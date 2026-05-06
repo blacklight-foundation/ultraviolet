@@ -1,0 +1,20 @@
+[[test(
+    name: "path segments are non empty maximal separator bounded substrings",
+    covers("def.PathSegments@L3188")
+)]]
+internal procedure pathSegmentsAreNonEmptyMaximalSeparatorBoundedSubstrings() -> bool
+|: => @result == true
+{
+    let path: Path = pathFromViewText("one//two\\three/")
+    let separators_only: Path = pathFromViewText("////")
+    let empty: Path = pathFromViewText("")
+    return (
+        pathComponentCount(path) == 3 &&
+        pathComponentEquals(path, 0, "one") &&
+        pathComponentEquals(path, 1, "two") &&
+        pathComponentEquals(path, 2, "three") &&
+        pathComponentCount(separators_only) == 1 &&
+        pathComponentEquals(separators_only, 0, "//") &&
+        pathComponentCount(empty) == 0
+    )
+}

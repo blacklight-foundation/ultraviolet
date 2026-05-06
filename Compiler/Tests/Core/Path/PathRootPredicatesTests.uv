@@ -1,0 +1,24 @@
+[[test(
+    name: "path root predicates classify absolute and relative forms",
+    covers("def.PathRootPredicates@L3146")
+)]]
+internal procedure pathRootPredicatesClassifyAbsoluteAndRelativeForms() -> bool
+|: => @result == true
+{
+    return (
+        pathFromViewText("C:/Program")~>isAbsolute() &&
+        pathFromViewText("C:/")~>isAbsolute() &&
+        pathFromViewText("C:\\Program")~>isAbsolute() &&
+        pathFromViewText("//server/share")~>isAbsolute() &&
+        pathFromViewText("\\\\server\\share")~>isAbsolute() &&
+        pathFromViewText("//")~>isAbsolute() &&
+        pathFromViewText("/")~>isAbsolute() &&
+        pathFromViewText("/Program")~>isAbsolute() &&
+        pathFromViewText("\\Program")~>isAbsolute() &&
+        pathFromViewText("Program")~>isRelative() &&
+        pathFromViewText("C:")~>isRelative() &&
+        pathFromViewText("C:Program")~>isRelative() &&
+        pathFromViewText("1:/Program")~>isRelative() &&
+        pathFromViewText("")~>isRelative()
+    )
+}

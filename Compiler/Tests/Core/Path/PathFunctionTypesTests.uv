@@ -1,0 +1,27 @@
+[[test(
+    name: "path function entrypoints return path and partial canonical path values",
+    covers("def.PathFunctionTypes@L3268")
+)]]
+internal procedure pathFunctionEntrypointsReturnPathAndPartialCanonicalPathValues() -> bool
+|: => @result == true
+{
+    let joined: Path = joinPath(pathFromViewText("root"), pathFromViewText("child"))
+    let normalized: Path = normalizePath(pathFromViewText("root/./child"))
+    let canonical: CanonicalPathValue = canonPath(pathFromViewText("root/child"))
+    return (
+        pathJoinCompEqualsText(joined, "root/child") &&
+        pathJoinCompEqualsText(normalized, "root/child") &&
+        canonicalPathAccepted(canonical)
+    )
+}
+
+internal procedure canonicalPathAccepted(value: CanonicalPathValue) -> bool {
+    return if value is {
+        @Accepted {
+            true
+        }
+        @RejectedParentTraversal {
+            false
+        }
+    }
+}

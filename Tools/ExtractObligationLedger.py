@@ -149,11 +149,11 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--public-spec", default="SPECIFICATION.md")
     parser.add_argument(
         "--internal-spec",
-        default="docs/internal/UltravioletSpecification.obligations.md",
+        default="Docs/Internal/UltravioletSpecification.obligations.md",
     )
     parser.add_argument(
         "--ledger",
-        default="docs/audit/ULTRAVIOLET_OBLIGATIONS.csv",
+        default="Docs/Audit/UltravioletObligations.csv",
         help="CSV obligation ledger path to write",
     )
     parser.add_argument(

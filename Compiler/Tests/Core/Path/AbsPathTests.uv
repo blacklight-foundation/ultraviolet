@@ -1,0 +1,39 @@
+using UltravioletCompiler::Core::Path::{
+    CanonicalPathValue,
+    Path,
+    RelativePathValue,
+    canonPath,
+    dropPathComponents,
+    joinPath,
+    normalizePath,
+    pathBasenameEquals,
+    pathComponentCount,
+    pathComponentEquals,
+    pathFileExtEquals,
+    pathFromViewText,
+    pathJoinCompEqualsText,
+    pathPrefix,
+    pathUnder,
+    relativePath
+}
+
+[[test(
+    name: "absolute path follows drive unc and root relative predicates",
+    covers("def.AbsPath@L3253")
+)]]
+internal procedure absolutePathFollowsDriveUNCAndRootRelativePredicates() -> bool
+|: => @result == true
+{
+    let normalized_drive_root: Path = normalizePath(pathFromViewText("Z:/."))
+    return (
+        pathFromViewText("Z:/a")~>isAbsolute() &&
+        pathFromViewText("Z:/")~>isAbsolute() &&
+        pathFromViewText("//host/share")~>isAbsolute() &&
+        pathFromViewText("/root")~>isAbsolute() &&
+        pathFromViewText("\\root")~>isAbsolute() &&
+        pathFromViewText("Z:relative")~>isRelative() &&
+        pathFromViewText("relative")~>isRelative() &&
+        pathFromViewText("")~>isRelative() &&
+        normalized_drive_root~>isRelative()
+    )
+}

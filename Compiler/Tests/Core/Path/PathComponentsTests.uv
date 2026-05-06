@@ -1,0 +1,36 @@
+[[test(
+    name: "path components combine root tag with tail segments",
+    covers("def.PathComponents@L3202")
+)]]
+internal procedure pathComponentsCombineRootTagWithTailSegments() -> bool
+|: => @result == true
+{
+    let drive: Path = pathFromViewText("C:/one//two/")
+    let drive_root_only: Path = pathFromViewText("C:/")
+    let unc: Path = pathFromViewText("//server/share")
+    let unc_root_only: Path = pathFromViewText("//")
+    let rooted: Path = pathFromViewText("/one//two")
+    let rooted_only: Path = pathFromViewText("/")
+    let relative: Path = pathFromViewText("one//two/")
+    return (
+        pathComponentCount(drive) == 3 &&
+        pathComponentEquals(drive, 0, "C:") &&
+        pathComponentEquals(drive, 1, "one") &&
+        pathComponentEquals(drive, 2, "two") &&
+        pathComponentCount(drive_root_only) == 1 &&
+        pathComponentEquals(drive_root_only, 0, "C:") &&
+        pathComponentCount(unc) == 3 &&
+        pathComponentEquals(unc, 0, "//") &&
+        pathComponentEquals(unc, 1, "server") &&
+        pathComponentEquals(unc, 2, "share") &&
+        pathComponentCount(unc_root_only) == 1 &&
+        pathComponentEquals(unc_root_only, 0, "//") &&
+        pathComponentCount(rooted) == 3 &&
+        pathComponentEquals(rooted, 0, "/") &&
+        pathComponentEquals(rooted, 1, "one") &&
+        pathComponentEquals(rooted, 2, "two") &&
+        pathComponentCount(rooted_only) == 1 &&
+        pathComponentEquals(rooted_only, 0, "/") &&
+        pathComponentCount(relative) == 2
+    )
+}

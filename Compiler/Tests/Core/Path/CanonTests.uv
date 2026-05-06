@@ -1,0 +1,43 @@
+[[test(
+    name: "canon accepts normalized paths and rejects parent traversal",
+    covers("def.Canon@L3326")
+)]]
+internal procedure canonAcceptsNormalizedPathsAndRejectsParentTraversal() -> bool
+|: => @result == true
+{
+    let accepted: CanonicalPathValue = canonPath(pathFromViewText("root/./file"))
+    let accepted_drive: CanonicalPathValue = canonPath(pathFromViewText("C:/root/."))
+    let rejected: CanonicalPathValue = canonPath(pathFromViewText("root/../file"))
+    let rejected_drive: CanonicalPathValue = canonPath(pathFromViewText("C:/.."))
+    return (
+        canonicalPathEqualsText(accepted, "root/file") &&
+        canonicalPathEqualsText(accepted_drive, "C:/root") &&
+        canonicalPathRejected(rejected) &&
+        canonicalPathRejected(rejected_drive)
+    )
+}
+
+internal procedure canonicalPathEqualsText(
+    value: CanonicalPathValue,
+    text: string@View
+) -> bool {
+    return if value is {
+        @Accepted { path } {
+            pathJoinCompEqualsText(path, text)
+        }
+        @RejectedParentTraversal {
+            false
+        }
+    }
+}
+
+internal procedure canonicalPathRejected(value: CanonicalPathValue) -> bool {
+    return if value is {
+        @Accepted {
+            false
+        }
+        @RejectedParentTraversal {
+            true
+        }
+    }
+}

@@ -1,0 +1,16 @@
+[[test(
+    name: "basename returns empty or final path component",
+    covers("def.Basename@L3369")
+)]]
+internal procedure basenameReturnsEmptyOrFinalPathComponent() -> bool
+|: => @result == true
+{
+    return (
+        pathBasenameEquals(pathFromViewText(""), "") &&
+        pathBasenameEquals(pathFromViewText("/"), "/") &&
+        pathBasenameEquals(pathFromViewText("//"), "//") &&
+        pathBasenameEquals(pathFromViewText("C:/"), "C:") &&
+        pathBasenameEquals(pathFromViewText("root/file.txt"), "file.txt") &&
+        pathBasenameEquals(pathFromViewText("root/dir/"), "dir")
+    )
+}

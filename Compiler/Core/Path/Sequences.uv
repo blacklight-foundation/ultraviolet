@@ -1,0 +1,196 @@
+// Support responsibility: Compiler/Core/Path/Sequences.uv
+//
+// This file owns the state-specific component sequence representation used by
+// Path.uv, Components.uv, and Algebra.uv to satisfy their assigned path
+// obligations without duplicating component traversal behavior.
+
+internal modal PathComponentSequence {
+    @Text {
+        private _root: PathRootValue
+
+        internal procedure componentCount(~) -> usize {
+            return textPathComponentCount(self._root)
+        }
+
+        internal procedure componentAt(~, index: usize) -> PathComponentLookupValue {
+            return textPathComponentAt(self._root, index)
+        }
+
+        internal procedure isAbsolute(~) -> bool {
+            return pathRootIsAbsolute(self._root)
+        }
+    }
+
+    @Joined {
+        private _left: Path
+        private _right: Path
+
+        internal procedure componentCount(~) -> usize {
+            return pathComponentCount(self._left) + pathComponentCount(self._right)
+        }
+
+        internal procedure componentAt(~, index: usize) -> PathComponentLookupValue {
+            let left_count: usize = pathComponentCount(self._left)
+            if (index < left_count) {
+                return pathComponentAt(self._left, index)
+            }
+            return pathComponentAt(self._right, index - left_count)
+        }
+
+        internal procedure isAbsolute(~) -> bool {
+            return pathComponentSequenceFormsAbsolutePath(self)
+        }
+    }
+
+    @DotFiltered {
+        private _source: Path
+
+        internal procedure componentCount(~) -> usize {
+            var count: usize = 0
+            var index: usize = 0
+            loop {
+                if (index >= pathComponentCount(self._source)) {
+                    break
+                }
+
+                if (!pathComponentLookupIsSingleDot(pathComponentAt(self._source, index))) {
+                    count = count + 1
+                }
+
+                index = index + 1
+            }
+            return count
+        }
+
+        internal procedure componentAt(~, index: usize) -> PathComponentLookupValue {
+            var source_index: usize = 0
+            var filtered_index: usize = 0
+            loop {
+                if (source_index >= pathComponentCount(self._source)) {
+                    break
+                }
+
+                let component: PathComponentLookupValue = pathComponentAt(self._source, source_index)
+                if (!pathComponentLookupIsSingleDot(component)) {
+                    if (filtered_index == index) {
+                        return component
+                    }
+                    filtered_index = filtered_index + 1
+                }
+
+                source_index = source_index + 1
+            }
+            return missingPathComponent()
+        }
+
+        internal procedure isAbsolute(~) -> bool {
+            return pathComponentSequenceFormsAbsolutePath(self)
+        }
+    }
+
+    @Dropped {
+        private _source: Path
+        private _drop_count: usize
+
+        internal procedure componentCount(~) -> usize {
+            let source_count: usize = pathComponentCount(self._source)
+            if (source_count <= self._drop_count) {
+                return 0
+            }
+            return source_count - self._drop_count
+        }
+
+        internal procedure componentAt(~, index: usize) -> PathComponentLookupValue {
+            return pathComponentAt(self._source, index + self._drop_count)
+        }
+
+        internal procedure isAbsolute(~) -> bool {
+            return pathComponentSequenceFormsAbsolutePath(self)
+        }
+    }
+}
+
+internal type PathComponentSequenceValue =
+    PathComponentSequence@Text |
+    PathComponentSequence@Joined |
+    PathComponentSequence@DotFiltered |
+    PathComponentSequence@Dropped
+
+internal procedure pathComponentsFromRoot(move root: PathRootValue) -> PathComponentSequenceValue {
+    return PathComponentSequence@Text { _root: move root }
+}
+
+internal procedure pathComponentSequenceCount(sequence: PathComponentSequenceValue) -> usize {
+    return if sequence is {
+        @Text {
+            sequence~>componentCount()
+        }
+        @Joined {
+            sequence~>componentCount()
+        }
+        @DotFiltered {
+            sequence~>componentCount()
+        }
+        @Dropped {
+            sequence~>componentCount()
+        }
+    }
+}
+
+internal procedure pathComponentSequenceAt(
+    sequence: PathComponentSequenceValue,
+    index: usize
+) -> PathComponentLookupValue {
+    return if sequence is {
+        @Text {
+            sequence~>componentAt(index)
+        }
+        @Joined {
+            sequence~>componentAt(index)
+        }
+        @DotFiltered {
+            sequence~>componentAt(index)
+        }
+        @Dropped {
+            sequence~>componentAt(index)
+        }
+    }
+}
+
+internal procedure pathComponentSequenceIsAbsolute(
+    sequence: PathComponentSequenceValue
+) -> bool {
+    return if sequence is {
+        @Text {
+            sequence~>isAbsolute()
+        }
+        @Joined {
+            sequence~>isAbsolute()
+        }
+        @DotFiltered {
+            sequence~>isAbsolute()
+        }
+        @Dropped {
+            sequence~>isAbsolute()
+        }
+    }
+}
+
+internal procedure pathComponentSequenceFormsAbsolutePath(
+    sequence: PathComponentSequenceValue
+) -> bool {
+    let count: usize = pathComponentSequenceCount(sequence)
+    if (count == 0) {
+        return false
+    }
+
+    let first: PathComponentLookupValue = pathComponentSequenceAt(sequence, 0)
+    if (
+        pathComponentLookupEqualsText(first, "/") ||
+            pathComponentLookupEqualsText(first, "//")
+    ) {
+        return true
+    }
+
+    return count >= 2 && pathComponentLookupIsDriveTag(first)
+}

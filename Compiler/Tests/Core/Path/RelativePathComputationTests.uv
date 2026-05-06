@@ -1,0 +1,44 @@
+[[test(
+    name: "relative path computation drops canonical base prefix",
+    covers("def.RelativePathComputation@L3355")
+)]]
+internal procedure relativePathComputationDropsCanonicalBasePrefix() -> bool
+|: => @result == true
+{
+    let computed: RelativePathValue =
+        relativePath(pathFromViewText("root/child/file"), pathFromViewText("root"))
+    let equal: RelativePathValue =
+        relativePath(pathFromViewText("root/child"), pathFromViewText("root/child"))
+    let non_prefix: RelativePathValue =
+        relativePath(pathFromViewText("other/file"), pathFromViewText("root"))
+    let parent: RelativePathValue =
+        relativePath(pathFromViewText("root/../file"), pathFromViewText("root"))
+    return (
+        relativePathEqualsText(computed, "child/file") &&
+        relativePathEqualsText(equal, "") &&
+        relativePathUnavailable(non_prefix) &&
+        relativePathUnavailable(parent)
+    )
+}
+
+internal procedure relativePathEqualsText(value: RelativePathValue, text: string@View) -> bool {
+    return if value is {
+        @Computed { path } {
+            pathJoinCompEqualsText(path, text)
+        }
+        @Unavailable {
+            false
+        }
+    }
+}
+
+internal procedure relativePathUnavailable(value: RelativePathValue) -> bool {
+    return if value is {
+        @Computed {
+            false
+        }
+        @Unavailable {
+            true
+        }
+    }
+}

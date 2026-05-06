@@ -1,0 +1,239 @@
+// Obligation responsibility: Compiler/Core/Path/Path.uv
+//
+// This file owns the public path value surface for project.path-resolution:
+//
+// - def.PathFunctionTypes@L3268
+//   Join : Path x Path -> Path
+//   Normalize : Path -> Path
+//   Canon : Path partial Path
+
+public record Path {
+    private _components: PathComponentSequenceValue
+
+    public procedure isAbsolute(~) -> bool {
+        return pathComponentSequenceIsAbsolute(self._components)
+    }
+
+    public procedure isRelative(~) -> bool {
+        return !self~>isAbsolute()
+    }
+
+    internal procedure componentCount(~) -> usize {
+        return pathComponentSequenceCount(self._components)
+    }
+
+    internal procedure componentAt(~, index: usize) -> PathComponentLookupValue {
+        return pathComponentSequenceAt(self._components, index)
+    }
+
+}
+
+public modal CanonicalPath {
+    @Accepted {
+        public path: Path
+    }
+
+    @RejectedParentTraversal {
+        public normalized_path: Path
+    }
+}
+
+public type CanonicalPathValue =
+    CanonicalPath@Accepted | CanonicalPath@RejectedParentTraversal
+
+public modal RelativePath {
+    @Computed {
+        public path: Path
+    }
+
+    @Unavailable {
+    }
+}
+
+public type RelativePathValue = RelativePath@Computed | RelativePath@Unavailable
+
+internal modal PathText {
+    @View {
+        private _text: string@View
+
+        internal procedure view(~) -> string@View {
+            return self._text
+        }
+
+        internal procedure length(~) -> usize {
+            return pathViewLength(self._text)
+        }
+
+        internal procedure byteAt(~, index: usize) -> u8
+        |: index < pathViewLength(self._text)
+        {
+            return pathViewByte(self._text, index)
+        }
+
+        internal procedure byteEquals(~, index: usize, expected: u8) -> bool {
+            if (index >= self~>length()) {
+                return false
+            }
+            return self~>byteAt(index) == expected
+        }
+
+        internal procedure byteIsAsciiLetter(~, index: usize) -> bool {
+            if (index >= self~>length()) {
+                return false
+            }
+            return isAsciiLetter(self~>byteAt(index))
+        }
+
+        internal procedure byteIsWinSeparator(~, index: usize) -> bool {
+            if (index >= self~>length()) {
+                return false
+            }
+            return isWinSeparator(self~>byteAt(index))
+        }
+    }
+
+    @Managed {
+        private _text: string@Managed
+
+        internal procedure view(~) -> string@View {
+            return string::as_view(self._text)
+        }
+
+        internal procedure length(~) -> usize {
+            return pathViewLength(self~>view())
+        }
+
+        internal procedure byteAt(~, index: usize) -> u8
+        |: index < pathViewLength(self~>view())
+        {
+            return pathViewByte(self~>view(), index)
+        }
+
+        internal procedure byteEquals(~, index: usize, expected: u8) -> bool {
+            if (index >= self~>length()) {
+                return false
+            }
+            return self~>byteAt(index) == expected
+        }
+
+        internal procedure byteIsAsciiLetter(~, index: usize) -> bool {
+            if (index >= self~>length()) {
+                return false
+            }
+            return isAsciiLetter(self~>byteAt(index))
+        }
+
+        internal procedure byteIsWinSeparator(~, index: usize) -> bool {
+            if (index >= self~>length()) {
+                return false
+            }
+            return isWinSeparator(self~>byteAt(index))
+        }
+    }
+}
+
+internal type PathTextValue = PathText@View | PathText@Managed
+
+public procedure pathFromViewText(text: string@View) -> Path {
+    return pathFromPathText(pathTextFromView(text))
+}
+
+public procedure pathFromManagedText(move text: string@Managed) -> Path {
+    return pathFromPathText(pathTextFromManaged(move text))
+}
+
+internal procedure pathFromPathText(move text: PathTextValue) -> Path {
+    let root: PathRootValue = classifyPathRoot(move text)
+    return Path {
+        _components: pathComponentsFromRoot(move root)
+    }
+}
+
+internal procedure pathFromComponentSequence(move components: PathComponentSequenceValue) -> Path {
+    return Path { _components: move components }
+}
+
+internal procedure pathTextFromView(text: string@View) -> PathTextValue {
+    return PathText@View { _text: text }
+}
+
+internal procedure pathTextFromManaged(move text: string@Managed) -> PathTextValue {
+    return PathText@Managed { _text: move text }
+}
+
+internal procedure pathTextView(text: PathTextValue) -> string@View {
+    return if text is {
+        @View {
+            text~>view()
+        }
+        @Managed {
+            text~>view()
+        }
+    }
+}
+
+internal procedure pathTextLength(text: PathTextValue) -> usize {
+    return if text is {
+        @View {
+            text~>length()
+        }
+        @Managed {
+            text~>length()
+        }
+    }
+}
+
+internal procedure pathTextByte(text: PathTextValue, index: usize) -> u8
+|: index < pathViewLength(pathTextView(text))
+{
+    return pathViewByte(pathTextView(text), index)
+}
+
+internal procedure pathViewLength(text: string@View) -> usize {
+    return string::length(text)
+}
+
+internal procedure pathViewByte(text: string@View, index: usize) -> u8
+|: index < pathViewLength(text)
+{
+    let view: bytes@View = bytes::view_string(text)
+    let data: const [u8] = bytes::as_slice(view)
+    return data[index]
+}
+
+internal procedure pathTextByteEquals(
+    text: PathTextValue,
+    index: usize,
+    expected: u8
+) -> bool {
+    return if text is {
+        @View {
+            text~>byteEquals(index, expected)
+        }
+        @Managed {
+            text~>byteEquals(index, expected)
+        }
+    }
+}
+
+internal procedure pathTextByteIsAsciiLetter(text: PathTextValue, index: usize) -> bool {
+    return if text is {
+        @View {
+            text~>byteIsAsciiLetter(index)
+        }
+        @Managed {
+            text~>byteIsAsciiLetter(index)
+        }
+    }
+}
+
+internal procedure pathTextByteIsWinSeparator(text: PathTextValue, index: usize) -> bool {
+    return if text is {
+        @View {
+            text~>byteIsWinSeparator(index)
+        }
+        @Managed {
+            text~>byteIsWinSeparator(index)
+        }
+    }
+}

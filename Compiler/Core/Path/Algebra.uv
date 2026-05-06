@@ -1,0 +1,277 @@
+// Obligation responsibility: Compiler/Core/Path/Algebra.uv
+//
+// This file owns component-based path algebra for project.path-resolution:
+//
+// - def.JoinComp@L3218
+// - def.Join@L3237
+// - def.PathPrefix@L3284
+// - def.Normalize@L3298
+// - def.Under@L3312
+// - def.Canon@L3326
+// - def.Drop@L3341
+// - def.RelativePathComputation@L3355
+// - def.Basename@L3369
+// - def.FileExt@L3386
+
+public procedure joinPath(base: Path, path: Path) -> Path {
+    if (path~>isAbsolute()) {
+        return path
+    }
+
+    return pathFromComponentSequence(joinedPathComponents(base, path))
+}
+
+public procedure normalizePath(path: Path) -> Path {
+    return pathFromComponentSequence(dotFilteredPathComponents(path))
+}
+
+public procedure pathPrefix(path: Path, candidate_prefix: Path) -> bool {
+    let path_count: usize = pathComponentCount(path)
+    let prefix_count: usize = pathComponentCount(candidate_prefix)
+    if (prefix_count > path_count) {
+        return false
+    }
+
+    var index: usize = 0
+    loop {
+        if (index >= prefix_count) {
+            break
+        }
+
+        if (
+            !pathComponentLookupsEqual(
+                pathComponentAt(path, index),
+                pathComponentAt(candidate_prefix, index)
+            )
+        ) {
+            return false
+        }
+
+        index = index + 1
+    }
+    return true
+}
+
+public procedure pathUnder(path: Path, owner: Path) -> bool {
+    return pathPrefix(normalizePath(path), normalizePath(owner))
+}
+
+public procedure canonPath(path: Path) -> CanonicalPathValue {
+    let normalized: Path = normalizePath(path)
+    var index: usize = 0
+    loop {
+        if (index >= pathComponentCount(normalized)) {
+            break
+        }
+
+        if (pathComponentLookupIsParentTraversal(pathComponentAt(normalized, index))) {
+            return CanonicalPath@RejectedParentTraversal {
+                normalized_path: normalized
+            }
+        }
+
+        index = index + 1
+    }
+    return CanonicalPath@Accepted { path: normalized }
+}
+
+internal procedure dropPathComponents(path: Path, count: usize) -> Path {
+    if (count == 0) {
+        return path
+    }
+
+    return pathFromComponentSequence(droppedPathComponents(path, count))
+}
+
+public procedure relativePath(path: Path, base: Path) -> RelativePathValue {
+    let path_canon: CanonicalPathValue = canonPath(path)
+    return if path_canon is {
+        @RejectedParentTraversal {
+            RelativePath@Unavailable {}
+        }
+        @Accepted {
+            let base_canon: CanonicalPathValue = canonPath(base)
+            if base_canon is {
+                @RejectedParentTraversal {
+                    RelativePath@Unavailable {}
+                }
+                @Accepted {
+                    if (!pathPrefix(path_canon.path, base_canon.path)) {
+                        RelativePath@Unavailable {}
+                    } else {
+                        RelativePath@Computed {
+                            path: dropPathComponents(
+                                path_canon.path,
+                                pathComponentCount(base_canon.path)
+                            )
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
+
+internal procedure pathJoinCompEqualsText(path: Path, text: string@View) -> bool {
+    let length: usize = pathViewLength(text)
+    var text_index: usize = 0
+    let count: usize = pathComponentCount(path)
+    var path_index: usize = 0
+    var previous_component_suppressed_separator: bool = false
+
+    loop {
+        if (path_index >= count) {
+            break
+        }
+
+        let component: PathComponentLookupValue = pathComponentAt(path, path_index)
+        let component_matched: bool = if component is {
+            @Found {
+                if (path_index > 0 && !previous_component_suppressed_separator) {
+                    if (text_index >= length) {
+                        return false
+                    }
+                    if (pathViewByte(text, text_index) != SLASH_BYTE) {
+                        return false
+                    }
+                    text_index = text_index + 1
+                }
+
+                let found_component: PathComponentView = component~>component()
+                if (!pathComponentMatchesTextAt(found_component, text, text_index)) {
+                    return false
+                }
+
+                text_index = text_index + pathComponentLength(found_component)
+                previous_component_suppressed_separator =
+                    pathComponentSuppressesJoinSeparator(found_component)
+                true
+            }
+            @Missing {
+                false
+            }
+        }
+        if (!component_matched) {
+            return false
+        }
+        path_index = path_index + 1
+    }
+
+    return text_index == length
+}
+
+internal procedure pathComponentCount(path: Path) -> usize {
+    return path~>componentCount()
+}
+
+internal procedure pathComponentEquals(path: Path, index: usize, text: string@View) -> bool {
+    return pathComponentLookupEqualsText(pathComponentAt(path, index), text)
+}
+
+internal procedure pathBasenameEquals(path: Path, text: string@View) -> bool {
+    return pathComponentEqualsText(pathBasenameView(path), text)
+}
+
+internal procedure pathFileExtEquals(path: Path, text: string@View) -> bool {
+    return pathComponentEqualsText(pathFileExtView(path), text)
+}
+
+internal procedure pathComponentAt(path: Path, index: usize) -> PathComponentLookupValue {
+    return path~>componentAt(index)
+}
+
+internal procedure joinedPathComponents(
+    left: Path,
+    right: Path
+) -> PathComponentSequenceValue {
+    return PathComponentSequence@Joined {
+        _left: left,
+        _right: right
+    }
+}
+
+internal procedure dotFilteredPathComponents(source: Path) -> PathComponentSequenceValue {
+    return PathComponentSequence@DotFiltered { _source: source }
+}
+
+internal procedure droppedPathComponents(
+    source: Path,
+    drop_count: usize
+) -> PathComponentSequenceValue {
+    return PathComponentSequence@Dropped {
+        _source: source,
+        _drop_count: drop_count
+    }
+}
+
+internal procedure pathComponentMatchesTextAt(
+    component: PathComponentView,
+    text: string@View,
+    start: usize
+) -> bool {
+    let component_length: usize = pathComponentLength(component)
+    let text_length: usize = pathViewLength(text)
+    if (start > text_length) {
+        return false
+    }
+    if (component_length > text_length - start) {
+        return false
+    }
+
+    var index: usize = 0
+    loop {
+        if (index >= component_length) {
+            break
+        }
+
+        if (pathComponentByteAt(component, index) != pathViewByte(text, start + index)) {
+            return false
+        }
+
+        index = index + 1
+    }
+    return true
+}
+
+internal procedure pathBasenameView(path: Path) -> PathComponentView {
+    let count: usize = pathComponentCount(path)
+    if (count == 0) {
+        return emptyPathComponent()
+    }
+
+    let component: PathComponentLookupValue = pathComponentAt(path, count - 1)
+    return if component is {
+        @Found {
+            pathComponentLookupComponent(component)
+        }
+        @Missing {
+            emptyPathComponent()
+        }
+    }
+}
+
+internal procedure pathFileExtView(path: Path) -> PathComponentView {
+    let basename: PathComponentView = pathBasenameView(path)
+    let length: usize = pathComponentLength(basename)
+    var last_dot: usize = length
+    var index: usize = 0
+    loop {
+        if (index >= length) {
+            break
+        }
+
+        if (pathComponentByteEquals(basename, index, DOT_BYTE)) {
+            last_dot = index
+        }
+
+        index = index + 1
+    }
+
+    if (last_dot == length) {
+        return emptyPathComponent()
+    }
+    if (last_dot == 0) {
+        return emptyPathComponent()
+    }
+    return pathComponentSuffix(basename, last_dot)
+}

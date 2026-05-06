@@ -1,0 +1,24 @@
+[[test(
+    name: "normalize removes single dot components and preserves parent traversal",
+    covers("def.Normalize@L3298")
+)]]
+internal procedure normalizeRemovesSingleDotComponentsAndPreservesParentTraversal() -> bool
+|: => @result == true
+{
+    let normalized: Path = normalizePath(pathFromViewText("root/./child/../file/."))
+    let drive_root_only: Path = normalizePath(pathFromViewText("C:/."))
+    let drive_child: Path = normalizePath(pathFromViewText("C:/a/."))
+    let rooted: Path = normalizePath(pathFromViewText("/./"))
+    let unc_path: Path = normalizePath(pathFromViewText("//host/./share"))
+    return (
+        pathJoinCompEqualsText(normalized, "root/child/../file") &&
+        pathJoinCompEqualsText(drive_root_only, "C:") &&
+        drive_root_only~>isRelative() &&
+        pathJoinCompEqualsText(drive_child, "C:/a") &&
+        drive_child~>isAbsolute() &&
+        pathJoinCompEqualsText(rooted, "/") &&
+        rooted~>isAbsolute() &&
+        pathJoinCompEqualsText(unc_path, "//host/share") &&
+        unc_path~>isAbsolute()
+    )
+}

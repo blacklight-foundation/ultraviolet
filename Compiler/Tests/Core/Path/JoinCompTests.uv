@@ -1,0 +1,20 @@
+[[test(
+    name: "join component renders empty roots drive tags and separators",
+    covers("def.JoinComp@L3218")
+)]]
+internal procedure joinComponentRendersEmptyRootsDriveTagsAndSeparators() -> bool
+|: => @result == true
+{
+    let drive_join: Path = joinPath(pathFromViewText("C:"), pathFromViewText("file"))
+    return (
+        pathJoinCompEqualsText(pathFromViewText(""), "") &&
+        pathJoinCompEqualsText(pathFromViewText("/"), "/") &&
+        pathJoinCompEqualsText(pathFromViewText("C:/"), "C:") &&
+        pathJoinCompEqualsText(pathFromViewText("//"), "//") &&
+        pathJoinCompEqualsText(pathFromViewText("\\child"), "/child") &&
+        pathJoinCompEqualsText(pathFromViewText("\\\\server\\share"), "//server/share") &&
+        pathJoinCompEqualsText(pathFromViewText("one//two/"), "one/two") &&
+        pathJoinCompEqualsText(pathFromViewText("C:/one//two/"), "C:/one/two") &&
+        pathJoinCompEqualsText(drive_join, "C:/file")
+    )
+}

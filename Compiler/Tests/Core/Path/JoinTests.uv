@@ -1,0 +1,25 @@
+[[test(
+    name: "join returns absolute right operand and appends relative components",
+    covers("def.Join@L3237")
+)]]
+internal procedure joinReturnsAbsoluteRightOperandAndAppendsRelativeComponents() -> bool
+|: => @result == true
+{
+    let joined: Path = joinPath(pathFromViewText("C:/base"), pathFromViewText("child/file"))
+    let absolute_right: Path = joinPath(pathFromViewText("C:/base"), pathFromViewText("/child"))
+    let drive_root_empty: Path = joinPath(pathFromViewText("C:/"), pathFromViewText(""))
+    return (
+        joined~>isAbsolute() &&
+        pathComponentCount(joined) == 4 &&
+        pathComponentEquals(joined, 0, "C:") &&
+        pathComponentEquals(joined, 1, "base") &&
+        pathComponentEquals(joined, 2, "child") &&
+        pathComponentEquals(joined, 3, "file") &&
+        pathJoinCompEqualsText(joined, "C:/base/child/file") &&
+        pathComponentCount(absolute_right) == 2 &&
+        pathComponentEquals(absolute_right, 0, "/") &&
+        pathComponentEquals(absolute_right, 1, "child") &&
+        pathJoinCompEqualsText(drive_root_empty, "C:") &&
+        drive_root_empty~>isRelative()
+    )
+}

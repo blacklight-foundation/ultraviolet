@@ -1,0 +1,19 @@
+[[test(
+    name: "path prefix compares complete ordered components",
+    covers("def.PathPrefix@L3284")
+)]]
+internal procedure pathPrefixComparesCompleteOrderedComponents() -> bool
+|: => @result == true
+{
+    return (
+        pathPrefix(pathFromViewText(""), pathFromViewText("")) &&
+        pathPrefix(pathFromViewText("root/child/file"), pathFromViewText("root/child")) &&
+        pathPrefix(pathFromViewText("root/child"), pathFromViewText("root/child")) &&
+        pathPrefix(pathFromViewText("root/child"), pathFromViewText("root")) &&
+        pathPrefix(pathFromViewText("/root/child"), pathFromViewText("/root")) &&
+        !pathPrefix(pathFromViewText("root/child"), pathFromViewText("root/ch")) &&
+        !pathPrefix(pathFromViewText("root/child"), pathFromViewText("other")) &&
+        !pathPrefix(pathFromViewText("/root"), pathFromViewText("root")) &&
+        !pathPrefix(pathFromViewText("root"), pathFromViewText("root/child"))
+    )
+}

@@ -1,0 +1,18 @@
+[[test(
+    name: "file extension follows final basename dot rules",
+    covers("def.FileExt@L3386")
+)]]
+internal procedure fileExtensionFollowsFinalBasenameDotRules() -> bool
+|: => @result == true
+{
+    return (
+        pathFileExtEquals(pathFromViewText("root/file"), "") &&
+        pathFileExtEquals(pathFromViewText("root/.profile"), "") &&
+        pathFileExtEquals(pathFromViewText("root/.profile.txt"), ".txt") &&
+        pathFileExtEquals(pathFromViewText("root/file.tar.gz"), ".gz") &&
+        pathFileExtEquals(pathFromViewText("root/file."), ".") &&
+        pathFileExtEquals(pathFromViewText("root/.."), ".") &&
+        pathFileExtEquals(pathFromViewText("/"), "") &&
+        pathFileExtEquals(pathFromViewText(""), "")
+    )
+}

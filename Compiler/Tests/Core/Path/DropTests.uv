@@ -1,0 +1,23 @@
+[[test(
+    name: "drop removes leading components and clamps at empty",
+    covers("def.Drop@L3341")
+)]]
+internal procedure dropRemovesLeadingComponentsAndClampsAtEmpty() -> bool
+|: => @result == true
+{
+    let zero: Path = dropPathComponents(pathFromViewText("root/child/file"), 0)
+    let two: Path = dropPathComponents(pathFromViewText("root/child/file"), 2)
+    let past: Path = dropPathComponents(pathFromViewText("root/child/file"), 8)
+    let drive_tail: Path = dropPathComponents(pathFromViewText("C:/root/file"), 1)
+    let drive_all: Path = dropPathComponents(pathFromViewText("C:/root/file"), 3)
+    return (
+        pathJoinCompEqualsText(zero, "root/child/file") &&
+        pathJoinCompEqualsText(two, "file") &&
+        pathJoinCompEqualsText(drive_tail, "root/file") &&
+        drive_tail~>isRelative() &&
+        pathComponentCount(drive_all) == 0 &&
+        drive_all~>isRelative() &&
+        pathComponentCount(past) == 0 &&
+        past~>isRelative()
+    )
+}

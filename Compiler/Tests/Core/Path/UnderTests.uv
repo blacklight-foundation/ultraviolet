@@ -1,0 +1,15 @@
+[[test(
+    name: "under compares normalized path prefixes",
+    covers("def.Under@L3312")
+)]]
+internal procedure underComparesNormalizedPathPrefixes() -> bool
+|: => @result == true
+{
+    return (
+        pathUnder(pathFromViewText("root/child/file"), pathFromViewText("root/./child")) &&
+        pathUnder(pathFromViewText("root/./child"), pathFromViewText("root")) &&
+        pathUnder(pathFromViewText("/root/./child"), pathFromViewText("/root")) &&
+        pathUnder(pathFromViewText(""), pathFromViewText("")) &&
+        !pathUnder(pathFromViewText("root/other/file"), pathFromViewText("root/child"))
+    )
+}
