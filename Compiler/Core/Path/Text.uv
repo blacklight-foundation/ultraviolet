@@ -59,6 +59,13 @@ internal procedure pathViewByte(text: string@View, index: usize) -> u8
     return data[index]
 }
 
+internal procedure pathViewByteIsWinSeparator(text: string@View, index: usize) -> bool {
+    if (index >= pathViewLength(text)) {
+        return false
+    }
+    return isWinSeparator(pathViewByte(text, index))
+}
+
 internal procedure pathTextByteEquals(
     text: PathTextValue,
     index: usize,

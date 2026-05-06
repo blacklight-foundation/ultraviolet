@@ -1,8 +1,11 @@
 using UltravioletCompiler::Core::Path::{
-    CanonicalPathValue,
+    CanonicalPathResultValue,
     Path,
-    RelativePathValue,
+    PathResolutionResultValue,
+    RelativePathResultValue,
+    RelativePathWellFormednessResultValue,
     canonPath,
+    checkRelativePathWellFormedness,
     dropPathComponents,
     joinPath,
     normalizePath,
@@ -14,6 +17,7 @@ using UltravioletCompiler::Core::Path::{
     pathTextEquals,
     pathPrefix,
     pathUnder,
+    resolvePath,
     relativePath
 }
 
@@ -27,6 +31,20 @@ internal procedure driveRootedPathIsAbsolute() -> bool
     var passed: bool = false
     region as paths {
         passed = pathFromViewText(paths, "Z:/a")~>isAbsolute()
+    }
+    return passed
+}
+
+[[test(
+    name: "drive-rooted path without tail is absolute",
+    covers("def.AbsPath@L3253")
+)]]
+internal procedure driveRootedPathWithoutTailIsAbsolute() -> bool
+|: => @result
+{
+    var passed: bool = false
+    region as paths {
+        passed = pathFromViewText(paths, "Z:/")~>isAbsolute()
     }
     return passed
 }

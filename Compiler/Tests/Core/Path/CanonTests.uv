@@ -8,7 +8,7 @@ internal procedure canonAcceptsNormalizedPath() -> bool
     var passed: bool = false
     region as paths {
         let source: Path = pathFromViewText(paths, "root/./file")
-        let value: CanonicalPathValue = canonPath(paths, move source)
+        let value: CanonicalPathResultValue = canonPath(paths, move source)
         passed = canonicalPathAcceptedAs(
             value,
             "root/file"
@@ -27,7 +27,7 @@ internal procedure canonAcceptsNormalizedDriveRootedPath() -> bool
     var passed: bool = false
     region as paths {
         let source: Path = pathFromViewText(paths, "C:/root/.")
-        let value: CanonicalPathValue = canonPath(paths, move source)
+        let value: CanonicalPathResultValue = canonPath(paths, move source)
         passed = canonicalPathAcceptedAs(
             value,
             "C:/root"
@@ -46,7 +46,7 @@ internal procedure canonRejectsParentTraversalAfterNormalization() -> bool
     var passed: bool = false
     region as paths {
         let source: Path = pathFromViewText(paths, "root/../file")
-        let value: CanonicalPathValue = canonPath(paths, move source)
+        let value: CanonicalPathResultValue = canonPath(paths, move source)
         passed = canonicalPathRejected(
             value
         )
@@ -64,7 +64,7 @@ internal procedure canonRejectsDriveRootedParentTraversal() -> bool
     var passed: bool = false
     region as paths {
         let source: Path = pathFromViewText(paths, "C:/..")
-        let value: CanonicalPathValue = canonPath(paths, move source)
+        let value: CanonicalPathResultValue = canonPath(paths, move source)
         passed = canonicalPathRejected(value)
     }
     return passed

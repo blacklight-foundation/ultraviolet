@@ -1,0 +1,27 @@
+// Source responsibility: Tools/Uv/Main.uv
+//
+// This file owns the public `uv` executable entrypoint source declaration.
+// The declaration must be the only `main` procedure in the `uv` assembly and
+// must use the executable signature consumed by main checking:
+//
+// - def.15.MainEntryPointDefinitions@L52786
+//   MainDecls(P) finds procedure declarations named `main`; MainSigOk requires
+//   public visibility, one Context-bundle parameter, and i32 return.
+// - rule.15.Main-Ok@L52807
+//   An executable project is accepted when it has exactly one non-generic
+//   public main declaration matching MainSigOk.
+//
+// The main-check implementation is owned by
+// Compiler/Semantics/Declarations/Procedures.uv.
+
+import UltravioletCompiler::Driver::CLI
+using UltravioletCompiler::Driver::CLI::{
+    CommandArguments,
+    entrypointCommandArguments,
+    runUv
+}
+
+public procedure main(context: Context) -> i32 {
+    let arguments: CommandArguments = entrypointCommandArguments()
+    return runUv(context, arguments)
+}

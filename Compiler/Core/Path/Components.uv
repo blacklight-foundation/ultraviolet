@@ -211,6 +211,17 @@ internal procedure pathComponentFromViewSlice(
     }
 }
 
+internal procedure pathComponentFromCheckedViewSlice(
+    text: string@View,
+    start: usize,
+    end: usize
+) -> PathComponentView {
+    if (start <= end && end <= pathViewLength(text)) {
+        return pathComponentFromViewSlice(text, start, end)
+    }
+    return emptyPathComponent()
+}
+
 internal procedure emptyPathComponent() -> PathComponentView {
     return pathComponentFromView("")
 }
@@ -358,82 +369,4 @@ internal procedure pathComponentLookupsEqual(
             false
         }
     }
-}
-
-internal procedure textPathComponentCount(root: PathRootValue) -> usize {
-    let root_count: usize = pathRootComponentCount(root)
-    let tail_count: usize = segmentCount(pathRootTextView(root), pathRootTailStart(root))
-    return root_count + tail_count
-}
-
-internal procedure textPathComponentAt(
-    root: PathRootValue,
-    index: usize
-) -> PathComponentLookupValue {
-    let root_count: usize = pathRootComponentCount(root)
-    if (index < root_count) {
-        return pathRootComponentAt(root, index)
-    }
-
-    return segmentAt(pathRootTextView(root), pathRootTailStart(root), index - root_count)
-}
-
-internal procedure segmentCount(text: string@View, start: usize) -> usize {
-    let length: usize = pathViewLength(text)
-    var count: usize = 0
-    var index: usize = start
-    var inside_segment: bool = false
-    loop {
-        if (index >= length) {
-            break
-        }
-
-        if (isWinSeparator(pathViewByte(text, index))) {
-            inside_segment = false
-        } else {
-            if (!inside_segment) {
-                count = count + 1
-                inside_segment = true
-            }
-        }
-
-        index = index + 1
-    }
-    return count
-}
-
-internal procedure segmentAt(
-    text: string@View,
-    start: usize,
-    segment_index: usize
-) -> PathComponentLookupValue {
-    let length: usize = pathViewLength(text)
-    var index: usize = start
-    var current_segment: usize = 0
-    loop {
-        if (index >= length) {
-            break
-        }
-
-        if (isWinSeparator(pathViewByte(text, index))) {
-            index = index + 1
-        } else {
-            let segment_start: usize = index
-            loop {
-                if (index >= length) {
-                    break
-                }
-                if (isWinSeparator(pathViewByte(text, index))) {
-                    break
-                }
-                index = index + 1
-            }
-
-            if (current_segment == segment_index) {
-                return foundPathComponent(pathComponentFromViewSlice(text, segment_start, index))
-            }
-            current_segment = current_segment + 1
-        }
-    }
-    return missingPathComponent()
 }

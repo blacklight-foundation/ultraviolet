@@ -8,10 +8,12 @@
 //   Canon : Path partial Path
 
 public record Path {
-    private _components: PathComponentSequenceValue
+    private _storage: PathStorageValue
+    private _components: PathComponentListValue
+    private _kind: PathKindValue
 
     public procedure isAbsolute(~) -> bool {
-        return pathComponentSequenceIsAbsolute(self._components)
+        return pathKindIsAbsolute(self._kind)
     }
 
     public procedure isRelative(~) -> bool {
@@ -19,38 +21,66 @@ public record Path {
     }
 
     internal procedure componentCount(~) -> usize {
-        return pathComponentSequenceCount(self._components)
+        return pathComponentListCount(self._components)
     }
 
     internal procedure componentAt(~, index: usize) -> PathComponentLookupValue {
-        return pathComponentSequenceAt(self._components, index)
+        return pathComponentListAt(self._components, index)
     }
 
     internal procedure hasPrefix(~, candidate_prefix: Path) -> bool {
-        return pathComponentSequenceHasPrefix(self._components, candidate_prefix._components)
+        return pathComponentListHasPrefix(self._components, candidate_prefix._components)
     }
 
     internal procedure containsParentTraversal(~) -> bool {
-        return pathComponentSequenceContainsParentTraversal(self._components)
+        return pathComponentListContainsParentTraversal(self._components)
     }
 
     internal procedure textEquals(~, text: string@View) -> bool {
-        return pathComponentSequenceTextEquals(self._components, text)
+        return pathComponentListTextEquals(self._components, text)
     }
 
     internal procedure basename(~) -> PathComponentView {
-        return pathComponentSequenceBasename(self._components)
+        return pathComponentListBasename(self._components)
     }
 
     internal procedure fileExtension(~) -> PathComponentView {
-        return pathComponentSequenceFileExtension(self._components)
+        return pathComponentListFileExtension(self._components)
     }
 
 }
 
-public modal CanonicalPath {
+internal modal PathKind {
+    @Absolute {
+        internal procedure isAbsolute(~) -> bool {
+            return true
+        }
+    }
+
+    @Relative {
+        internal procedure isAbsolute(~) -> bool {
+            return false
+        }
+    }
+}
+
+internal type PathKindValue = PathKind@Absolute | PathKind@Relative
+
+public record CanonicalPath {
+    private _path: Path
+
+    public procedure path(~) -> Path {
+        return self._path
+    }
+}
+
+internal procedure canonicalPathFromPath(move path: Path) -> CanonicalPath {
+    return CanonicalPath { _path: move path }
+}
+
+public modal CanonicalPathResult {
     @Accepted {
-        public path: Path
+        public canonical_path: CanonicalPath
     }
 
     @RejectedParentTraversal {
@@ -58,21 +88,51 @@ public modal CanonicalPath {
     }
 }
 
-public type CanonicalPathValue =
-    CanonicalPath@Accepted | CanonicalPath@RejectedParentTraversal
+public type CanonicalPathResultValue =
+    CanonicalPathResult@Accepted | CanonicalPathResult@RejectedParentTraversal
 
-public modal RelativePath {
-    @Computed {
-        public path: Path
+public modal RelativePathUnavailableReason {
+    @PathRejectedParentTraversal {
     }
 
-    @Unavailable {
+    @BaseRejectedParentTraversal {
+    }
+
+    @BaseNotPrefix {
     }
 }
 
-public type RelativePathValue = RelativePath@Computed | RelativePath@Unavailable
+public type RelativePathUnavailableReasonValue =
+    RelativePathUnavailableReason@PathRejectedParentTraversal |
+    RelativePathUnavailableReason@BaseRejectedParentTraversal |
+    RelativePathUnavailableReason@BaseNotPrefix
 
-public procedure pathFromViewText(paths: unique Region@Active, text: string@View) -> Path {
+public record RelativePath {
+    private _path: Path
+
+    public procedure path(~) -> Path {
+        return self._path
+    }
+}
+
+internal procedure relativePathFromPath(move path: Path) -> RelativePath {
+    return RelativePath { _path: move path }
+}
+
+public modal RelativePathResult {
+    @Computed {
+        public relative_path: RelativePath
+    }
+
+    @Unavailable {
+        public reason: RelativePathUnavailableReasonValue
+    }
+}
+
+public type RelativePathResultValue =
+    RelativePathResult@Computed | RelativePathResult@Unavailable
+
+internal procedure pathFromViewText(paths: unique Region@Active, text: string@View) -> Path {
     return pathFromPathText(paths, pathTextFromView(text))
 }
 
@@ -85,16 +145,40 @@ public procedure pathFromManagedText(
 
 internal procedure pathFromPathText(paths: unique Region@Active, move text: PathTextValue) -> Path {
     let root: PathRootValue = classifyPathRoot(move text)
-    let components: PathComponentSequenceValue = pathComponentsFromRoot(paths, move root)
+    let components: PathComponentListValue = pathComponentListFromRoot(paths, root)
+    let kind: PathKindValue = pathKindFromRoot(root)
+    let storage: PathStorageValue = textPathStorage(paths, move root)
+    return pathFromParsedTextComponents(move storage, move components, move kind)
+}
+
+internal procedure pathFromParsedTextComponents(
+    move storage: PathStorageValue,
+    move components: PathComponentListValue,
+    move kind: PathKindValue
+) -> Path
+{
     return Path {
-        _components: move components
+        _storage: move storage,
+        _components: move components,
+        _kind: move kind
     }
 }
 
-internal procedure pathFromComponentSequence(move components: PathComponentSequenceValue) -> Path {
+internal procedure pathFromDerivedComponents(
+    move storage: PathStorageValue,
+    move components: PathComponentListValue
+) -> Path
+{
+    let kind: PathKindValue = pathKindFromComponents(components)
     return Path {
-        _components: move components
+        _storage: move storage,
+        _components: move components,
+        _kind: kind
     }
+}
+
+internal procedure pathComponents(path: Path) -> PathComponentListValue {
+    return path._components
 }
 
 internal procedure pathComponentCount(path: Path) -> usize {
@@ -107,4 +191,37 @@ internal procedure pathComponentAt(path: Path, index: usize) -> PathComponentLoo
 
 internal procedure pathComponentEquals(path: Path, index: usize, text: string@View) -> bool {
     return pathComponentLookupEqualsText(pathComponentAt(path, index), text)
+}
+
+internal procedure absolutePathKind() -> PathKindValue {
+    return PathKind@Absolute {}
+}
+
+internal procedure relativePathKind() -> PathKindValue {
+    return PathKind@Relative {}
+}
+
+internal procedure pathKindFromRoot(root: PathRootValue) -> PathKindValue {
+    if (pathRootIsAbsolute(root)) {
+        return absolutePathKind()
+    }
+    return relativePathKind()
+}
+
+internal procedure pathKindFromComponents(components: PathComponentListValue) -> PathKindValue {
+    if (pathComponentListIsAbsolute(components)) {
+        return absolutePathKind()
+    }
+    return relativePathKind()
+}
+
+internal procedure pathKindIsAbsolute(kind: PathKindValue) -> bool {
+    return if kind is {
+        @Absolute {
+            kind~>isAbsolute()
+        }
+        @Relative {
+            kind~>isAbsolute()
+        }
+    }
 }

@@ -36,16 +36,16 @@ internal procedure normalizeEntrypointReturnsPath() -> bool
 }
 
 [[test(
-    name: "Canon entrypoint returns partial canonical path value",
+    name: "Canon entrypoint returns canonical path result",
     covers("def.PathFunctionTypes@L3268")
 )]]
-internal procedure canonEntrypointReturnsPartialCanonicalPathValue() -> bool
+internal procedure canonEntrypointReturnsCanonicalPathResult() -> bool
 |: => @result
 {
     var passed: bool = false
     region as paths {
         let source: Path = pathFromViewText(paths, "root/child")
-        let value: CanonicalPathValue = canonPath(paths, move source)
+        let value: CanonicalPathResultValue = canonPath(paths, move source)
         passed = canonicalPathAcceptedAs(
             value,
             "root/child"

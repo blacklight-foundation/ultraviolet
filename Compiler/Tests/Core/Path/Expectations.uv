@@ -7,12 +7,12 @@ internal procedure componentCountEquals(path: Path, expected: usize) -> bool {
 }
 
 internal procedure canonicalPathAcceptedAs(
-    value: CanonicalPathValue,
+    value: CanonicalPathResultValue,
     text: string@View
 ) -> bool {
     return if value is {
-        @Accepted { path } {
-            pathTextEquals(path, text)
+        @Accepted { canonical_path } {
+            pathTextEquals(canonical_path~>path(), text)
         }
         @RejectedParentTraversal {
             false
@@ -20,7 +20,7 @@ internal procedure canonicalPathAcceptedAs(
     }
 }
 
-internal procedure canonicalPathRejected(value: CanonicalPathValue) -> bool {
+internal procedure canonicalPathRejected(value: CanonicalPathResultValue) -> bool {
     return if value is {
         @Accepted {
             false
@@ -32,12 +32,12 @@ internal procedure canonicalPathRejected(value: CanonicalPathValue) -> bool {
 }
 
 internal procedure relativePathComputedAs(
-    value: RelativePathValue,
+    value: RelativePathResultValue,
     text: string@View
 ) -> bool {
     return if value is {
-        @Computed { path } {
-            pathTextEquals(path, text)
+        @Computed { relative_path } {
+            pathTextEquals(relative_path~>path(), text)
         }
         @Unavailable {
             false
@@ -45,13 +45,170 @@ internal procedure relativePathComputedAs(
     }
 }
 
-internal procedure relativePathUnavailable(value: RelativePathValue) -> bool {
+internal procedure relativePathUnavailable(value: RelativePathResultValue) -> bool {
     return if value is {
         @Computed {
             false
         }
         @Unavailable {
             true
+        }
+    }
+}
+
+internal procedure pathResolutionResolvedAs(
+    value: PathResolutionResultValue,
+    text: string@View
+) -> bool {
+    return if value is {
+        @Resolved { resolved_path } {
+            pathTextEquals(resolved_path~>path(), text)
+        }
+        @Unavailable {
+            false
+        }
+    }
+}
+
+internal procedure pathResolutionResolvedUnderRoot(value: PathResolutionResultValue) -> bool {
+    return if value is {
+        @Resolved { resolved_path } {
+            resolved_path~>pathHasCanonicalRootPrefix()
+        }
+        @Unavailable {
+            false
+        }
+    }
+}
+
+internal procedure pathResolutionUnavailableFromRoot(
+    value: PathResolutionResultValue
+) -> bool {
+    return if value is {
+        @Resolved {
+            false
+        }
+        @Unavailable { reason } {
+            return if reason is {
+                @RootRejectedParentTraversal {
+                    true
+                }
+                @PathRejectedParentTraversal {
+                    false
+                }
+            }
+        }
+    }
+}
+
+internal procedure pathResolutionUnavailableFromPath(
+    value: PathResolutionResultValue
+) -> bool {
+    return if value is {
+        @Resolved {
+            false
+        }
+        @Unavailable { reason } {
+            return if reason is {
+                @RootRejectedParentTraversal {
+                    false
+                }
+                @PathRejectedParentTraversal {
+                    true
+                }
+            }
+        }
+    }
+}
+
+internal procedure relativePathWellFormedAcceptedAs(
+    value: RelativePathWellFormednessResultValue,
+    text: string@View
+) -> bool {
+    return if value is {
+        @Accepted { relative_path } {
+            pathTextEquals(relative_path~>resolvedPath(), text)
+        }
+        @Rejected {
+            false
+        }
+    }
+}
+
+internal procedure relativePathWellFormedRejectedForAbsolutePath(
+    value: RelativePathWellFormednessResultValue
+) -> bool {
+    return if value is {
+        @Accepted {
+            false
+        }
+        @Rejected { reason } {
+            return if reason is {
+                @PathIsAbsolute {
+                    true
+                }
+                @RootRejectedParentTraversal {
+                    false
+                }
+                @PathRejectedParentTraversal {
+                    false
+                }
+                @ResolvedPathOutsideRoot {
+                    false
+                }
+            }
+        }
+    }
+}
+
+internal procedure relativePathWellFormedRejectedForRootTraversal(
+    value: RelativePathWellFormednessResultValue
+) -> bool {
+    return if value is {
+        @Accepted {
+            false
+        }
+        @Rejected { reason } {
+            return if reason is {
+                @PathIsAbsolute {
+                    false
+                }
+                @RootRejectedParentTraversal {
+                    true
+                }
+                @PathRejectedParentTraversal {
+                    false
+                }
+                @ResolvedPathOutsideRoot {
+                    false
+                }
+            }
+        }
+    }
+}
+
+internal procedure relativePathWellFormedRejectedForPathTraversal(
+    value: RelativePathWellFormednessResultValue
+) -> bool {
+    return if value is {
+        @Accepted {
+            false
+        }
+        @Rejected { reason } {
+            return if reason is {
+                @PathIsAbsolute {
+                    false
+                }
+                @RootRejectedParentTraversal {
+                    false
+                }
+                @PathRejectedParentTraversal {
+                    true
+                }
+                @ResolvedPathOutsideRoot {
+                    false
+                }
+            }
         }
     }
 }

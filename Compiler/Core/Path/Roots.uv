@@ -136,8 +136,6 @@ internal modal PathRoot {
             return true
         }
     }
-} |: {
-    pathRootSatisfiesStatePredicate(self)
 }
 
 internal type PathRootValue =
@@ -145,25 +143,6 @@ internal type PathRootValue =
     PathRoot@DriveRooted |
     PathRoot@UNC |
     PathRoot@RootRelative
-
-internal procedure pathRootSatisfiesStatePredicate(root: PathRootValue) -> bool {
-    return if root is {
-        @Relative { _text } {
-            !isDriveRootedPathText(_text) &&
-                !isUNCPathText(_text) &&
-                !isRootRelativePathText(_text)
-        }
-        @DriveRooted { _text } {
-            isDriveRootedPathText(_text)
-        }
-        @UNC { _text } {
-            isUNCPathText(_text)
-        }
-        @RootRelative { _text } {
-            isRootRelativePathText(_text)
-        }
-    }
-}
 
 internal procedure classifyPathRoot(move text: PathTextValue) -> PathRootValue {
     if (isDriveRootedPathText(text)) {

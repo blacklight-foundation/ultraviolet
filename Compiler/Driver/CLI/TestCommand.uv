@@ -1,0 +1,168 @@
+// Support responsibility: Compiler/Driver/CLI/TestCommand.uv
+//
+// This file owns `uv test` command coordination for the positional target model
+// in lowering.TestHarnessGeneration@L28498. Target resolution, deterministic
+// discovery, coverage validation, harness generation, execution, and result
+// reporting are routed through their owning driver files.
+//
+// Relevant source-native test command rule:
+//
+// - lowering.TestHarnessGeneration@L28498
+//   `uv test` uses an optional positional argument, resolves it to a test scope,
+//   generates an ephemeral harness under the selected assembly build output, and
+//   invokes selected tests in deterministic order.
+
+internal let TEST_TARGET_ERROR_CODE: string@View = "E-TST-0108"
+internal let TEST_TARGET_ERROR_MESSAGE: string@View = "unknown uv test target"
+
+public modal TestTargetArgument {
+    @Absent {
+        public procedure isPresent(~) -> bool {
+            return false
+        }
+    }
+
+    @Present {
+        public text: string@View
+
+        public procedure isPresent(~) -> bool {
+            return true
+        }
+    }
+}
+
+public type TestTargetArgumentValue =
+    TestTargetArgument@Absent | TestTargetArgument@Present
+
+public record TestCommandInput {
+    public current_directory: string@View
+    public target: TestTargetArgumentValue
+    public target_profile: TargetProfileInputValue
+    public output_mode: OutputModeValue
+
+    public procedure hasTarget(~) -> bool {
+        return testTargetArgumentIsPresent(self.target)
+    }
+}
+
+public modal TestCommandInputResult {
+    @Accepted {
+        public input: TestCommandInput
+
+        public procedure commandParseResult(~) -> CommandParseResultValue {
+            return parsedCommand(Command@Test { input: self.input })
+        }
+    }
+
+    @Rejected {
+        public diagnostic: CommandDiagnostic
+
+        public procedure commandParseResult(~) -> CommandParseResultValue {
+            return rejectedCommand(self.diagnostic)
+        }
+    }
+}
+
+public type TestCommandInputResultValue =
+    TestCommandInputResult@Accepted | TestCommandInputResult@Rejected
+
+public procedure absentTestTarget() -> TestTargetArgumentValue {
+    return TestTargetArgument@Absent {}
+}
+
+public procedure presentTestTarget(text: string@View) -> TestTargetArgumentValue {
+    return TestTargetArgument@Present { text: text }
+}
+
+public procedure testTargetArgumentIsPresent(target: TestTargetArgumentValue) -> bool {
+    return if target is {
+        @Absent {
+            target~>isPresent()
+        }
+        @Present {
+            target~>isPresent()
+        }
+    }
+}
+
+public procedure testCommandInput(
+    current_directory: string@View,
+    target: TestTargetArgumentValue,
+    target_profile: TargetProfileInputValue,
+    output_mode: OutputModeValue
+) -> TestCommandInput {
+    return TestCommandInput {
+        current_directory: current_directory,
+        target: target,
+        target_profile: target_profile,
+        output_mode: output_mode
+    }
+}
+
+public procedure testCommandInputFromArguments(
+    current_directory: string@View,
+    arguments: CommandArguments
+) -> TestCommandInputResultValue {
+    let positionals: PositionalArgumentsValue = arguments.positionals
+    return if positionals is {
+        @None {
+            acceptedTestCommandInput(
+                testCommandInput(
+                    current_directory,
+                    absentTestTarget(),
+                    arguments.target_profile,
+                    arguments.output_mode
+                )
+            )
+        }
+        @One {
+            acceptedTestCommandInput(
+                testCommandInput(
+                    current_directory,
+                    presentTestTarget(positionals.value),
+                    arguments.target_profile,
+                    arguments.output_mode
+                )
+            )
+        }
+        @TooMany {
+            rejectedTestCommandInput(testTargetDiagnostic())
+        }
+    }
+}
+
+public procedure acceptedTestCommandInput(input: TestCommandInput) -> TestCommandInputResultValue {
+    return TestCommandInputResult@Accepted { input: input }
+}
+
+public procedure rejectedTestCommandInput(
+    diagnostic: CommandDiagnostic
+) -> TestCommandInputResultValue {
+    return TestCommandInputResult@Rejected { diagnostic: diagnostic }
+}
+
+public procedure testTargetDiagnostic() -> CommandDiagnostic {
+    return commandDiagnostic(TEST_TARGET_ERROR_CODE, TEST_TARGET_ERROR_MESSAGE)
+}
+
+public procedure testCommandParseResult(
+    input_result: TestCommandInputResultValue
+) -> CommandParseResultValue {
+    return if input_result is {
+        @Accepted {
+            input_result~>commandParseResult()
+        }
+        @Rejected {
+            input_result~>commandParseResult()
+        }
+    }
+}
+
+public procedure executeTestCommand(
+    host: DriverHost,
+    input: TestCommandInput
+) -> CommandResultValue {
+    return commandFailed(
+        commandDiagnostic(COMMAND_DIAGNOSTIC_PIPELINE_REQUIRED, MESSAGE_PIPELINE_REQUIRED)
+    )
+}

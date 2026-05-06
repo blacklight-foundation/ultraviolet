@@ -18,11 +18,17 @@ public procedure joinPath(paths: unique Region@Active, move base: Path, move pat
         return path
     }
 
-    return pathFromComponentSequence(joinedPathComponents(paths, move base, move path))
+    let components: PathComponentListValue =
+        concatPathComponentLists(paths, pathComponents(base), pathComponents(path))
+    let storage: PathStorageValue = joinedPathStorage(paths, move base, move path)
+    return pathFromDerivedComponents(move storage, move components)
 }
 
 public procedure normalizePath(paths: unique Region@Active, move path: Path) -> Path {
-    return pathFromComponentSequence(dotFilteredPathComponents(paths, move path))
+    let components: PathComponentListValue =
+        dotFilteredPathComponentList(paths, pathComponents(path))
+    let storage: PathStorageValue = derivedPathStorage(paths, move path)
+    return pathFromDerivedComponents(move storage, move components)
 }
 
 public procedure pathPrefix(path: Path, candidate_prefix: Path) -> bool {
@@ -35,14 +41,19 @@ public procedure pathUnder(paths: unique Region@Active, move path: Path, move ow
     return pathPrefix(normalized_path, normalized_owner)
 }
 
-public procedure canonPath(paths: unique Region@Active, move path: Path) -> CanonicalPathValue {
+public procedure canonPath(
+    paths: unique Region@Active,
+    move path: Path
+) -> CanonicalPathResultValue {
     let normalized: Path = normalizePath(paths, move path)
     if (normalized~>containsParentTraversal()) {
-        return CanonicalPath@RejectedParentTraversal {
+        return CanonicalPathResult@RejectedParentTraversal {
             normalized_path: normalized
         }
     }
-    return CanonicalPath@Accepted { path: normalized }
+    return CanonicalPathResult@Accepted {
+        canonical_path: canonicalPathFromPath(move normalized)
+    }
 }
 
 internal procedure dropPathComponents(
@@ -54,35 +65,52 @@ internal procedure dropPathComponents(
         return path
     }
 
-    return pathFromComponentSequence(droppedPathComponents(paths, move path, count))
+    let components: PathComponentListValue = dropPathComponentList(
+        paths,
+        pathComponents(path),
+        count
+    )
+    let storage: PathStorageValue = derivedPathStorage(paths, move path)
+    return pathFromDerivedComponents(move storage, move components)
 }
 
 public procedure relativePath(
     paths: unique Region@Active,
     move path: Path,
     move base: Path
-) -> RelativePathValue {
-    let path_canon: CanonicalPathValue = canonPath(paths, move path)
+) -> RelativePathResultValue {
+    let path_canon: CanonicalPathResultValue = canonPath(paths, move path)
     return if path_canon is {
         @RejectedParentTraversal {
-            RelativePath@Unavailable {}
+            RelativePathResult@Unavailable {
+                reason: RelativePathUnavailableReason@PathRejectedParentTraversal {}
+            }
         }
         @Accepted {
-            let base_canon: CanonicalPathValue = canonPath(paths, move base)
+            let base_canon: CanonicalPathResultValue = canonPath(paths, move base)
             if base_canon is {
                 @RejectedParentTraversal {
-                    RelativePath@Unavailable {}
+                    RelativePathResult@Unavailable {
+                        reason: RelativePathUnavailableReason@BaseRejectedParentTraversal {}
+                    }
                 }
                 @Accepted {
-                    if (!pathPrefix(path_canon.path, base_canon.path)) {
-                        RelativePath@Unavailable {}
+                    let canonical_path: Path = path_canon.canonical_path~>path()
+                    let canonical_base: Path = base_canon.canonical_path~>path()
+                    if (!pathPrefix(canonical_path, canonical_base)) {
+                        RelativePathResult@Unavailable {
+                            reason: RelativePathUnavailableReason@BaseNotPrefix {}
+                        }
                     } else {
-                        let base_count: usize = pathComponentCount(base_canon.path)
-                        RelativePath@Computed {
-                            path: dropPathComponents(
-                                paths,
-                                move path_canon.path,
-                                base_count
+                        let base_count: usize = pathComponentCount(canonical_base)
+                        let computed_path: Path = dropPathComponents(
+                            paths,
+                            move canonical_path,
+                            base_count
+                        )
+                        RelativePathResult@Computed {
+                            relative_path: relativePathFromPath(
+                                move computed_path
                             )
                         }
                     }

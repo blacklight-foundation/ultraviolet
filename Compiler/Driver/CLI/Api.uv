@@ -1,0 +1,57 @@
+// Support responsibility: Compiler/Driver/CLI/Api.uv
+//
+// This file owns the CLI API surface shared by `Tools/Uv/Main.uv` and command
+// implementations. `DriverHost` projects the received `Context` into the exact
+// filesystem, system/process, heap, and output authorities used by the driver.
+
+public record DriverHost {
+    private _fs: $FileSystem
+    private _heap: $HeapAllocator
+    private _sys: System
+    private _reactor: $Reactor
+    private _cpu: $ExecutionDomain
+    private _gpu: $ExecutionDomain
+    private _inline_domain: $ExecutionDomain
+    private _current_directory: string@View
+
+    public procedure currentDirectory(~) -> string@View {
+        return self._current_directory
+    }
+
+    public procedure writeStdout(~, text: string@View) -> Outcome<(), IoError> {
+        return self._fs~>write_stdout(text)
+    }
+
+    public procedure run(~, arguments: CommandArguments) -> CommandResultValue {
+        let parsed: CommandParseResultValue =
+            parseCommand(self~>currentDirectory(), arguments)
+        return commandParseResultCommandResult(self, parsed)
+    }
+
+    public procedure runCommand(~, command: CommandValue) -> CommandResultValue {
+        return executeCommand(self, command)
+    }
+}
+
+public procedure driverHostFromContext(context: Context) -> DriverHost {
+    return DriverHost {
+        _fs: context.fs,
+        _heap: context.heap,
+        _sys: context.sys,
+        _reactor: context.reactor,
+        _cpu: context~>cpu(),
+        _gpu: context~>gpu(),
+        _inline_domain: context~>inline(),
+        _current_directory: "."
+    }
+}
+
+public procedure runUv(context: Context, arguments: CommandArguments) -> i32 {
+    let host: DriverHost = driverHostFromContext(context)
+    let result: CommandResultValue = host~>run(arguments)
+    return commandResultExitCode(result)
+}
+
+public procedure entrypointCommandArguments() -> CommandArguments {
+    return versionCommandArguments()
+}

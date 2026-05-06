@@ -9,7 +9,7 @@ internal procedure relativePathDropsCanonicalBasePrefix() -> bool
     region as paths {
         let path: Path = pathFromViewText(paths, "root/child/file")
         let base: Path = pathFromViewText(paths, "root")
-        let value: RelativePathValue = relativePath(
+        let value: RelativePathResultValue = relativePath(
             paths,
             move path,
             move base
@@ -30,7 +30,7 @@ internal procedure relativePathOfEqualCanonicalPathsIsEmpty() -> bool
     region as paths {
         let path: Path = pathFromViewText(paths, "root/child")
         let base: Path = pathFromViewText(paths, "root/child")
-        let value: RelativePathValue = relativePath(
+        let value: RelativePathResultValue = relativePath(
             paths,
             move path,
             move base
@@ -51,7 +51,7 @@ internal procedure relativePathUnavailableWhenBaseIsNotPrefix() -> bool
     region as paths {
         let path: Path = pathFromViewText(paths, "other/file")
         let base: Path = pathFromViewText(paths, "root")
-        let value: RelativePathValue = relativePath(
+        let value: RelativePathResultValue = relativePath(
             paths,
             move path,
             move base
@@ -72,7 +72,7 @@ internal procedure relativePathUnavailableWhenPathCanonicalizationFails() -> boo
     region as paths {
         let path: Path = pathFromViewText(paths, "root/../file")
         let base: Path = pathFromViewText(paths, "root")
-        let value: RelativePathValue = relativePath(
+        let value: RelativePathResultValue = relativePath(
             paths,
             move path,
             move base

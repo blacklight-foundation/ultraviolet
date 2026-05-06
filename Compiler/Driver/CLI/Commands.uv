@@ -1,0 +1,291 @@
+// Obligation responsibility: Compiler/Driver/CLI/Commands.uv
+//
+// This file owns the CLI command model, command result model, command dispatch
+// vocabulary, and project command-output relations:
+//
+// - def.DumpProjectOutput@L2073
+//   DumpProject(P, dump) emits project, output, and link summaries, with source
+//   file rows included when dump is true.
+// - def.ProjectSummaryOutput@L2090
+//   ProjectSummary(P) emits project root, assembly identity, source root, output
+//   root, and module list rows.
+// - def.OutputSummary@L2104
+//   OutputSummary(P) emits module object and optional IR rows for emitted
+//   modules.
+// - def.LinkOutputSummary@L2118
+//   LinkOutputSummary(P) emits artifact and optional import-library rows for
+//   linkable projects.
+// - def.IROpt@L2134
+//   IROpt(P, m) resolves the optional IR output path when IR emission is
+//   enabled.
+// - def.ImportLibOpt@L2150
+//   ImportLibOpt(P) resolves the optional import-library output path when one
+//   exists.
+
+internal let EXIT_SUCCESS: i32 = 0
+internal let EXIT_FAILURE: i32 = 1
+
+internal let COMMAND_DIAGNOSTIC_UNKNOWN_COMMAND: string@View = "unknown-command"
+internal let COMMAND_DIAGNOSTIC_PIPELINE_REQUIRED: string@View = "pipeline-required"
+internal let COMMAND_DIAGNOSTIC_OUTPUT_WRITE_FAILED: string@View = "output-write-failed"
+internal let MESSAGE_UNKNOWN_COMMAND: string@View = "unknown uv command"
+internal let MESSAGE_PIPELINE_REQUIRED: string@View =
+    "project loading and compilation pipeline are required for this command"
+internal let MESSAGE_OUTPUT_WRITE_FAILED: string@View = "failed to write command output"
+
+public record CommandDiagnostic {
+    public primary_key: string@View
+    public primary_message: string@View
+}
+
+public record DiagnosticStream {
+    public primary: CommandDiagnostic
+}
+
+public modal Command {
+    @Build {
+        public arguments: CommandArguments
+
+        public procedure execute(~, host: DriverHost) -> CommandResultValue {
+            return projectPipelineRequired()
+        }
+    }
+
+    @Check {
+        public arguments: CommandArguments
+
+        public procedure execute(~, host: DriverHost) -> CommandResultValue {
+            return projectPipelineRequired()
+        }
+    }
+
+    @Clean {
+        public arguments: CommandArguments
+
+        public procedure execute(~, host: DriverHost) -> CommandResultValue {
+            return projectPipelineRequired()
+        }
+    }
+
+    @Init {
+        public arguments: CommandArguments
+
+        public procedure execute(~, host: DriverHost) -> CommandResultValue {
+            return projectPipelineRequired()
+        }
+    }
+
+    @Run {
+        public arguments: CommandArguments
+
+        public procedure execute(~, host: DriverHost) -> CommandResultValue {
+            return projectPipelineRequired()
+        }
+    }
+
+    @Test {
+        public input: TestCommandInput
+
+        public procedure execute(~, host: DriverHost) -> CommandResultValue {
+            return executeTestCommand(host, self.input)
+        }
+    }
+
+    @Version {
+        public procedure execute(~, host: DriverHost) -> CommandResultValue {
+            return executeVersionCommand(host)
+        }
+    }
+}
+
+public type CommandValue =
+    Command@Build |
+    Command@Check |
+    Command@Clean |
+    Command@Init |
+    Command@Run |
+    Command@Test |
+    Command@Version
+
+public modal CommandParseResult {
+    @Parsed {
+        public command: CommandValue
+
+        public procedure commandResult(~, host: DriverHost) -> CommandResultValue {
+            return host~>runCommand(self.command)
+        }
+    }
+
+    @Rejected {
+        public diagnostics: DiagnosticStream
+
+        public procedure commandResult(~, host: DriverHost) -> CommandResultValue {
+            return commandFailedWithDiagnostics(self.diagnostics)
+        }
+    }
+}
+
+public type CommandParseResultValue =
+    CommandParseResult@Parsed | CommandParseResult@Rejected
+
+public modal CommandResult {
+    @Succeeded {
+        public exit_code: i32
+
+        public procedure exitCode(~) -> i32 {
+            return self.exit_code
+        }
+    }
+
+    @Failed {
+        public exit_code: i32
+        public diagnostics: DiagnosticStream
+
+        public procedure exitCode(~) -> i32 {
+            return self.exit_code
+        }
+    }
+}
+
+public type CommandResultValue =
+    CommandResult@Succeeded | CommandResult@Failed
+
+public procedure commandDiagnostic(
+    primary_key: string@View,
+    primary_message: string@View
+) -> CommandDiagnostic {
+    return CommandDiagnostic {
+        primary_key: primary_key,
+        primary_message: primary_message
+    }
+}
+
+public procedure diagnosticStream(diagnostic: CommandDiagnostic) -> DiagnosticStream {
+    return DiagnosticStream { primary: diagnostic }
+}
+
+public procedure commandSucceeded() -> CommandResultValue {
+    return CommandResult@Succeeded { exit_code: EXIT_SUCCESS }
+}
+
+public procedure commandFailed(diagnostic: CommandDiagnostic) -> CommandResultValue {
+    return commandFailedWithDiagnostics(diagnosticStream(diagnostic))
+}
+
+public procedure commandFailedWithDiagnostics(
+    diagnostics: DiagnosticStream
+) -> CommandResultValue {
+    return CommandResult@Failed {
+        exit_code: EXIT_FAILURE,
+        diagnostics: diagnostics
+    }
+}
+
+public procedure commandResultExitCode(result: CommandResultValue) -> i32 {
+    return if result is {
+        @Succeeded {
+            result~>exitCode()
+        }
+        @Failed {
+            result~>exitCode()
+        }
+    }
+}
+
+public procedure parseCommand(
+    current_directory: string@View,
+    arguments: CommandArguments
+) -> CommandParseResultValue {
+    let command_name: string@View = arguments.command_name
+
+    if (cliTextEquals(command_name, COMMAND_BUILD)) {
+        return parsedCommand(Command@Build { arguments: arguments })
+    }
+    if (cliTextEquals(command_name, COMMAND_CHECK)) {
+        return parsedCommand(Command@Check { arguments: arguments })
+    }
+    if (cliTextEquals(command_name, COMMAND_CLEAN)) {
+        return parsedCommand(Command@Clean { arguments: arguments })
+    }
+    if (cliTextEquals(command_name, COMMAND_INIT)) {
+        return parsedCommand(Command@Init { arguments: arguments })
+    }
+    if (cliTextEquals(command_name, COMMAND_RUN)) {
+        return parsedCommand(Command@Run { arguments: arguments })
+    }
+    if (cliTextEquals(command_name, COMMAND_TEST)) {
+        let test_input: TestCommandInputResultValue =
+            testCommandInputFromArguments(current_directory, arguments)
+        return testCommandParseResult(test_input)
+    }
+    if (cliTextEquals(command_name, COMMAND_VERSION)) {
+        return parsedCommand(Command@Version {})
+    }
+    if (string::is_empty(command_name)) {
+        return parsedCommand(Command@Version {})
+    }
+
+    return rejectedCommand(
+        commandDiagnostic(COMMAND_DIAGNOSTIC_UNKNOWN_COMMAND, MESSAGE_UNKNOWN_COMMAND)
+    )
+}
+
+public procedure parsedCommand(command: CommandValue) -> CommandParseResultValue {
+    return CommandParseResult@Parsed { command: command }
+}
+
+public procedure rejectedCommand(diagnostic: CommandDiagnostic) -> CommandParseResultValue {
+    return rejectedCommandWithDiagnostics(diagnosticStream(diagnostic))
+}
+
+public procedure rejectedCommandWithDiagnostics(
+    diagnostics: DiagnosticStream
+) -> CommandParseResultValue {
+    return CommandParseResult@Rejected { diagnostics: diagnostics }
+}
+
+public procedure commandParseResultCommandResult(
+    host: DriverHost,
+    parsed: CommandParseResultValue
+) -> CommandResultValue {
+    return if parsed is {
+        @Parsed {
+            parsed~>commandResult(host)
+        }
+        @Rejected {
+            parsed~>commandResult(host)
+        }
+    }
+}
+
+public procedure executeCommand(host: DriverHost, command: CommandValue) -> CommandResultValue {
+    return if command is {
+        @Build {
+            command~>execute(host)
+        }
+        @Check {
+            command~>execute(host)
+        }
+        @Clean {
+            command~>execute(host)
+        }
+        @Init {
+            command~>execute(host)
+        }
+        @Run {
+            command~>execute(host)
+        }
+        @Test {
+            command~>execute(host)
+        }
+        @Version {
+            command~>execute(host)
+        }
+    }
+}
+
+internal procedure projectPipelineRequired() -> CommandResultValue {
+    return commandFailed(
+        commandDiagnostic(COMMAND_DIAGNOSTIC_PIPELINE_REQUIRED, MESSAGE_PIPELINE_REQUIRED)
+    )
+}

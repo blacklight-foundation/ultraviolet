@@ -1,0 +1,263 @@
+// Support responsibility: Compiler/Driver/CLI/Options.uv
+//
+// This file owns source command arguments, positional argument structure, target
+// profile selection input, output-mode input, and the `uv test [target]`
+// target text shape used by lowering.TestHarnessGeneration@L28498.
+//
+// Relevant source-native test command rule:
+//
+// - lowering.TestHarnessGeneration@L28498
+//   TestArg is absent or one positional argument. The test command target model
+//   resolves that argument as a host path, assembly name, or module path.
+
+internal let COMMAND_BUILD: string@View = "build"
+internal let COMMAND_CHECK: string@View = "check"
+internal let COMMAND_CLEAN: string@View = "clean"
+internal let COMMAND_INIT: string@View = "init"
+internal let COMMAND_RUN: string@View = "run"
+internal let COMMAND_TEST: string@View = "test"
+internal let COMMAND_VERSION: string@View = "version"
+
+internal let TARGET_X86_64_SYSV: string@View = "x86_64-sysv"
+internal let TARGET_X86_64_WIN64: string@View = "x86_64-win64"
+internal let TARGET_AARCH64_AAPCS64: string@View = "aarch64-aapcs64"
+
+public modal PositionalArguments {
+    @None {
+        public procedure count(~) -> usize {
+            return 0
+        }
+    }
+
+    @One {
+        public value: string@View
+
+        public procedure count(~) -> usize {
+            return 1
+        }
+    }
+
+    @TooMany {
+        public first: string@View
+        public unexpected: string@View
+
+        public procedure count(~) -> usize {
+            return 2
+        }
+    }
+}
+
+public type PositionalArgumentsValue =
+    PositionalArguments@None |
+    PositionalArguments@One |
+    PositionalArguments@TooMany
+
+public modal TargetProfileInput {
+    @Absent {
+    }
+
+    @X8664SysV {
+    }
+
+    @X8664Win64 {
+    }
+
+    @Aarch64Aapcs64 {
+    }
+
+    @Unsupported {
+        public text: string@View
+    }
+}
+
+public type TargetProfileInputValue =
+    TargetProfileInput@Absent |
+    TargetProfileInput@X8664SysV |
+    TargetProfileInput@X8664Win64 |
+    TargetProfileInput@Aarch64Aapcs64 |
+    TargetProfileInput@Unsupported
+
+public modal OutputMode {
+    @Normal {
+    }
+
+    @Quiet {
+    }
+
+    @MachineReadable {
+    }
+}
+
+public type OutputModeValue =
+    OutputMode@Normal |
+    OutputMode@Quiet |
+    OutputMode@MachineReadable
+
+public record CommandArguments {
+    public command_name: string@View
+    public positionals: PositionalArgumentsValue
+    public target_profile: TargetProfileInputValue
+    public output_mode: OutputModeValue
+
+    public procedure positionalCount(~) -> usize {
+        return positionalArgumentsCount(self.positionals)
+    }
+
+    public procedure hasNoPositionals(~) -> bool {
+        return self~>positionalCount() == 0
+    }
+
+    public procedure hasOnePositional(~) -> bool {
+        return self~>positionalCount() == 1
+    }
+}
+
+public procedure noPositionals() -> PositionalArgumentsValue {
+    return PositionalArguments@None {}
+}
+
+public procedure onePositional(value: string@View) -> PositionalArgumentsValue {
+    return PositionalArguments@One { value: value }
+}
+
+public procedure tooManyPositionals(
+    first: string@View,
+    unexpected: string@View
+) -> PositionalArgumentsValue {
+    return PositionalArguments@TooMany {
+        first: first,
+        unexpected: unexpected
+    }
+}
+
+public procedure positionalArgumentsCount(positionals: PositionalArgumentsValue) -> usize {
+    return if positionals is {
+        @None {
+            positionals~>count()
+        }
+        @One {
+            positionals~>count()
+        }
+        @TooMany {
+            positionals~>count()
+        }
+    }
+}
+
+public procedure absentTargetProfile() -> TargetProfileInputValue {
+    return TargetProfileInput@Absent {}
+}
+
+public procedure targetProfileFromText(text: string@View) -> TargetProfileInputValue {
+    if (cliTextEquals(text, TARGET_X86_64_SYSV)) {
+        return TargetProfileInput@X8664SysV {}
+    }
+    if (cliTextEquals(text, TARGET_X86_64_WIN64)) {
+        return TargetProfileInput@X8664Win64 {}
+    }
+    if (cliTextEquals(text, TARGET_AARCH64_AAPCS64)) {
+        return TargetProfileInput@Aarch64Aapcs64 {}
+    }
+    return TargetProfileInput@Unsupported { text: text }
+}
+
+public procedure normalOutputMode() -> OutputModeValue {
+    return OutputMode@Normal {}
+}
+
+public procedure quietOutputMode() -> OutputModeValue {
+    return OutputMode@Quiet {}
+}
+
+public procedure machineReadableOutputMode() -> OutputModeValue {
+    return OutputMode@MachineReadable {}
+}
+
+public procedure commandArguments(
+    command_name: string@View,
+    positionals: PositionalArgumentsValue,
+    target_profile: TargetProfileInputValue,
+    output_mode: OutputModeValue
+) -> CommandArguments {
+    return CommandArguments {
+        command_name: command_name,
+        positionals: positionals,
+        target_profile: target_profile,
+        output_mode: output_mode
+    }
+}
+
+public procedure buildCommandArguments() -> CommandArguments {
+    return commandArguments(
+        COMMAND_BUILD,
+        noPositionals(),
+        absentTargetProfile(),
+        normalOutputMode()
+    )
+}
+
+public procedure checkCommandArguments() -> CommandArguments {
+    return commandArguments(
+        COMMAND_CHECK,
+        noPositionals(),
+        absentTargetProfile(),
+        normalOutputMode()
+    )
+}
+
+public procedure testCommandArguments() -> CommandArguments {
+    return commandArguments(
+        COMMAND_TEST,
+        noPositionals(),
+        absentTargetProfile(),
+        normalOutputMode()
+    )
+}
+
+public procedure testCommandArgumentsWithTarget(target: string@View) -> CommandArguments {
+    return commandArguments(
+        COMMAND_TEST,
+        onePositional(target),
+        absentTargetProfile(),
+        normalOutputMode()
+    )
+}
+
+public procedure versionCommandArguments() -> CommandArguments {
+    return commandArguments(
+        COMMAND_VERSION,
+        noPositionals(),
+        absentTargetProfile(),
+        normalOutputMode()
+    )
+}
+
+public procedure cliTextEquals(left: string@View, right: string@View) -> bool {
+    let left_length: usize = string::length(left)
+    let right_length: usize = string::length(right)
+    if (left_length != right_length) {
+        return false
+    }
+
+    var index: usize = 0
+    loop {
+        if (index >= left_length) {
+            break
+        }
+
+        if (cliTextByte(left, index) != cliTextByte(right, index)) {
+            return false
+        }
+
+        index = index + 1
+    }
+    return true
+}
+
+internal procedure cliTextByte(text: string@View, index: usize) -> u8
+|: index < string::length(text)
+{
+    let view: bytes@View = bytes::view_string(text)
+    let data: const [u8] = bytes::as_slice(view)
+    return data[index]
+}
