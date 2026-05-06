@@ -1,0 +1,71 @@
+[[test(
+    name: "Canon accepts normalized path",
+    covers("def.Canon@L3326")
+)]]
+internal procedure canonAcceptsNormalizedPath() -> bool
+|: => @result
+{
+    var passed: bool = false
+    region as paths {
+        let source: Path = pathFromViewText(paths, "root/./file")
+        let value: CanonicalPathValue = canonPath(paths, move source)
+        passed = canonicalPathAcceptedAs(
+            value,
+            "root/file"
+        )
+    }
+    return passed
+}
+
+[[test(
+    name: "Canon accepts normalized drive-rooted path",
+    covers("def.Canon@L3326")
+)]]
+internal procedure canonAcceptsNormalizedDriveRootedPath() -> bool
+|: => @result
+{
+    var passed: bool = false
+    region as paths {
+        let source: Path = pathFromViewText(paths, "C:/root/.")
+        let value: CanonicalPathValue = canonPath(paths, move source)
+        passed = canonicalPathAcceptedAs(
+            value,
+            "C:/root"
+        )
+    }
+    return passed
+}
+
+[[test(
+    name: "Canon rejects parent traversal after normalization",
+    covers("def.Canon@L3326")
+)]]
+internal procedure canonRejectsParentTraversalAfterNormalization() -> bool
+|: => @result
+{
+    var passed: bool = false
+    region as paths {
+        let source: Path = pathFromViewText(paths, "root/../file")
+        let value: CanonicalPathValue = canonPath(paths, move source)
+        passed = canonicalPathRejected(
+            value
+        )
+    }
+    return passed
+}
+
+[[test(
+    name: "Canon rejects drive-rooted parent traversal",
+    covers("def.Canon@L3326")
+)]]
+internal procedure canonRejectsDriveRootedParentTraversal() -> bool
+|: => @result
+{
+    var passed: bool = false
+    region as paths {
+        let source: Path = pathFromViewText(paths, "C:/..")
+        let value: CanonicalPathValue = canonPath(paths, move source)
+        passed = canonicalPathRejected(value)
+    }
+    return passed
+}

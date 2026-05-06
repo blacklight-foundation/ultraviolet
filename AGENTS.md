@@ -1,3 +1,10 @@
+## Behavior and Expectations
+
+- You will NOT continuously provide negative framing. When explaining or planning, avoid negative framing by default. Do not repeatedly say what a concept is not, what alternatives are rejected, or what should not be done unless the distinction is necessary to prevent a likely mistake. Prefer direct affirmative descriptions of the intended design, behavior, and next action. If a constraint matters, state it once in the relevant decision record or plan section, then proceed using the approved design without re-litigating rejected options.
+- Do NOT use "stage#" or "phase#" as a naming convention; ever.
+- Do NOT use vanity prefixes or suffixes unless there is an explicit need to prevent potential naming collisions, such as public facing API/ABIs.
+- Spec-valid source is authoritative evidence. When the current compiler rejects, misparses, mischecks, mislowers, or miscompiles source that conforms to the authoritative specification, repair the canonical compiler implementation: parser, resolver, typechecker, lowering, runtime, diagnostics, or whichever path owns the defect. Preserve the source form unless the source itself violates the specification, has an independent code-quality defect, or the user explicitly requests a source rewrite.
+
 ## Ultraviolet Style Guide
 
 - Express correctness in the code, not in comments.
@@ -38,7 +45,7 @@
 | Public/internal instance fields                          | `snake_case`                  | `package_id`, `world_id`                                                                 |
 | Private instance fields                                  | `_snake_case`                 | `_device`, `_frame_index`, `_package_cache`                                              |
 | Constants and static values                              | `SCREAMING_SNAKE`             | `MAX_SUBTICKS`, `DEFAULT_TIMEOUT_MS`                                                     |
-| Private static fields                                    | `_SCREAMING_SNAKE`            | `_FRAME_POOL_SIZE`, `_DEFAULT_STAGE_MASK`                                                |
+| Private static fields                                    | `_SCREAMING_SNAKE`            | `_FRAME_POOL_SIZE`, `_DEFAULT_LAYER_MASK`                                                |
 | Enum variants                                            | `PascalCase`                  | `Windowed`, `BorderlessFullscreen`, `Cooked`                                             |
 | Boolean variables and fields                             | predicate `snake_case`        | `is_ready`, `has_focus`, `can_present`, `should_reload`                                  |
 | Boolean procedures and methods                           | predicate `camelCase`         | `isReady`, `hasFocus`, `canPresent`, `shouldReload`                                      |

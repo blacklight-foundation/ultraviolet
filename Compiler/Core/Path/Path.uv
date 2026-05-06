@@ -1,0 +1,110 @@
+// Obligation responsibility: Compiler/Core/Path/Path.uv
+//
+// This file owns the public path value surface for project.path-resolution:
+//
+// - def.PathFunctionTypes@L3268
+//   Join : Path x Path -> Path
+//   Normalize : Path -> Path
+//   Canon : Path partial Path
+
+public record Path {
+    private _components: PathComponentSequenceValue
+
+    public procedure isAbsolute(~) -> bool {
+        return pathComponentSequenceIsAbsolute(self._components)
+    }
+
+    public procedure isRelative(~) -> bool {
+        return !self~>isAbsolute()
+    }
+
+    internal procedure componentCount(~) -> usize {
+        return pathComponentSequenceCount(self._components)
+    }
+
+    internal procedure componentAt(~, index: usize) -> PathComponentLookupValue {
+        return pathComponentSequenceAt(self._components, index)
+    }
+
+    internal procedure hasPrefix(~, candidate_prefix: Path) -> bool {
+        return pathComponentSequenceHasPrefix(self._components, candidate_prefix._components)
+    }
+
+    internal procedure containsParentTraversal(~) -> bool {
+        return pathComponentSequenceContainsParentTraversal(self._components)
+    }
+
+    internal procedure textEquals(~, text: string@View) -> bool {
+        return pathComponentSequenceTextEquals(self._components, text)
+    }
+
+    internal procedure basename(~) -> PathComponentView {
+        return pathComponentSequenceBasename(self._components)
+    }
+
+    internal procedure fileExtension(~) -> PathComponentView {
+        return pathComponentSequenceFileExtension(self._components)
+    }
+
+}
+
+public modal CanonicalPath {
+    @Accepted {
+        public path: Path
+    }
+
+    @RejectedParentTraversal {
+        public normalized_path: Path
+    }
+}
+
+public type CanonicalPathValue =
+    CanonicalPath@Accepted | CanonicalPath@RejectedParentTraversal
+
+public modal RelativePath {
+    @Computed {
+        public path: Path
+    }
+
+    @Unavailable {
+    }
+}
+
+public type RelativePathValue = RelativePath@Computed | RelativePath@Unavailable
+
+public procedure pathFromViewText(paths: unique Region@Active, text: string@View) -> Path {
+    return pathFromPathText(paths, pathTextFromView(text))
+}
+
+public procedure pathFromManagedText(
+    paths: unique Region@Active,
+    move text: string@Managed
+) -> Path {
+    return pathFromPathText(paths, pathTextFromManaged(move text))
+}
+
+internal procedure pathFromPathText(paths: unique Region@Active, move text: PathTextValue) -> Path {
+    let root: PathRootValue = classifyPathRoot(move text)
+    let components: PathComponentSequenceValue = pathComponentsFromRoot(paths, move root)
+    return Path {
+        _components: move components
+    }
+}
+
+internal procedure pathFromComponentSequence(move components: PathComponentSequenceValue) -> Path {
+    return Path {
+        _components: move components
+    }
+}
+
+internal procedure pathComponentCount(path: Path) -> usize {
+    return path~>componentCount()
+}
+
+internal procedure pathComponentAt(path: Path, index: usize) -> PathComponentLookupValue {
+    return path~>componentAt(index)
+}
+
+internal procedure pathComponentEquals(path: Path, index: usize, text: string@View) -> bool {
+    return pathComponentLookupEqualsText(pathComponentAt(path, index), text)
+}

@@ -1,0 +1,10 @@
+[[test(
+    name: "test attribute accepts source-native contract",
+    covers("grammar.TestAttribute@L28264"),
+    covers("req.TestProcedureShape@L28383")
+)]]
+internal procedure testAttributeAcceptsSourceNativeContract() -> bool
+|: => @result
+{
+    return true
+}

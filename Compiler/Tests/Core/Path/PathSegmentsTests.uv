@@ -1,0 +1,46 @@
+[[test(
+    name: "Segs returns maximal separator-bounded substrings",
+    covers("def.PathSegments@L3188")
+)]]
+internal procedure pathSegmentsReturnMaximalSeparatorBoundedSubstrings() -> bool
+|: => @result
+{
+    var passed: bool = false
+    region as paths {
+        let path: Path = pathFromViewText(paths, "one//two\\three/")
+        passed = componentCountEquals(path, 3) &&
+            componentAtEquals(path, 0, "one") &&
+            componentAtEquals(path, 1, "two") &&
+            componentAtEquals(path, 2, "three")
+    }
+    return passed
+}
+
+[[test(
+    name: "Segs skips empty substrings between separators",
+    covers("def.PathSegments@L3188")
+)]]
+internal procedure pathSegmentsSkipEmptySubstringsBetweenSeparators() -> bool
+|: => @result
+{
+    var passed: bool = false
+    region as paths {
+        passed = componentCountEquals(pathFromViewText(paths, ""), 0)
+    }
+    return passed
+}
+
+[[test(
+    name: "Segs after UNC root has no tail segments for separator-only UNC root",
+    covers("def.PathSegments@L3188")
+)]]
+internal procedure pathSegmentsAfterUNCRootHasNoTailForSeparatorOnlyRoot() -> bool
+|: => @result
+{
+    var passed: bool = false
+    region as paths {
+        let path: Path = pathFromViewText(paths, "////")
+        passed = componentCountEquals(path, 1) && componentAtEquals(path, 0, "//")
+    }
+    return passed
+}

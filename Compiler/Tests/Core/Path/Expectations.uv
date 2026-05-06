@@ -1,0 +1,57 @@
+internal procedure componentAtEquals(path: Path, index: usize, text: string@View) -> bool {
+    return pathComponentEquals(path, index, text)
+}
+
+internal procedure componentCountEquals(path: Path, expected: usize) -> bool {
+    return pathComponentCount(path) == expected
+}
+
+internal procedure canonicalPathAcceptedAs(
+    value: CanonicalPathValue,
+    text: string@View
+) -> bool {
+    return if value is {
+        @Accepted { path } {
+            pathTextEquals(path, text)
+        }
+        @RejectedParentTraversal {
+            false
+        }
+    }
+}
+
+internal procedure canonicalPathRejected(value: CanonicalPathValue) -> bool {
+    return if value is {
+        @Accepted {
+            false
+        }
+        @RejectedParentTraversal {
+            true
+        }
+    }
+}
+
+internal procedure relativePathComputedAs(
+    value: RelativePathValue,
+    text: string@View
+) -> bool {
+    return if value is {
+        @Computed { path } {
+            pathTextEquals(path, text)
+        }
+        @Unavailable {
+            false
+        }
+    }
+}
+
+internal procedure relativePathUnavailable(value: RelativePathValue) -> bool {
+    return if value is {
+        @Computed {
+            false
+        }
+        @Unavailable {
+            true
+        }
+    }
+}

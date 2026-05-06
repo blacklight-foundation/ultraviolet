@@ -1,0 +1,63 @@
+[[test(
+    name: "Drop zero preserves every component",
+    covers("def.Drop@L3341")
+)]]
+internal procedure dropZeroPreservesEveryComponent() -> bool
+|: => @result
+{
+    var passed: bool = false
+    region as paths {
+        let source: Path = pathFromViewText(paths, "root/child/file")
+        let path: Path = dropPathComponents(paths, move source, 0)
+        passed = pathTextEquals(path, "root/child/file")
+    }
+    return passed
+}
+
+[[test(
+    name: "Drop removes the requested leading components",
+    covers("def.Drop@L3341")
+)]]
+internal procedure dropRemovesRequestedLeadingComponents() -> bool
+|: => @result
+{
+    var passed: bool = false
+    region as paths {
+        let source: Path = pathFromViewText(paths, "root/child/file")
+        let path: Path = dropPathComponents(paths, move source, 2)
+        passed = pathTextEquals(path, "file")
+    }
+    return passed
+}
+
+[[test(
+    name: "Drop past the end returns empty relative path",
+    covers("def.Drop@L3341")
+)]]
+internal procedure dropPastEndReturnsEmptyRelativePath() -> bool
+|: => @result
+{
+    var passed: bool = false
+    region as paths {
+        let source: Path = pathFromViewText(paths, "root/child/file")
+        let path: Path = dropPathComponents(paths, move source, 8)
+        passed = componentCountEquals(path, 0) && path~>isRelative()
+    }
+    return passed
+}
+
+[[test(
+    name: "Drop removes a drive tag and yields relative tail components",
+    covers("def.Drop@L3341")
+)]]
+internal procedure dropRemovesDriveTagAndYieldsRelativeTail() -> bool
+|: => @result
+{
+    var passed: bool = false
+    region as paths {
+        let source: Path = pathFromViewText(paths, "C:/root/file")
+        let path: Path = dropPathComponents(paths, move source, 1)
+        passed = path~>isRelative() && pathTextEquals(path, "root/file")
+    }
+    return passed
+}

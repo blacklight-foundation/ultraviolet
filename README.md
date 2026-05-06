@@ -27,15 +27,7 @@ Ultraviolet is built around a small set of language-level design rules:
   synchronization, dispatch, allocation, copying, and foreign trust boundaries
   require explicit opt-in.
 
-## Quick Start
-
-Create and run a new Ultraviolet project:
-
-```sh
-uv init hello
-cd hello
-uv run
-```
+## Project Shape
 
 A minimal executable project has this shape:
 
@@ -62,13 +54,8 @@ public procedure main(move ctx: Context) -> i32 {
 Ultraviolet source files use the `.uv` extension. Project metadata lives in
 `Ultraviolet.toml`.
 
-Common project commands:
-
-```sh
-uv check
-uv build
-uv run
-```
+The `uv` command surface is part of the compiler rebuild tracked in
+[CompilerRebuildPlan.md](CompilerRebuildPlan.md).
 
 ## Language Highlights
 
@@ -95,23 +82,19 @@ uv run
 
 ## Building From Source
 
-Building the Ultraviolet reference implementation requires:
+The Ultraviolet compiler is rebuilt in Ultraviolet and bootstrapped with the
+existing Cursive compiler. The active build contract, Windows `x86_64-win64`
+target profile, assembly layout, and fixed-point self-host criteria are defined in
+[CompilerRebuildPlan.md](CompilerRebuildPlan.md).
 
-- CMake 4.0.1 or newer
-- a C++20-capable compiler
-- LLVM
-- ICU
-- toml++
+The initial source assemblies are declared in [Ultraviolet.toml](Ultraviolet.toml):
 
-Bootstrap external dependencies and build the compiler:
+- `UltravioletRT`
+- `UltravioletCompiler`
+- `uv`
 
-```sh
-uv bootstrap
-uv build --compiler
-```
-
-Builds produce the compiler, runtime library, and staged tool payloads needed to
-compile and run Ultraviolet projects.
+The backend direction is self-owned target-instruction lowering, object writing,
+archive writing, and final artifact production.
 
 ## Tools
 
@@ -125,7 +108,7 @@ The Ultraviolet toolchain is organized around:
 
 ## Documentation
 
-- [Language Specification](docs/UltravioletSpecification.md)
+- [Language Specification](SPECIFICATION.md)
 
 The language specification is the source of truth for syntax, static semantics,
 dynamic semantics, lowering, diagnostics, ABI behavior, and conformance.

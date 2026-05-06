@@ -1,0 +1,83 @@
+[[test(
+    name: "relative path drops canonical base prefix",
+    covers("def.RelativePathComputation@L3355")
+)]]
+internal procedure relativePathDropsCanonicalBasePrefix() -> bool
+|: => @result
+{
+    var passed: bool = false
+    region as paths {
+        let path: Path = pathFromViewText(paths, "root/child/file")
+        let base: Path = pathFromViewText(paths, "root")
+        let value: RelativePathValue = relativePath(
+            paths,
+            move path,
+            move base
+        )
+        passed = relativePathComputedAs(value, "child/file")
+    }
+    return passed
+}
+
+[[test(
+    name: "relative path of equal canonical paths is empty",
+    covers("def.RelativePathComputation@L3355")
+)]]
+internal procedure relativePathOfEqualCanonicalPathsIsEmpty() -> bool
+|: => @result
+{
+    var passed: bool = false
+    region as paths {
+        let path: Path = pathFromViewText(paths, "root/child")
+        let base: Path = pathFromViewText(paths, "root/child")
+        let value: RelativePathValue = relativePath(
+            paths,
+            move path,
+            move base
+        )
+        passed = relativePathComputedAs(value, "")
+    }
+    return passed
+}
+
+[[test(
+    name: "relative path is unavailable when base is not a prefix",
+    covers("def.RelativePathComputation@L3355")
+)]]
+internal procedure relativePathUnavailableWhenBaseIsNotPrefix() -> bool
+|: => @result
+{
+    var passed: bool = false
+    region as paths {
+        let path: Path = pathFromViewText(paths, "other/file")
+        let base: Path = pathFromViewText(paths, "root")
+        let value: RelativePathValue = relativePath(
+            paths,
+            move path,
+            move base
+        )
+        passed = relativePathUnavailable(value)
+    }
+    return passed
+}
+
+[[test(
+    name: "relative path is unavailable when path canonicalization fails",
+    covers("def.RelativePathComputation@L3355")
+)]]
+internal procedure relativePathUnavailableWhenPathCanonicalizationFails() -> bool
+|: => @result
+{
+    var passed: bool = false
+    region as paths {
+        let path: Path = pathFromViewText(paths, "root/../file")
+        let base: Path = pathFromViewText(paths, "root")
+        let value: RelativePathValue = relativePath(
+            paths,
+            move path,
+            move base
+        )
+        passed = relativePathUnavailable(value)
+    }
+    return passed
+}

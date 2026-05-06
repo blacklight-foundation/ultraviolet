@@ -1,0 +1,85 @@
+[[test(
+    name: "RootTag of drive-rooted path is the drive tag",
+    covers("def.PathRootTagAndTail@L3165")
+)]]
+internal procedure rootTagOfDriveRootedPathIsDriveTag() -> bool
+|: => @result
+{
+    var passed: bool = false
+    region as paths {
+        let path: Path = pathFromViewText(paths, "C:/one/two")
+        passed = componentCountEquals(path, 3) &&
+            componentAtEquals(path, 0, "C:") &&
+            componentAtEquals(path, 1, "one") &&
+            componentAtEquals(path, 2, "two")
+    }
+    return passed
+}
+
+[[test(
+    name: "Tail of drive-rooted path starts after drive separator",
+    covers("def.PathRootTagAndTail@L3165")
+)]]
+internal procedure tailOfDriveRootedPathStartsAfterDriveSeparator() -> bool
+|: => @result
+{
+    var passed: bool = false
+    region as paths {
+        let path: Path = pathFromViewText(paths, "C:/")
+        passed = componentCountEquals(path, 1) && componentAtEquals(path, 0, "C:")
+    }
+    return passed
+}
+
+[[test(
+    name: "RootTag of UNC path is canonical UNC tag",
+    covers("def.PathRootTagAndTail@L3165")
+)]]
+internal procedure rootTagOfUNCPathIsCanonicalUNCTag() -> bool
+|: => @result
+{
+    var passed: bool = false
+    region as paths {
+        let path: Path = pathFromViewText(paths, "\\\\server\\share")
+        passed = componentCountEquals(path, 3) &&
+            componentAtEquals(path, 0, "//") &&
+            componentAtEquals(path, 1, "server") &&
+            componentAtEquals(path, 2, "share")
+    }
+    return passed
+}
+
+[[test(
+    name: "RootTag of root-relative path is canonical slash",
+    covers("def.PathRootTagAndTail@L3165")
+)]]
+internal procedure rootTagOfRootRelativePathIsCanonicalSlash() -> bool
+|: => @result
+{
+    var passed: bool = false
+    region as paths {
+        let path: Path = pathFromViewText(paths, "\\one\\two")
+        passed = componentCountEquals(path, 3) &&
+            componentAtEquals(path, 0, "/") &&
+            componentAtEquals(path, 1, "one") &&
+            componentAtEquals(path, 2, "two")
+    }
+    return passed
+}
+
+[[test(
+    name: "RootTag of relative path is empty",
+    covers("def.PathRootTagAndTail@L3165")
+)]]
+internal procedure rootTagOfRelativePathIsEmpty() -> bool
+|: => @result
+{
+    var passed: bool = false
+    region as paths {
+        let path: Path = pathFromViewText(paths, "one/two")
+        passed = componentCountEquals(path, 2) &&
+            componentAtEquals(path, 0, "one") &&
+            componentAtEquals(path, 1, "two")
+    }
+    return passed
+}

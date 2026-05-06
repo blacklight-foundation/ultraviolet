@@ -1,0 +1,105 @@
+// Obligation responsibility: Compiler/Core/Path/Algebra.uv
+//
+// This file owns component-based path algebra for project.path-resolution:
+//
+// - def.JoinComp@L3218
+// - def.Join@L3237
+// - def.PathPrefix@L3284
+// - def.Normalize@L3298
+// - def.Under@L3312
+// - def.Canon@L3326
+// - def.Drop@L3341
+// - def.RelativePathComputation@L3355
+// - def.Basename@L3369
+// - def.FileExt@L3386
+
+public procedure joinPath(paths: unique Region@Active, move base: Path, move path: Path) -> Path {
+    if (path~>isAbsolute()) {
+        return path
+    }
+
+    return pathFromComponentSequence(joinedPathComponents(paths, move base, move path))
+}
+
+public procedure normalizePath(paths: unique Region@Active, move path: Path) -> Path {
+    return pathFromComponentSequence(dotFilteredPathComponents(paths, move path))
+}
+
+public procedure pathPrefix(path: Path, candidate_prefix: Path) -> bool {
+    return path~>hasPrefix(candidate_prefix)
+}
+
+public procedure pathUnder(paths: unique Region@Active, move path: Path, move owner: Path) -> bool {
+    let normalized_path: Path = normalizePath(paths, move path)
+    let normalized_owner: Path = normalizePath(paths, move owner)
+    return pathPrefix(normalized_path, normalized_owner)
+}
+
+public procedure canonPath(paths: unique Region@Active, move path: Path) -> CanonicalPathValue {
+    let normalized: Path = normalizePath(paths, move path)
+    if (normalized~>containsParentTraversal()) {
+        return CanonicalPath@RejectedParentTraversal {
+            normalized_path: normalized
+        }
+    }
+    return CanonicalPath@Accepted { path: normalized }
+}
+
+internal procedure dropPathComponents(
+    paths: unique Region@Active,
+    move path: Path,
+    count: usize
+) -> Path {
+    if (count == 0) {
+        return path
+    }
+
+    return pathFromComponentSequence(droppedPathComponents(paths, move path, count))
+}
+
+public procedure relativePath(
+    paths: unique Region@Active,
+    move path: Path,
+    move base: Path
+) -> RelativePathValue {
+    let path_canon: CanonicalPathValue = canonPath(paths, move path)
+    return if path_canon is {
+        @RejectedParentTraversal {
+            RelativePath@Unavailable {}
+        }
+        @Accepted {
+            let base_canon: CanonicalPathValue = canonPath(paths, move base)
+            if base_canon is {
+                @RejectedParentTraversal {
+                    RelativePath@Unavailable {}
+                }
+                @Accepted {
+                    if (!pathPrefix(path_canon.path, base_canon.path)) {
+                        RelativePath@Unavailable {}
+                    } else {
+                        let base_count: usize = pathComponentCount(base_canon.path)
+                        RelativePath@Computed {
+                            path: dropPathComponents(
+                                paths,
+                                move path_canon.path,
+                                base_count
+                            )
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
+
+internal procedure pathTextEquals(path: Path, text: string@View) -> bool {
+    return path~>textEquals(text)
+}
+
+internal procedure pathBasenameEquals(path: Path, text: string@View) -> bool {
+    return pathComponentEqualsText(path~>basename(), text)
+}
+
+internal procedure pathFileExtEquals(path: Path, text: string@View) -> bool {
+    return pathComponentEqualsText(path~>fileExtension(), text)
+}

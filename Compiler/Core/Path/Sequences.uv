@@ -1,0 +1,511 @@
+// Support responsibility: Compiler/Core/Path/Sequences.uv
+//
+// This file owns the state-specific component sequence representation used by
+// Path.uv, Components.uv, and Algebra.uv to satisfy their assigned path
+// obligations without duplicating component traversal behavior.
+
+internal modal PathComponentSequence {
+    @Text {
+        private _root: PathRootValue
+
+        internal procedure componentCount(~) -> usize {
+            return textPathComponentCount(self._root)
+        }
+
+        internal procedure componentAt(~, index: usize) -> PathComponentLookupValue {
+            return textPathComponentAt(self._root, index)
+        }
+
+        internal procedure isAbsolute(~) -> bool {
+            return pathRootIsAbsolute(self._root)
+        }
+
+        internal procedure containsParentTraversal(~) -> bool {
+            return sequenceContainsParentTraversal(self~>componentCount(), self)
+        }
+
+        internal procedure basename(~) -> PathComponentView {
+            return sequenceBasename(self~>componentCount(), self)
+        }
+    }
+
+    @Joined {
+        private _left: Path
+        private _right: Path
+
+        internal procedure componentCount(~) -> usize {
+            return pathComponentCount(self._left) + pathComponentCount(self._right)
+        }
+
+        internal procedure componentAt(~, index: usize) -> PathComponentLookupValue {
+            let left_count: usize = pathComponentCount(self._left)
+            if (index < left_count) {
+                return pathComponentAt(self._left, index)
+            }
+            let component_count: usize = self~>componentCount()
+            if (index < component_count) {
+                return pathComponentAt(self._right, index - left_count)
+            }
+            return missingPathComponent()
+        }
+
+        internal procedure isAbsolute(~) -> bool {
+            return pathSequenceViewIsAbsolute(self~>componentCount(), self~>componentAt(0))
+        }
+
+        internal procedure containsParentTraversal(~) -> bool {
+            return self._left~>containsParentTraversal() ||
+                self._right~>containsParentTraversal()
+        }
+
+        internal procedure basename(~) -> PathComponentView {
+            if (pathComponentCount(self._right) > 0) {
+                return self._right~>basename()
+            }
+            return self._left~>basename()
+        }
+    }
+
+    @DotFiltered {
+        private _source: Path
+
+        internal procedure componentCount(~) -> usize {
+            return dotFilteredPathComponentCount(self._source, pathComponentCount(self._source))
+        }
+
+        internal procedure componentAt(~, index: usize) -> PathComponentLookupValue {
+            return dotFilteredPathComponentAt(
+                self._source,
+                pathComponentCount(self._source),
+                index
+            )
+        }
+
+        internal procedure isAbsolute(~) -> bool {
+            return pathSequenceViewIsAbsolute(self~>componentCount(), self~>componentAt(0))
+        }
+
+        internal procedure containsParentTraversal(~) -> bool {
+            let source_count: usize = pathComponentCount(self._source)
+            var index: usize = 0
+            loop {
+                if (index >= source_count) {
+                    break
+                }
+
+                let component: PathComponentLookupValue = pathComponentAt(self._source, index)
+                if (
+                    !pathComponentLookupIsSingleDot(component) &&
+                        pathComponentLookupIsParentTraversal(component)
+                ) {
+                    return true
+                }
+
+                index = index + 1
+            }
+            return false
+        }
+
+        internal procedure basename(~) -> PathComponentView {
+            let source_count: usize = pathComponentCount(self._source)
+            var basename: PathComponentView = emptyPathComponent()
+            var index: usize = 0
+            loop {
+                if (index >= source_count) {
+                    break
+                }
+
+                let component: PathComponentLookupValue = pathComponentAt(self._source, index)
+                if (!pathComponentLookupIsSingleDot(component)) {
+                    if component is {
+                        @Found {
+                            basename = component~>component()
+                        }
+                        @Missing {
+                        }
+                    }
+                }
+
+                index = index + 1
+            }
+            return basename
+        }
+    }
+
+    @Dropped {
+        private _source: Path
+        private _drop_count: usize
+
+        internal procedure componentCount(~) -> usize {
+            return droppedPathComponentCount(pathComponentCount(self._source), self._drop_count)
+        }
+
+        internal procedure componentAt(~, index: usize) -> PathComponentLookupValue {
+            if (index >= self~>componentCount()) {
+                return missingPathComponent()
+            }
+            return pathComponentAt(self._source, index + self._drop_count)
+        }
+
+        internal procedure isAbsolute(~) -> bool {
+            return pathSequenceViewIsAbsolute(self~>componentCount(), self~>componentAt(0))
+        }
+
+        internal procedure containsParentTraversal(~) -> bool {
+            let source_count: usize = pathComponentCount(self._source)
+            var index: usize = self._drop_count
+            loop {
+                if (index >= source_count) {
+                    break
+                }
+
+                if (pathComponentLookupIsParentTraversal(pathComponentAt(self._source, index))) {
+                    return true
+                }
+
+                index = index + 1
+            }
+            return false
+        }
+
+        internal procedure basename(~) -> PathComponentView {
+            if (self._drop_count >= pathComponentCount(self._source)) {
+                return emptyPathComponent()
+            }
+            return self._source~>basename()
+        }
+    }
+}
+
+internal type PathComponentSequenceValue =
+    PathComponentSequence@Text |
+    PathComponentSequence@Joined |
+    PathComponentSequence@DotFiltered |
+    PathComponentSequence@Dropped
+
+internal procedure pathComponentsFromRoot(
+    paths: unique Region@Active,
+    move root: PathRootValue
+) -> PathComponentSequenceValue {
+    return paths ^ PathComponentSequence@Text { _root: move root }
+}
+
+internal procedure joinedPathComponents(
+    paths: unique Region@Active,
+    move left: Path,
+    move right: Path
+) -> PathComponentSequenceValue {
+    return paths ^ PathComponentSequence@Joined {
+        _left: move left,
+        _right: move right
+    }
+}
+
+internal procedure dotFilteredPathComponents(
+    paths: unique Region@Active,
+    move source: Path
+) -> PathComponentSequenceValue {
+    return paths ^ PathComponentSequence@DotFiltered {
+        _source: move source
+    }
+}
+
+internal procedure droppedPathComponents(
+    paths: unique Region@Active,
+    move source: Path,
+    drop_count: usize
+) -> PathComponentSequenceValue {
+    return paths ^ PathComponentSequence@Dropped {
+        _source: move source,
+        _drop_count: drop_count
+    }
+}
+
+internal procedure pathComponentSequenceCount(sequence: PathComponentSequenceValue) -> usize {
+    return if sequence is {
+        @Text {
+            sequence~>componentCount()
+        }
+        @Joined {
+            sequence~>componentCount()
+        }
+        @DotFiltered {
+            sequence~>componentCount()
+        }
+        @Dropped {
+            sequence~>componentCount()
+        }
+    }
+}
+
+internal procedure pathComponentSequenceAt(
+    sequence: PathComponentSequenceValue,
+    index: usize
+) -> PathComponentLookupValue {
+    return if sequence is {
+        @Text {
+            sequence~>componentAt(index)
+        }
+        @Joined {
+            sequence~>componentAt(index)
+        }
+        @DotFiltered {
+            sequence~>componentAt(index)
+        }
+        @Dropped {
+            sequence~>componentAt(index)
+        }
+    }
+}
+
+internal procedure pathComponentSequenceIsAbsolute(
+    sequence: PathComponentSequenceValue
+) -> bool {
+    return if sequence is {
+        @Text {
+            sequence~>isAbsolute()
+        }
+        @Joined {
+            sequence~>isAbsolute()
+        }
+        @DotFiltered {
+            sequence~>isAbsolute()
+        }
+        @Dropped {
+            sequence~>isAbsolute()
+        }
+    }
+}
+
+internal procedure pathComponentSequenceContainsParentTraversal(
+    sequence: PathComponentSequenceValue
+) -> bool {
+    return if sequence is {
+        @Text {
+            sequence~>containsParentTraversal()
+        }
+        @Joined {
+            sequence~>containsParentTraversal()
+        }
+        @DotFiltered {
+            sequence~>containsParentTraversal()
+        }
+        @Dropped {
+            sequence~>containsParentTraversal()
+        }
+    }
+}
+
+internal procedure pathComponentSequenceBasename(
+    sequence: PathComponentSequenceValue
+) -> PathComponentView {
+    return if sequence is {
+        @Text {
+            sequence~>basename()
+        }
+        @Joined {
+            sequence~>basename()
+        }
+        @DotFiltered {
+            sequence~>basename()
+        }
+        @Dropped {
+            sequence~>basename()
+        }
+    }
+}
+
+internal procedure pathComponentSequenceFileExtension(
+    sequence: PathComponentSequenceValue
+) -> PathComponentView {
+    return pathComponentFileExtension(pathComponentSequenceBasename(sequence))
+}
+
+internal procedure pathComponentSequenceHasPrefix(
+    sequence: PathComponentSequenceValue,
+    candidate_prefix: PathComponentSequenceValue
+) -> bool {
+    let component_count: usize = pathComponentSequenceCount(sequence)
+    let prefix_count: usize = pathComponentSequenceCount(candidate_prefix)
+    if (prefix_count > component_count) {
+        return false
+    }
+
+    var index: usize = 0
+    loop {
+        if (index >= prefix_count) {
+            break
+        }
+
+        if (
+            !pathComponentLookupsEqual(
+                pathComponentSequenceAt(sequence, index),
+                pathComponentSequenceAt(candidate_prefix, index)
+            )
+        ) {
+            return false
+        }
+
+        index = index + 1
+    }
+    return true
+}
+
+internal procedure pathComponentSequenceTextEquals(
+    sequence: PathComponentSequenceValue,
+    text: string@View
+) -> bool {
+    let text_length: usize = pathViewLength(text)
+    let component_count: usize = pathComponentSequenceCount(sequence)
+    var text_index: usize = 0
+    var component_index: usize = 0
+    var previous_component_suppressed_separator: bool = false
+
+    loop {
+        if (component_index >= component_count) {
+            break
+        }
+
+        let component: PathComponentLookupValue =
+            pathComponentSequenceAt(sequence, component_index)
+        let component_matched: bool = if component is {
+            @Found {
+                if (component_index > 0 && !previous_component_suppressed_separator) {
+                    if (text_index >= text_length) {
+                        return false
+                    }
+                    if (pathViewByte(text, text_index) != SLASH_BYTE) {
+                        return false
+                    }
+                    text_index = text_index + 1
+                }
+
+                let found_component: PathComponentView = component~>component()
+                if (!pathComponentMatchesTextAt(found_component, text, text_index)) {
+                    return false
+                }
+
+                text_index = text_index + pathComponentLength(found_component)
+                previous_component_suppressed_separator =
+                    pathComponentSuppressesJoinSeparator(found_component)
+                true
+            }
+            @Missing {
+                false
+            }
+        }
+        if (!component_matched) {
+            return false
+        }
+
+        component_index = component_index + 1
+    }
+
+    return text_index == text_length
+}
+
+internal procedure dotFilteredPathComponentCount(source: Path, source_count: usize) -> usize {
+    var count: usize = 0
+    var index: usize = 0
+    loop {
+        if (index >= source_count) {
+            break
+        }
+
+        if (!pathComponentLookupIsSingleDot(pathComponentAt(source, index))) {
+            count = count + 1
+        }
+
+        index = index + 1
+    }
+    return count
+}
+
+internal procedure dotFilteredPathComponentAt(
+    source: Path,
+    source_count: usize,
+    index: usize
+) -> PathComponentLookupValue {
+    var source_index: usize = 0
+    var filtered_index: usize = 0
+    loop {
+        if (source_index >= source_count) {
+            break
+        }
+
+        let component: PathComponentLookupValue = pathComponentAt(source, source_index)
+        if (!pathComponentLookupIsSingleDot(component)) {
+            if (filtered_index == index) {
+                return component
+            }
+            filtered_index = filtered_index + 1
+        }
+
+        source_index = source_index + 1
+    }
+    return missingPathComponent()
+}
+
+internal procedure sequenceContainsParentTraversal(
+    component_count: usize,
+    sequence: PathComponentSequenceValue
+) -> bool {
+    var index: usize = 0
+    loop {
+        if (index >= component_count) {
+            break
+        }
+
+        if (pathComponentLookupIsParentTraversal(pathComponentSequenceAt(sequence, index))) {
+            return true
+        }
+
+        index = index + 1
+    }
+    return false
+}
+
+internal procedure sequenceBasename(
+    component_count: usize,
+    sequence: PathComponentSequenceValue
+) -> PathComponentView {
+    if (component_count == 0) {
+        return emptyPathComponent()
+    }
+
+    let component: PathComponentLookupValue =
+        pathComponentSequenceAt(sequence, component_count - 1)
+    return if component is {
+        @Found {
+            component~>component()
+        }
+        @Missing {
+            emptyPathComponent()
+        }
+    }
+}
+
+internal procedure droppedPathComponentCount(source_count: usize, drop_count: usize) -> usize {
+    if (source_count <= drop_count) {
+        return 0
+    }
+    return source_count - drop_count
+}
+
+internal procedure pathSequenceViewIsAbsolute(
+    component_count: usize,
+    first_component: PathComponentLookupValue
+) -> bool {
+    if (component_count == 0) {
+        return false
+    }
+
+    if (
+        pathComponentLookupEqualsText(first_component, "/") ||
+            pathComponentLookupEqualsText(first_component, "//")
+    ) {
+        return true
+    }
+
+    return component_count >= 2 && pathComponentLookupIsDriveTag(first_component)
+}

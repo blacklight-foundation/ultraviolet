@@ -1,0 +1,85 @@
+[[test(
+    name: "Normalize removes single-dot components",
+    covers("def.Normalize@L3298")
+)]]
+internal procedure normalizeRemovesSingleDotComponents() -> bool
+|: => @result
+{
+    var passed: bool = false
+    region as paths {
+        let source: Path = pathFromViewText(paths, "root/./child/../file/.")
+        let path: Path = normalizePath(
+            paths,
+            move source
+        )
+        passed = pathTextEquals(path, "root/child/../file")
+    }
+    return passed
+}
+
+[[test(
+    name: "Normalize preserves parent-traversal components",
+    covers("def.Normalize@L3298")
+)]]
+internal procedure normalizePreservesParentTraversalComponents() -> bool
+|: => @result
+{
+    var passed: bool = false
+    region as paths {
+        let source: Path = pathFromViewText(paths, "root/./child/../file")
+        let path: Path = normalizePath(
+            paths,
+            move source
+        )
+        passed = componentAtEquals(path, 2, "..")
+    }
+    return passed
+}
+
+[[test(
+    name: "Normalize preserves drive-rooted child absoluteness",
+    covers("def.Normalize@L3298")
+)]]
+internal procedure normalizePreservesDriveRootedChildAbsoluteness() -> bool
+|: => @result
+{
+    var passed: bool = false
+    region as paths {
+        let source: Path = pathFromViewText(paths, "C:/a/.")
+        let path: Path = normalizePath(paths, move source)
+        passed = path~>isAbsolute() && pathTextEquals(path, "C:/a")
+    }
+    return passed
+}
+
+[[test(
+    name: "Normalize root-only path keeps root tag",
+    covers("def.Normalize@L3298")
+)]]
+internal procedure normalizeRootOnlyPathKeepsRootTag() -> bool
+|: => @result
+{
+    var passed: bool = false
+    region as paths {
+        let source: Path = pathFromViewText(paths, "/./")
+        let path: Path = normalizePath(paths, move source)
+        passed = path~>isAbsolute() && pathTextEquals(path, "/")
+    }
+    return passed
+}
+
+[[test(
+    name: "Normalize UNC path keeps UNC tag",
+    covers("def.Normalize@L3298")
+)]]
+internal procedure normalizeUNCPathKeepsUNCTag() -> bool
+|: => @result
+{
+    var passed: bool = false
+    region as paths {
+        let source: Path = pathFromViewText(paths, "//host/./share")
+        let path: Path = normalizePath(paths, move source)
+        passed = path~>isAbsolute() && pathTextEquals(path, "//host/share")
+    }
+    return passed
+}

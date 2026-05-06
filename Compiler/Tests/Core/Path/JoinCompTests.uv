@@ -1,0 +1,76 @@
+[[test(
+    name: "JoinComp renders empty component list as empty text",
+    covers("def.JoinComp@L3218")
+)]]
+internal procedure joinComponentRendersEmptyComponentList() -> bool
+|: => @result
+{
+    var passed: bool = false
+    region as paths {
+        passed = pathTextEquals(pathFromViewText(paths, ""), "")
+    }
+    return passed
+}
+
+[[test(
+    name: "JoinComp renders root-relative tag without an added separator",
+    covers("def.JoinComp@L3218")
+)]]
+internal procedure joinComponentRendersRootRelativeTag() -> bool
+|: => @result
+{
+    var passed: bool = false
+    region as paths {
+        passed = pathTextEquals(pathFromViewText(paths, "\\child"), "/child")
+    }
+    return passed
+}
+
+[[test(
+    name: "JoinComp renders UNC tag without an added separator",
+    covers("def.JoinComp@L3218")
+)]]
+internal procedure joinComponentRendersUNCTag() -> bool
+|: => @result
+{
+    var passed: bool = false
+    region as paths {
+        passed = pathTextEquals(pathFromViewText(paths, "\\\\server\\share"), "//server/share")
+    }
+    return passed
+}
+
+[[test(
+    name: "JoinComp renders drive tag with one separator before the tail",
+    covers("def.JoinComp@L3218")
+)]]
+internal procedure joinComponentRendersDriveTag() -> bool
+|: => @result
+{
+    var passed: bool = false
+    region as paths {
+        let base: Path = pathFromViewText(paths, "C:")
+        let child: Path = pathFromViewText(paths, "file")
+        let path: Path = joinPath(
+            paths,
+            move base,
+            move child
+        )
+        passed = pathTextEquals(path, "C:/file")
+    }
+    return passed
+}
+
+[[test(
+    name: "JoinComp renders repeated separators through maximal components",
+    covers("def.JoinComp@L3218")
+)]]
+internal procedure joinComponentRendersRepeatedSeparators() -> bool
+|: => @result
+{
+    var passed: bool = false
+    region as paths {
+        passed = pathTextEquals(pathFromViewText(paths, "one//two/"), "one/two")
+    }
+    return passed
+}

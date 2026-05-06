@@ -1,0 +1,72 @@
+[[test(
+    name: "Join appends relative right components",
+    covers("def.Join@L3237")
+)]]
+internal procedure joinAppendsRelativeRightComponents() -> bool
+|: => @result
+{
+    var passed: bool = false
+    region as paths {
+        let base: Path = pathFromViewText(paths, "C:/base")
+        let child: Path = pathFromViewText(paths, "child/file")
+        let path: Path = joinPath(
+            paths,
+            move base,
+            move child
+        )
+        passed = path~>isAbsolute() &&
+            componentCountEquals(path, 4) &&
+            componentAtEquals(path, 0, "C:") &&
+            componentAtEquals(path, 1, "base") &&
+            componentAtEquals(path, 2, "child") &&
+            componentAtEquals(path, 3, "file") &&
+            pathTextEquals(path, "C:/base/child/file")
+    }
+    return passed
+}
+
+[[test(
+    name: "Join returns absolute right operand",
+    covers("def.Join@L3237")
+)]]
+internal procedure joinReturnsAbsoluteRightOperand() -> bool
+|: => @result
+{
+    var passed: bool = false
+    region as paths {
+        let base: Path = pathFromViewText(paths, "C:/base")
+        let child: Path = pathFromViewText(paths, "/child")
+        let path: Path = joinPath(
+            paths,
+            move base,
+            move child
+        )
+        passed = path~>isAbsolute() &&
+            componentCountEquals(path, 2) &&
+            componentAtEquals(path, 0, "/") &&
+            componentAtEquals(path, 1, "child") &&
+            pathTextEquals(path, "/child")
+    }
+    return passed
+}
+
+[[test(
+    name: "Join with empty relative right preserves the left components",
+    covers("def.Join@L3237")
+)]]
+internal procedure joinWithEmptyRightPreservesLeftComponents() -> bool
+|: => @result
+{
+    var passed: bool = false
+    region as paths {
+        let base: Path = pathFromViewText(paths, "C:/")
+        let child: Path = pathFromViewText(paths, "")
+        let path: Path = joinPath(
+            paths,
+            move base,
+            move child
+        )
+        passed = path~>isRelative() && pathTextEquals(path, "C:")
+    }
+    return passed
+}

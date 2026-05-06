@@ -1,0 +1,83 @@
+[[test(
+    name: "DriveRooted accepts letter colon separator",
+    covers("def.PathRootPredicates@L3146")
+)]]
+internal procedure driveRootedAcceptsLetterColonSeparator() -> bool
+|: => @result
+{
+    var passed: bool = false
+    region as paths {
+        passed = pathFromViewText(paths, "C:\\Program")~>isAbsolute()
+    }
+    return passed
+}
+
+[[test(
+    name: "UNC accepts two forward separators",
+    covers("def.PathRootPredicates@L3146")
+)]]
+internal procedure uncAcceptsTwoForwardSeparators() -> bool
+|: => @result
+{
+    var passed: bool = false
+    region as paths {
+        passed = pathFromViewText(paths, "//server/share")~>isAbsolute()
+    }
+    return passed
+}
+
+[[test(
+    name: "UNC accepts two backward separators",
+    covers("def.PathRootPredicates@L3146")
+)]]
+internal procedure uncAcceptsTwoBackwardSeparators() -> bool
+|: => @result
+{
+    var passed: bool = false
+    region as paths {
+        passed = pathFromViewText(paths, "\\\\server\\share")~>isAbsolute()
+    }
+    return passed
+}
+
+[[test(
+    name: "RootRelative accepts one leading separator",
+    covers("def.PathRootPredicates@L3146")
+)]]
+internal procedure rootRelativeAcceptsOneLeadingSeparator() -> bool
+|: => @result
+{
+    var passed: bool = false
+    region as paths {
+        passed = pathFromViewText(paths, "/Program")~>isAbsolute()
+    }
+    return passed
+}
+
+[[test(
+    name: "DriveRooted rejects non-letter drive tag",
+    covers("def.PathRootPredicates@L3146")
+)]]
+internal procedure driveRootedRejectsNonLetterDriveTag() -> bool
+|: => @result
+{
+    var passed: bool = false
+    region as paths {
+        passed = pathFromViewText(paths, "1:/Program")~>isRelative()
+    }
+    return passed
+}
+
+[[test(
+    name: "Relative path has no root predicate",
+    covers("def.PathRootPredicates@L3146")
+)]]
+internal procedure relativePathHasNoRootPredicate() -> bool
+|: => @result
+{
+    var passed: bool = false
+    region as paths {
+        passed = pathFromViewText(paths, "Program")~>isRelative()
+    }
+    return passed
+}

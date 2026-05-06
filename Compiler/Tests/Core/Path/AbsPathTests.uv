@@ -1,0 +1,90 @@
+using UltravioletCompiler::Core::Path::{
+    CanonicalPathValue,
+    Path,
+    RelativePathValue,
+    canonPath,
+    dropPathComponents,
+    joinPath,
+    normalizePath,
+    pathBasenameEquals,
+    pathComponentCount,
+    pathComponentEquals,
+    pathFileExtEquals,
+    pathFromViewText,
+    pathTextEquals,
+    pathPrefix,
+    pathUnder,
+    relativePath
+}
+
+[[test(
+    name: "drive-rooted path is absolute",
+    covers("def.AbsPath@L3253")
+)]]
+internal procedure driveRootedPathIsAbsolute() -> bool
+|: => @result
+{
+    var passed: bool = false
+    region as paths {
+        passed = pathFromViewText(paths, "Z:/a")~>isAbsolute()
+    }
+    return passed
+}
+
+[[test(
+    name: "UNC path is absolute",
+    covers("def.AbsPath@L3253")
+)]]
+internal procedure uncPathIsAbsolute() -> bool
+|: => @result
+{
+    var passed: bool = false
+    region as paths {
+        passed = pathFromViewText(paths, "//host/share")~>isAbsolute()
+    }
+    return passed
+}
+
+[[test(
+    name: "root-relative path is absolute",
+    covers("def.AbsPath@L3253")
+)]]
+internal procedure rootRelativePathIsAbsolute() -> bool
+|: => @result
+{
+    var passed: bool = false
+    region as paths {
+        passed = pathFromViewText(paths, "\\root")~>isAbsolute()
+    }
+    return passed
+}
+
+[[test(
+    name: "drive-relative path is relative",
+    covers("def.AbsPath@L3253")
+)]]
+internal procedure driveRelativePathIsRelative() -> bool
+|: => @result
+{
+    var passed: bool = false
+    region as paths {
+        passed = pathFromViewText(paths, "Z:relative")~>isRelative()
+    }
+    return passed
+}
+
+[[test(
+    name: "normalized drive root without tail is relative",
+    covers("def.AbsPath@L3253")
+)]]
+internal procedure normalizedDriveRootWithoutTailIsRelative() -> bool
+|: => @result
+{
+    var passed: bool = false
+    region as paths {
+        let source: Path = pathFromViewText(paths, "Z:/.")
+        let path: Path = normalizePath(paths, move source)
+        passed = path~>isRelative() && pathTextEquals(path, "Z:")
+    }
+    return passed
+}

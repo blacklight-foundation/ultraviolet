@@ -1,0 +1,75 @@
+[[test(
+    name: "prefix holds for identical empty component lists",
+    covers("def.PathPrefix@L3284")
+)]]
+internal procedure prefixHoldsForIdenticalEmptyComponentLists() -> bool
+|: => @result
+{
+    var passed: bool = false
+    region as paths {
+        passed = pathPrefix(pathFromViewText(paths, ""), pathFromViewText(paths, ""))
+    }
+    return passed
+}
+
+[[test(
+    name: "prefix holds for complete leading components",
+    covers("def.PathPrefix@L3284")
+)]]
+internal procedure prefixHoldsForCompleteLeadingComponents() -> bool
+|: => @result
+{
+    var passed: bool = false
+    region as paths {
+        passed = pathPrefix(
+            pathFromViewText(paths, "root/child/file"),
+            pathFromViewText(paths, "root/child")
+        )
+    }
+    return passed
+}
+
+[[test(
+    name: "prefix rejects partial component text",
+    covers("def.PathPrefix@L3284")
+)]]
+internal procedure prefixRejectsPartialComponentText() -> bool
+|: => !@result
+{
+    var passed: bool = false
+    region as paths {
+        passed = pathPrefix(
+            pathFromViewText(paths, "root/child"),
+            pathFromViewText(paths, "root/ch")
+        )
+    }
+    return passed
+}
+
+[[test(
+    name: "prefix rejects different root tags",
+    covers("def.PathPrefix@L3284")
+)]]
+internal procedure prefixRejectsDifferentRootTags() -> bool
+|: => !@result
+{
+    var passed: bool = false
+    region as paths {
+        passed = pathPrefix(pathFromViewText(paths, "/root"), pathFromViewText(paths, "root"))
+    }
+    return passed
+}
+
+[[test(
+    name: "prefix rejects longer candidate prefix",
+    covers("def.PathPrefix@L3284")
+)]]
+internal procedure prefixRejectsLongerCandidatePrefix() -> bool
+|: => !@result
+{
+    var passed: bool = false
+    region as paths {
+        passed = pathPrefix(pathFromViewText(paths, "root"), pathFromViewText(paths, "root/child"))
+    }
+    return passed
+}
