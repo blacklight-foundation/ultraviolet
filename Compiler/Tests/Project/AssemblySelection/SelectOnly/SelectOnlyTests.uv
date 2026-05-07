@@ -1,0 +1,53 @@
+// Test responsibility:
+// Compiler/Tests/Project/AssemblySelection/SelectOnly/SelectOnlyTests.uv
+//
+// This file owns source-native tests for Select-Only@L3851.
+
+using UltravioletCompiler::Project::{
+    AssemblySelectionValue,
+    absentAssemblyTarget,
+    assembly,
+    assemblyListEntry,
+    assemblyName,
+    directoryPath,
+    emptyAssemblies,
+    emptyModules,
+    executableAssemblyKind,
+    noLinkKind,
+    projectTextEquals,
+    selectAssembly
+}
+
+[[test(
+    name: "assembly selection chooses sole assembly for absent target",
+    covers("Select-Only@L3851")
+)]]
+internal procedure assemblySelectionChoosesSoleAssemblyForAbsentTarget() -> bool
+|: => @result
+{
+    let selection: AssemblySelectionValue = selectAssembly(
+        assemblyListEntry(
+            assembly(
+                assemblyName("uv"),
+                executableAssemblyKind(),
+                noLinkKind(),
+                directoryPath("Tools/Uv"),
+                emptyModules()
+            ),
+            emptyAssemblies()
+        ),
+        absentAssemblyTarget()
+    )
+
+    return if selection is {
+        @Selected { assembly_name } {
+            projectTextEquals(assembly_name.text, "uv")
+        }
+        @Missing {
+            false
+        }
+        @Ambiguous {
+            false
+        }
+    }
+}

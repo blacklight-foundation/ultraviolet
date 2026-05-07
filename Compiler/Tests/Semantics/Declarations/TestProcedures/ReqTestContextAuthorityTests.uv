@@ -1,0 +1,68 @@
+// Test responsibility: Compiler/Tests/Semantics/Declarations/TestProcedures/ReqTestContextAuthorityTests.uv
+//
+// This file owns source-native tests for req.TestContextAuthority@L28477:
+//
+// `TestContext` is the only runner-injected value and carries filesystem,
+// process, temporary-directory, target-profile, and compiler-invocation
+// authority.
+
+[[test(
+    name: "parameterless test procedure requires no injected context",
+    covers("req.TestContextAuthority@L28477")
+)]]
+internal procedure parameterlessTestProcedureRequiresNoInjectedContext() -> bool
+|: => @result
+{
+    let check: TestProcedureShapeCheckValue =
+        checkTestProcedureShape(validTestProcedureDeclaration(noTestProcedureParameters()))
+    return if check is {
+        @Valid { requires_context } {
+            !requires_context
+        }
+        @Invalid {
+            false
+        }
+    }
+}
+
+[[test(
+    name: "TestContext parameter is the runner-injected authority",
+    covers("req.TestContextAuthority@L28477")
+)]]
+internal procedure testContextParameterIsRunnerInjectedAuthority() -> bool
+|: => @result
+{
+    let check: TestProcedureShapeCheckValue =
+        checkTestProcedureShape(
+            validTestProcedureDeclaration(testContextProcedureParameter())
+        )
+    return if check is {
+        @Valid { requires_context } {
+            requires_context
+        }
+        @Invalid {
+            false
+        }
+    }
+}
+
+[[test(
+    name: "non-TestContext parameter is rejected for source-native test",
+    covers("req.TestContextAuthority@L28477")
+)]]
+internal procedure nonTestContextParameterIsRejectedForSourceNativeTest() -> bool
+|: => @result
+{
+    let check: TestProcedureShapeCheckValue =
+        checkTestProcedureShape(
+            validTestProcedureDeclaration(invalidTestProcedureParameter())
+        )
+    return if check is {
+        @Valid {
+            false
+        }
+        @Invalid {
+            true
+        }
+    }
+}

@@ -1,0 +1,45 @@
+// Test responsibility:
+// Compiler/Tests/Project/AssemblyLoader/StepParse/StepParseTests.uv
+//
+// This file owns source-native tests for Step-Parse@L3558.
+
+using UltravioletCompiler::Project::{
+    ProjectLoadValue,
+    manifestAssemblyListCount,
+    projectLoadParseManifestText,
+    projectRoot
+}
+
+[[test(
+    name: "project load parse transition enters manifest parsed state",
+    covers("Step-Parse@L3558")
+)]]
+internal procedure projectLoadParseTransitionEntersManifestParsedState() -> bool
+|: => @result
+{
+    let load: ProjectLoadValue = projectLoadParseManifestText(
+        projectRoot("C:/Dev/Ultraviolet"),
+        "[[assembly]]\nname = \"UltravioletCompiler\"\nkind = \"library\"\nlink_kind = \"static\"\nroot = \"Compiler\"\n"
+    )
+
+    return if load is {
+        @ManifestParsed { manifest } {
+            manifestAssemblyListCount(manifest.assemblies) == 1
+        }
+        @RootLocated {
+            false
+        }
+        @ManifestValidated {
+            false
+        }
+        @AssembliesDiscovered {
+            false
+        }
+        @Complete {
+            false
+        }
+        @Failed {
+            false
+        }
+    }
+}

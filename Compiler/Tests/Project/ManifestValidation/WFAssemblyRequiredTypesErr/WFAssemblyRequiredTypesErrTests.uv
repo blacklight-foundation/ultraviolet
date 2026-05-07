@@ -1,0 +1,45 @@
+// Test responsibility:
+// Compiler/Tests/Project/ManifestValidation/WFAssemblyRequiredTypesErr/WFAssemblyRequiredTypesErrTests.uv
+//
+// This file owns source-native tests for WF-Assembly-Required-Types-Err@L2802.
+
+using UltravioletCompiler::Project::{
+    ManifestValidationValue,
+    emptyManifestAssemblies,
+    manifest,
+    manifestAssembly,
+    manifestAssemblyListEntry,
+    validateManifest
+}
+
+[[test(
+    name: "manifest validation rejects missing required fields",
+    covers("WF-Assembly-Required-Types-Err@L2802")
+)]]
+internal procedure manifestValidationRejectsMissingRequiredFields() -> bool
+|: => @result
+{
+    let validation: ManifestValidationValue = validateManifest(
+        manifest(
+            manifestAssemblyListEntry(
+                manifestAssembly("App", "executable", "", ""),
+                emptyManifestAssemblies()
+            )
+        )
+    )
+
+    return manifestValidationIsInvalid(validation)
+}
+
+internal procedure manifestValidationIsInvalid(
+    validation: ManifestValidationValue
+) -> bool {
+    return if validation is {
+        @Valid {
+            false
+        }
+        @Invalid {
+            true
+        }
+    }
+}

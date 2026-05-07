@@ -1,0 +1,967 @@
+// Obligation responsibility: Compiler/Project/Manifest.uv
+//
+// This file owns manifest parsing and parsed manifest records consumed by
+// project loading:
+//
+// - def.ManifestParsing@L2168
+//   ParseTOML : Path ⇀ TOMLTable
+// - Parse-Manifest-Ok@L2183
+//   ParseTOML(R/`Ultraviolet.toml`) ⇓ T
+//   Γ ⊢ ParseManifest(R) ⇓ T
+// - Parse-Manifest-Missing@L2201
+//   ¬ exists(R/`Ultraviolet.toml`)    c = Code(Parse-Manifest-Missing)
+//   Γ ⊢ ParseManifest(R) ⇑ c
+// - Parse-Manifest-Err@L2219
+//   ParseTOML(R/`Ultraviolet.toml`) ⇑    c = Code(Parse-Manifest-Err)
+//   Γ ⊢ ParseManifest(R) ⇑ c
+// - req.ManifestHostPathResolution@L2252
+//   Manifest lookup MUST use host filesystem path resolution semantics for
+//   R/`Ultraviolet.toml`.
+// - req.ManifestNoAdditionalCaseVerification@L2267
+//   Manifest lookup MUST NOT perform additional case verification.
+
+internal let MANIFEST_EMPTY_TEXT: string@View = ""
+internal let MANIFEST_ASSEMBLY_TABLE_TEXT: string@View = "[[assembly]]"
+internal let MANIFEST_ASSEMBLY_SINGLE_TABLE_TEXT: string@View = "[assembly]"
+internal let MANIFEST_TOOLCHAIN_TABLE_TEXT: string@View = "[toolchain]"
+internal let MANIFEST_BUILD_TABLE_TEXT: string@View = "[build]"
+internal let MANIFEST_NAME_KEY_TEXT: string@View = "name"
+internal let MANIFEST_KIND_KEY_TEXT: string@View = "kind"
+internal let MANIFEST_LINK_KIND_KEY_TEXT: string@View = "link_kind"
+internal let MANIFEST_ROOT_KEY_TEXT: string@View = "root"
+internal let MANIFEST_OUT_DIR_KEY_TEXT: string@View = "out_dir"
+internal let MANIFEST_EMIT_IR_KEY_TEXT: string@View = "emit_ir"
+internal let MANIFEST_PARSE_ERROR_CODE: string@View = "E-PRJ-0102"
+internal let MANIFEST_PARSE_ERROR_MESSAGE: string@View = "invalid manifest"
+internal let MANIFEST_SPACE: u8 = 32
+internal let MANIFEST_TAB: u8 = 9
+internal let MANIFEST_CR: u8 = 13
+internal let MANIFEST_LF: u8 = 10
+internal let MANIFEST_HASH: u8 = 35
+internal let MANIFEST_EQUALS: u8 = 61
+internal let MANIFEST_QUOTE: u8 = 34
+internal let MANIFEST_OPEN_BRACKET: u8 = 91
+
+public record ManifestAssembly {
+    public name: string@View
+    public kind: string@View
+    public link_kind: string@View
+    public root: string@View
+    public out_dir: string@View
+    public emit_ir: string@View
+    public has_unknown_key: bool
+}
+
+public modal ManifestAssemblyList {
+    @Empty {
+        public procedure count(~) -> usize {
+            return 0
+        }
+    }
+
+    @Entry {
+        public assembly: ManifestAssembly
+        public tail: ManifestAssemblyListValue
+
+        public procedure count(~) -> usize {
+            return 1 + manifestAssemblyListCount(self.tail)
+        }
+    }
+}
+
+public type ManifestAssemblyListValue =
+    ManifestAssemblyList@Empty | ManifestAssemblyList@Entry
+
+public record Manifest {
+    public assemblies: ManifestAssemblyListValue
+    public has_unknown_top_key: bool
+}
+
+internal record ManifestAssemblyBuilder {
+    internal name: string@View
+    internal kind: string@View
+    internal link_kind: string@View
+    internal root: string@View
+    internal out_dir: string@View
+    internal emit_ir: string@View
+    internal has_name: bool
+    internal has_kind: bool
+    internal has_link_kind: bool
+    internal has_root: bool
+    internal has_out_dir: bool
+    internal has_emit_ir: bool
+    internal has_unknown_key: bool
+}
+
+public modal ManifestParse {
+    @Parsed {
+        public manifest: Manifest
+    }
+
+    @Failed {
+        public diagnostics: DiagnosticStreamValue
+    }
+}
+
+public type ManifestParseValue = ManifestParse@Parsed | ManifestParse@Failed
+
+internal modal ManifestTextParse {
+    @ReadingTop {
+        internal assemblies: ManifestAssemblyListValue
+        internal has_unknown_top_key: bool
+    }
+
+    @ReadingAssembly {
+        internal assemblies: ManifestAssemblyListValue
+        internal has_unknown_top_key: bool
+        internal builder: ManifestAssemblyBuilder
+    }
+
+    @ReadingIgnoredTable {
+        internal assemblies: ManifestAssemblyListValue
+        internal has_unknown_top_key: bool
+    }
+
+    @Failed {
+        internal diagnostics: DiagnosticStreamValue
+    }
+}
+
+internal type ManifestTextParseValue =
+    ManifestTextParse@ReadingTop |
+    ManifestTextParse@ReadingAssembly |
+    ManifestTextParse@ReadingIgnoredTable |
+    ManifestTextParse@Failed
+
+internal record ManifestKeyValue {
+    internal key: string@View
+    internal value: string@View
+}
+
+internal modal ManifestKeyValueParse {
+    @Parsed {
+        internal field: ManifestKeyValue
+    }
+
+    @Failed {
+        internal diagnostics: DiagnosticStreamValue
+    }
+}
+
+internal type ManifestKeyValueParseValue =
+    ManifestKeyValueParse@Parsed | ManifestKeyValueParse@Failed
+
+public procedure manifestAssembly(
+    name: string@View,
+    kind: string@View,
+    link_kind: string@View,
+    root: string@View
+) -> ManifestAssembly {
+    return manifestAssemblyWithOptions(
+        name,
+        kind,
+        link_kind,
+        root,
+        MANIFEST_EMPTY_TEXT,
+        MANIFEST_EMPTY_TEXT
+    )
+}
+
+public procedure manifestAssemblyWithOptions(
+    name: string@View,
+    kind: string@View,
+    link_kind: string@View,
+    root: string@View,
+    out_dir: string@View,
+    emit_ir: string@View
+) -> ManifestAssembly {
+    return ManifestAssembly {
+        name: name,
+        kind: kind,
+        link_kind: link_kind,
+        root: root,
+        out_dir: out_dir,
+        emit_ir: emit_ir,
+        has_unknown_key: false
+    }
+}
+
+internal procedure manifestAssemblyWithUnknownKey(
+    assembly: ManifestAssembly
+) -> ManifestAssembly {
+    return ManifestAssembly {
+        name: assembly.name,
+        kind: assembly.kind,
+        link_kind: assembly.link_kind,
+        root: assembly.root,
+        out_dir: assembly.out_dir,
+        emit_ir: assembly.emit_ir,
+        has_unknown_key: true
+    }
+}
+
+public procedure emptyManifestAssemblies() -> ManifestAssemblyListValue {
+    return ManifestAssemblyList@Empty {}
+}
+
+public procedure manifestAssemblyListEntry(
+    assembly: ManifestAssembly,
+    move tail: ManifestAssemblyListValue
+) -> ManifestAssemblyListValue {
+    return ManifestAssemblyList@Entry {
+        assembly: assembly,
+        tail: move tail
+    }
+}
+
+public procedure manifestAssemblyListCount(assemblies: ManifestAssemblyListValue) -> usize {
+    return if assemblies is {
+        @Empty {
+            assemblies~>count()
+        }
+        @Entry {
+            assemblies~>count()
+        }
+    }
+}
+
+public procedure manifest(move assemblies: ManifestAssemblyListValue) -> Manifest {
+    return manifestWithTopKeyState(move assemblies, false)
+}
+
+public procedure manifestWithTopKeyState(
+    move assemblies: ManifestAssemblyListValue,
+    has_unknown_top_key: bool
+) -> Manifest {
+    return Manifest {
+        assemblies: move assemblies,
+        has_unknown_top_key: has_unknown_top_key
+    }
+}
+
+public procedure parsedManifest(move manifest: Manifest) -> ManifestParseValue {
+    return ManifestParse@Parsed { manifest: move manifest }
+}
+
+public procedure failedManifestParse(
+    move diagnostics: DiagnosticStreamValue
+) -> ManifestParseValue {
+    return ManifestParse@Failed { diagnostics: move diagnostics }
+}
+
+public procedure parseManifestText(text: string@View) -> ManifestParseValue {
+    let length: usize = string::length(text)
+    var state: ManifestTextParseValue =
+        ManifestTextParse@ReadingTop {
+            assemblies: emptyManifestAssemblies(),
+            has_unknown_top_key: false
+        }
+    var line_start: usize = 0
+
+    loop {
+        if (line_start >= length) {
+            break
+        }
+
+        let line_end: usize = manifestLineEnd(text, line_start)
+        state = parseManifestLine(text, line_start, line_end, move state)
+        line_start = manifestNextLineStart(text, line_end)
+    }
+
+    return finishManifestTextParse(move state)
+}
+
+internal procedure parseManifestLine(
+    text: string@View,
+    line_start: usize,
+    line_end: usize,
+    move state: ManifestTextParseValue
+) -> ManifestTextParseValue {
+    let start: usize = manifestTrimStart(text, line_start, line_end)
+    let end: usize = manifestTrimEnd(text, start, line_end)
+    if (start >= end) {
+        return move state
+    }
+    if (manifestTextByteEquals(text, start, MANIFEST_HASH)) {
+        return move state
+    }
+    if (manifestLineEquals(text, start, end, MANIFEST_ASSEMBLY_TABLE_TEXT) ||
+        manifestLineEquals(text, start, end, MANIFEST_ASSEMBLY_SINGLE_TABLE_TEXT)) {
+        return beginManifestAssembly(move state)
+    }
+    if (manifestLineEquals(text, start, end, MANIFEST_TOOLCHAIN_TABLE_TEXT) ||
+        manifestLineEquals(text, start, end, MANIFEST_BUILD_TABLE_TEXT)) {
+        return beginIgnoredManifestTable(move state, false)
+    }
+    if (manifestTextByteEquals(text, start, MANIFEST_OPEN_BRACKET)) {
+        return beginIgnoredManifestTable(move state, true)
+    }
+
+    let field_parse: ManifestKeyValueParseValue =
+        parseManifestKeyValue(text, start, end)
+    return if field_parse is {
+        @Parsed { field } {
+            acceptManifestField(move state, field)
+        }
+        @Failed { diagnostics } {
+            ManifestTextParse@Failed { diagnostics: move diagnostics }
+        }
+    }
+}
+
+internal procedure finishManifestTextParse(
+    move state: ManifestTextParseValue
+) -> ManifestParseValue {
+    return if state is {
+        @ReadingTop { assemblies, has_unknown_top_key } {
+            parsedManifest(manifestWithTopKeyState(
+                reverseManifestAssemblies(
+                    move assemblies,
+                    emptyManifestAssemblies()
+                ),
+                has_unknown_top_key
+            ))
+        }
+        @ReadingIgnoredTable { assemblies, has_unknown_top_key } {
+            parsedManifest(manifestWithTopKeyState(
+                reverseManifestAssemblies(
+                    move assemblies,
+                    emptyManifestAssemblies()
+                ),
+                has_unknown_top_key
+            ))
+        }
+        @ReadingAssembly { assemblies, has_unknown_top_key, builder } {
+            parsedManifest(manifestWithTopKeyState(
+                reverseManifestAssemblies(
+                    manifestAssemblyListEntry(
+                        manifestAssemblyFromBuilder(builder),
+                        move assemblies
+                    ),
+                    emptyManifestAssemblies()
+                ),
+                has_unknown_top_key
+            ))
+        }
+        @Failed { diagnostics } {
+            failedManifestParse(move diagnostics)
+        }
+    }
+}
+
+internal procedure beginManifestAssembly(
+    move state: ManifestTextParseValue
+) -> ManifestTextParseValue {
+    return if state is {
+        @ReadingTop { assemblies, has_unknown_top_key } {
+            ManifestTextParse@ReadingAssembly {
+                assemblies: move assemblies,
+                has_unknown_top_key: has_unknown_top_key,
+                builder: emptyManifestAssemblyBuilder()
+            }
+        }
+        @ReadingIgnoredTable { assemblies, has_unknown_top_key } {
+            ManifestTextParse@ReadingAssembly {
+                assemblies: move assemblies,
+                has_unknown_top_key: has_unknown_top_key,
+                builder: emptyManifestAssemblyBuilder()
+            }
+        }
+        @ReadingAssembly { assemblies, has_unknown_top_key, builder } {
+            ManifestTextParse@ReadingAssembly {
+                assemblies: manifestAssemblyListEntry(
+                    manifestAssemblyFromBuilder(builder),
+                    move assemblies
+                ),
+                has_unknown_top_key: has_unknown_top_key,
+                builder: emptyManifestAssemblyBuilder()
+            }
+        }
+        @Failed {
+            move state
+        }
+    }
+}
+
+internal procedure beginIgnoredManifestTable(
+    move state: ManifestTextParseValue,
+    is_unknown_top_key: bool
+) -> ManifestTextParseValue {
+    return if state is {
+        @ReadingTop { assemblies, has_unknown_top_key } {
+            ManifestTextParse@ReadingIgnoredTable {
+                assemblies: move assemblies,
+                has_unknown_top_key: has_unknown_top_key || is_unknown_top_key
+            }
+        }
+        @ReadingIgnoredTable { assemblies, has_unknown_top_key } {
+            ManifestTextParse@ReadingIgnoredTable {
+                assemblies: move assemblies,
+                has_unknown_top_key: has_unknown_top_key || is_unknown_top_key
+            }
+        }
+        @ReadingAssembly { assemblies, has_unknown_top_key, builder } {
+            ManifestTextParse@ReadingIgnoredTable {
+                assemblies: manifestAssemblyListEntry(
+                    manifestAssemblyFromBuilder(builder),
+                    move assemblies
+                ),
+                has_unknown_top_key: has_unknown_top_key || is_unknown_top_key
+            }
+        }
+        @Failed {
+            move state
+        }
+    }
+}
+
+internal procedure acceptManifestField(
+    move state: ManifestTextParseValue,
+    field: ManifestKeyValue
+) -> ManifestTextParseValue {
+    return if state is {
+        @ReadingAssembly { assemblies, has_unknown_top_key, builder } {
+            acceptManifestAssemblyField(
+                move assemblies,
+                has_unknown_top_key,
+                builder,
+                field
+            )
+        }
+        @ReadingIgnoredTable {
+            move state
+        }
+        @ReadingTop { assemblies, has_unknown_top_key } {
+            ManifestTextParse@ReadingTop {
+                assemblies: move assemblies,
+                has_unknown_top_key: true
+            }
+        }
+        @Failed {
+            move state
+        }
+    }
+}
+
+internal procedure acceptManifestAssemblyField(
+    move assemblies: ManifestAssemblyListValue,
+    has_unknown_top_key: bool,
+    builder: ManifestAssemblyBuilder,
+    field: ManifestKeyValue
+) -> ManifestTextParseValue {
+    if (manifestTextEquals(field.key, MANIFEST_NAME_KEY_TEXT)) {
+        if (builder.has_name) {
+            return failedManifestTextParse()
+        }
+        return ManifestTextParse@ReadingAssembly {
+            assemblies: move assemblies,
+            has_unknown_top_key: has_unknown_top_key,
+            builder: manifestAssemblyBuilderWithName(builder, field.value)
+        }
+    }
+    if (manifestTextEquals(field.key, MANIFEST_KIND_KEY_TEXT)) {
+        if (builder.has_kind) {
+            return failedManifestTextParse()
+        }
+        return ManifestTextParse@ReadingAssembly {
+            assemblies: move assemblies,
+            has_unknown_top_key: has_unknown_top_key,
+            builder: manifestAssemblyBuilderWithKind(builder, field.value)
+        }
+    }
+    if (manifestTextEquals(field.key, MANIFEST_LINK_KIND_KEY_TEXT)) {
+        if (builder.has_link_kind) {
+            return failedManifestTextParse()
+        }
+        return ManifestTextParse@ReadingAssembly {
+            assemblies: move assemblies,
+            has_unknown_top_key: has_unknown_top_key,
+            builder: manifestAssemblyBuilderWithLinkKind(builder, field.value)
+        }
+    }
+    if (manifestTextEquals(field.key, MANIFEST_ROOT_KEY_TEXT)) {
+        if (builder.has_root) {
+            return failedManifestTextParse()
+        }
+        return ManifestTextParse@ReadingAssembly {
+            assemblies: move assemblies,
+            has_unknown_top_key: has_unknown_top_key,
+            builder: manifestAssemblyBuilderWithRoot(builder, field.value)
+        }
+    }
+    if (manifestTextEquals(field.key, MANIFEST_OUT_DIR_KEY_TEXT)) {
+        if (builder.has_out_dir) {
+            return failedManifestTextParse()
+        }
+        return ManifestTextParse@ReadingAssembly {
+            assemblies: move assemblies,
+            has_unknown_top_key: has_unknown_top_key,
+            builder: manifestAssemblyBuilderWithOutDir(builder, field.value)
+        }
+    }
+    if (manifestTextEquals(field.key, MANIFEST_EMIT_IR_KEY_TEXT)) {
+        if (builder.has_emit_ir) {
+            return failedManifestTextParse()
+        }
+        return ManifestTextParse@ReadingAssembly {
+            assemblies: move assemblies,
+            has_unknown_top_key: has_unknown_top_key,
+            builder: manifestAssemblyBuilderWithEmitIR(builder, field.value)
+        }
+    }
+
+    return ManifestTextParse@ReadingAssembly {
+        assemblies: move assemblies,
+        has_unknown_top_key: has_unknown_top_key,
+        builder: manifestAssemblyBuilderWithUnknownKey(builder)
+    }
+}
+
+internal procedure parseManifestKeyValue(
+    text: string@View,
+    start: usize,
+    end: usize
+) -> ManifestKeyValueParseValue {
+    let key_end: usize = manifestKeyEnd(text, start, end)
+    if (key_end == start) {
+        return failedManifestKeyValueParse()
+    }
+
+    let equals_index: usize = manifestTrimStart(text, key_end, end)
+    if (equals_index >= end) {
+        return failedManifestKeyValueParse()
+    }
+    if (!manifestTextByteEquals(text, equals_index, MANIFEST_EQUALS)) {
+        return failedManifestKeyValueParse()
+    }
+
+    let quote_index: usize = manifestTrimStart(text, equals_index + 1, end)
+    if (quote_index >= end) {
+        return failedManifestKeyValueParse()
+    }
+    if (!manifestTextByteEquals(text, quote_index, MANIFEST_QUOTE)) {
+        return failedManifestKeyValueParse()
+    }
+
+    let value_end: usize = manifestStringLiteralEnd(text, quote_index + 1, end)
+    if (value_end >= end) {
+        return failedManifestKeyValueParse()
+    }
+
+    let trailing_start: usize = manifestTrimStart(text, value_end + 1, end)
+    if (trailing_start < end &&
+        !manifestTextByteEquals(text, trailing_start, MANIFEST_HASH)) {
+        return failedManifestKeyValueParse()
+    }
+
+    return ManifestKeyValueParse@Parsed {
+        field: ManifestKeyValue {
+            key: string::slice(text, start, key_end),
+            value: string::slice(text, quote_index + 1, value_end)
+        }
+    }
+}
+
+internal procedure failedManifestKeyValueParse() -> ManifestKeyValueParseValue {
+    return ManifestKeyValueParse@Failed {
+        diagnostics: manifestParseErrorDiagnostics()
+    }
+}
+
+internal procedure failedManifestTextParse() -> ManifestTextParseValue {
+    return ManifestTextParse@Failed {
+        diagnostics: manifestParseErrorDiagnostics()
+    }
+}
+
+internal procedure manifestParseErrorDiagnostics() -> DiagnosticStreamValue {
+    return singleErrorDiagnosticStream(
+        MANIFEST_PARSE_ERROR_CODE,
+        MANIFEST_PARSE_ERROR_MESSAGE
+    )
+}
+
+internal procedure emptyManifestAssemblyBuilder() -> ManifestAssemblyBuilder {
+    return ManifestAssemblyBuilder {
+        name: MANIFEST_EMPTY_TEXT,
+        kind: MANIFEST_EMPTY_TEXT,
+        link_kind: MANIFEST_EMPTY_TEXT,
+        root: MANIFEST_EMPTY_TEXT,
+        out_dir: MANIFEST_EMPTY_TEXT,
+        emit_ir: MANIFEST_EMPTY_TEXT,
+        has_name: false,
+        has_kind: false,
+        has_link_kind: false,
+        has_root: false,
+        has_out_dir: false,
+        has_emit_ir: false,
+        has_unknown_key: false
+    }
+}
+
+internal procedure manifestAssemblyFromBuilder(
+    builder: ManifestAssemblyBuilder
+) -> ManifestAssembly {
+    let parsed_assembly: ManifestAssembly = manifestAssemblyWithOptions(
+        builder.name,
+        builder.kind,
+        builder.link_kind,
+        builder.root,
+        builder.out_dir,
+        builder.emit_ir
+    )
+    if (builder.has_unknown_key) {
+        return manifestAssemblyWithUnknownKey(parsed_assembly)
+    }
+    return parsed_assembly
+}
+
+internal procedure manifestAssemblyBuilderWithUnknownKey(
+    builder: ManifestAssemblyBuilder
+) -> ManifestAssemblyBuilder {
+    return ManifestAssemblyBuilder {
+        name: builder.name,
+        kind: builder.kind,
+        link_kind: builder.link_kind,
+        root: builder.root,
+        out_dir: builder.out_dir,
+        emit_ir: builder.emit_ir,
+        has_name: builder.has_name,
+        has_kind: builder.has_kind,
+        has_link_kind: builder.has_link_kind,
+        has_root: builder.has_root,
+        has_out_dir: builder.has_out_dir,
+        has_emit_ir: builder.has_emit_ir,
+        has_unknown_key: true
+    }
+}
+
+internal procedure manifestAssemblyBuilderWithName(
+    builder: ManifestAssemblyBuilder,
+    value: string@View
+) -> ManifestAssemblyBuilder {
+    return ManifestAssemblyBuilder {
+        name: value,
+        kind: builder.kind,
+        link_kind: builder.link_kind,
+        root: builder.root,
+        out_dir: builder.out_dir,
+        emit_ir: builder.emit_ir,
+        has_name: true,
+        has_kind: builder.has_kind,
+        has_link_kind: builder.has_link_kind,
+        has_root: builder.has_root,
+        has_out_dir: builder.has_out_dir,
+        has_emit_ir: builder.has_emit_ir,
+        has_unknown_key: builder.has_unknown_key
+    }
+}
+
+internal procedure manifestAssemblyBuilderWithKind(
+    builder: ManifestAssemblyBuilder,
+    value: string@View
+) -> ManifestAssemblyBuilder {
+    return ManifestAssemblyBuilder {
+        name: builder.name,
+        kind: value,
+        link_kind: builder.link_kind,
+        root: builder.root,
+        out_dir: builder.out_dir,
+        emit_ir: builder.emit_ir,
+        has_name: builder.has_name,
+        has_kind: true,
+        has_link_kind: builder.has_link_kind,
+        has_root: builder.has_root,
+        has_out_dir: builder.has_out_dir,
+        has_emit_ir: builder.has_emit_ir,
+        has_unknown_key: builder.has_unknown_key
+    }
+}
+
+internal procedure manifestAssemblyBuilderWithLinkKind(
+    builder: ManifestAssemblyBuilder,
+    value: string@View
+) -> ManifestAssemblyBuilder {
+    return ManifestAssemblyBuilder {
+        name: builder.name,
+        kind: builder.kind,
+        link_kind: value,
+        root: builder.root,
+        out_dir: builder.out_dir,
+        emit_ir: builder.emit_ir,
+        has_name: builder.has_name,
+        has_kind: builder.has_kind,
+        has_link_kind: true,
+        has_root: builder.has_root,
+        has_out_dir: builder.has_out_dir,
+        has_emit_ir: builder.has_emit_ir,
+        has_unknown_key: builder.has_unknown_key
+    }
+}
+
+internal procedure manifestAssemblyBuilderWithRoot(
+    builder: ManifestAssemblyBuilder,
+    value: string@View
+) -> ManifestAssemblyBuilder {
+    return ManifestAssemblyBuilder {
+        name: builder.name,
+        kind: builder.kind,
+        link_kind: builder.link_kind,
+        root: value,
+        out_dir: builder.out_dir,
+        emit_ir: builder.emit_ir,
+        has_name: builder.has_name,
+        has_kind: builder.has_kind,
+        has_link_kind: builder.has_link_kind,
+        has_root: true,
+        has_out_dir: builder.has_out_dir,
+        has_emit_ir: builder.has_emit_ir,
+        has_unknown_key: builder.has_unknown_key
+    }
+}
+
+internal procedure manifestAssemblyBuilderWithOutDir(
+    builder: ManifestAssemblyBuilder,
+    value: string@View
+) -> ManifestAssemblyBuilder {
+    return ManifestAssemblyBuilder {
+        name: builder.name,
+        kind: builder.kind,
+        link_kind: builder.link_kind,
+        root: builder.root,
+        out_dir: value,
+        emit_ir: builder.emit_ir,
+        has_name: builder.has_name,
+        has_kind: builder.has_kind,
+        has_link_kind: builder.has_link_kind,
+        has_root: builder.has_root,
+        has_out_dir: true,
+        has_emit_ir: builder.has_emit_ir,
+        has_unknown_key: builder.has_unknown_key
+    }
+}
+
+internal procedure manifestAssemblyBuilderWithEmitIR(
+    builder: ManifestAssemblyBuilder,
+    value: string@View
+) -> ManifestAssemblyBuilder {
+    return ManifestAssemblyBuilder {
+        name: builder.name,
+        kind: builder.kind,
+        link_kind: builder.link_kind,
+        root: builder.root,
+        out_dir: builder.out_dir,
+        emit_ir: value,
+        has_name: builder.has_name,
+        has_kind: builder.has_kind,
+        has_link_kind: builder.has_link_kind,
+        has_root: builder.has_root,
+        has_out_dir: builder.has_out_dir,
+        has_emit_ir: true,
+        has_unknown_key: builder.has_unknown_key
+    }
+}
+
+internal procedure reverseManifestAssemblies(
+    move source: ManifestAssemblyListValue,
+    move target: ManifestAssemblyListValue
+) -> ManifestAssemblyListValue {
+    return if source is {
+        @Empty {
+            move target
+        }
+        @Entry { assembly: manifest_assembly, tail } {
+            reverseManifestAssemblies(
+                move tail,
+                manifestAssemblyListEntry(manifest_assembly, move target)
+            )
+        }
+    }
+}
+
+internal procedure manifestLineEnd(text: string@View, start: usize) -> usize {
+    let length: usize = string::length(text)
+    var index: usize = start
+    loop {
+        if (index >= length) {
+            break
+        }
+        if (manifestTextByteEquals(text, index, MANIFEST_LF)) {
+            break
+        }
+        index = index + 1
+    }
+    return index
+}
+
+internal procedure manifestNextLineStart(text: string@View, line_end: usize) -> usize {
+    if (line_end < string::length(text)) {
+        if (manifestTextByteEquals(text, line_end, MANIFEST_LF)) {
+            return line_end + 1
+        }
+    }
+    return string::length(text)
+}
+
+internal procedure manifestTrimStart(
+    text: string@View,
+    start: usize,
+    end: usize
+) -> usize {
+    var index: usize = start
+    loop {
+        if (index >= end) {
+            break
+        }
+        if (!manifestTextByteIsHorizontalSpace(text, index)) {
+            break
+        }
+        index = index + 1
+    }
+    return index
+}
+
+internal procedure manifestTrimEnd(
+    text: string@View,
+    start: usize,
+    end: usize
+) -> usize {
+    var index: usize = end
+    loop {
+        if (index <= start) {
+            break
+        }
+        if (!manifestTextByteIsHorizontalSpaceOrCR(text, index - 1)) {
+            break
+        }
+        index = index - 1
+    }
+    return index
+}
+
+internal procedure manifestKeyEnd(text: string@View, start: usize, end: usize) -> usize {
+    var index: usize = start
+    loop {
+        if (index >= end) {
+            break
+        }
+        if (manifestTextByteEndsKey(text, index)) {
+            break
+        }
+        index = index + 1
+    }
+    return index
+}
+
+internal procedure manifestStringLiteralEnd(
+    text: string@View,
+    start: usize,
+    end: usize
+) -> usize {
+    var index: usize = start
+    loop {
+        if (index >= end) {
+            break
+        }
+        if (manifestTextByteEquals(text, index, MANIFEST_QUOTE)) {
+            break
+        }
+        index = index + 1
+    }
+    return index
+}
+
+internal procedure manifestTextByteEquals(
+    text: string@View,
+    index: usize,
+    expected: u8
+) -> bool {
+    if (index >= string::length(text)) {
+        return false
+    }
+    return manifestTextByte(text, index) == expected
+}
+
+internal procedure manifestTextByteIsHorizontalSpace(
+    text: string@View,
+    index: usize
+) -> bool {
+    if (index >= string::length(text)) {
+        return false
+    }
+    return manifestByteIsHorizontalSpace(manifestTextByte(text, index))
+}
+
+internal procedure manifestTextByteIsHorizontalSpaceOrCR(
+    text: string@View,
+    index: usize
+) -> bool {
+    if (index >= string::length(text)) {
+        return false
+    }
+    let byte: u8 = manifestTextByte(text, index)
+    return manifestByteIsHorizontalSpace(byte) || byte == MANIFEST_CR
+}
+
+internal procedure manifestTextByteEndsKey(text: string@View, index: usize) -> bool {
+    if (index >= string::length(text)) {
+        return true
+    }
+    let byte: u8 = manifestTextByte(text, index)
+    return manifestByteIsHorizontalSpace(byte) || byte == MANIFEST_EQUALS
+}
+
+internal procedure manifestLineEquals(
+    text: string@View,
+    start: usize,
+    end: usize,
+    expected: string@View
+) -> bool {
+    if (end - start != string::length(expected)) {
+        return false
+    }
+    return manifestTextSegmentEquals(text, start, expected)
+}
+
+internal procedure manifestTextEquals(left: string@View, right: string@View) -> bool {
+    if (string::length(left) != string::length(right)) {
+        return false
+    }
+    return manifestTextSegmentEquals(left, 0, right)
+}
+
+internal procedure manifestTextSegmentEquals(
+    text: string@View,
+    start: usize,
+    expected: string@View
+) -> bool {
+    let expected_length: usize = string::length(expected)
+    if (start + expected_length > string::length(text)) {
+        return false
+    }
+
+    var index: usize = 0
+    loop {
+        if (index >= expected_length) {
+            break
+        }
+        if (manifestTextByte(text, start + index) !=
+            manifestTextByte(expected, index)) {
+            return false
+        }
+        index = index + 1
+    }
+    return true
+}
+
+internal procedure manifestByteIsHorizontalSpace(byte: u8) -> bool {
+    return byte == MANIFEST_SPACE || byte == MANIFEST_TAB
+}
+
+internal procedure manifestTextByte(text: string@View, index: usize) -> u8
+|: index < string::length(text)
+{
+    let view: bytes@View = bytes::view_string(text)
+    let data: const [u8] = bytes::as_slice(view)
+    return data[index]
+}

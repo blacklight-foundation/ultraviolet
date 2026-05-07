@@ -1,0 +1,166 @@
+// Test responsibility: Compiler/Tests/Driver/PipelineTests.uv
+//
+// This file owns source-native tests for def.TranslationPhases@L527 as exercised
+// by the driver pipeline request and submission value surface.
+
+using UltravioletCompiler::Driver::{
+    PipelineOutputModeValue,
+    PipelineRequest,
+    PipelineSubmissionValue,
+    PipelineTargetProfileValue,
+    pipelineBuildCommand,
+    pipelineNormalOutputMode,
+    pipelineRequest,
+    pipelineX8664Win64TargetProfile,
+    submitPipelineRequest
+}
+
+[[test(
+    name: "pipeline request preserves invocation paths",
+    covers("def.TranslationPhases@L527")
+)]]
+internal procedure pipelineRequestPreservesInvocationPaths() -> bool
+|: => @result
+{
+    let request: PipelineRequest = testBuildPipelineRequest()
+    return testTextEquals(request.current_directory, "C:/Project") &&
+        testTextEquals(request.executable_path, "C:/Tools/uv.exe")
+}
+
+[[test(
+    name: "pipeline request preserves build command state",
+    covers("def.TranslationPhases@L527")
+)]]
+internal procedure pipelineRequestPreservesBuildCommandState() -> bool
+|: => @result
+{
+    let request: PipelineRequest = testBuildPipelineRequest()
+    return if request.command is {
+        @Build {
+            true
+        }
+        @Check {
+            false
+        }
+        @Clean {
+            false
+        }
+        @Init {
+            false
+        }
+        @Run {
+            false
+        }
+    }
+}
+
+[[test(
+    name: "pipeline request preserves target profile and output mode",
+    covers("def.TranslationPhases@L527")
+)]]
+internal procedure pipelineRequestPreservesTargetProfileAndOutputMode() -> bool
+|: => @result
+{
+    let request: PipelineRequest = testBuildPipelineRequest()
+    return pipelineTargetProfileIsWin64(request.target_profile) &&
+        pipelineOutputModeIsNormal(request.output_mode)
+}
+
+[[test(
+    name: "pipeline submission returns typed unavailable state",
+    covers("def.TranslationPhases@L527")
+)]]
+internal procedure pipelineSubmissionReturnsTypedUnavailableState() -> bool
+|: => @result
+{
+    let request: PipelineRequest = testBuildPipelineRequest()
+    let submission: PipelineSubmissionValue = submitPipelineRequest(request)
+    return if submission is {
+        @Accepted {
+            false
+        }
+        @Unavailable { reason } {
+            if reason is {
+                @ProjectPipelinePending {
+                    true
+                }
+            }
+        }
+    }
+}
+
+internal procedure testBuildPipelineRequest() -> PipelineRequest {
+    return pipelineRequest(
+        "C:/Project",
+        "C:/Tools/uv.exe",
+        pipelineX8664Win64TargetProfile(),
+        pipelineNormalOutputMode(),
+        pipelineBuildCommand()
+    )
+}
+
+internal procedure pipelineTargetProfileIsWin64(
+    profile: PipelineTargetProfileValue
+) -> bool {
+    return if profile is {
+        @Default {
+            false
+        }
+        @X8664SysV {
+            false
+        }
+        @X8664Win64 {
+            true
+        }
+        @Aarch64Aapcs64 {
+            false
+        }
+        @Unsupported {
+            false
+        }
+    }
+}
+
+internal procedure pipelineOutputModeIsNormal(mode: PipelineOutputModeValue) -> bool {
+    return if mode is {
+        @Normal {
+            true
+        }
+        @Quiet {
+            false
+        }
+        @MachineReadable {
+            false
+        }
+    }
+}
+
+internal procedure testTextEquals(left: string@View, right: string@View) -> bool {
+    let left_length: usize = string::length(left)
+    let right_length: usize = string::length(right)
+    if (left_length != right_length) {
+        return false
+    }
+
+    var index: usize = 0
+    loop {
+        if (index >= left_length) {
+            break
+        }
+
+        if (testTextByte(left, index) != testTextByte(right, index)) {
+            return false
+        }
+
+        index = index + 1
+    }
+    return true
+}
+
+internal procedure testTextByte(text: string@View, index: usize) -> u8
+|: index < string::length(text)
+{
+    let view: bytes@View = bytes::view_string(text)
+    let data: const [u8] = bytes::as_slice(view)
+    return data[index]
+}

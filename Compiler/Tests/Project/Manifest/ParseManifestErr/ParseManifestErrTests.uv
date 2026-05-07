@@ -1,0 +1,40 @@
+// Test responsibility:
+// Compiler/Tests/Project/Manifest/ParseManifestErr/ParseManifestErrTests.uv
+//
+// This file owns source-native tests for Parse-Manifest-Err@L2219.
+
+using UltravioletCompiler::Project::{
+    ManifestParseValue,
+    parseManifestText
+}
+
+[[test(
+    name: "manifest parser reports malformed key value syntax",
+    covers("Parse-Manifest-Err@L2219")
+)]]
+internal procedure manifestParserReportsMalformedKeyValueSyntax() -> bool
+|: => @result
+{
+    return manifestParseFails(parseManifestText("[[assembly]]\nname \"UltravioletCompiler\"\nkind = \"library\"\nroot = \"Compiler\"\n"))
+}
+
+[[test(
+    name: "manifest parser reports duplicate table fields",
+    covers("Parse-Manifest-Err@L2219")
+)]]
+internal procedure manifestParserReportsDuplicateTableFields() -> bool
+|: => @result
+{
+    return manifestParseFails(parseManifestText("[[assembly]]\nname = \"UltravioletCompiler\"\nname = \"CompilerAgain\"\nkind = \"library\"\nroot = \"Compiler\"\n"))
+}
+
+internal procedure manifestParseFails(parse: ManifestParseValue) -> bool {
+    return if parse is {
+        @Parsed {
+            false
+        }
+        @Failed {
+            true
+        }
+    }
+}

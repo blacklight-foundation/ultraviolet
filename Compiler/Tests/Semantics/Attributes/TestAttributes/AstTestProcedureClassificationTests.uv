@@ -1,0 +1,79 @@
+using UltravioletCompiler::Project::{ projectTextEquals }
+// Test responsibility: Compiler/Tests/Semantics/Attributes/TestAttributes/AstTestProcedureClassificationTests.uv
+//
+// This file owns source-native tests for ast.TestProcedureClassification@L28374:
+//
+// A source-native test is an ordinary `ProcedureDecl` whose `AttrByName(proc,
+// test)` set is non-empty.
+
+using UltravioletCompiler::Semantics::Attributes::{
+    CoverageReferenceListValue,
+    TestAttributeArgumentCheckValue,
+    TestAttributeSemanticCheckValue,
+    attributeIsSourceNativeTest,
+    checkTestAttributeArguments,
+    classifyTestProcedure,
+    coverageReferenceListCount,
+    invalidTestAttributeTarget,
+    ordinaryProcedureTestAttributeTarget
+}
+using UltravioletCompiler::Source::Ast::{
+    attribute,
+    attributeName,
+    emptyAttributeArguments
+}
+using UltravioletCompiler::Source::Parser::{
+    AttributeParseResultValue,
+    parseTestAttributeWithoutArguments,
+    singleTestNameArgument,
+    testAttributeArguments2,
+    testCoverageAttributeArgument,
+    testNameAttributeArgument
+}
+
+[[test(
+    name: "source-native test is classified from ordinary test attribute",
+    covers("ast.TestProcedureClassification@L28374")
+)]]
+internal procedure sourceNativeTestIsClassifiedFromOrdinaryTestAttribute() -> bool
+|: => @result
+{
+    let result: AttributeParseResultValue = parseTestAttributeWithoutArguments()
+    return if result is {
+        @Parsed { attribute: test_attribute } {
+            let check: TestAttributeSemanticCheckValue =
+                classifyTestProcedure(
+                    test_attribute,
+                    ordinaryProcedureTestAttributeTarget(),
+                    "UltravioletCompiler::Tests::Example::passes",
+                    false
+                )
+            return if check is {
+                @Accepted { metadata } {
+                    projectTextEquals(
+                        metadata.stable_identity,
+                        "UltravioletCompiler::Tests::Example::passes"
+                    )
+                }
+                @Rejected {
+                    false
+                }
+            }
+        }
+        @Rejected {
+            false
+        }
+    }
+}
+
+[[test(
+    name: "non-test attribute is not classified as source-native test",
+    covers("ast.TestProcedureClassification@L28374")
+)]]
+internal procedure nonTestAttributeIsNotClassifiedAsSourceNativeTest() -> bool
+|: => @result
+{
+    return !attributeIsSourceNativeTest(
+        attribute(attributeName("deprecated"), emptyAttributeArguments())
+    )
+}

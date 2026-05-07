@@ -1,0 +1,46 @@
+// Test responsibility:
+// Compiler/Tests/Project/ManifestValidation/WFTopKeysErr/WFTopKeysErrTests.uv
+//
+// This file owns source-native tests for WF-TopKeys-Err@L2607.
+
+using UltravioletCompiler::Project::{
+    ManifestValidationValue,
+    emptyManifestAssemblies,
+    manifestAssembly,
+    manifestAssemblyListEntry,
+    manifestWithTopKeyState,
+    validateManifest
+}
+
+[[test(
+    name: "manifest validation rejects unknown top keys",
+    covers("WF-TopKeys-Err@L2607")
+)]]
+internal procedure manifestValidationRejectsUnknownTopKeys() -> bool
+|: => @result
+{
+    let validation: ManifestValidationValue = validateManifest(
+        manifestWithTopKeyState(
+            manifestAssemblyListEntry(
+                manifestAssembly("App", "executable", "", "Tools/Uv"),
+                emptyManifestAssemblies()
+            ),
+            true
+        )
+    )
+
+    return manifestValidationIsInvalid(validation)
+}
+
+internal procedure manifestValidationIsInvalid(
+    validation: ManifestValidationValue
+) -> bool {
+    return if validation is {
+        @Valid {
+            false
+        }
+        @Invalid {
+            true
+        }
+    }
+}

@@ -1,0 +1,30 @@
+// Test responsibility:
+// Compiler/Tests/Project/ManifestValidation/WFAssemblyLinkKind/WFAssemblyLinkKindTests.uv
+//
+// This file owns source-native tests for WF-Assembly-LinkKind@L2926.
+
+using UltravioletCompiler::Project::{
+    manifestAssembly,
+    manifestAssemblyLinkKindIsValid
+}
+
+[[test(
+    name: "manifest validation accepts valid link_kind usage",
+    covers("WF-Assembly-LinkKind@L2926")
+)]]
+internal procedure manifestValidationAcceptsValidLinkKindUsage() -> bool
+|: => @result
+{
+    return manifestAssemblyLinkKindIsValid(
+        manifestAssembly("Lib", "library", "", "Runtime")
+    ) &&
+        manifestAssemblyLinkKindIsValid(
+            manifestAssembly("Lib", "library", "static", "Runtime")
+        ) &&
+        manifestAssemblyLinkKindIsValid(
+            manifestAssembly("Lib", "library", "shared", "Runtime")
+        ) &&
+        manifestAssemblyLinkKindIsValid(
+            manifestAssembly("App", "executable", "", "Tools/Uv")
+        )
+}

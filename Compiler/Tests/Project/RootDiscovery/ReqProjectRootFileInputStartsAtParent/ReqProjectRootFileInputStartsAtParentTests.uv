@@ -1,0 +1,45 @@
+// Test responsibility:
+// Compiler/Tests/Project/RootDiscovery/ReqProjectRootFileInputStartsAtParent/ReqProjectRootFileInputStartsAtParentTests.uv
+//
+// This file owns source-native tests for req.ProjectRootFileInputStartsAtParent@L2296:
+//
+// If that resolved path denotes an existing non-directory, the upward search
+// MUST begin from its parent directory;
+
+using UltravioletCompiler::Project::{
+    directoryPath,
+    existingNonDirectoryInputPath,
+    projectRootSearchStart,
+    projectTextEquals,
+    resolvedInputPath
+}
+
+[[test(
+    name: "existing file input begins project-root search at parent directory",
+    covers("req.ProjectRootFileInputStartsAtParent@L2296")
+)]]
+internal procedure existingFileInputBeginsSearchAtParentDirectory() -> bool
+|: => @result
+{
+    let start = projectRootSearchStart(
+        resolvedInputPath("C:/Dev/Ultraviolet/Compiler/Core/Path/Path.uv"),
+        existingNonDirectoryInputPath()
+    )
+
+    return projectTextEquals(start.text, "C:/Dev/Ultraviolet/Compiler/Core/Path")
+}
+
+[[test(
+    name: "drive-root file input preserves drive root parent",
+    covers("req.ProjectRootFileInputStartsAtParent@L2296")
+)]]
+internal procedure driveRootFileInputPreservesDriveRootParent() -> bool
+|: => @result
+{
+    let start = projectRootSearchStart(
+        resolvedInputPath("C:/Ultraviolet.toml"),
+        existingNonDirectoryInputPath()
+    )
+
+    return projectTextEquals(start.text, "C:/")
+}

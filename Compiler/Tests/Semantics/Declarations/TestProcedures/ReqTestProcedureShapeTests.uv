@@ -1,0 +1,155 @@
+using UltravioletCompiler::Semantics::Declarations::{
+    TestProcedureDeclaration,
+    TestProcedureShapeCheckValue,
+    checkTestProcedureShape,
+    emptyProcedureContract,
+    invalidTestProcedureParameter,
+    noTestProcedureParameters,
+    procedureContractWithResultPostcondition,
+    testContextProcedureParameter,
+    testProcedureDeclaration,
+    validTestProcedureDeclaration
+}
+
+// Test responsibility: Compiler/Tests/Semantics/Declarations/TestProcedures/ReqTestProcedureShapeTests.uv
+//
+// This file owns source-native tests for req.TestProcedureShape@L28455:
+//
+// A `[[test]]` procedure has a body, is non-generic, has explicit visibility,
+// has an explicit return type, contains a postcondition, and has either no
+// parameters or exactly one `TestContext` parameter.
+
+[[test(
+    name: "valid test procedure shape is accepted",
+    covers("req.TestProcedureShape@L28455")
+)]]
+internal procedure validTestProcedureShapeIsAccepted() -> bool
+|: => @result
+{
+    return testProcedureShapeAccepted(
+        validTestProcedureDeclaration(noTestProcedureParameters())
+    )
+}
+
+[[test(
+    name: "test procedure shape requires body",
+    covers("req.TestProcedureShape@L28455")
+)]]
+internal procedure testProcedureShapeRequiresBody() -> bool
+|: => @result
+{
+    return testProcedureShapeRejected(
+        testProcedureDeclaration(
+            false,
+            false,
+            true,
+            true,
+            procedureContractWithResultPostcondition(),
+            noTestProcedureParameters()
+        )
+    )
+}
+
+[[test(
+    name: "test procedure shape requires non-generic procedure",
+    covers("req.TestProcedureShape@L28455")
+)]]
+internal procedure testProcedureShapeRequiresNonGenericProcedure() -> bool
+|: => @result
+{
+    return testProcedureShapeRejected(
+        testProcedureDeclaration(
+            true,
+            true,
+            true,
+            true,
+            procedureContractWithResultPostcondition(),
+            noTestProcedureParameters()
+        )
+    )
+}
+
+[[test(
+    name: "test procedure shape requires explicit visibility",
+    covers("req.TestProcedureShape@L28455")
+)]]
+internal procedure testProcedureShapeRequiresExplicitVisibility() -> bool
+|: => @result
+{
+    return testProcedureShapeRejected(
+        testProcedureDeclaration(
+            true,
+            false,
+            false,
+            true,
+            procedureContractWithResultPostcondition(),
+            noTestProcedureParameters()
+        )
+    )
+}
+
+[[test(
+    name: "test procedure shape requires explicit return type",
+    covers("req.TestProcedureShape@L28455")
+)]]
+internal procedure testProcedureShapeRequiresExplicitReturnType() -> bool
+|: => @result
+{
+    return testProcedureShapeRejected(
+        testProcedureDeclaration(
+            true,
+            false,
+            true,
+            false,
+            procedureContractWithResultPostcondition(),
+            noTestProcedureParameters()
+        )
+    )
+}
+
+[[test(
+    name: "test procedure shape requires postcondition",
+    covers("req.TestProcedureShape@L28455")
+)]]
+internal procedure testProcedureShapeRequiresPostcondition() -> bool
+|: => @result
+{
+    return testProcedureShapeRejected(
+        testProcedureDeclaration(
+            true,
+            false,
+            true,
+            true,
+            emptyProcedureContract(),
+            noTestProcedureParameters()
+        )
+    )
+}
+
+internal procedure testProcedureShapeAccepted(
+    declaration: TestProcedureDeclaration
+) -> bool {
+    let check: TestProcedureShapeCheckValue = checkTestProcedureShape(declaration)
+    return if check is {
+        @Valid {
+            true
+        }
+        @Invalid {
+            false
+        }
+    }
+}
+
+internal procedure testProcedureShapeRejected(
+    declaration: TestProcedureDeclaration
+) -> bool {
+    let check: TestProcedureShapeCheckValue = checkTestProcedureShape(declaration)
+    return if check is {
+        @Valid {
+            false
+        }
+        @Invalid {
+            true
+        }
+    }
+}

@@ -1,0 +1,210 @@
+// Test responsibility: Compiler/Tests/Driver/CLI/CommandOptionTests.uv
+//
+// This file exercises CLI option value parsing and conversion helpers used by
+// command-surface tests. Audit coverage for translation-phase obligations lives
+// in Compiler/Tests/Driver/PipelineTests.uv.
+
+[[test(
+    name: "target profile parses win64 target"
+)]]
+internal procedure targetProfileParsesWin64Target() -> bool
+|: => @result
+{
+    let profile: TargetProfileInputValue = targetProfileFromText("x86_64-win64")
+    return if profile is {
+        @Absent {
+            false
+        }
+        @X8664SysV {
+            false
+        }
+        @X8664Win64 {
+            true
+        }
+        @Aarch64Aapcs64 {
+            false
+        }
+        @Unsupported {
+            false
+        }
+    }
+}
+
+[[test(
+    name: "target profile preserves unsupported text"
+)]]
+internal procedure targetProfilePreservesUnsupportedText() -> bool
+|: => @result
+{
+    let profile: TargetProfileInputValue = targetProfileFromText("unsupported-target")
+    return if profile is {
+        @Absent {
+            false
+        }
+        @X8664SysV {
+            false
+        }
+        @X8664Win64 {
+            false
+        }
+        @Aarch64Aapcs64 {
+            false
+        }
+        @Unsupported { text } {
+            cliTextEquals(text, "unsupported-target")
+        }
+    }
+}
+
+[[test(
+    name: "quiet output mode is a distinct mode"
+)]]
+internal procedure quietOutputModeIsDistinctMode() -> bool
+|: => @result
+{
+    let output_mode: OutputModeValue = quietOutputMode()
+    return if output_mode is {
+        @Normal {
+            false
+        }
+        @Quiet {
+            true
+        }
+        @MachineReadable {
+            false
+        }
+    }
+}
+
+[[test(
+    name: "machine readable output mode is a distinct mode"
+)]]
+internal procedure machineReadableOutputModeIsDistinctMode() -> bool
+|: => @result
+{
+    let output_mode: OutputModeValue = machineReadableOutputMode()
+    return if output_mode is {
+        @Normal {
+            false
+        }
+        @Quiet {
+            false
+        }
+        @MachineReadable {
+            true
+        }
+    }
+}
+
+[[test(
+    name: "cli target profile input converts to pipeline target profile"
+)]]
+internal procedure cliTargetProfileInputConvertsToPipelineTargetProfile() -> bool
+|: => @result
+{
+    let profile: PipelineTargetProfileValue =
+        pipelineTargetProfileFromInput(targetProfileFromText("x86_64-win64"))
+    return pipelineTargetProfileIsWin64(profile)
+}
+
+[[test(
+    name: "cli unsupported target profile converts to pipeline target profile"
+)]]
+internal procedure cliUnsupportedTargetProfileInputConvertsToPipelineTargetProfile() -> bool
+|: => @result
+{
+    let profile: PipelineTargetProfileValue =
+        pipelineTargetProfileFromInput(targetProfileFromText("unsupported-target"))
+    return pipelineTargetProfileIsUnsupported(profile, "unsupported-target")
+}
+
+[[test(
+    name: "cli output mode input converts to pipeline output mode"
+)]]
+internal procedure cliOutputModeInputConvertsToPipelineOutputMode() -> bool
+|: => @result
+{
+    let mode: PipelineOutputModeValue =
+        pipelineOutputModeFromInput(machineReadableOutputMode())
+    return pipelineOutputModeIsMachineReadable(mode)
+}
+
+[[test(
+    name: "build request helper normalizes cli arguments"
+)]]
+internal procedure buildRequestHelperNormalizesCliArguments() -> bool
+|: => @result
+{
+    let arguments: CommandArguments = commandArguments(
+        "build",
+        noPositionals(),
+        targetProfileFromText("x86_64-win64"),
+        machineReadableOutputMode()
+    )
+    let request: PipelineRequest =
+        buildPipelineRequest("C:/Project", "C:/Tools/uv.exe", arguments)
+
+    return pipelineTargetProfileIsWin64(request.target_profile) &&
+        pipelineOutputModeIsMachineReadable(request.output_mode)
+}
+
+internal procedure pipelineTargetProfileIsWin64(
+    profile: PipelineTargetProfileValue
+) -> bool {
+    return if profile is {
+        @Default {
+            false
+        }
+        @X8664SysV {
+            false
+        }
+        @X8664Win64 {
+            true
+        }
+        @Aarch64Aapcs64 {
+            false
+        }
+        @Unsupported {
+            false
+        }
+    }
+}
+
+internal procedure pipelineTargetProfileIsUnsupported(
+    profile: PipelineTargetProfileValue,
+    expected_text: string@View
+) -> bool {
+    return if profile is {
+        @Default {
+            false
+        }
+        @X8664SysV {
+            false
+        }
+        @X8664Win64 {
+            false
+        }
+        @Aarch64Aapcs64 {
+            false
+        }
+        @Unsupported { text } {
+            cliTextEquals(text, expected_text)
+        }
+    }
+}
+
+internal procedure pipelineOutputModeIsMachineReadable(
+    mode: PipelineOutputModeValue
+) -> bool {
+    return if mode is {
+        @Normal {
+            false
+        }
+        @Quiet {
+            false
+        }
+        @MachineReadable {
+            true
+        }
+    }
+}

@@ -1,0 +1,18 @@
+// Test responsibility:
+// Compiler/Tests/Project/ManifestValidation/WFAssemblyNameErr/WFAssemblyNameErrTests.uv
+//
+// This file owns source-native tests for WF-Assembly-Name-Err@L2376.
+
+using UltravioletCompiler::Project::{ manifestAssemblyNameIsValid }
+
+[[test(
+    name: "manifest validation rejects malformed assembly names",
+    covers("WF-Assembly-Name-Err@L2376")
+)]]
+internal procedure manifestValidationRejectsMalformedAssemblyNames() -> bool
+|: => @result
+{
+    return !manifestAssemblyNameIsValid("1Compiler") &&
+        !manifestAssemblyNameIsValid("internal") &&
+        !manifestAssemblyNameIsValid("Compiler-Tools")
+}

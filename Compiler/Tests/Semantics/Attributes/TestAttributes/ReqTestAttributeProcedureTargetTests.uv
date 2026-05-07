@@ -1,0 +1,69 @@
+// Test responsibility: Compiler/Tests/Semantics/Attributes/TestAttributes/ReqTestAttributeProcedureTargetTests.uv
+//
+// This file owns source-native tests for req.TestAttributeProcedureTarget@L28421:
+//
+// `[[test]]` is valid only on ordinary source procedures.
+
+[[test(
+    name: "test attribute accepts ordinary procedure target",
+    covers("req.TestAttributeProcedureTarget@L28421")
+)]]
+internal procedure testAttributeAcceptsOrdinaryProcedureTarget() -> bool
+|: => @result
+{
+    let parsed: AttributeParseResultValue = parseTestAttributeWithoutArguments()
+    return if parsed is {
+        @Parsed { attribute: parsed_attribute } {
+            let check: TestAttributeSemanticCheckValue =
+                classifyTestProcedure(
+                    parsed_attribute,
+                    ordinaryProcedureTestAttributeTarget(),
+                    "UltravioletCompiler::Tests::Example::ordinaryTarget",
+                    false
+                )
+            return if check is {
+                @Accepted {
+                    true
+                }
+                @Rejected {
+                    false
+                }
+            }
+        }
+        @Rejected {
+            false
+        }
+    }
+}
+
+[[test(
+    name: "test attribute rejects non-procedure target",
+    covers("req.TestAttributeProcedureTarget@L28421")
+)]]
+internal procedure testAttributeRejectsNonProcedureTarget() -> bool
+|: => @result
+{
+    let parsed: AttributeParseResultValue = parseTestAttributeWithoutArguments()
+    return if parsed is {
+        @Parsed { attribute: parsed_attribute } {
+            let check: TestAttributeSemanticCheckValue =
+                classifyTestProcedure(
+                    parsed_attribute,
+                    invalidTestAttributeTarget(),
+                    "UltravioletCompiler::Tests::Example::invalidTarget",
+                    false
+                )
+            return if check is {
+                @Accepted {
+                    false
+                }
+                @Rejected {
+                    true
+                }
+            }
+        }
+        @Rejected {
+            false
+        }
+    }
+}

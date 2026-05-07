@@ -1,0 +1,73 @@
+// Obligation responsibility: Compiler/Diagnostics/Sources.uv
+//
+// This file owns source-location data used by diagnostics. It is a value model
+// shared by parser, semantic-analysis, driver, and test reporting owners.
+
+public record SourceLocation {
+    public file_path: string@View
+    public line: usize
+    public column: usize
+}
+
+public record SourceSpan {
+    public file_path: string@View
+    public start_line: usize
+    public start_column: usize
+    public end_line: usize
+    public end_column: usize
+}
+
+public modal DiagnosticSource {
+    @Unknown {
+        public procedure isKnown(~) -> bool {
+            return false
+        }
+    }
+
+    @Known {
+        public span: SourceSpan
+
+        public procedure isKnown(~) -> bool {
+            return true
+        }
+    }
+}
+
+public type DiagnosticSourceValue =
+    DiagnosticSource@Unknown | DiagnosticSource@Known
+
+public procedure unknownDiagnosticSource() -> DiagnosticSourceValue {
+    return DiagnosticSource@Unknown {}
+}
+
+public procedure sourceLocation(
+    file_path: string@View,
+    line: usize,
+    column: usize
+) -> SourceLocation {
+    return SourceLocation {
+        file_path: file_path,
+        line: line,
+        column: column
+    }
+}
+
+public procedure sourceSpan(
+    file_path: string@View,
+    start_line: usize,
+    start_column: usize,
+    end_line: usize,
+    end_column: usize
+) -> SourceSpan {
+    return SourceSpan {
+        file_path: file_path,
+        start_line: start_line,
+        start_column: start_column,
+        end_line: end_line,
+        end_column: end_column
+    }
+}
+
+public procedure knownDiagnosticSource(span: SourceSpan) -> DiagnosticSourceValue {
+    return DiagnosticSource@Known { span: span }
+}

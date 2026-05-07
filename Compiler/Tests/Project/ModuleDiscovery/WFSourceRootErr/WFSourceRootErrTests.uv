@@ -1,0 +1,44 @@
+// Test responsibility:
+// Compiler/Tests/Project/ModuleDiscovery/WFSourceRootErr/WFSourceRootErrTests.uv
+//
+// This file owns source-native tests for WF-Source-Root-Err@L4288.
+
+using UltravioletCompiler::Diagnostics::{ diagnosticStreamHasErrors }
+using UltravioletCompiler::Project::{
+    ModuleDiscoveryValue,
+    assemblyName,
+    directoryPath,
+    emptyModuleDirectoryScans,
+    discoverModulesFromSourceRootScan,
+    sourceRootScan
+}
+
+[[test(
+    name: "non-directory source root emits source-root diagnostic",
+    covers("WF-Source-Root-Err@L4288")
+)]]
+internal procedure nonDirectorySourceRootEmitsSourceRootDiagnostic() -> bool
+|: => @result
+{
+    let discovery: ModuleDiscoveryValue =
+        discoverModulesFromSourceRootScan(
+            assemblyName("UltravioletCompiler"),
+            sourceRootScan(
+                directoryPath("Compiler"),
+                false,
+                emptyModuleDirectoryScans()
+            )
+        )
+
+    return if discovery is {
+        @Scanning {
+            false
+        }
+        @Complete {
+            false
+        }
+        @Failed { diagnostics } {
+            diagnosticStreamHasErrors(diagnostics)
+        }
+    }
+}

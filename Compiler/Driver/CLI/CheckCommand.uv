@@ -1,0 +1,32 @@
+// Obligation responsibility: Compiler/Driver/CLI/CheckCommand.uv
+//
+// This file owns the `uv check` command entry procedure. It receives the parsed
+// command arguments from the command modal and routes semantic checking to the
+// canonical project pipeline boundary.
+
+public procedure executeCheckCommand(
+    host: DriverHost,
+    arguments: CommandArguments
+) -> CommandResultValue {
+    let request: PipelineRequest = checkPipelineRequest(
+        host~>currentDirectory(),
+        host~>executablePath(),
+        arguments
+    )
+    let submission: PipelineSubmissionValue = submitPipelineRequest(request)
+    return commandResultFromPipelineSubmission(submission)
+}
+
+public procedure checkPipelineRequest(
+    current_directory: string@View,
+    executable_path: string@View,
+    arguments: CommandArguments
+) -> PipelineRequest {
+    return pipelineRequest(
+        current_directory,
+        executable_path,
+        pipelineTargetProfileFromInput(arguments.target_profile),
+        pipelineOutputModeFromInput(arguments.output_mode),
+        pipelineCheckCommand()
+    )
+}

@@ -1,0 +1,27 @@
+// Test responsibility:
+// Compiler/Tests/Project/ModuleDiscovery/WFSourceRoot/WFSourceRootTests.uv
+//
+// This file owns source-native tests for WF-Source-Root@L4270.
+
+using UltravioletCompiler::Project::{
+    directoryPath,
+    emptyModuleDirectoryScans,
+    sourceRootScan,
+    sourceRootScanIsWellFormed
+}
+
+[[test(
+    name: "directory source root is well formed",
+    covers("WF-Source-Root@L4270")
+)]]
+internal procedure directorySourceRootIsWellFormed() -> bool
+|: => @result
+{
+    let scan = sourceRootScan(
+        directoryPath("Compiler"),
+        true,
+        emptyModuleDirectoryScans()
+    )
+
+    return sourceRootScanIsWellFormed(scan)
+}

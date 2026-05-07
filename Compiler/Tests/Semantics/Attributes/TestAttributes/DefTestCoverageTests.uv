@@ -1,0 +1,68 @@
+// Test responsibility: Compiler/Tests/Semantics/Attributes/TestAttributes/DefTestCoverageTests.uv
+//
+// This file owns source-native tests for def.TestCoverage@L28404:
+//
+// TestCoverage(proc) is the source-ordered list of string arguments from
+// `covers(r_i)` entries.
+
+[[test(
+    name: "test coverage preserves source-order coverage references",
+    covers("def.TestCoverage@L28404")
+)]]
+internal procedure testCoveragePreservesSourceOrderCoverageReferences() -> bool
+|: => @result
+{
+    let check: TestAttributeArgumentCheckValue =
+        checkTestAttributeArguments(
+            testAttributeArguments2(
+                testCoverageAttributeArgument("def.TestCoverage@L28404"),
+                testCoverageAttributeArgument("def.TestAttributeArgsOk@L28435")
+            ),
+            "UltravioletCompiler::Tests::Example::coverage"
+        )
+    return if check is {
+        @Accepted { coverage_references } {
+            coverageReferenceListCount(coverage_references) == 2 &&
+                coverageReferencesMatchSourceOrder(coverage_references)
+        }
+        @Rejected {
+            false
+        }
+    }
+}
+
+internal procedure coverageReferencesMatchSourceOrder(
+    references: CoverageReferenceListValue
+) -> bool {
+    return if references is {
+        @Empty {
+            false
+        }
+        @Entry { reference, tail } {
+            if (!projectTextEquals(reference.text, "def.TestCoverage@L28404")) {
+                return false
+            }
+            return if tail is {
+                @Empty {
+                    false
+                }
+                @Entry { reference: second_reference, tail: final_tail } {
+                    if (!projectTextEquals(
+                        second_reference.text,
+                        "def.TestAttributeArgsOk@L28435"
+                    )) {
+                        return false
+                    }
+                    return if final_tail is {
+                        @Empty {
+                            true
+                        }
+                        @Entry {
+                            false
+                        }
+                    }
+                }
+            }
+        }
+    }
+}

@@ -1,0 +1,61 @@
+// Test responsibility:
+// Compiler/Tests/Project/ModuleDiscovery/ModulesErr/ModulesErrTests.uv
+//
+// This file owns source-native tests for Modules-Err@L4402.
+
+using UltravioletCompiler::Diagnostics::{ diagnosticStreamHasErrors }
+using UltravioletCompiler::Project::{
+    ModuleDiscoveryValue,
+    assemblyName,
+    directoryPath,
+    discoverModulesFromSourceRootScan,
+    emptyModuleDirectoryScans,
+    emptySourceFilePaths,
+    moduleDirectoryScan,
+    moduleDirectoryScanListEntry,
+    modulePath,
+    sourceFilePath,
+    sourceFilePathListEntry,
+    sourceRootScan
+}
+
+[[test(
+    name: "module discovery returns failure when compilation unit fails",
+    covers("Modules-Err@L4402")
+)]]
+internal procedure moduleDiscoveryReturnsFailureWhenCompilationUnitFails() -> bool
+|: => @result
+{
+    let discovery: ModuleDiscoveryValue =
+        discoverModulesFromSourceRootScan(
+            assemblyName("UltravioletCompiler"),
+            sourceRootScan(
+                directoryPath("Compiler"),
+                true,
+                moduleDirectoryScanListEntry(
+                    moduleDirectoryScan(
+                        directoryPath("Compiler/Core"),
+                        modulePath("UltravioletCompiler::Core"),
+                        sourceFilePathListEntry(
+                            sourceFilePath("Outside/Path.uv"),
+                            emptySourceFilePaths()
+                        ),
+                        false
+                    ),
+                    emptyModuleDirectoryScans()
+                )
+            )
+        )
+
+    return if discovery is {
+        @Scanning {
+            false
+        }
+        @Complete {
+            false
+        }
+        @Failed { diagnostics } {
+            diagnosticStreamHasErrors(diagnostics)
+        }
+    }
+}

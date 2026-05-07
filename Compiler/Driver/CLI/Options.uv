@@ -1,12 +1,13 @@
-// Support responsibility: Compiler/Driver/CLI/Options.uv
+// Obligation responsibility: Compiler/Driver/CLI/Options.uv
 //
-// This file owns source command arguments, positional argument structure, target
-// profile selection input, output-mode input, and the `uv test [target]`
-// target text shape used by lowering.TestHarnessGeneration@L28498.
+// This file owns command argument records and command parsing from the
+// normalized `System` invocation argument surface. Positional argument state,
+// target-profile input, output-mode input, and CLI text comparison are owned by
+// their focused files in this module.
 //
 // Relevant source-native test command rule:
 //
-// - lowering.TestHarnessGeneration@L28498
+// - lowering.TestHarnessGeneration@L28516
 //   TestArg is absent or one positional argument. The test command target model
 //   resolves that argument as a host path, assembly name, or module path.
 
@@ -17,81 +18,6 @@ internal let COMMAND_INIT: string@View = "init"
 internal let COMMAND_RUN: string@View = "run"
 internal let COMMAND_TEST: string@View = "test"
 internal let COMMAND_VERSION: string@View = "version"
-
-internal let TARGET_X86_64_SYSV: string@View = "x86_64-sysv"
-internal let TARGET_X86_64_WIN64: string@View = "x86_64-win64"
-internal let TARGET_AARCH64_AAPCS64: string@View = "aarch64-aapcs64"
-
-public modal PositionalArguments {
-    @None {
-        public procedure count(~) -> usize {
-            return 0
-        }
-    }
-
-    @One {
-        public value: string@View
-
-        public procedure count(~) -> usize {
-            return 1
-        }
-    }
-
-    @TooMany {
-        public first: string@View
-        public unexpected: string@View
-
-        public procedure count(~) -> usize {
-            return 2
-        }
-    }
-}
-
-public type PositionalArgumentsValue =
-    PositionalArguments@None |
-    PositionalArguments@One |
-    PositionalArguments@TooMany
-
-public modal TargetProfileInput {
-    @Absent {
-    }
-
-    @X8664SysV {
-    }
-
-    @X8664Win64 {
-    }
-
-    @Aarch64Aapcs64 {
-    }
-
-    @Unsupported {
-        public text: string@View
-    }
-}
-
-public type TargetProfileInputValue =
-    TargetProfileInput@Absent |
-    TargetProfileInput@X8664SysV |
-    TargetProfileInput@X8664Win64 |
-    TargetProfileInput@Aarch64Aapcs64 |
-    TargetProfileInput@Unsupported
-
-public modal OutputMode {
-    @Normal {
-    }
-
-    @Quiet {
-    }
-
-    @MachineReadable {
-    }
-}
-
-public type OutputModeValue =
-    OutputMode@Normal |
-    OutputMode@Quiet |
-    OutputMode@MachineReadable
 
 public record CommandArguments {
     public command_name: string@View
@@ -112,66 +38,145 @@ public record CommandArguments {
     }
 }
 
-public procedure noPositionals() -> PositionalArgumentsValue {
-    return PositionalArguments@None {}
-}
+internal record CommandArgumentAccumulator {
+    internal command_name: string@View
+    internal positionals: PositionalArgumentsValue
+    internal target_profile: TargetProfileInputValue
+    internal output_mode: OutputModeValue
 
-public procedure onePositional(value: string@View) -> PositionalArgumentsValue {
-    return PositionalArguments@One { value: value }
-}
-
-public procedure tooManyPositionals(
-    first: string@View,
-    unexpected: string@View
-) -> PositionalArgumentsValue {
-    return PositionalArguments@TooMany {
-        first: first,
-        unexpected: unexpected
-    }
-}
-
-public procedure positionalArgumentsCount(positionals: PositionalArgumentsValue) -> usize {
-    return if positionals is {
-        @None {
-            positionals~>count()
-        }
-        @One {
-            positionals~>count()
-        }
-        @TooMany {
-            positionals~>count()
+    internal procedure withCommandName(
+        ~,
+        command_name: string@View
+    ) -> CommandArgumentAccumulator {
+        return CommandArgumentAccumulator {
+            command_name: command_name,
+            positionals: self.positionals,
+            target_profile: self.target_profile,
+            output_mode: self.output_mode
         }
     }
-}
 
-public procedure absentTargetProfile() -> TargetProfileInputValue {
-    return TargetProfileInput@Absent {}
-}
-
-public procedure targetProfileFromText(text: string@View) -> TargetProfileInputValue {
-    if (cliTextEquals(text, TARGET_X86_64_SYSV)) {
-        return TargetProfileInput@X8664SysV {}
+    internal procedure withPositional(
+        ~,
+        value: string@View
+    ) -> CommandArgumentAccumulator {
+        return CommandArgumentAccumulator {
+            command_name: self.command_name,
+            positionals: appendPositionalArgument(self.positionals, value),
+            target_profile: self.target_profile,
+            output_mode: self.output_mode
+        }
     }
-    if (cliTextEquals(text, TARGET_X86_64_WIN64)) {
-        return TargetProfileInput@X8664Win64 {}
+
+    internal procedure withTargetProfile(
+        ~,
+        target_profile: TargetProfileInputValue
+    ) -> CommandArgumentAccumulator {
+        return CommandArgumentAccumulator {
+            command_name: self.command_name,
+            positionals: self.positionals,
+            target_profile: target_profile,
+            output_mode: self.output_mode
+        }
     }
-    if (cliTextEquals(text, TARGET_AARCH64_AAPCS64)) {
-        return TargetProfileInput@Aarch64Aapcs64 {}
+
+    internal procedure withOutputMode(
+        ~,
+        output_mode: OutputModeValue
+    ) -> CommandArgumentAccumulator {
+        return CommandArgumentAccumulator {
+            command_name: self.command_name,
+            positionals: self.positionals,
+            target_profile: self.target_profile,
+            output_mode: output_mode
+        }
     }
-    return TargetProfileInput@Unsupported { text: text }
+
+    internal procedure finish(~) -> CommandArguments {
+        return commandArguments(
+            self.command_name,
+            self.positionals,
+            self.target_profile,
+            self.output_mode
+        )
+    }
 }
 
-public procedure normalOutputMode() -> OutputModeValue {
-    return OutputMode@Normal {}
+internal modal CommandArgumentParser {
+    @ReadingCommand {
+        internal accumulator: CommandArgumentAccumulator
+
+        internal procedure acceptArgument(
+            ~,
+            text: string@View
+        ) -> CommandArgumentParserValue {
+            return CommandArgumentParser@ReadingPositionals {
+                accumulator: self.accumulator~>withCommandName(text)
+            }
+        }
+
+        internal procedure withTargetProfile(
+            ~,
+            target_profile: TargetProfileInputValue
+        ) -> CommandArgumentParserValue {
+            return CommandArgumentParser@ReadingCommand {
+                accumulator: self.accumulator~>withTargetProfile(target_profile)
+            }
+        }
+
+        internal procedure withOutputMode(
+            ~,
+            output_mode: OutputModeValue
+        ) -> CommandArgumentParserValue {
+            return CommandArgumentParser@ReadingCommand {
+                accumulator: self.accumulator~>withOutputMode(output_mode)
+            }
+        }
+
+        internal procedure finish(~) -> CommandArguments {
+            return self.accumulator~>finish()
+        }
+    }
+
+    @ReadingPositionals {
+        internal accumulator: CommandArgumentAccumulator
+
+        internal procedure acceptArgument(
+            ~,
+            text: string@View
+        ) -> CommandArgumentParserValue {
+            return CommandArgumentParser@ReadingPositionals {
+                accumulator: self.accumulator~>withPositional(text)
+            }
+        }
+
+        internal procedure withTargetProfile(
+            ~,
+            target_profile: TargetProfileInputValue
+        ) -> CommandArgumentParserValue {
+            return CommandArgumentParser@ReadingPositionals {
+                accumulator: self.accumulator~>withTargetProfile(target_profile)
+            }
+        }
+
+        internal procedure withOutputMode(
+            ~,
+            output_mode: OutputModeValue
+        ) -> CommandArgumentParserValue {
+            return CommandArgumentParser@ReadingPositionals {
+                accumulator: self.accumulator~>withOutputMode(output_mode)
+            }
+        }
+
+        internal procedure finish(~) -> CommandArguments {
+            return self.accumulator~>finish()
+        }
+    }
 }
 
-public procedure quietOutputMode() -> OutputModeValue {
-    return OutputMode@Quiet {}
-}
-
-public procedure machineReadableOutputMode() -> OutputModeValue {
-    return OutputMode@MachineReadable {}
-}
+internal type CommandArgumentParserValue =
+    CommandArgumentParser@ReadingCommand |
+    CommandArgumentParser@ReadingPositionals
 
 public procedure commandArguments(
     command_name: string@View,
@@ -185,6 +190,120 @@ public procedure commandArguments(
         target_profile: target_profile,
         output_mode: output_mode
     }
+}
+
+internal procedure emptyCommandArgumentAccumulator() -> CommandArgumentAccumulator {
+    return CommandArgumentAccumulator {
+        command_name: CLI_EMPTY_TEXT,
+        positionals: noPositionals(),
+        target_profile: absentTargetProfile(),
+        output_mode: normalOutputMode()
+    }
+}
+
+internal procedure commandArgumentParser() -> CommandArgumentParserValue {
+    return CommandArgumentParser@ReadingCommand {
+        accumulator: emptyCommandArgumentAccumulator()
+    }
+}
+
+internal procedure commandArgumentParserAcceptArgument(
+    parser: CommandArgumentParserValue,
+    text: string@View
+) -> CommandArgumentParserValue {
+    return if parser is {
+        @ReadingCommand {
+            parser~>acceptArgument(text)
+        }
+        @ReadingPositionals {
+            parser~>acceptArgument(text)
+        }
+    }
+}
+
+internal procedure commandArgumentParserWithTargetProfile(
+    parser: CommandArgumentParserValue,
+    target_profile: TargetProfileInputValue
+) -> CommandArgumentParserValue {
+    return if parser is {
+        @ReadingCommand {
+            parser~>withTargetProfile(target_profile)
+        }
+        @ReadingPositionals {
+            parser~>withTargetProfile(target_profile)
+        }
+    }
+}
+
+internal procedure commandArgumentParserWithOutputMode(
+    parser: CommandArgumentParserValue,
+    output_mode: OutputModeValue
+) -> CommandArgumentParserValue {
+    return if parser is {
+        @ReadingCommand {
+            parser~>withOutputMode(output_mode)
+        }
+        @ReadingPositionals {
+            parser~>withOutputMode(output_mode)
+        }
+    }
+}
+
+internal procedure commandArgumentParserFinish(
+    parser: CommandArgumentParserValue
+) -> CommandArguments {
+    return if parser is {
+        @ReadingCommand {
+            parser~>finish()
+        }
+        @ReadingPositionals {
+            parser~>finish()
+        }
+    }
+}
+
+public procedure entrypointCommandArguments(system: System) -> CommandArguments {
+    let argument_count: usize = system~>argument_count()
+    var parser: CommandArgumentParserValue = commandArgumentParser()
+    var index: usize = 0
+
+    loop {
+        if (index >= argument_count) {
+            break
+        }
+
+        let text: string@View = system~>argument(index)
+        if (cliTextEquals(text, OPTION_TARGET_PROFILE)) {
+            let value_index: usize = index + 1
+            if (value_index < argument_count) {
+                parser = commandArgumentParserWithTargetProfile(
+                    parser,
+                    targetProfileFromText(system~>argument(value_index))
+                )
+                index = value_index + 1
+            } else {
+                parser = commandArgumentParserWithTargetProfile(
+                    parser,
+                    targetProfileFromText(CLI_EMPTY_TEXT)
+                )
+                index = argument_count
+            }
+        } else if (cliTextEquals(text, OPTION_QUIET)) {
+            parser = commandArgumentParserWithOutputMode(parser, quietOutputMode())
+            index = index + 1
+        } else if (cliTextEquals(text, OPTION_MACHINE_READABLE)) {
+            parser = commandArgumentParserWithOutputMode(
+                parser,
+                machineReadableOutputMode()
+            )
+            index = index + 1
+        } else {
+            parser = commandArgumentParserAcceptArgument(parser, text)
+            index = index + 1
+        }
+    }
+
+    return commandArgumentParserFinish(parser)
 }
 
 public procedure buildCommandArguments() -> CommandArguments {
@@ -230,34 +349,4 @@ public procedure versionCommandArguments() -> CommandArguments {
         absentTargetProfile(),
         normalOutputMode()
     )
-}
-
-public procedure cliTextEquals(left: string@View, right: string@View) -> bool {
-    let left_length: usize = string::length(left)
-    let right_length: usize = string::length(right)
-    if (left_length != right_length) {
-        return false
-    }
-
-    var index: usize = 0
-    loop {
-        if (index >= left_length) {
-            break
-        }
-
-        if (cliTextByte(left, index) != cliTextByte(right, index)) {
-            return false
-        }
-
-        index = index + 1
-    }
-    return true
-}
-
-internal procedure cliTextByte(text: string@View, index: usize) -> u8
-|: index < string::length(text)
-{
-    let view: bytes@View = bytes::view_string(text)
-    let data: const [u8] = bytes::as_slice(view)
-    return data[index]
 }

@@ -1,0 +1,33 @@
+#!/bin/sh
+set -eu
+
+THRESHOLD_BYTES=52428800
+tracked_files=$(mktemp)
+trap 'rm -f "$tracked_files"' EXIT HUP INT TERM
+
+git diff --cached --name-only --diff-filter=ACMR | while IFS= read -r path; do
+    if [ ! -f "$path" ]; then
+        continue
+    fi
+
+    size=$(wc -c < "$path" | tr -d '[:space:]')
+    if [ "$size" -lt "$THRESHOLD_BYTES" ]; then
+        continue
+    fi
+
+    filter_attr=$(git check-attr filter -- "$path")
+    case "$filter_attr" in
+        *": filter: lfs")
+            continue
+            ;;
+    esac
+
+    git lfs track --filename "$path" >/dev/null
+    git add .gitattributes "$path"
+    printf '%s\n' "$path" >> "$tracked_files"
+done
+
+if [ -s "$tracked_files" ]; then
+    printf '%s\n' "Moved staged files at or above 50 MiB to Git LFS:"
+    cat "$tracked_files"
+fi

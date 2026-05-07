@@ -1,0 +1,45 @@
+// Test responsibility:
+// Compiler/Tests/Project/ManifestValidation/WFAssemblyRequiredTypes/WFAssemblyRequiredTypesTests.uv
+//
+// This file owns source-native tests for WF-Assembly-Required-Types@L2784.
+
+using UltravioletCompiler::Project::{
+    ManifestValidationValue,
+    emptyManifestAssemblies,
+    manifest,
+    manifestAssembly,
+    manifestAssemblyListEntry,
+    validateManifest
+}
+
+[[test(
+    name: "manifest validation accepts present string required fields",
+    covers("WF-Assembly-Required-Types@L2784")
+)]]
+internal procedure manifestValidationAcceptsRequiredStringFields() -> bool
+|: => @result
+{
+    let validation: ManifestValidationValue = validateManifest(
+        manifest(
+            manifestAssemblyListEntry(
+                manifestAssembly("App", "executable", "", "Tools/Uv"),
+                emptyManifestAssemblies()
+            )
+        )
+    )
+
+    return manifestValidationIsValid(validation)
+}
+
+internal procedure manifestValidationIsValid(
+    validation: ManifestValidationValue
+) -> bool {
+    return if validation is {
+        @Valid {
+            true
+        }
+        @Invalid {
+            false
+        }
+    }
+}

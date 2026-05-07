@@ -1,0 +1,9 @@
+// Obligation responsibility: Compiler/Diagnostics/Rendering.uv
+//
+// This file owns diagnostic text selected for command-surface reporting. Rich
+// source rendering is supplied by the source-location owner once line tables are
+// migrated.
+
+public procedure diagnosticMessage(diagnostic: Diagnostic) -> string@View {
+    return diagnostic.message
+}

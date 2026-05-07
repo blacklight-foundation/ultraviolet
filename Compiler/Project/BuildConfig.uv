@@ -1,0 +1,49 @@
+// Obligation responsibility: Compiler/Project/BuildConfig.uv
+//
+// This file owns build manifest configuration:
+//
+// - def.BuildConfiguration@L3078
+// - WF-Build@L3093 and WF-Build-Err@L3111
+// - def.BuildConfigDefaults@L3129
+
+public record BuildConfig {
+    public emit_ir: string@View
+    public output_directory: string@View
+}
+
+public modal BuildValidation {
+    @Valid {
+        public config: BuildConfig
+    }
+
+    @Invalid {
+        public diagnostics: DiagnosticStreamValue
+    }
+}
+
+public type BuildValidationValue =
+    BuildValidation@Valid | BuildValidation@Invalid
+
+public procedure buildConfig(
+    emit_ir: string@View,
+    output_directory: string@View
+) -> BuildConfig {
+    return BuildConfig {
+        emit_ir: emit_ir,
+        output_directory: output_directory
+    }
+}
+
+public procedure defaultBuildConfig() -> BuildConfig {
+    return buildConfig("none", "Build")
+}
+
+public procedure validBuildConfig(config: BuildConfig) -> BuildValidationValue {
+    return BuildValidation@Valid { config: config }
+}
+
+public procedure invalidBuildConfig(
+    move diagnostics: DiagnosticStreamValue
+) -> BuildValidationValue {
+    return BuildValidation@Invalid { diagnostics: move diagnostics }
+}

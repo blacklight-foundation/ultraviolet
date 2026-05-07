@@ -1,0 +1,140 @@
+cmake_minimum_required(VERSION 4.0.1)
+project(cursive LANGUAGES C CXX)
+
+set(CURSIVE_BUILD_DIR "${CMAKE_BINARY_DIR}")
+file(MAKE_DIRECTORY "${CURSIVE_BUILD_DIR}")
+get_filename_component(CURSIVE_SHARED_BUILD_DIR "${CURSIVE_BUILD_DIR}/.." REALPATH)
+file(MAKE_DIRECTORY "${CURSIVE_SHARED_BUILD_DIR}")
+
+set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "${CURSIVE_BUILD_DIR}")
+set(CMAKE_LIBRARY_OUTPUT_DIRECTORY "${CURSIVE_BUILD_DIR}")
+set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY "${CURSIVE_BUILD_DIR}")
+
+if(CMAKE_CONFIGURATION_TYPES)
+  foreach(cfg ${CMAKE_CONFIGURATION_TYPES})
+    string(TOUPPER "${cfg}" cfg_upper)
+    set(CMAKE_RUNTIME_OUTPUT_DIRECTORY_${cfg_upper} "${CURSIVE_BUILD_DIR}/${cfg}")
+    set(CMAKE_LIBRARY_OUTPUT_DIRECTORY_${cfg_upper} "${CURSIVE_BUILD_DIR}/${cfg}")
+    set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY_${cfg_upper} "${CURSIVE_BUILD_DIR}/${cfg}")
+  endforeach()
+endif()
+
+if(NOT WIN32)
+  get_filename_component(CURSIVE_REPO_ROOT "${CMAKE_SOURCE_DIR}/.." REALPATH)
+  set(CURSIVE_EXTERN_DIR "${CURSIVE_REPO_ROOT}/extern")
+  set(CURSIVE_LINUX_ICU_ROOT "${CURSIVE_EXTERN_DIR}/icu/linux")
+  set(CURSIVE_LINUX_ICU_SHARED_INSTALL_DIR "${CURSIVE_LINUX_ICU_ROOT}")
+  set(CURSIVE_LINUX_ICU_SHARED_INCLUDE_DIR
+      "${CURSIVE_LINUX_ICU_ROOT}/include")
+  set(CURSIVE_LINUX_ICU_LIB_DIR
+      "${CURSIVE_LINUX_ICU_ROOT}/lib")
+  set(CURSIVE_LINUX_ICUUC_SHARED_REAL
+      "${CURSIVE_LINUX_ICU_LIB_DIR}/libicuuc.so.72")
+  set(CURSIVE_LINUX_ICUI18N_SHARED_REAL
+      "${CURSIVE_LINUX_ICU_LIB_DIR}/libicui18n.so.72")
+  set(CURSIVE_LINUX_ICUDATA_SHARED_REAL
+      "${CURSIVE_LINUX_ICU_LIB_DIR}/libicudata.so.72")
+  set(CURSIVE_LINUX_ICUDATA_DATA_REAL
+      "${CURSIVE_LINUX_ICU_LIB_DIR}/icudt72l.dat")
+  set(CURSIVE_LINUX_ICUUC_SHARED_SONAME "libicuuc.so.72")
+  set(CURSIVE_LINUX_ICUI18N_SHARED_SONAME "libicui18n.so.72")
+  set(CURSIVE_LINUX_ICUDATA_SHARED_SONAME "libicudata.so.72")
+  set(CURSIVE_LINUX_ICUDATA_DATA_NAME "icudt72l.dat")
+  set(CURSIVE_LINUX_ICU_STAGE_DIR "${CMAKE_BINARY_DIR}/lib")
+  set(CURSIVE_LINUX_ICUUC_SHARED_STAGE
+      "${CURSIVE_LINUX_ICU_STAGE_DIR}/${CURSIVE_LINUX_ICUUC_SHARED_SONAME}")
+  set(CURSIVE_LINUX_ICUI18N_SHARED_STAGE
+      "${CURSIVE_LINUX_ICU_STAGE_DIR}/${CURSIVE_LINUX_ICUI18N_SHARED_SONAME}")
+  set(CURSIVE_LINUX_ICUDATA_SHARED_STAGE
+      "${CURSIVE_LINUX_ICU_STAGE_DIR}/${CURSIVE_LINUX_ICUDATA_SHARED_SONAME}")
+  set(CURSIVE_LINUX_ICUDATA_DATA_STAGE
+      "${CURSIVE_LINUX_ICU_STAGE_DIR}/${CURSIVE_LINUX_ICUDATA_DATA_NAME}")
+
+  foreach(required_icu_path IN ITEMS
+      "${CURSIVE_LINUX_ICU_SHARED_INCLUDE_DIR}"
+      "${CURSIVE_LINUX_ICUI18N_SHARED_REAL}"
+      "${CURSIVE_LINUX_ICUUC_SHARED_REAL}"
+      "${CURSIVE_LINUX_ICUDATA_SHARED_REAL}"
+      "${CURSIVE_LINUX_ICUDATA_DATA_REAL}")
+    if(NOT EXISTS "${required_icu_path}")
+      message(FATAL_ERROR
+        "Required prebuilt Linux ICU payload is missing: ${required_icu_path}\n"
+        "Run scripts/bootstrap_linux_icu.sh to refresh extern/icu/linux.")
+    endif()
+  endforeach()
+
+  if(NOT EXISTS "${CURSIVE_LINUX_ICU_SHARED_INCLUDE_DIR}")
+    message(FATAL_ERROR
+      "Required Linux ICU include directory not found: ${CURSIVE_LINUX_ICU_SHARED_INCLUDE_DIR}")
+  endif()
+
+  add_custom_command(
+    OUTPUT
+      "${CURSIVE_LINUX_ICUI18N_SHARED_STAGE}"
+      "${CURSIVE_LINUX_ICUUC_SHARED_STAGE}"
+      "${CURSIVE_LINUX_ICUDATA_SHARED_STAGE}"
+      "${CURSIVE_LINUX_ICUDATA_DATA_STAGE}"
+    COMMAND "${CMAKE_COMMAND}" -E make_directory "${CURSIVE_LINUX_ICU_STAGE_DIR}"
+    COMMAND "${CMAKE_COMMAND}" -E rm -f
+            "${CURSIVE_LINUX_ICU_STAGE_DIR}/libicudata.a"
+            "${CURSIVE_LINUX_ICU_STAGE_DIR}/libicui18n.a"
+            "${CURSIVE_LINUX_ICU_STAGE_DIR}/libicutest.a"
+            "${CURSIVE_LINUX_ICU_STAGE_DIR}/libicutu.a"
+            "${CURSIVE_LINUX_ICU_STAGE_DIR}/libicuuc.a"
+    COMMAND "${CMAKE_COMMAND}" -E rm -rf
+            "${CURSIVE_LINUX_ICU_STAGE_DIR}/icu"
+            "${CURSIVE_LINUX_ICU_STAGE_DIR}/pkgconfig"
+    COMMAND "${CMAKE_COMMAND}" -E copy_if_different
+            "${CURSIVE_LINUX_ICUI18N_SHARED_REAL}"
+            "${CURSIVE_LINUX_ICUI18N_SHARED_STAGE}"
+    COMMAND "${CMAKE_COMMAND}" -E copy_if_different
+            "${CURSIVE_LINUX_ICUUC_SHARED_REAL}"
+            "${CURSIVE_LINUX_ICUUC_SHARED_STAGE}"
+    COMMAND "${CMAKE_COMMAND}" -E copy_if_different
+            "${CURSIVE_LINUX_ICUDATA_SHARED_REAL}"
+            "${CURSIVE_LINUX_ICUDATA_SHARED_STAGE}"
+    COMMAND "${CMAKE_COMMAND}" -E copy_if_different
+            "${CURSIVE_LINUX_ICUDATA_DATA_REAL}"
+            "${CURSIVE_LINUX_ICUDATA_DATA_STAGE}"
+    DEPENDS
+      "${CURSIVE_LINUX_ICUI18N_SHARED_REAL}"
+      "${CURSIVE_LINUX_ICUUC_SHARED_REAL}"
+      "${CURSIVE_LINUX_ICUDATA_SHARED_REAL}"
+      "${CURSIVE_LINUX_ICUDATA_DATA_REAL}"
+    VERBATIM
+  )
+  add_custom_target(cursive_linux_icu_sidecars
+    DEPENDS
+      "${CURSIVE_LINUX_ICUI18N_SHARED_STAGE}"
+      "${CURSIVE_LINUX_ICUUC_SHARED_STAGE}"
+      "${CURSIVE_LINUX_ICUDATA_SHARED_STAGE}"
+      "${CURSIVE_LINUX_ICUDATA_DATA_STAGE}"
+  )
+
+  add_library(cursive_linux_icuuc SHARED IMPORTED GLOBAL)
+  set_target_properties(cursive_linux_icuuc PROPERTIES
+    IMPORTED_LOCATION "${CURSIVE_LINUX_ICUUC_SHARED_STAGE}"
+    IMPORTED_SONAME "${CURSIVE_LINUX_ICUUC_SHARED_SONAME}"
+    INTERFACE_INCLUDE_DIRECTORIES "${CURSIVE_LINUX_ICU_SHARED_INCLUDE_DIR}"
+  )
+  add_dependencies(cursive_linux_icuuc cursive_linux_icu_sidecars)
+
+  add_library(cursive_linux_icui18n SHARED IMPORTED GLOBAL)
+  set_target_properties(cursive_linux_icui18n PROPERTIES
+    IMPORTED_LOCATION "${CURSIVE_LINUX_ICUI18N_SHARED_STAGE}"
+    IMPORTED_SONAME "${CURSIVE_LINUX_ICUI18N_SHARED_SONAME}"
+    INTERFACE_INCLUDE_DIRECTORIES "${CURSIVE_LINUX_ICU_SHARED_INCLUDE_DIR}"
+  )
+  add_dependencies(cursive_linux_icui18n cursive_linux_icu_sidecars)
+
+  add_library(cursive_linux_icudata SHARED IMPORTED GLOBAL)
+  set_target_properties(cursive_linux_icudata PROPERTIES
+    IMPORTED_LOCATION "${CURSIVE_LINUX_ICUDATA_SHARED_STAGE}"
+    IMPORTED_SONAME "${CURSIVE_LINUX_ICUDATA_SHARED_SONAME}"
+    INTERFACE_INCLUDE_DIRECTORIES "${CURSIVE_LINUX_ICU_SHARED_INCLUDE_DIR}"
+  )
+  add_dependencies(cursive_linux_icudata cursive_linux_icu_sidecars)
+endif()
+
+add_subdirectory(src)
+add_subdirectory(runtime)

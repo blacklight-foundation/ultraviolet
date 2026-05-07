@@ -1,0 +1,82 @@
+// Test responsibility: Compiler/Tests/Semantics/Attributes/TestAttributes/DefTestAttributeArgsOkTests.uv
+//
+// This file owns source-native tests for def.TestAttributeArgsOk@L28435:
+//
+// Test arguments are limited to `name: string_literal` and
+// `covers(string_literal)`, at most one `name` is present, every coverage
+// argument is non-empty, and every coverage reference names one ledger row.
+
+[[test(
+    name: "test attribute accepts name and coverage arguments",
+    covers("def.TestAttributeArgsOk@L28435")
+)]]
+internal procedure testAttributeAcceptsNameAndCoverageArguments() -> bool
+|: => @result
+{
+    let check: TestAttributeArgumentCheckValue =
+        checkTestAttributeArguments(
+            testAttributeArguments2(
+                testNameAttributeArgument("argument shape"),
+                testCoverageAttributeArgument("def.TestAttributeArgsOk@L28435")
+            ),
+            "UltravioletCompiler::Tests::Example::args"
+        )
+    return if check is {
+        @Accepted { coverage_references } {
+            coverageReferenceListCount(coverage_references) == 1
+        }
+        @Rejected {
+            false
+        }
+    }
+}
+
+[[test(
+    name: "test attribute rejects duplicate name arguments",
+    covers("def.TestAttributeArgsOk@L28435")
+)]]
+internal procedure testAttributeRejectsDuplicateNameArguments() -> bool
+|: => @result
+{
+    let check: TestAttributeArgumentCheckValue =
+        checkTestAttributeArguments(
+            testAttributeArguments2(
+                testNameAttributeArgument("one"),
+                testNameAttributeArgument("two")
+            ),
+            "UltravioletCompiler::Tests::Example::duplicateName"
+        )
+    return if check is {
+        @Accepted {
+            false
+        }
+        @Rejected {
+            true
+        }
+    }
+}
+
+[[test(
+    name: "test attribute rejects malformed coverage reference",
+    covers("def.TestAttributeArgsOk@L28435")
+)]]
+internal procedure testAttributeRejectsMalformedCoverageReference() -> bool
+|: => @result
+{
+    let check: TestAttributeArgumentCheckValue =
+        checkTestAttributeArguments(
+            testAttributeArguments2(
+                testNameAttributeArgument("bad coverage"),
+                testCoverageAttributeArgument("def.TestAttributeArgsOk")
+            ),
+            "UltravioletCompiler::Tests::Example::badCoverage"
+        )
+    return if check is {
+        @Accepted {
+            false
+        }
+        @Rejected {
+            true
+        }
+    }
+}

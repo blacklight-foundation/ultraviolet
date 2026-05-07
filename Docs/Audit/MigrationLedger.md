@@ -76,19 +76,19 @@ Every accepted migration entry must use this format:
   `SPECIFICATION.md`, `Docs/Internal/UltravioletSpecification.obligations.md`,
   `Docs/Audit/UltravioletObligations.csv`, `CompilerRebuildPlan.md`, and
   `Compiler/Tests/Parser/AttributeTests.uv`.
-- Specification basis: `def.SpecAttributeRegistry@L26939`,
-  `def.SpecAttributeTargets@L26962`,
-  `def.AttributeStaticSemantics.Helpers2@L27066`,
-  `grammar.TestAttribute@L28318`,
-  `parse.TestAttributeByOrdinaryAttributeParser@L28338`,
-  `ast.TestProcedureClassification@L28356`, `def.TestName@L28371`,
-  `def.TestCoverage@L28386`, `req.TestAttributeProcedureTarget@L28403`,
-  `def.TestAttributeArgsOk@L28417`, `req.TestProcedureShape@L28437`,
-  `req.TestContextAuthority@L28459`,
-  `conformance.TestAttributeDynamicSemantics@L28477`,
-  `lowering.TestHarnessGeneration@L28498`,
-  `def.TestDiscoveryOrder@L28557`, and
-  `diagnostics.TestAttributes@L28575`.
+- Specification basis: `def.SpecAttributeRegistry@L26957`,
+  `def.SpecAttributeTargets@L26980`,
+  `def.AttributeStaticSemantics.Helpers2@L27084`,
+  `grammar.TestAttribute@L28336`,
+  `parse.TestAttributeByOrdinaryAttributeParser@L28356`,
+  `ast.TestProcedureClassification@L28374`, `def.TestName@L28389`,
+  `def.TestCoverage@L28404`, `req.TestAttributeProcedureTarget@L28421`,
+  `def.TestAttributeArgsOk@L28435`, `req.TestProcedureShape@L28455`,
+  `req.TestContextAuthority@L28477`,
+  `conformance.TestAttributeDynamicSemantics@L28495`,
+  `lowering.TestHarnessGeneration@L28516`,
+  `def.TestDiscoveryOrder@L28575`, and
+  `diagnostics.TestAttributes@L28593`.
 - Implementation summary: Ultraviolet now specifies `[[test]]` as a
   procedure-target attribute with optional `name: "..."` and `covers("id@Lline")`
   metadata, ordinary contract-based pass/fail semantics, deterministic discovery,
@@ -97,7 +97,7 @@ Every accepted migration entry must use this format:
   shape, and resolves the new diagnostics through the generated registry.
 - Tests: `Compiler/Tests/Parser/AttributeTests.uv` adds
   `testAttributeAcceptsSourceNativeContract`, covering
-  `grammar.TestAttribute@L28318` and `req.TestProcedureShape@L28437`.
+  `grammar.TestAttribute@L28336` and `req.TestProcedureShape@L28455`.
 - Verification commands: `python3 Tools/ExtractObligationLedger.py --check`
   passed with 5966 obligations; `python3 cursive/tools/generate_diagnostic_registry.py
   --check && python3 cursive/tools/validate_diagnostic_spec_sync.py` passed in
@@ -106,11 +106,11 @@ Every accepted migration entry must use this format:
   UltravioletCompiler` succeeded with 39 parsed modules and zero diagnostics.
 - Bootstrap notes: Cursive now preserves explicit visibility spelling for
   ordinary procedures so the bootstrap checker can enforce the
-  explicit-visibility portion of `req.TestProcedureShape@L28437`.
+  explicit-visibility portion of `req.TestProcedureShape@L28455`.
 - Non-applicability notes: `uv test` execution, coverage report emission, unknown
   coverage-reference validation against the ledger, and harness invocation are
   owned by the future Ultraviolet `Compiler/Driver/CLI/TestCommand.uv` and
-  `Compiler/Driver/Test*.uv` migration slices.
+  `Compiler/Driver/Testing/Test*.uv` migration slices.
 - Acceptance: pending user review, 2026-05-05, implemented with fresh command
   output.
 
@@ -120,11 +120,15 @@ Every accepted migration entry must use this format:
   `SPECIFICATION.md` §9.6.6 and `CompilerRebuildPlan.md`; no C++ bootstrap
   implementation object applies because the Cursive bootstrap compiler does not
   own the future `uv test` CLI surface.
-- Target object: `Compiler/Driver/CLI/TestCommand.uv`, `TestDiscovery.uv`,
-  `TestHarness.uv`, `TestExecution.uv`, `TestResults.uv`, and `TestCoverage.uv`
-  implementation contract updated to use positional test targets.
-- Specification basis: `lowering.TestHarnessGeneration@L28498`,
-  `def.TestDiscoveryOrder@L28557`, `WF-Assembly@L3511`,
+- Target object: `Compiler/Driver/CLI/TestCommand.uv`,
+  `Compiler/Driver/Testing/TestDiscovery.uv`,
+  `Compiler/Driver/Testing/TestHarness.uv`,
+  `Compiler/Driver/Testing/TestExecution.uv`,
+  `Compiler/Driver/Testing/TestResults.uv`, and
+  `Compiler/Driver/Testing/TestCoverage.uv` implementation contract updated to
+  use positional test targets.
+- Specification basis: `lowering.TestHarnessGeneration@L28516`,
+  `def.TestDiscoveryOrder@L28575`, `WF-Assembly@L3511`,
   `Select-By-Name@L3887`, `Module-Dir@L4306`, and
   `def.FindProjectRoot@L2324`.
 - Implementation summary: the normative test command surface is now
@@ -196,40 +200,102 @@ Every accepted migration entry must use this format:
 - Non-applicability notes: source-native `[[test]]` execution remains owned by
   the future `uv test` driver and harness implementation; this pass verifies the
   tests by parsing and typechecking them through the bootstrap compiler.
-- Acceptance: pending user review, 2026-05-06, implemented with fresh command
-  output.
+- Acceptance: complete for the executable command surface, 2026-05-06, with
+  fresh bootstrap semantic-check evidence. Runtime `uv test` execution remains
+  owned by the source-native test driver completion entry.
 
 ### Executable Command Surface
 
 - Source object: `uv` executable entrypoint and driver CLI command surface.
 - Target object: `Tools/Uv/Main.uv`,
-  `Compiler/Driver/CLI/{Api,Commands,Options,TestCommand,Version}.uv`.
-- Specification basis: `def.15.MainEntryPointDefinitions@L52786`,
-  `rule.15.Main-Ok@L52807`, and the positional `uv test` command shape in
-  `lowering.TestHarnessGeneration@L28498`.
+  `Compiler/Driver/CLI/{Api,BuildCommand,CheckCommand,CleanCommand,Commands,InitCommand,OptionValues,Options,Positionals,RunCommand,TestCommand,Text,Version}.uv`
+  `Compiler/Driver/Pipeline.uv`, and `Compiler/Project/OutputArtifacts.uv`.
+- Specification basis: `def.15.MainEntryPointDefinitions@L52806`,
+  `rule.15.Main-Ok@L52827`, and the positional `uv test` command shape in
+  `lowering.TestHarnessGeneration@L28516`.
 - Implementation summary: `Tools/Uv/Main.uv` now defines the executable
   `public procedure main(context: Context) -> i32`. The driver CLI source now
-  contains a `DriverHost` authority projection record, a state-specific
+  contains a narrow `DriverHost` authority projection record, a state-specific
   `Command` modal for `build`, `check`, `clean`, `init`, `run`, `test`, and
-  `version`, modal-owned execution and result-conversion methods, a
+  `version`, command-specific entry procedures, typed pipeline request
+  submission, modal-owned result conversion, command failure reason states, a
   `CommandResult` modal, command argument records, positional target states for
-  `uv test [target]`, and version output through the
-  `FileSystem.write_stdout` authority.
+  `uv test [target]`, and version output through the `FileSystem.write_stdout`
+  authority. `Compiler/Driver/Pipeline.uv` owns the driver-level
+  `PipelineCommand`, `PipelineTargetProfile`, `PipelineOutputMode`,
+  `PipelineRequest`, `PipelineSubmission`, and `PipelineUnavailableReason`
+  boundary. CLI option parsing converts command-line target-profile and
+  output-mode input into those driver-owned pipeline values before project
+  command submission. Project command-output obligations are assigned to
+  `Compiler/Project/OutputArtifacts.uv` and are implemented with the
+  project/output artifact migration slice.
 - Tests: bootstrap semantic checks exercise the real `main` declaration,
-  command modal, command-result modal, positional target construction, and
-  version output result classification through the `uv` assembly.
+  command modal, command-result modal, command-specific entry procedures,
+  pipeline request construction, driver-owned target-profile and output-mode
+  request fields, typed pipeline unavailable states, positional target
+  construction, target-profile and output-mode input conversion, and version
+  output result classification through the `uv` assembly.
 - Verification commands:
-  - `python3 Tools/ExtractObligationLedger.py --check` passed with 5967
+  - `python3 Tools/ExtractObligationLedger.py --check` passed with 5977
     obligations.
   - `git diff --check` passed.
   - `/mnt/c/dev/cursive/cursive/build/windows/Release/Cursive.exe --target-profile x86_64-win64 --check C:\Dev\Ultraviolet --assembly uv`
-    passed with 44 resolved modules and zero diagnostics.
+    passed with 47 resolved modules and zero diagnostics.
   - `/mnt/c/dev/cursive/cursive/build/windows/Release/Cursive.exe --target-profile x86_64-win64 --check C:\Dev\Ultraviolet --assembly UltravioletCompiler`
-    passed with 42 resolved modules and zero diagnostics.
+    passed with 45 resolved modules and zero diagnostics.
   - `/mnt/c/dev/cursive/cursive/build/windows/Release/Cursive.exe --target-profile x86_64-win64 --check C:\Dev\Ultraviolet --assembly UltravioletRT`
     passed with 11 resolved modules and zero diagnostics.
-- Bootstrap notes: no bootstrap compiler repair was required for this command
-  surface.
+- Bootstrap notes: the command surface depends on the approved normalized
+  `System` process invocation methods recorded in the following ledger entry.
+- Acceptance: complete for the executable command surface, 2026-05-06, with
+  fresh bootstrap semantic-check evidence. Runtime `uv test` execution remains
+  owned by the source-native test driver completion entry.
+
+### Executable Process Invocation Surface
+
+- Source object: approved Ultraviolet `System` process invocation surface used
+  by the `uv` executable command parser.
+- Target object: `SPECIFICATION.md`,
+  `Docs/Internal/UltravioletSpecification.obligations.md`,
+  `Docs/Audit/{UltravioletObligations.csv,FileObligationMap.csv}`,
+  `Compiler/Driver/CLI/{Api,Commands,OptionValues,Options,Positionals,TestCommand,Text,Version}.uv`,
+  `Tools/Uv/Main.uv`, `Compiler/Semantics/Capabilities/SystemCapabilities.uv`,
+  `Compiler/Backend/IR/RuntimeSymbols.uv`, `Runtime/Host/{Startup,Platform}.uv`,
+  and `Runtime/System/{Environment,Process}.uv`.
+- Specification basis: `def.14.SystemDecl@L51462`,
+  `Prim-System-ExecutablePath@L14353`,
+  `Prim-System-ArgumentCount@L14371`, `Prim-System-Argument@L14389`,
+  `Prim-System-CurrentDirectory@L14407`,
+  `def.24.ProcessInvocationNormalization@L93519`,
+  `req.24.ProcessInvocationPlatformIsolation@L93538`, and
+  `lowering.TestHarnessGeneration@L28516`.
+- Implementation summary: `System` now has an explicit normalized invocation
+  surface in the Ultraviolet specification. The CLI entrypoint delegates to the
+  driver, `DriverHost` projects executable path and current directory from
+  `Context.sys`, and command arguments are parsed from `System.argument_count()`
+  and `System.argument(index)`.
+- Tests: added source-native CLI command-input tests for absent `uv test`
+  target, one target, extra target rejection, empty-command defaulting, unknown
+  command rejection, target-profile input parsing, unsupported target-profile
+  preservation, quiet output mode, and machine-readable output mode.
+- Verification commands:
+  - `python3 Tools/ExtractObligationLedger.py --check` passed with 5977
+    obligations.
+  - `git diff --check` passed.
+  - `/mnt/c/Windows/System32/WindowsPowerShell/v1.0/powershell.exe -NoProfile -ExecutionPolicy Bypass -File \\wsl.localhost\Ubuntu\home\crow\.codex\skills\vsdev-cmake-build\scripts\run_vsdev_cmake_build.ps1 -RepoRoot C:\dev\cursive -SourceDir C:\dev\cursive\cursive -BuildDir C:\dev\cursive\cursive\build\windows -Config Release -Target cursive`
+    passed and produced `Cursive.exe`.
+  - `/mnt/c/dev/cursive/cursive/build/windows/Release/Cursive.exe --target-profile x86_64-win64 --check C:\Dev\Ultraviolet --assembly uv`
+    passed with 47 resolved modules and zero diagnostics.
+  - `/mnt/c/dev/cursive/cursive/build/windows/Release/Cursive.exe --target-profile x86_64-win64 --check C:\Dev\Ultraviolet --assembly UltravioletCompiler`
+    passed with 45 resolved modules and zero diagnostics.
+  - `/mnt/c/dev/cursive/cursive/build/windows/Release/Cursive.exe --target-profile x86_64-win64 --check C:\Dev\Ultraviolet --assembly UltravioletRT`
+    passed with 11 resolved modules and zero diagnostics.
+- Bootstrap notes: updated the Cursive bootstrap specification, `System`
+  method lookup, runtime symbol declarations, intrinsic runtime signatures,
+  runtime ABI required-symbol list, and hosted runtime process/platform
+  implementation so the bootstrap accepts and can lower the approved
+  `System.executable_path`, `System.argument_count`, `System.argument`, and
+  `System.current_directory` methods.
 - Acceptance: pending user review, 2026-05-06, implemented with fresh command
   output.
 
@@ -240,31 +306,77 @@ Every accepted migration entry must use this format:
   `CompilerRebuildPlan.md`.
 - Target object: `Tools/Uv/Main.uv`,
   `Compiler/Driver/CLI/{Api,Commands,Options,TestCommand,Version}.uv`,
-  `Compiler/Driver/{Pipeline,TestDiscovery,TestCoverage,TestHarness,TestExecution,TestResults}.uv`,
+  `Compiler/Driver/Pipeline.uv`,
+  `Compiler/Driver/Testing/{TestDiscovery,TestCoverage,TestHarness,TestExecution,TestResults}.uv`,
   and the project, source, semantic, lowering, runtime, and backend files needed
   to execute source-native tests through the ordinary compiler path.
-- Specification basis: `conformance.TestAttributeDynamicSemantics@L28477`,
-  `lowering.TestHarnessGeneration@L28498`, `def.TestDiscoveryOrder@L28557`,
+- Specification basis: `conformance.TestAttributeDynamicSemantics@L28495`,
+  `lowering.TestHarnessGeneration@L28516`, `def.TestDiscoveryOrder@L28575`,
   `WF-Assembly@L3511`, `Select-By-Name@L3887`, `Module-Dir@L4306`,
-  `def.FindProjectRoot@L2324`, and `diagnostics.TestAttributes@L28575`.
-- Implementation summary: pending. Completion requires the `uv` executable
-  entrypoint, positional `uv test` command coordination, target resolution,
-  deterministic discovery, coverage validation, harness generation, execution,
-  and result reporting.
-- Tests: pending source-native driver tests for positional target resolution,
-  discovery order, harness construction, result classification, and audit
-  coverage validation.
+  `def.FindProjectRoot@L2324`, and `diagnostics.TestAttributes@L28593`.
+- Implementation summary: the `uv` executable entrypoint and positional
+  `uv test` command coordination are implemented through the CLI command
+  surface. `Compiler/Driver/Testing` now defines source-native target
+  candidate and scope states, deterministic discovered-test records and
+  ordering, ordered discovered-test list construction, coverage-reference
+  validation data, harness generation lifecycle states, test execution lifecycle
+  states, and result summary records. The Project module now defines the
+  manifest, validation, root-discovery, module-discovery, assembly-selection,
+  deterministic-ordering, build-config, toolchain-config, assembly-graph, and
+  project-load lifecycle surfaces needed by test target selection. Project
+  loading separates manifest text parsing, parse validation,
+  discovered-assembly completion, and module-discovery assembly construction.
+  Source-native execution planning sorts selected tests before creating the
+  planned test run.
+- Tests: each source-native testing obligation from `grammar.TestAttribute`
+  through `diagnostics.TestAttributes` has exactly one dedicated owning test
+  file under the parent assembly `Tests` subtree. The project-loading and
+  deterministic-ordering obligations currently implemented in this slice also
+  have dedicated owning test files under `Compiler/Tests/Project`. The manifest
+  parser tests cover `def.ManifestParsing@L2168`, `Parse-Manifest-Ok@L2183`,
+  and `Parse-Manifest-Err@L2219` with the accepted Ultraviolet assembly-table
+  manifest shape, comment and ignored-table traversal, malformed key-value
+  syntax, and duplicate-field parse failure. The project-loader parse tests
+  cover `Step-Parse@L3558` and `Step-Parse-Err@L3576` through the explicit
+  `ManifestParsed` and `Failed` loader states. The validation-transition tests
+  cover `Step-Validate@L3594` and `Step-Validate-Err@L3612` through the
+  `ManifestValidated` and `Failed` loader states. Manifest validation tests now
+  cover top-level key validation, assembly key validation, required assembly
+  fields, assembly name validity, assembly kind validity, relative root and
+  output-directory path validity, `emit_ir` validity, and `link_kind` validity.
+  Assembly-selection tests cover absent sole assembly selection, absent sole
+  executable selection, named selection, and ambiguous absent-target selection.
+  Root-discovery tests cover command-input resolution gating, file-input parent
+  search starts, directory-input resolved search starts, nearest-manifest root
+  selection, search-start fallback, and project-root well-formedness.
+  Deterministic-ordering tests cover folded path comparison, file key
+  tiebreaking, file ordering, fold comparison, directory key tiebreaking, and
+  directory ordering. Module-discovery tests cover source-root directory
+  inclusion, source-root well-formedness, source-root failure diagnostics,
+  module-directory classification, `.uv` source filtering, compilation-unit
+  ordering, relative derivation failure, module-path consumption from module
+  discovery rules, successful module discovery, and failed module discovery.
+  Assembly-ownership tests cover source-root projection, deepest unique owner
+  root selection, owned-module filtering, successful ownership completion, and
+  ownership failure diagnostics for modules with no unique source-root owner.
 - Verification commands:
-  - `python3 Tools/ExtractObligationLedger.py --check`
-  - `git diff --check`
-  - `Cursive.exe --target-profile x86_64-win64 --check C:\Dev\Ultraviolet --assembly UltravioletCompiler`
-  - `Cursive.exe --target-profile x86_64-win64 --check C:\Dev\Ultraviolet --assembly UltravioletRT`
-  - `Cursive.exe --target-profile x86_64-win64 --check C:\Dev\Ultraviolet --assembly uv`
-  - `uv test Compiler/Tests/Core/Path`
-  - `uv test UltravioletCompiler::Tests::Core::Path`
-  - `uv test UltravioletCompiler`
-  - `uv test`
-- Bootstrap notes: if spec-valid Ultraviolet source is rejected by the Cursive
-  bootstrap compiler, the canonical bootstrap owner must be repaired.
-- Non-applicability notes: none.
-- Acceptance: pending implementation and review.
+  - `python3 Tools/ExtractObligationLedger.py --check` passed with 5977
+    obligations.
+  - `git diff --check` passed.
+  - `/mnt/c/dev/cursive/cursive/build/out/Cursive.exe --target-profile x86_64-win64 --check C:\Dev\Ultraviolet --assembly UltravioletCompiler`
+    passed with 110 parsed compiler modules and zero diagnostics.
+  - `/mnt/c/dev/cursive/cursive/build/out/Cursive.exe --target-profile x86_64-win64 --check C:\Dev\Ultraviolet --assembly UltravioletRT`
+    passed with 11 resolved modules and zero diagnostics.
+  - `/mnt/c/dev/cursive/cursive/build/out/Cursive.exe --target-profile x86_64-win64 --check C:\Dev\Ultraviolet --assembly uv`
+    passed with 112 resolved modules and zero diagnostics.
+  - local source-native obligation scan passed with 95 obligations assigned to
+    exactly one owning test file each.
+- Bootstrap notes: repaired Cursive bootstrap modal-state subtyping,
+  modal-state record-literal path typing, record-literal diagnostic detail
+  propagation, and unique moved-value checking so spec-valid transition bodies
+  in the source-native driver check through the canonical semantic path.
+- Remaining implementation work: host filesystem traversal for module
+  discovery, source metadata extraction, harness source emission, backend
+  artifact generation, and harness process execution are owned by subsequent
+  project, source, driver, and backend implementation slices.
+- Acceptance: pending harness execution connection and review.

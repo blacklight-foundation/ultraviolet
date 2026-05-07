@@ -1,0 +1,491 @@
+// Obligation responsibility: Compiler/Semantics/Attributes/TestAttributes.uv
+//
+// This file owns the source-native test attribute semantic model:
+//
+// - ast.TestProcedureClassification@L28374
+//   A source-native test is an ordinary `ProcedureDecl` whose `AttrByName(proc,
+//   test)` set is non-empty.
+// - def.TestName@L28389
+//   TestName(proc) = s when the unique `name: s` argument is present.
+//   TestName(proc) = FullyQualifiedProcPath(proc) when no `name` argument is
+//   present.
+// - def.TestCoverage@L28404
+//   TestCoverage(proc) = [r_1, ..., r_n] where each r_i is the string argument
+//   of one `covers(r_i)` entry in source order.
+// - req.TestAttributeProcedureTarget@L28421
+//   `[[test]]` is valid only on ordinary source procedures.
+// - def.TestAttributeArgsOk@L28435
+//   `AttrArgsOk(test, args)` holds exactly when every argument is either
+//   `name: string_literal` or `covers(string_literal)`, at most one `name`
+//   argument is present, every `covers` argument has exactly one non-empty
+//   string literal argument, and every coverage reference names one row in the
+//   obligation ledger using `obligation-id@Linternal_spec_line`.
+
+using UltravioletCompiler::Diagnostics::{
+    Diagnostic,
+    DiagnosticStreamValue,
+    diagnosticStreamAppend,
+    emptyDiagnosticStream,
+    errorDiagnostic,
+    singleErrorDiagnosticStream,
+    unknownCoverageReferenceDiagnostic
+}
+using UltravioletCompiler::Source::Ast::{
+    Attribute,
+    AttributeArgumentListValue,
+    AttributeArgumentValue,
+    attributeArgumentNameEquals,
+    attributeArgumentStringValue,
+    attributeNameEquals
+}
+
+internal let TEST_ATTRIBUTE_TEXT: string@View = "test"
+internal let TEST_NAME_ARGUMENT_TEXT: string@View = "name"
+internal let TEST_COVERAGE_ARGUMENT_TEXT: string@View = "covers"
+internal let COVERAGE_AT: u8 = 64
+internal let COVERAGE_L: u8 = 76
+internal let COVERAGE_ZERO: u8 = 48
+internal let COVERAGE_NINE: u8 = 57
+
+public record TestName {
+    public text: string@View
+}
+
+public record CoverageReference {
+    public text: string@View
+}
+
+public modal CoverageReferenceList {
+    @Empty {
+        public procedure count(~) -> usize {
+            return 0
+        }
+    }
+
+    @Entry {
+        public reference: CoverageReference
+        public tail: CoverageReferenceListValue
+
+        public procedure count(~) -> usize {
+            return 1 + coverageReferenceListCount(self.tail)
+        }
+    }
+}
+
+public type CoverageReferenceListValue =
+    CoverageReferenceList@Empty | CoverageReferenceList@Entry
+
+public modal CoverageReferenceShape {
+    @Valid {
+        public reference: CoverageReference
+    }
+
+    @Malformed {
+        public reference: CoverageReference
+    }
+}
+
+public type CoverageReferenceShapeValue =
+    CoverageReferenceShape@Valid | CoverageReferenceShape@Malformed
+
+public record TestProcedureMetadata {
+    public stable_identity: string@View
+    public display_name: TestName
+    public requires_context: bool
+    public coverage_references: CoverageReferenceListValue
+}
+
+public modal TestAttributeTarget {
+    @OrdinaryProcedure {
+    }
+
+    @Other {
+    }
+}
+
+public type TestAttributeTargetValue =
+    TestAttributeTarget@OrdinaryProcedure | TestAttributeTarget@Other
+
+public modal TestAttributeArgumentCheck {
+    @Accepted {
+        public display_name: TestName
+        public coverage_references: CoverageReferenceListValue
+    }
+
+    @Rejected {
+        public diagnostics: DiagnosticStreamValue
+    }
+}
+
+public type TestAttributeArgumentCheckValue =
+    TestAttributeArgumentCheck@Accepted | TestAttributeArgumentCheck@Rejected
+
+public modal TestAttributeSemanticCheck {
+    @Accepted {
+        public metadata: TestProcedureMetadata
+    }
+
+    @Rejected {
+        public diagnostics: DiagnosticStreamValue
+    }
+}
+
+public type TestAttributeSemanticCheckValue =
+    TestAttributeSemanticCheck@Accepted | TestAttributeSemanticCheck@Rejected
+
+public procedure testName(text: string@View) -> TestName {
+    return TestName { text: text }
+}
+
+public procedure coverageReference(text: string@View) -> CoverageReference {
+    return CoverageReference { text: text }
+}
+
+public procedure emptyCoverageReferences() -> CoverageReferenceListValue {
+    return CoverageReferenceList@Empty {}
+}
+
+public procedure coverageReferenceListEntry(
+    reference: CoverageReference,
+    move tail: CoverageReferenceListValue
+) -> CoverageReferenceListValue {
+    return CoverageReferenceList@Entry {
+        reference: reference,
+        tail: move tail
+    }
+}
+
+public procedure coverageReferenceListCount(
+    references: CoverageReferenceListValue
+) -> usize {
+    return if references is {
+        @Empty {
+            references~>count()
+        }
+        @Entry {
+            references~>count()
+        }
+    }
+}
+
+public procedure ordinaryProcedureTestAttributeTarget() -> TestAttributeTargetValue {
+    return TestAttributeTarget@OrdinaryProcedure {}
+}
+
+public procedure invalidTestAttributeTarget() -> TestAttributeTargetValue {
+    return TestAttributeTarget@Other {}
+}
+
+public procedure attributeIsSourceNativeTest(attribute: Attribute) -> bool {
+    return attributeNameEquals(attribute.name, TEST_ATTRIBUTE_TEXT)
+}
+
+public procedure classifyTestProcedure(
+    attribute: Attribute,
+    target: TestAttributeTargetValue,
+    fully_qualified_path: string@View,
+    requires_context: bool
+) -> TestAttributeSemanticCheckValue {
+    if (!attributeIsSourceNativeTest(attribute)) {
+        return TestAttributeSemanticCheck@Rejected {
+            diagnostics: singleErrorDiagnosticStream(
+                "E-MOD-2452",
+                "[[test]] attribute expected"
+            )
+        }
+    }
+    if (!testAttributeTargetIsOrdinaryProcedure(target)) {
+        return TestAttributeSemanticCheck@Rejected {
+            diagnostics: singleErrorDiagnosticStream(
+                "E-MOD-2452",
+                "[[test]] applied outside ordinary procedure"
+            )
+        }
+    }
+
+    let args: TestAttributeArgumentCheckValue =
+        checkTestAttributeArguments(attribute.arguments, fully_qualified_path)
+    return if args is {
+        @Accepted { display_name, coverage_references } {
+            TestAttributeSemanticCheck@Accepted {
+                metadata: TestProcedureMetadata {
+                    stable_identity: fully_qualified_path,
+                    display_name: display_name,
+                    requires_context: requires_context,
+                    coverage_references: move coverage_references
+                }
+            }
+        }
+        @Rejected { diagnostics } {
+            TestAttributeSemanticCheck@Rejected { diagnostics: move diagnostics }
+        }
+    }
+}
+
+public procedure testAttributeTargetIsOrdinaryProcedure(
+    target: TestAttributeTargetValue
+) -> bool {
+    return if target is {
+        @OrdinaryProcedure {
+            true
+        }
+        @Other {
+            false
+        }
+    }
+}
+
+public procedure checkTestAttributeArguments(
+    arguments: AttributeArgumentListValue,
+    fully_qualified_path: string@View
+) -> TestAttributeArgumentCheckValue {
+    return checkTestAttributeArgumentsFrom(
+        arguments,
+        false,
+        testName(fully_qualified_path),
+        emptyCoverageReferences(),
+        emptyDiagnosticStream()
+    )
+}
+
+internal procedure checkTestAttributeArgumentsFrom(
+    arguments: AttributeArgumentListValue,
+    has_name: bool,
+    display_name: TestName,
+    move coverage_references: CoverageReferenceListValue,
+    move diagnostics: DiagnosticStreamValue
+) -> TestAttributeArgumentCheckValue {
+    return if arguments is {
+        @Empty {
+            if (diagnosticStreamHasContent(diagnostics)) {
+                TestAttributeArgumentCheck@Rejected { diagnostics: move diagnostics }
+            } else {
+                TestAttributeArgumentCheck@Accepted {
+                    display_name: display_name,
+                    coverage_references: reverseCoverageReferences(
+                        move coverage_references,
+                        emptyCoverageReferences()
+                    )
+                }
+            }
+        }
+        @Entry { argument, tail } {
+            if (attributeArgumentIsName(argument)) {
+                checkNameArgument(
+                    tail,
+                    has_name,
+                    argument,
+                    display_name,
+                    move coverage_references,
+                    move diagnostics
+                )
+            } else if (attributeArgumentIsCoverage(argument)) {
+                checkCoverageArgument(
+                    tail,
+                    has_name,
+                    argument,
+                    display_name,
+                    move coverage_references,
+                    move diagnostics
+                )
+            } else {
+                checkTestAttributeArgumentsFrom(
+                    tail,
+                    has_name,
+                    display_name,
+                    move coverage_references,
+                    diagnosticStreamAppend(
+                        move diagnostics,
+                        malformedTestAttributeArgumentDiagnostic()
+                    )
+                )
+            }
+        }
+    }
+}
+
+internal procedure checkNameArgument(
+    tail: AttributeArgumentListValue,
+    has_name: bool,
+    argument: AttributeArgumentValue,
+    display_name: TestName,
+    move coverage_references: CoverageReferenceListValue,
+    move diagnostics: DiagnosticStreamValue
+) -> TestAttributeArgumentCheckValue {
+    if (has_name) {
+        return checkTestAttributeArgumentsFrom(
+            tail,
+            has_name,
+            display_name,
+            move coverage_references,
+            diagnosticStreamAppend(move diagnostics, duplicateTestNameDiagnostic())
+        )
+    }
+
+    return checkTestAttributeArgumentsFrom(
+        tail,
+        true,
+        testName(attributeArgumentStringValue(argument)),
+        move coverage_references,
+        move diagnostics
+    )
+}
+
+internal procedure checkCoverageArgument(
+    tail: AttributeArgumentListValue,
+    has_name: bool,
+    argument: AttributeArgumentValue,
+    display_name: TestName,
+    move coverage_references: CoverageReferenceListValue,
+    move diagnostics: DiagnosticStreamValue
+) -> TestAttributeArgumentCheckValue {
+    let reference: CoverageReference =
+        coverageReference(attributeArgumentStringValue(argument))
+    let shape: CoverageReferenceShapeValue = validateCoverageReferenceShape(reference)
+    return if shape is {
+        @Valid {
+            checkTestAttributeArgumentsFrom(
+                tail,
+                has_name,
+                display_name,
+                coverageReferenceListEntry(reference, move coverage_references),
+                move diagnostics
+            )
+        }
+        @Malformed {
+            checkTestAttributeArgumentsFrom(
+                tail,
+                has_name,
+                display_name,
+                move coverage_references,
+                diagnosticStreamAppend(move diagnostics, malformedCoverageDiagnostic())
+            )
+        }
+    }
+}
+
+internal procedure attributeArgumentIsName(argument: AttributeArgumentValue) -> bool {
+    return if argument is {
+        @NamedString {
+            attributeArgumentNameEquals(argument, TEST_NAME_ARGUMENT_TEXT)
+        }
+        @CallString {
+            false
+        }
+    }
+}
+
+internal procedure attributeArgumentIsCoverage(argument: AttributeArgumentValue) -> bool {
+    return if argument is {
+        @NamedString {
+            false
+        }
+        @CallString {
+            attributeArgumentNameEquals(argument, TEST_COVERAGE_ARGUMENT_TEXT)
+        }
+    }
+}
+
+public procedure validateCoverageReferenceShape(
+    reference: CoverageReference
+) -> CoverageReferenceShapeValue {
+    if (!coverageReferenceHasLedgerLine(reference.text)) {
+        return CoverageReferenceShape@Malformed { reference: reference }
+    }
+
+    return CoverageReferenceShape@Valid { reference: reference }
+}
+
+public procedure coverageReferenceHasLedgerLine(text: string@View) -> bool {
+    let length: usize = string::length(text)
+    var at_index: usize = 0
+    var found_at: bool = false
+
+    loop {
+        if (at_index >= length) {
+            break
+        }
+        if (coverageTextByte(text, at_index) == COVERAGE_AT) {
+            found_at = true
+            break
+        }
+        at_index = at_index + 1
+    }
+
+    if (!found_at) {
+        return false
+    }
+    if (at_index == 0) {
+        return false
+    }
+    if (at_index + 2 >= length) {
+        return false
+    }
+    if (coverageTextByte(text, at_index + 1) != COVERAGE_L) {
+        return false
+    }
+
+    var line_index: usize = at_index + 2
+    loop {
+        if (line_index >= length) {
+            break
+        }
+        let byte: u8 = coverageTextByte(text, line_index)
+        if (byte < COVERAGE_ZERO || byte > COVERAGE_NINE) {
+            return false
+        }
+        line_index = line_index + 1
+    }
+
+    return line_index > at_index + 2
+}
+
+internal procedure reverseCoverageReferences(
+    move source: CoverageReferenceListValue,
+    move target: CoverageReferenceListValue
+) -> CoverageReferenceListValue {
+    return if source is {
+        @Empty {
+            move target
+        }
+        @Entry { reference, tail } {
+            reverseCoverageReferences(
+                move tail,
+                coverageReferenceListEntry(reference, move target)
+            )
+        }
+    }
+}
+
+internal procedure diagnosticStreamHasContent(
+    diagnostics: DiagnosticStreamValue
+) -> bool {
+    return if diagnostics is {
+        @Empty {
+            false
+        }
+        @Entry {
+            true
+        }
+    }
+}
+
+internal procedure malformedTestAttributeArgumentDiagnostic() -> Diagnostic {
+    return errorDiagnostic("E-TST-0101", "malformed [[test]] argument")
+}
+
+internal procedure duplicateTestNameDiagnostic() -> Diagnostic {
+    return errorDiagnostic("E-TST-0102", "duplicate [[test]] name argument")
+}
+
+internal procedure malformedCoverageDiagnostic() -> Diagnostic {
+    return errorDiagnostic("E-TST-0103", "malformed covers argument")
+}
+
+internal procedure coverageTextByte(text: string@View, index: usize) -> u8
+|: index < string::length(text)
+{
+    let view: bytes@View = bytes::view_string(text)
+    let data: const [u8] = bytes::as_slice(view)
+    return data[index]
+}

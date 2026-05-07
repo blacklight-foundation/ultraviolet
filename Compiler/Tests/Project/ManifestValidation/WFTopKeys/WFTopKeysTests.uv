@@ -1,0 +1,46 @@
+// Test responsibility:
+// Compiler/Tests/Project/ManifestValidation/WFTopKeys/WFTopKeysTests.uv
+//
+// This file owns source-native tests for WF-TopKeys@L2589.
+
+using UltravioletCompiler::Project::{
+    ManifestValidationValue,
+    emptyManifestAssemblies,
+    manifestAssembly,
+    manifestAssemblyListEntry,
+    manifestWithTopKeyState,
+    validateManifest
+}
+
+[[test(
+    name: "manifest validation accepts only declared top keys",
+    covers("WF-TopKeys@L2589")
+)]]
+internal procedure manifestValidationAcceptsOnlyDeclaredTopKeys() -> bool
+|: => @result
+{
+    let validation: ManifestValidationValue = validateManifest(
+        manifestWithTopKeyState(
+            manifestAssemblyListEntry(
+                manifestAssembly("App", "executable", "", "Tools/Uv"),
+                emptyManifestAssemblies()
+            ),
+            false
+        )
+    )
+
+    return manifestValidationIsValid(validation)
+}
+
+internal procedure manifestValidationIsValid(
+    validation: ManifestValidationValue
+) -> bool {
+    return if validation is {
+        @Valid {
+            true
+        }
+        @Invalid {
+            false
+        }
+    }
+}

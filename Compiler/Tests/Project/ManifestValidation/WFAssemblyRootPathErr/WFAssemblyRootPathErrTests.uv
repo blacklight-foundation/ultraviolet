@@ -1,0 +1,18 @@
+// Test responsibility:
+// Compiler/Tests/Project/ManifestValidation/WFAssemblyRootPathErr/WFAssemblyRootPathErrTests.uv
+//
+// This file owns source-native tests for WF-Assembly-Root-Path-Err@L2448.
+
+using UltravioletCompiler::Project::{ manifestAssemblyRootPathIsValid }
+
+[[test(
+    name: "manifest validation rejects absolute or escaping assembly roots",
+    covers("WF-Assembly-Root-Path-Err@L2448")
+)]]
+internal procedure manifestValidationRejectsAbsoluteOrEscapingAssemblyRoots() -> bool
+|: => @result
+{
+    return !manifestAssemblyRootPathIsValid("/Compiler") &&
+        !manifestAssemblyRootPathIsValid("C:/Compiler") &&
+        !manifestAssemblyRootPathIsValid("../Compiler")
+}

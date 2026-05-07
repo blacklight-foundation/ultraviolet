@@ -1,4 +1,4 @@
-// Support responsibility: Compiler/Driver/CLI/Version.uv
+// Obligation responsibility: Compiler/Driver/CLI/Version.uv
 //
 // This file owns version command display text and its command-result integration
 // for the CLI command surface.
@@ -16,12 +16,7 @@ public procedure executeVersionCommand(host: DriverHost) -> CommandResultValue {
             commandSucceeded()
         }
         @Error {
-            commandFailed(
-                commandDiagnostic(
-                    COMMAND_DIAGNOSTIC_OUTPUT_WRITE_FAILED,
-                    MESSAGE_OUTPUT_WRITE_FAILED
-                )
-            )
+            commandFailed(outputWriteFailedFailure())
         }
     }
 }

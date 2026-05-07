@@ -1,0 +1,394 @@
+// Test responsibility: Compiler/Tests/Driver/Testing/LoweringTestHarnessGenerationTests.uv
+//
+// This file owns source-native tests for lowering.TestHarnessGeneration@L28516:
+//
+// `uv test [target]` resolves the optional positional target into a test scope,
+// discovers selected tests, generates an ephemeral harness under the selected
+// assembly build output directory, and invokes selected tests deterministically.
+
+using UltravioletCompiler::Diagnostics::{
+    singleErrorDiagnosticStream,
+    sourceSpan
+}
+using UltravioletCompiler::Driver::Testing::{
+    DiscoveredTest,
+    DiscoveredTestListValue,
+    HarnessGenerationValue,
+    TestResultListValue,
+    TestResultSummary,
+    TestTargetResolutionValue,
+    absentTestTargetCandidate,
+    assemblyTestsScope,
+    discoveredTest,
+    discoveredTestListCount,
+    discoveredTestListEntry,
+    discoveredTestPrecedes,
+    directoryTestTargetCandidate,
+    emptyDiscoveredTests,
+    emptyTestResults,
+    errorTestOutcome,
+    failedTestOutcome,
+    generatedHarnessGeneration,
+    harnessEntrySymbol,
+    harnessPlan,
+    insertDiscoveredTestOrdered,
+    passedTestOutcome,
+    resolveTestTarget,
+    selectDiscoveredTests,
+    sourceFileTestTargetCandidate,
+    sourceFileTestsScope,
+    summarizeTestResults,
+    testDisplayName,
+    testProcedureSymbol,
+    testResult,
+    testResultListEntry,
+    textTestTargetCandidate
+}
+using UltravioletCompiler::Project::{
+    Assembly,
+    Project,
+    assembly,
+    assemblyListEntry,
+    assemblyName,
+    directoryPath,
+    emptyAssemblies,
+    emptyModules,
+    emptySourceFiles,
+    executableAssemblyKind,
+    module,
+    moduleListEntry,
+    modulePath,
+    noLinkKind,
+    project,
+    projectRoot,
+    projectTextEquals,
+    sourceFilePath
+}
+using UltravioletCompiler::Semantics::Attributes::{ emptyCoverageReferences }
+
+[[test(
+    name: "uv test absent target resolves to all tests",
+    covers("lowering.TestHarnessGeneration@L28516")
+)]]
+internal procedure uvTestAbsentTargetResolvesToAllTests() -> bool
+|: => @result
+{
+    let resolution: TestTargetResolutionValue =
+        resolveTestTarget(harnessGenerationProject(), absentTestTargetCandidate())
+    return if resolution is {
+        @Resolved { scope } {
+            if scope is {
+                @AllTests {
+                    true
+                }
+                @AssemblyTests {
+                    false
+                }
+                @ModuleTests {
+                    false
+                }
+                @SourceFileTests {
+                    false
+                }
+                @DirectoryTests {
+                    false
+                }
+            }
+        }
+        @Unknown {
+            false
+        }
+    }
+}
+
+[[test(
+    name: "uv test assembly target resolves to assembly test scope",
+    covers("lowering.TestHarnessGeneration@L28516")
+)]]
+internal procedure uvTestAssemblyTargetResolvesToAssemblyTestScope() -> bool
+|: => @result
+{
+    let resolution: TestTargetResolutionValue =
+        resolveTestTarget(
+            harnessGenerationProject(),
+            textTestTargetCandidate("UltravioletCompiler")
+        )
+    return if resolution is {
+        @Resolved { scope } {
+            if scope is {
+                @AssemblyTests { assembly_name } {
+                    projectTextEquals(assembly_name.text, "UltravioletCompiler")
+                }
+                @AllTests {
+                    false
+                }
+                @ModuleTests {
+                    false
+                }
+                @SourceFileTests {
+                    false
+                }
+                @DirectoryTests {
+                    false
+                }
+            }
+        }
+        @Unknown {
+            false
+        }
+    }
+}
+
+[[test(
+    name: "uv test module target resolves to module test scope",
+    covers("lowering.TestHarnessGeneration@L28516")
+)]]
+internal procedure uvTestModuleTargetResolvesToModuleTestScope() -> bool
+|: => @result
+{
+    let target: string@View = "UltravioletCompiler::Tests::Core::Path"
+    let resolution: TestTargetResolutionValue =
+        resolveTestTarget(harnessGenerationProject(), textTestTargetCandidate(target))
+    return if resolution is {
+        @Resolved { scope } {
+            if scope is {
+                @ModuleTests { path } {
+                    projectTextEquals(path.text, target)
+                }
+                @AllTests {
+                    false
+                }
+                @AssemblyTests {
+                    false
+                }
+                @SourceFileTests {
+                    false
+                }
+                @DirectoryTests {
+                    false
+                }
+            }
+        }
+        @Unknown {
+            false
+        }
+    }
+}
+
+[[test(
+    name: "uv test path targets resolve to path scopes",
+    covers("lowering.TestHarnessGeneration@L28516")
+)]]
+internal procedure uvTestPathTargetsResolveToPathScopes() -> bool
+|: => @result
+{
+    let directory_resolution: TestTargetResolutionValue =
+        resolveTestTarget(
+            harnessGenerationProject(),
+            directoryTestTargetCandidate("Compiler/Tests/Core/Path")
+        )
+    let file_resolution: TestTargetResolutionValue =
+        resolveTestTarget(
+            harnessGenerationProject(),
+            sourceFileTestTargetCandidate("Compiler/Tests/Core/Path/AbsPathTests.uv")
+        )
+
+    return resolutionIsDirectoryScope(directory_resolution) &&
+        resolutionIsSourceFileScope(file_resolution)
+}
+
+[[test(
+    name: "generated harness records selected assembly and entry symbol",
+    covers("lowering.TestHarnessGeneration@L28516")
+)]]
+internal procedure generatedHarnessRecordsSelectedAssemblyAndEntrySymbol() -> bool
+|: => @result
+{
+    let generated: HarnessGenerationValue =
+        generatedHarnessGeneration(harnessPlan(
+            harnessGenerationAssembly(),
+            sourceFilePath("Build/UltravioletCompiler/TestHarness.uv"),
+            emptyDiscoveredTests(),
+            harnessEntrySymbol("uv_test_main")
+        ))
+    return if generated is {
+        @Generated { plan } {
+            projectTextEquals(
+                plan.selected_assembly.name.text,
+                "UltravioletCompiler"
+            ) &&
+                projectTextEquals(plan.entry_symbol.text, "uv_test_main")
+        }
+        @Planned {
+            false
+        }
+        @Failed {
+            false
+        }
+    }
+}
+
+[[test(
+    name: "uv test assembly scope selects only tests subtree procedures",
+    covers("lowering.TestHarnessGeneration@L28516")
+)]]
+internal procedure uvTestAssemblyScopeSelectsOnlyTestsSubtreeProcedures() -> bool
+|: => @result
+{
+    let tests: DiscoveredTestListValue =
+        discoveredTestListEntry(
+            harnessSelectionTest(
+                "UltravioletCompiler::Tests::Core::Path",
+                "Compiler/Tests/Core/Path/AbsPathTests.uv",
+                "selected"
+            ),
+            discoveredTestListEntry(
+                harnessSelectionTest(
+                    "UltravioletCompiler::Core::Path",
+                    "Compiler/Core/Path/Path.uv",
+                    "rejected"
+                ),
+                emptyDiscoveredTests()
+            )
+        )
+    let selected: DiscoveredTestListValue =
+        selectDiscoveredTests(
+            harnessGenerationProject(),
+            assemblyTestsScope(assemblyName("UltravioletCompiler")),
+            move tests
+        )
+    return discoveredTestListCount(selected) == 1
+}
+
+[[test(
+    name: "uv test source file scope selects exact tests file",
+    covers("lowering.TestHarnessGeneration@L28516")
+)]]
+internal procedure uvTestSourceFileScopeSelectsExactTestsFile() -> bool
+|: => @result
+{
+    let tests: DiscoveredTestListValue =
+        discoveredTestListEntry(
+            harnessSelectionTest(
+                "UltravioletCompiler::Tests::Core::Path",
+                "Compiler/Tests/Core/Path/AbsPathTests.uv",
+                "selected"
+            ),
+            discoveredTestListEntry(
+                harnessSelectionTest(
+                    "UltravioletCompiler::Tests::Core::Path",
+                    "Compiler/Tests/Core/Path/JoinTests.uv",
+                    "rejected"
+                ),
+                emptyDiscoveredTests()
+            )
+        )
+    let selected: DiscoveredTestListValue =
+        selectDiscoveredTests(
+            harnessGenerationProject(),
+            sourceFileTestsScope(sourceFilePath("Compiler/Tests/Core/Path/AbsPathTests.uv")),
+            move tests
+        )
+    return discoveredTestListCount(selected) == 1
+}
+
+internal procedure resolutionIsDirectoryScope(
+    resolution: TestTargetResolutionValue
+) -> bool {
+    return if resolution is {
+        @Resolved { scope } {
+            if scope is {
+                @DirectoryTests {
+                    true
+                }
+                @AllTests {
+                    false
+                }
+                @AssemblyTests {
+                    false
+                }
+                @ModuleTests {
+                    false
+                }
+                @SourceFileTests {
+                    false
+                }
+            }
+        }
+        @Unknown {
+            false
+        }
+    }
+}
+
+internal procedure resolutionIsSourceFileScope(
+    resolution: TestTargetResolutionValue
+) -> bool {
+    return if resolution is {
+        @Resolved { scope } {
+            if scope is {
+                @SourceFileTests {
+                    true
+                }
+                @AllTests {
+                    false
+                }
+                @AssemblyTests {
+                    false
+                }
+                @ModuleTests {
+                    false
+                }
+                @DirectoryTests {
+                    false
+                }
+            }
+        }
+        @Unknown {
+            false
+        }
+    }
+}
+
+internal procedure harnessGenerationProject() -> Project {
+    return project(
+        projectRoot("C:/Dev/Ultraviolet"),
+        assemblyListEntry(harnessGenerationAssembly(), emptyAssemblies())
+    )
+}
+
+internal procedure harnessGenerationAssembly() -> Assembly {
+    return assembly(
+        assemblyName("UltravioletCompiler"),
+        executableAssemblyKind(),
+        noLinkKind(),
+        directoryPath("Compiler"),
+        moduleListEntry(
+            module(
+                modulePath("UltravioletCompiler::Tests::Core::Path"),
+                directoryPath("Compiler/Tests/Core/Path"),
+                emptySourceFiles()
+            ),
+            emptyModules()
+        )
+    )
+}
+
+internal procedure harnessSelectionTest(
+    module_text: string@View,
+    source_file_text: string@View,
+    symbol_text: string@View
+) -> DiscoveredTest {
+    return discoveredTest(
+        testProcedureSymbol(symbol_text),
+        testDisplayName(symbol_text),
+        assemblyName("UltravioletCompiler"),
+        modulePath(module_text),
+        sourceFilePath(source_file_text),
+        0,
+        sourceSpan(source_file_text, 1, 1, 1, 2),
+        testProcedureSymbol(symbol_text),
+        false,
+        emptyCoverageReferences()
+    )
+}

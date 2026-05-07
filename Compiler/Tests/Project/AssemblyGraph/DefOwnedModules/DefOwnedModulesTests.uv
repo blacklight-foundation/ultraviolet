@@ -1,0 +1,102 @@
+// Test responsibility:
+// Compiler/Tests/Project/AssemblyGraph/DefOwnedModules/DefOwnedModulesTests.uv
+//
+// This file owns source-native tests for def.OwnedModules@L4449:
+//
+// OwnedModules(A, As) = [ m ∈ A.modules |
+// OwnerRoot(ModuleDirOf(m, A.source_root), AssemblySourceRoots(As)) =
+// A.source_root ]
+
+using UltravioletCompiler::Project::{
+    ModuleListValue,
+    assembly,
+    assemblyListEntry,
+    assemblyName,
+    directoryPath,
+    emptyAssemblies,
+    emptyModules,
+    emptySourceFiles,
+    libraryAssemblyKind,
+    module,
+    moduleListContainsPath,
+    moduleListEntry,
+    modulePath,
+    noLinkKind,
+    ownedModules
+}
+
+[[test(
+    name: "owned modules keep only modules whose owner is the assembly source root",
+    covers("def.OwnedModules@L4449")
+)]]
+internal procedure ownedModulesKeepOnlyModulesOwnedByAssemblySourceRoot() -> bool
+|: => @result
+{
+    let compiler_assembly_for_filter =
+        assembly(
+            assemblyName("UltravioletCompiler"),
+            libraryAssemblyKind(),
+            noLinkKind(),
+            directoryPath("Compiler"),
+            moduleListEntry(
+                module(
+                    modulePath("UltravioletCompiler::Driver"),
+                    directoryPath("Compiler/Driver"),
+                    emptySourceFiles()
+                ),
+                moduleListEntry(
+                    module(
+                        modulePath("UltravioletCompiler::Core"),
+                        directoryPath("Compiler/Core"),
+                        emptySourceFiles()
+                    ),
+                    emptyModules()
+                )
+            )
+        )
+    let compiler_assembly_for_list =
+        assembly(
+            assemblyName("UltravioletCompiler"),
+            libraryAssemblyKind(),
+            noLinkKind(),
+            directoryPath("Compiler"),
+            moduleListEntry(
+                module(
+                    modulePath("UltravioletCompiler::Driver"),
+                    directoryPath("Compiler/Driver"),
+                    emptySourceFiles()
+                ),
+                moduleListEntry(
+                    module(
+                        modulePath("UltravioletCompiler::Core"),
+                        directoryPath("Compiler/Core"),
+                        emptySourceFiles()
+                    ),
+                    emptyModules()
+                )
+            )
+        )
+    let assemblies =
+        assemblyListEntry(
+            move compiler_assembly_for_list,
+            assemblyListEntry(
+                assembly(
+                    assemblyName("UltravioletCore"),
+                    libraryAssemblyKind(),
+                    noLinkKind(),
+                    directoryPath("Compiler/Core"),
+                    emptyModules()
+                ),
+                emptyAssemblies()
+            )
+        )
+    let modules: ModuleListValue = ownedModules(compiler_assembly_for_filter, assemblies)
+
+    return moduleListContainsPath(
+        modules,
+        modulePath("UltravioletCompiler::Driver")
+    ) && !moduleListContainsPath(
+        modules,
+        modulePath("UltravioletCompiler::Core")
+    )
+}

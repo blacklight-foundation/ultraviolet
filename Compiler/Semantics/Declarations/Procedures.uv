@@ -1,0 +1,208 @@
+// Obligation responsibility: Compiler/Semantics/Declarations/Procedures.uv
+//
+// This file owns source-native test procedure shape and runner-injected
+// authority validation:
+//
+// - req.TestProcedureShape@L28455
+//   A `[[test]]` procedure MUST have a body, be non-generic, have explicit
+//   visibility, have an explicit return type, have a contract clause containing
+//   a postcondition, and have either no parameters or exactly one parameter
+//   whose type is the toolchain-provided `TestContext` type.
+// - req.TestContextAuthority@L28477
+//   The `TestContext` parameter is the only runner-injected value. It carries
+//   filesystem, process, temporary-directory, target-profile, and
+//   compiler-invocation authority needed by effectful compiler tests.
+
+using UltravioletCompiler::Diagnostics::{
+    DiagnosticStreamValue,
+    emptyDiagnosticStream,
+    singleErrorDiagnosticStream
+}
+
+public modal TestProcedureParameterShape {
+    @None {
+        public procedure isValidForTest(~) -> bool {
+            return true
+        }
+
+        public procedure requiresContext(~) -> bool {
+            return false
+        }
+    }
+
+    @TestContext {
+        public procedure isValidForTest(~) -> bool {
+            return true
+        }
+
+        public procedure requiresContext(~) -> bool {
+            return true
+        }
+    }
+
+    @Other {
+        public procedure isValidForTest(~) -> bool {
+            return false
+        }
+
+        public procedure requiresContext(~) -> bool {
+            return false
+        }
+    }
+}
+
+public type TestProcedureParameterShapeValue =
+    TestProcedureParameterShape@None |
+    TestProcedureParameterShape@TestContext |
+    TestProcedureParameterShape@Other
+
+public record TestProcedureDeclaration {
+    public has_body: bool
+    public is_generic: bool
+    public has_explicit_visibility: bool
+    public has_explicit_return_type: bool
+    public contract: ProcedureContract
+    public parameters: TestProcedureParameterShapeValue
+}
+
+public modal TestProcedureShapeCheck {
+    @Valid {
+        public requires_context: bool
+    }
+
+    @Invalid {
+        public diagnostics: DiagnosticStreamValue
+    }
+}
+
+public type TestProcedureShapeCheckValue =
+    TestProcedureShapeCheck@Valid | TestProcedureShapeCheck@Invalid
+
+public procedure noTestProcedureParameters() -> TestProcedureParameterShapeValue {
+    return TestProcedureParameterShape@None {}
+}
+
+public procedure testContextProcedureParameter() -> TestProcedureParameterShapeValue {
+    return TestProcedureParameterShape@TestContext {}
+}
+
+public procedure invalidTestProcedureParameter() -> TestProcedureParameterShapeValue {
+    return TestProcedureParameterShape@Other {}
+}
+
+public procedure testProcedureDeclaration(
+    has_body: bool,
+    is_generic: bool,
+    has_explicit_visibility: bool,
+    has_explicit_return_type: bool,
+    contract: ProcedureContract,
+    parameters: TestProcedureParameterShapeValue
+) -> TestProcedureDeclaration {
+    return TestProcedureDeclaration {
+        has_body: has_body,
+        is_generic: is_generic,
+        has_explicit_visibility: has_explicit_visibility,
+        has_explicit_return_type: has_explicit_return_type,
+        contract: contract,
+        parameters: parameters
+    }
+}
+
+public procedure validTestProcedureDeclaration(
+    parameters: TestProcedureParameterShapeValue
+) -> TestProcedureDeclaration {
+    return testProcedureDeclaration(
+        true,
+        false,
+        true,
+        true,
+        procedureContractWithResultPostcondition(),
+        parameters
+    )
+}
+
+public procedure checkTestProcedureShape(
+    declaration: TestProcedureDeclaration
+) -> TestProcedureShapeCheckValue {
+    if (!declaration.has_body) {
+        return invalidTestProcedureShape()
+    }
+    if (declaration.is_generic) {
+        return invalidTestProcedureShape()
+    }
+    if (!declaration.has_explicit_visibility) {
+        return invalidTestProcedureShape()
+    }
+    if (!declaration.has_explicit_return_type) {
+        return invalidTestProcedureShape()
+    }
+    if (!postconditionIsPresent(declaration.contract.postcondition)) {
+        return missingTestPostcondition()
+    }
+    if (!testProcedureParameterIsValid(declaration.parameters)) {
+        return invalidTestContextParameter()
+    }
+
+    return TestProcedureShapeCheck@Valid {
+        requires_context: testProcedureParameterRequiresContext(declaration.parameters)
+    }
+}
+
+public procedure testProcedureParameterIsValid(
+    parameters: TestProcedureParameterShapeValue
+) -> bool {
+    return if parameters is {
+        @None {
+            parameters~>isValidForTest()
+        }
+        @TestContext {
+            parameters~>isValidForTest()
+        }
+        @Other {
+            parameters~>isValidForTest()
+        }
+    }
+}
+
+public procedure testProcedureParameterRequiresContext(
+    parameters: TestProcedureParameterShapeValue
+) -> bool {
+    return if parameters is {
+        @None {
+            parameters~>requiresContext()
+        }
+        @TestContext {
+            parameters~>requiresContext()
+        }
+        @Other {
+            parameters~>requiresContext()
+        }
+    }
+}
+
+internal procedure invalidTestProcedureShape() -> TestProcedureShapeCheckValue {
+    return TestProcedureShapeCheck@Invalid {
+        diagnostics: singleErrorDiagnosticStream(
+            "E-TST-0104",
+            "invalid [[test]] procedure shape"
+        )
+    }
+}
+
+internal procedure invalidTestContextParameter() -> TestProcedureShapeCheckValue {
+    return TestProcedureShapeCheck@Invalid {
+        diagnostics: singleErrorDiagnosticStream(
+            "E-TST-0105",
+            "invalid TestContext parameter"
+        )
+    }
+}
+
+internal procedure missingTestPostcondition() -> TestProcedureShapeCheckValue {
+    return TestProcedureShapeCheck@Invalid {
+        diagnostics: singleErrorDiagnosticStream(
+            "E-TST-0106",
+            "[[test]] procedure missing postcondition"
+        )
+    }
+}

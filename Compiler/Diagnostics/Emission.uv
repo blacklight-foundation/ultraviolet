@@ -1,0 +1,55 @@
+// Obligation responsibility: Compiler/Diagnostics/Emission.uv
+//
+// This file owns canonical diagnostic construction helpers used by parser,
+// semantic, command, and source-native testing owners.
+
+public procedure errorDiagnostic(
+    code: string@View,
+    message: string@View
+) -> Diagnostic {
+    return diagnostic(
+        diagnosticCode(code),
+        diagnosticSeverityError(),
+        unknownDiagnosticSource(),
+        message
+    )
+}
+
+public procedure sourceErrorDiagnostic(
+    code: string@View,
+    source: DiagnosticSourceValue,
+    message: string@View
+) -> Diagnostic {
+    return diagnostic(
+        diagnosticCode(code),
+        diagnosticSeverityError(),
+        source,
+        message
+    )
+}
+
+public procedure singleErrorDiagnosticStream(
+    code: string@View,
+    message: string@View
+) -> DiagnosticStreamValue {
+    return singleDiagnosticStream(errorDiagnostic(code, message))
+}
+
+public procedure unknownTestTargetDiagnostic(target_text: string@View) -> Diagnostic {
+    return errorDiagnostic(CODE_TEST_UNKNOWN_TARGET, "unknown uv test target")
+}
+
+public procedure unknownTestTargetDiagnosticStream(
+    target_text: string@View
+) -> DiagnosticStreamValue {
+    return singleDiagnosticStream(unknownTestTargetDiagnostic(target_text))
+}
+
+public procedure unknownCoverageReferenceDiagnostic(
+    reference_text: string@View
+) -> Diagnostic {
+    return errorDiagnostic(
+        CODE_TEST_UNKNOWN_COVERAGE_REFERENCE,
+        "unknown audit coverage reference"
+    )
+}

@@ -1,16 +1,28 @@
-// Support responsibility: Compiler/Driver/CLI/TestCommand.uv
+// Obligation responsibility: Compiler/Driver/CLI/TestCommand.uv
 //
 // This file owns `uv test` command coordination for the positional target model
-// in lowering.TestHarnessGeneration@L28498. Target resolution, deterministic
+// in lowering.TestHarnessGeneration@L28516. Target resolution, deterministic
 // discovery, coverage validation, harness generation, execution, and result
 // reporting are routed through their owning driver files.
 //
 // Relevant source-native test command rule:
 //
-// - lowering.TestHarnessGeneration@L28498
+// - lowering.TestHarnessGeneration@L28516
 //   `uv test` uses an optional positional argument, resolves it to a test scope,
 //   generates an ephemeral harness under the selected assembly build output, and
 //   invokes selected tests in deterministic order.
+
+import UltravioletCompiler::Driver::Testing
+using UltravioletCompiler::Driver::Testing::{
+    TestDriverExecutionValue,
+    TestDriverRequest,
+    TestTargetCandidateValue,
+    absentTestTargetCandidate,
+    sourceNativeTestExecutionRequiresProject,
+    testDriverExecutionDiagnostics,
+    testDriverRequest,
+    textTestTargetCandidate
+}
 
 internal let TEST_TARGET_ERROR_CODE: string@View = "E-TST-0108"
 internal let TEST_TARGET_ERROR_MESSAGE: string@View = "unknown uv test target"
@@ -55,10 +67,10 @@ public modal TestCommandInputResult {
     }
 
     @Rejected {
-        public diagnostic: CommandDiagnostic
+        public reason: CommandFailureReasonValue
 
         public procedure commandParseResult(~) -> CommandParseResultValue {
-            return rejectedCommand(self.diagnostic)
+            return rejectedCommand(self.reason)
         }
     }
 }
@@ -126,7 +138,7 @@ public procedure testCommandInputFromArguments(
             )
         }
         @TooMany {
-            rejectedTestCommandInput(testTargetDiagnostic())
+            rejectedTestCommandInput(testTargetRejectedReason())
         }
     }
 }
@@ -136,13 +148,13 @@ public procedure acceptedTestCommandInput(input: TestCommandInput) -> TestComman
 }
 
 public procedure rejectedTestCommandInput(
-    diagnostic: CommandDiagnostic
+    reason: CommandFailureReasonValue
 ) -> TestCommandInputResultValue {
-    return TestCommandInputResult@Rejected { diagnostic: diagnostic }
+    return TestCommandInputResult@Rejected { reason: reason }
 }
 
-public procedure testTargetDiagnostic() -> CommandDiagnostic {
-    return commandDiagnostic(TEST_TARGET_ERROR_CODE, TEST_TARGET_ERROR_MESSAGE)
+public procedure testTargetRejectedReason() -> CommandFailureReasonValue {
+    return testTargetRejectedFailure(TEST_TARGET_ERROR_CODE, TEST_TARGET_ERROR_MESSAGE)
 }
 
 public procedure testCommandParseResult(
@@ -162,7 +174,27 @@ public procedure executeTestCommand(
     host: DriverHost,
     input: TestCommandInput
 ) -> CommandResultValue {
-    return commandFailed(
-        commandDiagnostic(COMMAND_DIAGNOSTIC_PIPELINE_REQUIRED, MESSAGE_PIPELINE_REQUIRED)
+    let request: TestDriverRequest = testDriverRequest(
+        input.current_directory,
+        host~>executablePath(),
+        testTargetCandidateFromArgument(input.target),
+        targetProfileInputText(input.target_profile),
+        outputModeText(input.output_mode)
     )
+    let execution: TestDriverExecutionValue =
+        sourceNativeTestExecutionRequiresProject(move request)
+    return commandFailedWithDiagnostics(testDriverExecutionDiagnostics(move execution))
+}
+
+internal procedure testTargetCandidateFromArgument(
+    target: TestTargetArgumentValue
+) -> TestTargetCandidateValue {
+    return if target is {
+        @Absent {
+            absentTestTargetCandidate()
+        }
+        @Present { text } {
+            textTestTargetCandidate(text)
+        }
+    }
 }

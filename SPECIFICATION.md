@@ -3641,6 +3641,26 @@ DirHandleOf(v) = h    Γ ⊢ DirClose(h) ⇓ ok
 ──────────────────────────────────────────────────────────────────
 Γ ⊢ PrimCall(`System`, `get_env`, v_sys, [k]) ⇓ Val(r)
 
+**(Prim-System-ExecutablePath)**
+Γ ⊢ SystemExecutablePath() ⇓ path
+────────────────────────────────────────────────────────────────────────
+Γ ⊢ PrimCall(`System`, `executable_path`, v_sys, []) ⇓ Val(path)
+
+**(Prim-System-ArgumentCount)**
+Γ ⊢ SystemArgumentCount() ⇓ n
+────────────────────────────────────────────────────────────────────────
+Γ ⊢ PrimCall(`System`, `argument_count`, v_sys, []) ⇓ Val(n)
+
+**(Prim-System-Argument)**
+Γ ⊢ SystemArgument(index) ⇓ text    index < SystemArgumentCount()
+────────────────────────────────────────────────────────────────────────
+Γ ⊢ PrimCall(`System`, `argument`, v_sys, [index]) ⇓ Val(text)
+
+**(Prim-System-CurrentDirectory)**
+Γ ⊢ SystemCurrentDirectory() ⇓ path
+────────────────────────────────────────────────────────────────────────────
+Γ ⊢ PrimCall(`System`, `current_directory`, v_sys, []) ⇓ Val(path)
+
 **(Prim-System-Exit)**
 Γ ⊢ SystemExit(code) ⇓ ok
 ──────────────────────────────────────────────────────────────────
@@ -13678,11 +13698,19 @@ SystemInterface =
 {
  ⟨"exit", [⟨⊥, `code`, TypePrim("i32")⟩], TypePrim("!")⟩,
  ⟨"get_env", [⟨⊥, `key`, TypeString(`@View`)⟩], TypeString(`@View`)⟩,
+ ⟨"executable_path", [], TypeString(`@View`)⟩,
+ ⟨"argument_count", [], TypePrim("usize")⟩,
+ ⟨"argument", [⟨⊥, `index`, TypePrim("usize")⟩], TypeString(`@View`)⟩,
+ ⟨"current_directory", [], TypeString(`@View`)⟩,
  ⟨"run", [⟨⊥, `command`, TypeString(`@View`)⟩], TypePrim("i32")⟩
 }
 SystemMembers = [
   MethodDecl(⊥, `public`, false, "exit", ⊥, ReceiverShorthand(`const`), [⟨⊥, `code`, TypePrim("i32")⟩], TypePrim("!"), ⊥, ⊥, ⊥, ⊥),
   MethodDecl(⊥, `public`, false, "get_env", ⊥, ReceiverShorthand(`const`), [⟨⊥, `key`, TypeString(`@View`)⟩], TypeString(`@View`), ⊥, ⊥, ⊥, ⊥),
+  MethodDecl(⊥, `public`, false, "executable_path", ⊥, ReceiverShorthand(`const`), [], TypeString(`@View`), ⊥, ⊥, ⊥, ⊥),
+  MethodDecl(⊥, `public`, false, "argument_count", ⊥, ReceiverShorthand(`const`), [], TypePrim("usize"), ⊥, ⊥, ⊥, ⊥),
+  MethodDecl(⊥, `public`, false, "argument", ⊥, ReceiverShorthand(`const`), [⟨⊥, `index`, TypePrim("usize")⟩], TypeString(`@View`), ⊥, ⊥, ⊥, ⊥),
+  MethodDecl(⊥, `public`, false, "current_directory", ⊥, ReceiverShorthand(`const`), [], TypeString(`@View`), ⊥, ⊥, ⊥, ⊥),
   MethodDecl(⊥, `public`, false, "run", ⊥, ReceiverShorthand(`const`), [⟨⊥, `command`, TypeString(`@View`)⟩], TypePrim("i32"), ⊥, ⊥, ⊥, ⊥)
 ]
 SystemDecl = RecordDecl(⊥, `public`, `System`, ⊥, ⊥, [], SystemMembers, ⊥, ⊥, ⊥)
@@ -28063,6 +28091,19 @@ EntryJudg = {EntrySym ⇓ sym, ContextInitSym ⇓ sym, EntryStub(P) ⇓ IRDecl}
 ────────────────────────────────────────────────────────────────────────────────────────────
 Γ ⊢ ContextInitSym ⇓ PathSig(["ultraviolet", "runtime", "context_init"])
 
+ProcessInvocation = ⟨executable_path, arguments, current_directory⟩
+
+ProcessInvocationNormalization(host) ⇓ inv ⇔
+  inv.executable_path is the host executable path normalized to UTF-8 text ∧
+  inv.arguments is the ordered list of host command arguments after the executable path,
+    each normalized to UTF-8 text ∧
+  inv.current_directory is the host current working directory normalized to UTF-8 text
+
+A conforming runtime MUST isolate platform-specific process startup, argv, path
+encoding, and current-directory acquisition behind the runtime host/platform
+boundary. Source programs observe only the normalized `System` methods defined
+by `SystemInterface`.
+
 PanicRecordInit(σ) ⇔ PanicRecordOf(σ) = ⟨false, 0⟩
 EntryStubSpec(P, IR_entry) ⇔ Executable(P) ∧ ∃ d, main_sym. MainDecls(P) = [d] ∧ Γ ⊢ Mangle(d) ⇓ main_sym ∧ ∀ σ. ∃ ctx, arg, ret, c, σ_1, σ_2, σ_3.
  ExecIRSigma(CallIR(ContextInitSym, []), σ) ⇓ (Val(ctx), σ_1) ∧ ContextBundleBuild(StripPerm(MainArgType(d)), ctx) ⇓ arg ∧ PanicRecordInit(σ_1) ∧ ExecIRSigma(CallIR(main_sym, [arg, PanicOutName]), σ_1) ⇓ (Val(ret), σ_2) ∧
@@ -28575,6 +28616,22 @@ BuiltinModalSymMap = [
 **(BuiltinSym-System-GetEnv)**
 ─────────────────────────────────────────────────────────────────────────────────────────────────
 Γ ⊢ BuiltinSym(`System::get_env`) ⇓ PathSig(["ultraviolet", "runtime", "system", "get_env"])
+
+**(BuiltinSym-System-ExecutablePath)**
+────────────────────────────────────────────────────────────────────────────────────────────
+Γ ⊢ BuiltinSym(`System::executable_path`) ⇓ PathSig(["ultraviolet", "runtime", "system", "executable_path"])
+
+**(BuiltinSym-System-ArgumentCount)**
+────────────────────────────────────────────────────────────────────────────────────────────
+Γ ⊢ BuiltinSym(`System::argument_count`) ⇓ PathSig(["ultraviolet", "runtime", "system", "argument_count"])
+
+**(BuiltinSym-System-Argument)**
+─────────────────────────────────────────────────────────────────────────────────────────
+Γ ⊢ BuiltinSym(`System::argument`) ⇓ PathSig(["ultraviolet", "runtime", "system", "argument"])
+
+**(BuiltinSym-System-CurrentDirectory)**
+──────────────────────────────────────────────────────────────────────────────────────────────────
+Γ ⊢ BuiltinSym(`System::current_directory`) ⇓ PathSig(["ultraviolet", "runtime", "system", "current_directory"])
 
 **(BuiltinSym-System-Run)**
 ─────────────────────────────────────────────────────────────────────────────────────────────

@@ -1,0 +1,29 @@
+// Test responsibility:
+// Compiler/Tests/Project/Manifest/DefManifestParsing/DefManifestParsingTests.uv
+//
+// This file owns source-native tests for def.ManifestParsing@L2168.
+
+using UltravioletCompiler::Project::{
+    ManifestParseValue,
+    manifestAssemblyListCount,
+    parseManifestText
+}
+
+[[test(
+    name: "manifest parser reads assembly tables across comments and ignored tables",
+    covers("def.ManifestParsing@L2168")
+)]]
+internal procedure manifestParserReadsAssemblyTablesAcrossCommentsAndIgnoredTables() -> bool
+|: => @result
+{
+    let parse: ManifestParseValue = parseManifestText("# generated project manifest\n[toolchain]\nchannel = \"bootstrap\"\n\n[[assembly]]\nname = \"Sample\"\nkind = \"executable\"\nroot = \"Tools/Uv\"\n\n[build]\nprofile = \"check\"\n")
+
+    return if parse is {
+        @Parsed { manifest } {
+            manifestAssemblyListCount(manifest.assemblies) == 1
+        }
+        @Failed {
+            false
+        }
+    }
+}

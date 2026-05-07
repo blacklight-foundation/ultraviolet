@@ -1,0 +1,116 @@
+// Obligation responsibility: Compiler/Source/Parser/AttributeParser.uv
+//
+// This file owns the source-native test attribute grammar and the ordinary
+// attribute-parser representation used by semantic analysis:
+//
+// - grammar.TestAttribute@L28336
+//   test_attribute      ::= "[[" "test" ("(" test_attribute_args ")")? "]]"
+//   test_attribute_args ::= test_attribute_arg ("," test_attribute_arg)*
+//   test_attribute_arg  ::= "name" ":" string_literal
+//                         | "covers" "(" string_literal ")"
+// - parse.TestAttributeByOrdinaryAttributeParser@L28356
+//   `[[test]]` is parsed by the ordinary attribute parser from §9.1.2. The
+//   `name` argument is represented as `⟨name, string_literal⟩`. Each
+//   `covers(...)` argument is represented as `⟨covers, [string_literal]⟩`.
+
+using UltravioletCompiler::Diagnostics::{
+    DiagnosticStreamValue,
+    emptyDiagnosticStream,
+    singleErrorDiagnosticStream
+}
+using UltravioletCompiler::Source::Ast::{
+    Attribute,
+    AttributeArgumentListValue,
+    AttributeArgumentValue,
+    attribute,
+    attributeArgumentListEntry,
+    attributeName,
+    callStringAttributeArgument,
+    emptyAttributeArguments,
+    namedStringAttributeArgument
+}
+
+internal let TEST_ATTRIBUTE_NAME: string@View = "test"
+internal let TEST_ATTRIBUTE_NAME_ARG: string@View = "name"
+internal let TEST_ATTRIBUTE_COVERS_ARG: string@View = "covers"
+
+public modal AttributeParseResult {
+    @Parsed {
+        public attribute: Attribute
+    }
+
+    @Rejected {
+        public diagnostics: DiagnosticStreamValue
+    }
+}
+
+public type AttributeParseResultValue =
+    AttributeParseResult@Parsed | AttributeParseResult@Rejected
+
+public procedure parsedAttribute(attribute: Attribute) -> AttributeParseResultValue {
+    return AttributeParseResult@Parsed { attribute: attribute }
+}
+
+public procedure rejectedAttributeParse(
+    move diagnostics: DiagnosticStreamValue
+) -> AttributeParseResultValue {
+    return AttributeParseResult@Rejected { diagnostics: move diagnostics }
+}
+
+public procedure parseTestAttributeWithoutArguments() -> AttributeParseResultValue {
+    return parsedAttribute(
+        attribute(attributeName(TEST_ATTRIBUTE_NAME), emptyAttributeArguments())
+    )
+}
+
+public procedure parseTestAttribute(
+    move arguments: AttributeArgumentListValue
+) -> AttributeParseResultValue {
+    return parsedAttribute(
+        attribute(attributeName(TEST_ATTRIBUTE_NAME), move arguments)
+    )
+}
+
+public procedure testNameAttributeArgument(
+    value: string@View
+) -> AttributeArgumentValue {
+    return namedStringAttributeArgument(attributeName(TEST_ATTRIBUTE_NAME_ARG), value)
+}
+
+public procedure testCoverageAttributeArgument(
+    value: string@View
+) -> AttributeArgumentValue {
+    return callStringAttributeArgument(attributeName(TEST_ATTRIBUTE_COVERS_ARG), value)
+}
+
+public procedure singleTestNameArgument(value: string@View) -> AttributeArgumentListValue {
+    return attributeArgumentListEntry(
+        testNameAttributeArgument(value),
+        emptyAttributeArguments()
+    )
+}
+
+public procedure singleTestCoverageArgument(
+    value: string@View
+) -> AttributeArgumentListValue {
+    return attributeArgumentListEntry(
+        testCoverageAttributeArgument(value),
+        emptyAttributeArguments()
+    )
+}
+
+public procedure testAttributeArguments2(
+    left: AttributeArgumentValue,
+    right: AttributeArgumentValue
+) -> AttributeArgumentListValue {
+    return attributeArgumentListEntry(
+        left,
+        attributeArgumentListEntry(right, emptyAttributeArguments())
+    )
+}
+
+public procedure malformedTestAttributeArgument() -> AttributeParseResultValue {
+    return rejectedAttributeParse(
+        singleErrorDiagnosticStream("E-TST-0101", "malformed [[test]] argument")
+    )
+}

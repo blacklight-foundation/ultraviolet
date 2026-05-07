@@ -1,0 +1,89 @@
+// Support responsibility: Compiler/Driver/Testing/TestCoverage.uv
+//
+// This file supports source-native test coverage validation against the
+// obligation ledger. Primary extraction and static argument ownership lives in
+// Compiler/Semantics/Attributes/TestAttributes.uv:
+//
+// - def.TestCoverage@L28404
+//   `covers(...)` entries are represented in source order.
+// - def.TestAttributeArgsOk@L28435
+//   Coverage references use the `obligation-id@Linternal_spec_line` shape.
+// - diagnostics.TestAttributes@L28593
+//   Unknown or malformed coverage references produce source-native test
+//   diagnostics through Compiler/Diagnostics/Codes.uv and Emission.uv.
+
+using UltravioletCompiler::Semantics::Attributes::{
+    CoverageReference,
+    CoverageReferenceListValue,
+    CoverageReferenceShapeValue,
+    coverageReferenceHasLedgerLine,
+    emptyCoverageReferences,
+    validateCoverageReferenceShape
+}
+
+public modal CoverageCheck {
+    @Satisfied {
+    }
+
+    @Failed {
+        public diagnostics: DiagnosticStreamValue
+    }
+}
+
+public type CoverageCheckValue =
+    CoverageCheck@Satisfied | CoverageCheck@Failed
+
+public procedure coverageReferencesHaveValidShape(
+    move references: CoverageReferenceListValue
+) -> CoverageCheckValue {
+    return coverageReferencesHaveValidShapeWithDiagnostics(
+        move references,
+        emptyDiagnosticStream()
+    )
+}
+
+internal procedure coverageReferencesHaveValidShapeWithDiagnostics(
+    move references: CoverageReferenceListValue,
+    move diagnostics: DiagnosticStreamValue
+) -> CoverageCheckValue {
+    return if references is {
+        @Empty {
+            if (diagnosticStreamHasContent(diagnostics)) {
+                CoverageCheck@Failed { diagnostics: move diagnostics }
+            } else {
+                CoverageCheck@Satisfied {}
+            }
+        }
+        @Entry { reference, tail } {
+            let shape: CoverageReferenceShapeValue =
+                validateCoverageReferenceShape(reference)
+            if shape is {
+                @Valid {
+                    coverageReferencesHaveValidShapeWithDiagnostics(move tail, move diagnostics)
+                }
+                @Malformed {
+                    coverageReferencesHaveValidShapeWithDiagnostics(
+                        move tail,
+                        diagnosticStreamAppend(
+                            move diagnostics,
+                            unknownCoverageReferenceDiagnostic(reference.text)
+                        )
+                    )
+                }
+            }
+        }
+    }
+}
+
+internal procedure diagnosticStreamHasContent(
+    diagnostics: DiagnosticStreamValue
+) -> bool {
+    return if diagnostics is {
+        @Empty {
+            false
+        }
+        @Entry {
+            true
+        }
+    }
+}

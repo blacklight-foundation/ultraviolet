@@ -1,0 +1,520 @@
+// Obligation responsibility: Compiler/Project/ModuleDiscovery.uv
+//
+// This file owns source-root validation, filesystem scan interpretation,
+// module-directory classification, compilation-unit construction, and the
+// module-discovery lifecycle:
+//
+// - def.SourceRootDirectories@L4254
+//   Dirs(S) = { d | is_dir(d) ∧ relative(d, S) ⇓ r }
+//   S ∈ Dirs(S)
+// - WF-Source-Root@L4270
+//   is_dir(S)
+//   Γ ⊢ S : SourceRoot
+// - WF-Source-Root-Err@L4288
+//   ¬ is_dir(S)    c = Code(WF-Source-Root-Err)
+//   Γ ⊢ S : SourceRoot ⇑ c
+// - Module-Dir@L4306
+//   ∃ f ∈ Files(d) : FileExt(f) = ".uv"
+//   Γ ⊢ d : ModuleDir
+// - def.ModuleDirectoryFiles@L4324
+//   Files(d) = { f | f ∈ d ∧ FileExt(f) = ".uv" }
+// - def.CompilationUnits@L4338
+//   CompilationUnit(d) = sort_{≺_file}(Files(d))
+// - CompilationUnit-Rel-Fail@L4352
+//   ∃ f ∈ Files(d). relative(f, d) ⇑    c = Code(FileOrder-Rel-Fail)
+//   Γ ⊢ CompilationUnit(d) ⇑ c
+// - refs.ModuleDiscoverySection@L4370
+//   Module discovery state transitions and module-path formation are defined
+//   by §11.5.4.
+// - Modules-Ok@L4384
+//   ⟨DiscStart(S, A)⟩ →* ⟨DiscDone(M)⟩
+//   Γ ⊢ Modules(S, A) ⇓ M
+// - Modules-Err@L4402
+//   ⟨DiscStart(S, A)⟩ →* ⟨Error(c)⟩
+//   Γ ⊢ Modules(S, A) ⇑ c
+
+internal let SOURCE_ROOT_NOT_DIRECTORY_CODE: string@View = "E-PRJ-0302"
+internal let SOURCE_ROOT_NOT_DIRECTORY_MESSAGE: string@View =
+    "assembly source root is not a directory"
+internal let FILE_ORDER_RELATIVE_FAILURE_CODE: string@View = "E-PRJ-0303"
+internal let FILE_ORDER_RELATIVE_FAILURE_MESSAGE: string@View =
+    "source file cannot be relativized to module directory"
+
+public modal SourceFilePathList {
+    @Empty {
+        public procedure count(~) -> usize {
+            return 0
+        }
+    }
+
+    @Entry {
+        public path: SourceFilePath
+        public tail: SourceFilePathListValue
+
+        public procedure count(~) -> usize {
+            return 1 + sourceFilePathListCount(self.tail)
+        }
+    }
+}
+
+public type SourceFilePathListValue =
+    SourceFilePathList@Empty | SourceFilePathList@Entry
+
+public record ModuleDirectoryScan {
+    public directory: DirectoryPath
+    public module_path: ModulePath
+    public files: SourceFilePathListValue
+    public relative_paths_available: bool
+}
+
+public modal ModuleDirectoryScanList {
+    @Empty {
+        public procedure count(~) -> usize {
+            return 0
+        }
+    }
+
+    @Entry {
+        public scan: ModuleDirectoryScan
+        public tail: ModuleDirectoryScanListValue
+
+        public procedure count(~) -> usize {
+            return 1 + moduleDirectoryScanListCount(self.tail)
+        }
+    }
+}
+
+public type ModuleDirectoryScanListValue =
+    ModuleDirectoryScanList@Empty | ModuleDirectoryScanList@Entry
+
+public record SourceRootScan {
+    public root_directory: DirectoryPath
+    public is_directory: bool
+    public directories: ModuleDirectoryScanListValue
+}
+
+public modal CompilationUnitResult {
+    @Computed {
+        public source_files: SourceFileListValue
+    }
+
+    @Failed {
+        public diagnostics: DiagnosticStreamValue
+    }
+}
+
+public type CompilationUnitResultValue =
+    CompilationUnitResult@Computed | CompilationUnitResult@Failed
+
+public modal ModuleDiscovery {
+    @Scanning {
+        public assembly_name: AssemblyName
+        public root_directory: DirectoryPath
+
+        public transition discovered(move modules: ModuleListValue) -> @Complete {
+            return ModuleDiscovery@Complete {
+                assembly_name: move self.assembly_name,
+                root_directory: move self.root_directory,
+                modules: move modules
+            }
+        }
+    }
+
+    @Complete {
+        public assembly_name: AssemblyName
+        public root_directory: DirectoryPath
+        public modules: ModuleListValue
+    }
+
+    @Failed {
+        public assembly_name: AssemblyName
+        public root_directory: DirectoryPath
+        public diagnostics: DiagnosticStreamValue
+    }
+}
+
+public type ModuleDiscoveryValue =
+    ModuleDiscovery@Scanning |
+    ModuleDiscovery@Complete |
+    ModuleDiscovery@Failed
+
+public procedure scanningModuleDiscovery(
+    assembly_name: AssemblyName,
+    root_directory: DirectoryPath
+) -> ModuleDiscoveryValue {
+    return ModuleDiscovery@Scanning {
+        assembly_name: assembly_name,
+        root_directory: root_directory
+    }
+}
+
+public procedure completeModuleDiscovery(
+    assembly_name: AssemblyName,
+    root_directory: DirectoryPath,
+    move modules: ModuleListValue
+) -> ModuleDiscoveryValue {
+    return ModuleDiscovery@Complete {
+        assembly_name: assembly_name,
+        root_directory: root_directory,
+        modules: move modules
+    }
+}
+
+public procedure failedModuleDiscovery(
+    assembly_name: AssemblyName,
+    root_directory: DirectoryPath,
+    move diagnostics: DiagnosticStreamValue
+) -> ModuleDiscoveryValue {
+    return ModuleDiscovery@Failed {
+        assembly_name: assembly_name,
+        root_directory: root_directory,
+        diagnostics: move diagnostics
+    }
+}
+
+public procedure moduleDiscoveryHasDiscoveredModules(
+    discovery: ModuleDiscoveryValue
+) -> bool {
+    return if discovery is {
+        @Scanning {
+            false
+        }
+        @Failed {
+            false
+        }
+        @Complete { modules } {
+            moduleListCount(modules) > 0
+        }
+    }
+}
+
+public procedure emptySourceFilePaths() -> SourceFilePathListValue {
+    return SourceFilePathList@Empty {}
+}
+
+public procedure sourceFilePathListEntry(
+    path: SourceFilePath,
+    move tail: SourceFilePathListValue
+) -> SourceFilePathListValue {
+    return SourceFilePathList@Entry {
+        path: path,
+        tail: move tail
+    }
+}
+
+public procedure sourceFilePathListCount(paths: SourceFilePathListValue) -> usize {
+    return if paths is {
+        @Empty {
+            paths~>count()
+        }
+        @Entry {
+            paths~>count()
+        }
+    }
+}
+
+public procedure moduleDirectoryScan(
+    directory: DirectoryPath,
+    module_path: ModulePath,
+    move files: SourceFilePathListValue,
+    relative_paths_available: bool
+) -> ModuleDirectoryScan {
+    return ModuleDirectoryScan {
+        directory: directory,
+        module_path: module_path,
+        files: move files,
+        relative_paths_available: relative_paths_available
+    }
+}
+
+public procedure emptyModuleDirectoryScans() -> ModuleDirectoryScanListValue {
+    return ModuleDirectoryScanList@Empty {}
+}
+
+public procedure moduleDirectoryScanListEntry(
+    move scan: ModuleDirectoryScan,
+    move tail: ModuleDirectoryScanListValue
+) -> ModuleDirectoryScanListValue {
+    return ModuleDirectoryScanList@Entry {
+        scan: move scan,
+        tail: move tail
+    }
+}
+
+public procedure moduleDirectoryScanListCount(
+    scans: ModuleDirectoryScanListValue
+) -> usize {
+    return if scans is {
+        @Empty {
+            scans~>count()
+        }
+        @Entry {
+            scans~>count()
+        }
+    }
+}
+
+public procedure sourceRootScan(
+    root_directory: DirectoryPath,
+    is_directory: bool,
+    move directories: ModuleDirectoryScanListValue
+) -> SourceRootScan {
+    return SourceRootScan {
+        root_directory: root_directory,
+        is_directory: is_directory,
+        directories: move directories
+    }
+}
+
+public procedure sourceRootScanIncludesRoot(scan: SourceRootScan) -> bool {
+    return moduleDirectoryScanListContainsDirectory(
+        scan.directories,
+        scan.root_directory
+    )
+}
+
+public procedure sourceRootScanIsWellFormed(scan: SourceRootScan) -> bool {
+    return scan.is_directory
+}
+
+public procedure moduleDirectoryScanIsModuleDirectory(scan: ModuleDirectoryScan) -> bool {
+    return sourceFilePathListContainsUvFile(scan.files)
+}
+
+public procedure moduleDirectoryFiles(
+    scan: ModuleDirectoryScan
+) -> SourceFilePathListValue {
+    return uvSourceFilesFromSourceFilePaths(scan.files)
+}
+
+public procedure compilationUnitForDirectory(
+    scan: ModuleDirectoryScan
+) -> CompilationUnitResultValue {
+    if (!scan.relative_paths_available) {
+        return CompilationUnitResult@Failed {
+            diagnostics: singleErrorDiagnosticStream(
+                FILE_ORDER_RELATIVE_FAILURE_CODE,
+                FILE_ORDER_RELATIVE_FAILURE_MESSAGE
+            )
+        }
+    }
+
+    let files: SourceFileListValue =
+        sourceFilesFromPathList(scan.files, scan.module_path, 0)
+    return CompilationUnitResult@Computed {
+        source_files: sourceFilesWithFileOrder(sortSourceFiles(move files), 0)
+    }
+}
+
+public procedure discoverModulesFromSourceRootScan(
+    assembly_name: AssemblyName,
+    scan: SourceRootScan
+) -> ModuleDiscoveryValue {
+    if (!sourceRootScanIsWellFormed(scan)) {
+        return failedModuleDiscovery(
+            assembly_name,
+            scan.root_directory,
+            singleErrorDiagnosticStream(
+                SOURCE_ROOT_NOT_DIRECTORY_CODE,
+                SOURCE_ROOT_NOT_DIRECTORY_MESSAGE
+            )
+        )
+    }
+
+    let modules: ModuleDiscoveryValue =
+        discoverModulesFromDirectoryScans(
+            scanningModuleDiscovery(assembly_name, scan.root_directory),
+            scan.directories
+        )
+    return if modules is {
+        @Scanning { assembly_name: scanned_assembly, root_directory } {
+            completeModuleDiscovery(
+                scanned_assembly,
+                root_directory,
+                emptyModules()
+            )
+        }
+        @Complete {
+            modules
+        }
+        @Failed {
+            modules
+        }
+    }
+}
+
+internal procedure discoverModulesFromDirectoryScans(
+    move discovery: ModuleDiscoveryValue,
+    scans: ModuleDirectoryScanListValue
+) -> ModuleDiscoveryValue {
+    return if discovery is {
+        @Scanning { assembly_name, root_directory } {
+            let modules: ModuleScanResultValue =
+                modulesFromDirectoryScans(scans, emptyModules())
+            return if modules is {
+                @Discovered { modules: discovered_modules } {
+                    completeModuleDiscovery(
+                        assembly_name,
+                        root_directory,
+                        sortModules(move discovered_modules)
+                    )
+                }
+                @Failed { diagnostics } {
+                    failedModuleDiscovery(
+                        assembly_name,
+                        root_directory,
+                        move diagnostics
+                    )
+                }
+            }
+        }
+        @Complete {
+            discovery
+        }
+        @Failed {
+            discovery
+        }
+    }
+}
+
+internal modal ModuleScanResult {
+    @Discovered {
+        internal modules: ModuleListValue
+    }
+
+    @Failed {
+        internal diagnostics: DiagnosticStreamValue
+    }
+}
+
+internal type ModuleScanResultValue =
+    ModuleScanResult@Discovered | ModuleScanResult@Failed
+
+internal procedure modulesFromDirectoryScans(
+    scans: ModuleDirectoryScanListValue,
+    move modules: ModuleListValue
+) -> ModuleScanResultValue {
+    return if scans is {
+        @Empty {
+            ModuleScanResult@Discovered { modules: move modules }
+        }
+        @Entry { scan, tail } {
+            if (!moduleDirectoryScanIsModuleDirectory(scan)) {
+                return modulesFromDirectoryScans(tail, move modules)
+            }
+
+            let unit: CompilationUnitResultValue = compilationUnitForDirectory(scan)
+            return if unit is {
+                @Computed { source_files } {
+                    modulesFromDirectoryScans(
+                        tail,
+                        moduleListEntry(
+                            module(
+                                scan.module_path,
+                                scan.directory,
+                                move source_files
+                            ),
+                            move modules
+                        )
+                    )
+                }
+                @Failed { diagnostics } {
+                    ModuleScanResult@Failed { diagnostics: move diagnostics }
+                }
+            }
+        }
+    }
+}
+
+internal procedure moduleDirectoryScanListContainsDirectory(
+    scans: ModuleDirectoryScanListValue,
+    directory: DirectoryPath
+) -> bool {
+    return if scans is {
+        @Empty {
+            false
+        }
+        @Entry { scan, tail } {
+            if (projectTextEquals(scan.directory.text, directory.text)) {
+                true
+            } else {
+                moduleDirectoryScanListContainsDirectory(tail, directory)
+            }
+        }
+    }
+}
+
+internal procedure sourceFilePathListContainsUvFile(
+    paths: SourceFilePathListValue
+) -> bool {
+    return if paths is {
+        @Empty {
+            false
+        }
+        @Entry { path, tail } {
+            if (sourceFileHasUvExtension(path)) {
+                true
+            } else {
+                sourceFilePathListContainsUvFile(tail)
+            }
+        }
+    }
+}
+
+internal procedure uvSourceFilesFromSourceFilePaths(
+    paths: SourceFilePathListValue
+) -> SourceFilePathListValue {
+    return if paths is {
+        @Empty {
+            emptySourceFilePaths()
+        }
+        @Entry { path, tail } {
+            let filtered_tail: SourceFilePathListValue =
+                uvSourceFilesFromSourceFilePaths(tail)
+            if (sourceFileHasUvExtension(path)) {
+                sourceFilePathListEntry(path, move filtered_tail)
+            } else {
+                move filtered_tail
+            }
+        }
+    }
+}
+
+internal procedure sourceFilesFromPathList(
+    paths: SourceFilePathListValue,
+    path: ModulePath,
+    file_order: usize
+) -> SourceFileListValue {
+    return if paths is {
+        @Empty {
+            emptySourceFiles()
+        }
+        @Entry { path: source_path, tail } {
+            if (!sourceFileHasUvExtension(source_path)) {
+                sourceFilesFromPathList(tail, path, file_order)
+            } else {
+                sourceFileListEntry(
+                    sourceFile(source_path, path, file_order),
+                    sourceFilesFromPathList(tail, path, file_order + 1)
+                )
+            }
+        }
+    }
+}
+
+internal procedure sourceFilesWithFileOrder(
+    move files: SourceFileListValue,
+    file_order: usize
+) -> SourceFileListValue {
+    return if files is {
+        @Empty {
+            emptySourceFiles()
+        }
+        @Entry { file, tail } {
+            sourceFileListEntry(
+                sourceFile(file.path, file.module_path, file_order),
+                sourceFilesWithFileOrder(move tail, file_order + 1)
+            )
+        }
+    }
+}

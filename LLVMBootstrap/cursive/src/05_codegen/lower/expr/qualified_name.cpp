@@ -1,0 +1,59 @@
+﻿// =============================================================================
+// Expression Lowering: QualifiedNameExpr
+// =============================================================================
+//
+// SPEC REFERENCE: CursiveSpecification.md Section 6.4 (Expression Lowering)
+//   - Line 16067-16069: (Lower-Expr-Path)
+//
+// MIGRATED FROM:
+//   - cursive-bootstrap/src/04_codegen/lower/lower_expr_core.cpp
+//   - Lines 1174-1188: LowerPath function
+//
+// =============================================================================
+
+#include "05_codegen/lower/expr/qualified_name.h"
+#include "00_core/assert_spec.h"
+#include "05_codegen/intrinsics/builtins.h"
+
+namespace cursive::codegen {
+
+// =============================================================================
+// LowerQualifiedName - Lower a qualified name expression to IR
+// =============================================================================
+// SPEC: (Lower-Expr-Path)
+//   PathOfModule(mp) = path    name = last(path)    path' = init(path)
+//   -----------------------------------------------------------------
+//   Gamma |- LowerExpr(Path(mp, name)) => <ReadPathIR(path', name), v>
+//
+// QualifiedNameExpr represents a name with a module path prefix,
+// e.g., std::io::File. It produces:
+// 1. IRReadPath to read from the specified module path
+// 2. A symbol IRValue with the final name
+// =============================================================================
+
+LowerResult LowerQualifiedName(const ast::QualifiedNameExpr& expr, LowerCtx& /*ctx*/) {
+    SPEC_RULE("Lower-Expr-Path");
+
+    // Build IRReadPath from the path components
+    IRReadPath read;
+    read.path = expr.path;  // Module path segments
+    read.name = expr.name;  // Final item name
+
+    // Create symbol IRValue
+    IRValue value;
+    value.kind = IRValue::Kind::Symbol;
+    value.name = expr.name;
+
+    // Builtin path calls (for example string::length, bytes::to_managed)
+    // lower to runtime builtin symbols rather than user-scope path symbols.
+    if (!expr.path.empty()) {
+        const std::string qualified = expr.path.back() + "::" + expr.name;
+        if (const std::string builtin = BuiltinSym(qualified); !builtin.empty()) {
+            value.name = builtin;
+        }
+    }
+
+    return LowerResult{MakeIR(std::move(read)), value};
+}
+
+}  // namespace cursive::codegen

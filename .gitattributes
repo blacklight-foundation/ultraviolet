@@ -1,15 +1,17 @@
 * text=auto
-
+.gitattributes text eol=lf
 *.uv text eol=lf
 *.toml text eol=lf
 *.md text eol=lf
 *.py text eol=lf
 *.sh text eol=lf
 *.ps1 text eol=crlf
-
+.githooks/* text eol=lf
 *.png binary
 *.jpg binary
 *.jpeg binary
 *.gif binary
 *.ico binary
 *.pdf binary
+LLVMBootstrap/extern/llvm/llvm-21.1.8-x86_64-sysv/bin/clang++ filter=lfs diff=lfs merge=lfs -text
+LLVMBootstrap/extern/llvm/llvm-21.1.8-x86_64-sysv/bin/ld.lld filter=lfs diff=lfs merge=lfs -text

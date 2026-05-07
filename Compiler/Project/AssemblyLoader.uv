@@ -1,0 +1,358 @@
+// Obligation responsibility: Compiler/Project/AssemblyLoader.uv
+//
+// This file owns the project loading lifecycle:
+//
+// - conformance.ManifestRequired@L2237
+//   If Γ ⊢ ParseManifest(R) ⇑ c, then Γ ⊢ LoadProject(R, target) ⇑ c
+//   and the implementation MUST NOT attempt any single-file or heuristic
+//   fallback project construction.
+// - WF-Assembly@L3511
+//   A_0.kind ∈ AssemblyKind
+//   Γ ⊢ A_0 : Assembly
+// - def.AssemblyTarget@L3529
+//   AssemblyTarget = Name ∪ {⊥}
+// - def.ProjLoadState@L3544
+//   ProjLoadState = {Start(R, target), Parsed(R, target, T),
+//   Validated(R, target, T), ProjAsmScan(R, target, T, Ts, As),
+//   Discovered(P), Error(code)}
+// - Step-Parse@L3558
+//   Γ ⊢ ParseManifest(R) ⇓ T
+//   ⟨Start(R, target)⟩ → ⟨Parsed(R, target, T)⟩
+// - Step-Parse-Err@L3576
+//   Γ ⊢ ParseManifest(R) ⇑ c
+//   ⟨Start(R, target)⟩ → ⟨Error(c)⟩
+// - Step-Validate@L3594
+//   Γ ⊢ ValidateManifest(T) ⇓ ok
+//   ⟨Parsed(R, target, T)⟩ → ⟨Validated(R, target, T)⟩
+// - Step-Validate-Err@L3612
+//   Γ ⊢ ValidateManifest(T) ⇑ c
+//   ⟨Parsed(R, target, T)⟩ → ⟨Error(c)⟩
+// - Step-Asm-Init@L3741
+// - Step-Asm-Cons@L3759
+// - Step-Asm-Err@L3777
+// - Step-Asm-Done@L3795
+// - Step-Asm-Own-Err@L3813
+// - Step-Asm-Done-Err@L3831
+// - BuildAssembly-Ok@L3925
+// - BuildAssembly-Err-Resolve@L3943
+// - BuildAssembly-Err-Root@L3961
+// - BuildAssembly-Err-Modules@L3979
+// - LoadProject-Ok@L3999
+// - LoadProject-Err@L4017
+
+internal let ASSEMBLY_KIND_EXECUTABLE_TEXT: string@View = "executable"
+internal let ASSEMBLY_KIND_LIBRARY_TEXT: string@View = "library"
+internal let ASSEMBLY_KIND_DEPENDENCY_TEXT: string@View = "dependency"
+internal let ASSEMBLY_LINK_KIND_STATIC_TEXT: string@View = "static"
+internal let ASSEMBLY_LINK_KIND_SHARED_TEXT: string@View = "shared"
+
+public modal AssemblyBuild {
+    @Built {
+        public assembly: Assembly
+    }
+
+    @Failed {
+        public diagnostics: DiagnosticStreamValue
+    }
+}
+
+public type AssemblyBuildValue = AssemblyBuild@Built | AssemblyBuild@Failed
+
+public modal ProjectLoad {
+    @RootLocated {
+        public root: ProjectRoot
+
+        public transition manifestParsed(move manifest: Manifest) -> @ManifestParsed {
+            return ProjectLoad@ManifestParsed {
+                root: move self.root,
+                manifest: move manifest
+            }
+        }
+    }
+
+    @ManifestParsed {
+        public root: ProjectRoot
+        public manifest: Manifest
+
+        public transition manifestValidated(
+            move manifest: Manifest
+        ) -> @ManifestValidated {
+            return ProjectLoad@ManifestValidated {
+                root: move self.root,
+                manifest: move manifest
+            }
+        }
+    }
+
+    @ManifestValidated {
+        public root: ProjectRoot
+        public manifest: Manifest
+
+        public transition assembliesDiscovered(
+            move assemblies: AssemblyListValue
+        ) -> @AssembliesDiscovered {
+            return ProjectLoad@AssembliesDiscovered {
+                root: move self.root,
+                manifest: move self.manifest,
+                assemblies: move assemblies
+            }
+        }
+    }
+
+    @AssembliesDiscovered {
+        public root: ProjectRoot
+        public manifest: Manifest
+        public assemblies: AssemblyListValue
+
+        public transition complete(move project: Project) -> @Complete {
+            return ProjectLoad@Complete { project: move project }
+        }
+    }
+
+    @Complete {
+        public project: Project
+    }
+
+    @Failed {
+        public diagnostics: DiagnosticStreamValue
+    }
+}
+
+public type ProjectLoadValue =
+    ProjectLoad@RootLocated |
+    ProjectLoad@ManifestParsed |
+    ProjectLoad@ManifestValidated |
+    ProjectLoad@AssembliesDiscovered |
+    ProjectLoad@Complete |
+    ProjectLoad@Failed
+
+public procedure projectLoadRootLocated(root: ProjectRoot) -> ProjectLoadValue {
+    return ProjectLoad@RootLocated { root: root }
+}
+
+public procedure failedProjectLoad(
+    move diagnostics: DiagnosticStreamValue
+) -> ProjectLoadValue {
+    return ProjectLoad@Failed { diagnostics: move diagnostics }
+}
+
+public procedure completeProjectLoad(move project: Project) -> ProjectLoadValue {
+    return ProjectLoad@Complete { project: move project }
+}
+
+public procedure projectLoadParseManifestText(
+    root: ProjectRoot,
+    text: string@View
+) -> ProjectLoadValue {
+    let parse: ManifestParseValue = parseManifestText(text)
+    return if parse is {
+        @Failed { diagnostics } {
+            failedProjectLoad(move diagnostics)
+        }
+        @Parsed { manifest: parsed_manifest } {
+            ProjectLoad@ManifestParsed {
+                root: root,
+                manifest: move parsed_manifest
+            }
+        }
+    }
+}
+
+public procedure projectLoadFromManifestText(
+    root: ProjectRoot,
+    text: string@View
+) -> ProjectLoadValue {
+    let parsed_load: ProjectLoadValue = projectLoadParseManifestText(root, text)
+    return if parsed_load is {
+        @ManifestParsed { root: parsed_root, manifest: parsed_manifest } {
+            projectLoadFromManifestValidation(
+                parsed_root,
+                validateManifest(move parsed_manifest)
+            )
+        }
+        @Failed { diagnostics } {
+            failedProjectLoad(move diagnostics)
+        }
+        @RootLocated {
+            parsed_load
+        }
+        @ManifestValidated {
+            parsed_load
+        }
+        @AssembliesDiscovered {
+            parsed_load
+        }
+        @Complete {
+            parsed_load
+        }
+    }
+}
+
+public procedure projectFromLoadedAssemblies(
+    root: ProjectRoot,
+    move assemblies: AssemblyListValue
+) -> Project {
+    return project(root, move assemblies)
+}
+
+public procedure projectLoadFromManifestParse(
+    root: ProjectRoot,
+    move parse: ManifestParseValue
+) -> ProjectLoadValue {
+    return if parse is {
+        @Failed { diagnostics } {
+            failedProjectLoad(move diagnostics)
+        }
+        @Parsed { manifest: parsed_manifest } {
+            projectLoadFromManifestValidation(
+                root,
+                validateManifest(move parsed_manifest)
+            )
+        }
+    }
+}
+
+public procedure projectLoadFromManifestValidation(
+    root: ProjectRoot,
+    move validation: ManifestValidationValue
+) -> ProjectLoadValue {
+    return if validation is {
+        @Invalid { diagnostics } {
+            failedProjectLoad(move diagnostics)
+        }
+        @Valid { manifest: valid_manifest } {
+            ProjectLoad@ManifestValidated {
+                root: root,
+                manifest: move valid_manifest
+            }
+        }
+    }
+}
+
+public procedure projectLoadFromDiscoveredAssemblies(
+    root: ProjectRoot,
+    move manifest: Manifest,
+    move assemblies: AssemblyListValue
+) -> ProjectLoadValue {
+    return projectLoadFromDiscoveredAssembliesWithTarget(
+        root,
+        move manifest,
+        move assemblies,
+        absentAssemblyTarget()
+    )
+}
+
+public procedure projectLoadFromDiscoveredAssembliesWithTarget(
+    root: ProjectRoot,
+    move manifest: Manifest,
+    move assemblies: AssemblyListValue,
+    target: AssemblyTargetValue
+) -> ProjectLoadValue {
+    let ownership: AssemblyOwnershipValue = ownAssemblies(assemblies)
+    return if ownership is {
+        @Failed { diagnostics } {
+            failedProjectLoad(move diagnostics)
+        }
+        @Owned { assemblies: owned_assemblies } {
+            projectLoadFromOwnedAssembliesWithTarget(root, move owned_assemblies, target)
+        }
+    }
+}
+
+internal procedure projectLoadFromOwnedAssembliesWithTarget(
+    root: ProjectRoot,
+    move assemblies: AssemblyListValue,
+    target: AssemblyTargetValue
+) -> ProjectLoadValue {
+    let ordered_assemblies: AssemblyListValue = sortAssemblies(move assemblies)
+    let selection: AssemblySelectionValue = selectAssembly(ordered_assemblies, target)
+    return if selection is {
+        @Selected {
+            completeProjectLoad(
+                projectFromLoadedAssemblies(root, move ordered_assemblies)
+            )
+        }
+        @Missing {
+            failedProjectLoad(
+                singleErrorDiagnosticStream(
+                    "E-PRJ-0304",
+                    "assembly target was not found"
+                )
+            )
+        }
+        @Ambiguous {
+            failedProjectLoad(
+                singleErrorDiagnosticStream(
+                    "E-PRJ-0304",
+                    "assembly target is ambiguous"
+                )
+            )
+        }
+    }
+}
+
+public procedure buildAssemblyFromManifest(
+    manifest_assembly: ManifestAssembly,
+    move modules: ModuleListValue
+) -> AssemblyBuildValue {
+    let kind: AssemblyKindValue = assemblyKindFromManifest(manifest_assembly)
+    let link_kind: LinkKindValue = linkKindFromManifest(manifest_assembly)
+    return AssemblyBuild@Built {
+        assembly: assembly(
+            assemblyName(manifest_assembly.name),
+            kind,
+            link_kind,
+            directoryPath(manifest_assembly.root),
+            move modules
+        )
+    }
+}
+
+public procedure buildAssemblyFromModuleDiscovery(
+    manifest_assembly: ManifestAssembly,
+    move discovery: ModuleDiscoveryValue
+) -> AssemblyBuildValue {
+    return if discovery is {
+        @Complete { modules } {
+            buildAssemblyFromManifest(
+                manifest_assembly,
+                sortModules(move modules)
+            )
+        }
+        @Failed { diagnostics } {
+            AssemblyBuild@Failed { diagnostics: move diagnostics }
+        }
+        @Scanning {
+            AssemblyBuild@Failed {
+                diagnostics: singleErrorDiagnosticStream(
+                    "E-PRJ-0303",
+                    "module discovery did not complete"
+                )
+            }
+        }
+    }
+}
+
+public procedure assemblyKindFromManifest(
+    manifest_assembly: ManifestAssembly
+) -> AssemblyKindValue {
+    if (projectTextEquals(manifest_assembly.kind, ASSEMBLY_KIND_EXECUTABLE_TEXT)) {
+        return executableAssemblyKind()
+    }
+    if (projectTextEquals(manifest_assembly.kind, ASSEMBLY_KIND_LIBRARY_TEXT)) {
+        return libraryAssemblyKind()
+    }
+    return dependencyAssemblyKind()
+}
+
+public procedure linkKindFromManifest(
+    manifest_assembly: ManifestAssembly
+) -> LinkKindValue {
+    if (projectTextEquals(manifest_assembly.link_kind, ASSEMBLY_LINK_KIND_STATIC_TEXT)) {
+        return staticLinkKind()
+    }
+    if (projectTextEquals(manifest_assembly.link_kind, ASSEMBLY_LINK_KIND_SHARED_TEXT)) {
+        return sharedLinkKind()
+    }
+    return noLinkKind()
+}

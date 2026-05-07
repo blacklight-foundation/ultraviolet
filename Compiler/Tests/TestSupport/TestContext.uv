@@ -1,3 +1,51 @@
+// Obligation responsibility: Compiler/Tests/TestSupport/TestContext.uv
+//
+// This file owns the toolchain-provided compiler test context used by generated
+// source-native test harnesses:
+//
+// - req.TestContextAuthority@L28477
+//   `TestContext` is the only runner-injected parameter and carries the
+//   filesystem, process, temporary-directory, target-profile, heap, and
+//   compiler-invocation authority needed by effectful compiler tests.
+
+public record CompilerInvocation {
+    public executable_path: string@View
+    public current_directory: string@View
+}
+
 public record TestContext {
+    public fs: $FileSystem
+    public sys: System
     public heap: $HeapAllocator
+    public temporary_directory: string@View
+    public target_profile: string@View
+    public compiler: CompilerInvocation
+}
+
+public procedure compilerInvocation(
+    executable_path: string@View,
+    current_directory: string@View
+) -> CompilerInvocation {
+    return CompilerInvocation {
+        executable_path: executable_path,
+        current_directory: current_directory
+    }
+}
+
+public procedure testContext(
+    fs: $FileSystem,
+    sys: System,
+    heap: $HeapAllocator,
+    temporary_directory: string@View,
+    target_profile: string@View,
+    compiler: CompilerInvocation
+) -> TestContext {
+    return TestContext {
+        fs: fs,
+        sys: sys,
+        heap: heap,
+        temporary_directory: temporary_directory,
+        target_profile: target_profile,
+        compiler: compiler
+    }
 }
