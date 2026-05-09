@@ -10,13 +10,17 @@
 //   Selected tests are ordered by module path, source file order, declaration
 //   span, then fully-qualified procedure symbol.
 
+using UltravioletCompiler::Core::{
+    SourceSpan
+}
 using UltravioletCompiler::Diagnostics::{
+    CODE_TEST_UNKNOWN_TARGET,
     DiagnosticStreamValue,
-    SourceSpan,
     diagnosticStreamAppend,
     emptyDiagnosticStream,
     singleErrorDiagnosticStream,
-    unknownCoverageReferenceDiagnostic
+    unknownCoverageReferenceDiagnostic,
+    unknownTestTargetDiagnosticStream
 }
 using UltravioletCompiler::Project::{
     Assembly,

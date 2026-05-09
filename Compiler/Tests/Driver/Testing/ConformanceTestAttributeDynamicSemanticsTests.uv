@@ -21,29 +21,41 @@ using UltravioletCompiler::Driver::Testing::{
 internal procedure testResultSummaryClassifiesPassedFailedAndErrorOutcomes() -> bool
 |: => @result
 {
-    let results: TestResultListValue =
-        testResultListEntry(
-            testResult(dynamicSemanticsTest("passed"), passedTestOutcome()),
+    var passed: bool = false
+    region as diagnostics_region {
+        let results: TestResultListValue =
             testResultListEntry(
-                testResult(
-                    dynamicSemanticsTest("failed"),
-                    failedTestOutcome(
-                        singleErrorDiagnosticStream("E-TST-0106", "failed")
-                    )
-                ),
+                testResult(dynamicSemanticsTest("passed"), passedTestOutcome()),
                 testResultListEntry(
                     testResult(
-                        dynamicSemanticsTest("error"),
-                        errorTestOutcome(
-                            singleErrorDiagnosticStream("E-TST-0108", "error")
+                        dynamicSemanticsTest("failed"),
+                        failedTestOutcome(
+                            singleErrorDiagnosticStream(
+                                diagnostics_region,
+                                "E-TST-0106",
+                                "failed"
+                            )
                         )
                     ),
-                    emptyTestResults()
+                    testResultListEntry(
+                        testResult(
+                            dynamicSemanticsTest("error"),
+                            errorTestOutcome(
+                                singleErrorDiagnosticStream(
+                                    diagnostics_region,
+                                    "E-TST-0108",
+                                    "error"
+                                )
+                            )
+                        ),
+                        emptyTestResults()
+                    )
                 )
             )
-        )
-    let summary: TestResultSummary = summarizeTestResults(move results)
-    return summary.passed == 1 && summary.failed == 1 && summary.errors == 1
+        let summary: TestResultSummary = summarizeTestResults(move results)
+        passed = summary.passed == 1 && summary.failed == 1 && summary.errors == 1
+    }
+    return passed
 }
 
 [[test(
@@ -53,48 +65,53 @@ internal procedure testResultSummaryClassifiesPassedFailedAndErrorOutcomes() -> 
 internal procedure sourceNativeExecutionPlansSelectedTestsFromLoadedProject() -> bool
 |: => @result
 {
-    let execution: TestDriverExecutionValue =
-        sourceNativeTestExecutionFromProject(
-            testDriverRequest(
-                ".",
-                "uv.exe",
-                absentTestTargetCandidate(),
-                "x86_64-win64",
-                "normal"
-            ),
-            dynamicSemanticsProject(),
-            discoveredTestListEntry(
-                dynamicSemanticsTest("selected"),
-                emptyDiscoveredTests()
+    var passed: bool = false
+    region as diagnostics_region {
+        let execution: TestDriverExecutionValue =
+            sourceNativeTestExecutionFromProject(
+                diagnostics_region,
+                testDriverRequest(
+                    ".",
+                    "uv.exe",
+                    absentTestTargetCandidate(),
+                    "x86_64-win64",
+                    "normal"
+                ),
+                dynamicSemanticsProject(),
+                discoveredTestListEntry(
+                    dynamicSemanticsTest("selected"),
+                    emptyDiscoveredTests()
+                )
             )
-        )
-    return if execution is {
-        @Ready { run } {
-            if run is {
-                @Planned { selection } {
-                    discoveredTestListCount(selection.tests) == 1
-                }
-                @HarnessBuilt {
-                    false
-                }
-                @ExecutableBuilt {
-                    false
-                }
-                @Running {
-                    false
-                }
-                @Completed {
-                    false
+        passed = if execution is {
+            @Ready { run } {
+                if run is {
+                    @Planned { selection } {
+                        discoveredTestListCount(selection.tests) == 1
+                    }
+                    @HarnessBuilt {
+                        false
+                    }
+                    @ExecutableBuilt {
+                        false
+                    }
+                    @Running {
+                        false
+                    }
+                    @Completed {
+                        false
+                    }
                 }
             }
-        }
-        @ProjectRequired {
-            false
-        }
-        @Rejected {
-            false
+            @ProjectRequired {
+                false
+            }
+            @Rejected {
+                false
+            }
         }
     }
+    return passed
 }
 
 [[test(
@@ -104,29 +121,34 @@ internal procedure sourceNativeExecutionPlansSelectedTestsFromLoadedProject() ->
 internal procedure sourceNativeExecutionRejectsUnknownLoadedProjectTarget() -> bool
 |: => @result
 {
-    let execution: TestDriverExecutionValue =
-        sourceNativeTestExecutionFromProject(
-            testDriverRequest(
-                ".",
-                "uv.exe",
-                textTestTargetCandidate("MissingAssembly"),
-                "x86_64-win64",
-                "normal"
-            ),
-            dynamicSemanticsProject(),
-            emptyDiscoveredTests()
-        )
-    return if execution is {
-        @Rejected { diagnostics } {
-            diagnosticStreamHasErrors(diagnostics)
-        }
-        @ProjectRequired {
-            false
-        }
-        @Ready {
-            false
+    var passed: bool = false
+    region as diagnostics_region {
+        let execution: TestDriverExecutionValue =
+            sourceNativeTestExecutionFromProject(
+                diagnostics_region,
+                testDriverRequest(
+                    ".",
+                    "uv.exe",
+                    textTestTargetCandidate("MissingAssembly"),
+                    "x86_64-win64",
+                    "normal"
+                ),
+                dynamicSemanticsProject(),
+                emptyDiscoveredTests()
+            )
+        passed = if execution is {
+            @Rejected { diagnostics } {
+                diagnosticStreamHasErrors(diagnostics)
+            }
+            @ProjectRequired {
+                false
+            }
+            @Ready {
+                false
+            }
         }
     }
+    return passed
 }
 
 internal procedure dynamicSemanticsTest(symbol_text: string@View) -> DiscoveredTest {
@@ -141,6 +163,8 @@ internal procedure dynamicSemanticsTest(symbol_text: string@View) -> DiscoveredT
         0,
         sourceSpan(
             "Compiler/Tests/Driver/Testing/ConformanceTestAttributeDynamicSemanticsTests.uv",
+            0,
+            1,
             1,
             1,
             1,

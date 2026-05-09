@@ -27,49 +27,54 @@ using UltravioletCompiler::Project::{
 internal procedure projectLoadReportsAmbiguousAssemblySelection() -> bool
 |: => @result
 {
-    let load: ProjectLoadValue =
-        projectLoadFromDiscoveredAssemblies(
-            projectRoot("C:/Dev/Ultraviolet"),
-            manifest(emptyManifestAssemblies()),
-            assemblyListEntry(
-                assembly(
-                    assemblyName("A"),
-                    libraryAssemblyKind(),
-                    noLinkKind(),
-                    directoryPath("A"),
-                    emptyModules()
-                ),
+    var passed: bool = false
+    region as diagnostics_region {
+        let load: ProjectLoadValue =
+            projectLoadFromDiscoveredAssemblies(
+                diagnostics_region,
+                projectRoot("C:/Dev/Ultraviolet"),
+                manifest(emptyManifestAssemblies()),
                 assemblyListEntry(
                     assembly(
-                        assemblyName("B"),
+                        assemblyName("A"),
                         libraryAssemblyKind(),
                         noLinkKind(),
-                        directoryPath("B"),
+                        directoryPath("A"),
                         emptyModules()
                     ),
-                    emptyAssemblies()
+                    assemblyListEntry(
+                        assembly(
+                            assemblyName("B"),
+                            libraryAssemblyKind(),
+                            noLinkKind(),
+                            directoryPath("B"),
+                            emptyModules()
+                        ),
+                        emptyAssemblies()
+                    )
                 )
             )
-        )
 
-    return if load is {
-        @Failed { diagnostics } {
-            diagnosticStreamHasErrors(diagnostics)
-        }
-        @RootLocated {
-            false
-        }
-        @ManifestParsed {
-            false
-        }
-        @ManifestValidated {
-            false
-        }
-        @AssembliesDiscovered {
-            false
-        }
-        @Complete {
-            false
+        passed = if load is {
+            @Failed { diagnostics } {
+                diagnosticStreamHasErrors(diagnostics)
+            }
+            @RootLocated {
+                false
+            }
+            @ManifestParsed {
+                false
+            }
+            @ManifestValidated {
+                false
+            }
+            @AssembliesDiscovered {
+                false
+            }
+            @Complete {
+                false
+            }
         }
     }
+    return passed
 }

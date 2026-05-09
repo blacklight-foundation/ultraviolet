@@ -9,8 +9,6 @@
 // lowering.TestHarnessGeneration@L28516. This file consumes harness plans while
 // owning the execution classification rule above.
 
-using UltravioletCompiler::Diagnostics::{ unknownTestTargetDiagnosticStream }
-
 internal let TEST_DRIVER_PROJECT_MESSAGE: string@View =
     "source-native test execution requires project loading"
 
@@ -139,6 +137,7 @@ public procedure sourceNativeTestExecutionRequiresProject(
 }
 
 public procedure sourceNativeTestExecutionFromProject(
+    diagnostics_region: unique Region@Active,
     move request: TestDriverRequest,
     move project: Project,
     move discovered_tests: DiscoveredTestListValue
@@ -148,7 +147,7 @@ public procedure sourceNativeTestExecutionFromProject(
     return if resolution is {
         @Unknown { target_text } {
             rejectedTestDriverExecution(
-                unknownTestTargetDiagnosticStream(target_text)
+                unknownTestTargetDiagnosticStream(diagnostics_region, target_text)
             )
         }
         @Resolved { scope } {
@@ -184,17 +183,26 @@ public procedure plannedTestRun(move selection: TestSelection) -> TestRunValue {
 }
 
 public procedure testDriverExecutionDiagnostics(
+    diagnostics_region: unique Region@Active,
     move execution: TestDriverExecutionValue
 ) -> DiagnosticStreamValue {
     return if execution is {
         @ProjectRequired {
-            singleErrorDiagnosticStream("E-TST-0108", TEST_DRIVER_PROJECT_MESSAGE)
+            singleErrorDiagnosticStream(
+                diagnostics_region,
+                CODE_TEST_UNKNOWN_TARGET,
+                TEST_DRIVER_PROJECT_MESSAGE
+            )
         }
         @Rejected { diagnostics } {
             move diagnostics
         }
         @Ready {
-            singleErrorDiagnosticStream("E-TST-0108", "test execution not completed")
+            singleErrorDiagnosticStream(
+                diagnostics_region,
+                CODE_TEST_UNKNOWN_TARGET,
+                "test execution not completed"
+            )
         }
     }
 }

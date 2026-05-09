@@ -11,6 +11,27 @@ public procedure diagnosticCodeTextEquals(
     return diagnosticTextEquals(left.text, right)
 }
 
+public procedure diagnosticCodeOptionTextEquals(
+    left: DiagnosticCodeOptionValue,
+    right: string@View
+) -> bool {
+    return if left is {
+        @Absent {
+            false
+        }
+        @Present { code } {
+            diagnosticCodeTextEquals(code, right)
+        }
+    }
+}
+
+public procedure diagnosticHasCode(
+    diagnostic: Diagnostic,
+    code: string@View
+) -> bool {
+    return diagnosticCodeOptionTextEquals(diagnostic.code, code)
+}
+
 public procedure diagnosticTextEquals(left: string@View, right: string@View) -> bool {
     let left_length: usize = string::length(left)
     let right_length: usize = string::length(right)

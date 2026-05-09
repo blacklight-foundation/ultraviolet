@@ -6,9 +6,11 @@
 // discovers selected tests, generates an ephemeral harness under the selected
 // assembly build output directory, and invokes selected tests deterministically.
 
-using UltravioletCompiler::Diagnostics::{
-    singleErrorDiagnosticStream,
+using UltravioletCompiler::Core::{
     sourceSpan
+}
+using UltravioletCompiler::Diagnostics::{
+    singleErrorDiagnosticStream
 }
 using UltravioletCompiler::Driver::Testing::{
     DiscoveredTest,
@@ -386,7 +388,7 @@ internal procedure harnessSelectionTest(
         modulePath(module_text),
         sourceFilePath(source_file_text),
         0,
-        sourceSpan(source_file_text, 1, 1, 1, 2),
+        sourceSpan(source_file_text, 0, 1, 1, 1, 1, 2),
         testProcedureSymbol(symbol_text),
         false,
         emptyCoverageReferences()

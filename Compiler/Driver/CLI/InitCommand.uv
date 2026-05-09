@@ -6,6 +6,7 @@
 
 public procedure executeInitCommand(
     host: DriverHost,
+    diagnostics_region: unique Region@Active,
     arguments: CommandArguments
 ) -> CommandResultValue {
     let request: PipelineRequest = initPipelineRequest(
@@ -14,7 +15,7 @@ public procedure executeInitCommand(
         arguments
     )
     let submission: PipelineSubmissionValue = submitPipelineRequest(request)
-    return commandResultFromPipelineSubmission(submission)
+    return commandResultFromPipelineSubmission(diagnostics_region, submission)
 }
 
 public procedure initPipelineRequest(

@@ -1,73 +1,48 @@
 // Obligation responsibility: Compiler/Diagnostics/Sources.uv
 //
-// This file owns source-location data used by diagnostics. It is a value model
-// shared by parser, semantic-analysis, driver, and test reporting owners.
+// This file owns diagnostic span presence used by diagnostics:
+//
+// - NoSpan-External@L1982
+//   External-origin diagnostics have span = bottom.
 
-public record SourceLocation {
-    public file_path: string@View
-    public line: usize
-    public column: usize
+using UltravioletCompiler::Core::{
+    SourceSpan
 }
 
-public record SourceSpan {
-    public file_path: string@View
-    public start_line: usize
-    public start_column: usize
-    public end_line: usize
-    public end_column: usize
-}
-
-public modal DiagnosticSource {
-    @Unknown {
-        public procedure isKnown(~) -> bool {
+public modal DiagnosticSpan {
+    @Absent {
+        public procedure isPresent(~) -> bool {
             return false
         }
     }
 
-    @Known {
+    @Present {
         public span: SourceSpan
 
-        public procedure isKnown(~) -> bool {
+        public procedure isPresent(~) -> bool {
             return true
         }
     }
 }
 
-public type DiagnosticSourceValue =
-    DiagnosticSource@Unknown | DiagnosticSource@Known
+public type DiagnosticSpanValue =
+    DiagnosticSpan@Absent | DiagnosticSpan@Present
 
-public procedure unknownDiagnosticSource() -> DiagnosticSourceValue {
-    return DiagnosticSource@Unknown {}
+public procedure absentDiagnosticSpan() -> DiagnosticSpanValue {
+    return DiagnosticSpan@Absent {}
 }
 
-public procedure sourceLocation(
-    file_path: string@View,
-    line: usize,
-    column: usize
-) -> SourceLocation {
-    return SourceLocation {
-        file_path: file_path,
-        line: line,
-        column: column
+public procedure presentDiagnosticSpan(span: SourceSpan) -> DiagnosticSpanValue {
+    return DiagnosticSpan@Present { span: span }
+}
+
+public procedure diagnosticSpanIsPresent(span: DiagnosticSpanValue) -> bool {
+    return if span is {
+        @Absent {
+            span~>isPresent()
+        }
+        @Present {
+            span~>isPresent()
+        }
     }
-}
-
-public procedure sourceSpan(
-    file_path: string@View,
-    start_line: usize,
-    start_column: usize,
-    end_line: usize,
-    end_column: usize
-) -> SourceSpan {
-    return SourceSpan {
-        file_path: file_path,
-        start_line: start_line,
-        start_column: start_column,
-        end_line: end_line,
-        end_column: end_column
-    }
-}
-
-public procedure knownDiagnosticSource(span: SourceSpan) -> DiagnosticSourceValue {
-    return DiagnosticSource@Known { span: span }
 }

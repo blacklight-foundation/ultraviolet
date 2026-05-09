@@ -18,37 +18,41 @@ using UltravioletCompiler::Project::{
 internal procedure manifestParserAcceptsUltravioletAssemblyManifestShape() -> bool
 |: => @result
 {
-    let parse: ManifestParseValue = parseManifestText("[[assembly]]\nname = \"UltravioletRT\"\nkind = \"library\"\nlink_kind = \"static\"\nroot = \"Runtime\"\n\n[[assembly]]\nname = \"UltravioletCompiler\"\nkind = \"library\"\nlink_kind = \"static\"\nroot = \"Compiler\"\n\n[[assembly]]\nname = \"uv\"\nkind = \"executable\"\nroot = \"Tools/Uv\"\n")
+    var passed: bool = false
+    region as diagnostics_region {
+        let parse: ManifestParseValue = parseManifestText(diagnostics_region, "[[assembly]]\nname = \"UltravioletRT\"\nkind = \"library\"\nlink_kind = \"static\"\nroot = \"Runtime\"\n\n[[assembly]]\nname = \"UltravioletCompiler\"\nkind = \"library\"\nlink_kind = \"static\"\nroot = \"Compiler\"\n\n[[assembly]]\nname = \"uv\"\nkind = \"executable\"\nroot = \"Tools/Uv\"\n")
 
-    return if parse is {
-        @Parsed { manifest } {
-            manifestAssemblyListCount(manifest.assemblies) == 3 &&
-                manifestListContainsAssembly(
-                    manifest.assemblies,
-                    "UltravioletRT",
-                    "library",
-                    "static",
-                    "Runtime"
-                ) &&
-                manifestListContainsAssembly(
-                    manifest.assemblies,
-                    "UltravioletCompiler",
-                    "library",
-                    "static",
-                    "Compiler"
-                ) &&
-                manifestListContainsAssembly(
-                    manifest.assemblies,
-                    "uv",
-                    "executable",
-                    "",
-                    "Tools/Uv"
-                )
-        }
-        @Failed {
-            false
+        passed = if parse is {
+            @Parsed { manifest } {
+                manifestAssemblyListCount(manifest.assemblies) == 3 &&
+                    manifestListContainsAssembly(
+                        manifest.assemblies,
+                        "UltravioletRT",
+                        "library",
+                        "static",
+                        "Runtime"
+                    ) &&
+                    manifestListContainsAssembly(
+                        manifest.assemblies,
+                        "UltravioletCompiler",
+                        "library",
+                        "static",
+                        "Compiler"
+                    ) &&
+                    manifestListContainsAssembly(
+                        manifest.assemblies,
+                        "uv",
+                        "executable",
+                        "",
+                        "Tools/Uv"
+                    )
+            }
+            @Failed {
+                false
+            }
         }
     }
+    return passed
 }
 
 internal procedure manifestListContainsAssembly(

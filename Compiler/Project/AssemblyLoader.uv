@@ -58,6 +58,33 @@ public modal AssemblyBuild {
 
 public type AssemblyBuildValue = AssemblyBuild@Built | AssemblyBuild@Failed
 
+internal modal HostAssemblyListBuild {
+    @Built {
+        internal assemblies: AssemblyListValue
+        internal text_storage: ProjectTextStorageListValue
+    }
+
+    @Failed {
+        internal diagnostics: DiagnosticStreamValue
+    }
+}
+
+internal type HostAssemblyListBuildValue =
+    HostAssemblyListBuild@Built | HostAssemblyListBuild@Failed
+
+internal modal HostProjectTextStorageBuild {
+    @Built {
+        internal text_storage: ProjectTextStorageListValue
+    }
+
+    @Failed {
+        internal diagnostics: DiagnosticStreamValue
+    }
+}
+
+internal type HostProjectTextStorageBuildValue =
+    HostProjectTextStorageBuild@Built | HostProjectTextStorageBuild@Failed
+
 public modal ProjectLoad {
     @RootLocated {
         public root: ProjectRoot
@@ -141,10 +168,11 @@ public procedure completeProjectLoad(move project: Project) -> ProjectLoadValue 
 }
 
 public procedure projectLoadParseManifestText(
+    diagnostics_region: unique Region@Active,
     root: ProjectRoot,
     text: string@View
 ) -> ProjectLoadValue {
-    let parse: ManifestParseValue = parseManifestText(text)
+    let parse: ManifestParseValue = parseManifestText(diagnostics_region, text)
     return if parse is {
         @Failed { diagnostics } {
             failedProjectLoad(move diagnostics)
@@ -159,15 +187,17 @@ public procedure projectLoadParseManifestText(
 }
 
 public procedure projectLoadFromManifestText(
+    diagnostics_region: unique Region@Active,
     root: ProjectRoot,
     text: string@View
 ) -> ProjectLoadValue {
-    let parsed_load: ProjectLoadValue = projectLoadParseManifestText(root, text)
+    let parsed_load: ProjectLoadValue =
+        projectLoadParseManifestText(diagnostics_region, root, text)
     return if parsed_load is {
         @ManifestParsed { root: parsed_root, manifest: parsed_manifest } {
             projectLoadFromManifestValidation(
                 parsed_root,
-                validateManifest(move parsed_manifest)
+                validateManifest(diagnostics_region, move parsed_manifest)
             )
         }
         @Failed { diagnostics } {
@@ -196,6 +226,7 @@ public procedure projectFromLoadedAssemblies(
 }
 
 public procedure projectLoadFromManifestParse(
+    diagnostics_region: unique Region@Active,
     root: ProjectRoot,
     move parse: ManifestParseValue
 ) -> ProjectLoadValue {
@@ -206,8 +237,102 @@ public procedure projectLoadFromManifestParse(
         @Parsed { manifest: parsed_manifest } {
             projectLoadFromManifestValidation(
                 root,
-                validateManifest(move parsed_manifest)
+                validateManifest(diagnostics_region, move parsed_manifest)
             )
+        }
+    }
+}
+
+public procedure projectLoadFromHost(
+    filesystem: $FileSystem,
+    heap: $HeapAllocator,
+    diagnostics_region: unique Region@Active,
+    root: ProjectRoot
+) -> ProjectLoadValue {
+    let parse: ManifestParseValue =
+        parseManifestFromRoot(filesystem, diagnostics_region, root)
+    let project_filesystem: $FileSystem = filesystem~>restrict(root.text)
+    return projectLoadFromHostManifestParse(
+        project_filesystem,
+        heap,
+        diagnostics_region,
+        root,
+        move parse
+    )
+}
+
+internal procedure projectLoadFromHostManifestParse(
+    project_filesystem: $FileSystem,
+    heap: $HeapAllocator,
+    diagnostics_region: unique Region@Active,
+    root: ProjectRoot,
+    move parse: ManifestParseValue
+) -> ProjectLoadValue {
+    return if parse is {
+        @Failed { diagnostics } {
+            failedProjectLoad(move diagnostics)
+        }
+        @Parsed { manifest: parsed_manifest } {
+            projectLoadFromHostManifestValidation(
+                project_filesystem,
+                heap,
+                diagnostics_region,
+                root,
+                validateManifest(diagnostics_region, move parsed_manifest)
+            )
+        }
+    }
+}
+
+internal procedure projectLoadFromHostManifestValidation(
+    project_filesystem: $FileSystem,
+    heap: $HeapAllocator,
+    diagnostics_region: unique Region@Active,
+    root: ProjectRoot,
+    move validation: ManifestValidationValue
+) -> ProjectLoadValue {
+    return if validation is {
+        @Invalid { diagnostics } {
+            failedProjectLoad(move diagnostics)
+        }
+        @Valid { manifest: valid_manifest } {
+            let built: HostAssemblyListBuildValue =
+                hostBuildAssembliesFromManifest(
+                    project_filesystem,
+                    heap,
+                    diagnostics_region,
+                    valid_manifest.assemblies,
+                    emptyAssemblies(),
+                    emptyProjectTextStorage()
+                )
+            return if built is {
+                @Built { assemblies, text_storage } {
+                    let stored_text: HostProjectTextStorageBuildValue =
+                        hostProjectTextStorageWithManifestSource(
+                            heap,
+                            diagnostics_region,
+                            valid_manifest,
+                            move text_storage
+                        )
+                    return if stored_text is {
+                        @Built { text_storage: project_text_storage } {
+                            projectLoadFromDiscoveredAssembliesWithTargetAndStorage(
+                                diagnostics_region,
+                                root,
+                                move assemblies,
+                                absentAssemblyTarget(),
+                                move project_text_storage
+                            )
+                        }
+                        @Failed { diagnostics } {
+                            failedProjectLoad(move diagnostics)
+                        }
+                    }
+                }
+                @Failed { diagnostics } {
+                    failedProjectLoad(move diagnostics)
+                }
+            }
         }
     }
 }
@@ -230,11 +355,13 @@ public procedure projectLoadFromManifestValidation(
 }
 
 public procedure projectLoadFromDiscoveredAssemblies(
+    diagnostics_region: unique Region@Active,
     root: ProjectRoot,
     move manifest: Manifest,
     move assemblies: AssemblyListValue
 ) -> ProjectLoadValue {
     return projectLoadFromDiscoveredAssembliesWithTarget(
+        diagnostics_region,
         root,
         move manifest,
         move assemblies,
@@ -243,38 +370,83 @@ public procedure projectLoadFromDiscoveredAssemblies(
 }
 
 public procedure projectLoadFromDiscoveredAssembliesWithTarget(
+    diagnostics_region: unique Region@Active,
     root: ProjectRoot,
     move manifest: Manifest,
     move assemblies: AssemblyListValue,
     target: AssemblyTargetValue
 ) -> ProjectLoadValue {
-    let ownership: AssemblyOwnershipValue = ownAssemblies(assemblies)
+    return projectLoadFromDiscoveredAssembliesWithTargetAndStorage(
+        diagnostics_region,
+        root,
+        move assemblies,
+        target,
+        emptyProjectTextStorage()
+    )
+}
+
+internal procedure projectLoadFromDiscoveredAssembliesWithTargetAndStorage(
+    diagnostics_region: unique Region@Active,
+    root: ProjectRoot,
+    move assemblies: AssemblyListValue,
+    target: AssemblyTargetValue,
+    move text_storage: ProjectTextStorageListValue
+) -> ProjectLoadValue {
+    let ownership: AssemblyOwnershipValue = ownAssemblies(diagnostics_region, assemblies)
     return if ownership is {
         @Failed { diagnostics } {
             failedProjectLoad(move diagnostics)
         }
         @Owned { assemblies: owned_assemblies } {
-            projectLoadFromOwnedAssembliesWithTarget(root, move owned_assemblies, target)
+            projectLoadFromOwnedAssembliesWithTargetAndStorage(
+                diagnostics_region,
+                root,
+                move owned_assemblies,
+                target,
+                move text_storage
+            )
         }
     }
 }
 
 internal procedure projectLoadFromOwnedAssembliesWithTarget(
+    diagnostics_region: unique Region@Active,
     root: ProjectRoot,
     move assemblies: AssemblyListValue,
     target: AssemblyTargetValue
+) -> ProjectLoadValue {
+    return projectLoadFromOwnedAssembliesWithTargetAndStorage(
+        diagnostics_region,
+        root,
+        move assemblies,
+        target,
+        emptyProjectTextStorage()
+    )
+}
+
+internal procedure projectLoadFromOwnedAssembliesWithTargetAndStorage(
+    diagnostics_region: unique Region@Active,
+    root: ProjectRoot,
+    move assemblies: AssemblyListValue,
+    target: AssemblyTargetValue,
+    move text_storage: ProjectTextStorageListValue
 ) -> ProjectLoadValue {
     let ordered_assemblies: AssemblyListValue = sortAssemblies(move assemblies)
     let selection: AssemblySelectionValue = selectAssembly(ordered_assemblies, target)
     return if selection is {
         @Selected {
             completeProjectLoad(
-                projectFromLoadedAssemblies(root, move ordered_assemblies)
+                projectWithTextStorage(
+                    root,
+                    move ordered_assemblies,
+                    move text_storage
+                )
             )
         }
         @Missing {
             failedProjectLoad(
                 singleErrorDiagnosticStream(
+                    diagnostics_region,
                     "E-PRJ-0304",
                     "assembly target was not found"
                 )
@@ -283,10 +455,156 @@ internal procedure projectLoadFromOwnedAssembliesWithTarget(
         @Ambiguous {
             failedProjectLoad(
                 singleErrorDiagnosticStream(
+                    diagnostics_region,
                     "E-PRJ-0304",
                     "assembly target is ambiguous"
                 )
             )
+        }
+    }
+}
+
+internal procedure hostBuildAssembliesFromManifest(
+    project_filesystem: $FileSystem,
+    heap: $HeapAllocator,
+    diagnostics_region: unique Region@Active,
+    assemblies: ManifestAssemblyListValue,
+    move built_assemblies: AssemblyListValue,
+    move text_storage: ProjectTextStorageListValue
+) -> HostAssemblyListBuildValue {
+    return if assemblies is {
+        @Empty {
+            HostAssemblyListBuild@Built {
+                assemblies: move built_assemblies,
+                text_storage: move text_storage
+            }
+        }
+        @Entry { assembly: manifest_assembly, tail } {
+            let discovery: ModuleDiscoveryValue =
+                discoverModulesFromHost(
+                    project_filesystem,
+                    heap,
+                    diagnostics_region,
+                    assemblyName(manifest_assembly.name),
+                    directoryPath(manifest_assembly.root)
+                )
+            return hostBuildAssembliesFromModuleDiscovery(
+                project_filesystem,
+                heap,
+                diagnostics_region,
+                tail,
+                manifest_assembly,
+                move discovery,
+                move built_assemblies,
+                move text_storage
+            )
+        }
+    }
+}
+
+internal procedure hostBuildAssembliesFromModuleDiscovery(
+    project_filesystem: $FileSystem,
+    heap: $HeapAllocator,
+    diagnostics_region: unique Region@Active,
+    remaining: ManifestAssemblyListValue,
+    manifest_assembly: ManifestAssembly,
+    move discovery: ModuleDiscoveryValue,
+    move built_assemblies: AssemblyListValue,
+    move text_storage: ProjectTextStorageListValue
+) -> HostAssemblyListBuildValue {
+    return if discovery is {
+        @Complete { modules, text_storage: module_text_storage } {
+            let build: AssemblyBuildValue =
+                buildAssemblyFromManifest(
+                    manifest_assembly,
+                    sortModules(move modules)
+                )
+            return if build is {
+                @Built { assembly: built_assembly } {
+                    hostBuildAssembliesFromManifest(
+                        project_filesystem,
+                        heap,
+                        diagnostics_region,
+                        remaining,
+                        assemblyListEntry(
+                            move built_assembly,
+                            move built_assemblies
+                        ),
+                        hostProjectTextStorageAppendForAssemblyLoad(
+                            move module_text_storage,
+                            move text_storage
+                        )
+                    )
+                }
+                @Failed { diagnostics } {
+                    HostAssemblyListBuild@Failed { diagnostics: move diagnostics }
+                }
+            }
+        }
+        @Failed { diagnostics } {
+            HostAssemblyListBuild@Failed { diagnostics: move diagnostics }
+        }
+        @Scanning {
+            HostAssemblyListBuild@Failed {
+                diagnostics: singleErrorDiagnosticStream(
+                    diagnostics_region,
+                    "E-PRJ-0303",
+                    "module discovery did not complete"
+                )
+            }
+        }
+    }
+}
+
+internal procedure hostProjectTextStorageAppendForAssemblyLoad(
+    move left: ProjectTextStorageListValue,
+    move right: ProjectTextStorageListValue
+) -> ProjectTextStorageListValue {
+    return if left is {
+        @Empty {
+            move right
+        }
+        @Entry { tail } {
+            projectTextStorageListEntry(
+                move left._text,
+                hostProjectTextStorageAppendForAssemblyLoad(move tail, move right)
+            )
+        }
+    }
+}
+
+internal procedure hostProjectTextStorageWithManifestSource(
+    heap: $HeapAllocator,
+    diagnostics_region: unique Region@Active,
+    manifest: Manifest,
+    move text_storage: ProjectTextStorageListValue
+) -> HostProjectTextStorageBuildValue {
+    let source: string@View = manifestSourceText(manifest)
+    if (string::is_empty(source)) {
+        return HostProjectTextStorageBuild@Built {
+            text_storage: move text_storage
+        }
+    }
+
+    let cloned: Outcome<unique string@Managed, AllocationError> =
+        string::from(source, heap)
+    return if move cloned is {
+        @Value { value } {
+            HostProjectTextStorageBuild@Built {
+                text_storage: projectTextStorageListEntry(
+                    move value,
+                    move text_storage
+                )
+            }
+        }
+        @Error {
+            HostProjectTextStorageBuild@Failed {
+                diagnostics: singleErrorDiagnosticStream(
+                    diagnostics_region,
+                    "E-PRJ-0303",
+                    "project text storage allocation failed"
+                )
+            }
         }
     }
 }
@@ -309,6 +627,7 @@ public procedure buildAssemblyFromManifest(
 }
 
 public procedure buildAssemblyFromModuleDiscovery(
+    diagnostics_region: unique Region@Active,
     manifest_assembly: ManifestAssembly,
     move discovery: ModuleDiscoveryValue
 ) -> AssemblyBuildValue {
@@ -325,6 +644,7 @@ public procedure buildAssemblyFromModuleDiscovery(
         @Scanning {
             AssemblyBuild@Failed {
                 diagnostics: singleErrorDiagnosticStream(
+                    diagnostics_region,
                     "E-PRJ-0303",
                     "module discovery did not complete"
                 )

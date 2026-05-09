@@ -28,6 +28,8 @@ internal let ROOT_DISCOVERY_UPPER_A: u8 = 65
 internal let ROOT_DISCOVERY_UPPER_Z: u8 = 90
 internal let ROOT_DISCOVERY_LOWER_A: u8 = 97
 internal let ROOT_DISCOVERY_LOWER_Z: u8 = 122
+internal let ROOT_DISCOVERY_CURRENT_DIRECTORY_TEXT: string@View = "."
+internal let ROOT_DISCOVERY_MANIFEST_NAME_TEXT: string@View = "Ultraviolet.toml"
 
 public record CommandInputPath {
     public text: string@View
@@ -263,6 +265,16 @@ public procedure findProjectRoot(
     return findProjectRootFromSearch(searchingProjectRoot(start), candidates)
 }
 
+public procedure findProjectRootFromHost(
+    filesystem: $FileSystem,
+    current_directory: DirectoryPath,
+    input: CommandInputPath
+) -> ProjectRootSearchValue {
+    let start: DirectoryPath =
+        projectRootHostSearchStart(filesystem, current_directory, input)
+    return findProjectRootHostSearch(filesystem, current_directory, start)
+}
+
 public procedure projectRootSearchRoot(search: ProjectRootSearchValue) -> ProjectRoot {
     return if search is {
         @Searching { start } {
@@ -333,8 +345,129 @@ internal procedure findProjectRootCandidates(
 internal procedure parentDirectoryOfResolvedInput(
     resolved_path: ResolvedInputPath
 ) -> DirectoryPath {
+    if (!rootDiscoveryPathTextHasSeparator(resolved_path.text)) {
+        return directoryPath(ROOT_DISCOVERY_CURRENT_DIRECTORY_TEXT)
+    }
+
     let parent_end: usize = rootDiscoveryParentDirectoryEnd(resolved_path.text)
     return directoryPath(string::slice(resolved_path.text, 0, parent_end))
+}
+
+internal procedure projectRootHostSearchStart(
+    filesystem: $FileSystem,
+    current_directory: DirectoryPath,
+    input: CommandInputPath
+) -> DirectoryPath {
+    if (string::is_empty(input.text)) {
+        return current_directory
+    }
+
+    let resolved_path: ResolvedInputPath = resolvedInputPath(input.text)
+    let path_kind: ResolvedInputPathKindValue =
+        resolvedInputPathKindFromHost(filesystem, input)
+    let start: DirectoryPath = projectRootSearchStart(resolved_path, path_kind)
+    if (projectTextEquals(start.text, ROOT_DISCOVERY_CURRENT_DIRECTORY_TEXT)) {
+        return current_directory
+    }
+    return start
+}
+
+internal procedure resolvedInputPathKindFromHost(
+    filesystem: $FileSystem,
+    input: CommandInputPath
+) -> ResolvedInputPathKindValue {
+    let kind_result: Outcome<FileKind, IoError> = filesystem~>kind(input.text)
+    return if kind_result is {
+        @Value { value } {
+            resolvedInputPathKindFromFileKind(value)
+        }
+        @Error {
+            directoryOrUnresolvedInputPath()
+        }
+    }
+}
+
+internal procedure resolvedInputPathKindFromFileKind(
+    kind: FileKind
+) -> ResolvedInputPathKindValue {
+    return if kind is {
+        FileKind::File {
+            existingNonDirectoryInputPath()
+        }
+        FileKind::Dir {
+            directoryOrUnresolvedInputPath()
+        }
+        FileKind::Other {
+            existingNonDirectoryInputPath()
+        }
+    }
+}
+
+internal procedure findProjectRootHostSearch(
+    filesystem: $FileSystem,
+    current_directory: DirectoryPath,
+    start: DirectoryPath
+) -> ProjectRootSearchValue {
+    var current: DirectoryPath = start
+
+    loop {
+        if (projectRootManifestExistsAtHostDirectory(filesystem, current)) {
+            return foundProjectRoot(
+                projectRootFromHostSearchDirectory(current_directory, current)
+            )
+        }
+
+        let parent: DirectoryPath =
+            parentDirectoryOfResolvedInput(resolvedInputPath(current.text))
+        if (projectTextEquals(parent.text, current.text)) {
+            break
+        }
+        if (projectTextEquals(parent.text, ROOT_DISCOVERY_CURRENT_DIRECTORY_TEXT)) {
+            current = current_directory
+        } else {
+            current = parent
+        }
+    }
+
+    return searchStartProjectRoot(projectRootFromHostSearchDirectory(
+        current_directory,
+        start
+    ))
+}
+
+internal procedure projectRootManifestExistsAtHostDirectory(
+    filesystem: $FileSystem,
+    directory: DirectoryPath
+) -> bool {
+    let directory_filesystem: $FileSystem = filesystem~>restrict(directory.text)
+    return directory_filesystem~>exists(ROOT_DISCOVERY_MANIFEST_NAME_TEXT)
+}
+
+internal procedure projectRootFromHostSearchDirectory(
+    current_directory: DirectoryPath,
+    directory: DirectoryPath
+) -> ProjectRoot {
+    if (projectTextEquals(directory.text, ROOT_DISCOVERY_CURRENT_DIRECTORY_TEXT)) {
+        return projectRoot(current_directory.text)
+    }
+    return projectRoot(directory.text)
+}
+
+internal procedure rootDiscoveryPathTextHasSeparator(text: string@View) -> bool {
+    let length: usize = string::length(text)
+    var index: usize = 0
+
+    loop {
+        if (index >= length) {
+            break
+        }
+        if (rootDiscoveryByteIsSeparator(rootDiscoveryTextByte(text, index))) {
+            return true
+        }
+        index = index + 1
+    }
+
+    return false
 }
 
 internal procedure rootDiscoveryParentDirectoryEnd(text: string@View) -> usize {

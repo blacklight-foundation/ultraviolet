@@ -129,27 +129,37 @@ internal procedure testProcedureShapeRequiresPostcondition() -> bool
 internal procedure testProcedureShapeAccepted(
     declaration: TestProcedureDeclaration
 ) -> bool {
-    let check: TestProcedureShapeCheckValue = checkTestProcedureShape(declaration)
-    return if check is {
-        @Valid {
-            true
-        }
-        @Invalid {
-            false
+    var passed: bool = false
+    region as diagnostics_region {
+        let check: TestProcedureShapeCheckValue =
+            checkTestProcedureShape(diagnostics_region, declaration)
+        passed = if check is {
+            @Valid {
+                true
+            }
+            @Invalid {
+                false
+            }
         }
     }
+    return passed
 }
 
 internal procedure testProcedureShapeRejected(
     declaration: TestProcedureDeclaration
 ) -> bool {
-    let check: TestProcedureShapeCheckValue = checkTestProcedureShape(declaration)
-    return if check is {
-        @Valid {
-            false
-        }
-        @Invalid {
-            true
+    var passed: bool = false
+    region as diagnostics_region {
+        let check: TestProcedureShapeCheckValue =
+            checkTestProcedureShape(diagnostics_region, declaration)
+        passed = if check is {
+            @Valid {
+                false
+            }
+            @Invalid {
+                true
+            }
         }
     }
+    return passed
 }

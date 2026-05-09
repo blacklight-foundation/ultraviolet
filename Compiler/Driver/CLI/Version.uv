@@ -9,14 +9,17 @@ public procedure versionText() -> string@View {
     return ULTRAVIOLET_VERSION_TEXT
 }
 
-public procedure executeVersionCommand(host: DriverHost) -> CommandResultValue {
+public procedure executeVersionCommand(
+    host: DriverHost,
+    diagnostics_region: unique Region@Active
+) -> CommandResultValue {
     let output: Outcome<(), IoError> = host~>writeStdout(versionText())
     return if output is {
         @Value {
             commandSucceeded()
         }
         @Error {
-            commandFailed(outputWriteFailedFailure())
+            commandFailed(diagnostics_region, outputWriteFailedFailure())
         }
     }
 }

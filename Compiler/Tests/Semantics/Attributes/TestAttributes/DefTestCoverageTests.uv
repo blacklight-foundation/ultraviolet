@@ -12,23 +12,28 @@
 internal procedure testCoveragePreservesSourceOrderCoverageReferences() -> bool
 |: => @result
 {
-    let check: TestAttributeArgumentCheckValue =
-        checkTestAttributeArguments(
-            testAttributeArguments2(
-                testCoverageAttributeArgument("def.TestCoverage@L28404"),
-                testCoverageAttributeArgument("def.TestAttributeArgsOk@L28435")
-            ),
-            "UltravioletCompiler::Tests::Example::coverage"
-        )
-    return if check is {
-        @Accepted { coverage_references } {
-            coverageReferenceListCount(coverage_references) == 2 &&
-                coverageReferencesMatchSourceOrder(coverage_references)
-        }
-        @Rejected {
-            false
+    var passed: bool = false
+    region as diagnostics_region {
+        let check: TestAttributeArgumentCheckValue =
+            checkTestAttributeArguments(
+                diagnostics_region,
+                testAttributeArguments2(
+                    testCoverageAttributeArgument("def.TestCoverage@L28404"),
+                    testCoverageAttributeArgument("def.TestAttributeArgsOk@L28435")
+                ),
+                "UltravioletCompiler::Tests::Example::coverage"
+            )
+        passed = if check is {
+            @Accepted { coverage_references } {
+                coverageReferenceListCount(coverage_references) == 2 &&
+                    coverageReferencesMatchSourceOrder(coverage_references)
+            }
+            @Rejected {
+                false
+            }
         }
     }
+    return passed
 }
 
 internal procedure coverageReferencesMatchSourceOrder(

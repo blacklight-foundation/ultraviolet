@@ -13,16 +13,23 @@
 internal procedure parameterlessTestProcedureRequiresNoInjectedContext() -> bool
 |: => @result
 {
-    let check: TestProcedureShapeCheckValue =
-        checkTestProcedureShape(validTestProcedureDeclaration(noTestProcedureParameters()))
-    return if check is {
-        @Valid { requires_context } {
-            !requires_context
-        }
-        @Invalid {
-            false
+    var passed: bool = false
+    region as diagnostics_region {
+        let check: TestProcedureShapeCheckValue =
+            checkTestProcedureShape(
+                diagnostics_region,
+                validTestProcedureDeclaration(noTestProcedureParameters())
+            )
+        passed = if check is {
+            @Valid { requires_context } {
+                !requires_context
+            }
+            @Invalid {
+                false
+            }
         }
     }
+    return passed
 }
 
 [[test(
@@ -32,18 +39,23 @@ internal procedure parameterlessTestProcedureRequiresNoInjectedContext() -> bool
 internal procedure testContextParameterIsRunnerInjectedAuthority() -> bool
 |: => @result
 {
-    let check: TestProcedureShapeCheckValue =
-        checkTestProcedureShape(
-            validTestProcedureDeclaration(testContextProcedureParameter())
-        )
-    return if check is {
-        @Valid { requires_context } {
-            requires_context
-        }
-        @Invalid {
-            false
+    var passed: bool = false
+    region as diagnostics_region {
+        let check: TestProcedureShapeCheckValue =
+            checkTestProcedureShape(
+                diagnostics_region,
+                validTestProcedureDeclaration(testContextProcedureParameter())
+            )
+        passed = if check is {
+            @Valid { requires_context } {
+                requires_context
+            }
+            @Invalid {
+                false
+            }
         }
     }
+    return passed
 }
 
 [[test(
@@ -53,16 +65,21 @@ internal procedure testContextParameterIsRunnerInjectedAuthority() -> bool
 internal procedure nonTestContextParameterIsRejectedForSourceNativeTest() -> bool
 |: => @result
 {
-    let check: TestProcedureShapeCheckValue =
-        checkTestProcedureShape(
-            validTestProcedureDeclaration(invalidTestProcedureParameter())
-        )
-    return if check is {
-        @Valid {
-            false
-        }
-        @Invalid {
-            true
+    var passed: bool = false
+    region as diagnostics_region {
+        let check: TestProcedureShapeCheckValue =
+            checkTestProcedureShape(
+                diagnostics_region,
+                validTestProcedureDeclaration(invalidTestProcedureParameter())
+            )
+        passed = if check is {
+            @Valid {
+                false
+            }
+            @Invalid {
+                true
+            }
         }
     }
+    return passed
 }

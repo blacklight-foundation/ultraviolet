@@ -19,17 +19,22 @@ using UltravioletCompiler::Project::{
 internal procedure manifestValidationRejectsUnknownTopKeys() -> bool
 |: => @result
 {
-    let validation: ManifestValidationValue = validateManifest(
-        manifestWithTopKeyState(
-            manifestAssemblyListEntry(
-                manifestAssembly("App", "executable", "", "Tools/Uv"),
-                emptyManifestAssemblies()
-            ),
-            true
+    var passed: bool = false
+    region as diagnostics_region {
+        let validation: ManifestValidationValue = validateManifest(
+            diagnostics_region,
+            manifestWithTopKeyState(
+                manifestAssemblyListEntry(
+                    manifestAssembly("App", "executable", "", "Tools/Uv"),
+                    emptyManifestAssemblies()
+                ),
+                true
+            )
         )
-    )
 
-    return manifestValidationIsInvalid(validation)
+        passed = manifestValidationIsInvalid(validation)
+    }
+    return passed
 }
 
 internal procedure manifestValidationIsInvalid(

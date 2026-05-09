@@ -28,41 +28,46 @@ using UltravioletCompiler::Project::{
 internal procedure assemblyBuildConsumesCompletedModuleDiscovery() -> bool
 |: => @result
 {
-    let build: AssemblyBuildValue =
-        buildAssemblyFromModuleDiscovery(
-            manifestAssembly("UltravioletCompiler", "library", "static", "Compiler"),
-            completeModuleDiscovery(
-                assemblyName("UltravioletCompiler"),
-                directoryPath("Compiler"),
-                moduleListEntry(
-                    module(
-                        modulePath("UltravioletCompiler::Tests"),
-                        directoryPath("Compiler/Tests"),
-                        emptySourceFiles()
-                    ),
+    var passed: bool = false
+    region as diagnostics_region {
+        let build: AssemblyBuildValue =
+            buildAssemblyFromModuleDiscovery(
+                diagnostics_region,
+                manifestAssembly("UltravioletCompiler", "library", "static", "Compiler"),
+                completeModuleDiscovery(
+                    assemblyName("UltravioletCompiler"),
+                    directoryPath("Compiler"),
                     moduleListEntry(
                         module(
-                            modulePath("UltravioletCompiler::Core"),
-                            directoryPath("Compiler/Core"),
+                            modulePath("UltravioletCompiler::Tests"),
+                            directoryPath("Compiler/Tests"),
                             emptySourceFiles()
                         ),
-                        emptyModules()
+                        moduleListEntry(
+                            module(
+                                modulePath("UltravioletCompiler::Core"),
+                                directoryPath("Compiler/Core"),
+                                emptySourceFiles()
+                            ),
+                            emptyModules()
+                        )
                     )
                 )
             )
-        )
 
-    return if build is {
-        @Built { assembly } {
-            projectTextEquals(assembly.name.text, "UltravioletCompiler") &&
-                assemblyKindIsLibrary(assembly.kind) &&
-                linkKindIsStatic(assembly.link_kind) &&
-                moduleListStartsWith(assembly.modules, "UltravioletCompiler::Core")
-        }
-        @Failed {
-            false
+        passed = if build is {
+            @Built { assembly } {
+                projectTextEquals(assembly.name.text, "UltravioletCompiler") &&
+                    assemblyKindIsLibrary(assembly.kind) &&
+                    linkKindIsStatic(assembly.link_kind) &&
+                    moduleListStartsWith(assembly.modules, "UltravioletCompiler::Core")
+            }
+            @Failed {
+                false
+            }
         }
     }
+    return passed
 }
 
 internal procedure assemblyKindIsLibrary(kind: AssemblyKindValue) -> bool {

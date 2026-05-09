@@ -32,33 +32,38 @@ using UltravioletCompiler::Project::{
 internal procedure ownAssembliesFailsWhenModuleHasNoSourceRootOwner() -> bool
 |: => @result
 {
-    let ownership: AssemblyOwnershipValue =
-        ownAssemblies(
-            assemblyListEntry(
-                assembly(
-                    assemblyName("UltravioletCompiler"),
-                    libraryAssemblyKind(),
-                    noLinkKind(),
-                    directoryPath("Compiler"),
-                    moduleListEntry(
-                        module(
-                            modulePath("External::Module"),
-                            directoryPath("External/Module"),
-                            emptySourceFiles()
+    var passed: bool = false
+    region as diagnostics_region {
+        let ownership: AssemblyOwnershipValue =
+            ownAssemblies(
+                diagnostics_region,
+                assemblyListEntry(
+                    assembly(
+                        assemblyName("UltravioletCompiler"),
+                        libraryAssemblyKind(),
+                        noLinkKind(),
+                        directoryPath("Compiler"),
+                        moduleListEntry(
+                            module(
+                                modulePath("External::Module"),
+                                directoryPath("External/Module"),
+                                emptySourceFiles()
+                            ),
+                            emptyModules()
                         ),
-                        emptyModules()
-                    )
-                ),
-                emptyAssemblies()
+                    ),
+                    emptyAssemblies()
+                )
             )
-        )
 
-    return if ownership is {
-        @Failed {
-            true
-        }
-        @Owned {
-            false
+        passed = if ownership is {
+            @Failed {
+                true
+            }
+            @Owned {
+                false
+            }
         }
     }
+    return passed
 }

@@ -14,18 +14,34 @@
 
 import UltravioletCompiler::Driver::Testing
 using UltravioletCompiler::Driver::Testing::{
+    DiscoveredTestListValue,
     TestDriverExecutionValue,
     TestDriverRequest,
     TestTargetCandidateValue,
     absentTestTargetCandidate,
-    sourceNativeTestExecutionRequiresProject,
+    directoryTestTargetCandidate,
+    emptyDiscoveredTests,
+    projectRootTestTargetCandidate,
+    sourceFileTestTargetCandidate,
+    sourceNativeTestExecutionFromProject,
     testDriverExecutionDiagnostics,
     testDriverRequest,
     textTestTargetCandidate
 }
+using UltravioletCompiler::Project::{
+    Project,
+    ProjectLoadValue,
+    ProjectRoot,
+    commandInputPath,
+    directoryPath,
+    findProjectRootFromHost,
+    projectLoadFromHost,
+    projectRootSearchRoot,
+    projectTextEquals
+}
 
-internal let TEST_TARGET_ERROR_CODE: string@View = "E-TST-0108"
 internal let TEST_TARGET_ERROR_MESSAGE: string@View = "unknown uv test target"
+internal let TEST_CURRENT_DIRECTORY_TEXT: string@View = "."
 
 public modal TestTargetArgument {
     @Absent {
@@ -154,7 +170,7 @@ public procedure rejectedTestCommandInput(
 }
 
 public procedure testTargetRejectedReason() -> CommandFailureReasonValue {
-    return testTargetRejectedFailure(TEST_TARGET_ERROR_CODE, TEST_TARGET_ERROR_MESSAGE)
+    return testTargetRejectedFailure(CODE_TEST_UNKNOWN_TARGET, TEST_TARGET_ERROR_MESSAGE)
 }
 
 public procedure testCommandParseResult(
@@ -172,21 +188,132 @@ public procedure testCommandParseResult(
 
 public procedure executeTestCommand(
     host: DriverHost,
+    diagnostics_region: unique Region@Active,
     input: TestCommandInput
+) -> CommandResultValue {
+    let root: ProjectRoot = projectRootSearchRoot(
+        findProjectRootFromHost(
+            host~>fileSystem(),
+            directoryPath(input.current_directory),
+            commandInputPath(testCommandRootInputText(input.target))
+        )
+    )
+    let load: ProjectLoadValue =
+        projectLoadFromHost(
+            host~>fileSystem(),
+            host~>heap(),
+            diagnostics_region,
+            root
+        )
+    return testCommandResultFromProjectLoad(
+        host,
+        diagnostics_region,
+        input,
+        root,
+        move load
+    )
+}
+
+internal procedure testCommandResultFromProjectLoad(
+    host: DriverHost,
+    diagnostics_region: unique Region@Active,
+    input: TestCommandInput,
+    root: ProjectRoot,
+    move load: ProjectLoadValue
+) -> CommandResultValue {
+    return if load is {
+        @Complete { project } {
+            executeLoadedTestProject(
+                host,
+                diagnostics_region,
+                input,
+                root,
+                move project
+            )
+        }
+        @Failed { diagnostics } {
+            commandFailedWithDiagnostics(move diagnostics)
+        }
+        @RootLocated {
+            commandFailedWithDiagnostics(
+                singleErrorDiagnosticStream(
+                    diagnostics_region,
+                    CODE_TEST_UNKNOWN_TARGET,
+                    "project loading did not complete"
+                )
+            )
+        }
+        @ManifestParsed {
+            commandFailedWithDiagnostics(
+                singleErrorDiagnosticStream(
+                    diagnostics_region,
+                    CODE_TEST_UNKNOWN_TARGET,
+                    "project loading did not complete"
+                )
+            )
+        }
+        @ManifestValidated {
+            commandFailedWithDiagnostics(
+                singleErrorDiagnosticStream(
+                    diagnostics_region,
+                    CODE_TEST_UNKNOWN_TARGET,
+                    "project loading did not complete"
+                )
+            )
+        }
+        @AssembliesDiscovered {
+            commandFailedWithDiagnostics(
+                singleErrorDiagnosticStream(
+                    diagnostics_region,
+                    CODE_TEST_UNKNOWN_TARGET,
+                    "project loading did not complete"
+                )
+            )
+        }
+    }
+}
+
+internal procedure executeLoadedTestProject(
+    host: DriverHost,
+    diagnostics_region: unique Region@Active,
+    input: TestCommandInput,
+    root: ProjectRoot,
+    move project: Project
 ) -> CommandResultValue {
     let request: TestDriverRequest = testDriverRequest(
         input.current_directory,
         host~>executablePath(),
-        testTargetCandidateFromArgument(input.target),
+        testTargetCandidateFromArgument(host~>fileSystem(), root, input.target),
         targetProfileInputText(input.target_profile),
         outputModeText(input.output_mode)
     )
+    let discovered_tests: DiscoveredTestListValue = emptyDiscoveredTests()
     let execution: TestDriverExecutionValue =
-        sourceNativeTestExecutionRequiresProject(move request)
-    return commandFailedWithDiagnostics(testDriverExecutionDiagnostics(move execution))
+        sourceNativeTestExecutionFromProject(
+            diagnostics_region,
+            move request,
+            move project,
+            move discovered_tests
+        )
+    return commandFailedWithDiagnostics(
+        testDriverExecutionDiagnostics(diagnostics_region, move execution)
+    )
+}
+
+internal procedure testCommandRootInputText(target: TestTargetArgumentValue) -> string@View {
+    return if target is {
+        @Absent {
+            TEST_CURRENT_DIRECTORY_TEXT
+        }
+        @Present { text } {
+            text
+        }
+    }
 }
 
 internal procedure testTargetCandidateFromArgument(
+    filesystem: $FileSystem,
+    root: ProjectRoot,
     target: TestTargetArgumentValue
 ) -> TestTargetCandidateValue {
     return if target is {
@@ -194,6 +321,40 @@ internal procedure testTargetCandidateFromArgument(
             absentTestTargetCandidate()
         }
         @Present { text } {
+            testTargetCandidateFromPresentArgument(filesystem, root, text)
+        }
+    }
+}
+
+internal procedure testTargetCandidateFromPresentArgument(
+    filesystem: $FileSystem,
+    root: ProjectRoot,
+    text: string@View
+) -> TestTargetCandidateValue {
+    if (projectTextEquals(text, TEST_CURRENT_DIRECTORY_TEXT)) {
+        return projectRootTestTargetCandidate(text)
+    }
+    if (projectTextEquals(text, root.text)) {
+        return projectRootTestTargetCandidate(text)
+    }
+
+    let project_filesystem: $FileSystem = filesystem~>restrict(root.text)
+    let kind: Outcome<FileKind, IoError> = project_filesystem~>kind(text)
+    return if kind is {
+        @Value { value } {
+            if value is {
+                FileKind::File {
+                    sourceFileTestTargetCandidate(text)
+                }
+                FileKind::Dir {
+                    directoryTestTargetCandidate(text)
+                }
+                FileKind::Other {
+                    sourceFileTestTargetCandidate(text)
+                }
+            }
+        }
+        @Error {
             textTestTargetCandidate(text)
         }
     }

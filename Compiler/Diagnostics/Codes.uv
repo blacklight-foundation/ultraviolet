@@ -7,6 +7,8 @@
 //   Diagnostic severities are the stable categories used by diagnostic streams.
 // - def.DiagCodeOpt@L1518
 //   A diagnostic may carry a canonical diagnostic code.
+// - diagnostics.CommandLineDiagnostics@L100109
+//   Command-line diagnostics include E-CLI-0001 through E-CLI-0003.
 // - diagnostics.TestAttributes@L28593
 //   Source-native test diagnostics include E-MOD-2452 and E-TST-0101 through
 //   E-TST-0108.
@@ -54,8 +56,50 @@ public record DiagnosticCode {
     public text: string@View
 }
 
+public modal DiagnosticCodeOption {
+    @Absent {
+        public procedure isPresent(~) -> bool {
+            return false
+        }
+    }
+
+    @Present {
+        public code: DiagnosticCode
+
+        public procedure isPresent(~) -> bool {
+            return true
+        }
+    }
+}
+
+public type DiagnosticCodeOptionValue =
+    DiagnosticCodeOption@Absent | DiagnosticCodeOption@Present
+
 public procedure diagnosticCode(text: string@View) -> DiagnosticCode {
     return DiagnosticCode { text: text }
+}
+
+public procedure absentDiagnosticCode() -> DiagnosticCodeOptionValue {
+    return DiagnosticCodeOption@Absent {}
+}
+
+public procedure presentDiagnosticCode(code: DiagnosticCode) -> DiagnosticCodeOptionValue {
+    return DiagnosticCodeOption@Present { code: code }
+}
+
+public procedure diagnosticCodeFromText(text: string@View) -> DiagnosticCodeOptionValue {
+    return presentDiagnosticCode(diagnosticCode(text))
+}
+
+public procedure diagnosticCodeOptionIsPresent(code: DiagnosticCodeOptionValue) -> bool {
+    return if code is {
+        @Absent {
+            code~>isPresent()
+        }
+        @Present {
+            code~>isPresent()
+        }
+    }
 }
 
 public procedure diagnosticSeverityError() -> DiagnosticSeverityValue {
@@ -97,6 +141,10 @@ public procedure diagnosticSeverityIsError(severity: DiagnosticSeverityValue) ->
         }
     }
 }
+
+public let CODE_CLI_UNKNOWN_COMMAND: string@View = "E-CLI-0001"
+public let CODE_CLI_PIPELINE_UNAVAILABLE: string@View = "E-CLI-0002"
+public let CODE_CLI_OUTPUT_WRITE_FAILED: string@View = "E-CLI-0003"
 
 public let CODE_TEST_ATTRIBUTE_WRONG_TARGET: string@View = "E-MOD-2452"
 public let CODE_TEST_MALFORMED_ARGUMENT: string@View = "E-TST-0101"

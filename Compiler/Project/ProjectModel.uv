@@ -64,6 +64,26 @@ public record SourceFilePath {
     public text: string@View
 }
 
+public modal ProjectTextStorageList {
+    @Empty {
+        public procedure count(~) -> usize {
+            return 0
+        }
+    }
+
+    @Entry {
+        private _text: unique string@Managed
+        public tail: ProjectTextStorageListValue
+
+        public procedure count(~) -> usize {
+            return 1 + projectTextStorageListCount(self.tail)
+        }
+    }
+}
+
+public type ProjectTextStorageListValue =
+    ProjectTextStorageList@Empty | ProjectTextStorageList@Entry
+
 public record SourceFile {
     public path: SourceFilePath
     public module_path: ModulePath
@@ -147,6 +167,7 @@ public type AssemblyListValue =
 public record Project {
     public root: ProjectRoot
     public assemblies: AssemblyListValue
+    private _text_storage: ProjectTextStorageListValue
 }
 
 public modal AssemblyLookup {
@@ -217,6 +238,33 @@ public procedure directoryPath(text: string@View) -> DirectoryPath {
 
 public procedure sourceFilePath(text: string@View) -> SourceFilePath {
     return SourceFilePath { text: text }
+}
+
+public procedure emptyProjectTextStorage() -> ProjectTextStorageListValue {
+    return ProjectTextStorageList@Empty {}
+}
+
+public procedure projectTextStorageListEntry(
+    move text: unique string@Managed,
+    move tail: ProjectTextStorageListValue
+) -> ProjectTextStorageListValue {
+    return ProjectTextStorageList@Entry {
+        _text: move text,
+        tail: move tail
+    }
+}
+
+public procedure projectTextStorageListCount(
+    storage: ProjectTextStorageListValue
+) -> usize {
+    return if storage is {
+        @Empty {
+            storage~>count()
+        }
+        @Entry {
+            storage~>count()
+        }
+    }
 }
 
 public procedure sourceFile(
@@ -305,9 +353,22 @@ public procedure project(
     root: ProjectRoot,
     move assemblies: AssemblyListValue
 ) -> Project {
+    return projectWithTextStorage(
+        root,
+        move assemblies,
+        emptyProjectTextStorage()
+    )
+}
+
+public procedure projectWithTextStorage(
+    root: ProjectRoot,
+    move assemblies: AssemblyListValue,
+    move text_storage: ProjectTextStorageListValue
+) -> Project {
     return Project {
         root: root,
-        assemblies: move assemblies
+        assemblies: move assemblies,
+        _text_storage: move text_storage
     }
 }
 

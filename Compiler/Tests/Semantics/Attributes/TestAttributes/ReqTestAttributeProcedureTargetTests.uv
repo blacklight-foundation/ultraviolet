@@ -11,29 +11,34 @@
 internal procedure testAttributeAcceptsOrdinaryProcedureTarget() -> bool
 |: => @result
 {
-    let parsed: AttributeParseResultValue = parseTestAttributeWithoutArguments()
-    return if parsed is {
-        @Parsed { attribute: parsed_attribute } {
-            let check: TestAttributeSemanticCheckValue =
-                classifyTestProcedure(
-                    parsed_attribute,
-                    ordinaryProcedureTestAttributeTarget(),
-                    "UltravioletCompiler::Tests::Example::ordinaryTarget",
-                    false
-                )
-            return if check is {
-                @Accepted {
-                    true
-                }
-                @Rejected {
-                    false
+    var passed: bool = false
+    region as diagnostics_region {
+        let parsed: AttributeParseResultValue = parseTestAttributeWithoutArguments()
+        passed = if parsed is {
+            @Parsed { attribute: parsed_attribute } {
+                let check: TestAttributeSemanticCheckValue =
+                    classifyTestProcedure(
+                        diagnostics_region,
+                        parsed_attribute,
+                        ordinaryProcedureTestAttributeTarget(),
+                        "UltravioletCompiler::Tests::Example::ordinaryTarget",
+                        false
+                    )
+                if check is {
+                    @Accepted {
+                        true
+                    }
+                    @Rejected {
+                        false
+                    }
                 }
             }
-        }
-        @Rejected {
-            false
+            @Rejected {
+                false
+            }
         }
     }
+    return passed
 }
 
 [[test(
@@ -43,27 +48,32 @@ internal procedure testAttributeAcceptsOrdinaryProcedureTarget() -> bool
 internal procedure testAttributeRejectsNonProcedureTarget() -> bool
 |: => @result
 {
-    let parsed: AttributeParseResultValue = parseTestAttributeWithoutArguments()
-    return if parsed is {
-        @Parsed { attribute: parsed_attribute } {
-            let check: TestAttributeSemanticCheckValue =
-                classifyTestProcedure(
-                    parsed_attribute,
-                    invalidTestAttributeTarget(),
-                    "UltravioletCompiler::Tests::Example::invalidTarget",
-                    false
-                )
-            return if check is {
-                @Accepted {
-                    false
-                }
-                @Rejected {
-                    true
+    var passed: bool = false
+    region as diagnostics_region {
+        let parsed: AttributeParseResultValue = parseTestAttributeWithoutArguments()
+        passed = if parsed is {
+            @Parsed { attribute: parsed_attribute } {
+                let check: TestAttributeSemanticCheckValue =
+                    classifyTestProcedure(
+                        diagnostics_region,
+                        parsed_attribute,
+                        invalidTestAttributeTarget(),
+                        "UltravioletCompiler::Tests::Example::invalidTarget",
+                        false
+                    )
+                if check is {
+                    @Accepted {
+                        false
+                    }
+                    @Rejected {
+                        true
+                    }
                 }
             }
-        }
-        @Rejected {
-            false
+            @Rejected {
+                false
+            }
         }
     }
+    return passed
 }

@@ -632,6 +632,15 @@ ImportLibOpt(P) =
  ImportLibPath(P)  if ImportLibPath(P) ≠ ⊥
  ⊥                 otherwise
 
+**Command-Line Diagnostics.**
+This table owns diagnostics emitted by `uv` command parsing and command-output failure handling before a project-specific diagnostic owner applies.
+
+| Code         | Severity | Detection    | Condition                                    |
+| ------------ | -------- | ------------ | -------------------------------------------- |
+| `E-CLI-0001` | Error    | Command-line | Unknown `uv` command                         |
+| `E-CLI-0002` | Error    | Command-line | Compiler pipeline unavailable for command    |
+| `E-CLI-0003` | Error    | Command-line | Failed to write command output or diagnostic |
+
 ### 3.2 Project Root and Manifest
 
 **Manifest Parsing (Big-Step)**
@@ -16833,15 +16842,16 @@ Block typing and checking are owned by §18.1.4:
 Pattern typing uses Chapter 17 pattern judgments:
 
 - `Γ ⊢ pat ◁ T ⊣ B` for case binding
+- `CaseScope(Γ, e, pat, T)` for pattern bindings and scrutinee narrowing
 - `HasIrrefutableCase(cases, T)` and the exhaustiveness conditions from §17.6
 
 **(T-If-Is)**
-Γ; R; L ⊢ e : T_s    Γ ⊢ pat ◁ T_s ⊣ B    Distinct(PatNames(pat))    Γ_0 = PushScope(Γ)    IntroAll(Γ_0, B) ⇓ Γ_1    Γ_1; R; L ⊢ b_t : T    Γ; R; L ⊢ b_f : T
+Γ; R; L ⊢ e : T_s    CaseScope(Γ, e, pat, T_s) ⇓ Γ_1    Γ_1; R; L ⊢ b_t : T    Γ; R; L ⊢ b_f : T
 ──────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
 Γ; R; L ⊢ IfIsExpr(e, pat, b_t, b_f) : T
 
 **(T-If-Is-No-Else)**
-Γ; R; L ⊢ e : T_s    Γ ⊢ pat ◁ T_s ⊣ B    Distinct(PatNames(pat))    Γ_0 = PushScope(Γ)    IntroAll(Γ_0, B) ⇓ Γ_1    Γ_1; R; L ⊢ b_t : TypePrim(`()`)
+Γ; R; L ⊢ e : T_s    CaseScope(Γ, e, pat, T_s) ⇓ Γ_1    Γ_1; R; L ⊢ b_t : TypePrim(`()`)
 ──────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
 Γ; R; L ⊢ IfIsExpr(e, pat, b_t, ⊥) : TypePrim(`()`)
 
@@ -18452,7 +18462,45 @@ BindOrder(p, B) = [⟨x, B[x]⟩ | x ∈ PatNames(p)]
 
 #### 17.5.4 Static Semantics
 
-Case-body typing and checking are ordinary block typing and checking under the scope introduced by the clause pattern. Result agreement and exhaustiveness are enforced by the rules in §17.6.4.
+CaseScopeJudg = {CaseScope(Γ, e, pat, T) ⇓ Γ_case}
+PatternNarrowJudg = {PatternNarrow(Γ, pat, T) ⇓ T_n}
+
+ScrutineeBinding(Identifier(x)) = x
+ScrutineeBinding(e) = ⊥ ⇔ e ≠ Identifier(_)
+RefineBinding(Γ, x, T_n) ⇓ Γ' ⇔ LookupNearestValueBinding(Γ, x) = b ∧ Γ' = ReplaceBindingType(Γ, b, T_n)
+
+UnionOrSingle([T]) = T
+UnionOrSingle([T_1, …, T_n]) = TypeUnion([T_1, …, T_n]) ⇔ n ≥ 2
+
+**(PatternNarrow-Perm)**
+PatternNarrow(Γ, pat, T) ⇓ T_n
+──────────────────────────────────────────────────────────────
+PatternNarrow(Γ, pat, TypePerm(p, T)) ⇓ TypePerm(p, T_n)
+
+**(PatternNarrow-ModalRef)**
+StripPerm(T) = ModalRefType(modal_ref)    ModalDeclOf(modal_ref) = M    S ∈ States(M)
+────────────────────────────────────────────────────────────────────────────────────────────
+PatternNarrow(Γ, ModalPattern(S, fs), T) ⇓ TypeModalState(modal_ref, S)
+
+**(PatternNarrow-ModalState)**
+StripPerm(T) = TypeModalState(modal_ref, S)    ModalDeclOf(modal_ref) = M
+────────────────────────────────────────────────────────────────────────────────────────────
+PatternNarrow(Γ, ModalPattern(S, fs), T) ⇓ TypeModalState(modal_ref, S)
+
+**(PatternNarrow-Union)**
+T = TypeUnion([T_1, …, T_n])    Ns = [N_i | 1 ≤ i ≤ n ∧ PatternNarrow(Γ, pat, T_i) ⇓ N_i]    |Ns| ≥ 1    UnionOrSingle(Ns) = T_n
+────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+PatternNarrow(Γ, pat, T) ⇓ T_n
+
+**(CaseScope-Narrow)**
+Γ ⊢ pat ◁ T_s ⊣ B    Distinct(PatNames(pat))    ScrutineeBinding(e) = x    PatternNarrow(Γ, pat, T_s) ⇓ T_n    RefineBinding(Γ, x, T_n) ⇓ Γ_r    Γ_0 = PushScope(Γ_r)    IntroAll(Γ_0, B) ⇓ Γ_case
+──────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+CaseScope(Γ, e, pat, T_s) ⇓ Γ_case
+
+**(CaseScope-PatternOnly)**
+Γ ⊢ pat ◁ T_s ⊣ B    Distinct(PatNames(pat))    (ScrutineeBinding(e) = ⊥ ∨ PatternNarrow(Γ, pat, T_s) undefined)    Γ_0 = PushScope(Γ)    IntroAll(Γ_0, B) ⇓ Γ_case
+────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+CaseScope(Γ, e, pat, T_s) ⇓ Γ_case
 
 #### 17.5.5 Dynamic Semantics
 
@@ -18540,7 +18588,7 @@ MatchPattern(pat, v) undefined
 Γ ⊢ LowerBindPattern(pat, v) ⇑
 
 **(Lower-IfCases)**
-Γ ⊢ LowerExpr(scrut) ⇓ ⟨IR_s, v_s⟩
+Γ ⊢ LowerExpr(scrut) ⇓ ⟨IR_s, v_s⟩    Γ; R; L ⊢ scrut : T_s    ∀ i, case_i = ⟨p_i, b_i⟩    ∀ i, CaseScope(Γ, scrut, p_i, T_s) ⇓ Γ_i
 ────────────────────────────────────────────────────────────────────────────────────────────────────────
 Γ ⊢ LowerIfCases(scrut, cases, else_opt) ⇓ ⟨SeqIR(IR_s, IfCaseIR(v_s, cases, else_opt)), v_case⟩
 
@@ -18585,14 +18633,14 @@ UnionTypesExhaustive(cases, types) ⇔ ∀ T ∈ types. ∃ case ∈ cases. ∃ 
 **Enum Case Analysis**
 
 **(T-IfCase-Enum)**
-Γ; R; L ⊢ e : TypePath(p)    EnumDecl(p) = E    ∀ i, case_i = ⟨p_i, b_i⟩    Γ ⊢ p_i ◁ TypePath(p) ⊣ B_i    Distinct(PatNames(p_i))    Γ_i = IntroAll(Γ, B_i)    Γ_i; R; L ⊢ b_i : T_r    (else_opt = ⊥ ∨ Γ; R; L ⊢ else_opt : T_r)    (else_opt ≠ ⊥ ∨ HasIrrefutableCase(cases, TypePath(p)) ∨ CaseVariants(cases) = VariantNames(E))
+Γ; R; L ⊢ e : TypePath(p)    EnumDecl(p) = E    ∀ i, case_i = ⟨p_i, b_i⟩    ∀ i, CaseScope(Γ, e, p_i, TypePath(p)) ⇓ Γ_i    ∀ i, Γ_i; R; L ⊢ b_i : T_r    (else_opt = ⊥ ∨ Γ; R; L ⊢ else_opt : T_r)    (else_opt ≠ ⊥ ∨ HasIrrefutableCase(cases, TypePath(p)) ∨ CaseVariants(cases) = VariantNames(E))
 ──────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
 Γ; R; L ⊢ IfCaseExpr(e, cases, else_opt) : T_r
 
 **Modal Case Analysis**
 
 **(T-IfCase-Modal)**
-Γ; R; L ⊢ e : ModalRefType(modal_ref)    ModalDeclOf(modal_ref) = M    ∀ i, case_i = ⟨p_i, b_i⟩    Γ ⊢ p_i ◁ ModalRefType(modal_ref) ⊣ B_i    Distinct(PatNames(p_i))    Γ_i = IntroAll(Γ, B_i)    Γ_i; R; L ⊢ b_i : T_r    (else_opt = ⊥ ∨ Γ; R; L ⊢ else_opt : T_r)    (else_opt ≠ ⊥ ∨ HasIrrefutableCase(cases, ModalRefType(modal_ref)) ∨ CaseStates(cases) = States(M))
+Γ; R; L ⊢ e : ModalRefType(modal_ref)    ModalDeclOf(modal_ref) = M    ∀ i, case_i = ⟨p_i, b_i⟩    ∀ i, CaseScope(Γ, e, p_i, ModalRefType(modal_ref)) ⇓ Γ_i    ∀ i, Γ_i; R; L ⊢ b_i : T_r    (else_opt = ⊥ ∨ Γ; R; L ⊢ else_opt : T_r)    (else_opt ≠ ⊥ ∨ HasIrrefutableCase(cases, ModalRefType(modal_ref)) ∨ CaseStates(cases) = States(M))
 ──────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
 Γ; R; L ⊢ IfCaseExpr(e, cases, else_opt) : T_r
 
@@ -18604,7 +18652,7 @@ UnionTypesExhaustive(cases, types) ⇔ ∀ T ∈ types. ∃ case ∈ cases. ∃ 
 **Union Case Analysis**
 
 **(T-IfCase-Union)**
-Γ; R; L ⊢ e : TypeUnion([T_1, …, T_n])    ∀ i, case_i = ⟨p_i, b_i⟩    Γ ⊢ p_i ◁ TypeUnion([T_1, …, T_n]) ⊣ B_i    Distinct(PatNames(p_i))    Γ_i = IntroAll(Γ, B_i)    Γ_i; R; L ⊢ b_i : T_r    (else_opt = ⊥ ∨ Γ; R; L ⊢ else_opt : T_r)    (else_opt ≠ ⊥ ∨ HasIrrefutableCase(cases, TypeUnion([T_1, …, T_n])) ∨ UnionTypesExhaustive(cases, [T_1, …, T_n]))
+Γ; R; L ⊢ e : TypeUnion([T_1, …, T_n])    ∀ i, case_i = ⟨p_i, b_i⟩    ∀ i, CaseScope(Γ, e, p_i, TypeUnion([T_1, …, T_n])) ⇓ Γ_i    ∀ i, Γ_i; R; L ⊢ b_i : T_r    (else_opt = ⊥ ∨ Γ; R; L ⊢ else_opt : T_r)    (else_opt ≠ ⊥ ∨ HasIrrefutableCase(cases, TypeUnion([T_1, …, T_n])) ∨ UnionTypesExhaustive(cases, [T_1, …, T_n]))
 ────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
 Γ; R; L ⊢ IfCaseExpr(e, cases, else_opt) : T_r
 
@@ -18614,19 +18662,19 @@ UnionTypesExhaustive(cases, types) ⇔ ∀ T ∈ types. ∃ case ∈ cases. ∃ 
 Γ; R; L ⊢ IfCaseExpr(e, cases, else_opt) ⇑ c
 
 **(Chk-IfCase-Union)**
-Γ; R; L ⊢ e : TypeUnion([T_1, …, T_n])    ∀ i, case_i = ⟨p_i, b_i⟩    Γ ⊢ p_i ◁ TypeUnion([T_1, …, T_n]) ⊣ B_i    Distinct(PatNames(p_i))    Γ_i = IntroAll(Γ, B_i)    Γ_i; R; L ⊢ b_i ⇐ T    (else_opt = ⊥ ∨ Γ; R; L ⊢ else_opt ⇐ T ⊣ ∅)    (else_opt ≠ ⊥ ∨ HasIrrefutableCase(cases, TypeUnion([T_1, …, T_n])) ∨ UnionTypesExhaustive(cases, [T_1, …, T_n]))
+Γ; R; L ⊢ e : TypeUnion([T_1, …, T_n])    ∀ i, case_i = ⟨p_i, b_i⟩    ∀ i, CaseScope(Γ, e, p_i, TypeUnion([T_1, …, T_n])) ⇓ Γ_i    ∀ i, Γ_i; R; L ⊢ b_i ⇐ T    (else_opt = ⊥ ∨ Γ; R; L ⊢ else_opt ⇐ T ⊣ ∅)    (else_opt ≠ ⊥ ∨ HasIrrefutableCase(cases, TypeUnion([T_1, …, T_n])) ∨ UnionTypesExhaustive(cases, [T_1, …, T_n]))
 ────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
 Γ; R; L ⊢ IfCaseExpr(e, cases, else_opt) ⇐ T ⊣ ∅
 
 **Other Case Analysis**
 
 **(T-IfCase-Other)**
-Γ; R; L ⊢ e : T_s    ∀ i, case_i = ⟨p_i, b_i⟩    Γ ⊢ p_i ◁ T_s ⊣ B_i    Distinct(PatNames(p_i))    Γ_i = IntroAll(Γ, B_i)    Γ_i; R; L ⊢ b_i : T_r    (else_opt = ⊥ ∨ Γ; R; L ⊢ else_opt : T_r)    (else_opt ≠ ⊥ ∨ HasIrrefutableCase(cases, T_s))
+Γ; R; L ⊢ e : T_s    ∀ i, case_i = ⟨p_i, b_i⟩    ∀ i, CaseScope(Γ, e, p_i, T_s) ⇓ Γ_i    ∀ i, Γ_i; R; L ⊢ b_i : T_r    (else_opt = ⊥ ∨ Γ; R; L ⊢ else_opt : T_r)    (else_opt ≠ ⊥ ∨ HasIrrefutableCase(cases, T_s))
 ───────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
 Γ; R; L ⊢ IfCaseExpr(e, cases, else_opt) : T_r
 
 **(Chk-IfCase-Enum)**
-Γ; R; L ⊢ e : TypePath(p)    EnumDecl(p) = E    ∀ i, case_i = ⟨p_i, b_i⟩    Γ ⊢ p_i ◁ TypePath(p) ⊣ B_i    Distinct(PatNames(p_i))    Γ_i = IntroAll(Γ, B_i)    Γ_i; R; L ⊢ b_i ⇐ T    (else_opt = ⊥ ∨ Γ; R; L ⊢ else_opt ⇐ T ⊣ ∅)    (else_opt ≠ ⊥ ∨ HasIrrefutableCase(cases, TypePath(p)) ∨ CaseVariants(cases) = VariantNames(E))
+Γ; R; L ⊢ e : TypePath(p)    EnumDecl(p) = E    ∀ i, case_i = ⟨p_i, b_i⟩    ∀ i, CaseScope(Γ, e, p_i, TypePath(p)) ⇓ Γ_i    ∀ i, Γ_i; R; L ⊢ b_i ⇐ T    (else_opt = ⊥ ∨ Γ; R; L ⊢ else_opt ⇐ T ⊣ ∅)    (else_opt ≠ ⊥ ∨ HasIrrefutableCase(cases, TypePath(p)) ∨ CaseVariants(cases) = VariantNames(E))
 ──────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
 Γ; R; L ⊢ IfCaseExpr(e, cases, else_opt) ⇐ T ⊣ ∅
 
@@ -18636,22 +18684,22 @@ UnionTypesExhaustive(cases, types) ⇔ ∀ T ∈ types. ∃ case ∈ cases. ∃ 
 Γ; R; L ⊢ IfCaseExpr(e, cases, else_opt) ⇑ c
 
 **(Chk-IfCase-Modal)**
-Γ; R; L ⊢ e : ModalRefType(modal_ref)    ModalDeclOf(modal_ref) = M    ∀ i, case_i = ⟨p_i, b_i⟩    Γ ⊢ p_i ◁ ModalRefType(modal_ref) ⊣ B_i    Distinct(PatNames(p_i))    Γ_i = IntroAll(Γ, B_i)    Γ_i; R; L ⊢ b_i ⇐ T    (else_opt = ⊥ ∨ Γ; R; L ⊢ else_opt ⇐ T ⊣ ∅)    (else_opt ≠ ⊥ ∨ HasIrrefutableCase(cases, ModalRefType(modal_ref)) ∨ CaseStates(cases) = States(M))
+Γ; R; L ⊢ e : ModalRefType(modal_ref)    ModalDeclOf(modal_ref) = M    ∀ i, case_i = ⟨p_i, b_i⟩    ∀ i, CaseScope(Γ, e, p_i, ModalRefType(modal_ref)) ⇓ Γ_i    ∀ i, Γ_i; R; L ⊢ b_i ⇐ T    (else_opt = ⊥ ∨ Γ; R; L ⊢ else_opt ⇐ T ⊣ ∅)    (else_opt ≠ ⊥ ∨ HasIrrefutableCase(cases, ModalRefType(modal_ref)) ∨ CaseStates(cases) = States(M))
 ────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
 Γ; R; L ⊢ IfCaseExpr(e, cases, else_opt) ⇐ T ⊣ ∅
 
 **(Chk-IfCase-Other)**
-Γ; R; L ⊢ e : T_s    ∀ i, case_i = ⟨p_i, b_i⟩    Γ ⊢ p_i ◁ T_s ⊣ B_i    Distinct(PatNames(p_i))    Γ_i = IntroAll(Γ, B_i)    Γ_i; R; L ⊢ b_i ⇐ T    (else_opt = ⊥ ∨ Γ; R; L ⊢ else_opt ⇐ T ⊣ ∅)    (else_opt ≠ ⊥ ∨ HasIrrefutableCase(cases, T_s))
+Γ; R; L ⊢ e : T_s    ∀ i, case_i = ⟨p_i, b_i⟩    ∀ i, CaseScope(Γ, e, p_i, T_s) ⇓ Γ_i    ∀ i, Γ_i; R; L ⊢ b_i ⇐ T    (else_opt = ⊥ ∨ Γ; R; L ⊢ else_opt ⇐ T ⊣ ∅)    (else_opt ≠ ⊥ ∨ HasIrrefutableCase(cases, T_s))
 ───────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
 Γ; R; L ⊢ IfCaseExpr(e, cases, else_opt) ⇐ T ⊣ ∅
 
 **(Chk-IfIs)**
-Γ; R; L ⊢ e : T_s    Γ ⊢ pat ◁ T_s ⊣ B    Distinct(PatNames(pat))    Γ_0 = PushScope(Γ)    IntroAll(Γ_0, B) ⇓ Γ_1    Γ_1; R; L ⊢ b_t ⇐ T ⊣ ∅    Γ; R; L ⊢ b_f ⇐ T ⊣ ∅
+Γ; R; L ⊢ e : T_s    CaseScope(Γ, e, pat, T_s) ⇓ Γ_1    Γ_1; R; L ⊢ b_t ⇐ T ⊣ ∅    Γ; R; L ⊢ b_f ⇐ T ⊣ ∅
 ──────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
 Γ; R; L ⊢ IfIsExpr(e, pat, b_t, b_f) ⇐ T ⊣ ∅
 
 **(Chk-IfIs-No-Else)**
-Γ; R; L ⊢ e : T_s    Γ ⊢ pat ◁ T_s ⊣ B    Distinct(PatNames(pat))    Γ_0 = PushScope(Γ)    IntroAll(Γ_0, B) ⇓ Γ_1    Γ_1; R; L ⊢ b_t ⇐ TypePrim(`()`) ⊣ ∅
+Γ; R; L ⊢ e : T_s    CaseScope(Γ, e, pat, T_s) ⇓ Γ_1    Γ_1; R; L ⊢ b_t ⇐ TypePrim(`()`) ⊣ ∅
 ──────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
 Γ; R; L ⊢ IfIsExpr(e, pat, b_t, ⊥) ⇐ TypePrim(`()`) ⊣ ∅
 
@@ -29854,6 +29902,7 @@ Informative. Appendix A is an index of diagnostics defined by the owning constru
 
 Only sections that define named diagnostics are listed below.
 
+- `§3.1 Core Project Records`: `E-CLI-0001`, `E-CLI-0002`, `E-CLI-0003`
 - `§3.8 Project Diagnostics`: `E-PRJ-0101`, `E-PRJ-0102`, `E-PRJ-0103`, `E-PRJ-0104`, `E-PRJ-0110`, `E-PRJ-0111`, `E-PRJ-0112`, `E-PRJ-0201`, `E-PRJ-0202`, `E-PRJ-0203`, `E-PRJ-0204`, `E-PRJ-0205`, `E-PRJ-0206`, `E-PRJ-0207`, `E-PRJ-0208`, `E-PRJ-0209`, `E-PRJ-0210`, `E-PRJ-0301`, `E-PRJ-0302`, `E-PRJ-0303`, `E-PRJ-0304`, `E-PRJ-0305`
 - `§4.3 Source Loading and Lexical Diagnostics`: `E-SRC-0101`, `E-SRC-0102`, `E-SRC-0103`, `E-SRC-0104`, `E-SRC-0301`, `E-SRC-0302`, `E-SRC-0303`, `E-SRC-0304`, `E-SRC-0306`, `E-SRC-0307`, `E-SRC-0308`, `E-SRC-0309`, `E-SRC-0310`, `E-SRC-0311`, `W-SRC-0101`, `W-SRC-0301`, `W-SRC-0308`
 - `§5.10 Parsing Diagnostics Supplement`: `E-CNF-0401`, `E-SRC-0510`, `E-SRC-0520`, `E-SRC-0521`

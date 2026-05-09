@@ -15,7 +15,16 @@ using UltravioletCompiler::Project::{
 internal procedure manifestParserReportsMalformedKeyValueSyntax() -> bool
 |: => @result
 {
-    return manifestParseFails(parseManifestText("[[assembly]]\nname \"UltravioletCompiler\"\nkind = \"library\"\nroot = \"Compiler\"\n"))
+    var passed: bool = false
+    region as diagnostics_region {
+        passed = manifestParseFails(
+            parseManifestText(
+                diagnostics_region,
+                "[[assembly]]\nname \"UltravioletCompiler\"\nkind = \"library\"\nroot = \"Compiler\"\n"
+            )
+        )
+    }
+    return passed
 }
 
 [[test(
@@ -25,7 +34,16 @@ internal procedure manifestParserReportsMalformedKeyValueSyntax() -> bool
 internal procedure manifestParserReportsDuplicateTableFields() -> bool
 |: => @result
 {
-    return manifestParseFails(parseManifestText("[[assembly]]\nname = \"UltravioletCompiler\"\nname = \"CompilerAgain\"\nkind = \"library\"\nroot = \"Compiler\"\n"))
+    var passed: bool = false
+    region as diagnostics_region {
+        passed = manifestParseFails(
+            parseManifestText(
+                diagnostics_region,
+                "[[assembly]]\nname = \"UltravioletCompiler\"\nname = \"CompilerAgain\"\nkind = \"library\"\nroot = \"Compiler\"\n"
+            )
+        )
+    }
+    return passed
 }
 
 internal procedure manifestParseFails(parse: ManifestParseValue) -> bool {

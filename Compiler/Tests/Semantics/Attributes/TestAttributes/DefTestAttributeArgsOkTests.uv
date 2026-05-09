@@ -13,22 +13,27 @@
 internal procedure testAttributeAcceptsNameAndCoverageArguments() -> bool
 |: => @result
 {
-    let check: TestAttributeArgumentCheckValue =
-        checkTestAttributeArguments(
-            testAttributeArguments2(
-                testNameAttributeArgument("argument shape"),
-                testCoverageAttributeArgument("def.TestAttributeArgsOk@L28435")
-            ),
-            "UltravioletCompiler::Tests::Example::args"
-        )
-    return if check is {
-        @Accepted { coverage_references } {
-            coverageReferenceListCount(coverage_references) == 1
-        }
-        @Rejected {
-            false
+    var passed: bool = false
+    region as diagnostics_region {
+        let check: TestAttributeArgumentCheckValue =
+            checkTestAttributeArguments(
+                diagnostics_region,
+                testAttributeArguments2(
+                    testNameAttributeArgument("argument shape"),
+                    testCoverageAttributeArgument("def.TestAttributeArgsOk@L28435")
+                ),
+                "UltravioletCompiler::Tests::Example::args"
+            )
+        passed = if check is {
+            @Accepted { coverage_references } {
+                coverageReferenceListCount(coverage_references) == 1
+            }
+            @Rejected {
+                false
+            }
         }
     }
+    return passed
 }
 
 [[test(
@@ -38,22 +43,27 @@ internal procedure testAttributeAcceptsNameAndCoverageArguments() -> bool
 internal procedure testAttributeRejectsDuplicateNameArguments() -> bool
 |: => @result
 {
-    let check: TestAttributeArgumentCheckValue =
-        checkTestAttributeArguments(
-            testAttributeArguments2(
-                testNameAttributeArgument("one"),
-                testNameAttributeArgument("two")
-            ),
-            "UltravioletCompiler::Tests::Example::duplicateName"
-        )
-    return if check is {
-        @Accepted {
-            false
-        }
-        @Rejected {
-            true
+    var passed: bool = false
+    region as diagnostics_region {
+        let check: TestAttributeArgumentCheckValue =
+            checkTestAttributeArguments(
+                diagnostics_region,
+                testAttributeArguments2(
+                    testNameAttributeArgument("one"),
+                    testNameAttributeArgument("two")
+                ),
+                "UltravioletCompiler::Tests::Example::duplicateName"
+            )
+        passed = if check is {
+            @Accepted {
+                false
+            }
+            @Rejected {
+                true
+            }
         }
     }
+    return passed
 }
 
 [[test(
@@ -63,20 +73,25 @@ internal procedure testAttributeRejectsDuplicateNameArguments() -> bool
 internal procedure testAttributeRejectsMalformedCoverageReference() -> bool
 |: => @result
 {
-    let check: TestAttributeArgumentCheckValue =
-        checkTestAttributeArguments(
-            testAttributeArguments2(
-                testNameAttributeArgument("bad coverage"),
-                testCoverageAttributeArgument("def.TestAttributeArgsOk")
-            ),
-            "UltravioletCompiler::Tests::Example::badCoverage"
-        )
-    return if check is {
-        @Accepted {
-            false
-        }
-        @Rejected {
-            true
+    var passed: bool = false
+    region as diagnostics_region {
+        let check: TestAttributeArgumentCheckValue =
+            checkTestAttributeArguments(
+                diagnostics_region,
+                testAttributeArguments2(
+                    testNameAttributeArgument("bad coverage"),
+                    testCoverageAttributeArgument("def.TestAttributeArgsOk")
+                ),
+                "UltravioletCompiler::Tests::Example::badCoverage"
+            )
+        passed = if check is {
+            @Accepted {
+                false
+            }
+            @Rejected {
+                true
+            }
         }
     }
+    return passed
 }

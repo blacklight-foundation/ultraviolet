@@ -181,6 +181,7 @@ public procedure attributeIsSourceNativeTest(attribute: Attribute) -> bool {
 }
 
 public procedure classifyTestProcedure(
+    diagnostics_region: unique Region@Active,
     attribute: Attribute,
     target: TestAttributeTargetValue,
     fully_qualified_path: string@View,
@@ -189,6 +190,7 @@ public procedure classifyTestProcedure(
     if (!attributeIsSourceNativeTest(attribute)) {
         return TestAttributeSemanticCheck@Rejected {
             diagnostics: singleErrorDiagnosticStream(
+                diagnostics_region,
                 "E-MOD-2452",
                 "[[test]] attribute expected"
             )
@@ -197,6 +199,7 @@ public procedure classifyTestProcedure(
     if (!testAttributeTargetIsOrdinaryProcedure(target)) {
         return TestAttributeSemanticCheck@Rejected {
             diagnostics: singleErrorDiagnosticStream(
+                diagnostics_region,
                 "E-MOD-2452",
                 "[[test]] applied outside ordinary procedure"
             )
@@ -204,7 +207,11 @@ public procedure classifyTestProcedure(
     }
 
     let args: TestAttributeArgumentCheckValue =
-        checkTestAttributeArguments(attribute.arguments, fully_qualified_path)
+        checkTestAttributeArguments(
+            diagnostics_region,
+            attribute.arguments,
+            fully_qualified_path
+        )
     return if args is {
         @Accepted { display_name, coverage_references } {
             TestAttributeSemanticCheck@Accepted {
@@ -236,19 +243,24 @@ public procedure testAttributeTargetIsOrdinaryProcedure(
 }
 
 public procedure checkTestAttributeArguments(
+    diagnostics_region: unique Region@Active,
     arguments: AttributeArgumentListValue,
     fully_qualified_path: string@View
 ) -> TestAttributeArgumentCheckValue {
+    let diagnostics: DiagnosticStreamValue =
+        emptyDiagnosticStream(diagnostics_region)
     return checkTestAttributeArgumentsFrom(
+        diagnostics_region,
         arguments,
         false,
         testName(fully_qualified_path),
         emptyCoverageReferences(),
-        emptyDiagnosticStream()
+        move diagnostics
     )
 }
 
 internal procedure checkTestAttributeArgumentsFrom(
+    diagnostics_region: unique Region@Active,
     arguments: AttributeArgumentListValue,
     has_name: bool,
     display_name: TestName,
@@ -272,6 +284,7 @@ internal procedure checkTestAttributeArgumentsFrom(
         @Entry { argument, tail } {
             if (attributeArgumentIsName(argument)) {
                 checkNameArgument(
+                    diagnostics_region,
                     tail,
                     has_name,
                     argument,
@@ -281,6 +294,7 @@ internal procedure checkTestAttributeArgumentsFrom(
                 )
             } else if (attributeArgumentIsCoverage(argument)) {
                 checkCoverageArgument(
+                    diagnostics_region,
                     tail,
                     has_name,
                     argument,
@@ -289,15 +303,19 @@ internal procedure checkTestAttributeArgumentsFrom(
                     move diagnostics
                 )
             } else {
+                let updated_diagnostics: DiagnosticStreamValue =
+                    diagnosticStreamAppend(
+                        diagnostics_region,
+                        move diagnostics,
+                        malformedTestAttributeArgumentDiagnostic()
+                    )
                 checkTestAttributeArgumentsFrom(
+                    diagnostics_region,
                     tail,
                     has_name,
                     display_name,
                     move coverage_references,
-                    diagnosticStreamAppend(
-                        move diagnostics,
-                        malformedTestAttributeArgumentDiagnostic()
-                    )
+                    move updated_diagnostics
                 )
             }
         }
@@ -305,6 +323,7 @@ internal procedure checkTestAttributeArgumentsFrom(
 }
 
 internal procedure checkNameArgument(
+    diagnostics_region: unique Region@Active,
     tail: AttributeArgumentListValue,
     has_name: bool,
     argument: AttributeArgumentValue,
@@ -313,16 +332,24 @@ internal procedure checkNameArgument(
     move diagnostics: DiagnosticStreamValue
 ) -> TestAttributeArgumentCheckValue {
     if (has_name) {
+        let updated_diagnostics: DiagnosticStreamValue =
+            diagnosticStreamAppend(
+                diagnostics_region,
+                move diagnostics,
+                duplicateTestNameDiagnostic()
+            )
         return checkTestAttributeArgumentsFrom(
+            diagnostics_region,
             tail,
             has_name,
             display_name,
             move coverage_references,
-            diagnosticStreamAppend(move diagnostics, duplicateTestNameDiagnostic())
+            move updated_diagnostics
         )
     }
 
     return checkTestAttributeArgumentsFrom(
+        diagnostics_region,
         tail,
         true,
         testName(attributeArgumentStringValue(argument)),
@@ -332,6 +359,7 @@ internal procedure checkNameArgument(
 }
 
 internal procedure checkCoverageArgument(
+    diagnostics_region: unique Region@Active,
     tail: AttributeArgumentListValue,
     has_name: bool,
     argument: AttributeArgumentValue,
@@ -345,6 +373,7 @@ internal procedure checkCoverageArgument(
     return if shape is {
         @Valid {
             checkTestAttributeArgumentsFrom(
+                diagnostics_region,
                 tail,
                 has_name,
                 display_name,
@@ -353,12 +382,19 @@ internal procedure checkCoverageArgument(
             )
         }
         @Malformed {
+            let updated_diagnostics: DiagnosticStreamValue =
+                diagnosticStreamAppend(
+                    diagnostics_region,
+                    move diagnostics,
+                    malformedCoverageDiagnostic()
+                )
             checkTestAttributeArgumentsFrom(
+                diagnostics_region,
                 tail,
                 has_name,
                 display_name,
                 move coverage_references,
-                diagnosticStreamAppend(move diagnostics, malformedCoverageDiagnostic())
+                move updated_diagnostics
             )
         }
     }

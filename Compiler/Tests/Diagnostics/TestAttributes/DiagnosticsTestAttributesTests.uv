@@ -16,6 +16,7 @@ using UltravioletCompiler::Diagnostics::{
     CODE_TEST_UNKNOWN_COVERAGE_REFERENCE,
     CODE_TEST_UNKNOWN_TARGET,
     Diagnostic,
+    diagnosticHasCode,
     unknownCoverageReferenceDiagnostic,
     unknownTestTargetDiagnostic
 }
@@ -49,6 +50,6 @@ internal procedure testAttributeDiagnosticHelpersEmitCanonicalCodes() -> bool
     let target: Diagnostic = unknownTestTargetDiagnostic("missing")
     let coverage: Diagnostic =
         unknownCoverageReferenceDiagnostic("missing.Obligation@L1")
-    return projectTextEquals(target.code.text, CODE_TEST_UNKNOWN_TARGET) &&
-        projectTextEquals(coverage.code.text, CODE_TEST_UNKNOWN_COVERAGE_REFERENCE)
+    return diagnosticHasCode(target, CODE_TEST_UNKNOWN_TARGET) &&
+        diagnosticHasCode(coverage, CODE_TEST_UNKNOWN_COVERAGE_REFERENCE)
 }

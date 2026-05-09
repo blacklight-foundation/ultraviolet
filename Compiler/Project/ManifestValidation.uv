@@ -192,24 +192,39 @@ internal type ManifestLinkKindValidationValue =
     ManifestLinkKindValidation@InvalidValue |
     ManifestLinkKindValidation@InvalidUse
 
-public procedure validateManifest(move manifest: Manifest) -> ManifestValidationValue {
+public procedure validateManifest(
+    diagnostics_region: unique Region@Active,
+    move manifest: Manifest
+) -> ManifestValidationValue {
     if (manifest.has_unknown_top_key) {
         return invalidManifest(
-            singleErrorDiagnosticStream("E-PRJ-0101", "unknown manifest top-level key")
+            singleErrorDiagnosticStream(
+                diagnostics_region,
+                "E-PRJ-0101",
+                "unknown manifest top-level key"
+            )
         )
     }
     if (manifestAssemblyListCount(manifest.assemblies) == 0) {
         return invalidManifest(
-            singleErrorDiagnosticStream("E-PRJ-0103", "missing assembly table")
+            singleErrorDiagnosticStream(
+                diagnostics_region,
+                "E-PRJ-0103",
+                "missing assembly table"
+            )
         )
     }
     if (manifestAssemblyNamesHaveDuplicates(manifest.assemblies)) {
         return invalidManifest(
-            singleErrorDiagnosticStream("E-PRJ-0202", "duplicate assembly name")
+            singleErrorDiagnosticStream(
+                diagnostics_region,
+                "E-PRJ-0202",
+                "duplicate assembly name"
+            )
         )
     }
     let assembly_validation: ManifestAssemblyValidationValue =
-        validateManifestAssemblyList(manifest.assemblies)
+        validateManifestAssemblyList(diagnostics_region, manifest.assemblies)
     return if assembly_validation is {
         @Invalid { diagnostics } {
             invalidManifest(move diagnostics)
@@ -221,6 +236,7 @@ public procedure validateManifest(move manifest: Manifest) -> ManifestValidation
 }
 
 internal procedure validateManifestAssemblyList(
+    diagnostics_region: unique Region@Active,
     assemblies: ManifestAssemblyListValue
 ) -> ManifestAssemblyValidationValue {
     return if assemblies is {
@@ -231,6 +247,7 @@ internal procedure validateManifestAssemblyList(
             if (manifest_assembly.has_unknown_key) {
                 invalidManifestAssemblyList(
                     singleErrorDiagnosticStream(
+                        diagnostics_region,
                         "E-PRJ-0203",
                         "unknown assembly key"
                     )
@@ -238,6 +255,7 @@ internal procedure validateManifestAssemblyList(
             } else if (!manifestAssemblyHasRequiredFields(manifest_assembly)) {
                 invalidManifestAssemblyList(
                     singleErrorDiagnosticStream(
+                        diagnostics_region,
                         "E-PRJ-0204",
                         "missing required assembly field"
                     )
@@ -245,6 +263,7 @@ internal procedure validateManifestAssemblyList(
             } else if (!manifestAssemblyNameIsValid(manifest_assembly.name)) {
                 invalidManifestAssemblyList(
                     singleErrorDiagnosticStream(
+                        diagnostics_region,
                         "E-PRJ-0205",
                         "invalid assembly name"
                     )
@@ -252,6 +271,7 @@ internal procedure validateManifestAssemblyList(
             } else if (!manifestAssemblyKindIsValid(manifest_assembly.kind)) {
                 invalidManifestAssemblyList(
                     singleErrorDiagnosticStream(
+                        diagnostics_region,
                         "E-PRJ-0201",
                         "invalid assembly kind"
                     )
@@ -264,6 +284,7 @@ internal procedure validateManifestAssemblyList(
                         if (!manifestAssemblyEmitIRIsValid(manifest_assembly.emit_ir)) {
                             invalidManifestAssemblyList(
                                 singleErrorDiagnosticStream(
+                                    diagnostics_region,
                                     "E-PRJ-0209",
                                     "invalid assembly emit_ir"
                                 )
@@ -271,6 +292,7 @@ internal procedure validateManifestAssemblyList(
                         } else if (!manifestAssemblyRootPathIsValid(manifest_assembly.root)) {
                             invalidManifestAssemblyList(
                                 singleErrorDiagnosticStream(
+                                    diagnostics_region,
                                     "E-PRJ-0210",
                                     "invalid assembly root path"
                                 )
@@ -280,17 +302,19 @@ internal procedure validateManifestAssemblyList(
                         )) {
                             invalidManifestAssemblyList(
                                 singleErrorDiagnosticStream(
+                                    diagnostics_region,
                                     "E-PRJ-0211",
                                     "invalid assembly output directory path"
                                 )
                             )
                         } else {
-                            validateManifestAssemblyList(tail)
+                            validateManifestAssemblyList(diagnostics_region, tail)
                         }
                     }
                     @InvalidValue {
                         invalidManifestAssemblyList(
                             singleErrorDiagnosticStream(
+                                diagnostics_region,
                                 "E-PRJ-0207",
                                 "invalid assembly link kind"
                             )
@@ -299,6 +323,7 @@ internal procedure validateManifestAssemblyList(
                     @InvalidUse {
                         invalidManifestAssemblyList(
                             singleErrorDiagnosticStream(
+                                diagnostics_region,
                                 "E-PRJ-0208",
                                 "assembly link kind is only valid for libraries"
                             )

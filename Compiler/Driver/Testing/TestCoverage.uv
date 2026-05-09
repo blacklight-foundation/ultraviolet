@@ -34,15 +34,20 @@ public type CoverageCheckValue =
     CoverageCheck@Satisfied | CoverageCheck@Failed
 
 public procedure coverageReferencesHaveValidShape(
+    diagnostics_region: unique Region@Active,
     move references: CoverageReferenceListValue
 ) -> CoverageCheckValue {
+    let diagnostics: DiagnosticStreamValue =
+        emptyDiagnosticStream(diagnostics_region)
     return coverageReferencesHaveValidShapeWithDiagnostics(
+        diagnostics_region,
         move references,
-        emptyDiagnosticStream()
+        move diagnostics
     )
 }
 
 internal procedure coverageReferencesHaveValidShapeWithDiagnostics(
+    diagnostics_region: unique Region@Active,
     move references: CoverageReferenceListValue,
     move diagnostics: DiagnosticStreamValue
 ) -> CoverageCheckValue {
@@ -59,15 +64,23 @@ internal procedure coverageReferencesHaveValidShapeWithDiagnostics(
                 validateCoverageReferenceShape(reference)
             if shape is {
                 @Valid {
-                    coverageReferencesHaveValidShapeWithDiagnostics(move tail, move diagnostics)
+                    coverageReferencesHaveValidShapeWithDiagnostics(
+                        diagnostics_region,
+                        move tail,
+                        move diagnostics
+                    )
                 }
                 @Malformed {
-                    coverageReferencesHaveValidShapeWithDiagnostics(
-                        move tail,
+                    let updated_diagnostics: DiagnosticStreamValue =
                         diagnosticStreamAppend(
+                            diagnostics_region,
                             move diagnostics,
                             unknownCoverageReferenceDiagnostic(reference.text)
                         )
+                    coverageReferencesHaveValidShapeWithDiagnostics(
+                        diagnostics_region,
+                        move tail,
+                        move updated_diagnostics
                     )
                 }
             }

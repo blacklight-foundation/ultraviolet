@@ -26,36 +26,41 @@ using UltravioletCompiler::Project::{
 internal procedure moduleDiscoveryReturnsFailureWhenCompilationUnitFails() -> bool
 |: => @result
 {
-    let discovery: ModuleDiscoveryValue =
-        discoverModulesFromSourceRootScan(
-            assemblyName("UltravioletCompiler"),
-            sourceRootScan(
-                directoryPath("Compiler"),
-                true,
-                moduleDirectoryScanListEntry(
-                    moduleDirectoryScan(
-                        directoryPath("Compiler/Core"),
-                        modulePath("UltravioletCompiler::Core"),
-                        sourceFilePathListEntry(
-                            sourceFilePath("Outside/Path.uv"),
-                            emptySourceFilePaths()
+    var passed: bool = false
+    region as diagnostics_region {
+        let discovery: ModuleDiscoveryValue =
+            discoverModulesFromSourceRootScan(
+                diagnostics_region,
+                assemblyName("UltravioletCompiler"),
+                sourceRootScan(
+                    directoryPath("Compiler"),
+                    true,
+                    moduleDirectoryScanListEntry(
+                        moduleDirectoryScan(
+                            directoryPath("Compiler/Core"),
+                            modulePath("UltravioletCompiler::Core"),
+                            sourceFilePathListEntry(
+                                sourceFilePath("Outside/Path.uv"),
+                                emptySourceFilePaths()
+                            ),
+                            false
                         ),
-                        false
-                    ),
-                    emptyModuleDirectoryScans()
+                        emptyModuleDirectoryScans()
+                    )
                 )
             )
-        )
 
-    return if discovery is {
-        @Scanning {
-            false
-        }
-        @Complete {
-            false
-        }
-        @Failed { diagnostics } {
-            diagnosticStreamHasErrors(diagnostics)
+        passed = if discovery is {
+            @Scanning {
+                false
+            }
+            @Complete {
+                false
+            }
+            @Failed { diagnostics } {
+                diagnosticStreamHasErrors(diagnostics)
+            }
         }
     }
+    return passed
 }

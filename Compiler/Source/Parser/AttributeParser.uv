@@ -109,8 +109,14 @@ public procedure testAttributeArguments2(
     )
 }
 
-public procedure malformedTestAttributeArgument() -> AttributeParseResultValue {
+public procedure malformedTestAttributeArgument(
+    diagnostics_region: unique Region@Active
+) -> AttributeParseResultValue {
     return rejectedAttributeParse(
-        singleErrorDiagnosticStream("E-TST-0101", "malformed [[test]] argument")
+        singleErrorDiagnosticStream(
+            diagnostics_region,
+            "E-TST-0101",
+            "malformed [[test]] argument"
+        )
     )
 }

@@ -23,32 +23,37 @@ using UltravioletCompiler::Project::{
 internal procedure projectLoadAdvancesParsedManifestIntoValidatedState() -> bool
 |: => @result
 {
-    let load: ProjectLoadValue =
-        projectLoadFromManifestParse(
-            projectRoot("C:/Dev/Ultraviolet"),
-            parsedManifest(manifest(stepValidateManifestAssemblies()))
-        )
+    var passed: bool = false
+    region as diagnostics_region {
+        let load: ProjectLoadValue =
+            projectLoadFromManifestParse(
+                diagnostics_region,
+                projectRoot("C:/Dev/Ultraviolet"),
+                parsedManifest(manifest(stepValidateManifestAssemblies()))
+            )
 
-    return if load is {
-        @ManifestValidated { manifest: validated_manifest } {
-            manifestAssemblyListCount(validated_manifest.assemblies) == 2
-        }
-        @RootLocated {
-            false
-        }
-        @ManifestParsed {
-            false
-        }
-        @AssembliesDiscovered {
-            false
-        }
-        @Complete {
-            false
-        }
-        @Failed {
-            false
+        passed = if load is {
+            @ManifestValidated { manifest: validated_manifest } {
+                manifestAssemblyListCount(validated_manifest.assemblies) == 2
+            }
+            @RootLocated {
+                false
+            }
+            @ManifestParsed {
+                false
+            }
+            @AssembliesDiscovered {
+                false
+            }
+            @Complete {
+                false
+            }
+            @Failed {
+                false
+            }
         }
     }
+    return passed
 }
 
 internal procedure stepValidateManifestAssemblies() -> ManifestAssemblyListValue {

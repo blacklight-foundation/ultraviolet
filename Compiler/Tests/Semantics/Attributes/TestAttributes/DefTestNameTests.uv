@@ -12,22 +12,27 @@
 internal procedure testNameDefaultsToFullyQualifiedProcedurePath() -> bool
 |: => @result
 {
-    let check: TestAttributeArgumentCheckValue =
-        checkTestAttributeArguments(
-            emptyAttributeArguments(),
-            "UltravioletCompiler::Tests::Example::defaultName"
-        )
-    return if check is {
-        @Accepted { display_name } {
-            projectTextEquals(
-                display_name.text,
+    var passed: bool = false
+    region as diagnostics_region {
+        let check: TestAttributeArgumentCheckValue =
+            checkTestAttributeArguments(
+                diagnostics_region,
+                emptyAttributeArguments(),
                 "UltravioletCompiler::Tests::Example::defaultName"
             )
-        }
-        @Rejected {
-            false
+        passed = if check is {
+            @Accepted { display_name } {
+                projectTextEquals(
+                    display_name.text,
+                    "UltravioletCompiler::Tests::Example::defaultName"
+                )
+            }
+            @Rejected {
+                false
+            }
         }
     }
+    return passed
 }
 
 [[test(
@@ -37,17 +42,22 @@ internal procedure testNameDefaultsToFullyQualifiedProcedurePath() -> bool
 internal procedure testNameUsesExplicitNameArgument() -> bool
 |: => @result
 {
-    let check: TestAttributeArgumentCheckValue =
-        checkTestAttributeArguments(
-            singleTestNameArgument("display label"),
-            "UltravioletCompiler::Tests::Example::explicitName"
-        )
-    return if check is {
-        @Accepted { display_name } {
-            projectTextEquals(display_name.text, "display label")
-        }
-        @Rejected {
-            false
+    var passed: bool = false
+    region as diagnostics_region {
+        let check: TestAttributeArgumentCheckValue =
+            checkTestAttributeArguments(
+                diagnostics_region,
+                singleTestNameArgument("display label"),
+                "UltravioletCompiler::Tests::Example::explicitName"
+            )
+        passed = if check is {
+            @Accepted { display_name } {
+                projectTextEquals(display_name.text, "display label")
+            }
+            @Rejected {
+                false
+            }
         }
     }
+    return passed
 }

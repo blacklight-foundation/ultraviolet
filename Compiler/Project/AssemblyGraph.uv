@@ -224,12 +224,14 @@ public procedure ownedModules(
 }
 
 public procedure ownAssemblies(
+    diagnostics_region: unique Region@Active,
     assemblies: AssemblyListValue
 ) -> AssemblyOwnershipValue {
     let source_roots: AssemblySourceRootListValue = assemblySourceRoots(assemblies)
     if (!allModulesHaveOwners(assemblies, source_roots)) {
         return AssemblyOwnership@Failed {
             diagnostics: singleErrorDiagnosticStream(
+                diagnostics_region,
                 ASSEMBLY_GRAPH_ROOT_OWNER_AMBIGUOUS_CODE,
                 ASSEMBLY_GRAPH_ROOT_OWNER_AMBIGUOUS_MESSAGE
             )

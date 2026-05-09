@@ -31,6 +31,10 @@ internal let MANIFEST_LINK_KIND_KEY_TEXT: string@View = "link_kind"
 internal let MANIFEST_ROOT_KEY_TEXT: string@View = "root"
 internal let MANIFEST_OUT_DIR_KEY_TEXT: string@View = "out_dir"
 internal let MANIFEST_EMIT_IR_KEY_TEXT: string@View = "emit_ir"
+internal let MANIFEST_FILE_NAME_TEXT: string@View = "Ultraviolet.toml"
+internal let MANIFEST_MISSING_ERROR_CODE: string@View = "E-PRJ-0101"
+internal let MANIFEST_MISSING_ERROR_MESSAGE: string@View =
+    "Ultraviolet.toml not found at project root"
 internal let MANIFEST_PARSE_ERROR_CODE: string@View = "E-PRJ-0102"
 internal let MANIFEST_PARSE_ERROR_MESSAGE: string@View = "invalid manifest"
 internal let MANIFEST_SPACE: u8 = 32
@@ -75,7 +79,29 @@ public type ManifestAssemblyListValue =
 public record Manifest {
     public assemblies: ManifestAssemblyListValue
     public has_unknown_top_key: bool
+    private _source: ManifestTextSourceValue
 }
+
+internal modal ManifestTextSource {
+    @View {
+        private _text: string@View
+
+        internal procedure view(~) -> string@View {
+            return self._text
+        }
+    }
+
+    @Managed {
+        private _text: unique string@Managed
+
+        internal procedure view(~) -> string@View {
+            return string::as_view(self._text)
+        }
+    }
+}
+
+internal type ManifestTextSourceValue =
+    ManifestTextSource@View | ManifestTextSource@Managed
 
 internal record ManifestAssemblyBuilder {
     internal name: string@View
@@ -233,9 +259,47 @@ public procedure manifestWithTopKeyState(
     move assemblies: ManifestAssemblyListValue,
     has_unknown_top_key: bool
 ) -> Manifest {
+    return manifestWithSource(
+        move assemblies,
+        has_unknown_top_key,
+        manifestTextSourceFromView(MANIFEST_EMPTY_TEXT)
+    )
+}
+
+internal procedure manifestWithSource(
+    move assemblies: ManifestAssemblyListValue,
+    has_unknown_top_key: bool,
+    move source: ManifestTextSourceValue
+) -> Manifest {
     return Manifest {
         assemblies: move assemblies,
-        has_unknown_top_key: has_unknown_top_key
+        has_unknown_top_key: has_unknown_top_key,
+        _source: move source
+    }
+}
+
+internal procedure manifestTextSourceFromView(text: string@View) -> ManifestTextSourceValue {
+    return ManifestTextSource@View { _text: text }
+}
+
+internal procedure manifestTextSourceFromManaged(
+    move text: unique string@Managed
+) -> ManifestTextSourceValue {
+    return ManifestTextSource@Managed { _text: move text }
+}
+
+public procedure manifestSourceText(manifest: Manifest) -> string@View {
+    return manifestTextSourceView(manifest._source)
+}
+
+internal procedure manifestTextSourceView(source: ManifestTextSourceValue) -> string@View {
+    return if source is {
+        @View {
+            source~>view()
+        }
+        @Managed {
+            source~>view()
+        }
     }
 }
 
@@ -249,7 +313,56 @@ public procedure failedManifestParse(
     return ManifestParse@Failed { diagnostics: move diagnostics }
 }
 
-public procedure parseManifestText(text: string@View) -> ManifestParseValue {
+public procedure parseManifestText(
+    diagnostics_region: unique Region@Active,
+    text: string@View
+) -> ManifestParseValue {
+    return parseManifestTextWithSource(
+        diagnostics_region,
+        text,
+        manifestTextSourceFromView(text)
+    )
+}
+
+public procedure parseManifestManagedText(
+    diagnostics_region: unique Region@Active,
+    move text: unique string@Managed
+) -> ManifestParseValue {
+    let view: string@View = string::as_view(text)
+    return parseManifestTextWithSource(
+        diagnostics_region,
+        view,
+        manifestTextSourceFromManaged(move text)
+    )
+}
+
+public procedure parseManifestFromRoot(
+    filesystem: $FileSystem,
+    diagnostics_region: unique Region@Active,
+    root: ProjectRoot
+) -> ManifestParseValue {
+    let project_filesystem: $FileSystem = filesystem~>restrict(root.text)
+    if (!project_filesystem~>exists(MANIFEST_FILE_NAME_TEXT)) {
+        return failedManifestParse(manifestMissingDiagnostics(diagnostics_region))
+    }
+
+    let read_result: Outcome<unique string@Managed, IoError> =
+        project_filesystem~>read_file(MANIFEST_FILE_NAME_TEXT)
+    return if move read_result is {
+        @Value { value } {
+            parseManifestManagedText(diagnostics_region, move value)
+        }
+        @Error {
+            failedManifestParse(manifestParseErrorDiagnostics(diagnostics_region))
+        }
+    }
+}
+
+internal procedure parseManifestTextWithSource(
+    diagnostics_region: unique Region@Active,
+    text: string@View,
+    move source: ManifestTextSourceValue
+) -> ManifestParseValue {
     let length: usize = string::length(text)
     var state: ManifestTextParseValue =
         ManifestTextParse@ReadingTop {
@@ -264,14 +377,15 @@ public procedure parseManifestText(text: string@View) -> ManifestParseValue {
         }
 
         let line_end: usize = manifestLineEnd(text, line_start)
-        state = parseManifestLine(text, line_start, line_end, move state)
+        state = parseManifestLine(diagnostics_region, text, line_start, line_end, move state)
         line_start = manifestNextLineStart(text, line_end)
     }
 
-    return finishManifestTextParse(move state)
+    return finishManifestTextParse(move state, move source)
 }
 
 internal procedure parseManifestLine(
+    diagnostics_region: unique Region@Active,
     text: string@View,
     line_start: usize,
     line_end: usize,
@@ -298,10 +412,10 @@ internal procedure parseManifestLine(
     }
 
     let field_parse: ManifestKeyValueParseValue =
-        parseManifestKeyValue(text, start, end)
+        parseManifestKeyValue(diagnostics_region, text, start, end)
     return if field_parse is {
         @Parsed { field } {
-            acceptManifestField(move state, field)
+            acceptManifestField(diagnostics_region, move state, field)
         }
         @Failed { diagnostics } {
             ManifestTextParse@Failed { diagnostics: move diagnostics }
@@ -310,29 +424,32 @@ internal procedure parseManifestLine(
 }
 
 internal procedure finishManifestTextParse(
-    move state: ManifestTextParseValue
+    move state: ManifestTextParseValue,
+    move source: ManifestTextSourceValue
 ) -> ManifestParseValue {
     return if state is {
         @ReadingTop { assemblies, has_unknown_top_key } {
-            parsedManifest(manifestWithTopKeyState(
+            parsedManifest(manifestWithSource(
                 reverseManifestAssemblies(
                     move assemblies,
                     emptyManifestAssemblies()
                 ),
-                has_unknown_top_key
+                has_unknown_top_key,
+                move source
             ))
         }
         @ReadingIgnoredTable { assemblies, has_unknown_top_key } {
-            parsedManifest(manifestWithTopKeyState(
+            parsedManifest(manifestWithSource(
                 reverseManifestAssemblies(
                     move assemblies,
                     emptyManifestAssemblies()
                 ),
-                has_unknown_top_key
+                has_unknown_top_key,
+                move source
             ))
         }
         @ReadingAssembly { assemblies, has_unknown_top_key, builder } {
-            parsedManifest(manifestWithTopKeyState(
+            parsedManifest(manifestWithSource(
                 reverseManifestAssemblies(
                     manifestAssemblyListEntry(
                         manifestAssemblyFromBuilder(builder),
@@ -340,7 +457,8 @@ internal procedure finishManifestTextParse(
                     ),
                     emptyManifestAssemblies()
                 ),
-                has_unknown_top_key
+                has_unknown_top_key,
+                move source
             ))
         }
         @Failed { diagnostics } {
@@ -416,12 +534,14 @@ internal procedure beginIgnoredManifestTable(
 }
 
 internal procedure acceptManifestField(
+    diagnostics_region: unique Region@Active,
     move state: ManifestTextParseValue,
     field: ManifestKeyValue
 ) -> ManifestTextParseValue {
     return if state is {
         @ReadingAssembly { assemblies, has_unknown_top_key, builder } {
             acceptManifestAssemblyField(
+                diagnostics_region,
                 move assemblies,
                 has_unknown_top_key,
                 builder,
@@ -444,6 +564,7 @@ internal procedure acceptManifestField(
 }
 
 internal procedure acceptManifestAssemblyField(
+    diagnostics_region: unique Region@Active,
     move assemblies: ManifestAssemblyListValue,
     has_unknown_top_key: bool,
     builder: ManifestAssemblyBuilder,
@@ -451,7 +572,7 @@ internal procedure acceptManifestAssemblyField(
 ) -> ManifestTextParseValue {
     if (manifestTextEquals(field.key, MANIFEST_NAME_KEY_TEXT)) {
         if (builder.has_name) {
-            return failedManifestTextParse()
+            return failedManifestTextParse(diagnostics_region)
         }
         return ManifestTextParse@ReadingAssembly {
             assemblies: move assemblies,
@@ -461,7 +582,7 @@ internal procedure acceptManifestAssemblyField(
     }
     if (manifestTextEquals(field.key, MANIFEST_KIND_KEY_TEXT)) {
         if (builder.has_kind) {
-            return failedManifestTextParse()
+            return failedManifestTextParse(diagnostics_region)
         }
         return ManifestTextParse@ReadingAssembly {
             assemblies: move assemblies,
@@ -471,7 +592,7 @@ internal procedure acceptManifestAssemblyField(
     }
     if (manifestTextEquals(field.key, MANIFEST_LINK_KIND_KEY_TEXT)) {
         if (builder.has_link_kind) {
-            return failedManifestTextParse()
+            return failedManifestTextParse(diagnostics_region)
         }
         return ManifestTextParse@ReadingAssembly {
             assemblies: move assemblies,
@@ -481,7 +602,7 @@ internal procedure acceptManifestAssemblyField(
     }
     if (manifestTextEquals(field.key, MANIFEST_ROOT_KEY_TEXT)) {
         if (builder.has_root) {
-            return failedManifestTextParse()
+            return failedManifestTextParse(diagnostics_region)
         }
         return ManifestTextParse@ReadingAssembly {
             assemblies: move assemblies,
@@ -491,7 +612,7 @@ internal procedure acceptManifestAssemblyField(
     }
     if (manifestTextEquals(field.key, MANIFEST_OUT_DIR_KEY_TEXT)) {
         if (builder.has_out_dir) {
-            return failedManifestTextParse()
+            return failedManifestTextParse(diagnostics_region)
         }
         return ManifestTextParse@ReadingAssembly {
             assemblies: move assemblies,
@@ -501,7 +622,7 @@ internal procedure acceptManifestAssemblyField(
     }
     if (manifestTextEquals(field.key, MANIFEST_EMIT_IR_KEY_TEXT)) {
         if (builder.has_emit_ir) {
-            return failedManifestTextParse()
+            return failedManifestTextParse(diagnostics_region)
         }
         return ManifestTextParse@ReadingAssembly {
             assemblies: move assemblies,
@@ -518,40 +639,41 @@ internal procedure acceptManifestAssemblyField(
 }
 
 internal procedure parseManifestKeyValue(
+    diagnostics_region: unique Region@Active,
     text: string@View,
     start: usize,
     end: usize
 ) -> ManifestKeyValueParseValue {
     let key_end: usize = manifestKeyEnd(text, start, end)
     if (key_end == start) {
-        return failedManifestKeyValueParse()
+        return failedManifestKeyValueParse(diagnostics_region)
     }
 
     let equals_index: usize = manifestTrimStart(text, key_end, end)
     if (equals_index >= end) {
-        return failedManifestKeyValueParse()
+        return failedManifestKeyValueParse(diagnostics_region)
     }
     if (!manifestTextByteEquals(text, equals_index, MANIFEST_EQUALS)) {
-        return failedManifestKeyValueParse()
+        return failedManifestKeyValueParse(diagnostics_region)
     }
 
     let quote_index: usize = manifestTrimStart(text, equals_index + 1, end)
     if (quote_index >= end) {
-        return failedManifestKeyValueParse()
+        return failedManifestKeyValueParse(diagnostics_region)
     }
     if (!manifestTextByteEquals(text, quote_index, MANIFEST_QUOTE)) {
-        return failedManifestKeyValueParse()
+        return failedManifestKeyValueParse(diagnostics_region)
     }
 
     let value_end: usize = manifestStringLiteralEnd(text, quote_index + 1, end)
     if (value_end >= end) {
-        return failedManifestKeyValueParse()
+        return failedManifestKeyValueParse(diagnostics_region)
     }
 
     let trailing_start: usize = manifestTrimStart(text, value_end + 1, end)
     if (trailing_start < end &&
         !manifestTextByteEquals(text, trailing_start, MANIFEST_HASH)) {
-        return failedManifestKeyValueParse()
+        return failedManifestKeyValueParse(diagnostics_region)
     }
 
     return ManifestKeyValueParse@Parsed {
@@ -562,22 +684,39 @@ internal procedure parseManifestKeyValue(
     }
 }
 
-internal procedure failedManifestKeyValueParse() -> ManifestKeyValueParseValue {
+internal procedure failedManifestKeyValueParse(
+    diagnostics_region: unique Region@Active
+) -> ManifestKeyValueParseValue {
     return ManifestKeyValueParse@Failed {
-        diagnostics: manifestParseErrorDiagnostics()
+        diagnostics: manifestParseErrorDiagnostics(diagnostics_region)
     }
 }
 
-internal procedure failedManifestTextParse() -> ManifestTextParseValue {
+internal procedure failedManifestTextParse(
+    diagnostics_region: unique Region@Active
+) -> ManifestTextParseValue {
     return ManifestTextParse@Failed {
-        diagnostics: manifestParseErrorDiagnostics()
+        diagnostics: manifestParseErrorDiagnostics(diagnostics_region)
     }
 }
 
-internal procedure manifestParseErrorDiagnostics() -> DiagnosticStreamValue {
+internal procedure manifestParseErrorDiagnostics(
+    diagnostics_region: unique Region@Active
+) -> DiagnosticStreamValue {
     return singleErrorDiagnosticStream(
+        diagnostics_region,
         MANIFEST_PARSE_ERROR_CODE,
         MANIFEST_PARSE_ERROR_MESSAGE
+    )
+}
+
+internal procedure manifestMissingDiagnostics(
+    diagnostics_region: unique Region@Active
+) -> DiagnosticStreamValue {
+    return singleErrorDiagnosticStream(
+        diagnostics_region,
+        MANIFEST_MISSING_ERROR_CODE,
+        MANIFEST_MISSING_ERROR_MESSAGE
     )
 }
 

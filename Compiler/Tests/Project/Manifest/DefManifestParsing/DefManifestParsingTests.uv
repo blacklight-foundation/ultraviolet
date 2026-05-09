@@ -16,14 +16,18 @@ using UltravioletCompiler::Project::{
 internal procedure manifestParserReadsAssemblyTablesAcrossCommentsAndIgnoredTables() -> bool
 |: => @result
 {
-    let parse: ManifestParseValue = parseManifestText("# generated project manifest\n[toolchain]\nchannel = \"bootstrap\"\n\n[[assembly]]\nname = \"Sample\"\nkind = \"executable\"\nroot = \"Tools/Uv\"\n\n[build]\nprofile = \"check\"\n")
+    var passed: bool = false
+    region as diagnostics_region {
+        let parse: ManifestParseValue = parseManifestText(diagnostics_region, "# generated project manifest\n[toolchain]\nchannel = \"bootstrap\"\n\n[[assembly]]\nname = \"Sample\"\nkind = \"executable\"\nroot = \"Tools/Uv\"\n\n[build]\nprofile = \"check\"\n")
 
-    return if parse is {
-        @Parsed { manifest } {
-            manifestAssemblyListCount(manifest.assemblies) == 1
-        }
-        @Failed {
-            false
+        passed = if parse is {
+            @Parsed { manifest } {
+                manifestAssemblyListCount(manifest.assemblies) == 1
+            }
+            @Failed {
+                false
+            }
         }
     }
+    return passed
 }

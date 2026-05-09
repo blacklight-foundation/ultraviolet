@@ -21,20 +21,25 @@ using UltravioletCompiler::Project::{
 internal procedure manifestValidationRejectsUnknownAssemblyKeys() -> bool
 |: => @result
 {
-    let manifest_assembly: ManifestAssembly =
-        manifestAssemblyWithUnknownKey(
-            manifestAssembly("App", "executable", "", "Tools/Uv")
-        )
-    let validation: ManifestValidationValue = validateManifest(
-        manifest(
-            manifestAssemblyListEntry(
-                manifest_assembly,
-                emptyManifestAssemblies()
+    var passed: bool = false
+    region as diagnostics_region {
+        let manifest_assembly: ManifestAssembly =
+            manifestAssemblyWithUnknownKey(
+                manifestAssembly("App", "executable", "", "Tools/Uv")
+            )
+        let validation: ManifestValidationValue = validateManifest(
+            diagnostics_region,
+            manifest(
+                manifestAssemblyListEntry(
+                    manifest_assembly,
+                    emptyManifestAssemblies()
+                )
             )
         )
-    )
 
-    return manifestValidationIsInvalid(validation)
+        passed = manifestValidationIsInvalid(validation)
+    }
+    return passed
 }
 
 internal procedure manifestValidationIsInvalid(

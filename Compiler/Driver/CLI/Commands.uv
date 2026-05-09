@@ -4,6 +4,11 @@
 // vocabulary, and command-result conversion. It supports the executable
 // command surface by converting parsed command arguments into command modal
 // states and routing each state to its command-specific owner.
+//
+// - diagnostics.CommandLineDiagnostics@L100109
+//   Command-line diagnostics are E-CLI-0001 for an unknown command,
+//   E-CLI-0002 for pipeline unavailability, and E-CLI-0003 for output
+//   write failure.
 
 import UltravioletCompiler::Driver
 import UltravioletCompiler::Diagnostics
@@ -30,15 +35,21 @@ using UltravioletCompiler::Driver::{
     submitPipelineRequest
 }
 using UltravioletCompiler::Diagnostics::{
+    CODE_CLI_OUTPUT_WRITE_FAILED,
+    CODE_CLI_PIPELINE_UNAVAILABLE,
+    CODE_CLI_UNKNOWN_COMMAND,
+    CODE_TEST_UNKNOWN_TARGET,
+    Diagnostic,
+    DiagnosticSpanValue,
     DiagnosticStreamValue,
+    diagnosticHasMessage,
+    diagnosticMessage,
+    diagnosticSeverityText,
     singleErrorDiagnosticStream
 }
 
 internal let EXIT_SUCCESS: i32 = 0
 internal let EXIT_FAILURE: i32 = 1
-internal let COMMAND_UNKNOWN_DIAGNOSTIC: string@View = "E-CLI-0001"
-internal let COMMAND_PIPELINE_DIAGNOSTIC: string@View = "E-CLI-0002"
-internal let COMMAND_OUTPUT_DIAGNOSTIC: string@View = "E-CLI-0003"
 
 public modal CommandFailureReason {
     @UnknownCommand {
@@ -68,54 +79,82 @@ public modal Command {
     @Build {
         public arguments: CommandArguments
 
-        public procedure execute(~, host: DriverHost) -> CommandResultValue {
-            return executeBuildCommand(host, self.arguments)
+        public procedure execute(
+            ~,
+            host: DriverHost,
+            diagnostics_region: unique Region@Active
+        ) -> CommandResultValue {
+            return executeBuildCommand(host, diagnostics_region, self.arguments)
         }
     }
 
     @Check {
         public arguments: CommandArguments
 
-        public procedure execute(~, host: DriverHost) -> CommandResultValue {
-            return executeCheckCommand(host, self.arguments)
+        public procedure execute(
+            ~,
+            host: DriverHost,
+            diagnostics_region: unique Region@Active
+        ) -> CommandResultValue {
+            return executeCheckCommand(host, diagnostics_region, self.arguments)
         }
     }
 
     @Clean {
         public arguments: CommandArguments
 
-        public procedure execute(~, host: DriverHost) -> CommandResultValue {
-            return executeCleanCommand(host, self.arguments)
+        public procedure execute(
+            ~,
+            host: DriverHost,
+            diagnostics_region: unique Region@Active
+        ) -> CommandResultValue {
+            return executeCleanCommand(host, diagnostics_region, self.arguments)
         }
     }
 
     @Init {
         public arguments: CommandArguments
 
-        public procedure execute(~, host: DriverHost) -> CommandResultValue {
-            return executeInitCommand(host, self.arguments)
+        public procedure execute(
+            ~,
+            host: DriverHost,
+            diagnostics_region: unique Region@Active
+        ) -> CommandResultValue {
+            return executeInitCommand(host, diagnostics_region, self.arguments)
         }
     }
 
     @Run {
         public arguments: CommandArguments
 
-        public procedure execute(~, host: DriverHost) -> CommandResultValue {
-            return executeRunCommand(host, self.arguments)
+        public procedure execute(
+            ~,
+            host: DriverHost,
+            diagnostics_region: unique Region@Active
+        ) -> CommandResultValue {
+            return executeRunCommand(host, diagnostics_region, self.arguments)
         }
     }
 
     @Test {
         public input: TestCommandInput
 
-        public procedure execute(~, host: DriverHost) -> CommandResultValue {
-            return executeTestCommand(host, self.input)
+        public procedure execute(
+            ~,
+            host: DriverHost,
+            diagnostics_region: unique Region@Active
+        ) -> CommandResultValue {
+            return executeTestCommand(host, diagnostics_region, self.input)
         }
     }
 
     @Version {
-        public procedure execute(~, host: DriverHost) -> CommandResultValue {
-            return executeVersionCommand(host)
+        public procedure execute(
+            ~,
+            host: DriverHost,
+            diagnostics_region: unique Region@Active
+        ) -> CommandResultValue {
+            return executeVersionCommand(host, diagnostics_region)
         }
     }
 }
@@ -133,16 +172,24 @@ public modal CommandParseResult {
     @Parsed {
         public command: CommandValue
 
-        public procedure commandResult(~, host: DriverHost) -> CommandResultValue {
-            return host~>runCommand(self.command)
+        public procedure commandResult(
+            ~,
+            host: DriverHost,
+            diagnostics_region: unique Region@Active
+        ) -> CommandResultValue {
+            return host~>runCommand(diagnostics_region, self.command)
         }
     }
 
     @Rejected {
         public reason: CommandFailureReasonValue
 
-        public procedure commandResult(~, host: DriverHost) -> CommandResultValue {
-            return commandFailed(self.reason)
+        public procedure commandResult(
+            ~,
+            host: DriverHost,
+            diagnostics_region: unique Region@Active
+        ) -> CommandResultValue {
+            return commandFailed(diagnostics_region, self.reason)
         }
     }
 }
@@ -176,8 +223,13 @@ public procedure commandSucceeded() -> CommandResultValue {
     return CommandResult@Succeeded { exit_code: EXIT_SUCCESS }
 }
 
-public procedure commandFailed(reason: CommandFailureReasonValue) -> CommandResultValue {
-    return commandFailedWithDiagnostics(commandFailureDiagnostics(reason))
+public procedure commandFailed(
+    diagnostics_region: unique Region@Active,
+    reason: CommandFailureReasonValue
+) -> CommandResultValue {
+    return commandFailedWithDiagnostics(
+        commandFailureDiagnostics(diagnostics_region, reason)
+    )
 }
 
 public procedure commandFailedWithDiagnostics(
@@ -201,6 +253,7 @@ public procedure commandResultExitCode(result: CommandResultValue) -> i32 {
 }
 
 public procedure commandResultFromPipelineSubmission(
+    diagnostics_region: unique Region@Active,
     submission: PipelineSubmissionValue
 ) -> CommandResultValue {
     return if submission is {
@@ -208,7 +261,7 @@ public procedure commandResultFromPipelineSubmission(
             commandSucceeded()
         }
         @Unavailable { reason } {
-            commandFailed(pipelineUnavailableFailure(reason))
+            commandFailed(diagnostics_region, pipelineUnavailableFailure(reason))
         }
     }
 }
@@ -261,40 +314,45 @@ public procedure rejectedCommand(reason: CommandFailureReasonValue) -> CommandPa
 
 public procedure commandParseResultCommandResult(
     host: DriverHost,
+    diagnostics_region: unique Region@Active,
     parsed: CommandParseResultValue
 ) -> CommandResultValue {
     return if parsed is {
         @Parsed {
-            parsed~>commandResult(host)
+            parsed~>commandResult(host, diagnostics_region)
         }
         @Rejected {
-            parsed~>commandResult(host)
+            parsed~>commandResult(host, diagnostics_region)
         }
     }
 }
 
-public procedure executeCommand(host: DriverHost, command: CommandValue) -> CommandResultValue {
+public procedure executeCommand(
+    host: DriverHost,
+    diagnostics_region: unique Region@Active,
+    command: CommandValue
+) -> CommandResultValue {
     return if command is {
         @Build {
-            command~>execute(host)
+            command~>execute(host, diagnostics_region)
         }
         @Check {
-            command~>execute(host)
+            command~>execute(host, diagnostics_region)
         }
         @Clean {
-            command~>execute(host)
+            command~>execute(host, diagnostics_region)
         }
         @Init {
-            command~>execute(host)
+            command~>execute(host, diagnostics_region)
         }
         @Run {
-            command~>execute(host)
+            command~>execute(host, diagnostics_region)
         }
         @Test {
-            command~>execute(host)
+            command~>execute(host, diagnostics_region)
         }
         @Version {
-            command~>execute(host)
+            command~>execute(host, diagnostics_region)
         }
     }
 }
@@ -326,26 +384,33 @@ public procedure testTargetRejectedFailure(
 }
 
 public procedure commandFailureDiagnostics(
+    diagnostics_region: unique Region@Active,
     reason: CommandFailureReasonValue
 ) -> DiagnosticStreamValue {
     return if reason is {
         @UnknownCommand {
-            singleErrorDiagnosticStream(COMMAND_UNKNOWN_DIAGNOSTIC, "unknown command")
+            singleErrorDiagnosticStream(
+                diagnostics_region,
+                CODE_CLI_UNKNOWN_COMMAND,
+                "unknown command"
+            )
         }
         @PipelineUnavailable {
             singleErrorDiagnosticStream(
-                COMMAND_PIPELINE_DIAGNOSTIC,
+                diagnostics_region,
+                CODE_CLI_PIPELINE_UNAVAILABLE,
                 "compiler pipeline unavailable"
             )
         }
         @OutputWriteFailed {
             singleErrorDiagnosticStream(
-                COMMAND_OUTPUT_DIAGNOSTIC,
+                diagnostics_region,
+                CODE_CLI_OUTPUT_WRITE_FAILED,
                 "failed to write command output"
             )
         }
         @TestTargetRejected { code, message } {
-            singleErrorDiagnosticStream(code, message)
+            singleErrorDiagnosticStream(diagnostics_region, code, message)
         }
     }
 }

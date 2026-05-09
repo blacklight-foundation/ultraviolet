@@ -4,6 +4,7 @@
 // This file owns source-native tests for LoadProject-Err@L4017.
 
 using UltravioletCompiler::Diagnostics::{
+    DiagnosticStreamValue,
     diagnosticStreamHasErrors,
     singleErrorDiagnosticStream
 }
@@ -26,15 +27,24 @@ using UltravioletCompiler::Project::{
 internal procedure projectLoadPreservesManifestParseFailureDiagnostics() -> bool
 |: => @result
 {
-    let load: ProjectLoadValue =
-        projectLoadFromManifestParse(
-            projectRoot("C:/Dev/Ultraviolet"),
-            failedManifestParse(
-                singleErrorDiagnosticStream("E-PRJ-0102", "invalid manifest")
+    var passed: bool = false
+    region as diagnostics_region {
+        let parse_diagnostics: DiagnosticStreamValue =
+            singleErrorDiagnosticStream(
+                diagnostics_region,
+                "E-PRJ-0102",
+                "invalid manifest"
             )
-        )
+        let load: ProjectLoadValue =
+            projectLoadFromManifestParse(
+                diagnostics_region,
+                projectRoot("C:/Dev/Ultraviolet"),
+                failedManifestParse(move parse_diagnostics)
+            )
 
-    return projectLoadFailedWithErrors(load)
+        passed = projectLoadFailedWithErrors(load)
+    }
+    return passed
 }
 
 [[test(
@@ -44,20 +54,25 @@ internal procedure projectLoadPreservesManifestParseFailureDiagnostics() -> bool
 internal procedure projectLoadPreservesManifestValidationFailureDiagnostics() -> bool
 |: => @result
 {
-    let load: ProjectLoadValue =
-        projectLoadFromManifestParse(
-            projectRoot("C:/Dev/Ultraviolet"),
-            parsedManifest(
-                manifest(
-                    manifestAssemblyListEntry(
-                        manifestAssembly("Bad", "executable", "static", "Bad"),
-                        emptyManifestAssemblies()
+    var passed: bool = false
+    region as diagnostics_region {
+        let load: ProjectLoadValue =
+            projectLoadFromManifestParse(
+                diagnostics_region,
+                projectRoot("C:/Dev/Ultraviolet"),
+                parsedManifest(
+                    manifest(
+                        manifestAssemblyListEntry(
+                            manifestAssembly("Bad", "executable", "static", "Bad"),
+                            emptyManifestAssemblies()
+                        )
                     )
                 )
             )
-        )
 
-    return projectLoadFailedWithErrors(load)
+        passed = projectLoadFailedWithErrors(load)
+    }
+    return passed
 }
 
 internal procedure projectLoadFailedWithErrors(load: ProjectLoadValue) -> bool {

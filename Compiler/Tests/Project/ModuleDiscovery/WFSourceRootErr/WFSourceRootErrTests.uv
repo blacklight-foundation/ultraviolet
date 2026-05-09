@@ -20,25 +20,30 @@ using UltravioletCompiler::Project::{
 internal procedure nonDirectorySourceRootEmitsSourceRootDiagnostic() -> bool
 |: => @result
 {
-    let discovery: ModuleDiscoveryValue =
-        discoverModulesFromSourceRootScan(
-            assemblyName("UltravioletCompiler"),
-            sourceRootScan(
-                directoryPath("Compiler"),
-                false,
-                emptyModuleDirectoryScans()
+    var passed: bool = false
+    region as diagnostics_region {
+        let discovery: ModuleDiscoveryValue =
+            discoverModulesFromSourceRootScan(
+                diagnostics_region,
+                assemblyName("UltravioletCompiler"),
+                sourceRootScan(
+                    directoryPath("Compiler"),
+                    false,
+                    emptyModuleDirectoryScans()
+                )
             )
-        )
 
-    return if discovery is {
-        @Scanning {
-            false
-        }
-        @Complete {
-            false
-        }
-        @Failed { diagnostics } {
-            diagnosticStreamHasErrors(diagnostics)
+        passed = if discovery is {
+            @Scanning {
+                false
+            }
+            @Complete {
+                false
+            }
+            @Failed { diagnostics } {
+                diagnosticStreamHasErrors(diagnostics)
+            }
         }
     }
+    return passed
 }

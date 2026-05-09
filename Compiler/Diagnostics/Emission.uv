@@ -8,31 +8,35 @@ public procedure errorDiagnostic(
     message: string@View
 ) -> Diagnostic {
     return diagnostic(
-        diagnosticCode(code),
+        diagnosticCodeFromText(code),
         diagnosticSeverityError(),
-        unknownDiagnosticSource(),
-        message
+        message,
+        absentDiagnosticSpan()
     )
 }
 
 public procedure sourceErrorDiagnostic(
     code: string@View,
-    source: DiagnosticSourceValue,
+    span: SourceSpan,
     message: string@View
 ) -> Diagnostic {
     return diagnostic(
-        diagnosticCode(code),
+        diagnosticCodeFromText(code),
         diagnosticSeverityError(),
-        source,
-        message
+        message,
+        presentDiagnosticSpan(span)
     )
 }
 
 public procedure singleErrorDiagnosticStream(
+    diagnostics_region: unique Region@Active,
     code: string@View,
     message: string@View
 ) -> DiagnosticStreamValue {
-    return singleDiagnosticStream(errorDiagnostic(code, message))
+    return singleDiagnosticStream(
+        diagnostics_region,
+        errorDiagnostic(code, message)
+    )
 }
 
 public procedure unknownTestTargetDiagnostic(target_text: string@View) -> Diagnostic {
@@ -40,9 +44,13 @@ public procedure unknownTestTargetDiagnostic(target_text: string@View) -> Diagno
 }
 
 public procedure unknownTestTargetDiagnosticStream(
+    diagnostics_region: unique Region@Active,
     target_text: string@View
 ) -> DiagnosticStreamValue {
-    return singleDiagnosticStream(unknownTestTargetDiagnostic(target_text))
+    return singleDiagnosticStream(
+        diagnostics_region,
+        unknownTestTargetDiagnostic(target_text)
+    )
 }
 
 public procedure unknownCoverageReferenceDiagnostic(

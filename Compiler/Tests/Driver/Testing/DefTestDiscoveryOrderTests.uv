@@ -84,61 +84,66 @@ internal procedure testDiscoveryOrderConstructsSortedTestLists() -> bool
 internal procedure testExecutionPlanningSortsSelectedDiscoveredTests() -> bool
 |: => @result
 {
-    let execution: TestDriverExecutionValue =
-        sourceNativeTestExecutionFromProject(
-            testDriverRequest(
-                ".",
-                "uv.exe",
-                absentTestTargetCandidate(),
-                "x86_64-win64",
-                "normal"
-            ),
-            dynamicSemanticsProject(),
-            discoveredTestListEntry(
-                discoveryOrderTest("UltravioletCompiler::Tests::B", 0, 1, 1, "b"),
+    var passed: bool = false
+    region as diagnostics_region {
+        let execution: TestDriverExecutionValue =
+            sourceNativeTestExecutionFromProject(
+                diagnostics_region,
+                testDriverRequest(
+                    ".",
+                    "uv.exe",
+                    absentTestTargetCandidate(),
+                    "x86_64-win64",
+                    "normal"
+                ),
+                dynamicSemanticsProject(),
                 discoveredTestListEntry(
-                    discoveryOrderTest(
-                        "UltravioletCompiler::Tests::A",
-                        0,
-                        1,
-                        1,
-                        "a"
-                    ),
-                    emptyDiscoveredTests()
+                    discoveryOrderTest("UltravioletCompiler::Tests::B", 0, 1, 1, "b"),
+                    discoveredTestListEntry(
+                        discoveryOrderTest(
+                            "UltravioletCompiler::Tests::A",
+                            0,
+                            1,
+                            1,
+                            "a"
+                        ),
+                        emptyDiscoveredTests()
+                    )
                 )
             )
-        )
 
-    return if execution is {
-        @Ready { run } {
-            if run is {
-                @Planned { selection } {
-                    discoveredTestListStartsWith(
-                        selection.tests,
-                        "UltravioletCompiler::Tests::A"
-                    )
-                }
-                @HarnessBuilt {
-                    false
-                }
-                @ExecutableBuilt {
-                    false
-                }
-                @Running {
-                    false
-                }
-                @Completed {
-                    false
+        passed = if execution is {
+            @Ready { run } {
+                if run is {
+                    @Planned { selection } {
+                        discoveredTestListStartsWith(
+                            selection.tests,
+                            "UltravioletCompiler::Tests::A"
+                        )
+                    }
+                    @HarnessBuilt {
+                        false
+                    }
+                    @ExecutableBuilt {
+                        false
+                    }
+                    @Running {
+                        false
+                    }
+                    @Completed {
+                        false
+                    }
                 }
             }
-        }
-        @ProjectRequired {
-            false
-        }
-        @Rejected {
-            false
+            @ProjectRequired {
+                false
+            }
+            @Rejected {
+                false
+            }
         }
     }
+    return passed
 }
 
 internal procedure discoveryOrderTest(
@@ -157,6 +162,8 @@ internal procedure discoveryOrderTest(
         file_order,
         sourceSpan(
             "Compiler/Tests/Driver/Testing/DefTestDiscoveryOrderTests.uv",
+            0,
+            1,
             line,
             column,
             line,

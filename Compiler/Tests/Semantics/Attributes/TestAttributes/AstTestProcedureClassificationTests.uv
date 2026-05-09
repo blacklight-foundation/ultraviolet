@@ -38,32 +38,37 @@ using UltravioletCompiler::Source::Parser::{
 internal procedure sourceNativeTestIsClassifiedFromOrdinaryTestAttribute() -> bool
 |: => @result
 {
-    let result: AttributeParseResultValue = parseTestAttributeWithoutArguments()
-    return if result is {
-        @Parsed { attribute: test_attribute } {
-            let check: TestAttributeSemanticCheckValue =
-                classifyTestProcedure(
-                    test_attribute,
-                    ordinaryProcedureTestAttributeTarget(),
-                    "UltravioletCompiler::Tests::Example::passes",
-                    false
-                )
-            return if check is {
-                @Accepted { metadata } {
-                    projectTextEquals(
-                        metadata.stable_identity,
-                        "UltravioletCompiler::Tests::Example::passes"
+    var passed: bool = false
+    region as diagnostics_region {
+        let result: AttributeParseResultValue = parseTestAttributeWithoutArguments()
+        passed = if result is {
+            @Parsed { attribute: test_attribute } {
+                let check: TestAttributeSemanticCheckValue =
+                    classifyTestProcedure(
+                        diagnostics_region,
+                        test_attribute,
+                        ordinaryProcedureTestAttributeTarget(),
+                        "UltravioletCompiler::Tests::Example::passes",
+                        false
                     )
-                }
-                @Rejected {
-                    false
+                if check is {
+                    @Accepted { metadata } {
+                        projectTextEquals(
+                            metadata.stable_identity,
+                            "UltravioletCompiler::Tests::Example::passes"
+                        )
+                    }
+                    @Rejected {
+                        false
+                    }
                 }
             }
-        }
-        @Rejected {
-            false
+            @Rejected {
+                false
+            }
         }
     }
+    return passed
 }
 
 [[test(

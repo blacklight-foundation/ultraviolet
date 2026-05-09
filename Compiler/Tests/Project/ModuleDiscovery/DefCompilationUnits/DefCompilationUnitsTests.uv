@@ -23,33 +23,38 @@ using UltravioletCompiler::Project::{
 internal procedure compilationUnitSortsUvSourceFilesDeterministically() -> bool
 |: => @result
 {
-    let unit: CompilationUnitResultValue =
-        compilationUnitForDirectory(
-            moduleDirectoryScan(
-                directoryPath("Compiler/Tests"),
-                modulePath("UltravioletCompiler::Tests"),
-                sourceFilePathListEntry(
-                    sourceFilePath("Compiler/Tests/B.uv"),
+    var passed: bool = false
+    region as diagnostics_region {
+        let unit: CompilationUnitResultValue =
+            compilationUnitForDirectory(
+                diagnostics_region,
+                moduleDirectoryScan(
+                    directoryPath("Compiler/Tests"),
+                    modulePath("UltravioletCompiler::Tests"),
                     sourceFilePathListEntry(
-                        sourceFilePath("Compiler/Tests/a.uv"),
+                        sourceFilePath("Compiler/Tests/B.uv"),
                         sourceFilePathListEntry(
-                            sourceFilePath("Compiler/Tests/notes.txt"),
-                            emptySourceFilePaths()
+                            sourceFilePath("Compiler/Tests/a.uv"),
+                            sourceFilePathListEntry(
+                                sourceFilePath("Compiler/Tests/notes.txt"),
+                                emptySourceFilePaths()
+                            )
                         )
-                    )
-                ),
-                true
+                    ),
+                    true
+                )
             )
-        )
 
-    return if unit is {
-        @Computed { source_files } {
-            sourceFileListStartsWith(source_files, "Compiler/Tests/a.uv")
-        }
-        @Failed {
-            false
+        passed = if unit is {
+            @Computed { source_files } {
+                sourceFileListStartsWith(source_files, "Compiler/Tests/a.uv")
+            }
+            @Failed {
+                false
+            }
         }
     }
+    return passed
 }
 
 internal procedure sourceFileListStartsWith(

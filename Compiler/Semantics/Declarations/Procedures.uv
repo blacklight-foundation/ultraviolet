@@ -122,25 +122,26 @@ public procedure validTestProcedureDeclaration(
 }
 
 public procedure checkTestProcedureShape(
+    diagnostics_region: unique Region@Active,
     declaration: TestProcedureDeclaration
 ) -> TestProcedureShapeCheckValue {
     if (!declaration.has_body) {
-        return invalidTestProcedureShape()
+        return invalidTestProcedureShape(diagnostics_region)
     }
     if (declaration.is_generic) {
-        return invalidTestProcedureShape()
+        return invalidTestProcedureShape(diagnostics_region)
     }
     if (!declaration.has_explicit_visibility) {
-        return invalidTestProcedureShape()
+        return invalidTestProcedureShape(diagnostics_region)
     }
     if (!declaration.has_explicit_return_type) {
-        return invalidTestProcedureShape()
+        return invalidTestProcedureShape(diagnostics_region)
     }
     if (!postconditionIsPresent(declaration.contract.postcondition)) {
-        return missingTestPostcondition()
+        return missingTestPostcondition(diagnostics_region)
     }
     if (!testProcedureParameterIsValid(declaration.parameters)) {
-        return invalidTestContextParameter()
+        return invalidTestContextParameter(diagnostics_region)
     }
 
     return TestProcedureShapeCheck@Valid {
@@ -180,27 +181,36 @@ public procedure testProcedureParameterRequiresContext(
     }
 }
 
-internal procedure invalidTestProcedureShape() -> TestProcedureShapeCheckValue {
+internal procedure invalidTestProcedureShape(
+    diagnostics_region: unique Region@Active
+) -> TestProcedureShapeCheckValue {
     return TestProcedureShapeCheck@Invalid {
         diagnostics: singleErrorDiagnosticStream(
+            diagnostics_region,
             "E-TST-0104",
             "invalid [[test]] procedure shape"
         )
     }
 }
 
-internal procedure invalidTestContextParameter() -> TestProcedureShapeCheckValue {
+internal procedure invalidTestContextParameter(
+    diagnostics_region: unique Region@Active
+) -> TestProcedureShapeCheckValue {
     return TestProcedureShapeCheck@Invalid {
         diagnostics: singleErrorDiagnosticStream(
+            diagnostics_region,
             "E-TST-0105",
             "invalid TestContext parameter"
         )
     }
 }
 
-internal procedure missingTestPostcondition() -> TestProcedureShapeCheckValue {
+internal procedure missingTestPostcondition(
+    diagnostics_region: unique Region@Active
+) -> TestProcedureShapeCheckValue {
     return TestProcedureShapeCheck@Invalid {
         diagnostics: singleErrorDiagnosticStream(
+            diagnostics_region,
             "E-TST-0106",
             "[[test]] procedure missing postcondition"
         )

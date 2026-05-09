@@ -35,33 +35,38 @@ using UltravioletCompiler::Project::{
 internal procedure ownAssembliesSucceedsWhenEveryModuleHasUniqueSourceRootOwner() -> bool
 |: => @result
 {
-    let ownership: AssemblyOwnershipValue =
-        ownAssemblies(
-            assemblyListEntry(
-                assembly(
-                    assemblyName("UltravioletCompiler"),
-                    libraryAssemblyKind(),
-                    noLinkKind(),
-                    directoryPath("Compiler"),
-                    moduleListEntry(
-                        module(
-                            modulePath("UltravioletCompiler::Driver"),
-                            directoryPath("Compiler/Driver"),
-                            emptySourceFiles()
+    var passed: bool = false
+    region as diagnostics_region {
+        let ownership: AssemblyOwnershipValue =
+            ownAssemblies(
+                diagnostics_region,
+                assemblyListEntry(
+                    assembly(
+                        assemblyName("UltravioletCompiler"),
+                        libraryAssemblyKind(),
+                        noLinkKind(),
+                        directoryPath("Compiler"),
+                        moduleListEntry(
+                            module(
+                                modulePath("UltravioletCompiler::Driver"),
+                                directoryPath("Compiler/Driver"),
+                                emptySourceFiles()
+                            ),
+                            emptyModules()
                         ),
-                        emptyModules()
-                    )
-                ),
-                emptyAssemblies()
+                    ),
+                    emptyAssemblies()
+                )
             )
-        )
 
-    return if ownership is {
-        @Failed {
-            false
-        }
-        @Owned { assemblies } {
-            assemblyListCount(assemblies) == 1
+        passed = if ownership is {
+            @Failed {
+                false
+            }
+            @Owned { assemblies } {
+                assemblyListCount(assemblies) == 1
+            }
         }
     }
+    return passed
 }

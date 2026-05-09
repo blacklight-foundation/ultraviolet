@@ -19,16 +19,21 @@ using UltravioletCompiler::Project::{
 internal procedure manifestValidationRejectsMissingRequiredFields() -> bool
 |: => @result
 {
-    let validation: ManifestValidationValue = validateManifest(
-        manifest(
-            manifestAssemblyListEntry(
-                manifestAssembly("App", "executable", "", ""),
-                emptyManifestAssemblies()
+    var passed: bool = false
+    region as diagnostics_region {
+        let validation: ManifestValidationValue = validateManifest(
+            diagnostics_region,
+            manifest(
+                manifestAssemblyListEntry(
+                    manifestAssembly("App", "executable", "", ""),
+                    emptyManifestAssemblies()
+                )
             )
         )
-    )
 
-    return manifestValidationIsInvalid(validation)
+        passed = manifestValidationIsInvalid(validation)
+    }
+    return passed
 }
 
 internal procedure manifestValidationIsInvalid(

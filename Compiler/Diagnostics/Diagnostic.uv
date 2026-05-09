@@ -2,17 +2,23 @@
 //
 // This file owns diagnostic records and diagnostic stream representation:
 //
+// - def.DiagCodeOpt@L1518
+//   DiagCodeOpt = DiagCode union {bottom}.
 // - def.Diagnostic@L1532
-//   A diagnostic carries severity, optional code, source location, and message.
+//   Diagnostic = <code, severity, message, span> where code is optional and
+//   severity is one of the diagnostic severity states.
+// - req.DiagnosticCodeOwnership@L1546
+//   Code-owned diagnostics have a present diagnostic code; auxiliary
+//   diagnostics have an absent code only where a feature section defines them.
 // - def.DiagnosticStream@L1560
 //   A diagnostic stream is an ordered sequence consumed by status, rendering,
 //   and command-result reporting.
 
 public record Diagnostic {
-    public code: DiagnosticCode
+    public code: DiagnosticCodeOptionValue
     public severity: DiagnosticSeverityValue
-    public source: DiagnosticSourceValue
     public message: string@View
+    public span: DiagnosticSpanValue
 
     public procedure isError(~) -> bool {
         return diagnosticSeverityIsError(self.severity)
@@ -44,6 +50,14 @@ public modal DiagnosticStream {
             }
             return diagnosticStreamHasErrors(self.tail)
         }
+
+        public procedure currentDiagnostic(~) -> Diagnostic {
+            return self.diagnostic
+        }
+
+        public procedure remainingDiagnostics(~) -> DiagnosticStreamValue {
+            return self.tail
+        }
     }
 }
 
@@ -51,37 +65,45 @@ public type DiagnosticStreamValue =
     DiagnosticStream@Empty | DiagnosticStream@Entry
 
 public procedure diagnostic(
-    code: DiagnosticCode,
+    code: DiagnosticCodeOptionValue,
     severity: DiagnosticSeverityValue,
-    source: DiagnosticSourceValue,
-    message: string@View
+    message: string@View,
+    span: DiagnosticSpanValue
 ) -> Diagnostic {
     return Diagnostic {
         code: code,
         severity: severity,
-        source: source,
-        message: message
+        message: message,
+        span: span
     }
 }
 
-public procedure emptyDiagnosticStream() -> DiagnosticStreamValue {
-    return DiagnosticStream@Empty {}
+public procedure emptyDiagnosticStream(
+    diagnostics_region: unique Region@Active
+) -> DiagnosticStreamValue {
+    return diagnostics_region ^ DiagnosticStream@Empty {}
 }
 
-public procedure singleDiagnosticStream(diagnostic: Diagnostic) -> DiagnosticStreamValue {
-    return DiagnosticStream@Entry {
+public procedure singleDiagnosticStream(
+    diagnostics_region: unique Region@Active,
+    diagnostic: Diagnostic
+) -> DiagnosticStreamValue {
+    let empty_tail: DiagnosticStreamValue =
+        emptyDiagnosticStream(diagnostics_region)
+    return diagnostics_region ^ DiagnosticStream@Entry {
         diagnostic: diagnostic,
-        tail: emptyDiagnosticStream()
+        tail: move empty_tail
     }
 }
 
 public procedure diagnosticStreamEntry(
+    diagnostics_region: unique Region@Active,
     diagnostic: Diagnostic,
     move tail: DiagnosticStreamValue
 ) -> DiagnosticStreamValue {
-    return DiagnosticStream@Entry {
+    return diagnostics_region ^ DiagnosticStream@Entry {
         diagnostic: diagnostic,
-        tail: tail
+        tail: move tail
     }
 }
 
@@ -108,17 +130,23 @@ public procedure diagnosticStreamHasErrors(stream: DiagnosticStreamValue) -> boo
 }
 
 public procedure diagnosticStreamAppend(
+    diagnostics_region: unique Region@Active,
     move stream: DiagnosticStreamValue,
     diagnostic: Diagnostic
 ) -> DiagnosticStreamValue {
     return if stream is {
         @Empty {
-            singleDiagnosticStream(diagnostic)
+            singleDiagnosticStream(diagnostics_region, diagnostic)
         }
         @Entry {
             diagnosticStreamEntry(
-                stream.diagnostic,
-                diagnosticStreamAppend(move stream.tail, diagnostic)
+                diagnostics_region,
+                stream~>currentDiagnostic(),
+                diagnosticStreamAppend(
+                    diagnostics_region,
+                    stream~>remainingDiagnostics(),
+                    diagnostic
+                )
             )
         }
     }
