@@ -202,26 +202,40 @@ std::vector<std::filesystem::path> WindowsImportLibSearchDirs() {
     AppendExistingUniqueDir(out, version_dir / "ucrt" / "x64");
   }
 
-  const std::filesystem::path msvc_root(
-      "C:\\Program Files\\Microsoft Visual Studio\\18\\Community\\VC\\Tools\\MSVC");
-  std::vector<std::filesystem::path> msvc_versions;
-  ec.clear();
-  if (std::filesystem::is_directory(msvc_root, ec) && !ec) {
-    for (const auto& entry :
-         std::filesystem::directory_iterator(msvc_root, ec)) {
-      if (ec) {
-        break;
-      }
-      if (entry.is_directory(ec) && !ec) {
-        msvc_versions.push_back(entry.path());
+  const std::vector<std::filesystem::path> msvc_roots = {
+      std::filesystem::path(
+          "C:\\Program Files\\Microsoft Visual Studio\\2022\\Community\\VC\\Tools\\MSVC"),
+      std::filesystem::path(
+          "C:\\Program Files\\Microsoft Visual Studio\\18\\Community\\VC\\Tools\\MSVC"),
+  };
+  for (const auto& msvc_root : msvc_roots) {
+    std::vector<std::filesystem::path> msvc_versions;
+    ec.clear();
+    if (std::filesystem::is_directory(msvc_root, ec) && !ec) {
+      for (const auto& entry :
+           std::filesystem::directory_iterator(msvc_root, ec)) {
+        if (ec) {
+          break;
+        }
+        if (entry.is_directory(ec) && !ec) {
+          msvc_versions.push_back(entry.path());
+        }
       }
     }
+    std::sort(msvc_versions.begin(), msvc_versions.end());
+    std::reverse(msvc_versions.begin(), msvc_versions.end());
+    for (const auto& version_dir : msvc_versions) {
+      AppendExistingUniqueDir(out, version_dir / "lib" / "x64");
+    }
   }
-  std::sort(msvc_versions.begin(), msvc_versions.end());
-  std::reverse(msvc_versions.begin(), msvc_versions.end());
-  for (const auto& version_dir : msvc_versions) {
-    AppendExistingUniqueDir(out, version_dir / "lib" / "x64");
-  }
+
+  const std::filesystem::path exe_path = core::CurrentExecutablePath();
+  const std::filesystem::path bootstrap_root =
+      exe_path.parent_path().parent_path().parent_path().parent_path();
+  AppendExistingUniqueDir(out, bootstrap_root / "extern" / "icu" / "win64" / "lib64");
+  AppendExistingUniqueDir(out, bootstrap_root / "extern" / "icu" / "win64" / "lib");
+  AppendExistingUniqueDir(out, bootstrap_root / ".." / "extern" / "icu" / "win64" / "lib64");
+  AppendExistingUniqueDir(out, bootstrap_root / ".." / "extern" / "icu" / "win64" / "lib");
 
   return out;
 }
@@ -1362,12 +1376,27 @@ std::vector<std::string> BuildWindowsLinkArgs(
     for (const auto& lib_dir : WindowsImportLibSearchDirs()) {
       args.push_back("/LIBPATH:" + ToolPathArgString(tool, lib_dir));
     }
+
+    // The bundled Windows runtime uses ICU for filesystem key normalization.
+    // When linking with /NODEFAULTLIB we must provide both the ICU import
+    // library search path and the minimal CRT support library that defines
+    // compiler helper symbols such as __chkstk.
+    const auto extern_dir = tool.parent_path().parent_path().parent_path();
+    const auto bundled_icu_lib_dir = extern_dir / "icu" / "win64" / "lib64";
+    std::error_code icu_ec;
+    if (std::filesystem::is_directory(bundled_icu_lib_dir, icu_ec) && !icu_ec) {
+      args.push_back("/LIBPATH:" + ToolPathArgString(tool, bundled_icu_lib_dir));
+    }
   }
   for (const auto& input : inputs) {
     args.push_back(ToolPathArgString(tool, input));
   }
   if (plan.target_profile == TargetProfile::X86_64Win64) {
     args.push_back("kernel32.lib");
+    args.push_back("msvcrt.lib");
+    args.push_back("icuuc.lib");
+    args.push_back("icuin.lib");
+    args.push_back("icudt.lib");
   }
 
   std::vector<std::string> export_symbols = plan.export_symbols;

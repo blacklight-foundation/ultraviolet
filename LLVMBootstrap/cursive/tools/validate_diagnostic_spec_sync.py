@@ -27,6 +27,7 @@ SOURCE_PATTERNS = [
 def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser()
     parser.add_argument("--repo-root", default="")
+    parser.add_argument("--source-root", default="")
     parser.add_argument("--spec-path", default="")
     parser.add_argument("--registry-path", default="")
     return parser.parse_args()
@@ -54,7 +55,7 @@ def main() -> int:
     spec_codes = {match.group(0) for match in CODE_PATTERN.finditer(spec_text)}
 
     source_codes: set[str] = set()
-    src_root = repo_root / "cursive" / "src"
+    src_root = Path(args.source_root).resolve() if args.source_root else repo_root / "cursive" / "src"
     source_files = sorted(
         path
         for path in src_root.rglob("*")

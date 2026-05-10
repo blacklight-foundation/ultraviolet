@@ -45,6 +45,10 @@ else()
 endif()
 
 get_filename_component(CURSIVE_REPO_ROOT "${CMAKE_SOURCE_DIR}/.." REALPATH)
+get_filename_component(CURSIVE_LANGUAGE_REPO_ROOT "${CMAKE_SOURCE_DIR}/../.." REALPATH)
+if(NOT EXISTS "${CURSIVE_LANGUAGE_REPO_ROOT}/SPECIFICATION.md")
+  set(CURSIVE_LANGUAGE_REPO_ROOT "${CURSIVE_REPO_ROOT}")
+endif()
 set(CURSIVE_EXTERN_DIR "${CURSIVE_REPO_ROOT}/extern")
 set(CURSIVE_TOOLS_DIR "${CMAKE_SOURCE_DIR}/tools")
 set(CURSIVE_STATIC_RULE_MAPPING "${CURSIVE_TOOLS_DIR}/static_rule_mapping.json")
@@ -55,7 +59,7 @@ set(CURSIVE_TYPECHECK_DIAG_MAP_INC "${CMAKE_SOURCE_DIR}/src/04_analysis/typing/i
 
 find_package(Python3 COMPONENTS Interpreter REQUIRED)
 
-set(CURSIVE_DEFAULT_DIAG_SPEC_PATH "${CURSIVE_REPO_ROOT}/docs/CursiveSpecification.md")
+set(CURSIVE_DEFAULT_DIAG_SPEC_PATH "${CURSIVE_LANGUAGE_REPO_ROOT}/SPECIFICATION.md")
 set(CURSIVE_DIAG_SPEC_PATH "" CACHE FILEPATH "Path to the canonical Cursive language specification")
 if(NOT CURSIVE_DIAG_SPEC_PATH)
   if(EXISTS "${CURSIVE_DEFAULT_DIAG_SPEC_PATH}")
@@ -64,7 +68,7 @@ if(NOT CURSIVE_DIAG_SPEC_PATH)
     execute_process(
       COMMAND ${Python3_EXECUTABLE}
               "${CURSIVE_TOOLS_DIR}/resolve_spec_path.py"
-              --repo-root "${CURSIVE_REPO_ROOT}"
+              --repo-root "${CURSIVE_LANGUAGE_REPO_ROOT}"
       RESULT_VARIABLE CURSIVE_DIAG_SPEC_RESULT
       OUTPUT_VARIABLE CURSIVE_DIAG_SPEC_PATH
       ERROR_VARIABLE CURSIVE_DIAG_SPEC_ERROR
@@ -86,6 +90,7 @@ add_custom_target(generate_static_rule_registry
   COMMAND ${Python3_EXECUTABLE}
           "${CURSIVE_TOOLS_DIR}/generate_static_rule_registry.py"
           --repo-root "${CURSIVE_REPO_ROOT}"
+          --source-root "${CMAKE_SOURCE_DIR}/src"
           --spec-path "${CURSIVE_DIAG_SPEC_PATH}"
           --mapping-path "${CURSIVE_STATIC_RULE_MAPPING}"
           --output-path "${CURSIVE_STATIC_RULE_REGISTRY_INC}"
@@ -111,6 +116,7 @@ add_custom_target(validate_static_rule_registry_sync
   COMMAND ${Python3_EXECUTABLE}
           "${CURSIVE_TOOLS_DIR}/generate_static_rule_registry.py"
           --repo-root "${CURSIVE_REPO_ROOT}"
+          --source-root "${CMAKE_SOURCE_DIR}/src"
           --spec-path "${CURSIVE_DIAG_SPEC_PATH}"
           --mapping-path "${CURSIVE_STATIC_RULE_MAPPING}"
           --output-path "${CURSIVE_STATIC_RULE_REGISTRY_INC}"
@@ -130,6 +136,7 @@ add_custom_target(generate_diagnostic_registry
   COMMAND ${Python3_EXECUTABLE}
           "${CURSIVE_TOOLS_DIR}/generate_diagnostic_registry.py"
           --repo-root "${CURSIVE_REPO_ROOT}"
+          --source-root "${CMAKE_SOURCE_DIR}/src"
           --spec-path "${CURSIVE_DIAG_SPEC_PATH}"
           --output-registry-path "${CURSIVE_DIAG_REGISTRY_INC}"
           --output-typecheck-map-path "${CURSIVE_TYPECHECK_DIAG_MAP_INC}"
@@ -148,6 +155,7 @@ add_custom_target(validate_diagnostic_spec_sync
   COMMAND ${Python3_EXECUTABLE}
           "${CURSIVE_TOOLS_DIR}/generate_diagnostic_registry.py"
           --repo-root "${CURSIVE_REPO_ROOT}"
+          --source-root "${CMAKE_SOURCE_DIR}/src"
           --spec-path "${CURSIVE_DIAG_SPEC_PATH}"
           --output-registry-path "${CURSIVE_DIAG_REGISTRY_INC}"
           --output-typecheck-map-path "${CURSIVE_TYPECHECK_DIAG_MAP_INC}"
@@ -155,6 +163,7 @@ add_custom_target(validate_diagnostic_spec_sync
   COMMAND ${Python3_EXECUTABLE}
           "${CURSIVE_TOOLS_DIR}/validate_diagnostic_spec_sync.py"
           --repo-root "${CURSIVE_REPO_ROOT}"
+          --source-root "${CMAKE_SOURCE_DIR}/src"
           --spec-path "${CURSIVE_DIAG_SPEC_PATH}"
           --registry-path "${CURSIVE_DIAG_REGISTRY_INC}"
   DEPENDS
