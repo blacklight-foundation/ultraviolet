@@ -1,0 +1,204 @@
+{
+  "default_family": "DeclJudg",
+  "path_family_defaults": [
+    {
+      "regex": "^00_core/",
+      "family": "WFModulePathJudg"
+    },
+    {
+      "regex": "^01_project/",
+      "family": "LinkJudg"
+    },
+    {
+      "regex": "^02_source/",
+      "family": "ParseJudgment"
+    },
+    {
+      "regex": "^03_comptime/",
+      "family": "ParseJudgment"
+    },
+    {
+      "regex": "^04_analysis/resolve/",
+      "family": "ResolvePathJudg"
+    },
+    {
+      "regex": "^04_analysis/typing/expr/",
+      "family": "ExprJudg"
+    },
+    {
+      "regex": "^04_analysis/typing/stmt/",
+      "family": "StmtJudg"
+    },
+    {
+      "regex": "^04_analysis/typing/pattern/",
+      "family": "PatJudg"
+    },
+    {
+      "regex": "^04_analysis/typing/item/",
+      "family": "DeclJudg"
+    },
+    {
+      "regex": "^04_analysis/typing/type_equiv",
+      "family": "TypeEqJudg"
+    },
+    {
+      "regex": "^04_analysis/typing/subtyping",
+      "family": "SubtypingJudg"
+    },
+    {
+      "regex": "^04_analysis/typing/type_wf",
+      "family": "TypeWFJudg"
+    },
+    {
+      "regex": "^04_analysis/typing/",
+      "family": "TypeInfJudg"
+    },
+    {
+      "regex": "^04_analysis/memory/borrow_bind",
+      "family": "BJudgment"
+    },
+    {
+      "regex": "^04_analysis/memory/calls",
+      "family": "ArgPassJudg"
+    },
+    {
+      "regex": "^04_analysis/provenance/prov_place",
+      "family": "ProvPlaceJudg"
+    },
+    {
+      "regex": "^04_analysis/provenance/prov_expr",
+      "family": "ProvExprJudg"
+    },
+    {
+      "regex": "^04_analysis/provenance/prov_stmt",
+      "family": "ProvStmtJudg"
+    },
+    {
+      "regex": "^04_analysis/provenance/prov_block",
+      "family": "BlockProvJudg"
+    },
+    {
+      "regex": "^04_analysis/conformance/",
+      "family": "DeclJudg"
+    },
+    {
+      "regex": "^04_analysis/",
+      "family": "DeclJudg"
+    },
+    {
+      "regex": "^05_codegen/abi/",
+      "family": "ABICallJudg"
+    },
+    {
+      "regex": "^05_codegen/layout/",
+      "family": "LayoutJudg"
+    },
+    {
+      "regex": "^05_codegen/lower/expr/",
+      "family": "LowerExprJudg"
+    },
+    {
+      "regex": "^05_codegen/lower/stmt/",
+      "family": "LowerStmtJudg"
+    },
+    {
+      "regex": "^05_codegen/lower/pattern/",
+      "family": "PatternLowerJudg"
+    },
+    {
+      "regex": "^05_codegen/lower/lower_bind",
+      "family": "LowerBindJudg"
+    },
+    {
+      "regex": "^05_codegen/symbols/mangle",
+      "family": "MangleJudg"
+    },
+    {
+      "regex": "^05_codegen/symbols/linkage",
+      "family": "LinkageJudg"
+    },
+    {
+      "regex": "^05_codegen/globals/",
+      "family": "GlobalsJudg"
+    },
+    {
+      "regex": "^05_codegen/cleanup/",
+      "family": "CleanupJudg"
+    },
+    {
+      "regex": "^05_codegen/intrinsics/",
+      "family": "RuntimeIfcJudg"
+    },
+    {
+      "regex": "^05_codegen/dyn_dispatch/",
+      "family": "DynDispatchJudg"
+    },
+    {
+      "regex": "^05_codegen/checks/",
+      "family": "ChecksJudg"
+    },
+    {
+      "regex": "^05_codegen/llvm/",
+      "family": "LLVMEmitJudg"
+    },
+    {
+      "regex": "^05_codegen/ir/",
+      "family": "LowerIRJudg"
+    },
+    {
+      "regex": "^05_codegen/",
+      "family": "CodegenJudg"
+    },
+    {
+      "regex": "^06_driver/",
+      "family": "EntryJudg"
+    }
+  ],
+  "rule_family_overrides": {
+    "OutsideConformance": "DeclJudg",
+    "Reject-IllFormed": "DeclJudg",
+    "Abort-On-ErrorCount": "DeclJudg",
+    "Static-Undefined": "DeclJudg",
+    "Static-Undefined-NoCode": "DeclJudg"
+  },
+  "rule_diag_overrides": {
+    "Main-Missing": "Main-Missing",
+    "Main-Multiple": "Main-Multiple",
+    "Main-Generic-Err": "Main-Generic-Err",
+    "Main-Signature-Err": "Main-Signature-Err",
+    "T-Cast-Invalid": "E-SEM-2528",
+    "If-Branch-Mismatch": "If-Branch-Mismatch",
+    "IfCase-Branch-Mismatch": "IfCase-Branch-Mismatch",
+    "IfCase-Enum-NonExhaustive": "IfCase-Enum-NonExhaustive",
+    "IfCase-Modal-NonExhaustive": "IfCase-Modal-NonExhaustive",
+    "IfCase-Unreachable": "IfCase-Unreachable",
+    "IfCase-Union-NonExhaustive": "IfCase-Union-NonExhaustive"
+  },
+  "rule_source_overrides": {
+    "T-Array-Literal-Segments": "04_analysis/typing/expr/array_literal.cpp",
+    "T-Index-Array": "04_analysis/typing/expr/index_access.cpp",
+    "T-Index-Array-Dynamic": "04_analysis/typing/expr/index_access.cpp",
+    "T-Index-Array-Perm": "04_analysis/typing/expr/index_access.cpp",
+    "T-Index-Array-Perm-Dynamic": "04_analysis/typing/expr/index_access.cpp",
+    "T-Index-Slice": "04_analysis/typing/expr/index_access.cpp",
+    "T-Index-Slice-Perm": "04_analysis/typing/expr/index_access.cpp",
+    "T-Slice-From-Array": "04_analysis/typing/expr/index_access.cpp",
+    "T-Slice-From-Array-Perm": "04_analysis/typing/expr/index_access.cpp",
+    "T-Slice-From-Slice": "04_analysis/typing/expr/index_access.cpp",
+    "T-Slice-From-Slice-Perm": "04_analysis/typing/expr/index_access.cpp",
+    "P-Index-Array": "04_analysis/typing/expr/index_access.cpp",
+    "P-Index-Array-Dynamic": "04_analysis/typing/expr/index_access.cpp",
+    "P-Index-Array-Perm": "04_analysis/typing/expr/index_access.cpp",
+    "P-Index-Array-Perm-Dynamic": "04_analysis/typing/expr/index_access.cpp",
+    "P-Index-Slice": "04_analysis/typing/expr/index_access.cpp",
+    "P-Index-Slice-Perm": "04_analysis/typing/expr/index_access.cpp",
+    "P-Slice-From-Array": "04_analysis/typing/expr/index_access.cpp",
+    "P-Slice-From-Array-Perm": "04_analysis/typing/expr/index_access.cpp",
+    "P-Slice-From-Slice": "04_analysis/typing/expr/index_access.cpp",
+    "P-Slice-From-Slice-Perm": "04_analysis/typing/expr/index_access.cpp",
+    "Index-Array-NonConst-Err": "04_analysis/typing/expr/index_access.cpp",
+    "Index-Array-OOB-Err": "04_analysis/typing/expr/index_access.cpp",
+    "Index-Array-NonUsize": "04_analysis/typing/expr/index_access.cpp",
+    "Index-NonIndexable": "04_analysis/typing/expr/index_access.cpp"
+  }
+}
