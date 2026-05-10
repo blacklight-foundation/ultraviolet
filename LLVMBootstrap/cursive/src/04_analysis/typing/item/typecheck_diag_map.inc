@@ -7,6 +7,9 @@
 static const DiagMapEntry kTypecheckDiagMap[] = {
   {"AllocRaw-Unsafe-Err", "E-MEM-3030"},
   {"DeallocRaw-Unsafe-Err", "E-MEM-3030"},
+  {"E-CLI-0001", "E-CLI-0001"},
+  {"E-CLI-0002", "E-CLI-0002"},
+  {"E-CLI-0003", "E-CLI-0003"},
   {"E-CNF-0401", "E-CNF-0401"},
   {"E-CNF-0402", "E-CNF-0402"},
   {"E-CNF-0406", "E-CNF-0406"},

@@ -57,6 +57,7 @@ def check_text_matches(path: Path, content: str) -> bool:
 def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser()
     parser.add_argument("--repo-root", default="")
+    parser.add_argument("--source-root", default="")
     parser.add_argument("--spec-path", default="")
     parser.add_argument("--output-registry-path", default="")
     parser.add_argument("--output-typecheck-map-path", default="")

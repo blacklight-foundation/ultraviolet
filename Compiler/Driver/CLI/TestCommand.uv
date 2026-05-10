@@ -32,11 +32,13 @@ using UltravioletCompiler::Project::{
     Project,
     ProjectLoadValue,
     ProjectRoot,
+    ProjectRootSearchValue,
     commandInputPath,
     directoryPath,
     findProjectRootFromHost,
     projectLoadFromHost,
     projectRootSearchRoot,
+    projectRootSearchUsedManifest,
     projectTextEquals
 }
 
@@ -191,13 +193,16 @@ public procedure executeTestCommand(
     diagnostics_region: unique Region@Active,
     input: TestCommandInput
 ) -> CommandResultValue {
-    let root: ProjectRoot = projectRootSearchRoot(
-        findProjectRootFromHost(
-            host~>fileSystem(),
-            directoryPath(input.current_directory),
-            commandInputPath(testCommandRootInputText(input.target))
-        )
+    let search: ProjectRootSearchValue = findProjectRootFromHost(
+        host~>fileSystem(),
+        directoryPath(input.current_directory),
+        commandInputPath(TEST_CURRENT_DIRECTORY_TEXT)
     )
+    if (!projectRootSearchUsedManifest(search)) {
+        return commandFailed(diagnostics_region, testTargetRejectedReason())
+    }
+
+    let root: ProjectRoot = projectRootSearchRoot(search)
     let load: ProjectLoadValue =
         projectLoadFromHost(
             host~>fileSystem(),

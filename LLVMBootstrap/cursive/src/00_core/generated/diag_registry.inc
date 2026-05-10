@@ -17,8 +17,11 @@ struct DiagIdCodeEntry {
 };
 
 static constexpr DiagRegistryRow kDiagRegistryRows[] = {
+  {"E-CLI-0001", "Error", "Unknown `uv` command"},
+  {"E-CLI-0002", "Error", "Compiler pipeline unavailable for command"},
+  {"E-CLI-0003", "Error", "Failed to write command output or diagnostic"},
   {"E-CNF-0401", "Error", "Reserved keyword used as identifier"},
-  {"E-CNF-0402", "Error", "Reserved namespace `cursive::...` used by user code"},
+  {"E-CNF-0402", "Error", "Reserved namespace `ultraviolet::...` used by user code"},
   {"E-CNF-0406", "Error", "User declaration uses `gen_` prefix"},
   {"E-CON-0001", "Error", "Access to `shared` path outside valid key context"},
   {"E-CON-0002", "Error", "`#` annotation on non-`shared` path"},
@@ -226,8 +229,8 @@ static constexpr DiagRegistryRow kDiagRegistryRows[] = {
   {"E-OUT-0416", "Error", "Runtime built-in symbol resolution failed"},
   {"E-OUT-0417", "Error", "Entrypoint or context construction lowering failed"},
   {"E-OUT-0418", "Error", "Poisoning instrumentation failed"},
-  {"E-PRJ-0101", "Error", "`Cursive.toml` not found at project root"},
-  {"E-PRJ-0102", "Error", "`Cursive.toml` is not valid TOML"},
+  {"E-PRJ-0101", "Error", "`Ultraviolet.toml` not found at project root"},
+  {"E-PRJ-0102", "Error", "`Ultraviolet.toml` is not valid TOML"},
   {"E-PRJ-0103", "Error", "Missing required `assembly` table, empty assembly list, required keys, or required key type"},
   {"E-PRJ-0104", "Error", "Unknown key in `assembly` table or unknown top-level key"},
   {"E-PRJ-0110", "Error", "Invalid `[toolchain]` section in manifest"},
@@ -515,6 +518,9 @@ static constexpr DiagRegistryRow kDiagRegistryRows[] = {
 static constexpr DiagIdCodeEntry kDiagIdCodeMapEntries[] = {
   {"AllocRaw-Unsafe-Err", "E-MEM-3030"},
   {"DeallocRaw-Unsafe-Err", "E-MEM-3030"},
+  {"E-CLI-0001", "E-CLI-0001"},
+  {"E-CLI-0002", "E-CLI-0002"},
+  {"E-CLI-0003", "E-CLI-0003"},
   {"E-CNF-0401", "E-CNF-0401"},
   {"E-CNF-0402", "E-CNF-0402"},
   {"E-CNF-0406", "E-CNF-0406"},

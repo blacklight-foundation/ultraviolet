@@ -162,6 +162,7 @@ def resolve_rule_family(
 def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser()
     parser.add_argument("--repo-root", default="")
+    parser.add_argument("--source-root", default="")
     parser.add_argument("--spec-path", default="")
     parser.add_argument("--mapping-path", default="")
     parser.add_argument("--output-path", default="")
@@ -227,7 +228,7 @@ def main() -> int:
     diag_overrides = {str(key): str(value) for key, value in mapping.get("rule_diag_overrides", {}).items()}
     rule_source_overrides = {str(key): str(value) for key, value in mapping.get("rule_source_overrides", {}).items()}
 
-    source_root = repo_root / "cursive" / "src"
+    source_root = Path(args.source_root).resolve() if args.source_root else repo_root / "cursive" / "src"
     if not source_root.exists():
         print(f"Source root not found: {source_root}", file=sys.stderr)
         return 1
