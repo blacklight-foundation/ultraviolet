@@ -6,8 +6,8 @@
 using UltravioletCompiler::Project::{
     directoryPath,
     emptySourceFilePaths,
-    moduleDirectoryScan,
-    moduleDirectoryScanIsModuleDirectory,
+    directoryScan,
+    directoryScanIsModuleDirectory,
     modulePath,
     sourceFilePath,
     sourceFilePathListEntry
@@ -20,7 +20,7 @@ using UltravioletCompiler::Project::{
 internal procedure directoryContainingUvSourceIsModuleDirectory() -> bool
 |: => @result
 {
-    let scan = moduleDirectoryScan(
+    let scan = directoryScan(
         directoryPath("Compiler/Core"),
         modulePath("UltravioletCompiler::Core"),
         sourceFilePathListEntry(
@@ -30,5 +30,5 @@ internal procedure directoryContainingUvSourceIsModuleDirectory() -> bool
         true
     )
 
-    return moduleDirectoryScanIsModuleDirectory(scan)
+    return directoryScanIsModuleDirectory(scan)
 }

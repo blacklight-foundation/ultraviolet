@@ -8,7 +8,7 @@ using UltravioletCompiler::Project::{
     ModuleDiscoveryValue,
     assemblyName,
     directoryPath,
-    emptyModuleDirectoryScans,
+    emptyDirectoryScans,
     discoverModulesFromSourceRootScan,
     sourceRootScan
 }
@@ -29,7 +29,7 @@ internal procedure nonDirectorySourceRootEmitsSourceRootDiagnostic() -> bool
                 sourceRootScan(
                     directoryPath("Compiler"),
                     false,
-                    emptyModuleDirectoryScans()
+                    emptyDirectoryScans()
                 )
             )
 

@@ -45,6 +45,8 @@ internal let MANIFEST_HASH: u8 = 35
 internal let MANIFEST_EQUALS: u8 = 61
 internal let MANIFEST_QUOTE: u8 = 34
 internal let MANIFEST_OPEN_BRACKET: u8 = 91
+internal let MANIFEST_TRUE_TEXT: string@View = "true"
+internal let MANIFEST_FALSE_TEXT: string@View = "false"
 
 public record ManifestAssembly {
     public name: string@View
@@ -662,7 +664,7 @@ internal procedure parseManifestKeyValue(
         return failedManifestKeyValueParse(diagnostics_region)
     }
     if (!manifestTextByteEquals(text, quote_index, MANIFEST_QUOTE)) {
-        return failedManifestKeyValueParse(diagnostics_region)
+        return parseManifestBareBooleanKeyValue(diagnostics_region, text, start, key_end, quote_index, end)
     }
 
     let value_end: usize = manifestStringLiteralEnd(text, quote_index + 1, end)
@@ -680,6 +682,39 @@ internal procedure parseManifestKeyValue(
         field: ManifestKeyValue {
             key: string::slice(text, start, key_end),
             value: string::slice(text, quote_index + 1, value_end)
+        }
+    }
+}
+
+internal procedure parseManifestBareBooleanKeyValue(
+    diagnostics_region: unique Region@Active,
+    text: string@View,
+    key_start: usize,
+    key_end: usize,
+    value_start: usize,
+    end: usize
+) -> ManifestKeyValueParseValue {
+    let value_end: usize = manifestBareValueEnd(text, value_start, end)
+    if (value_end == value_start) {
+        return failedManifestKeyValueParse(diagnostics_region)
+    }
+
+    let trailing_start: usize = manifestTrimStart(text, value_end, end)
+    if (trailing_start < end &&
+        !manifestTextByteEquals(text, trailing_start, MANIFEST_HASH)) {
+        return failedManifestKeyValueParse(diagnostics_region)
+    }
+
+    let value: string@View = string::slice(text, value_start, value_end)
+    if (!manifestTextEquals(value, MANIFEST_TRUE_TEXT) &&
+        !manifestTextEquals(value, MANIFEST_FALSE_TEXT)) {
+        return failedManifestKeyValueParse(diagnostics_region)
+    }
+
+    return ManifestKeyValueParse@Parsed {
+        field: ManifestKeyValue {
+            key: string::slice(text, key_start, key_end),
+            value: value
         }
     }
 }
@@ -1003,6 +1038,25 @@ internal procedure manifestStringLiteralEnd(
             break
         }
         if (manifestTextByteEquals(text, index, MANIFEST_QUOTE)) {
+            break
+        }
+        index = index + 1
+    }
+    return index
+}
+
+internal procedure manifestBareValueEnd(
+    text: string@View,
+    start: usize,
+    end: usize
+) -> usize {
+    var index: usize = start
+    loop {
+        if (index >= end) {
+            break
+        }
+        if (manifestTextByteIsHorizontalSpace(text, index) ||
+            manifestTextByteEquals(text, index, MANIFEST_HASH)) {
             break
         }
         index = index + 1

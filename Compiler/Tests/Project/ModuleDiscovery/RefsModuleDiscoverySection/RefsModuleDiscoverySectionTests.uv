@@ -6,7 +6,7 @@
 using UltravioletCompiler::Project::{
     directoryPath,
     emptySourceFilePaths,
-    moduleDirectoryScan,
+    directoryScan,
     modulePath,
     projectTextEquals
 }
@@ -18,7 +18,7 @@ using UltravioletCompiler::Project::{
 internal procedure moduleDiscoveryConsumesModulePathsFormedByModuleRules() -> bool
 |: => @result
 {
-    let scan = moduleDirectoryScan(
+    let scan = directoryScan(
         directoryPath("Compiler/Tests/Core/Path"),
         modulePath("UltravioletCompiler::Tests::Core::Path"),
         emptySourceFilePaths(),

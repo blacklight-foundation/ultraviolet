@@ -39,8 +39,21 @@ internal let SOURCE_ROOT_NOT_DIRECTORY_MESSAGE: string@View =
 internal let FILE_ORDER_RELATIVE_FAILURE_CODE: string@View = "E-PRJ-0303"
 internal let FILE_ORDER_RELATIVE_FAILURE_MESSAGE: string@View =
     "source file cannot be relativized to module directory"
-internal let MODULE_DISCOVERY_ERROR_CODE: string@View = "E-PRJ-0303"
-internal let MODULE_DISCOVERY_ERROR_MESSAGE: string@View = "module discovery failed"
+internal let MODULE_PATH_DERIVATION_FAILURE_CODE: string@View = "E-PRJ-0304"
+internal let MODULE_PATH_DERIVATION_FAILURE_MESSAGE: string@View =
+    "path canonicalization or module path derivation failed"
+internal let DIRECTORY_ENUMERATION_FAILURE_CODE: string@View = "E-PRJ-0305"
+internal let DIRECTORY_ENUMERATION_FAILURE_MESSAGE: string@View =
+    "directory enumeration failed during module discovery"
+internal let MODULE_PATH_COLLISION_CODE: string@View = "E-MOD-1104"
+internal let MODULE_PATH_COLLISION_MESSAGE: string@View =
+    "module path collision after case folding"
+internal let MODULE_PATH_RESERVED_COMPONENT_CODE: string@View = "E-MOD-1105"
+internal let MODULE_PATH_RESERVED_COMPONENT_MESSAGE: string@View =
+    "module path component is a reserved keyword"
+internal let MODULE_PATH_INVALID_COMPONENT_CODE: string@View = "E-MOD-1106"
+internal let MODULE_PATH_INVALID_COMPONENT_MESSAGE: string@View =
+    "module path component is not a valid identifier"
 internal let MODULE_DISCOVERY_EMPTY_TEXT: string@View = ""
 internal let MODULE_DISCOVERY_PATH_SEPARATOR_TEXT: string@View = "/"
 internal let MODULE_DISCOVERY_MODULE_SEPARATOR_TEXT: string@View = "::"
@@ -67,14 +80,14 @@ public modal SourceFilePathList {
 public type SourceFilePathListValue =
     SourceFilePathList@Empty | SourceFilePathList@Entry
 
-public record ModuleDirectoryScan {
+public record DirectoryScan {
     public directory: DirectoryPath
     public module_path: ModulePath
     public files: SourceFilePathListValue
     public relative_paths_available: bool
 }
 
-public modal ModuleDirectoryScanList {
+public modal DirectoryScanList {
     @Empty {
         public procedure count(~) -> usize {
             return 0
@@ -82,22 +95,22 @@ public modal ModuleDirectoryScanList {
     }
 
     @Entry {
-        public scan: ModuleDirectoryScan
-        public tail: ModuleDirectoryScanListValue
+        public scan: DirectoryScan
+        public tail: DirectoryScanListValue
 
         public procedure count(~) -> usize {
-            return 1 + moduleDirectoryScanListCount(self.tail)
+            return 1 + directoryScanListCount(self.tail)
         }
     }
 }
 
-public type ModuleDirectoryScanListValue =
-    ModuleDirectoryScanList@Empty | ModuleDirectoryScanList@Entry
+public type DirectoryScanListValue =
+    DirectoryScanList@Empty | DirectoryScanList@Entry
 
 public record SourceRootScan {
     public root_directory: DirectoryPath
     public is_directory: bool
-    public directories: ModuleDirectoryScanListValue
+    public directories: DirectoryScanListValue
 }
 
 public modal CompilationUnitResult {
@@ -140,7 +153,7 @@ internal type HostTextAppendValue =
 
 internal modal HostModuleScan {
     @Scanned {
-        internal scans: ModuleDirectoryScanListValue
+        internal scans: DirectoryScanListValue
         internal text_storage: ProjectTextStorageListValue
     }
 
@@ -151,26 +164,6 @@ internal modal HostModuleScan {
 
 internal type HostModuleScanValue =
     HostModuleScan@Scanned | HostModuleScan@Failed
-
-internal modal HostDirectoryEntryRead {
-    @Entry {
-        internal path: string@View
-        internal kind: FileKind
-        internal text_storage: ProjectTextStorageListValue
-    }
-
-    @End {
-    }
-
-    @Failed {
-        internal diagnostics: DiagnosticStreamValue
-    }
-}
-
-internal type HostDirectoryEntryReadValue =
-    HostDirectoryEntryRead@Entry |
-    HostDirectoryEntryRead@End |
-    HostDirectoryEntryRead@Failed
 
 public modal ModuleDiscovery {
     @Scanning {
@@ -296,13 +289,13 @@ public procedure sourceFilePathListCount(paths: SourceFilePathListValue) -> usiz
     }
 }
 
-public procedure moduleDirectoryScan(
+public procedure directoryScan(
     directory: DirectoryPath,
     module_path: ModulePath,
     move files: SourceFilePathListValue,
     relative_paths_available: bool
-) -> ModuleDirectoryScan {
-    return ModuleDirectoryScan {
+) -> DirectoryScan {
+    return DirectoryScan {
         directory: directory,
         module_path: module_path,
         files: move files,
@@ -310,22 +303,22 @@ public procedure moduleDirectoryScan(
     }
 }
 
-public procedure emptyModuleDirectoryScans() -> ModuleDirectoryScanListValue {
-    return ModuleDirectoryScanList@Empty {}
+public procedure emptyDirectoryScans() -> DirectoryScanListValue {
+    return DirectoryScanList@Empty {}
 }
 
-public procedure moduleDirectoryScanListEntry(
-    move scan: ModuleDirectoryScan,
-    move tail: ModuleDirectoryScanListValue
-) -> ModuleDirectoryScanListValue {
-    return ModuleDirectoryScanList@Entry {
+public procedure directoryScanListEntry(
+    move scan: DirectoryScan,
+    move tail: DirectoryScanListValue
+) -> DirectoryScanListValue {
+    return DirectoryScanList@Entry {
         scan: move scan,
         tail: move tail
     }
 }
 
-public procedure moduleDirectoryScanListCount(
-    scans: ModuleDirectoryScanListValue
+public procedure directoryScanListCount(
+    scans: DirectoryScanListValue
 ) -> usize {
     return if scans is {
         @Empty {
@@ -340,7 +333,7 @@ public procedure moduleDirectoryScanListCount(
 public procedure sourceRootScan(
     root_directory: DirectoryPath,
     is_directory: bool,
-    move directories: ModuleDirectoryScanListValue
+    move directories: DirectoryScanListValue
 ) -> SourceRootScan {
     return SourceRootScan {
         root_directory: root_directory,
@@ -350,7 +343,7 @@ public procedure sourceRootScan(
 }
 
 public procedure sourceRootScanIncludesRoot(scan: SourceRootScan) -> bool {
-    return moduleDirectoryScanListContainsDirectory(
+    return directoryScanListContainsDirectory(
         scan.directories,
         scan.root_directory
     )
@@ -360,21 +353,32 @@ public procedure sourceRootScanIsWellFormed(scan: SourceRootScan) -> bool {
     return scan.is_directory
 }
 
-public procedure moduleDirectoryScanIsModuleDirectory(scan: ModuleDirectoryScan) -> bool {
+public procedure directoryScanIsModuleDirectory(scan: DirectoryScan) -> bool {
     return sourceFilePathListContainsUvFile(scan.files)
 }
 
-public procedure moduleDirectoryFiles(
-    scan: ModuleDirectoryScan
+public procedure directoryScanFiles(
+    scan: DirectoryScan
 ) -> SourceFilePathListValue {
     return uvSourceFilesFromSourceFilePaths(scan.files)
 }
 
 public procedure compilationUnitForDirectory(
     diagnostics_region: unique Region@Active,
-    scan: ModuleDirectoryScan
+    scan: DirectoryScan
 ) -> CompilationUnitResultValue {
-    if (!scan.relative_paths_available) {
+    return compilationUnitForDirectoryPath(diagnostics_region, scan, scan.module_path)
+}
+
+internal procedure compilationUnitForDirectoryPath(
+    diagnostics_region: unique Region@Active,
+    scan: DirectoryScan,
+    module_path: ModulePath
+) -> CompilationUnitResultValue {
+    if (!scan.relative_paths_available || !sourceFilePathListEntriesAreDirectoryChildren(
+        scan.files,
+        scan.directory
+    )) {
         return CompilationUnitResult@Failed {
             diagnostics: singleErrorDiagnosticStream(
                 diagnostics_region,
@@ -385,7 +389,7 @@ public procedure compilationUnitForDirectory(
     }
 
     let files: SourceFileListValue =
-        sourceFilesFromPathList(scan.files, scan.module_path, 0)
+        sourceFilesFromPathList(scan.files, module_path, 0)
     return CompilationUnitResult@Computed {
         source_files: sourceFilesWithFileOrder(sortSourceFiles(move files), 0)
     }
@@ -394,9 +398,9 @@ public procedure compilationUnitForDirectory(
 public procedure discoverModulesFromSourceRootScan(
     diagnostics_region: unique Region@Active,
     assembly_name: AssemblyName,
-    scan: SourceRootScan
+    move scan: SourceRootScan
 ) -> ModuleDiscoveryValue {
-    if (!sourceRootScanIsWellFormed(scan)) {
+    if (!sourceRootScanIsWellFormed(scan) || !sourceRootScanIncludesRoot(scan)) {
         return failedModuleDiscovery(
             assembly_name,
             scan.root_directory,
@@ -408,17 +412,18 @@ public procedure discoverModulesFromSourceRootScan(
         )
     }
 
+    let root_directory: DirectoryPath = scan.root_directory
     let modules: ModuleDiscoveryValue =
         discoverModulesFromDirectoryScans(
             diagnostics_region,
-            scanningModuleDiscovery(assembly_name, scan.root_directory),
+            scanningModuleDiscovery(assembly_name, root_directory),
             scan.directories
         )
     return if modules is {
-        @Scanning { assembly_name: scanned_assembly, root_directory } {
+        @Scanning { assembly_name: scanned_assembly, root_directory: discovered_root } {
             completeModuleDiscovery(
                 scanned_assembly,
-                root_directory,
+                discovered_root,
                 emptyModules()
             )
         }
@@ -473,10 +478,11 @@ public procedure discoverModulesFromHost(
             let source_scan: SourceRootScan =
                 sourceRootScan(root_directory, true, move scans)
             let discovery: ModuleDiscoveryValue =
-                discoverModulesFromSourceRootScan(
+                discoverModulesFromHostDirectoryScans(
+                    heap,
                     diagnostics_region,
                     assembly_name,
-                    source_scan
+                    move source_scan
                 )
             return if discovery is {
                 @Complete { assembly_name: scanned_assembly, root_directory: scanned_root, modules } {
@@ -526,7 +532,7 @@ internal procedure hostModuleScanDirectory(
                 directory,
                 move value,
                 emptySourceFilePaths(),
-                emptyModuleDirectoryScans(),
+                emptyDirectoryScans(),
                 emptyProjectTextStorage()
             )
         }
@@ -534,8 +540,8 @@ internal procedure hostModuleScanDirectory(
             HostModuleScan@Failed {
                 diagnostics: singleErrorDiagnosticStream(
                     diagnostics_region,
-                    MODULE_DISCOVERY_ERROR_CODE,
-                    MODULE_DISCOVERY_ERROR_MESSAGE
+                    DIRECTORY_ENUMERATION_FAILURE_CODE,
+                    DIRECTORY_ENUMERATION_FAILURE_MESSAGE
                 )
             }
         }
@@ -551,91 +557,70 @@ internal procedure hostModuleScanOpenDirectory(
     directory: DirectoryPath,
     move iterator: unique DirIter@Open,
     move files: SourceFilePathListValue,
-    move scans: ModuleDirectoryScanListValue,
+    move scans: DirectoryScanListValue,
     move text_storage: ProjectTextStorageListValue
 ) -> HostModuleScanValue {
-    let next: HostDirectoryEntryReadValue =
-        hostDirectoryEntryRead(heap, diagnostics_region, iterator)
-    return if next is {
-        @Entry { path, kind, text_storage: entry_text_storage } {
-            hostModuleScanEntry(
-                filesystem,
-                heap,
-                diagnostics_region,
-                assembly_name,
-                root_directory,
-                directory,
-                move iterator,
-                path,
-                kind,
-                move files,
-                move scans,
-                hostProjectTextStorageAppend(
-                    move entry_text_storage,
-                    move text_storage
-                )
-            )
-        }
-        @End {
-            hostModuleScanFinishDirectory(
-                heap,
-                diagnostics_region,
-                assembly_name,
-                root_directory,
-                directory,
-                move files,
-                move scans,
-                move text_storage
-            )
-        }
-        @Failed { diagnostics } {
-            HostModuleScan@Failed { diagnostics: move diagnostics }
-        }
-    }
-}
-
-internal procedure hostDirectoryEntryRead(
-    heap: $HeapAllocator,
-    diagnostics_region: unique Region@Active,
-    iterator: unique DirIter@Open
-) -> HostDirectoryEntryReadValue {
     let next: Outcome<DirEntry | (), IoError> = iterator~>next()
     return if move next is {
         @Value { value } {
             if value is {
-                DirEntry { path, kind } {
+                DirEntry { name, kind } {
                     let stable_path: HostTextBuildValue =
-                        hostTextFromView(heap, diagnostics_region, string::as_view(path))
+                        hostDirectoryChildPath(
+                            heap,
+                            diagnostics_region,
+                            directory,
+                            string::as_view(name)
+                        )
                     return if stable_path is {
                         @Built { text } {
                             let path_view: string@View = string::as_view(text)
-                            HostDirectoryEntryRead@Entry {
-                                path: path_view,
-                                kind: kind,
-                                text_storage: projectTextStorageListEntry(
-                                    move text,
-                                    emptyProjectTextStorage()
+                            hostModuleScanEntry(
+                                filesystem,
+                                heap,
+                                diagnostics_region,
+                                assembly_name,
+                                root_directory,
+                                directory,
+                                move iterator,
+                                path_view,
+                                kind,
+                                move files,
+                                move scans,
+                                hostProjectTextStorageAppend(
+                                    projectTextStorageListEntry(
+                                        move text,
+                                        emptyProjectTextStorage()
+                                    ),
+                                    move text_storage
                                 )
-                            }
+                            )
                         }
                         @Failed { diagnostics } {
-                            HostDirectoryEntryRead@Failed {
-                                diagnostics: move diagnostics
-                            }
+                            HostModuleScan@Failed { diagnostics: move diagnostics }
                         }
                     }
                 }
                 _: () {
-                    HostDirectoryEntryRead@End {}
+                    hostModuleScanFinishDirectory(
+                        heap,
+                        diagnostics_region,
+                        assembly_name,
+                        root_directory,
+                        directory,
+                        move files,
+                        move scans,
+                        move text_storage
+                    )
                 }
             }
         }
         @Error {
-            HostDirectoryEntryRead@Failed {
+            HostModuleScan@Failed {
                 diagnostics: singleErrorDiagnosticStream(
                     diagnostics_region,
-                    MODULE_DISCOVERY_ERROR_CODE,
-                    MODULE_DISCOVERY_ERROR_MESSAGE
+                    DIRECTORY_ENUMERATION_FAILURE_CODE,
+                    DIRECTORY_ENUMERATION_FAILURE_MESSAGE
                 )
             }
         }
@@ -653,7 +638,7 @@ internal procedure hostModuleScanEntry(
     entry_path: string@View,
     entry_kind: FileKind,
     move files: SourceFilePathListValue,
-    move scans: ModuleDirectoryScanListValue,
+    move scans: DirectoryScanListValue,
     move text_storage: ProjectTextStorageListValue
 ) -> HostModuleScanValue {
     return if entry_kind is {
@@ -695,7 +680,7 @@ internal procedure hostModuleScanEntry(
                         directory,
                         move iterator,
                         move files,
-                        hostModuleScanListAppend(move child_scans, move scans),
+                        hostDirectoryScanListAppend(move child_scans, move scans),
                         hostProjectTextStorageAppend(
                             move child_storage,
                             move text_storage
@@ -731,33 +716,20 @@ internal procedure hostModuleScanFinishDirectory(
     root_directory: DirectoryPath,
     directory: DirectoryPath,
     move files: SourceFilePathListValue,
-    move scans: ModuleDirectoryScanListValue,
+    move scans: DirectoryScanListValue,
     move text_storage: ProjectTextStorageListValue
 ) -> HostModuleScanValue {
-    let module_path_text: HostTextBuildValue =
-        hostModulePathText(heap, diagnostics_region, assembly_name, root_directory, directory)
-    return if module_path_text is {
-        @Built { text } {
-            let module_path_view: string@View = string::as_view(text)
-            HostModuleScan@Scanned {
-                scans: moduleDirectoryScanListEntry(
-                    moduleDirectoryScan(
-                        directory,
-                        modulePath(module_path_view),
-                        move files,
-                        true
-                    ),
-                    move scans
-                ),
-                text_storage: projectTextStorageListEntry(
-                    move text,
-                    move text_storage
-                )
-            }
-        }
-        @Failed { diagnostics } {
-            HostModuleScan@Failed { diagnostics: move diagnostics }
-        }
+    return HostModuleScan@Scanned {
+        scans: directoryScanListEntry(
+            directoryScan(
+                directory,
+                modulePath(MODULE_DISCOVERY_EMPTY_TEXT),
+                move files,
+                true
+            ),
+            move scans
+        ),
+        text_storage: move text_storage
     }
 }
 
@@ -768,6 +740,16 @@ internal procedure hostModulePathText(
     root_directory: DirectoryPath,
     directory: DirectoryPath
 ) -> HostTextBuildValue {
+    if (!moduleDiscoveryDirectoryIsRootOrChild(root_directory, directory)) {
+        return HostTextBuild@Failed {
+            diagnostics: singleErrorDiagnosticStream(
+                diagnostics_region,
+                MODULE_PATH_DERIVATION_FAILURE_CODE,
+                MODULE_PATH_DERIVATION_FAILURE_MESSAGE
+            )
+        }
+    }
+
     let base: HostTextBuildValue =
         hostTextFromView(heap, diagnostics_region, assembly_name.text)
     return if base is {
@@ -887,8 +869,8 @@ internal procedure hostTextAppendInPlace(
             HostTextAppend@Failed {
                 diagnostics: singleErrorDiagnosticStream(
                     diagnostics_region,
-                    MODULE_DISCOVERY_ERROR_CODE,
-                    MODULE_DISCOVERY_ERROR_MESSAGE
+                    MODULE_PATH_DERIVATION_FAILURE_CODE,
+                    MODULE_PATH_DERIVATION_FAILURE_MESSAGE
                 )
             }
         }
@@ -901,8 +883,8 @@ internal procedure hostTextAllocationFailure(
     return HostTextBuild@Failed {
         diagnostics: singleErrorDiagnosticStream(
             diagnostics_region,
-            MODULE_DISCOVERY_ERROR_CODE,
-            MODULE_DISCOVERY_ERROR_MESSAGE
+            MODULE_PATH_DERIVATION_FAILURE_CODE,
+            MODULE_PATH_DERIVATION_FAILURE_MESSAGE
         )
     }
 }
@@ -957,26 +939,91 @@ internal procedure hostTextFromView(
             HostTextBuild@Failed {
                 diagnostics: singleErrorDiagnosticStream(
                     diagnostics_region,
-                    MODULE_DISCOVERY_ERROR_CODE,
-                    MODULE_DISCOVERY_ERROR_MESSAGE
+                    MODULE_PATH_DERIVATION_FAILURE_CODE,
+                    MODULE_PATH_DERIVATION_FAILURE_MESSAGE
                 )
             }
         }
     }
 }
 
-internal procedure hostModuleScanListAppend(
-    move left: ModuleDirectoryScanListValue,
-    move right: ModuleDirectoryScanListValue
-) -> ModuleDirectoryScanListValue {
+internal procedure hostDirectoryChildPath(
+    heap: $HeapAllocator,
+    diagnostics_region: unique Region@Active,
+    directory: DirectoryPath,
+    child_name: string@View
+) -> HostTextBuildValue {
+    let base: HostTextBuildValue =
+        hostTextFromView(heap, diagnostics_region, directory.text)
+    return if base is {
+        @Built { text } {
+            var builder: unique string@Managed = move text
+            if (!hostTextAppendInPlaceOk(
+                heap,
+                builder,
+                MODULE_DISCOVERY_PATH_SEPARATOR_TEXT
+            )) {
+                return hostTextAllocationFailure(diagnostics_region)
+            }
+            if (!hostTextAppendInPlaceOk(heap, builder, child_name)) {
+                return hostTextAllocationFailure(diagnostics_region)
+            }
+            HostTextBuild@Built { text: move builder }
+        }
+        @Failed {
+            base
+        }
+    }
+}
+
+
+internal procedure sortDirectoryScans(move scans: DirectoryScanListValue) -> DirectoryScanListValue {
+    return if scans is {
+        @Empty {
+            emptyDirectoryScans()
+        }
+        @Entry { scan, tail } {
+            insertDirectoryScanOrdered(move scan, sortDirectoryScans(move tail))
+        }
+    }
+}
+
+internal procedure insertDirectoryScanOrdered(
+    move scan: DirectoryScan,
+    move scans: DirectoryScanListValue
+) -> DirectoryScanListValue {
+    return if scans is {
+        @Empty {
+            directoryScanListEntry(move scan, emptyDirectoryScans())
+        }
+        @Entry { scan: candidate_scan, tail } {
+            if (projectPathTextPrecedes(scan.directory.text, candidate_scan.directory.text)) {
+                directoryScanListEntry(
+                    move scan,
+                    directoryScanListEntry(move candidate_scan, move tail)
+                )
+            } else {
+                directoryScanListEntry(
+                    move candidate_scan,
+                    insertDirectoryScanOrdered(move scan, move tail)
+                )
+            }
+        }
+    }
+}
+
+internal procedure hostDirectoryScanListAppend(
+    move left: DirectoryScanListValue,
+    move right: DirectoryScanListValue
+) -> DirectoryScanListValue {
     return if left is {
         @Empty {
             move right
         }
         @Entry { scan, tail } {
-            moduleDirectoryScanListEntry(
+            directoryScanListEntry(
                 move scan,
-                hostModuleScanListAppend(move tail, move right)
+                hostDirectoryScanListAppend(move tail, move right)
             )
         }
     }
@@ -1016,12 +1063,16 @@ internal procedure moduleDiscoveryFileKindIsDirectory(kind: FileKind) -> bool {
 internal procedure discoverModulesFromDirectoryScans(
     diagnostics_region: unique Region@Active,
     move discovery: ModuleDiscoveryValue,
-    scans: ModuleDirectoryScanListValue
+    scans: DirectoryScanListValue
 ) -> ModuleDiscoveryValue {
     return if discovery is {
         @Scanning { assembly_name, root_directory } {
             let modules: ModuleScanResultValue =
-                modulesFromDirectoryScans(diagnostics_region, scans, emptyModules())
+                modulesFromDirectoryScans(
+                    diagnostics_region,
+                    scans,
+                    emptyModules()
+                )
             return if modules is {
                 @Discovered { modules: discovered_modules } {
                     completeModuleDiscovery(
@@ -1048,6 +1099,65 @@ internal procedure discoverModulesFromDirectoryScans(
     }
 }
 
+internal procedure discoverModulesFromHostDirectoryScans(
+    heap: $HeapAllocator,
+    diagnostics_region: unique Region@Active,
+    assembly_name: AssemblyName,
+    move scan: SourceRootScan
+) -> ModuleDiscoveryValue {
+    if (!sourceRootScanIsWellFormed(scan) || !sourceRootScanIncludesRoot(scan)) {
+        return failedModuleDiscovery(
+            assembly_name,
+            scan.root_directory,
+            singleErrorDiagnosticStream(
+                diagnostics_region,
+                SOURCE_ROOT_NOT_DIRECTORY_CODE,
+                SOURCE_ROOT_NOT_DIRECTORY_MESSAGE
+            )
+        )
+    }
+
+    let root_directory: DirectoryPath = scan.root_directory
+    let modules: ModuleScanResultValue =
+        modulesFromHostDirectoryScans(
+            heap,
+            diagnostics_region,
+            assembly_name,
+            root_directory,
+            scan.directories,
+            emptyModules()
+        )
+    return if modules is {
+        @Discovered { modules: discovered_modules } {
+            completeModuleDiscovery(
+                assembly_name,
+                root_directory,
+                sortModules(move discovered_modules)
+            )
+        }
+        @Failed { diagnostics } {
+            failedModuleDiscovery(
+                assembly_name,
+                root_directory,
+                move diagnostics
+            )
+        }
+    }
+}
+
+internal modal ModuleCollisionCheck {
+    @Clear {
+        internal modules: ModuleListValue
+    }
+
+    @Collision {
+        internal diagnostics: DiagnosticStreamValue
+    }
+}
+
+internal type ModuleCollisionCheckValue =
+    ModuleCollisionCheck@Clear | ModuleCollisionCheck@Collision
+
 internal modal ModuleScanResult {
     @Discovered {
         internal modules: ModuleListValue
@@ -1058,12 +1168,24 @@ internal modal ModuleScanResult {
     }
 }
 
+internal modal ModulePathValidation {
+    @Valid {
+    }
+
+    @Invalid {
+        internal diagnostics: DiagnosticStreamValue
+    }
+}
+
+internal type ModulePathValidationValue =
+    ModulePathValidation@Valid | ModulePathValidation@Invalid
+
 internal type ModuleScanResultValue =
     ModuleScanResult@Discovered | ModuleScanResult@Failed
 
 internal procedure modulesFromDirectoryScans(
     diagnostics_region: unique Region@Active,
-    scans: ModuleDirectoryScanListValue,
+    scans: DirectoryScanListValue,
     move modules: ModuleListValue
 ) -> ModuleScanResultValue {
     return if scans is {
@@ -1071,26 +1193,137 @@ internal procedure modulesFromDirectoryScans(
             ModuleScanResult@Discovered { modules: move modules }
         }
         @Entry { scan, tail } {
-            if (!moduleDirectoryScanIsModuleDirectory(scan)) {
+            if (!directoryScanIsModuleDirectory(scan)) {
                 return modulesFromDirectoryScans(diagnostics_region, tail, move modules)
             }
 
-            let unit: CompilationUnitResultValue =
-                compilationUnitForDirectory(diagnostics_region, scan)
-            return if unit is {
-                @Computed { source_files } {
-                    modulesFromDirectoryScans(
-                        diagnostics_region,
-                        tail,
-                        moduleListEntry(
-                            module(
-                                scan.module_path,
-                                scan.directory,
-                                move source_files
-                            ),
-                            move modules
+            let validation: ModulePathValidationValue =
+                validateModulePathForDiscovery(diagnostics_region, scan.module_path)
+            return if validation is {
+                @Valid {
+                    let collision: ModuleCollisionCheckValue =
+                        modulePathCheckFoldedCollision(
+                            diagnostics_region,
+                            move modules,
+                            scan.module_path
                         )
-                    )
+                    return if collision is {
+                        @Clear { modules: checked_modules } {
+                            let unit: CompilationUnitResultValue =
+                                compilationUnitForDirectory(diagnostics_region, scan)
+                            return if unit is {
+                                @Computed { source_files } {
+                                    modulesFromDirectoryScans(
+                                        diagnostics_region,
+                                        tail,
+                                        moduleListEntry(
+                                            module(
+                                                scan.module_path,
+                                                scan.directory,
+                                                move source_files
+                                            ),
+                                            move checked_modules
+                                        )
+                                    )
+                                }
+                                @Failed { diagnostics } {
+                                    ModuleScanResult@Failed { diagnostics: move diagnostics }
+                                }
+                            }
+                        }
+                        @Collision { diagnostics } {
+                            ModuleScanResult@Failed { diagnostics: move diagnostics }
+                        }
+                    }
+                }
+                @Invalid { diagnostics } {
+                    ModuleScanResult@Failed { diagnostics: move diagnostics }
+                }
+            }
+        }
+    }
+}
+
+internal procedure modulesFromHostDirectoryScans(
+    heap: $HeapAllocator,
+    diagnostics_region: unique Region@Active,
+    assembly_name: AssemblyName,
+    root_directory: DirectoryPath,
+    scans: DirectoryScanListValue,
+    move modules: ModuleListValue
+) -> ModuleScanResultValue {
+    return if scans is {
+        @Empty {
+            ModuleScanResult@Discovered { modules: move modules }
+        }
+        @Entry { scan, tail } {
+            if (!directoryScanIsModuleDirectory(scan)) {
+                return modulesFromHostDirectoryScans(
+                    heap,
+                    diagnostics_region,
+                    assembly_name,
+                    root_directory,
+                    tail,
+                    move modules
+                )
+            }
+
+            let module_path_text: HostTextBuildValue =
+                hostModulePathText(heap, diagnostics_region, assembly_name, root_directory, scan.directory)
+            return if module_path_text is {
+                @Built { text } {
+                    let module_path_view: string@View = string::as_view(text)
+                    let discovered_path: ModulePath = modulePath(module_path_view)
+                    let validation: ModulePathValidationValue =
+                        validateModulePathForDiscovery(diagnostics_region, discovered_path)
+                    return if validation is {
+                        @Valid {
+                            let collision: ModuleCollisionCheckValue =
+                                modulePathCheckFoldedCollision(
+                                    diagnostics_region,
+                                    move modules,
+                                    discovered_path
+                                )
+                            return if collision is {
+                                @Clear { modules: checked_modules } {
+                                    let unit: CompilationUnitResultValue =
+                                        compilationUnitForDirectoryPath(
+                                            diagnostics_region,
+                                            scan,
+                                            discovered_path
+                                        )
+                                    return if unit is {
+                                        @Computed { source_files } {
+                                            modulesFromHostDirectoryScans(
+                                                heap,
+                                                diagnostics_region,
+                                                assembly_name,
+                                                root_directory,
+                                                tail,
+                                                moduleListEntry(
+                                                    module(
+                                                        discovered_path,
+                                                        scan.directory,
+                                                        move source_files
+                                                    ),
+                                                    move checked_modules
+                                                )
+                                            )
+                                        }
+                                        @Failed { diagnostics } {
+                                            ModuleScanResult@Failed { diagnostics: move diagnostics }
+                                        }
+                                    }
+                                }
+                                @Collision { diagnostics } {
+                                    ModuleScanResult@Failed { diagnostics: move diagnostics }
+                                }
+                            }
+                        }
+                        @Invalid { diagnostics } {
+                            ModuleScanResult@Failed { diagnostics: move diagnostics }
+                        }
+                    }
                 }
                 @Failed { diagnostics } {
                     ModuleScanResult@Failed { diagnostics: move diagnostics }
@@ -1100,8 +1333,8 @@ internal procedure modulesFromDirectoryScans(
     }
 }
 
-internal procedure moduleDirectoryScanListContainsDirectory(
-    scans: ModuleDirectoryScanListValue,
+internal procedure directoryScanListContainsDirectory(
+    scans: DirectoryScanListValue,
     directory: DirectoryPath
 ) -> bool {
     return if scans is {
@@ -1112,7 +1345,7 @@ internal procedure moduleDirectoryScanListContainsDirectory(
             if (projectTextEquals(scan.directory.text, directory.text)) {
                 true
             } else {
-                moduleDirectoryScanListContainsDirectory(tail, directory)
+                directoryScanListContainsDirectory(tail, directory)
             }
         }
     }
@@ -1133,6 +1366,40 @@ internal procedure sourceFilePathListContainsUvFile(
             }
         }
     }
+}
+
+internal procedure sourceFilePathListEntriesAreDirectoryChildren(
+    paths: SourceFilePathListValue,
+    directory: DirectoryPath
+) -> bool {
+    return if paths is {
+        @Empty {
+            true
+        }
+        @Entry { path, tail } {
+            if (!sourceFileHasUvExtension(path)) {
+                sourceFilePathListEntriesAreDirectoryChildren(tail, directory)
+            } else if (!sourceFilePathIsDirectoryChild(path, directory)) {
+                false
+            } else {
+                sourceFilePathListEntriesAreDirectoryChildren(tail, directory)
+            }
+        }
+    }
+}
+
+internal procedure sourceFilePathIsDirectoryChild(
+    path: SourceFilePath,
+    directory: DirectoryPath
+) -> bool {
+    if (!projectTextStartsWith(path.text, directory.text)) {
+        return false
+    }
+    let directory_length: usize = string::length(directory.text)
+    if (directory_length >= string::length(path.text)) {
+        return false
+    }
+    return moduleDiscoveryTextByteIsSeparator(path.text, directory_length)
 }
 
 internal procedure uvSourceFilesFromSourceFilePaths(
@@ -1191,6 +1458,251 @@ internal procedure sourceFilesWithFileOrder(
             )
         }
     }
+}
+
+
+internal procedure modulePathCheckFoldedCollision(
+    diagnostics_region: unique Region@Active,
+    move modules: ModuleListValue,
+    path: ModulePath
+) -> ModuleCollisionCheckValue {
+    return if modules is {
+        @Empty {
+            ModuleCollisionCheck@Clear { modules: emptyModules() }
+        }
+        @Entry { module: candidate_module, tail } {
+            let tail_check: ModuleCollisionCheckValue =
+                modulePathCheckFoldedCollision(diagnostics_region, move tail, path)
+            return if tail_check is {
+                @Clear { modules: checked_tail } {
+                    if (modulePathFoldEquals(candidate_module.path.text, path.text) &&
+                        !projectTextEquals(candidate_module.path.text, path.text)) {
+                        ModuleCollisionCheck@Collision {
+                            diagnostics: singleErrorDiagnosticStream(
+                                diagnostics_region,
+                                MODULE_PATH_COLLISION_CODE,
+                                MODULE_PATH_COLLISION_MESSAGE
+                            )
+                        }
+                    } else {
+                        ModuleCollisionCheck@Clear {
+                            modules: moduleListEntry(
+                                move candidate_module,
+                                move checked_tail
+                            )
+                        }
+                    }
+                }
+                @Collision { diagnostics } {
+                    ModuleCollisionCheck@Collision { diagnostics: move diagnostics }
+                }
+            }
+        }
+    }
+}
+
+internal procedure modulePathFoldEquals(
+    left: string@View,
+    right: string@View
+) -> bool {
+    let left_length: usize = string::length(left)
+    let right_length: usize = string::length(right)
+    if (left_length != right_length) {
+        return false
+    }
+    var index: usize = 0
+    loop {
+        if (index >= left_length) {
+            break
+        }
+        if (moduleDiscoveryFoldByte(moduleDiscoveryTextByte(left, index)) !=
+            moduleDiscoveryFoldByte(moduleDiscoveryTextByte(right, index))) {
+            return false
+        }
+        index = index + 1
+    }
+    return true
+}
+
+internal procedure moduleDiscoveryFoldByte(value: u8) -> u8 {
+    if (value >= 65 && value <= 90) {
+        return value + 32
+    }
+    return value
+}
+
+internal procedure moduleDiscoveryDirectoryIsRootOrChild(
+    root_directory: DirectoryPath,
+    directory: DirectoryPath
+) -> bool {
+    if (projectTextEquals(root_directory.text, directory.text)) {
+        return true
+    }
+    if (!projectTextStartsWith(directory.text, root_directory.text)) {
+        return false
+    }
+    let root_length: usize = string::length(root_directory.text)
+    if (root_length >= string::length(directory.text)) {
+        return false
+    }
+    return moduleDiscoveryTextByteIsSeparator(directory.text, root_length)
+}
+
+
+internal procedure validateModulePathForDiscovery(
+    diagnostics_region: unique Region@Active,
+    path: ModulePath
+) -> ModulePathValidationValue {
+    let text: string@View = path.text
+    if (!moduleDiscoveryModulePathComponentsAreValid(text)) {
+        return ModulePathValidation@Invalid {
+            diagnostics: singleErrorDiagnosticStream(
+                diagnostics_region,
+                MODULE_PATH_INVALID_COMPONENT_CODE,
+                MODULE_PATH_INVALID_COMPONENT_MESSAGE
+            )
+        }
+    }
+    if (moduleDiscoveryModulePathHasReservedComponent(text)) {
+        return ModulePathValidation@Invalid {
+            diagnostics: singleErrorDiagnosticStream(
+                diagnostics_region,
+                MODULE_PATH_RESERVED_COMPONENT_CODE,
+                MODULE_PATH_RESERVED_COMPONENT_MESSAGE
+            )
+        }
+    }
+    return ModulePathValidation@Valid {}
+}
+
+internal procedure moduleDiscoveryModulePathHasReservedComponent(text: string@View) -> bool {
+    var start: usize = 0
+    var index: usize = 0
+    loop {
+        if (index > string::length(text)) {
+            break
+        }
+        if (index == string::length(text) ||
+            (index + 1 < string::length(text) &&
+             moduleDiscoveryTextByteIsSeparator(text, index) &&
+             moduleDiscoveryTextByteIsSeparator(text, index + 1))) {
+            let component: string@View = string::slice(text, start, index)
+            if (moduleDiscoveryModulePathComponentIsReserved(component)) {
+                return true
+            }
+            start = index + 2
+            index = index + 2
+        } else {
+            index = index + 1
+        }
+    }
+    return false
+}
+
+internal procedure moduleDiscoveryModulePathComponentsAreValid(text: string@View) -> bool {
+    var start: usize = 0
+    var index: usize = 0
+    loop {
+        if (index > string::length(text)) {
+            break
+        }
+        if (index == string::length(text) ||
+            (index + 1 < string::length(text) &&
+             moduleDiscoveryTextByteIsSeparator(text, index) &&
+             moduleDiscoveryTextByteIsSeparator(text, index + 1))) {
+            let component: string@View = string::slice(text, start, index)
+            if (!moduleDiscoveryModulePathComponentIsIdentifier(component)) {
+                return false
+            }
+            start = index + 2
+            index = index + 2
+        } else {
+            index = index + 1
+        }
+    }
+    return true
+}
+
+internal procedure moduleDiscoveryModulePathComponentIsIdentifier(component: string@View) -> bool {
+    let length: usize = string::length(component)
+    if (length == 0) {
+        return false
+    }
+    let first: u8 = moduleDiscoveryTextByte(component, 0)
+    if (!(moduleDiscoveryAsciiLowercase(first) ||
+        moduleDiscoveryAsciiUppercase(first) ||
+        first == 95)) {
+        return false
+    }
+    var index: usize = 1
+    loop {
+        if (index >= length) {
+            break
+        }
+        let value: u8 = moduleDiscoveryTextByte(component, index)
+        if (!(moduleDiscoveryAsciiLowercase(value) ||
+            moduleDiscoveryAsciiUppercase(value) ||
+            moduleDiscoveryAsciiDigit(value) ||
+            value == 95)) {
+            return false
+        }
+        index = index + 1
+    }
+    return true
+}
+
+internal procedure moduleDiscoveryModulePathComponentIsReserved(component: string@View) -> bool {
+    return projectTextEquals(component, "as") ||
+        projectTextEquals(component, "async") ||
+        projectTextEquals(component, "await") ||
+        projectTextEquals(component, "break") ||
+        projectTextEquals(component, "class") ||
+        projectTextEquals(component, "const") ||
+        projectTextEquals(component, "continue") ||
+        projectTextEquals(component, "else") ||
+        projectTextEquals(component, "enum") ||
+        projectTextEquals(component, "extern") ||
+        projectTextEquals(component, "false") ||
+        projectTextEquals(component, "for") ||
+        projectTextEquals(component, "if") ||
+        projectTextEquals(component, "import") ||
+        projectTextEquals(component, "internal") ||
+        projectTextEquals(component, "let") ||
+        projectTextEquals(component, "loop") ||
+        projectTextEquals(component, "modal") ||
+        projectTextEquals(component, "move") ||
+        projectTextEquals(component, "private") ||
+        projectTextEquals(component, "procedure") ||
+        projectTextEquals(component, "public") ||
+        projectTextEquals(component, "record") ||
+        projectTextEquals(component, "region") ||
+        projectTextEquals(component, "return") ||
+        projectTextEquals(component, "shared") ||
+        projectTextEquals(component, "true") ||
+        projectTextEquals(component, "type") ||
+        projectTextEquals(component, "unique") ||
+        projectTextEquals(component, "unsafe") ||
+        projectTextEquals(component, "using") ||
+        projectTextEquals(component, "var") ||
+        projectTextEquals(component, "while")
+}
+
+internal procedure moduleDiscoveryAsciiLowercase(value: u8) -> bool {
+    return value >= 97 && value <= 122
+}
+
+internal procedure moduleDiscoveryAsciiUppercase(value: u8) -> bool {
+    return value >= 65 && value <= 90
+}
+
+internal procedure moduleDiscoveryAsciiDigit(value: u8) -> bool {
+    return value >= 48 && value <= 57
+}
+
+internal procedure moduleDiscoveryTextByte(text: string@View, index: usize) -> u8 {
+    let view: bytes@View = bytes::view_string(text)
+    let data: const [u8] = bytes::as_slice(view)
+    return data[index]
 }
 
 internal procedure moduleDiscoveryTextByteIsSeparator(

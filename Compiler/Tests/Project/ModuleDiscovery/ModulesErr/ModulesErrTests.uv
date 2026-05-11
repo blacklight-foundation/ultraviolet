@@ -9,10 +9,10 @@ using UltravioletCompiler::Project::{
     assemblyName,
     directoryPath,
     discoverModulesFromSourceRootScan,
-    emptyModuleDirectoryScans,
+    emptyDirectoryScans,
     emptySourceFilePaths,
-    moduleDirectoryScan,
-    moduleDirectoryScanListEntry,
+    directoryScan,
+    directoryScanListEntry,
     modulePath,
     sourceFilePath,
     sourceFilePathListEntry,
@@ -35,8 +35,8 @@ internal procedure moduleDiscoveryReturnsFailureWhenCompilationUnitFails() -> bo
                 sourceRootScan(
                     directoryPath("Compiler"),
                     true,
-                    moduleDirectoryScanListEntry(
-                        moduleDirectoryScan(
+                    directoryScanListEntry(
+                        directoryScan(
                             directoryPath("Compiler/Core"),
                             modulePath("UltravioletCompiler::Core"),
                             sourceFilePathListEntry(
@@ -45,7 +45,7 @@ internal procedure moduleDiscoveryReturnsFailureWhenCompilationUnitFails() -> bo
                             ),
                             false
                         ),
-                        emptyModuleDirectoryScans()
+                        emptyDirectoryScans()
                     )
                 )
             )

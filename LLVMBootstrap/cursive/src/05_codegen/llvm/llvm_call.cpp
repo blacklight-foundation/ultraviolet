@@ -913,6 +913,12 @@ llvm::Value* EmitABICall(LLVMEmitter& emitter,
     }
   }
 
+  // Map source arguments onto ABI parameters. Hidden panic-out participates in
+  // the lowered procedure signature, but it is not a source argument. Keeping a
+  // separate source-argument cursor prevents hidden panic-out from shifting any
+  // ordinary argument that is passed later in the platform ABI stack area.
+  std::size_t source_arg_index = 0;
+
   // Map arguments according to ABI
   for (std::size_t i = 0; i < params.size(); ++i) {
     if (i >= abi.param_indices.size()) {
@@ -927,9 +933,15 @@ llvm::Value* EmitABICall(LLVMEmitter& emitter,
       continue;
     }
 
-    llvm::Value* arg = i < args.size() ? args[i] : nullptr;
-    if (!arg && params[i].name == std::string(kPanicOutName)) {
+    const bool is_panic_out_param = params[i].name == std::string(kPanicOutName);
+    std::size_t arg_lookup_index = source_arg_index;
+    llvm::Value* arg = nullptr;
+    if (is_panic_out_param) {
       arg = implicit_panic_out_arg();
+    } else {
+      arg = source_arg_index < args.size() ? args[source_arg_index] : nullptr;
+      arg_lookup_index = source_arg_index;
+      ++source_arg_index;
     }
     if (!arg) {
       continue;
@@ -945,9 +957,9 @@ llvm::Value* EmitABICall(LLVMEmitter& emitter,
       bool materialized_slice_storage = false;
       if (analysis::TypeRef slice_arg_type = is_slice_param_type(params[i].type)
                                                 ? params[i].type
-                                                : source_arg_slice_type(i)) {
+                                                : source_arg_slice_type(arg_lookup_index)) {
         if (llvm::Value* slice_storage =
-                materialize_slice_arg(i,
+                materialize_slice_arg(arg_lookup_index,
                                       slice_arg_type,
                                       abi.param_types[idx],
                                       /*prefer_storage=*/true,
@@ -957,7 +969,7 @@ llvm::Value* EmitABICall(LLVMEmitter& emitter,
         }
       }
       if (!arg->getType()->isPointerTy() || is_null_pointer_arg(arg)) {
-        llvm::Value* storage = existing_arg_storage(i, elem_ty);
+        llvm::Value* storage = existing_arg_storage(arg_lookup_index, elem_ty);
         if (storage) {
           call_args[idx] = storage;
           continue;
@@ -980,7 +992,7 @@ llvm::Value* EmitABICall(LLVMEmitter& emitter,
       }
       if (!materialized_slice_storage) {
         if (llvm::Value* storage =
-                materialize_mismatched_pointer_arg(i,
+                materialize_mismatched_pointer_arg(arg_lookup_index,
                                                    arg,
                                                    elem_ty,
                                                    params[i].type,
@@ -1003,9 +1015,9 @@ llvm::Value* EmitABICall(LLVMEmitter& emitter,
       bool materialized_slice_storage = false;
       if (analysis::TypeRef slice_arg_type = is_slice_param_type(params[i].type)
                                                 ? params[i].type
-                                                : source_arg_slice_type(i)) {
+                                                : source_arg_slice_type(arg_lookup_index)) {
         if (llvm::Value* slice_storage =
-                materialize_slice_arg(i,
+                materialize_slice_arg(arg_lookup_index,
                                       slice_arg_type,
                                       abi.param_types[idx],
                                       /*prefer_storage=*/true,
@@ -1015,7 +1027,7 @@ llvm::Value* EmitABICall(LLVMEmitter& emitter,
         }
       }
       if (!ptr_arg->getType()->isPointerTy() || is_null_pointer_arg(ptr_arg)) {
-        if (llvm::Value* storage = existing_arg_storage(i, elem_ty)) {
+        if (llvm::Value* storage = existing_arg_storage(arg_lookup_index, elem_ty)) {
           ptr_arg = storage;
         } else if (ptr_arg->getType()->isPointerTy()) {
           report_codegen_failure("indirect-null-pointer", i, ptr_arg);
@@ -1036,7 +1048,7 @@ llvm::Value* EmitABICall(LLVMEmitter& emitter,
       }
       if (!materialized_slice_storage) {
         if (llvm::Value* storage =
-                materialize_mismatched_pointer_arg(i,
+                materialize_mismatched_pointer_arg(arg_lookup_index,
                                                    ptr_arg,
                                                    elem_ty,
                                                    params[i].type,
@@ -1058,10 +1070,10 @@ llvm::Value* EmitABICall(LLVMEmitter& emitter,
     if (is_slice_param_type(params[i].type)) {
       slice_arg_type = params[i].type;
     } else {
-      slice_arg_type = source_arg_slice_type(i);
+      slice_arg_type = source_arg_slice_type(arg_lookup_index);
     }
     if (llvm::Value* slice_arg =
-            materialize_slice_arg(i,
+            materialize_slice_arg(arg_lookup_index,
                                   slice_arg_type,
                                   target_ty,
                                   /*prefer_storage=*/false,
@@ -1069,7 +1081,7 @@ llvm::Value* EmitABICall(LLVMEmitter& emitter,
       arg = slice_arg;
     }
     if (IsValidPtrType(params[i].type) && is_null_pointer_arg(arg)) {
-      if (llvm::Value* recovered = recover_pointer_value_arg(i, target_ty)) {
+      if (llvm::Value* recovered = recover_pointer_value_arg(arg_lookup_index, target_ty)) {
         arg = recovered;
       } else {
         report_codegen_failure("valid-pointer-null-value", i, arg);

@@ -9,7 +9,7 @@ using UltravioletCompiler::Project::{
     compilationUnitForDirectory,
     directoryPath,
     emptySourceFilePaths,
-    moduleDirectoryScan,
+    directoryScan,
     modulePath,
     sourceFilePath,
     sourceFilePathListEntry
@@ -27,7 +27,7 @@ internal procedure compilationUnitReportsRelativeDerivationFailure() -> bool
         let unit: CompilationUnitResultValue =
             compilationUnitForDirectory(
                 diagnostics_region,
-                moduleDirectoryScan(
+                directoryScan(
                     directoryPath("Compiler/Tests"),
                     modulePath("UltravioletCompiler::Tests"),
                     sourceFilePathListEntry(

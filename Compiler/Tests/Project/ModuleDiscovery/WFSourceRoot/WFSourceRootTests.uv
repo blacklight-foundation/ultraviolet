@@ -5,7 +5,7 @@
 
 using UltravioletCompiler::Project::{
     directoryPath,
-    emptyModuleDirectoryScans,
+    emptyDirectoryScans,
     sourceRootScan,
     sourceRootScanIsWellFormed
 }
@@ -20,7 +20,7 @@ internal procedure directorySourceRootIsWellFormed() -> bool
     let scan = sourceRootScan(
         directoryPath("Compiler"),
         true,
-        emptyModuleDirectoryScans()
+        emptyDirectoryScans()
     )
 
     return sourceRootScanIsWellFormed(scan)

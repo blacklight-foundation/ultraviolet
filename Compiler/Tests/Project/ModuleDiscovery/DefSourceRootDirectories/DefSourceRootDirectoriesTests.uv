@@ -5,10 +5,10 @@
 
 using UltravioletCompiler::Project::{
     directoryPath,
-    emptyModuleDirectoryScans,
+    emptyDirectoryScans,
     emptySourceFilePaths,
-    moduleDirectoryScan,
-    moduleDirectoryScanListEntry,
+    directoryScan,
+    directoryScanListEntry,
     modulePath,
     sourceRootScan,
     sourceRootScanIncludesRoot
@@ -24,14 +24,14 @@ internal procedure sourceRootDirectorySetIncludesTheSourceRoot() -> bool
     let scan = sourceRootScan(
         directoryPath("Compiler"),
         true,
-        moduleDirectoryScanListEntry(
-            moduleDirectoryScan(
+        directoryScanListEntry(
+            directoryScan(
                 directoryPath("Compiler"),
                 modulePath("UltravioletCompiler"),
                 emptySourceFilePaths(),
                 true
             ),
-            emptyModuleDirectoryScans()
+            emptyDirectoryScans()
         )
     )
 

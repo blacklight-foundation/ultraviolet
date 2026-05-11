@@ -7,8 +7,8 @@ using UltravioletCompiler::Project::{
     SourceFilePathListValue,
     directoryPath,
     emptySourceFilePaths,
-    moduleDirectoryFiles,
-    moduleDirectoryScan,
+    directoryScanFiles,
+    directoryScan,
     modulePath,
     projectTextEquals,
     sourceFilePath,
@@ -19,12 +19,12 @@ using UltravioletCompiler::Project::{
     name: "module directory files include only uv sources",
     covers("def.ModuleDirectoryFiles@L4324")
 )]]
-internal procedure moduleDirectoryFilesIncludeOnlyUvSources() -> bool
+internal procedure directoryScanFilesIncludeOnlyUvSources() -> bool
 |: => @result
 {
     let files: SourceFilePathListValue =
-        moduleDirectoryFiles(
-            moduleDirectoryScan(
+        directoryScanFiles(
+            directoryScan(
                 directoryPath("Compiler/Core"),
                 modulePath("UltravioletCompiler::Core"),
                 sourceFilePathListEntry(

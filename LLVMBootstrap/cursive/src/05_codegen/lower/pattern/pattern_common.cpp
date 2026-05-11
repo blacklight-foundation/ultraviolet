@@ -485,6 +485,12 @@ IRPtr EmitOrderedPatternBindings(const std::vector<OrderedPatternBinding>& bindi
   return SeqIR(std::move(emitted));
 }
 
+void MarkPatternScrutineeMoved(const IRValue& value, LowerCtx& ctx) {
+  if (value.kind == IRValue::Kind::Local) {
+    ctx.MarkMoved(value.name);
+  }
+}
+
 void CollectPatternBindingsInOrder(const ast::Pattern& pattern,
                                    const IRValue& value,
                                    LowerCtx& ctx,
@@ -544,6 +550,7 @@ void CollectPatternBindingsInOrder(const ast::Pattern& pattern,
           }
           bindings.push_back({pat.name, bind_value, type_hint});
         } else if constexpr (std::is_same_v<T, ast::TuplePattern>) {
+          MarkPatternScrutineeMoved(value, ctx);
           for (std::size_t i = 0; i < pat.elements.size(); ++i) {
             IRValue elem = ctx.FreshTempValue("pat_tuple_elem");
             DerivedValueInfo info;
@@ -554,6 +561,7 @@ void CollectPatternBindingsInOrder(const ast::Pattern& pattern,
             CollectPatternBindingsInOrder(*pat.elements[i], elem, ctx, bindings);
           }
         } else if constexpr (std::is_same_v<T, ast::RecordPattern>) {
+          MarkPatternScrutineeMoved(value, ctx);
           for (const auto& field : pat.fields) {
             IRValue field_val = ctx.FreshTempValue("pat_field");
             DerivedValueInfo info;
@@ -571,6 +579,7 @@ void CollectPatternBindingsInOrder(const ast::Pattern& pattern,
           if (!pat.payload_opt) {
             return;
           }
+          MarkPatternScrutineeMoved(value, ctx);
           const ast::EnumDecl* enum_decl = LookupEnumDecl(pat.path, ctx);
           const ast::VariantDecl* variant =
               enum_decl ? FindVariant(*enum_decl, pat.name) : nullptr;
@@ -633,6 +642,7 @@ void CollectPatternBindingsInOrder(const ast::Pattern& pattern,
           if (!pat.fields_opt) {
             return;
           }
+          MarkPatternScrutineeMoved(value, ctx);
           analysis::TypeRef modal_hint =
               ResolvePatternAliasType(InstantiateActiveGenericType(
                   ctx.LookupValueType(value), ctx), ctx);
