@@ -3,6 +3,7 @@
 #include <memory>
 #include <optional>
 #include <string>
+#include <utility>
 #include <vector>
 
 #include "05_codegen/ir/ir_model.h"
@@ -14,6 +15,12 @@ namespace cursive::codegen {
 // ============================================================================
 // §6.6 Pattern Lowering Judgments
 // ============================================================================
+
+// §6.6 BindOrder - recover the source-level bindings produced by a pattern.
+std::vector<std::pair<std::string, IRValue>> PatternBindingValuesInOrder(
+    const ast::Pattern& pattern,
+    const IRValue& value,
+    LowerCtx& ctx);
 
 // §6.6 LowerBindPattern - bind a value to a pattern
 IRPtr LowerBindPattern(const ast::Pattern& pattern,

@@ -308,18 +308,9 @@ IRPtr LowerStaticInitItem(const ast::ModulePath& module_path,
   auto init_result = LowerExpr(*binding.init, ctx);
   ir_parts.push_back(init_result.ir);
 
-  if (binding.pat) {
-    ir_parts.push_back(LowerBindPattern(*binding.pat, init_result.value, ctx));
-  }
-
   std::vector<std::pair<std::string, IRValue>> binds;
-  const auto names = StaticBindList(binding);
-  binds.reserve(names.size());
-  for (const auto& name : names) {
-    IRValue local;
-    local.kind = IRValue::Kind::Local;
-    local.name = name;
-    binds.emplace_back(name, local);
+  if (binding.pat) {
+    binds = PatternBindingValuesInOrder(*binding.pat, init_result.value, ctx);
   }
 
   ir_parts.push_back(StaticStoreIR(item, module_path, binds));

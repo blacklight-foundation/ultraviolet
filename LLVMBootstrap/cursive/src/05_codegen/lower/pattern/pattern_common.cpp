@@ -761,6 +761,21 @@ void CollectPatternBindingsInOrder(const ast::Pattern& pattern,
 
 }  // namespace
 
+std::vector<std::pair<std::string, IRValue>> PatternBindingValuesInOrder(
+    const ast::Pattern& pattern,
+    const IRValue& value,
+    LowerCtx& ctx) {
+  std::vector<OrderedPatternBinding> ordered;
+  CollectPatternBindingsInOrder(pattern, value, ctx, ordered);
+
+  std::vector<std::pair<std::string, IRValue>> result;
+  result.reserve(ordered.size());
+  for (const auto& binding : ordered) {
+    result.emplace_back(binding.name, binding.value);
+  }
+  return result;
+}
+
 // ============================================================================
 // §6.6 LowerBindPattern - Bind value to pattern
 // ============================================================================
