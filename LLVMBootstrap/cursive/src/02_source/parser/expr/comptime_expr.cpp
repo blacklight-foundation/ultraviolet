@@ -100,6 +100,7 @@ ParseElemResult<ExprPtr> ParseCtBlockExpr(Parser parser) {
   Parser after_r = value.parser;
   Advance(after_r);
 
+  SPEC_RULE("Parse-CtExpr");
   ComptimeExpr comptime;
   comptime.body = value.elem;
   comptime.attrs_opt = std::nullopt;

@@ -178,6 +178,7 @@ ParseElemResult<std::vector<TypeBound>> ParseTypeBounds(Parser parser) {
 
   std::vector<TypeBound> bounds;
   if (!IsOp(parser, "<:")) {
+    SPEC_RULE("Parse-TypeBoundsOpt-None");
     return {parser, bounds};
   }
   Parser next = parser;
@@ -187,14 +188,18 @@ ParseElemResult<std::vector<TypeBound>> ParseTypeBounds(Parser parser) {
   ParseElemResult<TypeBound> first_bound = parse_class_bound(next);
   bounds.push_back(first_bound.elem);
   next = first_bound.parser;
+  SPEC_RULE("Parse-ClassBoundList-Cons");
 
   // Parse additional bounds separated by ","
   while (IsPunc(next, ",")) {
+    SPEC_RULE("Parse-ClassBoundListTail-Cons");
     Advance(next);
     ParseElemResult<TypeBound> bound = parse_class_bound(next);
     bounds.push_back(bound.elem);
     next = bound.parser;
   }
+  SPEC_RULE("Parse-ClassBoundListTail-End");
+  SPEC_RULE("Parse-TypeBoundsOpt-Yes");
 
   return {next, bounds};
 }
@@ -223,10 +228,13 @@ ParseElemResult<TypeParam> ParseTypeParam(Parser parser) {
   std::shared_ptr<Type> default_type;
   Parser after_bounds = bounds.parser;
   if (IsOp(after_bounds, "=")) {
+    SPEC_RULE("Parse-TypeDefaultOpt-Yes");
     Advance(after_bounds);
     ParseElemResult<std::shared_ptr<Type>> ty = ParseType(after_bounds);
     default_type = ty.elem;
     after_bounds = ty.parser;
+  } else {
+    SPEC_RULE("Parse-TypeDefaultOpt-None");
   }
 
   TypeParam param;

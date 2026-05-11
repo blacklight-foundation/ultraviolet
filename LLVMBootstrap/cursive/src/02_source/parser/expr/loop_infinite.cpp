@@ -209,6 +209,7 @@ ParseElemResult<std::shared_ptr<Block>> ParseBlock(Parser parser);
 // This is shared by all three loop types (infinite, conditional, iterator).
 
 ParseElemResult<std::optional<LoopInvariant>> ParseLoopInvariantOpt(Parser parser) {
+  SPEC_RULE("ParseLoopInvariantOpt");
   if (!IsOp(parser, "|:")) {
     SPEC_RULE("Parse-LoopInvariantOpt-None");
     return {parser, std::nullopt};

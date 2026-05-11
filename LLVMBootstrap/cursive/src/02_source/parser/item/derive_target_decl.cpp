@@ -160,6 +160,7 @@ ParseItemResult ParseDeriveTargetDecl(Parser parser) {
   decl.body = body.elem;
   decl.span = SpanBetween(start, parser);
   decl.doc = {};
+  SPEC_RULE("Parse-DeriveTargetDecl");
   return {parser, decl};
 }
 

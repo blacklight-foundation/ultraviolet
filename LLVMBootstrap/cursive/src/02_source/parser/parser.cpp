@@ -291,6 +291,7 @@ ParseFileResult ParseFile(const core::SourceFile& source) {
   file.module_doc = std::move(items.module_doc);
   result.file = std::move(file);
   result.unsafe_spans = std::move(unsafe_spans);
+  SPEC_RULE("Phase1-File");
   return result;
 }
 

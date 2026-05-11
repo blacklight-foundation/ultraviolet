@@ -9,6 +9,7 @@
 #include <utility>
 #include <vector>
 
+#include "00_core/assert_spec.h"
 #include "00_core/symbols.h"
 #include "00_core/unicode.h"
 #include "02_source/ast/ast_dump.h"
@@ -1474,6 +1475,7 @@ std::optional<EvalResult> EvalIntrospectMethod(const ast::MethodCallExpr& call,
     std::unordered_set<const ast::Type*> visiting;
     EvalResult result;
     if (const auto category = CategoryOfType(env, *type, visiting)) {
+      SPEC_RULE("CtBuiltin-Reflect-Category");
       result.ok = true;
       result.value = *category;
     }
@@ -1485,6 +1487,7 @@ std::optional<EvalResult> EvalIntrospectMethod(const ast::MethodCallExpr& call,
     if (!type.has_value()) {
       return std::optional<EvalResult>{EvalResult{}};
     }
+    SPEC_RULE("CtBuiltin-Reflect-TypeName");
     return std::optional<EvalResult>{MakeStringResult(ast::to_string(**type))};
   }
 
@@ -1493,6 +1496,7 @@ std::optional<EvalResult> EvalIntrospectMethod(const ast::MethodCallExpr& call,
     if (!type.has_value()) {
       return std::optional<EvalResult>{EvalResult{}};
     }
+    SPEC_RULE("CtBuiltin-Reflect-ModulePath");
     return std::optional<EvalResult>{std::visit(
         [&](const auto& node) -> EvalResult {
           using T = std::decay_t<decltype(node)>;
@@ -1536,6 +1540,7 @@ std::optional<EvalResult> EvalIntrospectMethod(const ast::MethodCallExpr& call,
         ++field_index;
       }
     }
+    SPEC_RULE("CtBuiltin-Reflect-Fields");
     return std::optional<EvalResult>{MakeArrayResult(std::move(infos))};
   }
 
@@ -1584,6 +1589,7 @@ std::optional<EvalResult> EvalIntrospectMethod(const ast::MethodCallExpr& call,
           std::move(payload_types), PayloadFieldNames(variant.payload_opt),
           variant.span));
     }
+    SPEC_RULE("CtBuiltin-Reflect-Variants");
     return std::optional<EvalResult>{MakeArrayResult(std::move(infos))};
   }
 
@@ -1609,6 +1615,7 @@ std::optional<EvalResult> EvalIntrospectMethod(const ast::MethodCallExpr& call,
     for (const auto& state : target->decl.modal->states) {
       infos.push_back(MakeStateInfoValue(state));
     }
+    SPEC_RULE("CtBuiltin-Reflect-States");
     return std::optional<EvalResult>{MakeArrayResult(std::move(infos))};
   }
 
@@ -1634,6 +1641,7 @@ std::optional<EvalResult> EvalIntrospectMethod(const ast::MethodCallExpr& call,
     if (!target.has_value()) {
       return std::optional<EvalResult>{MakeBoolResult(false)};
     }
+    SPEC_RULE("CtBuiltin-Reflect-Form");
     return std::optional<EvalResult>{
         MakeBoolResult(ReflectNominalImplementsForm(env, *target, form_path))};
   }

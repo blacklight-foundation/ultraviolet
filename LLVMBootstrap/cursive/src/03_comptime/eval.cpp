@@ -4,6 +4,7 @@
 #include <string>
 #include <string_view>
 
+#include "00_core/assert_spec.h"
 #include "00_core/diagnostic_messages.h"
 #include "00_core/diagnostics.h"
 
@@ -189,12 +190,14 @@ EvalResult EvalMethodCall(const ast::MethodCallExpr& call, CtEnv& env) {
     const auto& recv = std::get<ast::IdentifierExpr>(call.receiver->node).name;
     if (recv == "diagnostics") {
       if (call.name == "current_module" && call.args.empty()) {
+        SPEC_RULE("CtBuiltin-Diagnostics-CurrentModule");
         EvalResult result;
         result.ok = true;
         result.value = CtString{ModulePathText(CtSiteOf(env).module_path)};
         return result;
       }
       if (call.name == "current_span" && call.args.empty()) {
+        SPEC_RULE("CtBuiltin-Diagnostics-CurrentSpan");
         EvalResult result;
         result.ok = true;
         result.value = MakeSpanValue(CtSiteOf(env).span);
@@ -210,6 +213,7 @@ EvalResult EvalMethodCall(const ast::MethodCallExpr& call, CtEnv& env) {
           return {};
         }
         if (call.name == "error") {
+          SPEC_RULE("CtBuiltin-Diagnostics-Error");
           AppendCtCodedDiagnostic(
               env, "E-CTE-0070", core::Severity::Error, msg->value);
           EvalResult result;
@@ -218,6 +222,7 @@ EvalResult EvalMethodCall(const ast::MethodCallExpr& call, CtEnv& env) {
           return result;
         }
         if (call.name == "warning") {
+          SPEC_RULE("CtBuiltin-Diagnostics-Warning");
           AppendCtCodedDiagnostic(
               env, "W-CTE-0071", core::Severity::Warning, msg->value);
           EvalResult result;
@@ -226,6 +231,7 @@ EvalResult EvalMethodCall(const ast::MethodCallExpr& call, CtEnv& env) {
           return result;
         }
         if (call.name == "note") {
+          SPEC_RULE("CtBuiltin-Diagnostics-Note");
           AppendCtUserNoteDiagnostic(env, msg->value);
           EvalResult result;
           result.ok = true;
@@ -264,6 +270,7 @@ EvalResult EvalMethodCall(const ast::MethodCallExpr& call, CtEnv& env) {
         if (auto* pending = CtPendingEmits(env)) {
           pending->push_back(*item);
         }
+        SPEC_RULE("CtBuiltin-Emit");
         EvalResult result;
         result.ok = true;
         result.value = MakeCtUnit();
@@ -497,11 +504,13 @@ EvalResult EvalExpr(const ExprPtr& expr, CtEnv& env) {
         } else if constexpr (std::is_same_v<T, ast::MethodCallExpr>) {
           return EvalMethodCall(node, env);
         } else if constexpr (std::is_same_v<T, ast::TypeLiteralExpr>) {
+          SPEC_RULE_AT("CtEval-TypeLiteral", expr->span);
           EvalResult out;
           out.ok = true;
           out.value = CtType{node.type};
           return out;
         } else if constexpr (std::is_same_v<T, ast::QuoteExpr>) {
+          SPEC_RULE_AT("CtEval-Quote", expr->span);
           EvalResult out;
           auto parsed_ast = ParseQuotedAst(node, env, *env.diags);
           if (!parsed_ast.has_value()) {

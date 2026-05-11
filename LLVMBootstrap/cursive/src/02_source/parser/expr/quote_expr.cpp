@@ -10,6 +10,7 @@
 #include <string_view>
 #include <vector>
 
+#include "00_core/assert_spec.h"
 #include "02_source/lexer/keyword_policy.h"
 
 namespace cursive::ast {
@@ -122,6 +123,13 @@ std::optional<ParseElemResult<ExprPtr>> TryParseQuoteExpr(Parser parser) {
   QuoteExpr quote;
   quote.kind = kind;
   quote.tokens = SliceTokensBetween(content_start, content_end);
+  if (kind == QuoteKind::Type) {
+    SPEC_RULE("Parse-Quote-Type");
+  } else if (kind == QuoteKind::Pattern) {
+    SPEC_RULE("Parse-Quote-Pattern");
+  } else {
+    SPEC_RULE("Parse-Quote-Raw");
+  }
   Advance(content_end);
   return ParseElemResult<ExprPtr>{
       content_end, MakeExpr(SpanBetween(start, content_end), quote)};

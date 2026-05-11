@@ -296,7 +296,7 @@ ParseItemResult ParseItem(Parser parser) {
 
   // extern block (visibility applies)
   if (IsKw(cur, "extern")) {
-    SPEC_RULE("Parse-Extern-Block");
+    SPEC_RULE("Parse-ExternBlock");
     return ParseExternBlock(start, cur, vis.elem, attrs_opt);
   }
 

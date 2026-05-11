@@ -22,9 +22,8 @@ namespace cursive::ast {
 // ParseRefinementClause - Parse Type Refinement: |: { predicate }
 // =============================================================================
 // SPEC: Lines 4674-4686
-// Called when `|:` token is found after a base type.
-// Parses the predicate and wraps the base type in a TypeRefine node.
-// Returns the original type if parsing fails, with errors emitted.
+// Recognizes `|: { predicate }` after a base type, then wraps the base type in
+// a TypeRefine node.
 
 ParseElemResult<ExprPtr> ParseRefinementOpt(Parser parser) {
   if (!IsOpType(parser, "|:")) {
@@ -36,10 +35,8 @@ ParseElemResult<ExprPtr> ParseRefinementOpt(Parser parser) {
   Advance(after_clause);  // consume '|:'
 
   if (!IsPuncType(after_clause, "{")) {
-    EmitParseSyntaxErr(after_clause, TokSpan(after_clause));
-    Parser sync = after_clause;
-    SyncType(sync);
-    return {sync, nullptr};
+    SPEC_RULE("Parse-RefinementOpt-None");
+    return {parser, nullptr};
   }
 
   Parser after_l = after_clause;

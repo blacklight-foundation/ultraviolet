@@ -1016,6 +1016,8 @@ int main() {
   const std::filesystem::path tool_root = project_root / "tools";
   const std::filesystem::path compile_log = project_root / "compile.log";
   const std::filesystem::path run_log = project_root / "run.log";
+  const std::filesystem::path conformance_log =
+      out_root / "logs" / "conformance" / "diagnostic_path.conformance.log";
 
   std::error_code ec;
   std::filesystem::remove_all(project_root, ec);
@@ -1048,11 +1050,22 @@ int main() {
               Quote(project_root.generic_string()) +
               " --assembly diagnostic_path --out-dir " +
               Quote(out_root.generic_string()) +
+              " --conformance diagnostic_path.conformance.log" +
               " --build-progress on --incremental off > " +
               Quote(compile_log.generic_string()) + " 2>&1");
   const int compile_result = RunCommand(compile_command);
   if (compile_result != 0) {
     std::cerr << "fixture compile failed; see " << compile_log << "\n";
+    return 1;
+  }
+
+  const auto conformance_text = ReadFile(conformance_log);
+  if (!conformance_text.has_value()) {
+    return 1;
+  }
+  if (CountOccurrences(*conformance_text, "\tcodegen\tPatternNarrow-Union\t") == 0) {
+    std::cerr << "codegen conformance trace did not record PatternNarrow-Union "
+                 "for modal union if-case lowering\n";
     return 1;
   }
 

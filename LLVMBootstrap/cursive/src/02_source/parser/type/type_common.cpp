@@ -200,8 +200,8 @@ ParseElemResult<std::shared_ptr<Type>> ParseNonPermType(Parser parser) {
     return {parser, MakeTypePrim(TokSpan(parser), "!")};
   }
 
-  // Closure type: |T| -> R
-  if (IsOpTok(*tok, "|")) {
+  // Closure type: |T| -> R or || -> R
+  if (IsOpTok(*tok, "|") || IsOpTok(*tok, "||")) {
     return ParseClosureType(parser);
   }
 
@@ -417,7 +417,8 @@ ParseElemResult<std::shared_ptr<Type>> ParseType(Parser parser) {
                                (tok->lexeme == "(" || tok->lexeme == "[")) ||
                               (tok->kind == TokenKind::Operator &&
                                (tok->lexeme == "*" || tok->lexeme == "$" ||
-                                tok->lexeme == "!" || tok->lexeme == "|"));
+                                tok->lexeme == "!" || tok->lexeme == "|" ||
+                                tok->lexeme == "||"));
   if (!non_perm_start) {
     SPEC_RULE("Parse-Type-Err");
     EmitGenericParseSyntaxErr(after_perm, TokSpan(after_perm));
@@ -499,7 +500,8 @@ ParseElemResult<std::shared_ptr<Type>> ParseTypeNoUnion(Parser parser) {
                                (tok->lexeme == "(" || tok->lexeme == "[")) ||
                               (tok->kind == TokenKind::Operator &&
                                (tok->lexeme == "*" || tok->lexeme == "$" ||
-                                tok->lexeme == "!" || tok->lexeme == "|"));
+                                tok->lexeme == "!" || tok->lexeme == "|" ||
+                                tok->lexeme == "||"));
   if (!non_perm_start) {
     SPEC_RULE("Parse-Type-Err");
     EmitGenericParseSyntaxErr(after_perm, TokSpan(after_perm));

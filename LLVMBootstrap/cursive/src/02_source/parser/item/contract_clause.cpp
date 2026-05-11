@@ -118,16 +118,19 @@ namespace cursive::ast
     }
     if (!IsOp(probe, "|:"))
     {
+      SPEC_RULE("Parse-ContractClauseOpt-None");
       return {parser, std::nullopt};
     }
 
     // Check for foreign contract
     if (IsForeignContractStart(probe))
     {
+      SPEC_RULE("Parse-ContractClauseOpt-None");
       return {parser, std::nullopt};
     }
 
     parser = probe;
+    SPEC_RULE("Parse-ContractClauseOpt-Yes");
     SPEC_RULE("Parse-Contract-Clause");
     Parser start = parser;
     Parser next = parser;
@@ -138,6 +141,7 @@ namespace cursive::ast
     // Check for => (postcondition only case)
     if (IsOp(next, "=>"))
     {
+      SPEC_RULE("Parse-ContractBody-PostOnly");
       Advance(next);
       ParseElemResult<ExprPtr> post = ParsePredicateExpr(next);
       clause.postcondition = post.elem;
@@ -156,10 +160,15 @@ namespace cursive::ast
     // Check for => postcondition
     if (IsOp(next, "=>"))
     {
+      SPEC_RULE("Parse-ContractBody-PrePost");
       Advance(next);
       ParseElemResult<ExprPtr> post = ParsePredicateExpr(next);
       clause.postcondition = post.elem;
       next = post.parser;
+    }
+    else
+    {
+      SPEC_RULE("Parse-ContractBody-PreOnly");
     }
 
     clause.span = SpanBetween(start, next);

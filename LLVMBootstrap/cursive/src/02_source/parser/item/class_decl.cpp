@@ -311,10 +311,13 @@ ParseElemResult<ClassItem> ParseClassItem(Parser parser) {
     // Check for optional = Type
     std::shared_ptr<Type> type_opt = nullptr;
     if (IsOp(after_name, "=")) {
+      SPEC_RULE("Parse-AssocTypeOpt-Yes");
       Advance(after_name);
       ParseElemResult<std::shared_ptr<Type>> ty = ParseType(after_name);
       type_opt = ty.elem;
       after_name = ty.parser;
+    } else {
+      SPEC_RULE("Parse-AssocTypeOpt-None");
     }
 
     ConsumeTerminatorReq(after_name);
@@ -369,6 +372,7 @@ ParseElemResult<std::vector<ClassItem>> ParseClassItemList(Parser parser) {
   SkipNewlines(parser);
 
   if (IsPunc(parser, "}")) {
+    SPEC_RULE("Parse-ClassItemList-End");
     SPEC_RULE("Parse-ClassItemList-Empty");
     return {parser, {}};
   }
@@ -397,6 +401,7 @@ ParseElemResult<std::vector<ClassItem>> ParseClassItemList(Parser parser) {
     }
   }
 
+  SPEC_RULE("Parse-ClassItemList-End");
   return {cur, items};
 }
 

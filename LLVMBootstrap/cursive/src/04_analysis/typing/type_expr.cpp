@@ -3425,6 +3425,7 @@ static ExprTypeResult TypeExprImpl(const ScopeContext& ctx,
             r.diag_id = "E-CTE-0411";
             return r;
           }
+          SPEC_RULE_AT("T-TypeLiteral", e ? e->span : core::Span{});
           r.ok = true;
           r.type = TypeMetaType();
           return r;
@@ -3473,6 +3474,9 @@ static ExprTypeResult TypeExprImpl(const ScopeContext& ctx,
                             : std::optional<core::Span>(e->span);
             }
           }
+          if (typed.ok) {
+            SPEC_RULE_AT("T-CtExpr", e ? e->span : core::Span{});
+          }
           return typed;
         } else if constexpr (std::is_same_v<T, ast::CtIfExpr>) {
           const TypeEnv comptime_env = ExtendComptimeEnv(env, nullptr);
@@ -3487,7 +3491,12 @@ static ExprTypeResult TypeExprImpl(const ScopeContext& ctx,
             if_expr.else_expr->span = node.else_block_opt->span;
             if_expr.else_expr->node = ast::BlockExpr{node.else_block_opt};
           }
-          return expr::TypeIfExprImpl(ctx, type_ctx, if_expr, comptime_env);
+          auto typed =
+              expr::TypeIfExprImpl(ctx, type_ctx, if_expr, comptime_env);
+          if (typed.ok) {
+            SPEC_RULE_AT("T-CtIf", e ? e->span : core::Span{});
+          }
+          return typed;
         } else if constexpr (std::is_same_v<T, ast::CtLoopIterExpr>) {
           const TypeEnv comptime_env = ExtendComptimeEnv(env, nullptr);
           return TypeCtLoopIterExpr(ctx, type_ctx, node, comptime_env,

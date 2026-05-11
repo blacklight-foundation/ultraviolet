@@ -99,6 +99,14 @@ namespace cursive::ast
           out.kind = (name->lexeme == "error")
                          ? ForeignContractKind::EnsuresError
                          : ForeignContractKind::EnsuresNullResult;
+          if (name->lexeme == "error")
+          {
+            SPEC_RULE("Parse-EnsuresPredicate-Error");
+          }
+          else
+          {
+            SPEC_RULE("Parse-EnsuresPredicate-NullResult");
+          }
           Advance(next);
           if (!IsPunc(next, ":"))
           {
@@ -114,6 +122,7 @@ namespace cursive::ast
         }
       }
 
+      SPEC_RULE("Parse-EnsuresPredicate-Plain");
       ParseElemResult<ExprPtr> pred = ParseForeignPredicate(parser);
       out.kind = ForeignContractKind::Ensures;
       out.pred = pred.elem;

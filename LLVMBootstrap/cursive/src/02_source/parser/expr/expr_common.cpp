@@ -467,9 +467,10 @@ bool IsExprStart(const Token& tok) {
   }
   if (tok.kind == TokenKind::Keyword) {
     return tok.lexeme == "if" ||
-           tok.lexeme == "loop" || tok.lexeme == "unsafe" ||
-           tok.lexeme == "move" || tok.lexeme == "transmute" ||
-           tok.lexeme == "widen" ||
+          tok.lexeme == "loop" || tok.lexeme == "unsafe" ||
+          tok.lexeme == "move" || tok.lexeme == "transmute" ||
+          tok.lexeme == "widen" || tok.lexeme == "comptime" ||
+          tok.lexeme == "quote" ||
            // Layout intrinsics
            tok.lexeme == "sizeof" || tok.lexeme == "alignof" ||
            // C0X Extension: Structured Concurrency
@@ -650,6 +651,7 @@ ParseElemResult<ExprPtr> ParseExprNoBrace(Parser parser) {
 // Note: Supports range predicates of the form "expr in range_expr".
 
 ParseElemResult<ExprPtr> ParsePredicateExpr(Parser parser) {
+  SPEC_RULE("ParsePredicateExpr");
   SPEC_RULE("Parse-Predicate-Expr");
   return ParseExprWithLeadingAttrs(
       parser, [](Parser next) { return ParseLogicalOr(next, false, true); });

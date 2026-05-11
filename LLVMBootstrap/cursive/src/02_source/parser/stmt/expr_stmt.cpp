@@ -220,8 +220,9 @@ bool IsExprStartToken(const Token& tok) {
     return tok.lexeme == "if" ||
            tok.lexeme == "loop" || tok.lexeme == "unsafe" ||
            tok.lexeme == "move" || tok.lexeme == "transmute" ||
-           tok.lexeme == "widen" || tok.lexeme == "comptime" ||
-           tok.lexeme == "parallel" || tok.lexeme == "spawn" ||
+          tok.lexeme == "widen" || tok.lexeme == "comptime" ||
+          tok.lexeme == "quote" ||
+          tok.lexeme == "parallel" || tok.lexeme == "spawn" ||
            tok.lexeme == "dispatch" || tok.lexeme == "yield" ||
            tok.lexeme == "sync" || tok.lexeme == "race" ||
            tok.lexeme == "all";

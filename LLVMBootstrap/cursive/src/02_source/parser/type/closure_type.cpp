@@ -80,7 +80,7 @@ ParseElemResult<std::vector<TypeFuncParam>> ParseClosureParamTypeListTail(
     Parser parser, std::vector<TypeFuncParam> params) {
   SkipNewlinesType(parser);
   if (IsOpType(parser, "|")) {
-    SPEC_RULE("Parse-ParamTypeListTail-End");
+    SPEC_RULE("Parse-ClosureParamTypeListTail-End");
     return {parser, params};
   }
 
@@ -95,14 +95,14 @@ ParseElemResult<std::vector<TypeFuncParam>> ParseClosureParamTypeListTail(
   SkipNewlinesType(after);
   if (IsOpType(after, "|")) {
     if (TrailingCommaAllowed(parser, end_set)) {
-      SPEC_RULE("Parse-ParamTypeListTail-TrailingComma");
+      SPEC_RULE("Parse-ClosureParamTypeListTail-TrailingComma");
     }
     EmitTrailingCommaErr(parser, end_set);
     after.diags = parser.diags;
     return {after, params};
   }
 
-  SPEC_RULE("Parse-ParamTypeListTail-Comma");
+  SPEC_RULE("Parse-ClosureParamTypeListTail-Comma");
   ParseElemResult<TypeFuncParam> param = ParseClosureParamType(after);
   params.push_back(param.elem);
   return ParseClosureParamTypeListTail(param.parser, std::move(params));
@@ -112,11 +112,11 @@ ParseElemResult<std::vector<TypeFuncParam>> ParseClosureParamTypeList(
     Parser parser) {
   SkipNewlinesType(parser);
   if (IsOpType(parser, "|")) {
-    SPEC_RULE("Parse-ParamTypeList-Empty");
+    SPEC_RULE("Parse-ClosureParamTypeList-Empty");
     return {parser, {}};
   }
 
-  SPEC_RULE("Parse-ParamTypeList-Cons");
+  SPEC_RULE("Parse-ClosureParamTypeList-Cons");
   ParseElemResult<TypeFuncParam> first = ParseClosureParamType(parser);
   std::vector<TypeFuncParam> params;
   params.push_back(first.elem);
@@ -220,6 +220,27 @@ ParseElemResult<std::optional<std::vector<SharedDep>>> ParseClosureDepsOpt(
 
 ParseElemResult<std::shared_ptr<Type>> ParseClosureType(Parser parser) {
   Parser start = parser;
+  if (IsOpType(parser, "||")) {
+    SPEC_RULE("Parse-ClosureParamTypeList-Empty");
+    SPEC_RULE("Parse-Closure-Type-Empty");
+    Parser after_bar = parser;
+    Advance(after_bar);
+    if (!IsOpType(after_bar, "->")) {
+      EmitParseSyntaxErr(after_bar, TokSpan(after_bar));
+      return {after_bar, MakeTypePrim(SpanBetween(start, after_bar), "!")};
+    }
+    Parser after_arrow = after_bar;
+    Advance(after_arrow);
+    ParseElemResult<std::shared_ptr<Type>> ret = ParseType(after_arrow);
+    ParseElemResult<std::optional<std::vector<SharedDep>>> deps =
+        ParseClosureDepsOpt(ret.parser);
+    TypeClosure closure;
+    closure.params = {};
+    closure.ret = ret.elem;
+    closure.deps_opt = deps.elem;
+    return {deps.parser, MakeTypeNode(SpanBetween(start, deps.parser), closure)};
+  }
+
   if (!IsOpType(parser, "|")) {
     EmitParseSyntaxErr(parser, TokSpan(parser));
     return {parser, MakeTypePrim(TokSpan(parser), "!")};
@@ -229,6 +250,7 @@ ParseElemResult<std::shared_ptr<Type>> ParseClosureType(Parser parser) {
   Advance(after_l);  // consume |
 
   if (IsOpType(after_l, "|")) {
+    SPEC_RULE("Parse-ClosureParamTypeList-Empty");
     SPEC_RULE("Parse-Closure-Type-Empty");
     Parser after_bar = after_l;
     Advance(after_bar);  // consume |

@@ -47,6 +47,7 @@ void EmitMissingTerminator(core::DiagnosticStream& diags, const core::Span& span
   if (!diag) {
     return;
   }
+  SPEC_RULE_AT("Missing-Terminator-Err", span);
   core::Emit(diags, *diag);
 }
 

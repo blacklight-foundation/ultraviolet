@@ -2,6 +2,7 @@
 
 #include <string>
 
+#include "00_core/assert_spec.h"
 #include "00_core/diagnostic_messages.h"
 #include "00_core/diagnostics.h"
 #include "02_source/attributes/attribute_registry.h"
@@ -205,15 +206,21 @@ ast::Stmt RewriteStmt(const ast::Stmt& stmt, CtEnv& env) {
 }
 
 Block RewriteBlock(const Block& block, CtEnv& env) {
+  SPEC_RULE_AT("CtExpandBlock", block.span);
   Block out = block;
   out.stmts.clear();
   out.stmts.reserve(block.stmts.size());
+  if (block.stmts.empty()) {
+    SPEC_RULE("CtExpandStmtSeq-Empty");
+  }
   for (const auto& stmt : block.stmts) {
+    SPEC_RULE("CtExpandStmtSeq-Cons");
     if (const auto* comptime = std::get_if<ast::ComptimeStmt>(&stmt)) {
       if (!ValidatePhase2AttributeList(env, comptime->attrs,
                                        analysis::AttributeTarget::Statement)) {
         continue;
       }
+      SPEC_RULE_AT("CtExpandStmt-CtStmt", comptime->span);
       std::vector<ASTItem> emitted;
       CtEnv stmt_env = WithCtCaps(env, comptime->attrs);
       stmt_env.pending_emits = &emitted;
@@ -239,6 +246,7 @@ ExprPtr RewriteExpr(const ExprPtr& expr, CtEnv& env) {
         using T = std::decay_t<decltype(node)>;
         if constexpr (std::is_same_v<T, ast::AttributedExpr>) {
           if (node.expr && std::holds_alternative<ast::ComptimeExpr>(node.expr->node)) {
+            SPEC_RULE_AT("CtExpandExpr-CtExpr", expr->span);
             if (!ValidatePhase2AttributeList(
                     env, node.attrs, analysis::AttributeTarget::Expression)) {
               return expr;
@@ -273,6 +281,7 @@ ExprPtr RewriteExpr(const ExprPtr& expr, CtEnv& env) {
           rewritten.expr = RewriteExpr(node.expr, env);
           return out;
         } else if constexpr (std::is_same_v<T, ast::ComptimeExpr>) {
+          SPEC_RULE_AT("CtExpandExpr-CtExpr", expr->span);
           if (!ValidatePhase2AttributeList(
                   env, ast::AttrListOf(node.attrs_opt),
                   analysis::AttributeTarget::Expression)) {
@@ -318,12 +327,18 @@ ExprPtr RewriteExpr(const ExprPtr& expr, CtEnv& env) {
             EmitComptimeDiag(env, "E-CTE-0081", expr->span);
             return expr;
           }
+          if (cond_bool) {
+            SPEC_RULE_AT("CtExpandExpr-CtIf-True", expr->span);
+          } else {
+            SPEC_RULE_AT("CtExpandExpr-CtIf-False", expr->span);
+          }
           const Block* selected =
               cond_bool ? node.then_block.get() : node.else_block_opt.get();
           Block rewritten =
               selected ? RewriteBlock(*selected, ct_env) : MakeFallbackEmptyBlock(expr->span);
           return MakeBlockExpr(rewritten, expr->span);
         } else if constexpr (std::is_same_v<T, ast::CtLoopIterExpr>) {
+          SPEC_RULE_AT("CtExpandExpr-CtLoopIter", expr->span);
           CtEnv ct_env = env;
           auto iter = EvalExpr(node.iter, ct_env);
           if (!iter.ok) {
@@ -345,7 +360,11 @@ ExprPtr RewriteExpr(const ExprPtr& expr, CtEnv& env) {
           unrolled.span = expr->span;
           unrolled.tail_opt = MakeUnitExpr(expr->span);
           CtEnv loop_env = ct_env;
+          if (elems->empty()) {
+            SPEC_RULE_AT("CtLoopIterUnroll-Empty", expr->span);
+          }
           for (const auto& elem : *elems) {
+            SPEC_RULE_AT("CtLoopIterUnroll-Cons", expr->span);
             CtEnv iter_env = loop_env;
             if (!BindCtPatternValue(iter_env, node.pattern, elem)) {
               EmitComptimeDiag(env, "E-CTE-0083", expr->span);
@@ -459,7 +478,11 @@ std::optional<std::vector<ASTItem>> ExpandModuleItems(
   std::vector<ASTItem> visible_current_items = items;
   env.current_module_items = &visible_current_items;
   std::vector<ASTItem> out;
+  if (queue.empty()) {
+    SPEC_RULE("CtExpandItemSeq-Empty");
+  }
   for (std::size_t i = 0; i < queue.size(); ++i) {
+    SPEC_RULE("CtExpandItemSeq-Cons");
     env = WithCtSite(std::move(env), i, {});
     const ASTItem item = queue[i];
 
@@ -468,12 +491,13 @@ std::optional<std::vector<ASTItem>> ExpandModuleItems(
               env, proc->attrs, analysis::AttributeTarget::Procedure)) {
         continue;
       }
+      SPEC_RULE_AT("CtExpandItem-CtProc", proc->span);
       env = BindCtProc(std::move(env), *proc);
       continue;
     }
 
     if (const auto* derive = std::get_if<ast::DeriveTargetDecl>(&item)) {
-      (void)derive;
+      SPEC_RULE_AT("CtExpandItem-DeriveTargetDecl", derive->span);
       continue;
     }
 
@@ -485,6 +509,7 @@ std::optional<std::vector<ASTItem>> ExpandModuleItems(
 
     std::vector<ASTItem> emitted;
     if (IsDeriveAnnotatedItem(item)) {
+      SPEC_RULE_AT("CtExpandItem-DeriveAnnotatedDecl", SpanOfItem(item));
       auto derive_emits = ExpandDerives(item, env);
       if (!derive_emits.has_value()) {
         return std::nullopt;

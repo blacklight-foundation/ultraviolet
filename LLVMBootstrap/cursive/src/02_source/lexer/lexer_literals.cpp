@@ -882,6 +882,7 @@ LiteralScanResult ScanIntLiteral(const core::SourceFile& source,
 
   if (!is_based && !saw_exp && !used_int_suffix && !used_float_suffix &&
       underscore_ok && DecimalLeadingZero(source, offsets, start, j)) {
+    SPEC_RULE("Warn-DecimalLeadingZero");
     EmitDiag(result.diags, "W-SRC-0301", SpanOfText(source, offsets, start, j));
   }
 

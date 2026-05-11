@@ -286,10 +286,17 @@ namespace cursive::ast
     std::shared_ptr<Type> default_type = nullptr;
     if (IsOp(after_name, "="))
     {
+      SPEC_RULE("Parse-AssocTypeOpt-Yes");
+      SPEC_RULE("Parse-AssocTypeDefaultOpt");
       Advance(after_name);
       ParseElemResult<std::shared_ptr<Type>> ty = ParseType(after_name);
       default_type = ty.elem;
       after_name = ty.parser;
+    }
+    else
+    {
+      SPEC_RULE("Parse-AssocTypeOpt-None");
+      SPEC_RULE("Parse-AssocTypeDefaultOpt");
     }
 
     AssociatedTypeDecl assoc;

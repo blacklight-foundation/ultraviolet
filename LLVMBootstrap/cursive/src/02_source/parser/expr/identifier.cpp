@@ -13,6 +13,7 @@
 
 #include <memory>
 #include <optional>
+#include <string_view>
 
 #include "00_core/assert_spec.h"
 #include "00_core/keywords.h"
@@ -28,6 +29,15 @@ using lexer::IsOpTok;
 
 // Forward declarations from other modules
 ExprPtr MakeExpr(const core::Span& span, ExprNode node);
+
+namespace {
+
+bool IsCompileTimeCapabilityName(std::string_view lexeme) {
+  return lexeme == "emitter" || lexeme == "introspect" || lexeme == "files" ||
+         lexeme == "diagnostics";
+}
+
+}  // namespace
 
 // =============================================================================
 // ParseReceiverRef - Parse receiver reference (~)
@@ -95,6 +105,9 @@ std::optional<ParseElemResult<ExprPtr>> TryParseIdentifierExpr(
   }
 
   SPEC_RULE("Parse-Identifier-Expr");
+  if (IsCompileTimeCapabilityName(tok->lexeme)) {
+    SPEC_RULE("Parse-CtCapRef");
+  }
 
   IdentifierExpr ident;
   ident.name = tok->lexeme;
@@ -118,6 +131,9 @@ ParseElemResult<ExprPtr> ParseIdentifierExpr(Parser parser) {
   }
 
   SPEC_RULE("Parse-Identifier-Expr");
+  if (IsCompileTimeCapabilityName(tok->lexeme)) {
+    SPEC_RULE("Parse-CtCapRef");
+  }
 
   Parser next = parser;
   Advance(next);

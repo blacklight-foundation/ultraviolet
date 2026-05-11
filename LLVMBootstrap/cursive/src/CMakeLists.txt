@@ -1560,3 +1560,66 @@ target_compile_definitions(cursive_codegen_diagnostic_path_test PRIVATE
 )
 
 add_dependencies(cursive_codegen_diagnostic_path_test cursive_out)
+
+add_executable(cursive_lexer_diagnostics_test
+  tests/lexer_diagnostics_test.cpp
+)
+
+target_compile_features(cursive_lexer_diagnostics_test PRIVATE cxx_std_20)
+
+target_compile_definitions(cursive_lexer_diagnostics_test PRIVATE
+  CURSIVE_TEST_COMPILER_PATH="${CURSIVE_OUT_DIR}/$<TARGET_FILE_NAME:cursive>"
+  CURSIVE_TEST_RUNTIME_LIB_PATH="${CURSIVE_CODEGEN_ABI_SRET_RUNTIME_LIB}"
+  CURSIVE_TEST_TARGET_PROFILE="${CURSIVE_CODEGEN_ABI_SRET_TARGET_PROFILE}"
+  CURSIVE_TEST_WORK_ROOT="${CMAKE_BINARY_DIR}/tests"
+)
+
+add_dependencies(cursive_lexer_diagnostics_test cursive_out)
+
+add_executable(cursive_parser_generic_conformance_test
+  tests/parser_generic_conformance_test.cpp
+)
+
+target_compile_features(cursive_parser_generic_conformance_test PRIVATE
+  cxx_std_20
+)
+
+target_compile_definitions(cursive_parser_generic_conformance_test PRIVATE
+  CURSIVE_TEST_COMPILER_PATH="${CURSIVE_OUT_DIR}/$<TARGET_FILE_NAME:cursive>"
+  CURSIVE_TEST_RUNTIME_LIB_PATH="${CURSIVE_CODEGEN_ABI_SRET_RUNTIME_LIB}"
+  CURSIVE_TEST_TARGET_PROFILE="${CURSIVE_CODEGEN_ABI_SRET_TARGET_PROFILE}"
+  CURSIVE_TEST_WORK_ROOT="${CMAKE_BINARY_DIR}/tests"
+)
+
+add_dependencies(cursive_parser_generic_conformance_test cursive_out)
+
+add_executable(cursive_parser_terminator_diagnostics_test
+  tests/parser_terminator_diagnostics_test.cpp
+)
+
+target_compile_features(cursive_parser_terminator_diagnostics_test PRIVATE
+  cxx_std_20
+)
+
+target_compile_definitions(cursive_parser_terminator_diagnostics_test PRIVATE
+  CURSIVE_TEST_COMPILER_PATH="${CURSIVE_OUT_DIR}/$<TARGET_FILE_NAME:cursive>"
+  CURSIVE_TEST_RUNTIME_LIB_PATH="${CURSIVE_CODEGEN_ABI_SRET_RUNTIME_LIB}"
+  CURSIVE_TEST_TARGET_PROFILE="${CURSIVE_CODEGEN_ABI_SRET_TARGET_PROFILE}"
+  CURSIVE_TEST_WORK_ROOT="${CMAKE_BINARY_DIR}/tests"
+)
+
+add_dependencies(cursive_parser_terminator_diagnostics_test cursive_out)
+
+add_executable(cursive_parser_token_consumption_test
+  tests/parser_token_consumption_test.cpp
+)
+
+target_compile_features(cursive_parser_token_consumption_test PRIVATE cxx_std_20)
+
+target_compile_definitions(cursive_parser_token_consumption_test PRIVATE
+  CURSIVE_TEST_WORK_ROOT="${CMAKE_BINARY_DIR}/tests"
+)
+
+target_link_libraries(cursive_parser_token_consumption_test PRIVATE
+  cursive_source
+)

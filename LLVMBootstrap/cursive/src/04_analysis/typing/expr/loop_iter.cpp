@@ -628,6 +628,7 @@ ExprTypeResult TypeCtLoopIterExpr(const ScopeContext& ctx,
     return result;
   }
 
+  SPEC_RULE("T-CtLoopIter");
   result.ok = true;
   result.type = unit_type;
   return result;

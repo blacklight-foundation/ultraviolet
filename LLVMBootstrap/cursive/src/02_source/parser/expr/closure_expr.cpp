@@ -82,6 +82,19 @@ ParseElemResult<ClosureParam> ParseClosureParam(Parser parser) {
     type_opt = ty.elem;
     cur = ty.parser;
   }
+  if (move_capture) {
+    if (type_opt) {
+      SPEC_RULE("Parse-ClosureParam-MoveTyped");
+    } else {
+      SPEC_RULE("Parse-ClosureParam-MoveUntyped");
+    }
+  } else {
+    if (type_opt) {
+      SPEC_RULE("Parse-ClosureParam-Typed");
+    } else {
+      SPEC_RULE("Parse-ClosureParam-Untyped");
+    }
+  }
   ClosureParam param;
   param.move_capture = move_capture;
   param.name = name.elem;
@@ -150,38 +163,48 @@ ParseElemResult<ExprPtr> ParseClosureBody(Parser parser) {
 
 ParseElemResult<ExprPtr> ParseClosureExpr(Parser parser) {
   Parser start = parser;
-  Parser next = parser;
-  Advance(next);  // consume opening |
 
   std::vector<ClosureParam> params;
   Parser after_bar;
-  if (IsOp(next, "|")) {
+  if (IsOp(parser, "||")) {
     SPEC_RULE("Parse-Closure-Expr-Empty");
-    after_bar = next;
+    after_bar = parser;
     Advance(after_bar);
   } else {
-    SPEC_RULE("Parse-Closure-Expr");
-    ParseElemResult<std::vector<ClosureParam>> parsed_params =
-        ParseClosureParamList(next);
-    if (!IsOp(parsed_params.parser, "|")) {
-      EmitParseSyntaxErr(parsed_params.parser, TokSpan(parsed_params.parser));
-      Parser sync = parsed_params.parser;
-      SyncStmt(sync);
-      return {sync, MakeExpr(SpanBetween(start, sync), ErrorExpr{})};
+    Parser next = parser;
+    Advance(next);  // consume opening |
+
+    if (IsOp(next, "|")) {
+      SPEC_RULE("Parse-Closure-Expr-Empty");
+      after_bar = next;
+      Advance(after_bar);
+    } else {
+      SPEC_RULE("Parse-Closure-Expr");
+      ParseElemResult<std::vector<ClosureParam>> parsed_params =
+          ParseClosureParamList(next);
+      if (!IsOp(parsed_params.parser, "|")) {
+        EmitParseSyntaxErr(parsed_params.parser, TokSpan(parsed_params.parser));
+        Parser sync = parsed_params.parser;
+        SyncStmt(sync);
+        return {sync, MakeExpr(SpanBetween(start, sync), ErrorExpr{})};
+      }
+      params = std::move(parsed_params.elem);
+      after_bar = parsed_params.parser;
+      Advance(after_bar);  // consume closing |
     }
-    params = std::move(parsed_params.elem);
-    after_bar = parsed_params.parser;
-    Advance(after_bar);  // consume closing |
   }
 
   // Optional return type
   std::shared_ptr<Type> ret_type_opt = nullptr;
   Parser cur = after_bar;
   if (IsOp(cur, "->")) {
+    SPEC_RULE("Parse-ClosureRetOpt-Some");
     Advance(cur);
     ParseElemResult<std::shared_ptr<Type>> ret = ParseType(cur);
     ret_type_opt = ret.elem;
     cur = ret.parser;
+  } else {
+    SPEC_RULE("Parse-ClosureRetOpt-None");
   }
 
   // Closure body (expression or block)
@@ -199,7 +222,8 @@ ParseElemResult<ExprPtr> ParseClosureExpr(Parser parser) {
 
 std::optional<ParseElemResult<ExprPtr>> TryParseClosureExpr(Parser parser) {
   const lexer::Token* tok = Tok(parser);
-  if (!tok || tok->kind != lexer::TokenKind::Operator || tok->lexeme != "|") {
+  if (!tok || tok->kind != lexer::TokenKind::Operator ||
+      (tok->lexeme != "|" && tok->lexeme != "||")) {
     return std::nullopt;
   }
   return ParseClosureExpr(parser);

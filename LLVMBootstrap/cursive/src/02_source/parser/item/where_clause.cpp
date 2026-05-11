@@ -290,6 +290,7 @@ ParseElemResult<std::optional<PredicateClause>> ParsePredicateClauseImpl(Parser 
 
   ParseElemResult<std::vector<PredicateReq>> tail =
       ParsePredicateReqListTail(first.parser, std::move(predicates));
+  SPEC_RULE("Parse-PredicateReqList-Cons");
 
   next = tail.parser;
 
@@ -308,7 +309,14 @@ ParseElemResult<std::optional<PredicateClause>> ParseWhereClauseOpt(Parser parse
 
 ParseElemResult<std::optional<PredicateClause>> ParsePredicateClauseOpt(
     Parser parser) {
-  return ParsePredicateClauseImpl(parser);
+  ParseElemResult<std::optional<PredicateClause>> clause =
+      ParsePredicateClauseImpl(parser);
+  if (clause.elem.has_value()) {
+    SPEC_RULE("Parse-PredicateClauseOpt-Yes");
+  } else {
+    SPEC_RULE("Parse-PredicateClauseOpt-None");
+  }
+  return clause;
 }
 
 }  // namespace cursive::ast

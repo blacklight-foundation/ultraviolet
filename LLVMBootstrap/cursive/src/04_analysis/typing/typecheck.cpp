@@ -579,6 +579,8 @@ DeclTypingResult DeclTypingModules(ScopeContext& ctx,
                 EmitDeclDiag(result.diags, res.diag_id,
                              diag_span,
                              res.diag_detail);
+              } else {
+                SPEC_RULE_AT("T-CtProc", node.span);
               }
             } else if constexpr (std::is_same_v<T, ast::DeriveTargetDecl>) {
               const auto res =

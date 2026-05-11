@@ -9,8 +9,8 @@
 // - Parse-Range-Lhs (Lines 5007-5010)
 // - Parse-RangeTail-None (Lines 5012-5015)
 // - Parse-RangeTail-From (Lines 5017-5020)
-// - Parse-RangeTail-Excl (Lines 5022-5025)
-// - Parse-RangeTail-Incl (Lines 5027-5030)
+// - Parse-RangeTail-Exclusive (Lines 5022-5025)
+// - Parse-RangeTail-Inclusive (Lines 5027-5030)
 //
 // =============================================================================
 
@@ -68,7 +68,7 @@ ParseElemResult<ExprPtr> ParseRangeTail(Parser parser, const ExprPtr& lhs,
       range.rhs = nullptr;
       return {after, MakeExpr(SpanBetween(start, after), range)};
     }
-    SPEC_RULE("Parse-RangeTail-Excl");
+    SPEC_RULE("Parse-RangeTail-Exclusive");
     ParseElemResult<ExprPtr> rhs =
         ParseLogicalOr(after, allow_brace, allow_bracket);
     RangeExpr range;
@@ -79,7 +79,7 @@ ParseElemResult<ExprPtr> ParseRangeTail(Parser parser, const ExprPtr& lhs,
   }
 
   // Must be "..="
-  SPEC_RULE("Parse-RangeTail-Incl");
+  SPEC_RULE("Parse-RangeTail-Inclusive");
   Parser after = parser;
   Advance(after);
   ParseElemResult<ExprPtr> rhs =

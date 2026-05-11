@@ -55,10 +55,7 @@ bool TokenMatchesImpl(const Token& tok, const MatchSpec& match) {
   return true;
 }
 
-bool ConsumeByMatch(Parser& parser,
-                    TokenKindMatch expected,
-                    const char* rule_name) {
-  SPEC_RULE(rule_name);
+bool ConsumeByMatch(Parser& parser, TokenKindMatch expected) {
   ConsumeState state = Consume(parser, expected);
   const ConsumePendingState* pending = std::get_if<ConsumePendingState>(&state);
   if (!pending) {
@@ -204,7 +201,11 @@ bool ListDone(const Parser& parser, std::span<const EndSetToken> end_set) {
 //   <Consume(P, k)> -> <ConsumeDone(Advance(P))>
 
 bool ConsumeKind(Parser& parser, TokenKind kind) {
-  return ConsumeByMatch(parser, MatchKind(kind), "Tok-Consume-Kind");
+  if (!ConsumeByMatch(parser, MatchKind(kind))) {
+    return false;
+  }
+  SPEC_RULE("Tok-Consume-Kind");
+  return true;
 }
 
 // =============================================================================
@@ -217,7 +218,11 @@ bool ConsumeKind(Parser& parser, TokenKind kind) {
 //   <Consume(P, Keyword(s))> -> <ConsumeDone(Advance(P))>
 
 bool ConsumeKeyword(Parser& parser, std::string_view keyword) {
-  return ConsumeByMatch(parser, MatchKeyword(keyword), "Tok-Consume-Keyword");
+  if (!ConsumeByMatch(parser, MatchKeyword(keyword))) {
+    return false;
+  }
+  SPEC_RULE("Tok-Consume-Keyword");
+  return true;
 }
 
 // =============================================================================
@@ -230,7 +235,11 @@ bool ConsumeKeyword(Parser& parser, std::string_view keyword) {
 //   <Consume(P, Operator(s))> -> <ConsumeDone(Advance(P))>
 
 bool ConsumeOperator(Parser& parser, std::string_view op) {
-  return ConsumeByMatch(parser, MatchOperator(op), "Tok-Consume-Operator");
+  if (!ConsumeByMatch(parser, MatchOperator(op))) {
+    return false;
+  }
+  SPEC_RULE("Tok-Consume-Operator");
+  return true;
 }
 
 // =============================================================================
@@ -243,7 +252,11 @@ bool ConsumeOperator(Parser& parser, std::string_view op) {
 //   <Consume(P, Punctuator(s))> -> <ConsumeDone(Advance(P))>
 
 bool ConsumePunct(Parser& parser, std::string_view punct) {
-  return ConsumeByMatch(parser, MatchPunct(punct), "Tok-Consume-Punct");
+  if (!ConsumeByMatch(parser, MatchPunct(punct))) {
+    return false;
+  }
+  SPEC_RULE("Tok-Consume-Punct");
+  return true;
 }
 
 // =============================================================================

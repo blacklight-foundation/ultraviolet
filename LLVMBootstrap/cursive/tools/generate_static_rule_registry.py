@@ -14,7 +14,10 @@ from pathlib import Path
 from resolve_spec_path import resolve_spec_path
 
 
-RULE_PATTERN = re.compile(r'SPEC_RULE(?:_AT)?\("([^"]+)"\)')
+RULE_PATTERNS = [
+    re.compile(r'SPEC_RULE(?:_AT)?\(\s*"([^"]+)"'),
+    re.compile(r'\bRecord[A-Za-z0-9_]*Rule\(\s*"([^"]+)"'),
+]
 DIAG_CODE_PATTERN = re.compile(r"^[EWI]-[A-Z]{3}-[0-9]{4}$")
 RULE_HEADER_PATTERN = re.compile(r"^\*\*\(([^)]+)\)\*\*$")
 RULE_BAR_PATTERN = re.compile(r"^[─-]{3,}$")
@@ -78,6 +81,14 @@ def has_bottom_premise(premises: list[str] | None) -> bool:
     return any(premise.strip() == "⊥" for premise in premises)
 
 
+def extract_rule_ids(content: str) -> list[tuple[str, int]]:
+    matches: list[tuple[str, int]] = []
+    for pattern in RULE_PATTERNS:
+        matches.extend((match.group(1), match.start()) for match in pattern.finditer(content))
+    matches.sort(key=lambda entry: entry[1])
+    return matches
+
+
 def parse_static_judgment_families(spec_path: Path) -> list[str]:
     text = spec_path.read_text(encoding="utf-8-sig")
     match = re.search(r"StaticJudgSet\s*=\s*(?P<body>[^\n]+)", text)
@@ -100,6 +111,21 @@ def run_self_test() -> int:
         if actual != expected:
             print(
                 f"Self-test failed for premises={premises!r}: expected {expected}, got {actual}",
+                file=sys.stderr,
+            )
+            return 1
+    rule_cases = [
+        ('SPEC_RULE("Rule-A")', ["Rule-A"]),
+        ('SPEC_RULE_AT("Rule-B", span)', ["Rule-B"]),
+        ('SPEC_RULE_AT( "Rule-C", TokSpan(parser))', ["Rule-C"]),
+        ('RecordGenericArgsRule("Rule-D", span, "some", 1)', ["Rule-D"]),
+    ]
+    for text, expected in rule_cases:
+        actual = [rule_id for rule_id, _ in extract_rule_ids(text)]
+        if actual != expected:
+            print(
+                f"Self-test failed for rule trace {text!r}: "
+                f"expected {expected}, got {actual}",
                 file=sys.stderr,
             )
             return 1
@@ -243,14 +269,13 @@ def main() -> int:
 
     for file_path in files:
         content = file_path.read_text(encoding="utf-8")
-        matches = list(RULE_PATTERN.finditer(content))
+        matches = extract_rule_ids(content)
         if not matches:
             continue
 
         source_rel = normalize_rel_path(source_root, file_path)
 
-        for match in matches:
-            rule_id = match.group(1)
+        for rule_id, _ in matches:
             family = resolve_rule_family(rule_id, source_rel, default_family, path_family_defaults, family_overrides)
             if not family.strip():
                 unmapped_rules.append(rule_id)

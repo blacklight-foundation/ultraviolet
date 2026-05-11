@@ -180,6 +180,8 @@ IfCaseListResult ParseIfCaseList(Parser parser) {
     if (IsKw(cur, "else")) {
       if (cases.empty()) {
         EmitParseSyntaxErr(cur, TokSpan(cur));
+      } else {
+        SPEC_RULE("Parse-IfCasesTail-Else");
       }
       Parser after_else = cur;
       Advance(after_else);
@@ -190,6 +192,11 @@ IfCaseListResult ParseIfCaseList(Parser parser) {
       break;
     }
 
+    if (cases.empty()) {
+      SPEC_RULE("Parse-IfCases-Cons");
+    } else {
+      SPEC_RULE("Parse-IfCasesTail-Cons");
+    }
     SPEC_RULE("Parse-IfCase");
     ParseElemResult<IfCaseClause> clause = ParseIfCaseClause(cur);
     if (clause.parser.index <= cur.index) {
@@ -206,6 +213,10 @@ IfCaseListResult ParseIfCaseList(Parser parser) {
 
     cur = clause.parser;
     SkipCaseListNewlines(cur);
+  }
+
+  if (!cases.empty() && !else_opt && IsPunc(cur, "}")) {
+    SPEC_RULE("Parse-IfCasesTail-End");
   }
 
   return {cur, std::move(cases), else_opt};

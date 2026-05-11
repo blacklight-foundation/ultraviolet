@@ -937,8 +937,12 @@ ComptimeResult ComptimePass(const std::vector<ast::ASTModule>& modules,
   std::vector<std::size_t> processed_modules;
   processed_modules.reserve(modules.size());
   std::size_t next_hygiene = 0;
+  if (modules.empty()) {
+    SPEC_RULE("ComptimePass-Empty");
+  }
   for (std::size_t module_index = 0; module_index < modules.size();
        ++module_index) {
+    SPEC_RULE("ComptimePass-Cons");
     SPEC_RULE("Phase2-Deterministic-Dependency-Order");
     const auto& module = modules[module_index];
     available_modules.clear();
@@ -965,6 +969,7 @@ ComptimeResult ComptimePass(const std::vector<ast::ASTModule>& modules,
     env.files = project_files;
 
     ast::ASTModule out = module;
+    SPEC_RULE("CtExecModule");
     auto expanded_items = comptime_internal::ExpandModuleItems(module.items, env);
     if (!expanded_items.has_value() || core::HasError(result.diags)) {
       return result;

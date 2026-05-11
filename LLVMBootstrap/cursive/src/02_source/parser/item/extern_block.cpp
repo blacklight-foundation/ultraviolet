@@ -104,11 +104,19 @@ ExternAbiOptResult ParseExternAbiOpt(Parser parser) {
   }
 
   if (tok->kind == TokenKind::StringLiteral) {
-    SPEC_RULE("Parse-Extern-Abi-String");
+    SPEC_RULE("Parse-ExternAbiOpt-String");
     ExternAbiString abi_str;
     abi_str.literal = *tok;
     Advance(parser);
     return {parser, abi_str};
+  }
+
+  if (IsIdentTok(*tok)) {
+    SPEC_RULE("Parse-ExternAbiOpt-Ident");
+    ExternAbiIdent abi_ident;
+    abi_ident.name = Identifier{tok->lexeme};
+    Advance(parser);
+    return {parser, abi_ident};
   }
 
   SPEC_RULE("Parse-ExternAbiOpt-None");
@@ -241,7 +249,7 @@ ExternItemListResult ParseExternItemList(Parser parser) {
 
 ParseItemResult ParseExternBlock(Parser item_start, Parser parser,
                                  Visibility vis, AttrOpt attrs_opt) {
-  SPEC_RULE("Parse-Extern-Block");
+  SPEC_RULE("Parse-ExternBlock");
   Parser start = item_start;
 
   if (!IsKw(parser, "extern")) {

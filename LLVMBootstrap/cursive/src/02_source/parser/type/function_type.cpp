@@ -112,8 +112,8 @@ ParseElemResult<std::vector<TypeFuncParam>> ParseParamTypeListTail(
     return {after, ps};
   }
 
-  // Parse-ParamTypeListTail-Comma
-  SPEC_RULE("Parse-ParamTypeListTail-Comma");
+  // Parse-ParamTypeListTail-Cons
+  SPEC_RULE("Parse-ParamTypeListTail-Cons");
   ParseElemResult<TypeFuncParam> param = ParseParamType(after);
   ps.push_back(param.elem);
   return ParseParamTypeListTail(param.parser, std::move(ps));

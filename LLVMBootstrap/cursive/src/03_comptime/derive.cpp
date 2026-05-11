@@ -9,6 +9,7 @@
 #include <utility>
 #include <vector>
 
+#include "00_core/assert_spec.h"
 #include "00_core/diagnostic_messages.h"
 #include "00_core/diagnostics.h"
 #include "00_core/symbols.h"
@@ -514,6 +515,7 @@ std::optional<std::vector<DeriveRequest>> ResolveDeriveRequests(
 std::optional<RunDeriveResult> RunDeriveTarget(const ASTItem& item,
                                                const ast::DeriveTargetDecl& target,
                                                const CtEnv& env) {
+  SPEC_RULE_AT("RunDeriveTarget", target.span);
   const std::size_t diag_count_before =
       env.diags == nullptr ? 0 : env.diags->size();
   auto derive_env_opt = BindDeriveTargetInputs(env, item);
@@ -536,7 +538,11 @@ std::optional<RunDeriveResult> RunDeriveSet(const ASTItem& item,
                                             const std::vector<std::string>& order,
                                             CtEnv env) {
   RunDeriveResult result{env, {}};
+  if (order.empty()) {
+    SPEC_RULE_AT("RunDeriveSet-Empty", SpanOfItem(item));
+  }
   for (const auto& name : order) {
+    SPEC_RULE_AT("RunDeriveSet-Cons", SpanOfItem(item));
     const ast::DeriveTargetDecl* target = VisibleDeriveTarget(name, result.env);
     if (target == nullptr) {
       if (auto diag = core::MakeDiagnosticById("E-CTE-0310", SpanOfItem(item))) {

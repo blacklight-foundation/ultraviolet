@@ -8,6 +8,7 @@
 #include <optional>
 #include <string_view>
 
+#include "00_core/assert_spec.h"
 #include "02_source/lexer/keyword_policy.h"
 
 namespace cursive::ast {
@@ -59,6 +60,7 @@ std::optional<ParseElemResult<ExprPtr>> TryParseTypeLiteralExpr(Parser parser) {
   Advance(cur);
   TypeLiteralExpr lit;
   lit.type = parsed_type.elem;
+  SPEC_RULE("Parse-TypeLiteral");
   return ParseElemResult<ExprPtr>{cur, MakeExpr(SpanBetween(start, cur), lit)};
 }
 

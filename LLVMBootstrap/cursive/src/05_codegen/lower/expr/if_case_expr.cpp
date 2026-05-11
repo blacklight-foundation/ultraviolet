@@ -384,10 +384,10 @@ analysis::TypeRef RefinedModalPatternType(
     if (matched.empty()) {
       return nullptr;
     }
+    SPEC_RULE("PatternNarrow-Union");
     if (matched.size() == 1) {
       return matched.front();
     }
-    SPEC_RULE("PatternNarrow-Union");
     return analysis::MakeTypeUnion(std::move(matched));
   }
 
