@@ -1,0 +1,14 @@
+//! Rejected expression specimen for construction diagnostic coverage.
+
+public record ConstructionDiagnosticPayload {
+    public first: i32
+    public second: i32
+}
+
+public procedure constructionExpressionsDiagnosticReference() -> ConstructionDiagnosticPayload {
+    return ConstructionDiagnosticPayload {
+        first: 1,
+        first: 2,
+        second: 3
+    }
+}

@@ -1,0 +1,11 @@
+//! Rejected expression specimen for move-capturing an immovable binding.
+
+public record ClosureImmovablePayload {
+    public value: i32
+}
+
+public procedure closureMoveCaptureImmovableReference() -> i32 {
+    let payload: ClosureImmovablePayload := ClosureImmovablePayload { value: 1 }
+    let reader = || -> i32 (move payload).value
+    return 0
+}

@@ -1,7 +1,7 @@
 //! Rejected expression specimens.
 
 public procedure expressionsRejectedSourceFixtureCount() -> usize {
-    return 36usize
+    return 44usize
 }
 
 public procedure validatedExpressionsRejectedSourceFixtureCount() -> usize {
@@ -331,6 +331,57 @@ public procedure validatedExpressionsRejectedSourceFixtureCount() -> usize {
     }
     if rejectedSpecimenMatches(
         rejectedSpecimen(
+            "ClosureMoveCaptureMoved",
+            "Fixtures/RejectedSource/Expressions/ClosureMoveCaptureMoved",
+            "Fixtures/RejectedSource/Expressions/ClosureMoveCaptureMoved/Source/Main.uv",
+            "Fixtures/RejectedSource/Expressions/ClosureMoveCaptureMoved/Expected.uv",
+            expectedDiagnostic("E-CON-0121", "rule.16.B-Closure-MoveCapture-Moved-Err")
+        ),
+        "ClosureMoveCaptureMoved",
+        "Fixtures/RejectedSource/Expressions/ClosureMoveCaptureMoved",
+        "Fixtures/RejectedSource/Expressions/ClosureMoveCaptureMoved/Source/Main.uv",
+        "Fixtures/RejectedSource/Expressions/ClosureMoveCaptureMoved/Expected.uv",
+        "E-CON-0121",
+        "rule.16.B-Closure-MoveCapture-Moved-Err"
+    ) {
+        count = count + 1usize
+    }
+    if rejectedSpecimenMatches(
+        rejectedSpecimen(
+            "ClosureRefCaptureMoved",
+            "Fixtures/RejectedSource/Expressions/ClosureRefCaptureMoved",
+            "Fixtures/RejectedSource/Expressions/ClosureRefCaptureMoved/Source/Main.uv",
+            "Fixtures/RejectedSource/Expressions/ClosureRefCaptureMoved/Expected.uv",
+            expectedDiagnostic("E-MEM-3001", "rule.16.B-Closure-RefCapture-Moved-Err")
+        ),
+        "ClosureRefCaptureMoved",
+        "Fixtures/RejectedSource/Expressions/ClosureRefCaptureMoved",
+        "Fixtures/RejectedSource/Expressions/ClosureRefCaptureMoved/Source/Main.uv",
+        "Fixtures/RejectedSource/Expressions/ClosureRefCaptureMoved/Expected.uv",
+        "E-MEM-3001",
+        "rule.16.B-Closure-RefCapture-Moved-Err"
+    ) {
+        count = count + 1usize
+    }
+    if rejectedSpecimenMatches(
+        rejectedSpecimen(
+            "ClosureMoveCaptureImmovable",
+            "Fixtures/RejectedSource/Expressions/ClosureMoveCaptureImmovable",
+            "Fixtures/RejectedSource/Expressions/ClosureMoveCaptureImmovable/Source/Main.uv",
+            "Fixtures/RejectedSource/Expressions/ClosureMoveCaptureImmovable/Expected.uv",
+            expectedDiagnostic("E-MEM-3006", "rule.16.B-Closure-MoveCapture-Immovable-Err")
+        ),
+        "ClosureMoveCaptureImmovable",
+        "Fixtures/RejectedSource/Expressions/ClosureMoveCaptureImmovable",
+        "Fixtures/RejectedSource/Expressions/ClosureMoveCaptureImmovable/Source/Main.uv",
+        "Fixtures/RejectedSource/Expressions/ClosureMoveCaptureImmovable/Expected.uv",
+        "E-MEM-3006",
+        "rule.16.B-Closure-MoveCapture-Immovable-Err"
+    ) {
+        count = count + 1usize
+    }
+    if rejectedSpecimenMatches(
+        rejectedSpecimen(
             "CallMoveUnexpected",
             "Fixtures/RejectedSource/Expressions/CallMoveUnexpected",
             "Fixtures/RejectedSource/Expressions/CallMoveUnexpected/Source/Main.uv",
@@ -615,6 +666,91 @@ public procedure validatedExpressionsRejectedSourceFixtureCount() -> usize {
         "Fixtures/RejectedSource/Expressions/RecordDefaultInit/Expected.uv",
         "E-TYP-1911",
         "rule.16.Record-Default-Init-Err"
+    ) {
+        count = count + 1usize
+    }
+    if rejectedSpecimenMatches(
+        rejectedSpecimen(
+            "CallExpressionsDiagnostic",
+            "Fixtures/RejectedSource/Expressions/CallExpressionsDiagnostic",
+            "Fixtures/RejectedSource/Expressions/CallExpressionsDiagnostic/Source/Main.uv",
+            "Fixtures/RejectedSource/Expressions/CallExpressionsDiagnostic/Expected.uv",
+            expectedDiagnostic("E-SEM-2531", "diag.16.CallExpressions")
+        ),
+        "CallExpressionsDiagnostic",
+        "Fixtures/RejectedSource/Expressions/CallExpressionsDiagnostic",
+        "Fixtures/RejectedSource/Expressions/CallExpressionsDiagnostic/Source/Main.uv",
+        "Fixtures/RejectedSource/Expressions/CallExpressionsDiagnostic/Expected.uv",
+        "E-SEM-2531",
+        "diag.16.CallExpressions"
+    ) {
+        count = count + 1usize
+    }
+    if rejectedSpecimenMatches(
+        rejectedSpecimen(
+            "CastAndTransmuteExpressionsDiagnostic",
+            "Fixtures/RejectedSource/Expressions/CastAndTransmuteExpressionsDiagnostic",
+            "Fixtures/RejectedSource/Expressions/CastAndTransmuteExpressionsDiagnostic/Source/Main.uv",
+            "Fixtures/RejectedSource/Expressions/CastAndTransmuteExpressionsDiagnostic/Expected.uv",
+            expectedDiagnostic("E-SEM-2528", "diag.16.CastAndTransmuteExpressions")
+        ),
+        "CastAndTransmuteExpressionsDiagnostic",
+        "Fixtures/RejectedSource/Expressions/CastAndTransmuteExpressionsDiagnostic",
+        "Fixtures/RejectedSource/Expressions/CastAndTransmuteExpressionsDiagnostic/Source/Main.uv",
+        "Fixtures/RejectedSource/Expressions/CastAndTransmuteExpressionsDiagnostic/Expected.uv",
+        "E-SEM-2528",
+        "diag.16.CastAndTransmuteExpressions"
+    ) {
+        count = count + 1usize
+    }
+    if rejectedSpecimenMatches(
+        rejectedSpecimen(
+            "ConstructionExpressionsDiagnostic",
+            "Fixtures/RejectedSource/Expressions/ConstructionExpressionsDiagnostic",
+            "Fixtures/RejectedSource/Expressions/ConstructionExpressionsDiagnostic/Source/Main.uv",
+            "Fixtures/RejectedSource/Expressions/ConstructionExpressionsDiagnostic/Expected.uv",
+            expectedDiagnostic("E-TYP-1903", "diag.16.ConstructionExpressions")
+        ),
+        "ConstructionExpressionsDiagnostic",
+        "Fixtures/RejectedSource/Expressions/ConstructionExpressionsDiagnostic",
+        "Fixtures/RejectedSource/Expressions/ConstructionExpressionsDiagnostic/Source/Main.uv",
+        "Fixtures/RejectedSource/Expressions/ConstructionExpressionsDiagnostic/Expected.uv",
+        "E-TYP-1903",
+        "diag.16.ConstructionExpressions"
+    ) {
+        count = count + 1usize
+    }
+    if rejectedSpecimenMatches(
+        rejectedSpecimen(
+            "ClosureAndPipelineExpressionsDiagnostic",
+            "Fixtures/RejectedSource/Expressions/ClosureAndPipelineExpressionsDiagnostic",
+            "Fixtures/RejectedSource/Expressions/ClosureAndPipelineExpressionsDiagnostic/Source/Main.uv",
+            "Fixtures/RejectedSource/Expressions/ClosureAndPipelineExpressionsDiagnostic/Expected.uv",
+            expectedDiagnostic("E-SEM-2539", "diag.16.ClosureAndPipelineExpressions")
+        ),
+        "ClosureAndPipelineExpressionsDiagnostic",
+        "Fixtures/RejectedSource/Expressions/ClosureAndPipelineExpressionsDiagnostic",
+        "Fixtures/RejectedSource/Expressions/ClosureAndPipelineExpressionsDiagnostic/Source/Main.uv",
+        "Fixtures/RejectedSource/Expressions/ClosureAndPipelineExpressionsDiagnostic/Expected.uv",
+        "E-SEM-2539",
+        "diag.16.ClosureAndPipelineExpressions"
+    ) {
+        count = count + 1usize
+    }
+    if rejectedSpecimenMatches(
+        rejectedSpecimen(
+            "ExpressionDiagnosticsSupplement",
+            "Fixtures/RejectedSource/Expressions/ExpressionDiagnosticsSupplement",
+            "Fixtures/RejectedSource/Expressions/ExpressionDiagnosticsSupplement/Source/Main.uv",
+            "Fixtures/RejectedSource/Expressions/ExpressionDiagnosticsSupplement/Expected.uv",
+            expectedDiagnostic("E-SEM-2525", "diag.16.ExpressionDiagnosticsSupplement")
+        ),
+        "ExpressionDiagnosticsSupplement",
+        "Fixtures/RejectedSource/Expressions/ExpressionDiagnosticsSupplement",
+        "Fixtures/RejectedSource/Expressions/ExpressionDiagnosticsSupplement/Source/Main.uv",
+        "Fixtures/RejectedSource/Expressions/ExpressionDiagnosticsSupplement/Expected.uv",
+        "E-SEM-2525",
+        "diag.16.ExpressionDiagnosticsSupplement"
     ) {
         count = count + 1usize
     }

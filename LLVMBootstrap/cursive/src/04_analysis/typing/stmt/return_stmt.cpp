@@ -416,7 +416,7 @@ StmtTypeResult TypeReturnStmt(const ScopeContext& ctx,
       const auto check =
           CheckExprAgainst(ctx, type_ctx, node.value_opt, async_sig->result, env);
       if (!check.ok) {
-        if (!check.diag_id.has_value()) {
+        if (!check.diag_id.has_value() || *check.diag_id == "E-SEM-2526") {
           SPEC_RULE("Return-Async-Type-Err");
           return {false, "E-CON-0203", {}, {}};
         }

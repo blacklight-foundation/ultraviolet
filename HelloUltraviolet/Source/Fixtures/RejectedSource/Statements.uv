@@ -1,7 +1,7 @@
 //! Rejected statement specimens.
 
 public procedure statementsRejectedSourceFixtureCount() -> usize {
-    return 15usize
+    return 33usize
 }
 
 public procedure validatedStatementsRejectedSourceFixtureCount() -> usize {
@@ -93,6 +93,91 @@ public procedure validatedStatementsRejectedSourceFixtureCount() -> usize {
     }
     if rejectedSpecimenMatches(
         rejectedSpecimen(
+            "StatementParseError",
+            "Fixtures/RejectedSource/Statements/StatementParseError",
+            "Fixtures/RejectedSource/Statements/StatementParseError/Source/Main.uv",
+            "Fixtures/RejectedSource/Statements/StatementParseError/Expected.uv",
+            expectedDiagnostic("E-SRC-0520", "rule.18.Parse-Statement-Err")
+        ),
+        "StatementParseError",
+        "Fixtures/RejectedSource/Statements/StatementParseError",
+        "Fixtures/RejectedSource/Statements/StatementParseError/Source/Main.uv",
+        "Fixtures/RejectedSource/Statements/StatementParseError/Expected.uv",
+        "E-SRC-0520",
+        "rule.18.Parse-Statement-Err"
+    ) {
+        count = count + 1usize
+    }
+    if rejectedSpecimenMatches(
+        rejectedSpecimen(
+            "MissingRequiredTerminator",
+            "Fixtures/RejectedSource/Statements/MissingRequiredTerminator",
+            "Fixtures/RejectedSource/Statements/MissingRequiredTerminator/Source/Main.uv",
+            "Fixtures/RejectedSource/Statements/MissingRequiredTerminator/Expected.uv",
+            expectedDiagnostic("E-SRC-0510", "rule.18.ConsumeTerminatorOpt-Req-No")
+        ),
+        "MissingRequiredTerminator",
+        "Fixtures/RejectedSource/Statements/MissingRequiredTerminator",
+        "Fixtures/RejectedSource/Statements/MissingRequiredTerminator/Source/Main.uv",
+        "Fixtures/RejectedSource/Statements/MissingRequiredTerminator/Expected.uv",
+        "E-SRC-0510",
+        "rule.18.ConsumeTerminatorOpt-Req-No"
+    ) {
+        count = count + 1usize
+    }
+    if rejectedSpecimenMatches(
+        rejectedSpecimen(
+            "LetInferenceFailure",
+            "Fixtures/RejectedSource/Statements/LetInferenceFailure",
+            "Fixtures/RejectedSource/Statements/LetInferenceFailure/Source/Main.uv",
+            "Fixtures/RejectedSource/Statements/LetInferenceFailure/Expected.uv",
+            expectedDiagnostic("E-TYP-1530", "rule.18.T-LetStmt-Infer-Err")
+        ),
+        "LetInferenceFailure",
+        "Fixtures/RejectedSource/Statements/LetInferenceFailure",
+        "Fixtures/RejectedSource/Statements/LetInferenceFailure/Source/Main.uv",
+        "Fixtures/RejectedSource/Statements/LetInferenceFailure/Expected.uv",
+        "E-TYP-1530",
+        "rule.18.T-LetStmt-Infer-Err"
+    ) {
+        count = count + 1usize
+    }
+    if rejectedSpecimenMatches(
+        rejectedSpecimen(
+            "UsingLocalUnresolved",
+            "Fixtures/RejectedSource/Statements/UsingLocalUnresolved",
+            "Fixtures/RejectedSource/Statements/UsingLocalUnresolved/Source/Main.uv",
+            "Fixtures/RejectedSource/Statements/UsingLocalUnresolved/Expected.uv",
+            expectedDiagnostic("E-MOD-1301", "rule.18.T-UsingLocalStmt-Err")
+        ),
+        "UsingLocalUnresolved",
+        "Fixtures/RejectedSource/Statements/UsingLocalUnresolved",
+        "Fixtures/RejectedSource/Statements/UsingLocalUnresolved/Source/Main.uv",
+        "Fixtures/RejectedSource/Statements/UsingLocalUnresolved/Expected.uv",
+        "E-MOD-1301",
+        "rule.18.T-UsingLocalStmt-Err"
+    ) {
+        count = count + 1usize
+    }
+    if rejectedSpecimenMatches(
+        rejectedSpecimen(
+            "AssignNotPlace",
+            "Fixtures/RejectedSource/Statements/AssignNotPlace",
+            "Fixtures/RejectedSource/Statements/AssignNotPlace/Source/Main.uv",
+            "Fixtures/RejectedSource/Statements/AssignNotPlace/Expected.uv",
+            expectedDiagnostic("E-SEM-3131", "rule.18.Assign-NotPlace")
+        ),
+        "AssignNotPlace",
+        "Fixtures/RejectedSource/Statements/AssignNotPlace",
+        "Fixtures/RejectedSource/Statements/AssignNotPlace/Source/Main.uv",
+        "Fixtures/RejectedSource/Statements/AssignNotPlace/Expected.uv",
+        "E-SEM-3131",
+        "rule.18.Assign-NotPlace"
+    ) {
+        count = count + 1usize
+    }
+    if rejectedSpecimenMatches(
+        rejectedSpecimen(
             "ReturnAtModuleScope",
             "Fixtures/RejectedSource/Statements/ReturnAtModuleScope",
             "Fixtures/RejectedSource/Statements/ReturnAtModuleScope/Source/Main.uv",
@@ -114,14 +199,14 @@ public procedure validatedStatementsRejectedSourceFixtureCount() -> usize {
             "Fixtures/RejectedSource/Statements/ReturnTypeMismatch",
             "Fixtures/RejectedSource/Statements/ReturnTypeMismatch/Source/Main.uv",
             "Fixtures/RejectedSource/Statements/ReturnTypeMismatch/Expected.uv",
-            expectedDiagnostic("E-SEM-3161", "Return-Type-Err")
+            expectedDiagnostic("E-SEM-3161", "rule.18.Return-Type-Err")
         ),
         "ReturnTypeMismatch",
         "Fixtures/RejectedSource/Statements/ReturnTypeMismatch",
         "Fixtures/RejectedSource/Statements/ReturnTypeMismatch/Source/Main.uv",
         "Fixtures/RejectedSource/Statements/ReturnTypeMismatch/Expected.uv",
         "E-SEM-3161",
-        "Return-Type-Err"
+        "rule.18.Return-Type-Err"
     ) {
         count = count + 1usize
     }
@@ -165,14 +250,14 @@ public procedure validatedStatementsRejectedSourceFixtureCount() -> usize {
             "Fixtures/RejectedSource/Statements/DeferNonLocal",
             "Fixtures/RejectedSource/Statements/DeferNonLocal/Source/Main.uv",
             "Fixtures/RejectedSource/Statements/DeferNonLocal/Expected.uv",
-            expectedDiagnostic("E-SEM-3152", "Defer-NonLocal-Err")
+            expectedDiagnostic("E-SEM-3152", "rule.18.Defer-NonLocal-Err")
         ),
         "DeferNonLocal",
         "Fixtures/RejectedSource/Statements/DeferNonLocal",
         "Fixtures/RejectedSource/Statements/DeferNonLocal/Source/Main.uv",
         "Fixtures/RejectedSource/Statements/DeferNonLocal/Expected.uv",
         "E-SEM-3152",
-        "Defer-NonLocal-Err"
+        "rule.18.Defer-NonLocal-Err"
     ) {
         count = count + 1usize
     }
@@ -258,6 +343,227 @@ public procedure validatedStatementsRejectedSourceFixtureCount() -> usize {
         "Fixtures/RejectedSource/Statements/FrameTargetNotActive/Expected.uv",
         "",
         "rule.18.Frame-Target-NotActive-Err"
+    ) {
+        count = count + 1usize
+    }
+    if rejectedSpecimenMatches(
+        rejectedSpecimen(
+            "BlocksDiagnostic",
+            "Fixtures/RejectedSource/Statements/BlocksDiagnostic",
+            "Fixtures/RejectedSource/Statements/BlocksDiagnostic/Source/Main.uv",
+            "Fixtures/RejectedSource/Statements/BlocksDiagnostic/Expected.uv",
+            expectedDiagnostic("E-SRC-0520", "diag.18.Blocks")
+        ),
+        "BlocksDiagnostic",
+        "Fixtures/RejectedSource/Statements/BlocksDiagnostic",
+        "Fixtures/RejectedSource/Statements/BlocksDiagnostic/Source/Main.uv",
+        "Fixtures/RejectedSource/Statements/BlocksDiagnostic/Expected.uv",
+        "E-SRC-0520",
+        "diag.18.Blocks"
+    ) {
+        count = count + 1usize
+    }
+    if rejectedSpecimenMatches(
+        rejectedSpecimen(
+            "BindingStatementsDiagnostic",
+            "Fixtures/RejectedSource/Statements/BindingStatementsDiagnostic",
+            "Fixtures/RejectedSource/Statements/BindingStatementsDiagnostic/Source/Main.uv",
+            "Fixtures/RejectedSource/Statements/BindingStatementsDiagnostic/Expected.uv",
+            expectedDiagnostic("E-TYP-1530", "diag.18.BindingStatements")
+        ),
+        "BindingStatementsDiagnostic",
+        "Fixtures/RejectedSource/Statements/BindingStatementsDiagnostic",
+        "Fixtures/RejectedSource/Statements/BindingStatementsDiagnostic/Source/Main.uv",
+        "Fixtures/RejectedSource/Statements/BindingStatementsDiagnostic/Expected.uv",
+        "E-TYP-1530",
+        "diag.18.BindingStatements"
+    ) {
+        count = count + 1usize
+    }
+    if rejectedSpecimenMatches(
+        rejectedSpecimen(
+            "LocalUsingStatementsDiagnostic",
+            "Fixtures/RejectedSource/Statements/LocalUsingStatementsDiagnostic",
+            "Fixtures/RejectedSource/Statements/LocalUsingStatementsDiagnostic/Source/Main.uv",
+            "Fixtures/RejectedSource/Statements/LocalUsingStatementsDiagnostic/Expected.uv",
+            expectedDiagnostic("E-MOD-1301", "diag.18.LocalUsingStatements")
+        ),
+        "LocalUsingStatementsDiagnostic",
+        "Fixtures/RejectedSource/Statements/LocalUsingStatementsDiagnostic",
+        "Fixtures/RejectedSource/Statements/LocalUsingStatementsDiagnostic/Source/Main.uv",
+        "Fixtures/RejectedSource/Statements/LocalUsingStatementsDiagnostic/Expected.uv",
+        "E-MOD-1301",
+        "diag.18.LocalUsingStatements"
+    ) {
+        count = count + 1usize
+    }
+    if rejectedSpecimenMatches(
+        rejectedSpecimen(
+            "AssignmentStatementsDiagnostic",
+            "Fixtures/RejectedSource/Statements/AssignmentStatementsDiagnostic",
+            "Fixtures/RejectedSource/Statements/AssignmentStatementsDiagnostic/Source/Main.uv",
+            "Fixtures/RejectedSource/Statements/AssignmentStatementsDiagnostic/Expected.uv",
+            expectedDiagnostic("E-SEM-3131", "diag.18.AssignmentStatements")
+        ),
+        "AssignmentStatementsDiagnostic",
+        "Fixtures/RejectedSource/Statements/AssignmentStatementsDiagnostic",
+        "Fixtures/RejectedSource/Statements/AssignmentStatementsDiagnostic/Source/Main.uv",
+        "Fixtures/RejectedSource/Statements/AssignmentStatementsDiagnostic/Expected.uv",
+        "E-SEM-3131",
+        "diag.18.AssignmentStatements"
+    ) {
+        count = count + 1usize
+    }
+    if rejectedSpecimenMatches(
+        rejectedSpecimen(
+            "ExpressionStatementsDiagnostic",
+            "Fixtures/RejectedSource/Statements/ExpressionStatementsDiagnostic",
+            "Fixtures/RejectedSource/Statements/ExpressionStatementsDiagnostic/Source/Main.uv",
+            "Fixtures/RejectedSource/Statements/ExpressionStatementsDiagnostic/Expected.uv",
+            expectedDiagnostic("E-MOD-1301", "diag.18.ExpressionStatements")
+        ),
+        "ExpressionStatementsDiagnostic",
+        "Fixtures/RejectedSource/Statements/ExpressionStatementsDiagnostic",
+        "Fixtures/RejectedSource/Statements/ExpressionStatementsDiagnostic/Source/Main.uv",
+        "Fixtures/RejectedSource/Statements/ExpressionStatementsDiagnostic/Expected.uv",
+        "E-MOD-1301",
+        "diag.18.ExpressionStatements"
+    ) {
+        count = count + 1usize
+    }
+    if rejectedSpecimenMatches(
+        rejectedSpecimen(
+            "DeferDiagnostic",
+            "Fixtures/RejectedSource/Statements/DeferDiagnostic",
+            "Fixtures/RejectedSource/Statements/DeferDiagnostic/Source/Main.uv",
+            "Fixtures/RejectedSource/Statements/DeferDiagnostic/Expected.uv",
+            expectedDiagnostic("E-SEM-3152", "diag.18.Defer")
+        ),
+        "DeferDiagnostic",
+        "Fixtures/RejectedSource/Statements/DeferDiagnostic",
+        "Fixtures/RejectedSource/Statements/DeferDiagnostic/Source/Main.uv",
+        "Fixtures/RejectedSource/Statements/DeferDiagnostic/Expected.uv",
+        "E-SEM-3152",
+        "diag.18.Defer"
+    ) {
+        count = count + 1usize
+    }
+    if rejectedSpecimenMatches(
+        rejectedSpecimen(
+            "RegionDiagnostic",
+            "Fixtures/RejectedSource/Statements/RegionDiagnostic",
+            "Fixtures/RejectedSource/Statements/RegionDiagnostic/Source/Main.uv",
+            "Fixtures/RejectedSource/Statements/RegionDiagnostic/Expected.uv",
+            expectedDiagnostic("E-MOD-1301", "diag.18.Region")
+        ),
+        "RegionDiagnostic",
+        "Fixtures/RejectedSource/Statements/RegionDiagnostic",
+        "Fixtures/RejectedSource/Statements/RegionDiagnostic/Source/Main.uv",
+        "Fixtures/RejectedSource/Statements/RegionDiagnostic/Expected.uv",
+        "E-MOD-1301",
+        "diag.18.Region"
+    ) {
+        count = count + 1usize
+    }
+    if rejectedSpecimenMatches(
+        rejectedSpecimen(
+            "FrameDiagnostic",
+            "Fixtures/RejectedSource/Statements/FrameDiagnostic",
+            "Fixtures/RejectedSource/Statements/FrameDiagnostic/Source/Main.uv",
+            "Fixtures/RejectedSource/Statements/FrameDiagnostic/Expected.uv",
+            expectedDiagnostic("", "diag.18.Frame")
+        ),
+        "FrameDiagnostic",
+        "Fixtures/RejectedSource/Statements/FrameDiagnostic",
+        "Fixtures/RejectedSource/Statements/FrameDiagnostic/Source/Main.uv",
+        "Fixtures/RejectedSource/Statements/FrameDiagnostic/Expected.uv",
+        "",
+        "diag.18.Frame"
+    ) {
+        count = count + 1usize
+    }
+    if rejectedSpecimenMatches(
+        rejectedSpecimen(
+            "UnsafeRequiredOperationOwnershipDiagnostic",
+            "Fixtures/RejectedSource/Statements/UnsafeRequiredOperationOwnershipDiagnostic",
+            "Fixtures/RejectedSource/Statements/UnsafeRequiredOperationOwnershipDiagnostic/Source/Main.uv",
+            "Fixtures/RejectedSource/Statements/UnsafeRequiredOperationOwnershipDiagnostic/Expected.uv",
+            expectedDiagnostic("", "diag.18.UnsafeRequiredOperationOwnership")
+        ),
+        "UnsafeRequiredOperationOwnershipDiagnostic",
+        "Fixtures/RejectedSource/Statements/UnsafeRequiredOperationOwnershipDiagnostic",
+        "Fixtures/RejectedSource/Statements/UnsafeRequiredOperationOwnershipDiagnostic/Source/Main.uv",
+        "Fixtures/RejectedSource/Statements/UnsafeRequiredOperationOwnershipDiagnostic/Expected.uv",
+        "",
+        "diag.18.UnsafeRequiredOperationOwnership"
+    ) {
+        count = count + 1usize
+    }
+    if rejectedSpecimenMatches(
+        rejectedSpecimen(
+            "UnsafeStatementsDiagnostic",
+            "Fixtures/RejectedSource/Statements/UnsafeStatementsDiagnostic",
+            "Fixtures/RejectedSource/Statements/UnsafeStatementsDiagnostic/Source/Main.uv",
+            "Fixtures/RejectedSource/Statements/UnsafeStatementsDiagnostic/Expected.uv",
+            expectedDiagnostic("E-MOD-2402", "diag.18.UnsafeStatements")
+        ),
+        "UnsafeStatementsDiagnostic",
+        "Fixtures/RejectedSource/Statements/UnsafeStatementsDiagnostic",
+        "Fixtures/RejectedSource/Statements/UnsafeStatementsDiagnostic/Source/Main.uv",
+        "Fixtures/RejectedSource/Statements/UnsafeStatementsDiagnostic/Expected.uv",
+        "E-MOD-2402",
+        "diag.18.UnsafeStatements"
+    ) {
+        count = count + 1usize
+    }
+    if rejectedSpecimenMatches(
+        rejectedSpecimen(
+            "StatementDiagnosticsSupplement",
+            "Fixtures/RejectedSource/Statements/StatementDiagnosticsSupplement",
+            "Fixtures/RejectedSource/Statements/StatementDiagnosticsSupplement/Source/Main.uv",
+            "Fixtures/RejectedSource/Statements/StatementDiagnosticsSupplement/Expected.uv",
+            expectedDiagnostic("E-SEM-3131", "diag.18.StatementDiagnosticsSupplement")
+        ),
+        "StatementDiagnosticsSupplement",
+        "Fixtures/RejectedSource/Statements/StatementDiagnosticsSupplement",
+        "Fixtures/RejectedSource/Statements/StatementDiagnosticsSupplement/Source/Main.uv",
+        "Fixtures/RejectedSource/Statements/StatementDiagnosticsSupplement/Expected.uv",
+        "E-SEM-3131",
+        "diag.18.StatementDiagnosticsSupplement"
+    ) {
+        count = count + 1usize
+    }
+    if rejectedSpecimenMatches(
+        rejectedSpecimen(
+            "AsyncReturnTypeMismatch",
+            "Fixtures/RejectedSource/Statements/AsyncReturnTypeMismatch",
+            "Fixtures/RejectedSource/Statements/AsyncReturnTypeMismatch/Source/Main.uv",
+            "Fixtures/RejectedSource/Statements/AsyncReturnTypeMismatch/Expected.uv",
+            expectedDiagnostic("E-CON-0203", "rule.18.Return-Async-Type-Err")
+        ),
+        "AsyncReturnTypeMismatch",
+        "Fixtures/RejectedSource/Statements/AsyncReturnTypeMismatch",
+        "Fixtures/RejectedSource/Statements/AsyncReturnTypeMismatch/Source/Main.uv",
+        "Fixtures/RejectedSource/Statements/AsyncReturnTypeMismatch/Expected.uv",
+        "E-CON-0203",
+        "rule.18.Return-Async-Type-Err"
+    ) {
+        count = count + 1usize
+    }
+    if rejectedSpecimenMatches(
+        rejectedSpecimen(
+            "AsyncReturnUnitMismatch",
+            "Fixtures/RejectedSource/Statements/AsyncReturnUnitMismatch",
+            "Fixtures/RejectedSource/Statements/AsyncReturnUnitMismatch/Source/Main.uv",
+            "Fixtures/RejectedSource/Statements/AsyncReturnUnitMismatch/Expected.uv",
+            expectedDiagnostic("E-CON-0203", "rule.18.Return-Async-Unit-Err")
+        ),
+        "AsyncReturnUnitMismatch",
+        "Fixtures/RejectedSource/Statements/AsyncReturnUnitMismatch",
+        "Fixtures/RejectedSource/Statements/AsyncReturnUnitMismatch/Source/Main.uv",
+        "Fixtures/RejectedSource/Statements/AsyncReturnUnitMismatch/Expected.uv",
+        "E-CON-0203",
+        "rule.18.Return-Async-Unit-Err"
     ) {
         count = count + 1usize
     }

@@ -1659,3 +1659,71 @@ Repair:
   returning that diagnostic id.
 - `generate_static_rule_registry.py` regenerated `static_rule_registry.inc`, and
   the Release `cursive` target was rebuilt successfully.
+
+## UVBOOT-0024: Async Return Type Diagnostic Ownership
+
+Status: repaired in the workspace bootstrap and verified by:
+
+```text
+powershell.exe ... run_vsdev_cmake_build.ps1 -SourceDir C:\Dev\Ultraviolet\LLVMBootstrap\cursive -BuildDir C:\Dev\Ultraviolet\LLVMBootstrap\cursive\build\windows -Config Release -Target cursive
+./LLVMBootstrap/cursive/build/windows/Release/Cursive.exe build HelloUltraviolet/Fixtures/RejectedSource/Statements/AsyncReturnTypeMismatch --check --target-profile x86_64-win64 --incremental off --build-progress off
+./LLVMBootstrap/cursive/build/windows/Release/Cursive.exe build HelloUltraviolet/Fixtures/RejectedSource/Statements/AsyncReturnUnitMismatch --check --target-profile x86_64-win64 --incremental off --build-progress off
+```
+
+Rejected-source specimens:
+
+- `Fixtures/RejectedSource/Statements/AsyncReturnTypeMismatch/Source/Main.uv`
+- `Fixtures/RejectedSource/Statements/AsyncReturnUnitMismatch/Source/Main.uv`
+
+Spec obligations exercised:
+
+- `rule.18.Return-Async-Type-Err`
+- `rule.18.Return-Async-Unit-Err`
+
+Spec basis:
+
+- `SPECIFICATION.md:19825` assigns `E-CON-0203` to async return values whose
+  expression type is incompatible with the async `Result` parameter.
+- `SPECIFICATION.md:19830` assigns `E-CON-0203` to empty async returns when
+  the async `Result` parameter is not unit.
+
+Spec-valid rejected specimen:
+
+```ultraviolet
+public procedure asyncReturnTypeMismatchReference() -> Async<(), (), i32, !> {
+    return true
+}
+```
+
+Observed bootstrap result before repair:
+
+```text
+error[E-SEM-2526]: Expression type incompatible with expected type
+  --> .../AsyncReturnTypeMismatch/Source/Main.uv:4:5
+4 |     return true
+4 |     ^^^^^^^^^^^
+```
+
+Bootstrap owner:
+
+- `LLVMBootstrap/cursive/src/04_analysis/typing/stmt/return_stmt.cpp`
+
+Failure analysis:
+
+`TypeReturnStmt` correctly detected that the enclosing return type had an
+async signature, but when `CheckExprAgainst` produced the generic expected-type
+diagnostic `E-SEM-2526`, the async-return path propagated that generic code
+instead of mapping the failure to the statement-owned `E-CON-0203` required by
+`Return-Async-Type-Err`.
+
+Required bootstrap behavior:
+
+Async return expression incompatibility must be reported as `E-CON-0203` for
+the async return rule. Expression diagnostics that identify an independently
+ill-formed return expression may still propagate from the expression checker.
+
+Repair:
+
+- `LLVMBootstrap/cursive/src/04_analysis/typing/stmt/return_stmt.cpp` now maps
+  the generic expected-type mismatch `E-SEM-2526` to `E-CON-0203` inside the
+  async return branch while preserving other expression-owned diagnostics.

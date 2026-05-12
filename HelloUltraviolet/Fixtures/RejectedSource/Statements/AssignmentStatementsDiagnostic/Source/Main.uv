@@ -1,0 +1,14 @@
+//! Rejected statement specimen for assignment diagnostic coverage.
+
+public record AssignmentDiagnosticTarget {
+    public value: i32
+}
+
+public procedure makeAssignmentDiagnosticTarget() -> AssignmentDiagnosticTarget {
+    return AssignmentDiagnosticTarget { value: 1 }
+}
+
+public procedure assignmentStatementsDiagnosticReference() -> i32 {
+    makeAssignmentDiagnosticTarget().value = 2
+    return 0
+}

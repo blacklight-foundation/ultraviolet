@@ -31,10 +31,10 @@ Objective: execute `.agents/plans/HelloUltravioletReferenceCorpus.md`.
 - `CatalogSymbols.uv` imports and executes the 65 unique compiled reference
   symbols named by catalog rows, and `HelloUltraviolet.exe` validates them
   through `catalogCompiledSymbolsExecute()`.
-- `Source/Fixtures/RejectedSource` compiles metadata for 82 rejected-source
+- `Source/Fixtures/RejectedSource` compiles metadata for 112 rejected-source
   fixture specimens, and `HelloUltraviolet.exe` validates that fixture index
   through `rejectedSourceFixturesAreIndexed`.
-- The 82 rejected-source fixture projects under
+- The 112 rejected-source fixture projects under
   `HelloUltraviolet/Fixtures/RejectedSource` fail with their expected SPEC
   diagnostic code or static-rule diagnostic when built individually with
   `Cursive.exe build ... --check`.
@@ -44,7 +44,7 @@ Objective: execute `.agents/plans/HelloUltravioletReferenceCorpus.md`.
 - `HelloUltraviolet.exe` verifies runtime existence of each rejected fixture
   manifest, invalid source file, and `Expected.uv` artifact through
   `rejectedSourceFixtureArtifactsExist(context)`.
-- `ExpectedFiles.uv` reads the 82 current rejected-source `Expected.uv`
+- `ExpectedFiles.uv` reads the 112 current rejected-source `Expected.uv`
   artifacts and `HelloUltraviolet.exe` validates exact metadata content through
   one named check per specimen.
 - `Source/Fixtures/AcceptedProjects` compiles metadata for 3 accepted project
@@ -77,9 +77,9 @@ Objective: execute `.agents/plans/HelloUltravioletReferenceCorpus.md`.
 ## Completion Blockers
 
 - Rejected-source fixtures are partially populated. The current fixture set
-  covers 82 source, parsing, name-resolution, procedure, statement, expression,
+  covers 112 source, parsing, name-resolution, procedure, statement, expression,
   and pattern diagnostics; the full expected-diagnostics obligation surface is
-  not yet represented. Direct expected-diagnostics coverage is `70/382`
+  not yet represented. Direct expected-diagnostics coverage is `102/382`
   obligation keys.
 - Accepted-project fixtures are partially populated with 3 buildable projects.
   Artifact-project fixtures are partially populated with 3 buildable projects.
