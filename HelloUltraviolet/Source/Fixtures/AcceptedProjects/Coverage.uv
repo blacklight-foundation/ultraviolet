@@ -1,11 +1,11 @@
 //! Coverage checks for accepted project fixture metadata.
 
 public procedure expectedAcceptedProjectFixtureCount() -> usize {
-    return 3usize
+    return 4usize
 }
 
 public procedure acceptedProjectFixtureCount() -> usize {
-    return 3usize
+    return 4usize
 }
 
 public procedure validatedAcceptedProjectFixtureCount() -> usize {
@@ -60,6 +60,24 @@ public procedure validatedAcceptedProjectFixtureCount() -> usize {
         "Fixtures/AcceptedProjects/PtrNullReturn/Ultraviolet.toml",
         "Fixtures/AcceptedProjects/PtrNullReturn/Source/Library.uv",
         "PtrNullReturn",
+        "library"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedProjectSpecimenMatches(
+        acceptedProjectSpecimen(
+            "ExpressionSemantics",
+            "Fixtures/AcceptedProjects/ExpressionSemantics",
+            "Fixtures/AcceptedProjects/ExpressionSemantics/Ultraviolet.toml",
+            "Fixtures/AcceptedProjects/ExpressionSemantics/Source/Library.uv",
+            "ExpressionSemantics",
+            "library"
+        ),
+        "ExpressionSemantics",
+        "Fixtures/AcceptedProjects/ExpressionSemantics",
+        "Fixtures/AcceptedProjects/ExpressionSemantics/Ultraviolet.toml",
+        "Fixtures/AcceptedProjects/ExpressionSemantics/Source/Library.uv",
+        "ExpressionSemantics",
         "library"
     ) {
         count = count + 1usize

@@ -895,6 +895,25 @@ static std::optional<IdKey> PlaceRoot(const ast::ExprPtr& expr) {
   return std::nullopt;
 }
 
+static bool PlaceWritesThroughDeref(const ast::ExprPtr& expr) {
+  if (!expr) {
+    return false;
+  }
+  if (std::holds_alternative<ast::DerefExpr>(expr->node)) {
+    return true;
+  }
+  if (const auto* field = std::get_if<ast::FieldAccessExpr>(&expr->node)) {
+    return PlaceWritesThroughDeref(field->base);
+  }
+  if (const auto* tuple = std::get_if<ast::TupleAccessExpr>(&expr->node)) {
+    return PlaceWritesThroughDeref(tuple->base);
+  }
+  if (const auto* index = std::get_if<ast::IndexAccessExpr>(&expr->node)) {
+    return PlaceWritesThroughDeref(index->base);
+  }
+  return false;
+}
+
 static std::optional<IdKey> FieldHead(const ast::ExprPtr& expr) {
   if (!expr) {
     return std::nullopt;
@@ -3220,7 +3239,7 @@ static BindResult BindStmt(const ScopeContext& ctx,
               return ErrorResult(std::string_view("E-SEM-3132"), std::optional<core::Span>(node.span));
             }
             const auto root = PlaceRoot(place);
-            if (root.has_value()) {
+            if (!PlaceWritesThroughDeref(place) && root.has_value()) {
               const auto info = Lookup_B(in.binds, *root);
               if (info.has_value() &&
                   info->mut == ast::Mutability::Let &&

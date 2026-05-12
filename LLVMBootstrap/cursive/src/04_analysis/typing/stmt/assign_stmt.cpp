@@ -123,6 +123,28 @@ static bool IsRootIdentifierPlace(const ast::ExprPtr& expr) {
   return std::holds_alternative<ast::IdentifierExpr>(expr->node);
 }
 
+static bool PlaceWritesThroughDeref(const ast::ExprPtr& expr) {
+  if (!expr) {
+    return false;
+  }
+  if (const auto* attributed = std::get_if<ast::AttributedExpr>(&expr->node)) {
+    return PlaceWritesThroughDeref(attributed->expr);
+  }
+  if (std::holds_alternative<ast::DerefExpr>(expr->node)) {
+    return true;
+  }
+  if (const auto* field = std::get_if<ast::FieldAccessExpr>(&expr->node)) {
+    return PlaceWritesThroughDeref(field->base);
+  }
+  if (const auto* tup = std::get_if<ast::TupleAccessExpr>(&expr->node)) {
+    return PlaceWritesThroughDeref(tup->base);
+  }
+  if (const auto* idx = std::get_if<ast::IndexAccessExpr>(&expr->node)) {
+    return PlaceWritesThroughDeref(idx->base);
+  }
+  return false;
+}
+
 static bool IsPlaceExprNode(const ast::ExprNode& node) {
   if (std::holds_alternative<ast::IdentifierExpr>(node)) {
     return true;
@@ -764,8 +786,9 @@ StmtTypeResult TypeAssignStmt(const ScopeContext& ctx,
   }
 
   // Find the root of the place and check mutability
+  const bool writes_through_deref = PlaceWritesThroughDeref(node.place);
   const auto root = PlaceRootName(node.place);
-  if (root.has_value()) {
+  if (!writes_through_deref && root.has_value()) {
     const auto root_mut = LookupRootMutability(ctx, env, *root);
     if (!root_mut.ok) {
       return {false, root_mut.diag_id, {}, {}};
@@ -849,7 +872,7 @@ StmtTypeResult TypeAssignStmt(const ScopeContext& ctx,
   }
 
   TypeEnv out_env = env;
-  if (root.has_value()) {
+  if (!writes_through_deref && root.has_value()) {
     const auto value_prov = TrackExprProvenance(ctx, node.value, env);
     if (value_prov.ok) {
       UpdateAssignedBindingProvenance(out_env, *root, value_prov);

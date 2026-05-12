@@ -24,5 +24,10 @@ public procedure acceptedProjectFixtureArtifactsExist(context: Context) -> bool 
             context,
             "HelloUltraviolet/Fixtures/AcceptedProjects/PtrNullReturn/Ultraviolet.toml",
             "HelloUltraviolet/Fixtures/AcceptedProjects/PtrNullReturn/Source/Library.uv"
+        ) &&
+        acceptedProjectArtifactsExist(
+            context,
+            "HelloUltraviolet/Fixtures/AcceptedProjects/ExpressionSemantics/Ultraviolet.toml",
+            "HelloUltraviolet/Fixtures/AcceptedProjects/ExpressionSemantics/Source/Library.uv"
         )
 }

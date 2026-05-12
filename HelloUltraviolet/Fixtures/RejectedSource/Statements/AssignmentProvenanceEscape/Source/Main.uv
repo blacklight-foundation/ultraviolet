@@ -1,0 +1,9 @@
+//! Rejected statement specimen for assignment provenance escape diagnostics.
+
+public procedure assignmentProvenanceEscapeReference() -> i32 {
+    var escaped: i32 = 0
+    region {
+        escaped = ^1
+    }
+    return escaped
+}

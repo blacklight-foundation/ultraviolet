@@ -98,15 +98,33 @@ public procedure rejectedSourceFixtureArtifactsExist(context: Context) -> bool {
         ) &&
         rejectedFixtureArtifactsExist(
             context,
+            "HelloUltraviolet/Fixtures/RejectedSource/Statements/VarAnnotationMismatch/Ultraviolet.toml",
+            "HelloUltraviolet/Fixtures/RejectedSource/Statements/VarAnnotationMismatch/Source/Main.uv",
+            "HelloUltraviolet/Fixtures/RejectedSource/Statements/VarAnnotationMismatch/Expected.uv"
+        ) &&
+        rejectedFixtureArtifactsExist(
+            context,
             "HelloUltraviolet/Fixtures/RejectedSource/Statements/AssignTypeMismatch/Ultraviolet.toml",
             "HelloUltraviolet/Fixtures/RejectedSource/Statements/AssignTypeMismatch/Source/Main.uv",
             "HelloUltraviolet/Fixtures/RejectedSource/Statements/AssignTypeMismatch/Expected.uv"
         ) &&
         rejectedFixtureArtifactsExist(
             context,
+            "HelloUltraviolet/Fixtures/RejectedSource/Statements/AssignmentProvenanceEscape/Ultraviolet.toml",
+            "HelloUltraviolet/Fixtures/RejectedSource/Statements/AssignmentProvenanceEscape/Source/Main.uv",
+            "HelloUltraviolet/Fixtures/RejectedSource/Statements/AssignmentProvenanceEscape/Expected.uv"
+        ) &&
+        rejectedFixtureArtifactsExist(
+            context,
             "HelloUltraviolet/Fixtures/RejectedSource/Statements/StatementParseError/Ultraviolet.toml",
             "HelloUltraviolet/Fixtures/RejectedSource/Statements/StatementParseError/Source/Main.uv",
             "HelloUltraviolet/Fixtures/RejectedSource/Statements/StatementParseError/Expected.uv"
+        ) &&
+        rejectedFixtureArtifactsExist(
+            context,
+            "HelloUltraviolet/Fixtures/RejectedSource/Statements/SyncStatementRecovery/Ultraviolet.toml",
+            "HelloUltraviolet/Fixtures/RejectedSource/Statements/SyncStatementRecovery/Source/Main.uv",
+            "HelloUltraviolet/Fixtures/RejectedSource/Statements/SyncStatementRecovery/Expected.uv"
         ) &&
         rejectedFixtureArtifactsExist(
             context,
@@ -518,6 +536,12 @@ public procedure rejectedSourceFixtureArtifactsExist(context: Context) -> bool {
         ) &&
         rejectedFixtureArtifactsExist(
             context,
+            "HelloUltraviolet/Fixtures/RejectedSource/Expressions/AsyncTryInfallible/Ultraviolet.toml",
+            "HelloUltraviolet/Fixtures/RejectedSource/Expressions/AsyncTryInfallible/Source/Main.uv",
+            "HelloUltraviolet/Fixtures/RejectedSource/Expressions/AsyncTryInfallible/Expected.uv"
+        ) &&
+        rejectedFixtureArtifactsExist(
+            context,
             "HelloUltraviolet/Fixtures/RejectedSource/Patterns/DuplicatePatternBinding/Ultraviolet.toml",
             "HelloUltraviolet/Fixtures/RejectedSource/Patterns/DuplicatePatternBinding/Source/Main.uv",
             "HelloUltraviolet/Fixtures/RejectedSource/Patterns/DuplicatePatternBinding/Expected.uv"
@@ -587,6 +611,48 @@ public procedure rejectedSourceFixtureArtifactsExist(context: Context) -> bool {
             "HelloUltraviolet/Fixtures/RejectedSource/Patterns/ParsePatternError/Ultraviolet.toml",
             "HelloUltraviolet/Fixtures/RejectedSource/Patterns/ParsePatternError/Source/Main.uv",
             "HelloUltraviolet/Fixtures/RejectedSource/Patterns/ParsePatternError/Expected.uv"
+        ) &&
+        rejectedFixtureArtifactsExist(
+            context,
+            "HelloUltraviolet/Fixtures/RejectedSource/Patterns/BasicPatternsDiagnostic/Ultraviolet.toml",
+            "HelloUltraviolet/Fixtures/RejectedSource/Patterns/BasicPatternsDiagnostic/Source/Main.uv",
+            "HelloUltraviolet/Fixtures/RejectedSource/Patterns/BasicPatternsDiagnostic/Expected.uv"
+        ) &&
+        rejectedFixtureArtifactsExist(
+            context,
+            "HelloUltraviolet/Fixtures/RejectedSource/Patterns/TupleRecordPatternsDiagnostic/Ultraviolet.toml",
+            "HelloUltraviolet/Fixtures/RejectedSource/Patterns/TupleRecordPatternsDiagnostic/Source/Main.uv",
+            "HelloUltraviolet/Fixtures/RejectedSource/Patterns/TupleRecordPatternsDiagnostic/Expected.uv"
+        ) &&
+        rejectedFixtureArtifactsExist(
+            context,
+            "HelloUltraviolet/Fixtures/RejectedSource/Patterns/EnumModalPatternsDiagnostic/Ultraviolet.toml",
+            "HelloUltraviolet/Fixtures/RejectedSource/Patterns/EnumModalPatternsDiagnostic/Source/Main.uv",
+            "HelloUltraviolet/Fixtures/RejectedSource/Patterns/EnumModalPatternsDiagnostic/Expected.uv"
+        ) &&
+        rejectedFixtureArtifactsExist(
+            context,
+            "HelloUltraviolet/Fixtures/RejectedSource/Patterns/RangePatternsDiagnostic/Ultraviolet.toml",
+            "HelloUltraviolet/Fixtures/RejectedSource/Patterns/RangePatternsDiagnostic/Source/Main.uv",
+            "HelloUltraviolet/Fixtures/RejectedSource/Patterns/RangePatternsDiagnostic/Expected.uv"
+        ) &&
+        rejectedFixtureArtifactsExist(
+            context,
+            "HelloUltraviolet/Fixtures/RejectedSource/Patterns/CaseClausesDiagnostic/Ultraviolet.toml",
+            "HelloUltraviolet/Fixtures/RejectedSource/Patterns/CaseClausesDiagnostic/Source/Main.uv",
+            "HelloUltraviolet/Fixtures/RejectedSource/Patterns/CaseClausesDiagnostic/Expected.uv"
+        ) &&
+        rejectedFixtureArtifactsExist(
+            context,
+            "HelloUltraviolet/Fixtures/RejectedSource/Patterns/ExhaustivenessAndReachabilityDiagnostic/Ultraviolet.toml",
+            "HelloUltraviolet/Fixtures/RejectedSource/Patterns/ExhaustivenessAndReachabilityDiagnostic/Source/Main.uv",
+            "HelloUltraviolet/Fixtures/RejectedSource/Patterns/ExhaustivenessAndReachabilityDiagnostic/Expected.uv"
+        ) &&
+        rejectedFixtureArtifactsExist(
+            context,
+            "HelloUltraviolet/Fixtures/RejectedSource/Patterns/PatternDiagnosticsSupplement/Ultraviolet.toml",
+            "HelloUltraviolet/Fixtures/RejectedSource/Patterns/PatternDiagnosticsSupplement/Source/Main.uv",
+            "HelloUltraviolet/Fixtures/RejectedSource/Patterns/PatternDiagnosticsSupplement/Expected.uv"
         ) &&
         rejectedFixtureArtifactsExist(
             context,

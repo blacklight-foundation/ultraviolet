@@ -1,0 +1,44 @@
+//! Accepted project fixture for rule-level expression typing obligations.
+
+public procedure checkedIntLiteralReference() -> i8 {
+    let value: i8 = 12
+    return value
+}
+
+public procedure checkedFloatLiteralExplicitReference() -> f64 {
+    let value: f64 = 1.0f64
+    return value
+}
+
+public procedure referenceArgumentValue(value: i32) -> i32 {
+    return value
+}
+
+public procedure argsTConsRefReference() -> i32 {
+    let value: i32 = 21
+    return referenceArgumentValue(value)
+}
+
+public procedure addressOfReference() -> i32 {
+    var value: i32 = 9
+    let pointer: Ptr<i32> = &value
+    return *pointer
+}
+
+public procedure rawDerefReference(pointer: *imm i32) -> i32 {
+    return unsafe { *pointer }
+}
+
+public procedure derefPlaceReference(pointer: *mut i32) -> i32 {
+    unsafe {
+        *pointer = 17
+    }
+    return unsafe { *pointer }
+}
+
+public procedure asyncIteratorLoopReference(stream: Stream<i32, !>) -> Async<(), (), (), !> {
+    loop value in stream {
+        let copied_value: i32 = value
+    }
+    return
+}

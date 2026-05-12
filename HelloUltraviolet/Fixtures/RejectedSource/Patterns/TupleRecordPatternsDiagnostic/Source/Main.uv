@@ -1,0 +1,7 @@
+//! Rejected pattern specimen for tuple and record pattern diagnostic ownership.
+
+public procedure tupleRecordPatternsDiagnosticReference() -> i32 {
+    let pair: (i32, bool) = (1, true)
+    let (count, is_ready, extra) = pair
+    return count
+}

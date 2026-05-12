@@ -1,0 +1,10 @@
+//! Rejected pattern specimen for range pattern diagnostic ownership.
+
+public procedure rangePatternsDiagnosticReference() -> i32 {
+    let value: i32 = 2
+    return if value is 4..4 {
+        1
+    } else {
+        0
+    }
+}

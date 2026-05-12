@@ -31,10 +31,10 @@ Objective: execute `.agents/plans/HelloUltravioletReferenceCorpus.md`.
 - `CatalogSymbols.uv` imports and executes the 65 unique compiled reference
   symbols named by catalog rows, and `HelloUltraviolet.exe` validates them
   through `catalogCompiledSymbolsExecute()`.
-- `Source/Fixtures/RejectedSource` compiles metadata for 112 rejected-source
+- `Source/Fixtures/RejectedSource` compiles metadata for 123 rejected-source
   fixture specimens, and `HelloUltraviolet.exe` validates that fixture index
   through `rejectedSourceFixturesAreIndexed`.
-- The 112 rejected-source fixture projects under
+- The 123 rejected-source fixture projects under
   `HelloUltraviolet/Fixtures/RejectedSource` fail with their expected SPEC
   diagnostic code or static-rule diagnostic when built individually with
   `Cursive.exe build ... --check`.
@@ -44,16 +44,18 @@ Objective: execute `.agents/plans/HelloUltravioletReferenceCorpus.md`.
 - `HelloUltraviolet.exe` verifies runtime existence of each rejected fixture
   manifest, invalid source file, and `Expected.uv` artifact through
   `rejectedSourceFixtureArtifactsExist(context)`.
-- `ExpectedFiles.uv` reads the 112 current rejected-source `Expected.uv`
+- `ExpectedFiles.uv` reads the 123 current rejected-source `Expected.uv`
   artifacts and `HelloUltraviolet.exe` validates exact metadata content through
   one named check per specimen.
-- `Source/Fixtures/AcceptedProjects` compiles metadata for 3 accepted project
+- `Source/Fixtures/AcceptedProjects` compiles metadata for 4 accepted project
   fixture specimens, and `HelloUltraviolet.exe` validates both the index and
   artifact paths through accepted-project fixture checks.
 - `Fixtures/AcceptedProjects/StaticLibrary` builds as a valid static library
   project, `Fixtures/AcceptedProjects/ExecutableMain` builds and runs as a
-  valid executable project, and `Fixtures/AcceptedProjects/PtrNullReturn`
-  builds as a valid library project for checked `Ptr::null()` return typing.
+  valid executable project, `Fixtures/AcceptedProjects/PtrNullReturn` builds as
+  a valid library project for checked `Ptr::null()` return typing, and
+  `Fixtures/AcceptedProjects/ExpressionSemantics` builds as a valid library
+  project for rule-level expression typing.
 - `Source/Fixtures/ArtifactProjects` compiles metadata for 3 artifact project
   fixture specimens, and `HelloUltraviolet.exe` validates both the index and
   source/manifest paths through artifact-project fixture checks.
@@ -63,10 +65,10 @@ Objective: execute `.agents/plans/HelloUltravioletReferenceCorpus.md`.
   `.exe`, `.map`, and `.obj` artifact.
 - The project check gate passes:
   `Cursive.exe build HelloUltraviolet --check --target-profile x86_64-win64
-  --incremental off --build-progress off`.
+  --build-progress off`.
 - The project build gate passes:
   `Cursive.exe build HelloUltraviolet --target-profile x86_64-win64
-  --incremental off --build-progress off`.
+  --build-progress off`.
 - The executable gate passes:
   `HelloUltraviolet/build/bin/HelloUltraviolet.exe`.
 - The focused bootstrap regression gate passes:
@@ -77,11 +79,21 @@ Objective: execute `.agents/plans/HelloUltravioletReferenceCorpus.md`.
 ## Completion Blockers
 
 - Rejected-source fixtures are partially populated. The current fixture set
-  covers 112 source, parsing, name-resolution, procedure, statement, expression,
+  covers 123 source, parsing, name-resolution, procedure, statement, expression,
   and pattern diagnostics; the full expected-diagnostics obligation surface is
-  not yet represented. Direct expected-diagnostics coverage is `102/382`
-  obligation keys.
-- Accepted-project fixtures are partially populated with 3 buildable projects.
+  not yet represented. Direct expected-diagnostics coverage is `113/382`
+  obligation keys. The expected-diagnostics obligations owned by Chapter 17
+  patterns are now represented. Chapter 18 statements still have one uncovered
+  expected-diagnostic obligation: `rule.18.BlockInfo-Res-Err`.
+- `rule.18.BlockInfo-Res-Err` remains unindexed pending source-construct
+  clarification. The row rejects block result prefixes whose `Res` set has no
+  common type, but the current Chapter 18 statement rules inspected here
+  produce `Res = []` for expression statements and unsafe block statements, and
+  route `break` values through `Brk` instead of `Res`. The bootstrap currently
+  forwards only nested statement-block results with type `!` into `flow.results`,
+  which can exercise `BlockInfo-Res` but does not create a heterogeneous `Res`
+  set for `BlockInfo-Res-Err`.
+- Accepted-project fixtures are partially populated with 4 buildable projects.
   Artifact-project fixtures are partially populated with 3 buildable projects.
 - Some high-level areas currently use executable reference models rather than
   source specimens for every concrete syntax form, notably polymorphism, keys,

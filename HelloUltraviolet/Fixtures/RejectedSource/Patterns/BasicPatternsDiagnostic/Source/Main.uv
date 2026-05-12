@@ -1,0 +1,7 @@
+//! Rejected pattern specimen for basic pattern diagnostic ownership.
+
+public procedure basicPatternsDiagnosticReference() -> i32 {
+    let pair: (i32, i32) = (1, 2)
+    let (value, value) = pair
+    return value
+}

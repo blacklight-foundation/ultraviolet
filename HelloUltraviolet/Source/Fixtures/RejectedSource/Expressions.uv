@@ -1,7 +1,7 @@
 //! Rejected expression specimens.
 
 public procedure expressionsRejectedSourceFixtureCount() -> usize {
-    return 44usize
+    return 45usize
 }
 
 public procedure validatedExpressionsRejectedSourceFixtureCount() -> usize {
@@ -751,6 +751,23 @@ public procedure validatedExpressionsRejectedSourceFixtureCount() -> usize {
         "Fixtures/RejectedSource/Expressions/ExpressionDiagnosticsSupplement/Expected.uv",
         "E-SEM-2525",
         "diag.16.ExpressionDiagnosticsSupplement"
+    ) {
+        count = count + 1usize
+    }
+    if rejectedSpecimenMatches(
+        rejectedSpecimen(
+            "AsyncTryInfallible",
+            "Fixtures/RejectedSource/Expressions/AsyncTryInfallible",
+            "Fixtures/RejectedSource/Expressions/AsyncTryInfallible/Source/Main.uv",
+            "Fixtures/RejectedSource/Expressions/AsyncTryInfallible/Expected.uv",
+            expectedDiagnostic("E-CON-0230", "rule.16.Async-Try-Infallible-Err")
+        ),
+        "AsyncTryInfallible",
+        "Fixtures/RejectedSource/Expressions/AsyncTryInfallible",
+        "Fixtures/RejectedSource/Expressions/AsyncTryInfallible/Source/Main.uv",
+        "Fixtures/RejectedSource/Expressions/AsyncTryInfallible/Expected.uv",
+        "E-CON-0230",
+        "rule.16.Async-Try-Infallible-Err"
     ) {
         count = count + 1usize
     }

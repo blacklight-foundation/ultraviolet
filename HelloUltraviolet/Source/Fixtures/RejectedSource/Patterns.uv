@@ -1,7 +1,7 @@
 //! Rejected pattern specimens.
 
 public procedure patternsRejectedSourceFixtureCount() -> usize {
-    return 10usize
+    return 17usize
 }
 
 public procedure validatedPatternsRejectedSourceFixtureCount() -> usize {
@@ -173,6 +173,125 @@ public procedure validatedPatternsRejectedSourceFixtureCount() -> usize {
         "Fixtures/RejectedSource/Patterns/ParsePatternError/Expected.uv",
         "E-SRC-0520",
         "rule.17.Parse-Pattern-Err"
+    ) {
+        count = count + 1usize
+    }
+    if rejectedSpecimenMatches(
+        rejectedSpecimen(
+            "BasicPatternsDiagnostic",
+            "Fixtures/RejectedSource/Patterns/BasicPatternsDiagnostic",
+            "Fixtures/RejectedSource/Patterns/BasicPatternsDiagnostic/Source/Main.uv",
+            "Fixtures/RejectedSource/Patterns/BasicPatternsDiagnostic/Expected.uv",
+            expectedDiagnostic("E-SEM-2713", "diag.17.BasicPatterns")
+        ),
+        "BasicPatternsDiagnostic",
+        "Fixtures/RejectedSource/Patterns/BasicPatternsDiagnostic",
+        "Fixtures/RejectedSource/Patterns/BasicPatternsDiagnostic/Source/Main.uv",
+        "Fixtures/RejectedSource/Patterns/BasicPatternsDiagnostic/Expected.uv",
+        "E-SEM-2713",
+        "diag.17.BasicPatterns"
+    ) {
+        count = count + 1usize
+    }
+    if rejectedSpecimenMatches(
+        rejectedSpecimen(
+            "TupleRecordPatternsDiagnostic",
+            "Fixtures/RejectedSource/Patterns/TupleRecordPatternsDiagnostic",
+            "Fixtures/RejectedSource/Patterns/TupleRecordPatternsDiagnostic/Source/Main.uv",
+            "Fixtures/RejectedSource/Patterns/TupleRecordPatternsDiagnostic/Expected.uv",
+            expectedDiagnostic("", "diag.17.TupleRecordPatterns")
+        ),
+        "TupleRecordPatternsDiagnostic",
+        "Fixtures/RejectedSource/Patterns/TupleRecordPatternsDiagnostic",
+        "Fixtures/RejectedSource/Patterns/TupleRecordPatternsDiagnostic/Source/Main.uv",
+        "Fixtures/RejectedSource/Patterns/TupleRecordPatternsDiagnostic/Expected.uv",
+        "",
+        "diag.17.TupleRecordPatterns"
+    ) {
+        count = count + 1usize
+    }
+    if rejectedSpecimenMatches(
+        rejectedSpecimen(
+            "EnumModalPatternsDiagnostic",
+            "Fixtures/RejectedSource/Patterns/EnumModalPatternsDiagnostic",
+            "Fixtures/RejectedSource/Patterns/EnumModalPatternsDiagnostic/Source/Main.uv",
+            "Fixtures/RejectedSource/Patterns/EnumModalPatternsDiagnostic/Expected.uv",
+            expectedDiagnostic("E-SEM-2741", "diag.17.EnumModalPatterns")
+        ),
+        "EnumModalPatternsDiagnostic",
+        "Fixtures/RejectedSource/Patterns/EnumModalPatternsDiagnostic",
+        "Fixtures/RejectedSource/Patterns/EnumModalPatternsDiagnostic/Source/Main.uv",
+        "Fixtures/RejectedSource/Patterns/EnumModalPatternsDiagnostic/Expected.uv",
+        "E-SEM-2741",
+        "diag.17.EnumModalPatterns"
+    ) {
+        count = count + 1usize
+    }
+    if rejectedSpecimenMatches(
+        rejectedSpecimen(
+            "RangePatternsDiagnostic",
+            "Fixtures/RejectedSource/Patterns/RangePatternsDiagnostic",
+            "Fixtures/RejectedSource/Patterns/RangePatternsDiagnostic/Source/Main.uv",
+            "Fixtures/RejectedSource/Patterns/RangePatternsDiagnostic/Expected.uv",
+            expectedDiagnostic("", "diag.17.RangePatterns")
+        ),
+        "RangePatternsDiagnostic",
+        "Fixtures/RejectedSource/Patterns/RangePatternsDiagnostic",
+        "Fixtures/RejectedSource/Patterns/RangePatternsDiagnostic/Source/Main.uv",
+        "Fixtures/RejectedSource/Patterns/RangePatternsDiagnostic/Expected.uv",
+        "",
+        "diag.17.RangePatterns"
+    ) {
+        count = count + 1usize
+    }
+    if rejectedSpecimenMatches(
+        rejectedSpecimen(
+            "CaseClausesDiagnostic",
+            "Fixtures/RejectedSource/Patterns/CaseClausesDiagnostic",
+            "Fixtures/RejectedSource/Patterns/CaseClausesDiagnostic/Source/Main.uv",
+            "Fixtures/RejectedSource/Patterns/CaseClausesDiagnostic/Expected.uv",
+            expectedDiagnostic("E-SEM-2751", "diag.17.CaseClauses")
+        ),
+        "CaseClausesDiagnostic",
+        "Fixtures/RejectedSource/Patterns/CaseClausesDiagnostic",
+        "Fixtures/RejectedSource/Patterns/CaseClausesDiagnostic/Source/Main.uv",
+        "Fixtures/RejectedSource/Patterns/CaseClausesDiagnostic/Expected.uv",
+        "E-SEM-2751",
+        "diag.17.CaseClauses"
+    ) {
+        count = count + 1usize
+    }
+    if rejectedSpecimenMatches(
+        rejectedSpecimen(
+            "ExhaustivenessAndReachabilityDiagnostic",
+            "Fixtures/RejectedSource/Patterns/ExhaustivenessAndReachabilityDiagnostic",
+            "Fixtures/RejectedSource/Patterns/ExhaustivenessAndReachabilityDiagnostic/Source/Main.uv",
+            "Fixtures/RejectedSource/Patterns/ExhaustivenessAndReachabilityDiagnostic/Expected.uv",
+            expectedDiagnostic("E-SEM-2751", "diag.17.ExhaustivenessAndReachability")
+        ),
+        "ExhaustivenessAndReachabilityDiagnostic",
+        "Fixtures/RejectedSource/Patterns/ExhaustivenessAndReachabilityDiagnostic",
+        "Fixtures/RejectedSource/Patterns/ExhaustivenessAndReachabilityDiagnostic/Source/Main.uv",
+        "Fixtures/RejectedSource/Patterns/ExhaustivenessAndReachabilityDiagnostic/Expected.uv",
+        "E-SEM-2751",
+        "diag.17.ExhaustivenessAndReachability"
+    ) {
+        count = count + 1usize
+    }
+    if rejectedSpecimenMatches(
+        rejectedSpecimen(
+            "PatternDiagnosticsSupplement",
+            "Fixtures/RejectedSource/Patterns/PatternDiagnosticsSupplement",
+            "Fixtures/RejectedSource/Patterns/PatternDiagnosticsSupplement/Source/Main.uv",
+            "Fixtures/RejectedSource/Patterns/PatternDiagnosticsSupplement/Expected.uv",
+            expectedDiagnostic("E-SEM-2713", "diag.17.PatternDiagnosticsSupplement")
+        ),
+        "PatternDiagnosticsSupplement",
+        "Fixtures/RejectedSource/Patterns/PatternDiagnosticsSupplement",
+        "Fixtures/RejectedSource/Patterns/PatternDiagnosticsSupplement/Source/Main.uv",
+        "Fixtures/RejectedSource/Patterns/PatternDiagnosticsSupplement/Expected.uv",
+        "E-SEM-2713",
+        "diag.17.PatternDiagnosticsSupplement"
     ) {
         count = count + 1usize
     }

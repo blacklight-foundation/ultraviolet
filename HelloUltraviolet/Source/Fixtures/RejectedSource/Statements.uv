@@ -1,7 +1,7 @@
 //! Rejected statement specimens.
 
 public procedure statementsRejectedSourceFixtureCount() -> usize {
-    return 33usize
+    return 36usize
 }
 
 public procedure validatedStatementsRejectedSourceFixtureCount() -> usize {
@@ -76,6 +76,23 @@ public procedure validatedStatementsRejectedSourceFixtureCount() -> usize {
     }
     if rejectedSpecimenMatches(
         rejectedSpecimen(
+            "VarAnnotationMismatch",
+            "Fixtures/RejectedSource/Statements/VarAnnotationMismatch",
+            "Fixtures/RejectedSource/Statements/VarAnnotationMismatch/Source/Main.uv",
+            "Fixtures/RejectedSource/Statements/VarAnnotationMismatch/Expected.uv",
+            expectedDiagnostic("E-MOD-2402", "req.18.VarStmtTypingMirrorsLet")
+        ),
+        "VarAnnotationMismatch",
+        "Fixtures/RejectedSource/Statements/VarAnnotationMismatch",
+        "Fixtures/RejectedSource/Statements/VarAnnotationMismatch/Source/Main.uv",
+        "Fixtures/RejectedSource/Statements/VarAnnotationMismatch/Expected.uv",
+        "E-MOD-2402",
+        "req.18.VarStmtTypingMirrorsLet"
+    ) {
+        count = count + 1usize
+    }
+    if rejectedSpecimenMatches(
+        rejectedSpecimen(
             "AssignTypeMismatch",
             "Fixtures/RejectedSource/Statements/AssignTypeMismatch",
             "Fixtures/RejectedSource/Statements/AssignTypeMismatch/Source/Main.uv",
@@ -88,6 +105,40 @@ public procedure validatedStatementsRejectedSourceFixtureCount() -> usize {
         "Fixtures/RejectedSource/Statements/AssignTypeMismatch/Expected.uv",
         "E-SEM-3133",
         "rule.18.Assign-Type-Err"
+    ) {
+        count = count + 1usize
+    }
+    if rejectedSpecimenMatches(
+        rejectedSpecimen(
+            "AssignmentProvenanceEscape",
+            "Fixtures/RejectedSource/Statements/AssignmentProvenanceEscape",
+            "Fixtures/RejectedSource/Statements/AssignmentProvenanceEscape/Source/Main.uv",
+            "Fixtures/RejectedSource/Statements/AssignmentProvenanceEscape/Expected.uv",
+            expectedDiagnostic("E-MEM-3020", "req.18.AssignmentProvenanceEscapeFailures")
+        ),
+        "AssignmentProvenanceEscape",
+        "Fixtures/RejectedSource/Statements/AssignmentProvenanceEscape",
+        "Fixtures/RejectedSource/Statements/AssignmentProvenanceEscape/Source/Main.uv",
+        "Fixtures/RejectedSource/Statements/AssignmentProvenanceEscape/Expected.uv",
+        "E-MEM-3020",
+        "req.18.AssignmentProvenanceEscapeFailures"
+    ) {
+        count = count + 1usize
+    }
+    if rejectedSpecimenMatches(
+        rejectedSpecimen(
+            "SyncStatementRecovery",
+            "Fixtures/RejectedSource/Statements/SyncStatementRecovery",
+            "Fixtures/RejectedSource/Statements/SyncStatementRecovery/Source/Main.uv",
+            "Fixtures/RejectedSource/Statements/SyncStatementRecovery/Expected.uv",
+            expectedDiagnostic("E-SRC-0520", "def.18.SyncStmt")
+        ),
+        "SyncStatementRecovery",
+        "Fixtures/RejectedSource/Statements/SyncStatementRecovery",
+        "Fixtures/RejectedSource/Statements/SyncStatementRecovery/Source/Main.uv",
+        "Fixtures/RejectedSource/Statements/SyncStatementRecovery/Expected.uv",
+        "E-SRC-0520",
+        "def.18.SyncStmt"
     ) {
         count = count + 1usize
     }

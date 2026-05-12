@@ -1727,3 +1727,72 @@ Repair:
 - `LLVMBootstrap/cursive/src/04_analysis/typing/stmt/return_stmt.cpp` now maps
   the generic expected-type mismatch `E-SEM-2526` to `E-CON-0203` inside the
   async return branch while preserving other expression-owned diagnostics.
+
+## UVBOOT-0025: Raw Dereference Assignment Mutability
+
+Status: repaired in the workspace bootstrap and verified by:
+
+```text
+powershell.exe ... run_vsdev_cmake_build.ps1 -SourceDir C:\Dev\Ultraviolet\LLVMBootstrap\cursive -BuildDir C:\Dev\Ultraviolet\LLVMBootstrap\cursive\build\windows -Config Release -Target cursive
+./LLVMBootstrap/cursive/build/windows/Release/Cursive.exe build HelloUltraviolet/Fixtures/AcceptedProjects/ExpressionSemantics --check --target-profile x86_64-win64 --incremental off --build-progress off
+```
+
+Accepted-source specimen:
+
+- `Fixtures/AcceptedProjects/ExpressionSemantics/Source/Library.uv`
+
+Spec obligations exercised:
+
+- `rule.16.T-Deref-Raw`
+- `rule.16.DerefPlaceTypingFamily`
+- `rule.16.T-AddrOf`
+
+Spec basis:
+
+- `SPECIFICATION.md:17163-17166` types raw pointer dereference inside an
+  `unsafe` span as a valid value expression.
+- `SPECIFICATION.md:17168` defines raw dereference place typing.
+- `SPECIFICATION.md:12017-12021` defines `P-Deref-Raw-Mut` as a mutable raw
+  dereference place.
+
+Spec-valid accepted specimen:
+
+```ultraviolet
+public procedure derefPlaceReference(pointer: *mut i32) -> i32 {
+    unsafe {
+        *pointer = 17
+    }
+    return unsafe { *pointer }
+}
+```
+
+Observed bootstrap result before repair:
+
+```text
+error[E-MOD-2401]: Reassignment of immutable `let` binding
+  --> .../ExpressionSemantics/Source/Library.uv:32:8
+32 | public procedure derefPlaceReference(pointer: *mut i32) -> i32 {
+32 |
+```
+
+Bootstrap owners:
+
+- `LLVMBootstrap/cursive/src/04_analysis/typing/stmt/assign_stmt.cpp`
+- `LLVMBootstrap/cursive/src/04_analysis/typing/stmt/compound_assign_stmt.cpp`
+- `LLVMBootstrap/cursive/src/04_analysis/memory/borrow_bind.cpp`
+
+Failure analysis:
+
+Assignment typing and borrow/binding analysis followed a dereference place back
+to the pointer parameter binding and treated the write as reassignment of that
+immutable parameter. The spec places mutability for raw pointer writes on the
+dereferenced place type: `*imm T` yields a const place and `*mut T` yields a
+unique place.
+
+Repair:
+
+- Assignment typing now skips root-binding mutability checks when the assigned
+  place writes through a dereference, leaving const and shared checks on the
+  typed place intact.
+- Borrow/binding assignment validation now applies the same dereference-write
+  distinction before issuing `E-MOD-2401`.
