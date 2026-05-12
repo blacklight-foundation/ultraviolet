@@ -1,0 +1,44 @@
+//! Reference specimens for ModalTypes / ModalDeclarations.
+
+public modal ModalReference {
+    @Closed {
+        public procedure isOpen(~) -> bool {
+            return false
+        }
+
+        public transition open(value: i32) -> @Open {
+            return ModalReference@Open { value: value }
+        }
+    }
+
+    @Open {
+        public value: i32
+
+        public procedure isOpen(~) -> bool {
+            return true
+        }
+
+        public transition close() -> @Closed {
+            return ModalReference@Closed {}
+        }
+    }
+}
+
+public type ModalReferenceValue = ModalReference@Closed | ModalReference@Open
+
+public procedure closedModalReference() -> ModalReferenceValue {
+    return ModalReference@Closed {}
+}
+
+/// Exercises the ModalTypes ModalDeclarations reference surface.
+public procedure runModalTypesModalDeclarationsReference() -> bool {
+    let reference: ModalReferenceValue = closedModalReference()
+    return if reference is {
+        @Closed {
+            true
+        }
+        @Open {
+            false
+        }
+    }
+}

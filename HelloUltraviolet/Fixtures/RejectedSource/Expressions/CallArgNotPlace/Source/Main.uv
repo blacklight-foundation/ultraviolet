@@ -1,0 +1,10 @@
+//! Rejected expression specimen for a provenance-bearing non-place reference argument.
+
+public procedure borrowedValue(value: i32) -> i32 {
+    return value
+}
+
+public procedure callArgNotPlaceReference() -> i32 {
+    let value: i32 = 1
+    return borrowedValue({ value })
+}

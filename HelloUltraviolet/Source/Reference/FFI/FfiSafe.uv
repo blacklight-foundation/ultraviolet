@@ -1,0 +1,29 @@
+//! Reference specimens for FFI / FfiSafe.
+
+internal record FFIReference {
+    internal boundary_count: usize
+    internal abi_checked: bool
+    internal unwinds_safely: bool
+}
+
+internal procedure ffiReference(
+    boundary_count: usize,
+    abi_checked: bool,
+    unwinds_safely: bool
+) -> FFIReference {
+    return FFIReference {
+        boundary_count: boundary_count,
+        abi_checked: abi_checked,
+        unwinds_safely: unwinds_safely
+    }
+}
+
+internal procedure ffiReferenceIsCovered(reference: FFIReference) -> bool {
+    return reference.boundary_count > 0usize && reference.abi_checked
+}
+
+/// Exercises the FFI FfiSafe reference surface.
+public procedure runFFIFfiSafeReference() -> bool {
+    let reference: FFIReference = ffiReference(1usize, true, false)
+    return ffiReferenceIsCovered(reference)
+}

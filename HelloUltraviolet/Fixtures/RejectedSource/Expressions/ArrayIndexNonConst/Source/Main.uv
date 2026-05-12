@@ -1,0 +1,7 @@
+//! Rejected array index specimen for non-constant fixed-array indexing.
+
+public procedure arrayIndexNonConstReference() -> i32 {
+    let values: [i32; 2] = [1, 2]
+    let selected_index: usize = 1usize
+    return values[selected_index]
+}

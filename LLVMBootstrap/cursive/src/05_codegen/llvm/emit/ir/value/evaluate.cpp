@@ -353,6 +353,30 @@ using namespace emit_detail;
       {
         return func;
       }
+      if (const LowerCtx *active_ctx = GetCurrentCtx())
+      {
+        if (const auto *sig = active_ctx->LookupProcSig(symbol))
+        {
+          const bool use_c_abi_aggregate_sret =
+              sig->ffi_import ||
+              active_ctx->LookupExportUnwindMode(symbol).has_value();
+          ABICallResult abi = ComputeCallABI(
+              *this,
+              sig->params,
+              sig->ret,
+              use_c_abi_aggregate_sret);
+          if (abi.func_type)
+          {
+            llvm::Function *declared = llvm::Function::Create(
+                abi.func_type,
+                llvm::GlobalValue::ExternalLinkage,
+                symbol,
+                module_.get());
+            declared->setCallingConv(CallingConvForAbi(sig->abi));
+            return declared;
+          }
+        }
+      }
       if (llvm::Value *global = GetGlobal(symbol))
       {
         if (auto *global_var = llvm::dyn_cast<llvm::GlobalVariable>(global))

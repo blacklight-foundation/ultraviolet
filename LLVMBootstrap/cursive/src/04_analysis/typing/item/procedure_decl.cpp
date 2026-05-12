@@ -2015,19 +2015,19 @@ ProcedureDeclResult TypeProcedureDecl(
     }
     contract_ctx.return_type = sig.return_type;
 
-    // Check contract well-formedness
-    const auto contract_check = CheckContractWellFormed(contract_ctx, *decl.contract);
-    if (!contract_check.ok) {
-      result.ok = false;
-      result.diag_id = contract_check.diag_id;
-      return result;
-    }
-
     // Validate contract intrinsics
     const auto intrinsics_check = ValidateContractIntrinsics(*decl.contract, contract_ctx);
     if (!intrinsics_check.ok) {
       result.ok = false;
       result.diag_id = intrinsics_check.diag_id;
+      return result;
+    }
+
+    // Check contract well-formedness
+    const auto contract_check = CheckContractWellFormed(contract_ctx, *decl.contract);
+    if (!contract_check.ok) {
+      result.ok = false;
+      result.diag_id = contract_check.diag_id;
       return result;
     }
 
@@ -2082,6 +2082,41 @@ ProcedureDeclResult TypeProcedureDecl(
     PlaceTypeFn type_place = [&](const ast::ExprPtr& inner) {
       return TypePlace(proc_ctx, type_ctx, inner, env);
     };
+
+    if (decl.contract.has_value()) {
+      auto check_contract_predicate =
+          [&](const ast::ExprPtr& predicate,
+              ContractPhase phase) -> std::optional<std::string_view> {
+        if (!predicate) {
+          return std::nullopt;
+        }
+
+        StmtTypeContext contract_type_ctx = type_ctx;
+        contract_type_ctx.contract_phase = phase;
+        contract_type_ctx.require_pure = true;
+        const auto typed = TypeExpr(proc_ctx, contract_type_ctx, predicate, env);
+        if (!typed.ok) {
+          return typed.diag_id.value_or("WF-Contract");
+        }
+        if (!TypeEquiv(typed.type, MakeTypePrim("bool")).equiv) {
+          return std::string_view("WF-Contract");
+        }
+        return std::nullopt;
+      };
+
+      if (const auto diag = check_contract_predicate(
+              decl.contract->precondition, ContractPhase::Precondition)) {
+        result.ok = false;
+        result.diag_id = *diag;
+        return result;
+      }
+      if (const auto diag = check_contract_predicate(
+              decl.contract->postcondition, ContractPhase::Postcondition)) {
+        result.ok = false;
+        result.diag_id = *diag;
+        return result;
+      }
+    }
 
     const auto diag_count_before_body = diags.size();
     if (perf_on) {

@@ -112,6 +112,11 @@ TypeRef StripPermAndRefine(const TypeRef& type) {
   return cur;
 }
 
+template <typename TResult>
+bool IsExpectedTypeMismatch(const TResult& check) {
+  return !check.diag_id.has_value() || *check.diag_id == "E-SEM-2526";
+}
+
 const ast::TypeAliasDecl* LookupTypeAliasDecl(const ScopeContext& ctx,
                                               const TypePath& path) {
   if (path.empty()) {
@@ -887,7 +892,7 @@ CallTypeResult TypeCall(const ScopeContext& ctx,
       return result;
     }
     SPEC_RULE("Call-Callee-NotFunc");
-    result.diag_id = "Call-Callee-NotFunc";
+    result.diag_id = "E-SEM-2531";
     return result;
   }
 
@@ -959,10 +964,13 @@ CallTypeResult TypeCall(const ScopeContext& ctx,
             arg_types.push_back(params[i].type);
             continue;
           }
-          if (checked.diag_id.has_value()) {
-            result.diag_id = checked.diag_id;
+          if (IsExpectedTypeMismatch(checked)) {
+            SPEC_RULE("Call-ArgType-Err");
+            result.diag_id = "E-SEM-2533";
             return result;
           }
+          result.diag_id = checked.diag_id;
+          return result;
         }
         const auto arg_type = type_expr(arg.value);
         if (!arg_type.ok) {
@@ -980,10 +988,13 @@ CallTypeResult TypeCall(const ScopeContext& ctx,
         arg_types.push_back(params[i].type);
         continue;
       }
-      if (checked.diag_id.has_value()) {
-        result.diag_id = checked.diag_id;
+      if (IsExpectedTypeMismatch(checked)) {
+        SPEC_RULE("Call-ArgType-Err");
+        result.diag_id = "E-SEM-2533";
         return result;
       }
+      result.diag_id = checked.diag_id;
+      return result;
     }
     const auto arg_type = type_expr(arg_expr);
     if (!arg_type.ok) {
@@ -1105,7 +1116,7 @@ CallTypeResult TypeCallWithSubst(const ScopeContext& ctx,
       normalized_callee.type ? std::get_if<TypeFunc>(&normalized_callee.type->node) : nullptr;
   if (!func) {
     SPEC_RULE("Call-Callee-NotFunc");
-    result.diag_id = "Call-Callee-NotFunc";
+    result.diag_id = "E-SEM-2531";
     return result;
   }
 
@@ -1162,10 +1173,13 @@ CallTypeResult TypeCallWithSubst(const ScopeContext& ctx,
             arg_types.push_back(subst_param_type);
             continue;
           }
-          if (checked.diag_id.has_value()) {
-            result.diag_id = checked.diag_id;
+          if (IsExpectedTypeMismatch(checked)) {
+            SPEC_RULE("Call-ArgType-Err");
+            result.diag_id = "E-SEM-2533";
             return result;
           }
+          result.diag_id = checked.diag_id;
+          return result;
         }
         const auto arg_type = type_expr(arg.value);
         if (!arg_type.ok) {
@@ -1183,10 +1197,13 @@ CallTypeResult TypeCallWithSubst(const ScopeContext& ctx,
         arg_types.push_back(subst_param_type);
         continue;
       }
-      if (checked.diag_id.has_value()) {
-        result.diag_id = checked.diag_id;
+      if (IsExpectedTypeMismatch(checked)) {
+        SPEC_RULE("Call-ArgType-Err");
+        result.diag_id = "E-SEM-2533";
         return result;
       }
+      result.diag_id = checked.diag_id;
+      return result;
     }
     const auto arg_type = type_expr(arg_expr);
     if (!arg_type.ok) {

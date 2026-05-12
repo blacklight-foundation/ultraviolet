@@ -1,0 +1,45 @@
+//! Reference specimens for Attributes / LayoutAttributes.
+
+internal enum LayoutAttributeReferenceKind {
+    C
+    Packed
+    Align
+    IntegerDiscriminant
+}
+
+internal record LayoutAttributeReference {
+    internal kind: LayoutAttributeReferenceKind
+    internal applies_to_record: bool
+    internal applies_to_enum: bool
+}
+
+internal procedure layoutAttributeReference(
+    kind: LayoutAttributeReferenceKind,
+    applies_to_record: bool,
+    applies_to_enum: bool
+) -> LayoutAttributeReference {
+    return LayoutAttributeReference {
+        kind: kind,
+        applies_to_record: applies_to_record,
+        applies_to_enum: applies_to_enum
+    }
+}
+
+internal procedure layoutAttributeTargetIsValid(
+    reference: LayoutAttributeReference
+) -> bool {
+    return reference.applies_to_record || reference.applies_to_enum
+}
+
+/// Exercises the Attributes LayoutAttributes reference surface.
+public procedure runAttributesLayoutAttributesReference() -> bool {
+    let c_layout: LayoutAttributeReference =
+        layoutAttributeReference(LayoutAttributeReferenceKind::C, true, true)
+    let packed: LayoutAttributeReference =
+        layoutAttributeReference(LayoutAttributeReferenceKind::Packed, true, false)
+    let discriminant: LayoutAttributeReference =
+        layoutAttributeReference(LayoutAttributeReferenceKind::IntegerDiscriminant, false, true)
+    return layoutAttributeTargetIsValid(c_layout) &&
+        layoutAttributeTargetIsValid(packed) &&
+        layoutAttributeTargetIsValid(discriminant)
+}

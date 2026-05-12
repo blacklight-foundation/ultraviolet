@@ -1,0 +1,15 @@
+//! Reference specimens for Expressions / CastsAndTransmutes.
+
+/// Exercises the Expressions CastsAndTransmutes reference surface.
+public procedure runExpressionsCastsAndTransmutesReference() -> bool {
+    let small_value: i32 = 7
+    let widened_value: i64 = small_value as i64
+    let bool_as_int: i32 = true as i32
+    let int_as_bool: bool = 1 as bool
+    var transmuted_value: i32 = 0
+    unsafe {
+        transmuted_value = transmute<i32, i32>(small_value)
+    }
+    return widened_value == 7 && bool_as_int == 1 && int_as_bool &&
+        transmuted_value == 7
+}

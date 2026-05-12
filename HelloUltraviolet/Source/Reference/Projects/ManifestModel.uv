@@ -1,0 +1,57 @@
+//! Reference specimens for Projects / ManifestModel.
+
+internal record ManifestAssemblyReference {
+    internal name: string@View
+    internal kind: string@View
+    internal root: string@View
+    internal has_required_keys: bool
+}
+
+internal record ManifestReference {
+    internal assembly_count: usize
+    internal has_toolchain: bool
+    internal has_build: bool
+    internal primary_assembly: ManifestAssemblyReference
+}
+
+internal procedure manifestAssemblyReference(
+    name: string@View,
+    kind: string@View,
+    root: string@View,
+    has_required_keys: bool
+) -> ManifestAssemblyReference {
+    return ManifestAssemblyReference {
+        name: name,
+        kind: kind,
+        root: root,
+        has_required_keys: has_required_keys
+    }
+}
+
+internal procedure manifestReference(
+    assembly_count: usize,
+    has_toolchain: bool,
+    has_build: bool,
+    primary_assembly: ManifestAssemblyReference
+) -> ManifestReference {
+    return ManifestReference {
+        assembly_count: assembly_count,
+        has_toolchain: has_toolchain,
+        has_build: has_build,
+        primary_assembly: primary_assembly
+    }
+}
+
+internal procedure manifestIsLoadable(manifest: ManifestReference) -> bool {
+    return manifest.assembly_count > 0usize &&
+        manifest.primary_assembly.has_required_keys
+}
+
+/// Exercises the Projects ManifestModel reference surface.
+public procedure runProjectsManifestModelReference() -> bool {
+    let assembly: ManifestAssemblyReference =
+        manifestAssemblyReference("HelloUltraviolet", "executable", "Source", true)
+    let manifest: ManifestReference =
+        manifestReference(1usize, false, true, assembly)
+    return manifestIsLoadable(manifest)
+}

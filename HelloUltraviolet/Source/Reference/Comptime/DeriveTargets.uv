@@ -1,0 +1,7 @@
+//! Reference specimens for Comptime / DeriveTargets.
+
+/// Exercises the Comptime DeriveTargets reference surface.
+public procedure runComptimeDeriveTargetsReference() -> bool {
+    let reference: ComptimeReference = comptimeReference(true, true, false)
+    return comptimeReferenceIsCovered(reference) && reference.emits_source
+}

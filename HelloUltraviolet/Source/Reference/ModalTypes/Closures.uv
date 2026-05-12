@@ -1,0 +1,9 @@
+//! Reference specimens for ModalTypes / Closures.
+
+/// Exercises the ModalTypes Closures reference surface.
+public procedure runModalTypesClosuresReference() -> bool {
+    let captured: i32 = 9
+    let add_captured = |value: i32| -> i32 value + captured
+    let no_capture = || 4
+    return add_captured(3) == 12 && no_capture() == 4
+}

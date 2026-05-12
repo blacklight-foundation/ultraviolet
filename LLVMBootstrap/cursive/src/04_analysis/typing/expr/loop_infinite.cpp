@@ -27,6 +27,7 @@
 #include "04_analysis/resolve/scopes.h"
 #include "04_analysis/typing/context.h"
 #include "04_analysis/typing/type_expr.h"
+#include "04_analysis/typing/type_equiv.h"
 #include "04_analysis/typing/place_types.h"
 #include "04_analysis/typing/type_infer.h"
 #include "04_analysis/typing/types.h"
@@ -66,44 +67,36 @@ static bool IsBoolType(const TypeRef& type) {
   return prim && prim->name == "bool";
 }
 
-// Compute loop result type from break types (LoopTypeInf)
-// For infinite loops:
-//   - If Brk is empty: type is ! (never - infinite loop)
-//   - If Brk has single type T: type is T
-//   - If Brk has multiple types: union of all types
-//   - BrkVoid affects whether () is included
-static TypeRef LoopTypeInf(const std::vector<TypeRef>& breaks, bool break_void) {
+// Compute loop result type from break types (LoopTypeInf).
+static std::optional<TypeRef> LoopTypeInf(const std::vector<TypeRef>& breaks,
+                                          bool break_void) {
   if (breaks.empty() && !break_void) {
-    // Infinite loop with no break has type ! (never)
-    // This is a divergent computation
     return MakeTypePrim("!");
   }
 
-  // Collect break types
-  std::vector<TypeRef> members;
-  members.reserve(breaks.size() + (break_void ? 1 : 0));
-
-  for (const auto& brk : breaks) {
-    if (brk) {
-      members.push_back(brk);
-    }
-  }
-
-  // If there are void breaks, include unit
-  if (break_void) {
-    members.push_back(MakeTypePrim("()"));
-  }
-
-  if (members.empty()) {
-    // Only void breaks
+  if (breaks.empty() && break_void) {
     return MakeTypePrim("()");
   }
 
-  if (members.size() == 1) {
-    return members[0];
+  if (break_void) {
+    return std::nullopt;
   }
 
-  return MakeTypeUnion(std::move(members));
+  TypeRef base = breaks.front();
+  if (!base) {
+    return std::nullopt;
+  }
+  for (std::size_t i = 1; i < breaks.size(); ++i) {
+    if (!breaks[i]) {
+      return std::nullopt;
+    }
+    const auto eq = TypeEquiv(base, breaks[i]);
+    if (!eq.ok || !eq.equiv) {
+      return std::nullopt;
+    }
+  }
+
+  return base;
 }
 
 static std::optional<std::string_view> ValidateLoopInvariantExpr(
@@ -316,8 +309,13 @@ ExprTypeResult TypeLoopInfiniteExpr(const ScopeContext& ctx,
 
   // 4. Compute result type via LoopTypeInf
   SPEC_RULE("T-Loop-Infinite");
+  const auto loop_type = LoopTypeInf(body_info.breaks, body_info.break_void);
+  if (!loop_type.has_value()) {
+    result.diag_id = "T-Loop-Infinite";
+    return result;
+  }
   result.ok = true;
-  result.type = LoopTypeInf(body_info.breaks, body_info.break_void);
+  result.type = *loop_type;
   return result;
 }
 

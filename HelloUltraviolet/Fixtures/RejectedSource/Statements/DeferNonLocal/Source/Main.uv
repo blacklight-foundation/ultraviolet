@@ -1,0 +1,8 @@
+//! Rejected statement specimen for non-local control flow in defer.
+
+public procedure deferNonLocalReference() -> i32 {
+    defer {
+        return 1
+    }
+    return 0
+}

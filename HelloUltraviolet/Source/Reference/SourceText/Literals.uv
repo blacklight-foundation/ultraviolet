@@ -1,0 +1,39 @@
+//! Reference specimens for SourceText / Literals.
+
+internal procedure sourceTextLiteralLength(text: string@View) -> usize {
+    return string::length(text)
+}
+
+internal procedure sourceTextLiteralByte(text: string@View, index: usize) -> u8 {
+    if index >= sourceTextLiteralLength(text) {
+        return 0u8
+    }
+    let view: bytes@View = bytes::view_string(text)
+    let data: const [u8] = bytes::as_slice(view)
+    return data[index]
+}
+
+/// Exercises the SourceText Literals reference surface.
+public procedure runSourceTextLiteralsReference() -> bool {
+    let decimal_value: i32 = 1_024
+    let hex_value: i32 = 0x10
+    let octal_value: i32 = 0o10
+    let binary_value: i32 = 0b1010
+    let float_value: f32 = 1.5f32
+    let inferred_float: f64 = 2.5
+    let letter: char = 'A'
+    let newline: char = '\n'
+    let escaped: string@View = "A\n\x42\u{43}"
+    return decimal_value == 1024 &&
+        hex_value == 16 &&
+        octal_value == 8 &&
+        binary_value == 10 &&
+        float_value > 1.0f32 &&
+        inferred_float > 2.0f64 &&
+        letter == 'A' &&
+        newline == '\n' &&
+        sourceTextLiteralLength(escaped) == 4usize &&
+        sourceTextLiteralByte(escaped, 0usize) == 65u8 &&
+        sourceTextLiteralByte(escaped, 2usize) == 66u8 &&
+        sourceTextLiteralByte(escaped, 3usize) == 67u8
+}

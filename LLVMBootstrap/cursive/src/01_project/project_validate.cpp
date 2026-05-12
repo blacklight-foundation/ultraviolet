@@ -538,6 +538,7 @@ ManifestValidationResult ValidateManifest(const std::filesystem::path& project_r
       }
       emit_ir_value = emit_ir_node->value<std::string>();
     }
+    SPEC_RULE("WF-Assembly-EmitIRType");
 
     std::optional<std::string> link_kind_value;
     if (const toml::node* link_kind_node = assembly->get("link_kind")) {
@@ -547,6 +548,7 @@ ManifestValidationResult ValidateManifest(const std::filesystem::path& project_r
       }
       link_kind_value = link_kind_node->value<std::string>();
     }
+    SPEC_RULE("WF-Assembly-LinkKindType");
 
     SPEC_RULE("WF-Assembly-Optional-Types");
 

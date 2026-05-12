@@ -1,0 +1,10 @@
+//! Rejected pattern specimen for a statically empty range pattern.
+
+public procedure rangePatternEmptyReference() -> i32 {
+    let value: i32 = 2
+    return if value is 4..4 {
+        1
+    } else {
+        0
+    }
+}

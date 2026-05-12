@@ -1,0 +1,27 @@
+//! Metadata records for rejected source reference specimens.
+
+using HelloUltraviolet::Audit::{ auditTextEquals }
+
+public record ExpectedDiagnostic {
+    public code: string@View
+    public obligation_id: string@View
+}
+
+public procedure expectedDiagnostic(
+    code: string@View,
+    obligation_id: string@View
+) -> ExpectedDiagnostic {
+    return ExpectedDiagnostic {
+        code: code,
+        obligation_id: obligation_id
+    }
+}
+
+public procedure expectedDiagnosticMatches(
+    diagnostic: ExpectedDiagnostic,
+    code: string@View,
+    obligation_id: string@View
+) -> bool {
+    return auditTextEquals(diagnostic.code, code) &&
+        auditTextEquals(diagnostic.obligation_id, obligation_id)
+}

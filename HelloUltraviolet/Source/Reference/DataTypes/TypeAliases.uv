@@ -1,0 +1,15 @@
+//! Reference specimens for DataTypes / TypeAliases.
+
+public type ReferenceCount = usize
+public type ReferenceRecordAlias = RecordReference
+
+public procedure referenceCount(value: usize) -> ReferenceCount {
+    return value
+}
+
+/// Exercises the DataTypes TypeAliases reference surface.
+public procedure runDataTypesTypeAliasesReference() -> bool {
+    let count: ReferenceCount = referenceCount(5usize)
+    let alias_value: ReferenceRecordAlias = recordReference("alias", count, true)
+    return alias_value.is_active && alias_value.count == 5usize
+}

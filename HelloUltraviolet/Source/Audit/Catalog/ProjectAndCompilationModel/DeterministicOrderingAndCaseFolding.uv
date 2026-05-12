@@ -1,0 +1,101 @@
+//! Generated catalog markers for 3. Project and Compilation Model / 3.4 Deterministic Ordering and Case Folding.
+
+
+public procedure countProjectAndCompilationModelDeterministicOrderingAndCaseFoldingObligations() -> usize {
+    return 10usize
+}
+
+public procedure validatedProjectAndCompilationModelDeterministicOrderingAndCaseFoldingObligations() -> usize {
+    var count: usize = 0usize
+    if acceptedObligationEntryMatches(
+        "def.FoldPath",
+        4095usize,
+        "HelloUltraviolet::Reference::Projects",
+        "runProjectsModuleDiscoveryReference",
+        "Source/Reference/Projects/ModuleDiscovery.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "def.FileKey",
+        4109usize,
+        "HelloUltraviolet::Reference::Projects",
+        "runProjectsModuleDiscoveryReference",
+        "Source/Reference/Projects/ModuleDiscovery.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "def.FileOrdering",
+        4125usize,
+        "HelloUltraviolet::Reference::Projects",
+        "runProjectsModuleDiscoveryReference",
+        "Source/Reference/Projects/ModuleDiscovery.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "FileOrder-Rel-Fail",
+        4139usize,
+        "HelloUltraviolet::Reference::Projects",
+        "runProjectsModuleDiscoveryReference",
+        "Source/Reference/Projects/ModuleDiscovery.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "def.Fold",
+        4157usize,
+        "HelloUltraviolet::Reference::Projects",
+        "runProjectsModuleDiscoveryReference",
+        "Source/Reference/Projects/ModuleDiscovery.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "def.DirKey",
+        4172usize,
+        "HelloUltraviolet::Reference::Projects",
+        "runProjectsModuleDiscoveryReference",
+        "Source/Reference/Projects/ModuleDiscovery.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "def.DirectoryOrdering",
+        4188usize,
+        "HelloUltraviolet::Reference::Projects",
+        "runProjectsModuleDiscoveryReference",
+        "Source/Reference/Projects/ModuleDiscovery.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "def.DirSeq",
+        4202usize,
+        "HelloUltraviolet::Reference::Projects",
+        "runProjectsModuleDiscoveryReference",
+        "Source/Reference/Projects/ModuleDiscovery.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "DirSeq-Read-Err",
+        4216usize,
+        "HelloUltraviolet::Reference::Projects",
+        "runProjectsModuleDiscoveryReference",
+        "Source/Reference/Projects/ModuleDiscovery.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "DirSeq-Rel-Fail",
+        4234usize,
+        "HelloUltraviolet::Reference::Projects",
+        "runProjectsModuleDiscoveryReference",
+        "Source/Reference/Projects/ModuleDiscovery.uv"
+    ) {
+        count = count + 1usize
+    }
+    return count
+}

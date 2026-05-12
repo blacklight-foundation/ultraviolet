@@ -113,6 +113,7 @@ ParseElemResult<std::vector<FieldInit>> ParseFieldInitTail(
 // at their own call sites.
 
 ParseElemResult<std::vector<FieldInit>> ParseFieldInitList(Parser parser) {
+  SPEC_RULE("ConstructionListAndShorthandParsingFamily");
   SkipNewlines(parser);
   if (IsPunc(parser, "}")) {
     SPEC_RULE("Parse-FieldInitList-Empty");

@@ -1,0 +1,7 @@
+//! Rejected contract specimen for @entry capturing a non-bitcopy value.
+
+public procedure contractEntryNonBitcopyReference(value: unique string@Managed) -> bool
+|: => @entry(value) == @entry(value)
+{
+    return true
+}

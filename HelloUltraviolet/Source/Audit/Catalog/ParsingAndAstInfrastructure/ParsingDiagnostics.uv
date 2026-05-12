@@ -1,0 +1,38 @@
+//! Generated catalog markers for 5. Parsing and AST Infrastructure / 5.9 Parsing Diagnostics.
+
+
+public procedure countParsingAndAstInfrastructureParsingDiagnosticsObligations() -> usize {
+    return 3usize
+}
+
+public procedure validatedParsingAndAstInfrastructureParsingDiagnosticsObligations() -> usize {
+    var count: usize = 0usize
+    if acceptedObligationEntryMatches(
+        "def.ParsingDiagnosticRules",
+        11997usize,
+        "HelloUltraviolet::Reference::Parsing",
+        "runParsingItemSequencingReference",
+        "Source/Reference/Parsing/ItemSequencing.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "def.GenericParseRules",
+        12011usize,
+        "HelloUltraviolet::Reference::Parsing",
+        "runParsingItemSequencingReference",
+        "Source/Reference/Parsing/ItemSequencing.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "Parse-Syntax-Err",
+        12025usize,
+        "HelloUltraviolet::Reference::Parsing",
+        "runParsingItemSequencingReference",
+        "Source/Reference/Parsing/ItemSequencing.uv"
+    ) {
+        count = count + 1usize
+    }
+    return count
+}

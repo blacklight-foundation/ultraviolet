@@ -1,0 +1,44 @@
+//! Reference specimens for Parsing / RecoverySpecimens.
+
+internal enum RecoverySyncSetReference {
+    Statement
+    Item
+    Type
+}
+
+internal record RecoverySpecimenReference {
+    internal sync_set: RecoverySyncSetReference
+    internal consumed_tokens: usize
+    internal resumes_at_boundary: bool
+}
+
+internal procedure recoverySpecimenReference(
+    sync_set: RecoverySyncSetReference,
+    consumed_tokens: usize,
+    resumes_at_boundary: bool
+) -> RecoverySpecimenReference {
+    return RecoverySpecimenReference {
+        sync_set: sync_set,
+        consumed_tokens: consumed_tokens,
+        resumes_at_boundary: resumes_at_boundary
+    }
+}
+
+internal procedure recoverySpecimenIsUsable(
+    specimen: RecoverySpecimenReference
+) -> bool {
+    return specimen.consumed_tokens > 0usize && specimen.resumes_at_boundary
+}
+
+/// Exercises the Parsing RecoverySpecimens reference surface.
+public procedure runParsingRecoverySpecimensReference() -> bool {
+    let statement_recovery: RecoverySpecimenReference =
+        recoverySpecimenReference(RecoverySyncSetReference::Statement, 2usize, true)
+    let item_recovery: RecoverySpecimenReference =
+        recoverySpecimenReference(RecoverySyncSetReference::Item, 4usize, true)
+    let type_recovery: RecoverySpecimenReference =
+        recoverySpecimenReference(RecoverySyncSetReference::Type, 1usize, true)
+    return recoverySpecimenIsUsable(statement_recovery) &&
+        recoverySpecimenIsUsable(item_recovery) &&
+        recoverySpecimenIsUsable(type_recovery)
+}

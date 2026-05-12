@@ -33,7 +33,7 @@
  *   1. Contract syntax: |: P (precond), |: P => Q (pre+post), |: => Q (postcond only)
  *   2. @result references return value (postcondition only)
  *   3. @entry(expr) captures entry/old value of expression
- *   4. @entry requires BitcopyType or CloneType
+ *   4. @entry requires BitcopyType
  *   5. Contracts must be boolean expressions
  *   6. Contract predicates must be PURE (see contract_purity.cpp)
  *
@@ -48,12 +48,12 @@
  *
  * DIAGNOSTIC CODES:
  *   - E-SEM-2802: Impure expression in contract predicate
- *   - E-SEM-2805: @entry() result type not BitcopyType or CloneType
+ *   - E-SEM-2805: @entry() result type not BitcopyType
  *   - E-SEM-2806: @result used outside postcondition
  *   - E-CON-0001: Invalid contract syntax
  *   - E-CON-0002: @result outside postcondition
  *   - E-CON-0003: @entry with non-copyable type
- *   - E-CON-0004: Contract not boolean
+ *   - WF-Contract: Contract predicate is not boolean
  *   - E-CON-0005: Undefined name in contract
  *
  * =============================================================================
@@ -914,8 +914,8 @@ namespace cursive::analysis
               return nullptr;
             }
             return nullptr;
-          },
-          expr->node);
+      },
+      expr->node);
     }
 
     bool ReceiverIsConst(const ast::Receiver &receiver, const ScopeContext *scope_ctx)

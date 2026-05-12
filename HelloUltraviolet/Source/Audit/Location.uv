@@ -1,0 +1,94 @@
+//! Source and fixture locations used by obligation catalog entries.
+
+public record ReferenceLocation {
+    public module_path: string@View
+    public symbol: string@View
+    public source_path: string@View
+}
+
+public record ExerciseReference {
+    public kind: ExerciseKindValue
+    public location: ReferenceLocation
+}
+
+public procedure referenceLocation(
+    module_path: string@View,
+    symbol: string@View,
+    source_path: string@View
+) -> ReferenceLocation {
+    return ReferenceLocation {
+        module_path: module_path,
+        symbol: symbol,
+        source_path: source_path
+    }
+}
+
+public procedure exerciseReference(
+    kind: ExerciseKindValue,
+    location: ReferenceLocation
+) -> ExerciseReference {
+    return ExerciseReference {
+        kind: kind,
+        location: location
+    }
+}
+
+internal procedure auditTextByte(text: string@View, index: usize) -> u8 {
+    if index >= string::length(text) {
+        return 0u8
+    }
+    let view: bytes@View = bytes::view_string(text)
+    let data: const [u8] = bytes::as_slice(view)
+    return data[index]
+}
+
+public procedure auditTextEquals(left: string@View, right: string@View) -> bool {
+    let left_length: usize = string::length(left)
+    let right_length: usize = string::length(right)
+    if left_length != right_length {
+        return false
+    }
+
+    var index: usize = 0usize
+    loop index < left_length {
+        if auditTextByte(left, index) != auditTextByte(right, index) {
+            return false
+        }
+        index = index + 1usize
+    }
+    return true
+}
+
+public procedure auditTextLess(left: string@View, right: string@View) -> bool {
+    let left_length: usize = string::length(left)
+    let right_length: usize = string::length(right)
+    var limit: usize = left_length
+    if right_length < limit {
+        limit = right_length
+    }
+
+    var index: usize = 0usize
+    loop index < limit {
+        let left_byte: u8 = auditTextByte(left, index)
+        let right_byte: u8 = auditTextByte(right, index)
+        if left_byte < right_byte {
+            return true
+        }
+        if left_byte > right_byte {
+            return false
+        }
+        index = index + 1usize
+    }
+    return left_length < right_length
+}
+
+public procedure referenceLocationMatches(
+    location: ReferenceLocation,
+    module_path: string@View,
+    symbol: string@View,
+    source_path: string@View
+) -> bool {
+    return auditTextEquals(location.module_path, module_path) &&
+        auditTextEquals(location.symbol, symbol) &&
+        auditTextEquals(location.source_path, source_path)
+}

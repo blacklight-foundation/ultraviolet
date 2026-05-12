@@ -6,6 +6,7 @@
 
 #include <memory>
 #include <optional>
+#include <string>
 #include <string_view>
 #include <utility>
 #include <vector>
@@ -130,7 +131,13 @@ TryParseBraceDisambiguatedIfCasePattern(Parser parser) {
   Parser next = parser;
   Advance(next);
   if (!IsOp(next, "::")) {
-    return std::nullopt;
+    SPEC_RULE("Parse-Pattern-Identifier");
+    IdentifierPattern pat;
+    pat.name = std::string(tok->lexeme);
+    pat.name_splice_opt = std::nullopt;
+    return ParseElemResult<PatternPtr>{
+        next,
+        MakePattern(tok->span, pat)};
   }
 
   SPEC_RULE("Parse-IfCase-Pattern-EnumHead");
@@ -289,6 +296,7 @@ IfHeadResult ParseIfHeadNoElse(Parser parser) {
 }  // namespace
 
 ParseElemResult<ExprPtr> ParseIfExpr(Parser parser) {
+  SPEC_RULE("ControlExpressionParsingRemainderFamily");
   SPEC_RULE("Parse-If-Expr");
   IfHeadResult head = ParseIfHeadNoElse(parser);
   if (head.completed_expr) {

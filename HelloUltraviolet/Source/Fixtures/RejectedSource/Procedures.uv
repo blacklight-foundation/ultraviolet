@@ -1,0 +1,333 @@
+//! Rejected procedure specimens.
+
+public procedure proceduresRejectedSourceFixtureCount() -> usize {
+    return 19usize
+}
+
+public procedure validatedProceduresRejectedSourceFixtureCount() -> usize {
+    var count: usize = 0usize
+    if rejectedSpecimenMatches(
+        rejectedSpecimen(
+            "MainMissing",
+            "Fixtures/RejectedSource/Procedures/MainMissing",
+            "Fixtures/RejectedSource/Procedures/MainMissing/Source/Main.uv",
+            "Fixtures/RejectedSource/Procedures/MainMissing/Expected.uv",
+            expectedDiagnostic("E-MOD-2434", "rule.15.Main-Missing")
+        ),
+        "MainMissing",
+        "Fixtures/RejectedSource/Procedures/MainMissing",
+        "Fixtures/RejectedSource/Procedures/MainMissing/Source/Main.uv",
+        "Fixtures/RejectedSource/Procedures/MainMissing/Expected.uv",
+        "E-MOD-2434",
+        "rule.15.Main-Missing"
+    ) {
+        count = count + 1usize
+    }
+    if rejectedSpecimenMatches(
+        rejectedSpecimen(
+            "MainMultiple",
+            "Fixtures/RejectedSource/Procedures/MainMultiple",
+            "Fixtures/RejectedSource/Procedures/MainMultiple/Source/Main.uv",
+            "Fixtures/RejectedSource/Procedures/MainMultiple/Expected.uv",
+            expectedDiagnostic("E-MOD-2430", "rule.15.Main-Multiple")
+        ),
+        "MainMultiple",
+        "Fixtures/RejectedSource/Procedures/MainMultiple",
+        "Fixtures/RejectedSource/Procedures/MainMultiple/Source/Main.uv",
+        "Fixtures/RejectedSource/Procedures/MainMultiple/Expected.uv",
+        "E-MOD-2430",
+        "rule.15.Main-Multiple"
+    ) {
+        count = count + 1usize
+    }
+    if rejectedSpecimenMatches(
+        rejectedSpecimen(
+            "MainGeneric",
+            "Fixtures/RejectedSource/Procedures/MainGeneric",
+            "Fixtures/RejectedSource/Procedures/MainGeneric/Source/Main.uv",
+            "Fixtures/RejectedSource/Procedures/MainGeneric/Expected.uv",
+            expectedDiagnostic("E-MOD-2432", "rule.15.Main-Generic-Err")
+        ),
+        "MainGeneric",
+        "Fixtures/RejectedSource/Procedures/MainGeneric",
+        "Fixtures/RejectedSource/Procedures/MainGeneric/Source/Main.uv",
+        "Fixtures/RejectedSource/Procedures/MainGeneric/Expected.uv",
+        "E-MOD-2432",
+        "rule.15.Main-Generic-Err"
+    ) {
+        count = count + 1usize
+    }
+    if rejectedSpecimenMatches(
+        rejectedSpecimen(
+            "MainSignature",
+            "Fixtures/RejectedSource/Procedures/MainSignature",
+            "Fixtures/RejectedSource/Procedures/MainSignature/Source/Main.uv",
+            "Fixtures/RejectedSource/Procedures/MainSignature/Expected.uv",
+            expectedDiagnostic("E-MOD-2431", "rule.15.Main-Signature-Err")
+        ),
+        "MainSignature",
+        "Fixtures/RejectedSource/Procedures/MainSignature",
+        "Fixtures/RejectedSource/Procedures/MainSignature/Source/Main.uv",
+        "Fixtures/RejectedSource/Procedures/MainSignature/Expected.uv",
+        "E-MOD-2431",
+        "rule.15.Main-Signature-Err"
+    ) {
+        count = count + 1usize
+    }
+    if rejectedSpecimenMatches(
+        rejectedSpecimen(
+            "MissingReturnType",
+            "Fixtures/RejectedSource/Procedures/MissingReturnType",
+            "Fixtures/RejectedSource/Procedures/MissingReturnType/Source/Main.uv",
+            "Fixtures/RejectedSource/Procedures/MissingReturnType/Expected.uv",
+            expectedDiagnostic("", "rule.15.WF-ProcedureDecl-MissingReturnType")
+        ),
+        "MissingReturnType",
+        "Fixtures/RejectedSource/Procedures/MissingReturnType",
+        "Fixtures/RejectedSource/Procedures/MissingReturnType/Source/Main.uv",
+        "Fixtures/RejectedSource/Procedures/MissingReturnType/Expected.uv",
+        "",
+        "rule.15.WF-ProcedureDecl-MissingReturnType"
+    ) {
+        count = count + 1usize
+    }
+    if rejectedSpecimenMatches(
+        rejectedSpecimen(
+            "MissingExplicitReturn",
+            "Fixtures/RejectedSource/Procedures/MissingExplicitReturn",
+            "Fixtures/RejectedSource/Procedures/MissingExplicitReturn/Source/Main.uv",
+            "Fixtures/RejectedSource/Procedures/MissingExplicitReturn/Expected.uv",
+            expectedDiagnostic("E-TYP-1507", "rule.15.WF-ProcBody-ExplicitReturn-Err")
+        ),
+        "MissingExplicitReturn",
+        "Fixtures/RejectedSource/Procedures/MissingExplicitReturn",
+        "Fixtures/RejectedSource/Procedures/MissingExplicitReturn/Source/Main.uv",
+        "Fixtures/RejectedSource/Procedures/MissingExplicitReturn/Expected.uv",
+        "E-TYP-1507",
+        "rule.15.WF-ProcBody-ExplicitReturn-Err"
+    ) {
+        count = count + 1usize
+    }
+    if rejectedSpecimenMatches(
+        rejectedSpecimen(
+            "RecordMethodReceiverNotSelf",
+            "Fixtures/RejectedSource/Procedures/RecordMethodReceiverNotSelf",
+            "Fixtures/RejectedSource/Procedures/RecordMethodReceiverNotSelf/Source/Main.uv",
+            "Fixtures/RejectedSource/Procedures/RecordMethodReceiverNotSelf/Expected.uv",
+            expectedDiagnostic("", "rule.15.Record-Method-RecvSelf-Err")
+        ),
+        "RecordMethodReceiverNotSelf",
+        "Fixtures/RejectedSource/Procedures/RecordMethodReceiverNotSelf",
+        "Fixtures/RejectedSource/Procedures/RecordMethodReceiverNotSelf/Source/Main.uv",
+        "Fixtures/RejectedSource/Procedures/RecordMethodReceiverNotSelf/Expected.uv",
+        "",
+        "rule.15.Record-Method-RecvSelf-Err"
+    ) {
+        count = count + 1usize
+    }
+    if rejectedSpecimenMatches(
+        rejectedSpecimen(
+            "RecordMethodDuplicate",
+            "Fixtures/RejectedSource/Procedures/RecordMethodDuplicate",
+            "Fixtures/RejectedSource/Procedures/RecordMethodDuplicate/Source/Main.uv",
+            "Fixtures/RejectedSource/Procedures/RecordMethodDuplicate/Expected.uv",
+            expectedDiagnostic("", "rule.15.Record-Method-Dup")
+        ),
+        "RecordMethodDuplicate",
+        "Fixtures/RejectedSource/Procedures/RecordMethodDuplicate",
+        "Fixtures/RejectedSource/Procedures/RecordMethodDuplicate/Source/Main.uv",
+        "Fixtures/RejectedSource/Procedures/RecordMethodDuplicate/Expected.uv",
+        "",
+        "rule.15.Record-Method-Dup"
+    ) {
+        count = count + 1usize
+    }
+    if rejectedSpecimenMatches(
+        rejectedSpecimen(
+            "ContractResultOutsidePostcondition",
+            "Fixtures/RejectedSource/Procedures/ContractResultOutsidePostcondition",
+            "Fixtures/RejectedSource/Procedures/ContractResultOutsidePostcondition/Source/Main.uv",
+            "Fixtures/RejectedSource/Procedures/ContractResultOutsidePostcondition/Expected.uv",
+            expectedDiagnostic("E-SEM-2806", "req.15.ContractResultProperties")
+        ),
+        "ContractResultOutsidePostcondition",
+        "Fixtures/RejectedSource/Procedures/ContractResultOutsidePostcondition",
+        "Fixtures/RejectedSource/Procedures/ContractResultOutsidePostcondition/Source/Main.uv",
+        "Fixtures/RejectedSource/Procedures/ContractResultOutsidePostcondition/Expected.uv",
+        "E-SEM-2806",
+        "req.15.ContractResultProperties"
+    ) {
+        count = count + 1usize
+    }
+    if rejectedSpecimenMatches(
+        rejectedSpecimen(
+            "UnsatisfiedPrecondition",
+            "Fixtures/RejectedSource/Procedures/UnsatisfiedPrecondition",
+            "Fixtures/RejectedSource/Procedures/UnsatisfiedPrecondition/Source/Main.uv",
+            "Fixtures/RejectedSource/Procedures/UnsatisfiedPrecondition/Expected.uv",
+            expectedDiagnostic("E-SEM-2801", "rule.15.Contract-Static-Fail")
+        ),
+        "UnsatisfiedPrecondition",
+        "Fixtures/RejectedSource/Procedures/UnsatisfiedPrecondition",
+        "Fixtures/RejectedSource/Procedures/UnsatisfiedPrecondition/Source/Main.uv",
+        "Fixtures/RejectedSource/Procedures/UnsatisfiedPrecondition/Expected.uv",
+        "E-SEM-2801",
+        "rule.15.Contract-Static-Fail"
+    ) {
+        count = count + 1usize
+    }
+    if rejectedSpecimenMatches(
+        rejectedSpecimen(
+            "PreconditionCallerObligation",
+            "Fixtures/RejectedSource/Procedures/PreconditionCallerObligation",
+            "Fixtures/RejectedSource/Procedures/PreconditionCallerObligation/Source/Main.uv",
+            "Fixtures/RejectedSource/Procedures/PreconditionCallerObligation/Expected.uv",
+            expectedDiagnostic("E-SEM-2801", "req.15.CallerResponsibleForPrecondition")
+        ),
+        "PreconditionCallerObligation",
+        "Fixtures/RejectedSource/Procedures/PreconditionCallerObligation",
+        "Fixtures/RejectedSource/Procedures/PreconditionCallerObligation/Source/Main.uv",
+        "Fixtures/RejectedSource/Procedures/PreconditionCallerObligation/Expected.uv",
+        "E-SEM-2801",
+        "req.15.CallerResponsibleForPrecondition"
+    ) {
+        count = count + 1usize
+    }
+    if rejectedSpecimenMatches(
+        rejectedSpecimen(
+            "ContractEntryOutsidePostcondition",
+            "Fixtures/RejectedSource/Procedures/ContractEntryOutsidePostcondition",
+            "Fixtures/RejectedSource/Procedures/ContractEntryOutsidePostcondition/Source/Main.uv",
+            "Fixtures/RejectedSource/Procedures/ContractEntryOutsidePostcondition/Expected.uv",
+            expectedDiagnostic("E-SEM-2852", "req.15.ContractEntryConstraints")
+        ),
+        "ContractEntryOutsidePostcondition",
+        "Fixtures/RejectedSource/Procedures/ContractEntryOutsidePostcondition",
+        "Fixtures/RejectedSource/Procedures/ContractEntryOutsidePostcondition/Source/Main.uv",
+        "Fixtures/RejectedSource/Procedures/ContractEntryOutsidePostcondition/Expected.uv",
+        "E-SEM-2852",
+        "req.15.ContractEntryConstraints"
+    ) {
+        count = count + 1usize
+    }
+    if rejectedSpecimenMatches(
+        rejectedSpecimen(
+            "ContractEntryNonBitcopy",
+            "Fixtures/RejectedSource/Procedures/ContractEntryNonBitcopy",
+            "Fixtures/RejectedSource/Procedures/ContractEntryNonBitcopy/Source/Main.uv",
+            "Fixtures/RejectedSource/Procedures/ContractEntryNonBitcopy/Expected.uv",
+            expectedDiagnostic("E-SEM-2805", "rule.15.Entry-Type")
+        ),
+        "ContractEntryNonBitcopy",
+        "Fixtures/RejectedSource/Procedures/ContractEntryNonBitcopy",
+        "Fixtures/RejectedSource/Procedures/ContractEntryNonBitcopy/Source/Main.uv",
+        "Fixtures/RejectedSource/Procedures/ContractEntryNonBitcopy/Expected.uv",
+        "E-SEM-2805",
+        "rule.15.Entry-Type"
+    ) {
+        count = count + 1usize
+    }
+    if rejectedSpecimenMatches(
+        rejectedSpecimen(
+            "ContractPredicateNonBool",
+            "Fixtures/RejectedSource/Procedures/ContractPredicateNonBool",
+            "Fixtures/RejectedSource/Procedures/ContractPredicateNonBool/Source/Main.uv",
+            "Fixtures/RejectedSource/Procedures/ContractPredicateNonBool/Expected.uv",
+            expectedDiagnostic("", "rule.15.WF-Contract")
+        ),
+        "ContractPredicateNonBool",
+        "Fixtures/RejectedSource/Procedures/ContractPredicateNonBool",
+        "Fixtures/RejectedSource/Procedures/ContractPredicateNonBool/Source/Main.uv",
+        "Fixtures/RejectedSource/Procedures/ContractPredicateNonBool/Expected.uv",
+        "",
+        "rule.15.WF-Contract"
+    ) {
+        count = count + 1usize
+    }
+    if rejectedSpecimenMatches(
+        rejectedSpecimen(
+            "ContractPredicateImpureMove",
+            "Fixtures/RejectedSource/Procedures/ContractPredicateImpureMove",
+            "Fixtures/RejectedSource/Procedures/ContractPredicateImpureMove/Source/Main.uv",
+            "Fixtures/RejectedSource/Procedures/ContractPredicateImpureMove/Expected.uv",
+            expectedDiagnostic("E-SEM-2802", "req.15.ContractNeverPureForms")
+        ),
+        "ContractPredicateImpureMove",
+        "Fixtures/RejectedSource/Procedures/ContractPredicateImpureMove",
+        "Fixtures/RejectedSource/Procedures/ContractPredicateImpureMove/Source/Main.uv",
+        "Fixtures/RejectedSource/Procedures/ContractPredicateImpureMove/Expected.uv",
+        "E-SEM-2802",
+        "req.15.ContractNeverPureForms"
+    ) {
+        count = count + 1usize
+    }
+    if rejectedSpecimenMatches(
+        rejectedSpecimen(
+            "ContractDynamicAttribute",
+            "Fixtures/RejectedSource/Procedures/ContractDynamicAttribute",
+            "Fixtures/RejectedSource/Procedures/ContractDynamicAttribute/Source/Main.uv",
+            "Fixtures/RejectedSource/Procedures/ContractDynamicAttribute/Expected.uv",
+            expectedDiagnostic("E-CON-0410", "diag.15.ContractClauses")
+        ),
+        "ContractDynamicAttribute",
+        "Fixtures/RejectedSource/Procedures/ContractDynamicAttribute",
+        "Fixtures/RejectedSource/Procedures/ContractDynamicAttribute/Source/Main.uv",
+        "Fixtures/RejectedSource/Procedures/ContractDynamicAttribute/Expected.uv",
+        "E-CON-0410",
+        "diag.15.ContractClauses"
+    ) {
+        count = count + 1usize
+    }
+    if rejectedSpecimenMatches(
+        rejectedSpecimen(
+            "ContractEntryMovedParameter",
+            "Fixtures/RejectedSource/Procedures/ContractEntryMovedParameter",
+            "Fixtures/RejectedSource/Procedures/ContractEntryMovedParameter/Source/Main.uv",
+            "Fixtures/RejectedSource/Procedures/ContractEntryMovedParameter/Expected.uv",
+            expectedDiagnostic("E-SEM-2807", "diag.15.ProcedureContractEntryDiagnosticsOwnership")
+        ),
+        "ContractEntryMovedParameter",
+        "Fixtures/RejectedSource/Procedures/ContractEntryMovedParameter",
+        "Fixtures/RejectedSource/Procedures/ContractEntryMovedParameter/Source/Main.uv",
+        "Fixtures/RejectedSource/Procedures/ContractEntryMovedParameter/Expected.uv",
+        "E-SEM-2807",
+        "diag.15.ProcedureContractEntryDiagnosticsOwnership"
+    ) {
+        count = count + 1usize
+    }
+    if rejectedSpecimenMatches(
+        rejectedSpecimen(
+            "ContractEntrySideEffect",
+            "Fixtures/RejectedSource/Procedures/ContractEntrySideEffect",
+            "Fixtures/RejectedSource/Procedures/ContractEntrySideEffect/Source/Main.uv",
+            "Fixtures/RejectedSource/Procedures/ContractEntrySideEffect/Expected.uv",
+            expectedDiagnostic("E-CON-0416", "diag-table.15.ProcedureContractEntryDiagnostics")
+        ),
+        "ContractEntrySideEffect",
+        "Fixtures/RejectedSource/Procedures/ContractEntrySideEffect",
+        "Fixtures/RejectedSource/Procedures/ContractEntrySideEffect/Source/Main.uv",
+        "Fixtures/RejectedSource/Procedures/ContractEntrySideEffect/Expected.uv",
+        "E-CON-0416",
+        "diag-table.15.ProcedureContractEntryDiagnostics"
+    ) {
+        count = count + 1usize
+    }
+    if rejectedSpecimenMatches(
+        rejectedSpecimen(
+            "ContractEntryCapability",
+            "Fixtures/RejectedSource/Procedures/ContractEntryCapability",
+            "Fixtures/RejectedSource/Procedures/ContractEntryCapability/Source/Main.uv",
+            "Fixtures/RejectedSource/Procedures/ContractEntryCapability/Expected.uv",
+            expectedDiagnostic("E-CON-0415", "diag-table.15.ProcedureContractEntryDiagnostics")
+        ),
+        "ContractEntryCapability",
+        "Fixtures/RejectedSource/Procedures/ContractEntryCapability",
+        "Fixtures/RejectedSource/Procedures/ContractEntryCapability/Source/Main.uv",
+        "Fixtures/RejectedSource/Procedures/ContractEntryCapability/Expected.uv",
+        "E-CON-0415",
+        "diag-table.15.ProcedureContractEntryDiagnostics"
+    ) {
+        count = count + 1usize
+    }
+    return count
+}

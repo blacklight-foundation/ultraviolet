@@ -1,0 +1,20 @@
+//! Reference specimens for ModalTypes / Bytes.
+
+internal procedure byteReferenceAt(text: string@View, index: usize) -> u8 {
+    if index >= string::length(text) {
+        return 0u8
+    }
+    let view: bytes@View = bytes::view_string(text)
+    let data: const [u8] = bytes::as_slice(view)
+    return data[index]
+}
+
+/// Exercises the ModalTypes Bytes reference surface.
+public procedure runModalTypesBytesReference() -> bool {
+    let text: string@View = "bytes"
+    let view: bytes@View = bytes::view_string(text)
+    let data: const [u8] = bytes::as_slice(view)
+    return string::length(text) == 5usize &&
+        data[0usize] == 98u8 &&
+        byteReferenceAt(text, 4usize) == 115u8
+}

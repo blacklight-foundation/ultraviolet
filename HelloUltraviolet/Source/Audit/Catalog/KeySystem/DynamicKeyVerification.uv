@@ -1,0 +1,146 @@
+//! Generated catalog markers for 19. Key System / 19.6 Dynamic Key Verification.
+
+
+public procedure countKeySystemDynamicKeyVerificationObligations() -> usize {
+    return 15usize
+}
+
+public procedure validatedKeySystemDynamicKeyVerificationObligations() -> usize {
+    var count: usize = 0usize
+    if acceptedObligationEntryMatches(
+        "requirement.19.DynamicKeyVerificationNoAdditionalSyntax",
+        74055usize,
+        "HelloUltraviolet::Reference::Keys",
+        "runKeysKeyPathsReference",
+        "Source/Reference/Keys/KeyPaths.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "requirement.19.DynamicKeyVerificationNoAdditionalParsingRules",
+        74070usize,
+        "HelloUltraviolet::Reference::Keys",
+        "runKeysKeyPathsReference",
+        "Source/Reference/Keys/KeyPaths.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "def.19.StaticallySafeConditions",
+        74085usize,
+        "HelloUltraviolet::Reference::Keys",
+        "runKeysKeyPathsReference",
+        "Source/Reference/Keys/KeyPaths.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "requirement.19.StaticallySafeSoundProofRequired",
+        74107usize,
+        "HelloUltraviolet::Reference::Keys",
+        "runKeysKeyPathsReference",
+        "Source/Reference/Keys/KeyPaths.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "rule.19.K-Static-Safe",
+        74126usize,
+        "HelloUltraviolet::Reference::Keys",
+        "runKeysKeyPathsReference",
+        "Source/Reference/Keys/KeyPaths.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "requirement.19.NoRuntimeSyncMeaning",
+        74142usize,
+        "HelloUltraviolet::Reference::Keys",
+        "runKeysKeyPathsReference",
+        "Source/Reference/Keys/KeyPaths.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "rule.19.K-Static-Required",
+        74157usize,
+        "HelloUltraviolet::Reference::Keys",
+        "runKeysKeyPathsReference",
+        "Source/Reference/Keys/KeyPaths.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "requirement.19.RuntimeSynchronizationRequirements",
+        74175usize,
+        "HelloUltraviolet::Reference::Keys",
+        "runKeysKeyPathsReference",
+        "Source/Reference/Keys/KeyPaths.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "requirement.19.DynamicIndexRuntimeOrdering",
+        74193usize,
+        "HelloUltraviolet::Reference::Keys",
+        "runKeysKeyPathsReference",
+        "Source/Reference/Keys/KeyPaths.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "requirement.19.DynamicIndexedPathCoarsening",
+        74212usize,
+        "HelloUltraviolet::Reference::Keys",
+        "runKeysKeyPathsReference",
+        "Source/Reference/Keys/KeyPaths.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "requirement.19.CanonicalOrderDeadlockFreedom",
+        74227usize,
+        "HelloUltraviolet::Reference::Keys",
+        "runKeysKeyPathsReference",
+        "Source/Reference/Keys/KeyPaths.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "requirement.19.StaticAndRuntimeKeySafetyEquivalence",
+        74242usize,
+        "HelloUltraviolet::Reference::Keys",
+        "runKeysKeyPathsReference",
+        "Source/Reference/Keys/KeyPaths.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "rule.19.K-Dynamic-Permitted",
+        74257usize,
+        "HelloUltraviolet::Reference::Keys",
+        "runKeysKeyPathsReference",
+        "Source/Reference/Keys/KeyPaths.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "requirement.19.DynamicContextStaticSafeLowering",
+        74273usize,
+        "HelloUltraviolet::Reference::Keys",
+        "runKeysKeyPathsReference",
+        "Source/Reference/Keys/KeyPaths.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "diagnostics.19.DynamicKeyVerification",
+        74288usize,
+        "HelloUltraviolet::Reference::Keys",
+        "runKeysKeyPathsReference",
+        "Source/Reference/Keys/KeyPaths.uv"
+    ) {
+        count = count + 1usize
+    }
+    return count
+}

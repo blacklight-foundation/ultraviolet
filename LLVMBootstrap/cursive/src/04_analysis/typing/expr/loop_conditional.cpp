@@ -28,6 +28,7 @@
 #include "04_analysis/resolve/scopes.h"
 #include "04_analysis/typing/context.h"
 #include "04_analysis/typing/type_expr.h"
+#include "04_analysis/typing/type_equiv.h"
 #include "04_analysis/typing/place_types.h"
 #include "04_analysis/typing/type_infer.h"
 #include "04_analysis/typing/types.h"
@@ -70,42 +71,32 @@ static bool IsBoolType(const TypeRef& type) {
   return false;
 }
 
-// Compute loop result type from break types (LoopTypeFin)
-// For conditional loops:
-//   - If Brk is empty and BrkVoid: type is ()
-//   - If Brk has single type T: type is T | ()
-//   - If Brk has multiple types: union of all | ()
-static TypeRef LoopTypeFin(const std::vector<TypeRef>& breaks, bool break_void) {
+// Compute loop result type from break types (LoopTypeFin).
+static std::optional<TypeRef> LoopTypeFin(const std::vector<TypeRef>& breaks,
+                                          bool break_void) {
   if (breaks.empty()) {
-    // Loop can exit normally, result is unit
     return MakeTypePrim("()");
   }
 
-  // Collect break types
-  std::vector<TypeRef> members;
-  members.reserve(breaks.size() + 1);
+  if (break_void) {
+    return std::nullopt;
+  }
 
-  for (const auto& brk : breaks) {
-    if (brk) {
-      members.push_back(brk);
+  TypeRef base = breaks.front();
+  if (!base) {
+    return std::nullopt;
+  }
+  for (std::size_t i = 1; i < breaks.size(); ++i) {
+    if (!breaks[i]) {
+      return std::nullopt;
+    }
+    const auto eq = TypeEquiv(base, breaks[i]);
+    if (!eq.ok || !eq.equiv) {
+      return std::nullopt;
     }
   }
 
-  // Conditional loops can also exit normally (condition becomes false)
-  // so include unit in the result type if there are non-void breaks
-  if (!break_void) {
-    members.push_back(MakeTypePrim("()"));
-  }
-
-  if (members.empty()) {
-    return MakeTypePrim("()");
-  }
-
-  if (members.size() == 1) {
-    return members[0];
-  }
-
-  return MakeTypeUnion(std::move(members));
+  return base;
 }
 
 static std::optional<std::string_view> ValidateLoopInvariantExpr(
@@ -335,8 +326,13 @@ ExprTypeResult TypeLoopConditionalExpr(const ScopeContext& ctx,
 
   // 6. Compute result type via LoopTypeFin
   SPEC_RULE("T-Loop-Conditional");
+  const auto loop_type = LoopTypeFin(body_info.breaks, body_info.break_void);
+  if (!loop_type.has_value()) {
+    result.diag_id = "T-Loop-Conditional";
+    return result;
+  }
   result.ok = true;
-  result.type = LoopTypeFin(body_info.breaks, body_info.break_void);
+  result.type = *loop_type;
   return result;
 }
 

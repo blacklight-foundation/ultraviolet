@@ -1,0 +1,20 @@
+//! Generated catalog markers for 6. Abstract Machine, Objects, Responsibility, and Authority / 6.6 Runtime State and Memory Diagnostics.
+
+
+public procedure countAbstractMachineObjectsResponsibilityAndAuthorityRuntimeStateAndMemoryDiagnosticsObligations() -> usize {
+    return 1usize
+}
+
+public procedure validatedAbstractMachineObjectsResponsibilityAndAuthorityRuntimeStateAndMemoryDiagnosticsObligations() -> usize {
+    var count: usize = 0usize
+    if acceptedObligationEntryMatches(
+        "diagnostics.RuntimeStateAndMemoryDiagnostics",
+        18438usize,
+        "HelloUltraviolet::Reference::Authority",
+        "runAuthorityCapabilitiesReference",
+        "Source/Reference/Authority/Capabilities.uv"
+    ) {
+        count = count + 1usize
+    }
+    return count
+}

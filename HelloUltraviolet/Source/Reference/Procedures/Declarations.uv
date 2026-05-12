@@ -1,0 +1,18 @@
+//! Reference specimens for Procedures / Declarations.
+
+using HelloUltraviolet::Reference::DataTypes::{ RecordReference, recordReference }
+
+internal procedure declarationReferenceNoParameters() -> i32 {
+    return 1
+}
+
+internal procedure declarationReferenceMoveParameter(move value: RecordReference) -> bool {
+    return value.is_active
+}
+
+/// Exercises the Procedures Declarations reference surface.
+public procedure runProceduresDeclarationsReference() -> bool {
+    let reference: RecordReference = recordReference("procedure-declaration", 1usize, true)
+    return declarationReferenceNoParameters() == 1 &&
+        declarationReferenceMoveParameter(move reference)
+}

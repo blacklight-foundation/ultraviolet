@@ -1,0 +1,50 @@
+//! Reference specimens for Projects / ModuleDiscovery.
+
+internal record ModuleDiscoveryReference {
+    internal source_root: string@View
+    internal module_path: string@View
+    internal source_file_count: usize
+    internal directory_order: usize
+}
+
+internal procedure moduleDiscoveryReference(
+    source_root: string@View,
+    module_path: string@View,
+    source_file_count: usize,
+    directory_order: usize
+) -> ModuleDiscoveryReference {
+    return ModuleDiscoveryReference {
+        source_root: source_root,
+        module_path: module_path,
+        source_file_count: source_file_count,
+        directory_order: directory_order
+    }
+}
+
+internal procedure moduleDiscoveryHasCompilationUnit(
+    module: ModuleDiscoveryReference
+) -> bool {
+    return module.source_file_count > 0usize
+}
+
+internal procedure moduleDiscoveryPrecedes(
+    left: ModuleDiscoveryReference,
+    right: ModuleDiscoveryReference
+) -> bool {
+    return left.directory_order < right.directory_order
+}
+
+/// Exercises the Projects ModuleDiscovery reference surface.
+public procedure runProjectsModuleDiscoveryReference() -> bool {
+    let root_module: ModuleDiscoveryReference =
+        moduleDiscoveryReference("Source", "HelloUltraviolet", 2usize, 1usize)
+    let reference_module: ModuleDiscoveryReference = moduleDiscoveryReference(
+        "Source",
+        "HelloUltraviolet::Reference",
+        20usize,
+        2usize
+    )
+    return moduleDiscoveryHasCompilationUnit(root_module) &&
+        moduleDiscoveryHasCompilationUnit(reference_module) &&
+        moduleDiscoveryPrecedes(root_module, reference_module)
+}

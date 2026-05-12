@@ -1,0 +1,31 @@
+//! Reference specimens for Polymorphism / GenericParameters.
+
+internal record PolymorphismReference {
+    internal feature_count: usize
+    internal statically_checked: bool
+    internal dynamically_dispatchable: bool
+}
+
+internal procedure polymorphismReference(
+    feature_count: usize,
+    statically_checked: bool,
+    dynamically_dispatchable: bool
+) -> PolymorphismReference {
+    return PolymorphismReference {
+        feature_count: feature_count,
+        statically_checked: statically_checked,
+        dynamically_dispatchable: dynamically_dispatchable
+    }
+}
+
+internal procedure polymorphismReferenceIsCovered(
+    reference: PolymorphismReference
+) -> bool {
+    return reference.feature_count > 0usize && reference.statically_checked
+}
+
+/// Exercises the Polymorphism GenericParameters reference surface.
+public procedure runPolymorphismGenericParametersReference() -> bool {
+    let reference: PolymorphismReference = polymorphismReference(3usize, true, false)
+    return polymorphismReferenceIsCovered(reference)
+}

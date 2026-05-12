@@ -1,0 +1,47 @@
+//! Reference specimens for Diagnostics / RenderingInputs.
+
+internal record DiagnosticRenderReference {
+    internal code: string@View
+    internal severity: string@View
+    internal message: string@View
+    internal file_path: string@View
+    internal line: usize
+    internal column: usize
+}
+
+internal procedure diagnosticRenderReference(
+    code: string@View,
+    severity: string@View,
+    message: string@View,
+    file_path: string@View,
+    line: usize,
+    column: usize
+) -> DiagnosticRenderReference {
+    return DiagnosticRenderReference {
+        code: code,
+        severity: severity,
+        message: message,
+        file_path: file_path,
+        line: line,
+        column: column
+    }
+}
+
+internal procedure diagnosticRenderHasLocation(
+    diagnostic: DiagnosticRenderReference
+) -> bool {
+    return diagnostic.line > 0usize && diagnostic.column > 0usize
+}
+
+/// Exercises the Diagnostics RenderingInputs reference surface.
+public procedure runDiagnosticsRenderingInputsReference() -> bool {
+    let diagnostic: DiagnosticRenderReference = diagnosticRenderReference(
+        "E-SRC-0520",
+        "error",
+        "unexpected token",
+        "Source/Main.uv",
+        4usize,
+        9usize
+    )
+    return diagnosticRenderHasLocation(diagnostic)
+}

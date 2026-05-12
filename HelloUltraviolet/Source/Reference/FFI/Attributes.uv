@@ -1,0 +1,7 @@
+//! Reference specimens for FFI / Attributes.
+
+/// Exercises the FFI Attributes reference surface.
+public procedure runFFIAttributesReference() -> bool {
+    let reference: FFIReference = ffiReference(5usize, true, false)
+    return ffiReferenceIsCovered(reference)
+}

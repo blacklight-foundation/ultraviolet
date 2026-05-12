@@ -150,6 +150,7 @@ std::optional<Diagnostic> MakeDiagnosticById(
   if (!resolved.has_value()) {
     return std::nullopt;
   }
+  SPEC_RULE("DiagId-Code");
   auto diag = MakeDiagnostic(*resolved, span, locale);
   if (!diag.has_value()) {
     return std::nullopt;

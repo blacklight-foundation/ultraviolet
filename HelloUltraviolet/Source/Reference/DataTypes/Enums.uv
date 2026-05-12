@@ -1,0 +1,51 @@
+//! Reference specimens for DataTypes / Enums.
+
+public enum EnumReference {
+    Idle
+    Count(i32)
+    Named {
+        value: i32
+    }
+}
+
+/// Exercises the DataTypes Enums reference surface.
+public procedure runDataTypesEnumsReference() -> bool {
+    let idle: EnumReference = EnumReference::Idle
+    let count: EnumReference = EnumReference::Count(7)
+    let named: EnumReference = EnumReference::Named { value: 7 }
+
+    let idle_ok: bool = if idle is {
+        EnumReference::Idle {
+            true
+        }
+        EnumReference::Count(value) {
+            value == 0
+        }
+        EnumReference::Named { value } {
+            value == 0
+        }
+    }
+    let count_ok: bool = if count is {
+        EnumReference::Idle {
+            false
+        }
+        EnumReference::Count(value) {
+            value == 7
+        }
+        EnumReference::Named { value } {
+            value == 0
+        }
+    }
+    let named_ok: bool = if named is {
+        EnumReference::Idle {
+            false
+        }
+        EnumReference::Count(value) {
+            value == 0
+        }
+        EnumReference::Named { value } {
+            value == 7
+        }
+    }
+    return idle_ok && count_ok && named_ok
+}

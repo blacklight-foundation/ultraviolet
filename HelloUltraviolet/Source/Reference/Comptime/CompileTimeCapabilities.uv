@@ -1,0 +1,7 @@
+//! Reference specimens for Comptime / CompileTimeCapabilities.
+
+/// Exercises the Comptime CompileTimeCapabilities reference surface.
+public procedure runComptimeCompileTimeCapabilitiesReference() -> bool {
+    let reference: ComptimeReference = comptimeReference(true, false, true)
+    return comptimeReferenceIsCovered(reference) && reference.has_capability_boundary
+}

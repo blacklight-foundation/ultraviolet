@@ -1,0 +1,25 @@
+//! Reference specimens for DataTypes / Records.
+
+public record RecordReference {
+    public name: string@View
+    public count: usize
+    public is_active: bool
+}
+
+public procedure recordReference(
+    name: string@View,
+    count: usize,
+    is_active: bool
+) -> RecordReference {
+    return RecordReference {
+        name: name,
+        count: count,
+        is_active: is_active
+    }
+}
+
+/// Exercises the DataTypes Records reference surface.
+public procedure runDataTypesRecordsReference() -> bool {
+    let reference: RecordReference = recordReference("records", 3usize, true)
+    return reference.is_active && reference.count == 3usize
+}

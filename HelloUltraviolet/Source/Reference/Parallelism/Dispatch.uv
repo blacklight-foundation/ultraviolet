@@ -1,0 +1,7 @@
+//! Reference specimens for Parallelism / Dispatch.
+
+/// Exercises the Parallelism Dispatch reference surface.
+public procedure runParallelismDispatchReference() -> bool {
+    let reference: ParallelReference = parallelReference(4usize, true, false)
+    return parallelReferenceIsCovered(reference)
+}

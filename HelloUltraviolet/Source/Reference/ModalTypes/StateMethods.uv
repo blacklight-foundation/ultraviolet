@@ -1,0 +1,8 @@
+//! Reference specimens for ModalTypes / StateMethods.
+
+/// Exercises the ModalTypes StateMethods reference surface.
+public procedure runModalTypesStateMethodsReference() -> bool {
+    let closed: ModalReference@Closed = ModalReference@Closed {}
+    let opened: ModalReference@Open = ModalReference@Open { value: 1 }
+    return !closed~>isOpen() && opened~>isOpen()
+}

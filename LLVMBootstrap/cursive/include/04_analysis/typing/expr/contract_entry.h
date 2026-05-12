@@ -25,7 +25,7 @@ namespace cursive::analysis::expr
     //
     // REQUIREMENTS:
     //   - Only valid in postcondition context (right of =>)
-    //   - Result type must satisfy BitcopyType or CloneType
+    //   - Result type must satisfy BitcopyType
     //   - Expression evaluated in entry environment (parameters at call time)
     //
     // USE CASE:

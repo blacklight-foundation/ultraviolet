@@ -1,0 +1,15 @@
+//! Reference specimens for ModalTypes / FunctionTypes.
+
+internal procedure functionTypeReferenceApply(value: i32) -> i32 {
+    return value + 2
+}
+
+internal procedure functionTypeReferenceCall(value: i32) -> i32 {
+    return functionTypeReferenceApply(value)
+}
+
+/// Exercises the ModalTypes FunctionTypes reference surface.
+public procedure runModalTypesFunctionTypesReference() -> bool {
+    let callable = |value: i32| -> i32 functionTypeReferenceCall(value)
+    return callable(6) == 8
+}

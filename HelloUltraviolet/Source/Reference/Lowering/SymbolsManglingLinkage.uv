@@ -1,0 +1,7 @@
+//! Reference specimens for Lowering / SymbolsManglingLinkage.
+
+/// Exercises the Lowering SymbolsManglingLinkage reference surface.
+public procedure runLoweringSymbolsManglingLinkageReference() -> bool {
+    let reference: LoweringReference = loweringReference(3usize, true, true)
+    return loweringReferenceIsCovered(reference)
+}

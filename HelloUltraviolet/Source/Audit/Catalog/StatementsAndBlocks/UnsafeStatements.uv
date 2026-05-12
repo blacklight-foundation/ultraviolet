@@ -1,0 +1,92 @@
+//! Generated catalog markers for 18. Statements and Blocks / 18.10 Unsafe Statements.
+
+
+public procedure countStatementsAndBlocksUnsafeStatementsObligations() -> usize {
+    return 9usize
+}
+
+public procedure validatedStatementsAndBlocksUnsafeStatementsObligations() -> usize {
+    var count: usize = 0usize
+    if acceptedObligationEntryMatches(
+        "grammar.18.UnsafeStatements",
+        71235usize,
+        "HelloUltraviolet::Reference::Statements",
+        "runStatementsExpressionStatementsReference",
+        "Source/Reference/Statements/ExpressionStatements.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "rule.18.Parse-Unsafe-Block",
+        71252usize,
+        "HelloUltraviolet::Reference::Statements",
+        "runStatementsExpressionStatementsReference",
+        "Source/Reference/Statements/ExpressionStatements.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "def.18.UnsafeBlockStmtAst",
+        71270usize,
+        "HelloUltraviolet::Reference::Statements",
+        "runStatementsExpressionStatementsReference",
+        "Source/Reference/Statements/ExpressionStatements.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "rule.18.T-UnsafeStmt",
+        71285usize,
+        "HelloUltraviolet::Reference::Statements",
+        "runStatementsExpressionStatementsReference",
+        "Source/Reference/Statements/ExpressionStatements.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "req.18.UnsafeStatementStateAndProvenance",
+        71301usize,
+        "HelloUltraviolet::Reference::Statements",
+        "runStatementsExpressionStatementsReference",
+        "Source/Reference/Statements/ExpressionStatements.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "diag.18.UnsafeRequiredOperationOwnership",
+        71314usize,
+        "HelloUltraviolet::Reference::Statements",
+        "runStatementsExpressionStatementsReference",
+        "Source/Reference/Statements/ExpressionStatements.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "rule.18.ExecSigma-UnsafeStmt",
+        71329usize,
+        "HelloUltraviolet::Reference::Statements",
+        "runStatementsExpressionStatementsReference",
+        "Source/Reference/Statements/ExpressionStatements.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "rule.18.Lower-Stmt-UnsafeBlock",
+        71347usize,
+        "HelloUltraviolet::Reference::Statements",
+        "runStatementsExpressionStatementsReference",
+        "Source/Reference/Statements/ExpressionStatements.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "diag.18.UnsafeStatements",
+        71365usize,
+        "HelloUltraviolet::Reference::Statements",
+        "runStatementsExpressionStatementsReference",
+        "Source/Reference/Statements/ExpressionStatements.uv"
+    ) {
+        count = count + 1usize
+    }
+    return count
+}

@@ -1,0 +1,18 @@
+//! Reference specimens for Statements / ControlTransfer.
+
+/// Exercises the Statements ControlTransfer reference surface.
+public procedure runStatementsControlTransferReference() -> bool {
+    var index: i32 = 0
+    var total: i32 = 0
+    loop {
+        index = index + 1
+        if index == 2 {
+            continue
+        }
+        total = total + index
+        if index >= 3 {
+            break
+        }
+    }
+    return total == 4
+}

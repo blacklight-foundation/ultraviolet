@@ -304,6 +304,7 @@ ParseElemResult<std::vector<Arg>> ParseArgTail(ListState<Arg> state) {
 // Used by call expressions and method calls.
 
 ParseElemResult<std::vector<Arg>> ParseArgList(Parser parser) {
+  SPEC_RULE("ArgumentListParsingFamily");
   SkipNewlines(parser);
   const std::array<EndSetToken, 1> end_set = {EndPunct(")")};
   ListState<Arg> state = ListStart<Arg>(parser);

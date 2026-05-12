@@ -1,0 +1,51 @@
+//! Reference specimens for Types / Subtyping.
+
+internal enum SubtypingReferenceKind {
+    Exact
+    Widened
+    Rejected
+}
+
+internal record SubtypingReference {
+    internal kind: SubtypingReferenceKind
+    internal preserves_value: bool
+}
+
+internal procedure subtypingReference(
+    kind: SubtypingReferenceKind,
+    preserves_value: bool
+) -> SubtypingReference {
+    return SubtypingReference {
+        kind: kind,
+        preserves_value: preserves_value
+    }
+}
+
+internal procedure subtypingReferenceIsAccepted(reference: SubtypingReference) -> bool {
+    return if reference.kind is {
+        SubtypingReferenceKind::Exact {
+            reference.preserves_value
+        }
+        SubtypingReferenceKind::Widened {
+            reference.preserves_value
+        }
+        SubtypingReferenceKind::Rejected {
+            false
+        }
+    }
+}
+
+/// Exercises the Types Subtyping reference surface.
+public procedure runTypesSubtypingReference() -> bool {
+    let small_value: i32 = 7
+    let widened_value: i64 = small_value as i64
+    let exact: SubtypingReference =
+        subtypingReference(SubtypingReferenceKind::Exact, true)
+    let widened: SubtypingReference =
+        subtypingReference(SubtypingReferenceKind::Widened, widened_value == 7)
+    let rejected: SubtypingReference =
+        subtypingReference(SubtypingReferenceKind::Rejected, false)
+    return subtypingReferenceIsAccepted(exact) &&
+        subtypingReferenceIsAccepted(widened) &&
+        !subtypingReferenceIsAccepted(rejected)
+}

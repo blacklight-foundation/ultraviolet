@@ -120,6 +120,7 @@ static inline void SpecDefsTypeInfer() {
   SPEC_DEF("NicheCompatible", "5.7");
   SPEC_DEF("GpuPtr-AddrSpace-Err", "20.2.4");
   SPEC_DEF("Chk-Subsumption-Err", "5.2.12");
+  SPEC_DEF("ValueUse-NonBitcopyPlace", "5.2.12");
   SpecDefsSafePtr();
 }
 
@@ -177,6 +178,17 @@ static bool PtrNullExpected(const TypeRef& type) {
     return true;
   }
   return ptr->state == PtrState::Null;
+}
+
+static bool IsExplicitMoveExpr(const ast::ExprPtr& expr) {
+  return expr && std::holds_alternative<ast::MoveExpr>(expr->node);
+}
+
+static bool IsNonBitcopyPlaceValueUse(const ScopeContext& ctx,
+                                      const ast::ExprPtr& expr,
+                                      const TypeRef& type) {
+  return expr && !IsExplicitMoveExpr(expr) && IsPlaceExprForCall(expr) &&
+         !BitcopyType(ctx, type);
 }
 
 static const ast::TypeAliasDecl* LookupTypeAliasDecl(const ScopeContext& ctx,
@@ -1696,6 +1708,11 @@ static CheckResult CheckExprImpl(const ScopeContext& ctx,
                                             type_ident, if_case_check, nullptr);
   if (!inferred.ok) {
     result.diag_id = inferred.diag_id;
+    return result;
+  }
+  if (IsNonBitcopyPlaceValueUse(ctx, expr, inferred.type)) {
+    SPEC_RULE("ValueUse-NonBitcopyPlace");
+    result.diag_id = "ValueUse-NonBitcopyPlace";
     return result;
   }
 

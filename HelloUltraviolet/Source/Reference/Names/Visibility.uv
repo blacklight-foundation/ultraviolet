@@ -1,0 +1,35 @@
+//! Reference specimens for Names / Visibility.
+
+internal record VisibilityReference {
+    internal public_allowed: bool
+    internal internal_allowed: bool
+    internal private_allowed: bool
+}
+
+internal procedure visibilityReference(
+    public_allowed: bool,
+    internal_allowed: bool,
+    private_allowed: bool
+) -> VisibilityReference {
+    return VisibilityReference {
+        public_allowed: public_allowed,
+        internal_allowed: internal_allowed,
+        private_allowed: private_allowed
+    }
+}
+
+internal procedure visibilityAllowsCurrentModule(reference: VisibilityReference) -> bool {
+    return reference.public_allowed &&
+        reference.internal_allowed &&
+        reference.private_allowed
+}
+
+/// Exercises the Names Visibility reference surface.
+public procedure runNamesVisibilityReference() -> bool {
+    let current_module: VisibilityReference = visibilityReference(true, true, true)
+    let imported_module: VisibilityReference = visibilityReference(true, false, false)
+    return visibilityAllowsCurrentModule(current_module) &&
+        imported_module.public_allowed &&
+        !imported_module.internal_allowed &&
+        !imported_module.private_allowed
+}

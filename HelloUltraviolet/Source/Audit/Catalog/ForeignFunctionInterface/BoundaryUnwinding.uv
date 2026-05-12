@@ -1,0 +1,164 @@
+//! Generated catalog markers for 23. Foreign Function Interface / 23.7 Boundary Unwinding.
+
+
+public procedure countForeignFunctionInterfaceBoundaryUnwindingObligations() -> usize {
+    return 17usize
+}
+
+public procedure validatedForeignFunctionInterfaceBoundaryUnwindingObligations() -> usize {
+    var count: usize = 0usize
+    if acceptedObligationEntryMatches(
+        "requirement.23.BoundaryUnwindingSyntax",
+        88687usize,
+        "HelloUltraviolet::Reference::FFI",
+        "runFFIFfiSafeReference",
+        "Source/Reference/FFI/FfiSafe.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "requirement.23.BoundaryUnwindingParsingNoAdditionalRules",
+        88702usize,
+        "HelloUltraviolet::Reference::FFI",
+        "runFFIFfiSafeReference",
+        "Source/Reference/FFI/FfiSafe.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "ast.23.BoundaryUnwindPolicySource",
+        88717usize,
+        "HelloUltraviolet::Reference::FFI",
+        "runFFIFfiSafeReference",
+        "Source/Reference/FFI/FfiSafe.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "def.23.UnwindModeAstHelpers",
+        88730usize,
+        "HelloUltraviolet::Reference::FFI",
+        "runFFIFfiSafeReference",
+        "Source/Reference/FFI/FfiSafe.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "def.23.DetermineUnwindMode",
+        88752usize,
+        "HelloUltraviolet::Reference::FFI",
+        "runFFIFfiSafeReference",
+        "Source/Reference/FFI/FfiSafe.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "def.23.ParseUnwindArg",
+        88777usize,
+        "HelloUltraviolet::Reference::FFI",
+        "runFFIFfiSafeReference",
+        "Source/Reference/FFI/FfiSafe.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "rule.23.UnwindMode-Valid",
+        88799usize,
+        "HelloUltraviolet::Reference::FFI",
+        "runFFIFfiSafeReference",
+        "Source/Reference/FFI/FfiSafe.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "rule.23.UnwindMode-Invalid-Err",
+        88817usize,
+        "HelloUltraviolet::Reference::FFI",
+        "runFFIFfiSafeReference",
+        "Source/Reference/FFI/FfiSafe.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "requirement.23.BoundaryUnwindDynamicEffects",
+        88837usize,
+        "HelloUltraviolet::Reference::FFI",
+        "runFFIFfiSafeReference",
+        "Source/Reference/FFI/FfiSafe.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "requirement.23.GeneralDestructionAndUnwindCleanupReference",
+        88856usize,
+        "HelloUltraviolet::Reference::FFI",
+        "runFFIFfiSafeReference",
+        "Source/Reference/FFI/FfiSafe.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "def.23.BoundaryUnwindCodeGenerationEffects",
+        88871usize,
+        "HelloUltraviolet::Reference::FFI",
+        "runFFIFfiSafeReference",
+        "Source/Reference/FFI/FfiSafe.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "rule.23.CodeGen-UnwindAbort-Import",
+        88891usize,
+        "HelloUltraviolet::Reference::FFI",
+        "runFFIFfiSafeReference",
+        "Source/Reference/FFI/FfiSafe.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "rule.23.CodeGen-UnwindCatch-Import",
+        88909usize,
+        "HelloUltraviolet::Reference::FFI",
+        "runFFIFfiSafeReference",
+        "Source/Reference/FFI/FfiSafe.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "rule.23.CodeGen-UnwindAbort-Export",
+        88927usize,
+        "HelloUltraviolet::Reference::FFI",
+        "runFFIFfiSafeReference",
+        "Source/Reference/FFI/FfiSafe.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "rule.23.CodeGen-UnwindCatch-Export",
+        88945usize,
+        "HelloUltraviolet::Reference::FFI",
+        "runFFIFfiSafeReference",
+        "Source/Reference/FFI/FfiSafe.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "diagnostics.23.BoundaryUnwindingNoAdditionalDiagnostics",
+        88965usize,
+        "HelloUltraviolet::Reference::FFI",
+        "runFFIFfiSafeReference",
+        "Source/Reference/FFI/FfiSafe.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "diagnostics.23.BoundaryUnwindingDiagnosticOwnership",
+        88978usize,
+        "HelloUltraviolet::Reference::FFI",
+        "runFFIFfiSafeReference",
+        "Source/Reference/FFI/FfiSafe.uv"
+    ) {
+        count = count + 1usize
+    }
+    return count
+}

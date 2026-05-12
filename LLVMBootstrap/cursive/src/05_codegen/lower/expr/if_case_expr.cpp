@@ -798,8 +798,6 @@ LowerIfCaseClauseResult LowerIfCaseClauseImpl(
     std::optional<std::string> scrutinee_region_tag,
     const std::optional<OwnedIfCaseScrutinee>& owned_scrutinee,
     LowerCtx& ctx) {
-  RefineScrutineeBinding(scrutinee_expr, *arm.pattern, scrutinee_type, ctx);
-
   // Push a new scope for pattern bindings
   ctx.PushScope(false, false);
   ctx.RegisterRuntimeScopeExit();
@@ -849,6 +847,8 @@ LowerIfCaseClauseResult LowerIfCaseClauseImpl(
 
   // Bind the pattern - this creates IR to extract values from the scrutinee
   IRPtr bind_ir = LowerBindPattern(*arm.pattern, bind_scrutinee, ctx);
+
+  RefineScrutineeBinding(scrutinee_expr, *arm.pattern, scrutinee_type, ctx);
 
   // Lower the body expression
   LowerResult body_result;

@@ -1,0 +1,7 @@
+//! Reference specimens for FFI / ExportedProcedures.
+
+/// Exercises the FFI ExportedProcedures reference surface.
+public procedure runFFIExportedProceduresReference() -> bool {
+    let reference: FFIReference = ffiReference(2usize, true, false)
+    return ffiReferenceIsCovered(reference)
+}

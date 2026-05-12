@@ -1,0 +1,15 @@
+//! Reference specimens for SourceText / Identifiers.
+
+internal procedure identifierReferenceValue(read: i32, write: i32) -> i32 {
+    let dynamic: i32 = read + write
+    let release: i32 = dynamic + 1
+    let name_with_underscore: i32 = release + 1
+    return name_with_underscore
+}
+
+/// Exercises the SourceText Identifiers reference surface.
+public procedure runSourceTextIdentifiersReference() -> bool {
+    let identifier_value: i32 = identifierReferenceValue(2, 3)
+    let _leading_underscore: i32 = 1
+    return identifier_value == 7 && _leading_underscore == 1
+}

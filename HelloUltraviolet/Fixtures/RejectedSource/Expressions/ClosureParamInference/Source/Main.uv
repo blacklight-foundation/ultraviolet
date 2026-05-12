@@ -1,0 +1,6 @@
+//! Rejected closure specimen for missing parameter inference context.
+
+public procedure closureParamInferenceReference() -> i32 {
+    let identity = |value| value
+    return identity(1)
+}

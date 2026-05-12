@@ -1,0 +1,7 @@
+//! Reference specimens for Polymorphism / OpaqueTypes.
+
+/// Exercises the Polymorphism OpaqueTypes reference surface.
+public procedure runPolymorphismOpaqueTypesReference() -> bool {
+    let reference: PolymorphismReference = polymorphismReference(2usize, true, false)
+    return polymorphismReferenceIsCovered(reference)
+}

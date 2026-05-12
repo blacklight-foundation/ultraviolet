@@ -1,0 +1,101 @@
+//! Generated catalog markers for 15. Procedures and Contracts / 15.5 Preconditions.
+
+
+public procedure countProceduresAndContractsPreconditionsObligations() -> usize {
+    return 10usize
+}
+
+public procedure validatedProceduresAndContractsPreconditionsObligations() -> usize {
+    var count: usize = 0usize
+    if acceptedObligationEntryMatches(
+        "req.15.PreconditionSyntaxDefinition",
+        55062usize,
+        "HelloUltraviolet::Reference::Procedures",
+        "runProceduresContractsReference",
+        "Source/Reference/Procedures/Contracts.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "req.15.PreconditionsParsedByContractBody",
+        55077usize,
+        "HelloUltraviolet::Reference::Procedures",
+        "runProceduresContractsReference",
+        "Source/Reference/Procedures/Contracts.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "def.15.PreconditionOf",
+        55092usize,
+        "HelloUltraviolet::Reference::Procedures",
+        "runProceduresContractsReference",
+        "Source/Reference/Procedures/Contracts.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "def.15.PreconditionProofContext",
+        55109usize,
+        "HelloUltraviolet::Reference::Procedures",
+        "runProceduresContractsReference",
+        "Source/Reference/Procedures/Contracts.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "rule.15.Pre-Satisfied",
+        55125usize,
+        "HelloUltraviolet::Reference::Procedures",
+        "runProceduresContractsReference",
+        "Source/Reference/Procedures/Contracts.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "def.15.PreconditionElisionRules",
+        55141usize,
+        "HelloUltraviolet::Reference::Procedures",
+        "runProceduresContractsReference",
+        "Source/Reference/Procedures/Contracts.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "req.15.CallerResponsibleForPrecondition",
+        55161usize,
+        "HelloUltraviolet::Reference::Procedures",
+        "runProceduresContractsReference",
+        "Source/Reference/Procedures/Contracts.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "req.15.PreconditionRuntimeEvaluationOrder",
+        55176usize,
+        "HelloUltraviolet::Reference::Procedures",
+        "runProceduresContractsReference",
+        "Source/Reference/Procedures/Contracts.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "req.15.PreconditionCheckInsertionOwnedByVerificationLogic",
+        55191usize,
+        "HelloUltraviolet::Reference::Procedures",
+        "runProceduresContractsReference",
+        "Source/Reference/Procedures/Contracts.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "diag.15.Preconditions",
+        55206usize,
+        "HelloUltraviolet::Reference::Procedures",
+        "runProceduresContractsReference",
+        "Source/Reference/Procedures/Contracts.uv"
+    ) {
+        count = count + 1usize
+    }
+    return count
+}

@@ -1,0 +1,11 @@
+//! Rejected contract specimen for a statically unsatisfied precondition.
+
+public procedure requiresPositive(value: i32) -> i32
+|: value > 0
+{
+    return value
+}
+
+public procedure unsatisfiedPreconditionReference() -> i32 {
+    return requiresPositive(0)
+}

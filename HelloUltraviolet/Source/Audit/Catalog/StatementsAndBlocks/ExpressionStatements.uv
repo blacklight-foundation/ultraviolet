@@ -1,0 +1,83 @@
+//! Generated catalog markers for 18. Statements and Blocks / 18.5 Expression Statements.
+
+
+public procedure countStatementsAndBlocksExpressionStatementsObligations() -> usize {
+    return 8usize
+}
+
+public procedure validatedStatementsAndBlocksExpressionStatementsObligations() -> usize {
+    var count: usize = 0usize
+    if acceptedObligationEntryMatches(
+        "grammar.18.ExpressionStatements",
+        69523usize,
+        "HelloUltraviolet::Reference::Statements",
+        "runStatementsExpressionStatementsReference",
+        "Source/Reference/Statements/ExpressionStatements.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "rule.18.Parse-Expr-Stmt",
+        69540usize,
+        "HelloUltraviolet::Reference::Statements",
+        "runStatementsExpressionStatementsReference",
+        "Source/Reference/Statements/ExpressionStatements.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "def.18.ExprStmtAst",
+        69558usize,
+        "HelloUltraviolet::Reference::Statements",
+        "runStatementsExpressionStatementsReference",
+        "Source/Reference/Statements/ExpressionStatements.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "rule.18.T-ExprStmt",
+        69573usize,
+        "HelloUltraviolet::Reference::Statements",
+        "runStatementsExpressionStatementsReference",
+        "Source/Reference/Statements/ExpressionStatements.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "req.18.ExprStmtStateAndProvenanceRules",
+        69589usize,
+        "HelloUltraviolet::Reference::Statements",
+        "runStatementsExpressionStatementsReference",
+        "Source/Reference/Statements/ExpressionStatements.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "rule.18.ExecSigma-ExprStmt",
+        69604usize,
+        "HelloUltraviolet::Reference::Statements",
+        "runStatementsExpressionStatementsReference",
+        "Source/Reference/Statements/ExpressionStatements.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "rule.18.Lower-Stmt-Expr",
+        69622usize,
+        "HelloUltraviolet::Reference::Statements",
+        "runStatementsExpressionStatementsReference",
+        "Source/Reference/Statements/ExpressionStatements.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "diag.18.ExpressionStatements",
+        69640usize,
+        "HelloUltraviolet::Reference::Statements",
+        "runStatementsExpressionStatementsReference",
+        "Source/Reference/Statements/ExpressionStatements.uv"
+    ) {
+        count = count + 1usize
+    }
+    return count
+}

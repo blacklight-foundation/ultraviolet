@@ -1,0 +1,20 @@
+//! Generated catalog markers for Appendix B. Complete Grammar Reference / B.8 Attribute Grammar.
+
+
+public procedure countAppendixBCompleteGrammarReferenceBAttributeGrammarObligations() -> usize {
+    return 1usize
+}
+
+public procedure validatedAppendixBCompleteGrammarReferenceBAttributeGrammarObligations() -> usize {
+    var count: usize = 0usize
+    if acceptedObligationEntryMatches(
+        "grammar.B.8.AttributeGrammar",
+        99807usize,
+        "HelloUltraviolet::Reference::Parsing",
+        "runParsingItemSequencingReference",
+        "Source/Reference/Parsing/ItemSequencing.uv"
+    ) {
+        count = count + 1usize
+    }
+    return count
+}

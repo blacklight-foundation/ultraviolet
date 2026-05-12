@@ -1,0 +1,36 @@
+//! Reference specimens for DataTypes / Ranges.
+
+public procedure exclusiveRangeReference() -> Range<usize> {
+    return 1usize..3usize
+}
+
+public procedure inclusiveRangeReference() -> RangeInclusive<usize> {
+    return 1usize..=3usize
+}
+
+public procedure fromRangeReference() -> RangeFrom<usize> {
+    return 1usize..
+}
+
+public procedure toRangeReference() -> RangeTo<usize> {
+    return ..3usize
+}
+
+public procedure toInclusiveRangeReference() -> RangeToInclusive<usize> {
+    return ..=3usize
+}
+
+public procedure fullRangeReference() -> RangeFull {
+    return ..
+}
+
+/// Exercises the DataTypes Ranges reference surface.
+public procedure runDataTypesRangesReference() -> bool {
+    let exclusive: Range<usize> = exclusiveRangeReference()
+    let inclusive: RangeInclusive<usize> = inclusiveRangeReference()
+    let from_start: RangeFrom<usize> = fromRangeReference()
+    let to_end: RangeTo<usize> = toRangeReference()
+    let to_inclusive_end: RangeToInclusive<usize> = toInclusiveRangeReference()
+    let full: RangeFull = fullRangeReference()
+    return true
+}

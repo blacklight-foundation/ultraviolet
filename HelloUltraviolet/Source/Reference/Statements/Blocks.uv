@@ -1,0 +1,11 @@
+//! Reference specimens for Statements / Blocks.
+
+/// Exercises the Statements Blocks reference surface.
+public procedure runStatementsBlocksReference() -> bool {
+    let value: i32 = {
+        let left: i32 = 10
+        let right: i32 = 5
+        left + right
+    }
+    return value == 15
+}

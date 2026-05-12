@@ -1,0 +1,41 @@
+//! Reference specimens for Permissions / AliasExclusivity.
+
+internal record AliasExclusivityReference {
+    internal unique_aliases: usize
+    internal shared_aliases: usize
+    internal mutable_aliases: usize
+}
+
+internal procedure aliasExclusivityReference(
+    unique_aliases: usize,
+    shared_aliases: usize,
+    mutable_aliases: usize
+) -> AliasExclusivityReference {
+    return AliasExclusivityReference {
+        unique_aliases: unique_aliases,
+        shared_aliases: shared_aliases,
+        mutable_aliases: mutable_aliases
+    }
+}
+
+internal procedure aliasExclusivityIsSatisfied(
+    reference: AliasExclusivityReference
+) -> bool {
+    if reference.unique_aliases > 0usize {
+        return reference.shared_aliases == 0usize && reference.mutable_aliases == 0usize
+    }
+    return true
+}
+
+/// Exercises the Permissions AliasExclusivity reference surface.
+public procedure runPermissionsAliasExclusivityReference() -> bool {
+    let unique_access: AliasExclusivityReference =
+        aliasExclusivityReference(1usize, 0usize, 0usize)
+    let shared_access: AliasExclusivityReference =
+        aliasExclusivityReference(0usize, 2usize, 0usize)
+    let conflict: AliasExclusivityReference =
+        aliasExclusivityReference(1usize, 1usize, 0usize)
+    return aliasExclusivityIsSatisfied(unique_access) &&
+        aliasExclusivityIsSatisfied(shared_access) &&
+        !aliasExclusivityIsSatisfied(conflict)
+}

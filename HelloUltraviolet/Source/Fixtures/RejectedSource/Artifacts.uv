@@ -1,0 +1,531 @@
+//! Runtime path checks for rejected-source fixture artifacts.
+
+internal procedure rejectedFixtureArtifactsExist(
+    context: Context,
+    manifest_path: string@View,
+    source_path: string@View,
+    expected_path: string@View
+) -> bool {
+    return context.fs~>exists(manifest_path) &&
+        context.fs~>exists(source_path) &&
+        context.fs~>exists(expected_path)
+}
+
+public procedure rejectedSourceFixtureArtifactsExist(context: Context) -> bool {
+    return rejectedFixtureArtifactsExist(
+        context,
+        "HelloUltraviolet/Fixtures/RejectedSource/SourceText/UnterminatedString/Ultraviolet.toml",
+        "HelloUltraviolet/Fixtures/RejectedSource/SourceText/UnterminatedString/Source/Main.uv",
+        "HelloUltraviolet/Fixtures/RejectedSource/SourceText/UnterminatedString/Expected.uv"
+    ) &&
+        rejectedFixtureArtifactsExist(
+            context,
+            "HelloUltraviolet/Fixtures/RejectedSource/SourceText/InvalidStringEscape/Ultraviolet.toml",
+            "HelloUltraviolet/Fixtures/RejectedSource/SourceText/InvalidStringEscape/Source/Main.uv",
+            "HelloUltraviolet/Fixtures/RejectedSource/SourceText/InvalidStringEscape/Expected.uv"
+        ) &&
+        rejectedFixtureArtifactsExist(
+            context,
+            "HelloUltraviolet/Fixtures/RejectedSource/SourceText/MalformedNumericLiteral/Ultraviolet.toml",
+            "HelloUltraviolet/Fixtures/RejectedSource/SourceText/MalformedNumericLiteral/Source/Main.uv",
+            "HelloUltraviolet/Fixtures/RejectedSource/SourceText/MalformedNumericLiteral/Expected.uv"
+        ) &&
+        rejectedFixtureArtifactsExist(
+            context,
+            "HelloUltraviolet/Fixtures/RejectedSource/SourceText/UnterminatedBlockComment/Ultraviolet.toml",
+            "HelloUltraviolet/Fixtures/RejectedSource/SourceText/UnterminatedBlockComment/Source/Main.uv",
+            "HelloUltraviolet/Fixtures/RejectedSource/SourceText/UnterminatedBlockComment/Expected.uv"
+        ) &&
+        rejectedFixtureArtifactsExist(
+            context,
+            "HelloUltraviolet/Fixtures/RejectedSource/Parsing/MissingStatementTerminator/Ultraviolet.toml",
+            "HelloUltraviolet/Fixtures/RejectedSource/Parsing/MissingStatementTerminator/Source/Main.uv",
+            "HelloUltraviolet/Fixtures/RejectedSource/Parsing/MissingStatementTerminator/Expected.uv"
+        ) &&
+        rejectedFixtureArtifactsExist(
+            context,
+            "HelloUltraviolet/Fixtures/RejectedSource/Names/DuplicateModuleDeclaration/Ultraviolet.toml",
+            "HelloUltraviolet/Fixtures/RejectedSource/Names/DuplicateModuleDeclaration/Source/Main.uv",
+            "HelloUltraviolet/Fixtures/RejectedSource/Names/DuplicateModuleDeclaration/Expected.uv"
+        ) &&
+        rejectedFixtureArtifactsExist(
+            context,
+            "HelloUltraviolet/Fixtures/RejectedSource/Procedures/MainMissing/Ultraviolet.toml",
+            "HelloUltraviolet/Fixtures/RejectedSource/Procedures/MainMissing/Source/Main.uv",
+            "HelloUltraviolet/Fixtures/RejectedSource/Procedures/MainMissing/Expected.uv"
+        ) &&
+        rejectedFixtureArtifactsExist(
+            context,
+            "HelloUltraviolet/Fixtures/RejectedSource/Procedures/MainMultiple/Ultraviolet.toml",
+            "HelloUltraviolet/Fixtures/RejectedSource/Procedures/MainMultiple/Source/Main.uv",
+            "HelloUltraviolet/Fixtures/RejectedSource/Procedures/MainMultiple/Expected.uv"
+        ) &&
+        rejectedFixtureArtifactsExist(
+            context,
+            "HelloUltraviolet/Fixtures/RejectedSource/Procedures/MainGeneric/Ultraviolet.toml",
+            "HelloUltraviolet/Fixtures/RejectedSource/Procedures/MainGeneric/Source/Main.uv",
+            "HelloUltraviolet/Fixtures/RejectedSource/Procedures/MainGeneric/Expected.uv"
+        ) &&
+        rejectedFixtureArtifactsExist(
+            context,
+            "HelloUltraviolet/Fixtures/RejectedSource/Procedures/MainSignature/Ultraviolet.toml",
+            "HelloUltraviolet/Fixtures/RejectedSource/Procedures/MainSignature/Source/Main.uv",
+            "HelloUltraviolet/Fixtures/RejectedSource/Procedures/MainSignature/Expected.uv"
+        ) &&
+        rejectedFixtureArtifactsExist(
+            context,
+            "HelloUltraviolet/Fixtures/RejectedSource/Statements/BreakOutsideLoop/Ultraviolet.toml",
+            "HelloUltraviolet/Fixtures/RejectedSource/Statements/BreakOutsideLoop/Source/Main.uv",
+            "HelloUltraviolet/Fixtures/RejectedSource/Statements/BreakOutsideLoop/Expected.uv"
+        ) &&
+        rejectedFixtureArtifactsExist(
+            context,
+            "HelloUltraviolet/Fixtures/RejectedSource/Statements/ContinueOutsideLoop/Ultraviolet.toml",
+            "HelloUltraviolet/Fixtures/RejectedSource/Statements/ContinueOutsideLoop/Source/Main.uv",
+            "HelloUltraviolet/Fixtures/RejectedSource/Statements/ContinueOutsideLoop/Expected.uv"
+        ) &&
+        rejectedFixtureArtifactsExist(
+            context,
+            "HelloUltraviolet/Fixtures/RejectedSource/Statements/AssignImmutableLet/Ultraviolet.toml",
+            "HelloUltraviolet/Fixtures/RejectedSource/Statements/AssignImmutableLet/Source/Main.uv",
+            "HelloUltraviolet/Fixtures/RejectedSource/Statements/AssignImmutableLet/Expected.uv"
+        ) &&
+        rejectedFixtureArtifactsExist(
+            context,
+            "HelloUltraviolet/Fixtures/RejectedSource/Statements/LetAnnotationMismatch/Ultraviolet.toml",
+            "HelloUltraviolet/Fixtures/RejectedSource/Statements/LetAnnotationMismatch/Source/Main.uv",
+            "HelloUltraviolet/Fixtures/RejectedSource/Statements/LetAnnotationMismatch/Expected.uv"
+        ) &&
+        rejectedFixtureArtifactsExist(
+            context,
+            "HelloUltraviolet/Fixtures/RejectedSource/Statements/AssignTypeMismatch/Ultraviolet.toml",
+            "HelloUltraviolet/Fixtures/RejectedSource/Statements/AssignTypeMismatch/Source/Main.uv",
+            "HelloUltraviolet/Fixtures/RejectedSource/Statements/AssignTypeMismatch/Expected.uv"
+        ) &&
+        rejectedFixtureArtifactsExist(
+            context,
+            "HelloUltraviolet/Fixtures/RejectedSource/Statements/ReturnTypeMismatch/Ultraviolet.toml",
+            "HelloUltraviolet/Fixtures/RejectedSource/Statements/ReturnTypeMismatch/Source/Main.uv",
+            "HelloUltraviolet/Fixtures/RejectedSource/Statements/ReturnTypeMismatch/Expected.uv"
+        ) &&
+        rejectedFixtureArtifactsExist(
+            context,
+            "HelloUltraviolet/Fixtures/RejectedSource/Statements/ReturnUnitMismatch/Ultraviolet.toml",
+            "HelloUltraviolet/Fixtures/RejectedSource/Statements/ReturnUnitMismatch/Source/Main.uv",
+            "HelloUltraviolet/Fixtures/RejectedSource/Statements/ReturnUnitMismatch/Expected.uv"
+        ) &&
+        rejectedFixtureArtifactsExist(
+            context,
+            "HelloUltraviolet/Fixtures/RejectedSource/Statements/ReturnAtModuleScope/Ultraviolet.toml",
+            "HelloUltraviolet/Fixtures/RejectedSource/Statements/ReturnAtModuleScope/Source/Main.uv",
+            "HelloUltraviolet/Fixtures/RejectedSource/Statements/ReturnAtModuleScope/Expected.uv"
+        ) &&
+        rejectedFixtureArtifactsExist(
+            context,
+            "HelloUltraviolet/Fixtures/RejectedSource/Statements/DeferNonUnit/Ultraviolet.toml",
+            "HelloUltraviolet/Fixtures/RejectedSource/Statements/DeferNonUnit/Source/Main.uv",
+            "HelloUltraviolet/Fixtures/RejectedSource/Statements/DeferNonUnit/Expected.uv"
+        ) &&
+        rejectedFixtureArtifactsExist(
+            context,
+            "HelloUltraviolet/Fixtures/RejectedSource/Statements/DeferNonLocal/Ultraviolet.toml",
+            "HelloUltraviolet/Fixtures/RejectedSource/Statements/DeferNonLocal/Source/Main.uv",
+            "HelloUltraviolet/Fixtures/RejectedSource/Statements/DeferNonLocal/Expected.uv"
+        ) &&
+        rejectedFixtureArtifactsExist(
+            context,
+            "HelloUltraviolet/Fixtures/RejectedSource/Procedures/MissingExplicitReturn/Ultraviolet.toml",
+            "HelloUltraviolet/Fixtures/RejectedSource/Procedures/MissingExplicitReturn/Source/Main.uv",
+            "HelloUltraviolet/Fixtures/RejectedSource/Procedures/MissingExplicitReturn/Expected.uv"
+        ) &&
+        rejectedFixtureArtifactsExist(
+            context,
+            "HelloUltraviolet/Fixtures/RejectedSource/Procedures/MissingReturnType/Ultraviolet.toml",
+            "HelloUltraviolet/Fixtures/RejectedSource/Procedures/MissingReturnType/Source/Main.uv",
+            "HelloUltraviolet/Fixtures/RejectedSource/Procedures/MissingReturnType/Expected.uv"
+        ) &&
+        rejectedFixtureArtifactsExist(
+            context,
+            "HelloUltraviolet/Fixtures/RejectedSource/Expressions/CallNonFunction/Ultraviolet.toml",
+            "HelloUltraviolet/Fixtures/RejectedSource/Expressions/CallNonFunction/Source/Main.uv",
+            "HelloUltraviolet/Fixtures/RejectedSource/Expressions/CallNonFunction/Expected.uv"
+        ) &&
+        rejectedFixtureArtifactsExist(
+            context,
+            "HelloUltraviolet/Fixtures/RejectedSource/Expressions/IndexNonIndexable/Ultraviolet.toml",
+            "HelloUltraviolet/Fixtures/RejectedSource/Expressions/IndexNonIndexable/Source/Main.uv",
+            "HelloUltraviolet/Fixtures/RejectedSource/Expressions/IndexNonIndexable/Expected.uv"
+        ) &&
+        rejectedFixtureArtifactsExist(
+            context,
+            "HelloUltraviolet/Fixtures/RejectedSource/Expressions/ArrayIndexNonConst/Ultraviolet.toml",
+            "HelloUltraviolet/Fixtures/RejectedSource/Expressions/ArrayIndexNonConst/Source/Main.uv",
+            "HelloUltraviolet/Fixtures/RejectedSource/Expressions/ArrayIndexNonConst/Expected.uv"
+        ) &&
+        rejectedFixtureArtifactsExist(
+            context,
+            "HelloUltraviolet/Fixtures/RejectedSource/Expressions/ArrayIndexOutOfBounds/Ultraviolet.toml",
+            "HelloUltraviolet/Fixtures/RejectedSource/Expressions/ArrayIndexOutOfBounds/Source/Main.uv",
+            "HelloUltraviolet/Fixtures/RejectedSource/Expressions/ArrayIndexOutOfBounds/Expected.uv"
+        ) &&
+        rejectedFixtureArtifactsExist(
+            context,
+            "HelloUltraviolet/Fixtures/RejectedSource/Expressions/PtrNullSynthesis/Ultraviolet.toml",
+            "HelloUltraviolet/Fixtures/RejectedSource/Expressions/PtrNullSynthesis/Source/Main.uv",
+            "HelloUltraviolet/Fixtures/RejectedSource/Expressions/PtrNullSynthesis/Expected.uv"
+        ) &&
+        rejectedFixtureArtifactsExist(
+            context,
+            "HelloUltraviolet/Fixtures/RejectedSource/Expressions/PtrNullCheck/Ultraviolet.toml",
+            "HelloUltraviolet/Fixtures/RejectedSource/Expressions/PtrNullCheck/Source/Main.uv",
+            "HelloUltraviolet/Fixtures/RejectedSource/Expressions/PtrNullCheck/Expected.uv"
+        ) &&
+        rejectedFixtureArtifactsExist(
+            context,
+            "HelloUltraviolet/Fixtures/RejectedSource/Expressions/CallArgCount/Ultraviolet.toml",
+            "HelloUltraviolet/Fixtures/RejectedSource/Expressions/CallArgCount/Source/Main.uv",
+            "HelloUltraviolet/Fixtures/RejectedSource/Expressions/CallArgCount/Expected.uv"
+        ) &&
+        rejectedFixtureArtifactsExist(
+            context,
+            "HelloUltraviolet/Fixtures/RejectedSource/Expressions/CallArgType/Ultraviolet.toml",
+            "HelloUltraviolet/Fixtures/RejectedSource/Expressions/CallArgType/Source/Main.uv",
+            "HelloUltraviolet/Fixtures/RejectedSource/Expressions/CallArgType/Expected.uv"
+        ) &&
+        rejectedFixtureArtifactsExist(
+            context,
+            "HelloUltraviolet/Fixtures/RejectedSource/Expressions/ExprUnresolved/Ultraviolet.toml",
+            "HelloUltraviolet/Fixtures/RejectedSource/Expressions/ExprUnresolved/Source/Main.uv",
+            "HelloUltraviolet/Fixtures/RejectedSource/Expressions/ExprUnresolved/Expected.uv"
+        ) &&
+        rejectedFixtureArtifactsExist(
+            context,
+            "HelloUltraviolet/Fixtures/RejectedSource/Expressions/UnionDirectAccess/Ultraviolet.toml",
+            "HelloUltraviolet/Fixtures/RejectedSource/Expressions/UnionDirectAccess/Source/Main.uv",
+            "HelloUltraviolet/Fixtures/RejectedSource/Expressions/UnionDirectAccess/Expected.uv"
+        ) &&
+        rejectedFixtureArtifactsExist(
+            context,
+            "HelloUltraviolet/Fixtures/RejectedSource/Expressions/AllocImplicitNoRegion/Ultraviolet.toml",
+            "HelloUltraviolet/Fixtures/RejectedSource/Expressions/AllocImplicitNoRegion/Source/Main.uv",
+            "HelloUltraviolet/Fixtures/RejectedSource/Expressions/AllocImplicitNoRegion/Expected.uv"
+        ) &&
+        rejectedFixtureArtifactsExist(
+            context,
+            "HelloUltraviolet/Fixtures/RejectedSource/Expressions/CallArgNotPlace/Ultraviolet.toml",
+            "HelloUltraviolet/Fixtures/RejectedSource/Expressions/CallArgNotPlace/Source/Main.uv",
+            "HelloUltraviolet/Fixtures/RejectedSource/Expressions/CallArgNotPlace/Expected.uv"
+        ) &&
+        rejectedFixtureArtifactsExist(
+            context,
+            "HelloUltraviolet/Fixtures/RejectedSource/Expressions/CallArgPackedUnsafe/Ultraviolet.toml",
+            "HelloUltraviolet/Fixtures/RejectedSource/Expressions/CallArgPackedUnsafe/Source/Main.uv",
+            "HelloUltraviolet/Fixtures/RejectedSource/Expressions/CallArgPackedUnsafe/Expected.uv"
+        ) &&
+        rejectedFixtureArtifactsExist(
+            context,
+            "HelloUltraviolet/Fixtures/RejectedSource/Expressions/FloatSuffixMismatch/Ultraviolet.toml",
+            "HelloUltraviolet/Fixtures/RejectedSource/Expressions/FloatSuffixMismatch/Source/Main.uv",
+            "HelloUltraviolet/Fixtures/RejectedSource/Expressions/FloatSuffixMismatch/Expected.uv"
+        ) &&
+        rejectedFixtureArtifactsExist(
+            context,
+            "HelloUltraviolet/Fixtures/RejectedSource/Expressions/ParsePlaceError/Ultraviolet.toml",
+            "HelloUltraviolet/Fixtures/RejectedSource/Expressions/ParsePlaceError/Source/Main.uv",
+            "HelloUltraviolet/Fixtures/RejectedSource/Expressions/ParsePlaceError/Expected.uv"
+        ) &&
+        rejectedFixtureArtifactsExist(
+            context,
+            "HelloUltraviolet/Fixtures/RejectedSource/Expressions/OperatorOperandMismatch/Ultraviolet.toml",
+            "HelloUltraviolet/Fixtures/RejectedSource/Expressions/OperatorOperandMismatch/Source/Main.uv",
+            "HelloUltraviolet/Fixtures/RejectedSource/Expressions/OperatorOperandMismatch/Expected.uv"
+        ) &&
+        rejectedFixtureArtifactsExist(
+            context,
+            "HelloUltraviolet/Fixtures/RejectedSource/Expressions/IfConditionNonBool/Ultraviolet.toml",
+            "HelloUltraviolet/Fixtures/RejectedSource/Expressions/IfConditionNonBool/Source/Main.uv",
+            "HelloUltraviolet/Fixtures/RejectedSource/Expressions/IfConditionNonBool/Expected.uv"
+        ) &&
+        rejectedFixtureArtifactsExist(
+            context,
+            "HelloUltraviolet/Fixtures/RejectedSource/Expressions/TupleAccessNonTuple/Ultraviolet.toml",
+            "HelloUltraviolet/Fixtures/RejectedSource/Expressions/TupleAccessNonTuple/Source/Main.uv",
+            "HelloUltraviolet/Fixtures/RejectedSource/Expressions/TupleAccessNonTuple/Expected.uv"
+        ) &&
+        rejectedFixtureArtifactsExist(
+            context,
+            "HelloUltraviolet/Fixtures/RejectedSource/Expressions/ClosureCaptureUnique/Ultraviolet.toml",
+            "HelloUltraviolet/Fixtures/RejectedSource/Expressions/ClosureCaptureUnique/Source/Main.uv",
+            "HelloUltraviolet/Fixtures/RejectedSource/Expressions/ClosureCaptureUnique/Expected.uv"
+        ) &&
+        rejectedFixtureArtifactsExist(
+            context,
+            "HelloUltraviolet/Fixtures/RejectedSource/Expressions/CallMoveUnexpected/Ultraviolet.toml",
+            "HelloUltraviolet/Fixtures/RejectedSource/Expressions/CallMoveUnexpected/Source/Main.uv",
+            "HelloUltraviolet/Fixtures/RejectedSource/Expressions/CallMoveUnexpected/Expected.uv"
+        ) &&
+        rejectedFixtureArtifactsExist(
+            context,
+            "HelloUltraviolet/Fixtures/RejectedSource/Expressions/CallMoveMissing/Ultraviolet.toml",
+            "HelloUltraviolet/Fixtures/RejectedSource/Expressions/CallMoveMissing/Source/Main.uv",
+            "HelloUltraviolet/Fixtures/RejectedSource/Expressions/CallMoveMissing/Expected.uv"
+        ) &&
+        rejectedFixtureArtifactsExist(
+            context,
+            "HelloUltraviolet/Fixtures/RejectedSource/Expressions/MethodNotFound/Ultraviolet.toml",
+            "HelloUltraviolet/Fixtures/RejectedSource/Expressions/MethodNotFound/Source/Main.uv",
+            "HelloUltraviolet/Fixtures/RejectedSource/Expressions/MethodNotFound/Expected.uv"
+        ) &&
+        rejectedFixtureArtifactsExist(
+            context,
+            "HelloUltraviolet/Fixtures/RejectedSource/Expressions/PipelineNotCallable/Ultraviolet.toml",
+            "HelloUltraviolet/Fixtures/RejectedSource/Expressions/PipelineNotCallable/Source/Main.uv",
+            "HelloUltraviolet/Fixtures/RejectedSource/Expressions/PipelineNotCallable/Expected.uv"
+        ) &&
+        rejectedFixtureArtifactsExist(
+            context,
+            "HelloUltraviolet/Fixtures/RejectedSource/Expressions/PipelineTypeMismatch/Ultraviolet.toml",
+            "HelloUltraviolet/Fixtures/RejectedSource/Expressions/PipelineTypeMismatch/Source/Main.uv",
+            "HelloUltraviolet/Fixtures/RejectedSource/Expressions/PipelineTypeMismatch/Expected.uv"
+        ) &&
+        rejectedFixtureArtifactsExist(
+            context,
+            "HelloUltraviolet/Fixtures/RejectedSource/Expressions/PipelineArgCount/Ultraviolet.toml",
+            "HelloUltraviolet/Fixtures/RejectedSource/Expressions/PipelineArgCount/Source/Main.uv",
+            "HelloUltraviolet/Fixtures/RejectedSource/Expressions/PipelineArgCount/Expected.uv"
+        ) &&
+        rejectedFixtureArtifactsExist(
+            context,
+            "HelloUltraviolet/Fixtures/RejectedSource/Expressions/ClosureParamInference/Ultraviolet.toml",
+            "HelloUltraviolet/Fixtures/RejectedSource/Expressions/ClosureParamInference/Source/Main.uv",
+            "HelloUltraviolet/Fixtures/RejectedSource/Expressions/ClosureParamInference/Expected.uv"
+        ) &&
+        rejectedFixtureArtifactsExist(
+            context,
+            "HelloUltraviolet/Fixtures/RejectedSource/Expressions/InvalidCast/Ultraviolet.toml",
+            "HelloUltraviolet/Fixtures/RejectedSource/Expressions/InvalidCast/Source/Main.uv",
+            "HelloUltraviolet/Fixtures/RejectedSource/Expressions/InvalidCast/Expected.uv"
+        ) &&
+        rejectedFixtureArtifactsExist(
+            context,
+            "HelloUltraviolet/Fixtures/RejectedSource/Expressions/TransmuteSizeMismatch/Ultraviolet.toml",
+            "HelloUltraviolet/Fixtures/RejectedSource/Expressions/TransmuteSizeMismatch/Source/Main.uv",
+            "HelloUltraviolet/Fixtures/RejectedSource/Expressions/TransmuteSizeMismatch/Expected.uv"
+        ) &&
+        rejectedFixtureArtifactsExist(
+            context,
+            "HelloUltraviolet/Fixtures/RejectedSource/Expressions/TransmuteAlignMismatch/Ultraviolet.toml",
+            "HelloUltraviolet/Fixtures/RejectedSource/Expressions/TransmuteAlignMismatch/Source/Main.uv",
+            "HelloUltraviolet/Fixtures/RejectedSource/Expressions/TransmuteAlignMismatch/Expected.uv"
+        ) &&
+        rejectedFixtureArtifactsExist(
+            context,
+            "HelloUltraviolet/Fixtures/RejectedSource/Expressions/TransmuteUnsafe/Ultraviolet.toml",
+            "HelloUltraviolet/Fixtures/RejectedSource/Expressions/TransmuteUnsafe/Source/Main.uv",
+            "HelloUltraviolet/Fixtures/RejectedSource/Expressions/TransmuteUnsafe/Expected.uv"
+        ) &&
+        rejectedFixtureArtifactsExist(
+            context,
+            "HelloUltraviolet/Fixtures/RejectedSource/Expressions/ValueUseNonBitcopyPlace/Ultraviolet.toml",
+            "HelloUltraviolet/Fixtures/RejectedSource/Expressions/ValueUseNonBitcopyPlace/Source/Main.uv",
+            "HelloUltraviolet/Fixtures/RejectedSource/Expressions/ValueUseNonBitcopyPlace/Expected.uv"
+        ) &&
+        rejectedFixtureArtifactsExist(
+            context,
+            "HelloUltraviolet/Fixtures/RejectedSource/Expressions/RecordFieldInitDuplicate/Ultraviolet.toml",
+            "HelloUltraviolet/Fixtures/RejectedSource/Expressions/RecordFieldInitDuplicate/Source/Main.uv",
+            "HelloUltraviolet/Fixtures/RejectedSource/Expressions/RecordFieldInitDuplicate/Expected.uv"
+        ) &&
+        rejectedFixtureArtifactsExist(
+            context,
+            "HelloUltraviolet/Fixtures/RejectedSource/Expressions/RecordFieldInitMissing/Ultraviolet.toml",
+            "HelloUltraviolet/Fixtures/RejectedSource/Expressions/RecordFieldInitMissing/Source/Main.uv",
+            "HelloUltraviolet/Fixtures/RejectedSource/Expressions/RecordFieldInitMissing/Expected.uv"
+        ) &&
+        rejectedFixtureArtifactsExist(
+            context,
+            "HelloUltraviolet/Fixtures/RejectedSource/Expressions/RecordFieldUnknown/Ultraviolet.toml",
+            "HelloUltraviolet/Fixtures/RejectedSource/Expressions/RecordFieldUnknown/Source/Main.uv",
+            "HelloUltraviolet/Fixtures/RejectedSource/Expressions/RecordFieldUnknown/Expected.uv"
+        ) &&
+        rejectedFixtureArtifactsExist(
+            context,
+            "HelloUltraviolet/Fixtures/RejectedSource/Expressions/RecordFieldNonBitcopyMove/Ultraviolet.toml",
+            "HelloUltraviolet/Fixtures/RejectedSource/Expressions/RecordFieldNonBitcopyMove/Source/Main.uv",
+            "HelloUltraviolet/Fixtures/RejectedSource/Expressions/RecordFieldNonBitcopyMove/Expected.uv"
+        ) &&
+        rejectedFixtureArtifactsExist(
+            context,
+            "HelloUltraviolet/Fixtures/RejectedSource/Expressions/RecordDefaultInit/Ultraviolet.toml",
+            "HelloUltraviolet/Fixtures/RejectedSource/Expressions/RecordDefaultInit/Source/Main.uv",
+            "HelloUltraviolet/Fixtures/RejectedSource/Expressions/RecordDefaultInit/Expected.uv"
+        ) &&
+        rejectedFixtureArtifactsExist(
+            context,
+            "HelloUltraviolet/Fixtures/RejectedSource/Patterns/DuplicatePatternBinding/Ultraviolet.toml",
+            "HelloUltraviolet/Fixtures/RejectedSource/Patterns/DuplicatePatternBinding/Source/Main.uv",
+            "HelloUltraviolet/Fixtures/RejectedSource/Patterns/DuplicatePatternBinding/Expected.uv"
+        ) &&
+        rejectedFixtureArtifactsExist(
+            context,
+            "HelloUltraviolet/Fixtures/RejectedSource/Patterns/TuplePatternArity/Ultraviolet.toml",
+            "HelloUltraviolet/Fixtures/RejectedSource/Patterns/TuplePatternArity/Source/Main.uv",
+            "HelloUltraviolet/Fixtures/RejectedSource/Patterns/TuplePatternArity/Expected.uv"
+        ) &&
+        rejectedFixtureArtifactsExist(
+            context,
+            "HelloUltraviolet/Fixtures/RejectedSource/Patterns/RecordPatternUnknownField/Ultraviolet.toml",
+            "HelloUltraviolet/Fixtures/RejectedSource/Patterns/RecordPatternUnknownField/Source/Main.uv",
+            "HelloUltraviolet/Fixtures/RejectedSource/Patterns/RecordPatternUnknownField/Expected.uv"
+        ) &&
+        rejectedFixtureArtifactsExist(
+            context,
+            "HelloUltraviolet/Fixtures/RejectedSource/Patterns/RangePatternNonConst/Ultraviolet.toml",
+            "HelloUltraviolet/Fixtures/RejectedSource/Patterns/RangePatternNonConst/Source/Main.uv",
+            "HelloUltraviolet/Fixtures/RejectedSource/Patterns/RangePatternNonConst/Expected.uv"
+        ) &&
+        rejectedFixtureArtifactsExist(
+            context,
+            "HelloUltraviolet/Fixtures/RejectedSource/Patterns/RangePatternEmpty/Ultraviolet.toml",
+            "HelloUltraviolet/Fixtures/RejectedSource/Patterns/RangePatternEmpty/Source/Main.uv",
+            "HelloUltraviolet/Fixtures/RejectedSource/Patterns/RangePatternEmpty/Expected.uv"
+        ) &&
+        rejectedFixtureArtifactsExist(
+            context,
+            "HelloUltraviolet/Fixtures/RejectedSource/Patterns/IfCaseEnumNonExhaustive/Ultraviolet.toml",
+            "HelloUltraviolet/Fixtures/RejectedSource/Patterns/IfCaseEnumNonExhaustive/Source/Main.uv",
+            "HelloUltraviolet/Fixtures/RejectedSource/Patterns/IfCaseEnumNonExhaustive/Expected.uv"
+        ) &&
+        rejectedFixtureArtifactsExist(
+            context,
+            "HelloUltraviolet/Fixtures/RejectedSource/Patterns/IfCaseModalNonExhaustive/Ultraviolet.toml",
+            "HelloUltraviolet/Fixtures/RejectedSource/Patterns/IfCaseModalNonExhaustive/Source/Main.uv",
+            "HelloUltraviolet/Fixtures/RejectedSource/Patterns/IfCaseModalNonExhaustive/Expected.uv"
+        ) &&
+        rejectedFixtureArtifactsExist(
+            context,
+            "HelloUltraviolet/Fixtures/RejectedSource/Patterns/IfCaseUnionNonExhaustive/Ultraviolet.toml",
+            "HelloUltraviolet/Fixtures/RejectedSource/Patterns/IfCaseUnionNonExhaustive/Source/Main.uv",
+            "HelloUltraviolet/Fixtures/RejectedSource/Patterns/IfCaseUnionNonExhaustive/Expected.uv"
+        ) &&
+        rejectedFixtureArtifactsExist(
+            context,
+            "HelloUltraviolet/Fixtures/RejectedSource/Patterns/IfCaseUnreachable/Ultraviolet.toml",
+            "HelloUltraviolet/Fixtures/RejectedSource/Patterns/IfCaseUnreachable/Source/Main.uv",
+            "HelloUltraviolet/Fixtures/RejectedSource/Patterns/IfCaseUnreachable/Expected.uv"
+        ) &&
+        rejectedFixtureArtifactsExist(
+            context,
+            "HelloUltraviolet/Fixtures/RejectedSource/Procedures/RecordMethodReceiverNotSelf/Ultraviolet.toml",
+            "HelloUltraviolet/Fixtures/RejectedSource/Procedures/RecordMethodReceiverNotSelf/Source/Main.uv",
+            "HelloUltraviolet/Fixtures/RejectedSource/Procedures/RecordMethodReceiverNotSelf/Expected.uv"
+        ) &&
+        rejectedFixtureArtifactsExist(
+            context,
+            "HelloUltraviolet/Fixtures/RejectedSource/Procedures/RecordMethodDuplicate/Ultraviolet.toml",
+            "HelloUltraviolet/Fixtures/RejectedSource/Procedures/RecordMethodDuplicate/Source/Main.uv",
+            "HelloUltraviolet/Fixtures/RejectedSource/Procedures/RecordMethodDuplicate/Expected.uv"
+        ) &&
+        rejectedFixtureArtifactsExist(
+            context,
+            "HelloUltraviolet/Fixtures/RejectedSource/Patterns/ParsePatternError/Ultraviolet.toml",
+            "HelloUltraviolet/Fixtures/RejectedSource/Patterns/ParsePatternError/Source/Main.uv",
+            "HelloUltraviolet/Fixtures/RejectedSource/Patterns/ParsePatternError/Expected.uv"
+        ) &&
+        rejectedFixtureArtifactsExist(
+            context,
+            "HelloUltraviolet/Fixtures/RejectedSource/Procedures/ContractResultOutsidePostcondition/Ultraviolet.toml",
+            "HelloUltraviolet/Fixtures/RejectedSource/Procedures/ContractResultOutsidePostcondition/Source/Main.uv",
+            "HelloUltraviolet/Fixtures/RejectedSource/Procedures/ContractResultOutsidePostcondition/Expected.uv"
+        ) &&
+        rejectedFixtureArtifactsExist(
+            context,
+            "HelloUltraviolet/Fixtures/RejectedSource/Procedures/UnsatisfiedPrecondition/Ultraviolet.toml",
+            "HelloUltraviolet/Fixtures/RejectedSource/Procedures/UnsatisfiedPrecondition/Source/Main.uv",
+            "HelloUltraviolet/Fixtures/RejectedSource/Procedures/UnsatisfiedPrecondition/Expected.uv"
+        ) &&
+        rejectedFixtureArtifactsExist(
+            context,
+            "HelloUltraviolet/Fixtures/RejectedSource/Procedures/PreconditionCallerObligation/Ultraviolet.toml",
+            "HelloUltraviolet/Fixtures/RejectedSource/Procedures/PreconditionCallerObligation/Source/Main.uv",
+            "HelloUltraviolet/Fixtures/RejectedSource/Procedures/PreconditionCallerObligation/Expected.uv"
+        ) &&
+        rejectedFixtureArtifactsExist(
+            context,
+            "HelloUltraviolet/Fixtures/RejectedSource/Procedures/ContractEntryOutsidePostcondition/Ultraviolet.toml",
+            "HelloUltraviolet/Fixtures/RejectedSource/Procedures/ContractEntryOutsidePostcondition/Source/Main.uv",
+            "HelloUltraviolet/Fixtures/RejectedSource/Procedures/ContractEntryOutsidePostcondition/Expected.uv"
+        ) &&
+        rejectedFixtureArtifactsExist(
+            context,
+            "HelloUltraviolet/Fixtures/RejectedSource/Procedures/ContractEntryNonBitcopy/Ultraviolet.toml",
+            "HelloUltraviolet/Fixtures/RejectedSource/Procedures/ContractEntryNonBitcopy/Source/Main.uv",
+            "HelloUltraviolet/Fixtures/RejectedSource/Procedures/ContractEntryNonBitcopy/Expected.uv"
+        ) &&
+        rejectedFixtureArtifactsExist(
+            context,
+            "HelloUltraviolet/Fixtures/RejectedSource/Procedures/ContractPredicateNonBool/Ultraviolet.toml",
+            "HelloUltraviolet/Fixtures/RejectedSource/Procedures/ContractPredicateNonBool/Source/Main.uv",
+            "HelloUltraviolet/Fixtures/RejectedSource/Procedures/ContractPredicateNonBool/Expected.uv"
+        ) &&
+        rejectedFixtureArtifactsExist(
+            context,
+            "HelloUltraviolet/Fixtures/RejectedSource/Procedures/ContractPredicateImpureMove/Ultraviolet.toml",
+            "HelloUltraviolet/Fixtures/RejectedSource/Procedures/ContractPredicateImpureMove/Source/Main.uv",
+            "HelloUltraviolet/Fixtures/RejectedSource/Procedures/ContractPredicateImpureMove/Expected.uv"
+        ) &&
+        rejectedFixtureArtifactsExist(
+            context,
+            "HelloUltraviolet/Fixtures/RejectedSource/Procedures/ContractDynamicAttribute/Ultraviolet.toml",
+            "HelloUltraviolet/Fixtures/RejectedSource/Procedures/ContractDynamicAttribute/Source/Main.uv",
+            "HelloUltraviolet/Fixtures/RejectedSource/Procedures/ContractDynamicAttribute/Expected.uv"
+        ) &&
+        rejectedFixtureArtifactsExist(
+            context,
+            "HelloUltraviolet/Fixtures/RejectedSource/Procedures/ContractEntryMovedParameter/Ultraviolet.toml",
+            "HelloUltraviolet/Fixtures/RejectedSource/Procedures/ContractEntryMovedParameter/Source/Main.uv",
+            "HelloUltraviolet/Fixtures/RejectedSource/Procedures/ContractEntryMovedParameter/Expected.uv"
+        ) &&
+        rejectedFixtureArtifactsExist(
+            context,
+            "HelloUltraviolet/Fixtures/RejectedSource/Procedures/ContractEntrySideEffect/Ultraviolet.toml",
+            "HelloUltraviolet/Fixtures/RejectedSource/Procedures/ContractEntrySideEffect/Source/Main.uv",
+            "HelloUltraviolet/Fixtures/RejectedSource/Procedures/ContractEntrySideEffect/Expected.uv"
+        ) &&
+        rejectedFixtureArtifactsExist(
+            context,
+            "HelloUltraviolet/Fixtures/RejectedSource/Procedures/ContractEntryCapability/Ultraviolet.toml",
+            "HelloUltraviolet/Fixtures/RejectedSource/Procedures/ContractEntryCapability/Source/Main.uv",
+            "HelloUltraviolet/Fixtures/RejectedSource/Procedures/ContractEntryCapability/Expected.uv"
+        ) &&
+        rejectedFixtureArtifactsExist(
+            context,
+            "HelloUltraviolet/Fixtures/RejectedSource/Statements/AssignConst/Ultraviolet.toml",
+            "HelloUltraviolet/Fixtures/RejectedSource/Statements/AssignConst/Source/Main.uv",
+            "HelloUltraviolet/Fixtures/RejectedSource/Statements/AssignConst/Expected.uv"
+        ) &&
+        rejectedFixtureArtifactsExist(
+            context,
+            "HelloUltraviolet/Fixtures/RejectedSource/Statements/LetRefutablePattern/Ultraviolet.toml",
+            "HelloUltraviolet/Fixtures/RejectedSource/Statements/LetRefutablePattern/Source/Main.uv",
+            "HelloUltraviolet/Fixtures/RejectedSource/Statements/LetRefutablePattern/Expected.uv"
+        ) &&
+        rejectedFixtureArtifactsExist(
+            context,
+            "HelloUltraviolet/Fixtures/RejectedSource/Statements/UniqueNonMoveBinding/Ultraviolet.toml",
+            "HelloUltraviolet/Fixtures/RejectedSource/Statements/UniqueNonMoveBinding/Source/Main.uv",
+            "HelloUltraviolet/Fixtures/RejectedSource/Statements/UniqueNonMoveBinding/Expected.uv"
+        ) &&
+        rejectedFixtureArtifactsExist(
+            context,
+            "HelloUltraviolet/Fixtures/RejectedSource/Statements/FrameNoActiveRegion/Ultraviolet.toml",
+            "HelloUltraviolet/Fixtures/RejectedSource/Statements/FrameNoActiveRegion/Source/Main.uv",
+            "HelloUltraviolet/Fixtures/RejectedSource/Statements/FrameNoActiveRegion/Expected.uv"
+        ) &&
+        rejectedFixtureArtifactsExist(
+            context,
+            "HelloUltraviolet/Fixtures/RejectedSource/Statements/FrameTargetNotActive/Ultraviolet.toml",
+            "HelloUltraviolet/Fixtures/RejectedSource/Statements/FrameTargetNotActive/Source/Main.uv",
+            "HelloUltraviolet/Fixtures/RejectedSource/Statements/FrameTargetNotActive/Expected.uv"
+        )
+}

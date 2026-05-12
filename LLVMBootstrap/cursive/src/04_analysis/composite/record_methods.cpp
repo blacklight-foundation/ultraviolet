@@ -222,6 +222,7 @@ RecvTypeResult RecvTypeForReceiver(const ScopeContext& ctx,
             return result;
           }
           if (!IsExplicitSelfReceiverType(lowered.type)) {
+            SPEC_RULE("Record-Method-RecvSelf-Err");
             result.diag_id = "Record-Method-RecvSelf-Err";
             return result;
           }

@@ -1,0 +1,70 @@
+//! Obligation identity records for the reference catalog.
+
+public record ObligationReference {
+    public id: string@View
+    public internal_spec_line: usize
+}
+
+public record ObligationEntry {
+    public reference: ObligationReference
+    public exercise: ExerciseReference
+}
+
+public procedure obligationReference(
+    id: string@View,
+    internal_spec_line: usize
+) -> ObligationReference {
+    return ObligationReference {
+        id: id,
+        internal_spec_line: internal_spec_line
+    }
+}
+
+public procedure obligationEntry(
+    reference: ObligationReference,
+    exercise: ExerciseReference
+) -> ObligationEntry {
+    return ObligationEntry {
+        reference: reference,
+        exercise: exercise
+    }
+}
+
+public procedure obligationEntryMatchesPrimary(
+    entry: ObligationEntry,
+    id: string@View,
+    internal_spec_line: usize,
+    kind: ExerciseKindValue,
+    module_path: string@View,
+    symbol: string@View,
+    source_path: string@View
+) -> bool {
+    return auditTextEquals(entry.reference.id, id) &&
+        entry.reference.internal_spec_line == internal_spec_line &&
+        exerciseKindEquals(entry.exercise.kind, kind) &&
+        referenceLocationMatches(entry.exercise.location, module_path, symbol, source_path)
+}
+
+public procedure acceptedObligationEntryMatches(
+    id: string@View,
+    internal_spec_line: usize,
+    module_path: string@View,
+    symbol: string@View,
+    source_path: string@View
+) -> bool {
+    return obligationEntryMatchesPrimary(
+        obligationEntry(
+            obligationReference(id, internal_spec_line),
+            exerciseReference(
+                acceptedSourceExerciseKind(),
+                referenceLocation(module_path, symbol, source_path)
+            )
+        ),
+        id,
+        internal_spec_line,
+        acceptedSourceExerciseKind(),
+        module_path,
+        symbol,
+        source_path
+    )
+}

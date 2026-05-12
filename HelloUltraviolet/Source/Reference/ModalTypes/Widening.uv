@@ -1,0 +1,15 @@
+//! Reference specimens for ModalTypes / Widening.
+
+/// Exercises the ModalTypes Widening reference surface.
+public procedure runModalTypesWideningReference() -> bool {
+    let opened: ModalReference@Open = ModalReference@Open { value: 31 }
+    let widened: ModalReferenceValue = opened
+    return if widened is {
+        @Open { value } {
+            value == 31
+        }
+        @Closed {
+            false
+        }
+    }
+}

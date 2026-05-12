@@ -1,0 +1,36 @@
+//! Reference specimens for Attributes / DiagnosticAttributes.
+
+internal record DiagnosticAttributeReference {
+    internal carries_diagnostic_metadata: bool
+    internal applies_to_declaration: bool
+    internal applies_to_expression: bool
+}
+
+internal procedure diagnosticAttributeReference(
+    carries_diagnostic_metadata: bool,
+    applies_to_declaration: bool,
+    applies_to_expression: bool
+) -> DiagnosticAttributeReference {
+    return DiagnosticAttributeReference {
+        carries_diagnostic_metadata: carries_diagnostic_metadata,
+        applies_to_declaration: applies_to_declaration,
+        applies_to_expression: applies_to_expression
+    }
+}
+
+internal procedure diagnosticAttributeTargetIsValid(
+    reference: DiagnosticAttributeReference
+) -> bool {
+    return reference.carries_diagnostic_metadata &&
+        (reference.applies_to_declaration || reference.applies_to_expression)
+}
+
+/// Exercises the Attributes DiagnosticAttributes reference surface.
+public procedure runAttributesDiagnosticAttributesReference() -> bool {
+    let deprecated: DiagnosticAttributeReference =
+        diagnosticAttributeReference(true, true, false)
+    let emitted: DiagnosticAttributeReference =
+        diagnosticAttributeReference(true, false, true)
+    return diagnosticAttributeTargetIsValid(deprecated) &&
+        diagnosticAttributeTargetIsValid(emitted)
+}

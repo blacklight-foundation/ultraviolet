@@ -1,0 +1,29 @@
+//! Generated catalog markers for 20. Structured Parallelism / 20.9 Structured Parallelism Diagnostics Supplement.
+
+
+public procedure countStructuredParallelismStructuredParallelismDiagnosticsSupplementObligations() -> usize {
+    return 2usize
+}
+
+public procedure validatedStructuredParallelismStructuredParallelismDiagnosticsSupplementObligations() -> usize {
+    var count: usize = 0usize
+    if acceptedObligationEntryMatches(
+        "requirement.20.StructuredParallelismRuntimePanicOwnership",
+        77814usize,
+        "HelloUltraviolet::Reference::Parallelism",
+        "runParallelismParallelBlocksReference",
+        "Source/Reference/Parallelism/ParallelBlocks.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "diagnostics.20.StructuredParallelismSupplement",
+        77827usize,
+        "HelloUltraviolet::Reference::Parallelism",
+        "runParallelismParallelBlocksReference",
+        "Source/Reference/Parallelism/ParallelBlocks.uv"
+    ) {
+        count = count + 1usize
+    }
+    return count
+}

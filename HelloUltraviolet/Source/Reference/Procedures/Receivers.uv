@@ -1,0 +1,19 @@
+//! Reference specimens for Procedures / Receivers.
+
+internal record ReceiverReference {
+    internal value: i32
+
+    internal procedure readValue(~) -> i32 {
+        return self.value
+    }
+}
+
+internal procedure receiverReference(value: i32) -> ReceiverReference {
+    return ReceiverReference { value: value }
+}
+
+/// Exercises the Procedures Receivers reference surface.
+public procedure runProceduresReceiversReference() -> bool {
+    let reference: ReceiverReference = receiverReference(17)
+    return reference~>readValue() == 17
+}

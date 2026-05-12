@@ -1,0 +1,29 @@
+//! Reference specimens for Procedures / BehavioralSubtyping.
+
+internal record BehavioralSubtypingReference {
+    internal weakens_precondition: bool
+    internal strengthens_postcondition: bool
+}
+
+internal procedure behavioralSubtypingReference(
+    weakens_precondition: bool,
+    strengthens_postcondition: bool
+) -> BehavioralSubtypingReference {
+    return BehavioralSubtypingReference {
+        weakens_precondition: weakens_precondition,
+        strengthens_postcondition: strengthens_postcondition
+    }
+}
+
+internal procedure behavioralSubtypingIsValid(
+    reference: BehavioralSubtypingReference
+) -> bool {
+    return reference.weakens_precondition && reference.strengthens_postcondition
+}
+
+/// Exercises the Procedures BehavioralSubtyping reference surface.
+public procedure runProceduresBehavioralSubtypingReference() -> bool {
+    let valid: BehavioralSubtypingReference = behavioralSubtypingReference(true, true)
+    let invalid: BehavioralSubtypingReference = behavioralSubtypingReference(false, true)
+    return behavioralSubtypingIsValid(valid) && !behavioralSubtypingIsValid(invalid)
+}

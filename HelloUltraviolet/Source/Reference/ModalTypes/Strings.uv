@@ -1,0 +1,9 @@
+//! Reference specimens for ModalTypes / Strings.
+
+/// Exercises the ModalTypes Strings reference surface.
+public procedure runModalTypesStringsReference() -> bool {
+    let text: string@View = "ultraviolet"
+    let slice: string@View = string::slice(text, 0usize, 5usize)
+    return string::length(text) == 11usize &&
+        string::length(slice) == 5usize
+}

@@ -1,0 +1,56 @@
+//! Generated catalog markers for 5. Parsing and AST Infrastructure / 5.7 Doc Comment Association.
+
+
+public procedure countParsingAndAstInfrastructureDocCommentAssociationObligations() -> usize {
+    return 5usize
+}
+
+public procedure validatedParsingAndAstInfrastructureDocCommentAssociationObligations() -> usize {
+    var count: usize = 0usize
+    if acceptedObligationEntryMatches(
+        "def.DocCommentAssociation",
+        11706usize,
+        "HelloUltraviolet::Reference::Parsing",
+        "runParsingItemSequencingReference",
+        "Source/Reference/Parsing/ItemSequencing.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "Attach-Doc-Line",
+        11721usize,
+        "HelloUltraviolet::Reference::Parsing",
+        "runParsingItemSequencingReference",
+        "Source/Reference/Parsing/ItemSequencing.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "def.LineDocTargets",
+        11739usize,
+        "HelloUltraviolet::Reference::Parsing",
+        "runParsingItemSequencingReference",
+        "Source/Reference/Parsing/ItemSequencing.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "Attach-Doc-Module",
+        11754usize,
+        "HelloUltraviolet::Reference::Parsing",
+        "runParsingItemSequencingReference",
+        "Source/Reference/Parsing/ItemSequencing.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "def.ModuleDocs",
+        11772usize,
+        "HelloUltraviolet::Reference::Parsing",
+        "runParsingItemSequencingReference",
+        "Source/Reference/Parsing/ItemSequencing.uv"
+    ) {
+        count = count + 1usize
+    }
+    return count
+}

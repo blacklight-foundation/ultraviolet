@@ -1,0 +1,22 @@
+//! Reference specimens for Expressions / Control.
+
+/// Exercises the Expressions Control reference surface.
+public procedure runExpressionsControlReference() -> bool {
+    let if_value: i32 = if true {
+        10
+    } else {
+        20
+    }
+    let case_value: i32 = if if_value is {
+        10 {
+            1
+        }
+        else {
+            0
+        }
+    }
+    let loop_value: i32 = loop true {
+        break case_value + 4
+    }
+    return if_value == 10 && case_value == 1 && loop_value == 5
+}

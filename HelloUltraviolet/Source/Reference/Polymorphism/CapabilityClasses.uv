@@ -1,0 +1,7 @@
+//! Reference specimens for Polymorphism / CapabilityClasses.
+
+/// Exercises the Polymorphism CapabilityClasses reference surface.
+public procedure runPolymorphismCapabilityClassesReference() -> bool {
+    let reference: PolymorphismReference = polymorphismReference(4usize, true, true)
+    return polymorphismReferenceIsCovered(reference) && reference.dynamically_dispatchable
+}

@@ -1,0 +1,1534 @@
+//! Public entry surface for the HelloUltraviolet reference corpus.
+
+using HelloUltraviolet::Audit::{ catalogCoverageIsComplete }
+using HelloUltraviolet::Audit::{ catalogMatchesCsvObligations }
+using HelloUltraviolet::Audit::{ catalogCompiledSymbolsExecute }
+using HelloUltraviolet::Audit::{ catalogPrimaryReferencesAreUnique }
+using HelloUltraviolet::Audit::{ catalogSourcePathsExist }
+using HelloUltraviolet::Fixtures::AcceptedProjects::{ acceptedProjectFixturesAreIndexed }
+using HelloUltraviolet::Fixtures::AcceptedProjects::{ acceptedProjectFixtureArtifactsExist }
+using HelloUltraviolet::Fixtures::ArtifactProjects::{ artifactProjectFixturesAreIndexed }
+using HelloUltraviolet::Fixtures::ArtifactProjects::{ artifactProjectFixtureSourceArtifactsExist }
+using HelloUltraviolet::Fixtures::RejectedSource::{ rejectedSourceFixturesAreIndexed }
+using HelloUltraviolet::Fixtures::RejectedSource::{ rejectedSourceFixtureArtifactsExist }
+using HelloUltraviolet::Fixtures::RejectedSource::{ unterminatedStringExpectedDiagnosticFileMatches }
+using HelloUltraviolet::Fixtures::RejectedSource::{ invalidStringEscapeExpectedDiagnosticFileMatches }
+using HelloUltraviolet::Fixtures::RejectedSource::{ malformedNumericLiteralExpectedDiagnosticFileMatches }
+using HelloUltraviolet::Fixtures::RejectedSource::{ unterminatedBlockCommentExpectedDiagnosticFileMatches }
+using HelloUltraviolet::Fixtures::RejectedSource::{ missingStatementTerminatorExpectedDiagnosticFileMatches }
+using HelloUltraviolet::Fixtures::RejectedSource::{ duplicateModuleDeclarationExpectedDiagnosticFileMatches }
+using HelloUltraviolet::Fixtures::RejectedSource::{ mainMissingExpectedDiagnosticFileMatches }
+using HelloUltraviolet::Fixtures::RejectedSource::{ mainMultipleExpectedDiagnosticFileMatches }
+using HelloUltraviolet::Fixtures::RejectedSource::{ mainGenericExpectedDiagnosticFileMatches }
+using HelloUltraviolet::Fixtures::RejectedSource::{ mainSignatureExpectedDiagnosticFileMatches }
+using HelloUltraviolet::Fixtures::RejectedSource::{ breakOutsideLoopExpectedDiagnosticFileMatches }
+using HelloUltraviolet::Fixtures::RejectedSource::{ continueOutsideLoopExpectedDiagnosticFileMatches }
+using HelloUltraviolet::Fixtures::RejectedSource::{ assignImmutableLetExpectedDiagnosticFileMatches }
+using HelloUltraviolet::Fixtures::RejectedSource::{ letAnnotationMismatchExpectedDiagnosticFileMatches }
+using HelloUltraviolet::Fixtures::RejectedSource::{ assignTypeMismatchExpectedDiagnosticFileMatches }
+using HelloUltraviolet::Fixtures::RejectedSource::{ returnTypeMismatchExpectedDiagnosticFileMatches }
+using HelloUltraviolet::Fixtures::RejectedSource::{ returnUnitMismatchExpectedDiagnosticFileMatches }
+using HelloUltraviolet::Fixtures::RejectedSource::{ returnAtModuleScopeExpectedDiagnosticFileMatches }
+using HelloUltraviolet::Fixtures::RejectedSource::{ deferNonUnitExpectedDiagnosticFileMatches }
+using HelloUltraviolet::Fixtures::RejectedSource::{ deferNonLocalExpectedDiagnosticFileMatches }
+using HelloUltraviolet::Fixtures::RejectedSource::{ assignConstExpectedDiagnosticFileMatches }
+using HelloUltraviolet::Fixtures::RejectedSource::{ letRefutablePatternExpectedDiagnosticFileMatches }
+using HelloUltraviolet::Fixtures::RejectedSource::{ uniqueNonMoveBindingExpectedDiagnosticFileMatches }
+using HelloUltraviolet::Fixtures::RejectedSource::{ frameNoActiveRegionExpectedDiagnosticFileMatches }
+using HelloUltraviolet::Fixtures::RejectedSource::{ frameTargetNotActiveExpectedDiagnosticFileMatches }
+using HelloUltraviolet::Fixtures::RejectedSource::{ missingExplicitReturnExpectedDiagnosticFileMatches }
+using HelloUltraviolet::Fixtures::RejectedSource::{ missingReturnTypeExpectedDiagnosticFileMatches }
+using HelloUltraviolet::Fixtures::RejectedSource::{ callNonFunctionExpectedDiagnosticFileMatches }
+using HelloUltraviolet::Fixtures::RejectedSource::{ indexNonIndexableExpectedDiagnosticFileMatches }
+using HelloUltraviolet::Fixtures::RejectedSource::{ arrayIndexNonConstExpectedDiagnosticFileMatches }
+using HelloUltraviolet::Fixtures::RejectedSource::{ arrayIndexOutOfBoundsExpectedDiagnosticFileMatches }
+using HelloUltraviolet::Fixtures::RejectedSource::{ ptrNullSynthesisExpectedDiagnosticFileMatches }
+using HelloUltraviolet::Fixtures::RejectedSource::{ ptrNullCheckExpectedDiagnosticFileMatches }
+using HelloUltraviolet::Fixtures::RejectedSource::{ callArgCountExpectedDiagnosticFileMatches }
+using HelloUltraviolet::Fixtures::RejectedSource::{ callArgTypeExpectedDiagnosticFileMatches }
+using HelloUltraviolet::Fixtures::RejectedSource::{ exprUnresolvedExpectedDiagnosticFileMatches }
+using HelloUltraviolet::Fixtures::RejectedSource::{ unionDirectAccessExpectedDiagnosticFileMatches }
+using HelloUltraviolet::Fixtures::RejectedSource::{ allocImplicitNoRegionExpectedDiagnosticFileMatches }
+using HelloUltraviolet::Fixtures::RejectedSource::{ callArgNotPlaceExpectedDiagnosticFileMatches }
+using HelloUltraviolet::Fixtures::RejectedSource::{ callArgPackedUnsafeExpectedDiagnosticFileMatches }
+using HelloUltraviolet::Fixtures::RejectedSource::{ floatSuffixMismatchExpectedDiagnosticFileMatches }
+using HelloUltraviolet::Fixtures::RejectedSource::{ parsePlaceErrorExpectedDiagnosticFileMatches }
+using HelloUltraviolet::Fixtures::RejectedSource::{ operatorOperandMismatchExpectedDiagnosticFileMatches }
+using HelloUltraviolet::Fixtures::RejectedSource::{ ifConditionNonBoolExpectedDiagnosticFileMatches }
+using HelloUltraviolet::Fixtures::RejectedSource::{ tupleAccessNonTupleExpectedDiagnosticFileMatches }
+using HelloUltraviolet::Fixtures::RejectedSource::{ closureCaptureUniqueExpectedDiagnosticFileMatches }
+using HelloUltraviolet::Fixtures::RejectedSource::{ callMoveUnexpectedExpectedDiagnosticFileMatches }
+using HelloUltraviolet::Fixtures::RejectedSource::{ callMoveMissingExpectedDiagnosticFileMatches }
+using HelloUltraviolet::Fixtures::RejectedSource::{ methodNotFoundExpectedDiagnosticFileMatches }
+using HelloUltraviolet::Fixtures::RejectedSource::{ pipelineNotCallableExpectedDiagnosticFileMatches }
+using HelloUltraviolet::Fixtures::RejectedSource::{ pipelineTypeMismatchExpectedDiagnosticFileMatches }
+using HelloUltraviolet::Fixtures::RejectedSource::{ pipelineArgCountExpectedDiagnosticFileMatches }
+using HelloUltraviolet::Fixtures::RejectedSource::{ closureParamInferenceExpectedDiagnosticFileMatches }
+using HelloUltraviolet::Fixtures::RejectedSource::{ invalidCastExpectedDiagnosticFileMatches }
+using HelloUltraviolet::Fixtures::RejectedSource::{ transmuteSizeMismatchExpectedDiagnosticFileMatches }
+using HelloUltraviolet::Fixtures::RejectedSource::{ transmuteAlignMismatchExpectedDiagnosticFileMatches }
+using HelloUltraviolet::Fixtures::RejectedSource::{ transmuteUnsafeExpectedDiagnosticFileMatches }
+using HelloUltraviolet::Fixtures::RejectedSource::{ valueUseNonBitcopyPlaceExpectedDiagnosticFileMatches }
+using HelloUltraviolet::Fixtures::RejectedSource::{ recordFieldInitDuplicateExpectedDiagnosticFileMatches }
+using HelloUltraviolet::Fixtures::RejectedSource::{ recordFieldInitMissingExpectedDiagnosticFileMatches }
+using HelloUltraviolet::Fixtures::RejectedSource::{ recordFieldUnknownExpectedDiagnosticFileMatches }
+using HelloUltraviolet::Fixtures::RejectedSource::{ recordFieldNonBitcopyMoveExpectedDiagnosticFileMatches }
+using HelloUltraviolet::Fixtures::RejectedSource::{ recordDefaultInitExpectedDiagnosticFileMatches }
+using HelloUltraviolet::Fixtures::RejectedSource::{ duplicatePatternBindingExpectedDiagnosticFileMatches }
+using HelloUltraviolet::Fixtures::RejectedSource::{ tuplePatternArityExpectedDiagnosticFileMatches }
+using HelloUltraviolet::Fixtures::RejectedSource::{ recordPatternUnknownFieldExpectedDiagnosticFileMatches }
+using HelloUltraviolet::Fixtures::RejectedSource::{ rangePatternNonConstExpectedDiagnosticFileMatches }
+using HelloUltraviolet::Fixtures::RejectedSource::{ rangePatternEmptyExpectedDiagnosticFileMatches }
+using HelloUltraviolet::Fixtures::RejectedSource::{ ifCaseEnumNonExhaustiveExpectedDiagnosticFileMatches }
+using HelloUltraviolet::Fixtures::RejectedSource::{ ifCaseModalNonExhaustiveExpectedDiagnosticFileMatches }
+using HelloUltraviolet::Fixtures::RejectedSource::{ ifCaseUnionNonExhaustiveExpectedDiagnosticFileMatches }
+using HelloUltraviolet::Fixtures::RejectedSource::{ ifCaseUnreachableExpectedDiagnosticFileMatches }
+using HelloUltraviolet::Fixtures::RejectedSource::{ recordMethodReceiverNotSelfExpectedDiagnosticFileMatches }
+using HelloUltraviolet::Fixtures::RejectedSource::{ recordMethodDuplicateExpectedDiagnosticFileMatches }
+using HelloUltraviolet::Fixtures::RejectedSource::{ parsePatternErrorExpectedDiagnosticFileMatches }
+using HelloUltraviolet::Fixtures::RejectedSource::{ contractResultOutsidePostconditionExpectedDiagnosticFileMatches }
+using HelloUltraviolet::Fixtures::RejectedSource::{ unsatisfiedPreconditionExpectedDiagnosticFileMatches }
+using HelloUltraviolet::Fixtures::RejectedSource::{ preconditionCallerObligationExpectedDiagnosticFileMatches }
+using HelloUltraviolet::Fixtures::RejectedSource::{ contractEntryOutsidePostconditionExpectedDiagnosticFileMatches }
+using HelloUltraviolet::Fixtures::RejectedSource::{ contractEntryNonBitcopyExpectedDiagnosticFileMatches }
+using HelloUltraviolet::Fixtures::RejectedSource::{ contractPredicateNonBoolExpectedDiagnosticFileMatches }
+using HelloUltraviolet::Fixtures::RejectedSource::{ contractPredicateImpureMoveExpectedDiagnosticFileMatches }
+using HelloUltraviolet::Fixtures::RejectedSource::{ contractDynamicAttributeExpectedDiagnosticFileMatches }
+using HelloUltraviolet::Fixtures::RejectedSource::{ contractEntryMovedParameterExpectedDiagnosticFileMatches }
+using HelloUltraviolet::Fixtures::RejectedSource::{ contractEntrySideEffectExpectedDiagnosticFileMatches }
+using HelloUltraviolet::Fixtures::RejectedSource::{ contractEntryCapabilityExpectedDiagnosticFileMatches }
+using HelloUltraviolet::Reference::Conformance::{ runConformanceConstructVocabularyReference }
+using HelloUltraviolet::Reference::Conformance::{ runConformanceBehaviorClassificationReference }
+using HelloUltraviolet::Reference::Conformance::{ runConformanceTranslationOrderingReference }
+using HelloUltraviolet::Reference::Diagnostics::{ runDiagnosticsSourceSpansReference }
+using HelloUltraviolet::Reference::Diagnostics::{ runDiagnosticsDiagnosticRecordsReference }
+using HelloUltraviolet::Reference::Diagnostics::{ runDiagnosticsDiagnosticOrderingReference }
+using HelloUltraviolet::Reference::Diagnostics::{ runDiagnosticsRenderingInputsReference }
+using HelloUltraviolet::Reference::Projects::{ runProjectsManifestModelReference }
+using HelloUltraviolet::Reference::Projects::{ runProjectsAssemblyModelReference }
+using HelloUltraviolet::Reference::Projects::{ runProjectsModuleDiscoveryReference }
+using HelloUltraviolet::Reference::Projects::{ runProjectsOutputArtifactsReference }
+using HelloUltraviolet::Reference::SourceText::{ runSourceTextUnicodeNormalizationReference }
+using HelloUltraviolet::Reference::SourceText::{ runSourceTextLogicalLinesReference }
+using HelloUltraviolet::Reference::SourceText::{ runSourceTextLiteralsReference }
+using HelloUltraviolet::Reference::SourceText::{ runSourceTextIdentifiersReference }
+using HelloUltraviolet::Reference::SourceText::{ runSourceTextOperatorsAndPunctuationReference }
+using HelloUltraviolet::Reference::Parsing::{ runParsingItemSequencingReference }
+using HelloUltraviolet::Reference::Parsing::{ runParsingAttributeParsingReference }
+using HelloUltraviolet::Reference::Parsing::{ runParsingTerminatorsReference }
+using HelloUltraviolet::Reference::Parsing::{ runParsingRecoverySpecimensReference }
+using HelloUltraviolet::Reference::Authority::{ runAuthorityCapabilitiesReference }
+using HelloUltraviolet::Reference::Authority::{ runAuthorityFileSystemReference }
+using HelloUltraviolet::Reference::Authority::{ runAuthoritySystemReference }
+using HelloUltraviolet::Reference::Authority::{ runAuthorityNetworkReference }
+using HelloUltraviolet::Reference::Authority::{ runAuthorityRegionsAndFramesReference }
+using HelloUltraviolet::Reference::Authority::{ runAuthorityBindingRuntimeStateReference }
+using HelloUltraviolet::Reference::Names::{ runNamesImportsReference }
+using HelloUltraviolet::Reference::Names::{ runNamesUsingDeclarationsReference }
+using HelloUltraviolet::Reference::Names::{ runNamesVisibilityReference }
+using HelloUltraviolet::Reference::Names::{ runNamesQualifiedResolutionReference }
+using HelloUltraviolet::Reference::Names::{ runNamesDisambiguationReference }
+using HelloUltraviolet::Reference::Types::{ runTypesEquivalenceReference }
+using HelloUltraviolet::Reference::Types::{ runTypesSubtypingReference }
+using HelloUltraviolet::Reference::Types::{ runTypesInferenceReference }
+using HelloUltraviolet::Reference::Types::{ runTypesRefinementsReference }
+using HelloUltraviolet::Reference::Attributes::{ runAttributesGeneralAttributesReference }
+using HelloUltraviolet::Reference::Attributes::{ runAttributesVendorAttributesReference }
+using HelloUltraviolet::Reference::Attributes::{ runAttributesLayoutAttributesReference }
+using HelloUltraviolet::Reference::Attributes::{ runAttributesOptimizationAttributesReference }
+using HelloUltraviolet::Reference::Attributes::{ runAttributesDiagnosticAttributesReference }
+using HelloUltraviolet::Reference::Permissions::{ runPermissionsPermissionFormsReference }
+using HelloUltraviolet::Reference::Permissions::{ runPermissionsAliasExclusivityReference }
+using HelloUltraviolet::Reference::Permissions::{ runPermissionsActivityStatesReference }
+using HelloUltraviolet::Reference::Permissions::{ runPermissionsAdmissibilityReference }
+using HelloUltraviolet::Reference::Modules::{ runModulesImportsReference }
+using HelloUltraviolet::Reference::Modules::{ runModulesUsingsReference }
+using HelloUltraviolet::Reference::Modules::{ runModulesStaticsReference }
+using HelloUltraviolet::Reference::Modules::{ runModulesExternBlocksReference }
+using HelloUltraviolet::Reference::Modules::{ runModulesAggregationReference }
+using HelloUltraviolet::Reference::DataTypes::{ runDataTypesPrimitivesReference }
+using HelloUltraviolet::Reference::DataTypes::{ runDataTypesTuplesReference }
+using HelloUltraviolet::Reference::DataTypes::{ runDataTypesArraysReference }
+using HelloUltraviolet::Reference::DataTypes::{ runDataTypesSlicesReference }
+using HelloUltraviolet::Reference::DataTypes::{ runDataTypesRangesReference }
+using HelloUltraviolet::Reference::DataTypes::{ runDataTypesRecordsReference }
+using HelloUltraviolet::Reference::DataTypes::{ runDataTypesEnumsReference }
+using HelloUltraviolet::Reference::DataTypes::{ runDataTypesUnionsReference }
+using HelloUltraviolet::Reference::DataTypes::{ runDataTypesTypeAliasesReference }
+using HelloUltraviolet::Reference::ModalTypes::{ runModalTypesModalDeclarationsReference }
+using HelloUltraviolet::Reference::ModalTypes::{ runModalTypesStateFieldsReference }
+using HelloUltraviolet::Reference::ModalTypes::{ runModalTypesStateMethodsReference }
+using HelloUltraviolet::Reference::ModalTypes::{ runModalTypesTransitionsReference }
+using HelloUltraviolet::Reference::ModalTypes::{ runModalTypesWideningReference }
+using HelloUltraviolet::Reference::ModalTypes::{ runModalTypesStringsReference }
+using HelloUltraviolet::Reference::ModalTypes::{ runModalTypesBytesReference }
+using HelloUltraviolet::Reference::ModalTypes::{ runModalTypesPointersReference }
+using HelloUltraviolet::Reference::ModalTypes::{ runModalTypesFunctionTypesReference }
+using HelloUltraviolet::Reference::ModalTypes::{ runModalTypesClosuresReference }
+using HelloUltraviolet::Reference::Polymorphism::{ runPolymorphismGenericParametersReference }
+using HelloUltraviolet::Reference::Polymorphism::{ runPolymorphismGenericProceduresReference }
+using HelloUltraviolet::Reference::Polymorphism::{ runPolymorphismClassesReference }
+using HelloUltraviolet::Reference::Polymorphism::{ runPolymorphismImplementationsReference }
+using HelloUltraviolet::Reference::Polymorphism::{ runPolymorphismAssociatedTypesReference }
+using HelloUltraviolet::Reference::Polymorphism::{ runPolymorphismDynamicClassObjectsReference }
+using HelloUltraviolet::Reference::Polymorphism::{ runPolymorphismOpaqueTypesReference }
+using HelloUltraviolet::Reference::Polymorphism::{ runPolymorphismCapabilityClassesReference }
+using HelloUltraviolet::Reference::Procedures::{ runProceduresDeclarationsReference }
+using HelloUltraviolet::Reference::Procedures::{ runProceduresReceiversReference }
+using HelloUltraviolet::Reference::Procedures::{ runProceduresOverloadingReference }
+using HelloUltraviolet::Reference::Procedures::{ runProceduresContractsReference }
+using HelloUltraviolet::Reference::Procedures::{ runProceduresPreconditionsReference }
+using HelloUltraviolet::Reference::Procedures::{ runProceduresPostconditionsReference }
+using HelloUltraviolet::Reference::Procedures::{ runProceduresInvariantsReference }
+using HelloUltraviolet::Reference::Procedures::{ runProceduresVerificationReference }
+using HelloUltraviolet::Reference::Procedures::{ runProceduresBehavioralSubtypingReference }
+using HelloUltraviolet::Reference::Expressions::{ runExpressionsLiteralsAndNamesReference }
+using HelloUltraviolet::Reference::Expressions::{ runExpressionsAccessAndPlacesReference }
+using HelloUltraviolet::Reference::Expressions::{ runExpressionsCallsReference }
+using HelloUltraviolet::Reference::Expressions::{ runExpressionsOperatorsReference }
+using HelloUltraviolet::Reference::Expressions::{ runExpressionsCastsAndTransmutesReference }
+using HelloUltraviolet::Reference::Expressions::{ runExpressionsConstructionReference }
+using HelloUltraviolet::Reference::Expressions::{ runExpressionsControlReference }
+using HelloUltraviolet::Reference::Expressions::{ runExpressionsEffectfulCoreReference }
+using HelloUltraviolet::Reference::Expressions::{ runExpressionsClosuresAndPipelinesReference }
+using HelloUltraviolet::Reference::Patterns::{ runPatternsBasicPatternsReference }
+using HelloUltraviolet::Reference::Patterns::{ runPatternsTupleRecordPatternsReference }
+using HelloUltraviolet::Reference::Patterns::{ runPatternsEnumModalPatternsReference }
+using HelloUltraviolet::Reference::Patterns::{ runPatternsRangePatternsReference }
+using HelloUltraviolet::Reference::Patterns::{ runPatternsCaseClausesReference }
+using HelloUltraviolet::Reference::Patterns::{ runPatternsExhaustivenessReference }
+using HelloUltraviolet::Reference::Statements::{ runStatementsBlocksReference }
+using HelloUltraviolet::Reference::Statements::{ runStatementsBindingsReference }
+using HelloUltraviolet::Reference::Statements::{ runStatementsLocalUsingReference }
+using HelloUltraviolet::Reference::Statements::{ runStatementsAssignmentReference }
+using HelloUltraviolet::Reference::Statements::{ runStatementsExpressionStatementsReference }
+using HelloUltraviolet::Reference::Statements::{ runStatementsDeferReference }
+using HelloUltraviolet::Reference::Statements::{ runStatementsRegionReference }
+using HelloUltraviolet::Reference::Statements::{ runStatementsFrameReference }
+using HelloUltraviolet::Reference::Statements::{ runStatementsControlTransferReference }
+using HelloUltraviolet::Reference::Statements::{ runStatementsUnsafeReference }
+using HelloUltraviolet::Reference::Keys::{ runKeysKeyPathsReference }
+using HelloUltraviolet::Reference::Keys::{ runKeysAcquisitionBlocksReference }
+using HelloUltraviolet::Reference::Keys::{ runKeysConflictDetectionReference }
+using HelloUltraviolet::Reference::Keys::{ runKeysNestedReleaseReference }
+using HelloUltraviolet::Reference::Keys::{ runKeysSpeculativeExecutionReference }
+using HelloUltraviolet::Reference::Keys::{ runKeysDynamicVerificationReference }
+using HelloUltraviolet::Reference::Keys::{ runKeysMemoryOrderingReference }
+using HelloUltraviolet::Reference::Parallelism::{ runParallelismParallelBlocksReference }
+using HelloUltraviolet::Reference::Parallelism::{ runParallelismExecutionDomainsReference }
+using HelloUltraviolet::Reference::Parallelism::{ runParallelismCaptureSemanticsReference }
+using HelloUltraviolet::Reference::Parallelism::{ runParallelismSpawnReference }
+using HelloUltraviolet::Reference::Parallelism::{ runParallelismDispatchReference }
+using HelloUltraviolet::Reference::Parallelism::{ runParallelismCancellationReference }
+using HelloUltraviolet::Reference::Parallelism::{ runParallelismPanicHandlingReference }
+using HelloUltraviolet::Reference::Parallelism::{ runParallelismDeterminismReference }
+using HelloUltraviolet::Reference::Async::{ runAsyncAsyncTypeReference }
+using HelloUltraviolet::Reference::Async::{ runAsyncSuspensionFormsReference }
+using HelloUltraviolet::Reference::Async::{ runAsyncCompositionFormsReference }
+using HelloUltraviolet::Reference::Async::{ runAsyncStateMachineReference }
+using HelloUltraviolet::Reference::Async::{ runAsyncAsyncKeyIntegrationReference }
+using HelloUltraviolet::Reference::Comptime::{ runComptimeCompileTimeFormsReference }
+using HelloUltraviolet::Reference::Comptime::{ runComptimeCompileTimeCapabilitiesReference }
+using HelloUltraviolet::Reference::Comptime::{ runComptimeReflectionReference }
+using HelloUltraviolet::Reference::Comptime::{ runComptimeQuoteSpliceEmissionReference }
+using HelloUltraviolet::Reference::Comptime::{ runComptimeDeriveTargetsReference }
+using HelloUltraviolet::Reference::FFI::{ runFFIFfiSafeReference }
+using HelloUltraviolet::Reference::FFI::{ runFFIExternProceduresReference }
+using HelloUltraviolet::Reference::FFI::{ runFFIExportedProceduresReference }
+using HelloUltraviolet::Reference::FFI::{ runFFIAttributesReference }
+using HelloUltraviolet::Reference::FFI::{ runFFICapabilityIsolationReference }
+using HelloUltraviolet::Reference::FFI::{ runFFIForeignContractsReference }
+using HelloUltraviolet::Reference::FFI::{ runFFIBoundaryUnwindingReference }
+using HelloUltraviolet::Reference::Lowering::{ runLoweringSharedJudgmentsReference }
+using HelloUltraviolet::Reference::Lowering::{ runLoweringLayoutAndABIReference }
+using HelloUltraviolet::Reference::Lowering::{ runLoweringSymbolsManglingLinkageReference }
+using HelloUltraviolet::Reference::Lowering::{ runLoweringInitializationLifecycleReference }
+using HelloUltraviolet::Reference::Lowering::{ runLoweringCleanupDropUnwindingReference }
+using HelloUltraviolet::Reference::Lowering::{ runLoweringRuntimeInterfaceReference }
+using HelloUltraviolet::Reference::Lowering::{ runLoweringBackendRequirementsReference }
+
+public record ReferenceResult {
+    public passed: bool
+    public exercised_sections: usize
+}
+
+public procedure referenceResult(
+    passed: bool,
+    exercised_sections: usize
+) -> ReferenceResult {
+    return ReferenceResult {
+        passed: passed,
+        exercised_sections: exercised_sections
+    }
+}
+
+internal procedure writeReferenceMessage(context: Context, text: string@View) -> bool {
+    let output: Outcome<(), IoError> = context.fs~>write_stderr(text)
+    return if output is {
+        @Value {
+            true
+        }
+        @Error {
+            false
+        }
+    }
+}
+
+internal procedure recordReferenceResult(
+    context: Context,
+    name: string@View,
+    passed: bool
+) -> bool {
+    if passed {
+        return true
+    }
+
+    if (!writeReferenceMessage(context, "reference failed: ")) {
+        return false
+    }
+    if (!writeReferenceMessage(context, name)) {
+        return false
+    }
+    if (!writeReferenceMessage(context, "\n")) {
+        return false
+    }
+    return false
+}
+
+public procedure runReferenceCorpus(context: Context) -> ReferenceResult {
+    var passed: bool = true
+    passed = passed && recordReferenceResult(
+        context,
+        "catalogCoverageIsComplete",
+        catalogCoverageIsComplete()
+    )
+    passed = passed && recordReferenceResult(
+        context,
+        "catalogMatchesCsvObligations",
+        catalogMatchesCsvObligations()
+    )
+    passed = passed && recordReferenceResult(
+        context,
+        "catalogPrimaryReferencesAreUnique",
+        catalogPrimaryReferencesAreUnique()
+    )
+    passed = passed && recordReferenceResult(
+        context,
+        "catalogSourcePathsExist",
+        catalogSourcePathsExist(context)
+    )
+    passed = passed && recordReferenceResult(
+        context,
+        "catalogCompiledSymbolsExecute",
+        catalogCompiledSymbolsExecute()
+    )
+    passed = passed && recordReferenceResult(
+        context,
+        "acceptedProjectFixturesAreIndexed",
+        acceptedProjectFixturesAreIndexed()
+    )
+    passed = passed && recordReferenceResult(
+        context,
+        "acceptedProjectFixtureArtifactsExist",
+        acceptedProjectFixtureArtifactsExist(context)
+    )
+    passed = passed && recordReferenceResult(
+        context,
+        "artifactProjectFixturesAreIndexed",
+        artifactProjectFixturesAreIndexed()
+    )
+    passed = passed && recordReferenceResult(
+        context,
+        "artifactProjectFixtureSourceArtifactsExist",
+        artifactProjectFixtureSourceArtifactsExist(context)
+    )
+    passed = passed && recordReferenceResult(
+        context,
+        "rejectedSourceFixturesAreIndexed",
+        rejectedSourceFixturesAreIndexed()
+    )
+    passed = passed && recordReferenceResult(
+        context,
+        "rejectedSourceFixtureArtifactsExist",
+        rejectedSourceFixtureArtifactsExist(context)
+    )
+    passed = passed && recordReferenceResult(
+        context,
+        "unterminatedStringExpectedDiagnosticFileMatches",
+        unterminatedStringExpectedDiagnosticFileMatches(context)
+    )
+    passed = passed && recordReferenceResult(
+        context,
+        "invalidStringEscapeExpectedDiagnosticFileMatches",
+        invalidStringEscapeExpectedDiagnosticFileMatches(context)
+    )
+    passed = passed && recordReferenceResult(
+        context,
+        "malformedNumericLiteralExpectedDiagnosticFileMatches",
+        malformedNumericLiteralExpectedDiagnosticFileMatches(context)
+    )
+    passed = passed && recordReferenceResult(
+        context,
+        "unterminatedBlockCommentExpectedDiagnosticFileMatches",
+        unterminatedBlockCommentExpectedDiagnosticFileMatches(context)
+    )
+    passed = passed && recordReferenceResult(
+        context,
+        "missingStatementTerminatorExpectedDiagnosticFileMatches",
+        missingStatementTerminatorExpectedDiagnosticFileMatches(context)
+    )
+    passed = passed && recordReferenceResult(
+        context,
+        "duplicateModuleDeclarationExpectedDiagnosticFileMatches",
+        duplicateModuleDeclarationExpectedDiagnosticFileMatches(context)
+    )
+    passed = passed && recordReferenceResult(
+        context,
+        "mainMissingExpectedDiagnosticFileMatches",
+        mainMissingExpectedDiagnosticFileMatches(context)
+    )
+    passed = passed && recordReferenceResult(
+        context,
+        "mainMultipleExpectedDiagnosticFileMatches",
+        mainMultipleExpectedDiagnosticFileMatches(context)
+    )
+    passed = passed && recordReferenceResult(
+        context,
+        "mainGenericExpectedDiagnosticFileMatches",
+        mainGenericExpectedDiagnosticFileMatches(context)
+    )
+    passed = passed && recordReferenceResult(
+        context,
+        "mainSignatureExpectedDiagnosticFileMatches",
+        mainSignatureExpectedDiagnosticFileMatches(context)
+    )
+    passed = passed && recordReferenceResult(
+        context,
+        "breakOutsideLoopExpectedDiagnosticFileMatches",
+        breakOutsideLoopExpectedDiagnosticFileMatches(context)
+    )
+    passed = passed && recordReferenceResult(
+        context,
+        "continueOutsideLoopExpectedDiagnosticFileMatches",
+        continueOutsideLoopExpectedDiagnosticFileMatches(context)
+    )
+    passed = passed && recordReferenceResult(
+        context,
+        "assignImmutableLetExpectedDiagnosticFileMatches",
+        assignImmutableLetExpectedDiagnosticFileMatches(context)
+    )
+    passed = passed && recordReferenceResult(
+        context,
+        "letAnnotationMismatchExpectedDiagnosticFileMatches",
+        letAnnotationMismatchExpectedDiagnosticFileMatches(context)
+    )
+    passed = passed && recordReferenceResult(
+        context,
+        "assignTypeMismatchExpectedDiagnosticFileMatches",
+        assignTypeMismatchExpectedDiagnosticFileMatches(context)
+    )
+    passed = passed && recordReferenceResult(
+        context,
+        "returnTypeMismatchExpectedDiagnosticFileMatches",
+        returnTypeMismatchExpectedDiagnosticFileMatches(context)
+    )
+    passed = passed && recordReferenceResult(
+        context,
+        "returnUnitMismatchExpectedDiagnosticFileMatches",
+        returnUnitMismatchExpectedDiagnosticFileMatches(context)
+    )
+    passed = passed && recordReferenceResult(
+        context,
+        "returnAtModuleScopeExpectedDiagnosticFileMatches",
+        returnAtModuleScopeExpectedDiagnosticFileMatches(context)
+    )
+    passed = passed && recordReferenceResult(
+        context,
+        "deferNonUnitExpectedDiagnosticFileMatches",
+        deferNonUnitExpectedDiagnosticFileMatches(context)
+    )
+    passed = passed && recordReferenceResult(
+        context,
+        "deferNonLocalExpectedDiagnosticFileMatches",
+        deferNonLocalExpectedDiagnosticFileMatches(context)
+    )
+    passed = passed && recordReferenceResult(
+        context,
+        "assignConstExpectedDiagnosticFileMatches",
+        assignConstExpectedDiagnosticFileMatches(context)
+    )
+    passed = passed && recordReferenceResult(
+        context,
+        "letRefutablePatternExpectedDiagnosticFileMatches",
+        letRefutablePatternExpectedDiagnosticFileMatches(context)
+    )
+    passed = passed && recordReferenceResult(
+        context,
+        "uniqueNonMoveBindingExpectedDiagnosticFileMatches",
+        uniqueNonMoveBindingExpectedDiagnosticFileMatches(context)
+    )
+    passed = passed && recordReferenceResult(
+        context,
+        "frameNoActiveRegionExpectedDiagnosticFileMatches",
+        frameNoActiveRegionExpectedDiagnosticFileMatches(context)
+    )
+    passed = passed && recordReferenceResult(
+        context,
+        "frameTargetNotActiveExpectedDiagnosticFileMatches",
+        frameTargetNotActiveExpectedDiagnosticFileMatches(context)
+    )
+    passed = passed && recordReferenceResult(
+        context,
+        "missingExplicitReturnExpectedDiagnosticFileMatches",
+        missingExplicitReturnExpectedDiagnosticFileMatches(context)
+    )
+    passed = passed && recordReferenceResult(
+        context,
+        "missingReturnTypeExpectedDiagnosticFileMatches",
+        missingReturnTypeExpectedDiagnosticFileMatches(context)
+    )
+    passed = passed && recordReferenceResult(
+        context,
+        "callNonFunctionExpectedDiagnosticFileMatches",
+        callNonFunctionExpectedDiagnosticFileMatches(context)
+    )
+    passed = passed && recordReferenceResult(
+        context,
+        "indexNonIndexableExpectedDiagnosticFileMatches",
+        indexNonIndexableExpectedDiagnosticFileMatches(context)
+    )
+    passed = passed && recordReferenceResult(
+        context,
+        "arrayIndexNonConstExpectedDiagnosticFileMatches",
+        arrayIndexNonConstExpectedDiagnosticFileMatches(context)
+    )
+    passed = passed && recordReferenceResult(
+        context,
+        "arrayIndexOutOfBoundsExpectedDiagnosticFileMatches",
+        arrayIndexOutOfBoundsExpectedDiagnosticFileMatches(context)
+    )
+    passed = passed && recordReferenceResult(
+        context,
+        "ptrNullSynthesisExpectedDiagnosticFileMatches",
+        ptrNullSynthesisExpectedDiagnosticFileMatches(context)
+    )
+    passed = passed && recordReferenceResult(
+        context,
+        "ptrNullCheckExpectedDiagnosticFileMatches",
+        ptrNullCheckExpectedDiagnosticFileMatches(context)
+    )
+    passed = passed && recordReferenceResult(
+        context,
+        "callArgCountExpectedDiagnosticFileMatches",
+        callArgCountExpectedDiagnosticFileMatches(context)
+    )
+    passed = passed && recordReferenceResult(
+        context,
+        "callArgTypeExpectedDiagnosticFileMatches",
+        callArgTypeExpectedDiagnosticFileMatches(context)
+    )
+    passed = passed && recordReferenceResult(
+        context,
+        "exprUnresolvedExpectedDiagnosticFileMatches",
+        exprUnresolvedExpectedDiagnosticFileMatches(context)
+    )
+    passed = passed && recordReferenceResult(
+        context,
+        "unionDirectAccessExpectedDiagnosticFileMatches",
+        unionDirectAccessExpectedDiagnosticFileMatches(context)
+    )
+    passed = passed && recordReferenceResult(
+        context,
+        "allocImplicitNoRegionExpectedDiagnosticFileMatches",
+        allocImplicitNoRegionExpectedDiagnosticFileMatches(context)
+    )
+    passed = passed && recordReferenceResult(
+        context,
+        "callArgNotPlaceExpectedDiagnosticFileMatches",
+        callArgNotPlaceExpectedDiagnosticFileMatches(context)
+    )
+    passed = passed && recordReferenceResult(
+        context,
+        "callArgPackedUnsafeExpectedDiagnosticFileMatches",
+        callArgPackedUnsafeExpectedDiagnosticFileMatches(context)
+    )
+    passed = passed && recordReferenceResult(
+        context,
+        "floatSuffixMismatchExpectedDiagnosticFileMatches",
+        floatSuffixMismatchExpectedDiagnosticFileMatches(context)
+    )
+    passed = passed && recordReferenceResult(
+        context,
+        "parsePlaceErrorExpectedDiagnosticFileMatches",
+        parsePlaceErrorExpectedDiagnosticFileMatches(context)
+    )
+    passed = passed && recordReferenceResult(
+        context,
+        "operatorOperandMismatchExpectedDiagnosticFileMatches",
+        operatorOperandMismatchExpectedDiagnosticFileMatches(context)
+    )
+    passed = passed && recordReferenceResult(
+        context,
+        "ifConditionNonBoolExpectedDiagnosticFileMatches",
+        ifConditionNonBoolExpectedDiagnosticFileMatches(context)
+    )
+    passed = passed && recordReferenceResult(
+        context,
+        "tupleAccessNonTupleExpectedDiagnosticFileMatches",
+        tupleAccessNonTupleExpectedDiagnosticFileMatches(context)
+    )
+    passed = passed && recordReferenceResult(
+        context,
+        "closureCaptureUniqueExpectedDiagnosticFileMatches",
+        closureCaptureUniqueExpectedDiagnosticFileMatches(context)
+    )
+    passed = passed && recordReferenceResult(
+        context,
+        "callMoveUnexpectedExpectedDiagnosticFileMatches",
+        callMoveUnexpectedExpectedDiagnosticFileMatches(context)
+    )
+    passed = passed && recordReferenceResult(
+        context,
+        "callMoveMissingExpectedDiagnosticFileMatches",
+        callMoveMissingExpectedDiagnosticFileMatches(context)
+    )
+    passed = passed && recordReferenceResult(
+        context,
+        "methodNotFoundExpectedDiagnosticFileMatches",
+        methodNotFoundExpectedDiagnosticFileMatches(context)
+    )
+    passed = passed && recordReferenceResult(
+        context,
+        "pipelineNotCallableExpectedDiagnosticFileMatches",
+        pipelineNotCallableExpectedDiagnosticFileMatches(context)
+    )
+    passed = passed && recordReferenceResult(
+        context,
+        "pipelineTypeMismatchExpectedDiagnosticFileMatches",
+        pipelineTypeMismatchExpectedDiagnosticFileMatches(context)
+    )
+    passed = passed && recordReferenceResult(
+        context,
+        "pipelineArgCountExpectedDiagnosticFileMatches",
+        pipelineArgCountExpectedDiagnosticFileMatches(context)
+    )
+    passed = passed && recordReferenceResult(
+        context,
+        "closureParamInferenceExpectedDiagnosticFileMatches",
+        closureParamInferenceExpectedDiagnosticFileMatches(context)
+    )
+    passed = passed && recordReferenceResult(
+        context,
+        "invalidCastExpectedDiagnosticFileMatches",
+        invalidCastExpectedDiagnosticFileMatches(context)
+    )
+    passed = passed && recordReferenceResult(
+        context,
+        "transmuteSizeMismatchExpectedDiagnosticFileMatches",
+        transmuteSizeMismatchExpectedDiagnosticFileMatches(context)
+    )
+    passed = passed && recordReferenceResult(
+        context,
+        "transmuteAlignMismatchExpectedDiagnosticFileMatches",
+        transmuteAlignMismatchExpectedDiagnosticFileMatches(context)
+    )
+    passed = passed && recordReferenceResult(
+        context,
+        "transmuteUnsafeExpectedDiagnosticFileMatches",
+        transmuteUnsafeExpectedDiagnosticFileMatches(context)
+    )
+    passed = passed && recordReferenceResult(
+        context,
+        "valueUseNonBitcopyPlaceExpectedDiagnosticFileMatches",
+        valueUseNonBitcopyPlaceExpectedDiagnosticFileMatches(context)
+    )
+    passed = passed && recordReferenceResult(
+        context,
+        "recordFieldInitDuplicateExpectedDiagnosticFileMatches",
+        recordFieldInitDuplicateExpectedDiagnosticFileMatches(context)
+    )
+    passed = passed && recordReferenceResult(
+        context,
+        "recordFieldInitMissingExpectedDiagnosticFileMatches",
+        recordFieldInitMissingExpectedDiagnosticFileMatches(context)
+    )
+    passed = passed && recordReferenceResult(
+        context,
+        "recordFieldUnknownExpectedDiagnosticFileMatches",
+        recordFieldUnknownExpectedDiagnosticFileMatches(context)
+    )
+    passed = passed && recordReferenceResult(
+        context,
+        "recordFieldNonBitcopyMoveExpectedDiagnosticFileMatches",
+        recordFieldNonBitcopyMoveExpectedDiagnosticFileMatches(context)
+    )
+    passed = passed && recordReferenceResult(
+        context,
+        "recordDefaultInitExpectedDiagnosticFileMatches",
+        recordDefaultInitExpectedDiagnosticFileMatches(context)
+    )
+    passed = passed && recordReferenceResult(
+        context,
+        "duplicatePatternBindingExpectedDiagnosticFileMatches",
+        duplicatePatternBindingExpectedDiagnosticFileMatches(context)
+    )
+    passed = passed && recordReferenceResult(
+        context,
+        "tuplePatternArityExpectedDiagnosticFileMatches",
+        tuplePatternArityExpectedDiagnosticFileMatches(context)
+    )
+    passed = passed && recordReferenceResult(
+        context,
+        "recordPatternUnknownFieldExpectedDiagnosticFileMatches",
+        recordPatternUnknownFieldExpectedDiagnosticFileMatches(context)
+    )
+    passed = passed && recordReferenceResult(
+        context,
+        "rangePatternNonConstExpectedDiagnosticFileMatches",
+        rangePatternNonConstExpectedDiagnosticFileMatches(context)
+    )
+    passed = passed && recordReferenceResult(
+        context,
+        "rangePatternEmptyExpectedDiagnosticFileMatches",
+        rangePatternEmptyExpectedDiagnosticFileMatches(context)
+    )
+    passed = passed && recordReferenceResult(
+        context,
+        "ifCaseEnumNonExhaustiveExpectedDiagnosticFileMatches",
+        ifCaseEnumNonExhaustiveExpectedDiagnosticFileMatches(context)
+    )
+    passed = passed && recordReferenceResult(
+        context,
+        "ifCaseModalNonExhaustiveExpectedDiagnosticFileMatches",
+        ifCaseModalNonExhaustiveExpectedDiagnosticFileMatches(context)
+    )
+    passed = passed && recordReferenceResult(
+        context,
+        "ifCaseUnionNonExhaustiveExpectedDiagnosticFileMatches",
+        ifCaseUnionNonExhaustiveExpectedDiagnosticFileMatches(context)
+    )
+    passed = passed && recordReferenceResult(
+        context,
+        "ifCaseUnreachableExpectedDiagnosticFileMatches",
+        ifCaseUnreachableExpectedDiagnosticFileMatches(context)
+    )
+    passed = passed && recordReferenceResult(
+        context,
+        "recordMethodReceiverNotSelfExpectedDiagnosticFileMatches",
+        recordMethodReceiverNotSelfExpectedDiagnosticFileMatches(context)
+    )
+    passed = passed && recordReferenceResult(
+        context,
+        "recordMethodDuplicateExpectedDiagnosticFileMatches",
+        recordMethodDuplicateExpectedDiagnosticFileMatches(context)
+    )
+    passed = passed && recordReferenceResult(
+        context,
+        "parsePatternErrorExpectedDiagnosticFileMatches",
+        parsePatternErrorExpectedDiagnosticFileMatches(context)
+    )
+    passed = passed && recordReferenceResult(
+        context,
+        "contractResultOutsidePostconditionExpectedDiagnosticFileMatches",
+        contractResultOutsidePostconditionExpectedDiagnosticFileMatches(context)
+    )
+    passed = passed && recordReferenceResult(
+        context,
+        "unsatisfiedPreconditionExpectedDiagnosticFileMatches",
+        unsatisfiedPreconditionExpectedDiagnosticFileMatches(context)
+    )
+    passed = passed && recordReferenceResult(
+        context,
+        "preconditionCallerObligationExpectedDiagnosticFileMatches",
+        preconditionCallerObligationExpectedDiagnosticFileMatches(context)
+    )
+    passed = passed && recordReferenceResult(
+        context,
+        "contractEntryOutsidePostconditionExpectedDiagnosticFileMatches",
+        contractEntryOutsidePostconditionExpectedDiagnosticFileMatches(context)
+    )
+    passed = passed && recordReferenceResult(
+        context,
+        "contractEntryNonBitcopyExpectedDiagnosticFileMatches",
+        contractEntryNonBitcopyExpectedDiagnosticFileMatches(context)
+    )
+    passed = passed && recordReferenceResult(
+        context,
+        "contractPredicateNonBoolExpectedDiagnosticFileMatches",
+        contractPredicateNonBoolExpectedDiagnosticFileMatches(context)
+    )
+    passed = passed && recordReferenceResult(
+        context,
+        "contractPredicateImpureMoveExpectedDiagnosticFileMatches",
+        contractPredicateImpureMoveExpectedDiagnosticFileMatches(context)
+    )
+    passed = passed && recordReferenceResult(
+        context,
+        "contractDynamicAttributeExpectedDiagnosticFileMatches",
+        contractDynamicAttributeExpectedDiagnosticFileMatches(context)
+    )
+    passed = passed && recordReferenceResult(
+        context,
+        "contractEntryMovedParameterExpectedDiagnosticFileMatches",
+        contractEntryMovedParameterExpectedDiagnosticFileMatches(context)
+    )
+    passed = passed && recordReferenceResult(
+        context,
+        "contractEntrySideEffectExpectedDiagnosticFileMatches",
+        contractEntrySideEffectExpectedDiagnosticFileMatches(context)
+    )
+    passed = passed && recordReferenceResult(
+        context,
+        "contractEntryCapabilityExpectedDiagnosticFileMatches",
+        contractEntryCapabilityExpectedDiagnosticFileMatches(context)
+    )
+    passed = passed && recordReferenceResult(
+        context,
+        "runConformanceConstructVocabularyReference",
+        runConformanceConstructVocabularyReference()
+    )
+    passed = passed && recordReferenceResult(
+        context,
+        "runConformanceBehaviorClassificationReference",
+        runConformanceBehaviorClassificationReference()
+    )
+    passed = passed && recordReferenceResult(
+        context,
+        "runConformanceTranslationOrderingReference",
+        runConformanceTranslationOrderingReference()
+    )
+    passed = passed && recordReferenceResult(
+        context,
+        "runDiagnosticsSourceSpansReference",
+        runDiagnosticsSourceSpansReference()
+    )
+    passed = passed && recordReferenceResult(
+        context,
+        "runDiagnosticsDiagnosticRecordsReference",
+        runDiagnosticsDiagnosticRecordsReference()
+    )
+    passed = passed && recordReferenceResult(
+        context,
+        "runDiagnosticsDiagnosticOrderingReference",
+        runDiagnosticsDiagnosticOrderingReference()
+    )
+    passed = passed && recordReferenceResult(
+        context,
+        "runDiagnosticsRenderingInputsReference",
+        runDiagnosticsRenderingInputsReference()
+    )
+    passed = passed && recordReferenceResult(
+        context,
+        "runProjectsManifestModelReference",
+        runProjectsManifestModelReference()
+    )
+    passed = passed && recordReferenceResult(
+        context,
+        "runProjectsAssemblyModelReference",
+        runProjectsAssemblyModelReference()
+    )
+    passed = passed && recordReferenceResult(
+        context,
+        "runProjectsModuleDiscoveryReference",
+        runProjectsModuleDiscoveryReference()
+    )
+    passed = passed && recordReferenceResult(
+        context,
+        "runProjectsOutputArtifactsReference",
+        runProjectsOutputArtifactsReference()
+    )
+    passed = passed && recordReferenceResult(
+        context,
+        "runSourceTextUnicodeNormalizationReference",
+        runSourceTextUnicodeNormalizationReference()
+    )
+    passed = passed && recordReferenceResult(
+        context,
+        "runSourceTextLogicalLinesReference",
+        runSourceTextLogicalLinesReference()
+    )
+    passed = passed && recordReferenceResult(
+        context,
+        "runSourceTextLiteralsReference",
+        runSourceTextLiteralsReference()
+    )
+    passed = passed && recordReferenceResult(
+        context,
+        "runSourceTextIdentifiersReference",
+        runSourceTextIdentifiersReference()
+    )
+    passed = passed && recordReferenceResult(
+        context,
+        "runSourceTextOperatorsAndPunctuationReference",
+        runSourceTextOperatorsAndPunctuationReference()
+    )
+    passed = passed && recordReferenceResult(
+        context,
+        "runParsingItemSequencingReference",
+        runParsingItemSequencingReference()
+    )
+    passed = passed && recordReferenceResult(
+        context,
+        "runParsingAttributeParsingReference",
+        runParsingAttributeParsingReference()
+    )
+    passed = passed && recordReferenceResult(
+        context,
+        "runParsingTerminatorsReference",
+        runParsingTerminatorsReference()
+    )
+    passed = passed && recordReferenceResult(
+        context,
+        "runParsingRecoverySpecimensReference",
+        runParsingRecoverySpecimensReference()
+    )
+    passed = passed && recordReferenceResult(
+        context,
+        "runAuthorityCapabilitiesReference",
+        runAuthorityCapabilitiesReference()
+    )
+    passed = passed && recordReferenceResult(
+        context,
+        "runAuthorityFileSystemReference",
+        runAuthorityFileSystemReference()
+    )
+    passed = passed && recordReferenceResult(
+        context,
+        "runAuthoritySystemReference",
+        runAuthoritySystemReference()
+    )
+    passed = passed && recordReferenceResult(
+        context,
+        "runAuthorityNetworkReference",
+        runAuthorityNetworkReference()
+    )
+    passed = passed && recordReferenceResult(
+        context,
+        "runAuthorityRegionsAndFramesReference",
+        runAuthorityRegionsAndFramesReference()
+    )
+    passed = passed && recordReferenceResult(
+        context,
+        "runAuthorityBindingRuntimeStateReference",
+        runAuthorityBindingRuntimeStateReference()
+    )
+    passed = passed && recordReferenceResult(
+        context,
+        "runNamesImportsReference",
+        runNamesImportsReference()
+    )
+    passed = passed && recordReferenceResult(
+        context,
+        "runNamesUsingDeclarationsReference",
+        runNamesUsingDeclarationsReference()
+    )
+    passed = passed && recordReferenceResult(
+        context,
+        "runNamesVisibilityReference",
+        runNamesVisibilityReference()
+    )
+    passed = passed && recordReferenceResult(
+        context,
+        "runNamesQualifiedResolutionReference",
+        runNamesQualifiedResolutionReference()
+    )
+    passed = passed && recordReferenceResult(
+        context,
+        "runNamesDisambiguationReference",
+        runNamesDisambiguationReference()
+    )
+    passed = passed && recordReferenceResult(
+        context,
+        "runTypesEquivalenceReference",
+        runTypesEquivalenceReference()
+    )
+    passed = passed && recordReferenceResult(
+        context,
+        "runTypesSubtypingReference",
+        runTypesSubtypingReference()
+    )
+    passed = passed && recordReferenceResult(
+        context,
+        "runTypesInferenceReference",
+        runTypesInferenceReference()
+    )
+    passed = passed && recordReferenceResult(
+        context,
+        "runTypesRefinementsReference",
+        runTypesRefinementsReference()
+    )
+    passed = passed && recordReferenceResult(
+        context,
+        "runAttributesGeneralAttributesReference",
+        runAttributesGeneralAttributesReference()
+    )
+    passed = passed && recordReferenceResult(
+        context,
+        "runAttributesVendorAttributesReference",
+        runAttributesVendorAttributesReference()
+    )
+    passed = passed && recordReferenceResult(
+        context,
+        "runAttributesLayoutAttributesReference",
+        runAttributesLayoutAttributesReference()
+    )
+    passed = passed && recordReferenceResult(
+        context,
+        "runAttributesOptimizationAttributesReference",
+        runAttributesOptimizationAttributesReference()
+    )
+    passed = passed && recordReferenceResult(
+        context,
+        "runAttributesDiagnosticAttributesReference",
+        runAttributesDiagnosticAttributesReference()
+    )
+    passed = passed && recordReferenceResult(
+        context,
+        "runPermissionsPermissionFormsReference",
+        runPermissionsPermissionFormsReference()
+    )
+    passed = passed && recordReferenceResult(
+        context,
+        "runPermissionsAliasExclusivityReference",
+        runPermissionsAliasExclusivityReference()
+    )
+    passed = passed && recordReferenceResult(
+        context,
+        "runPermissionsActivityStatesReference",
+        runPermissionsActivityStatesReference()
+    )
+    passed = passed && recordReferenceResult(
+        context,
+        "runPermissionsAdmissibilityReference",
+        runPermissionsAdmissibilityReference()
+    )
+    passed = passed && recordReferenceResult(
+        context,
+        "runModulesImportsReference",
+        runModulesImportsReference()
+    )
+    passed = passed && recordReferenceResult(
+        context,
+        "runModulesUsingsReference",
+        runModulesUsingsReference()
+    )
+    passed = passed && recordReferenceResult(
+        context,
+        "runModulesStaticsReference",
+        runModulesStaticsReference()
+    )
+    passed = passed && recordReferenceResult(
+        context,
+        "runModulesExternBlocksReference",
+        runModulesExternBlocksReference()
+    )
+    passed = passed && recordReferenceResult(
+        context,
+        "runModulesAggregationReference",
+        runModulesAggregationReference()
+    )
+    passed = passed && recordReferenceResult(
+        context,
+        "runDataTypesPrimitivesReference",
+        runDataTypesPrimitivesReference()
+    )
+    passed = passed && recordReferenceResult(
+        context,
+        "runDataTypesTuplesReference",
+        runDataTypesTuplesReference()
+    )
+    passed = passed && recordReferenceResult(
+        context,
+        "runDataTypesArraysReference",
+        runDataTypesArraysReference()
+    )
+    passed = passed && recordReferenceResult(
+        context,
+        "runDataTypesSlicesReference",
+        runDataTypesSlicesReference()
+    )
+    passed = passed && recordReferenceResult(
+        context,
+        "runDataTypesRangesReference",
+        runDataTypesRangesReference()
+    )
+    passed = passed && recordReferenceResult(
+        context,
+        "runDataTypesRecordsReference",
+        runDataTypesRecordsReference()
+    )
+    passed = passed && recordReferenceResult(
+        context,
+        "runDataTypesEnumsReference",
+        runDataTypesEnumsReference()
+    )
+    passed = passed && recordReferenceResult(
+        context,
+        "runDataTypesUnionsReference",
+        runDataTypesUnionsReference()
+    )
+    passed = passed && recordReferenceResult(
+        context,
+        "runDataTypesTypeAliasesReference",
+        runDataTypesTypeAliasesReference()
+    )
+    passed = passed && recordReferenceResult(
+        context,
+        "runModalTypesModalDeclarationsReference",
+        runModalTypesModalDeclarationsReference()
+    )
+    passed = passed && recordReferenceResult(
+        context,
+        "runModalTypesStateFieldsReference",
+        runModalTypesStateFieldsReference()
+    )
+    passed = passed && recordReferenceResult(
+        context,
+        "runModalTypesStateMethodsReference",
+        runModalTypesStateMethodsReference()
+    )
+    passed = passed && recordReferenceResult(
+        context,
+        "runModalTypesTransitionsReference",
+        runModalTypesTransitionsReference()
+    )
+    passed = passed && recordReferenceResult(
+        context,
+        "runModalTypesWideningReference",
+        runModalTypesWideningReference()
+    )
+    passed = passed && recordReferenceResult(
+        context,
+        "runModalTypesStringsReference",
+        runModalTypesStringsReference()
+    )
+    passed = passed && recordReferenceResult(
+        context,
+        "runModalTypesBytesReference",
+        runModalTypesBytesReference()
+    )
+    passed = passed && recordReferenceResult(
+        context,
+        "runModalTypesPointersReference",
+        runModalTypesPointersReference()
+    )
+    passed = passed && recordReferenceResult(
+        context,
+        "runModalTypesFunctionTypesReference",
+        runModalTypesFunctionTypesReference()
+    )
+    passed = passed && recordReferenceResult(
+        context,
+        "runModalTypesClosuresReference",
+        runModalTypesClosuresReference()
+    )
+    passed = passed && recordReferenceResult(
+        context,
+        "runPolymorphismGenericParametersReference",
+        runPolymorphismGenericParametersReference()
+    )
+    passed = passed && recordReferenceResult(
+        context,
+        "runPolymorphismGenericProceduresReference",
+        runPolymorphismGenericProceduresReference()
+    )
+    passed = passed && recordReferenceResult(
+        context,
+        "runPolymorphismClassesReference",
+        runPolymorphismClassesReference()
+    )
+    passed = passed && recordReferenceResult(
+        context,
+        "runPolymorphismImplementationsReference",
+        runPolymorphismImplementationsReference()
+    )
+    passed = passed && recordReferenceResult(
+        context,
+        "runPolymorphismAssociatedTypesReference",
+        runPolymorphismAssociatedTypesReference()
+    )
+    passed = passed && recordReferenceResult(
+        context,
+        "runPolymorphismDynamicClassObjectsReference",
+        runPolymorphismDynamicClassObjectsReference()
+    )
+    passed = passed && recordReferenceResult(
+        context,
+        "runPolymorphismOpaqueTypesReference",
+        runPolymorphismOpaqueTypesReference()
+    )
+    passed = passed && recordReferenceResult(
+        context,
+        "runPolymorphismCapabilityClassesReference",
+        runPolymorphismCapabilityClassesReference()
+    )
+    passed = passed && recordReferenceResult(
+        context,
+        "runProceduresDeclarationsReference",
+        runProceduresDeclarationsReference()
+    )
+    passed = passed && recordReferenceResult(
+        context,
+        "runProceduresReceiversReference",
+        runProceduresReceiversReference()
+    )
+    passed = passed && recordReferenceResult(
+        context,
+        "runProceduresOverloadingReference",
+        runProceduresOverloadingReference()
+    )
+    passed = passed && recordReferenceResult(
+        context,
+        "runProceduresContractsReference",
+        runProceduresContractsReference()
+    )
+    passed = passed && recordReferenceResult(
+        context,
+        "runProceduresPreconditionsReference",
+        runProceduresPreconditionsReference()
+    )
+    passed = passed && recordReferenceResult(
+        context,
+        "runProceduresPostconditionsReference",
+        runProceduresPostconditionsReference()
+    )
+    passed = passed && recordReferenceResult(
+        context,
+        "runProceduresInvariantsReference",
+        runProceduresInvariantsReference()
+    )
+    passed = passed && recordReferenceResult(
+        context,
+        "runProceduresVerificationReference",
+        runProceduresVerificationReference()
+    )
+    passed = passed && recordReferenceResult(
+        context,
+        "runProceduresBehavioralSubtypingReference",
+        runProceduresBehavioralSubtypingReference()
+    )
+    passed = passed && recordReferenceResult(
+        context,
+        "runExpressionsLiteralsAndNamesReference",
+        runExpressionsLiteralsAndNamesReference()
+    )
+    passed = passed && recordReferenceResult(
+        context,
+        "runExpressionsAccessAndPlacesReference",
+        runExpressionsAccessAndPlacesReference()
+    )
+    passed = passed && recordReferenceResult(
+        context,
+        "runExpressionsCallsReference",
+        runExpressionsCallsReference()
+    )
+    passed = passed && recordReferenceResult(
+        context,
+        "runExpressionsOperatorsReference",
+        runExpressionsOperatorsReference()
+    )
+    passed = passed && recordReferenceResult(
+        context,
+        "runExpressionsCastsAndTransmutesReference",
+        runExpressionsCastsAndTransmutesReference()
+    )
+    passed = passed && recordReferenceResult(
+        context,
+        "runExpressionsConstructionReference",
+        runExpressionsConstructionReference()
+    )
+    passed = passed && recordReferenceResult(
+        context,
+        "runExpressionsControlReference",
+        runExpressionsControlReference()
+    )
+    passed = passed && recordReferenceResult(
+        context,
+        "runExpressionsEffectfulCoreReference",
+        runExpressionsEffectfulCoreReference()
+    )
+    passed = passed && recordReferenceResult(
+        context,
+        "runExpressionsClosuresAndPipelinesReference",
+        runExpressionsClosuresAndPipelinesReference()
+    )
+    passed = passed && recordReferenceResult(
+        context,
+        "runPatternsBasicPatternsReference",
+        runPatternsBasicPatternsReference()
+    )
+    passed = passed && recordReferenceResult(
+        context,
+        "runPatternsTupleRecordPatternsReference",
+        runPatternsTupleRecordPatternsReference()
+    )
+    passed = passed && recordReferenceResult(
+        context,
+        "runPatternsEnumModalPatternsReference",
+        runPatternsEnumModalPatternsReference()
+    )
+    passed = passed && recordReferenceResult(
+        context,
+        "runPatternsRangePatternsReference",
+        runPatternsRangePatternsReference()
+    )
+    passed = passed && recordReferenceResult(
+        context,
+        "runPatternsCaseClausesReference",
+        runPatternsCaseClausesReference()
+    )
+    passed = passed && recordReferenceResult(
+        context,
+        "runPatternsExhaustivenessReference",
+        runPatternsExhaustivenessReference()
+    )
+    passed = passed && recordReferenceResult(
+        context,
+        "runStatementsBlocksReference",
+        runStatementsBlocksReference()
+    )
+    passed = passed && recordReferenceResult(
+        context,
+        "runStatementsBindingsReference",
+        runStatementsBindingsReference()
+    )
+    passed = passed && recordReferenceResult(
+        context,
+        "runStatementsLocalUsingReference",
+        runStatementsLocalUsingReference()
+    )
+    passed = passed && recordReferenceResult(
+        context,
+        "runStatementsAssignmentReference",
+        runStatementsAssignmentReference()
+    )
+    passed = passed && recordReferenceResult(
+        context,
+        "runStatementsExpressionStatementsReference",
+        runStatementsExpressionStatementsReference()
+    )
+    passed = passed && recordReferenceResult(
+        context,
+        "runStatementsDeferReference",
+        runStatementsDeferReference()
+    )
+    passed = passed && recordReferenceResult(
+        context,
+        "runStatementsRegionReference",
+        runStatementsRegionReference()
+    )
+    passed = passed && recordReferenceResult(
+        context,
+        "runStatementsFrameReference",
+        runStatementsFrameReference()
+    )
+    passed = passed && recordReferenceResult(
+        context,
+        "runStatementsControlTransferReference",
+        runStatementsControlTransferReference()
+    )
+    passed = passed && recordReferenceResult(
+        context,
+        "runStatementsUnsafeReference",
+        runStatementsUnsafeReference()
+    )
+    passed = passed && recordReferenceResult(
+        context,
+        "runKeysKeyPathsReference",
+        runKeysKeyPathsReference()
+    )
+    passed = passed && recordReferenceResult(
+        context,
+        "runKeysAcquisitionBlocksReference",
+        runKeysAcquisitionBlocksReference()
+    )
+    passed = passed && recordReferenceResult(
+        context,
+        "runKeysConflictDetectionReference",
+        runKeysConflictDetectionReference()
+    )
+    passed = passed && recordReferenceResult(
+        context,
+        "runKeysNestedReleaseReference",
+        runKeysNestedReleaseReference()
+    )
+    passed = passed && recordReferenceResult(
+        context,
+        "runKeysSpeculativeExecutionReference",
+        runKeysSpeculativeExecutionReference()
+    )
+    passed = passed && recordReferenceResult(
+        context,
+        "runKeysDynamicVerificationReference",
+        runKeysDynamicVerificationReference()
+    )
+    passed = passed && recordReferenceResult(
+        context,
+        "runKeysMemoryOrderingReference",
+        runKeysMemoryOrderingReference()
+    )
+    passed = passed && recordReferenceResult(
+        context,
+        "runParallelismParallelBlocksReference",
+        runParallelismParallelBlocksReference()
+    )
+    passed = passed && recordReferenceResult(
+        context,
+        "runParallelismExecutionDomainsReference",
+        runParallelismExecutionDomainsReference()
+    )
+    passed = passed && recordReferenceResult(
+        context,
+        "runParallelismCaptureSemanticsReference",
+        runParallelismCaptureSemanticsReference()
+    )
+    passed = passed && recordReferenceResult(
+        context,
+        "runParallelismSpawnReference",
+        runParallelismSpawnReference()
+    )
+    passed = passed && recordReferenceResult(
+        context,
+        "runParallelismDispatchReference",
+        runParallelismDispatchReference()
+    )
+    passed = passed && recordReferenceResult(
+        context,
+        "runParallelismCancellationReference",
+        runParallelismCancellationReference()
+    )
+    passed = passed && recordReferenceResult(
+        context,
+        "runParallelismPanicHandlingReference",
+        runParallelismPanicHandlingReference()
+    )
+    passed = passed && recordReferenceResult(
+        context,
+        "runParallelismDeterminismReference",
+        runParallelismDeterminismReference()
+    )
+    passed = passed && recordReferenceResult(
+        context,
+        "runAsyncAsyncTypeReference",
+        runAsyncAsyncTypeReference()
+    )
+    passed = passed && recordReferenceResult(
+        context,
+        "runAsyncSuspensionFormsReference",
+        runAsyncSuspensionFormsReference()
+    )
+    passed = passed && recordReferenceResult(
+        context,
+        "runAsyncCompositionFormsReference",
+        runAsyncCompositionFormsReference()
+    )
+    passed = passed && recordReferenceResult(
+        context,
+        "runAsyncStateMachineReference",
+        runAsyncStateMachineReference()
+    )
+    passed = passed && recordReferenceResult(
+        context,
+        "runAsyncAsyncKeyIntegrationReference",
+        runAsyncAsyncKeyIntegrationReference()
+    )
+    passed = passed && recordReferenceResult(
+        context,
+        "runComptimeCompileTimeFormsReference",
+        runComptimeCompileTimeFormsReference()
+    )
+    passed = passed && recordReferenceResult(
+        context,
+        "runComptimeCompileTimeCapabilitiesReference",
+        runComptimeCompileTimeCapabilitiesReference()
+    )
+    passed = passed && recordReferenceResult(
+        context,
+        "runComptimeReflectionReference",
+        runComptimeReflectionReference()
+    )
+    passed = passed && recordReferenceResult(
+        context,
+        "runComptimeQuoteSpliceEmissionReference",
+        runComptimeQuoteSpliceEmissionReference()
+    )
+    passed = passed && recordReferenceResult(
+        context,
+        "runComptimeDeriveTargetsReference",
+        runComptimeDeriveTargetsReference()
+    )
+    passed = passed && recordReferenceResult(
+        context,
+        "runFFIFfiSafeReference",
+        runFFIFfiSafeReference()
+    )
+    passed = passed && recordReferenceResult(
+        context,
+        "runFFIExternProceduresReference",
+        runFFIExternProceduresReference()
+    )
+    passed = passed && recordReferenceResult(
+        context,
+        "runFFIExportedProceduresReference",
+        runFFIExportedProceduresReference()
+    )
+    passed = passed && recordReferenceResult(
+        context,
+        "runFFIAttributesReference",
+        runFFIAttributesReference()
+    )
+    passed = passed && recordReferenceResult(
+        context,
+        "runFFICapabilityIsolationReference",
+        runFFICapabilityIsolationReference()
+    )
+    passed = passed && recordReferenceResult(
+        context,
+        "runFFIForeignContractsReference",
+        runFFIForeignContractsReference()
+    )
+    passed = passed && recordReferenceResult(
+        context,
+        "runFFIBoundaryUnwindingReference",
+        runFFIBoundaryUnwindingReference()
+    )
+    passed = passed && recordReferenceResult(
+        context,
+        "runLoweringSharedJudgmentsReference",
+        runLoweringSharedJudgmentsReference()
+    )
+    passed = passed && recordReferenceResult(
+        context,
+        "runLoweringLayoutAndABIReference",
+        runLoweringLayoutAndABIReference()
+    )
+    passed = passed && recordReferenceResult(
+        context,
+        "runLoweringSymbolsManglingLinkageReference",
+        runLoweringSymbolsManglingLinkageReference()
+    )
+    passed = passed && recordReferenceResult(
+        context,
+        "runLoweringInitializationLifecycleReference",
+        runLoweringInitializationLifecycleReference()
+    )
+    passed = passed && recordReferenceResult(
+        context,
+        "runLoweringCleanupDropUnwindingReference",
+        runLoweringCleanupDropUnwindingReference()
+    )
+    passed = passed && recordReferenceResult(
+        context,
+        "runLoweringRuntimeInterfaceReference",
+        runLoweringRuntimeInterfaceReference()
+    )
+    passed = passed && recordReferenceResult(
+        context,
+        "runLoweringBackendRequirementsReference",
+        runLoweringBackendRequirementsReference()
+    )
+    return referenceResult(
+        passed,
+        246
+    )
+}

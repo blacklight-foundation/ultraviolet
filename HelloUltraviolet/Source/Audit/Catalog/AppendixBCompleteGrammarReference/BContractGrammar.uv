@@ -1,0 +1,20 @@
+//! Generated catalog markers for Appendix B. Complete Grammar Reference / B.7 Contract Grammar.
+
+
+public procedure countAppendixBCompleteGrammarReferenceBContractGrammarObligations() -> usize {
+    return 1usize
+}
+
+public procedure validatedAppendixBCompleteGrammarReferenceBContractGrammarObligations() -> usize {
+    var count: usize = 0usize
+    if acceptedObligationEntryMatches(
+        "grammar.B.7.ContractGrammar",
+        99780usize,
+        "HelloUltraviolet::Reference::Parsing",
+        "runParsingItemSequencingReference",
+        "Source/Reference/Parsing/ItemSequencing.uv"
+    ) {
+        count = count + 1usize
+    }
+    return count
+}

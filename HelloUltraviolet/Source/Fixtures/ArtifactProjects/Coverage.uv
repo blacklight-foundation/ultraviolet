@@ -1,0 +1,82 @@
+//! Coverage checks for artifact project fixture metadata.
+
+public procedure expectedArtifactProjectFixtureCount() -> usize {
+    return 3usize
+}
+
+public procedure artifactProjectFixtureCount() -> usize {
+    return 3usize
+}
+
+public procedure validatedArtifactProjectFixtureCount() -> usize {
+    var count: usize = 0usize
+    if artifactProjectSpecimenMatches(
+        artifactProjectSpecimen(
+            "StaticLibraryArchive",
+            "Fixtures/ArtifactProjects/StaticLibraryArchive",
+            "Fixtures/ArtifactProjects/StaticLibraryArchive/Ultraviolet.toml",
+            "Fixtures/ArtifactProjects/StaticLibraryArchive/Source/Library.uv",
+            "Fixtures/ArtifactProjects/StaticLibraryArchive/build/lib/StaticLibraryArchive.lib",
+            "Fixtures/ArtifactProjects/StaticLibraryArchive/build/obj/StaticLibraryArchive.obj",
+            artifactExpectation("StaticLibraryPrimaryArtifact", "PrimaryArtifactSet")
+        ),
+        "StaticLibraryArchive",
+        "Fixtures/ArtifactProjects/StaticLibraryArchive",
+        "Fixtures/ArtifactProjects/StaticLibraryArchive/Ultraviolet.toml",
+        "Fixtures/ArtifactProjects/StaticLibraryArchive/Source/Library.uv",
+        "Fixtures/ArtifactProjects/StaticLibraryArchive/build/lib/StaticLibraryArchive.lib",
+        "Fixtures/ArtifactProjects/StaticLibraryArchive/build/obj/StaticLibraryArchive.obj",
+        "StaticLibraryPrimaryArtifact",
+        "PrimaryArtifactSet"
+    ) {
+        count = count + 1usize
+    }
+    if artifactProjectSpecimenMatches(
+        artifactProjectSpecimen(
+            "EmitLlLibrary",
+            "Fixtures/ArtifactProjects/EmitLlLibrary",
+            "Fixtures/ArtifactProjects/EmitLlLibrary/Ultraviolet.toml",
+            "Fixtures/ArtifactProjects/EmitLlLibrary/Source/Library.uv",
+            "Fixtures/ArtifactProjects/EmitLlLibrary/build/ir/EmitLlLibrary.ll",
+            "Fixtures/ArtifactProjects/EmitLlLibrary/build/obj/EmitLlLibrary.obj",
+            artifactExpectation("LlvmIrArtifact", "IRSet")
+        ),
+        "EmitLlLibrary",
+        "Fixtures/ArtifactProjects/EmitLlLibrary",
+        "Fixtures/ArtifactProjects/EmitLlLibrary/Ultraviolet.toml",
+        "Fixtures/ArtifactProjects/EmitLlLibrary/Source/Library.uv",
+        "Fixtures/ArtifactProjects/EmitLlLibrary/build/ir/EmitLlLibrary.ll",
+        "Fixtures/ArtifactProjects/EmitLlLibrary/build/obj/EmitLlLibrary.obj",
+        "LlvmIrArtifact",
+        "IRSet"
+    ) {
+        count = count + 1usize
+    }
+    if artifactProjectSpecimenMatches(
+        artifactProjectSpecimen(
+            "ExecutableOutput",
+            "Fixtures/ArtifactProjects/ExecutableOutput",
+            "Fixtures/ArtifactProjects/ExecutableOutput/Ultraviolet.toml",
+            "Fixtures/ArtifactProjects/ExecutableOutput/Source/Main.uv",
+            "Fixtures/ArtifactProjects/ExecutableOutput/build/bin/ExecutableOutput.exe",
+            "Fixtures/ArtifactProjects/ExecutableOutput/build/bin/ExecutableOutput.map",
+            artifactExpectation("ExecutablePrimaryArtifact", "PrimaryArtifactSet")
+        ),
+        "ExecutableOutput",
+        "Fixtures/ArtifactProjects/ExecutableOutput",
+        "Fixtures/ArtifactProjects/ExecutableOutput/Ultraviolet.toml",
+        "Fixtures/ArtifactProjects/ExecutableOutput/Source/Main.uv",
+        "Fixtures/ArtifactProjects/ExecutableOutput/build/bin/ExecutableOutput.exe",
+        "Fixtures/ArtifactProjects/ExecutableOutput/build/bin/ExecutableOutput.map",
+        "ExecutablePrimaryArtifact",
+        "PrimaryArtifactSet"
+    ) {
+        count = count + 1usize
+    }
+    return count
+}
+
+public procedure artifactProjectFixturesAreIndexed() -> bool {
+    return artifactProjectFixtureCount() == expectedArtifactProjectFixtureCount() &&
+        validatedArtifactProjectFixtureCount() == expectedArtifactProjectFixtureCount()
+}

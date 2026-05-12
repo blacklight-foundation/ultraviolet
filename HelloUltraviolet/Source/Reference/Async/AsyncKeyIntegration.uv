@@ -1,0 +1,7 @@
+//! Reference specimens for Async / AsyncKeyIntegration.
+
+/// Exercises the Async AsyncKeyIntegration reference surface.
+public procedure runAsyncAsyncKeyIntegrationReference() -> bool {
+    let reference: AsyncReference = asyncReference(2usize, true, true)
+    return asyncReferenceIsCovered(reference) && reference.integrates_keys
+}

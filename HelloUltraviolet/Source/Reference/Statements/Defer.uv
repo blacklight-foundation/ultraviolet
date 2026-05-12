@@ -1,0 +1,13 @@
+//! Reference specimens for Statements / Defer.
+
+/// Exercises the Statements Defer reference surface.
+public procedure runStatementsDeferReference() -> bool {
+    var value: i32 = 0
+    {
+        defer {
+            value = value + 1
+        }
+        value = value + 2
+    }
+    return value == 3
+}

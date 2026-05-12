@@ -1,0 +1,128 @@
+//! Generated catalog markers for 15. Procedures and Contracts / 15.3 Overloading.
+
+
+public procedure countProceduresAndContractsOverloadingObligations() -> usize {
+    return 13usize
+}
+
+public procedure validatedProceduresAndContractsOverloadingObligations() -> usize {
+    var count: usize = 0usize
+    if acceptedObligationEntryMatches(
+        "req.15.OverloadingNoAdditionalSyntax",
+        54224usize,
+        "HelloUltraviolet::Reference::Procedures",
+        "runProceduresOverloadingReference",
+        "Source/Reference/Procedures/Overloading.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "req.15.OverloadResolutionNotParserConcern",
+        54239usize,
+        "HelloUltraviolet::Reference::Procedures",
+        "runProceduresOverloadingReference",
+        "Source/Reference/Procedures/Overloading.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "def.15.ClassDefaults",
+        54254usize,
+        "HelloUltraviolet::Reference::Procedures",
+        "runProceduresOverloadingReference",
+        "Source/Reference/Procedures/Overloading.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "def.15.LookupMethod",
+        54267usize,
+        "HelloUltraviolet::Reference::Procedures",
+        "runProceduresOverloadingReference",
+        "Source/Reference/Procedures/Overloading.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "rule.15.LookupMethod-NotFound",
+        54284usize,
+        "HelloUltraviolet::Reference::Procedures",
+        "runProceduresOverloadingReference",
+        "Source/Reference/Procedures/Overloading.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "rule.15.LookupMethod-Ambig",
+        54300usize,
+        "HelloUltraviolet::Reference::Procedures",
+        "runProceduresOverloadingReference",
+        "Source/Reference/Procedures/Overloading.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "req.15.FreeProcedureOverloadResolutionBeforeCallTyping",
+        54316usize,
+        "HelloUltraviolet::Reference::Procedures",
+        "runProceduresOverloadingReference",
+        "Source/Reference/Procedures/Overloading.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "req.15.FreeCallOverloadResolutionAlgorithm",
+        54329usize,
+        "HelloUltraviolet::Reference::Procedures",
+        "runProceduresOverloadingReference",
+        "Source/Reference/Procedures/Overloading.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "req.15.DuplicateErasedOverloadSignaturesForbidden",
+        54351usize,
+        "HelloUltraviolet::Reference::Procedures",
+        "runProceduresOverloadingReference",
+        "Source/Reference/Procedures/Overloading.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "req.15.NoRuntimeOverloadSearch",
+        54366usize,
+        "HelloUltraviolet::Reference::Procedures",
+        "runProceduresOverloadingReference",
+        "Source/Reference/Procedures/Overloading.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "req.15.OverloadResolutionCompleteBeforeLowering",
+        54381usize,
+        "HelloUltraviolet::Reference::Procedures",
+        "runProceduresOverloadingReference",
+        "Source/Reference/Procedures/Overloading.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "diag-table.15.Overloading",
+        54396usize,
+        "HelloUltraviolet::Reference::Procedures",
+        "runProceduresOverloadingReference",
+        "Source/Reference/Procedures/Overloading.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "diag.15.MethodLookupDiagnostics",
+        54413usize,
+        "HelloUltraviolet::Reference::Procedures",
+        "runProceduresOverloadingReference",
+        "Source/Reference/Procedures/Overloading.uv"
+    ) {
+        count = count + 1usize
+    }
+    return count
+}

@@ -1,0 +1,32 @@
+//! Reference specimens for Authority / Network.
+
+internal record NetworkAuthorityReference {
+    internal can_connect: bool
+    internal can_listen: bool
+    internal requires_capability: bool
+}
+
+internal procedure networkAuthorityReference(
+    can_connect: bool,
+    can_listen: bool,
+    requires_capability: bool
+) -> NetworkAuthorityReference {
+    return NetworkAuthorityReference {
+        can_connect: can_connect,
+        can_listen: can_listen,
+        requires_capability: requires_capability
+    }
+}
+
+internal procedure networkAuthorityCanAffectHost(
+    reference: NetworkAuthorityReference
+) -> bool {
+    return reference.requires_capability && (reference.can_connect || reference.can_listen)
+}
+
+/// Exercises the Authority Network reference surface.
+public procedure runAuthorityNetworkReference() -> bool {
+    let client: NetworkAuthorityReference = networkAuthorityReference(true, false, true)
+    let server: NetworkAuthorityReference = networkAuthorityReference(false, true, true)
+    return networkAuthorityCanAffectHost(client) && networkAuthorityCanAffectHost(server)
+}

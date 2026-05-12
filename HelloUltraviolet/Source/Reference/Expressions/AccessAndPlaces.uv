@@ -1,0 +1,20 @@
+//! Reference specimens for Expressions / AccessAndPlaces.
+
+public record ExpressionPlaceReference {
+    public first: i32
+    public second: i32
+}
+
+/// Exercises the Expressions AccessAndPlaces reference surface.
+public procedure runExpressionsAccessAndPlacesReference() -> bool {
+    let record_value: ExpressionPlaceReference = ExpressionPlaceReference {
+        first: 4,
+        second: 9
+    }
+    let tuple_value: (i32, bool) = (record_value.first, true)
+    let array_value: [i32; 3] = [record_value.first, record_value.second, 12]
+    let field_ok: bool = record_value.second == 9
+    let tuple_ok: bool = tuple_value.0 == 4 && tuple_value.1
+    let index_ok: bool = array_value[2usize] == 12
+    return field_ok && tuple_ok && index_ok
+}

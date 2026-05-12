@@ -1,0 +1,15 @@
+//! Reference specimens for Types / Inference.
+
+internal procedure inferredReturnReference(left: i32, right: i32) -> i32 {
+    let inferred_sum = left + right
+    return inferred_sum
+}
+
+/// Exercises the Types Inference reference surface.
+public procedure runTypesInferenceReference() -> bool {
+    let inferred_integer = 7
+    let inferred_boolean = inferred_integer > 3
+    let inferred_tuple = (inferred_integer, inferred_boolean)
+    let (value, flag): (i32, bool) = inferred_tuple
+    return inferredReturnReference(value, 5) == 12 && flag
+}

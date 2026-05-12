@@ -1,0 +1,7 @@
+//! Reference specimens for Polymorphism / AssociatedTypes.
+
+/// Exercises the Polymorphism AssociatedTypes reference surface.
+public procedure runPolymorphismAssociatedTypesReference() -> bool {
+    let reference: PolymorphismReference = polymorphismReference(2usize, true, false)
+    return polymorphismReferenceIsCovered(reference)
+}

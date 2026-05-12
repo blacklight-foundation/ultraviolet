@@ -1,0 +1,7 @@
+//! Reference specimens for Keys / AcquisitionBlocks.
+
+/// Exercises the Keys AcquisitionBlocks reference surface.
+public procedure runKeysAcquisitionBlocksReference() -> bool {
+    let reference: KeyReference = keyReference(4usize, true, true)
+    return keyReferenceIsCovered(reference)
+}

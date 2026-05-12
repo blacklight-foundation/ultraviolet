@@ -30,7 +30,37 @@ inline core::Diagnostic MakeInternalTypecheckDiagnostic(
   return diag;
 }
 
+inline core::Diagnostic MakeUncodedStaticTypecheckDiagnostic(
+    const std::optional<core::Span>& span,
+    std::string_view rule_id) {
+  core::Diagnostic diag;
+  diag.severity = core::Severity::Error;
+  diag.span = span;
+  diag.message = "Static rule failed without assigned diagnostic code: " +
+      std::string(rule_id);
+  return diag;
+}
+
 inline std::optional<std::string> LookupTypecheckDiagCode(std::string_view diag_id) {
+  if (diag_id == "LookupMethod-NotFound") {
+    return "E-SEM-2536";
+  }
+  if (diag_id == "Infer-Closure-Params-Err") {
+    return "E-SEM-2591";
+  }
+  if (diag_id == "T-Transmute-SizeEq") {
+    return "E-MEM-3031";
+  }
+  if (diag_id == "T-Transmute-AlignEq") {
+    return "E-UNS-0104";
+  }
+  if (diag_id == "PtrNull-Infer-Err") {
+    return "E-TYP-1530";
+  }
+  if (diag_id == "Record-Default-Init-Err") {
+    return "E-TYP-1911";
+  }
+
   if (const auto code = core::ResolveDiagCode(std::string(diag_id));
       code.has_value()) {
     return *code;
@@ -60,6 +90,10 @@ inline std::optional<core::Diagnostic> BuildResolvedTypecheckDiagnostic(
     return MakeInternalTypecheckDiagnostic(
         core::Severity::Error, span,
         "Internal error: unresolved diagnostic code '" + *code + "'");
+  }
+
+  if (core::IsStaticRule(diag_id)) {
+    return MakeUncodedStaticTypecheckDiagnostic(span, diag_id);
   }
 
   return MakeInternalTypecheckDiagnostic(

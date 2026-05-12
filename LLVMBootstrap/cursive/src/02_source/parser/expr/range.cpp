@@ -104,6 +104,7 @@ ParseElemResult<ExprPtr> ParseRangeTail(Parser parser, const ExprPtr& lhs,
 
 ParseElemResult<ExprPtr> ParseRange(Parser parser, bool allow_brace,
                                     bool allow_bracket) {
+  SPEC_RULE("ParseRangeFamily");
   Parser start = parser;
 
   // Check for ToInclusive range: ..=e

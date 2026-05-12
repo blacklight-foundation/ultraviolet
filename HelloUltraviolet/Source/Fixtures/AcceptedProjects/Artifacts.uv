@@ -1,0 +1,28 @@
+//! Runtime path checks for accepted project fixture artifacts.
+
+internal procedure acceptedProjectArtifactsExist(
+    context: Context,
+    manifest_path: string@View,
+    source_path: string@View
+) -> bool {
+    return context.fs~>exists(manifest_path) &&
+        context.fs~>exists(source_path)
+}
+
+public procedure acceptedProjectFixtureArtifactsExist(context: Context) -> bool {
+    return acceptedProjectArtifactsExist(
+        context,
+        "HelloUltraviolet/Fixtures/AcceptedProjects/StaticLibrary/Ultraviolet.toml",
+        "HelloUltraviolet/Fixtures/AcceptedProjects/StaticLibrary/Source/Library.uv"
+    ) &&
+        acceptedProjectArtifactsExist(
+            context,
+            "HelloUltraviolet/Fixtures/AcceptedProjects/ExecutableMain/Ultraviolet.toml",
+            "HelloUltraviolet/Fixtures/AcceptedProjects/ExecutableMain/Source/Main.uv"
+        ) &&
+        acceptedProjectArtifactsExist(
+            context,
+            "HelloUltraviolet/Fixtures/AcceptedProjects/PtrNullReturn/Ultraviolet.toml",
+            "HelloUltraviolet/Fixtures/AcceptedProjects/PtrNullReturn/Source/Library.uv"
+        )
+}

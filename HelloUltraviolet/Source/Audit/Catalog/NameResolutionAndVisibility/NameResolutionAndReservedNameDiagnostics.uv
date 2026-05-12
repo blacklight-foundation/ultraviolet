@@ -1,0 +1,20 @@
+//! Generated catalog markers for 7. Name Resolution and Visibility / 7.8 Name Resolution and Reserved Name Diagnostics.
+
+
+public procedure countNameResolutionAndVisibilityNameResolutionAndReservedNameDiagnosticsObligations() -> usize {
+    return 1usize
+}
+
+public procedure validatedNameResolutionAndVisibilityNameResolutionAndReservedNameDiagnosticsObligations() -> usize {
+    var count: usize = 0usize
+    if acceptedObligationEntryMatches(
+        "diagnostics.NameResolutionAndReservedNames",
+        23775usize,
+        "HelloUltraviolet::Reference::Names",
+        "runNamesQualifiedResolutionReference",
+        "Source/Reference/Names/QualifiedResolution.uv"
+    ) {
+        count = count + 1usize
+    }
+    return count
+}

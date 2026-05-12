@@ -1,0 +1,20 @@
+//! Generated catalog markers for Appendix B. Complete Grammar Reference / B.6 Declaration Grammar.
+
+
+public procedure countAppendixBCompleteGrammarReferenceBDeclarationGrammarObligations() -> usize {
+    return 1usize
+}
+
+public procedure validatedAppendixBCompleteGrammarReferenceBDeclarationGrammarObligations() -> usize {
+    var count: usize = 0usize
+    if acceptedObligationEntryMatches(
+        "grammar.B.6.DeclarationGrammar",
+        99696usize,
+        "HelloUltraviolet::Reference::Parsing",
+        "runParsingItemSequencingReference",
+        "Source/Reference/Parsing/ItemSequencing.uv"
+    ) {
+        count = count + 1usize
+    }
+    return count
+}

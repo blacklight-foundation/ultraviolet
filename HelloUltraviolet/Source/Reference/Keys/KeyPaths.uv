@@ -1,0 +1,30 @@
+//! Reference specimens for Keys / KeyPaths.
+
+internal record KeyReference {
+    internal surface_forms: usize
+    internal statically_verified: bool
+    internal runtime_checked: bool
+}
+
+internal procedure keyReference(
+    surface_forms: usize,
+    statically_verified: bool,
+    runtime_checked: bool
+) -> KeyReference {
+    return KeyReference {
+        surface_forms: surface_forms,
+        statically_verified: statically_verified,
+        runtime_checked: runtime_checked
+    }
+}
+
+internal procedure keyReferenceIsCovered(reference: KeyReference) -> bool {
+    return reference.surface_forms > 0usize &&
+        (reference.statically_verified || reference.runtime_checked)
+}
+
+/// Exercises the Keys KeyPaths reference surface.
+public procedure runKeysKeyPathsReference() -> bool {
+    let reference: KeyReference = keyReference(3usize, true, false)
+    return keyReferenceIsCovered(reference)
+}

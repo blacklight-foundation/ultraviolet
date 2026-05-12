@@ -1,0 +1,41 @@
+//! Metadata for source specimens that are intentionally rejected by the language.
+
+public record RejectedSpecimen {
+    public name: string@View
+    public fixture_path: string@View
+    public source_path: string@View
+    public expected_path: string@View
+    public expected: ExpectedDiagnostic
+}
+
+public procedure rejectedSpecimen(
+    name: string@View,
+    fixture_path: string@View,
+    source_path: string@View,
+    expected_path: string@View,
+    expected: ExpectedDiagnostic
+) -> RejectedSpecimen {
+    return RejectedSpecimen {
+        name: name,
+        fixture_path: fixture_path,
+        source_path: source_path,
+        expected_path: expected_path,
+        expected: expected
+    }
+}
+
+public procedure rejectedSpecimenMatches(
+    specimen: RejectedSpecimen,
+    name: string@View,
+    fixture_path: string@View,
+    source_path: string@View,
+    expected_path: string@View,
+    expected_code: string@View,
+    obligation_id: string@View
+) -> bool {
+    return auditTextEquals(specimen.name, name) &&
+        auditTextEquals(specimen.fixture_path, fixture_path) &&
+        auditTextEquals(specimen.source_path, source_path) &&
+        auditTextEquals(specimen.expected_path, expected_path) &&
+        expectedDiagnosticMatches(specimen.expected, expected_code, obligation_id)
+}

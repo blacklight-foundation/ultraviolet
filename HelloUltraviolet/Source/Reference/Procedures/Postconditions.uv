@@ -1,0 +1,12 @@
+//! Reference specimens for Procedures / Postconditions.
+
+internal procedure postconditionReference(value: i32) -> bool
+|: => @result
+{
+    return value == value
+}
+
+/// Exercises the Procedures Postconditions reference surface.
+public procedure runProceduresPostconditionsReference() -> bool {
+    return postconditionReference(8)
+}

@@ -1,0 +1,20 @@
+//! Generated catalog markers for 16. Expressions / 16.10 Expression Diagnostics Supplement.
+
+
+public procedure countExpressionsExpressionDiagnosticsSupplementObligations() -> usize {
+    return 1usize
+}
+
+public procedure validatedExpressionsExpressionDiagnosticsSupplementObligations() -> usize {
+    var count: usize = 0usize
+    if acceptedObligationEntryMatches(
+        "diag.16.ExpressionDiagnosticsSupplement",
+        64537usize,
+        "HelloUltraviolet::Reference::Expressions",
+        "runExpressionsLiteralsAndNamesReference",
+        "Source/Reference/Expressions/LiteralsAndNames.uv"
+    ) {
+        count = count + 1usize
+    }
+    return count
+}

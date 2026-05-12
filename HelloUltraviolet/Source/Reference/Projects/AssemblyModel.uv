@@ -1,0 +1,77 @@
+//! Reference specimens for Projects / AssemblyModel.
+
+internal enum AssemblyKindReference {
+    Executable
+    Library
+    Dependency
+}
+
+internal enum LinkKindReference {
+    None
+    Static
+    Shared
+}
+
+internal record AssemblyReference {
+    internal name: string@View
+    internal kind: AssemblyKindReference
+    internal link_kind: LinkKindReference
+    internal root_order: usize
+}
+
+internal procedure assemblyReference(
+    name: string@View,
+    kind: AssemblyKindReference,
+    link_kind: LinkKindReference,
+    root_order: usize
+) -> AssemblyReference {
+    return AssemblyReference {
+        name: name,
+        kind: kind,
+        link_kind: link_kind,
+        root_order: root_order
+    }
+}
+
+internal procedure assemblyIsLinkedLibrary(assembly: AssemblyReference) -> bool {
+    return if assembly.kind is {
+        AssemblyKindReference::Executable {
+            false
+        }
+        AssemblyKindReference::Library {
+            if assembly.link_kind is {
+                LinkKindReference::None {
+                    false
+                }
+                LinkKindReference::Static {
+                    true
+                }
+                LinkKindReference::Shared {
+                    true
+                }
+            }
+        }
+        AssemblyKindReference::Dependency {
+            false
+        }
+    }
+}
+
+/// Exercises the Projects AssemblyModel reference surface.
+public procedure runProjectsAssemblyModelReference() -> bool {
+    let executable: AssemblyReference = assemblyReference(
+        "HelloUltraviolet",
+        AssemblyKindReference::Executable,
+        LinkKindReference::None,
+        1usize
+    )
+    let library: AssemblyReference = assemblyReference(
+        "ReferenceLibrary",
+        AssemblyKindReference::Library,
+        LinkKindReference::Static,
+        2usize
+    )
+    return !assemblyIsLinkedLibrary(executable) &&
+        assemblyIsLinkedLibrary(library) &&
+        executable.root_order < library.root_order
+}

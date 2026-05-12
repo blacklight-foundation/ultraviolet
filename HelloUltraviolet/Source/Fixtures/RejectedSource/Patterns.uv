@@ -1,0 +1,180 @@
+//! Rejected pattern specimens.
+
+public procedure patternsRejectedSourceFixtureCount() -> usize {
+    return 10usize
+}
+
+public procedure validatedPatternsRejectedSourceFixtureCount() -> usize {
+    var count: usize = 0usize
+    if rejectedSpecimenMatches(
+        rejectedSpecimen(
+            "DuplicatePatternBinding",
+            "Fixtures/RejectedSource/Patterns/DuplicatePatternBinding",
+            "Fixtures/RejectedSource/Patterns/DuplicatePatternBinding/Source/Main.uv",
+            "Fixtures/RejectedSource/Patterns/DuplicatePatternBinding/Expected.uv",
+            expectedDiagnostic("E-SEM-2713", "rule.17.Pat-Dup-R-Err")
+        ),
+        "DuplicatePatternBinding",
+        "Fixtures/RejectedSource/Patterns/DuplicatePatternBinding",
+        "Fixtures/RejectedSource/Patterns/DuplicatePatternBinding/Source/Main.uv",
+        "Fixtures/RejectedSource/Patterns/DuplicatePatternBinding/Expected.uv",
+        "E-SEM-2713",
+        "rule.17.Pat-Dup-R-Err"
+    ) {
+        count = count + 1usize
+    }
+    if rejectedSpecimenMatches(
+        rejectedSpecimen(
+            "TuplePatternArity",
+            "Fixtures/RejectedSource/Patterns/TuplePatternArity",
+            "Fixtures/RejectedSource/Patterns/TuplePatternArity/Source/Main.uv",
+            "Fixtures/RejectedSource/Patterns/TuplePatternArity/Expected.uv",
+            expectedDiagnostic("", "rule.17.Pat-Tuple-R-Arity-Err")
+        ),
+        "TuplePatternArity",
+        "Fixtures/RejectedSource/Patterns/TuplePatternArity",
+        "Fixtures/RejectedSource/Patterns/TuplePatternArity/Source/Main.uv",
+        "Fixtures/RejectedSource/Patterns/TuplePatternArity/Expected.uv",
+        "",
+        "rule.17.Pat-Tuple-R-Arity-Err"
+    ) {
+        count = count + 1usize
+    }
+    if rejectedSpecimenMatches(
+        rejectedSpecimen(
+            "RecordPatternUnknownField",
+            "Fixtures/RejectedSource/Patterns/RecordPatternUnknownField",
+            "Fixtures/RejectedSource/Patterns/RecordPatternUnknownField/Source/Main.uv",
+            "Fixtures/RejectedSource/Patterns/RecordPatternUnknownField/Expected.uv",
+            expectedDiagnostic("", "rule.17.RecordPattern-UnknownField")
+        ),
+        "RecordPatternUnknownField",
+        "Fixtures/RejectedSource/Patterns/RecordPatternUnknownField",
+        "Fixtures/RejectedSource/Patterns/RecordPatternUnknownField/Source/Main.uv",
+        "Fixtures/RejectedSource/Patterns/RecordPatternUnknownField/Expected.uv",
+        "",
+        "rule.17.RecordPattern-UnknownField"
+    ) {
+        count = count + 1usize
+    }
+    if rejectedSpecimenMatches(
+        rejectedSpecimen(
+            "RangePatternNonConst",
+            "Fixtures/RejectedSource/Patterns/RangePatternNonConst",
+            "Fixtures/RejectedSource/Patterns/RangePatternNonConst/Source/Main.uv",
+            "Fixtures/RejectedSource/Patterns/RangePatternNonConst/Expected.uv",
+            expectedDiagnostic("", "rule.17.RangePattern-NonConst")
+        ),
+        "RangePatternNonConst",
+        "Fixtures/RejectedSource/Patterns/RangePatternNonConst",
+        "Fixtures/RejectedSource/Patterns/RangePatternNonConst/Source/Main.uv",
+        "Fixtures/RejectedSource/Patterns/RangePatternNonConst/Expected.uv",
+        "",
+        "rule.17.RangePattern-NonConst"
+    ) {
+        count = count + 1usize
+    }
+    if rejectedSpecimenMatches(
+        rejectedSpecimen(
+            "RangePatternEmpty",
+            "Fixtures/RejectedSource/Patterns/RangePatternEmpty",
+            "Fixtures/RejectedSource/Patterns/RangePatternEmpty/Source/Main.uv",
+            "Fixtures/RejectedSource/Patterns/RangePatternEmpty/Expected.uv",
+            expectedDiagnostic("", "rule.17.RangePattern-Empty")
+        ),
+        "RangePatternEmpty",
+        "Fixtures/RejectedSource/Patterns/RangePatternEmpty",
+        "Fixtures/RejectedSource/Patterns/RangePatternEmpty/Source/Main.uv",
+        "Fixtures/RejectedSource/Patterns/RangePatternEmpty/Expected.uv",
+        "",
+        "rule.17.RangePattern-Empty"
+    ) {
+        count = count + 1usize
+    }
+    if rejectedSpecimenMatches(
+        rejectedSpecimen(
+            "IfCaseEnumNonExhaustive",
+            "Fixtures/RejectedSource/Patterns/IfCaseEnumNonExhaustive",
+            "Fixtures/RejectedSource/Patterns/IfCaseEnumNonExhaustive/Source/Main.uv",
+            "Fixtures/RejectedSource/Patterns/IfCaseEnumNonExhaustive/Expected.uv",
+            expectedDiagnostic("E-SEM-2741", "rule.17.IfCase-Enum-NonExhaustive")
+        ),
+        "IfCaseEnumNonExhaustive",
+        "Fixtures/RejectedSource/Patterns/IfCaseEnumNonExhaustive",
+        "Fixtures/RejectedSource/Patterns/IfCaseEnumNonExhaustive/Source/Main.uv",
+        "Fixtures/RejectedSource/Patterns/IfCaseEnumNonExhaustive/Expected.uv",
+        "E-SEM-2741",
+        "rule.17.IfCase-Enum-NonExhaustive"
+    ) {
+        count = count + 1usize
+    }
+    if rejectedSpecimenMatches(
+        rejectedSpecimen(
+            "IfCaseModalNonExhaustive",
+            "Fixtures/RejectedSource/Patterns/IfCaseModalNonExhaustive",
+            "Fixtures/RejectedSource/Patterns/IfCaseModalNonExhaustive/Source/Main.uv",
+            "Fixtures/RejectedSource/Patterns/IfCaseModalNonExhaustive/Expected.uv",
+            expectedDiagnostic("E-TYP-2060", "rule.17.IfCase-Modal-NonExhaustive")
+        ),
+        "IfCaseModalNonExhaustive",
+        "Fixtures/RejectedSource/Patterns/IfCaseModalNonExhaustive",
+        "Fixtures/RejectedSource/Patterns/IfCaseModalNonExhaustive/Source/Main.uv",
+        "Fixtures/RejectedSource/Patterns/IfCaseModalNonExhaustive/Expected.uv",
+        "E-TYP-2060",
+        "rule.17.IfCase-Modal-NonExhaustive"
+    ) {
+        count = count + 1usize
+    }
+    if rejectedSpecimenMatches(
+        rejectedSpecimen(
+            "IfCaseUnionNonExhaustive",
+            "Fixtures/RejectedSource/Patterns/IfCaseUnionNonExhaustive",
+            "Fixtures/RejectedSource/Patterns/IfCaseUnionNonExhaustive/Source/Main.uv",
+            "Fixtures/RejectedSource/Patterns/IfCaseUnionNonExhaustive/Expected.uv",
+            expectedDiagnostic("E-SEM-2705", "rule.17.IfCase-Union-NonExhaustive")
+        ),
+        "IfCaseUnionNonExhaustive",
+        "Fixtures/RejectedSource/Patterns/IfCaseUnionNonExhaustive",
+        "Fixtures/RejectedSource/Patterns/IfCaseUnionNonExhaustive/Source/Main.uv",
+        "Fixtures/RejectedSource/Patterns/IfCaseUnionNonExhaustive/Expected.uv",
+        "E-SEM-2705",
+        "rule.17.IfCase-Union-NonExhaustive"
+    ) {
+        count = count + 1usize
+    }
+    if rejectedSpecimenMatches(
+        rejectedSpecimen(
+            "IfCaseUnreachable",
+            "Fixtures/RejectedSource/Patterns/IfCaseUnreachable",
+            "Fixtures/RejectedSource/Patterns/IfCaseUnreachable/Source/Main.uv",
+            "Fixtures/RejectedSource/Patterns/IfCaseUnreachable/Expected.uv",
+            expectedDiagnostic("E-SEM-2751", "rule.17.IfCase-Unreachable")
+        ),
+        "IfCaseUnreachable",
+        "Fixtures/RejectedSource/Patterns/IfCaseUnreachable",
+        "Fixtures/RejectedSource/Patterns/IfCaseUnreachable/Source/Main.uv",
+        "Fixtures/RejectedSource/Patterns/IfCaseUnreachable/Expected.uv",
+        "E-SEM-2751",
+        "rule.17.IfCase-Unreachable"
+    ) {
+        count = count + 1usize
+    }
+    if rejectedSpecimenMatches(
+        rejectedSpecimen(
+            "ParsePatternError",
+            "Fixtures/RejectedSource/Patterns/ParsePatternError",
+            "Fixtures/RejectedSource/Patterns/ParsePatternError/Source/Main.uv",
+            "Fixtures/RejectedSource/Patterns/ParsePatternError/Expected.uv",
+            expectedDiagnostic("E-SRC-0520", "rule.17.Parse-Pattern-Err")
+        ),
+        "ParsePatternError",
+        "Fixtures/RejectedSource/Patterns/ParsePatternError",
+        "Fixtures/RejectedSource/Patterns/ParsePatternError/Source/Main.uv",
+        "Fixtures/RejectedSource/Patterns/ParsePatternError/Expected.uv",
+        "E-SRC-0520",
+        "rule.17.Parse-Pattern-Err"
+    ) {
+        count = count + 1usize
+    }
+    return count
+}

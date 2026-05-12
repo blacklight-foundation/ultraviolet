@@ -1,0 +1,7 @@
+//! Reference specimens for ModalTypes / StateFields.
+
+/// Exercises the ModalTypes StateFields reference surface.
+public procedure runModalTypesStateFieldsReference() -> bool {
+    let reference: ModalReference@Open = ModalReference@Open { value: 11 }
+    return reference.value == 11
+}

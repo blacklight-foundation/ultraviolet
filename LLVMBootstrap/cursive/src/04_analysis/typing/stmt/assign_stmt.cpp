@@ -830,7 +830,7 @@ StmtTypeResult TypeAssignStmt(const ScopeContext& ctx,
                      diag_dbg.c_str());
       }
     }
-    if (!check.diag_id.has_value()) {
+    if (!check.diag_id.has_value() || *check.diag_id == "E-SEM-2526") {
       SPEC_RULE("Assign-Type-Err");
       return {false, "E-SEM-3133", {}, {}};
     }

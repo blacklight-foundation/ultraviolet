@@ -1,0 +1,12 @@
+//! Reference specimens for Procedures / Contracts.
+
+internal procedure contractReference(value: i32) -> bool
+|: value > 0 => @result
+{
+    return value > 0
+}
+
+/// Exercises the Procedures Contracts reference surface.
+public procedure runProceduresContractsReference() -> bool {
+    return contractReference(4)
+}

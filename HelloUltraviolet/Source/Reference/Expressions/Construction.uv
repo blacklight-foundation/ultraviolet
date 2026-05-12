@@ -1,0 +1,38 @@
+//! Reference specimens for Expressions / Construction.
+
+public record ExpressionConstructionRecord {
+    public count: i32
+    public is_ready: bool
+}
+
+public enum ExpressionConstructionEnum {
+    Empty
+    Count(i32)
+    Named { value: i32, is_ready: bool }
+}
+
+/// Exercises the Expressions Construction reference surface.
+public procedure runExpressionsConstructionReference() -> bool {
+    let tuple_value: (i32, bool) = (5, true)
+    let array_value: [i32; 3] = [1, 2, 3]
+    let record_value: ExpressionConstructionRecord = ExpressionConstructionRecord {
+        count: array_value[2usize],
+        is_ready: tuple_value.1
+    }
+    let enum_value: ExpressionConstructionEnum = ExpressionConstructionEnum::Named {
+        value: record_value.count,
+        is_ready: record_value.is_ready
+    }
+    let enum_ok: bool = if enum_value is {
+        ExpressionConstructionEnum::Empty {
+            false
+        }
+        ExpressionConstructionEnum::Count(value) {
+            value == 3
+        }
+        ExpressionConstructionEnum::Named { value, is_ready } {
+            value == 3 && is_ready
+        }
+    }
+    return tuple_value.0 == 5 && record_value.count == 3 && enum_ok
+}

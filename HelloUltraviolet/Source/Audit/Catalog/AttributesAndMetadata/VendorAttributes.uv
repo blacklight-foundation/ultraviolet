@@ -1,0 +1,119 @@
+//! Generated catalog markers for 9. Attributes and Metadata / 9.2 Vendor Attributes.
+
+
+public procedure countAttributesAndMetadataVendorAttributesObligations() -> usize {
+    return 12usize
+}
+
+public procedure validatedAttributesAndMetadataVendorAttributesObligations() -> usize {
+    var count: usize = 0usize
+    if acceptedObligationEntryMatches(
+        "conformance.VendorAttributeSyntaxReuse",
+        27209usize,
+        "HelloUltraviolet::Reference::Attributes",
+        "runAttributesGeneralAttributesReference",
+        "Source/Reference/Attributes/GeneralAttributes.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "req.VendorAttributeParserReuse",
+        27227usize,
+        "HelloUltraviolet::Reference::Attributes",
+        "runAttributesGeneralAttributesReference",
+        "Source/Reference/Attributes/GeneralAttributes.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "def.AttributeLeafToken",
+        27241usize,
+        "HelloUltraviolet::Reference::Attributes",
+        "runAttributesGeneralAttributesReference",
+        "Source/Reference/Attributes/GeneralAttributes.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "Parse-AttrName-Plain",
+        27255usize,
+        "HelloUltraviolet::Reference::Attributes",
+        "runAttributesGeneralAttributesReference",
+        "Source/Reference/Attributes/GeneralAttributes.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "Parse-AttrName-Vendor",
+        27273usize,
+        "HelloUltraviolet::Reference::Attributes",
+        "runAttributesGeneralAttributesReference",
+        "Source/Reference/Attributes/GeneralAttributes.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "Parse-VendorPrefixTail-End",
+        27291usize,
+        "HelloUltraviolet::Reference::Attributes",
+        "runAttributesGeneralAttributesReference",
+        "Source/Reference/Attributes/GeneralAttributes.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "Parse-VendorPrefixTail-Cons",
+        27309usize,
+        "HelloUltraviolet::Reference::Attributes",
+        "runAttributesGeneralAttributesReference",
+        "Source/Reference/Attributes/GeneralAttributes.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "def.VendorAttributeAst",
+        27330usize,
+        "HelloUltraviolet::Reference::Attributes",
+        "runAttributesGeneralAttributesReference",
+        "Source/Reference/Attributes/GeneralAttributes.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "conformance.VendorAttributeStaticSemantics",
+        27346usize,
+        "HelloUltraviolet::Reference::Attributes",
+        "runAttributesGeneralAttributesReference",
+        "Source/Reference/Attributes/GeneralAttributes.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "conformance.VendorAttributeDynamicSemantics",
+        27366usize,
+        "HelloUltraviolet::Reference::Attributes",
+        "runAttributesGeneralAttributesReference",
+        "Source/Reference/Attributes/GeneralAttributes.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "conformance.VendorAttributeLowering",
+        27382usize,
+        "HelloUltraviolet::Reference::Attributes",
+        "runAttributesGeneralAttributesReference",
+        "Source/Reference/Attributes/GeneralAttributes.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "diagnostics.VendorAttributeDiagnostics",
+        27398usize,
+        "HelloUltraviolet::Reference::Attributes",
+        "runAttributesGeneralAttributesReference",
+        "Source/Reference/Attributes/GeneralAttributes.uv"
+    ) {
+        count = count + 1usize
+    }
+    return count
+}

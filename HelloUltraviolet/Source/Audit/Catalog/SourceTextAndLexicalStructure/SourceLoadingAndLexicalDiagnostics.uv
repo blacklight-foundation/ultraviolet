@@ -1,0 +1,20 @@
+//! Generated catalog markers for 4. Source Text and Lexical Structure / 4.3 Source Loading and Lexical Diagnostics.
+
+
+public procedure countSourceTextAndLexicalStructureSourceLoadingAndLexicalDiagnosticsObligations() -> usize {
+    return 1usize
+}
+
+public procedure validatedSourceTextAndLexicalStructureSourceLoadingAndLexicalDiagnosticsObligations() -> usize {
+    var count: usize = 0usize
+    if acceptedObligationEntryMatches(
+        "diagnostics.SourceLexicalDiagnostics",
+        10319usize,
+        "HelloUltraviolet::Reference::SourceText",
+        "runSourceTextLiteralsReference",
+        "Source/Reference/SourceText/Literals.uv"
+    ) {
+        count = count + 1usize
+    }
+    return count
+}

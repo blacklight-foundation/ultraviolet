@@ -48,7 +48,7 @@ enum class IntrinsicKind {
 
   /// @entry(expr) - captures entry/old value of expression.
   /// Only valid in postcondition context.
-  /// Requires: expr type satisfies Bitcopy or Clone.
+  /// Requires: expr type satisfies Bitcopy.
   Entry,
 
   // ===========================================================================

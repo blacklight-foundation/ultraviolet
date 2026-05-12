@@ -1,0 +1,16 @@
+//! Reference specimens for Authority / RegionsAndFrames.
+
+/// Exercises the Authority RegionsAndFrames reference surface.
+public procedure runAuthorityRegionsAndFramesReference() -> bool {
+    var value: i32 = 0
+    region as authority_region {
+        value = value + 1
+        frame {
+            value = value + 2
+        }
+        authority_region.frame {
+            value = value + 3
+        }
+    }
+    return value == 6
+}

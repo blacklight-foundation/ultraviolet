@@ -1,0 +1,12 @@
+//! Rejected record construction specimen for a missing field initializer.
+
+public record MissingFieldPayload {
+    public first: i32
+    public second: i32
+}
+
+public procedure recordFieldInitMissingReference() -> MissingFieldPayload {
+    return MissingFieldPayload {
+        first: 1
+    }
+}

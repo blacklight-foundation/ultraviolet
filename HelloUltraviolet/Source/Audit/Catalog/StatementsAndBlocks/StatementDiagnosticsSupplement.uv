@@ -1,0 +1,20 @@
+//! Generated catalog markers for 18. Statements and Blocks / 18.11 Statement Diagnostics Supplement.
+
+
+public procedure countStatementsAndBlocksStatementDiagnosticsSupplementObligations() -> usize {
+    return 1usize
+}
+
+public procedure validatedStatementsAndBlocksStatementDiagnosticsSupplementObligations() -> usize {
+    var count: usize = 0usize
+    if acceptedObligationEntryMatches(
+        "diag.18.StatementDiagnosticsSupplement",
+        71380usize,
+        "HelloUltraviolet::Reference::Statements",
+        "runStatementsExpressionStatementsReference",
+        "Source/Reference/Statements/ExpressionStatements.uv"
+    ) {
+        count = count + 1usize
+    }
+    return count
+}

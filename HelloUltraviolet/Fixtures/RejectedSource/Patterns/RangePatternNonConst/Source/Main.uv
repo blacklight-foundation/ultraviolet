@@ -1,0 +1,10 @@
+//! Rejected pattern specimen for a range pattern with a non-constant endpoint.
+
+public procedure rangePatternNonConstReference() -> i32 {
+    let value: i32 = 2
+    return if value is true..4 {
+        1
+    } else {
+        0
+    }
+}

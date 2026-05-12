@@ -1,0 +1,77 @@
+//! Metadata records for artifact-oriented reference specimens.
+
+using HelloUltraviolet::Audit::{ auditTextEquals }
+
+public record ArtifactExpectation {
+    public name: string@View
+    public obligation_id: string@View
+}
+
+public record ArtifactProjectSpecimen {
+    public name: string@View
+    public fixture_path: string@View
+    public manifest_path: string@View
+    public source_path: string@View
+    public primary_artifact_path: string@View
+    public secondary_artifact_path: string@View
+    public expectation: ArtifactExpectation
+}
+
+public procedure artifactExpectation(
+    name: string@View,
+    obligation_id: string@View
+) -> ArtifactExpectation {
+    return ArtifactExpectation {
+        name: name,
+        obligation_id: obligation_id
+    }
+}
+
+public procedure artifactProjectSpecimen(
+    name: string@View,
+    fixture_path: string@View,
+    manifest_path: string@View,
+    source_path: string@View,
+    primary_artifact_path: string@View,
+    secondary_artifact_path: string@View,
+    expectation: ArtifactExpectation
+) -> ArtifactProjectSpecimen {
+    return ArtifactProjectSpecimen {
+        name: name,
+        fixture_path: fixture_path,
+        manifest_path: manifest_path,
+        source_path: source_path,
+        primary_artifact_path: primary_artifact_path,
+        secondary_artifact_path: secondary_artifact_path,
+        expectation: expectation
+    }
+}
+
+public procedure artifactExpectationMatches(
+    expectation: ArtifactExpectation,
+    name: string@View,
+    obligation_id: string@View
+) -> bool {
+    return auditTextEquals(expectation.name, name) &&
+        auditTextEquals(expectation.obligation_id, obligation_id)
+}
+
+public procedure artifactProjectSpecimenMatches(
+    specimen: ArtifactProjectSpecimen,
+    name: string@View,
+    fixture_path: string@View,
+    manifest_path: string@View,
+    source_path: string@View,
+    primary_artifact_path: string@View,
+    secondary_artifact_path: string@View,
+    expectation_name: string@View,
+    obligation_id: string@View
+) -> bool {
+    return auditTextEquals(specimen.name, name) &&
+        auditTextEquals(specimen.fixture_path, fixture_path) &&
+        auditTextEquals(specimen.manifest_path, manifest_path) &&
+        auditTextEquals(specimen.source_path, source_path) &&
+        auditTextEquals(specimen.primary_artifact_path, primary_artifact_path) &&
+        auditTextEquals(specimen.secondary_artifact_path, secondary_artifact_path) &&
+        artifactExpectationMatches(specimen.expectation, expectation_name, obligation_id)
+}

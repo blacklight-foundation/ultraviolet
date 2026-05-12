@@ -318,9 +318,9 @@ StmtTypeResult TypeDeferStmt(const ScopeContext& ctx,
                                 type_ident, type_place,
                                 type_ctx.env_ref);
   if (!check.ok) {
-    if (!check.diag_id.has_value()) {
+    if (!check.diag_id.has_value() || *check.diag_id == "E-SEM-2526") {
       SPEC_RULE("Defer-NonUnit-Err");
-      return {false, "Defer-NonUnit-Err", {}, {}};
+      return {false, "E-SEM-3151", {}, {}};
     }
     return {false, check.diag_id, {}, {}};
   }
@@ -328,7 +328,7 @@ StmtTypeResult TypeDeferStmt(const ScopeContext& ctx,
   // Check that defer block doesn't contain non-local control flow
   if (!LocalDeferSafe(*node.body)) {
     SPEC_RULE("Defer-NonLocal-Err");
-    return {false, "Defer-NonLocal-Err", {}, {}};
+    return {false, "E-SEM-3152", {}, {}};
   }
 
   SPEC_RULE("T-DeferStmt");

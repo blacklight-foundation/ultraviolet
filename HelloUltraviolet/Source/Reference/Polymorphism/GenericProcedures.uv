@@ -1,0 +1,7 @@
+//! Reference specimens for Polymorphism / GenericProcedures.
+
+/// Exercises the Polymorphism GenericProcedures reference surface.
+public procedure runPolymorphismGenericProceduresReference() -> bool {
+    let reference: PolymorphismReference = polymorphismReference(4usize, true, false)
+    return polymorphismReferenceIsCovered(reference)
+}

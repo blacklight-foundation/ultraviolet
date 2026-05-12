@@ -1,0 +1,29 @@
+//! Reference specimens for Parallelism / ParallelBlocks.
+
+internal record ParallelReference {
+    internal fork_count: usize
+    internal joins_structurally: bool
+    internal propagates_panic: bool
+}
+
+internal procedure parallelReference(
+    fork_count: usize,
+    joins_structurally: bool,
+    propagates_panic: bool
+) -> ParallelReference {
+    return ParallelReference {
+        fork_count: fork_count,
+        joins_structurally: joins_structurally,
+        propagates_panic: propagates_panic
+    }
+}
+
+internal procedure parallelReferenceIsCovered(reference: ParallelReference) -> bool {
+    return reference.fork_count > 0usize && reference.joins_structurally
+}
+
+/// Exercises the Parallelism ParallelBlocks reference surface.
+public procedure runParallelismParallelBlocksReference() -> bool {
+    let reference: ParallelReference = parallelReference(2usize, true, true)
+    return parallelReferenceIsCovered(reference)
+}

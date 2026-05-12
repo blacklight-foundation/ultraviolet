@@ -1,0 +1,9 @@
+//! Rejected procedure specimen for an explicit receiver that is not Self.
+
+public record ReceiverOwner {
+    public value: i32
+
+    public procedure readValue(self: i32) -> i32 {
+        return self
+    }
+}

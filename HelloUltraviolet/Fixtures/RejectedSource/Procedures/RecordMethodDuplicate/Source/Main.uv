@@ -1,0 +1,13 @@
+//! Rejected procedure specimen for duplicate record method names.
+
+public record DuplicateMethodOwner {
+    public value: i32
+
+    public procedure readValue(~) -> i32 {
+        return self.value
+    }
+
+    public procedure readValue(~) -> i32 {
+        return self.value + 1
+    }
+}

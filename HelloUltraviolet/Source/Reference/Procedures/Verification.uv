@@ -1,0 +1,13 @@
+//! Reference specimens for Procedures / Verification.
+
+internal procedure verificationFactReference(value: i32) -> bool {
+    if value > 0 {
+        return value >= 1
+    }
+    return value <= 0
+}
+
+/// Exercises the Procedures Verification reference surface.
+public procedure runProceduresVerificationReference() -> bool {
+    return verificationFactReference(3) && verificationFactReference(0)
+}

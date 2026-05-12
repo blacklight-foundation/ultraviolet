@@ -1,0 +1,8 @@
+//! Reference specimens for Keys / MemoryOrdering.
+
+/// Exercises the Keys MemoryOrdering reference surface.
+public procedure runKeysMemoryOrderingReference() -> bool {
+    let relaxed: KeyReference = keyReference(1usize, true, false)
+    let sequential: KeyReference = keyReference(1usize, true, true)
+    return keyReferenceIsCovered(relaxed) && keyReferenceIsCovered(sequential)
+}

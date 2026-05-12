@@ -1,0 +1,20 @@
+//! Reference specimens for Patterns / TupleRecordPatterns.
+
+using HelloUltraviolet::Reference::DataTypes::{ RecordReference, recordReference }
+
+/// Exercises the Patterns TupleRecordPatterns reference surface.
+public procedure runPatternsTupleRecordPatternsReference() -> bool {
+    let pair: (i32, bool) = (13, true)
+    let (count, is_ready) = pair
+    let singleton: (i32;) = (21;)
+    let (single_count;) = singleton
+
+    let reference: RecordReference = recordReference("pattern-record", 34usize, true)
+    let RecordReference { count: record_count, is_active } = reference
+
+    return count == 13 &&
+        is_ready &&
+        single_count == 21 &&
+        record_count == 34usize &&
+        is_active
+}

@@ -1,0 +1,13 @@
+//! Reference specimens for Names / UsingDeclarations.
+
+using HelloUltraviolet::Reference::DataTypes::{ RecordReference, recordReference }
+
+internal procedure usingDeclarationRecordReference() -> RecordReference {
+    return recordReference("name-using", 21usize, true)
+}
+
+/// Exercises the Names UsingDeclarations reference surface.
+public procedure runNamesUsingDeclarationsReference() -> bool {
+    let reference: RecordReference = usingDeclarationRecordReference()
+    return reference.is_active && reference.count == 21usize
+}

@@ -1,0 +1,36 @@
+//! Reference specimens for Authority / System.
+
+internal record SystemAuthorityReference {
+    internal can_read_environment: bool
+    internal can_spawn_process: bool
+    internal requires_capability: bool
+}
+
+internal procedure systemAuthorityReference(
+    can_read_environment: bool,
+    can_spawn_process: bool,
+    requires_capability: bool
+) -> SystemAuthorityReference {
+    return SystemAuthorityReference {
+        can_read_environment: can_read_environment,
+        can_spawn_process: can_spawn_process,
+        requires_capability: requires_capability
+    }
+}
+
+internal procedure systemAuthorityCanObserveHost(
+    reference: SystemAuthorityReference
+) -> bool {
+    return reference.requires_capability &&
+        (reference.can_read_environment || reference.can_spawn_process)
+}
+
+/// Exercises the Authority System reference surface.
+public procedure runAuthoritySystemReference() -> bool {
+    let environment: SystemAuthorityReference =
+        systemAuthorityReference(true, false, true)
+    let process: SystemAuthorityReference =
+        systemAuthorityReference(false, true, true)
+    return systemAuthorityCanObserveHost(environment) &&
+        systemAuthorityCanObserveHost(process)
+}

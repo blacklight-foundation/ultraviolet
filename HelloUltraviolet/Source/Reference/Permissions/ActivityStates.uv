@@ -1,0 +1,30 @@
+//! Reference specimens for Permissions / ActivityStates.
+
+internal enum PermissionActivityReference {
+    Active
+    Inactive
+    Expired
+}
+
+internal procedure permissionActivityCanBeUsed(
+    activity: PermissionActivityReference
+) -> bool {
+    return if activity is {
+        PermissionActivityReference::Active {
+            true
+        }
+        PermissionActivityReference::Inactive {
+            false
+        }
+        PermissionActivityReference::Expired {
+            false
+        }
+    }
+}
+
+/// Exercises the Permissions ActivityStates reference surface.
+public procedure runPermissionsActivityStatesReference() -> bool {
+    return permissionActivityCanBeUsed(PermissionActivityReference::Active) &&
+        !permissionActivityCanBeUsed(PermissionActivityReference::Inactive) &&
+        !permissionActivityCanBeUsed(PermissionActivityReference::Expired)
+}

@@ -1,0 +1,7 @@
+//! Reference specimens for FFI / BoundaryUnwinding.
+
+/// Exercises the FFI BoundaryUnwinding reference surface.
+public procedure runFFIBoundaryUnwindingReference() -> bool {
+    let reference: FFIReference = ffiReference(1usize, true, true)
+    return ffiReferenceIsCovered(reference) && reference.unwinds_safely
+}

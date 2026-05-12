@@ -173,6 +173,9 @@ CheckReturnedSafePointerProvenance(const ScopeContext& ctx,
   if (!ret_expr || !TypeContainsSafePointer(expected_return_type)) {
     return std::nullopt;
   }
+  if (std::holds_alternative<ast::PtrNullExpr>(ret_expr->node)) {
+    return std::nullopt;
+  }
 
   const auto typed =
       TypeExprWithCurrentEnv(ctx, type_ctx, env, type_expr, ret_expr);
@@ -505,7 +508,7 @@ StmtTypeResult TypeReturnStmt(const ScopeContext& ctx,
     const auto check = CheckExprAgainst(ctx, type_ctx, node.value_opt,
                                         type_ctx.return_type, env);
     if (!check.ok) {
-      if (!check.diag_id.has_value()) {
+      if (!check.diag_id.has_value() || *check.diag_id == "E-SEM-2526") {
         SPEC_RULE("Return-Type-Err");
         return {false, "E-SEM-3161", {}, {}};
       }

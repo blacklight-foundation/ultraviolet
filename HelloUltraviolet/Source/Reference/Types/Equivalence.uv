@@ -1,0 +1,27 @@
+//! Reference specimens for Types / Equivalence.
+
+internal type EquivalenceCount = usize
+
+internal record EquivalenceReferenceRecord {
+    internal count: EquivalenceCount
+    internal tuple_value: (i32, bool)
+}
+
+internal procedure equivalenceReferenceRecord(
+    count: EquivalenceCount,
+    tuple_value: (i32, bool)
+) -> EquivalenceReferenceRecord {
+    return EquivalenceReferenceRecord {
+        count: count,
+        tuple_value: tuple_value
+    }
+}
+
+/// Exercises the Types Equivalence reference surface.
+public procedure runTypesEquivalenceReference() -> bool {
+    let count: EquivalenceCount = 9usize
+    let reference: EquivalenceReferenceRecord =
+        equivalenceReferenceRecord(count, (4, true))
+    let (value, flag): (i32, bool) = reference.tuple_value
+    return reference.count == 9usize && value == 4 && flag
+}

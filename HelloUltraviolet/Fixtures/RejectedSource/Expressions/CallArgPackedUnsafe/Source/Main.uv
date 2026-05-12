@@ -1,0 +1,15 @@
+//! Rejected expression specimen for a packed-field reference argument outside unsafe.
+
+[[layout(packed)]]
+public record PackedArgumentPayload {
+    public value: i32
+}
+
+public procedure borrowedPackedValue(value: i32) -> i32 {
+    return value
+}
+
+public procedure callArgPackedUnsafeReference() -> i32 {
+    let payload: PackedArgumentPayload = PackedArgumentPayload { value: 1 }
+    return borrowedPackedValue(payload.value)
+}

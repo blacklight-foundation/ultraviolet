@@ -1,0 +1,20 @@
+//! Generated catalog markers for 8. Type System Core / 8.5 Core Type Diagnostics.
+
+
+public procedure countTypeSystemCoreCoreTypeDiagnosticsObligations() -> usize {
+    return 1usize
+}
+
+public procedure validatedTypeSystemCoreCoreTypeDiagnosticsObligations() -> usize {
+    var count: usize = 0usize
+    if acceptedObligationEntryMatches(
+        "diagnostics.CoreTypeDiagnostics",
+        26278usize,
+        "HelloUltraviolet::Reference::Types",
+        "runTypesEquivalenceReference",
+        "Source/Reference/Types/Equivalence.uv"
+    ) {
+        count = count + 1usize
+    }
+    return count
+}

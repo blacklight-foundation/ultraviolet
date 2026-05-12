@@ -1,0 +1,30 @@
+//! Reference specimens for Procedures / Overloading.
+
+internal enum OverloadResolutionReference {
+    Arity
+    ParameterType
+    ReceiverType
+}
+
+internal procedure overloadResolutionReferenceOrder(
+    reference: OverloadResolutionReference
+) -> usize {
+    return if reference is {
+        OverloadResolutionReference::Arity {
+            1usize
+        }
+        OverloadResolutionReference::ParameterType {
+            2usize
+        }
+        OverloadResolutionReference::ReceiverType {
+            3usize
+        }
+    }
+}
+
+/// Exercises the Procedures Overloading reference surface.
+public procedure runProceduresOverloadingReference() -> bool {
+    return overloadResolutionReferenceOrder(OverloadResolutionReference::Arity) == 1usize &&
+        overloadResolutionReferenceOrder(OverloadResolutionReference::ParameterType) == 2usize &&
+        overloadResolutionReferenceOrder(OverloadResolutionReference::ReceiverType) == 3usize
+}

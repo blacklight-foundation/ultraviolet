@@ -1318,6 +1318,18 @@ LowerResult LowerCallExpr(const ast::Expr& expr_wrapper,
     return LowerResult{ir, record_value};
   }
 
+  if (expr.callee && ctx.expr_type) {
+    analysis::TypeRef callee_type =
+        analysis::StripPerm(ctx.expr_type(*expr.callee));
+    if (!callee_type) {
+      callee_type = ctx.expr_type(*expr.callee);
+    }
+    if (callee_type &&
+        std::holds_alternative<analysis::TypeClosure>(callee_type->node)) {
+      return LowerClosureCall(*expr.callee, expr.args, ctx);
+    }
+  }
+
   const bool debug_call = core::IsDebugEnabled("codegen");
   auto log_call_stage = [&](std::string_view stage) {
     if (!debug_call) {

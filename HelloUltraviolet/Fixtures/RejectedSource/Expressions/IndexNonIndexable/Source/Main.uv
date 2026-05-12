@@ -1,0 +1,6 @@
+//! Rejected expression specimen for indexing a non-indexable value.
+
+public procedure indexNonIndexableReference() -> i32 {
+    let value: i32 = 3
+    return value[0usize]
+}

@@ -8,14 +8,14 @@
 // @ENTRY INTRINSIC (@entry(expr)):
 //   1. Valid only in postcondition context (right of =>)
 //   2. Type the inner expression at entry state
-//   3. Result type must satisfy BitcopyType or CloneType
+//   3. Result type must satisfy BitcopyType
 //   4. Value captured at procedure entry
 //   5. Available for comparison in postcondition
 //
 // TYPING:
 //   InPostcondition = true
 //   Gamma_entry |- expr : T
-//   BitcopyType(T) or CloneType(T)
+//   BitcopyType(T)
 //   --------------------------------------------------
 //   Gamma |- @entry(expr) : T
 //
@@ -26,7 +26,7 @@
 //   - Cannot reference post-state bindings
 //
 // TYPE CONSTRAINTS:
-//   - Result type must be BitcopyType or CloneType
+//   - Result type must be BitcopyType
 //   - This ensures value can be preserved across procedure body
 //   - Prevents capturing unique/move-only types
 //
@@ -48,7 +48,7 @@ namespace {
 static inline void SpecDefsContractEntry() {
   SPEC_DEF("@entry-Intrinsic", "5.8");
   SPEC_DEF("@entry-Context", "5.8");
-  SPEC_DEF("@entry-BitcopyOrClone", "5.8");
+  SPEC_DEF("Entry-Type", "15.6.4");
 }
 
 static TypeEnv EntryEnvWithPatternBindings(const TypeEnv& env,
@@ -286,6 +286,7 @@ static bool ExprContainsSideEffectOp(const ast::ExprPtr& expr) {
             std::is_same_v<T, ast::YieldFromExpr> ||
             std::is_same_v<T, ast::SpawnExpr> ||
             std::is_same_v<T, ast::WaitExpr> ||
+            std::is_same_v<T, ast::FenceExpr> ||
             std::is_same_v<T, ast::ParallelExpr> ||
             std::is_same_v<T, ast::DispatchExpr> ||
             std::is_same_v<T, ast::RaceExpr> ||
@@ -368,13 +369,21 @@ static bool ExprContainsSideEffectOp(const ast::ExprPtr& expr) {
         } else if constexpr (std::is_same_v<T, ast::AddressOfExpr>) {
           return ExprContainsSideEffectOp(node.place);
         } else if constexpr (std::is_same_v<T, ast::MoveExpr>) {
-          return ExprContainsSideEffectOp(node.place);
+          return true;
         } else if constexpr (std::is_same_v<T, ast::AllocExpr>) {
-          return ExprContainsSideEffectOp(node.value);
+          return true;
+        } else if constexpr (std::is_same_v<T, ast::TransmuteExpr>) {
+          return true;
         } else if constexpr (std::is_same_v<T, ast::PropagateExpr>) {
-          return ExprContainsSideEffectOp(node.value);
+          return true;
         } else if constexpr (std::is_same_v<T, ast::EntryExpr>) {
           return ExprContainsSideEffectOp(node.expr);
+        } else if constexpr (std::is_same_v<T, ast::LoopInfiniteExpr> ||
+                             std::is_same_v<T, ast::LoopConditionalExpr> ||
+                             std::is_same_v<T, ast::LoopIterExpr> ||
+                             std::is_same_v<T, ast::BlockExpr> ||
+                             std::is_same_v<T, ast::UnsafeBlockExpr>) {
+          return true;
         } else {
           return false;
         }
@@ -492,12 +501,12 @@ ExprTypeResult TypeEntryExprImpl(const ScopeContext& ctx,
 
   if (ExprContainsCapabilityOp(ctx, type_ctx, env, expr.expr)) {
     SPEC_RULE("Entry-NoCapability-Err");
-    result.diag_id = "Entry-NoCapability-Err";
+    result.diag_id = "E-CON-0415";
     return result;
   }
   if (ExprContainsSideEffectOp(expr.expr)) {
     SPEC_RULE("Entry-SideEffect-Err");
-    result.diag_id = "Entry-SideEffect-Err";
+    result.diag_id = "E-CON-0416";
     return result;
   }
 
@@ -508,14 +517,13 @@ ExprTypeResult TypeEntryExprImpl(const ScopeContext& ctx,
     return result;
   }
 
-  // Result type must be Bitcopy or Clone
-  if (!BitcopyType(ctx, typed.type) && !CloneType(ctx, typed.type)) {
-    SPEC_RULE("@entry-BitcopyOrClone");
-    result.diag_id = "E-SEM-2805";  // @entry requires Bitcopy or Clone
+  // Result type must be Bitcopy so the entry-state value can be captured.
+  if (!BitcopyType(ctx, typed.type)) {
+    result.diag_id = "E-SEM-2805";
     return result;
   }
 
-  SPEC_RULE("@entry-Intrinsic");
+  SPEC_RULE("Entry-Type");
   result.ok = true;
   result.type = typed.type;
   return result;

@@ -1,0 +1,9 @@
+//! Rejected expression specimen for a call argument type mismatch.
+
+public procedure oneArg(value: i32) -> i32 {
+    return value
+}
+
+public procedure callArgTypeReference() -> i32 {
+    return oneArg(true)
+}

@@ -155,7 +155,7 @@ IntrinsicValidationResult ValidateEntryIntrinsic(
     const ast::ExprPtr& expr,
     const ContractContext& ctx);
 
-// Validate that a type is suitable for @entry (Bitcopy or Clone)
+// Validate that a type is suitable for @entry (Bitcopy)
 bool ValidateEntryType(const TypeRef& type);
 
 // Foreign contract assumption

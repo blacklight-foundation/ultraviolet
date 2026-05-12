@@ -1,0 +1,7 @@
+//! Rejected pattern specimen for duplicate bindings introduced by one pattern.
+
+public procedure duplicatePatternBindingReference() -> i32 {
+    let pair: (i32, i32) = (1, 2)
+    let (value, value) = pair
+    return value
+}

@@ -1,0 +1,20 @@
+//! Generated catalog markers for Appendix D. Layout, ABI, and Runtime Reference / C.3 Expression, Pattern, and Statement Families.
+
+
+public procedure countAppendixDLayoutAbiAndRuntimeReferenceCExpressionPatternAndStatementFamiliesObligations() -> usize {
+    return 1usize
+}
+
+public procedure validatedAppendixDLayoutAbiAndRuntimeReferenceCExpressionPatternAndStatementFamiliesObligations() -> usize {
+    var count: usize = 0usize
+    if acceptedObligationEntryMatches(
+        "diagnostics.CommandLineDiagnostics",
+        100109usize,
+        "HelloUltraviolet::Reference::Lowering",
+        "runLoweringLayoutAndABIReference",
+        "Source/Reference/Lowering/LayoutAndABI.uv"
+    ) {
+        count = count + 1usize
+    }
+    return count
+}

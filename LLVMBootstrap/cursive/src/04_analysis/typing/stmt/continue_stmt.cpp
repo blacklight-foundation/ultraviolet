@@ -38,7 +38,7 @@ StmtTypeResult TypeContinueStmt(const ScopeContext& ctx,
   // Continue must be inside a loop
   if (type_ctx.loop_flag != LoopFlag::Loop) {
     SPEC_RULE("Continue-Outside-Loop");
-    return {false, "Continue-Outside-Loop", {}, {}};
+    return {false, "E-SEM-3163", {}, {}};
   }
 
   SPEC_RULE("T-Continue");

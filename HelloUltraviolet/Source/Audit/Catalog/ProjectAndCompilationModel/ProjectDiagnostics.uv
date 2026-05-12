@@ -1,0 +1,20 @@
+//! Generated catalog markers for 3. Project and Compilation Model / 3.8 Project Diagnostics.
+
+
+public procedure countProjectAndCompilationModelProjectDiagnosticsObligations() -> usize {
+    return 1usize
+}
+
+public procedure validatedProjectAndCompilationModelProjectDiagnosticsObligations() -> usize {
+    var count: usize = 0usize
+    if acceptedObligationEntryMatches(
+        "diagnostics.ProjectDiagnostics",
+        6767usize,
+        "HelloUltraviolet::Reference::Projects",
+        "runProjectsManifestModelReference",
+        "Source/Reference/Projects/ManifestModel.uv"
+    ) {
+        count = count + 1usize
+    }
+    return count
+}

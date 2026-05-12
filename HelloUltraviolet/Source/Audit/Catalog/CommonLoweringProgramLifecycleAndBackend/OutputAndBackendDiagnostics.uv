@@ -1,0 +1,29 @@
+//! Generated catalog markers for 24. Common Lowering, Program Lifecycle, and Backend / 24.8 Output and Backend Diagnostics.
+
+
+public procedure countCommonLoweringProgramLifecycleAndBackendOutputAndBackendDiagnosticsObligations() -> usize {
+    return 2usize
+}
+
+public procedure validatedCommonLoweringProgramLifecycleAndBackendOutputAndBackendDiagnosticsObligations() -> usize {
+    var count: usize = 0usize
+    if acceptedObligationEntryMatches(
+        "req.24.OutputBackendDiagnosticsOwnership",
+        99235usize,
+        "HelloUltraviolet::Reference::Lowering",
+        "runLoweringLayoutAndABIReference",
+        "Source/Reference/Lowering/LayoutAndABI.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "diag.24.OutputBackendDiagnostics",
+        99248usize,
+        "HelloUltraviolet::Reference::Lowering",
+        "runLoweringLayoutAndABIReference",
+        "Source/Reference/Lowering/LayoutAndABI.uv"
+    ) {
+        count = count + 1usize
+    }
+    return count
+}

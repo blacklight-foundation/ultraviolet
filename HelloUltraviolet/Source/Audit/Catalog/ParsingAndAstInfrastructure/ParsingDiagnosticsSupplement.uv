@@ -1,0 +1,20 @@
+//! Generated catalog markers for 5. Parsing and AST Infrastructure / 5.10 Parsing Diagnostics Supplement.
+
+
+public procedure countParsingAndAstInfrastructureParsingDiagnosticsSupplementObligations() -> usize {
+    return 1usize
+}
+
+public procedure validatedParsingAndAstInfrastructureParsingDiagnosticsSupplementObligations() -> usize {
+    var count: usize = 0usize
+    if acceptedObligationEntryMatches(
+        "diagnostics.ParsingDiagnostics",
+        12045usize,
+        "HelloUltraviolet::Reference::Parsing",
+        "runParsingItemSequencingReference",
+        "Source/Reference/Parsing/ItemSequencing.uv"
+    ) {
+        count = count + 1usize
+    }
+    return count
+}

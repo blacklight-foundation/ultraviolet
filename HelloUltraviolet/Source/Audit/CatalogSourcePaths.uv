@@ -1,0 +1,82 @@
+//! Runtime path checks for source files referenced by generated catalog rows.
+
+public procedure expectedCatalogSourcePathCount() -> usize {
+    return 65usize
+}
+
+public procedure catalogSourcePathCount() -> usize {
+    return 65usize
+}
+
+internal procedure catalogSourcePathExists(context: Context, source_path: string@View) -> bool {
+    return context.fs~>exists(source_path)
+}
+
+public procedure catalogSourcePathsExist(context: Context) -> bool {
+    return catalogSourcePathCount() == expectedCatalogSourcePathCount() &&
+        catalogSourcePathExists(context, "HelloUltraviolet/Source/Reference/Async/AsyncType.uv") &&
+        catalogSourcePathExists(context, "HelloUltraviolet/Source/Reference/Attributes/GeneralAttributes.uv") &&
+        catalogSourcePathExists(context, "HelloUltraviolet/Source/Reference/Authority/BindingRuntimeState.uv") &&
+        catalogSourcePathExists(context, "HelloUltraviolet/Source/Reference/Authority/Capabilities.uv") &&
+        catalogSourcePathExists(context, "HelloUltraviolet/Source/Reference/Authority/FileSystem.uv") &&
+        catalogSourcePathExists(context, "HelloUltraviolet/Source/Reference/Authority/Network.uv") &&
+        catalogSourcePathExists(context, "HelloUltraviolet/Source/Reference/Authority/RegionsAndFrames.uv") &&
+        catalogSourcePathExists(context, "HelloUltraviolet/Source/Reference/Authority/System.uv") &&
+        catalogSourcePathExists(context, "HelloUltraviolet/Source/Reference/Comptime/CompileTimeForms.uv") &&
+        catalogSourcePathExists(context, "HelloUltraviolet/Source/Reference/Conformance/BehaviorClassification.uv") &&
+        catalogSourcePathExists(context, "HelloUltraviolet/Source/Reference/Conformance/ConstructVocabulary.uv") &&
+        catalogSourcePathExists(context, "HelloUltraviolet/Source/Reference/Conformance/TranslationOrdering.uv") &&
+        catalogSourcePathExists(context, "HelloUltraviolet/Source/Reference/DataTypes/Arrays.uv") &&
+        catalogSourcePathExists(context, "HelloUltraviolet/Source/Reference/DataTypes/Enums.uv") &&
+        catalogSourcePathExists(context, "HelloUltraviolet/Source/Reference/DataTypes/Ranges.uv") &&
+        catalogSourcePathExists(context, "HelloUltraviolet/Source/Reference/DataTypes/Records.uv") &&
+        catalogSourcePathExists(context, "HelloUltraviolet/Source/Reference/DataTypes/Slices.uv") &&
+        catalogSourcePathExists(context, "HelloUltraviolet/Source/Reference/DataTypes/Tuples.uv") &&
+        catalogSourcePathExists(context, "HelloUltraviolet/Source/Reference/DataTypes/TypeAliases.uv") &&
+        catalogSourcePathExists(context, "HelloUltraviolet/Source/Reference/Diagnostics/DiagnosticOrdering.uv") &&
+        catalogSourcePathExists(context, "HelloUltraviolet/Source/Reference/Diagnostics/DiagnosticRecords.uv") &&
+        catalogSourcePathExists(context, "HelloUltraviolet/Source/Reference/Diagnostics/RenderingInputs.uv") &&
+        catalogSourcePathExists(context, "HelloUltraviolet/Source/Reference/Diagnostics/SourceSpans.uv") &&
+        catalogSourcePathExists(context, "HelloUltraviolet/Source/Reference/Expressions/Construction.uv") &&
+        catalogSourcePathExists(context, "HelloUltraviolet/Source/Reference/Expressions/Control.uv") &&
+        catalogSourcePathExists(context, "HelloUltraviolet/Source/Reference/Expressions/EffectfulCore.uv") &&
+        catalogSourcePathExists(context, "HelloUltraviolet/Source/Reference/Expressions/LiteralsAndNames.uv") &&
+        catalogSourcePathExists(context, "HelloUltraviolet/Source/Reference/FFI/FfiSafe.uv") &&
+        catalogSourcePathExists(context, "HelloUltraviolet/Source/Reference/Keys/KeyPaths.uv") &&
+        catalogSourcePathExists(context, "HelloUltraviolet/Source/Reference/Lowering/LayoutAndABI.uv") &&
+        catalogSourcePathExists(context, "HelloUltraviolet/Source/Reference/Lowering/SharedJudgments.uv") &&
+        catalogSourcePathExists(context, "HelloUltraviolet/Source/Reference/ModalTypes/ModalDeclarations.uv") &&
+        catalogSourcePathExists(context, "HelloUltraviolet/Source/Reference/Modules/Aggregation.uv") &&
+        catalogSourcePathExists(context, "HelloUltraviolet/Source/Reference/Modules/ExternBlocks.uv") &&
+        catalogSourcePathExists(context, "HelloUltraviolet/Source/Reference/Names/QualifiedResolution.uv") &&
+        catalogSourcePathExists(context, "HelloUltraviolet/Source/Reference/Names/Visibility.uv") &&
+        catalogSourcePathExists(context, "HelloUltraviolet/Source/Reference/Parallelism/ParallelBlocks.uv") &&
+        catalogSourcePathExists(context, "HelloUltraviolet/Source/Reference/Parsing/ItemSequencing.uv") &&
+        catalogSourcePathExists(context, "HelloUltraviolet/Source/Reference/Parsing/RecoverySpecimens.uv") &&
+        catalogSourcePathExists(context, "HelloUltraviolet/Source/Reference/Parsing/Terminators.uv") &&
+        catalogSourcePathExists(context, "HelloUltraviolet/Source/Reference/Patterns/BasicPatterns.uv") &&
+        catalogSourcePathExists(context, "HelloUltraviolet/Source/Reference/Permissions/PermissionForms.uv") &&
+        catalogSourcePathExists(context, "HelloUltraviolet/Source/Reference/Polymorphism/AssociatedTypes.uv") &&
+        catalogSourcePathExists(context, "HelloUltraviolet/Source/Reference/Polymorphism/Classes.uv") &&
+        catalogSourcePathExists(context, "HelloUltraviolet/Source/Reference/Polymorphism/DynamicClassObjects.uv") &&
+        catalogSourcePathExists(context, "HelloUltraviolet/Source/Reference/Polymorphism/GenericParameters.uv") &&
+        catalogSourcePathExists(context, "HelloUltraviolet/Source/Reference/Polymorphism/Implementations.uv") &&
+        catalogSourcePathExists(context, "HelloUltraviolet/Source/Reference/Procedures/Contracts.uv") &&
+        catalogSourcePathExists(context, "HelloUltraviolet/Source/Reference/Procedures/Declarations.uv") &&
+        catalogSourcePathExists(context, "HelloUltraviolet/Source/Reference/Procedures/Overloading.uv") &&
+        catalogSourcePathExists(context, "HelloUltraviolet/Source/Reference/Procedures/Receivers.uv") &&
+        catalogSourcePathExists(context, "HelloUltraviolet/Source/Reference/Projects/AssemblyModel.uv") &&
+        catalogSourcePathExists(context, "HelloUltraviolet/Source/Reference/Projects/ManifestModel.uv") &&
+        catalogSourcePathExists(context, "HelloUltraviolet/Source/Reference/Projects/ModuleDiscovery.uv") &&
+        catalogSourcePathExists(context, "HelloUltraviolet/Source/Reference/Projects/OutputArtifacts.uv") &&
+        catalogSourcePathExists(context, "HelloUltraviolet/Source/Reference/SourceText/Identifiers.uv") &&
+        catalogSourcePathExists(context, "HelloUltraviolet/Source/Reference/SourceText/Literals.uv") &&
+        catalogSourcePathExists(context, "HelloUltraviolet/Source/Reference/SourceText/OperatorsAndPunctuation.uv") &&
+        catalogSourcePathExists(context, "HelloUltraviolet/Source/Reference/Statements/Assignment.uv") &&
+        catalogSourcePathExists(context, "HelloUltraviolet/Source/Reference/Statements/Blocks.uv") &&
+        catalogSourcePathExists(context, "HelloUltraviolet/Source/Reference/Statements/ExpressionStatements.uv") &&
+        catalogSourcePathExists(context, "HelloUltraviolet/Source/Reference/Statements/LocalUsing.uv") &&
+        catalogSourcePathExists(context, "HelloUltraviolet/Source/Reference/Types/Equivalence.uv") &&
+        catalogSourcePathExists(context, "HelloUltraviolet/Source/Reference/Types/Inference.uv") &&
+        catalogSourcePathExists(context, "HelloUltraviolet/Source/Reference/Types/Subtyping.uv")
+}

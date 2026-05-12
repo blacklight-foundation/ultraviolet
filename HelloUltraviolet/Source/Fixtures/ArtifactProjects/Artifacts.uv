@@ -1,0 +1,28 @@
+//! Runtime path checks for artifact project fixture source artifacts.
+
+internal procedure artifactProjectSourceArtifactsExist(
+    context: Context,
+    manifest_path: string@View,
+    source_path: string@View
+) -> bool {
+    return context.fs~>exists(manifest_path) &&
+        context.fs~>exists(source_path)
+}
+
+public procedure artifactProjectFixtureSourceArtifactsExist(context: Context) -> bool {
+    return artifactProjectSourceArtifactsExist(
+        context,
+        "HelloUltraviolet/Fixtures/ArtifactProjects/StaticLibraryArchive/Ultraviolet.toml",
+        "HelloUltraviolet/Fixtures/ArtifactProjects/StaticLibraryArchive/Source/Library.uv"
+    ) &&
+        artifactProjectSourceArtifactsExist(
+            context,
+            "HelloUltraviolet/Fixtures/ArtifactProjects/EmitLlLibrary/Ultraviolet.toml",
+            "HelloUltraviolet/Fixtures/ArtifactProjects/EmitLlLibrary/Source/Library.uv"
+        ) &&
+        artifactProjectSourceArtifactsExist(
+            context,
+            "HelloUltraviolet/Fixtures/ArtifactProjects/ExecutableOutput/Ultraviolet.toml",
+            "HelloUltraviolet/Fixtures/ArtifactProjects/ExecutableOutput/Source/Main.uv"
+        )
+}

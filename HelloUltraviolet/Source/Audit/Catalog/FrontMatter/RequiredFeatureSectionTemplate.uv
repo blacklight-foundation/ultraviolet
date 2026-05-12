@@ -1,0 +1,20 @@
+//! Generated catalog markers for 0. Front Matter / 0.3 Required Feature Section Template.
+
+
+public procedure countFrontMatterRequiredFeatureSectionTemplateObligations() -> usize {
+    return 1usize
+}
+
+public procedure validatedFrontMatterRequiredFeatureSectionTemplateObligations() -> usize {
+    var count: usize = 0usize
+    if acceptedObligationEntryMatches(
+        "front-matter.feature-section-template",
+        77usize,
+        "HelloUltraviolet::Reference::Conformance",
+        "runConformanceConstructVocabularyReference",
+        "Source/Reference/Conformance/ConstructVocabulary.uv"
+    ) {
+        count = count + 1usize
+    }
+    return count
+}

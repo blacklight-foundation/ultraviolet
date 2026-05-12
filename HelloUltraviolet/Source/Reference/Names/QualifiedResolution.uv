@@ -1,0 +1,41 @@
+//! Reference specimens for Names / QualifiedResolution.
+
+internal record QualifiedNameReference {
+    internal path_segments: usize
+    internal terminal_name_present: bool
+}
+
+internal procedure qualifiedNameReference(
+    path_segments: usize,
+    terminal_name_present: bool
+) -> QualifiedNameReference {
+    return QualifiedNameReference {
+        path_segments: path_segments,
+        terminal_name_present: terminal_name_present
+    }
+}
+
+internal procedure qualifiedNameCanResolve(reference: QualifiedNameReference) -> bool {
+    return reference.path_segments > 0usize && reference.terminal_name_present
+}
+
+/// Exercises the Names QualifiedResolution reference surface.
+public procedure runNamesQualifiedResolutionReference() -> bool {
+    let variant_value: DisambiguatedNameKind = DisambiguatedNameKind::Type
+    let path: QualifiedNameReference = qualifiedNameReference(4usize, true)
+    let variant_ok: bool = if variant_value is {
+        DisambiguatedNameKind::Type {
+            true
+        }
+        DisambiguatedNameKind::Value {
+            false
+        }
+        DisambiguatedNameKind::Module {
+            false
+        }
+        DisambiguatedNameKind::Class {
+            false
+        }
+    }
+    return qualifiedNameCanResolve(path) && variant_ok
+}

@@ -1,0 +1,7 @@
+//! Reference specimens for Lowering / InitializationLifecycle.
+
+/// Exercises the Lowering InitializationLifecycle reference surface.
+public procedure runLoweringInitializationLifecycleReference() -> bool {
+    let reference: LoweringReference = loweringReference(2usize, true, true)
+    return loweringReferenceIsCovered(reference)
+}

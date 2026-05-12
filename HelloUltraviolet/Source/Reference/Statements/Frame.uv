@@ -1,0 +1,15 @@
+//! Reference specimens for Statements / Frame.
+
+/// Exercises the Statements Frame reference surface.
+public procedure runStatementsFrameReference() -> bool {
+    var value: i32 = 0
+    region as scratch {
+        frame {
+            value = value + 1
+        }
+        scratch.frame {
+            value = value + 2
+        }
+    }
+    return value == 3
+}

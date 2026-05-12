@@ -1,0 +1,7 @@
+//! Rejected contract specimen for side-effecting operations inside @entry.
+
+public procedure contractEntrySideEffectReference(value: i32) -> bool
+|: => @entry(^value) == @entry(^value)
+{
+    return true
+}

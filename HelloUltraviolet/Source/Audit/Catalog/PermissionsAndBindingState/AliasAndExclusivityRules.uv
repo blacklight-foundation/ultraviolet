@@ -1,0 +1,92 @@
+//! Generated catalog markers for 10. Permissions and Binding State / 10.2 Alias and Exclusivity Rules.
+
+
+public procedure countPermissionsAndBindingStateAliasAndExclusivityRulesObligations() -> usize {
+    return 9usize
+}
+
+public procedure validatedPermissionsAndBindingStateAliasAndExclusivityRulesObligations() -> usize {
+    var count: usize = 0usize
+    if acceptedObligationEntryMatches(
+        "conformance.AliasAndExclusivityRules",
+        28925usize,
+        "HelloUltraviolet::Reference::Permissions",
+        "runPermissionsPermissionFormsReference",
+        "Source/Reference/Permissions/PermissionForms.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "req.AliasExclusivityNoParsingRules",
+        28943usize,
+        "HelloUltraviolet::Reference::Permissions",
+        "runPermissionsPermissionFormsReference",
+        "Source/Reference/Permissions/PermissionForms.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "req.AliasExclusivityNoAstForms",
+        28959usize,
+        "HelloUltraviolet::Reference::Permissions",
+        "runPermissionsPermissionFormsReference",
+        "Source/Reference/Permissions/PermissionForms.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "def.AliasingByOverlappingStorage",
+        28977usize,
+        "HelloUltraviolet::Reference::Permissions",
+        "runPermissionsPermissionFormsReference",
+        "Source/Reference/Permissions/PermissionForms.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "req.UniqueExclusivityInvariant",
+        28993usize,
+        "HelloUltraviolet::Reference::Permissions",
+        "runPermissionsPermissionFormsReference",
+        "Source/Reference/Permissions/PermissionForms.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "def.PermissionCoexistenceMatrix",
+        29009usize,
+        "HelloUltraviolet::Reference::Permissions",
+        "runPermissionsPermissionFormsReference",
+        "Source/Reference/Permissions/PermissionForms.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "conformance.AliasExclusivityDynamicSemantics",
+        29029usize,
+        "HelloUltraviolet::Reference::Permissions",
+        "runPermissionsPermissionFormsReference",
+        "Source/Reference/Permissions/PermissionForms.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "conformance.AliasExclusivityLowering",
+        29045usize,
+        "HelloUltraviolet::Reference::Permissions",
+        "runPermissionsPermissionFormsReference",
+        "Source/Reference/Permissions/PermissionForms.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "req.AliasExclusivityDiagnosticOwnership",
+        29061usize,
+        "HelloUltraviolet::Reference::Permissions",
+        "runPermissionsPermissionFormsReference",
+        "Source/Reference/Permissions/PermissionForms.uv"
+    ) {
+        count = count + 1usize
+    }
+    return count
+}

@@ -1,0 +1,128 @@
+//! Generated catalog markers for 9. Attributes and Metadata / 9.6 Source-Native Test Attributes.
+
+
+public procedure countAttributesAndMetadataSourceNativeTestAttributesObligations() -> usize {
+    return 13usize
+}
+
+public procedure validatedAttributesAndMetadataSourceNativeTestAttributesObligations() -> usize {
+    var count: usize = 0usize
+    if acceptedObligationEntryMatches(
+        "grammar.TestAttribute",
+        28336usize,
+        "HelloUltraviolet::Reference::Attributes",
+        "runAttributesGeneralAttributesReference",
+        "Source/Reference/Attributes/GeneralAttributes.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "parse.TestAttributeByOrdinaryAttributeParser",
+        28356usize,
+        "HelloUltraviolet::Reference::Attributes",
+        "runAttributesGeneralAttributesReference",
+        "Source/Reference/Attributes/GeneralAttributes.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "ast.TestProcedureClassification",
+        28374usize,
+        "HelloUltraviolet::Reference::Attributes",
+        "runAttributesGeneralAttributesReference",
+        "Source/Reference/Attributes/GeneralAttributes.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "def.TestName",
+        28389usize,
+        "HelloUltraviolet::Reference::Attributes",
+        "runAttributesGeneralAttributesReference",
+        "Source/Reference/Attributes/GeneralAttributes.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "def.TestCoverage",
+        28404usize,
+        "HelloUltraviolet::Reference::Attributes",
+        "runAttributesGeneralAttributesReference",
+        "Source/Reference/Attributes/GeneralAttributes.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "req.TestAttributeProcedureTarget",
+        28421usize,
+        "HelloUltraviolet::Reference::Attributes",
+        "runAttributesGeneralAttributesReference",
+        "Source/Reference/Attributes/GeneralAttributes.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "def.TestAttributeArgsOk",
+        28435usize,
+        "HelloUltraviolet::Reference::Attributes",
+        "runAttributesGeneralAttributesReference",
+        "Source/Reference/Attributes/GeneralAttributes.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "req.TestProcedureShape",
+        28455usize,
+        "HelloUltraviolet::Reference::Attributes",
+        "runAttributesGeneralAttributesReference",
+        "Source/Reference/Attributes/GeneralAttributes.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "req.TestContextAuthority",
+        28477usize,
+        "HelloUltraviolet::Reference::Attributes",
+        "runAttributesGeneralAttributesReference",
+        "Source/Reference/Attributes/GeneralAttributes.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "conformance.TestAttributeDynamicSemantics",
+        28495usize,
+        "HelloUltraviolet::Reference::Attributes",
+        "runAttributesGeneralAttributesReference",
+        "Source/Reference/Attributes/GeneralAttributes.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "lowering.TestHarnessGeneration",
+        28516usize,
+        "HelloUltraviolet::Reference::Attributes",
+        "runAttributesGeneralAttributesReference",
+        "Source/Reference/Attributes/GeneralAttributes.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "def.TestDiscoveryOrder",
+        28575usize,
+        "HelloUltraviolet::Reference::Attributes",
+        "runAttributesGeneralAttributesReference",
+        "Source/Reference/Attributes/GeneralAttributes.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "diagnostics.TestAttributes",
+        28593usize,
+        "HelloUltraviolet::Reference::Attributes",
+        "runAttributesGeneralAttributesReference",
+        "Source/Reference/Attributes/GeneralAttributes.uv"
+    ) {
+        count = count + 1usize
+    }
+    return count
+}

@@ -1,0 +1,6 @@
+//! Rejected expression specimen for calling a non-function value.
+
+public procedure callNonFunctionReference() -> i32 {
+    let value: i32 = 3
+    return value()
+}

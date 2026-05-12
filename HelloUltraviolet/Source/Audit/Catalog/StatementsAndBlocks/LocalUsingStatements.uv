@@ -1,0 +1,119 @@
+//! Generated catalog markers for 18. Statements and Blocks / 18.3 Local Using Statements.
+
+
+public procedure countStatementsAndBlocksLocalUsingStatementsObligations() -> usize {
+    return 12usize
+}
+
+public procedure validatedStatementsAndBlocksLocalUsingStatementsObligations() -> usize {
+    var count: usize = 0usize
+    if acceptedObligationEntryMatches(
+        "grammar.18.LocalUsingStatements",
+        68907usize,
+        "HelloUltraviolet::Reference::Statements",
+        "runStatementsLocalUsingReference",
+        "Source/Reference/Statements/LocalUsing.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "rule.18.Parse-UsingLocal-Stmt",
+        68924usize,
+        "HelloUltraviolet::Reference::Statements",
+        "runStatementsLocalUsingReference",
+        "Source/Reference/Statements/LocalUsing.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "def.18.UsingLocalStmtAst",
+        68942usize,
+        "HelloUltraviolet::Reference::Statements",
+        "runStatementsLocalUsingReference",
+        "Source/Reference/Statements/LocalUsing.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "req.18.UsingLocalUsesUsingAlias",
+        68957usize,
+        "HelloUltraviolet::Reference::Statements",
+        "runStatementsLocalUsingReference",
+        "Source/Reference/Statements/LocalUsing.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "rule.18.T-UsingLocalStmt",
+        68970usize,
+        "HelloUltraviolet::Reference::Statements",
+        "runStatementsLocalUsingReference",
+        "Source/Reference/Statements/LocalUsing.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "rule.18.T-UsingLocalStmt-Err",
+        68986usize,
+        "HelloUltraviolet::Reference::Statements",
+        "runStatementsLocalUsingReference",
+        "Source/Reference/Statements/LocalUsing.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "req.18.UsingLocalAliasIdentity",
+        69002usize,
+        "HelloUltraviolet::Reference::Statements",
+        "runStatementsLocalUsingReference",
+        "Source/Reference/Statements/LocalUsing.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "rule.18.ExecSigma-UsingLocal",
+        69017usize,
+        "HelloUltraviolet::Reference::Statements",
+        "runStatementsLocalUsingReference",
+        "Source/Reference/Statements/LocalUsing.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "req.18.UsingLocalNoRuntimeEffect",
+        69032usize,
+        "HelloUltraviolet::Reference::Statements",
+        "runStatementsLocalUsingReference",
+        "Source/Reference/Statements/LocalUsing.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "rule.18.Lower-Stmt-UsingLocal",
+        69047usize,
+        "HelloUltraviolet::Reference::Statements",
+        "runStatementsLocalUsingReference",
+        "Source/Reference/Statements/LocalUsing.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "req.18.UsingLocalNoRuntimeIR",
+        69062usize,
+        "HelloUltraviolet::Reference::Statements",
+        "runStatementsLocalUsingReference",
+        "Source/Reference/Statements/LocalUsing.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "diag.18.LocalUsingStatements",
+        69077usize,
+        "HelloUltraviolet::Reference::Statements",
+        "runStatementsLocalUsingReference",
+        "Source/Reference/Statements/LocalUsing.uv"
+    ) {
+        count = count + 1usize
+    }
+    return count
+}

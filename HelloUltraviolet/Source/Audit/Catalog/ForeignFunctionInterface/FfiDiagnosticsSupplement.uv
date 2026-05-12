@@ -1,0 +1,20 @@
+//! Generated catalog markers for 23. Foreign Function Interface / 23.8 FFI Diagnostics Supplement.
+
+
+public procedure countForeignFunctionInterfaceFfiDiagnosticsSupplementObligations() -> usize {
+    return 1usize
+}
+
+public procedure validatedForeignFunctionInterfaceFfiDiagnosticsSupplementObligations() -> usize {
+    var count: usize = 0usize
+    if acceptedObligationEntryMatches(
+        "diagnostics.23.FfiDiagnosticsSupplement",
+        88993usize,
+        "HelloUltraviolet::Reference::FFI",
+        "runFFIFfiSafeReference",
+        "Source/Reference/FFI/FfiSafe.uv"
+    ) {
+        count = count + 1usize
+    }
+    return count
+}

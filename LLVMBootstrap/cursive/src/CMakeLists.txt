@@ -1576,6 +1576,47 @@ target_compile_definitions(cursive_lexer_diagnostics_test PRIVATE
 
 add_dependencies(cursive_lexer_diagnostics_test cursive_out)
 
+add_executable(cursive_project_manifest_validation_test
+  tests/project_manifest_validation_test.cpp
+)
+
+target_compile_features(cursive_project_manifest_validation_test PRIVATE
+  cxx_std_20
+)
+
+target_compile_definitions(cursive_project_manifest_validation_test PRIVATE
+  CURSIVE_TEST_WORK_ROOT="${CMAKE_BINARY_DIR}/tests"
+)
+
+target_link_libraries(cursive_project_manifest_validation_test PRIVATE
+  cursive_project
+)
+
+if(WIN32)
+  add_custom_command(TARGET cursive_project_manifest_validation_test POST_BUILD
+    COMMAND ${CMAKE_COMMAND} -E copy_if_different
+            ${ICU_DLLS}
+            $<TARGET_FILE_DIR:cursive_project_manifest_validation_test>
+  )
+endif()
+
+add_executable(cursive_comptime_conformance_test
+  tests/comptime_conformance_test.cpp
+)
+
+target_compile_features(cursive_comptime_conformance_test PRIVATE
+  cxx_std_20
+)
+
+target_compile_definitions(cursive_comptime_conformance_test PRIVATE
+  CURSIVE_TEST_COMPILER_PATH="${CURSIVE_OUT_DIR}/$<TARGET_FILE_NAME:cursive>"
+  CURSIVE_TEST_RUNTIME_LIB_PATH="${CURSIVE_CODEGEN_ABI_SRET_RUNTIME_LIB}"
+  CURSIVE_TEST_TARGET_PROFILE="${CURSIVE_CODEGEN_ABI_SRET_TARGET_PROFILE}"
+  CURSIVE_TEST_WORK_ROOT="${CMAKE_BINARY_DIR}/tests"
+)
+
+add_dependencies(cursive_comptime_conformance_test cursive_out)
+
 add_executable(cursive_parser_generic_conformance_test
   tests/parser_generic_conformance_test.cpp
 )

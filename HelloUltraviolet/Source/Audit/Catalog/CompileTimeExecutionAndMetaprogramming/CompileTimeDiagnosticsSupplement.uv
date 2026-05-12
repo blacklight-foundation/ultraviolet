@@ -1,0 +1,29 @@
+//! Generated catalog markers for 22. Compile-Time Execution and Metaprogramming / 22.6 Compile-Time Diagnostics Supplement.
+
+
+public procedure countCompileTimeExecutionAndMetaprogrammingCompileTimeDiagnosticsSupplementObligations() -> usize {
+    return 2usize
+}
+
+public procedure validatedCompileTimeExecutionAndMetaprogrammingCompileTimeDiagnosticsSupplementObligations() -> usize {
+    var count: usize = 0usize
+    if acceptedObligationEntryMatches(
+        "diagnostics.22.CompileTimeDiagnosticsSupplement",
+        85476usize,
+        "HelloUltraviolet::Reference::Comptime",
+        "runComptimeCompileTimeFormsReference",
+        "Source/Reference/Comptime/CompileTimeForms.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "requirement.22.UserDiagnosticBuiltinEmission",
+        85552usize,
+        "HelloUltraviolet::Reference::Comptime",
+        "runComptimeCompileTimeFormsReference",
+        "Source/Reference/Comptime/CompileTimeForms.uv"
+    ) {
+        count = count + 1usize
+    }
+    return count
+}

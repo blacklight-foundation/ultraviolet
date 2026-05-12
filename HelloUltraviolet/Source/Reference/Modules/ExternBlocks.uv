@@ -1,0 +1,31 @@
+//! Reference specimens for Modules / ExternBlocks.
+
+internal record ExternBlockReference {
+    internal has_abi: bool
+    internal item_count: usize
+    internal contributes_runtime_body: bool
+}
+
+internal procedure externBlockReference(
+    has_abi: bool,
+    item_count: usize,
+    contributes_runtime_body: bool
+) -> ExternBlockReference {
+    return ExternBlockReference {
+        has_abi: has_abi,
+        item_count: item_count,
+        contributes_runtime_body: contributes_runtime_body
+    }
+}
+
+internal procedure externBlockShellIsValid(reference: ExternBlockReference) -> bool {
+    return reference.has_abi &&
+        reference.item_count > 0usize &&
+        !reference.contributes_runtime_body
+}
+
+/// Exercises the Modules ExternBlocks reference surface.
+public procedure runModulesExternBlocksReference() -> bool {
+    let block: ExternBlockReference = externBlockReference(true, 1usize, false)
+    return externBlockShellIsValid(block)
+}

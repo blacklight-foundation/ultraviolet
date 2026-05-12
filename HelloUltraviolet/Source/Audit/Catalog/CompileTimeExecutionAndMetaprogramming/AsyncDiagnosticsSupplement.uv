@@ -1,0 +1,20 @@
+//! Generated catalog markers for 22. Compile-Time Execution and Metaprogramming / 21.6 Async Diagnostics Supplement.
+
+
+public procedure countCompileTimeExecutionAndMetaprogrammingAsyncDiagnosticsSupplementObligations() -> usize {
+    return 1usize
+}
+
+public procedure validatedCompileTimeExecutionAndMetaprogrammingAsyncDiagnosticsSupplementObligations() -> usize {
+    var count: usize = 0usize
+    if acceptedObligationEntryMatches(
+        "requirement.22.Phase2ExecutionPosition",
+        82538usize,
+        "HelloUltraviolet::Reference::Comptime",
+        "runComptimeCompileTimeFormsReference",
+        "Source/Reference/Comptime/CompileTimeForms.uv"
+    ) {
+        count = count + 1usize
+    }
+    return count
+}

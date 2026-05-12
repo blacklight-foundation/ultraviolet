@@ -1,0 +1,38 @@
+//! Reference specimens for Authority / Capabilities.
+
+internal enum CapabilityReferenceKind {
+    FileSystem
+    Network
+    HeapAllocator
+    Reactor
+    ExecutionDomain
+    System
+}
+
+internal record CapabilityReference {
+    internal kind: CapabilityReferenceKind
+    internal explicit_parameter: bool
+}
+
+internal procedure capabilityReference(
+    kind: CapabilityReferenceKind,
+    explicit_parameter: bool
+) -> CapabilityReference {
+    return CapabilityReference {
+        kind: kind,
+        explicit_parameter: explicit_parameter
+    }
+}
+
+internal procedure capabilityHasAuthority(reference: CapabilityReference) -> bool {
+    return reference.explicit_parameter
+}
+
+/// Exercises the Authority Capabilities reference surface.
+public procedure runAuthorityCapabilitiesReference() -> bool {
+    let file_system: CapabilityReference =
+        capabilityReference(CapabilityReferenceKind::FileSystem, true)
+    let system: CapabilityReference =
+        capabilityReference(CapabilityReferenceKind::System, true)
+    return capabilityHasAuthority(file_system) && capabilityHasAuthority(system)
+}

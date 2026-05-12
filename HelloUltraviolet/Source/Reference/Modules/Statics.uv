@@ -1,0 +1,10 @@
+//! Reference specimens for Modules / Statics.
+
+internal let STATIC_REFERENCE_VALUE: i32 = 11
+internal let STATIC_REFERENCE_PAIR: (i32, i32) = (7, 4)
+
+/// Exercises the Modules Statics reference surface.
+public procedure runModulesStaticsReference() -> bool {
+    let (left, right): (i32, i32) = STATIC_REFERENCE_PAIR
+    return STATIC_REFERENCE_VALUE == 11 && left + right == STATIC_REFERENCE_VALUE
+}

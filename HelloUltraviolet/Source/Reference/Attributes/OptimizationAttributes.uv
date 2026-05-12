@@ -1,0 +1,37 @@
+//! Reference specimens for Attributes / OptimizationAttributes.
+
+internal enum OptimizationAttributeReferenceKind {
+    InlineDefault
+    InlineAlways
+    InlineNever
+    Cold
+}
+
+internal procedure optimizationAttributeAppliesToCallable(
+    kind: OptimizationAttributeReferenceKind
+) -> bool {
+    return if kind is {
+        OptimizationAttributeReferenceKind::InlineDefault {
+            true
+        }
+        OptimizationAttributeReferenceKind::InlineAlways {
+            true
+        }
+        OptimizationAttributeReferenceKind::InlineNever {
+            true
+        }
+        OptimizationAttributeReferenceKind::Cold {
+            true
+        }
+    }
+}
+
+/// Exercises the Attributes OptimizationAttributes reference surface.
+public procedure runAttributesOptimizationAttributesReference() -> bool {
+    return optimizationAttributeAppliesToCallable(
+        OptimizationAttributeReferenceKind::InlineDefault
+    ) &&
+        optimizationAttributeAppliesToCallable(OptimizationAttributeReferenceKind::InlineAlways) &&
+        optimizationAttributeAppliesToCallable(OptimizationAttributeReferenceKind::InlineNever) &&
+        optimizationAttributeAppliesToCallable(OptimizationAttributeReferenceKind::Cold)
+}

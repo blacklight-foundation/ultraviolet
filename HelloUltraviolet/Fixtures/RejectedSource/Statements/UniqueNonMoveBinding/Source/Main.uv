@@ -1,0 +1,7 @@
+//! Rejected statement specimen for unique binding from a place without move.
+
+public procedure uniqueNonMoveBindingReference() -> i32 {
+    let source: unique i32 = 1
+    let target: unique i32 = source
+    return 0
+}

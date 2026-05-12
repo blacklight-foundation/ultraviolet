@@ -921,10 +921,15 @@ llvm::Value* EmitABICall(LLVMEmitter& emitter,
 
   // Map arguments according to ABI
   for (std::size_t i = 0; i < params.size(); ++i) {
+    const bool is_panic_out_param =
+        params[i].name == std::string(kPanicOutName);
     if (i >= abi.param_indices.size()) {
       break;
     }
     if (!abi.param_indices[i].has_value()) {
+      if (!is_panic_out_param && source_arg_index < args.size()) {
+        ++source_arg_index;
+      }
       continue;
     }
 
@@ -933,7 +938,6 @@ llvm::Value* EmitABICall(LLVMEmitter& emitter,
       continue;
     }
 
-    const bool is_panic_out_param = params[i].name == std::string(kPanicOutName);
     std::size_t arg_lookup_index = source_arg_index;
     llvm::Value* arg = nullptr;
     if (is_panic_out_param) {

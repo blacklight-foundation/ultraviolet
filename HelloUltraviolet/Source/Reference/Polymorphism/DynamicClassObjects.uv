@@ -1,0 +1,7 @@
+//! Reference specimens for Polymorphism / DynamicClassObjects.
+
+/// Exercises the Polymorphism DynamicClassObjects reference surface.
+public procedure runPolymorphismDynamicClassObjectsReference() -> bool {
+    let reference: PolymorphismReference = polymorphismReference(3usize, true, true)
+    return polymorphismReferenceIsCovered(reference) && reference.dynamically_dispatchable
+}

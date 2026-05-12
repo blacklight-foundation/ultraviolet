@@ -1,0 +1,9 @@
+//! Reference specimens for Modules / Usings.
+
+using HelloUltraviolet::Reference::DataTypes::{ RecordReference, recordReference }
+
+/// Exercises the Modules Usings reference surface.
+public procedure runModulesUsingsReference() -> bool {
+    let reference: RecordReference = recordReference("module-using", 12usize, true)
+    return reference.is_active && reference.count == 12usize
+}

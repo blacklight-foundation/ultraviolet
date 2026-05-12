@@ -1,0 +1,47 @@
+//! Reference specimens for Projects / OutputArtifacts.
+
+internal enum OutputArtifactKindReference {
+    ExecutableImage
+    ObjectFile
+    DependencyRuntime
+    MapFile
+}
+
+internal record OutputArtifactReference {
+    internal kind: OutputArtifactKindReference
+    internal is_required_for_run: bool
+    internal order: usize
+}
+
+internal procedure outputArtifactReference(
+    kind: OutputArtifactKindReference,
+    is_required_for_run: bool,
+    order: usize
+) -> OutputArtifactReference {
+    return OutputArtifactReference {
+        kind: kind,
+        is_required_for_run: is_required_for_run,
+        order: order
+    }
+}
+
+internal procedure outputArtifactPrecedes(
+    left: OutputArtifactReference,
+    right: OutputArtifactReference
+) -> bool {
+    return left.order < right.order
+}
+
+/// Exercises the Projects OutputArtifacts reference surface.
+public procedure runProjectsOutputArtifactsReference() -> bool {
+    let object_file: OutputArtifactReference =
+        outputArtifactReference(OutputArtifactKindReference::ObjectFile, false, 1usize)
+    let executable: OutputArtifactReference =
+        outputArtifactReference(OutputArtifactKindReference::ExecutableImage, true, 2usize)
+    let runtime: OutputArtifactReference =
+        outputArtifactReference(OutputArtifactKindReference::DependencyRuntime, true, 3usize)
+    return outputArtifactPrecedes(object_file, executable) &&
+        outputArtifactPrecedes(executable, runtime) &&
+        executable.is_required_for_run &&
+        runtime.is_required_for_run
+}

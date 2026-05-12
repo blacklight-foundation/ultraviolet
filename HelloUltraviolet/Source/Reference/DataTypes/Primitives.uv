@@ -1,0 +1,32 @@
+//! Reference specimens for DataTypes / Primitives.
+
+public record PrimitiveReference {
+    public signed_value: i32
+    public unsigned_value: usize
+    public enabled: bool
+    public label: string@View
+}
+
+public procedure primitiveReference(
+    signed_value: i32,
+    unsigned_value: usize,
+    enabled: bool,
+    label: string@View
+) -> PrimitiveReference {
+    return PrimitiveReference {
+        signed_value: signed_value,
+        unsigned_value: unsigned_value,
+        enabled: enabled,
+        label: label
+    }
+}
+
+/// Exercises the DataTypes Primitives reference surface.
+public procedure runDataTypesPrimitivesReference() -> bool {
+    let reference: PrimitiveReference =
+        primitiveReference(-7, 7usize, true, "primitive reference")
+    let unit_value: () = ()
+    return reference.enabled &&
+        reference.signed_value + 14 == 7 &&
+        reference.unsigned_value == 7usize
+}

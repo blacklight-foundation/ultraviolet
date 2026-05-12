@@ -1,0 +1,38 @@
+//! Generated catalog markers for Appendix B. Complete Grammar Reference / B.3 Expression Grammar.
+
+
+public procedure countAppendixBCompleteGrammarReferenceBExpressionGrammarObligations() -> usize {
+    return 3usize
+}
+
+public procedure validatedAppendixBCompleteGrammarReferenceBExpressionGrammarObligations() -> usize {
+    var count: usize = 0usize
+    if acceptedObligationEntryMatches(
+        "grammar.B.3.ExpressionGrammar",
+        99504usize,
+        "HelloUltraviolet::Reference::Parsing",
+        "runParsingItemSequencingReference",
+        "Source/Reference/Parsing/ItemSequencing.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "req.B.3.ClosureExprUnionParameterParentheses",
+        99582usize,
+        "HelloUltraviolet::Reference::Parsing",
+        "runParsingItemSequencingReference",
+        "Source/Reference/Parsing/ItemSequencing.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "grammar.B.3.ControlAndSpecialExpressionGrammar",
+        99595usize,
+        "HelloUltraviolet::Reference::Parsing",
+        "runParsingItemSequencingReference",
+        "Source/Reference/Parsing/ItemSequencing.uv"
+    ) {
+        count = count + 1usize
+    }
+    return count
+}

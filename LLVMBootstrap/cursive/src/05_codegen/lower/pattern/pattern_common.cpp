@@ -21,6 +21,7 @@
 #include "00_core/assert_spec.h"
 #include "04_analysis/generics/monomorphize.h"
 #include "04_analysis/resolve/scopes.h"
+#include "04_analysis/resolve/scopes_lookup.h"
 #include "04_analysis/typing/type_equiv.h"
 #include "04_analysis/typing/type_layout.h"
 #include "04_analysis/typing/type_predicates.h"
@@ -121,12 +122,23 @@ analysis::TypeRef ResolvePatternAliasType(const analysis::TypeRef& type,
   for (const auto& segment : path->path) {
     syntax_path.push_back(segment);
   }
-  const auto it = ctx.sigma->types.find(analysis::PathKeyOf(syntax_path));
-  if (it == ctx.sigma->types.end()) {
-    return stripped;
+  const ast::TypeAliasDecl* alias = nullptr;
+  if (const auto it = ctx.sigma->types.find(analysis::PathKeyOf(syntax_path));
+      it != ctx.sigma->types.end()) {
+    alias = std::get_if<ast::TypeAliasDecl>(&it->second);
   }
-
-  const auto* alias = std::get_if<ast::TypeAliasDecl>(&it->second);
+  if (!alias && syntax_path.size() == 1) {
+    const analysis::ScopeContext& scope = ScopeForLowering(ctx);
+    const auto resolved = analysis::ResolveTypeName(scope, syntax_path.front());
+    if (resolved.has_value() && resolved->origin_opt.has_value()) {
+      ast::Path full_path = *resolved->origin_opt;
+      full_path.push_back(resolved->target_opt.value_or(syntax_path.front()));
+      if (const auto it = ctx.sigma->types.find(analysis::PathKeyOf(full_path));
+          it != ctx.sigma->types.end()) {
+        alias = std::get_if<ast::TypeAliasDecl>(&it->second);
+      }
+    }
+  }
   if (!alias) {
     return stripped;
   }
@@ -512,9 +524,12 @@ void CollectPatternBindingsInOrder(const ast::Pattern& pattern,
           IRValue bind_value = value;
           analysis::TypeRef type_hint = nullptr;
           if (ctx.sigma) {
-            type_hint =
-                InstantiateActiveGenericType(LowerSyntaxType(pat.type, ctx), ctx);
-            const auto base_type = ctx.LookupValueType(value);
+            type_hint = ResolvePatternAliasType(
+                InstantiateActiveGenericType(LowerSyntaxType(pat.type, ctx), ctx),
+                ctx);
+            const auto base_type = ResolvePatternAliasType(
+                InstantiateActiveGenericType(ctx.LookupValueType(value), ctx),
+                ctx);
             if (type_hint && base_type) {
               analysis::TypeRef stripped = base_type;
               if (const auto* perm = std::get_if<analysis::TypePerm>(&stripped->node)) {

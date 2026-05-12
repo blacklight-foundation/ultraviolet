@@ -1,0 +1,65 @@
+//! Generated catalog markers for 2. Diagnostic Infrastructure / 2.2 Token Spans.
+
+
+public procedure countDiagnosticInfrastructureTokenSpansObligations() -> usize {
+    return 6usize
+}
+
+public procedure validatedDiagnosticInfrastructureTokenSpansObligations() -> usize {
+    var count: usize = 0usize
+    if acceptedObligationEntryMatches(
+        "def.TokenKind",
+        1400usize,
+        "HelloUltraviolet::Reference::Diagnostics",
+        "runDiagnosticsSourceSpansReference",
+        "Source/Reference/Diagnostics/SourceSpans.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "No-Unknown-Ok",
+        1415usize,
+        "HelloUltraviolet::Reference::Diagnostics",
+        "runDiagnosticsSourceSpansReference",
+        "Source/Reference/Diagnostics/SourceSpans.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "def.RawToken",
+        1433usize,
+        "HelloUltraviolet::Reference::Diagnostics",
+        "runDiagnosticsSourceSpansReference",
+        "Source/Reference/Diagnostics/SourceSpans.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "def.Token",
+        1448usize,
+        "HelloUltraviolet::Reference::Diagnostics",
+        "runDiagnosticsSourceSpansReference",
+        "Source/Reference/Diagnostics/SourceSpans.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "Attach-Token-Ok",
+        1463usize,
+        "HelloUltraviolet::Reference::Diagnostics",
+        "runDiagnosticsSourceSpansReference",
+        "Source/Reference/Diagnostics/SourceSpans.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "Attach-Tokens-Ok",
+        1481usize,
+        "HelloUltraviolet::Reference::Diagnostics",
+        "runDiagnosticsSourceSpansReference",
+        "Source/Reference/Diagnostics/SourceSpans.uv"
+    ) {
+        count = count + 1usize
+    }
+    return count
+}

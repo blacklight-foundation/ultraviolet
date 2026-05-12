@@ -1,0 +1,8 @@
+//! Reference specimens for ModalTypes / Transitions.
+
+/// Exercises the ModalTypes Transitions reference surface.
+public procedure runModalTypesTransitionsReference() -> bool {
+    let closed: unique ModalReference@Closed = ModalReference@Closed {}
+    let opened: ModalReference@Open = closed~>open(23)
+    return opened.value == 23
+}

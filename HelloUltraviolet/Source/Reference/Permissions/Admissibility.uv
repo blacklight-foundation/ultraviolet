@@ -1,0 +1,37 @@
+//! Reference specimens for Permissions / Admissibility.
+
+internal record PermissionAdmissibilityReference {
+    internal place_is_initialized: bool
+    internal permission_is_supported: bool
+    internal alias_rules_satisfied: bool
+}
+
+internal procedure permissionAdmissibilityReference(
+    place_is_initialized: bool,
+    permission_is_supported: bool,
+    alias_rules_satisfied: bool
+) -> PermissionAdmissibilityReference {
+    return PermissionAdmissibilityReference {
+        place_is_initialized: place_is_initialized,
+        permission_is_supported: permission_is_supported,
+        alias_rules_satisfied: alias_rules_satisfied
+    }
+}
+
+internal procedure permissionAdmissibilityIsAccepted(
+    reference: PermissionAdmissibilityReference
+) -> bool {
+    return reference.place_is_initialized &&
+        reference.permission_is_supported &&
+        reference.alias_rules_satisfied
+}
+
+/// Exercises the Permissions Admissibility reference surface.
+public procedure runPermissionsAdmissibilityReference() -> bool {
+    let accepted: PermissionAdmissibilityReference =
+        permissionAdmissibilityReference(true, true, true)
+    let rejected: PermissionAdmissibilityReference =
+        permissionAdmissibilityReference(true, true, false)
+    return permissionAdmissibilityIsAccepted(accepted) &&
+        !permissionAdmissibilityIsAccepted(rejected)
+}

@@ -1,0 +1,7 @@
+//! Reference specimens for Comptime / Reflection.
+
+/// Exercises the Comptime Reflection reference surface.
+public procedure runComptimeReflectionReference() -> bool {
+    let reference: ComptimeReference = comptimeReference(true, false, false)
+    return comptimeReferenceIsCovered(reference)
+}

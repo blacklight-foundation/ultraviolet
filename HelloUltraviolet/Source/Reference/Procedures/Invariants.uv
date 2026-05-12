@@ -1,0 +1,41 @@
+//! Reference specimens for Procedures / Invariants.
+
+internal record ProcedureInvariantReference {
+    internal established_before_loop: bool
+    internal maintained_on_back_edge: bool
+    internal available_after_loop: bool
+}
+
+internal procedure procedureInvariantReference(
+    established_before_loop: bool,
+    maintained_on_back_edge: bool,
+    available_after_loop: bool
+) -> ProcedureInvariantReference {
+    return ProcedureInvariantReference {
+        established_before_loop: established_before_loop,
+        maintained_on_back_edge: maintained_on_back_edge,
+        available_after_loop: available_after_loop
+    }
+}
+
+internal procedure procedureInvariantIsVerified(
+    reference: ProcedureInvariantReference
+) -> bool {
+    return reference.established_before_loop &&
+        reference.maintained_on_back_edge &&
+        reference.available_after_loop
+}
+
+/// Exercises the Procedures Invariants reference surface.
+public procedure runProceduresInvariantsReference() -> bool {
+    var index: i32 = 0
+    loop {
+        if index >= 3 {
+            break
+        }
+        index = index + 1
+    }
+    let reference: ProcedureInvariantReference =
+        procedureInvariantReference(true, index == 3, true)
+    return procedureInvariantIsVerified(reference)
+}

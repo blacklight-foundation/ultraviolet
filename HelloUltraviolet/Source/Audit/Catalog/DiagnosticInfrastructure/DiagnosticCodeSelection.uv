@@ -1,0 +1,56 @@
+//! Generated catalog markers for 2. Diagnostic Infrastructure / 2.4 Diagnostic Code Selection.
+
+
+public procedure countDiagnosticInfrastructureDiagnosticCodeSelectionObligations() -> usize {
+    return 5usize
+}
+
+public procedure validatedDiagnosticInfrastructureDiagnosticCodeSelectionObligations() -> usize {
+    var count: usize = 0usize
+    if acceptedObligationEntryMatches(
+        "def.SpecCode",
+        1674usize,
+        "HelloUltraviolet::Reference::Diagnostics",
+        "runDiagnosticsDiagnosticRecordsReference",
+        "Source/Reference/Diagnostics/DiagnosticRecords.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "Code",
+        1690usize,
+        "HelloUltraviolet::Reference::Diagnostics",
+        "runDiagnosticsDiagnosticRecordsReference",
+        "Source/Reference/Diagnostics/DiagnosticRecords.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "conformance.AppendixADiagnosticIndex",
+        1708usize,
+        "HelloUltraviolet::Reference::Diagnostics",
+        "runDiagnosticsDiagnosticRecordsReference",
+        "Source/Reference/Diagnostics/DiagnosticRecords.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "DiagId-Code",
+        1722usize,
+        "HelloUltraviolet::Reference::Diagnostics",
+        "runDiagnosticsDiagnosticRecordsReference",
+        "Source/Reference/Diagnostics/DiagnosticRecords.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "def.DiagIdCodeMapping",
+        1741usize,
+        "HelloUltraviolet::Reference::Diagnostics",
+        "runDiagnosticsDiagnosticRecordsReference",
+        "Source/Reference/Diagnostics/DiagnosticRecords.uv"
+    ) {
+        count = count + 1usize
+    }
+    return count
+}

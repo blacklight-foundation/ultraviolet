@@ -1,0 +1,36 @@
+//! Reference specimens for Modules / Imports.
+
+internal record ImportDeclarationReference {
+    internal path_segments: usize
+    internal has_alias: bool
+    internal introduces_module_alias: bool
+}
+
+internal procedure importDeclarationReference(
+    path_segments: usize,
+    has_alias: bool,
+    introduces_module_alias: bool
+) -> ImportDeclarationReference {
+    return ImportDeclarationReference {
+        path_segments: path_segments,
+        has_alias: has_alias,
+        introduces_module_alias: introduces_module_alias
+    }
+}
+
+internal procedure importDeclarationBindsName(
+    reference: ImportDeclarationReference
+) -> bool {
+    return reference.path_segments > 0usize && reference.introduces_module_alias
+}
+
+/// Exercises the Modules Imports reference surface.
+public procedure runModulesImportsReference() -> bool {
+    let plain_import: ImportDeclarationReference =
+        importDeclarationReference(3usize, false, true)
+    let aliased_import: ImportDeclarationReference =
+        importDeclarationReference(3usize, true, true)
+    return importDeclarationBindsName(plain_import) &&
+        importDeclarationBindsName(aliased_import) &&
+        aliased_import.has_alias
+}

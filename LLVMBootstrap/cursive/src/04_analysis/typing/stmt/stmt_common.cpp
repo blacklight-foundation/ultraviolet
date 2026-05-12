@@ -2930,7 +2930,7 @@ PatternTypeResult TypePattern(const ScopeContext& ctx,
         else {
           // Other patterns (Literal, Enum, Modal, Range) are refutable
           // and cannot be used in let/var bindings
-          SPEC_RULE("Pat-Refutable-Err");
+          SPEC_RULE("Let-Refutable-Pattern-Err");
           return {false, "Let-Refutable-Pattern-Err", {}};
         }
       },

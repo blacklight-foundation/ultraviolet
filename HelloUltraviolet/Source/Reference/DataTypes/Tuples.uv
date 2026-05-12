@@ -1,0 +1,9 @@
+//! Reference specimens for DataTypes / Tuples.
+
+/// Exercises the DataTypes Tuples reference surface.
+public procedure runDataTypesTuplesReference() -> bool {
+    let unit_value: () = ()
+    let single: (i32;) = (7;)
+    let pair: (i32, bool) = (7, true)
+    return single.0 == pair.0 && pair.1
+}

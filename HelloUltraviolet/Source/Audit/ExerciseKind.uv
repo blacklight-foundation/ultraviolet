@@ -1,0 +1,95 @@
+//! Catalog classification for the way an obligation is exercised.
+
+public modal ExerciseKind {
+    @AcceptedSource {
+    }
+
+    @AcceptedProject {
+    }
+
+    @RejectedSource {
+    }
+
+    @ArtifactBehavior {
+    }
+
+    @ReferenceModel {
+    }
+}
+
+public type ExerciseKindValue =
+    ExerciseKind@AcceptedSource |
+    ExerciseKind@AcceptedProject |
+    ExerciseKind@RejectedSource |
+    ExerciseKind@ArtifactBehavior |
+    ExerciseKind@ReferenceModel
+
+public procedure acceptedSourceExerciseKind() -> ExerciseKindValue {
+    return ExerciseKind@AcceptedSource {}
+}
+
+public procedure acceptedProjectExerciseKind() -> ExerciseKindValue {
+    return ExerciseKind@AcceptedProject {}
+}
+
+public procedure rejectedSourceExerciseKind() -> ExerciseKindValue {
+    return ExerciseKind@RejectedSource {}
+}
+
+public procedure artifactBehaviorExerciseKind() -> ExerciseKindValue {
+    return ExerciseKind@ArtifactBehavior {}
+}
+
+public procedure referenceModelExerciseKind() -> ExerciseKindValue {
+    return ExerciseKind@ReferenceModel {}
+}
+
+public procedure exerciseKindEquals(left: ExerciseKindValue, right: ExerciseKindValue) -> bool {
+    return if left is {
+        @AcceptedSource {
+            if right is {
+                @AcceptedSource { true }
+                @AcceptedProject { false }
+                @RejectedSource { false }
+                @ArtifactBehavior { false }
+                @ReferenceModel { false }
+            }
+        }
+        @AcceptedProject {
+            if right is {
+                @AcceptedSource { false }
+                @AcceptedProject { true }
+                @RejectedSource { false }
+                @ArtifactBehavior { false }
+                @ReferenceModel { false }
+            }
+        }
+        @RejectedSource {
+            if right is {
+                @AcceptedSource { false }
+                @AcceptedProject { false }
+                @RejectedSource { true }
+                @ArtifactBehavior { false }
+                @ReferenceModel { false }
+            }
+        }
+        @ArtifactBehavior {
+            if right is {
+                @AcceptedSource { false }
+                @AcceptedProject { false }
+                @RejectedSource { false }
+                @ArtifactBehavior { true }
+                @ReferenceModel { false }
+            }
+        }
+        @ReferenceModel {
+            if right is {
+                @AcceptedSource { false }
+                @AcceptedProject { false }
+                @RejectedSource { false }
+                @ArtifactBehavior { false }
+                @ReferenceModel { true }
+            }
+        }
+    }
+}

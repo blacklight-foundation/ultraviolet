@@ -1,0 +1,9 @@
+//! Reference specimens for Statements / Bindings.
+
+/// Exercises the Statements Bindings reference surface.
+public procedure runStatementsBindingsReference() -> bool {
+    let immutable_value: i32 = 3
+    var mutable_value: i32 = immutable_value
+    mutable_value = mutable_value + 4
+    return mutable_value == 7
+}

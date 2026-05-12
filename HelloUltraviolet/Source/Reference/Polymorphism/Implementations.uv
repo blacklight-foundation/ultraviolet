@@ -1,0 +1,7 @@
+//! Reference specimens for Polymorphism / Implementations.
+
+/// Exercises the Polymorphism Implementations reference surface.
+public procedure runPolymorphismImplementationsReference() -> bool {
+    let reference: PolymorphismReference = polymorphismReference(6usize, true, true)
+    return polymorphismReferenceIsCovered(reference) && reference.dynamically_dispatchable
+}

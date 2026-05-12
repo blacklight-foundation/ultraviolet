@@ -1,0 +1,146 @@
+//! Generated catalog markers for 3. Project and Compilation Model / 3.5 Source Roots, Module Directories, and Compilation Units.
+
+
+public procedure countProjectAndCompilationModelSourceRootsModuleDirectoriesAndCompilationUnitsObligations() -> usize {
+    return 15usize
+}
+
+public procedure validatedProjectAndCompilationModelSourceRootsModuleDirectoriesAndCompilationUnitsObligations() -> usize {
+    var count: usize = 0usize
+    if acceptedObligationEntryMatches(
+        "def.SourceRootDirectories",
+        4254usize,
+        "HelloUltraviolet::Reference::Projects",
+        "runProjectsModuleDiscoveryReference",
+        "Source/Reference/Projects/ModuleDiscovery.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "WF-Source-Root",
+        4270usize,
+        "HelloUltraviolet::Reference::Projects",
+        "runProjectsModuleDiscoveryReference",
+        "Source/Reference/Projects/ModuleDiscovery.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "WF-Source-Root-Err",
+        4288usize,
+        "HelloUltraviolet::Reference::Projects",
+        "runProjectsModuleDiscoveryReference",
+        "Source/Reference/Projects/ModuleDiscovery.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "Module-Dir",
+        4306usize,
+        "HelloUltraviolet::Reference::Projects",
+        "runProjectsModuleDiscoveryReference",
+        "Source/Reference/Projects/ModuleDiscovery.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "def.ModuleDirectoryFiles",
+        4324usize,
+        "HelloUltraviolet::Reference::Projects",
+        "runProjectsModuleDiscoveryReference",
+        "Source/Reference/Projects/ModuleDiscovery.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "def.CompilationUnits",
+        4338usize,
+        "HelloUltraviolet::Reference::Projects",
+        "runProjectsModuleDiscoveryReference",
+        "Source/Reference/Projects/ModuleDiscovery.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "CompilationUnit-Rel-Fail",
+        4352usize,
+        "HelloUltraviolet::Reference::Projects",
+        "runProjectsModuleDiscoveryReference",
+        "Source/Reference/Projects/ModuleDiscovery.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "refs.ModuleDiscoverySection",
+        4370usize,
+        "HelloUltraviolet::Reference::Projects",
+        "runProjectsModuleDiscoveryReference",
+        "Source/Reference/Projects/ModuleDiscovery.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "Modules-Ok",
+        4384usize,
+        "HelloUltraviolet::Reference::Projects",
+        "runProjectsModuleDiscoveryReference",
+        "Source/Reference/Projects/ModuleDiscovery.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "Modules-Err",
+        4402usize,
+        "HelloUltraviolet::Reference::Projects",
+        "runProjectsModuleDiscoveryReference",
+        "Source/Reference/Projects/ModuleDiscovery.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "def.AssemblySourceRoots",
+        4420usize,
+        "HelloUltraviolet::Reference::Projects",
+        "runProjectsAssemblyModelReference",
+        "Source/Reference/Projects/AssemblyModel.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "def.OwnerRoot",
+        4435usize,
+        "HelloUltraviolet::Reference::Projects",
+        "runProjectsAssemblyModelReference",
+        "Source/Reference/Projects/AssemblyModel.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "def.OwnedModules",
+        4449usize,
+        "HelloUltraviolet::Reference::Projects",
+        "runProjectsAssemblyModelReference",
+        "Source/Reference/Projects/AssemblyModel.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "OwnAssemblies-Ok",
+        4463usize,
+        "HelloUltraviolet::Reference::Projects",
+        "runProjectsAssemblyModelReference",
+        "Source/Reference/Projects/AssemblyModel.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "WF-Assembly-Root-Owner-Ambiguous",
+        4481usize,
+        "HelloUltraviolet::Reference::Projects",
+        "runProjectsAssemblyModelReference",
+        "Source/Reference/Projects/AssemblyModel.uv"
+    ) {
+        count = count + 1usize
+    }
+    return count
+}

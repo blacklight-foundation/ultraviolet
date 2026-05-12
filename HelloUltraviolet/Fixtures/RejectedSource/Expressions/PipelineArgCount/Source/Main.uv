@@ -1,0 +1,9 @@
+//! Rejected pipeline specimen for a right-hand side with the wrong arity.
+
+public procedure addPair(left: i32, right: i32) -> i32 {
+    return left + right
+}
+
+public procedure pipelineArgCountReference() -> i32 {
+    return 1 => addPair
+}

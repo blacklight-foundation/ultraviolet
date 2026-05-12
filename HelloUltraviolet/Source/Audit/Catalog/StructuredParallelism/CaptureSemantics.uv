@@ -1,0 +1,209 @@
+//! Generated catalog markers for 20. Structured Parallelism / 20.3 Capture Semantics.
+
+
+public procedure countStructuredParallelismCaptureSemanticsObligations() -> usize {
+    return 22usize
+}
+
+public procedure validatedStructuredParallelismCaptureSemanticsObligations() -> usize {
+    var count: usize = 0usize
+    if acceptedObligationEntryMatches(
+        "requirement.20.CaptureSemanticsNoAdditionalSyntax",
+        75925usize,
+        "HelloUltraviolet::Reference::Parallelism",
+        "runParallelismParallelBlocksReference",
+        "Source/Reference/Parallelism/ParallelBlocks.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "requirement.20.CaptureSemanticsNoAdditionalParsingRules",
+        75940usize,
+        "HelloUltraviolet::Reference::Parallelism",
+        "runParallelismParallelBlocksReference",
+        "Source/Reference/Parallelism/ParallelBlocks.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "requirement.20.CaptureSetComputationReference",
+        75955usize,
+        "HelloUltraviolet::Reference::Parallelism",
+        "runParallelismParallelBlocksReference",
+        "Source/Reference/Parallelism/ParallelBlocks.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "def.20.GpuCaptureJudgments",
+        75977usize,
+        "HelloUltraviolet::Reference::Parallelism",
+        "runParallelismParallelBlocksReference",
+        "Source/Reference/Parallelism/ParallelBlocks.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "requirement.20.ParallelCapturePermissions",
+        75994usize,
+        "HelloUltraviolet::Reference::Parallelism",
+        "runParallelismParallelBlocksReference",
+        "Source/Reference/Parallelism/ParallelBlocks.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "rule.20.Parallel-Closure-Capture-Const",
+        76011usize,
+        "HelloUltraviolet::Reference::Parallelism",
+        "runParallelismParallelBlocksReference",
+        "Source/Reference/Parallelism/ParallelBlocks.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "rule.20.Parallel-Closure-Capture-Shared",
+        76027usize,
+        "HelloUltraviolet::Reference::Parallelism",
+        "runParallelismParallelBlocksReference",
+        "Source/Reference/Parallelism/ParallelBlocks.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "rule.20.Parallel-Closure-Capture-Unique-Err",
+        76043usize,
+        "HelloUltraviolet::Reference::Parallelism",
+        "runParallelismParallelBlocksReference",
+        "Source/Reference/Parallelism/ParallelBlocks.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "def.20.OuterParallelMoveSelection",
+        76059usize,
+        "HelloUltraviolet::Reference::Parallelism",
+        "runParallelismParallelBlocksReference",
+        "Source/Reference/Parallelism/ParallelBlocks.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "rule.20.Parallel-Closure-Capture-Unique-Move-Ok",
+        76073usize,
+        "HelloUltraviolet::Reference::Parallelism",
+        "runParallelismParallelBlocksReference",
+        "Source/Reference/Parallelism/ParallelBlocks.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "rule.20.Parallel-Closure-Capture-OuterMove-Err",
+        76089usize,
+        "HelloUltraviolet::Reference::Parallelism",
+        "runParallelismParallelBlocksReference",
+        "Source/Reference/Parallelism/ParallelBlocks.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "rule.20.Parallel-Escaping-Closure-Spawn-Err",
+        76105usize,
+        "HelloUltraviolet::Reference::Parallelism",
+        "runParallelismParallelBlocksReference",
+        "Source/Reference/Parallelism/ParallelBlocks.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "requirement.20.ParallelClosuresLocalForKeys",
+        76121usize,
+        "HelloUltraviolet::Reference::Parallelism",
+        "runParallelismParallelBlocksReference",
+        "Source/Reference/Parallelism/ParallelBlocks.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "rule.20.GpuCaptureOk-Const",
+        76134usize,
+        "HelloUltraviolet::Reference::Parallelism",
+        "runParallelismParallelBlocksReference",
+        "Source/Reference/Parallelism/ParallelBlocks.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "rule.20.GpuCaptureOk-Unique-Move",
+        76150usize,
+        "HelloUltraviolet::Reference::Parallelism",
+        "runParallelismParallelBlocksReference",
+        "Source/Reference/Parallelism/ParallelBlocks.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "rule.20.GpuCapture-Shared-Err",
+        76166usize,
+        "HelloUltraviolet::Reference::Parallelism",
+        "runParallelismParallelBlocksReference",
+        "Source/Reference/Parallelism/ParallelBlocks.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "rule.20.GpuCapture-HeapProv-Err",
+        76182usize,
+        "HelloUltraviolet::Reference::Parallelism",
+        "runParallelismParallelBlocksReference",
+        "Source/Reference/Parallelism/ParallelBlocks.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "rule.20.GpuCapture-NonGpuSafe-Err",
+        76198usize,
+        "HelloUltraviolet::Reference::Parallelism",
+        "runParallelismParallelBlocksReference",
+        "Source/Reference/Parallelism/ParallelBlocks.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "requirement.20.MovedBindingValidityReference",
+        76214usize,
+        "HelloUltraviolet::Reference::Parallelism",
+        "runParallelismParallelBlocksReference",
+        "Source/Reference/Parallelism/ParallelBlocks.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "requirement.20.CaptureSemanticsNoAdditionalRuntimeMechanism",
+        76229usize,
+        "HelloUltraviolet::Reference::Parallelism",
+        "runParallelismParallelBlocksReference",
+        "Source/Reference/Parallelism/ParallelBlocks.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "requirement.20.CaptureSemanticsGenericLowering",
+        76248usize,
+        "HelloUltraviolet::Reference::Parallelism",
+        "runParallelismParallelBlocksReference",
+        "Source/Reference/Parallelism/ParallelBlocks.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "diagnostics.20.CaptureSemantics",
+        76263usize,
+        "HelloUltraviolet::Reference::Parallelism",
+        "runParallelismParallelBlocksReference",
+        "Source/Reference/Parallelism/ParallelBlocks.uv"
+    ) {
+        count = count + 1usize
+    }
+    return count
+}

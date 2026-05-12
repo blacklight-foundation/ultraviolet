@@ -61,7 +61,7 @@ StmtTypeResult TypeBreakStmt(const ScopeContext& ctx,
   // Break must be inside a loop
   if (type_ctx.loop_flag != LoopFlag::Loop) {
     SPEC_RULE("Break-Outside-Loop");
-    return {false, "Break-Outside-Loop", {}, {}};
+    return {false, "E-SEM-3162", {}, {}};
   }
 
   FlowInfo flow;

@@ -1,0 +1,12 @@
+//! Reference specimens for Expressions / EffectfulCore.
+
+/// Exercises the Expressions EffectfulCore reference surface.
+public procedure runExpressionsEffectfulCoreReference() -> bool {
+    let source_value: i32 = 11
+    let moved_value: i32 = move source_value
+    var unsafe_value: i32 = 0
+    unsafe {
+        unsafe_value = moved_value + 1
+    }
+    return moved_value == 11 && unsafe_value == 12
+}

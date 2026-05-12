@@ -3152,6 +3152,16 @@ bool EntryExprHasSideEffectOp(const ast::ExprPtr& e) {
           return EntryExprHasSideEffectOp(node.scrutinee) ||
                  EntryExprHasSideEffectOp(node.then_expr) ||
                  EntryExprHasSideEffectOp(node.else_expr);
+        } else if constexpr (std::is_same_v<T, ast::AllocExpr> ||
+                             std::is_same_v<T, ast::MoveExpr> ||
+                             std::is_same_v<T, ast::TransmuteExpr> ||
+                             std::is_same_v<T, ast::PropagateExpr> ||
+                             std::is_same_v<T, ast::LoopInfiniteExpr> ||
+                             std::is_same_v<T, ast::LoopConditionalExpr> ||
+                             std::is_same_v<T, ast::LoopIterExpr> ||
+                             std::is_same_v<T, ast::BlockExpr> ||
+                             std::is_same_v<T, ast::UnsafeBlockExpr>) {
+          return true;
         } else {
           return false;
         }
@@ -3357,12 +3367,12 @@ static ExprTypeResult TypeExprImpl(const ScopeContext& ctx,
           }
           if (EntryExprHasCapabilityOp(node.expr)) {
             ExprTypeResult r;
-            r.diag_id = "Entry-NoCapability-Err";
+            r.diag_id = "E-CON-0415";
             return r;
           }
           if (EntryExprHasSideEffectOp(node.expr)) {
             ExprTypeResult r;
-            r.diag_id = "Entry-SideEffect-Err";
+            r.diag_id = "E-CON-0416";
             return r;
           }
           const auto typed = TypeExpr(ctx, type_ctx, node.expr, env);
@@ -3371,7 +3381,7 @@ static ExprTypeResult TypeExprImpl(const ScopeContext& ctx,
             r.diag_id = typed.diag_id;
             return r;
           }
-          if (!BitcopyType(ctx, typed.type) && !CloneType(ctx, typed.type)) {
+          if (!BitcopyType(ctx, typed.type)) {
             ExprTypeResult r;
             r.diag_id = "E-SEM-2805";
             return r;

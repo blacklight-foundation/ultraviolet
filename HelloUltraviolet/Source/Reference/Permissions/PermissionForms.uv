@@ -1,0 +1,33 @@
+//! Reference specimens for Permissions / PermissionForms.
+
+internal enum PermissionFormReference {
+    Immutable
+    Mutable
+    Unique
+    Shared
+}
+
+internal procedure permissionFormAllowsWrite(form: PermissionFormReference) -> bool {
+    return if form is {
+        PermissionFormReference::Immutable {
+            false
+        }
+        PermissionFormReference::Mutable {
+            true
+        }
+        PermissionFormReference::Unique {
+            true
+        }
+        PermissionFormReference::Shared {
+            false
+        }
+    }
+}
+
+/// Exercises the Permissions PermissionForms reference surface.
+public procedure runPermissionsPermissionFormsReference() -> bool {
+    return !permissionFormAllowsWrite(PermissionFormReference::Immutable) &&
+        permissionFormAllowsWrite(PermissionFormReference::Mutable) &&
+        permissionFormAllowsWrite(PermissionFormReference::Unique) &&
+        !permissionFormAllowsWrite(PermissionFormReference::Shared)
+}

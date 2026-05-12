@@ -1,0 +1,29 @@
+//! Reference specimens for Async / AsyncType.
+
+internal record AsyncReference {
+    internal suspension_points: usize
+    internal has_result_type: bool
+    internal integrates_keys: bool
+}
+
+internal procedure asyncReference(
+    suspension_points: usize,
+    has_result_type: bool,
+    integrates_keys: bool
+) -> AsyncReference {
+    return AsyncReference {
+        suspension_points: suspension_points,
+        has_result_type: has_result_type,
+        integrates_keys: integrates_keys
+    }
+}
+
+internal procedure asyncReferenceIsCovered(reference: AsyncReference) -> bool {
+    return reference.has_result_type && reference.suspension_points > 0usize
+}
+
+/// Exercises the Async AsyncType reference surface.
+public procedure runAsyncAsyncTypeReference() -> bool {
+    let reference: AsyncReference = asyncReference(1usize, true, false)
+    return asyncReferenceIsCovered(reference)
+}

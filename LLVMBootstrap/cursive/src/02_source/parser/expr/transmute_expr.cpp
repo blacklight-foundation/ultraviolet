@@ -49,6 +49,7 @@ std::optional<ParseElemResult<ExprPtr>> TryParseTransmuteExpr(Parser parser) {
     return std::nullopt;
   }
 
+  SPEC_RULE("ParseTransmuteExprFamily");
   Parser next = parser;
   Advance(next);  // past "transmute"
 

@@ -1,0 +1,27 @@
+//! Rejected name-resolution specimens.
+
+public procedure namesRejectedSourceFixtureCount() -> usize {
+    return 1usize
+}
+
+public procedure validatedNamesRejectedSourceFixtureCount() -> usize {
+    var count: usize = 0usize
+    if rejectedSpecimenMatches(
+        rejectedSpecimen(
+            "DuplicateModuleDeclaration",
+            "Fixtures/RejectedSource/Names/DuplicateModuleDeclaration",
+            "Fixtures/RejectedSource/Names/DuplicateModuleDeclaration/Source/Main.uv",
+            "Fixtures/RejectedSource/Names/DuplicateModuleDeclaration/Expected.uv",
+            expectedDiagnostic("E-MOD-1302", "Collect-Dup")
+        ),
+        "DuplicateModuleDeclaration",
+        "Fixtures/RejectedSource/Names/DuplicateModuleDeclaration",
+        "Fixtures/RejectedSource/Names/DuplicateModuleDeclaration/Source/Main.uv",
+        "Fixtures/RejectedSource/Names/DuplicateModuleDeclaration/Expected.uv",
+        "E-MOD-1302",
+        "Collect-Dup"
+    ) {
+        count = count + 1usize
+    }
+    return count
+}

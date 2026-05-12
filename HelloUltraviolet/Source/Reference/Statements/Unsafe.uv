@@ -1,0 +1,10 @@
+//! Reference specimens for Statements / Unsafe.
+
+/// Exercises the Statements Unsafe reference surface.
+public procedure runStatementsUnsafeReference() -> bool {
+    var value: i32 = 0
+    unsafe {
+        value = value + 1
+    }
+    return value == 1
+}

@@ -441,6 +441,71 @@ Every accepted migration entry must use this format:
 - Acceptance: pending user review, 2026-05-11, implemented with fresh command
   output.
 
+### Bootstrap Diagnostic And Manifest Validation Trace
+
+- Source object: Cursive bootstrap diagnostic id emission and project manifest
+  validation; primary paths
+  `LLVMBootstrap/cursive/src/00_core/diagnostic_messages.cpp`,
+  `LLVMBootstrap/cursive/src/01_project/project_validate.cpp`,
+  `LLVMBootstrap/cursive/src/tests/lexer_diagnostics_test.cpp`,
+  `LLVMBootstrap/cursive/src/tests/project_manifest_validation_test.cpp`, and
+  `LLVMBootstrap/cursive/src/CMakeLists.txt`.
+- Target object: required trace coverage for diagnostic-id code selection and
+  accepted optional assembly manifest field typing.
+- Obligation basis: `DiagId-Code@L1722`,
+  `WF-Assembly-EmitIRType@L2856`, and
+  `WF-Assembly-LinkKindType@L2891` from
+  `Docs/Audit/UltravioletObligations.csv`. `DiagId-Code` records the
+  diagnostic id to code-bearing diagnostic boundary. The two manifest labels
+  record the accepted `emit_ir` and `link_kind` omitted-or-string judgments.
+- Implementation summary: `MakeDiagnosticById` now records `DiagId-Code` after
+  a diagnostic id resolves to a code and before the diagnostic is built.
+  `ValidateManifest` now records `WF-Assembly-EmitIRType` and
+  `WF-Assembly-LinkKindType` after each optional field passes its existing type
+  check. `cursive_lexer_diagnostics_test` asserts the diagnostic trace, and the
+  new `cursive_project_manifest_validation_test` directly calls
+  `ValidateManifest` with accepted optional field values and asserts both
+  project-system conformance records.
+- Verification commands:
+  - `python3 LLVMBootstrap/cursive/tools/generate_static_rule_registry.py
+    --repo-root LLVMBootstrap/cursive --source-root
+    LLVMBootstrap/cursive/src --spec-path SPECIFICATION.md --mapping-path
+    LLVMBootstrap/cursive/tools/static_rule_mapping.json --output-path
+    LLVMBootstrap/cursive/src/00_core/generated/static_rule_registry.inc
+    --report-path /tmp/uv_static_rule_registry_report_after_project_optional_types.json
+    --strict` passed with 3,250 rules.
+  - `cmd.exe /c cmake --build --preset windows-release --target
+    cursive_project_manifest_validation_test` passed.
+  - `/mnt/c/Dev/Ultraviolet/LLVMBootstrap/cursive/build/windows/Release/cursive_project_manifest_validation_test.exe`
+    passed.
+  - `/mnt/c/Dev/Ultraviolet/LLVMBootstrap/cursive/build/windows/Release/cursive_lexer_diagnostics_test.exe`
+    passed.
+  - `python3 LLVMBootstrap/cursive/tools/generate_static_rule_registry.py
+    --self-test --repo-root LLVMBootstrap/cursive --source-root
+    LLVMBootstrap/cursive/src --spec-path SPECIFICATION.md --mapping-path
+    LLVMBootstrap/cursive/tools/static_rule_mapping.json --output-path
+    LLVMBootstrap/cursive/src/00_core/generated/static_rule_registry.inc`
+    passed.
+  - `python3 LLVMBootstrap/cursive/tools/generate_static_rule_registry.py
+    --repo-root LLVMBootstrap/cursive --source-root
+    LLVMBootstrap/cursive/src --spec-path SPECIFICATION.md --mapping-path
+    LLVMBootstrap/cursive/tools/static_rule_mapping.json --output-path
+    LLVMBootstrap/cursive/src/00_core/generated/static_rule_registry.inc
+    --check --strict` passed with 3,250 rules.
+  - `/mnt/c/Dev/Ultraviolet/LLVMBootstrap/cursive/build/windows/out/Cursive.exe
+    --target-profile x86_64-win64 --check C:/Dev/Ultraviolet --assembly
+    UltravioletRT` passed with zero diagnostics.
+  - `git -c filter.lfs.process= -c filter.lfs.smudge= -c filter.lfs.clean=
+    -c filter.lfs.required=false diff --check -- <touched files>` passed
+    with existing CRLF normalization warnings on Windows-source files.
+- Bootstrap notes: the normalized formal-rule comparison now reports
+  `required_formal_rules=2940`, `trace_labels=3250`, `missing=962`,
+  `missing_diagnostics.code-selection=0`, and
+  `missing_project.manifest-validation=0`. The global missing count dropped
+  from 965 to 962 in this slice.
+- Acceptance: pending user review, 2026-05-11, implemented with fresh command
+  output.
+
 ### Bootstrap Leading-Zero Literal Trace
 
 - Source object: Cursive bootstrap lexer integer literal diagnostics; primary
@@ -1008,5 +1073,150 @@ Every accepted migration entry must use this format:
 - Bootstrap notes: the normalized formal-rule comparison now reports 1,013
   required formal-rule labels still absent from bootstrap trace sites, and no
   parse-shaped required formal-rule labels remain absent.
+- Acceptance: pending user review, 2026-05-11, implemented with fresh command
+  output.
+
+### Bootstrap Compile-Time Execution Trace
+
+- Source object: Cursive bootstrap compile-time analysis and execution paths;
+  primary paths `LLVMBootstrap/cursive/src/03_comptime/pass.cpp`,
+  `LLVMBootstrap/cursive/src/03_comptime/rewrite.cpp`,
+  `LLVMBootstrap/cursive/src/03_comptime/eval.cpp`,
+  `LLVMBootstrap/cursive/src/03_comptime/derive.cpp`,
+  `LLVMBootstrap/cursive/src/03_comptime/reflect.cpp`,
+  `LLVMBootstrap/cursive/src/04_analysis/typing/type_expr.cpp`,
+  `LLVMBootstrap/cursive/src/04_analysis/typing/expr/loop_iter.cpp`, and
+  `LLVMBootstrap/cursive/src/04_analysis/typing/typecheck.cpp`.
+- Target object: required `spec.comptime` formal-rule coverage for compile-time
+  expression typing, compile-time module execution, item and statement
+  expansion, compile-time expression expansion, quote evaluation, Type literal
+  evaluation, diagnostics and emit builtins, reflection builtins, and derive
+  target execution.
+- Specification basis: `T-CtExpr@L82900`, `T-CtIf@L82916`,
+  `T-CtLoopIter@L82932`, `T-CtProc@L82948`,
+  `ComptimePass-Empty@L83099`, `ComptimePass-Cons@L83114`,
+  `CtExecModule@L83148`, `CtExpandItemSeq-Empty@L83164`,
+  `CtExpandItemSeq-Cons@L83179`, `CtExpandItem-CtProc@L83221`,
+  `CtExpandStmtSeq-Empty@L83237`, `CtExpandStmtSeq-Cons@L83252`,
+  `CtExpandBlock@L83268`, `CtExpandStmt-CtStmt@L83284`,
+  `CtExpandExpr-CtExpr@L83300`, `CtExpandExpr-CtIf-True@L83316`,
+  `CtExpandExpr-CtIf-False@L83332`,
+  `CtExpandExpr-CtLoopIter@L83348`,
+  `CtLoopIterUnroll-Empty@L83364`,
+  `CtLoopIterUnroll-Cons@L83379`, `CtBuiltin-Emit@L83773`,
+  diagnostics builtin rules at `L83933-L83997`, `T-TypeLiteral@L84265`,
+  `CtEval-TypeLiteral@L84340`, reflection builtin rules at `L84356-L84452`,
+  `CtEval-Quote@L84893`, and derive expansion rules at `L85326-L85402`.
+- Implementation summary: the existing successful compile-time execution,
+  rewrite, builtin, quote, reflection, derive, and typechecking branches now
+  record the exact formal rule labels. A new
+  `cursive_comptime_conformance_test` driver regression compiles a `.uv`
+  fixture through `--check`, records a conformance log, and fails if the log
+  omits the module execution, block/statement expansion, compile-time
+  expression, true/false compile-time if, loop unroll, compile-time statement,
+  or quote-evaluation records that the fixture exercises.
+- Verification commands:
+  - `python3 LLVMBootstrap/cursive/tools/generate_static_rule_registry.py
+    --repo-root LLVMBootstrap/cursive --source-root
+    LLVMBootstrap/cursive/src --spec-path SPECIFICATION.md --mapping-path
+    LLVMBootstrap/cursive/tools/static_rule_mapping.json --output-path
+    LLVMBootstrap/cursive/src/00_core/generated/static_rule_registry.inc
+    --report-path /tmp/uv_static_rule_registry_report_after_comptime.json
+    --strict` passed with 3,240 rules.
+  - `python3 LLVMBootstrap/cursive/tools/generate_static_rule_registry.py
+    --self-test` passed.
+  - `python3 LLVMBootstrap/cursive/tools/generate_static_rule_registry.py
+    --repo-root LLVMBootstrap/cursive --source-root
+    LLVMBootstrap/cursive/src --spec-path SPECIFICATION.md --mapping-path
+    LLVMBootstrap/cursive/tools/static_rule_mapping.json --output-path
+    LLVMBootstrap/cursive/src/00_core/generated/static_rule_registry.inc
+    --report-path /tmp/uv_static_rule_registry_report_after_comptime_check.json
+    --strict --check` passed with 3,240 rules.
+  - `cmd.exe /c "cd /d C:\Dev\Ultraviolet\LLVMBootstrap\cursive && cmake
+    --build --preset windows-release --target
+    cursive_comptime_conformance_test"` passed.
+  - `/mnt/c/Dev/Ultraviolet/LLVMBootstrap/cursive/build/windows/Release/cursive_comptime_conformance_test.exe`
+    passed.
+  - `/mnt/c/Dev/Ultraviolet/LLVMBootstrap/cursive/build/windows/Release/cursive_parser_generic_conformance_test.exe`
+    passed.
+  - `/mnt/c/Dev/Ultraviolet/LLVMBootstrap/cursive/build/windows/Release/cursive_lexer_diagnostics_test.exe`
+    passed.
+  - `/mnt/c/Dev/Ultraviolet/LLVMBootstrap/cursive/build/windows/Release/cursive_parser_terminator_diagnostics_test.exe`
+    passed.
+  - `/mnt/c/Dev/Ultraviolet/LLVMBootstrap/cursive/build/windows/Release/cursive_parser_token_consumption_test.exe`
+    passed.
+  - `/mnt/c/Dev/Ultraviolet/LLVMBootstrap/cursive/build/windows/out/Cursive.exe
+    --target-profile x86_64-win64 --check C:\Dev\Ultraviolet --assembly
+    UltravioletRT` passed with zero diagnostics.
+- Bootstrap notes: the normalized formal-rule comparison now reports zero
+  missing required `spec.comptime` formal-rule labels. The global comparison now
+  reports 972 required formal-rule labels still absent from bootstrap trace
+  sites.
+- Acceptance: pending user review, 2026-05-11, implemented with fresh command
+  output.
+
+### Bootstrap Parser Family Trace
+
+- Source object: Cursive bootstrap expression parser family entry points;
+  primary paths `LLVMBootstrap/cursive/src/02_source/parser/expr/call.cpp`,
+  `LLVMBootstrap/cursive/src/02_source/parser/expr/range.cpp`,
+  `LLVMBootstrap/cursive/src/02_source/parser/expr/binary.cpp`,
+  `LLVMBootstrap/cursive/src/02_source/parser/expr/transmute_expr.cpp`,
+  `LLVMBootstrap/cursive/src/02_source/parser/expr/record_literal.cpp`,
+  and `LLVMBootstrap/cursive/src/02_source/parser/expr/if_expr.cpp`.
+- Target object: required parse-phase family trace coverage for argument-list,
+  range, left-associative binary chain, power, transmute, construction-list and
+  shorthand, and remaining control-expression parsing obligations.
+- Obligation basis: `ArgumentListParsingFamily@L58538`,
+  `ParseRangeFamily@L59239`, `ParseLeftChainFamily@L59252`,
+  `ParsePowerFamily@L59265`, `ParseTransmuteExprFamily@L60009`,
+  `ConstructionListAndShorthandParsingFamily@L60785`, and
+  `ControlExpressionParsingRemainderFamily@L61376` from
+  `Docs/Audit/UltravioletObligations.csv`. These are obligations CSV family
+  labels over existing parser component rules.
+- Implementation summary: the owning parser entry points now record one family
+  label for each obligations CSV family. The existing component traces remain
+  unchanged. `cursive_parser_generic_conformance_test` now drives accepted
+  parser forms for empty and moved calls, full/to/from/exclusive/inclusive
+  ranges, left-chain and power expressions, tuple and field construction,
+  normal and nested transmute syntax, if-case/else parsing, and iterator and
+  conditional loop tails.
+- Verification commands:
+  - `python3 LLVMBootstrap/cursive/tools/generate_static_rule_registry.py
+    --repo-root LLVMBootstrap/cursive --source-root
+    LLVMBootstrap/cursive/src --spec-path SPECIFICATION.md --mapping-path
+    LLVMBootstrap/cursive/tools/static_rule_mapping.json --output-path
+    LLVMBootstrap/cursive/src/00_core/generated/static_rule_registry.inc
+    --report-path /tmp/uv_static_rule_registry_report_after_parsing.json
+    --strict` passed with 3,247 rules.
+  - `python3 LLVMBootstrap/cursive/tools/generate_static_rule_registry.py
+    --self-test` passed.
+  - `python3 LLVMBootstrap/cursive/tools/generate_static_rule_registry.py
+    --repo-root LLVMBootstrap/cursive --source-root
+    LLVMBootstrap/cursive/src --spec-path SPECIFICATION.md --mapping-path
+    LLVMBootstrap/cursive/tools/static_rule_mapping.json --output-path
+    LLVMBootstrap/cursive/src/00_core/generated/static_rule_registry.inc
+    --report-path /tmp/uv_static_rule_registry_check_final.json --strict
+    --check` passed with 3,247 rules.
+  - `cmd.exe /c "cd /d C:\Dev\Ultraviolet\LLVMBootstrap\cursive && cmake
+    --build --preset windows-release --target
+    cursive_parser_generic_conformance_test"` passed.
+  - `/mnt/c/Dev/Ultraviolet/LLVMBootstrap/cursive/build/windows/Release/cursive_parser_generic_conformance_test.exe`
+    passed.
+  - `/mnt/c/Dev/Ultraviolet/LLVMBootstrap/cursive/build/windows/Release/cursive_comptime_conformance_test.exe`
+    passed.
+  - `/mnt/c/Dev/Ultraviolet/LLVMBootstrap/cursive/build/windows/Release/cursive_lexer_diagnostics_test.exe`
+    passed.
+  - `/mnt/c/Dev/Ultraviolet/LLVMBootstrap/cursive/build/windows/Release/cursive_parser_terminator_diagnostics_test.exe`
+    passed.
+  - `/mnt/c/Dev/Ultraviolet/LLVMBootstrap/cursive/build/windows/Release/cursive_parser_token_consumption_test.exe`
+    passed.
+  - `/mnt/c/Dev/Ultraviolet/LLVMBootstrap/cursive/build/windows/out/Cursive.exe
+    --target-profile x86_64-win64 --check C:\Dev\Ultraviolet --assembly
+    UltravioletRT` passed with zero diagnostics.
+- Bootstrap notes: the normalized formal-rule comparison now reports
+  `required_formal_rules=2940`, `trace_labels=3247`, `missing=965`, and
+  `missing_parsing=0`. The global missing count dropped from 972 to 965 in this
+  slice.
 - Acceptance: pending user review, 2026-05-11, implemented with fresh command
   output.

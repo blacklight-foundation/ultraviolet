@@ -1,0 +1,821 @@
+//! Coverage checks for the generated obligation catalog.
+
+using HelloUltraviolet::Audit::Catalog::AbstractMachineObjectsResponsibilityAndAuthority::{ countAbstractMachineObjectsResponsibilityAndAuthorityAuthorityModelObligations }
+using HelloUltraviolet::Audit::Catalog::AbstractMachineObjectsResponsibilityAndAuthority::{ validatedAbstractMachineObjectsResponsibilityAndAuthorityAuthorityModelObligations }
+using HelloUltraviolet::Audit::Catalog::AbstractMachineObjectsResponsibilityAndAuthority::{ countAbstractMachineObjectsResponsibilityAndAuthorityBindingAndPermissionRuntimeStateObligations }
+using HelloUltraviolet::Audit::Catalog::AbstractMachineObjectsResponsibilityAndAuthority::{ validatedAbstractMachineObjectsResponsibilityAndAuthorityBindingAndPermissionRuntimeStateObligations }
+using HelloUltraviolet::Audit::Catalog::AbstractMachineObjectsResponsibilityAndAuthority::{ countAbstractMachineObjectsResponsibilityAndAuthorityDynamicScopeStackBindingsAndRegionRuntimeObligations }
+using HelloUltraviolet::Audit::Catalog::AbstractMachineObjectsResponsibilityAndAuthority::{ validatedAbstractMachineObjectsResponsibilityAndAuthorityDynamicScopeStackBindingsAndRegionRuntimeObligations }
+using HelloUltraviolet::Audit::Catalog::AbstractMachineObjectsResponsibilityAndAuthority::{ countAbstractMachineObjectsResponsibilityAndAuthorityHostPrimitivesObligations }
+using HelloUltraviolet::Audit::Catalog::AbstractMachineObjectsResponsibilityAndAuthority::{ validatedAbstractMachineObjectsResponsibilityAndAuthorityHostPrimitivesObligations }
+using HelloUltraviolet::Audit::Catalog::AbstractMachineObjectsResponsibilityAndAuthority::{ countAbstractMachineObjectsResponsibilityAndAuthorityRegionsFramesAndProvenanceObligations }
+using HelloUltraviolet::Audit::Catalog::AbstractMachineObjectsResponsibilityAndAuthority::{ validatedAbstractMachineObjectsResponsibilityAndAuthorityRegionsFramesAndProvenanceObligations }
+using HelloUltraviolet::Audit::Catalog::AbstractMachineObjectsResponsibilityAndAuthority::{ countAbstractMachineObjectsResponsibilityAndAuthorityRuntimeStateAndMemoryDiagnosticsObligations }
+using HelloUltraviolet::Audit::Catalog::AbstractMachineObjectsResponsibilityAndAuthority::{ validatedAbstractMachineObjectsResponsibilityAndAuthorityRuntimeStateAndMemoryDiagnosticsObligations }
+using HelloUltraviolet::Audit::Catalog::AbstractionAndPolymorphism::{ countAbstractionAndPolymorphismAssociatedTypesObligations }
+using HelloUltraviolet::Audit::Catalog::AbstractionAndPolymorphism::{ validatedAbstractionAndPolymorphismAssociatedTypesObligations }
+using HelloUltraviolet::Audit::Catalog::AbstractionAndPolymorphism::{ countAbstractionAndPolymorphismCapabilityClassesObligations }
+using HelloUltraviolet::Audit::Catalog::AbstractionAndPolymorphism::{ validatedAbstractionAndPolymorphismCapabilityClassesObligations }
+using HelloUltraviolet::Audit::Catalog::AbstractionAndPolymorphism::{ countAbstractionAndPolymorphismClassesObligations }
+using HelloUltraviolet::Audit::Catalog::AbstractionAndPolymorphism::{ validatedAbstractionAndPolymorphismClassesObligations }
+using HelloUltraviolet::Audit::Catalog::AbstractionAndPolymorphism::{ countAbstractionAndPolymorphismDynamicClassObjectsObligations }
+using HelloUltraviolet::Audit::Catalog::AbstractionAndPolymorphism::{ validatedAbstractionAndPolymorphismDynamicClassObjectsObligations }
+using HelloUltraviolet::Audit::Catalog::AbstractionAndPolymorphism::{ countAbstractionAndPolymorphismFoundationalClassesAndPredicatesObligations }
+using HelloUltraviolet::Audit::Catalog::AbstractionAndPolymorphism::{ validatedAbstractionAndPolymorphismFoundationalClassesAndPredicatesObligations }
+using HelloUltraviolet::Audit::Catalog::AbstractionAndPolymorphism::{ countAbstractionAndPolymorphismGenericParametersAndArgumentsObligations }
+using HelloUltraviolet::Audit::Catalog::AbstractionAndPolymorphism::{ validatedAbstractionAndPolymorphismGenericParametersAndArgumentsObligations }
+using HelloUltraviolet::Audit::Catalog::AbstractionAndPolymorphism::{ countAbstractionAndPolymorphismGenericProceduresAndTypesObligations }
+using HelloUltraviolet::Audit::Catalog::AbstractionAndPolymorphism::{ validatedAbstractionAndPolymorphismGenericProceduresAndTypesObligations }
+using HelloUltraviolet::Audit::Catalog::AbstractionAndPolymorphism::{ countAbstractionAndPolymorphismImplementationsObligations }
+using HelloUltraviolet::Audit::Catalog::AbstractionAndPolymorphism::{ validatedAbstractionAndPolymorphismImplementationsObligations }
+using HelloUltraviolet::Audit::Catalog::AbstractionAndPolymorphism::{ countAbstractionAndPolymorphismOpaqueTypesObligations }
+using HelloUltraviolet::Audit::Catalog::AbstractionAndPolymorphism::{ validatedAbstractionAndPolymorphismOpaqueTypesObligations }
+using HelloUltraviolet::Audit::Catalog::AbstractionAndPolymorphism::{ countAbstractionAndPolymorphismRefinementAndPolymorphismDiagnosticsSupplementObligations }
+using HelloUltraviolet::Audit::Catalog::AbstractionAndPolymorphism::{ validatedAbstractionAndPolymorphismRefinementAndPolymorphismDiagnosticsSupplementObligations }
+using HelloUltraviolet::Audit::Catalog::AbstractionAndPolymorphism::{ countAbstractionAndPolymorphismRefinementTypesObligations }
+using HelloUltraviolet::Audit::Catalog::AbstractionAndPolymorphism::{ validatedAbstractionAndPolymorphismRefinementTypesObligations }
+using HelloUltraviolet::Audit::Catalog::AppendixBCompleteGrammarReference::{ countAppendixBCompleteGrammarReferenceBAsyncGrammarObligations }
+using HelloUltraviolet::Audit::Catalog::AppendixBCompleteGrammarReference::{ validatedAppendixBCompleteGrammarReferenceBAsyncGrammarObligations }
+using HelloUltraviolet::Audit::Catalog::AppendixBCompleteGrammarReference::{ countAppendixBCompleteGrammarReferenceBAttributeGrammarObligations }
+using HelloUltraviolet::Audit::Catalog::AppendixBCompleteGrammarReference::{ validatedAppendixBCompleteGrammarReferenceBAttributeGrammarObligations }
+using HelloUltraviolet::Audit::Catalog::AppendixBCompleteGrammarReference::{ countAppendixBCompleteGrammarReferenceBConcurrencyGrammarObligations }
+using HelloUltraviolet::Audit::Catalog::AppendixBCompleteGrammarReference::{ validatedAppendixBCompleteGrammarReferenceBConcurrencyGrammarObligations }
+using HelloUltraviolet::Audit::Catalog::AppendixBCompleteGrammarReference::{ countAppendixBCompleteGrammarReferenceBContractGrammarObligations }
+using HelloUltraviolet::Audit::Catalog::AppendixBCompleteGrammarReference::{ validatedAppendixBCompleteGrammarReferenceBContractGrammarObligations }
+using HelloUltraviolet::Audit::Catalog::AppendixBCompleteGrammarReference::{ countAppendixBCompleteGrammarReferenceBDeclarationGrammarObligations }
+using HelloUltraviolet::Audit::Catalog::AppendixBCompleteGrammarReference::{ validatedAppendixBCompleteGrammarReferenceBDeclarationGrammarObligations }
+using HelloUltraviolet::Audit::Catalog::AppendixBCompleteGrammarReference::{ countAppendixBCompleteGrammarReferenceBExpressionGrammarObligations }
+using HelloUltraviolet::Audit::Catalog::AppendixBCompleteGrammarReference::{ validatedAppendixBCompleteGrammarReferenceBExpressionGrammarObligations }
+using HelloUltraviolet::Audit::Catalog::AppendixBCompleteGrammarReference::{ countAppendixBCompleteGrammarReferenceBFfiGrammarObligations }
+using HelloUltraviolet::Audit::Catalog::AppendixBCompleteGrammarReference::{ validatedAppendixBCompleteGrammarReferenceBFfiGrammarObligations }
+using HelloUltraviolet::Audit::Catalog::AppendixBCompleteGrammarReference::{ countAppendixBCompleteGrammarReferenceBKeySystemGrammarObligations }
+using HelloUltraviolet::Audit::Catalog::AppendixBCompleteGrammarReference::{ validatedAppendixBCompleteGrammarReferenceBKeySystemGrammarObligations }
+using HelloUltraviolet::Audit::Catalog::AppendixBCompleteGrammarReference::{ countAppendixBCompleteGrammarReferenceBLexicalGrammarObligations }
+using HelloUltraviolet::Audit::Catalog::AppendixBCompleteGrammarReference::{ validatedAppendixBCompleteGrammarReferenceBLexicalGrammarObligations }
+using HelloUltraviolet::Audit::Catalog::AppendixBCompleteGrammarReference::{ countAppendixBCompleteGrammarReferenceBMetaprogrammingGrammarObligations }
+using HelloUltraviolet::Audit::Catalog::AppendixBCompleteGrammarReference::{ validatedAppendixBCompleteGrammarReferenceBMetaprogrammingGrammarObligations }
+using HelloUltraviolet::Audit::Catalog::AppendixBCompleteGrammarReference::{ countAppendixBCompleteGrammarReferenceBPatternGrammarObligations }
+using HelloUltraviolet::Audit::Catalog::AppendixBCompleteGrammarReference::{ validatedAppendixBCompleteGrammarReferenceBPatternGrammarObligations }
+using HelloUltraviolet::Audit::Catalog::AppendixBCompleteGrammarReference::{ countAppendixBCompleteGrammarReferenceBRegionGrammarObligations }
+using HelloUltraviolet::Audit::Catalog::AppendixBCompleteGrammarReference::{ validatedAppendixBCompleteGrammarReferenceBRegionGrammarObligations }
+using HelloUltraviolet::Audit::Catalog::AppendixBCompleteGrammarReference::{ countAppendixBCompleteGrammarReferenceBStatementGrammarObligations }
+using HelloUltraviolet::Audit::Catalog::AppendixBCompleteGrammarReference::{ validatedAppendixBCompleteGrammarReferenceBStatementGrammarObligations }
+using HelloUltraviolet::Audit::Catalog::AppendixBCompleteGrammarReference::{ countAppendixBCompleteGrammarReferenceBTypeGrammarObligations }
+using HelloUltraviolet::Audit::Catalog::AppendixBCompleteGrammarReference::{ validatedAppendixBCompleteGrammarReferenceBTypeGrammarObligations }
+using HelloUltraviolet::Audit::Catalog::AppendixDLayoutAbiAndRuntimeReference::{ countAppendixDLayoutAbiAndRuntimeReferenceCExpressionPatternAndStatementFamiliesObligations }
+using HelloUltraviolet::Audit::Catalog::AppendixDLayoutAbiAndRuntimeReference::{ validatedAppendixDLayoutAbiAndRuntimeReferenceCExpressionPatternAndStatementFamiliesObligations }
+using HelloUltraviolet::Audit::Catalog::AsynchronousOperations::{ countAsynchronousOperationsAsyncDiagnosticsSupplementObligations }
+using HelloUltraviolet::Audit::Catalog::AsynchronousOperations::{ validatedAsynchronousOperationsAsyncDiagnosticsSupplementObligations }
+using HelloUltraviolet::Audit::Catalog::AsynchronousOperations::{ countAsynchronousOperationsAsyncKeyIntegrationObligations }
+using HelloUltraviolet::Audit::Catalog::AsynchronousOperations::{ validatedAsynchronousOperationsAsyncKeyIntegrationObligations }
+using HelloUltraviolet::Audit::Catalog::AsynchronousOperations::{ countAsynchronousOperationsAsyncStateMachineObligations }
+using HelloUltraviolet::Audit::Catalog::AsynchronousOperations::{ validatedAsynchronousOperationsAsyncStateMachineObligations }
+using HelloUltraviolet::Audit::Catalog::AsynchronousOperations::{ countAsynchronousOperationsAsyncTypeObligations }
+using HelloUltraviolet::Audit::Catalog::AsynchronousOperations::{ validatedAsynchronousOperationsAsyncTypeObligations }
+using HelloUltraviolet::Audit::Catalog::AsynchronousOperations::{ countAsynchronousOperationsCompositionFormsObligations }
+using HelloUltraviolet::Audit::Catalog::AsynchronousOperations::{ validatedAsynchronousOperationsCompositionFormsObligations }
+using HelloUltraviolet::Audit::Catalog::AsynchronousOperations::{ countAsynchronousOperationsSuspensionFormsObligations }
+using HelloUltraviolet::Audit::Catalog::AsynchronousOperations::{ validatedAsynchronousOperationsSuspensionFormsObligations }
+using HelloUltraviolet::Audit::Catalog::AttributesAndMetadata::{ countAttributesAndMetadataAttributeSyntaxAndPlacementObligations }
+using HelloUltraviolet::Audit::Catalog::AttributesAndMetadata::{ validatedAttributesAndMetadataAttributeSyntaxAndPlacementObligations }
+using HelloUltraviolet::Audit::Catalog::AttributesAndMetadata::{ countAttributesAndMetadataDiagnosticsAndMetadataAttributesObligations }
+using HelloUltraviolet::Audit::Catalog::AttributesAndMetadata::{ validatedAttributesAndMetadataDiagnosticsAndMetadataAttributesObligations }
+using HelloUltraviolet::Audit::Catalog::AttributesAndMetadata::{ countAttributesAndMetadataLayoutAttributesObligations }
+using HelloUltraviolet::Audit::Catalog::AttributesAndMetadata::{ validatedAttributesAndMetadataLayoutAttributesObligations }
+using HelloUltraviolet::Audit::Catalog::AttributesAndMetadata::{ countAttributesAndMetadataOptimizationAttributesObligations }
+using HelloUltraviolet::Audit::Catalog::AttributesAndMetadata::{ validatedAttributesAndMetadataOptimizationAttributesObligations }
+using HelloUltraviolet::Audit::Catalog::AttributesAndMetadata::{ countAttributesAndMetadataSourceNativeTestAttributesObligations }
+using HelloUltraviolet::Audit::Catalog::AttributesAndMetadata::{ validatedAttributesAndMetadataSourceNativeTestAttributesObligations }
+using HelloUltraviolet::Audit::Catalog::AttributesAndMetadata::{ countAttributesAndMetadataVendorAttributesObligations }
+using HelloUltraviolet::Audit::Catalog::AttributesAndMetadata::{ validatedAttributesAndMetadataVendorAttributesObligations }
+using HelloUltraviolet::Audit::Catalog::CommonLoweringProgramLifecycleAndBackend::{ countCommonLoweringProgramLifecycleAndBackendBackendRequirementsObligations }
+using HelloUltraviolet::Audit::Catalog::CommonLoweringProgramLifecycleAndBackend::{ validatedCommonLoweringProgramLifecycleAndBackendBackendRequirementsObligations }
+using HelloUltraviolet::Audit::Catalog::CommonLoweringProgramLifecycleAndBackend::{ countCommonLoweringProgramLifecycleAndBackendCleanupDropAndUnwindingFrameworkObligations }
+using HelloUltraviolet::Audit::Catalog::CommonLoweringProgramLifecycleAndBackend::{ validatedCommonLoweringProgramLifecycleAndBackendCleanupDropAndUnwindingFrameworkObligations }
+using HelloUltraviolet::Audit::Catalog::CommonLoweringProgramLifecycleAndBackend::{ countCommonLoweringProgramLifecycleAndBackendInitializationAndProgramLifecycleObligations }
+using HelloUltraviolet::Audit::Catalog::CommonLoweringProgramLifecycleAndBackend::{ validatedCommonLoweringProgramLifecycleAndBackendInitializationAndProgramLifecycleObligations }
+using HelloUltraviolet::Audit::Catalog::CommonLoweringProgramLifecycleAndBackend::{ countCommonLoweringProgramLifecycleAndBackendLayoutAndAbiFrameworkObligations }
+using HelloUltraviolet::Audit::Catalog::CommonLoweringProgramLifecycleAndBackend::{ validatedCommonLoweringProgramLifecycleAndBackendLayoutAndAbiFrameworkObligations }
+using HelloUltraviolet::Audit::Catalog::CommonLoweringProgramLifecycleAndBackend::{ countCommonLoweringProgramLifecycleAndBackendOutputAndBackendDiagnosticsObligations }
+using HelloUltraviolet::Audit::Catalog::CommonLoweringProgramLifecycleAndBackend::{ validatedCommonLoweringProgramLifecycleAndBackendOutputAndBackendDiagnosticsObligations }
+using HelloUltraviolet::Audit::Catalog::CommonLoweringProgramLifecycleAndBackend::{ countCommonLoweringProgramLifecycleAndBackendRuntimeInterfaceObligations }
+using HelloUltraviolet::Audit::Catalog::CommonLoweringProgramLifecycleAndBackend::{ validatedCommonLoweringProgramLifecycleAndBackendRuntimeInterfaceObligations }
+using HelloUltraviolet::Audit::Catalog::CommonLoweringProgramLifecycleAndBackend::{ countCommonLoweringProgramLifecycleAndBackendSharedLoweringJudgmentsObligations }
+using HelloUltraviolet::Audit::Catalog::CommonLoweringProgramLifecycleAndBackend::{ validatedCommonLoweringProgramLifecycleAndBackendSharedLoweringJudgmentsObligations }
+using HelloUltraviolet::Audit::Catalog::CommonLoweringProgramLifecycleAndBackend::{ countCommonLoweringProgramLifecycleAndBackendSymbolsManglingAndLinkageObligations }
+using HelloUltraviolet::Audit::Catalog::CommonLoweringProgramLifecycleAndBackend::{ validatedCommonLoweringProgramLifecycleAndBackendSymbolsManglingAndLinkageObligations }
+using HelloUltraviolet::Audit::Catalog::CompileTimeExecutionAndMetaprogramming::{ countCompileTimeExecutionAndMetaprogrammingAsyncDiagnosticsSupplementObligations }
+using HelloUltraviolet::Audit::Catalog::CompileTimeExecutionAndMetaprogramming::{ validatedCompileTimeExecutionAndMetaprogrammingAsyncDiagnosticsSupplementObligations }
+using HelloUltraviolet::Audit::Catalog::CompileTimeExecutionAndMetaprogramming::{ countCompileTimeExecutionAndMetaprogrammingCompileTimeCapabilitiesObligations }
+using HelloUltraviolet::Audit::Catalog::CompileTimeExecutionAndMetaprogramming::{ validatedCompileTimeExecutionAndMetaprogrammingCompileTimeCapabilitiesObligations }
+using HelloUltraviolet::Audit::Catalog::CompileTimeExecutionAndMetaprogramming::{ countCompileTimeExecutionAndMetaprogrammingCompileTimeDiagnosticsSupplementObligations }
+using HelloUltraviolet::Audit::Catalog::CompileTimeExecutionAndMetaprogramming::{ validatedCompileTimeExecutionAndMetaprogrammingCompileTimeDiagnosticsSupplementObligations }
+using HelloUltraviolet::Audit::Catalog::CompileTimeExecutionAndMetaprogramming::{ countCompileTimeExecutionAndMetaprogrammingCompileTimeFormsObligations }
+using HelloUltraviolet::Audit::Catalog::CompileTimeExecutionAndMetaprogramming::{ validatedCompileTimeExecutionAndMetaprogrammingCompileTimeFormsObligations }
+using HelloUltraviolet::Audit::Catalog::CompileTimeExecutionAndMetaprogramming::{ countCompileTimeExecutionAndMetaprogrammingDeriveTargetsAndContractsObligations }
+using HelloUltraviolet::Audit::Catalog::CompileTimeExecutionAndMetaprogramming::{ validatedCompileTimeExecutionAndMetaprogrammingDeriveTargetsAndContractsObligations }
+using HelloUltraviolet::Audit::Catalog::CompileTimeExecutionAndMetaprogramming::{ countCompileTimeExecutionAndMetaprogrammingQuoteSpliceAndEmissionObligations }
+using HelloUltraviolet::Audit::Catalog::CompileTimeExecutionAndMetaprogramming::{ validatedCompileTimeExecutionAndMetaprogrammingQuoteSpliceAndEmissionObligations }
+using HelloUltraviolet::Audit::Catalog::CompileTimeExecutionAndMetaprogramming::{ countCompileTimeExecutionAndMetaprogrammingReflectionObligations }
+using HelloUltraviolet::Audit::Catalog::CompileTimeExecutionAndMetaprogramming::{ validatedCompileTimeExecutionAndMetaprogrammingReflectionObligations }
+using HelloUltraviolet::Audit::Catalog::ConcreteDataTypes::{ countConcreteDataTypesArraysObligations }
+using HelloUltraviolet::Audit::Catalog::ConcreteDataTypes::{ validatedConcreteDataTypesArraysObligations }
+using HelloUltraviolet::Audit::Catalog::ConcreteDataTypes::{ countConcreteDataTypesEnumsObligations }
+using HelloUltraviolet::Audit::Catalog::ConcreteDataTypes::{ validatedConcreteDataTypesEnumsObligations }
+using HelloUltraviolet::Audit::Catalog::ConcreteDataTypes::{ countConcreteDataTypesPrimitiveTypesObligations }
+using HelloUltraviolet::Audit::Catalog::ConcreteDataTypes::{ validatedConcreteDataTypesPrimitiveTypesObligations }
+using HelloUltraviolet::Audit::Catalog::ConcreteDataTypes::{ countConcreteDataTypesRangesObligations }
+using HelloUltraviolet::Audit::Catalog::ConcreteDataTypes::{ validatedConcreteDataTypesRangesObligations }
+using HelloUltraviolet::Audit::Catalog::ConcreteDataTypes::{ countConcreteDataTypesRecordsObligations }
+using HelloUltraviolet::Audit::Catalog::ConcreteDataTypes::{ validatedConcreteDataTypesRecordsObligations }
+using HelloUltraviolet::Audit::Catalog::ConcreteDataTypes::{ countConcreteDataTypesSlicesObligations }
+using HelloUltraviolet::Audit::Catalog::ConcreteDataTypes::{ validatedConcreteDataTypesSlicesObligations }
+using HelloUltraviolet::Audit::Catalog::ConcreteDataTypes::{ countConcreteDataTypesTuplesObligations }
+using HelloUltraviolet::Audit::Catalog::ConcreteDataTypes::{ validatedConcreteDataTypesTuplesObligations }
+using HelloUltraviolet::Audit::Catalog::ConcreteDataTypes::{ countConcreteDataTypesTypeAliasesObligations }
+using HelloUltraviolet::Audit::Catalog::ConcreteDataTypes::{ validatedConcreteDataTypesTypeAliasesObligations }
+using HelloUltraviolet::Audit::Catalog::ConcreteDataTypes::{ countConcreteDataTypesUnionTypesObligations }
+using HelloUltraviolet::Audit::Catalog::ConcreteDataTypes::{ validatedConcreteDataTypesUnionTypesObligations }
+using HelloUltraviolet::Audit::Catalog::ConformanceAndNotation::{ countConformanceAndNotationBehaviorTypesObligations }
+using HelloUltraviolet::Audit::Catalog::ConformanceAndNotation::{ validatedConformanceAndNotationBehaviorTypesObligations }
+using HelloUltraviolet::Audit::Catalog::ConformanceAndNotation::{ countConformanceAndNotationCompileTimeExecutionAndPhaseOrderingObligations }
+using HelloUltraviolet::Audit::Catalog::ConformanceAndNotation::{ validatedConformanceAndNotationCompileTimeExecutionAndPhaseOrderingObligations }
+using HelloUltraviolet::Audit::Catalog::ConformanceAndNotation::{ countConformanceAndNotationConformanceObligations }
+using HelloUltraviolet::Audit::Catalog::ConformanceAndNotation::{ validatedConformanceAndNotationConformanceObligations }
+using HelloUltraviolet::Audit::Catalog::ConformanceAndNotation::{ countConformanceAndNotationDocumentConventionsObligations }
+using HelloUltraviolet::Audit::Catalog::ConformanceAndNotation::{ validatedConformanceAndNotationDocumentConventionsObligations }
+using HelloUltraviolet::Audit::Catalog::ConformanceAndNotation::{ countConformanceAndNotationNormativeReferencesObligations }
+using HelloUltraviolet::Audit::Catalog::ConformanceAndNotation::{ validatedConformanceAndNotationNormativeReferencesObligations }
+using HelloUltraviolet::Audit::Catalog::ConformanceAndNotation::{ countConformanceAndNotationTargetAndAbiAssumptionsObligations }
+using HelloUltraviolet::Audit::Catalog::ConformanceAndNotation::{ validatedConformanceAndNotationTargetAndAbiAssumptionsObligations }
+using HelloUltraviolet::Audit::Catalog::DiagnosticInfrastructure::{ countDiagnosticInfrastructureDiagnosticCodeSelectionObligations }
+using HelloUltraviolet::Audit::Catalog::DiagnosticInfrastructure::{ validatedDiagnosticInfrastructureDiagnosticCodeSelectionObligations }
+using HelloUltraviolet::Audit::Catalog::DiagnosticInfrastructure::{ countDiagnosticInfrastructureDiagnosticOrderingObligations }
+using HelloUltraviolet::Audit::Catalog::DiagnosticInfrastructure::{ validatedDiagnosticInfrastructureDiagnosticOrderingObligations }
+using HelloUltraviolet::Audit::Catalog::DiagnosticInfrastructure::{ countDiagnosticInfrastructureDiagnosticRecordsAndEmissionObligations }
+using HelloUltraviolet::Audit::Catalog::DiagnosticInfrastructure::{ validatedDiagnosticInfrastructureDiagnosticRecordsAndEmissionObligations }
+using HelloUltraviolet::Audit::Catalog::DiagnosticInfrastructure::{ countDiagnosticInfrastructureDiagnosticRenderingObligations }
+using HelloUltraviolet::Audit::Catalog::DiagnosticInfrastructure::{ validatedDiagnosticInfrastructureDiagnosticRenderingObligations }
+using HelloUltraviolet::Audit::Catalog::DiagnosticInfrastructure::{ countDiagnosticInfrastructureDiagnosticsWithoutSourceSpansObligations }
+using HelloUltraviolet::Audit::Catalog::DiagnosticInfrastructure::{ validatedDiagnosticInfrastructureDiagnosticsWithoutSourceSpansObligations }
+using HelloUltraviolet::Audit::Catalog::DiagnosticInfrastructure::{ countDiagnosticInfrastructureSourceLocationsAndSpansObligations }
+using HelloUltraviolet::Audit::Catalog::DiagnosticInfrastructure::{ validatedDiagnosticInfrastructureSourceLocationsAndSpansObligations }
+using HelloUltraviolet::Audit::Catalog::DiagnosticInfrastructure::{ countDiagnosticInfrastructureTokenSpansObligations }
+using HelloUltraviolet::Audit::Catalog::DiagnosticInfrastructure::{ validatedDiagnosticInfrastructureTokenSpansObligations }
+using HelloUltraviolet::Audit::Catalog::Expressions::{ countExpressionsAccessAndPlaceExpressionsObligations }
+using HelloUltraviolet::Audit::Catalog::Expressions::{ validatedExpressionsAccessAndPlaceExpressionsObligations }
+using HelloUltraviolet::Audit::Catalog::Expressions::{ countExpressionsCallExpressionsObligations }
+using HelloUltraviolet::Audit::Catalog::Expressions::{ validatedExpressionsCallExpressionsObligations }
+using HelloUltraviolet::Audit::Catalog::Expressions::{ countExpressionsCastAndTransmuteExpressionsObligations }
+using HelloUltraviolet::Audit::Catalog::Expressions::{ validatedExpressionsCastAndTransmuteExpressionsObligations }
+using HelloUltraviolet::Audit::Catalog::Expressions::{ countExpressionsClosureAndPipelineExpressionsObligations }
+using HelloUltraviolet::Audit::Catalog::Expressions::{ validatedExpressionsClosureAndPipelineExpressionsObligations }
+using HelloUltraviolet::Audit::Catalog::Expressions::{ countExpressionsConstructionExpressionsObligations }
+using HelloUltraviolet::Audit::Catalog::Expressions::{ validatedExpressionsConstructionExpressionsObligations }
+using HelloUltraviolet::Audit::Catalog::Expressions::{ countExpressionsControlExpressionsObligations }
+using HelloUltraviolet::Audit::Catalog::Expressions::{ validatedExpressionsControlExpressionsObligations }
+using HelloUltraviolet::Audit::Catalog::Expressions::{ countExpressionsEffectfulCoreExpressionsObligations }
+using HelloUltraviolet::Audit::Catalog::Expressions::{ validatedExpressionsEffectfulCoreExpressionsObligations }
+using HelloUltraviolet::Audit::Catalog::Expressions::{ countExpressionsExpressionDiagnosticsSupplementObligations }
+using HelloUltraviolet::Audit::Catalog::Expressions::{ validatedExpressionsExpressionDiagnosticsSupplementObligations }
+using HelloUltraviolet::Audit::Catalog::Expressions::{ countExpressionsLiteralAndNameExpressionsObligations }
+using HelloUltraviolet::Audit::Catalog::Expressions::{ validatedExpressionsLiteralAndNameExpressionsObligations }
+using HelloUltraviolet::Audit::Catalog::Expressions::{ countExpressionsOperatorExpressionsObligations }
+using HelloUltraviolet::Audit::Catalog::Expressions::{ validatedExpressionsOperatorExpressionsObligations }
+using HelloUltraviolet::Audit::Catalog::ForeignFunctionInterface::{ countForeignFunctionInterfaceBoundaryUnwindingObligations }
+using HelloUltraviolet::Audit::Catalog::ForeignFunctionInterface::{ validatedForeignFunctionInterfaceBoundaryUnwindingObligations }
+using HelloUltraviolet::Audit::Catalog::ForeignFunctionInterface::{ countForeignFunctionInterfaceCapabilityIsolationObligations }
+using HelloUltraviolet::Audit::Catalog::ForeignFunctionInterface::{ validatedForeignFunctionInterfaceCapabilityIsolationObligations }
+using HelloUltraviolet::Audit::Catalog::ForeignFunctionInterface::{ countForeignFunctionInterfaceCompileTimeDiagnosticsSupplementObligations }
+using HelloUltraviolet::Audit::Catalog::ForeignFunctionInterface::{ validatedForeignFunctionInterfaceCompileTimeDiagnosticsSupplementObligations }
+using HelloUltraviolet::Audit::Catalog::ForeignFunctionInterface::{ countForeignFunctionInterfaceExportedProceduresAndHostedExportsObligations }
+using HelloUltraviolet::Audit::Catalog::ForeignFunctionInterface::{ validatedForeignFunctionInterfaceExportedProceduresAndHostedExportsObligations }
+using HelloUltraviolet::Audit::Catalog::ForeignFunctionInterface::{ countForeignFunctionInterfaceExternProceduresObligations }
+using HelloUltraviolet::Audit::Catalog::ForeignFunctionInterface::{ validatedForeignFunctionInterfaceExternProceduresObligations }
+using HelloUltraviolet::Audit::Catalog::ForeignFunctionInterface::{ countForeignFunctionInterfaceFfiAttributesObligations }
+using HelloUltraviolet::Audit::Catalog::ForeignFunctionInterface::{ validatedForeignFunctionInterfaceFfiAttributesObligations }
+using HelloUltraviolet::Audit::Catalog::ForeignFunctionInterface::{ countForeignFunctionInterfaceFfiDiagnosticsSupplementObligations }
+using HelloUltraviolet::Audit::Catalog::ForeignFunctionInterface::{ validatedForeignFunctionInterfaceFfiDiagnosticsSupplementObligations }
+using HelloUltraviolet::Audit::Catalog::ForeignFunctionInterface::{ countForeignFunctionInterfaceFfiSafeObligations }
+using HelloUltraviolet::Audit::Catalog::ForeignFunctionInterface::{ validatedForeignFunctionInterfaceFfiSafeObligations }
+using HelloUltraviolet::Audit::Catalog::ForeignFunctionInterface::{ countForeignFunctionInterfaceForeignContractsObligations }
+using HelloUltraviolet::Audit::Catalog::ForeignFunctionInterface::{ validatedForeignFunctionInterfaceForeignContractsObligations }
+using HelloUltraviolet::Audit::Catalog::FrontMatter::{ countFrontMatterDocumentOrganizationObligations }
+using HelloUltraviolet::Audit::Catalog::FrontMatter::{ validatedFrontMatterDocumentOrganizationObligations }
+using HelloUltraviolet::Audit::Catalog::FrontMatter::{ countFrontMatterLanguageDesignContractObligations }
+using HelloUltraviolet::Audit::Catalog::FrontMatter::{ validatedFrontMatterLanguageDesignContractObligations }
+using HelloUltraviolet::Audit::Catalog::FrontMatter::{ countFrontMatterRequiredFeatureSectionTemplateObligations }
+using HelloUltraviolet::Audit::Catalog::FrontMatter::{ validatedFrontMatterRequiredFeatureSectionTemplateObligations }
+using HelloUltraviolet::Audit::Catalog::KeySystem::{ countKeySystemConflictDetectionObligations }
+using HelloUltraviolet::Audit::Catalog::KeySystem::{ validatedKeySystemConflictDetectionObligations }
+using HelloUltraviolet::Audit::Catalog::KeySystem::{ countKeySystemDynamicKeyVerificationObligations }
+using HelloUltraviolet::Audit::Catalog::KeySystem::{ validatedKeySystemDynamicKeyVerificationObligations }
+using HelloUltraviolet::Audit::Catalog::KeySystem::{ countKeySystemKeyAcquisitionBlocksObligations }
+using HelloUltraviolet::Audit::Catalog::KeySystem::{ validatedKeySystemKeyAcquisitionBlocksObligations }
+using HelloUltraviolet::Audit::Catalog::KeySystem::{ countKeySystemKeyPathsObligations }
+using HelloUltraviolet::Audit::Catalog::KeySystem::{ validatedKeySystemKeyPathsObligations }
+using HelloUltraviolet::Audit::Catalog::KeySystem::{ countKeySystemMemoryOrderingObligations }
+using HelloUltraviolet::Audit::Catalog::KeySystem::{ validatedKeySystemMemoryOrderingObligations }
+using HelloUltraviolet::Audit::Catalog::KeySystem::{ countKeySystemNestedReleaseObligations }
+using HelloUltraviolet::Audit::Catalog::KeySystem::{ validatedKeySystemNestedReleaseObligations }
+using HelloUltraviolet::Audit::Catalog::KeySystem::{ countKeySystemSpeculativeExecutionObligations }
+using HelloUltraviolet::Audit::Catalog::KeySystem::{ validatedKeySystemSpeculativeExecutionObligations }
+using HelloUltraviolet::Audit::Catalog::ModalAndSpecialTypes::{ countModalAndSpecialTypesBytesTypesObligations }
+using HelloUltraviolet::Audit::Catalog::ModalAndSpecialTypes::{ validatedModalAndSpecialTypesBytesTypesObligations }
+using HelloUltraviolet::Audit::Catalog::ModalAndSpecialTypes::{ countModalAndSpecialTypesClosureTypesObligations }
+using HelloUltraviolet::Audit::Catalog::ModalAndSpecialTypes::{ validatedModalAndSpecialTypesClosureTypesObligations }
+using HelloUltraviolet::Audit::Catalog::ModalAndSpecialTypes::{ countModalAndSpecialTypesFunctionTypesObligations }
+using HelloUltraviolet::Audit::Catalog::ModalAndSpecialTypes::{ validatedModalAndSpecialTypesFunctionTypesObligations }
+using HelloUltraviolet::Audit::Catalog::ModalAndSpecialTypes::{ countModalAndSpecialTypesModalDeclarationsObligations }
+using HelloUltraviolet::Audit::Catalog::ModalAndSpecialTypes::{ validatedModalAndSpecialTypesModalDeclarationsObligations }
+using HelloUltraviolet::Audit::Catalog::ModalAndSpecialTypes::{ countModalAndSpecialTypesModalWideningObligations }
+using HelloUltraviolet::Audit::Catalog::ModalAndSpecialTypes::{ validatedModalAndSpecialTypesModalWideningObligations }
+using HelloUltraviolet::Audit::Catalog::ModalAndSpecialTypes::{ countModalAndSpecialTypesRawPointerTypesObligations }
+using HelloUltraviolet::Audit::Catalog::ModalAndSpecialTypes::{ validatedModalAndSpecialTypesRawPointerTypesObligations }
+using HelloUltraviolet::Audit::Catalog::ModalAndSpecialTypes::{ countModalAndSpecialTypesSafePointerTypesObligations }
+using HelloUltraviolet::Audit::Catalog::ModalAndSpecialTypes::{ validatedModalAndSpecialTypesSafePointerTypesObligations }
+using HelloUltraviolet::Audit::Catalog::ModalAndSpecialTypes::{ countModalAndSpecialTypesStateFieldsObligations }
+using HelloUltraviolet::Audit::Catalog::ModalAndSpecialTypes::{ validatedModalAndSpecialTypesStateFieldsObligations }
+using HelloUltraviolet::Audit::Catalog::ModalAndSpecialTypes::{ countModalAndSpecialTypesStateSpecificMethodsObligations }
+using HelloUltraviolet::Audit::Catalog::ModalAndSpecialTypes::{ validatedModalAndSpecialTypesStateSpecificMethodsObligations }
+using HelloUltraviolet::Audit::Catalog::ModalAndSpecialTypes::{ countModalAndSpecialTypesStringTypesObligations }
+using HelloUltraviolet::Audit::Catalog::ModalAndSpecialTypes::{ validatedModalAndSpecialTypesStringTypesObligations }
+using HelloUltraviolet::Audit::Catalog::ModalAndSpecialTypes::{ countModalAndSpecialTypesTransitionsObligations }
+using HelloUltraviolet::Audit::Catalog::ModalAndSpecialTypes::{ validatedModalAndSpecialTypesTransitionsObligations }
+using HelloUltraviolet::Audit::Catalog::ModuleLevelForms::{ countModuleLevelFormsExternBlockShellObligations }
+using HelloUltraviolet::Audit::Catalog::ModuleLevelForms::{ validatedModuleLevelFormsExternBlockShellObligations }
+using HelloUltraviolet::Audit::Catalog::ModuleLevelForms::{ countModuleLevelFormsImportDeclarationsObligations }
+using HelloUltraviolet::Audit::Catalog::ModuleLevelForms::{ validatedModuleLevelFormsImportDeclarationsObligations }
+using HelloUltraviolet::Audit::Catalog::ModuleLevelForms::{ countModuleLevelFormsModuleAndFileAggregationObligations }
+using HelloUltraviolet::Audit::Catalog::ModuleLevelForms::{ validatedModuleLevelFormsModuleAndFileAggregationObligations }
+using HelloUltraviolet::Audit::Catalog::ModuleLevelForms::{ countModuleLevelFormsStaticDeclarationsObligations }
+using HelloUltraviolet::Audit::Catalog::ModuleLevelForms::{ validatedModuleLevelFormsStaticDeclarationsObligations }
+using HelloUltraviolet::Audit::Catalog::ModuleLevelForms::{ countModuleLevelFormsUsingDeclarationsObligations }
+using HelloUltraviolet::Audit::Catalog::ModuleLevelForms::{ validatedModuleLevelFormsUsingDeclarationsObligations }
+using HelloUltraviolet::Audit::Catalog::NameResolutionAndVisibility::{ countNameResolutionAndVisibilityLookupAndQualifiedResolutionObligations }
+using HelloUltraviolet::Audit::Catalog::NameResolutionAndVisibility::{ validatedNameResolutionAndVisibilityLookupAndQualifiedResolutionObligations }
+using HelloUltraviolet::Audit::Catalog::NameResolutionAndVisibility::{ countNameResolutionAndVisibilityNameIntroductionAndModuleValidationObligations }
+using HelloUltraviolet::Audit::Catalog::NameResolutionAndVisibility::{ validatedNameResolutionAndVisibilityNameIntroductionAndModuleValidationObligations }
+using HelloUltraviolet::Audit::Catalog::NameResolutionAndVisibility::{ countNameResolutionAndVisibilityNameResolutionAndReservedNameDiagnosticsObligations }
+using HelloUltraviolet::Audit::Catalog::NameResolutionAndVisibility::{ validatedNameResolutionAndVisibilityNameResolutionAndReservedNameDiagnosticsObligations }
+using HelloUltraviolet::Audit::Catalog::NameResolutionAndVisibility::{ countNameResolutionAndVisibilityQualifiedDisambiguationObligations }
+using HelloUltraviolet::Audit::Catalog::NameResolutionAndVisibility::{ validatedNameResolutionAndVisibilityQualifiedDisambiguationObligations }
+using HelloUltraviolet::Audit::Catalog::NameResolutionAndVisibility::{ countNameResolutionAndVisibilityScopeContextAndIdentifiersObligations }
+using HelloUltraviolet::Audit::Catalog::NameResolutionAndVisibility::{ validatedNameResolutionAndVisibilityScopeContextAndIdentifiersObligations }
+using HelloUltraviolet::Audit::Catalog::NameResolutionAndVisibility::{ countNameResolutionAndVisibilitySharedResolutionHelpersAndResolutionPassObligations }
+using HelloUltraviolet::Audit::Catalog::NameResolutionAndVisibility::{ validatedNameResolutionAndVisibilitySharedResolutionHelpersAndResolutionPassObligations }
+using HelloUltraviolet::Audit::Catalog::NameResolutionAndVisibility::{ countNameResolutionAndVisibilityTopLevelNameCollectionObligations }
+using HelloUltraviolet::Audit::Catalog::NameResolutionAndVisibility::{ validatedNameResolutionAndVisibilityTopLevelNameCollectionObligations }
+using HelloUltraviolet::Audit::Catalog::NameResolutionAndVisibility::{ countNameResolutionAndVisibilityVisibilityAndAccessibilityObligations }
+using HelloUltraviolet::Audit::Catalog::NameResolutionAndVisibility::{ validatedNameResolutionAndVisibilityVisibilityAndAccessibilityObligations }
+using HelloUltraviolet::Audit::Catalog::ParsingAndAstInfrastructure::{ countParsingAndAstInfrastructureAstMetaConventionsObligations }
+using HelloUltraviolet::Audit::Catalog::ParsingAndAstInfrastructure::{ validatedParsingAndAstInfrastructureAstMetaConventionsObligations }
+using HelloUltraviolet::Audit::Catalog::ParsingAndAstInfrastructure::{ countParsingAndAstInfrastructureDocCommentAssociationObligations }
+using HelloUltraviolet::Audit::Catalog::ParsingAndAstInfrastructure::{ validatedParsingAndAstInfrastructureDocCommentAssociationObligations }
+using HelloUltraviolet::Audit::Catalog::ParsingAndAstInfrastructure::{ countParsingAndAstInfrastructureErrorRecoveryAndSynchronizationObligations }
+using HelloUltraviolet::Audit::Catalog::ParsingAndAstInfrastructure::{ validatedParsingAndAstInfrastructureErrorRecoveryAndSynchronizationObligations }
+using HelloUltraviolet::Audit::Catalog::ParsingAndAstInfrastructure::{ countParsingAndAstInfrastructureParseFileItemSequencingAndTerminatorsObligations }
+using HelloUltraviolet::Audit::Catalog::ParsingAndAstInfrastructure::{ validatedParsingAndAstInfrastructureParseFileItemSequencingAndTerminatorsObligations }
+using HelloUltraviolet::Audit::Catalog::ParsingAndAstInfrastructure::{ countParsingAndAstInfrastructureParserStateAndJudgmentsObligations }
+using HelloUltraviolet::Audit::Catalog::ParsingAndAstInfrastructure::{ validatedParsingAndAstInfrastructureParserStateAndJudgmentsObligations }
+using HelloUltraviolet::Audit::Catalog::ParsingAndAstInfrastructure::{ countParsingAndAstInfrastructureParsingDiagnosticsObligations }
+using HelloUltraviolet::Audit::Catalog::ParsingAndAstInfrastructure::{ validatedParsingAndAstInfrastructureParsingDiagnosticsObligations }
+using HelloUltraviolet::Audit::Catalog::ParsingAndAstInfrastructure::{ countParsingAndAstInfrastructureParsingDiagnosticsSupplementObligations }
+using HelloUltraviolet::Audit::Catalog::ParsingAndAstInfrastructure::{ validatedParsingAndAstInfrastructureParsingDiagnosticsSupplementObligations }
+using HelloUltraviolet::Audit::Catalog::ParsingAndAstInfrastructure::{ countParsingAndAstInfrastructureParsingInputsOutputsAndInvariantsObligations }
+using HelloUltraviolet::Audit::Catalog::ParsingAndAstInfrastructure::{ validatedParsingAndAstInfrastructureParsingInputsOutputsAndInvariantsObligations }
+using HelloUltraviolet::Audit::Catalog::ParsingAndAstInfrastructure::{ countParsingAndAstInfrastructureSharedGrammarPolicyAndParserHelpersObligations }
+using HelloUltraviolet::Audit::Catalog::ParsingAndAstInfrastructure::{ validatedParsingAndAstInfrastructureSharedGrammarPolicyAndParserHelpersObligations }
+using HelloUltraviolet::Audit::Catalog::ParsingAndAstInfrastructure::{ countParsingAndAstInfrastructureTokenConsumptionAndListParsingObligations }
+using HelloUltraviolet::Audit::Catalog::ParsingAndAstInfrastructure::{ validatedParsingAndAstInfrastructureTokenConsumptionAndListParsingObligations }
+using HelloUltraviolet::Audit::Catalog::Patterns::{ countPatternsBasicPatternsObligations }
+using HelloUltraviolet::Audit::Catalog::Patterns::{ validatedPatternsBasicPatternsObligations }
+using HelloUltraviolet::Audit::Catalog::Patterns::{ countPatternsCaseClausesObligations }
+using HelloUltraviolet::Audit::Catalog::Patterns::{ validatedPatternsCaseClausesObligations }
+using HelloUltraviolet::Audit::Catalog::Patterns::{ countPatternsEnumAndModalPatternsObligations }
+using HelloUltraviolet::Audit::Catalog::Patterns::{ validatedPatternsEnumAndModalPatternsObligations }
+using HelloUltraviolet::Audit::Catalog::Patterns::{ countPatternsExhaustivenessAndReachabilityObligations }
+using HelloUltraviolet::Audit::Catalog::Patterns::{ validatedPatternsExhaustivenessAndReachabilityObligations }
+using HelloUltraviolet::Audit::Catalog::Patterns::{ countPatternsPatternDiagnosticsSupplementObligations }
+using HelloUltraviolet::Audit::Catalog::Patterns::{ validatedPatternsPatternDiagnosticsSupplementObligations }
+using HelloUltraviolet::Audit::Catalog::Patterns::{ countPatternsRangePatternsObligations }
+using HelloUltraviolet::Audit::Catalog::Patterns::{ validatedPatternsRangePatternsObligations }
+using HelloUltraviolet::Audit::Catalog::Patterns::{ countPatternsTupleAndRecordPatternsObligations }
+using HelloUltraviolet::Audit::Catalog::Patterns::{ validatedPatternsTupleAndRecordPatternsObligations }
+using HelloUltraviolet::Audit::Catalog::PermissionsAndBindingState::{ countPermissionsAndBindingStateAliasAndExclusivityRulesObligations }
+using HelloUltraviolet::Audit::Catalog::PermissionsAndBindingState::{ validatedPermissionsAndBindingStateAliasAndExclusivityRulesObligations }
+using HelloUltraviolet::Audit::Catalog::PermissionsAndBindingState::{ countPermissionsAndBindingStateBindingActivityStatesObligations }
+using HelloUltraviolet::Audit::Catalog::PermissionsAndBindingState::{ validatedPermissionsAndBindingStateBindingActivityStatesObligations }
+using HelloUltraviolet::Audit::Catalog::PermissionsAndBindingState::{ countPermissionsAndBindingStatePermissionAdmissibilityObligations }
+using HelloUltraviolet::Audit::Catalog::PermissionsAndBindingState::{ validatedPermissionsAndBindingStatePermissionAdmissibilityObligations }
+using HelloUltraviolet::Audit::Catalog::PermissionsAndBindingState::{ countPermissionsAndBindingStatePermissionFormsObligations }
+using HelloUltraviolet::Audit::Catalog::PermissionsAndBindingState::{ validatedPermissionsAndBindingStatePermissionFormsObligations }
+using HelloUltraviolet::Audit::Catalog::ProceduresAndContracts::{ countProceduresAndContractsBehavioralSubtypingObligations }
+using HelloUltraviolet::Audit::Catalog::ProceduresAndContracts::{ validatedProceduresAndContractsBehavioralSubtypingObligations }
+using HelloUltraviolet::Audit::Catalog::ProceduresAndContracts::{ countProceduresAndContractsContractClausesObligations }
+using HelloUltraviolet::Audit::Catalog::ProceduresAndContracts::{ validatedProceduresAndContractsContractClausesObligations }
+using HelloUltraviolet::Audit::Catalog::ProceduresAndContracts::{ countProceduresAndContractsInvariantsObligations }
+using HelloUltraviolet::Audit::Catalog::ProceduresAndContracts::{ validatedProceduresAndContractsInvariantsObligations }
+using HelloUltraviolet::Audit::Catalog::ProceduresAndContracts::{ countProceduresAndContractsMethodsAndReceiversObligations }
+using HelloUltraviolet::Audit::Catalog::ProceduresAndContracts::{ validatedProceduresAndContractsMethodsAndReceiversObligations }
+using HelloUltraviolet::Audit::Catalog::ProceduresAndContracts::{ countProceduresAndContractsOverloadingObligations }
+using HelloUltraviolet::Audit::Catalog::ProceduresAndContracts::{ validatedProceduresAndContractsOverloadingObligations }
+using HelloUltraviolet::Audit::Catalog::ProceduresAndContracts::{ countProceduresAndContractsPostconditionsObligations }
+using HelloUltraviolet::Audit::Catalog::ProceduresAndContracts::{ validatedProceduresAndContractsPostconditionsObligations }
+using HelloUltraviolet::Audit::Catalog::ProceduresAndContracts::{ countProceduresAndContractsPreconditionsObligations }
+using HelloUltraviolet::Audit::Catalog::ProceduresAndContracts::{ validatedProceduresAndContractsPreconditionsObligations }
+using HelloUltraviolet::Audit::Catalog::ProceduresAndContracts::{ countProceduresAndContractsProcedureContractAndEntryDiagnosticsSupplementObligations }
+using HelloUltraviolet::Audit::Catalog::ProceduresAndContracts::{ validatedProceduresAndContractsProcedureContractAndEntryDiagnosticsSupplementObligations }
+using HelloUltraviolet::Audit::Catalog::ProceduresAndContracts::{ countProceduresAndContractsProcedureDeclarationsObligations }
+using HelloUltraviolet::Audit::Catalog::ProceduresAndContracts::{ validatedProceduresAndContractsProcedureDeclarationsObligations }
+using HelloUltraviolet::Audit::Catalog::ProceduresAndContracts::{ countProceduresAndContractsVerificationLogicObligations }
+using HelloUltraviolet::Audit::Catalog::ProceduresAndContracts::{ validatedProceduresAndContractsVerificationLogicObligations }
+using HelloUltraviolet::Audit::Catalog::ProjectAndCompilationModel::{ countProjectAndCompilationModelAssembliesAndProjectLoadingObligations }
+using HelloUltraviolet::Audit::Catalog::ProjectAndCompilationModel::{ validatedProjectAndCompilationModelAssembliesAndProjectLoadingObligations }
+using HelloUltraviolet::Audit::Catalog::ProjectAndCompilationModel::{ countProjectAndCompilationModelCoreProjectRecordsObligations }
+using HelloUltraviolet::Audit::Catalog::ProjectAndCompilationModel::{ validatedProjectAndCompilationModelCoreProjectRecordsObligations }
+using HelloUltraviolet::Audit::Catalog::ProjectAndCompilationModel::{ countProjectAndCompilationModelDeterministicOrderingAndCaseFoldingObligations }
+using HelloUltraviolet::Audit::Catalog::ProjectAndCompilationModel::{ validatedProjectAndCompilationModelDeterministicOrderingAndCaseFoldingObligations }
+using HelloUltraviolet::Audit::Catalog::ProjectAndCompilationModel::{ countProjectAndCompilationModelOutputArtifactsAndLinkingObligations }
+using HelloUltraviolet::Audit::Catalog::ProjectAndCompilationModel::{ validatedProjectAndCompilationModelOutputArtifactsAndLinkingObligations }
+using HelloUltraviolet::Audit::Catalog::ProjectAndCompilationModel::{ countProjectAndCompilationModelProjectDiagnosticsObligations }
+using HelloUltraviolet::Audit::Catalog::ProjectAndCompilationModel::{ validatedProjectAndCompilationModelProjectDiagnosticsObligations }
+using HelloUltraviolet::Audit::Catalog::ProjectAndCompilationModel::{ countProjectAndCompilationModelProjectRootAndManifestObligations }
+using HelloUltraviolet::Audit::Catalog::ProjectAndCompilationModel::{ validatedProjectAndCompilationModelProjectRootAndManifestObligations }
+using HelloUltraviolet::Audit::Catalog::ProjectAndCompilationModel::{ countProjectAndCompilationModelSourceRootsModuleDirectoriesAndCompilationUnitsObligations }
+using HelloUltraviolet::Audit::Catalog::ProjectAndCompilationModel::{ validatedProjectAndCompilationModelSourceRootsModuleDirectoriesAndCompilationUnitsObligations }
+using HelloUltraviolet::Audit::Catalog::ProjectAndCompilationModel::{ countProjectAndCompilationModelToolResolutionAndIRAssemblyInputsObligations }
+using HelloUltraviolet::Audit::Catalog::ProjectAndCompilationModel::{ validatedProjectAndCompilationModelToolResolutionAndIRAssemblyInputsObligations }
+using HelloUltraviolet::Audit::Catalog::SourceTextAndLexicalStructure::{ countSourceTextAndLexicalStructureLexicalAnalysisObligations }
+using HelloUltraviolet::Audit::Catalog::SourceTextAndLexicalStructure::{ validatedSourceTextAndLexicalStructureLexicalAnalysisObligations }
+using HelloUltraviolet::Audit::Catalog::SourceTextAndLexicalStructure::{ countSourceTextAndLexicalStructureSourceLoadingAndLexicalDiagnosticsObligations }
+using HelloUltraviolet::Audit::Catalog::SourceTextAndLexicalStructure::{ validatedSourceTextAndLexicalStructureSourceLoadingAndLexicalDiagnosticsObligations }
+using HelloUltraviolet::Audit::Catalog::SourceTextAndLexicalStructure::{ countSourceTextAndLexicalStructureSourceLoadingAndNormalizationObligations }
+using HelloUltraviolet::Audit::Catalog::SourceTextAndLexicalStructure::{ validatedSourceTextAndLexicalStructureSourceLoadingAndNormalizationObligations }
+using HelloUltraviolet::Audit::Catalog::StatementsAndBlocks::{ countStatementsAndBlocksAssignmentStatementsObligations }
+using HelloUltraviolet::Audit::Catalog::StatementsAndBlocks::{ validatedStatementsAndBlocksAssignmentStatementsObligations }
+using HelloUltraviolet::Audit::Catalog::StatementsAndBlocks::{ countStatementsAndBlocksBindingStatementsObligations }
+using HelloUltraviolet::Audit::Catalog::StatementsAndBlocks::{ validatedStatementsAndBlocksBindingStatementsObligations }
+using HelloUltraviolet::Audit::Catalog::StatementsAndBlocks::{ countStatementsAndBlocksBlocksObligations }
+using HelloUltraviolet::Audit::Catalog::StatementsAndBlocks::{ validatedStatementsAndBlocksBlocksObligations }
+using HelloUltraviolet::Audit::Catalog::StatementsAndBlocks::{ countStatementsAndBlocksControlTransferStatementsObligations }
+using HelloUltraviolet::Audit::Catalog::StatementsAndBlocks::{ validatedStatementsAndBlocksControlTransferStatementsObligations }
+using HelloUltraviolet::Audit::Catalog::StatementsAndBlocks::{ countStatementsAndBlocksDeferObligations }
+using HelloUltraviolet::Audit::Catalog::StatementsAndBlocks::{ validatedStatementsAndBlocksDeferObligations }
+using HelloUltraviolet::Audit::Catalog::StatementsAndBlocks::{ countStatementsAndBlocksExpressionStatementsObligations }
+using HelloUltraviolet::Audit::Catalog::StatementsAndBlocks::{ validatedStatementsAndBlocksExpressionStatementsObligations }
+using HelloUltraviolet::Audit::Catalog::StatementsAndBlocks::{ countStatementsAndBlocksFrameObligations }
+using HelloUltraviolet::Audit::Catalog::StatementsAndBlocks::{ validatedStatementsAndBlocksFrameObligations }
+using HelloUltraviolet::Audit::Catalog::StatementsAndBlocks::{ countStatementsAndBlocksLocalUsingStatementsObligations }
+using HelloUltraviolet::Audit::Catalog::StatementsAndBlocks::{ validatedStatementsAndBlocksLocalUsingStatementsObligations }
+using HelloUltraviolet::Audit::Catalog::StatementsAndBlocks::{ countStatementsAndBlocksRegionObligations }
+using HelloUltraviolet::Audit::Catalog::StatementsAndBlocks::{ validatedStatementsAndBlocksRegionObligations }
+using HelloUltraviolet::Audit::Catalog::StatementsAndBlocks::{ countStatementsAndBlocksStatementDiagnosticsSupplementObligations }
+using HelloUltraviolet::Audit::Catalog::StatementsAndBlocks::{ validatedStatementsAndBlocksStatementDiagnosticsSupplementObligations }
+using HelloUltraviolet::Audit::Catalog::StatementsAndBlocks::{ countStatementsAndBlocksUnsafeStatementsObligations }
+using HelloUltraviolet::Audit::Catalog::StatementsAndBlocks::{ validatedStatementsAndBlocksUnsafeStatementsObligations }
+using HelloUltraviolet::Audit::Catalog::StructuredParallelism::{ countStructuredParallelismCancellationObligations }
+using HelloUltraviolet::Audit::Catalog::StructuredParallelism::{ validatedStructuredParallelismCancellationObligations }
+using HelloUltraviolet::Audit::Catalog::StructuredParallelism::{ countStructuredParallelismCaptureSemanticsObligations }
+using HelloUltraviolet::Audit::Catalog::StructuredParallelism::{ validatedStructuredParallelismCaptureSemanticsObligations }
+using HelloUltraviolet::Audit::Catalog::StructuredParallelism::{ countStructuredParallelismDeterminismAndNestingObligations }
+using HelloUltraviolet::Audit::Catalog::StructuredParallelism::{ validatedStructuredParallelismDeterminismAndNestingObligations }
+using HelloUltraviolet::Audit::Catalog::StructuredParallelism::{ countStructuredParallelismDispatchObligations }
+using HelloUltraviolet::Audit::Catalog::StructuredParallelism::{ validatedStructuredParallelismDispatchObligations }
+using HelloUltraviolet::Audit::Catalog::StructuredParallelism::{ countStructuredParallelismExecutionDomainsObligations }
+using HelloUltraviolet::Audit::Catalog::StructuredParallelism::{ validatedStructuredParallelismExecutionDomainsObligations }
+using HelloUltraviolet::Audit::Catalog::StructuredParallelism::{ countStructuredParallelismPanicHandlingObligations }
+using HelloUltraviolet::Audit::Catalog::StructuredParallelism::{ validatedStructuredParallelismPanicHandlingObligations }
+using HelloUltraviolet::Audit::Catalog::StructuredParallelism::{ countStructuredParallelismParallelBlocksObligations }
+using HelloUltraviolet::Audit::Catalog::StructuredParallelism::{ validatedStructuredParallelismParallelBlocksObligations }
+using HelloUltraviolet::Audit::Catalog::StructuredParallelism::{ countStructuredParallelismSpawnObligations }
+using HelloUltraviolet::Audit::Catalog::StructuredParallelism::{ validatedStructuredParallelismSpawnObligations }
+using HelloUltraviolet::Audit::Catalog::StructuredParallelism::{ countStructuredParallelismStructuredParallelismDiagnosticsSupplementObligations }
+using HelloUltraviolet::Audit::Catalog::StructuredParallelism::{ validatedStructuredParallelismStructuredParallelismDiagnosticsSupplementObligations }
+using HelloUltraviolet::Audit::Catalog::TypeSystemCore::{ countTypeSystemCoreCoreTypeDiagnosticsObligations }
+using HelloUltraviolet::Audit::Catalog::TypeSystemCore::{ validatedTypeSystemCoreCoreTypeDiagnosticsObligations }
+using HelloUltraviolet::Audit::Catalog::TypeSystemCore::{ countTypeSystemCoreMetatheoreticPropertiesObligations }
+using HelloUltraviolet::Audit::Catalog::TypeSystemCore::{ validatedTypeSystemCoreMetatheoreticPropertiesObligations }
+using HelloUltraviolet::Audit::Catalog::TypeSystemCore::{ countTypeSystemCoreSubtypingObligations }
+using HelloUltraviolet::Audit::Catalog::TypeSystemCore::{ validatedTypeSystemCoreSubtypingObligations }
+using HelloUltraviolet::Audit::Catalog::TypeSystemCore::{ countTypeSystemCoreTypeEquivalenceObligations }
+using HelloUltraviolet::Audit::Catalog::TypeSystemCore::{ validatedTypeSystemCoreTypeEquivalenceObligations }
+using HelloUltraviolet::Audit::Catalog::TypeSystemCore::{ countTypeSystemCoreTypeInferenceObligations }
+using HelloUltraviolet::Audit::Catalog::TypeSystemCore::{ validatedTypeSystemCoreTypeInferenceObligations }
+
+public procedure generatedCatalogObligationCount() -> usize {
+    var count: usize = 0
+    count = count + countAbstractMachineObjectsResponsibilityAndAuthorityAuthorityModelObligations()
+    count = count + countAbstractMachineObjectsResponsibilityAndAuthorityBindingAndPermissionRuntimeStateObligations()
+    count = count + countAbstractMachineObjectsResponsibilityAndAuthorityDynamicScopeStackBindingsAndRegionRuntimeObligations()
+    count = count + countAbstractMachineObjectsResponsibilityAndAuthorityHostPrimitivesObligations()
+    count = count + countAbstractMachineObjectsResponsibilityAndAuthorityRegionsFramesAndProvenanceObligations()
+    count = count + countAbstractMachineObjectsResponsibilityAndAuthorityRuntimeStateAndMemoryDiagnosticsObligations()
+    count = count + countAbstractionAndPolymorphismAssociatedTypesObligations()
+    count = count + countAbstractionAndPolymorphismCapabilityClassesObligations()
+    count = count + countAbstractionAndPolymorphismClassesObligations()
+    count = count + countAbstractionAndPolymorphismDynamicClassObjectsObligations()
+    count = count + countAbstractionAndPolymorphismFoundationalClassesAndPredicatesObligations()
+    count = count + countAbstractionAndPolymorphismGenericParametersAndArgumentsObligations()
+    count = count + countAbstractionAndPolymorphismGenericProceduresAndTypesObligations()
+    count = count + countAbstractionAndPolymorphismImplementationsObligations()
+    count = count + countAbstractionAndPolymorphismOpaqueTypesObligations()
+    count = count + countAbstractionAndPolymorphismRefinementAndPolymorphismDiagnosticsSupplementObligations()
+    count = count + countAbstractionAndPolymorphismRefinementTypesObligations()
+    count = count + countAppendixBCompleteGrammarReferenceBAsyncGrammarObligations()
+    count = count + countAppendixBCompleteGrammarReferenceBAttributeGrammarObligations()
+    count = count + countAppendixBCompleteGrammarReferenceBConcurrencyGrammarObligations()
+    count = count + countAppendixBCompleteGrammarReferenceBContractGrammarObligations()
+    count = count + countAppendixBCompleteGrammarReferenceBDeclarationGrammarObligations()
+    count = count + countAppendixBCompleteGrammarReferenceBExpressionGrammarObligations()
+    count = count + countAppendixBCompleteGrammarReferenceBFfiGrammarObligations()
+    count = count + countAppendixBCompleteGrammarReferenceBKeySystemGrammarObligations()
+    count = count + countAppendixBCompleteGrammarReferenceBLexicalGrammarObligations()
+    count = count + countAppendixBCompleteGrammarReferenceBMetaprogrammingGrammarObligations()
+    count = count + countAppendixBCompleteGrammarReferenceBPatternGrammarObligations()
+    count = count + countAppendixBCompleteGrammarReferenceBRegionGrammarObligations()
+    count = count + countAppendixBCompleteGrammarReferenceBStatementGrammarObligations()
+    count = count + countAppendixBCompleteGrammarReferenceBTypeGrammarObligations()
+    count = count + countAppendixDLayoutAbiAndRuntimeReferenceCExpressionPatternAndStatementFamiliesObligations()
+    count = count + countAsynchronousOperationsAsyncDiagnosticsSupplementObligations()
+    count = count + countAsynchronousOperationsAsyncKeyIntegrationObligations()
+    count = count + countAsynchronousOperationsAsyncStateMachineObligations()
+    count = count + countAsynchronousOperationsAsyncTypeObligations()
+    count = count + countAsynchronousOperationsCompositionFormsObligations()
+    count = count + countAsynchronousOperationsSuspensionFormsObligations()
+    count = count + countAttributesAndMetadataAttributeSyntaxAndPlacementObligations()
+    count = count + countAttributesAndMetadataDiagnosticsAndMetadataAttributesObligations()
+    count = count + countAttributesAndMetadataLayoutAttributesObligations()
+    count = count + countAttributesAndMetadataOptimizationAttributesObligations()
+    count = count + countAttributesAndMetadataSourceNativeTestAttributesObligations()
+    count = count + countAttributesAndMetadataVendorAttributesObligations()
+    count = count + countCommonLoweringProgramLifecycleAndBackendBackendRequirementsObligations()
+    count = count + countCommonLoweringProgramLifecycleAndBackendCleanupDropAndUnwindingFrameworkObligations()
+    count = count + countCommonLoweringProgramLifecycleAndBackendInitializationAndProgramLifecycleObligations()
+    count = count + countCommonLoweringProgramLifecycleAndBackendLayoutAndAbiFrameworkObligations()
+    count = count + countCommonLoweringProgramLifecycleAndBackendOutputAndBackendDiagnosticsObligations()
+    count = count + countCommonLoweringProgramLifecycleAndBackendRuntimeInterfaceObligations()
+    count = count + countCommonLoweringProgramLifecycleAndBackendSharedLoweringJudgmentsObligations()
+    count = count + countCommonLoweringProgramLifecycleAndBackendSymbolsManglingAndLinkageObligations()
+    count = count + countCompileTimeExecutionAndMetaprogrammingAsyncDiagnosticsSupplementObligations()
+    count = count + countCompileTimeExecutionAndMetaprogrammingCompileTimeCapabilitiesObligations()
+    count = count + countCompileTimeExecutionAndMetaprogrammingCompileTimeDiagnosticsSupplementObligations()
+    count = count + countCompileTimeExecutionAndMetaprogrammingCompileTimeFormsObligations()
+    count = count + countCompileTimeExecutionAndMetaprogrammingDeriveTargetsAndContractsObligations()
+    count = count + countCompileTimeExecutionAndMetaprogrammingQuoteSpliceAndEmissionObligations()
+    count = count + countCompileTimeExecutionAndMetaprogrammingReflectionObligations()
+    count = count + countConcreteDataTypesArraysObligations()
+    count = count + countConcreteDataTypesEnumsObligations()
+    count = count + countConcreteDataTypesPrimitiveTypesObligations()
+    count = count + countConcreteDataTypesRangesObligations()
+    count = count + countConcreteDataTypesRecordsObligations()
+    count = count + countConcreteDataTypesSlicesObligations()
+    count = count + countConcreteDataTypesTuplesObligations()
+    count = count + countConcreteDataTypesTypeAliasesObligations()
+    count = count + countConcreteDataTypesUnionTypesObligations()
+    count = count + countConformanceAndNotationBehaviorTypesObligations()
+    count = count + countConformanceAndNotationCompileTimeExecutionAndPhaseOrderingObligations()
+    count = count + countConformanceAndNotationConformanceObligations()
+    count = count + countConformanceAndNotationDocumentConventionsObligations()
+    count = count + countConformanceAndNotationNormativeReferencesObligations()
+    count = count + countConformanceAndNotationTargetAndAbiAssumptionsObligations()
+    count = count + countDiagnosticInfrastructureDiagnosticCodeSelectionObligations()
+    count = count + countDiagnosticInfrastructureDiagnosticOrderingObligations()
+    count = count + countDiagnosticInfrastructureDiagnosticRecordsAndEmissionObligations()
+    count = count + countDiagnosticInfrastructureDiagnosticRenderingObligations()
+    count = count + countDiagnosticInfrastructureDiagnosticsWithoutSourceSpansObligations()
+    count = count + countDiagnosticInfrastructureSourceLocationsAndSpansObligations()
+    count = count + countDiagnosticInfrastructureTokenSpansObligations()
+    count = count + countExpressionsAccessAndPlaceExpressionsObligations()
+    count = count + countExpressionsCallExpressionsObligations()
+    count = count + countExpressionsCastAndTransmuteExpressionsObligations()
+    count = count + countExpressionsClosureAndPipelineExpressionsObligations()
+    count = count + countExpressionsConstructionExpressionsObligations()
+    count = count + countExpressionsControlExpressionsObligations()
+    count = count + countExpressionsEffectfulCoreExpressionsObligations()
+    count = count + countExpressionsExpressionDiagnosticsSupplementObligations()
+    count = count + countExpressionsLiteralAndNameExpressionsObligations()
+    count = count + countExpressionsOperatorExpressionsObligations()
+    count = count + countForeignFunctionInterfaceBoundaryUnwindingObligations()
+    count = count + countForeignFunctionInterfaceCapabilityIsolationObligations()
+    count = count + countForeignFunctionInterfaceCompileTimeDiagnosticsSupplementObligations()
+    count = count + countForeignFunctionInterfaceExportedProceduresAndHostedExportsObligations()
+    count = count + countForeignFunctionInterfaceExternProceduresObligations()
+    count = count + countForeignFunctionInterfaceFfiAttributesObligations()
+    count = count + countForeignFunctionInterfaceFfiDiagnosticsSupplementObligations()
+    count = count + countForeignFunctionInterfaceFfiSafeObligations()
+    count = count + countForeignFunctionInterfaceForeignContractsObligations()
+    count = count + countFrontMatterDocumentOrganizationObligations()
+    count = count + countFrontMatterLanguageDesignContractObligations()
+    count = count + countFrontMatterRequiredFeatureSectionTemplateObligations()
+    count = count + countKeySystemConflictDetectionObligations()
+    count = count + countKeySystemDynamicKeyVerificationObligations()
+    count = count + countKeySystemKeyAcquisitionBlocksObligations()
+    count = count + countKeySystemKeyPathsObligations()
+    count = count + countKeySystemMemoryOrderingObligations()
+    count = count + countKeySystemNestedReleaseObligations()
+    count = count + countKeySystemSpeculativeExecutionObligations()
+    count = count + countModalAndSpecialTypesBytesTypesObligations()
+    count = count + countModalAndSpecialTypesClosureTypesObligations()
+    count = count + countModalAndSpecialTypesFunctionTypesObligations()
+    count = count + countModalAndSpecialTypesModalDeclarationsObligations()
+    count = count + countModalAndSpecialTypesModalWideningObligations()
+    count = count + countModalAndSpecialTypesRawPointerTypesObligations()
+    count = count + countModalAndSpecialTypesSafePointerTypesObligations()
+    count = count + countModalAndSpecialTypesStateFieldsObligations()
+    count = count + countModalAndSpecialTypesStateSpecificMethodsObligations()
+    count = count + countModalAndSpecialTypesStringTypesObligations()
+    count = count + countModalAndSpecialTypesTransitionsObligations()
+    count = count + countModuleLevelFormsExternBlockShellObligations()
+    count = count + countModuleLevelFormsImportDeclarationsObligations()
+    count = count + countModuleLevelFormsModuleAndFileAggregationObligations()
+    count = count + countModuleLevelFormsStaticDeclarationsObligations()
+    count = count + countModuleLevelFormsUsingDeclarationsObligations()
+    count = count + countNameResolutionAndVisibilityLookupAndQualifiedResolutionObligations()
+    count = count + countNameResolutionAndVisibilityNameIntroductionAndModuleValidationObligations()
+    count = count + countNameResolutionAndVisibilityNameResolutionAndReservedNameDiagnosticsObligations()
+    count = count + countNameResolutionAndVisibilityQualifiedDisambiguationObligations()
+    count = count + countNameResolutionAndVisibilityScopeContextAndIdentifiersObligations()
+    count = count + countNameResolutionAndVisibilitySharedResolutionHelpersAndResolutionPassObligations()
+    count = count + countNameResolutionAndVisibilityTopLevelNameCollectionObligations()
+    count = count + countNameResolutionAndVisibilityVisibilityAndAccessibilityObligations()
+    count = count + countParsingAndAstInfrastructureAstMetaConventionsObligations()
+    count = count + countParsingAndAstInfrastructureDocCommentAssociationObligations()
+    count = count + countParsingAndAstInfrastructureErrorRecoveryAndSynchronizationObligations()
+    count = count + countParsingAndAstInfrastructureParseFileItemSequencingAndTerminatorsObligations()
+    count = count + countParsingAndAstInfrastructureParserStateAndJudgmentsObligations()
+    count = count + countParsingAndAstInfrastructureParsingDiagnosticsObligations()
+    count = count + countParsingAndAstInfrastructureParsingDiagnosticsSupplementObligations()
+    count = count + countParsingAndAstInfrastructureParsingInputsOutputsAndInvariantsObligations()
+    count = count + countParsingAndAstInfrastructureSharedGrammarPolicyAndParserHelpersObligations()
+    count = count + countParsingAndAstInfrastructureTokenConsumptionAndListParsingObligations()
+    count = count + countPatternsBasicPatternsObligations()
+    count = count + countPatternsCaseClausesObligations()
+    count = count + countPatternsEnumAndModalPatternsObligations()
+    count = count + countPatternsExhaustivenessAndReachabilityObligations()
+    count = count + countPatternsPatternDiagnosticsSupplementObligations()
+    count = count + countPatternsRangePatternsObligations()
+    count = count + countPatternsTupleAndRecordPatternsObligations()
+    count = count + countPermissionsAndBindingStateAliasAndExclusivityRulesObligations()
+    count = count + countPermissionsAndBindingStateBindingActivityStatesObligations()
+    count = count + countPermissionsAndBindingStatePermissionAdmissibilityObligations()
+    count = count + countPermissionsAndBindingStatePermissionFormsObligations()
+    count = count + countProceduresAndContractsBehavioralSubtypingObligations()
+    count = count + countProceduresAndContractsContractClausesObligations()
+    count = count + countProceduresAndContractsInvariantsObligations()
+    count = count + countProceduresAndContractsMethodsAndReceiversObligations()
+    count = count + countProceduresAndContractsOverloadingObligations()
+    count = count + countProceduresAndContractsPostconditionsObligations()
+    count = count + countProceduresAndContractsPreconditionsObligations()
+    count = count + countProceduresAndContractsProcedureContractAndEntryDiagnosticsSupplementObligations()
+    count = count + countProceduresAndContractsProcedureDeclarationsObligations()
+    count = count + countProceduresAndContractsVerificationLogicObligations()
+    count = count + countProjectAndCompilationModelAssembliesAndProjectLoadingObligations()
+    count = count + countProjectAndCompilationModelCoreProjectRecordsObligations()
+    count = count + countProjectAndCompilationModelDeterministicOrderingAndCaseFoldingObligations()
+    count = count + countProjectAndCompilationModelOutputArtifactsAndLinkingObligations()
+    count = count + countProjectAndCompilationModelProjectDiagnosticsObligations()
+    count = count + countProjectAndCompilationModelProjectRootAndManifestObligations()
+    count = count + countProjectAndCompilationModelSourceRootsModuleDirectoriesAndCompilationUnitsObligations()
+    count = count + countProjectAndCompilationModelToolResolutionAndIRAssemblyInputsObligations()
+    count = count + countSourceTextAndLexicalStructureLexicalAnalysisObligations()
+    count = count + countSourceTextAndLexicalStructureSourceLoadingAndLexicalDiagnosticsObligations()
+    count = count + countSourceTextAndLexicalStructureSourceLoadingAndNormalizationObligations()
+    count = count + countStatementsAndBlocksAssignmentStatementsObligations()
+    count = count + countStatementsAndBlocksBindingStatementsObligations()
+    count = count + countStatementsAndBlocksBlocksObligations()
+    count = count + countStatementsAndBlocksControlTransferStatementsObligations()
+    count = count + countStatementsAndBlocksDeferObligations()
+    count = count + countStatementsAndBlocksExpressionStatementsObligations()
+    count = count + countStatementsAndBlocksFrameObligations()
+    count = count + countStatementsAndBlocksLocalUsingStatementsObligations()
+    count = count + countStatementsAndBlocksRegionObligations()
+    count = count + countStatementsAndBlocksStatementDiagnosticsSupplementObligations()
+    count = count + countStatementsAndBlocksUnsafeStatementsObligations()
+    count = count + countStructuredParallelismCancellationObligations()
+    count = count + countStructuredParallelismCaptureSemanticsObligations()
+    count = count + countStructuredParallelismDeterminismAndNestingObligations()
+    count = count + countStructuredParallelismDispatchObligations()
+    count = count + countStructuredParallelismExecutionDomainsObligations()
+    count = count + countStructuredParallelismPanicHandlingObligations()
+    count = count + countStructuredParallelismParallelBlocksObligations()
+    count = count + countStructuredParallelismSpawnObligations()
+    count = count + countStructuredParallelismStructuredParallelismDiagnosticsSupplementObligations()
+    count = count + countTypeSystemCoreCoreTypeDiagnosticsObligations()
+    count = count + countTypeSystemCoreMetatheoreticPropertiesObligations()
+    count = count + countTypeSystemCoreSubtypingObligations()
+    count = count + countTypeSystemCoreTypeEquivalenceObligations()
+    count = count + countTypeSystemCoreTypeInferenceObligations()
+    return count
+}
+
+public procedure generatedCatalogValidatedObligationCount() -> usize {
+    var count: usize = 0usize
+    count = count + validatedAbstractMachineObjectsResponsibilityAndAuthorityAuthorityModelObligations()
+    count = count + validatedAbstractMachineObjectsResponsibilityAndAuthorityBindingAndPermissionRuntimeStateObligations()
+    count = count + validatedAbstractMachineObjectsResponsibilityAndAuthorityDynamicScopeStackBindingsAndRegionRuntimeObligations()
+    count = count + validatedAbstractMachineObjectsResponsibilityAndAuthorityHostPrimitivesObligations()
+    count = count + validatedAbstractMachineObjectsResponsibilityAndAuthorityRegionsFramesAndProvenanceObligations()
+    count = count + validatedAbstractMachineObjectsResponsibilityAndAuthorityRuntimeStateAndMemoryDiagnosticsObligations()
+    count = count + validatedAbstractionAndPolymorphismAssociatedTypesObligations()
+    count = count + validatedAbstractionAndPolymorphismCapabilityClassesObligations()
+    count = count + validatedAbstractionAndPolymorphismClassesObligations()
+    count = count + validatedAbstractionAndPolymorphismDynamicClassObjectsObligations()
+    count = count + validatedAbstractionAndPolymorphismFoundationalClassesAndPredicatesObligations()
+    count = count + validatedAbstractionAndPolymorphismGenericParametersAndArgumentsObligations()
+    count = count + validatedAbstractionAndPolymorphismGenericProceduresAndTypesObligations()
+    count = count + validatedAbstractionAndPolymorphismImplementationsObligations()
+    count = count + validatedAbstractionAndPolymorphismOpaqueTypesObligations()
+    count = count + validatedAbstractionAndPolymorphismRefinementAndPolymorphismDiagnosticsSupplementObligations()
+    count = count + validatedAbstractionAndPolymorphismRefinementTypesObligations()
+    count = count + validatedAppendixBCompleteGrammarReferenceBAsyncGrammarObligations()
+    count = count + validatedAppendixBCompleteGrammarReferenceBAttributeGrammarObligations()
+    count = count + validatedAppendixBCompleteGrammarReferenceBConcurrencyGrammarObligations()
+    count = count + validatedAppendixBCompleteGrammarReferenceBContractGrammarObligations()
+    count = count + validatedAppendixBCompleteGrammarReferenceBDeclarationGrammarObligations()
+    count = count + validatedAppendixBCompleteGrammarReferenceBExpressionGrammarObligations()
+    count = count + validatedAppendixBCompleteGrammarReferenceBFfiGrammarObligations()
+    count = count + validatedAppendixBCompleteGrammarReferenceBKeySystemGrammarObligations()
+    count = count + validatedAppendixBCompleteGrammarReferenceBLexicalGrammarObligations()
+    count = count + validatedAppendixBCompleteGrammarReferenceBMetaprogrammingGrammarObligations()
+    count = count + validatedAppendixBCompleteGrammarReferenceBPatternGrammarObligations()
+    count = count + validatedAppendixBCompleteGrammarReferenceBRegionGrammarObligations()
+    count = count + validatedAppendixBCompleteGrammarReferenceBStatementGrammarObligations()
+    count = count + validatedAppendixBCompleteGrammarReferenceBTypeGrammarObligations()
+    count = count + validatedAppendixDLayoutAbiAndRuntimeReferenceCExpressionPatternAndStatementFamiliesObligations()
+    count = count + validatedAsynchronousOperationsAsyncDiagnosticsSupplementObligations()
+    count = count + validatedAsynchronousOperationsAsyncKeyIntegrationObligations()
+    count = count + validatedAsynchronousOperationsAsyncStateMachineObligations()
+    count = count + validatedAsynchronousOperationsAsyncTypeObligations()
+    count = count + validatedAsynchronousOperationsCompositionFormsObligations()
+    count = count + validatedAsynchronousOperationsSuspensionFormsObligations()
+    count = count + validatedAttributesAndMetadataAttributeSyntaxAndPlacementObligations()
+    count = count + validatedAttributesAndMetadataDiagnosticsAndMetadataAttributesObligations()
+    count = count + validatedAttributesAndMetadataLayoutAttributesObligations()
+    count = count + validatedAttributesAndMetadataOptimizationAttributesObligations()
+    count = count + validatedAttributesAndMetadataSourceNativeTestAttributesObligations()
+    count = count + validatedAttributesAndMetadataVendorAttributesObligations()
+    count = count + validatedCommonLoweringProgramLifecycleAndBackendBackendRequirementsObligations()
+    count = count + validatedCommonLoweringProgramLifecycleAndBackendCleanupDropAndUnwindingFrameworkObligations()
+    count = count + validatedCommonLoweringProgramLifecycleAndBackendInitializationAndProgramLifecycleObligations()
+    count = count + validatedCommonLoweringProgramLifecycleAndBackendLayoutAndAbiFrameworkObligations()
+    count = count + validatedCommonLoweringProgramLifecycleAndBackendOutputAndBackendDiagnosticsObligations()
+    count = count + validatedCommonLoweringProgramLifecycleAndBackendRuntimeInterfaceObligations()
+    count = count + validatedCommonLoweringProgramLifecycleAndBackendSharedLoweringJudgmentsObligations()
+    count = count + validatedCommonLoweringProgramLifecycleAndBackendSymbolsManglingAndLinkageObligations()
+    count = count + validatedCompileTimeExecutionAndMetaprogrammingAsyncDiagnosticsSupplementObligations()
+    count = count + validatedCompileTimeExecutionAndMetaprogrammingCompileTimeCapabilitiesObligations()
+    count = count + validatedCompileTimeExecutionAndMetaprogrammingCompileTimeDiagnosticsSupplementObligations()
+    count = count + validatedCompileTimeExecutionAndMetaprogrammingCompileTimeFormsObligations()
+    count = count + validatedCompileTimeExecutionAndMetaprogrammingDeriveTargetsAndContractsObligations()
+    count = count + validatedCompileTimeExecutionAndMetaprogrammingQuoteSpliceAndEmissionObligations()
+    count = count + validatedCompileTimeExecutionAndMetaprogrammingReflectionObligations()
+    count = count + validatedConcreteDataTypesArraysObligations()
+    count = count + validatedConcreteDataTypesEnumsObligations()
+    count = count + validatedConcreteDataTypesPrimitiveTypesObligations()
+    count = count + validatedConcreteDataTypesRangesObligations()
+    count = count + validatedConcreteDataTypesRecordsObligations()
+    count = count + validatedConcreteDataTypesSlicesObligations()
+    count = count + validatedConcreteDataTypesTuplesObligations()
+    count = count + validatedConcreteDataTypesTypeAliasesObligations()
+    count = count + validatedConcreteDataTypesUnionTypesObligations()
+    count = count + validatedConformanceAndNotationBehaviorTypesObligations()
+    count = count + validatedConformanceAndNotationCompileTimeExecutionAndPhaseOrderingObligations()
+    count = count + validatedConformanceAndNotationConformanceObligations()
+    count = count + validatedConformanceAndNotationDocumentConventionsObligations()
+    count = count + validatedConformanceAndNotationNormativeReferencesObligations()
+    count = count + validatedConformanceAndNotationTargetAndAbiAssumptionsObligations()
+    count = count + validatedDiagnosticInfrastructureDiagnosticCodeSelectionObligations()
+    count = count + validatedDiagnosticInfrastructureDiagnosticOrderingObligations()
+    count = count + validatedDiagnosticInfrastructureDiagnosticRecordsAndEmissionObligations()
+    count = count + validatedDiagnosticInfrastructureDiagnosticRenderingObligations()
+    count = count + validatedDiagnosticInfrastructureDiagnosticsWithoutSourceSpansObligations()
+    count = count + validatedDiagnosticInfrastructureSourceLocationsAndSpansObligations()
+    count = count + validatedDiagnosticInfrastructureTokenSpansObligations()
+    count = count + validatedExpressionsAccessAndPlaceExpressionsObligations()
+    count = count + validatedExpressionsCallExpressionsObligations()
+    count = count + validatedExpressionsCastAndTransmuteExpressionsObligations()
+    count = count + validatedExpressionsClosureAndPipelineExpressionsObligations()
+    count = count + validatedExpressionsConstructionExpressionsObligations()
+    count = count + validatedExpressionsControlExpressionsObligations()
+    count = count + validatedExpressionsEffectfulCoreExpressionsObligations()
+    count = count + validatedExpressionsExpressionDiagnosticsSupplementObligations()
+    count = count + validatedExpressionsLiteralAndNameExpressionsObligations()
+    count = count + validatedExpressionsOperatorExpressionsObligations()
+    count = count + validatedForeignFunctionInterfaceBoundaryUnwindingObligations()
+    count = count + validatedForeignFunctionInterfaceCapabilityIsolationObligations()
+    count = count + validatedForeignFunctionInterfaceCompileTimeDiagnosticsSupplementObligations()
+    count = count + validatedForeignFunctionInterfaceExportedProceduresAndHostedExportsObligations()
+    count = count + validatedForeignFunctionInterfaceExternProceduresObligations()
+    count = count + validatedForeignFunctionInterfaceFfiAttributesObligations()
+    count = count + validatedForeignFunctionInterfaceFfiDiagnosticsSupplementObligations()
+    count = count + validatedForeignFunctionInterfaceFfiSafeObligations()
+    count = count + validatedForeignFunctionInterfaceForeignContractsObligations()
+    count = count + validatedFrontMatterDocumentOrganizationObligations()
+    count = count + validatedFrontMatterLanguageDesignContractObligations()
+    count = count + validatedFrontMatterRequiredFeatureSectionTemplateObligations()
+    count = count + validatedKeySystemConflictDetectionObligations()
+    count = count + validatedKeySystemDynamicKeyVerificationObligations()
+    count = count + validatedKeySystemKeyAcquisitionBlocksObligations()
+    count = count + validatedKeySystemKeyPathsObligations()
+    count = count + validatedKeySystemMemoryOrderingObligations()
+    count = count + validatedKeySystemNestedReleaseObligations()
+    count = count + validatedKeySystemSpeculativeExecutionObligations()
+    count = count + validatedModalAndSpecialTypesBytesTypesObligations()
+    count = count + validatedModalAndSpecialTypesClosureTypesObligations()
+    count = count + validatedModalAndSpecialTypesFunctionTypesObligations()
+    count = count + validatedModalAndSpecialTypesModalDeclarationsObligations()
+    count = count + validatedModalAndSpecialTypesModalWideningObligations()
+    count = count + validatedModalAndSpecialTypesRawPointerTypesObligations()
+    count = count + validatedModalAndSpecialTypesSafePointerTypesObligations()
+    count = count + validatedModalAndSpecialTypesStateFieldsObligations()
+    count = count + validatedModalAndSpecialTypesStateSpecificMethodsObligations()
+    count = count + validatedModalAndSpecialTypesStringTypesObligations()
+    count = count + validatedModalAndSpecialTypesTransitionsObligations()
+    count = count + validatedModuleLevelFormsExternBlockShellObligations()
+    count = count + validatedModuleLevelFormsImportDeclarationsObligations()
+    count = count + validatedModuleLevelFormsModuleAndFileAggregationObligations()
+    count = count + validatedModuleLevelFormsStaticDeclarationsObligations()
+    count = count + validatedModuleLevelFormsUsingDeclarationsObligations()
+    count = count + validatedNameResolutionAndVisibilityLookupAndQualifiedResolutionObligations()
+    count = count + validatedNameResolutionAndVisibilityNameIntroductionAndModuleValidationObligations()
+    count = count + validatedNameResolutionAndVisibilityNameResolutionAndReservedNameDiagnosticsObligations()
+    count = count + validatedNameResolutionAndVisibilityQualifiedDisambiguationObligations()
+    count = count + validatedNameResolutionAndVisibilityScopeContextAndIdentifiersObligations()
+    count = count + validatedNameResolutionAndVisibilitySharedResolutionHelpersAndResolutionPassObligations()
+    count = count + validatedNameResolutionAndVisibilityTopLevelNameCollectionObligations()
+    count = count + validatedNameResolutionAndVisibilityVisibilityAndAccessibilityObligations()
+    count = count + validatedParsingAndAstInfrastructureAstMetaConventionsObligations()
+    count = count + validatedParsingAndAstInfrastructureDocCommentAssociationObligations()
+    count = count + validatedParsingAndAstInfrastructureErrorRecoveryAndSynchronizationObligations()
+    count = count + validatedParsingAndAstInfrastructureParseFileItemSequencingAndTerminatorsObligations()
+    count = count + validatedParsingAndAstInfrastructureParserStateAndJudgmentsObligations()
+    count = count + validatedParsingAndAstInfrastructureParsingDiagnosticsObligations()
+    count = count + validatedParsingAndAstInfrastructureParsingDiagnosticsSupplementObligations()
+    count = count + validatedParsingAndAstInfrastructureParsingInputsOutputsAndInvariantsObligations()
+    count = count + validatedParsingAndAstInfrastructureSharedGrammarPolicyAndParserHelpersObligations()
+    count = count + validatedParsingAndAstInfrastructureTokenConsumptionAndListParsingObligations()
+    count = count + validatedPatternsBasicPatternsObligations()
+    count = count + validatedPatternsCaseClausesObligations()
+    count = count + validatedPatternsEnumAndModalPatternsObligations()
+    count = count + validatedPatternsExhaustivenessAndReachabilityObligations()
+    count = count + validatedPatternsPatternDiagnosticsSupplementObligations()
+    count = count + validatedPatternsRangePatternsObligations()
+    count = count + validatedPatternsTupleAndRecordPatternsObligations()
+    count = count + validatedPermissionsAndBindingStateAliasAndExclusivityRulesObligations()
+    count = count + validatedPermissionsAndBindingStateBindingActivityStatesObligations()
+    count = count + validatedPermissionsAndBindingStatePermissionAdmissibilityObligations()
+    count = count + validatedPermissionsAndBindingStatePermissionFormsObligations()
+    count = count + validatedProceduresAndContractsBehavioralSubtypingObligations()
+    count = count + validatedProceduresAndContractsContractClausesObligations()
+    count = count + validatedProceduresAndContractsInvariantsObligations()
+    count = count + validatedProceduresAndContractsMethodsAndReceiversObligations()
+    count = count + validatedProceduresAndContractsOverloadingObligations()
+    count = count + validatedProceduresAndContractsPostconditionsObligations()
+    count = count + validatedProceduresAndContractsPreconditionsObligations()
+    count = count + validatedProceduresAndContractsProcedureContractAndEntryDiagnosticsSupplementObligations()
+    count = count + validatedProceduresAndContractsProcedureDeclarationsObligations()
+    count = count + validatedProceduresAndContractsVerificationLogicObligations()
+    count = count + validatedProjectAndCompilationModelAssembliesAndProjectLoadingObligations()
+    count = count + validatedProjectAndCompilationModelCoreProjectRecordsObligations()
+    count = count + validatedProjectAndCompilationModelDeterministicOrderingAndCaseFoldingObligations()
+    count = count + validatedProjectAndCompilationModelOutputArtifactsAndLinkingObligations()
+    count = count + validatedProjectAndCompilationModelProjectDiagnosticsObligations()
+    count = count + validatedProjectAndCompilationModelProjectRootAndManifestObligations()
+    count = count + validatedProjectAndCompilationModelSourceRootsModuleDirectoriesAndCompilationUnitsObligations()
+    count = count + validatedProjectAndCompilationModelToolResolutionAndIRAssemblyInputsObligations()
+    count = count + validatedSourceTextAndLexicalStructureLexicalAnalysisObligations()
+    count = count + validatedSourceTextAndLexicalStructureSourceLoadingAndLexicalDiagnosticsObligations()
+    count = count + validatedSourceTextAndLexicalStructureSourceLoadingAndNormalizationObligations()
+    count = count + validatedStatementsAndBlocksAssignmentStatementsObligations()
+    count = count + validatedStatementsAndBlocksBindingStatementsObligations()
+    count = count + validatedStatementsAndBlocksBlocksObligations()
+    count = count + validatedStatementsAndBlocksControlTransferStatementsObligations()
+    count = count + validatedStatementsAndBlocksDeferObligations()
+    count = count + validatedStatementsAndBlocksExpressionStatementsObligations()
+    count = count + validatedStatementsAndBlocksFrameObligations()
+    count = count + validatedStatementsAndBlocksLocalUsingStatementsObligations()
+    count = count + validatedStatementsAndBlocksRegionObligations()
+    count = count + validatedStatementsAndBlocksStatementDiagnosticsSupplementObligations()
+    count = count + validatedStatementsAndBlocksUnsafeStatementsObligations()
+    count = count + validatedStructuredParallelismCancellationObligations()
+    count = count + validatedStructuredParallelismCaptureSemanticsObligations()
+    count = count + validatedStructuredParallelismDeterminismAndNestingObligations()
+    count = count + validatedStructuredParallelismDispatchObligations()
+    count = count + validatedStructuredParallelismExecutionDomainsObligations()
+    count = count + validatedStructuredParallelismPanicHandlingObligations()
+    count = count + validatedStructuredParallelismParallelBlocksObligations()
+    count = count + validatedStructuredParallelismSpawnObligations()
+    count = count + validatedStructuredParallelismStructuredParallelismDiagnosticsSupplementObligations()
+    count = count + validatedTypeSystemCoreCoreTypeDiagnosticsObligations()
+    count = count + validatedTypeSystemCoreMetatheoreticPropertiesObligations()
+    count = count + validatedTypeSystemCoreSubtypingObligations()
+    count = count + validatedTypeSystemCoreTypeEquivalenceObligations()
+    count = count + validatedTypeSystemCoreTypeInferenceObligations()
+    return count
+}
+
+public procedure catalogCoverageIsComplete() -> bool {
+    return generatedCatalogObligationCount() == EXPECTED_OBLIGATION_COUNT &&
+        generatedCatalogValidatedObligationCount() == EXPECTED_OBLIGATION_COUNT
+}

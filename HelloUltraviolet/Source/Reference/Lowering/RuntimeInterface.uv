@@ -1,0 +1,7 @@
+//! Reference specimens for Lowering / RuntimeInterface.
+
+/// Exercises the Lowering RuntimeInterface reference surface.
+public procedure runLoweringRuntimeInterfaceReference() -> bool {
+    let reference: LoweringReference = loweringReference(2usize, true, true)
+    return loweringReferenceIsCovered(reference)
+}

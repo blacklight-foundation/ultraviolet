@@ -1,0 +1,73 @@
+//! Coverage checks for accepted project fixture metadata.
+
+public procedure expectedAcceptedProjectFixtureCount() -> usize {
+    return 3usize
+}
+
+public procedure acceptedProjectFixtureCount() -> usize {
+    return 3usize
+}
+
+public procedure validatedAcceptedProjectFixtureCount() -> usize {
+    var count: usize = 0usize
+    if acceptedProjectSpecimenMatches(
+        acceptedProjectSpecimen(
+            "StaticLibrary",
+            "Fixtures/AcceptedProjects/StaticLibrary",
+            "Fixtures/AcceptedProjects/StaticLibrary/Ultraviolet.toml",
+            "Fixtures/AcceptedProjects/StaticLibrary/Source/Library.uv",
+            "StaticLibrary",
+            "library"
+        ),
+        "StaticLibrary",
+        "Fixtures/AcceptedProjects/StaticLibrary",
+        "Fixtures/AcceptedProjects/StaticLibrary/Ultraviolet.toml",
+        "Fixtures/AcceptedProjects/StaticLibrary/Source/Library.uv",
+        "StaticLibrary",
+        "library"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedProjectSpecimenMatches(
+        acceptedProjectSpecimen(
+            "ExecutableMain",
+            "Fixtures/AcceptedProjects/ExecutableMain",
+            "Fixtures/AcceptedProjects/ExecutableMain/Ultraviolet.toml",
+            "Fixtures/AcceptedProjects/ExecutableMain/Source/Main.uv",
+            "ExecutableMain",
+            "executable"
+        ),
+        "ExecutableMain",
+        "Fixtures/AcceptedProjects/ExecutableMain",
+        "Fixtures/AcceptedProjects/ExecutableMain/Ultraviolet.toml",
+        "Fixtures/AcceptedProjects/ExecutableMain/Source/Main.uv",
+        "ExecutableMain",
+        "executable"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedProjectSpecimenMatches(
+        acceptedProjectSpecimen(
+            "PtrNullReturn",
+            "Fixtures/AcceptedProjects/PtrNullReturn",
+            "Fixtures/AcceptedProjects/PtrNullReturn/Ultraviolet.toml",
+            "Fixtures/AcceptedProjects/PtrNullReturn/Source/Library.uv",
+            "PtrNullReturn",
+            "library"
+        ),
+        "PtrNullReturn",
+        "Fixtures/AcceptedProjects/PtrNullReturn",
+        "Fixtures/AcceptedProjects/PtrNullReturn/Ultraviolet.toml",
+        "Fixtures/AcceptedProjects/PtrNullReturn/Source/Library.uv",
+        "PtrNullReturn",
+        "library"
+    ) {
+        count = count + 1usize
+    }
+    return count
+}
+
+public procedure acceptedProjectFixturesAreIndexed() -> bool {
+    return acceptedProjectFixtureCount() == expectedAcceptedProjectFixtureCount() &&
+        validatedAcceptedProjectFixtureCount() == expectedAcceptedProjectFixtureCount()
+}

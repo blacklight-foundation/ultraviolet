@@ -1,0 +1,7 @@
+//! Reference specimens for Parallelism / ExecutionDomains.
+
+/// Exercises the Parallelism ExecutionDomains reference surface.
+public procedure runParallelismExecutionDomainsReference() -> bool {
+    let reference: ParallelReference = parallelReference(1usize, true, false)
+    return parallelReferenceIsCovered(reference)
+}

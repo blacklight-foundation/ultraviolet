@@ -196,9 +196,105 @@ procedure consumeAggregate(result: LargeResult) -> i32 {
     }
 }
 
+public modal Gate {
+    @Closed {
+        public transition open(value: i32) -> @Open {
+            return Gate@Open { value: value }
+        }
+    }
+
+    @Open {
+        public value: i32
+    }
+}
+
+procedure transitionExitCode() -> i32 {
+    let closed: unique Gate@Closed = Gate@Closed {}
+    let opened: Gate@Open = closed~>open(42)
+    if (opened.value == 42) {
+        return 0
+    }
+    return 2
+}
+
+public type PrimitiveUnion = i32 | bool
+
+procedure numericUnion() -> PrimitiveUnion {
+    return 9
+}
+
+procedure booleanUnion() -> PrimitiveUnion {
+    return true
+}
+
+procedure typedUnionExitCode() -> i32 {
+    let numeric: PrimitiveUnion = numericUnion()
+    let boolean: PrimitiveUnion = booleanUnion()
+    let numeric_ok: bool = if numeric is {
+        value: i32 { value == 9 }
+        value: bool { value == false }
+    }
+    let boolean_ok: bool = if boolean is {
+        value: i32 { value == 0 }
+        value: bool { value == true }
+    }
+    if (numeric_ok && boolean_ok) {
+        return 0
+    }
+    return 3
+}
+
+procedure conditionalLoopExitCode() -> i32 {
+    let value: i32 = loop true {
+        break 5
+    }
+    if (value == 5) {
+        return 0
+    }
+    return 4
+}
+
+procedure nonCapturingClosureExitCode() -> i32 {
+    let non_capturing = |value: i32| -> i32 value + 1
+    let empty = || 5
+    if (non_capturing(4) == 5 && empty() == 5) {
+        return 0
+    }
+    return 5
+}
+
+procedure capturedClosureExitCode() -> i32 {
+    let base_value: i32 = 3
+    let capturing = |value: i32| -> i32 value + base_value
+    if (capturing(4) == 7) {
+        return 0
+    }
+    return 6
+}
+
 public procedure main(move ctx: Context) -> i32 {
     let _ = ctx
-    return consumeAggregate(chooseAggregate(10))
+    let aggregate_code: i32 = consumeAggregate(chooseAggregate(10))
+    if (aggregate_code != 0) {
+        return aggregate_code
+    }
+    let transition_code: i32 = transitionExitCode()
+    if (transition_code != 0) {
+        return transition_code
+    }
+    let union_code: i32 = typedUnionExitCode()
+    if (union_code != 0) {
+        return union_code
+    }
+    let loop_code: i32 = conditionalLoopExitCode()
+    if (loop_code != 0) {
+        return loop_code
+    }
+    let non_capturing_code: i32 = nonCapturingClosureExitCode()
+    if (non_capturing_code != 0) {
+        return non_capturing_code
+    }
+    return capturedClosureExitCode()
 }
 )cursive";
 }

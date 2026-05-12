@@ -1,0 +1,32 @@
+//! Reference specimens for Patterns / EnumModalPatterns.
+
+using HelloUltraviolet::Reference::DataTypes::{ EnumReference }
+using HelloUltraviolet::Reference::ModalTypes::{ ModalReference, ModalReferenceValue }
+
+/// Exercises the Patterns EnumModalPatterns reference surface.
+public procedure runPatternsEnumModalPatternsReference() -> bool {
+    let enum_reference: EnumReference = EnumReference::Count(41)
+    let enum_hit: bool = if enum_reference is {
+        EnumReference::Idle {
+            false
+        }
+        EnumReference::Count(value) {
+            value == 41
+        }
+        EnumReference::Named { value } {
+            false
+        }
+    }
+
+    let modal_reference: ModalReferenceValue = ModalReference@Open { value: 41 }
+    let modal_hit: bool = if modal_reference is {
+        @Open { value } {
+            value == 41
+        }
+        @Closed {
+            false
+        }
+    }
+
+    return enum_hit && modal_hit
+}

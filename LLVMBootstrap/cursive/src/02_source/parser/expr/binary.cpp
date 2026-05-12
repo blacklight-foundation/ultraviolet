@@ -292,6 +292,7 @@ ParseElemResult<ExprPtr> ParsePowerTail(Parser parser, ExprPtr lhs,
 
 ParseElemResult<ExprPtr> ParsePower(Parser parser, bool allow_brace,
                                     bool allow_bracket) {
+  SPEC_RULE("ParsePowerFamily");
   SPEC_RULE("Parse-Power");
   ParseElemResult<ExprPtr> lhs = ParseCast(parser, allow_brace, allow_bracket);
   return ParsePowerTail(lhs.parser, lhs.elem, allow_brace, allow_bracket);
@@ -307,6 +308,7 @@ ParseElemResult<ExprPtr> ParsePower(Parser parser, bool allow_brace,
 
 ParseElemResult<ExprPtr> ParseBinaryExpr(Parser parser, BinaryPrecedence min_prec,
                                          bool allow_brace, bool allow_bracket) {
+  SPEC_RULE("ParseLeftChainFamily");
   // Start with the highest-precedence sub-expression (power, cast, unary, postfix, primary)
   ParseElemResult<ExprPtr> result = ParsePower(parser, allow_brace, allow_bracket);
 

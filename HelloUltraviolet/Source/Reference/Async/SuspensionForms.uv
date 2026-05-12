@@ -1,0 +1,7 @@
+//! Reference specimens for Async / SuspensionForms.
+
+/// Exercises the Async SuspensionForms reference surface.
+public procedure runAsyncSuspensionFormsReference() -> bool {
+    let reference: AsyncReference = asyncReference(2usize, true, false)
+    return asyncReferenceIsCovered(reference)
+}

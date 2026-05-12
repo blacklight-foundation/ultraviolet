@@ -1,0 +1,8 @@
+//! Reference specimens for Statements / LocalUsing.
+
+/// Exercises the Statements LocalUsing reference surface.
+public procedure runStatementsLocalUsingReference() -> bool {
+    let source_value: i32 = 19
+    using source_value as alias_value
+    return alias_value == 19
+}

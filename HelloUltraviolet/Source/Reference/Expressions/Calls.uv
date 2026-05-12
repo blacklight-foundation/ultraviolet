@@ -1,0 +1,16 @@
+//! Reference specimens for Expressions / Calls.
+
+public procedure callReferenceAdd(left: i32, right: i32) -> i32 {
+    return left + right
+}
+
+public procedure callReferenceApply(value: i32) -> i32 {
+    return callReferenceAdd(value, 4)
+}
+
+/// Exercises the Expressions Calls reference surface.
+public procedure runExpressionsCallsReference() -> bool {
+    let direct_call: i32 = callReferenceAdd(2, 3)
+    let nested_call: i32 = callReferenceApply(callReferenceAdd(1, 2))
+    return direct_call == 5 && nested_call == 7
+}

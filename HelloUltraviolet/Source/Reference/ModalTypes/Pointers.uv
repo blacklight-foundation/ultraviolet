@@ -1,0 +1,33 @@
+//! Reference specimens for ModalTypes / Pointers.
+
+internal enum PointerReferenceState {
+    Null
+    Valid
+    Expired
+    Raw
+}
+
+internal procedure pointerReferenceCanDereference(state: PointerReferenceState) -> bool {
+    return if state is {
+        PointerReferenceState::Null {
+            false
+        }
+        PointerReferenceState::Valid {
+            true
+        }
+        PointerReferenceState::Expired {
+            false
+        }
+        PointerReferenceState::Raw {
+            false
+        }
+    }
+}
+
+/// Exercises the ModalTypes Pointers reference surface.
+public procedure runModalTypesPointersReference() -> bool {
+    return !pointerReferenceCanDereference(PointerReferenceState::Null) &&
+        pointerReferenceCanDereference(PointerReferenceState::Valid) &&
+        !pointerReferenceCanDereference(PointerReferenceState::Expired) &&
+        !pointerReferenceCanDereference(PointerReferenceState::Raw)
+}

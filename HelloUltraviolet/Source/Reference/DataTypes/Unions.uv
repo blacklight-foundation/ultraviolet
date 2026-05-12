@@ -1,0 +1,34 @@
+//! Reference specimens for DataTypes / Unions.
+
+public type DataUnionReference = i32 | bool
+
+public procedure numericUnionReference() -> DataUnionReference {
+    return 9
+}
+
+public procedure booleanUnionReference() -> DataUnionReference {
+    return true
+}
+
+/// Exercises the DataTypes Unions reference surface.
+public procedure runDataTypesUnionsReference() -> bool {
+    let numeric: DataUnionReference = numericUnionReference()
+    let boolean: DataUnionReference = booleanUnionReference()
+    let numeric_ok: bool = if numeric is {
+        value: i32 {
+            value == 9
+        }
+        value: bool {
+            value == false
+        }
+    }
+    let boolean_ok: bool = if boolean is {
+        value: i32 {
+            value == 0
+        }
+        value: bool {
+            value == true
+        }
+    }
+    return numeric_ok && boolean_ok
+}

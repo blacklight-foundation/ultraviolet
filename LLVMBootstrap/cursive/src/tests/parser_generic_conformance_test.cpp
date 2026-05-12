@@ -155,8 +155,21 @@ public procedure useClosureExpr() -> i32 {
     let untyped = |value| value
     let moved_typed = |move value: i32| value
     let moved = |move value| value
+    let empty_call = foreignString()
+    let moved_call = foreignString(move 1, 2)
+    let chain = 1 + 2 + 3
+    let power = 2 ** 3 ** 4
+    let full = ..
+    let to_range = ..10
+    let from_range = 10..
     let exclusive = 0..1
     let inclusive = 0..=1
+    let tuple_value = (1, 2)
+    let singleton_tuple = (1;)
+    let second = 2
+    let record_value = Pair{ first: 1, second }
+    let transmuted = transmute<i32, i32>(1)
+    let split_transmuted = transmute<Pair<i32, i32>, Pair<i32, i32>>(record_value)
     let matched = if 1 is {
         0 { 0 }
         1 { 1 }
@@ -164,6 +177,12 @@ public procedure useClosureExpr() -> i32 {
     }
     let ended = if 1 is {
         0 { 0 }
+    }
+    loop value in [1, 2] {
+        break 0
+    }
+    loop true {
+        break 0
     }
     return 0
 }
@@ -290,12 +309,35 @@ int main() {
            "Parse-ClosureRetOpt-Some",
            "Parse-ClosureRetOpt-None",
            "Parse-ClosureBody-Expr",
+           "ArgumentListParsingFamily",
+           "Parse-ArgList-Empty",
+           "Parse-ArgList-Cons",
+           "Parse-ArgMoveOpt-Yes",
+           "ParseRangeFamily",
+           "Parse-Range-Full",
+           "Parse-Range-To",
+           "Parse-RangeTail-From",
            "Parse-RangeTail-Exclusive",
            "Parse-RangeTail-Inclusive",
+           "ParseLeftChainFamily",
+           "Parse-LeftChain-Cons",
+           "ParsePowerFamily",
+           "Parse-PowerTail-Cons",
+           "ParseTransmuteExprFamily",
+           "Parse-Transmute-Expr",
+           "ConstructionListAndShorthandParsingFamily",
+           "Parse-TupleExprElems-Many",
+           "Parse-FieldInit-Explicit",
+           "Parse-FieldInit-Shorthand",
+           "ControlExpressionParsingRemainderFamily",
            "Parse-IfCases-Cons",
            "Parse-IfCasesTail-End",
            "Parse-IfCasesTail-Else",
            "Parse-IfCasesTail-Cons",
+           "TryParsePatternIn-Ok",
+           "TryParsePatternIn-Fail",
+           "Parse-LoopTail-Iter",
+           "Parse-LoopTail-Cond",
            "Parse-ExternBlock",
            "Parse-ExternAbiOpt-String",
            "Parse-ExternAbiOpt-Ident",

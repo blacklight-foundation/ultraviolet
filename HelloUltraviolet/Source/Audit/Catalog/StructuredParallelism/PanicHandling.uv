@@ -1,0 +1,101 @@
+//! Generated catalog markers for 20. Structured Parallelism / 20.7 Panic Handling.
+
+
+public procedure countStructuredParallelismPanicHandlingObligations() -> usize {
+    return 10usize
+}
+
+public procedure validatedStructuredParallelismPanicHandlingObligations() -> usize {
+    var count: usize = 0usize
+    if acceptedObligationEntryMatches(
+        "requirement.20.PanicHandlingNoAdditionalSyntax",
+        77473usize,
+        "HelloUltraviolet::Reference::Parallelism",
+        "runParallelismParallelBlocksReference",
+        "Source/Reference/Parallelism/ParallelBlocks.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "requirement.20.PanicHandlingNoAdditionalParsingRules",
+        77488usize,
+        "HelloUltraviolet::Reference::Parallelism",
+        "runParallelismParallelBlocksReference",
+        "Source/Reference/Parallelism/ParallelBlocks.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "ast.20.ParallelPanicPropagationInputs",
+        77503usize,
+        "HelloUltraviolet::Reference::Parallelism",
+        "runParallelismParallelBlocksReference",
+        "Source/Reference/Parallelism/ParallelBlocks.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "requirement.20.PanicHandlingNoAdditionalStaticTypingRules",
+        77518usize,
+        "HelloUltraviolet::Reference::Parallelism",
+        "runParallelismParallelBlocksReference",
+        "Source/Reference/Parallelism/ParallelBlocks.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "requirement.20.ParallelWorkItemPanicSemantics",
+        77533usize,
+        "HelloUltraviolet::Reference::Parallelism",
+        "runParallelismParallelBlocksReference",
+        "Source/Reference/Parallelism/ParallelBlocks.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "rule.20.EvalSigma-Parallel-Spawn-Panic",
+        77550usize,
+        "HelloUltraviolet::Reference::Parallelism",
+        "runParallelismParallelBlocksReference",
+        "Source/Reference/Parallelism/ParallelBlocks.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "requirement.20.ParallelPanicCancellationRequest",
+        77566usize,
+        "HelloUltraviolet::Reference::Parallelism",
+        "runParallelismParallelBlocksReference",
+        "Source/Reference/Parallelism/ParallelBlocks.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "def.20.FirstCompletedFailure",
+        77579usize,
+        "HelloUltraviolet::Reference::Parallelism",
+        "runParallelismParallelBlocksReference",
+        "Source/Reference/Parallelism/ParallelBlocks.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "rule.20.Lower-Parallel-Join-Panic",
+        77594usize,
+        "HelloUltraviolet::Reference::Parallelism",
+        "runParallelismParallelBlocksReference",
+        "Source/Reference/Parallelism/ParallelBlocks.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "diagnostics.20.PanicHandling",
+        77611usize,
+        "HelloUltraviolet::Reference::Parallelism",
+        "runParallelismParallelBlocksReference",
+        "Source/Reference/Parallelism/ParallelBlocks.uv"
+    ) {
+        count = count + 1usize
+    }
+    return count
+}

@@ -1,0 +1,20 @@
+//! Generated catalog markers for 2. Diagnostic Infrastructure / 2.5 Diagnostic Ordering.
+
+
+public procedure countDiagnosticInfrastructureDiagnosticOrderingObligations() -> usize {
+    return 1usize
+}
+
+public procedure validatedDiagnosticInfrastructureDiagnosticOrderingObligations() -> usize {
+    var count: usize = 0usize
+    if acceptedObligationEntryMatches(
+        "Order",
+        1758usize,
+        "HelloUltraviolet::Reference::Diagnostics",
+        "runDiagnosticsDiagnosticOrderingReference",
+        "Source/Reference/Diagnostics/DiagnosticOrdering.uv"
+    ) {
+        count = count + 1usize
+    }
+    return count
+}

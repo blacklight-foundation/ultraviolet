@@ -1,0 +1,7 @@
+//! Reference specimens for Keys / DynamicVerification.
+
+/// Exercises the Keys DynamicVerification reference surface.
+public procedure runKeysDynamicVerificationReference() -> bool {
+    let reference: KeyReference = keyReference(3usize, false, true)
+    return keyReferenceIsCovered(reference) && reference.runtime_checked
+}

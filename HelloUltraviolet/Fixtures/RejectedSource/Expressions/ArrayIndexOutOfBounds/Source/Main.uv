@@ -1,0 +1,6 @@
+//! Rejected array index specimen for fixed-array indexing past the last element.
+
+public procedure arrayIndexOutOfBoundsReference() -> i32 {
+    let values: [i32; 2] = [1, 2]
+    return values[2usize]
+}

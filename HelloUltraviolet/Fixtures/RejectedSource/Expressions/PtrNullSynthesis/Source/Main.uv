@@ -1,0 +1,6 @@
+//! Rejected null pointer expression specimen for synthesis without expected type.
+
+public procedure ptrNullSynthesisReference() -> i32 {
+    let pointer = Ptr::null()
+    return 0
+}

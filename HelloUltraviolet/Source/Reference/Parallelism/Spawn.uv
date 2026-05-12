@@ -1,0 +1,7 @@
+//! Reference specimens for Parallelism / Spawn.
+
+/// Exercises the Parallelism Spawn reference surface.
+public procedure runParallelismSpawnReference() -> bool {
+    let reference: ParallelReference = parallelReference(1usize, true, true)
+    return parallelReferenceIsCovered(reference)
+}

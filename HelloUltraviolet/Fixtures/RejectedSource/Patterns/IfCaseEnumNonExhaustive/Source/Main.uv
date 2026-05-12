@@ -1,0 +1,15 @@
+//! Rejected pattern specimen for non-exhaustive enum case analysis.
+
+public enum IfCaseEnumReference {
+    First
+    Second
+}
+
+public procedure ifCaseEnumNonExhaustiveReference() -> i32 {
+    let value: IfCaseEnumReference = IfCaseEnumReference::First
+    return if value is {
+        IfCaseEnumReference::First {
+            1
+        }
+    }
+}

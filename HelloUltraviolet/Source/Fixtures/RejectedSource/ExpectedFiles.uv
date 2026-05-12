@@ -1,0 +1,750 @@
+//! Runtime content checks for rejected-source expected diagnostic metadata.
+
+internal procedure expectedDiagnosticFileMatches(
+    context: Context,
+    expected_path: string@View,
+    expected_text: string@View
+) -> bool {
+    let read_result: Outcome<unique string@Managed, IoError> = context.fs~>read_file(expected_path)
+    return if move read_result is {
+        @Value { value } {
+            let text: string@View = string::as_view(value)
+            auditTextEquals(text, expected_text)
+        }
+        @Error {
+            false
+        }
+    }
+}
+
+public procedure unterminatedStringExpectedDiagnosticFileMatches(context: Context) -> bool {
+    return expectedDiagnosticFileMatches(
+        context,
+        "HelloUltraviolet/Fixtures/RejectedSource/SourceText/UnterminatedString/Expected.uv",
+        "//! Expected diagnostic metadata for the UnterminatedString rejected-source specimen.\n\nexpectedDiagnostic(\"E-SRC-0301\", \"Lex-String-Unterminated\")\n"
+    )
+}
+
+public procedure invalidStringEscapeExpectedDiagnosticFileMatches(context: Context) -> bool {
+    return expectedDiagnosticFileMatches(
+        context,
+        "HelloUltraviolet/Fixtures/RejectedSource/SourceText/InvalidStringEscape/Expected.uv",
+        "//! Expected diagnostic metadata for the InvalidStringEscape rejected-source specimen.\n\nexpectedDiagnostic(\"E-SRC-0302\", \"Lex-String-BadEscape\")\n"
+    )
+}
+
+public procedure malformedNumericLiteralExpectedDiagnosticFileMatches(context: Context) -> bool {
+    return expectedDiagnosticFileMatches(
+        context,
+        "HelloUltraviolet/Fixtures/RejectedSource/SourceText/MalformedNumericLiteral/Expected.uv",
+        "//! Expected diagnostic metadata for the MalformedNumericLiteral rejected-source specimen.\n\nexpectedDiagnostic(\"E-SRC-0304\", \"Lex-Numeric-Err\")\n"
+    )
+}
+
+public procedure unterminatedBlockCommentExpectedDiagnosticFileMatches(context: Context) -> bool {
+    return expectedDiagnosticFileMatches(
+        context,
+        "HelloUltraviolet/Fixtures/RejectedSource/SourceText/UnterminatedBlockComment/Expected.uv",
+        "//! Expected diagnostic metadata for the UnterminatedBlockComment rejected-source specimen.\n\nexpectedDiagnostic(\"E-SRC-0306\", \"Block-Comment-Unterminated\")\n"
+    )
+}
+
+public procedure missingStatementTerminatorExpectedDiagnosticFileMatches(context: Context) -> bool {
+    return expectedDiagnosticFileMatches(
+        context,
+        "HelloUltraviolet/Fixtures/RejectedSource/Parsing/MissingStatementTerminator/Expected.uv",
+        "//! Expected diagnostic metadata for the MissingStatementTerminator rejected-source specimen.\n\nexpectedDiagnostic(\"E-SRC-0510\", \"Missing-Terminator-Err\")\n"
+    )
+}
+
+public procedure duplicateModuleDeclarationExpectedDiagnosticFileMatches(context: Context) -> bool {
+    return expectedDiagnosticFileMatches(
+        context,
+        "HelloUltraviolet/Fixtures/RejectedSource/Names/DuplicateModuleDeclaration/Expected.uv",
+        "//! Expected diagnostic metadata for the DuplicateModuleDeclaration rejected-source specimen.\n\nexpectedDiagnostic(\"E-MOD-1302\", \"Collect-Dup\")\n"
+    )
+}
+
+public procedure mainMissingExpectedDiagnosticFileMatches(context: Context) -> bool {
+    return expectedDiagnosticFileMatches(
+        context,
+        "HelloUltraviolet/Fixtures/RejectedSource/Procedures/MainMissing/Expected.uv",
+        "//! Expected diagnostic metadata for the MainMissing rejected-source specimen.\n\nexpectedDiagnostic(\"E-MOD-2434\", \"rule.15.Main-Missing\")\n"
+    )
+}
+
+public procedure mainMultipleExpectedDiagnosticFileMatches(context: Context) -> bool {
+    return expectedDiagnosticFileMatches(
+        context,
+        "HelloUltraviolet/Fixtures/RejectedSource/Procedures/MainMultiple/Expected.uv",
+        "//! Expected diagnostic metadata for the MainMultiple rejected-source specimen.\n\nexpectedDiagnostic(\"E-MOD-2430\", \"rule.15.Main-Multiple\")\n"
+    )
+}
+
+public procedure mainGenericExpectedDiagnosticFileMatches(context: Context) -> bool {
+    return expectedDiagnosticFileMatches(
+        context,
+        "HelloUltraviolet/Fixtures/RejectedSource/Procedures/MainGeneric/Expected.uv",
+        "//! Expected diagnostic metadata for the MainGeneric rejected-source specimen.\n\nexpectedDiagnostic(\"E-MOD-2432\", \"rule.15.Main-Generic-Err\")\n"
+    )
+}
+
+public procedure mainSignatureExpectedDiagnosticFileMatches(context: Context) -> bool {
+    return expectedDiagnosticFileMatches(
+        context,
+        "HelloUltraviolet/Fixtures/RejectedSource/Procedures/MainSignature/Expected.uv",
+        "//! Expected diagnostic metadata for the MainSignature rejected-source specimen.\n\nexpectedDiagnostic(\"E-MOD-2431\", \"rule.15.Main-Signature-Err\")\n"
+    )
+}
+
+public procedure breakOutsideLoopExpectedDiagnosticFileMatches(context: Context) -> bool {
+    return expectedDiagnosticFileMatches(
+        context,
+        "HelloUltraviolet/Fixtures/RejectedSource/Statements/BreakOutsideLoop/Expected.uv",
+        "//! Expected diagnostic metadata for the BreakOutsideLoop rejected-source specimen.\n\nexpectedDiagnostic(\"E-SEM-3162\", \"rule.18.Break-Outside-Loop\")\n"
+    )
+}
+
+public procedure continueOutsideLoopExpectedDiagnosticFileMatches(context: Context) -> bool {
+    return expectedDiagnosticFileMatches(
+        context,
+        "HelloUltraviolet/Fixtures/RejectedSource/Statements/ContinueOutsideLoop/Expected.uv",
+        "//! Expected diagnostic metadata for the ContinueOutsideLoop rejected-source specimen.\n\nexpectedDiagnostic(\"E-SEM-3163\", \"rule.18.Continue-Outside-Loop\")\n"
+    )
+}
+
+public procedure assignImmutableLetExpectedDiagnosticFileMatches(context: Context) -> bool {
+    return expectedDiagnosticFileMatches(
+        context,
+        "HelloUltraviolet/Fixtures/RejectedSource/Statements/AssignImmutableLet/Expected.uv",
+        "//! Expected diagnostic metadata for the AssignImmutableLet rejected-source specimen.\n\nexpectedDiagnostic(\"E-MOD-2401\", \"rule.18.Assign-Immutable-Err\")\n"
+    )
+}
+
+public procedure letAnnotationMismatchExpectedDiagnosticFileMatches(context: Context) -> bool {
+    return expectedDiagnosticFileMatches(
+        context,
+        "HelloUltraviolet/Fixtures/RejectedSource/Statements/LetAnnotationMismatch/Expected.uv",
+        "//! Expected diagnostic metadata for the LetAnnotationMismatch rejected-source specimen.\n\nexpectedDiagnostic(\"E-MOD-2402\", \"rule.18.T-LetStmt-Ann-Mismatch\")\n"
+    )
+}
+
+public procedure assignTypeMismatchExpectedDiagnosticFileMatches(context: Context) -> bool {
+    return expectedDiagnosticFileMatches(
+        context,
+        "HelloUltraviolet/Fixtures/RejectedSource/Statements/AssignTypeMismatch/Expected.uv",
+        "//! Expected diagnostic metadata for the AssignTypeMismatch rejected-source specimen.\n\nexpectedDiagnostic(\"E-SEM-3133\", \"rule.18.Assign-Type-Err\")\n"
+    )
+}
+
+public procedure returnTypeMismatchExpectedDiagnosticFileMatches(context: Context) -> bool {
+    return expectedDiagnosticFileMatches(
+        context,
+        "HelloUltraviolet/Fixtures/RejectedSource/Statements/ReturnTypeMismatch/Expected.uv",
+        "//! Expected diagnostic metadata for the ReturnTypeMismatch rejected-source specimen.\n\nexpectedDiagnostic(\"E-SEM-3161\", \"Return-Type-Err\")\n"
+    )
+}
+
+public procedure returnUnitMismatchExpectedDiagnosticFileMatches(context: Context) -> bool {
+    return expectedDiagnosticFileMatches(
+        context,
+        "HelloUltraviolet/Fixtures/RejectedSource/Statements/ReturnUnitMismatch/Expected.uv",
+        "//! Expected diagnostic metadata for the ReturnUnitMismatch rejected-source specimen.\n\nexpectedDiagnostic(\"E-SEM-3161\", \"rule.18.Return-Unit-Err\")\n"
+    )
+}
+
+public procedure returnAtModuleScopeExpectedDiagnosticFileMatches(context: Context) -> bool {
+    return expectedDiagnosticFileMatches(
+        context,
+        "HelloUltraviolet/Fixtures/RejectedSource/Statements/ReturnAtModuleScope/Expected.uv",
+        "//! Expected diagnostic metadata for the ReturnAtModuleScope rejected-source specimen.\n\nexpectedDiagnostic(\"E-SEM-3165\", \"diag.18.ControlTransferStatements\")\n"
+    )
+}
+
+public procedure deferNonUnitExpectedDiagnosticFileMatches(context: Context) -> bool {
+    return expectedDiagnosticFileMatches(
+        context,
+        "HelloUltraviolet/Fixtures/RejectedSource/Statements/DeferNonUnit/Expected.uv",
+        "//! Expected diagnostic metadata for the DeferNonUnit rejected-source specimen.\n\nexpectedDiagnostic(\"E-SEM-3151\", \"rule.18.Defer-NonUnit-Err\")\n"
+    )
+}
+
+public procedure deferNonLocalExpectedDiagnosticFileMatches(context: Context) -> bool {
+    return expectedDiagnosticFileMatches(
+        context,
+        "HelloUltraviolet/Fixtures/RejectedSource/Statements/DeferNonLocal/Expected.uv",
+        "//! Expected diagnostic metadata for the DeferNonLocal rejected-source specimen.\n\nexpectedDiagnostic(\"E-SEM-3152\", \"Defer-NonLocal-Err\")\n"
+    )
+}
+
+public procedure missingExplicitReturnExpectedDiagnosticFileMatches(context: Context) -> bool {
+    return expectedDiagnosticFileMatches(
+        context,
+        "HelloUltraviolet/Fixtures/RejectedSource/Procedures/MissingExplicitReturn/Expected.uv",
+        "//! Expected diagnostic metadata for the MissingExplicitReturn rejected-source specimen.\n\nexpectedDiagnostic(\"E-TYP-1507\", \"rule.15.WF-ProcBody-ExplicitReturn-Err\")\n"
+    )
+}
+
+public procedure missingReturnTypeExpectedDiagnosticFileMatches(context: Context) -> bool {
+    return expectedDiagnosticFileMatches(
+        context,
+        "HelloUltraviolet/Fixtures/RejectedSource/Procedures/MissingReturnType/Expected.uv",
+        "//! Expected diagnostic metadata for the MissingReturnType rejected-source specimen.\n\nexpectedDiagnostic(\"\", \"rule.15.WF-ProcedureDecl-MissingReturnType\")\n"
+    )
+}
+
+public procedure callNonFunctionExpectedDiagnosticFileMatches(context: Context) -> bool {
+    return expectedDiagnosticFileMatches(
+        context,
+        "HelloUltraviolet/Fixtures/RejectedSource/Expressions/CallNonFunction/Expected.uv",
+        "//! Expected diagnostic metadata for the CallNonFunction rejected-source specimen.\n\nexpectedDiagnostic(\"E-SEM-2531\", \"rule.16.Call-Callee-NotFunc\")\n"
+    )
+}
+
+public procedure indexNonIndexableExpectedDiagnosticFileMatches(context: Context) -> bool {
+    return expectedDiagnosticFileMatches(
+        context,
+        "HelloUltraviolet/Fixtures/RejectedSource/Expressions/IndexNonIndexable/Expected.uv",
+        "//! Expected diagnostic metadata for the IndexNonIndexable rejected-source specimen.\n\nexpectedDiagnostic(\"E-SEM-2527\", \"Index-NonIndexable\")\n"
+    )
+}
+
+public procedure arrayIndexNonConstExpectedDiagnosticFileMatches(context: Context) -> bool {
+    return expectedDiagnosticFileMatches(
+        context,
+        "HelloUltraviolet/Fixtures/RejectedSource/Expressions/ArrayIndexNonConst/Expected.uv",
+        "//! Expected diagnostic metadata for the ArrayIndexNonConst rejected-source specimen.\n\nexpectedDiagnostic(\"E-UNS-0102\", \"Index-Array-NonConst-Err\")\n"
+    )
+}
+
+public procedure arrayIndexOutOfBoundsExpectedDiagnosticFileMatches(context: Context) -> bool {
+    return expectedDiagnosticFileMatches(
+        context,
+        "HelloUltraviolet/Fixtures/RejectedSource/Expressions/ArrayIndexOutOfBounds/Expected.uv",
+        "//! Expected diagnostic metadata for the ArrayIndexOutOfBounds rejected-source specimen.\n\nexpectedDiagnostic(\"E-UNS-0103\", \"Index-Array-OOB-Err\")\n"
+    )
+}
+
+public procedure ptrNullSynthesisExpectedDiagnosticFileMatches(context: Context) -> bool {
+    return expectedDiagnosticFileMatches(
+        context,
+        "HelloUltraviolet/Fixtures/RejectedSource/Expressions/PtrNullSynthesis/Expected.uv",
+        "//! Expected diagnostic metadata for the PtrNullSynthesis rejected-source specimen.\n\nexpectedDiagnostic(\"E-TYP-1530\", \"rule.16.Syn-PtrNull-Err\")\n"
+    )
+}
+
+public procedure ptrNullCheckExpectedDiagnosticFileMatches(context: Context) -> bool {
+    return expectedDiagnosticFileMatches(
+        context,
+        "HelloUltraviolet/Fixtures/RejectedSource/Expressions/PtrNullCheck/Expected.uv",
+        "//! Expected diagnostic metadata for the PtrNullCheck rejected-source specimen.\n\nexpectedDiagnostic(\"E-TYP-1530\", \"rule.16.Chk-PtrNull-Err\")\n"
+    )
+}
+
+public procedure callArgCountExpectedDiagnosticFileMatches(context: Context) -> bool {
+    return expectedDiagnosticFileMatches(
+        context,
+        "HelloUltraviolet/Fixtures/RejectedSource/Expressions/CallArgCount/Expected.uv",
+        "//! Expected diagnostic metadata for the CallArgCount rejected-source specimen.\n\nexpectedDiagnostic(\"E-SEM-2532\", \"rule.16.Call-ArgCount-Err\")\n"
+    )
+}
+
+public procedure callArgTypeExpectedDiagnosticFileMatches(context: Context) -> bool {
+    return expectedDiagnosticFileMatches(
+        context,
+        "HelloUltraviolet/Fixtures/RejectedSource/Expressions/CallArgType/Expected.uv",
+        "//! Expected diagnostic metadata for the CallArgType rejected-source specimen.\n\nexpectedDiagnostic(\"E-SEM-2533\", \"rule.16.Call-ArgType-Err\")\n"
+    )
+}
+
+public procedure exprUnresolvedExpectedDiagnosticFileMatches(context: Context) -> bool {
+    return expectedDiagnosticFileMatches(
+        context,
+        "HelloUltraviolet/Fixtures/RejectedSource/Expressions/ExprUnresolved/Expected.uv",
+        "//! Expected diagnostic metadata for the ExprUnresolved rejected-source specimen.\n\nexpectedDiagnostic(\"E-MOD-1301\", \"rule.16.Expr-Unresolved-Err\")\n"
+    )
+}
+
+public procedure unionDirectAccessExpectedDiagnosticFileMatches(context: Context) -> bool {
+    return expectedDiagnosticFileMatches(
+        context,
+        "HelloUltraviolet/Fixtures/RejectedSource/Expressions/UnionDirectAccess/Expected.uv",
+        "//! Expected diagnostic metadata for the UnionDirectAccess rejected-source specimen.\n\nexpectedDiagnostic(\"E-TYP-2202\", \"rule.16.Union-DirectAccess-Err\")\n"
+    )
+}
+
+public procedure allocImplicitNoRegionExpectedDiagnosticFileMatches(context: Context) -> bool {
+    return expectedDiagnosticFileMatches(
+        context,
+        "HelloUltraviolet/Fixtures/RejectedSource/Expressions/AllocImplicitNoRegion/Expected.uv",
+        "//! Expected diagnostic metadata for the AllocImplicitNoRegion rejected-source specimen.\n\nexpectedDiagnostic(\"E-MEM-3021\", \"diag.16.EffectfulCoreExpressions\")\n"
+    )
+}
+
+public procedure callArgNotPlaceExpectedDiagnosticFileMatches(context: Context) -> bool {
+    return expectedDiagnosticFileMatches(
+        context,
+        "HelloUltraviolet/Fixtures/RejectedSource/Expressions/CallArgNotPlace/Expected.uv",
+        "//! Expected diagnostic metadata for the CallArgNotPlace rejected-source specimen.\n\nexpectedDiagnostic(\"E-TYP-1603\", \"rule.16.Call-Arg-NotPlace\")\n"
+    )
+}
+
+public procedure callArgPackedUnsafeExpectedDiagnosticFileMatches(context: Context) -> bool {
+    return expectedDiagnosticFileMatches(
+        context,
+        "HelloUltraviolet/Fixtures/RejectedSource/Expressions/CallArgPackedUnsafe/Expected.uv",
+        "//! Expected diagnostic metadata for the CallArgPackedUnsafe rejected-source specimen.\n\nexpectedDiagnostic(\"E-TYP-2105\", \"rule.16.Call-Arg-Packed-Unsafe-Err\")\n"
+    )
+}
+
+public procedure floatSuffixMismatchExpectedDiagnosticFileMatches(context: Context) -> bool {
+    return expectedDiagnosticFileMatches(
+        context,
+        "HelloUltraviolet/Fixtures/RejectedSource/Expressions/FloatSuffixMismatch/Expected.uv",
+        "//! Expected diagnostic metadata for the FloatSuffixMismatch rejected-source specimen.\n\nexpectedDiagnostic(\"E-TYP-1531\", \"diag.16.LiteralAndNameExpressions\")\n"
+    )
+}
+
+public procedure parsePlaceErrorExpectedDiagnosticFileMatches(context: Context) -> bool {
+    return expectedDiagnosticFileMatches(
+        context,
+        "HelloUltraviolet/Fixtures/RejectedSource/Expressions/ParsePlaceError/Expected.uv",
+        "//! Expected diagnostic metadata for the ParsePlaceError rejected-source specimen.\n\nexpectedDiagnostic(\"E-SRC-0520\", \"rule.16.Parse-Place-Err\")\n"
+    )
+}
+
+public procedure operatorOperandMismatchExpectedDiagnosticFileMatches(
+    context: Context
+) -> bool {
+    return expectedDiagnosticFileMatches(
+        context,
+        "HelloUltraviolet/Fixtures/RejectedSource/Expressions/OperatorOperandMismatch/Expected.uv",
+        "//! Expected diagnostic metadata for the OperatorOperandMismatch rejected-source specimen.\n\nexpectedDiagnostic(\"E-SEM-2525\", \"diag.16.OperatorExpressions\")\n"
+    )
+}
+
+public procedure ifConditionNonBoolExpectedDiagnosticFileMatches(context: Context) -> bool {
+    return expectedDiagnosticFileMatches(
+        context,
+        "HelloUltraviolet/Fixtures/RejectedSource/Expressions/IfConditionNonBool/Expected.uv",
+        "//! Expected diagnostic metadata for the IfConditionNonBool rejected-source specimen.\n\nexpectedDiagnostic(\"\", \"diag.16.ControlExpressions\")\n"
+    )
+}
+
+public procedure tupleAccessNonTupleExpectedDiagnosticFileMatches(context: Context) -> bool {
+    return expectedDiagnosticFileMatches(
+        context,
+        "HelloUltraviolet/Fixtures/RejectedSource/Expressions/TupleAccessNonTuple/Expected.uv",
+        "//! Expected diagnostic metadata for the TupleAccessNonTuple rejected-source specimen.\n\nexpectedDiagnostic(\"E-SEM-2524\", \"diag.16.AccessAndPlaceExpressions\")\n"
+    )
+}
+
+public procedure closureCaptureUniqueExpectedDiagnosticFileMatches(context: Context) -> bool {
+    return expectedDiagnosticFileMatches(
+        context,
+        "HelloUltraviolet/Fixtures/RejectedSource/Expressions/ClosureCaptureUnique/Expected.uv",
+        "//! Expected diagnostic metadata for the ClosureCaptureUnique rejected-source specimen.\n\nexpectedDiagnostic(\"E-CON-0120\", \"rule.16.Capture-Unique-Err\")\n"
+    )
+}
+
+public procedure callMoveUnexpectedExpectedDiagnosticFileMatches(context: Context) -> bool {
+    return expectedDiagnosticFileMatches(
+        context,
+        "HelloUltraviolet/Fixtures/RejectedSource/Expressions/CallMoveUnexpected/Expected.uv",
+        "//! Expected diagnostic metadata for the CallMoveUnexpected rejected-source specimen.\n\nexpectedDiagnostic(\"E-SEM-2535\", \"rule.16.Call-Move-Unexpected\")\n"
+    )
+}
+
+public procedure callMoveMissingExpectedDiagnosticFileMatches(context: Context) -> bool {
+    return expectedDiagnosticFileMatches(
+        context,
+        "HelloUltraviolet/Fixtures/RejectedSource/Expressions/CallMoveMissing/Expected.uv",
+        "//! Expected diagnostic metadata for the CallMoveMissing rejected-source specimen.\n\nexpectedDiagnostic(\"E-SEM-2534\", \"rule.16.Call-Move-Missing\")\n"
+    )
+}
+
+public procedure methodNotFoundExpectedDiagnosticFileMatches(context: Context) -> bool {
+    return expectedDiagnosticFileMatches(
+        context,
+        "HelloUltraviolet/Fixtures/RejectedSource/Expressions/MethodNotFound/Expected.uv",
+        "//! Expected diagnostic metadata for the MethodNotFound rejected-source specimen.\n\nexpectedDiagnostic(\"E-SEM-2536\", \"rule.15.LookupMethod-NotFound\")\n"
+    )
+}
+
+public procedure pipelineNotCallableExpectedDiagnosticFileMatches(context: Context) -> bool {
+    return expectedDiagnosticFileMatches(
+        context,
+        "HelloUltraviolet/Fixtures/RejectedSource/Expressions/PipelineNotCallable/Expected.uv",
+        "//! Expected diagnostic metadata for the PipelineNotCallable rejected-source specimen.\n\nexpectedDiagnostic(\"E-SEM-2538\", \"rule.16.T-Pipeline-NotCallable-Err\")\n"
+    )
+}
+
+public procedure pipelineTypeMismatchExpectedDiagnosticFileMatches(context: Context) -> bool {
+    return expectedDiagnosticFileMatches(
+        context,
+        "HelloUltraviolet/Fixtures/RejectedSource/Expressions/PipelineTypeMismatch/Expected.uv",
+        "//! Expected diagnostic metadata for the PipelineTypeMismatch rejected-source specimen.\n\nexpectedDiagnostic(\"E-SEM-2539\", \"rule.16.T-Pipeline-TypeMismatch-Err\")\n"
+    )
+}
+
+public procedure pipelineArgCountExpectedDiagnosticFileMatches(context: Context) -> bool {
+    return expectedDiagnosticFileMatches(
+        context,
+        "HelloUltraviolet/Fixtures/RejectedSource/Expressions/PipelineArgCount/Expected.uv",
+        "//! Expected diagnostic metadata for the PipelineArgCount rejected-source specimen.\n\nexpectedDiagnostic(\"E-SEM-2539\", \"rule.16.T-Pipeline-ArgCount-Err\")\n"
+    )
+}
+
+public procedure closureParamInferenceExpectedDiagnosticFileMatches(context: Context) -> bool {
+    return expectedDiagnosticFileMatches(
+        context,
+        "HelloUltraviolet/Fixtures/RejectedSource/Expressions/ClosureParamInference/Expected.uv",
+        "//! Expected diagnostic metadata for the ClosureParamInference rejected-source specimen.\n\nexpectedDiagnostic(\"E-SEM-2591\", \"rule.16.Infer-Closure-Params-Err\")\n"
+    )
+}
+
+public procedure invalidCastExpectedDiagnosticFileMatches(context: Context) -> bool {
+    return expectedDiagnosticFileMatches(
+        context,
+        "HelloUltraviolet/Fixtures/RejectedSource/Expressions/InvalidCast/Expected.uv",
+        "//! Expected diagnostic metadata for the InvalidCast rejected-source specimen.\n\nexpectedDiagnostic(\"E-SEM-2528\", \"rule.16.T-Cast-Invalid\")\n"
+    )
+}
+
+public procedure transmuteSizeMismatchExpectedDiagnosticFileMatches(context: Context) -> bool {
+    return expectedDiagnosticFileMatches(
+        context,
+        "HelloUltraviolet/Fixtures/RejectedSource/Expressions/TransmuteSizeMismatch/Expected.uv",
+        "//! Expected diagnostic metadata for the TransmuteSizeMismatch rejected-source specimen.\n\nexpectedDiagnostic(\"E-MEM-3031\", \"rule.16.T-Transmute-SizeEq\")\n"
+    )
+}
+
+public procedure transmuteAlignMismatchExpectedDiagnosticFileMatches(context: Context) -> bool {
+    return expectedDiagnosticFileMatches(
+        context,
+        "HelloUltraviolet/Fixtures/RejectedSource/Expressions/TransmuteAlignMismatch/Expected.uv",
+        "//! Expected diagnostic metadata for the TransmuteAlignMismatch rejected-source specimen.\n\nexpectedDiagnostic(\"E-UNS-0104\", \"rule.16.T-Transmute-AlignEq\")\n"
+    )
+}
+
+public procedure transmuteUnsafeExpectedDiagnosticFileMatches(context: Context) -> bool {
+    return expectedDiagnosticFileMatches(
+        context,
+        "HelloUltraviolet/Fixtures/RejectedSource/Expressions/TransmuteUnsafe/Expected.uv",
+        "//! Expected diagnostic metadata for the TransmuteUnsafe rejected-source specimen.\n\nexpectedDiagnostic(\"\", \"rule.16.Transmute-Unsafe-Err\")\n"
+    )
+}
+
+public procedure valueUseNonBitcopyPlaceExpectedDiagnosticFileMatches(context: Context) -> bool {
+    return expectedDiagnosticFileMatches(
+        context,
+        "HelloUltraviolet/Fixtures/RejectedSource/Expressions/ValueUseNonBitcopyPlace/Expected.uv",
+        "//! Expected diagnostic metadata for the ValueUseNonBitcopyPlace rejected-source specimen.\n\nexpectedDiagnostic(\"E-UNS-0107\", \"rule.16.ValueUse-NonBitcopyPlace\")\n"
+    )
+}
+
+public procedure recordFieldInitDuplicateExpectedDiagnosticFileMatches(context: Context) -> bool {
+    return expectedDiagnosticFileMatches(
+        context,
+        "HelloUltraviolet/Fixtures/RejectedSource/Expressions/RecordFieldInitDuplicate/Expected.uv",
+        "//! Expected diagnostic metadata for the RecordFieldInitDuplicate rejected-source specimen.\n\nexpectedDiagnostic(\"E-TYP-1903\", \"rule.16.Record-FieldInit-Dup\")\n"
+    )
+}
+
+public procedure recordFieldInitMissingExpectedDiagnosticFileMatches(context: Context) -> bool {
+    return expectedDiagnosticFileMatches(
+        context,
+        "HelloUltraviolet/Fixtures/RejectedSource/Expressions/RecordFieldInitMissing/Expected.uv",
+        "//! Expected diagnostic metadata for the RecordFieldInitMissing rejected-source specimen.\n\nexpectedDiagnostic(\"E-TYP-1902\", \"rule.16.Record-FieldInit-Missing\")\n"
+    )
+}
+
+public procedure recordFieldUnknownExpectedDiagnosticFileMatches(context: Context) -> bool {
+    return expectedDiagnosticFileMatches(
+        context,
+        "HelloUltraviolet/Fixtures/RejectedSource/Expressions/RecordFieldUnknown/Expected.uv",
+        "//! Expected diagnostic metadata for the RecordFieldUnknown rejected-source specimen.\n\nexpectedDiagnostic(\"E-TYP-1904\", \"rule.16.RecordFieldUnknownNotVisibleFamily\")\n"
+    )
+}
+
+public procedure recordFieldNonBitcopyMoveExpectedDiagnosticFileMatches(context: Context) -> bool {
+    return expectedDiagnosticFileMatches(
+        context,
+        "HelloUltraviolet/Fixtures/RejectedSource/Expressions/RecordFieldNonBitcopyMove/Expected.uv",
+        "//! Expected diagnostic metadata for the RecordFieldNonBitcopyMove rejected-source specimen.\n\nexpectedDiagnostic(\"E-TYP-1907\", \"rule.16.Record-Field-NonBitcopy-Move\")\n"
+    )
+}
+
+public procedure recordDefaultInitExpectedDiagnosticFileMatches(context: Context) -> bool {
+    return expectedDiagnosticFileMatches(
+        context,
+        "HelloUltraviolet/Fixtures/RejectedSource/Expressions/RecordDefaultInit/Expected.uv",
+        "//! Expected diagnostic metadata for the RecordDefaultInit rejected-source specimen.\n\nexpectedDiagnostic(\"E-TYP-1911\", \"rule.16.Record-Default-Init-Err\")\n"
+    )
+}
+
+public procedure duplicatePatternBindingExpectedDiagnosticFileMatches(
+    context: Context
+) -> bool {
+    return expectedDiagnosticFileMatches(
+        context,
+        "HelloUltraviolet/Fixtures/RejectedSource/Patterns/DuplicatePatternBinding/Expected.uv",
+        "//! Expected diagnostic metadata for the DuplicatePatternBinding rejected-source specimen.\n\nexpectedDiagnostic(\"E-SEM-2713\", \"rule.17.Pat-Dup-R-Err\")\n"
+    )
+}
+
+public procedure tuplePatternArityExpectedDiagnosticFileMatches(context: Context) -> bool {
+    return expectedDiagnosticFileMatches(
+        context,
+        "HelloUltraviolet/Fixtures/RejectedSource/Patterns/TuplePatternArity/Expected.uv",
+        "//! Expected diagnostic metadata for the TuplePatternArity rejected-source specimen.\n\nexpectedDiagnostic(\"\", \"rule.17.Pat-Tuple-R-Arity-Err\")\n"
+    )
+}
+
+public procedure recordPatternUnknownFieldExpectedDiagnosticFileMatches(
+    context: Context
+) -> bool {
+    return expectedDiagnosticFileMatches(
+        context,
+        "HelloUltraviolet/Fixtures/RejectedSource/Patterns/RecordPatternUnknownField/Expected.uv",
+        "//! Expected diagnostic metadata for the RecordPatternUnknownField rejected-source specimen.\n\nexpectedDiagnostic(\"\", \"rule.17.RecordPattern-UnknownField\")\n"
+    )
+}
+
+public procedure rangePatternNonConstExpectedDiagnosticFileMatches(context: Context) -> bool {
+    return expectedDiagnosticFileMatches(
+        context,
+        "HelloUltraviolet/Fixtures/RejectedSource/Patterns/RangePatternNonConst/Expected.uv",
+        "//! Expected diagnostic metadata for the RangePatternNonConst rejected-source specimen.\n\nexpectedDiagnostic(\"\", \"rule.17.RangePattern-NonConst\")\n"
+    )
+}
+
+public procedure rangePatternEmptyExpectedDiagnosticFileMatches(context: Context) -> bool {
+    return expectedDiagnosticFileMatches(
+        context,
+        "HelloUltraviolet/Fixtures/RejectedSource/Patterns/RangePatternEmpty/Expected.uv",
+        "//! Expected diagnostic metadata for the RangePatternEmpty rejected-source specimen.\n\nexpectedDiagnostic(\"\", \"rule.17.RangePattern-Empty\")\n"
+    )
+}
+
+public procedure ifCaseEnumNonExhaustiveExpectedDiagnosticFileMatches(
+    context: Context
+) -> bool {
+    return expectedDiagnosticFileMatches(
+        context,
+        "HelloUltraviolet/Fixtures/RejectedSource/Patterns/IfCaseEnumNonExhaustive/Expected.uv",
+        "//! Expected diagnostic metadata for the IfCaseEnumNonExhaustive rejected-source specimen.\n\nexpectedDiagnostic(\"E-SEM-2741\", \"rule.17.IfCase-Enum-NonExhaustive\")\n"
+    )
+}
+
+public procedure ifCaseModalNonExhaustiveExpectedDiagnosticFileMatches(
+    context: Context
+) -> bool {
+    return expectedDiagnosticFileMatches(
+        context,
+        "HelloUltraviolet/Fixtures/RejectedSource/Patterns/IfCaseModalNonExhaustive/Expected.uv",
+        "//! Expected diagnostic metadata for the IfCaseModalNonExhaustive rejected-source specimen.\n\nexpectedDiagnostic(\"E-TYP-2060\", \"rule.17.IfCase-Modal-NonExhaustive\")\n"
+    )
+}
+
+public procedure ifCaseUnionNonExhaustiveExpectedDiagnosticFileMatches(
+    context: Context
+) -> bool {
+    return expectedDiagnosticFileMatches(
+        context,
+        "HelloUltraviolet/Fixtures/RejectedSource/Patterns/IfCaseUnionNonExhaustive/Expected.uv",
+        "//! Expected diagnostic metadata for the IfCaseUnionNonExhaustive rejected-source specimen.\n\nexpectedDiagnostic(\"E-SEM-2705\", \"rule.17.IfCase-Union-NonExhaustive\")\n"
+    )
+}
+
+public procedure ifCaseUnreachableExpectedDiagnosticFileMatches(context: Context) -> bool {
+    return expectedDiagnosticFileMatches(
+        context,
+        "HelloUltraviolet/Fixtures/RejectedSource/Patterns/IfCaseUnreachable/Expected.uv",
+        "//! Expected diagnostic metadata for the IfCaseUnreachable rejected-source specimen.\n\nexpectedDiagnostic(\"E-SEM-2751\", \"rule.17.IfCase-Unreachable\")\n"
+    )
+}
+
+public procedure recordMethodReceiverNotSelfExpectedDiagnosticFileMatches(
+    context: Context
+) -> bool {
+    return expectedDiagnosticFileMatches(
+        context,
+        "HelloUltraviolet/Fixtures/RejectedSource/Procedures/RecordMethodReceiverNotSelf/Expected.uv",
+        "//! Expected diagnostic metadata for the RecordMethodReceiverNotSelf rejected-source specimen.\n\nexpectedDiagnostic(\"\", \"rule.15.Record-Method-RecvSelf-Err\")\n"
+    )
+}
+
+public procedure recordMethodDuplicateExpectedDiagnosticFileMatches(context: Context) -> bool {
+    return expectedDiagnosticFileMatches(
+        context,
+        "HelloUltraviolet/Fixtures/RejectedSource/Procedures/RecordMethodDuplicate/Expected.uv",
+        "//! Expected diagnostic metadata for the RecordMethodDuplicate rejected-source specimen.\n\nexpectedDiagnostic(\"\", \"rule.15.Record-Method-Dup\")\n"
+    )
+}
+
+public procedure parsePatternErrorExpectedDiagnosticFileMatches(context: Context) -> bool {
+    return expectedDiagnosticFileMatches(
+        context,
+        "HelloUltraviolet/Fixtures/RejectedSource/Patterns/ParsePatternError/Expected.uv",
+        "//! Expected diagnostic metadata for the ParsePatternError rejected-source specimen.\n\nexpectedDiagnostic(\"E-SRC-0520\", \"rule.17.Parse-Pattern-Err\")\n"
+    )
+}
+
+public procedure contractResultOutsidePostconditionExpectedDiagnosticFileMatches(
+    context: Context
+) -> bool {
+    return expectedDiagnosticFileMatches(
+        context,
+        "HelloUltraviolet/Fixtures/RejectedSource/Procedures/ContractResultOutsidePostcondition/Expected.uv",
+        "//! Expected diagnostic metadata for the ContractResultOutsidePostcondition rejected-source specimen.\n\nexpectedDiagnostic(\"E-SEM-2806\", \"req.15.ContractResultProperties\")\n"
+    )
+}
+
+public procedure unsatisfiedPreconditionExpectedDiagnosticFileMatches(
+    context: Context
+) -> bool {
+    return expectedDiagnosticFileMatches(
+        context,
+        "HelloUltraviolet/Fixtures/RejectedSource/Procedures/UnsatisfiedPrecondition/Expected.uv",
+        "//! Expected diagnostic metadata for the UnsatisfiedPrecondition rejected-source specimen.\n\nexpectedDiagnostic(\"E-SEM-2801\", \"rule.15.Contract-Static-Fail\")\n"
+    )
+}
+
+public procedure preconditionCallerObligationExpectedDiagnosticFileMatches(
+    context: Context
+) -> bool {
+    return expectedDiagnosticFileMatches(
+        context,
+        "HelloUltraviolet/Fixtures/RejectedSource/Procedures/PreconditionCallerObligation/Expected.uv",
+        "//! Expected diagnostic metadata for the PreconditionCallerObligation rejected-source specimen.\n\nexpectedDiagnostic(\"E-SEM-2801\", \"req.15.CallerResponsibleForPrecondition\")\n"
+    )
+}
+
+public procedure contractEntryOutsidePostconditionExpectedDiagnosticFileMatches(
+    context: Context
+) -> bool {
+    return expectedDiagnosticFileMatches(
+        context,
+        "HelloUltraviolet/Fixtures/RejectedSource/Procedures/ContractEntryOutsidePostcondition/Expected.uv",
+        "//! Expected diagnostic metadata for the ContractEntryOutsidePostcondition rejected-source specimen.\n\nexpectedDiagnostic(\"E-SEM-2852\", \"req.15.ContractEntryConstraints\")\n"
+    )
+}
+
+public procedure contractEntryNonBitcopyExpectedDiagnosticFileMatches(
+    context: Context
+) -> bool {
+    return expectedDiagnosticFileMatches(
+        context,
+        "HelloUltraviolet/Fixtures/RejectedSource/Procedures/ContractEntryNonBitcopy/Expected.uv",
+        "//! Expected diagnostic metadata for the ContractEntryNonBitcopy rejected-source specimen.\n\nexpectedDiagnostic(\"E-SEM-2805\", \"rule.15.Entry-Type\")\n"
+    )
+}
+
+public procedure contractPredicateNonBoolExpectedDiagnosticFileMatches(
+    context: Context
+) -> bool {
+    return expectedDiagnosticFileMatches(
+        context,
+        "HelloUltraviolet/Fixtures/RejectedSource/Procedures/ContractPredicateNonBool/Expected.uv",
+        "//! Expected diagnostic metadata for the ContractPredicateNonBool rejected-source specimen.\n\nexpectedDiagnostic(\"\", \"rule.15.WF-Contract\")\n"
+    )
+}
+
+public procedure contractPredicateImpureMoveExpectedDiagnosticFileMatches(
+    context: Context
+) -> bool {
+    return expectedDiagnosticFileMatches(
+        context,
+        "HelloUltraviolet/Fixtures/RejectedSource/Procedures/ContractPredicateImpureMove/Expected.uv",
+        "//! Expected diagnostic metadata for the ContractPredicateImpureMove rejected-source specimen.\n\nexpectedDiagnostic(\"E-SEM-2802\", \"req.15.ContractNeverPureForms\")\n"
+    )
+}
+
+public procedure contractDynamicAttributeExpectedDiagnosticFileMatches(
+    context: Context
+) -> bool {
+    return expectedDiagnosticFileMatches(
+        context,
+        "HelloUltraviolet/Fixtures/RejectedSource/Procedures/ContractDynamicAttribute/Expected.uv",
+        "//! Expected diagnostic metadata for the ContractDynamicAttribute rejected-source specimen.\n\nexpectedDiagnostic(\"E-CON-0410\", \"diag.15.ContractClauses\")\n"
+    )
+}
+
+public procedure contractEntryMovedParameterExpectedDiagnosticFileMatches(
+    context: Context
+) -> bool {
+    return expectedDiagnosticFileMatches(
+        context,
+        "HelloUltraviolet/Fixtures/RejectedSource/Procedures/ContractEntryMovedParameter/Expected.uv",
+        "//! Expected diagnostic metadata for the ContractEntryMovedParameter rejected-source specimen.\n\nexpectedDiagnostic(\"E-SEM-2807\", \"diag.15.ProcedureContractEntryDiagnosticsOwnership\")\n"
+    )
+}
+
+public procedure contractEntrySideEffectExpectedDiagnosticFileMatches(
+    context: Context
+) -> bool {
+    return expectedDiagnosticFileMatches(
+        context,
+        "HelloUltraviolet/Fixtures/RejectedSource/Procedures/ContractEntrySideEffect/Expected.uv",
+        "//! Expected diagnostic metadata for the ContractEntrySideEffect rejected-source specimen.\n\nexpectedDiagnostic(\"E-CON-0416\", \"diag-table.15.ProcedureContractEntryDiagnostics\")\n"
+    )
+}
+
+public procedure contractEntryCapabilityExpectedDiagnosticFileMatches(
+    context: Context
+) -> bool {
+    return expectedDiagnosticFileMatches(
+        context,
+        "HelloUltraviolet/Fixtures/RejectedSource/Procedures/ContractEntryCapability/Expected.uv",
+        "//! Expected diagnostic metadata for the ContractEntryCapability rejected-source specimen.\n\nexpectedDiagnostic(\"E-CON-0415\", \"diag-table.15.ProcedureContractEntryDiagnostics\")\n"
+    )
+}
+
+public procedure assignConstExpectedDiagnosticFileMatches(context: Context) -> bool {
+    return expectedDiagnosticFileMatches(
+        context,
+        "HelloUltraviolet/Fixtures/RejectedSource/Statements/AssignConst/Expected.uv",
+        "//! Expected diagnostic metadata for the AssignConst rejected-source specimen.\n\nexpectedDiagnostic(\"E-SEM-3132\", \"rule.18.Assign-Const-Err\")\n"
+    )
+}
+
+public procedure letRefutablePatternExpectedDiagnosticFileMatches(
+    context: Context
+) -> bool {
+    return expectedDiagnosticFileMatches(
+        context,
+        "HelloUltraviolet/Fixtures/RejectedSource/Statements/LetRefutablePattern/Expected.uv",
+        "//! Expected diagnostic metadata for the LetRefutablePattern rejected-source specimen.\n\nexpectedDiagnostic(\"\", \"rule.18.Let-Refutable-Pattern-Err\")\n"
+    )
+}
+
+public procedure uniqueNonMoveBindingExpectedDiagnosticFileMatches(
+    context: Context
+) -> bool {
+    return expectedDiagnosticFileMatches(
+        context,
+        "HelloUltraviolet/Fixtures/RejectedSource/Statements/UniqueNonMoveBinding/Expected.uv",
+        "//! Expected diagnostic metadata for the UniqueNonMoveBinding rejected-source specimen.\n\nexpectedDiagnostic(\"E-MEM-3007\", \"rule.18.B-LetVar-UniqueNonMove-Err\")\n"
+    )
+}
+
+public procedure frameNoActiveRegionExpectedDiagnosticFileMatches(
+    context: Context
+) -> bool {
+    return expectedDiagnosticFileMatches(
+        context,
+        "HelloUltraviolet/Fixtures/RejectedSource/Statements/FrameNoActiveRegion/Expected.uv",
+        "//! Expected diagnostic metadata for the FrameNoActiveRegion rejected-source specimen.\n\nexpectedDiagnostic(\"\", \"rule.18.Frame-NoActiveRegion-Err\")\n"
+    )
+}
+
+public procedure frameTargetNotActiveExpectedDiagnosticFileMatches(
+    context: Context
+) -> bool {
+    return expectedDiagnosticFileMatches(
+        context,
+        "HelloUltraviolet/Fixtures/RejectedSource/Statements/FrameTargetNotActive/Expected.uv",
+        "//! Expected diagnostic metadata for the FrameTargetNotActive rejected-source specimen.\n\nexpectedDiagnostic(\"\", \"rule.18.Frame-Target-NotActive-Err\")\n"
+    )
+}

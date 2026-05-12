@@ -1,0 +1,110 @@
+//! Generated catalog markers for 2. Diagnostic Infrastructure / 2.3 Diagnostic Records and Emission.
+
+
+public procedure countDiagnosticInfrastructureDiagnosticRecordsAndEmissionObligations() -> usize {
+    return 11usize
+}
+
+public procedure validatedDiagnosticInfrastructureDiagnosticRecordsAndEmissionObligations() -> usize {
+    var count: usize = 0usize
+    if acceptedObligationEntryMatches(
+        "def.DiagnosticSeverity",
+        1503usize,
+        "HelloUltraviolet::Reference::Diagnostics",
+        "runDiagnosticsDiagnosticRecordsReference",
+        "Source/Reference/Diagnostics/DiagnosticRecords.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "def.DiagCodeOpt",
+        1518usize,
+        "HelloUltraviolet::Reference::Diagnostics",
+        "runDiagnosticsDiagnosticRecordsReference",
+        "Source/Reference/Diagnostics/DiagnosticRecords.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "def.Diagnostic",
+        1532usize,
+        "HelloUltraviolet::Reference::Diagnostics",
+        "runDiagnosticsDiagnosticRecordsReference",
+        "Source/Reference/Diagnostics/DiagnosticRecords.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "req.DiagnosticCodeOwnership",
+        1546usize,
+        "HelloUltraviolet::Reference::Diagnostics",
+        "runDiagnosticsDiagnosticRecordsReference",
+        "Source/Reference/Diagnostics/DiagnosticRecords.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "def.DiagnosticStream",
+        1560usize,
+        "HelloUltraviolet::Reference::Diagnostics",
+        "runDiagnosticsDiagnosticRecordsReference",
+        "Source/Reference/Diagnostics/DiagnosticRecords.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "Emit-Append",
+        1575usize,
+        "HelloUltraviolet::Reference::Diagnostics",
+        "runDiagnosticsDiagnosticRecordsReference",
+        "Source/Reference/Diagnostics/DiagnosticRecords.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "def.DiagnosticTableColumns",
+        1592usize,
+        "HelloUltraviolet::Reference::Diagnostics",
+        "runDiagnosticsDiagnosticRecordsReference",
+        "Source/Reference/Diagnostics/DiagnosticRecords.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "def.EmitImplicit",
+        1611usize,
+        "HelloUltraviolet::Reference::Diagnostics",
+        "runDiagnosticsDiagnosticRecordsReference",
+        "Source/Reference/Diagnostics/DiagnosticRecords.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "def.EmitList",
+        1626usize,
+        "HelloUltraviolet::Reference::Diagnostics",
+        "runDiagnosticsDiagnosticRecordsReference",
+        "Source/Reference/Diagnostics/DiagnosticRecords.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "def.DiagnosticMessageLookup",
+        1641usize,
+        "HelloUltraviolet::Reference::Diagnostics",
+        "runDiagnosticsDiagnosticRecordsReference",
+        "Source/Reference/Diagnostics/DiagnosticRecords.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "def.CompileStatus",
+        1656usize,
+        "HelloUltraviolet::Reference::Diagnostics",
+        "runDiagnosticsDiagnosticRecordsReference",
+        "Source/Reference/Diagnostics/DiagnosticRecords.uv"
+    ) {
+        count = count + 1usize
+    }
+    return count
+}

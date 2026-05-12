@@ -1,0 +1,92 @@
+//! Generated catalog markers for 3. Project and Compilation Model / 3.7 Tool Resolution and IR Assembly Inputs.
+
+
+public procedure countProjectAndCompilationModelToolResolutionAndIRAssemblyInputsObligations() -> usize {
+    return 9usize
+}
+
+public procedure validatedProjectAndCompilationModelToolResolutionAndIRAssemblyInputsObligations() -> usize {
+    var count: usize = 0usize
+    if acceptedObligationEntryMatches(
+        "def.SearchDirs",
+        6610usize,
+        "HelloUltraviolet::Reference::Projects",
+        "runProjectsAssemblyModelReference",
+        "Source/Reference/Projects/AssemblyModel.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "def.CompilerToolBinDir",
+        6627usize,
+        "HelloUltraviolet::Reference::Projects",
+        "runProjectsAssemblyModelReference",
+        "Source/Reference/Projects/AssemblyModel.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "def.ToolVersion",
+        6643usize,
+        "HelloUltraviolet::Reference::Projects",
+        "runProjectsAssemblyModelReference",
+        "Source/Reference/Projects/AssemblyModel.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "ResolveTool-Ok",
+        6657usize,
+        "HelloUltraviolet::Reference::Projects",
+        "runProjectsAssemblyModelReference",
+        "Source/Reference/Projects/AssemblyModel.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "ResolveTool-Err-Linker",
+        6675usize,
+        "HelloUltraviolet::Reference::Projects",
+        "runProjectsAssemblyModelReference",
+        "Source/Reference/Projects/AssemblyModel.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "ResolveTool-Err-Archiver",
+        6693usize,
+        "HelloUltraviolet::Reference::Projects",
+        "runProjectsAssemblyModelReference",
+        "Source/Reference/Projects/AssemblyModel.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "ResolveTool-Err-IR",
+        6711usize,
+        "HelloUltraviolet::Reference::Projects",
+        "runProjectsAssemblyModelReference",
+        "Source/Reference/Projects/AssemblyModel.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "AssembleIR-Ok",
+        6729usize,
+        "HelloUltraviolet::Reference::Projects",
+        "runProjectsAssemblyModelReference",
+        "Source/Reference/Projects/AssemblyModel.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "AssembleIR-Err",
+        6747usize,
+        "HelloUltraviolet::Reference::Projects",
+        "runProjectsAssemblyModelReference",
+        "Source/Reference/Projects/AssemblyModel.uv"
+    ) {
+        count = count + 1usize
+    }
+    return count
+}

@@ -1,0 +1,49 @@
+//! Reference specimens for Attributes / GeneralAttributes.
+
+internal enum AttributeTargetReference {
+    Record
+    Enum
+    Modal
+    Procedure
+    Method
+    Field
+    Binding
+    Statement
+    Expression
+    TypeAlias
+}
+
+internal record GeneralAttributeReference {
+    internal name_segments: usize
+    internal argument_count: usize
+    internal target: AttributeTargetReference
+}
+
+internal procedure generalAttributeReference(
+    name_segments: usize,
+    argument_count: usize,
+    target: AttributeTargetReference
+) -> GeneralAttributeReference {
+    return GeneralAttributeReference {
+        name_segments: name_segments,
+        argument_count: argument_count,
+        target: target
+    }
+}
+
+internal procedure generalAttributeHasValidName(
+    reference: GeneralAttributeReference
+) -> bool {
+    return reference.name_segments > 0usize
+}
+
+/// Exercises the Attributes GeneralAttributes reference surface.
+public procedure runAttributesGeneralAttributesReference() -> bool {
+    let marker: GeneralAttributeReference =
+        generalAttributeReference(1usize, 0usize, AttributeTargetReference::Procedure)
+    let configured: GeneralAttributeReference =
+        generalAttributeReference(1usize, 2usize, AttributeTargetReference::Expression)
+    return generalAttributeHasValidName(marker) &&
+        generalAttributeHasValidName(configured) &&
+        configured.argument_count == 2usize
+}

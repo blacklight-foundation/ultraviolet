@@ -1,0 +1,74 @@
+//! Generated catalog markers for 2. Diagnostic Infrastructure / 2.1 Source Locations and Spans.
+
+
+public procedure countDiagnosticInfrastructureSourceLocationsAndSpansObligations() -> usize {
+    return 7usize
+}
+
+public procedure validatedDiagnosticInfrastructureSourceLocationsAndSpansObligations() -> usize {
+    var count: usize = 0usize
+    if acceptedObligationEntryMatches(
+        "def.SourceLocation",
+        1283usize,
+        "HelloUltraviolet::Reference::Diagnostics",
+        "runDiagnosticsSourceSpansReference",
+        "Source/Reference/Diagnostics/SourceSpans.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "def.Span",
+        1298usize,
+        "HelloUltraviolet::Reference::Diagnostics",
+        "runDiagnosticsSourceSpansReference",
+        "Source/Reference/Diagnostics/SourceSpans.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "def.SpanRange",
+        1313usize,
+        "HelloUltraviolet::Reference::Diagnostics",
+        "runDiagnosticsSourceSpansReference",
+        "Source/Reference/Diagnostics/SourceSpans.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "WF-Location",
+        1327usize,
+        "HelloUltraviolet::Reference::Diagnostics",
+        "runDiagnosticsSourceSpansReference",
+        "Source/Reference/Diagnostics/SourceSpans.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "WF-Span",
+        1345usize,
+        "HelloUltraviolet::Reference::Diagnostics",
+        "runDiagnosticsSourceSpansReference",
+        "Source/Reference/Diagnostics/SourceSpans.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "def.ClampSpan",
+        1363usize,
+        "HelloUltraviolet::Reference::Diagnostics",
+        "runDiagnosticsSourceSpansReference",
+        "Source/Reference/Diagnostics/SourceSpans.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "Span-Of",
+        1380usize,
+        "HelloUltraviolet::Reference::Diagnostics",
+        "runDiagnosticsSourceSpansReference",
+        "Source/Reference/Diagnostics/SourceSpans.uv"
+    ) {
+        count = count + 1usize
+    }
+    return count
+}

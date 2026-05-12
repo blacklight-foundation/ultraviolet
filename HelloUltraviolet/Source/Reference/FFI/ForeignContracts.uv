@@ -1,0 +1,7 @@
+//! Reference specimens for FFI / ForeignContracts.
+
+/// Exercises the FFI ForeignContracts reference surface.
+public procedure runFFIForeignContractsReference() -> bool {
+    let reference: FFIReference = ffiReference(2usize, true, false)
+    return ffiReferenceIsCovered(reference)
+}

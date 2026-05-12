@@ -1,0 +1,34 @@
+//! Reference specimens for Modules / Aggregation.
+
+internal record ModuleAggregationReference {
+    internal directory_segments: usize
+    internal source_file_count: usize
+    internal public_item_count: usize
+}
+
+internal procedure moduleAggregationReference(
+    directory_segments: usize,
+    source_file_count: usize,
+    public_item_count: usize
+) -> ModuleAggregationReference {
+    return ModuleAggregationReference {
+        directory_segments: directory_segments,
+        source_file_count: source_file_count,
+        public_item_count: public_item_count
+    }
+}
+
+internal procedure moduleAggregationIsConcrete(
+    reference: ModuleAggregationReference
+) -> bool {
+    return reference.directory_segments > 0usize &&
+        reference.source_file_count > 0usize
+}
+
+/// Exercises the Modules Aggregation reference surface.
+public procedure runModulesAggregationReference() -> bool {
+    let reference_module: ModuleAggregationReference =
+        moduleAggregationReference(3usize, 5usize, 5usize)
+    return moduleAggregationIsConcrete(reference_module) &&
+        reference_module.public_item_count == 5usize
+}

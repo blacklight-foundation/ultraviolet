@@ -1,0 +1,12 @@
+//! Rejected record construction specimen for an unknown field initializer.
+
+public record UnknownFieldPayload {
+    public value: i32
+}
+
+public procedure recordFieldUnknownReference() -> UnknownFieldPayload {
+    return UnknownFieldPayload {
+        value: 1,
+        missing: 2
+    }
+}

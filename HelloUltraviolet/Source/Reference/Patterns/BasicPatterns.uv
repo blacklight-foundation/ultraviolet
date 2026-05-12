@@ -1,0 +1,21 @@
+//! Reference specimens for Patterns / BasicPatterns.
+
+/// Exercises the Patterns BasicPatterns reference surface.
+public procedure runPatternsBasicPatternsReference() -> bool {
+    let literal_hit: bool = if 7 is 7 {
+        true
+    } else {
+        false
+    }
+    let wildcard_hit: bool = if 7 is _ {
+        true
+    } else {
+        false
+    }
+    let identifier_hit: bool = if 7 is bound_value {
+        bound_value == 7
+    } else {
+        false
+    }
+    return literal_hit && wildcard_hit && identifier_hit
+}

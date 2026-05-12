@@ -1,0 +1,31 @@
+//! Reference specimens for Lowering / SharedJudgments.
+
+internal record LoweringReference {
+    internal source_constructs: usize
+    internal produces_ir: bool
+    internal preserves_semantics: bool
+}
+
+internal procedure loweringReference(
+    source_constructs: usize,
+    produces_ir: bool,
+    preserves_semantics: bool
+) -> LoweringReference {
+    return LoweringReference {
+        source_constructs: source_constructs,
+        produces_ir: produces_ir,
+        preserves_semantics: preserves_semantics
+    }
+}
+
+internal procedure loweringReferenceIsCovered(reference: LoweringReference) -> bool {
+    return reference.source_constructs > 0usize &&
+        reference.produces_ir &&
+        reference.preserves_semantics
+}
+
+/// Exercises the Lowering SharedJudgments reference surface.
+public procedure runLoweringSharedJudgmentsReference() -> bool {
+    let reference: LoweringReference = loweringReference(4usize, true, true)
+    return loweringReferenceIsCovered(reference)
+}

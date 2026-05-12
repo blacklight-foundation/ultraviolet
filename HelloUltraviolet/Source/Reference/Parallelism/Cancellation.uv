@@ -1,0 +1,7 @@
+//! Reference specimens for Parallelism / Cancellation.
+
+/// Exercises the Parallelism Cancellation reference surface.
+public procedure runParallelismCancellationReference() -> bool {
+    let reference: ParallelReference = parallelReference(1usize, true, true)
+    return parallelReferenceIsCovered(reference) && reference.propagates_panic
+}

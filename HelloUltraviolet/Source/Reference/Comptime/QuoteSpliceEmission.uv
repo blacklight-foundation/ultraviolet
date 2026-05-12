@@ -1,0 +1,7 @@
+//! Reference specimens for Comptime / QuoteSpliceEmission.
+
+/// Exercises the Comptime QuoteSpliceEmission reference surface.
+public procedure runComptimeQuoteSpliceEmissionReference() -> bool {
+    let reference: ComptimeReference = comptimeReference(true, true, false)
+    return comptimeReferenceIsCovered(reference) && reference.emits_source
+}

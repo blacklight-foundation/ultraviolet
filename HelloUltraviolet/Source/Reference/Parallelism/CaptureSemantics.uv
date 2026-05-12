@@ -1,0 +1,9 @@
+//! Reference specimens for Parallelism / CaptureSemantics.
+
+/// Exercises the Parallelism CaptureSemantics reference surface.
+public procedure runParallelismCaptureSemanticsReference() -> bool {
+    let captured: i32 = 5
+    let closure = |value: i32| -> i32 value + captured
+    let reference: ParallelReference = parallelReference(1usize, true, false)
+    return parallelReferenceIsCovered(reference) && closure(2) == 7
+}

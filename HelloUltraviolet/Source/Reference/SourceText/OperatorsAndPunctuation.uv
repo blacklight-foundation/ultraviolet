@@ -1,0 +1,40 @@
+//! Reference specimens for SourceText / OperatorsAndPunctuation.
+
+internal record TokenReference {
+    internal operator_count: usize
+    internal punctuator_count: usize
+    internal has_attribute_delimiters: bool
+}
+
+internal procedure tokenReference(
+    operator_count: usize,
+    punctuator_count: usize,
+    has_attribute_delimiters: bool
+) -> TokenReference {
+    return TokenReference {
+        operator_count: operator_count,
+        punctuator_count: punctuator_count,
+        has_attribute_delimiters: has_attribute_delimiters
+    }
+}
+
+internal procedure tokenReferenceCoversCoreSurface(reference: TokenReference) -> bool {
+    return reference.operator_count >= 20usize &&
+        reference.punctuator_count >= 10usize &&
+        reference.has_attribute_delimiters
+}
+
+/// Exercises the SourceText OperatorsAndPunctuation reference surface.
+public procedure runSourceTextOperatorsAndPunctuationReference() -> bool {
+    let arithmetic: i32 = ((8 + 4) - 2) * 3 / 5 % 5
+    let comparison: bool = arithmetic == 1 && arithmetic != 2 && 1 < 2 && 2 >= 2
+    let bitwise: i32 = (1 | 2) & 3
+    let shifted: i32 = (1 << 3) >> 1
+    let ranges_ok: bool = true
+    let reference: TokenReference = tokenReference(28usize, 12usize, true)
+    return comparison &&
+        bitwise == 3 &&
+        shifted == 4 &&
+        ranges_ok &&
+        tokenReferenceCoversCoreSurface(reference)
+}

@@ -1,0 +1,29 @@
+//! Generated catalog markers for 14. Abstraction and Polymorphism / 14.11 Refinement and Polymorphism Diagnostics Supplement.
+
+
+public procedure countAbstractionAndPolymorphismRefinementAndPolymorphismDiagnosticsSupplementObligations() -> usize {
+    return 2usize
+}
+
+public procedure validatedAbstractionAndPolymorphismRefinementAndPolymorphismDiagnosticsSupplementObligations() -> usize {
+    var count: usize = 0usize
+    if acceptedObligationEntryMatches(
+        "diag.14.RefinementPolymorphismDiagnosticsOwnership",
+        52280usize,
+        "HelloUltraviolet::Reference::Polymorphism",
+        "runPolymorphismGenericParametersReference",
+        "Source/Reference/Polymorphism/GenericParameters.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "diag-table.14.RefinementPolymorphismDiagnostics",
+        52293usize,
+        "HelloUltraviolet::Reference::Polymorphism",
+        "runPolymorphismGenericParametersReference",
+        "Source/Reference/Polymorphism/GenericParameters.uv"
+    ) {
+        count = count + 1usize
+    }
+    return count
+}

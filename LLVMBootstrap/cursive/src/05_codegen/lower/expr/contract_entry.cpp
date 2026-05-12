@@ -28,7 +28,7 @@ namespace cursive::codegen {
 //   2. At procedure exit, @entry(expr) refers to the saved value
 //
 // Requirements:
-//   - The result type of @entry(expr) must satisfy Bitcopy or Clone
+//   - The result type of @entry(expr) must satisfy Bitcopy
 // =============================================================================
 
 LowerResult LowerEntryExpr(const ast::EntryExpr& expr, LowerCtx& ctx) {

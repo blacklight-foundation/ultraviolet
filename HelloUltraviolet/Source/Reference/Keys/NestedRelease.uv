@@ -1,0 +1,7 @@
+//! Reference specimens for Keys / NestedRelease.
+
+/// Exercises the Keys NestedRelease reference surface.
+public procedure runKeysNestedReleaseReference() -> bool {
+    let reference: KeyReference = keyReference(2usize, true, true)
+    return keyReferenceIsCovered(reference)
+}

@@ -1,0 +1,7 @@
+//! Rejected contract specimen for direct dynamic attributes on contract predicates.
+
+public procedure contractDynamicAttributeReference(value: i32) -> i32
+|: [[dynamic]] value > 0
+{
+    return value
+}

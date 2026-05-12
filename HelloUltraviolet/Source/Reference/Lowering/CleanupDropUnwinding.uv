@@ -1,0 +1,7 @@
+//! Reference specimens for Lowering / CleanupDropUnwinding.
+
+/// Exercises the Lowering CleanupDropUnwinding reference surface.
+public procedure runLoweringCleanupDropUnwindingReference() -> bool {
+    let reference: LoweringReference = loweringReference(2usize, true, true)
+    return loweringReferenceIsCovered(reference)
+}

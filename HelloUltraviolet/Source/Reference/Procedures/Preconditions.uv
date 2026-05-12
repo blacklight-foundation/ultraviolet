@@ -1,0 +1,12 @@
+//! Reference specimens for Procedures / Preconditions.
+
+internal procedure preconditionReference(value: i32) -> i32
+|: value > 0
+{
+    return value
+}
+
+/// Exercises the Procedures Preconditions reference surface.
+public procedure runProceduresPreconditionsReference() -> bool {
+    return preconditionReference(6) == 6
+}

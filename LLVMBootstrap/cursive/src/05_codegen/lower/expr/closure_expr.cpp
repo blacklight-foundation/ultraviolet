@@ -803,12 +803,15 @@ LowerResult LowerClosureExpr(
       snapshot.Restore(ctx);
     }
 
+    analysis::TypeRef result_ret_type = proc.ret;
     ctx.QueueExtraProc(std::move(proc), LinkageKind::Internal);
 
     IRValue result;
     result.kind = IRValue::Kind::Symbol;
     result.name = code_sym;
-    ctx.RegisterValueType(result, analysis::MakeTypeFunc(std::move(fn_type_params), proc.ret));
+    ctx.RegisterValueType(
+        result,
+        analysis::MakeTypeFunc(std::move(fn_type_params), result_ret_type));
 
     return LowerResult{EmptyIR(), result};
   }
@@ -848,17 +851,33 @@ LowerResult LowerClosureExpr(
   IRValue env_zero = ctx.FreshTempValue("closure_env_zero");
   ctx.RegisterValueType(env_zero, env_type);
 
-  IRAlloc alloc_env;
-  alloc_env.value = env_zero;
-  alloc_env.result = env_ptr;
-  alloc_env.type = env_type;
   if (!ctx.active_region_aliases.empty()) {
+    IRAlloc alloc_env;
+    alloc_env.value = env_zero;
+    alloc_env.result = env_ptr;
+    alloc_env.type = env_type;
     IRValue region_local;
     region_local.kind = IRValue::Kind::Local;
     region_local.name = ctx.active_region_aliases.back();
     alloc_env.region = region_local;
+    env_parts.push_back(MakeIR(std::move(alloc_env)));
+  } else {
+    IRValue env_storage;
+    env_storage.kind = IRValue::Kind::Local;
+    env_storage.name = ctx.FreshTempValue("closure_env_storage").name;
+    ctx.RegisterValueType(env_storage, env_type);
+
+    IRBindVar bind_env;
+    bind_env.name = env_storage.name;
+    bind_env.value = env_zero;
+    bind_env.type = env_type;
+    env_parts.push_back(MakeIR(std::move(bind_env)));
+
+    DerivedValueInfo env_addr;
+    env_addr.kind = DerivedValueInfo::Kind::AddrLocal;
+    env_addr.name = env_storage.name;
+    ctx.RegisterDerivedValue(env_ptr, env_addr);
   }
-  env_parts.push_back(MakeIR(std::move(alloc_env)));
 
   for (std::size_t i = 0; i < captures.size(); ++i) {
     const auto& cap = captures[i];

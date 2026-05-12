@@ -17,7 +17,7 @@
  *
  * @entry(expr):
  *   - Captures value of expr at procedure entry time
- *   - expr must be BitcopyType or CloneType
+ *   - expr must be BitcopyType
  *   - Used to compare post-state with pre-state
  *   - Example: @result > @entry(self.value)
  *
@@ -29,7 +29,7 @@
  *
  * DIAGNOSTIC CODES:
  *   - E-SEM-2806: @result used outside postcondition
- *   - E-SEM-2805: @entry() result type not BitcopyType or CloneType
+ *   - E-SEM-2805: @entry() result type not BitcopyType
  *   - E-SEM-2852: Predicate references out-of-scope value
  *   - E-CON-0415: Capability-requiring operation in @entry expression
  *   - E-CON-0416: Side-effecting operation in @entry expression
@@ -285,6 +285,7 @@ static bool EntryExprHasSideEffectOp(const ast::ExprPtr& expr) {
                       std::is_same_v<T, ast::YieldFromExpr> ||
                       std::is_same_v<T, ast::SpawnExpr> ||
                       std::is_same_v<T, ast::WaitExpr> ||
+                      std::is_same_v<T, ast::FenceExpr> ||
                       std::is_same_v<T, ast::ParallelExpr> ||
                       std::is_same_v<T, ast::DispatchExpr> ||
                       std::is_same_v<T, ast::RaceExpr> ||
@@ -358,6 +359,16 @@ static bool EntryExprHasSideEffectOp(const ast::ExprPtr& expr) {
           return EntryExprHasSideEffectOp(node.scrutinee) ||
                  EntryExprHasSideEffectOp(node.then_expr) ||
                  EntryExprHasSideEffectOp(node.else_expr);
+        } else if constexpr (std::is_same_v<T, ast::AllocExpr> ||
+                             std::is_same_v<T, ast::MoveExpr> ||
+                             std::is_same_v<T, ast::TransmuteExpr> ||
+                             std::is_same_v<T, ast::PropagateExpr> ||
+                             std::is_same_v<T, ast::LoopInfiniteExpr> ||
+                             std::is_same_v<T, ast::LoopConditionalExpr> ||
+                             std::is_same_v<T, ast::LoopIterExpr> ||
+                             std::is_same_v<T, ast::BlockExpr> ||
+                             std::is_same_v<T, ast::UnsafeBlockExpr>) {
+          return true;
         } else {
           return false;
         }
@@ -826,14 +837,14 @@ IntrinsicValidationResult ValidateEntryIntrinsic(
 
     if (EntryExprHasCapabilityOp(entry->expr, &ctx)) {
       result.ok = false;
-      result.diag_id = "Entry-NoCapability-Err";
+      result.diag_id = "E-CON-0415";
       result.span = entry->expr->span;
       return result;
     }
 
     if (EntryExprHasSideEffectOp(entry->expr)) {
       result.ok = false;
-      result.diag_id = "Entry-SideEffect-Err";
+      result.diag_id = "E-CON-0416";
       result.span = entry->expr->span;
       return result;
     }
@@ -846,8 +857,8 @@ IntrinsicValidationResult ValidateEntryIntrinsic(
       return result;
     }
 
-    // The inner expression's type must be Bitcopy or Clone
-    // This is checked during type analysis - we record the occurrence here
+    // The inner expression's type must be Bitcopy.
+    // This is checked during type analysis - we record the occurrence here.
     result.entry_occurrences.push_back({entry->expr, entry->expr->span});
   }
 
@@ -885,8 +896,7 @@ bool ValidateEntryType(const TypeRef& type) {
   }
 
   // For user-defined types, we would need to check if they implement
-  // Bitcopy or Clone - this requires type resolution which happens later
-  // For now, accept them and let type checking handle it
+  // User-defined types require type resolution, which happens later.
 
   return true;
 }

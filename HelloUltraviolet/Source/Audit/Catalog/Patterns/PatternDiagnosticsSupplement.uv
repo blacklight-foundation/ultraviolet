@@ -1,0 +1,20 @@
+//! Generated catalog markers for 17. Patterns / 17.7 Pattern Diagnostics Supplement.
+
+
+public procedure countPatternsPatternDiagnosticsSupplementObligations() -> usize {
+    return 1usize
+}
+
+public procedure validatedPatternsPatternDiagnosticsSupplementObligations() -> usize {
+    var count: usize = 0usize
+    if acceptedObligationEntryMatches(
+        "diag.17.PatternDiagnosticsSupplement",
+        67252usize,
+        "HelloUltraviolet::Reference::Patterns",
+        "runPatternsBasicPatternsReference",
+        "Source/Reference/Patterns/BasicPatterns.uv"
+    ) {
+        count = count + 1usize
+    }
+    return count
+}

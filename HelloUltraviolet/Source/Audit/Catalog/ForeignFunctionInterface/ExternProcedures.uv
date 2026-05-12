@@ -1,0 +1,128 @@
+//! Generated catalog markers for 23. Foreign Function Interface / 23.2 Extern Procedures.
+
+
+public procedure countForeignFunctionInterfaceExternProceduresObligations() -> usize {
+    return 13usize
+}
+
+public procedure validatedForeignFunctionInterfaceExternProceduresObligations() -> usize {
+    var count: usize = 0usize
+    if acceptedObligationEntryMatches(
+        "grammar.23.ExternProcedureDecl",
+        86354usize,
+        "HelloUltraviolet::Reference::FFI",
+        "runFFIFfiSafeReference",
+        "Source/Reference/FFI/FfiSafe.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "rule.23.Parse-ExternProcDecl",
+        86371usize,
+        "HelloUltraviolet::Reference::FFI",
+        "runFFIFfiSafeReference",
+        "Source/Reference/FFI/FfiSafe.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "ast.23.ExternProcDeclForm",
+        86389usize,
+        "HelloUltraviolet::Reference::FFI",
+        "runFFIFfiSafeReference",
+        "Source/Reference/FFI/FfiSafe.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "def.23.ExternProcedureDerivedForms",
+        86406usize,
+        "HelloUltraviolet::Reference::FFI",
+        "runFFIFfiSafeReference",
+        "Source/Reference/FFI/FfiSafe.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "def.23.ExternProcedureMeaning",
+        86426usize,
+        "HelloUltraviolet::Reference::FFI",
+        "runFFIFfiSafeReference",
+        "Source/Reference/FFI/FfiSafe.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "def.23.ExternAbiStrings",
+        86439usize,
+        "HelloUltraviolet::Reference::FFI",
+        "runFFIFfiSafeReference",
+        "Source/Reference/FFI/FfiSafe.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "def.23.ExternSignatureRequirements",
+        86461usize,
+        "HelloUltraviolet::Reference::FFI",
+        "runFFIFfiSafeReference",
+        "Source/Reference/FFI/FfiSafe.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "requirement.23.ExternFfiConstraints",
+        86484usize,
+        "HelloUltraviolet::Reference::FFI",
+        "runFFIFfiSafeReference",
+        "Source/Reference/FFI/FfiSafe.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "requirement.23.ExternCallSafety",
+        86501usize,
+        "HelloUltraviolet::Reference::FFI",
+        "runFFIFfiSafeReference",
+        "Source/Reference/FFI/FfiSafe.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "requirement.23.ExternDynamicSemantics",
+        86518usize,
+        "HelloUltraviolet::Reference::FFI",
+        "runFFIFfiSafeReference",
+        "Source/Reference/FFI/FfiSafe.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "requirement.23.ExternLowering",
+        86533usize,
+        "HelloUltraviolet::Reference::FFI",
+        "runFFIFfiSafeReference",
+        "Source/Reference/FFI/FfiSafe.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "diagnostics.23.ExternProcedureDiagnostics",
+        86548usize,
+        "HelloUltraviolet::Reference::FFI",
+        "runFFIFfiSafeReference",
+        "Source/Reference/FFI/FfiSafe.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "diagnostics.23.ExternProcedureDiagnosticOwnership",
+        86564usize,
+        "HelloUltraviolet::Reference::FFI",
+        "runFFIFfiSafeReference",
+        "Source/Reference/FFI/FfiSafe.uv"
+    ) {
+        count = count + 1usize
+    }
+    return count
+}

@@ -1,0 +1,27 @@
+//! Rejected parsing specimens.
+
+public procedure parsingRejectedSourceFixtureCount() -> usize {
+    return 1usize
+}
+
+public procedure validatedParsingRejectedSourceFixtureCount() -> usize {
+    var count: usize = 0usize
+    if rejectedSpecimenMatches(
+        rejectedSpecimen(
+            "MissingStatementTerminator",
+            "Fixtures/RejectedSource/Parsing/MissingStatementTerminator",
+            "Fixtures/RejectedSource/Parsing/MissingStatementTerminator/Source/Main.uv",
+            "Fixtures/RejectedSource/Parsing/MissingStatementTerminator/Expected.uv",
+            expectedDiagnostic("E-SRC-0510", "Missing-Terminator-Err")
+        ),
+        "MissingStatementTerminator",
+        "Fixtures/RejectedSource/Parsing/MissingStatementTerminator",
+        "Fixtures/RejectedSource/Parsing/MissingStatementTerminator/Source/Main.uv",
+        "Fixtures/RejectedSource/Parsing/MissingStatementTerminator/Expected.uv",
+        "E-SRC-0510",
+        "Missing-Terminator-Err"
+    ) {
+        count = count + 1usize
+    }
+    return count
+}

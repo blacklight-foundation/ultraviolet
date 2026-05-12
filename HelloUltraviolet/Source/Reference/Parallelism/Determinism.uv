@@ -1,0 +1,10 @@
+//! Reference specimens for Parallelism / Determinism.
+
+/// Exercises the Parallelism Determinism reference surface.
+public procedure runParallelismDeterminismReference() -> bool {
+    let first: ParallelReference = parallelReference(2usize, true, false)
+    let second: ParallelReference = parallelReference(2usize, true, false)
+    return parallelReferenceIsCovered(first) &&
+        parallelReferenceIsCovered(second) &&
+        first.fork_count == second.fork_count
+}

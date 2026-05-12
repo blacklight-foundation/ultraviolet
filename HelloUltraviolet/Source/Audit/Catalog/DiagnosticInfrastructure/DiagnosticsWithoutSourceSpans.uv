@@ -1,0 +1,20 @@
+//! Generated catalog markers for 2. Diagnostic Infrastructure / 2.7 Diagnostics Without Source Spans.
+
+
+public procedure countDiagnosticInfrastructureDiagnosticsWithoutSourceSpansObligations() -> usize {
+    return 1usize
+}
+
+public procedure validatedDiagnosticInfrastructureDiagnosticsWithoutSourceSpansObligations() -> usize {
+    var count: usize = 0usize
+    if acceptedObligationEntryMatches(
+        "NoSpan-External",
+        1982usize,
+        "HelloUltraviolet::Reference::Diagnostics",
+        "runDiagnosticsSourceSpansReference",
+        "Source/Reference/Diagnostics/SourceSpans.uv"
+    ) {
+        count = count + 1usize
+    }
+    return count
+}

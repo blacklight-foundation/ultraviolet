@@ -1,0 +1,8 @@
+//! Reference specimens for Keys / ConflictDetection.
+
+/// Exercises the Keys ConflictDetection reference surface.
+public procedure runKeysConflictDetectionReference() -> bool {
+    let compatible: KeyReference = keyReference(2usize, true, false)
+    let conflict: KeyReference = keyReference(2usize, false, true)
+    return keyReferenceIsCovered(compatible) && keyReferenceIsCovered(conflict)
+}

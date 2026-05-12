@@ -1,0 +1,9 @@
+//! Rejected call specimen for an unexpected move argument.
+
+public procedure borrowValue(value: i32) -> i32 {
+    return value
+}
+
+public procedure callMoveUnexpectedReference() -> i32 {
+    return borrowValue(move 1)
+}

@@ -151,7 +151,7 @@ namespace cursive::analysis
               return true;
             }
 
-            // @entry captures entry value - requires Bitcopy or Clone
+            // @entry captures entry value by bitwise copy.
             if constexpr (std::is_same_v<T, ast::EntryExpr>)
             {
               return ExprIsPure(node.expr);
@@ -219,7 +219,7 @@ namespace cursive::analysis
     // @ENTRY TYPE CHECK
     // =============================================================================
 
-    // @entry(expr) requires the result type to be BitcopyType or CloneType
+    // @entry(expr) requires the result type to be BitcopyType.
     static bool CheckEntryExprType(const ScopeContext &ctx,
                                    const ast::ExprPtr &expr,
                                    const TypeRef &type)
@@ -237,8 +237,7 @@ namespace cursive::analysis
 
             if constexpr (std::is_same_v<T, ast::EntryExpr>)
             {
-              // The captured expression must be Bitcopy or Clone
-              return BitcopyType(ctx, type) || CloneType(ctx, type);
+              return BitcopyType(ctx, type);
             }
 
             // Recursively check subexpressions
@@ -385,7 +384,7 @@ namespace cursive::analysis
         return result;
       }
 
-      // Check @entry expressions have Bitcopy or Clone type
+      // Check @entry expressions have Bitcopy type.
       // (Simplified: we'd need to type the subexpression first)
 
       // Postcondition must have type bool

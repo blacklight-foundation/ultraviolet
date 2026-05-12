@@ -1,0 +1,16 @@
+//! Reference specimens for Patterns / RangePatterns.
+
+/// Exercises the Patterns RangePatterns reference surface.
+public procedure runPatternsRangePatternsReference() -> bool {
+    let inclusive_hit: bool = if 4 is 1..=4 {
+        true
+    } else {
+        false
+    }
+    let exclusive_miss: bool = if 4 is 1..4 {
+        false
+    } else {
+        true
+    }
+    return inclusive_hit && exclusive_miss
+}

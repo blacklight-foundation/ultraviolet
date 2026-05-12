@@ -1,0 +1,7 @@
+//! Reference specimens for Keys / SpeculativeExecution.
+
+/// Exercises the Keys SpeculativeExecution reference surface.
+public procedure runKeysSpeculativeExecutionReference() -> bool {
+    let reference: KeyReference = keyReference(3usize, false, true)
+    return keyReferenceIsCovered(reference) && reference.runtime_checked
+}

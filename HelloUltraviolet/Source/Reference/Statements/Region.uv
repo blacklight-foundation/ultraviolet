@@ -1,0 +1,10 @@
+//! Reference specimens for Statements / Region.
+
+/// Exercises the Statements Region reference surface.
+public procedure runStatementsRegionReference() -> bool {
+    var value: i32 = 0
+    region as scratch {
+        value = value + 1
+    }
+    return value == 1
+}

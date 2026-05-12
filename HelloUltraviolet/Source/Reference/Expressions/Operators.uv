@@ -1,0 +1,11 @@
+//! Reference specimens for Expressions / Operators.
+
+/// Exercises the Expressions Operators reference surface.
+public procedure runExpressionsOperatorsReference() -> bool {
+    let arithmetic: i32 = ((8 + 4) - 3) * 2 / 3
+    let remainder: i32 = 14 % 5
+    let comparison: bool = arithmetic == 6 && remainder == 4 && 7 > 3 && 3 <= 3
+    let logical: bool = !(false) && (true || false)
+    let negative: i32 = -arithmetic
+    return comparison && logical && negative == -6
+}

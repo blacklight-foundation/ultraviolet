@@ -20,6 +20,7 @@
 #include "00_core/assert_spec.h"
 #include "04_analysis/generics/monomorphize.h"
 #include "04_analysis/resolve/scopes.h"
+#include "04_analysis/resolve/scopes_lookup.h"
 #include "04_analysis/typing/type_equiv.h"
 #include "04_analysis/typing/type_layout.h"
 #include "04_analysis/typing/type_predicates.h"
@@ -65,12 +66,23 @@ analysis::TypeRef ResolveAliasTypeForPattern(const analysis::TypeRef& type,
   for (const auto& seg : path->path) {
     syntax_path.push_back(seg);
   }
-  const auto it = ctx.sigma->types.find(analysis::PathKeyOf(syntax_path));
-  if (it == ctx.sigma->types.end()) {
-    return stripped;
+  const ast::TypeAliasDecl* alias = nullptr;
+  if (const auto it = ctx.sigma->types.find(analysis::PathKeyOf(syntax_path));
+      it != ctx.sigma->types.end()) {
+    alias = std::get_if<ast::TypeAliasDecl>(&it->second);
   }
-
-  const auto* alias = std::get_if<ast::TypeAliasDecl>(&it->second);
+  if (!alias && syntax_path.size() == 1) {
+    const analysis::ScopeContext& scope = ScopeForLowering(ctx);
+    const auto resolved = analysis::ResolveTypeName(scope, syntax_path.front());
+    if (resolved.has_value() && resolved->origin_opt.has_value()) {
+      ast::Path full_path = *resolved->origin_opt;
+      full_path.push_back(resolved->target_opt.value_or(syntax_path.front()));
+      if (const auto it = ctx.sigma->types.find(analysis::PathKeyOf(full_path));
+          it != ctx.sigma->types.end()) {
+        alias = std::get_if<ast::TypeAliasDecl>(&it->second);
+      }
+    }
+  }
   if (!alias) {
     return stripped;
   }

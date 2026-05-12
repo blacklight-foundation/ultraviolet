@@ -1,0 +1,14 @@
+//! Reference specimens for Patterns / Exhaustiveness.
+
+/// Exercises the Patterns Exhaustiveness reference surface.
+public procedure runPatternsExhaustivenessReference() -> bool {
+    let reference: ModalReferenceValue = ModalReference@Closed {}
+    return if reference is {
+        @Closed {
+            true
+        }
+        @Open {
+            false
+        }
+    }
+}

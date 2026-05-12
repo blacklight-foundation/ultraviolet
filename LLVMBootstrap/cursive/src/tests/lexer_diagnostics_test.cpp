@@ -175,6 +175,10 @@ int main() {
     std::cerr << "conformance trace did not record Warn-DecimalLeadingZero\n";
     return 1;
   }
+  if (conformance_text->find("\tparse\tDiagId-Code\t") == std::string::npos) {
+    std::cerr << "conformance trace did not record DiagId-Code\n";
+    return 1;
+  }
   if (conformance_text->find("\tparse\tPhase1-File\t") ==
       std::string::npos) {
     std::cerr << "conformance trace did not record Phase1-File\n";

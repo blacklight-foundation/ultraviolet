@@ -123,6 +123,9 @@ std::optional<std::string_view> CodeForResolveDiag(
   if (diag_id == "Collect-Dup" || diag_id == "Names-Step-Dup") {
     return "E-MOD-1302";
   }
+  if (diag_id == "E-MOD-2430") {
+    return "E-MOD-2430";
+  }
   if (diag_id == "Intro-Dup") {
     return "E-MOD-1302";
   }

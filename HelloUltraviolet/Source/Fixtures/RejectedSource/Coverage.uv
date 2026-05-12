@@ -1,0 +1,30 @@
+//! Coverage checks for rejected-source fixture metadata.
+
+public procedure expectedRejectedSourceFixtureCount() -> usize {
+    return 86usize
+}
+
+public procedure rejectedSourceFixtureCount() -> usize {
+    return sourceTextRejectedSourceFixtureCount() +
+        parsingRejectedSourceFixtureCount() +
+        namesRejectedSourceFixtureCount() +
+        proceduresRejectedSourceFixtureCount() +
+        statementsRejectedSourceFixtureCount() +
+        expressionsRejectedSourceFixtureCount() +
+        patternsRejectedSourceFixtureCount()
+}
+
+public procedure validatedRejectedSourceFixtureCount() -> usize {
+    return validatedSourceTextRejectedSourceFixtureCount() +
+        validatedParsingRejectedSourceFixtureCount() +
+        validatedNamesRejectedSourceFixtureCount() +
+        validatedProceduresRejectedSourceFixtureCount() +
+        validatedStatementsRejectedSourceFixtureCount() +
+        validatedExpressionsRejectedSourceFixtureCount() +
+        validatedPatternsRejectedSourceFixtureCount()
+}
+
+public procedure rejectedSourceFixturesAreIndexed() -> bool {
+    return rejectedSourceFixtureCount() == expectedRejectedSourceFixtureCount() &&
+        validatedRejectedSourceFixtureCount() == expectedRejectedSourceFixtureCount()
+}

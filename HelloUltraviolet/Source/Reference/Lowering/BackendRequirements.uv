@@ -1,0 +1,7 @@
+//! Reference specimens for Lowering / BackendRequirements.
+
+/// Exercises the Lowering BackendRequirements reference surface.
+public procedure runLoweringBackendRequirementsReference() -> bool {
+    let reference: LoweringReference = loweringReference(2usize, true, true)
+    return loweringReferenceIsCovered(reference)
+}

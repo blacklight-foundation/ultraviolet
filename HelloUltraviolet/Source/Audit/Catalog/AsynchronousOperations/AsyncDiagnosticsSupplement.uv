@@ -1,0 +1,20 @@
+//! Generated catalog markers for 21. Asynchronous Operations / 21.6 Async Diagnostics Supplement.
+
+
+public procedure countAsynchronousOperationsAsyncDiagnosticsSupplementObligations() -> usize {
+    return 1usize
+}
+
+public procedure validatedAsynchronousOperationsAsyncDiagnosticsSupplementObligations() -> usize {
+    var count: usize = 0usize
+    if acceptedObligationEntryMatches(
+        "diagnostics.21.AsyncDiagnosticsSupplement",
+        82518usize,
+        "HelloUltraviolet::Reference::Async",
+        "runAsyncAsyncTypeReference",
+        "Source/Reference/Async/AsyncType.uv"
+    ) {
+        count = count + 1usize
+    }
+    return count
+}

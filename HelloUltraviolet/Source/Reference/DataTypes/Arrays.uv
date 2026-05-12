@@ -1,0 +1,10 @@
+//! Reference specimens for DataTypes / Arrays.
+
+/// Exercises the DataTypes Arrays reference surface.
+public procedure runDataTypesArraysReference() -> bool {
+    let values: [i32; 3] = [1, 2, 3]
+    let repeated: [i32; 3] = [4; 3]
+    return values[0usize] == 1 &&
+        values[2usize] == 3 &&
+        repeated[1usize] == 4
+}
