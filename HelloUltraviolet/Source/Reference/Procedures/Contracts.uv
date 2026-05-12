@@ -6,7 +6,21 @@ internal procedure contractReference(value: i32) -> bool
     return value > 0
 }
 
+internal procedure valueRequiresPositive(value: i32) -> i32
+|: value > 0
+{
+    return value
+}
+
+internal procedure flowFactDischargesPrecondition(value: i32) -> bool {
+    if value > 0 {
+        return valueRequiresPositive(value) == value
+    }
+
+    return true
+}
+
 /// Exercises the Procedures Contracts reference surface.
 public procedure runProceduresContractsReference() -> bool {
-    return contractReference(4)
+    return contractReference(4) && flowFactDischargesPrecondition(5)
 }

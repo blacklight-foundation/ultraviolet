@@ -981,7 +981,7 @@ ForeignContractResult ResolveForeignEnsures(
   if (clause.kind == ast::ForeignContractKind::EnsuresNullResult &&
       !IsNullableForeignPtrType(return_type)) {
     result.ok = false;
-    result.diag_id = "E-SEM-2853";
+    result.diag_id = "E-SEM-2856";
     return result;
   }
 

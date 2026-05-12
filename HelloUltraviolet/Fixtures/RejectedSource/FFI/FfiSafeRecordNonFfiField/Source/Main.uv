@@ -1,0 +1,11 @@
+//! Rejected FFI specimen for non-FfiSafe fields inside layout(C) records.
+
+[[layout(C)]]
+public record FfiRecordWithBool {
+    public value: bool
+}
+
+extern "C" {
+    public procedure importedRecord(value: FfiRecordWithBool) -> i32
+}
+

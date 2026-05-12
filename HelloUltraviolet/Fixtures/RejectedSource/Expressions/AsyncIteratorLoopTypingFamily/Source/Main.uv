@@ -1,0 +1,8 @@
+//! Rejected async iterator loop specimen for non-async enclosing returns.
+
+public procedure asyncIteratorLoopTypingFamilyReference(stream: Stream<i32, !>) -> i32 {
+    loop value in stream {
+        let copied_value: i32 = value
+    }
+    return 0
+}

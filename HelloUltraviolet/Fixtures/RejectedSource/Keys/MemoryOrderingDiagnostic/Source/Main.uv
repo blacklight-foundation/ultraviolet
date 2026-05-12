@@ -1,0 +1,10 @@
+//! Rejected key-system specimen for memory-ordering diagnostic ownership.
+
+public procedure memoryOrderingDiagnosticReference() -> i32 {
+    var shared_value: shared i32 = 1
+    #shared_value speculative write {
+        let observed: i32 = [[acquire]] shared_value
+        shared_value = observed
+    }
+    return 0
+}

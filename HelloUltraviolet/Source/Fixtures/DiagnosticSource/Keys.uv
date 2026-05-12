@@ -1,0 +1,146 @@
+//! Diagnostic key-system specimens.
+
+public procedure keysDiagnosticSourceFixtureCount() -> usize {
+    return 8usize
+}
+
+public procedure validatedKeysDiagnosticSourceFixtureCount() -> usize {
+    var count: usize = 0usize
+    if diagnosticSpecimenMatches(
+        diagnosticSpecimen(
+            "FineGrainedLoopKeyWarning",
+            "Fixtures/DiagnosticSource/Keys/FineGrainedLoopKeyWarning",
+            "Fixtures/DiagnosticSource/Keys/FineGrainedLoopKeyWarning/Source/Main.uv",
+            "Fixtures/DiagnosticSource/Keys/FineGrainedLoopKeyWarning/Expected.uv",
+            expectedDiagnostic("W-CON-0001", "requirement.19.FineGrainedKeyLoopWarning")
+        ),
+        "FineGrainedLoopKeyWarning",
+        "Fixtures/DiagnosticSource/Keys/FineGrainedLoopKeyWarning",
+        "Fixtures/DiagnosticSource/Keys/FineGrainedLoopKeyWarning/Source/Main.uv",
+        "Fixtures/DiagnosticSource/Keys/FineGrainedLoopKeyWarning/Expected.uv",
+        "W-CON-0001",
+        "requirement.19.FineGrainedKeyLoopWarning"
+    ) {
+        count = count + 1usize
+    }
+    if diagnosticSpecimenMatches(
+        diagnosticSpecimen(
+            "ReadThenWriteExplicitWarning",
+            "Fixtures/DiagnosticSource/Keys/ReadThenWriteExplicitWarning",
+            "Fixtures/DiagnosticSource/Keys/ReadThenWriteExplicitWarning/Source/Main.uv",
+            "Fixtures/DiagnosticSource/Keys/ReadThenWriteExplicitWarning/Expected.uv",
+            expectedDiagnostic("W-CON-0006", "rule.19.K-RMW-Explicit-Warn")
+        ),
+        "ReadThenWriteExplicitWarning",
+        "Fixtures/DiagnosticSource/Keys/ReadThenWriteExplicitWarning",
+        "Fixtures/DiagnosticSource/Keys/ReadThenWriteExplicitWarning/Source/Main.uv",
+        "Fixtures/DiagnosticSource/Keys/ReadThenWriteExplicitWarning/Expected.uv",
+        "W-CON-0006",
+        "rule.19.K-RMW-Explicit-Warn"
+    ) {
+        count = count + 1usize
+    }
+    if diagnosticSpecimenMatches(
+        diagnosticSpecimen(
+            "ReadThenWriteContentionWarning",
+            "Fixtures/DiagnosticSource/Keys/ReadThenWriteContentionWarning",
+            "Fixtures/DiagnosticSource/Keys/ReadThenWriteContentionWarning/Source/Main.uv",
+            "Fixtures/DiagnosticSource/Keys/ReadThenWriteContentionWarning/Expected.uv",
+            expectedDiagnostic("W-CON-0004", "rule.19.K-RMW-Contention-Warn")
+        ),
+        "ReadThenWriteContentionWarning",
+        "Fixtures/DiagnosticSource/Keys/ReadThenWriteContentionWarning",
+        "Fixtures/DiagnosticSource/Keys/ReadThenWriteContentionWarning/Source/Main.uv",
+        "Fixtures/DiagnosticSource/Keys/ReadThenWriteContentionWarning/Expected.uv",
+        "W-CON-0004",
+        "rule.19.K-RMW-Contention-Warn"
+    ) {
+        count = count + 1usize
+    }
+    if diagnosticSpecimenMatches(
+        diagnosticSpecimen(
+            "OrderedRedundantWarning",
+            "Fixtures/DiagnosticSource/Keys/OrderedRedundantWarning",
+            "Fixtures/DiagnosticSource/Keys/OrderedRedundantWarning/Source/Main.uv",
+            "Fixtures/DiagnosticSource/Keys/OrderedRedundantWarning/Expected.uv",
+            expectedDiagnostic("W-CON-0013", "rule.19.K-Ordered-Redundant-Warn")
+        ),
+        "OrderedRedundantWarning",
+        "Fixtures/DiagnosticSource/Keys/OrderedRedundantWarning",
+        "Fixtures/DiagnosticSource/Keys/OrderedRedundantWarning/Source/Main.uv",
+        "Fixtures/DiagnosticSource/Keys/OrderedRedundantWarning/Expected.uv",
+        "W-CON-0013",
+        "rule.19.K-Ordered-Redundant-Warn"
+    ) {
+        count = count + 1usize
+    }
+    if diagnosticSpecimenMatches(
+        diagnosticSpecimen(
+            "UnknownCalleeAccessWarning",
+            "Fixtures/DiagnosticSource/Keys/UnknownCalleeAccessWarning",
+            "Fixtures/DiagnosticSource/Keys/UnknownCalleeAccessWarning/Source/Main.uv",
+            "Fixtures/DiagnosticSource/Keys/UnknownCalleeAccessWarning/Expected.uv",
+            expectedDiagnostic("W-CON-0005", "requirement.19.UnknownCalleeAccessWarning")
+        ),
+        "UnknownCalleeAccessWarning",
+        "Fixtures/DiagnosticSource/Keys/UnknownCalleeAccessWarning",
+        "Fixtures/DiagnosticSource/Keys/UnknownCalleeAccessWarning/Source/Main.uv",
+        "Fixtures/DiagnosticSource/Keys/UnknownCalleeAccessWarning/Expected.uv",
+        "W-CON-0005",
+        "requirement.19.UnknownCalleeAccessWarning"
+    ) {
+        count = count + 1usize
+    }
+    if diagnosticSpecimenMatches(
+        diagnosticSpecimen(
+            "SharedClosureCaptureWarning",
+            "Fixtures/DiagnosticSource/Keys/SharedClosureCaptureWarning",
+            "Fixtures/DiagnosticSource/Keys/SharedClosureCaptureWarning/Source/Main.uv",
+            "Fixtures/DiagnosticSource/Keys/SharedClosureCaptureWarning/Expected.uv",
+            expectedDiagnostic("W-CON-0009", "diagnostics.19.KeyAcquisitionBlocks")
+        ),
+        "SharedClosureCaptureWarning",
+        "Fixtures/DiagnosticSource/Keys/SharedClosureCaptureWarning",
+        "Fixtures/DiagnosticSource/Keys/SharedClosureCaptureWarning/Source/Main.uv",
+        "Fixtures/DiagnosticSource/Keys/SharedClosureCaptureWarning/Expected.uv",
+        "W-CON-0009",
+        "diagnostics.19.KeyAcquisitionBlocks"
+    ) {
+        count = count + 1usize
+    }
+    if diagnosticSpecimenMatches(
+        diagnosticSpecimen(
+            "NestedReleaseInterleavingWarning",
+            "Fixtures/DiagnosticSource/Keys/NestedReleaseInterleavingWarning",
+            "Fixtures/DiagnosticSource/Keys/NestedReleaseInterleavingWarning/Source/Main.uv",
+            "Fixtures/DiagnosticSource/Keys/NestedReleaseInterleavingWarning/Expected.uv",
+            expectedDiagnostic("W-CON-0010", "diagnostics.19.NestedRelease")
+        ),
+        "NestedReleaseInterleavingWarning",
+        "Fixtures/DiagnosticSource/Keys/NestedReleaseInterleavingWarning",
+        "Fixtures/DiagnosticSource/Keys/NestedReleaseInterleavingWarning/Source/Main.uv",
+        "Fixtures/DiagnosticSource/Keys/NestedReleaseInterleavingWarning/Expected.uv",
+        "W-CON-0010",
+        "diagnostics.19.NestedRelease"
+    ) {
+        count = count + 1usize
+    }
+    if diagnosticSpecimenMatches(
+        diagnosticSpecimen(
+            "DynamicKeyRuntimeInfo",
+            "Fixtures/DiagnosticSource/Keys/DynamicKeyRuntimeInfo",
+            "Fixtures/DiagnosticSource/Keys/DynamicKeyRuntimeInfo/Source/Main.uv",
+            "Fixtures/DiagnosticSource/Keys/DynamicKeyRuntimeInfo/Expected.uv",
+            expectedDiagnostic("I-CON-0013", "diagnostics.19.DynamicKeyVerification")
+        ),
+        "DynamicKeyRuntimeInfo",
+        "Fixtures/DiagnosticSource/Keys/DynamicKeyRuntimeInfo",
+        "Fixtures/DiagnosticSource/Keys/DynamicKeyRuntimeInfo/Source/Main.uv",
+        "Fixtures/DiagnosticSource/Keys/DynamicKeyRuntimeInfo/Expected.uv",
+        "I-CON-0013",
+        "diagnostics.19.DynamicKeyVerification"
+    ) {
+        count = count + 1usize
+    }
+    return count
+}

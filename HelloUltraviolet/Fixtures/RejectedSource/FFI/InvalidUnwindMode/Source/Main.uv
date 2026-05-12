@@ -1,0 +1,8 @@
+//! Rejected FFI specimen for invalid unwind attribute modes.
+
+[[export("C")]]
+[[unwind("resume")]]
+public procedure invalidUnwindModeReference() -> i32 {
+    return 0
+}
+

@@ -1,7 +1,7 @@
 //! Rejected procedure specimens.
 
 public procedure proceduresRejectedSourceFixtureCount() -> usize {
-    return 19usize
+    return 41usize
 }
 
 public procedure validatedProceduresRejectedSourceFixtureCount() -> usize {
@@ -326,6 +326,380 @@ public procedure validatedProceduresRejectedSourceFixtureCount() -> usize {
         "Fixtures/RejectedSource/Procedures/ContractEntryCapability/Expected.uv",
         "E-CON-0415",
         "diag-table.15.ProcedureContractEntryDiagnostics"
+    ) {
+        count = count + 1usize
+    }
+    if rejectedSpecimenMatches(
+        rejectedSpecimen(
+            "ExplicitReturnDefinition",
+            "Fixtures/RejectedSource/Procedures/ExplicitReturnDefinition",
+            "Fixtures/RejectedSource/Procedures/ExplicitReturnDefinition/Source/Main.uv",
+            "Fixtures/RejectedSource/Procedures/ExplicitReturnDefinition/Expected.uv",
+            expectedDiagnostic("E-TYP-1507", "def.15.ExplicitReturn")
+        ),
+        "ExplicitReturnDefinition",
+        "Fixtures/RejectedSource/Procedures/ExplicitReturnDefinition",
+        "Fixtures/RejectedSource/Procedures/ExplicitReturnDefinition/Source/Main.uv",
+        "Fixtures/RejectedSource/Procedures/ExplicitReturnDefinition/Expected.uv",
+        "E-TYP-1507",
+        "def.15.ExplicitReturn"
+    ) {
+        count = count + 1usize
+    }
+    if rejectedSpecimenMatches(
+        rejectedSpecimen(
+            "ReturnAnnotationPresence",
+            "Fixtures/RejectedSource/Procedures/ReturnAnnotationPresence",
+            "Fixtures/RejectedSource/Procedures/ReturnAnnotationPresence/Source/Main.uv",
+            "Fixtures/RejectedSource/Procedures/ReturnAnnotationPresence/Expected.uv",
+            expectedDiagnostic("", "def.15.ReturnAnnOk")
+        ),
+        "ReturnAnnotationPresence",
+        "Fixtures/RejectedSource/Procedures/ReturnAnnotationPresence",
+        "Fixtures/RejectedSource/Procedures/ReturnAnnotationPresence/Source/Main.uv",
+        "Fixtures/RejectedSource/Procedures/ReturnAnnotationPresence/Expected.uv",
+        "",
+        "def.15.ReturnAnnOk"
+    ) {
+        count = count + 1usize
+    }
+    if rejectedSpecimenMatches(
+        rejectedSpecimen(
+            "ProcedureDeclarationWellFormedness",
+            "Fixtures/RejectedSource/Procedures/ProcedureDeclarationWellFormedness",
+            "Fixtures/RejectedSource/Procedures/ProcedureDeclarationWellFormedness/Source/Main.uv",
+            "Fixtures/RejectedSource/Procedures/ProcedureDeclarationWellFormedness/Expected.uv",
+            expectedDiagnostic("E-TYP-1507", "rule.15.WF-ProcedureDecl")
+        ),
+        "ProcedureDeclarationWellFormedness",
+        "Fixtures/RejectedSource/Procedures/ProcedureDeclarationWellFormedness",
+        "Fixtures/RejectedSource/Procedures/ProcedureDeclarationWellFormedness/Source/Main.uv",
+        "Fixtures/RejectedSource/Procedures/ProcedureDeclarationWellFormedness/Expected.uv",
+        "E-TYP-1507",
+        "rule.15.WF-ProcedureDecl"
+    ) {
+        count = count + 1usize
+    }
+    if rejectedSpecimenMatches(
+        rejectedSpecimen(
+            "MainDiagnosticReferences",
+            "Fixtures/RejectedSource/Procedures/MainDiagnosticReferences",
+            "Fixtures/RejectedSource/Procedures/MainDiagnosticReferences/Source/Main.uv",
+            "Fixtures/RejectedSource/Procedures/MainDiagnosticReferences/Expected.uv",
+            expectedDiagnostic("E-MOD-2434", "def.15.MainDiagRefs")
+        ),
+        "MainDiagnosticReferences",
+        "Fixtures/RejectedSource/Procedures/MainDiagnosticReferences",
+        "Fixtures/RejectedSource/Procedures/MainDiagnosticReferences/Source/Main.uv",
+        "Fixtures/RejectedSource/Procedures/MainDiagnosticReferences/Expected.uv",
+        "E-MOD-2434",
+        "def.15.MainDiagRefs"
+    ) {
+        count = count + 1usize
+    }
+    if rejectedSpecimenMatches(
+        rejectedSpecimen(
+            "ProcedureDeclarationsDiagnostic",
+            "Fixtures/RejectedSource/Procedures/ProcedureDeclarationsDiagnostic",
+            "Fixtures/RejectedSource/Procedures/ProcedureDeclarationsDiagnostic/Source/Main.uv",
+            "Fixtures/RejectedSource/Procedures/ProcedureDeclarationsDiagnostic/Expected.uv",
+            expectedDiagnostic("E-TYP-1507", "diag.15.ProcedureDeclarations")
+        ),
+        "ProcedureDeclarationsDiagnostic",
+        "Fixtures/RejectedSource/Procedures/ProcedureDeclarationsDiagnostic",
+        "Fixtures/RejectedSource/Procedures/ProcedureDeclarationsDiagnostic/Source/Main.uv",
+        "Fixtures/RejectedSource/Procedures/ProcedureDeclarationsDiagnostic/Expected.uv",
+        "E-TYP-1507",
+        "diag.15.ProcedureDeclarations"
+    ) {
+        count = count + 1usize
+    }
+    if rejectedSpecimenMatches(
+        rejectedSpecimen(
+            "SelfTypeDefinition",
+            "Fixtures/RejectedSource/Procedures/SelfTypeDefinition",
+            "Fixtures/RejectedSource/Procedures/SelfTypeDefinition/Source/Main.uv",
+            "Fixtures/RejectedSource/Procedures/SelfTypeDefinition/Expected.uv",
+            expectedDiagnostic("", "def.15.SelfType")
+        ),
+        "SelfTypeDefinition",
+        "Fixtures/RejectedSource/Procedures/SelfTypeDefinition",
+        "Fixtures/RejectedSource/Procedures/SelfTypeDefinition/Source/Main.uv",
+        "Fixtures/RejectedSource/Procedures/SelfTypeDefinition/Expected.uv",
+        "",
+        "def.15.SelfType"
+    ) {
+        count = count + 1usize
+    }
+    if rejectedSpecimenMatches(
+        rejectedSpecimen(
+            "RecordMethodWellFormedness",
+            "Fixtures/RejectedSource/Procedures/RecordMethodWellFormedness",
+            "Fixtures/RejectedSource/Procedures/RecordMethodWellFormedness/Source/Main.uv",
+            "Fixtures/RejectedSource/Procedures/RecordMethodWellFormedness/Expected.uv",
+            expectedDiagnostic("", "rule.15.WF-Record-Method")
+        ),
+        "RecordMethodWellFormedness",
+        "Fixtures/RejectedSource/Procedures/RecordMethodWellFormedness",
+        "Fixtures/RejectedSource/Procedures/RecordMethodWellFormedness/Source/Main.uv",
+        "Fixtures/RejectedSource/Procedures/RecordMethodWellFormedness/Expected.uv",
+        "",
+        "rule.15.WF-Record-Method"
+    ) {
+        count = count + 1usize
+    }
+    if rejectedSpecimenMatches(
+        rejectedSpecimen(
+            "MethodsAndReceiversDiagnostic",
+            "Fixtures/RejectedSource/Procedures/MethodsAndReceiversDiagnostic",
+            "Fixtures/RejectedSource/Procedures/MethodsAndReceiversDiagnostic/Source/Main.uv",
+            "Fixtures/RejectedSource/Procedures/MethodsAndReceiversDiagnostic/Expected.uv",
+            expectedDiagnostic("", "diag.15.MethodsAndReceivers")
+        ),
+        "MethodsAndReceiversDiagnostic",
+        "Fixtures/RejectedSource/Procedures/MethodsAndReceiversDiagnostic",
+        "Fixtures/RejectedSource/Procedures/MethodsAndReceiversDiagnostic/Source/Main.uv",
+        "Fixtures/RejectedSource/Procedures/MethodsAndReceiversDiagnostic/Expected.uv",
+        "",
+        "diag.15.MethodsAndReceivers"
+    ) {
+        count = count + 1usize
+    }
+    if rejectedSpecimenMatches(
+        rejectedSpecimen(
+            "PostconditionsDiagnostic",
+            "Fixtures/RejectedSource/Procedures/PostconditionsDiagnostic",
+            "Fixtures/RejectedSource/Procedures/PostconditionsDiagnostic/Source/Main.uv",
+            "Fixtures/RejectedSource/Procedures/PostconditionsDiagnostic/Expected.uv",
+            expectedDiagnostic("E-SEM-2806", "diag.15.Postconditions")
+        ),
+        "PostconditionsDiagnostic",
+        "Fixtures/RejectedSource/Procedures/PostconditionsDiagnostic",
+        "Fixtures/RejectedSource/Procedures/PostconditionsDiagnostic/Source/Main.uv",
+        "Fixtures/RejectedSource/Procedures/PostconditionsDiagnostic/Expected.uv",
+        "E-SEM-2806",
+        "diag.15.Postconditions"
+    ) {
+        count = count + 1usize
+    }
+    if rejectedSpecimenMatches(
+        rejectedSpecimen(
+            "PreconditionsDiagnostic",
+            "Fixtures/RejectedSource/Procedures/PreconditionsDiagnostic",
+            "Fixtures/RejectedSource/Procedures/PreconditionsDiagnostic/Source/Main.uv",
+            "Fixtures/RejectedSource/Procedures/PreconditionsDiagnostic/Expected.uv",
+            expectedDiagnostic("E-SEM-2801", "diag.15.Preconditions")
+        ),
+        "PreconditionsDiagnostic",
+        "Fixtures/RejectedSource/Procedures/PreconditionsDiagnostic",
+        "Fixtures/RejectedSource/Procedures/PreconditionsDiagnostic/Source/Main.uv",
+        "Fixtures/RejectedSource/Procedures/PreconditionsDiagnostic/Expected.uv",
+        "E-SEM-2801",
+        "diag.15.Preconditions"
+    ) {
+        count = count + 1usize
+    }
+    if rejectedSpecimenMatches(
+        rejectedSpecimen(
+            "VerificationLogicDiagnostic",
+            "Fixtures/RejectedSource/Procedures/VerificationLogicDiagnostic",
+            "Fixtures/RejectedSource/Procedures/VerificationLogicDiagnostic/Source/Main.uv",
+            "Fixtures/RejectedSource/Procedures/VerificationLogicDiagnostic/Expected.uv",
+            expectedDiagnostic("E-SEM-2801", "diag.15.VerificationLogic")
+        ),
+        "VerificationLogicDiagnostic",
+        "Fixtures/RejectedSource/Procedures/VerificationLogicDiagnostic",
+        "Fixtures/RejectedSource/Procedures/VerificationLogicDiagnostic/Source/Main.uv",
+        "Fixtures/RejectedSource/Procedures/VerificationLogicDiagnostic/Expected.uv",
+        "E-SEM-2801",
+        "diag.15.VerificationLogic"
+    ) {
+        count = count + 1usize
+    }
+    if rejectedSpecimenMatches(
+        rejectedSpecimen(
+            "RecordMethodBodyExplicitReturn",
+            "Fixtures/RejectedSource/Procedures/RecordMethodBodyExplicitReturn",
+            "Fixtures/RejectedSource/Procedures/RecordMethodBodyExplicitReturn/Source/Main.uv",
+            "Fixtures/RejectedSource/Procedures/RecordMethodBodyExplicitReturn/Expected.uv",
+            expectedDiagnostic("E-TYP-1507", "rule.15.T-Record-Method-Body")
+        ),
+        "RecordMethodBodyExplicitReturn",
+        "Fixtures/RejectedSource/Procedures/RecordMethodBodyExplicitReturn",
+        "Fixtures/RejectedSource/Procedures/RecordMethodBodyExplicitReturn/Source/Main.uv",
+        "Fixtures/RejectedSource/Procedures/RecordMethodBodyExplicitReturn/Expected.uv",
+        "E-TYP-1507",
+        "rule.15.T-Record-Method-Body"
+    ) {
+        count = count + 1usize
+    }
+    if rejectedSpecimenMatches(
+        rejectedSpecimen(
+            "RecordMethodCallArgumentType",
+            "Fixtures/RejectedSource/Procedures/RecordMethodCallArgumentType",
+            "Fixtures/RejectedSource/Procedures/RecordMethodCallArgumentType/Source/Main.uv",
+            "Fixtures/RejectedSource/Procedures/RecordMethodCallArgumentType/Expected.uv",
+            expectedDiagnostic("E-SEM-2526", "rule.15.T-Record-MethodCall")
+        ),
+        "RecordMethodCallArgumentType",
+        "Fixtures/RejectedSource/Procedures/RecordMethodCallArgumentType",
+        "Fixtures/RejectedSource/Procedures/RecordMethodCallArgumentType/Source/Main.uv",
+        "Fixtures/RejectedSource/Procedures/RecordMethodCallArgumentType/Expected.uv",
+        "E-SEM-2526",
+        "rule.15.T-Record-MethodCall"
+    ) {
+        count = count + 1usize
+    }
+    if rejectedSpecimenMatches(
+        rejectedSpecimen(
+            "MethodLookupDiagnostics",
+            "Fixtures/RejectedSource/Procedures/MethodLookupDiagnostics",
+            "Fixtures/RejectedSource/Procedures/MethodLookupDiagnostics/Source/Main.uv",
+            "Fixtures/RejectedSource/Procedures/MethodLookupDiagnostics/Expected.uv",
+            expectedDiagnostic("E-SEM-2536", "diag.15.MethodLookupDiagnostics")
+        ),
+        "MethodLookupDiagnostics",
+        "Fixtures/RejectedSource/Procedures/MethodLookupDiagnostics",
+        "Fixtures/RejectedSource/Procedures/MethodLookupDiagnostics/Source/Main.uv",
+        "Fixtures/RejectedSource/Procedures/MethodLookupDiagnostics/Expected.uv",
+        "E-SEM-2536",
+        "diag.15.MethodLookupDiagnostics"
+    ) {
+        count = count + 1usize
+    }
+    if rejectedSpecimenMatches(
+        rejectedSpecimen(
+            "InvariantPublicMutableField",
+            "Fixtures/RejectedSource/Procedures/InvariantPublicMutableField",
+            "Fixtures/RejectedSource/Procedures/InvariantPublicMutableField/Source/Main.uv",
+            "Fixtures/RejectedSource/Procedures/InvariantPublicMutableField/Expected.uv",
+            expectedDiagnostic("E-SEM-2824", "req.15.TypeInvariantsForbidPublicMutableFields")
+        ),
+        "InvariantPublicMutableField",
+        "Fixtures/RejectedSource/Procedures/InvariantPublicMutableField",
+        "Fixtures/RejectedSource/Procedures/InvariantPublicMutableField/Source/Main.uv",
+        "Fixtures/RejectedSource/Procedures/InvariantPublicMutableField/Expected.uv",
+        "E-SEM-2824",
+        "req.15.TypeInvariantsForbidPublicMutableFields"
+    ) {
+        count = count + 1usize
+    }
+    if rejectedSpecimenMatches(
+        rejectedSpecimen(
+            "InvariantDiagnostics",
+            "Fixtures/RejectedSource/Procedures/InvariantDiagnostics",
+            "Fixtures/RejectedSource/Procedures/InvariantDiagnostics/Source/Main.uv",
+            "Fixtures/RejectedSource/Procedures/InvariantDiagnostics/Expected.uv",
+            expectedDiagnostic("E-SEM-2824", "diag.15.Invariants")
+        ),
+        "InvariantDiagnostics",
+        "Fixtures/RejectedSource/Procedures/InvariantDiagnostics",
+        "Fixtures/RejectedSource/Procedures/InvariantDiagnostics/Source/Main.uv",
+        "Fixtures/RejectedSource/Procedures/InvariantDiagnostics/Expected.uv",
+        "E-SEM-2824",
+        "diag.15.Invariants"
+    ) {
+        count = count + 1usize
+    }
+    if rejectedSpecimenMatches(
+        rejectedSpecimen(
+            "BehavioralSubtypingPrecondition",
+            "Fixtures/RejectedSource/Procedures/BehavioralSubtypingPrecondition",
+            "Fixtures/RejectedSource/Procedures/BehavioralSubtypingPrecondition/Source/Main.uv",
+            "Fixtures/RejectedSource/Procedures/BehavioralSubtypingPrecondition/Expected.uv",
+            expectedDiagnostic("E-SEM-2803", "req.15.BehavioralSubtypingPreconditionRule")
+        ),
+        "BehavioralSubtypingPrecondition",
+        "Fixtures/RejectedSource/Procedures/BehavioralSubtypingPrecondition",
+        "Fixtures/RejectedSource/Procedures/BehavioralSubtypingPrecondition/Source/Main.uv",
+        "Fixtures/RejectedSource/Procedures/BehavioralSubtypingPrecondition/Expected.uv",
+        "E-SEM-2803",
+        "req.15.BehavioralSubtypingPreconditionRule"
+    ) {
+        count = count + 1usize
+    }
+    if rejectedSpecimenMatches(
+        rejectedSpecimen(
+            "BehavioralSubtypingPostcondition",
+            "Fixtures/RejectedSource/Procedures/BehavioralSubtypingPostcondition",
+            "Fixtures/RejectedSource/Procedures/BehavioralSubtypingPostcondition/Source/Main.uv",
+            "Fixtures/RejectedSource/Procedures/BehavioralSubtypingPostcondition/Expected.uv",
+            expectedDiagnostic("E-SEM-2804", "req.15.BehavioralSubtypingPostconditionRule")
+        ),
+        "BehavioralSubtypingPostcondition",
+        "Fixtures/RejectedSource/Procedures/BehavioralSubtypingPostcondition",
+        "Fixtures/RejectedSource/Procedures/BehavioralSubtypingPostcondition/Source/Main.uv",
+        "Fixtures/RejectedSource/Procedures/BehavioralSubtypingPostcondition/Expected.uv",
+        "E-SEM-2804",
+        "req.15.BehavioralSubtypingPostconditionRule"
+    ) {
+        count = count + 1usize
+    }
+    if rejectedSpecimenMatches(
+        rejectedSpecimen(
+            "BehavioralSubtypingLiskov",
+            "Fixtures/RejectedSource/Procedures/BehavioralSubtypingLiskov",
+            "Fixtures/RejectedSource/Procedures/BehavioralSubtypingLiskov/Source/Main.uv",
+            "Fixtures/RejectedSource/Procedures/BehavioralSubtypingLiskov/Expected.uv",
+            expectedDiagnostic("E-SEM-2803", "req.15.BehavioralSubtypingLiskovRequirement")
+        ),
+        "BehavioralSubtypingLiskov",
+        "Fixtures/RejectedSource/Procedures/BehavioralSubtypingLiskov",
+        "Fixtures/RejectedSource/Procedures/BehavioralSubtypingLiskov/Source/Main.uv",
+        "Fixtures/RejectedSource/Procedures/BehavioralSubtypingLiskov/Expected.uv",
+        "E-SEM-2803",
+        "req.15.BehavioralSubtypingLiskovRequirement"
+    ) {
+        count = count + 1usize
+    }
+    if rejectedSpecimenMatches(
+        rejectedSpecimen(
+            "BehavioralSubtypingDiagnostics",
+            "Fixtures/RejectedSource/Procedures/BehavioralSubtypingDiagnostics",
+            "Fixtures/RejectedSource/Procedures/BehavioralSubtypingDiagnostics/Source/Main.uv",
+            "Fixtures/RejectedSource/Procedures/BehavioralSubtypingDiagnostics/Expected.uv",
+            expectedDiagnostic("E-SEM-2803", "diag.15.BehavioralSubtyping")
+        ),
+        "BehavioralSubtypingDiagnostics",
+        "Fixtures/RejectedSource/Procedures/BehavioralSubtypingDiagnostics",
+        "Fixtures/RejectedSource/Procedures/BehavioralSubtypingDiagnostics/Source/Main.uv",
+        "Fixtures/RejectedSource/Procedures/BehavioralSubtypingDiagnostics/Expected.uv",
+        "E-SEM-2803",
+        "diag.15.BehavioralSubtyping"
+    ) {
+        count = count + 1usize
+    }
+    if rejectedSpecimenMatches(
+        rejectedSpecimen(
+            "ResultGenericConstraint",
+            "Fixtures/RejectedSource/Procedures/ResultGenericConstraint",
+            "Fixtures/RejectedSource/Procedures/ResultGenericConstraint/Source/Main.uv",
+            "Fixtures/RejectedSource/Procedures/ResultGenericConstraint/Expected.uv",
+            expectedDiagnostic("E-SEM-2525", "rule.15.Result-Generic-Constraint")
+        ),
+        "ResultGenericConstraint",
+        "Fixtures/RejectedSource/Procedures/ResultGenericConstraint",
+        "Fixtures/RejectedSource/Procedures/ResultGenericConstraint/Source/Main.uv",
+        "Fixtures/RejectedSource/Procedures/ResultGenericConstraint/Expected.uv",
+        "E-SEM-2525",
+        "rule.15.Result-Generic-Constraint"
+    ) {
+        count = count + 1usize
+    }
+    if rejectedSpecimenMatches(
+        rejectedSpecimen(
+            "MethodLookupAmbiguousDefault",
+            "Fixtures/RejectedSource/Procedures/MethodLookupAmbiguousDefault",
+            "Fixtures/RejectedSource/Procedures/MethodLookupAmbiguousDefault/Source/Main.uv",
+            "Fixtures/RejectedSource/Procedures/MethodLookupAmbiguousDefault/Expected.uv",
+            expectedDiagnostic("", "rule.15.LookupMethod-Ambig")
+        ),
+        "MethodLookupAmbiguousDefault",
+        "Fixtures/RejectedSource/Procedures/MethodLookupAmbiguousDefault",
+        "Fixtures/RejectedSource/Procedures/MethodLookupAmbiguousDefault/Source/Main.uv",
+        "Fixtures/RejectedSource/Procedures/MethodLookupAmbiguousDefault/Expected.uv",
+        "",
+        "rule.15.LookupMethod-Ambig"
     ) {
         count = count + 1usize
     }

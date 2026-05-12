@@ -128,6 +128,71 @@ struct UnwindAttrCheck {
   std::string mode;
 };
 
+struct ForeignPredicateValidation {
+  bool ok = true;
+  std::string_view diag_id;
+};
+
+static bool ForeignPredicateNameAllowed(
+    std::string_view name,
+    const std::vector<std::string_view>& allowed_names) {
+  for (const auto allowed : allowed_names) {
+    if (IdEq(name, allowed)) {
+      return true;
+    }
+  }
+  return false;
+}
+
+static ForeignPredicateValidation ValidateForeignPredicateExpr(
+    const ast::ExprPtr& expr,
+    const std::vector<std::string_view>& allowed_names,
+    bool allow_result,
+    std::string_view impurity_diag) {
+  if (!expr) {
+    return {};
+  }
+
+  return std::visit(
+      [&](const auto& node) -> ForeignPredicateValidation {
+        using T = std::decay_t<decltype(node)>;
+
+        if constexpr (std::is_same_v<T, ast::LiteralExpr> ||
+                      std::is_same_v<T, ast::PtrNullExpr> ||
+                      std::is_same_v<T, ast::TupleExpr>) {
+          return {};
+        } else if constexpr (std::is_same_v<T, ast::IdentifierExpr>) {
+          if (ForeignPredicateNameAllowed(node.name, allowed_names)) {
+            return {};
+          }
+          return {false, "E-SEM-2852"};
+        } else if constexpr (std::is_same_v<T, ast::ResultExpr>) {
+          if (allow_result) {
+            return {};
+          }
+          return {false, "E-SEM-2854"};
+        } else if constexpr (std::is_same_v<T, ast::BinaryExpr>) {
+          const auto lhs =
+              ValidateForeignPredicateExpr(
+                  node.lhs, allowed_names, allow_result, impurity_diag);
+          if (!lhs.ok) {
+            return lhs;
+          }
+          return ValidateForeignPredicateExpr(
+              node.rhs, allowed_names, allow_result, impurity_diag);
+        } else if constexpr (std::is_same_v<T, ast::UnaryExpr>) {
+          return ValidateForeignPredicateExpr(
+              node.value, allowed_names, allow_result, impurity_diag);
+        } else if constexpr (std::is_same_v<T, ast::FieldAccessExpr>) {
+          return ValidateForeignPredicateExpr(
+              node.base, allowed_names, allow_result, impurity_diag);
+        } else {
+          return {false, impurity_diag};
+        }
+      },
+      expr->node);
+}
+
 static UnwindAttrCheck CheckUnwindAttr(const ast::AttributeList& attrs) {
   UnwindAttrCheck result;
   std::vector<const ast::AttributeItem*> unwind_attrs;
@@ -412,7 +477,29 @@ static bool BuildExternProcInfo(const ScopeContext& ctx,
   proc_info.verification_mode = ResolveForeignVerificationMode(proc);
 
   if (proc.foreign_contracts_opt.has_value()) {
+    std::vector<std::string_view> foreign_predicate_params;
+    foreign_predicate_params.reserve(proc.params.size());
+    for (const auto& param : proc.params) {
+      foreign_predicate_params.push_back(param.name);
+    }
+
     for (const auto& clause : *proc.foreign_contracts_opt) {
+      const bool is_assumes =
+          clause.kind == ast::ForeignContractKind::Assumes;
+      const std::string_view impurity_diag =
+          is_assumes ? "E-SEM-2851" : "E-SEM-2853";
+      for (const auto& predicate : clause.predicates) {
+        const auto validation = ValidateForeignPredicateExpr(
+            predicate,
+            foreign_predicate_params,
+            !is_assumes,
+            impurity_diag);
+        if (!validation.ok) {
+          diag_id = validation.diag_id;
+          return false;
+        }
+      }
+
       switch (clause.kind) {
         case ast::ForeignContractKind::Assumes: {
           const auto assume_result = ResolveForeignAssumes(clause);

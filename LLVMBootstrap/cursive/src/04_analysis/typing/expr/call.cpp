@@ -2633,7 +2633,7 @@ ExprTypeResult TypeCallExprImpl(const ScopeContext& ctx,
       !IsInUnsafeSpan(ctx, node.callee ? node.callee->span : core::Span{})) {
     ExprTypeResult r;
     SPEC_RULE("Call-Extern-Unsafe-Err");
-    r.diag_id = "Call-Extern-Unsafe-Err";
+    r.diag_id = "E-TYP-2106";
     return r;
   }
 

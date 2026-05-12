@@ -1,0 +1,13 @@
+//! Diagnostic key-system specimen for read-then-write contention that is not a compound candidate.
+
+public procedure holdValue(value: i32) -> i32 {
+    return value
+}
+
+public procedure readThenWriteContentionWarningReference() -> i32 {
+    var shared_value: shared i32 = 1
+    #shared_value write {
+        shared_value = holdValue(shared_value)
+    }
+    return 0
+}

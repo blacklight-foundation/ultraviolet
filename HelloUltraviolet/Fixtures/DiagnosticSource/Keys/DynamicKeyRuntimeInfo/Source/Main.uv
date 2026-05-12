@@ -1,0 +1,11 @@
+//! Diagnostic key-system specimen for dynamic key verification information.
+
+[[dynamic]]
+public procedure dynamicKeyRuntimeInfoReference(index: usize) -> i32
+|: index >= 0usize
+{
+    var values: shared [i32; 4] = [1, 2, 3, 4]
+    #values[index] dynamic read {
+    }
+    return 0
+}

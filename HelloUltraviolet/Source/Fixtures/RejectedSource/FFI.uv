@@ -1,0 +1,781 @@
+//! Rejected FFI specimens.
+
+public procedure ffiRejectedSourceFixtureCount() -> usize {
+    return 45usize
+}
+
+public procedure validatedFFIRejectedSourceFixtureCount() -> usize {
+    var count: usize = 0usize
+    if rejectedSpecimenMatches(
+        rejectedSpecimen(
+            "ExternGenericSignature",
+            "Fixtures/RejectedSource/FFI/ExternGenericSignature",
+            "Fixtures/RejectedSource/FFI/ExternGenericSignature/Source/Main.uv",
+            "Fixtures/RejectedSource/FFI/ExternGenericSignature/Expected.uv",
+            expectedDiagnostic("E-TYP-2306", "diagnostics.23.ExternProcedureDiagnostics")
+        ),
+        "ExternGenericSignature",
+        "Fixtures/RejectedSource/FFI/ExternGenericSignature",
+        "Fixtures/RejectedSource/FFI/ExternGenericSignature/Source/Main.uv",
+        "Fixtures/RejectedSource/FFI/ExternGenericSignature/Expected.uv",
+        "E-TYP-2306",
+        "diagnostics.23.ExternProcedureDiagnostics"
+    ) {
+        count = count + 1usize
+    }
+    if rejectedSpecimenMatches(
+        rejectedSpecimen(
+            "ExternCallSafety",
+            "Fixtures/RejectedSource/FFI/ExternCallSafety",
+            "Fixtures/RejectedSource/FFI/ExternCallSafety/Source/Main.uv",
+            "Fixtures/RejectedSource/FFI/ExternCallSafety/Expected.uv",
+            expectedDiagnostic("E-TYP-2106", "requirement.23.ExternCallSafety")
+        ),
+        "ExternCallSafety",
+        "Fixtures/RejectedSource/FFI/ExternCallSafety",
+        "Fixtures/RejectedSource/FFI/ExternCallSafety/Source/Main.uv",
+        "Fixtures/RejectedSource/FFI/ExternCallSafety/Expected.uv",
+        "E-TYP-2106",
+        "requirement.23.ExternCallSafety"
+    ) {
+        count = count + 1usize
+    }
+    if rejectedSpecimenMatches(
+        rejectedSpecimen(
+            "UnsupportedExternABI",
+            "Fixtures/RejectedSource/FFI/UnsupportedExternABI",
+            "Fixtures/RejectedSource/FFI/UnsupportedExternABI/Source/Main.uv",
+            "Fixtures/RejectedSource/FFI/UnsupportedExternABI/Expected.uv",
+            expectedDiagnostic("E-SYS-3352", "diagnostics.23.FfiDiagnosticsSupplement")
+        ),
+        "UnsupportedExternABI",
+        "Fixtures/RejectedSource/FFI/UnsupportedExternABI",
+        "Fixtures/RejectedSource/FFI/UnsupportedExternABI/Source/Main.uv",
+        "Fixtures/RejectedSource/FFI/UnsupportedExternABI/Expected.uv",
+        "E-SYS-3352",
+        "diagnostics.23.FfiDiagnosticsSupplement"
+    ) {
+        count = count + 1usize
+    }
+    if rejectedSpecimenMatches(
+        rejectedSpecimen(
+            "InvalidUnwindMode",
+            "Fixtures/RejectedSource/FFI/InvalidUnwindMode",
+            "Fixtures/RejectedSource/FFI/InvalidUnwindMode/Source/Main.uv",
+            "Fixtures/RejectedSource/FFI/InvalidUnwindMode/Expected.uv",
+            expectedDiagnostic("E-SYS-3355", "rule.23.UnwindMode-Invalid-Err")
+        ),
+        "InvalidUnwindMode",
+        "Fixtures/RejectedSource/FFI/InvalidUnwindMode",
+        "Fixtures/RejectedSource/FFI/InvalidUnwindMode/Source/Main.uv",
+        "Fixtures/RejectedSource/FFI/InvalidUnwindMode/Expected.uv",
+        "E-SYS-3355",
+        "rule.23.UnwindMode-Invalid-Err"
+    ) {
+        count = count + 1usize
+    }
+    if rejectedSpecimenMatches(
+        rejectedSpecimen(
+            "UnwindOnNonFFIProcedure",
+            "Fixtures/RejectedSource/FFI/UnwindOnNonFFIProcedure",
+            "Fixtures/RejectedSource/FFI/UnwindOnNonFFIProcedure/Source/Main.uv",
+            "Fixtures/RejectedSource/FFI/UnwindOnNonFFIProcedure/Expected.uv",
+            expectedDiagnostic("E-SYS-3356", "requirement.23.UnwindAttributeTargetValidity")
+        ),
+        "UnwindOnNonFFIProcedure",
+        "Fixtures/RejectedSource/FFI/UnwindOnNonFFIProcedure",
+        "Fixtures/RejectedSource/FFI/UnwindOnNonFFIProcedure/Source/Main.uv",
+        "Fixtures/RejectedSource/FFI/UnwindOnNonFFIProcedure/Expected.uv",
+        "E-SYS-3356",
+        "requirement.23.UnwindAttributeTargetValidity"
+    ) {
+        count = count + 1usize
+    }
+    if rejectedSpecimenMatches(
+        rejectedSpecimen(
+            "BoundaryUnwindingDiagnosticOwnership",
+            "Fixtures/RejectedSource/FFI/BoundaryUnwindingDiagnosticOwnership",
+            "Fixtures/RejectedSource/FFI/BoundaryUnwindingDiagnosticOwnership/Source/Main.uv",
+            "Fixtures/RejectedSource/FFI/BoundaryUnwindingDiagnosticOwnership/Expected.uv",
+            expectedDiagnostic("E-SYS-3356", "diagnostics.23.BoundaryUnwindingDiagnosticOwnership")
+        ),
+        "BoundaryUnwindingDiagnosticOwnership",
+        "Fixtures/RejectedSource/FFI/BoundaryUnwindingDiagnosticOwnership",
+        "Fixtures/RejectedSource/FFI/BoundaryUnwindingDiagnosticOwnership/Source/Main.uv",
+        "Fixtures/RejectedSource/FFI/BoundaryUnwindingDiagnosticOwnership/Expected.uv",
+        "E-SYS-3356",
+        "diagnostics.23.BoundaryUnwindingDiagnosticOwnership"
+    ) {
+        count = count + 1usize
+    }
+    if rejectedSpecimenMatches(
+        rejectedSpecimen(
+            "UnwindCatchABIMismatch",
+            "Fixtures/RejectedSource/FFI/UnwindCatchABIMismatch",
+            "Fixtures/RejectedSource/FFI/UnwindCatchABIMismatch/Source/Main.uv",
+            "Fixtures/RejectedSource/FFI/UnwindCatchABIMismatch/Expected.uv",
+            expectedDiagnostic("E-SYS-3355", "requirement.23.UnwindCatchAbiRequirement")
+        ),
+        "UnwindCatchABIMismatch",
+        "Fixtures/RejectedSource/FFI/UnwindCatchABIMismatch",
+        "Fixtures/RejectedSource/FFI/UnwindCatchABIMismatch/Source/Main.uv",
+        "Fixtures/RejectedSource/FFI/UnwindCatchABIMismatch/Expected.uv",
+        "E-SYS-3355",
+        "requirement.23.UnwindCatchAbiRequirement"
+    ) {
+        count = count + 1usize
+    }
+    if rejectedSpecimenMatches(
+        rejectedSpecimen(
+            "BoundaryUnwindingNoAdditionalDiagnostics",
+            "Fixtures/RejectedSource/FFI/BoundaryUnwindingNoAdditionalDiagnostics",
+            "Fixtures/RejectedSource/FFI/BoundaryUnwindingNoAdditionalDiagnostics/Source/Main.uv",
+            "Fixtures/RejectedSource/FFI/BoundaryUnwindingNoAdditionalDiagnostics/Expected.uv",
+            expectedDiagnostic(
+                "E-SYS-3355",
+                "diagnostics.23.BoundaryUnwindingNoAdditionalDiagnostics"
+            )
+        ),
+        "BoundaryUnwindingNoAdditionalDiagnostics",
+        "Fixtures/RejectedSource/FFI/BoundaryUnwindingNoAdditionalDiagnostics",
+        "Fixtures/RejectedSource/FFI/BoundaryUnwindingNoAdditionalDiagnostics/Source/Main.uv",
+        "Fixtures/RejectedSource/FFI/BoundaryUnwindingNoAdditionalDiagnostics/Expected.uv",
+        "E-SYS-3355",
+        "diagnostics.23.BoundaryUnwindingNoAdditionalDiagnostics"
+    ) {
+        count = count + 1usize
+    }
+    if rejectedSpecimenMatches(
+        rejectedSpecimen(
+            "UnsupportedLibraryKind",
+            "Fixtures/RejectedSource/FFI/UnsupportedLibraryKind",
+            "Fixtures/RejectedSource/FFI/UnsupportedLibraryKind/Source/Main.uv",
+            "Fixtures/RejectedSource/FFI/UnsupportedLibraryKind/Expected.uv",
+            expectedDiagnostic("E-SYS-3346", "requirement.23.UnsupportedLibraryKindIllFormed")
+        ),
+        "UnsupportedLibraryKind",
+        "Fixtures/RejectedSource/FFI/UnsupportedLibraryKind",
+        "Fixtures/RejectedSource/FFI/UnsupportedLibraryKind/Source/Main.uv",
+        "Fixtures/RejectedSource/FFI/UnsupportedLibraryKind/Expected.uv",
+        "E-SYS-3346",
+        "requirement.23.UnsupportedLibraryKindIllFormed"
+    ) {
+        count = count + 1usize
+    }
+    if rejectedSpecimenMatches(
+        rejectedSpecimen(
+            "MangleOnNonFFIProcedure",
+            "Fixtures/RejectedSource/FFI/MangleOnNonFFIProcedure",
+            "Fixtures/RejectedSource/FFI/MangleOnNonFFIProcedure/Source/Main.uv",
+            "Fixtures/RejectedSource/FFI/MangleOnNonFFIProcedure/Expected.uv",
+            expectedDiagnostic("E-SYS-3340", "requirement.23.FfiAttributeConstraints")
+        ),
+        "MangleOnNonFFIProcedure",
+        "Fixtures/RejectedSource/FFI/MangleOnNonFFIProcedure",
+        "Fixtures/RejectedSource/FFI/MangleOnNonFFIProcedure/Source/Main.uv",
+        "Fixtures/RejectedSource/FFI/MangleOnNonFFIProcedure/Expected.uv",
+        "E-SYS-3340",
+        "requirement.23.FfiAttributeConstraints"
+    ) {
+        count = count + 1usize
+    }
+    if rejectedSpecimenMatches(
+        rejectedSpecimen(
+            "FfiAttributeDiagnostics",
+            "Fixtures/RejectedSource/FFI/FfiAttributeDiagnostics",
+            "Fixtures/RejectedSource/FFI/FfiAttributeDiagnostics/Source/Main.uv",
+            "Fixtures/RejectedSource/FFI/FfiAttributeDiagnostics/Expected.uv",
+            expectedDiagnostic("E-SYS-3340", "diagnostics.23.FfiAttributeDiagnostics")
+        ),
+        "FfiAttributeDiagnostics",
+        "Fixtures/RejectedSource/FFI/FfiAttributeDiagnostics",
+        "Fixtures/RejectedSource/FFI/FfiAttributeDiagnostics/Source/Main.uv",
+        "Fixtures/RejectedSource/FFI/FfiAttributeDiagnostics/Expected.uv",
+        "E-SYS-3340",
+        "diagnostics.23.FfiAttributeDiagnostics"
+    ) {
+        count = count + 1usize
+    }
+    if rejectedSpecimenMatches(
+        rejectedSpecimen(
+            "HostExportOutsideLibrary",
+            "Fixtures/RejectedSource/FFI/HostExportOutsideLibrary",
+            "Fixtures/RejectedSource/FFI/HostExportOutsideLibrary/Source/Main.uv",
+            "Fixtures/RejectedSource/FFI/HostExportOutsideLibrary/Expected.uv",
+            expectedDiagnostic("E-SYS-3357", "rule.23.HostExport-Library-Err")
+        ),
+        "HostExportOutsideLibrary",
+        "Fixtures/RejectedSource/FFI/HostExportOutsideLibrary",
+        "Fixtures/RejectedSource/FFI/HostExportOutsideLibrary/Source/Main.uv",
+        "Fixtures/RejectedSource/FFI/HostExportOutsideLibrary/Expected.uv",
+        "E-SYS-3357",
+        "rule.23.HostExport-Library-Err"
+    ) {
+        count = count + 1usize
+    }
+    if rejectedSpecimenMatches(
+        rejectedSpecimen(
+            "HostExportMixedMode",
+            "Fixtures/RejectedSource/FFI/HostExportMixedMode",
+            "Fixtures/RejectedSource/FFI/HostExportMixedMode/Source/Main.uv",
+            "Fixtures/RejectedSource/FFI/HostExportMixedMode/Expected.uv",
+            expectedDiagnostic("E-SYS-3358", "rule.23.HostExport-MixedMode-Err")
+        ),
+        "HostExportMixedMode",
+        "Fixtures/RejectedSource/FFI/HostExportMixedMode",
+        "Fixtures/RejectedSource/FFI/HostExportMixedMode/Source/Main.uv",
+        "Fixtures/RejectedSource/FFI/HostExportMixedMode/Expected.uv",
+        "E-SYS-3358",
+        "rule.23.HostExport-MixedMode-Err"
+    ) {
+        count = count + 1usize
+    }
+    if rejectedSpecimenMatches(
+        rejectedSpecimen(
+            "HostExportGeneric",
+            "Fixtures/RejectedSource/FFI/HostExportGeneric",
+            "Fixtures/RejectedSource/FFI/HostExportGeneric/Source/Main.uv",
+            "Fixtures/RejectedSource/FFI/HostExportGeneric/Expected.uv",
+            expectedDiagnostic("E-TYP-2634", "rule.23.HostExport-Generic-Err")
+        ),
+        "HostExportGeneric",
+        "Fixtures/RejectedSource/FFI/HostExportGeneric",
+        "Fixtures/RejectedSource/FFI/HostExportGeneric/Source/Main.uv",
+        "Fixtures/RejectedSource/FFI/HostExportGeneric/Expected.uv",
+        "E-TYP-2634",
+        "rule.23.HostExport-Generic-Err"
+    ) {
+        count = count + 1usize
+    }
+    if rejectedSpecimenMatches(
+        rejectedSpecimen(
+            "HostedExportDiagnostics",
+            "Fixtures/RejectedSource/FFI/HostedExportDiagnostics",
+            "Fixtures/RejectedSource/FFI/HostedExportDiagnostics/Source/Main.uv",
+            "Fixtures/RejectedSource/FFI/HostedExportDiagnostics/Expected.uv",
+            expectedDiagnostic("E-TYP-2634", "diagnostics.23.HostedExportDiagnostics")
+        ),
+        "HostedExportDiagnostics",
+        "Fixtures/RejectedSource/FFI/HostedExportDiagnostics",
+        "Fixtures/RejectedSource/FFI/HostedExportDiagnostics/Source/Main.uv",
+        "Fixtures/RejectedSource/FFI/HostedExportDiagnostics/Expected.uv",
+        "E-TYP-2634",
+        "diagnostics.23.HostedExportDiagnostics"
+    ) {
+        count = count + 1usize
+    }
+    if rejectedSpecimenMatches(
+        rejectedSpecimen(
+            "HostExportMissingContext",
+            "Fixtures/RejectedSource/FFI/HostExportMissingContext",
+            "Fixtures/RejectedSource/FFI/HostExportMissingContext/Source/Main.uv",
+            "Fixtures/RejectedSource/FFI/HostExportMissingContext/Expected.uv",
+            expectedDiagnostic("E-TYP-2632", "rule.23.HostExport-Context-Err")
+        ),
+        "HostExportMissingContext",
+        "Fixtures/RejectedSource/FFI/HostExportMissingContext",
+        "Fixtures/RejectedSource/FFI/HostExportMissingContext/Source/Main.uv",
+        "Fixtures/RejectedSource/FFI/HostExportMissingContext/Expected.uv",
+        "E-TYP-2632",
+        "rule.23.HostExport-Context-Err"
+    ) {
+        count = count + 1usize
+    }
+    if rejectedSpecimenMatches(
+        rejectedSpecimen(
+            "HostedExportDiagnosticOwnership",
+            "Fixtures/RejectedSource/FFI/HostedExportDiagnosticOwnership",
+            "Fixtures/RejectedSource/FFI/HostedExportDiagnosticOwnership/Source/Main.uv",
+            "Fixtures/RejectedSource/FFI/HostedExportDiagnosticOwnership/Expected.uv",
+            expectedDiagnostic("E-TYP-2623", "diagnostics.23.HostedExportDiagnosticOwnership")
+        ),
+        "HostedExportDiagnosticOwnership",
+        "Fixtures/RejectedSource/FFI/HostedExportDiagnosticOwnership",
+        "Fixtures/RejectedSource/FFI/HostedExportDiagnosticOwnership/Source/Main.uv",
+        "Fixtures/RejectedSource/FFI/HostedExportDiagnosticOwnership/Expected.uv",
+        "E-TYP-2623",
+        "diagnostics.23.HostedExportDiagnosticOwnership"
+    ) {
+        count = count + 1usize
+    }
+    if rejectedSpecimenMatches(
+        rejectedSpecimen(
+            "HostExportRawContext",
+            "Fixtures/RejectedSource/FFI/HostExportRawContext",
+            "Fixtures/RejectedSource/FFI/HostExportRawContext/Source/Main.uv",
+            "Fixtures/RejectedSource/FFI/HostExportRawContext/Expected.uv",
+            expectedDiagnostic("E-TYP-2636", "rule.23.HostExport-Context-Raw-Err")
+        ),
+        "HostExportRawContext",
+        "Fixtures/RejectedSource/FFI/HostExportRawContext",
+        "Fixtures/RejectedSource/FFI/HostExportRawContext/Source/Main.uv",
+        "Fixtures/RejectedSource/FFI/HostExportRawContext/Expected.uv",
+        "E-TYP-2636",
+        "rule.23.HostExport-Context-Raw-Err"
+    ) {
+        count = count + 1usize
+    }
+    if rejectedSpecimenMatches(
+        rejectedSpecimen(
+            "HostExportMoveContext",
+            "Fixtures/RejectedSource/FFI/HostExportMoveContext",
+            "Fixtures/RejectedSource/FFI/HostExportMoveContext/Source/Main.uv",
+            "Fixtures/RejectedSource/FFI/HostExportMoveContext/Expected.uv",
+            expectedDiagnostic("E-TYP-2633", "rule.23.HostExport-Context-Move-Err")
+        ),
+        "HostExportMoveContext",
+        "Fixtures/RejectedSource/FFI/HostExportMoveContext",
+        "Fixtures/RejectedSource/FFI/HostExportMoveContext/Source/Main.uv",
+        "Fixtures/RejectedSource/FFI/HostExportMoveContext/Expected.uv",
+        "E-TYP-2633",
+        "rule.23.HostExport-Context-Move-Err"
+    ) {
+        count = count + 1usize
+    }
+    if rejectedSpecimenMatches(
+        rejectedSpecimen(
+            "RawExportNonPublic",
+            "Fixtures/RejectedSource/FFI/RawExportNonPublic",
+            "Fixtures/RejectedSource/FFI/RawExportNonPublic/Source/Main.uv",
+            "Fixtures/RejectedSource/FFI/RawExportNonPublic/Expected.uv",
+            expectedDiagnostic("E-SYS-3353", "diagnostics.23.RawExportDiagnostics")
+        ),
+        "RawExportNonPublic",
+        "Fixtures/RejectedSource/FFI/RawExportNonPublic",
+        "Fixtures/RejectedSource/FFI/RawExportNonPublic/Source/Main.uv",
+        "Fixtures/RejectedSource/FFI/RawExportNonPublic/Expected.uv",
+        "E-SYS-3353",
+        "diagnostics.23.RawExportDiagnostics"
+    ) {
+        count = count + 1usize
+    }
+    if rejectedSpecimenMatches(
+        rejectedSpecimen(
+            "RawExportUnsupportedABI",
+            "Fixtures/RejectedSource/FFI/RawExportUnsupportedABI",
+            "Fixtures/RejectedSource/FFI/RawExportUnsupportedABI/Source/Main.uv",
+            "Fixtures/RejectedSource/FFI/RawExportUnsupportedABI/Expected.uv",
+            expectedDiagnostic("E-SYS-3352", "diagnostics.23.RawExportDiagnosticOwnership")
+        ),
+        "RawExportUnsupportedABI",
+        "Fixtures/RejectedSource/FFI/RawExportUnsupportedABI",
+        "Fixtures/RejectedSource/FFI/RawExportUnsupportedABI/Source/Main.uv",
+        "Fixtures/RejectedSource/FFI/RawExportUnsupportedABI/Expected.uv",
+        "E-SYS-3352",
+        "diagnostics.23.RawExportDiagnosticOwnership"
+    ) {
+        count = count + 1usize
+    }
+    if rejectedSpecimenMatches(
+        rejectedSpecimen(
+            "CapabilityIsolationDiagnostics",
+            "Fixtures/RejectedSource/FFI/CapabilityIsolationDiagnostics",
+            "Fixtures/RejectedSource/FFI/CapabilityIsolationDiagnostics/Source/Main.uv",
+            "Fixtures/RejectedSource/FFI/CapabilityIsolationDiagnostics/Expected.uv",
+            expectedDiagnostic("E-TYP-2623", "diagnostics.23.CapabilityIsolationDiagnostics")
+        ),
+        "CapabilityIsolationDiagnostics",
+        "Fixtures/RejectedSource/FFI/CapabilityIsolationDiagnostics",
+        "Fixtures/RejectedSource/FFI/CapabilityIsolationDiagnostics/Source/Main.uv",
+        "Fixtures/RejectedSource/FFI/CapabilityIsolationDiagnostics/Expected.uv",
+        "E-TYP-2623",
+        "diagnostics.23.CapabilityIsolationDiagnostics"
+    ) {
+        count = count + 1usize
+    }
+    if rejectedSpecimenMatches(
+        rejectedSpecimen(
+            "CapabilityIsolationDiagnosticOwnership",
+            "Fixtures/RejectedSource/FFI/CapabilityIsolationDiagnosticOwnership",
+            "Fixtures/RejectedSource/FFI/CapabilityIsolationDiagnosticOwnership/Source/Main.uv",
+            "Fixtures/RejectedSource/FFI/CapabilityIsolationDiagnosticOwnership/Expected.uv",
+            expectedDiagnostic("E-TYP-2623", "diagnostics.23.CapabilityIsolationDiagnosticOwnership")
+        ),
+        "CapabilityIsolationDiagnosticOwnership",
+        "Fixtures/RejectedSource/FFI/CapabilityIsolationDiagnosticOwnership",
+        "Fixtures/RejectedSource/FFI/CapabilityIsolationDiagnosticOwnership/Source/Main.uv",
+        "Fixtures/RejectedSource/FFI/CapabilityIsolationDiagnosticOwnership/Expected.uv",
+        "E-TYP-2623",
+        "diagnostics.23.CapabilityIsolationDiagnosticOwnership"
+    ) {
+        count = count + 1usize
+    }
+    if rejectedSpecimenMatches(
+        rejectedSpecimen(
+            "FfiSafeBoolParameter",
+            "Fixtures/RejectedSource/FFI/FfiSafeBoolParameter",
+            "Fixtures/RejectedSource/FFI/FfiSafeBoolParameter/Source/Main.uv",
+            "Fixtures/RejectedSource/FFI/FfiSafeBoolParameter/Expected.uv",
+            expectedDiagnostic("E-TYP-2623", "rule.23.FfiSafe-Prohibited-Err")
+        ),
+        "FfiSafeBoolParameter",
+        "Fixtures/RejectedSource/FFI/FfiSafeBoolParameter",
+        "Fixtures/RejectedSource/FFI/FfiSafeBoolParameter/Source/Main.uv",
+        "Fixtures/RejectedSource/FFI/FfiSafeBoolParameter/Expected.uv",
+        "E-TYP-2623",
+        "rule.23.FfiSafe-Prohibited-Err"
+    ) {
+        count = count + 1usize
+    }
+    if rejectedSpecimenMatches(
+        rejectedSpecimen(
+            "FfiSafeDiagnostics",
+            "Fixtures/RejectedSource/FFI/FfiSafeDiagnostics",
+            "Fixtures/RejectedSource/FFI/FfiSafeDiagnostics/Source/Main.uv",
+            "Fixtures/RejectedSource/FFI/FfiSafeDiagnostics/Expected.uv",
+            expectedDiagnostic("E-TYP-2623", "diagnostics.23.FfiSafeDiagnostics")
+        ),
+        "FfiSafeDiagnostics",
+        "Fixtures/RejectedSource/FFI/FfiSafeDiagnostics",
+        "Fixtures/RejectedSource/FFI/FfiSafeDiagnostics/Source/Main.uv",
+        "Fixtures/RejectedSource/FFI/FfiSafeDiagnostics/Expected.uv",
+        "E-TYP-2623",
+        "diagnostics.23.FfiSafeDiagnostics"
+    ) {
+        count = count + 1usize
+    }
+    if rejectedSpecimenMatches(
+        rejectedSpecimen(
+            "FfiSafeRecordWithoutLayoutC",
+            "Fixtures/RejectedSource/FFI/FfiSafeRecordWithoutLayoutC",
+            "Fixtures/RejectedSource/FFI/FfiSafeRecordWithoutLayoutC/Source/Main.uv",
+            "Fixtures/RejectedSource/FFI/FfiSafeRecordWithoutLayoutC/Expected.uv",
+            expectedDiagnostic("E-TYP-2624", "rule.23.FfiSafe-Record-LayoutC-Err")
+        ),
+        "FfiSafeRecordWithoutLayoutC",
+        "Fixtures/RejectedSource/FFI/FfiSafeRecordWithoutLayoutC",
+        "Fixtures/RejectedSource/FFI/FfiSafeRecordWithoutLayoutC/Source/Main.uv",
+        "Fixtures/RejectedSource/FFI/FfiSafeRecordWithoutLayoutC/Expected.uv",
+        "E-TYP-2624",
+        "rule.23.FfiSafe-Record-LayoutC-Err"
+    ) {
+        count = count + 1usize
+    }
+    if rejectedSpecimenMatches(
+        rejectedSpecimen(
+            "FfiSafeEnumWithoutLayoutC",
+            "Fixtures/RejectedSource/FFI/FfiSafeEnumWithoutLayoutC",
+            "Fixtures/RejectedSource/FFI/FfiSafeEnumWithoutLayoutC/Source/Main.uv",
+            "Fixtures/RejectedSource/FFI/FfiSafeEnumWithoutLayoutC/Expected.uv",
+            expectedDiagnostic("E-TYP-2625", "rule.23.FfiSafe-Enum-LayoutC-Err")
+        ),
+        "FfiSafeEnumWithoutLayoutC",
+        "Fixtures/RejectedSource/FFI/FfiSafeEnumWithoutLayoutC",
+        "Fixtures/RejectedSource/FFI/FfiSafeEnumWithoutLayoutC/Source/Main.uv",
+        "Fixtures/RejectedSource/FFI/FfiSafeEnumWithoutLayoutC/Expected.uv",
+        "E-TYP-2625",
+        "rule.23.FfiSafe-Enum-LayoutC-Err"
+    ) {
+        count = count + 1usize
+    }
+    if rejectedSpecimenMatches(
+        rejectedSpecimen(
+            "FfiSafeRecordNonFfiField",
+            "Fixtures/RejectedSource/FFI/FfiSafeRecordNonFfiField",
+            "Fixtures/RejectedSource/FFI/FfiSafeRecordNonFfiField/Source/Main.uv",
+            "Fixtures/RejectedSource/FFI/FfiSafeRecordNonFfiField/Expected.uv",
+            expectedDiagnostic("E-TYP-2626", "rule.23.FfiSafe-Record-Field-Err")
+        ),
+        "FfiSafeRecordNonFfiField",
+        "Fixtures/RejectedSource/FFI/FfiSafeRecordNonFfiField",
+        "Fixtures/RejectedSource/FFI/FfiSafeRecordNonFfiField/Source/Main.uv",
+        "Fixtures/RejectedSource/FFI/FfiSafeRecordNonFfiField/Expected.uv",
+        "E-TYP-2626",
+        "rule.23.FfiSafe-Record-Field-Err"
+    ) {
+        count = count + 1usize
+    }
+    if rejectedSpecimenMatches(
+        rejectedSpecimen(
+            "FfiSafeEnumNonFfiPayload",
+            "Fixtures/RejectedSource/FFI/FfiSafeEnumNonFfiPayload",
+            "Fixtures/RejectedSource/FFI/FfiSafeEnumNonFfiPayload/Source/Main.uv",
+            "Fixtures/RejectedSource/FFI/FfiSafeEnumNonFfiPayload/Expected.uv",
+            expectedDiagnostic("E-TYP-2627", "rule.23.FfiSafe-Enum-Field-Err")
+        ),
+        "FfiSafeEnumNonFfiPayload",
+        "Fixtures/RejectedSource/FFI/FfiSafeEnumNonFfiPayload",
+        "Fixtures/RejectedSource/FFI/FfiSafeEnumNonFfiPayload/Source/Main.uv",
+        "Fixtures/RejectedSource/FFI/FfiSafeEnumNonFfiPayload/Expected.uv",
+        "E-TYP-2627",
+        "rule.23.FfiSafe-Enum-Field-Err"
+    ) {
+        count = count + 1usize
+    }
+    if rejectedSpecimenMatches(
+        rejectedSpecimen(
+            "FfiSafeRecordFieldApply",
+            "Fixtures/RejectedSource/FFI/FfiSafeRecordFieldApply",
+            "Fixtures/RejectedSource/FFI/FfiSafeRecordFieldApply/Source/Main.uv",
+            "Fixtures/RejectedSource/FFI/FfiSafeRecordFieldApply/Expected.uv",
+            expectedDiagnostic("E-TYP-2626", "rule.23.FfiSafe-Record-Field-Apply-Err")
+        ),
+        "FfiSafeRecordFieldApply",
+        "Fixtures/RejectedSource/FFI/FfiSafeRecordFieldApply",
+        "Fixtures/RejectedSource/FFI/FfiSafeRecordFieldApply/Source/Main.uv",
+        "Fixtures/RejectedSource/FFI/FfiSafeRecordFieldApply/Expected.uv",
+        "E-TYP-2626",
+        "rule.23.FfiSafe-Record-Field-Apply-Err"
+    ) {
+        count = count + 1usize
+    }
+    if rejectedSpecimenMatches(
+        rejectedSpecimen(
+            "FfiSafeEnumFieldApply",
+            "Fixtures/RejectedSource/FFI/FfiSafeEnumFieldApply",
+            "Fixtures/RejectedSource/FFI/FfiSafeEnumFieldApply/Source/Main.uv",
+            "Fixtures/RejectedSource/FFI/FfiSafeEnumFieldApply/Expected.uv",
+            expectedDiagnostic("E-TYP-2627", "rule.23.FfiSafe-Enum-Field-Apply-Err")
+        ),
+        "FfiSafeEnumFieldApply",
+        "Fixtures/RejectedSource/FFI/FfiSafeEnumFieldApply",
+        "Fixtures/RejectedSource/FFI/FfiSafeEnumFieldApply/Source/Main.uv",
+        "Fixtures/RejectedSource/FFI/FfiSafeEnumFieldApply/Expected.uv",
+        "E-TYP-2627",
+        "rule.23.FfiSafe-Enum-Field-Apply-Err"
+    ) {
+        count = count + 1usize
+    }
+    if rejectedSpecimenMatches(
+        rejectedSpecimen(
+            "FfiSafeIncompleteLayout",
+            "Fixtures/RejectedSource/FFI/FfiSafeIncompleteLayout",
+            "Fixtures/RejectedSource/FFI/FfiSafeIncompleteLayout/Source/Main.uv",
+            "Fixtures/RejectedSource/FFI/FfiSafeIncompleteLayout/Expected.uv",
+            expectedDiagnostic("E-TYP-2628", "rule.23.FfiSafe-Incomplete-Err")
+        ),
+        "FfiSafeIncompleteLayout",
+        "Fixtures/RejectedSource/FFI/FfiSafeIncompleteLayout",
+        "Fixtures/RejectedSource/FFI/FfiSafeIncompleteLayout/Source/Main.uv",
+        "Fixtures/RejectedSource/FFI/FfiSafeIncompleteLayout/Expected.uv",
+        "E-TYP-2628",
+        "rule.23.FfiSafe-Incomplete-Err"
+    ) {
+        count = count + 1usize
+    }
+    if rejectedSpecimenMatches(
+        rejectedSpecimen(
+            "FfiSafeRecordGenericUnbounded",
+            "Fixtures/RejectedSource/FFI/FfiSafeRecordGenericUnbounded",
+            "Fixtures/RejectedSource/FFI/FfiSafeRecordGenericUnbounded/Source/Main.uv",
+            "Fixtures/RejectedSource/FFI/FfiSafeRecordGenericUnbounded/Expected.uv",
+            expectedDiagnostic("E-TYP-2629", "rule.23.FfiSafe-Record-Generic-Unbounded-Err")
+        ),
+        "FfiSafeRecordGenericUnbounded",
+        "Fixtures/RejectedSource/FFI/FfiSafeRecordGenericUnbounded",
+        "Fixtures/RejectedSource/FFI/FfiSafeRecordGenericUnbounded/Source/Main.uv",
+        "Fixtures/RejectedSource/FFI/FfiSafeRecordGenericUnbounded/Expected.uv",
+        "E-TYP-2629",
+        "rule.23.FfiSafe-Record-Generic-Unbounded-Err"
+    ) {
+        count = count + 1usize
+    }
+    if rejectedSpecimenMatches(
+        rejectedSpecimen(
+            "FfiSafeEnumGenericUnbounded",
+            "Fixtures/RejectedSource/FFI/FfiSafeEnumGenericUnbounded",
+            "Fixtures/RejectedSource/FFI/FfiSafeEnumGenericUnbounded/Source/Main.uv",
+            "Fixtures/RejectedSource/FFI/FfiSafeEnumGenericUnbounded/Expected.uv",
+            expectedDiagnostic("E-TYP-2629", "rule.23.FfiSafe-Enum-Generic-Unbounded-Err")
+        ),
+        "FfiSafeEnumGenericUnbounded",
+        "Fixtures/RejectedSource/FFI/FfiSafeEnumGenericUnbounded",
+        "Fixtures/RejectedSource/FFI/FfiSafeEnumGenericUnbounded/Source/Main.uv",
+        "Fixtures/RejectedSource/FFI/FfiSafeEnumGenericUnbounded/Expected.uv",
+        "E-TYP-2629",
+        "rule.23.FfiSafe-Enum-Generic-Unbounded-Err"
+    ) {
+        count = count + 1usize
+    }
+    if rejectedSpecimenMatches(
+        rejectedSpecimen(
+            "FfiSafeRecordApplyGenericUnbounded",
+            "Fixtures/RejectedSource/FFI/FfiSafeRecordApplyGenericUnbounded",
+            "Fixtures/RejectedSource/FFI/FfiSafeRecordApplyGenericUnbounded/Source/Main.uv",
+            "Fixtures/RejectedSource/FFI/FfiSafeRecordApplyGenericUnbounded/Expected.uv",
+            expectedDiagnostic("E-TYP-2629", "rule.23.FfiSafe-Record-Apply-Generic-Unbounded-Err")
+        ),
+        "FfiSafeRecordApplyGenericUnbounded",
+        "Fixtures/RejectedSource/FFI/FfiSafeRecordApplyGenericUnbounded",
+        "Fixtures/RejectedSource/FFI/FfiSafeRecordApplyGenericUnbounded/Source/Main.uv",
+        "Fixtures/RejectedSource/FFI/FfiSafeRecordApplyGenericUnbounded/Expected.uv",
+        "E-TYP-2629",
+        "rule.23.FfiSafe-Record-Apply-Generic-Unbounded-Err"
+    ) {
+        count = count + 1usize
+    }
+    if rejectedSpecimenMatches(
+        rejectedSpecimen(
+            "FfiSafeEnumApplyGenericUnbounded",
+            "Fixtures/RejectedSource/FFI/FfiSafeEnumApplyGenericUnbounded",
+            "Fixtures/RejectedSource/FFI/FfiSafeEnumApplyGenericUnbounded/Source/Main.uv",
+            "Fixtures/RejectedSource/FFI/FfiSafeEnumApplyGenericUnbounded/Expected.uv",
+            expectedDiagnostic("E-TYP-2629", "rule.23.FfiSafe-Enum-Apply-Generic-Unbounded-Err")
+        ),
+        "FfiSafeEnumApplyGenericUnbounded",
+        "Fixtures/RejectedSource/FFI/FfiSafeEnumApplyGenericUnbounded",
+        "Fixtures/RejectedSource/FFI/FfiSafeEnumApplyGenericUnbounded/Source/Main.uv",
+        "Fixtures/RejectedSource/FFI/FfiSafeEnumApplyGenericUnbounded/Expected.uv",
+        "E-TYP-2629",
+        "rule.23.FfiSafe-Enum-Apply-Generic-Unbounded-Err"
+    ) {
+        count = count + 1usize
+    }
+    if rejectedSpecimenMatches(
+        rejectedSpecimen(
+            "FfiPassByValueRequired",
+            "Fixtures/RejectedSource/FFI/FfiPassByValueRequired",
+            "Fixtures/RejectedSource/FFI/FfiPassByValueRequired/Source/Main.uv",
+            "Fixtures/RejectedSource/FFI/FfiPassByValueRequired/Expected.uv",
+            expectedDiagnostic("E-TYP-2630", "diagnostics.23.ExternProcedureDiagnosticOwnership")
+        ),
+        "FfiPassByValueRequired",
+        "Fixtures/RejectedSource/FFI/FfiPassByValueRequired",
+        "Fixtures/RejectedSource/FFI/FfiPassByValueRequired/Source/Main.uv",
+        "Fixtures/RejectedSource/FFI/FfiPassByValueRequired/Expected.uv",
+        "E-TYP-2630",
+        "diagnostics.23.ExternProcedureDiagnosticOwnership"
+    ) {
+        count = count + 1usize
+    }
+    if rejectedSpecimenMatches(
+        rejectedSpecimen(
+            "FfiArgRegionLocalRawPtr",
+            "Fixtures/RejectedSource/FFI/FfiArgRegionLocalRawPtr",
+            "Fixtures/RejectedSource/FFI/FfiArgRegionLocalRawPtr/Source/Main.uv",
+            "Fixtures/RejectedSource/FFI/FfiArgRegionLocalRawPtr/Expected.uv",
+            expectedDiagnostic("E-SYS-3360", "rule.23.FFI-Arg-RegionLocalRawPtr-Err")
+        ),
+        "FfiArgRegionLocalRawPtr",
+        "Fixtures/RejectedSource/FFI/FfiArgRegionLocalRawPtr",
+        "Fixtures/RejectedSource/FFI/FfiArgRegionLocalRawPtr/Source/Main.uv",
+        "Fixtures/RejectedSource/FFI/FfiArgRegionLocalRawPtr/Expected.uv",
+        "E-SYS-3360",
+        "rule.23.FFI-Arg-RegionLocalRawPtr-Err"
+    ) {
+        count = count + 1usize
+    }
+    if rejectedSpecimenMatches(
+        rejectedSpecimen(
+            "FfiReturnRegionLocalRawPtr",
+            "Fixtures/RejectedSource/FFI/FfiReturnRegionLocalRawPtr",
+            "Fixtures/RejectedSource/FFI/FfiReturnRegionLocalRawPtr/Source/Main.uv",
+            "Fixtures/RejectedSource/FFI/FfiReturnRegionLocalRawPtr/Expected.uv",
+            expectedDiagnostic("E-SYS-3360", "rule.23.FFI-Return-RegionLocalRawPtr-Err")
+        ),
+        "FfiReturnRegionLocalRawPtr",
+        "Fixtures/RejectedSource/FFI/FfiReturnRegionLocalRawPtr",
+        "Fixtures/RejectedSource/FFI/FfiReturnRegionLocalRawPtr/Source/Main.uv",
+        "Fixtures/RejectedSource/FFI/FfiReturnRegionLocalRawPtr/Expected.uv",
+        "E-SYS-3360",
+        "rule.23.FFI-Return-RegionLocalRawPtr-Err"
+    ) {
+        count = count + 1usize
+    }
+    if rejectedSpecimenMatches(
+        rejectedSpecimen(
+            "ForeignPredicateContext",
+            "Fixtures/RejectedSource/FFI/ForeignPredicateContext",
+            "Fixtures/RejectedSource/FFI/ForeignPredicateContext/Source/Main.uv",
+            "Fixtures/RejectedSource/FFI/ForeignPredicateContext/Expected.uv",
+            expectedDiagnostic("E-SEM-2851", "requirement.23.ForeignPredicateContext")
+        ),
+        "ForeignPredicateContext",
+        "Fixtures/RejectedSource/FFI/ForeignPredicateContext",
+        "Fixtures/RejectedSource/FFI/ForeignPredicateContext/Source/Main.uv",
+        "Fixtures/RejectedSource/FFI/ForeignPredicateContext/Expected.uv",
+        "E-SEM-2851",
+        "requirement.23.ForeignPredicateContext"
+    ) {
+        count = count + 1usize
+    }
+    if rejectedSpecimenMatches(
+        rejectedSpecimen(
+            "ForeignPostconditionPredicateBindings",
+            "Fixtures/RejectedSource/FFI/ForeignPostconditionPredicateBindings",
+            "Fixtures/RejectedSource/FFI/ForeignPostconditionPredicateBindings/Source/Main.uv",
+            "Fixtures/RejectedSource/FFI/ForeignPostconditionPredicateBindings/Expected.uv",
+            expectedDiagnostic(
+                "E-SEM-2852",
+                "requirement.23.ForeignPostconditionPredicateBindings"
+            )
+        ),
+        "ForeignPostconditionPredicateBindings",
+        "Fixtures/RejectedSource/FFI/ForeignPostconditionPredicateBindings",
+        "Fixtures/RejectedSource/FFI/ForeignPostconditionPredicateBindings/Source/Main.uv",
+        "Fixtures/RejectedSource/FFI/ForeignPostconditionPredicateBindings/Expected.uv",
+        "E-SEM-2852",
+        "requirement.23.ForeignPostconditionPredicateBindings"
+    ) {
+        count = count + 1usize
+    }
+    if rejectedSpecimenMatches(
+        rejectedSpecimen(
+            "NullResultWellFormedness",
+            "Fixtures/RejectedSource/FFI/NullResultWellFormedness",
+            "Fixtures/RejectedSource/FFI/NullResultWellFormedness/Source/Main.uv",
+            "Fixtures/RejectedSource/FFI/NullResultWellFormedness/Expected.uv",
+            expectedDiagnostic("E-SEM-2856", "requirement.23.NullResultWellFormedness")
+        ),
+        "NullResultWellFormedness",
+        "Fixtures/RejectedSource/FFI/NullResultWellFormedness",
+        "Fixtures/RejectedSource/FFI/NullResultWellFormedness/Source/Main.uv",
+        "Fixtures/RejectedSource/FFI/NullResultWellFormedness/Expected.uv",
+        "E-SEM-2856",
+        "requirement.23.NullResultWellFormedness"
+    ) {
+        count = count + 1usize
+    }
+    if rejectedSpecimenMatches(
+        rejectedSpecimen(
+            "ForeignEnsuresNullResult",
+            "Fixtures/RejectedSource/FFI/ForeignEnsuresNullResult",
+            "Fixtures/RejectedSource/FFI/ForeignEnsuresNullResult/Source/Main.uv",
+            "Fixtures/RejectedSource/FFI/ForeignEnsuresNullResult/Expected.uv",
+            expectedDiagnostic("E-SEM-2856", "rule.23.ForeignEnsures-NullResult-Err")
+        ),
+        "ForeignEnsuresNullResult",
+        "Fixtures/RejectedSource/FFI/ForeignEnsuresNullResult",
+        "Fixtures/RejectedSource/FFI/ForeignEnsuresNullResult/Source/Main.uv",
+        "Fixtures/RejectedSource/FFI/ForeignEnsuresNullResult/Expected.uv",
+        "E-SEM-2856",
+        "rule.23.ForeignEnsures-NullResult-Err"
+    ) {
+        count = count + 1usize
+    }
+    if rejectedSpecimenMatches(
+        rejectedSpecimen(
+            "ErrorPredicateWellFormedness",
+            "Fixtures/RejectedSource/FFI/ErrorPredicateWellFormedness",
+            "Fixtures/RejectedSource/FFI/ErrorPredicateWellFormedness/Source/Main.uv",
+            "Fixtures/RejectedSource/FFI/ErrorPredicateWellFormedness/Expected.uv",
+            expectedDiagnostic("E-SEM-2855", "requirement.23.ErrorPredicateWellFormedness")
+        ),
+        "ErrorPredicateWellFormedness",
+        "Fixtures/RejectedSource/FFI/ErrorPredicateWellFormedness",
+        "Fixtures/RejectedSource/FFI/ErrorPredicateWellFormedness/Source/Main.uv",
+        "Fixtures/RejectedSource/FFI/ErrorPredicateWellFormedness/Expected.uv",
+        "E-SEM-2855",
+        "requirement.23.ErrorPredicateWellFormedness"
+    ) {
+        count = count + 1usize
+    }
+    if rejectedSpecimenMatches(
+        rejectedSpecimen(
+            "ForeignContractDiagnostics",
+            "Fixtures/RejectedSource/FFI/ForeignContractDiagnostics",
+            "Fixtures/RejectedSource/FFI/ForeignContractDiagnostics/Source/Main.uv",
+            "Fixtures/RejectedSource/FFI/ForeignContractDiagnostics/Expected.uv",
+            expectedDiagnostic("E-SEM-2853", "diagnostics.23.ForeignContractDiagnostics")
+        ),
+        "ForeignContractDiagnostics",
+        "Fixtures/RejectedSource/FFI/ForeignContractDiagnostics",
+        "Fixtures/RejectedSource/FFI/ForeignContractDiagnostics/Source/Main.uv",
+        "Fixtures/RejectedSource/FFI/ForeignContractDiagnostics/Expected.uv",
+        "E-SEM-2853",
+        "diagnostics.23.ForeignContractDiagnostics"
+    ) {
+        count = count + 1usize
+    }
+    return count
+}

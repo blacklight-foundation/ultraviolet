@@ -1003,8 +1003,12 @@ static std::optional<std::string_view> FfiSafeRecordDiag(
     }
     const auto instantiated =
         ApplyDeclGenericArgs(lowered.type, param_names, generic_args);
-    if (FfiSafeDiagForTypeImpl(ctx, &decl_module, instantiated, active_paths)
-            .has_value()) {
+    const auto field_diag =
+        FfiSafeDiagForTypeImpl(ctx, &decl_module, instantiated, active_paths);
+    if (field_diag.has_value()) {
+      if (*field_diag == "E-TYP-2628") {
+        return field_diag;
+      }
       return std::optional<std::string_view>{"E-TYP-2626"};
     }
   }
@@ -1044,9 +1048,14 @@ static std::optional<std::string_view> FfiSafeEnumDiag(
               }
               const auto instantiated =
                   ApplyDeclGenericArgs(lowered.type, param_names, generic_args);
-              if (FfiSafeDiagForTypeImpl(ctx, &decl_module, instantiated,
-                                         active_paths)
-                      .has_value()) {
+              const auto elem_diag =
+                  FfiSafeDiagForTypeImpl(ctx, &decl_module, instantiated,
+                                         active_paths);
+              if (elem_diag.has_value()) {
+                if (*elem_diag == "E-TYP-2628") {
+                  bad_payload = "E-TYP-2628";
+                  return;
+                }
                 bad_payload = "E-TYP-2627";
                 return;
               }
@@ -1060,9 +1069,14 @@ static std::optional<std::string_view> FfiSafeEnumDiag(
               }
               const auto instantiated =
                   ApplyDeclGenericArgs(lowered.type, param_names, generic_args);
-              if (FfiSafeDiagForTypeImpl(ctx, &decl_module, instantiated,
-                                         active_paths)
-                      .has_value()) {
+              const auto field_diag =
+                  FfiSafeDiagForTypeImpl(ctx, &decl_module, instantiated,
+                                         active_paths);
+              if (field_diag.has_value()) {
+                if (*field_diag == "E-TYP-2628") {
+                  bad_payload = "E-TYP-2628";
+                  return;
+                }
                 bad_payload = "E-TYP-2627";
                 return;
               }
@@ -1150,6 +1164,13 @@ static std::optional<std::string_view> FfiSafeDiagForTypeImpl(
               [&](const auto& resolved_decl) -> std::optional<std::string_view> {
                 using D = std::decay_t<decltype(resolved_decl)>;
                 if constexpr (std::is_same_v<D, ast::RecordDecl>) {
+                  if (applied_args.empty() &&
+                      GenericParamsMissingFfiSafeReqs(
+                          resolved_decl.generic_params,
+                          resolved_decl.predicate_clause_opt,
+                          FfiSafeRecordTypeParamsInFields(resolved_decl))) {
+                    return std::optional<std::string_view>{"E-TYP-2629"};
+                  }
                   const auto args = ResolveDeclGenericArgs(
                       ctx, resolved_decl.generic_params, applied_args);
                   if (!args.has_value()) {
@@ -1158,6 +1179,13 @@ static std::optional<std::string_view> FfiSafeDiagForTypeImpl(
                   return FfiSafeRecordDiag(ctx, resolved_decl, *args, decl_module,
                                            active_paths);
                 } else if constexpr (std::is_same_v<D, ast::EnumDecl>) {
+                  if (applied_args.empty() &&
+                      GenericParamsMissingFfiSafeReqs(
+                          resolved_decl.generic_params,
+                          resolved_decl.predicate_clause_opt,
+                          FfiSafeEnumTypeParamsInPayloads(resolved_decl))) {
+                    return std::optional<std::string_view>{"E-TYP-2629"};
+                  }
                   const auto args = ResolveDeclGenericArgs(
                       ctx, resolved_decl.generic_params, applied_args);
                   if (!args.has_value()) {

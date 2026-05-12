@@ -1,0 +1,16 @@
+//! Rejected FFI specimen for passing region-local raw pointers to extern calls.
+
+extern "C" {
+    public procedure importedPointer(value: *mut i32) -> i32
+}
+
+public procedure ffiArgRegionLocalRawPtrReference() -> i32 {
+    region as scratch {
+        let raw: *mut i32 = null
+        let pointer: *mut i32 = scratch ^ raw
+        unsafe {
+            return importedPointer(pointer)
+        }
+    }
+    return 0
+}

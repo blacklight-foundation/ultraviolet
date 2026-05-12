@@ -1796,3 +1796,432 @@ Repair:
   typed place intact.
 - Borrow/binding assignment validation now applies the same dereference-write
   distinction before issuing `E-MOD-2401`.
+
+## UVBOOT-0026: Extern Call Unsafe Diagnostic Code
+
+Status: repaired.
+
+Rejected-source specimens:
+
+- `Fixtures/RejectedSource/Expressions/ExternCallUnsafeRequirement/Source/Main.uv`
+- `Fixtures/RejectedSource/FFI/ExternCallSafety/Source/Main.uv`
+
+Spec obligation exercised:
+
+- `req.16.ExternProcedureCallsRequireUnsafe`
+- `requirement.23.ExternCallSafety`
+
+Spec basis:
+
+- `SPECIFICATION.md:16032` requires calls to `extern` procedures outside
+  `unsafe` to be rejected by the FFI boundary rule.
+- `SPECIFICATION.md:25688` requires calls to extern procedures to appear within
+  an `unsafe` block.
+- `SPECIFICATION.md:25703` assigns diagnostic code `E-TYP-2106` to calls to
+  extern procedures outside `unsafe`.
+
+Spec-valid rejected specimen:
+
+```ultraviolet
+extern "C" {
+    public procedure importedValue() -> i32
+}
+
+public procedure externCallUnsafeRequirementReference() -> i32 {
+    return importedValue()
+}
+```
+
+Observed bootstrap result before repair:
+
+```text
+error: Static rule failed without assigned diagnostic code: Call-Extern-Unsafe-Err
+  --> .../ExternCallUnsafeRequirement/Source/Main.uv:8:5
+8 |     return importedValue()
+8 |     ^^^^^^^^^^^^^^^^^^^^^^
+```
+
+Observed bootstrap result after repair:
+
+```text
+error[E-TYP-2106]: Call to `extern` procedure outside `unsafe`
+  --> .../ExternCallSafety/Source/Main.uv:8:5
+8 |     return importedValue()
+8 |     ^^^^^^^^^^^^^^^^^^^^^^
+```
+
+Bootstrap owner:
+
+- `LLVMBootstrap/cursive/src/04_analysis/typing/expr/call.cpp`
+
+Repair analysis:
+
+The bootstrap enforces the required rejection, but the diagnostic is emitted as
+the static rule `Call-Extern-Unsafe-Err` unless the typechecker maps the branch
+to the SPEC-assigned diagnostic code. The owner branch now preserves the static
+rule marker and emits `E-TYP-2106`.
+
+Repaired bootstrap behavior:
+
+Extern procedure calls outside `unsafe` must report the SPEC diagnostic code
+`E-TYP-2106` for `Call-Extern-Unsafe-Err`.
+
+## UVBOOT-0027: FfiSafe Generic and Incomplete Layout Diagnostics
+
+Status: repaired.
+
+Rejected-source specimens:
+
+- `Fixtures/RejectedSource/FFI/FfiSafeIncompleteLayout/Source/Main.uv`
+- `Fixtures/RejectedSource/FFI/FfiSafeRecordGenericUnbounded/Source/Main.uv`
+- `Fixtures/RejectedSource/FFI/FfiSafeEnumGenericUnbounded/Source/Main.uv`
+
+Spec obligations exercised:
+
+- `rule.23.FfiSafe-Incomplete-Err`
+- `rule.23.FfiSafe-Record-Generic-Unbounded-Err`
+- `rule.23.FfiSafe-Enum-Generic-Unbounded-Err`
+
+Spec basis:
+
+- `SPECIFICATION.md:25557-25560` assigns `E-TYP-2628` when layout cannot be
+  computed for a record or enum type.
+- `SPECIFICATION.md:25562-25570` assigns `E-TYP-2629` for generic record and
+  enum paths whose field or payload type parameters are not bounded by
+  `FfiSafe`.
+
+Observed bootstrap result before repair:
+
+```text
+FfiSafeIncompleteLayout: E-TYP-2626
+FfiSafeRecordGenericUnbounded: E-TYP-2628
+FfiSafeEnumGenericUnbounded: E-TYP-2628
+```
+
+Bootstrap owner:
+
+- `LLVMBootstrap/cursive/src/04_analysis/typing/type_predicates.cpp`
+
+Failure analysis:
+
+The FFI-safe diagnostic walker collapsed recursive or otherwise incomplete
+field/payload layout failures into the broader record/enum field diagnostics.
+It also resolved generic arguments before checking the unbounded generic
+predicate rule, so bare generic record and enum paths without `FfiSafe(T)`
+bounds became incomplete-layout diagnostics.
+
+Repair:
+
+- Nested `E-TYP-2628` diagnostics are now preserved through record-field and
+  enum-payload FFI-safe checks.
+- Bare generic record and enum paths now check missing `FfiSafe(T)` predicate
+  requirements before generic-argument resolution.
+
+Verified result after repair:
+
+```text
+FfiSafeIncompleteLayout: E-TYP-2628
+FfiSafeRecordGenericUnbounded: E-TYP-2629
+FfiSafeEnumGenericUnbounded: E-TYP-2629
+```
+
+## UVBOOT-0028: Foreign Contract Predicate Diagnostics
+
+Status: repaired.
+
+Rejected-source specimens:
+
+- `Fixtures/RejectedSource/FFI/ForeignPredicateContext/Source/Main.uv`
+- `Fixtures/RejectedSource/FFI/ForeignPostconditionPredicateBindings/Source/Main.uv`
+- `Fixtures/RejectedSource/FFI/NullResultWellFormedness/Source/Main.uv`
+- `Fixtures/RejectedSource/FFI/ForeignEnsuresNullResult/Source/Main.uv`
+- `Fixtures/RejectedSource/FFI/ErrorPredicateWellFormedness/Source/Main.uv`
+- `Fixtures/RejectedSource/FFI/ForeignContractDiagnostics/Source/Main.uv`
+
+Spec obligations exercised:
+
+- `requirement.23.ForeignPredicateContext`
+- `requirement.23.ForeignPostconditionPredicateBindings`
+- `requirement.23.NullResultWellFormedness`
+- `rule.23.ForeignEnsures-NullResult-Err`
+- `requirement.23.ErrorPredicateWellFormedness`
+- `diagnostics.23.ForeignContractDiagnostics`
+
+Spec basis:
+
+- `SPECIFICATION.md:26310-26319` restricts foreign contract predicates to
+  in-scope parameter values, pure forms, and allowed result/error/null
+  postcondition bindings.
+- `SPECIFICATION.md:26358-26376` requires `@null_result` predicates to appear
+  only when the return type is a nullable pointer type.
+- `SPECIFICATION.md:26416-26422` assigns `E-SEM-2851`, `E-SEM-2852`,
+  `E-SEM-2853`, `E-SEM-2855`, and `E-SEM-2856` to the corresponding foreign
+  contract predicate failures.
+
+Observed bootstrap result before repair:
+
+```text
+ForeignPredicateContext: exit 0
+ForeignPostconditionPredicateBindings: exit 0
+NullResultWellFormedness: E-SEM-2853
+ForeignEnsuresNullResult: E-SEM-2853
+```
+
+Bootstrap owners:
+
+- `LLVMBootstrap/cursive/src/04_analysis/contracts/contract_intrinsics.cpp`
+- `LLVMBootstrap/cursive/src/04_analysis/typing/item/extern_block.cpp`
+
+Failure analysis:
+
+The extern-procedure declaration path recorded foreign contract clauses and
+deferred to contract intrinsic resolution, but it did not validate predicate
+purity or binding scope while building the extern procedure info. The
+`@null_result` check rejected non-nullable returns through the broader
+postcondition predicate diagnostic instead of the SPEC-assigned null-result
+diagnostic.
+
+Repair:
+
+- Extern procedure typing now validates each foreign contract predicate against
+  the allowed parameter names and postcondition-only bindings before resolving
+  the foreign contract clause.
+- Foreign precondition impurity maps to `E-SEM-2851`; out-of-scope predicate
+  names map to `E-SEM-2852`; foreign postcondition impurity maps to
+  `E-SEM-2853`; `@result` in a non-return context maps to `E-SEM-2854`.
+- `@null_result` on a non-nullable foreign return now maps to `E-SEM-2856`.
+
+Verified result after repair:
+
+```text
+ForeignPredicateContext: E-SEM-2851
+ForeignPostconditionPredicateBindings: E-SEM-2852
+NullResultWellFormedness: E-SEM-2856
+ForeignEnsuresNullResult: E-SEM-2856
+ErrorPredicateWellFormedness: E-SEM-2855
+ForeignContractDiagnostics: E-SEM-2853
+```
+
+## UVBOOT-0029: Null Literal Expected-Type Diagnostic
+
+Status: repaired.
+
+Rejected-source specimen:
+
+- `Fixtures/RejectedSource/Expressions/NullLiteralExpected/Source/Main.uv`
+
+Spec obligation exercised:
+
+- `def.16.NullLiteralExpected`
+
+Spec basis:
+
+- `SPECIFICATION.md:15521-15542` defines checked `null` literals as valid only
+  when the expected type is a raw pointer.
+- `SPECIFICATION.md:6396` assigns `E-TYP-1530` to failed type inference where
+  the checker cannot determine a valid type.
+
+Observed bootstrap result before repair:
+
+```text
+NullLiteralExpected: error: Internal error: unknown diagnostic id 'NullLiteral-Infer-Err'
+```
+
+Bootstrap owner:
+
+- `LLVMBootstrap/cursive/src/04_analysis/typing/literals.cpp`
+- `LLVMBootstrap/cursive/src/04_analysis/typing/type_infer.cpp`
+- `LLVMBootstrap/cursive/src/04_analysis/typing/typecheck_diag_lookup.h`
+
+Failure analysis:
+
+The literal checker and expression inference path correctly rejected a `null`
+literal checked against `i32`, but they surfaced the internal sentinel
+`NullLiteral-Infer-Err` without resolving it to a SPEC diagnostic code. The
+diagnostic renderer therefore produced an internal compiler error instead of a
+language diagnostic.
+
+Repair:
+
+- `NullLiteral-Infer-Err` now resolves through the typecheck diagnostic lookup
+  to `E-TYP-1530`, matching the existing `PtrNull-Infer-Err` diagnostic
+  ownership for expected-type failures.
+
+Verified result after repair:
+
+```text
+NullLiteralExpected: E-TYP-1530
+```
+
+## UVBOOT-0030: Field Access Visibility Diagnostic
+
+Status: repaired.
+
+Rejected-source specimen:
+
+- `Fixtures/RejectedSource/Expressions/FieldVisibility/Source/Main.uv`
+
+Spec obligation exercised:
+
+- `def.16.FieldVisibility`
+
+Spec basis:
+
+- `SPECIFICATION.md:9935` assigns `E-TYP-1905` to field access that is not
+  visible in the current scope.
+- `SPECIFICATION.md:15884` requires diagnostics for unknown or inaccessible
+  record fields in access expressions.
+
+Observed bootstrap result before repair:
+
+```text
+FieldVisibility: error: Static rule failed without assigned diagnostic code: FieldAccess-NotVisible
+```
+
+Bootstrap owner:
+
+- `LLVMBootstrap/cursive/src/04_analysis/typing/expr/field_access.cpp`
+- `LLVMBootstrap/cursive/src/04_analysis/typing/typecheck_diag_lookup.h`
+
+Failure analysis:
+
+The field-access type checker correctly rejected a read of a private field from
+outside the declaring module, but it surfaced the internal static rule
+`FieldAccess-NotVisible` without resolving it to the SPEC diagnostic code used
+for inaccessible record fields.
+
+Repair:
+
+- `FieldAccess-NotVisible` now resolves through the typecheck diagnostic lookup
+  to `E-TYP-1905`.
+
+Verified result after repair:
+
+```text
+FieldVisibility: E-TYP-1905
+```
+
+## UVBOOT-0031: Widen Non-Modal Diagnostic
+
+Status: repaired.
+
+Rejected-source specimen:
+
+- `Fixtures/RejectedSource/Expressions/WidenTypingDiagnosticsOwnership/Source/Main.uv`
+
+Spec obligation exercised:
+
+- `req.16.WidenTypingDiagnosticsOwnershipForCastTransmute`
+
+Spec basis:
+
+- `SPECIFICATION.md:11336-11339` defines `Widen-NonModal` for applying
+  `widen` to a non-modal operand.
+- `SPECIFICATION.md:12369` assigns `E-TYP-2071` to `widen` applied to a
+  non-modal type.
+- `SPECIFICATION.md:12370` assigns `E-TYP-2072` to `widen` applied to an
+  already-general modal type.
+
+Observed bootstrap result before repair:
+
+```text
+WidenTypingDiagnosticsOwnership: error: Static rule failed without assigned diagnostic code: Widen-NonModal
+```
+
+Bootstrap owner:
+
+- `LLVMBootstrap/cursive/src/04_analysis/typing/expr/unary.cpp`
+- `LLVMBootstrap/cursive/src/04_analysis/typing/typecheck_diag_lookup.h`
+
+Failure analysis:
+
+The unary-expression checker correctly rejected `widen 1`, but it surfaced the
+internal `Widen-NonModal` sentinel without resolving it to the SPEC diagnostic
+code. The adjacent already-general modal widening sentinel had the same
+diagnostic lookup gap.
+
+Repair:
+
+- `Widen-NonModal` now resolves through the typecheck diagnostic lookup to
+  `E-TYP-2071`.
+- `Widen-AlreadyGeneral` now resolves through the same lookup to `E-TYP-2072`.
+
+Verified result after repair:
+
+```text
+WidenTypingDiagnosticsOwnership: E-TYP-2071
+```
+
+## UVBOOT-0032: Free Procedure Overload Sets
+
+Status: open.
+
+Spec-valid specimen:
+
+- `Fixtures/BootstrapNonCompliance/Procedures/FreeProcedureOverloadResolution/Source/Main.uv`
+
+Spec obligations exercised:
+
+- `req.15.FreeProcedureOverloadResolutionBeforeCallTyping`
+- `req.15.FreeCallOverloadResolutionAlgorithm`
+- `req.15.NoRuntimeOverloadSearch`
+- `req.15.OverloadResolutionCompleteBeforeLowering`
+
+Spec basis:
+
+- `SPECIFICATION.md:14593` states that overloading introduces no additional
+  surface syntax beyond ordinary procedure and method declarations.
+- `SPECIFICATION.md:14613-14624` defines free-procedure overload resolution by
+  candidate selection, type filtering, preference, and selected unique target.
+- `SPECIFICATION.md:14629` states that execution performs no runtime overload
+  search.
+- `SPECIFICATION.md:14633` states that lowering consumes the selected symbol
+  after overload resolution is complete.
+
+Spec-valid source:
+
+```ultraviolet
+public procedure selectOverload(value: i32) -> i32 {
+    return value + 1
+}
+
+public procedure selectOverload(value: bool) -> i32 {
+    if value {
+        return 2
+    }
+
+    return 0
+}
+
+public procedure freeProcedureOverloadResolutionReference() -> i32 {
+    return selectOverload(4) + selectOverload(true)
+}
+```
+
+Observed bootstrap result:
+
+```text
+error[E-MOD-1302]: Duplicate declaration in module scope
+  --> .../FreeProcedureOverloadResolution/Source/Main.uv:7:8
+7 | public procedure selectOverload(value: bool) -> i32 {
+```
+
+Bootstrap owner:
+
+- `LLVMBootstrap/cursive/src/04_analysis/resolve/collect_toplevel.cpp`
+- `LLVMBootstrap/cursive/src/04_analysis/typing/expr/call.cpp`
+
+Failure analysis:
+
+The bootstrap name collector stores a single module-scope value binding per
+identifier and rejects the second ordinary procedure before call typing can
+build an overload set. The call type checker also indexes procedures by a single
+name-to-procedure entry, so it has no representation for candidate sets or the
+§15.3.4 selection algorithm.
+
+Required bootstrap behavior:
+
+Module-scope collection must admit multiple visible free procedures with the
+same name when their erased parameter-mode/type signatures differ. Call typing
+must resolve that overload set before ordinary call typing and hand lowering the
+selected procedure symbol.

@@ -1,0 +1,10 @@
+//! Rejected method-lookup specimen for required method lookup diagnostics.
+
+public record MethodLookupDiagnosticOwner {
+    public value: i32
+}
+
+public procedure methodLookupDiagnosticsReference() -> i32 {
+    let owner: MethodLookupDiagnosticOwner = MethodLookupDiagnosticOwner { value: 3 }
+    return owner~>missingMethod()
+}

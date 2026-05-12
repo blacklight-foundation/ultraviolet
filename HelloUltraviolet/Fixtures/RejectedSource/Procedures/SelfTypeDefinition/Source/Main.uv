@@ -1,0 +1,9 @@
+//! Rejected method specimen for explicit receiver Self-type recognition.
+
+public record SelfTypeOwner {
+    public value: i32
+
+    public procedure readValue(self: i32) -> i32 {
+        return self
+    }
+}

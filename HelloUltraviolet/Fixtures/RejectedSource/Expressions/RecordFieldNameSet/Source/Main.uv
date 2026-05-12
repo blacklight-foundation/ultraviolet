@@ -1,0 +1,12 @@
+//! Rejected record construction specimen for record field-name set checking.
+
+public record RecordFieldNameSetPayload {
+    public first: i32
+    public second: i32
+}
+
+public procedure recordFieldNameSetReference() -> RecordFieldNameSetPayload {
+    return RecordFieldNameSetPayload {
+        first: 1
+    }
+}

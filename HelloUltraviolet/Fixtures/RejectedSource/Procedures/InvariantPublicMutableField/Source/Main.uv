@@ -1,0 +1,5 @@
+//! Rejected invariant specimen for public mutable fields on invariant-bearing types.
+
+public record InvariantPublicOwner {
+    public value: i32
+} |: { self.value > 0 }

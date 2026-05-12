@@ -1,0 +1,21 @@
+//! Diagnostic key-system specimen for repeated fine-grained loop key acquisition.
+
+public record LoopKeyLeaf {
+    public value: i32
+}
+
+public record LoopKeyContainer {
+    public leaf: LoopKeyLeaf
+}
+
+public procedure fineGrainedLoopKeyWarningReference() -> i32 {
+    var container: shared LoopKeyContainer =
+        LoopKeyContainer { leaf: LoopKeyLeaf { value: 1 } }
+    var index: usize = 0usize
+    loop index < 4usize {
+        #container.leaf.value read {
+        }
+        index = index + 1usize
+    }
+    return 0
+}

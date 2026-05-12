@@ -1,0 +1,7 @@
+//! Diagnostic key-system specimen for closure capture of shared data.
+
+public procedure sharedClosureCaptureWarningReference() -> i32 {
+    var shared_value: shared i32 = 1
+    let reader = || shared_value
+    return 0
+}

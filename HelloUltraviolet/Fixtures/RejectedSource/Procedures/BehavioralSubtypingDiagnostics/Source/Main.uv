@@ -1,0 +1,16 @@
+//! Rejected behavioral-subtyping specimen for behavioral-subtyping diagnostics.
+
+public class BehavioralDiagnosticClass {
+    public procedure readValue(~, value: i32) -> i32
+    |: value > 0
+}
+
+public record BehavioralDiagnosticOwner <: BehavioralDiagnosticClass {
+    public value: i32
+
+    public procedure readValue(~, value: i32) -> i32
+    |: value > 10
+    {
+        return self.value + value
+    }
+}

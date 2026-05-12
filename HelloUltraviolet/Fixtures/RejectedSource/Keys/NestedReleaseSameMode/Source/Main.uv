@@ -1,0 +1,11 @@
+//! Rejected key-system specimen for releasing a key in the same mode as the held key.
+
+public procedure nestedReleaseSameModeReference() -> i32 {
+    var shared_value: shared i32 = 1
+    #shared_value write {
+        #shared_value release write {
+            shared_value = 2
+        }
+    }
+    return 0
+}

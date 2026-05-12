@@ -1,0 +1,11 @@
+//! Rejected FFI specimen for generic enum applications with unconstrained payload parameters.
+
+[[layout(C)]]
+public enum GenericFfiEnum<TValue> {
+    Value(TValue)
+}
+
+extern "C" {
+    public procedure importedEnum(value: GenericFfiEnum<i32>) -> i32
+}
+

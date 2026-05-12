@@ -1,0 +1,7 @@
+//! Rejected FFI specimen for hosted exports without a leading context bundle.
+
+[[host_export("C")]]
+public procedure hostedMissingContext(value: i32) -> i32 {
+    return value
+}
+

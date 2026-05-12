@@ -1,0 +1,9 @@
+//! Rejected method specimen for record-method declaration well-formedness.
+
+public record RecordMethodWellFormedOwner {
+    public value: i32
+
+    public procedure readValue(self: i32) -> i32 {
+        return self
+    }
+}

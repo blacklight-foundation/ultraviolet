@@ -1,0 +1,11 @@
+//! Rejected address-of specimen for packed-field admissibility helpers.
+
+[[layout(packed)]]
+public record AddressOfPackedPayload {
+    public value: i32
+}
+
+public procedure addressOfStaticHelpersReference() -> Ptr<i32> {
+    let payload: AddressOfPackedPayload = AddressOfPackedPayload { value: 1 }
+    return &payload.value
+}

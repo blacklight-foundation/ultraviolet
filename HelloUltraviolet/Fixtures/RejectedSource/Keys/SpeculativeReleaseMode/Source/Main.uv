@@ -1,0 +1,9 @@
+//! Rejected key-system specimen for combining speculative and release key-block modes.
+
+public procedure speculativeReleaseModeReference() -> i32 {
+    var shared_value: shared i32 = 1
+    #shared_value speculative release write {
+        shared_value = 2
+    }
+    return 0
+}

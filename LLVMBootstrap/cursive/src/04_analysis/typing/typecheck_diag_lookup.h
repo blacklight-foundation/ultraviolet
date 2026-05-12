@@ -57,6 +57,18 @@ inline std::optional<std::string> LookupTypecheckDiagCode(std::string_view diag_
   if (diag_id == "PtrNull-Infer-Err") {
     return "E-TYP-1530";
   }
+  if (diag_id == "NullLiteral-Infer-Err") {
+    return "E-TYP-1530";
+  }
+  if (diag_id == "FieldAccess-NotVisible") {
+    return "E-TYP-1905";
+  }
+  if (diag_id == "Widen-NonModal") {
+    return "E-TYP-2071";
+  }
+  if (diag_id == "Widen-AlreadyGeneral") {
+    return "E-TYP-2072";
+  }
   if (diag_id == "Record-Default-Init-Err") {
     return "E-TYP-1911";
   }

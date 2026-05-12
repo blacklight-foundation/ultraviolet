@@ -1,0 +1,29 @@
+//! Diagnostic expression specimens.
+
+using HelloUltraviolet::Fixtures::RejectedSource::{ expectedDiagnostic }
+
+public procedure expressionsDiagnosticSourceFixtureCount() -> usize {
+    return 1usize
+}
+
+public procedure validatedExpressionsDiagnosticSourceFixtureCount() -> usize {
+    var count: usize = 0usize
+    if diagnosticSpecimenMatches(
+        diagnosticSpecimen(
+            "ValidTransmuteTarget",
+            "Fixtures/DiagnosticSource/Expressions/ValidTransmuteTarget",
+            "Fixtures/DiagnosticSource/Expressions/ValidTransmuteTarget/Source/Main.uv",
+            "Fixtures/DiagnosticSource/Expressions/ValidTransmuteTarget/Expected.uv",
+            expectedDiagnostic("W-SAFE-0100", "def.16.ValidTransmuteTarget")
+        ),
+        "ValidTransmuteTarget",
+        "Fixtures/DiagnosticSource/Expressions/ValidTransmuteTarget",
+        "Fixtures/DiagnosticSource/Expressions/ValidTransmuteTarget/Source/Main.uv",
+        "Fixtures/DiagnosticSource/Expressions/ValidTransmuteTarget/Expected.uv",
+        "W-SAFE-0100",
+        "def.16.ValidTransmuteTarget"
+    ) {
+        count = count + 1usize
+    }
+    return count
+}

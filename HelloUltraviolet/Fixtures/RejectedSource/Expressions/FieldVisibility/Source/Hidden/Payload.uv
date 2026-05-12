@@ -1,0 +1,11 @@
+//! Hidden record fixture for field visibility diagnostics.
+
+public record HiddenPayload {
+    private value: i32
+}
+
+public procedure hiddenPayload() -> HiddenPayload {
+    return HiddenPayload {
+        value: 7
+    }
+}

@@ -1,0 +1,14 @@
+//! Rejected FFI specimen for DropType values passed by value without ffi_pass_by_value.
+
+[[layout(C)]]
+public record DroppingFfiRecord {
+    public value: unique i32
+
+    public procedure drop(~!) -> () {
+    }
+}
+
+extern "C" {
+    public procedure importedDropValue(value: DroppingFfiRecord) -> i32
+}
+

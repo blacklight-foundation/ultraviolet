@@ -1,0 +1,11 @@
+//! Rejected contract specimen for verification logic diagnostics.
+
+public procedure requiresVerificationLogicPositive(value: i32) -> i32
+|: value > 0
+{
+    return value
+}
+
+public procedure verificationLogicDiagnosticReference() -> i32 {
+    return requiresVerificationLogicPositive(0)
+}

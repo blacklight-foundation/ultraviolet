@@ -1,0 +1,13 @@
+//! Rejected FFI specimen for capability-isolation diagnostic ownership.
+
+public record HostedCapabilityContext {
+    public sys: System
+}
+
+[[host_export("C")]]
+public procedure hostedCapability(
+    context: HostedCapabilityContext,
+    value: Context
+) -> i32 {
+    return 0
+}

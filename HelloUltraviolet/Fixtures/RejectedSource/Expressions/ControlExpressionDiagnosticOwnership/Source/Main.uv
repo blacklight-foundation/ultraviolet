@@ -1,0 +1,9 @@
+//! Rejected control-expression specimen for non-boolean if condition diagnostics.
+
+public procedure controlExpressionDiagnosticOwnershipReference() -> i32 {
+    return if 1 {
+        2
+    } else {
+        3
+    }
+}

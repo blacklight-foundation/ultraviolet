@@ -31,10 +31,10 @@ Objective: execute `.agents/plans/HelloUltravioletReferenceCorpus.md`.
 - `CatalogSymbols.uv` imports and executes the 65 unique compiled reference
   symbols named by catalog rows, and `HelloUltraviolet.exe` validates them
   through `catalogCompiledSymbolsExecute()`.
-- `Source/Fixtures/RejectedSource` compiles metadata for 123 rejected-source
+- `Source/Fixtures/RejectedSource` compiles metadata for 215 rejected-source
   fixture specimens, and `HelloUltraviolet.exe` validates that fixture index
   through `rejectedSourceFixturesAreIndexed`.
-- The 123 rejected-source fixture projects under
+- The 215 rejected-source fixture projects under
   `HelloUltraviolet/Fixtures/RejectedSource` fail with their expected SPEC
   diagnostic code or static-rule diagnostic when built individually with
   `Cursive.exe build ... --check`.
@@ -44,10 +44,17 @@ Objective: execute `.agents/plans/HelloUltravioletReferenceCorpus.md`.
 - `HelloUltraviolet.exe` verifies runtime existence of each rejected fixture
   manifest, invalid source file, and `Expected.uv` artifact through
   `rejectedSourceFixtureArtifactsExist(context)`.
-- `ExpectedFiles.uv` reads the 123 current rejected-source `Expected.uv`
+- `ExpectedFiles.uv` reads the 215 current rejected-source `Expected.uv`
   artifacts and `HelloUltraviolet.exe` validates exact metadata content through
   one named check per specimen.
-- `Source/Fixtures/AcceptedProjects` compiles metadata for 4 accepted project
+- `Source/Fixtures/DiagnosticSource` compiles metadata for 1 diagnostic-source
+  fixture specimen whose source is expected to compile while emitting a SPEC
+  warning, and `HelloUltraviolet.exe` validates the index, artifact paths, and
+  exact `Expected.uv` metadata through the diagnostic-source fixture checks.
+- `Fixtures/DiagnosticSource/Expressions/ValidTransmuteTarget` builds with exit
+  code 0 and emits `W-SAFE-0100` for a valid unsafe transmute whose target type
+  is known to admit invalid bit patterns.
+- `Source/Fixtures/AcceptedProjects` compiles metadata for 5 accepted project
   fixture specimens, and `HelloUltraviolet.exe` validates both the index and
   artifact paths through accepted-project fixture checks.
 - `Fixtures/AcceptedProjects/StaticLibrary` builds as a valid static library
@@ -55,7 +62,10 @@ Objective: execute `.agents/plans/HelloUltravioletReferenceCorpus.md`.
   valid executable project, `Fixtures/AcceptedProjects/PtrNullReturn` builds as
   a valid library project for checked `Ptr::null()` return typing, and
   `Fixtures/AcceptedProjects/ExpressionSemantics` builds as a valid library
-  project for rule-level expression typing.
+  project for rule-level expression typing, and
+  `Fixtures/AcceptedProjects/VerificationFactPrecondition` builds as a valid
+  library project for branch-generated verification facts discharging
+  preconditions.
 - `Source/Fixtures/ArtifactProjects` compiles metadata for 3 artifact project
   fixture specimens, and `HelloUltraviolet.exe` validates both the index and
   source/manifest paths through artifact-project fixture checks.
@@ -79,20 +89,31 @@ Objective: execute `.agents/plans/HelloUltravioletReferenceCorpus.md`.
 ## Completion Blockers
 
 - Rejected-source fixtures are partially populated. The current fixture set
-  covers 123 source, parsing, name-resolution, procedure, statement, expression,
-  and pattern diagnostics; the full expected-diagnostics obligation surface is
-  not yet represented. Direct expected-diagnostics coverage is `113/382`
+  covers 215 source, parsing, name-resolution, procedure, statement, expression,
+  pattern, and FFI diagnostics; the full expected-diagnostics obligation surface
+  is not yet represented. Direct expected-diagnostics coverage is `206/382`
   obligation keys. The expected-diagnostics obligations owned by Chapter 17
-  patterns are now represented. Chapter 18 statements still have one uncovered
+  patterns, Chapter 16 expressions, and Chapter 23 FFI are now represented.
+  Procedure/contracts coverage now has 5 uncovered expected-diagnostic
+  obligations. Chapter 18 statement coverage still has one uncovered
   expected-diagnostic obligation: `rule.18.BlockInfo-Res-Err`.
+- `Fixtures/BootstrapNonCompliance/Procedures/FreeProcedureOverloadResolution`
+  contains a SPEC-valid free-procedure overload specimen. The current bootstrap
+  rejects it as `E-MOD-1302` during module-scope name collection before
+  overload resolution can run. `Audit/BootstrapNonCompliance.md` records this as
+  `UVBOOT-0032` with owner paths in `collect_toplevel.cpp` and `expr/call.cpp`.
 - `rule.18.BlockInfo-Res-Err` remains unindexed pending source-construct
   clarification. The row rejects block result prefixes whose `Res` set has no
-  common type, but the current Chapter 18 statement rules inspected here
-  produce `Res = []` for expression statements and unsafe block statements, and
-  route `break` values through `Brk` instead of `Res`. The bootstrap currently
-  forwards only nested statement-block results with type `!` into `flow.results`,
-  which can exercise `BlockInfo-Res` but does not create a heterogeneous `Res`
-  set for `BlockInfo-Res-Err`.
+  common type, but the Chapter 18 rules inspected here produce `Res = []` for
+  expression, unsafe, region, and frame statements, and route `break` values
+  through `Brk` instead of `Res`. A corrected probe using two block-expression
+  statement prefixes with incompatible tail types was rejected as
+  `E-SEM-3161` at the enclosing `return`, not as `BlockInfo-Res-Err`. The
+  bootstrap owner path is `TypeBlockInfo` in
+  `LLVMBootstrap/cursive/src/04_analysis/typing/stmt/stmt_common.cpp`; it
+  forwards only nested statement-block results with type `!` into
+  `flow.results`, which can exercise `BlockInfo-Res` but does not create a
+  heterogeneous `Res` set for `BlockInfo-Res-Err`.
 - Accepted-project fixtures are partially populated with 4 buildable projects.
   Artifact-project fixtures are partially populated with 3 buildable projects.
 - Some high-level areas currently use executable reference models rather than

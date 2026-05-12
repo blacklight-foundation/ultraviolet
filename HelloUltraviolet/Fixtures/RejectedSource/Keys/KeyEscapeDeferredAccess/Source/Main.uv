@@ -1,0 +1,11 @@
+//! Rejected key-system specimen for deferred key-dependent access.
+
+public procedure keyEscapeDeferredAccessReference() -> i32 {
+    var shared_value: shared i32 = 1
+    #shared_value read {
+        defer {
+            let delayed = shared_value
+        }
+    }
+    return 0
+}

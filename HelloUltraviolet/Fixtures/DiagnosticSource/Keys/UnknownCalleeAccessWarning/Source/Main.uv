@@ -1,0 +1,21 @@
+//! Diagnostic key-system specimen for unknown callee access under a held key prefix.
+
+public record UnknownAccessTarget {
+    public value: i32
+
+    public procedure readValue(~) -> i32 {
+        return 0
+    }
+}
+
+public procedure summarizeAsUnknown(target: shared UnknownAccessTarget) -> i32 {
+    return target~>readValue()
+}
+
+public procedure unknownCalleeAccessWarningReference() -> i32 {
+    var target: shared UnknownAccessTarget = UnknownAccessTarget { value: 1 }
+    #target read {
+        let observed: i32 = summarizeAsUnknown(target)
+    }
+    return 0
+}

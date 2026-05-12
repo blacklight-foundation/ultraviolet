@@ -1,0 +1,17 @@
+//! Spec-valid overload specimen currently rejected by the bootstrap name collector.
+
+public procedure selectOverload(value: i32) -> i32 {
+    return value + 1
+}
+
+public procedure selectOverload(value: bool) -> i32 {
+    if value {
+        return 2
+    }
+
+    return 0
+}
+
+public procedure freeProcedureOverloadResolutionReference() -> i32 {
+    return selectOverload(4) + selectOverload(true)
+}

@@ -1,0 +1,13 @@
+//! SPEC-invalid key-system specimen currently accepted by the bootstrap.
+
+public class SharedDynamicReceiverClass {
+    public procedure mutate(~!) -> i32 {
+        return 1
+    }
+}
+
+public procedure sharedDynamicMutatingReceiverReference(
+    value: shared $SharedDynamicReceiverClass
+) -> i32 {
+    return 0
+}

@@ -1,0 +1,9 @@
+//! Rejected record construction specimen for default construction eligibility.
+
+public record NonDefaultConstructionPayload {
+    public value: i32
+}
+
+public procedure recordDefaultConstructionEligibilityReference() -> NonDefaultConstructionPayload {
+    return NonDefaultConstructionPayload()
+}

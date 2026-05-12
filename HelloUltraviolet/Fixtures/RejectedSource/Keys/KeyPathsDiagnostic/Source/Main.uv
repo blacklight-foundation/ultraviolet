@@ -1,0 +1,8 @@
+//! Rejected key-system specimen for key path marker diagnostics.
+
+public procedure keyPathsDiagnosticReference() -> i32 {
+    var shared_value: shared i32 = 1
+    #shared_value.#field read {
+    }
+    return 0
+}

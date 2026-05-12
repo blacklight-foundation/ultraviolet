@@ -1,0 +1,90 @@
+//! Runtime content checks for diagnostic-source expected diagnostic metadata.
+
+internal procedure diagnosticExpectedFileMatches(
+    context: Context,
+    expected_path: string@View,
+    expected_text: string@View
+) -> bool {
+    let read_result: Outcome<unique string@Managed, IoError> = context.fs~>read_file(expected_path)
+    return if move read_result is {
+        @Value { value } {
+            let text: string@View = string::as_view(value)
+            auditTextEquals(text, expected_text)
+        }
+        @Error {
+            false
+        }
+    }
+}
+
+public procedure validTransmuteTargetExpectedDiagnosticFileMatches(context: Context) -> bool {
+    return diagnosticExpectedFileMatches(
+        context,
+        "HelloUltraviolet/Fixtures/DiagnosticSource/Expressions/ValidTransmuteTarget/Expected.uv",
+        "//! Expected diagnostic metadata for the ValidTransmuteTarget diagnostic-source specimen.\n\nexpectedDiagnostic(\"W-SAFE-0100\", \"def.16.ValidTransmuteTarget\")\n"
+    )
+}
+
+public procedure fineGrainedLoopKeyWarningExpectedDiagnosticFileMatches(context: Context) -> bool {
+    return diagnosticExpectedFileMatches(
+        context,
+        "HelloUltraviolet/Fixtures/DiagnosticSource/Keys/FineGrainedLoopKeyWarning/Expected.uv",
+        "//! Expected diagnostic metadata for the FineGrainedLoopKeyWarning diagnostic-source specimen.\n\nexpectedDiagnostic(\"W-CON-0001\", \"requirement.19.FineGrainedKeyLoopWarning\")\n"
+    )
+}
+
+public procedure readThenWriteExplicitWarningExpectedDiagnosticFileMatches(context: Context) -> bool {
+    return diagnosticExpectedFileMatches(
+        context,
+        "HelloUltraviolet/Fixtures/DiagnosticSource/Keys/ReadThenWriteExplicitWarning/Expected.uv",
+        "//! Expected diagnostic metadata for the ReadThenWriteExplicitWarning diagnostic-source specimen.\n\nexpectedDiagnostic(\"W-CON-0006\", \"rule.19.K-RMW-Explicit-Warn\")\n"
+    )
+}
+
+public procedure readThenWriteContentionWarningExpectedDiagnosticFileMatches(context: Context) -> bool {
+    return diagnosticExpectedFileMatches(
+        context,
+        "HelloUltraviolet/Fixtures/DiagnosticSource/Keys/ReadThenWriteContentionWarning/Expected.uv",
+        "//! Expected diagnostic metadata for the ReadThenWriteContentionWarning diagnostic-source specimen.\n\nexpectedDiagnostic(\"W-CON-0004\", \"rule.19.K-RMW-Contention-Warn\")\n"
+    )
+}
+
+public procedure orderedRedundantWarningExpectedDiagnosticFileMatches(context: Context) -> bool {
+    return diagnosticExpectedFileMatches(
+        context,
+        "HelloUltraviolet/Fixtures/DiagnosticSource/Keys/OrderedRedundantWarning/Expected.uv",
+        "//! Expected diagnostic metadata for the OrderedRedundantWarning diagnostic-source specimen.\n\nexpectedDiagnostic(\"W-CON-0013\", \"rule.19.K-Ordered-Redundant-Warn\")\n"
+    )
+}
+
+public procedure unknownCalleeAccessWarningExpectedDiagnosticFileMatches(context: Context) -> bool {
+    return diagnosticExpectedFileMatches(
+        context,
+        "HelloUltraviolet/Fixtures/DiagnosticSource/Keys/UnknownCalleeAccessWarning/Expected.uv",
+        "//! Expected diagnostic metadata for the UnknownCalleeAccessWarning diagnostic-source specimen.\n\nexpectedDiagnostic(\"W-CON-0005\", \"requirement.19.UnknownCalleeAccessWarning\")\n"
+    )
+}
+
+public procedure sharedClosureCaptureWarningExpectedDiagnosticFileMatches(context: Context) -> bool {
+    return diagnosticExpectedFileMatches(
+        context,
+        "HelloUltraviolet/Fixtures/DiagnosticSource/Keys/SharedClosureCaptureWarning/Expected.uv",
+        "//! Expected diagnostic metadata for the SharedClosureCaptureWarning diagnostic-source specimen.\n\nexpectedDiagnostic(\"W-CON-0009\", \"diagnostics.19.KeyAcquisitionBlocks\")\n"
+    )
+}
+
+public procedure nestedReleaseInterleavingWarningExpectedDiagnosticFileMatches(context: Context) -> bool {
+    return diagnosticExpectedFileMatches(
+        context,
+        "HelloUltraviolet/Fixtures/DiagnosticSource/Keys/NestedReleaseInterleavingWarning/Expected.uv",
+        "//! Expected diagnostic metadata for the NestedReleaseInterleavingWarning diagnostic-source specimen.\n\nexpectedDiagnostic(\"W-CON-0010\", \"diagnostics.19.NestedRelease\")\n"
+    )
+}
+
+public procedure dynamicKeyRuntimeInfoExpectedDiagnosticFileMatches(context: Context) -> bool {
+    return diagnosticExpectedFileMatches(
+        context,
+        "HelloUltraviolet/Fixtures/DiagnosticSource/Keys/DynamicKeyRuntimeInfo/Expected.uv",
+        "//! Expected diagnostic metadata for the DynamicKeyRuntimeInfo diagnostic-source specimen.\n\nexpectedDiagnostic(\"I-CON-0013\", \"diagnostics.19.DynamicKeyVerification\")\n"
+    )
+}

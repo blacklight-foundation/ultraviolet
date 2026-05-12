@@ -1,0 +1,9 @@
+//! Rejected field access specimen for inaccessible record fields.
+
+using FieldVisibility::Hidden::{ HiddenPayload }
+using FieldVisibility::Hidden::{ hiddenPayload }
+
+public procedure fieldVisibilityReference() -> i32 {
+    let payload: HiddenPayload = hiddenPayload()
+    return payload.value
+}

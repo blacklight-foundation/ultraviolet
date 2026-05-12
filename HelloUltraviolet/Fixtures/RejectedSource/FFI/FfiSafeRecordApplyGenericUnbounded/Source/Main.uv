@@ -1,0 +1,11 @@
+//! Rejected FFI specimen for generic record applications with unconstrained field parameters.
+
+[[layout(C)]]
+public record GenericFfiRecord<TValue> {
+    public value: TValue
+}
+
+extern "C" {
+    public procedure importedRecord(value: GenericFfiRecord<i32>) -> i32
+}
+

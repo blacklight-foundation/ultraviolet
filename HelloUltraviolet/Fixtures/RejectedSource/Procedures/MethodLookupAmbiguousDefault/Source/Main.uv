@@ -1,0 +1,22 @@
+//! Rejected method-lookup specimen for ambiguous inherited class defaults.
+
+public class FirstDefaultClass {
+    public procedure readValue(~) -> i32 {
+        return 1
+    }
+}
+
+public class SecondDefaultClass {
+    public procedure readValue(~) -> i32 {
+        return 2
+    }
+}
+
+public record AmbiguousDefaultOwner <: FirstDefaultClass, SecondDefaultClass {
+    public value: i32
+}
+
+public procedure methodLookupAmbiguousDefaultReference() -> i32 {
+    let owner: AmbiguousDefaultOwner = AmbiguousDefaultOwner { value: 0 }
+    return owner~>readValue()
+}

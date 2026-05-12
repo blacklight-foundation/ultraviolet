@@ -1,0 +1,9 @@
+//! Rejected FFI specimen for extern calls outside unsafe.
+
+extern "C" {
+    public procedure importedValue() -> i32
+}
+
+public procedure externCallSafetyReference() -> i32 {
+    return importedValue()
+}

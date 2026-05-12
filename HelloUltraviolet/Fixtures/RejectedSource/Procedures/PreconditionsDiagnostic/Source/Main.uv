@@ -1,0 +1,11 @@
+//! Rejected contract specimen for precondition diagnostics.
+
+public procedure requiresPreconditionsDiagnosticPositive(value: i32) -> i32
+|: value > 0
+{
+    return value
+}
+
+public procedure preconditionsDiagnosticReference() -> i32 {
+    return requiresPreconditionsDiagnosticPositive(0)
+}

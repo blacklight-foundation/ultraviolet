@@ -1,0 +1,20 @@
+//! Coverage checks for diagnostic-source fixture metadata.
+
+public procedure expectedDiagnosticSourceFixtureCount() -> usize {
+    return 9usize
+}
+
+public procedure diagnosticSourceFixtureCount() -> usize {
+    return expressionsDiagnosticSourceFixtureCount() +
+        keysDiagnosticSourceFixtureCount()
+}
+
+public procedure validatedDiagnosticSourceFixtureCount() -> usize {
+    return validatedExpressionsDiagnosticSourceFixtureCount() +
+        validatedKeysDiagnosticSourceFixtureCount()
+}
+
+public procedure diagnosticSourceFixturesAreIndexed() -> bool {
+    return diagnosticSourceFixtureCount() == expectedDiagnosticSourceFixtureCount() &&
+        validatedDiagnosticSourceFixtureCount() == expectedDiagnosticSourceFixtureCount()
+}

@@ -1,0 +1,9 @@
+//! Diagnostic key-system specimen for redundant ordered acquisition over static indices.
+
+public procedure orderedRedundantWarningReference() -> i32 {
+    var values: shared [i32; 4] = [1, 2, 3, 4]
+    #values[0usize], values[1usize] ordered read {
+        let total: i32 = values[0usize] + values[1usize]
+    }
+    return 0
+}

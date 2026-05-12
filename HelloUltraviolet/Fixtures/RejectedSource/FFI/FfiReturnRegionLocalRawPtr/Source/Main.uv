@@ -1,0 +1,11 @@
+//! Rejected FFI specimen for returning region-local raw pointers from exports.
+
+[[export("C")]]
+public procedure ffiReturnRegionLocalRawPtrReference() -> *mut i32 {
+    region as scratch {
+        let raw: *mut i32 = null
+        let pointer: *mut i32 = scratch ^ raw
+        return pointer
+    }
+    return null
+}

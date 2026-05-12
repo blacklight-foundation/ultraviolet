@@ -1,0 +1,10 @@
+//! Rejected key-system specimen for an impure capability call inside speculative execution.
+
+public procedure speculativeImpureCallReference(context: Context) -> i32 {
+    var shared_value: shared i32 = 1
+    #shared_value speculative write {
+        context.fs~>exists("HelloUltraviolet")
+        shared_value = 2
+    }
+    return 0
+}

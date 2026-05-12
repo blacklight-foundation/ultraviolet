@@ -1,0 +1,6 @@
+//! Rejected FFI specimen for the null_result rejection rule.
+
+extern "C" {
+    public procedure importedNullResultRule(value: i32) -> i32
+        |: @foreign_ensures(@null_result: true)
+}

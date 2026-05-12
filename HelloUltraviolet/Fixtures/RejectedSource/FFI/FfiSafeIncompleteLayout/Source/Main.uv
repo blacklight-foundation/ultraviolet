@@ -1,0 +1,11 @@
+//! Rejected FFI specimen for a layout(C) record whose layout cannot be completed.
+
+[[layout(C)]]
+public record RecursiveFfiRecord {
+    public next: RecursiveFfiRecord
+}
+
+extern "C" {
+    public procedure importedRecursive(value: RecursiveFfiRecord) -> i32
+}
+

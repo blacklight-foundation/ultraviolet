@@ -1,0 +1,13 @@
+[[assembly]]
+name = "LlvmToolResolveOwnership"
+kind = "library"
+link_kind = "static"
+emit_ir = "bc"
+root = "Source"
+
+[toolchain]
+llvm_bin = "MissingLlvmTools"
+
+[build]
+incremental = true
+progress = false

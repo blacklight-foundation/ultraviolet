@@ -1,0 +1,7 @@
+//! Rejected key-system specimen for an expanded read-then-write shared assignment.
+
+public procedure sharedReadThenWriteReference() -> i32 {
+    var shared_value: shared i32 = 1
+    shared_value = shared_value + 1
+    return 0
+}

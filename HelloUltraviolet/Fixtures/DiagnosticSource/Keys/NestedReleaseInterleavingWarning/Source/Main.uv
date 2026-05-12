@@ -1,0 +1,10 @@
+//! Diagnostic key-system specimen for nested release interleaving.
+
+public procedure nestedReleaseInterleavingWarningReference() -> i32 {
+    var shared_value: shared i32 = 1
+    #shared_value write {
+        #shared_value release read {
+        }
+    }
+    return 0
+}
