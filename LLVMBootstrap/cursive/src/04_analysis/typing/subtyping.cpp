@@ -829,10 +829,10 @@ static SubtypingResult SubtypingUncached(const ScopeContext& ctx,
       return {true, std::nullopt, false};
     }
     SPEC_RULE("Sub-Opaque");
-    if (SpanEq(lopaque->origin_span, ropaque->origin_span)) {
+    if (TypePathEq(lopaque->class_path, ropaque->class_path)) {
       return {true, std::nullopt, true};
     }
-    return {true, std::optional<std::string_view>{"Opaque-Type-Mismatch"}, false};
+    return {true, std::optional<std::string_view>{"E-TYP-2512"}, false};
   }
   if (std::holds_alternative<TypeOpaque>(rhs->node)) {
     return {true, std::nullopt, false};

@@ -1,7 +1,7 @@
 //! Rejected key-system specimens.
 
 public procedure keysRejectedSourceFixtureCount() -> usize {
-    return 15usize
+    return 16usize
 }
 
 public procedure validatedKeysRejectedSourceFixtureCount() -> usize {
@@ -258,6 +258,26 @@ public procedure validatedKeysRejectedSourceFixtureCount() -> usize {
         "Fixtures/RejectedSource/Keys/EscapingClosureSharedLifetime/Expected.uv",
         "E-CON-0086",
         "requirement.19.EscapingClosureSharedLifetime"
+    ) {
+        count = count + 1usize
+    }
+    if rejectedSpecimenMatches(
+        rejectedSpecimen(
+            "SharedDynamicMutatingReceiver",
+            "Fixtures/RejectedSource/Keys/SharedDynamicMutatingReceiver",
+            "Fixtures/RejectedSource/Keys/SharedDynamicMutatingReceiver/Source/Main.uv",
+            "Fixtures/RejectedSource/Keys/SharedDynamicMutatingReceiver/Expected.uv",
+            expectedDiagnostic(
+                "E-CON-0083",
+                "requirement.19.SharedDynamicClassRejectsMutatingReceivers"
+            )
+        ),
+        "SharedDynamicMutatingReceiver",
+        "Fixtures/RejectedSource/Keys/SharedDynamicMutatingReceiver",
+        "Fixtures/RejectedSource/Keys/SharedDynamicMutatingReceiver/Source/Main.uv",
+        "Fixtures/RejectedSource/Keys/SharedDynamicMutatingReceiver/Expected.uv",
+        "E-CON-0083",
+        "requirement.19.SharedDynamicClassRejectsMutatingReceivers"
     ) {
         count = count + 1usize
     }

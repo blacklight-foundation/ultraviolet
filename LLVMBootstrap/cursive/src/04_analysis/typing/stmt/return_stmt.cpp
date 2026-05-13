@@ -476,7 +476,7 @@ StmtTypeResult TypeReturnStmt(const ScopeContext& ctx,
         }
         if (!equiv.equiv) {
           SPEC_RULE("T-Opaque-Return");
-          return {false, "Opaque-Type-Mismatch", {}, {}};
+          return {false, "E-TYP-2512", {}, {}};
         }
       } else {
         type_ctx.opaque_return->underlying = typed.type;

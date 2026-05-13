@@ -1,7 +1,53 @@
 //! Reference specimens for Polymorphism / Implementations.
 
+internal class ImplementationReadable {
+    internal type ValueType
+
+    internal required_value: i32
+
+    internal procedure readValue(~) -> i32
+
+    internal procedure defaultValue(~) -> i32 {
+        return 29
+    }
+}
+
+internal record ImplementationOwner <: ImplementationReadable {
+    internal type ValueType = i32
+
+    internal required_value: i32
+
+    internal procedure readValue(~) -> i32 {
+        return self.required_value
+    }
+}
+
+internal record ImplementationOverrideOwner <: ImplementationReadable {
+    internal type ValueType = i32
+
+    internal required_value: i32
+
+    internal procedure readValue(~) -> i32 {
+        return self.required_value
+    }
+
+    internal override procedure defaultValue(~) -> i32 {
+        return self.required_value + 1
+    }
+}
+
 /// Exercises the Polymorphism Implementations reference surface.
 public procedure runPolymorphismImplementationsReference() -> bool {
-    let reference: PolymorphismReference = polymorphismReference(6usize, true, true)
+    let owner: ImplementationOwner = ImplementationOwner { required_value: 23 }
+    let override_owner: ImplementationOverrideOwner =
+        ImplementationOverrideOwner { required_value: 31 }
+    let reference: PolymorphismReference = polymorphismReference(
+        9usize,
+        owner~>readValue() == 23 &&
+            owner~>defaultValue() == 29 &&
+            override_owner~>readValue() == 31 &&
+            override_owner~>defaultValue() == 32,
+        true
+    )
     return polymorphismReferenceIsCovered(reference) && reference.dynamically_dispatchable
 }

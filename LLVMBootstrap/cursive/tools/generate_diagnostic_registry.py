@@ -144,6 +144,12 @@ def main() -> int:
         "IfCase-Modal-NonExhaustive": "E-TYP-2060",
         "IfCase-NonExhaustive": "E-SEM-2741",
         "IfCase-Unreachable": "E-SEM-2751",
+        "Let-Refutable-Pattern-Err": "E-SEM-2711",
+        "RangePattern-Empty": "E-SEM-2722",
+        "RangePattern-NonConst": "E-SEM-2721",
+        "RecordPattern-UnknownField": "E-SEM-2731",
+        "Record-Method-Dup": "E-SEM-3012",
+        "Record-Method-RecvSelf-Err": "E-TYP-1912",
         "TupleAccess-NotTuple": "E-SEM-2524",
         "TupleIndex-OOB": "E-TYP-1801",
         "T-Cast-Invalid": "E-SEM-2528",
@@ -163,6 +169,7 @@ def main() -> int:
             diag_id in spec_diag_ids
             or diag_id.startswith("If")
             or diag_id.startswith("Index-")
+            or diag_id.startswith("Record-")
             or diag_id.startswith("Tuple")
             or diag_id == "T-Cast-Invalid"
         ):

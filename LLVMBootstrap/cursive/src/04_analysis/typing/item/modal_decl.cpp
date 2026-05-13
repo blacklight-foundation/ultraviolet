@@ -504,7 +504,7 @@ ModalDeclResult TypeModalDecl(
   if (!DistinctClassPaths(decl.implements)) {
     SPEC_RULE("Impl-Duplicate-Err");
     result.ok = false;
-    result.diag_id = "Impl-Dup";
+    result.diag_id = "E-TYP-2506";
     return result;
   }
 

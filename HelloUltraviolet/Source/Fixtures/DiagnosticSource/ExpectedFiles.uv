@@ -88,3 +88,19 @@ public procedure dynamicKeyRuntimeInfoExpectedDiagnosticFileMatches(context: Con
         "//! Expected diagnostic metadata for the DynamicKeyRuntimeInfo diagnostic-source specimen.\n\nexpectedDiagnostic(\"I-CON-0013\", \"diagnostics.19.DynamicKeyVerification\")\n"
     )
 }
+
+public procedure staleAfterYieldReleaseWarningExpectedDiagnosticFileMatches(context: Context) -> bool {
+    return diagnosticExpectedFileMatches(
+        context,
+        "HelloUltraviolet/Fixtures/DiagnosticSource/Keys/StaleAfterYieldReleaseWarning/Expected.uv",
+        "//! Expected diagnostic metadata for the StaleAfterYieldReleaseWarning diagnostic-source specimen.\n\nexpectedDiagnostic(\"W-CON-0011\", \"requirement.21.YieldReleaseStalenessWarning\")\n"
+    )
+}
+
+public procedure staleOkSuppressesReleaseWarningExpectedDiagnosticFileMatches(context: Context) -> bool {
+    return diagnosticExpectedFileMatches(
+        context,
+        "HelloUltraviolet/Fixtures/DiagnosticSource/Keys/StaleOkSuppressesReleaseWarning/Expected.uv",
+        "//! Expected diagnostic-absence metadata for the StaleOkSuppressesReleaseWarning diagnostic-source specimen.\n\nexpectedDiagnosticAbsent(\"W-CON-0011\", \"requirement.19.StaleOkSuppressesReleaseWarning\")\n"
+    )
+}

@@ -1682,23 +1682,26 @@ static CheckResult CheckExprImpl(const ScopeContext& ctx,
 
   std::optional<ExprTypeResult> inferred_call_with_expected;
   if (const auto* call = std::get_if<ast::CallExpr>(&expr->node)) {
-    const auto inferred_subst = ::cursive::analysis::expr::InferGenericCallSubst(
-        ctx, call->callee, call->args, expected, type_expr, type_place);
-    if (inferred_subst.ok) {
-      const auto typed_call = TypeCallWithSubst(
-          ctx, call->callee, call->args, inferred_subst.subst, type_expr,
-          type_place, nullptr);
-      if (!typed_call.ok) {
-        result.diag_id = typed_call.diag_id;
-        return result;
+    if (call->generic_args.empty()) {
+      const auto inferred_subst =
+          ::cursive::analysis::expr::InferGenericCallSubst(
+              ctx, call->callee, call->args, expected, type_expr, type_place);
+      if (inferred_subst.ok) {
+        const auto typed_call = TypeCallWithSubst(
+            ctx, call->callee, call->args, inferred_subst.subst, type_expr,
+            type_place, nullptr);
+        if (!typed_call.ok) {
+          result.diag_id = typed_call.diag_id;
+          return result;
+        }
+        ::cursive::analysis::expr::RecordGenericCallSubst(
+            ctx, *call, inferred_subst.subst);
+        ExprTypeResult call_result;
+        call_result.ok = true;
+        call_result.type = typed_call.type;
+        call_result.diag_detail = typed_call.diag_detail;
+        inferred_call_with_expected = std::move(call_result);
       }
-      ::cursive::analysis::expr::RecordGenericCallSubst(
-          ctx, *call, inferred_subst.subst);
-      ExprTypeResult call_result;
-      call_result.ok = true;
-      call_result.type = typed_call.type;
-      call_result.diag_detail = typed_call.diag_detail;
-      inferred_call_with_expected = std::move(call_result);
     }
   }
 

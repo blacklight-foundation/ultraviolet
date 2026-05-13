@@ -50,6 +50,10 @@ void LogClassLookupPerfSummary();
 
 bool ClassDispatchable(const ScopeContext& ctx, const ast::ClassPath& path);
 
+std::optional<std::string_view> ClassDispatchabilityDiagnostic(
+    const ScopeContext& ctx,
+    const ast::ClassPath& path);
+
 bool ClassSubtypes(const ScopeContext& ctx,
                    const ast::ClassPath& sub,
                    const ast::ClassPath& sup);

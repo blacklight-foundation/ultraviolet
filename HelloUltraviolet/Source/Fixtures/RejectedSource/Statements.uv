@@ -335,13 +335,13 @@ public procedure validatedStatementsRejectedSourceFixtureCount() -> usize {
             "Fixtures/RejectedSource/Statements/LetRefutablePattern",
             "Fixtures/RejectedSource/Statements/LetRefutablePattern/Source/Main.uv",
             "Fixtures/RejectedSource/Statements/LetRefutablePattern/Expected.uv",
-            expectedDiagnostic("", "rule.18.Let-Refutable-Pattern-Err")
+            expectedDiagnostic("E-SEM-2711", "rule.18.Let-Refutable-Pattern-Err")
         ),
         "LetRefutablePattern",
         "Fixtures/RejectedSource/Statements/LetRefutablePattern",
         "Fixtures/RejectedSource/Statements/LetRefutablePattern/Source/Main.uv",
         "Fixtures/RejectedSource/Statements/LetRefutablePattern/Expected.uv",
-        "",
+        "E-SEM-2711",
         "rule.18.Let-Refutable-Pattern-Err"
     ) {
         count = count + 1usize

@@ -1384,13 +1384,20 @@ error: Internal error: unknown diagnostic id 'Record-Method-RecvSelf-Err'
 Repaired bootstrap result:
 
 ```text
-error: Static rule failed without assigned diagnostic code: Record-Method-RecvSelf-Err
+./LLVMBootstrap/cursive/build/windows/Release/Cursive.exe build HelloUltraviolet/Fixtures/RejectedSource/Procedures/RecordMethodReceiverNotSelf --check --target-profile x86_64-win64 --build-progress off
+
+exit=1
+error[E-TYP-1912]: Explicit receiver type must be `Self` for record methods
 ```
 
 Bootstrap owner:
 
 - `LLVMBootstrap/cursive/src/04_analysis/composite/record_methods.cpp`
+- `LLVMBootstrap/cursive/tools/generate_diagnostic_registry.py`
+- `LLVMBootstrap/cursive/tools/static_rule_mapping.json`
+- `LLVMBootstrap/cursive/src/00_core/generated/diag_registry.inc`
 - `LLVMBootstrap/cursive/src/00_core/generated/static_rule_registry.inc`
+- `LLVMBootstrap/cursive/src/04_analysis/typing/item/typecheck_diag_map.inc`
 
 Failure analysis:
 
@@ -1404,8 +1411,9 @@ Repair:
 
 - `record_methods.cpp` now records `SPEC_RULE("Record-Method-RecvSelf-Err")`
   before returning the diagnostic id.
-- `generate_static_rule_registry` regenerated `static_rule_registry.inc`, and
-  the Release `cursive` target was rebuilt successfully.
+- The diagnostic and static-rule registries map `Record-Method-RecvSelf-Err` to
+  the SPEC-defined `E-TYP-1912`, and the Release `cursive` target was rebuilt
+  successfully.
 
 ## UVBOOT-0020: Contract Entry Bitcopy Enforcement
 
@@ -1638,13 +1646,20 @@ error: Internal error: unknown diagnostic id 'Let-Refutable-Pattern-Err'
 Repaired bootstrap result:
 
 ```text
-error: Static rule failed without assigned diagnostic code: Let-Refutable-Pattern-Err
+./LLVMBootstrap/cursive/build/windows/Release/Cursive.exe build HelloUltraviolet/Fixtures/RejectedSource/Statements/LetRefutablePattern --check --target-profile x86_64-win64 --build-progress off
+
+exit=1
+error[E-SEM-2711]: Refutable pattern in irrefutable context (`let`)
 ```
 
 Bootstrap owner:
 
 - `LLVMBootstrap/cursive/src/04_analysis/typing/stmt/stmt_common.cpp`
+- `LLVMBootstrap/cursive/tools/generate_diagnostic_registry.py`
+- `LLVMBootstrap/cursive/tools/static_rule_mapping.json`
+- `LLVMBootstrap/cursive/src/00_core/generated/diag_registry.inc`
 - `LLVMBootstrap/cursive/src/00_core/generated/static_rule_registry.inc`
+- `LLVMBootstrap/cursive/src/04_analysis/typing/item/typecheck_diag_map.inc`
 
 Failure analysis:
 
@@ -1657,8 +1672,9 @@ Repair:
 
 - `stmt_common.cpp` now records `SPEC_RULE("Let-Refutable-Pattern-Err")` before
   returning that diagnostic id.
-- `generate_static_rule_registry.py` regenerated `static_rule_registry.inc`, and
-  the Release `cursive` target was rebuilt successfully.
+- The diagnostic and static-rule registries map `Let-Refutable-Pattern-Err` to
+  the SPEC-defined `E-SEM-2711`, and the Release `cursive` target was rebuilt
+  successfully.
 
 ## UVBOOT-0024: Async Return Type Diagnostic Ownership
 
@@ -2225,3 +2241,625 @@ Module-scope collection must admit multiple visible free procedures with the
 same name when their erased parameter-mode/type signatures differ. Call typing
 must resolve that overload set before ordinary call typing and hand lowering the
 selected procedure symbol.
+
+## UVBOOT-0033: Shared Dynamic Class Receiver Well-Formedness
+
+Status: repaired.
+
+SPEC-invalid specimen:
+
+- `Fixtures/RejectedSource/Keys/SharedDynamicMutatingReceiver/Source/Main.uv`
+
+Spec obligation exercised:
+
+- `requirement.19.SharedDynamicClassRejectsMutatingReceivers`
+
+Spec basis:
+
+- `SPECIFICATION.md:20097` permits `shared $Cl` only when every
+  vtable-eligible procedure in the class has a `const` receiver.
+- `SPECIFICATION.md:20105-20106` states that `shared $Cl` is ill-formed when
+  any method requires `shared` (`~%`) or `unique` (`~!`) receiver permission.
+- `SPECIFICATION.md:20146` assigns `E-CON-0083` to `shared $Class` where the
+  class has `~%` or `~!` methods.
+
+Spec-invalid source:
+
+```ultraviolet
+public class SharedDynamicReceiverClass {
+    public procedure mutate(~!) -> i32 {
+        return 1
+    }
+}
+
+public procedure sharedDynamicMutatingReceiverReference(
+    value: shared $SharedDynamicReceiverClass
+) -> i32 {
+    return 0
+}
+```
+
+Verified bootstrap result:
+
+```text
+./LLVMBootstrap/cursive/build/windows/Release/Cursive.exe build HelloUltraviolet/Fixtures/RejectedSource/Keys/SharedDynamicMutatingReceiver --check --target-profile x86_64-win64 --build-progress off
+
+exit=1
+error[E-CON-0083]: `shared $Class` where class has `~%`/`~!` methods
+```
+
+Bootstrap repair owner:
+
+- `LLVMBootstrap/cursive/src/04_analysis/typing/type_wf.cpp`
+- `LLVMBootstrap/cursive/src/00_core/generated/static_rule_registry.inc`
+
+Repair summary:
+
+The class-analysis path already computes vtable eligibility in
+`VTableEligible`, and dynamic class object type construction is routed through
+`MakeTypeDynamic`. The dynamic type well-formedness path now checks the
+vtable-eligible method set for `shared $Class` and rejects any dispatchable
+method whose receiver permission is `~%` or `~!`.
+
+Implemented bootstrap behavior:
+
+Dynamic class object type well-formedness must resolve the target class, inspect
+the vtable-eligible effective method set, and reject `shared $Class` with
+`E-CON-0083` when any dispatchable method has a `~%` or `~!` receiver.
+
+## UVBOOT-0034: Tuple Pattern Arity Diagnostic Code Assignment
+
+Status: open.
+
+SPEC-invalid specimen:
+
+- `Fixtures/RejectedSource/Patterns/TuplePatternArity/Source/Main.uv`
+
+Spec obligation exercised:
+
+- `rule.17.Pat-Tuple-R-Arity-Err`
+
+Spec basis:
+
+- `SPECIFICATION.md:18118-18121` rejects tuple patterns whose element count
+  differs from the matched tuple type arity and names
+  `Code(Pat-Tuple-Arity-Err)`.
+- `SPECIFICATION.md:18173` says diagnostics are defined for tuple-pattern
+  arity mismatch and unknown record fields.
+- `SPECIFICATION.md:18729-18737` lists Chapter 17 pattern diagnostic codes but
+  assigns no concrete code for tuple-pattern arity mismatch.
+
+Spec-invalid source:
+
+```ultraviolet
+public procedure tuplePatternArityReference() -> i32 {
+    let pair: (i32, bool) = (1, true)
+    let (count, is_ready, extra) = pair
+    return count
+}
+```
+
+Observed bootstrap result:
+
+```text
+./LLVMBootstrap/cursive/build/windows/Release/Cursive.exe build HelloUltraviolet/Fixtures/RejectedSource/Patterns/TuplePatternArity --check --target-profile x86_64-win64 --build-progress off
+
+exit=1
+error: Static rule failed without assigned diagnostic code: Pat-Tuple-Arity-Err
+```
+
+Bootstrap owner:
+
+- `LLVMBootstrap/cursive/src/04_analysis/typing/pattern/pattern_common.cpp`
+- `LLVMBootstrap/cursive/src/04_analysis/typing/typecheck_diag_lookup.h`
+- `LLVMBootstrap/cursive/tools/generate_diagnostic_registry.py`
+- `LLVMBootstrap/cursive/src/00_core/generated/diag_registry.inc`
+
+Failure analysis:
+
+The pattern checker correctly rejects the source through the tuple-pattern
+arity rule, but the rule cannot be surfaced as a concrete expected diagnostic
+because the SPEC names `Code(Pat-Tuple-Arity-Err)` without a corresponding
+Chapter 17 diagnostic code. The diagnostic registry can map rule names only
+when the SPEC defines the target code.
+
+Required bootstrap behavior:
+
+After the SPEC assigns a concrete diagnostic code for `Pat-Tuple-Arity-Err`,
+the bootstrap diagnostic registry must map that rule name to the assigned code
+and the `TuplePatternArity` fixture must use the concrete expected diagnostic.
+
+## UVBOOT-0035: Record Method Duplicate Diagnostic Code Mapping
+
+Status: repaired.
+
+SPEC-invalid specimen:
+
+- `Fixtures/RejectedSource/Procedures/RecordMethodDuplicate/Source/Main.uv`
+
+Spec obligation exercised:
+
+- `rule.15.Record-Method-Dup`
+
+Spec basis:
+
+- `SPECIFICATION.md:14446-14448` rejects duplicate record method names.
+- `SPECIFICATION.md:19999` assigns `E-SEM-3012` to duplicate method names in a
+  type.
+
+Verified bootstrap result:
+
+```text
+./LLVMBootstrap/cursive/build/windows/Release/Cursive.exe build HelloUltraviolet/Fixtures/RejectedSource/Procedures/RecordMethodDuplicate --check --target-profile x86_64-win64 --build-progress off
+
+exit=1
+error[E-SEM-3012]: Duplicate method name in type
+```
+
+Bootstrap repair owner:
+
+- `LLVMBootstrap/cursive/tools/generate_diagnostic_registry.py`
+- `LLVMBootstrap/cursive/tools/static_rule_mapping.json`
+- `LLVMBootstrap/cursive/src/00_core/generated/diag_registry.inc`
+- `LLVMBootstrap/cursive/src/00_core/generated/static_rule_registry.inc`
+- `LLVMBootstrap/cursive/src/04_analysis/typing/item/typecheck_diag_map.inc`
+
+Repair summary:
+
+The record method checker already rejected duplicate method names with
+`Record-Method-Dup`. The diagnostic and static-rule registries now map that rule
+name to the SPEC-defined `E-SEM-3012`.
+
+## UVBOOT-0036: Class Default Method Access to Required Class Field
+
+Status: open.
+
+Spec-valid specimen:
+
+- `Fixtures/BootstrapNonCompliance/Polymorphism/ClassDefaultMethodFieldAccess/Source/Main.uv`
+
+Spec obligations exercised:
+
+- `rule.14.Parse-ClassItem-Field`
+- `def.EffectiveClassMembers`
+- `rule.14.Impl-Field`
+- `rule.14.T-Class-Method-Body`
+
+Spec basis:
+
+- `SPECIFICATION.md:12802-12805` defines class fields as class items.
+- `SPECIFICATION.md:12952-12978` defines effective class fields from class
+  linearization.
+- `SPECIFICATION.md:12993-12996` type-checks concrete class method bodies with
+  `self` bound to `Self`.
+- `SPECIFICATION.md:13138-13143` requires implementers to satisfy class fields.
+
+Observed bootstrap result:
+
+```text
+./LLVMBootstrap/cursive/build/windows/Release/Cursive.exe build HelloUltraviolet --check --target-profile x86_64-win64 --build-progress off
+
+error[E-TYP-1904]: Access to nonexistent field
+  --> C:/Dev/Ultraviolet/HelloUltraviolet/Source/Reference/Polymorphism/Classes.uv:15:10
+```
+
+Bootstrap owner:
+
+- `LLVMBootstrap/cursive/src/04_analysis/typing/item/class_decl.cpp`
+- `LLVMBootstrap/cursive/src/04_analysis/typing/expr/field_access.cpp`
+- `LLVMBootstrap/cursive/src/04_analysis/composite/classes.cpp`
+
+Failure analysis:
+
+The class field is parsed and the implementer is required to provide it, but
+class default method body checking does not make the effective class field table
+available to `self` field lookup. The checker therefore treats `self.inspected_value`
+inside the class method body as an unknown field.
+
+Required bootstrap behavior:
+
+When checking a concrete class method body, field lookup on `Self` must include
+the effective class fields of the current class.
+
+## UVBOOT-0037: Generic Class-Bound Method Lookup
+
+Status: open.
+
+Spec-valid specimen:
+
+- `Fixtures/BootstrapNonCompliance/Polymorphism/GenericClassBoundMethodLookup/Source/Main.uv`
+
+Spec obligations exercised:
+
+- `rule.14.Parse-TypeBoundsOpt-Yes`
+- `rule.14.T-Constraint-Sat`
+- `rule.14.GenericCallInference`
+- `rule.14.T-Generic-Call`
+
+Spec basis:
+
+- `SPECIFICATION.md:12380-12587` defines inline class bounds on generic
+  parameters.
+- `SPECIFICATION.md:12564-12573` requires instantiations to satisfy bounds.
+- `SPECIFICATION.md:12639-12702` includes bounds in generic call inference and
+  generic-call typing.
+
+Observed bootstrap result:
+
+```text
+./LLVMBootstrap/cursive/build/windows/Release/Cursive.exe build HelloUltraviolet --check --target-profile x86_64-win64 --build-progress off
+
+error[E-SEM-2536]: Method not found for receiver type
+  --> C:/Dev/Ultraviolet/HelloUltraviolet/Source/Reference/Polymorphism/GenericParameters.uv:34:5
+34 |     return value~>classValue()
+```
+
+Bootstrap owner:
+
+- `LLVMBootstrap/cursive/src/04_analysis/generics/where_bounds.cpp`
+- `LLVMBootstrap/cursive/src/04_analysis/typing/expr/method_call.cpp`
+- `LLVMBootstrap/cursive/src/04_analysis/composite/record_methods.cpp`
+
+Failure analysis:
+
+The generic parameter bound is accepted syntactically, but method lookup for a
+generic receiver does not consult the receiver type parameter's class-bound set.
+The checker therefore cannot resolve a class method that is guaranteed by the
+bound.
+
+Required bootstrap behavior:
+
+Method lookup for a type parameter with class bounds must expose the effective
+methods of those bounds when typing the generic declaration body.
+
+## UVBOOT-0038: Generic Record Literal Expected-Type Construction
+
+Status: open.
+
+Spec-valid specimen:
+
+- `Fixtures/BootstrapNonCompliance/Polymorphism/GenericRecordLiteralExpectedType/Source/Main.uv`
+
+Spec obligations exercised:
+
+- `rule.14.DefaultArgs`
+- `rule.14.T-Generic-Type`
+- `rule.16.Parse-Record-Literal`
+- `rule.16.T-Record-Literal`
+
+Spec basis:
+
+- `SPECIFICATION.md:12556-12563` defines default generic arguments.
+- `SPECIFICATION.md:12623-12631` defines generic type use as `TypeApply`.
+- `SPECIFICATION.md:16617-16620` parses record literals as record expressions.
+- `SPECIFICATION.md:16677-16679` types record literals by field set and field
+  type.
+
+Observed bootstrap result:
+
+```text
+./LLVMBootstrap/cursive/build/windows/Release/Cursive.exe build HelloUltraviolet --check --target-profile x86_64-win64 --build-progress off
+
+error[E-MOD-2402]: Type annotation incompatible with inferred type
+  --> C:/Dev/Ultraviolet/HelloUltraviolet/Source/Reference/Polymorphism/GenericParameters.uv:59:5
+59 |     let carrier: GenericCarrier<i32> = GenericCarrier { value: 19, tag: 29 }
+```
+
+Bootstrap owner:
+
+- `LLVMBootstrap/cursive/src/04_analysis/typing/expr/record_literal.cpp`
+- `LLVMBootstrap/cursive/src/04_analysis/typing/stmt/let_stmt.cpp`
+- `LLVMBootstrap/cursive/src/04_analysis/generics/monomorphize.cpp`
+
+Failure analysis:
+
+The parser follows the spec record-literal surface, but the expression checker
+infers the unapplied record type from the literal name and the annotated
+expected type is checked only after expression inference. The expected
+`GenericRecord<i32>` application is therefore not used to instantiate the record
+field types during literal checking.
+
+Required bootstrap behavior:
+
+When a record literal is checked against an expected `TypeApply`, the record
+literal checker must instantiate the record declaration with those type
+arguments before checking field initializers and returning the literal type.
+
+## UVBOOT-0039: Generic Type Application Arity Well-Formedness
+
+Status: repaired.
+
+SPEC-invalid specimen:
+
+- `Fixtures/RejectedSource/Polymorphism/GenericTypeApplyArgCount/Source/Main.uv`
+
+Spec obligation exercised:
+
+- `rule.14.WF-Apply-ArgCount-Err`
+
+Spec basis:
+
+- `SPECIFICATION.md:12697-12708` requires a generic type use to reject when
+  `DefaultArgs(params_gen, args) = bottom`.
+- `SPECIFICATION.md:13975` assigns `E-TYP-2303` to wrong type-argument count.
+
+Observed bootstrap result before repair:
+
+```text
+./LLVMBootstrap/cursive/build/windows/Release/Cursive.exe build HelloUltraviolet/Fixtures/RejectedSource/Polymorphism/GenericTypeApplyArgCount --check --target-profile x86_64-win64 --build-progress off
+
+exit=0
+```
+
+Verified bootstrap result after repair:
+
+```text
+error[E-TYP-2303]: Wrong number of type arguments
+  --> .../GenericTypeApplyArgCount/Source/Main.uv:8:8
+8 | public procedure genericTypeApplyArgCountReference(
+```
+
+Bootstrap repair owner:
+
+- `LLVMBootstrap/cursive/src/04_analysis/typing/type_wf.cpp`
+
+Repair summary:
+
+`LowerType` already preserved generic type arguments as `TypeApply`, but
+`TypeWFImpl` only applied generic arity checks to async and modal-state forms.
+The user-defined `TypeApply` branch now consults `TypeParamsOf`, compares the
+provided count against the required/defaulted range, and reports `E-TYP-2303`.
+The `TypePath` branch also rejects references to generic declarations when the
+source omits required type arguments.
+
+## UVBOOT-0040: Explicit Generic Call Arguments Bypassed in Check Mode
+
+Status: repaired.
+
+SPEC-invalid specimen:
+
+- `Fixtures/RejectedSource/Polymorphism/GenericCallArgCount/Source/Main.uv`
+
+Spec obligation exercised:
+
+- `rule.14.Generic-Call-ArgCount-Err`
+
+Spec basis:
+
+- `SPECIFICATION.md:12692-12695` requires `CallTypeArgs` to reject when
+  `DefaultArgs(params_gen, [A_1, ..., A_k]) = bottom`.
+- `SPECIFICATION.md:13975` assigns `E-TYP-2303` to wrong type-argument count.
+
+Observed bootstrap result before repair:
+
+```text
+./LLVMBootstrap/cursive/build/windows/Release/Cursive.exe build HelloUltraviolet/Fixtures/RejectedSource/Polymorphism/GenericCallArgCount --check --target-profile x86_64-win64 --build-progress off
+
+exit=0
+```
+
+Verified bootstrap result after repair:
+
+```text
+error[E-TYP-2303]: Wrong number of type arguments
+  --> .../GenericCallArgCount/Source/Main.uv:8:5
+8 |     return chooseLeft<
+```
+
+Bootstrap repair owner:
+
+- `LLVMBootstrap/cursive/src/04_analysis/typing/type_infer.cpp`
+- `LLVMBootstrap/cursive/src/04_analysis/typing/expr/call.cpp`
+- `LLVMBootstrap/cursive/src/04_analysis/typing/expr/call_type_args.cpp`
+
+Repair summary:
+
+The resolver lowers `CallTypeArgsExpr` to `CallExpr` with populated
+`generic_args`. Check-mode typing was running generic-call inference for every
+`CallExpr`, including those with explicit `generic_args`, so it inferred
+`<i32, bool>` from the value arguments and ignored the extra explicit `i32`.
+Check mode now uses inference only when the source omitted explicit generic
+arguments, and explicit generic-call arity failures report `E-TYP-2303`.
+
+## UVBOOT-0041: Override Misuse Diagnostic Code Mapping
+
+Status: repaired.
+
+SPEC-invalid specimens:
+
+- `Fixtures/RejectedSource/Polymorphism/OverrideAbstractMethod/Source/Main.uv`
+- `Fixtures/RejectedSource/Polymorphism/OverrideMissingOnDefault/Source/Main.uv`
+
+Spec obligations exercised:
+
+- `rule.14.Override-Abstract-Err`
+- `rule.14.Override-Missing-Err`
+
+Spec basis:
+
+- `SPECIFICATION.md:13107-13112` rejects `override` on implementations of
+  abstract class methods.
+- `SPECIFICATION.md:13122-13126` rejects replacements of concrete default
+  methods that omit `override`.
+- `SPECIFICATION.md:13990-13991` assigns `E-TYP-2501` and `E-TYP-2502`.
+
+Observed bootstrap result before repair:
+
+```text
+error: Static rule failed without assigned diagnostic code: Override-Abstract-Err
+error: Static rule failed without assigned diagnostic code: Override-Missing-Err
+```
+
+Verified bootstrap result after repair:
+
+```text
+error[E-TYP-2501]: `override` used on abstract procedure implementation
+error[E-TYP-2502]: Missing `override` on concrete procedure replacement
+```
+
+Bootstrap repair owner:
+
+- `LLVMBootstrap/cursive/src/04_analysis/typing/item/record_decl.cpp`
+
+Repair summary:
+
+The implementation checker already detected both override misuse rules, but
+returned the static rule ids as diagnostics. The checker now reports the
+concrete spec diagnostic codes `E-TYP-2501` and `E-TYP-2502`.
+
+## UVBOOT-0042: Override Without Concrete Default Diagnostic Code Mapping
+
+Status: repaired.
+
+SPEC-invalid specimen:
+
+- `Fixtures/RejectedSource/Polymorphism/OverrideNoConcrete/Source/Main.uv`
+
+Spec obligation exercised:
+
+- `rule.14.Override-NoConcrete`
+
+Spec basis:
+
+- `SPECIFICATION.md:13129-13133` rejects `override` on an implementing method
+  when no implemented class contributes a concrete default method with that
+  name.
+- `SPECIFICATION.md:14007` assigns `E-UNS-0105` to override with no concrete
+  procedure to override.
+
+Observed bootstrap result before repair:
+
+```text
+error: Static rule failed without assigned diagnostic code: Override-NoConcrete
+  --> .../OverrideNoConcrete/Source/Main.uv:7:10
+```
+
+Verified bootstrap result after repair:
+
+```text
+error[E-UNS-0105]: `override` used with no concrete procedure to override
+  --> .../OverrideNoConcrete/Source/Main.uv:7:10
+```
+
+Bootstrap repair owner:
+
+- `LLVMBootstrap/cursive/src/04_analysis/typing/item/record_decl.cpp`
+
+Repair summary:
+
+The implementation checker already enforced `Override-NoConcrete`, but returned
+the static rule id as the diagnostic. The checker now reports the concrete spec
+diagnostic code `E-UNS-0105`.
+
+## UVBOOT-0043: Foundational Bitcopy Requires Explicit Clone
+
+Status: repaired.
+
+SPEC-invalid specimen:
+
+- `Fixtures/RejectedSource/Polymorphism/BitcopyFieldNonBitcopy/Source/Main.uv`
+
+Spec obligation exercised:
+
+- `diag.14.FoundationalClasses`
+
+Spec basis:
+
+- `SPECIFICATION.md:13876` states that `Bitcopy`, `Clone`, `Drop`, and
+  `FfiSafe` foundational class bounds are interpreted through intrinsic
+  satisfaction judgments.
+- `SPECIFICATION.md:13890-13900` defines `BitcopyTypeCore` for records in
+  terms of all fields satisfying `BitcopyType`.
+- `SPECIFICATION.md:14008` assigns `E-TYP-2622` to a `BitcopyType` with a
+  non-`BitcopyType` field.
+
+Observed bootstrap result before repair:
+
+```text
+error[E-TYP-2503]: Type does not implement required procedure from class or has incompatible signature
+  --> .../BitcopyFieldNonBitcopy/Source/Main.uv:3:10
+```
+
+Verified bootstrap result after repair:
+
+```text
+error[E-TYP-2622]: `BitcopyType` has non-`BitcopyType` field
+  --> .../BitcopyFieldNonBitcopy/Source/Main.uv:3:10
+```
+
+Bootstrap repair owner:
+
+- `LLVMBootstrap/cursive/src/04_analysis/typing/item/record_decl.cpp`
+- `LLVMBootstrap/cursive/src/04_analysis/typing/item/enum_decl.cpp`
+
+Repair summary:
+
+The record and enum implementation-conflict checks required every declaration
+listing `Bitcopy` to also list `Clone`. The SPEC does not require that explicit
+class-list pairing because `CloneType(T)` is discharged intrinsically for
+`BitcopyType(T)`. The checker now allows `:< Bitcopy` without `:< Clone`, and
+the record non-bitcopy-field path reports the concrete `E-TYP-2622` diagnostic.
+
+## UVBOOT-0044: Reserved Capability and Foundational Name Protection
+
+Status: repaired.
+
+SPEC-invalid specimens:
+
+- `Fixtures/RejectedSource/Polymorphism/CapabilityClassNameReserved/Source/Main.uv`
+- `Fixtures/RejectedSource/Polymorphism/FoundationalClassNameReserved/Source/Main.uv`
+
+Spec obligations exercised:
+
+- `req.14.CapabilityClassNamesReserved`
+- `req.14.FoundationalClassesSyntaxAndReservedNames`
+
+Spec basis:
+
+- `SPECIFICATION.md:13765` reserves the built-in capability class names
+  `FileSystem`, `Network`, `HeapAllocator`, `ExecutionDomain`, and `Reactor`.
+- `SPECIFICATION.md:13846` reserves the foundational names `Bitcopy`, `Clone`,
+  `Drop`, `FfiSafe`, `Eq`, `Hasher`, `Hash`, `Iterator`, and `Step`.
+- `SPECIFICATION.md:5750` assigns `E-MOD-1304` to identifier reuse from an
+  enclosing scope, including universe names.
+
+Observed bootstrap results before repair:
+
+```text
+FoundationalClassNameReserved:
+error: Internal error: resolver diagnostic id `Validate-Module-Special-Shadow-Err` mapped to unregistered diagnostic code `E-CNF-0404`.
+
+CapabilityClassNameReserved:
+exit=0
+```
+
+Verified bootstrap results after repair:
+
+```text
+error[E-MOD-1304]: Unresolved module: path prefix did not resolve to a module
+  --> .../FoundationalClassNameReserved/Source/Main.uv:3:8
+
+error[E-MOD-1304]: Unresolved module: path prefix did not resolve to a module
+  --> .../CapabilityClassNameReserved/Source/Main.uv:3:8
+```
+
+Bootstrap repair owner:
+
+- `LLVMBootstrap/cursive/src/04_analysis/resolve/scopes.cpp`
+- `LLVMBootstrap/cursive/src/04_analysis/resolve/resolve_module.cpp`
+
+Repair summary:
+
+`HeapAllocator` and `FileSystem` were missing from the bootstrap's protected
+special-name set even though §14.9 reserves them. The resolver also mapped
+special-name validation to an unregistered `E-CNF-0404` diagnostic. The
+protected special-name set now includes those capability names, and reserved
+primitive, special, and async universe-name validation routes through the
+registered `E-MOD-1304` diagnostic.
+
+Residual diagnostic text note:
+
+The generated `E-MOD-1304` diagnostic text currently comes from the §11.5.7
+module-path row instead of the §7.8 name-reuse row. The fixture validates the
+registered code path; the duplicated diagnostic-code text ownership remains a
+separate diagnostic registry cleanup.

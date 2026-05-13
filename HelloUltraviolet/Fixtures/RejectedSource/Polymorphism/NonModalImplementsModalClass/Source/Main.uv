@@ -1,0 +1,11 @@
+//! Rejected polymorphism specimen for a non-modal type implementing a modal class.
+
+internal class ModalOnlyClass {
+    internal @Ready {
+        value: i32
+    }
+}
+
+internal record NonModalImplementation <: ModalOnlyClass {
+    internal value: i32
+}

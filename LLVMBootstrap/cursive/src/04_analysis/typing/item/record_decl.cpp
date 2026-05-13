@@ -205,7 +205,14 @@ static bool CollectRecordAssociatedTypeBindings(
     std::optional<std::string_view>& diag_id) {
   for (const auto& member : record.members) {
     const auto* assoc = std::get_if<ast::AssociatedTypeDecl>(&member);
-    if (!assoc || !assoc->default_type) {
+    if (!assoc) {
+      continue;
+    }
+    if (!assoc->default_type) {
+      if (!record.implements.empty()) {
+        diag_id = "E-TYP-2503";
+        return false;
+      }
       continue;
     }
     const auto lowered = LowerTypeWithWF(ctx, assoc->default_type);
@@ -332,15 +339,9 @@ static bool CheckImplConflicts(const std::vector<ast::ClassPath>& impls,
 
   const bool has_bitcopy = has_impl("Bitcopy");
   const bool has_drop = has_impl("Drop");
-  const bool has_clone = has_impl("Clone");
 
   if (has_bitcopy && has_drop) {
     diag_id = "E-TYP-2621";
-    return false;
-  }
-
-  if (has_bitcopy && !has_clone) {
-    diag_id = "E-TYP-2503";
     return false;
   }
 
@@ -466,7 +467,7 @@ RecordDeclResult TypeRecordDecl(
   if (!DistinctClassPaths(decl.implements)) {
     SPEC_RULE("Impl-Duplicate-Err");
     result.ok = false;
-    result.diag_id = "Impl-Dup";
+    result.diag_id = "E-TYP-2506";
     return result;
   }
 
@@ -603,7 +604,7 @@ RecordDeclResult TypeRecordDecl(
       if (!BitcopyType(ctx, field_info.type)) {
         SPEC_RULE("Bitcopy-Field-NonBitcopy");
         result.ok = false;
-        result.diag_id = "Bitcopy-Field-NonBitcopy";
+        result.diag_id = "E-TYP-2622";
         return result;
       }
     }
@@ -723,7 +724,7 @@ RecordDeclResult TypeRecordDecl(
       if (!impl_field) {
         SPEC_RULE("Impl-Field-Missing");
         result.ok = false;
-        result.diag_id = "Impl-Field-Missing";
+        result.diag_id = "E-TYP-2402";
         return result;
       }
 
@@ -736,7 +737,7 @@ RecordDeclResult TypeRecordDecl(
       const auto impl_field_type = FieldType(decl, impl_field->name, ctx);
       if (!impl_field_type.has_value()) {
         result.ok = false;
-        result.diag_id = "Impl-Field-Type-Err";
+        result.diag_id = "E-TYP-2404";
         return result;
       }
       const auto class_field_subst =
@@ -745,12 +746,17 @@ RecordDeclResult TypeRecordDecl(
       const auto impl_field_subst =
           SubstSelfType(result.self_type, *impl_field_type,
                         &class_assoc_subst);
-      const auto field_equiv =
-          TypeEquiv(class_field_subst, impl_field_subst);
-      if (!field_equiv.ok || !field_equiv.equiv) {
+      const auto field_subtype =
+          Subtyping(ctx, impl_field_subst, class_field_subst);
+      if (!field_subtype.ok) {
+        result.ok = false;
+        result.diag_id = field_subtype.diag_id;
+        return result;
+      }
+      if (!field_subtype.subtype) {
         SPEC_RULE("Impl-Field-Type-Err");
         result.ok = false;
-        result.diag_id = "Impl-Field-Type-Err";
+        result.diag_id = "E-TYP-2404";
         return result;
       }
     }
@@ -775,7 +781,7 @@ RecordDeclResult TypeRecordDecl(
         if (impl_method->override_flag) {
           SPEC_RULE("Override-Abstract-Err");
           result.ok = false;
-          result.diag_id = "Override-Abstract-Err";
+          result.diag_id = "E-TYP-2501";
           return result;
         }
       } else {
@@ -784,7 +790,7 @@ RecordDeclResult TypeRecordDecl(
         if (impl_method && !impl_method->override_flag) {
           SPEC_RULE("Override-Missing-Err");
           result.ok = false;
-          result.diag_id = "Override-Missing-Err";
+          result.diag_id = "E-TYP-2502";
           return result;
         }
       }
@@ -851,7 +857,7 @@ RecordDeclResult TypeRecordDecl(
         concrete_class_methods.end()) {
       SPEC_RULE("Override-NoConcrete");
       result.ok = false;
-      result.diag_id = "Override-NoConcrete";
+      result.diag_id = "E-UNS-0105";
       return result;
     }
   }

@@ -1,0 +1,8 @@
+//! Rejected polymorphism specimen for a BitcopyType and DropType conflict.
+
+internal record BitcopyDropConflictOwner {
+    internal value: i32
+
+    internal procedure drop(~!) -> () {
+    }
+}

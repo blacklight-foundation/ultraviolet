@@ -510,7 +510,7 @@ static TypeEquivResult TypeEquivImpl(const TypeRef& lhs,
           if (!TypePathEq(node.class_path, other->class_path)) {
             return {true, std::nullopt, false};
           }
-          return {true, std::nullopt, SpanEq(node.origin_span, other->origin_span)};
+          return {true, std::nullopt, true};
         } else if constexpr (std::is_same_v<T, TypeRefine>) {
           const auto* other = std::get_if<TypeRefine>(&rhs->node);
           if (!other) {

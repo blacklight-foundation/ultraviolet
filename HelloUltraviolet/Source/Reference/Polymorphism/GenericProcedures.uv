@@ -1,7 +1,32 @@
 //! Reference specimens for Polymorphism / GenericProcedures.
 
+internal procedure identityGeneric<TValue>(move value: TValue) -> TValue {
+    return move value
+}
+
+internal procedure selectGeneric<TValue; TOther>(
+    move selected: TValue,
+    ignored: TOther
+) -> TValue {
+    return move selected
+}
+
+internal procedure expectedReturnGeneric<TValue>(move value: TValue) -> TValue {
+    return move value
+}
+
 /// Exercises the Polymorphism GenericProcedures reference surface.
 public procedure runPolymorphismGenericProceduresReference() -> bool {
-    let reference: PolymorphismReference = polymorphismReference(4usize, true, false)
+    let explicit_value: i32 = selectGeneric<
+        i32,
+        bool,
+    >(41, true)
+    let inferred_value: i32 = identityGeneric(43)
+    let expected_return_value: i32 = expectedReturnGeneric(47)
+    let reference: PolymorphismReference = polymorphismReference(
+        4usize,
+        explicit_value == 41 && inferred_value == 43 && expected_return_value == 47,
+        false
+    )
     return polymorphismReferenceIsCovered(reference)
 }

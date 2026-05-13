@@ -45,6 +45,14 @@ inline std::optional<std::string> LookupTypecheckDiagCode(std::string_view diag_
   if (diag_id == "LookupMethod-NotFound") {
     return "E-SEM-2536";
   }
+  if (diag_id == "Superclass-Undefined" ||
+      diag_id == "WF-Dynamic-Err" ||
+      diag_id == "WF-Opaque-Err") {
+    return "E-TYP-2509";
+  }
+  if (diag_id == "Dynamic-NonDispatchable") {
+    return "E-TYP-2541";
+  }
   if (diag_id == "Infer-Closure-Params-Err") {
     return "E-SEM-2591";
   }

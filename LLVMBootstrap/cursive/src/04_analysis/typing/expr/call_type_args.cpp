@@ -42,7 +42,14 @@ namespace {
 static inline void SpecDefsCallTypeArgs() {
   SPEC_DEF("T-Generic-Call", "13.1.2");
   SPEC_DEF("CallTypeArgs-Elaboration", "9.4");
+  SPEC_DEF("Generic-Call-ArgCount-Err", "14.2.4");
 }
+
+struct CallTypeArgsSubstResult {
+  bool ok = false;
+  std::optional<std::string_view> diag_id;
+  TypeSubst subst;
+};
 
 static const ast::ASTModule* FindModuleForGenericCall(
     const ScopeContext& ctx,
@@ -67,16 +74,28 @@ static const ast::ProcedureDecl* FindProcedureDecl(
   return nullptr;
 }
 
+static std::size_t RequiredTypeArgCount(
+    const std::vector<ast::TypeParam>& params) {
+  std::size_t count = 0;
+  for (const auto& param : params) {
+    if (!param.default_type) {
+      ++count;
+    }
+  }
+  return count;
+}
+
 }  // namespace
 
-std::optional<TypeSubst> BuildCallTypeArgsSubst(
+static CallTypeArgsSubstResult BuildCallTypeArgsSubstChecked(
     const ScopeContext& ctx,
     const ast::ExprPtr& callee,
     const std::vector<std::shared_ptr<ast::Type>>& type_args) {
   SpecDefsCallTypeArgs();
+  CallTypeArgsSubstResult result;
 
   if (!callee) {
-    return std::nullopt;
+    return result;
   }
 
   std::string name;
@@ -86,7 +105,7 @@ std::optional<TypeSubst> BuildCallTypeArgsSubst(
   if (const auto* ident = std::get_if<ast::IdentifierExpr>(&callee->node)) {
     const auto ent = ResolveValueName(ctx, ident->name);
     if (!ent || !ent->origin_opt) {
-      return std::nullopt;
+      return result;
     }
     origin = ent->origin_opt;
     name = ent->target_opt.value_or(std::string(ident->name));
@@ -94,29 +113,25 @@ std::optional<TypeSubst> BuildCallTypeArgsSubst(
     origin = path_expr->path;
     name = path_expr->name;
   } else {
-    return std::nullopt;
+    return result;
   }
 
   const auto* module = FindModuleForGenericCall(ctx, *origin);
   if (!module) {
-    return std::nullopt;
+    return result;
   }
 
   const auto* proc = FindProcedureDecl(*module, name);
   if (!proc || !proc->generic_params) {
-    return std::nullopt;
+    return result;
   }
 
   const auto& params = proc->generic_params->params;
-  // Generic call defaulting: explicit args may be a prefix when all
-  // remaining parameters provide defaults (C0updated §13.1.2/§13.1.3).
-  if (type_args.size() > params.size()) {
-    return std::nullopt;
-  }
-  for (std::size_t i = type_args.size(); i < params.size(); ++i) {
-    if (!params[i].default_type) {
-      return std::nullopt;
-    }
+  const auto required = RequiredTypeArgCount(params);
+  if (type_args.size() < required || type_args.size() > params.size()) {
+    SPEC_RULE("Generic-Call-ArgCount-Err");
+    result.diag_id = "E-TYP-2303";
+    return result;
   }
 
   // Lower each type argument
@@ -125,13 +140,27 @@ std::optional<TypeSubst> BuildCallTypeArgsSubst(
   for (const auto& arg : type_args) {
     const auto lowered = LowerType(ctx, arg);
     if (!lowered.ok) {
-      return std::nullopt;
+      result.diag_id = lowered.diag_id;
+      return result;
     }
     lowered_args.push_back(lowered.type);
   }
 
   // Build substitution mapping generic parameters to type arguments
-  return BuildSubstitution(params, lowered_args);
+  result.ok = true;
+  result.subst = BuildSubstitution(params, lowered_args);
+  return result;
+}
+
+std::optional<TypeSubst> BuildCallTypeArgsSubst(
+    const ScopeContext& ctx,
+    const ast::ExprPtr& callee,
+    const std::vector<std::shared_ptr<ast::Type>>& type_args) {
+  const auto result = BuildCallTypeArgsSubstChecked(ctx, callee, type_args);
+  if (!result.ok) {
+    return std::nullopt;
+  }
+  return result.subst;
 }
 
 ExprTypeResult TypeCallTypeArgsExprImpl(const ScopeContext& ctx,
@@ -148,10 +177,10 @@ ExprTypeResult TypeCallTypeArgsExprImpl(const ScopeContext& ctx,
   }
 
   // Build substitution from type arguments
-  const auto subst_opt = BuildCallTypeArgsSubst(ctx, expr.callee, expr.type_args);
-  if (!subst_opt.has_value()) {
-    // Keep emitted diagnostic mapped to a concrete error code.
-    result.diag_id = "E-SEM-2533";
+  const auto subst_result =
+      BuildCallTypeArgsSubstChecked(ctx, expr.callee, expr.type_args);
+  if (!subst_result.ok) {
+    result.diag_id = subst_result.diag_id.value_or("E-SEM-2533");
     return result;
   }
 
@@ -184,7 +213,7 @@ ExprTypeResult TypeCallTypeArgsExprImpl(const ScopeContext& ctx,
 
   // Type the call with the type substitution applied
   const auto call = TypeCallWithSubst(ctx, expr.callee, expr.args,
-                                       *subst_opt, type_expr, &type_place,
+                                       subst_result.subst, type_expr, &type_place,
                                        &check_expr);
   if (!call.ok) {
     result.diag_id = call.diag_id;

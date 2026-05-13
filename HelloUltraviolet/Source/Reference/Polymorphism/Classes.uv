@@ -1,7 +1,47 @@
 //! Reference specimens for Polymorphism / Classes.
 
+internal class ClassReadable {
+    internal procedure classValue(~) -> i32 {
+        return 11
+    }
+}
+
+internal class ClassDerived <: ClassReadable {
+    internal procedure derivedValue(~) -> i32 {
+        return 13
+    }
+}
+
+internal class ClassInspectable {
+    internal inspected_value: i32
+
+    internal procedure inspectedValue(~) -> i32 {
+        return 23
+    }
+}
+
+internal class ClassCombined <: ClassDerived + ClassInspectable {
+    internal procedure combinedValue(~) -> i32 {
+        return 17
+    }
+}
+
+internal record ClassOwner <: ClassCombined {
+    internal value: i32
+    internal inspected_value: i32
+}
+
 /// Exercises the Polymorphism Classes reference surface.
 public procedure runPolymorphismClassesReference() -> bool {
-    let reference: PolymorphismReference = polymorphismReference(5usize, true, true)
+    let owner: ClassOwner = ClassOwner { value: 19, inspected_value: 23 }
+    let reference: PolymorphismReference = polymorphismReference(
+        8usize,
+        owner~>classValue() == 11 &&
+            owner~>derivedValue() == 13 &&
+            owner~>combinedValue() == 17 &&
+            owner~>inspectedValue() == 23 &&
+            owner.value == 19,
+        true
+    )
     return polymorphismReferenceIsCovered(reference) && reference.dynamically_dispatchable
 }

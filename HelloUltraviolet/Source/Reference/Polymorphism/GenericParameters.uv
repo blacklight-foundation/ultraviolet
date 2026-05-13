@@ -1,9 +1,31 @@
 //! Reference specimens for Polymorphism / GenericParameters.
 
+internal type GenericAlias<TValue> = TValue
+
+internal record GenericCarrier<TValue; TTag = TValue> {
+    internal value: TValue
+    internal tag: TTag
+}
+
 internal record PolymorphismReference {
     internal feature_count: usize
     internal statically_checked: bool
     internal dynamically_dispatchable: bool
+}
+
+internal procedure defaultedGenericValue<TValue; TMirror = TValue>(
+    move value: TValue,
+    mirror: TMirror
+) -> TValue
+|: Bitcopy(TValue)
+{
+    return move value
+}
+
+internal procedure genericAliasValue<TValue>(move value: TValue) -> GenericAlias<TValue>
+|: Bitcopy(TValue)
+{
+    return move value
 }
 
 internal procedure polymorphismReference(
@@ -26,6 +48,17 @@ internal procedure polymorphismReferenceIsCovered(
 
 /// Exercises the Polymorphism GenericParameters reference surface.
 public procedure runPolymorphismGenericParametersReference() -> bool {
-    let reference: PolymorphismReference = polymorphismReference(3usize, true, false)
+    let defaulted_value: i32 = defaultedGenericValue<i32>(17, 23)
+    let alias_value: i32 = genericAliasValue<i32>(31)
+    let owner: ClassOwner = ClassOwner { value: 37, inspected_value: 41 }
+    let reference: PolymorphismReference =
+        polymorphismReference(
+            5usize,
+            defaulted_value == 17 &&
+                alias_value == 31 &&
+                owner~>classValue() == 11 &&
+                owner.inspected_value == 41,
+            false
+        )
     return polymorphismReferenceIsCovered(reference)
 }

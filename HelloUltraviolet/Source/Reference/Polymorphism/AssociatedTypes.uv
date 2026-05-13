@@ -1,7 +1,27 @@
 //! Reference specimens for Polymorphism / AssociatedTypes.
 
+internal class AssociatedValueClass {
+    internal type Item
+    internal type DefaultItem = i32
+
+    internal procedure associatedDefaultValue(~) -> i32 {
+        return 31
+    }
+}
+
+internal record AssociatedValueOwner <: AssociatedValueClass {
+    internal type Item = i32
+
+    internal value: i32
+}
+
 /// Exercises the Polymorphism AssociatedTypes reference surface.
 public procedure runPolymorphismAssociatedTypesReference() -> bool {
-    let reference: PolymorphismReference = polymorphismReference(2usize, true, false)
+    let owner: AssociatedValueOwner = AssociatedValueOwner { value: 37 }
+    let reference: PolymorphismReference = polymorphismReference(
+        2usize,
+        owner.value == 37 && owner~>associatedDefaultValue() == 31,
+        false
+    )
     return polymorphismReferenceIsCovered(reference)
 }

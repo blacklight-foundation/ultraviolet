@@ -84,6 +84,45 @@ using HelloUltraviolet::Fixtures::RejectedSource::{ behavioralSubtypingLiskovExp
 using HelloUltraviolet::Fixtures::RejectedSource::{ behavioralSubtypingDiagnosticsExpectedDiagnosticFileMatches }
 using HelloUltraviolet::Fixtures::RejectedSource::{ resultGenericConstraintExpectedDiagnosticFileMatches }
 using HelloUltraviolet::Fixtures::RejectedSource::{ methodLookupAmbiguousDefaultExpectedDiagnosticFileMatches }
+using HelloUltraviolet::Fixtures::RejectedSource::{ implementationMissingRequiredFieldExpectedDiagnosticFileMatches }
+using HelloUltraviolet::Fixtures::RejectedSource::{ implementationFieldTypeMismatchExpectedDiagnosticFileMatches }
+using HelloUltraviolet::Fixtures::RejectedSource::{ duplicateClassImplementationRuleExpectedDiagnosticFileMatches }
+using HelloUltraviolet::Fixtures::RejectedSource::{ duplicateClassImplementationRequirementExpectedDiagnosticFileMatches }
+using HelloUltraviolet::Fixtures::RejectedSource::{ nonModalImplementsModalClassExpectedDiagnosticFileMatches }
+using HelloUltraviolet::Fixtures::RejectedSource::{ implementationMissingAbstractMethodExpectedDiagnosticFileMatches }
+using HelloUltraviolet::Fixtures::RejectedSource::{ duplicateAssociatedTypeNameExpectedDiagnosticFileMatches }
+using HelloUltraviolet::Fixtures::RejectedSource::{ associatedTypeMissingBindingExpectedDiagnosticFileMatches }
+using HelloUltraviolet::Fixtures::RejectedSource::{ associatedTypeUnboundMemberExpectedDiagnosticFileMatches }
+using HelloUltraviolet::Fixtures::RejectedSource::{ genericTypeApplyArgCountExpectedDiagnosticFileMatches }
+using HelloUltraviolet::Fixtures::RejectedSource::{ genericPathMissingArgumentsExpectedDiagnosticFileMatches }
+using HelloUltraviolet::Fixtures::RejectedSource::{ genericCallArgCountExpectedDiagnosticFileMatches }
+using HelloUltraviolet::Fixtures::RejectedSource::{ genericClassBoundNonClassExpectedDiagnosticFileMatches }
+using HelloUltraviolet::Fixtures::RejectedSource::{ overrideAbstractMethodExpectedDiagnosticFileMatches }
+using HelloUltraviolet::Fixtures::RejectedSource::{ overrideMissingOnDefaultExpectedDiagnosticFileMatches }
+using HelloUltraviolet::Fixtures::RejectedSource::{ implementationAbstractMethodSignatureMismatchExpectedDiagnosticFileMatches }
+using HelloUltraviolet::Fixtures::RejectedSource::{ implementationDefaultMethodSignatureMismatchExpectedDiagnosticFileMatches }
+using HelloUltraviolet::Fixtures::RejectedSource::{ dynamicUndefinedClassTypeExpectedDiagnosticFileMatches }
+using HelloUltraviolet::Fixtures::RejectedSource::{ dynamicSelfParameterNonDispatchableExpectedDiagnosticFileMatches }
+using HelloUltraviolet::Fixtures::RejectedSource::{ dynamicNonDispatchableRequirementExpectedDiagnosticFileMatches }
+using HelloUltraviolet::Fixtures::RejectedSource::{ dynamicGenericMethodNonDispatchableExpectedDiagnosticFileMatches }
+using HelloUltraviolet::Fixtures::RejectedSource::{ dynamicMissingMethodExpectedDiagnosticFileMatches }
+using HelloUltraviolet::Fixtures::RejectedSource::{ dynamicClassObjectDiagnosticsExpectedDiagnosticFileMatches }
+using HelloUltraviolet::Fixtures::RejectedSource::{ opaqueUndefinedClassTypeExpectedDiagnosticFileMatches }
+using HelloUltraviolet::Fixtures::RejectedSource::{ opaqueMemberNotDefinedExpectedDiagnosticFileMatches }
+using HelloUltraviolet::Fixtures::RejectedSource::{ opaqueReturnMissingImplementationExpectedDiagnosticFileMatches }
+using HelloUltraviolet::Fixtures::RejectedSource::{ bitcopyDropConflictExpectedDiagnosticFileMatches }
+using HelloUltraviolet::Fixtures::RejectedSource::{ bitcopyFieldNonBitcopyExpectedDiagnosticFileMatches }
+using HelloUltraviolet::Fixtures::RejectedSource::{ capabilityClassNameReservedExpectedDiagnosticFileMatches }
+using HelloUltraviolet::Fixtures::RejectedSource::{ foundationalClassNameReservedExpectedDiagnosticFileMatches }
+using HelloUltraviolet::Fixtures::RejectedSource::{ duplicateTypeParameterNameExpectedDiagnosticFileMatches }
+using HelloUltraviolet::Fixtures::RejectedSource::{ duplicateClassProcedureNameExpectedDiagnosticFileMatches }
+using HelloUltraviolet::Fixtures::RejectedSource::{ classMemberNameConflictExpectedDiagnosticFileMatches }
+using HelloUltraviolet::Fixtures::RejectedSource::{ superclassCycleExpectedDiagnosticFileMatches }
+using HelloUltraviolet::Fixtures::RejectedSource::{ overrideNoConcreteExpectedDiagnosticFileMatches }
+using HelloUltraviolet::Fixtures::RejectedSource::{ heapAllocatorRawCallRequiresUnsafeExpectedDiagnosticFileMatches }
+using HelloUltraviolet::Fixtures::RejectedSource::{ heapAllocRawUnsafeExpectedDiagnosticFileMatches }
+using HelloUltraviolet::Fixtures::RejectedSource::{ heapDeallocRawUnsafeExpectedDiagnosticFileMatches }
+using HelloUltraviolet::Fixtures::RejectedSource::{ capabilityClassesDiagnosticsExpectedDiagnosticFileMatches }
 using HelloUltraviolet::Fixtures::RejectedSource::{ callNonFunctionExpectedDiagnosticFileMatches }
 using HelloUltraviolet::Fixtures::RejectedSource::{ indexNonIndexableExpectedDiagnosticFileMatches }
 using HelloUltraviolet::Fixtures::RejectedSource::{ arrayIndexNonConstExpectedDiagnosticFileMatches }
@@ -237,6 +276,8 @@ using HelloUltraviolet::Fixtures::DiagnosticSource::{ unknownCalleeAccessWarning
 using HelloUltraviolet::Fixtures::DiagnosticSource::{ sharedClosureCaptureWarningExpectedDiagnosticFileMatches }
 using HelloUltraviolet::Fixtures::DiagnosticSource::{ nestedReleaseInterleavingWarningExpectedDiagnosticFileMatches }
 using HelloUltraviolet::Fixtures::DiagnosticSource::{ dynamicKeyRuntimeInfoExpectedDiagnosticFileMatches }
+using HelloUltraviolet::Fixtures::DiagnosticSource::{ staleAfterYieldReleaseWarningExpectedDiagnosticFileMatches }
+using HelloUltraviolet::Fixtures::DiagnosticSource::{ staleOkSuppressesReleaseWarningExpectedDiagnosticFileMatches }
 using HelloUltraviolet::Fixtures::RejectedSource::{ speculativeReleaseModeExpectedDiagnosticFileMatches }
 using HelloUltraviolet::Fixtures::RejectedSource::{ orderedDifferentBaseExpectedDiagnosticFileMatches }
 using HelloUltraviolet::Fixtures::RejectedSource::{ nestedReleaseSameModeExpectedDiagnosticFileMatches }
@@ -252,6 +293,7 @@ using HelloUltraviolet::Fixtures::RejectedSource::{ keyEscapePrecedenceExpectedD
 using HelloUltraviolet::Fixtures::RejectedSource::{ conflictDetectionDiagnosticExpectedDiagnosticFileMatches }
 using HelloUltraviolet::Fixtures::RejectedSource::{ memoryOrderingDiagnosticExpectedDiagnosticFileMatches }
 using HelloUltraviolet::Fixtures::RejectedSource::{ escapingClosureSharedLifetimeExpectedDiagnosticFileMatches }
+using HelloUltraviolet::Fixtures::RejectedSource::{ sharedDynamicMutatingReceiverExpectedDiagnosticFileMatches }
 using HelloUltraviolet::Reference::Conformance::{ runConformanceConstructVocabularyReference }
 using HelloUltraviolet::Reference::Conformance::{ runConformanceBehaviorClassificationReference }
 using HelloUltraviolet::Reference::Conformance::{ runConformanceTranslationOrderingReference }
@@ -551,6 +593,16 @@ public procedure runReferenceCorpus(context: Context) -> ReferenceResult {
         context,
         "dynamicKeyRuntimeInfoExpectedDiagnosticFileMatches",
         dynamicKeyRuntimeInfoExpectedDiagnosticFileMatches(context)
+    )
+    passed = passed && recordReferenceResult(
+        context,
+        "staleAfterYieldReleaseWarningExpectedDiagnosticFileMatches",
+        staleAfterYieldReleaseWarningExpectedDiagnosticFileMatches(context)
+    )
+    passed = passed && recordReferenceResult(
+        context,
+        "staleOkSuppressesReleaseWarningExpectedDiagnosticFileMatches",
+        staleOkSuppressesReleaseWarningExpectedDiagnosticFileMatches(context)
     )
     passed = passed && recordReferenceResult(
         context,
@@ -911,6 +963,201 @@ public procedure runReferenceCorpus(context: Context) -> ReferenceResult {
         context,
         "methodLookupAmbiguousDefaultExpectedDiagnosticFileMatches",
         methodLookupAmbiguousDefaultExpectedDiagnosticFileMatches(context)
+    )
+    passed = passed && recordReferenceResult(
+        context,
+        "implementationMissingRequiredFieldExpectedDiagnosticFileMatches",
+        implementationMissingRequiredFieldExpectedDiagnosticFileMatches(context)
+    )
+    passed = passed && recordReferenceResult(
+        context,
+        "implementationFieldTypeMismatchExpectedDiagnosticFileMatches",
+        implementationFieldTypeMismatchExpectedDiagnosticFileMatches(context)
+    )
+    passed = passed && recordReferenceResult(
+        context,
+        "duplicateClassImplementationRuleExpectedDiagnosticFileMatches",
+        duplicateClassImplementationRuleExpectedDiagnosticFileMatches(context)
+    )
+    passed = passed && recordReferenceResult(
+        context,
+        "duplicateClassImplementationRequirementExpectedDiagnosticFileMatches",
+        duplicateClassImplementationRequirementExpectedDiagnosticFileMatches(context)
+    )
+    passed = passed && recordReferenceResult(
+        context,
+        "nonModalImplementsModalClassExpectedDiagnosticFileMatches",
+        nonModalImplementsModalClassExpectedDiagnosticFileMatches(context)
+    )
+    passed = passed && recordReferenceResult(
+        context,
+        "implementationMissingAbstractMethodExpectedDiagnosticFileMatches",
+        implementationMissingAbstractMethodExpectedDiagnosticFileMatches(context)
+    )
+    passed = passed && recordReferenceResult(
+        context,
+        "duplicateAssociatedTypeNameExpectedDiagnosticFileMatches",
+        duplicateAssociatedTypeNameExpectedDiagnosticFileMatches(context)
+    )
+    passed = passed && recordReferenceResult(
+        context,
+        "associatedTypeMissingBindingExpectedDiagnosticFileMatches",
+        associatedTypeMissingBindingExpectedDiagnosticFileMatches(context)
+    )
+    passed = passed && recordReferenceResult(
+        context,
+        "associatedTypeUnboundMemberExpectedDiagnosticFileMatches",
+        associatedTypeUnboundMemberExpectedDiagnosticFileMatches(context)
+    )
+    passed = passed && recordReferenceResult(
+        context,
+        "genericTypeApplyArgCountExpectedDiagnosticFileMatches",
+        genericTypeApplyArgCountExpectedDiagnosticFileMatches(context)
+    )
+    passed = passed && recordReferenceResult(
+        context,
+        "genericPathMissingArgumentsExpectedDiagnosticFileMatches",
+        genericPathMissingArgumentsExpectedDiagnosticFileMatches(context)
+    )
+    passed = passed && recordReferenceResult(
+        context,
+        "genericCallArgCountExpectedDiagnosticFileMatches",
+        genericCallArgCountExpectedDiagnosticFileMatches(context)
+    )
+    passed = passed && recordReferenceResult(
+        context,
+        "genericClassBoundNonClassExpectedDiagnosticFileMatches",
+        genericClassBoundNonClassExpectedDiagnosticFileMatches(context)
+    )
+    passed = passed && recordReferenceResult(
+        context,
+        "overrideAbstractMethodExpectedDiagnosticFileMatches",
+        overrideAbstractMethodExpectedDiagnosticFileMatches(context)
+    )
+    passed = passed && recordReferenceResult(
+        context,
+        "overrideMissingOnDefaultExpectedDiagnosticFileMatches",
+        overrideMissingOnDefaultExpectedDiagnosticFileMatches(context)
+    )
+    passed = passed && recordReferenceResult(
+        context,
+        "implementationAbstractMethodSignatureMismatchExpectedDiagnosticFileMatches",
+        implementationAbstractMethodSignatureMismatchExpectedDiagnosticFileMatches(context)
+    )
+    passed = passed && recordReferenceResult(
+        context,
+        "implementationDefaultMethodSignatureMismatchExpectedDiagnosticFileMatches",
+        implementationDefaultMethodSignatureMismatchExpectedDiagnosticFileMatches(context)
+    )
+    passed = passed && recordReferenceResult(
+        context,
+        "dynamicUndefinedClassTypeExpectedDiagnosticFileMatches",
+        dynamicUndefinedClassTypeExpectedDiagnosticFileMatches(context)
+    )
+    passed = passed && recordReferenceResult(
+        context,
+        "dynamicSelfParameterNonDispatchableExpectedDiagnosticFileMatches",
+        dynamicSelfParameterNonDispatchableExpectedDiagnosticFileMatches(context)
+    )
+    passed = passed && recordReferenceResult(
+        context,
+        "dynamicNonDispatchableRequirementExpectedDiagnosticFileMatches",
+        dynamicNonDispatchableRequirementExpectedDiagnosticFileMatches(context)
+    )
+    passed = passed && recordReferenceResult(
+        context,
+        "dynamicGenericMethodNonDispatchableExpectedDiagnosticFileMatches",
+        dynamicGenericMethodNonDispatchableExpectedDiagnosticFileMatches(context)
+    )
+    passed = passed && recordReferenceResult(
+        context,
+        "dynamicMissingMethodExpectedDiagnosticFileMatches",
+        dynamicMissingMethodExpectedDiagnosticFileMatches(context)
+    )
+    passed = passed && recordReferenceResult(
+        context,
+        "dynamicClassObjectDiagnosticsExpectedDiagnosticFileMatches",
+        dynamicClassObjectDiagnosticsExpectedDiagnosticFileMatches(context)
+    )
+    passed = passed && recordReferenceResult(
+        context,
+        "opaqueUndefinedClassTypeExpectedDiagnosticFileMatches",
+        opaqueUndefinedClassTypeExpectedDiagnosticFileMatches(context)
+    )
+    passed = passed && recordReferenceResult(
+        context,
+        "opaqueMemberNotDefinedExpectedDiagnosticFileMatches",
+        opaqueMemberNotDefinedExpectedDiagnosticFileMatches(context)
+    )
+    passed = passed && recordReferenceResult(
+        context,
+        "opaqueReturnMissingImplementationExpectedDiagnosticFileMatches",
+        opaqueReturnMissingImplementationExpectedDiagnosticFileMatches(context)
+    )
+    passed = passed && recordReferenceResult(
+        context,
+        "bitcopyDropConflictExpectedDiagnosticFileMatches",
+        bitcopyDropConflictExpectedDiagnosticFileMatches(context)
+    )
+    passed = passed && recordReferenceResult(
+        context,
+        "bitcopyFieldNonBitcopyExpectedDiagnosticFileMatches",
+        bitcopyFieldNonBitcopyExpectedDiagnosticFileMatches(context)
+    )
+    passed = passed && recordReferenceResult(
+        context,
+        "capabilityClassNameReservedExpectedDiagnosticFileMatches",
+        capabilityClassNameReservedExpectedDiagnosticFileMatches(context)
+    )
+    passed = passed && recordReferenceResult(
+        context,
+        "foundationalClassNameReservedExpectedDiagnosticFileMatches",
+        foundationalClassNameReservedExpectedDiagnosticFileMatches(context)
+    )
+    passed = passed && recordReferenceResult(
+        context,
+        "duplicateTypeParameterNameExpectedDiagnosticFileMatches",
+        duplicateTypeParameterNameExpectedDiagnosticFileMatches(context)
+    )
+    passed = passed && recordReferenceResult(
+        context,
+        "duplicateClassProcedureNameExpectedDiagnosticFileMatches",
+        duplicateClassProcedureNameExpectedDiagnosticFileMatches(context)
+    )
+    passed = passed && recordReferenceResult(
+        context,
+        "classMemberNameConflictExpectedDiagnosticFileMatches",
+        classMemberNameConflictExpectedDiagnosticFileMatches(context)
+    )
+    passed = passed && recordReferenceResult(
+        context,
+        "superclassCycleExpectedDiagnosticFileMatches",
+        superclassCycleExpectedDiagnosticFileMatches(context)
+    )
+    passed = passed && recordReferenceResult(
+        context,
+        "overrideNoConcreteExpectedDiagnosticFileMatches",
+        overrideNoConcreteExpectedDiagnosticFileMatches(context)
+    )
+    passed = passed && recordReferenceResult(
+        context,
+        "heapAllocatorRawCallRequiresUnsafeExpectedDiagnosticFileMatches",
+        heapAllocatorRawCallRequiresUnsafeExpectedDiagnosticFileMatches(context)
+    )
+    passed = passed && recordReferenceResult(
+        context,
+        "heapAllocRawUnsafeExpectedDiagnosticFileMatches",
+        heapAllocRawUnsafeExpectedDiagnosticFileMatches(context)
+    )
+    passed = passed && recordReferenceResult(
+        context,
+        "heapDeallocRawUnsafeExpectedDiagnosticFileMatches",
+        heapDeallocRawUnsafeExpectedDiagnosticFileMatches(context)
+    )
+    passed = passed && recordReferenceResult(
+        context,
+        "capabilityClassesDiagnosticsExpectedDiagnosticFileMatches",
+        capabilityClassesDiagnosticsExpectedDiagnosticFileMatches(context)
     )
     passed = passed && recordReferenceResult(
         context,
@@ -1714,6 +1961,11 @@ public procedure runReferenceCorpus(context: Context) -> ReferenceResult {
     )
     passed = passed && recordReferenceResult(
         context,
+        "sharedDynamicMutatingReceiverExpectedDiagnosticFileMatches",
+        sharedDynamicMutatingReceiverExpectedDiagnosticFileMatches(context)
+    )
+    passed = passed && recordReferenceResult(
+        context,
         "runConformanceConstructVocabularyReference",
         runConformanceConstructVocabularyReference()
     )
@@ -2090,7 +2342,7 @@ public procedure runReferenceCorpus(context: Context) -> ReferenceResult {
     passed = passed && recordReferenceResult(
         context,
         "runPolymorphismCapabilityClassesReference",
-        runPolymorphismCapabilityClassesReference()
+        runPolymorphismCapabilityClassesReference(context)
     )
     passed = passed && recordReferenceResult(
         context,
@@ -2459,6 +2711,6 @@ public procedure runReferenceCorpus(context: Context) -> ReferenceResult {
     )
     return referenceResult(
         passed,
-        402
+        432
     )
 }

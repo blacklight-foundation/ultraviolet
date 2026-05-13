@@ -1,0 +1,18 @@
+//! Spec-valid class-field access from a concrete class default method currently rejected by the bootstrap checker.
+
+internal class Inspectable {
+    internal inspected_value: i32
+
+    internal procedure inspectedValue(~) -> i32 {
+        return self.inspected_value
+    }
+}
+
+internal record InspectableOwner <: Inspectable {
+    internal inspected_value: i32
+}
+
+public procedure classDefaultMethodFieldAccessReference() -> i32 {
+    let owner: InspectableOwner = InspectableOwner { inspected_value: 7 }
+    return owner~>inspectedValue()
+}

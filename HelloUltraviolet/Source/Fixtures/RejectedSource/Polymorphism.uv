@@ -1,0 +1,673 @@
+//! Rejected polymorphism specimens.
+
+public procedure polymorphismRejectedSourceFixtureCount() -> usize {
+    return 39usize
+}
+
+public procedure validatedPolymorphismRejectedSourceFixtureCount() -> usize {
+    var count: usize = 0usize
+    if rejectedSpecimenMatches(
+        rejectedSpecimen(
+            "ImplementationMissingRequiredField",
+            "Fixtures/RejectedSource/Polymorphism/ImplementationMissingRequiredField",
+            "Fixtures/RejectedSource/Polymorphism/ImplementationMissingRequiredField/Source/Main.uv",
+            "Fixtures/RejectedSource/Polymorphism/ImplementationMissingRequiredField/Expected.uv",
+            expectedDiagnostic("E-TYP-2402", "rule.14.Impl-Field-Missing")
+        ),
+        "ImplementationMissingRequiredField",
+        "Fixtures/RejectedSource/Polymorphism/ImplementationMissingRequiredField",
+        "Fixtures/RejectedSource/Polymorphism/ImplementationMissingRequiredField/Source/Main.uv",
+        "Fixtures/RejectedSource/Polymorphism/ImplementationMissingRequiredField/Expected.uv",
+        "E-TYP-2402",
+        "rule.14.Impl-Field-Missing"
+    ) {
+        count = count + 1usize
+    }
+    if rejectedSpecimenMatches(
+        rejectedSpecimen(
+            "ImplementationFieldTypeMismatch",
+            "Fixtures/RejectedSource/Polymorphism/ImplementationFieldTypeMismatch",
+            "Fixtures/RejectedSource/Polymorphism/ImplementationFieldTypeMismatch/Source/Main.uv",
+            "Fixtures/RejectedSource/Polymorphism/ImplementationFieldTypeMismatch/Expected.uv",
+            expectedDiagnostic("E-TYP-2404", "rule.14.Impl-Field-Type-Err")
+        ),
+        "ImplementationFieldTypeMismatch",
+        "Fixtures/RejectedSource/Polymorphism/ImplementationFieldTypeMismatch",
+        "Fixtures/RejectedSource/Polymorphism/ImplementationFieldTypeMismatch/Source/Main.uv",
+        "Fixtures/RejectedSource/Polymorphism/ImplementationFieldTypeMismatch/Expected.uv",
+        "E-TYP-2404",
+        "rule.14.Impl-Field-Type-Err"
+    ) {
+        count = count + 1usize
+    }
+    if rejectedSpecimenMatches(
+        rejectedSpecimen(
+            "DuplicateClassImplementationRule",
+            "Fixtures/RejectedSource/Polymorphism/DuplicateClassImplementationRule",
+            "Fixtures/RejectedSource/Polymorphism/DuplicateClassImplementationRule/Source/Main.uv",
+            "Fixtures/RejectedSource/Polymorphism/DuplicateClassImplementationRule/Expected.uv",
+            expectedDiagnostic("E-TYP-2506", "rule.14.Impl-Coherence-Err")
+        ),
+        "DuplicateClassImplementationRule",
+        "Fixtures/RejectedSource/Polymorphism/DuplicateClassImplementationRule",
+        "Fixtures/RejectedSource/Polymorphism/DuplicateClassImplementationRule/Source/Main.uv",
+        "Fixtures/RejectedSource/Polymorphism/DuplicateClassImplementationRule/Expected.uv",
+        "E-TYP-2506",
+        "rule.14.Impl-Coherence-Err"
+    ) {
+        count = count + 1usize
+    }
+    if rejectedSpecimenMatches(
+        rejectedSpecimen(
+            "DuplicateClassImplementationRequirement",
+            "Fixtures/RejectedSource/Polymorphism/DuplicateClassImplementationRequirement",
+            "Fixtures/RejectedSource/Polymorphism/DuplicateClassImplementationRequirement/Source/Main.uv",
+            "Fixtures/RejectedSource/Polymorphism/DuplicateClassImplementationRequirement/Expected.uv",
+            expectedDiagnostic("E-TYP-2506", "req.14.DuplicateClassImplementationForbidden")
+        ),
+        "DuplicateClassImplementationRequirement",
+        "Fixtures/RejectedSource/Polymorphism/DuplicateClassImplementationRequirement",
+        "Fixtures/RejectedSource/Polymorphism/DuplicateClassImplementationRequirement/Source/Main.uv",
+        "Fixtures/RejectedSource/Polymorphism/DuplicateClassImplementationRequirement/Expected.uv",
+        "E-TYP-2506",
+        "req.14.DuplicateClassImplementationForbidden"
+    ) {
+        count = count + 1usize
+    }
+    if rejectedSpecimenMatches(
+        rejectedSpecimen(
+            "NonModalImplementsModalClass",
+            "Fixtures/RejectedSource/Polymorphism/NonModalImplementsModalClass",
+            "Fixtures/RejectedSource/Polymorphism/NonModalImplementsModalClass/Source/Main.uv",
+            "Fixtures/RejectedSource/Polymorphism/NonModalImplementsModalClass/Expected.uv",
+            expectedDiagnostic("E-TYP-2401", "req.14.ModalClassImplementationRequiresModalType")
+        ),
+        "NonModalImplementsModalClass",
+        "Fixtures/RejectedSource/Polymorphism/NonModalImplementsModalClass",
+        "Fixtures/RejectedSource/Polymorphism/NonModalImplementsModalClass/Source/Main.uv",
+        "Fixtures/RejectedSource/Polymorphism/NonModalImplementsModalClass/Expected.uv",
+        "E-TYP-2401",
+        "req.14.ModalClassImplementationRequiresModalType"
+    ) {
+        count = count + 1usize
+    }
+    if rejectedSpecimenMatches(
+        rejectedSpecimen(
+            "ImplementationMissingAbstractMethod",
+            "Fixtures/RejectedSource/Polymorphism/ImplementationMissingAbstractMethod",
+            "Fixtures/RejectedSource/Polymorphism/ImplementationMissingAbstractMethod/Source/Main.uv",
+            "Fixtures/RejectedSource/Polymorphism/ImplementationMissingAbstractMethod/Expected.uv",
+            expectedDiagnostic("E-TYP-2503", "diag.14.Implementations")
+        ),
+        "ImplementationMissingAbstractMethod",
+        "Fixtures/RejectedSource/Polymorphism/ImplementationMissingAbstractMethod",
+        "Fixtures/RejectedSource/Polymorphism/ImplementationMissingAbstractMethod/Source/Main.uv",
+        "Fixtures/RejectedSource/Polymorphism/ImplementationMissingAbstractMethod/Expected.uv",
+        "E-TYP-2503",
+        "diag.14.Implementations"
+    ) {
+        count = count + 1usize
+    }
+    if rejectedSpecimenMatches(
+        rejectedSpecimen(
+            "DuplicateAssociatedTypeName",
+            "Fixtures/RejectedSource/Polymorphism/DuplicateAssociatedTypeName",
+            "Fixtures/RejectedSource/Polymorphism/DuplicateAssociatedTypeName/Source/Main.uv",
+            "Fixtures/RejectedSource/Polymorphism/DuplicateAssociatedTypeName/Expected.uv",
+            expectedDiagnostic("E-TYP-2504", "diag.14.AssociatedTypes")
+        ),
+        "DuplicateAssociatedTypeName",
+        "Fixtures/RejectedSource/Polymorphism/DuplicateAssociatedTypeName",
+        "Fixtures/RejectedSource/Polymorphism/DuplicateAssociatedTypeName/Source/Main.uv",
+        "Fixtures/RejectedSource/Polymorphism/DuplicateAssociatedTypeName/Expected.uv",
+        "E-TYP-2504",
+        "diag.14.AssociatedTypes"
+    ) {
+        count = count + 1usize
+    }
+    if rejectedSpecimenMatches(
+        rejectedSpecimen(
+            "AssociatedTypeMissingBinding",
+            "Fixtures/RejectedSource/Polymorphism/AssociatedTypeMissingBinding",
+            "Fixtures/RejectedSource/Polymorphism/AssociatedTypeMissingBinding/Source/Main.uv",
+            "Fixtures/RejectedSource/Polymorphism/AssociatedTypeMissingBinding/Expected.uv",
+            expectedDiagnostic("E-TYP-2503", "req.14.AssociatedTypeAbstractAndDefaultBinding")
+        ),
+        "AssociatedTypeMissingBinding",
+        "Fixtures/RejectedSource/Polymorphism/AssociatedTypeMissingBinding",
+        "Fixtures/RejectedSource/Polymorphism/AssociatedTypeMissingBinding/Source/Main.uv",
+        "Fixtures/RejectedSource/Polymorphism/AssociatedTypeMissingBinding/Expected.uv",
+        "E-TYP-2503",
+        "req.14.AssociatedTypeAbstractAndDefaultBinding"
+    ) {
+        count = count + 1usize
+    }
+    if rejectedSpecimenMatches(
+        rejectedSpecimen(
+            "AssociatedTypeUnboundMember",
+            "Fixtures/RejectedSource/Polymorphism/AssociatedTypeUnboundMember",
+            "Fixtures/RejectedSource/Polymorphism/AssociatedTypeUnboundMember/Source/Main.uv",
+            "Fixtures/RejectedSource/Polymorphism/AssociatedTypeUnboundMember/Expected.uv",
+            expectedDiagnostic("E-TYP-2503", "req.14.ImplementationAssociatedTypeBoundForm")
+        ),
+        "AssociatedTypeUnboundMember",
+        "Fixtures/RejectedSource/Polymorphism/AssociatedTypeUnboundMember",
+        "Fixtures/RejectedSource/Polymorphism/AssociatedTypeUnboundMember/Source/Main.uv",
+        "Fixtures/RejectedSource/Polymorphism/AssociatedTypeUnboundMember/Expected.uv",
+        "E-TYP-2503",
+        "req.14.ImplementationAssociatedTypeBoundForm"
+    ) {
+        count = count + 1usize
+    }
+    if rejectedSpecimenMatches(
+        rejectedSpecimen(
+            "GenericTypeApplyArgCount",
+            "Fixtures/RejectedSource/Polymorphism/GenericTypeApplyArgCount",
+            "Fixtures/RejectedSource/Polymorphism/GenericTypeApplyArgCount/Source/Main.uv",
+            "Fixtures/RejectedSource/Polymorphism/GenericTypeApplyArgCount/Expected.uv",
+            expectedDiagnostic("E-TYP-2303", "rule.14.WF-Apply-ArgCount-Err")
+        ),
+        "GenericTypeApplyArgCount",
+        "Fixtures/RejectedSource/Polymorphism/GenericTypeApplyArgCount",
+        "Fixtures/RejectedSource/Polymorphism/GenericTypeApplyArgCount/Source/Main.uv",
+        "Fixtures/RejectedSource/Polymorphism/GenericTypeApplyArgCount/Expected.uv",
+        "E-TYP-2303",
+        "rule.14.WF-Apply-ArgCount-Err"
+    ) {
+        count = count + 1usize
+    }
+    if rejectedSpecimenMatches(
+        rejectedSpecimen(
+            "GenericPathMissingArguments",
+            "Fixtures/RejectedSource/Polymorphism/GenericPathMissingArguments",
+            "Fixtures/RejectedSource/Polymorphism/GenericPathMissingArguments/Source/Main.uv",
+            "Fixtures/RejectedSource/Polymorphism/GenericPathMissingArguments/Expected.uv",
+            expectedDiagnostic("E-TYP-2303", "rule.14.WF-Path-Generic-Err")
+        ),
+        "GenericPathMissingArguments",
+        "Fixtures/RejectedSource/Polymorphism/GenericPathMissingArguments",
+        "Fixtures/RejectedSource/Polymorphism/GenericPathMissingArguments/Source/Main.uv",
+        "Fixtures/RejectedSource/Polymorphism/GenericPathMissingArguments/Expected.uv",
+        "E-TYP-2303",
+        "rule.14.WF-Path-Generic-Err"
+    ) {
+        count = count + 1usize
+    }
+    if rejectedSpecimenMatches(
+        rejectedSpecimen(
+            "GenericCallArgCount",
+            "Fixtures/RejectedSource/Polymorphism/GenericCallArgCount",
+            "Fixtures/RejectedSource/Polymorphism/GenericCallArgCount/Source/Main.uv",
+            "Fixtures/RejectedSource/Polymorphism/GenericCallArgCount/Expected.uv",
+            expectedDiagnostic("E-TYP-2303", "rule.14.Generic-Call-ArgCount-Err")
+        ),
+        "GenericCallArgCount",
+        "Fixtures/RejectedSource/Polymorphism/GenericCallArgCount",
+        "Fixtures/RejectedSource/Polymorphism/GenericCallArgCount/Source/Main.uv",
+        "Fixtures/RejectedSource/Polymorphism/GenericCallArgCount/Expected.uv",
+        "E-TYP-2303",
+        "rule.14.Generic-Call-ArgCount-Err"
+    ) {
+        count = count + 1usize
+    }
+    if rejectedSpecimenMatches(
+        rejectedSpecimen(
+            "GenericClassBoundNonClass",
+            "Fixtures/RejectedSource/Polymorphism/GenericClassBoundNonClass",
+            "Fixtures/RejectedSource/Polymorphism/GenericClassBoundNonClass/Source/Main.uv",
+            "Fixtures/RejectedSource/Polymorphism/GenericClassBoundNonClass/Expected.uv",
+            expectedDiagnostic("E-TYP-2305", "rule.14.WF-ClassPath-Err")
+        ),
+        "GenericClassBoundNonClass",
+        "Fixtures/RejectedSource/Polymorphism/GenericClassBoundNonClass",
+        "Fixtures/RejectedSource/Polymorphism/GenericClassBoundNonClass/Source/Main.uv",
+        "Fixtures/RejectedSource/Polymorphism/GenericClassBoundNonClass/Expected.uv",
+        "E-TYP-2305",
+        "rule.14.WF-ClassPath-Err"
+    ) {
+        count = count + 1usize
+    }
+    if rejectedSpecimenMatches(
+        rejectedSpecimen(
+            "OverrideAbstractMethod",
+            "Fixtures/RejectedSource/Polymorphism/OverrideAbstractMethod",
+            "Fixtures/RejectedSource/Polymorphism/OverrideAbstractMethod/Source/Main.uv",
+            "Fixtures/RejectedSource/Polymorphism/OverrideAbstractMethod/Expected.uv",
+            expectedDiagnostic("E-TYP-2501", "rule.14.Override-Abstract-Err")
+        ),
+        "OverrideAbstractMethod",
+        "Fixtures/RejectedSource/Polymorphism/OverrideAbstractMethod",
+        "Fixtures/RejectedSource/Polymorphism/OverrideAbstractMethod/Source/Main.uv",
+        "Fixtures/RejectedSource/Polymorphism/OverrideAbstractMethod/Expected.uv",
+        "E-TYP-2501",
+        "rule.14.Override-Abstract-Err"
+    ) {
+        count = count + 1usize
+    }
+    if rejectedSpecimenMatches(
+        rejectedSpecimen(
+            "OverrideMissingOnDefault",
+            "Fixtures/RejectedSource/Polymorphism/OverrideMissingOnDefault",
+            "Fixtures/RejectedSource/Polymorphism/OverrideMissingOnDefault/Source/Main.uv",
+            "Fixtures/RejectedSource/Polymorphism/OverrideMissingOnDefault/Expected.uv",
+            expectedDiagnostic("E-TYP-2502", "rule.14.Override-Missing-Err")
+        ),
+        "OverrideMissingOnDefault",
+        "Fixtures/RejectedSource/Polymorphism/OverrideMissingOnDefault",
+        "Fixtures/RejectedSource/Polymorphism/OverrideMissingOnDefault/Source/Main.uv",
+        "Fixtures/RejectedSource/Polymorphism/OverrideMissingOnDefault/Expected.uv",
+        "E-TYP-2502",
+        "rule.14.Override-Missing-Err"
+    ) {
+        count = count + 1usize
+    }
+    if rejectedSpecimenMatches(
+        rejectedSpecimen(
+            "ImplementationAbstractMethodSignatureMismatch",
+            "Fixtures/RejectedSource/Polymorphism/ImplementationAbstractMethodSignatureMismatch",
+            "Fixtures/RejectedSource/Polymorphism/ImplementationAbstractMethodSignatureMismatch/Source/Main.uv",
+            "Fixtures/RejectedSource/Polymorphism/ImplementationAbstractMethodSignatureMismatch/Expected.uv",
+            expectedDiagnostic("E-TYP-2503", "rule.14.Impl-Sig-Err")
+        ),
+        "ImplementationAbstractMethodSignatureMismatch",
+        "Fixtures/RejectedSource/Polymorphism/ImplementationAbstractMethodSignatureMismatch",
+        "Fixtures/RejectedSource/Polymorphism/ImplementationAbstractMethodSignatureMismatch/Source/Main.uv",
+        "Fixtures/RejectedSource/Polymorphism/ImplementationAbstractMethodSignatureMismatch/Expected.uv",
+        "E-TYP-2503",
+        "rule.14.Impl-Sig-Err"
+    ) {
+        count = count + 1usize
+    }
+    if rejectedSpecimenMatches(
+        rejectedSpecimen(
+            "ImplementationDefaultMethodSignatureMismatch",
+            "Fixtures/RejectedSource/Polymorphism/ImplementationDefaultMethodSignatureMismatch",
+            "Fixtures/RejectedSource/Polymorphism/ImplementationDefaultMethodSignatureMismatch/Source/Main.uv",
+            "Fixtures/RejectedSource/Polymorphism/ImplementationDefaultMethodSignatureMismatch/Expected.uv",
+            expectedDiagnostic("E-TYP-2503", "rule.14.Impl-Sig-Err-Concrete")
+        ),
+        "ImplementationDefaultMethodSignatureMismatch",
+        "Fixtures/RejectedSource/Polymorphism/ImplementationDefaultMethodSignatureMismatch",
+        "Fixtures/RejectedSource/Polymorphism/ImplementationDefaultMethodSignatureMismatch/Source/Main.uv",
+        "Fixtures/RejectedSource/Polymorphism/ImplementationDefaultMethodSignatureMismatch/Expected.uv",
+        "E-TYP-2503",
+        "rule.14.Impl-Sig-Err-Concrete"
+    ) {
+        count = count + 1usize
+    }
+    if rejectedSpecimenMatches(
+        rejectedSpecimen(
+            "DynamicUndefinedClassType",
+            "Fixtures/RejectedSource/Polymorphism/DynamicUndefinedClassType",
+            "Fixtures/RejectedSource/Polymorphism/DynamicUndefinedClassType/Source/Main.uv",
+            "Fixtures/RejectedSource/Polymorphism/DynamicUndefinedClassType/Expected.uv",
+            expectedDiagnostic("E-TYP-2509", "rule.14.WF-Dynamic-Err")
+        ),
+        "DynamicUndefinedClassType",
+        "Fixtures/RejectedSource/Polymorphism/DynamicUndefinedClassType",
+        "Fixtures/RejectedSource/Polymorphism/DynamicUndefinedClassType/Source/Main.uv",
+        "Fixtures/RejectedSource/Polymorphism/DynamicUndefinedClassType/Expected.uv",
+        "E-TYP-2509",
+        "rule.14.WF-Dynamic-Err"
+    ) {
+        count = count + 1usize
+    }
+    if rejectedSpecimenMatches(
+        rejectedSpecimen(
+            "DynamicSelfParameterNonDispatchable",
+            "Fixtures/RejectedSource/Polymorphism/DynamicSelfParameterNonDispatchable",
+            "Fixtures/RejectedSource/Polymorphism/DynamicSelfParameterNonDispatchable/Source/Main.uv",
+            "Fixtures/RejectedSource/Polymorphism/DynamicSelfParameterNonDispatchable/Expected.uv",
+            expectedDiagnostic("E-TYP-2541", "rule.14.Dynamic-NonDispatchable")
+        ),
+        "DynamicSelfParameterNonDispatchable",
+        "Fixtures/RejectedSource/Polymorphism/DynamicSelfParameterNonDispatchable",
+        "Fixtures/RejectedSource/Polymorphism/DynamicSelfParameterNonDispatchable/Source/Main.uv",
+        "Fixtures/RejectedSource/Polymorphism/DynamicSelfParameterNonDispatchable/Expected.uv",
+        "E-TYP-2541",
+        "rule.14.Dynamic-NonDispatchable"
+    ) {
+        count = count + 1usize
+    }
+    if rejectedSpecimenMatches(
+        rejectedSpecimen(
+            "DynamicNonDispatchableRequirement",
+            "Fixtures/RejectedSource/Polymorphism/DynamicNonDispatchableRequirement",
+            "Fixtures/RejectedSource/Polymorphism/DynamicNonDispatchableRequirement/Source/Main.uv",
+            "Fixtures/RejectedSource/Polymorphism/DynamicNonDispatchableRequirement/Expected.uv",
+            expectedDiagnostic("E-TYP-2541", "req.14.DynamicDispatchDispatchableClassesOnly")
+        ),
+        "DynamicNonDispatchableRequirement",
+        "Fixtures/RejectedSource/Polymorphism/DynamicNonDispatchableRequirement",
+        "Fixtures/RejectedSource/Polymorphism/DynamicNonDispatchableRequirement/Source/Main.uv",
+        "Fixtures/RejectedSource/Polymorphism/DynamicNonDispatchableRequirement/Expected.uv",
+        "E-TYP-2541",
+        "req.14.DynamicDispatchDispatchableClassesOnly"
+    ) {
+        count = count + 1usize
+    }
+    if rejectedSpecimenMatches(
+        rejectedSpecimen(
+            "DynamicGenericMethodNonDispatchable",
+            "Fixtures/RejectedSource/Polymorphism/DynamicGenericMethodNonDispatchable",
+            "Fixtures/RejectedSource/Polymorphism/DynamicGenericMethodNonDispatchable/Source/Main.uv",
+            "Fixtures/RejectedSource/Polymorphism/DynamicGenericMethodNonDispatchable/Expected.uv",
+            expectedDiagnostic("E-TYP-2542", "def.14.DynamicDispatchEligibility")
+        ),
+        "DynamicGenericMethodNonDispatchable",
+        "Fixtures/RejectedSource/Polymorphism/DynamicGenericMethodNonDispatchable",
+        "Fixtures/RejectedSource/Polymorphism/DynamicGenericMethodNonDispatchable/Source/Main.uv",
+        "Fixtures/RejectedSource/Polymorphism/DynamicGenericMethodNonDispatchable/Expected.uv",
+        "E-TYP-2542",
+        "def.14.DynamicDispatchEligibility"
+    ) {
+        count = count + 1usize
+    }
+    if rejectedSpecimenMatches(
+        rejectedSpecimen(
+            "DynamicMissingMethod",
+            "Fixtures/RejectedSource/Polymorphism/DynamicMissingMethod",
+            "Fixtures/RejectedSource/Polymorphism/DynamicMissingMethod/Source/Main.uv",
+            "Fixtures/RejectedSource/Polymorphism/DynamicMissingMethod/Expected.uv",
+            expectedDiagnostic("E-SEM-2536", "rule.14.LookupClassMethod-NotFound")
+        ),
+        "DynamicMissingMethod",
+        "Fixtures/RejectedSource/Polymorphism/DynamicMissingMethod",
+        "Fixtures/RejectedSource/Polymorphism/DynamicMissingMethod/Source/Main.uv",
+        "Fixtures/RejectedSource/Polymorphism/DynamicMissingMethod/Expected.uv",
+        "E-SEM-2536",
+        "rule.14.LookupClassMethod-NotFound"
+    ) {
+        count = count + 1usize
+    }
+    if rejectedSpecimenMatches(
+        rejectedSpecimen(
+            "DynamicClassObjectDiagnostics",
+            "Fixtures/RejectedSource/Polymorphism/DynamicClassObjectDiagnostics",
+            "Fixtures/RejectedSource/Polymorphism/DynamicClassObjectDiagnostics/Source/Main.uv",
+            "Fixtures/RejectedSource/Polymorphism/DynamicClassObjectDiagnostics/Expected.uv",
+            expectedDiagnostic("E-TYP-2541", "diag.14.DynamicClassObjects")
+        ),
+        "DynamicClassObjectDiagnostics",
+        "Fixtures/RejectedSource/Polymorphism/DynamicClassObjectDiagnostics",
+        "Fixtures/RejectedSource/Polymorphism/DynamicClassObjectDiagnostics/Source/Main.uv",
+        "Fixtures/RejectedSource/Polymorphism/DynamicClassObjectDiagnostics/Expected.uv",
+        "E-TYP-2541",
+        "diag.14.DynamicClassObjects"
+    ) {
+        count = count + 1usize
+    }
+    if rejectedSpecimenMatches(
+        rejectedSpecimen(
+            "OpaqueUndefinedClassType",
+            "Fixtures/RejectedSource/Polymorphism/OpaqueUndefinedClassType",
+            "Fixtures/RejectedSource/Polymorphism/OpaqueUndefinedClassType/Source/Main.uv",
+            "Fixtures/RejectedSource/Polymorphism/OpaqueUndefinedClassType/Expected.uv",
+            expectedDiagnostic("E-TYP-2509", "rule.14.WF-Opaque-Err")
+        ),
+        "OpaqueUndefinedClassType",
+        "Fixtures/RejectedSource/Polymorphism/OpaqueUndefinedClassType",
+        "Fixtures/RejectedSource/Polymorphism/OpaqueUndefinedClassType/Source/Main.uv",
+        "Fixtures/RejectedSource/Polymorphism/OpaqueUndefinedClassType/Expected.uv",
+        "E-TYP-2509",
+        "rule.14.WF-Opaque-Err"
+    ) {
+        count = count + 1usize
+    }
+    if rejectedSpecimenMatches(
+        rejectedSpecimen(
+            "OpaqueMemberNotDefined",
+            "Fixtures/RejectedSource/Polymorphism/OpaqueMemberNotDefined",
+            "Fixtures/RejectedSource/Polymorphism/OpaqueMemberNotDefined/Source/Main.uv",
+            "Fixtures/RejectedSource/Polymorphism/OpaqueMemberNotDefined/Expected.uv",
+            expectedDiagnostic("E-TYP-2510", "req.14.OpaqueEquivalenceAndInterfaceExposure")
+        ),
+        "OpaqueMemberNotDefined",
+        "Fixtures/RejectedSource/Polymorphism/OpaqueMemberNotDefined",
+        "Fixtures/RejectedSource/Polymorphism/OpaqueMemberNotDefined/Source/Main.uv",
+        "Fixtures/RejectedSource/Polymorphism/OpaqueMemberNotDefined/Expected.uv",
+        "E-TYP-2510",
+        "req.14.OpaqueEquivalenceAndInterfaceExposure"
+    ) {
+        count = count + 1usize
+    }
+    if rejectedSpecimenMatches(
+        rejectedSpecimen(
+            "OpaqueReturnMissingImplementation",
+            "Fixtures/RejectedSource/Polymorphism/OpaqueReturnMissingImplementation",
+            "Fixtures/RejectedSource/Polymorphism/OpaqueReturnMissingImplementation/Source/Main.uv",
+            "Fixtures/RejectedSource/Polymorphism/OpaqueReturnMissingImplementation/Expected.uv",
+            expectedDiagnostic("E-TYP-2511", "diag.14.OpaqueTypes")
+        ),
+        "OpaqueReturnMissingImplementation",
+        "Fixtures/RejectedSource/Polymorphism/OpaqueReturnMissingImplementation",
+        "Fixtures/RejectedSource/Polymorphism/OpaqueReturnMissingImplementation/Source/Main.uv",
+        "Fixtures/RejectedSource/Polymorphism/OpaqueReturnMissingImplementation/Expected.uv",
+        "E-TYP-2511",
+        "diag.14.OpaqueTypes"
+    ) {
+        count = count + 1usize
+    }
+    if rejectedSpecimenMatches(
+        rejectedSpecimen(
+            "BitcopyDropConflict",
+            "Fixtures/RejectedSource/Polymorphism/BitcopyDropConflict",
+            "Fixtures/RejectedSource/Polymorphism/BitcopyDropConflict/Source/Main.uv",
+            "Fixtures/RejectedSource/Polymorphism/BitcopyDropConflict/Expected.uv",
+            expectedDiagnostic("E-TYP-2621", "rule.14.BitcopyDrop-Conflict")
+        ),
+        "BitcopyDropConflict",
+        "Fixtures/RejectedSource/Polymorphism/BitcopyDropConflict",
+        "Fixtures/RejectedSource/Polymorphism/BitcopyDropConflict/Source/Main.uv",
+        "Fixtures/RejectedSource/Polymorphism/BitcopyDropConflict/Expected.uv",
+        "E-TYP-2621",
+        "rule.14.BitcopyDrop-Conflict"
+    ) {
+        count = count + 1usize
+    }
+    if rejectedSpecimenMatches(
+        rejectedSpecimen(
+            "BitcopyFieldNonBitcopy",
+            "Fixtures/RejectedSource/Polymorphism/BitcopyFieldNonBitcopy",
+            "Fixtures/RejectedSource/Polymorphism/BitcopyFieldNonBitcopy/Source/Main.uv",
+            "Fixtures/RejectedSource/Polymorphism/BitcopyFieldNonBitcopy/Expected.uv",
+            expectedDiagnostic("E-TYP-2622", "diag.14.FoundationalClasses")
+        ),
+        "BitcopyFieldNonBitcopy",
+        "Fixtures/RejectedSource/Polymorphism/BitcopyFieldNonBitcopy",
+        "Fixtures/RejectedSource/Polymorphism/BitcopyFieldNonBitcopy/Source/Main.uv",
+        "Fixtures/RejectedSource/Polymorphism/BitcopyFieldNonBitcopy/Expected.uv",
+        "E-TYP-2622",
+        "diag.14.FoundationalClasses"
+    ) {
+        count = count + 1usize
+    }
+    if rejectedSpecimenMatches(
+        rejectedSpecimen(
+            "CapabilityClassNameReserved",
+            "Fixtures/RejectedSource/Polymorphism/CapabilityClassNameReserved",
+            "Fixtures/RejectedSource/Polymorphism/CapabilityClassNameReserved/Source/Main.uv",
+            "Fixtures/RejectedSource/Polymorphism/CapabilityClassNameReserved/Expected.uv",
+            expectedDiagnostic("E-MOD-1304", "req.14.CapabilityClassNamesReserved")
+        ),
+        "CapabilityClassNameReserved",
+        "Fixtures/RejectedSource/Polymorphism/CapabilityClassNameReserved",
+        "Fixtures/RejectedSource/Polymorphism/CapabilityClassNameReserved/Source/Main.uv",
+        "Fixtures/RejectedSource/Polymorphism/CapabilityClassNameReserved/Expected.uv",
+        "E-MOD-1304",
+        "req.14.CapabilityClassNamesReserved"
+    ) {
+        count = count + 1usize
+    }
+    if rejectedSpecimenMatches(
+        rejectedSpecimen(
+            "FoundationalClassNameReserved",
+            "Fixtures/RejectedSource/Polymorphism/FoundationalClassNameReserved",
+            "Fixtures/RejectedSource/Polymorphism/FoundationalClassNameReserved/Source/Main.uv",
+            "Fixtures/RejectedSource/Polymorphism/FoundationalClassNameReserved/Expected.uv",
+            expectedDiagnostic("E-MOD-1304", "req.14.FoundationalClassesSyntaxAndReservedNames")
+        ),
+        "FoundationalClassNameReserved",
+        "Fixtures/RejectedSource/Polymorphism/FoundationalClassNameReserved",
+        "Fixtures/RejectedSource/Polymorphism/FoundationalClassNameReserved/Source/Main.uv",
+        "Fixtures/RejectedSource/Polymorphism/FoundationalClassNameReserved/Expected.uv",
+        "E-MOD-1304",
+        "req.14.FoundationalClassesSyntaxAndReservedNames"
+    ) {
+        count = count + 1usize
+    }
+    if rejectedSpecimenMatches(
+        rejectedSpecimen(
+            "DuplicateTypeParameterName",
+            "Fixtures/RejectedSource/Polymorphism/DuplicateTypeParameterName",
+            "Fixtures/RejectedSource/Polymorphism/DuplicateTypeParameterName/Source/Main.uv",
+            "Fixtures/RejectedSource/Polymorphism/DuplicateTypeParameterName/Expected.uv",
+            expectedDiagnostic("E-TYP-2304", "rule.14.WF-Generic-Param")
+        ),
+        "DuplicateTypeParameterName",
+        "Fixtures/RejectedSource/Polymorphism/DuplicateTypeParameterName",
+        "Fixtures/RejectedSource/Polymorphism/DuplicateTypeParameterName/Source/Main.uv",
+        "Fixtures/RejectedSource/Polymorphism/DuplicateTypeParameterName/Expected.uv",
+        "E-TYP-2304",
+        "rule.14.WF-Generic-Param"
+    ) {
+        count = count + 1usize
+    }
+    if rejectedSpecimenMatches(
+        rejectedSpecimen(
+            "DuplicateClassProcedureName",
+            "Fixtures/RejectedSource/Polymorphism/DuplicateClassProcedureName",
+            "Fixtures/RejectedSource/Polymorphism/DuplicateClassProcedureName/Source/Main.uv",
+            "Fixtures/RejectedSource/Polymorphism/DuplicateClassProcedureName/Expected.uv",
+            expectedDiagnostic("E-TYP-2500", "rule.14.WF-Class")
+        ),
+        "DuplicateClassProcedureName",
+        "Fixtures/RejectedSource/Polymorphism/DuplicateClassProcedureName",
+        "Fixtures/RejectedSource/Polymorphism/DuplicateClassProcedureName/Source/Main.uv",
+        "Fixtures/RejectedSource/Polymorphism/DuplicateClassProcedureName/Expected.uv",
+        "E-TYP-2500",
+        "rule.14.WF-Class"
+    ) {
+        count = count + 1usize
+    }
+    if rejectedSpecimenMatches(
+        rejectedSpecimen(
+            "ClassMemberNameConflict",
+            "Fixtures/RejectedSource/Polymorphism/ClassMemberNameConflict",
+            "Fixtures/RejectedSource/Polymorphism/ClassMemberNameConflict/Source/Main.uv",
+            "Fixtures/RejectedSource/Polymorphism/ClassMemberNameConflict/Expected.uv",
+            expectedDiagnostic("E-TYP-2505", "diag.Classes")
+        ),
+        "ClassMemberNameConflict",
+        "Fixtures/RejectedSource/Polymorphism/ClassMemberNameConflict",
+        "Fixtures/RejectedSource/Polymorphism/ClassMemberNameConflict/Source/Main.uv",
+        "Fixtures/RejectedSource/Polymorphism/ClassMemberNameConflict/Expected.uv",
+        "E-TYP-2505",
+        "diag.Classes"
+    ) {
+        count = count + 1usize
+    }
+    if rejectedSpecimenMatches(
+        rejectedSpecimen(
+            "SuperclassCycle",
+            "Fixtures/RejectedSource/Polymorphism/SuperclassCycle",
+            "Fixtures/RejectedSource/Polymorphism/SuperclassCycle/Source/Main.uv",
+            "Fixtures/RejectedSource/Polymorphism/SuperclassCycle/Expected.uv",
+            expectedDiagnostic("E-TYP-2508", "rule.14.Superclass-Cycle")
+        ),
+        "SuperclassCycle",
+        "Fixtures/RejectedSource/Polymorphism/SuperclassCycle",
+        "Fixtures/RejectedSource/Polymorphism/SuperclassCycle/Source/Main.uv",
+        "Fixtures/RejectedSource/Polymorphism/SuperclassCycle/Expected.uv",
+        "E-TYP-2508",
+        "rule.14.Superclass-Cycle"
+    ) {
+        count = count + 1usize
+    }
+    if rejectedSpecimenMatches(
+        rejectedSpecimen(
+            "OverrideNoConcrete",
+            "Fixtures/RejectedSource/Polymorphism/OverrideNoConcrete",
+            "Fixtures/RejectedSource/Polymorphism/OverrideNoConcrete/Source/Main.uv",
+            "Fixtures/RejectedSource/Polymorphism/OverrideNoConcrete/Expected.uv",
+            expectedDiagnostic("E-UNS-0105", "rule.14.Override-NoConcrete")
+        ),
+        "OverrideNoConcrete",
+        "Fixtures/RejectedSource/Polymorphism/OverrideNoConcrete",
+        "Fixtures/RejectedSource/Polymorphism/OverrideNoConcrete/Source/Main.uv",
+        "Fixtures/RejectedSource/Polymorphism/OverrideNoConcrete/Expected.uv",
+        "E-UNS-0105",
+        "rule.14.Override-NoConcrete"
+    ) {
+        count = count + 1usize
+    }
+    if rejectedSpecimenMatches(
+        rejectedSpecimen(
+            "HeapAllocatorRawCallRequiresUnsafe",
+            "Fixtures/RejectedSource/Polymorphism/HeapAllocatorRawCallRequiresUnsafe",
+            "Fixtures/RejectedSource/Polymorphism/HeapAllocatorRawCallRequiresUnsafe/Source/Main.uv",
+            "Fixtures/RejectedSource/Polymorphism/HeapAllocatorRawCallRequiresUnsafe/Expected.uv",
+            expectedDiagnostic("E-MEM-3030", "req.14.HeapAllocatorRawCallsRequireUnsafe")
+        ),
+        "HeapAllocatorRawCallRequiresUnsafe",
+        "Fixtures/RejectedSource/Polymorphism/HeapAllocatorRawCallRequiresUnsafe",
+        "Fixtures/RejectedSource/Polymorphism/HeapAllocatorRawCallRequiresUnsafe/Source/Main.uv",
+        "Fixtures/RejectedSource/Polymorphism/HeapAllocatorRawCallRequiresUnsafe/Expected.uv",
+        "E-MEM-3030",
+        "req.14.HeapAllocatorRawCallsRequireUnsafe"
+    ) {
+        count = count + 1usize
+    }
+    if rejectedSpecimenMatches(
+        rejectedSpecimen(
+            "HeapAllocRawUnsafe",
+            "Fixtures/RejectedSource/Polymorphism/HeapAllocRawUnsafe",
+            "Fixtures/RejectedSource/Polymorphism/HeapAllocRawUnsafe/Source/Main.uv",
+            "Fixtures/RejectedSource/Polymorphism/HeapAllocRawUnsafe/Expected.uv",
+            expectedDiagnostic("E-MEM-3030", "rule.14.AllocRaw-Unsafe-Err")
+        ),
+        "HeapAllocRawUnsafe",
+        "Fixtures/RejectedSource/Polymorphism/HeapAllocRawUnsafe",
+        "Fixtures/RejectedSource/Polymorphism/HeapAllocRawUnsafe/Source/Main.uv",
+        "Fixtures/RejectedSource/Polymorphism/HeapAllocRawUnsafe/Expected.uv",
+        "E-MEM-3030",
+        "rule.14.AllocRaw-Unsafe-Err"
+    ) {
+        count = count + 1usize
+    }
+    if rejectedSpecimenMatches(
+        rejectedSpecimen(
+            "HeapDeallocRawUnsafe",
+            "Fixtures/RejectedSource/Polymorphism/HeapDeallocRawUnsafe",
+            "Fixtures/RejectedSource/Polymorphism/HeapDeallocRawUnsafe/Source/Main.uv",
+            "Fixtures/RejectedSource/Polymorphism/HeapDeallocRawUnsafe/Expected.uv",
+            expectedDiagnostic("E-MEM-3030", "rule.14.DeallocRaw-Unsafe-Err")
+        ),
+        "HeapDeallocRawUnsafe",
+        "Fixtures/RejectedSource/Polymorphism/HeapDeallocRawUnsafe",
+        "Fixtures/RejectedSource/Polymorphism/HeapDeallocRawUnsafe/Source/Main.uv",
+        "Fixtures/RejectedSource/Polymorphism/HeapDeallocRawUnsafe/Expected.uv",
+        "E-MEM-3030",
+        "rule.14.DeallocRaw-Unsafe-Err"
+    ) {
+        count = count + 1usize
+    }
+    if rejectedSpecimenMatches(
+        rejectedSpecimen(
+            "CapabilityClassesDiagnostics",
+            "Fixtures/RejectedSource/Polymorphism/CapabilityClassesDiagnostics",
+            "Fixtures/RejectedSource/Polymorphism/CapabilityClassesDiagnostics/Source/Main.uv",
+            "Fixtures/RejectedSource/Polymorphism/CapabilityClassesDiagnostics/Expected.uv",
+            expectedDiagnostic("E-MEM-3030", "diag.14.CapabilityClasses")
+        ),
+        "CapabilityClassesDiagnostics",
+        "Fixtures/RejectedSource/Polymorphism/CapabilityClassesDiagnostics",
+        "Fixtures/RejectedSource/Polymorphism/CapabilityClassesDiagnostics/Source/Main.uv",
+        "Fixtures/RejectedSource/Polymorphism/CapabilityClassesDiagnostics/Expected.uv",
+        "E-MEM-3030",
+        "diag.14.CapabilityClasses"
+    ) {
+        count = count + 1usize
+    }
+    return count
+}

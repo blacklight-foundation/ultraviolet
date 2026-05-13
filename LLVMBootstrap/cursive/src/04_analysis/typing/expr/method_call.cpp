@@ -1876,7 +1876,7 @@ ExprTypeResult TypeMethodCallExprImpl(const ScopeContext& ctx,
                      opaque->origin_span.end_col);
       }
       SPEC_RULE("LookupMethod-NotFound");
-      result.diag_id = "LookupMethod-NotFound";
+      result.diag_id = "E-TYP-2510";
       result.diag_detail = "method '" + std::string(expr.name) +
                            "' on type '" + TypeToString(lookup_base) + "'";
       return result;

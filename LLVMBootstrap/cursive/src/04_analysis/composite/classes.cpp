@@ -687,7 +687,35 @@ static bool SelfOccurs(const ast::ClassMethodDecl& method) {
 }
 
 static bool VtableEligibleInternal(const ast::ClassMethodDecl& method) {
+  if (method.generic_params && !method.generic_params->params.empty()) {
+    return false;
+  }
   return !SelfOccurs(method);
+}
+
+static std::optional<std::string_view> ClassDispatchabilityDiagnosticInOrder(
+    const ScopeContext& ctx,
+    const ast::ClassPath& path) {
+  const auto lin = LinearizeClass(ctx, path);
+  if (!lin.ok) {
+    return lin.diag_id;
+  }
+
+  for (const auto& cls_path : lin.order) {
+    const auto* decl = LookupClassDecl(ctx, cls_path);
+    if (!decl) {
+      return "Superclass-Undefined";
+    }
+    for (const auto* method : ClassMethods(*decl)) {
+      if (!VTableEligible(*method)) {
+        if (method->generic_params && !method->generic_params->params.empty()) {
+          return "E-TYP-2542";
+        }
+        return "E-TYP-2541";
+      }
+    }
+  }
+  return std::nullopt;
 }
 
 }  // namespace
@@ -828,17 +856,30 @@ const ast::ClassMethodDecl* LookupClassMethod(const ScopeContext& ctx,
 }
 
 bool ClassDispatchable(const ScopeContext& ctx, const ast::ClassPath& path) {
+  return !ClassDispatchabilityDiagnostic(ctx, path).has_value();
+}
+
+std::optional<std::string_view> ClassDispatchabilityDiagnostic(
+    const ScopeContext& ctx,
+    const ast::ClassPath& path) {
   SpecDefsClasses();
+  if (const auto diag_id = ClassDispatchabilityDiagnosticInOrder(ctx, path)) {
+    return diag_id;
+  }
   const auto table = ClassMethodTable(ctx, path);
   if (!table.ok) {
-    return false;
+    return table.diag_id;
   }
   for (const auto& entry : table.methods) {
     if (!entry.method || !VtableEligibleInternal(*entry.method)) {
-      return false;
+      if (entry.method && entry.method->generic_params &&
+          !entry.method->generic_params->params.empty()) {
+        return "E-TYP-2542";
+      }
+      return "E-TYP-2541";
     }
   }
-  return true;
+  return std::nullopt;
 }
 
 bool ClassSubtypes(const ScopeContext& ctx,

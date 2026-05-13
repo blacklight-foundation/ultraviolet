@@ -1,0 +1,13 @@
+//! Rejected polymorphism specimen for replacing a concrete default method without override.
+
+internal class DefaultOverrideClass {
+    internal procedure value(~) -> i32 {
+        return 1
+    }
+}
+
+internal record OverrideMissingOwner <: DefaultOverrideClass {
+    internal procedure value(~) -> i32 {
+        return 2
+    }
+}

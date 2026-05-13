@@ -59,7 +59,7 @@ struct Sigma {
   std::unordered_map<std::string, std::vector<core::Span>> unsafe_spans_by_file;
   std::map<PathKey, TypeDecl> types;
   std::map<PathKey, ast::ClassDecl> classes;
-  std::unordered_map<const ast::Type*, TypeRef> opaque_underlying;
+  std::map<PathKey, TypeRef> opaque_underlying_by_class_path;
 };
 
 using Scope = std::unordered_map<IdKey, Entity>;

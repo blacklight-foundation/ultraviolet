@@ -1,0 +1,12 @@
+//! Rejected polymorphism specimen for a generic type use with too many type arguments.
+
+internal record PairBox<TValue; TOther> {
+    internal left: TValue
+    internal right: TOther
+}
+
+public procedure genericTypeApplyArgCountReference(
+    box: PairBox<i32, bool, i32>
+) -> i32 {
+    return 0
+}

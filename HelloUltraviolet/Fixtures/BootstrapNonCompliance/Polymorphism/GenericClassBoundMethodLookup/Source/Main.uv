@@ -1,0 +1,20 @@
+//! Spec-valid method lookup through a generic class bound currently rejected by the bootstrap checker.
+
+internal class Readable {
+    internal procedure readValue(~) -> i32 {
+        return 11
+    }
+}
+
+internal record ReadableOwner <: Readable {
+    internal value: i32
+}
+
+internal procedure boundedRead<TValue <: Readable>(value: TValue) -> i32 {
+    return value~>readValue()
+}
+
+public procedure genericClassBoundMethodLookupReference() -> i32 {
+    let owner: ReadableOwner = ReadableOwner { value: 13 }
+    return boundedRead<ReadableOwner>(owner)
+}

@@ -22,6 +22,7 @@ static inline void SpecDefsCast() {
   SPEC_DEF("T-Cast", "16.5.4");
   SPEC_DEF("CastValid", "16.5.4");
   SPEC_DEF("T-Cast-Invalid", "16.5.4");
+  SPEC_DEF("T-Dynamic-Form", "14.6.4");
   SPEC_DEF("Dynamic-NonDispatchable", "5.3.1");
 }
 
@@ -55,11 +56,19 @@ ExprTypeResult TypeCastExprImpl(const ScopeContext& ctx,
   // Dynamic class casts have their own diagnostic obligation.
   if (const auto* target_dynamic = std::get_if<TypeDynamic>(&target.type->node)) {
     const auto source_base = StripPerm(value_result.type);
-    if (TypeImplementsClass(ctx, source_base, target_dynamic->path) &&
-        !ClassDispatchable(ctx, target_dynamic->path)) {
-      SPEC_RULE("Dynamic-NonDispatchable");
-      result.diag_id = "Dynamic-NonDispatchable";
-      return result;
+    if (TypeImplementsClass(ctx, source_base, target_dynamic->path)) {
+      if (const auto diag_id =
+              ClassDispatchabilityDiagnostic(ctx, target_dynamic->path)) {
+        SPEC_RULE("Dynamic-NonDispatchable");
+        result.diag_id = *diag_id;
+        return result;
+      }
+      if (IsPlaceExpr(expr.value)) {
+        SPEC_RULE("T-Dynamic-Form");
+        result.ok = true;
+        result.type = target.type;
+        return result;
+      }
     }
   }
 

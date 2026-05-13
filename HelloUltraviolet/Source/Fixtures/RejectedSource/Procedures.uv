@@ -114,13 +114,13 @@ public procedure validatedProceduresRejectedSourceFixtureCount() -> usize {
             "Fixtures/RejectedSource/Procedures/RecordMethodReceiverNotSelf",
             "Fixtures/RejectedSource/Procedures/RecordMethodReceiverNotSelf/Source/Main.uv",
             "Fixtures/RejectedSource/Procedures/RecordMethodReceiverNotSelf/Expected.uv",
-            expectedDiagnostic("", "rule.15.Record-Method-RecvSelf-Err")
+            expectedDiagnostic("E-TYP-1912", "rule.15.Record-Method-RecvSelf-Err")
         ),
         "RecordMethodReceiverNotSelf",
         "Fixtures/RejectedSource/Procedures/RecordMethodReceiverNotSelf",
         "Fixtures/RejectedSource/Procedures/RecordMethodReceiverNotSelf/Source/Main.uv",
         "Fixtures/RejectedSource/Procedures/RecordMethodReceiverNotSelf/Expected.uv",
-        "",
+        "E-TYP-1912",
         "rule.15.Record-Method-RecvSelf-Err"
     ) {
         count = count + 1usize
@@ -131,13 +131,13 @@ public procedure validatedProceduresRejectedSourceFixtureCount() -> usize {
             "Fixtures/RejectedSource/Procedures/RecordMethodDuplicate",
             "Fixtures/RejectedSource/Procedures/RecordMethodDuplicate/Source/Main.uv",
             "Fixtures/RejectedSource/Procedures/RecordMethodDuplicate/Expected.uv",
-            expectedDiagnostic("", "rule.15.Record-Method-Dup")
+            expectedDiagnostic("E-SEM-3012", "rule.15.Record-Method-Dup")
         ),
         "RecordMethodDuplicate",
         "Fixtures/RejectedSource/Procedures/RecordMethodDuplicate",
         "Fixtures/RejectedSource/Procedures/RecordMethodDuplicate/Source/Main.uv",
         "Fixtures/RejectedSource/Procedures/RecordMethodDuplicate/Expected.uv",
-        "",
+        "E-SEM-3012",
         "rule.15.Record-Method-Dup"
     ) {
         count = count + 1usize
@@ -420,13 +420,13 @@ public procedure validatedProceduresRejectedSourceFixtureCount() -> usize {
             "Fixtures/RejectedSource/Procedures/SelfTypeDefinition",
             "Fixtures/RejectedSource/Procedures/SelfTypeDefinition/Source/Main.uv",
             "Fixtures/RejectedSource/Procedures/SelfTypeDefinition/Expected.uv",
-            expectedDiagnostic("", "def.15.SelfType")
+            expectedDiagnostic("E-TYP-1912", "def.15.SelfType")
         ),
         "SelfTypeDefinition",
         "Fixtures/RejectedSource/Procedures/SelfTypeDefinition",
         "Fixtures/RejectedSource/Procedures/SelfTypeDefinition/Source/Main.uv",
         "Fixtures/RejectedSource/Procedures/SelfTypeDefinition/Expected.uv",
-        "",
+        "E-TYP-1912",
         "def.15.SelfType"
     ) {
         count = count + 1usize
@@ -437,13 +437,13 @@ public procedure validatedProceduresRejectedSourceFixtureCount() -> usize {
             "Fixtures/RejectedSource/Procedures/RecordMethodWellFormedness",
             "Fixtures/RejectedSource/Procedures/RecordMethodWellFormedness/Source/Main.uv",
             "Fixtures/RejectedSource/Procedures/RecordMethodWellFormedness/Expected.uv",
-            expectedDiagnostic("", "rule.15.WF-Record-Method")
+            expectedDiagnostic("E-TYP-1912", "rule.15.WF-Record-Method")
         ),
         "RecordMethodWellFormedness",
         "Fixtures/RejectedSource/Procedures/RecordMethodWellFormedness",
         "Fixtures/RejectedSource/Procedures/RecordMethodWellFormedness/Source/Main.uv",
         "Fixtures/RejectedSource/Procedures/RecordMethodWellFormedness/Expected.uv",
-        "",
+        "E-TYP-1912",
         "rule.15.WF-Record-Method"
     ) {
         count = count + 1usize
@@ -454,13 +454,13 @@ public procedure validatedProceduresRejectedSourceFixtureCount() -> usize {
             "Fixtures/RejectedSource/Procedures/MethodsAndReceiversDiagnostic",
             "Fixtures/RejectedSource/Procedures/MethodsAndReceiversDiagnostic/Source/Main.uv",
             "Fixtures/RejectedSource/Procedures/MethodsAndReceiversDiagnostic/Expected.uv",
-            expectedDiagnostic("", "diag.15.MethodsAndReceivers")
+            expectedDiagnostic("E-TYP-1912", "diag.15.MethodsAndReceivers")
         ),
         "MethodsAndReceiversDiagnostic",
         "Fixtures/RejectedSource/Procedures/MethodsAndReceiversDiagnostic",
         "Fixtures/RejectedSource/Procedures/MethodsAndReceiversDiagnostic/Source/Main.uv",
         "Fixtures/RejectedSource/Procedures/MethodsAndReceiversDiagnostic/Expected.uv",
-        "",
+        "E-TYP-1912",
         "diag.15.MethodsAndReceivers"
     ) {
         count = count + 1usize

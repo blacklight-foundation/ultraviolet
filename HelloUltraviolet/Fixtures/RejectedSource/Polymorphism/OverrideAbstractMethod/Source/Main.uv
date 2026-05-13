@@ -1,0 +1,11 @@
+//! Rejected polymorphism specimen for using override on an abstract class method implementation.
+
+internal class AbstractOverrideClass {
+    internal procedure value(~) -> i32
+}
+
+internal record OverrideAbstractOwner <: AbstractOverrideClass {
+    internal override procedure value(~) -> i32 {
+        return 1
+    }
+}

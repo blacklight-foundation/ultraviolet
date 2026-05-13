@@ -1,0 +1,11 @@
+//! Rejected polymorphism specimen for duplicate class procedure names.
+
+internal class DuplicateProcedureClass {
+    internal procedure repeated(~) -> i32 {
+        return 1
+    }
+
+    internal procedure repeated(~) -> i32 {
+        return 2
+    }
+}

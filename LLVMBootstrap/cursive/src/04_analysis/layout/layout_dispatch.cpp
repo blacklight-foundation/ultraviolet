@@ -64,6 +64,18 @@
 namespace cursive::analysis::layout {
 namespace {
 
+std::optional<cursive::analysis::TypeRef> ResolveOpaqueUnderlying(
+    const cursive::analysis::ScopeContext& ctx,
+    const cursive::analysis::TypeOpaque& opaque) {
+  const auto it = ctx.sigma.opaque_underlying_by_class_path.find(
+      cursive::analysis::PathKeyOf(opaque.class_path));
+  if (it != ctx.sigma.opaque_underlying_by_class_path.end() && it->second) {
+    return it->second;
+  }
+
+  return std::nullopt;
+}
+
 struct LowerTypeCacheKey {
   const cursive::analysis::Sigma* sigma = nullptr;
   cursive::analysis::ExprTypeMap* expr_types = nullptr;
@@ -795,11 +807,8 @@ std::optional<Layout> LayoutOf(const cursive::analysis::ScopeContext& ctx,
   }
   if (const auto* opaque =
           std::get_if<cursive::analysis::TypeOpaque>(&type->node)) {
-    if (opaque->origin) {
-      const auto it = ctx.sigma.opaque_underlying.find(opaque->origin);
-      if (it != ctx.sigma.opaque_underlying.end()) {
-        return LayoutOf(ctx, it->second);
-      }
+    if (const auto underlying = ResolveOpaqueUnderlying(ctx, *opaque)) {
+      return LayoutOf(ctx, *underlying);
     }
     return std::nullopt;
   }
@@ -1056,11 +1065,8 @@ std::optional<std::uint64_t> SizeOf(const cursive::analysis::ScopeContext& ctx,
   }
   if (const auto* opaque =
           std::get_if<cursive::analysis::TypeOpaque>(&type->node)) {
-    if (opaque->origin) {
-      const auto it = ctx.sigma.opaque_underlying.find(opaque->origin);
-      if (it != ctx.sigma.opaque_underlying.end()) {
-        return SizeOf(ctx, it->second);
-      }
+    if (const auto underlying = ResolveOpaqueUnderlying(ctx, *opaque)) {
+      return SizeOf(ctx, *underlying);
     }
     return std::nullopt;
   }
@@ -1253,11 +1259,8 @@ std::optional<std::uint64_t> AlignOf(const cursive::analysis::ScopeContext& ctx,
   }
   if (const auto* opaque =
           std::get_if<cursive::analysis::TypeOpaque>(&type->node)) {
-    if (opaque->origin) {
-      const auto it = ctx.sigma.opaque_underlying.find(opaque->origin);
-      if (it != ctx.sigma.opaque_underlying.end()) {
-        return AlignOf(ctx, it->second);
-      }
+    if (const auto underlying = ResolveOpaqueUnderlying(ctx, *opaque)) {
+      return AlignOf(ctx, *underlying);
     }
     return std::nullopt;
   }

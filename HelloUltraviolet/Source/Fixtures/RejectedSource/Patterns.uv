@@ -46,13 +46,13 @@ public procedure validatedPatternsRejectedSourceFixtureCount() -> usize {
             "Fixtures/RejectedSource/Patterns/RecordPatternUnknownField",
             "Fixtures/RejectedSource/Patterns/RecordPatternUnknownField/Source/Main.uv",
             "Fixtures/RejectedSource/Patterns/RecordPatternUnknownField/Expected.uv",
-            expectedDiagnostic("", "rule.17.RecordPattern-UnknownField")
+            expectedDiagnostic("E-SEM-2731", "rule.17.RecordPattern-UnknownField")
         ),
         "RecordPatternUnknownField",
         "Fixtures/RejectedSource/Patterns/RecordPatternUnknownField",
         "Fixtures/RejectedSource/Patterns/RecordPatternUnknownField/Source/Main.uv",
         "Fixtures/RejectedSource/Patterns/RecordPatternUnknownField/Expected.uv",
-        "",
+        "E-SEM-2731",
         "rule.17.RecordPattern-UnknownField"
     ) {
         count = count + 1usize
@@ -63,13 +63,13 @@ public procedure validatedPatternsRejectedSourceFixtureCount() -> usize {
             "Fixtures/RejectedSource/Patterns/RangePatternNonConst",
             "Fixtures/RejectedSource/Patterns/RangePatternNonConst/Source/Main.uv",
             "Fixtures/RejectedSource/Patterns/RangePatternNonConst/Expected.uv",
-            expectedDiagnostic("", "rule.17.RangePattern-NonConst")
+            expectedDiagnostic("E-SEM-2721", "rule.17.RangePattern-NonConst")
         ),
         "RangePatternNonConst",
         "Fixtures/RejectedSource/Patterns/RangePatternNonConst",
         "Fixtures/RejectedSource/Patterns/RangePatternNonConst/Source/Main.uv",
         "Fixtures/RejectedSource/Patterns/RangePatternNonConst/Expected.uv",
-        "",
+        "E-SEM-2721",
         "rule.17.RangePattern-NonConst"
     ) {
         count = count + 1usize
@@ -80,13 +80,13 @@ public procedure validatedPatternsRejectedSourceFixtureCount() -> usize {
             "Fixtures/RejectedSource/Patterns/RangePatternEmpty",
             "Fixtures/RejectedSource/Patterns/RangePatternEmpty/Source/Main.uv",
             "Fixtures/RejectedSource/Patterns/RangePatternEmpty/Expected.uv",
-            expectedDiagnostic("", "rule.17.RangePattern-Empty")
+            expectedDiagnostic("E-SEM-2722", "rule.17.RangePattern-Empty")
         ),
         "RangePatternEmpty",
         "Fixtures/RejectedSource/Patterns/RangePatternEmpty",
         "Fixtures/RejectedSource/Patterns/RangePatternEmpty/Source/Main.uv",
         "Fixtures/RejectedSource/Patterns/RangePatternEmpty/Expected.uv",
-        "",
+        "E-SEM-2722",
         "rule.17.RangePattern-Empty"
     ) {
         count = count + 1usize
@@ -199,13 +199,13 @@ public procedure validatedPatternsRejectedSourceFixtureCount() -> usize {
             "Fixtures/RejectedSource/Patterns/TupleRecordPatternsDiagnostic",
             "Fixtures/RejectedSource/Patterns/TupleRecordPatternsDiagnostic/Source/Main.uv",
             "Fixtures/RejectedSource/Patterns/TupleRecordPatternsDiagnostic/Expected.uv",
-            expectedDiagnostic("", "diag.17.TupleRecordPatterns")
+            expectedDiagnostic("E-SEM-2731", "diag.17.TupleRecordPatterns")
         ),
         "TupleRecordPatternsDiagnostic",
         "Fixtures/RejectedSource/Patterns/TupleRecordPatternsDiagnostic",
         "Fixtures/RejectedSource/Patterns/TupleRecordPatternsDiagnostic/Source/Main.uv",
         "Fixtures/RejectedSource/Patterns/TupleRecordPatternsDiagnostic/Expected.uv",
-        "",
+        "E-SEM-2731",
         "diag.17.TupleRecordPatterns"
     ) {
         count = count + 1usize
@@ -233,13 +233,13 @@ public procedure validatedPatternsRejectedSourceFixtureCount() -> usize {
             "Fixtures/RejectedSource/Patterns/RangePatternsDiagnostic",
             "Fixtures/RejectedSource/Patterns/RangePatternsDiagnostic/Source/Main.uv",
             "Fixtures/RejectedSource/Patterns/RangePatternsDiagnostic/Expected.uv",
-            expectedDiagnostic("", "diag.17.RangePatterns")
+            expectedDiagnostic("E-SEM-2722", "diag.17.RangePatterns")
         ),
         "RangePatternsDiagnostic",
         "Fixtures/RejectedSource/Patterns/RangePatternsDiagnostic",
         "Fixtures/RejectedSource/Patterns/RangePatternsDiagnostic/Source/Main.uv",
         "Fixtures/RejectedSource/Patterns/RangePatternsDiagnostic/Expected.uv",
-        "",
+        "E-SEM-2722",
         "diag.17.RangePatterns"
     ) {
         count = count + 1usize

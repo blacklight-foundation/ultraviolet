@@ -1,7 +1,38 @@
 //! Reference specimens for Polymorphism / OpaqueTypes.
 
+internal class OpaqueReadableClass {
+    internal procedure readOpaqueValue(~) -> i32
+}
+
+internal record OpaqueReadableOwner <: OpaqueReadableClass {
+    internal value: i32
+
+    internal procedure readOpaqueValue(~) -> i32 {
+        return self.value
+    }
+}
+
+internal procedure makeOpaqueReadable(value: i32) -> opaque OpaqueReadableClass {
+    return OpaqueReadableOwner { value: value }
+}
+
+internal procedure makeAlternateOpaqueReadable(value: i32) -> opaque OpaqueReadableClass {
+    return OpaqueReadableOwner { value: value + 1 }
+}
+
+internal procedure readOpaqueArgument(value: opaque OpaqueReadableClass) -> i32 {
+    return value~>readOpaqueValue()
+}
+
 /// Exercises the Polymorphism OpaqueTypes reference surface.
 public procedure runPolymorphismOpaqueTypesReference() -> bool {
-    let reference: PolymorphismReference = polymorphismReference(2usize, true, false)
+    let opaque_value: opaque OpaqueReadableClass = makeOpaqueReadable(43)
+    let alternate_value: opaque OpaqueReadableClass = makeAlternateOpaqueReadable(44)
+    let reference: PolymorphismReference = polymorphismReference(
+        5usize,
+        opaque_value~>readOpaqueValue() == 43 &&
+            readOpaqueArgument(alternate_value) == 45,
+        false
+    )
     return polymorphismReferenceIsCovered(reference)
 }

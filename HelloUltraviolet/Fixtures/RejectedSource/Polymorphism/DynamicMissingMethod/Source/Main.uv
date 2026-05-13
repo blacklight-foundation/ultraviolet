@@ -1,0 +1,17 @@
+//! Rejected polymorphism specimen for dynamic class method lookup failure.
+
+internal class DynamicLookupClass {
+    internal procedure presentDynamicValue(~) -> i32 {
+        return 4
+    }
+}
+
+internal record DynamicLookupOwner <: DynamicLookupClass {
+    internal value: i32
+}
+
+internal procedure readMissingDynamicMethod() -> i32 {
+    let owner: DynamicLookupOwner = DynamicLookupOwner { value: 4 }
+    let value: $DynamicLookupClass = owner as $DynamicLookupClass
+    return value~>missingDynamicValue()
+}

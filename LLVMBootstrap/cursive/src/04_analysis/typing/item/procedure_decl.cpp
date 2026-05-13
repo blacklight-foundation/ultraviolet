@@ -50,6 +50,7 @@
 #include "04_analysis/generics/monomorphize.h"
 #include "04_analysis/memory/borrow_bind.h"
 #include "04_analysis/memory/regions.h"
+#include "04_analysis/resolve/scopes.h"
 #include "02_source/ast/ast.h"
 #include "../typecheck_diag_lookup.h"
 
@@ -2159,7 +2160,8 @@ ProcedureDeclResult TypeProcedureDecl(
     if (type_ctx.opaque_return && type_ctx.opaque_return->origin &&
         type_ctx.opaque_return->underlying) {
       auto& sigma_mut = const_cast<ScopeContext&>(ctx).sigma;
-      sigma_mut.opaque_underlying[type_ctx.opaque_return->origin] =
+      sigma_mut.opaque_underlying_by_class_path[
+          PathKeyOf(type_ctx.opaque_return->class_path)] =
           type_ctx.opaque_return->underlying;
     }
 
@@ -2441,7 +2443,8 @@ ProcedureDeclResult TypeProcedureDeclBody(
   if (type_ctx.opaque_return && type_ctx.opaque_return->origin &&
       type_ctx.opaque_return->underlying) {
     auto& sigma_mut = const_cast<ScopeContext&>(ctx).sigma;
-    sigma_mut.opaque_underlying[type_ctx.opaque_return->origin] =
+    sigma_mut.opaque_underlying_by_class_path[
+        PathKeyOf(type_ctx.opaque_return->class_path)] =
         type_ctx.opaque_return->underlying;
   }
 

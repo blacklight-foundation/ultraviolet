@@ -1302,7 +1302,7 @@ static bool ExpandTypeArgsWithDefaults(
     std::optional<std::string_view>& diag_id) {
   out_args = provided_args;
   if (out_args.size() > params.size()) {
-    diag_id = "E-SEM-2532";
+    diag_id = "E-TYP-2303";
     return false;
   }
 
@@ -2460,7 +2460,7 @@ std::optional<TypeSubst> BuildGenericCallSubst(
     const auto required = RequiredTypeArgCount(params);
     if (call_generic_args.size() < required ||
         call_generic_args.size() > params.size()) {
-      result.diag_id = "E-SEM-2532";
+      result.diag_id = "E-TYP-2303";
       return result;
     }
 
@@ -2539,7 +2539,7 @@ static std::optional<std::string_view> BuildGenericCallSubstChecked(
   const auto& params = lookup->proc->generic_params->params;
   const auto required = RequiredTypeArgCount(params);
   if (generic_args.size() < required || generic_args.size() > params.size()) {
-    return std::optional<std::string_view>{"E-SEM-2532"};
+    return std::optional<std::string_view>{"E-TYP-2303"};
   }
 
   std::vector<TypeRef> provided_args;
@@ -2691,10 +2691,10 @@ ExprTypeResult TypeCallExprImpl(const ScopeContext& ctx,
         BuildGenericCallSubstChecked(ctx, node.callee, node.generic_args, subst);
     if (subst_diag.has_value()) {
       ExprTypeResult r;
-      if (*subst_diag == "E-SEM-2532" ||
+      if (*subst_diag == "E-TYP-2303" ||
           GenericArgCountMismatch(ctx, node.callee, node.generic_args.size())) {
         SPEC_RULE("Generic-Call-ArgCount-Err");
-        r.diag_id = "E-SEM-2532";
+        r.diag_id = "E-TYP-2303";
       } else {
         r.diag_id = *subst_diag;
       }

@@ -1,0 +1,9 @@
+//! Rejected polymorphism specimen for a class member name conflict.
+
+internal class ConflictingMemberClass {
+    internal value: i32
+
+    internal procedure value(~) -> i32 {
+        return 1
+    }
+}

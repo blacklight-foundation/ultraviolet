@@ -74,6 +74,17 @@
 namespace cursive::codegen {
 namespace {
 
+analysis::TypeRef ResolveOpaqueUnderlying(const analysis::ScopeContext& ctx,
+                                          const analysis::TypeOpaque& opaque) {
+  const auto it = ctx.sigma.opaque_underlying_by_class_path.find(
+      analysis::PathKeyOf(opaque.class_path));
+  if (it != ctx.sigma.opaque_underlying_by_class_path.end() && it->second) {
+    return it->second;
+  }
+
+  return nullptr;
+}
+
 // Get ModalDecl from a TypePath by looking up in the sigma types map.
 const ast::ModalDecl* GetModalDecl(const analysis::ScopeContext& ctx,
                                    const analysis::TypePath& path) {
@@ -354,11 +365,8 @@ std::optional<std::string> MethodSymbol(const analysis::ScopeContext& ctx,
   // Handle opaque types by resolving to underlying type.
   if (stripped) {
     if (const auto* opaque = std::get_if<analysis::TypeOpaque>(&stripped->node)) {
-      if (opaque->origin) {
-        const auto it = ctx.sigma.opaque_underlying.find(opaque->origin);
-        if (it != ctx.sigma.opaque_underlying.end()) {
-          stripped = it->second;
-        }
+      if (analysis::TypeRef underlying = ResolveOpaqueUnderlying(ctx, *opaque)) {
+        stripped = underlying;
       }
     }
   }

@@ -1,0 +1,15 @@
+//! Rejected polymorphism specimen for override without a concrete class default.
+
+internal class OverrideNoConcreteClass {
+    internal procedure required(~) -> i32
+}
+
+internal record OverrideNoConcreteOwner <: OverrideNoConcreteClass {
+    internal override procedure unrelated(~) -> i32 {
+        return 1
+    }
+
+    internal procedure required(~) -> i32 {
+        return 2
+    }
+}

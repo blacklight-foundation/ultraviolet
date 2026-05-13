@@ -1,7 +1,39 @@
 //! Reference specimens for Polymorphism / DynamicClassObjects.
 
+internal class DynamicReadableClass {
+    internal procedure readDynamicValue(~) -> i32
+}
+
+internal record DynamicReadableOwner <: DynamicReadableClass {
+    internal value: i32
+
+    internal procedure readDynamicValue(~) -> i32 {
+        return self.value
+    }
+}
+
+internal class DynamicDefaultClass {
+    internal procedure defaultDynamicValue(~) -> i32 {
+        return 47
+    }
+}
+
+internal record DynamicDefaultOwner <: DynamicDefaultClass {
+    internal value: i32
+}
+
 /// Exercises the Polymorphism DynamicClassObjects reference surface.
 public procedure runPolymorphismDynamicClassObjectsReference() -> bool {
-    let reference: PolymorphismReference = polymorphismReference(3usize, true, true)
+    let owner: DynamicReadableOwner = DynamicReadableOwner { value: 41 }
+    let dynamic_owner: $DynamicReadableClass = owner as $DynamicReadableClass
+    let default_owner: DynamicDefaultOwner = DynamicDefaultOwner { value: 43 }
+    let dynamic_default_owner: $DynamicDefaultClass =
+        default_owner as $DynamicDefaultClass
+    let reference: PolymorphismReference = polymorphismReference(
+        6usize,
+        dynamic_owner~>readDynamicValue() == 41 &&
+            dynamic_default_owner~>defaultDynamicValue() == 47,
+        true
+    )
     return polymorphismReferenceIsCovered(reference) && reference.dynamically_dispatchable
 }

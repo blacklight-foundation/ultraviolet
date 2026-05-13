@@ -98,13 +98,13 @@ std::optional<std::string_view> CodeForResolveDiag(
     return "E-CNF-0401";
   }
   if (diag_id == "Validate-Module-Prim-Shadow-Err") {
-    return "E-CNF-0403";
+    return "E-MOD-1304";
   }
   if (diag_id == "Validate-Module-Special-Shadow-Err") {
-    return "E-CNF-0404";
+    return "E-MOD-1304";
   }
   if (diag_id == "Validate-Module-Async-Shadow-Err") {
-    return "E-CNF-0405";
+    return "E-MOD-1304";
   }
   if (diag_id == "Protected-TopLevel-Err") {
     return "E-MOD-2440";

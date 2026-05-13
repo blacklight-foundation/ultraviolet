@@ -34,6 +34,7 @@
 #include "00_core/spec_trace.h"
 #include "04_analysis/layout/layout.h"
 #include "04_analysis/modal/modal.h"
+#include "04_analysis/resolve/scopes.h"
 #include "04_analysis/typing/type_equiv.h"
 #include "05_codegen/llvm/llvm_emit.h"
 #include "05_codegen/llvm/emit/internal_helpers.h"
@@ -1006,13 +1007,13 @@ using namespace emit_detail;
     else if (const auto *opaque = std::get_if<analysis::TypeOpaque>(&type->node))
     {
       SPEC_RULE("LLVMTy-Opaque");
-      if (opaque->origin && current_ctx_ && current_ctx_->sigma)
+      if (current_ctx_ && current_ctx_->sigma)
       {
         const analysis::ScopeContext &scope = BuildScope(current_ctx_);
-        const auto it = scope.sigma.opaque_underlying.find(opaque->origin);
-        if (it != scope.sigma.opaque_underlying.end() && it->second &&
-            it->second.get() != type.get())
-        {
+        const auto it = scope.sigma.opaque_underlying_by_class_path.find(
+            analysis::PathKeyOf(opaque->class_path));
+        if (it != scope.sigma.opaque_underlying_by_class_path.end() &&
+            it->second && it->second.get() != type.get()) {
           ll_ty = GetLLVMType(it->second);
         }
       }

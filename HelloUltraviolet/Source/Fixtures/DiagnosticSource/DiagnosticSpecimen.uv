@@ -2,6 +2,7 @@
 
 using HelloUltraviolet::Audit::{ auditTextEquals }
 using HelloUltraviolet::Fixtures::RejectedSource::{ ExpectedDiagnostic }
+using HelloUltraviolet::Fixtures::RejectedSource::{ expectedDiagnostic }
 using HelloUltraviolet::Fixtures::RejectedSource::{ expectedDiagnosticMatches }
 
 public record DiagnosticSpecimen {
@@ -42,4 +43,41 @@ public procedure diagnosticSpecimenMatches(
         auditTextEquals(specimen.source_path, source_path) &&
         auditTextEquals(specimen.expected_path, expected_path) &&
         expectedDiagnosticMatches(specimen.expected, expected_code, obligation_id)
+}
+
+public procedure expectedDiagnosticAbsent(
+    code: string@View,
+    obligation_id: string@View
+) -> ExpectedDiagnostic {
+    return expectedDiagnostic(code, obligation_id)
+}
+
+public procedure diagnosticAbsenceSpecimen(
+    name: string@View,
+    fixture_path: string@View,
+    source_path: string@View,
+    expected_path: string@View,
+    expected: ExpectedDiagnostic
+) -> DiagnosticSpecimen {
+    return diagnosticSpecimen(name, fixture_path, source_path, expected_path, expected)
+}
+
+public procedure diagnosticAbsenceSpecimenMatches(
+    specimen: DiagnosticSpecimen,
+    name: string@View,
+    fixture_path: string@View,
+    source_path: string@View,
+    expected_path: string@View,
+    absent_code: string@View,
+    obligation_id: string@View
+) -> bool {
+    return diagnosticSpecimenMatches(
+        specimen,
+        name,
+        fixture_path,
+        source_path,
+        expected_path,
+        absent_code,
+        obligation_id
+    )
 }

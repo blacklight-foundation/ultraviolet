@@ -1,0 +1,9 @@
+//! Rejected polymorphism specimen for an incompatible required class field type.
+
+internal class RequiredI32FieldClass {
+    internal required_value: i32
+}
+
+internal record MismatchedRequiredField <: RequiredI32FieldClass {
+    internal required_value: bool
+}

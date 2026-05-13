@@ -679,11 +679,10 @@ StaticMethodLookup LookupMethodStatic(const ScopeContext& ctx,
 
   TypeRef lookup_base = base;
   if (const auto* opaque = std::get_if<TypeOpaque>(&base->node)) {
-    if (opaque->origin) {
-      const auto it = ctx.sigma.opaque_underlying.find(opaque->origin);
-      if (it != ctx.sigma.opaque_underlying.end()) {
-        lookup_base = it->second;
-      }
+    const auto it = ctx.sigma.opaque_underlying_by_class_path.find(
+        PathKeyOf(opaque->class_path));
+    if (it != ctx.sigma.opaque_underlying_by_class_path.end() && it->second) {
+      lookup_base = it->second;
     }
   }
 

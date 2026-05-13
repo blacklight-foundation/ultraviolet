@@ -113,15 +113,9 @@ static bool CheckImplConflicts(const std::vector<ast::ClassPath>& impls,
 
   const bool has_bitcopy = has_impl("Bitcopy");
   const bool has_drop = has_impl("Drop");
-  const bool has_clone = has_impl("Clone");
 
   if (has_bitcopy && has_drop) {
     diag_id = "E-TYP-2621";
-    return false;
-  }
-
-  if (has_bitcopy && !has_clone) {
-    diag_id = "E-TYP-2503";
     return false;
   }
 
@@ -210,7 +204,7 @@ EnumDeclResult TypeEnumDecl(
   if (!DistinctClassPaths(decl.implements)) {
     SPEC_RULE("Impl-Duplicate-Err");
     result.ok = false;
-    result.diag_id = "Impl-Dup";
+    result.diag_id = "E-TYP-2506";
     return result;
   }
 

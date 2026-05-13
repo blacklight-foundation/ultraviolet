@@ -1,0 +1,6 @@
+//! Rejected capability-class specimen for HeapAllocator.dealloc_raw outside unsafe context.
+
+public procedure heapDeallocRawUnsafeReference(context: Context) -> () {
+    let pointer: *mut u8 = null
+    context.heap~>dealloc_raw(pointer, 16usize)
+}

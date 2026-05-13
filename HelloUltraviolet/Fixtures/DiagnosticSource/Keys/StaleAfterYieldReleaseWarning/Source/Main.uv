@@ -1,0 +1,11 @@
+//! Diagnostic key-system specimen for stale binding use after yield release.
+
+public procedure staleAfterYieldReleaseWarningReference() -> Async<i32, (), (), !> {
+    var shared_value: shared i32 = 1
+    #shared_value read {
+        let observed_value = shared_value
+        yield release 1
+        let resumed_value = observed_value
+    }
+    return
+}

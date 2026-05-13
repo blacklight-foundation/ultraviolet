@@ -80,6 +80,7 @@
 #include "04_analysis/typing/type_wf.h"
 
 #include "00_core/assert_spec.h"
+#include "04_analysis/composite/classes.h"
 #include "04_analysis/caps/cap_system.h"
 #include "04_analysis/contracts/contract_check.h"
 #include "04_analysis/generics/generic_params.h"
@@ -89,6 +90,7 @@
 #include "04_analysis/typing/type_equiv.h"
 #include "04_analysis/typing/type_expr.h"
 #include "04_analysis/typing/type_infer.h"
+#include "04_analysis/typing/type_lookup.h"
 #include "04_analysis/typing/type_stmt.h"
 
 namespace cursive::analysis {
@@ -119,6 +121,7 @@ static inline void SpecDefsTypeWF() {
   SPEC_DEF("WF-Async-Arg-WF-Err", "5.2.12");
   SPEC_DEF("WF-Async-ArgCount-Err", "5.2.12");
   SPEC_DEF("WF-Async-Path-Err", "5.2.12");
+  SPEC_DEF("K-Witness-Shared-WF", "19.1.4");
 }
 
 static bool IsSelfAssociatedTypePath(const TypePath& path) {
@@ -162,6 +165,47 @@ static bool IsKnownTypePath(const ScopeContext& ctx, const TypePath& path) {
   return ctx.sigma.types.find(PathKeyOf(resolved)) != ctx.sigma.types.end();
 }
 
+static bool ReceiverIsConst(const ScopeContext& ctx,
+                            const ast::ClassMethodDecl& method) {
+  if (const auto* shorthand =
+          std::get_if<ast::ReceiverShorthand>(&method.receiver)) {
+    return shorthand->perm == ast::ReceiverPerm::Const;
+  }
+
+  if (const auto* explicit_recv =
+          std::get_if<ast::ReceiverExplicit>(&method.receiver)) {
+    const auto lowered = LowerType(ctx, explicit_recv->type);
+    if (!lowered.ok) {
+      return true;
+    }
+    return PermOfType(lowered.type) == Permission::Const;
+  }
+
+  return true;
+}
+
+static bool SharedDynamicReceiversAreConst(const ScopeContext& ctx,
+                                           const TypeDynamic& type) {
+  ast::ClassPath class_path;
+  class_path.reserve(type.path.size());
+  for (const auto& comp : type.path) {
+    class_path.push_back(comp);
+  }
+
+  const auto table = ClassMethodTable(ctx, class_path);
+  if (!table.ok) {
+    return true;
+  }
+
+  for (const auto& entry : table.methods) {
+    if (entry.method && VTableEligible(*entry.method) &&
+        !ReceiverIsConst(ctx, *entry.method)) {
+      return false;
+    }
+  }
+  return true;
+}
+
 // Forward declaration for primitive type name checking - defined below at line 321
 // Note: Must use fully qualified call since the definition is outside the anonymous namespace
 }  // namespace (anonymous) - temporarily close to declare forward ref
@@ -194,6 +238,15 @@ static TypeWfResult TypeWFImpl(const ScopeContext& ctx, const TypeRef& type) {
           const auto base = TypeWFImpl(ctx, node.base);
           if (!base.ok) {
             return base;
+          }
+          if (node.perm == Permission::Shared) {
+            if (const auto* dynamic =
+                    std::get_if<TypeDynamic>(&node.base->node)) {
+              if (!SharedDynamicReceiversAreConst(ctx, *dynamic)) {
+                SPEC_RULE("K-Witness-Shared-WF");
+                return {false, "E-CON-0083"};
+              }
+            }
           }
           SPEC_RULE("WF-Perm");
           return {true, std::nullopt};
@@ -307,6 +360,11 @@ static TypeWfResult TypeWFImpl(const ScopeContext& ctx, const TypeRef& type) {
             SPEC_RULE("WF-Path");
             return {true, std::nullopt};
           }
+          if (const auto* params = TypeParamsOf(ctx, node.path)) {
+            if (TotalParamCount(*params) > 0) {
+              return {false, "E-TYP-2303"};
+            }
+          }
           if (!IsKnownTypePath(ctx, node.path)) {
             return {};
           }
@@ -317,6 +375,13 @@ static TypeWfResult TypeWFImpl(const ScopeContext& ctx, const TypeRef& type) {
             if (node.args.size() != 4) {
               SPEC_RULE("WF-Async-ArgCount-Err");
               return {false, "WF-Async-ArgCount-Err"};
+            }
+          } else if (const auto* params = TypeParamsOf(ctx, node.path)) {
+            const auto provided = node.args.size();
+            const auto required = RequiredParamCount(*params);
+            const auto total = TotalParamCount(*params);
+            if (provided < required || provided > total) {
+              return {false, "E-TYP-2303"};
             }
           }
           for (const auto& arg : node.args) {

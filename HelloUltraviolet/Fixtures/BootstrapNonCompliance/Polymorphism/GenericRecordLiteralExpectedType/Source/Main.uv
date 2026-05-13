@@ -1,0 +1,11 @@
+//! Spec-valid expected-type construction of a generic record literal currently rejected by the bootstrap checker.
+
+internal record Carrier<TValue; TTag = TValue> {
+    internal value: TValue
+    internal tag: TTag
+}
+
+public procedure genericRecordLiteralExpectedTypeReference() -> i32 {
+    let carrier: Carrier<i32> = Carrier { value: 17, tag: 19 }
+    return carrier.value + carrier.tag
+}

@@ -144,9 +144,10 @@ const std::vector<std::string_view>& UniverseProtectedNames() {
       "f64",    "bool",   "char",   "usize",  "isize",  "Self",
       "Drop", "Bitcopy", "Clone", "Eq", "Hash", "Hasher", "Iterator", "Step",
       "FfiSafe", "string", "bytes",  "Modal",  "Region", "RegionOptions",
-      "CancelToken", "Context", "System", "ExecutionDomain", "Reactor",
-      "Network", "CpuSet", "Priority", "Async", "Future", "Sequence", "Stream",
-      "Pipe", "Exchange", "Tracked", "Spawned"};
+      "CancelToken", "Context", "System", "FileSystem", "HeapAllocator",
+      "ExecutionDomain", "Reactor", "Network", "CpuSet", "Priority", "Async",
+      "Future", "Sequence", "Stream", "Pipe", "Exchange", "Tracked",
+      "Spawned"};
   return names;
 }
 
@@ -241,8 +242,9 @@ const std::vector<std::string_view>& SpecialTypeNames() {
   static const std::vector<std::string_view> names = {
       "Self", "Drop", "Bitcopy", "Clone", "Eq", "Hash", "Hasher", "Iterator",
       "Step", "FfiSafe", "string", "bytes", "Modal", "Region",
-      "RegionOptions", "CancelToken", "Context", "System", "ExecutionDomain",
-      "CpuSet", "Priority", "Reactor", "Network"};
+      "RegionOptions", "CancelToken", "Context", "System", "FileSystem",
+      "HeapAllocator", "ExecutionDomain", "CpuSet", "Priority", "Reactor",
+      "Network"};
   return names;
 }
 
