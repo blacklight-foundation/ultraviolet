@@ -542,6 +542,10 @@ static bool IsBuiltinBitcopyPath(const TypePath& path) {
   return path.size() == 1 &&
          (IdEq(path[0], "FileKind") ||
           IdEq(path[0], "IoError") ||
+          IdEq(path[0], "TimeError") ||
+          IdEq(path[0], "Duration") ||
+          IdEq(path[0], "MonotonicInstant") ||
+          IdEq(path[0], "UtcInstant") ||
           IdEq(path[0], "Context") ||
           IdEq(path[0], "System"));
 }

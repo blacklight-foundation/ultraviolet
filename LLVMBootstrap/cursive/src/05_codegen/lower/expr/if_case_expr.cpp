@@ -982,10 +982,6 @@ LowerResult LowerIfCases(const ast::Expr& scrutinee,
     if (else_narrowing.narrowed) {
       else_has_narrow_scope = true;
       else_ctx.PushScope(false, false);
-      else_ctx.RegisterRuntimeScopeExit();
-      if (const auto scope_id = else_ctx.CurrentRuntimeScopeId()) {
-        else_scope_enter_ir = EmitRuntimeScopeEnter(*scope_id, else_ctx);
-      }
       else_narrow_ir =
           BindElseNarrowedScrutinee(scrutinee,
                                     scrutinee_result.value,
@@ -1027,6 +1023,12 @@ LowerResult LowerIfCases(const ast::Expr& scrutinee,
     }
 
     if (else_has_narrow_scope) {
+      else_ctx.RegisterRuntimeScopeExitIfRequired();
+      if (else_ctx.CurrentScopeRequiresRuntime()) {
+        if (const auto scope_id = else_ctx.CurrentRuntimeScopeId()) {
+          else_scope_enter_ir = EmitRuntimeScopeEnter(*scope_id, else_ctx);
+        }
+      }
       CleanupPlan cleanup_plan = ComputeCleanupPlanForCurrentScope(else_ctx);
       CleanupPlan remainder =
           ComputeCleanupPlanRemainder(CleanupTarget::CurrentScope, else_ctx);
@@ -1114,11 +1116,7 @@ LowerIfCaseClauseResult LowerIfCaseClauseImpl(
     LowerCtx& ctx) {
   // Push a new scope for pattern bindings
   ctx.PushScope(false, false);
-  ctx.RegisterRuntimeScopeExit();
   IRPtr scope_enter_ir = EmptyIR();
-  if (const auto scope_id = ctx.CurrentRuntimeScopeId()) {
-    scope_enter_ir = EmitRuntimeScopeEnter(*scope_id, ctx);
-  }
 
   IRValue bind_scrutinee = scrutinee;
   IRPtr scrutinee_bind_ir = EmptyIR();
@@ -1213,6 +1211,12 @@ LowerIfCaseClauseResult LowerIfCaseClauseImpl(
   }
 
   // Compute cleanup for the clause scope.
+  ctx.RegisterRuntimeScopeExitIfRequired();
+  if (ctx.CurrentScopeRequiresRuntime()) {
+    if (const auto scope_id = ctx.CurrentRuntimeScopeId()) {
+      scope_enter_ir = EmitRuntimeScopeEnter(*scope_id, ctx);
+    }
+  }
   CleanupPlan cleanup_plan = ComputeCleanupPlanForCurrentScope(ctx);
   CleanupPlan remainder = ComputeCleanupPlanRemainder(CleanupTarget::CurrentScope, ctx);
   IRPtr cleanup_ir = EmitCleanupWithRemainder(cleanup_plan, remainder, ctx);

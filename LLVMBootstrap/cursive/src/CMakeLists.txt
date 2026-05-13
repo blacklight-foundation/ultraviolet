@@ -472,6 +472,7 @@ add_library(cursive_analysis STATIC
   04_analysis/caps/cap_network.cpp
   04_analysis/caps/cap_requirements.cpp
   04_analysis/caps/cap_system.cpp
+  04_analysis/caps/cap_time.cpp
   04_analysis/caps/context_caps.cpp
   04_analysis/composite/arrays_slices.cpp
   04_analysis/composite/class_linearization.cpp

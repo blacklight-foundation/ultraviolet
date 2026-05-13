@@ -1,7 +1,22 @@
 //! Reference specimens for Async / StateMachine.
 
+/// Completes an async future without suspending.
+public procedure asyncCompletesReference(value: i32) -> AsyncReferenceFuture {
+    return value
+}
+
 /// Exercises the Async StateMachine reference surface.
 public procedure runAsyncStateMachineReference() -> bool {
-    let reference: AsyncReference = asyncReference(3usize, true, false)
-    return asyncReferenceIsCovered(reference)
+    let completed: AsyncReferenceFuture = asyncCompletesReference(17)
+    return if completed is {
+        @Completed { value } {
+            value == 17
+        }
+        @Suspended {
+            false
+        }
+        @Failed {
+            false
+        }
+    }
 }

@@ -150,6 +150,21 @@ std::vector<std::string> RuntimeLinkRequiredSyms(std::string_view runtime_root) 
                         RuntimeSym({runtime_root, "runtime", "system", name}));
   }
 
+  for (const auto* name : {
+           "monotonic",
+           "wall",
+           "monotonic_now",
+           "monotonic_resolution",
+           "monotonic_elapsed",
+           "monotonic_coarsen",
+           "wall_now_utc",
+           "wall_resolution",
+           "wall_coarsen",
+       }) {
+    AppendRuntimeSymbol(syms,
+                        RuntimeSym({runtime_root, "runtime", "time", name}));
+  }
+
   SortUniqueSymbols(syms);
   return syms;
 }

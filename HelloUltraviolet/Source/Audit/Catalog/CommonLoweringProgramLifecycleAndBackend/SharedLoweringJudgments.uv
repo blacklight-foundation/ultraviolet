@@ -9,7 +9,7 @@ public procedure validatedCommonLoweringProgramLifecycleAndBackendSharedLowering
     var count: usize = 0usize
     if acceptedObligationEntryMatches(
         "requirement.24.SharedLoweringScope",
-        89014usize,
+        89742usize,
         "HelloUltraviolet::Reference::Lowering",
         "runLoweringSharedJudgmentsReference",
         "Source/Reference/Lowering/SharedJudgments.uv"
@@ -18,7 +18,7 @@ public procedure validatedCommonLoweringProgramLifecycleAndBackendSharedLowering
     }
     if acceptedObligationEntryMatches(
         "def.24.CodegenModelAndTargets",
-        89029usize,
+        89757usize,
         "HelloUltraviolet::Reference::Lowering",
         "runLoweringSharedJudgmentsReference",
         "Source/Reference/Lowering/SharedJudgments.uv"
@@ -27,7 +27,7 @@ public procedure validatedCommonLoweringProgramLifecycleAndBackendSharedLowering
     }
     if acceptedObligationEntryMatches(
         "def.24.CodegenJudgements",
-        89048usize,
+        89776usize,
         "HelloUltraviolet::Reference::Lowering",
         "runLoweringSharedJudgmentsReference",
         "Source/Reference/Lowering/SharedJudgments.uv"
@@ -36,7 +36,7 @@ public procedure validatedCommonLoweringProgramLifecycleAndBackendSharedLowering
     }
     if acceptedObligationEntryMatches(
         "def.24.IRDefined",
-        89061usize,
+        89789usize,
         "HelloUltraviolet::Reference::Lowering",
         "runLoweringSharedJudgmentsReference",
         "Source/Reference/Lowering/SharedJudgments.uv"
@@ -45,384 +45,6 @@ public procedure validatedCommonLoweringProgramLifecycleAndBackendSharedLowering
     }
     if acceptedObligationEntryMatches(
         "def.24.CodegenCorrectnessPredicates",
-        89074usize,
-        "HelloUltraviolet::Reference::Lowering",
-        "runLoweringSharedJudgmentsReference",
-        "Source/Reference/Lowering/SharedJudgments.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
-        "def.24.CodegenCorrectAndUndefined",
-        89091usize,
-        "HelloUltraviolet::Reference::Lowering",
-        "runLoweringSharedJudgmentsReference",
-        "Source/Reference/Lowering/SharedJudgments.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
-        "def.24.IRFormsAndEmissionJudgements",
-        89108usize,
-        "HelloUltraviolet::Reference::Lowering",
-        "runLoweringSharedJudgmentsReference",
-        "Source/Reference/Lowering/SharedJudgments.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
-        "def.24.PanicOutCodegenParams",
-        89126usize,
-        "HelloUltraviolet::Reference::Lowering",
-        "runLoweringSharedJudgmentsReference",
-        "Source/Reference/Lowering/SharedJudgments.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
-        "def.24.MethodAndTransitionParams",
-        89140usize,
-        "HelloUltraviolet::Reference::Lowering",
-        "runLoweringSharedJudgmentsReference",
-        "Source/Reference/Lowering/SharedJudgments.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
-        "def.24.SeqIR",
-        89158usize,
-        "HelloUltraviolet::Reference::Lowering",
-        "runLoweringSharedJudgmentsReference",
-        "Source/Reference/Lowering/SharedJudgments.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
-        "def.24.EvalOrderJudgements",
-        89173usize,
-        "HelloUltraviolet::Reference::Lowering",
-        "runLoweringSharedJudgmentsReference",
-        "Source/Reference/Lowering/SharedJudgments.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
-        "def.24.ChildExpressionListHelpers",
-        89186usize,
-        "HelloUltraviolet::Reference::Lowering",
-        "runLoweringSharedJudgmentsReference",
-        "Source/Reference/Lowering/SharedJudgments.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
-        "def.24.ChildrenLTRExpressions",
-        89232usize,
-        "HelloUltraviolet::Reference::Lowering",
-        "runLoweringSharedJudgmentsReference",
-        "Source/Reference/Lowering/SharedJudgments.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
-        "def.24.LowerExprJudgementsAndRetType",
-        89283usize,
-        "HelloUltraviolet::Reference::Lowering",
-        "runLoweringSharedJudgmentsReference",
-        "Source/Reference/Lowering/SharedJudgments.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
-        "rule.24.Lower-Expr-Correctness",
-        89298usize,
-        "HelloUltraviolet::Reference::Lowering",
-        "runLoweringSharedJudgmentsReference",
-        "Source/Reference/Lowering/SharedJudgments.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
-        "def.24.LowerExprTotal",
-        89314usize,
-        "HelloUltraviolet::Reference::Lowering",
-        "runLoweringSharedJudgmentsReference",
-        "Source/Reference/Lowering/SharedJudgments.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
-        "def.24.ExecIRJudgements",
-        89328usize,
-        "HelloUltraviolet::Reference::Lowering",
-        "runLoweringSharedJudgmentsReference",
-        "Source/Reference/Lowering/SharedJudgments.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
-        "rule.24.ExecIR-ReadVar",
-        89341usize,
-        "HelloUltraviolet::Reference::Lowering",
-        "runLoweringSharedJudgmentsReference",
-        "Source/Reference/Lowering/SharedJudgments.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
-        "rule.24.ExecIR-ReadPath",
-        89357usize,
-        "HelloUltraviolet::Reference::Lowering",
-        "runLoweringSharedJudgmentsReference",
-        "Source/Reference/Lowering/SharedJudgments.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
-        "rule.24.ExecIR-StoreVar",
-        89373usize,
-        "HelloUltraviolet::Reference::Lowering",
-        "runLoweringSharedJudgmentsReference",
-        "Source/Reference/Lowering/SharedJudgments.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
-        "rule.24.ExecIR-StoreVarNoDrop",
-        89389usize,
-        "HelloUltraviolet::Reference::Lowering",
-        "runLoweringSharedJudgmentsReference",
-        "Source/Reference/Lowering/SharedJudgments.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
-        "rule.24.ExecIR-BindVar",
-        89405usize,
-        "HelloUltraviolet::Reference::Lowering",
-        "runLoweringSharedJudgmentsReference",
-        "Source/Reference/Lowering/SharedJudgments.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
-        "rule.24.ExecIR-ReadPtr",
-        89421usize,
-        "HelloUltraviolet::Reference::Lowering",
-        "runLoweringSharedJudgmentsReference",
-        "Source/Reference/Lowering/SharedJudgments.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
-        "rule.24.ExecIR-WritePtr",
-        89437usize,
-        "HelloUltraviolet::Reference::Lowering",
-        "runLoweringSharedJudgmentsReference",
-        "Source/Reference/Lowering/SharedJudgments.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
-        "def.24.AllocTarget",
-        89453usize,
-        "HelloUltraviolet::Reference::Lowering",
-        "runLoweringSharedJudgmentsReference",
-        "Source/Reference/Lowering/SharedJudgments.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
-        "rule.24.ExecIR-Alloc",
-        89467usize,
-        "HelloUltraviolet::Reference::Lowering",
-        "runLoweringSharedJudgmentsReference",
-        "Source/Reference/Lowering/SharedJudgments.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
-        "rule.24.MoveState-Root",
-        89483usize,
-        "HelloUltraviolet::Reference::Lowering",
-        "runLoweringSharedJudgmentsReference",
-        "Source/Reference/Lowering/SharedJudgments.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
-        "rule.24.MoveState-Field",
-        89499usize,
-        "HelloUltraviolet::Reference::Lowering",
-        "runLoweringSharedJudgmentsReference",
-        "Source/Reference/Lowering/SharedJudgments.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
-        "rule.24.ExecIR-MoveState",
-        89515usize,
-        "HelloUltraviolet::Reference::Lowering",
-        "runLoweringSharedJudgmentsReference",
-        "Source/Reference/Lowering/SharedJudgments.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
-        "def.24.ExecIRControlResults",
-        89531usize,
-        "HelloUltraviolet::Reference::Lowering",
-        "runLoweringSharedJudgmentsReference",
-        "Source/Reference/Lowering/SharedJudgments.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
-        "rule.24.ExecIR-Defer",
-        89547usize,
-        "HelloUltraviolet::Reference::Lowering",
-        "runLoweringSharedJudgmentsReference",
-        "Source/Reference/Lowering/SharedJudgments.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
-        "def.24.ExecIRBlockHelpers",
-        89563usize,
-        "HelloUltraviolet::Reference::Lowering",
-        "runLoweringSharedJudgmentsReference",
-        "Source/Reference/Lowering/SharedJudgments.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
-        "rule.24.ExecIR-If-True",
-        89578usize,
-        "HelloUltraviolet::Reference::Lowering",
-        "runLoweringSharedJudgmentsReference",
-        "Source/Reference/Lowering/SharedJudgments.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
-        "rule.24.ExecIR-If-False",
-        89594usize,
-        "HelloUltraviolet::Reference::Lowering",
-        "runLoweringSharedJudgmentsReference",
-        "Source/Reference/Lowering/SharedJudgments.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
-        "rule.24.ExecIR-Block",
-        89610usize,
-        "HelloUltraviolet::Reference::Lowering",
-        "runLoweringSharedJudgmentsReference",
-        "Source/Reference/Lowering/SharedJudgments.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
-        "rule.24.ExecIR-IfCase",
-        89626usize,
-        "HelloUltraviolet::Reference::Lowering",
-        "runLoweringSharedJudgmentsReference",
-        "Source/Reference/Lowering/SharedJudgments.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
-        "rule.24.ExecIR-Loop-Infinite-Step",
-        89642usize,
-        "HelloUltraviolet::Reference::Lowering",
-        "runLoweringSharedJudgmentsReference",
-        "Source/Reference/Lowering/SharedJudgments.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
-        "rule.24.ExecIR-Loop-Infinite-Continue",
-        89658usize,
-        "HelloUltraviolet::Reference::Lowering",
-        "runLoweringSharedJudgmentsReference",
-        "Source/Reference/Lowering/SharedJudgments.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
-        "rule.24.ExecIR-Loop-Infinite-Break",
-        89674usize,
-        "HelloUltraviolet::Reference::Lowering",
-        "runLoweringSharedJudgmentsReference",
-        "Source/Reference/Lowering/SharedJudgments.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
-        "rule.24.ExecIR-Loop-Infinite-Ctrl",
-        89690usize,
-        "HelloUltraviolet::Reference::Lowering",
-        "runLoweringSharedJudgmentsReference",
-        "Source/Reference/Lowering/SharedJudgments.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
-        "rule.24.ExecIR-Loop-Cond-False",
-        89706usize,
-        "HelloUltraviolet::Reference::Lowering",
-        "runLoweringSharedJudgmentsReference",
-        "Source/Reference/Lowering/SharedJudgments.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
-        "rule.24.ExecIR-Loop-Cond-True-Step",
-        89722usize,
-        "HelloUltraviolet::Reference::Lowering",
-        "runLoweringSharedJudgmentsReference",
-        "Source/Reference/Lowering/SharedJudgments.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
-        "rule.24.ExecIR-Loop-Cond-Continue",
-        89738usize,
-        "HelloUltraviolet::Reference::Lowering",
-        "runLoweringSharedJudgmentsReference",
-        "Source/Reference/Lowering/SharedJudgments.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
-        "rule.24.ExecIR-Loop-Cond-Break",
-        89754usize,
-        "HelloUltraviolet::Reference::Lowering",
-        "runLoweringSharedJudgmentsReference",
-        "Source/Reference/Lowering/SharedJudgments.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
-        "rule.24.ExecIR-Loop-Cond-Ctrl",
-        89770usize,
-        "HelloUltraviolet::Reference::Lowering",
-        "runLoweringSharedJudgmentsReference",
-        "Source/Reference/Lowering/SharedJudgments.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
-        "rule.24.ExecIR-Loop-Cond-Body-Ctrl",
-        89786usize,
-        "HelloUltraviolet::Reference::Lowering",
-        "runLoweringSharedJudgmentsReference",
-        "Source/Reference/Lowering/SharedJudgments.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
-        "def.24.LoopIterIRJudgement",
         89802usize,
         "HelloUltraviolet::Reference::Lowering",
         "runLoweringSharedJudgmentsReference",
@@ -431,8 +53,8 @@ public procedure validatedCommonLoweringProgramLifecycleAndBackendSharedLowering
         count = count + 1usize
     }
     if acceptedObligationEntryMatches(
-        "rule.24.ExecIR-Loop-Iter",
-        89815usize,
+        "def.24.CodegenCorrectAndUndefined",
+        89819usize,
         "HelloUltraviolet::Reference::Lowering",
         "runLoweringSharedJudgmentsReference",
         "Source/Reference/Lowering/SharedJudgments.uv"
@@ -440,8 +62,8 @@ public procedure validatedCommonLoweringProgramLifecycleAndBackendSharedLowering
         count = count + 1usize
     }
     if acceptedObligationEntryMatches(
-        "rule.24.ExecIR-Loop-Iter-Ctrl",
-        89831usize,
+        "def.24.IRFormsAndEmissionJudgements",
+        89836usize,
         "HelloUltraviolet::Reference::Lowering",
         "runLoweringSharedJudgmentsReference",
         "Source/Reference/Lowering/SharedJudgments.uv"
@@ -449,8 +71,8 @@ public procedure validatedCommonLoweringProgramLifecycleAndBackendSharedLowering
         count = count + 1usize
     }
     if acceptedObligationEntryMatches(
-        "rule.24.LoopIterIR-Done",
-        89847usize,
+        "def.24.PanicOutCodegenParams",
+        89854usize,
         "HelloUltraviolet::Reference::Lowering",
         "runLoweringSharedJudgmentsReference",
         "Source/Reference/Lowering/SharedJudgments.uv"
@@ -458,8 +80,8 @@ public procedure validatedCommonLoweringProgramLifecycleAndBackendSharedLowering
         count = count + 1usize
     }
     if acceptedObligationEntryMatches(
-        "rule.24.LoopIterIR-Step-Val",
-        89863usize,
+        "def.24.MethodAndTransitionParams",
+        89868usize,
         "HelloUltraviolet::Reference::Lowering",
         "runLoweringSharedJudgmentsReference",
         "Source/Reference/Lowering/SharedJudgments.uv"
@@ -467,8 +89,8 @@ public procedure validatedCommonLoweringProgramLifecycleAndBackendSharedLowering
         count = count + 1usize
     }
     if acceptedObligationEntryMatches(
-        "rule.24.LoopIterIR-Step-Continue",
-        89879usize,
+        "def.24.SeqIR",
+        89886usize,
         "HelloUltraviolet::Reference::Lowering",
         "runLoweringSharedJudgmentsReference",
         "Source/Reference/Lowering/SharedJudgments.uv"
@@ -476,8 +98,8 @@ public procedure validatedCommonLoweringProgramLifecycleAndBackendSharedLowering
         count = count + 1usize
     }
     if acceptedObligationEntryMatches(
-        "rule.24.LoopIterIR-Step-Break",
-        89895usize,
+        "def.24.EvalOrderJudgements",
+        89901usize,
         "HelloUltraviolet::Reference::Lowering",
         "runLoweringSharedJudgmentsReference",
         "Source/Reference/Lowering/SharedJudgments.uv"
@@ -485,8 +107,8 @@ public procedure validatedCommonLoweringProgramLifecycleAndBackendSharedLowering
         count = count + 1usize
     }
     if acceptedObligationEntryMatches(
-        "rule.24.LoopIterIR-Step-Ctrl",
-        89911usize,
+        "def.24.ChildExpressionListHelpers",
+        89914usize,
         "HelloUltraviolet::Reference::Lowering",
         "runLoweringSharedJudgmentsReference",
         "Source/Reference/Lowering/SharedJudgments.uv"
@@ -494,8 +116,8 @@ public procedure validatedCommonLoweringProgramLifecycleAndBackendSharedLowering
         count = count + 1usize
     }
     if acceptedObligationEntryMatches(
-        "rule.24.ExecIR-Region",
-        89927usize,
+        "def.24.ChildrenLTRExpressions",
+        89960usize,
         "HelloUltraviolet::Reference::Lowering",
         "runLoweringSharedJudgmentsReference",
         "Source/Reference/Lowering/SharedJudgments.uv"
@@ -503,8 +125,8 @@ public procedure validatedCommonLoweringProgramLifecycleAndBackendSharedLowering
         count = count + 1usize
     }
     if acceptedObligationEntryMatches(
-        "rule.24.ExecIR-Frame-Implicit",
-        89943usize,
+        "def.24.LowerExprJudgementsAndRetType",
+        90011usize,
         "HelloUltraviolet::Reference::Lowering",
         "runLoweringSharedJudgmentsReference",
         "Source/Reference/Lowering/SharedJudgments.uv"
@@ -512,8 +134,8 @@ public procedure validatedCommonLoweringProgramLifecycleAndBackendSharedLowering
         count = count + 1usize
     }
     if acceptedObligationEntryMatches(
-        "rule.24.ExecIR-Frame-Explicit",
-        89959usize,
+        "rule.24.Lower-Expr-Correctness",
+        90026usize,
         "HelloUltraviolet::Reference::Lowering",
         "runLoweringSharedJudgmentsReference",
         "Source/Reference/Lowering/SharedJudgments.uv"
@@ -521,8 +143,8 @@ public procedure validatedCommonLoweringProgramLifecycleAndBackendSharedLowering
         count = count + 1usize
     }
     if acceptedObligationEntryMatches(
-        "rule.24.LowerList-Empty",
-        89975usize,
+        "def.24.LowerExprTotal",
+        90042usize,
         "HelloUltraviolet::Reference::Lowering",
         "runLoweringSharedJudgmentsReference",
         "Source/Reference/Lowering/SharedJudgments.uv"
@@ -530,8 +152,8 @@ public procedure validatedCommonLoweringProgramLifecycleAndBackendSharedLowering
         count = count + 1usize
     }
     if acceptedObligationEntryMatches(
-        "rule.24.LowerList-Cons",
-        89990usize,
+        "def.24.ExecIRJudgements",
+        90056usize,
         "HelloUltraviolet::Reference::Lowering",
         "runLoweringSharedJudgmentsReference",
         "Source/Reference/Lowering/SharedJudgments.uv"
@@ -539,8 +161,8 @@ public procedure validatedCommonLoweringProgramLifecycleAndBackendSharedLowering
         count = count + 1usize
     }
     if acceptedObligationEntryMatches(
-        "rule.24.LowerFieldInits-Empty",
-        90006usize,
+        "rule.24.ExecIR-ReadVar",
+        90069usize,
         "HelloUltraviolet::Reference::Lowering",
         "runLoweringSharedJudgmentsReference",
         "Source/Reference/Lowering/SharedJudgments.uv"
@@ -548,8 +170,8 @@ public procedure validatedCommonLoweringProgramLifecycleAndBackendSharedLowering
         count = count + 1usize
     }
     if acceptedObligationEntryMatches(
-        "rule.24.LowerFieldInits-Cons",
-        90021usize,
+        "rule.24.ExecIR-ReadPath",
+        90085usize,
         "HelloUltraviolet::Reference::Lowering",
         "runLoweringSharedJudgmentsReference",
         "Source/Reference/Lowering/SharedJudgments.uv"
@@ -557,8 +179,8 @@ public procedure validatedCommonLoweringProgramLifecycleAndBackendSharedLowering
         count = count + 1usize
     }
     if acceptedObligationEntryMatches(
-        "rule.24.LowerOpt-None",
-        90037usize,
+        "rule.24.ExecIR-StoreVar",
+        90101usize,
         "HelloUltraviolet::Reference::Lowering",
         "runLoweringSharedJudgmentsReference",
         "Source/Reference/Lowering/SharedJudgments.uv"
@@ -566,8 +188,8 @@ public procedure validatedCommonLoweringProgramLifecycleAndBackendSharedLowering
         count = count + 1usize
     }
     if acceptedObligationEntryMatches(
-        "rule.24.LowerOpt-Some",
-        90052usize,
+        "rule.24.ExecIR-StoreVarNoDrop",
+        90117usize,
         "HelloUltraviolet::Reference::Lowering",
         "runLoweringSharedJudgmentsReference",
         "Source/Reference/Lowering/SharedJudgments.uv"
@@ -575,8 +197,8 @@ public procedure validatedCommonLoweringProgramLifecycleAndBackendSharedLowering
         count = count + 1usize
     }
     if acceptedObligationEntryMatches(
-        "def.24.RefSyms",
-        90068usize,
+        "rule.24.ExecIR-BindVar",
+        90133usize,
         "HelloUltraviolet::Reference::Lowering",
         "runLoweringSharedJudgmentsReference",
         "Source/Reference/Lowering/SharedJudgments.uv"
@@ -584,8 +206,8 @@ public procedure validatedCommonLoweringProgramLifecycleAndBackendSharedLowering
         count = count + 1usize
     }
     if acceptedObligationEntryMatches(
-        "def.24.ExpandIR",
-        90130usize,
+        "rule.24.ExecIR-ReadPtr",
+        90149usize,
         "HelloUltraviolet::Reference::Lowering",
         "runLoweringSharedJudgmentsReference",
         "Source/Reference/Lowering/SharedJudgments.uv"
@@ -593,16 +215,7 @@ public procedure validatedCommonLoweringProgramLifecycleAndBackendSharedLowering
         count = count + 1usize
     }
     if acceptedObligationEntryMatches(
-        "def.24.UniqueEmits",
-        90143usize,
-        "HelloUltraviolet::Reference::Lowering",
-        "runLoweringSharedJudgmentsReference",
-        "Source/Reference/Lowering/SharedJudgments.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
-        "def.24.ModuleItems",
+        "rule.24.ExecIR-WritePtr",
         90165usize,
         "HelloUltraviolet::Reference::Lowering",
         "runLoweringSharedJudgmentsReference",
@@ -611,8 +224,395 @@ public procedure validatedCommonLoweringProgramLifecycleAndBackendSharedLowering
         count = count + 1usize
     }
     if acceptedObligationEntryMatches(
+        "def.24.AllocTarget",
+        90181usize,
+        "HelloUltraviolet::Reference::Lowering",
+        "runLoweringSharedJudgmentsReference",
+        "Source/Reference/Lowering/SharedJudgments.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "rule.24.ExecIR-Alloc",
+        90195usize,
+        "HelloUltraviolet::Reference::Lowering",
+        "runLoweringSharedJudgmentsReference",
+        "Source/Reference/Lowering/SharedJudgments.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "rule.24.MoveState-Root",
+        90211usize,
+        "HelloUltraviolet::Reference::Lowering",
+        "runLoweringSharedJudgmentsReference",
+        "Source/Reference/Lowering/SharedJudgments.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "rule.24.MoveState-Field",
+        90227usize,
+        "HelloUltraviolet::Reference::Lowering",
+        "runLoweringSharedJudgmentsReference",
+        "Source/Reference/Lowering/SharedJudgments.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "rule.24.ExecIR-MoveState",
+        90243usize,
+        "HelloUltraviolet::Reference::Lowering",
+        "runLoweringSharedJudgmentsReference",
+        "Source/Reference/Lowering/SharedJudgments.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "def.24.ExecIRControlResults",
+        90259usize,
+        "HelloUltraviolet::Reference::Lowering",
+        "runLoweringSharedJudgmentsReference",
+        "Source/Reference/Lowering/SharedJudgments.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "rule.24.ExecIR-Defer",
+        90275usize,
+        "HelloUltraviolet::Reference::Lowering",
+        "runLoweringSharedJudgmentsReference",
+        "Source/Reference/Lowering/SharedJudgments.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "def.24.ExecIRBlockHelpers",
+        90291usize,
+        "HelloUltraviolet::Reference::Lowering",
+        "runLoweringSharedJudgmentsReference",
+        "Source/Reference/Lowering/SharedJudgments.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "rule.24.ExecIR-If-True",
+        90306usize,
+        "HelloUltraviolet::Reference::Lowering",
+        "runLoweringSharedJudgmentsReference",
+        "Source/Reference/Lowering/SharedJudgments.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "rule.24.ExecIR-If-False",
+        90322usize,
+        "HelloUltraviolet::Reference::Lowering",
+        "runLoweringSharedJudgmentsReference",
+        "Source/Reference/Lowering/SharedJudgments.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "rule.24.ExecIR-Block",
+        90338usize,
+        "HelloUltraviolet::Reference::Lowering",
+        "runLoweringSharedJudgmentsReference",
+        "Source/Reference/Lowering/SharedJudgments.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "rule.24.ExecIR-IfCase",
+        90354usize,
+        "HelloUltraviolet::Reference::Lowering",
+        "runLoweringSharedJudgmentsReference",
+        "Source/Reference/Lowering/SharedJudgments.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "rule.24.ExecIR-Loop-Infinite-Step",
+        90370usize,
+        "HelloUltraviolet::Reference::Lowering",
+        "runLoweringSharedJudgmentsReference",
+        "Source/Reference/Lowering/SharedJudgments.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "rule.24.ExecIR-Loop-Infinite-Continue",
+        90386usize,
+        "HelloUltraviolet::Reference::Lowering",
+        "runLoweringSharedJudgmentsReference",
+        "Source/Reference/Lowering/SharedJudgments.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "rule.24.ExecIR-Loop-Infinite-Break",
+        90402usize,
+        "HelloUltraviolet::Reference::Lowering",
+        "runLoweringSharedJudgmentsReference",
+        "Source/Reference/Lowering/SharedJudgments.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "rule.24.ExecIR-Loop-Infinite-Ctrl",
+        90418usize,
+        "HelloUltraviolet::Reference::Lowering",
+        "runLoweringSharedJudgmentsReference",
+        "Source/Reference/Lowering/SharedJudgments.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "rule.24.ExecIR-Loop-Cond-False",
+        90434usize,
+        "HelloUltraviolet::Reference::Lowering",
+        "runLoweringSharedJudgmentsReference",
+        "Source/Reference/Lowering/SharedJudgments.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "rule.24.ExecIR-Loop-Cond-True-Step",
+        90450usize,
+        "HelloUltraviolet::Reference::Lowering",
+        "runLoweringSharedJudgmentsReference",
+        "Source/Reference/Lowering/SharedJudgments.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "rule.24.ExecIR-Loop-Cond-Continue",
+        90466usize,
+        "HelloUltraviolet::Reference::Lowering",
+        "runLoweringSharedJudgmentsReference",
+        "Source/Reference/Lowering/SharedJudgments.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "rule.24.ExecIR-Loop-Cond-Break",
+        90482usize,
+        "HelloUltraviolet::Reference::Lowering",
+        "runLoweringSharedJudgmentsReference",
+        "Source/Reference/Lowering/SharedJudgments.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "rule.24.ExecIR-Loop-Cond-Ctrl",
+        90498usize,
+        "HelloUltraviolet::Reference::Lowering",
+        "runLoweringSharedJudgmentsReference",
+        "Source/Reference/Lowering/SharedJudgments.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "rule.24.ExecIR-Loop-Cond-Body-Ctrl",
+        90514usize,
+        "HelloUltraviolet::Reference::Lowering",
+        "runLoweringSharedJudgmentsReference",
+        "Source/Reference/Lowering/SharedJudgments.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "def.24.LoopIterIRJudgement",
+        90530usize,
+        "HelloUltraviolet::Reference::Lowering",
+        "runLoweringSharedJudgmentsReference",
+        "Source/Reference/Lowering/SharedJudgments.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "rule.24.ExecIR-Loop-Iter",
+        90543usize,
+        "HelloUltraviolet::Reference::Lowering",
+        "runLoweringSharedJudgmentsReference",
+        "Source/Reference/Lowering/SharedJudgments.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "rule.24.ExecIR-Loop-Iter-Ctrl",
+        90559usize,
+        "HelloUltraviolet::Reference::Lowering",
+        "runLoweringSharedJudgmentsReference",
+        "Source/Reference/Lowering/SharedJudgments.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "rule.24.LoopIterIR-Done",
+        90575usize,
+        "HelloUltraviolet::Reference::Lowering",
+        "runLoweringSharedJudgmentsReference",
+        "Source/Reference/Lowering/SharedJudgments.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "rule.24.LoopIterIR-Step-Val",
+        90591usize,
+        "HelloUltraviolet::Reference::Lowering",
+        "runLoweringSharedJudgmentsReference",
+        "Source/Reference/Lowering/SharedJudgments.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "rule.24.LoopIterIR-Step-Continue",
+        90607usize,
+        "HelloUltraviolet::Reference::Lowering",
+        "runLoweringSharedJudgmentsReference",
+        "Source/Reference/Lowering/SharedJudgments.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "rule.24.LoopIterIR-Step-Break",
+        90623usize,
+        "HelloUltraviolet::Reference::Lowering",
+        "runLoweringSharedJudgmentsReference",
+        "Source/Reference/Lowering/SharedJudgments.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "rule.24.LoopIterIR-Step-Ctrl",
+        90639usize,
+        "HelloUltraviolet::Reference::Lowering",
+        "runLoweringSharedJudgmentsReference",
+        "Source/Reference/Lowering/SharedJudgments.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "rule.24.ExecIR-Region",
+        90655usize,
+        "HelloUltraviolet::Reference::Lowering",
+        "runLoweringSharedJudgmentsReference",
+        "Source/Reference/Lowering/SharedJudgments.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "rule.24.ExecIR-Frame-Implicit",
+        90671usize,
+        "HelloUltraviolet::Reference::Lowering",
+        "runLoweringSharedJudgmentsReference",
+        "Source/Reference/Lowering/SharedJudgments.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "rule.24.ExecIR-Frame-Explicit",
+        90687usize,
+        "HelloUltraviolet::Reference::Lowering",
+        "runLoweringSharedJudgmentsReference",
+        "Source/Reference/Lowering/SharedJudgments.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "rule.24.LowerList-Empty",
+        90703usize,
+        "HelloUltraviolet::Reference::Lowering",
+        "runLoweringSharedJudgmentsReference",
+        "Source/Reference/Lowering/SharedJudgments.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "rule.24.LowerList-Cons",
+        90718usize,
+        "HelloUltraviolet::Reference::Lowering",
+        "runLoweringSharedJudgmentsReference",
+        "Source/Reference/Lowering/SharedJudgments.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "rule.24.LowerFieldInits-Empty",
+        90734usize,
+        "HelloUltraviolet::Reference::Lowering",
+        "runLoweringSharedJudgmentsReference",
+        "Source/Reference/Lowering/SharedJudgments.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "rule.24.LowerFieldInits-Cons",
+        90749usize,
+        "HelloUltraviolet::Reference::Lowering",
+        "runLoweringSharedJudgmentsReference",
+        "Source/Reference/Lowering/SharedJudgments.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "rule.24.LowerOpt-None",
+        90765usize,
+        "HelloUltraviolet::Reference::Lowering",
+        "runLoweringSharedJudgmentsReference",
+        "Source/Reference/Lowering/SharedJudgments.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "rule.24.LowerOpt-Some",
+        90780usize,
+        "HelloUltraviolet::Reference::Lowering",
+        "runLoweringSharedJudgmentsReference",
+        "Source/Reference/Lowering/SharedJudgments.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "def.24.RefSyms",
+        90796usize,
+        "HelloUltraviolet::Reference::Lowering",
+        "runLoweringSharedJudgmentsReference",
+        "Source/Reference/Lowering/SharedJudgments.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "def.24.ExpandIR",
+        90858usize,
+        "HelloUltraviolet::Reference::Lowering",
+        "runLoweringSharedJudgmentsReference",
+        "Source/Reference/Lowering/SharedJudgments.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "def.24.UniqueEmits",
+        90871usize,
+        "HelloUltraviolet::Reference::Lowering",
+        "runLoweringSharedJudgmentsReference",
+        "Source/Reference/Lowering/SharedJudgments.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "def.24.ModuleItems",
+        90893usize,
+        "HelloUltraviolet::Reference::Lowering",
+        "runLoweringSharedJudgmentsReference",
+        "Source/Reference/Lowering/SharedJudgments.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
         "rule.24.CG-Project",
-        90178usize,
+        90906usize,
         "HelloUltraviolet::Reference::Lowering",
         "runLoweringSharedJudgmentsReference",
         "Source/Reference/Lowering/SharedJudgments.uv"
@@ -621,7 +621,7 @@ public procedure validatedCommonLoweringProgramLifecycleAndBackendSharedLowering
     }
     if acceptedObligationEntryMatches(
         "requirement.24.NoAdditionalFeatureLocalCodegenItemRules",
-        90194usize,
+        90922usize,
         "HelloUltraviolet::Reference::Lowering",
         "runLoweringSharedJudgmentsReference",
         "Source/Reference/Lowering/SharedJudgments.uv"
@@ -630,7 +630,7 @@ public procedure validatedCommonLoweringProgramLifecycleAndBackendSharedLowering
     }
     if acceptedObligationEntryMatches(
         "rule.24.CG-Module",
-        90207usize,
+        90935usize,
         "HelloUltraviolet::Reference::Lowering",
         "runLoweringSharedJudgmentsReference",
         "Source/Reference/Lowering/SharedJudgments.uv"
@@ -639,7 +639,7 @@ public procedure validatedCommonLoweringProgramLifecycleAndBackendSharedLowering
     }
     if acceptedObligationEntryMatches(
         "rule.24.CG-Expr",
-        90223usize,
+        90951usize,
         "HelloUltraviolet::Reference::Lowering",
         "runLoweringSharedJudgmentsReference",
         "Source/Reference/Lowering/SharedJudgments.uv"
@@ -648,7 +648,7 @@ public procedure validatedCommonLoweringProgramLifecycleAndBackendSharedLowering
     }
     if acceptedObligationEntryMatches(
         "rule.24.CG-Stmt",
-        90239usize,
+        90967usize,
         "HelloUltraviolet::Reference::Lowering",
         "runLoweringSharedJudgmentsReference",
         "Source/Reference/Lowering/SharedJudgments.uv"
@@ -657,7 +657,7 @@ public procedure validatedCommonLoweringProgramLifecycleAndBackendSharedLowering
     }
     if acceptedObligationEntryMatches(
         "rule.24.CG-Block",
-        90255usize,
+        90983usize,
         "HelloUltraviolet::Reference::Lowering",
         "runLoweringSharedJudgmentsReference",
         "Source/Reference/Lowering/SharedJudgments.uv"
@@ -666,7 +666,7 @@ public procedure validatedCommonLoweringProgramLifecycleAndBackendSharedLowering
     }
     if acceptedObligationEntryMatches(
         "rule.24.CG-Place",
-        90271usize,
+        90999usize,
         "HelloUltraviolet::Reference::Lowering",
         "runLoweringSharedJudgmentsReference",
         "Source/Reference/Lowering/SharedJudgments.uv"
@@ -675,7 +675,7 @@ public procedure validatedCommonLoweringProgramLifecycleAndBackendSharedLowering
     }
     if acceptedObligationEntryMatches(
         "rule.24.LowerIR-Module",
-        90287usize,
+        91015usize,
         "HelloUltraviolet::Reference::Lowering",
         "runLoweringSharedJudgmentsReference",
         "Source/Reference/Lowering/SharedJudgments.uv"
@@ -684,7 +684,7 @@ public procedure validatedCommonLoweringProgramLifecycleAndBackendSharedLowering
     }
     if acceptedObligationEntryMatches(
         "rule.24.LowerIR-Err",
-        90303usize,
+        91031usize,
         "HelloUltraviolet::Reference::Lowering",
         "runLoweringSharedJudgmentsReference",
         "Source/Reference/Lowering/SharedJudgments.uv"
@@ -693,7 +693,7 @@ public procedure validatedCommonLoweringProgramLifecycleAndBackendSharedLowering
     }
     if acceptedObligationEntryMatches(
         "rule.24.EmitLLVM-Ok",
-        90319usize,
+        91047usize,
         "HelloUltraviolet::Reference::Lowering",
         "runLoweringSharedJudgmentsReference",
         "Source/Reference/Lowering/SharedJudgments.uv"
@@ -702,7 +702,7 @@ public procedure validatedCommonLoweringProgramLifecycleAndBackendSharedLowering
     }
     if acceptedObligationEntryMatches(
         "def.24.LLVMText21Acceptance",
-        90335usize,
+        91063usize,
         "HelloUltraviolet::Reference::Lowering",
         "runLoweringSharedJudgmentsReference",
         "Source/Reference/Lowering/SharedJudgments.uv"
@@ -711,7 +711,7 @@ public procedure validatedCommonLoweringProgramLifecycleAndBackendSharedLowering
     }
     if acceptedObligationEntryMatches(
         "rule.24.EmitLLVM-Err",
-        90349usize,
+        91077usize,
         "HelloUltraviolet::Reference::Lowering",
         "runLoweringSharedJudgmentsReference",
         "Source/Reference/Lowering/SharedJudgments.uv"
@@ -720,7 +720,7 @@ public procedure validatedCommonLoweringProgramLifecycleAndBackendSharedLowering
     }
     if acceptedObligationEntryMatches(
         "requirement.24.LLVMToolAcceptanceAndResolveOwnership",
-        90365usize,
+        91093usize,
         "HelloUltraviolet::Reference::Lowering",
         "runLoweringSharedJudgmentsReference",
         "Source/Reference/Lowering/SharedJudgments.uv"
@@ -729,7 +729,7 @@ public procedure validatedCommonLoweringProgramLifecycleAndBackendSharedLowering
     }
     if acceptedObligationEntryMatches(
         "rule.24.EmitObj-Ok",
-        90379usize,
+        91107usize,
         "HelloUltraviolet::Reference::Lowering",
         "runLoweringSharedJudgmentsReference",
         "Source/Reference/Lowering/SharedJudgments.uv"
@@ -738,7 +738,7 @@ public procedure validatedCommonLoweringProgramLifecycleAndBackendSharedLowering
     }
     if acceptedObligationEntryMatches(
         "def.24.LLVMEmitObj21",
-        90395usize,
+        91123usize,
         "HelloUltraviolet::Reference::Lowering",
         "runLoweringSharedJudgmentsReference",
         "Source/Reference/Lowering/SharedJudgments.uv"
@@ -747,7 +747,7 @@ public procedure validatedCommonLoweringProgramLifecycleAndBackendSharedLowering
     }
     if acceptedObligationEntryMatches(
         "rule.24.EmitObj-Err",
-        90408usize,
+        91136usize,
         "HelloUltraviolet::Reference::Lowering",
         "runLoweringSharedJudgmentsReference",
         "Source/Reference/Lowering/SharedJudgments.uv"

@@ -1079,6 +1079,8 @@ std::vector<CapabilityLeak> DetectCapabilityLeaks(const CallGraph& cg) {
           leak.capability = CapabilityKind::Reactor;
         } else if (edge->capabilities_passed.has_system) {
           leak.capability = CapabilityKind::System;
+        } else if (edge->capabilities_passed.has_time) {
+          leak.capability = CapabilityKind::Time;
         }
 
         std::ostringstream msg;

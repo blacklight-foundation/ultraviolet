@@ -1,0 +1,6 @@
+//! Rejected compile-time specimen for a non-bool comptime-if condition.
+
+public procedure comptimeIfConditionTypeReference() -> i32 {
+    let value = comptime if 1 { 1 } else { 2 }
+    return value
+}

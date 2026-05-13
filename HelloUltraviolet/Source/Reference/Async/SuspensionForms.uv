@@ -1,7 +1,21 @@
 //! Reference specimens for Async / SuspensionForms.
 
+/// Suspends once and later completes with the resume input.
+public procedure asyncSuspendsReference(value: i32) -> AsyncReferenceComputation {
+    let resumed: i32 = yield value
+    return resumed
+}
+
+/// Delegates suspension through another async computation.
+public procedure asyncDelegatesReference(value: i32) -> AsyncReferenceComputation {
+    let resumed: i32 = yield from asyncSuspendsReference(value)
+    return resumed + 1
+}
+
 /// Exercises the Async SuspensionForms reference surface.
 public procedure runAsyncSuspensionFormsReference() -> bool {
-    let reference: AsyncReference = asyncReference(2usize, true, false)
-    return asyncReferenceIsCovered(reference)
+    let suspended: AsyncReferenceComputation = asyncSuspendsReference(21)
+    let delegated: AsyncReferenceComputation = asyncDelegatesReference(22)
+    return asyncSuspendedOutputIs(suspended, 21) &&
+        asyncSuspendedOutputIs(delegated, 22)
 }

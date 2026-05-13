@@ -29,6 +29,7 @@
 #include "04_analysis/caps/cap_heap.h"
 #include "04_analysis/caps/cap_network.h"
 #include "04_analysis/caps/cap_system.h"
+#include "04_analysis/caps/cap_time.h"
 #include "04_analysis/composite/classes.h"
 #include "04_analysis/composite/record_methods.h"
 #include "04_analysis/generics/monomorphize.h"
@@ -273,7 +274,7 @@ LowerResult LowerRefReceiverWithTemp(const ast::ExprPtr& expr,
     }
 
     if (analysis::HasSourceProvenance(expr)) {
-        return LowerAddrOf(*expr, ctx);
+        return LowerAddrOf(*expr, ctx, AddressUseKind::TransientNoEscape);
     }
 
     auto value_result = LowerExpr(*expr, ctx);
@@ -303,7 +304,8 @@ LowerResult LowerRefReceiverWithTemp(const ast::ExprPtr& expr,
     ast::Expr temp_ident;
     temp_ident.span = expr->span;
     temp_ident.node = ast::IdentifierExpr{temp_name};
-    auto addr_result = LowerAddrOf(temp_ident, ctx);
+    auto addr_result =
+        LowerAddrOf(temp_ident, ctx, AddressUseKind::TransientNoEscape);
 
     return LowerResult{SeqIR({value_result.ir, MakeIR(std::move(bind)), addr_result.ir}),
                        addr_result.value};
@@ -354,6 +356,28 @@ std::optional<ParamModeList> BuiltinCapabilityParamModes(
         return std::nullopt;
     }
 
+    if (analysis::IsTimeClassPath(class_path)) {
+        if (const auto sig = analysis::LookupTimeMethodSig(method_name)) {
+            return ParamModesFromParams(sig->params);
+        }
+        return std::nullopt;
+    }
+
+    if (analysis::IsMonotonicTimeClassPath(class_path)) {
+        if (const auto sig =
+                analysis::LookupMonotonicTimeMethodSig(method_name)) {
+            return ParamModesFromParams(sig->params);
+        }
+        return std::nullopt;
+    }
+
+    if (analysis::IsWallTimeClassPath(class_path)) {
+        if (const auto sig = analysis::LookupWallTimeMethodSig(method_name)) {
+            return ParamModesFromParams(sig->params);
+        }
+        return std::nullopt;
+    }
+
   if (analysis::IsExecutionDomainTypePath(cap_path)) {
     if (const auto sig = analysis::LookupExecutionDomainMethodSig(method_name)) {
       return ParamModesFromParams(sig->params);
@@ -397,6 +421,28 @@ std::optional<ParamTypeList> BuiltinCapabilityParamTypes(
 
     if (analysis::IsNetworkClassPath(class_path)) {
         if (const auto sig = analysis::LookupNetworkMethodSig(method_name)) {
+            return ParamTypesFromParams(scope, sig->params);
+        }
+        return std::nullopt;
+    }
+
+    if (analysis::IsTimeClassPath(class_path)) {
+        if (const auto sig = analysis::LookupTimeMethodSig(method_name)) {
+            return ParamTypesFromParams(scope, sig->params);
+        }
+        return std::nullopt;
+    }
+
+    if (analysis::IsMonotonicTimeClassPath(class_path)) {
+        if (const auto sig =
+                analysis::LookupMonotonicTimeMethodSig(method_name)) {
+            return ParamTypesFromParams(scope, sig->params);
+        }
+        return std::nullopt;
+    }
+
+    if (analysis::IsWallTimeClassPath(class_path)) {
+        if (const auto sig = analysis::LookupWallTimeMethodSig(method_name)) {
             return ParamTypesFromParams(scope, sig->params);
         }
         return std::nullopt;

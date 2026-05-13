@@ -50,6 +50,20 @@ typedef struct C0NetState {
   int valid;
 } C0NetState;
 
+typedef enum C0TimeStateKind {
+  C0_TIME_STATE_ROOT = 0,
+  C0_TIME_STATE_MONOTONIC = 1,
+  C0_TIME_STATE_WALL = 2,
+} C0TimeStateKind;
+
+typedef struct C0TimeState {
+  struct C0TimeState* parent;
+  uint8_t kind;
+  uint8_t _pad[7];
+  uint64_t domain;
+  C0U128 resolution;
+} C0TimeState;
+
 typedef struct C0DirIterState {
   wchar_t* base_path;
   uint32_t base_len;
@@ -605,8 +619,17 @@ _Static_assert(sizeof(C0StringManaged) == 24, "string@Managed layout");
 _Static_assert(sizeof(C0BytesView) == 16, "bytes@View layout");
 _Static_assert(sizeof(C0BytesManaged) == 24, "bytes@Managed layout");
 _Static_assert(sizeof(C0DynObject) == 16, "dynamic object layout");
-_Static_assert(sizeof(C0Context) == 64, "Context layout");
+_Static_assert(sizeof(C0Context) == 80, "Context layout");
 _Static_assert(sizeof(C0ExecutionDomain) == 16, "ExecutionDomain layout");
+_Static_assert(sizeof(C0Duration) == 16, "Duration layout");
+_Static_assert(sizeof(C0MonotonicInstant) == 32, "MonotonicInstant layout");
+_Static_assert(sizeof(C0UtcInstant) == 16, "UtcInstant layout");
+_Static_assert(sizeof(C0Union_Duration_TimeError) == 32,
+               "Outcome<Duration, TimeError> layout");
+_Static_assert(sizeof(C0Union_DynObject_TimeError) == 24,
+               "Outcome<dyn, TimeError> layout");
+_Static_assert(sizeof(C0Union_UtcInstant_TimeError) == 32,
+               "Outcome<UtcInstant, TimeError> layout");
 _Static_assert(sizeof(C0StringModal) == 32, "string modal layout");
 _Static_assert(sizeof(C0RegionOptions) == 40, "RegionOptions layout");
 _Static_assert(sizeof(C0Range) == 24, "Range layout");

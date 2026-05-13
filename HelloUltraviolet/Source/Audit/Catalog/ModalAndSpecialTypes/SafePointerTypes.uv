@@ -9,7 +9,7 @@ public procedure validatedModalAndSpecialTypesSafePointerTypesObligations() -> u
     var count: usize = 0usize
     if acceptedObligationEntryMatches(
         "grammar.SafePointerTypes.Syntax",
-        45458usize,
+        45770usize,
         "HelloUltraviolet::Reference::ModalTypes",
         "runModalTypesModalDeclarationsReference",
         "Source/Reference/ModalTypes/ModalDeclarations.uv"
@@ -18,7 +18,7 @@ public procedure validatedModalAndSpecialTypesSafePointerTypesObligations() -> u
     }
     if acceptedObligationEntryMatches(
         "rule.13.Parse-Safe-Pointer-Type-ShiftSplit",
-        45475usize,
+        45787usize,
         "HelloUltraviolet::Reference::ModalTypes",
         "runModalTypesModalDeclarationsReference",
         "Source/Reference/ModalTypes/ModalDeclarations.uv"
@@ -27,7 +27,7 @@ public procedure validatedModalAndSpecialTypesSafePointerTypesObligations() -> u
     }
     if acceptedObligationEntryMatches(
         "rule.13.Parse-Safe-Pointer-Type",
-        45491usize,
+        45803usize,
         "HelloUltraviolet::Reference::ModalTypes",
         "runModalTypesModalDeclarationsReference",
         "Source/Reference/ModalTypes/ModalDeclarations.uv"
@@ -36,7 +36,7 @@ public procedure validatedModalAndSpecialTypesSafePointerTypesObligations() -> u
     }
     if acceptedObligationEntryMatches(
         "rule.13.Parse-PtrState-None",
-        45509usize,
+        45821usize,
         "HelloUltraviolet::Reference::ModalTypes",
         "runModalTypesModalDeclarationsReference",
         "Source/Reference/ModalTypes/ModalDeclarations.uv"
@@ -45,7 +45,7 @@ public procedure validatedModalAndSpecialTypesSafePointerTypesObligations() -> u
     }
     if acceptedObligationEntryMatches(
         "rule.13.Parse-PtrState-Valid",
-        45525usize,
+        45837usize,
         "HelloUltraviolet::Reference::ModalTypes",
         "runModalTypesModalDeclarationsReference",
         "Source/Reference/ModalTypes/ModalDeclarations.uv"
@@ -54,7 +54,7 @@ public procedure validatedModalAndSpecialTypesSafePointerTypesObligations() -> u
     }
     if acceptedObligationEntryMatches(
         "rule.13.Parse-PtrState-Null",
-        45541usize,
+        45853usize,
         "HelloUltraviolet::Reference::ModalTypes",
         "runModalTypesModalDeclarationsReference",
         "Source/Reference/ModalTypes/ModalDeclarations.uv"
@@ -63,7 +63,7 @@ public procedure validatedModalAndSpecialTypesSafePointerTypesObligations() -> u
     }
     if acceptedObligationEntryMatches(
         "rule.13.Parse-PtrState-Expired",
-        45557usize,
+        45869usize,
         "HelloUltraviolet::Reference::ModalTypes",
         "runModalTypesModalDeclarationsReference",
         "Source/Reference/ModalTypes/ModalDeclarations.uv"
@@ -72,7 +72,7 @@ public procedure validatedModalAndSpecialTypesSafePointerTypesObligations() -> u
     }
     if acceptedObligationEntryMatches(
         "def.PtrStateSet",
-        45575usize,
+        45887usize,
         "HelloUltraviolet::Reference::ModalTypes",
         "runModalTypesModalDeclarationsReference",
         "Source/Reference/ModalTypes/ModalDeclarations.uv"
@@ -81,195 +81,6 @@ public procedure validatedModalAndSpecialTypesSafePointerTypesObligations() -> u
     }
     if acceptedObligationEntryMatches(
         "def.SafePointerTypeForms",
-        45587usize,
-        "HelloUltraviolet::Reference::ModalTypes",
-        "runModalTypesModalDeclarationsReference",
-        "Source/Reference/ModalTypes/ModalDeclarations.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
-        "rule.13.WF-Ptr",
-        45602usize,
-        "HelloUltraviolet::Reference::ModalTypes",
-        "runModalTypesModalDeclarationsReference",
-        "Source/Reference/ModalTypes/ModalDeclarations.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
-        "def.SafePointerTraits",
-        45618usize,
-        "HelloUltraviolet::Reference::ModalTypes",
-        "runModalTypesModalDeclarationsReference",
-        "Source/Reference/ModalTypes/ModalDeclarations.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
-        "rule.13.Sub-Ptr-State",
-        45632usize,
-        "HelloUltraviolet::Reference::ModalTypes",
-        "runModalTypesModalDeclarationsReference",
-        "Source/Reference/ModalTypes/ModalDeclarations.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
-        "def.SafePointerRuntimeConstructors",
-        45650usize,
-        "HelloUltraviolet::Reference::ModalTypes",
-        "runModalTypesModalDeclarationsReference",
-        "Source/Reference/ModalTypes/ModalDeclarations.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
-        "def.SafePointerValueType",
-        45664usize,
-        "HelloUltraviolet::Reference::ModalTypes",
-        "runModalTypesModalDeclarationsReference",
-        "Source/Reference/ModalTypes/ModalDeclarations.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
-        "def.PtrStateImmediate",
-        45676usize,
-        "HelloUltraviolet::Reference::ModalTypes",
-        "runModalTypesModalDeclarationsReference",
-        "Source/Reference/ModalTypes/ModalDeclarations.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
-        "def.PtrStateValid",
-        45689usize,
-        "HelloUltraviolet::Reference::ModalTypes",
-        "runModalTypesModalDeclarationsReference",
-        "Source/Reference/ModalTypes/ModalDeclarations.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
-        "def.PtrAddrJudgementSet",
-        45704usize,
-        "HelloUltraviolet::Reference::ModalTypes",
-        "runModalTypesModalDeclarationsReference",
-        "Source/Reference/ModalTypes/ModalDeclarations.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
-        "rule.13.ReadPtr-Safe",
-        45716usize,
-        "HelloUltraviolet::Reference::ModalTypes",
-        "runModalTypesModalDeclarationsReference",
-        "Source/Reference/ModalTypes/ModalDeclarations.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
-        "rule.13.WritePtr-Safe",
-        45732usize,
-        "HelloUltraviolet::Reference::ModalTypes",
-        "runModalTypesModalDeclarationsReference",
-        "Source/Reference/ModalTypes/ModalDeclarations.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
-        "rule.13.ReadPtr-Null",
-        45748usize,
-        "HelloUltraviolet::Reference::ModalTypes",
-        "runModalTypesModalDeclarationsReference",
-        "Source/Reference/ModalTypes/ModalDeclarations.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
-        "rule.13.ReadPtr-Expired",
-        45764usize,
-        "HelloUltraviolet::Reference::ModalTypes",
-        "runModalTypesModalDeclarationsReference",
-        "Source/Reference/ModalTypes/ModalDeclarations.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
-        "rule.13.WritePtr-Null",
-        45780usize,
-        "HelloUltraviolet::Reference::ModalTypes",
-        "runModalTypesModalDeclarationsReference",
-        "Source/Reference/ModalTypes/ModalDeclarations.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
-        "rule.13.WritePtr-Expired",
-        45796usize,
-        "HelloUltraviolet::Reference::ModalTypes",
-        "runModalTypesModalDeclarationsReference",
-        "Source/Reference/ModalTypes/ModalDeclarations.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
-        "rule.13.Size-Ptr",
-        45814usize,
-        "HelloUltraviolet::Reference::ModalTypes",
-        "runModalTypesModalDeclarationsReference",
-        "Source/Reference/ModalTypes/ModalDeclarations.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
-        "rule.13.Align-Ptr",
-        45830usize,
-        "HelloUltraviolet::Reference::ModalTypes",
-        "runModalTypesModalDeclarationsReference",
-        "Source/Reference/ModalTypes/ModalDeclarations.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
-        "rule.13.Layout-Ptr",
-        45846usize,
-        "HelloUltraviolet::Reference::ModalTypes",
-        "runModalTypesModalDeclarationsReference",
-        "Source/Reference/ModalTypes/ModalDeclarations.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
-        "def.SafePointerSizeAlignEquations",
-        45862usize,
-        "HelloUltraviolet::Reference::ModalTypes",
-        "runModalTypesModalDeclarationsReference",
-        "Source/Reference/ModalTypes/ModalDeclarations.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
-        "def.PtrDiagRefs",
-        45874usize,
-        "HelloUltraviolet::Reference::ModalTypes",
-        "runModalTypesModalDeclarationsReference",
-        "Source/Reference/ModalTypes/ModalDeclarations.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
-        "def.SafePointerNicheSet",
-        45886usize,
-        "HelloUltraviolet::Reference::ModalTypes",
-        "runModalTypesModalDeclarationsReference",
-        "Source/Reference/ModalTypes/ModalDeclarations.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
-        "def.SafePointerValidValue",
         45899usize,
         "HelloUltraviolet::Reference::ModalTypes",
         "runModalTypesModalDeclarationsReference",
@@ -278,7 +89,7 @@ public procedure validatedModalAndSpecialTypesSafePointerTypesObligations() -> u
         count = count + 1usize
     }
     if acceptedObligationEntryMatches(
-        "def.SafePointerValueBits",
+        "rule.13.WF-Ptr",
         45914usize,
         "HelloUltraviolet::Reference::ModalTypes",
         "runModalTypesModalDeclarationsReference",
@@ -287,8 +98,197 @@ public procedure validatedModalAndSpecialTypesSafePointerTypesObligations() -> u
         count = count + 1usize
     }
     if acceptedObligationEntryMatches(
+        "def.SafePointerTraits",
+        45930usize,
+        "HelloUltraviolet::Reference::ModalTypes",
+        "runModalTypesModalDeclarationsReference",
+        "Source/Reference/ModalTypes/ModalDeclarations.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "rule.13.Sub-Ptr-State",
+        45944usize,
+        "HelloUltraviolet::Reference::ModalTypes",
+        "runModalTypesModalDeclarationsReference",
+        "Source/Reference/ModalTypes/ModalDeclarations.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "def.SafePointerRuntimeConstructors",
+        45962usize,
+        "HelloUltraviolet::Reference::ModalTypes",
+        "runModalTypesModalDeclarationsReference",
+        "Source/Reference/ModalTypes/ModalDeclarations.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "def.SafePointerValueType",
+        45976usize,
+        "HelloUltraviolet::Reference::ModalTypes",
+        "runModalTypesModalDeclarationsReference",
+        "Source/Reference/ModalTypes/ModalDeclarations.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "def.PtrStateImmediate",
+        45988usize,
+        "HelloUltraviolet::Reference::ModalTypes",
+        "runModalTypesModalDeclarationsReference",
+        "Source/Reference/ModalTypes/ModalDeclarations.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "def.PtrStateValid",
+        46001usize,
+        "HelloUltraviolet::Reference::ModalTypes",
+        "runModalTypesModalDeclarationsReference",
+        "Source/Reference/ModalTypes/ModalDeclarations.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "def.PtrAddrJudgementSet",
+        46016usize,
+        "HelloUltraviolet::Reference::ModalTypes",
+        "runModalTypesModalDeclarationsReference",
+        "Source/Reference/ModalTypes/ModalDeclarations.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "rule.13.ReadPtr-Safe",
+        46028usize,
+        "HelloUltraviolet::Reference::ModalTypes",
+        "runModalTypesModalDeclarationsReference",
+        "Source/Reference/ModalTypes/ModalDeclarations.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "rule.13.WritePtr-Safe",
+        46044usize,
+        "HelloUltraviolet::Reference::ModalTypes",
+        "runModalTypesModalDeclarationsReference",
+        "Source/Reference/ModalTypes/ModalDeclarations.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "rule.13.ReadPtr-Null",
+        46060usize,
+        "HelloUltraviolet::Reference::ModalTypes",
+        "runModalTypesModalDeclarationsReference",
+        "Source/Reference/ModalTypes/ModalDeclarations.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "rule.13.ReadPtr-Expired",
+        46076usize,
+        "HelloUltraviolet::Reference::ModalTypes",
+        "runModalTypesModalDeclarationsReference",
+        "Source/Reference/ModalTypes/ModalDeclarations.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "rule.13.WritePtr-Null",
+        46092usize,
+        "HelloUltraviolet::Reference::ModalTypes",
+        "runModalTypesModalDeclarationsReference",
+        "Source/Reference/ModalTypes/ModalDeclarations.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "rule.13.WritePtr-Expired",
+        46108usize,
+        "HelloUltraviolet::Reference::ModalTypes",
+        "runModalTypesModalDeclarationsReference",
+        "Source/Reference/ModalTypes/ModalDeclarations.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "rule.13.Size-Ptr",
+        46126usize,
+        "HelloUltraviolet::Reference::ModalTypes",
+        "runModalTypesModalDeclarationsReference",
+        "Source/Reference/ModalTypes/ModalDeclarations.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "rule.13.Align-Ptr",
+        46142usize,
+        "HelloUltraviolet::Reference::ModalTypes",
+        "runModalTypesModalDeclarationsReference",
+        "Source/Reference/ModalTypes/ModalDeclarations.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "rule.13.Layout-Ptr",
+        46158usize,
+        "HelloUltraviolet::Reference::ModalTypes",
+        "runModalTypesModalDeclarationsReference",
+        "Source/Reference/ModalTypes/ModalDeclarations.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "def.SafePointerSizeAlignEquations",
+        46174usize,
+        "HelloUltraviolet::Reference::ModalTypes",
+        "runModalTypesModalDeclarationsReference",
+        "Source/Reference/ModalTypes/ModalDeclarations.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "def.PtrDiagRefs",
+        46186usize,
+        "HelloUltraviolet::Reference::ModalTypes",
+        "runModalTypesModalDeclarationsReference",
+        "Source/Reference/ModalTypes/ModalDeclarations.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "def.SafePointerNicheSet",
+        46198usize,
+        "HelloUltraviolet::Reference::ModalTypes",
+        "runModalTypesModalDeclarationsReference",
+        "Source/Reference/ModalTypes/ModalDeclarations.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "def.SafePointerValidValue",
+        46211usize,
+        "HelloUltraviolet::Reference::ModalTypes",
+        "runModalTypesModalDeclarationsReference",
+        "Source/Reference/ModalTypes/ModalDeclarations.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "def.SafePointerValueBits",
+        46226usize,
+        "HelloUltraviolet::Reference::ModalTypes",
+        "runModalTypesModalDeclarationsReference",
+        "Source/Reference/ModalTypes/ModalDeclarations.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
         "diag.SafePointerTypes",
-        45931usize,
+        46243usize,
         "HelloUltraviolet::Reference::ModalTypes",
         "runModalTypesModalDeclarationsReference",
         "Source/Reference/ModalTypes/ModalDeclarations.uv"

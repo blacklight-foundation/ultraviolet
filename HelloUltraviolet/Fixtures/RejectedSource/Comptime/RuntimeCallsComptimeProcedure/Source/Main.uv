@@ -1,0 +1,9 @@
+//! Rejected compile-time specimen for runtime use of a compile-time procedure.
+
+comptime procedure buildValue() -> i32 {
+    return 1
+}
+
+public procedure runtimeCallsComptimeProcedureReference() -> i32 {
+    return buildValue()
+}

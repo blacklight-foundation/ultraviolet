@@ -1,0 +1,13 @@
+//! Rejected compile-time specimen for introspect.fields on a non-record type.
+
+[[reflect]]
+public enum ReflectionEnum {
+    Value
+}
+
+public procedure introspectFieldsNonRecordReference() -> i32 {
+    comptime {
+        let fields = introspect~>fields(Type::<ReflectionEnum>)
+    }
+    return 0
+}

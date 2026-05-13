@@ -1,0 +1,8 @@
+//! Rejected compile-time specimen for user error diagnostic emission.
+
+public procedure userDiagnosticErrorReference() -> i32 {
+    comptime {
+        diagnostics~>error("compile-time user diagnostic")
+    }
+    return 0
+}

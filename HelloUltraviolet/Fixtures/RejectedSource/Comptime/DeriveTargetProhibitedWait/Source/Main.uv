@@ -1,0 +1,11 @@
+//! Rejected derive specimen for prohibited runtime constructs in derive bodies.
+
+derive target WaitInDeriveTarget(target: Type) {
+    let reflected = target
+    let value: i32 = wait 1
+}
+
+[[derive(WaitInDeriveTarget)]]
+public record DeriveTargetProhibitedWaitReference {
+    public value: i32
+}

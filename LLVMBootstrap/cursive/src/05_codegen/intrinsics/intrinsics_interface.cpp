@@ -223,6 +223,17 @@ RuntimeCategoryMap BuildRuntimeCategoryMap() {
   AddRuntimeSymbol(categories, RuntimeSymbolCategory::System, BuiltinSymSystemCurrentDirectory());
   AddRuntimeSymbol(categories, RuntimeSymbolCategory::System, BuiltinSymSystemRun());
 
+  // Time
+  AddRuntimeSymbol(categories, RuntimeSymbolCategory::Time, BuiltinSymTimeMonotonic());
+  AddRuntimeSymbol(categories, RuntimeSymbolCategory::Time, BuiltinSymTimeWall());
+  AddRuntimeSymbol(categories, RuntimeSymbolCategory::Time, BuiltinSymMonotonicTimeNow());
+  AddRuntimeSymbol(categories, RuntimeSymbolCategory::Time, BuiltinSymMonotonicTimeResolution());
+  AddRuntimeSymbol(categories, RuntimeSymbolCategory::Time, BuiltinSymMonotonicTimeElapsed());
+  AddRuntimeSymbol(categories, RuntimeSymbolCategory::Time, BuiltinSymMonotonicTimeCoarsen());
+  AddRuntimeSymbol(categories, RuntimeSymbolCategory::Time, BuiltinSymWallTimeNowUtc());
+  AddRuntimeSymbol(categories, RuntimeSymbolCategory::Time, BuiltinSymWallTimeResolution());
+  AddRuntimeSymbol(categories, RuntimeSymbolCategory::Time, BuiltinSymWallTimeCoarsen());
+
   // ExecutionDomain and Context domain builtins
   AddRuntimeSymbol(categories, RuntimeSymbolCategory::ExecutionDomain, BuiltinSymExecutionDomainName());
   AddRuntimeSymbol(categories, RuntimeSymbolCategory::ExecutionDomain, BuiltinSymExecutionDomainMaxConcurrency());
@@ -567,6 +578,9 @@ RuntimeSymbolCategory CategorizeRuntimeSymbol(const std::string& symbol) {
     if (suffix.rfind("system", 0) == 0) {
       return RuntimeSymbolCategory::System;
     }
+    if (suffix.rfind("time", 0) == 0) {
+      return RuntimeSymbolCategory::Time;
+    }
     if (suffix.rfind("execution_domain", 0) == 0) {
       return RuntimeSymbolCategory::ExecutionDomain;
     }
@@ -677,8 +691,17 @@ std::optional<RuntimeFuncInfo> GetRuntimeFuncInfo(const std::string& symbol) {
       analysis::MakeTypeDynamic({"FileSystem"});
   const analysis::TypeRef t_network = analysis::MakeTypeDynamic({"Network"});
   const analysis::TypeRef t_heap_alloc = analysis::MakeTypeDynamic({"HeapAllocator"});
+  const analysis::TypeRef t_time = analysis::MakeTypeDynamic({"Time"});
+  const analysis::TypeRef t_monotonic_time =
+      analysis::MakeTypeDynamic({"MonotonicTime"});
+  const analysis::TypeRef t_wall_time = analysis::MakeTypeDynamic({"WallTime"});
   const analysis::TypeRef t_context = analysis::MakeTypePath({"Context"});
   const analysis::TypeRef t_io_error = analysis::MakeTypePath({"IoError"});
+  const analysis::TypeRef t_time_error = analysis::MakeTypePath({"TimeError"});
+  const analysis::TypeRef t_duration = analysis::MakeTypePath({"Duration"});
+  const analysis::TypeRef t_monotonic_instant =
+      analysis::MakeTypePath({"MonotonicInstant"});
+  const analysis::TypeRef t_utc_instant = analysis::MakeTypePath({"UtcInstant"});
   const analysis::TypeRef t_dir_entry = analysis::MakeTypePath({"DirEntry"});
   const analysis::TypeRef t_file_read =
       analysis::MakeTypeModalState({"File"}, "Read");
@@ -1047,6 +1070,57 @@ std::optional<RuntimeFuncInfo> GetRuntimeFuncInfo(const std::string& symbol) {
     info.params.push_back(make_param("ptr", t_raw_mut_u8));
     info.params.push_back(make_param("count", t_usize));
     info.ret = t_unit;
+    return info;
+  }
+
+  // Time methods.
+  if (symbol == BuiltinSymTimeMonotonic()) {
+    info.params.push_back(make_param("self", t_time));
+    info.ret = t_monotonic_time;
+    return info;
+  }
+  if (symbol == BuiltinSymTimeWall()) {
+    info.params.push_back(make_param("self", t_time));
+    info.ret = t_wall_time;
+    return info;
+  }
+  if (symbol == BuiltinSymMonotonicTimeNow()) {
+    info.params.push_back(make_param("self", t_monotonic_time));
+    info.ret = t_monotonic_instant;
+    return info;
+  }
+  if (symbol == BuiltinSymMonotonicTimeResolution()) {
+    info.params.push_back(make_param("self", t_monotonic_time));
+    info.ret = t_duration;
+    return info;
+  }
+  if (symbol == BuiltinSymMonotonicTimeElapsed()) {
+    info.params.push_back(make_param("self", t_monotonic_time));
+    info.params.push_back(make_param("start", t_monotonic_instant));
+    info.params.push_back(make_param("end", t_monotonic_instant));
+    info.ret = make_outcome(t_duration, t_time_error);
+    return info;
+  }
+  if (symbol == BuiltinSymMonotonicTimeCoarsen()) {
+    info.params.push_back(make_param("self", t_monotonic_time));
+    info.params.push_back(make_param("resolution", t_duration));
+    info.ret = make_outcome(t_monotonic_time, t_time_error);
+    return info;
+  }
+  if (symbol == BuiltinSymWallTimeNowUtc()) {
+    info.params.push_back(make_param("self", t_wall_time));
+    info.ret = make_outcome(t_utc_instant, t_time_error);
+    return info;
+  }
+  if (symbol == BuiltinSymWallTimeResolution()) {
+    info.params.push_back(make_param("self", t_wall_time));
+    info.ret = make_outcome(t_duration, t_time_error);
+    return info;
+  }
+  if (symbol == BuiltinSymWallTimeCoarsen()) {
+    info.params.push_back(make_param("self", t_wall_time));
+    info.params.push_back(make_param("resolution", t_duration));
+    info.ret = make_outcome(t_wall_time, t_time_error);
     return info;
   }
 

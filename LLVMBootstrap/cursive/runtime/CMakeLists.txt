@@ -141,6 +141,7 @@ set(CURSIVE_RUNTIME_SOURCES
   src/network/network.c
   src/system/process.c
   src/system/raw_dylib.c
+  src/time/time.c
 
   # Concurrency
   src/concurrency/key.c

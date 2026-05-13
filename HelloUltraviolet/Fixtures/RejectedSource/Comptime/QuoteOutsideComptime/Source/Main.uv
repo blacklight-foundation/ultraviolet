@@ -1,0 +1,6 @@
+//! Rejected compile-time specimen for quote use outside Phase 2.
+
+public procedure quoteOutsideComptimeReference() -> i32 {
+    let ast = quote { 1 + 2 }
+    return 0
+}

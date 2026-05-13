@@ -48,11 +48,14 @@ static inline void SpecDefsContextCaps() {
   SPEC_DEF("Priority", "5.9.4");
 }
 
-static constexpr std::array<std::string_view, 4> kBuiltinRecordNames = {
+static constexpr std::array<std::string_view, 7> kBuiltinRecordNames = {
     "RegionOptions",
     "DirEntry",
     "Context",
     "System",
+    "Duration",
+    "MonotonicInstant",
+    "UtcInstant",
 };
 
 static std::optional<ast::Path> BuiltinRecordPath(std::string_view builtin_name) {
@@ -233,6 +236,9 @@ static bool MatchesContextBundleFieldType(const ast::Type& type,
   if (IdEq(field_name, "reactor")) {
     return MatchesDynamicBuiltinType(type, "Reactor");
   }
+  if (IdEq(field_name, "time")) {
+    return MatchesDynamicBuiltinType(type, "Time");
+  }
   if (IdEq(field_name, "cpu") || IdEq(field_name, "gpu") ||
       IdEq(field_name, "inline")) {
     return MatchesDynamicBuiltinType(type, "ExecutionDomain");
@@ -392,6 +398,9 @@ std::optional<TypeRef> ContextFieldType(std::string_view field_name) {
   if (IdEq(field_name, "reactor")) {
     return MakeTypeDynamic({"Reactor"});
   }
+  if (IdEq(field_name, "time")) {
+    return MakeTypeDynamic({"Time"});
+  }
 
   return std::nullopt;
 }
@@ -546,6 +555,9 @@ bool IsCapabilityClassPath(const ast::ClassPath& path) {
          PathMatchesBuiltinName(path, "HeapAllocator") ||
          PathMatchesBuiltinName(path, "ExecutionDomain") ||
          PathMatchesBuiltinName(path, "Reactor") ||
+         PathMatchesBuiltinName(path, "Time") ||
+         PathMatchesBuiltinName(path, "MonotonicTime") ||
+         PathMatchesBuiltinName(path, "WallTime") ||
          PathMatchesBuiltinName(path, "System");
 }
 

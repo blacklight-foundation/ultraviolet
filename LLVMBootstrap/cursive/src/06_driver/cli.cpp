@@ -89,6 +89,18 @@ std::optional<bool> ParseToggleMode(std::string_view value) {
   return std::nullopt;
 }
 
+std::optional<std::string> NormalizeOptLevel(std::string_view value) {
+  if (value == "O0" || value == "0") return std::string("O0");
+  if (value == "O1" || value == "1") return std::string("O1");
+  if (value == "O2" || value == "2" || value == "release") {
+    return std::string("O2");
+  }
+  if (value == "O3" || value == "3") return std::string("O3");
+  if (value == "Os" || value == "s") return std::string("Os");
+  if (value == "Oz" || value == "z") return std::string("Oz");
+  return std::nullopt;
+}
+
 // Parse a comma-separated list of debug subsystem names.
 std::vector<std::string> ParseDebugSubsystems(std::string_view value) {
   std::vector<std::string> result;
@@ -261,6 +273,7 @@ std::string SuggestFlag(std::string_view unknown) {
       "--color", "--check", "--diag-json", "--dump", "--dump-ast",
       "--assembly", "--out-dir",
       "--target-profile",
+      "--opt-level",
       "--build-progress", "--incremental",
       "--max-errors", "--no-crash-report",
       "--runtime-lib",
@@ -354,6 +367,26 @@ CliParseResult ParseArgs(int argc, char** argv) {
                     "x86_64-win64, aarch64-aapcs64");
       }
       opts.target_profile_override = *profile;
+      continue;
+    }
+    if (arg == "--opt-level") {
+      if (i + 1 >= argc) {
+        return Fail("--opt-level requires a value (O0|O1|O2|O3|Os|Oz)");
+      }
+      const auto parsed = NormalizeOptLevel(std::string_view(argv[++i]));
+      if (!parsed.has_value()) {
+        return Fail("invalid --opt-level value; expected one of: O0, O1, O2, O3, Os, Oz");
+      }
+      opts.opt_level = *parsed;
+      continue;
+    }
+    if (StartsWith(arg, "--opt-level=")) {
+      const auto parsed = NormalizeOptLevel(
+          arg.substr(std::string_view("--opt-level=").size()));
+      if (!parsed.has_value()) {
+        return Fail("invalid --opt-level value; expected one of: O0, O1, O2, O3, Os, Oz");
+      }
+      opts.opt_level = *parsed;
       continue;
     }
     if (arg == "--color") {
@@ -987,6 +1020,7 @@ OPTIONS
                              executable exists)
   --target-profile <profile> Select target profile: x86_64-sysv,
                              x86_64-win64, aarch64-aapcs64
+  --opt-level <level>        Select codegen optimization: O0, O1, O2, O3, Os, Oz
   --out-dir <path>           Override output directory (default: build/)
   --diag-json                Output diagnostics as JSON
   --dump                     Dump project structure

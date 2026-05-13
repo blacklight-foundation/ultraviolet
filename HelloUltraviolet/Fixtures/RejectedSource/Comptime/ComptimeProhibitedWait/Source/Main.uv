@@ -1,0 +1,8 @@
+//! Rejected compile-time specimen for a prohibited runtime construct.
+
+public procedure comptimeProhibitedWaitReference() -> i32 {
+    comptime {
+        let value: i32 = wait 1
+    }
+    return 0
+}

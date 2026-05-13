@@ -356,6 +356,55 @@ std::string BuiltinSymSystemRun() {
 }
 
 // =============================================================================
+// Section 14.9 Time builtins
+// =============================================================================
+
+std::string BuiltinSymTimeMonotonic() {
+  SPEC_RULE("BuiltinSym-Time-Monotonic");
+  return project::RuntimePathSig({"time", "monotonic"});
+}
+
+std::string BuiltinSymTimeWall() {
+  SPEC_RULE("BuiltinSym-Time-Wall");
+  return project::RuntimePathSig({"time", "wall"});
+}
+
+std::string BuiltinSymMonotonicTimeNow() {
+  SPEC_RULE("BuiltinSym-MonotonicTime-Now");
+  return project::RuntimePathSig({"time", "monotonic_now"});
+}
+
+std::string BuiltinSymMonotonicTimeResolution() {
+  SPEC_RULE("BuiltinSym-MonotonicTime-Resolution");
+  return project::RuntimePathSig({"time", "monotonic_resolution"});
+}
+
+std::string BuiltinSymMonotonicTimeElapsed() {
+  SPEC_RULE("BuiltinSym-MonotonicTime-Elapsed");
+  return project::RuntimePathSig({"time", "monotonic_elapsed"});
+}
+
+std::string BuiltinSymMonotonicTimeCoarsen() {
+  SPEC_RULE("BuiltinSym-MonotonicTime-Coarsen");
+  return project::RuntimePathSig({"time", "monotonic_coarsen"});
+}
+
+std::string BuiltinSymWallTimeNowUtc() {
+  SPEC_RULE("BuiltinSym-WallTime-NowUtc");
+  return project::RuntimePathSig({"time", "wall_now_utc"});
+}
+
+std::string BuiltinSymWallTimeResolution() {
+  SPEC_RULE("BuiltinSym-WallTime-Resolution");
+  return project::RuntimePathSig({"time", "wall_resolution"});
+}
+
+std::string BuiltinSymWallTimeCoarsen() {
+  SPEC_RULE("BuiltinSym-WallTime-Coarsen");
+  return project::RuntimePathSig({"time", "wall_coarsen"});
+}
+
+// =============================================================================
 // Section 18.2 ExecutionDomain builtins
 // =============================================================================
 
@@ -841,6 +890,19 @@ std::vector<std::string> RuntimeSpecSyms() {
   }};
   AppendRuntimeSymbols(syms, kSystemSymbols);
 
+  static const std::array<BuiltinSymbolFactory, 9> kTimeSymbols = {{
+      &BuiltinSymTimeMonotonic,
+      &BuiltinSymTimeWall,
+      &BuiltinSymMonotonicTimeNow,
+      &BuiltinSymMonotonicTimeResolution,
+      &BuiltinSymMonotonicTimeElapsed,
+      &BuiltinSymMonotonicTimeCoarsen,
+      &BuiltinSymWallTimeNowUtc,
+      &BuiltinSymWallTimeResolution,
+      &BuiltinSymWallTimeCoarsen,
+  }};
+  AppendRuntimeSymbols(syms, kTimeSymbols);
+
   static const std::array<BuiltinSymbolFactory, 24> kAdditionalBuiltinMethods = {{
       &BuiltinSymAsyncResume,
       &BuiltinSymAsyncAllocFrame,
@@ -980,6 +1042,19 @@ std::vector<std::string> RuntimeLinkRequiredSyms() {
   }};
   AppendRuntimeSymbols(syms, kSystemSymbols);
 
+  static const std::array<BuiltinSymbolFactory, 9> kTimeSymbols = {{
+      &BuiltinSymTimeMonotonic,
+      &BuiltinSymTimeWall,
+      &BuiltinSymMonotonicTimeNow,
+      &BuiltinSymMonotonicTimeResolution,
+      &BuiltinSymMonotonicTimeElapsed,
+      &BuiltinSymMonotonicTimeCoarsen,
+      &BuiltinSymWallTimeNowUtc,
+      &BuiltinSymWallTimeResolution,
+      &BuiltinSymWallTimeCoarsen,
+  }};
+  AppendRuntimeSymbols(syms, kTimeSymbols);
+
   SortUniqueSymbols(syms);
   return syms;
 }
@@ -1064,6 +1139,17 @@ std::string BuiltinSym(const std::string& qualified_name) {
       {"System::argument", &BuiltinSymSystemArgument},
       {"System::current_directory", &BuiltinSymSystemCurrentDirectory},
       {"System::run", &BuiltinSymSystemRun},
+  }};
+  static const std::array<BuiltinSymbolEntry, 9> kTimeBuiltins = {{
+      {"Time::monotonic", &BuiltinSymTimeMonotonic},
+      {"Time::wall", &BuiltinSymTimeWall},
+      {"MonotonicTime::now", &BuiltinSymMonotonicTimeNow},
+      {"MonotonicTime::resolution", &BuiltinSymMonotonicTimeResolution},
+      {"MonotonicTime::elapsed", &BuiltinSymMonotonicTimeElapsed},
+      {"MonotonicTime::coarsen", &BuiltinSymMonotonicTimeCoarsen},
+      {"WallTime::now_utc", &BuiltinSymWallTimeNowUtc},
+      {"WallTime::resolution", &BuiltinSymWallTimeResolution},
+      {"WallTime::coarsen", &BuiltinSymWallTimeCoarsen},
   }};
   static const std::array<BuiltinSymbolEntry, 2> kExecutionDomainBuiltins = {{
       {"ExecutionDomain::name", &BuiltinSymExecutionDomainName},
@@ -1155,6 +1241,12 @@ std::string BuiltinSym(const std::string& qualified_name) {
 
   // System methods
   if (const auto sym = LookupBuiltinSymbol(qualified_name, kSystemBuiltins);
+      !sym.empty()) {
+    return sym;
+  }
+
+  // Time methods
+  if (const auto sym = LookupBuiltinSymbol(qualified_name, kTimeBuiltins);
       !sym.empty()) {
     return sym;
   }
@@ -1268,6 +1360,15 @@ void AnchorBuiltinSymRules() {
   SPEC_RULE("BuiltinSym-System-Exit");
   SPEC_RULE("BuiltinSym-System-GetEnv");
   SPEC_RULE("BuiltinSym-System-Run");
+  SPEC_RULE("BuiltinSym-Time-Monotonic");
+  SPEC_RULE("BuiltinSym-Time-Wall");
+  SPEC_RULE("BuiltinSym-MonotonicTime-Now");
+  SPEC_RULE("BuiltinSym-MonotonicTime-Resolution");
+  SPEC_RULE("BuiltinSym-MonotonicTime-Elapsed");
+  SPEC_RULE("BuiltinSym-MonotonicTime-Coarsen");
+  SPEC_RULE("BuiltinSym-WallTime-NowUtc");
+  SPEC_RULE("BuiltinSym-WallTime-Resolution");
+  SPEC_RULE("BuiltinSym-WallTime-Coarsen");
 
   // Section 6.8 Panic
   SPEC_RULE("PanicSym");

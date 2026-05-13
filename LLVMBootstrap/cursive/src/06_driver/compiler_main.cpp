@@ -104,6 +104,7 @@
 #include "05_codegen/lower/lower_expr.h"
 #include "05_codegen/lower/lower_module.h"
 #include "05_codegen/intrinsics/builtins.h"
+#include "05_codegen/llvm/llvm_passes.h"
 
 namespace {
 
@@ -1689,6 +1690,19 @@ std::string EffectiveEmitIR(const cursive::project::Project& project) {
   return cursive::project::IsExecutable(project) ? "none" : "ll";
 }
 
+cursive::codegen::OptLevel EffectiveOptLevel(
+    const cursive::driver::CliOptions& opts) {
+  if (!opts.opt_level.has_value()) {
+    return cursive::codegen::OptLevel::O0;
+  }
+  if (*opts.opt_level == "O1") return cursive::codegen::OptLevel::O1;
+  if (*opts.opt_level == "O2") return cursive::codegen::OptLevel::O2;
+  if (*opts.opt_level == "O3") return cursive::codegen::OptLevel::O3;
+  if (*opts.opt_level == "Os") return cursive::codegen::OptLevel::Os;
+  if (*opts.opt_level == "Oz") return cursive::codegen::OptLevel::Oz;
+  return cursive::codegen::OptLevel::O0;
+}
+
 struct IncrementalNoopCheckResult {
   bool reusable = false;
   std::size_t modules = 0;
@@ -2314,6 +2328,7 @@ int cursive::driver::RunCompiler(int argc, char** argv) {
       selected_target_profile.has_value()) {
     const auto& proj = *project_result.project;
     const auto target_profile = *selected_target_profile;
+    const auto opt_level = EffectiveOptLevel(*opts);
     if (!opts->phase1_only && !opts->check_only && !opts->emit_ir &&
         !opts->no_output) {
       const auto global_noop =
@@ -2538,28 +2553,52 @@ int cursive::driver::RunCompiler(int argc, char** argv) {
         const auto comptime_start = std::chrono::steady_clock::now();
         log_machine("phase=comptime project-start modules=" +
                     std::to_string(project_modules.size()));
-        auto expanded_project = frontend::ExecuteComptime(
-            project_modules, BuildComptimeOptions(proj));
-        for (const auto& diag : expanded_project.diags) {
+        analysis::ScopeContext comptime_signature_ctx;
+        comptime_signature_ctx.project = &proj;
+        comptime_signature_ctx.target_profile = target_profile;
+        comptime_signature_ctx.sigma.mods = project_modules;
+        comptime_signature_ctx.sigma.unsafe_spans_by_file =
+            parsed_unsafe_spans_by_file;
+        comptime_signature_ctx.scopes =
+            {analysis::Scope{}, analysis::Scope{}, analysis::Scope{}};
+        const auto comptime_signature_diags =
+            analysis::ValidateComptimeProcedureSignatures(
+                comptime_signature_ctx, project_modules);
+        for (const auto& diag : comptime_signature_diags) {
           core::Emit(comptime_phase_diags, diag);
         }
-        const bool comptime_has_errors = core::HasError(expanded_project.diags);
-        if (!expanded_project.modules.has_value() || comptime_has_errors) {
+        const bool comptime_signature_has_errors =
+            core::HasError(comptime_signature_diags);
+        std::optional<frontend::ComptimeResult> expanded_project;
+        if (!comptime_signature_has_errors) {
+          expanded_project = frontend::ExecuteComptime(
+              project_modules, BuildComptimeOptions(proj));
+          for (const auto& diag : expanded_project->diags) {
+            core::Emit(comptime_phase_diags, diag);
+          }
+        }
+        const bool comptime_has_errors =
+            comptime_signature_has_errors ||
+            (expanded_project.has_value() &&
+             core::HasError(expanded_project->diags));
+        if (comptime_signature_has_errors || !expanded_project.has_value() ||
+            !expanded_project->modules.has_value() || comptime_has_errors) {
           log_machine("phase=comptime project-finish ok=false expanded_modules=" +
-                      std::to_string(expanded_project.modules.has_value()
-                                         ? expanded_project.modules->size()
+                      std::to_string(expanded_project.has_value() &&
+                                             expanded_project->modules.has_value()
+                                         ? expanded_project->modules->size()
                                          : 0) +
                       " emitted_diags=" +
-                      std::to_string(expanded_project.diags.size()));
+                      std::to_string(comptime_phase_diags.size()));
           comptime_ok = false;
         } else {
-          project_modules = std::move(*expanded_project.modules);
+          project_modules = std::move(*expanded_project->modules);
           parsed_modules =
               FilterAstModulesByModuleInfo(project_modules, reachable_modules);
           log_machine("phase=comptime project-finish ok=true expanded_modules=" +
                       std::to_string(project_modules.size()) +
                       " emitted_diags=" +
-                      std::to_string(expanded_project.diags.size()));
+                      std::to_string(comptime_phase_diags.size()));
         }
         comptime_ms = std::chrono::duration_cast<std::chrono::milliseconds>(
             std::chrono::steady_clock::now() - comptime_start).count();
@@ -3209,17 +3248,17 @@ int cursive::driver::RunCompiler(int argc, char** argv) {
                   driver::OutputPipelineDeps out_deps;
                   out_deps.ensure_dir = EnsureDir;
                   out_deps.codegen_obj =
-                      [ensure_cache, target_profile](const project::ModuleInfo& module,
+                      [ensure_cache, target_profile, opt_level](const project::ModuleInfo& module,
                                              const project::Project& p)
                           -> std::optional<std::string> {
                     const auto cache = ensure_cache(p);
                     if (!cache || !cache->ok.load()) {
                       return std::nullopt;
                     }
-                    return CodegenObj(*cache, module, p, target_profile);
+                    return CodegenObj(*cache, module, p, target_profile, opt_level);
                   };
                   out_deps.codegen_obj_and_ir =
-                      [ensure_cache, target_profile](const project::ModuleInfo& module,
+                      [ensure_cache, target_profile, opt_level](const project::ModuleInfo& module,
                                              const project::Project& p,
                                              std::string_view emit_ir)
                           -> std::optional<driver::CodegenObjectAndIR> {
@@ -3231,6 +3270,7 @@ int cursive::driver::RunCompiler(int argc, char** argv) {
                                            module,
                                            p,
                                            target_profile,
+                                           opt_level,
                                            emit_ir);
                   };
                   out_deps.codegen_ir =

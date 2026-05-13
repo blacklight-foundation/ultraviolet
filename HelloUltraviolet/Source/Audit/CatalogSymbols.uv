@@ -8,6 +8,7 @@ using HelloUltraviolet::Reference::Authority::{ runAuthorityFileSystemReference 
 using HelloUltraviolet::Reference::Authority::{ runAuthorityNetworkReference }
 using HelloUltraviolet::Reference::Authority::{ runAuthorityRegionsAndFramesReference }
 using HelloUltraviolet::Reference::Authority::{ runAuthoritySystemReference }
+using HelloUltraviolet::Reference::Authority::{ runAuthorityTimeReference }
 using HelloUltraviolet::Reference::Comptime::{ runComptimeCompileTimeFormsReference }
 using HelloUltraviolet::Reference::Conformance::{ runConformanceBehaviorClassificationReference }
 using HelloUltraviolet::Reference::Conformance::{ runConformanceConstructVocabularyReference }
@@ -67,11 +68,11 @@ using HelloUltraviolet::Reference::Types::{ runTypesInferenceReference }
 using HelloUltraviolet::Reference::Types::{ runTypesSubtypingReference }
 
 public procedure expectedCatalogCompiledSymbolCount() -> usize {
-    return 65usize
+    return 66usize
 }
 
 public procedure catalogCompiledSymbolCount() -> usize {
-    return 65usize
+    return 66usize
 }
 
 internal procedure catalogSymbolTargetMatches(
@@ -152,6 +153,14 @@ public procedure catalogCompiledSymbolTargetsAreIndexed() -> bool {
             "HelloUltraviolet::Reference::Authority",
             "runAuthoritySystemReference",
             "Source/Reference/Authority/System.uv"
+        ) &&
+        catalogSymbolTargetMatches(
+            "HelloUltraviolet::Reference::Authority",
+            "runAuthorityTimeReference",
+            "Source/Reference/Authority/Time.uv",
+            "HelloUltraviolet::Reference::Authority",
+            "runAuthorityTimeReference",
+            "Source/Reference/Authority/Time.uv"
         ) &&
         catalogSymbolTargetMatches(
             "HelloUltraviolet::Reference::Comptime",
@@ -611,9 +620,8 @@ public procedure catalogCompiledSymbolTargetsAreIndexed() -> bool {
         )
 }
 
-public procedure catalogCompiledSymbolsExecute() -> bool {
-    return catalogCompiledSymbolTargetsAreIndexed() &&
-        runAsyncAsyncTypeReference() &&
+public procedure catalogCompiledSymbolsExecute(context: Context) -> bool {
+    return runAsyncAsyncTypeReference() &&
         runAttributesGeneralAttributesReference() &&
         runAuthorityBindingRuntimeStateReference() &&
         runAuthorityCapabilitiesReference() &&
@@ -621,6 +629,7 @@ public procedure catalogCompiledSymbolsExecute() -> bool {
         runAuthorityNetworkReference() &&
         runAuthorityRegionsAndFramesReference() &&
         runAuthoritySystemReference() &&
+        runAuthorityTimeReference(context) &&
         runComptimeCompileTimeFormsReference() &&
         runConformanceBehaviorClassificationReference() &&
         runConformanceConstructVocabularyReference() &&

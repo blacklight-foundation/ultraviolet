@@ -1037,7 +1037,7 @@ LowerResult LowerRefArgExprWithTemp(const ast::ExprPtr& expr,
   }
 
   if (analysis::HasSourceProvenance(expr)) {
-    return LowerAddrOf(*expr, ctx);
+    return LowerAddrOf(*expr, ctx, AddressUseKind::TransientNoEscape);
   }
 
   auto prev_suppress = ctx.suppress_temp_at_depth;
@@ -1080,7 +1080,8 @@ LowerResult LowerRefArgExprWithTemp(const ast::ExprPtr& expr,
   ast::Expr temp_ident;
   temp_ident.span = expr->span;
   temp_ident.node = ast::IdentifierExpr{temp_name};
-  auto addr_result = LowerAddrOf(temp_ident, ctx);
+  auto addr_result =
+      LowerAddrOf(temp_ident, ctx, AddressUseKind::TransientNoEscape);
 
   return LowerResult{SeqIR({value_result.ir, MakeIR(std::move(bind)), addr_result.ir}),
                      addr_result.value};

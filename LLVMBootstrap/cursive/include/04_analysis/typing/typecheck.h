@@ -26,4 +26,8 @@ TypecheckResult TypecheckModules(ScopeContext& ctx,
                                  const NameMapTable* precomputed_name_maps =
                                      nullptr);
 
+core::DiagnosticStream ValidateComptimeProcedureSignatures(
+    ScopeContext& ctx,
+    const std::vector<ast::ASTModule>& modules);
+
 }  // namespace cursive::analysis

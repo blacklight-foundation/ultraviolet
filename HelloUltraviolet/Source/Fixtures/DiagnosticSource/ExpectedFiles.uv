@@ -182,3 +182,29 @@ public procedure panicHandlingNoAdditionalDiagnosticsExpectedDiagnosticFileMatch
         "//! Expected diagnostic-absence metadata for the PanicHandlingNoAdditionalDiagnostics diagnostic-source specimen.\n\nexpectedDiagnosticAbsent(\"E-CON-0103\", \"diagnostics.20.PanicHandling\")\n"
     )
 }
+
+public procedure userDiagnosticWarningExpectedDiagnosticFileMatches(context: Context) -> bool {
+    return diagnosticExpectedFileMatches(
+        context,
+        "HelloUltraviolet/Fixtures/DiagnosticSource/Comptime/UserDiagnosticWarning/Expected.uv",
+        "//! Expected diagnostic metadata for the UserDiagnosticWarning diagnostic-source specimen.\n\nexpectedDiagnostic(\"W-CTE-0071\", \"rule.22.CtBuiltin-Diagnostics-Warning\")\nexpectedDiagnostic(\"W-CTE-0071\", \"diagnostics.22.CompileTimeDiagnosticsSupplement\")\n"
+    )
+}
+
+public procedure userDiagnosticNoteExpectedDiagnosticFileMatches(context: Context) -> bool {
+    return diagnosticExpectedFileMatches(
+        context,
+        "HelloUltraviolet/Fixtures/DiagnosticSource/Comptime/UserDiagnosticNote/Expected.uv",
+        "//! Expected diagnostic metadata for the UserDiagnosticNote diagnostic-source specimen.\n\nexpectedDiagnostic(\"\", \"rule.22.CtBuiltin-Diagnostics-Note\")\n"
+    )
+}
+
+public procedure projectFilesInvalidPathExpectedDiagnosticFileMatches(
+    context: Context
+) -> bool {
+    return diagnosticExpectedFileMatches(
+        context,
+        "HelloUltraviolet/Fixtures/DiagnosticSource/Comptime/ProjectFilesInvalidPath/Expected.uv",
+        "//! Expected diagnostic-absence metadata for the ProjectFilesInvalidPath diagnostic-source specimen.\n\nexpectedDiagnosticAbsent(\"E-CTE-0070\", \"requirement.22.ProjectFilesPathRestrictions\")\n"
+    )
+}

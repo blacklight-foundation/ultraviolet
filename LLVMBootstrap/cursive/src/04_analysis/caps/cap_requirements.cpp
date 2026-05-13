@@ -33,6 +33,7 @@
 #include "04_analysis/caps/cap_heap.h"
 #include "04_analysis/caps/cap_network.h"
 #include "04_analysis/caps/cap_system.h"
+#include "04_analysis/caps/cap_time.h"
 #include "04_analysis/resolve/scopes.h"
 #include "04_analysis/typing/type_decls.h"
 
@@ -689,6 +690,8 @@ std::string_view CapabilityKindName(CapabilityKind kind) {
       return "Reactor";
     case CapabilityKind::System:
       return "System";
+    case CapabilityKind::Time:
+      return "Time";
     case CapabilityKind::Context:
       return "Context";
   }
@@ -715,6 +718,10 @@ std::optional<CapabilityKind> CapabilityKindFromPath(const TypePath& path) {
   }
   if (IsSystemTypePath(path)) {
     return CapabilityKind::System;
+  }
+  if (IsTimeClassPath(class_path) || IsMonotonicTimeClassPath(class_path) ||
+      IsWallTimeClassPath(class_path)) {
+    return CapabilityKind::Time;
   }
   if (IsContextTypePath(path)) {
     return CapabilityKind::Context;
@@ -744,6 +751,7 @@ CapabilitySet CapabilitySet::FromContext() {
   set.has_execution_domain = true;
   set.has_reactor = true;
   set.has_system = true;
+  set.has_time = true;
   return set;
 }
 
@@ -767,6 +775,9 @@ void CapabilitySet::Add(CapabilityKind kind) {
     case CapabilityKind::System:
       has_system = true;
       break;
+    case CapabilityKind::Time:
+      has_time = true;
+      break;
     case CapabilityKind::Context:
       has_context = true;
       has_filesystem = true;
@@ -775,6 +786,7 @@ void CapabilitySet::Add(CapabilityKind kind) {
       has_execution_domain = true;
       has_reactor = true;
       has_system = true;
+      has_time = true;
       break;
   }
 }
@@ -797,6 +809,8 @@ bool CapabilitySet::Has(CapabilityKind kind) const {
       return has_reactor;
     case CapabilityKind::System:
       return has_system;
+    case CapabilityKind::Time:
+      return has_time;
     case CapabilityKind::Context:
       return has_context;
   }
@@ -815,6 +829,7 @@ bool CapabilitySet::IsSubsetOf(const CapabilitySet& other) const {
   if (has_execution_domain && !other.has_execution_domain) return false;
   if (has_reactor && !other.has_reactor) return false;
   if (has_system && !other.has_system) return false;
+  if (has_time && !other.has_time) return false;
   if (has_context && !other.has_context) return false;
   return true;
 }
@@ -827,6 +842,7 @@ CapabilitySet CapabilitySet::Union(const CapabilitySet& other) const {
   result.has_execution_domain = has_execution_domain || other.has_execution_domain;
   result.has_reactor = has_reactor || other.has_reactor;
   result.has_system = has_system || other.has_system;
+  result.has_time = has_time || other.has_time;
   result.has_context = has_context || other.has_context;
   return result;
 }
@@ -839,6 +855,7 @@ CapabilitySet CapabilitySet::Intersection(const CapabilitySet& other) const {
   result.has_execution_domain = has_execution_domain && other.has_execution_domain;
   result.has_reactor = has_reactor && other.has_reactor;
   result.has_system = has_system && other.has_system;
+  result.has_time = has_time && other.has_time;
   result.has_context = has_context && other.has_context;
   return result;
 }
@@ -846,7 +863,7 @@ CapabilitySet CapabilitySet::Intersection(const CapabilitySet& other) const {
 bool CapabilitySet::IsEmpty() const {
   return !has_filesystem && !has_network && !has_heap &&
          !has_execution_domain &&
-         !has_reactor && !has_system && !has_context;
+         !has_reactor && !has_system && !has_time && !has_context;
 }
 
 std::string CapabilitySet::ToString() const {
@@ -867,6 +884,7 @@ std::string CapabilitySet::ToString() const {
     if (has_execution_domain) append("ExecutionDomain");
     if (has_reactor) append("Reactor");
     if (has_system) append("System");
+    if (has_time) append("Time");
   }
   oss << "}";
   return oss.str();
@@ -1117,6 +1135,9 @@ CapabilityValidationResult ValidateCapabilitySatisfied(
   if (required.has_system && !provided.has_system) {
     missing.has_system = true;
   }
+  if (required.has_time && !provided.has_time) {
+    missing.has_time = true;
+  }
   if (required.has_context && !provided.has_context) {
     missing.has_context = true;
   }
@@ -1173,6 +1194,22 @@ std::optional<CapabilityKind> MethodCallRequiresCapability(
     if (IsHeapAllocatorClassPath(class_path)) {
       if (LookupHeapAllocatorMethodSig(method_name)) {
         return CapabilityKind::HeapAllocator;
+      }
+    }
+
+    if (IsTimeClassPath(class_path)) {
+      if (LookupTimeMethodSig(method_name)) {
+        return CapabilityKind::Time;
+      }
+    }
+    if (IsMonotonicTimeClassPath(class_path)) {
+      if (LookupMonotonicTimeMethodSig(method_name)) {
+        return CapabilityKind::Time;
+      }
+    }
+    if (IsWallTimeClassPath(class_path)) {
+      if (LookupWallTimeMethodSig(method_name)) {
+        return CapabilityKind::Time;
       }
     }
 

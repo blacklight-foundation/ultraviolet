@@ -484,7 +484,7 @@ RecordDeclResult TypeRecordDecl(
   if (!FieldVisOk(decl)) {
     SPEC_RULE("FieldVisOk-Err");
     result.ok = false;
-    result.diag_id = "FieldVisOk-Err";
+    result.diag_id = "E-TYP-1906";
     return result;
   }
 

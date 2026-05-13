@@ -37,6 +37,8 @@ namespace cursive::codegen {
 // Parameters:
 //   place - The place expression to take the address of
 //   ctx - The lowering context
+//   use_kind - Whether the resulting address is runtime-observable or a
+//              transient noescape implementation address
 //
 // Returns:
 //   LowerResult containing the IR to compute the address and the resulting
@@ -46,8 +48,7 @@ namespace cursive::codegen {
 // of the place expression.
 // ============================================================================
 
-// Declaration in lower_expr.h:
-// LowerResult LowerAddrOf(const ast::Expr& place, LowerCtx& ctx);
+// Declaration in lower_expr.h.
 
 // ============================================================================
 // LowerMovePlace - Move value out of a place

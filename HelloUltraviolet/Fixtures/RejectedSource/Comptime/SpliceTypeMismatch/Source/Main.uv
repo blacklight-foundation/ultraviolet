@@ -1,0 +1,8 @@
+//! Rejected quote/splice specimen for incompatible splice source type.
+
+public procedure spliceTypeMismatchReference() -> i32 {
+    comptime {
+        let ast = quote type { $(1) }
+    }
+    return 0
+}

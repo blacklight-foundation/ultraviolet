@@ -6,6 +6,13 @@
 
 #include "cursive_rt_language_symbols.h"
 
+#if defined(_MSC_VER)
+#define C0_ALIGNED_STRUCT(name, alignment) __declspec(align(alignment)) struct name
+#else
+#define C0_ALIGNED_STRUCT(name, alignment) \
+  struct __attribute__((aligned(alignment))) name
+#endif
+
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -42,12 +49,13 @@ typedef struct C0DynObject {
   void* vtable;
 } C0DynObject;
 
-// Context record: { fs: dyn FileSystem, net: dyn Network, heap: dyn HeapAllocator, sys: System (empty), reactor: dyn Reactor }
+// Context record. The System field is zero-sized in the runtime layout.
 typedef struct C0Context {
   C0DynObject fs;
   C0DynObject net;
   C0DynObject heap;
   C0DynObject reactor;
+  C0DynObject time;
 } C0Context;
 
 typedef enum {
@@ -160,6 +168,37 @@ enum {
   C0_ALLOC_QUOTA_EXCEEDED = 1,
 };
 
+typedef C0_ALIGNED_STRUCT(C0U128, 16) {
+  uint64_t lo;
+  uint64_t hi;
+} C0U128;
+
+typedef C0U128 C0I128;
+
+typedef struct C0Duration {
+  C0U128 nanoseconds;
+} C0Duration;
+
+typedef C0_ALIGNED_STRUCT(C0MonotonicInstant, 16) {
+  uint64_t domain;
+  uint8_t _pad[8];
+  C0U128 ticks;
+} C0MonotonicInstant;
+
+typedef struct C0UtcInstant {
+  C0I128 unix_nanoseconds;
+} C0UtcInstant;
+
+typedef uint8_t C0TimeError;
+
+enum {
+  C0_TIME_UNSUPPORTED = 0,
+  C0_TIME_CLOCK_UNAVAILABLE = 1,
+  C0_TIME_OUT_OF_RANGE = 2,
+  C0_TIME_INVALID_RESOLUTION = 3,
+  C0_TIME_CLOCK_MISMATCH = 4,
+};
+
 // DirEntry record: { name: string@Managed, path: string@Managed, kind: FileKind }
 typedef struct C0DirEntry {
   C0StringManaged name;
@@ -239,6 +278,33 @@ typedef struct C0Union_FileKind_IoError {
   uint8_t disc;
   uint8_t payload;
 } C0Union_FileKind_IoError;
+
+typedef C0_ALIGNED_STRUCT(C0Union_Duration_TimeError, 16) {
+  uint8_t disc;
+  uint8_t _pad[15];
+  union {
+    C0TimeError time_error;
+    C0Duration value;
+  } payload;
+} C0Union_Duration_TimeError;
+
+typedef struct C0Union_DynObject_TimeError {
+  uint8_t disc;
+  uint8_t _pad[7];
+  union {
+    C0TimeError time_error;
+    C0DynObject value;
+  } payload;
+} C0Union_DynObject_TimeError;
+
+typedef C0_ALIGNED_STRUCT(C0Union_UtcInstant_TimeError, 16) {
+  uint8_t disc;
+  uint8_t _pad[15];
+  union {
+    C0TimeError time_error;
+    C0UtcInstant value;
+  } payload;
+} C0Union_UtcInstant_TimeError;
 
 typedef struct C0Union_DirEntry_Unit {
   uint8_t disc;
@@ -560,6 +626,45 @@ void cursive_x3a_x3aruntime_x3a_x3aheap_x3a_x3adealloc_x5fraw(
   void** ptr,
   const uint64_t* count);
 
+// Time builtins
+C0DynObject cursive_x3a_x3aruntime_x3a_x3atime_x3a_x3amonotonic(
+  const C0DynObject* self);
+
+C0DynObject cursive_x3a_x3aruntime_x3a_x3atime_x3a_x3awall(
+  const C0DynObject* self);
+
+void cursive_x3a_x3aruntime_x3a_x3atime_x3a_x3amonotonic_x5fnow(
+  C0MonotonicInstant* out,
+  const C0DynObject* self);
+
+void cursive_x3a_x3aruntime_x3a_x3atime_x3a_x3amonotonic_x5fresolution(
+  C0Duration* out,
+  const C0DynObject* self);
+
+void cursive_x3a_x3aruntime_x3a_x3atime_x3a_x3amonotonic_x5felapsed(
+  C0Union_Duration_TimeError* out,
+  const C0DynObject* self,
+  const C0MonotonicInstant* start,
+  const C0MonotonicInstant* end);
+
+void cursive_x3a_x3aruntime_x3a_x3atime_x3a_x3amonotonic_x5fcoarsen(
+  C0Union_DynObject_TimeError* out,
+  const C0DynObject* self,
+  const C0Duration* resolution);
+
+void cursive_x3a_x3aruntime_x3a_x3atime_x3a_x3awall_x5fnow_x5futc(
+  C0Union_UtcInstant_TimeError* out,
+  const C0DynObject* self);
+
+void cursive_x3a_x3aruntime_x3a_x3atime_x3a_x3awall_x5fresolution(
+  C0Union_Duration_TimeError* out,
+  const C0DynObject* self);
+
+void cursive_x3a_x3aruntime_x3a_x3atime_x3a_x3awall_x5fcoarsen(
+  C0Union_DynObject_TimeError* out,
+  const C0DynObject* self,
+  const C0Duration* resolution);
+
 // System builtins
 void cursive_x3a_x3aruntime_x3a_x3asystem_x3a_x3aexit(
   int32_t code);
@@ -704,4 +809,3 @@ void DirIter_x3a_x3aOpen_x3a_x3aclose(
 #endif
 
 #endif  // CURSIVE0_RT_H
-

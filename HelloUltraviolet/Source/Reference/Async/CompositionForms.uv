@@ -2,7 +2,6 @@
 
 /// Exercises the Async CompositionForms reference surface.
 public procedure runAsyncCompositionFormsReference() -> bool {
-    let sequence: AsyncReference = asyncReference(2usize, true, false)
-    let racing_form: AsyncReference = asyncReference(2usize, true, false)
-    return asyncReferenceIsCovered(sequence) && asyncReferenceIsCovered(racing_form)
+    let completed_value: i32 = sync asyncCompletesReference(31)
+    return completed_value == 31
 }

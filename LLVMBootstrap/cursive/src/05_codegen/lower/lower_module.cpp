@@ -618,11 +618,6 @@ ProcIR LowerProcLike(const std::string& symbol,
   ctx.lowering_contract_postcondition = false;
 
   ctx.PushScope(false, false);
-  ctx.RegisterRuntimeScopeExit();
-  IRPtr scope_enter_ir = EmptyIR();
-  if (const auto scope_id = ctx.CurrentRuntimeScopeId()) {
-    scope_enter_ir = EmitRuntimeScopeEnter(*scope_id, ctx);
-  }
 
   for (const auto& param : params) {
     IRParam lowered_param = param;
@@ -641,6 +636,13 @@ ProcIR LowerProcLike(const std::string& symbol,
 
   auto body_res = LowerBlock(body, ctx);
 
+  IRPtr scope_enter_ir = EmptyIR();
+  ctx.RegisterRuntimeScopeExitIfRequired();
+  if (ctx.CurrentScopeRequiresRuntime()) {
+    if (const auto scope_id = ctx.CurrentRuntimeScopeId()) {
+      scope_enter_ir = EmitRuntimeScopeEnter(*scope_id, ctx);
+    }
+  }
   CleanupPlan cleanup_plan = ComputeCleanupPlanForCurrentScope(ctx);
   IRPtr cleanup_ir = EmitCleanup(cleanup_plan, ctx);
   ctx.PopScope();

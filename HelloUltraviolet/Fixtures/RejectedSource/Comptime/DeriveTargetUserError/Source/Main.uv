@@ -1,0 +1,11 @@
+//! Rejected derive specimen for derive target user-error failure.
+
+derive target EmitsUserError(target: Type) {
+    let reflected = target
+    diagnostics~>error("derive target user diagnostic")
+}
+
+[[derive(EmitsUserError)]]
+public record DeriveTargetUserErrorReference {
+    public value: i32
+}

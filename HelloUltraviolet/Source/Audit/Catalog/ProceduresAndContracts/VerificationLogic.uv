@@ -9,249 +9,6 @@ public procedure validatedProceduresAndContractsVerificationLogicObligations() -
     var count: usize = 0usize
     if acceptedObligationEntryMatches(
         "req.15.VerificationLogicNoSurfaceSyntax",
-        55896usize,
-        "HelloUltraviolet::Reference::Procedures",
-        "runProceduresContractsReference",
-        "Source/Reference/Procedures/Contracts.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
-        "req.15.VerificationLogicNotParserOwned",
-        55911usize,
-        "HelloUltraviolet::Reference::Procedures",
-        "runProceduresContractsReference",
-        "Source/Reference/Procedures/Contracts.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
-        "def.15.ContractKind",
-        55926usize,
-        "HelloUltraviolet::Reference::Procedures",
-        "runProceduresContractsReference",
-        "Source/Reference/Procedures/Contracts.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
-        "def.15.VerificationFact",
-        55939usize,
-        "HelloUltraviolet::Reference::Procedures",
-        "runProceduresContractsReference",
-        "Source/Reference/Procedures/Contracts.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
-        "def.15.CheckState",
-        55952usize,
-        "HelloUltraviolet::Reference::Procedures",
-        "runProceduresContractsReference",
-        "Source/Reference/Procedures/Contracts.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
-        "def.15.ContractCheck",
-        55965usize,
-        "HelloUltraviolet::Reference::Procedures",
-        "runProceduresContractsReference",
-        "Source/Reference/Procedures/Contracts.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
-        "def.15.DynamicScopeAndContext",
-        55980usize,
-        "HelloUltraviolet::Reference::Procedures",
-        "runProceduresContractsReference",
-        "Source/Reference/Procedures/Contracts.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
-        "rule.15.Contract-Static-OK",
-        56001usize,
-        "HelloUltraviolet::Reference::Procedures",
-        "runProceduresContractsReference",
-        "Source/Reference/Procedures/Contracts.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
-        "rule.15.Contract-Static-Fail",
-        56017usize,
-        "HelloUltraviolet::Reference::Procedures",
-        "runProceduresContractsReference",
-        "Source/Reference/Procedures/Contracts.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
-        "rule.15.Contract-Dynamic-Elide",
-        56033usize,
-        "HelloUltraviolet::Reference::Procedures",
-        "runProceduresContractsReference",
-        "Source/Reference/Procedures/Contracts.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
-        "rule.15.Contract-Dynamic-Check",
-        56049usize,
-        "HelloUltraviolet::Reference::Procedures",
-        "runProceduresContractsReference",
-        "Source/Reference/Procedures/Contracts.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
-        "req.15.MandatoryProofTechniques",
-        56065usize,
-        "HelloUltraviolet::Reference::Procedures",
-        "runProceduresContractsReference",
-        "Source/Reference/Procedures/Contracts.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
-        "def.15.ProofContextAt",
-        56085usize,
-        "HelloUltraviolet::Reference::Procedures",
-        "runProceduresContractsReference",
-        "Source/Reference/Procedures/Contracts.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
-        "def.15.DecidablePredicates",
-        56106usize,
-        "HelloUltraviolet::Reference::Procedures",
-        "runProceduresContractsReference",
-        "Source/Reference/Procedures/Contracts.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
-        "rule.15.Ent-True",
-        56126usize,
-        "HelloUltraviolet::Reference::Procedures",
-        "runProceduresContractsReference",
-        "Source/Reference/Procedures/Contracts.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
-        "rule.15.Ent-Fact",
-        56142usize,
-        "HelloUltraviolet::Reference::Procedures",
-        "runProceduresContractsReference",
-        "Source/Reference/Procedures/Contracts.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
-        "rule.15.Ent-And",
-        56158usize,
-        "HelloUltraviolet::Reference::Procedures",
-        "runProceduresContractsReference",
-        "Source/Reference/Procedures/Contracts.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
-        "rule.15.Ent-Or-L",
-        56174usize,
-        "HelloUltraviolet::Reference::Procedures",
-        "runProceduresContractsReference",
-        "Source/Reference/Procedures/Contracts.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
-        "rule.15.Ent-Or-R",
-        56190usize,
-        "HelloUltraviolet::Reference::Procedures",
-        "runProceduresContractsReference",
-        "Source/Reference/Procedures/Contracts.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
-        "rule.15.Ent-Linear",
-        56206usize,
-        "HelloUltraviolet::Reference::Procedures",
-        "runProceduresContractsReference",
-        "Source/Reference/Procedures/Contracts.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
-        "def.15.LinearIntegerEntailment",
-        56222usize,
-        "HelloUltraviolet::Reference::Procedures",
-        "runProceduresContractsReference",
-        "Source/Reference/Procedures/Contracts.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
-        "req.15.LinearEntailmentSoundAndComplete",
-        56245usize,
-        "HelloUltraviolet::Reference::Procedures",
-        "runProceduresContractsReference",
-        "Source/Reference/Procedures/Contracts.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
-        "def.15.StaticProofAt",
-        56258usize,
-        "HelloUltraviolet::Reference::Procedures",
-        "runProceduresContractsReference",
-        "Source/Reference/Procedures/Contracts.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
-        "def.15.NegFact",
-        56271usize,
-        "HelloUltraviolet::Reference::Procedures",
-        "runProceduresContractsReference",
-        "Source/Reference/Procedures/Contracts.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
-        "req.15.VerificationFactsNoRuntimeRepresentation",
-        56293usize,
-        "HelloUltraviolet::Reference::Procedures",
-        "runProceduresContractsReference",
-        "Source/Reference/Procedures/Contracts.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
-        "rule.15.Fact-Dominate",
-        56310usize,
-        "HelloUltraviolet::Reference::Procedures",
-        "runProceduresContractsReference",
-        "Source/Reference/Procedures/Contracts.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
-        "req.15.FactGeneration",
-        56326usize,
-        "HelloUltraviolet::Reference::Procedures",
-        "runProceduresContractsReference",
-        "Source/Reference/Procedures/Contracts.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
-        "req.15.TypeNarrowingFromFacts",
         56349usize,
         "HelloUltraviolet::Reference::Procedures",
         "runProceduresContractsReference",
@@ -260,7 +17,7 @@ public procedure validatedProceduresAndContractsVerificationLogicObligations() -
         count = count + 1usize
     }
     if acceptedObligationEntryMatches(
-        "def.15.ContractEnvironments",
+        "req.15.VerificationLogicNotParserOwned",
         56364usize,
         "HelloUltraviolet::Reference::Procedures",
         "runProceduresContractsReference",
@@ -269,8 +26,251 @@ public procedure validatedProceduresAndContractsVerificationLogicObligations() -
         count = count + 1usize
     }
     if acceptedObligationEntryMatches(
+        "def.15.ContractKind",
+        56379usize,
+        "HelloUltraviolet::Reference::Procedures",
+        "runProceduresContractsReference",
+        "Source/Reference/Procedures/Contracts.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "def.15.VerificationFact",
+        56392usize,
+        "HelloUltraviolet::Reference::Procedures",
+        "runProceduresContractsReference",
+        "Source/Reference/Procedures/Contracts.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "def.15.CheckState",
+        56405usize,
+        "HelloUltraviolet::Reference::Procedures",
+        "runProceduresContractsReference",
+        "Source/Reference/Procedures/Contracts.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "def.15.ContractCheck",
+        56418usize,
+        "HelloUltraviolet::Reference::Procedures",
+        "runProceduresContractsReference",
+        "Source/Reference/Procedures/Contracts.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "def.15.DynamicScopeAndContext",
+        56433usize,
+        "HelloUltraviolet::Reference::Procedures",
+        "runProceduresContractsReference",
+        "Source/Reference/Procedures/Contracts.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "rule.15.Contract-Static-OK",
+        56454usize,
+        "HelloUltraviolet::Reference::Procedures",
+        "runProceduresContractsReference",
+        "Source/Reference/Procedures/Contracts.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "rule.15.Contract-Static-Fail",
+        56470usize,
+        "HelloUltraviolet::Reference::Procedures",
+        "runProceduresContractsReference",
+        "Source/Reference/Procedures/Contracts.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "rule.15.Contract-Dynamic-Elide",
+        56486usize,
+        "HelloUltraviolet::Reference::Procedures",
+        "runProceduresContractsReference",
+        "Source/Reference/Procedures/Contracts.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "rule.15.Contract-Dynamic-Check",
+        56502usize,
+        "HelloUltraviolet::Reference::Procedures",
+        "runProceduresContractsReference",
+        "Source/Reference/Procedures/Contracts.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "req.15.MandatoryProofTechniques",
+        56518usize,
+        "HelloUltraviolet::Reference::Procedures",
+        "runProceduresContractsReference",
+        "Source/Reference/Procedures/Contracts.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "def.15.ProofContextAt",
+        56538usize,
+        "HelloUltraviolet::Reference::Procedures",
+        "runProceduresContractsReference",
+        "Source/Reference/Procedures/Contracts.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "def.15.DecidablePredicates",
+        56559usize,
+        "HelloUltraviolet::Reference::Procedures",
+        "runProceduresContractsReference",
+        "Source/Reference/Procedures/Contracts.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "rule.15.Ent-True",
+        56579usize,
+        "HelloUltraviolet::Reference::Procedures",
+        "runProceduresContractsReference",
+        "Source/Reference/Procedures/Contracts.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "rule.15.Ent-Fact",
+        56595usize,
+        "HelloUltraviolet::Reference::Procedures",
+        "runProceduresContractsReference",
+        "Source/Reference/Procedures/Contracts.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "rule.15.Ent-And",
+        56611usize,
+        "HelloUltraviolet::Reference::Procedures",
+        "runProceduresContractsReference",
+        "Source/Reference/Procedures/Contracts.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "rule.15.Ent-Or-L",
+        56627usize,
+        "HelloUltraviolet::Reference::Procedures",
+        "runProceduresContractsReference",
+        "Source/Reference/Procedures/Contracts.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "rule.15.Ent-Or-R",
+        56643usize,
+        "HelloUltraviolet::Reference::Procedures",
+        "runProceduresContractsReference",
+        "Source/Reference/Procedures/Contracts.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "rule.15.Ent-Linear",
+        56659usize,
+        "HelloUltraviolet::Reference::Procedures",
+        "runProceduresContractsReference",
+        "Source/Reference/Procedures/Contracts.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "def.15.LinearIntegerEntailment",
+        56675usize,
+        "HelloUltraviolet::Reference::Procedures",
+        "runProceduresContractsReference",
+        "Source/Reference/Procedures/Contracts.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "req.15.LinearEntailmentSoundAndComplete",
+        56698usize,
+        "HelloUltraviolet::Reference::Procedures",
+        "runProceduresContractsReference",
+        "Source/Reference/Procedures/Contracts.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "def.15.StaticProofAt",
+        56711usize,
+        "HelloUltraviolet::Reference::Procedures",
+        "runProceduresContractsReference",
+        "Source/Reference/Procedures/Contracts.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "def.15.NegFact",
+        56724usize,
+        "HelloUltraviolet::Reference::Procedures",
+        "runProceduresContractsReference",
+        "Source/Reference/Procedures/Contracts.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "req.15.VerificationFactsNoRuntimeRepresentation",
+        56746usize,
+        "HelloUltraviolet::Reference::Procedures",
+        "runProceduresContractsReference",
+        "Source/Reference/Procedures/Contracts.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "rule.15.Fact-Dominate",
+        56763usize,
+        "HelloUltraviolet::Reference::Procedures",
+        "runProceduresContractsReference",
+        "Source/Reference/Procedures/Contracts.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "req.15.FactGeneration",
+        56779usize,
+        "HelloUltraviolet::Reference::Procedures",
+        "runProceduresContractsReference",
+        "Source/Reference/Procedures/Contracts.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "req.15.TypeNarrowingFromFacts",
+        56802usize,
+        "HelloUltraviolet::Reference::Procedures",
+        "runProceduresContractsReference",
+        "Source/Reference/Procedures/Contracts.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "def.15.ContractEnvironments",
+        56817usize,
+        "HelloUltraviolet::Reference::Procedures",
+        "runProceduresContractsReference",
+        "Source/Reference/Procedures/Contracts.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
         "rule.15.Check-True",
-        56381usize,
+        56834usize,
         "HelloUltraviolet::Reference::Procedures",
         "runProceduresContractsReference",
         "Source/Reference/Procedures/Contracts.uv"
@@ -279,7 +279,7 @@ public procedure validatedProceduresAndContractsVerificationLogicObligations() -
     }
     if acceptedObligationEntryMatches(
         "rule.15.Check-False",
-        56397usize,
+        56850usize,
         "HelloUltraviolet::Reference::Procedures",
         "runProceduresContractsReference",
         "Source/Reference/Procedures/Contracts.uv"
@@ -288,7 +288,7 @@ public procedure validatedProceduresAndContractsVerificationLogicObligations() -
     }
     if acceptedObligationEntryMatches(
         "rule.15.Check-Panic",
-        56413usize,
+        56866usize,
         "HelloUltraviolet::Reference::Procedures",
         "runProceduresContractsReference",
         "Source/Reference/Procedures/Contracts.uv"
@@ -297,7 +297,7 @@ public procedure validatedProceduresAndContractsVerificationLogicObligations() -
     }
     if acceptedObligationEntryMatches(
         "rule.15.Check-Ok",
-        56429usize,
+        56882usize,
         "HelloUltraviolet::Reference::Procedures",
         "runProceduresContractsReference",
         "Source/Reference/Procedures/Contracts.uv"
@@ -306,7 +306,7 @@ public procedure validatedProceduresAndContractsVerificationLogicObligations() -
     }
     if acceptedObligationEntryMatches(
         "rule.15.Check-Fail",
-        56445usize,
+        56898usize,
         "HelloUltraviolet::Reference::Procedures",
         "runProceduresContractsReference",
         "Source/Reference/Procedures/Contracts.uv"
@@ -315,7 +315,7 @@ public procedure validatedProceduresAndContractsVerificationLogicObligations() -
     }
     if acceptedObligationEntryMatches(
         "req.15.DynamicChecksInjectFacts",
-        56461usize,
+        56914usize,
         "HelloUltraviolet::Reference::Procedures",
         "runProceduresContractsReference",
         "Source/Reference/Procedures/Contracts.uv"
@@ -324,7 +324,7 @@ public procedure validatedProceduresAndContractsVerificationLogicObligations() -
     }
     if acceptedObligationEntryMatches(
         "def.15.RuntimeCheckInsertionPointsIntro",
-        56476usize,
+        56929usize,
         "HelloUltraviolet::Reference::Procedures",
         "runProceduresContractsReference",
         "Source/Reference/Procedures/Contracts.uv"
@@ -333,7 +333,7 @@ public procedure validatedProceduresAndContractsVerificationLogicObligations() -
     }
     if acceptedObligationEntryMatches(
         "rule.15.Insert-Precondition-Check",
-        56489usize,
+        56942usize,
         "HelloUltraviolet::Reference::Procedures",
         "runProceduresContractsReference",
         "Source/Reference/Procedures/Contracts.uv"
@@ -342,7 +342,7 @@ public procedure validatedProceduresAndContractsVerificationLogicObligations() -
     }
     if acceptedObligationEntryMatches(
         "rule.15.Insert-Postcondition-Check",
-        56505usize,
+        56958usize,
         "HelloUltraviolet::Reference::Procedures",
         "runProceduresContractsReference",
         "Source/Reference/Procedures/Contracts.uv"
@@ -351,7 +351,7 @@ public procedure validatedProceduresAndContractsVerificationLogicObligations() -
     }
     if acceptedObligationEntryMatches(
         "rule.15.Insert-TypeInv-Construction-Check",
-        56521usize,
+        56974usize,
         "HelloUltraviolet::Reference::Procedures",
         "runProceduresContractsReference",
         "Source/Reference/Procedures/Contracts.uv"
@@ -360,7 +360,7 @@ public procedure validatedProceduresAndContractsVerificationLogicObligations() -
     }
     if acceptedObligationEntryMatches(
         "rule.15.Insert-TypeInv-PreCall-Check",
-        56537usize,
+        56990usize,
         "HelloUltraviolet::Reference::Procedures",
         "runProceduresContractsReference",
         "Source/Reference/Procedures/Contracts.uv"
@@ -369,7 +369,7 @@ public procedure validatedProceduresAndContractsVerificationLogicObligations() -
     }
     if acceptedObligationEntryMatches(
         "rule.15.Insert-TypeInv-PostCall-Check",
-        56553usize,
+        57006usize,
         "HelloUltraviolet::Reference::Procedures",
         "runProceduresContractsReference",
         "Source/Reference/Procedures/Contracts.uv"
@@ -378,7 +378,7 @@ public procedure validatedProceduresAndContractsVerificationLogicObligations() -
     }
     if acceptedObligationEntryMatches(
         "rule.15.Insert-LoopInv-Init-Check",
-        56569usize,
+        57022usize,
         "HelloUltraviolet::Reference::Procedures",
         "runProceduresContractsReference",
         "Source/Reference/Procedures/Contracts.uv"
@@ -387,7 +387,7 @@ public procedure validatedProceduresAndContractsVerificationLogicObligations() -
     }
     if acceptedObligationEntryMatches(
         "rule.15.Insert-LoopInv-Maintenance-Check",
-        56585usize,
+        57038usize,
         "HelloUltraviolet::Reference::Procedures",
         "runProceduresContractsReference",
         "Source/Reference/Procedures/Contracts.uv"
@@ -396,7 +396,7 @@ public procedure validatedProceduresAndContractsVerificationLogicObligations() -
     }
     if acceptedObligationEntryMatches(
         "rule.15.Insert-Refinement-Check",
-        56601usize,
+        57054usize,
         "HelloUltraviolet::Reference::Procedures",
         "runProceduresContractsReference",
         "Source/Reference/Procedures/Contracts.uv"
@@ -405,7 +405,7 @@ public procedure validatedProceduresAndContractsVerificationLogicObligations() -
     }
     if acceptedObligationEntryMatches(
         "diag.15.VerificationLogic",
-        56619usize,
+        57072usize,
         "HelloUltraviolet::Reference::Procedures",
         "runProceduresContractsReference",
         "Source/Reference/Procedures/Contracts.uv"

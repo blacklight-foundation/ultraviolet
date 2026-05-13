@@ -13,6 +13,8 @@ void cursive_x3a_x3aruntime_x3a_x3acontext_x5finit(C0Context* out) {
   out->heap.vtable = NULL;
   out->reactor.data = NULL;
   out->reactor.vtable = NULL;
+  out->time.data = NULL;
+  out->time.vtable = NULL;
 
   C0FsState* fs = (C0FsState*)c0_heap_alloc_raw(sizeof(C0FsState));
   if (!fs) {
@@ -44,12 +46,27 @@ void cursive_x3a_x3aruntime_x3a_x3acontext_x5finit(C0Context* out) {
   heap->quota = 0;
   heap->used = 0;
 
+  C0TimeState* time = (C0TimeState*)c0_heap_alloc_raw(sizeof(C0TimeState));
+  if (!time) {
+    c0_heap_free_raw(heap);
+    c0_heap_free_raw(net);
+    c0_heap_free_raw(fs);
+    return;
+  }
+  time->parent = NULL;
+  time->kind = C0_TIME_STATE_ROOT;
+  time->domain = 1;
+  time->resolution.lo = 1;
+  time->resolution.hi = 0;
+
   out->fs.data = fs;
   out->fs.vtable = NULL;
   out->net.data = net;
   out->net.vtable = NULL;
   out->heap.data = heap;
   out->heap.vtable = NULL;
+  out->time.data = time;
+  out->time.vtable = NULL;
 }
 
 static C0ExecutionDomain g_cpu_domain = {C0_DOMAIN_CPU, {0}, 4};

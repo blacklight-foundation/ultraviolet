@@ -1,0 +1,10 @@
+//! Rejected derive specimen for applying derive to a procedure.
+
+derive target ProcedureOnly(target: Type) {
+    let reflected = target
+}
+
+[[derive(ProcedureOnly)]]
+public procedure deriveOnProcedureReference() -> i32 {
+    return 0
+}

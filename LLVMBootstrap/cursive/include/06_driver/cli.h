@@ -50,6 +50,7 @@ struct CliOptions {
   std::optional<bool> link_debug;                            // --link-debug
   std::optional<core::ErrorRecoveryPolicy> max_errors_override;  // --max-errors <N|inf>
   std::optional<std::string> out_dir;                        // --out-dir
+  std::optional<std::string> opt_level;                      // --opt-level <O0|O1|O2|O3|Os|Oz>
   std::optional<project::TargetProfile> target_profile_override; // --target-profile
   std::vector<std::string> debug_subsystems;                 // --debug
   ColorMode color_mode = ColorMode::Auto;  // --color

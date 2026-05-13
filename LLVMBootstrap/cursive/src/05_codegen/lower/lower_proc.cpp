@@ -1098,11 +1098,6 @@ ProcIR LowerProc(const ProcedureDecl& decl,
   log_stage("provenance-ready");
   // Establish function root scope for parameters and cleanup
   ctx.PushScope(false, false);
-  ctx.RegisterRuntimeScopeExit();
-  IRPtr scope_enter_ir = EmptyIR();
-  if (const auto scope_id = ctx.CurrentRuntimeScopeId()) {
-    scope_enter_ir = EmitRuntimeScopeEnter(*scope_id, ctx);
-  }
 
   // Lower parameters
   for (const auto& param : decl.params) {
@@ -1216,6 +1211,13 @@ ProcIR LowerProc(const ProcedureDecl& decl,
   log_stage("lower-body-finish");
 
   // Cleanup for parameters on fallthrough
+  IRPtr scope_enter_ir = EmptyIR();
+  ctx.RegisterRuntimeScopeExitIfRequired();
+  if (ctx.CurrentScopeRequiresRuntime()) {
+    if (const auto scope_id = ctx.CurrentRuntimeScopeId()) {
+      scope_enter_ir = EmitRuntimeScopeEnter(*scope_id, ctx);
+    }
+  }
   CleanupPlan cleanup_plan = ComputeCleanupPlanForCurrentScope(ctx);
   IRPtr cleanup_ir = EmitCleanup(cleanup_plan, ctx);
   ctx.PopScope();

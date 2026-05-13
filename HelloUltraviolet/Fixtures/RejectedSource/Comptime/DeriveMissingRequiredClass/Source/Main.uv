@@ -1,0 +1,13 @@
+//! Rejected derive specimen for unmet derive `requires` contracts.
+
+internal class RequiredDeriveClass {
+}
+
+derive target NeedsRequiredClass(target: Type) |: requires RequiredDeriveClass {
+    let reflected = target
+}
+
+[[derive(NeedsRequiredClass)]]
+public record DeriveMissingRequiredClassReference {
+    public value: i32
+}

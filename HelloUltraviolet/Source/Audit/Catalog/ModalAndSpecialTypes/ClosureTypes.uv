@@ -9,7 +9,7 @@ public procedure validatedModalAndSpecialTypesClosureTypesObligations() -> usize
     var count: usize = 0usize
     if acceptedObligationEntryMatches(
         "grammar.ClosureTypes.Syntax",
-        46644usize,
+        46956usize,
         "HelloUltraviolet::Reference::ModalTypes",
         "runModalTypesModalDeclarationsReference",
         "Source/Reference/ModalTypes/ModalDeclarations.uv"
@@ -18,7 +18,7 @@ public procedure validatedModalAndSpecialTypesClosureTypesObligations() -> usize
     }
     if acceptedObligationEntryMatches(
         "req.ClosureParamUnionParentheses",
-        46661usize,
+        46973usize,
         "HelloUltraviolet::Reference::ModalTypes",
         "runModalTypesModalDeclarationsReference",
         "Source/Reference/ModalTypes/ModalDeclarations.uv"
@@ -27,186 +27,6 @@ public procedure validatedModalAndSpecialTypesClosureTypesObligations() -> usize
     }
     if acceptedObligationEntryMatches(
         "rule.13.Parse-Closure-Type",
-        46675usize,
-        "HelloUltraviolet::Reference::ModalTypes",
-        "runModalTypesModalDeclarationsReference",
-        "Source/Reference/ModalTypes/ModalDeclarations.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
-        "rule.13.Parse-Closure-Type-Empty",
-        46691usize,
-        "HelloUltraviolet::Reference::ModalTypes",
-        "runModalTypesModalDeclarationsReference",
-        "Source/Reference/ModalTypes/ModalDeclarations.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
-        "rule.13.Parse-ClosureParamType-Grouped",
-        46707usize,
-        "HelloUltraviolet::Reference::ModalTypes",
-        "runModalTypesModalDeclarationsReference",
-        "Source/Reference/ModalTypes/ModalDeclarations.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
-        "rule.13.Parse-ClosureParamType-Plain",
-        46723usize,
-        "HelloUltraviolet::Reference::ModalTypes",
-        "runModalTypesModalDeclarationsReference",
-        "Source/Reference/ModalTypes/ModalDeclarations.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
-        "rule.13.Parse-ClosureParamTypeList-Empty",
-        46739usize,
-        "HelloUltraviolet::Reference::ModalTypes",
-        "runModalTypesModalDeclarationsReference",
-        "Source/Reference/ModalTypes/ModalDeclarations.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
-        "rule.13.Parse-ClosureParamTypeList-Cons",
-        46755usize,
-        "HelloUltraviolet::Reference::ModalTypes",
-        "runModalTypesModalDeclarationsReference",
-        "Source/Reference/ModalTypes/ModalDeclarations.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
-        "rule.13.Parse-ClosureParamTypeListTail-End",
-        46771usize,
-        "HelloUltraviolet::Reference::ModalTypes",
-        "runModalTypesModalDeclarationsReference",
-        "Source/Reference/ModalTypes/ModalDeclarations.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
-        "rule.13.Parse-ClosureParamTypeListTail-TrailingComma",
-        46787usize,
-        "HelloUltraviolet::Reference::ModalTypes",
-        "runModalTypesModalDeclarationsReference",
-        "Source/Reference/ModalTypes/ModalDeclarations.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
-        "rule.13.Parse-ClosureParamTypeListTail-Comma",
-        46803usize,
-        "HelloUltraviolet::Reference::ModalTypes",
-        "runModalTypesModalDeclarationsReference",
-        "Source/Reference/ModalTypes/ModalDeclarations.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
-        "rule.13.Parse-ClosureDepsOpt-None",
-        46819usize,
-        "HelloUltraviolet::Reference::ModalTypes",
-        "runModalTypesModalDeclarationsReference",
-        "Source/Reference/ModalTypes/ModalDeclarations.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
-        "rule.13.Parse-ClosureDepsOpt-Some",
-        46835usize,
-        "HelloUltraviolet::Reference::ModalTypes",
-        "runModalTypesModalDeclarationsReference",
-        "Source/Reference/ModalTypes/ModalDeclarations.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
-        "rule.13.Parse-SharedDepList-Empty",
-        46851usize,
-        "HelloUltraviolet::Reference::ModalTypes",
-        "runModalTypesModalDeclarationsReference",
-        "Source/Reference/ModalTypes/ModalDeclarations.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
-        "rule.13.Parse-SharedDepList-Single",
-        46867usize,
-        "HelloUltraviolet::Reference::ModalTypes",
-        "runModalTypesModalDeclarationsReference",
-        "Source/Reference/ModalTypes/ModalDeclarations.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
-        "rule.13.Parse-SharedDepList-Cons",
-        46883usize,
-        "HelloUltraviolet::Reference::ModalTypes",
-        "runModalTypesModalDeclarationsReference",
-        "Source/Reference/ModalTypes/ModalDeclarations.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
-        "rule.13.Parse-SharedDep",
-        46899usize,
-        "HelloUltraviolet::Reference::ModalTypes",
-        "runModalTypesModalDeclarationsReference",
-        "Source/Reference/ModalTypes/ModalDeclarations.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
-        "def.TypeClosureAst",
-        46917usize,
-        "HelloUltraviolet::Reference::ModalTypes",
-        "runModalTypesModalDeclarationsReference",
-        "Source/Reference/ModalTypes/ModalDeclarations.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
-        "def.ClosureDepsOpt",
-        46929usize,
-        "HelloUltraviolet::Reference::ModalTypes",
-        "runModalTypesModalDeclarationsReference",
-        "Source/Reference/ModalTypes/ModalDeclarations.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
-        "req.ClosureTypeOwnershipBoundaries",
-        46941usize,
-        "HelloUltraviolet::Reference::ModalTypes",
-        "runModalTypesModalDeclarationsReference",
-        "Source/Reference/ModalTypes/ModalDeclarations.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
-        "rule.13.WF-Closure",
-        46955usize,
-        "HelloUltraviolet::Reference::ModalTypes",
-        "runModalTypesModalDeclarationsReference",
-        "Source/Reference/ModalTypes/ModalDeclarations.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
-        "rule.13.T-Equiv-Closure",
-        46971usize,
-        "HelloUltraviolet::Reference::ModalTypes",
-        "runModalTypesModalDeclarationsReference",
-        "Source/Reference/ModalTypes/ModalDeclarations.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
-        "rule.13.Sub-Closure",
         46987usize,
         "HelloUltraviolet::Reference::ModalTypes",
         "runModalTypesModalDeclarationsReference",
@@ -215,7 +35,7 @@ public procedure validatedModalAndSpecialTypesClosureTypesObligations() -> usize
         count = count + 1usize
     }
     if acceptedObligationEntryMatches(
-        "req.ClosureExpressionOwnership",
+        "rule.13.Parse-Closure-Type-Empty",
         47003usize,
         "HelloUltraviolet::Reference::ModalTypes",
         "runModalTypesModalDeclarationsReference",
@@ -224,8 +44,188 @@ public procedure validatedModalAndSpecialTypesClosureTypesObligations() -> usize
         count = count + 1usize
     }
     if acceptedObligationEntryMatches(
+        "rule.13.Parse-ClosureParamType-Grouped",
+        47019usize,
+        "HelloUltraviolet::Reference::ModalTypes",
+        "runModalTypesModalDeclarationsReference",
+        "Source/Reference/ModalTypes/ModalDeclarations.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "rule.13.Parse-ClosureParamType-Plain",
+        47035usize,
+        "HelloUltraviolet::Reference::ModalTypes",
+        "runModalTypesModalDeclarationsReference",
+        "Source/Reference/ModalTypes/ModalDeclarations.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "rule.13.Parse-ClosureParamTypeList-Empty",
+        47051usize,
+        "HelloUltraviolet::Reference::ModalTypes",
+        "runModalTypesModalDeclarationsReference",
+        "Source/Reference/ModalTypes/ModalDeclarations.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "rule.13.Parse-ClosureParamTypeList-Cons",
+        47067usize,
+        "HelloUltraviolet::Reference::ModalTypes",
+        "runModalTypesModalDeclarationsReference",
+        "Source/Reference/ModalTypes/ModalDeclarations.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "rule.13.Parse-ClosureParamTypeListTail-End",
+        47083usize,
+        "HelloUltraviolet::Reference::ModalTypes",
+        "runModalTypesModalDeclarationsReference",
+        "Source/Reference/ModalTypes/ModalDeclarations.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "rule.13.Parse-ClosureParamTypeListTail-TrailingComma",
+        47099usize,
+        "HelloUltraviolet::Reference::ModalTypes",
+        "runModalTypesModalDeclarationsReference",
+        "Source/Reference/ModalTypes/ModalDeclarations.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "rule.13.Parse-ClosureParamTypeListTail-Comma",
+        47115usize,
+        "HelloUltraviolet::Reference::ModalTypes",
+        "runModalTypesModalDeclarationsReference",
+        "Source/Reference/ModalTypes/ModalDeclarations.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "rule.13.Parse-ClosureDepsOpt-None",
+        47131usize,
+        "HelloUltraviolet::Reference::ModalTypes",
+        "runModalTypesModalDeclarationsReference",
+        "Source/Reference/ModalTypes/ModalDeclarations.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "rule.13.Parse-ClosureDepsOpt-Some",
+        47147usize,
+        "HelloUltraviolet::Reference::ModalTypes",
+        "runModalTypesModalDeclarationsReference",
+        "Source/Reference/ModalTypes/ModalDeclarations.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "rule.13.Parse-SharedDepList-Empty",
+        47163usize,
+        "HelloUltraviolet::Reference::ModalTypes",
+        "runModalTypesModalDeclarationsReference",
+        "Source/Reference/ModalTypes/ModalDeclarations.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "rule.13.Parse-SharedDepList-Single",
+        47179usize,
+        "HelloUltraviolet::Reference::ModalTypes",
+        "runModalTypesModalDeclarationsReference",
+        "Source/Reference/ModalTypes/ModalDeclarations.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "rule.13.Parse-SharedDepList-Cons",
+        47195usize,
+        "HelloUltraviolet::Reference::ModalTypes",
+        "runModalTypesModalDeclarationsReference",
+        "Source/Reference/ModalTypes/ModalDeclarations.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "rule.13.Parse-SharedDep",
+        47211usize,
+        "HelloUltraviolet::Reference::ModalTypes",
+        "runModalTypesModalDeclarationsReference",
+        "Source/Reference/ModalTypes/ModalDeclarations.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "def.TypeClosureAst",
+        47229usize,
+        "HelloUltraviolet::Reference::ModalTypes",
+        "runModalTypesModalDeclarationsReference",
+        "Source/Reference/ModalTypes/ModalDeclarations.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "def.ClosureDepsOpt",
+        47241usize,
+        "HelloUltraviolet::Reference::ModalTypes",
+        "runModalTypesModalDeclarationsReference",
+        "Source/Reference/ModalTypes/ModalDeclarations.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "req.ClosureTypeOwnershipBoundaries",
+        47253usize,
+        "HelloUltraviolet::Reference::ModalTypes",
+        "runModalTypesModalDeclarationsReference",
+        "Source/Reference/ModalTypes/ModalDeclarations.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "rule.13.WF-Closure",
+        47267usize,
+        "HelloUltraviolet::Reference::ModalTypes",
+        "runModalTypesModalDeclarationsReference",
+        "Source/Reference/ModalTypes/ModalDeclarations.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "rule.13.T-Equiv-Closure",
+        47283usize,
+        "HelloUltraviolet::Reference::ModalTypes",
+        "runModalTypesModalDeclarationsReference",
+        "Source/Reference/ModalTypes/ModalDeclarations.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "rule.13.Sub-Closure",
+        47299usize,
+        "HelloUltraviolet::Reference::ModalTypes",
+        "runModalTypesModalDeclarationsReference",
+        "Source/Reference/ModalTypes/ModalDeclarations.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "req.ClosureExpressionOwnership",
+        47315usize,
+        "HelloUltraviolet::Reference::ModalTypes",
+        "runModalTypesModalDeclarationsReference",
+        "Source/Reference/ModalTypes/ModalDeclarations.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
         "def.ClosureRuntimeValue",
-        47017usize,
+        47329usize,
         "HelloUltraviolet::Reference::ModalTypes",
         "runModalTypesModalDeclarationsReference",
         "Source/Reference/ModalTypes/ModalDeclarations.uv"
@@ -234,7 +234,7 @@ public procedure validatedModalAndSpecialTypesClosureTypesObligations() -> usize
     }
     if acceptedObligationEntryMatches(
         "req.ClosureOperationOwnership",
-        47029usize,
+        47341usize,
         "HelloUltraviolet::Reference::ModalTypes",
         "runModalTypesModalDeclarationsReference",
         "Source/Reference/ModalTypes/ModalDeclarations.uv"
@@ -243,7 +243,7 @@ public procedure validatedModalAndSpecialTypesClosureTypesObligations() -> usize
     }
     if acceptedObligationEntryMatches(
         "def.ClosureLoweringRep",
-        47043usize,
+        47355usize,
         "HelloUltraviolet::Reference::ModalTypes",
         "runModalTypesModalDeclarationsReference",
         "Source/Reference/ModalTypes/ModalDeclarations.uv"
@@ -252,7 +252,7 @@ public procedure validatedModalAndSpecialTypesClosureTypesObligations() -> usize
     }
     if acceptedObligationEntryMatches(
         "rule.13.Size-Closure",
-        47055usize,
+        47367usize,
         "HelloUltraviolet::Reference::ModalTypes",
         "runModalTypesModalDeclarationsReference",
         "Source/Reference/ModalTypes/ModalDeclarations.uv"
@@ -261,7 +261,7 @@ public procedure validatedModalAndSpecialTypesClosureTypesObligations() -> usize
     }
     if acceptedObligationEntryMatches(
         "rule.13.Align-Closure",
-        47071usize,
+        47383usize,
         "HelloUltraviolet::Reference::ModalTypes",
         "runModalTypesModalDeclarationsReference",
         "Source/Reference/ModalTypes/ModalDeclarations.uv"
@@ -270,7 +270,7 @@ public procedure validatedModalAndSpecialTypesClosureTypesObligations() -> usize
     }
     if acceptedObligationEntryMatches(
         "rule.13.Layout-Closure",
-        47087usize,
+        47399usize,
         "HelloUltraviolet::Reference::ModalTypes",
         "runModalTypesModalDeclarationsReference",
         "Source/Reference/ModalTypes/ModalDeclarations.uv"
@@ -279,7 +279,7 @@ public procedure validatedModalAndSpecialTypesClosureTypesObligations() -> usize
     }
     if acceptedObligationEntryMatches(
         "req.ClosureLoweringOwnership",
-        47103usize,
+        47415usize,
         "HelloUltraviolet::Reference::ModalTypes",
         "runModalTypesModalDeclarationsReference",
         "Source/Reference/ModalTypes/ModalDeclarations.uv"
@@ -288,7 +288,7 @@ public procedure validatedModalAndSpecialTypesClosureTypesObligations() -> usize
     }
     if acceptedObligationEntryMatches(
         "diag.ClosureTypes",
-        47117usize,
+        47429usize,
         "HelloUltraviolet::Reference::ModalTypes",
         "runModalTypesModalDeclarationsReference",
         "Source/Reference/ModalTypes/ModalDeclarations.uv"
@@ -297,7 +297,7 @@ public procedure validatedModalAndSpecialTypesClosureTypesObligations() -> usize
     }
     if acceptedObligationEntryMatches(
         "diagnostics.ModalPointerSupplement",
-        47129usize,
+        47441usize,
         "HelloUltraviolet::Reference::ModalTypes",
         "runModalTypesModalDeclarationsReference",
         "Source/Reference/ModalTypes/ModalDeclarations.uv"

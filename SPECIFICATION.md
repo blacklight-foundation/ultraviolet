@@ -2130,7 +2130,7 @@ ReservedIdentPrefix = {`gen_`}
 ReservedNamespacePhase = Phase3
 
 **Universe-Protected Bindings.**
-UniverseProtected = {`i8`, `i16`, `i32`, `i64`, `i128`, `u8`, `u16`, `u32`, `u64`, `u128`, `f16`, `f32`, `f64`, `bool`, `char`, `usize`, `isize`, `Self`, `Drop`, `Bitcopy`, `Clone`, `Eq`, `Hash`, `Hasher`, `Iterator`, `Step`, `FfiSafe`, `string`, `bytes`, `Modal`, `Region`, `RegionOptions`, `CancelToken`, `Context`, `System`, `Network`, `ExecutionDomain`, `Reactor`, `CpuSet`, `Priority`, `Async`, `Future`, `Sequence`, `Stream`, `Pipe`, `Exchange`, `Tracked`, `Spawned`}
+UniverseProtected = {`i8`, `i16`, `i32`, `i64`, `i128`, `u8`, `u16`, `u32`, `u64`, `u128`, `f16`, `f32`, `f64`, `bool`, `char`, `usize`, `isize`, `Self`, `Drop`, `Bitcopy`, `Clone`, `Eq`, `Hash`, `Hasher`, `Iterator`, `Step`, `FfiSafe`, `string`, `bytes`, `Modal`, `Region`, `RegionOptions`, `CancelToken`, `Context`, `System`, `Network`, `ExecutionDomain`, `Reactor`, `Time`, `MonotonicTime`, `WallTime`, `Duration`, `MonotonicInstant`, `UtcInstant`, `TimeError`, `CpuSet`, `Priority`, `Async`, `Future`, `Sequence`, `Stream`, `Pipe`, `Exchange`, `Tracked`, `Spawned`}
 UniverseProtectedPhase = Phase3
 
 `Drop`, `Bitcopy`, `Clone`, and `FfiSafe` are reserved predicate names. They MUST NOT be declared as classes or used as user-defined type/value bindings.
@@ -3131,17 +3131,20 @@ The language adopts a no ambient authority discipline: observable external effec
 
 #### 6.1.1 Capability Universe
 
-CapToken = {FileSystem, Network, HeapAllocator, Reactor, ExecutionDomain, System}
+CapToken = {FileSystem, Network, HeapAllocator, Reactor, ExecutionDomain, System, Time}
 
 CapInType : Type → 𝒫(CapToken)
 
-CapInType(TypePath([`Context`])) = {FileSystem, Network, HeapAllocator, Reactor, ExecutionDomain, System}
+CapInType(TypePath([`Context`])) = {FileSystem, Network, HeapAllocator, Reactor, ExecutionDomain, System, Time}
 CapInType(TypePath([`System`])) = {System}
 CapInType(TypeDynamic([`FileSystem`])) = {FileSystem}
 CapInType(TypeDynamic([`Network`])) = {Network}
 CapInType(TypeDynamic([`HeapAllocator`])) = {HeapAllocator}
 CapInType(TypeDynamic([`Reactor`])) = {Reactor}
 CapInType(TypeDynamic([`ExecutionDomain`])) = {ExecutionDomain}
+CapInType(TypeDynamic([`Time`])) = {Time}
+CapInType(TypeDynamic([`MonotonicTime`])) = {Time}
+CapInType(TypeDynamic([`WallTime`])) = {Time}
 CapInType(TypePerm(_, T)) = CapInType(T)
 CapInType(TypeTuple(Ts)) = ⋃{CapInType(T) | T ∈ Ts}
 CapInType(TypeArray(T, _)) = CapInType(T)
@@ -3176,6 +3179,10 @@ The following operations are attenuation operations:
 - `Context::cpu()`
 - `Context::gpu()`
 - `Context::inline()`
+- `$Time::monotonic()`
+- `$Time::wall()`
+- `$MonotonicTime::coarsen(resolution)`
+- `$WallTime::coarsen(resolution)`
 
 A conforming implementation MUST ensure attenuation is monotone: a derived capability MUST NOT grant authority beyond the source capability from which it was derived.
 
@@ -3250,11 +3257,12 @@ SystemPrim = {SystemGetEnv, SystemExit, SystemRun}
 NetworkPrim = {NetRestrictHost}
 HeapPrim = {HeapWithQuota, HeapAllocRaw, HeapDeallocRaw}
 ReactorPrim = {ReactorRun, ReactorRegister}
+TimePrim = {TimeMonotonic, TimeWall, MonotonicTimeNow, MonotonicTimeResolution, MonotonicTimeElapsed, MonotonicTimeCoarsen, WallTimeNowUtc, WallTimeResolution, WallTimeCoarsen}
 CancelPrim = {CancelNew, CancelChild, CancelDoCancel, CancelIsCancelled, CancelWaitCancelled}
 
-HostPrim = {ParseTOML, ReadBytes, WriteFile, ResolveTool, ResolveRuntimeLib, Invoke, AssembleIR, InvokeLinker, InvokeArchiver, ArchiveMembers} ∪ FSPrim ∪ FilePrim ∪ DirPrim ∪ SystemPrim ∪ NetworkPrim ∪ HeapPrim ∪ ReactorPrim ∪ CancelPrim
+HostPrim = {ParseTOML, ReadBytes, WriteFile, ResolveTool, ResolveRuntimeLib, Invoke, AssembleIR, InvokeLinker, InvokeArchiver, ArchiveMembers} ∪ FSPrim ∪ FilePrim ∪ DirPrim ∪ SystemPrim ∪ NetworkPrim ∪ HeapPrim ∪ ReactorPrim ∪ TimePrim ∪ CancelPrim
 HostPrimDiag = {ParseTOML, ReadBytes, WriteFile, ResolveTool, ResolveRuntimeLib, Invoke, AssembleIR, InvokeLinker, InvokeArchiver, ArchiveMembers}
-HostPrimRuntime = FSPrim ∪ FilePrim ∪ DirPrim ∪ SystemPrim ∪ NetworkPrim ∪ HeapPrim ∪ ReactorPrim ∪ CancelPrim
+HostPrimRuntime = FSPrim ∪ FilePrim ∪ DirPrim ∪ SystemPrim ∪ NetworkPrim ∪ HeapPrim ∪ ReactorPrim ∪ TimePrim ∪ CancelPrim
 
 MapsToDiagOrRuntime(p) ⇔ p ∈ HostPrimDiag ∪ HostPrimRuntime
 HostPrimFail(p) ⇔ p ∈ HostPrim ∧ ∃ args. Γ ⊢ p(args) ⇑
@@ -3485,7 +3493,32 @@ HostRun(command) ⇓ code
 ──────────────────────────────────────────────
 SystemRun(command, sys) ⇓ (code, sys)
 
-#### 6.2.3 Network Primitive Relations
+#### 6.2.3 Time Primitive Relations
+
+TimeJudg = {TimeMonotonic(v_time) ⇓ v_mono, TimeWall(v_time) ⇓ v_wall, MonotonicTimeNow(v_mono) ⇓ t, MonotonicTimeResolution(v_mono) ⇓ d, MonotonicTimeElapsed(v_mono, start, end) ⇓ r, MonotonicTimeCoarsen(v_mono, resolution) ⇓ r, WallTimeNowUtc(v_wall) ⇓ r, WallTimeResolution(v_wall) ⇓ r, WallTimeCoarsen(v_wall, resolution) ⇓ r}
+
+DurationVal(n) = RecordValue(TypePath(["Duration"]), [⟨`nanoseconds`, IntVal("u128", n)⟩])
+MonotonicInstantVal(domain, ticks) = RecordValue(TypePath(["MonotonicInstant"]), [⟨`domain`, IntVal("usize", domain)⟩, ⟨`ticks`, IntVal("u128", ticks)⟩])
+UtcInstantVal(n) = RecordValue(TypePath(["UtcInstant"]), [⟨`unix_nanoseconds`, IntVal("i128", n)⟩])
+TimeErrorVal(name) = EnumValue(["TimeError", name], ⊥)
+TimeOk(T, v) = `Outcome<T, TimeError>@Value`{`value`: v}
+TimeErr(T, name) = `Outcome<T, TimeError>@Error`{`error`: TimeErrorVal(name)}
+
+`TimeMonotonic` and `TimeWall` are attenuation relations from the process time root. `MonotonicTimeCoarsen` and `WallTimeCoarsen` are attenuation relations from an existing clock capability.
+
+A conforming implementation MUST satisfy all of the following:
+1. `TimeMonotonic(v_time) ⇓ v_mono` implies `v_mono` denotes a monotonic-clock capability whose authority is a subset of `v_time`.
+2. `TimeWall(v_time) ⇓ v_wall` implies `v_wall` denotes a wall-clock capability whose authority is a subset of `v_time`.
+3. `MonotonicTimeNow(v_mono) ⇓ MonotonicInstantVal(domain, ticks)` MUST read a monotonic clock. For two successful reads through capabilities in the same clock domain, if read A happens-before read B, then `ticks_A <= ticks_B`.
+4. `MonotonicTimeResolution(v_mono) ⇓ DurationVal(n)` MUST return the advertised monotonic-clock resolution for `v_mono`, with `n > 0`.
+5. `MonotonicTimeElapsed(v_mono, start, end) ⇓ TimeOk(TypePath(["Duration"]), DurationVal(n))` only if `start` and `end` are monotonic instants from the clock domain authorized by `v_mono`, `end` does not precede `start`, and the elapsed duration is representable in nanoseconds. Otherwise it MUST return `TimeErr(TypePath(["Duration"]), ClockMismatch)` or `TimeErr(TypePath(["Duration"]), OutOfRange)` without reading wall-clock time.
+6. `MonotonicTimeCoarsen(v_mono, resolution) ⇓ TimeOk(TypeDynamic(`MonotonicTime`), v_mono')` only if `resolution` denotes `DurationVal(n)` with `n > 0`; the resulting capability MUST NOT expose timing precision finer than `max(n, resolution(v_mono))`. If `resolution` is zero or not a valid duration value, it MUST return `TimeErr(TypeDynamic(`MonotonicTime`), InvalidResolution)`.
+7. `WallTimeNowUtc(v_wall) ⇓ TimeOk(TypePath(["UtcInstant"]), UtcInstantVal(n))` MUST read the host wall clock as UTC nanoseconds relative to the Unix epoch. If the host wall clock is unavailable or the value is not representable, it MUST return `TimeErr(TypePath(["UtcInstant"]), ClockUnavailable)` or `TimeErr(TypePath(["UtcInstant"]), OutOfRange)`.
+8. `WallTimeResolution(v_wall) ⇓ TimeOk(TypePath(["Duration"]), DurationVal(n))` MUST return the advertised wall-clock resolution for `v_wall`, with `n > 0`, or a `TimeErr(TypePath(["Duration"]), ClockUnavailable)` value when the host cannot report a wall-clock resolution.
+9. `WallTimeCoarsen(v_wall, resolution) ⇓ TimeOk(TypeDynamic(`WallTime`), v_wall')` only if `resolution` denotes `DurationVal(n)` with `n > 0`; the resulting capability MUST NOT expose timing precision finer than `max(n, resolution(v_wall))`. If `resolution` is zero or not a valid duration value, it MUST return `TimeErr(TypeDynamic(`WallTime`), InvalidResolution)`.
+10. Coarsened clock capabilities MUST NOT invalidate the source capability, mutate unrelated capability state, or introduce authority outside the source capability.
+
+#### 6.2.4 Network Primitive Relations
 
 NetworkJudg = {NetRestrictHost(v_net, host) ⇓ v_net'}
 
@@ -3497,7 +3530,7 @@ A conforming implementation MUST satisfy all of the following:
 3. Rejection under rule 2 MUST occur before any externally observable network effect is performed.
 4. `NetRestrictHost` MUST NOT invalidate `v_net` and MUST NOT mutate unrelated capability state.
 
-#### 6.2.4 Primitive Method Application
+#### 6.2.5 Primitive Method Application
 
 HandleOf(v) = h ⇔ v = `File@Read`{`handle`: h} ∨ v = `File@Write`{`handle`: h} ∨ v = `File@Append`{`handle`: h}
 DirHandleOf(v) = h ⇔ v = `DirIter@Open`{`handle`: h}
@@ -3679,6 +3712,51 @@ DirHandleOf(v) = h    Γ ⊢ DirClose(h) ⇓ ok
 Γ ⊢ SystemRun(command) ⇓ code
 ──────────────────────────────────────────────────────────────────
 Γ ⊢ PrimCall(`System`, `run`, v_sys, [command]) ⇓ Val(code)
+
+**(Prim-Time-Monotonic)**
+Γ ⊢ TimeMonotonic(v_time) ⇓ v_mono
+──────────────────────────────────────────────────────────────────
+Γ ⊢ PrimCall(`Time`, `monotonic`, v_time, []) ⇓ Val(v_mono)
+
+**(Prim-Time-Wall)**
+Γ ⊢ TimeWall(v_time) ⇓ v_wall
+────────────────────────────────────────────────────────────
+Γ ⊢ PrimCall(`Time`, `wall`, v_time, []) ⇓ Val(v_wall)
+
+**(Prim-MonotonicTime-Now)**
+Γ ⊢ MonotonicTimeNow(v_mono) ⇓ t
+──────────────────────────────────────────────────────────────────────
+Γ ⊢ PrimCall(`MonotonicTime`, `now`, v_mono, []) ⇓ Val(t)
+
+**(Prim-MonotonicTime-Resolution)**
+Γ ⊢ MonotonicTimeResolution(v_mono) ⇓ d
+─────────────────────────────────────────────────────────────────────────────
+Γ ⊢ PrimCall(`MonotonicTime`, `resolution`, v_mono, []) ⇓ Val(d)
+
+**(Prim-MonotonicTime-Elapsed)**
+Γ ⊢ MonotonicTimeElapsed(v_mono, start, end) ⇓ r
+────────────────────────────────────────────────────────────────────────────────
+Γ ⊢ PrimCall(`MonotonicTime`, `elapsed`, v_mono, [start, end]) ⇓ Val(r)
+
+**(Prim-MonotonicTime-Coarsen)**
+Γ ⊢ MonotonicTimeCoarsen(v_mono, resolution) ⇓ r
+────────────────────────────────────────────────────────────────────────────────
+Γ ⊢ PrimCall(`MonotonicTime`, `coarsen`, v_mono, [resolution]) ⇓ Val(r)
+
+**(Prim-WallTime-NowUtc)**
+Γ ⊢ WallTimeNowUtc(v_wall) ⇓ r
+───────────────────────────────────────────────────────────────────
+Γ ⊢ PrimCall(`WallTime`, `now_utc`, v_wall, []) ⇓ Val(r)
+
+**(Prim-WallTime-Resolution)**
+Γ ⊢ WallTimeResolution(v_wall) ⇓ r
+───────────────────────────────────────────────────────────────────────
+Γ ⊢ PrimCall(`WallTime`, `resolution`, v_wall, []) ⇓ Val(r)
+
+**(Prim-WallTime-Coarsen)**
+Γ ⊢ WallTimeCoarsen(v_wall, resolution) ⇓ r
+────────────────────────────────────────────────────────────────────────────
+Γ ⊢ PrimCall(`WallTime`, `coarsen`, v_wall, [resolution]) ⇓ Val(r)
 
 **(Prim-Network-RestrictHost)**
 Γ ⊢ NetRestrictHost(v_net, host) ⇓ v_net'
@@ -4614,7 +4692,7 @@ ReservedModulePath(path) ⇔ (|path| ≥ 1 ∧ IdEq(path[0], `ultraviolet`)) ∨
 <!-- Source: "The `ultraviolet::...` namespace prefix is reserved for specification-defined features. User programs and vendor extensions MUST NOT use this namespace." -->
 
 PrimTypeNames = {`i8`, `i16`, `i32`, `i64`, `i128`, `u8`, `u16`, `u32`, `u64`, `u128`, `f16`, `f32`, `f64`, `bool`, `char`, `usize`, `isize`}
-SpecialTypeNames = {`Self`, `Drop`, `Bitcopy`, `Clone`, `Eq`, `Hash`, `Hasher`, `Iterator`, `Step`, `FfiSafe`, `string`, `bytes`, `Modal`, `Region`, `RegionOptions`, `CancelToken`, `Context`, `System`, `Network`, `ExecutionDomain`, `CpuSet`, `Priority`, `Reactor`}
+SpecialTypeNames = {`Self`, `Drop`, `Bitcopy`, `Clone`, `Eq`, `Hash`, `Hasher`, `Iterator`, `Step`, `FfiSafe`, `string`, `bytes`, `Modal`, `Region`, `RegionOptions`, `CancelToken`, `Context`, `System`, `Network`, `ExecutionDomain`, `CpuSet`, `Priority`, `Reactor`, `Time`, `MonotonicTime`, `WallTime`, `Duration`, `MonotonicInstant`, `UtcInstant`, `TimeError`}
 AsyncTypeNames = {`Async`, `Future`, `Sequence`, `Stream`, `Pipe`, `Exchange`, `Tracked`}
 
 `Drop`, `Bitcopy`, `Clone`, and `FfiSafe` are reserved predicate names and are included in `SpecialTypeNames`. Reuse of these names at any scope is an error via `(Intro-Outer-Err)` (§7.2), since `UniverseBindings` is the outermost scope and contains these names.
@@ -13630,7 +13708,7 @@ Capability classes have no feature-specific parser beyond ordinary class parsing
 
 #### 14.9.3 AST Representation / Form
 
-CapClass = {`FileSystem`, `Network`, `HeapAllocator`, `ExecutionDomain`, `Reactor`}
+CapClass = {`FileSystem`, `Network`, `HeapAllocator`, `ExecutionDomain`, `Reactor`, `Time`, `MonotonicTime`, `WallTime`}
 CapType(Cl) = TypeDynamic(Cl)
 
 FileSystemInterface =
@@ -13665,6 +13743,27 @@ HeapAllocatorInterface =
  ⟨"dealloc_raw", `const`, [⟨⊥, `ptr`, TypeRawPtr(`mut`, TypePrim("u8"))⟩, ⟨⊥, `count`, TypePrim("usize")⟩], TypePrim("()")⟩
 }
 
+TimeInterface =
+{
+ ⟨"monotonic", `const`, [], TypeDynamic(`MonotonicTime`)⟩,
+ ⟨"wall", `const`, [], TypeDynamic(`WallTime`)⟩
+}
+
+MonotonicTimeInterface =
+{
+ ⟨"now", `const`, [], TypePath(["MonotonicInstant"])⟩,
+ ⟨"resolution", `const`, [], TypePath(["Duration"])⟩,
+ ⟨"elapsed", `const`, [⟨⊥, `start`, TypePath(["MonotonicInstant"])⟩, ⟨⊥, `end`, TypePath(["MonotonicInstant"])⟩], TypeApply(["Outcome"], [TypePath(["Duration"]), TypePath(["TimeError"])])⟩,
+ ⟨"coarsen", `const`, [⟨⊥, `resolution`, TypePath(["Duration"])⟩], TypeApply(["Outcome"], [TypeDynamic(`MonotonicTime`), TypePath(["TimeError"])])⟩
+}
+
+WallTimeInterface =
+{
+ ⟨"now_utc", `const`, [], TypeApply(["Outcome"], [TypePath(["UtcInstant"]), TypePath(["TimeError"])])⟩,
+ ⟨"resolution", `const`, [], TypeApply(["Outcome"], [TypePath(["Duration"]), TypePath(["TimeError"])])⟩,
+ ⟨"coarsen", `const`, [⟨⊥, `resolution`, TypePath(["Duration"])⟩], TypeApply(["Outcome"], [TypeDynamic(`WallTime`), TypePath(["TimeError"])])⟩
+}
+
 FileKindVariants = [
   VariantDecl(`File`, ⊥, ⊥, ⊥, ⊥),
   VariantDecl(`Dir`, ⊥, ⊥, ⊥, ⊥),
@@ -13695,12 +13794,38 @@ AllocationErrorVariants = [
 ]
 AllocationErrorDecl = EnumDecl(⊥, `public`, `AllocationError`, ⊥, ⊥, [], AllocationErrorVariants, ⊥, ⊥, ⊥)
 
+TimeErrorVariants = [
+  VariantDecl(`Unsupported`, ⊥, ⊥, ⊥, ⊥),
+  VariantDecl(`ClockUnavailable`, ⊥, ⊥, ⊥, ⊥),
+  VariantDecl(`OutOfRange`, ⊥, ⊥, ⊥, ⊥),
+  VariantDecl(`InvalidResolution`, ⊥, ⊥, ⊥, ⊥),
+  VariantDecl(`ClockMismatch`, ⊥, ⊥, ⊥, ⊥)
+]
+TimeErrorDecl = EnumDecl(⊥, `public`, `TimeError`, ⊥, ⊥, [], TimeErrorVariants, ⊥, ⊥, ⊥)
+
+DurationFields = [
+  ⟨⊥, `public`, false, `nanoseconds`, TypePrim("u128"), ⊥, ⊥, ⊥⟩
+]
+DurationDecl = RecordDecl(⊥, `public`, `Duration`, ⊥, ⊥, [], DurationFields, ⊥, ⊥, ⊥)
+
+MonotonicInstantFields = [
+  ⟨⊥, `private`, false, `domain`, TypePrim("usize"), ⊥, ⊥, ⊥⟩,
+  ⟨⊥, `private`, false, `ticks`, TypePrim("u128"), ⊥, ⊥, ⊥⟩
+]
+MonotonicInstantDecl = RecordDecl(⊥, `public`, `MonotonicInstant`, ⊥, ⊥, [], MonotonicInstantFields, ⊥, ⊥, ⊥)
+
+UtcInstantFields = [
+  ⟨⊥, `public`, false, `unix_nanoseconds`, TypePrim("i128"), ⊥, ⊥, ⊥⟩
+]
+UtcInstantDecl = RecordDecl(⊥, `public`, `UtcInstant`, ⊥, ⊥, [], UtcInstantFields, ⊥, ⊥, ⊥)
+
 ContextFields = [
   ⟨⊥, `public`, false, `fs`, TypeDynamic(`FileSystem`), ⊥, ⊥, ⊥⟩,
   ⟨⊥, `public`, false, `net`, TypeDynamic(`Network`), ⊥, ⊥, ⊥⟩,
   ⟨⊥, `public`, false, `heap`, TypeDynamic(`HeapAllocator`), ⊥, ⊥, ⊥⟩,
   ⟨⊥, `public`, false, `sys`, TypePath(["System"]), ⊥, ⊥, ⊥⟩,
-  ⟨⊥, `public`, false, `reactor`, TypeDynamic(`Reactor`), ⊥, ⊥, ⊥⟩
+  ⟨⊥, `public`, false, `reactor`, TypeDynamic(`Reactor`), ⊥, ⊥, ⊥⟩,
+  ⟨⊥, `public`, false, `time`, TypeDynamic(`Time`), ⊥, ⊥, ⊥⟩
 ]
 ContextMethods = [
   MethodDecl(⊥, `public`, false, "cpu", ⊥, ReceiverShorthand(`const`), [], TypeDynamic(`ExecutionDomain`), ⊥, ⊥, ⊥, ⊥),
@@ -13752,16 +13877,22 @@ CapMethodSig(`FileSystem`, name) = ⟨params, ret⟩ ⇔ ⟨name, recv, params, 
 CapMethodSig(`Network`, name) = ⟨params, ret⟩ ⇔ ⟨name, recv, params, ret⟩ ∈ NetworkInterface
 CapMethodSig(`HeapAllocator`, name) = ⟨params, ret⟩ ⇔ ⟨name, recv, params, ret⟩ ∈ HeapAllocatorInterface
 CapMethodSig(`Reactor`, name) = ⟨params, ret⟩ ⇔ LookupClassMethod(`Reactor`, name) = m ∧ Sig_T(SelfVar, m) = ⟨_, params, ret⟩
+CapMethodSig(`Time`, name) = ⟨params, ret⟩ ⇔ ⟨name, recv, params, ret⟩ ∈ TimeInterface
+CapMethodSig(`MonotonicTime`, name) = ⟨params, ret⟩ ⇔ ⟨name, recv, params, ret⟩ ∈ MonotonicTimeInterface
+CapMethodSig(`WallTime`, name) = ⟨params, ret⟩ ⇔ ⟨name, recv, params, ret⟩ ∈ WallTimeInterface
 SystemMethodSig(name) = ⟨params, ret⟩ ⇔ ⟨name, params, ret⟩ ∈ SystemInterface
 
 CapRecv(`FileSystem`, name) = recv ⇔ ⟨name, recv, params, ret⟩ ∈ FileSystemInterface
 CapRecv(`Network`, name) = recv ⇔ ⟨name, recv, params, ret⟩ ∈ NetworkInterface
 CapRecv(`HeapAllocator`, name) = recv ⇔ ⟨name, recv, params, ret⟩ ∈ HeapAllocatorInterface
 CapRecv(`Reactor`, name) = recv ⇔ LookupClassMethod(`Reactor`, name) = m ∧ RecvPerm(SelfVar, m.receiver) = recv
+CapRecv(`Time`, name) = recv ⇔ ⟨name, recv, params, ret⟩ ∈ TimeInterface
+CapRecv(`MonotonicTime`, name) = recv ⇔ ⟨name, recv, params, ret⟩ ∈ MonotonicTimeInterface
+CapRecv(`WallTime`, name) = recv ⇔ ⟨name, recv, params, ret⟩ ∈ WallTimeInterface
 
 LowerCallJudg = {MethodSymbol, BuiltinMethodSym, LowerMethodCall, LowerArgs, LowerRecvArg}
 ModalStateOf(T) = TypeModalState(modal_ref, S) ⇔ StripPerm(T) = TypeModalState(modal_ref, S)
-BuiltinCapClass = {`FileSystem`, `Network`, `HeapAllocator`, `Reactor`}
+BuiltinCapClass = {`FileSystem`, `Network`, `HeapAllocator`, `Reactor`, `Time`, `MonotonicTime`, `WallTime`}
 
 #### 14.9.4 Static Semantics
 
@@ -13769,7 +13900,7 @@ Capability classes are ordinary classes in the type system. A parameter of type 
 
 Capability classes MAY be used as generic bounds exactly like any other class bound.
 
-The built-in capability class names `FileSystem`, `Network`, `HeapAllocator`, `ExecutionDomain`, and `Reactor` are reserved. Type-system use of those names is via `CapType(Cl) = TypeDynamic(Cl)`.
+The built-in capability class names `FileSystem`, `Network`, `HeapAllocator`, `ExecutionDomain`, `Reactor`, `Time`, `MonotonicTime`, and `WallTime` are reserved. Type-system use of those names is via `CapType(Cl) = TypeDynamic(Cl)`.
 
 Calls to `HeapAllocator.alloc_raw` and `HeapAllocator.dealloc_raw` require `unsafe` context.
 
@@ -13784,19 +13915,28 @@ Calls to `HeapAllocator.alloc_raw` and `HeapAllocator.dealloc_raw` require `unsa
 Γ; R; L ⊢ MethodCall(base, "dealloc_raw", args) ⇑ c
 
 BuiltinTypes_FS = {`File`, `DirIter`, `DirEntry`, `FileKind`, `IoError`}
+BuiltinTypes_Time = {`Duration`, `MonotonicInstant`, `UtcInstant`, `TimeError`}
 
 RecordDecl(["DirEntry"]) = DirEntryDecl
+RecordDecl(["Duration"]) = DurationDecl
+RecordDecl(["MonotonicInstant"]) = MonotonicInstantDecl
+RecordDecl(["UtcInstant"]) = UtcInstantDecl
 RecordDecl(["Context"]) = ContextDecl
 RecordDecl(["System"]) = SystemDecl
 EnumDecl(["FileKind"]) = FileKindDecl
 EnumDecl(["IoError"]) = IoErrorDecl
 EnumDecl(["AllocationError"]) = AllocationErrorDecl
+EnumDecl(["TimeError"]) = TimeErrorDecl
 EnumDecl(["Priority"]) = PriorityDecl
 
 Σ.Types["DirEntry"] = DirEntryDecl
+Σ.Types["Duration"] = DurationDecl
+Σ.Types["MonotonicInstant"] = MonotonicInstantDecl
+Σ.Types["UtcInstant"] = UtcInstantDecl
 Σ.Types["FileKind"] = FileKindDecl
 Σ.Types["IoError"] = IoErrorDecl
 Σ.Types["AllocationError"] = AllocationErrorDecl
+Σ.Types["TimeError"] = TimeErrorDecl
 Σ.Types["Context"] = ContextDecl
 Σ.Types["System"] = SystemDecl
 Σ.Types["CpuSet"] = CpuSetDecl
@@ -13809,6 +13949,7 @@ ContextBundleFieldType(`net`) = TypeDynamic(`Network`)
 ContextBundleFieldType(`heap`) = TypeDynamic(`HeapAllocator`)
 ContextBundleFieldType(`sys`) = TypePath(["System"])
 ContextBundleFieldType(`reactor`) = TypeDynamic(`Reactor`)
+ContextBundleFieldType(`time`) = TypeDynamic(`Time`)
 ContextBundleFieldType(`cpu`) = TypeDynamic(`ExecutionDomain`)
 ContextBundleFieldType(`gpu`) = TypeDynamic(`ExecutionDomain`)
 ContextBundleFieldType(`inline`) = TypeDynamic(`ExecutionDomain`)
@@ -13821,6 +13962,7 @@ ContextBundleFieldValue(v_ctx, `net`) ⇓ v ⇔ FieldValue(v_ctx, `net`) = v
 ContextBundleFieldValue(v_ctx, `heap`) ⇓ v ⇔ FieldValue(v_ctx, `heap`) = v
 ContextBundleFieldValue(v_ctx, `sys`) ⇓ v ⇔ FieldValue(v_ctx, `sys`) = v
 ContextBundleFieldValue(v_ctx, `reactor`) ⇓ v ⇔ FieldValue(v_ctx, `reactor`) = v
+ContextBundleFieldValue(v_ctx, `time`) ⇓ v ⇔ FieldValue(v_ctx, `time`) = v
 ContextBundleFieldValue(v_ctx, `cpu`) ⇓ v ⇔ ContextDomainValue(v_ctx, `cpu`) ⇓ v
 ContextBundleFieldValue(v_ctx, `gpu`) ⇓ v ⇔ ContextDomainValue(v_ctx, `gpu`) ⇓ v
 ContextBundleFieldValue(v_ctx, `inline`) ⇓ v ⇔ ContextDomainValue(v_ctx, `inline`) ⇓ v
@@ -13840,7 +13982,7 @@ Capability classes introduce no separate dispatch model. Built-in capability ope
 
 #### 14.9.6 Lowering
 
-Calls on dynamic receivers of builtin capability classes `FileSystem`, `Network`, `HeapAllocator`, and `Reactor` lower to builtin method symbols rather than emitted vtable-call sequences. Other capability classes lower through the ordinary dynamic-dispatch path of §14.6.
+Calls on dynamic receivers of builtin capability classes `FileSystem`, `Network`, `HeapAllocator`, `Reactor`, `Time`, `MonotonicTime`, and `WallTime` lower to builtin method symbols rather than emitted vtable-call sequences. Other capability classes lower through the ordinary dynamic-dispatch path of §14.6.
 
 #### 14.9.7 Diagnostics
 
@@ -28761,6 +28903,42 @@ BuiltinModalSymMap = [
 ───────────────────────────────────────────────────────────────────────────────────────────────
 Γ ⊢ BuiltinSym(`Reactor::register`) ⇓ PathSig(["ultraviolet", "runtime", "reactor", "register"])
 
+**(BuiltinSym-Time-Monotonic)**
+──────────────────────────────────────────────────────────────────────────────────────────────
+Γ ⊢ BuiltinSym(`Time::monotonic`) ⇓ PathSig(["ultraviolet", "runtime", "time", "monotonic"])
+
+**(BuiltinSym-Time-Wall)**
+────────────────────────────────────────────────────────────────────────────────────
+Γ ⊢ BuiltinSym(`Time::wall`) ⇓ PathSig(["ultraviolet", "runtime", "time", "wall"])
+
+**(BuiltinSym-MonotonicTime-Now)**
+──────────────────────────────────────────────────────────────────────────────────────────────
+Γ ⊢ BuiltinSym(`MonotonicTime::now`) ⇓ PathSig(["ultraviolet", "runtime", "time", "monotonic_now"])
+
+**(BuiltinSym-MonotonicTime-Resolution)**
+────────────────────────────────────────────────────────────────────────────────────────────────────
+Γ ⊢ BuiltinSym(`MonotonicTime::resolution`) ⇓ PathSig(["ultraviolet", "runtime", "time", "monotonic_resolution"])
+
+**(BuiltinSym-MonotonicTime-Elapsed)**
+────────────────────────────────────────────────────────────────────────────────────────────────
+Γ ⊢ BuiltinSym(`MonotonicTime::elapsed`) ⇓ PathSig(["ultraviolet", "runtime", "time", "monotonic_elapsed"])
+
+**(BuiltinSym-MonotonicTime-Coarsen)**
+────────────────────────────────────────────────────────────────────────────────────────────────
+Γ ⊢ BuiltinSym(`MonotonicTime::coarsen`) ⇓ PathSig(["ultraviolet", "runtime", "time", "monotonic_coarsen"])
+
+**(BuiltinSym-WallTime-NowUtc)**
+────────────────────────────────────────────────────────────────────────────────────────────
+Γ ⊢ BuiltinSym(`WallTime::now_utc`) ⇓ PathSig(["ultraviolet", "runtime", "time", "wall_now_utc"])
+
+**(BuiltinSym-WallTime-Resolution)**
+──────────────────────────────────────────────────────────────────────────────────────────────
+Γ ⊢ BuiltinSym(`WallTime::resolution`) ⇓ PathSig(["ultraviolet", "runtime", "time", "wall_resolution"])
+
+**(BuiltinSym-WallTime-Coarsen)**
+──────────────────────────────────────────────────────────────────────────────────────────
+Γ ⊢ BuiltinSym(`WallTime::coarsen`) ⇓ PathSig(["ultraviolet", "runtime", "time", "wall_coarsen"])
+
 **(BuiltinSym-System-Exit)**
 ──────────────────────────────────────────────────────────────────────────────────────────────
 Γ ⊢ BuiltinSym(`System::exit`) ⇓ PathSig(["ultraviolet", "runtime", "system", "exit"])
@@ -28857,7 +29035,8 @@ NetworkBuiltinMethods = {`Network::restrict_to_host`}
 HeapAllocatorBuiltinMethods = {`HeapAllocator::with_quota`, `HeapAllocator::alloc_raw`, `HeapAllocator::dealloc_raw`}
 SystemBuiltinMethods = {`System::name` | ⟨name, params, ret⟩ ∈ SystemInterface}
 ReactorBuiltinMethods = {`Reactor::run`, `Reactor::register`}
-BuiltinMethods = StringBuiltins ∪ BytesBuiltins ∪ FileSystemBuiltinMethods ∪ NetworkBuiltinMethods ∪ HeapAllocatorBuiltinMethods ∪ SystemBuiltinMethods ∪ ReactorBuiltinMethods
+TimeBuiltinMethods = {`Time::monotonic`, `Time::wall`, `MonotonicTime::now`, `MonotonicTime::resolution`, `MonotonicTime::elapsed`, `MonotonicTime::coarsen`, `WallTime::now_utc`, `WallTime::resolution`, `WallTime::coarsen`}
+BuiltinMethods = StringBuiltins ∪ BytesBuiltins ∪ FileSystemBuiltinMethods ∪ NetworkBuiltinMethods ∪ HeapAllocatorBuiltinMethods ∪ SystemBuiltinMethods ∪ ReactorBuiltinMethods ∪ TimeBuiltinMethods
 RuntimeSyms = {PanicSym, StringDropSym, BytesDropSym, ContextInitSym} ∪ {BuiltinModalSym(proc) | proc ∈ dom(BuiltinModalSymMap)} ∪ {RegionAddrIsActiveSym, RegionAddrTagFromSym} ∪ {BuiltinSym(method) | method ∈ BuiltinMethods}
 
 BuiltinSig(`FileSystem`::name) = ⟨[⟨⊥, `self`, TypePerm(CapRecv(`FileSystem`, name), TypeDynamic(`FileSystem`))⟩] ++ params, ret⟩ ⇔ CapMethodSig(`FileSystem`, name) = ⟨params, ret⟩
@@ -28865,6 +29044,9 @@ BuiltinSig(`Network`::name) = ⟨[⟨⊥, `self`, TypePerm(CapRecv(`Network`, na
 BuiltinSig(`HeapAllocator`::name) = ⟨[⟨⊥, `self`, TypePerm(CapRecv(`HeapAllocator`, name), TypeDynamic(`HeapAllocator`))⟩] ++ params, ret⟩ ⇔ CapMethodSig(`HeapAllocator`, name) = ⟨params, ret⟩
 BuiltinSig(`System`::name) = ⟨[⟨⊥, `self`, TypePerm(`const`, TypePath(["System"]))⟩] ++ params, ret⟩ ⇔ SystemMethodSig(name) = ⟨params, ret⟩
 BuiltinSig(`Reactor`::name) = ⟨[⟨⊥, `self`, TypePerm(CapRecv(`Reactor`, name), TypeDynamic(`Reactor`))⟩] ++ params, ret⟩ ⇔ CapMethodSig(`Reactor`, name) = ⟨params, ret⟩
+BuiltinSig(`Time`::name) = ⟨[⟨⊥, `self`, TypePerm(CapRecv(`Time`, name), TypeDynamic(`Time`))⟩] ++ params, ret⟩ ⇔ CapMethodSig(`Time`, name) = ⟨params, ret⟩
+BuiltinSig(`MonotonicTime`::name) = ⟨[⟨⊥, `self`, TypePerm(CapRecv(`MonotonicTime`, name), TypeDynamic(`MonotonicTime`))⟩] ++ params, ret⟩ ⇔ CapMethodSig(`MonotonicTime`, name) = ⟨params, ret⟩
+BuiltinSig(`WallTime`::name) = ⟨[⟨⊥, `self`, TypePerm(CapRecv(`WallTime`, name), TypeDynamic(`WallTime`))⟩] ++ params, ret⟩ ⇔ CapMethodSig(`WallTime`, name) = ⟨params, ret⟩
 BuiltinSig(method) = ⟨params, ret⟩ ⇔ StringBytesBuiltinSig(method) = ⟨params, ret⟩
 
 RuntimeSig(PanicSym) = ⟨[⟨⊥, `code`, TypePrim("u32")⟩], TypePrim("!")⟩
@@ -28898,7 +29080,7 @@ DeclAttrsOk(sym) ⇔ (sym = PanicSym ⇒ {`noreturn`, `nounwind`} ⊆ DeclAttrs(
 RuntimeDeclsOk(decls) ⇔ ∀ sym ∈ DeclSyms(decls). DeclAttrsOk(sym)
 RuntimeDeclsCover(LLVMIR, IR) ⇔ RuntimeRefs(IR) ⊆ DeclSyms(LLVMIR)
 
-#### 24.6.4 Network, Heap, and Reactor Host-Primitives
+#### 24.6.4 Network, Heap, Reactor, and Time Host-Primitives
 
 **(Prim-Network-RestrictHost-Runtime)**
 Γ ⊢ NetRestrictHost(v_net, host) ⇓ v_net'
@@ -28956,6 +29138,53 @@ ReactorJudg = {ReactorRun(v_reactor, f) ⇓ r, ReactorRegister(v_reactor, f) ⇓
 Γ ⊢ ReactorRegister(v_reactor, f) ⇓ h
 ────────────────────────────────────────────────────────────────────────────
 Γ ⊢ PrimCall(`Reactor`, `register`, v_reactor, [f]) ⇓ Val(h)
+
+Time host-primitives are defined in §6.2.3.
+
+**(Prim-Time-Monotonic-Runtime)**
+Γ ⊢ TimeMonotonic(v_time) ⇓ v_mono
+────────────────────────────────────────────────────────────────────────────
+Γ ⊢ PrimCall(`Time`, `monotonic`, v_time, []) ⇓ Val(v_mono)
+
+**(Prim-Time-Wall-Runtime)**
+Γ ⊢ TimeWall(v_time) ⇓ v_wall
+──────────────────────────────────────────────────────────────────────
+Γ ⊢ PrimCall(`Time`, `wall`, v_time, []) ⇓ Val(v_wall)
+
+**(Prim-MonotonicTime-Now-Runtime)**
+Γ ⊢ MonotonicTimeNow(v_mono) ⇓ t
+────────────────────────────────────────────────────────────────────────────
+Γ ⊢ PrimCall(`MonotonicTime`, `now`, v_mono, []) ⇓ Val(t)
+
+**(Prim-MonotonicTime-Resolution-Runtime)**
+Γ ⊢ MonotonicTimeResolution(v_mono) ⇓ d
+───────────────────────────────────────────────────────────────────────────────────
+Γ ⊢ PrimCall(`MonotonicTime`, `resolution`, v_mono, []) ⇓ Val(d)
+
+**(Prim-MonotonicTime-Elapsed-Runtime)**
+Γ ⊢ MonotonicTimeElapsed(v_mono, start, end) ⇓ r
+────────────────────────────────────────────────────────────────────────────────
+Γ ⊢ PrimCall(`MonotonicTime`, `elapsed`, v_mono, [start, end]) ⇓ Val(r)
+
+**(Prim-MonotonicTime-Coarsen-Runtime)**
+Γ ⊢ MonotonicTimeCoarsen(v_mono, resolution) ⇓ r
+────────────────────────────────────────────────────────────────────────────────
+Γ ⊢ PrimCall(`MonotonicTime`, `coarsen`, v_mono, [resolution]) ⇓ Val(r)
+
+**(Prim-WallTime-NowUtc-Runtime)**
+Γ ⊢ WallTimeNowUtc(v_wall) ⇓ r
+────────────────────────────────────────────────────────────────────────
+Γ ⊢ PrimCall(`WallTime`, `now_utc`, v_wall, []) ⇓ Val(r)
+
+**(Prim-WallTime-Resolution-Runtime)**
+Γ ⊢ WallTimeResolution(v_wall) ⇓ r
+────────────────────────────────────────────────────────────────────────────
+Γ ⊢ PrimCall(`WallTime`, `resolution`, v_wall, []) ⇓ Val(r)
+
+**(Prim-WallTime-Coarsen-Runtime)**
+Γ ⊢ WallTimeCoarsen(v_wall, resolution) ⇓ r
+────────────────────────────────────────────────────────────────────────────
+Γ ⊢ PrimCall(`WallTime`, `coarsen`, v_wall, [resolution]) ⇓ Val(r)
 
 ### 24.7 Backend Requirements
 
@@ -30623,7 +30852,7 @@ Informative. Appendix D cross-indexes layout, ABI, and runtime ownership after r
 | Modal, string, and bytes layout                                  | `§13.1.5`, `§13.6.5`, `§13.7.5`, `§24.6.1`, `§24.7.7`              | `ModalLayout`, `ModalBits`, `BuiltinModalLayout`, `LLVMTy`                   |
 | Safe pointers, raw pointers, and function/closure representation | `§13.8.5`, `§13.9.5`, `§13.10.5`, `§13.11.5`, `§24.2.2`, `§24.7.7` | `ValueBits`, `LLVMPtrTy`, `LLVMArgAttrs`, `LLVMTy`                           |
 | Dynamic class objects and vtables                                | `§14.6.5`, `§14.6.6`, `§24.3`, `§24.7.7`                           | `DynLayout`, `VTable`, `EmitVTable`, `Mangle`, `Linkage`                     |
-| Filesystem, network, and system runtime behavior                 | `§6.2.1`, `§6.2.2`, `§6.2.3`, `§6.2.4`                             | `FSJudg`, `FileJudg_ω`, `DirJudg_ω`, `SystemJudg`, `NetworkJudg`, `PrimCall` |
+| Filesystem, system, time, and network runtime behavior           | `§6.2.1`, `§6.2.2`, `§6.2.3`, `§6.2.4`, `§6.2.5`                    | `FSJudg`, `FileJudg_ω`, `DirJudg_ω`, `SystemJudg`, `TimeJudg`, `NetworkJudg`, `PrimCall` |
 | Program lifecycle and initialization                             | `§24.4`                                                            | `EmitGlobal`, `InitFn`, `DeinitFn`, `ContextInitSym`, `InterpretProject`     |
 | Cleanup, drop, and unwinding                                     | `§24.5`                                                            | `CleanupPlan`, `CleanupScope`, `Destroy`, `Unwind`                           |
 | Runtime symbol surface                                           | `§24.6`                                                            | `BuiltinModalSym`, `BuiltinSym`, `RuntimeSig`, `RuntimeDecls`                |

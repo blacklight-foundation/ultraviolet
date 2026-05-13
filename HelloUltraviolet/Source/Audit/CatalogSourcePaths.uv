@@ -1,11 +1,11 @@
 //! Runtime path checks for source files referenced by generated catalog rows.
 
 public procedure expectedCatalogSourcePathCount() -> usize {
-    return 65usize
+    return 66usize
 }
 
 public procedure catalogSourcePathCount() -> usize {
-    return 65usize
+    return 66usize
 }
 
 internal procedure catalogSourcePathExists(context: Context, source_path: string@View) -> bool {
@@ -22,6 +22,7 @@ public procedure catalogSourcePathsExist(context: Context) -> bool {
         catalogSourcePathExists(context, "HelloUltraviolet/Source/Reference/Authority/Network.uv") &&
         catalogSourcePathExists(context, "HelloUltraviolet/Source/Reference/Authority/RegionsAndFrames.uv") &&
         catalogSourcePathExists(context, "HelloUltraviolet/Source/Reference/Authority/System.uv") &&
+        catalogSourcePathExists(context, "HelloUltraviolet/Source/Reference/Authority/Time.uv") &&
         catalogSourcePathExists(context, "HelloUltraviolet/Source/Reference/Comptime/CompileTimeForms.uv") &&
         catalogSourcePathExists(context, "HelloUltraviolet/Source/Reference/Conformance/BehaviorClassification.uv") &&
         catalogSourcePathExists(context, "HelloUltraviolet/Source/Reference/Conformance/ConstructVocabulary.uv") &&

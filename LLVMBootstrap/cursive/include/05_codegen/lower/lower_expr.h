@@ -114,6 +114,16 @@ struct ScopeInfo {
   bool is_loop = false;                   // True if this is a loop scope
   bool is_region = false;                 // True if this is a region scope
   std::uint64_t runtime_scope_id = 0;     // Runtime scope tag id (ScopeTag)
+  bool runtime_scope_exit_registered = false;
+};
+
+struct RuntimeScopeMaterialization {
+  bool required = false;
+};
+
+enum class AddressUseKind {
+  RuntimeObservable,
+  TransientNoEscape,
 };
 
 // BindingState tracks the state of a binding for cleanup purposes
@@ -480,7 +490,12 @@ struct LowerCtx {
   
   // Stack of scope information for cleanup
   std::vector<ScopeInfo> scope_stack;
-  std::uint64_t next_runtime_scope_id = 1;
+  std::shared_ptr<std::uint64_t> next_runtime_scope_id =
+      std::make_shared<std::uint64_t>(1);
+  std::shared_ptr<std::unordered_map<std::uint64_t, RuntimeScopeMaterialization>>
+      runtime_scope_materialization =
+          std::make_shared<
+              std::unordered_map<std::uint64_t, RuntimeScopeMaterialization>>();
   
   // Map from binding name to its state
   std::unordered_map<std::string, std::vector<BindingState>> binding_states;
@@ -549,6 +564,21 @@ struct LowerCtx {
 
   // Register runtime scope exit cleanup for the current scope.
   void RegisterRuntimeScopeExit();
+
+  // Mark a scope as requiring runtime materialization.
+  void RequireRuntimeScope(std::uint64_t scope_id);
+
+  // Mark the current scope as requiring runtime materialization.
+  void RequireCurrentRuntimeScope();
+
+  // True when a scope requires runtime scope_enter/scope_exit emission.
+  bool ScopeRequiresRuntime(std::uint64_t scope_id) const;
+
+  // True when the current scope requires runtime scope_enter/scope_exit emission.
+  bool CurrentScopeRequiresRuntime() const;
+
+  // Register runtime scope exit cleanup when the current scope is materialized.
+  void RegisterRuntimeScopeExitIfRequired();
 
   // Runtime scope id for the current scope (if any).
   std::optional<std::uint64_t> CurrentRuntimeScopeId() const;
@@ -690,7 +720,10 @@ IRPtr LowerWritePlace(const ast::Expr& place, const IRValue& value, LowerCtx& ct
 IRPtr LowerWritePlaceSub(const ast::Expr& place, const IRValue& value, LowerCtx& ctx);
 
 // §6.4 LowerAddrOf - lower address-of expression
-LowerResult LowerAddrOf(const ast::Expr& place, LowerCtx& ctx);
+LowerResult LowerAddrOf(const ast::Expr& place,
+                        LowerCtx& ctx,
+                        AddressUseKind use_kind =
+                            AddressUseKind::RuntimeObservable);
 
 // §6.4 LowerMovePlace - lower move expression
 LowerResult LowerMovePlace(const ast::Expr& place, LowerCtx& ctx);

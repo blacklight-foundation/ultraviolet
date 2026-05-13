@@ -1,0 +1,10 @@
+//! Rejected compile-time specimen for emitting a non-item AST.
+
+public procedure emitterEmitNonItemReference() -> i32 {
+    [[emit]]
+    comptime {
+        let ast = quote type { i32 }
+        emitter~>emit(ast)
+    }
+    return 0
+}

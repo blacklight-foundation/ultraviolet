@@ -659,7 +659,7 @@ ast::ModalDecl BuildAsyncModalDecl() {
     resume.span = core::Span{};
     resume.doc_opt = std::nullopt;
     suspended.members = {
-        MakeStateField("output", MakeTypePathAst({"Out"})),
+        MakeStateField("output", MakeTypePathAst({"TOut"})),
         resume,
     };
     decl.states.push_back(suspended);
@@ -722,7 +722,7 @@ ast::TypeAliasDecl BuildSequenceAliasDecl() {
   decl.generic_params = MakeGenericParams({MakeTypeParam("T", nullptr)});
   ast::TypePathType body{};
   body.path = {"Async"};
-  body.generic_args = {MakeTypePathAst({"TValue"}),
+  body.generic_args = {MakeTypePathAst({"T"}),
                        MakeTypePrimAst("()"),
                        MakeTypePrimAst("()"),
                        MakeTypePrimAst("!")};

@@ -1,7 +1,13 @@
 //! Reference specimens for Async / AsyncKeyIntegration.
 
+/// Suspends with the release modifier so held-key handling is part of lowering.
+public procedure asyncYieldReleaseReference(value: i32) -> AsyncReferenceComputation {
+    let resumed: i32 = yield release value
+    return resumed
+}
+
 /// Exercises the Async AsyncKeyIntegration reference surface.
 public procedure runAsyncAsyncKeyIntegrationReference() -> bool {
-    let reference: AsyncReference = asyncReference(2usize, true, true)
-    return asyncReferenceIsCovered(reference) && reference.integrates_keys
+    let released: AsyncReferenceComputation = asyncYieldReleaseReference(41)
+    return asyncSuspendedOutputIs(released, 41)
 }

@@ -1,0 +1,39 @@
+//! Diagnostic-absence specimen for ProjectFiles invalid path restrictions.
+
+public procedure projectFilesInvalidPathReference() -> i32 {
+    [[files]]
+    comptime {
+        let result = files~>exists("../outside-project")
+        let invalid_path: bool = if result is {
+            @Value { value } {
+                false
+            }
+            @Error { error } {
+                if error is {
+                    @NotFound {
+                        false
+                    }
+                    @PermissionDenied {
+                        false
+                    }
+                    @AlreadyExists {
+                        false
+                    }
+                    @InvalidPath {
+                        true
+                    }
+                    @Busy {
+                        false
+                    }
+                    @IoFailure {
+                        false
+                    }
+                }
+            }
+        }
+        if (!invalid_path) {
+            diagnostics~>error("ProjectFiles invalid path did not return InvalidPath")
+        }
+    }
+    return 0
+}

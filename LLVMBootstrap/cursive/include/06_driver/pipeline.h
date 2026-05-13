@@ -14,6 +14,7 @@
 #include "04_analysis/resolve/resolve_items.h"
 #include "04_analysis/typing/context.h"
 #include "04_analysis/typing/typecheck.h"
+#include "05_codegen/llvm/llvm_passes.h"
 
 namespace cursive::driver {
 
@@ -48,19 +49,22 @@ std::optional<std::string> EmitObjForModule(
     const CodegenCache& cache,
     const ModuleCodegen& module,
     const project::Project& project,
-    project::TargetProfile target_profile);
+    project::TargetProfile target_profile,
+    codegen::OptLevel opt_level);
 
 std::optional<std::string> CodegenObj(
     CodegenCache& cache,
     const project::ModuleInfo& module,
     const project::Project& project,
-    project::TargetProfile target_profile);
+    project::TargetProfile target_profile,
+    codegen::OptLevel opt_level);
 
 std::optional<CodegenObjectAndIR> CodegenObjAndIR(
     CodegenCache& cache,
     const project::ModuleInfo& module,
     const project::Project& project,
     project::TargetProfile target_profile,
+    codegen::OptLevel opt_level,
     std::string_view emit_ir);
 
 std::optional<std::string> CodegenIR(

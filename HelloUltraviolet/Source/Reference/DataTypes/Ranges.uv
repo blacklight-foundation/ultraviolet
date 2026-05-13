@@ -1,36 +1,60 @@
 //! Reference specimens for DataTypes / Ranges.
 
+/// Builds an exclusive range value.
 public procedure exclusiveRangeReference() -> Range<usize> {
     return 1usize..3usize
 }
 
+/// Builds an inclusive range value.
 public procedure inclusiveRangeReference() -> RangeInclusive<usize> {
     return 1usize..=3usize
 }
 
+/// Builds a range-from value.
 public procedure fromRangeReference() -> RangeFrom<usize> {
-    return 1usize..
+    return 2usize..
 }
 
+/// Builds a range-to value.
 public procedure toRangeReference() -> RangeTo<usize> {
     return ..3usize
 }
 
+/// Builds a range-to-inclusive value.
 public procedure toInclusiveRangeReference() -> RangeToInclusive<usize> {
-    return ..=3usize
+    return ..=2usize
 }
 
+/// Builds a full-range value.
 public procedure fullRangeReference() -> RangeFull {
     return ..
 }
 
+internal procedure rangeReferencesProduceSpecifiedSliceBounds() -> bool {
+    let values: [i32; 5] = [10, 20, 30, 40, 50]
+
+    let exclusive: [i32] = values[exclusiveRangeReference()]
+    let inclusive: [i32] = values[inclusiveRangeReference()]
+    let from_start: [i32] = values[fromRangeReference()]
+    let to_end: [i32] = values[toRangeReference()]
+    let to_inclusive_end: [i32] = values[toInclusiveRangeReference()]
+    let full: [i32] = values[fullRangeReference()]
+
+    return exclusive[0usize] == 20 &&
+        exclusive[1usize] == 30 &&
+        inclusive[0usize] == 20 &&
+        inclusive[2usize] == 40 &&
+        from_start[0usize] == 30 &&
+        from_start[2usize] == 50 &&
+        to_end[0usize] == 10 &&
+        to_end[2usize] == 30 &&
+        to_inclusive_end[0usize] == 10 &&
+        to_inclusive_end[2usize] == 30 &&
+        full[0usize] == 10 &&
+        full[4usize] == 50
+}
+
 /// Exercises the DataTypes Ranges reference surface.
 public procedure runDataTypesRangesReference() -> bool {
-    let exclusive: Range<usize> = exclusiveRangeReference()
-    let inclusive: RangeInclusive<usize> = inclusiveRangeReference()
-    let from_start: RangeFrom<usize> = fromRangeReference()
-    let to_end: RangeTo<usize> = toRangeReference()
-    let to_inclusive_end: RangeToInclusive<usize> = toInclusiveRangeReference()
-    let full: RangeFull = fullRangeReference()
-    return true
+    return rangeReferencesProduceSpecifiedSliceBounds()
 }

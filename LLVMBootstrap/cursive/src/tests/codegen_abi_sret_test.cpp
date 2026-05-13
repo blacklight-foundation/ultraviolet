@@ -291,8 +291,30 @@ procedure capturedClosureExitCode() -> i32 {
     return 6
 }
 
+procedure timeCapabilityExitCode(time: $Time) -> i32 {
+    let monotonic: $MonotonicTime = time~>monotonic()
+    let start: MonotonicInstant = monotonic~>now()
+    let end: MonotonicInstant = monotonic~>now()
+    let resolution: Duration = monotonic~>resolution()
+    let elapsed_result = monotonic~>elapsed(start, end)
+    let monotonic_coarse = monotonic~>coarsen(resolution)
+    let wall: $WallTime = time~>wall()
+    let utc_result = wall~>now_utc()
+    let wall_resolution = wall~>resolution()
+    let wall_coarse = wall~>coarsen(resolution)
+    let _ = elapsed_result
+    let _ = monotonic_coarse
+    let _ = utc_result
+    let _ = wall_resolution
+    let _ = wall_coarse
+    return 0
+}
+
 public procedure main(move ctx: Context) -> i32 {
-    let _ = ctx
+    let time_code: i32 = timeCapabilityExitCode(ctx.time)
+    if (time_code != 0) {
+        return time_code
+    }
     let aggregate_code: i32 = consumeAggregate(chooseAggregate(10))
     if (aggregate_code != 0) {
         return aggregate_code

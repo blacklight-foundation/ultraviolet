@@ -9,7 +9,7 @@ public procedure validatedModuleLevelFormsStaticDeclarationsObligations() -> usi
     var count: usize = 0usize
     if acceptedObligationEntryMatches(
         "grammar.StaticDeclarationSyntax",
-        30268usize,
+        30562usize,
         "HelloUltraviolet::Reference::Modules",
         "runModulesAggregationReference",
         "Source/Reference/Modules/Aggregation.uv"
@@ -18,168 +18,6 @@ public procedure validatedModuleLevelFormsStaticDeclarationsObligations() -> usi
     }
     if acceptedObligationEntryMatches(
         "def.StaticDeclTopLevelItems",
-        30287usize,
-        "HelloUltraviolet::Reference::Modules",
-        "runModulesAggregationReference",
-        "Source/Reference/Modules/Aggregation.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
-        "req.StaticDeclParserOwnership",
-        30301usize,
-        "HelloUltraviolet::Reference::Modules",
-        "runModulesAggregationReference",
-        "Source/Reference/Modules/Aggregation.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
-        "Parse-Static-Decl",
-        30317usize,
-        "HelloUltraviolet::Reference::Modules",
-        "runModulesAggregationReference",
-        "Source/Reference/Modules/Aggregation.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
-        "def.StaticDeclAst",
-        30335usize,
-        "HelloUltraviolet::Reference::Modules",
-        "runModulesAggregationReference",
-        "Source/Reference/Modules/Aggregation.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
-        "req.StaticDeclModuleScopeBindingSemantics",
-        30353usize,
-        "HelloUltraviolet::Reference::Modules",
-        "runModulesAggregationReference",
-        "Source/Reference/Modules/Aggregation.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
-        "def.StaticVisOk",
-        30369usize,
-        "HelloUltraviolet::Reference::Modules",
-        "runModulesAggregationReference",
-        "Source/Reference/Modules/Aggregation.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
-        "Bind-Static",
-        30383usize,
-        "HelloUltraviolet::Reference::Modules",
-        "runModulesAggregationReference",
-        "Source/Reference/Modules/Aggregation.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
-        "WF-StaticDecl",
-        30401usize,
-        "HelloUltraviolet::Reference::Modules",
-        "runModulesAggregationReference",
-        "Source/Reference/Modules/Aggregation.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
-        "WF-StaticDecl-Ann-Mismatch",
-        30419usize,
-        "HelloUltraviolet::Reference::Modules",
-        "runModulesAggregationReference",
-        "Source/Reference/Modules/Aggregation.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
-        "WF-StaticDecl-MissingType",
-        30437usize,
-        "HelloUltraviolet::Reference::Modules",
-        "runModulesAggregationReference",
-        "Source/Reference/Modules/Aggregation.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
-        "StaticVisOk-Err",
-        30455usize,
-        "HelloUltraviolet::Reference::Modules",
-        "runModulesAggregationReference",
-        "Source/Reference/Modules/Aggregation.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
-        "ResolveItem-Static",
-        30473usize,
-        "HelloUltraviolet::Reference::Modules",
-        "runModulesAggregationReference",
-        "Source/Reference/Modules/Aggregation.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
-        "conformance.StaticDeclarationDynamicSemantics",
-        30491usize,
-        "HelloUltraviolet::Reference::Modules",
-        "runModulesAggregationReference",
-        "Source/Reference/Modules/Aggregation.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
-        "def.ConstInitJudgementSet",
-        30507usize,
-        "HelloUltraviolet::Reference::Modules",
-        "runModulesAggregationReference",
-        "Source/Reference/Modules/Aggregation.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
-        "def.ConstInitLiteralEncoding",
-        30523usize,
-        "HelloUltraviolet::Reference::Modules",
-        "runModulesAggregationReference",
-        "Source/Reference/Modules/Aggregation.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
-        "def.StaticName",
-        30537usize,
-        "HelloUltraviolet::Reference::Modules",
-        "runModulesAggregationReference",
-        "Source/Reference/Modules/Aggregation.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
-        "def.StaticBindTypes",
-        30553usize,
-        "HelloUltraviolet::Reference::Modules",
-        "runModulesAggregationReference",
-        "Source/Reference/Modules/Aggregation.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
-        "def.StaticBindList",
-        30567usize,
-        "HelloUltraviolet::Reference::Modules",
-        "runModulesAggregationReference",
-        "Source/Reference/Modules/Aggregation.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
-        "def.StaticBindingFunctionSignature",
         30581usize,
         "HelloUltraviolet::Reference::Modules",
         "runModulesAggregationReference",
@@ -188,7 +26,7 @@ public procedure validatedModuleLevelFormsStaticDeclarationsObligations() -> usi
         count = count + 1usize
     }
     if acceptedObligationEntryMatches(
-        "def.StaticSym",
+        "req.StaticDeclParserOwnership",
         30595usize,
         "HelloUltraviolet::Reference::Modules",
         "runModulesAggregationReference",
@@ -197,7 +35,7 @@ public procedure validatedModuleLevelFormsStaticDeclarationsObligations() -> usi
         count = count + 1usize
     }
     if acceptedObligationEntryMatches(
-        "Emit-Static-Const",
+        "Parse-Static-Decl",
         30611usize,
         "HelloUltraviolet::Reference::Modules",
         "runModulesAggregationReference",
@@ -206,7 +44,7 @@ public procedure validatedModuleLevelFormsStaticDeclarationsObligations() -> usi
         count = count + 1usize
     }
     if acceptedObligationEntryMatches(
-        "Emit-Static-Init",
+        "def.StaticDeclAst",
         30629usize,
         "HelloUltraviolet::Reference::Modules",
         "runModulesAggregationReference",
@@ -215,7 +53,7 @@ public procedure validatedModuleLevelFormsStaticDeclarationsObligations() -> usi
         count = count + 1usize
     }
     if acceptedObligationEntryMatches(
-        "Emit-Static-Multi",
+        "req.StaticDeclModuleScopeBindingSemantics",
         30647usize,
         "HelloUltraviolet::Reference::Modules",
         "runModulesAggregationReference",
@@ -224,8 +62,8 @@ public procedure validatedModuleLevelFormsStaticDeclarationsObligations() -> usi
         count = count + 1usize
     }
     if acceptedObligationEntryMatches(
-        "def.InitSym",
-        30665usize,
+        "def.StaticVisOk",
+        30663usize,
         "HelloUltraviolet::Reference::Modules",
         "runModulesAggregationReference",
         "Source/Reference/Modules/Aggregation.uv"
@@ -233,8 +71,8 @@ public procedure validatedModuleLevelFormsStaticDeclarationsObligations() -> usi
         count = count + 1usize
     }
     if acceptedObligationEntryMatches(
-        "InitFn",
-        30679usize,
+        "Bind-Static",
+        30677usize,
         "HelloUltraviolet::Reference::Modules",
         "runModulesAggregationReference",
         "Source/Reference/Modules/Aggregation.uv"
@@ -242,8 +80,8 @@ public procedure validatedModuleLevelFormsStaticDeclarationsObligations() -> usi
         count = count + 1usize
     }
     if acceptedObligationEntryMatches(
-        "def.DeinitSym",
-        30697usize,
+        "WF-StaticDecl",
+        30695usize,
         "HelloUltraviolet::Reference::Modules",
         "runModulesAggregationReference",
         "Source/Reference/Modules/Aggregation.uv"
@@ -251,8 +89,8 @@ public procedure validatedModuleLevelFormsStaticDeclarationsObligations() -> usi
         count = count + 1usize
     }
     if acceptedObligationEntryMatches(
-        "DeinitFn",
-        30711usize,
+        "WF-StaticDecl-Ann-Mismatch",
+        30713usize,
         "HelloUltraviolet::Reference::Modules",
         "runModulesAggregationReference",
         "Source/Reference/Modules/Aggregation.uv"
@@ -260,8 +98,8 @@ public procedure validatedModuleLevelFormsStaticDeclarationsObligations() -> usi
         count = count + 1usize
     }
     if acceptedObligationEntryMatches(
-        "def.StaticItems",
-        30729usize,
+        "WF-StaticDecl-MissingType",
+        30731usize,
         "HelloUltraviolet::Reference::Modules",
         "runModulesAggregationReference",
         "Source/Reference/Modules/Aggregation.uv"
@@ -269,8 +107,8 @@ public procedure validatedModuleLevelFormsStaticDeclarationsObligations() -> usi
         count = count + 1usize
     }
     if acceptedObligationEntryMatches(
-        "def.StaticItemOf",
-        30743usize,
+        "StaticVisOk-Err",
+        30749usize,
         "HelloUltraviolet::Reference::Modules",
         "runModulesAggregationReference",
         "Source/Reference/Modules/Aggregation.uv"
@@ -278,8 +116,8 @@ public procedure validatedModuleLevelFormsStaticDeclarationsObligations() -> usi
         count = count + 1usize
     }
     if acceptedObligationEntryMatches(
-        "def.StaticSymPath",
-        30757usize,
+        "ResolveItem-Static",
+        30767usize,
         "HelloUltraviolet::Reference::Modules",
         "runModulesAggregationReference",
         "Source/Reference/Modules/Aggregation.uv"
@@ -287,16 +125,7 @@ public procedure validatedModuleLevelFormsStaticDeclarationsObligations() -> usi
         count = count + 1usize
     }
     if acceptedObligationEntryMatches(
-        "def.StaticAddr",
-        30771usize,
-        "HelloUltraviolet::Reference::Modules",
-        "runModulesAggregationReference",
-        "Source/Reference/Modules/Aggregation.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
-        "req.HostedLibraryStaticAddrSessionLocal",
+        "conformance.StaticDeclarationDynamicSemantics",
         30785usize,
         "HelloUltraviolet::Reference::Modules",
         "runModulesAggregationReference",
@@ -305,8 +134,8 @@ public procedure validatedModuleLevelFormsStaticDeclarationsObligations() -> usi
         count = count + 1usize
     }
     if acceptedObligationEntryMatches(
-        "def.AddrOfSym",
-        30799usize,
+        "def.ConstInitJudgementSet",
+        30801usize,
         "HelloUltraviolet::Reference::Modules",
         "runModulesAggregationReference",
         "Source/Reference/Modules/Aggregation.uv"
@@ -314,8 +143,8 @@ public procedure validatedModuleLevelFormsStaticDeclarationsObligations() -> usi
         count = count + 1usize
     }
     if acceptedObligationEntryMatches(
-        "def.StaticType",
-        30813usize,
+        "def.ConstInitLiteralEncoding",
+        30817usize,
         "HelloUltraviolet::Reference::Modules",
         "runModulesAggregationReference",
         "Source/Reference/Modules/Aggregation.uv"
@@ -323,8 +152,8 @@ public procedure validatedModuleLevelFormsStaticDeclarationsObligations() -> usi
         count = count + 1usize
     }
     if acceptedObligationEntryMatches(
-        "def.StaticBindInfo",
-        30827usize,
+        "def.StaticName",
+        30831usize,
         "HelloUltraviolet::Reference::Modules",
         "runModulesAggregationReference",
         "Source/Reference/Modules/Aggregation.uv"
@@ -332,8 +161,8 @@ public procedure validatedModuleLevelFormsStaticDeclarationsObligations() -> usi
         count = count + 1usize
     }
     if acceptedObligationEntryMatches(
-        "def.SeqIRList",
-        30841usize,
+        "def.StaticBindTypes",
+        30847usize,
         "HelloUltraviolet::Reference::Modules",
         "runModulesAggregationReference",
         "Source/Reference/Modules/Aggregation.uv"
@@ -341,8 +170,8 @@ public procedure validatedModuleLevelFormsStaticDeclarationsObligations() -> usi
         count = count + 1usize
     }
     if acceptedObligationEntryMatches(
-        "def.StaticStoreIR",
-        30856usize,
+        "def.StaticBindList",
+        30861usize,
         "HelloUltraviolet::Reference::Modules",
         "runModulesAggregationReference",
         "Source/Reference/Modules/Aggregation.uv"
@@ -350,8 +179,8 @@ public procedure validatedModuleLevelFormsStaticDeclarationsObligations() -> usi
         count = count + 1usize
     }
     if acceptedObligationEntryMatches(
-        "Lower-StaticInit-Item",
-        30871usize,
+        "def.StaticBindingFunctionSignature",
+        30875usize,
         "HelloUltraviolet::Reference::Modules",
         "runModulesAggregationReference",
         "Source/Reference/Modules/Aggregation.uv"
@@ -359,7 +188,7 @@ public procedure validatedModuleLevelFormsStaticDeclarationsObligations() -> usi
         count = count + 1usize
     }
     if acceptedObligationEntryMatches(
-        "Lower-StaticInitItems-Empty",
+        "def.StaticSym",
         30889usize,
         "HelloUltraviolet::Reference::Modules",
         "runModulesAggregationReference",
@@ -368,8 +197,179 @@ public procedure validatedModuleLevelFormsStaticDeclarationsObligations() -> usi
         count = count + 1usize
     }
     if acceptedObligationEntryMatches(
+        "Emit-Static-Const",
+        30905usize,
+        "HelloUltraviolet::Reference::Modules",
+        "runModulesAggregationReference",
+        "Source/Reference/Modules/Aggregation.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "Emit-Static-Init",
+        30923usize,
+        "HelloUltraviolet::Reference::Modules",
+        "runModulesAggregationReference",
+        "Source/Reference/Modules/Aggregation.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "Emit-Static-Multi",
+        30941usize,
+        "HelloUltraviolet::Reference::Modules",
+        "runModulesAggregationReference",
+        "Source/Reference/Modules/Aggregation.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "def.InitSym",
+        30959usize,
+        "HelloUltraviolet::Reference::Modules",
+        "runModulesAggregationReference",
+        "Source/Reference/Modules/Aggregation.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "InitFn",
+        30973usize,
+        "HelloUltraviolet::Reference::Modules",
+        "runModulesAggregationReference",
+        "Source/Reference/Modules/Aggregation.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "def.DeinitSym",
+        30991usize,
+        "HelloUltraviolet::Reference::Modules",
+        "runModulesAggregationReference",
+        "Source/Reference/Modules/Aggregation.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "DeinitFn",
+        31005usize,
+        "HelloUltraviolet::Reference::Modules",
+        "runModulesAggregationReference",
+        "Source/Reference/Modules/Aggregation.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "def.StaticItems",
+        31023usize,
+        "HelloUltraviolet::Reference::Modules",
+        "runModulesAggregationReference",
+        "Source/Reference/Modules/Aggregation.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "def.StaticItemOf",
+        31037usize,
+        "HelloUltraviolet::Reference::Modules",
+        "runModulesAggregationReference",
+        "Source/Reference/Modules/Aggregation.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "def.StaticSymPath",
+        31051usize,
+        "HelloUltraviolet::Reference::Modules",
+        "runModulesAggregationReference",
+        "Source/Reference/Modules/Aggregation.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "def.StaticAddr",
+        31065usize,
+        "HelloUltraviolet::Reference::Modules",
+        "runModulesAggregationReference",
+        "Source/Reference/Modules/Aggregation.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "req.HostedLibraryStaticAddrSessionLocal",
+        31079usize,
+        "HelloUltraviolet::Reference::Modules",
+        "runModulesAggregationReference",
+        "Source/Reference/Modules/Aggregation.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "def.AddrOfSym",
+        31093usize,
+        "HelloUltraviolet::Reference::Modules",
+        "runModulesAggregationReference",
+        "Source/Reference/Modules/Aggregation.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "def.StaticType",
+        31107usize,
+        "HelloUltraviolet::Reference::Modules",
+        "runModulesAggregationReference",
+        "Source/Reference/Modules/Aggregation.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "def.StaticBindInfo",
+        31121usize,
+        "HelloUltraviolet::Reference::Modules",
+        "runModulesAggregationReference",
+        "Source/Reference/Modules/Aggregation.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "def.SeqIRList",
+        31135usize,
+        "HelloUltraviolet::Reference::Modules",
+        "runModulesAggregationReference",
+        "Source/Reference/Modules/Aggregation.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "def.StaticStoreIR",
+        31150usize,
+        "HelloUltraviolet::Reference::Modules",
+        "runModulesAggregationReference",
+        "Source/Reference/Modules/Aggregation.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "Lower-StaticInit-Item",
+        31165usize,
+        "HelloUltraviolet::Reference::Modules",
+        "runModulesAggregationReference",
+        "Source/Reference/Modules/Aggregation.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "Lower-StaticInitItems-Empty",
+        31183usize,
+        "HelloUltraviolet::Reference::Modules",
+        "runModulesAggregationReference",
+        "Source/Reference/Modules/Aggregation.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
         "Lower-StaticInitItems-Cons",
-        30906usize,
+        31200usize,
         "HelloUltraviolet::Reference::Modules",
         "runModulesAggregationReference",
         "Source/Reference/Modules/Aggregation.uv"
@@ -378,7 +378,7 @@ public procedure validatedModuleLevelFormsStaticDeclarationsObligations() -> usi
     }
     if acceptedObligationEntryMatches(
         "Lower-StaticInit",
-        30924usize,
+        31218usize,
         "HelloUltraviolet::Reference::Modules",
         "runModulesAggregationReference",
         "Source/Reference/Modules/Aggregation.uv"
@@ -387,7 +387,7 @@ public procedure validatedModuleLevelFormsStaticDeclarationsObligations() -> usi
     }
     if acceptedObligationEntryMatches(
         "InitCallIR",
-        30942usize,
+        31236usize,
         "HelloUltraviolet::Reference::Modules",
         "runModulesAggregationReference",
         "Source/Reference/Modules/Aggregation.uv"
@@ -396,7 +396,7 @@ public procedure validatedModuleLevelFormsStaticDeclarationsObligations() -> usi
     }
     if acceptedObligationEntryMatches(
         "def.Rev",
-        30960usize,
+        31254usize,
         "HelloUltraviolet::Reference::Modules",
         "runModulesAggregationReference",
         "Source/Reference/Modules/Aggregation.uv"
@@ -405,7 +405,7 @@ public procedure validatedModuleLevelFormsStaticDeclarationsObligations() -> usi
     }
     if acceptedObligationEntryMatches(
         "Lower-StaticDeinitNames-Empty",
-        30975usize,
+        31269usize,
         "HelloUltraviolet::Reference::Modules",
         "runModulesAggregationReference",
         "Source/Reference/Modules/Aggregation.uv"
@@ -414,7 +414,7 @@ public procedure validatedModuleLevelFormsStaticDeclarationsObligations() -> usi
     }
     if acceptedObligationEntryMatches(
         "Lower-StaticDeinitNames-Cons-Resp",
-        30992usize,
+        31286usize,
         "HelloUltraviolet::Reference::Modules",
         "runModulesAggregationReference",
         "Source/Reference/Modules/Aggregation.uv"
@@ -423,7 +423,7 @@ public procedure validatedModuleLevelFormsStaticDeclarationsObligations() -> usi
     }
     if acceptedObligationEntryMatches(
         "Lower-StaticDeinitNames-Cons-NoResp",
-        31010usize,
+        31304usize,
         "HelloUltraviolet::Reference::Modules",
         "runModulesAggregationReference",
         "Source/Reference/Modules/Aggregation.uv"
@@ -432,7 +432,7 @@ public procedure validatedModuleLevelFormsStaticDeclarationsObligations() -> usi
     }
     if acceptedObligationEntryMatches(
         "Lower-StaticDeinit-Item",
-        31028usize,
+        31322usize,
         "HelloUltraviolet::Reference::Modules",
         "runModulesAggregationReference",
         "Source/Reference/Modules/Aggregation.uv"
@@ -441,7 +441,7 @@ public procedure validatedModuleLevelFormsStaticDeclarationsObligations() -> usi
     }
     if acceptedObligationEntryMatches(
         "Lower-StaticDeinitItems-Empty",
-        31046usize,
+        31340usize,
         "HelloUltraviolet::Reference::Modules",
         "runModulesAggregationReference",
         "Source/Reference/Modules/Aggregation.uv"
@@ -450,7 +450,7 @@ public procedure validatedModuleLevelFormsStaticDeclarationsObligations() -> usi
     }
     if acceptedObligationEntryMatches(
         "Lower-StaticDeinitItems-Cons",
-        31063usize,
+        31357usize,
         "HelloUltraviolet::Reference::Modules",
         "runModulesAggregationReference",
         "Source/Reference/Modules/Aggregation.uv"
@@ -459,7 +459,7 @@ public procedure validatedModuleLevelFormsStaticDeclarationsObligations() -> usi
     }
     if acceptedObligationEntryMatches(
         "Lower-StaticDeinit",
-        31081usize,
+        31375usize,
         "HelloUltraviolet::Reference::Modules",
         "runModulesAggregationReference",
         "Source/Reference/Modules/Aggregation.uv"
@@ -468,7 +468,7 @@ public procedure validatedModuleLevelFormsStaticDeclarationsObligations() -> usi
     }
     if acceptedObligationEntryMatches(
         "diagnostics.StaticDeclarations",
-        31099usize,
+        31393usize,
         "HelloUltraviolet::Reference::Modules",
         "runModulesAggregationReference",
         "Source/Reference/Modules/Aggregation.uv"
@@ -477,7 +477,7 @@ public procedure validatedModuleLevelFormsStaticDeclarationsObligations() -> usi
     }
     if acceptedObligationEntryMatches(
         "req.StaticDeclarationDiagnosticOwnership",
-        31119usize,
+        31413usize,
         "HelloUltraviolet::Reference::Modules",
         "runModulesAggregationReference",
         "Source/Reference/Modules/Aggregation.uv"

@@ -1,0 +1,61 @@
+//! Diagnostic compile-time execution specimens.
+
+public procedure comptimeDiagnosticSourceFixtureCount() -> usize {
+    return 3usize
+}
+
+public procedure validatedComptimeDiagnosticSourceFixtureCount() -> usize {
+    var count: usize = 0usize
+    if diagnosticSpecimenMatches(
+        diagnosticSpecimen(
+            "UserDiagnosticWarning",
+            "Fixtures/DiagnosticSource/Comptime/UserDiagnosticWarning",
+            "Fixtures/DiagnosticSource/Comptime/UserDiagnosticWarning/Source/Main.uv",
+            "Fixtures/DiagnosticSource/Comptime/UserDiagnosticWarning/Expected.uv",
+            expectedDiagnostic("W-CTE-0071", "rule.22.CtBuiltin-Diagnostics-Warning")
+        ),
+        "UserDiagnosticWarning",
+        "Fixtures/DiagnosticSource/Comptime/UserDiagnosticWarning",
+        "Fixtures/DiagnosticSource/Comptime/UserDiagnosticWarning/Source/Main.uv",
+        "Fixtures/DiagnosticSource/Comptime/UserDiagnosticWarning/Expected.uv",
+        "W-CTE-0071",
+        "rule.22.CtBuiltin-Diagnostics-Warning"
+    ) {
+        count = count + 1usize
+    }
+    if diagnosticSpecimenMatches(
+        diagnosticSpecimen(
+            "UserDiagnosticNote",
+            "Fixtures/DiagnosticSource/Comptime/UserDiagnosticNote",
+            "Fixtures/DiagnosticSource/Comptime/UserDiagnosticNote/Source/Main.uv",
+            "Fixtures/DiagnosticSource/Comptime/UserDiagnosticNote/Expected.uv",
+            expectedDiagnostic("", "rule.22.CtBuiltin-Diagnostics-Note")
+        ),
+        "UserDiagnosticNote",
+        "Fixtures/DiagnosticSource/Comptime/UserDiagnosticNote",
+        "Fixtures/DiagnosticSource/Comptime/UserDiagnosticNote/Source/Main.uv",
+        "Fixtures/DiagnosticSource/Comptime/UserDiagnosticNote/Expected.uv",
+        "",
+        "rule.22.CtBuiltin-Diagnostics-Note"
+    ) {
+        count = count + 1usize
+    }
+    if diagnosticAbsenceSpecimenMatches(
+        diagnosticAbsenceSpecimen(
+            "ProjectFilesInvalidPath",
+            "Fixtures/DiagnosticSource/Comptime/ProjectFilesInvalidPath",
+            "Fixtures/DiagnosticSource/Comptime/ProjectFilesInvalidPath/Source/Main.uv",
+            "Fixtures/DiagnosticSource/Comptime/ProjectFilesInvalidPath/Expected.uv",
+            expectedDiagnosticAbsent("E-CTE-0070", "requirement.22.ProjectFilesPathRestrictions")
+        ),
+        "ProjectFilesInvalidPath",
+        "Fixtures/DiagnosticSource/Comptime/ProjectFilesInvalidPath",
+        "Fixtures/DiagnosticSource/Comptime/ProjectFilesInvalidPath/Source/Main.uv",
+        "Fixtures/DiagnosticSource/Comptime/ProjectFilesInvalidPath/Expected.uv",
+        "E-CTE-0070",
+        "requirement.22.ProjectFilesPathRestrictions"
+    ) {
+        count = count + 1usize
+    }
+    return count
+}

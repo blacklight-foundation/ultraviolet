@@ -1,29 +1,161 @@
 //! Reference specimens for Async / AsyncType.
 
-internal record AsyncReference {
-    internal suspension_points: usize
-    internal has_result_type: bool
-    internal integrates_keys: bool
+public type AsyncReferenceComputation = Async<i32, i32, i32, i32>
+
+public type AsyncReferenceFuture = Future<i32, i32>
+
+public type AsyncReferenceSequence = Sequence<i32>
+
+public type AsyncReferenceStream = Stream<i32, i32>
+
+public type AsyncReferencePipe = Pipe<i32, i32>
+
+public type AsyncReferenceExchange = Exchange<i32>
+
+/// Produces a sequence by suspending with an output value.
+public procedure asyncSequenceReference(value: i32) -> AsyncReferenceSequence {
+    yield value
+    return ()
 }
 
-internal procedure asyncReference(
-    suspension_points: usize,
-    has_result_type: bool,
-    integrates_keys: bool
-) -> AsyncReference {
-    return AsyncReference {
-        suspension_points: suspension_points,
-        has_result_type: has_result_type,
-        integrates_keys: integrates_keys
+/// Produces a stream by suspending with an output value.
+public procedure asyncStreamReference(value: i32) -> AsyncReferenceStream {
+    yield value
+    return ()
+}
+
+/// Produces a pipe by yielding an output and accepting an input.
+public procedure asyncPipeReference(value: i32) -> AsyncReferencePipe {
+    let input: i32 = yield value
+    if input > value {
+        return ()
+    }
+    return ()
+}
+
+/// Produces an exchange by yielding a value and completing with the resume input.
+public procedure asyncExchangeReference(value: i32) -> AsyncReferenceExchange {
+    let input: i32 = yield value
+    return input
+}
+
+internal procedure futureCompletedValueIs(
+    state: AsyncReferenceFuture,
+    expected: i32
+) -> bool {
+    return if state is {
+        @Completed { value } {
+            value == expected
+        }
+        @Suspended {
+            false
+        }
+        @Failed {
+            false
+        }
     }
 }
 
-internal procedure asyncReferenceIsCovered(reference: AsyncReference) -> bool {
-    return reference.has_result_type && reference.suspension_points > 0usize
+internal procedure asyncSuspendedOutputIs(
+    state: AsyncReferenceComputation,
+    expected: i32
+) -> bool {
+    return if state is {
+        @Suspended { output } {
+            output == expected
+        }
+        @Completed {
+            false
+        }
+        @Failed {
+            false
+        }
+    }
+}
+
+internal procedure asyncFailedErrorIs(
+    state: AsyncReferenceComputation,
+    expected: i32
+) -> bool {
+    return if state is {
+        @Failed { error } {
+            error == expected
+        }
+        @Suspended {
+            false
+        }
+        @Completed {
+            false
+        }
+    }
+}
+
+internal procedure asyncAliasesHaveExpectedStatePayloads() -> bool {
+    let future: AsyncReferenceFuture = asyncCompletesReference(11)
+    let sequence: AsyncReferenceSequence = asyncSequenceReference(12)
+    let stream: AsyncReferenceStream = asyncStreamReference(13)
+    let pipe: AsyncReferencePipe = asyncPipeReference(14)
+    let exchange: AsyncReferenceExchange = asyncExchangeReference(15)
+
+    let future_ok: bool = futureCompletedValueIs(future, 11)
+    let sequence_ok: bool = if sequence is {
+        @Suspended { output } {
+            output == 12
+        }
+        @Completed {
+            false
+        }
+    }
+    let stream_ok: bool = if stream is {
+        @Suspended { output } {
+            output == 13
+        }
+        @Completed {
+            false
+        }
+        @Failed {
+            false
+        }
+    }
+    let pipe_ok: bool = if pipe is {
+        @Suspended { output } {
+            output == 14
+        }
+        @Completed {
+            false
+        }
+    }
+    let exchange_ok: bool = if exchange is {
+        @Suspended { output } {
+            output == 15
+        }
+        @Completed {
+            false
+        }
+    }
+    return future_ok && sequence_ok && stream_ok && pipe_ok && exchange_ok
+}
+
+internal procedure asyncCompletionStateMachineCarriesValue() -> bool {
+    let completed: AsyncReferenceFuture = asyncCompletesReference(7)
+    return if completed is {
+        @Completed { value } {
+            value == 7
+        }
+        @Suspended {
+            false
+        }
+        @Failed {
+            false
+        }
+    }
 }
 
 /// Exercises the Async AsyncType reference surface.
 public procedure runAsyncAsyncTypeReference() -> bool {
-    let reference: AsyncReference = asyncReference(1usize, true, false)
-    return asyncReferenceIsCovered(reference)
+    let suspended: AsyncReferenceComputation = asyncSuspendsReference(8)
+
+    return asyncSuspendedOutputIs(suspended, 8) &&
+        asyncCompletionStateMachineCarriesValue() &&
+        asyncAliasesHaveExpectedStatePayloads()
 }

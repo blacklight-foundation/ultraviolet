@@ -16,6 +16,23 @@ using HelloUltraviolet::Fixtures::DiagnosticSource::{ diagnosticSourceFixtureArt
 using HelloUltraviolet::Fixtures::DiagnosticSource::{ validTransmuteTargetExpectedDiagnosticFileMatches }
 using HelloUltraviolet::Fixtures::RejectedSource::{ rejectedSourceFixturesAreIndexed }
 using HelloUltraviolet::Fixtures::RejectedSource::{ rejectedSourceFixtureArtifactsExist }
+using HelloUltraviolet::Fixtures::RejectedSource::{ userDiagnosticErrorExpectedDiagnosticFileMatches }
+using HelloUltraviolet::Fixtures::RejectedSource::{ quoteOutsideComptimeExpectedDiagnosticFileMatches }
+using HelloUltraviolet::Fixtures::RejectedSource::{ invalidQuotedContentExpectedDiagnosticFileMatches }
+using HelloUltraviolet::Fixtures::RejectedSource::{ spliceTypeMismatchExpectedDiagnosticFileMatches }
+using HelloUltraviolet::Fixtures::RejectedSource::{ spliceIdentifierStructuralNameExpectedDiagnosticFileMatches }
+using HelloUltraviolet::Fixtures::RejectedSource::{ comptimeIfConditionTypeExpectedDiagnosticFileMatches }
+using HelloUltraviolet::Fixtures::RejectedSource::{ runtimeCallsComptimeProcedureExpectedDiagnosticFileMatches }
+using HelloUltraviolet::Fixtures::RejectedSource::{ introspectFieldsNonRecordExpectedDiagnosticFileMatches }
+using HelloUltraviolet::Fixtures::RejectedSource::{ comptimePointerParameterExpectedDiagnosticFileMatches }
+using HelloUltraviolet::Fixtures::RejectedSource::{ comptimeProhibitedWaitExpectedDiagnosticFileMatches }
+using HelloUltraviolet::Fixtures::RejectedSource::{ emitterEmitNonItemExpectedDiagnosticFileMatches }
+using HelloUltraviolet::Fixtures::RejectedSource::{ deriveOnProcedureExpectedDiagnosticFileMatches }
+using HelloUltraviolet::Fixtures::RejectedSource::{ unknownDeriveTargetExpectedDiagnosticFileMatches }
+using HelloUltraviolet::Fixtures::RejectedSource::{ deriveMissingRequiredClassExpectedDiagnosticFileMatches }
+using HelloUltraviolet::Fixtures::RejectedSource::{ deriveMissingEmittedClassExpectedDiagnosticFileMatches }
+using HelloUltraviolet::Fixtures::RejectedSource::{ deriveTargetUserErrorExpectedDiagnosticFileMatches }
+using HelloUltraviolet::Fixtures::RejectedSource::{ deriveTargetProhibitedWaitExpectedDiagnosticFileMatches }
 using HelloUltraviolet::Fixtures::RejectedSource::{ unterminatedStringExpectedDiagnosticFileMatches }
 using HelloUltraviolet::Fixtures::RejectedSource::{ invalidStringEscapeExpectedDiagnosticFileMatches }
 using HelloUltraviolet::Fixtures::RejectedSource::{ malformedNumericLiteralExpectedDiagnosticFileMatches }
@@ -364,6 +381,9 @@ using HelloUltraviolet::Fixtures::DiagnosticSource::{ staleValueMarkIRDiagnostic
 using HelloUltraviolet::Fixtures::DiagnosticSource::{ dispatchDynamicKeyWarningExpectedDiagnosticFileMatches }
 using HelloUltraviolet::Fixtures::DiagnosticSource::{ cancellationNoAdditionalDiagnosticsExpectedDiagnosticFileMatches }
 using HelloUltraviolet::Fixtures::DiagnosticSource::{ panicHandlingNoAdditionalDiagnosticsExpectedDiagnosticFileMatches }
+using HelloUltraviolet::Fixtures::DiagnosticSource::{ userDiagnosticWarningExpectedDiagnosticFileMatches }
+using HelloUltraviolet::Fixtures::DiagnosticSource::{ userDiagnosticNoteExpectedDiagnosticFileMatches }
+using HelloUltraviolet::Fixtures::DiagnosticSource::{ projectFilesInvalidPathExpectedDiagnosticFileMatches }
 using HelloUltraviolet::Fixtures::RejectedSource::{ speculativeReleaseModeExpectedDiagnosticFileMatches }
 using HelloUltraviolet::Fixtures::RejectedSource::{ orderedDifferentBaseExpectedDiagnosticFileMatches }
 using HelloUltraviolet::Fixtures::RejectedSource::{ nestedReleaseSameModeExpectedDiagnosticFileMatches }
@@ -408,6 +428,7 @@ using HelloUltraviolet::Reference::Parsing::{ runParsingRecoverySpecimensReferen
 using HelloUltraviolet::Reference::Authority::{ runAuthorityCapabilitiesReference }
 using HelloUltraviolet::Reference::Authority::{ runAuthorityFileSystemReference }
 using HelloUltraviolet::Reference::Authority::{ runAuthoritySystemReference }
+using HelloUltraviolet::Reference::Authority::{ runAuthorityTimeReference }
 using HelloUltraviolet::Reference::Authority::{ runAuthorityNetworkReference }
 using HelloUltraviolet::Reference::Authority::{ runAuthorityRegionsAndFramesReference }
 using HelloUltraviolet::Reference::Authority::{ runAuthorityBindingRuntimeStateReference }
@@ -608,7 +629,7 @@ public procedure runReferenceCorpus(context: Context) -> ReferenceResult {
     passed = passed && recordReferenceResult(
         context,
         "catalogCompiledSymbolsExecute",
-        catalogCompiledSymbolsExecute()
+        catalogCompiledSymbolsExecute(context)
     )
     passed = passed && recordReferenceResult(
         context,
@@ -747,6 +768,21 @@ public procedure runReferenceCorpus(context: Context) -> ReferenceResult {
     )
     passed = passed && recordReferenceResult(
         context,
+        "userDiagnosticWarningExpectedDiagnosticFileMatches",
+        userDiagnosticWarningExpectedDiagnosticFileMatches(context)
+    )
+    passed = passed && recordReferenceResult(
+        context,
+        "userDiagnosticNoteExpectedDiagnosticFileMatches",
+        userDiagnosticNoteExpectedDiagnosticFileMatches(context)
+    )
+    passed = passed && recordReferenceResult(
+        context,
+        "projectFilesInvalidPathExpectedDiagnosticFileMatches",
+        projectFilesInvalidPathExpectedDiagnosticFileMatches(context)
+    )
+    passed = passed && recordReferenceResult(
+        context,
         "rejectedSourceFixturesAreIndexed",
         rejectedSourceFixturesAreIndexed()
     )
@@ -754,6 +790,91 @@ public procedure runReferenceCorpus(context: Context) -> ReferenceResult {
         context,
         "rejectedSourceFixtureArtifactsExist",
         rejectedSourceFixtureArtifactsExist(context)
+    )
+    passed = passed && recordReferenceResult(
+        context,
+        "userDiagnosticErrorExpectedDiagnosticFileMatches",
+        userDiagnosticErrorExpectedDiagnosticFileMatches(context)
+    )
+    passed = passed && recordReferenceResult(
+        context,
+        "quoteOutsideComptimeExpectedDiagnosticFileMatches",
+        quoteOutsideComptimeExpectedDiagnosticFileMatches(context)
+    )
+    passed = passed && recordReferenceResult(
+        context,
+        "invalidQuotedContentExpectedDiagnosticFileMatches",
+        invalidQuotedContentExpectedDiagnosticFileMatches(context)
+    )
+    passed = passed && recordReferenceResult(
+        context,
+        "spliceTypeMismatchExpectedDiagnosticFileMatches",
+        spliceTypeMismatchExpectedDiagnosticFileMatches(context)
+    )
+    passed = passed && recordReferenceResult(
+        context,
+        "spliceIdentifierStructuralNameExpectedDiagnosticFileMatches",
+        spliceIdentifierStructuralNameExpectedDiagnosticFileMatches(context)
+    )
+    passed = passed && recordReferenceResult(
+        context,
+        "comptimeIfConditionTypeExpectedDiagnosticFileMatches",
+        comptimeIfConditionTypeExpectedDiagnosticFileMatches(context)
+    )
+    passed = passed && recordReferenceResult(
+        context,
+        "runtimeCallsComptimeProcedureExpectedDiagnosticFileMatches",
+        runtimeCallsComptimeProcedureExpectedDiagnosticFileMatches(context)
+    )
+    passed = passed && recordReferenceResult(
+        context,
+        "introspectFieldsNonRecordExpectedDiagnosticFileMatches",
+        introspectFieldsNonRecordExpectedDiagnosticFileMatches(context)
+    )
+    passed = passed && recordReferenceResult(
+        context,
+        "comptimePointerParameterExpectedDiagnosticFileMatches",
+        comptimePointerParameterExpectedDiagnosticFileMatches(context)
+    )
+    passed = passed && recordReferenceResult(
+        context,
+        "comptimeProhibitedWaitExpectedDiagnosticFileMatches",
+        comptimeProhibitedWaitExpectedDiagnosticFileMatches(context)
+    )
+    passed = passed && recordReferenceResult(
+        context,
+        "emitterEmitNonItemExpectedDiagnosticFileMatches",
+        emitterEmitNonItemExpectedDiagnosticFileMatches(context)
+    )
+    passed = passed && recordReferenceResult(
+        context,
+        "deriveOnProcedureExpectedDiagnosticFileMatches",
+        deriveOnProcedureExpectedDiagnosticFileMatches(context)
+    )
+    passed = passed && recordReferenceResult(
+        context,
+        "unknownDeriveTargetExpectedDiagnosticFileMatches",
+        unknownDeriveTargetExpectedDiagnosticFileMatches(context)
+    )
+    passed = passed && recordReferenceResult(
+        context,
+        "deriveMissingRequiredClassExpectedDiagnosticFileMatches",
+        deriveMissingRequiredClassExpectedDiagnosticFileMatches(context)
+    )
+    passed = passed && recordReferenceResult(
+        context,
+        "deriveMissingEmittedClassExpectedDiagnosticFileMatches",
+        deriveMissingEmittedClassExpectedDiagnosticFileMatches(context)
+    )
+    passed = passed && recordReferenceResult(
+        context,
+        "deriveTargetUserErrorExpectedDiagnosticFileMatches",
+        deriveTargetUserErrorExpectedDiagnosticFileMatches(context)
+    )
+    passed = passed && recordReferenceResult(
+        context,
+        "deriveTargetProhibitedWaitExpectedDiagnosticFileMatches",
+        deriveTargetProhibitedWaitExpectedDiagnosticFileMatches(context)
     )
     passed = passed && recordReferenceResult(
         context,
@@ -2627,6 +2748,11 @@ public procedure runReferenceCorpus(context: Context) -> ReferenceResult {
     )
     passed = passed && recordReferenceResult(
         context,
+        "runAuthorityTimeReference",
+        runAuthorityTimeReference(context)
+    )
+    passed = passed && recordReferenceResult(
+        context,
         "runAuthorityNetworkReference",
         runAuthorityNetworkReference()
     )
@@ -3257,6 +3383,6 @@ public procedure runReferenceCorpus(context: Context) -> ReferenceResult {
     )
     return referenceResult(
         passed,
-        469
+        490
     )
 }

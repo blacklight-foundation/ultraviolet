@@ -2,14 +2,14 @@
 
 
 public procedure countExpressionsControlExpressionsObligations() -> usize {
-    return 63usize
+    return 64usize
 }
 
 public procedure validatedExpressionsControlExpressionsObligations() -> usize {
     var count: usize = 0usize
     if acceptedObligationEntryMatches(
         "grammar.16.ControlExpressions",
-        61256usize,
+        61709usize,
         "HelloUltraviolet::Reference::Expressions",
         "runExpressionsControlReference",
         "Source/Reference/Expressions/Control.uv"
@@ -18,7 +18,7 @@ public procedure validatedExpressionsControlExpressionsObligations() -> usize {
     }
     if acceptedObligationEntryMatches(
         "req.16.ControlExpressionOwnership",
-        61280usize,
+        61734usize,
         "HelloUltraviolet::Reference::Expressions",
         "runExpressionsControlReference",
         "Source/Reference/Expressions/Control.uv"
@@ -27,7 +27,7 @@ public procedure validatedExpressionsControlExpressionsObligations() -> usize {
     }
     if acceptedObligationEntryMatches(
         "rule.16.Parse-If-Expr",
-        61296usize,
+        61750usize,
         "HelloUltraviolet::Reference::Expressions",
         "runExpressionsControlReference",
         "Source/Reference/Expressions/Control.uv"
@@ -36,7 +36,16 @@ public procedure validatedExpressionsControlExpressionsObligations() -> usize {
     }
     if acceptedObligationEntryMatches(
         "rule.16.Parse-If-Is-Single",
-        61312usize,
+        61766usize,
+        "HelloUltraviolet::Reference::Expressions",
+        "runExpressionsControlReference",
+        "Source/Reference/Expressions/Control.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "rule.16.Parse-If-Is-TypeTest",
+        61782usize,
         "HelloUltraviolet::Reference::Expressions",
         "runExpressionsControlReference",
         "Source/Reference/Expressions/Control.uv"
@@ -45,276 +54,6 @@ public procedure validatedExpressionsControlExpressionsObligations() -> usize {
     }
     if acceptedObligationEntryMatches(
         "rule.16.Parse-If-Is-CaseList",
-        61328usize,
-        "HelloUltraviolet::Reference::Expressions",
-        "runExpressionsControlReference",
-        "Source/Reference/Expressions/Control.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
-        "rule.16.Parse-Loop-Expr",
-        61344usize,
-        "HelloUltraviolet::Reference::Expressions",
-        "runExpressionsControlReference",
-        "Source/Reference/Expressions/Control.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
-        "rule.16.Parse-Block-Expr",
-        61360usize,
-        "HelloUltraviolet::Reference::Expressions",
-        "runExpressionsControlReference",
-        "Source/Reference/Expressions/Control.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
-        "rule.16.ControlExpressionParsingRemainderFamily",
-        61376usize,
-        "HelloUltraviolet::Reference::Expressions",
-        "runExpressionsControlReference",
-        "Source/Reference/Expressions/Control.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
-        "def.16.ControlExprAst",
-        61391usize,
-        "HelloUltraviolet::Reference::Expressions",
-        "runExpressionsControlReference",
-        "Source/Reference/Expressions/Control.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
-        "def.16.ControlAstHelpers",
-        61404usize,
-        "HelloUltraviolet::Reference::Expressions",
-        "runExpressionsControlReference",
-        "Source/Reference/Expressions/Control.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
-        "def.16.LoopTypeInference",
-        61418usize,
-        "HelloUltraviolet::Reference::Expressions",
-        "runExpressionsControlReference",
-        "Source/Reference/Expressions/Control.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
-        "req.16.BlockTypingOwnershipForControlExpressions",
-        61442usize,
-        "HelloUltraviolet::Reference::Expressions",
-        "runExpressionsControlReference",
-        "Source/Reference/Expressions/Control.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
-        "rule.16.T-If",
-        61461usize,
-        "HelloUltraviolet::Reference::Expressions",
-        "runExpressionsControlReference",
-        "Source/Reference/Expressions/Control.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
-        "rule.16.T-If-No-Else",
-        61477usize,
-        "HelloUltraviolet::Reference::Expressions",
-        "runExpressionsControlReference",
-        "Source/Reference/Expressions/Control.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
-        "rule.16.CheckIfFamily",
-        61493usize,
-        "HelloUltraviolet::Reference::Expressions",
-        "runExpressionsControlReference",
-        "Source/Reference/Expressions/Control.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
-        "req.16.PatternTypingOwnershipForControlExpressions",
-        61506usize,
-        "HelloUltraviolet::Reference::Expressions",
-        "runExpressionsControlReference",
-        "Source/Reference/Expressions/Control.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
-        "rule.16.T-If-Is",
-        61522usize,
-        "HelloUltraviolet::Reference::Expressions",
-        "runExpressionsControlReference",
-        "Source/Reference/Expressions/Control.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
-        "rule.16.T-If-Is-No-Else",
-        61538usize,
-        "HelloUltraviolet::Reference::Expressions",
-        "runExpressionsControlReference",
-        "Source/Reference/Expressions/Control.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
-        "rule.16.IfCaseTypingFamily",
-        61554usize,
-        "HelloUltraviolet::Reference::Expressions",
-        "runExpressionsControlReference",
-        "Source/Reference/Expressions/Control.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
-        "rule.16.CheckIfIsAndIfCaseFamily",
-        61567usize,
-        "HelloUltraviolet::Reference::Expressions",
-        "runExpressionsControlReference",
-        "Source/Reference/Expressions/Control.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
-        "req.16.LoopInvariantTypingOwnership",
-        61581usize,
-        "HelloUltraviolet::Reference::Expressions",
-        "runExpressionsControlReference",
-        "Source/Reference/Expressions/Control.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
-        "rule.16.T-Loop-Infinite",
-        61594usize,
-        "HelloUltraviolet::Reference::Expressions",
-        "runExpressionsControlReference",
-        "Source/Reference/Expressions/Control.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
-        "rule.16.T-Loop-Conditional",
-        61610usize,
-        "HelloUltraviolet::Reference::Expressions",
-        "runExpressionsControlReference",
-        "Source/Reference/Expressions/Control.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
-        "rule.16.T-Loop-Iter",
-        61626usize,
-        "HelloUltraviolet::Reference::Expressions",
-        "runExpressionsControlReference",
-        "Source/Reference/Expressions/Control.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
-        "rule.16.AsyncIteratorLoopTypingFamily",
-        61642usize,
-        "HelloUltraviolet::Reference::Expressions",
-        "runExpressionsControlReference",
-        "Source/Reference/Expressions/Control.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
-        "rule.16.EvalSigma-If-True",
-        61657usize,
-        "HelloUltraviolet::Reference::Expressions",
-        "runExpressionsControlReference",
-        "Source/Reference/Expressions/Control.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
-        "rule.16.EvalSigma-If-False-None",
-        61673usize,
-        "HelloUltraviolet::Reference::Expressions",
-        "runExpressionsControlReference",
-        "Source/Reference/Expressions/Control.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
-        "rule.16.EvalSigma-If-False-Some",
-        61689usize,
-        "HelloUltraviolet::Reference::Expressions",
-        "runExpressionsControlReference",
-        "Source/Reference/Expressions/Control.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
-        "rule.16.EvalSigma-If-Ctrl",
-        61705usize,
-        "HelloUltraviolet::Reference::Expressions",
-        "runExpressionsControlReference",
-        "Source/Reference/Expressions/Control.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
-        "rule.16.EvalSigma-If-Is",
-        61721usize,
-        "HelloUltraviolet::Reference::Expressions",
-        "runExpressionsControlReference",
-        "Source/Reference/Expressions/Control.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
-        "rule.16.EvalSigma-If-Is-Ctrl",
-        61737usize,
-        "HelloUltraviolet::Reference::Expressions",
-        "runExpressionsControlReference",
-        "Source/Reference/Expressions/Control.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
-        "rule.16.EvalSigma-If-Cases",
-        61753usize,
-        "HelloUltraviolet::Reference::Expressions",
-        "runExpressionsControlReference",
-        "Source/Reference/Expressions/Control.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
-        "rule.16.EvalSigma-If-Cases-Ctrl",
-        61769usize,
-        "HelloUltraviolet::Reference::Expressions",
-        "runExpressionsControlReference",
-        "Source/Reference/Expressions/Control.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
-        "rule.16.EvalIfCasesFamily",
-        61785usize,
-        "HelloUltraviolet::Reference::Expressions",
-        "runExpressionsControlReference",
-        "Source/Reference/Expressions/Control.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
-        "rule.16.EvalSigma-Block",
         61798usize,
         "HelloUltraviolet::Reference::Expressions",
         "runExpressionsControlReference",
@@ -323,7 +62,7 @@ public procedure validatedExpressionsControlExpressionsObligations() -> usize {
         count = count + 1usize
     }
     if acceptedObligationEntryMatches(
-        "def.16.LoopIterableTypePredicates",
+        "rule.16.Parse-Loop-Expr",
         61814usize,
         "HelloUltraviolet::Reference::Expressions",
         "runExpressionsControlReference",
@@ -332,8 +71,278 @@ public procedure validatedExpressionsControlExpressionsObligations() -> usize {
         count = count + 1usize
     }
     if acceptedObligationEntryMatches(
+        "rule.16.Parse-Block-Expr",
+        61830usize,
+        "HelloUltraviolet::Reference::Expressions",
+        "runExpressionsControlReference",
+        "Source/Reference/Expressions/Control.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "rule.16.ControlExpressionParsingRemainderFamily",
+        61846usize,
+        "HelloUltraviolet::Reference::Expressions",
+        "runExpressionsControlReference",
+        "Source/Reference/Expressions/Control.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "def.16.ControlExprAst",
+        61861usize,
+        "HelloUltraviolet::Reference::Expressions",
+        "runExpressionsControlReference",
+        "Source/Reference/Expressions/Control.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "def.16.ControlAstHelpers",
+        61874usize,
+        "HelloUltraviolet::Reference::Expressions",
+        "runExpressionsControlReference",
+        "Source/Reference/Expressions/Control.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "def.16.LoopTypeInference",
+        61890usize,
+        "HelloUltraviolet::Reference::Expressions",
+        "runExpressionsControlReference",
+        "Source/Reference/Expressions/Control.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "req.16.BlockTypingOwnershipForControlExpressions",
+        61914usize,
+        "HelloUltraviolet::Reference::Expressions",
+        "runExpressionsControlReference",
+        "Source/Reference/Expressions/Control.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "rule.16.T-If",
+        61933usize,
+        "HelloUltraviolet::Reference::Expressions",
+        "runExpressionsControlReference",
+        "Source/Reference/Expressions/Control.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "rule.16.T-If-No-Else",
+        61949usize,
+        "HelloUltraviolet::Reference::Expressions",
+        "runExpressionsControlReference",
+        "Source/Reference/Expressions/Control.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "rule.16.CheckIfFamily",
+        61965usize,
+        "HelloUltraviolet::Reference::Expressions",
+        "runExpressionsControlReference",
+        "Source/Reference/Expressions/Control.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "req.16.PatternTypingOwnershipForControlExpressions",
+        61978usize,
+        "HelloUltraviolet::Reference::Expressions",
+        "runExpressionsControlReference",
+        "Source/Reference/Expressions/Control.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "rule.16.T-If-Is",
+        61996usize,
+        "HelloUltraviolet::Reference::Expressions",
+        "runExpressionsControlReference",
+        "Source/Reference/Expressions/Control.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "rule.16.T-If-Is-No-Else",
+        62012usize,
+        "HelloUltraviolet::Reference::Expressions",
+        "runExpressionsControlReference",
+        "Source/Reference/Expressions/Control.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "rule.16.IfCaseTypingFamily",
+        62028usize,
+        "HelloUltraviolet::Reference::Expressions",
+        "runExpressionsControlReference",
+        "Source/Reference/Expressions/Control.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "rule.16.CheckIfIsAndIfCaseFamily",
+        62041usize,
+        "HelloUltraviolet::Reference::Expressions",
+        "runExpressionsControlReference",
+        "Source/Reference/Expressions/Control.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "req.16.LoopInvariantTypingOwnership",
+        62055usize,
+        "HelloUltraviolet::Reference::Expressions",
+        "runExpressionsControlReference",
+        "Source/Reference/Expressions/Control.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "rule.16.T-Loop-Infinite",
+        62068usize,
+        "HelloUltraviolet::Reference::Expressions",
+        "runExpressionsControlReference",
+        "Source/Reference/Expressions/Control.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "rule.16.T-Loop-Conditional",
+        62084usize,
+        "HelloUltraviolet::Reference::Expressions",
+        "runExpressionsControlReference",
+        "Source/Reference/Expressions/Control.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "rule.16.T-Loop-Iter",
+        62100usize,
+        "HelloUltraviolet::Reference::Expressions",
+        "runExpressionsControlReference",
+        "Source/Reference/Expressions/Control.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "rule.16.AsyncIteratorLoopTypingFamily",
+        62116usize,
+        "HelloUltraviolet::Reference::Expressions",
+        "runExpressionsControlReference",
+        "Source/Reference/Expressions/Control.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "rule.16.EvalSigma-If-True",
+        62131usize,
+        "HelloUltraviolet::Reference::Expressions",
+        "runExpressionsControlReference",
+        "Source/Reference/Expressions/Control.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "rule.16.EvalSigma-If-False-None",
+        62147usize,
+        "HelloUltraviolet::Reference::Expressions",
+        "runExpressionsControlReference",
+        "Source/Reference/Expressions/Control.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "rule.16.EvalSigma-If-False-Some",
+        62163usize,
+        "HelloUltraviolet::Reference::Expressions",
+        "runExpressionsControlReference",
+        "Source/Reference/Expressions/Control.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "rule.16.EvalSigma-If-Ctrl",
+        62179usize,
+        "HelloUltraviolet::Reference::Expressions",
+        "runExpressionsControlReference",
+        "Source/Reference/Expressions/Control.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "rule.16.EvalSigma-If-Is",
+        62195usize,
+        "HelloUltraviolet::Reference::Expressions",
+        "runExpressionsControlReference",
+        "Source/Reference/Expressions/Control.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "rule.16.EvalSigma-If-Is-Ctrl",
+        62211usize,
+        "HelloUltraviolet::Reference::Expressions",
+        "runExpressionsControlReference",
+        "Source/Reference/Expressions/Control.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "rule.16.EvalSigma-If-Cases",
+        62227usize,
+        "HelloUltraviolet::Reference::Expressions",
+        "runExpressionsControlReference",
+        "Source/Reference/Expressions/Control.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "rule.16.EvalSigma-If-Cases-Ctrl",
+        62243usize,
+        "HelloUltraviolet::Reference::Expressions",
+        "runExpressionsControlReference",
+        "Source/Reference/Expressions/Control.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "rule.16.EvalIfCasesFamily",
+        62259usize,
+        "HelloUltraviolet::Reference::Expressions",
+        "runExpressionsControlReference",
+        "Source/Reference/Expressions/Control.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "rule.16.EvalSigma-Block",
+        62272usize,
+        "HelloUltraviolet::Reference::Expressions",
+        "runExpressionsControlReference",
+        "Source/Reference/Expressions/Control.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "def.16.LoopIterableTypePredicates",
+        62288usize,
+        "HelloUltraviolet::Reference::Expressions",
+        "runExpressionsControlReference",
+        "Source/Reference/Expressions/Control.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
         "def.16.LoopIteratorRuntime",
-        61832usize,
+        62306usize,
         "HelloUltraviolet::Reference::Expressions",
         "runExpressionsControlReference",
         "Source/Reference/Expressions/Control.uv"
@@ -342,7 +351,7 @@ public procedure validatedExpressionsControlExpressionsObligations() -> usize {
     }
     if acceptedObligationEntryMatches(
         "def.16.LoopIterJudgement",
-        61865usize,
+        62339usize,
         "HelloUltraviolet::Reference::Expressions",
         "runExpressionsControlReference",
         "Source/Reference/Expressions/Control.uv"
@@ -351,7 +360,7 @@ public procedure validatedExpressionsControlExpressionsObligations() -> usize {
     }
     if acceptedObligationEntryMatches(
         "rule.16.EvalSigma-Loop-Infinite-Step",
-        61878usize,
+        62352usize,
         "HelloUltraviolet::Reference::Expressions",
         "runExpressionsControlReference",
         "Source/Reference/Expressions/Control.uv"
@@ -360,7 +369,7 @@ public procedure validatedExpressionsControlExpressionsObligations() -> usize {
     }
     if acceptedObligationEntryMatches(
         "rule.16.EvalSigma-Loop-Infinite-Continue",
-        61894usize,
+        62368usize,
         "HelloUltraviolet::Reference::Expressions",
         "runExpressionsControlReference",
         "Source/Reference/Expressions/Control.uv"
@@ -369,7 +378,7 @@ public procedure validatedExpressionsControlExpressionsObligations() -> usize {
     }
     if acceptedObligationEntryMatches(
         "rule.16.EvalSigma-Loop-Infinite-Break",
-        61910usize,
+        62384usize,
         "HelloUltraviolet::Reference::Expressions",
         "runExpressionsControlReference",
         "Source/Reference/Expressions/Control.uv"
@@ -378,7 +387,7 @@ public procedure validatedExpressionsControlExpressionsObligations() -> usize {
     }
     if acceptedObligationEntryMatches(
         "rule.16.EvalSigma-Loop-Infinite-Ctrl",
-        61926usize,
+        62400usize,
         "HelloUltraviolet::Reference::Expressions",
         "runExpressionsControlReference",
         "Source/Reference/Expressions/Control.uv"
@@ -387,7 +396,7 @@ public procedure validatedExpressionsControlExpressionsObligations() -> usize {
     }
     if acceptedObligationEntryMatches(
         "rule.16.EvalSigma-Loop-Cond-False",
-        61942usize,
+        62416usize,
         "HelloUltraviolet::Reference::Expressions",
         "runExpressionsControlReference",
         "Source/Reference/Expressions/Control.uv"
@@ -396,7 +405,7 @@ public procedure validatedExpressionsControlExpressionsObligations() -> usize {
     }
     if acceptedObligationEntryMatches(
         "rule.16.EvalSigma-Loop-Cond-True-Step",
-        61958usize,
+        62432usize,
         "HelloUltraviolet::Reference::Expressions",
         "runExpressionsControlReference",
         "Source/Reference/Expressions/Control.uv"
@@ -405,7 +414,7 @@ public procedure validatedExpressionsControlExpressionsObligations() -> usize {
     }
     if acceptedObligationEntryMatches(
         "rule.16.EvalSigma-Loop-Cond-Continue",
-        61974usize,
+        62448usize,
         "HelloUltraviolet::Reference::Expressions",
         "runExpressionsControlReference",
         "Source/Reference/Expressions/Control.uv"
@@ -414,7 +423,7 @@ public procedure validatedExpressionsControlExpressionsObligations() -> usize {
     }
     if acceptedObligationEntryMatches(
         "rule.16.EvalSigma-Loop-Cond-Break",
-        61990usize,
+        62464usize,
         "HelloUltraviolet::Reference::Expressions",
         "runExpressionsControlReference",
         "Source/Reference/Expressions/Control.uv"
@@ -423,7 +432,7 @@ public procedure validatedExpressionsControlExpressionsObligations() -> usize {
     }
     if acceptedObligationEntryMatches(
         "rule.16.EvalSigma-Loop-Cond-Ctrl",
-        62006usize,
+        62480usize,
         "HelloUltraviolet::Reference::Expressions",
         "runExpressionsControlReference",
         "Source/Reference/Expressions/Control.uv"
@@ -432,7 +441,7 @@ public procedure validatedExpressionsControlExpressionsObligations() -> usize {
     }
     if acceptedObligationEntryMatches(
         "rule.16.EvalSigma-Loop-Cond-Body-Ctrl",
-        62022usize,
+        62496usize,
         "HelloUltraviolet::Reference::Expressions",
         "runExpressionsControlReference",
         "Source/Reference/Expressions/Control.uv"
@@ -441,7 +450,7 @@ public procedure validatedExpressionsControlExpressionsObligations() -> usize {
     }
     if acceptedObligationEntryMatches(
         "rule.16.EvalSigma-Loop-Iter",
-        62038usize,
+        62512usize,
         "HelloUltraviolet::Reference::Expressions",
         "runExpressionsControlReference",
         "Source/Reference/Expressions/Control.uv"
@@ -450,7 +459,7 @@ public procedure validatedExpressionsControlExpressionsObligations() -> usize {
     }
     if acceptedObligationEntryMatches(
         "rule.16.EvalSigma-Loop-Iter-Ctrl",
-        62054usize,
+        62528usize,
         "HelloUltraviolet::Reference::Expressions",
         "runExpressionsControlReference",
         "Source/Reference/Expressions/Control.uv"
@@ -459,7 +468,7 @@ public procedure validatedExpressionsControlExpressionsObligations() -> usize {
     }
     if acceptedObligationEntryMatches(
         "rule.16.LoopIter-Done",
-        62070usize,
+        62544usize,
         "HelloUltraviolet::Reference::Expressions",
         "runExpressionsControlReference",
         "Source/Reference/Expressions/Control.uv"
@@ -468,7 +477,7 @@ public procedure validatedExpressionsControlExpressionsObligations() -> usize {
     }
     if acceptedObligationEntryMatches(
         "rule.16.LoopIter-Step-Val",
-        62086usize,
+        62560usize,
         "HelloUltraviolet::Reference::Expressions",
         "runExpressionsControlReference",
         "Source/Reference/Expressions/Control.uv"
@@ -477,7 +486,7 @@ public procedure validatedExpressionsControlExpressionsObligations() -> usize {
     }
     if acceptedObligationEntryMatches(
         "rule.16.LoopIter-Step-Continue",
-        62102usize,
+        62576usize,
         "HelloUltraviolet::Reference::Expressions",
         "runExpressionsControlReference",
         "Source/Reference/Expressions/Control.uv"
@@ -486,7 +495,7 @@ public procedure validatedExpressionsControlExpressionsObligations() -> usize {
     }
     if acceptedObligationEntryMatches(
         "rule.16.LoopIter-Step-Break",
-        62118usize,
+        62592usize,
         "HelloUltraviolet::Reference::Expressions",
         "runExpressionsControlReference",
         "Source/Reference/Expressions/Control.uv"
@@ -495,7 +504,7 @@ public procedure validatedExpressionsControlExpressionsObligations() -> usize {
     }
     if acceptedObligationEntryMatches(
         "rule.16.LoopIter-Step-Ctrl",
-        62134usize,
+        62608usize,
         "HelloUltraviolet::Reference::Expressions",
         "runExpressionsControlReference",
         "Source/Reference/Expressions/Control.uv"
@@ -504,7 +513,7 @@ public procedure validatedExpressionsControlExpressionsObligations() -> usize {
     }
     if acceptedObligationEntryMatches(
         "rule.16.Lower-Expr-If",
-        62152usize,
+        62626usize,
         "HelloUltraviolet::Reference::Expressions",
         "runExpressionsControlReference",
         "Source/Reference/Expressions/Control.uv"
@@ -513,7 +522,7 @@ public procedure validatedExpressionsControlExpressionsObligations() -> usize {
     }
     if acceptedObligationEntryMatches(
         "rule.16.Lower-Expr-If-Is",
-        62168usize,
+        62642usize,
         "HelloUltraviolet::Reference::Expressions",
         "runExpressionsControlReference",
         "Source/Reference/Expressions/Control.uv"
@@ -522,7 +531,7 @@ public procedure validatedExpressionsControlExpressionsObligations() -> usize {
     }
     if acceptedObligationEntryMatches(
         "rule.16.Lower-Expr-If-Cases",
-        62184usize,
+        62658usize,
         "HelloUltraviolet::Reference::Expressions",
         "runExpressionsControlReference",
         "Source/Reference/Expressions/Control.uv"
@@ -531,7 +540,7 @@ public procedure validatedExpressionsControlExpressionsObligations() -> usize {
     }
     if acceptedObligationEntryMatches(
         "rule.16.LowerLoopExpressionFamily",
-        62200usize,
+        62674usize,
         "HelloUltraviolet::Reference::Expressions",
         "runExpressionsControlReference",
         "Source/Reference/Expressions/Control.uv"
@@ -540,7 +549,7 @@ public procedure validatedExpressionsControlExpressionsObligations() -> usize {
     }
     if acceptedObligationEntryMatches(
         "rule.16.Lower-Expr-Block",
-        62213usize,
+        62687usize,
         "HelloUltraviolet::Reference::Expressions",
         "runExpressionsControlReference",
         "Source/Reference/Expressions/Control.uv"
@@ -549,7 +558,7 @@ public procedure validatedExpressionsControlExpressionsObligations() -> usize {
     }
     if acceptedObligationEntryMatches(
         "req.16.ControlExpressionLoweringOwnership",
-        62229usize,
+        62703usize,
         "HelloUltraviolet::Reference::Expressions",
         "runExpressionsControlReference",
         "Source/Reference/Expressions/Control.uv"
@@ -558,7 +567,7 @@ public procedure validatedExpressionsControlExpressionsObligations() -> usize {
     }
     if acceptedObligationEntryMatches(
         "diag.16.ControlExpressions",
-        62244usize,
+        62718usize,
         "HelloUltraviolet::Reference::Expressions",
         "runExpressionsControlReference",
         "Source/Reference/Expressions/Control.uv"
@@ -567,7 +576,7 @@ public procedure validatedExpressionsControlExpressionsObligations() -> usize {
     }
     if acceptedObligationEntryMatches(
         "req.16.ControlExpressionDiagnosticOwnership",
-        62257usize,
+        62731usize,
         "HelloUltraviolet::Reference::Expressions",
         "runExpressionsControlReference",
         "Source/Reference/Expressions/Control.uv"

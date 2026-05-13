@@ -40,6 +40,7 @@ enum class CapabilityKind {
   ExecutionDomain, // $ExecutionDomain - parallel execution
   Reactor,         // $Reactor - async reactor
   System,          // System record - system operations
+  Time,            // $Time/$MonotonicTime/$WallTime - clock access
   Context,         // Context record - all capabilities
 };
 
@@ -64,6 +65,7 @@ struct CapabilitySet {
   bool has_execution_domain = false;
   bool has_reactor = false;
   bool has_system = false;
+  bool has_time = false;
   bool has_context = false;  // Context implies all capabilities
 
   /// Create an empty capability set

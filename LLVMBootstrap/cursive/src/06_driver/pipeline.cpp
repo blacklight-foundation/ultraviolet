@@ -52,6 +52,7 @@
 #include "04_analysis/layout/layout.h"
 #include "05_codegen/intrinsics/builtins.h"
 #include "05_codegen/llvm/llvm_emit.h"
+#include "05_codegen/llvm/llvm_passes.h"
 
 #include "llvm/ADT/SmallVector.h"
 #include "llvm/IR/LegacyPassManager.h"
@@ -371,7 +372,7 @@ void ResetLowerContextForModule(codegen::LowerCtx& ctx,
   ctx.values.required_vtables.clear();
   ctx.temp_counter = std::make_shared<std::uint64_t>(0);
   ctx.scope_stack.clear();
-  ctx.next_runtime_scope_id = 1;
+  ctx.next_runtime_scope_id = std::make_shared<std::uint64_t>(1);
   ctx.binding_states.clear();
   ctx.local_addr_aliases.clear();
   ctx.next_binding_id = 1;
@@ -862,7 +863,42 @@ const llvm::Target* GetCachedTarget(const llvm::Triple& triple,
   return it->second;
 }
 
+llvm::CodeGenOptLevel ToLLVMCodeGenOptLevel(codegen::OptLevel opt_level) {
+  switch (opt_level) {
+    case codegen::OptLevel::O0:
+      return llvm::CodeGenOptLevel::None;
+    case codegen::OptLevel::O1:
+      return llvm::CodeGenOptLevel::Less;
+    case codegen::OptLevel::O2:
+    case codegen::OptLevel::Os:
+    case codegen::OptLevel::Oz:
+      return llvm::CodeGenOptLevel::Default;
+    case codegen::OptLevel::O3:
+      return llvm::CodeGenOptLevel::Aggressive;
+  }
+  return llvm::CodeGenOptLevel::None;
+}
+
+std::string_view OptLevelName(codegen::OptLevel opt_level) {
+  switch (opt_level) {
+    case codegen::OptLevel::O0:
+      return "O0";
+    case codegen::OptLevel::O1:
+      return "O1";
+    case codegen::OptLevel::O2:
+      return "O2";
+    case codegen::OptLevel::O3:
+      return "O3";
+    case codegen::OptLevel::Os:
+      return "Os";
+    case codegen::OptLevel::Oz:
+      return "Oz";
+  }
+  return "O0";
+}
+
 llvm::TargetMachine* GetThreadLocalTargetMachine(const llvm::Triple& triple,
+                                                 codegen::OptLevel opt_level,
                                                  std::string& err) {
   const llvm::Target* target = GetCachedTarget(triple, err);
   if (!target) {
@@ -871,20 +907,21 @@ llvm::TargetMachine* GetThreadLocalTargetMachine(const llvm::Triple& triple,
 
   thread_local std::unordered_map<std::string, std::unique_ptr<llvm::TargetMachine>>
       machine_cache;
-  const std::string triple_key = triple.str();
+  const std::string triple_key =
+      triple.str() + "|" + std::string(OptLevelName(opt_level));
   if (const auto it = machine_cache.find(triple_key); it != machine_cache.end()) {
     return it->second.get();
   }
 
   llvm::TargetOptions options;
   std::unique_ptr<llvm::TargetMachine> machine(target->createTargetMachine(
-      triple_key,
+      triple.str(),
       "generic",
       "",
       options,
       std::nullopt,
       std::nullopt,
-      llvm::CodeGenOptLevel::None));
+      ToLLVMCodeGenOptLevel(opt_level)));
   if (!machine) {
     err = "target machine creation failed";
     return nullptr;
@@ -951,17 +988,20 @@ std::optional<CodegenObjectAndIR> EmitObjAndOptionalIRForModule(
     const ModuleCodegen& module,
     const project::Project& project,
     project::TargetProfile target_profile,
+    codegen::OptLevel opt_level,
     std::string_view emit_ir);
 
 std::optional<std::string> EmitObjForModule(
     const CodegenCache& cache,
     const ModuleCodegen& module,
     const project::Project& project,
-    project::TargetProfile target_profile) {
+    project::TargetProfile target_profile,
+    codegen::OptLevel opt_level) {
   auto emitted = EmitObjAndOptionalIRForModule(cache,
                                                module,
                                                project,
                                                target_profile,
+                                               opt_level,
                                                "none");
   if (!emitted.has_value()) {
     return std::nullopt;
@@ -974,6 +1014,7 @@ std::optional<CodegenObjectAndIR> EmitObjAndIRForModule(
     const ModuleCodegen& module,
     const project::Project& project,
     project::TargetProfile target_profile,
+    codegen::OptLevel opt_level,
     std::string_view emit_ir) {
   if (!(emit_ir == "ll" || emit_ir == "bc")) {
     return std::nullopt;
@@ -982,6 +1023,7 @@ std::optional<CodegenObjectAndIR> EmitObjAndIRForModule(
                                        module,
                                        project,
                                        target_profile,
+                                       opt_level,
                                        emit_ir);
 }
 
@@ -990,6 +1032,7 @@ std::optional<CodegenObjectAndIR> EmitObjAndOptionalIRForModule(
     const ModuleCodegen& module,
     const project::Project& project,
     project::TargetProfile target_profile,
+    codegen::OptLevel opt_level,
     std::string_view emit_ir) {
   EnsureLLVMInit();
   const std::string module_name = ModuleNameForLog(module);
@@ -1032,6 +1075,11 @@ std::optional<CodegenObjectAndIR> EmitObjAndOptionalIRForModule(
       return std::nullopt;
     }
   }
+  if (opt_level != codegen::OptLevel::O0) {
+    codegen::PassConfig pass_config;
+    pass_config.opt_level = opt_level;
+    codegen::RunOptimizationPipeline(*bundle.module, pass_config);
+  }
   if (verify_llvm_module) {
     std::string verify_err;
     llvm::raw_string_ostream verify_os(verify_err);
@@ -1056,7 +1104,7 @@ std::optional<CodegenObjectAndIR> EmitObjAndOptionalIRForModule(
   }
 
   std::string err;
-  llvm::TargetMachine* machine = GetThreadLocalTargetMachine(triple, err);
+  llvm::TargetMachine* machine = GetThreadLocalTargetMachine(triple, opt_level, err);
   if (!machine) {
     LogCodegenProgress("emit-obj-error module=" + module_name +
                        " stage=target-machine");
@@ -1100,13 +1148,14 @@ std::optional<CodegenObjectAndIR> EmitObjAndOptionalIRForModule(
 std::optional<std::string> CodegenObj(CodegenCache& cache,
                                       const project::ModuleInfo& module,
                                       const project::Project& project,
-                                      project::TargetProfile target_profile) {
+                                      project::TargetProfile target_profile,
+                                      codegen::OptLevel opt_level) {
   const auto lowered = FindCodegenModuleEntry(cache, module.path);
   if (!lowered) {
     cache.ok.store(false);
     return std::nullopt;
   }
-  auto bytes = EmitObjForModule(cache, *lowered, project, target_profile);
+  auto bytes = EmitObjForModule(cache, *lowered, project, target_profile, opt_level);
   if (bytes.has_value()) {
     SPEC_RULE("CodegenObj-LLVM");
   }
@@ -1118,6 +1167,7 @@ std::optional<CodegenObjectAndIR> CodegenObjAndIR(
     const project::ModuleInfo& module,
     const project::Project& project,
     project::TargetProfile target_profile,
+    codegen::OptLevel opt_level,
     std::string_view emit_ir) {
   if (!(emit_ir == "ll" || emit_ir == "bc")) {
     return std::nullopt;
@@ -1128,7 +1178,7 @@ std::optional<CodegenObjectAndIR> CodegenObjAndIR(
     return std::nullopt;
   }
   auto emitted =
-      EmitObjAndIRForModule(cache, *lowered, project, target_profile, emit_ir);
+      EmitObjAndIRForModule(cache, *lowered, project, target_profile, opt_level, emit_ir);
   if (emitted.has_value()) {
     SPEC_RULE("CodegenObj-LLVM");
     SPEC_RULE("CodegenIR-LLVM");

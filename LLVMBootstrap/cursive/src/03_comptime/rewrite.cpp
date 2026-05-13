@@ -14,6 +14,218 @@ namespace {
 ExprPtr RewriteExpr(const ExprPtr& expr, CtEnv& env);
 bool BindCtPatternValue(CtEnv& env, const ast::PatternPtr& pattern, const CtValue& value);
 
+bool IsKnownCtProcedureName(const CtEnv& env, const ast::Identifier& name) {
+  return env.procs.find(name) != env.procs.end();
+}
+
+void EmitRuntimeCtProcedureReferenceIfNeeded(CtEnv& env, const ExprPtr& expr) {
+  if (!expr) {
+    return;
+  }
+  if (const auto* ident = std::get_if<ast::IdentifierExpr>(&expr->node)) {
+    if (IsKnownCtProcedureName(env, ident->name)) {
+      EmitComptimeDiag(env, "E-CTE-0034", expr->span);
+    }
+  }
+}
+
+class CtProhibitedConstructFinder {
+ public:
+  std::optional<core::Span> Find(const Block& block) {
+    found_span_ = std::nullopt;
+    VisitBlock(block);
+    return found_span_;
+  }
+
+ private:
+  bool Found() const { return found_span_.has_value(); }
+
+  void Mark(core::Span span) {
+    if (!Found()) {
+      found_span_ = span;
+    }
+  }
+
+  void VisitBlock(const Block& block) {
+    for (const auto& stmt : block.stmts) {
+      VisitStmt(stmt);
+      if (Found()) {
+        return;
+      }
+    }
+    VisitExpr(block.tail_opt);
+  }
+
+  void VisitStmt(const Stmt& stmt) {
+    if (Found()) {
+      return;
+    }
+    std::visit(
+        [&](const auto& node) {
+          using T = std::decay_t<decltype(node)>;
+          if constexpr (std::is_same_v<T, ast::RegionStmt> ||
+                        std::is_same_v<T, ast::FrameStmt> ||
+                        std::is_same_v<T, ast::UnsafeBlockStmt> ||
+                        std::is_same_v<T, ast::KeyBlockStmt>) {
+            Mark(node.span);
+          } else if constexpr (std::is_same_v<T, ast::LetStmt> ||
+                               std::is_same_v<T, ast::VarStmt>) {
+            VisitExpr(node.binding.init);
+          } else if constexpr (std::is_same_v<T, ast::AssignStmt> ||
+                               std::is_same_v<T, ast::CompoundAssignStmt>) {
+            VisitExpr(node.place);
+            VisitExpr(node.value);
+          } else if constexpr (std::is_same_v<T, ast::ExprStmt>) {
+            VisitExpr(node.value);
+          } else if constexpr (std::is_same_v<T, ast::DeferStmt> ||
+                               std::is_same_v<T, ast::CtStmt>) {
+            if (node.body) {
+              VisitBlock(*node.body);
+            }
+          } else if constexpr (std::is_same_v<T, ast::ReturnStmt> ||
+                               std::is_same_v<T, ast::BreakStmt>) {
+            VisitExpr(node.value_opt);
+          } else {
+            (void)node;
+          }
+        },
+        stmt);
+  }
+
+  void VisitExpr(const ExprPtr& expr) {
+    if (!expr || Found()) {
+      return;
+    }
+    std::visit(
+        [&](const auto& node) {
+          using T = std::decay_t<decltype(node)>;
+          if constexpr (std::is_same_v<T, ast::UnsafeBlockExpr> ||
+                        std::is_same_v<T, ast::DerefExpr> ||
+                        std::is_same_v<T, ast::TransmuteExpr> ||
+                        std::is_same_v<T, ast::YieldExpr> ||
+                        std::is_same_v<T, ast::YieldFromExpr> ||
+                        std::is_same_v<T, ast::SyncExpr> ||
+                        std::is_same_v<T, ast::RaceExpr> ||
+                        std::is_same_v<T, ast::AllExpr> ||
+                        std::is_same_v<T, ast::ParallelExpr> ||
+                        std::is_same_v<T, ast::SpawnExpr> ||
+                        std::is_same_v<T, ast::WaitExpr> ||
+                        std::is_same_v<T, ast::DispatchExpr>) {
+            Mark(expr->span);
+          } else if constexpr (std::is_same_v<T, ast::BlockExpr>) {
+            if (node.block) {
+              VisitBlock(*node.block);
+            }
+          } else if constexpr (std::is_same_v<T, ast::ComptimeExpr>) {
+            VisitExpr(node.body);
+          } else if constexpr (std::is_same_v<T, ast::CtIfExpr>) {
+            VisitExpr(node.cond);
+            if (node.then_block) {
+              VisitBlock(*node.then_block);
+            }
+            if (node.else_block_opt) {
+              VisitBlock(*node.else_block_opt);
+            }
+          } else if constexpr (std::is_same_v<T, ast::CtLoopIterExpr>) {
+            VisitExpr(node.iter);
+            if (node.body) {
+              VisitBlock(*node.body);
+            }
+          } else if constexpr (std::is_same_v<T, ast::AttributedExpr>) {
+            VisitExpr(node.expr);
+          } else if constexpr (std::is_same_v<T, ast::RangeExpr> ||
+                               std::is_same_v<T, ast::BinaryExpr>) {
+            VisitExpr(node.lhs);
+            VisitExpr(node.rhs);
+          } else if constexpr (std::is_same_v<T, ast::UnaryExpr> ||
+                               std::is_same_v<T, ast::CastExpr> ||
+                               std::is_same_v<T, ast::AllocExpr> ||
+                               std::is_same_v<T, ast::PropagateExpr>) {
+            VisitExpr(node.value);
+          } else if constexpr (std::is_same_v<T, ast::EntryExpr>) {
+            VisitExpr(node.expr);
+          } else if constexpr (std::is_same_v<T, ast::AddressOfExpr> ||
+                               std::is_same_v<T, ast::MoveExpr>) {
+            VisitExpr(node.place);
+          } else if constexpr (std::is_same_v<T, ast::FieldAccessExpr> ||
+                               std::is_same_v<T, ast::TupleAccessExpr>) {
+            VisitExpr(node.base);
+          } else if constexpr (std::is_same_v<T, ast::IndexAccessExpr>) {
+            VisitExpr(node.base);
+            VisitExpr(node.index);
+          } else if constexpr (std::is_same_v<T, ast::CallExpr>) {
+            VisitExpr(node.callee);
+            for (const auto& arg : node.args) {
+              VisitExpr(arg.value);
+            }
+          } else if constexpr (std::is_same_v<T, ast::CallTypeArgsExpr>) {
+            VisitExpr(node.callee);
+            for (const auto& arg : node.args) {
+              VisitExpr(arg.value);
+            }
+          } else if constexpr (std::is_same_v<T, ast::MethodCallExpr>) {
+            VisitExpr(node.receiver);
+            for (const auto& arg : node.args) {
+              VisitExpr(arg.value);
+            }
+          } else if constexpr (std::is_same_v<T, ast::TupleExpr>) {
+            for (const auto& elem : node.elements) {
+              VisitExpr(elem);
+            }
+          } else if constexpr (std::is_same_v<T, ast::ArrayExpr>) {
+            ast::ForEachArrayExprSubexpr(node, [&](const ExprPtr& elem) {
+              VisitExpr(elem);
+            });
+          } else if constexpr (std::is_same_v<T, ast::ArrayRepeatExpr>) {
+            VisitExpr(node.value);
+            VisitExpr(node.count);
+          } else if constexpr (std::is_same_v<T, ast::RecordExpr>) {
+            for (const auto& field : node.fields) {
+              VisitExpr(field.value);
+            }
+          } else if constexpr (std::is_same_v<T, ast::IfExpr>) {
+            VisitExpr(node.cond);
+            VisitExpr(node.then_expr);
+            VisitExpr(node.else_expr);
+          } else if constexpr (std::is_same_v<T, ast::IfCaseExpr>) {
+            VisitExpr(node.scrutinee);
+            for (const auto& arm : node.cases) {
+              VisitExpr(arm.body);
+            }
+            VisitExpr(node.else_expr);
+          } else if constexpr (std::is_same_v<T, ast::IfIsExpr>) {
+            VisitExpr(node.scrutinee);
+            VisitExpr(node.then_expr);
+            VisitExpr(node.else_expr);
+          } else if constexpr (std::is_same_v<T, ast::LoopInfiniteExpr>) {
+            if (node.body) {
+              VisitBlock(*node.body);
+            }
+          } else if constexpr (std::is_same_v<T, ast::LoopConditionalExpr>) {
+            VisitExpr(node.cond);
+            if (node.body) {
+              VisitBlock(*node.body);
+            }
+          } else if constexpr (std::is_same_v<T, ast::LoopIterExpr>) {
+            VisitExpr(node.iter);
+            if (node.body) {
+              VisitBlock(*node.body);
+            }
+          } else if constexpr (std::is_same_v<T, ast::ClosureExpr>) {
+            VisitExpr(node.body);
+          } else if constexpr (std::is_same_v<T, ast::PipelineExpr>) {
+            VisitExpr(node.lhs);
+            VisitExpr(node.rhs);
+          } else {
+            (void)node;
+          }
+        },
+        expr->node);
+  }
+
+  std::optional<core::Span> found_span_;
+};
+
 bool ValidatePhase2AttributeList(CtEnv& env,
                                  const AttributeList& attrs,
                                  analysis::AttributeTarget target) {
@@ -38,6 +250,31 @@ bool ValidatePhase2AttributeList(CtEnv& env,
     }
   }
   return false;
+}
+
+bool IsDeriveTargetKind(const ASTItem& item) {
+  return std::visit(
+      [](const auto& node) -> bool {
+        using T = std::decay_t<decltype(node)>;
+        return std::is_same_v<T, ast::RecordDecl> ||
+               std::is_same_v<T, ast::EnumDecl> ||
+               std::is_same_v<T, ast::ModalDecl>;
+      },
+      item);
+}
+
+bool RejectInvalidDeriveAttributeTargetKind(CtEnv& env, const ASTItem& item) {
+  if (!analysis::HasAttribute(ast::AttrListOf(item), analysis::attrs::kDerive) ||
+      IsDeriveTargetKind(item)) {
+    return false;
+  }
+
+  if (core::DiagnosticStream* diags = CtDiags(env)) {
+    if (auto diag = core::MakeDiagnosticById("E-CTE-0311", SpanOfItem(item))) {
+      core::Emit(*diags, *diag);
+    }
+  }
+  return true;
 }
 
 ExprPtr MakeUnitExpr(const core::Span& span) {
@@ -221,6 +458,10 @@ Block RewriteBlock(const Block& block, CtEnv& env) {
         continue;
       }
       SPEC_RULE_AT("CtExpandStmt-CtStmt", comptime->span);
+      if (const auto span = CtProhibitedConstructFinder{}.Find(*comptime->body)) {
+        EmitComptimeDiag(env, "E-CTE-0020", *span);
+        continue;
+      }
       std::vector<ASTItem> emitted;
       CtEnv stmt_env = WithCtCaps(env, comptime->attrs);
       stmt_env.pending_emits = &emitted;
@@ -418,6 +659,7 @@ ExprPtr RewriteExpr(const ExprPtr& expr, CtEnv& env) {
           }
           return out;
         } else if constexpr (std::is_same_v<T, ast::CallExpr>) {
+          EmitRuntimeCtProcedureReferenceIfNeeded(env, node.callee);
           auto out = std::make_shared<Expr>(*expr);
           auto& rewritten = std::get<ast::CallExpr>(out->node);
           rewritten.callee = RewriteExpr(node.callee, env);
@@ -485,6 +727,10 @@ std::optional<std::vector<ASTItem>> ExpandModuleItems(
     SPEC_RULE("CtExpandItemSeq-Cons");
     env = WithCtSite(std::move(env), i, {});
     const ASTItem item = queue[i];
+
+    if (RejectInvalidDeriveAttributeTargetKind(env, item)) {
+      return std::nullopt;
+    }
 
     if (const auto* proc = std::get_if<ast::ComptimeProcedureDecl>(&item)) {
       if (!ValidatePhase2AttributeList(

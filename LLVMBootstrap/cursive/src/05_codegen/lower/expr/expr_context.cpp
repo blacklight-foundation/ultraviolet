@@ -124,7 +124,10 @@ void LowerCtx::PushScope(bool is_loop, bool is_region) {
   ScopeInfo scope;
   scope.is_loop = is_loop;
   scope.is_region = is_region;
-  scope.runtime_scope_id = next_runtime_scope_id++;
+  if (!next_runtime_scope_id) {
+    next_runtime_scope_id = std::make_shared<std::uint64_t>(1);
+  }
+  scope.runtime_scope_id = (*next_runtime_scope_id)++;
   scope_stack.push_back(std::move(scope));
 }
 
@@ -248,10 +251,53 @@ void LowerCtx::RegisterRuntimeScopeExit() {
   if (scope_stack.empty()) {
     return;
   }
+  if (scope_stack.back().runtime_scope_exit_registered) {
+    return;
+  }
   CleanupItem item;
   item.kind = CleanupItem::Kind::RuntimeScopeExit;
   item.scope_runtime_id = scope_stack.back().runtime_scope_id;
   scope_stack.back().cleanup_items.push_back(std::move(item));
+  scope_stack.back().runtime_scope_exit_registered = true;
+}
+
+void LowerCtx::RequireRuntimeScope(std::uint64_t scope_id) {
+  if (scope_id == 0) {
+    return;
+  }
+  if (!runtime_scope_materialization) {
+    runtime_scope_materialization = std::make_shared<
+        std::unordered_map<std::uint64_t, RuntimeScopeMaterialization>>();
+  }
+  (*runtime_scope_materialization)[scope_id].required = true;
+}
+
+void LowerCtx::RequireCurrentRuntimeScope() {
+  if (const auto scope_id = CurrentRuntimeScopeId()) {
+    RequireRuntimeScope(*scope_id);
+  }
+}
+
+bool LowerCtx::ScopeRequiresRuntime(std::uint64_t scope_id) const {
+  if (scope_id == 0 || !runtime_scope_materialization) {
+    return false;
+  }
+  const auto it = runtime_scope_materialization->find(scope_id);
+  return it != runtime_scope_materialization->end() && it->second.required;
+}
+
+bool LowerCtx::CurrentScopeRequiresRuntime() const {
+  if (scope_stack.empty()) {
+    return false;
+  }
+  return ScopeRequiresRuntime(scope_stack.back().runtime_scope_id);
+}
+
+void LowerCtx::RegisterRuntimeScopeExitIfRequired() {
+  if (!CurrentScopeRequiresRuntime()) {
+    return;
+  }
+  RegisterRuntimeScopeExit();
 }
 
 std::optional<std::uint64_t> LowerCtx::CurrentRuntimeScopeId() const {

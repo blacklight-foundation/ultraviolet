@@ -33,6 +33,7 @@
 #include "04_analysis/caps/cap_system.h"
 #include "04_analysis/caps/cap_filesystem.h"
 #include "04_analysis/caps/cap_heap.h"
+#include "04_analysis/caps/cap_time.h"
 #include "04_analysis/caps/cap_concurrency.h"
 #include "04_analysis/memory/region_type.h"
 #include "04_analysis/typing/outcome.h"
@@ -487,6 +488,21 @@ void PopulateSigma(ScopeContext& ctx) {
     path.emplace_back("Priority");
     ctx.sigma.types[PathKeyOf(path)] = BuildPriorityEnumDecl();
   }
+  {
+    ast::Path path;
+    path.emplace_back("Duration");
+    ctx.sigma.types[PathKeyOf(path)] = BuildDurationRecordDecl();
+  }
+  {
+    ast::Path path;
+    path.emplace_back("MonotonicInstant");
+    ctx.sigma.types[PathKeyOf(path)] = BuildMonotonicInstantRecordDecl();
+  }
+  {
+    ast::Path path;
+    path.emplace_back("UtcInstant");
+    ctx.sigma.types[PathKeyOf(path)] = BuildUtcInstantRecordDecl();
+  }
 
   // Built-in capability classes
   {
@@ -515,6 +531,11 @@ void PopulateSigma(ScopeContext& ctx) {
     ast::Path path;
     path.emplace_back("IoError");
     ctx.sigma.types[PathKeyOf(path)] = BuildIoErrorEnumDecl();
+  }
+  {
+    ast::Path path;
+    path.emplace_back("TimeError");
+    ctx.sigma.types[PathKeyOf(path)] = BuildTimeErrorEnumDecl();
   }
   {
     ast::Path path;

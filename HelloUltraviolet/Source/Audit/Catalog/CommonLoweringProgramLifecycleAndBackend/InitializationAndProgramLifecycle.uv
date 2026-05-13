@@ -9,7 +9,7 @@ public procedure validatedCommonLoweringProgramLifecycleAndBackendInitialization
     var count: usize = 0usize
     if acceptedObligationEntryMatches(
         "def.24.GlobalsJudg",
-        92623usize,
+        93351usize,
         "HelloUltraviolet::Reference::Lowering",
         "runLoweringLayoutAndABIReference",
         "Source/Reference/Lowering/LayoutAndABI.uv"
@@ -18,447 +18,6 @@ public procedure validatedCommonLoweringProgramLifecycleAndBackendInitialization
     }
     if acceptedObligationEntryMatches(
         "def.24.ConstInitJudg",
-        92636usize,
-        "HelloUltraviolet::Reference::Lowering",
-        "runLoweringLayoutAndABIReference",
-        "Source/Reference/Lowering/LayoutAndABI.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
-        "def.24.ConstInitLiteral",
-        92649usize,
-        "HelloUltraviolet::Reference::Lowering",
-        "runLoweringLayoutAndABIReference",
-        "Source/Reference/Lowering/LayoutAndABI.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
-        "def.24.StaticName",
-        92662usize,
-        "HelloUltraviolet::Reference::Lowering",
-        "runLoweringLayoutAndABIReference",
-        "Source/Reference/Lowering/LayoutAndABI.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
-        "def.24.StaticBindTypes",
-        92677usize,
-        "HelloUltraviolet::Reference::Lowering",
-        "runLoweringLayoutAndABIReference",
-        "Source/Reference/Lowering/LayoutAndABI.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
-        "def.24.StaticBindList",
-        92690usize,
-        "HelloUltraviolet::Reference::Lowering",
-        "runLoweringLayoutAndABIReference",
-        "Source/Reference/Lowering/LayoutAndABI.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
-        "def.24.StaticBinding",
-        92703usize,
-        "HelloUltraviolet::Reference::Lowering",
-        "runLoweringLayoutAndABIReference",
-        "Source/Reference/Lowering/LayoutAndABI.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
-        "def.24.StaticSym",
-        92716usize,
-        "HelloUltraviolet::Reference::Lowering",
-        "runLoweringLayoutAndABIReference",
-        "Source/Reference/Lowering/LayoutAndABI.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
-        "rule.24.Emit-Static-Const",
-        92731usize,
-        "HelloUltraviolet::Reference::Lowering",
-        "runLoweringLayoutAndABIReference",
-        "Source/Reference/Lowering/LayoutAndABI.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
-        "rule.24.Emit-Static-Init",
-        92747usize,
-        "HelloUltraviolet::Reference::Lowering",
-        "runLoweringLayoutAndABIReference",
-        "Source/Reference/Lowering/LayoutAndABI.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
-        "rule.24.Emit-Static-Multi",
-        92763usize,
-        "HelloUltraviolet::Reference::Lowering",
-        "runLoweringLayoutAndABIReference",
-        "Source/Reference/Lowering/LayoutAndABI.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
-        "def.24.InitSym",
-        92779usize,
-        "HelloUltraviolet::Reference::Lowering",
-        "runLoweringLayoutAndABIReference",
-        "Source/Reference/Lowering/LayoutAndABI.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
-        "rule.24.InitFn",
-        92792usize,
-        "HelloUltraviolet::Reference::Lowering",
-        "runLoweringLayoutAndABIReference",
-        "Source/Reference/Lowering/LayoutAndABI.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
-        "def.24.DeinitSym",
-        92808usize,
-        "HelloUltraviolet::Reference::Lowering",
-        "runLoweringLayoutAndABIReference",
-        "Source/Reference/Lowering/LayoutAndABI.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
-        "rule.24.DeinitFn",
-        92821usize,
-        "HelloUltraviolet::Reference::Lowering",
-        "runLoweringLayoutAndABIReference",
-        "Source/Reference/Lowering/LayoutAndABI.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
-        "def.24.StaticItems",
-        92837usize,
-        "HelloUltraviolet::Reference::Lowering",
-        "runLoweringLayoutAndABIReference",
-        "Source/Reference/Lowering/LayoutAndABI.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
-        "def.24.StaticItemOf",
-        92850usize,
-        "HelloUltraviolet::Reference::Lowering",
-        "runLoweringLayoutAndABIReference",
-        "Source/Reference/Lowering/LayoutAndABI.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
-        "def.24.StaticSymPath",
-        92863usize,
-        "HelloUltraviolet::Reference::Lowering",
-        "runLoweringLayoutAndABIReference",
-        "Source/Reference/Lowering/LayoutAndABI.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
-        "def.24.StaticAddr",
-        92876usize,
-        "HelloUltraviolet::Reference::Lowering",
-        "runLoweringLayoutAndABIReference",
-        "Source/Reference/Lowering/LayoutAndABI.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
-        "req.24.HostedStaticAddrSessionInterpretation",
-        92889usize,
-        "HelloUltraviolet::Reference::Lowering",
-        "runLoweringLayoutAndABIReference",
-        "Source/Reference/Lowering/LayoutAndABI.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
-        "def.24.AddrOfSym",
-        92902usize,
-        "HelloUltraviolet::Reference::Lowering",
-        "runLoweringLayoutAndABIReference",
-        "Source/Reference/Lowering/LayoutAndABI.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
-        "def.24.StaticType",
-        92915usize,
-        "HelloUltraviolet::Reference::Lowering",
-        "runLoweringLayoutAndABIReference",
-        "Source/Reference/Lowering/LayoutAndABI.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
-        "def.24.StaticBindInfo",
-        92928usize,
-        "HelloUltraviolet::Reference::Lowering",
-        "runLoweringLayoutAndABIReference",
-        "Source/Reference/Lowering/LayoutAndABI.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
-        "def.24.SeqIRList",
-        92941usize,
-        "HelloUltraviolet::Reference::Lowering",
-        "runLoweringLayoutAndABIReference",
-        "Source/Reference/Lowering/LayoutAndABI.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
-        "def.24.StaticStoreIR",
-        92955usize,
-        "HelloUltraviolet::Reference::Lowering",
-        "runLoweringLayoutAndABIReference",
-        "Source/Reference/Lowering/LayoutAndABI.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
-        "rule.24.Lower-StaticInit-Item",
-        92969usize,
-        "HelloUltraviolet::Reference::Lowering",
-        "runLoweringLayoutAndABIReference",
-        "Source/Reference/Lowering/LayoutAndABI.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
-        "rule.24.Lower-StaticInitItems-Empty",
-        92985usize,
-        "HelloUltraviolet::Reference::Lowering",
-        "runLoweringLayoutAndABIReference",
-        "Source/Reference/Lowering/LayoutAndABI.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
-        "rule.24.Lower-StaticInitItems-Cons",
-        93000usize,
-        "HelloUltraviolet::Reference::Lowering",
-        "runLoweringLayoutAndABIReference",
-        "Source/Reference/Lowering/LayoutAndABI.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
-        "rule.24.Lower-StaticInit",
-        93016usize,
-        "HelloUltraviolet::Reference::Lowering",
-        "runLoweringLayoutAndABIReference",
-        "Source/Reference/Lowering/LayoutAndABI.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
-        "rule.24.InitCallIR",
-        93032usize,
-        "HelloUltraviolet::Reference::Lowering",
-        "runLoweringLayoutAndABIReference",
-        "Source/Reference/Lowering/LayoutAndABI.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
-        "def.24.Rev",
-        93048usize,
-        "HelloUltraviolet::Reference::Lowering",
-        "runLoweringLayoutAndABIReference",
-        "Source/Reference/Lowering/LayoutAndABI.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
-        "rule.24.Lower-StaticDeinitNames-Empty",
-        93062usize,
-        "HelloUltraviolet::Reference::Lowering",
-        "runLoweringLayoutAndABIReference",
-        "Source/Reference/Lowering/LayoutAndABI.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
-        "rule.24.Lower-StaticDeinitNames-Cons-Resp",
-        93077usize,
-        "HelloUltraviolet::Reference::Lowering",
-        "runLoweringLayoutAndABIReference",
-        "Source/Reference/Lowering/LayoutAndABI.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
-        "rule.24.Lower-StaticDeinitNames-Cons-NoResp",
-        93093usize,
-        "HelloUltraviolet::Reference::Lowering",
-        "runLoweringLayoutAndABIReference",
-        "Source/Reference/Lowering/LayoutAndABI.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
-        "rule.24.Lower-StaticDeinit-Item",
-        93109usize,
-        "HelloUltraviolet::Reference::Lowering",
-        "runLoweringLayoutAndABIReference",
-        "Source/Reference/Lowering/LayoutAndABI.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
-        "rule.24.Lower-StaticDeinitItems-Empty",
-        93125usize,
-        "HelloUltraviolet::Reference::Lowering",
-        "runLoweringLayoutAndABIReference",
-        "Source/Reference/Lowering/LayoutAndABI.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
-        "rule.24.Lower-StaticDeinitItems-Cons",
-        93140usize,
-        "HelloUltraviolet::Reference::Lowering",
-        "runLoweringLayoutAndABIReference",
-        "Source/Reference/Lowering/LayoutAndABI.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
-        "rule.24.Lower-StaticDeinit",
-        93156usize,
-        "HelloUltraviolet::Reference::Lowering",
-        "runLoweringLayoutAndABIReference",
-        "Source/Reference/Lowering/LayoutAndABI.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
-        "rule.24.DeinitCallIR",
-        93172usize,
-        "HelloUltraviolet::Reference::Lowering",
-        "runLoweringLayoutAndABIReference",
-        "Source/Reference/Lowering/LayoutAndABI.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
-        "def.24.HostedStateAddressDefinitions",
-        93188usize,
-        "HelloUltraviolet::Reference::Lowering",
-        "runLoweringLayoutAndABIReference",
-        "Source/Reference/Lowering/LayoutAndABI.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
-        "def.24.LibraryStateSymbolDefinitions",
-        93203usize,
-        "HelloUltraviolet::Reference::Lowering",
-        "runLoweringLayoutAndABIReference",
-        "Source/Reference/Lowering/LayoutAndABI.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
-        "def.24.HostedStateJudg",
-        93219usize,
-        "HelloUltraviolet::Reference::Lowering",
-        "runLoweringLayoutAndABIReference",
-        "Source/Reference/Lowering/LayoutAndABI.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
-        "req.24.SessionStateInitDefinesHostedCells",
-        93232usize,
-        "HelloUltraviolet::Reference::Lowering",
-        "runLoweringLayoutAndABIReference",
-        "Source/Reference/Lowering/LayoutAndABI.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
-        "req.24.SessionStateDestroyRemovesHostedCells",
-        93245usize,
-        "HelloUltraviolet::Reference::Lowering",
-        "runLoweringLayoutAndABIReference",
-        "Source/Reference/Lowering/LayoutAndABI.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
-        "req.24.HostedLibraryStateAddressInterpretation",
-        93258usize,
-        "HelloUltraviolet::Reference::Lowering",
-        "runLoweringLayoutAndABIReference",
-        "Source/Reference/Lowering/LayoutAndABI.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
-        "def.24.InitializationGraphOrdering",
-        93275usize,
-        "HelloUltraviolet::Reference::Lowering",
-        "runLoweringLayoutAndABIReference",
-        "Source/Reference/Lowering/LayoutAndABI.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
-        "rule.24.Topo-Ok",
-        93294usize,
-        "HelloUltraviolet::Reference::Lowering",
-        "runLoweringLayoutAndABIReference",
-        "Source/Reference/Lowering/LayoutAndABI.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
-        "rule.24.Topo-Cycle",
-        93310usize,
-        "HelloUltraviolet::Reference::Lowering",
-        "runLoweringLayoutAndABIReference",
-        "Source/Reference/Lowering/LayoutAndABI.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
-        "def.24.ProjectInitializationItems",
-        93326usize,
-        "HelloUltraviolet::Reference::Lowering",
-        "runLoweringLayoutAndABIReference",
-        "Source/Reference/Lowering/LayoutAndABI.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
-        "def.24.InitializationPlanDefinitions",
-        93342usize,
-        "HelloUltraviolet::Reference::Lowering",
-        "runLoweringLayoutAndABIReference",
-        "Source/Reference/Lowering/LayoutAndABI.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
-        "def.24.EvalFromEvalSigma",
         93364usize,
         "HelloUltraviolet::Reference::Lowering",
         "runLoweringLayoutAndABIReference",
@@ -467,8 +26,8 @@ public procedure validatedCommonLoweringProgramLifecycleAndBackendInitialization
         count = count + 1usize
     }
     if acceptedObligationEntryMatches(
-        "rule.24.EmitInitPlan",
-        93378usize,
+        "def.24.ConstInitLiteral",
+        93377usize,
         "HelloUltraviolet::Reference::Lowering",
         "runLoweringLayoutAndABIReference",
         "Source/Reference/Lowering/LayoutAndABI.uv"
@@ -476,8 +35,8 @@ public procedure validatedCommonLoweringProgramLifecycleAndBackendInitialization
         count = count + 1usize
     }
     if acceptedObligationEntryMatches(
-        "rule.24.EmitInitPlan-Err",
-        93394usize,
+        "def.24.StaticName",
+        93390usize,
         "HelloUltraviolet::Reference::Lowering",
         "runLoweringLayoutAndABIReference",
         "Source/Reference/Lowering/LayoutAndABI.uv"
@@ -485,8 +44,8 @@ public procedure validatedCommonLoweringProgramLifecycleAndBackendInitialization
         count = count + 1usize
     }
     if acceptedObligationEntryMatches(
-        "rule.24.EmitDeinitPlan",
-        93410usize,
+        "def.24.StaticBindTypes",
+        93405usize,
         "HelloUltraviolet::Reference::Lowering",
         "runLoweringLayoutAndABIReference",
         "Source/Reference/Lowering/LayoutAndABI.uv"
@@ -494,8 +53,8 @@ public procedure validatedCommonLoweringProgramLifecycleAndBackendInitialization
         count = count + 1usize
     }
     if acceptedObligationEntryMatches(
-        "rule.24.EmitDeinitPlan-Err",
-        93426usize,
+        "def.24.StaticBindList",
+        93418usize,
         "HelloUltraviolet::Reference::Lowering",
         "runLoweringLayoutAndABIReference",
         "Source/Reference/Lowering/LayoutAndABI.uv"
@@ -503,8 +62,8 @@ public procedure validatedCommonLoweringProgramLifecycleAndBackendInitialization
         count = count + 1usize
     }
     if acceptedObligationEntryMatches(
-        "def.24.InitStateMachineDefinitions",
-        93442usize,
+        "def.24.StaticBinding",
+        93431usize,
         "HelloUltraviolet::Reference::Lowering",
         "runLoweringLayoutAndABIReference",
         "Source/Reference/Lowering/LayoutAndABI.uv"
@@ -512,8 +71,8 @@ public procedure validatedCommonLoweringProgramLifecycleAndBackendInitialization
         count = count + 1usize
     }
     if acceptedObligationEntryMatches(
-        "rule.24.Init-Start",
-        93457usize,
+        "def.24.StaticSym",
+        93444usize,
         "HelloUltraviolet::Reference::Lowering",
         "runLoweringLayoutAndABIReference",
         "Source/Reference/Lowering/LayoutAndABI.uv"
@@ -521,8 +80,8 @@ public procedure validatedCommonLoweringProgramLifecycleAndBackendInitialization
         count = count + 1usize
     }
     if acceptedObligationEntryMatches(
-        "rule.24.Init-Step",
-        93472usize,
+        "rule.24.Emit-Static-Const",
+        93459usize,
         "HelloUltraviolet::Reference::Lowering",
         "runLoweringLayoutAndABIReference",
         "Source/Reference/Lowering/LayoutAndABI.uv"
@@ -530,8 +89,8 @@ public procedure validatedCommonLoweringProgramLifecycleAndBackendInitialization
         count = count + 1usize
     }
     if acceptedObligationEntryMatches(
-        "rule.24.Init-Next-Module",
-        93488usize,
+        "rule.24.Emit-Static-Init",
+        93475usize,
         "HelloUltraviolet::Reference::Lowering",
         "runLoweringLayoutAndABIReference",
         "Source/Reference/Lowering/LayoutAndABI.uv"
@@ -539,8 +98,8 @@ public procedure validatedCommonLoweringProgramLifecycleAndBackendInitialization
         count = count + 1usize
     }
     if acceptedObligationEntryMatches(
-        "rule.24.Init-Panic",
-        93504usize,
+        "rule.24.Emit-Static-Multi",
+        93491usize,
         "HelloUltraviolet::Reference::Lowering",
         "runLoweringLayoutAndABIReference",
         "Source/Reference/Lowering/LayoutAndABI.uv"
@@ -548,7 +107,16 @@ public procedure validatedCommonLoweringProgramLifecycleAndBackendInitialization
         count = count + 1usize
     }
     if acceptedObligationEntryMatches(
-        "rule.24.Init-Done",
+        "def.24.InitSym",
+        93507usize,
+        "HelloUltraviolet::Reference::Lowering",
+        "runLoweringLayoutAndABIReference",
+        "Source/Reference/Lowering/LayoutAndABI.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "rule.24.InitFn",
         93520usize,
         "HelloUltraviolet::Reference::Lowering",
         "runLoweringLayoutAndABIReference",
@@ -557,7 +125,7 @@ public procedure validatedCommonLoweringProgramLifecycleAndBackendInitialization
         count = count + 1usize
     }
     if acceptedObligationEntryMatches(
-        "rule.24.Init-Ok",
+        "def.24.DeinitSym",
         93536usize,
         "HelloUltraviolet::Reference::Lowering",
         "runLoweringLayoutAndABIReference",
@@ -566,8 +134,8 @@ public procedure validatedCommonLoweringProgramLifecycleAndBackendInitialization
         count = count + 1usize
     }
     if acceptedObligationEntryMatches(
-        "rule.24.Init-Fail",
-        93552usize,
+        "rule.24.DeinitFn",
+        93549usize,
         "HelloUltraviolet::Reference::Lowering",
         "runLoweringLayoutAndABIReference",
         "Source/Reference/Lowering/LayoutAndABI.uv"
@@ -575,8 +143,8 @@ public procedure validatedCommonLoweringProgramLifecycleAndBackendInitialization
         count = count + 1usize
     }
     if acceptedObligationEntryMatches(
-        "rule.24.Deinit-Ok",
-        93568usize,
+        "def.24.StaticItems",
+        93565usize,
         "HelloUltraviolet::Reference::Lowering",
         "runLoweringLayoutAndABIReference",
         "Source/Reference/Lowering/LayoutAndABI.uv"
@@ -584,8 +152,8 @@ public procedure validatedCommonLoweringProgramLifecycleAndBackendInitialization
         count = count + 1usize
     }
     if acceptedObligationEntryMatches(
-        "rule.24.Deinit-Panic",
-        93584usize,
+        "def.24.StaticItemOf",
+        93578usize,
         "HelloUltraviolet::Reference::Lowering",
         "runLoweringLayoutAndABIReference",
         "Source/Reference/Lowering/LayoutAndABI.uv"
@@ -593,8 +161,8 @@ public procedure validatedCommonLoweringProgramLifecycleAndBackendInitialization
         count = count + 1usize
     }
     if acceptedObligationEntryMatches(
-        "def.24.EntryJudg",
-        93602usize,
+        "def.24.StaticSymPath",
+        93591usize,
         "HelloUltraviolet::Reference::Lowering",
         "runLoweringLayoutAndABIReference",
         "Source/Reference/Lowering/LayoutAndABI.uv"
@@ -602,8 +170,8 @@ public procedure validatedCommonLoweringProgramLifecycleAndBackendInitialization
         count = count + 1usize
     }
     if acceptedObligationEntryMatches(
-        "rule.24.EntrySym-Decl",
-        93615usize,
+        "def.24.StaticAddr",
+        93604usize,
         "HelloUltraviolet::Reference::Lowering",
         "runLoweringLayoutAndABIReference",
         "Source/Reference/Lowering/LayoutAndABI.uv"
@@ -611,7 +179,16 @@ public procedure validatedCommonLoweringProgramLifecycleAndBackendInitialization
         count = count + 1usize
     }
     if acceptedObligationEntryMatches(
-        "rule.24.ContextInitSym-Decl",
+        "req.24.HostedStaticAddrSessionInterpretation",
+        93617usize,
+        "HelloUltraviolet::Reference::Lowering",
+        "runLoweringLayoutAndABIReference",
+        "Source/Reference/Lowering/LayoutAndABI.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "def.24.AddrOfSym",
         93630usize,
         "HelloUltraviolet::Reference::Lowering",
         "runLoweringLayoutAndABIReference",
@@ -620,8 +197,431 @@ public procedure validatedCommonLoweringProgramLifecycleAndBackendInitialization
         count = count + 1usize
     }
     if acceptedObligationEntryMatches(
+        "def.24.StaticType",
+        93643usize,
+        "HelloUltraviolet::Reference::Lowering",
+        "runLoweringLayoutAndABIReference",
+        "Source/Reference/Lowering/LayoutAndABI.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "def.24.StaticBindInfo",
+        93656usize,
+        "HelloUltraviolet::Reference::Lowering",
+        "runLoweringLayoutAndABIReference",
+        "Source/Reference/Lowering/LayoutAndABI.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "def.24.SeqIRList",
+        93669usize,
+        "HelloUltraviolet::Reference::Lowering",
+        "runLoweringLayoutAndABIReference",
+        "Source/Reference/Lowering/LayoutAndABI.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "def.24.StaticStoreIR",
+        93683usize,
+        "HelloUltraviolet::Reference::Lowering",
+        "runLoweringLayoutAndABIReference",
+        "Source/Reference/Lowering/LayoutAndABI.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "rule.24.Lower-StaticInit-Item",
+        93697usize,
+        "HelloUltraviolet::Reference::Lowering",
+        "runLoweringLayoutAndABIReference",
+        "Source/Reference/Lowering/LayoutAndABI.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "rule.24.Lower-StaticInitItems-Empty",
+        93713usize,
+        "HelloUltraviolet::Reference::Lowering",
+        "runLoweringLayoutAndABIReference",
+        "Source/Reference/Lowering/LayoutAndABI.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "rule.24.Lower-StaticInitItems-Cons",
+        93728usize,
+        "HelloUltraviolet::Reference::Lowering",
+        "runLoweringLayoutAndABIReference",
+        "Source/Reference/Lowering/LayoutAndABI.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "rule.24.Lower-StaticInit",
+        93744usize,
+        "HelloUltraviolet::Reference::Lowering",
+        "runLoweringLayoutAndABIReference",
+        "Source/Reference/Lowering/LayoutAndABI.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "rule.24.InitCallIR",
+        93760usize,
+        "HelloUltraviolet::Reference::Lowering",
+        "runLoweringLayoutAndABIReference",
+        "Source/Reference/Lowering/LayoutAndABI.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "def.24.Rev",
+        93776usize,
+        "HelloUltraviolet::Reference::Lowering",
+        "runLoweringLayoutAndABIReference",
+        "Source/Reference/Lowering/LayoutAndABI.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "rule.24.Lower-StaticDeinitNames-Empty",
+        93790usize,
+        "HelloUltraviolet::Reference::Lowering",
+        "runLoweringLayoutAndABIReference",
+        "Source/Reference/Lowering/LayoutAndABI.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "rule.24.Lower-StaticDeinitNames-Cons-Resp",
+        93805usize,
+        "HelloUltraviolet::Reference::Lowering",
+        "runLoweringLayoutAndABIReference",
+        "Source/Reference/Lowering/LayoutAndABI.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "rule.24.Lower-StaticDeinitNames-Cons-NoResp",
+        93821usize,
+        "HelloUltraviolet::Reference::Lowering",
+        "runLoweringLayoutAndABIReference",
+        "Source/Reference/Lowering/LayoutAndABI.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "rule.24.Lower-StaticDeinit-Item",
+        93837usize,
+        "HelloUltraviolet::Reference::Lowering",
+        "runLoweringLayoutAndABIReference",
+        "Source/Reference/Lowering/LayoutAndABI.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "rule.24.Lower-StaticDeinitItems-Empty",
+        93853usize,
+        "HelloUltraviolet::Reference::Lowering",
+        "runLoweringLayoutAndABIReference",
+        "Source/Reference/Lowering/LayoutAndABI.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "rule.24.Lower-StaticDeinitItems-Cons",
+        93868usize,
+        "HelloUltraviolet::Reference::Lowering",
+        "runLoweringLayoutAndABIReference",
+        "Source/Reference/Lowering/LayoutAndABI.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "rule.24.Lower-StaticDeinit",
+        93884usize,
+        "HelloUltraviolet::Reference::Lowering",
+        "runLoweringLayoutAndABIReference",
+        "Source/Reference/Lowering/LayoutAndABI.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "rule.24.DeinitCallIR",
+        93900usize,
+        "HelloUltraviolet::Reference::Lowering",
+        "runLoweringLayoutAndABIReference",
+        "Source/Reference/Lowering/LayoutAndABI.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "def.24.HostedStateAddressDefinitions",
+        93916usize,
+        "HelloUltraviolet::Reference::Lowering",
+        "runLoweringLayoutAndABIReference",
+        "Source/Reference/Lowering/LayoutAndABI.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "def.24.LibraryStateSymbolDefinitions",
+        93931usize,
+        "HelloUltraviolet::Reference::Lowering",
+        "runLoweringLayoutAndABIReference",
+        "Source/Reference/Lowering/LayoutAndABI.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "def.24.HostedStateJudg",
+        93947usize,
+        "HelloUltraviolet::Reference::Lowering",
+        "runLoweringLayoutAndABIReference",
+        "Source/Reference/Lowering/LayoutAndABI.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "req.24.SessionStateInitDefinesHostedCells",
+        93960usize,
+        "HelloUltraviolet::Reference::Lowering",
+        "runLoweringLayoutAndABIReference",
+        "Source/Reference/Lowering/LayoutAndABI.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "req.24.SessionStateDestroyRemovesHostedCells",
+        93973usize,
+        "HelloUltraviolet::Reference::Lowering",
+        "runLoweringLayoutAndABIReference",
+        "Source/Reference/Lowering/LayoutAndABI.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "req.24.HostedLibraryStateAddressInterpretation",
+        93986usize,
+        "HelloUltraviolet::Reference::Lowering",
+        "runLoweringLayoutAndABIReference",
+        "Source/Reference/Lowering/LayoutAndABI.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "def.24.InitializationGraphOrdering",
+        94003usize,
+        "HelloUltraviolet::Reference::Lowering",
+        "runLoweringLayoutAndABIReference",
+        "Source/Reference/Lowering/LayoutAndABI.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "rule.24.Topo-Ok",
+        94022usize,
+        "HelloUltraviolet::Reference::Lowering",
+        "runLoweringLayoutAndABIReference",
+        "Source/Reference/Lowering/LayoutAndABI.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "rule.24.Topo-Cycle",
+        94038usize,
+        "HelloUltraviolet::Reference::Lowering",
+        "runLoweringLayoutAndABIReference",
+        "Source/Reference/Lowering/LayoutAndABI.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "def.24.ProjectInitializationItems",
+        94054usize,
+        "HelloUltraviolet::Reference::Lowering",
+        "runLoweringLayoutAndABIReference",
+        "Source/Reference/Lowering/LayoutAndABI.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "def.24.InitializationPlanDefinitions",
+        94070usize,
+        "HelloUltraviolet::Reference::Lowering",
+        "runLoweringLayoutAndABIReference",
+        "Source/Reference/Lowering/LayoutAndABI.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "def.24.EvalFromEvalSigma",
+        94092usize,
+        "HelloUltraviolet::Reference::Lowering",
+        "runLoweringLayoutAndABIReference",
+        "Source/Reference/Lowering/LayoutAndABI.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "rule.24.EmitInitPlan",
+        94106usize,
+        "HelloUltraviolet::Reference::Lowering",
+        "runLoweringLayoutAndABIReference",
+        "Source/Reference/Lowering/LayoutAndABI.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "rule.24.EmitInitPlan-Err",
+        94122usize,
+        "HelloUltraviolet::Reference::Lowering",
+        "runLoweringLayoutAndABIReference",
+        "Source/Reference/Lowering/LayoutAndABI.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "rule.24.EmitDeinitPlan",
+        94138usize,
+        "HelloUltraviolet::Reference::Lowering",
+        "runLoweringLayoutAndABIReference",
+        "Source/Reference/Lowering/LayoutAndABI.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "rule.24.EmitDeinitPlan-Err",
+        94154usize,
+        "HelloUltraviolet::Reference::Lowering",
+        "runLoweringLayoutAndABIReference",
+        "Source/Reference/Lowering/LayoutAndABI.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "def.24.InitStateMachineDefinitions",
+        94170usize,
+        "HelloUltraviolet::Reference::Lowering",
+        "runLoweringLayoutAndABIReference",
+        "Source/Reference/Lowering/LayoutAndABI.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "rule.24.Init-Start",
+        94185usize,
+        "HelloUltraviolet::Reference::Lowering",
+        "runLoweringLayoutAndABIReference",
+        "Source/Reference/Lowering/LayoutAndABI.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "rule.24.Init-Step",
+        94200usize,
+        "HelloUltraviolet::Reference::Lowering",
+        "runLoweringLayoutAndABIReference",
+        "Source/Reference/Lowering/LayoutAndABI.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "rule.24.Init-Next-Module",
+        94216usize,
+        "HelloUltraviolet::Reference::Lowering",
+        "runLoweringLayoutAndABIReference",
+        "Source/Reference/Lowering/LayoutAndABI.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "rule.24.Init-Panic",
+        94232usize,
+        "HelloUltraviolet::Reference::Lowering",
+        "runLoweringLayoutAndABIReference",
+        "Source/Reference/Lowering/LayoutAndABI.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "rule.24.Init-Done",
+        94248usize,
+        "HelloUltraviolet::Reference::Lowering",
+        "runLoweringLayoutAndABIReference",
+        "Source/Reference/Lowering/LayoutAndABI.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "rule.24.Init-Ok",
+        94264usize,
+        "HelloUltraviolet::Reference::Lowering",
+        "runLoweringLayoutAndABIReference",
+        "Source/Reference/Lowering/LayoutAndABI.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "rule.24.Init-Fail",
+        94280usize,
+        "HelloUltraviolet::Reference::Lowering",
+        "runLoweringLayoutAndABIReference",
+        "Source/Reference/Lowering/LayoutAndABI.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "rule.24.Deinit-Ok",
+        94296usize,
+        "HelloUltraviolet::Reference::Lowering",
+        "runLoweringLayoutAndABIReference",
+        "Source/Reference/Lowering/LayoutAndABI.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "rule.24.Deinit-Panic",
+        94312usize,
+        "HelloUltraviolet::Reference::Lowering",
+        "runLoweringLayoutAndABIReference",
+        "Source/Reference/Lowering/LayoutAndABI.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "def.24.EntryJudg",
+        94330usize,
+        "HelloUltraviolet::Reference::Lowering",
+        "runLoweringLayoutAndABIReference",
+        "Source/Reference/Lowering/LayoutAndABI.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "rule.24.EntrySym-Decl",
+        94343usize,
+        "HelloUltraviolet::Reference::Lowering",
+        "runLoweringLayoutAndABIReference",
+        "Source/Reference/Lowering/LayoutAndABI.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "rule.24.ContextInitSym-Decl",
+        94358usize,
+        "HelloUltraviolet::Reference::Lowering",
+        "runLoweringLayoutAndABIReference",
+        "Source/Reference/Lowering/LayoutAndABI.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
         "def.24.ProcessInvocationNormalization",
-        93645usize,
+        94373usize,
         "HelloUltraviolet::Reference::Lowering",
         "runLoweringLayoutAndABIReference",
         "Source/Reference/Lowering/LayoutAndABI.uv"
@@ -630,7 +630,7 @@ public procedure validatedCommonLoweringProgramLifecycleAndBackendInitialization
     }
     if acceptedObligationEntryMatches(
         "req.24.ProcessInvocationPlatformIsolation",
-        93664usize,
+        94392usize,
         "HelloUltraviolet::Reference::Lowering",
         "runLoweringLayoutAndABIReference",
         "Source/Reference/Lowering/LayoutAndABI.uv"
@@ -639,7 +639,7 @@ public procedure validatedCommonLoweringProgramLifecycleAndBackendInitialization
     }
     if acceptedObligationEntryMatches(
         "def.24.PanicRecordInit",
-        93680usize,
+        94408usize,
         "HelloUltraviolet::Reference::Lowering",
         "runLoweringLayoutAndABIReference",
         "Source/Reference/Lowering/LayoutAndABI.uv"
@@ -648,7 +648,7 @@ public procedure validatedCommonLoweringProgramLifecycleAndBackendInitialization
     }
     if acceptedObligationEntryMatches(
         "def.24.EntryStubSpec",
-        93693usize,
+        94421usize,
         "HelloUltraviolet::Reference::Lowering",
         "runLoweringLayoutAndABIReference",
         "Source/Reference/Lowering/LayoutAndABI.uv"
@@ -657,7 +657,7 @@ public procedure validatedCommonLoweringProgramLifecycleAndBackendInitialization
     }
     if acceptedObligationEntryMatches(
         "rule.24.EntryStub-Decl",
-        93711usize,
+        94439usize,
         "HelloUltraviolet::Reference::Lowering",
         "runLoweringLayoutAndABIReference",
         "Source/Reference/Lowering/LayoutAndABI.uv"
@@ -666,7 +666,7 @@ public procedure validatedCommonLoweringProgramLifecycleAndBackendInitialization
     }
     if acceptedObligationEntryMatches(
         "rule.24.EntrySym-Err",
-        93727usize,
+        94455usize,
         "HelloUltraviolet::Reference::Lowering",
         "runLoweringLayoutAndABIReference",
         "Source/Reference/Lowering/LayoutAndABI.uv"
@@ -675,7 +675,7 @@ public procedure validatedCommonLoweringProgramLifecycleAndBackendInitialization
     }
     if acceptedObligationEntryMatches(
         "rule.24.EntryStub-Err",
-        93743usize,
+        94471usize,
         "HelloUltraviolet::Reference::Lowering",
         "runLoweringLayoutAndABIReference",
         "Source/Reference/Lowering/LayoutAndABI.uv"
@@ -684,7 +684,7 @@ public procedure validatedCommonLoweringProgramLifecycleAndBackendInitialization
     }
     if acceptedObligationEntryMatches(
         "def.24.LibraryImageJudg",
-        93761usize,
+        94489usize,
         "HelloUltraviolet::Reference::Lowering",
         "runLoweringLayoutAndABIReference",
         "Source/Reference/Lowering/LayoutAndABI.uv"
@@ -693,7 +693,7 @@ public procedure validatedCommonLoweringProgramLifecycleAndBackendInitialization
     }
     if acceptedObligationEntryMatches(
         "def.24.LibraryImageStateDefinitions",
-        93774usize,
+        94502usize,
         "HelloUltraviolet::Reference::Lowering",
         "runLoweringLayoutAndABIReference",
         "Source/Reference/Lowering/LayoutAndABI.uv"
@@ -702,7 +702,7 @@ public procedure validatedCommonLoweringProgramLifecycleAndBackendInitialization
     }
     if acceptedObligationEntryMatches(
         "req.24.DistinctLibraryImageState",
-        93794usize,
+        94522usize,
         "HelloUltraviolet::Reference::Lowering",
         "runLoweringLayoutAndABIReference",
         "Source/Reference/Lowering/LayoutAndABI.uv"
@@ -711,7 +711,7 @@ public procedure validatedCommonLoweringProgramLifecycleAndBackendInitialization
     }
     if acceptedObligationEntryMatches(
         "req.24.LibraryImageLivenessTransitions",
-        93807usize,
+        94535usize,
         "HelloUltraviolet::Reference::Lowering",
         "runLoweringLayoutAndABIReference",
         "Source/Reference/Lowering/LayoutAndABI.uv"
@@ -720,7 +720,7 @@ public procedure validatedCommonLoweringProgramLifecycleAndBackendInitialization
     }
     if acceptedObligationEntryMatches(
         "req.24.LibraryImageInitDefinesSharedCells",
-        93820usize,
+        94548usize,
         "HelloUltraviolet::Reference::Lowering",
         "runLoweringLayoutAndABIReference",
         "Source/Reference/Lowering/LayoutAndABI.uv"
@@ -729,7 +729,7 @@ public procedure validatedCommonLoweringProgramLifecycleAndBackendInitialization
     }
     if acceptedObligationEntryMatches(
         "req.24.LibraryImageDestroyRemovesSharedCells",
-        93833usize,
+        94561usize,
         "HelloUltraviolet::Reference::Lowering",
         "runLoweringLayoutAndABIReference",
         "Source/Reference/Lowering/LayoutAndABI.uv"
@@ -738,7 +738,7 @@ public procedure validatedCommonLoweringProgramLifecycleAndBackendInitialization
     }
     if acceptedObligationEntryMatches(
         "req.24.SharedLibraryImageStateInterpretation",
-        93846usize,
+        94574usize,
         "HelloUltraviolet::Reference::Lowering",
         "runLoweringLayoutAndABIReference",
         "Source/Reference/Lowering/LayoutAndABI.uv"
@@ -747,7 +747,7 @@ public procedure validatedCommonLoweringProgramLifecycleAndBackendInitialization
     }
     if acceptedObligationEntryMatches(
         "req.24.PartialInitPanicCleanupPrefix",
-        93859usize,
+        94587usize,
         "HelloUltraviolet::Reference::Lowering",
         "runLoweringLayoutAndABIReference",
         "Source/Reference/Lowering/LayoutAndABI.uv"
@@ -756,7 +756,7 @@ public procedure validatedCommonLoweringProgramLifecycleAndBackendInitialization
     }
     if acceptedObligationEntryMatches(
         "req.24.RawExportImageLifecycle",
-        93872usize,
+        94600usize,
         "HelloUltraviolet::Reference::Lowering",
         "runLoweringLayoutAndABIReference",
         "Source/Reference/Lowering/LayoutAndABI.uv"
@@ -765,7 +765,7 @@ public procedure validatedCommonLoweringProgramLifecycleAndBackendInitialization
     }
     if acceptedObligationEntryMatches(
         "req.24.SharedLibraryLinkedCallImageLifecycle",
-        93885usize,
+        94613usize,
         "HelloUltraviolet::Reference::Lowering",
         "runLoweringLayoutAndABIReference",
         "Source/Reference/Lowering/LayoutAndABI.uv"
@@ -774,7 +774,7 @@ public procedure validatedCommonLoweringProgramLifecycleAndBackendInitialization
     }
     if acceptedObligationEntryMatches(
         "req.24.SharedLibraryLoaderEntrypoint",
-        93898usize,
+        94626usize,
         "HelloUltraviolet::Reference::Lowering",
         "runLoweringLayoutAndABIReference",
         "Source/Reference/Lowering/LayoutAndABI.uv"
@@ -783,7 +783,7 @@ public procedure validatedCommonLoweringProgramLifecycleAndBackendInitialization
     }
     if acceptedObligationEntryMatches(
         "rule.24.LibraryImageInitSigma",
-        93911usize,
+        94639usize,
         "HelloUltraviolet::Reference::Lowering",
         "runLoweringLayoutAndABIReference",
         "Source/Reference/Lowering/LayoutAndABI.uv"
@@ -792,7 +792,7 @@ public procedure validatedCommonLoweringProgramLifecycleAndBackendInitialization
     }
     if acceptedObligationEntryMatches(
         "rule.24.RawLibraryCallSigma-Ok",
-        93927usize,
+        94655usize,
         "HelloUltraviolet::Reference::Lowering",
         "runLoweringLayoutAndABIReference",
         "Source/Reference/Lowering/LayoutAndABI.uv"
@@ -801,7 +801,7 @@ public procedure validatedCommonLoweringProgramLifecycleAndBackendInitialization
     }
     if acceptedObligationEntryMatches(
         "rule.24.LibraryImageDestroySigma",
-        93943usize,
+        94671usize,
         "HelloUltraviolet::Reference::Lowering",
         "runLoweringLayoutAndABIReference",
         "Source/Reference/Lowering/LayoutAndABI.uv"
@@ -810,7 +810,7 @@ public procedure validatedCommonLoweringProgramLifecycleAndBackendInitialization
     }
     if acceptedObligationEntryMatches(
         "def.24.HostedSessionJudg",
-        93959usize,
+        94687usize,
         "HelloUltraviolet::Reference::Lowering",
         "runLoweringLayoutAndABIReference",
         "Source/Reference/Lowering/LayoutAndABI.uv"
@@ -819,7 +819,7 @@ public procedure validatedCommonLoweringProgramLifecycleAndBackendInitialization
     }
     if acceptedObligationEntryMatches(
         "def.24.HostedSessionStateDefinitions",
-        93972usize,
+        94700usize,
         "HelloUltraviolet::Reference::Lowering",
         "runLoweringLayoutAndABIReference",
         "Source/Reference/Lowering/LayoutAndABI.uv"
@@ -828,7 +828,7 @@ public procedure validatedCommonLoweringProgramLifecycleAndBackendInitialization
     }
     if acceptedObligationEntryMatches(
         "req.24.DistinctHostedState",
-        93994usize,
+        94722usize,
         "HelloUltraviolet::Reference::Lowering",
         "runLoweringLayoutAndABIReference",
         "Source/Reference/Lowering/LayoutAndABI.uv"
@@ -837,7 +837,7 @@ public procedure validatedCommonLoweringProgramLifecycleAndBackendInitialization
     }
     if acceptedObligationEntryMatches(
         "req.24.HostedSessionLifecycleState",
-        94007usize,
+        94735usize,
         "HelloUltraviolet::Reference::Lowering",
         "runLoweringLayoutAndABIReference",
         "Source/Reference/Lowering/LayoutAndABI.uv"
@@ -846,7 +846,7 @@ public procedure validatedCommonLoweringProgramLifecycleAndBackendInitialization
     }
     if acceptedObligationEntryMatches(
         "req.24.HostedSessionNoConcurrentReentry",
-        94020usize,
+        94748usize,
         "HelloUltraviolet::Reference::Lowering",
         "runLoweringLayoutAndABIReference",
         "Source/Reference/Lowering/LayoutAndABI.uv"
@@ -855,7 +855,7 @@ public procedure validatedCommonLoweringProgramLifecycleAndBackendInitialization
     }
     if acceptedObligationEntryMatches(
         "rule.24.HostSessionInitSigma",
-        94033usize,
+        94761usize,
         "HelloUltraviolet::Reference::Lowering",
         "runLoweringLayoutAndABIReference",
         "Source/Reference/Lowering/LayoutAndABI.uv"
@@ -864,7 +864,7 @@ public procedure validatedCommonLoweringProgramLifecycleAndBackendInitialization
     }
     if acceptedObligationEntryMatches(
         "rule.24.HostedCallSigma-Ok",
-        94049usize,
+        94777usize,
         "HelloUltraviolet::Reference::Lowering",
         "runLoweringLayoutAndABIReference",
         "Source/Reference/Lowering/LayoutAndABI.uv"
@@ -873,7 +873,7 @@ public procedure validatedCommonLoweringProgramLifecycleAndBackendInitialization
     }
     if acceptedObligationEntryMatches(
         "rule.24.HostSessionDestroySigma",
-        94065usize,
+        94793usize,
         "HelloUltraviolet::Reference::Lowering",
         "runLoweringLayoutAndABIReference",
         "Source/Reference/Lowering/LayoutAndABI.uv"
@@ -882,7 +882,7 @@ public procedure validatedCommonLoweringProgramLifecycleAndBackendInitialization
     }
     if acceptedObligationEntryMatches(
         "def.24.InterpJudg",
-        94083usize,
+        94811usize,
         "HelloUltraviolet::Reference::Lowering",
         "runLoweringLayoutAndABIReference",
         "Source/Reference/Lowering/LayoutAndABI.uv"
@@ -891,7 +891,7 @@ public procedure validatedCommonLoweringProgramLifecycleAndBackendInitialization
     }
     if acceptedObligationEntryMatches(
         "def.24.ContextValue",
-        94096usize,
+        94824usize,
         "HelloUltraviolet::Reference::Lowering",
         "runLoweringLayoutAndABIReference",
         "Source/Reference/Lowering/LayoutAndABI.uv"
@@ -900,7 +900,7 @@ public procedure validatedCommonLoweringProgramLifecycleAndBackendInitialization
     }
     if acceptedObligationEntryMatches(
         "rule.24.ContextInitSigma",
-        94109usize,
+        94837usize,
         "HelloUltraviolet::Reference::Lowering",
         "runLoweringLayoutAndABIReference",
         "Source/Reference/Lowering/LayoutAndABI.uv"
@@ -909,7 +909,7 @@ public procedure validatedCommonLoweringProgramLifecycleAndBackendInitialization
     }
     if acceptedObligationEntryMatches(
         "rule.24.Interpret-Project-Ok",
-        94125usize,
+        94853usize,
         "HelloUltraviolet::Reference::Lowering",
         "runLoweringLayoutAndABIReference",
         "Source/Reference/Lowering/LayoutAndABI.uv"
@@ -918,7 +918,7 @@ public procedure validatedCommonLoweringProgramLifecycleAndBackendInitialization
     }
     if acceptedObligationEntryMatches(
         "rule.24.Interpret-Project-Init-Panic",
-        94141usize,
+        94869usize,
         "HelloUltraviolet::Reference::Lowering",
         "runLoweringLayoutAndABIReference",
         "Source/Reference/Lowering/LayoutAndABI.uv"
@@ -927,7 +927,7 @@ public procedure validatedCommonLoweringProgramLifecycleAndBackendInitialization
     }
     if acceptedObligationEntryMatches(
         "rule.24.Interpret-Project-Main-Ctrl",
-        94157usize,
+        94885usize,
         "HelloUltraviolet::Reference::Lowering",
         "runLoweringLayoutAndABIReference",
         "Source/Reference/Lowering/LayoutAndABI.uv"
@@ -936,7 +936,7 @@ public procedure validatedCommonLoweringProgramLifecycleAndBackendInitialization
     }
     if acceptedObligationEntryMatches(
         "rule.24.Interpret-Project-Deinit-Panic",
-        94173usize,
+        94901usize,
         "HelloUltraviolet::Reference::Lowering",
         "runLoweringLayoutAndABIReference",
         "Source/Reference/Lowering/LayoutAndABI.uv"

@@ -31,6 +31,7 @@
 #include "04_analysis/caps/cap_heap.h"
 #include "04_analysis/caps/cap_network.h"
 #include "04_analysis/caps/cap_system.h"
+#include "04_analysis/caps/cap_time.h"
 #include "04_analysis/composite/classes.h"
 #include "04_analysis/composite/record_methods.h"
 #include "04_analysis/generics/generic_params.h"
@@ -1683,6 +1684,30 @@ ExprTypeResult TypeMethodCallExprImpl(const ScopeContext& ctx,
     }
     if (IsNetworkClassPath(dyn->path)) {
       const auto sig = LookupNetworkMethodSig(expr.name);
+      if (sig.has_value()) {
+        if (handle_cap_method(sig->recv_perm, sig->params, sig->ret)) {
+          return result;
+        }
+      }
+    }
+    if (IsTimeClassPath(dyn->path)) {
+      const auto sig = LookupTimeMethodSig(expr.name);
+      if (sig.has_value()) {
+        if (handle_cap_method(sig->recv_perm, sig->params, sig->ret)) {
+          return result;
+        }
+      }
+    }
+    if (IsMonotonicTimeClassPath(dyn->path)) {
+      const auto sig = LookupMonotonicTimeMethodSig(expr.name);
+      if (sig.has_value()) {
+        if (handle_cap_method(sig->recv_perm, sig->params, sig->ret)) {
+          return result;
+        }
+      }
+    }
+    if (IsWallTimeClassPath(dyn->path)) {
+      const auto sig = LookupWallTimeMethodSig(expr.name);
       if (sig.has_value()) {
         if (handle_cap_method(sig->recv_perm, sig->params, sig->ret)) {
           return result;

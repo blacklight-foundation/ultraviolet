@@ -129,11 +129,6 @@ analysis::TypeRef InferParallelCollectedType(const ast::Expr& expr,
 LowerResult LowerBlock(const ast::Block& block, LowerCtx& ctx) {
   // Push a new scope for this block
   ctx.PushScope(false, false);
-  ctx.RegisterRuntimeScopeExit();
-  IRPtr scope_enter_ir = EmptyIR();
-  if (const auto scope_id = ctx.CurrentRuntimeScopeId()) {
-    scope_enter_ir = EmitRuntimeScopeEnter(*scope_id, ctx);
-  }
   ParallelCollectScope collect_scope(ctx);
 
   // Lower all statements
@@ -170,6 +165,13 @@ LowerResult LowerBlock(const ast::Block& block, LowerCtx& ctx) {
   }
 
   // Section 6.8: Emit cleanup for variables in this scope
+  IRPtr scope_enter_ir = EmptyIR();
+  ctx.RegisterRuntimeScopeExitIfRequired();
+  if (ctx.CurrentScopeRequiresRuntime()) {
+    if (const auto scope_id = ctx.CurrentRuntimeScopeId()) {
+      scope_enter_ir = EmitRuntimeScopeEnter(*scope_id, ctx);
+    }
+  }
   CleanupPlan cleanup_plan = ComputeCleanupPlanForCurrentScope(ctx);
   CleanupPlan remainder =
       ComputeCleanupPlanRemainder(CleanupTarget::CurrentScope, ctx);

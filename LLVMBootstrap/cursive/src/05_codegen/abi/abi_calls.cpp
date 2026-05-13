@@ -58,6 +58,7 @@
 #include "04_analysis/caps/cap_heap.h"
 #include "04_analysis/caps/cap_network.h"
 #include "04_analysis/caps/cap_system.h"
+#include "04_analysis/caps/cap_time.h"
 #include "04_analysis/modal/builtin_modal_intrinsics.h"
 #include "04_analysis/modal/modal.h"
 #include "04_analysis/typing/types.h"
@@ -445,7 +446,10 @@ bool IsBuiltinCapClass(const analysis::TypePath& class_path) {
          analysis::IsNetworkClassPath(cap_class) ||
          analysis::IsHeapAllocatorClassPath(cap_class) ||
          analysis::IsExecutionDomainClassPath(cap_class) ||
-         analysis::IsReactorClassPath(cap_class);
+         analysis::IsReactorClassPath(cap_class) ||
+         analysis::IsTimeClassPath(cap_class) ||
+         analysis::IsMonotonicTimeClassPath(cap_class) ||
+         analysis::IsWallTimeClassPath(cap_class);
 }
 
 bool IsBuiltinCapClass(std::string_view class_name) {
@@ -481,6 +485,36 @@ std::optional<std::string> BuiltinMethodSym(const analysis::TypePath& cap_path,
   if (analysis::IsNetworkClassPath(cap_class)) {
     const std::string sym =
         BuiltinSym(std::string("Network::") + std::string(name));
+    if (sym.empty()) {
+      return std::nullopt;
+    }
+    return sym;
+  }
+
+  if (analysis::IsTimeClassPath(cap_class)) {
+    SPEC_RULE("BuiltinMethodSym-Time");
+    const std::string sym =
+        BuiltinSym(std::string("Time::") + std::string(name));
+    if (sym.empty()) {
+      return std::nullopt;
+    }
+    return sym;
+  }
+
+  if (analysis::IsMonotonicTimeClassPath(cap_class)) {
+    SPEC_RULE("BuiltinMethodSym-MonotonicTime");
+    const std::string sym =
+        BuiltinSym(std::string("MonotonicTime::") + std::string(name));
+    if (sym.empty()) {
+      return std::nullopt;
+    }
+    return sym;
+  }
+
+  if (analysis::IsWallTimeClassPath(cap_class)) {
+    SPEC_RULE("BuiltinMethodSym-WallTime");
+    const std::string sym =
+        BuiltinSym(std::string("WallTime::") + std::string(name));
     if (sym.empty()) {
       return std::nullopt;
     }

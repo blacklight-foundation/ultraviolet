@@ -1,0 +1,13 @@
+//! Rejected derive specimen for unmet derive `emits` contracts.
+
+internal class EmittedDeriveClass {
+}
+
+derive target EmitsRequiredClass(target: Type) |: emits EmittedDeriveClass {
+    let reflected = target
+}
+
+[[derive(EmitsRequiredClass)]]
+public record DeriveMissingEmittedClassReference {
+    public value: i32
+}

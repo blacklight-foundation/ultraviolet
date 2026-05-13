@@ -84,6 +84,7 @@ IRPtr LowerRegionStmt(const ast::RegionStmt& stmt, LowerCtx& ctx) {
   // Region statements correspond to RegionNew, so enter the runtime scope
   // before opening the region. This lets Region::new_scoped observe the
   // pushed scope as CurrentScopeId(sigma).
+  ctx.RequireCurrentRuntimeScope();
   ctx.RegisterRuntimeScopeExit();
   IRPtr scope_enter_ir = EmptyIR();
   if (const auto scope_id = ctx.CurrentRuntimeScopeId()) {

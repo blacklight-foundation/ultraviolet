@@ -827,6 +827,105 @@ using namespace emit_detail;
         }
         return type;
       };
+      auto tuple_type_for_value = [&](const IRValue &value) -> analysis::TypeRef
+      {
+        analysis::TypeRef type = lookup_value_type(value);
+        if (!type)
+        {
+          return nullptr;
+        }
+        if (analysis::TypeRef stripped = analysis::StripPerm(type))
+        {
+          type = stripped;
+        }
+        if (const auto *raw = std::get_if<analysis::TypeRawPtr>(&type->node))
+        {
+          type = analysis::StripPerm(raw->element);
+        }
+        else if (const auto *ptr = std::get_if<analysis::TypePtr>(&type->node))
+        {
+          type = analysis::StripPerm(ptr->element);
+        }
+        if (!type)
+        {
+          return nullptr;
+        }
+        if (analysis::TypeRef resolved = ResolveAliasTypeInScope(scope, type))
+        {
+          type = analysis::StripPerm(resolved);
+          if (!type)
+          {
+            type = resolved;
+          }
+        }
+        return type && std::holds_alternative<analysis::TypeTuple>(type->node)
+                   ? type
+                   : nullptr;
+      };
+      auto addressable_aggregate_value = [&](llvm::Value *value) -> llvm::Value *
+      {
+        if (!value)
+        {
+          return nullptr;
+        }
+        if (llvm::Value *ptr = pointer_from_value(value))
+        {
+          return ptr;
+        }
+        llvm::Function *current_fn =
+            builder->GetInsertBlock() ? builder->GetInsertBlock()->getParent() : nullptr;
+        if (!current_fn)
+        {
+          return nullptr;
+        }
+        llvm::IRBuilder<> entry_builder(
+            &current_fn->getEntryBlock(),
+            current_fn->getEntryBlock().begin());
+        llvm::AllocaInst *slot = entry_builder.CreateAlloca(value->getType());
+        builder->CreateStore(value, slot);
+        return slot;
+      };
+      auto load_tuple_element_by_offset =
+          [&](llvm::Value *base,
+              const analysis::TypeTuple &tuple,
+              std::size_t tuple_index) -> llvm::Value *
+      {
+        if (tuple_index >= tuple.elements.size())
+        {
+          return nullptr;
+        }
+        const auto layout =
+            ::cursive::analysis::layout::RecordLayoutOf(scope, tuple.elements);
+        if (!layout.has_value() || tuple_index >= layout->offsets.size())
+        {
+          return nullptr;
+        }
+        llvm::Type *elem_ll = GetLLVMType(tuple.elements[tuple_index]);
+        if (!elem_ll || elem_ll->isVoidTy())
+        {
+          return nullptr;
+        }
+        llvm::Value *base_ptr = addressable_aggregate_value(base);
+        if (!base_ptr)
+        {
+          return nullptr;
+        }
+        llvm::Value *base_i8 = builder->CreateBitCast(
+            base_ptr,
+            llvm::PointerType::get(llvm::Type::getInt8Ty(context_), 0));
+        llvm::Value *field_i8 = builder->CreateGEP(
+            llvm::Type::getInt8Ty(context_),
+            base_i8,
+            llvm::ConstantInt::get(
+                llvm::Type::getInt64Ty(context_),
+                layout->offsets[tuple_index]));
+        llvm::Value *field_ptr = builder->CreateBitCast(
+            field_i8,
+            llvm::PointerType::get(elem_ll, 0));
+        llvm::LoadInst *load = builder->CreateLoad(elem_ll, field_ptr);
+        load->setAlignment(llvm::Align(1));
+        return load;
+      };
       struct MaterializedRangeValue
       {
         IRRangeKind kind = IRRangeKind::Full;
@@ -2261,7 +2360,19 @@ using namespace emit_detail;
       {
         llvm::Value *base = EvaluateIRValue(derived->base);
         const bool debug_tuple = core::IsDebugEnabled("obj");
-        if (auto *struct_ty = base ? llvm::dyn_cast<llvm::StructType>(base->getType()) : nullptr)
+        analysis::TypeRef tuple_type = tuple_type_for_value(derived->base);
+        const auto *tuple =
+            tuple_type ? std::get_if<analysis::TypeTuple>(&tuple_type->node) : nullptr;
+        if (tuple)
+        {
+          materialized =
+              load_tuple_element_by_offset(base, *tuple, derived->tuple_index);
+          if (!materialized && current_ctx_)
+          {
+            current_ctx_->ReportCodegenFailure();
+          }
+        }
+        else if (auto *struct_ty = base ? llvm::dyn_cast<llvm::StructType>(base->getType()) : nullptr)
         {
           if (derived->tuple_index < struct_ty->getNumElements())
           {
@@ -3628,10 +3739,109 @@ using namespace emit_detail;
         materialized = fat;
         break;
       }
+      case DerivedValueInfo::Kind::TupleLit:
+      {
+        analysis::TypeRef tuple_type = tuple_type_for_value(val);
+        const auto *tuple =
+            tuple_type ? std::get_if<analysis::TypeTuple>(&tuple_type->node) : nullptr;
+        llvm::Type *agg_ty = tuple_type ? GetLLVMType(tuple_type) : nullptr;
+        auto *struct_ty = llvm::dyn_cast_or_null<llvm::StructType>(agg_ty);
+        if (tuple && struct_ty)
+        {
+          const auto layout =
+              ::cursive::analysis::layout::RecordLayoutOf(scope, tuple->elements);
+          llvm::Function *current_fn =
+              builder->GetInsertBlock() ? builder->GetInsertBlock()->getParent() : nullptr;
+          if (layout.has_value() && current_fn &&
+              layout->offsets.size() >= tuple->elements.size())
+          {
+            llvm::IRBuilder<> entry_builder(
+                &current_fn->getEntryBlock(),
+                current_fn->getEntryBlock().begin());
+            llvm::AllocaInst *agg_slot = entry_builder.CreateAlloca(struct_ty);
+            builder->CreateStore(llvm::Constant::getNullValue(struct_ty), agg_slot);
+            llvm::Value *base_i8 = builder->CreateBitCast(
+                agg_slot,
+                llvm::PointerType::get(llvm::Type::getInt8Ty(context_), 0));
+            const std::size_t count =
+                std::min(derived->elements.size(), tuple->elements.size());
+            for (std::size_t i = 0; i < count; ++i)
+            {
+              llvm::Type *elem_ll = GetLLVMType(tuple->elements[i]);
+              if (!elem_ll || elem_ll->isVoidTy())
+              {
+                continue;
+              }
+              llvm::Value *elem = EvaluateIRValue(derived->elements[i]);
+              analysis::TypeRef source_type =
+                  lookup_value_type(derived->elements[i]);
+              elem = CoerceToTyped(*this,
+                                   builder,
+                                   elem,
+                                   elem_ll,
+                                   source_type,
+                                   tuple->elements[i]);
+              if (!elem)
+              {
+                elem = llvm::Constant::getNullValue(elem_ll);
+              }
+              llvm::Value *field_i8 = builder->CreateGEP(
+                  llvm::Type::getInt8Ty(context_),
+                  base_i8,
+                  llvm::ConstantInt::get(
+                      llvm::Type::getInt64Ty(context_),
+                      layout->offsets[i]));
+              llvm::Value *field_ptr = builder->CreateBitCast(
+                  field_i8,
+                  llvm::PointerType::get(elem_ll, 0));
+              llvm::StoreInst *store = builder->CreateStore(elem, field_ptr);
+              store->setAlignment(llvm::Align(1));
+            }
+            materialized = builder->CreateLoad(struct_ty, agg_slot);
+          }
+          if (!materialized && current_ctx_)
+          {
+            current_ctx_->ReportCodegenFailure();
+          }
+          break;
+        }
+
+        std::vector<llvm::Type *> inferred_elem_tys;
+        inferred_elem_tys.reserve(derived->elements.size());
+        for (const auto &elem_value : derived->elements)
+        {
+          llvm::Value *elem = EvaluateIRValue(elem_value);
+          inferred_elem_tys.push_back(
+              elem ? elem->getType() : llvm::Type::getInt64Ty(context_));
+        }
+        agg_ty = llvm::StructType::get(context_, inferred_elem_tys);
+        if (auto *fallback_struct = llvm::dyn_cast_or_null<llvm::StructType>(agg_ty))
+        {
+          llvm::Value *agg = llvm::Constant::getNullValue(fallback_struct);
+          for (std::size_t i = 0; i < derived->elements.size(); ++i)
+          {
+            if (i >= fallback_struct->getNumElements())
+            {
+              break;
+            }
+            llvm::Type *elem_ty =
+                fallback_struct->getElementType(static_cast<unsigned>(i));
+            llvm::Value *elem = EvaluateIRValue(derived->elements[i]);
+            elem = CoerceTo(builder, elem, elem_ty);
+            if (!elem)
+            {
+              elem = llvm::Constant::getNullValue(elem_ty);
+            }
+            agg = builder->CreateInsertValue(
+                agg, elem, {static_cast<unsigned>(i)});
+          }
+          materialized = agg;
+        }
+        break;
+      }
       case DerivedValueInfo::Kind::ArrayLit:
       case DerivedValueInfo::Kind::ArrayRepeat:
       case DerivedValueInfo::Kind::ArraySegments:
-      case DerivedValueInfo::Kind::TupleLit:
       {
         llvm::Type *agg_ty = nullptr;
         if (analysis::TypeRef ty = lookup_value_type(val))

@@ -3098,3 +3098,163 @@ public procedure gpuPtrDerefHostMemoryExpectedDiagnosticFileMatches(context: Con
         "//! Expected diagnostic metadata for the GpuPtrDerefHostMemory rejected-source specimen.\n\nexpectedDiagnostic(\"E-CON-0150\", \"rule.20.GpuPtr-Deref-Err\")\n"
     )
 }
+
+public procedure userDiagnosticErrorExpectedDiagnosticFileMatches(context: Context) -> bool {
+    return expectedDiagnosticFileMatches(
+        context,
+        "HelloUltraviolet/Fixtures/RejectedSource/Comptime/UserDiagnosticError/Expected.uv",
+        "//! Expected diagnostic metadata for the UserDiagnosticError rejected-source specimen.\n\nexpectedDiagnostic(\"E-CTE-0070\", \"rule.22.CtBuiltin-Diagnostics-Error\")\nexpectedDiagnostic(\"E-CTE-0070\", \"requirement.22.UserDiagnosticBuiltinEmission\")\n"
+    )
+}
+
+public procedure quoteOutsideComptimeExpectedDiagnosticFileMatches(context: Context) -> bool {
+    return expectedDiagnosticFileMatches(
+        context,
+        "HelloUltraviolet/Fixtures/RejectedSource/Comptime/QuoteOutsideComptime/Expected.uv",
+        "//! Expected diagnostic metadata for the QuoteOutsideComptime rejected-source specimen.\n\nexpectedDiagnostic(\"E-CTE-0221\", \"requirement.22.QuoteCompileTimeOnly\")\nexpectedDiagnostic(\"E-CTE-0221\", \"diagnostics.22.QuoteSpliceEmissionDiagnosticsReference\")\n"
+    )
+}
+
+public procedure invalidQuotedContentExpectedDiagnosticFileMatches(context: Context) -> bool {
+    return expectedDiagnosticFileMatches(
+        context,
+        "HelloUltraviolet/Fixtures/RejectedSource/Comptime/InvalidQuotedContent/Expected.uv",
+        "//! Expected diagnostic metadata for the InvalidQuotedContent rejected-source specimen.\n\nexpectedDiagnostic(\"E-CTE-0220\", \"requirement.22.QuotedContentValidity\")\n"
+    )
+}
+
+public procedure spliceTypeMismatchExpectedDiagnosticFileMatches(context: Context) -> bool {
+    return expectedDiagnosticFileMatches(
+        context,
+        "HelloUltraviolet/Fixtures/RejectedSource/Comptime/SpliceTypeMismatch/Expected.uv",
+        "//! Expected diagnostic metadata for the SpliceTypeMismatch rejected-source specimen.\n\nexpectedDiagnostic(\"E-CTE-0230\", \"requirement.22.SpliceContextAndTypeCompatibility\")\n"
+    )
+}
+
+public procedure spliceIdentifierStructuralNameExpectedDiagnosticFileMatches(
+    context: Context
+) -> bool {
+    return expectedDiagnosticFileMatches(
+        context,
+        "HelloUltraviolet/Fixtures/RejectedSource/Comptime/SpliceIdentifierStructuralName/Expected.uv",
+        "//! Expected diagnostic metadata for the SpliceIdentifierStructuralName rejected-source specimen.\n\nexpectedDiagnostic(\"E-CTE-0220\", \"requirement.22.SpliceIdentifierPositionRestrictions\")\n"
+    )
+}
+
+public procedure comptimeIfConditionTypeExpectedDiagnosticFileMatches(context: Context) -> bool {
+    return expectedDiagnosticFileMatches(
+        context,
+        "HelloUltraviolet/Fixtures/RejectedSource/Comptime/ComptimeIfConditionType/Expected.uv",
+        "//! Expected diagnostic metadata for the ComptimeIfConditionType rejected-source specimen.\n\nexpectedDiagnostic(\"E-CTE-0081\", \"diagnostics.22.CompileTimeFormsDiagnosticsReference\")\n"
+    )
+}
+
+public procedure runtimeCallsComptimeProcedureExpectedDiagnosticFileMatches(
+    context: Context
+) -> bool {
+    return expectedDiagnosticFileMatches(
+        context,
+        "HelloUltraviolet/Fixtures/RejectedSource/Comptime/RuntimeCallsComptimeProcedure/Expected.uv",
+        "//! Expected diagnostic metadata for the RuntimeCallsComptimeProcedure rejected-source specimen.\n\nexpectedDiagnostic(\"E-CTE-0034\", \"requirement.22.CompileTimeProcedureContextRestriction\")\n"
+    )
+}
+
+public procedure introspectFieldsNonRecordExpectedDiagnosticFileMatches(
+    context: Context
+) -> bool {
+    return expectedDiagnosticFileMatches(
+        context,
+        "HelloUltraviolet/Fixtures/RejectedSource/Comptime/IntrospectFieldsNonRecord/Expected.uv",
+        "//! Expected diagnostic metadata for the IntrospectFieldsNonRecord rejected-source specimen.\n\nexpectedDiagnostic(\"E-CTE-0050\", \"requirement.22.IntrospectMemberValidity\")\nexpectedDiagnostic(\"E-CTE-0050\", \"diagnostics.22.ReflectionDiagnosticsReference\")\n"
+    )
+}
+
+public procedure comptimePointerParameterExpectedDiagnosticFileMatches(
+    context: Context
+) -> bool {
+    return expectedDiagnosticFileMatches(
+        context,
+        "HelloUltraviolet/Fixtures/RejectedSource/Comptime/ComptimePointerParameter/Expected.uv",
+        "//! Expected diagnostic metadata for the ComptimePointerParameter rejected-source specimen.\n\nexpectedDiagnostic(\"E-CTE-0011\", \"requirement.22.CompileTimeTypeAvailabilityRejection\")\n"
+    )
+}
+
+public procedure comptimeProhibitedWaitExpectedDiagnosticFileMatches(
+    context: Context
+) -> bool {
+    return expectedDiagnosticFileMatches(
+        context,
+        "HelloUltraviolet/Fixtures/RejectedSource/Comptime/ComptimeProhibitedWait/Expected.uv",
+        "//! Expected diagnostic metadata for the ComptimeProhibitedWait rejected-source specimen.\n\nexpectedDiagnostic(\"E-CTE-0020\", \"requirement.22.CompileTimeProhibitedConstructs\")\n"
+    )
+}
+
+public procedure emitterEmitNonItemExpectedDiagnosticFileMatches(
+    context: Context
+) -> bool {
+    return expectedDiagnosticFileMatches(
+        context,
+        "HelloUltraviolet/Fixtures/RejectedSource/Comptime/EmitterEmitNonItem/Expected.uv",
+        "//! Expected diagnostic metadata for the EmitterEmitNonItem rejected-source specimen.\n\nexpectedDiagnostic(\"E-CTE-0251\", \"requirement.22.TypeEmitterEmitTypeRequirement\")\nexpectedDiagnostic(\"E-CTE-0251\", \"requirement.22.EmitterEmitWellFormedness\")\nexpectedDiagnostic(\"E-CTE-0251\", \"diagnostics.22.CompileTimeCapabilitiesDiagnosticsReference\")\n"
+    )
+}
+
+public procedure deriveOnProcedureExpectedDiagnosticFileMatches(
+    context: Context
+) -> bool {
+    return expectedDiagnosticFileMatches(
+        context,
+        "HelloUltraviolet/Fixtures/RejectedSource/Comptime/DeriveOnProcedure/Expected.uv",
+        "//! Expected diagnostic metadata for the DeriveOnProcedure rejected-source specimen.\n\nexpectedDiagnostic(\"E-CTE-0311\", \"requirement.22.DeriveAttributeTargetKinds\")\nexpectedDiagnostic(\"E-CTE-0311\", \"diagnostics.22.DeriveTargetsDiagnosticsReference\")\n"
+    )
+}
+
+public procedure unknownDeriveTargetExpectedDiagnosticFileMatches(
+    context: Context
+) -> bool {
+    return expectedDiagnosticFileMatches(
+        context,
+        "HelloUltraviolet/Fixtures/RejectedSource/Comptime/UnknownDeriveTarget/Expected.uv",
+        "//! Expected diagnostic metadata for the UnknownDeriveTarget rejected-source specimen.\n\nexpectedDiagnostic(\"E-CTE-0310\", \"requirement.22.DeriveTargetNameResolution\")\n"
+    )
+}
+
+public procedure deriveMissingRequiredClassExpectedDiagnosticFileMatches(
+    context: Context
+) -> bool {
+    return expectedDiagnosticFileMatches(
+        context,
+        "HelloUltraviolet/Fixtures/RejectedSource/Comptime/DeriveMissingRequiredClass/Expected.uv",
+        "//! Expected diagnostic metadata for the DeriveMissingRequiredClass rejected-source specimen.\n\nexpectedDiagnostic(\"E-CTE-0330\", \"requirement.22.DeriveRequiresValidation\")\n"
+    )
+}
+
+public procedure deriveMissingEmittedClassExpectedDiagnosticFileMatches(
+    context: Context
+) -> bool {
+    return expectedDiagnosticFileMatches(
+        context,
+        "HelloUltraviolet/Fixtures/RejectedSource/Comptime/DeriveMissingEmittedClass/Expected.uv",
+        "//! Expected diagnostic metadata for the DeriveMissingEmittedClass rejected-source specimen.\n\nexpectedDiagnostic(\"E-CTE-0331\", \"requirement.22.DeriveEmitsValidation\")\n"
+    )
+}
+
+public procedure deriveTargetUserErrorExpectedDiagnosticFileMatches(
+    context: Context
+) -> bool {
+    return expectedDiagnosticFileMatches(
+        context,
+        "HelloUltraviolet/Fixtures/RejectedSource/Comptime/DeriveTargetUserError/Expected.uv",
+        "//! Expected diagnostic metadata for the DeriveTargetUserError rejected-source specimen.\n\nexpectedDiagnostic(\"E-CTE-0070\", \"requirement.22.DeriveTargetFailureSemantics\")\n"
+    )
+}
+
+public procedure deriveTargetProhibitedWaitExpectedDiagnosticFileMatches(
+    context: Context
+) -> bool {
+    return expectedDiagnosticFileMatches(
+        context,
+        "HelloUltraviolet/Fixtures/RejectedSource/Comptime/DeriveTargetProhibitedWait/Expected.uv",
+        "//! Expected diagnostic metadata for the DeriveTargetProhibitedWait rejected-source specimen.\n\nexpectedDiagnostic(\"E-CTE-0320\", \"requirement.22.DeriveTargetBodyRestrictions\")\n"
+    )
+}

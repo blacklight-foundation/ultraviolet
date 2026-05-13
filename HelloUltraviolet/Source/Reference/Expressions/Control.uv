@@ -15,8 +15,13 @@ public procedure runExpressionsControlReference() -> bool {
             0
         }
     }
+    let type_test_value: i32 = if if_value is _: i32 {
+        2
+    } else {
+        0
+    }
     let loop_value: i32 = loop true {
         break case_value + 4
     }
-    return if_value == 10 && case_value == 1 && loop_value == 5
+    return if_value == 10 && case_value == 1 && type_test_value == 2 && loop_value == 5
 }

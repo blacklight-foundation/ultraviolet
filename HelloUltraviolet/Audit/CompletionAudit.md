@@ -31,10 +31,10 @@ Objective: execute `.agents/plans/HelloUltravioletReferenceCorpus.md`.
 - `CatalogSymbols.uv` imports and executes the 65 unique compiled reference
   symbols named by catalog rows, and `HelloUltraviolet.exe` validates them
   through `catalogCompiledSymbolsExecute()`.
-- `Source/Fixtures/RejectedSource` compiles metadata for 351 rejected-source
+- `Source/Fixtures/RejectedSource` compiles metadata for 368 rejected-source
   fixture specimens, and `HelloUltraviolet.exe` validates that fixture index
   through `rejectedSourceFixturesAreIndexed`.
-- The 351 rejected-source fixture projects under
+- The 368 rejected-source fixture projects under
   `HelloUltraviolet/Fixtures/RejectedSource` fail with their expected SPEC
   diagnostic code or static-rule diagnostic when built individually with
   `Cursive.exe build ... --check`.
@@ -44,10 +44,10 @@ Objective: execute `.agents/plans/HelloUltravioletReferenceCorpus.md`.
 - `HelloUltraviolet.exe` verifies runtime existence of each rejected fixture
   manifest, invalid source file, and `Expected.uv` artifact through
   `rejectedSourceFixtureArtifactsExist(context)`.
-- `ExpectedFiles.uv` reads the 351 current rejected-source `Expected.uv`
+- `ExpectedFiles.uv` reads the 368 current rejected-source `Expected.uv`
   artifacts and `HelloUltraviolet.exe` validates exact metadata content through
   one named check per specimen.
-- `Source/Fixtures/DiagnosticSource` compiles metadata for 19 diagnostic-source
+- `Source/Fixtures/DiagnosticSource` compiles metadata for 22 diagnostic-source
   fixture specimens whose source is expected to compile while emitting SPEC
   warnings or informational diagnostics, or while proving a SPEC diagnostic is
   absent, and `HelloUltraviolet.exe` validates the index, artifact paths, and
@@ -251,6 +251,85 @@ Objective: execute `.agents/plans/HelloUltravioletReferenceCorpus.md`.
   undefined dynamic/opaque class bounds resolve to `E-TYP-2509`, opaque
   interface misses resolve to `E-TYP-2510`, and method-level generic class
   methods make dynamic class casts reject with `E-TYP-2542`.
+- `Fixtures/RejectedSource/Comptime/UserDiagnosticError` rejects with
+  `E-CTE-0070`, exercising `diagnostics.error` user diagnostic emission during
+  Phase 2 and recording both the builtin rule and user-diagnostic emission
+  obligation in its expected metadata.
+- `Fixtures/RejectedSource/Comptime/QuoteOutsideComptime` rejects with
+  `E-CTE-0221`, exercising the requirement that quote forms are valid only in
+  compile-time contexts and the quote/splice diagnostic reference surface.
+- `Fixtures/RejectedSource/Comptime/InvalidQuotedContent` rejects with
+  `E-CTE-0220`, exercising quoted-content syntactic validity in the resolved
+  quote category.
+- `Fixtures/RejectedSource/Comptime/ComptimeIfConditionType` rejects with
+  `E-CTE-0081`, exercising the compile-time-form diagnostics reference through
+  a non-bool `comptime if` condition.
+- `Fixtures/RejectedSource/Comptime/RuntimeCallsComptimeProcedure` rejects
+  with `E-CTE-0034`, exercising the rule that compile-time procedures are only
+  callable from compile-time contexts. This required a bootstrap fix in
+  `rewrite.cpp` so Phase 2 reports the specific diagnostic before compile-time
+  procedure declarations are removed from the expanded module.
+- `Fixtures/RejectedSource/Comptime/IntrospectFieldsNonRecord` rejects with
+  `E-CTE-0050`, exercising the rule that `introspect.fields` is valid only
+  for reflectable record types and the reflection diagnostics reference. This
+  required a bootstrap fix in `reflect.cpp` so reflected enums, modals, and
+  records that fail the queried member-kind check emit the specific
+  `E-CTE-0050`, `E-CTE-0051`, or `E-CTE-0052` diagnostic instead of the
+  incomplete/non-reflectable declaration diagnostic.
+- `Fixtures/RejectedSource/Comptime/ComptimePointerParameter` rejects with
+  `E-CTE-0011`, exercising compile-time type availability rejection for a
+  pointer-bearing compile-time procedure parameter. This required a bootstrap
+  fix in `typecheck.cpp` and `compiler_main.cpp` so compile-time procedure
+  signatures are checked before Phase 2 erases compile-time procedure
+  declarations.
+- `Fixtures/RejectedSource/Comptime/ComptimeProhibitedWait` rejects with
+  `E-CTE-0020`, exercising the compile-time prohibited-construct rule with
+  `wait` inside a `comptime` statement. This required a bootstrap fix in
+  `rewrite.cpp` so Phase 2 expansion checks prohibited runtime constructs
+  before evaluating and erasing compile-time statements.
+- `Fixtures/RejectedSource/Comptime/EmitterEmitNonItem` rejects with
+  `E-CTE-0251`, exercising `TypeEmitter.emit` argument-kind requirements,
+  emission well-formedness, and compile-time capability diagnostics with a
+  `quote type` AST passed to `emitter~>emit`.
+- `Fixtures/RejectedSource/Comptime/DeriveOnProcedure` rejects with
+  `E-CTE-0311`, exercising the requirement that `[[derive(... )]]` is valid
+  only on record, enum, and modal declarations. This required a bootstrap fix
+  in `rewrite.cpp` so Phase 2 reports the derive target-kind diagnostic before
+  non-type derive attributes are stripped from runtime items.
+- `Fixtures/RejectedSource/Comptime/UnknownDeriveTarget` rejects with
+  `E-CTE-0310`, exercising derive target name resolution for a
+  `[[derive(... )]]` attribute whose target name has no visible derive target
+  declaration.
+- `Fixtures/RejectedSource/Comptime/DeriveMissingRequiredClass` rejects with
+  `E-CTE-0330`, exercising derive `requires` validation against the annotated
+  declaration's explicit class implementation list.
+- `Fixtures/RejectedSource/Comptime/DeriveMissingEmittedClass` rejects with
+  `E-CTE-0331`, exercising derive `emits` validation against the annotated
+  declaration's explicit class implementation list.
+- `Fixtures/RejectedSource/Comptime/DeriveTargetUserError` rejects with
+  `E-CTE-0070`, exercising derive target failure semantics when a derive target
+  body signals a compile-time user error.
+- `Fixtures/RejectedSource/Comptime/DeriveTargetProhibitedWait` rejects with
+  `E-CTE-0320`, exercising derive target body restrictions for prohibited
+  runtime constructs inside a derive target body. This required a bootstrap fix
+  in `derive.cpp` so derive execution reports the specific derive-body
+  diagnostic instead of a silent Phase 2 failure.
+- `Fixtures/DiagnosticSource/Comptime/UserDiagnosticWarning` compiles with
+  exit code 0 and emits `W-CTE-0071`, and
+  `Fixtures/DiagnosticSource/Comptime/UserDiagnosticNote` compiles with exit
+  code 0 while emitting the uncoded user note diagnostic. These exercise the
+  `diagnostics.warning` and `diagnostics.note` Phase 2 builtin forms.
+- `Fixtures/DiagnosticSource/Comptime/ProjectFilesInvalidPath` compiles with
+  exit code 0 and exercises `[[files]]` ProjectFiles path restrictions by
+  requiring an escaping path to return `IoError::InvalidPath`; the specimen
+  emits `E-CTE-0070` only if the invalid-path outcome is not observed.
+- `Fixtures/RejectedSource/Comptime/SpliceTypeMismatch` rejects with
+  `E-CTE-0230`, exercising quote splice context and type compatibility by
+  attempting to splice a compile-time integer expression into a type quote.
+- `Fixtures/RejectedSource/Comptime/SpliceIdentifierStructuralName` rejects
+  with `E-CTE-0220`, exercising the structural identifier restriction by
+  attempting to use an identifier splice as an item declaration name inside a
+  quote.
 - The bootstrap class-implementation checker now evaluates
   `def.ImplementationOrphanRule` for record, enum, and modal `implements`
   clauses in `CheckOrphanRule`, using the first module-path segment as the
@@ -297,12 +376,12 @@ Objective: execute `.agents/plans/HelloUltravioletReferenceCorpus.md`.
 ## Completion Blockers
 
 - Rejected-source and diagnostic-source fixtures are partially populated. The
-  current fixture set covers 351 rejected-source diagnostics and 19 compiling
+  current fixture set covers 368 rejected-source diagnostics and 22 compiling
   diagnostic-source warning/info/absence cases; the full expected-diagnostics
   obligation surface is not yet represented. Of the 382 expected-diagnostic
-  obligations, 33 remain uncovered by current expected-diagnostic metadata.
+  obligations, 6 remain uncovered by current expected-diagnostic metadata.
   Remaining uncovered expected-diagnostic ownership counts are:
-  compile-time 27, lowering 3, abstraction/polymorphism 2, statements 1.
+  lowering 3, abstraction/polymorphism 2, statements 1.
 - `Fixtures/BootstrapNonCompliance/Procedures/FreeProcedureOverloadResolution`
   now passes both semantic checking and the standalone library build after the
   bootstrap repair in `collect_toplevel.cpp` and `expr/call.cpp`. The

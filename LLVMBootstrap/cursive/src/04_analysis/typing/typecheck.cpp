@@ -973,4 +973,47 @@ TypecheckResult TypecheckModules(
   return result;
 }
 
+core::DiagnosticStream ValidateComptimeProcedureSignatures(
+    ScopeContext& ctx,
+    const std::vector<ast::ASTModule>& modules) {
+  core::DiagnosticStream diags;
+  NameMapBuildResult collected_name_maps = CollectNameMaps(ctx);
+  for (const auto& diag : collected_name_maps.diags) {
+    core::Emit(diags, diag);
+  }
+  if (core::HasError(diags)) {
+    return diags;
+  }
+
+  const Scope universe_scope = UniverseBindings();
+  for (const auto& module : modules) {
+    ctx.current_module = module.path;
+    Scope module_scope;
+    const auto map_it =
+        collected_name_maps.name_maps.find(PathKeyOf(module.path));
+    if (map_it != collected_name_maps.name_maps.end()) {
+      module_scope = map_it->second;
+    }
+    ctx.scopes = {Scope{}, std::move(module_scope), universe_scope};
+
+    for (const auto& item : module.items) {
+      const auto* node = std::get_if<ast::ComptimeProcedureDecl>(&item);
+      if (node == nullptr) {
+        continue;
+      }
+      if (const auto precheck =
+              ValidateComptimeProcedureSignatureTypes(ctx, *node)) {
+        const auto diag_span =
+            precheck->diag_span.has_value()
+                ? precheck->diag_span
+                : std::optional<core::Span>(node->span);
+        EmitDeclDiag(diags, precheck->diag_id, diag_span,
+                     precheck->diag_detail);
+      }
+    }
+  }
+
+  return diags;
+}
+
 }  // namespace cursive::analysis

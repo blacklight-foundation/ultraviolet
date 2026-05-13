@@ -180,7 +180,9 @@ void SeedAddrRefSyms(IRAddrOf& addr, std::vector<IRPtr> prereq_ir) {
 //   Lower-AddrOf-Deref-Raw
 // ============================================================================
 
-LowerResult LowerAddrOf(const ast::Expr& place, LowerCtx& ctx) {
+LowerResult LowerAddrOf(const ast::Expr& place,
+                        LowerCtx& ctx,
+                        AddressUseKind use_kind) {
   SPEC_RULE("Lower-AddrOf-Ident-Local");
   SPEC_RULE("Lower-AddrOf-Ident-Path");
   SPEC_RULE("Lower-AddrOf-Field");
@@ -210,6 +212,9 @@ LowerResult LowerAddrOf(const ast::Expr& place, LowerCtx& ctx) {
   };
 
   auto tag_from = [&](const IRValue& addr, const IRValue& base) -> IRPtr {
+    if (use_kind == AddressUseKind::TransientNoEscape) {
+      return EmptyIR();
+    }
     IRCall tag_call;
     tag_call.callee.kind = IRValue::Kind::Symbol;
     tag_call.callee.name = RuntimeBuiltinModalSymRegionAddrTagFrom();
@@ -274,10 +279,12 @@ LowerResult LowerAddrOf(const ast::Expr& place, LowerCtx& ctx) {
             }
 
             const bool should_tag_scope =
+                use_kind == AddressUseKind::RuntimeObservable &&
                 !tagged_from_origin &&
                 !state.preserve_addr_provenance &&
                 state.scope_runtime_id != 0;
             if (should_tag_scope) {
+              ctx.RequireRuntimeScope(state.scope_runtime_id);
               IRCall tag_scope;
               tag_scope.callee.kind = IRValue::Kind::Symbol;
               tag_scope.callee.name = RuntimeBuiltinModalSymRegionAddrTagScope();
@@ -378,7 +385,7 @@ LowerResult LowerAddrOf(const ast::Expr& place, LowerCtx& ctx) {
 
           return lower_static_address(std::move(full), std::move(resolved_name));
         } else if constexpr (std::is_same_v<T, ast::FieldAccessExpr>) {
-          auto base_result = LowerAddrOf(*node.base, ctx);
+          auto base_result = LowerAddrOf(*node.base, ctx, use_kind);
           IRAddrOf addr;
           addr.place = LowerPlace(place, ctx);
           IRValue ptr_value = ctx.FreshTempValue("addr_of");
@@ -398,7 +405,7 @@ LowerResult LowerAddrOf(const ast::Expr& place, LowerCtx& ctx) {
                                                       tag_ir}),
                              ptr_value};
         } else if constexpr (std::is_same_v<T, ast::TupleAccessExpr>) {
-          auto base_result = LowerAddrOf(*node.base, ctx);
+          auto base_result = LowerAddrOf(*node.base, ctx, use_kind);
           IRAddrOf addr;
           addr.place = LowerPlace(place, ctx);
           IRValue ptr_value = ctx.FreshTempValue("addr_of");
@@ -422,12 +429,12 @@ LowerResult LowerAddrOf(const ast::Expr& place, LowerCtx& ctx) {
           if (HasDynamicAttr(node.attrs)) {
             ctx.dynamic_checks = true;
           }
-          LowerResult out = node.expr ? LowerAddrOf(*node.expr, ctx)
+          LowerResult out = node.expr ? LowerAddrOf(*node.expr, ctx, use_kind)
                                       : LowerResult{EmptyIR(), ctx.FreshTempValue("addr_of_attr")};
           ctx.dynamic_checks = prev_dynamic;
           return out;
         } else if constexpr (std::is_same_v<T, ast::IndexAccessExpr>) {
-          auto base_result = LowerAddrOf(*node.base, ctx);
+          auto base_result = LowerAddrOf(*node.base, ctx, use_kind);
           IRValue ptr_value = ctx.FreshTempValue("addr_of");
           register_ptr_type(ptr_value);
 

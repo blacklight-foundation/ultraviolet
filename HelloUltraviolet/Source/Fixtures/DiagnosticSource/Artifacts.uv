@@ -127,5 +127,23 @@ public procedure diagnosticSourceFixtureArtifactsExist(context: Context) -> bool
             "HelloUltraviolet/Fixtures/DiagnosticSource/Parallelism/PanicHandlingNoAdditionalDiagnostics/Source/Main.uv",
             "HelloUltraviolet/Fixtures/DiagnosticSource/Parallelism/PanicHandlingNoAdditionalDiagnostics/Expected.uv"
         )
+    artifacts_exist = artifacts_exist && diagnosticFixtureArtifactsExist(
+            context,
+            "HelloUltraviolet/Fixtures/DiagnosticSource/Comptime/UserDiagnosticWarning/Ultraviolet.toml",
+            "HelloUltraviolet/Fixtures/DiagnosticSource/Comptime/UserDiagnosticWarning/Source/Main.uv",
+            "HelloUltraviolet/Fixtures/DiagnosticSource/Comptime/UserDiagnosticWarning/Expected.uv"
+        )
+    artifacts_exist = artifacts_exist && diagnosticFixtureArtifactsExist(
+            context,
+            "HelloUltraviolet/Fixtures/DiagnosticSource/Comptime/UserDiagnosticNote/Ultraviolet.toml",
+            "HelloUltraviolet/Fixtures/DiagnosticSource/Comptime/UserDiagnosticNote/Source/Main.uv",
+            "HelloUltraviolet/Fixtures/DiagnosticSource/Comptime/UserDiagnosticNote/Expected.uv"
+        )
+    artifacts_exist = artifacts_exist && diagnosticFixtureArtifactsExist(
+            context,
+            "HelloUltraviolet/Fixtures/DiagnosticSource/Comptime/ProjectFilesInvalidPath/Ultraviolet.toml",
+            "HelloUltraviolet/Fixtures/DiagnosticSource/Comptime/ProjectFilesInvalidPath/Source/Main.uv",
+            "HelloUltraviolet/Fixtures/DiagnosticSource/Comptime/ProjectFilesInvalidPath/Expected.uv"
+        )
     return artifacts_exist
 }

@@ -63,6 +63,8 @@ enum class RuntimeSymbolCategory {
   HeapAllocator,
   /// System capability
   System,
+  /// Time capability
+  Time,
   /// ExecutionDomain capability
   ExecutionDomain,
   /// CancelToken modal

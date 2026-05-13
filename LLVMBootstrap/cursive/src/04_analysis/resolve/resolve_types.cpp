@@ -27,6 +27,7 @@
 #include "04_analysis/caps/cap_filesystem.h"
 #include "04_analysis/caps/cap_heap.h"
 #include "04_analysis/caps/cap_network.h"
+#include "04_analysis/caps/cap_time.h"
 #include "04_analysis/language_service/facts.h"
 #include "04_analysis/typing/outcome.h"
 
@@ -101,6 +102,7 @@ ResTypePathResult ResolveTypePath(ResolveContext& ctx,
     if (IsGpuPtrPath(path) ||
         IsFileSystemBuiltinTypePath(path) ||
         IsHeapAllocatorBuiltinTypePath(path) ||
+        IsTimeBuiltinTypePath(path) ||
         IsOutcomeTypePath(path)) {
       SPEC_RULE("ResolveTypePath-Ident-Local");
       return {true, std::nullopt, std::nullopt, ast::TypePath{path[0]}};
@@ -154,6 +156,8 @@ ResClassPathResult ResolveClassPath(ResolveContext& ctx,
   if (path.size() == 1) {
     if (IsFileSystemClassPath(path) || IsNetworkClassPath(path) ||
         IsHeapAllocatorClassPath(path) ||
+        IsTimeClassPath(path) || IsMonotonicTimeClassPath(path) ||
+        IsWallTimeClassPath(path) ||
         IsFoundationalClassPath(path)) {
       SPEC_RULE("ResolveClassPath-Ident");
       return {true, std::nullopt, std::nullopt, ast::ClassPath{path[0]}};

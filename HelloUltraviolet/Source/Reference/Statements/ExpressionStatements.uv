@@ -4,8 +4,34 @@ public procedure expressionStatementValue(value: i32) -> i32 {
     return value + 1
 }
 
+internal procedure expressionStatementRunsBlockValue() -> i32 {
+    var value: i32 = 4
+    {
+        value = expressionStatementValue(value)
+    }
+    return value
+}
+
+internal procedure expressionStatementRunsNestedExpression() -> i32 {
+    var value: i32 = 7
+    {
+        expressionStatementValue(value)
+        value = expressionStatementValue(value)
+    }
+    return value
+}
+
+internal procedure expressionStatementPropagatesControl() -> i32 {
+    {
+        return expressionStatementValue(12)
+    }
+    return 0
+}
+
 /// Exercises the Statements ExpressionStatements reference surface.
 public procedure runStatementsExpressionStatementsReference() -> bool {
     expressionStatementValue(11)
-    return true
+    return expressionStatementRunsBlockValue() == 5 &&
+        expressionStatementRunsNestedExpression() == 8 &&
+        expressionStatementPropagatesControl() == 13
 }

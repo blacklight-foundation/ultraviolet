@@ -2,14 +2,14 @@
 
 
 public procedure countPatternsBasicPatternsObligations() -> usize {
-    return 23usize
+    return 30usize
 }
 
 public procedure validatedPatternsBasicPatternsObligations() -> usize {
     var count: usize = 0usize
     if acceptedObligationEntryMatches(
         "grammar.17.BasicPatterns",
-        64578usize,
+        65052usize,
         "HelloUltraviolet::Reference::Patterns",
         "runPatternsBasicPatternsReference",
         "Source/Reference/Patterns/BasicPatterns.uv"
@@ -18,7 +18,7 @@ public procedure validatedPatternsBasicPatternsObligations() -> usize {
     }
     if acceptedObligationEntryMatches(
         "rule.17.Parse-Pattern-Literal",
-        64595usize,
+        65070usize,
         "HelloUltraviolet::Reference::Patterns",
         "runPatternsBasicPatternsReference",
         "Source/Reference/Patterns/BasicPatterns.uv"
@@ -27,7 +27,7 @@ public procedure validatedPatternsBasicPatternsObligations() -> usize {
     }
     if acceptedObligationEntryMatches(
         "rule.17.Parse-Pattern-Wildcard",
-        64611usize,
+        65086usize,
         "HelloUltraviolet::Reference::Patterns",
         "runPatternsBasicPatternsReference",
         "Source/Reference/Patterns/BasicPatterns.uv"
@@ -36,7 +36,16 @@ public procedure validatedPatternsBasicPatternsObligations() -> usize {
     }
     if acceptedObligationEntryMatches(
         "rule.17.Parse-Pattern-Identifier",
-        64627usize,
+        65102usize,
+        "HelloUltraviolet::Reference::Patterns",
+        "runPatternsBasicPatternsReference",
+        "Source/Reference/Patterns/BasicPatterns.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "rule.17.Parse-Pattern-Typed",
+        65118usize,
         "HelloUltraviolet::Reference::Patterns",
         "runPatternsBasicPatternsReference",
         "Source/Reference/Patterns/BasicPatterns.uv"
@@ -45,7 +54,7 @@ public procedure validatedPatternsBasicPatternsObligations() -> usize {
     }
     if acceptedObligationEntryMatches(
         "def.17.PatternAstForms",
-        64645usize,
+        65136usize,
         "HelloUltraviolet::Reference::Patterns",
         "runPatternsBasicPatternsReference",
         "Source/Reference/Patterns/BasicPatterns.uv"
@@ -54,7 +63,7 @@ public procedure validatedPatternsBasicPatternsObligations() -> usize {
     }
     if acceptedObligationEntryMatches(
         "def.17.PatternJudgements",
-        64661usize,
+        65152usize,
         "HelloUltraviolet::Reference::Patterns",
         "runPatternsBasicPatternsReference",
         "Source/Reference/Patterns/BasicPatterns.uv"
@@ -63,7 +72,7 @@ public procedure validatedPatternsBasicPatternsObligations() -> usize {
     }
     if acceptedObligationEntryMatches(
         "def.17.PermWrap",
-        64674usize,
+        65165usize,
         "HelloUltraviolet::Reference::Patterns",
         "runPatternsBasicPatternsReference",
         "Source/Reference/Patterns/BasicPatterns.uv"
@@ -72,7 +81,7 @@ public procedure validatedPatternsBasicPatternsObligations() -> usize {
     }
     if acceptedObligationEntryMatches(
         "rule.17.Pat-StripPerm",
-        64689usize,
+        65180usize,
         "HelloUltraviolet::Reference::Patterns",
         "runPatternsBasicPatternsReference",
         "Source/Reference/Patterns/BasicPatterns.uv"
@@ -81,7 +90,7 @@ public procedure validatedPatternsBasicPatternsObligations() -> usize {
     }
     if acceptedObligationEntryMatches(
         "def.17.PatternNameExtractionJudgement",
-        64705usize,
+        65196usize,
         "HelloUltraviolet::Reference::Patterns",
         "runPatternsBasicPatternsReference",
         "Source/Reference/Patterns/BasicPatterns.uv"
@@ -90,7 +99,7 @@ public procedure validatedPatternsBasicPatternsObligations() -> usize {
     }
     if acceptedObligationEntryMatches(
         "rule.17.Pat-Ident-Names",
-        64718usize,
+        65209usize,
         "HelloUltraviolet::Reference::Patterns",
         "runPatternsBasicPatternsReference",
         "Source/Reference/Patterns/BasicPatterns.uv"
@@ -99,7 +108,7 @@ public procedure validatedPatternsBasicPatternsObligations() -> usize {
     }
     if acceptedObligationEntryMatches(
         "rule.17.Pat-Wild",
-        64732usize,
+        65223usize,
         "HelloUltraviolet::Reference::Patterns",
         "runPatternsBasicPatternsReference",
         "Source/Reference/Patterns/BasicPatterns.uv"
@@ -108,7 +117,25 @@ public procedure validatedPatternsBasicPatternsObligations() -> usize {
     }
     if acceptedObligationEntryMatches(
         "rule.17.Pat-Lit",
-        64747usize,
+        65238usize,
+        "HelloUltraviolet::Reference::Patterns",
+        "runPatternsBasicPatternsReference",
+        "Source/Reference/Patterns/BasicPatterns.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "rule.17.Pat-Typed-Discard",
+        65253usize,
+        "HelloUltraviolet::Reference::Patterns",
+        "runPatternsBasicPatternsReference",
+        "Source/Reference/Patterns/BasicPatterns.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "rule.17.Pat-Typed-Ident",
+        65268usize,
         "HelloUltraviolet::Reference::Patterns",
         "runPatternsBasicPatternsReference",
         "Source/Reference/Patterns/BasicPatterns.uv"
@@ -117,7 +144,7 @@ public procedure validatedPatternsBasicPatternsObligations() -> usize {
     }
     if acceptedObligationEntryMatches(
         "rule.17.Pat-Dup-R-Err",
-        64762usize,
+        65284usize,
         "HelloUltraviolet::Reference::Patterns",
         "runPatternsBasicPatternsReference",
         "Source/Reference/Patterns/BasicPatterns.uv"
@@ -126,7 +153,7 @@ public procedure validatedPatternsBasicPatternsObligations() -> usize {
     }
     if acceptedObligationEntryMatches(
         "rule.17.Pat-Wildcard-R",
-        64780usize,
+        65302usize,
         "HelloUltraviolet::Reference::Patterns",
         "runPatternsBasicPatternsReference",
         "Source/Reference/Patterns/BasicPatterns.uv"
@@ -135,7 +162,7 @@ public procedure validatedPatternsBasicPatternsObligations() -> usize {
     }
     if acceptedObligationEntryMatches(
         "rule.17.Pat-Ident-R",
-        64795usize,
+        65317usize,
         "HelloUltraviolet::Reference::Patterns",
         "runPatternsBasicPatternsReference",
         "Source/Reference/Patterns/BasicPatterns.uv"
@@ -144,7 +171,25 @@ public procedure validatedPatternsBasicPatternsObligations() -> usize {
     }
     if acceptedObligationEntryMatches(
         "rule.17.Pat-Literal-R",
-        64810usize,
+        65332usize,
+        "HelloUltraviolet::Reference::Patterns",
+        "runPatternsBasicPatternsReference",
+        "Source/Reference/Patterns/BasicPatterns.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "rule.17.Pat-Typed-Exact-R",
+        65348usize,
+        "HelloUltraviolet::Reference::Patterns",
+        "runPatternsBasicPatternsReference",
+        "Source/Reference/Patterns/BasicPatterns.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "rule.17.Pat-Typed-Union-R",
+        65364usize,
         "HelloUltraviolet::Reference::Patterns",
         "runPatternsBasicPatternsReference",
         "Source/Reference/Patterns/BasicPatterns.uv"
@@ -153,7 +198,7 @@ public procedure validatedPatternsBasicPatternsObligations() -> usize {
     }
     if acceptedObligationEntryMatches(
         "def.17.PatternBindingEnvironment",
-        64828usize,
+        65382usize,
         "HelloUltraviolet::Reference::Patterns",
         "runPatternsBasicPatternsReference",
         "Source/Reference/Patterns/BasicPatterns.uv"
@@ -162,7 +207,7 @@ public procedure validatedPatternsBasicPatternsObligations() -> usize {
     }
     if acceptedObligationEntryMatches(
         "def.17.PatternMatchingJudgementAndLiteralTypes",
-        64843usize,
+        65397usize,
         "HelloUltraviolet::Reference::Patterns",
         "runPatternsBasicPatternsReference",
         "Source/Reference/Patterns/BasicPatterns.uv"
@@ -171,7 +216,7 @@ public procedure validatedPatternsBasicPatternsObligations() -> usize {
     }
     if acceptedObligationEntryMatches(
         "rule.17.Match-Wildcard",
-        64865usize,
+        65419usize,
         "HelloUltraviolet::Reference::Patterns",
         "runPatternsBasicPatternsReference",
         "Source/Reference/Patterns/BasicPatterns.uv"
@@ -180,7 +225,7 @@ public procedure validatedPatternsBasicPatternsObligations() -> usize {
     }
     if acceptedObligationEntryMatches(
         "rule.17.Match-Ident",
-        64880usize,
+        65434usize,
         "HelloUltraviolet::Reference::Patterns",
         "runPatternsBasicPatternsReference",
         "Source/Reference/Patterns/BasicPatterns.uv"
@@ -189,7 +234,25 @@ public procedure validatedPatternsBasicPatternsObligations() -> usize {
     }
     if acceptedObligationEntryMatches(
         "rule.17.Match-Literal",
-        64895usize,
+        65449usize,
+        "HelloUltraviolet::Reference::Patterns",
+        "runPatternsBasicPatternsReference",
+        "Source/Reference/Patterns/BasicPatterns.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "rule.17.Match-Typed-Discard",
+        65465usize,
+        "HelloUltraviolet::Reference::Patterns",
+        "runPatternsBasicPatternsReference",
+        "Source/Reference/Patterns/BasicPatterns.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "rule.17.Match-Typed-Ident",
+        65481usize,
         "HelloUltraviolet::Reference::Patterns",
         "runPatternsBasicPatternsReference",
         "Source/Reference/Patterns/BasicPatterns.uv"
@@ -198,7 +261,7 @@ public procedure validatedPatternsBasicPatternsObligations() -> usize {
     }
     if acceptedObligationEntryMatches(
         "req.17.BasicPatternLoweringShared",
-        64913usize,
+        65499usize,
         "HelloUltraviolet::Reference::Patterns",
         "runPatternsBasicPatternsReference",
         "Source/Reference/Patterns/BasicPatterns.uv"
@@ -207,7 +270,7 @@ public procedure validatedPatternsBasicPatternsObligations() -> usize {
     }
     if acceptedObligationEntryMatches(
         "diag.17.BasicPatterns",
-        64928usize,
+        65514usize,
         "HelloUltraviolet::Reference::Patterns",
         "runPatternsBasicPatternsReference",
         "Source/Reference/Patterns/BasicPatterns.uv"

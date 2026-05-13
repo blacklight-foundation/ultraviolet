@@ -263,6 +263,7 @@ ast::RecordDecl BuildContextRecordDecl() {
       MakeField("heap", MakeTypeDynamicAst({"HeapAllocator"})),
       MakeField("sys", MakeTypePathAst({"System"})),
       MakeField("reactor", MakeTypeDynamicAst({"Reactor"})),
+      MakeField("time", MakeTypeDynamicAst({"Time"})),
   };
   record.span = core::Span{};
   record.doc = {};

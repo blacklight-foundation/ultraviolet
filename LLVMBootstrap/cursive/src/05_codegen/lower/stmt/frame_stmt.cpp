@@ -160,6 +160,7 @@ IRPtr LowerFrameStmt(const ast::FrameStmt& stmt, LowerCtx& ctx) {
 
   // Push a new scope for the frame
   ctx.PushScope(false, false);
+  ctx.RequireCurrentRuntimeScope();
   ctx.RegisterRuntimeScopeExit();
   IRPtr scope_enter_ir = EmptyIR();
   if (const auto scope_id = ctx.CurrentRuntimeScopeId()) {

@@ -1,21 +1,23 @@
 //! Coverage checks for diagnostic-source fixture metadata.
 
 public procedure expectedDiagnosticSourceFixtureCount() -> usize {
-    return 19usize
+    return 22usize
 }
 
 public procedure diagnosticSourceFixtureCount() -> usize {
     return expressionsDiagnosticSourceFixtureCount() +
         asyncDiagnosticSourceFixtureCount() +
         keysDiagnosticSourceFixtureCount() +
-        parallelismDiagnosticSourceFixtureCount()
+        parallelismDiagnosticSourceFixtureCount() +
+        comptimeDiagnosticSourceFixtureCount()
 }
 
 public procedure validatedDiagnosticSourceFixtureCount() -> usize {
     return validatedExpressionsDiagnosticSourceFixtureCount() +
         validatedAsyncDiagnosticSourceFixtureCount() +
         validatedKeysDiagnosticSourceFixtureCount() +
-        validatedParallelismDiagnosticSourceFixtureCount()
+        validatedParallelismDiagnosticSourceFixtureCount() +
+        validatedComptimeDiagnosticSourceFixtureCount()
 }
 
 public procedure diagnosticSourceFixturesAreIndexed() -> bool {

@@ -1525,7 +1525,7 @@ std::optional<EvalResult> EvalIntrospectMethod(const ast::MethodCallExpr& call,
     const auto target = ResolveReflectNominalTarget(env, *type);
     if (!target.has_value() || target->decl.kind != NamedDeclKind::Record ||
         target->decl.record == nullptr) {
-      EmitReflectionDeclDiag(env, ReflectionDiagSpan(call));
+      EmitComptimeDiag(env, "E-CTE-0050", ReflectionDiagSpan(call));
       return std::optional<EvalResult>{EvalResult{}};
     }
 
@@ -1557,7 +1557,7 @@ std::optional<EvalResult> EvalIntrospectMethod(const ast::MethodCallExpr& call,
     const auto target = ResolveReflectNominalTarget(env, *type);
     if (!target.has_value() || target->decl.kind != NamedDeclKind::Enum ||
         target->decl.enum_decl == nullptr) {
-      EmitReflectionDeclDiag(env, ReflectionDiagSpan(call));
+      EmitComptimeDiag(env, "E-CTE-0051", ReflectionDiagSpan(call));
       return std::optional<EvalResult>{EvalResult{}};
     }
 
@@ -1606,7 +1606,7 @@ std::optional<EvalResult> EvalIntrospectMethod(const ast::MethodCallExpr& call,
     const auto target = ResolveReflectNominalTarget(env, *type);
     if (!target.has_value() || target->decl.kind != NamedDeclKind::Modal ||
         target->decl.modal == nullptr) {
-      EmitReflectionDeclDiag(env, ReflectionDiagSpan(call));
+      EmitComptimeDiag(env, "E-CTE-0052", ReflectionDiagSpan(call));
       return std::optional<EvalResult>{EvalResult{}};
     }
 

@@ -1,5 +1,7 @@
 //! Reference specimens for Patterns / BasicPatterns.
 
+public type BasicPatternUnionReference = i32 | bool
+
 /// Exercises the Patterns BasicPatterns reference surface.
 public procedure runPatternsBasicPatternsReference() -> bool {
     let literal_hit: bool = if 7 is 7 {
@@ -17,5 +19,38 @@ public procedure runPatternsBasicPatternsReference() -> bool {
     } else {
         false
     }
-    return literal_hit && wildcard_hit && identifier_hit
+    let typed_discard_hit: bool = if 7 is _: i32 {
+        true
+    } else {
+        false
+    }
+    let typed_identifier_hit: bool = if 7 is typed_value: i32 {
+        typed_value == 7
+    } else {
+        false
+    }
+    let union_value: BasicPatternUnionReference = 9
+    let typed_union_hit: bool = if union_value is {
+        value: i32 {
+            value == 9
+        }
+        value: bool {
+            false
+        }
+    }
+    let typed_else_hit: bool = if union_value is {
+        value: bool {
+            false
+        }
+        else {
+            true
+        }
+    }
+    return literal_hit &&
+        wildcard_hit &&
+        identifier_hit &&
+        typed_discard_hit &&
+        typed_identifier_hit &&
+        typed_union_hit &&
+        typed_else_hit
 }

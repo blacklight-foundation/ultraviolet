@@ -86,6 +86,20 @@ std::string BuiltinSymSystemCurrentDirectory();
 std::string BuiltinSymSystemRun();
 
 // =============================================================================
+// Section 14.9 Time builtin symbols
+// =============================================================================
+
+std::string BuiltinSymTimeMonotonic();
+std::string BuiltinSymTimeWall();
+std::string BuiltinSymMonotonicTimeNow();
+std::string BuiltinSymMonotonicTimeResolution();
+std::string BuiltinSymMonotonicTimeElapsed();
+std::string BuiltinSymMonotonicTimeCoarsen();
+std::string BuiltinSymWallTimeNowUtc();
+std::string BuiltinSymWallTimeResolution();
+std::string BuiltinSymWallTimeCoarsen();
+
+// =============================================================================
 // Section 18.2 ExecutionDomain builtin symbols
 // =============================================================================
 
