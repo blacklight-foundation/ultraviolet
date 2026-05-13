@@ -124,31 +124,38 @@ static inline void SpecDefsTypeInfer() {
   SpecDefsSafePtr();
 }
 
-static const TypePathType* AsGpuPtrType(const TypeRef& type) {
+struct GpuPtrTypeView {
+  TypeRef pointee;
+  TypeRef address_space;
+};
+
+static std::optional<GpuPtrTypeView> AsGpuPtrType(const TypeRef& type) {
   const auto stripped = StripPerm(type);
-  const auto* path = stripped ? std::get_if<TypePathType>(&stripped->node)
-                              : nullptr;
-  if (!path || path->path != TypePath{"GpuPtr"} ||
-      path->generic_args.size() != 2) {
-    return nullptr;
+  if (!stripped) {
+    return std::nullopt;
   }
-  return path;
+  const TypePath* path = AppliedTypePath(*stripped);
+  const std::vector<TypeRef>* args = AppliedTypeArgs(*stripped);
+  if (!path || !args || *path != TypePath{"GpuPtr"} || args->size() != 2) {
+    return std::nullopt;
+  }
+  return GpuPtrTypeView{(*args)[0], (*args)[1]};
 }
 
 static bool IsGpuPtrAddrSpaceMismatch(const TypeRef& actual,
                                       const TypeRef& expected) {
-  const auto* actual_gpu = AsGpuPtrType(actual);
-  const auto* expected_gpu = AsGpuPtrType(expected);
-  if (!actual_gpu || !expected_gpu) {
+  const auto actual_gpu = AsGpuPtrType(actual);
+  const auto expected_gpu = AsGpuPtrType(expected);
+  if (!actual_gpu.has_value() || !expected_gpu.has_value()) {
     return false;
   }
   const auto pointee_eq =
-      TypeEquiv(actual_gpu->generic_args[0], expected_gpu->generic_args[0]);
+      TypeEquiv(actual_gpu->pointee, expected_gpu->pointee);
   if (!pointee_eq.ok || !pointee_eq.equiv) {
     return false;
   }
   const auto addr_space_eq =
-      TypeEquiv(actual_gpu->generic_args[1], expected_gpu->generic_args[1]);
+      TypeEquiv(actual_gpu->address_space, expected_gpu->address_space);
   return addr_space_eq.ok && !addr_space_eq.equiv;
 }
 
@@ -1842,7 +1849,7 @@ static CheckResult CheckExprImpl(const ScopeContext& ctx,
     }
     if (IsGpuPtrAddrSpaceMismatch(inferred.type, expected)) {
       SPEC_RULE("GpuPtr-AddrSpace-Err");
-      result.diag_id = "GpuPtr-AddrSpace-Err";
+      result.diag_id = "E-TYP-2641";
       return result;
     }
     TypeRef expected_norm = expected;

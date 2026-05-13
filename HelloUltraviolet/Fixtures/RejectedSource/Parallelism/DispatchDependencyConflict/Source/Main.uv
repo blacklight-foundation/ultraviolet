@@ -1,0 +1,14 @@
+//! Rejected structured-parallelism specimen for conflicting dispatch access schemas.
+
+public procedure dispatchDependencyConflictReference(
+    context: Context,
+    values: shared [i32],
+    offset: usize
+) -> () {
+    parallel context~>cpu() {
+        dispatch index in 0usize..4usize {
+            values[index] = index as i32
+            values[index + offset]
+        }
+    }
+}

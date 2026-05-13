@@ -594,7 +594,7 @@ ExprTypeResult TypeIfExpr(const ScopeContext& ctx,
     const bool else_has_barrier = ContainsGpuBarrierCall(expr.else_expr);
     if (then_has_barrier != else_has_barrier) {
       SPEC_RULE("Barrier-Divergence-Err");
-      result.diag_id = "Barrier-Divergence-Err";
+      result.diag_id = "E-CON-0158";
       return result;
     }
   }
@@ -708,7 +708,7 @@ CheckResult CheckIfExpr(const ScopeContext& ctx,
     const bool else_has_barrier = ContainsGpuBarrierCall(expr.else_expr);
     if (then_has_barrier != else_has_barrier) {
       SPEC_RULE("Barrier-Divergence-Err");
-      result.diag_id = "Barrier-Divergence-Err";
+      result.diag_id = "E-CON-0158";
       return result;
     }
   }

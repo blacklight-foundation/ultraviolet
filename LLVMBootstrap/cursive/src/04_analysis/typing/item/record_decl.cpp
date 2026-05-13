@@ -666,6 +666,12 @@ RecordDeclResult TypeRecordDecl(
       result.diag_id = "Superclass-Undefined";
       return result;
     }
+    if (!CheckOrphanRule(ctx, type_path, impl_path, CurrentModule(ctx))) {
+      SPEC_RULE("Impl-Orphan-Err");
+      result.ok = false;
+      result.diag_id = "E-TYP-2507";
+      return result;
+    }
     if (IsModalClass(class_it->second)) {
       SPEC_RULE("T-Modal-Class");
       result.ok = false;

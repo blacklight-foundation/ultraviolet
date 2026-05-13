@@ -1758,15 +1758,26 @@ static std::optional<std::string_view> GpuSafeDiagForTypeImpl(
           SPEC_RULE("ProhibitedGpuType");
           SPEC_RULE("GpuSafeType-Err");
           return std::optional<std::string_view>{"E-TYP-2640"};
-        } else if constexpr (std::is_same_v<T, TypePathType>) {
-          if (const auto* record = LookupRecordDecl(ctx, node.path)) {
-            ast::Path ast_path(node.path.begin(), node.path.end());
+        } else if constexpr (std::is_same_v<T, TypePathType> ||
+                             std::is_same_v<T, TypeApply>) {
+          const TypePath& applied_path = node.path;
+          const std::vector<TypeRef>& applied_args =
+              [&]() -> const std::vector<TypeRef>& {
+            if constexpr (std::is_same_v<T, TypePathType>) {
+              return node.generic_args;
+            } else {
+              return node.args;
+            }
+          }();
+
+          if (const auto* record = LookupRecordDecl(ctx, applied_path)) {
+            ast::Path ast_path(applied_path.begin(), applied_path.end());
             const auto key = PathKeyOf(ast_path);
             if (active_paths.find(key) != active_paths.end()) {
               return std::optional<std::string_view>{"E-TYP-2640"};
             }
             const auto args = ResolveDeclGenericArgs(
-                ctx, record->generic_params, node.generic_args);
+                ctx, record->generic_params, applied_args);
             if (!args.has_value()) {
               return std::optional<std::string_view>{"E-TYP-2640"};
             }
@@ -1776,14 +1787,14 @@ static std::optional<std::string_view> GpuSafeDiagForTypeImpl(
             active_paths.erase(key);
             return diag;
           }
-          if (const auto* enm = LookupEnumDecl(ctx, node.path)) {
-            ast::Path ast_path(node.path.begin(), node.path.end());
+          if (const auto* enm = LookupEnumDecl(ctx, applied_path)) {
+            ast::Path ast_path(applied_path.begin(), applied_path.end());
             const auto key = PathKeyOf(ast_path);
             if (active_paths.find(key) != active_paths.end()) {
               return std::optional<std::string_view>{"E-TYP-2640"};
             }
             const auto args = ResolveDeclGenericArgs(
-                ctx, enm->generic_params, node.generic_args);
+                ctx, enm->generic_params, applied_args);
             if (!args.has_value()) {
               return std::optional<std::string_view>{"E-TYP-2640"};
             }
@@ -1793,13 +1804,13 @@ static std::optional<std::string_view> GpuSafeDiagForTypeImpl(
             active_paths.erase(key);
             return diag;
           }
-          if (LookupModalDecl(ctx, node.path)) {
+          if (LookupModalDecl(ctx, applied_path)) {
             SPEC_RULE("ProhibitedGpuType");
             SPEC_RULE("GpuSafeType-Err");
             return std::optional<std::string_view>{"E-TYP-2640"};
           }
 
-          ast::Path ast_path(node.path.begin(), node.path.end());
+          ast::Path ast_path(applied_path.begin(), applied_path.end());
           const auto it = ctx.sigma.types.find(PathKeyOf(ast_path));
           if (it != ctx.sigma.types.end()) {
             if (const auto* alias = std::get_if<ast::TypeAliasDecl>(&it->second)) {
@@ -1811,7 +1822,7 @@ static std::optional<std::string_view> GpuSafeDiagForTypeImpl(
                 return std::optional<std::string_view>{"E-TYP-2640"};
               }
               const auto args = ResolveDeclGenericArgs(
-                  ctx, alias->generic_params, node.generic_args);
+                  ctx, alias->generic_params, applied_args);
               if (!args.has_value()) {
                 return std::optional<std::string_view>{"E-TYP-2640"};
               }

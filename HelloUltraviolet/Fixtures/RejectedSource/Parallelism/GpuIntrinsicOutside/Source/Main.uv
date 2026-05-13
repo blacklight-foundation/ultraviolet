@@ -1,0 +1,5 @@
+//! Rejected structured-parallelism specimen for GPU intrinsics outside GPU context.
+
+public procedure gpuIntrinsicOutsideReference() -> usize {
+    return gpu_linear_id()
+}

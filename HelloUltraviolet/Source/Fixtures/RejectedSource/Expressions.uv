@@ -1,7 +1,7 @@
 //! Rejected expression specimens.
 
 public procedure expressionsRejectedSourceFixtureCount() -> usize {
-    return 98usize
+    return 101usize
 }
 
 public procedure validatedExpressionsRejectedSourceFixtureCount() -> usize {
@@ -1210,6 +1210,57 @@ public procedure validatedExpressionsRejectedSourceFixtureCount() -> usize {
         "Fixtures/RejectedSource/Expressions/LoopAsyncEnclosingReturn/Expected.uv",
         "E-CON-0240",
         "rule.21.Loop-Async-Err"
+    ) {
+        count = count + 1usize
+    }
+    if rejectedSpecimenMatches(
+        rejectedSpecimen(
+            "AsyncCaptureOutlivesFrame",
+            "Fixtures/RejectedSource/Expressions/AsyncCaptureOutlivesFrame",
+            "Fixtures/RejectedSource/Expressions/AsyncCaptureOutlivesFrame/Source/Main.uv",
+            "Fixtures/RejectedSource/Expressions/AsyncCaptureOutlivesFrame/Expected.uv",
+            expectedDiagnostic("E-CON-0280", "rule.21.Async-Capture-Err")
+        ),
+        "AsyncCaptureOutlivesFrame",
+        "Fixtures/RejectedSource/Expressions/AsyncCaptureOutlivesFrame",
+        "Fixtures/RejectedSource/Expressions/AsyncCaptureOutlivesFrame/Source/Main.uv",
+        "Fixtures/RejectedSource/Expressions/AsyncCaptureOutlivesFrame/Expected.uv",
+        "E-CON-0280",
+        "rule.21.Async-Capture-Err"
+    ) {
+        count = count + 1usize
+    }
+    if rejectedSpecimenMatches(
+        rejectedSpecimen(
+            "AsyncOperationEscapesRegion",
+            "Fixtures/RejectedSource/Expressions/AsyncOperationEscapesRegion",
+            "Fixtures/RejectedSource/Expressions/AsyncOperationEscapesRegion/Source/Main.uv",
+            "Fixtures/RejectedSource/Expressions/AsyncOperationEscapesRegion/Expected.uv",
+            expectedDiagnostic("E-CON-0281", "rule.21.Prov-Async-Escape-Err")
+        ),
+        "AsyncOperationEscapesRegion",
+        "Fixtures/RejectedSource/Expressions/AsyncOperationEscapesRegion",
+        "Fixtures/RejectedSource/Expressions/AsyncOperationEscapesRegion/Source/Main.uv",
+        "Fixtures/RejectedSource/Expressions/AsyncOperationEscapesRegion/Expected.uv",
+        "E-CON-0281",
+        "rule.21.Prov-Async-Escape-Err"
+    ) {
+        count = count + 1usize
+    }
+    if rejectedSpecimenMatches(
+        rejectedSpecimen(
+            "AsyncDiagnosticsSupplement",
+            "Fixtures/RejectedSource/Expressions/AsyncDiagnosticsSupplement",
+            "Fixtures/RejectedSource/Expressions/AsyncDiagnosticsSupplement/Source/Main.uv",
+            "Fixtures/RejectedSource/Expressions/AsyncDiagnosticsSupplement/Expected.uv",
+            expectedDiagnostic("E-CON-0230", "diagnostics.21.AsyncDiagnosticsSupplement")
+        ),
+        "AsyncDiagnosticsSupplement",
+        "Fixtures/RejectedSource/Expressions/AsyncDiagnosticsSupplement",
+        "Fixtures/RejectedSource/Expressions/AsyncDiagnosticsSupplement/Source/Main.uv",
+        "Fixtures/RejectedSource/Expressions/AsyncDiagnosticsSupplement/Expected.uv",
+        "E-CON-0230",
+        "diagnostics.21.AsyncDiagnosticsSupplement"
     ) {
         count = count + 1usize
     }

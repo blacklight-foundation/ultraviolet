@@ -145,9 +145,12 @@ ProcedureDeclResult TypeDeriveTargetDeclBody(const ScopeContext& ctx,
     result.ok = false;
     result.diag_id = body_result.diag_id.has_value()
                          ? body_result.diag_id
-                         : std::optional<std::string_view>{"Stmt-Type-NoDiag"};
+                         : std::optional<std::string_view>{"E-TYP-1530"};
     result.diag_span = body_result.diag_span;
-    result.diag_detail = body_result.diag_detail;
+    result.diag_detail =
+        body_result.diag_detail.empty()
+            ? "procedure body typing failed without statement-level diagnostic"
+            : body_result.diag_detail;
   }
   return result;
 }

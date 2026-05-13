@@ -1,0 +1,15 @@
+//! Diagnostic async specimen for stale value marks across shared-capture suspension.
+
+public procedure staleValueMarkIRDiagnosticsReference() -> Async<i32, (), (), !> {
+    var shared_value: shared i32 = 1
+    let producer = || -> Async<i32, (), (), !> {
+        #shared_value read {
+            let observed_value = shared_value
+            yield release 1
+            let resumed_value = observed_value
+        }
+        return
+    }
+    producer()
+    return
+}

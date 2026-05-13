@@ -1,0 +1,7 @@
+//! Rejected structured-parallelism specimen for GPU workgroup size limits.
+
+public procedure parallelWorkgroupSizeReference(context: Context) -> i32 {
+    return parallel context~>gpu() [workgroup: (1025usize, 1usize, 1usize)] {
+        2
+    }
+}

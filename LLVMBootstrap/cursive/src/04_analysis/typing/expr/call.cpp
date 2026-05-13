@@ -1685,7 +1685,22 @@ static std::optional<std::string_view> ValidateProcedureTypeArgConstraints(
   return std::nullopt;
 }
 
-static std::optional<std::string_view> CollectCallArgTypesForInference(
+struct CallArgCollectionResult {
+  std::optional<std::string_view> diag_id;
+  std::optional<core::Span> diag_span;
+};
+
+static std::optional<core::Span> ArgDiagnosticSpan(const ast::Arg& arg) {
+  if (!arg.span.file.empty()) {
+    return arg.span;
+  }
+  if (arg.value) {
+    return arg.value->span;
+  }
+  return std::nullopt;
+}
+
+static CallArgCollectionResult CollectCallArgTypesForInference(
     const ScopeContext& ctx,
     const ast::ProcedureDecl& proc,
     const std::vector<ast::Arg>& args,
@@ -1695,7 +1710,7 @@ static std::optional<std::string_view> CollectCallArgTypesForInference(
     std::vector<TypeRef>& out_expected_param_types) {
   (void)ctx;
   if (proc.params.size() != args.size()) {
-    return "E-SEM-2532";
+    return {"E-SEM-2532", std::nullopt};
   }
 
   std::vector<TypeFuncParam> lowered_params;
@@ -1705,7 +1720,7 @@ static std::optional<std::string_view> CollectCallArgTypesForInference(
   for (const auto& param : proc.params) {
     const auto lowered = LowerType(ctx, param.type);
     if (!lowered.ok) {
-      return lowered.diag_id;
+      return {lowered.diag_id, std::nullopt};
     }
     lowered_params.push_back(TypeFuncParam{LowerParamMode(param.mode), lowered.type});
     out_expected_param_types.push_back(lowered.type);
@@ -1713,10 +1728,10 @@ static std::optional<std::string_view> CollectCallArgTypesForInference(
 
   for (std::size_t i = 0; i < args.size(); ++i) {
     if (MissingRequiredMoveForConsuming(lowered_params[i].mode, args[i])) {
-      return "E-SEM-2534";
+      return {"E-SEM-2534", ArgDiagnosticSpan(args[i])};
     }
     if (!lowered_params[i].mode.has_value() && args[i].moved) {
-      return "E-SEM-2535";
+      return {"E-SEM-2535", ArgDiagnosticSpan(args[i])};
     }
   }
 
@@ -1726,18 +1741,20 @@ static std::optional<std::string_view> CollectCallArgTypesForInference(
     if (!lowered_params[i].mode.has_value()) {
       const bool has_source_prov = HasSourceProvenance(args[i].value);
       if (has_source_prov && !IsPlaceExprForCall(args[i].value)) {
-        return "E-TYP-1603";
+        return {"E-TYP-1603", ArgDiagnosticSpan(args[i])};
       }
       if (has_source_prov && type_place) {
         const auto place = (*type_place)(args[i].value);
         if (!place.ok) {
-          return place.diag_id;
+          return {place.diag_id, ArgDiagnosticSpan(args[i])};
         }
         out_actual_arg_types.push_back(place.type);
       } else {
         const auto arg_type = type_expr(args[i].value);
         if (!arg_type.ok) {
-          return arg_type.diag_id;
+          return {arg_type.diag_id,
+                  arg_type.diag_span.has_value() ? arg_type.diag_span
+                                                 : ArgDiagnosticSpan(args[i])};
         }
         out_actual_arg_types.push_back(arg_type.type);
       }
@@ -1747,12 +1764,14 @@ static std::optional<std::string_view> CollectCallArgTypesForInference(
     const auto arg_expr = MovedArgExpr(args[i]);
     const auto arg_type = type_expr(arg_expr);
     if (!arg_type.ok) {
-      return arg_type.diag_id;
+      return {arg_type.diag_id,
+              arg_type.diag_span.has_value() ? arg_type.diag_span
+                                             : ArgDiagnosticSpan(args[i])};
     }
     out_actual_arg_types.push_back(arg_type.type);
   }
 
-  return std::nullopt;
+  return {};
 }
 
 static GenericCallSubstResult InferGenericCallSubstForProc(
@@ -1769,10 +1788,12 @@ static GenericCallSubstResult InferGenericCallSubstForProc(
 
   std::vector<TypeRef> actual_arg_types;
   std::vector<TypeRef> expected_param_types;
-  if (const auto diag = CollectCallArgTypesForInference(
-          ctx, proc, args, type_expr, type_place, actual_arg_types,
-          expected_param_types)) {
-    result.diag_id = *diag;
+  const auto arg_collection = CollectCallArgTypesForInference(
+      ctx, proc, args, type_expr, type_place, actual_arg_types,
+      expected_param_types);
+  if (arg_collection.diag_id) {
+    result.diag_id = arg_collection.diag_id;
+    result.diag_span = arg_collection.diag_span;
     return result;
   }
 
@@ -1783,6 +1804,9 @@ static GenericCallSubstResult InferGenericCallSubstForProc(
     if (!BindTypeParamsForCall(type_params, expected_param_types[i],
                                actual_arg_types[i], bindings)) {
       result.diag_id = "E-SEM-2533";
+      if (i < args.size()) {
+        result.diag_span = ArgDiagnosticSpan(args[i]);
+      }
       return result;
     }
   }
@@ -2929,7 +2953,7 @@ ExprTypeResult TypeCallExprImpl(const ScopeContext& ctx,
       ExprTypeResult r;
       if (IsGpuBarrierName(*callee_name)) {
         SPEC_RULE("Barrier-Outside-Err");
-        r.diag_id = "Barrier-Outside-Err";
+        r.diag_id = "E-CON-0156";
       } else {
         SPEC_RULE("GpuIntrinsic-Outside-Err");
         r.diag_id = "E-CON-0154";
@@ -3036,6 +3060,7 @@ ExprTypeResult TypeCallExprImpl(const ScopeContext& ctx,
     if (!call.ok) {
       r.diag_id = call.diag_id;
       r.diag_detail = call.diag_detail;
+      r.diag_span = call.diag_span;
       return r;
     }
     if (type_ctx.require_pure) {
@@ -3087,6 +3112,7 @@ ExprTypeResult TypeCallExprImpl(const ScopeContext& ctx,
     ExprTypeResult r;
     if (!inferred.ok) {
       r.diag_id = inferred.diag_id.value_or("E-SEM-2533");
+      r.diag_span = inferred.diag_span;
       return r;
     }
     const auto call = TypeCallWithSubst(ctx, node.callee, node.args, inferred.subst,
@@ -3094,6 +3120,7 @@ ExprTypeResult TypeCallExprImpl(const ScopeContext& ctx,
     if (!call.ok) {
       r.diag_id = call.diag_id;
       r.diag_detail = call.diag_detail;
+      r.diag_span = call.diag_span;
       return r;
     }
     if (type_ctx.require_pure) {
@@ -3143,6 +3170,7 @@ ExprTypeResult TypeCallExprImpl(const ScopeContext& ctx,
   if (!call.ok) {
     r.diag_id = call.diag_id;
     r.diag_detail = call.diag_detail;
+    r.diag_span = call.diag_span;
     return r;
   }
   if (type_ctx.require_pure) {

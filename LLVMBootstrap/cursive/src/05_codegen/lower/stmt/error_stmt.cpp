@@ -34,6 +34,7 @@ namespace cursive::codegen {
 //
 IRPtr LowerErrorStmt(const ast::ErrorStmt& /*stmt*/, LowerCtx& ctx) {
   SPEC_RULE("Lower-Stmt-Error");
+  ctx.codegen_failed = true;
 
   // Error statements emit a panic with the ErrorStmt reason
   return LowerPanic(PanicReason::ErrorStmt, ctx);

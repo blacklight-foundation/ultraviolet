@@ -1,0 +1,17 @@
+//! Rejected async specimen for captured binding provenance shorter than the async frame.
+
+public procedure acceptsRegionValue(value: i32) -> Async<(), (), i32, !> {
+    return value
+}
+
+public procedure asyncCaptureOutlivesFrameReference() -> i32 {
+    region {
+        frame {
+            region {
+                let region_value: i32 = ^1
+                let operation: Async<(), (), i32, !> = acceptsRegionValue(region_value)
+            }
+        }
+    }
+    return 0
+}

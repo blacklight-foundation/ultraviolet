@@ -1,0 +1,9 @@
+//! Rejected structured-parallelism specimen for nested GPU parallel blocks.
+
+public procedure nestedGpuParallelReference(context: Context) -> i32 {
+    return parallel context~>gpu() {
+        parallel context~>gpu() {
+            2
+        }
+    }
+}

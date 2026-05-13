@@ -1,0 +1,9 @@
+//! Rejected structured-parallelism specimen for host pointer dereference in GPU code.
+
+public procedure gpuPtrDerefHostMemoryReference(context: Context, pointer: *mut i32) -> i32 {
+    return parallel context~>gpu() {
+        unsafe {
+            *pointer
+        }
+    }
+}

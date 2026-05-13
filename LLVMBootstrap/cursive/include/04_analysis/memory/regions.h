@@ -87,7 +87,8 @@ ProvCheckResult ProvBindCheck(const ScopeContext& ctx,
                               const ast::ModulePath& module_path,
                               const std::vector<ast::Param>& params,
                               const std::shared_ptr<ast::Block>& body,
-                              const std::optional<BindSelfParam>& self_param);
+                              const std::optional<BindSelfParam>& self_param,
+                              core::DiagnosticStream* diags = nullptr);
 
 // Debug-only profiling summary for provenance checks.
 void LogProvenancePerfSummary();

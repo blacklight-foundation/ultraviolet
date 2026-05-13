@@ -1,0 +1,10 @@
+//! Rejected structured-parallelism specimen for key blocks in GPU contexts.
+
+public procedure keyBlockGpuContextReference(context: Context) -> i32 {
+    var shared_value: shared i32 = 1
+    return parallel context~>gpu() {
+        #shared_value read {
+        }
+        0
+    }
+}

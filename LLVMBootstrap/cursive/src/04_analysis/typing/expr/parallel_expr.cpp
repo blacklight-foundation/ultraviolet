@@ -234,10 +234,15 @@ static bool IsCancelTokenType(const TypeRef& type) {
     return false;
   }
 
-  // Spec rule BlockOptOk(Cancel(e)) requires TypePath(["CancelToken"]),
-  // not a state-qualified CancelToken@S value.
   if (const auto* path = std::get_if<TypePathType>(&stripped->node)) {
     if (IsCancelTokenTypePath(path->path)) {
+      return true;
+    }
+  }
+
+  if (const auto* modal = std::get_if<TypeModalState>(&stripped->node)) {
+    if (IsCancelTokenTypePath(modal->path) &&
+        IsValidCancelTokenState(modal->state)) {
       return true;
     }
   }
@@ -431,7 +436,7 @@ ExprTypeResult TypeParallelExpr(const ScopeContext& ctx,
 
   if (GpuContext(env) && gpu_domain) {
     SPEC_RULE("T-GPU-Nested-Err");
-    result.diag_id = "T-GPU-Nested-Err";
+    result.diag_id = "E-CON-0152";
     return result;
   }
 

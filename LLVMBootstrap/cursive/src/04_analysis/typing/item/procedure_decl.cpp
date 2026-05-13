@@ -2132,7 +2132,7 @@ ProcedureDeclResult TypeProcedureDecl(
     if (!body_result.ok) {
       const auto diag_id = body_result.diag_id.has_value()
                                ? body_result.diag_id
-                               : std::optional<std::string_view>{"Stmt-Type-NoDiag"};
+                               : std::optional<std::string_view>{"E-TYP-1530"};
       if (core::IsDebugEnabled("sema") || core::IsDebugEnabled("pipeline")) {
         std::fprintf(stderr,
                      "[proc-body-fail] %s diag=%s detail=%s\n",
@@ -2204,7 +2204,7 @@ ProcedureDeclResult TypeProcedureDecl(
     const auto prov_result = [&]() {
       ScopedPerfTimer prov_timer(perf_on ? &perf_stats.prov_ms : nullptr);
       return ProvBindCheck(proc_ctx, module_path, decl.params, decl.body,
-                           std::nullopt);
+                           std::nullopt, &diags);
     }();
     if (!prov_result.ok) {
       result.ok = false;
@@ -2415,7 +2415,7 @@ ProcedureDeclResult TypeProcedureDeclBody(
   if (!body_result.ok) {
     const auto diag_id = body_result.diag_id.has_value()
                              ? body_result.diag_id
-                             : std::optional<std::string_view>{"Stmt-Type-NoDiag"};
+                             : std::optional<std::string_view>{"E-TYP-1530"};
     if (core::IsDebugEnabled("sema") || core::IsDebugEnabled("pipeline")) {
       std::fprintf(stderr,
                    "[proc-body-fail] %s diag=%s detail=%s\n",
@@ -2482,7 +2482,7 @@ ProcedureDeclResult TypeProcedureDeclBody(
   const auto prov_result = [&]() {
     ScopedPerfTimer prov_timer(perf_on ? &perf_stats.prov_ms : nullptr);
     return ProvBindCheck(proc_ctx, module_path, decl.params, decl.body,
-                         std::nullopt);
+                         std::nullopt, &diags);
   }();
   if (!prov_result.ok) {
     result.ok = false;

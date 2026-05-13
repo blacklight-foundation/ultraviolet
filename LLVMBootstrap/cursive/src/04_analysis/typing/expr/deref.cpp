@@ -32,6 +32,7 @@ static inline void SpecDefsDeref() {
   SPEC_DEF("Deref-Expired", "5.2.12");
   SPEC_DEF("Deref-Raw-Unsafe", "5.2.12");
   SPEC_DEF("ValueUse-NonBitcopyPlace", "5.2.12");
+  SPEC_DEF("GpuPtr-Deref-Err", "20.2.5");
 }
 
 static TypeRef StripPermDeepLocal(const TypeRef& type) {
@@ -217,7 +218,7 @@ ExprTypeResult TypeDerefExprImpl(const ScopeContext& ctx,
 
   if (IsGpuHostPointerDeref(env, expr.value)) {
     SPEC_RULE("GpuPtr-Deref-Err");
-    result.diag_id = "GpuPtr-Deref-Err";
+    result.diag_id = "E-CON-0150";
     return result;
   }
 
@@ -295,7 +296,7 @@ PlaceTypeResult TypeDerefPlaceImpl(const ScopeContext& ctx,
 
   if (IsGpuHostPointerDeref(env, expr.value)) {
     SPEC_RULE("GpuPtr-Deref-Err");
-    result.diag_id = "GpuPtr-Deref-Err";
+    result.diag_id = "E-CON-0150";
     return result;
   }
 

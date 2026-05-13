@@ -1,0 +1,8 @@
+//! Rejected structured-parallelism specimen for heap-provenance GPU captures.
+
+public procedure gpuCaptureHeapProvenanceReference(context: Context) -> () {
+    let pointer: *mut u8 = unsafe { context.heap~>alloc_raw(16usize) }
+    parallel context~>gpu() {
+        let captured: *mut u8 = pointer
+    }
+}

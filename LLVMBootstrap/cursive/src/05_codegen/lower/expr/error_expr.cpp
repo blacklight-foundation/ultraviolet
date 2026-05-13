@@ -30,6 +30,7 @@ namespace cursive::codegen {
 
 LowerResult LowerError(const ast::ErrorExpr& /*expr*/, LowerCtx& ctx) {
     SPEC_RULE("Lower-Expr-Error");
+    ctx.codegen_failed = true;
 
     // Create an opaque value for the unreachable result
     IRValue value = ctx.FreshTempValue("unreachable");

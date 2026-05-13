@@ -10,6 +10,7 @@ using HelloUltraviolet::Fixtures::AcceptedProjects::{ acceptedProjectFixtureArti
 using HelloUltraviolet::Fixtures::ArtifactProjects::{ artifactProjectFixturesAreIndexed }
 using HelloUltraviolet::Fixtures::ArtifactProjects::{ artifactProjectFixtureSourceArtifactsExist }
 using HelloUltraviolet::Fixtures::ArtifactProjects::{ artifactProjectRuntimeErasureArtifactsMatch }
+using HelloUltraviolet::Fixtures::ArtifactProjects::{ reducedEmptyDispatchPanicExpectedArtifactMatches }
 using HelloUltraviolet::Fixtures::DiagnosticSource::{ diagnosticSourceFixturesAreIndexed }
 using HelloUltraviolet::Fixtures::DiagnosticSource::{ diagnosticSourceFixtureArtifactsExist }
 using HelloUltraviolet::Fixtures::DiagnosticSource::{ validTransmuteTargetExpectedDiagnosticFileMatches }
@@ -256,6 +257,42 @@ using HelloUltraviolet::Fixtures::RejectedSource::{ asyncTypeDiagnosticsTableExp
 using HelloUltraviolet::Fixtures::RejectedSource::{ suspensionFormsDiagnosticsTableExpectedDiagnosticFileMatches }
 using HelloUltraviolet::Fixtures::RejectedSource::{ asyncCompositionDiagnosticsTableExpectedDiagnosticFileMatches }
 using HelloUltraviolet::Fixtures::RejectedSource::{ loopAsyncEnclosingReturnExpectedDiagnosticFileMatches }
+using HelloUltraviolet::Fixtures::RejectedSource::{ asyncCaptureOutlivesFrameExpectedDiagnosticFileMatches }
+using HelloUltraviolet::Fixtures::RejectedSource::{ asyncOperationEscapesRegionExpectedDiagnosticFileMatches }
+using HelloUltraviolet::Fixtures::RejectedSource::{ asyncDiagnosticsSupplementExpectedDiagnosticFileMatches }
+using HelloUltraviolet::Fixtures::RejectedSource::{ spawnOutsideParallelExpectedDiagnosticFileMatches }
+using HelloUltraviolet::Fixtures::RejectedSource::{ dispatchOutsideParallelExpectedDiagnosticFileMatches }
+using HelloUltraviolet::Fixtures::RejectedSource::{ parallelDomainNotExecutionDomainExpectedDiagnosticFileMatches }
+using HelloUltraviolet::Fixtures::RejectedSource::{ parallelCancelOptionTypeExpectedDiagnosticFileMatches }
+using HelloUltraviolet::Fixtures::RejectedSource::{ parallelDim3ConstExpectedDiagnosticFileMatches }
+using HelloUltraviolet::Fixtures::RejectedSource::{ parallelWorkgroupSizeExpectedDiagnosticFileMatches }
+using HelloUltraviolet::Fixtures::RejectedSource::{ dispatchChunkTypeExpectedDiagnosticFileMatches }
+using HelloUltraviolet::Fixtures::RejectedSource::{ dispatchNonAssociativeReduceExpectedDiagnosticFileMatches }
+using HelloUltraviolet::Fixtures::RejectedSource::{ nestedGpuParallelExpectedDiagnosticFileMatches }
+using HelloUltraviolet::Fixtures::RejectedSource::{ gpuIntrinsicOutsideExpectedDiagnosticFileMatches }
+using HelloUltraviolet::Fixtures::RejectedSource::{ barrierOutsideGpuContextExpectedDiagnosticFileMatches }
+using HelloUltraviolet::Fixtures::RejectedSource::{ parallelDomainParameterExpectedDiagnosticFileMatches }
+using HelloUltraviolet::Fixtures::RejectedSource::{ spawnInvalidPriorityOptionExpectedDiagnosticFileMatches }
+using HelloUltraviolet::Fixtures::RejectedSource::{ dispatchRequiresParallelContextExpectedDiagnosticFileMatches }
+using HelloUltraviolet::Fixtures::RejectedSource::{ dispatchDiagnosticsExpectedDiagnosticFileMatches }
+using HelloUltraviolet::Fixtures::RejectedSource::{ executionDomainsDiagnosticsExpectedDiagnosticFileMatches }
+using HelloUltraviolet::Fixtures::RejectedSource::{ determinismAndNestingDiagnosticsExpectedDiagnosticFileMatches }
+using HelloUltraviolet::Fixtures::RejectedSource::{ keyBlockGpuContextExpectedDiagnosticFileMatches }
+using HelloUltraviolet::Fixtures::RejectedSource::{ barrierDivergenceExpectedDiagnosticFileMatches }
+using HelloUltraviolet::Fixtures::RejectedSource::{ gpuCaptureSharedExpectedDiagnosticFileMatches }
+using HelloUltraviolet::Fixtures::RejectedSource::{ gpuCaptureNonGpuSafeExpectedDiagnosticFileMatches }
+using HelloUltraviolet::Fixtures::RejectedSource::{ captureSemanticsDiagnosticsExpectedDiagnosticFileMatches }
+using HelloUltraviolet::Fixtures::RejectedSource::{ parallelClosureCaptureUniqueExpectedDiagnosticFileMatches }
+using HelloUltraviolet::Fixtures::RejectedSource::{ parallelClosureCaptureOuterMoveExpectedDiagnosticFileMatches }
+using HelloUltraviolet::Fixtures::RejectedSource::{ parallelEscapingClosureSpawnExpectedDiagnosticFileMatches }
+using HelloUltraviolet::Fixtures::RejectedSource::{ dispatchInferFailureExpectedDiagnosticFileMatches }
+using HelloUltraviolet::Fixtures::RejectedSource::{ dispatchDependencyConflictExpectedDiagnosticFileMatches }
+using HelloUltraviolet::Fixtures::RejectedSource::{ gpuCaptureHeapProvenanceExpectedDiagnosticFileMatches }
+using HelloUltraviolet::Fixtures::RejectedSource::{ gpuSafeTypeDiagnosticExpectedDiagnosticFileMatches }
+using HelloUltraviolet::Fixtures::RejectedSource::{ gpuSafeRecordFieldDiagnosticExpectedDiagnosticFileMatches }
+using HelloUltraviolet::Fixtures::RejectedSource::{ gpuSafeGenericUnboundedExpectedDiagnosticFileMatches }
+using HelloUltraviolet::Fixtures::RejectedSource::{ gpuPtrAddrSpaceExpectedDiagnosticFileMatches }
+using HelloUltraviolet::Fixtures::RejectedSource::{ gpuPtrDerefHostMemoryExpectedDiagnosticFileMatches }
 using HelloUltraviolet::Fixtures::RejectedSource::{ nullLiteralExpectedExpectedDiagnosticFileMatches }
 using HelloUltraviolet::Fixtures::RejectedSource::{ ptrNullExpectedRequirementExpectedDiagnosticFileMatches }
 using HelloUltraviolet::Fixtures::RejectedSource::{ indexClassificationExpectedDiagnosticFileMatches }
@@ -319,6 +356,14 @@ using HelloUltraviolet::Fixtures::DiagnosticSource::{ nestedReleaseInterleavingW
 using HelloUltraviolet::Fixtures::DiagnosticSource::{ dynamicKeyRuntimeInfoExpectedDiagnosticFileMatches }
 using HelloUltraviolet::Fixtures::DiagnosticSource::{ staleAfterYieldReleaseWarningExpectedDiagnosticFileMatches }
 using HelloUltraviolet::Fixtures::DiagnosticSource::{ staleOkSuppressesReleaseWarningExpectedDiagnosticFileMatches }
+using HelloUltraviolet::Fixtures::DiagnosticSource::{ asyncLargeCaptureWarningExpectedDiagnosticFileMatches }
+using HelloUltraviolet::Fixtures::DiagnosticSource::{ asyncLargeCaptureWarningEmissionExpectedDiagnosticFileMatches }
+using HelloUltraviolet::Fixtures::DiagnosticSource::{ asyncLargeCaptureNoWarningExpectedDiagnosticFileMatches }
+using HelloUltraviolet::Fixtures::DiagnosticSource::{ asyncStateMachineDiagnosticsTableExpectedDiagnosticFileMatches }
+using HelloUltraviolet::Fixtures::DiagnosticSource::{ staleValueMarkIRDiagnosticsExpectedDiagnosticFileMatches }
+using HelloUltraviolet::Fixtures::DiagnosticSource::{ dispatchDynamicKeyWarningExpectedDiagnosticFileMatches }
+using HelloUltraviolet::Fixtures::DiagnosticSource::{ cancellationNoAdditionalDiagnosticsExpectedDiagnosticFileMatches }
+using HelloUltraviolet::Fixtures::DiagnosticSource::{ panicHandlingNoAdditionalDiagnosticsExpectedDiagnosticFileMatches }
 using HelloUltraviolet::Fixtures::RejectedSource::{ speculativeReleaseModeExpectedDiagnosticFileMatches }
 using HelloUltraviolet::Fixtures::RejectedSource::{ orderedDifferentBaseExpectedDiagnosticFileMatches }
 using HelloUltraviolet::Fixtures::RejectedSource::{ nestedReleaseSameModeExpectedDiagnosticFileMatches }
@@ -335,6 +380,11 @@ using HelloUltraviolet::Fixtures::RejectedSource::{ conflictDetectionDiagnosticE
 using HelloUltraviolet::Fixtures::RejectedSource::{ memoryOrderingDiagnosticExpectedDiagnosticFileMatches }
 using HelloUltraviolet::Fixtures::RejectedSource::{ escapingClosureSharedLifetimeExpectedDiagnosticFileMatches }
 using HelloUltraviolet::Fixtures::RejectedSource::{ sharedDynamicMutatingReceiverExpectedDiagnosticFileMatches }
+using HelloUltraviolet::Fixtures::RejectedSource::{ asyncKeyRestrictionsYieldHeldExpectedDiagnosticFileMatches }
+using HelloUltraviolet::Fixtures::RejectedSource::{ yieldFromWhileKeyHeldExpectedDiagnosticFileMatches }
+using HelloUltraviolet::Fixtures::RejectedSource::{ waitWhileKeyHeldLoweringExpectedDiagnosticFileMatches }
+using HelloUltraviolet::Fixtures::RejectedSource::{ sharedClosureYieldKeysExpectedDiagnosticFileMatches }
+using HelloUltraviolet::Fixtures::RejectedSource::{ sharedCapturingClosureYieldKeysExpectedDiagnosticFileMatches }
 using HelloUltraviolet::Reference::Conformance::{ runConformanceConstructVocabularyReference }
 using HelloUltraviolet::Reference::Conformance::{ runConformanceBehaviorClassificationReference }
 using HelloUltraviolet::Reference::Conformance::{ runConformanceTranslationOrderingReference }
@@ -587,6 +637,11 @@ public procedure runReferenceCorpus(context: Context) -> ReferenceResult {
     )
     passed = passed && recordReferenceResult(
         context,
+        "reducedEmptyDispatchPanicExpectedArtifactMatches",
+        reducedEmptyDispatchPanicExpectedArtifactMatches(context)
+    )
+    passed = passed && recordReferenceResult(
+        context,
         "diagnosticSourceFixturesAreIndexed",
         diagnosticSourceFixturesAreIndexed()
     )
@@ -649,6 +704,46 @@ public procedure runReferenceCorpus(context: Context) -> ReferenceResult {
         context,
         "staleOkSuppressesReleaseWarningExpectedDiagnosticFileMatches",
         staleOkSuppressesReleaseWarningExpectedDiagnosticFileMatches(context)
+    )
+    passed = passed && recordReferenceResult(
+        context,
+        "asyncLargeCaptureWarningExpectedDiagnosticFileMatches",
+        asyncLargeCaptureWarningExpectedDiagnosticFileMatches(context)
+    )
+    passed = passed && recordReferenceResult(
+        context,
+        "asyncLargeCaptureWarningEmissionExpectedDiagnosticFileMatches",
+        asyncLargeCaptureWarningEmissionExpectedDiagnosticFileMatches(context)
+    )
+    passed = passed && recordReferenceResult(
+        context,
+        "asyncLargeCaptureNoWarningExpectedDiagnosticFileMatches",
+        asyncLargeCaptureNoWarningExpectedDiagnosticFileMatches(context)
+    )
+    passed = passed && recordReferenceResult(
+        context,
+        "asyncStateMachineDiagnosticsTableExpectedDiagnosticFileMatches",
+        asyncStateMachineDiagnosticsTableExpectedDiagnosticFileMatches(context)
+    )
+    passed = passed && recordReferenceResult(
+        context,
+        "staleValueMarkIRDiagnosticsExpectedDiagnosticFileMatches",
+        staleValueMarkIRDiagnosticsExpectedDiagnosticFileMatches(context)
+    )
+    passed = passed && recordReferenceResult(
+        context,
+        "dispatchDynamicKeyWarningExpectedDiagnosticFileMatches",
+        dispatchDynamicKeyWarningExpectedDiagnosticFileMatches(context)
+    )
+    passed = passed && recordReferenceResult(
+        context,
+        "cancellationNoAdditionalDiagnosticsExpectedDiagnosticFileMatches",
+        cancellationNoAdditionalDiagnosticsExpectedDiagnosticFileMatches(context)
+    )
+    passed = passed && recordReferenceResult(
+        context,
+        "panicHandlingNoAdditionalDiagnosticsExpectedDiagnosticFileMatches",
+        panicHandlingNoAdditionalDiagnosticsExpectedDiagnosticFileMatches(context)
     )
     passed = passed && recordReferenceResult(
         context,
@@ -1867,6 +1962,186 @@ public procedure runReferenceCorpus(context: Context) -> ReferenceResult {
     )
     passed = passed && recordReferenceResult(
         context,
+        "asyncCaptureOutlivesFrameExpectedDiagnosticFileMatches",
+        asyncCaptureOutlivesFrameExpectedDiagnosticFileMatches(context)
+    )
+    passed = passed && recordReferenceResult(
+        context,
+        "asyncOperationEscapesRegionExpectedDiagnosticFileMatches",
+        asyncOperationEscapesRegionExpectedDiagnosticFileMatches(context)
+    )
+    passed = passed && recordReferenceResult(
+        context,
+        "asyncDiagnosticsSupplementExpectedDiagnosticFileMatches",
+        asyncDiagnosticsSupplementExpectedDiagnosticFileMatches(context)
+    )
+    passed = passed && recordReferenceResult(
+        context,
+        "spawnOutsideParallelExpectedDiagnosticFileMatches",
+        spawnOutsideParallelExpectedDiagnosticFileMatches(context)
+    )
+    passed = passed && recordReferenceResult(
+        context,
+        "dispatchOutsideParallelExpectedDiagnosticFileMatches",
+        dispatchOutsideParallelExpectedDiagnosticFileMatches(context)
+    )
+    passed = passed && recordReferenceResult(
+        context,
+        "parallelDomainNotExecutionDomainExpectedDiagnosticFileMatches",
+        parallelDomainNotExecutionDomainExpectedDiagnosticFileMatches(context)
+    )
+    passed = passed && recordReferenceResult(
+        context,
+        "parallelCancelOptionTypeExpectedDiagnosticFileMatches",
+        parallelCancelOptionTypeExpectedDiagnosticFileMatches(context)
+    )
+    passed = passed && recordReferenceResult(
+        context,
+        "parallelDim3ConstExpectedDiagnosticFileMatches",
+        parallelDim3ConstExpectedDiagnosticFileMatches(context)
+    )
+    passed = passed && recordReferenceResult(
+        context,
+        "parallelWorkgroupSizeExpectedDiagnosticFileMatches",
+        parallelWorkgroupSizeExpectedDiagnosticFileMatches(context)
+    )
+    passed = passed && recordReferenceResult(
+        context,
+        "dispatchChunkTypeExpectedDiagnosticFileMatches",
+        dispatchChunkTypeExpectedDiagnosticFileMatches(context)
+    )
+    passed = passed && recordReferenceResult(
+        context,
+        "dispatchNonAssociativeReduceExpectedDiagnosticFileMatches",
+        dispatchNonAssociativeReduceExpectedDiagnosticFileMatches(context)
+    )
+    passed = passed && recordReferenceResult(
+        context,
+        "nestedGpuParallelExpectedDiagnosticFileMatches",
+        nestedGpuParallelExpectedDiagnosticFileMatches(context)
+    )
+    passed = passed && recordReferenceResult(
+        context,
+        "gpuIntrinsicOutsideExpectedDiagnosticFileMatches",
+        gpuIntrinsicOutsideExpectedDiagnosticFileMatches(context)
+    )
+    passed = passed && recordReferenceResult(
+        context,
+        "barrierOutsideGpuContextExpectedDiagnosticFileMatches",
+        barrierOutsideGpuContextExpectedDiagnosticFileMatches(context)
+    )
+    passed = passed && recordReferenceResult(
+        context,
+        "parallelDomainParameterExpectedDiagnosticFileMatches",
+        parallelDomainParameterExpectedDiagnosticFileMatches(context)
+    )
+    passed = passed && recordReferenceResult(
+        context,
+        "spawnInvalidPriorityOptionExpectedDiagnosticFileMatches",
+        spawnInvalidPriorityOptionExpectedDiagnosticFileMatches(context)
+    )
+    passed = passed && recordReferenceResult(
+        context,
+        "dispatchRequiresParallelContextExpectedDiagnosticFileMatches",
+        dispatchRequiresParallelContextExpectedDiagnosticFileMatches(context)
+    )
+    passed = passed && recordReferenceResult(
+        context,
+        "dispatchDiagnosticsExpectedDiagnosticFileMatches",
+        dispatchDiagnosticsExpectedDiagnosticFileMatches(context)
+    )
+    passed = passed && recordReferenceResult(
+        context,
+        "executionDomainsDiagnosticsExpectedDiagnosticFileMatches",
+        executionDomainsDiagnosticsExpectedDiagnosticFileMatches(context)
+    )
+    passed = passed && recordReferenceResult(
+        context,
+        "determinismAndNestingDiagnosticsExpectedDiagnosticFileMatches",
+        determinismAndNestingDiagnosticsExpectedDiagnosticFileMatches(context)
+    )
+    passed = passed && recordReferenceResult(
+        context,
+        "keyBlockGpuContextExpectedDiagnosticFileMatches",
+        keyBlockGpuContextExpectedDiagnosticFileMatches(context)
+    )
+    passed = passed && recordReferenceResult(
+        context,
+        "barrierDivergenceExpectedDiagnosticFileMatches",
+        barrierDivergenceExpectedDiagnosticFileMatches(context)
+    )
+    passed = passed && recordReferenceResult(
+        context,
+        "gpuCaptureSharedExpectedDiagnosticFileMatches",
+        gpuCaptureSharedExpectedDiagnosticFileMatches(context)
+    )
+    passed = passed && recordReferenceResult(
+        context,
+        "gpuCaptureNonGpuSafeExpectedDiagnosticFileMatches",
+        gpuCaptureNonGpuSafeExpectedDiagnosticFileMatches(context)
+    )
+    passed = passed && recordReferenceResult(
+        context,
+        "captureSemanticsDiagnosticsExpectedDiagnosticFileMatches",
+        captureSemanticsDiagnosticsExpectedDiagnosticFileMatches(context)
+    )
+    passed = passed && recordReferenceResult(
+        context,
+        "parallelClosureCaptureUniqueExpectedDiagnosticFileMatches",
+        parallelClosureCaptureUniqueExpectedDiagnosticFileMatches(context)
+    )
+    passed = passed && recordReferenceResult(
+        context,
+        "parallelClosureCaptureOuterMoveExpectedDiagnosticFileMatches",
+        parallelClosureCaptureOuterMoveExpectedDiagnosticFileMatches(context)
+    )
+    passed = passed && recordReferenceResult(
+        context,
+        "parallelEscapingClosureSpawnExpectedDiagnosticFileMatches",
+        parallelEscapingClosureSpawnExpectedDiagnosticFileMatches(context)
+    )
+    passed = passed && recordReferenceResult(
+        context,
+        "dispatchInferFailureExpectedDiagnosticFileMatches",
+        dispatchInferFailureExpectedDiagnosticFileMatches(context)
+    )
+    passed = passed && recordReferenceResult(
+        context,
+        "dispatchDependencyConflictExpectedDiagnosticFileMatches",
+        dispatchDependencyConflictExpectedDiagnosticFileMatches(context)
+    )
+    passed = passed && recordReferenceResult(
+        context,
+        "gpuCaptureHeapProvenanceExpectedDiagnosticFileMatches",
+        gpuCaptureHeapProvenanceExpectedDiagnosticFileMatches(context)
+    )
+    passed = passed && recordReferenceResult(
+        context,
+        "gpuSafeTypeDiagnosticExpectedDiagnosticFileMatches",
+        gpuSafeTypeDiagnosticExpectedDiagnosticFileMatches(context)
+    )
+    passed = passed && recordReferenceResult(
+        context,
+        "gpuSafeRecordFieldDiagnosticExpectedDiagnosticFileMatches",
+        gpuSafeRecordFieldDiagnosticExpectedDiagnosticFileMatches(context)
+    )
+    passed = passed && recordReferenceResult(
+        context,
+        "gpuSafeGenericUnboundedExpectedDiagnosticFileMatches",
+        gpuSafeGenericUnboundedExpectedDiagnosticFileMatches(context)
+    )
+    passed = passed && recordReferenceResult(
+        context,
+        "gpuPtrAddrSpaceExpectedDiagnosticFileMatches",
+        gpuPtrAddrSpaceExpectedDiagnosticFileMatches(context)
+    )
+    passed = passed && recordReferenceResult(
+        context,
+        "gpuPtrDerefHostMemoryExpectedDiagnosticFileMatches",
+        gpuPtrDerefHostMemoryExpectedDiagnosticFileMatches(context)
+    )
+    passed = passed && recordReferenceResult(
+        context,
         "nullLiteralExpectedExpectedDiagnosticFileMatches",
         nullLiteralExpectedExpectedDiagnosticFileMatches(context)
     )
@@ -2209,6 +2484,31 @@ public procedure runReferenceCorpus(context: Context) -> ReferenceResult {
         context,
         "sharedDynamicMutatingReceiverExpectedDiagnosticFileMatches",
         sharedDynamicMutatingReceiverExpectedDiagnosticFileMatches(context)
+    )
+    passed = passed && recordReferenceResult(
+        context,
+        "asyncKeyRestrictionsYieldHeldExpectedDiagnosticFileMatches",
+        asyncKeyRestrictionsYieldHeldExpectedDiagnosticFileMatches(context)
+    )
+    passed = passed && recordReferenceResult(
+        context,
+        "yieldFromWhileKeyHeldExpectedDiagnosticFileMatches",
+        yieldFromWhileKeyHeldExpectedDiagnosticFileMatches(context)
+    )
+    passed = passed && recordReferenceResult(
+        context,
+        "waitWhileKeyHeldLoweringExpectedDiagnosticFileMatches",
+        waitWhileKeyHeldLoweringExpectedDiagnosticFileMatches(context)
+    )
+    passed = passed && recordReferenceResult(
+        context,
+        "sharedClosureYieldKeysExpectedDiagnosticFileMatches",
+        sharedClosureYieldKeysExpectedDiagnosticFileMatches(context)
+    )
+    passed = passed && recordReferenceResult(
+        context,
+        "sharedCapturingClosureYieldKeysExpectedDiagnosticFileMatches",
+        sharedCapturingClosureYieldKeysExpectedDiagnosticFileMatches(context)
     )
     passed = passed && recordReferenceResult(
         context,
@@ -2957,6 +3257,6 @@ public procedure runReferenceCorpus(context: Context) -> ReferenceResult {
     )
     return referenceResult(
         passed,
-        432
+        469
     )
 }

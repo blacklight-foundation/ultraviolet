@@ -1,0 +1,12 @@
+//! Diagnostic structured-parallelism specimen for cancellation without new diagnostics.
+
+public procedure cancellationNoAdditionalDiagnosticsReference(context: Context) -> i32 {
+    let token: CancelToken@Active = CancelToken::new()
+    return parallel context~>cpu() [cancel: token] {
+        if token~>is_cancelled() {
+            1
+        } else {
+            0
+        }
+    }
+}

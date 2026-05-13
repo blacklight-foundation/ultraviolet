@@ -1,0 +1,7 @@
+//! Rejected structured-parallelism specimen for dispatch diagnostics ownership.
+
+public procedure dispatchDiagnosticsReference() -> () {
+    dispatch index in 0usize..4usize {
+        index
+    }
+}

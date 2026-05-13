@@ -63,6 +63,22 @@ static bool IsSelfAssociatedTypePath(const ast::TypePath& path) {
   return path.size() == 2 && IdEq(path[0], "Self");
 }
 
+static bool IsGpuPtrPath(const ast::TypePath& path) {
+  return path.size() == 1 && IdEq(path[0], "GpuPtr");
+}
+
+static bool IsGpuPtrAddressSpaceArg(const std::shared_ptr<ast::Type>& type) {
+  if (!type) {
+    return false;
+  }
+  const auto* path = std::get_if<ast::TypePathType>(&type->node);
+  if (!path || path->path.size() != 1 || !path->generic_args.empty()) {
+    return false;
+  }
+  return IdEq(path->path[0], "Global") || IdEq(path->path[0], "Shared") ||
+         IdEq(path->path[0], "Private");
+}
+
 ast::Path FullPath(const ast::Path& path, std::string_view name) {
   ast::Path out = path;
   out.emplace_back(name);
@@ -82,7 +98,8 @@ ResTypePathResult ResolveTypePath(ResolveContext& ctx,
     return result;
   }
   if (path.size() == 1) {
-    if (IsFileSystemBuiltinTypePath(path) ||
+    if (IsGpuPtrPath(path) ||
+        IsFileSystemBuiltinTypePath(path) ||
         IsHeapAllocatorBuiltinTypePath(path) ||
         IsOutcomeTypePath(path)) {
       SPEC_RULE("ResolveTypePath-Ident-Local");
@@ -213,7 +230,13 @@ ResTypeResult ResolveType(ResolveContext& ctx,
               ctx.language_service, *ctx.ctx, resolved.value, type->span);
           std::vector<std::shared_ptr<ast::Type>> resolved_args;
           resolved_args.reserve(node.args.size());
-          for (const auto& arg : node.args) {
+          for (std::size_t index = 0; index < node.args.size(); ++index) {
+            const auto& arg = node.args[index];
+            if (IsGpuPtrPath(resolved.value) && index == 1 &&
+                IsGpuPtrAddressSpaceArg(arg)) {
+              resolved_args.push_back(arg);
+              continue;
+            }
             const auto resolved_arg = ResolveType(ctx, arg);
             if (!resolved_arg.ok) {
               return {false, resolved_arg.diag_id, std::nullopt, {}};

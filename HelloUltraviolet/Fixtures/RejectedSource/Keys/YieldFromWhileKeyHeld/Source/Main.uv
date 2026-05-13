@@ -1,0 +1,13 @@
+//! Rejected async-key specimen for yield from while a shared key is held.
+
+public procedure delegatedAsyncValue() -> Async<i32, (), (), !> {
+    return
+}
+
+public procedure yieldFromWhileKeyHeldReference() -> Async<i32, (), (), !> {
+    var shared_value: shared i32 = 1
+    #shared_value read {
+        yield from delegatedAsyncValue()
+    }
+    return
+}

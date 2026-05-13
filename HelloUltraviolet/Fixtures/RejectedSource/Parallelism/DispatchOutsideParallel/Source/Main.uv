@@ -1,0 +1,7 @@
+//! Rejected structured-parallelism specimen for `dispatch` without a parallel context.
+
+public procedure dispatchOutsideParallelReference() -> () {
+    dispatch index in 0usize..4usize {
+        index
+    }
+}

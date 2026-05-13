@@ -28,6 +28,9 @@ typedef struct WorkerPool WorkerPool;
 typedef struct ParallelContext ParallelContext;
 typedef struct SpawnHandle SpawnHandle;
 typedef size_t C0CancelId;
+static void c0_parallel_context_panic(ParallelContext* ctx, uint32_t code);
+static cursive_rt_u32_t c0_worker_thread_proc(void* param);
+static void c0_start_worker_threads(WorkerPool* pool);
 
 // -----------------------------------------------------------------------------
 // Panic boundary + TLS state
@@ -241,6 +244,7 @@ struct WorkerPool {
     cursive_rt_condition_t work_cv;
     cursive_rt_condition_t done_cv;
     volatile int shutdown;
+    uint8_t threads_started;
     size_t pending_count;
     C0CancelId cancel_token;
 };
@@ -254,6 +258,7 @@ struct ParallelContext {
     cursive_rt_condition_t done_cv;
     C0CancelId cancel_token;
     WorkItem* first_panic;    // First panicked work item
+    uint32_t context_panic_code;
     int panic_count;          // Number of panics
     const char* name;         // Debug name
     SpawnHandle* handles_head;
@@ -890,6 +895,7 @@ static void c0_enqueue_item(WorkerPool* pool, WorkItem* item) {
     if (!pool || !item) {
         return;
     }
+    c0_start_worker_threads(pool);
     cursive_rt_mutex_lock(&pool->lock);
     if (pool->queue_tail) {
         pool->queue_tail->next = item;
@@ -993,6 +999,35 @@ static cursive_rt_u32_t c0_worker_thread_proc(void* param) {
     }
 }
 
+static void c0_start_worker_threads(WorkerPool* pool) {
+    if (!pool) {
+        return;
+    }
+
+    cursive_rt_mutex_lock(&pool->lock);
+    if (pool->threads_started || pool->shutdown) {
+        cursive_rt_mutex_unlock(&pool->lock);
+        return;
+    }
+
+    pool->threads_started = 1;
+    pool->threads =
+        (cursive_rt_handle_t*)c0_heap_alloc_raw(
+            sizeof(cursive_rt_handle_t) * pool->num_workers);
+    if (!pool->threads) {
+        pool->threads_started = 0;
+        cursive_rt_mutex_unlock(&pool->lock);
+        return;
+    }
+
+    for (int i = 0; i < pool->num_workers; ++i) {
+        pool->threads[i] =
+            cursive_rt_thread_spawn(NULL, 0, c0_worker_thread_proc,
+                                    pool, 0, NULL);
+    }
+    cursive_rt_mutex_unlock(&pool->lock);
+}
+
 // §18.1.1 Begin parallel block
 // runtime_parallel_begin(domain) -> ParallelContext*
 void* cursive_parallel_begin(C0DynObject domain,
@@ -1044,6 +1079,7 @@ void* cursive_parallel_begin(C0DynObject domain,
     cursive_rt_condition_init(&ctx->done_cv);
     ctx->cancel_token = cancel_token;
     ctx->first_panic = NULL;
+    ctx->context_panic_code = 0;
     ctx->panic_count = 0;
     ctx->name = name;
     ctx->handles_head = NULL;
@@ -1077,23 +1113,12 @@ void* cursive_parallel_begin(C0DynObject domain,
             ctx->pool->queue_tail = NULL;
             ctx->pool->threads = NULL;
             ctx->pool->shutdown = 0;
+            ctx->pool->threads_started = 0;
             ctx->pool->pending_count = 0;
             ctx->pool->cancel_token = cancel_token;
             cursive_rt_mutex_init(&ctx->pool->lock);
             cursive_rt_condition_init(&ctx->pool->work_cv);
             cursive_rt_condition_init(&ctx->pool->done_cv);
-
-            // Start worker threads
-            ctx->pool->threads =
-                (cursive_rt_handle_t*)c0_heap_alloc_raw(
-                    sizeof(cursive_rt_handle_t) * ctx->pool->num_workers);
-            if (ctx->pool->threads) {
-                for (int i = 0; i < ctx->pool->num_workers; ++i) {
-                    ctx->pool->threads[i] =
-                        cursive_rt_thread_spawn(NULL, 0, c0_worker_thread_proc,
-                                                ctx->pool, 0, NULL);
-                }
-            }
         }
     }
 
@@ -1162,7 +1187,16 @@ int cursive_parallel_join(void* ctx_ptr) {
     }
 
     // §18.7.2 Check for panics
-    int had_panic = (ctx->first_panic != NULL);
+    uint32_t panic_code = 0;
+    if (ctx->first_panic) {
+        panic_code = ctx->first_panic->panic_code;
+        if (panic_code == 0) {
+            panic_code = 1;
+        }
+    } else if (ctx->context_panic_code != 0) {
+        panic_code = ctx->context_panic_code;
+    }
+    int had_panic = (panic_code != 0);
     
     // Cleanup
     WorkItem* item = ctx->all_items;
@@ -1209,7 +1243,7 @@ int cursive_parallel_join(void* ctx_ptr) {
                                 12,
                                 NULL);
     }
-    return had_panic ? 1 : 0;
+    return (int)panic_code;
 }
 
 // §18.4.2 Create spawn handle
@@ -1656,7 +1690,12 @@ void cursive_dispatch_run(C0Range range, size_t elem_size, size_t result_size,
                                   chunk_size);
     if (end <= start) {
         if ((reduce_fn || c0_reduce_has_op(reduce_op)) && result_size > 0) {
-            cursive_panic(C0_PANIC_REDUCED_EMPTY_DISPATCH);
+            ParallelContext* ctx = c0_current_ctx();
+            if (ctx) {
+                c0_parallel_context_panic(ctx, C0_PANIC_REDUCED_EMPTY_DISPATCH);
+            } else {
+                cursive_panic(C0_PANIC_REDUCED_EMPTY_DISPATCH);
+            }
         }
         return;
     }
@@ -1928,14 +1967,39 @@ int cursive_cancel_token_is_cancelled(C0CancelId token_id) {
 }
 
 // §18.7 Record panic in work item
+static void c0_parallel_context_panic(ParallelContext* ctx, uint32_t code) {
+    if (!ctx) {
+        cursive_panic(code);
+        return;
+    }
+
+    int request_cancel = 0;
+    c0_lock_parallel_ctx(ctx);
+    if (ctx->context_panic_code == 0 && !ctx->first_panic) {
+        ctx->context_panic_code = code;
+    }
+    ctx->panic_count += 1;
+    request_cancel =
+        (ctx->cancel_token != C0_CANCEL_INVALID_ID && ctx->panic_count == 1);
+    c0_unlock_parallel_ctx(ctx);
+
+    if (request_cancel) {
+        cursive_cancel_token_cancel(ctx->cancel_token);
+    }
+}
+
 void cursive_parallel_work_panic(void* ctx_ptr, uint32_t code) {
     ParallelContext* ctx = (ParallelContext*)ctx_ptr;
     if (!ctx) {
         ctx = c0_current_ctx();
     }
     WorkItem* item = c0_current_item();
-    if (!ctx || !item) {
+    if (!ctx) {
         cursive_panic(code);
+        return;
+    }
+    if (!item) {
+        c0_parallel_context_panic(ctx, code);
         return;
     }
 

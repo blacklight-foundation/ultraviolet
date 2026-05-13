@@ -1,0 +1,9 @@
+//! Rejected structured-parallelism specimen for unordered custom reductions.
+
+public procedure dispatchNonAssociativeReduceReference(context: Context) -> i32 {
+    return parallel context~>cpu() {
+        dispatch index in 0usize..4usize [reduce: combine] {
+            index as i32
+        }
+    }
+}

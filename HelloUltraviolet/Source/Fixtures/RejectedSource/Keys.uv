@@ -1,7 +1,7 @@
 //! Rejected key-system specimens.
 
 public procedure keysRejectedSourceFixtureCount() -> usize {
-    return 16usize
+    return 21usize
 }
 
 public procedure validatedKeysRejectedSourceFixtureCount() -> usize {
@@ -278,6 +278,91 @@ public procedure validatedKeysRejectedSourceFixtureCount() -> usize {
         "Fixtures/RejectedSource/Keys/SharedDynamicMutatingReceiver/Expected.uv",
         "E-CON-0083",
         "requirement.19.SharedDynamicClassRejectsMutatingReceivers"
+    ) {
+        count = count + 1usize
+    }
+    if rejectedSpecimenMatches(
+        rejectedSpecimen(
+            "AsyncKeyRestrictionsYieldHeld",
+            "Fixtures/RejectedSource/Keys/AsyncKeyRestrictionsYieldHeld",
+            "Fixtures/RejectedSource/Keys/AsyncKeyRestrictionsYieldHeld/Source/Main.uv",
+            "Fixtures/RejectedSource/Keys/AsyncKeyRestrictionsYieldHeld/Expected.uv",
+            expectedDiagnostic("E-CON-0213", "requirement.21.AsyncKeyRestrictions")
+        ),
+        "AsyncKeyRestrictionsYieldHeld",
+        "Fixtures/RejectedSource/Keys/AsyncKeyRestrictionsYieldHeld",
+        "Fixtures/RejectedSource/Keys/AsyncKeyRestrictionsYieldHeld/Source/Main.uv",
+        "Fixtures/RejectedSource/Keys/AsyncKeyRestrictionsYieldHeld/Expected.uv",
+        "E-CON-0213",
+        "requirement.21.AsyncKeyRestrictions"
+    ) {
+        count = count + 1usize
+    }
+    if rejectedSpecimenMatches(
+        rejectedSpecimen(
+            "YieldFromWhileKeyHeld",
+            "Fixtures/RejectedSource/Keys/YieldFromWhileKeyHeld",
+            "Fixtures/RejectedSource/Keys/YieldFromWhileKeyHeld/Source/Main.uv",
+            "Fixtures/RejectedSource/Keys/YieldFromWhileKeyHeld/Expected.uv",
+            expectedDiagnostic("E-CON-0224", "diagnostics.21.AsyncKeyDiagnostics")
+        ),
+        "YieldFromWhileKeyHeld",
+        "Fixtures/RejectedSource/Keys/YieldFromWhileKeyHeld",
+        "Fixtures/RejectedSource/Keys/YieldFromWhileKeyHeld/Source/Main.uv",
+        "Fixtures/RejectedSource/Keys/YieldFromWhileKeyHeld/Expected.uv",
+        "E-CON-0224",
+        "diagnostics.21.AsyncKeyDiagnostics"
+    ) {
+        count = count + 1usize
+    }
+    if rejectedSpecimenMatches(
+        rejectedSpecimen(
+            "WaitWhileKeyHeldLowering",
+            "Fixtures/RejectedSource/Keys/WaitWhileKeyHeldLowering",
+            "Fixtures/RejectedSource/Keys/WaitWhileKeyHeldLowering/Source/Main.uv",
+            "Fixtures/RejectedSource/Keys/WaitWhileKeyHeldLowering/Expected.uv",
+            expectedDiagnostic("E-CON-0133", "rule.21.Lower-Wait-Key-Illegal")
+        ),
+        "WaitWhileKeyHeldLowering",
+        "Fixtures/RejectedSource/Keys/WaitWhileKeyHeldLowering",
+        "Fixtures/RejectedSource/Keys/WaitWhileKeyHeldLowering/Source/Main.uv",
+        "Fixtures/RejectedSource/Keys/WaitWhileKeyHeldLowering/Expected.uv",
+        "E-CON-0133",
+        "rule.21.Lower-Wait-Key-Illegal"
+    ) {
+        count = count + 1usize
+    }
+    if rejectedSpecimenMatches(
+        rejectedSpecimen(
+            "SharedClosureYieldKeys",
+            "Fixtures/RejectedSource/Keys/SharedClosureYieldKeys",
+            "Fixtures/RejectedSource/Keys/SharedClosureYieldKeys/Source/Main.uv",
+            "Fixtures/RejectedSource/Keys/SharedClosureYieldKeys/Expected.uv",
+            expectedDiagnostic("E-CON-0213", "rule.21.A-Closure-Yield-Keys-Err")
+        ),
+        "SharedClosureYieldKeys",
+        "Fixtures/RejectedSource/Keys/SharedClosureYieldKeys",
+        "Fixtures/RejectedSource/Keys/SharedClosureYieldKeys/Source/Main.uv",
+        "Fixtures/RejectedSource/Keys/SharedClosureYieldKeys/Expected.uv",
+        "E-CON-0213",
+        "rule.21.A-Closure-Yield-Keys-Err"
+    ) {
+        count = count + 1usize
+    }
+    if rejectedSpecimenMatches(
+        rejectedSpecimen(
+            "SharedCapturingClosureYieldKeys",
+            "Fixtures/RejectedSource/Keys/SharedCapturingClosureYieldKeys",
+            "Fixtures/RejectedSource/Keys/SharedCapturingClosureYieldKeys/Source/Main.uv",
+            "Fixtures/RejectedSource/Keys/SharedCapturingClosureYieldKeys/Expected.uv",
+            expectedDiagnostic("E-CON-0213", "requirement.21.SharedCapturingClosureYieldKeys")
+        ),
+        "SharedCapturingClosureYieldKeys",
+        "Fixtures/RejectedSource/Keys/SharedCapturingClosureYieldKeys",
+        "Fixtures/RejectedSource/Keys/SharedCapturingClosureYieldKeys/Source/Main.uv",
+        "Fixtures/RejectedSource/Keys/SharedCapturingClosureYieldKeys/Expected.uv",
+        "E-CON-0213",
+        "requirement.21.SharedCapturingClosureYieldKeys"
     ) {
         count = count + 1usize
     }

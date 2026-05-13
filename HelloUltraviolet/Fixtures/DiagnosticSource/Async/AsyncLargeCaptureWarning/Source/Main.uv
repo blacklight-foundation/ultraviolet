@@ -1,0 +1,17 @@
+//! Diagnostic async specimen for large captured state warning analysis.
+
+public record LargeAsyncPayload {
+    public values: [i64; 40]
+}
+
+public procedure acceptsLargeAsyncPayload(payload: LargeAsyncPayload) -> Async<(), (), i32, !> {
+    return 1
+}
+
+public procedure asyncLargeCaptureWarningReference() -> i32 {
+    let payload: LargeAsyncPayload = LargeAsyncPayload {
+        values: [1i64; 40]
+    }
+    let operation: Async<(), (), i32, !> = acceptsLargeAsyncPayload(payload)
+    return 0
+}

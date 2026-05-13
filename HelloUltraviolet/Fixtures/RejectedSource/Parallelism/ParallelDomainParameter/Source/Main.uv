@@ -1,0 +1,7 @@
+//! Rejected structured-parallelism specimen for invalid domain constructor parameters.
+
+public procedure parallelDomainParameterReference(context: Context) -> i32 {
+    return parallel context~>cpu(1) {
+        2
+    }
+}

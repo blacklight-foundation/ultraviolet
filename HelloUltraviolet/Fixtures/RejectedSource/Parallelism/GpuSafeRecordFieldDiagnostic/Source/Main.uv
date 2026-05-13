@@ -1,0 +1,15 @@
+//! Rejected structured-parallelism specimen for non-GpuSafe record fields.
+
+public record GpuRecordFieldPayload {
+    public pointer: Ptr<i32>@Valid
+}
+
+public procedure gpuSafeRecordFieldDiagnosticReference(
+    context: Context,
+    payload: GpuRecordFieldPayload
+) -> i32 {
+    return parallel context~>gpu() {
+        payload
+        0
+    }
+}

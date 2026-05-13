@@ -31,7 +31,37 @@ public procedure artifactProjectFixtureSourceArtifactsExist(context: Context) ->
             context,
             "HelloUltraviolet/Fixtures/ArtifactProjects/ExecutableOutput/Ultraviolet.toml",
             "HelloUltraviolet/Fixtures/ArtifactProjects/ExecutableOutput/Source/Main.uv"
+        ) &&
+        artifactProjectSourceArtifactsExist(
+            context,
+            "HelloUltraviolet/Fixtures/ArtifactProjects/ReducedEmptyDispatchPanic/Ultraviolet.toml",
+            "HelloUltraviolet/Fixtures/ArtifactProjects/ReducedEmptyDispatchPanic/Source/Main.uv"
         )
+}
+
+internal procedure artifactProjectExpectedFileMatches(
+    context: Context,
+    expected_path: string@View,
+    expected_text: string@View
+) -> bool {
+    let read_result: Outcome<unique string@Managed, IoError> = context.fs~>read_file(expected_path)
+    return if move read_result is {
+        @Value { value } {
+            let text: string@View = string::as_view(value)
+            auditTextEquals(text, expected_text)
+        }
+        @Error {
+            false
+        }
+    }
+}
+
+public procedure reducedEmptyDispatchPanicExpectedArtifactMatches(context: Context) -> bool {
+    return artifactProjectExpectedFileMatches(
+        context,
+        "HelloUltraviolet/Fixtures/ArtifactProjects/ReducedEmptyDispatchPanic/Expected.uv",
+        "//! Expected runtime panic metadata for the ReducedEmptyDispatchPanic artifact specimen.\n\nexpectedDiagnostic(\"P-SEM-2862\", \"requirement.20.StructuredParallelismRuntimePanicOwnership\")\nexpectedDiagnostic(\"P-SEM-2862\", \"diagnostics.20.StructuredParallelismSupplement\")\n"
+    )
 }
 
 internal procedure artifactTextExcludes(

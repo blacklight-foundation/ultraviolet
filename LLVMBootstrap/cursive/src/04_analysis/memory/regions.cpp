@@ -45,6 +45,7 @@
 #include <vector>
 
 #include "00_core/assert_spec.h"
+#include "00_core/diagnostic_messages.h"
 #include "00_core/diagnostics.h"
 #include "00_core/process_config.h"
 #include "04_analysis/caps/cap_heap.h"
@@ -58,6 +59,7 @@
 #include "04_analysis/typing/type_equiv.h"
 #include "04_analysis/typing/type_expr.h"
 #include "04_analysis/typing/type_infer.h"
+#include "04_analysis/typing/type_layout.h"
 #include "04_analysis/typing/type_lower.h"
 #include "04_analysis/typing/type_pattern.h"
 
@@ -130,6 +132,33 @@ struct ProvPerfStats {
 static ProvPerfStats& RegionsPerfStats() {
   static ProvPerfStats stats;
   return stats;
+}
+
+thread_local core::DiagnosticStream* g_provenance_diags = nullptr;
+
+class ScopedProvenanceDiagnosticStream {
+ public:
+  explicit ScopedProvenanceDiagnosticStream(core::DiagnosticStream* diags)
+      : previous_(g_provenance_diags) {
+    g_provenance_diags = diags;
+  }
+
+  ~ScopedProvenanceDiagnosticStream() {
+    g_provenance_diags = previous_;
+  }
+
+ private:
+  core::DiagnosticStream* previous_ = nullptr;
+};
+
+static void EmitProvenanceDiagnostic(std::string_view diag_id,
+                                     const core::Span& span) {
+  if (!g_provenance_diags) {
+    return;
+  }
+  if (auto diag = core::MakeDiagnosticById(diag_id, span)) {
+    core::Emit(*g_provenance_diags, *diag);
+  }
 }
 
 static bool RegionsPerfEnabled() {
@@ -1302,10 +1331,26 @@ static std::vector<ast::ExprPtr> AsyncCaptureArgs(
   return out;
 }
 
-static bool WarnAsyncCapture(const std::vector<ast::ExprPtr>& args) {
-  // Conservative approximation for conformance instrumentation:
-  // treat larger capture sets as potentially expensive captures.
-  return args.size() >= 3;
+static bool WarnAsyncCapture(const ScopeContext& ctx,
+                             const TypeEnv& env,
+                             const std::vector<ast::ExprPtr>& args) {
+  constexpr std::uint64_t kAsyncLargeCaptureThresholdBytes = 256;
+  std::uint64_t capture_size = 0;
+  for (const auto& arg : args) {
+    const auto type = ExprTypeForProvenance(ctx, env, arg);
+    if (!type.has_value() || !*type) {
+      continue;
+    }
+    const auto size = SizeOf(ctx, *type);
+    if (!size.has_value()) {
+      continue;
+    }
+    capture_size += *size;
+    if (capture_size > kAsyncLargeCaptureThresholdBytes) {
+      return true;
+    }
+  }
+  return false;
 }
 
 static std::optional<TypeRef> LookupTypeForRegion(const ScopeContext& ctx,
@@ -2469,13 +2514,14 @@ static ProvExprResult ProvExpr(const ScopeContext& ctx,
         SPEC_RULE("Async-Capture-Err");
         ProvExprResult err;
         err.ok = false;
-        err.diag_id = "Async-Capture-Err";
+        err.diag_id = "E-CON-0280";
         err.span = expr->span;
         return finish(err);
       }
     }
-    if (WarnAsyncCapture(args)) {
+    if (WarnAsyncCapture(ctx, gamma, args)) {
       SPEC_RULE("Warn-Async-LargeCapture");
+      EmitProvenanceDiagnostic("W-CON-0201", expr->span);
     } else {
       SPEC_RULE("Warn-Async-LargeCapture-Ok");
     }
@@ -2724,7 +2770,7 @@ static ProvStmtResult ProvStmt(const ScopeContext& ctx,
             if (AsyncSigForExpr(ctx, gamma, node.value, expr_map == nullptr)
                     .has_value()) {
               SPEC_RULE("Prov-Async-Escape-Err");
-              return {false, "E-MEM-3020", node.span,
+              return {false, "E-CON-0281", node.span,
                       env, gamma, {}};
             }
             SPEC_RULE("Prov-Escape-Err");
@@ -2749,7 +2795,7 @@ static ProvStmtResult ProvStmt(const ScopeContext& ctx,
             if (AsyncSigForExpr(ctx, gamma, node.value, expr_map == nullptr)
                     .has_value()) {
               SPEC_RULE("Prov-Async-Escape-Err");
-              return {false, "E-MEM-3020", node.span,
+              return {false, "E-CON-0281", node.span,
                       env, gamma, {}};
             }
             SPEC_RULE("Prov-Escape-Err");
@@ -2800,7 +2846,7 @@ static ProvStmtResult ProvStmt(const ScopeContext& ctx,
           const auto bind_pi = BindProv(inner_env, BottomTag());
           Intro_pi_inplace(inner_env, name, bind_pi);
           inner_env.regions.push_back(
-              RegionEntry{IdKeyOf(name), IdKeyOf(name), true});
+              RegionEntry{IdKeyOf(name), IdKeyOf(name), false});
 
           TypeEnv inner_gamma = gamma;
           inner_gamma.scopes.emplace_back();
@@ -3122,8 +3168,10 @@ ProvCheckResult ProvBindCheck(const ScopeContext& ctx,
                               const ast::ModulePath& module_path,
                               const std::vector<ast::Param>& params,
                               const std::shared_ptr<ast::Block>& body,
-                              const std::optional<BindSelfParam>& self_param) {
+                              const std::optional<BindSelfParam>& self_param,
+                              core::DiagnosticStream* diags) {
   SpecDefsRegions();
+  ScopedProvenanceDiagnosticStream scoped_diags(diags);
   auto& perf = RegionsPerfStats();
   const bool perf_on = RegionsPerfActive();
   if (perf_on) {

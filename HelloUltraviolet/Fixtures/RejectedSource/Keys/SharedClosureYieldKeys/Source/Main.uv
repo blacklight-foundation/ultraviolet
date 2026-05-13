@@ -1,0 +1,13 @@
+//! Rejected async-key specimen for a shared-capturing closure that yields with a key held.
+
+public procedure sharedClosureYieldKeysReference() -> Async<i32, (), (), !> {
+    var shared_value: shared i32 = 1
+    let producer = || -> Async<i32, (), (), !> {
+        #shared_value read {
+            yield 1
+        }
+        return
+    }
+    producer()
+    return
+}

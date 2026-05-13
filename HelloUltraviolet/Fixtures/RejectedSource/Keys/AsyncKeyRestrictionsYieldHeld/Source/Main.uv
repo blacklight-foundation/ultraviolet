@@ -1,0 +1,9 @@
+//! Rejected async-key specimen for yield while a shared key is held.
+
+public procedure asyncKeyRestrictionsYieldHeldReference() -> Async<i32, (), (), !> {
+    var shared_value: shared i32 = 1
+    #shared_value read {
+        yield 1
+    }
+    return
+}

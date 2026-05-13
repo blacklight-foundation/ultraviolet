@@ -868,6 +868,12 @@ ModalDeclResult TypeModalDecl(
       result.diag_id = "Superclass-Undefined";
       return result;
     }
+    if (!CheckOrphanRule(ctx, type_path, impl_path, CurrentModule(ctx))) {
+      SPEC_RULE("Impl-Orphan-Err");
+      result.ok = false;
+      result.diag_id = "E-TYP-2507";
+      return result;
+    }
 
     const auto field_table = ClassFieldTable(ctx, impl_path);
     if (!field_table.ok) {

@@ -872,6 +872,7 @@ static const StaticRuleMeta kStaticRules[] = {
     {"Impl-Field-Missing", "DeclJudg", std::nullopt, "04_analysis/typing/item/enum_decl.cpp", std::string_view("f : T_c ∈ ClassFieldTable(Cl)\n¬ ∃ T_i. f : T_i ∈ Fields(T)"), false},
     {"Impl-Field-Type-Err", "DeclJudg", std::nullopt, "04_analysis/typing/item/record_decl.cpp", std::string_view("f : T_c ∈ ClassFieldTable(Cl)\nf : T_i ∈ Fields(T)\n¬(Γ ⊢ T_i <: T_c)"), false},
     {"Impl-Missing-Method", "DeclJudg", std::nullopt, "04_analysis/typing/item/enum_decl.cpp", std::string_view("m ∈ ClassMethodTable(Cl)\nm.body = ⊥\nMethodByName(T, m.name) = ⊥"), false},
+    {"Impl-Orphan-Err", "DeclJudg", std::nullopt, "04_analysis/typing/item/enum_decl.cpp", std::string_view("Cl ∈ Implements(T)\n¬ ImplOrphanOk(T, Cl)"), false},
     {"Impl-Sig-Err", "DeclJudg", std::nullopt, "04_analysis/typing/item/record_decl.cpp", std::string_view("m ∈ ClassMethodTable(Cl)\nm.body = ⊥\nMethodByName(T, m.name) = m'\n¬ SigMatch(T, m', m)"), false},
     {"ImplModule", "ResolvePathJudg", std::nullopt, "04_analysis/resolve/module_relations.cpp", std::nullopt, false},
     {"ImplementsEq", "TypeInfJudg", std::nullopt, "04_analysis/typing/type_predicates.cpp", std::nullopt, false},

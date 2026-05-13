@@ -1,0 +1,98 @@
+//! Diagnostic async state-machine specimens.
+
+public procedure asyncDiagnosticSourceFixtureCount() -> usize {
+    return 5usize
+}
+
+public procedure validatedAsyncDiagnosticSourceFixtureCount() -> usize {
+    var count: usize = 0usize
+    if diagnosticSpecimenMatches(
+        diagnosticSpecimen(
+            "AsyncLargeCaptureWarning",
+            "Fixtures/DiagnosticSource/Async/AsyncLargeCaptureWarning",
+            "Fixtures/DiagnosticSource/Async/AsyncLargeCaptureWarning/Source/Main.uv",
+            "Fixtures/DiagnosticSource/Async/AsyncLargeCaptureWarning/Expected.uv",
+            expectedDiagnostic("W-CON-0201", "rule.21.Warn-Async-LargeCapture")
+        ),
+        "AsyncLargeCaptureWarning",
+        "Fixtures/DiagnosticSource/Async/AsyncLargeCaptureWarning",
+        "Fixtures/DiagnosticSource/Async/AsyncLargeCaptureWarning/Source/Main.uv",
+        "Fixtures/DiagnosticSource/Async/AsyncLargeCaptureWarning/Expected.uv",
+        "W-CON-0201",
+        "rule.21.Warn-Async-LargeCapture"
+    ) {
+        count = count + 1usize
+    }
+    if diagnosticSpecimenMatches(
+        diagnosticSpecimen(
+            "AsyncLargeCaptureWarningEmission",
+            "Fixtures/DiagnosticSource/Async/AsyncLargeCaptureWarningEmission",
+            "Fixtures/DiagnosticSource/Async/AsyncLargeCaptureWarningEmission/Source/Main.uv",
+            "Fixtures/DiagnosticSource/Async/AsyncLargeCaptureWarningEmission/Expected.uv",
+            expectedDiagnostic("W-CON-0201", "requirement.21.AsyncLargeCaptureWarningEmission")
+        ),
+        "AsyncLargeCaptureWarningEmission",
+        "Fixtures/DiagnosticSource/Async/AsyncLargeCaptureWarningEmission",
+        "Fixtures/DiagnosticSource/Async/AsyncLargeCaptureWarningEmission/Source/Main.uv",
+        "Fixtures/DiagnosticSource/Async/AsyncLargeCaptureWarningEmission/Expected.uv",
+        "W-CON-0201",
+        "requirement.21.AsyncLargeCaptureWarningEmission"
+    ) {
+        count = count + 1usize
+    }
+    if diagnosticAbsenceSpecimenMatches(
+        diagnosticAbsenceSpecimen(
+            "AsyncLargeCaptureNoWarning",
+            "Fixtures/DiagnosticSource/Async/AsyncLargeCaptureNoWarning",
+            "Fixtures/DiagnosticSource/Async/AsyncLargeCaptureNoWarning/Source/Main.uv",
+            "Fixtures/DiagnosticSource/Async/AsyncLargeCaptureNoWarning/Expected.uv",
+            expectedDiagnosticAbsent(
+                "W-CON-0201",
+                "rule.21.Warn-Async-LargeCapture-Ok"
+            )
+        ),
+        "AsyncLargeCaptureNoWarning",
+        "Fixtures/DiagnosticSource/Async/AsyncLargeCaptureNoWarning",
+        "Fixtures/DiagnosticSource/Async/AsyncLargeCaptureNoWarning/Source/Main.uv",
+        "Fixtures/DiagnosticSource/Async/AsyncLargeCaptureNoWarning/Expected.uv",
+        "W-CON-0201",
+        "rule.21.Warn-Async-LargeCapture-Ok"
+    ) {
+        count = count + 1usize
+    }
+    if diagnosticSpecimenMatches(
+        diagnosticSpecimen(
+            "AsyncStateMachineDiagnosticsTable",
+            "Fixtures/DiagnosticSource/Async/AsyncStateMachineDiagnosticsTable",
+            "Fixtures/DiagnosticSource/Async/AsyncStateMachineDiagnosticsTable/Source/Main.uv",
+            "Fixtures/DiagnosticSource/Async/AsyncStateMachineDiagnosticsTable/Expected.uv",
+            expectedDiagnostic("W-CON-0201", "diagnostics.21.AsyncStateMachineDiagnostics")
+        ),
+        "AsyncStateMachineDiagnosticsTable",
+        "Fixtures/DiagnosticSource/Async/AsyncStateMachineDiagnosticsTable",
+        "Fixtures/DiagnosticSource/Async/AsyncStateMachineDiagnosticsTable/Source/Main.uv",
+        "Fixtures/DiagnosticSource/Async/AsyncStateMachineDiagnosticsTable/Expected.uv",
+        "W-CON-0201",
+        "diagnostics.21.AsyncStateMachineDiagnostics"
+    ) {
+        count = count + 1usize
+    }
+    if diagnosticSpecimenMatches(
+        diagnosticSpecimen(
+            "StaleValueMarkIRDiagnostics",
+            "Fixtures/DiagnosticSource/Async/StaleValueMarkIRDiagnostics",
+            "Fixtures/DiagnosticSource/Async/StaleValueMarkIRDiagnostics/Source/Main.uv",
+            "Fixtures/DiagnosticSource/Async/StaleValueMarkIRDiagnostics/Expected.uv",
+            expectedDiagnostic("W-CON-0011", "requirement.21.StaleValueMarkIRDiagnostics")
+        ),
+        "StaleValueMarkIRDiagnostics",
+        "Fixtures/DiagnosticSource/Async/StaleValueMarkIRDiagnostics",
+        "Fixtures/DiagnosticSource/Async/StaleValueMarkIRDiagnostics/Source/Main.uv",
+        "Fixtures/DiagnosticSource/Async/StaleValueMarkIRDiagnostics/Expected.uv",
+        "W-CON-0011",
+        "requirement.21.StaleValueMarkIRDiagnostics"
+    ) {
+        count = count + 1usize
+    }
+    return count
+}

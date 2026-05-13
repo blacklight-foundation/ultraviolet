@@ -216,7 +216,9 @@ static bool CleanupActionCanPanic(const CleanupAction& action) {
     case CleanupAction::Kind::ReleaseRegion:
     case CleanupAction::Kind::ReleaseKeyScope:
     case CleanupAction::Kind::ReacquireReleasedKey:
+      return false;
     case CleanupAction::Kind::ParallelJoin:
+      return true;
     case CleanupAction::Kind::RuntimeScopeExit:
       // These lower to runtime no-panic helpers and do not carry a hidden
       // panic out-parameter. Treating them as panic-capable bloats cleanup CFG
@@ -396,6 +398,10 @@ static void AppendCleanupItemToPlan(const CleanupItem& item,
       CleanupAction action;
       action.kind = CleanupAction::Kind::ParallelJoin;
       action.name = item.name;
+      IRValue parallel_ctx;
+      parallel_ctx.kind = IRValue::Kind::Opaque;
+      parallel_ctx.name = item.name;
+      action.value = parallel_ctx;
       plan.push_back(std::move(action));
       return;
     }
@@ -615,21 +621,29 @@ static IRPtr EmitCleanupAction(const CleanupAction& action, LowerCtx& ctx) {
       call.result = ctx.FreshTempValue("parallel_join_status");
       ctx.RegisterValueType(call.result, analysis::MakeTypePrim("i32"));
 
-      IRBinaryOp ok_cmp;
-      ok_cmp.op = "==";
-      ok_cmp.lhs = call.result;
-      ok_cmp.rhs = U32Immediate(0);
-      ok_cmp.result = ctx.FreshTempValue("parallel_join_ok");
-      ctx.RegisterValueType(ok_cmp.result, analysis::MakeTypePrim("bool"));
+      IRBinaryOp panic_cmp;
+      panic_cmp.op = "!=";
+      panic_cmp.lhs = call.result;
+      panic_cmp.rhs = U32Immediate(0);
+      panic_cmp.result = ctx.FreshTempValue("parallel_join_panicked");
+      ctx.RegisterValueType(panic_cmp.result, analysis::MakeTypePrim("bool"));
 
-      IRCheckOp check;
-      check.op = "nonnull";
-      check.reason = PanicReasonString(PanicReason::Other);
-      check.lhs = ok_cmp.result;
+      IRPtr write_panic = WritePanicRecord(
+          BuildPanicAccess(ctx),
+          BoolImmediate(true),
+          call.result);
+
+      IRIf if_panic;
+      if_panic.cond = panic_cmp.result;
+      if_panic.then_ir = write_panic;
+      if_panic.then_value = UnitValue();
+      if_panic.else_ir = EmptyIR();
+      if_panic.else_value = UnitValue();
+      if_panic.result = ctx.FreshTempValue("parallel_join_panic_if");
 
       return SeqIR({MakeIR(std::move(call)),
-                    MakeIR(std::move(ok_cmp)),
-                    MakeIR(std::move(check))});
+                    MakeIR(std::move(panic_cmp)),
+                    MakeIR(std::move(if_panic))});
     }
     case CleanupAction::Kind::RunDefer: {
       if (action.defer_ir) {

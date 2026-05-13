@@ -1365,6 +1365,8 @@ std::vector<std::string> BuildWindowsLinkArgs(
   } else {
     args.push_back("/ENTRY:main");
     args.push_back("/SUBSYSTEM:CONSOLE");
+    args.push_back("/MANIFEST:EMBED");
+    args.push_back("/MANIFESTUAC:level='asInvoker' uiAccess='false'");
     args.push_back("/STACK:" +
                    std::to_string(kWindowsExeStackReserveBytes) +
                    "," +

@@ -1,0 +1,9 @@
+//! Rejected structured-parallelism specimen for invalid spawn priority options.
+
+public procedure spawnInvalidPriorityOptionReference(context: Context) -> i32 {
+    return parallel context~>cpu() {
+        spawn [priority: 1] {
+            1
+        }
+    }
+}

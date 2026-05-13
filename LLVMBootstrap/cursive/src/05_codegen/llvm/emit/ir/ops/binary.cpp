@@ -6,6 +6,155 @@
 
 namespace cursive::codegen::emit_detail {
 
+namespace {
+
+analysis::TypeRef StripStringBytesWrappers(const LowerCtx *ctx,
+                                           analysis::TypeRef type)
+{
+  analysis::TypeRef current = ResolveAliasType(ctx, type);
+  if (!current)
+  {
+    current = type;
+  }
+
+  for (std::size_t depth = 0; current && depth < 8; ++depth)
+  {
+    if (analysis::TypeRef stripped = analysis::StripPerm(current))
+    {
+      current = stripped;
+    }
+    if (const auto *refined = std::get_if<analysis::TypeRefine>(&current->node))
+    {
+      current = ResolveAliasType(ctx, refined->base);
+      if (!current)
+      {
+        current = refined->base;
+      }
+      continue;
+    }
+    break;
+  }
+
+  return current;
+}
+
+bool SameStringBytesFamily(const LowerCtx *ctx,
+                           const analysis::TypeRef &lhs_type,
+                           const analysis::TypeRef &rhs_type)
+{
+  analysis::TypeRef lhs = StripStringBytesWrappers(ctx, lhs_type);
+  analysis::TypeRef rhs = StripStringBytesWrappers(ctx, rhs_type);
+  if (!lhs || !rhs)
+  {
+    return false;
+  }
+
+  const bool lhs_string = std::holds_alternative<analysis::TypeString>(lhs->node);
+  const bool rhs_string = std::holds_alternative<analysis::TypeString>(rhs->node);
+  const bool lhs_bytes = std::holds_alternative<analysis::TypeBytes>(lhs->node);
+  const bool rhs_bytes = std::holds_alternative<analysis::TypeBytes>(rhs->node);
+  return (lhs_string && rhs_string) || (lhs_bytes && rhs_bytes);
+}
+
+llvm::Value *EmitStringBytesContentEq(LLVMEmitter &emitter,
+                                      llvm::IRBuilder<> &builder,
+                                      const LowerCtx *ctx,
+                                      const analysis::TypeRef &lhs_type,
+                                      llvm::Value *lhs,
+                                      const analysis::TypeRef &rhs_type,
+                                      llvm::Value *rhs)
+{
+  if (!SameStringBytesFamily(ctx, lhs_type, rhs_type) || !lhs || !rhs)
+  {
+    return nullptr;
+  }
+  if (lhs->getType() != rhs->getType())
+  {
+    rhs = CoerceTo(&builder, rhs, lhs->getType());
+  }
+  if (!rhs || lhs->getType() != rhs->getType())
+  {
+    return nullptr;
+  }
+
+  auto *view_ty = llvm::dyn_cast<llvm::StructType>(lhs->getType());
+  if (!view_ty || view_ty->getNumElements() < 2 ||
+      !view_ty->getElementType(0)->isPointerTy() ||
+      !view_ty->getElementType(1)->isIntegerTy())
+  {
+    return nullptr;
+  }
+
+  llvm::Type *i64_ty = llvm::Type::getInt64Ty(emitter.GetContext());
+  llvm::Type *i32_ty = llvm::Type::getInt32Ty(emitter.GetContext());
+  llvm::Type *i1_ty = llvm::Type::getInt1Ty(emitter.GetContext());
+  llvm::Type *ptr_ty = emitter.GetOpaquePtr();
+
+  llvm::Value *lhs_data = builder.CreateExtractValue(lhs, {0u});
+  llvm::Value *rhs_data = builder.CreateExtractValue(rhs, {0u});
+  llvm::Value *lhs_len = builder.CreateExtractValue(lhs, {1u});
+  llvm::Value *rhs_len = builder.CreateExtractValue(rhs, {1u});
+  if (!lhs_data || !rhs_data || !lhs_len || !rhs_len)
+  {
+    return nullptr;
+  }
+
+  lhs_data = CoerceTo(&builder, lhs_data, ptr_ty);
+  rhs_data = CoerceTo(&builder, rhs_data, ptr_ty);
+  lhs_len = CoerceTo(&builder, lhs_len, i64_ty);
+  rhs_len = CoerceTo(&builder, rhs_len, i64_ty);
+  if (!lhs_data || !rhs_data || !lhs_len || !rhs_len)
+  {
+    return nullptr;
+  }
+
+  llvm::Value *lengths_equal = builder.CreateICmpEQ(lhs_len, rhs_len);
+  llvm::Value *lhs_len_le_rhs = builder.CreateICmpULE(lhs_len, rhs_len);
+  llvm::Value *compare_len = builder.CreateSelect(lhs_len_le_rhs, lhs_len, rhs_len);
+  llvm::Value *zero_len = builder.CreateICmpEQ(
+      compare_len, llvm::ConstantInt::get(i64_ty, 0));
+
+  llvm::Function *fn =
+      builder.GetInsertBlock() ? builder.GetInsertBlock()->getParent() : nullptr;
+  if (!fn)
+  {
+    auto *memcmp_ty =
+        llvm::FunctionType::get(i32_ty, {ptr_ty, ptr_ty, i64_ty}, false);
+    llvm::FunctionCallee memcmp_fn =
+        emitter.GetModule().getOrInsertFunction("memcmp", memcmp_ty);
+    llvm::Value *cmp = builder.CreateCall(memcmp_fn, {lhs_data, rhs_data, compare_len});
+    llvm::Value *bytes_equal =
+        builder.CreateICmpEQ(cmp, llvm::ConstantInt::get(i32_ty, 0));
+    return builder.CreateAnd(lengths_equal, bytes_equal);
+  }
+
+  llvm::BasicBlock *origin = builder.GetInsertBlock();
+  llvm::BasicBlock *memcmp_block =
+      llvm::BasicBlock::Create(emitter.GetContext(), "string_eq.memcmp", fn);
+  llvm::BasicBlock *done_block =
+      llvm::BasicBlock::Create(emitter.GetContext(), "string_eq.done", fn);
+  builder.CreateCondBr(zero_len, done_block, memcmp_block);
+
+  builder.SetInsertPoint(memcmp_block);
+  auto *memcmp_ty =
+      llvm::FunctionType::get(i32_ty, {ptr_ty, ptr_ty, i64_ty}, false);
+  llvm::FunctionCallee memcmp_fn =
+      emitter.GetModule().getOrInsertFunction("memcmp", memcmp_ty);
+  llvm::Value *cmp = builder.CreateCall(memcmp_fn, {lhs_data, rhs_data, compare_len});
+  llvm::Value *memcmp_equal =
+      builder.CreateICmpEQ(cmp, llvm::ConstantInt::get(i32_ty, 0));
+  llvm::BasicBlock *memcmp_exit = builder.GetInsertBlock();
+  builder.CreateBr(done_block);
+
+  builder.SetInsertPoint(done_block);
+  llvm::PHINode *bytes_equal = builder.CreatePHI(i1_ty, 2);
+  bytes_equal->addIncoming(llvm::ConstantInt::getTrue(emitter.GetContext()), origin);
+  bytes_equal->addIncoming(memcmp_equal, memcmp_exit);
+  return builder.CreateAnd(lengths_equal, bytes_equal);
+}
+
+}  // namespace
+
 void IRInstructionVisitor::operator()(const IRBinaryOp &bin) const
 {
   llvm::Function *debug_fn =
@@ -250,11 +399,21 @@ void IRInstructionVisitor::operator()(const IRBinaryOp &bin) const
   }
   else if (op == "==" || op == "===")
   {
-    result = EmitTypedEq(&builder, lhs, rhs);
+    result = EmitStringBytesContentEq(emitter, builder, type_ctx, lhs_type, lhs,
+                                      rhs_type, rhs);
+    if (!result)
+    {
+      result = EmitTypedEq(&builder, lhs, rhs);
+    }
   }
   else if (op == "!=")
   {
-    llvm::Value *eq = EmitTypedEq(&builder, lhs, rhs);
+    llvm::Value *eq = EmitStringBytesContentEq(emitter, builder, type_ctx,
+                                               lhs_type, lhs, rhs_type, rhs);
+    if (!eq)
+    {
+      eq = EmitTypedEq(&builder, lhs, rhs);
+    }
     result = builder.CreateNot(AsBool(&builder, eq));
   }
   else if (op == "<")

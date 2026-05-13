@@ -1,0 +1,6 @@
+//! Rejected async specimen for the async diagnostics supplement table.
+
+public procedure asyncDiagnosticsSupplementReference(context: Context) -> Async<(), (), i32, !> {
+    let text: unique string@Managed = context.fs~>read_file("missing.txt")?
+    return 0
+}

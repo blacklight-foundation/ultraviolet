@@ -2695,6 +2695,52 @@ public procedure sharedDynamicMutatingReceiverExpectedDiagnosticFileMatches(cont
     )
 }
 
+public procedure asyncKeyRestrictionsYieldHeldExpectedDiagnosticFileMatches(
+    context: Context
+) -> bool {
+    return expectedDiagnosticFileMatches(
+        context,
+        "HelloUltraviolet/Fixtures/RejectedSource/Keys/AsyncKeyRestrictionsYieldHeld/Expected.uv",
+        "//! Expected diagnostic metadata for the AsyncKeyRestrictionsYieldHeld rejected-source specimen.\n\nexpectedDiagnostic(\"E-CON-0213\", \"requirement.21.AsyncKeyRestrictions\")\n"
+    )
+}
+
+public procedure yieldFromWhileKeyHeldExpectedDiagnosticFileMatches(context: Context) -> bool {
+    return expectedDiagnosticFileMatches(
+        context,
+        "HelloUltraviolet/Fixtures/RejectedSource/Keys/YieldFromWhileKeyHeld/Expected.uv",
+        "//! Expected diagnostic metadata for the YieldFromWhileKeyHeld rejected-source specimen.\n\nexpectedDiagnostic(\"E-CON-0224\", \"diagnostics.21.AsyncKeyDiagnostics\")\n"
+    )
+}
+
+public procedure waitWhileKeyHeldLoweringExpectedDiagnosticFileMatches(
+    context: Context
+) -> bool {
+    return expectedDiagnosticFileMatches(
+        context,
+        "HelloUltraviolet/Fixtures/RejectedSource/Keys/WaitWhileKeyHeldLowering/Expected.uv",
+        "//! Expected diagnostic metadata for the WaitWhileKeyHeldLowering rejected-source specimen.\n\nexpectedDiagnostic(\"E-CON-0133\", \"rule.21.Lower-Wait-Key-Illegal\")\n"
+    )
+}
+
+public procedure sharedClosureYieldKeysExpectedDiagnosticFileMatches(context: Context) -> bool {
+    return expectedDiagnosticFileMatches(
+        context,
+        "HelloUltraviolet/Fixtures/RejectedSource/Keys/SharedClosureYieldKeys/Expected.uv",
+        "//! Expected diagnostic metadata for the SharedClosureYieldKeys rejected-source specimen.\n\nexpectedDiagnostic(\"E-CON-0213\", \"rule.21.A-Closure-Yield-Keys-Err\")\n"
+    )
+}
+
+public procedure sharedCapturingClosureYieldKeysExpectedDiagnosticFileMatches(
+    context: Context
+) -> bool {
+    return expectedDiagnosticFileMatches(
+        context,
+        "HelloUltraviolet/Fixtures/RejectedSource/Keys/SharedCapturingClosureYieldKeys/Expected.uv",
+        "//! Expected diagnostic metadata for the SharedCapturingClosureYieldKeys rejected-source specimen.\n\nexpectedDiagnostic(\"E-CON-0213\", \"requirement.21.SharedCapturingClosureYieldKeys\")\n"
+    )
+}
+
 public procedure asyncTypeDiagnosticsTableExpectedDiagnosticFileMatches(
     context: Context
 ) -> bool {
@@ -2730,5 +2776,325 @@ public procedure loopAsyncEnclosingReturnExpectedDiagnosticFileMatches(context: 
         context,
         "HelloUltraviolet/Fixtures/RejectedSource/Expressions/LoopAsyncEnclosingReturn/Expected.uv",
         "//! Expected diagnostic metadata for the LoopAsyncEnclosingReturn rejected-source specimen.\n\nexpectedDiagnostic(\"E-CON-0240\", \"rule.21.Loop-Async-Err\")\n"
+    )
+}
+
+public procedure asyncCaptureOutlivesFrameExpectedDiagnosticFileMatches(
+    context: Context
+) -> bool {
+    return expectedDiagnosticFileMatches(
+        context,
+        "HelloUltraviolet/Fixtures/RejectedSource/Expressions/AsyncCaptureOutlivesFrame/Expected.uv",
+        "//! Expected diagnostic metadata for the AsyncCaptureOutlivesFrame rejected-source specimen.\n\nexpectedDiagnostic(\"E-CON-0280\", \"rule.21.Async-Capture-Err\")\n"
+    )
+}
+
+public procedure asyncOperationEscapesRegionExpectedDiagnosticFileMatches(
+    context: Context
+) -> bool {
+    return expectedDiagnosticFileMatches(
+        context,
+        "HelloUltraviolet/Fixtures/RejectedSource/Expressions/AsyncOperationEscapesRegion/Expected.uv",
+        "//! Expected diagnostic metadata for the AsyncOperationEscapesRegion rejected-source specimen.\n\nexpectedDiagnostic(\"E-CON-0281\", \"rule.21.Prov-Async-Escape-Err\")\n"
+    )
+}
+
+public procedure asyncDiagnosticsSupplementExpectedDiagnosticFileMatches(
+    context: Context
+) -> bool {
+    return expectedDiagnosticFileMatches(
+        context,
+        "HelloUltraviolet/Fixtures/RejectedSource/Expressions/AsyncDiagnosticsSupplement/Expected.uv",
+        "//! Expected diagnostic metadata for the AsyncDiagnosticsSupplement rejected-source specimen.\n\nexpectedDiagnostic(\"E-CON-0230\", \"diagnostics.21.AsyncDiagnosticsSupplement\")\n"
+    )
+}
+
+public procedure spawnOutsideParallelExpectedDiagnosticFileMatches(context: Context) -> bool {
+    return expectedDiagnosticFileMatches(
+        context,
+        "HelloUltraviolet/Fixtures/RejectedSource/Parallelism/SpawnOutsideParallel/Expected.uv",
+        "//! Expected diagnostic metadata for the SpawnOutsideParallel rejected-source specimen.\n\nexpectedDiagnostic(\"E-CON-0101\", \"requirement.20.SpawnRequiresParallelContext\")\n"
+    )
+}
+
+public procedure dispatchOutsideParallelExpectedDiagnosticFileMatches(context: Context) -> bool {
+    return expectedDiagnosticFileMatches(
+        context,
+        "HelloUltraviolet/Fixtures/RejectedSource/Parallelism/DispatchOutsideParallel/Expected.uv",
+        "//! Expected diagnostic metadata for the DispatchOutsideParallel rejected-source specimen.\n\nexpectedDiagnostic(\"E-CON-0140\", \"rule.20.Dispatch-Outside-Err\")\n"
+    )
+}
+
+public procedure parallelDomainNotExecutionDomainExpectedDiagnosticFileMatches(
+    context: Context
+) -> bool {
+    return expectedDiagnosticFileMatches(
+        context,
+        "HelloUltraviolet/Fixtures/RejectedSource/Parallelism/ParallelDomainNotExecutionDomain/Expected.uv",
+        "//! Expected diagnostic metadata for the ParallelDomainNotExecutionDomain rejected-source specimen.\n\nexpectedDiagnostic(\"E-CON-0102\", \"diagnostics.20.ParallelBlocks\")\n"
+    )
+}
+
+public procedure parallelCancelOptionTypeExpectedDiagnosticFileMatches(context: Context) -> bool {
+    return expectedDiagnosticFileMatches(
+        context,
+        "HelloUltraviolet/Fixtures/RejectedSource/Parallelism/ParallelCancelOptionType/Expected.uv",
+        "//! Expected diagnostic metadata for the ParallelCancelOptionType rejected-source specimen.\n\nexpectedDiagnostic(\"E-CON-0103\", \"requirement.20.ParallelCancelOptionType\")\n"
+    )
+}
+
+public procedure parallelDim3ConstExpectedDiagnosticFileMatches(context: Context) -> bool {
+    return expectedDiagnosticFileMatches(
+        context,
+        "HelloUltraviolet/Fixtures/RejectedSource/Parallelism/ParallelDim3Const/Expected.uv",
+        "//! Expected diagnostic metadata for the ParallelDim3Const rejected-source specimen.\n\nexpectedDiagnostic(\"E-CON-0159\", \"rule.20.Dim3Const-Err\")\n"
+    )
+}
+
+public procedure parallelWorkgroupSizeExpectedDiagnosticFileMatches(context: Context) -> bool {
+    return expectedDiagnosticFileMatches(
+        context,
+        "HelloUltraviolet/Fixtures/RejectedSource/Parallelism/ParallelWorkgroupSize/Expected.uv",
+        "//! Expected diagnostic metadata for the ParallelWorkgroupSize rejected-source specimen.\n\nexpectedDiagnostic(\"E-CON-0157\", \"rule.20.WorkgroupSize-Err\")\n"
+    )
+}
+
+public procedure dispatchChunkTypeExpectedDiagnosticFileMatches(context: Context) -> bool {
+    return expectedDiagnosticFileMatches(
+        context,
+        "HelloUltraviolet/Fixtures/RejectedSource/Parallelism/DispatchChunkType/Expected.uv",
+        "//! Expected diagnostic metadata for the DispatchChunkType rejected-source specimen.\n\nexpectedDiagnostic(\"E-SEM-3133\", \"rule.20.Dispatch-Chunk-Type-Err\")\n"
+    )
+}
+
+public procedure dispatchNonAssociativeReduceExpectedDiagnosticFileMatches(
+    context: Context
+) -> bool {
+    return expectedDiagnosticFileMatches(
+        context,
+        "HelloUltraviolet/Fixtures/RejectedSource/Parallelism/DispatchNonAssociativeReduce/Expected.uv",
+        "//! Expected diagnostic metadata for the DispatchNonAssociativeReduce rejected-source specimen.\n\nexpectedDiagnostic(\"E-CON-0143\", \"rule.20.Dispatch-Reduce-Assoc-Err\")\n"
+    )
+}
+
+public procedure nestedGpuParallelExpectedDiagnosticFileMatches(context: Context) -> bool {
+    return expectedDiagnosticFileMatches(
+        context,
+        "HelloUltraviolet/Fixtures/RejectedSource/Parallelism/NestedGpuParallel/Expected.uv",
+        "//! Expected diagnostic metadata for the NestedGpuParallel rejected-source specimen.\n\nexpectedDiagnostic(\"E-CON-0152\", \"requirement.20.NoNestedGpuParallel\")\n"
+    )
+}
+
+public procedure gpuIntrinsicOutsideExpectedDiagnosticFileMatches(context: Context) -> bool {
+    return expectedDiagnosticFileMatches(
+        context,
+        "HelloUltraviolet/Fixtures/RejectedSource/Parallelism/GpuIntrinsicOutside/Expected.uv",
+        "//! Expected diagnostic metadata for the GpuIntrinsicOutside rejected-source specimen.\n\nexpectedDiagnostic(\"E-CON-0154\", \"rule.20.GpuIntrinsic-Outside-Err\")\n"
+    )
+}
+
+public procedure barrierOutsideGpuContextExpectedDiagnosticFileMatches(context: Context) -> bool {
+    return expectedDiagnosticFileMatches(
+        context,
+        "HelloUltraviolet/Fixtures/RejectedSource/Parallelism/BarrierOutsideGpuContext/Expected.uv",
+        "//! Expected diagnostic metadata for the BarrierOutsideGpuContext rejected-source specimen.\n\nexpectedDiagnostic(\"E-CON-0156\", \"rule.20.Barrier-Outside-Err\")\n"
+    )
+}
+
+public procedure parallelDomainParameterExpectedDiagnosticFileMatches(context: Context) -> bool {
+    return expectedDiagnosticFileMatches(
+        context,
+        "HelloUltraviolet/Fixtures/RejectedSource/Parallelism/ParallelDomainParameter/Expected.uv",
+        "//! Expected diagnostic metadata for the ParallelDomainParameter rejected-source specimen.\n\nexpectedDiagnostic(\"E-CON-0103\", \"rule.20.Parallel-Domain-Param-Err\")\n"
+    )
+}
+
+public procedure spawnInvalidPriorityOptionExpectedDiagnosticFileMatches(
+    context: Context
+) -> bool {
+    return expectedDiagnosticFileMatches(
+        context,
+        "HelloUltraviolet/Fixtures/RejectedSource/Parallelism/SpawnInvalidPriorityOption/Expected.uv",
+        "//! Expected diagnostic metadata for the SpawnInvalidPriorityOption rejected-source specimen.\n\nexpectedDiagnostic(\"E-CON-0130\", \"diagnostics.20.Spawn\")\n"
+    )
+}
+
+public procedure dispatchRequiresParallelContextExpectedDiagnosticFileMatches(
+    context: Context
+) -> bool {
+    return expectedDiagnosticFileMatches(
+        context,
+        "HelloUltraviolet/Fixtures/RejectedSource/Parallelism/DispatchRequiresParallelContext/Expected.uv",
+        "//! Expected diagnostic metadata for the DispatchRequiresParallelContext rejected-source specimen.\n\nexpectedDiagnostic(\"E-CON-0140\", \"requirement.20.DispatchRequiresParallelContext\")\n"
+    )
+}
+
+public procedure dispatchDiagnosticsExpectedDiagnosticFileMatches(context: Context) -> bool {
+    return expectedDiagnosticFileMatches(
+        context,
+        "HelloUltraviolet/Fixtures/RejectedSource/Parallelism/DispatchDiagnostics/Expected.uv",
+        "//! Expected diagnostic metadata for the DispatchDiagnostics rejected-source specimen.\n\nexpectedDiagnostic(\"E-CON-0140\", \"diagnostics.20.Dispatch\")\n"
+    )
+}
+
+public procedure executionDomainsDiagnosticsExpectedDiagnosticFileMatches(
+    context: Context
+) -> bool {
+    return expectedDiagnosticFileMatches(
+        context,
+        "HelloUltraviolet/Fixtures/RejectedSource/Parallelism/ExecutionDomainsDiagnostics/Expected.uv",
+        "//! Expected diagnostic metadata for the ExecutionDomainsDiagnostics rejected-source specimen.\n\nexpectedDiagnostic(\"E-CON-0156\", \"diagnostics.20.ExecutionDomains\")\n"
+    )
+}
+
+public procedure determinismAndNestingDiagnosticsExpectedDiagnosticFileMatches(
+    context: Context
+) -> bool {
+    return expectedDiagnosticFileMatches(
+        context,
+        "HelloUltraviolet/Fixtures/RejectedSource/Parallelism/DeterminismAndNestingDiagnostics/Expected.uv",
+        "//! Expected diagnostic metadata for the DeterminismAndNestingDiagnostics rejected-source specimen.\n\nexpectedDiagnostic(\"E-CON-0152\", \"diagnostics.20.DeterminismAndNesting\")\n"
+    )
+}
+
+public procedure keyBlockGpuContextExpectedDiagnosticFileMatches(context: Context) -> bool {
+    return expectedDiagnosticFileMatches(
+        context,
+        "HelloUltraviolet/Fixtures/RejectedSource/Parallelism/KeyBlockGpuContext/Expected.uv",
+        "//! Expected diagnostic metadata for the KeyBlockGpuContext rejected-source specimen.\n\nexpectedDiagnostic(\"E-CON-0155\", \"rule.20.KeyBlock-GPU-Err\")\n"
+    )
+}
+
+public procedure barrierDivergenceExpectedDiagnosticFileMatches(context: Context) -> bool {
+    return expectedDiagnosticFileMatches(
+        context,
+        "HelloUltraviolet/Fixtures/RejectedSource/Parallelism/BarrierDivergence/Expected.uv",
+        "//! Expected diagnostic metadata for the BarrierDivergence rejected-source specimen.\n\nexpectedDiagnostic(\"E-CON-0158\", \"rule.20.Barrier-Divergence-Err\")\n"
+    )
+}
+
+public procedure gpuCaptureSharedExpectedDiagnosticFileMatches(context: Context) -> bool {
+    return expectedDiagnosticFileMatches(
+        context,
+        "HelloUltraviolet/Fixtures/RejectedSource/Parallelism/GpuCaptureShared/Expected.uv",
+        "//! Expected diagnostic metadata for the GpuCaptureShared rejected-source specimen.\n\nexpectedDiagnostic(\"E-CON-0151\", \"rule.20.GpuCapture-Shared-Err\")\n"
+    )
+}
+
+public procedure gpuCaptureNonGpuSafeExpectedDiagnosticFileMatches(context: Context) -> bool {
+    return expectedDiagnosticFileMatches(
+        context,
+        "HelloUltraviolet/Fixtures/RejectedSource/Parallelism/GpuCaptureNonGpuSafe/Expected.uv",
+        "//! Expected diagnostic metadata for the GpuCaptureNonGpuSafe rejected-source specimen.\n\nexpectedDiagnostic(\"E-CON-0153\", \"rule.20.GpuCapture-NonGpuSafe-Err\")\n"
+    )
+}
+
+public procedure captureSemanticsDiagnosticsExpectedDiagnosticFileMatches(
+    context: Context
+) -> bool {
+    return expectedDiagnosticFileMatches(
+        context,
+        "HelloUltraviolet/Fixtures/RejectedSource/Parallelism/CaptureSemanticsDiagnostics/Expected.uv",
+        "//! Expected diagnostic metadata for the CaptureSemanticsDiagnostics rejected-source specimen.\n\nexpectedDiagnostic(\"E-CON-0151\", \"diagnostics.20.CaptureSemantics\")\n"
+    )
+}
+
+public procedure parallelClosureCaptureUniqueExpectedDiagnosticFileMatches(
+    context: Context
+) -> bool {
+    return expectedDiagnosticFileMatches(
+        context,
+        "HelloUltraviolet/Fixtures/RejectedSource/Parallelism/ParallelClosureCaptureUnique/Expected.uv",
+        "//! Expected diagnostic metadata for the ParallelClosureCaptureUnique rejected-source specimen.\n\nexpectedDiagnostic(\"E-CON-0120\", \"rule.20.Parallel-Closure-Capture-Unique-Err\")\n"
+    )
+}
+
+public procedure parallelClosureCaptureOuterMoveExpectedDiagnosticFileMatches(
+    context: Context
+) -> bool {
+    return expectedDiagnosticFileMatches(
+        context,
+        "HelloUltraviolet/Fixtures/RejectedSource/Parallelism/ParallelClosureCaptureOuterMove/Expected.uv",
+        "//! Expected diagnostic metadata for the ParallelClosureCaptureOuterMove rejected-source specimen.\n\nexpectedDiagnostic(\"E-CON-0122\", \"rule.20.Parallel-Closure-Capture-OuterMove-Err\")\n"
+    )
+}
+
+public procedure parallelEscapingClosureSpawnExpectedDiagnosticFileMatches(
+    context: Context
+) -> bool {
+    return expectedDiagnosticFileMatches(
+        context,
+        "HelloUltraviolet/Fixtures/RejectedSource/Parallelism/ParallelEscapingClosureSpawn/Expected.uv",
+        "//! Expected diagnostic metadata for the ParallelEscapingClosureSpawn rejected-source specimen.\n\nexpectedDiagnostic(\"E-CON-0131\", \"rule.20.Parallel-Escaping-Closure-Spawn-Err\")\n"
+    )
+}
+
+public procedure dispatchInferFailureExpectedDiagnosticFileMatches(context: Context) -> bool {
+    return expectedDiagnosticFileMatches(
+        context,
+        "HelloUltraviolet/Fixtures/RejectedSource/Parallelism/DispatchInferFailure/Expected.uv",
+        "//! Expected diagnostic metadata for the DispatchInferFailure rejected-source specimen.\n\nexpectedDiagnostic(\"E-CON-0141\", \"rule.20.Dispatch-Infer-Err\")\n"
+    )
+}
+
+public procedure dispatchDependencyConflictExpectedDiagnosticFileMatches(
+    context: Context
+) -> bool {
+    return expectedDiagnosticFileMatches(
+        context,
+        "HelloUltraviolet/Fixtures/RejectedSource/Parallelism/DispatchDependencyConflict/Expected.uv",
+        "//! Expected diagnostic metadata for the DispatchDependencyConflict rejected-source specimen.\n\nexpectedDiagnostic(\"E-CON-0142\", \"rule.20.Dispatch-Dependency-Err\")\n"
+    )
+}
+
+public procedure gpuCaptureHeapProvenanceExpectedDiagnosticFileMatches(
+    context: Context
+) -> bool {
+    return expectedDiagnosticFileMatches(
+        context,
+        "HelloUltraviolet/Fixtures/RejectedSource/Parallelism/GpuCaptureHeapProvenance/Expected.uv",
+        "//! Expected diagnostic metadata for the GpuCaptureHeapProvenance rejected-source specimen.\n\nexpectedDiagnostic(\"E-CON-0150\", \"rule.20.GpuCapture-HeapProv-Err\")\n"
+    )
+}
+
+public procedure gpuSafeTypeDiagnosticExpectedDiagnosticFileMatches(context: Context) -> bool {
+    return expectedDiagnosticFileMatches(
+        context,
+        "HelloUltraviolet/Fixtures/RejectedSource/Parallelism/GpuSafeTypeDiagnostic/Expected.uv",
+        "//! Expected diagnostic metadata for the GpuSafeTypeDiagnostic rejected-source specimen.\n\nexpectedDiagnostic(\"E-TYP-2640\", \"rule.20.GpuSafeType-Err\")\n"
+    )
+}
+
+public procedure gpuSafeRecordFieldDiagnosticExpectedDiagnosticFileMatches(
+    context: Context
+) -> bool {
+    return expectedDiagnosticFileMatches(
+        context,
+        "HelloUltraviolet/Fixtures/RejectedSource/Parallelism/GpuSafeRecordFieldDiagnostic/Expected.uv",
+        "//! Expected diagnostic metadata for the GpuSafeRecordFieldDiagnostic rejected-source specimen.\n\nexpectedDiagnostic(\"E-TYP-2640\", \"rule.20.GpuSafe-Record-Field-Err\")\n"
+    )
+}
+
+public procedure gpuSafeGenericUnboundedExpectedDiagnosticFileMatches(context: Context) -> bool {
+    return expectedDiagnosticFileMatches(
+        context,
+        "HelloUltraviolet/Fixtures/RejectedSource/Parallelism/GpuSafeGenericUnbounded/Expected.uv",
+        "//! Expected diagnostic metadata for the GpuSafeGenericUnbounded rejected-source specimen.\n\nexpectedDiagnostic(\"E-TYP-2642\", \"rule.20.GpuSafe-Generic-Unbounded-Err\")\n"
+    )
+}
+
+public procedure gpuPtrAddrSpaceExpectedDiagnosticFileMatches(context: Context) -> bool {
+    return expectedDiagnosticFileMatches(
+        context,
+        "HelloUltraviolet/Fixtures/RejectedSource/Parallelism/GpuPtrAddrSpace/Expected.uv",
+        "//! Expected diagnostic metadata for the GpuPtrAddrSpace rejected-source specimen.\n\nexpectedDiagnostic(\"E-TYP-2641\", \"rule.20.GpuPtr-AddrSpace-Err\")\n"
+    )
+}
+
+public procedure gpuPtrDerefHostMemoryExpectedDiagnosticFileMatches(context: Context) -> bool {
+    return expectedDiagnosticFileMatches(
+        context,
+        "HelloUltraviolet/Fixtures/RejectedSource/Parallelism/GpuPtrDerefHostMemory/Expected.uv",
+        "//! Expected diagnostic metadata for the GpuPtrDerefHostMemory rejected-source specimen.\n\nexpectedDiagnostic(\"E-CON-0150\", \"rule.20.GpuPtr-Deref-Err\")\n"
     )
 }

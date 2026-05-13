@@ -21,6 +21,7 @@ namespace cursive::analysis::expr {
 struct GenericCallSubstResult {
   bool ok = false;
   std::optional<std::string_view> diag_id;
+  std::optional<core::Span> diag_span;
   TypeSubst subst;
 };
 

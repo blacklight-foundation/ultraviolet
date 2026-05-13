@@ -1735,7 +1735,7 @@ StmtTypeResult TypeKeyBlockStmt(const ScopeContext& ctx,
 
   if (GpuContext(env)) {
     SPEC_RULE("KeyBlock-GPU-Err");
-    return {false, "KeyBlock-GPU-Err", {}, {}};
+    return {false, "E-CON-0155", {}, {}};
   }
 
   for (const auto& path : node.paths) {

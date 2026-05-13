@@ -1,0 +1,9 @@
+//! Rejected structured-parallelism specimen for non-usize dispatch chunks.
+
+public procedure dispatchChunkTypeReference(context: Context) -> () {
+    parallel context~>cpu() {
+        dispatch index in 0usize..4usize [chunk: true] {
+            index
+        }
+    }
+}

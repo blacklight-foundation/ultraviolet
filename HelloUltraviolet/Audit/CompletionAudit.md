@@ -31,10 +31,10 @@ Objective: execute `.agents/plans/HelloUltravioletReferenceCorpus.md`.
 - `CatalogSymbols.uv` imports and executes the 65 unique compiled reference
   symbols named by catalog rows, and `HelloUltraviolet.exe` validates them
   through `catalogCompiledSymbolsExecute()`.
-- `Source/Fixtures/RejectedSource` compiles metadata for 310 rejected-source
+- `Source/Fixtures/RejectedSource` compiles metadata for 351 rejected-source
   fixture specimens, and `HelloUltraviolet.exe` validates that fixture index
   through `rejectedSourceFixturesAreIndexed`.
-- The 310 rejected-source fixture projects under
+- The 351 rejected-source fixture projects under
   `HelloUltraviolet/Fixtures/RejectedSource` fail with their expected SPEC
   diagnostic code or static-rule diagnostic when built individually with
   `Cursive.exe build ... --check`.
@@ -44,10 +44,10 @@ Objective: execute `.agents/plans/HelloUltravioletReferenceCorpus.md`.
 - `HelloUltraviolet.exe` verifies runtime existence of each rejected fixture
   manifest, invalid source file, and `Expected.uv` artifact through
   `rejectedSourceFixtureArtifactsExist(context)`.
-- `ExpectedFiles.uv` reads the 310 current rejected-source `Expected.uv`
+- `ExpectedFiles.uv` reads the 351 current rejected-source `Expected.uv`
   artifacts and `HelloUltraviolet.exe` validates exact metadata content through
   one named check per specimen.
-- `Source/Fixtures/DiagnosticSource` compiles metadata for 11 diagnostic-source
+- `Source/Fixtures/DiagnosticSource` compiles metadata for 19 diagnostic-source
   fixture specimens whose source is expected to compile while emitting SPEC
   warnings or informational diagnostics, or while proving a SPEC diagnostic is
   absent, and `HelloUltraviolet.exe` validates the index, artifact paths, and
@@ -55,11 +55,36 @@ Objective: execute `.agents/plans/HelloUltravioletReferenceCorpus.md`.
 - `Fixtures/DiagnosticSource/Expressions/ValidTransmuteTarget` builds with exit
   code 0 and emits `W-SAFE-0100` for a valid unsafe transmute whose target type
   is known to admit invalid bit patterns.
-- The 16 key-system rejected-source fixtures under
+- The 21 key-system rejected-source fixtures under
   `Fixtures/RejectedSource/Keys` reject with their expected `E-CON-*`
   diagnostics, and the 10 key-system diagnostic-source fixtures under
   `Fixtures/DiagnosticSource/Keys` compile with their expected `W-CON-*` or
   `I-CON-*` diagnostics or prove expected diagnostic absence.
+- `Fixtures/DiagnosticSource/Parallelism/DispatchDynamicKeyWarning` compiles
+  with exit code 0 and emits `W-CON-0140` for dispatch partition specs with
+  non-static index expressions.
+- `Fixtures/DiagnosticSource/Parallelism/CancellationNoAdditionalDiagnostics`
+  and
+  `Fixtures/DiagnosticSource/Parallelism/PanicHandlingNoAdditionalDiagnostics`
+  compile with exit code 0 and record that cancellation and panic propagation
+  themselves introduce no additional named structured-parallelism diagnostics.
+- The GPU-safe structured-parallelism fixtures reject with `E-TYP-2640` and
+  `E-TYP-2642`, exercising direct prohibited GPU-safe types, record-field
+  GPU-safe component rejection, and unbounded generic GPU-safe compound types.
+  This required a bootstrap fix in `type_predicates.cpp` so `GpuSafeType`
+  analysis follows generic applications lowered as `TypeApply`.
+- The GPU pointer structured-parallelism fixtures reject with `E-TYP-2641` and
+  `E-CON-0150`, exercising `GpuPtr` address-space mismatch and host pointer
+  dereference inside GPU code. This required bootstrap fixes in
+  `resolve_types.cpp`, `type_wf.cpp`, `type_infer.cpp`, and `expr/deref.cpp`
+  so `GpuPtr<T, S>` address-space markers survive resolution and lowering and
+  the dereference owner emits the SPEC diagnostic code.
+- The async key-integration rejected-source fixtures under
+  `Fixtures/RejectedSource/Keys` reject with `E-CON-0133`, `E-CON-0213`, and
+  `E-CON-0224`, exercising wait, yield, yield-from, and shared-capturing
+  closure obligations while keys are held. This required a bootstrap closure
+  typing fix in `closure_expr.cpp` so an explicitly async-returning closure
+  body is checked against its own declared return context.
 - `Fixtures/DiagnosticSource/Keys/StaleAfterYieldReleaseWarning` emits
   `W-CON-0011` for stale binding use after `yield release`, while
   `Fixtures/DiagnosticSource/Keys/StaleOkSuppressesReleaseWarning` uses the
@@ -84,6 +109,17 @@ Objective: execute `.agents/plans/HelloUltravioletReferenceCorpus.md`.
   obligations from Chapter 21. This required bootstrap diagnostic routing fixes
   for `WF-Async-ArgCount-Err`, `WF-Async-Arg-WF-Err`, and
   `WF-Async-Path-Err`.
+- The async state-machine diagnostic fixtures now exercise `W-CON-0201`,
+  `E-CON-0280`, `E-CON-0281`, `E-CON-0230`, and `W-CON-0011` through
+  `Fixtures/DiagnosticSource/Async` and
+  `Fixtures/RejectedSource/Expressions/AsyncCaptureOutlivesFrame`,
+  `AsyncOperationEscapesRegion`, and `AsyncDiagnosticsSupplement`. This
+  required bootstrap provenance fixes in `regions.cpp` for large-capture
+  warning sizing, async capture/escape diagnostic ids, diagnostic emission
+  routing through `ProvBindCheck`, and region/frame provenance separation. The
+  compiler rebuild also required a surgical `parse_modules.cpp` update so
+  dispatch-option reserved-binder traversal follows `chunk_expr` and
+  `workgroup_expr`.
 - `Fixtures/RejectedSource/Polymorphism/ImplementationMissingRequiredField`
   rejects with `E-TYP-2402`, and
   `Fixtures/RejectedSource/Polymorphism/ImplementationFieldTypeMismatch`
@@ -215,6 +251,10 @@ Objective: execute `.agents/plans/HelloUltravioletReferenceCorpus.md`.
   undefined dynamic/opaque class bounds resolve to `E-TYP-2509`, opaque
   interface misses resolve to `E-TYP-2510`, and method-level generic class
   methods make dynamic class casts reject with `E-TYP-2542`.
+- The bootstrap class-implementation checker now evaluates
+  `def.ImplementationOrphanRule` for record, enum, and modal `implements`
+  clauses in `CheckOrphanRule`, using the first module-path segment as the
+  assembly identity and routing violations to `E-TYP-2507`.
 - `Source/Fixtures/AcceptedProjects` compiles metadata for 5 accepted project
   fixture specimens, and `HelloUltraviolet.exe` validates both the index and
   artifact paths through accepted-project fixture checks.
@@ -227,7 +267,7 @@ Objective: execute `.agents/plans/HelloUltravioletReferenceCorpus.md`.
   `Fixtures/AcceptedProjects/VerificationFactPrecondition` builds as a valid
   library project for branch-generated verification facts discharging
   preconditions.
-- `Source/Fixtures/ArtifactProjects` compiles metadata for 4 artifact project
+- `Source/Fixtures/ArtifactProjects` compiles metadata for 5 artifact project
   fixture specimens, and `HelloUltraviolet.exe` validates the index,
   source/manifest paths, and emitted-IR erasure checks through artifact-project
   fixture checks.
@@ -237,6 +277,10 @@ Objective: execute `.agents/plans/HelloUltravioletReferenceCorpus.md`.
   and `.obj` whose emitted IR contains no verification-fact runtime
   materialization, and `Fixtures/ArtifactProjects/ExecutableOutput` builds and
   runs an `.exe`, `.map`, and `.obj` artifact.
+- `Fixtures/ArtifactProjects/ReducedEmptyDispatchPanic` builds an executable
+  artifact and exits with runtime panic code `2862`, exercising
+  `P-SEM-2862` for reduced dispatch over an empty iteration space and the
+  structured-parallelism runtime-panic ownership obligation.
 - The project check gate passes:
   `Cursive.exe build HelloUltraviolet --check --target-profile x86_64-win64
   --build-progress off`.
@@ -253,13 +297,12 @@ Objective: execute `.agents/plans/HelloUltravioletReferenceCorpus.md`.
 ## Completion Blockers
 
 - Rejected-source and diagnostic-source fixtures are partially populated. The
-  current fixture set covers 310 rejected-source diagnostics and 11 compiling
+  current fixture set covers 351 rejected-source diagnostics and 19 compiling
   diagnostic-source warning/info/absence cases; the full expected-diagnostics
   obligation surface is not yet represented. Of the 382 expected-diagnostic
-  obligations, 84 remain
-  uncovered. Remaining uncovered expected-diagnostic ownership counts are:
-  abstraction/polymorphism 2, async 13, compile-time 27, lowering 3,
-  statements 1, and structured parallelism 38.
+  obligations, 33 remain uncovered by current expected-diagnostic metadata.
+  Remaining uncovered expected-diagnostic ownership counts are:
+  compile-time 27, lowering 3, abstraction/polymorphism 2, statements 1.
 - `Fixtures/BootstrapNonCompliance/Procedures/FreeProcedureOverloadResolution`
   now passes both semantic checking and the standalone library build after the
   bootstrap repair in `collect_toplevel.cpp` and `expr/call.cpp`. The
@@ -277,6 +320,16 @@ Objective: execute `.agents/plans/HelloUltravioletReferenceCorpus.md`.
   forwards only nested statement-block results with type `!` into
   `flow.results`, which can exercise `BlockInfo-Res` but does not create a
   heterogeneous `Res` set for `BlockInfo-Res-Err`.
+- `rule.14.Impl-Orphan-Err` and
+  `req.14.ImplementationOrphanRequirement` remain unindexed as concrete
+  expected-diagnostic obligations. `SPECIFICATION.md:13033` states that class
+  implementation occurs at the defining record, enum, or modal declaration and
+  that standalone extension implementation blocks are not part of the language.
+  Under that surface, an ordinary source implementation always has the
+  implementing declaration in the current assembly. The bootstrap checker now
+  owns the rule and emits `E-TYP-2507` if an implementation relation is ever
+  presented outside that owner context; there is no current SPEC-valid source
+  spelling for the rejecting case.
 - `rule.17.Pat-Tuple-R-Arity-Err` remains unindexed as a concrete
   expected-diagnostic obligation. `SPECIFICATION.md:18119` names
   `Code(Pat-Tuple-Arity-Err)`, but the Chapter 17 diagnostic table at
@@ -289,12 +342,46 @@ Objective: execute `.agents/plans/HelloUltravioletReferenceCorpus.md`.
   the Chapter 18 diagnostic table at `SPECIFICATION.md:19996-20008` does not
   assign concrete codes for the frame rules. The current bootstrap emits
   uncoded static-rule diagnostics for the frame specimens.
+- Structured-parallelism rejected-source fixtures now cover spawn/dispatch
+  context requirements, invalid spawn option types, execution-domain typing and
+  constructor parameters, cancellation option typing, GPU workgroup shape
+  checks, reducer associativity, nested GPU parallelism, GPU intrinsic scope,
+  GPU barrier scope, GPU key-block rejection, barrier divergence, and GPU
+  capture rejection for shared and non-`GpuSafe` captures. They also cover
+  unique capture rejection, non-selected outer unique moves, escaping closures
+  that contain `spawn`, dispatch key inference failure, dispatch dependency
+  conflicts, heap-provenance capture rejection in GPU context, and the dynamic
+  dispatch-key warning. They also cover direct GPU-safe type rejection,
+  GPU-safe record-field rejection through a bitcopy `Ptr<i32>@Valid` field,
+  generic GPU-safe compound rejection for an unbounded type parameter, `GpuPtr`
+  address-space mismatch, and host pointer dereference inside GPU code. Additional bootstrap
+  diagnostic conformance repairs were required: nested GPU parallel now emits
+  `E-CON-0152` for `T-GPU-Nested-Err`, `gpu_barrier()` outside a GPU context
+  now emits `E-CON-0156` for `Barrier-Outside-Err`, key blocks in GPU contexts
+  now emit `E-CON-0155` for `KeyBlock-GPU-Err`, and divergent GPU barriers now
+  emit `E-CON-0158` for `Barrier-Divergence-Err`. Heap allocation provenance
+  from `HeapAllocator.alloc_raw` is now preserved by `prov_expr.cpp`, allowing
+  GPU capture checks to emit `E-CON-0150` for `GpuCapture-HeapProv-Err`. GPU-safe
+  nominal type analysis now handles `TypeApply` in `type_predicates.cpp`, so
+  generic GPU-safe records and enums follow the same diagnostics as non-generic
+  nominal types. `GpuPtr<T, S>` resolution now preserves `Global`, `Shared`,
+  and `Private` address-space markers, type well-formedness accepts those
+  markers only in the `GpuPtr` address-space position, address-space mismatch
+  checking follows lowered `TypeApply`, and GPU host-pointer dereference emits
+  `E-CON-0150`.
+- Structured-parallelism source fixtures now also exercise the two
+  no-additional-diagnostics clauses for cancellation and panic propagation, and
+  the artifact-project runtime specimen exercises reduced empty dispatch
+  through `P-SEM-2862`. This required bootstrap repairs in structured-parallel
+  cancel-token typing, parallel cleanup lowering, runtime panic propagation,
+  reduced empty dispatch panic reporting, lazy worker startup, and Windows
+  executable manifest emission.
 - `diag.18.UnsafeRequiredOperationOwnership` remains unindexed. The current
   fixture exercises `Transmute-Unsafe-Err`, but the expression diagnostic table
   does not assign a concrete diagnostic code for unsafe transmute outside an
   unsafe span, so the bootstrap emits an uncoded static-rule diagnostic.
 - Accepted-project fixtures are partially populated with 5 buildable projects.
-  Artifact-project fixtures are partially populated with 3 buildable projects.
+  Artifact-project fixtures are partially populated with 5 buildable projects.
 - Some high-level areas currently use executable reference models rather than
   source specimens for every concrete syntax form, notably polymorphism,
   structured parallelism, async, compile-time forms, FFI, and backend artifacts.

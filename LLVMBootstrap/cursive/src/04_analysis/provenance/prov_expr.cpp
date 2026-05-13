@@ -29,6 +29,7 @@
 
 #include "00_core/assert_spec.h"
 #include "04_analysis/composite/function_types.h"
+#include "04_analysis/caps/cap_heap.h"
 #include "04_analysis/resolve/scopes.h"
 #include "04_analysis/resolve/scopes_lookup.h"
 #include "04_analysis/typing/type_expr.h"
@@ -661,6 +662,22 @@ static ProvExprResult ProvExpr(const ScopeContext& ctx,
         result.prov = recv_res.prov.kind == ProvKind::Region
                           ? recv_res.prov
                           : BottomTag();
+        return result;
+      }
+    }
+    if (IdEq(call->name, "alloc_raw")) {
+      const auto type = ExprTypeForProvenance(ctx, gamma, call->receiver);
+      const auto stripped = type.has_value() ? StripPerm(*type) : nullptr;
+      const auto* dyn =
+          stripped ? std::get_if<TypeDynamic>(&stripped->node) : nullptr;
+      if (dyn && IsHeapAllocatorClassPath(dyn->path)) {
+        for (const auto& arg : call->args) {
+          const auto arg_res = ProvExpr(ctx, arg.value, env, gamma);
+          if (!arg_res.ok) return arg_res;
+        }
+        SPEC_RULE("P-Expr-Sub");
+        result.ok = true;
+        result.prov = HeapTag();
         return result;
       }
     }

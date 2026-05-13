@@ -1,0 +1,5 @@
+//! Rejected structured-parallelism specimen for `spawn` without an enclosing parallel block.
+
+public procedure spawnOutsideParallelReference() -> Spawned<i32> {
+    return spawn { 1 }
+}

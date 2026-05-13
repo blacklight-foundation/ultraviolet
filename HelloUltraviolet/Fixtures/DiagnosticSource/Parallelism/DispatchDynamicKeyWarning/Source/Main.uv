@@ -1,0 +1,13 @@
+//! Diagnostic structured-parallelism specimen for dynamic dispatch key patterns.
+
+public procedure dispatchDynamicKeyWarningReference(
+    context: Context,
+    values: shared [i32],
+    offset: usize
+) -> () {
+    parallel context~>cpu() {
+        dispatch index in 0usize..4usize {
+            let observed: shared i32 = values[index + offset]
+        }
+    }
+}

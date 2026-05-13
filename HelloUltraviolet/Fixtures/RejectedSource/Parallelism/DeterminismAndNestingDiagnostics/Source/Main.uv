@@ -1,0 +1,9 @@
+//! Rejected structured-parallelism specimen for determinism and nesting diagnostics.
+
+public procedure determinismAndNestingDiagnosticsReference(context: Context) -> i32 {
+    return parallel context~>gpu() {
+        parallel context~>gpu() {
+            1
+        }
+    }
+}

@@ -1138,23 +1138,19 @@ bool CheckOrphanRule(const ScopeContext& ctx,
                      const ast::ClassPath& class_path,
                      const ast::ModulePath& current_module) {
   SPEC_RULE("T-Orphan-Rule");
-  (void)current_module;
 
-  // Check if type is defined in current assembly
-  // (Simplified - full impl needs assembly tracking)
-  bool type_local = false;
-  for (const auto& [key, decl] : ctx.sigma.types) {
-    // Check if type path matches and is in current module prefix
-    if (PathKeyOf(type_path) == key) {
-      type_local = true;
-      break;
-    }
-  }
+  auto in_current_assembly = [&](const ast::Path& path) {
+    return !path.empty() && !current_module.empty() &&
+           IdEq(path.front(), current_module.front());
+  };
 
-  // Check if class is defined in current assembly
-  bool class_local = ctx.sigma.classes.find(PathKeyOf(class_path))
-                     != ctx.sigma.classes.end();
+  const bool type_declared =
+      ctx.sigma.types.find(PathKeyOf(type_path)) != ctx.sigma.types.end();
+  const bool class_declared =
+      ctx.sigma.classes.find(PathKeyOf(class_path)) != ctx.sigma.classes.end();
 
+  const bool type_local = type_declared && in_current_assembly(type_path);
+  const bool class_local = class_declared && in_current_assembly(class_path);
   return type_local || class_local;
 }
 

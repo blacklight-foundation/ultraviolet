@@ -1,0 +1,67 @@
+//! Diagnostic structured-parallelism specimens.
+
+public procedure parallelismDiagnosticSourceFixtureCount() -> usize {
+    return 3usize
+}
+
+public procedure validatedParallelismDiagnosticSourceFixtureCount() -> usize {
+    var count: usize = 0usize
+    if diagnosticSpecimenMatches(
+        diagnosticSpecimen(
+            "DispatchDynamicKeyWarning",
+            "Fixtures/DiagnosticSource/Parallelism/DispatchDynamicKeyWarning",
+            "Fixtures/DiagnosticSource/Parallelism/DispatchDynamicKeyWarning/Source/Main.uv",
+            "Fixtures/DiagnosticSource/Parallelism/DispatchDynamicKeyWarning/Expected.uv",
+            expectedDiagnostic("W-CON-0140", "rule.20.Dispatch-DynamicKey-Warn")
+        ),
+        "DispatchDynamicKeyWarning",
+        "Fixtures/DiagnosticSource/Parallelism/DispatchDynamicKeyWarning",
+        "Fixtures/DiagnosticSource/Parallelism/DispatchDynamicKeyWarning/Source/Main.uv",
+        "Fixtures/DiagnosticSource/Parallelism/DispatchDynamicKeyWarning/Expected.uv",
+        "W-CON-0140",
+        "rule.20.Dispatch-DynamicKey-Warn"
+    ) {
+        count = count + 1usize
+    }
+    if diagnosticAbsenceSpecimenMatches(
+        diagnosticAbsenceSpecimen(
+            "CancellationNoAdditionalDiagnostics",
+            "Fixtures/DiagnosticSource/Parallelism/CancellationNoAdditionalDiagnostics",
+            "Fixtures/DiagnosticSource/Parallelism/CancellationNoAdditionalDiagnostics/Source/Main.uv",
+            "Fixtures/DiagnosticSource/Parallelism/CancellationNoAdditionalDiagnostics/Expected.uv",
+            expectedDiagnosticAbsent(
+                "E-CON-0103",
+                "diagnostics.20.Cancellation"
+            )
+        ),
+        "CancellationNoAdditionalDiagnostics",
+        "Fixtures/DiagnosticSource/Parallelism/CancellationNoAdditionalDiagnostics",
+        "Fixtures/DiagnosticSource/Parallelism/CancellationNoAdditionalDiagnostics/Source/Main.uv",
+        "Fixtures/DiagnosticSource/Parallelism/CancellationNoAdditionalDiagnostics/Expected.uv",
+        "E-CON-0103",
+        "diagnostics.20.Cancellation"
+    ) {
+        count = count + 1usize
+    }
+    if diagnosticAbsenceSpecimenMatches(
+        diagnosticAbsenceSpecimen(
+            "PanicHandlingNoAdditionalDiagnostics",
+            "Fixtures/DiagnosticSource/Parallelism/PanicHandlingNoAdditionalDiagnostics",
+            "Fixtures/DiagnosticSource/Parallelism/PanicHandlingNoAdditionalDiagnostics/Source/Main.uv",
+            "Fixtures/DiagnosticSource/Parallelism/PanicHandlingNoAdditionalDiagnostics/Expected.uv",
+            expectedDiagnosticAbsent(
+                "E-CON-0103",
+                "diagnostics.20.PanicHandling"
+            )
+        ),
+        "PanicHandlingNoAdditionalDiagnostics",
+        "Fixtures/DiagnosticSource/Parallelism/PanicHandlingNoAdditionalDiagnostics",
+        "Fixtures/DiagnosticSource/Parallelism/PanicHandlingNoAdditionalDiagnostics/Source/Main.uv",
+        "Fixtures/DiagnosticSource/Parallelism/PanicHandlingNoAdditionalDiagnostics/Expected.uv",
+        "E-CON-0103",
+        "diagnostics.20.PanicHandling"
+    ) {
+        count = count + 1usize
+    }
+    return count
+}

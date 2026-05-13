@@ -1,0 +1,9 @@
+//! Rejected async-key specimen for wait while a shared key is held.
+
+public procedure waitWhileKeyHeldLoweringReference() -> i32 {
+    var shared_value: shared i32 = 1
+    #shared_value read {
+        let observed_value: i32 = wait shared_value
+    }
+    return 0
+}

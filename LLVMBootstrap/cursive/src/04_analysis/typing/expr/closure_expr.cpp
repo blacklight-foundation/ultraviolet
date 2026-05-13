@@ -102,15 +102,19 @@ ExprTypeResult TypeClosureExpr(const ast::ClosureExpr& expr,
     ret_type = lower_result.type;
   }
 
+  StmtTypeContext body_type_ctx = type_ctx;
+  body_type_ctx.env_ref = &body_env;
+
   if (ret_type) {
+    body_type_ctx.return_type = ret_type;
     const auto body_check =
-        CheckExprAgainst(ctx, type_ctx, expr.body, ret_type, body_env);
+        CheckExprAgainst(ctx, body_type_ctx, expr.body, ret_type, body_env);
     if (!body_check.ok) {
       result.diag_id = body_check.diag_id;
       return result;
     }
   } else {
-    const auto body_type = TypeExpr(ctx, type_ctx, expr.body, body_env);
+    const auto body_type = TypeExpr(ctx, body_type_ctx, expr.body, body_env);
     if (!body_type.ok) {
       result.diag_id = body_type.diag_id;
       return result;

@@ -822,6 +822,16 @@ const ast::RecordDecl* RecordCalleeDecl(const ScopeContext& ctx,
       callee->node);
 }
 
+std::optional<core::Span> ArgDiagnosticSpan(const ast::Arg& arg) {
+  if (!arg.span.file.empty()) {
+    return arg.span;
+  }
+  if (arg.value) {
+    return arg.value->span;
+  }
+  return std::nullopt;
+}
+
 }  // namespace
 
 bool IsPlaceExprForCall(const ast::ExprPtr& expr) {
@@ -873,6 +883,7 @@ CallTypeResult TypeCall(const ScopeContext& ctx,
   const auto callee_type = type_expr(callee);
   if (!callee_type.ok) {
     result.diag_id = callee_type.diag_id;
+    result.diag_span = callee_type.diag_span;
     return result;
   }
 
@@ -927,6 +938,7 @@ CallTypeResult TypeCall(const ScopeContext& ctx,
     if (MissingRequiredMoveForConsumingLocal(params[i].mode, args[i])) {
       SPEC_RULE("Call-Move-Missing");
       result.diag_id = "E-SEM-2534";
+      result.diag_span = ArgDiagnosticSpan(args[i]);
       return result;
     }
   }
@@ -935,6 +947,7 @@ CallTypeResult TypeCall(const ScopeContext& ctx,
     if (!params[i].mode.has_value() && args[i].moved) {
       SPEC_RULE("Call-Move-Unexpected");
       result.diag_id = "E-SEM-2535";
+      result.diag_span = ArgDiagnosticSpan(args[i]);
       return result;
     }
   }
@@ -948,12 +961,14 @@ CallTypeResult TypeCall(const ScopeContext& ctx,
       if (has_source_prov && !IsPlaceExprForCallLocal(arg.value)) {
         SPEC_RULE("Call-Arg-NotPlace");
         result.diag_id = "E-TYP-1603";
+        result.diag_span = ArgDiagnosticSpan(arg);
         return result;
       }
       if (has_source_prov && type_place) {
         const auto place_type = (*type_place)(arg.value);
         if (!place_type.ok) {
           result.diag_id = place_type.diag_id;
+          result.diag_span = ArgDiagnosticSpan(arg);
           return result;
         }
         arg_types.push_back(place_type.type);
@@ -967,14 +982,19 @@ CallTypeResult TypeCall(const ScopeContext& ctx,
           if (IsExpectedTypeMismatch(checked)) {
             SPEC_RULE("Call-ArgType-Err");
             result.diag_id = "E-SEM-2533";
+            result.diag_span = ArgDiagnosticSpan(arg);
             return result;
           }
           result.diag_id = checked.diag_id;
+          result.diag_span = ArgDiagnosticSpan(arg);
           return result;
         }
         const auto arg_type = type_expr(arg.value);
         if (!arg_type.ok) {
           result.diag_id = arg_type.diag_id;
+          result.diag_span = arg_type.diag_span.has_value()
+                                 ? arg_type.diag_span
+                                 : ArgDiagnosticSpan(arg);
           return result;
         }
         arg_types.push_back(arg_type.type);
@@ -991,14 +1011,19 @@ CallTypeResult TypeCall(const ScopeContext& ctx,
       if (IsExpectedTypeMismatch(checked)) {
         SPEC_RULE("Call-ArgType-Err");
         result.diag_id = "E-SEM-2533";
+        result.diag_span = ArgDiagnosticSpan(arg);
         return result;
       }
       result.diag_id = checked.diag_id;
+      result.diag_span = ArgDiagnosticSpan(arg);
       return result;
     }
     const auto arg_type = type_expr(arg_expr);
     if (!arg_type.ok) {
       result.diag_id = arg_type.diag_id;
+      result.diag_span = arg_type.diag_span.has_value()
+                             ? arg_type.diag_span
+                             : ArgDiagnosticSpan(arg);
       return result;
     }
     arg_types.push_back(arg_type.type);
@@ -1010,6 +1035,7 @@ CallTypeResult TypeCall(const ScopeContext& ctx,
                                params[i].mode);
     if (!sub.ok) {
       result.diag_id = sub.diag_id;
+      result.diag_span = ArgDiagnosticSpan(args[i]);
       return result;
     }
     if (!sub.subtype) {
@@ -1017,6 +1043,7 @@ CallTypeResult TypeCall(const ScopeContext& ctx,
       result.diag_id = "E-SEM-2533";
       result.diag_detail = "expected type " + TypeToString(params[i].type) +
                            ", found " + TypeToString(arg_types[i]);
+      result.diag_span = ArgDiagnosticSpan(args[i]);
       return result;
     }
   }
@@ -1027,6 +1054,7 @@ CallTypeResult TypeCall(const ScopeContext& ctx,
         !IsPlaceExprForCallLocal(args[i].value)) {
       SPEC_RULE("Call-Arg-NotPlace");
       result.diag_id = "E-TYP-1603";
+      result.diag_span = ArgDiagnosticSpan(args[i]);
       return result;
     }
   }
@@ -1040,6 +1068,9 @@ CallTypeResult TypeCall(const ScopeContext& ctx,
         const auto moved_type = type_expr(moved);
         if (!moved_type.ok) {
           result.diag_id = moved_type.diag_id;
+          result.diag_span = moved_type.diag_span.has_value()
+                                 ? moved_type.diag_span
+                                 : ArgDiagnosticSpan(args[i]);
           return result;
         }
         const auto sub =
@@ -1047,6 +1078,7 @@ CallTypeResult TypeCall(const ScopeContext& ctx,
                                    params[i].mode);
         if (!sub.ok) {
           result.diag_id = sub.diag_id;
+          result.diag_span = ArgDiagnosticSpan(args[i]);
           return result;
         }
         if (!sub.subtype) {
@@ -1054,6 +1086,7 @@ CallTypeResult TypeCall(const ScopeContext& ctx,
           result.diag_id = "E-SEM-2533";
           result.diag_detail = "expected type " + TypeToString(params[i].type) +
                                ", found " + TypeToString(moved_type.type);
+          result.diag_span = ArgDiagnosticSpan(args[i]);
           return result;
         }
         SPEC_RULE("ArgsT-Cons");
@@ -1067,6 +1100,7 @@ CallTypeResult TypeCall(const ScopeContext& ctx,
             SPEC_RULE("Call-Arg-Packed-Unsafe-Err");
           }
           result.diag_id = addr_ok.diag_id;
+          result.diag_span = ArgDiagnosticSpan(args[i]);
           return result;
         }
       }
@@ -1103,6 +1137,7 @@ CallTypeResult TypeCallWithSubst(const ScopeContext& ctx,
   const auto callee_type = type_expr(callee);
   if (!callee_type.ok) {
     result.diag_id = callee_type.diag_id;
+    result.diag_span = callee_type.diag_span;
     return result;
   }
 
@@ -1134,6 +1169,7 @@ CallTypeResult TypeCallWithSubst(const ScopeContext& ctx,
     if (MissingRequiredMoveForConsumingLocal(params[i].mode, args[i])) {
       SPEC_RULE("Call-Move-Missing");
       result.diag_id = "E-SEM-2534";
+      result.diag_span = ArgDiagnosticSpan(args[i]);
       return result;
     }
   }
@@ -1142,6 +1178,7 @@ CallTypeResult TypeCallWithSubst(const ScopeContext& ctx,
     if (!params[i].mode.has_value() && args[i].moved) {
       SPEC_RULE("Call-Move-Unexpected");
       result.diag_id = "E-SEM-2535";
+      result.diag_span = ArgDiagnosticSpan(args[i]);
       return result;
     }
   }
@@ -1157,12 +1194,14 @@ CallTypeResult TypeCallWithSubst(const ScopeContext& ctx,
       if (has_source_prov && !IsPlaceExprForCallLocal(arg.value)) {
         SPEC_RULE("Call-Arg-NotPlace");
         result.diag_id = "E-TYP-1603";
+        result.diag_span = ArgDiagnosticSpan(arg);
         return result;
       }
       if (has_source_prov && type_place) {
         const auto place_type = (*type_place)(arg.value);
         if (!place_type.ok) {
           result.diag_id = place_type.diag_id;
+          result.diag_span = ArgDiagnosticSpan(arg);
           return result;
         }
         arg_types.push_back(place_type.type);
@@ -1176,14 +1215,19 @@ CallTypeResult TypeCallWithSubst(const ScopeContext& ctx,
           if (IsExpectedTypeMismatch(checked)) {
             SPEC_RULE("Call-ArgType-Err");
             result.diag_id = "E-SEM-2533";
+            result.diag_span = ArgDiagnosticSpan(arg);
             return result;
           }
           result.diag_id = checked.diag_id;
+          result.diag_span = ArgDiagnosticSpan(arg);
           return result;
         }
         const auto arg_type = type_expr(arg.value);
         if (!arg_type.ok) {
           result.diag_id = arg_type.diag_id;
+          result.diag_span = arg_type.diag_span.has_value()
+                                 ? arg_type.diag_span
+                                 : ArgDiagnosticSpan(arg);
           return result;
         }
         arg_types.push_back(arg_type.type);
@@ -1200,14 +1244,19 @@ CallTypeResult TypeCallWithSubst(const ScopeContext& ctx,
       if (IsExpectedTypeMismatch(checked)) {
         SPEC_RULE("Call-ArgType-Err");
         result.diag_id = "E-SEM-2533";
+        result.diag_span = ArgDiagnosticSpan(arg);
         return result;
       }
       result.diag_id = checked.diag_id;
+      result.diag_span = ArgDiagnosticSpan(arg);
       return result;
     }
     const auto arg_type = type_expr(arg_expr);
     if (!arg_type.ok) {
       result.diag_id = arg_type.diag_id;
+      result.diag_span = arg_type.diag_span.has_value()
+                             ? arg_type.diag_span
+                             : ArgDiagnosticSpan(arg);
       return result;
     }
     arg_types.push_back(arg_type.type);
@@ -1222,6 +1271,7 @@ CallTypeResult TypeCallWithSubst(const ScopeContext& ctx,
                                params[i].mode);
     if (!sub.ok) {
       result.diag_id = sub.diag_id;
+      result.diag_span = ArgDiagnosticSpan(args[i]);
       return result;
     }
     if (!sub.subtype) {
@@ -1229,6 +1279,7 @@ CallTypeResult TypeCallWithSubst(const ScopeContext& ctx,
       result.diag_id = "E-SEM-2533";
       result.diag_detail = "expected type " + TypeToString(subst_param_type) +
                            ", found " + TypeToString(arg_types[i]);
+      result.diag_span = ArgDiagnosticSpan(args[i]);
       return result;
     }
   }
@@ -1239,6 +1290,7 @@ CallTypeResult TypeCallWithSubst(const ScopeContext& ctx,
         !IsPlaceExprForCallLocal(args[i].value)) {
       SPEC_RULE("Call-Arg-NotPlace");
       result.diag_id = "E-TYP-1603";
+      result.diag_span = ArgDiagnosticSpan(args[i]);
       return result;
     }
   }
@@ -1252,6 +1304,9 @@ CallTypeResult TypeCallWithSubst(const ScopeContext& ctx,
         const auto moved_type = type_expr(moved);
         if (!moved_type.ok) {
           result.diag_id = moved_type.diag_id;
+          result.diag_span = moved_type.diag_span.has_value()
+                                 ? moved_type.diag_span
+                                 : ArgDiagnosticSpan(args[i]);
           return result;
         }
         // Apply substitution to parameter type
@@ -1261,6 +1316,7 @@ CallTypeResult TypeCallWithSubst(const ScopeContext& ctx,
                                    params[i].mode);
         if (!sub.ok) {
           result.diag_id = sub.diag_id;
+          result.diag_span = ArgDiagnosticSpan(args[i]);
           return result;
         }
         if (!sub.subtype) {
@@ -1268,6 +1324,7 @@ CallTypeResult TypeCallWithSubst(const ScopeContext& ctx,
           result.diag_id = "E-SEM-2533";
           result.diag_detail = "expected type " + TypeToString(subst_param_type) +
                                ", found " + TypeToString(moved_type.type);
+          result.diag_span = ArgDiagnosticSpan(args[i]);
           return result;
         }
         SPEC_RULE("ArgsT-Cons");
@@ -1281,6 +1338,7 @@ CallTypeResult TypeCallWithSubst(const ScopeContext& ctx,
             SPEC_RULE("Call-Arg-Packed-Unsafe-Err");
           }
           result.diag_id = addr_ok.diag_id;
+          result.diag_span = ArgDiagnosticSpan(args[i]);
           return result;
         }
       }

@@ -38,6 +38,7 @@ struct CallTypeResult {
   TypeRef type;
   bool record_callee = false;
   std::string diag_detail;
+  std::optional<core::Span> diag_span;
 };
 
 // Call-argument helpers shared across typing/borrow/lowering.

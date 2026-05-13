@@ -79,5 +79,53 @@ public procedure diagnosticSourceFixtureArtifactsExist(context: Context) -> bool
             "HelloUltraviolet/Fixtures/DiagnosticSource/Keys/StaleOkSuppressesReleaseWarning/Source/Main.uv",
             "HelloUltraviolet/Fixtures/DiagnosticSource/Keys/StaleOkSuppressesReleaseWarning/Expected.uv"
         )
+    artifacts_exist = artifacts_exist && diagnosticFixtureArtifactsExist(
+            context,
+            "HelloUltraviolet/Fixtures/DiagnosticSource/Async/AsyncLargeCaptureWarning/Ultraviolet.toml",
+            "HelloUltraviolet/Fixtures/DiagnosticSource/Async/AsyncLargeCaptureWarning/Source/Main.uv",
+            "HelloUltraviolet/Fixtures/DiagnosticSource/Async/AsyncLargeCaptureWarning/Expected.uv"
+        )
+    artifacts_exist = artifacts_exist && diagnosticFixtureArtifactsExist(
+            context,
+            "HelloUltraviolet/Fixtures/DiagnosticSource/Async/AsyncLargeCaptureWarningEmission/Ultraviolet.toml",
+            "HelloUltraviolet/Fixtures/DiagnosticSource/Async/AsyncLargeCaptureWarningEmission/Source/Main.uv",
+            "HelloUltraviolet/Fixtures/DiagnosticSource/Async/AsyncLargeCaptureWarningEmission/Expected.uv"
+        )
+    artifacts_exist = artifacts_exist && diagnosticFixtureArtifactsExist(
+            context,
+            "HelloUltraviolet/Fixtures/DiagnosticSource/Async/AsyncLargeCaptureNoWarning/Ultraviolet.toml",
+            "HelloUltraviolet/Fixtures/DiagnosticSource/Async/AsyncLargeCaptureNoWarning/Source/Main.uv",
+            "HelloUltraviolet/Fixtures/DiagnosticSource/Async/AsyncLargeCaptureNoWarning/Expected.uv"
+        )
+    artifacts_exist = artifacts_exist && diagnosticFixtureArtifactsExist(
+            context,
+            "HelloUltraviolet/Fixtures/DiagnosticSource/Async/AsyncStateMachineDiagnosticsTable/Ultraviolet.toml",
+            "HelloUltraviolet/Fixtures/DiagnosticSource/Async/AsyncStateMachineDiagnosticsTable/Source/Main.uv",
+            "HelloUltraviolet/Fixtures/DiagnosticSource/Async/AsyncStateMachineDiagnosticsTable/Expected.uv"
+        )
+    artifacts_exist = artifacts_exist && diagnosticFixtureArtifactsExist(
+            context,
+            "HelloUltraviolet/Fixtures/DiagnosticSource/Async/StaleValueMarkIRDiagnostics/Ultraviolet.toml",
+            "HelloUltraviolet/Fixtures/DiagnosticSource/Async/StaleValueMarkIRDiagnostics/Source/Main.uv",
+            "HelloUltraviolet/Fixtures/DiagnosticSource/Async/StaleValueMarkIRDiagnostics/Expected.uv"
+        )
+    artifacts_exist = artifacts_exist && diagnosticFixtureArtifactsExist(
+            context,
+            "HelloUltraviolet/Fixtures/DiagnosticSource/Parallelism/DispatchDynamicKeyWarning/Ultraviolet.toml",
+            "HelloUltraviolet/Fixtures/DiagnosticSource/Parallelism/DispatchDynamicKeyWarning/Source/Main.uv",
+            "HelloUltraviolet/Fixtures/DiagnosticSource/Parallelism/DispatchDynamicKeyWarning/Expected.uv"
+        )
+    artifacts_exist = artifacts_exist && diagnosticFixtureArtifactsExist(
+            context,
+            "HelloUltraviolet/Fixtures/DiagnosticSource/Parallelism/CancellationNoAdditionalDiagnostics/Ultraviolet.toml",
+            "HelloUltraviolet/Fixtures/DiagnosticSource/Parallelism/CancellationNoAdditionalDiagnostics/Source/Main.uv",
+            "HelloUltraviolet/Fixtures/DiagnosticSource/Parallelism/CancellationNoAdditionalDiagnostics/Expected.uv"
+        )
+    artifacts_exist = artifacts_exist && diagnosticFixtureArtifactsExist(
+            context,
+            "HelloUltraviolet/Fixtures/DiagnosticSource/Parallelism/PanicHandlingNoAdditionalDiagnostics/Ultraviolet.toml",
+            "HelloUltraviolet/Fixtures/DiagnosticSource/Parallelism/PanicHandlingNoAdditionalDiagnostics/Source/Main.uv",
+            "HelloUltraviolet/Fixtures/DiagnosticSource/Parallelism/PanicHandlingNoAdditionalDiagnostics/Expected.uv"
+        )
     return artifacts_exist
 }

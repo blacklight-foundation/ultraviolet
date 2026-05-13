@@ -1,0 +1,7 @@
+//! Rejected structured-parallelism specimen for invalid dim3 parallel options.
+
+public procedure parallelDim3ConstReference(context: Context) -> i32 {
+    return parallel context~>gpu() [workgroup: (0usize, 1usize, 1usize)] {
+        2
+    }
+}

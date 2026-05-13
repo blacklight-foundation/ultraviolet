@@ -91,6 +91,7 @@
 #include "04_analysis/typing/type_expr.h"
 #include "04_analysis/typing/type_infer.h"
 #include "04_analysis/typing/type_lookup.h"
+#include "04_analysis/typing/type_predicates.h"
 #include "04_analysis/typing/type_stmt.h"
 
 namespace cursive::analysis {
@@ -139,6 +140,21 @@ static bool IsBuiltinCapClassPath(const TypePath& path) {
 
 static bool IsAsyncPathType(const TypePath& path) {
   return IsAsyncModalPath(path);
+}
+
+static bool IsGpuPtrPathType(const TypePath& path) {
+  return path.size() == 1 && IdEq(path.front(), "GpuPtr");
+}
+
+static bool IsGpuPtrAddressSpaceType(const TypeRef& type) {
+  const auto stripped = StripPerm(type);
+  const auto* path = stripped ? std::get_if<TypePathType>(&stripped->node)
+                              : nullptr;
+  if (!path || path->path.size() != 1 || !path->generic_args.empty()) {
+    return false;
+  }
+  return IdEq(path->path[0], "Global") || IdEq(path->path[0], "Shared") ||
+         IdEq(path->path[0], "Private");
 }
 
 static bool IsKnownTypePath(const ScopeContext& ctx, const TypePath& path) {
@@ -375,6 +391,18 @@ static TypeWfResult TypeWFImpl(const ScopeContext& ctx, const TypeRef& type) {
           SPEC_RULE("WF-Path");
           return {true, std::nullopt};
         } else if constexpr (std::is_same_v<T, TypeApply>) {
+          if (IsGpuPtrPathType(node.path)) {
+            if (node.args.size() != 2 ||
+                !IsGpuPtrAddressSpaceType(node.args[1])) {
+              return {};
+            }
+            const auto pointee = TypeWFImpl(ctx, node.args[0]);
+            if (!pointee.ok) {
+              return pointee;
+            }
+            SPEC_RULE("WF-Apply");
+            return {true, std::nullopt};
+          }
           if (IsAsyncPathType(node.path)) {
             if (node.args.empty()) {
               SPEC_RULE("WF-Async-Path-Err");

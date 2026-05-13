@@ -104,3 +104,81 @@ public procedure staleOkSuppressesReleaseWarningExpectedDiagnosticFileMatches(co
         "//! Expected diagnostic-absence metadata for the StaleOkSuppressesReleaseWarning diagnostic-source specimen.\n\nexpectedDiagnosticAbsent(\"W-CON-0011\", \"requirement.19.StaleOkSuppressesReleaseWarning\")\n"
     )
 }
+
+public procedure asyncLargeCaptureWarningExpectedDiagnosticFileMatches(context: Context) -> bool {
+    return diagnosticExpectedFileMatches(
+        context,
+        "HelloUltraviolet/Fixtures/DiagnosticSource/Async/AsyncLargeCaptureWarning/Expected.uv",
+        "//! Expected diagnostic metadata for the AsyncLargeCaptureWarning diagnostic-source specimen.\n\nexpectedDiagnostic(\"W-CON-0201\", \"rule.21.Warn-Async-LargeCapture\")\n"
+    )
+}
+
+public procedure asyncLargeCaptureWarningEmissionExpectedDiagnosticFileMatches(
+    context: Context
+) -> bool {
+    return diagnosticExpectedFileMatches(
+        context,
+        "HelloUltraviolet/Fixtures/DiagnosticSource/Async/AsyncLargeCaptureWarningEmission/Expected.uv",
+        "//! Expected diagnostic metadata for the AsyncLargeCaptureWarningEmission diagnostic-source specimen.\n\nexpectedDiagnostic(\"W-CON-0201\", \"requirement.21.AsyncLargeCaptureWarningEmission\")\n"
+    )
+}
+
+public procedure asyncLargeCaptureNoWarningExpectedDiagnosticFileMatches(
+    context: Context
+) -> bool {
+    return diagnosticExpectedFileMatches(
+        context,
+        "HelloUltraviolet/Fixtures/DiagnosticSource/Async/AsyncLargeCaptureNoWarning/Expected.uv",
+        "//! Expected diagnostic-absence metadata for the AsyncLargeCaptureNoWarning diagnostic-source specimen.\n\nexpectedDiagnosticAbsent(\"W-CON-0201\", \"rule.21.Warn-Async-LargeCapture-Ok\")\n"
+    )
+}
+
+public procedure asyncStateMachineDiagnosticsTableExpectedDiagnosticFileMatches(
+    context: Context
+) -> bool {
+    return diagnosticExpectedFileMatches(
+        context,
+        "HelloUltraviolet/Fixtures/DiagnosticSource/Async/AsyncStateMachineDiagnosticsTable/Expected.uv",
+        "//! Expected diagnostic metadata for the AsyncStateMachineDiagnosticsTable diagnostic-source specimen.\n\nexpectedDiagnostic(\"W-CON-0201\", \"diagnostics.21.AsyncStateMachineDiagnostics\")\n"
+    )
+}
+
+public procedure staleValueMarkIRDiagnosticsExpectedDiagnosticFileMatches(
+    context: Context
+) -> bool {
+    return diagnosticExpectedFileMatches(
+        context,
+        "HelloUltraviolet/Fixtures/DiagnosticSource/Async/StaleValueMarkIRDiagnostics/Expected.uv",
+        "//! Expected diagnostic metadata for the StaleValueMarkIRDiagnostics diagnostic-source specimen.\n\nexpectedDiagnostic(\"W-CON-0011\", \"requirement.21.StaleValueMarkIRDiagnostics\")\n"
+    )
+}
+
+public procedure dispatchDynamicKeyWarningExpectedDiagnosticFileMatches(
+    context: Context
+) -> bool {
+    return diagnosticExpectedFileMatches(
+        context,
+        "HelloUltraviolet/Fixtures/DiagnosticSource/Parallelism/DispatchDynamicKeyWarning/Expected.uv",
+        "//! Expected diagnostic metadata for the DispatchDynamicKeyWarning diagnostic-source specimen.\n\nexpectedDiagnostic(\"W-CON-0140\", \"rule.20.Dispatch-DynamicKey-Warn\")\n"
+    )
+}
+
+public procedure cancellationNoAdditionalDiagnosticsExpectedDiagnosticFileMatches(
+    context: Context
+) -> bool {
+    return diagnosticExpectedFileMatches(
+        context,
+        "HelloUltraviolet/Fixtures/DiagnosticSource/Parallelism/CancellationNoAdditionalDiagnostics/Expected.uv",
+        "//! Expected diagnostic-absence metadata for the CancellationNoAdditionalDiagnostics diagnostic-source specimen.\n\nexpectedDiagnosticAbsent(\"E-CON-0103\", \"diagnostics.20.Cancellation\")\n"
+    )
+}
+
+public procedure panicHandlingNoAdditionalDiagnosticsExpectedDiagnosticFileMatches(
+    context: Context
+) -> bool {
+    return diagnosticExpectedFileMatches(
+        context,
+        "HelloUltraviolet/Fixtures/DiagnosticSource/Parallelism/PanicHandlingNoAdditionalDiagnostics/Expected.uv",
+        "//! Expected diagnostic-absence metadata for the PanicHandlingNoAdditionalDiagnostics diagnostic-source specimen.\n\nexpectedDiagnosticAbsent(\"E-CON-0103\", \"diagnostics.20.PanicHandling\")\n"
+    )
+}
