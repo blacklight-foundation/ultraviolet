@@ -28,6 +28,7 @@
 #include "04_analysis/modal/modal.h"
 #include "04_analysis/resolve/scopes.h"
 #include "04_analysis/resolve/scopes_lookup.h"
+#include "04_analysis/typing/type_equiv.h"
 #include "04_analysis/typing/type_lower.h"
 #include "04_analysis/typing/type_predicates.h"
 #include "05_codegen/cleanup/cleanup.h"
@@ -434,6 +435,166 @@ analysis::TypeRef RefinedPatternType(
   return nullptr;
 }
 
+bool TypeEquivIgnorePermLocal(const analysis::TypeRef& lhs,
+                              const analysis::TypeRef& rhs) {
+  const auto lhs_base = analysis::StripPerm(lhs);
+  const auto rhs_base = analysis::StripPerm(rhs);
+  const auto equiv = analysis::TypeEquiv(lhs_base ? lhs_base : lhs,
+                                         rhs_base ? rhs_base : rhs);
+  return equiv.ok && equiv.equiv;
+}
+
+bool TypedPatternMatchesType(const analysis::ScopeContext& scope,
+                             const ast::TypedPattern& pattern,
+                             const analysis::TypeRef& expected,
+                             LowerCtx& ctx) {
+  if (!expected) {
+    return false;
+  }
+  const auto lowered = analysis::LowerType(scope, pattern.type);
+  if (!lowered.ok || !lowered.type) {
+    return false;
+  }
+  if (TypeEquivIgnorePermLocal(lowered.type, expected)) {
+    return true;
+  }
+
+  const auto lowered_base = analysis::StripPerm(lowered.type);
+  const auto expected_stripped = analysis::StripPerm(expected);
+  const auto expected_base = ResolvePatternAliasType(
+      expected_stripped ? expected_stripped : expected, ctx);
+  if (!lowered_base || !expected_base) {
+    return false;
+  }
+
+  const auto* lowered_modal =
+      std::get_if<analysis::TypeModalState>(&lowered_base->node);
+  if (!lowered_modal) {
+    return false;
+  }
+  const auto* expected_path = analysis::AppliedTypePath(*expected_base);
+  const auto* expected_args = analysis::AppliedTypeArgs(*expected_base);
+  if (!expected_path || !expected_args ||
+      lowered_modal->path != *expected_path ||
+      lowered_modal->generic_args.size() != expected_args->size()) {
+    return false;
+  }
+  for (std::size_t i = 0; i < lowered_modal->generic_args.size(); ++i) {
+    if (!TypeEquivIgnorePermLocal(lowered_modal->generic_args[i],
+                                  (*expected_args)[i])) {
+      return false;
+    }
+  }
+  return true;
+}
+
+bool PatternMayMatchType(const analysis::ScopeContext& scope,
+                         const ast::Pattern& pattern,
+                         const analysis::TypeRef& expected,
+                         LowerCtx& ctx) {
+  return std::visit(
+      [&](const auto& node) -> bool {
+        using T = std::decay_t<decltype(node)>;
+        if constexpr (std::is_same_v<T, ast::WildcardPattern> ||
+                      std::is_same_v<T, ast::IdentifierPattern>) {
+          return true;
+        } else if constexpr (std::is_same_v<T, ast::TypedPattern>) {
+          return TypedPatternMatchesType(scope, node, expected, ctx);
+        } else if constexpr (std::is_same_v<T, ast::ModalPattern>) {
+          return RefinedModalPatternType(scope, node, expected, ctx) != nullptr;
+        } else {
+          return RefinedPatternType(scope, pattern, expected, ctx) != nullptr;
+        }
+      },
+      pattern.node);
+}
+
+analysis::TypeRef RejectedPatternType(const analysis::ScopeContext& scope,
+                                      const ast::Pattern& pattern,
+                                      const analysis::TypeRef& scrutinee_type,
+                                      LowerCtx& ctx) {
+  if (!scrutinee_type) {
+    return nullptr;
+  }
+
+  if (const auto* perm = std::get_if<analysis::TypePerm>(&scrutinee_type->node)) {
+    const auto rejected = RejectedPatternType(scope, pattern, perm->base, ctx);
+    return rejected ? analysis::MakeTypePerm(perm->perm, rejected) : nullptr;
+  }
+
+  const analysis::TypeRef normalized =
+      ResolvePatternAliasType(scrutinee_type, ctx);
+  if (!normalized) {
+    return nullptr;
+  }
+
+  const auto* union_type = std::get_if<analysis::TypeUnion>(&normalized->node);
+  if (!union_type) {
+    return nullptr;
+  }
+
+  std::vector<analysis::TypeRef> rejected;
+  rejected.reserve(union_type->members.size());
+  for (const auto& member : union_type->members) {
+    if (!PatternMayMatchType(scope, pattern, member, ctx)) {
+      rejected.push_back(member);
+    }
+  }
+
+  if (rejected.empty() || rejected.size() == union_type->members.size()) {
+    return nullptr;
+  }
+  if (rejected.size() == 1) {
+    return rejected.front();
+  }
+  return analysis::MakeTypeUnion(std::move(rejected));
+}
+
+void RefineScrutineeBindingToType(const ast::Expr& scrutinee,
+                                  const analysis::TypeRef& refined_type,
+                                  LowerCtx& ctx) {
+  if (!refined_type) {
+    return;
+  }
+  const auto name = ScrutineeIdentifier(scrutinee);
+  if (!name.has_value()) {
+    return;
+  }
+  auto binding_it = ctx.binding_states.find(*name);
+  if (binding_it == ctx.binding_states.end() || binding_it->second.empty()) {
+    return;
+  }
+  binding_it->second.back().type = refined_type;
+}
+
+void RefineElseScrutineeBinding(const ast::Expr& scrutinee,
+                                const std::vector<ast::IfCaseClause>& arms,
+                                const analysis::TypeRef& scrutinee_type,
+                                LowerCtx& ctx) {
+  if (!ctx.sigma || !scrutinee_type) {
+    return;
+  }
+  const analysis::ScopeContext& scope = ScopeForLowering(ctx);
+  analysis::TypeRef remaining = scrutinee_type;
+  bool narrowed = false;
+
+  for (const auto& arm : arms) {
+    if (!arm.pattern) {
+      continue;
+    }
+    const analysis::TypeRef rejected =
+        RejectedPatternType(scope, *arm.pattern, remaining, ctx);
+    if (rejected) {
+      remaining = rejected;
+      narrowed = true;
+    }
+  }
+
+  if (narrowed) {
+    RefineScrutineeBindingToType(scrutinee, remaining, ctx);
+  }
+}
+
 void RefineScrutineeBinding(const ast::Expr& scrutinee,
                             const ast::Pattern& pattern,
                             const analysis::TypeRef& scrutinee_type,
@@ -706,6 +867,7 @@ LowerResult LowerIfCases(const ast::Expr& scrutinee,
     LowerCtx else_ctx = MakeBranchCtx(ctx);
     LowerResult else_result;
     analysis::TypeRef else_type;
+    RefineElseScrutineeBinding(scrutinee, arms, scrutinee_type, else_ctx);
 
     if (else_expr) {
       else_result = LowerExpr(*else_expr, else_ctx);

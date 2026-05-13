@@ -67,7 +67,7 @@ std::optional<std::string_view> CodeForResolveDiag(
     return "E-CON-0031";
   }
   if (diag_id == "ResolveModulePath-Err") {
-    return "E-MOD-1304";
+    return "E-MOD-1107";
   }
   if (diag_id == "Import-Using-Missing") {
     return "E-MOD-1201";
@@ -134,6 +134,9 @@ std::optional<std::string_view> CodeForResolveDiag(
   }
   if (diag_id == "Pat-Dup-Err") {
     return "E-SEM-2713";
+  }
+  if (diag_id == "IfIs-BareTypePattern-Err") {
+    return "E-SEM-2761";
   }
   if (diag_id == "Access-Err") {
     return "E-MOD-1207";

@@ -1,11 +1,11 @@
 //! Coverage checks for artifact project fixture metadata.
 
 public procedure expectedArtifactProjectFixtureCount() -> usize {
-    return 3usize
+    return 4usize
 }
 
 public procedure artifactProjectFixtureCount() -> usize {
-    return 3usize
+    return 4usize
 }
 
 public procedure validatedArtifactProjectFixtureCount() -> usize {
@@ -49,6 +49,27 @@ public procedure validatedArtifactProjectFixtureCount() -> usize {
         "Fixtures/ArtifactProjects/EmitLlLibrary/build/obj/EmitLlLibrary.obj",
         "LlvmIrArtifact",
         "IRSet"
+    ) {
+        count = count + 1usize
+    }
+    if artifactProjectSpecimenMatches(
+        artifactProjectSpecimen(
+            "FlowProofRuntimeErasure",
+            "Fixtures/ArtifactProjects/FlowProofRuntimeErasure",
+            "Fixtures/ArtifactProjects/FlowProofRuntimeErasure/Ultraviolet.toml",
+            "Fixtures/ArtifactProjects/FlowProofRuntimeErasure/Source/Library.uv",
+            "Fixtures/ArtifactProjects/FlowProofRuntimeErasure/build/ir/FlowProofRuntimeErasure.ll",
+            "Fixtures/ArtifactProjects/FlowProofRuntimeErasure/build/obj/FlowProofRuntimeErasure.obj",
+            artifactExpectation("VerificationFactRuntimeErasure", "req.15.VerificationFactsNoRuntimeRepresentation")
+        ),
+        "FlowProofRuntimeErasure",
+        "Fixtures/ArtifactProjects/FlowProofRuntimeErasure",
+        "Fixtures/ArtifactProjects/FlowProofRuntimeErasure/Ultraviolet.toml",
+        "Fixtures/ArtifactProjects/FlowProofRuntimeErasure/Source/Library.uv",
+        "Fixtures/ArtifactProjects/FlowProofRuntimeErasure/build/ir/FlowProofRuntimeErasure.ll",
+        "Fixtures/ArtifactProjects/FlowProofRuntimeErasure/build/obj/FlowProofRuntimeErasure.obj",
+        "VerificationFactRuntimeErasure",
+        "req.15.VerificationFactsNoRuntimeRepresentation"
     ) {
         count = count + 1usize
     }

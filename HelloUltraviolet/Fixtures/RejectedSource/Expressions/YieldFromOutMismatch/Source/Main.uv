@@ -1,0 +1,10 @@
+//! Rejected async suspension specimen for yield from output incompatibility.
+
+public procedure boolOutputAsync() -> Async<bool, (), i32, !> {
+    return 1
+}
+
+public procedure yieldFromOutMismatchReference() -> Async<i32, (), i32, !> {
+    let value: i32 = yield from boolOutputAsync()
+    return value
+}

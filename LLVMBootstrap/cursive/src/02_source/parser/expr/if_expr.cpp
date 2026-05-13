@@ -32,6 +32,7 @@ ParseQualifiedHeadResult ParseQualifiedHead(Parser parser);
 ParseElemResult<ExprPtr> ParseExprNoBrace(Parser parser);
 ParseElemResult<std::shared_ptr<Block>> ParseBlock(Parser parser);
 ParseElemResult<std::shared_ptr<Pattern>> ParsePattern(Parser parser);
+ParseElemResult<std::shared_ptr<Type>> ParseType(Parser parser);
 ParseElemResult<ExprPtr> ParsePrimary(Parser parser, bool allow_brace);
 
 namespace {
@@ -153,6 +154,24 @@ TryParseBraceDisambiguatedIfCasePattern(Parser parser) {
 }
 
 ParseElemResult<IfCaseClause> ParseIfCaseClause(Parser parser) {
+  if (IsPunc(parser, ":")) {
+    SPEC_RULE("Parse-If-Is-TypeTest");
+    Parser after_colon = parser;
+    Advance(after_colon);
+    ParseElemResult<std::shared_ptr<Type>> type = ParseType(after_colon);
+
+    TypedPattern pat;
+    pat.name = "_";
+    pat.type = type.elem;
+    pat.name_splice_opt = std::nullopt;
+
+    ParseElemResult<ExprPtr> body = ParseCaseBodyBlock(type.parser);
+    IfCaseClause clause;
+    clause.pattern = MakePattern(SpanBetween(parser, type.parser), std::move(pat));
+    clause.body = body.elem;
+    return {body.parser, std::move(clause)};
+  }
+
   Parser speculative = Clone(parser);
   ParseElemResult<PatternPtr> full_pattern = ParsePattern(speculative);
   if (IsPunc(full_pattern.parser, "{")) {

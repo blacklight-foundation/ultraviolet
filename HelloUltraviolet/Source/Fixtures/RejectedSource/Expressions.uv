@@ -1,7 +1,7 @@
 //! Rejected expression specimens.
 
 public procedure expressionsRejectedSourceFixtureCount() -> usize {
-    return 70usize
+    return 94usize
 }
 
 public procedure validatedExpressionsRejectedSourceFixtureCount() -> usize {
@@ -802,6 +802,414 @@ public procedure validatedExpressionsRejectedSourceFixtureCount() -> usize {
         "Fixtures/RejectedSource/Expressions/AsyncTryInfallible/Expected.uv",
         "E-CON-0230",
         "rule.16.Async-Try-Infallible-Err"
+    ) {
+        count = count + 1usize
+    }
+    if rejectedSpecimenMatches(
+        rejectedSpecimen(
+            "YieldOutsideAsync",
+            "Fixtures/RejectedSource/Expressions/YieldOutsideAsync",
+            "Fixtures/RejectedSource/Expressions/YieldOutsideAsync/Source/Main.uv",
+            "Fixtures/RejectedSource/Expressions/YieldOutsideAsync/Expected.uv",
+            expectedDiagnostic("E-CON-0210", "rule.21.Yield-NotAsync-Err")
+        ),
+        "YieldOutsideAsync",
+        "Fixtures/RejectedSource/Expressions/YieldOutsideAsync",
+        "Fixtures/RejectedSource/Expressions/YieldOutsideAsync/Source/Main.uv",
+        "Fixtures/RejectedSource/Expressions/YieldOutsideAsync/Expected.uv",
+        "E-CON-0210",
+        "rule.21.Yield-NotAsync-Err"
+    ) {
+        count = count + 1usize
+    }
+    if rejectedSpecimenMatches(
+        rejectedSpecimen(
+            "WaitNonHandle",
+            "Fixtures/RejectedSource/Expressions/WaitNonHandle",
+            "Fixtures/RejectedSource/Expressions/WaitNonHandle/Source/Main.uv",
+            "Fixtures/RejectedSource/Expressions/WaitNonHandle/Expected.uv",
+            expectedDiagnostic("E-CON-0132", "rule.21.Wait-Handle-Err")
+        ),
+        "WaitNonHandle",
+        "Fixtures/RejectedSource/Expressions/WaitNonHandle",
+        "Fixtures/RejectedSource/Expressions/WaitNonHandle/Source/Main.uv",
+        "Fixtures/RejectedSource/Expressions/WaitNonHandle/Expected.uv",
+        "E-CON-0132",
+        "rule.21.Wait-Handle-Err"
+    ) {
+        count = count + 1usize
+    }
+    if rejectedSpecimenMatches(
+        rejectedSpecimen(
+            "YieldTypeMismatch",
+            "Fixtures/RejectedSource/Expressions/YieldTypeMismatch",
+            "Fixtures/RejectedSource/Expressions/YieldTypeMismatch/Source/Main.uv",
+            "Fixtures/RejectedSource/Expressions/YieldTypeMismatch/Expected.uv",
+            expectedDiagnostic("E-CON-0211", "rule.21.Yield-Out-Err")
+        ),
+        "YieldTypeMismatch",
+        "Fixtures/RejectedSource/Expressions/YieldTypeMismatch",
+        "Fixtures/RejectedSource/Expressions/YieldTypeMismatch/Source/Main.uv",
+        "Fixtures/RejectedSource/Expressions/YieldTypeMismatch/Expected.uv",
+        "E-CON-0211",
+        "rule.21.Yield-Out-Err"
+    ) {
+        count = count + 1usize
+    }
+    if rejectedSpecimenMatches(
+        rejectedSpecimen(
+            "YieldFromOutsideAsync",
+            "Fixtures/RejectedSource/Expressions/YieldFromOutsideAsync",
+            "Fixtures/RejectedSource/Expressions/YieldFromOutsideAsync/Source/Main.uv",
+            "Fixtures/RejectedSource/Expressions/YieldFromOutsideAsync/Expected.uv",
+            expectedDiagnostic("E-CON-0220", "rule.21.YieldFrom-NotAsync-Err")
+        ),
+        "YieldFromOutsideAsync",
+        "Fixtures/RejectedSource/Expressions/YieldFromOutsideAsync",
+        "Fixtures/RejectedSource/Expressions/YieldFromOutsideAsync/Source/Main.uv",
+        "Fixtures/RejectedSource/Expressions/YieldFromOutsideAsync/Expected.uv",
+        "E-CON-0220",
+        "rule.21.YieldFrom-NotAsync-Err"
+    ) {
+        count = count + 1usize
+    }
+    if rejectedSpecimenMatches(
+        rejectedSpecimen(
+            "YieldFromOutMismatch",
+            "Fixtures/RejectedSource/Expressions/YieldFromOutMismatch",
+            "Fixtures/RejectedSource/Expressions/YieldFromOutMismatch/Source/Main.uv",
+            "Fixtures/RejectedSource/Expressions/YieldFromOutMismatch/Expected.uv",
+            expectedDiagnostic("E-CON-0221", "rule.21.YieldFrom-Out-Err")
+        ),
+        "YieldFromOutMismatch",
+        "Fixtures/RejectedSource/Expressions/YieldFromOutMismatch",
+        "Fixtures/RejectedSource/Expressions/YieldFromOutMismatch/Source/Main.uv",
+        "Fixtures/RejectedSource/Expressions/YieldFromOutMismatch/Expected.uv",
+        "E-CON-0221",
+        "rule.21.YieldFrom-Out-Err"
+    ) {
+        count = count + 1usize
+    }
+    if rejectedSpecimenMatches(
+        rejectedSpecimen(
+            "YieldFromInMismatch",
+            "Fixtures/RejectedSource/Expressions/YieldFromInMismatch",
+            "Fixtures/RejectedSource/Expressions/YieldFromInMismatch/Source/Main.uv",
+            "Fixtures/RejectedSource/Expressions/YieldFromInMismatch/Expected.uv",
+            expectedDiagnostic("E-CON-0222", "rule.21.YieldFrom-In-Err")
+        ),
+        "YieldFromInMismatch",
+        "Fixtures/RejectedSource/Expressions/YieldFromInMismatch",
+        "Fixtures/RejectedSource/Expressions/YieldFromInMismatch/Source/Main.uv",
+        "Fixtures/RejectedSource/Expressions/YieldFromInMismatch/Expected.uv",
+        "E-CON-0222",
+        "rule.21.YieldFrom-In-Err"
+    ) {
+        count = count + 1usize
+    }
+    if rejectedSpecimenMatches(
+        rejectedSpecimen(
+            "YieldFromErrorMismatch",
+            "Fixtures/RejectedSource/Expressions/YieldFromErrorMismatch",
+            "Fixtures/RejectedSource/Expressions/YieldFromErrorMismatch/Source/Main.uv",
+            "Fixtures/RejectedSource/Expressions/YieldFromErrorMismatch/Expected.uv",
+            expectedDiagnostic("E-CON-0225", "rule.21.YieldFrom-ErrType-Err")
+        ),
+        "YieldFromErrorMismatch",
+        "Fixtures/RejectedSource/Expressions/YieldFromErrorMismatch",
+        "Fixtures/RejectedSource/Expressions/YieldFromErrorMismatch/Source/Main.uv",
+        "Fixtures/RejectedSource/Expressions/YieldFromErrorMismatch/Expected.uv",
+        "E-CON-0225",
+        "rule.21.YieldFrom-ErrType-Err"
+    ) {
+        count = count + 1usize
+    }
+    if rejectedSpecimenMatches(
+        rejectedSpecimen(
+            "SyncContainsYield",
+            "Fixtures/RejectedSource/Expressions/SyncContainsYield",
+            "Fixtures/RejectedSource/Expressions/SyncContainsYield/Source/Main.uv",
+            "Fixtures/RejectedSource/Expressions/SyncContainsYield/Expected.uv",
+            expectedDiagnostic("E-CON-0212", "rule.21.Sync-Yield-Err")
+        ),
+        "SyncContainsYield",
+        "Fixtures/RejectedSource/Expressions/SyncContainsYield",
+        "Fixtures/RejectedSource/Expressions/SyncContainsYield/Source/Main.uv",
+        "Fixtures/RejectedSource/Expressions/SyncContainsYield/Expected.uv",
+        "E-CON-0212",
+        "rule.21.Sync-Yield-Err"
+    ) {
+        count = count + 1usize
+    }
+    if rejectedSpecimenMatches(
+        rejectedSpecimen(
+            "SyncContainsYieldFrom",
+            "Fixtures/RejectedSource/Expressions/SyncContainsYieldFrom",
+            "Fixtures/RejectedSource/Expressions/SyncContainsYieldFrom/Source/Main.uv",
+            "Fixtures/RejectedSource/Expressions/SyncContainsYieldFrom/Expected.uv",
+            expectedDiagnostic("E-CON-0223", "rule.21.Sync-YieldFrom-Err")
+        ),
+        "SyncContainsYieldFrom",
+        "Fixtures/RejectedSource/Expressions/SyncContainsYieldFrom",
+        "Fixtures/RejectedSource/Expressions/SyncContainsYieldFrom/Source/Main.uv",
+        "Fixtures/RejectedSource/Expressions/SyncContainsYieldFrom/Expected.uv",
+        "E-CON-0223",
+        "rule.21.Sync-YieldFrom-Err"
+    ) {
+        count = count + 1usize
+    }
+    if rejectedSpecimenMatches(
+        rejectedSpecimen(
+            "SyncInsideAsync",
+            "Fixtures/RejectedSource/Expressions/SyncInsideAsync",
+            "Fixtures/RejectedSource/Expressions/SyncInsideAsync/Source/Main.uv",
+            "Fixtures/RejectedSource/Expressions/SyncInsideAsync/Expected.uv",
+            expectedDiagnostic("E-CON-0250", "rule.21.Sync-Async-Context-Err")
+        ),
+        "SyncInsideAsync",
+        "Fixtures/RejectedSource/Expressions/SyncInsideAsync",
+        "Fixtures/RejectedSource/Expressions/SyncInsideAsync/Source/Main.uv",
+        "Fixtures/RejectedSource/Expressions/SyncInsideAsync/Expected.uv",
+        "E-CON-0250",
+        "rule.21.Sync-Async-Context-Err"
+    ) {
+        count = count + 1usize
+    }
+    if rejectedSpecimenMatches(
+        rejectedSpecimen(
+            "SyncOperandYields",
+            "Fixtures/RejectedSource/Expressions/SyncOperandYields",
+            "Fixtures/RejectedSource/Expressions/SyncOperandYields/Source/Main.uv",
+            "Fixtures/RejectedSource/Expressions/SyncOperandYields/Expected.uv",
+            expectedDiagnostic("E-CON-0251", "rule.21.Sync-Out-Err")
+        ),
+        "SyncOperandYields",
+        "Fixtures/RejectedSource/Expressions/SyncOperandYields",
+        "Fixtures/RejectedSource/Expressions/SyncOperandYields/Source/Main.uv",
+        "Fixtures/RejectedSource/Expressions/SyncOperandYields/Expected.uv",
+        "E-CON-0251",
+        "rule.21.Sync-Out-Err"
+    ) {
+        count = count + 1usize
+    }
+    if rejectedSpecimenMatches(
+        rejectedSpecimen(
+            "SyncOperandRequiresInput",
+            "Fixtures/RejectedSource/Expressions/SyncOperandRequiresInput",
+            "Fixtures/RejectedSource/Expressions/SyncOperandRequiresInput/Source/Main.uv",
+            "Fixtures/RejectedSource/Expressions/SyncOperandRequiresInput/Expected.uv",
+            expectedDiagnostic("E-CON-0252", "rule.21.Sync-In-Err")
+        ),
+        "SyncOperandRequiresInput",
+        "Fixtures/RejectedSource/Expressions/SyncOperandRequiresInput",
+        "Fixtures/RejectedSource/Expressions/SyncOperandRequiresInput/Source/Main.uv",
+        "Fixtures/RejectedSource/Expressions/SyncOperandRequiresInput/Expected.uv",
+        "E-CON-0252",
+        "rule.21.Sync-In-Err"
+    ) {
+        count = count + 1usize
+    }
+    if rejectedSpecimenMatches(
+        rejectedSpecimen(
+            "RaceTooFewArms",
+            "Fixtures/RejectedSource/Expressions/RaceTooFewArms",
+            "Fixtures/RejectedSource/Expressions/RaceTooFewArms/Source/Main.uv",
+            "Fixtures/RejectedSource/Expressions/RaceTooFewArms/Expected.uv",
+            expectedDiagnostic("E-CON-0260", "rule.21.Race-Arity-Err")
+        ),
+        "RaceTooFewArms",
+        "Fixtures/RejectedSource/Expressions/RaceTooFewArms",
+        "Fixtures/RejectedSource/Expressions/RaceTooFewArms/Source/Main.uv",
+        "Fixtures/RejectedSource/Expressions/RaceTooFewArms/Expected.uv",
+        "E-CON-0260",
+        "rule.21.Race-Arity-Err"
+    ) {
+        count = count + 1usize
+    }
+    if rejectedSpecimenMatches(
+        rejectedSpecimen(
+            "RaceHandlerMix",
+            "Fixtures/RejectedSource/Expressions/RaceHandlerMix",
+            "Fixtures/RejectedSource/Expressions/RaceHandlerMix/Source/Main.uv",
+            "Fixtures/RejectedSource/Expressions/RaceHandlerMix/Expected.uv",
+            expectedDiagnostic("E-CON-0263", "rule.21.Race-Handler-Mix-Err")
+        ),
+        "RaceHandlerMix",
+        "Fixtures/RejectedSource/Expressions/RaceHandlerMix",
+        "Fixtures/RejectedSource/Expressions/RaceHandlerMix/Source/Main.uv",
+        "Fixtures/RejectedSource/Expressions/RaceHandlerMix/Expected.uv",
+        "E-CON-0263",
+        "rule.21.Race-Handler-Mix-Err"
+    ) {
+        count = count + 1usize
+    }
+    if rejectedSpecimenMatches(
+        rejectedSpecimen(
+            "RaceOperandYields",
+            "Fixtures/RejectedSource/Expressions/RaceOperandYields",
+            "Fixtures/RejectedSource/Expressions/RaceOperandYields/Source/Main.uv",
+            "Fixtures/RejectedSource/Expressions/RaceOperandYields/Expected.uv",
+            expectedDiagnostic("E-CON-0262", "rule.21.Race-Operand-Out-Err")
+        ),
+        "RaceOperandYields",
+        "Fixtures/RejectedSource/Expressions/RaceOperandYields",
+        "Fixtures/RejectedSource/Expressions/RaceOperandYields/Source/Main.uv",
+        "Fixtures/RejectedSource/Expressions/RaceOperandYields/Expected.uv",
+        "E-CON-0262",
+        "rule.21.Race-Operand-Out-Err"
+    ) {
+        count = count + 1usize
+    }
+    if rejectedSpecimenMatches(
+        rejectedSpecimen(
+            "RaceOperandNonAsync",
+            "Fixtures/RejectedSource/Expressions/RaceOperandNonAsync",
+            "Fixtures/RejectedSource/Expressions/RaceOperandNonAsync/Source/Main.uv",
+            "Fixtures/RejectedSource/Expressions/RaceOperandNonAsync/Expected.uv",
+            expectedDiagnostic("E-CON-0261", "rule.21.Race-Operand-Err")
+        ),
+        "RaceOperandNonAsync",
+        "Fixtures/RejectedSource/Expressions/RaceOperandNonAsync",
+        "Fixtures/RejectedSource/Expressions/RaceOperandNonAsync/Source/Main.uv",
+        "Fixtures/RejectedSource/Expressions/RaceOperandNonAsync/Expected.uv",
+        "E-CON-0261",
+        "rule.21.Race-Operand-Err"
+    ) {
+        count = count + 1usize
+    }
+    if rejectedSpecimenMatches(
+        rejectedSpecimen(
+            "RaceStreamOperandNeedsInput",
+            "Fixtures/RejectedSource/Expressions/RaceStreamOperandNeedsInput",
+            "Fixtures/RejectedSource/Expressions/RaceStreamOperandNeedsInput/Source/Main.uv",
+            "Fixtures/RejectedSource/Expressions/RaceStreamOperandNeedsInput/Expected.uv",
+            expectedDiagnostic("E-CON-0261", "rule.21.Race-Stream-Operand-Err")
+        ),
+        "RaceStreamOperandNeedsInput",
+        "Fixtures/RejectedSource/Expressions/RaceStreamOperandNeedsInput",
+        "Fixtures/RejectedSource/Expressions/RaceStreamOperandNeedsInput/Source/Main.uv",
+        "Fixtures/RejectedSource/Expressions/RaceStreamOperandNeedsInput/Expected.uv",
+        "E-CON-0261",
+        "rule.21.Race-Stream-Operand-Err"
+    ) {
+        count = count + 1usize
+    }
+    if rejectedSpecimenMatches(
+        rejectedSpecimen(
+            "RaceHandlerTypeMismatch",
+            "Fixtures/RejectedSource/Expressions/RaceHandlerTypeMismatch",
+            "Fixtures/RejectedSource/Expressions/RaceHandlerTypeMismatch/Source/Main.uv",
+            "Fixtures/RejectedSource/Expressions/RaceHandlerTypeMismatch/Expected.uv",
+            expectedDiagnostic("E-CON-0261", "rule.21.Race-Handler-Type-Err")
+        ),
+        "RaceHandlerTypeMismatch",
+        "Fixtures/RejectedSource/Expressions/RaceHandlerTypeMismatch",
+        "Fixtures/RejectedSource/Expressions/RaceHandlerTypeMismatch/Source/Main.uv",
+        "Fixtures/RejectedSource/Expressions/RaceHandlerTypeMismatch/Expected.uv",
+        "E-CON-0261",
+        "rule.21.Race-Handler-Type-Err"
+    ) {
+        count = count + 1usize
+    }
+    if rejectedSpecimenMatches(
+        rejectedSpecimen(
+            "RaceStreamHandlerTypeMismatch",
+            "Fixtures/RejectedSource/Expressions/RaceStreamHandlerTypeMismatch",
+            "Fixtures/RejectedSource/Expressions/RaceStreamHandlerTypeMismatch/Source/Main.uv",
+            "Fixtures/RejectedSource/Expressions/RaceStreamHandlerTypeMismatch/Expected.uv",
+            expectedDiagnostic("E-CON-0261", "rule.21.Race-Stream-Handler-Type-Err")
+        ),
+        "RaceStreamHandlerTypeMismatch",
+        "Fixtures/RejectedSource/Expressions/RaceStreamHandlerTypeMismatch",
+        "Fixtures/RejectedSource/Expressions/RaceStreamHandlerTypeMismatch/Source/Main.uv",
+        "Fixtures/RejectedSource/Expressions/RaceStreamHandlerTypeMismatch/Expected.uv",
+        "E-CON-0261",
+        "rule.21.Race-Stream-Handler-Type-Err"
+    ) {
+        count = count + 1usize
+    }
+    if rejectedSpecimenMatches(
+        rejectedSpecimen(
+            "AllOperandYields",
+            "Fixtures/RejectedSource/Expressions/AllOperandYields",
+            "Fixtures/RejectedSource/Expressions/AllOperandYields/Source/Main.uv",
+            "Fixtures/RejectedSource/Expressions/AllOperandYields/Expected.uv",
+            expectedDiagnostic("E-CON-0270", "rule.21.All-Out-Err")
+        ),
+        "AllOperandYields",
+        "Fixtures/RejectedSource/Expressions/AllOperandYields",
+        "Fixtures/RejectedSource/Expressions/AllOperandYields/Source/Main.uv",
+        "Fixtures/RejectedSource/Expressions/AllOperandYields/Expected.uv",
+        "E-CON-0270",
+        "rule.21.All-Out-Err"
+    ) {
+        count = count + 1usize
+    }
+    if rejectedSpecimenMatches(
+        rejectedSpecimen(
+            "AllOperandRequiresInput",
+            "Fixtures/RejectedSource/Expressions/AllOperandRequiresInput",
+            "Fixtures/RejectedSource/Expressions/AllOperandRequiresInput/Source/Main.uv",
+            "Fixtures/RejectedSource/Expressions/AllOperandRequiresInput/Expected.uv",
+            expectedDiagnostic("E-CON-0271", "rule.21.All-In-Err")
+        ),
+        "AllOperandRequiresInput",
+        "Fixtures/RejectedSource/Expressions/AllOperandRequiresInput",
+        "Fixtures/RejectedSource/Expressions/AllOperandRequiresInput/Source/Main.uv",
+        "Fixtures/RejectedSource/Expressions/AllOperandRequiresInput/Expected.uv",
+        "E-CON-0271",
+        "rule.21.All-In-Err"
+    ) {
+        count = count + 1usize
+    }
+    if rejectedSpecimenMatches(
+        rejectedSpecimen(
+            "AsyncTypeArgCount",
+            "Fixtures/RejectedSource/Expressions/AsyncTypeArgCount",
+            "Fixtures/RejectedSource/Expressions/AsyncTypeArgCount/Source/Main.uv",
+            "Fixtures/RejectedSource/Expressions/AsyncTypeArgCount/Expected.uv",
+            expectedDiagnostic("E-CON-0201", "rule.21.WF-Async-ArgCount-Err")
+        ),
+        "AsyncTypeArgCount",
+        "Fixtures/RejectedSource/Expressions/AsyncTypeArgCount",
+        "Fixtures/RejectedSource/Expressions/AsyncTypeArgCount/Source/Main.uv",
+        "Fixtures/RejectedSource/Expressions/AsyncTypeArgCount/Expected.uv",
+        "E-CON-0201",
+        "rule.21.WF-Async-ArgCount-Err"
+    ) {
+        count = count + 1usize
+    }
+    if rejectedSpecimenMatches(
+        rejectedSpecimen(
+            "AsyncTypeArgIllFormed",
+            "Fixtures/RejectedSource/Expressions/AsyncTypeArgIllFormed",
+            "Fixtures/RejectedSource/Expressions/AsyncTypeArgIllFormed/Source/Main.uv",
+            "Fixtures/RejectedSource/Expressions/AsyncTypeArgIllFormed/Expected.uv",
+            expectedDiagnostic("E-CON-0201", "rule.21.WF-Async-Arg-WF-Err")
+        ),
+        "AsyncTypeArgIllFormed",
+        "Fixtures/RejectedSource/Expressions/AsyncTypeArgIllFormed",
+        "Fixtures/RejectedSource/Expressions/AsyncTypeArgIllFormed/Source/Main.uv",
+        "Fixtures/RejectedSource/Expressions/AsyncTypeArgIllFormed/Expected.uv",
+        "E-CON-0201",
+        "rule.21.WF-Async-Arg-WF-Err"
+    ) {
+        count = count + 1usize
+    }
+    if rejectedSpecimenMatches(
+        rejectedSpecimen(
+            "AsyncTypePathUnapplied",
+            "Fixtures/RejectedSource/Expressions/AsyncTypePathUnapplied",
+            "Fixtures/RejectedSource/Expressions/AsyncTypePathUnapplied/Source/Main.uv",
+            "Fixtures/RejectedSource/Expressions/AsyncTypePathUnapplied/Expected.uv",
+            expectedDiagnostic("E-CON-0201", "rule.21.WF-Async-Path-Err")
+        ),
+        "AsyncTypePathUnapplied",
+        "Fixtures/RejectedSource/Expressions/AsyncTypePathUnapplied",
+        "Fixtures/RejectedSource/Expressions/AsyncTypePathUnapplied/Source/Main.uv",
+        "Fixtures/RejectedSource/Expressions/AsyncTypePathUnapplied/Expected.uv",
+        "E-CON-0201",
+        "rule.21.WF-Async-Path-Err"
     ) {
         count = count + 1usize
     }

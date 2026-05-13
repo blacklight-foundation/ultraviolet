@@ -238,10 +238,29 @@ procedure typedUnionExitCode() -> i32 {
         value: i32 { value == 0 }
         value: bool { value == true }
     }
-    if (numeric_ok && boolean_ok) {
-        return 0
+    let numeric_type_test_ok: bool = if numeric is :i32 {
+        true
+    } else {
+        false
     }
-    return 3
+    let boolean_else_narrow_ok: bool = if boolean is :i32 {
+        false
+    } else {
+        boolean == true
+    }
+    if (!numeric_ok) {
+        return 30
+    }
+    if (!boolean_ok) {
+        return 31
+    }
+    if (!numeric_type_test_ok) {
+        return 32
+    }
+    if (!boolean_else_narrow_ok) {
+        return 33
+    }
+    return 0
 }
 
 procedure conditionalLoopExitCode() -> i32 {

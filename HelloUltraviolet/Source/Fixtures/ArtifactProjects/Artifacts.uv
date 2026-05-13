@@ -1,5 +1,7 @@
 //! Runtime path checks for artifact project fixture source artifacts.
 
+using HelloUltraviolet::Audit::{ auditTextContains }
+
 internal procedure artifactProjectSourceArtifactsExist(
     context: Context,
     manifest_path: string@View,
@@ -16,13 +18,51 @@ public procedure artifactProjectFixtureSourceArtifactsExist(context: Context) ->
         "HelloUltraviolet/Fixtures/ArtifactProjects/StaticLibraryArchive/Source/Library.uv"
     ) &&
         artifactProjectSourceArtifactsExist(
+        context,
+        "HelloUltraviolet/Fixtures/ArtifactProjects/EmitLlLibrary/Ultraviolet.toml",
+        "HelloUltraviolet/Fixtures/ArtifactProjects/EmitLlLibrary/Source/Library.uv"
+    ) &&
+        artifactProjectSourceArtifactsExist(
             context,
-            "HelloUltraviolet/Fixtures/ArtifactProjects/EmitLlLibrary/Ultraviolet.toml",
-            "HelloUltraviolet/Fixtures/ArtifactProjects/EmitLlLibrary/Source/Library.uv"
+            "HelloUltraviolet/Fixtures/ArtifactProjects/FlowProofRuntimeErasure/Ultraviolet.toml",
+            "HelloUltraviolet/Fixtures/ArtifactProjects/FlowProofRuntimeErasure/Source/Library.uv"
         ) &&
         artifactProjectSourceArtifactsExist(
             context,
             "HelloUltraviolet/Fixtures/ArtifactProjects/ExecutableOutput/Ultraviolet.toml",
             "HelloUltraviolet/Fixtures/ArtifactProjects/ExecutableOutput/Source/Main.uv"
         )
+}
+
+internal procedure artifactTextExcludes(
+    context: Context,
+    artifact_path: string@View,
+    forbidden_text: string@View
+) -> bool {
+    let read_result: Outcome<unique string@Managed, IoError> = context.fs~>read_file(artifact_path)
+    return if move read_result is {
+        @Value { value } {
+            let text: string@View = string::as_view(value)
+            !auditTextContains(text, forbidden_text)
+        }
+        @Error {
+            false
+        }
+    }
+}
+
+public procedure artifactProjectRuntimeErasureArtifactsMatch(context: Context) -> bool {
+    let ir_path: string@View =
+        "HelloUltraviolet/Fixtures/ArtifactProjects/FlowProofRuntimeErasure/build/ir/FlowProofRuntimeErasure.ll"
+    return context.fs~>exists(ir_path) &&
+        context.fs~>exists(
+            "HelloUltraviolet/Fixtures/ArtifactProjects/FlowProofRuntimeErasure/build/obj/FlowProofRuntimeErasure.obj"
+        ) &&
+        artifactTextExcludes(context, ir_path, "VerificationFact") &&
+        artifactTextExcludes(context, ir_path, "FlowFactsAt") &&
+        artifactTextExcludes(context, ir_path, "ProofContextAt") &&
+        artifactTextExcludes(context, ir_path, "ContractFactsAt") &&
+        artifactTextExcludes(context, ir_path, "ContractCheck") &&
+        artifactTextExcludes(context, ir_path, "ContractViolation") &&
+        artifactTextExcludes(context, ir_path, "Precondition")
 }

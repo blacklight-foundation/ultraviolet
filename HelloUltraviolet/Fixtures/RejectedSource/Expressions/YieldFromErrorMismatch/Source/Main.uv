@@ -1,0 +1,10 @@
+//! Rejected async suspension specimen for yield from error-type incompatibility.
+
+public procedure fallibleAsync() -> Async<i32, (), i32, i32> {
+    return 1
+}
+
+public procedure yieldFromErrorMismatchReference() -> Async<i32, (), i32, !> {
+    let value: i32 = yield from fallibleAsync()
+    return value
+}

@@ -31,10 +31,10 @@ Objective: execute `.agents/plans/HelloUltravioletReferenceCorpus.md`.
 - `CatalogSymbols.uv` imports and executes the 65 unique compiled reference
   symbols named by catalog rows, and `HelloUltraviolet.exe` validates them
   through `catalogCompiledSymbolsExecute()`.
-- `Source/Fixtures/RejectedSource` compiles metadata for 279 rejected-source
+- `Source/Fixtures/RejectedSource` compiles metadata for 306 rejected-source
   fixture specimens, and `HelloUltraviolet.exe` validates that fixture index
   through `rejectedSourceFixturesAreIndexed`.
-- The 279 rejected-source fixture projects under
+- The 306 rejected-source fixture projects under
   `HelloUltraviolet/Fixtures/RejectedSource` fail with their expected SPEC
   diagnostic code or static-rule diagnostic when built individually with
   `Cursive.exe build ... --check`.
@@ -44,7 +44,7 @@ Objective: execute `.agents/plans/HelloUltravioletReferenceCorpus.md`.
 - `HelloUltraviolet.exe` verifies runtime existence of each rejected fixture
   manifest, invalid source file, and `Expected.uv` artifact through
   `rejectedSourceFixtureArtifactsExist(context)`.
-- `ExpectedFiles.uv` reads the 279 current rejected-source `Expected.uv`
+- `ExpectedFiles.uv` reads the 306 current rejected-source `Expected.uv`
   artifacts and `HelloUltraviolet.exe` validates exact metadata content through
   one named check per specimen.
 - `Source/Fixtures/DiagnosticSource` compiles metadata for 11 diagnostic-source
@@ -64,6 +64,26 @@ Objective: execute `.agents/plans/HelloUltravioletReferenceCorpus.md`.
   `W-CON-0011` for stale binding use after `yield release`, while
   `Fixtures/DiagnosticSource/Keys/StaleOkSuppressesReleaseWarning` uses the
   same source shape with `[[stale_ok]]` and verifies `W-CON-0011` is absent.
+- `Fixtures/RejectedSource/Expressions/YieldOutsideAsync` rejects with
+  `E-CON-0210`, exercising `rule.21.Yield-NotAsync-Err` by using `yield` in a
+  non-async-returning procedure.
+- The async suspension and sync fixture group under
+  `Fixtures/RejectedSource/Expressions` now rejects with `E-CON-0132`,
+  `E-CON-0211`, `E-CON-0220`, `E-CON-0221`, `E-CON-0222`, `E-CON-0225`,
+  `E-CON-0212`, `E-CON-0223`, `E-CON-0250`, `E-CON-0251`, and `E-CON-0252`,
+  exercising wait-handle, yield output, yield-from compatibility, and sync
+  operand/context obligations from Chapter 21.
+- The async race/all fixture group under `Fixtures/RejectedSource/Expressions`
+  rejects with `E-CON-0260`, `E-CON-0261`, `E-CON-0262`, `E-CON-0263`,
+  `E-CON-0270`, and `E-CON-0271`, exercising race arity, race handler
+  consistency, race operand compatibility, race handler result compatibility,
+  and all-expression operand requirements from Chapter 21.
+- The async type well-formedness fixture group under
+  `Fixtures/RejectedSource/Expressions` rejects with `E-CON-0201`, exercising
+  async argument count, ill-formed async argument, and unapplied async type path
+  obligations from Chapter 21. This required bootstrap diagnostic routing fixes
+  for `WF-Async-ArgCount-Err`, `WF-Async-Arg-WF-Err`, and
+  `WF-Async-Path-Err`.
 - `Fixtures/RejectedSource/Polymorphism/ImplementationMissingRequiredField`
   rejects with `E-TYP-2402`, and
   `Fixtures/RejectedSource/Polymorphism/ImplementationFieldTypeMismatch`
@@ -151,6 +171,22 @@ Objective: execute `.agents/plans/HelloUltravioletReferenceCorpus.md`.
   `req.15.DuplicateErasedOverloadSignaturesForbidden`. This required a
   bootstrap fix in `typecheck.cpp` so procedure declaration typing compares
   same-name overload parameter signatures after generic-parameter erasure.
+- `Fixtures/RejectedSource/Procedures/OverloadingDiagnosticsTable` rejects
+  with `E-SEM-3032`, exercising `diag-table.15.Overloading` through the
+  duplicate-signature condition defined in the Chapter 15 overloading
+  diagnostic table.
+- `Fixtures/RejectedSource/Procedures/OverloadResolutionBeforeCallTyping`
+  rejects with `E-SEM-3031`, exercising
+  `req.15.FreeProcedureOverloadResolutionBeforeCallTyping` by requiring the
+  overloaded callee set to reject at overload resolution rather than falling
+  through to ordinary call typing.
+- `Fixtures/RejectedSource/Procedures/VerificationFactNoRuntimeRepresentation`
+  rejects with `E-MOD-1301`, exercising
+  `req.15.VerificationFactsNoRuntimeRepresentation`. The specimen attempts to
+  expose the spec's internal `VerificationFact` form as a returned surface
+  type; the bootstrap correctly keeps verification facts out of the value/type
+  namespace because §15.8 introduces no surface syntax for facts and gives them
+  no runtime representation.
 - The dynamic class object rejected-source specimens under
   `Fixtures/RejectedSource/Polymorphism` reject with `E-TYP-2509`,
   `E-TYP-2541`, `E-TYP-2542`, and `E-SEM-2536`; these exercise undefined
@@ -191,13 +227,16 @@ Objective: execute `.agents/plans/HelloUltravioletReferenceCorpus.md`.
   `Fixtures/AcceptedProjects/VerificationFactPrecondition` builds as a valid
   library project for branch-generated verification facts discharging
   preconditions.
-- `Source/Fixtures/ArtifactProjects` compiles metadata for 3 artifact project
-  fixture specimens, and `HelloUltraviolet.exe` validates both the index and
-  source/manifest paths through artifact-project fixture checks.
+- `Source/Fixtures/ArtifactProjects` compiles metadata for 4 artifact project
+  fixture specimens, and `HelloUltraviolet.exe` validates the index,
+  source/manifest paths, and emitted-IR erasure checks through artifact-project
+  fixture checks.
 - `Fixtures/ArtifactProjects/StaticLibraryArchive` builds a `.lib` archive and
   `.obj`, `Fixtures/ArtifactProjects/EmitLlLibrary` builds a `.ll`, `.lib`, and
-  `.obj`, and `Fixtures/ArtifactProjects/ExecutableOutput` builds and runs an
-  `.exe`, `.map`, and `.obj` artifact.
+  `.obj`, `Fixtures/ArtifactProjects/FlowProofRuntimeErasure` builds a `.ll`
+  and `.obj` whose emitted IR contains no verification-fact runtime
+  materialization, and `Fixtures/ArtifactProjects/ExecutableOutput` builds and
+  runs an `.exe`, `.map`, and `.obj` artifact.
 - The project check gate passes:
   `Cursive.exe build HelloUltraviolet --check --target-profile x86_64-win64
   --build-progress off`.
@@ -214,14 +253,13 @@ Objective: execute `.agents/plans/HelloUltravioletReferenceCorpus.md`.
 ## Completion Blockers
 
 - Rejected-source and diagnostic-source fixtures are partially populated. The
-  current fixture set covers 279 rejected-source diagnostics and 11 compiling
+  current fixture set covers 306 rejected-source diagnostics and 11 compiling
   diagnostic-source warning/info/absence cases; the full expected-diagnostics
   obligation surface is not yet represented. Of the 382 expected-diagnostic
-  obligations, 116 remain
+  obligations, 88 remain
   uncovered. Remaining uncovered expected-diagnostic ownership counts are:
-  abstraction/polymorphism 2, async 41, compile-time 27,
-  key-system 1, lowering 3, procedures/contracts 3, statements 1,
-  and structured parallelism 38.
+  abstraction/polymorphism 2, async 17, compile-time 27, lowering 3,
+  statements 1, and structured parallelism 38.
 - `Fixtures/BootstrapNonCompliance/Procedures/FreeProcedureOverloadResolution`
   now passes both semantic checking and the standalone library build after the
   bootstrap repair in `collect_toplevel.cpp` and `expr/call.cpp`. The

@@ -1651,6 +1651,40 @@ target_compile_definitions(cursive_parser_terminator_diagnostics_test PRIVATE
 
 add_dependencies(cursive_parser_terminator_diagnostics_test cursive_out)
 
+add_executable(cursive_resolver_name_reuse_diagnostics_test
+  tests/resolver_name_reuse_diagnostics_test.cpp
+)
+
+target_compile_features(cursive_resolver_name_reuse_diagnostics_test PRIVATE
+  cxx_std_20
+)
+
+target_compile_definitions(cursive_resolver_name_reuse_diagnostics_test PRIVATE
+  CURSIVE_TEST_COMPILER_PATH="${CURSIVE_OUT_DIR}/$<TARGET_FILE_NAME:cursive>"
+  CURSIVE_TEST_RUNTIME_LIB_PATH="${CURSIVE_CODEGEN_ABI_SRET_RUNTIME_LIB}"
+  CURSIVE_TEST_TARGET_PROFILE="${CURSIVE_CODEGEN_ABI_SRET_TARGET_PROFILE}"
+  CURSIVE_TEST_WORK_ROOT="${CMAKE_BINARY_DIR}/tests"
+)
+
+add_dependencies(cursive_resolver_name_reuse_diagnostics_test cursive_out)
+
+add_executable(cursive_if_is_type_test_diagnostics_test
+  tests/if_is_type_test_diagnostics_test.cpp
+)
+
+target_compile_features(cursive_if_is_type_test_diagnostics_test PRIVATE
+  cxx_std_20
+)
+
+target_compile_definitions(cursive_if_is_type_test_diagnostics_test PRIVATE
+  CURSIVE_TEST_COMPILER_PATH="${CURSIVE_OUT_DIR}/$<TARGET_FILE_NAME:cursive>"
+  CURSIVE_TEST_RUNTIME_LIB_PATH="${CURSIVE_CODEGEN_ABI_SRET_RUNTIME_LIB}"
+  CURSIVE_TEST_TARGET_PROFILE="${CURSIVE_CODEGEN_ABI_SRET_TARGET_PROFILE}"
+  CURSIVE_TEST_WORK_ROOT="${CMAKE_BINARY_DIR}/tests"
+)
+
+add_dependencies(cursive_if_is_type_test_diagnostics_test cursive_out)
+
 add_executable(cursive_parser_token_consumption_test
   tests/parser_token_consumption_test.cpp
 )

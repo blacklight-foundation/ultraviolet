@@ -1,0 +1,6 @@
+//! Rejected async composition specimen for yield inside a sync expression.
+
+public procedure syncContainsYieldReference() -> i32 {
+    let value: i32 = sync yield 1
+    return value
+}

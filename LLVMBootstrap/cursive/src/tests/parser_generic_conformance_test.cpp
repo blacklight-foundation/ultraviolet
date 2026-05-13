@@ -178,6 +178,11 @@ public procedure useClosureExpr() -> i32 {
     let ended = if 1 is {
         0 { 0 }
     }
+    let type_test_single = if 1 is :i32 { 3 } else { 4 }
+    let type_test_case = if 1 is {
+        :i32 { 5 }
+        else { 6 }
+    }
     loop value in [1, 2] {
         break 0
     }
@@ -331,6 +336,7 @@ int main() {
            "Parse-FieldInit-Shorthand",
            "ControlExpressionParsingRemainderFamily",
            "Parse-IfCases-Cons",
+           "Parse-If-Is-TypeTest",
            "Parse-IfCasesTail-End",
            "Parse-IfCasesTail-Else",
            "Parse-IfCasesTail-Cons",

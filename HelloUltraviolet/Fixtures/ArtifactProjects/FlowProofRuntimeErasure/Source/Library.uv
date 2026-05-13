@@ -1,0 +1,15 @@
+//! Artifact fixture for runtime erasure of static verification evidence.
+
+public procedure requirePositiveValue(value: i32) -> i32
+|: value > 0
+{
+    return value
+}
+
+public procedure branchValidatedValue(value: i32) -> i32 {
+    if value > 0 {
+        return requirePositiveValue(value)
+    }
+
+    return 0
+}

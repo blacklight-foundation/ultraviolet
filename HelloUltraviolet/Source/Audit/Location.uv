@@ -42,6 +42,27 @@ internal procedure auditTextByte(text: string@View, index: usize) -> u8 {
     return data[index]
 }
 
+internal procedure auditTextStartsAt(
+    text: string@View,
+    needle: string@View,
+    start: usize
+) -> bool {
+    let text_length: usize = string::length(text)
+    let needle_length: usize = string::length(needle)
+    if start + needle_length > text_length {
+        return false
+    }
+
+    var index: usize = 0usize
+    loop index < needle_length {
+        if auditTextByte(text, start + index) != auditTextByte(needle, index) {
+            return false
+        }
+        index = index + 1usize
+    }
+    return true
+}
+
 public procedure auditTextEquals(left: string@View, right: string@View) -> bool {
     let left_length: usize = string::length(left)
     let right_length: usize = string::length(right)
@@ -57,6 +78,27 @@ public procedure auditTextEquals(left: string@View, right: string@View) -> bool 
         index = index + 1usize
     }
     return true
+}
+
+public procedure auditTextContains(text: string@View, needle: string@View) -> bool {
+    let text_length: usize = string::length(text)
+    let needle_length: usize = string::length(needle)
+    if needle_length == 0usize {
+        return true
+    }
+    if needle_length > text_length {
+        return false
+    }
+
+    let last_start: usize = text_length - needle_length
+    var start: usize = 0usize
+    loop start <= last_start {
+        if auditTextStartsAt(text, needle, start) {
+            return true
+        }
+        start = start + 1usize
+    }
+    return false
 }
 
 public procedure auditTextLess(left: string@View, right: string@View) -> bool {

@@ -4825,6 +4825,8 @@ ClassMap(m) = { n ↦ origin | NameMap(P, m)[n].kind = Class }
 Γ ⊢ PatNames(IdentifierPattern(x)) ⇓ [x]
 Γ ⊢ PatNames(WildcardPattern) ⇓ []
 Γ ⊢ PatNames(LiteralPattern(lit)) ⇓ []
+Γ ⊢ PatNames(TypedPattern("_", T)) ⇓ []
+Γ ⊢ PatNames(TypedPattern(x, T)) ⇓ [x] ⇔ x ≠ "_"
 
 ∀ i, Γ ⊢ PatNames(p_i) ⇓ N_i
 ──────────────────────────────────────────────────────────────────────────────
@@ -8454,6 +8456,11 @@ NoSpecificTypeRefsExpr(e)    Children_LTR(e) = [e_1, …, e_n]    ∀ i, Γ ⊢ 
 ───────────────────────────────────────────────────────────────
 Γ ⊢ TypeRefsPat(IdentifierPattern(_), env) ⇓ ∅
 
+**(TypeRef-TypedPattern)**
+Γ ⊢ TypeRefsTy(T, env) ⇓ T_refs
+──────────────────────────────────────────────────────────────
+Γ ⊢ TypeRefsPat(TypedPattern(_, T), env) ⇓ T_refs
+
 **(TypeRef-TuplePattern)**
 ∀ i, Γ ⊢ TypeRefsPat(p_i, env) ⇓ T_i
 ────────────────────────────────────────────────────────────────────────────────────────────
@@ -8693,7 +8700,7 @@ Static initialization ordering, deinitialization ordering, and project lifecycle
 | `E-MOD-1105` | Error    | Compile-time | Module path component is a reserved keyword                    |
 | `E-MOD-1106` | Error    | Compile-time | Module path component is not a valid identifier                |
 | `E-MOD-1201` | Error    | Compile-time | External `using` path without required `import`                |
-| `E-MOD-1304` | Error    | Compile-time | Unresolved module: path prefix did not resolve to a module     |
+| `E-MOD-1107` | Error    | Compile-time | Unresolved module: path prefix did not resolve to a module     |
 | `W-MOD-1101` | Warning  | Compile-time | Potential module path collision on case-insensitive filesystem |
 | `E-MOD-1401` | Error    | Compile-time | Cyclic module dependency detected in eager initializers        |
 
@@ -16757,9 +16764,10 @@ Diagnostics are defined for duplicate record-field initializers, missing record-
 ```ebnf
 if_expr        ::= "if" expression if_tail
 if_tail        ::= block_expr ("else" (block_expr | if_expr))?
-                 | "is" pattern block_expr ("else" (block_expr | if_expr))?
+                 | "is" if_case_pattern block_expr ("else" (block_expr | if_expr))?
                  | "is" "{" if_case+ if_case_else? "}"
-if_case        ::= pattern block_expr
+if_case        ::= if_case_pattern block_expr
+if_case_pattern ::= pattern | ":" type
 if_case_else   ::= "else" block_expr
 loop_expr      ::= "loop" loop_condition? loop_invariant? block_expr
 loop_condition ::= expression | pattern (":" type)? "in" expression
@@ -16767,7 +16775,7 @@ loop_invariant ::= "|:" "{" predicate_expr "}"
 block_expr     ::= "{" statement* expression? "}"
 ```
 
-Pattern forms, case-clause parsing, and exhaustiveness notions are owned by Chapter 17. Loop-invariant obligations are owned by §15.7.
+Pattern forms, case-clause parsing, and exhaustiveness notions are owned by Chapter 17. In an `if ... is` case position, `: T` is a type-test pattern shorthand and elaborates to the discard typed pattern `_: T`; it is not general pattern syntax outside `if_case_pattern`. Loop-invariant obligations are owned by §15.7.
 Block structure, statement sequencing, terminator handling, and block-local typing are owned by §18.1.
 
 #### 16.7.2 Parsing
@@ -16778,9 +16786,14 @@ IsKw(Tok(P), `if`)    Γ ⊢ ParseExpr_NoBrace(Advance(P)) ⇓ (P_1, c)    ¬ Is
 Γ ⊢ ParsePrimary(P) ⇓ (P_3, IfExpr(c, b1, b2))
 
 **(Parse-If-Is-Single)**
-IsKw(Tok(P), `if`)    Γ ⊢ ParseExpr_NoBrace(Advance(P)) ⇓ (P_1, e)    IsKw(Tok(P_1), `is`)    ¬ IsPunc(Tok(Advance(P_1)), "{")    Γ ⊢ ParsePattern(Advance(P_1)) ⇓ (P_2, pat)    Γ ⊢ ParseBlock(P_2) ⇓ (P_3, b1)    Γ ⊢ ParseElseOpt(P_3) ⇓ (P_4, b2)
+IsKw(Tok(P), `if`)    Γ ⊢ ParseExpr_NoBrace(Advance(P)) ⇓ (P_1, e)    IsKw(Tok(P_1), `is`)    ¬ IsPunc(Tok(Advance(P_1)), "{")    Γ ⊢ ParseIfCasePattern(Advance(P_1)) ⇓ (P_2, pat)    Γ ⊢ ParseBlock(P_2) ⇓ (P_3, b1)    Γ ⊢ ParseElseOpt(P_3) ⇓ (P_4, b2)
 ──────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
 Γ ⊢ ParsePrimary(P) ⇓ (P_4, IfIsExpr(e, pat, b1, b2))
+
+**(Parse-If-Is-TypeTest)**
+IsPunc(Tok(P), ":")    Γ ⊢ ParseType(Advance(P)) ⇓ (P_1, T)
+────────────────────────────────────────────────────────────────
+Γ ⊢ ParseIfCasePattern(P) ⇓ (P_1, TypedPattern("_", T))
 
 **(Parse-If-Is-CaseList)**
 IsKw(Tok(P), `if`)    Γ ⊢ ParseExpr_NoBrace(Advance(P)) ⇓ (P_1, e)    IsKw(Tok(P_1), `is`)    IsPunc(Tok(Advance(P_1)), "{")    Γ ⊢ ParseIfCases(Advance(Advance(P_1))) ⇓ (P_2, cases, else_opt)    IsPunc(Tok(P_2), "}")
@@ -16805,6 +16818,8 @@ Expr = IfExpr(cond, then_block, else_opt) | IfIsExpr(scrutinee, pattern, then_bl
 
 LoopInvariantOpt ∈ {⊥} ∪ Expr
 IfCase = ⟨pattern, body⟩
+
+`if_case_pattern` does not add a distinct AST node. `: T` MUST be represented as `TypedPattern("_", T)` before semantic analysis.
 
 LoopTypeInf(Brk, BrkVoid) =
   { TypePrim(`!`)    if Brk = [] ∧ BrkVoid = false
@@ -16846,7 +16861,7 @@ Pattern typing uses Chapter 17 pattern judgments:
 - `HasIrrefutableCase(cases, T)` and the exhaustiveness conditions from §17.6
 
 **(T-If-Is)**
-Γ; R; L ⊢ e : T_s    CaseScope(Γ, e, pat, T_s) ⇓ Γ_1    Γ_1; R; L ⊢ b_t : T    Γ; R; L ⊢ b_f : T
+Γ; R; L ⊢ e : T_s    CaseScope(Γ, e, pat, T_s) ⇓ Γ_1    ElseScope(Γ, e, pat, T_s) ⇓ Γ_2    Γ_1; R; L ⊢ b_t : T    Γ_2; R; L ⊢ b_f : T
 ──────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
 Γ; R; L ⊢ IfIsExpr(e, pat, b_t, b_f) : T
 
@@ -17898,7 +17913,8 @@ This section owns diagnostics for general expression typing, calls, indexing res
 #### 17.1.1 Syntax
 
 ```ebnf
-basic_pattern ::= literal | "_" | identifier
+basic_pattern ::= literal | "_" | identifier | typed_pattern
+typed_pattern ::= ("_" | identifier) ":" type
 ```
 
 #### 17.1.2 Parsing
@@ -17918,9 +17934,14 @@ IsIdent(Tok(P))
 ────────────────────────────────────────────────────────────────────
 Γ ⊢ ParsePatternAtom(P) ⇓ (Advance(P), IdentifierPattern(Lexeme(Tok(P))))
 
+**(Parse-Pattern-Typed)**
+IsIdent(Tok(P))    IsPunc(Tok(Advance(P)), ":")    Γ ⊢ ParseType(Advance(Advance(P))) ⇓ (P_1, T)
+────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+Γ ⊢ ParsePatternAtom(P) ⇓ (P_1, TypedPattern(Lexeme(Tok(P)), T))
+
 #### 17.1.3 AST Representation / Form
 
-Pattern = {LiteralPattern(lit), WildcardPattern, IdentifierPattern(name), TuplePattern(elems), RecordPattern(type_path, fields), EnumPattern(type_path, name, payload_opt), ModalPattern(state_name, fields_opt), RangePattern(kind, lo, hi)}
+Pattern = {LiteralPattern(lit), WildcardPattern, IdentifierPattern(name), TypedPattern(name, type), TuplePattern(elems), RecordPattern(type_path, fields), EnumPattern(type_path, name, payload_opt), ModalPattern(state_name, fields_opt), RangePattern(kind, lo, hi)}
 PatternSpan : Pattern → Span
 
 #### 17.1.4 Static Semantics
@@ -17949,6 +17970,15 @@ PermWrap(T, B) =
 ──────────────────────────────────────────────
 Γ ⊢ PatNames(LiteralPattern(lit)) ⇓ []
 
+**(Pat-Typed-Discard)**
+──────────────────────────────────────────────
+Γ ⊢ PatNames(TypedPattern("_", T)) ⇓ []
+
+**(Pat-Typed-Ident)**
+x ≠ "_"
+──────────────────────────────────────────────
+Γ ⊢ PatNames(TypedPattern(x, T)) ⇓ [x]
+
 **(Pat-Dup-R-Err)**
 PatJudg = {Γ ⊢ pat ⇐ T ⊣ B}
 
@@ -17968,6 +17998,16 @@ PatJudg = {Γ ⊢ pat ⇐ T ⊣ B}
 Γ ⊢ Literal(lit) : T_l    Γ ⊢ T_l <: T
 ────────────────────────────────────────────────────────────────
 Γ ⊢ LiteralPattern(lit) ◁ T ⊣ ∅
+
+**(Pat-Typed-Exact-R)**
+Γ ⊢ T_a type    Γ ⊢ T_a ≡ StripPerm(T)    B = ({x ↦ T_a} if x ≠ "_" else ∅)
+────────────────────────────────────────────────────────────────────────────────────────────────
+Γ ⊢ TypedPattern(x, T_a) ◁ T ⊣ B
+
+**(Pat-Typed-Union-R)**
+Γ ⊢ T_a type    StripPerm(T) = TypeUnion([T_1, …, T_n])    ∃ i. Γ ⊢ T_a ≡ StripPerm(T_i)    B = ({x ↦ T_a} if x ≠ "_" else ∅)
+────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+Γ ⊢ TypedPattern(x, T_a) ◁ T ⊣ B
 
 #### 17.1.5 Dynamic Semantics
 
@@ -17998,6 +18038,16 @@ PatType(LiteralPattern(lit)) =
 T = PatType(ℓ)    LiteralValue(ℓ, T) = v
 ──────────────────────────────────────────────────────────────
 Γ ⊢ MatchPattern(ℓ, v) ⇓ ∅
+
+**(Match-Typed-Discard)**
+RuntimeTypeMember(v, T)
+──────────────────────────────────────────────
+Γ ⊢ MatchPattern(TypedPattern("_", T), v) ⇓ ∅
+
+**(Match-Typed-Ident)**
+x ≠ "_"    RuntimeTypeMember(v, T)
+──────────────────────────────────────────────
+Γ ⊢ MatchPattern(TypedPattern(x, T), v) ⇓ {x ↦ v}
 
 #### 17.1.6 Lowering
 
@@ -18421,7 +18471,8 @@ Diagnostics are defined for range-pattern bounds that are not compile-time const
 #### 17.5.1 Syntax
 
 ```ebnf
-if_case      ::= pattern block_expr
+if_case      ::= if_case_pattern block_expr
+if_case_pattern ::= pattern | ":" type
 if_case_else ::= "else" block_expr
 ```
 
@@ -18435,9 +18486,14 @@ if_case_else ::= "else" block_expr
 Γ ⊢ ParseIfCases(P) ⇓ (P_2, cases, else_opt)
 
 **(Parse-IfCase)**
-Γ ⊢ ParsePattern(P) ⇓ (P_1, pat)    Γ ⊢ ParseBlock(P_1) ⇓ (P_2, body)
+Γ ⊢ ParseIfCasePattern(P) ⇓ (P_1, pat)    Γ ⊢ ParseBlock(P_1) ⇓ (P_2, body)
 ────────────────────────────────────────────────────────────────────────────────────────────
 Γ ⊢ ParseIfCase(P) ⇓ (P_2, ⟨pat, body⟩)
+
+**(Parse-IfCase-Pattern)**
+¬ IsPunc(Tok(P), ":")    Γ ⊢ ParsePattern(P) ⇓ (P_1, pat)
+────────────────────────────────────────────────────────────────
+Γ ⊢ ParseIfCasePattern(P) ⇓ (P_1, pat)
 
 **(Parse-IfCasesTail-End)**
 Tok(P) = Punctuator("}")
@@ -18462,8 +18518,9 @@ BindOrder(p, B) = [⟨x, B[x]⟩ | x ∈ PatNames(p)]
 
 #### 17.5.4 Static Semantics
 
-CaseScopeJudg = {CaseScope(Γ, e, pat, T) ⇓ Γ_case}
+CaseScopeJudg = {CaseScope(Γ, e, pat, T) ⇓ Γ_case, ElseScope(Γ, e, pat, T) ⇓ Γ_else, CasesElseScope(Γ, e, cases, T) ⇓ Γ_else}
 PatternNarrowJudg = {PatternNarrow(Γ, pat, T) ⇓ T_n}
+PatternRejectNarrowJudg = {PatternRejectNarrow(Γ, pat, T) ⇓ T_r}
 
 ScrutineeBinding(Identifier(x)) = x
 ScrutineeBinding(e) = ⊥ ⇔ e ≠ Identifier(_)
@@ -18492,6 +18549,16 @@ T = TypeUnion([T_1, …, T_n])    Ns = [N_i | 1 ≤ i ≤ n ∧ PatternNarrow(Γ
 ────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
 PatternNarrow(Γ, pat, T) ⇓ T_n
 
+**(PatternNarrow-Typed)**
+Γ ⊢ TypedPattern(x, T_a) ◁ T ⊣ B
+──────────────────────────────────────────────
+PatternNarrow(Γ, TypedPattern(x, T_a), T) ⇓ T_a
+
+**(PatternRejectNarrow-Union)**
+T = TypeUnion([T_1, …, T_n])    Rs = [T_i | 1 ≤ i ≤ n ∧ PatternNarrow(Γ, pat, T_i) undefined]    1 ≤ |Rs| < n    UnionOrSingle(Rs) = T_r
+──────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+PatternRejectNarrow(Γ, pat, T) ⇓ T_r
+
 **(CaseScope-Narrow)**
 Γ ⊢ pat ◁ T_s ⊣ B    Distinct(PatNames(pat))    ScrutineeBinding(e) = x    PatternNarrow(Γ, pat, T_s) ⇓ T_n    RefineBinding(Γ, x, T_n) ⇓ Γ_r    Γ_0 = PushScope(Γ_r)    IntroAll(Γ_0, B) ⇓ Γ_case
 ──────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
@@ -18501,6 +18568,30 @@ CaseScope(Γ, e, pat, T_s) ⇓ Γ_case
 Γ ⊢ pat ◁ T_s ⊣ B    Distinct(PatNames(pat))    (ScrutineeBinding(e) = ⊥ ∨ PatternNarrow(Γ, pat, T_s) undefined)    Γ_0 = PushScope(Γ)    IntroAll(Γ_0, B) ⇓ Γ_case
 ────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
 CaseScope(Γ, e, pat, T_s) ⇓ Γ_case
+
+**(ElseScope-Narrow)**
+ScrutineeBinding(e) = x    PatternRejectNarrow(Γ, pat, T_s) ⇓ T_r    RefineBinding(Γ, x, T_r) ⇓ Γ_else
+────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+ElseScope(Γ, e, pat, T_s) ⇓ Γ_else
+
+**(ElseScope-Original)**
+ScrutineeBinding(e) = ⊥ ∨ PatternRejectNarrow(Γ, pat, T_s) undefined
+──────────────────────────────────────────────────────────────────────────────
+ElseScope(Γ, e, pat, T_s) ⇓ Γ
+
+**(CasesElseScope-Empty)**
+──────────────────────────────────────────────
+CasesElseScope(Γ, e, [], T) ⇓ Γ
+
+**(CasesElseScope-Cons-Narrow)**
+PatternRejectNarrow(Γ, pat, T) ⇓ T_r    ElseScope(Γ, e, pat, T) ⇓ Γ_1    CasesElseScope(Γ_1, e, cases, T_r) ⇓ Γ_2
+────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+CasesElseScope(Γ, e, ⟨pat, body⟩ :: cases, T) ⇓ Γ_2
+
+**(CasesElseScope-Cons-Original)**
+PatternRejectNarrow(Γ, pat, T) undefined    ElseScope(Γ, e, pat, T) ⇓ Γ_1    CasesElseScope(Γ_1, e, cases, T) ⇓ Γ_2
+────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+CasesElseScope(Γ, e, ⟨pat, body⟩ :: cases, T) ⇓ Γ_2
 
 #### 17.5.5 Dynamic Semantics
 
@@ -18609,11 +18700,11 @@ Exhaustiveness and reachability are not parser-owned.
 #### 17.6.3 AST Representation / Form
 
 AllEq_Γ([T_1, …, T_n]) ⇔ ∀ i. Γ ⊢ T_i ≡ T_1
-Irrefutable(pat, T) ⇔ pat = WildcardPattern ∨ pat = IdentifierPattern(_) ∨ (pat = TuplePattern([p_1, …, p_n]) ∧ StripPerm(T) = TypeTuple([T_1, …, T_n]) ∧ ∀ i. Irrefutable(p_i, T_i)) ∨ (pat = RecordPattern(p, fs) ∧ StripPerm(T) = TypePath(p) ∧ RecordDecl(p) = R ∧ ∀ fp ∈ fs. Irrefutable(PatOf(fp), FieldType(R, FieldName(fp))))
+Irrefutable(pat, T) ⇔ pat = WildcardPattern ∨ pat = IdentifierPattern(_) ∨ (pat = TypedPattern(_, T_a) ∧ T_a = StripPerm(T)) ∨ (pat = TuplePattern([p_1, …, p_n]) ∧ StripPerm(T) = TypeTuple([T_1, …, T_n]) ∧ ∀ i. Irrefutable(p_i, T_i)) ∨ (pat = RecordPattern(p, fs) ∧ StripPerm(T) = TypePath(p) ∧ RecordDecl(p) = R ∧ ∀ fp ∈ fs. Irrefutable(PatOf(fp), FieldType(R, FieldName(fp))))
 HasIrrefutableCase(cases, T) ⇔ ∃ case ∈ cases. ∃ p, b. case = ⟨p, b⟩ ∧ Irrefutable(p, T)
 CaseLabel(EnumPattern(path, v, _)) = ⟨`enum`, path, v⟩
 CaseLabel(ModalPattern(s, _)) = ⟨`modal`, s⟩
-CaseLabel(Pat-Union(T, _)) = ⟨`union`, T⟩
+CaseLabel(TypedPattern(_, T)) = ⟨`union`, T⟩
 CaseLabel(_) = ⊥
 CaseUnreachable(T, cases, i) ⇔
   (∃ j. 1 ≤ j < i ∧ Irrefutable(cases[j].pat, T)) ∨
@@ -18625,22 +18716,23 @@ CaseVariants(cases) = { v | ∃ p, b. ⟨p, b⟩ ∈ cases ∧ p = EnumPattern(_
 CaseStates(cases) = { s | ∃ p, b. ⟨p, b⟩ ∈ cases ∧ p = ModalPattern(_, s) }
 
 UnionTypes(U) = [T_1, …, T_n] ⇔ U = TypeUnion([T_1, …, T_n])
-CaseUnionTypes(cases) = { T | ∃ p, b. ⟨p, b⟩ ∈ cases ∧ p = Pat-Union(T, _) }
-UnionTypesExhaustive(cases, types) ⇔ ∀ T ∈ types. ∃ case ∈ cases. ∃ p, b. case = ⟨p, b⟩ ∧ p = Pat-Union(T, _)
+CaseUnionTypes(cases) = { T | ∃ p, b. ⟨p, b⟩ ∈ cases ∧ p = TypedPattern(_, T) }
+PatternMayMatchType(Γ, p, T) ⇔ ∃ B. Γ ⊢ p ◁ T ⊣ B
+UnionTypesExhaustive(cases, types) ⇔ ∀ T ∈ types. ∃ case ∈ cases. ∃ p, b. case = ⟨p, b⟩ ∧ PatternMayMatchType(Γ, p, T)
 
 #### 17.6.4 Static Semantics
 
 **Enum Case Analysis**
 
 **(T-IfCase-Enum)**
-Γ; R; L ⊢ e : TypePath(p)    EnumDecl(p) = E    ∀ i, case_i = ⟨p_i, b_i⟩    ∀ i, CaseScope(Γ, e, p_i, TypePath(p)) ⇓ Γ_i    ∀ i, Γ_i; R; L ⊢ b_i : T_r    (else_opt = ⊥ ∨ Γ; R; L ⊢ else_opt : T_r)    (else_opt ≠ ⊥ ∨ HasIrrefutableCase(cases, TypePath(p)) ∨ CaseVariants(cases) = VariantNames(E))
+Γ; R; L ⊢ e : TypePath(p)    EnumDecl(p) = E    ∀ i, case_i = ⟨p_i, b_i⟩    ∀ i, CaseScope(Γ, e, p_i, TypePath(p)) ⇓ Γ_i    ∀ i, Γ_i; R; L ⊢ b_i : T_r    (else_opt = ⊥ ∨ (CasesElseScope(Γ, e, cases, TypePath(p)) ⇓ Γ_e ∧ Γ_e; R; L ⊢ else_opt : T_r))    (else_opt ≠ ⊥ ∨ HasIrrefutableCase(cases, TypePath(p)) ∨ CaseVariants(cases) = VariantNames(E))
 ──────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
 Γ; R; L ⊢ IfCaseExpr(e, cases, else_opt) : T_r
 
 **Modal Case Analysis**
 
 **(T-IfCase-Modal)**
-Γ; R; L ⊢ e : ModalRefType(modal_ref)    ModalDeclOf(modal_ref) = M    ∀ i, case_i = ⟨p_i, b_i⟩    ∀ i, CaseScope(Γ, e, p_i, ModalRefType(modal_ref)) ⇓ Γ_i    ∀ i, Γ_i; R; L ⊢ b_i : T_r    (else_opt = ⊥ ∨ Γ; R; L ⊢ else_opt : T_r)    (else_opt ≠ ⊥ ∨ HasIrrefutableCase(cases, ModalRefType(modal_ref)) ∨ CaseStates(cases) = States(M))
+Γ; R; L ⊢ e : ModalRefType(modal_ref)    ModalDeclOf(modal_ref) = M    ∀ i, case_i = ⟨p_i, b_i⟩    ∀ i, CaseScope(Γ, e, p_i, ModalRefType(modal_ref)) ⇓ Γ_i    ∀ i, Γ_i; R; L ⊢ b_i : T_r    (else_opt = ⊥ ∨ (CasesElseScope(Γ, e, cases, ModalRefType(modal_ref)) ⇓ Γ_e ∧ Γ_e; R; L ⊢ else_opt : T_r))    (else_opt ≠ ⊥ ∨ HasIrrefutableCase(cases, ModalRefType(modal_ref)) ∨ CaseStates(cases) = States(M))
 ──────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
 Γ; R; L ⊢ IfCaseExpr(e, cases, else_opt) : T_r
 
@@ -18652,7 +18744,7 @@ UnionTypesExhaustive(cases, types) ⇔ ∀ T ∈ types. ∃ case ∈ cases. ∃ 
 **Union Case Analysis**
 
 **(T-IfCase-Union)**
-Γ; R; L ⊢ e : TypeUnion([T_1, …, T_n])    ∀ i, case_i = ⟨p_i, b_i⟩    ∀ i, CaseScope(Γ, e, p_i, TypeUnion([T_1, …, T_n])) ⇓ Γ_i    ∀ i, Γ_i; R; L ⊢ b_i : T_r    (else_opt = ⊥ ∨ Γ; R; L ⊢ else_opt : T_r)    (else_opt ≠ ⊥ ∨ HasIrrefutableCase(cases, TypeUnion([T_1, …, T_n])) ∨ UnionTypesExhaustive(cases, [T_1, …, T_n]))
+Γ; R; L ⊢ e : TypeUnion([T_1, …, T_n])    ∀ i, case_i = ⟨p_i, b_i⟩    ∀ i, CaseScope(Γ, e, p_i, TypeUnion([T_1, …, T_n])) ⇓ Γ_i    ∀ i, Γ_i; R; L ⊢ b_i : T_r    (else_opt = ⊥ ∨ (CasesElseScope(Γ, e, cases, TypeUnion([T_1, …, T_n])) ⇓ Γ_e ∧ Γ_e; R; L ⊢ else_opt : T_r))    (else_opt ≠ ⊥ ∨ HasIrrefutableCase(cases, TypeUnion([T_1, …, T_n])) ∨ UnionTypesExhaustive(cases, [T_1, …, T_n]))
 ────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
 Γ; R; L ⊢ IfCaseExpr(e, cases, else_opt) : T_r
 
@@ -18662,19 +18754,19 @@ UnionTypesExhaustive(cases, types) ⇔ ∀ T ∈ types. ∃ case ∈ cases. ∃ 
 Γ; R; L ⊢ IfCaseExpr(e, cases, else_opt) ⇑ c
 
 **(Chk-IfCase-Union)**
-Γ; R; L ⊢ e : TypeUnion([T_1, …, T_n])    ∀ i, case_i = ⟨p_i, b_i⟩    ∀ i, CaseScope(Γ, e, p_i, TypeUnion([T_1, …, T_n])) ⇓ Γ_i    ∀ i, Γ_i; R; L ⊢ b_i ⇐ T    (else_opt = ⊥ ∨ Γ; R; L ⊢ else_opt ⇐ T ⊣ ∅)    (else_opt ≠ ⊥ ∨ HasIrrefutableCase(cases, TypeUnion([T_1, …, T_n])) ∨ UnionTypesExhaustive(cases, [T_1, …, T_n]))
+Γ; R; L ⊢ e : TypeUnion([T_1, …, T_n])    ∀ i, case_i = ⟨p_i, b_i⟩    ∀ i, CaseScope(Γ, e, p_i, TypeUnion([T_1, …, T_n])) ⇓ Γ_i    ∀ i, Γ_i; R; L ⊢ b_i ⇐ T    (else_opt = ⊥ ∨ (CasesElseScope(Γ, e, cases, TypeUnion([T_1, …, T_n])) ⇓ Γ_e ∧ Γ_e; R; L ⊢ else_opt ⇐ T ⊣ ∅))    (else_opt ≠ ⊥ ∨ HasIrrefutableCase(cases, TypeUnion([T_1, …, T_n])) ∨ UnionTypesExhaustive(cases, [T_1, …, T_n]))
 ────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
 Γ; R; L ⊢ IfCaseExpr(e, cases, else_opt) ⇐ T ⊣ ∅
 
 **Other Case Analysis**
 
 **(T-IfCase-Other)**
-Γ; R; L ⊢ e : T_s    ∀ i, case_i = ⟨p_i, b_i⟩    ∀ i, CaseScope(Γ, e, p_i, T_s) ⇓ Γ_i    ∀ i, Γ_i; R; L ⊢ b_i : T_r    (else_opt = ⊥ ∨ Γ; R; L ⊢ else_opt : T_r)    (else_opt ≠ ⊥ ∨ HasIrrefutableCase(cases, T_s))
+Γ; R; L ⊢ e : T_s    ∀ i, case_i = ⟨p_i, b_i⟩    ∀ i, CaseScope(Γ, e, p_i, T_s) ⇓ Γ_i    ∀ i, Γ_i; R; L ⊢ b_i : T_r    (else_opt = ⊥ ∨ (CasesElseScope(Γ, e, cases, T_s) ⇓ Γ_e ∧ Γ_e; R; L ⊢ else_opt : T_r))    (else_opt ≠ ⊥ ∨ HasIrrefutableCase(cases, T_s))
 ───────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
 Γ; R; L ⊢ IfCaseExpr(e, cases, else_opt) : T_r
 
 **(Chk-IfCase-Enum)**
-Γ; R; L ⊢ e : TypePath(p)    EnumDecl(p) = E    ∀ i, case_i = ⟨p_i, b_i⟩    ∀ i, CaseScope(Γ, e, p_i, TypePath(p)) ⇓ Γ_i    ∀ i, Γ_i; R; L ⊢ b_i ⇐ T    (else_opt = ⊥ ∨ Γ; R; L ⊢ else_opt ⇐ T ⊣ ∅)    (else_opt ≠ ⊥ ∨ HasIrrefutableCase(cases, TypePath(p)) ∨ CaseVariants(cases) = VariantNames(E))
+Γ; R; L ⊢ e : TypePath(p)    EnumDecl(p) = E    ∀ i, case_i = ⟨p_i, b_i⟩    ∀ i, CaseScope(Γ, e, p_i, TypePath(p)) ⇓ Γ_i    ∀ i, Γ_i; R; L ⊢ b_i ⇐ T    (else_opt = ⊥ ∨ (CasesElseScope(Γ, e, cases, TypePath(p)) ⇓ Γ_e ∧ Γ_e; R; L ⊢ else_opt ⇐ T ⊣ ∅))    (else_opt ≠ ⊥ ∨ HasIrrefutableCase(cases, TypePath(p)) ∨ CaseVariants(cases) = VariantNames(E))
 ──────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
 Γ; R; L ⊢ IfCaseExpr(e, cases, else_opt) ⇐ T ⊣ ∅
 
@@ -18684,17 +18776,17 @@ UnionTypesExhaustive(cases, types) ⇔ ∀ T ∈ types. ∃ case ∈ cases. ∃ 
 Γ; R; L ⊢ IfCaseExpr(e, cases, else_opt) ⇑ c
 
 **(Chk-IfCase-Modal)**
-Γ; R; L ⊢ e : ModalRefType(modal_ref)    ModalDeclOf(modal_ref) = M    ∀ i, case_i = ⟨p_i, b_i⟩    ∀ i, CaseScope(Γ, e, p_i, ModalRefType(modal_ref)) ⇓ Γ_i    ∀ i, Γ_i; R; L ⊢ b_i ⇐ T    (else_opt = ⊥ ∨ Γ; R; L ⊢ else_opt ⇐ T ⊣ ∅)    (else_opt ≠ ⊥ ∨ HasIrrefutableCase(cases, ModalRefType(modal_ref)) ∨ CaseStates(cases) = States(M))
+Γ; R; L ⊢ e : ModalRefType(modal_ref)    ModalDeclOf(modal_ref) = M    ∀ i, case_i = ⟨p_i, b_i⟩    ∀ i, CaseScope(Γ, e, p_i, ModalRefType(modal_ref)) ⇓ Γ_i    ∀ i, Γ_i; R; L ⊢ b_i ⇐ T    (else_opt = ⊥ ∨ (CasesElseScope(Γ, e, cases, ModalRefType(modal_ref)) ⇓ Γ_e ∧ Γ_e; R; L ⊢ else_opt ⇐ T ⊣ ∅))    (else_opt ≠ ⊥ ∨ HasIrrefutableCase(cases, ModalRefType(modal_ref)) ∨ CaseStates(cases) = States(M))
 ────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
 Γ; R; L ⊢ IfCaseExpr(e, cases, else_opt) ⇐ T ⊣ ∅
 
 **(Chk-IfCase-Other)**
-Γ; R; L ⊢ e : T_s    ∀ i, case_i = ⟨p_i, b_i⟩    ∀ i, CaseScope(Γ, e, p_i, T_s) ⇓ Γ_i    ∀ i, Γ_i; R; L ⊢ b_i ⇐ T    (else_opt = ⊥ ∨ Γ; R; L ⊢ else_opt ⇐ T ⊣ ∅)    (else_opt ≠ ⊥ ∨ HasIrrefutableCase(cases, T_s))
+Γ; R; L ⊢ e : T_s    ∀ i, case_i = ⟨p_i, b_i⟩    ∀ i, CaseScope(Γ, e, p_i, T_s) ⇓ Γ_i    ∀ i, Γ_i; R; L ⊢ b_i ⇐ T    (else_opt = ⊥ ∨ (CasesElseScope(Γ, e, cases, T_s) ⇓ Γ_e ∧ Γ_e; R; L ⊢ else_opt ⇐ T ⊣ ∅))    (else_opt ≠ ⊥ ∨ HasIrrefutableCase(cases, T_s))
 ───────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
 Γ; R; L ⊢ IfCaseExpr(e, cases, else_opt) ⇐ T ⊣ ∅
 
 **(Chk-IfIs)**
-Γ; R; L ⊢ e : T_s    CaseScope(Γ, e, pat, T_s) ⇓ Γ_1    Γ_1; R; L ⊢ b_t ⇐ T ⊣ ∅    Γ; R; L ⊢ b_f ⇐ T ⊣ ∅
+Γ; R; L ⊢ e : T_s    CaseScope(Γ, e, pat, T_s) ⇓ Γ_1    ElseScope(Γ, e, pat, T_s) ⇓ Γ_2    Γ_1; R; L ⊢ b_t ⇐ T ⊣ ∅    Γ_2; R; L ⊢ b_f ⇐ T ⊣ ∅
 ──────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
 Γ; R; L ⊢ IfIsExpr(e, pat, b_t, b_f) ⇐ T ⊣ ∅
 
@@ -18724,6 +18816,16 @@ Diagnostics are defined for non-exhaustive `if ... is { ... }` case analysis on 
 
 This section owns diagnostics for pattern exhaustiveness, irrefutability, and pattern-shape validity.
 
+**(IfIs-BareTypePattern-Err)**
+`if ... is` case position contains IdentifierPattern(x)    ResolveTypeName(Γ, x) defined    c = Code(IfIs-BareTypePattern-Err)
+────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+Γ ⊢ IfIsCasePattern(IdentifierPattern(x)) ⇑ c
+
+**(IfIs-TypedPattern-Incompatible)**
+`if ... is` case position contains TypedPattern(x, T_a)    Γ ⊢ TypedPattern(x, T_a) ◁ T_s undefined    c = Code(IfIs-TypedPattern-Incompatible)
+────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+Γ ⊢ IfIsCasePattern(TypedPattern(x, T_a), T_s) ⇑ c
+
 | Code         | Severity | Detection    | Condition                                                          |
 | ------------ | -------- | ------------ | ------------------------------------------------------------------ |
 | `E-SEM-2705` | Error    | Compile-time | `if ... is { ... }` case analysis is not exhaustive for union type |
@@ -18734,6 +18836,8 @@ This section owns diagnostics for pattern exhaustiveness, irrefutability, and pa
 | `E-SEM-2731` | Error    | Compile-time | Record pattern references non-existent field                       |
 | `E-SEM-2741` | Error    | Compile-time | `if ... is { ... }` case analysis is not exhaustive                |
 | `E-SEM-2751` | Error    | Compile-time | Case clause is unreachable                                         |
+| `E-SEM-2761` | Error    | Compile-time | Bare type name in `if ... is` pattern; use `: T` or `_: T`         |
+| `E-SEM-2762` | Error    | Compile-time | Typed `if ... is` pattern is incompatible with the scrutinee type  |
 
 ## 18. Statements and Blocks
 
@@ -29919,7 +30023,7 @@ Only sections that define named diagnostics are listed below.
 - `§11.1.7 Import Declarations`: `E-MOD-1202`
 - `§11.2.7 Using Declarations`: `E-MOD-1204`, `E-MOD-1205`, `E-MOD-1206`, `W-MOD-1201`
 - `§11.3.7 Static Declarations`: `E-TYP-1505`, `E-MOD-2402`, `E-MOD-2433`
-- `§11.5.7 Module and File Aggregation`: `E-MOD-1104`, `E-MOD-1105`, `E-MOD-1106`, `W-MOD-1101`, `E-MOD-1201`, `E-MOD-1304`, `E-MOD-1401`
+- `§11.5.7 Module and File Aggregation`: `E-MOD-1104`, `E-MOD-1105`, `E-MOD-1106`, `E-MOD-1107`, `W-MOD-1101`, `E-MOD-1201`, `E-MOD-1401`
 - `§12.2.7 Tuples`: `E-TYP-1801`, `E-TYP-1802`, `E-TYP-1803`, `E-SEM-2524`
 - `§12.6.7 Records`: `E-TYP-1901`, `E-TYP-1902`, `E-TYP-1903`, `E-TYP-1904`, `E-TYP-1905`, `E-TYP-1906`, `E-TYP-1907`, `E-TYP-1911`
 - `§12.7.7 Enums`: `E-TYP-1920`, `E-TYP-1921`, `E-TYP-1922`, `E-TYP-1923`
@@ -29928,7 +30032,7 @@ Only sections that define named diagnostics are listed below.
 - `§14.11 Refinement and Polymorphism Diagnostics Supplement`: `E-TYP-1953`, `E-TYP-1954`, `E-TYP-1955`, `E-TYP-1956`, `E-TYP-1957`, `P-TYP-1953`, `E-TYP-2301`, `E-TYP-2302`, `E-TYP-2303`, `E-TYP-2304`, `E-TYP-2305`, `E-TYP-2307`, `E-TYP-2308`, `E-TYP-2401`, `E-TYP-2402`, `E-TYP-2403`, `E-TYP-2404`, `E-TYP-2405`, `E-TYP-2406`, `E-TYP-2407`, `E-TYP-2408`, `E-TYP-2409`, `E-TYP-2500`, `E-TYP-2501`, `E-TYP-2502`, `E-TYP-2503`, `E-TYP-2504`, `E-TYP-2505`, `E-TYP-2506`, `E-TYP-2507`, `E-TYP-2508`, `E-TYP-2509`, `E-TYP-2510`, `E-TYP-2511`, `E-TYP-2512`, `E-TYP-2530`, `E-TYP-2531`, `E-TYP-2540`, `E-TYP-2541`, `E-TYP-2542`, `E-TYP-2621`, `E-TYP-2622`, `E-UNS-0105`, `E-UNS-0106`
 - `§15.10 Procedure, Contract, and Entry Diagnostics Supplement`: `E-TYP-1507`, `E-TYP-1912`, `E-MOD-2411`, `E-MOD-2430`, `E-MOD-2431`, `E-MOD-2432`, `E-MOD-2434`, `E-CON-0415`, `E-CON-0416`, `P-SEM-2850`, `E-SEM-2801`, `E-SEM-2802`, `E-SEM-2803`, `E-SEM-2804`, `E-SEM-2805`, `E-SEM-2806`, `E-SEM-2807`, `E-SEM-2820`, `E-SEM-2821`, `E-SEM-2822`, `E-SEM-2823`, `E-SEM-2824`, `E-SEM-2830`, `E-SEM-2831`, `E-SEM-3004`
 - `§16.10 Expression Diagnostics Supplement`: `E-SEM-2527`, `E-SEM-2528`, `E-SEM-2531`, `E-SEM-2532`, `E-SEM-2533`, `E-SEM-2534`, `E-SEM-2535`, `E-SEM-2536`, `E-SEM-2538`, `E-SEM-2539`, `E-SEM-2591`, `E-MEM-3031`, `E-UNS-0102`, `E-UNS-0103`, `E-UNS-0104`, `E-UNS-0107`, `W-SAFE-0100`
-- `§17.7 Pattern Diagnostics Supplement`: `E-SEM-2705`, `E-SEM-2711`, `E-SEM-2713`, `E-SEM-2721`, `E-SEM-2722`, `E-SEM-2731`
+- `§17.7 Pattern Diagnostics Supplement`: `E-SEM-2705`, `E-SEM-2711`, `E-SEM-2713`, `E-SEM-2721`, `E-SEM-2722`, `E-SEM-2731`, `E-SEM-2741`, `E-SEM-2751`, `E-SEM-2761`, `E-SEM-2762`
 - `§18.11 Statement Diagnostics Supplement`: `E-MOD-2401`, `E-SEM-3011`, `E-SEM-3012`, `E-SEM-3131`, `E-SEM-3132`, `E-SEM-3133`, `E-SEM-3151`, `E-SEM-3152`, `E-SEM-3161`, `E-SEM-3162`, `E-SEM-3163`, `E-SEM-3165`
 - `§19.1.7 Key Paths`: `E-CON-0002`, `E-CON-0003`, `E-CON-0030`, `E-CON-0033`, `E-CON-0034`, `E-CON-0083`
 - `§19.2.7 Key Acquisition Blocks`: `E-CON-0001`, `E-CON-0004`, `E-CON-0006`, `E-CON-0031`, `E-CON-0032`, `E-CON-0070`, `E-CON-0085`, `E-CON-0086`, `W-CON-0001`, `W-CON-0002`, `W-CON-0003`, `W-CON-0009`
@@ -30145,9 +30249,10 @@ Within `closure_expr`, a typed parameter annotation whose outermost constructor 
 
 if_expr        ::= "if" expression if_tail
 if_tail        ::= block_expr ("else" (block_expr | if_expr))?
-                 | "is" pattern block_expr ("else" (block_expr | if_expr))?
+                 | "is" if_case_pattern block_expr ("else" (block_expr | if_expr))?
                  | "is" "{" if_case+ if_case_else? "}"
-if_case        ::= pattern block_expr
+if_case        ::= if_case_pattern block_expr
+if_case_pattern ::= pattern | ":" type
 if_case_else   ::= "else" block_expr
 loop_expr      ::= "loop" loop_condition? loop_invariant? block_expr
 loop_condition ::= expression | pattern (":" type)? "in" expression
@@ -30166,10 +30271,11 @@ transmute_expr   ::= "transmute" "<" type "," type ">" "(" expression ")"
 ### B.4 Pattern Grammar
 
 ```ebnf
-pattern                ::= literal_pattern | wildcard_pattern | identifier_pattern | tuple_pattern | record_pattern | enum_pattern | modal_pattern | range_pattern
+pattern                ::= literal_pattern | wildcard_pattern | identifier_pattern | typed_pattern | tuple_pattern | record_pattern | enum_pattern | modal_pattern | range_pattern
 literal_pattern        ::= literal
 wildcard_pattern       ::= "_"
 identifier_pattern     ::= identifier
+typed_pattern          ::= ("_" | identifier) ":" type
 tuple_pattern          ::= "(" tuple_pattern_elements? ")"
 tuple_pattern_elements ::= pattern ";" | pattern ("," pattern)+ ","?
 record_pattern         ::= type_path "{" field_pattern_list? "}"

@@ -95,7 +95,14 @@ static inline void SpecDefsIfCase() {
   SPEC_DEF("PatternNarrow-Perm", "17.5.4");
   SPEC_DEF("PatternNarrow-ModalRef", "17.5.4");
   SPEC_DEF("PatternNarrow-ModalState", "17.5.4");
+  SPEC_DEF("PatternNarrow-Typed", "17.5.4");
   SPEC_DEF("PatternNarrow-Union", "17.5.4");
+  SPEC_DEF("PatternRejectNarrow-Union", "17.5.4");
+  SPEC_DEF("ElseScope", "17.5.4");
+  SPEC_DEF("ElseScope-Narrow", "17.5.4");
+  SPEC_DEF("ElseScope-Original", "17.5.4");
+  SPEC_DEF("IfIs-TypedPattern-Incompatible", "17.7");
+  SPEC_DEF("IfIs-BareTypePattern-Err", "17.7");
   SPEC_DEF("T-IfIs", "5.2.13");
   SPEC_DEF("T-IfIs-No-Else", "5.2.13");
   SPEC_DEF("T-IfCase-Enum", "5.2.13");
@@ -780,10 +787,152 @@ static PatternMatchedTypeResult PatternMatchedType(
     }
     result.matched = true;
     result.type = lowered.type;
+    SPEC_RULE("PatternNarrow-Typed");
     return result;
   }
 
   return ConcreteModalPatternType(ctx, pattern, expected);
+}
+
+static bool PatternContainsTypedPattern(const ast::PatternPtr& pattern) {
+  if (!pattern) {
+    return false;
+  }
+
+  return std::visit(
+      [&](const auto& node) -> bool {
+        using T = std::decay_t<decltype(node)>;
+
+        if constexpr (std::is_same_v<T, ast::TypedPattern>) {
+          return true;
+        } else if constexpr (std::is_same_v<T, ast::TuplePattern>) {
+          for (const auto& elem : node.elements) {
+            if (PatternContainsTypedPattern(elem)) {
+              return true;
+            }
+          }
+          return false;
+        } else if constexpr (std::is_same_v<T, ast::RecordPattern>) {
+          for (const auto& field : node.fields) {
+            if (PatternContainsTypedPattern(field.pattern_opt)) {
+              return true;
+            }
+          }
+          return false;
+        } else if constexpr (std::is_same_v<T, ast::EnumPattern>) {
+          if (!node.payload_opt.has_value()) {
+            return false;
+          }
+          return std::visit(
+              [&](const auto& payload) -> bool {
+                using P = std::decay_t<decltype(payload)>;
+                if constexpr (std::is_same_v<P, ast::TuplePayloadPattern>) {
+                  for (const auto& elem : payload.elements) {
+                    if (PatternContainsTypedPattern(elem)) {
+                      return true;
+                    }
+                  }
+                  return false;
+                } else if constexpr (std::is_same_v<P, ast::RecordPayloadPattern>) {
+                  for (const auto& field : payload.fields) {
+                    if (PatternContainsTypedPattern(field.pattern_opt)) {
+                      return true;
+                    }
+                  }
+                  return false;
+                } else {
+                  return false;
+                }
+              },
+              *node.payload_opt);
+        } else if constexpr (std::is_same_v<T, ast::ModalPattern>) {
+          if (!node.fields_opt.has_value()) {
+            return false;
+          }
+          for (const auto& field : node.fields_opt->fields) {
+            if (PatternContainsTypedPattern(field.pattern_opt)) {
+              return true;
+            }
+          }
+          return false;
+        } else if constexpr (std::is_same_v<T, ast::RangePattern>) {
+          return PatternContainsTypedPattern(node.lo) ||
+                 PatternContainsTypedPattern(node.hi);
+        } else {
+          return false;
+        }
+      },
+      pattern->node);
+}
+
+static PatternMatchedTypeResult PatternRejectedType(
+    const ScopeContext& ctx,
+    const ast::PatternPtr& pattern,
+    const TypeRef& expected) {
+  PatternMatchedTypeResult result;
+  if (!pattern || !expected) {
+    return result;
+  }
+
+  if (const auto* perm = std::get_if<TypePerm>(&expected->node)) {
+    const auto rejected = PatternRejectedType(ctx, pattern, perm->base);
+    if (!rejected.ok || !rejected.matched) {
+      return rejected;
+    }
+    result.matched = true;
+    result.type = MakeTypePerm(perm->perm, rejected.type);
+    return result;
+  }
+
+  const auto normalized = NormalizeAliasTopLevel(ctx, expected);
+  if (!normalized.ok) {
+    result.ok = false;
+    result.diag_id = normalized.diag_id;
+    return result;
+  }
+  if (normalized.expanded && normalized.type) {
+    return PatternRejectedType(ctx, pattern, normalized.type);
+  }
+
+  const TypeRef expected_base = StripPermOnceLocal(normalized.type);
+  if (!expected_base) {
+    return result;
+  }
+
+  const auto* union_type = std::get_if<TypeUnion>(&expected_base->node);
+  if (!union_type) {
+    return result;
+  }
+
+  std::vector<TypeRef> rejected_members;
+  rejected_members.reserve(union_type->members.size());
+  for (const auto& member : union_type->members) {
+    const auto member_narrow = PatternMatchedType(ctx, pattern, member);
+    if (!member_narrow.ok) {
+      if (member_narrow.diag_id.has_value()) {
+        result.ok = false;
+        result.diag_id = member_narrow.diag_id;
+        return result;
+      }
+      rejected_members.push_back(member);
+      continue;
+    }
+    if (!member_narrow.matched || !member_narrow.type) {
+      rejected_members.push_back(member);
+    }
+  }
+
+  if (rejected_members.empty() ||
+      rejected_members.size() == union_type->members.size()) {
+    return result;
+  }
+
+  result.matched = true;
+  result.type = rejected_members.size() == 1
+                    ? rejected_members.front()
+                    : MakeTypeUnion(std::move(rejected_members));
+  SPEC_RULE("PatternRejectNarrow-Union");
+  return result;
 }
 
 static IntroResult CaseScopeEnv(const ScopeContext& ctx,
@@ -795,6 +944,10 @@ static IntroResult CaseScopeEnv(const ScopeContext& ctx,
   SpecDefsIfCase();
   const auto pat = TypePatternAgainstType(ctx, pattern, scrutinee_type);
   if (!pat.ok) {
+    if (!pat.diag_id.has_value() && PatternContainsTypedPattern(pattern)) {
+      SPEC_RULE("IfIs-TypedPattern-Incompatible");
+      return {false, "IfIs-TypedPattern-Incompatible", env};
+    }
     return {false, pat.diag_id, env};
   }
 
@@ -813,6 +966,56 @@ static IntroResult CaseScopeEnv(const ScopeContext& ctx,
 
   TypeEnv binding_scope = PushScope(case_base);
   return IntroAll(binding_scope, pat.bindings, mut);
+}
+
+static IntroResult ElseScopeEnv(const ScopeContext& ctx,
+                                const ast::ExprPtr& scrutinee,
+                                const TypeEnv& env,
+                                const ast::PatternPtr& pattern,
+                                const TypeRef& scrutinee_type) {
+  SpecDefsIfCase();
+  const auto rejected_type = PatternRejectedType(ctx, pattern, scrutinee_type);
+  if (!rejected_type.ok) {
+    return {false, rejected_type.diag_id, env};
+  }
+  if (rejected_type.matched && rejected_type.type &&
+      ScrutineeIdentifier(scrutinee).has_value()) {
+    SPEC_RULE("ElseScope-Narrow");
+    return {true, std::nullopt,
+            RefineScrutineeEnv(scrutinee, env, rejected_type.type)};
+  }
+  SPEC_RULE("ElseScope-Original");
+  return {true, std::nullopt, env};
+}
+
+static IntroResult ElseScopeForCases(const ScopeContext& ctx,
+                                     const ast::ExprPtr& scrutinee,
+                                     const TypeEnv& env,
+                                     const std::vector<ast::IfCaseClause>& arms,
+                                     const TypeRef& scrutinee_type) {
+  SpecDefsIfCase();
+  TypeRef remaining_type = scrutinee_type;
+  bool narrowed = false;
+
+  for (const auto& arm : arms) {
+    const auto rejected_type =
+        PatternRejectedType(ctx, arm.pattern, remaining_type);
+    if (!rejected_type.ok) {
+      return {false, rejected_type.diag_id, env};
+    }
+    if (rejected_type.matched && rejected_type.type) {
+      remaining_type = rejected_type.type;
+      narrowed = true;
+    }
+  }
+
+  if (narrowed && remaining_type && ScrutineeIdentifier(scrutinee).has_value()) {
+    SPEC_RULE("ElseScope-Narrow");
+    return {true, std::nullopt,
+            RefineScrutineeEnv(scrutinee, env, remaining_type)};
+  }
+  SPEC_RULE("ElseScope-Original");
+  return {true, std::nullopt, env};
 }
 
 static std::unordered_set<IdKey> VariantNames(const ast::EnumDecl& decl) {
@@ -1294,6 +1497,17 @@ ExprTypeResult TypeIfIsExpr(const ScopeContext& ctx,
     return result;
   }
   const TypeEnv then_env = case_scope.env;
+  TypeEnv else_env = env;
+  if (expr.else_expr) {
+    const auto else_scope =
+        ElseScopeEnv(ctx, expr.scrutinee, env, expr.pattern, scrutinee_base);
+    if (!else_scope.ok) {
+      result.diag_id = else_scope.diag_id;
+      return result;
+    }
+    else_env = else_scope.env;
+    SPEC_RULE("ElseScope");
+  }
 
   const bool has_else = static_cast<bool>(expr.else_expr);
   const TypeRef unit_type = MakeTypePrim("()");
@@ -1315,7 +1529,7 @@ ExprTypeResult TypeIfIsExpr(const ScopeContext& ctx,
     result.diag_id = then_typed.diag_id;
     return result;
   }
-  const auto else_typed = TypeExpr(ctx, type_ctx, expr.else_expr, env);
+  const auto else_typed = TypeExpr(ctx, type_ctx, expr.else_expr, else_env);
   if (!else_typed.ok) {
     result.diag_id = else_typed.diag_id;
     return result;
@@ -1410,7 +1624,15 @@ ExprTypeResult TypeIfCaseExpr(const ScopeContext& ctx,
   }
 
   if (has_else) {
-    const auto else_typed = TypeExpr(ctx, type_ctx, expr.else_expr, env);
+    const auto else_scope =
+        ElseScopeForCases(ctx, expr.scrutinee, env, expr.cases, scrutinee_base);
+    if (!else_scope.ok) {
+      result.diag_id = else_scope.diag_id;
+      return result;
+    }
+    SPEC_RULE("ElseScope");
+    const auto else_typed =
+        TypeExpr(ctx, type_ctx, expr.else_expr, else_scope.env);
     if (!else_typed.ok) {
       result.diag_id = else_typed.diag_id;
       return result;
@@ -1563,8 +1785,15 @@ CheckResult CheckIfCaseExpr(const ScopeContext& ctx,
   }
 
   if (has_else) {
+    const auto else_scope =
+        ElseScopeForCases(ctx, expr.scrutinee, env, expr.cases, scrutinee_base);
+    if (!else_scope.ok) {
+      result.diag_id = else_scope.diag_id;
+      return result;
+    }
+    SPEC_RULE("ElseScope");
     const auto else_check =
-        CheckExprAgainst(ctx, type_ctx, expr.else_expr, expected, env);
+        CheckExprAgainst(ctx, type_ctx, expr.else_expr, expected, else_scope.env);
     if (!else_check.ok) {
       result.diag_id = else_check.diag_id;
       return result;

@@ -144,6 +144,8 @@ def main() -> int:
         "IfCase-Modal-NonExhaustive": "E-TYP-2060",
         "IfCase-NonExhaustive": "E-SEM-2741",
         "IfCase-Unreachable": "E-SEM-2751",
+        "IfIs-BareTypePattern-Err": "E-SEM-2761",
+        "IfIs-TypedPattern-Incompatible": "E-SEM-2762",
         "Let-Refutable-Pattern-Err": "E-SEM-2711",
         "RangePattern-Empty": "E-SEM-2722",
         "RangePattern-NonConst": "E-SEM-2721",

@@ -1,0 +1,10 @@
+//! Rejected async composition specimen for syncing an async value that needs input.
+
+public procedure inputRequiredAsyncValue() -> Async<(), i32, i32, !> {
+    return 1
+}
+
+public procedure syncOperandRequiresInputReference() -> i32 {
+    let value: i32 = sync inputRequiredAsyncValue()
+    return value
+}

@@ -1,7 +1,7 @@
 //! Rejected procedure specimens.
 
 public procedure proceduresRejectedSourceFixtureCount() -> usize {
-    return 43usize
+    return 46usize
 }
 
 public procedure validatedProceduresRejectedSourceFixtureCount() -> usize {
@@ -139,6 +139,57 @@ public procedure validatedProceduresRejectedSourceFixtureCount() -> usize {
         "Fixtures/RejectedSource/Procedures/DuplicateErasedOverloadSignature/Expected.uv",
         "E-SEM-3032",
         "req.15.DuplicateErasedOverloadSignaturesForbidden"
+    ) {
+        count = count + 1usize
+    }
+    if rejectedSpecimenMatches(
+        rejectedSpecimen(
+            "OverloadingDiagnosticsTable",
+            "Fixtures/RejectedSource/Procedures/OverloadingDiagnosticsTable",
+            "Fixtures/RejectedSource/Procedures/OverloadingDiagnosticsTable/Source/Main.uv",
+            "Fixtures/RejectedSource/Procedures/OverloadingDiagnosticsTable/Expected.uv",
+            expectedDiagnostic("E-SEM-3032", "diag-table.15.Overloading")
+        ),
+        "OverloadingDiagnosticsTable",
+        "Fixtures/RejectedSource/Procedures/OverloadingDiagnosticsTable",
+        "Fixtures/RejectedSource/Procedures/OverloadingDiagnosticsTable/Source/Main.uv",
+        "Fixtures/RejectedSource/Procedures/OverloadingDiagnosticsTable/Expected.uv",
+        "E-SEM-3032",
+        "diag-table.15.Overloading"
+    ) {
+        count = count + 1usize
+    }
+    if rejectedSpecimenMatches(
+        rejectedSpecimen(
+            "OverloadResolutionBeforeCallTyping",
+            "Fixtures/RejectedSource/Procedures/OverloadResolutionBeforeCallTyping",
+            "Fixtures/RejectedSource/Procedures/OverloadResolutionBeforeCallTyping/Source/Main.uv",
+            "Fixtures/RejectedSource/Procedures/OverloadResolutionBeforeCallTyping/Expected.uv",
+            expectedDiagnostic("E-SEM-3031", "req.15.FreeProcedureOverloadResolutionBeforeCallTyping")
+        ),
+        "OverloadResolutionBeforeCallTyping",
+        "Fixtures/RejectedSource/Procedures/OverloadResolutionBeforeCallTyping",
+        "Fixtures/RejectedSource/Procedures/OverloadResolutionBeforeCallTyping/Source/Main.uv",
+        "Fixtures/RejectedSource/Procedures/OverloadResolutionBeforeCallTyping/Expected.uv",
+        "E-SEM-3031",
+        "req.15.FreeProcedureOverloadResolutionBeforeCallTyping"
+    ) {
+        count = count + 1usize
+    }
+    if rejectedSpecimenMatches(
+        rejectedSpecimen(
+            "VerificationFactNoRuntimeRepresentation",
+            "Fixtures/RejectedSource/Procedures/VerificationFactNoRuntimeRepresentation",
+            "Fixtures/RejectedSource/Procedures/VerificationFactNoRuntimeRepresentation/Source/Main.uv",
+            "Fixtures/RejectedSource/Procedures/VerificationFactNoRuntimeRepresentation/Expected.uv",
+            expectedDiagnostic("E-MOD-1301", "req.15.VerificationFactsNoRuntimeRepresentation")
+        ),
+        "VerificationFactNoRuntimeRepresentation",
+        "Fixtures/RejectedSource/Procedures/VerificationFactNoRuntimeRepresentation",
+        "Fixtures/RejectedSource/Procedures/VerificationFactNoRuntimeRepresentation/Source/Main.uv",
+        "Fixtures/RejectedSource/Procedures/VerificationFactNoRuntimeRepresentation/Expected.uv",
+        "E-MOD-1301",
+        "req.15.VerificationFactsNoRuntimeRepresentation"
     ) {
         count = count + 1usize
     }

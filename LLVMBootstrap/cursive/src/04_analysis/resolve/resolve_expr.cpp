@@ -29,6 +29,7 @@
 #include "04_analysis/resolve/resolve_qual.h"
 #include "04_analysis/resolve/scopes.h"
 #include "04_analysis/resolve/scopes_intro.h"
+#include "04_analysis/resolve/scopes_lookup.h"
 #include "04_analysis/resolve/scope_overrides.h"
 #include "04_analysis/resolve/visibility.h"
 
@@ -162,6 +163,7 @@ static inline void SpecDefsResolverExpr() {
   SPEC_DEF("ResolveKeyClauseOpt", "5.1.7");
   SPEC_DEF("ResolveCallee", "5.1.7");
   SPEC_DEF("ResolveIfCase", "5.1.7");
+  SPEC_DEF("IfIs-BareTypePattern-Err", "17.7");
   SPEC_DEF("BindNames", "5.1.7");
   SPEC_DEF("BindPattern", "5.1.7");
   SPEC_DEF("ResolveExprOpt", "5.1.7");
@@ -288,6 +290,21 @@ BindNamesResult BindPattern(ResolveContext& ctx,
     SPEC_RULE("BindPattern");
   }
   return result;
+}
+
+std::optional<core::Span> BareTypePatternSpan(const ScopeContext& scope,
+                                              const ast::PatternPtr& pattern) {
+  if (!pattern) {
+    return std::nullopt;
+  }
+  const auto* ident = std::get_if<ast::IdentifierPattern>(&pattern->node);
+  if (!ident) {
+    return std::nullopt;
+  }
+  if (!ResolveTypeName(scope, ident->name).has_value()) {
+    return std::nullopt;
+  }
+  return pattern->span;
 }
 
 ResExprResult ResolveExprOpt(ResolveContext& ctx,
@@ -890,6 +907,10 @@ ResolveResult<ast::IfCaseClause> ResolveIfCase(ResolveContext& ctx,
             resolved_pat.span.has_value() ? resolved_pat.span : std::optional<core::Span>(arm.pattern ? arm.pattern->span : (arm.body ? arm.body->span : core::Span{})),
             {}, detail, resolved_pat.diag_children};
   }
+  if (const auto bare_type_span = BareTypePatternSpan(*ctx.ctx, resolved_pat.value)) {
+    SPEC_RULE("IfIs-BareTypePattern-Err");
+    return {false, "IfIs-BareTypePattern-Err", bare_type_span, {}};
+  }
   const auto bind = BindPattern(ctx, resolved_pat.value);
   if (!bind.ok) {
     return {false, bind.diag_id,
@@ -1092,14 +1113,24 @@ ResExprResult ResolveExpr(ResolveContext& ctx,
           if (!resolved_pattern.ok) {
             return {false, resolved_pattern.diag_id, resolved_pattern.span, {}};
           }
-          const auto bind = BindPattern(ctx, resolved_pattern.value);
-          if (!bind.ok) {
-            return {false, bind.diag_id, bind.span, {}};
-          }
-          const auto resolved_then = ResolveExpr(ctx, node.then_expr);
-          if (!resolved_then.ok) {
-            return {false, resolved_then.diag_id, resolved_then.span, {},
-                    resolved_then.diag_detail, resolved_then.diag_children};
+          ast::ExprPtr resolved_then_value;
+          {
+            ScopeGuard guard(*ctx.ctx);
+            if (const auto bare_type_span =
+                    BareTypePatternSpan(*ctx.ctx, resolved_pattern.value)) {
+              SPEC_RULE("IfIs-BareTypePattern-Err");
+              return {false, "IfIs-BareTypePattern-Err", bare_type_span, {}};
+            }
+            const auto bind = BindPattern(ctx, resolved_pattern.value);
+            if (!bind.ok) {
+              return {false, bind.diag_id, bind.span, {}};
+            }
+            const auto resolved_then = ResolveExpr(ctx, node.then_expr);
+            if (!resolved_then.ok) {
+              return {false, resolved_then.diag_id, resolved_then.span, {},
+                      resolved_then.diag_detail, resolved_then.diag_children};
+            }
+            resolved_then_value = resolved_then.value;
           }
           const auto resolved_else = ResolveExprOpt(ctx, node.else_expr);
           if (!resolved_else.ok) {
@@ -1110,7 +1141,7 @@ ResExprResult ResolveExpr(ResolveContext& ctx,
           auto& out_node = std::get<ast::IfIsExpr>(out.node);
           out_node.scrutinee = resolved_scrutinee.value;
           out_node.pattern = resolved_pattern.value;
-          out_node.then_expr = resolved_then.value;
+          out_node.then_expr = resolved_then_value;
           out_node.else_expr = resolved_else.value;
           SPEC_RULE("ResolveExpr-IfIs");
           return {true, std::nullopt, std::nullopt,

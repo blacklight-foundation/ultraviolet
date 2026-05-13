@@ -9,6 +9,7 @@ using HelloUltraviolet::Fixtures::AcceptedProjects::{ acceptedProjectFixturesAre
 using HelloUltraviolet::Fixtures::AcceptedProjects::{ acceptedProjectFixtureArtifactsExist }
 using HelloUltraviolet::Fixtures::ArtifactProjects::{ artifactProjectFixturesAreIndexed }
 using HelloUltraviolet::Fixtures::ArtifactProjects::{ artifactProjectFixtureSourceArtifactsExist }
+using HelloUltraviolet::Fixtures::ArtifactProjects::{ artifactProjectRuntimeErasureArtifactsMatch }
 using HelloUltraviolet::Fixtures::DiagnosticSource::{ diagnosticSourceFixturesAreIndexed }
 using HelloUltraviolet::Fixtures::DiagnosticSource::{ diagnosticSourceFixtureArtifactsExist }
 using HelloUltraviolet::Fixtures::DiagnosticSource::{ validTransmuteTargetExpectedDiagnosticFileMatches }
@@ -64,6 +65,9 @@ using HelloUltraviolet::Fixtures::RejectedSource::{ missingExplicitReturnExpecte
 using HelloUltraviolet::Fixtures::RejectedSource::{ missingReturnTypeExpectedDiagnosticFileMatches }
 using HelloUltraviolet::Fixtures::RejectedSource::{ noMatchingOverloadExpectedDiagnosticFileMatches }
 using HelloUltraviolet::Fixtures::RejectedSource::{ duplicateErasedOverloadSignatureExpectedDiagnosticFileMatches }
+using HelloUltraviolet::Fixtures::RejectedSource::{ overloadingDiagnosticsTableExpectedDiagnosticFileMatches }
+using HelloUltraviolet::Fixtures::RejectedSource::{ overloadResolutionBeforeCallTypingExpectedDiagnosticFileMatches }
+using HelloUltraviolet::Fixtures::RejectedSource::{ verificationFactNoRuntimeRepresentationExpectedDiagnosticFileMatches }
 using HelloUltraviolet::Fixtures::RejectedSource::{ explicitReturnDefinitionExpectedDiagnosticFileMatches }
 using HelloUltraviolet::Fixtures::RejectedSource::{ returnAnnotationPresenceExpectedDiagnosticFileMatches }
 using HelloUltraviolet::Fixtures::RejectedSource::{ procedureDeclarationWellFormednessExpectedDiagnosticFileMatches }
@@ -224,6 +228,30 @@ using HelloUltraviolet::Fixtures::RejectedSource::{ constructionExpressionsDiagn
 using HelloUltraviolet::Fixtures::RejectedSource::{ closureAndPipelineExpressionsDiagnosticExpectedDiagnosticFileMatches }
 using HelloUltraviolet::Fixtures::RejectedSource::{ expressionDiagnosticsSupplementExpectedDiagnosticFileMatches }
 using HelloUltraviolet::Fixtures::RejectedSource::{ asyncTryInfallibleExpectedDiagnosticFileMatches }
+using HelloUltraviolet::Fixtures::RejectedSource::{ yieldOutsideAsyncExpectedDiagnosticFileMatches }
+using HelloUltraviolet::Fixtures::RejectedSource::{ waitNonHandleExpectedDiagnosticFileMatches }
+using HelloUltraviolet::Fixtures::RejectedSource::{ yieldTypeMismatchExpectedDiagnosticFileMatches }
+using HelloUltraviolet::Fixtures::RejectedSource::{ yieldFromOutsideAsyncExpectedDiagnosticFileMatches }
+using HelloUltraviolet::Fixtures::RejectedSource::{ yieldFromOutMismatchExpectedDiagnosticFileMatches }
+using HelloUltraviolet::Fixtures::RejectedSource::{ yieldFromInMismatchExpectedDiagnosticFileMatches }
+using HelloUltraviolet::Fixtures::RejectedSource::{ yieldFromErrorMismatchExpectedDiagnosticFileMatches }
+using HelloUltraviolet::Fixtures::RejectedSource::{ syncContainsYieldExpectedDiagnosticFileMatches }
+using HelloUltraviolet::Fixtures::RejectedSource::{ syncContainsYieldFromExpectedDiagnosticFileMatches }
+using HelloUltraviolet::Fixtures::RejectedSource::{ syncInsideAsyncExpectedDiagnosticFileMatches }
+using HelloUltraviolet::Fixtures::RejectedSource::{ syncOperandYieldsExpectedDiagnosticFileMatches }
+using HelloUltraviolet::Fixtures::RejectedSource::{ syncOperandRequiresInputExpectedDiagnosticFileMatches }
+using HelloUltraviolet::Fixtures::RejectedSource::{ raceTooFewArmsExpectedDiagnosticFileMatches }
+using HelloUltraviolet::Fixtures::RejectedSource::{ raceHandlerMixExpectedDiagnosticFileMatches }
+using HelloUltraviolet::Fixtures::RejectedSource::{ raceOperandYieldsExpectedDiagnosticFileMatches }
+using HelloUltraviolet::Fixtures::RejectedSource::{ raceOperandNonAsyncExpectedDiagnosticFileMatches }
+using HelloUltraviolet::Fixtures::RejectedSource::{ raceStreamOperandNeedsInputExpectedDiagnosticFileMatches }
+using HelloUltraviolet::Fixtures::RejectedSource::{ raceHandlerTypeMismatchExpectedDiagnosticFileMatches }
+using HelloUltraviolet::Fixtures::RejectedSource::{ raceStreamHandlerTypeMismatchExpectedDiagnosticFileMatches }
+using HelloUltraviolet::Fixtures::RejectedSource::{ allOperandYieldsExpectedDiagnosticFileMatches }
+using HelloUltraviolet::Fixtures::RejectedSource::{ allOperandRequiresInputExpectedDiagnosticFileMatches }
+using HelloUltraviolet::Fixtures::RejectedSource::{ asyncTypeArgCountExpectedDiagnosticFileMatches }
+using HelloUltraviolet::Fixtures::RejectedSource::{ asyncTypeArgIllFormedExpectedDiagnosticFileMatches }
+using HelloUltraviolet::Fixtures::RejectedSource::{ asyncTypePathUnappliedExpectedDiagnosticFileMatches }
 using HelloUltraviolet::Fixtures::RejectedSource::{ nullLiteralExpectedExpectedDiagnosticFileMatches }
 using HelloUltraviolet::Fixtures::RejectedSource::{ ptrNullExpectedRequirementExpectedDiagnosticFileMatches }
 using HelloUltraviolet::Fixtures::RejectedSource::{ indexClassificationExpectedDiagnosticFileMatches }
@@ -550,6 +578,11 @@ public procedure runReferenceCorpus(context: Context) -> ReferenceResult {
     )
     passed = passed && recordReferenceResult(
         context,
+        "artifactProjectRuntimeErasureArtifactsMatch",
+        artifactProjectRuntimeErasureArtifactsMatch(context)
+    )
+    passed = passed && recordReferenceResult(
+        context,
         "diagnosticSourceFixturesAreIndexed",
         diagnosticSourceFixturesAreIndexed()
     )
@@ -872,6 +905,21 @@ public procedure runReferenceCorpus(context: Context) -> ReferenceResult {
         context,
         "duplicateErasedOverloadSignatureExpectedDiagnosticFileMatches",
         duplicateErasedOverloadSignatureExpectedDiagnosticFileMatches(context)
+    )
+    passed = passed && recordReferenceResult(
+        context,
+        "overloadingDiagnosticsTableExpectedDiagnosticFileMatches",
+        overloadingDiagnosticsTableExpectedDiagnosticFileMatches(context)
+    )
+    passed = passed && recordReferenceResult(
+        context,
+        "overloadResolutionBeforeCallTypingExpectedDiagnosticFileMatches",
+        overloadResolutionBeforeCallTypingExpectedDiagnosticFileMatches(context)
+    )
+    passed = passed && recordReferenceResult(
+        context,
+        "verificationFactNoRuntimeRepresentationExpectedDiagnosticFileMatches",
+        verificationFactNoRuntimeRepresentationExpectedDiagnosticFileMatches(context)
     )
     passed = passed && recordReferenceResult(
         context,
@@ -1672,6 +1720,126 @@ public procedure runReferenceCorpus(context: Context) -> ReferenceResult {
         context,
         "asyncTryInfallibleExpectedDiagnosticFileMatches",
         asyncTryInfallibleExpectedDiagnosticFileMatches(context)
+    )
+    passed = passed && recordReferenceResult(
+        context,
+        "yieldOutsideAsyncExpectedDiagnosticFileMatches",
+        yieldOutsideAsyncExpectedDiagnosticFileMatches(context)
+    )
+    passed = passed && recordReferenceResult(
+        context,
+        "waitNonHandleExpectedDiagnosticFileMatches",
+        waitNonHandleExpectedDiagnosticFileMatches(context)
+    )
+    passed = passed && recordReferenceResult(
+        context,
+        "yieldTypeMismatchExpectedDiagnosticFileMatches",
+        yieldTypeMismatchExpectedDiagnosticFileMatches(context)
+    )
+    passed = passed && recordReferenceResult(
+        context,
+        "yieldFromOutsideAsyncExpectedDiagnosticFileMatches",
+        yieldFromOutsideAsyncExpectedDiagnosticFileMatches(context)
+    )
+    passed = passed && recordReferenceResult(
+        context,
+        "yieldFromOutMismatchExpectedDiagnosticFileMatches",
+        yieldFromOutMismatchExpectedDiagnosticFileMatches(context)
+    )
+    passed = passed && recordReferenceResult(
+        context,
+        "yieldFromInMismatchExpectedDiagnosticFileMatches",
+        yieldFromInMismatchExpectedDiagnosticFileMatches(context)
+    )
+    passed = passed && recordReferenceResult(
+        context,
+        "yieldFromErrorMismatchExpectedDiagnosticFileMatches",
+        yieldFromErrorMismatchExpectedDiagnosticFileMatches(context)
+    )
+    passed = passed && recordReferenceResult(
+        context,
+        "syncContainsYieldExpectedDiagnosticFileMatches",
+        syncContainsYieldExpectedDiagnosticFileMatches(context)
+    )
+    passed = passed && recordReferenceResult(
+        context,
+        "syncContainsYieldFromExpectedDiagnosticFileMatches",
+        syncContainsYieldFromExpectedDiagnosticFileMatches(context)
+    )
+    passed = passed && recordReferenceResult(
+        context,
+        "syncInsideAsyncExpectedDiagnosticFileMatches",
+        syncInsideAsyncExpectedDiagnosticFileMatches(context)
+    )
+    passed = passed && recordReferenceResult(
+        context,
+        "syncOperandYieldsExpectedDiagnosticFileMatches",
+        syncOperandYieldsExpectedDiagnosticFileMatches(context)
+    )
+    passed = passed && recordReferenceResult(
+        context,
+        "syncOperandRequiresInputExpectedDiagnosticFileMatches",
+        syncOperandRequiresInputExpectedDiagnosticFileMatches(context)
+    )
+    passed = passed && recordReferenceResult(
+        context,
+        "raceTooFewArmsExpectedDiagnosticFileMatches",
+        raceTooFewArmsExpectedDiagnosticFileMatches(context)
+    )
+    passed = passed && recordReferenceResult(
+        context,
+        "raceHandlerMixExpectedDiagnosticFileMatches",
+        raceHandlerMixExpectedDiagnosticFileMatches(context)
+    )
+    passed = passed && recordReferenceResult(
+        context,
+        "raceOperandYieldsExpectedDiagnosticFileMatches",
+        raceOperandYieldsExpectedDiagnosticFileMatches(context)
+    )
+    passed = passed && recordReferenceResult(
+        context,
+        "raceOperandNonAsyncExpectedDiagnosticFileMatches",
+        raceOperandNonAsyncExpectedDiagnosticFileMatches(context)
+    )
+    passed = passed && recordReferenceResult(
+        context,
+        "raceStreamOperandNeedsInputExpectedDiagnosticFileMatches",
+        raceStreamOperandNeedsInputExpectedDiagnosticFileMatches(context)
+    )
+    passed = passed && recordReferenceResult(
+        context,
+        "raceHandlerTypeMismatchExpectedDiagnosticFileMatches",
+        raceHandlerTypeMismatchExpectedDiagnosticFileMatches(context)
+    )
+    passed = passed && recordReferenceResult(
+        context,
+        "raceStreamHandlerTypeMismatchExpectedDiagnosticFileMatches",
+        raceStreamHandlerTypeMismatchExpectedDiagnosticFileMatches(context)
+    )
+    passed = passed && recordReferenceResult(
+        context,
+        "allOperandYieldsExpectedDiagnosticFileMatches",
+        allOperandYieldsExpectedDiagnosticFileMatches(context)
+    )
+    passed = passed && recordReferenceResult(
+        context,
+        "allOperandRequiresInputExpectedDiagnosticFileMatches",
+        allOperandRequiresInputExpectedDiagnosticFileMatches(context)
+    )
+    passed = passed && recordReferenceResult(
+        context,
+        "asyncTypeArgCountExpectedDiagnosticFileMatches",
+        asyncTypeArgCountExpectedDiagnosticFileMatches(context)
+    )
+    passed = passed && recordReferenceResult(
+        context,
+        "asyncTypeArgIllFormedExpectedDiagnosticFileMatches",
+        asyncTypeArgIllFormedExpectedDiagnosticFileMatches(context)
+    )
+    passed = passed && recordReferenceResult(
+        context,
+        "asyncTypePathUnappliedExpectedDiagnosticFileMatches",
+        asyncTypePathUnappliedExpectedDiagnosticFileMatches(context)
     )
     passed = passed && recordReferenceResult(
         context,

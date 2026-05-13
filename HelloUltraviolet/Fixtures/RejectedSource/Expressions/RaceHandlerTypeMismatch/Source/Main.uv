@@ -1,0 +1,17 @@
+//! Rejected async composition specimen for return-mode race handler type mismatch.
+
+public procedure firstAsyncValue() -> Async<(), (), i32, !> {
+    return 1
+}
+
+public procedure secondAsyncValue() -> Async<(), (), i32, !> {
+    return 2
+}
+
+public procedure raceHandlerTypeMismatchReference() -> i32 {
+    let value: i32 = race {
+        firstAsyncValue() -> |result| result,
+        secondAsyncValue() -> |result| false,
+    }
+    return value
+}

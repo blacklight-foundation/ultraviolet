@@ -80,6 +80,11 @@ inline std::optional<std::string> LookupTypecheckDiagCode(std::string_view diag_
   if (diag_id == "Record-Default-Init-Err") {
     return "E-TYP-1911";
   }
+  if (diag_id == "WF-Async-ArgCount-Err" ||
+      diag_id == "WF-Async-Arg-WF-Err" ||
+      diag_id == "WF-Async-Path-Err") {
+    return "E-CON-0201";
+  }
 
   if (const auto code = core::ResolveDiagCode(std::string(diag_id));
       code.has_value()) {

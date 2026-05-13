@@ -338,6 +338,10 @@ static TypeWfResult TypeWFImpl(const ScopeContext& ctx, const TypeRef& type) {
           return {true, std::nullopt};
         } else if constexpr (std::is_same_v<T, TypePathType>) {
           if (IsAsyncPathType(node.path)) {
+            if (node.generic_args.empty()) {
+              SPEC_RULE("WF-Async-Path-Err");
+              return {false, "WF-Async-Path-Err"};
+            }
             if (node.generic_args.size() != 4) {
               SPEC_RULE("WF-Async-ArgCount-Err");
               return {false, "WF-Async-ArgCount-Err"};
@@ -372,6 +376,10 @@ static TypeWfResult TypeWFImpl(const ScopeContext& ctx, const TypeRef& type) {
           return {true, std::nullopt};
         } else if constexpr (std::is_same_v<T, TypeApply>) {
           if (IsAsyncPathType(node.path)) {
+            if (node.args.empty()) {
+              SPEC_RULE("WF-Async-Path-Err");
+              return {false, "WF-Async-Path-Err"};
+            }
             if (node.args.size() != 4) {
               SPEC_RULE("WF-Async-ArgCount-Err");
               return {false, "WF-Async-ArgCount-Err"};

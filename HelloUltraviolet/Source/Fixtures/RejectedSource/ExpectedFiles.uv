@@ -393,6 +393,34 @@ public procedure duplicateErasedOverloadSignatureExpectedDiagnosticFileMatches(
     )
 }
 
+public procedure overloadingDiagnosticsTableExpectedDiagnosticFileMatches(context: Context) -> bool {
+    return expectedDiagnosticFileMatches(
+        context,
+        "HelloUltraviolet/Fixtures/RejectedSource/Procedures/OverloadingDiagnosticsTable/Expected.uv",
+        "//! Expected diagnostic metadata for the OverloadingDiagnosticsTable rejected-source specimen.\n\nexpectedDiagnostic(\"E-SEM-3032\", \"diag-table.15.Overloading\")\n"
+    )
+}
+
+public procedure overloadResolutionBeforeCallTypingExpectedDiagnosticFileMatches(
+    context: Context
+) -> bool {
+    return expectedDiagnosticFileMatches(
+        context,
+        "HelloUltraviolet/Fixtures/RejectedSource/Procedures/OverloadResolutionBeforeCallTyping/Expected.uv",
+        "//! Expected diagnostic metadata for the OverloadResolutionBeforeCallTyping rejected-source specimen.\n\nexpectedDiagnostic(\"E-SEM-3031\", \"req.15.FreeProcedureOverloadResolutionBeforeCallTyping\")\n"
+    )
+}
+
+public procedure verificationFactNoRuntimeRepresentationExpectedDiagnosticFileMatches(
+    context: Context
+) -> bool {
+    return expectedDiagnosticFileMatches(
+        context,
+        "HelloUltraviolet/Fixtures/RejectedSource/Procedures/VerificationFactNoRuntimeRepresentation/Expected.uv",
+        "//! Expected diagnostic metadata for the VerificationFactNoRuntimeRepresentation rejected-source specimen.\n\nexpectedDiagnostic(\"E-MOD-1301\", \"req.15.VerificationFactsNoRuntimeRepresentation\")\n"
+    )
+}
+
 public procedure callNonFunctionExpectedDiagnosticFileMatches(context: Context) -> bool {
     return expectedDiagnosticFileMatches(
         context,
@@ -1176,6 +1204,204 @@ public procedure asyncTryInfallibleExpectedDiagnosticFileMatches(context: Contex
         context,
         "HelloUltraviolet/Fixtures/RejectedSource/Expressions/AsyncTryInfallible/Expected.uv",
         "//! Expected diagnostic metadata for the AsyncTryInfallible rejected-source specimen.\n\nexpectedDiagnostic(\"E-CON-0230\", \"rule.16.Async-Try-Infallible-Err\")\n"
+    )
+}
+
+public procedure yieldOutsideAsyncExpectedDiagnosticFileMatches(context: Context) -> bool {
+    return expectedDiagnosticFileMatches(
+        context,
+        "HelloUltraviolet/Fixtures/RejectedSource/Expressions/YieldOutsideAsync/Expected.uv",
+        "//! Expected diagnostic metadata for the YieldOutsideAsync rejected-source specimen.\n\nexpectedDiagnostic(\"E-CON-0210\", \"rule.21.Yield-NotAsync-Err\")\n"
+    )
+}
+
+public procedure waitNonHandleExpectedDiagnosticFileMatches(context: Context) -> bool {
+    return expectedDiagnosticFileMatches(
+        context,
+        "HelloUltraviolet/Fixtures/RejectedSource/Expressions/WaitNonHandle/Expected.uv",
+        "//! Expected diagnostic metadata for the WaitNonHandle rejected-source specimen.\n\nexpectedDiagnostic(\"E-CON-0132\", \"rule.21.Wait-Handle-Err\")\n"
+    )
+}
+
+public procedure yieldTypeMismatchExpectedDiagnosticFileMatches(context: Context) -> bool {
+    return expectedDiagnosticFileMatches(
+        context,
+        "HelloUltraviolet/Fixtures/RejectedSource/Expressions/YieldTypeMismatch/Expected.uv",
+        "//! Expected diagnostic metadata for the YieldTypeMismatch rejected-source specimen.\n\nexpectedDiagnostic(\"E-CON-0211\", \"rule.21.Yield-Out-Err\")\n"
+    )
+}
+
+public procedure yieldFromOutsideAsyncExpectedDiagnosticFileMatches(context: Context) -> bool {
+    return expectedDiagnosticFileMatches(
+        context,
+        "HelloUltraviolet/Fixtures/RejectedSource/Expressions/YieldFromOutsideAsync/Expected.uv",
+        "//! Expected diagnostic metadata for the YieldFromOutsideAsync rejected-source specimen.\n\nexpectedDiagnostic(\"E-CON-0220\", \"rule.21.YieldFrom-NotAsync-Err\")\n"
+    )
+}
+
+public procedure yieldFromOutMismatchExpectedDiagnosticFileMatches(context: Context) -> bool {
+    return expectedDiagnosticFileMatches(
+        context,
+        "HelloUltraviolet/Fixtures/RejectedSource/Expressions/YieldFromOutMismatch/Expected.uv",
+        "//! Expected diagnostic metadata for the YieldFromOutMismatch rejected-source specimen.\n\nexpectedDiagnostic(\"E-CON-0221\", \"rule.21.YieldFrom-Out-Err\")\n"
+    )
+}
+
+public procedure yieldFromInMismatchExpectedDiagnosticFileMatches(context: Context) -> bool {
+    return expectedDiagnosticFileMatches(
+        context,
+        "HelloUltraviolet/Fixtures/RejectedSource/Expressions/YieldFromInMismatch/Expected.uv",
+        "//! Expected diagnostic metadata for the YieldFromInMismatch rejected-source specimen.\n\nexpectedDiagnostic(\"E-CON-0222\", \"rule.21.YieldFrom-In-Err\")\n"
+    )
+}
+
+public procedure yieldFromErrorMismatchExpectedDiagnosticFileMatches(context: Context) -> bool {
+    return expectedDiagnosticFileMatches(
+        context,
+        "HelloUltraviolet/Fixtures/RejectedSource/Expressions/YieldFromErrorMismatch/Expected.uv",
+        "//! Expected diagnostic metadata for the YieldFromErrorMismatch rejected-source specimen.\n\nexpectedDiagnostic(\"E-CON-0225\", \"rule.21.YieldFrom-ErrType-Err\")\n"
+    )
+}
+
+public procedure syncContainsYieldExpectedDiagnosticFileMatches(context: Context) -> bool {
+    return expectedDiagnosticFileMatches(
+        context,
+        "HelloUltraviolet/Fixtures/RejectedSource/Expressions/SyncContainsYield/Expected.uv",
+        "//! Expected diagnostic metadata for the SyncContainsYield rejected-source specimen.\n\nexpectedDiagnostic(\"E-CON-0212\", \"rule.21.Sync-Yield-Err\")\n"
+    )
+}
+
+public procedure syncContainsYieldFromExpectedDiagnosticFileMatches(context: Context) -> bool {
+    return expectedDiagnosticFileMatches(
+        context,
+        "HelloUltraviolet/Fixtures/RejectedSource/Expressions/SyncContainsYieldFrom/Expected.uv",
+        "//! Expected diagnostic metadata for the SyncContainsYieldFrom rejected-source specimen.\n\nexpectedDiagnostic(\"E-CON-0223\", \"rule.21.Sync-YieldFrom-Err\")\n"
+    )
+}
+
+public procedure syncInsideAsyncExpectedDiagnosticFileMatches(context: Context) -> bool {
+    return expectedDiagnosticFileMatches(
+        context,
+        "HelloUltraviolet/Fixtures/RejectedSource/Expressions/SyncInsideAsync/Expected.uv",
+        "//! Expected diagnostic metadata for the SyncInsideAsync rejected-source specimen.\n\nexpectedDiagnostic(\"E-CON-0250\", \"rule.21.Sync-Async-Context-Err\")\n"
+    )
+}
+
+public procedure syncOperandYieldsExpectedDiagnosticFileMatches(context: Context) -> bool {
+    return expectedDiagnosticFileMatches(
+        context,
+        "HelloUltraviolet/Fixtures/RejectedSource/Expressions/SyncOperandYields/Expected.uv",
+        "//! Expected diagnostic metadata for the SyncOperandYields rejected-source specimen.\n\nexpectedDiagnostic(\"E-CON-0251\", \"rule.21.Sync-Out-Err\")\n"
+    )
+}
+
+public procedure syncOperandRequiresInputExpectedDiagnosticFileMatches(context: Context) -> bool {
+    return expectedDiagnosticFileMatches(
+        context,
+        "HelloUltraviolet/Fixtures/RejectedSource/Expressions/SyncOperandRequiresInput/Expected.uv",
+        "//! Expected diagnostic metadata for the SyncOperandRequiresInput rejected-source specimen.\n\nexpectedDiagnostic(\"E-CON-0252\", \"rule.21.Sync-In-Err\")\n"
+    )
+}
+
+public procedure raceTooFewArmsExpectedDiagnosticFileMatches(context: Context) -> bool {
+    return expectedDiagnosticFileMatches(
+        context,
+        "HelloUltraviolet/Fixtures/RejectedSource/Expressions/RaceTooFewArms/Expected.uv",
+        "//! Expected diagnostic metadata for the RaceTooFewArms rejected-source specimen.\n\nexpectedDiagnostic(\"E-CON-0260\", \"rule.21.Race-Arity-Err\")\n"
+    )
+}
+
+public procedure raceHandlerMixExpectedDiagnosticFileMatches(context: Context) -> bool {
+    return expectedDiagnosticFileMatches(
+        context,
+        "HelloUltraviolet/Fixtures/RejectedSource/Expressions/RaceHandlerMix/Expected.uv",
+        "//! Expected diagnostic metadata for the RaceHandlerMix rejected-source specimen.\n\nexpectedDiagnostic(\"E-CON-0263\", \"rule.21.Race-Handler-Mix-Err\")\n"
+    )
+}
+
+public procedure raceOperandYieldsExpectedDiagnosticFileMatches(context: Context) -> bool {
+    return expectedDiagnosticFileMatches(
+        context,
+        "HelloUltraviolet/Fixtures/RejectedSource/Expressions/RaceOperandYields/Expected.uv",
+        "//! Expected diagnostic metadata for the RaceOperandYields rejected-source specimen.\n\nexpectedDiagnostic(\"E-CON-0262\", \"rule.21.Race-Operand-Out-Err\")\n"
+    )
+}
+
+public procedure raceOperandNonAsyncExpectedDiagnosticFileMatches(context: Context) -> bool {
+    return expectedDiagnosticFileMatches(
+        context,
+        "HelloUltraviolet/Fixtures/RejectedSource/Expressions/RaceOperandNonAsync/Expected.uv",
+        "//! Expected diagnostic metadata for the RaceOperandNonAsync rejected-source specimen.\n\nexpectedDiagnostic(\"E-CON-0261\", \"rule.21.Race-Operand-Err\")\n"
+    )
+}
+
+public procedure raceStreamOperandNeedsInputExpectedDiagnosticFileMatches(
+    context: Context
+) -> bool {
+    return expectedDiagnosticFileMatches(
+        context,
+        "HelloUltraviolet/Fixtures/RejectedSource/Expressions/RaceStreamOperandNeedsInput/Expected.uv",
+        "//! Expected diagnostic metadata for the RaceStreamOperandNeedsInput rejected-source specimen.\n\nexpectedDiagnostic(\"E-CON-0261\", \"rule.21.Race-Stream-Operand-Err\")\n"
+    )
+}
+
+public procedure raceHandlerTypeMismatchExpectedDiagnosticFileMatches(
+    context: Context
+) -> bool {
+    return expectedDiagnosticFileMatches(
+        context,
+        "HelloUltraviolet/Fixtures/RejectedSource/Expressions/RaceHandlerTypeMismatch/Expected.uv",
+        "//! Expected diagnostic metadata for the RaceHandlerTypeMismatch rejected-source specimen.\n\nexpectedDiagnostic(\"E-CON-0261\", \"rule.21.Race-Handler-Type-Err\")\n"
+    )
+}
+
+public procedure raceStreamHandlerTypeMismatchExpectedDiagnosticFileMatches(
+    context: Context
+) -> bool {
+    return expectedDiagnosticFileMatches(
+        context,
+        "HelloUltraviolet/Fixtures/RejectedSource/Expressions/RaceStreamHandlerTypeMismatch/Expected.uv",
+        "//! Expected diagnostic metadata for the RaceStreamHandlerTypeMismatch rejected-source specimen.\n\nexpectedDiagnostic(\"E-CON-0261\", \"rule.21.Race-Stream-Handler-Type-Err\")\n"
+    )
+}
+
+public procedure allOperandYieldsExpectedDiagnosticFileMatches(context: Context) -> bool {
+    return expectedDiagnosticFileMatches(
+        context,
+        "HelloUltraviolet/Fixtures/RejectedSource/Expressions/AllOperandYields/Expected.uv",
+        "//! Expected diagnostic metadata for the AllOperandYields rejected-source specimen.\n\nexpectedDiagnostic(\"E-CON-0270\", \"rule.21.All-Out-Err\")\n"
+    )
+}
+
+public procedure allOperandRequiresInputExpectedDiagnosticFileMatches(context: Context) -> bool {
+    return expectedDiagnosticFileMatches(
+        context,
+        "HelloUltraviolet/Fixtures/RejectedSource/Expressions/AllOperandRequiresInput/Expected.uv",
+        "//! Expected diagnostic metadata for the AllOperandRequiresInput rejected-source specimen.\n\nexpectedDiagnostic(\"E-CON-0271\", \"rule.21.All-In-Err\")\n"
+    )
+}
+
+public procedure asyncTypeArgCountExpectedDiagnosticFileMatches(context: Context) -> bool {
+    return expectedDiagnosticFileMatches(
+        context,
+        "HelloUltraviolet/Fixtures/RejectedSource/Expressions/AsyncTypeArgCount/Expected.uv",
+        "//! Expected diagnostic metadata for the AsyncTypeArgCount rejected-source specimen.\n\nexpectedDiagnostic(\"E-CON-0201\", \"rule.21.WF-Async-ArgCount-Err\")\n"
+    )
+}
+
+public procedure asyncTypeArgIllFormedExpectedDiagnosticFileMatches(context: Context) -> bool {
+    return expectedDiagnosticFileMatches(
+        context,
+        "HelloUltraviolet/Fixtures/RejectedSource/Expressions/AsyncTypeArgIllFormed/Expected.uv",
+        "//! Expected diagnostic metadata for the AsyncTypeArgIllFormed rejected-source specimen.\n\nexpectedDiagnostic(\"E-CON-0201\", \"rule.21.WF-Async-Arg-WF-Err\")\n"
+    )
+}
+
+public procedure asyncTypePathUnappliedExpectedDiagnosticFileMatches(context: Context) -> bool {
+    return expectedDiagnosticFileMatches(
+        context,
+        "HelloUltraviolet/Fixtures/RejectedSource/Expressions/AsyncTypePathUnapplied/Expected.uv",
+        "//! Expected diagnostic metadata for the AsyncTypePathUnapplied rejected-source specimen.\n\nexpectedDiagnostic(\"E-CON-0201\", \"rule.21.WF-Async-Path-Err\")\n"
     )
 }
 
