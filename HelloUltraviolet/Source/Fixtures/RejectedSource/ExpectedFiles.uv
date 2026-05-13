@@ -2694,3 +2694,41 @@ public procedure sharedDynamicMutatingReceiverExpectedDiagnosticFileMatches(cont
         "//! Expected diagnostic metadata for the SharedDynamicMutatingReceiver rejected-source specimen.\n\nexpectedDiagnostic(\"E-CON-0083\", \"requirement.19.SharedDynamicClassRejectsMutatingReceivers\")\n"
     )
 }
+
+public procedure asyncTypeDiagnosticsTableExpectedDiagnosticFileMatches(
+    context: Context
+) -> bool {
+    return expectedDiagnosticFileMatches(
+        context,
+        "HelloUltraviolet/Fixtures/RejectedSource/Expressions/AsyncTypeDiagnosticsTable/Expected.uv",
+        "//! Expected diagnostic metadata for the AsyncTypeDiagnosticsTable rejected-source specimen.\n\nexpectedDiagnostic(\"E-CON-0201\", \"diagnostics.21.AsyncType\")\n"
+    )
+}
+
+public procedure suspensionFormsDiagnosticsTableExpectedDiagnosticFileMatches(
+    context: Context
+) -> bool {
+    return expectedDiagnosticFileMatches(
+        context,
+        "HelloUltraviolet/Fixtures/RejectedSource/Expressions/SuspensionFormsDiagnosticsTable/Expected.uv",
+        "//! Expected diagnostic metadata for the SuspensionFormsDiagnosticsTable rejected-source specimen.\n\nexpectedDiagnostic(\"E-CON-0132\", \"diagnostics.21.SuspensionForms\")\n"
+    )
+}
+
+public procedure asyncCompositionDiagnosticsTableExpectedDiagnosticFileMatches(
+    context: Context
+) -> bool {
+    return expectedDiagnosticFileMatches(
+        context,
+        "HelloUltraviolet/Fixtures/RejectedSource/Expressions/AsyncCompositionDiagnosticsTable/Expected.uv",
+        "//! Expected diagnostic metadata for the AsyncCompositionDiagnosticsTable rejected-source specimen.\n\nexpectedDiagnostic(\"E-CON-0260\", \"diagnostics.21.AsyncCompositionDiagnostics\")\n"
+    )
+}
+
+public procedure loopAsyncEnclosingReturnExpectedDiagnosticFileMatches(context: Context) -> bool {
+    return expectedDiagnosticFileMatches(
+        context,
+        "HelloUltraviolet/Fixtures/RejectedSource/Expressions/LoopAsyncEnclosingReturn/Expected.uv",
+        "//! Expected diagnostic metadata for the LoopAsyncEnclosingReturn rejected-source specimen.\n\nexpectedDiagnostic(\"E-CON-0240\", \"rule.21.Loop-Async-Err\")\n"
+    )
+}

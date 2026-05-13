@@ -31,10 +31,10 @@ Objective: execute `.agents/plans/HelloUltravioletReferenceCorpus.md`.
 - `CatalogSymbols.uv` imports and executes the 65 unique compiled reference
   symbols named by catalog rows, and `HelloUltraviolet.exe` validates them
   through `catalogCompiledSymbolsExecute()`.
-- `Source/Fixtures/RejectedSource` compiles metadata for 306 rejected-source
+- `Source/Fixtures/RejectedSource` compiles metadata for 310 rejected-source
   fixture specimens, and `HelloUltraviolet.exe` validates that fixture index
   through `rejectedSourceFixturesAreIndexed`.
-- The 306 rejected-source fixture projects under
+- The 310 rejected-source fixture projects under
   `HelloUltraviolet/Fixtures/RejectedSource` fail with their expected SPEC
   diagnostic code or static-rule diagnostic when built individually with
   `Cursive.exe build ... --check`.
@@ -44,7 +44,7 @@ Objective: execute `.agents/plans/HelloUltravioletReferenceCorpus.md`.
 - `HelloUltraviolet.exe` verifies runtime existence of each rejected fixture
   manifest, invalid source file, and `Expected.uv` artifact through
   `rejectedSourceFixtureArtifactsExist(context)`.
-- `ExpectedFiles.uv` reads the 306 current rejected-source `Expected.uv`
+- `ExpectedFiles.uv` reads the 310 current rejected-source `Expected.uv`
   artifacts and `HelloUltraviolet.exe` validates exact metadata content through
   one named check per specimen.
 - `Source/Fixtures/DiagnosticSource` compiles metadata for 11 diagnostic-source
@@ -253,12 +253,12 @@ Objective: execute `.agents/plans/HelloUltravioletReferenceCorpus.md`.
 ## Completion Blockers
 
 - Rejected-source and diagnostic-source fixtures are partially populated. The
-  current fixture set covers 306 rejected-source diagnostics and 11 compiling
+  current fixture set covers 310 rejected-source diagnostics and 11 compiling
   diagnostic-source warning/info/absence cases; the full expected-diagnostics
   obligation surface is not yet represented. Of the 382 expected-diagnostic
-  obligations, 88 remain
+  obligations, 84 remain
   uncovered. Remaining uncovered expected-diagnostic ownership counts are:
-  abstraction/polymorphism 2, async 17, compile-time 27, lowering 3,
+  abstraction/polymorphism 2, async 13, compile-time 27, lowering 3,
   statements 1, and structured parallelism 38.
 - `Fixtures/BootstrapNonCompliance/Procedures/FreeProcedureOverloadResolution`
   now passes both semantic checking and the standalone library build after the

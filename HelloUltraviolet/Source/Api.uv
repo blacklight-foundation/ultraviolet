@@ -252,6 +252,10 @@ using HelloUltraviolet::Fixtures::RejectedSource::{ allOperandRequiresInputExpec
 using HelloUltraviolet::Fixtures::RejectedSource::{ asyncTypeArgCountExpectedDiagnosticFileMatches }
 using HelloUltraviolet::Fixtures::RejectedSource::{ asyncTypeArgIllFormedExpectedDiagnosticFileMatches }
 using HelloUltraviolet::Fixtures::RejectedSource::{ asyncTypePathUnappliedExpectedDiagnosticFileMatches }
+using HelloUltraviolet::Fixtures::RejectedSource::{ asyncTypeDiagnosticsTableExpectedDiagnosticFileMatches }
+using HelloUltraviolet::Fixtures::RejectedSource::{ suspensionFormsDiagnosticsTableExpectedDiagnosticFileMatches }
+using HelloUltraviolet::Fixtures::RejectedSource::{ asyncCompositionDiagnosticsTableExpectedDiagnosticFileMatches }
+using HelloUltraviolet::Fixtures::RejectedSource::{ loopAsyncEnclosingReturnExpectedDiagnosticFileMatches }
 using HelloUltraviolet::Fixtures::RejectedSource::{ nullLiteralExpectedExpectedDiagnosticFileMatches }
 using HelloUltraviolet::Fixtures::RejectedSource::{ ptrNullExpectedRequirementExpectedDiagnosticFileMatches }
 using HelloUltraviolet::Fixtures::RejectedSource::{ indexClassificationExpectedDiagnosticFileMatches }
@@ -1840,6 +1844,26 @@ public procedure runReferenceCorpus(context: Context) -> ReferenceResult {
         context,
         "asyncTypePathUnappliedExpectedDiagnosticFileMatches",
         asyncTypePathUnappliedExpectedDiagnosticFileMatches(context)
+    )
+    passed = passed && recordReferenceResult(
+        context,
+        "asyncTypeDiagnosticsTableExpectedDiagnosticFileMatches",
+        asyncTypeDiagnosticsTableExpectedDiagnosticFileMatches(context)
+    )
+    passed = passed && recordReferenceResult(
+        context,
+        "suspensionFormsDiagnosticsTableExpectedDiagnosticFileMatches",
+        suspensionFormsDiagnosticsTableExpectedDiagnosticFileMatches(context)
+    )
+    passed = passed && recordReferenceResult(
+        context,
+        "asyncCompositionDiagnosticsTableExpectedDiagnosticFileMatches",
+        asyncCompositionDiagnosticsTableExpectedDiagnosticFileMatches(context)
+    )
+    passed = passed && recordReferenceResult(
+        context,
+        "loopAsyncEnclosingReturnExpectedDiagnosticFileMatches",
+        loopAsyncEnclosingReturnExpectedDiagnosticFileMatches(context)
     )
     passed = passed && recordReferenceResult(
         context,

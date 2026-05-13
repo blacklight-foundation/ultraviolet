@@ -25,6 +25,7 @@
 
 #include "00_core/assert_spec.h"
 #include "04_analysis/generics/monomorphize.h"
+#include "04_analysis/layout/layout.h"
 #include "04_analysis/modal/modal.h"
 #include "04_analysis/resolve/scopes.h"
 #include "04_analysis/resolve/scopes_lookup.h"
@@ -550,6 +551,47 @@ analysis::TypeRef RejectedPatternType(const analysis::ScopeContext& scope,
   return analysis::MakeTypeUnion(std::move(rejected));
 }
 
+std::optional<std::size_t> UnionMemberIndexForType(
+    const analysis::ScopeContext& scope,
+    const analysis::TypeRef& scrutinee_type,
+    const analysis::TypeRef& target_type,
+    LowerCtx& ctx) {
+  if (!scrutinee_type || !target_type) {
+    return std::nullopt;
+  }
+
+  analysis::TypeRef normalized_scrutinee =
+      ResolvePatternAliasType(scrutinee_type, ctx);
+  normalized_scrutinee = analysis::StripPerm(normalized_scrutinee);
+  if (!normalized_scrutinee) {
+    return std::nullopt;
+  }
+
+  const auto* union_type =
+      std::get_if<analysis::TypeUnion>(&normalized_scrutinee->node);
+  if (!union_type) {
+    return std::nullopt;
+  }
+
+  std::vector<analysis::TypeRef> members = union_type->members;
+  if (const auto layout = analysis::layout::UnionLayoutOf(scope, *union_type)) {
+    members = layout->member_list;
+  }
+
+  analysis::TypeRef normalized_target = ResolvePatternAliasType(target_type, ctx);
+  normalized_target = analysis::StripPerm(normalized_target);
+  if (!normalized_target) {
+    return std::nullopt;
+  }
+
+  for (std::size_t i = 0; i < members.size(); ++i) {
+    if (TypeEquivIgnorePermLocal(members[i], normalized_target)) {
+      return i;
+    }
+  }
+  return std::nullopt;
+}
+
 void RefineScrutineeBindingToType(const ast::Expr& scrutinee,
                                   const analysis::TypeRef& refined_type,
                                   LowerCtx& ctx) {
@@ -567,12 +609,17 @@ void RefineScrutineeBindingToType(const ast::Expr& scrutinee,
   binding_it->second.back().type = refined_type;
 }
 
-void RefineElseScrutineeBinding(const ast::Expr& scrutinee,
-                                const std::vector<ast::IfCaseClause>& arms,
-                                const analysis::TypeRef& scrutinee_type,
-                                LowerCtx& ctx) {
+struct ElseNarrowing {
+  analysis::TypeRef type;
+  bool narrowed = false;
+};
+
+ElseNarrowing ElseNarrowedType(const std::vector<ast::IfCaseClause>& arms,
+                               const analysis::TypeRef& scrutinee_type,
+                               LowerCtx& ctx) {
+  ElseNarrowing result;
   if (!ctx.sigma || !scrutinee_type) {
-    return;
+    return result;
   }
   const analysis::ScopeContext& scope = ScopeForLowering(ctx);
   analysis::TypeRef remaining = scrutinee_type;
@@ -591,8 +638,66 @@ void RefineElseScrutineeBinding(const ast::Expr& scrutinee,
   }
 
   if (narrowed) {
-    RefineScrutineeBindingToType(scrutinee, remaining, ctx);
+    result.type = remaining;
+    result.narrowed = true;
   }
+  return result;
+}
+
+IRPtr BindElseNarrowedScrutinee(const ast::Expr& scrutinee,
+                                const IRValue& scrutinee_value,
+                                const analysis::TypeRef& scrutinee_type,
+                                const analysis::TypeRef& narrowed_type,
+                                LowerCtx& ctx) {
+  const auto name = ScrutineeIdentifier(scrutinee);
+  if (!name.has_value() || !narrowed_type) {
+    return EmptyIR();
+  }
+
+  const BindingState* original_binding = ctx.GetBindingState(*name);
+  const analysis::ScopeContext& scope = ScopeForLowering(ctx);
+  const auto member_index =
+      UnionMemberIndexForType(scope, scrutinee_type, narrowed_type, ctx);
+  if (!member_index.has_value()) {
+    RefineScrutineeBindingToType(scrutinee, narrowed_type, ctx);
+    return EmptyIR();
+  }
+
+  ctx.RegisterVar(*name,
+                  narrowed_type,
+                  original_binding ? original_binding->has_responsibility : true,
+                  original_binding ? original_binding->is_immovable : false,
+                  original_binding ? original_binding->prov
+                                   : analysis::ProvenanceKind::Bottom,
+                  original_binding ? original_binding->prov_region
+                                   : std::optional<std::string>{},
+                  original_binding
+                      ? original_binding->preserve_addr_provenance
+                      : false,
+                  original_binding ? original_binding->prov_region_tag
+                                   : std::optional<std::string>{});
+
+  IRValue payload = ctx.FreshTempValue("ifcase_else_payload");
+  DerivedValueInfo info;
+  info.kind = DerivedValueInfo::Kind::UnionPayload;
+  info.base = scrutinee_value;
+  info.union_index = *member_index;
+  ctx.RegisterDerivedValue(payload, std::move(info));
+  ctx.RegisterValueType(payload, narrowed_type);
+
+  IRBindVar bind;
+  bind.name = *name;
+  bind.stable_name = ctx.StableBindingName(*name);
+  bind.value = payload;
+  bind.type = narrowed_type;
+  if (const BindingState* narrowed_binding = ctx.GetBindingState(*name)) {
+    bind.prov = narrowed_binding->prov;
+    bind.prov_region = narrowed_binding->prov_region;
+    bind.prov_region_tag = narrowed_binding->prov_region_tag;
+  } else {
+    bind.prov = analysis::ProvenanceKind::Bottom;
+  }
+  return MakeIR(std::move(bind));
 }
 
 void RefineScrutineeBinding(const ast::Expr& scrutinee,
@@ -867,7 +972,27 @@ LowerResult LowerIfCases(const ast::Expr& scrutinee,
     LowerCtx else_ctx = MakeBranchCtx(ctx);
     LowerResult else_result;
     analysis::TypeRef else_type;
-    RefineElseScrutineeBinding(scrutinee, arms, scrutinee_type, else_ctx);
+    IRPtr else_scope_enter_ir = EmptyIR();
+    IRPtr else_narrow_ir = EmptyIR();
+    IRPtr else_cleanup_ir = EmptyIR();
+    bool else_has_narrow_scope = false;
+
+    const ElseNarrowing else_narrowing =
+        ElseNarrowedType(arms, scrutinee_type, else_ctx);
+    if (else_narrowing.narrowed) {
+      else_has_narrow_scope = true;
+      else_ctx.PushScope(false, false);
+      else_ctx.RegisterRuntimeScopeExit();
+      if (const auto scope_id = else_ctx.CurrentRuntimeScopeId()) {
+        else_scope_enter_ir = EmitRuntimeScopeEnter(*scope_id, else_ctx);
+      }
+      else_narrow_ir =
+          BindElseNarrowedScrutinee(scrutinee,
+                                    scrutinee_result.value,
+                                    scrutinee_type,
+                                    else_narrowing.type,
+                                    else_ctx);
+    }
 
     if (else_expr) {
       else_result = LowerExpr(*else_expr, else_ctx);
@@ -877,6 +1002,7 @@ LowerResult LowerIfCases(const ast::Expr& scrutinee,
     }
 
     const bool else_may_fallthrough = IRFlowMayFallThrough(else_result.ir);
+    IRPtr else_capture_ir = EmptyIR();
     if (else_may_fallthrough) {
       else_type = else_ctx.LookupValueType(else_result.value);
       if (!else_type && else_expr && ctx.expr_type) {
@@ -885,7 +1011,31 @@ LowerResult LowerIfCases(const ast::Expr& scrutinee,
       if (!else_type && !else_expr && single_form) {
         else_type = analysis::MakeTypePrim("()");
       }
+      if (else_has_narrow_scope && else_type) {
+        IRBindVar capture;
+        capture.name = else_ctx.FreshTempValue("if_case_else_result").name;
+        capture.value = else_result.value;
+        capture.type = else_type;
+        capture.prov = analysis::ProvenanceKind::Bottom;
+        capture.prov_region = std::nullopt;
+        capture.prov_region_tag = std::nullopt;
+        else_result.value.kind = IRValue::Kind::Local;
+        else_result.value.name = capture.name;
+        else_capture_ir = MakeIR(std::move(capture));
+      }
       merge_result_type(else_type);
+    }
+
+    if (else_has_narrow_scope) {
+      CleanupPlan cleanup_plan = ComputeCleanupPlanForCurrentScope(else_ctx);
+      CleanupPlan remainder =
+          ComputeCleanupPlanRemainder(CleanupTarget::CurrentScope, else_ctx);
+      else_cleanup_ir = EmitCleanupWithRemainder(cleanup_plan, remainder, else_ctx);
+      else_ctx.PopScope();
+      else_result.ir = SeqIR({else_scope_enter_ir,
+                              else_narrow_ir,
+                              else_result.ir,
+                              else_capture_ir});
     }
 
     MergeLowerCtxTemps(ctx, else_ctx);
@@ -894,7 +1044,9 @@ LowerResult LowerIfCases(const ast::Expr& scrutinee,
     IRIfCaseClause else_arm;
     else_arm.pattern = std::make_shared<IRPattern>(IRPattern{IRWildcardPattern{}});
     else_arm.body = else_result.ir;
-    else_arm.cleanup_ir = EmptyIR();
+    else_arm.cleanup_ir =
+        else_may_fallthrough && else_has_narrow_scope ? else_cleanup_ir
+                                                      : EmptyIR();
     else_arm.value = else_result.value;
     else_arm.value_type = else_type;
     ir_arms.push_back(std::move(else_arm));

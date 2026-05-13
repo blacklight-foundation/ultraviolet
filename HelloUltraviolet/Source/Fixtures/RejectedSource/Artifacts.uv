@@ -1849,5 +1849,29 @@ public procedure rejectedSourceFixtureArtifactsExist(context: Context) -> bool {
             "HelloUltraviolet/Fixtures/RejectedSource/Keys/SharedDynamicMutatingReceiver/Source/Main.uv",
             "HelloUltraviolet/Fixtures/RejectedSource/Keys/SharedDynamicMutatingReceiver/Expected.uv"
         )
+    artifacts_exist = artifacts_exist && rejectedFixtureArtifactsExist(
+            context,
+            "HelloUltraviolet/Fixtures/RejectedSource/Expressions/AsyncTypeDiagnosticsTable/Ultraviolet.toml",
+            "HelloUltraviolet/Fixtures/RejectedSource/Expressions/AsyncTypeDiagnosticsTable/Source/Main.uv",
+            "HelloUltraviolet/Fixtures/RejectedSource/Expressions/AsyncTypeDiagnosticsTable/Expected.uv"
+        )
+    artifacts_exist = artifacts_exist && rejectedFixtureArtifactsExist(
+            context,
+            "HelloUltraviolet/Fixtures/RejectedSource/Expressions/SuspensionFormsDiagnosticsTable/Ultraviolet.toml",
+            "HelloUltraviolet/Fixtures/RejectedSource/Expressions/SuspensionFormsDiagnosticsTable/Source/Main.uv",
+            "HelloUltraviolet/Fixtures/RejectedSource/Expressions/SuspensionFormsDiagnosticsTable/Expected.uv"
+        )
+    artifacts_exist = artifacts_exist && rejectedFixtureArtifactsExist(
+            context,
+            "HelloUltraviolet/Fixtures/RejectedSource/Expressions/AsyncCompositionDiagnosticsTable/Ultraviolet.toml",
+            "HelloUltraviolet/Fixtures/RejectedSource/Expressions/AsyncCompositionDiagnosticsTable/Source/Main.uv",
+            "HelloUltraviolet/Fixtures/RejectedSource/Expressions/AsyncCompositionDiagnosticsTable/Expected.uv"
+        )
+    artifacts_exist = artifacts_exist && rejectedFixtureArtifactsExist(
+            context,
+            "HelloUltraviolet/Fixtures/RejectedSource/Expressions/LoopAsyncEnclosingReturn/Ultraviolet.toml",
+            "HelloUltraviolet/Fixtures/RejectedSource/Expressions/LoopAsyncEnclosingReturn/Source/Main.uv",
+            "HelloUltraviolet/Fixtures/RejectedSource/Expressions/LoopAsyncEnclosingReturn/Expected.uv"
+        )
     return artifacts_exist
 }

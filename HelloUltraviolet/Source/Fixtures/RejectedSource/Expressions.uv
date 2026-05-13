@@ -1,7 +1,7 @@
 //! Rejected expression specimens.
 
 public procedure expressionsRejectedSourceFixtureCount() -> usize {
-    return 94usize
+    return 98usize
 }
 
 public procedure validatedExpressionsRejectedSourceFixtureCount() -> usize {
@@ -1011,6 +1011,23 @@ public procedure validatedExpressionsRejectedSourceFixtureCount() -> usize {
     }
     if rejectedSpecimenMatches(
         rejectedSpecimen(
+            "SuspensionFormsDiagnosticsTable",
+            "Fixtures/RejectedSource/Expressions/SuspensionFormsDiagnosticsTable",
+            "Fixtures/RejectedSource/Expressions/SuspensionFormsDiagnosticsTable/Source/Main.uv",
+            "Fixtures/RejectedSource/Expressions/SuspensionFormsDiagnosticsTable/Expected.uv",
+            expectedDiagnostic("E-CON-0132", "diagnostics.21.SuspensionForms")
+        ),
+        "SuspensionFormsDiagnosticsTable",
+        "Fixtures/RejectedSource/Expressions/SuspensionFormsDiagnosticsTable",
+        "Fixtures/RejectedSource/Expressions/SuspensionFormsDiagnosticsTable/Source/Main.uv",
+        "Fixtures/RejectedSource/Expressions/SuspensionFormsDiagnosticsTable/Expected.uv",
+        "E-CON-0132",
+        "diagnostics.21.SuspensionForms"
+    ) {
+        count = count + 1usize
+    }
+    if rejectedSpecimenMatches(
+        rejectedSpecimen(
             "RaceTooFewArms",
             "Fixtures/RejectedSource/Expressions/RaceTooFewArms",
             "Fixtures/RejectedSource/Expressions/RaceTooFewArms/Source/Main.uv",
@@ -1164,6 +1181,40 @@ public procedure validatedExpressionsRejectedSourceFixtureCount() -> usize {
     }
     if rejectedSpecimenMatches(
         rejectedSpecimen(
+            "AsyncCompositionDiagnosticsTable",
+            "Fixtures/RejectedSource/Expressions/AsyncCompositionDiagnosticsTable",
+            "Fixtures/RejectedSource/Expressions/AsyncCompositionDiagnosticsTable/Source/Main.uv",
+            "Fixtures/RejectedSource/Expressions/AsyncCompositionDiagnosticsTable/Expected.uv",
+            expectedDiagnostic("E-CON-0260", "diagnostics.21.AsyncCompositionDiagnostics")
+        ),
+        "AsyncCompositionDiagnosticsTable",
+        "Fixtures/RejectedSource/Expressions/AsyncCompositionDiagnosticsTable",
+        "Fixtures/RejectedSource/Expressions/AsyncCompositionDiagnosticsTable/Source/Main.uv",
+        "Fixtures/RejectedSource/Expressions/AsyncCompositionDiagnosticsTable/Expected.uv",
+        "E-CON-0260",
+        "diagnostics.21.AsyncCompositionDiagnostics"
+    ) {
+        count = count + 1usize
+    }
+    if rejectedSpecimenMatches(
+        rejectedSpecimen(
+            "LoopAsyncEnclosingReturn",
+            "Fixtures/RejectedSource/Expressions/LoopAsyncEnclosingReturn",
+            "Fixtures/RejectedSource/Expressions/LoopAsyncEnclosingReturn/Source/Main.uv",
+            "Fixtures/RejectedSource/Expressions/LoopAsyncEnclosingReturn/Expected.uv",
+            expectedDiagnostic("E-CON-0240", "rule.21.Loop-Async-Err")
+        ),
+        "LoopAsyncEnclosingReturn",
+        "Fixtures/RejectedSource/Expressions/LoopAsyncEnclosingReturn",
+        "Fixtures/RejectedSource/Expressions/LoopAsyncEnclosingReturn/Source/Main.uv",
+        "Fixtures/RejectedSource/Expressions/LoopAsyncEnclosingReturn/Expected.uv",
+        "E-CON-0240",
+        "rule.21.Loop-Async-Err"
+    ) {
+        count = count + 1usize
+    }
+    if rejectedSpecimenMatches(
+        rejectedSpecimen(
             "AsyncTypeArgCount",
             "Fixtures/RejectedSource/Expressions/AsyncTypeArgCount",
             "Fixtures/RejectedSource/Expressions/AsyncTypeArgCount/Source/Main.uv",
@@ -1210,6 +1261,23 @@ public procedure validatedExpressionsRejectedSourceFixtureCount() -> usize {
         "Fixtures/RejectedSource/Expressions/AsyncTypePathUnapplied/Expected.uv",
         "E-CON-0201",
         "rule.21.WF-Async-Path-Err"
+    ) {
+        count = count + 1usize
+    }
+    if rejectedSpecimenMatches(
+        rejectedSpecimen(
+            "AsyncTypeDiagnosticsTable",
+            "Fixtures/RejectedSource/Expressions/AsyncTypeDiagnosticsTable",
+            "Fixtures/RejectedSource/Expressions/AsyncTypeDiagnosticsTable/Source/Main.uv",
+            "Fixtures/RejectedSource/Expressions/AsyncTypeDiagnosticsTable/Expected.uv",
+            expectedDiagnostic("E-CON-0201", "diagnostics.21.AsyncType")
+        ),
+        "AsyncTypeDiagnosticsTable",
+        "Fixtures/RejectedSource/Expressions/AsyncTypeDiagnosticsTable",
+        "Fixtures/RejectedSource/Expressions/AsyncTypeDiagnosticsTable/Source/Main.uv",
+        "Fixtures/RejectedSource/Expressions/AsyncTypeDiagnosticsTable/Expected.uv",
+        "E-CON-0201",
+        "diagnostics.21.AsyncType"
     ) {
         count = count + 1usize
     }
