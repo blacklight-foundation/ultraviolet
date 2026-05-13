@@ -7,6 +7,7 @@
 
 #include "04_analysis/typing/expr/call.h"
 
+#include <algorithm>
 #include <chrono>
 #include <cctype>
 #include <cstdint>
@@ -25,6 +26,7 @@
 #include "04_analysis/caps/cap_concurrency.h"
 #include "04_analysis/caps/cap_system.h"
 #include "04_analysis/composite/classes.h"
+#include "04_analysis/composite/function_types.h"
 #include "04_analysis/composite/records.h"
 #include "04_analysis/contracts/verification.h"
 #include "04_analysis/generics/monomorphize.h"
@@ -49,6 +51,7 @@ static inline void SpecDefsCall() {
   SPEC_DEF("T-Call", "5.2.12");
   SPEC_DEF("T-Generic-Call", "13.1.2");
   SPEC_DEF("T-Record-Default", "5.2.12");
+  SPEC_DEF("FreeProcedureOverloadResolutionBeforeCallTyping", "15.3.4");
   SPEC_DEF("FFI-Arg-RegionLocalRawPtr-Err", "23.5.4");
   SPEC_DEF("Barrier-Outside-Err", "20.2.4");
   SPEC_DEF("GpuIntrinsic-Outside-Err", "20.2.4");
@@ -119,7 +122,7 @@ struct CallLookupIndex {
   std::size_t module_count = 0;
   std::map<PathKey, const ast::ASTModule*> modules_by_path;
   std::unordered_map<const ast::ASTModule*,
-                     std::unordered_map<IdKey, ProcLikeLookupEntry>>
+                     std::unordered_map<IdKey, std::vector<ProcLikeLookupEntry>>>
       procedures_by_module;
   std::unordered_map<const ast::ASTModule*,
                      std::unordered_map<IdKey, ExternLookupEntry>>
@@ -151,11 +154,13 @@ static const CallLookupIndex& GetCallLookupIndex(const ScopeContext& ctx) {
     auto& ext_map = index.externs_by_module[mod_ptr];
     for (const auto& item : mod.items) {
       if (const auto* proc = std::get_if<ast::ProcedureDecl>(&item)) {
-        proc_map.emplace(IdKeyOf(proc->name), ProcLikeLookupEntry{proc, nullptr});
+        proc_map[IdKeyOf(proc->name)].push_back(
+            ProcLikeLookupEntry{proc, nullptr});
         continue;
       }
       if (const auto* proc = std::get_if<ast::ComptimeProcedureDecl>(&item)) {
-        proc_map.emplace(IdKeyOf(proc->name), ProcLikeLookupEntry{nullptr, proc});
+        proc_map[IdKeyOf(proc->name)].push_back(
+            ProcLikeLookupEntry{nullptr, proc});
         continue;
       }
       if (const auto* block = std::get_if<ast::ExternBlock>(&item)) {
@@ -206,9 +211,33 @@ static std::optional<ProcLikeLookupEntry> FindProcedureInModule(
   }
   const auto proc_it = mod_it->second.find(IdKeyOf(name));
   if (proc_it != mod_it->second.end()) {
-    return proc_it->second;
+    if (!proc_it->second.empty()) {
+      return proc_it->second.front();
+    }
   }
   return std::nullopt;
+}
+
+static std::vector<ProcLikeLookupEntry> FindProceduresInModule(
+    const ScopeContext& ctx,
+    const ast::ASTModule& module,
+    std::string_view name) {
+  auto& perf = CallPerfStats();
+  const bool perf_on = CallPerfActive();
+  if (perf_on) {
+    ++perf.find_proc_in_module_calls;
+    ++perf.find_proc_in_module_scanned_items;
+  }
+  const auto& index = GetCallLookupIndex(ctx);
+  const auto mod_it = index.procedures_by_module.find(&module);
+  if (mod_it == index.procedures_by_module.end()) {
+    return {};
+  }
+  const auto proc_it = mod_it->second.find(IdKeyOf(name));
+  if (proc_it == mod_it->second.end()) {
+    return {};
+  }
+  return proc_it->second;
 }
 
 struct CalleeProcedureLookupResult {
@@ -305,6 +334,262 @@ static std::optional<CalleeProcedureLookupResult> LookupProcedureForCallee(
   result.origin = *origin;
   result.name = std::move(name);
   return result;
+}
+
+struct FreeProcedureOverloadSet {
+  ast::ModulePath origin;
+  std::string name;
+  std::vector<ProcLikeLookupEntry> candidates;
+};
+
+static std::optional<FreeProcedureOverloadSet> LookupFreeProcedureOverloadSet(
+    const ScopeContext& ctx,
+    const ast::ExprPtr& callee) {
+  if (!callee) {
+    return std::nullopt;
+  }
+
+  std::string name;
+  std::optional<ast::ModulePath> origin;
+
+  if (const auto* ident = std::get_if<ast::IdentifierExpr>(&callee->node)) {
+    const auto ent = ResolveValueName(ctx, ident->name);
+    if (ent && ent->origin_opt.has_value()) {
+      origin = *ent->origin_opt;
+      name = ent->target_opt.value_or(std::string(ident->name));
+    } else {
+      origin = ctx.current_module;
+      name = ident->name;
+    }
+  } else if (const auto* qualified =
+                 std::get_if<ast::QualifiedNameExpr>(&callee->node)) {
+    origin = qualified->path;
+    name = qualified->name;
+  } else if (const auto* path_expr = std::get_if<ast::PathExpr>(&callee->node)) {
+    origin = path_expr->path.empty() ? ctx.current_module : path_expr->path;
+    name = path_expr->name;
+  } else {
+    return std::nullopt;
+  }
+
+  if (!origin.has_value()) {
+    return std::nullopt;
+  }
+
+  const auto* module = FindModuleByPathForGeneric(ctx, *origin);
+  if (!module) {
+    return std::nullopt;
+  }
+
+  auto candidates = FindProceduresInModule(ctx, *module, name);
+  if (candidates.size() <= 1) {
+    return std::nullopt;
+  }
+
+  return FreeProcedureOverloadSet{*origin, std::move(name),
+                                  std::move(candidates)};
+}
+
+struct OverloadCandidateCheck {
+  bool viable = false;
+  bool hard_error = false;
+  std::optional<std::string_view> diag_id;
+  TypeRef return_type;
+  std::size_t exact_matches = 0;
+};
+
+static std::optional<ast::ProcedureDecl> ProcViewFor(
+    const ProcLikeLookupEntry& entry) {
+  if (entry.proc) {
+    return std::nullopt;
+  }
+  if (!entry.comptime_proc) {
+    return std::nullopt;
+  }
+  return AsProcedureDecl(*entry.comptime_proc);
+}
+
+static const ast::ProcedureDecl* ProcDeclFor(
+    const ProcLikeLookupEntry& entry,
+    const std::optional<ast::ProcedureDecl>& view) {
+  if (entry.proc) {
+    return entry.proc;
+  }
+  if (view.has_value()) {
+    return &*view;
+  }
+  return nullptr;
+}
+
+static OverloadCandidateCheck CheckFreeProcedureOverloadCandidate(
+    const ScopeContext& ctx,
+    const StmtTypeContext& type_ctx,
+    const ast::ProcedureDecl& proc,
+    bool is_comptime_proc,
+    const std::vector<ast::Arg>& args,
+    const TypeEnv& env,
+    const ExprTypeFn& type_expr,
+    const ArgCheckFn& check_expr) {
+  OverloadCandidateCheck out;
+  if (is_comptime_proc && !IsComptimeTypingEnv(env)) {
+    out.hard_error = true;
+    out.diag_id = "E-CTE-0034";
+    return out;
+  }
+  if (proc.generic_params && !proc.generic_params->params.empty()) {
+    return out;
+  }
+
+  const auto proc_type = ProcType(ctx, proc);
+  if (!proc_type.ok) {
+    out.hard_error = true;
+    out.diag_id = proc_type.diag_id;
+    return out;
+  }
+  const auto* func = proc_type.type
+                         ? std::get_if<TypeFunc>(&StripPerm(proc_type.type)->node)
+                         : nullptr;
+  if (!func) {
+    return out;
+  }
+  if (func->params.size() != args.size()) {
+    return out;
+  }
+
+  for (std::size_t i = 0; i < args.size(); ++i) {
+    const auto& param = func->params[i];
+    const auto& arg = args[i];
+    if (MissingRequiredMoveForConsuming(param.mode, arg)) {
+      return out;
+    }
+    if (!param.mode.has_value() && arg.moved) {
+      return out;
+    }
+
+    const ast::ExprPtr arg_expr =
+        param.mode == ParamMode::Move ? MovedArgExpr(arg) : arg.value;
+    const auto checked = check_expr(arg_expr, param.type);
+    if (!checked.ok) {
+      if (!checked.diag_id.has_value() || *checked.diag_id == "E-SEM-2526") {
+        return out;
+      }
+      out.hard_error = true;
+      out.diag_id = checked.diag_id;
+      return out;
+    }
+
+    const auto typed = type_expr(arg_expr);
+    if (!typed.ok) {
+      out.hard_error = true;
+      out.diag_id = typed.diag_id;
+      return out;
+    }
+    const auto exact = TypeEquiv(StripPerm(typed.type), StripPerm(param.type));
+    if (exact.equiv) {
+      ++out.exact_matches;
+    }
+  }
+
+  (void)type_ctx;
+  out.viable = true;
+  out.return_type = func->ret;
+  return out;
+}
+
+struct FreeProcedureOverloadResolution {
+  bool applies = false;
+  const ast::ProcedureDecl* selected = nullptr;
+  std::optional<ast::ProcedureDecl> selected_view;
+  TypeRef return_type;
+  std::optional<std::string_view> diag_id;
+};
+
+static FreeProcedureOverloadResolution ResolveFreeProcedureOverload(
+    const ScopeContext& ctx,
+    const StmtTypeContext& type_ctx,
+    const ast::ExprPtr& callee,
+    const std::vector<ast::Arg>& args,
+    const TypeEnv& env,
+    const ExprTypeFn& type_expr,
+    const ArgCheckFn& check_expr) {
+  FreeProcedureOverloadResolution out;
+  const auto overloads = LookupFreeProcedureOverloadSet(ctx, callee);
+  if (!overloads.has_value()) {
+    return out;
+  }
+  out.applies = true;
+  SPEC_RULE("FreeProcedureOverloadResolutionBeforeCallTyping");
+
+  struct Viable {
+    const ProcLikeLookupEntry* entry = nullptr;
+    std::optional<ast::ProcedureDecl> view;
+    TypeRef return_type;
+    std::size_t exact_matches = 0;
+  };
+
+  std::vector<Viable> viable;
+  viable.reserve(overloads->candidates.size());
+  for (const auto& candidate : overloads->candidates) {
+    auto view = ProcViewFor(candidate);
+    const auto* proc = ProcDeclFor(candidate, view);
+    if (!proc) {
+      continue;
+    }
+    const auto checked = CheckFreeProcedureOverloadCandidate(
+        ctx, type_ctx, *proc, candidate.comptime_proc != nullptr, args, env,
+        type_expr, check_expr);
+    if (checked.hard_error) {
+      out.diag_id = checked.diag_id;
+      return out;
+    }
+    if (!checked.viable) {
+      continue;
+    }
+    viable.push_back(Viable{&candidate, std::move(view), checked.return_type,
+                            checked.exact_matches});
+  }
+
+  if (viable.empty()) {
+    out.diag_id = "E-SEM-3031";
+    return out;
+  }
+
+  std::size_t best_exact = 0;
+  for (const auto& candidate : viable) {
+    best_exact = std::max(best_exact, candidate.exact_matches);
+  }
+  viable.erase(std::remove_if(viable.begin(), viable.end(),
+                              [&](const Viable& candidate) {
+                                return candidate.exact_matches != best_exact;
+                              }),
+               viable.end());
+
+  const bool has_non_generic =
+      std::any_of(viable.begin(), viable.end(), [](const Viable& candidate) {
+        const auto* proc = ProcDeclFor(*candidate.entry, candidate.view);
+        return proc && (!proc->generic_params ||
+                        proc->generic_params->params.empty());
+      });
+  if (has_non_generic) {
+    viable.erase(std::remove_if(viable.begin(), viable.end(),
+                                [](const Viable& candidate) {
+                                  const auto* proc =
+                                      ProcDeclFor(*candidate.entry, candidate.view);
+                                  return proc && proc->generic_params &&
+                                         !proc->generic_params->params.empty();
+                                }),
+                 viable.end());
+  }
+
+  if (viable.size() != 1) {
+    out.diag_id = "E-SEM-3030";
+    return out;
+  }
+
+  out.selected_view = std::move(viable.front().view);
+  out.selected = ProcDeclFor(*viable.front().entry, out.selected_view);
+  out.return_type = viable.front().return_type;
+  return out;
 }
 
 struct FormalSharedPathRef {
@@ -2683,6 +2968,50 @@ ExprTypeResult TypeCallExprImpl(const ScopeContext& ctx,
     return r;
   }
   const auto proc_lookup = LookupProcedureForCallee(ctx, node.callee);
+
+  if (node.generic_args.empty()) {
+    const auto overload = ResolveFreeProcedureOverload(
+        ctx, type_ctx, node.callee, node.args, env, type_expr, check_expr);
+    if (overload.applies) {
+      ExprTypeResult r;
+      if (overload.diag_id.has_value()) {
+        r.diag_id = overload.diag_id;
+        return r;
+      }
+      if (!overload.selected) {
+        r.diag_id = "E-SEM-3031";
+        return r;
+      }
+      if (type_ctx.require_pure) {
+        const auto callee_type = ProcType(ctx, *overload.selected);
+        const auto stripped = callee_type.ok ? StripPerm(callee_type.type) : nullptr;
+        if (stripped) {
+          const auto* func = std::get_if<TypeFunc>(&stripped->node);
+          if (func && !ParamsPure(ctx, func->params)) {
+            r.diag_id = "E-SEM-2802";
+            return r;
+          }
+        }
+      }
+      if (const auto key_diag = CheckSharedArgWriteRequirement(
+              ctx, type_ctx, env, *overload.selected, node.args, type_expr)) {
+        r.diag_id = *key_diag;
+        return r;
+      }
+      if (const auto foreign_diag = CheckForeignStaticAssumes(ctx, type_ctx, node)) {
+        r.diag_id = *foreign_diag;
+        return r;
+      }
+      if (const auto ffi_diag =
+              CheckFfiBoundaryRegionLocalRawPointerArgs(ctx, type_ctx, node, env)) {
+        r.diag_id = *ffi_diag;
+        return r;
+      }
+      r.ok = true;
+      r.type = overload.return_type;
+      return r;
+    }
+  }
 
   // Handle generic procedure calls (section 13.1.2 T-Generic-Call)
   if (!node.generic_args.empty()) {

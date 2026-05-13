@@ -97,6 +97,36 @@ bool IsUsingImportSource(EntitySource source) {
   return source == EntitySource::Using;
 }
 
+std::optional<IdKey> FreeProcedureOverloadName(const ast::ASTItem& item) {
+  const auto* proc = std::get_if<ast::ProcedureDecl>(&item);
+  if (proc == nullptr || IdEq(proc->name, "main")) {
+    return std::nullopt;
+  }
+  return IdKeyOf(proc->name);
+}
+
+bool BindingsAreSingleOverloadProcedure(const ast::ASTItem& item,
+                                        const BindingList& bindings) {
+  const auto overload_name = FreeProcedureOverloadName(item);
+  return overload_name.has_value() && bindings.size() == 1 &&
+         bindings.front().name == *overload_name &&
+         bindings.front().ent.kind == EntityKind::Value &&
+         bindings.front().ent.source == EntitySource::Decl;
+}
+
+bool HasPriorFreeProcedureOverload(
+    const std::vector<ast::ASTItem>& items,
+    std::size_t end_index,
+    const IdKey& name) {
+  for (std::size_t i = 0; i < end_index && i < items.size(); ++i) {
+    const auto overload_name = FreeProcedureOverloadName(items[i]);
+    if (overload_name.has_value() && *overload_name == name) {
+      return true;
+    }
+  }
+  return false;
+}
+
 bool UsingImportConflict(const BindingList& bindings, const NameMap& names) {
   std::unordered_map<IdKey, std::size_t> counts;
   std::unordered_map<IdKey, bool> has_using_import;
@@ -715,8 +745,14 @@ CollectNamesResult CollectNames(const ScopeContext& ctx,
       SPEC_RULE("Collect-Err");
       return {false, bindings.diag_id, bindings.span, {}};
     }
-    if (!DisjointNames(bindings.bindings, names) ||
-        !NoDup(bindings.bindings)) {
+    const auto overload_name = FreeProcedureOverloadName(item);
+    const bool merges_free_procedure_overload =
+        BindingsAreSingleOverloadProcedure(item, bindings.bindings) &&
+        overload_name.has_value() &&
+        names.find(*overload_name) != names.end();
+    if ((!DisjointNames(bindings.bindings, names) ||
+         !NoDup(bindings.bindings)) &&
+        !merges_free_procedure_overload) {
       if (is_main_procedure(item) &&
           names.find(IdKeyOf("main")) != names.end()) {
         SPEC_RULE("Main-Multiple");
@@ -735,7 +771,9 @@ CollectNamesResult CollectNames(const ScopeContext& ctx,
         name_spans.emplace(binding.name, binding.span);
       }
     }
-    InsertBindings(names, bindings.bindings);
+    if (!merges_free_procedure_overload) {
+      InsertBindings(names, bindings.bindings);
+    }
   }
   SPEC_RULE("Collect-Ok");
   return {true, std::nullopt, std::nullopt, names, std::move(name_spans)};
@@ -791,6 +829,20 @@ NamesState NamesStep(const ScopeContext& ctx,
   }
   if (!DisjointNames(bindings.bindings, state.names) ||
       !NoDup(bindings.bindings)) {
+    const auto overload_name = FreeProcedureOverloadName(item);
+    const bool merges_free_procedure_overload =
+        BindingsAreSingleOverloadProcedure(item, bindings.bindings) &&
+        overload_name.has_value() &&
+        state.names.find(*overload_name) != state.names.end() &&
+        state.module &&
+        HasPriorFreeProcedureOverload(state.module->items, state.index,
+                                      *overload_name);
+    if (merges_free_procedure_overload) {
+      SPEC_RULE("Names-Step");
+      next.index++;
+      return next;
+    }
+
     auto is_main_procedure = [](const ast::ASTItem& ast_item) -> bool {
       if (const auto* proc = std::get_if<ast::ProcedureDecl>(&ast_item)) {
         return IdEq(proc->name, "main");

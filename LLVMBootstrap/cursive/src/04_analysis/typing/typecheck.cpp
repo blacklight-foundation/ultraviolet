@@ -34,6 +34,8 @@
 #include "04_analysis/composite/classes.h"
 #include "04_analysis/caps/cap_system.h"
 #include "04_analysis/conformance/conformance.h"
+#include "04_analysis/generics/generic_params.h"
+#include "04_analysis/generics/monomorphize.h"
 #include "04_analysis/memory/borrow_bind.h"
 #include "04_analysis/resolve/resolve_items.h"
 #include "04_analysis/resolve/scopes.h"
@@ -231,6 +233,7 @@ static inline void SpecDefsDeclTyping() {
   SPEC_DEF("MainDecls", "5.2.14");
   SPEC_DEF("MainGeneric", "5.2.14");
   SPEC_DEF("MainSigOk", "5.2.14");
+  SPEC_DEF("DuplicateErasedOverloadSignaturesForbidden", "15.3.4");
 }
 
 // =============================================================================
@@ -384,6 +387,109 @@ static void EmitDuplicateSymbolDiags(
   }
 }
 
+struct ErasedOverloadParam {
+  std::optional<ParamMode> mode;
+  TypeKey type_key;
+};
+
+struct ErasedOverloadSignature {
+  std::string name;
+  std::vector<ErasedOverloadParam> params;
+};
+
+static bool ParamModeEqual(const std::optional<ParamMode>& lhs,
+                           const std::optional<ParamMode>& rhs) {
+  if (lhs.has_value() != rhs.has_value()) {
+    return false;
+  }
+  if (!lhs.has_value()) {
+    return true;
+  }
+  return *lhs == *rhs;
+}
+
+static bool ErasedOverloadSignatureEqual(
+    const ErasedOverloadSignature& lhs,
+    const ErasedOverloadSignature& rhs) {
+  if (!IdEq(lhs.name, rhs.name) || lhs.params.size() != rhs.params.size()) {
+    return false;
+  }
+
+  for (std::size_t i = 0; i < lhs.params.size(); ++i) {
+    if (!ParamModeEqual(lhs.params[i].mode, rhs.params[i].mode) ||
+        !TypeKeyEqual(lhs.params[i].type_key, rhs.params[i].type_key)) {
+      return false;
+    }
+  }
+  return true;
+}
+
+static TypeSubst BuildGenericErasureSubstitution(
+    const std::optional<ast::GenericParams>& generic_params) {
+  TypeSubst subst;
+  const TypeRef erased_param = MakeTypeVar(0);
+  for (const auto& param : ast::TypeParamsOpt(generic_params)) {
+    subst[param.name] = erased_param;
+  }
+  return subst;
+}
+
+static std::optional<ErasedOverloadSignature> BuildErasedOverloadSignature(
+    const ScopeContext& ctx,
+    const ast::ProcedureDecl& proc) {
+  ScopeContext proc_ctx = ctx;
+  proc_ctx.scopes = BindTypeParams(ctx, proc.generic_params);
+  const auto sig =
+      BuildProcedureSignature(proc_ctx, proc.params, proc.return_type_opt);
+  if (!sig.ok || !sig.func_type) {
+    return std::nullopt;
+  }
+
+  const auto* func = std::get_if<TypeFunc>(&sig.func_type->node);
+  if (!func) {
+    return std::nullopt;
+  }
+
+  const TypeSubst erasure = BuildGenericErasureSubstitution(proc.generic_params);
+  ErasedOverloadSignature signature;
+  signature.name = proc.name;
+  signature.params.reserve(func->params.size());
+  for (const auto& param : func->params) {
+    const TypeRef erased_type = InstantiateType(param.type, erasure);
+    signature.params.push_back(
+        ErasedOverloadParam{param.mode, TypeKeyOf(erased_type)});
+  }
+  return signature;
+}
+
+static void EmitDuplicateErasedOverloadSignatureDiags(
+    const ScopeContext& ctx,
+    const ast::ASTModule& module,
+    core::DiagnosticStream& diags) {
+  SpecDefsDeclTyping();
+  std::vector<ErasedOverloadSignature> seen_signatures;
+  for (const auto& item : module.items) {
+    const auto* proc = std::get_if<ast::ProcedureDecl>(&item);
+    if (proc == nullptr || IdEq(proc->name, "main")) {
+      continue;
+    }
+    const auto signature = BuildErasedOverloadSignature(ctx, *proc);
+    if (!signature.has_value()) {
+      continue;
+    }
+
+    for (const auto& seen : seen_signatures) {
+      if (ErasedOverloadSignatureEqual(*signature, seen)) {
+        SPEC_RULE("DuplicateErasedOverloadSignaturesForbidden");
+        EmitTypecheckDiag(diags, "E-SEM-3032",
+                          std::optional<core::Span>(proc->span));
+        break;
+      }
+    }
+    seen_signatures.push_back(*signature);
+  }
+}
+
 // =============================================================================
 // MAIN SIGNATURE CHECKING
 // =============================================================================
@@ -489,6 +595,13 @@ DeclTypingResult DeclTypingModules(ScopeContext& ctx,
       module_scope = map_it->second;
     }
     ctx.scopes = {Scope{}, std::move(module_scope), universe_scope};
+
+    EmitDuplicateErasedOverloadSignatureDiags(ctx, module, result.diags);
+    if (core::AbortOnErrorCount(error_policy,
+                                CountErrorDiagnostics(result.diags))) {
+      result.ok = false;
+      return result;
+    }
 
     // Type check each item in the module
     std::size_t item_index = 0;

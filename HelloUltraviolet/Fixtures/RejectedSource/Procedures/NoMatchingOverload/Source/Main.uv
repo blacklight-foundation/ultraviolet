@@ -1,0 +1,17 @@
+//! Rejected procedure specimen for no matching free-procedure overload.
+
+public procedure chooseOverload(value: i32) -> i32 {
+    return value
+}
+
+public procedure chooseOverload(value: bool) -> i32 {
+    if value {
+        return 1
+    }
+
+    return 0
+}
+
+public procedure noMatchingOverloadReference() -> i32 {
+    return chooseOverload((1, true))
+}

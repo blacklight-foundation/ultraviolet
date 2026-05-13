@@ -2170,7 +2170,7 @@ WidenTypingDiagnosticsOwnership: E-TYP-2071
 
 ## UVBOOT-0032: Free Procedure Overload Sets
 
-Status: open.
+Status: repaired for semantic checking and the standalone library build.
 
 Spec-valid specimen:
 
@@ -2214,7 +2214,7 @@ public procedure freeProcedureOverloadResolutionReference() -> i32 {
 }
 ```
 
-Observed bootstrap result:
+Previous bootstrap result:
 
 ```text
 error[E-MOD-1302]: Duplicate declaration in module scope
@@ -2241,6 +2241,27 @@ Module-scope collection must admit multiple visible free procedures with the
 same name when their erased parameter-mode/type signatures differ. Call typing
 must resolve that overload set before ordinary call typing and hand lowering the
 selected procedure symbol.
+
+Repair:
+
+- `collect_toplevel.cpp` now permits same-name free procedure declarations to
+  merge into one module-scope value binding while preserving duplicate `main`
+  handling and non-procedure name conflicts.
+- `expr/call.cpp` now indexes all same-name procedures in a module and resolves
+  direct free calls against the candidate set before ordinary call typing. It
+  filters by arity and argument compatibility, applies exact-match preference,
+  and reports `E-SEM-3031` or `E-SEM-3030` for failed selection.
+- `Fixtures/RejectedSource/Procedures/NoMatchingOverload` now exercises the
+  no-matching-candidate diagnostic path for
+  `req.15.FreeCallOverloadResolutionAlgorithm`.
+
+Verified results after repair:
+
+```text
+FreeProcedureOverloadResolution --check: EXIT 0
+FreeProcedureOverloadResolution build: EXIT 0
+NoMatchingOverload --check: E-SEM-3031, EXIT 1
+```
 
 ## UVBOOT-0033: Shared Dynamic Class Receiver Well-Formedness
 
@@ -2863,3 +2884,94 @@ The generated `E-MOD-1304` diagnostic text currently comes from the §11.5.7
 module-path row instead of the §7.8 name-reuse row. The fixture validates the
 registered code path; the duplicated diagnostic-code text ownership remains a
 separate diagnostic registry cleanup.
+
+## UVBOOT-0045: Inline Parameter Refinement `self` Diagnostic
+
+Status: repaired.
+
+SPEC-invalid specimen:
+
+- `Fixtures/RejectedSource/Polymorphism/RefinementInlineSelfConstraint/Source/Main.uv`
+
+Spec obligations exercised:
+
+- `diag.14.RefinementTypes`
+- `diag-table.14.RefinementPolymorphismDiagnostics`
+
+Spec basis:
+
+- `SPECIFICATION.md:13535` binds `self` only within a standalone refinement
+  type.
+- `SPECIFICATION.md:13971` requires `E-TYP-1956` when `self` is used in an
+  inline parameter constraint.
+
+Observed bootstrap result before repair:
+
+```text
+RefinementInlineSelfConstraint:
+exit=0
+```
+
+Verified bootstrap result after repair:
+
+```text
+error[E-TYP-1956]: `self` used in inline parameter constraint
+  --> .../RefinementInlineSelfConstraint/Source/Main.uv:3:8
+```
+
+Bootstrap repair owner:
+
+- `LLVMBootstrap/cursive/src/04_analysis/typing/item/signature.cpp`
+- `LLVMBootstrap/cursive/src/00_core/generated/static_rule_registry.inc`
+
+Repair summary:
+
+Procedure signature analysis now detects `self` in inline parameter refinement
+predicates before lowering the parameter type through ordinary refinement
+well-formedness. Standalone refinement types still bind `self`; inline
+parameter constraints now report the required `E-TYP-1956` diagnostic.
+
+## UVBOOT-0046: Duplicate Erased Free-Procedure Overload Signatures Accepted
+
+Status: repaired.
+
+SPEC-invalid specimen:
+
+- `Fixtures/RejectedSource/Procedures/DuplicateErasedOverloadSignature/Source/Main.uv`
+
+Spec obligation exercised:
+
+- `req.15.DuplicateErasedOverloadSignaturesForbidden`
+
+Spec basis:
+
+- `SPECIFICATION.md:14598` states that same-name overloads with identical
+  parameter-mode/type signatures after generic-parameter erasure are ill-formed.
+- `SPECIFICATION.md:14614` assigns `E-SEM-3032` to duplicate overload
+  signatures after generic erasure.
+
+Observed bootstrap result before repair:
+
+```text
+Same-name free procedures were collected as an overload set, but declaration
+typing had no duplicate-erased-signature check for the set.
+```
+
+Verified bootstrap result after repair:
+
+```text
+error[E-SEM-3032]: Duplicate signature in overload set
+  --> .../DuplicateErasedOverloadSignature/Source/Main.uv:7:8
+```
+
+Bootstrap repair owner:
+
+- `LLVMBootstrap/cursive/src/04_analysis/typing/typecheck.cpp`
+- `LLVMBootstrap/cursive/src/00_core/generated/static_rule_registry.inc`
+
+Repair summary:
+
+Declaration typing now lowers each same-name free-procedure signature in the
+procedure's generic scope, erases generic parameters to a canonical type
+variable, compares parameter modes and `TypeKeyOf` parameter types, and reports
+`E-SEM-3032` on duplicate erased overload signatures.

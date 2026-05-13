@@ -1,0 +1,7 @@
+//! Rejected refinement specimen for a failed static refinement introduction.
+
+public type PositiveI32 = i32 |: { self > 0 }
+
+public procedure staticRefinementProofFailure(value: i32) -> PositiveI32 {
+    return value
+}

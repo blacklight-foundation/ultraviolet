@@ -273,6 +273,18 @@ public procedure rejectedSourceFixtureArtifactsExist(context: Context) -> bool {
         )
     artifacts_exist = artifacts_exist && rejectedFixtureArtifactsExist(
             context,
+            "HelloUltraviolet/Fixtures/RejectedSource/Procedures/NoMatchingOverload/Ultraviolet.toml",
+            "HelloUltraviolet/Fixtures/RejectedSource/Procedures/NoMatchingOverload/Source/Main.uv",
+            "HelloUltraviolet/Fixtures/RejectedSource/Procedures/NoMatchingOverload/Expected.uv"
+        )
+    artifacts_exist = artifacts_exist && rejectedFixtureArtifactsExist(
+            context,
+            "HelloUltraviolet/Fixtures/RejectedSource/Procedures/DuplicateErasedOverloadSignature/Ultraviolet.toml",
+            "HelloUltraviolet/Fixtures/RejectedSource/Procedures/DuplicateErasedOverloadSignature/Source/Main.uv",
+            "HelloUltraviolet/Fixtures/RejectedSource/Procedures/DuplicateErasedOverloadSignature/Expected.uv"
+        )
+    artifacts_exist = artifacts_exist && rejectedFixtureArtifactsExist(
+            context,
             "HelloUltraviolet/Fixtures/RejectedSource/Expressions/CallNonFunction/Ultraviolet.toml",
             "HelloUltraviolet/Fixtures/RejectedSource/Expressions/CallNonFunction/Source/Main.uv",
             "HelloUltraviolet/Fixtures/RejectedSource/Expressions/CallNonFunction/Expected.uv"
@@ -1482,6 +1494,48 @@ public procedure rejectedSourceFixtureArtifactsExist(context: Context) -> bool {
             "HelloUltraviolet/Fixtures/RejectedSource/Polymorphism/FoundationalClassNameReserved/Ultraviolet.toml",
             "HelloUltraviolet/Fixtures/RejectedSource/Polymorphism/FoundationalClassNameReserved/Source/Main.uv",
             "HelloUltraviolet/Fixtures/RejectedSource/Polymorphism/FoundationalClassNameReserved/Expected.uv"
+        )
+    artifacts_exist = artifacts_exist && rejectedFixtureArtifactsExist(
+            context,
+            "HelloUltraviolet/Fixtures/RejectedSource/Polymorphism/RefinementPredicateNonBool/Ultraviolet.toml",
+            "HelloUltraviolet/Fixtures/RejectedSource/Polymorphism/RefinementPredicateNonBool/Source/Main.uv",
+            "HelloUltraviolet/Fixtures/RejectedSource/Polymorphism/RefinementPredicateNonBool/Expected.uv"
+        )
+    artifacts_exist = artifacts_exist && rejectedFixtureArtifactsExist(
+            context,
+            "HelloUltraviolet/Fixtures/RejectedSource/Polymorphism/RefinementPredicateImpure/Ultraviolet.toml",
+            "HelloUltraviolet/Fixtures/RejectedSource/Polymorphism/RefinementPredicateImpure/Source/Main.uv",
+            "HelloUltraviolet/Fixtures/RejectedSource/Polymorphism/RefinementPredicateImpure/Expected.uv"
+        )
+    artifacts_exist = artifacts_exist && rejectedFixtureArtifactsExist(
+            context,
+            "HelloUltraviolet/Fixtures/RejectedSource/Polymorphism/RefinementStaticProofFailure/Ultraviolet.toml",
+            "HelloUltraviolet/Fixtures/RejectedSource/Polymorphism/RefinementStaticProofFailure/Source/Main.uv",
+            "HelloUltraviolet/Fixtures/RejectedSource/Polymorphism/RefinementStaticProofFailure/Expected.uv"
+        )
+    artifacts_exist = artifacts_exist && rejectedFixtureArtifactsExist(
+            context,
+            "HelloUltraviolet/Fixtures/RejectedSource/Polymorphism/RefinementInlineSelfConstraint/Ultraviolet.toml",
+            "HelloUltraviolet/Fixtures/RejectedSource/Polymorphism/RefinementInlineSelfConstraint/Source/Main.uv",
+            "HelloUltraviolet/Fixtures/RejectedSource/Polymorphism/RefinementInlineSelfConstraint/Expected.uv"
+        )
+    artifacts_exist = artifacts_exist && rejectedFixtureArtifactsExist(
+            context,
+            "HelloUltraviolet/Fixtures/RejectedSource/Polymorphism/RefinementStaticDefaultRequirement/Ultraviolet.toml",
+            "HelloUltraviolet/Fixtures/RejectedSource/Polymorphism/RefinementStaticDefaultRequirement/Source/Main.uv",
+            "HelloUltraviolet/Fixtures/RejectedSource/Polymorphism/RefinementStaticDefaultRequirement/Expected.uv"
+        )
+    artifacts_exist = artifacts_exist && rejectedFixtureArtifactsExist(
+            context,
+            "HelloUltraviolet/Fixtures/RejectedSource/Polymorphism/RefinementDiagnosticsOwnership/Ultraviolet.toml",
+            "HelloUltraviolet/Fixtures/RejectedSource/Polymorphism/RefinementDiagnosticsOwnership/Source/Main.uv",
+            "HelloUltraviolet/Fixtures/RejectedSource/Polymorphism/RefinementDiagnosticsOwnership/Expected.uv"
+        )
+    artifacts_exist = artifacts_exist && rejectedFixtureArtifactsExist(
+            context,
+            "HelloUltraviolet/Fixtures/RejectedSource/Polymorphism/RefinementDiagnosticsTable/Ultraviolet.toml",
+            "HelloUltraviolet/Fixtures/RejectedSource/Polymorphism/RefinementDiagnosticsTable/Source/Main.uv",
+            "HelloUltraviolet/Fixtures/RejectedSource/Polymorphism/RefinementDiagnosticsTable/Expected.uv"
         )
     artifacts_exist = artifacts_exist && rejectedFixtureArtifactsExist(
             context,

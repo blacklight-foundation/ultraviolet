@@ -375,6 +375,24 @@ public procedure missingReturnTypeExpectedDiagnosticFileMatches(context: Context
     )
 }
 
+public procedure noMatchingOverloadExpectedDiagnosticFileMatches(context: Context) -> bool {
+    return expectedDiagnosticFileMatches(
+        context,
+        "HelloUltraviolet/Fixtures/RejectedSource/Procedures/NoMatchingOverload/Expected.uv",
+        "//! Expected diagnostic metadata for the NoMatchingOverload rejected-source specimen.\n\nexpectedDiagnostic(\"E-SEM-3031\", \"req.15.FreeCallOverloadResolutionAlgorithm\")\n"
+    )
+}
+
+public procedure duplicateErasedOverloadSignatureExpectedDiagnosticFileMatches(
+    context: Context
+) -> bool {
+    return expectedDiagnosticFileMatches(
+        context,
+        "HelloUltraviolet/Fixtures/RejectedSource/Procedures/DuplicateErasedOverloadSignature/Expected.uv",
+        "//! Expected diagnostic metadata for the DuplicateErasedOverloadSignature rejected-source specimen.\n\nexpectedDiagnostic(\"E-SEM-3032\", \"req.15.DuplicateErasedOverloadSignaturesForbidden\")\n"
+    )
+}
+
 public procedure callNonFunctionExpectedDiagnosticFileMatches(context: Context) -> bool {
     return expectedDiagnosticFileMatches(
         context,
@@ -2168,6 +2186,76 @@ public procedure foundationalClassNameReservedExpectedDiagnosticFileMatches(
         context,
         "HelloUltraviolet/Fixtures/RejectedSource/Polymorphism/FoundationalClassNameReserved/Expected.uv",
         "//! Expected diagnostic metadata for the FoundationalClassNameReserved rejected-source specimen.\n\nexpectedDiagnostic(\"E-MOD-1304\", \"req.14.FoundationalClassesSyntaxAndReservedNames\")\n"
+    )
+}
+
+public procedure refinementPredicateNonBoolExpectedDiagnosticFileMatches(
+    context: Context
+) -> bool {
+    return expectedDiagnosticFileMatches(
+        context,
+        "HelloUltraviolet/Fixtures/RejectedSource/Polymorphism/RefinementPredicateNonBool/Expected.uv",
+        "//! Expected diagnostic metadata for the RefinementPredicateNonBool rejected-source specimen.\n\nexpectedDiagnostic(\"E-TYP-1955\", \"rule.14.WF-Refine-Type\")\n"
+    )
+}
+
+public procedure refinementPredicateImpureExpectedDiagnosticFileMatches(
+    context: Context
+) -> bool {
+    return expectedDiagnosticFileMatches(
+        context,
+        "HelloUltraviolet/Fixtures/RejectedSource/Polymorphism/RefinementPredicateImpure/Expected.uv",
+        "//! Expected diagnostic metadata for the RefinementPredicateImpure rejected-source specimen.\n\nexpectedDiagnostic(\"E-TYP-1954\", \"diag.14.RefinementTypes\")\n"
+    )
+}
+
+public procedure refinementStaticProofFailureExpectedDiagnosticFileMatches(
+    context: Context
+) -> bool {
+    return expectedDiagnosticFileMatches(
+        context,
+        "HelloUltraviolet/Fixtures/RejectedSource/Polymorphism/RefinementStaticProofFailure/Expected.uv",
+        "//! Expected diagnostic metadata for the RefinementStaticProofFailure rejected-source specimen.\n\nexpectedDiagnostic(\"E-TYP-1953\", \"rule.14.T-Refine-Intro\")\n"
+    )
+}
+
+public procedure refinementInlineSelfConstraintExpectedDiagnosticFileMatches(
+    context: Context
+) -> bool {
+    return expectedDiagnosticFileMatches(
+        context,
+        "HelloUltraviolet/Fixtures/RejectedSource/Polymorphism/RefinementInlineSelfConstraint/Expected.uv",
+        "//! Expected diagnostic metadata for the RefinementInlineSelfConstraint rejected-source specimen.\n\nexpectedDiagnostic(\"E-TYP-1956\", \"diag.14.RefinementTypes\")\n"
+    )
+}
+
+public procedure refinementStaticDefaultRequirementExpectedDiagnosticFileMatches(
+    context: Context
+) -> bool {
+    return expectedDiagnosticFileMatches(
+        context,
+        "HelloUltraviolet/Fixtures/RejectedSource/Polymorphism/RefinementStaticDefaultRequirement/Expected.uv",
+        "//! Expected diagnostic metadata for the RefinementStaticDefaultRequirement rejected-source specimen.\n\nexpectedDiagnostic(\"E-TYP-1953\", \"req.14.RefinementStaticDefaultDynamicFallback\")\n"
+    )
+}
+
+public procedure refinementDiagnosticsOwnershipExpectedDiagnosticFileMatches(
+    context: Context
+) -> bool {
+    return expectedDiagnosticFileMatches(
+        context,
+        "HelloUltraviolet/Fixtures/RejectedSource/Polymorphism/RefinementDiagnosticsOwnership/Expected.uv",
+        "//! Expected diagnostic metadata for the RefinementDiagnosticsOwnership rejected-source specimen.\n\nexpectedDiagnostic(\"E-TYP-1954\", \"diag.14.RefinementPolymorphismDiagnosticsOwnership\")\n"
+    )
+}
+
+public procedure refinementDiagnosticsTableExpectedDiagnosticFileMatches(
+    context: Context
+) -> bool {
+    return expectedDiagnosticFileMatches(
+        context,
+        "HelloUltraviolet/Fixtures/RejectedSource/Polymorphism/RefinementDiagnosticsTable/Expected.uv",
+        "//! Expected diagnostic metadata for the RefinementDiagnosticsTable rejected-source specimen.\n\nexpectedDiagnostic(\"E-TYP-1956\", \"diag-table.14.RefinementPolymorphismDiagnostics\")\n"
     )
 }
 

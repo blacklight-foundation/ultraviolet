@@ -62,6 +62,8 @@ using HelloUltraviolet::Fixtures::RejectedSource::{ asyncReturnTypeMismatchExpec
 using HelloUltraviolet::Fixtures::RejectedSource::{ asyncReturnUnitMismatchExpectedDiagnosticFileMatches }
 using HelloUltraviolet::Fixtures::RejectedSource::{ missingExplicitReturnExpectedDiagnosticFileMatches }
 using HelloUltraviolet::Fixtures::RejectedSource::{ missingReturnTypeExpectedDiagnosticFileMatches }
+using HelloUltraviolet::Fixtures::RejectedSource::{ noMatchingOverloadExpectedDiagnosticFileMatches }
+using HelloUltraviolet::Fixtures::RejectedSource::{ duplicateErasedOverloadSignatureExpectedDiagnosticFileMatches }
 using HelloUltraviolet::Fixtures::RejectedSource::{ explicitReturnDefinitionExpectedDiagnosticFileMatches }
 using HelloUltraviolet::Fixtures::RejectedSource::{ returnAnnotationPresenceExpectedDiagnosticFileMatches }
 using HelloUltraviolet::Fixtures::RejectedSource::{ procedureDeclarationWellFormednessExpectedDiagnosticFileMatches }
@@ -114,6 +116,13 @@ using HelloUltraviolet::Fixtures::RejectedSource::{ bitcopyDropConflictExpectedD
 using HelloUltraviolet::Fixtures::RejectedSource::{ bitcopyFieldNonBitcopyExpectedDiagnosticFileMatches }
 using HelloUltraviolet::Fixtures::RejectedSource::{ capabilityClassNameReservedExpectedDiagnosticFileMatches }
 using HelloUltraviolet::Fixtures::RejectedSource::{ foundationalClassNameReservedExpectedDiagnosticFileMatches }
+using HelloUltraviolet::Fixtures::RejectedSource::{ refinementPredicateNonBoolExpectedDiagnosticFileMatches }
+using HelloUltraviolet::Fixtures::RejectedSource::{ refinementPredicateImpureExpectedDiagnosticFileMatches }
+using HelloUltraviolet::Fixtures::RejectedSource::{ refinementStaticProofFailureExpectedDiagnosticFileMatches }
+using HelloUltraviolet::Fixtures::RejectedSource::{ refinementInlineSelfConstraintExpectedDiagnosticFileMatches }
+using HelloUltraviolet::Fixtures::RejectedSource::{ refinementStaticDefaultRequirementExpectedDiagnosticFileMatches }
+using HelloUltraviolet::Fixtures::RejectedSource::{ refinementDiagnosticsOwnershipExpectedDiagnosticFileMatches }
+using HelloUltraviolet::Fixtures::RejectedSource::{ refinementDiagnosticsTableExpectedDiagnosticFileMatches }
 using HelloUltraviolet::Fixtures::RejectedSource::{ duplicateTypeParameterNameExpectedDiagnosticFileMatches }
 using HelloUltraviolet::Fixtures::RejectedSource::{ duplicateClassProcedureNameExpectedDiagnosticFileMatches }
 using HelloUltraviolet::Fixtures::RejectedSource::{ classMemberNameConflictExpectedDiagnosticFileMatches }
@@ -856,6 +865,16 @@ public procedure runReferenceCorpus(context: Context) -> ReferenceResult {
     )
     passed = passed && recordReferenceResult(
         context,
+        "noMatchingOverloadExpectedDiagnosticFileMatches",
+        noMatchingOverloadExpectedDiagnosticFileMatches(context)
+    )
+    passed = passed && recordReferenceResult(
+        context,
+        "duplicateErasedOverloadSignatureExpectedDiagnosticFileMatches",
+        duplicateErasedOverloadSignatureExpectedDiagnosticFileMatches(context)
+    )
+    passed = passed && recordReferenceResult(
+        context,
         "explicitReturnDefinitionExpectedDiagnosticFileMatches",
         explicitReturnDefinitionExpectedDiagnosticFileMatches(context)
     )
@@ -1113,6 +1132,41 @@ public procedure runReferenceCorpus(context: Context) -> ReferenceResult {
         context,
         "foundationalClassNameReservedExpectedDiagnosticFileMatches",
         foundationalClassNameReservedExpectedDiagnosticFileMatches(context)
+    )
+    passed = passed && recordReferenceResult(
+        context,
+        "refinementPredicateNonBoolExpectedDiagnosticFileMatches",
+        refinementPredicateNonBoolExpectedDiagnosticFileMatches(context)
+    )
+    passed = passed && recordReferenceResult(
+        context,
+        "refinementPredicateImpureExpectedDiagnosticFileMatches",
+        refinementPredicateImpureExpectedDiagnosticFileMatches(context)
+    )
+    passed = passed && recordReferenceResult(
+        context,
+        "refinementStaticProofFailureExpectedDiagnosticFileMatches",
+        refinementStaticProofFailureExpectedDiagnosticFileMatches(context)
+    )
+    passed = passed && recordReferenceResult(
+        context,
+        "refinementInlineSelfConstraintExpectedDiagnosticFileMatches",
+        refinementInlineSelfConstraintExpectedDiagnosticFileMatches(context)
+    )
+    passed = passed && recordReferenceResult(
+        context,
+        "refinementStaticDefaultRequirementExpectedDiagnosticFileMatches",
+        refinementStaticDefaultRequirementExpectedDiagnosticFileMatches(context)
+    )
+    passed = passed && recordReferenceResult(
+        context,
+        "refinementDiagnosticsOwnershipExpectedDiagnosticFileMatches",
+        refinementDiagnosticsOwnershipExpectedDiagnosticFileMatches(context)
+    )
+    passed = passed && recordReferenceResult(
+        context,
+        "refinementDiagnosticsTableExpectedDiagnosticFileMatches",
+        refinementDiagnosticsTableExpectedDiagnosticFileMatches(context)
     )
     passed = passed && recordReferenceResult(
         context,

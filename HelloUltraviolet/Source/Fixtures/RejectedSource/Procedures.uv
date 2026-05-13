@@ -1,7 +1,7 @@
 //! Rejected procedure specimens.
 
 public procedure proceduresRejectedSourceFixtureCount() -> usize {
-    return 41usize
+    return 43usize
 }
 
 public procedure validatedProceduresRejectedSourceFixtureCount() -> usize {
@@ -105,6 +105,40 @@ public procedure validatedProceduresRejectedSourceFixtureCount() -> usize {
         "Fixtures/RejectedSource/Procedures/MissingExplicitReturn/Expected.uv",
         "E-TYP-1507",
         "rule.15.WF-ProcBody-ExplicitReturn-Err"
+    ) {
+        count = count + 1usize
+    }
+    if rejectedSpecimenMatches(
+        rejectedSpecimen(
+            "NoMatchingOverload",
+            "Fixtures/RejectedSource/Procedures/NoMatchingOverload",
+            "Fixtures/RejectedSource/Procedures/NoMatchingOverload/Source/Main.uv",
+            "Fixtures/RejectedSource/Procedures/NoMatchingOverload/Expected.uv",
+            expectedDiagnostic("E-SEM-3031", "req.15.FreeCallOverloadResolutionAlgorithm")
+        ),
+        "NoMatchingOverload",
+        "Fixtures/RejectedSource/Procedures/NoMatchingOverload",
+        "Fixtures/RejectedSource/Procedures/NoMatchingOverload/Source/Main.uv",
+        "Fixtures/RejectedSource/Procedures/NoMatchingOverload/Expected.uv",
+        "E-SEM-3031",
+        "req.15.FreeCallOverloadResolutionAlgorithm"
+    ) {
+        count = count + 1usize
+    }
+    if rejectedSpecimenMatches(
+        rejectedSpecimen(
+            "DuplicateErasedOverloadSignature",
+            "Fixtures/RejectedSource/Procedures/DuplicateErasedOverloadSignature",
+            "Fixtures/RejectedSource/Procedures/DuplicateErasedOverloadSignature/Source/Main.uv",
+            "Fixtures/RejectedSource/Procedures/DuplicateErasedOverloadSignature/Expected.uv",
+            expectedDiagnostic("E-SEM-3032", "req.15.DuplicateErasedOverloadSignaturesForbidden")
+        ),
+        "DuplicateErasedOverloadSignature",
+        "Fixtures/RejectedSource/Procedures/DuplicateErasedOverloadSignature",
+        "Fixtures/RejectedSource/Procedures/DuplicateErasedOverloadSignature/Source/Main.uv",
+        "Fixtures/RejectedSource/Procedures/DuplicateErasedOverloadSignature/Expected.uv",
+        "E-SEM-3032",
+        "req.15.DuplicateErasedOverloadSignaturesForbidden"
     ) {
         count = count + 1usize
     }

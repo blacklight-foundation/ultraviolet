@@ -1,7 +1,7 @@
 //! Rejected polymorphism specimens.
 
 public procedure polymorphismRejectedSourceFixtureCount() -> usize {
-    return 39usize
+    return 46usize
 }
 
 public procedure validatedPolymorphismRejectedSourceFixtureCount() -> usize {
@@ -513,6 +513,125 @@ public procedure validatedPolymorphismRejectedSourceFixtureCount() -> usize {
         "Fixtures/RejectedSource/Polymorphism/FoundationalClassNameReserved/Expected.uv",
         "E-MOD-1304",
         "req.14.FoundationalClassesSyntaxAndReservedNames"
+    ) {
+        count = count + 1usize
+    }
+    if rejectedSpecimenMatches(
+        rejectedSpecimen(
+            "RefinementPredicateNonBool",
+            "Fixtures/RejectedSource/Polymorphism/RefinementPredicateNonBool",
+            "Fixtures/RejectedSource/Polymorphism/RefinementPredicateNonBool/Source/Main.uv",
+            "Fixtures/RejectedSource/Polymorphism/RefinementPredicateNonBool/Expected.uv",
+            expectedDiagnostic("E-TYP-1955", "rule.14.WF-Refine-Type")
+        ),
+        "RefinementPredicateNonBool",
+        "Fixtures/RejectedSource/Polymorphism/RefinementPredicateNonBool",
+        "Fixtures/RejectedSource/Polymorphism/RefinementPredicateNonBool/Source/Main.uv",
+        "Fixtures/RejectedSource/Polymorphism/RefinementPredicateNonBool/Expected.uv",
+        "E-TYP-1955",
+        "rule.14.WF-Refine-Type"
+    ) {
+        count = count + 1usize
+    }
+    if rejectedSpecimenMatches(
+        rejectedSpecimen(
+            "RefinementPredicateImpure",
+            "Fixtures/RejectedSource/Polymorphism/RefinementPredicateImpure",
+            "Fixtures/RejectedSource/Polymorphism/RefinementPredicateImpure/Source/Main.uv",
+            "Fixtures/RejectedSource/Polymorphism/RefinementPredicateImpure/Expected.uv",
+            expectedDiagnostic("E-TYP-1954", "diag.14.RefinementTypes")
+        ),
+        "RefinementPredicateImpure",
+        "Fixtures/RejectedSource/Polymorphism/RefinementPredicateImpure",
+        "Fixtures/RejectedSource/Polymorphism/RefinementPredicateImpure/Source/Main.uv",
+        "Fixtures/RejectedSource/Polymorphism/RefinementPredicateImpure/Expected.uv",
+        "E-TYP-1954",
+        "diag.14.RefinementTypes"
+    ) {
+        count = count + 1usize
+    }
+    if rejectedSpecimenMatches(
+        rejectedSpecimen(
+            "RefinementStaticProofFailure",
+            "Fixtures/RejectedSource/Polymorphism/RefinementStaticProofFailure",
+            "Fixtures/RejectedSource/Polymorphism/RefinementStaticProofFailure/Source/Main.uv",
+            "Fixtures/RejectedSource/Polymorphism/RefinementStaticProofFailure/Expected.uv",
+            expectedDiagnostic("E-TYP-1953", "rule.14.T-Refine-Intro")
+        ),
+        "RefinementStaticProofFailure",
+        "Fixtures/RejectedSource/Polymorphism/RefinementStaticProofFailure",
+        "Fixtures/RejectedSource/Polymorphism/RefinementStaticProofFailure/Source/Main.uv",
+        "Fixtures/RejectedSource/Polymorphism/RefinementStaticProofFailure/Expected.uv",
+        "E-TYP-1953",
+        "rule.14.T-Refine-Intro"
+    ) {
+        count = count + 1usize
+    }
+    if rejectedSpecimenMatches(
+        rejectedSpecimen(
+            "RefinementInlineSelfConstraint",
+            "Fixtures/RejectedSource/Polymorphism/RefinementInlineSelfConstraint",
+            "Fixtures/RejectedSource/Polymorphism/RefinementInlineSelfConstraint/Source/Main.uv",
+            "Fixtures/RejectedSource/Polymorphism/RefinementInlineSelfConstraint/Expected.uv",
+            expectedDiagnostic("E-TYP-1956", "diag.14.RefinementTypes")
+        ),
+        "RefinementInlineSelfConstraint",
+        "Fixtures/RejectedSource/Polymorphism/RefinementInlineSelfConstraint",
+        "Fixtures/RejectedSource/Polymorphism/RefinementInlineSelfConstraint/Source/Main.uv",
+        "Fixtures/RejectedSource/Polymorphism/RefinementInlineSelfConstraint/Expected.uv",
+        "E-TYP-1956",
+        "diag.14.RefinementTypes"
+    ) {
+        count = count + 1usize
+    }
+    if rejectedSpecimenMatches(
+        rejectedSpecimen(
+            "RefinementStaticDefaultRequirement",
+            "Fixtures/RejectedSource/Polymorphism/RefinementStaticDefaultRequirement",
+            "Fixtures/RejectedSource/Polymorphism/RefinementStaticDefaultRequirement/Source/Main.uv",
+            "Fixtures/RejectedSource/Polymorphism/RefinementStaticDefaultRequirement/Expected.uv",
+            expectedDiagnostic("E-TYP-1953", "req.14.RefinementStaticDefaultDynamicFallback")
+        ),
+        "RefinementStaticDefaultRequirement",
+        "Fixtures/RejectedSource/Polymorphism/RefinementStaticDefaultRequirement",
+        "Fixtures/RejectedSource/Polymorphism/RefinementStaticDefaultRequirement/Source/Main.uv",
+        "Fixtures/RejectedSource/Polymorphism/RefinementStaticDefaultRequirement/Expected.uv",
+        "E-TYP-1953",
+        "req.14.RefinementStaticDefaultDynamicFallback"
+    ) {
+        count = count + 1usize
+    }
+    if rejectedSpecimenMatches(
+        rejectedSpecimen(
+            "RefinementDiagnosticsOwnership",
+            "Fixtures/RejectedSource/Polymorphism/RefinementDiagnosticsOwnership",
+            "Fixtures/RejectedSource/Polymorphism/RefinementDiagnosticsOwnership/Source/Main.uv",
+            "Fixtures/RejectedSource/Polymorphism/RefinementDiagnosticsOwnership/Expected.uv",
+            expectedDiagnostic("E-TYP-1954", "diag.14.RefinementPolymorphismDiagnosticsOwnership")
+        ),
+        "RefinementDiagnosticsOwnership",
+        "Fixtures/RejectedSource/Polymorphism/RefinementDiagnosticsOwnership",
+        "Fixtures/RejectedSource/Polymorphism/RefinementDiagnosticsOwnership/Source/Main.uv",
+        "Fixtures/RejectedSource/Polymorphism/RefinementDiagnosticsOwnership/Expected.uv",
+        "E-TYP-1954",
+        "diag.14.RefinementPolymorphismDiagnosticsOwnership"
+    ) {
+        count = count + 1usize
+    }
+    if rejectedSpecimenMatches(
+        rejectedSpecimen(
+            "RefinementDiagnosticsTable",
+            "Fixtures/RejectedSource/Polymorphism/RefinementDiagnosticsTable",
+            "Fixtures/RejectedSource/Polymorphism/RefinementDiagnosticsTable/Source/Main.uv",
+            "Fixtures/RejectedSource/Polymorphism/RefinementDiagnosticsTable/Expected.uv",
+            expectedDiagnostic("E-TYP-1956", "diag-table.14.RefinementPolymorphismDiagnostics")
+        ),
+        "RefinementDiagnosticsTable",
+        "Fixtures/RejectedSource/Polymorphism/RefinementDiagnosticsTable",
+        "Fixtures/RejectedSource/Polymorphism/RefinementDiagnosticsTable/Source/Main.uv",
+        "Fixtures/RejectedSource/Polymorphism/RefinementDiagnosticsTable/Expected.uv",
+        "E-TYP-1956",
+        "diag-table.14.RefinementPolymorphismDiagnostics"
     ) {
         count = count + 1usize
     }

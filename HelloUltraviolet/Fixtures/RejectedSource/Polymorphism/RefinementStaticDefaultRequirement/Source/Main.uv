@@ -1,0 +1,8 @@
+//! Rejected refinement specimen for static-by-default refinement checking.
+
+public type NonZeroI32 = i32 |: { self != 0 }
+
+public procedure staticDefaultRefinementRequirement(value: i32) -> i32 {
+    let non_zero_value: NonZeroI32 = value
+    return non_zero_value
+}

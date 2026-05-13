@@ -1,0 +1,8 @@
+//! Rejected refinement specimen for refinement diagnostic ownership.
+
+public procedure refinementDiagnosticsOwnershipPredicate() -> bool {
+    return true
+}
+
+public type RefinementDiagnosticsOwnershipType =
+    bool |: { self && refinementDiagnosticsOwnershipPredicate() }

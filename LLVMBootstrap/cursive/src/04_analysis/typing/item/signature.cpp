@@ -46,6 +46,7 @@ static inline void SpecDefsSignature() {
   SPEC_DEF("Recv-Explicit", "5.3.1");
   SPEC_DEF("ParamMode-Move", "5.3.1");
   SPEC_DEF("TypeFunc-Construct", "5.3.1");
+  SPEC_DEF("InlineParamConstraint-Self-Err", "14.8.7");
 }
 
 static LowerTypeResult LowerTypeWithWF(const ScopeContext& ctx,
@@ -59,6 +60,199 @@ static LowerTypeResult LowerTypeWithWF(const ScopeContext& ctx,
     return {false, wf.diag_id, {}};
   }
   return lowered;
+}
+
+static bool ExprContainsIdentifier(const ast::ExprPtr& expr,
+                                   std::string_view name) {
+  if (!expr) {
+    return false;
+  }
+
+  return std::visit(
+      [&](const auto& node) -> bool {
+        using T = std::decay_t<decltype(node)>;
+
+        if constexpr (std::is_same_v<T, ast::IdentifierExpr>) {
+          return IdEq(node.name, std::string(name));
+        } else if constexpr (std::is_same_v<T, ast::BinaryExpr>) {
+          return ExprContainsIdentifier(node.lhs, name) ||
+                 ExprContainsIdentifier(node.rhs, name);
+        } else if constexpr (std::is_same_v<T, ast::RangeExpr>) {
+          return ExprContainsIdentifier(node.lhs, name) ||
+                 ExprContainsIdentifier(node.rhs, name);
+        } else if constexpr (std::is_same_v<T, ast::UnaryExpr>) {
+          return ExprContainsIdentifier(node.value, name);
+        } else if constexpr (std::is_same_v<T, ast::CastExpr>) {
+          return ExprContainsIdentifier(node.value, name);
+        } else if constexpr (std::is_same_v<T, ast::FieldAccessExpr>) {
+          return ExprContainsIdentifier(node.base, name);
+        } else if constexpr (std::is_same_v<T, ast::TupleAccessExpr>) {
+          return ExprContainsIdentifier(node.base, name);
+        } else if constexpr (std::is_same_v<T, ast::IndexAccessExpr>) {
+          return ExprContainsIdentifier(node.base, name) ||
+                 ExprContainsIdentifier(node.index, name);
+        } else if constexpr (std::is_same_v<T, ast::CallExpr>) {
+          if (ExprContainsIdentifier(node.callee, name)) {
+            return true;
+          }
+          for (const auto& arg : node.args) {
+            if (ExprContainsIdentifier(arg.value, name)) {
+              return true;
+            }
+          }
+          return false;
+        } else if constexpr (std::is_same_v<T, ast::MethodCallExpr>) {
+          if (ExprContainsIdentifier(node.receiver, name)) {
+            return true;
+          }
+          for (const auto& arg : node.args) {
+            if (ExprContainsIdentifier(arg.value, name)) {
+              return true;
+            }
+          }
+          return false;
+        } else if constexpr (std::is_same_v<T, ast::TupleExpr>) {
+          for (const auto& elem : node.elements) {
+            if (ExprContainsIdentifier(elem, name)) {
+              return true;
+            }
+          }
+          return false;
+        } else if constexpr (std::is_same_v<T, ast::ArrayExpr>) {
+          bool found = false;
+          ast::ForEachArrayExprSubexpr(node, [&](const ast::ExprPtr& elem) {
+            found = found || ExprContainsIdentifier(elem, name);
+          });
+          return found;
+        } else if constexpr (std::is_same_v<T, ast::ArrayRepeatExpr>) {
+          return ExprContainsIdentifier(node.value, name) ||
+                 ExprContainsIdentifier(node.count, name);
+        } else if constexpr (std::is_same_v<T, ast::RecordExpr>) {
+          for (const auto& field : node.fields) {
+            if (ExprContainsIdentifier(field.value, name)) {
+              return true;
+            }
+          }
+          return false;
+        } else if constexpr (std::is_same_v<T, ast::IfExpr>) {
+          return ExprContainsIdentifier(node.cond, name) ||
+                 ExprContainsIdentifier(node.then_expr, name) ||
+                 ExprContainsIdentifier(node.else_expr, name);
+        } else if constexpr (std::is_same_v<T, ast::AttributedExpr>) {
+          return ExprContainsIdentifier(node.expr, name);
+        } else if constexpr (std::is_same_v<T, ast::MoveExpr>) {
+          return ExprContainsIdentifier(node.place, name);
+        } else if constexpr (std::is_same_v<T, ast::AddressOfExpr>) {
+          return ExprContainsIdentifier(node.place, name);
+        } else if constexpr (std::is_same_v<T, ast::DerefExpr>) {
+          return ExprContainsIdentifier(node.value, name);
+        } else if constexpr (std::is_same_v<T, ast::EntryExpr>) {
+          return ExprContainsIdentifier(node.expr, name);
+        } else if constexpr (std::is_same_v<T, ast::PipelineExpr>) {
+          return ExprContainsIdentifier(node.lhs, name) ||
+                 ExprContainsIdentifier(node.rhs, name);
+        } else if constexpr (std::is_same_v<T, ast::PropagateExpr>) {
+          return ExprContainsIdentifier(node.value, name);
+        }
+        return false;
+      },
+      expr->node);
+}
+
+static bool TypeContainsInlineParameterSelfConstraint(
+    const std::shared_ptr<ast::Type>& type) {
+  if (!type) {
+    return false;
+  }
+
+  return std::visit(
+      [&](const auto& node) -> bool {
+        using T = std::decay_t<decltype(node)>;
+
+        if constexpr (std::is_same_v<T, ast::TypeRefine>) {
+          return ExprContainsIdentifier(node.predicate, "self") ||
+                 TypeContainsInlineParameterSelfConstraint(node.base);
+        } else if constexpr (std::is_same_v<T, ast::TypePermType>) {
+          return TypeContainsInlineParameterSelfConstraint(node.base);
+        } else if constexpr (std::is_same_v<T, ast::TypeUnion>) {
+          for (const auto& member : node.types) {
+            if (TypeContainsInlineParameterSelfConstraint(member)) {
+              return true;
+            }
+          }
+          return false;
+        } else if constexpr (std::is_same_v<T, ast::TypeFunc>) {
+          for (const auto& param : node.params) {
+            if (TypeContainsInlineParameterSelfConstraint(param.type)) {
+              return true;
+            }
+          }
+          return TypeContainsInlineParameterSelfConstraint(node.ret);
+        } else if constexpr (std::is_same_v<T, ast::TypeClosure>) {
+          for (const auto& param : node.params) {
+            if (TypeContainsInlineParameterSelfConstraint(param.type)) {
+              return true;
+            }
+          }
+          if (TypeContainsInlineParameterSelfConstraint(node.ret)) {
+            return true;
+          }
+          if (node.deps_opt.has_value()) {
+            for (const auto& dep : *node.deps_opt) {
+              if (TypeContainsInlineParameterSelfConstraint(dep.type)) {
+                return true;
+              }
+            }
+          }
+          return false;
+        } else if constexpr (std::is_same_v<T, ast::TypeTuple>) {
+          for (const auto& elem : node.elements) {
+            if (TypeContainsInlineParameterSelfConstraint(elem)) {
+              return true;
+            }
+          }
+          return false;
+        } else if constexpr (std::is_same_v<T, ast::TypeArray>) {
+          return TypeContainsInlineParameterSelfConstraint(node.element);
+        } else if constexpr (std::is_same_v<T, ast::TypeSlice>) {
+          return TypeContainsInlineParameterSelfConstraint(node.element);
+        } else if constexpr (std::is_same_v<T, ast::TypeSafePtr>) {
+          return TypeContainsInlineParameterSelfConstraint(node.element);
+        } else if constexpr (std::is_same_v<T, ast::TypeRawPtr>) {
+          return TypeContainsInlineParameterSelfConstraint(node.element);
+        } else if constexpr (std::is_same_v<T, ast::TypePathType>) {
+          for (const auto& arg : node.generic_args) {
+            if (TypeContainsInlineParameterSelfConstraint(arg)) {
+              return true;
+            }
+          }
+          return false;
+        } else if constexpr (std::is_same_v<T, ast::TypeApply>) {
+          for (const auto& arg : node.args) {
+            if (TypeContainsInlineParameterSelfConstraint(arg)) {
+              return true;
+            }
+          }
+          return false;
+        } else if constexpr (std::is_same_v<T, ast::TypeModalState>) {
+          for (const auto& arg : node.generic_args) {
+            if (TypeContainsInlineParameterSelfConstraint(arg)) {
+              return true;
+            }
+          }
+          return false;
+        } else if constexpr (std::is_same_v<T, ast::SpliceExprNode>) {
+          return ExprContainsIdentifier(node.expr, "self");
+        } else if constexpr (std::is_same_v<T, ast::TypeRange> ||
+                             std::is_same_v<T, ast::TypeRangeInclusive> ||
+                             std::is_same_v<T, ast::TypeRangeFrom> ||
+                             std::is_same_v<T, ast::TypeRangeTo> ||
+                             std::is_same_v<T, ast::TypeRangeToInclusive>) {
+          return TypeContainsInlineParameterSelfConstraint(node.base);
+        }
+        return false;
+      },
+      type->node);
 }
 
 }  // namespace
@@ -232,6 +426,13 @@ SignatureResult BuildProcedureSignature(
   func_params.reserve(params.size());
 
   for (const auto& param : params) {
+    if (TypeContainsInlineParameterSelfConstraint(param.type)) {
+      SPEC_RULE("InlineParamConstraint-Self-Err");
+      result.ok = false;
+      result.diag_id = "E-TYP-1956";
+      return result;
+    }
+
     const auto lowered = LowerTypeWithWF(ctx, param.type);
     if (!lowered.ok) {
       result.ok = false;

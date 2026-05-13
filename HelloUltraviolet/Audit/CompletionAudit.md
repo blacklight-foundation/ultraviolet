@@ -31,10 +31,10 @@ Objective: execute `.agents/plans/HelloUltravioletReferenceCorpus.md`.
 - `CatalogSymbols.uv` imports and executes the 65 unique compiled reference
   symbols named by catalog rows, and `HelloUltraviolet.exe` validates them
   through `catalogCompiledSymbolsExecute()`.
-- `Source/Fixtures/RejectedSource` compiles metadata for 270 rejected-source
+- `Source/Fixtures/RejectedSource` compiles metadata for 279 rejected-source
   fixture specimens, and `HelloUltraviolet.exe` validates that fixture index
   through `rejectedSourceFixturesAreIndexed`.
-- The 270 rejected-source fixture projects under
+- The 279 rejected-source fixture projects under
   `HelloUltraviolet/Fixtures/RejectedSource` fail with their expected SPEC
   diagnostic code or static-rule diagnostic when built individually with
   `Cursive.exe build ... --check`.
@@ -44,7 +44,7 @@ Objective: execute `.agents/plans/HelloUltravioletReferenceCorpus.md`.
 - `HelloUltraviolet.exe` verifies runtime existence of each rejected fixture
   manifest, invalid source file, and `Expected.uv` artifact through
   `rejectedSourceFixtureArtifactsExist(context)`.
-- `ExpectedFiles.uv` reads the 270 current rejected-source `Expected.uv`
+- `ExpectedFiles.uv` reads the 279 current rejected-source `Expected.uv`
   artifacts and `HelloUltraviolet.exe` validates exact metadata content through
   one named check per specimen.
 - `Source/Fixtures/DiagnosticSource` compiles metadata for 11 diagnostic-source
@@ -134,6 +134,23 @@ Objective: execute `.agents/plans/HelloUltravioletReferenceCorpus.md`.
   with `E-MEM-3030`; these exercise the HeapAllocator raw-call unsafe
   requirement, both formal raw-call unsafe rules, and the capability-class
   diagnostics aggregate.
+- The refinement rejected-source specimens under
+  `Fixtures/RejectedSource/Polymorphism` reject with `E-TYP-1953`,
+  `E-TYP-1954`, `E-TYP-1955`, and `E-TYP-1956`; these exercise refinement
+  well-formedness, static introduction, static-default checking, refinement
+  diagnostic ownership, and the refinement diagnostic table surface. The
+  inline-parameter `self` diagnostic required a bootstrap fix in
+  `signature.cpp`.
+- `Fixtures/RejectedSource/Procedures/NoMatchingOverload` rejects with
+  `E-SEM-3031`, exercising the no-match branch of
+  `req.15.FreeCallOverloadResolutionAlgorithm`. This required bootstrap fixes
+  in `collect_toplevel.cpp` and `expr/call.cpp` so same-name free procedures
+  form overload sets before ordinary call typing.
+- `Fixtures/RejectedSource/Procedures/DuplicateErasedOverloadSignature`
+  rejects with `E-SEM-3032`, exercising
+  `req.15.DuplicateErasedOverloadSignaturesForbidden`. This required a
+  bootstrap fix in `typecheck.cpp` so procedure declaration typing compares
+  same-name overload parameter signatures after generic-parameter erasure.
 - The dynamic class object rejected-source specimens under
   `Fixtures/RejectedSource/Polymorphism` reject with `E-TYP-2509`,
   `E-TYP-2541`, `E-TYP-2542`, and `E-SEM-2536`; these exercise undefined
@@ -197,19 +214,19 @@ Objective: execute `.agents/plans/HelloUltravioletReferenceCorpus.md`.
 ## Completion Blockers
 
 - Rejected-source and diagnostic-source fixtures are partially populated. The
-  current fixture set covers 270 rejected-source diagnostics and 11 compiling
+  current fixture set covers 279 rejected-source diagnostics and 11 compiling
   diagnostic-source warning/info/absence cases; the full expected-diagnostics
-  obligation surface is not yet represented. Expected-file metadata names 265
-  unique obligation ids. Of the 382 expected-diagnostic obligations, 139 remain
+  obligation surface is not yet represented. Of the 382 expected-diagnostic
+  obligations, 116 remain
   uncovered. Remaining uncovered expected-diagnostic ownership counts are:
-  abstraction/polymorphism 8, async 41, compile-time 27, expressions 5,
-  key-system 1, lowering 4, patterns 1, procedures/contracts 9, statements 5,
+  abstraction/polymorphism 2, async 41, compile-time 27,
+  key-system 1, lowering 3, procedures/contracts 3, statements 1,
   and structured parallelism 38.
 - `Fixtures/BootstrapNonCompliance/Procedures/FreeProcedureOverloadResolution`
-  contains a SPEC-valid free-procedure overload specimen. The current bootstrap
-  rejects it as `E-MOD-1302` during module-scope name collection before
-  overload resolution can run. `Audit/BootstrapNonCompliance.md` records this as
-  `UVBOOT-0032` with owner paths in `collect_toplevel.cpp` and `expr/call.cpp`.
+  now passes both semantic checking and the standalone library build after the
+  bootstrap repair in `collect_toplevel.cpp` and `expr/call.cpp`. The
+  `NoMatchingOverload` rejected-source fixture covers the no-match branch of
+  the free-call overload selection algorithm.
 - `rule.18.BlockInfo-Res-Err` remains unindexed pending source-construct
   clarification. The row rejects block result prefixes whose `Res` set has no
   common type, but the Chapter 18 rules inspected here produce `Res = []` for
