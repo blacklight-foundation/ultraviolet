@@ -1,31 +1,52 @@
 //! Reference specimens for Lowering / SharedJudgments.
 
-internal record LoweringReference {
-    internal source_constructs: usize
-    internal produces_ir: bool
-    internal preserves_semantics: bool
+internal record LoweringMutableCell {
+    internal value: i32
 }
 
-internal procedure loweringReference(
-    source_constructs: usize,
-    produces_ir: bool,
-    preserves_semantics: bool
-) -> LoweringReference {
-    return LoweringReference {
-        source_constructs: source_constructs,
-        produces_ir: produces_ir,
-        preserves_semantics: preserves_semantics
+internal procedure loweredExpressionValue(input: i32) -> i32 {
+    let adjusted: i32 = if input > 4 {
+        input + 3
+    } else {
+        input - 3
     }
+    return adjusted * 2
 }
 
-internal procedure loweringReferenceIsCovered(reference: LoweringReference) -> bool {
-    return reference.source_constructs > 0usize &&
-        reference.produces_ir &&
-        reference.preserves_semantics
+internal procedure loweredStatementValue(limit: i32) -> i32 {
+    var index: i32 = 0
+    var total: i32 = 0
+    loop {
+        index = index + 1
+        if index == 2 {
+            continue
+        }
+        total = total + index
+        if index >= limit {
+            break
+        }
+    }
+    return total
+}
+
+internal procedure loweredBlockValue(seed: i32) -> i32 {
+    let block_value: i32 = {
+        let next: i32 = seed + 1
+        next * 2
+    }
+    return block_value
+}
+
+internal procedure loweredPlaceMutation() -> bool {
+    var cell: LoweringMutableCell = LoweringMutableCell { value: 3 }
+    cell.value = cell.value + 7
+    return cell.value == 10
 }
 
 /// Exercises the Lowering SharedJudgments reference surface.
 public procedure runLoweringSharedJudgmentsReference() -> bool {
-    let reference: LoweringReference = loweringReference(4usize, true, true)
-    return loweringReferenceIsCovered(reference)
+    return loweredExpressionValue(5) == 16 &&
+        loweredStatementValue(4) == 8 &&
+        loweredBlockValue(6) == 14 &&
+        loweredPlaceMutation()
 }

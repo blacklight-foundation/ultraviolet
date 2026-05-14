@@ -15,12 +15,28 @@ internal record AssociatedValueOwner <: AssociatedValueClass {
     internal value: i32
 }
 
+internal class AssociatedDefaultClass {
+    internal type DefaultItem = i32
+
+    internal procedure associatedDefaultBindingValue(~) -> i32 {
+        return 53
+    }
+}
+
+internal record AssociatedDefaultOwner <: AssociatedDefaultClass {
+    internal value: i32
+}
+
 /// Exercises the Polymorphism AssociatedTypes reference surface.
 public procedure runPolymorphismAssociatedTypesReference() -> bool {
     let owner: AssociatedValueOwner = AssociatedValueOwner { value: 37 }
+    let default_owner: AssociatedDefaultOwner = AssociatedDefaultOwner { value: 41 }
     let reference: PolymorphismReference = polymorphismReference(
-        2usize,
-        owner.value == 37 && owner~>associatedDefaultValue() == 31,
+        4usize,
+        owner.value == 37 &&
+            owner~>associatedDefaultValue() == 31 &&
+            default_owner.value == 41 &&
+            default_owner~>associatedDefaultBindingValue() == 53,
         false
     )
     return polymorphismReferenceIsCovered(reference)

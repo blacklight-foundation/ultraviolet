@@ -1,7 +1,34 @@
 //! Reference specimens for Comptime / DeriveTargets.
 
+internal class ComptimeDeriveClass {}
+
+derive target EmitComptimeDeriveReference(target: Type) |: emits ComptimeDeriveClass {
+    let target_name = introspect~>type_name(target)
+    let ast = quote {
+        internal procedure emittedComptimeDeriveReferenceValue() -> i32 {
+            return 37
+        }
+    }
+    emitter~>emit(ast)
+}
+
+derive target RequireComptimeDeriveReference(target: Type) |: requires ComptimeDeriveClass {
+    let target_name = introspect~>type_name(target)
+    let ast = quote {
+        internal procedure emittedRequiredComptimeDeriveReferenceValue() -> i32 {
+            return 41
+        }
+    }
+    emitter~>emit(ast)
+}
+
+[[derive(EmitComptimeDeriveReference, RequireComptimeDeriveReference)]]
+internal record ComptimeDerivedReference <: ComptimeDeriveClass {
+    internal value: i32
+}
+
 /// Exercises the Comptime DeriveTargets reference surface.
 public procedure runComptimeDeriveTargetsReference() -> bool {
-    let reference: ComptimeReference = comptimeReference(true, true, false)
-    return comptimeReferenceIsCovered(reference) && reference.emits_source
+    return emittedComptimeDeriveReferenceValue() == 37 &&
+        emittedRequiredComptimeDeriveReferenceValue() == 41
 }

@@ -495,6 +495,7 @@ void IRInstructionVisitor::operator()(const IRYield &y) const
   builder.SetInsertPoint(cont_bb);
   if (info.is_resume && async_state->resume_switch)
   {
+    async_state->emitting_resume_prelude = false;
     if (y.release && async_state->frame_ptr)
     {
       llvm::Value *released =

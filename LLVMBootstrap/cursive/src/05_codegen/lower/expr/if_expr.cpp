@@ -54,6 +54,7 @@ LowerCtx MakeBranchCtx(LowerCtx& base) {
   branch.values.derived_values.clear();
   branch.values.drop_glue_types.clear();
   branch.values.parent = &base;
+  branch.extra_procs.clear();
   return branch;
 }
 
@@ -249,6 +250,8 @@ LowerResult LowerIfExpr(const ast::Expr& expr,
 
   MergeLowerCtxTemps(ctx, then_ctx);
   MergeLowerCtxTemps(ctx, else_ctx);
+  ctx.MergeGeneratedProcsFrom(then_ctx);
+  ctx.MergeGeneratedProcsFrom(else_ctx);
   MergeMoveStates(ctx, {&then_ctx, &else_ctx});
   MergeFailures(ctx, then_ctx);
   MergeFailures(ctx, else_ctx);

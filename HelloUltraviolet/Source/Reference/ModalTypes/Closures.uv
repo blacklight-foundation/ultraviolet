@@ -1,9 +1,48 @@
 //! Reference specimens for ModalTypes / Closures.
 
+public type ModalClosureNoCapture = || -> i32
+
+public type ModalClosureWithCapture = |i32| -> i32
+
+public type ModalClosureGroupedUnion = |(i32 | bool)| -> i32
+
+public type ModalClosureSharedDependency = || -> i32 [shared: { count: shared i32 }]
+
+internal procedure applyModalClosure(closure: ModalClosureWithCapture, value: i32) -> i32 {
+    return closure(value)
+}
+
+internal procedure applyModalFunctionNoCapture(closure: () -> i32) -> i32 {
+    return closure()
+}
+
+internal procedure applyModalClosureUnion(closure: ModalClosureGroupedUnion, value: i32 | bool) -> i32 {
+    return closure(value)
+}
+
 /// Exercises the ModalTypes Closures reference surface.
 public procedure runModalTypesClosuresReference() -> bool {
     let captured: i32 = 9
-    let add_captured = |value: i32| -> i32 value + captured
-    let no_capture = || 4
-    return add_captured(3) == 12 && no_capture() == 4
+    let union_bias: i32 = 0
+    let add_captured: ModalClosureWithCapture = |value: i32| -> i32 value + captured
+    let no_capture: () -> i32 = || -> i32 4
+    let union_reader: ModalClosureGroupedUnion = |value: (i32 | bool)| -> i32 {
+        return if value is {
+            number: i32 {
+                number + union_bias
+            }
+            flag: bool {
+                if flag {
+                    1 + union_bias
+                } else {
+                    union_bias
+                }
+            }
+        }
+    }
+    return applyModalClosure(add_captured, 3) == 12 &&
+        applyModalFunctionNoCapture(no_capture) == 4 &&
+        applyModalClosureUnion(union_reader, 7) == 7 &&
+        sizeof(ModalClosureNoCapture) == 2usize * sizeof(usize) &&
+        sizeof(ModalClosureSharedDependency) == 2usize * sizeof(usize)
 }

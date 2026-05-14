@@ -10,10 +10,18 @@ using HelloUltraviolet::Fixtures::AcceptedProjects::{ acceptedProjectFixtureArti
 using HelloUltraviolet::Fixtures::ArtifactProjects::{ artifactProjectFixturesAreIndexed }
 using HelloUltraviolet::Fixtures::ArtifactProjects::{ artifactProjectFixtureSourceArtifactsExist }
 using HelloUltraviolet::Fixtures::ArtifactProjects::{ artifactProjectRuntimeErasureArtifactsMatch }
+using HelloUltraviolet::Fixtures::ArtifactProjects::{ artifactProjectAArch64DependencyObjectArtifactsExist }
+using HelloUltraviolet::Fixtures::ArtifactProjects::{ artifactProjectEmitBcLibraryArtifactsExist }
 using HelloUltraviolet::Fixtures::ArtifactProjects::{ reducedEmptyDispatchPanicExpectedArtifactMatches }
 using HelloUltraviolet::Fixtures::DiagnosticSource::{ diagnosticSourceFixturesAreIndexed }
 using HelloUltraviolet::Fixtures::DiagnosticSource::{ diagnosticSourceFixtureArtifactsExist }
 using HelloUltraviolet::Fixtures::DiagnosticSource::{ validTransmuteTargetExpectedDiagnosticFileMatches }
+using HelloUltraviolet::Fixtures::OutputDiagnostics::{ outputDiagnosticFixturesAreIndexed }
+using HelloUltraviolet::Fixtures::OutputDiagnostics::{ outputDiagnosticFixtureArtifactsExist }
+using HelloUltraviolet::Fixtures::OutputDiagnostics::{ llvmToolResolveOwnershipExpectedDiagnosticFileMatches }
+using HelloUltraviolet::Fixtures::OutputDiagnostics::{ llvmToolResolveOwnershipConformanceLogMatches }
+using HelloUltraviolet::Fixtures::OutputDiagnostics::{ emitLLVMRenderFailureExpectedDiagnosticFileMatches }
+using HelloUltraviolet::Fixtures::OutputDiagnostics::{ emitLLVMRenderFailureConformanceLogMatches }
 using HelloUltraviolet::Fixtures::RejectedSource::{ rejectedSourceFixturesAreIndexed }
 using HelloUltraviolet::Fixtures::RejectedSource::{ rejectedSourceFixtureArtifactsExist }
 using HelloUltraviolet::Fixtures::RejectedSource::{ userDiagnosticErrorExpectedDiagnosticFileMatches }
@@ -658,6 +666,16 @@ public procedure runReferenceCorpus(context: Context) -> ReferenceResult {
     )
     passed = passed && recordReferenceResult(
         context,
+        "artifactProjectAArch64DependencyObjectArtifactsExist",
+        artifactProjectAArch64DependencyObjectArtifactsExist(context)
+    )
+    passed = passed && recordReferenceResult(
+        context,
+        "artifactProjectEmitBcLibraryArtifactsExist",
+        artifactProjectEmitBcLibraryArtifactsExist(context)
+    )
+    passed = passed && recordReferenceResult(
+        context,
         "reducedEmptyDispatchPanicExpectedArtifactMatches",
         reducedEmptyDispatchPanicExpectedArtifactMatches(context)
     )
@@ -780,6 +798,36 @@ public procedure runReferenceCorpus(context: Context) -> ReferenceResult {
         context,
         "projectFilesInvalidPathExpectedDiagnosticFileMatches",
         projectFilesInvalidPathExpectedDiagnosticFileMatches(context)
+    )
+    passed = passed && recordReferenceResult(
+        context,
+        "outputDiagnosticFixturesAreIndexed",
+        outputDiagnosticFixturesAreIndexed()
+    )
+    passed = passed && recordReferenceResult(
+        context,
+        "outputDiagnosticFixtureArtifactsExist",
+        outputDiagnosticFixtureArtifactsExist(context)
+    )
+    passed = passed && recordReferenceResult(
+        context,
+        "llvmToolResolveOwnershipExpectedDiagnosticFileMatches",
+        llvmToolResolveOwnershipExpectedDiagnosticFileMatches(context)
+    )
+    passed = passed && recordReferenceResult(
+        context,
+        "llvmToolResolveOwnershipConformanceLogMatches",
+        llvmToolResolveOwnershipConformanceLogMatches(context)
+    )
+    passed = passed && recordReferenceResult(
+        context,
+        "emitLLVMRenderFailureExpectedDiagnosticFileMatches",
+        emitLLVMRenderFailureExpectedDiagnosticFileMatches(context)
+    )
+    passed = passed && recordReferenceResult(
+        context,
+        "emitLLVMRenderFailureConformanceLogMatches",
+        emitLLVMRenderFailureConformanceLogMatches(context)
     )
     passed = passed && recordReferenceResult(
         context,
@@ -3224,42 +3272,42 @@ public procedure runReferenceCorpus(context: Context) -> ReferenceResult {
     passed = passed && recordReferenceResult(
         context,
         "runParallelismParallelBlocksReference",
-        runParallelismParallelBlocksReference()
+        runParallelismParallelBlocksReference(context)
     )
     passed = passed && recordReferenceResult(
         context,
         "runParallelismExecutionDomainsReference",
-        runParallelismExecutionDomainsReference()
+        runParallelismExecutionDomainsReference(context)
     )
     passed = passed && recordReferenceResult(
         context,
         "runParallelismCaptureSemanticsReference",
-        runParallelismCaptureSemanticsReference()
+        runParallelismCaptureSemanticsReference(context)
     )
     passed = passed && recordReferenceResult(
         context,
         "runParallelismSpawnReference",
-        runParallelismSpawnReference()
+        runParallelismSpawnReference(context)
     )
     passed = passed && recordReferenceResult(
         context,
         "runParallelismDispatchReference",
-        runParallelismDispatchReference()
+        runParallelismDispatchReference(context)
     )
     passed = passed && recordReferenceResult(
         context,
         "runParallelismCancellationReference",
-        runParallelismCancellationReference()
+        runParallelismCancellationReference(context)
     )
     passed = passed && recordReferenceResult(
         context,
         "runParallelismPanicHandlingReference",
-        runParallelismPanicHandlingReference()
+        runParallelismPanicHandlingReference(context)
     )
     passed = passed && recordReferenceResult(
         context,
         "runParallelismDeterminismReference",
-        runParallelismDeterminismReference()
+        runParallelismDeterminismReference(context)
     )
     passed = passed && recordReferenceResult(
         context,

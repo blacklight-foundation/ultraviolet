@@ -1,7 +1,14 @@
 //! Reference specimens for Keys / SpeculativeExecution.
 
+internal procedure speculativeWriteValue() -> i32 {
+    var shared_value: shared i32 = 1
+    #shared_value speculative write {
+        shared_value = 2
+    }
+    return shared_value + 0
+}
+
 /// Exercises the Keys SpeculativeExecution reference surface.
 public procedure runKeysSpeculativeExecutionReference() -> bool {
-    let reference: KeyReference = keyReference(3usize, false, true)
-    return keyReferenceIsCovered(reference) && reference.runtime_checked
+    return speculativeWriteValue() == 2
 }

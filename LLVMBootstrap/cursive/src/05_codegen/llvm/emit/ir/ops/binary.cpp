@@ -2,6 +2,9 @@
 // File: 05_codegen/llvm/emit/ir/ops/binary.cpp
 // Canonical owner for LLVM IR binary operation instruction lowering.
 // =============================================================================
+#include <cstdint>
+#include <optional>
+
 #include "../../ir_instruction_visitor.h"
 
 namespace cursive::codegen::emit_detail {
@@ -56,6 +59,113 @@ bool SameStringBytesFamily(const LowerCtx *ctx,
   return (lhs_string && rhs_string) || (lhs_bytes && rhs_bytes);
 }
 
+std::optional<std::uint8_t> OneByteLiteralViewByte(llvm::Value *value)
+{
+  auto *literal = llvm::dyn_cast_or_null<llvm::ConstantStruct>(value);
+  if (!literal || literal->getNumOperands() < 2)
+  {
+    return std::nullopt;
+  }
+
+  auto *len = llvm::dyn_cast<llvm::ConstantInt>(literal->getOperand(1));
+  if (!len || !len->equalsInt(1))
+  {
+    return std::nullopt;
+  }
+
+  auto *data = llvm::dyn_cast<llvm::Constant>(literal->getOperand(0));
+  if (!data)
+  {
+    return std::nullopt;
+  }
+
+  llvm::Constant *cursor = data;
+  for (std::size_t depth = 0; cursor && depth < 8; ++depth)
+  {
+    if (auto *global = llvm::dyn_cast<llvm::GlobalVariable>(cursor))
+    {
+      if (auto *bytes =
+              llvm::dyn_cast_or_null<llvm::ConstantDataArray>(global->getInitializer()))
+      {
+        if (bytes->getNumElements() == 1)
+        {
+          return static_cast<std::uint8_t>(bytes->getElementAsInteger(0));
+        }
+      }
+      return std::nullopt;
+    }
+
+    auto *expr = llvm::dyn_cast<llvm::ConstantExpr>(cursor);
+    if (!expr)
+    {
+      return std::nullopt;
+    }
+    if (expr->isCast() || expr->getOpcode() == llvm::Instruction::GetElementPtr)
+    {
+      cursor = llvm::dyn_cast<llvm::Constant>(expr->getOperand(0));
+      continue;
+    }
+    return std::nullopt;
+  }
+
+  return std::nullopt;
+}
+
+llvm::Value *EmitViewEqualsOneByteLiteral(LLVMEmitter &emitter,
+                                          llvm::IRBuilder<> &builder,
+                                          llvm::Value *view_data,
+                                          llvm::Value *view_len,
+                                          std::uint8_t literal_byte)
+{
+  if (!view_data || !view_len || !view_data->getType()->isPointerTy() ||
+      !view_len->getType()->isIntegerTy())
+  {
+    return nullptr;
+  }
+
+  llvm::Function *fn =
+      builder.GetInsertBlock() ? builder.GetInsertBlock()->getParent() : nullptr;
+  if (!fn)
+  {
+    return nullptr;
+  }
+
+  llvm::Type *i8_ty = llvm::Type::getInt8Ty(emitter.GetContext());
+  llvm::Type *i1_ty = llvm::Type::getInt1Ty(emitter.GetContext());
+  llvm::Type *i8_ptr_ty = llvm::PointerType::get(i8_ty, 0);
+  llvm::Value *len_is_one = builder.CreateICmpEQ(
+      view_len,
+      llvm::ConstantInt::get(view_len->getType(), 1),
+      "string_eq.literal_len");
+
+  llvm::BasicBlock *origin = builder.GetInsertBlock();
+  llvm::BasicBlock *byte_block =
+      llvm::BasicBlock::Create(emitter.GetContext(), "string_eq.literal_byte", fn);
+  llvm::BasicBlock *done_block =
+      llvm::BasicBlock::Create(emitter.GetContext(), "string_eq.literal_done", fn);
+  builder.CreateCondBr(len_is_one, byte_block, done_block);
+
+  builder.SetInsertPoint(byte_block);
+  llvm::Value *byte_ptr = CoerceTo(&builder, view_data, i8_ptr_ty);
+  if (!byte_ptr)
+  {
+    return nullptr;
+  }
+  llvm::Value *byte = builder.CreateLoad(i8_ty, byte_ptr, "string_eq.view_byte");
+  llvm::Value *byte_equal = builder.CreateICmpEQ(
+      byte,
+      llvm::ConstantInt::get(i8_ty, literal_byte),
+      "string_eq.literal_equal");
+  llvm::BasicBlock *byte_exit = builder.GetInsertBlock();
+  builder.CreateBr(done_block);
+
+  builder.SetInsertPoint(done_block);
+  llvm::PHINode *result = builder.CreatePHI(i1_ty, 2);
+  result->addIncoming(llvm::ConstantInt::getFalse(emitter.GetContext()), origin);
+  result->addIncoming(byte_equal, byte_exit);
+  return result;
+}
+
 llvm::Value *EmitStringBytesContentEq(LLVMEmitter &emitter,
                                       llvm::IRBuilder<> &builder,
                                       const LowerCtx *ctx,
@@ -88,6 +198,7 @@ llvm::Value *EmitStringBytesContentEq(LLVMEmitter &emitter,
   llvm::Type *i64_ty = llvm::Type::getInt64Ty(emitter.GetContext());
   llvm::Type *i32_ty = llvm::Type::getInt32Ty(emitter.GetContext());
   llvm::Type *i1_ty = llvm::Type::getInt1Ty(emitter.GetContext());
+  llvm::Type *i8_ty = llvm::Type::getInt8Ty(emitter.GetContext());
   llvm::Type *ptr_ty = emitter.GetOpaquePtr();
 
   llvm::Value *lhs_data = builder.CreateExtractValue(lhs, {0u});
@@ -97,6 +208,27 @@ llvm::Value *EmitStringBytesContentEq(LLVMEmitter &emitter,
   if (!lhs_data || !rhs_data || !lhs_len || !rhs_len)
   {
     return nullptr;
+  }
+
+  const std::optional<std::uint8_t> lhs_literal_byte =
+      OneByteLiteralViewByte(lhs);
+  const std::optional<std::uint8_t> rhs_literal_byte =
+      OneByteLiteralViewByte(rhs);
+  if (lhs_literal_byte.has_value() && rhs_literal_byte.has_value())
+  {
+    return llvm::ConstantInt::get(
+        llvm::Type::getInt1Ty(emitter.GetContext()),
+        *lhs_literal_byte == *rhs_literal_byte);
+  }
+  if (lhs_literal_byte.has_value())
+  {
+    return EmitViewEqualsOneByteLiteral(
+        emitter, builder, rhs_data, rhs_len, *lhs_literal_byte);
+  }
+  if (rhs_literal_byte.has_value())
+  {
+    return EmitViewEqualsOneByteLiteral(
+        emitter, builder, lhs_data, lhs_len, *rhs_literal_byte);
   }
 
   lhs_data = CoerceTo(&builder, lhs_data, ptr_ty);
@@ -113,6 +245,8 @@ llvm::Value *EmitStringBytesContentEq(LLVMEmitter &emitter,
   llvm::Value *compare_len = builder.CreateSelect(lhs_len_le_rhs, lhs_len, rhs_len);
   llvm::Value *zero_len = builder.CreateICmpEQ(
       compare_len, llvm::ConstantInt::get(i64_ty, 0));
+  llvm::Value *one_len = builder.CreateICmpEQ(
+      compare_len, llvm::ConstantInt::get(i64_ty, 1));
 
   llvm::Function *fn =
       builder.GetInsertBlock() ? builder.GetInsertBlock()->getParent() : nullptr;
@@ -129,11 +263,34 @@ llvm::Value *EmitStringBytesContentEq(LLVMEmitter &emitter,
   }
 
   llvm::BasicBlock *origin = builder.GetInsertBlock();
+  llvm::BasicBlock *one_check_block =
+      llvm::BasicBlock::Create(emitter.GetContext(), "string_eq.one_check", fn);
+  llvm::BasicBlock *one_block =
+      llvm::BasicBlock::Create(emitter.GetContext(), "string_eq.one", fn);
   llvm::BasicBlock *memcmp_block =
       llvm::BasicBlock::Create(emitter.GetContext(), "string_eq.memcmp", fn);
   llvm::BasicBlock *done_block =
       llvm::BasicBlock::Create(emitter.GetContext(), "string_eq.done", fn);
-  builder.CreateCondBr(zero_len, done_block, memcmp_block);
+  builder.CreateCondBr(zero_len, done_block, one_check_block);
+
+  builder.SetInsertPoint(one_check_block);
+  builder.CreateCondBr(one_len, one_block, memcmp_block);
+
+  builder.SetInsertPoint(one_block);
+  llvm::Type *i8_ptr_ty = llvm::PointerType::get(i8_ty, 0);
+  llvm::Value *lhs_byte_ptr = CoerceTo(&builder, lhs_data, i8_ptr_ty);
+  llvm::Value *rhs_byte_ptr = CoerceTo(&builder, rhs_data, i8_ptr_ty);
+  if (!lhs_byte_ptr || !rhs_byte_ptr)
+  {
+    return nullptr;
+  }
+  llvm::Value *lhs_byte =
+      builder.CreateLoad(i8_ty, lhs_byte_ptr, "string_eq.lhs_byte");
+  llvm::Value *rhs_byte =
+      builder.CreateLoad(i8_ty, rhs_byte_ptr, "string_eq.rhs_byte");
+  llvm::Value *one_equal = builder.CreateICmpEQ(lhs_byte, rhs_byte);
+  llvm::BasicBlock *one_exit = builder.GetInsertBlock();
+  builder.CreateBr(done_block);
 
   builder.SetInsertPoint(memcmp_block);
   auto *memcmp_ty =
@@ -147,8 +304,9 @@ llvm::Value *EmitStringBytesContentEq(LLVMEmitter &emitter,
   builder.CreateBr(done_block);
 
   builder.SetInsertPoint(done_block);
-  llvm::PHINode *bytes_equal = builder.CreatePHI(i1_ty, 2);
+  llvm::PHINode *bytes_equal = builder.CreatePHI(i1_ty, 3);
   bytes_equal->addIncoming(llvm::ConstantInt::getTrue(emitter.GetContext()), origin);
+  bytes_equal->addIncoming(one_equal, one_exit);
   bytes_equal->addIncoming(memcmp_equal, memcmp_exit);
   return builder.CreateAnd(lengths_equal, bytes_equal);
 }

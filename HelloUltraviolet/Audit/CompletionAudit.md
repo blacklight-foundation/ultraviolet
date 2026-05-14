@@ -52,6 +52,50 @@ Objective: execute `.agents/plans/HelloUltravioletReferenceCorpus.md`.
   warnings or informational diagnostics, or while proving a SPEC diagnostic is
   absent, and `HelloUltraviolet.exe` validates the index, artifact paths, and
   exact `Expected.uv` metadata through the diagnostic-source fixture checks.
+- `Source/Fixtures/OutputDiagnostics` compiles metadata for the
+  `LlvmToolResolveOwnership` and `EmitLLVMRenderFailure` output-diagnostic
+  fixtures, and `HelloUltraviolet.exe` validates the index, source artifacts,
+  exact `Expected.uv` metadata, and conformance-log ownership markers through
+  the output-diagnostic fixture checks.
+- `Fixtures/OutputDiagnostics/Lowering/LlvmToolResolveOwnership` builds with
+  exit code 1 and emits `E-OUT-0403` when bitcode emission requests
+  `llvm-as` from an unavailable toolchain. The conformance log records
+  `ResolveTool-Err-IR`, `Out-IR-Err`, and `Output-Pipeline-Err`, exercising
+  `requirement.24.LLVMToolAcceptanceAndResolveOwnership` without assigning
+  the failure to object emission.
+- `Fixtures/OutputDiagnostics/Lowering/EmitLLVMRenderFailure` builds with
+  exit code 1 and emits `E-OUT-0403` after resolving a fixture-local
+  `llvm-as` tool that reports LLVM 21.1.8 and then rejects rendered LLVM text.
+  The conformance log records `ResolveTool-Ok`, `AssembleIR-Err`,
+  `EmitLLVM-Err`, `Out-IR-Err`, and `Output-Pipeline-Err`, exercising
+  `rule.24.EmitLLVM-Err` without assigning the failure to object emission or
+  LLVM-tool resolution.
+- The `Source/Reference/Lowering` files now contain executable source
+  specimens for expression, statement, block, and place lowering; concrete
+  `sizeof`/`alignof` layout queries; module-scope initialization; defer cleanup
+  and user `drop` lowering for a non-`Bitcopy` record; runtime string/bytes
+  interface calls; exported symbol mangling; and backend arithmetic/branching.
+  `HelloUltraviolet.exe` exercises those flows through the seven
+  `runLowering...Reference` functions.
+- The `Source/Reference/ModalTypes` files now contain executable source
+  specimens for modal declarations, state fields, state-specific methods with
+  receiver permissions, consuming transitions, explicit `widen` from concrete
+  modal state to general modal type, string and bytes state/layout/builtin
+  behavior, safe and raw pointer state/layout/deref behavior, first-class
+  function types including `move` parameters, and closure type syntax including
+  grouped-union parameters and shared-dependency annotations.
+  `HelloUltraviolet.exe` exercises those flows through the ten
+  `runModalTypes...Reference` functions.
+- The `Source/Reference/Polymorphism` files now contain executable source
+  specimens for generic default type parameters, generic aliases, multi-predicate
+  generic clauses, generic tuple-return procedures, class-bound generic method
+  dispatch, default associated types, default class methods, dynamic casts to
+  superclass objects, opaque class values, and receiver permissions for
+  const/shared/unique class methods. This surfaced and repaired bootstrap
+  lowering defects in generic class-bound method-symbol selection and generated
+  procedure propagation from branch-local contexts.
+  `HelloUltraviolet.exe` exercises those flows through the Polymorphism
+  reference runner.
 - `Fixtures/DiagnosticSource/Expressions/ValidTransmuteTarget` builds with exit
   code 0 and emits `W-SAFE-0100` for a valid unsafe transmute whose target type
   is known to admit invalid bit patterns.
@@ -334,7 +378,7 @@ Objective: execute `.agents/plans/HelloUltravioletReferenceCorpus.md`.
   `def.ImplementationOrphanRule` for record, enum, and modal `implements`
   clauses in `CheckOrphanRule`, using the first module-path segment as the
   assembly identity and routing violations to `E-TYP-2507`.
-- `Source/Fixtures/AcceptedProjects` compiles metadata for 5 accepted project
+- `Source/Fixtures/AcceptedProjects` compiles metadata for 6 accepted project
   fixture specimens, and `HelloUltraviolet.exe` validates both the index and
   artifact paths through accepted-project fixture checks.
 - `Fixtures/AcceptedProjects/StaticLibrary` builds as a valid static library
@@ -346,26 +390,52 @@ Objective: execute `.agents/plans/HelloUltravioletReferenceCorpus.md`.
   `Fixtures/AcceptedProjects/VerificationFactPrecondition` builds as a valid
   library project for branch-generated verification facts discharging
   preconditions.
-- `Source/Fixtures/ArtifactProjects` compiles metadata for 5 artifact project
+- `Fixtures/AcceptedProjects/CrossAssemblyImplementation` builds as a valid
+  multi-assembly library project. The selected library assembly imports a
+  dependency assembly, implements the dependency's public required-field class
+  with a local record, and returns the implemented field value. This exercises
+  the valid source surface for `def.ImplementationOrphanRule` and
+  `req.14.ImplementationOrphanRequirement`: the implementing type is local to
+  the current assembly while the class is imported from another assembly.
+  Building this fixture required a bootstrap correction in
+  `collect_toplevel.cpp` and `item/import_decl.cpp` so import validation uses
+  the semantic AST module set being analyzed rather than the selected
+  assembly's initial module list.
+- `Source/Fixtures/ArtifactProjects` compiles metadata for 7 artifact project
   fixture specimens, and `HelloUltraviolet.exe` validates the index,
   source/manifest paths, and emitted-IR erasure checks through artifact-project
   fixture checks.
 - `Fixtures/ArtifactProjects/StaticLibraryArchive` builds a `.lib` archive and
   `.obj`, `Fixtures/ArtifactProjects/EmitLlLibrary` builds a `.ll`, `.lib`, and
-  `.obj`, `Fixtures/ArtifactProjects/FlowProofRuntimeErasure` builds a `.ll`
-  and `.obj` whose emitted IR contains no verification-fact runtime
-  materialization, and `Fixtures/ArtifactProjects/ExecutableOutput` builds and
-  runs an `.exe`, `.map`, and `.obj` artifact.
+  `.obj`, `Fixtures/ArtifactProjects/EmitBcLibrary` builds a `.bc`, `.lib`, and
+  `.obj` with the pinned LLVM 21.1.8 `llvm-as` tool directory, and
+  `Fixtures/ArtifactProjects/FlowProofRuntimeErasure` builds a `.ll` and `.obj`
+  whose emitted IR contains no verification-fact runtime materialization.
+  `Fixtures/ArtifactProjects/ExecutableOutput` builds and runs an `.exe`,
+  `.map`, and `.obj` artifact.
 - `Fixtures/ArtifactProjects/ReducedEmptyDispatchPanic` builds an executable
   artifact and exits with runtime panic code `2862`, exercising
   `P-SEM-2862` for reduced dispatch over an empty iteration space and the
   structured-parallelism runtime-panic ownership obligation.
+- `Fixtures/ArtifactProjects/AArch64DependencyObject` builds a dependency
+  assembly with `toolchain.target_profile = "aarch64-aapcs64"` and emits
+  `build/obj/AArch64DependencyObject.o`, exercising SPEC target-profile object
+  emission without final archiving. This required linking and initializing the
+  bootstrap compiler's AArch64 LLVM target components; the previous
+  target-machine lookup failure for `aarch64-unknown-linux-gnu` is repaired.
+- The object emission path no longer records `EmitObj-Err` when LLVM module
+  materialization fails before object emission begins. That path is owned by
+  `LowerIR-Err`; `EmitObj-Err` remains reserved for failures of
+  `LLVMEmitObj_21` after a module exists.
 - The project check gate passes:
   `Cursive.exe build HelloUltraviolet --check --target-profile x86_64-win64
   --build-progress off`.
 - The project build gate passes:
   `Cursive.exe build HelloUltraviolet --target-profile x86_64-win64
-  --build-progress off`.
+  --build-progress on`, captured in
+  `Build/HelloUltraviolet.after-generated-procs.build.stderr`; it rebuilt all
+  58 modules and produced
+  `HelloUltraviolet/build/bin/HelloUltraviolet.exe`.
 - The executable gate passes:
   `HelloUltraviolet/build/bin/HelloUltraviolet.exe`.
 - The focused bootstrap regression gate passes:
@@ -375,13 +445,16 @@ Objective: execute `.agents/plans/HelloUltravioletReferenceCorpus.md`.
 
 ## Completion Blockers
 
-- Rejected-source and diagnostic-source fixtures are partially populated. The
-  current fixture set covers 368 rejected-source diagnostics and 22 compiling
-  diagnostic-source warning/info/absence cases; the full expected-diagnostics
-  obligation surface is not yet represented. Of the 382 expected-diagnostic
-  obligations, 6 remain uncovered by current expected-diagnostic metadata.
-  Remaining uncovered expected-diagnostic ownership counts are:
-  lowering 3, abstraction/polymorphism 2, statements 1.
+- Rejected-source, diagnostic-source, and output-diagnostic fixtures are
+  partially populated. The current fixture set covers 368 rejected-source
+  diagnostics, 22 compiling diagnostic-source warning/info/absence cases, and
+  2 output-diagnostic artifact cases; the full expected-diagnostics obligation
+  surface is not yet represented. Of the 382 expected-diagnostic obligations,
+  5 remain uncovered by current expected-diagnostic metadata. Remaining
+  uncovered expected-diagnostic ownership counts are: lowering 2,
+  abstraction/polymorphism 2, statements 1.
+  `HelloUltraviolet/Audit/SpecClarificationsNeeded.md` records the current
+  sourceability questions for those five rows.
 - `Fixtures/BootstrapNonCompliance/Procedures/FreeProcedureOverloadResolution`
   now passes both semantic checking and the standalone library build after the
   bootstrap repair in `collect_toplevel.cpp` and `expr/call.cpp`. The
@@ -398,29 +471,38 @@ Objective: execute `.agents/plans/HelloUltravioletReferenceCorpus.md`.
   `LLVMBootstrap/cursive/src/04_analysis/typing/stmt/stmt_common.cpp`; it
   forwards only nested statement-block results with type `!` into
   `flow.results`, which can exercise `BlockInfo-Res` but does not create a
-  heterogeneous `Res` set for `BlockInfo-Res-Err`.
+  heterogeneous `Res` set for `BlockInfo-Res-Err`. This is tracked in
+  `HelloUltraviolet/Audit/SpecClarificationsNeeded.md`.
 - `rule.14.Impl-Orphan-Err` and
   `req.14.ImplementationOrphanRequirement` remain unindexed as concrete
-  expected-diagnostic obligations. `SPECIFICATION.md:13033` states that class
+  expected-diagnostic obligations. The accepted
+  `CrossAssemblyImplementation` fixture now exercises the valid cross-assembly
+  implementation surface for the same orphan requirement. `SPECIFICATION.md:13033` states that class
   implementation occurs at the defining record, enum, or modal declaration and
   that standalone extension implementation blocks are not part of the language.
   Under that surface, an ordinary source implementation always has the
   implementing declaration in the current assembly. The bootstrap checker now
   owns the rule and emits `E-TYP-2507` if an implementation relation is ever
   presented outside that owner context; there is no current SPEC-valid source
-  spelling for the rejecting case.
-- `rule.17.Pat-Tuple-R-Arity-Err` remains unindexed as a concrete
-  expected-diagnostic obligation. `SPECIFICATION.md:18119` names
-  `Code(Pat-Tuple-Arity-Err)`, but the Chapter 17 diagnostic table at
-  `SPECIFICATION.md:18729-18737` does not assign a concrete diagnostic code
-  for tuple-pattern arity mismatch. The current bootstrap therefore emits an
-  uncoded static-rule diagnostic for the `TuplePatternArity` specimen.
-- `rule.18.Frame-NoActiveRegion-Err`, `rule.18.Frame-Target-NotActive-Err`,
-  and `diag.18.Frame` remain unindexed as concrete expected-diagnostic
-  obligations. `SPECIFICATION.md:19704-19710` names frame diagnostic codes, but
-  the Chapter 18 diagnostic table at `SPECIFICATION.md:19996-20008` does not
-  assign concrete codes for the frame rules. The current bootstrap emits
-  uncoded static-rule diagnostics for the frame specimens.
+  spelling for the rejecting case. This is tracked in
+  `HelloUltraviolet/Audit/SpecClarificationsNeeded.md`.
+- `Fixtures/RejectedSource/Patterns/TuplePatternArity` rejects with
+  `E-TYP-1803`, exercising `rule.17.Pat-Tuple-R-Arity-Err` through a tuple
+  pattern whose element count differs from the matched tuple type arity. This
+  required a bootstrap fix in `pattern_common.cpp` and `stmt_common.cpp`
+  because both tuple-pattern typing paths previously returned the uncoded
+  static-rule label instead of the concrete tuple diagnostic code defined by
+  `SPECIFICATION.md:9127`.
+- `Fixtures/RejectedSource/Statements/FrameNoActiveRegion`,
+  `Fixtures/RejectedSource/Statements/FrameTargetNotActive`, and
+  `Fixtures/RejectedSource/Statements/FrameDiagnostic` reject with the
+  uncoded static-rule diagnostics `Frame-NoActiveRegion-Err` and
+  `Frame-Target-NotActive-Err`, exercising
+  `rule.18.Frame-NoActiveRegion-Err`, `rule.18.Frame-Target-NotActive-Err`,
+  and `diag.18.Frame`. This matches the SPEC diagnostic-code selection rule:
+  `SPECIFICATION.md:477-478` states that `SpecCode(id) = ⊥` when the owning
+  construct section assigns no diagnostic code, and the frame rules at
+  `SPECIFICATION.md:19950-19958` do not assign concrete codes.
 - Structured-parallelism rejected-source fixtures now cover spawn/dispatch
   context requirements, invalid spawn option types, execution-domain typing and
   constructor parameters, cancellation option typing, GPU workgroup shape
@@ -455,15 +537,19 @@ Objective: execute `.agents/plans/HelloUltravioletReferenceCorpus.md`.
   cancel-token typing, parallel cleanup lowering, runtime panic propagation,
   reduced empty dispatch panic reporting, lazy worker startup, and Windows
   executable manifest emission.
-- `diag.18.UnsafeRequiredOperationOwnership` remains unindexed. The current
-  fixture exercises `Transmute-Unsafe-Err`, but the expression diagnostic table
-  does not assign a concrete diagnostic code for unsafe transmute outside an
-  unsafe span, so the bootstrap emits an uncoded static-rule diagnostic.
-- Accepted-project fixtures are partially populated with 5 buildable projects.
-  Artifact-project fixtures are partially populated with 5 buildable projects.
+- `Fixtures/RejectedSource/Statements/UnsafeRequiredOperationOwnershipDiagnostic`
+  rejects with the uncoded static-rule diagnostic `Transmute-Unsafe-Err`,
+  exercising `diag.18.UnsafeRequiredOperationOwnership` through the construct
+  owner named by `SPECIFICATION.md:20217`. The transmute rule is defined at
+  `SPECIFICATION.md:16569-16572`, and the expression diagnostic table at
+  `SPECIFICATION.md:18027-18049` assigns concrete codes for invalid casts,
+  transmute size mismatch, transmute alignment mismatch, and invalid bit-pattern
+  warnings, but assigns no concrete code for transmute outside `unsafe`.
+- Accepted-project fixtures are partially populated with 6 buildable projects.
+  Artifact-project fixtures are partially populated with 7 buildable projects.
 - Some high-level areas currently use executable reference models rather than
-  source specimens for every concrete syntax form, notably polymorphism,
-  structured parallelism, async, compile-time forms, FFI, and backend artifacts.
+  source specimens for every concrete syntax form, notably structured
+  parallelism, async, compile-time forms, and FFI.
   Key-system source specimens now exercise selected rejected-source and
   diagnostic-source obligations, with accepted/source-runtime coverage still
   incomplete.

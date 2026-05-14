@@ -1,11 +1,11 @@
 //! Coverage checks for artifact project fixture metadata.
 
 public procedure expectedArtifactProjectFixtureCount() -> usize {
-    return 5usize
+    return 7usize
 }
 
 public procedure artifactProjectFixtureCount() -> usize {
-    return 5usize
+    return 7usize
 }
 
 public procedure validatedArtifactProjectFixtureCount() -> usize {
@@ -49,6 +49,27 @@ public procedure validatedArtifactProjectFixtureCount() -> usize {
         "Fixtures/ArtifactProjects/EmitLlLibrary/build/obj/EmitLlLibrary.obj",
         "LlvmIrArtifact",
         "IRSet"
+    ) {
+        count = count + 1usize
+    }
+    if artifactProjectSpecimenMatches(
+        artifactProjectSpecimen(
+            "EmitBcLibrary",
+            "Fixtures/ArtifactProjects/EmitBcLibrary",
+            "Fixtures/ArtifactProjects/EmitBcLibrary/Ultraviolet.toml",
+            "Fixtures/ArtifactProjects/EmitBcLibrary/Source/Library.uv",
+            "Fixtures/ArtifactProjects/EmitBcLibrary/build/ir/EmitBcLibrary.bc",
+            "Fixtures/ArtifactProjects/EmitBcLibrary/build/obj/EmitBcLibrary.obj",
+            artifactExpectation("LlvmBitcodeArtifact", "def.24.LLVMText21Acceptance")
+        ),
+        "EmitBcLibrary",
+        "Fixtures/ArtifactProjects/EmitBcLibrary",
+        "Fixtures/ArtifactProjects/EmitBcLibrary/Ultraviolet.toml",
+        "Fixtures/ArtifactProjects/EmitBcLibrary/Source/Library.uv",
+        "Fixtures/ArtifactProjects/EmitBcLibrary/build/ir/EmitBcLibrary.bc",
+        "Fixtures/ArtifactProjects/EmitBcLibrary/build/obj/EmitBcLibrary.obj",
+        "LlvmBitcodeArtifact",
+        "def.24.LLVMText21Acceptance"
     ) {
         count = count + 1usize
     }
@@ -115,6 +136,27 @@ public procedure validatedArtifactProjectFixtureCount() -> usize {
         "Fixtures/ArtifactProjects/ReducedEmptyDispatchPanic/build/bin/ReducedEmptyDispatchPanic.map",
         "ReducedEmptyDispatchRuntimePanic",
         "requirement.20.StructuredParallelismRuntimePanicOwnership"
+    ) {
+        count = count + 1usize
+    }
+    if artifactProjectSpecimenMatches(
+        artifactProjectSpecimen(
+            "AArch64DependencyObject",
+            "Fixtures/ArtifactProjects/AArch64DependencyObject",
+            "Fixtures/ArtifactProjects/AArch64DependencyObject/Ultraviolet.toml",
+            "Fixtures/ArtifactProjects/AArch64DependencyObject/Source/Library.uv",
+            "Fixtures/ArtifactProjects/AArch64DependencyObject/build/obj/AArch64DependencyObject.o",
+            "Fixtures/ArtifactProjects/AArch64DependencyObject/build/.ultraviolet-incremental/AArch64DependencyObject.manifest",
+            artifactExpectation("AArch64DependencyObject", "def.TargetProfile")
+        ),
+        "AArch64DependencyObject",
+        "Fixtures/ArtifactProjects/AArch64DependencyObject",
+        "Fixtures/ArtifactProjects/AArch64DependencyObject/Ultraviolet.toml",
+        "Fixtures/ArtifactProjects/AArch64DependencyObject/Source/Library.uv",
+        "Fixtures/ArtifactProjects/AArch64DependencyObject/build/obj/AArch64DependencyObject.o",
+        "Fixtures/ArtifactProjects/AArch64DependencyObject/build/.ultraviolet-incremental/AArch64DependencyObject.manifest",
+        "AArch64DependencyObject",
+        "def.TargetProfile"
     ) {
         count = count + 1usize
     }

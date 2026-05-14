@@ -58,6 +58,80 @@ static const ast::ModalDecl* LookupModalDeclForLiteral(
   return std::get_if<ast::ModalDecl>(decl);
 }
 
+static bool TypePathEqLocal(const TypePath& lhs, const TypePath& rhs) {
+  if (lhs.size() != rhs.size()) {
+    return false;
+  }
+  for (std::size_t i = 0; i < lhs.size(); ++i) {
+    if (!IdEq(lhs[i], rhs[i])) {
+      return false;
+    }
+  }
+  return true;
+}
+
+static bool ExpandLiteralTypeArgsWithDefaults(
+    const ScopeContext& ctx,
+    const std::vector<ast::TypeParam>& params,
+    const std::vector<TypeRef>& provided_args,
+    std::vector<TypeRef>& out_args,
+    std::optional<std::string_view>& diag_id) {
+  out_args = provided_args;
+  if (out_args.size() > params.size()) {
+    diag_id = "E-TYP-2303";
+    return false;
+  }
+
+  for (std::size_t i = out_args.size(); i < params.size(); ++i) {
+    if (!params[i].default_type) {
+      diag_id = "E-SEM-2533";
+      return false;
+    }
+
+    const auto lowered_default = LowerType(ctx, params[i].default_type);
+    if (!lowered_default.ok) {
+      diag_id = lowered_default.diag_id;
+      return false;
+    }
+
+    TypeRef value = lowered_default.type;
+    if (i > 0) {
+      std::vector<ast::TypeParam> prefix_params(
+          params.begin(), params.begin() + static_cast<long>(i));
+      std::vector<TypeRef> prefix_args(
+          out_args.begin(), out_args.begin() + static_cast<long>(i));
+      const auto prefix_subst = BuildSubstitution(prefix_params, prefix_args);
+      value = InstantiateType(value, prefix_subst);
+    }
+    out_args.push_back(value);
+  }
+
+  return true;
+}
+
+static bool ExtractExpectedRecordApplication(
+    const TypeRef& expected_type,
+    const TypePath& literal_path,
+    const std::vector<ast::TypeParam>& params,
+    const ScopeContext& ctx,
+    std::vector<TypeRef>& out_args,
+    std::optional<std::string_view>& diag_id) {
+  const auto stripped = StripPerm(expected_type);
+  if (!stripped) {
+    return false;
+  }
+
+  const auto* expected_path = AppliedTypePath(*stripped);
+  const auto* expected_args = AppliedTypeArgs(*stripped);
+  if (!expected_path || !expected_args ||
+      !TypePathEqLocal(*expected_path, literal_path)) {
+    return false;
+  }
+
+  return ExpandLiteralTypeArgsWithDefaults(
+      ctx, params, *expected_args, out_args, diag_id);
+}
+
 }  // namespace
 
 // §5.2.12 Record Literal Expression Typing
@@ -77,7 +151,8 @@ static const ast::ModalDecl* LookupModalDeclForLiteral(
 ExprTypeResult TypeRecordExprImpl(const ScopeContext& ctx,
                                   const StmtTypeContext& type_ctx,
                                   const ast::RecordExpr& expr,
-                                  const TypeEnv& env) {
+                                  const TypeEnv& env,
+                                  const TypeRef* expected_type) {
   ExprTypeResult result;
 
   // Handle modal state construction: Modal@State{ fields }
@@ -230,6 +305,19 @@ ExprTypeResult TypeRecordExprImpl(const ScopeContext& ctx,
   EmitDeprecatedReferenceWarningFromAttrs(
       record->attrs, type_ctx, ref_span);
 
+  std::vector<TypeRef> record_generic_args;
+  bool expected_record_application = false;
+  if (record->generic_params.has_value() && expected_type) {
+    std::optional<std::string_view> diag_id;
+    expected_record_application = ExtractExpectedRecordApplication(
+        *expected_type, type_path, record->generic_params->params, ctx,
+        record_generic_args, diag_id);
+    if (diag_id.has_value()) {
+      result.diag_id = diag_id;
+      return result;
+    }
+  }
+
   // Check for duplicate field initializers
   std::unordered_set<IdKey> seen;
   for (const auto& field_init : expr.fields) {
@@ -273,7 +361,8 @@ ExprTypeResult TypeRecordExprImpl(const ScopeContext& ctx,
 
   // Type-check each field initializer
   for (const auto& field_init : expr.fields) {
-    auto field_type_opt = FieldType(*record, field_init.name, ctx);
+    auto field_type_opt =
+        FieldType(*record, field_init.name, ctx, record_generic_args);
     if (!field_type_opt.has_value()) {
       return result;
     }
@@ -300,7 +389,13 @@ ExprTypeResult TypeRecordExprImpl(const ScopeContext& ctx,
   SPEC_RULE("T-Record-Literal");
 
   result.ok = true;
-  result.type = MakeTypePath(type_path);
+  if (expected_record_application && expected_type) {
+    result.type = *expected_type;
+  } else if (!record_generic_args.empty()) {
+    result.type = MakeTypePath(type_path, std::move(record_generic_args));
+  } else {
+    result.type = MakeTypePath(type_path);
+  }
   return result;
 }
 

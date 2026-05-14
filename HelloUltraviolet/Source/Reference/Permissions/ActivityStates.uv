@@ -1,30 +1,13 @@
 //! Reference specimens for Permissions / ActivityStates.
 
-internal enum PermissionActivityReference {
-    Active
-    Inactive
-    Expired
-}
-
-internal procedure permissionActivityCanBeUsed(
-    activity: PermissionActivityReference
-) -> bool {
-    return if activity is {
-        PermissionActivityReference::Active {
-            true
-        }
-        PermissionActivityReference::Inactive {
-            false
-        }
-        PermissionActivityReference::Expired {
-            false
-        }
-    }
+internal procedure uniqueActivityValue() -> i32 {
+    let unique_cell: unique PermissionCell = PermissionCell { value: 9 }
+    let first_read: i32 = unique_cell~>readConst()
+    let second_read: i32 = unique_cell~>readUnique()
+    return first_read + second_read
 }
 
 /// Exercises the Permissions ActivityStates reference surface.
 public procedure runPermissionsActivityStatesReference() -> bool {
-    return permissionActivityCanBeUsed(PermissionActivityReference::Active) &&
-        !permissionActivityCanBeUsed(PermissionActivityReference::Inactive) &&
-        !permissionActivityCanBeUsed(PermissionActivityReference::Expired)
+    return uniqueActivityValue() == 18
 }

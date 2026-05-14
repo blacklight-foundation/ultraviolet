@@ -6,6 +6,35 @@
 
 namespace cursive::codegen::emit_detail {
 
+namespace {
+
+bool IsResolvedUnion(const analysis::TypeRef &type)
+{
+  return type && std::holds_alternative<analysis::TypeUnion>(type->node);
+}
+
+bool CanSkipAliasedSRetStore(const LowerCtx *ctx,
+                             const analysis::TypeRef &source_type,
+                             const analysis::TypeRef &target_type)
+{
+  analysis::TypeRef resolved_source = ResolveAliasType(ctx, source_type);
+  analysis::TypeRef resolved_target = ResolveAliasType(ctx, target_type);
+  if (!resolved_source || !resolved_target)
+  {
+    return false;
+  }
+
+  if (IsResolvedUnion(resolved_target) && !IsResolvedUnion(resolved_source))
+  {
+    return false;
+  }
+
+  const auto equiv = analysis::TypeEquiv(resolved_source, resolved_target);
+  return equiv.ok && equiv.equiv;
+}
+
+} // namespace
+
 void IRInstructionVisitor::operator()(const IRReturn &ret) const
 {
   llvm::Function *func = builder.GetInsertBlock()->getParent();
@@ -13,7 +42,7 @@ void IRInstructionVisitor::operator()(const IRReturn &ret) const
   const LowerCtx *ctx = emitter.GetCurrentCtx();
   const std::string sym = std::string(func->getName());
   const LowerCtx::ProcSigInfo *sig = ctx ? ctx->LookupProcSig(sym) : nullptr;
-  analysis::TypeRef source_type = ctx ? ctx->LookupValueType(ret.value) : nullptr;
+  analysis::TypeRef source_type = LookupValueType(ret.value);
   const bool debug_return = core::IsDebugEnabled("return") &&
                             sym.find("PropagationMaybeDouble") != std::string::npos;
   if (debug_return)
@@ -77,7 +106,8 @@ void IRInstructionVisitor::operator()(const IRReturn &ret) const
 
         if (normalized_source && normalized_source->getType()->isPointerTy() &&
             out_ptr->stripPointerCasts() ==
-                normalized_source->stripPointerCasts())
+                normalized_source->stripPointerCasts() &&
+            CanSkipAliasedSRetStore(ctx, source_type, sig->ret))
         {
           builder.CreateRetVoid();
           return;

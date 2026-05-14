@@ -395,6 +395,7 @@ using namespace emit_detail;
       async_state_storage.info = async_info;
       async_state_active = true;
       async_resume_mode = async_info->is_resume;
+      async_state_storage.emitting_resume_prelude = async_info->is_resume;
 
       llvm::IRBuilder<> entry_builder(&func->getEntryBlock(), func->getEntryBlock().begin());
       for (const auto &slot_name : async_info->slot_order)
@@ -484,10 +485,22 @@ using namespace emit_detail;
           {
             resume_state = llvm::ConstantInt::get(i64_ty, 0);
           }
+          llvm::BasicBlock *invalid_resume_bb =
+              llvm::BasicBlock::Create(context_, "async.resume.invalid", func);
           llvm::BasicBlock *start_bb =
               llvm::BasicBlock::Create(context_, "async.resume.start", func);
           async_state_storage.resume_switch =
-              builder->CreateSwitch(resume_state, start_bb);
+              builder->CreateSwitch(resume_state, invalid_resume_bb);
+          builder->SetInsertPoint(invalid_resume_bb);
+          if (func->getReturnType()->isVoidTy())
+          {
+            builder->CreateRetVoid();
+          }
+          else
+          {
+            builder->CreateRet(
+                llvm::Constant::getNullValue(func->getReturnType()));
+          }
           builder->SetInsertPoint(start_bb);
         }
       }

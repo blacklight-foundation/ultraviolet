@@ -32,6 +32,8 @@ namespace cursive::codegen {
 /// @param expr The record expression AST node
 /// @param ctx  The lowering context
 /// @return IR to execute and the resulting record value
-LowerResult LowerRecord(const ast::RecordExpr& expr, LowerCtx& ctx);
+LowerResult LowerRecord(const ast::Expr& full_expr,
+                        const ast::RecordExpr& expr,
+                        LowerCtx& ctx);
 
 }  // namespace cursive::codegen

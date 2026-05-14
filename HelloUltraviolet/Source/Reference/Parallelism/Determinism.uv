@@ -1,10 +1,30 @@
 //! Reference specimens for Parallelism / Determinism.
 
+internal procedure orderedDispatchDeterminismReference(context: Context) -> i32 {
+    return parallel context~>inline() {
+        dispatch index in 0usize..4usize [reduce: +, ordered] {
+            index as i32
+        }
+    }
+}
+
+internal procedure nestedParallelReference(context: Context) -> i32 {
+    return parallel context~>inline() {
+        let outer: Spawned<i32> = spawn {
+            parallel context~>inline() {
+                8
+            }
+        }
+        wait outer
+    }
+}
+
 /// Exercises the Parallelism Determinism reference surface.
-public procedure runParallelismDeterminismReference() -> bool {
-    let first: ParallelReference = parallelReference(2usize, true, false)
-    let second: ParallelReference = parallelReference(2usize, true, false)
-    return parallelReferenceIsCovered(first) &&
-        parallelReferenceIsCovered(second) &&
-        first.fork_count == second.fork_count
+public procedure runParallelismDeterminismReference(context: Context) -> bool {
+    let first: i32 = orderedDispatchDeterminismReference(context)
+    let second: i32 = orderedDispatchDeterminismReference(context)
+    return first == 6 &&
+        second == 6 &&
+        first == second &&
+        nestedParallelReference(context) == 8
 }

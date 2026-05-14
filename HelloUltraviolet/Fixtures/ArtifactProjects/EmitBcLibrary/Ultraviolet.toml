@@ -1,0 +1,14 @@
+[[assembly]]
+name = "EmitBcLibrary"
+kind = "library"
+link_kind = "static"
+emit_ir = "bc"
+root = "Source"
+
+[toolchain]
+llvm_bin = "../../../../LLVMBootstrap/cursive/build/tools"
+target_profile = "x86_64-win64"
+
+[build]
+incremental = true
+progress = false

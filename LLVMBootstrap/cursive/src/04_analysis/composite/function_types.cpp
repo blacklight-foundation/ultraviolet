@@ -428,6 +428,33 @@ ValuePathTypeResult ValuePathType(const ScopeContext& ctx,
                                   const ast::ModulePath& path,
                                   std::string_view name) {
   SpecDefsFunctionTypes();
+  auto direct_module_lookup =
+      [&]() -> std::optional<ValuePathTypeResult> {
+    const ast::ModulePath module_path = path.empty() ? ctx.current_module : path;
+    const auto* module = FindModule(ctx, module_path);
+    if (!module) {
+      return std::nullopt;
+    }
+    const auto static_lookup = LookupModuleStaticInModule(ctx, *module, name);
+    if (!static_lookup.ok) {
+      return ValuePathTypeResult{false, static_lookup.diag_id, {}};
+    }
+    if (static_lookup.type) {
+      return ValuePathTypeResult{true, std::nullopt, static_lookup.type};
+    }
+    const auto proc_lookup = FindProcedure(*module, name);
+    if (proc_lookup.proc) {
+      return ProcType(ctx, *proc_lookup.proc);
+    }
+    if (proc_lookup.comptime_proc) {
+      return ProcType(ctx, *proc_lookup.comptime_proc);
+    }
+    if (proc_lookup.extern_proc) {
+      return ProcType(ctx, *proc_lookup.extern_proc);
+    }
+    return std::nullopt;
+  };
+
   if (const auto builtin = LookupStringBytesBuiltinType(path, name)) {
     return {true, std::nullopt, *builtin};
   }
@@ -442,6 +469,11 @@ ValuePathTypeResult ValuePathType(const ScopeContext& ctx,
       ctx, name_maps, module_names, path, name, EntityKind::Value,
       CanAccess);
   if (!resolved.ok) {
+    if (!resolved.diag_id) {
+      if (const auto direct = direct_module_lookup()) {
+        return *direct;
+      }
+    }
     if (!resolved.diag_id && ModulePathEq(path, ctx.current_module)) {
       if (const auto gpu_intrinsic = LookupGpuIntrinsicType(name)) {
         return {true, std::nullopt, *gpu_intrinsic};
@@ -450,6 +482,9 @@ ValuePathTypeResult ValuePathType(const ScopeContext& ctx,
     return {false, resolved.diag_id, {}};
   }
   if (!resolved.entity || !resolved.entity->origin_opt) {
+    if (const auto direct = direct_module_lookup()) {
+      return *direct;
+    }
     return {true, std::nullopt, {}};
   }
   const auto resolved_name =

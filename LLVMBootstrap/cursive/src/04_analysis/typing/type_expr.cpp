@@ -663,32 +663,29 @@ static TypeRef AstItemMetaType() { return MakeTypePath({"Ast", "Item"}); }
 static TypeRef AstTypeMetaType() { return MakeTypePath({"Ast", "Type"}); }
 static TypeRef AstPatternMetaType() { return MakeTypePath({"Ast", "Pattern"}); }
 
+static bool IsExactTypePath(const TypeRef& type, const TypePath& path);
+
 static std::optional<ast::QuoteKind> ExpectedQuoteKind(const TypeRef& type) {
-  const auto* path = type ? std::get_if<TypePathType>(&type->node) : nullptr;
-  if (!path || path->generic_args.size() != 0) {
-    return std::nullopt;
-  }
-  if (path->path == TypePath{"Ast", "Expr"}) {
+  if (IsExactTypePath(type, {"Ast", "Expr"})) {
     return ast::QuoteKind::Expr;
   }
-  if (path->path == TypePath{"Ast", "Stmt"}) {
+  if (IsExactTypePath(type, {"Ast", "Stmt"})) {
     return ast::QuoteKind::Stmt;
   }
-  if (path->path == TypePath{"Ast", "Item"}) {
+  if (IsExactTypePath(type, {"Ast", "Item"})) {
     return ast::QuoteKind::Item;
   }
-  if (path->path == TypePath{"Ast", "Type"}) {
+  if (IsExactTypePath(type, {"Ast", "Type"})) {
     return ast::QuoteKind::Type;
   }
-  if (path->path == TypePath{"Ast", "Pattern"}) {
+  if (IsExactTypePath(type, {"Ast", "Pattern"})) {
     return ast::QuoteKind::Pattern;
   }
   return std::nullopt;
 }
 
 static bool IsAstMetaType(const TypeRef& type) {
-  const auto* path = type ? std::get_if<TypePathType>(&type->node) : nullptr;
-  return path && path->generic_args.empty() && path->path == TypePath{"Ast"};
+  return IsExactTypePath(type, {"Ast"});
 }
 
 static TypeRef QuoteKindType(ast::QuoteKind kind) {
@@ -3632,6 +3629,7 @@ static PlaceTypeResult TypePlaceImpl(const ScopeContext& ctx,
               HasMemoryOrderAttribute(node.attrs)) {
             PlaceTypeResult r;
             r.diag_id = "E-CON-0096";
+            r.diag_span = e ? std::optional<core::Span>(e->span) : std::nullopt;
             return r;
           }
 
@@ -3640,11 +3638,13 @@ static PlaceTypeResult TypePlaceImpl(const ScopeContext& ctx,
           if (!attr_validation.ok) {
             PlaceTypeResult r;
             r.diag_id = attr_validation.diag_id;
+            r.diag_span = e ? std::optional<core::Span>(e->span) : std::nullopt;
             return r;
           }
           if (CountMemoryOrderAttributes(node.attrs) > 1) {
             PlaceTypeResult r;
             r.diag_id = "E-MOD-2450";
+            r.diag_span = e ? std::optional<core::Span>(e->span) : std::nullopt;
             return r;
           }
 
@@ -3660,6 +3660,7 @@ static PlaceTypeResult TypePlaceImpl(const ScopeContext& ctx,
                   ctx, inner_ctx, node.attrs, node.expr, env)) {
             PlaceTypeResult r;
             r.diag_id = *diag;
+            r.diag_span = e ? std::optional<core::Span>(e->span) : std::nullopt;
             return r;
           }
           return inner;
@@ -3683,6 +3684,7 @@ static PlaceTypeResult TypePlaceImpl(const ScopeContext& ctx,
             CheckSharedAccessRequirement(type_ctx, e, result.type)) {
       result.ok = false;
       result.diag_id = *diag_id;
+      result.diag_span = e ? std::optional<core::Span>(e->span) : std::nullopt;
       return result;
     }
   }
@@ -3916,6 +3918,47 @@ CheckResult CheckExprAgainst(const ScopeContext& ctx,
       (*ctx.expr_types)[e.get()] = expected;
     }
     return result;
+  }
+
+  if (const auto* if_is_expr = std::get_if<ast::IfIsExpr>(&e->node)) {
+    result = CheckIfIsExpr(ctx, type_ctx, *if_is_expr, env, expected);
+    if (!result.ok) {
+      const auto dynamic_fallback =
+          TryDynamicRefinementFallback(ctx, type_ctx, e, expected, env);
+      if (!dynamic_fallback.ok) {
+        return result;
+      }
+      result = dynamic_fallback;
+    }
+    if (ctx.expr_types && e) {
+      (*ctx.expr_types)[e.get()] = expected;
+    }
+    return result;
+  }
+
+  if (const auto* record_expr = std::get_if<ast::RecordExpr>(&e->node)) {
+    const auto typed_record =
+        expr::TypeRecordExprImpl(ctx, type_ctx, *record_expr, env, &expected);
+    if (typed_record.ok) {
+      const auto sub = Subtyping(ctx, typed_record.type, expected);
+      if (!sub.ok) {
+        result.diag_id = sub.diag_id;
+        return result;
+      }
+      if (sub.subtype) {
+        result.ok = true;
+        if (ctx.expr_types && e) {
+          (*ctx.expr_types)[e.get()] = expected;
+        }
+        return result;
+      }
+    }
+    if (typed_record.diag_id.has_value()) {
+      result.diag_id = typed_record.diag_id;
+      result.diag_detail = typed_record.diag_detail;
+      result.diag_span = typed_record.diag_span;
+      return result;
+    }
   }
 
   if (const auto* quote = std::get_if<ast::QuoteExpr>(&e->node)) {

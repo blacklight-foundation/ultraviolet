@@ -1,30 +1,41 @@
 //! Reference specimens for Keys / KeyPaths.
 
-internal record KeyReference {
-    internal surface_forms: usize
-    internal statically_verified: bool
-    internal runtime_checked: bool
+internal record KeyLeaf {
+    internal value: i32
 }
 
-internal procedure keyReference(
-    surface_forms: usize,
-    statically_verified: bool,
-    runtime_checked: bool
-) -> KeyReference {
-    return KeyReference {
-        surface_forms: surface_forms,
-        statically_verified: statically_verified,
-        runtime_checked: runtime_checked
+internal record KeyContainer {
+    internal leaf: KeyLeaf
+    internal values: [i32; 4]
+}
+
+internal procedure nestedKeyPathValue() -> i32 {
+    var container: shared KeyContainer =
+        KeyContainer {
+            leaf: KeyLeaf { value: 7 },
+            values: [1, 2, 3, 4]
+        }
+    var observed: i32 = 0
+    #container.leaf.value read {
+        observed = observed + container.leaf.value
     }
+    #container.values[1usize] read {
+        observed = observed + container.values[1usize]
+    }
+    return observed
 }
 
-internal procedure keyReferenceIsCovered(reference: KeyReference) -> bool {
-    return reference.surface_forms > 0usize &&
-        (reference.statically_verified || reference.runtime_checked)
+internal procedure rootKeyPathValue() -> i32 {
+    var shared_value: shared i32 = 5
+    var observed: i32 = 0
+    #shared_value read {
+        observed = shared_value + 0
+    }
+    return observed
 }
 
 /// Exercises the Keys KeyPaths reference surface.
 public procedure runKeysKeyPathsReference() -> bool {
-    let reference: KeyReference = keyReference(3usize, true, false)
-    return keyReferenceIsCovered(reference)
+    return rootKeyPathValue() == 5 &&
+        nestedKeyPathValue() == 9
 }

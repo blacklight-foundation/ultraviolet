@@ -215,6 +215,7 @@ AliasExpandResult NormalizeCalleeType(const ScopeContext& ctx,
 
 struct CallLookupIndex {
   const void* sigma_key = nullptr;
+  const void* module_storage_key = nullptr;
   std::size_t module_count = 0;
   std::map<PathKey, const ast::ASTModule*> modules_by_path;
   std::unordered_map<const ast::ASTModule*,
@@ -229,12 +230,17 @@ const CallLookupIndex& GetCallLookupIndex(const ScopeContext& ctx) {
   thread_local CallLookupIndex index;
   const Sigma* sigma_ptr = ctx.sigma_source ? ctx.sigma_source : &ctx.sigma;
   const void* sigma_key = static_cast<const void*>(sigma_ptr);
-  if (index.sigma_key == sigma_key && index.module_count == sigma_ptr->mods.size()) {
+  const void* module_storage_key =
+      sigma_ptr->mods.empty() ? nullptr : static_cast<const void*>(sigma_ptr->mods.data());
+  if (index.sigma_key == sigma_key &&
+      index.module_storage_key == module_storage_key &&
+      index.module_count == sigma_ptr->mods.size()) {
     return index;
   }
 
   index = {};
   index.sigma_key = sigma_key;
+  index.module_storage_key = module_storage_key;
   index.module_count = sigma_ptr->mods.size();
   index.procedures_by_module.reserve(sigma_ptr->mods.size());
   index.externs_by_module.reserve(sigma_ptr->mods.size());
@@ -832,6 +838,59 @@ std::optional<core::Span> ArgDiagnosticSpan(const ast::Arg& arg) {
   return std::nullopt;
 }
 
+static const ast::TypeAliasDecl* LookupTypeAliasDeclForFunctionValue(
+    const ScopeContext& ctx,
+    const TypePath& path) {
+  if (path.empty()) {
+    return nullptr;
+  }
+  if (path.size() > 1) {
+    const auto it = ctx.sigma.types.find(PathKeyOf(path));
+    if (it == ctx.sigma.types.end()) {
+      return nullptr;
+    }
+    return std::get_if<ast::TypeAliasDecl>(&it->second);
+  }
+
+  const auto ent = ResolveTypeName(ctx, path[0]);
+  if (!ent.has_value() || !ent->origin_opt.has_value()) {
+    return nullptr;
+  }
+  ast::Path resolved = *ent->origin_opt;
+  resolved.push_back(ent->target_opt.value_or(path[0]));
+  const auto it = ctx.sigma.types.find(PathKeyOf(resolved));
+  if (it == ctx.sigma.types.end()) {
+    return nullptr;
+  }
+  return std::get_if<ast::TypeAliasDecl>(&it->second);
+}
+
+static bool IsFunctionValueType(const ScopeContext& ctx,
+                                const TypeRef& type,
+                                std::uint32_t depth = 0) {
+  if (depth > 32) {
+    return false;
+  }
+  const auto stripped = StripPerm(type);
+  if (!stripped) {
+    return false;
+  }
+  if (std::holds_alternative<TypeFunc>(stripped->node)) {
+    return true;
+  }
+  const auto* path_type = std::get_if<TypePathType>(&stripped->node);
+  if (!path_type || !path_type->generic_args.empty()) {
+    return false;
+  }
+  const auto* alias =
+      LookupTypeAliasDeclForFunctionValue(ctx, path_type->path);
+  if (!alias || alias->generic_params.has_value()) {
+    return false;
+  }
+  const auto lowered = LowerType(ctx, alias->type);
+  return lowered.ok && IsFunctionValueType(ctx, lowered.type, depth + 1);
+}
+
 }  // namespace
 
 bool IsPlaceExprForCall(const ast::ExprPtr& expr) {
@@ -958,13 +1017,16 @@ CallTypeResult TypeCall(const ScopeContext& ctx,
     const auto& arg = args[i];
     if (!params[i].mode.has_value()) {
       const bool has_source_prov = HasSourceProvenanceLocal(arg.value);
-      if (has_source_prov && !IsPlaceExprForCallLocal(arg.value)) {
+      const bool expected_function_value =
+          IsFunctionValueType(ctx, params[i].type);
+      if (has_source_prov && !expected_function_value &&
+          !IsPlaceExprForCallLocal(arg.value)) {
         SPEC_RULE("Call-Arg-NotPlace");
         result.diag_id = "E-TYP-1603";
         result.diag_span = ArgDiagnosticSpan(arg);
         return result;
       }
-      if (has_source_prov && type_place) {
+      if (has_source_prov && !expected_function_value && type_place) {
         const auto place_type = (*type_place)(arg.value);
         if (!place_type.ok) {
           result.diag_id = place_type.diag_id;
@@ -973,7 +1035,7 @@ CallTypeResult TypeCall(const ScopeContext& ctx,
         }
         arg_types.push_back(place_type.type);
       } else {
-        if (!has_source_prov && check_expr) {
+        if ((!has_source_prov || expected_function_value) && check_expr) {
           const auto checked = (*check_expr)(arg.value, params[i].type);
           if (checked.ok) {
             arg_types.push_back(params[i].type);
@@ -1050,6 +1112,7 @@ CallTypeResult TypeCall(const ScopeContext& ctx,
 
   for (std::size_t i = 0; i < args.size(); ++i) {
     if (!params[i].mode.has_value() &&
+        !IsFunctionValueType(ctx, params[i].type) &&
         HasSourceProvenanceLocal(args[i].value) &&
         !IsPlaceExprForCallLocal(args[i].value)) {
       SPEC_RULE("Call-Arg-NotPlace");
@@ -1092,7 +1155,8 @@ CallTypeResult TypeCall(const ScopeContext& ctx,
         SPEC_RULE("ArgsT-Cons");
         continue;
       }
-      if (HasSourceProvenanceLocal(args[i].value)) {
+      if (!IsFunctionValueType(ctx, params[i].type) &&
+          HasSourceProvenanceLocal(args[i].value)) {
         const auto addr_ok = AddrOfOk(ctx, args[i].value, type_expr);
         if (!addr_ok.ok) {
           if (addr_ok.diag_id ==
@@ -1191,13 +1255,16 @@ CallTypeResult TypeCallWithSubst(const ScopeContext& ctx,
     const TypeRef subst_param_type = InstantiateType(params[i].type, subst);
     if (!params[i].mode.has_value()) {
       const bool has_source_prov = HasSourceProvenanceLocal(arg.value);
-      if (has_source_prov && !IsPlaceExprForCallLocal(arg.value)) {
+      const bool expected_function_value =
+          IsFunctionValueType(ctx, subst_param_type);
+      if (has_source_prov && !expected_function_value &&
+          !IsPlaceExprForCallLocal(arg.value)) {
         SPEC_RULE("Call-Arg-NotPlace");
         result.diag_id = "E-TYP-1603";
         result.diag_span = ArgDiagnosticSpan(arg);
         return result;
       }
-      if (has_source_prov && type_place) {
+      if (has_source_prov && !expected_function_value && type_place) {
         const auto place_type = (*type_place)(arg.value);
         if (!place_type.ok) {
           result.diag_id = place_type.diag_id;
@@ -1206,7 +1273,7 @@ CallTypeResult TypeCallWithSubst(const ScopeContext& ctx,
         }
         arg_types.push_back(place_type.type);
       } else {
-        if (!has_source_prov && check_expr) {
+        if ((!has_source_prov || expected_function_value) && check_expr) {
           const auto checked = (*check_expr)(arg.value, subst_param_type);
           if (checked.ok) {
             arg_types.push_back(subst_param_type);
@@ -1286,6 +1353,7 @@ CallTypeResult TypeCallWithSubst(const ScopeContext& ctx,
 
   for (std::size_t i = 0; i < args.size(); ++i) {
     if (!params[i].mode.has_value() &&
+        !IsFunctionValueType(ctx, InstantiateType(params[i].type, subst)) &&
         HasSourceProvenanceLocal(args[i].value) &&
         !IsPlaceExprForCallLocal(args[i].value)) {
       SPEC_RULE("Call-Arg-NotPlace");
@@ -1330,7 +1398,8 @@ CallTypeResult TypeCallWithSubst(const ScopeContext& ctx,
         SPEC_RULE("ArgsT-Cons");
         continue;
       }
-      if (HasSourceProvenanceLocal(args[i].value)) {
+      if (!IsFunctionValueType(ctx, InstantiateType(params[i].type, subst)) &&
+          HasSourceProvenanceLocal(args[i].value)) {
         const auto addr_ok = AddrOfOk(ctx, args[i].value, type_expr);
         if (!addr_ok.ok) {
           if (addr_ok.diag_id ==

@@ -649,7 +649,8 @@ LowerResult LowerMethodCall(const ast::Expr& expr_wrapper,
     SPEC_RULE("Lower-Expr-MethodCall");
 
     // Get receiver type for dispatch determination
-    analysis::TypeRef recv_type = ReceiverDispatchType(expr.receiver, ctx);
+    analysis::TypeRef recv_type =
+        InstantiateActiveGenericType(ReceiverDispatchType(expr.receiver, ctx), ctx);
     analysis::TypeRef stripped = recv_type ? analysis::StripPerm(recv_type) : recv_type;
     const auto* dyn_type = stripped ? std::get_if<analysis::TypeDynamic>(&stripped->node) : nullptr;
     if (ShouldTraceMethodCall(expr.name)) {
@@ -1176,6 +1177,7 @@ LowerResult LowerMethodCall(const ast::Expr& expr_wrapper,
         if (!recv_type_for_sym) {
             recv_type_for_sym = ctx.expr_type(*expr.receiver);
         }
+        recv_type_for_sym = InstantiateActiveGenericType(recv_type_for_sym, ctx);
         if (recv_type_for_sym) {
             const auto stripped_for_sym = analysis::StripPerm(recv_type_for_sym);
             if (stripped_for_sym) {
@@ -1221,7 +1223,7 @@ LowerResult LowerMethodCall(const ast::Expr& expr_wrapper,
     analysis::TypeRef method_result_type = resolved_method_result_type;
     if (ctx.expr_type) {
         if (analysis::TypeRef result_type = ctx.expr_type(expr_wrapper)) {
-            method_result_type = result_type;
+            method_result_type = InstantiateActiveGenericType(result_type, ctx);
         }
     }
     if (method_result_type) {

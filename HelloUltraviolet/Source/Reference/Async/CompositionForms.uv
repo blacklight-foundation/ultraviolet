@@ -1,7 +1,145 @@
 //! Reference specimens for Async / CompositionForms.
 
+internal procedure asyncCompositionOutcome(should_fail: bool, value: i32) -> i32 | bool {
+    if should_fail {
+        return true
+    }
+    return value
+}
+
+internal procedure asyncCompositionMayFail(
+    should_fail: bool,
+    value: i32
+) -> Async<(), (), i32, bool> {
+    let result: i32 = asyncCompositionOutcome(should_fail, value)?
+    return result
+}
+
+internal procedure asyncCompositionStreamMayFail(
+    should_fail: bool,
+    value: i32
+) -> Async<i32, (), i32, bool> {
+    let result: i32 = asyncCompositionOutcome(should_fail, value)?
+    yield result
+    return result
+}
+
+internal procedure i32BoolUnionIsValue(value: i32 | bool, expected: i32) -> bool {
+    return if value is {
+        actual: i32 {
+            actual == expected
+        }
+        failed: bool {
+            false
+        }
+    }
+}
+
+internal procedure i32BoolUnionIsFailure(value: i32 | bool) -> bool {
+    return if value is {
+        actual: i32 {
+            false
+        }
+        failed: bool {
+            failed
+        }
+    }
+}
+
+internal procedure pairBoolUnionIsValue(
+    value: (i32, i32) | bool,
+    expected_left: i32,
+    expected_right: i32
+) -> bool {
+    return if value is {
+        actual: (i32, i32) {
+            actual.0 == expected_left && actual.1 == expected_right
+        }
+        failed: bool {
+            false
+        }
+    }
+}
+
+internal procedure pairBoolUnionIsFailure(value: (i32, i32) | bool) -> bool {
+    return if value is {
+        actual: (i32, i32) {
+            false
+        }
+        failed: bool {
+            failed
+        }
+    }
+}
+
+internal procedure streamBoolIsSuspendedOutput(
+    state: Stream<i32, bool>,
+    expected: i32
+) -> bool {
+    return if state is {
+        @Suspended { output } {
+            output == expected
+        }
+        @Completed {
+            false
+        }
+        @Failed {
+            false
+        }
+    }
+}
+
+internal procedure streamBoolIsFailure(state: Stream<i32, bool>) -> bool {
+    return if state is {
+        @Suspended {
+            false
+        }
+        @Completed {
+            false
+        }
+        @Failed { error } {
+            error
+        }
+    }
+}
+
 /// Exercises the Async CompositionForms reference surface.
 public procedure runAsyncCompositionFormsReference() -> bool {
     let completed_value: i32 = sync asyncCompletesReference(31)
-    return completed_value == 31
+    let sync_success: i32 | bool = sync asyncCompositionMayFail(false, 32)
+    let sync_failure: i32 | bool = sync asyncCompositionMayFail(true, 33)
+    let all_success: (i32, i32) | bool = all {
+        asyncCompositionMayFail(false, 34),
+        asyncCompositionMayFail(false, 35),
+    }
+    let all_failure: (i32, i32) | bool = all {
+        asyncCompositionMayFail(true, 36),
+        asyncCompositionMayFail(false, 37),
+    }
+    let race_success: i32 | bool = race {
+        asyncCompositionMayFail(false, 38) -> |value| value + 1,
+        asyncCompositionMayFail(false, 40) -> |value| value + 1,
+    }
+    let race_failure: i32 | bool = race {
+        asyncCompositionMayFail(true, 41) -> |value| value,
+        asyncCompositionMayFail(true, 42) -> |value| value,
+    }
+    let stream_success: Stream<i32, bool> = race {
+        asyncCompositionStreamMayFail(false, 43) -> |output| yield output,
+        asyncCompositionStreamMayFail(false, 44) -> |output| yield output + 1,
+    }
+    let stream_failure: Stream<i32, bool> = race {
+        asyncCompositionStreamMayFail(true, 45) -> |output| yield output,
+        asyncCompositionStreamMayFail(true, 46) -> |output| yield output,
+    }
+
+    return completed_value == 31 &&
+        i32BoolUnionIsValue(sync_success, 32) &&
+        i32BoolUnionIsFailure(sync_failure) &&
+        pairBoolUnionIsValue(all_success, 34, 35) &&
+        pairBoolUnionIsFailure(all_failure) &&
+        i32BoolUnionIsValue(race_success, 39) &&
+        i32BoolUnionIsFailure(race_failure) &&
+        streamBoolIsSuspendedOutput(stream_success, 43) &&
+        streamBoolIsFailure(stream_failure)
 }

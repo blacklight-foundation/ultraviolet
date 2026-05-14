@@ -743,7 +743,10 @@ StmtTypeResult TypeAssignStmt(const ScopeContext& ctx,
         }
       }
     }
-    return {false, place_type.diag_id, {}, {}, detail};
+    if (!place_type.diag_detail.empty()) {
+      detail = place_type.diag_detail;
+    }
+    return {false, place_type.diag_id, {}, {}, detail, place_type.diag_span};
   }
 
   // Check for const permission

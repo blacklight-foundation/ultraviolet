@@ -18042,7 +18042,7 @@ This section owns diagnostics for general expression typing, calls, indexing res
 | `E-SEM-2539`  | Error    | Compile-time | Pipeline argument type mismatch                                                     |
 | `E-SEM-2591`  | Error    | Compile-time | Closure parameter type cannot be inferred                                           |
 | `E-MEM-3031`  | Error    | Compile-time | `transmute` source and target sizes differ                                          |
-| `E-UNS-0102`  | Error    | Compile-time | Array index must be a compile-time constant outside `[[dynamic]]` scope             |
+| `E-UNS-0102`  | Error    | Compile-time | Fixed-size array index must be a compile-time constant outside `[[dynamic]]` scope  |
 | `E-UNS-0103`  | Error    | Compile-time | Array index out of bounds                                                           |
 | `E-UNS-0104`  | Error    | Compile-time | `transmute` source and target alignments differ                                     |
 | `E-UNS-0107`  | Error    | Compile-time | Non-`Bitcopy` place expression used as value                                        |

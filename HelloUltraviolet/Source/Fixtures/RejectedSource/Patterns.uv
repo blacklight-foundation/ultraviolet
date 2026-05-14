@@ -29,13 +29,13 @@ public procedure validatedPatternsRejectedSourceFixtureCount() -> usize {
             "Fixtures/RejectedSource/Patterns/TuplePatternArity",
             "Fixtures/RejectedSource/Patterns/TuplePatternArity/Source/Main.uv",
             "Fixtures/RejectedSource/Patterns/TuplePatternArity/Expected.uv",
-            expectedDiagnostic("", "rule.17.Pat-Tuple-R-Arity-Err")
+            expectedDiagnostic("E-TYP-1803", "rule.17.Pat-Tuple-R-Arity-Err")
         ),
         "TuplePatternArity",
         "Fixtures/RejectedSource/Patterns/TuplePatternArity",
         "Fixtures/RejectedSource/Patterns/TuplePatternArity/Source/Main.uv",
         "Fixtures/RejectedSource/Patterns/TuplePatternArity/Expected.uv",
-        "",
+        "E-TYP-1803",
         "rule.17.Pat-Tuple-R-Arity-Err"
     ) {
         count = count + 1usize

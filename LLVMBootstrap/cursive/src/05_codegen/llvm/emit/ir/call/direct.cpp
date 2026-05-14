@@ -15,6 +15,262 @@ void IRInstructionVisitor::operator()(const IRCall &call) const
     args.push_back(EvaluateOrDefault(arg));
   }
 
+  // Pure string/bytes view builtins are specified as pointer/length metadata
+  // operations. Lower them directly instead of crossing the runtime ABI.
+  auto build_prefix_pair = [&](llvm::StructType *pair_ty,
+                               llvm::Value *data,
+                               llvm::Value *len) -> llvm::Value *
+  {
+    if (!pair_ty || pair_ty->getNumElements() < 2 || !data || !len)
+    {
+      return nullptr;
+    }
+    llvm::Type *data_ty = pair_ty->getElementType(0);
+    llvm::Type *len_ty = pair_ty->getElementType(1);
+    data = CoerceTo(&builder, data, data_ty);
+    len = CoerceTo(&builder, len, len_ty);
+    if (!data || !len)
+    {
+      return nullptr;
+    }
+    llvm::Value *pair = llvm::UndefValue::get(pair_ty);
+    pair = builder.CreateInsertValue(pair, data, {0u});
+    pair = builder.CreateInsertValue(pair, len, {1u});
+    return pair;
+  };
+
+  auto load_prefix_pair = [&](llvm::Value *value,
+                              llvm::StructType *pair_ty,
+                              llvm::StringRef name) -> llvm::Value *
+  {
+    if (!value || !pair_ty)
+    {
+      return nullptr;
+    }
+    if (llvm::isa<llvm::ConstantPointerNull>(value))
+    {
+      return nullptr;
+    }
+    if (auto *struct_ty = llvm::dyn_cast<llvm::StructType>(value->getType()))
+    {
+      if (struct_ty->getNumElements() < 2)
+      {
+        return nullptr;
+      }
+      llvm::Value *data = builder.CreateExtractValue(value, {0u});
+      llvm::Value *len = builder.CreateExtractValue(value, {1u});
+      return build_prefix_pair(pair_ty, data, len);
+    }
+    if (!value->getType()->isPointerTy())
+    {
+      return nullptr;
+    }
+    llvm::Value *ptr = value;
+    llvm::Type *wanted_ptr_ty = llvm::PointerType::get(pair_ty, 0);
+    if (ptr->getType() != wanted_ptr_ty)
+    {
+      ptr = builder.CreateBitCast(ptr, wanted_ptr_ty);
+    }
+    return builder.CreateLoad(pair_ty, ptr, name);
+  };
+
+  auto set_intrinsic_result = [&](llvm::Value *value) -> bool
+  {
+    if (!value)
+    {
+      return false;
+    }
+    if (llvm::Type *expected = ExpectedLLVMType(call.result))
+    {
+      if (llvm::Value *coerced = CoerceTo(&builder, value, expected))
+      {
+        value = coerced;
+      }
+    }
+    emitter.SetTempValue(call.result, value);
+    return true;
+  };
+
+  auto emit_pure_string_bytes_intrinsic = [&]() -> bool
+  {
+    if (call.callee.kind != IRValue::Kind::Symbol || args.empty())
+    {
+      return false;
+    }
+
+    const std::string &symbol = call.callee.name;
+    llvm::StructType *string_view_ty = GetStringViewType(emitter.GetContext());
+    llvm::StructType *bytes_view_ty = GetBytesViewType(emitter.GetContext());
+    llvm::StructType *slice_ty = GetSliceType(emitter.GetContext());
+
+    auto extract_len = [&](llvm::StructType *pair_ty) -> llvm::Value *
+    {
+      llvm::Value *pair = load_prefix_pair(args[0], pair_ty, "view.prefix");
+      if (!pair)
+      {
+        return nullptr;
+      }
+      return builder.CreateExtractValue(pair, {1u}, "view.len");
+    };
+
+    auto coerce_scalar_arg = [&](llvm::Value *value,
+                                 llvm::Type *target_ty,
+                                 llvm::StringRef name) -> llvm::Value *
+    {
+      if (!value || !target_ty)
+      {
+        return nullptr;
+      }
+      if (value->getType() == target_ty)
+      {
+        return value;
+      }
+      if (value->getType()->isPointerTy() && target_ty->isFirstClassType())
+      {
+        return builder.CreateLoad(target_ty, value, name);
+      }
+      return CoerceTo(&builder, value, target_ty);
+    };
+
+    if (symbol == BuiltinSymStringLength())
+    {
+      return set_intrinsic_result(extract_len(string_view_ty));
+    }
+    if (symbol == BuiltinSymBytesLength())
+    {
+      return set_intrinsic_result(extract_len(bytes_view_ty));
+    }
+    if (symbol == BuiltinSymStringIsEmpty())
+    {
+      if (llvm::Value *len = extract_len(string_view_ty))
+      {
+        llvm::Value *is_empty = builder.CreateICmpEQ(
+            len,
+            llvm::ConstantInt::get(len->getType(), 0));
+        return set_intrinsic_result(
+            builder.CreateZExt(is_empty, llvm::Type::getInt8Ty(emitter.GetContext())));
+      }
+      return false;
+    }
+    if (symbol == BuiltinSymBytesIsEmpty())
+    {
+      if (llvm::Value *len = extract_len(bytes_view_ty))
+      {
+        llvm::Value *is_empty = builder.CreateICmpEQ(
+            len,
+            llvm::ConstantInt::get(len->getType(), 0));
+        return set_intrinsic_result(
+            builder.CreateZExt(is_empty, llvm::Type::getInt8Ty(emitter.GetContext())));
+      }
+      return false;
+    }
+    if (symbol == BuiltinSymStringAsView())
+    {
+      return set_intrinsic_result(
+          load_prefix_pair(args[0], string_view_ty, "string.as_view"));
+    }
+    if (symbol == BuiltinSymStringSlice() && args.size() >= 3)
+    {
+      llvm::Value *string_pair =
+          load_prefix_pair(args[0], string_view_ty, "string.slice.self");
+      if (!string_pair)
+      {
+        return false;
+      }
+
+      llvm::Value *data = builder.CreateExtractValue(string_pair, {0u});
+      llvm::Value *len = builder.CreateExtractValue(string_pair, {1u});
+      if (!data || !len)
+      {
+        return false;
+      }
+
+      llvm::Type *data_ty = string_view_ty->getElementType(0);
+      llvm::Type *len_ty = string_view_ty->getElementType(1);
+      data = CoerceTo(&builder, data, data_ty);
+      len = CoerceTo(&builder, len, len_ty);
+      llvm::Value *start = coerce_scalar_arg(args[1], len_ty, "string.slice.start");
+      llvm::Value *end = coerce_scalar_arg(args[2], len_ty, "string.slice.end");
+      if (!data || !len || !start || !end || !data_ty->isPointerTy() ||
+          !len_ty->isIntegerTy())
+      {
+        return false;
+      }
+
+      llvm::Type *i8_ty = llvm::Type::getInt8Ty(emitter.GetContext());
+      llvm::Type *i8_ptr_ty = llvm::PointerType::get(i8_ty, 0);
+      llvm::Value *data_i8 = CoerceTo(&builder, data, i8_ptr_ty);
+      if (!data_i8)
+      {
+        return false;
+      }
+
+      llvm::Value *zero_len = llvm::ConstantInt::get(len_ty, 0);
+      llvm::Value *null_data =
+          llvm::ConstantPointerNull::get(llvm::cast<llvm::PointerType>(data_ty));
+      llvm::Value *null_i8 =
+          llvm::ConstantPointerNull::get(llvm::cast<llvm::PointerType>(i8_ptr_ty));
+
+      llvm::Value *start_le_end = builder.CreateICmpULE(start, end);
+      llvm::Value *end_le_len = builder.CreateICmpULE(end, len);
+      llvm::Value *in_range = builder.CreateAnd(start_le_end, end_le_len);
+      llvm::Value *slice_len = builder.CreateSub(end, start);
+
+      llvm::Value *offset_i8 = builder.CreateGEP(i8_ty, data_i8, start);
+      llvm::Value *data_present = builder.CreateICmpNE(data_i8, null_i8);
+      llvm::Value *valid_i8 = builder.CreateSelect(data_present, offset_i8, null_i8);
+      llvm::Value *valid_data = CoerceTo(&builder, valid_i8, data_ty);
+      if (!valid_data)
+      {
+        return false;
+      }
+
+      llvm::Value *result_data =
+          builder.CreateSelect(in_range, valid_data, null_data);
+      llvm::Value *result_len =
+          builder.CreateSelect(in_range, slice_len, zero_len);
+      return set_intrinsic_result(
+          build_prefix_pair(string_view_ty, result_data, result_len));
+    }
+    if (symbol == BuiltinSymBytesAsView() ||
+        symbol == BuiltinSymBytesView())
+    {
+      return set_intrinsic_result(
+          load_prefix_pair(args[0], bytes_view_ty, "bytes.as_view"));
+    }
+    if (symbol == BuiltinSymBytesViewString())
+    {
+      llvm::Value *string_pair =
+          load_prefix_pair(args[0], string_view_ty, "bytes.view_string");
+      if (!string_pair)
+      {
+        return false;
+      }
+      llvm::Value *data = builder.CreateExtractValue(string_pair, {0u});
+      llvm::Value *len = builder.CreateExtractValue(string_pair, {1u});
+      return set_intrinsic_result(build_prefix_pair(bytes_view_ty, data, len));
+    }
+    if (symbol == BuiltinSymBytesAsSlice())
+    {
+      llvm::Value *bytes_pair =
+          load_prefix_pair(args[0], bytes_view_ty, "bytes.as_slice");
+      if (!bytes_pair)
+      {
+        return false;
+      }
+      llvm::Value *data = builder.CreateExtractValue(bytes_pair, {0u});
+      llvm::Value *len = builder.CreateExtractValue(bytes_pair, {1u});
+      return set_intrinsic_result(build_prefix_pair(slice_ty, data, len));
+    }
+
+    return false;
+  };
+
+  if (emit_pure_string_bytes_intrinsic())
+  {
+    return;
+  }
+
   if (call.callee.kind == IRValue::Kind::Symbol &&
       IsDropGlueSymbol(call.callee.name) &&
       !call.args.empty())
@@ -1223,6 +1479,19 @@ void IRInstructionVisitor::operator()(const IRCall &call) const
       if (!callee_type)
       {
         callee_type = emitter.LookupLocalType(call.callee.name);
+      }
+    }
+    if (callee_type)
+    {
+      const analysis::ScopeContext scope = BuildScope(ctx);
+      if (analysis::TypeRef resolved =
+              ResolveAliasTypeInScope(scope, callee_type))
+      {
+        callee_type = resolved;
+      }
+      if (analysis::TypeRef stripped = analysis::StripPerm(callee_type))
+      {
+        callee_type = stripped;
       }
     }
     if (!sig && !callee_type && call.callee.kind == IRValue::Kind::Opaque)

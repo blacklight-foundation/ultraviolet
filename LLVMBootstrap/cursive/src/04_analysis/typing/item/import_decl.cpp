@@ -68,13 +68,16 @@ static const ast::ASTModule* FindModule(const Sigma& sigma,
 }
 
 static source::ModuleNames ModuleNamesForContext(const ScopeContext& ctx) {
-  if (ctx.project != nullptr) {
-    return ModuleNamesOf(*ctx.project);
-  }
   source::ModuleNames names;
   names.reserve(ctx.sigma.mods.size());
   for (const auto& mod : ctx.sigma.mods) {
     names.insert(core::StringOfPath(mod.path));
+  }
+  if (!names.empty()) {
+    return names;
+  }
+  if (ctx.project != nullptr) {
+    return ModuleNamesOf(*ctx.project);
   }
   return names;
 }

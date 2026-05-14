@@ -19,6 +19,12 @@ ExprTypeResult TypeIfCaseExpr(const ScopeContext& ctx,
                              const ast::IfCaseExpr& expr,
                              const TypeEnv& env);
 
+CheckResult CheckIfIsExpr(const ScopeContext& ctx,
+                          const StmtTypeContext& type_ctx,
+                          const ast::IfIsExpr& expr,
+                          const TypeEnv& env,
+                          const TypeRef& expected);
+
 CheckResult CheckIfCaseExpr(const ScopeContext& ctx,
                            const StmtTypeContext& type_ctx,
                            const ast::IfCaseExpr& expr,

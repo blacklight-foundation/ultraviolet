@@ -627,17 +627,33 @@ LoweredCaptureEnv LowerCtx::LowerParallelCaptureEnv(
   IRValue env_zero = FreshTempValue(std::string(env_prefix) + "_env_zero");
   RegisterValueType(env_zero, env_type);
 
-  IRAlloc alloc_env;
-  alloc_env.value = env_zero;
-  alloc_env.result = env_ptr;
-  alloc_env.type = env_type;
   if (!active_region_aliases.empty()) {
+    IRAlloc alloc_env;
+    alloc_env.value = env_zero;
+    alloc_env.result = env_ptr;
+    alloc_env.type = env_type;
     IRValue region_local;
     region_local.kind = IRValue::Kind::Local;
     region_local.name = active_region_aliases.back();
     alloc_env.region = region_local;
+    lowered.ir_parts.push_back(MakeIR(std::move(alloc_env)));
+  } else {
+    IRValue env_storage;
+    env_storage.kind = IRValue::Kind::Local;
+    env_storage.name = FreshTempValue(std::string(env_prefix) + "_env_storage").name;
+    RegisterValueType(env_storage, env_type);
+
+    IRBindVar bind_env;
+    bind_env.name = env_storage.name;
+    bind_env.value = env_zero;
+    bind_env.type = env_type;
+    lowered.ir_parts.push_back(MakeIR(std::move(bind_env)));
+
+    DerivedValueInfo env_addr;
+    env_addr.kind = DerivedValueInfo::Kind::AddrLocal;
+    env_addr.name = env_storage.name;
+    RegisterDerivedValue(env_ptr, env_addr);
   }
-  lowered.ir_parts.push_back(MakeIR(std::move(alloc_env)));
 
   for (std::size_t i = 0; i < captures.size(); ++i) {
     const auto& cap = captures[i];
@@ -1222,6 +1238,55 @@ void LowerCtx::QueueExtraProc(ProcIR proc,
     RegisterProcModule(proc.symbol, proc.defining_module_path);
   }
   extra_procs.push_back(std::move(proc));
+}
+
+void LowerCtx::MergeGeneratedProcsFrom(LowerCtx& branch) {
+  if (branch.extra_procs.empty()) {
+    return;
+  }
+
+  for (auto& proc : branch.extra_procs) {
+    const std::string symbol = proc.symbol;
+    const bool already_registered = LookupProcModule(symbol) != nullptr;
+
+    if (const auto it = branch.proc_sigs.find(symbol);
+        it != branch.proc_sigs.end()) {
+      proc_sigs.emplace(symbol, it->second);
+    }
+    if (const auto it = branch.proc_linkages.find(symbol);
+        it != branch.proc_linkages.end()) {
+      proc_linkages.emplace(symbol, it->second);
+    }
+    if (const auto it = branch.proc_visibilities.find(symbol);
+        it != branch.proc_visibilities.end()) {
+      proc_visibilities.emplace(symbol, it->second);
+    }
+    if (const auto it = branch.proc_modules.find(symbol);
+        it != branch.proc_modules.end()) {
+      proc_modules.emplace(symbol, it->second);
+    }
+    if (const auto it = branch.export_unwind_modes.find(symbol);
+        it != branch.export_unwind_modes.end()) {
+      export_unwind_modes.emplace(symbol, it->second);
+    }
+    if (const auto it = branch.foreign_contracts.find(symbol);
+        it != branch.foreign_contracts.end()) {
+      foreign_contracts.emplace(symbol, it->second);
+    }
+    if (const auto it = branch.local_contracts.find(symbol);
+        it != branch.local_contracts.end()) {
+      local_contracts.emplace(symbol, it->second);
+    }
+    if (const auto it = branch.async_procs.find(symbol);
+        it != branch.async_procs.end()) {
+      async_procs.emplace(symbol, it->second);
+    }
+
+    if (!already_registered) {
+      extra_procs.push_back(std::move(proc));
+    }
+  }
+  branch.extra_procs.clear();
 }
 
 void LowerCtx::RegisterExportUnwindMode(const std::string& sym,

@@ -1,7 +1,23 @@
 //! Reference specimens for Parallelism / Cancellation.
 
+internal procedure cancelledParallelReference(context: Context) -> bool {
+    let token: CancelToken@Active = CancelToken::new()
+    let child: CancelToken@Active = token~>child()
+    token~>cancel()
+    return parallel context~>inline() [cancel: child] {
+        child~>is_cancelled()
+    }
+}
+
+internal procedure cancellationChildReference() -> bool {
+    let token: CancelToken@Active = CancelToken::new()
+    let child: CancelToken@Active = token~>child()
+    token~>cancel()
+    return child~>is_cancelled()
+}
+
 /// Exercises the Parallelism Cancellation reference surface.
-public procedure runParallelismCancellationReference() -> bool {
-    let reference: ParallelReference = parallelReference(1usize, true, true)
-    return parallelReferenceIsCovered(reference) && reference.propagates_panic
+public procedure runParallelismCancellationReference(context: Context) -> bool {
+    return cancelledParallelReference(context) &&
+        cancellationChildReference()
 }

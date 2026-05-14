@@ -119,6 +119,7 @@ struct ProcLikeLookupEntry {
 
 struct CallLookupIndex {
   const void* sigma_key = nullptr;
+  const void* module_storage_key = nullptr;
   std::size_t module_count = 0;
   std::map<PathKey, const ast::ASTModule*> modules_by_path;
   std::unordered_map<const ast::ASTModule*,
@@ -135,13 +136,17 @@ static const CallLookupIndex& GetCallLookupIndex(const ScopeContext& ctx) {
       ctx.sigma_source ? ctx.sigma_source : &ctx.sigma;
   const analysis::Sigma& sigma = *sigma_ptr;
   const void* sigma_key = static_cast<const void*>(sigma_ptr);
+  const void* module_storage_key =
+      sigma.mods.empty() ? nullptr : static_cast<const void*>(sigma.mods.data());
   if (index.sigma_key == sigma_key &&
+      index.module_storage_key == module_storage_key &&
       index.module_count == sigma.mods.size()) {
     return index;
   }
 
   index = {};
   index.sigma_key = sigma_key;
+  index.module_storage_key = module_storage_key;
   index.module_count = sigma.mods.size();
   index.procedures_by_module.reserve(sigma.mods.size());
   index.externs_by_module.reserve(sigma.mods.size());
@@ -1619,7 +1624,8 @@ static bool ExpandTypeArgsWithDefaults(
 
 static bool IsPredicateReqName(std::string_view name) {
   return IdEq(name, "Bitcopy") || IdEq(name, "Clone") ||
-         IdEq(name, "Drop") || IdEq(name, "FfiSafe");
+         IdEq(name, "Drop") || IdEq(name, "FfiSafe") ||
+         IdEq(name, "GpuSafe");
 }
 
 static bool PredicateReqSatisfied(const ScopeContext& ctx,
@@ -1636,6 +1642,9 @@ static bool PredicateReqSatisfied(const ScopeContext& ctx,
   }
   if (IdEq(pred, "FfiSafe")) {
     return FfiSafeType(ctx, type);
+  }
+  if (IdEq(pred, "GpuSafe")) {
+    return !GpuSafeDiagForType(ctx, type).has_value();
   }
   return false;
 }
@@ -1700,6 +1709,59 @@ static std::optional<core::Span> ArgDiagnosticSpan(const ast::Arg& arg) {
   return std::nullopt;
 }
 
+static const ast::TypeAliasDecl* LookupTypeAliasDeclForFunctionValue(
+    const ScopeContext& ctx,
+    const TypePath& path) {
+  if (path.empty()) {
+    return nullptr;
+  }
+  if (path.size() > 1) {
+    const auto it = ctx.sigma.types.find(PathKeyOf(path));
+    if (it == ctx.sigma.types.end()) {
+      return nullptr;
+    }
+    return std::get_if<ast::TypeAliasDecl>(&it->second);
+  }
+
+  const auto ent = ResolveTypeName(ctx, path[0]);
+  if (!ent.has_value() || !ent->origin_opt.has_value()) {
+    return nullptr;
+  }
+  ast::Path resolved = *ent->origin_opt;
+  resolved.push_back(ent->target_opt.value_or(path[0]));
+  const auto it = ctx.sigma.types.find(PathKeyOf(resolved));
+  if (it == ctx.sigma.types.end()) {
+    return nullptr;
+  }
+  return std::get_if<ast::TypeAliasDecl>(&it->second);
+}
+
+static bool IsFunctionValueType(const ScopeContext& ctx,
+                                const TypeRef& type,
+                                std::uint32_t depth = 0) {
+  if (depth > 32) {
+    return false;
+  }
+  const auto stripped = StripPerm(type);
+  if (!stripped) {
+    return false;
+  }
+  if (std::holds_alternative<TypeFunc>(stripped->node)) {
+    return true;
+  }
+  const auto* path_type = std::get_if<TypePathType>(&stripped->node);
+  if (!path_type || !path_type->generic_args.empty()) {
+    return false;
+  }
+  const auto* alias =
+      LookupTypeAliasDeclForFunctionValue(ctx, path_type->path);
+  if (!alias || alias->generic_params.has_value()) {
+    return false;
+  }
+  const auto lowered = LowerType(ctx, alias->type);
+  return lowered.ok && IsFunctionValueType(ctx, lowered.type, depth + 1);
+}
+
 static CallArgCollectionResult CollectCallArgTypesForInference(
     const ScopeContext& ctx,
     const ast::ProcedureDecl& proc,
@@ -1740,10 +1802,13 @@ static CallArgCollectionResult CollectCallArgTypesForInference(
   for (std::size_t i = 0; i < args.size(); ++i) {
     if (!lowered_params[i].mode.has_value()) {
       const bool has_source_prov = HasSourceProvenance(args[i].value);
-      if (has_source_prov && !IsPlaceExprForCall(args[i].value)) {
+      const bool expected_function_value =
+          IsFunctionValueType(ctx, lowered_params[i].type);
+      if (has_source_prov && !expected_function_value &&
+          !IsPlaceExprForCall(args[i].value)) {
         return {"E-TYP-1603", ArgDiagnosticSpan(args[i])};
       }
-      if (has_source_prov && type_place) {
+      if (has_source_prov && !expected_function_value && type_place) {
         const auto place = (*type_place)(args[i].value);
         if (!place.ok) {
           return {place.diag_id, ArgDiagnosticSpan(args[i])};

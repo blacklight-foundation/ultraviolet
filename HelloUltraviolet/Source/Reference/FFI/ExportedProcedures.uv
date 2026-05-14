@@ -1,7 +1,29 @@
 //! Reference specimens for FFI / ExportedProcedures.
 
+/// Raw exported primitive procedure using the C ABI.
+[[export("C")]]
+[[mangle("uv_reference_exported_increment")]]
+public procedure ffiExportedIncrement(value: i32) -> i32 {
+    return value + 1
+}
+
+/// Raw exported aggregate procedure whose signature satisfies FfiSafe.
+[[export("C")]]
+[[mangle("uv_reference_exported_record_value")]]
+public procedure ffiExportedRecordValue(value: FFIPrimitiveRecord) -> i32 {
+    return value.signed_value
+}
+
+/// Raw exported procedure using a drop-bearing by-value FfiSafe record.
+[[export("C")]]
+[[mangle("uv_reference_exported_dropping_value")]]
+public procedure ffiExportedDroppingValue(value: FFIDroppingRecord) -> i32 {
+    return 1
+}
+
 /// Exercises the FFI ExportedProcedures reference surface.
 public procedure runFFIExportedProceduresReference() -> bool {
-    let reference: FFIReference = ffiReference(2usize, true, false)
-    return ffiReferenceIsCovered(reference)
+    let record_value: FFIPrimitiveRecord = ffiPrimitiveRecord(12, 3u32)
+    return ffiExportedIncrement(4) == 5 &&
+        ffiExportedRecordValue(record_value) == 12
 }

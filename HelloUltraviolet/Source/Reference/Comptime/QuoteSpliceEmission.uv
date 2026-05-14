@@ -2,6 +2,21 @@
 
 /// Exercises the Comptime QuoteSpliceEmission reference surface.
 public procedure runComptimeQuoteSpliceEmissionReference() -> bool {
-    let reference: ComptimeReference = comptimeReference(true, true, false)
-    return comptimeReferenceIsCovered(reference) && reference.emits_source
+    [[emit]]
+    comptime {
+        let first_ast: Ast::Item =
+            quote { internal procedure emittedQuoteReferenceValue() -> i32 { return 47 } }
+        emitter~>emit(first_ast)
+
+        let return_type: Ast::Type = quote type { i32 }
+        let return_expr: Ast::Expr = quote { 19 + 23 }
+        let second_ast: Ast::Item = quote {
+            internal procedure emittedSplicedReferenceValue() -> $(return_type) {
+                return $(return_expr)
+            }
+        }
+        emitter~>emit(second_ast)
+    }
+
+    return emittedQuoteReferenceValue() == 47 && emittedSplicedReferenceValue() == 42
 }

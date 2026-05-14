@@ -1,7 +1,64 @@
 //! Reference specimens for FFI / ForeignContracts.
 
+extern "C" {
+    [[static]]
+    public procedure importedStaticForeignContract(value: i32) -> i32
+        |: @foreign_assumes(value > 0)
+        |: @foreign_ensures(@result >= value)
+
+    [[dynamic]]
+    public procedure importedDynamicForeignContract(value: i32) -> i32
+        |: @foreign_assumes(value >= 0)
+        |: @foreign_ensures(@result >= 0)
+
+    [[dynamic]]
+    public procedure importedNullableForeignContract(value: i32) -> *mut i32
+        |: @foreign_ensures(@null_result: @result == null)
+}
+
+/// Foreign-visible provider satisfying the static foreign contract.
+[[export("C")]]
+[[mangle("importedStaticForeignContract")]]
+public procedure ffiImportedStaticForeignContractProvider(value: i32) -> i32 {
+    return value
+}
+
+/// Foreign-visible provider satisfying the dynamic foreign contract.
+[[export("C")]]
+[[mangle("importedDynamicForeignContract")]]
+public procedure ffiImportedDynamicForeignContractProvider(value: i32) -> i32 {
+    return value + 1
+}
+
+/// Foreign-visible provider satisfying the nullable foreign postcondition.
+[[export("C")]]
+[[mangle("importedNullableForeignContract")]]
+public procedure ffiImportedNullableForeignContractProvider(value: i32) -> *mut i32 {
+    return null
+}
+
+internal procedure callStaticForeignContract(value: i32) -> i32 {
+    if value > 0 {
+        return unsafe { importedStaticForeignContract(value) }
+    }
+    return value
+}
+
+internal procedure callDynamicForeignContract(value: i32) -> i32 {
+    return unsafe { importedDynamicForeignContract(value) }
+}
+
+internal procedure callNullableForeignContract(value: i32) -> *mut i32 {
+    return unsafe { importedNullableForeignContract(value) }
+}
+
 /// Exercises the FFI ForeignContracts reference surface.
 public procedure runFFIForeignContractsReference() -> bool {
-    let reference: FFIReference = ffiReference(2usize, true, false)
-    return ffiReferenceIsCovered(reference)
+    let precondition_value: i32 = 3
+    let static_result: i32 = callStaticForeignContract(precondition_value)
+    let dynamic_result: i32 = callDynamicForeignContract(5)
+    let nullable_result: *mut i32 = callNullableForeignContract(7)
+    return static_result >= precondition_value &&
+        dynamic_result >= 0 &&
+        nullable_result == null
 }

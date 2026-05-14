@@ -148,6 +148,49 @@ static bool IsUnitType(const TypeRef& type) {
   return prim && prim->name == "()";
 }
 
+static bool IsNeverTypeLocal(const TypeRef& type) {
+  if (!type) {
+    return false;
+  }
+  const TypeRef stripped = StripPerm(type);
+  if (!stripped) {
+    return false;
+  }
+  const auto* prim = std::get_if<TypePrim>(&stripped->node);
+  return prim && prim->name == "!";
+}
+
+static TypeRef CanonicalAsyncPatternType(const ScopeContext& ctx,
+                                         const TypeRef& type) {
+  if (!type || std::holds_alternative<TypeModalState>(type->node) ||
+      std::holds_alternative<TypeUnion>(type->node)) {
+    return type;
+  }
+
+  const auto async_sig = AsyncSigOf(ctx, type);
+  if (!async_sig.has_value()) {
+    return type;
+  }
+
+  return MakeTypePath({"Async"},
+                      {async_sig->out,
+                       async_sig->in,
+                       async_sig->result,
+                       async_sig->err});
+}
+
+static std::unordered_set<IdKey> ModalExhaustiveStatesForScrutinee(
+    const ScopeContext& ctx,
+    const TypeRef& scrutinee,
+    const ast::ModalDecl& modal_decl) {
+  auto states = StateNameSet(modal_decl);
+  const auto async_sig = AsyncSigOf(ctx, scrutinee);
+  if (async_sig.has_value() && IsNeverTypeLocal(async_sig->err)) {
+    states.erase(IdKeyOf("Failed"));
+  }
+  return states;
+}
+
 static TypeRef StripPermOnceLocal(const TypeRef& type) {
   if (!type) {
     return type;
@@ -1328,6 +1371,34 @@ static AllEqResult AllEq(const std::vector<TypeRef>& types) {
   return {true, std::nullopt, true};
 }
 
+static TypeRef UnifyBranchTypes(const ScopeContext& ctx,
+                                const TypeRef& lhs,
+                                const TypeRef& rhs) {
+  if (IsNeverTypeLocal(lhs)) {
+    return rhs;
+  }
+  if (IsNeverTypeLocal(rhs)) {
+    return lhs;
+  }
+
+  const auto equiv = TypeEquiv(lhs, rhs);
+  if (equiv.ok && equiv.equiv) {
+    return lhs;
+  }
+
+  const auto lhs_sub = Subtyping(ctx, lhs, rhs);
+  if (lhs_sub.ok && lhs_sub.subtype) {
+    return rhs;
+  }
+
+  const auto rhs_sub = Subtyping(ctx, rhs, lhs);
+  if (rhs_sub.ok && rhs_sub.subtype) {
+    return lhs;
+  }
+
+  return nullptr;
+}
+
 static ExhaustiveResult UnionTypesExhaustive(
     const ScopeContext& ctx,
     const std::vector<ast::IfCaseClause>& arms,
@@ -1481,7 +1552,8 @@ ExprTypeResult TypeIfIsExpr(const ScopeContext& ctx,
     result.diag_id = scrutinee_norm.diag_id;
     return result;
   }
-  const TypeRef scrutinee_base = scrutinee_norm.type;
+  const TypeRef scrutinee_base =
+      CanonicalAsyncPatternType(ctx, scrutinee_norm.type);
   if (!scrutinee_base) {
     return result;
   }
@@ -1535,12 +1607,8 @@ ExprTypeResult TypeIfIsExpr(const ScopeContext& ctx,
     return result;
   }
 
-  const auto all_eq = AllEq({then_typed.type, else_typed.type});
-  if (!all_eq.ok) {
-    result.diag_id = all_eq.diag_id;
-    return result;
-  }
-  if (!all_eq.equal) {
+  const TypeRef unified = UnifyBranchTypes(ctx, then_typed.type, else_typed.type);
+  if (!unified) {
     SPEC_RULE("If-Branch-Mismatch");
     result.diag_id = "If-Branch-Mismatch";
     return result;
@@ -1548,7 +1616,103 @@ ExprTypeResult TypeIfIsExpr(const ScopeContext& ctx,
 
   SPEC_RULE("T-IfIs");
   result.ok = true;
-  result.type = then_typed.type;
+  result.type = unified;
+  return result;
+}
+
+CheckResult CheckIfIsExpr(const ScopeContext& ctx,
+                          const StmtTypeContext& type_ctx,
+                          const ast::IfIsExpr& expr,
+                          const TypeEnv& env,
+                          const TypeRef& expected) {
+  SpecDefsIfCase();
+  CheckResult result;
+  if (!expr.scrutinee || !expr.pattern || !expr.then_expr || !expected) {
+    return result;
+  }
+
+  const auto scrutinee = TypeExpr(
+      ctx, WithSharedAccessMode(type_ctx, ast::KeyMode::Read), expr.scrutinee,
+      env);
+  if (!scrutinee.ok) {
+    result.diag_id = scrutinee.diag_id;
+    return result;
+  }
+
+  const auto scrutinee_norm = NormalizeAliasTopLevel(ctx, StripPerm(scrutinee.type));
+  if (!scrutinee_norm.ok) {
+    result.diag_id = scrutinee_norm.diag_id;
+    return result;
+  }
+  const TypeRef scrutinee_base =
+      CanonicalAsyncPatternType(ctx, scrutinee_norm.type);
+  if (!scrutinee_base) {
+    return result;
+  }
+
+  const auto case_scope = CaseScopeEnv(ctx,
+                                       expr.scrutinee,
+                                       env,
+                                       expr.pattern,
+                                       scrutinee_base,
+                                       ast::Mutability::Let);
+  if (!case_scope.ok) {
+    result.diag_id = case_scope.diag_id;
+    return result;
+  }
+
+  if (!expr.else_expr) {
+    const TypeRef unit_type = MakeTypePrim("()");
+    const auto then_check =
+        CheckArmBody(ctx, type_ctx, expr.then_expr, case_scope.env, unit_type);
+    if (!then_check.ok) {
+      result.diag_id = then_check.diag_id.has_value()
+                           ? then_check.diag_id
+                           : std::optional<std::string_view>{"If-Branch-Mismatch"};
+      return result;
+    }
+
+    const auto sub = Subtyping(ctx, unit_type, expected);
+    if (!sub.ok) {
+      result.diag_id = sub.diag_id;
+      return result;
+    }
+    if (!sub.subtype) {
+      result.diag_id = sub.diag_id.has_value()
+                           ? sub.diag_id
+                           : std::optional<std::string_view>{"If-Branch-Mismatch"};
+      return result;
+    }
+
+    SPEC_RULE("Chk-IfIs-No-Else");
+    result.ok = true;
+    return result;
+  }
+
+  const auto then_check =
+      CheckArmBody(ctx, type_ctx, expr.then_expr, case_scope.env, expected);
+  if (!then_check.ok) {
+    result.diag_id = then_check.diag_id;
+    return result;
+  }
+
+  const auto else_scope =
+      ElseScopeEnv(ctx, expr.scrutinee, env, expr.pattern, scrutinee_base);
+  if (!else_scope.ok) {
+    result.diag_id = else_scope.diag_id;
+    return result;
+  }
+  SPEC_RULE("ElseScope");
+
+  const auto else_check =
+      CheckExprAgainst(ctx, type_ctx, expr.else_expr, expected, else_scope.env);
+  if (!else_check.ok) {
+    result.diag_id = else_check.diag_id;
+    return result;
+  }
+
+  SPEC_RULE("Chk-IfIs");
+  result.ok = true;
   return result;
 }
 
@@ -1575,7 +1739,8 @@ ExprTypeResult TypeIfCaseExpr(const ScopeContext& ctx,
     result.diag_id = scrutinee_norm.diag_id;
     return result;
   }
-  const TypeRef scrutinee_base = scrutinee_norm.type;
+  const TypeRef scrutinee_base =
+      CanonicalAsyncPatternType(ctx, scrutinee_norm.type);
   if (!scrutinee_base) {
     return result;
   }
@@ -1584,18 +1749,18 @@ ExprTypeResult TypeIfCaseExpr(const ScopeContext& ctx,
   const bool requires_exhaustive = !has_else;
 
   const auto* union_type = std::get_if<TypeUnion>(&scrutinee_base->node);
-    const auto* path_type = AppliedTypePath(*scrutinee_base);
-    const ast::EnumDecl* enum_decl = nullptr;
-    const ast::ModalDecl* modal_decl = nullptr;
-    if (path_type) {
-      enum_decl = LookupEnumDecl(ctx, *path_type);
-      if (!enum_decl) {
-        ast::TypePath ast_path;
-        ast_path.reserve(path_type->size());
-        for (const auto& comp : *path_type) {
-          ast_path.push_back(comp);
-        }
-        modal_decl = LookupModalDecl(ctx, ast_path);
+  const auto* path_type = AppliedTypePath(*scrutinee_base);
+  const ast::EnumDecl* enum_decl = nullptr;
+  const ast::ModalDecl* modal_decl = nullptr;
+  if (path_type) {
+    enum_decl = LookupEnumDecl(ctx, *path_type);
+    if (!enum_decl) {
+      ast::TypePath ast_path;
+      ast_path.reserve(path_type->size());
+      for (const auto& comp : *path_type) {
+        ast_path.push_back(comp);
+      }
+      modal_decl = LookupModalDecl(ctx, ast_path);
     }
   }
 
@@ -1675,7 +1840,8 @@ ExprTypeResult TypeIfCaseExpr(const ScopeContext& ctx,
     SPEC_RULE("T-IfCase-Enum");
   } else if (modal_decl) {
     const auto arm_states = ArmStates(ctx, expr.cases);
-    const auto decl_states = StateNameSet(*modal_decl);
+    const auto decl_states = ModalExhaustiveStatesForScrutinee(
+        ctx, scrutinee_match_type, *modal_decl);
     if (requires_exhaustive &&
         !HasIrrefutableArm(ctx, expr.cases, scrutinee_match_type) &&
         arm_states != decl_states) {
@@ -1738,7 +1904,8 @@ CheckResult CheckIfCaseExpr(const ScopeContext& ctx,
     result.diag_id = scrutinee_norm.diag_id;
     return result;
   }
-  const TypeRef scrutinee_base = scrutinee_norm.type;
+  const TypeRef scrutinee_base =
+      CanonicalAsyncPatternType(ctx, scrutinee_norm.type);
   if (!scrutinee_base) {
     return result;
   }
@@ -1747,18 +1914,18 @@ CheckResult CheckIfCaseExpr(const ScopeContext& ctx,
   const bool requires_exhaustive = !has_else;
 
   const auto* union_type = std::get_if<TypeUnion>(&scrutinee_base->node);
-    const auto* path_type = AppliedTypePath(*scrutinee_base);
-    const ast::EnumDecl* enum_decl = nullptr;
-    const ast::ModalDecl* modal_decl = nullptr;
-    if (path_type) {
-      enum_decl = LookupEnumDecl(ctx, *path_type);
-      if (!enum_decl) {
-        ast::TypePath ast_path;
-        ast_path.reserve(path_type->size());
-        for (const auto& comp : *path_type) {
-          ast_path.push_back(comp);
-        }
-        modal_decl = LookupModalDecl(ctx, ast_path);
+  const auto* path_type = AppliedTypePath(*scrutinee_base);
+  const ast::EnumDecl* enum_decl = nullptr;
+  const ast::ModalDecl* modal_decl = nullptr;
+  if (path_type) {
+    enum_decl = LookupEnumDecl(ctx, *path_type);
+    if (!enum_decl) {
+      ast::TypePath ast_path;
+      ast_path.reserve(path_type->size());
+      for (const auto& comp : *path_type) {
+        ast_path.push_back(comp);
+      }
+      modal_decl = LookupModalDecl(ctx, ast_path);
     }
   }
 
@@ -1824,7 +1991,8 @@ CheckResult CheckIfCaseExpr(const ScopeContext& ctx,
     SPEC_RULE("Chk-IfCase-Enum");
   } else if (modal_decl) {
     const auto arm_states = ArmStates(ctx, expr.cases);
-    const auto decl_states = StateNameSet(*modal_decl);
+    const auto decl_states = ModalExhaustiveStatesForScrutinee(
+        ctx, scrutinee_match_type, *modal_decl);
     if (requires_exhaustive &&
         !HasIrrefutableArm(ctx, expr.cases, scrutinee_match_type) &&
         arm_states != decl_states) {

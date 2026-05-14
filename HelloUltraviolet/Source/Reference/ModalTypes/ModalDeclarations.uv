@@ -18,6 +18,22 @@ public modal ModalReference {
             return true
         }
 
+        public procedure readValue(~) -> i32 {
+            return self.value
+        }
+
+        public procedure readValueWithOffset(~, offset: i32) -> i32 {
+            return self.value + offset
+        }
+
+        public procedure uniqueReceiverOffset(~!, offset: i32) -> i32 {
+            return offset + 1
+        }
+
+        public transition replace(value: i32) -> @Open {
+            return ModalReference@Open { value: value }
+        }
+
         public transition close() -> @Closed {
             return ModalReference@Closed {}
         }
@@ -30,10 +46,15 @@ public procedure closedModalReference() -> ModalReferenceValue {
     return ModalReference@Closed {}
 }
 
+internal procedure modalReferenceOpenValue(reference: ModalReference@Open) -> i32 {
+    return reference.value
+}
+
 /// Exercises the ModalTypes ModalDeclarations reference surface.
 public procedure runModalTypesModalDeclarationsReference() -> bool {
     let reference: ModalReferenceValue = closedModalReference()
-    return if reference is {
+    let open_reference: ModalReference@Open = ModalReference@Open { value: 17 }
+    let state_specific_value: bool = if reference is {
         @Closed {
             true
         }
@@ -41,4 +62,6 @@ public procedure runModalTypesModalDeclarationsReference() -> bool {
             false
         }
     }
+    return state_specific_value &&
+        modalReferenceOpenValue(open_reference) == 17
 }

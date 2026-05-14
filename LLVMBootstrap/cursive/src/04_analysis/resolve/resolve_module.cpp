@@ -98,6 +98,10 @@ std::optional<std::string_view> CodeForResolveDiag(
   if (diag_id == "Validate-Module-Keyword-Err") {
     return "E-CNF-0401";
   }
+  if (diag_id == "Intro-Reserved-Id-Err" ||
+      diag_id == "Shadow-Reserved-Id-Err") {
+    return "E-CNF-0401";
+  }
   if (diag_id == "Validate-Module-Prim-Shadow-Err") {
     return "E-MOD-1304";
   }

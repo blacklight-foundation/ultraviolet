@@ -874,11 +874,22 @@ static bool BitcopyTypeImpl(const ScopeContext& ctx,
           return node.state.has_value() && node.state == StringState::View;
         } else if constexpr (std::is_same_v<T, TypeBytes>) {
           return node.state.has_value() && node.state == BytesState::View;
-        } else if constexpr (std::is_same_v<T, TypePathType>) {
-          if (IsBuiltinBitcopyPath(node.path)) {
+        } else if constexpr (std::is_same_v<T, TypePathType> ||
+                             std::is_same_v<T, TypeApply>) {
+          const TypePath& applied_path = node.path;
+          const std::vector<TypeRef>& applied_args =
+              [&]() -> const std::vector<TypeRef>& {
+            if constexpr (std::is_same_v<T, TypePathType>) {
+              return node.generic_args;
+            } else {
+              return node.args;
+            }
+          }();
+
+          if (IsBuiltinBitcopyPath(applied_path)) {
             return true;
           }
-          ast::Path ast_path(node.path.begin(), node.path.end());
+          ast::Path ast_path(applied_path.begin(), applied_path.end());
           const auto key = PathKeyOf(ast_path);
           if (active_paths.find(key) != active_paths.end()) {
             return false;
@@ -894,17 +905,17 @@ static bool BitcopyTypeImpl(const ScopeContext& ctx,
                 using D = std::decay_t<decltype(decl)>;
                 if constexpr (std::is_same_v<D, ast::RecordDecl>) {
                   const auto args = ResolveDeclGenericArgs(
-                      ctx, decl.generic_params, node.generic_args);
+                      ctx, decl.generic_params, applied_args);
                   return args.has_value() &&
                          CheckRecordBitcopy(ctx, decl, *args, active_paths);
                 } else if constexpr (std::is_same_v<D, ast::EnumDecl>) {
                   const auto args = ResolveDeclGenericArgs(
-                      ctx, decl.generic_params, node.generic_args);
+                      ctx, decl.generic_params, applied_args);
                   return args.has_value() &&
                          CheckEnumBitcopy(ctx, decl, *args, active_paths);
                 } else if constexpr (std::is_same_v<D, ast::ModalDecl>) {
                   const auto args = ResolveDeclGenericArgs(
-                      ctx, decl.generic_params, node.generic_args);
+                      ctx, decl.generic_params, applied_args);
                   return args.has_value() &&
                          CheckModalBitcopy(ctx, decl, *args, std::nullopt, active_paths);
                 } else if constexpr (std::is_same_v<D, ast::TypeAliasDecl>) {
@@ -916,7 +927,7 @@ static bool BitcopyTypeImpl(const ScopeContext& ctx,
                     return false;
                   }
                   const auto args = ResolveDeclGenericArgs(
-                      ctx, decl.generic_params, node.generic_args);
+                      ctx, decl.generic_params, applied_args);
                   if (!args.has_value()) {
                     return false;
                   }

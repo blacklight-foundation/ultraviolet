@@ -1,9 +1,22 @@
 //! Reference specimens for ModalTypes / Strings.
 
+internal procedure stringReferenceLayoutMatches() -> bool {
+    return sizeof(string@View) == 2usize * sizeof(usize) &&
+        sizeof(string@Managed) == 3usize * sizeof(usize) &&
+        sizeof(string) >= sizeof(string@View) &&
+        alignof(string@View) == alignof(usize) &&
+        alignof(string@Managed) == alignof(usize)
+}
+
 /// Exercises the ModalTypes Strings reference surface.
 public procedure runModalTypesStringsReference() -> bool {
     let text: string@View = "ultraviolet"
+    let general_text: string = text
+    let empty_text: string@View = ""
     let slice: string@View = string::slice(text, 0usize, 5usize)
     return string::length(text) == 11usize &&
-        string::length(slice) == 5usize
+        string::length(slice) == 5usize &&
+        string::is_empty(empty_text) &&
+        !string::is_empty(text) &&
+        stringReferenceLayoutMatches()
 }

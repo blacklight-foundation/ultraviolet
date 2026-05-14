@@ -1,7 +1,27 @@
 //! Reference specimens for Lowering / LayoutAndABI.
 
+internal record LoweringLayoutRecord {
+    internal left: i32
+    internal right: i32
+}
+
+internal procedure primitiveLayoutMatches() -> bool {
+    return sizeof(i8) == 1usize &&
+        sizeof(i32) == 4usize &&
+        sizeof(i64) == 8usize &&
+        alignof(i32) == 4usize &&
+        alignof(i64) == 8usize
+}
+
+internal procedure aggregateLayoutMatches() -> bool {
+    return sizeof([i32; 3]) == 12usize &&
+        alignof([i32; 3]) == 4usize &&
+        sizeof(LoweringLayoutRecord) == 8usize &&
+        alignof(LoweringLayoutRecord) == 4usize
+}
+
 /// Exercises the Lowering LayoutAndABI reference surface.
 public procedure runLoweringLayoutAndABIReference() -> bool {
-    let reference: LoweringReference = loweringReference(3usize, true, true)
-    return loweringReferenceIsCovered(reference)
+    return primitiveLayoutMatches() &&
+        aggregateLayoutMatches()
 }

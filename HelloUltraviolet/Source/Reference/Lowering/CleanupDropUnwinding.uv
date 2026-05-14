@@ -1,7 +1,30 @@
 //! Reference specimens for Lowering / CleanupDropUnwinding.
 
+internal procedure cleanupDeferValue(seed: i32) -> i32 {
+    var value: i32 = seed
+    {
+        defer {
+            value = value + 10
+        }
+        value = value + 1
+    }
+    return value
+}
+
+internal record LoweringDropRecord {
+    internal value: unique i32
+
+    internal procedure drop(~!) -> () {
+    }
+}
+
+internal procedure cleanupDropValue(move value: LoweringDropRecord) -> i32 {
+    return move value.value
+}
+
 /// Exercises the Lowering CleanupDropUnwinding reference surface.
 public procedure runLoweringCleanupDropUnwindingReference() -> bool {
-    let reference: LoweringReference = loweringReference(2usize, true, true)
-    return loweringReferenceIsCovered(reference)
+    let record_value: LoweringDropRecord = LoweringDropRecord { value: 7 }
+    return cleanupDeferValue(1) == 12 &&
+        cleanupDropValue(move record_value) == 7
 }

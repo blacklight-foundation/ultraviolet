@@ -53,7 +53,8 @@ WhereClauseResult ProcessWhereClause(
   for (const auto& predicate : predicates) {
     // Verify predicate name is valid
     if (predicate.pred != "Bitcopy" && predicate.pred != "Clone" &&
-        predicate.pred != "Drop" && predicate.pred != "FfiSafe") {
+        predicate.pred != "Drop" && predicate.pred != "FfiSafe" &&
+        predicate.pred != "GpuSafe") {
       SPEC_RULE("WhereClause-PredicateNotFound");
       result.ok = false;
       result.diag_id = "E-TYP-2302";

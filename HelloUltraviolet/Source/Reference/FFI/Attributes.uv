@@ -1,7 +1,27 @@
 //! Reference specimens for FFI / Attributes.
 
+[[library(name: "Kernel32", kind: "raw-dylib")]]
+extern "C" {
+    [[mangle("GetLastError")]]
+    public procedure ffiImportedGetLastErrorReference() -> u32
+}
+
+[[library(name: "Kernel32")]]
+extern "C" {
+    [[mangle(none)]]
+    public procedure GetCurrentProcessId() -> u32
+}
+
+/// Exported procedure with an explicit link name selected by mangle.
+[[export("C")]]
+[[mangle("uv_reference_attribute_export")]]
+public procedure ffiAttributeExportReference(value: i32) -> i32 {
+    return value + 2
+}
+
 /// Exercises the FFI Attributes reference surface.
 public procedure runFFIAttributesReference() -> bool {
-    let reference: FFIReference = ffiReference(5usize, true, false)
-    return ffiReferenceIsCovered(reference)
+    let current_process_id: u32 = unsafe { GetCurrentProcessId() }
+    return ffiAttributeExportReference(5) == 7 &&
+        current_process_id >= 0u32
 }

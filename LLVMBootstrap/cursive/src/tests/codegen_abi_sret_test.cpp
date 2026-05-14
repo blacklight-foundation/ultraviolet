@@ -153,6 +153,16 @@ std::string FixtureSource() {
     public v5: i64
 }
 
+public record LargeError {
+    public row: usize
+    public code0: i64
+    public code1: i64
+    public code2: i64
+    public code3: i64
+}
+
+public type LargeUnion = LargeError | LargeAggregate
+
 public enum LargeResult {
     Ready(LargeAggregate)
     Rejected(i32)
@@ -173,8 +183,26 @@ procedure nestedAggregate(seed: i64) -> LargeAggregate {
     return makeAggregate(seed)
 }
 
+procedure makeLargeError(row: usize) -> LargeError {
+    return LargeError {
+        row: row,
+        code0: 40,
+        code1: 41,
+        code2: 42,
+        code3: 43
+    }
+}
+
 procedure chooseAggregate(seed: i64) -> LargeResult {
     return LargeResult::Ready(nestedAggregate(seed))
+}
+
+procedure chooseLargeError() -> LargeUnion {
+    return makeLargeError(7usize)
+}
+
+procedure chooseLargeAggregate() -> LargeUnion {
+    return makeAggregate(10)
 }
 
 procedure aggregateExitCode(value: LargeAggregate) -> i32 {
@@ -187,6 +215,40 @@ procedure aggregateExitCode(value: LargeAggregate) -> i32 {
         return 0
     }
     return 1
+}
+
+procedure largeErrorExitCode(value: LargeError) -> i32 {
+    if ((value.row == 7usize) &&
+        (value.code0 == 40) &&
+        (value.code1 == 41) &&
+        (value.code2 == 42) &&
+        (value.code3 == 43)) {
+        return 0
+    }
+    return 7
+}
+
+procedure concreteLargeUnionReturnExitCode() -> i32 {
+    let error_or_aggregate: LargeUnion = chooseLargeError()
+    let error_ok: bool = if error_or_aggregate is :LargeError {
+        largeErrorExitCode(error_or_aggregate) == 0
+    } else {
+        false
+    }
+    if (!error_ok) {
+        return 8
+    }
+
+    let aggregate_or_error: LargeUnion = chooseLargeAggregate()
+    let aggregate_ok: bool = if aggregate_or_error is :LargeAggregate {
+        aggregateExitCode(aggregate_or_error) == 0
+    } else {
+        false
+    }
+    if (!aggregate_ok) {
+        return 9
+    }
+    return 0
 }
 
 procedure consumeAggregate(result: LargeResult) -> i32 {
@@ -273,6 +335,32 @@ procedure conditionalLoopExitCode() -> i32 {
     return 4
 }
 
+procedure aggregateLocalCopyExitCode() -> i32 {
+    var first: LargeAggregate = makeAggregate(0)
+    var second: LargeAggregate = first
+    var third: LargeAggregate = first
+    var fourth: LargeAggregate = first
+
+    first = makeAggregate(10)
+    second = makeAggregate(20)
+    third = makeAggregate(30)
+    fourth = makeAggregate(40)
+
+    if (first.v0 != 10) {
+        return 40
+    }
+    if (second.v0 != 20) {
+        return 41
+    }
+    if (third.v0 != 30) {
+        return 42
+    }
+    if (fourth.v0 != 40) {
+        return 43
+    }
+    return 0
+}
+
 procedure nonCapturingClosureExitCode() -> i32 {
     let non_capturing = |value: i32| -> i32 value + 1
     let empty = || 5
@@ -319,6 +407,10 @@ public procedure main(move ctx: Context) -> i32 {
     if (aggregate_code != 0) {
         return aggregate_code
     }
+    let concrete_union_code: i32 = concreteLargeUnionReturnExitCode()
+    if (concrete_union_code != 0) {
+        return concrete_union_code
+    }
     let transition_code: i32 = transitionExitCode()
     if (transition_code != 0) {
         return transition_code
@@ -330,6 +422,10 @@ public procedure main(move ctx: Context) -> i32 {
     let loop_code: i32 = conditionalLoopExitCode()
     if (loop_code != 0) {
         return loop_code
+    }
+    let aggregate_local_copy_code: i32 = aggregateLocalCopyExitCode()
+    if (aggregate_local_copy_code != 0) {
+        return aggregate_local_copy_code
     }
     let non_capturing_code: i32 = nonCapturingClosureExitCode()
     if (non_capturing_code != 0) {

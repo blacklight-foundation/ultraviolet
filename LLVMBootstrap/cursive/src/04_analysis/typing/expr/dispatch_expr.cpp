@@ -1679,6 +1679,8 @@ ExprTypeResult TypeDispatchExprImpl(const ScopeContext& ctx,
                                          type_expr, type_ident, type_place);
   if (!body_result.ok) {
     result.diag_id = body_result.diag_id;
+    result.diag_detail = body_result.diag_detail;
+    result.diag_span = body_result.diag_span;
     return result;
   }
 

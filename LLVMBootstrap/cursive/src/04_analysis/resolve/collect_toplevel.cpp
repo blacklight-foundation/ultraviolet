@@ -330,13 +330,16 @@ NameMap BuildDeclNameMap(const ast::ModulePath& module_path,
 }
 
 source::ModuleNames ModuleNamesFromContext(const ScopeContext& ctx) {
-  if (ctx.project) {
-    return ModuleNamesOf(*ctx.project);
-  }
   source::ModuleNames names;
   names.reserve(ctx.sigma.mods.size());
   for (const auto& mod : ctx.sigma.mods) {
     names.insert(core::StringOfPath(mod.path));
+  }
+  if (!names.empty()) {
+    return names;
+  }
+  if (ctx.project) {
+    return ModuleNamesOf(*ctx.project);
   }
   return names;
 }

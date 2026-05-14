@@ -1,11 +1,11 @@
 //! Coverage checks for accepted project fixture metadata.
 
 public procedure expectedAcceptedProjectFixtureCount() -> usize {
-    return 5usize
+    return 6usize
 }
 
 public procedure acceptedProjectFixtureCount() -> usize {
-    return 5usize
+    return 6usize
 }
 
 public procedure validatedAcceptedProjectFixtureCount() -> usize {
@@ -96,6 +96,24 @@ public procedure validatedAcceptedProjectFixtureCount() -> usize {
         "Fixtures/AcceptedProjects/VerificationFactPrecondition/Ultraviolet.toml",
         "Fixtures/AcceptedProjects/VerificationFactPrecondition/Source/Library.uv",
         "VerificationFactPrecondition",
+        "library"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedProjectSpecimenMatches(
+        acceptedProjectSpecimen(
+            "CrossAssemblyImplementation",
+            "Fixtures/AcceptedProjects/CrossAssemblyImplementation",
+            "Fixtures/AcceptedProjects/CrossAssemblyImplementation/Ultraviolet.toml",
+            "Fixtures/AcceptedProjects/CrossAssemblyImplementation/Source/CrossAssemblyImplementation/Library.uv",
+            "CrossAssemblyImplementation",
+            "library"
+        ),
+        "CrossAssemblyImplementation",
+        "Fixtures/AcceptedProjects/CrossAssemblyImplementation",
+        "Fixtures/AcceptedProjects/CrossAssemblyImplementation/Ultraviolet.toml",
+        "Fixtures/AcceptedProjects/CrossAssemblyImplementation/Source/CrossAssemblyImplementation/Library.uv",
+        "CrossAssemblyImplementation",
         "library"
     ) {
         count = count + 1usize

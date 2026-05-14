@@ -28,6 +28,17 @@ internal procedure genericAliasValue<TValue>(move value: TValue) -> GenericAlias
     return move value
 }
 
+internal procedure multiPredicateGenericValue<TValue>(move value: TValue) -> TValue
+|: Bitcopy(TValue)
+Clone(TValue)
+{
+    return move value
+}
+
+internal procedure classBoundGenericValue<TValue <: ClassReadable>(value: TValue) -> i32 {
+    return value~>classValue()
+}
+
 internal procedure polymorphismReference(
     feature_count: usize,
     statically_checked: bool,
@@ -50,12 +61,23 @@ internal procedure polymorphismReferenceIsCovered(
 public procedure runPolymorphismGenericParametersReference() -> bool {
     let defaulted_value: i32 = defaultedGenericValue<i32>(17, 23)
     let alias_value: i32 = genericAliasValue<i32>(31)
+    let multi_predicate_value: i32 = multiPredicateGenericValue<i32>(29)
+    let defaulted_carrier_layout: bool =
+        sizeof(GenericCarrier<i32>) == 2usize * sizeof(i32) &&
+            alignof(GenericCarrier<i32>) == alignof(i32)
+    let explicit_carrier_layout: bool =
+        sizeof(GenericCarrier<i32, bool>) >= sizeof(i32) + sizeof(bool) &&
+            alignof(GenericCarrier<i32, bool>) == alignof(i32)
     let owner: ClassOwner = ClassOwner { value: 37, inspected_value: 41 }
     let reference: PolymorphismReference =
         polymorphismReference(
-            5usize,
+            10usize,
             defaulted_value == 17 &&
                 alias_value == 31 &&
+                multi_predicate_value == 29 &&
+                defaulted_carrier_layout &&
+                explicit_carrier_layout &&
+                classBoundGenericValue<ClassOwner>(owner) == 11 &&
                 owner~>classValue() == 11 &&
                 owner.inspected_value == 41,
             false

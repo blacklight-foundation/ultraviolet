@@ -1,41 +1,24 @@
 //! Reference specimens for Permissions / AliasExclusivity.
 
-internal record AliasExclusivityReference {
-    internal unique_aliases: usize
-    internal shared_aliases: usize
-    internal mutable_aliases: usize
+internal procedure consumePermissionCell(move cell: unique PermissionCell) -> i32 {
+    let consumed: unique PermissionCell = move cell
+    return consumed.value + 0
 }
 
-internal procedure aliasExclusivityReference(
-    unique_aliases: usize,
-    shared_aliases: usize,
-    mutable_aliases: usize
-) -> AliasExclusivityReference {
-    return AliasExclusivityReference {
-        unique_aliases: unique_aliases,
-        shared_aliases: shared_aliases,
-        mutable_aliases: mutable_aliases
+internal procedure aliasExclusivityValue() -> i32 {
+    let unique_cell: unique PermissionCell = PermissionCell { value: 6 }
+    let consumed: i32 = consumePermissionCell(move unique_cell)
+    var shared_cell: shared PermissionCell = PermissionCell { value: 7 }
+    var shared_sum: i32 = 0
+    #shared_cell write {
+        let first: i32 = shared_cell~>readShared()
+        let second: i32 = shared_cell~>readConst()
+        shared_sum = first + second
     }
-}
-
-internal procedure aliasExclusivityIsSatisfied(
-    reference: AliasExclusivityReference
-) -> bool {
-    if reference.unique_aliases > 0usize {
-        return reference.shared_aliases == 0usize && reference.mutable_aliases == 0usize
-    }
-    return true
+    return consumed + shared_sum
 }
 
 /// Exercises the Permissions AliasExclusivity reference surface.
 public procedure runPermissionsAliasExclusivityReference() -> bool {
-    let unique_access: AliasExclusivityReference =
-        aliasExclusivityReference(1usize, 0usize, 0usize)
-    let shared_access: AliasExclusivityReference =
-        aliasExclusivityReference(0usize, 2usize, 0usize)
-    let conflict: AliasExclusivityReference =
-        aliasExclusivityReference(1usize, 1usize, 0usize)
-    return aliasExclusivityIsSatisfied(unique_access) &&
-        aliasExclusivityIsSatisfied(shared_access) &&
-        !aliasExclusivityIsSatisfied(conflict)
+    return aliasExclusivityValue() == 20
 }

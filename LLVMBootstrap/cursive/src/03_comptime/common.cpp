@@ -64,6 +64,7 @@ CtEnv CtEmptyEnv(const ast::ASTModule& module) {
   env.current_item_index = 0;
   env.current_span = {};
   env.quote_ctx.reset();
+  env.return_quote_kind.reset();
   return env;
 }
 

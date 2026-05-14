@@ -1,6 +1,8 @@
 //! Reference specimens for DataTypes / Unions.
 
 public type DataUnionReference = i32 | bool
+public type ReorderedDataUnionReference = bool | i32
+public type ExpandedDataUnionReference = bool | i64 | i32
 
 public procedure numericUnionReference() -> DataUnionReference {
     return 9
@@ -10,25 +12,74 @@ public procedure booleanUnionReference() -> DataUnionReference {
     return true
 }
 
+internal procedure reorderedUnionReference(
+    value: DataUnionReference
+) -> ReorderedDataUnionReference {
+    return value
+}
+
+internal procedure expandedUnionReference(
+    value: DataUnionReference
+) -> ExpandedDataUnionReference {
+    return value
+}
+
+internal procedure unionPatternValue(value: DataUnionReference) -> i32 {
+    return if value is {
+        numeric_value: i32 {
+            numeric_value
+        }
+        flag_value: bool {
+            if flag_value {
+                1
+            } else {
+                0
+            }
+        }
+    }
+}
+
+internal procedure unionPropagatesSuccess(value: DataUnionReference) -> bool {
+    let numeric: i32 = value?
+    return numeric == 9
+}
+
+internal procedure expandedUnionValue(value: ExpandedDataUnionReference) -> i32 {
+    return if value is {
+        flag_value: bool {
+            if flag_value {
+                1
+            } else {
+                0
+            }
+        }
+        wide_value: i64 {
+            64
+        }
+        numeric_value: i32 {
+            numeric_value
+        }
+    }
+}
+
 /// Exercises the DataTypes Unions reference surface.
 public procedure runDataTypesUnionsReference() -> bool {
     let numeric: DataUnionReference = numericUnionReference()
     let boolean: DataUnionReference = booleanUnionReference()
-    let numeric_ok: bool = if numeric is {
-        value: i32 {
-            value == 9
+    let reordered: ReorderedDataUnionReference = reorderedUnionReference(numeric)
+    let expanded: ExpandedDataUnionReference = expandedUnionReference(numeric)
+    let reordered_ok: bool = if reordered is {
+        flag_value: bool {
+            flag_value == false
         }
-        value: bool {
-            value == false
-        }
-    }
-    let boolean_ok: bool = if boolean is {
-        value: i32 {
-            value == 0
-        }
-        value: bool {
-            value == true
+        numeric_value: i32 {
+            numeric_value == 9
         }
     }
-    return numeric_ok && boolean_ok
+    return unionPatternValue(numeric) == 9 &&
+        unionPatternValue(boolean) == 1 &&
+        reordered_ok &&
+        expandedUnionValue(expanded) == 9 &&
+        unionPropagatesSuccess(numeric) &&
+        unionPropagatesSuccess(boolean)
 }

@@ -1,29 +1,57 @@
 //! Reference specimens for Parallelism / ParallelBlocks.
 
+internal record GpuSafePayload<TValue> |: GpuSafe(TValue) {
+    internal value: TValue
+}
+
 internal record ParallelReference {
-    internal fork_count: usize
-    internal joins_structurally: bool
-    internal propagates_panic: bool
+    internal inline_value: i32
+    internal cpu_value: i32
+    internal named_value: i32
 }
 
 internal procedure parallelReference(
-    fork_count: usize,
-    joins_structurally: bool,
-    propagates_panic: bool
+    inline_value: i32,
+    cpu_value: i32,
+    named_value: i32
 ) -> ParallelReference {
     return ParallelReference {
-        fork_count: fork_count,
-        joins_structurally: joins_structurally,
-        propagates_panic: propagates_panic
+        inline_value: inline_value,
+        cpu_value: cpu_value,
+        named_value: named_value
     }
 }
 
 internal procedure parallelReferenceIsCovered(reference: ParallelReference) -> bool {
-    return reference.fork_count > 0usize && reference.joins_structurally
+    return reference.inline_value == 42 &&
+        reference.cpu_value == 6 &&
+        reference.named_value == 9
+}
+
+internal procedure inlineParallelValue(context: Context) -> i32 {
+    return parallel context~>inline() {
+        40 + 2
+    }
+}
+
+internal procedure cpuParallelValue(context: Context) -> i32 {
+    return parallel context~>cpu() {
+        3 + 3
+    }
+}
+
+internal procedure namedParallelValue(context: Context) -> i32 {
+    return parallel context~>inline() [name: "parallel-block-reference"] {
+        4 + 5
+    }
 }
 
 /// Exercises the Parallelism ParallelBlocks reference surface.
-public procedure runParallelismParallelBlocksReference() -> bool {
-    let reference: ParallelReference = parallelReference(2usize, true, true)
+public procedure runParallelismParallelBlocksReference(context: Context) -> bool {
+    let reference: ParallelReference = parallelReference(
+        inlineParallelValue(context),
+        cpuParallelValue(context),
+        namedParallelValue(context)
+    )
     return parallelReferenceIsCovered(reference)
 }

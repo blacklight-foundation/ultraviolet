@@ -92,6 +92,10 @@ void EnsureLLVMInit() {
   std::call_once(once, []() {
     llvm::InitializeNativeTarget();
     llvm::InitializeNativeTargetAsmPrinter();
+    LLVMInitializeAArch64TargetInfo();
+    LLVMInitializeAArch64Target();
+    LLVMInitializeAArch64TargetMC();
+    LLVMInitializeAArch64AsmPrinter();
   });
 }
 
@@ -1047,32 +1051,29 @@ std::optional<CodegenObjectAndIR> EmitObjAndOptionalIRForModule(
                                                project,
                                                target_profile,
                                                true,
-                                               wants_ir_artifact);
+                                               false);
   if (!cached.has_value()) {
     LogCodegenProgress("emit-obj-error module=" + module_name +
-                       " stage=emit-llvm");
+                       " stage=lower-ir");
     std::cerr << "[cursive] EmitObjForModule: module="
               << (module.path_key.empty() ? "<root>" : module.path_key)
               << " LLVM module emission failed before object generation\n";
-    SPEC_RULE("EmitObj-Err");
     return std::nullopt;
   }
   auto& entry = **cached;
   auto& bundle = *entry.bundle;
   std::optional<std::string> ir_bytes;
   if (wants_ir_artifact) {
-    if (emit_ir == "ll") {
-      if (entry.ir_text.has_value()) {
-        ir_bytes = *entry.ir_text;
+    const auto assembler = project::ResolveTool(project, target_profile, "llvm-as");
+    if (assembler.has_value()) {
+      auto rendered = RenderLLVMText(*bundle.module, *assembler, module_name);
+      if (rendered.has_value()) {
+        if (emit_ir == "ll") {
+          ir_bytes = std::move(rendered->text);
+        } else {
+          ir_bytes = std::move(rendered->bitcode);
+        }
       }
-    } else if (entry.bitcode.has_value()) {
-      ir_bytes = *entry.bitcode;
-    }
-    if (!ir_bytes.has_value()) {
-      LogCodegenProgress("emit-obj-error module=" + module_name +
-                         " stage=render-ir mode=" + std::string(emit_ir));
-      SPEC_RULE("EmitObj-Err");
-      return std::nullopt;
     }
   }
   if (opt_level != codegen::OptLevel::O0) {

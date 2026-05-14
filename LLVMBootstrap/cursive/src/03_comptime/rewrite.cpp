@@ -435,6 +435,16 @@ ast::Stmt RewriteStmt(const ast::Stmt& stmt, CtEnv& env) {
           ast::ReturnStmt out = node;
           out.value_opt = RewriteExpr(node.value_opt, env);
           return out;
+        } else if constexpr (std::is_same_v<T, ast::AssignStmt>) {
+          ast::AssignStmt out = node;
+          out.place = RewriteExpr(node.place, env);
+          out.value = RewriteExpr(node.value, env);
+          return out;
+        } else if constexpr (std::is_same_v<T, ast::CompoundAssignStmt>) {
+          ast::CompoundAssignStmt out = node;
+          out.place = RewriteExpr(node.place, env);
+          out.value = RewriteExpr(node.value, env);
+          return out;
         } else {
           return stmt;
         }

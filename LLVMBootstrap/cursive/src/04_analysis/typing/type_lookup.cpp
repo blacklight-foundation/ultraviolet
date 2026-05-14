@@ -11,9 +11,6 @@
 
 #include "04_analysis/typing/type_lookup.h"
 
-#include <mutex>
-#include <unordered_map>
-
 #include "00_core/assert_spec.h"
 #include "00_core/symbols.h"
 #include "04_analysis/generics/generic_params.h"
@@ -35,13 +32,6 @@ static inline void SpecDefsTypeLookup() {
   SPEC_DEF("TypeParamsOf", "14.1.3");
   SPEC_DEF("TypePredicateClauseOf", "14.1.3");
 }
-
-struct RecordFieldIndex {
-  std::unordered_map<std::string, const ast::FieldDecl*> by_name;
-};
-
-std::mutex g_record_field_index_mu;
-std::unordered_map<const ast::RecordDecl*, RecordFieldIndex> g_record_field_index;
 
 TypePath EntityQualifiedPath(const Entity& entity,
                              std::string_view written_name,
@@ -139,28 +129,13 @@ const TypeDecl* LookupModuleRelativeTypeDecl(const ScopeContext& ctx,
 const ast::FieldDecl* LookupFieldDeclImpl(const ast::RecordDecl& record,
                                           std::string_view field_name) {
   const auto key = IdKeyOf(field_name);
-  {
-    std::lock_guard<std::mutex> lock(g_record_field_index_mu);
-    const auto it = g_record_field_index.find(&record);
-    if (it != g_record_field_index.end()) {
-      const auto field_it = it->second.by_name.find(key);
-      return field_it != it->second.by_name.end() ? field_it->second : nullptr;
-    }
-  }
-
-  RecordFieldIndex index;
   for (const auto& member : record.members) {
     const auto* field = std::get_if<ast::FieldDecl>(&member);
-    if (!field) {
-      continue;
+    if (field && IdKeyOf(field->name) == key) {
+      return field;
     }
-    index.by_name.emplace(IdKeyOf(field->name), field);
   }
-
-  std::lock_guard<std::mutex> lock(g_record_field_index_mu);
-  auto [it, _inserted] = g_record_field_index.emplace(&record, std::move(index));
-  const auto field_it = it->second.by_name.find(key);
-  return field_it != it->second.by_name.end() ? field_it->second : nullptr;
+  return nullptr;
 }
 
 ScopeContext BindRecordFieldTypeScope(const ScopeContext& ctx,

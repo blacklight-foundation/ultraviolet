@@ -1,0 +1,16 @@
+[[assembly]]
+name = "CrossAssemblyImplementation"
+kind = "library"
+root = "Source/CrossAssemblyImplementation"
+
+[[assembly]]
+name = "ExternalContracts"
+kind = "dependency"
+root = "Source/ExternalContracts"
+
+[toolchain]
+target_profile = "x86_64-win64"
+
+[build]
+incremental = true
+progress = false

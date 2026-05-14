@@ -277,6 +277,10 @@ ExprTypeResult TypeLoopConditionalExpr(const ScopeContext& ctx,
       ctx, WithSharedAccessMode(type_ctx, ast::KeyMode::Read), expr.cond, env);
   if (!cond_type.ok) {
     result.diag_id = cond_type.diag_id;
+    result.diag_detail = cond_type.diag_detail;
+    result.diag_span = cond_type.diag_span.has_value()
+                           ? cond_type.diag_span
+                           : std::optional<core::Span>(expr.cond->span);
     return result;
   }
 
@@ -305,6 +309,8 @@ ExprTypeResult TypeLoopConditionalExpr(const ScopeContext& ctx,
                                        loop_type_expr, loop_type_ident, loop_type_place);
   if (!body_info.ok) {
     result.diag_id = body_info.diag_id;
+    result.diag_detail = body_info.diag_detail;
+    result.diag_span = body_info.diag_span;
     return result;
   }
 

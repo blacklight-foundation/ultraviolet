@@ -1,8 +1,38 @@
 //! Reference specimens for ModalTypes / Transitions.
 
+internal modal ModalTransitionReference {
+    @Draft {
+        internal transition submit(value: i32) -> @Submitted {
+            return ModalTransitionReference@Submitted { value: value }
+        }
+    }
+
+    @Submitted {
+        internal value: i32
+
+        internal transition reset() -> @Draft {
+            return ModalTransitionReference@Draft {}
+        }
+    }
+}
+
+internal procedure modalTransitionDraftScore(reference: ModalTransitionReference@Draft) -> i32 {
+    return 1
+}
+
 /// Exercises the ModalTypes Transitions reference surface.
 public procedure runModalTypesTransitionsReference() -> bool {
     let closed: unique ModalReference@Closed = ModalReference@Closed {}
     let opened: ModalReference@Open = closed~>open(23)
-    return opened.value == 23
+    let open_for_replace: unique ModalReference@Open = ModalReference@Open { value: 29 }
+    let replaced: ModalReference@Open = open_for_replace~>replace(31)
+    let draft: unique ModalTransitionReference@Draft = ModalTransitionReference@Draft {}
+    let submitted: ModalTransitionReference@Submitted = draft~>submit(41)
+    let submitted_for_reset: unique ModalTransitionReference@Submitted =
+        ModalTransitionReference@Submitted { value: 43 }
+    let reset: ModalTransitionReference@Draft = submitted_for_reset~>reset()
+    return opened.value == 23 &&
+        replaced.value == 31 &&
+        submitted.value == 41 &&
+        modalTransitionDraftScore(reset) == 1
 }

@@ -1,8 +1,43 @@
 //! Reference specimens for ModalTypes / StateMethods.
 
+internal modal ModalStateMethodReference {
+    @Idle {
+        internal procedure readValue(~) -> i32 {
+            return 0
+        }
+    }
+
+    @Ready {
+        internal value: i32
+
+        internal procedure readValue(~) -> i32 {
+            return self.value
+        }
+
+        internal procedure addValue(~, amount: i32) -> i32 {
+            return self.value + amount
+        }
+
+        internal procedure uniqueReceiverValue(~!, amount: i32) -> i32 {
+            return amount + 1
+        }
+    }
+}
+
 /// Exercises the ModalTypes StateMethods reference surface.
 public procedure runModalTypesStateMethodsReference() -> bool {
     let closed: ModalReference@Closed = ModalReference@Closed {}
     let opened: ModalReference@Open = ModalReference@Open { value: 1 }
-    return !closed~>isOpen() && opened~>isOpen()
+    let idle: ModalStateMethodReference@Idle = ModalStateMethodReference@Idle {}
+    let ready: ModalStateMethodReference@Ready = ModalStateMethodReference@Ready { value: 9 }
+    let unique_ready: unique ModalStateMethodReference@Ready =
+        ModalStateMethodReference@Ready { value: 11 }
+    return !closed~>isOpen() &&
+        opened~>isOpen() &&
+        opened~>readValue() == 1 &&
+        opened~>readValueWithOffset(4) == 5 &&
+        idle~>readValue() == 0 &&
+        ready~>readValue() == 9 &&
+        ready~>addValue(5) == 14 &&
+        unique_ready~>uniqueReceiverValue(6) == 7
 }

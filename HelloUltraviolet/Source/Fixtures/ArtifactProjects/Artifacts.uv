@@ -23,6 +23,11 @@ public procedure artifactProjectFixtureSourceArtifactsExist(context: Context) ->
         "HelloUltraviolet/Fixtures/ArtifactProjects/EmitLlLibrary/Source/Library.uv"
     ) &&
         artifactProjectSourceArtifactsExist(
+        context,
+        "HelloUltraviolet/Fixtures/ArtifactProjects/EmitBcLibrary/Ultraviolet.toml",
+        "HelloUltraviolet/Fixtures/ArtifactProjects/EmitBcLibrary/Source/Library.uv"
+    ) &&
+        artifactProjectSourceArtifactsExist(
             context,
             "HelloUltraviolet/Fixtures/ArtifactProjects/FlowProofRuntimeErasure/Ultraviolet.toml",
             "HelloUltraviolet/Fixtures/ArtifactProjects/FlowProofRuntimeErasure/Source/Library.uv"
@@ -36,6 +41,11 @@ public procedure artifactProjectFixtureSourceArtifactsExist(context: Context) ->
             context,
             "HelloUltraviolet/Fixtures/ArtifactProjects/ReducedEmptyDispatchPanic/Ultraviolet.toml",
             "HelloUltraviolet/Fixtures/ArtifactProjects/ReducedEmptyDispatchPanic/Source/Main.uv"
+        ) &&
+        artifactProjectSourceArtifactsExist(
+            context,
+            "HelloUltraviolet/Fixtures/ArtifactProjects/AArch64DependencyObject/Ultraviolet.toml",
+            "HelloUltraviolet/Fixtures/ArtifactProjects/AArch64DependencyObject/Source/Library.uv"
         )
 }
 
@@ -95,4 +105,25 @@ public procedure artifactProjectRuntimeErasureArtifactsMatch(context: Context) -
         artifactTextExcludes(context, ir_path, "ContractCheck") &&
         artifactTextExcludes(context, ir_path, "ContractViolation") &&
         artifactTextExcludes(context, ir_path, "Precondition")
+}
+
+public procedure artifactProjectAArch64DependencyObjectArtifactsExist(context: Context) -> bool {
+    return context.fs~>exists(
+        "HelloUltraviolet/Fixtures/ArtifactProjects/AArch64DependencyObject/build/obj/AArch64DependencyObject.o"
+    ) &&
+        context.fs~>exists(
+            "HelloUltraviolet/Fixtures/ArtifactProjects/AArch64DependencyObject/build/.ultraviolet-incremental/AArch64DependencyObject.manifest"
+        )
+}
+
+public procedure artifactProjectEmitBcLibraryArtifactsExist(context: Context) -> bool {
+    return context.fs~>exists(
+        "HelloUltraviolet/Fixtures/ArtifactProjects/EmitBcLibrary/build/ir/EmitBcLibrary.bc"
+    ) &&
+        context.fs~>exists(
+            "HelloUltraviolet/Fixtures/ArtifactProjects/EmitBcLibrary/build/obj/EmitBcLibrary.obj"
+        ) &&
+        context.fs~>exists(
+            "HelloUltraviolet/Fixtures/ArtifactProjects/EmitBcLibrary/build/lib/EmitBcLibrary.lib"
+        )
 }

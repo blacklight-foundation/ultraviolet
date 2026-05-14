@@ -72,6 +72,7 @@ LowerCtx MakeBranchCtx(LowerCtx& base) {
     branch.values.derived_values.clear();
     branch.values.drop_glue_types.clear();
     branch.values.parent = &base;
+    branch.extra_procs.clear();
     return branch;
 }
 
@@ -208,6 +209,7 @@ LowerResult LowerRaceExpr(const ast::RaceExpr& expr, LowerCtx& ctx) {
 
         // Sync temp counter
         *ctx.temp_counter = std::max(*ctx.temp_counter, *arm_ctx.temp_counter);
+        ctx.MergeGeneratedProcsFrom(arm_ctx);
 
         ir_arms.push_back(std::move(ir_arm));
         arm_ctxs.push_back(std::move(arm_ctx));

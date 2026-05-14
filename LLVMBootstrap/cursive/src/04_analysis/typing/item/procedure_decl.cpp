@@ -2125,7 +2125,7 @@ ProcedureDeclResult TypeProcedureDecl(
     }
     const auto body_result = [&]() {
       ScopedPerfTimer body_timer(perf_on ? &perf_stats.body_type_ms : nullptr);
-      return TypeBlock(ctx, type_ctx, *decl.body, env, type_expr, type_ident,
+      return TypeBlock(proc_ctx, type_ctx, *decl.body, env, type_expr, type_ident,
                        type_place, &env);
     }();
     EmitBorrowMoveMissingFromRecentDiags(diags, diag_count_before_body);
@@ -2408,7 +2408,7 @@ ProcedureDeclResult TypeProcedureDeclBody(
   }
   const auto body_result = [&]() {
     ScopedPerfTimer body_timer(perf_on ? &perf_stats.body_type_ms : nullptr);
-    return TypeBlock(ctx, type_ctx, *decl.body, env, type_expr, type_ident,
+    return TypeBlock(proc_ctx, type_ctx, *decl.body, env, type_expr, type_ident,
                      type_place, &env);
   }();
   EmitBorrowMoveMissingFromRecentDiags(diags, diag_count_before_body);

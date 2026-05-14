@@ -1,0 +1,51 @@
+//! Output-diagnostic lowering specimens.
+
+using HelloUltraviolet::Fixtures::DiagnosticSource::{ DiagnosticSpecimen }
+using HelloUltraviolet::Fixtures::DiagnosticSource::{ diagnosticSpecimen }
+using HelloUltraviolet::Fixtures::DiagnosticSource::{ diagnosticSpecimenMatches }
+using HelloUltraviolet::Fixtures::RejectedSource::{ expectedDiagnostic }
+
+public procedure outputLoweringDiagnosticFixtureCount() -> usize {
+    return 2usize
+}
+
+public procedure validatedOutputLoweringDiagnosticFixtureCount() -> usize {
+    var count: usize = 0usize
+    let resolve_specimen: DiagnosticSpecimen = diagnosticSpecimen(
+        "LlvmToolResolveOwnership",
+        "Fixtures/OutputDiagnostics/Lowering/LlvmToolResolveOwnership",
+        "Fixtures/OutputDiagnostics/Lowering/LlvmToolResolveOwnership/Source/Library.uv",
+        "Fixtures/OutputDiagnostics/Lowering/LlvmToolResolveOwnership/Expected.uv",
+        expectedDiagnostic("E-OUT-0403", "requirement.24.LLVMToolAcceptanceAndResolveOwnership")
+    )
+    if diagnosticSpecimenMatches(
+        resolve_specimen,
+        "LlvmToolResolveOwnership",
+        "Fixtures/OutputDiagnostics/Lowering/LlvmToolResolveOwnership",
+        "Fixtures/OutputDiagnostics/Lowering/LlvmToolResolveOwnership/Source/Library.uv",
+        "Fixtures/OutputDiagnostics/Lowering/LlvmToolResolveOwnership/Expected.uv",
+        "E-OUT-0403",
+        "requirement.24.LLVMToolAcceptanceAndResolveOwnership"
+    ) {
+        count = count + 1usize
+    }
+    let emit_llvm_specimen: DiagnosticSpecimen = diagnosticSpecimen(
+        "EmitLLVMRenderFailure",
+        "Fixtures/OutputDiagnostics/Lowering/EmitLLVMRenderFailure",
+        "Fixtures/OutputDiagnostics/Lowering/EmitLLVMRenderFailure/Source/Library.uv",
+        "Fixtures/OutputDiagnostics/Lowering/EmitLLVMRenderFailure/Expected.uv",
+        expectedDiagnostic("E-OUT-0403", "rule.24.EmitLLVM-Err")
+    )
+    if diagnosticSpecimenMatches(
+        emit_llvm_specimen,
+        "EmitLLVMRenderFailure",
+        "Fixtures/OutputDiagnostics/Lowering/EmitLLVMRenderFailure",
+        "Fixtures/OutputDiagnostics/Lowering/EmitLLVMRenderFailure/Source/Library.uv",
+        "Fixtures/OutputDiagnostics/Lowering/EmitLLVMRenderFailure/Expected.uv",
+        "E-OUT-0403",
+        "rule.24.EmitLLVM-Err"
+    ) {
+        count = count + 1usize
+    }
+    return count
+}

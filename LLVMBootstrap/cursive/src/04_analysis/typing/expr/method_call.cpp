@@ -1469,6 +1469,8 @@ ExprTypeResult TypeMethodCallExprImpl(const ScopeContext& ctx,
             const auto place_type = type_place(arg.value);
             if (!place_type.ok) {
               result.diag_id = place_type.diag_id;
+              result.diag_detail = place_type.diag_detail;
+              result.diag_span = place_type.diag_span;
               return result;
             }
             arg_types.push_back(place_type.type);

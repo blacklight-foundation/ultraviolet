@@ -1,7 +1,16 @@
 //! Reference specimens for Keys / DynamicVerification.
 
+[[dynamic]]
+internal procedure dynamicKeyBlockValue(index: usize) -> i32 {
+    var values: shared [i32; 4] = [1, 2, 3, 4]
+    var observed: i32 = 0
+    #values[index] dynamic read {
+        observed = values[index] + 0
+    }
+    return observed
+}
+
 /// Exercises the Keys DynamicVerification reference surface.
 public procedure runKeysDynamicVerificationReference() -> bool {
-    let reference: KeyReference = keyReference(3usize, false, true)
-    return keyReferenceIsCovered(reference) && reference.runtime_checked
+    return dynamicKeyBlockValue(2usize) == 3
 }

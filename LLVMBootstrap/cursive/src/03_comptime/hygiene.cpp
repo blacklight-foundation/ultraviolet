@@ -135,7 +135,7 @@ std::optional<std::string> FreshHygienicName(HygieneContext& ctx,
   const std::string sanitized = SanitizeName(base);
   for (;;) {
     std::ostringstream buffer;
-    buffer << "gen_h" << std::hex << std::nouppercase << site_hash << "_"
+    buffer << "hyg_" << std::hex << std::nouppercase << site_hash << "_"
            << std::dec << ctx.next_seed++ << "_" << sanitized;
     std::string candidate = buffer.str();
     if (ctx.unhygienic_names.contains(candidate)) {
@@ -1416,11 +1416,11 @@ void RenameItem(ASTItem& item, HygieneContext& ctx, const CtAst& ast) {
           RenameUsingAliases(node.clause, ctx, ast);
         } else if constexpr (std::is_same_v<T, ast::ImportDecl>) {
           if (node.alias_opt.has_value()) {
-            BindHygienicItemName(*node.alias_opt, ctx, ast);
+            BindPreservedName(ctx, *node.alias_opt);
           }
         } else if constexpr (std::is_same_v<T, ast::ProcedureDecl> ||
                       std::is_same_v<T, ast::ComptimeProcedureDecl>) {
-          BindHygienicItemName(node.name, ctx, ast);
+          BindPreservedName(ctx, node.name);
           if constexpr (std::is_same_v<T, ast::ProcedureDecl>) {
             RenameMethodLike(node.generic_params, &node.predicate_clause_opt,
                              node.params, node.return_type_opt,
@@ -1436,7 +1436,7 @@ void RenameItem(ASTItem& item, HygieneContext& ctx, const CtAst& ast) {
                 [&](auto& ext_item) {
                   using E = std::decay_t<decltype(ext_item)>;
                   if constexpr (std::is_same_v<E, ast::ExternProcDecl>) {
-                    BindHygienicItemName(ext_item.name, ctx, ast);
+                    BindPreservedName(ctx, ext_item.name);
                     RenameMethodLike(ext_item.generic_params,
                                      &ext_item.where_clause,
                                      ext_item.params,
@@ -1448,7 +1448,7 @@ void RenameItem(ASTItem& item, HygieneContext& ctx, const CtAst& ast) {
                 ext);
           }
         } else if constexpr (std::is_same_v<T, ast::RecordDecl>) {
-          BindHygienicItemName(node.name, ctx, ast);
+          BindPreservedName(ctx, node.name);
           PushScope(ctx);
           RenameGenericParams(node.generic_params, ctx, ast);
           RenameWhereClause(node.predicate_clause_opt, ctx);
@@ -1473,7 +1473,7 @@ void RenameItem(ASTItem& item, HygieneContext& ctx, const CtAst& ast) {
           }
           PopScope(ctx);
         } else if constexpr (std::is_same_v<T, ast::EnumDecl>) {
-          BindHygienicItemName(node.name, ctx, ast);
+          BindPreservedName(ctx, node.name);
           PushScope(ctx);
           RenameGenericParams(node.generic_params, ctx, ast);
           RenameWhereClause(node.predicate_clause_opt, ctx);
@@ -1498,7 +1498,7 @@ void RenameItem(ASTItem& item, HygieneContext& ctx, const CtAst& ast) {
           }
           PopScope(ctx);
         } else if constexpr (std::is_same_v<T, ast::ModalDecl>) {
-          BindHygienicItemName(node.name, ctx, ast);
+          BindPreservedName(ctx, node.name);
           PushScope(ctx);
           RenameGenericParams(node.generic_params, ctx, ast);
           RenameWhereClause(node.predicate_clause_opt, ctx);
@@ -1528,7 +1528,7 @@ void RenameItem(ASTItem& item, HygieneContext& ctx, const CtAst& ast) {
           }
           PopScope(ctx);
         } else if constexpr (std::is_same_v<T, ast::ClassDecl>) {
-          BindHygienicItemName(node.name, ctx, ast);
+          BindPreservedName(ctx, node.name);
           PushScope(ctx);
           RenameGenericParams(node.generic_params, ctx, ast);
           RenameWhereClause(node.predicate_clause_opt, ctx);
@@ -1561,14 +1561,14 @@ void RenameItem(ASTItem& item, HygieneContext& ctx, const CtAst& ast) {
           RenamePattern(node.binding.pat, ctx, ast);
           PopScope(ctx);
         } else if constexpr (std::is_same_v<T, ast::TypeAliasDecl>) {
-          BindHygienicItemName(node.name, ctx, ast);
+          BindPreservedName(ctx, node.name);
           PushScope(ctx);
           RenameGenericParams(node.generic_params, ctx, ast);
           RenameWhereClause(node.predicate_clause_opt, ctx);
           RenameType(node.type, ctx);
           PopScope(ctx);
         } else if constexpr (std::is_same_v<T, ast::DeriveTargetDecl>) {
-          BindHygienicItemName(node.name, ctx, ast);
+          BindPreservedName(ctx, node.name);
           RenameBlock(*node.body, ctx, ast);
         }
       },

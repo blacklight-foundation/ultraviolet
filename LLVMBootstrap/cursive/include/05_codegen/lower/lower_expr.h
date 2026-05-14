@@ -483,6 +483,7 @@ struct LowerCtx {
   void QueueExtraProc(ProcIR proc,
                       std::optional<LinkageKind> linkage = std::nullopt,
                       const ast::ModulePath* module_path = nullptr);
+  void MergeGeneratedProcsFrom(LowerCtx& branch);
   
   // =========================================================================
   // §6.8 Scope tracking for cleanup

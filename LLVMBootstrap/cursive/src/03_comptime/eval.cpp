@@ -3,6 +3,7 @@
 #include <optional>
 #include <string>
 #include <string_view>
+#include <type_traits>
 
 #include "00_core/assert_spec.h"
 #include "00_core/diagnostic_messages.h"
@@ -66,6 +67,204 @@ std::string ModulePathText(const ast::ModulePath& path) {
   return text;
 }
 
+std::optional<ast::QuoteKind> ExpectedQuoteKindOfType(const ast::TypePtr& type) {
+  if (!type) {
+    return std::nullopt;
+  }
+
+  const ast::TypePtr stripped = std::visit(
+      [&](const auto& node) -> ast::TypePtr {
+        using T = std::decay_t<decltype(node)>;
+        if constexpr (std::is_same_v<T, ast::TypePermType> ||
+                      std::is_same_v<T, ast::TypeRefine>) {
+          return node.base;
+        } else {
+          return type;
+        }
+      },
+      type->node);
+  if (stripped && stripped.get() != type.get()) {
+    return ExpectedQuoteKindOfType(stripped);
+  }
+
+  const ast::TypePathType* path =
+      stripped ? std::get_if<ast::TypePathType>(&stripped->node) : nullptr;
+  if (!path || !path->generic_args.empty()) {
+    return std::nullopt;
+  }
+  if (path->path == ast::TypePath{"Ast", "Expr"}) {
+    return ast::QuoteKind::Expr;
+  }
+  if (path->path == ast::TypePath{"Ast", "Stmt"}) {
+    return ast::QuoteKind::Stmt;
+  }
+  if (path->path == ast::TypePath{"Ast", "Item"}) {
+    return ast::QuoteKind::Item;
+  }
+  if (path->path == ast::TypePath{"Ast", "Type"}) {
+    return ast::QuoteKind::Type;
+  }
+  if (path->path == ast::TypePath{"Ast", "Pattern"}) {
+    return ast::QuoteKind::Pattern;
+  }
+  return std::nullopt;
+}
+
+EvalResult EvalQuoteExpr(const ast::QuoteExpr& quote,
+                         CtEnv& env,
+                         const core::Span& span,
+                         std::optional<ast::QuoteKind> expected_kind) {
+  SPEC_RULE_AT("CtEval-Quote", span);
+  EvalResult out;
+  auto parsed_ast = ParseQuotedAst(quote, env, *env.diags, expected_kind);
+  if (!parsed_ast.has_value()) {
+    out.ok = false;
+    return out;
+  }
+  if (!parsed_ast->span.has_value()) {
+    parsed_ast->span = span;
+  }
+  if (!parsed_ast->hygiene.has_value()) {
+    parsed_ast->hygiene = CtHygiene{CtSiteOf(env), CtSiteOf(env), 0};
+  }
+  out.ok = true;
+  out.value = std::move(*parsed_ast);
+  return out;
+}
+
+EvalResult EvalExprWithExpectedQuoteKind(
+    const ExprPtr& expr,
+    CtEnv& env,
+    std::optional<ast::QuoteKind> expected_kind) {
+  if (!expected_kind.has_value() || !expr) {
+    return EvalExpr(expr, env);
+  }
+  if (const auto* quote = std::get_if<ast::QuoteExpr>(&expr->node)) {
+    return EvalQuoteExpr(*quote, env, expr->span, expected_kind);
+  }
+  if (const auto* attributed = std::get_if<ast::AttributedExpr>(&expr->node)) {
+    return EvalExprWithExpectedQuoteKind(attributed->expr, env, expected_kind);
+  }
+  return EvalExpr(expr, env);
+}
+
+bool CtValueEqualsLiteral(const CtValue& value, const ast::Token& literal) {
+  if (literal.kind == ast::TokenKind::BoolLiteral) {
+    bool bool_value = false;
+    return TryGetCtBool(value, bool_value) &&
+           ((literal.lexeme == "true") == bool_value);
+  }
+  if (literal.kind == ast::TokenKind::IntLiteral) {
+    const auto* i = TryGetCtInt(value);
+    if (!i) {
+      return false;
+    }
+    try {
+      return i->value == std::stoull(std::string(literal.lexeme));
+    } catch (...) {
+      return false;
+    }
+  }
+  if (literal.kind == ast::TokenKind::StringLiteral) {
+    const auto* s = std::get_if<CtString>(&value);
+    if (!s) {
+      return false;
+    }
+    std::string lexeme = literal.lexeme;
+    if (lexeme.size() >= 2 && lexeme.front() == '"' && lexeme.back() == '"') {
+      lexeme = lexeme.substr(1, lexeme.size() - 2);
+    }
+    return s->value == lexeme;
+  }
+  return false;
+}
+
+bool BindEvalPatternValue(CtEnv& env,
+                          const ast::PatternPtr& pattern,
+                          const CtValue& value);
+
+bool CtEnumEquals(const CtEnum& lhs, const CtEnum& rhs) {
+  return lhs.path == rhs.path &&
+         lhs.variant == rhs.variant &&
+         std::holds_alternative<std::monostate>(lhs.payload) &&
+         std::holds_alternative<std::monostate>(rhs.payload);
+}
+
+bool BindEvalTuplePattern(CtEnv& env,
+                          const ast::TuplePattern& tuple,
+                          const CtValue& value) {
+  const auto* tuple_value = std::get_if<std::shared_ptr<CtTuple>>(&value);
+  if (!tuple_value || !*tuple_value ||
+      (*tuple_value)->elements.size() != tuple.elements.size()) {
+    return false;
+  }
+  CtEnv next = env;
+  for (std::size_t i = 0; i < tuple.elements.size(); ++i) {
+    if (!BindEvalPatternValue(next, tuple.elements[i],
+                              (*tuple_value)->elements[i])) {
+      return false;
+    }
+  }
+  env = std::move(next);
+  return true;
+}
+
+bool BindEvalRangePattern(CtEnv& env,
+                          const ast::RangePattern& range,
+                          const CtValue& value) {
+  const auto* int_value = TryGetCtInt(value);
+  if (!int_value || !range.lo || !range.hi) {
+    return false;
+  }
+  const auto* lo_pat = std::get_if<ast::LiteralPattern>(&range.lo->node);
+  const auto* hi_pat = std::get_if<ast::LiteralPattern>(&range.hi->node);
+  if (!lo_pat || !hi_pat) {
+    return false;
+  }
+  try {
+    const auto lo = std::stoull(std::string(lo_pat->literal.lexeme));
+    const auto hi = std::stoull(std::string(hi_pat->literal.lexeme));
+    const bool lower_ok = int_value->value >= lo;
+    const bool upper_ok =
+        range.kind == ast::RangeKind::Inclusive
+            ? int_value->value <= hi
+            : int_value->value < hi;
+    return lower_ok && upper_ok;
+  } catch (...) {
+    return false;
+  }
+}
+
+bool BindEvalPatternValue(CtEnv& env,
+                          const ast::PatternPtr& pattern,
+                          const CtValue& value) {
+  if (!pattern) {
+    return false;
+  }
+  return std::visit(
+      [&](const auto& node) -> bool {
+        using T = std::decay_t<decltype(node)>;
+        if constexpr (std::is_same_v<T, ast::WildcardPattern>) {
+          return true;
+        } else if constexpr (std::is_same_v<T, ast::IdentifierPattern>) {
+          env.values[node.name] = value;
+          return true;
+        } else if constexpr (std::is_same_v<T, ast::TypedPattern>) {
+          env.values[node.name] = value;
+          return true;
+        } else if constexpr (std::is_same_v<T, ast::LiteralPattern>) {
+          return CtValueEqualsLiteral(value, node.literal);
+        } else if constexpr (std::is_same_v<T, ast::TuplePattern>) {
+          return BindEvalTuplePattern(env, node, value);
+        } else if constexpr (std::is_same_v<T, ast::RangePattern>) {
+          return BindEvalRangePattern(env, node, value);
+        } else {
+          return false;
+        }
+      },
+      pattern->node);
+}
+
 void AppendCtDiagnostic(CtEnv& env, const core::Diagnostic& diag) {
   if (!CtDiags(env)) {
     return;
@@ -118,6 +317,7 @@ EvalResult EvalCall(const ast::CallExpr& call, CtEnv& env) {
   CtEnv proc_env = env;
   proc_env.pending_emits = env.pending_emits;
   proc_env.contract_result_value.reset();
+  proc_env.return_quote_kind = ExpectedQuoteKindOfType(it->second.return_type_opt);
   std::vector<bool> bound(it->second.params.size(), false);
   for (std::size_t i = 0; i < call.args.size(); ++i) {
     const auto value = EvalExpr(call.args[i].value, env);
@@ -294,13 +494,15 @@ EvalResult EvalBlock(const Block& block, CtEnv& env) {
       if (!let_stmt->binding.init) {
         continue;
       }
-      auto value = EvalExpr(let_stmt->binding.init, local);
+      auto value = EvalExprWithExpectedQuoteKind(
+          let_stmt->binding.init,
+          local,
+          ExpectedQuoteKindOfType(ast::BindingAnnotationTypeOpt(let_stmt->binding)));
       if (!value.ok) {
         return value;
       }
-      if (const auto* pat =
-              std::get_if<ast::IdentifierPattern>(&let_stmt->binding.pat->node)) {
-        local.values[pat->name] = value.value;
+      if (!BindEvalPatternValue(local, let_stmt->binding.pat, value.value)) {
+        return {};
       }
       continue;
     }
@@ -309,13 +511,15 @@ EvalResult EvalBlock(const Block& block, CtEnv& env) {
       if (!var_stmt->binding.init) {
         continue;
       }
-      auto value = EvalExpr(var_stmt->binding.init, local);
+      auto value = EvalExprWithExpectedQuoteKind(
+          var_stmt->binding.init,
+          local,
+          ExpectedQuoteKindOfType(ast::BindingAnnotationTypeOpt(var_stmt->binding)));
       if (!value.ok) {
         return value;
       }
-      if (const auto* pat =
-              std::get_if<ast::IdentifierPattern>(&var_stmt->binding.pat->node)) {
-        local.values[pat->name] = value.value;
+      if (!BindEvalPatternValue(local, var_stmt->binding.pat, value.value)) {
+        return {};
       }
       continue;
     }
@@ -329,7 +533,9 @@ EvalResult EvalBlock(const Block& block, CtEnv& env) {
     }
 
     if (const auto* ret_stmt = std::get_if<ast::ReturnStmt>(&stmt)) {
-      auto value = EvalExpr(ret_stmt->value_opt, local);
+      auto value =
+          EvalExprWithExpectedQuoteKind(ret_stmt->value_opt, local,
+                                        local.return_quote_kind);
       value.returned = true;
       return value;
     }
@@ -399,6 +605,14 @@ EvalResult EvalExpr(const ExprPtr& expr, CtEnv& env) {
           out.ok = true;
           out.value = it->second;
           return out;
+        } else if constexpr (std::is_same_v<T, ast::QualifiedNameExpr>) {
+          auto enum_value = std::make_shared<CtEnum>();
+          enum_value->path = node.path;
+          enum_value->variant = node.name;
+          EvalResult out;
+          out.ok = true;
+          out.value = enum_value;
+          return out;
         } else if constexpr (std::is_same_v<T, ast::ResultExpr>) {
           if (!env.contract_result_value.has_value()) {
             return {};
@@ -424,6 +638,61 @@ EvalResult EvalExpr(const ExprPtr& expr, CtEnv& env) {
           if (!rhs.ok) {
             return rhs;
           }
+          bool lb = false;
+          bool rb = false;
+          if (TryGetCtBool(lhs.value, lb) && TryGetCtBool(rhs.value, rb)) {
+            EvalResult out;
+            out.ok = true;
+            if (node.op == "&&") {
+              out.value = MakeCtBool(lb && rb);
+              return out;
+            }
+            if (node.op == "||") {
+              out.value = MakeCtBool(lb || rb);
+              return out;
+            }
+            if (node.op == "==") {
+              out.value = MakeCtBool(lb == rb);
+              return out;
+            }
+            if (node.op == "!=") {
+              out.value = MakeCtBool(lb != rb);
+              return out;
+            }
+            return {};
+          }
+          const auto* lhs_string = std::get_if<CtString>(&lhs.value);
+          const auto* rhs_string = std::get_if<CtString>(&rhs.value);
+          if (lhs_string && rhs_string) {
+            EvalResult out;
+            out.ok = true;
+            if (node.op == "==") {
+              out.value = MakeCtBool(lhs_string->value == rhs_string->value);
+              return out;
+            }
+            if (node.op == "!=") {
+              out.value = MakeCtBool(lhs_string->value != rhs_string->value);
+              return out;
+            }
+            return {};
+          }
+          const auto* lhs_enum =
+              std::get_if<std::shared_ptr<CtEnum>>(&lhs.value);
+          const auto* rhs_enum =
+              std::get_if<std::shared_ptr<CtEnum>>(&rhs.value);
+          if (lhs_enum && rhs_enum && *lhs_enum && *rhs_enum) {
+            EvalResult out;
+            out.ok = true;
+            if (node.op == "==") {
+              out.value = MakeCtBool(CtEnumEquals(**lhs_enum, **rhs_enum));
+              return out;
+            }
+            if (node.op == "!=") {
+              out.value = MakeCtBool(!CtEnumEquals(**lhs_enum, **rhs_enum));
+              return out;
+            }
+            return {};
+          }
           const auto* li = TryGetCtInt(lhs.value);
           const auto* ri = TryGetCtInt(rhs.value);
           if (!li || !ri) {
@@ -437,6 +706,30 @@ EvalResult EvalExpr(const ExprPtr& expr, CtEnv& env) {
           }
           if (node.op == "*") {
             out.value = MakeCtInt(li->value * ri->value, li->suffix);
+            return out;
+          }
+          if (node.op == "==") {
+            out.value = MakeCtBool(li->value == ri->value);
+            return out;
+          }
+          if (node.op == "!=") {
+            out.value = MakeCtBool(li->value != ri->value);
+            return out;
+          }
+          if (node.op == ">") {
+            out.value = MakeCtBool(li->value > ri->value);
+            return out;
+          }
+          if (node.op == ">=") {
+            out.value = MakeCtBool(li->value >= ri->value);
+            return out;
+          }
+          if (node.op == "<") {
+            out.value = MakeCtBool(li->value < ri->value);
+            return out;
+          }
+          if (node.op == "<=") {
+            out.value = MakeCtBool(li->value <= ri->value);
             return out;
           }
           return {};
@@ -497,6 +790,52 @@ EvalResult EvalExpr(const ExprPtr& expr, CtEnv& env) {
           out.ok = true;
           out.value = array;
           return out;
+        } else if constexpr (std::is_same_v<T, ast::EnumLiteralExpr>) {
+          if (node.path.empty()) {
+            return {};
+          }
+          auto enum_value = std::make_shared<CtEnum>();
+          enum_value->path.assign(node.path.begin(), node.path.end() - 1);
+          enum_value->variant = node.path.back();
+          if (node.payload_opt.has_value()) {
+            return {};
+          }
+          EvalResult out;
+          out.ok = true;
+          out.value = enum_value;
+          return out;
+        } else if constexpr (std::is_same_v<T, ast::FieldAccessExpr>) {
+          auto base = EvalExpr(node.base, env);
+          if (!base.ok) {
+            return base;
+          }
+          const auto* record =
+              std::get_if<std::shared_ptr<CtRecord>>(&base.value);
+          if (record && *record) {
+            for (const auto& field : (*record)->fields) {
+              if (field.first == node.name) {
+                EvalResult out;
+                out.ok = true;
+                out.value = field.second;
+                return out;
+              }
+            }
+            return {};
+          }
+          const auto* modal_state =
+              std::get_if<std::shared_ptr<CtModalState>>(&base.value);
+          if (!modal_state || !*modal_state) {
+            return {};
+          }
+          for (const auto& field : (*modal_state)->fields) {
+            if (field.first == node.name) {
+              EvalResult out;
+              out.ok = true;
+              out.value = field.second;
+              return out;
+            }
+          }
+          return {};
         } else if constexpr (std::is_same_v<T, ast::AttributedExpr>) {
           return EvalExpr(node.expr, env);
         } else if constexpr (std::is_same_v<T, ast::CallExpr>) {
@@ -510,22 +849,7 @@ EvalResult EvalExpr(const ExprPtr& expr, CtEnv& env) {
           out.value = CtType{node.type};
           return out;
         } else if constexpr (std::is_same_v<T, ast::QuoteExpr>) {
-          SPEC_RULE_AT("CtEval-Quote", expr->span);
-          EvalResult out;
-          auto parsed_ast = ParseQuotedAst(node, env, *env.diags);
-          if (!parsed_ast.has_value()) {
-            out.ok = false;
-            return out;
-          }
-          if (!parsed_ast->span.has_value()) {
-            parsed_ast->span = expr->span;
-          }
-          if (!parsed_ast->hygiene.has_value()) {
-            parsed_ast->hygiene = CtHygiene{CtSiteOf(env), CtSiteOf(env), 0};
-          }
-          out.ok = true;
-          out.value = std::move(*parsed_ast);
-          return out;
+          return EvalQuoteExpr(node, env, expr->span, std::nullopt);
         } else {
           return {};
         }

@@ -211,7 +211,7 @@ void IRInstructionVisitor::operator()(const IRSync &s) const
 
   analysis::TypeRef completed_type = s.result_type;
   analysis::TypeRef error_type = s.error_type;
-  if (const auto sig = analysis::GetAsyncSig(s.async_type))
+  if (const auto sig = analysis::AsyncSigOf(scope, s.async_type))
   {
     if (!completed_type)
     {

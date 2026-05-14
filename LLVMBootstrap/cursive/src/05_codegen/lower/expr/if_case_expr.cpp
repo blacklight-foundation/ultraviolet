@@ -61,6 +61,7 @@ LowerCtx MakeBranchCtx(LowerCtx& base) {
   branch.values.derived_values.clear();
   branch.values.drop_glue_types.clear();
   branch.values.parent = &base;
+  branch.extra_procs.clear();
   return branch;
 }
 
@@ -950,6 +951,7 @@ LowerResult LowerIfCases(const ast::Expr& scrutinee,
 
     // Merge arm context temps back to base context
     MergeLowerCtxTemps(ctx, arm_ctx);
+    ctx.MergeGeneratedProcsFrom(arm_ctx);
 
     // Update temp counter to the maximum across all arms
     *ctx.temp_counter = std::max(*ctx.temp_counter, *arm_ctx.temp_counter);
@@ -1041,6 +1043,7 @@ LowerResult LowerIfCases(const ast::Expr& scrutinee,
     }
 
     MergeLowerCtxTemps(ctx, else_ctx);
+    ctx.MergeGeneratedProcsFrom(else_ctx);
     *ctx.temp_counter = std::max(*ctx.temp_counter, *else_ctx.temp_counter);
 
     IRIfCaseClause else_arm;

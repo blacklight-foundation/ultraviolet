@@ -206,6 +206,7 @@ struct CtEnv {
       contract_entry_values;
   std::optional<CtValue> contract_result_value;
   std::shared_ptr<const ProjectFileSnapshot> files;
+  std::optional<ast::QuoteKind> return_quote_kind;
 };
 
 void AppendDiags(core::DiagnosticStream& out, const core::DiagnosticStream& add);
@@ -269,7 +270,8 @@ CtValue MakeSpanValue(const core::Span& span);
 
 std::optional<CtAst> ParseQuotedAst(const QuoteExpr& quote,
                                     CtEnv& env,
-                                    core::DiagnosticStream& diags);
+                                    core::DiagnosticStream& diags,
+                                    std::optional<ast::QuoteKind> expected_kind = std::nullopt);
 
 CtValue MakeIoErrorValue(std::string_view variant);
 std::shared_ptr<ProjectFileSnapshot> CaptureProjectFileSnapshot(

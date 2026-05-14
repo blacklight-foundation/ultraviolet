@@ -1,29 +1,29 @@
 //! Reference specimens for Comptime / CompileTimeForms.
 
-internal record ComptimeReference {
-    internal evaluated_before_runtime: bool
-    internal emits_source: bool
-    internal has_capability_boundary: bool
+comptime internal procedure addComptimeReferenceValue(value: usize) -> usize
+|: value > 0usize => @result > value
+{
+    return value + 2usize
 }
 
-internal procedure comptimeReference(
-    evaluated_before_runtime: bool,
-    emits_source: bool,
-    has_capability_boundary: bool
-) -> ComptimeReference {
-    return ComptimeReference {
-        evaluated_before_runtime: evaluated_before_runtime,
-        emits_source: emits_source,
-        has_capability_boundary: has_capability_boundary
+internal procedure compileTimeFormsValue() -> usize {
+    var total: usize = comptime { addComptimeReferenceValue(5usize) }
+    let selected: usize = comptime if true { 7usize } else { missingRejectedBranch() }
+    let else_if_selected: usize =
+        comptime if false { missingFirstBranch() } else comptime if true { 11usize } else { 13usize }
+
+    comptime loop value: usize in [1usize, 2usize, 3usize] {
+        total = total + comptime { value }
     }
-}
 
-internal procedure comptimeReferenceIsCovered(reference: ComptimeReference) -> bool {
-    return reference.evaluated_before_runtime
+    comptime loop value: usize in [0usize; 0] {
+        total = total + comptime { value }
+    }
+
+    return total + selected + else_if_selected
 }
 
 /// Exercises the Comptime CompileTimeForms reference surface.
 public procedure runComptimeCompileTimeFormsReference() -> bool {
-    let reference: ComptimeReference = comptimeReference(true, false, false)
-    return comptimeReferenceIsCovered(reference)
+    return compileTimeFormsValue() == 31usize
 }

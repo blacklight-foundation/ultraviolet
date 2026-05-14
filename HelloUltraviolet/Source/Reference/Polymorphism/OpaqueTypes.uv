@@ -28,10 +28,11 @@ internal procedure readOpaqueArgument(value: opaque OpaqueReadableClass) -> i32 
 public procedure runPolymorphismOpaqueTypesReference() -> bool {
     let opaque_value: opaque OpaqueReadableClass = makeOpaqueReadable(43)
     let alternate_value: opaque OpaqueReadableClass = makeAlternateOpaqueReadable(44)
+    let reassigned_opaque: opaque OpaqueReadableClass = move alternate_value
     let reference: PolymorphismReference = polymorphismReference(
-        5usize,
+        6usize,
         opaque_value~>readOpaqueValue() == 43 &&
-            readOpaqueArgument(alternate_value) == 45,
+            readOpaqueArgument(reassigned_opaque) == 45,
         false
     )
     return polymorphismReferenceIsCovered(reference)

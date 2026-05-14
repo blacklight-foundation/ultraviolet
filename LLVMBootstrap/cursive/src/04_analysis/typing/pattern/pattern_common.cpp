@@ -584,7 +584,7 @@ static PatternTypeResult TypePatternAgainstTypeImpl(const ScopeContext& ctx,
           }
           if (tuple->elements.size() != node.elements.size()) {
             SPEC_RULE("Pat-Tuple-R-Arity-Err");
-            return {false, "Pat-Tuple-Arity-Err", {}};
+            return {false, "E-TYP-1803", {}};
           }
           std::vector<std::pair<std::string, TypeRef>> binds;
           for (std::size_t i = 0; i < node.elements.size(); ++i) {

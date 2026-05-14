@@ -14,6 +14,9 @@
 #include "05_codegen/lower/expr/propagate_expr.h"
 #include "05_codegen/cleanup/cleanup.h"
 #include "05_codegen/checks/checks.h"
+#include "04_analysis/generics/monomorphize.h"
+#include "04_analysis/resolve/scopes.h"
+#include "04_analysis/resolve/scopes_lookup.h"
 #include "04_analysis/typing/subtyping.h"
 #include "04_analysis/typing/outcome.h"
 #include "04_analysis/typing/type_predicates.h"
@@ -30,6 +33,67 @@
 namespace cursive::codegen {
 
 namespace {
+
+analysis::TypeRef ResolvePropagateAliasType(const analysis::TypeRef& type,
+                                            const LowerCtx& ctx,
+                                            std::size_t depth = 0) {
+    analysis::TypeRef stripped = analysis::StripPerm(type);
+    if (!stripped) {
+        stripped = type;
+    }
+    if (!stripped || depth > 16 || !ctx.sigma) {
+        return stripped;
+    }
+
+    const auto* path = std::get_if<analysis::TypePathType>(&stripped->node);
+    if (!path) {
+        return stripped;
+    }
+
+    ast::Path syntax_path;
+    syntax_path.reserve(path->path.size());
+    for (const auto& segment : path->path) {
+        syntax_path.push_back(segment);
+    }
+    const ast::TypeAliasDecl* alias = nullptr;
+    if (const auto it = ctx.sigma->types.find(analysis::PathKeyOf(syntax_path));
+        it != ctx.sigma->types.end()) {
+        alias = std::get_if<ast::TypeAliasDecl>(&it->second);
+    }
+    if (!alias && syntax_path.size() == 1) {
+        const analysis::ScopeContext& scope = ScopeForLowering(ctx);
+        const auto resolved = analysis::ResolveTypeName(scope, syntax_path.front());
+        if (resolved.has_value() && resolved->origin_opt.has_value()) {
+            ast::Path full_path = *resolved->origin_opt;
+            full_path.push_back(resolved->target_opt.value_or(syntax_path.front()));
+            if (const auto it = ctx.sigma->types.find(analysis::PathKeyOf(full_path));
+                it != ctx.sigma->types.end()) {
+                alias = std::get_if<ast::TypeAliasDecl>(&it->second);
+            }
+        }
+    }
+    if (!alias) {
+        return stripped;
+    }
+
+    const analysis::ScopeContext& scope = ScopeForLowering(ctx);
+    const auto lowered = analysis::layout::LowerTypeForLayout(scope, alias->type);
+    if (!lowered.has_value()) {
+        return stripped;
+    }
+
+    analysis::TypeRef expanded = *lowered;
+    if (alias->generic_params &&
+        !alias->generic_params->params.empty() &&
+        !path->generic_args.empty()) {
+        analysis::TypeSubst subst =
+            analysis::BuildSubstitution(alias->generic_params->params,
+                                        path->generic_args);
+        expanded = analysis::InstantiateType(expanded, subst);
+    }
+
+    return ResolvePropagateAliasType(expanded, ctx, depth + 1);
+}
 
 // Check if a type is a subtype of the procedure return type.
 // Returns the success member type if the expression type is a union where
@@ -216,7 +280,7 @@ LowerResult LowerPropagateExpr(const ast::PropagateExpr& expr, LowerCtx& ctx) {
     if (!expr_type) {
         expr_type = ctx.LookupValueType(inner_result.value);
     }
-    analysis::TypeRef stripped_expr = analysis::StripPerm(expr_type);
+    analysis::TypeRef stripped_expr = ResolvePropagateAliasType(expr_type, ctx);
 
     if (!ctx.proc_ret_type || !stripped_expr) {
         if (debug_propagate) {

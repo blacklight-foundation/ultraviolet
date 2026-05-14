@@ -1,9 +1,39 @@
 //! Reference specimens for Parallelism / CaptureSemantics.
 
-/// Exercises the Parallelism CaptureSemantics reference surface.
-public procedure runParallelismCaptureSemanticsReference() -> bool {
+internal procedure spawnConstCaptureReference(context: Context) -> i32 {
     let captured: i32 = 5
-    let closure = |value: i32| -> i32 value + captured
-    let reference: ParallelReference = parallelReference(1usize, true, false)
-    return parallelReferenceIsCovered(reference) && closure(2) == 7
+    return parallel context~>inline() {
+        let handle: Spawned<i32> = spawn {
+            captured + 2
+        }
+        wait handle
+    }
+}
+
+internal procedure dispatchSharedCaptureReference(context: Context) -> i32 {
+    let partition_key: shared i32 = 7
+    return parallel context~>inline() {
+        dispatch index in 0usize..4usize key partition_key read [reduce: +, ordered] {
+            index as i32
+        }
+    }
+}
+
+internal procedure gpuSafeCaptureReference(context: Context) -> usize {
+    let payload: GpuSafePayload<i32> = GpuSafePayload { value: 3 }
+    return parallel context~>gpu() [
+        workgroup: (1usize, 1usize, 1usize),
+        workgroups: (1usize, 1usize, 1usize)
+    ] {
+        dispatch index in 0usize..1usize [reduce: +, workgroup: (1usize, 1usize, 1usize)] {
+            gpu_barrier()
+            gpu_linear_id() + (payload.value as usize) + index
+        }
+    }
+}
+
+/// Exercises the Parallelism CaptureSemantics reference surface.
+public procedure runParallelismCaptureSemanticsReference(context: Context) -> bool {
+    return spawnConstCaptureReference(context) == 7 &&
+        dispatchSharedCaptureReference(context) == 6
 }

@@ -36,6 +36,7 @@ struct AsyncEmitState {
   llvm::Value* input_ptr = nullptr;
   llvm::SwitchInst* resume_switch = nullptr;
   std::unordered_map<std::size_t, llvm::BasicBlock*> resume_blocks;
+  bool emitting_resume_prelude = false;
 };
 
 
@@ -158,12 +159,12 @@ public:
     std::unordered_map<std::string, llvm::Value*> locals;
     std::unordered_map<std::string, llvm::Value*> local_home_storage;
     std::unordered_map<std::string, analysis::TypeRef> local_types;
-    std::unordered_map<std::string, llvm::Value*> values;
-    std::unordered_map<std::string, llvm::Value*> storage_values;
-    std::unordered_map<std::string, llvm::Value*> preferred_result_storage;
-    std::unordered_map<llvm::Function*,
-                       std::unordered_map<llvm::Type*, std::vector<llvm::AllocaInst*>>>
-        reusable_aggregate_storage;
+  std::unordered_map<std::string, llvm::Value*> values;
+  std::unordered_map<std::string, llvm::Value*> storage_values;
+  std::unordered_map<std::string, llvm::Value*> preferred_result_storage;
+  std::unordered_map<llvm::Function*,
+                     std::unordered_map<llvm::Type*, std::vector<llvm::AllocaInst*>>>
+      reusable_aggregate_storage;
   };
   FlowStateSnapshot SaveFlowState() const;
   void RestoreFlowState(const FlowStateSnapshot& snapshot);
@@ -191,7 +192,11 @@ public:
   void ForgetTempStorage(const IRValue& value);
   void ReleaseTempStorage(const IRValue& value);
   void ReleaseMoveConsumedStorage(const IRValue& value);
-  void ClearTempValues() { values_.clear(); storage_values_.clear(); preferred_result_storage_.clear(); }
+  void ClearTempValues() {
+    values_.clear();
+    storage_values_.clear();
+    preferred_result_storage_.clear();
+  }
 
   // Async lowering state (active only while emitting async resume proc)
   void SetAsyncState(AsyncEmitState* state) { async_state_ = state; }

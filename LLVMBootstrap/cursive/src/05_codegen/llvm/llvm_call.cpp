@@ -827,6 +827,23 @@ llvm::Value* EmitABICall(LLVMEmitter& emitter,
     return type;
   };
 
+  auto is_function_value_type = [&](analysis::TypeRef type) -> bool {
+    type = analysis::StripPerm(type);
+    if (!type) {
+      return false;
+    }
+    LowerCtx* ctx = emitter.GetCurrentCtx();
+    const analysis::ScopeContext scope = BuildScope(ctx);
+    if (analysis::TypeRef resolved =
+            emit_detail::ResolveAliasTypeInScope(scope, type)) {
+      type = analysis::StripPerm(resolved);
+      if (!type) {
+        type = resolved;
+      }
+    }
+    return type && std::holds_alternative<analysis::TypeFunc>(type->node);
+  };
+
   auto materialize_mismatched_pointer_arg =
       [&](std::size_t index,
           llvm::Value* ptr_arg,
@@ -970,6 +987,26 @@ llvm::Value* EmitABICall(LLVMEmitter& emitter,
                                       arg)) {
           arg = slice_storage;
           materialized_slice_storage = true;
+        }
+      }
+      if (!materialized_slice_storage && is_function_value_type(params[i].type)) {
+        if (llvm::Function* fn = emit_detail::FunctionFromLLVMValue(arg)) {
+          const unsigned ordinal =
+              next_scratch_ordinal(elem_ty, "function_ref_arg");
+          llvm::AllocaInst* slot =
+              AcquireReusableEntryAlloca(func, elem_ty, "function_ref_arg", ordinal);
+          if (!slot) {
+            report_codegen_failure("function-ref-scratch-allocation", i, arg);
+            continue;
+          }
+          llvm::Value* stored = CoerceValue(builder, fn, elem_ty);
+          if (!stored) {
+            report_codegen_failure("function-ref-coercion", i, arg);
+            continue;
+          }
+          builder->CreateStore(stored, slot);
+          call_args[idx] = slot;
+          continue;
         }
       }
       if (!arg->getType()->isPointerTy() || is_null_pointer_arg(arg)) {

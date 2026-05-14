@@ -1,7 +1,36 @@
 //! Reference specimens for FFI / CapabilityIsolation.
 
+extern "C" {
+    public procedure importedReferenceBorrowedRawPointer(value: *mut i32) -> i32
+}
+
+/// Foreign-visible raw-pointer boundary that accepts no capability values.
+[[export("C")]]
+[[mangle("importedReferenceBorrowedRawPointer")]]
+public procedure ffiImportedReferenceBorrowedRawPointerProvider(value: *mut i32) -> i32 {
+    if value == null {
+        return 0
+    }
+    return 1
+}
+
+internal procedure callBorrowedRawPointer(pointer: *mut i32) -> i32 {
+    return unsafe { importedReferenceBorrowedRawPointer(pointer) }
+}
+
+/// Exported raw-pointer identity keeps the boundary free of capability values.
+[[export("C")]]
+[[mangle("uv_reference_pointer_identity")]]
+public procedure ffiPointerIdentity(pointer: *mut i32) -> *mut i32 {
+    return pointer
+}
+
 /// Exercises the FFI CapabilityIsolation reference surface.
 public procedure runFFICapabilityIsolationReference() -> bool {
-    let reference: FFIReference = ffiReference(1usize, true, false)
-    return ffiReferenceIsCovered(reference)
+    let scalar_value: i32 = 41
+    let pointer: *mut i32 = null
+    let returned_pointer: *mut i32 = ffiPointerIdentity(pointer)
+    return scalar_value + 1 == 42 &&
+        returned_pointer == pointer &&
+        callBorrowedRawPointer(pointer) == 0
 }

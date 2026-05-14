@@ -1,29 +1,67 @@
 //! Reference specimens for FFI / FfiSafe.
 
-internal record FFIReference {
-    internal boundary_count: usize
-    internal abi_checked: bool
-    internal unwinds_safely: bool
+/// Layout-compatible aggregate used by raw FFI signatures.
+[[layout(C)]]
+public record FFIPrimitiveRecord {
+    public signed_value: i32
+    public status: u32
 }
 
-internal procedure ffiReference(
-    boundary_count: usize,
-    abi_checked: bool,
-    unwinds_safely: bool
-) -> FFIReference {
-    return FFIReference {
-        boundary_count: boundary_count,
-        abi_checked: abi_checked,
-        unwinds_safely: unwinds_safely
+/// Generic layout-compatible aggregate whose field parameter is FfiSafe-bounded.
+[[layout(C)]]
+public record FFIGenericRecord<TValue> |: FfiSafe(TValue)
+{
+    public value: TValue
+}
+
+/// Layout-compatible tagged value used by raw FFI signatures.
+[[layout(C)]]
+public enum FFIPrimitiveEnum {
+    Empty
+    Value(i32)
+}
+
+/// Generic layout-compatible tagged value whose payload parameter is FfiSafe-bounded.
+[[layout(C)]]
+public enum FFIGenericEnum<TValue> |: FfiSafe(TValue)
+{
+    Value(TValue)
+}
+
+/// Drop-bearing FfiSafe record explicitly authorized for by-value FFI passing.
+[[ffi_pass_by_value]]
+[[layout(C)]]
+public record FFIDroppingRecord {
+    public value: unique i32
+
+    public procedure drop(~!) -> () {
     }
 }
 
-internal procedure ffiReferenceIsCovered(reference: FFIReference) -> bool {
-    return reference.boundary_count > 0usize && reference.abi_checked
+/// Sparse function-pointer shape accepted by FfiSafe.
+public type FFIFunctionPointer = (i32) -> i32
+
+internal procedure ffiPrimitiveRecord(
+    signed_value: i32,
+    status: u32
+) -> FFIPrimitiveRecord {
+    return FFIPrimitiveRecord {
+        signed_value: signed_value,
+        status: status
+    }
 }
 
 /// Exercises the FFI FfiSafe reference surface.
 public procedure runFFIFfiSafeReference() -> bool {
-    let reference: FFIReference = ffiReference(1usize, true, false)
-    return ffiReferenceIsCovered(reference)
+    let record_value: FFIPrimitiveRecord = ffiPrimitiveRecord(17, 4u32)
+    let enum_value: FFIPrimitiveEnum = FFIPrimitiveEnum::Value(record_value.signed_value)
+    let enum_ok: bool = if enum_value is {
+        FFIPrimitiveEnum::Empty {
+            false
+        }
+        FFIPrimitiveEnum::Value(payload) {
+            payload == 17
+        }
+    }
+    return record_value.status == 4u32 && enum_ok
 }

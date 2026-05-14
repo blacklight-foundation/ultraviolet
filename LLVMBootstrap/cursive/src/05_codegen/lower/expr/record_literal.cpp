@@ -18,6 +18,7 @@
 
 #include "00_core/assert_spec.h"
 #include "04_analysis/typing/type_lower.h"
+#include "04_analysis/typing/type_predicates.h"
 
 #include <type_traits>
 #include <utility>
@@ -26,6 +27,55 @@
 namespace cursive::codegen {
 
 namespace {
+
+bool PathEquals(const analysis::TypePath& lhs, const analysis::TypePath& rhs) {
+  if (lhs.size() != rhs.size()) {
+    return false;
+  }
+  for (std::size_t i = 0; i < lhs.size(); ++i) {
+    if (lhs[i] != rhs[i]) {
+      return false;
+    }
+  }
+  return true;
+}
+
+analysis::TypeRef TypeCheckedRecordTargetType(const ast::Expr& full_expr,
+                                              const ast::RecordExpr& expr,
+                                              LowerCtx& ctx) {
+  if (!ctx.expr_type) {
+    return nullptr;
+  }
+
+  analysis::TypeRef typed = analysis::StripPerm(ctx.expr_type(full_expr));
+  if (!typed) {
+    typed = ctx.expr_type(full_expr);
+  }
+  if (!typed) {
+    return nullptr;
+  }
+
+  return std::visit(
+      [&](const auto& target) -> analysis::TypeRef {
+        using T = std::decay_t<decltype(target)>;
+        if constexpr (std::is_same_v<T, ast::TypePath>) {
+          const auto* typed_path = analysis::AppliedTypePath(*typed);
+          if (typed_path && PathEquals(*typed_path, target)) {
+            return typed;
+          }
+        } else if constexpr (std::is_same_v<T, ast::ModalStateRef>) {
+          if (const auto* modal_state =
+                  std::get_if<analysis::TypeModalState>(&typed->node)) {
+            if (PathEquals(modal_state->path, target.path) &&
+                modal_state->state == target.state) {
+              return typed;
+            }
+          }
+        }
+        return nullptr;
+      },
+      expr.target);
+}
 
 analysis::TypeRef LowerRecordTargetType(const ast::RecordExpr& expr,
                                         LowerCtx& ctx) {
@@ -77,7 +127,9 @@ analysis::TypeRef LowerRecordTargetType(const ast::RecordExpr& expr,
 //
 // =============================================================================
 
-LowerResult LowerRecord(const ast::RecordExpr& expr, LowerCtx& ctx) {
+LowerResult LowerRecord(const ast::Expr& full_expr,
+                        const ast::RecordExpr& expr,
+                        LowerCtx& ctx) {
   SPEC_RULE("Lower-Expr-Record");
 
   // Field initializer values are consumed by the record construction, so they
@@ -90,9 +142,13 @@ LowerResult LowerRecord(const ast::RecordExpr& expr, LowerCtx& ctx) {
   // record layout even in contextual positions (for example, union-typed
   // returns). Falling back to expr_type(expr) can capture the contextual
   // supertype and lose field-layout fidelity.
+  analysis::TypeRef record_type = TypeCheckedRecordTargetType(full_expr, expr, ctx);
+  if (!record_type) {
+    record_type = LowerRecordTargetType(expr, ctx);
+  }
   IRValue record_value = RegisterLoweredRecordValue(
       std::move(field_values),
-      LowerRecordTargetType(expr, ctx),
+      record_type,
       "record",
       ctx);
 

@@ -5,10 +5,46 @@
 #include "05_codegen/llvm/emit/llvm_emit_helpers.h"
 
 #include "04_analysis/layout/layout.h"
+#include "05_codegen/symbols/mangle.h"
 
 namespace cursive::codegen {
 
 using namespace emit_detail;
+
+namespace {
+
+std::optional<std::string> ProcedureSymbolForPath(
+    const LowerCtx &ctx,
+    const std::vector<std::string> &module_path,
+    const std::string &name)
+{
+  if (!ctx.sigma)
+  {
+    return std::nullopt;
+  }
+  for (const auto &module : ctx.sigma->mods)
+  {
+    if (module.path != module_path)
+    {
+      continue;
+    }
+    for (const auto &item : module.items)
+    {
+      if (const auto *proc = std::get_if<ast::ProcedureDecl>(&item))
+      {
+        if (proc->name == name)
+        {
+          return MangleProc(module.path, *proc);
+        }
+      }
+    }
+    break;
+  }
+  return std::nullopt;
+}
+
+} // namespace
+
   // Evaluate an IRValue to an llvm::Value*
   llvm::Value *LLVMEmitter::EvaluateIRValue(const IRValue &val)
   {
@@ -1854,6 +1890,13 @@ using namespace emit_detail;
             symbol_candidates.push_back(
                 StaticSymPath(derived->static_path, derived->name));
           }
+          if (auto proc_symbol =
+                  ProcedureSymbolForPath(*ctx,
+                                         derived->static_path,
+                                         derived->name))
+          {
+            symbol_candidates.push_back(*proc_symbol);
+          }
         }
         if (!derived->name.empty())
         {
@@ -1871,6 +1914,43 @@ using namespace emit_detail;
           if (symbol_name.empty() || !seen_symbols.insert(symbol_name).second)
           {
             continue;
+          }
+
+          if (ctx)
+          {
+            if (const auto *sig = ctx->LookupProcSig(symbol_name))
+            {
+              llvm::Function *fn = GetFunction(symbol_name);
+              if (!fn)
+              {
+                fn = module_->getFunction(symbol_name);
+              }
+              if (!fn)
+              {
+                const bool use_c_abi_aggregate_sret =
+                    sig->ffi_import ||
+                    ctx->LookupExportUnwindMode(symbol_name).has_value();
+                ABICallResult abi = ComputeCallABI(
+                    *this,
+                    sig->params,
+                    sig->ret,
+                    use_c_abi_aggregate_sret);
+                if (abi.func_type)
+                {
+                  fn = llvm::Function::Create(
+                      abi.func_type,
+                      llvm::GlobalValue::ExternalLinkage,
+                      symbol_name,
+                      module_.get());
+                  fn->setCallingConv(CallingConvForAbi(sig->abi));
+                }
+              }
+              if (fn)
+              {
+                materialized = fn;
+                break;
+              }
+            }
           }
 
           analysis::TypeRef static_type = nullptr;
@@ -1939,6 +2019,39 @@ using namespace emit_detail;
       case DerivedValueInfo::Kind::AddrLocal:
       {
         llvm::Value *local = GetLocalBindStorage(derived->name);
+        if (!local)
+        {
+          if (async_state_ && async_state_->info &&
+              async_state_->info->is_resume &&
+              async_state_->emitting_resume_prelude)
+          {
+            analysis::TypeRef storage_type =
+                pointee_from_type(lookup_value_type(val));
+            llvm::Type *storage_ll =
+                storage_type ? GetLLVMType(storage_type) : nullptr;
+            llvm::Function *func =
+                builder && builder->GetInsertBlock()
+                    ? builder->GetInsertBlock()->getParent()
+                    : nullptr;
+            if (storage_ll && !storage_ll->isVoidTy() && func)
+            {
+              llvm::IRBuilder<> entry_builder(
+                  &func->getEntryBlock(),
+                  func->getEntryBlock().begin());
+              local = entry_builder.CreateAlloca(
+                  storage_ll,
+                  nullptr,
+                  derived->name + ".resume_prelude");
+              if (builder && builder->GetInsertBlock() &&
+                  !builder->GetInsertBlock()->getTerminator())
+              {
+                builder->CreateStore(
+                    llvm::Constant::getNullValue(storage_ll),
+                    local);
+              }
+            }
+          }
+        }
         if (!local)
         {
           if (current_ctx_)

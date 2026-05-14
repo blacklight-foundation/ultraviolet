@@ -183,7 +183,7 @@ std::optional<BuiltinModalMemberSig> LookupCancelTokenMemberSig(
     std::string_view member_name) {
   if (IdEq(member_name, "cancel") && IdEq(state, "Active")) {
     BuiltinModalMemberSig sig;
-    sig.recv_perm = Permission::Shared;
+    sig.recv_perm = Permission::Const;
     sig.ret = TypeUnit();
     sig.runtime_symbol = core::PathSig({"CancelToken", "Active", "cancel"});
     return sig;

@@ -475,7 +475,7 @@ static constexpr DiagRegistryRow kDiagRegistryRows[] = {
   {"E-TYP-2640", "Error", "Type not `GpuSafeType`"},
   {"E-TYP-2641", "Error", "`GpuPtr` address space mismatch"},
   {"E-TYP-2642", "Error", "Generic `GpuSafeType` with unconstrained parameter"},
-  {"E-UNS-0102", "Error", "Array index must be a compile-time constant outside `[[dynamic]]` scope"},
+  {"E-UNS-0102", "Error", "Fixed-size array index must be a compile-time constant outside `[[dynamic]]` scope"},
   {"E-UNS-0103", "Error", "Array index out of bounds"},
   {"E-UNS-0104", "Error", "`transmute` source and target alignments differ"},
   {"E-UNS-0105", "Error", "`override` used with no concrete procedure to override"},

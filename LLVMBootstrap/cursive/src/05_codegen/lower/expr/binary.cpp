@@ -68,6 +68,7 @@ LowerCtx MakeBranchCtx(LowerCtx& base) {
   branch.values.derived_values.clear();
   branch.values.drop_glue_types.clear();
   branch.values.parent = &base;
+  branch.extra_procs.clear();
   return branch;
 }
 
@@ -261,6 +262,7 @@ LowerResult LowerBinAnd(const ast::Expr& lhs,
 
   // Merge context info from branch back to base
   MergeLowerCtxTemps(ctx, rhs_ctx);
+  ctx.MergeGeneratedProcsFrom(rhs_ctx);
   MergeMoveStates(ctx, {&rhs_ctx});
   MergeFailures(ctx, rhs_ctx);
 
@@ -305,6 +307,7 @@ LowerResult LowerBinOr(const ast::Expr& lhs,
 
   // Merge context info from branch back to base
   MergeLowerCtxTemps(ctx, rhs_ctx);
+  ctx.MergeGeneratedProcsFrom(rhs_ctx);
   MergeMoveStates(ctx, {&rhs_ctx});
   MergeFailures(ctx, rhs_ctx);
 

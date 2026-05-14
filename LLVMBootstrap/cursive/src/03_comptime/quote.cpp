@@ -23,6 +23,16 @@ ast::Parser MakeTokenParser(const std::vector<ast::Token>& tokens,
   return parser;
 }
 
+bool AtEofAfterTrailingNewlines(ast::Parser parser) {
+  while (const ast::Token* tok = ast::Tok(parser)) {
+    if (tok->kind != ast::TokenKind::Newline) {
+      break;
+    }
+    ast::Advance(parser);
+  }
+  return ast::AtEof(parser);
+}
+
 template <typename Node>
 ExprPtr MakeExpr(const core::Span& span, Node node) {
   auto expr = std::make_shared<Expr>();
@@ -88,7 +98,7 @@ std::optional<ExprPtr> ParseWholeBodySpliceExpr(const QuoteExpr& quote) {
   const std::size_t start_index = parser.index;
   ast::ParseElemResult<ExprPtr> parsed = ast::ParseExpr(parser);
   if (parsed.parser.index == start_index || !parsed.elem ||
-      !ast::AtEof(parsed.parser)) {
+      !AtEofAfterTrailingNewlines(parsed.parser)) {
     return std::nullopt;
   }
   if (const auto* splice = std::get_if<ast::SpliceExprNode>(&parsed.elem->node)) {
@@ -108,12 +118,12 @@ bool QuoteParsesAsKind(const QuoteExpr& quote, ast::QuoteKind kind) {
     case ast::QuoteKind::Expr: {
       ast::ParseElemResult<ExprPtr> parsed = ast::ParseExpr(parser);
       return parsed.parser.index != start_index && parsed.elem &&
-             ast::AtEof(parsed.parser);
+             AtEofAfterTrailingNewlines(parsed.parser);
     }
     case ast::QuoteKind::Stmt: {
       ast::ParseElemResult<Stmt> parsed = ast::ParseStmt(parser);
       return parsed.parser.index != start_index && IsQuotedStatementForm(parsed.elem) &&
-             ast::AtEof(parsed.parser);
+             AtEofAfterTrailingNewlines(parsed.parser);
     }
     case ast::QuoteKind::Unspecified:
       return false;
@@ -121,17 +131,17 @@ bool QuoteParsesAsKind(const QuoteExpr& quote, ast::QuoteKind kind) {
       ast::ParseItemResult parsed = ast::ParseItem(parser);
       return parsed.parser.index != start_index &&
              !std::holds_alternative<ast::ErrorItem>(parsed.item) &&
-             ast::AtEof(parsed.parser);
+             AtEofAfterTrailingNewlines(parsed.parser);
     }
     case ast::QuoteKind::Type: {
       ast::ParseElemResult<TypePtr> parsed = ast::ParseType(parser);
       return parsed.parser.index != start_index && parsed.elem &&
-             ast::AtEof(parsed.parser);
+             AtEofAfterTrailingNewlines(parsed.parser);
     }
     case ast::QuoteKind::Pattern: {
       ast::ParseElemResult<PatternPtr> parsed = ast::ParsePattern(parser);
       return parsed.parser.index != start_index && parsed.elem &&
-             ast::AtEof(parsed.parser);
+             AtEofAfterTrailingNewlines(parsed.parser);
     }
   }
   return false;
@@ -1736,7 +1746,7 @@ std::optional<CtAst> ParseQuotedAstAsKind(const QuoteExpr& quote,
       auto parsed = ast::ParseExpr(parser);
       AppendDiags(diags, parsed.parser.diags);
       if (parsed.parser.index == start_index || !parsed.elem ||
-          !ast::AtEof(parsed.parser)) {
+          !AtEofAfterTrailingNewlines(parsed.parser)) {
         parse_failed = true;
         return std::nullopt;
       }
@@ -1750,7 +1760,7 @@ std::optional<CtAst> ParseQuotedAstAsKind(const QuoteExpr& quote,
       auto parsed = ast::ParseStmt(parser);
       AppendDiags(diags, parsed.parser.diags);
       if (parsed.parser.index == start_index || !IsQuotedStatementForm(parsed.elem) ||
-          !ast::AtEof(parsed.parser)) {
+          !AtEofAfterTrailingNewlines(parsed.parser)) {
         parse_failed = true;
         return std::nullopt;
       }
@@ -1768,7 +1778,7 @@ std::optional<CtAst> ParseQuotedAstAsKind(const QuoteExpr& quote,
       AppendDiags(diags, parsed.parser.diags);
       if (parsed.parser.index == start_index ||
           std::holds_alternative<ast::ErrorItem>(parsed.item) ||
-          !ast::AtEof(parsed.parser)) {
+          !AtEofAfterTrailingNewlines(parsed.parser)) {
         parse_failed = true;
         return std::nullopt;
       }
@@ -1782,7 +1792,7 @@ std::optional<CtAst> ParseQuotedAstAsKind(const QuoteExpr& quote,
       auto parsed = ast::ParseType(parser);
       AppendDiags(diags, parsed.parser.diags);
       if (parsed.parser.index == start_index || !parsed.elem ||
-          !ast::AtEof(parsed.parser)) {
+          !AtEofAfterTrailingNewlines(parsed.parser)) {
         parse_failed = true;
         return std::nullopt;
       }
@@ -1796,7 +1806,7 @@ std::optional<CtAst> ParseQuotedAstAsKind(const QuoteExpr& quote,
       auto parsed = ast::ParsePattern(parser);
       AppendDiags(diags, parsed.parser.diags);
       if (parsed.parser.index == start_index || !parsed.elem ||
-          !ast::AtEof(parsed.parser)) {
+          !AtEofAfterTrailingNewlines(parsed.parser)) {
         parse_failed = true;
         return std::nullopt;
       }
@@ -1814,7 +1824,8 @@ std::optional<CtAst> ParseQuotedAstAsKind(const QuoteExpr& quote,
 
 std::optional<CtAst> ParseQuotedAst(const QuoteExpr& quote,
                                     CtEnv& env,
-                                    core::DiagnosticStream& diags) {
+                                    core::DiagnosticStream& diags,
+                                    std::optional<ast::QuoteKind> expected_kind) {
   auto emit_invalid_quote = [&]() -> std::optional<CtAst> {
     if (auto diag = core::MakeDiagnosticById(
             "E-CTE-0220",
@@ -1828,6 +1839,15 @@ std::optional<CtAst> ParseQuotedAst(const QuoteExpr& quote,
   if (quote.kind != ast::QuoteKind::Unspecified) {
     bool parse_failed = false;
     if (auto parsed = ParseQuotedAstAsKind(quote, quote.kind, env, diags, parse_failed)) {
+      return parsed;
+    }
+    return parse_failed ? emit_invalid_quote() : std::nullopt;
+  }
+
+  if (expected_kind.has_value()) {
+    bool parse_failed = false;
+    if (auto parsed =
+            ParseQuotedAstAsKind(quote, *expected_kind, env, diags, parse_failed)) {
       return parsed;
     }
     return parse_failed ? emit_invalid_quote() : std::nullopt;

@@ -11,7 +11,7 @@
 // CRITICAL: Predicate clause syntax is Predicate(Type), NOT Type: Predicate
 //           Example: |: Bitcopy(T)  NOT where T: Bitcopy
 //
-// Available predicates: Bitcopy, Clone, Drop, FfiSafe
+// Available predicates: Bitcopy, Clone, Drop, FfiSafe, GpuSafe
 //
 // =============================================================================
 
@@ -36,12 +36,13 @@ namespace cursive::analysis {
 // Predicate Types
 // =============================================================================
 
-// The four built-in predicates
+// Built-in predicates
 enum class PredicateKind {
   Bitcopy,  // Can be copied bitwise
   Clone,    // Has clone() method
   Drop,     // Has drop() cleanup
   FfiSafe,  // Can cross FFI boundary
+  GpuSafe,  // Can be captured into GPU work
 };
 
 // Convert predicate name string to kind
@@ -54,7 +55,7 @@ std::string_view PredicateKindToString(PredicateKind kind);
 // Bound Types
 // =============================================================================
 
-// A predicate bound: Bitcopy(T), Clone(T), Drop(T), FfiSafe(T)
+// A predicate bound: Bitcopy(T), Clone(T), Drop(T), FfiSafe(T), GpuSafe(T)
 struct PredicateBound {
   PredicateKind predicate;
   TypeRef type;  // The type being constrained

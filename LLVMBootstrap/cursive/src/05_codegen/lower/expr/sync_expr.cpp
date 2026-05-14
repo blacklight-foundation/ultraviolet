@@ -48,10 +48,11 @@ LowerResult LowerSyncExpr(const ast::SyncExpr& expr, LowerCtx& ctx) {
     sync.result = ctx.FreshTempValue("sync_result");
 
     // Get async type info for emission
+    const analysis::ScopeContext& scope = ScopeForLowering(ctx);
     if (ctx.expr_type) {
         sync.async_type = ctx.expr_type(*expr.value);
         // Extract result_type and error_type from async signature
-        if (auto sig = analysis::GetAsyncSig(sync.async_type)) {
+        if (auto sig = analysis::AsyncSigOf(scope, sync.async_type)) {
             sync.result_type = sig->result;
             sync.error_type = sig->err;
         }

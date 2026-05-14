@@ -12,7 +12,7 @@
  * This file implements the where clause parsing and bound validation system:
  *   - ParseWhereClause: Parse where clause into list of bounds
  *   - ValidateBound: Validate type argument satisfies a bound
- *   - CheckPredicateBound: Check predicate bounds (Bitcopy, Clone, Drop, FfiSafe)
+ *   - CheckPredicateBound: Check predicate bounds (Bitcopy, Clone, Drop, FfiSafe, GpuSafe)
  *   - CheckClassBound: Check class implementation bounds
  *   - SubstituteWhere: Substitute types in where clause
  *   - InferBoundsFromUsage: Infer required bounds from generic body
@@ -20,7 +20,7 @@
  * CRITICAL SYNTAX:
  *   - Where clause syntax is Predicate(Type), NOT Type: Predicate
  *   - Example: where Bitcopy(T)  NOT where T: Bitcopy
- *   - Available predicates: Bitcopy, Clone, Drop, FfiSafe
+ *   - Available predicates: Bitcopy, Clone, Drop, FfiSafe, GpuSafe
  *   - Class bounds use <: syntax: T <: Comparable
  *
  * =============================================================================
@@ -67,7 +67,8 @@ const std::set<std::string> kPredicateNames = {
     "Bitcopy",
     "Clone",
     "Drop",
-    "FfiSafe"
+    "FfiSafe",
+    "GpuSafe"
 };
 
 // Lower an AST type to a TypeRef
@@ -305,7 +306,7 @@ std::optional<PredicateKind> ParsePredicateName(const std::string& name) {
   SpecDefsWhereBounds();
   SPEC_RULE("Parse-PredicateName");
 
-  // SPEC: IsPredName(name) iff name in {Bitcopy, Clone, Drop, FfiSafe}
+  // SPEC: IsPredName(name) iff name in {Bitcopy, Clone, Drop, FfiSafe, GpuSafe}
   if (name == "Bitcopy") {
     return PredicateKind::Bitcopy;
   } else if (name == "Clone") {
@@ -314,6 +315,8 @@ std::optional<PredicateKind> ParsePredicateName(const std::string& name) {
     return PredicateKind::Drop;
   } else if (name == "FfiSafe") {
     return PredicateKind::FfiSafe;
+  } else if (name == "GpuSafe") {
+    return PredicateKind::GpuSafe;
   }
   return std::nullopt;
 }
@@ -328,6 +331,8 @@ std::string_view PredicateKindToString(PredicateKind kind) {
       return "Drop";
     case PredicateKind::FfiSafe:
       return "FfiSafe";
+    case PredicateKind::GpuSafe:
+      return "GpuSafe";
   }
   return "Unknown";
 }
@@ -477,6 +482,9 @@ bool CheckPredicateBound(
     case PredicateKind::FfiSafe:
       // SPEC: FfiSafeType(T)
       return FfiSafeType(ctx, type);
+    case PredicateKind::GpuSafe:
+      // SPEC: GpuSafeType(T)
+      return !GpuSafeDiagForType(ctx, type).has_value();
   }
 
   return false;

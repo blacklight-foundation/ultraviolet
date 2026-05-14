@@ -1,7 +1,15 @@
 //! Reference specimens for Lowering / InitializationLifecycle.
 
+internal let LOWERING_INIT_LEFT: i32 = 13
+internal let LOWERING_INIT_RIGHT: i32 = 8
+internal let LOWERING_INIT_PAIR: (i32, i32) = (LOWERING_INIT_LEFT, LOWERING_INIT_RIGHT)
+
+internal procedure initializationPairSum() -> i32 {
+    let (left, right): (i32, i32) = LOWERING_INIT_PAIR
+    return left + right
+}
+
 /// Exercises the Lowering InitializationLifecycle reference surface.
 public procedure runLoweringInitializationLifecycleReference() -> bool {
-    let reference: LoweringReference = loweringReference(2usize, true, true)
-    return loweringReferenceIsCovered(reference)
+    return initializationPairSum() == 21
 }

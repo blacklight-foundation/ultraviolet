@@ -1,0 +1,12 @@
+//! Accepted fixture for cross-assembly class implementation.
+
+public import ExternalContracts
+
+public record LocalImplementation <: ExternalContracts::ExternalRequiredClass {
+    public required_value: i32
+}
+
+public procedure crossAssemblyImplementationValue() -> i32 {
+    let item = LocalImplementation { required_value: 42 }
+    return item.required_value
+}

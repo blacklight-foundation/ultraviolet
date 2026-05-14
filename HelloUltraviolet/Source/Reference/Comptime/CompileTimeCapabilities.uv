@@ -1,7 +1,37 @@
 //! Reference specimens for Comptime / CompileTimeCapabilities.
 
+internal procedure compileTimeFileSystemReferenceValue() -> usize {
+    let project_root_ok: bool =
+        [[files]] comptime { files~>project_root() != "" }
+    let manifest_exists_ok: bool =
+        [[files]] comptime { files~>exists("Ultraviolet.toml").value == true }
+    let manifest_text_ok: bool =
+        [[files]] comptime { files~>read("Ultraviolet.toml").value != "" }
+    [[files]]
+    comptime {
+        let manifest_bytes = files~>read_bytes("Ultraviolet.toml")
+    }
+
+    var source_root_hits: usize = 0usize
+    [[files]]
+    comptime loop entry in files~>list_dir("Source").value {
+        source_root_hits = source_root_hits +
+            comptime if entry == "Main.uv" { 1usize } else { 0usize }
+    }
+
+    if project_root_ok && manifest_exists_ok && manifest_text_ok {
+        return source_root_hits
+    }
+    return 0usize
+}
+
+internal procedure compileTimeDiagnosticsReferenceValue() -> bool {
+    return comptime { diagnostics~>current_module() != "" } &&
+        comptime { diagnostics~>current_span().start_line > 0usize }
+}
+
 /// Exercises the Comptime CompileTimeCapabilities reference surface.
 public procedure runComptimeCompileTimeCapabilitiesReference() -> bool {
-    let reference: ComptimeReference = comptimeReference(true, false, true)
-    return comptimeReferenceIsCovered(reference) && reference.has_capability_boundary
+    return compileTimeFileSystemReferenceValue() == 1usize &&
+        compileTimeDiagnosticsReferenceValue()
 }

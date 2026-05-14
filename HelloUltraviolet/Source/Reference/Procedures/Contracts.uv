@@ -22,5 +22,7 @@ internal procedure flowFactDischargesPrecondition(value: i32) -> bool {
 
 /// Exercises the Procedures Contracts reference surface.
 public procedure runProceduresContractsReference() -> bool {
-    return contractReference(4) && flowFactDischargesPrecondition(5)
+    return contractReference(4) &&
+        flowFactDischargesPrecondition(5) &&
+        flowFactDischargesPrecondition(0)
 }

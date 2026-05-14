@@ -1,0 +1,18 @@
+//! Coverage checks for output-diagnostic fixture metadata.
+
+public procedure expectedOutputDiagnosticFixtureCount() -> usize {
+    return 2usize
+}
+
+public procedure outputDiagnosticFixtureCount() -> usize {
+    return outputLoweringDiagnosticFixtureCount()
+}
+
+public procedure validatedOutputDiagnosticFixtureCount() -> usize {
+    return validatedOutputLoweringDiagnosticFixtureCount()
+}
+
+public procedure outputDiagnosticFixturesAreIndexed() -> bool {
+    return outputDiagnosticFixtureCount() == expectedOutputDiagnosticFixtureCount() &&
+        validatedOutputDiagnosticFixtureCount() == expectedOutputDiagnosticFixtureCount()
+}

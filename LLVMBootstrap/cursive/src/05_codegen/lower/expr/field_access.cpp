@@ -221,7 +221,8 @@ IRPtr LowerWritePlaceFieldAccess(const ast::FieldAccessExpr& node,
   SPEC_RULE(allow_drop ? "Lower-WritePlace-Field" : "LowerWriteSub-Field");
 
   // Get address of the base
-  auto base_addr = LowerAddrOf(*node.base, ctx);
+  auto base_addr =
+      LowerAddrOf(*node.base, ctx, AddressUseKind::TransientNoEscape);
 
   // Create a pointer to the field
   IRValue ptr_value = ctx.FreshTempValue("addr_of_field");

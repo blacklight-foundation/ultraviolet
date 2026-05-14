@@ -743,6 +743,10 @@ namespace cursive::codegen::emit_detail {
         const analysis::ScopeContext &scope,
         const analysis::TypeRef &async_type)
     {
+      if (const auto sig = analysis::AsyncSigOf(scope, async_type))
+      {
+        return LoweredAsyncStateDiscs(scope, *sig);
+      }
       return LoweredAsyncStateDiscs(scope, ::cursive::analysis::layout::LowerAsyncType(async_type));
     }
 
@@ -1201,15 +1205,17 @@ namespace cursive::codegen::emit_detail {
         return stripped;
       }
 
-      const auto *path = std::get_if<analysis::TypePathType>(&stripped->node);
+      const analysis::TypePath *path = analysis::AppliedTypePath(*stripped);
+      const std::vector<analysis::TypeRef> *generic_args =
+          analysis::AppliedTypeArgs(*stripped);
       if (!path)
       {
         return stripped;
       }
 
       ast::Path syntax_path;
-      syntax_path.reserve(path->path.size());
-      for (const auto &seg : path->path)
+      syntax_path.reserve(path->size());
+      for (const auto &seg : *path)
       {
         syntax_path.push_back(seg);
       }
@@ -1234,11 +1240,12 @@ namespace cursive::codegen::emit_detail {
       analysis::TypeRef inst = *lowered;
       if (alias->generic_params &&
           !alias->generic_params->params.empty() &&
-          !path->generic_args.empty())
+          generic_args &&
+          !generic_args->empty())
       {
         analysis::TypeSubst subst =
             analysis::BuildSubstitution(alias->generic_params->params,
-                                        path->generic_args);
+                                        *generic_args);
         inst = analysis::InstantiateType(inst, subst);
       }
       return ResolveAliasTypeInScope(scope, inst, depth + 1);
@@ -1355,24 +1362,26 @@ namespace cursive::codegen::emit_detail {
         return meta;
       }
 
-      const auto *path = std::get_if<analysis::TypePathType>(&stripped->node);
+      const analysis::TypePath *path = analysis::AppliedTypePath(*stripped);
+      const std::vector<analysis::TypeRef> *generic_args =
+          analysis::AppliedTypeArgs(*stripped);
       if (!path)
       {
         return std::nullopt;
       }
-      const ast::RecordDecl *record = analysis::LookupRecordDecl(scope, path->path);
-      if (!record && !path->path.empty())
+      const ast::RecordDecl *record = analysis::LookupRecordDecl(scope, *path);
+      if (!record && !path->empty())
       {
         auto suffix_matches = [&](const analysis::PathKey &key) -> bool
         {
-          if (key.size() < path->path.size())
+          if (key.size() < path->size())
           {
             return false;
           }
-          const std::size_t offset = key.size() - path->path.size();
-          for (std::size_t i = 0; i < path->path.size(); ++i)
+          const std::size_t offset = key.size() - path->size();
+          for (std::size_t i = 0; i < path->size(); ++i)
           {
-            if (!analysis::IdEq(key[offset + i], path->path[i]))
+            if (!analysis::IdEq(key[offset + i], (*path)[i]))
             {
               return false;
             }
@@ -1446,13 +1455,14 @@ namespace cursive::codegen::emit_detail {
       ::cursive::analysis::layout::RecordLayoutOptions record_layout_options{};
       if (record->generic_params && !record->generic_params->params.empty())
       {
-        if (path->generic_args.size() > record->generic_params->params.size())
+        const std::size_t arg_count = generic_args ? generic_args->size() : 0;
+        if (arg_count > record->generic_params->params.size())
         {
           return std::nullopt;
         }
         record_subst = analysis::BuildSubstitution(
             record->generic_params->params,
-            path->generic_args);
+            generic_args ? *generic_args : std::vector<analysis::TypeRef>{});
       }
       record_layout_options = ::cursive::analysis::layout::ResolveRecordLayoutOptions(record->attrs);
 
@@ -2055,6 +2065,193 @@ namespace cursive::codegen::emit_detail {
       return load;
     }
 
+    llvm::Value *RepackUnionToUnion(LLVMEmitter &emitter,
+                                    llvm::IRBuilder<> *builder,
+                                    llvm::Value *source_value,
+                                    llvm::Type *target_ty,
+                                    const analysis::TypeRef &source_type,
+                                    const analysis::TypeRef &target_type)
+    {
+      if (!builder || !source_value || !target_ty)
+      {
+        return nullptr;
+      }
+
+      const LowerCtx *ctx = emitter.GetCurrentCtx();
+      if (!ctx || !ctx->sigma)
+      {
+        return nullptr;
+      }
+
+      analysis::TypeRef stripped_source = ResolveAliasType(ctx, source_type);
+      analysis::TypeRef stripped_target = ResolveAliasType(ctx, target_type);
+      const auto *source_union =
+          stripped_source ? std::get_if<analysis::TypeUnion>(&stripped_source->node) : nullptr;
+      const auto *target_union =
+          stripped_target ? std::get_if<analysis::TypeUnion>(&stripped_target->node) : nullptr;
+      if (!source_union || !target_union)
+      {
+        return nullptr;
+      }
+
+      const analysis::ScopeContext &scope = BuildScope(ctx);
+      const auto source_layout =
+          ::cursive::analysis::layout::UnionLayoutOf(scope, *source_union);
+      const auto target_layout =
+          ::cursive::analysis::layout::UnionLayoutOf(scope, *target_union);
+      if (!source_layout.has_value() || !target_layout.has_value())
+      {
+        return nullptr;
+      }
+
+      for (const analysis::TypeRef &member_type : source_layout->member_list)
+      {
+        if (!FindUnionMemberIndex(target_layout->member_list, member_type).has_value())
+        {
+          return nullptr;
+        }
+      }
+
+      llvm::Function *current_fn =
+          builder->GetInsertBlock() ? builder->GetInsertBlock()->getParent() : nullptr;
+      if (!current_fn)
+      {
+        return nullptr;
+      }
+
+      llvm::IRBuilder<> entry_builder(
+          &current_fn->getEntryBlock(),
+          current_fn->getEntryBlock().begin());
+      llvm::AllocaInst *target_slot = entry_builder.CreateAlloca(target_ty);
+      builder->CreateStore(llvm::Constant::getNullValue(target_ty), target_slot);
+
+      auto source_value_for = [&](std::size_t member_index) -> llvm::Value *
+      {
+        if (member_index >= source_layout->member_list.size())
+        {
+          return nullptr;
+        }
+        const analysis::TypeRef member_type = source_layout->member_list[member_index];
+        llvm::Type *member_ty = emitter.GetLLVMType(member_type);
+        if (IsUnitType(member_type))
+        {
+          return member_ty ? llvm::Constant::getNullValue(member_ty)
+                           : llvm::ConstantInt::get(llvm::Type::getInt8Ty(emitter.GetContext()), 0);
+        }
+        if (!member_ty)
+        {
+          return nullptr;
+        }
+        return UnpackUnionToMember(
+            emitter,
+            builder,
+            source_value,
+            member_ty,
+            stripped_source,
+            member_type);
+      };
+
+      auto store_target_member = [&](std::size_t member_index) -> void
+      {
+        if (llvm::Value *member_value = source_value_for(member_index))
+        {
+          const analysis::TypeRef member_type = source_layout->member_list[member_index];
+          if (llvm::Value *packed = PackUnionFromMember(
+                  emitter,
+                  builder,
+                  member_value,
+                  target_ty,
+                  member_type,
+                  stripped_target))
+          {
+            builder->CreateStore(packed, target_slot);
+          }
+        }
+      };
+
+      if (source_layout->niche)
+      {
+        std::optional<std::size_t> payload_index;
+        std::optional<std::size_t> unit_index;
+        for (std::size_t i = 0; i < source_layout->member_list.size(); ++i)
+        {
+          if (IsUnitType(source_layout->member_list[i]))
+          {
+            unit_index = i;
+          }
+          else
+          {
+            payload_index = i;
+          }
+        }
+        if (!payload_index.has_value() || !unit_index.has_value())
+        {
+          return nullptr;
+        }
+
+        llvm::BasicBlock *merge_bb =
+            llvm::BasicBlock::Create(emitter.GetContext(), "union.widen.merge", current_fn);
+        llvm::Value *zero = llvm::Constant::getNullValue(source_value->getType());
+        llvm::Value *has_payload = source_value->getType()->isPointerTy()
+                                       ? builder->CreateICmpNE(source_value, zero)
+                                       : builder->CreateICmpNE(source_value, zero);
+        llvm::BasicBlock *payload_bb =
+            llvm::BasicBlock::Create(emitter.GetContext(), "union.widen.payload", current_fn);
+        llvm::BasicBlock *unit_bb =
+            llvm::BasicBlock::Create(emitter.GetContext(), "union.widen.unit", current_fn);
+        builder->CreateCondBr(has_payload, payload_bb, unit_bb);
+
+        builder->SetInsertPoint(payload_bb);
+        store_target_member(*payload_index);
+        builder->CreateBr(merge_bb);
+
+        builder->SetInsertPoint(unit_bb);
+        store_target_member(*unit_index);
+        builder->CreateBr(merge_bb);
+
+        builder->SetInsertPoint(merge_bb);
+        return builder->CreateLoad(target_ty, target_slot);
+      }
+
+      auto *source_struct_ty = llvm::dyn_cast<llvm::StructType>(source_value->getType());
+      if (!source_struct_ty || source_struct_ty->getNumElements() < 1)
+      {
+        return nullptr;
+      }
+
+      llvm::Value *disc = builder->CreateExtractValue(source_value, {0u});
+      if (!disc || !disc->getType()->isIntegerTy())
+      {
+        return nullptr;
+      }
+
+      llvm::BasicBlock *merge_bb =
+          llvm::BasicBlock::Create(emitter.GetContext(), "union.widen.merge", current_fn);
+      llvm::BasicBlock *default_bb =
+          llvm::BasicBlock::Create(emitter.GetContext(), "union.widen.default", current_fn);
+      llvm::SwitchInst *switch_inst =
+          builder->CreateSwitch(disc, default_bb, source_layout->member_list.size());
+
+      for (std::size_t i = 0; i < source_layout->member_list.size(); ++i)
+      {
+        llvm::BasicBlock *case_bb =
+            llvm::BasicBlock::Create(emitter.GetContext(), "union.widen.case", current_fn);
+        switch_inst->addCase(
+            llvm::ConstantInt::get(llvm::cast<llvm::IntegerType>(disc->getType()), i),
+            case_bb);
+
+        builder->SetInsertPoint(case_bb);
+        store_target_member(i);
+        builder->CreateBr(merge_bb);
+      }
+
+      builder->SetInsertPoint(default_bb);
+      builder->CreateBr(merge_bb);
+
+      builder->SetInsertPoint(merge_bb);
+      return builder->CreateLoad(target_ty, target_slot);
+    }
+
     llvm::Value *CoerceToTyped(LLVMEmitter &emitter,
                                llvm::IRBuilder<> *builder,
                                llvm::Value *value,
@@ -2195,6 +2392,17 @@ namespace cursive::codegen::emit_detail {
           {
             return CoerceTo(builder, value, target_ty);
           }
+        }
+
+        if (llvm::Value *repacked = RepackUnionToUnion(
+                emitter,
+                builder,
+                value,
+                target_ty,
+                stripped_source,
+                stripped_target))
+        {
+          return repacked;
         }
       }
 

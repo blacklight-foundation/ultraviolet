@@ -812,6 +812,66 @@ analysis::TypeRef InstantiateActiveGenericType(const analysis::TypeRef& type,
   return analysis::InstantiateType(type, *ctx.active_generic_type_subst);
 }
 
+const ast::TypeAliasDecl* LookupTypeAliasDeclForCallLowering(
+    const analysis::TypePath& path,
+    const LowerCtx& ctx) {
+  if (!ctx.sigma || path.empty()) {
+    return nullptr;
+  }
+  if (path.size() > 1) {
+    const auto it = ctx.sigma->types.find(analysis::PathKeyOf(path));
+    if (it == ctx.sigma->types.end()) {
+      return nullptr;
+    }
+    return std::get_if<ast::TypeAliasDecl>(&it->second);
+  }
+
+  ast::Path resolved;
+  if (ctx.resolve_type_name) {
+    if (auto resolved_path = ctx.resolve_type_name(path[0])) {
+      resolved = *resolved_path;
+    }
+  }
+  if (resolved.empty()) {
+    resolved = ctx.module_path;
+    resolved.push_back(path[0]);
+  }
+
+  const auto it = ctx.sigma->types.find(analysis::PathKeyOf(resolved));
+  if (it == ctx.sigma->types.end()) {
+    return nullptr;
+  }
+  return std::get_if<ast::TypeAliasDecl>(&it->second);
+}
+
+analysis::TypeRef NormalizeFunctionAliasType(const analysis::TypeRef& type,
+                                             const LowerCtx& ctx,
+                                             std::uint32_t depth = 0) {
+  if (!type || depth > 32) {
+    return type;
+  }
+  const auto stripped = analysis::StripPerm(type);
+  if (!stripped) {
+    return type;
+  }
+  if (std::holds_alternative<analysis::TypeFunc>(stripped->node)) {
+    return stripped;
+  }
+  const auto* path = std::get_if<analysis::TypePathType>(&stripped->node);
+  if (!path || !path->generic_args.empty()) {
+    return type;
+  }
+  const auto* alias = LookupTypeAliasDeclForCallLowering(path->path, ctx);
+  if (!alias || alias->generic_params.has_value()) {
+    return type;
+  }
+  const auto lowered = analysis::LowerType(ScopeForLowering(ctx), alias->type);
+  if (!lowered.ok || !lowered.type) {
+    return type;
+  }
+  return NormalizeFunctionAliasType(lowered.type, ctx, depth + 1);
+}
+
 analysis::ScopeContext SourceCallScope(const ast::ModulePath& module_path,
                                        const LowerCtx& ctx) {
   analysis::ScopeContext scope;
@@ -1511,6 +1571,7 @@ LowerResult LowerCallExpr(const ast::Expr& expr_wrapper,
     callee_type = ctx.LookupValueType(callee_result.value);
   }
   callee_type = InstantiateActiveGenericType(callee_type, ctx);
+  callee_type = NormalizeFunctionAliasType(callee_type, ctx);
   if (callee_type) {
     auto stripped = analysis::StripPerm(callee_type);
     if (stripped) {

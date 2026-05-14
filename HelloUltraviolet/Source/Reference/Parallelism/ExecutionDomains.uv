@@ -1,7 +1,41 @@
 //! Reference specimens for Parallelism / ExecutionDomains.
 
+internal procedure inlineDomainReference(context: Context) -> i32 {
+    return parallel context~>inline() {
+        11
+    }
+}
+
+internal procedure cpuDomainReference(context: Context) -> i32 {
+    let affinity: CpuSet = 1u64
+    let priority: Priority = Priority::High
+    return parallel context~>cpu() [name: "cpu-domain-reference"] {
+        let handle: Spawned<i32> = spawn [
+            name: "cpu-domain-worker",
+            affinity: affinity,
+            priority: priority
+        ] {
+            12
+        }
+        wait handle
+    }
+}
+
+internal procedure gpuDomainReference(context: Context) -> usize {
+    let payload: GpuSafePayload<i32> = GpuSafePayload { value: 1 }
+    return parallel context~>gpu() [
+        workgroup: (1usize, 1usize, 1usize),
+        workgroups: (1usize, 1usize, 1usize)
+    ] {
+        dispatch index in 0usize..1usize [reduce: +, workgroup: (1usize, 1usize, 1usize)] {
+            gpu_barrier()
+            gpu_linear_id() + (payload.value as usize) + index
+        }
+    }
+}
+
 /// Exercises the Parallelism ExecutionDomains reference surface.
-public procedure runParallelismExecutionDomainsReference() -> bool {
-    let reference: ParallelReference = parallelReference(1usize, true, false)
-    return parallelReferenceIsCovered(reference)
+public procedure runParallelismExecutionDomainsReference(context: Context) -> bool {
+    return inlineDomainReference(context) == 11 &&
+        cpuDomainReference(context) == 12
 }

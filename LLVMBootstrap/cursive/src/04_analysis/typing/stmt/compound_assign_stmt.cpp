@@ -370,7 +370,8 @@ namespace
     const auto place_type = TypePlace(ctx, write_ctx, node.place, env);
     if (!place_type.ok)
     {
-      return {false, place_type.diag_id, {}, {}};
+      return {false, place_type.diag_id, {}, {},
+              place_type.diag_detail, place_type.diag_span};
     }
 
     // Check for const permission

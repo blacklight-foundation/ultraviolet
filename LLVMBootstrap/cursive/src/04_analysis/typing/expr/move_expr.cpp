@@ -89,6 +89,8 @@ ExprTypeResult TypeMoveExprImpl(const ScopeContext& ctx,
   const auto place = ::cursive::analysis::TypePlace(ctx, type_ctx, expr.place, env);
   if (!place.ok) {
     result.diag_id = place.diag_id;
+    result.diag_detail = place.diag_detail;
+    result.diag_span = place.diag_span;
     return result;
   }
 
@@ -123,6 +125,8 @@ ExprTypeResult TypeMoveExpr(const ScopeContext& ctx,
   const auto place_result = type_place(expr.place);
   if (!place_result.ok) {
     result.diag_id = place_result.diag_id;
+    result.diag_detail = place_result.diag_detail;
+    result.diag_span = place_result.diag_span;
     return result;
   }
 

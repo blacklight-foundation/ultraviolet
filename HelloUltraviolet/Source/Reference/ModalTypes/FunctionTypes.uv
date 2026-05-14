@@ -1,15 +1,40 @@
 //! Reference specimens for ModalTypes / FunctionTypes.
 
+internal record FunctionTypeMovePayload {
+    internal value: unique i32
+}
+
 internal procedure functionTypeReferenceApply(value: i32) -> i32 {
     return value + 2
 }
 
-internal procedure functionTypeReferenceCall(value: i32) -> i32 {
-    return functionTypeReferenceApply(value)
+internal procedure functionTypeReferenceNoArgs() -> i32 {
+    return 5
+}
+
+internal procedure functionTypeReferenceConsume(move payload: FunctionTypeMovePayload) -> i32 {
+    return move payload.value
+}
+
+internal procedure functionTypeReferenceCall(callable: (i32) -> i32, value: i32) -> i32 {
+    return callable(value)
+}
+
+internal procedure functionTypeReferenceMoveCall(
+    callable: (move FunctionTypeMovePayload) -> i32
+) -> i32 {
+    let payload: FunctionTypeMovePayload = FunctionTypeMovePayload { value: 13 }
+    return callable(move payload)
 }
 
 /// Exercises the ModalTypes FunctionTypes reference surface.
 public procedure runModalTypesFunctionTypesReference() -> bool {
-    let callable = |value: i32| -> i32 functionTypeReferenceCall(value)
-    return callable(6) == 8
+    let callable: (i32) -> i32 = functionTypeReferenceApply
+    let no_arg_callable: () -> i32 = functionTypeReferenceNoArgs
+    let consumer: (move FunctionTypeMovePayload) -> i32 = functionTypeReferenceConsume
+    return functionTypeReferenceCall(callable, 6) == 8 &&
+        no_arg_callable() == 5 &&
+        functionTypeReferenceMoveCall(consumer) == 13 &&
+        sizeof((i32) -> i32) == sizeof(usize) &&
+        alignof((move FunctionTypeMovePayload) -> i32) == alignof(usize)
 }

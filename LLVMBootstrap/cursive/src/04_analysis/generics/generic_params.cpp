@@ -80,6 +80,7 @@ Entity MakeTypeParamEntity(const ast::TypeParam& param) {
   entity.source = EntitySource::Decl;
   entity.origin_opt = std::nullopt;
   entity.target_opt = param.name;
+  entity.type_param_class_bounds = param.bounds;
   return entity;
 }
 

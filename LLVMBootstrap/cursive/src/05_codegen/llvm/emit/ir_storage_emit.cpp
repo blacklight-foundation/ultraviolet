@@ -7,6 +7,20 @@
 namespace cursive::codegen {
 
 using namespace emit_detail;
+
+  namespace {
+
+  bool SameStorageObject(llvm::Value *left, llvm::Value *right)
+  {
+    if (!left || !right)
+    {
+      return false;
+    }
+    return left->stripPointerCasts() == right->stripPointerCasts();
+  }
+
+  } // namespace
+
   llvm::Value *LLVMEmitter::GetAddressableStorage(const IRValue &value)
   {
     auto *builder = static_cast<llvm::IRBuilder<> *>(builder_.get());
@@ -312,6 +326,24 @@ using namespace emit_detail;
     llvm::IRBuilder<> entry_builder(&func->getEntryBlock(), func->getEntryBlock().begin());
     llvm::Value *bind_slot = nullptr;
     bool adopted_existing_storage = false;
+    auto aliases_live_local_storage = [&](llvm::Value *storage) -> bool
+    {
+      for (const auto &[_, local_storage] : local_home_storage_)
+      {
+        if (SameStorageObject(storage, local_storage))
+        {
+          return true;
+        }
+      }
+      for (const auto &[_, local_storage] : locals_)
+      {
+        if (SameStorageObject(storage, local_storage))
+        {
+          return true;
+        }
+      }
+      return false;
+    };
     analysis::TypeRef source_type = nullptr;
     if (const LowerCtx *ctx = GetCurrentCtx())
     {
@@ -363,25 +395,28 @@ using namespace emit_detail;
         !use_region_slot &&
         aggregate_bind_ty)
     {
-      if (llvm::Value *existing_storage = GetAddressableStorage(bind.value))
+      if (bind.value.kind == IRValue::Kind::Opaque)
       {
-        bool compatible_storage = (source_llvm_ty == ty);
-        if (!compatible_storage)
+        if (llvm::Value *existing_storage = GetTempStorage(bind.value))
         {
-          if (auto *alloca_inst = llvm::dyn_cast<llvm::AllocaInst>(existing_storage))
+          bool compatible_storage = (source_llvm_ty == ty);
+          auto *alloca_inst =
+              llvm::dyn_cast<llvm::AllocaInst>(existing_storage->stripPointerCasts());
+          if (!compatible_storage && alloca_inst)
           {
             compatible_storage = (alloca_inst->getAllocatedType() == ty);
           }
-        }
-        if (compatible_storage)
-        {
-          llvm::Type *slot_ptr_ty = llvm::PointerType::get(ty, 0);
-          if (existing_storage->getType() != slot_ptr_ty)
+          if (compatible_storage && alloca_inst &&
+              !aliases_live_local_storage(existing_storage))
           {
-            existing_storage = builder->CreateBitCast(existing_storage, slot_ptr_ty);
+            llvm::Type *slot_ptr_ty = llvm::PointerType::get(ty, 0);
+            if (existing_storage->getType() != slot_ptr_ty)
+            {
+              existing_storage = builder->CreateBitCast(existing_storage, slot_ptr_ty);
+            }
+            bind_slot = existing_storage;
+            adopted_existing_storage = true;
           }
-          bind_slot = existing_storage;
-          adopted_existing_storage = true;
         }
       }
     }

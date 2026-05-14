@@ -19,6 +19,7 @@ namespace cursive::analysis::expr {
 ExprTypeResult TypeRecordExprImpl(const ScopeContext& ctx,
                                   const StmtTypeContext& type_ctx,
                                   const ast::RecordExpr& expr,
-                                  const TypeEnv& env);
+                                  const TypeEnv& env,
+                                  const TypeRef* expected_type = nullptr);
 
 }  // namespace cursive::analysis::expr

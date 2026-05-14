@@ -442,12 +442,12 @@ std::optional<CancelTokenMethodSig> LookupCancelTokenMethodSig(
   SpecDefsConcurrency();
   CancelTokenMethodSig sig{};
 
-  // §18.6.1: procedure cancel(~%) - only in @Active state
+  // §20.6.4: CancelToken@Active::cancel() - only in @Active state
   if (StrEq(name, "cancel")) {
     if (!StrEq(state, "Active") && !state.empty()) {
       return std::nullopt;  // Only valid in @Active state
     }
-    sig.recv_perm = Permission::Shared;
+    sig.recv_perm = Permission::Const;
     sig.params = {};
     sig.ret = TypeUnit();
     sig.valid_states = "Active";
@@ -523,7 +523,7 @@ ast::ModalDecl BuildSpawnedModalDecl() {
   ast::ModalDecl decl{};
   decl.vis = ast::Visibility::Public;
   decl.name = "Spawned";
-  decl.generic_params = MakeGenericParams({MakeTypeParam("TValue", nullptr)});
+  decl.generic_params = MakeGenericParams({MakeTypeParam("T", nullptr)});
   decl.implements = {};
 
   // State @Pending - task has been created but not completed
@@ -559,7 +559,7 @@ ast::ModalDecl BuildCancelTokenModalDecl() {
   id_field.vis = ast::Visibility::Private;
   auto cancel_method = MakeStateMethod(
       "cancel", MakeTypePrimAst("()"),
-      ast::ReceiverShorthand{ast::ReceiverPerm::Shared});
+      ast::ReceiverShorthand{ast::ReceiverPerm::Const});
 
   // State @Active
   {

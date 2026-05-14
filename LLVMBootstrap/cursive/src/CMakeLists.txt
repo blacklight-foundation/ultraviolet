@@ -983,6 +983,10 @@ if(LLVM_FOUND)
     MC
     TargetParser
     CodeGen
+    AArch64CodeGen
+    AArch64Desc
+    AArch64Info
+    AArch64Utils
     X86CodeGen
     X86AsmParser
     X86Desc

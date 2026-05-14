@@ -35,11 +35,7 @@ namespace {
 BlockPtr MakeElseIfBlock(const ExprPtr& expr, const core::Span& span) {
   auto block = std::make_shared<Block>();
   block->span = span;
-  block->tail_opt = nullptr;
-  ExprStmt stmt;
-  stmt.value = expr;
-  stmt.span = expr ? expr->span : span;
-  block->stmts.push_back(std::move(stmt));
+  block->tail_opt = expr;
   return block;
 }
 

@@ -16,6 +16,7 @@
 
 #include <cstdint>
 #include <optional>
+#include <string>
 #include <string_view>
 #include <variant>
 
@@ -95,6 +96,19 @@ static TypeRef StripPermLocal(const TypeRef& type) {
     break;
   }
   return cur;
+}
+
+static std::optional<core::Span> ExprSpan(const ast::ExprPtr& expr) {
+  if (!expr) {
+    return std::nullopt;
+  }
+  return expr->span;
+}
+
+static std::string NonConstArrayIndexDetail() {
+  return "fixed-size array index expression is not compile-time constant; "
+         "runtime fixed-array indexing requires [[dynamic]], or use a slice "
+         "for runtime indexing";
 }
 
 // Extract permission if present
@@ -233,6 +247,10 @@ ExprTypeResult TypeIndexAccessExpr(const ScopeContext& ctx,
       ctx, SuppressSharedAccessCheck(type_ctx), expr.base, env);
   if (!base_type.ok) {
     result.diag_id = base_type.diag_id;
+    result.diag_detail = base_type.diag_detail;
+    result.diag_span = base_type.diag_span.has_value()
+                           ? base_type.diag_span
+                           : ExprSpan(expr.base);
     return result;
   }
 
@@ -242,12 +260,14 @@ ExprTypeResult TypeIndexAccessExpr(const ScopeContext& ctx,
   const auto normalized = NormalizeIndexBaseAlias(ctx, stripped);
   if (!normalized.ok) {
     result.diag_id = normalized.diag_id;
+    result.diag_span = ExprSpan(expr.base);
     return result;
   }
   const auto stripped_base = normalized.type;
 
   if (!stripped_base) {
     result.diag_id = "Index-NonIndexable";
+    result.diag_span = ExprSpan(expr.base);
     return result;
   }
 
@@ -261,6 +281,10 @@ ExprTypeResult TypeIndexAccessExpr(const ScopeContext& ctx,
     const auto index_type = type_expr(expr.index);
     if (!index_type.ok) {
       result.diag_id = index_type.diag_id;
+      result.diag_detail = index_type.diag_detail;
+      result.diag_span = index_type.diag_span.has_value()
+                             ? index_type.diag_span
+                             : ExprSpan(expr.index);
       return result;
     }
     const bool base_is_slice =
@@ -276,6 +300,7 @@ ExprTypeResult TypeIndexAccessExpr(const ScopeContext& ctx,
         SPEC_RULE("Index-Array-NonUsize");
       }
       result.diag_id = non_usize_diag;
+      result.diag_span = ExprSpan(expr.index);
       return result;
     }
 
@@ -327,6 +352,7 @@ ExprTypeResult TypeIndexAccessExpr(const ScopeContext& ctx,
     }
 
     result.diag_id = "Index-NonIndexable";
+    result.diag_span = ExprSpan(expr.base);
     return result;
   }
 
@@ -337,11 +363,14 @@ ExprTypeResult TypeIndexAccessExpr(const ScopeContext& ctx,
     if (!has_const_index && !type_ctx.contract_dynamic) {
       SPEC_RULE("Index-Array-NonConst-Err");
       result.diag_id = "E-UNS-0102";
+      result.diag_detail = NonConstArrayIndexDetail();
+      result.diag_span = ExprSpan(expr.index);
       return result;
     }
     if (has_const_index && *index_const.value >= arr->length) {
       SPEC_RULE("Index-Array-OOB-Err");
       result.diag_id = "E-UNS-0103";
+      result.diag_span = ExprSpan(expr.index);
       return result;
     }
 
@@ -424,6 +453,10 @@ PlaceTypeResult TypeIndexAccessPlace(const ScopeContext& ctx,
       ctx, SuppressSharedAccessCheck(type_ctx), expr.base, env);
   if (!base_type.ok) {
     result.diag_id = base_type.diag_id;
+    result.diag_detail = base_type.diag_detail;
+    result.diag_span = base_type.diag_span.has_value()
+                           ? base_type.diag_span
+                           : ExprSpan(expr.base);
     return result;
   }
 
@@ -432,11 +465,13 @@ PlaceTypeResult TypeIndexAccessPlace(const ScopeContext& ctx,
   const auto normalized = NormalizeIndexBaseAlias(ctx, stripped);
   if (!normalized.ok) {
     result.diag_id = normalized.diag_id;
+    result.diag_span = ExprSpan(expr.base);
     return result;
   }
   const auto stripped_base = normalized.type;
   if (!stripped_base) {
     result.diag_id = "Index-NonIndexable";
+    result.diag_span = ExprSpan(expr.base);
     return result;
   }
 
@@ -446,6 +481,10 @@ PlaceTypeResult TypeIndexAccessPlace(const ScopeContext& ctx,
     const auto index_type = type_expr(expr.index);
     if (!index_type.ok) {
       result.diag_id = index_type.diag_id;
+      result.diag_detail = index_type.diag_detail;
+      result.diag_span = index_type.diag_span.has_value()
+                             ? index_type.diag_span
+                             : ExprSpan(expr.index);
       return result;
     }
     const bool base_is_slice =
@@ -461,6 +500,7 @@ PlaceTypeResult TypeIndexAccessPlace(const ScopeContext& ctx,
         SPEC_RULE("Index-Array-NonUsize");
       }
       result.diag_id = non_usize_diag;
+      result.diag_span = ExprSpan(expr.index);
       return result;
     }
 
@@ -491,6 +531,7 @@ PlaceTypeResult TypeIndexAccessPlace(const ScopeContext& ctx,
     }
 
     result.diag_id = "Index-NonIndexable";
+    result.diag_span = ExprSpan(expr.base);
     return result;
   }
 
@@ -500,11 +541,14 @@ PlaceTypeResult TypeIndexAccessPlace(const ScopeContext& ctx,
     if (!has_const_index && !type_ctx.contract_dynamic) {
       SPEC_RULE("Index-Array-NonConst-Err");
       result.diag_id = "E-UNS-0102";
+      result.diag_detail = NonConstArrayIndexDetail();
+      result.diag_span = ExprSpan(expr.index);
       return result;
     }
     if (has_const_index && *index_const.value >= arr->length) {
       SPEC_RULE("Index-Array-OOB-Err");
       result.diag_id = "E-UNS-0103";
+      result.diag_span = ExprSpan(expr.index);
       return result;
     }
 

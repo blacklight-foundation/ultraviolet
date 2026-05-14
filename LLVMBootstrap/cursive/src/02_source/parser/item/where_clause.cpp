@@ -52,7 +52,7 @@ namespace {
 
 bool IsPredicateReqName(std::string_view name) {
   return name == "Bitcopy" || name == "Clone" || name == "Drop" ||
-         name == "FfiSafe";
+         name == "FfiSafe" || name == "GpuSafe";
 }
 
 bool IsPredicateReqTerminator(Parser parser) {

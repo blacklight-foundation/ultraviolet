@@ -34,5 +34,13 @@ public procedure acceptedProjectFixtureArtifactsExist(context: Context) -> bool 
             context,
             "HelloUltraviolet/Fixtures/AcceptedProjects/VerificationFactPrecondition/Ultraviolet.toml",
             "HelloUltraviolet/Fixtures/AcceptedProjects/VerificationFactPrecondition/Source/Library.uv"
+        ) &&
+        acceptedProjectArtifactsExist(
+            context,
+            "HelloUltraviolet/Fixtures/AcceptedProjects/CrossAssemblyImplementation/Ultraviolet.toml",
+            "HelloUltraviolet/Fixtures/AcceptedProjects/CrossAssemblyImplementation/Source/CrossAssemblyImplementation/Library.uv"
+        ) &&
+        context.fs~>exists(
+            "HelloUltraviolet/Fixtures/AcceptedProjects/CrossAssemblyImplementation/Source/ExternalContracts/Contracts.uv"
         )
 }

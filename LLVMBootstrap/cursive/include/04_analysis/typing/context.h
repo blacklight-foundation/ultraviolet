@@ -47,6 +47,7 @@ struct Entity {
   EntitySource source;
   std::optional<core::Span> declaration_span;
   std::string language_symbol_id;
+  std::vector<ast::TypeBound> type_param_class_bounds = {};
 };
 
 using TypeDecl = std::variant<ast::RecordDecl,

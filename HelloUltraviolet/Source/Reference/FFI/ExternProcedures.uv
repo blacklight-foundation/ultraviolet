@@ -1,7 +1,149 @@
 //! Reference specimens for FFI / ExternProcedures.
 
+extern "C" {
+    public procedure importedReferencePrimitive(value: i32) -> i32
+    public procedure importedReferenceRecord(value: FFIPrimitiveRecord) -> i32
+    public procedure importedReferenceGenericRecord(value: FFIGenericRecord<i32>) -> i32
+    public procedure importedReferenceEnum(value: FFIPrimitiveEnum) -> i32
+    public procedure importedReferenceGenericEnum(value: FFIGenericEnum<i32>) -> i32
+    public procedure importedReferenceArray(value: [i32; 2]) -> i32
+    public procedure importedReferencePointer(value: *mut i32) -> i32
+    public procedure importedReferenceFunction(value: FFIFunctionPointer) -> i32
+    public procedure importedReferenceDroppingRecord(value: FFIDroppingRecord) -> i32
+}
+
+/// Foreign-visible primitive provider used by the imported primitive procedure.
+[[export("C")]]
+[[mangle("importedReferencePrimitive")]]
+public procedure ffiImportedReferencePrimitiveProvider(value: i32) -> i32 {
+    return value + 1
+}
+
+/// Foreign-visible record provider used by the imported record procedure.
+[[export("C")]]
+[[mangle("importedReferenceRecord")]]
+public procedure ffiImportedReferenceRecordProvider(value: FFIPrimitiveRecord) -> i32 {
+    return value.signed_value + value.status as i32
+}
+
+/// Foreign-visible generic-record provider used by the imported generic procedure.
+[[export("C")]]
+[[mangle("importedReferenceGenericRecord")]]
+public procedure ffiImportedReferenceGenericRecordProvider(value: FFIGenericRecord<i32>) -> i32 {
+    return value.value
+}
+
+/// Foreign-visible enum provider used by the imported enum procedure.
+[[export("C")]]
+[[mangle("importedReferenceEnum")]]
+public procedure ffiImportedReferenceEnumProvider(value: FFIPrimitiveEnum) -> i32 {
+    let selected: i32 = if value is {
+        FFIPrimitiveEnum::Empty {
+            0
+        }
+        FFIPrimitiveEnum::Value(payload) {
+            payload
+        }
+    }
+    return selected
+}
+
+/// Foreign-visible generic-enum provider used by the imported generic enum procedure.
+[[export("C")]]
+[[mangle("importedReferenceGenericEnum")]]
+public procedure ffiImportedReferenceGenericEnumProvider(value: FFIGenericEnum<i32>) -> i32 {
+    let selected: i32 = if value is {
+        FFIGenericEnum::Value(payload) {
+            payload
+        }
+    }
+    return selected
+}
+
+/// Foreign-visible array provider used by the imported fixed-array procedure.
+[[export("C")]]
+[[mangle("importedReferenceArray")]]
+public procedure ffiImportedReferenceArrayProvider(value: [i32; 2]) -> i32 {
+    return value[0usize] + value[1usize]
+}
+
+/// Foreign-visible raw-pointer provider used by the imported pointer procedure.
+[[export("C")]]
+[[mangle("importedReferencePointer")]]
+public procedure ffiImportedReferencePointerProvider(value: *mut i32) -> i32 {
+    if value == null {
+        return 0
+    }
+    return 1
+}
+
+/// Foreign-visible function-pointer provider used by the imported callback procedure.
+[[export("C")]]
+[[mangle("importedReferenceFunction")]]
+public procedure ffiImportedReferenceFunctionProvider(value: FFIFunctionPointer) -> i32 {
+    return value(7)
+}
+
+internal procedure callImportedReferencePrimitive(value: i32) -> i32 {
+    return unsafe { importedReferencePrimitive(value) }
+}
+
+internal procedure callImportedReferenceRecord(value: FFIPrimitiveRecord) -> i32 {
+    return unsafe { importedReferenceRecord(value) }
+}
+
+internal procedure callImportedReferenceGenericRecord(value: FFIGenericRecord<i32>) -> i32 {
+    return unsafe { importedReferenceGenericRecord(value) }
+}
+
+internal procedure callImportedReferenceEnum(value: FFIPrimitiveEnum) -> i32 {
+    return unsafe { importedReferenceEnum(value) }
+}
+
+internal procedure callImportedReferenceGenericEnum(value: FFIGenericEnum<i32>) -> i32 {
+    return unsafe { importedReferenceGenericEnum(value) }
+}
+
+internal procedure callImportedReferenceArray(value: [i32; 2]) -> i32 {
+    return unsafe { importedReferenceArray(value) }
+}
+
+internal procedure callImportedReferencePointer(value: *mut i32) -> i32 {
+    return unsafe { importedReferencePointer(value) }
+}
+
+internal procedure ffiCallbackReference(value: i32) -> i32 {
+    return value + 1
+}
+
+internal procedure callImportedReferenceFunction(callback: FFIFunctionPointer) -> i32 {
+    return unsafe { importedReferenceFunction(callback) }
+}
+
 /// Exercises the FFI ExternProcedures reference surface.
 public procedure runFFIExternProceduresReference() -> bool {
-    let reference: FFIReference = ffiReference(2usize, true, false)
-    return ffiReferenceIsCovered(reference)
+    let record_value: FFIPrimitiveRecord = ffiPrimitiveRecord(9, 2u32)
+    let generic_record: FFIGenericRecord<i32> = FFIGenericRecord { value: 13 }
+    let enum_value: FFIPrimitiveEnum = FFIPrimitiveEnum::Value(17)
+    let generic_enum: FFIGenericEnum<i32> = FFIGenericEnum::Value(19)
+    let array_value: [i32; 2] = [3, 5]
+    let pointer_value: *mut i32 = null
+
+    let primitive_ok: bool = callImportedReferencePrimitive(10) == 11
+    let record_ok: bool = callImportedReferenceRecord(record_value) == 11
+    let generic_record_ok: bool = callImportedReferenceGenericRecord(generic_record) == 13
+    let enum_ok: bool = callImportedReferenceEnum(enum_value) == 17
+    let generic_enum_ok: bool = callImportedReferenceGenericEnum(generic_enum) == 19
+    let array_ok: bool = callImportedReferenceArray(array_value) == 8
+    let pointer_ok: bool = callImportedReferencePointer(pointer_value) == 0
+    let function_ok: bool = callImportedReferenceFunction(ffiCallbackReference) == 8
+
+    return primitive_ok &&
+        record_ok &&
+        generic_record_ok &&
+        enum_ok &&
+        generic_enum_ok &&
+        array_ok &&
+        pointer_ok &&
+        function_ok
 }

@@ -188,7 +188,7 @@ LowerResult LowerExprImpl(const ast::Expr& expr, LowerCtx& ctx) {
           value.bytes = EncodeU64LE(layout->align);
           return LowerResult{EmptyIR(), value};
         } else if constexpr (std::is_same_v<T, ast::RecordExpr>) {
-          return LowerRecord(node, ctx);
+          return LowerRecord(expr, node, ctx);
         } else if constexpr (std::is_same_v<T, ast::EnumLiteralExpr>) {
           return LowerEnumLiteral(expr, node, ctx);
         } else if constexpr (std::is_same_v<T, ast::FieldAccessExpr>) {

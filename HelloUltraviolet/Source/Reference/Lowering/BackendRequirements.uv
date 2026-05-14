@@ -1,7 +1,20 @@
 //! Reference specimens for Lowering / BackendRequirements.
 
+internal procedure backendArithmeticValue(left: i32, right: i32) -> i32 {
+    let sum: i32 = left + right
+    let product: i32 = sum * 3
+    return product - right
+}
+
+internal procedure backendBranchValue(flag: bool) -> i32 {
+    if flag {
+        return backendArithmeticValue(4, 5)
+    }
+    return backendArithmeticValue(2, 3)
+}
+
 /// Exercises the Lowering BackendRequirements reference surface.
 public procedure runLoweringBackendRequirementsReference() -> bool {
-    let reference: LoweringReference = loweringReference(2usize, true, true)
-    return loweringReferenceIsCovered(reference)
+    return backendBranchValue(true) == 22 &&
+        backendBranchValue(false) == 12
 }

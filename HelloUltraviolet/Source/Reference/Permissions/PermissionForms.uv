@@ -1,33 +1,34 @@
 //! Reference specimens for Permissions / PermissionForms.
 
-internal enum PermissionFormReference {
-    Immutable
-    Mutable
-    Unique
-    Shared
+internal record PermissionCell {
+    internal value: i32
+
+    internal procedure readConst(~) -> i32 {
+        return self.value + 0
+    }
+
+    internal procedure readShared(~%) -> i32 {
+        return self.value + 0
+    }
+
+    internal procedure readUnique(~!) -> i32 {
+        return self.value + 0
+    }
 }
 
-internal procedure permissionFormAllowsWrite(form: PermissionFormReference) -> bool {
-    return if form is {
-        PermissionFormReference::Immutable {
-            false
-        }
-        PermissionFormReference::Mutable {
-            true
-        }
-        PermissionFormReference::Unique {
-            true
-        }
-        PermissionFormReference::Shared {
-            false
-        }
+internal procedure permissionQualifiedBindingValue() -> i32 {
+    let const_cell: const PermissionCell = PermissionCell { value: 1 }
+    var shared_cell: shared PermissionCell = PermissionCell { value: 2 }
+    let unique_cell: unique PermissionCell = PermissionCell { value: 3 }
+    var observed: i32 = const_cell~>readConst()
+    #shared_cell write {
+        observed = observed + shared_cell~>readShared()
     }
+    observed = observed + unique_cell~>readUnique()
+    return observed
 }
 
 /// Exercises the Permissions PermissionForms reference surface.
 public procedure runPermissionsPermissionFormsReference() -> bool {
-    return !permissionFormAllowsWrite(PermissionFormReference::Immutable) &&
-        permissionFormAllowsWrite(PermissionFormReference::Mutable) &&
-        permissionFormAllowsWrite(PermissionFormReference::Unique) &&
-        !permissionFormAllowsWrite(PermissionFormReference::Shared)
+    return permissionQualifiedBindingValue() == 6
 }

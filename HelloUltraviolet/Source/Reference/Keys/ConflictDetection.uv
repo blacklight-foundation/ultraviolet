@@ -1,8 +1,29 @@
 //! Reference specimens for Keys / ConflictDetection.
 
+internal procedure disjointKeyAccessValue() -> i32 {
+    var values: shared [i32; 4] = [1, 2, 3, 4]
+    var observed: i32 = 0
+    #values[0usize], values[1usize] read {
+        observed = values[0usize] + values[1usize]
+    }
+    return observed
+}
+
+internal procedure coveredKeyAccessValue() -> i32 {
+    var container: shared KeyContainer =
+        KeyContainer {
+            leaf: KeyLeaf { value: 8 },
+            values: [1, 2, 3, 4]
+        }
+    var observed: i32 = 0
+    #container read {
+        observed = container.leaf.value + container.values[0usize]
+    }
+    return observed
+}
+
 /// Exercises the Keys ConflictDetection reference surface.
 public procedure runKeysConflictDetectionReference() -> bool {
-    let compatible: KeyReference = keyReference(2usize, true, false)
-    let conflict: KeyReference = keyReference(2usize, false, true)
-    return keyReferenceIsCovered(compatible) && keyReferenceIsCovered(conflict)
+    return disjointKeyAccessValue() == 3 &&
+        coveredKeyAccessValue() == 9
 }

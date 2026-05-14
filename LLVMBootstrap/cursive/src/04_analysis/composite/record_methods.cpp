@@ -184,6 +184,27 @@ static bool IsExplicitSelfReceiverType(const TypeRef& type) {
   return false;
 }
 
+static const Entity* LookupTypeParamEntity(const ScopeContext& ctx,
+                                           const TypePath& path) {
+  if (path.empty()) {
+    return nullptr;
+  }
+  const auto key = IdKeyOf(path.back());
+  for (const auto& scope : ctx.scopes) {
+    const auto it = scope.find(key);
+    if (it == scope.end()) {
+      continue;
+    }
+    const auto& entity = it->second;
+    if (entity.kind == EntityKind::Type &&
+        !entity.type_param_class_bounds.empty() &&
+        (!entity.target_opt.has_value() || IdEq(*entity.target_opt, path.back()))) {
+      return &entity;
+    }
+  }
+  return nullptr;
+}
+
 }  // namespace
 
 std::vector<const ast::MethodDecl*> RecordMethods(
@@ -690,6 +711,7 @@ StaticMethodLookup LookupMethodStatic(const ScopeContext& ctx,
   const auto* method_type_args = AppliedTypeArgs(*lookup_base);
   const ast::RecordDecl* record = nullptr;
   std::vector<ast::ClassPath> implements;
+  bool type_param_bound_lookup = false;
   if (method_type_path) {
     const ast::Path syntax_path(method_type_path->begin(),
                                 method_type_path->end());
@@ -705,6 +727,13 @@ StaticMethodLookup LookupMethodStatic(const ScopeContext& ctx,
                      std::get_if<ast::ModalDecl>(&it->second)) {
         implements = modal_decl->implements;
       }
+    } else if (const auto* type_param =
+                   LookupTypeParamEntity(ctx, *method_type_path)) {
+      implements.reserve(type_param->type_param_class_bounds.size());
+      for (const auto& bound : type_param->type_param_class_bounds) {
+        implements.push_back(bound.class_path);
+      }
+      type_param_bound_lookup = !implements.empty();
     }
   }
 
@@ -736,7 +765,7 @@ StaticMethodLookup LookupMethodStatic(const ScopeContext& ctx,
       return result;
     }
     for (const auto& entry : table.methods) {
-      if (!entry.method || !entry.method->body_opt) {
+      if (!entry.method || (!type_param_bound_lookup && !entry.method->body_opt)) {
         continue;
       }
       if (!IdEq(entry.method->name, name)) {

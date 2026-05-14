@@ -658,7 +658,7 @@ public procedure catalogCompiledSymbolsExecute(context: Context) -> bool {
         runModulesExternBlocksReference() &&
         runNamesQualifiedResolutionReference() &&
         runNamesVisibilityReference() &&
-        runParallelismParallelBlocksReference() &&
+        runParallelismParallelBlocksReference(context) &&
         runParsingItemSequencingReference() &&
         runParsingRecoverySpecimensReference() &&
         runParsingTerminatorsReference() &&

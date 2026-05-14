@@ -554,6 +554,8 @@ ExprTypeResult TypeParallelExpr(const ScopeContext& ctx,
                                        parallel_type_place, &parallel_env);
   if (!body_info.ok) {
     result.diag_id = body_info.diag_id;
+    result.diag_detail = body_info.diag_detail;
+    result.diag_span = body_info.diag_span;
     return result;
   }
 

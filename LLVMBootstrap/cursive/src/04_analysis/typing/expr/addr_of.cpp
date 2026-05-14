@@ -126,6 +126,8 @@ ExprTypeResult TypeAddressOfExprImpl(const ScopeContext& ctx,
         const auto base_place = TypePlace(ctx, type_ctx, index->base, env);
         if (!base_place.ok) {
           result.diag_id = base_place.diag_id;
+          result.diag_detail = base_place.diag_detail;
+          result.diag_span = base_place.diag_span;
           return result;
         }
         const auto stripped = StripPerm(base_place.type);
@@ -136,10 +138,20 @@ ExprTypeResult TypeAddressOfExprImpl(const ScopeContext& ctx,
           if (!has_const_index) {
             if (!type_ctx.contract_dynamic) {
               result.diag_id = "Index-Array-NonConst-Err";
+              result.diag_detail =
+                  "fixed-size array index expression is not compile-time constant; "
+                  "runtime fixed-array indexing requires [[dynamic]], or use a slice "
+                  "for runtime indexing";
+              result.diag_span = index->index
+                                     ? std::optional<core::Span>(index->index->span)
+                                     : std::nullopt;
               return result;
             }
           } else if (*index_const.value >= array->length) {
             result.diag_id = "Index-Array-OOB-Err";
+            result.diag_span = index->index
+                                   ? std::optional<core::Span>(index->index->span)
+                                   : std::nullopt;
             return result;
           }
           TypeRef out_type = array->element;
@@ -158,6 +170,8 @@ ExprTypeResult TypeAddressOfExprImpl(const ScopeContext& ctx,
   const auto place = TypePlace(ctx, type_ctx, expr.place, env);
   if (!place.ok) {
     result.diag_id = place.diag_id;
+    result.diag_detail = place.diag_detail;
+    result.diag_span = place.diag_span;
     return result;
   }
 

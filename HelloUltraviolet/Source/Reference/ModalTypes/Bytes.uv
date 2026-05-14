@@ -9,12 +9,30 @@ internal procedure byteReferenceAt(text: string@View, index: usize) -> u8 {
     return data[index]
 }
 
+internal procedure bytesReferenceLayoutMatches() -> bool {
+    return sizeof(bytes@View) == 2usize * sizeof(usize) &&
+        sizeof(bytes@Managed) == 3usize * sizeof(usize) &&
+        sizeof(bytes) >= sizeof(bytes@View) &&
+        alignof(bytes@View) == alignof(usize) &&
+        alignof(bytes@Managed) == alignof(usize)
+}
+
 /// Exercises the ModalTypes Bytes reference surface.
 public procedure runModalTypesBytesReference() -> bool {
     let text: string@View = "bytes"
+    let empty_text: string@View = ""
     let view: bytes@View = bytes::view_string(text)
+    let empty_view: bytes@View = bytes::view_string(empty_text)
     let data: const [u8] = bytes::as_slice(view)
+    let octets: [u8; 3] = [3u8, 5u8, 8u8]
+    let octet_slice: const [u8] = octets[..]
+    let octet_view: bytes@View = bytes::view(octet_slice)
+    let octet_data: const [u8] = bytes::as_slice(octet_view)
     return string::length(text) == 5usize &&
+        bytes::length(view) == 5usize &&
+        bytes::is_empty(empty_view) &&
         data[0usize] == 98u8 &&
-        byteReferenceAt(text, 4usize) == 115u8
+        byteReferenceAt(text, 4usize) == 115u8 &&
+        octet_data[2usize] == 8u8 &&
+        bytesReferenceLayoutMatches()
 }

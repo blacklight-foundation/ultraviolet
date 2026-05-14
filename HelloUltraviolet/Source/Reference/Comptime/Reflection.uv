@@ -1,7 +1,101 @@
 //! Reference specimens for Comptime / Reflection.
 
+[[reflect]]
+internal record ComptimeReflectedRecord {
+    internal first: i32
+    internal second: bool
+}
+
+[[reflect]]
+internal enum ComptimeReflectedEnum {
+    Empty
+    Value(i32)
+    Named {
+        value: usize
+    }
+}
+
+[[reflect]]
+internal modal ComptimeReflectedModal {
+    @Ready {
+        internal value: i32
+    }
+
+    @Done {}
+}
+
+internal class ComptimeReflectedClass {}
+
+internal record ComptimeReflectedImplementation <: ComptimeReflectedClass {
+    internal value: i32
+}
+
 /// Exercises the Comptime Reflection reference surface.
 public procedure runComptimeReflectionReference() -> bool {
-    let reference: ComptimeReference = comptimeReference(true, false, false)
-    return comptimeReferenceIsCovered(reference)
+    let record_category_ok: bool =
+        comptime { introspect~>category(Type::<ComptimeReflectedRecord>) == TypeCategory::Record }
+    let enum_category_ok: bool =
+        comptime { introspect~>category(Type::<ComptimeReflectedEnum>) == TypeCategory::Enum }
+    let modal_category_ok: bool =
+        comptime { introspect~>category(Type::<ComptimeReflectedModal>) == TypeCategory::Modal }
+    let implements_ok: bool = comptime { introspect~>implements_form(
+        Type::<ComptimeReflectedImplementation>,
+        Type::<ComptimeReflectedClass>
+    ) }
+    let type_name_ok: bool =
+        comptime { introspect~>type_name(Type::<ComptimeReflectedRecord>) != "" }
+    let unqualified_module_path_ok: bool = comptime { introspect~>module_path(
+        Type::<ComptimeReflectedRecord>
+    ) == "" }
+    let qualified_module_path_ok: bool = comptime { introspect~>module_path(
+        Type::<HelloUltraviolet::Reference::Comptime::ComptimeReflectedRecord>
+    ) == diagnostics~>current_module() }
+    let span_line_ok: bool = comptime { diagnostics~>current_span().start_line > 0usize }
+
+    var reflected_field_count: usize = 0usize
+    var named_field_count: usize = 0usize
+    comptime loop field in introspect~>fields(Type::<ComptimeReflectedRecord>) {
+        reflected_field_count = reflected_field_count + 1usize
+        named_field_count = named_field_count +
+            comptime if field.name == "first" { 1usize } else { 0usize }
+        named_field_count = named_field_count +
+            comptime if field.name == "second" { 1usize } else { 0usize }
+    }
+
+    var reflected_variant_count: usize = 0usize
+    var named_variant_count: usize = 0usize
+    comptime loop variant in introspect~>variants(Type::<ComptimeReflectedEnum>) {
+        reflected_variant_count = reflected_variant_count + 1usize
+        named_variant_count = named_variant_count +
+            comptime if variant.name == "Empty" { 1usize } else { 0usize }
+        named_variant_count = named_variant_count +
+            comptime if variant.name == "Value" { 1usize } else { 0usize }
+        named_variant_count = named_variant_count +
+            comptime if variant.name == "Named" { 1usize } else { 0usize }
+    }
+
+    var reflected_state_count: usize = 0usize
+    var named_state_count: usize = 0usize
+    comptime loop state in introspect~>states(Type::<ComptimeReflectedModal>) {
+        reflected_state_count = reflected_state_count + 1usize
+        named_state_count = named_state_count +
+            comptime if state.name == "Ready" { 1usize } else { 0usize }
+        named_state_count = named_state_count +
+            comptime if state.name == "Done" { 1usize } else { 0usize }
+    }
+
+    return record_category_ok &&
+        enum_category_ok &&
+        modal_category_ok &&
+        implements_ok &&
+        type_name_ok &&
+        unqualified_module_path_ok &&
+        qualified_module_path_ok &&
+        span_line_ok &&
+        reflected_field_count == 2usize &&
+        named_field_count == 2usize &&
+        reflected_variant_count == 3usize &&
+        named_variant_count == 3usize &&
+        reflected_state_count == 2usize &&
+        named_state_count == 2usize
 }

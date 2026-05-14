@@ -29,10 +29,17 @@ public procedure runPolymorphismDynamicClassObjectsReference() -> bool {
     let default_owner: DynamicDefaultOwner = DynamicDefaultOwner { value: 43 }
     let dynamic_default_owner: $DynamicDefaultClass =
         default_owner as $DynamicDefaultClass
+    let class_owner: ClassOwner = ClassOwner { value: 29, inspected_value: 31 }
+    let dynamic_super_owner: $ClassReadable = class_owner as $ClassReadable
+    let dynamic_layout_is_pointer_pair: bool =
+        sizeof($DynamicReadableClass) == 2usize * sizeof(usize) &&
+            alignof($DynamicReadableClass) == alignof(usize)
     let reference: PolymorphismReference = polymorphismReference(
-        6usize,
+        10usize,
         dynamic_owner~>readDynamicValue() == 41 &&
-            dynamic_default_owner~>defaultDynamicValue() == 47,
+            dynamic_default_owner~>defaultDynamicValue() == 47 &&
+            dynamic_super_owner~>classValue() == 11 &&
+            dynamic_layout_is_pointer_pair,
         true
     )
     return polymorphismReferenceIsCovered(reference) && reference.dynamically_dispatchable

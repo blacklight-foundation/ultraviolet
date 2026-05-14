@@ -1,7 +1,34 @@
 //! Reference specimens for Parallelism / Spawn.
 
+internal procedure namedSpawnReference(context: Context) -> i32 {
+    let affinity: CpuSet = 1u64
+    let priority: Priority = Priority::High
+    return parallel context~>inline() [name: "spawn-reference"] {
+        let handle: Spawned<i32> = spawn [
+            name: "spawn-worker",
+            affinity: affinity,
+            priority: priority
+        ] {
+            40 + 2
+        }
+        wait handle
+    }
+}
+
+internal procedure nestedSpawnReference(context: Context) -> i32 {
+    return parallel context~>inline() {
+        let first: Spawned<i32> = spawn {
+            10
+        }
+        let second: Spawned<i32> = spawn {
+            11
+        }
+        (wait first) + (wait second)
+    }
+}
+
 /// Exercises the Parallelism Spawn reference surface.
-public procedure runParallelismSpawnReference() -> bool {
-    let reference: ParallelReference = parallelReference(1usize, true, true)
-    return parallelReferenceIsCovered(reference)
+public procedure runParallelismSpawnReference(context: Context) -> bool {
+    return namedSpawnReference(context) == 42 &&
+        nestedSpawnReference(context) == 21
 }

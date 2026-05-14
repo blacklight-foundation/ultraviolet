@@ -43,8 +43,11 @@
 #include "04_analysis/memory/regions.h"
 #include "04_analysis/typing/expr/call.h"
 #include "04_analysis/typing/expr/path.h"
+#include "04_analysis/typing/subtyping.h"
+#include "04_analysis/typing/type_equiv.h"
 #include "04_analysis/typing/type_expr.h"
 #include "04_analysis/typing/type_decls.h"
+#include "04_analysis/typing/type_stmt.h"
 
 namespace cursive::analysis {
 
@@ -152,6 +155,154 @@ ProcedureDeclResult TypeDeriveTargetDeclBody(const ScopeContext& ctx,
             ? "procedure body typing failed without statement-level diagnostic"
             : body_result.diag_detail;
   }
+  return result;
+}
+
+bool ComptimeProcedureHasExplicitReturn(const ast::Block& block) {
+  auto stmt_has_return = [&](const auto& self, const ast::Stmt& stmt) -> bool {
+    return std::visit(
+        [&](const auto& node) -> bool {
+          using T = std::decay_t<decltype(node)>;
+          if constexpr (std::is_same_v<T, ast::ReturnStmt>) {
+            return true;
+          } else if constexpr (std::is_same_v<T, ast::UnsafeBlockStmt> ||
+                               std::is_same_v<T, ast::RegionStmt> ||
+                               std::is_same_v<T, ast::FrameStmt> ||
+                               std::is_same_v<T, ast::ComptimeStmt> ||
+                               std::is_same_v<T, ast::KeyBlockStmt>) {
+            return node.body && ComptimeProcedureHasExplicitReturn(*node.body);
+          } else {
+            return false;
+          }
+        },
+        stmt);
+  };
+
+  return !block.stmts.empty() &&
+         stmt_has_return(stmt_has_return, block.stmts.back());
+}
+
+void AddComptimeCapabilityBindings(TypeEnv& env,
+                                   const ast::AttributeList& attr_list) {
+  if (env.scopes.empty()) {
+    env.scopes.emplace_back();
+  }
+  auto& scope = env.scopes.back();
+  scope[IdKeyOf("introspect")] =
+      TypeBinding{ast::Mutability::Let, MakeTypePath({"Introspect"})};
+  scope[IdKeyOf("diagnostics")] =
+      TypeBinding{ast::Mutability::Let, MakeTypePath({"ComptimeDiagnostics"})};
+  if (HasAttribute(attr_list, attrs::kEmit)) {
+    scope[IdKeyOf("emitter")] =
+        TypeBinding{ast::Mutability::Let, MakeTypePath({"TypeEmitter"})};
+  }
+  if (HasAttribute(attr_list, attrs::kFiles)) {
+    scope[IdKeyOf("files")] =
+        TypeBinding{ast::Mutability::Let, MakeTypePath({"ProjectFiles"})};
+  }
+}
+
+ProcedureDeclResult TypeComptimeProcedureDeclBody(
+    const ScopeContext& ctx,
+    const ast::ComptimeProcedureDecl& decl,
+    const ast::ModulePath& module_path,
+    core::DiagnosticStream& diags) {
+  ProcedureDeclResult result;
+  result.ok = true;
+
+  if (!decl.body) {
+    return result;
+  }
+
+  ScopeContext proc_ctx = ctx;
+  proc_ctx.scopes = BindTypeParams(ctx, decl.generic_params);
+  proc_ctx.diagnostics = &diags;
+
+  const auto sig = BuildProcedureSignature(proc_ctx, decl.params,
+                                           decl.return_type_opt);
+  if (!sig.ok) {
+    result.ok = false;
+    result.diag_id = sig.diag_id;
+    return result;
+  }
+
+  const bool is_unit = TypeEquiv(sig.return_type, MakeTypePrim("()")).equiv;
+  if (!is_unit && !ComptimeProcedureHasExplicitReturn(*decl.body)) {
+    SPEC_RULE("WF-ProcBody-ExplicitReturn-Err");
+    SPEC_RULE("ProcReturn-Missing-Err");
+    result.ok = false;
+    result.diag_id = "E-TYP-1507";
+    return result;
+  }
+
+  TypeEnv env;
+  env.scopes.emplace_back();
+  for (const auto& binding_pair : sig.bindings) {
+    TypeBinding binding;
+    binding.mut = ast::Mutability::Let;
+    binding.type = binding_pair.second;
+    binding.storage_type = binding_pair.second;
+    binding.provenance_kind = BindingProvenanceSeedKind::Param;
+    env.scopes.back()[IdKeyOf(binding_pair.first)] = std::move(binding);
+  }
+  AddComptimeCapabilityBindings(env, decl.attrs);
+
+  StmtTypeContext type_ctx;
+  type_ctx.return_type = sig.return_type;
+  type_ctx.diags = &diags;
+  type_ctx.env_ref = &env;
+  if (decl.contract.has_value()) {
+    type_ctx.contract = &*decl.contract;
+  }
+
+  ExprTypeFn type_expr = [&](const ast::ExprPtr& inner) {
+    return TypeExpr(proc_ctx, type_ctx, inner, env);
+  };
+  IdentTypeFn type_ident = [&](std::string_view name) -> ExprTypeResult {
+    return expr::TypeIdentifierExprImpl(
+        proc_ctx, ast::IdentifierExpr{std::string(name)}, env);
+  };
+  PlaceTypeFn type_place = [&](const ast::ExprPtr& inner) {
+    return TypePlace(proc_ctx, type_ctx, inner, env);
+  };
+
+  const auto body_result =
+      TypeBlock(proc_ctx, type_ctx, *decl.body, env, type_expr, type_ident,
+                type_place, &env);
+  if (!body_result.ok) {
+    result.ok = false;
+    result.diag_id = body_result.diag_id.has_value()
+                         ? body_result.diag_id
+                         : std::optional<std::string_view>{"E-TYP-1530"};
+    result.diag_span = body_result.diag_span;
+    result.diag_detail =
+        body_result.diag_detail.empty()
+            ? "compile-time procedure body typing failed without statement-level diagnostic"
+            : body_result.diag_detail;
+    return result;
+  }
+
+  if (body_result.type) {
+    const auto sub = Subtyping(proc_ctx, body_result.type, sig.return_type);
+    if (!sub.ok || !sub.subtype) {
+      SPEC_RULE("Return-Type-Err");
+      result.ok = false;
+      result.diag_id = sub.diag_id.has_value()
+                           ? sub.diag_id
+                           : std::optional<std::string_view>{"E-SEM-3161"};
+      return result;
+    }
+  }
+
+  const auto bind_result =
+      BindCheckBody(proc_ctx, module_path, decl.params, decl.body, std::nullopt);
+  if (!bind_result.ok) {
+    result.ok = false;
+    result.diag_id = bind_result.diag_id;
+    result.diag_span = bind_result.span;
+    return result;
+  }
+
   return result;
 }
 
@@ -684,9 +835,8 @@ DeclTypingResult DeclTypingModules(ScopeContext& ctx,
                              precheck->diag_detail);
                 return;
               }
-              const auto proc = AsProcedureDecl(node);
-              const auto res = ::cursive::analysis::TypeProcedureDecl(
-                  ctx, proc, module.path, result.diags);
+              const auto res = TypeComptimeProcedureDeclBody(
+                  ctx, node, module.path, result.diags);
               if (!res.ok) {
                 const auto diag_span =
                     res.diag_span.has_value()

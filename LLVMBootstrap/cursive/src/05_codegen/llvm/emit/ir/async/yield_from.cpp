@@ -14,6 +14,7 @@ void IRInstructionVisitor::operator()(const IRYieldFrom &y) const
   {
     async_type = active_ctx->LookupValueType(y.source);
   }
+  const analysis::ScopeContext &scope = BuildScope(active_ctx);
 
   llvm::Type *expected = ExpectedLLVMType(y.result);
   analysis::TypeRef target_type =
@@ -70,7 +71,7 @@ void IRInstructionVisitor::operator()(const IRYieldFrom &y) const
     return out;
   };
 
-  const auto source_sig = analysis::GetAsyncSig(async_type);
+  const auto source_sig = analysis::AsyncSigOf(scope, async_type);
   if (!source_sig)
   {
     emitter.SetTempValue(
@@ -120,12 +121,13 @@ void IRInstructionVisitor::operator()(const IRYieldFrom &y) const
   }
 
   const LowerCtx::AsyncProcInfo &info = *async_state->info;
-  const analysis::ScopeContext &scope = BuildScope(active_ctx);
   const AsyncStateDiscs source_discs =
       LoweredAsyncStateDiscs(scope, *source_sig);
   const std::uint64_t suspended_disc = source_discs.suspended;
   const std::uint64_t completed_disc = source_discs.completed;
   const std::optional<std::uint64_t> failed_disc = source_discs.failed;
+  const AsyncStateDiscs outer_discs =
+      LoweredAsyncStateDiscs(scope, info.async_type);
 
   const std::string sym = std::string(func->getName());
   const LowerCtx::ProcSigInfo *proc_sig =
@@ -144,6 +146,23 @@ void IRInstructionVisitor::operator()(const IRYieldFrom &y) const
     if (value->getType() == dst_ty)
     {
       return value;
+    }
+    llvm::Type *dst_ptr_ty = llvm::PointerType::get(dst_ty, 0);
+    if (value->getType() == dst_ptr_ty)
+    {
+      return builder.CreateLoad(dst_ty, value);
+    }
+    if (value->getType()->isPointerTy())
+    {
+      llvm::Value *typed_ptr = CoerceTo(&builder, value, dst_ptr_ty);
+      if (!typed_ptr)
+      {
+        typed_ptr = builder.CreateBitCast(value, dst_ptr_ty);
+      }
+      if (typed_ptr)
+      {
+        return builder.CreateLoad(dst_ty, typed_ptr);
+      }
     }
     if (llvm::Value *coerced = CoerceTo(&builder, value, dst_ty))
     {
@@ -525,7 +544,7 @@ void IRInstructionVisitor::operator()(const IRYieldFrom &y) const
       llvm::Type *disc_ty = outer_struct->getElementType(0);
       llvm::Value *disc_ptr = builder.CreateStructGEP(outer_struct, outer_slot, 0);
       builder.CreateStore(
-          llvm::ConstantInt::get(disc_ty, suspended_disc),
+          llvm::ConstantInt::get(disc_ty, outer_discs.suspended),
           disc_ptr);
 
       llvm::Value *payload_i8 = CreateTaggedPayloadI8Ptr(
@@ -891,6 +910,10 @@ void IRInstructionVisitor::operator()(const IRYieldFrom &y) const
   builder.CreateBr(cont_bb);
 
   builder.SetInsertPoint(cont_bb);
+  if (info.is_resume && async_state->resume_switch)
+  {
+    async_state->emitting_resume_prelude = false;
+  }
   llvm::Value *result_value = nullptr;
   if (result_slot && expected && !expected->isVoidTy())
   {

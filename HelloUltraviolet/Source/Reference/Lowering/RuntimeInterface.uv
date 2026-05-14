@@ -1,7 +1,21 @@
 //! Reference specimens for Lowering / RuntimeInterface.
 
+internal procedure runtimeStringByteAt(text: string@View, index: usize) -> u8 {
+    if index >= string::length(text) {
+        return 0u8
+    }
+    let view: bytes@View = bytes::view_string(text)
+    let data: const [u8] = bytes::as_slice(view)
+    return data[index]
+}
+
+internal procedure runtimeStringChecksum(text: string@View) -> usize {
+    return string::length(text) +
+        runtimeStringByteAt(text, 0usize) as usize +
+        runtimeStringByteAt(text, 1usize) as usize
+}
+
 /// Exercises the Lowering RuntimeInterface reference surface.
 public procedure runLoweringRuntimeInterfaceReference() -> bool {
-    let reference: LoweringReference = loweringReference(2usize, true, true)
-    return loweringReferenceIsCovered(reference)
+    return runtimeStringChecksum("uv") == 237usize
 }

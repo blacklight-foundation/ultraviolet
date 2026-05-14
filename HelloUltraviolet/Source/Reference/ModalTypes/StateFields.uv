@@ -1,7 +1,33 @@
 //! Reference specimens for ModalTypes / StateFields.
 
+internal modal ModalStateFieldReference {
+    @Configured {
+        internal count: i32
+        internal label: string@View
+        internal is_enabled: bool
+    }
+}
+
+internal procedure modalStateFieldScore(reference: ModalStateFieldReference@Configured) -> usize {
+    let label_length: usize = string::length(reference.label)
+    if reference.is_enabled {
+        return label_length + reference.count as usize
+    }
+    return label_length
+}
+
 /// Exercises the ModalTypes StateFields reference surface.
 public procedure runModalTypesStateFieldsReference() -> bool {
     let reference: ModalReference@Open = ModalReference@Open { value: 11 }
-    return reference.value == 11
+    let configured: ModalStateFieldReference@Configured =
+        ModalStateFieldReference@Configured {
+            count: 5,
+            label: "field",
+            is_enabled: true
+        }
+    return reference.value == 11 &&
+        configured.count == 5 &&
+        configured.label == "field" &&
+        configured.is_enabled &&
+        modalStateFieldScore(configured) == 10usize
 }

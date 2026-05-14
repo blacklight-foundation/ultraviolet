@@ -1,10 +1,32 @@
 //! Reference specimens for ModalTypes / Widening.
 
+internal modal ModalWideningReference {
+    @Empty {
+    }
+
+    @Small {
+        internal value: i32
+    }
+}
+
+internal procedure widenedModalValue(reference: ModalWideningReference) -> i32 {
+    return if reference is {
+        @Empty {
+            0
+        }
+        @Small { value } {
+            value
+        }
+    }
+}
+
 /// Exercises the ModalTypes Widening reference surface.
 public procedure runModalTypesWideningReference() -> bool {
     let opened: ModalReference@Open = ModalReference@Open { value: 31 }
-    let widened: ModalReferenceValue = opened
-    return if widened is {
+    let widened_union: ModalReferenceValue = opened
+    let small: ModalWideningReference@Small = ModalWideningReference@Small { value: 37 }
+    let widened_modal: ModalWideningReference = widen small
+    let matched_union: bool = if widened_union is {
         @Open { value } {
             value == 31
         }
@@ -12,4 +34,6 @@ public procedure runModalTypesWideningReference() -> bool {
             false
         }
     }
+    return matched_union &&
+        widenedModalValue(widened_modal) == 37
 }

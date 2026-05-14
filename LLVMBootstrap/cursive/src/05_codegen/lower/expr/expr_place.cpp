@@ -675,7 +675,8 @@ IRPtr LowerWritePlaceImpl(const ast::Expr& place,
         } else if constexpr (std::is_same_v<T, ast::FieldAccessExpr>) {
           SPEC_RULE(allow_drop ? "Lower-WritePlace-Field"
                                : "LowerWriteSub-Field");
-          auto base_addr = LowerAddrOf(*node.base, ctx);
+          auto base_addr =
+              LowerAddrOf(*node.base, ctx, AddressUseKind::TransientNoEscape);
 
           IRValue ptr_value = ctx.FreshTempValue("addr_of_field");
           if (ctx.expr_type) {
@@ -723,7 +724,8 @@ IRPtr LowerWritePlaceImpl(const ast::Expr& place,
         } else if constexpr (std::is_same_v<T, ast::TupleAccessExpr>) {
           SPEC_RULE(allow_drop ? "Lower-WritePlace-Tuple"
                                : "LowerWriteSub-Tuple");
-          auto base_addr = LowerAddrOf(*node.base, ctx);
+          auto base_addr =
+              LowerAddrOf(*node.base, ctx, AddressUseKind::TransientNoEscape);
 
           IRValue ptr_value = ctx.FreshTempValue("addr_of_tuple");
           if (ctx.expr_type) {
@@ -768,7 +770,8 @@ IRPtr LowerWritePlaceImpl(const ast::Expr& place,
           return node.expr ? LowerWritePlaceImpl(*node.expr, value, ctx, allow_drop)
                            : EmptyIR();
         } else if constexpr (std::is_same_v<T, ast::IndexAccessExpr>) {
-          auto base_addr = LowerAddrOf(*node.base, ctx);
+          auto base_addr =
+              LowerAddrOf(*node.base, ctx, AddressUseKind::TransientNoEscape);
 
           analysis::TypeRef base_type;
           if (ctx.expr_type) {

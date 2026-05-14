@@ -15,6 +15,16 @@ internal procedure expectedReturnGeneric<TValue>(move value: TValue) -> TValue {
     return move value
 }
 
+internal procedure pairGeneric<TFirst; TSecond>(
+    first: TFirst,
+    second: TSecond
+) -> (TFirst, TSecond)
+|: Bitcopy(TFirst)
+Bitcopy(TSecond)
+{
+    return (first, second)
+}
+
 /// Exercises the Polymorphism GenericProcedures reference surface.
 public procedure runPolymorphismGenericProceduresReference() -> bool {
     let explicit_value: i32 = selectGeneric<
@@ -23,9 +33,14 @@ public procedure runPolymorphismGenericProceduresReference() -> bool {
     >(41, true)
     let inferred_value: i32 = identityGeneric(43)
     let expected_return_value: i32 = expectedReturnGeneric(47)
+    let pair_value: (i32, bool) = pairGeneric(53, true)
     let reference: PolymorphismReference = polymorphismReference(
-        4usize,
-        explicit_value == 41 && inferred_value == 43 && expected_return_value == 47,
+        6usize,
+        explicit_value == 41 &&
+            inferred_value == 43 &&
+            expected_return_value == 47 &&
+            pair_value.0 == 53 &&
+            pair_value.1,
         false
     )
     return polymorphismReferenceIsCovered(reference)

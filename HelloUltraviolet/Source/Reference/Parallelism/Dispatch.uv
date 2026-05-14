@@ -1,7 +1,34 @@
 //! Reference specimens for Parallelism / Dispatch.
 
+internal procedure reducingDispatchReference(context: Context) -> i32 {
+    return parallel context~>inline() {
+        dispatch index in 0usize..4usize [reduce: +, chunk: 2usize, ordered] {
+            index as i32
+        }
+    }
+}
+
+internal procedure keyedDispatchReference(context: Context) -> i32 {
+    let partition_key: shared i32 = 7
+    return parallel context~>inline() {
+        dispatch index in 0usize..4usize key partition_key read [reduce: +, ordered] {
+            index as i32
+        }
+    }
+}
+
+internal procedure nonReducingDispatchReference(context: Context) -> bool {
+    return parallel context~>inline() {
+        dispatch index in 0usize..2usize [ordered] {
+            let observed: usize = index
+        }
+        true
+    }
+}
+
 /// Exercises the Parallelism Dispatch reference surface.
-public procedure runParallelismDispatchReference() -> bool {
-    let reference: ParallelReference = parallelReference(4usize, true, false)
-    return parallelReferenceIsCovered(reference)
+public procedure runParallelismDispatchReference(context: Context) -> bool {
+    return reducingDispatchReference(context) == 6 &&
+        keyedDispatchReference(context) == 6 &&
+        nonReducingDispatchReference(context)
 }

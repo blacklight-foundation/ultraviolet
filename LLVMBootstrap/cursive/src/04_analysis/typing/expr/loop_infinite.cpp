@@ -288,6 +288,8 @@ ExprTypeResult TypeLoopInfiniteExpr(const ScopeContext& ctx,
                                        loop_type_expr, loop_type_ident, loop_type_place);
   if (!body_info.ok) {
     result.diag_id = body_info.diag_id;
+    result.diag_detail = body_info.diag_detail;
+    result.diag_span = body_info.diag_span;
     return result;
   }
 

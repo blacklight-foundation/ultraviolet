@@ -1,7 +1,28 @@
 //! Reference specimens for Keys / AcquisitionBlocks.
 
+internal procedure readAndWriteKeyBlockValue() -> i32 {
+    var shared_value: shared i32 = 1
+    var observed: i32 = 0
+    #shared_value read {
+        observed = shared_value + 0
+    }
+    #shared_value write {
+        shared_value = observed + 1
+    }
+    return shared_value + 0
+}
+
+internal procedure orderedKeyBlockValue() -> i32 {
+    var values: shared [i32; 4] = [1, 2, 3, 4]
+    var observed: i32 = 0
+    #values[0usize], values[1usize] ordered read {
+        observed = values[0usize] + values[1usize]
+    }
+    return observed
+}
+
 /// Exercises the Keys AcquisitionBlocks reference surface.
 public procedure runKeysAcquisitionBlocksReference() -> bool {
-    let reference: KeyReference = keyReference(4usize, true, true)
-    return keyReferenceIsCovered(reference)
+    return readAndWriteKeyBlockValue() == 2 &&
+        orderedKeyBlockValue() == 3
 }

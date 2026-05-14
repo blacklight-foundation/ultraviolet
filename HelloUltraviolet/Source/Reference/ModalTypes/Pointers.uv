@@ -1,33 +1,29 @@
 //! Reference specimens for ModalTypes / Pointers.
 
-internal enum PointerReferenceState {
-    Null
-    Valid
-    Expired
-    Raw
+internal procedure safePointerReferenceRead() -> i32 {
+    var value: i32 = 41
+    let pointer: Ptr<i32> = &value
+    return *pointer
 }
 
-internal procedure pointerReferenceCanDereference(state: PointerReferenceState) -> bool {
-    return if state is {
-        PointerReferenceState::Null {
-            false
-        }
-        PointerReferenceState::Valid {
-            true
-        }
-        PointerReferenceState::Expired {
-            false
-        }
-        PointerReferenceState::Raw {
-            false
-        }
-    }
+internal procedure rawPointerReferenceIdentity(pointer: *mut i32) -> *mut i32 {
+    return pointer
+}
+
+internal procedure pointerReferenceLayoutMatches() -> bool {
+    return sizeof(Ptr<i32>) == sizeof(usize) &&
+        alignof(Ptr<i32>) == alignof(usize) &&
+        sizeof(Ptr<i32>@Null) == sizeof(usize) &&
+        sizeof(Ptr<i32>@Valid) == sizeof(usize) &&
+        sizeof(*imm i32) == sizeof(usize) &&
+        sizeof(*mut i32) == sizeof(usize)
 }
 
 /// Exercises the ModalTypes Pointers reference surface.
 public procedure runModalTypesPointersReference() -> bool {
-    return !pointerReferenceCanDereference(PointerReferenceState::Null) &&
-        pointerReferenceCanDereference(PointerReferenceState::Valid) &&
-        !pointerReferenceCanDereference(PointerReferenceState::Expired) &&
-        !pointerReferenceCanDereference(PointerReferenceState::Raw)
+    let null_pointer: Ptr<i32> = Ptr::null()
+    let raw_pointer: *mut i32 = null
+    return safePointerReferenceRead() == 41 &&
+        rawPointerReferenceIdentity(raw_pointer) == raw_pointer &&
+        pointerReferenceLayoutMatches()
 }

@@ -1,7 +1,23 @@
 //! Reference specimens for Parallelism / PanicHandling.
 
+internal procedure reducedEmptyDispatchPanicReference(context: Context) -> i32 {
+    return parallel context~>inline() {
+        dispatch index in 0usize..0usize [reduce: +] {
+            index as i32
+        }
+    }
+}
+
+internal procedure nonPanickingParallelJoinReference(context: Context) -> i32 {
+    return parallel context~>inline() {
+        let handle: Spawned<i32> = spawn {
+            13
+        }
+        wait handle
+    }
+}
+
 /// Exercises the Parallelism PanicHandling reference surface.
-public procedure runParallelismPanicHandlingReference() -> bool {
-    let reference: ParallelReference = parallelReference(2usize, true, true)
-    return parallelReferenceIsCovered(reference) && reference.propagates_panic
+public procedure runParallelismPanicHandlingReference(context: Context) -> bool {
+    return nonPanickingParallelJoinReference(context) == 13
 }

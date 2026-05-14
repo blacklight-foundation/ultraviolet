@@ -1419,7 +1419,7 @@ public procedure tuplePatternArityExpectedDiagnosticFileMatches(context: Context
     return expectedDiagnosticFileMatches(
         context,
         "HelloUltraviolet/Fixtures/RejectedSource/Patterns/TuplePatternArity/Expected.uv",
-        "//! Expected diagnostic metadata for the TuplePatternArity rejected-source specimen.\n\nexpectedDiagnostic(\"\", \"rule.17.Pat-Tuple-R-Arity-Err\")\n"
+        "//! Expected diagnostic metadata for the TuplePatternArity rejected-source specimen.\n\nexpectedDiagnostic(\"E-TYP-1803\", \"rule.17.Pat-Tuple-R-Arity-Err\")\n"
     )
 }
 
