@@ -43,12 +43,12 @@ public procedure validatedStructuredParallelismParallelBlocksObligations() -> us
     ) {
         count = count + 1usize
     }
-    if acceptedObligationEntryMatches(
+    if rejectedSourceObligationEntryMatches(
         "rule.20.Dim3Const-Err",
         75439usize,
-        "HelloUltraviolet::Reference::Parallelism",
-        "runParallelismParallelBlocksReference",
-        "Source/Reference/Parallelism/ParallelBlocks.uv"
+        "HelloUltraviolet::Fixtures::RejectedSource",
+        "validatedParallelismRejectedSourceFixtureCount",
+        "Fixtures/RejectedSource/Parallelism/ParallelDim3Const/Source/Main.uv"
     ) {
         count = count + 1usize
     }
@@ -79,21 +79,21 @@ public procedure validatedStructuredParallelismParallelBlocksObligations() -> us
     ) {
         count = count + 1usize
     }
-    if acceptedObligationEntryMatches(
+    if rejectedSourceObligationEntryMatches(
         "rule.20.Parallel-Domain-Param-Err",
         75508usize,
-        "HelloUltraviolet::Reference::Parallelism",
-        "runParallelismParallelBlocksReference",
-        "Source/Reference/Parallelism/ParallelBlocks.uv"
+        "HelloUltraviolet::Fixtures::RejectedSource",
+        "validatedParallelismRejectedSourceFixtureCount",
+        "Fixtures/RejectedSource/Parallelism/ParallelDomainParameter/Source/Main.uv"
     ) {
         count = count + 1usize
     }
-    if acceptedObligationEntryMatches(
+    if rejectedSourceObligationEntryMatches(
         "requirement.20.ParallelCancelOptionType",
         75524usize,
-        "HelloUltraviolet::Reference::Parallelism",
-        "runParallelismParallelBlocksReference",
-        "Source/Reference/Parallelism/ParallelBlocks.uv"
+        "HelloUltraviolet::Fixtures::RejectedSource",
+        "validatedParallelismRejectedSourceFixtureCount",
+        "Fixtures/RejectedSource/Parallelism/ParallelCancelOptionType/Source/Main.uv"
     ) {
         count = count + 1usize
     }
@@ -178,12 +178,12 @@ public procedure validatedStructuredParallelismParallelBlocksObligations() -> us
     ) {
         count = count + 1usize
     }
-    if acceptedObligationEntryMatches(
+    if rejectedSourceObligationEntryMatches(
         "diagnostics.20.ParallelBlocks",
         75697usize,
-        "HelloUltraviolet::Reference::Parallelism",
-        "runParallelismParallelBlocksReference",
-        "Source/Reference/Parallelism/ParallelBlocks.uv"
+        "HelloUltraviolet::Fixtures::RejectedSource",
+        "validatedParallelismRejectedSourceFixtureCount",
+        "Fixtures/RejectedSource/Parallelism/ParallelDomainNotExecutionDomain/Source/Main.uv"
     ) {
         count = count + 1usize
     }

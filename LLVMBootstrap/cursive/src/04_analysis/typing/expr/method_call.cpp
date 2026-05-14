@@ -475,6 +475,106 @@ static TypeEquivResult TypeEquivInScope(const ScopeContext& ctx,
   return direct;
 }
 
+struct MethodAliasExpandResult {
+  bool ok = true;
+  std::optional<std::string_view> diag_id;
+  TypeRef type = nullptr;
+  bool expanded = false;
+};
+
+static const ast::TypeAliasDecl* LookupTypeAliasDeclForMethodCall(
+    const ScopeContext& ctx,
+    const TypePath& path) {
+  const auto direct = ctx.sigma.types.find(PathKeyOf(path));
+  if (direct != ctx.sigma.types.end()) {
+    return std::get_if<ast::TypeAliasDecl>(&direct->second);
+  }
+
+  if (path.size() != 1) {
+    return nullptr;
+  }
+
+  const auto resolved = ResolveTypeName(ctx, path[0]);
+  if (!resolved.has_value() || !resolved->origin_opt.has_value()) {
+    return nullptr;
+  }
+
+  ast::Path full_path = *resolved->origin_opt;
+  full_path.push_back(
+      resolved->target_opt.has_value() ? *resolved->target_opt : path[0]);
+  const auto resolved_it = ctx.sigma.types.find(PathKeyOf(full_path));
+  if (resolved_it == ctx.sigma.types.end()) {
+    return nullptr;
+  }
+  return std::get_if<ast::TypeAliasDecl>(&resolved_it->second);
+}
+
+static MethodAliasExpandResult ExpandTypeAliasForMethodCall(
+    const ScopeContext& ctx,
+    const TypePathType& applied) {
+  MethodAliasExpandResult result;
+  const auto* alias = LookupTypeAliasDeclForMethodCall(ctx, applied.path);
+  if (!alias) {
+    return result;
+  }
+
+  const auto lowered = LowerType(ctx, alias->type);
+  if (!lowered.ok) {
+    result.ok = false;
+    result.diag_id = lowered.diag_id;
+    return result;
+  }
+
+  if (!alias->generic_params.has_value()) {
+    if (!applied.generic_args.empty()) {
+      return result;
+    }
+    result.type = lowered.type;
+    result.expanded = true;
+    return result;
+  }
+
+  const auto& params = alias->generic_params->params;
+  if (applied.generic_args.size() > params.size()) {
+    return result;
+  }
+
+  const auto subst = BuildSubstitution(params, applied.generic_args);
+  result.type = InstantiateType(lowered.type, subst);
+  result.expanded = result.type != nullptr;
+  return result;
+}
+
+static MethodAliasExpandResult NormalizeAliasTopLevelForMethodCall(
+    const ScopeContext& ctx,
+    const TypeRef& type) {
+  MethodAliasExpandResult out;
+  out.type = type;
+  for (int i = 0; i < 16; ++i) {
+    if (!out.type) {
+      return out;
+    }
+    const auto* path = AppliedTypePath(*out.type);
+    const auto* args = AppliedTypeArgs(*out.type);
+    if (!path || !args) {
+      return out;
+    }
+    const auto expanded =
+        ExpandTypeAliasForMethodCall(ctx, TypePathType{*path, *args});
+    if (!expanded.ok) {
+      out.ok = false;
+      out.diag_id = expanded.diag_id;
+      return out;
+    }
+    if (!expanded.expanded) {
+      return out;
+    }
+    out.type = expanded.type;
+    out.expanded = true;
+  }
+  return out;
+}
+
 static bool BindTypeParams(const ScopeContext& ctx,
                            const std::vector<ast::TypeParam>& params,
                            const TypeRef& expected,
@@ -495,6 +595,22 @@ static bool BindTypeParams(const ScopeContext& ctx,
       const auto equiv = TypeEquiv(it->second, actual);
       return equiv.ok && equiv.equiv;
     }
+  }
+
+  const auto expected_alias = NormalizeAliasTopLevelForMethodCall(ctx, expected);
+  if (!expected_alias.ok) {
+    return false;
+  }
+  if (expected_alias.expanded && expected_alias.type) {
+    return BindTypeParams(ctx, params, expected_alias.type, actual, bindings);
+  }
+
+  const auto actual_alias = NormalizeAliasTopLevelForMethodCall(ctx, actual);
+  if (!actual_alias.ok) {
+    return false;
+  }
+  if (actual_alias.expanded && actual_alias.type) {
+    return BindTypeParams(ctx, params, expected, actual_alias.type, bindings);
   }
 
   return std::visit(
@@ -563,14 +679,31 @@ static bool BindTypeParams(const ScopeContext& ctx,
           }
           return BindTypeParams(ctx, params, node.ret, other->ret, bindings);
         } else if constexpr (std::is_same_v<T, TypePathType>) {
-          const auto* other = std::get_if<TypePathType>(&actual->node);
-          if (!other || !TypePathEqLocal(node.path, other->path) ||
-              node.generic_args.size() != other->generic_args.size()) {
+          const auto* other_path = AppliedTypePath(*actual);
+          const auto* other_args = AppliedTypeArgs(*actual);
+          if (!other_path || !other_args ||
+              !TypePathEqLocal(node.path, *other_path) ||
+              node.generic_args.size() != other_args->size()) {
             return false;
           }
           for (std::size_t i = 0; i < node.generic_args.size(); ++i) {
             if (!BindTypeParams(ctx, params, node.generic_args[i],
-                                other->generic_args[i], bindings)) {
+                                (*other_args)[i], bindings)) {
+              return false;
+            }
+          }
+          return true;
+        } else if constexpr (std::is_same_v<T, TypeApply>) {
+          const auto* other_path = AppliedTypePath(*actual);
+          const auto* other_args = AppliedTypeArgs(*actual);
+          if (!other_path || !other_args ||
+              !TypePathEqLocal(node.path, *other_path) ||
+              node.args.size() != other_args->size()) {
+            return false;
+          }
+          for (std::size_t i = 0; i < node.args.size(); ++i) {
+            if (!BindTypeParams(ctx, params, node.args[i], (*other_args)[i],
+                                bindings)) {
               return false;
             }
           }
@@ -1821,11 +1954,6 @@ ExprTypeResult TypeMethodCallExprImpl(const ScopeContext& ctx,
     if (IsReactorClassPath(dyn->path)) {
       const auto* method = LookupClassMethod(ctx, dyn->path, expr.name);
       if (method) {
-        if (!VTableEligible(*method)) {
-          SPEC_RULE("MethodCall-StaticDispatchOnly-OnDynamic");
-          result.diag_id = "E-TYP-2540";
-          return result;
-        }
         const auto recv_type = RecvTypeForReceiver(ctx, lookup_base, method->receiver, lower_type);
         if (!recv_type.ok) {
           result.diag_id = recv_type.diag_id;

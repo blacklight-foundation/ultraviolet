@@ -702,6 +702,11 @@ C0DynObject cursive_x3a_x3aruntime_x3a_x3acontext_x3a_x3agpu(
 C0DynObject cursive_x3a_x3aruntime_x3a_x3acontext_x3a_x3ainline(
   const C0Context* self);
 
+// Section 19.4 Reactor methods
+void* cursive_x3a_x3aruntime_x3a_x3areactor_x3a_x3aregister(
+  const C0DynObject* self,
+  const void* future);
+
 // Â§18.2 ExecutionDomain methods
 C0StringView cursive_x3a_x3aruntime_x3a_x3aexecution_x5fdomain_x3a_x3aname(
   const C0DynObject* self);

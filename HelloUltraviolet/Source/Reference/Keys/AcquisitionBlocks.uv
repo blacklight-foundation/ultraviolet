@@ -21,8 +21,33 @@ internal procedure orderedKeyBlockValue() -> i32 {
     return observed
 }
 
+internal procedure sharedArgumentReadReference(value: shared i32) -> i32 {
+    #value read {
+        return value + 0
+    }
+    return 0
+}
+
+internal procedure sharedArgumentNoCallSiteAcquisitionValue() -> i32 {
+    var shared_value: shared i32 = 8
+    return sharedArgumentReadReference(shared_value)
+}
+
+internal procedure localClosureSharedCaptureValue() -> i32 {
+    var shared_value: shared i32 = 13
+    let reader = || -> i32 {
+        #shared_value read {
+            return shared_value + 0
+        }
+        return 0
+    }
+    return reader()
+}
+
 /// Exercises the Keys AcquisitionBlocks reference surface.
 public procedure runKeysAcquisitionBlocksReference() -> bool {
     return readAndWriteKeyBlockValue() == 2 &&
-        orderedKeyBlockValue() == 3
+        orderedKeyBlockValue() == 3 &&
+        sharedArgumentNoCallSiteAcquisitionValue() == 8 &&
+        localClosureSharedCaptureValue() == 13
 }

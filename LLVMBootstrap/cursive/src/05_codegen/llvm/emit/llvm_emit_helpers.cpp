@@ -1018,6 +1018,659 @@ namespace cursive::codegen::emit_detail {
       return emitter.EvaluateIRValue(local);
     }
 
+    bool TryEmitBitcopyAggregateStorageCopy(LLVMEmitter &emitter,
+                                            llvm::IRBuilder<> *builder,
+                                            llvm::Value *dst_storage,
+                                            llvm::Value *src_storage,
+                                            const analysis::TypeRef &target_type,
+                                            const analysis::TypeRef &source_type)
+    {
+      if (!builder || !dst_storage || !src_storage || !target_type || !source_type)
+      {
+        return false;
+      }
+      if (!dst_storage->getType()->isPointerTy() ||
+          !src_storage->getType()->isPointerTy())
+      {
+        return false;
+      }
+
+      const LowerCtx *ctx = emitter.GetCurrentCtx();
+      if (!ctx)
+      {
+        return false;
+      }
+
+      analysis::TypeRef resolved_target = ResolveAliasType(ctx, target_type);
+      analysis::TypeRef resolved_source = ResolveAliasType(ctx, source_type);
+      if (!resolved_target || !resolved_source)
+      {
+        return false;
+      }
+
+      const auto equiv = analysis::TypeEquiv(resolved_source, resolved_target);
+      if (!equiv.ok || !equiv.equiv)
+      {
+        return false;
+      }
+
+      const analysis::ScopeContext &scope = BuildScope(ctx);
+      if (!analysis::BitcopyType(scope, resolved_target))
+      {
+        return false;
+      }
+
+      const auto size =
+          ::cursive::analysis::layout::SizeOf(scope, resolved_target);
+      const auto align =
+          ::cursive::analysis::layout::AlignOf(scope, resolved_target);
+      if (!size.has_value() || !align.has_value())
+      {
+        return false;
+      }
+      if (*size == 0)
+      {
+        return true;
+      }
+      if (*size <= kByValMax)
+      {
+        return false;
+      }
+
+      llvm::Type *llvm_ty = emitter.GetLLVMType(resolved_target);
+      if (!llvm_ty || llvm_ty->isVoidTy())
+      {
+        return false;
+      }
+
+      llvm::Type *ptr_ty = llvm::PointerType::get(llvm_ty, 0);
+      if (dst_storage->getType() != ptr_ty)
+      {
+        dst_storage = builder->CreateBitCast(dst_storage, ptr_ty);
+      }
+      if (src_storage->getType() != ptr_ty)
+      {
+        src_storage = builder->CreateBitCast(src_storage, ptr_ty);
+      }
+      if (dst_storage->stripPointerCasts() == src_storage->stripPointerCasts())
+      {
+        return true;
+      }
+
+      llvm::Value *size_value =
+          llvm::ConstantInt::get(llvm::Type::getInt64Ty(emitter.GetContext()),
+                                 static_cast<std::uint64_t>(*size));
+      const std::uint64_t copy_align = std::max<std::uint64_t>(1, *align);
+      SPEC_RULE("MemIntrinsics-Move");
+      builder->CreateMemMove(dst_storage,
+                             llvm::MaybeAlign(copy_align),
+                             src_storage,
+                             llvm::MaybeAlign(copy_align),
+                             size_value);
+      return true;
+    }
+
+namespace {
+
+    llvm::Value *TypedStoragePointer(LLVMEmitter &emitter,
+                                     llvm::IRBuilder<> *builder,
+                                     llvm::Value *storage,
+                                     llvm::Type *pointee)
+    {
+      if (!builder || !storage || !pointee || !storage->getType()->isPointerTy())
+      {
+        return nullptr;
+      }
+      llvm::Type *ptr_ty = llvm::PointerType::get(pointee, 0);
+      if (storage->getType() == ptr_ty)
+      {
+        return storage;
+      }
+      (void)emitter;
+      return builder->CreateBitCast(storage, ptr_ty);
+    }
+
+    analysis::TypeRef LookupStorageValueType(LLVMEmitter &emitter,
+                                             const IRValue &value)
+    {
+      if (const LowerCtx *ctx = emitter.GetCurrentCtx())
+      {
+        if (analysis::TypeRef type = ctx->LookupValueType(value))
+        {
+          return type;
+        }
+      }
+      if (value.kind == IRValue::Kind::Local)
+      {
+        return emitter.LookupLocalType(value.name);
+      }
+      return nullptr;
+    }
+
+    llvm::Value *ByteOffsetPointer(LLVMEmitter &emitter,
+                                   llvm::IRBuilder<> *builder,
+                                   llvm::Value *storage,
+                                   llvm::Type *pointee,
+                                   std::uint64_t offset)
+    {
+      if (!builder || !storage || !pointee || !storage->getType()->isPointerTy())
+      {
+        return nullptr;
+      }
+      llvm::Type *i8_ty = llvm::Type::getInt8Ty(emitter.GetContext());
+      llvm::Type *i8_ptr_ty = llvm::PointerType::get(i8_ty, 0);
+      llvm::Value *base_i8 = storage;
+      if (base_i8->getType() != i8_ptr_ty)
+      {
+        base_i8 = builder->CreateBitCast(base_i8, i8_ptr_ty);
+      }
+      llvm::Value *field_i8 = base_i8;
+      if (offset != 0)
+      {
+        field_i8 = builder->CreateGEP(
+            i8_ty,
+            base_i8,
+            llvm::ConstantInt::get(llvm::Type::getInt64Ty(emitter.GetContext()),
+                                   offset));
+      }
+      return builder->CreateBitCast(field_i8, llvm::PointerType::get(pointee, 0));
+    }
+
+    void EmitStorageMemZero(LLVMEmitter &emitter,
+                            llvm::IRBuilder<> *builder,
+                            llvm::Value *storage,
+                            const analysis::ScopeContext &scope,
+                            const analysis::TypeRef &type)
+    {
+      if (!builder || !storage || !type || !storage->getType()->isPointerTy())
+      {
+        return;
+      }
+      const auto size = ::cursive::analysis::layout::SizeOf(scope, type);
+      const auto align = ::cursive::analysis::layout::AlignOf(scope, type);
+      if (!size.has_value() || *size == 0)
+      {
+        return;
+      }
+      llvm::Type *i8_ty = llvm::Type::getInt8Ty(emitter.GetContext());
+      llvm::Value *dst_i8 = storage;
+      llvm::Type *i8_ptr_ty = llvm::PointerType::get(i8_ty, 0);
+      if (dst_i8->getType() != i8_ptr_ty)
+      {
+        dst_i8 = builder->CreateBitCast(dst_i8, i8_ptr_ty);
+      }
+      builder->CreateMemSet(
+          dst_i8,
+          llvm::ConstantInt::get(i8_ty, 0),
+          llvm::ConstantInt::get(llvm::Type::getInt64Ty(emitter.GetContext()),
+                                 static_cast<std::uint64_t>(*size)),
+          llvm::MaybeAlign(std::max<std::uint64_t>(1, align.value_or(1))));
+    }
+
+    bool StoreIRValueToStorage(LLVMEmitter &emitter,
+                               llvm::IRBuilder<> *builder,
+                               llvm::Value *dst_storage,
+                               const IRValue &value,
+                               const analysis::TypeRef &target_type,
+                               llvm::Type *target_ll,
+                               std::uint64_t align)
+    {
+      if (!builder || !dst_storage || !target_type)
+      {
+        return false;
+      }
+      if (!target_ll)
+      {
+        target_ll = emitter.GetLLVMType(target_type);
+      }
+      if (!target_ll || target_ll->isVoidTy())
+      {
+        return false;
+      }
+
+      if ((target_ll->isStructTy() || target_ll->isArrayTy()) &&
+          TryEmitDerivedAggregateToStorage(
+              emitter, builder, dst_storage, value, target_type))
+      {
+        return true;
+      }
+
+      analysis::TypeRef source_type = LookupStorageValueType(emitter, value);
+      if (llvm::Value *source_storage = emitter.GetAddressableStorage(value))
+      {
+        if (source_storage->stripPointerCasts() ==
+            dst_storage->stripPointerCasts())
+        {
+          return true;
+        }
+        if (TryEmitBitcopyAggregateStorageCopy(
+                emitter,
+                builder,
+                dst_storage,
+                source_storage,
+                target_type,
+                source_type))
+        {
+          return true;
+        }
+      }
+
+      llvm::Value *stored = emitter.EvaluateIRValue(value);
+      stored = CoerceToTyped(
+          emitter, builder, stored, target_ll, source_type, target_type);
+      if (!stored)
+      {
+        stored = llvm::Constant::getNullValue(target_ll);
+      }
+      llvm::Value *typed_dst =
+          TypedStoragePointer(emitter, builder, dst_storage, target_ll);
+      if (!typed_dst)
+      {
+        return false;
+      }
+      llvm::StoreInst *store = builder->CreateStore(stored, typed_dst);
+      if (align != 0)
+      {
+        store->setAlignment(llvm::Align(std::max<std::uint64_t>(1, align)));
+      }
+      return true;
+    }
+
+    bool TryEmitRecordLiteralToStorage(LLVMEmitter &emitter,
+                                       llvm::IRBuilder<> *builder,
+                                       llvm::Value *dst_storage,
+                                       const DerivedValueInfo &derived,
+                                       const analysis::TypeRef &record_type,
+                                       const analysis::ScopeContext &scope)
+    {
+      llvm::Type *record_ll = emitter.GetLLVMType(record_type);
+      if (!llvm::dyn_cast_or_null<llvm::StructType>(record_ll))
+      {
+        return false;
+      }
+
+      struct FieldStore {
+        IRValue value;
+        analysis::TypeRef type;
+        llvm::Type *llvm_type = nullptr;
+        std::uint64_t offset = 0;
+        std::uint64_t align = 1;
+      };
+
+      std::vector<FieldStore> stores;
+      stores.reserve(derived.fields.size());
+      for (const auto &[field_name, field_value] : derived.fields)
+      {
+        auto meta = ResolveFieldAccessMeta(scope, record_type, field_name);
+        if (!meta.has_value() || !meta->field_type ||
+            meta->index >= meta->aggregate_fields.size())
+        {
+          return false;
+        }
+        const auto layout = ComputeLayoutLLVMRecord(
+            emitter,
+            scope,
+            meta->aggregate_type,
+            meta->aggregate_fields,
+            meta->layout_options);
+        if (!layout.has_value() || meta->index >= layout->fields.size())
+        {
+          return false;
+        }
+        const auto &field = layout->fields[meta->index];
+        if (field.recursive_indirect)
+        {
+          return false;
+        }
+        FieldStore store;
+        store.value = field_value;
+        store.type = meta->field_type;
+        store.llvm_type = field.llvm_type ? field.llvm_type
+                                          : emitter.GetLLVMType(meta->field_type);
+        store.offset = field.offset;
+        store.align = std::max<std::uint64_t>(1, field.align);
+        if (!store.llvm_type || store.llvm_type->isVoidTy())
+        {
+          return false;
+        }
+        stores.push_back(std::move(store));
+      }
+
+      EmitStorageMemZero(emitter, builder, dst_storage, scope, record_type);
+      for (const auto &store : stores)
+      {
+        llvm::Value *field_ptr = ByteOffsetPointer(
+            emitter, builder, dst_storage, store.llvm_type, store.offset);
+        if (!field_ptr)
+        {
+          return false;
+        }
+        (void)StoreIRValueToStorage(emitter,
+                                    builder,
+                                    field_ptr,
+                                    store.value,
+                                    store.type,
+                                    store.llvm_type,
+                                    store.align);
+      }
+      return true;
+    }
+
+    std::optional<std::uint64_t> EvaluateConstantCount(LLVMEmitter &emitter,
+                                                       const IRValue &count_value)
+    {
+      llvm::Value *count = emitter.EvaluateIRValue(count_value);
+      auto *constant = llvm::dyn_cast_or_null<llvm::ConstantInt>(count);
+      if (!constant)
+      {
+        return std::nullopt;
+      }
+      return constant->getZExtValue();
+    }
+
+    bool StoreRepeatedArrayElement(LLVMEmitter &emitter,
+                                   llvm::IRBuilder<> *builder,
+                                   llvm::ArrayType *array_ll,
+                                   llvm::Value *array_ptr,
+                                   const IRValue &value,
+                                   const analysis::TypeRef &element_type,
+                                   llvm::Type *element_ll,
+                                   std::uint64_t elem_align,
+                                   std::uint64_t first_index,
+                                   std::uint64_t count)
+    {
+      if (!builder || !array_ll || !array_ptr || !element_type || !element_ll)
+      {
+        return false;
+      }
+      if (count == 0)
+      {
+        return true;
+      }
+
+      const bool aggregate_element =
+          element_ll->isStructTy() || element_ll->isArrayTy();
+      llvm::Value *repeat_storage = nullptr;
+      llvm::Value *repeat_value = nullptr;
+
+      if (aggregate_element)
+      {
+        llvm::Function *func =
+            builder->GetInsertBlock() ? builder->GetInsertBlock()->getParent()
+                                      : nullptr;
+        if (!func)
+        {
+          return false;
+        }
+        llvm::IRBuilder<> entry_builder(&func->getEntryBlock(),
+                                        func->getEntryBlock().begin());
+        repeat_storage = entry_builder.CreateAlloca(
+            element_ll, nullptr, "array.repeat.value");
+        if (!StoreIRValueToStorage(emitter,
+                                   builder,
+                                   repeat_storage,
+                                   value,
+                                   element_type,
+                                   element_ll,
+                                   elem_align))
+        {
+          return false;
+        }
+      }
+      else
+      {
+        analysis::TypeRef source_type = LookupStorageValueType(emitter, value);
+        repeat_value = emitter.EvaluateIRValue(value);
+        repeat_value = CoerceToTyped(
+            emitter, builder, repeat_value, element_ll, source_type, element_type);
+        if (!repeat_value)
+        {
+          repeat_value = llvm::Constant::getNullValue(element_ll);
+        }
+      }
+
+      auto store_one = [&](llvm::Value *elem_ptr) {
+        if (repeat_storage)
+        {
+          if (!TryEmitBitcopyAggregateStorageCopy(emitter,
+                                                  builder,
+                                                  elem_ptr,
+                                                  repeat_storage,
+                                                  element_type,
+                                                  element_type))
+          {
+            llvm::Value *loaded = builder->CreateLoad(element_ll, repeat_storage);
+            llvm::StoreInst *store = builder->CreateStore(loaded, elem_ptr);
+            store->setAlignment(
+                llvm::Align(std::max<std::uint64_t>(1, elem_align)));
+          }
+          return;
+        }
+        llvm::StoreInst *store = builder->CreateStore(repeat_value, elem_ptr);
+        store->setAlignment(llvm::Align(std::max<std::uint64_t>(1, elem_align)));
+      };
+
+      constexpr std::uint64_t kUnrolledRepeatLimit = 32;
+      if (count > kUnrolledRepeatLimit)
+      {
+        llvm::Function *func =
+            builder->GetInsertBlock() ? builder->GetInsertBlock()->getParent()
+                                      : nullptr;
+        if (!func)
+        {
+          return false;
+        }
+        llvm::LLVMContext &context = emitter.GetContext();
+        llvm::BasicBlock *preheader = builder->GetInsertBlock();
+        llvm::BasicBlock *loop_bb =
+            llvm::BasicBlock::Create(context, "array.repeat.fill", func);
+        llvm::BasicBlock *done_bb =
+            llvm::BasicBlock::Create(context, "array.repeat.done", func);
+        llvm::Type *i64_ty = llvm::Type::getInt64Ty(context);
+        llvm::Value *start =
+            llvm::ConstantInt::get(i64_ty, static_cast<std::uint64_t>(first_index));
+        llvm::Value *limit = llvm::ConstantInt::get(
+            i64_ty, static_cast<std::uint64_t>(first_index + count));
+        builder->CreateBr(loop_bb);
+        builder->SetInsertPoint(loop_bb);
+        llvm::PHINode *idx = builder->CreatePHI(i64_ty, 2, "array.repeat.index");
+        idx->addIncoming(start, preheader);
+        llvm::Value *zero = llvm::ConstantInt::get(i64_ty, 0);
+        llvm::Value *elem_ptr =
+            builder->CreateInBoundsGEP(array_ll, array_ptr, {zero, idx});
+        store_one(elem_ptr);
+        llvm::Value *next = builder->CreateAdd(
+            idx, llvm::ConstantInt::get(i64_ty, 1));
+        llvm::Value *finished = builder->CreateICmpEQ(next, limit);
+        idx->addIncoming(next, loop_bb);
+        builder->CreateCondBr(finished, done_bb, loop_bb);
+        builder->SetInsertPoint(done_bb);
+        return true;
+      }
+
+      for (std::uint64_t offset = 0; offset < count; ++offset)
+      {
+        llvm::Value *elem_ptr = builder->CreateConstInBoundsGEP2_64(
+            array_ll, array_ptr, 0, first_index + offset);
+        store_one(elem_ptr);
+      }
+      return true;
+    }
+
+    bool TryEmitArrayAggregateToStorage(LLVMEmitter &emitter,
+                                        llvm::IRBuilder<> *builder,
+                                        llvm::Value *dst_storage,
+                                        const DerivedValueInfo &derived,
+                                        const analysis::TypeRef &array_type,
+                                        const analysis::ScopeContext &scope)
+    {
+      const auto *array = std::get_if<analysis::TypeArray>(&array_type->node);
+      if (!array || !array->element)
+      {
+        return false;
+      }
+      llvm::Type *array_ll_ty = emitter.GetLLVMType(array_type);
+      auto *array_ll = llvm::dyn_cast_or_null<llvm::ArrayType>(array_ll_ty);
+      llvm::Type *element_ll = emitter.GetLLVMType(array->element);
+      if (!array_ll || !element_ll || array_ll->getElementType() != element_ll)
+      {
+        return false;
+      }
+
+      struct SegmentWrite {
+        IRValue value;
+        std::uint64_t count = 1;
+        bool repeat = false;
+      };
+      std::vector<SegmentWrite> writes;
+      std::uint64_t total_count = 0;
+
+      if (derived.kind == DerivedValueInfo::Kind::ArrayLit)
+      {
+        writes.reserve(derived.elements.size());
+        for (const IRValue &element : derived.elements)
+        {
+          writes.push_back(SegmentWrite{element, 1, false});
+          ++total_count;
+        }
+      }
+      else if (derived.kind == DerivedValueInfo::Kind::ArrayRepeat)
+      {
+        auto count = EvaluateConstantCount(emitter, derived.repeat_count);
+        if (!count.has_value())
+        {
+          return false;
+        }
+        writes.push_back(SegmentWrite{derived.repeat_value, *count, true});
+        total_count += *count;
+      }
+      else if (derived.kind == DerivedValueInfo::Kind::ArraySegments)
+      {
+        writes.reserve(derived.array_segments.size());
+        for (const DerivedArraySegment &segment : derived.array_segments)
+        {
+          if (segment.kind == DerivedArraySegment::Kind::Element)
+          {
+            writes.push_back(SegmentWrite{segment.value, 1, false});
+            ++total_count;
+            continue;
+          }
+          if (!segment.count.has_value())
+          {
+            return false;
+          }
+          auto count = EvaluateConstantCount(emitter, *segment.count);
+          if (!count.has_value())
+          {
+            return false;
+          }
+          writes.push_back(SegmentWrite{segment.value, *count, true});
+          total_count += *count;
+        }
+      }
+      else
+      {
+        return false;
+      }
+
+      if (total_count > array->length || array_ll->getNumElements() != array->length)
+      {
+        return false;
+      }
+      if (total_count < array->length)
+      {
+        EmitStorageMemZero(emitter, builder, dst_storage, scope, array_type);
+      }
+
+      llvm::Value *array_ptr =
+          TypedStoragePointer(emitter, builder, dst_storage, array_ll);
+      if (!array_ptr)
+      {
+        return false;
+      }
+      const std::uint64_t elem_align = std::max<std::uint64_t>(
+          1,
+          ::cursive::analysis::layout::AlignOf(scope, array->element).value_or(1));
+
+      std::uint64_t index = 0;
+      for (const SegmentWrite &write : writes)
+      {
+        if (write.repeat)
+        {
+          if (!StoreRepeatedArrayElement(emitter,
+                                         builder,
+                                         array_ll,
+                                         array_ptr,
+                                         write.value,
+                                         array->element,
+                                         element_ll,
+                                         elem_align,
+                                         index,
+                                         write.count))
+          {
+            return false;
+          }
+          index += write.count;
+          continue;
+        }
+        llvm::Value *elem_ptr =
+            builder->CreateConstInBoundsGEP2_64(array_ll, array_ptr, 0, index);
+        (void)StoreIRValueToStorage(emitter,
+                                    builder,
+                                    elem_ptr,
+                                    write.value,
+                                    array->element,
+                                    element_ll,
+                                    elem_align);
+        ++index;
+      }
+      return true;
+    }
+
+} // namespace
+
+    bool TryEmitDerivedAggregateToStorage(LLVMEmitter &emitter,
+                                          llvm::IRBuilder<> *builder,
+                                          llvm::Value *dst_storage,
+                                          const IRValue &value,
+                                          const analysis::TypeRef &target_type)
+    {
+      if (!builder || !dst_storage || !target_type ||
+          !dst_storage->getType()->isPointerTy())
+      {
+        return false;
+      }
+      const LowerCtx *ctx = emitter.GetCurrentCtx();
+      if (!ctx)
+      {
+        return false;
+      }
+      const DerivedValueInfo *derived = ctx->LookupDerivedValue(value);
+      if (!derived)
+      {
+        return false;
+      }
+      analysis::TypeRef resolved_target = ResolveAliasType(ctx, target_type);
+      if (!resolved_target)
+      {
+        return false;
+      }
+      const analysis::ScopeContext &scope = BuildScope(ctx);
+      switch (derived->kind)
+      {
+      case DerivedValueInfo::Kind::RecordLit:
+        return TryEmitRecordLiteralToStorage(
+            emitter, builder, dst_storage, *derived, resolved_target, scope);
+      case DerivedValueInfo::Kind::ArrayLit:
+      case DerivedValueInfo::Kind::ArrayRepeat:
+      case DerivedValueInfo::Kind::ArraySegments:
+        return TryEmitArrayAggregateToStorage(
+            emitter, builder, dst_storage, *derived, resolved_target, scope);
+      default:
+        return false;
+      }
+    }
+
     bool StoreProcedureOutValue(LLVMEmitter &emitter,
                                 llvm::IRBuilder<> *builder,
                                 llvm::Function *func,

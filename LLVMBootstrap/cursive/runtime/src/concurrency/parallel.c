@@ -1422,8 +1422,9 @@ void* cursive_spawn_wait(void* handle_ptr) {
 // pointer, and the returned tracked handle is the same opaque spawn handle used
 // by wait. For Cursive0 exercises, Future<T,E> values here are immediate and we
 // materialize a ready handle carrying T|E in a compact tagged payload.
-void* cursive_x3a_x3aruntime_x3a_x3areactor_x3a_x3aregister(void* reactor,
-                                                             void* future) {
+void* cursive_x3a_x3aruntime_x3a_x3areactor_x3a_x3aregister(
+    const C0DynObject* reactor,
+    const void* future) {
     (void)reactor;
 
     SpawnHandle* handle =

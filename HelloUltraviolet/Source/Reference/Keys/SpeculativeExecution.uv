@@ -1,5 +1,13 @@
 //! Reference specimens for Keys / SpeculativeExecution.
 
+internal record SpeculativeKeyCounter {
+    internal value: i32
+
+    internal procedure nextValue(~) -> i32 {
+        return self.value + 1
+    }
+}
+
 internal procedure speculativeWriteValue() -> i32 {
     var shared_value: shared i32 = 1
     #shared_value speculative write {
@@ -8,7 +16,17 @@ internal procedure speculativeWriteValue() -> i32 {
     return shared_value + 0
 }
 
+internal procedure speculativeConstReceiverCallValue() -> i32 {
+    var counter: shared SpeculativeKeyCounter = SpeculativeKeyCounter { value: 5 }
+    #counter speculative write {
+        let next_value: i32 = counter~>nextValue()
+        counter.value = next_value
+    }
+    return counter.value + 0
+}
+
 /// Exercises the Keys SpeculativeExecution reference surface.
 public procedure runKeysSpeculativeExecutionReference() -> bool {
-    return speculativeWriteValue() == 2
+    return speculativeWriteValue() == 2 &&
+        speculativeConstReceiverCallValue() == 6
 }

@@ -1,11 +1,11 @@
 //! Runtime path checks for source files referenced by generated catalog rows.
 
 public procedure expectedCatalogSourcePathCount() -> usize {
-    return 515usize
+    return 552usize
 }
 
 public procedure catalogSourcePathCount() -> usize {
-    return 515usize
+    return 552usize
 }
 
 internal procedure catalogSourcePathExists(context: Context, source_path: string@View) -> bool {
@@ -231,6 +231,39 @@ public procedure catalogSourcePathsExist(context: Context) -> bool {
         catalogSourcePathExists(context, "HelloUltraviolet/Fixtures/RejectedSource/Keys/WaitWhileKeyHeldLowering/Source/Main.uv") &&
         catalogSourcePathExists(context, "HelloUltraviolet/Fixtures/RejectedSource/Keys/YieldFromWhileKeyHeld/Source/Main.uv") &&
         catalogSourcePathExists(context, "HelloUltraviolet/Fixtures/RejectedSource/Names/DuplicateModuleDeclaration/Source/Main.uv") &&
+        catalogSourcePathExists(context, "HelloUltraviolet/Fixtures/RejectedSource/Parallelism/BarrierDivergence/Source/Main.uv") &&
+        catalogSourcePathExists(context, "HelloUltraviolet/Fixtures/RejectedSource/Parallelism/BarrierOutsideGpuContext/Source/Main.uv") &&
+        catalogSourcePathExists(context, "HelloUltraviolet/Fixtures/RejectedSource/Parallelism/CaptureSemanticsDiagnostics/Source/Main.uv") &&
+        catalogSourcePathExists(context, "HelloUltraviolet/Fixtures/RejectedSource/Parallelism/DeterminismAndNestingDiagnostics/Source/Main.uv") &&
+        catalogSourcePathExists(context, "HelloUltraviolet/Fixtures/RejectedSource/Parallelism/DispatchChunkType/Source/Main.uv") &&
+        catalogSourcePathExists(context, "HelloUltraviolet/Fixtures/RejectedSource/Parallelism/DispatchDependencyConflict/Source/Main.uv") &&
+        catalogSourcePathExists(context, "HelloUltraviolet/Fixtures/RejectedSource/Parallelism/DispatchDiagnostics/Source/Main.uv") &&
+        catalogSourcePathExists(context, "HelloUltraviolet/Fixtures/RejectedSource/Parallelism/DispatchInferFailure/Source/Main.uv") &&
+        catalogSourcePathExists(context, "HelloUltraviolet/Fixtures/RejectedSource/Parallelism/DispatchNonAssociativeReduce/Source/Main.uv") &&
+        catalogSourcePathExists(context, "HelloUltraviolet/Fixtures/RejectedSource/Parallelism/DispatchOutsideParallel/Source/Main.uv") &&
+        catalogSourcePathExists(context, "HelloUltraviolet/Fixtures/RejectedSource/Parallelism/DispatchRequiresParallelContext/Source/Main.uv") &&
+        catalogSourcePathExists(context, "HelloUltraviolet/Fixtures/RejectedSource/Parallelism/ExecutionDomainsDiagnostics/Source/Main.uv") &&
+        catalogSourcePathExists(context, "HelloUltraviolet/Fixtures/RejectedSource/Parallelism/GpuCaptureHeapProvenance/Source/Main.uv") &&
+        catalogSourcePathExists(context, "HelloUltraviolet/Fixtures/RejectedSource/Parallelism/GpuCaptureNonGpuSafe/Source/Main.uv") &&
+        catalogSourcePathExists(context, "HelloUltraviolet/Fixtures/RejectedSource/Parallelism/GpuCaptureShared/Source/Main.uv") &&
+        catalogSourcePathExists(context, "HelloUltraviolet/Fixtures/RejectedSource/Parallelism/GpuIntrinsicOutside/Source/Main.uv") &&
+        catalogSourcePathExists(context, "HelloUltraviolet/Fixtures/RejectedSource/Parallelism/GpuPtrAddrSpace/Source/Main.uv") &&
+        catalogSourcePathExists(context, "HelloUltraviolet/Fixtures/RejectedSource/Parallelism/GpuPtrDerefHostMemory/Source/Main.uv") &&
+        catalogSourcePathExists(context, "HelloUltraviolet/Fixtures/RejectedSource/Parallelism/GpuSafeGenericUnbounded/Source/Main.uv") &&
+        catalogSourcePathExists(context, "HelloUltraviolet/Fixtures/RejectedSource/Parallelism/GpuSafeRecordFieldDiagnostic/Source/Main.uv") &&
+        catalogSourcePathExists(context, "HelloUltraviolet/Fixtures/RejectedSource/Parallelism/GpuSafeTypeDiagnostic/Source/Main.uv") &&
+        catalogSourcePathExists(context, "HelloUltraviolet/Fixtures/RejectedSource/Parallelism/KeyBlockGpuContext/Source/Main.uv") &&
+        catalogSourcePathExists(context, "HelloUltraviolet/Fixtures/RejectedSource/Parallelism/NestedGpuParallel/Source/Main.uv") &&
+        catalogSourcePathExists(context, "HelloUltraviolet/Fixtures/RejectedSource/Parallelism/ParallelCancelOptionType/Source/Main.uv") &&
+        catalogSourcePathExists(context, "HelloUltraviolet/Fixtures/RejectedSource/Parallelism/ParallelClosureCaptureOuterMove/Source/Main.uv") &&
+        catalogSourcePathExists(context, "HelloUltraviolet/Fixtures/RejectedSource/Parallelism/ParallelClosureCaptureUnique/Source/Main.uv") &&
+        catalogSourcePathExists(context, "HelloUltraviolet/Fixtures/RejectedSource/Parallelism/ParallelDim3Const/Source/Main.uv") &&
+        catalogSourcePathExists(context, "HelloUltraviolet/Fixtures/RejectedSource/Parallelism/ParallelDomainNotExecutionDomain/Source/Main.uv") &&
+        catalogSourcePathExists(context, "HelloUltraviolet/Fixtures/RejectedSource/Parallelism/ParallelDomainParameter/Source/Main.uv") &&
+        catalogSourcePathExists(context, "HelloUltraviolet/Fixtures/RejectedSource/Parallelism/ParallelEscapingClosureSpawn/Source/Main.uv") &&
+        catalogSourcePathExists(context, "HelloUltraviolet/Fixtures/RejectedSource/Parallelism/ParallelWorkgroupSize/Source/Main.uv") &&
+        catalogSourcePathExists(context, "HelloUltraviolet/Fixtures/RejectedSource/Parallelism/SpawnInvalidPriorityOption/Source/Main.uv") &&
+        catalogSourcePathExists(context, "HelloUltraviolet/Fixtures/RejectedSource/Parallelism/SpawnOutsideParallel/Source/Main.uv") &&
         catalogSourcePathExists(context, "HelloUltraviolet/Fixtures/RejectedSource/Parsing/MissingStatementTerminator/Source/Main.uv") &&
         catalogSourcePathExists(context, "HelloUltraviolet/Fixtures/RejectedSource/Patterns/BasicPatternsDiagnostic/Source/Main.uv") &&
         catalogSourcePathExists(context, "HelloUltraviolet/Fixtures/RejectedSource/Patterns/CaseClausesDiagnostic/Source/Main.uv") &&
@@ -341,6 +374,10 @@ public procedure catalogSourcePathsExist(context: Context) -> bool {
         catalogSourcePathExists(context, "HelloUltraviolet/Fixtures/RejectedSource/Procedures/UnsatisfiedPrecondition/Source/Main.uv") &&
         catalogSourcePathExists(context, "HelloUltraviolet/Fixtures/RejectedSource/Procedures/VerificationFactNoRuntimeRepresentation/Source/Main.uv") &&
         catalogSourcePathExists(context, "HelloUltraviolet/Fixtures/RejectedSource/Procedures/VerificationLogicDiagnostic/Source/Main.uv") &&
+        catalogSourcePathExists(context, "HelloUltraviolet/Fixtures/RejectedSource/SourceText/InvalidStringEscape/Source/Main.uv") &&
+        catalogSourcePathExists(context, "HelloUltraviolet/Fixtures/RejectedSource/SourceText/MalformedNumericLiteral/Source/Main.uv") &&
+        catalogSourcePathExists(context, "HelloUltraviolet/Fixtures/RejectedSource/SourceText/UnterminatedBlockComment/Source/Main.uv") &&
+        catalogSourcePathExists(context, "HelloUltraviolet/Fixtures/RejectedSource/SourceText/UnterminatedString/Source/Main.uv") &&
         catalogSourcePathExists(context, "HelloUltraviolet/Fixtures/RejectedSource/Statements/AssignConst/Source/Main.uv") &&
         catalogSourcePathExists(context, "HelloUltraviolet/Fixtures/RejectedSource/Statements/AssignImmutableLet/Source/Main.uv") &&
         catalogSourcePathExists(context, "HelloUltraviolet/Fixtures/RejectedSource/Statements/AssignNotPlace/Source/Main.uv") &&

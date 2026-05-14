@@ -536,13 +536,35 @@ using namespace emit_detail;
       }
     }
 
+    bool copied_from_storage = false;
     if (!adopted_existing_storage)
+    {
+      copied_from_storage = TryEmitDerivedAggregateToStorage(
+          *this,
+          builder,
+          bind_slot,
+          bind.value,
+          bind.type ? bind.type : source_type);
+      if (!copied_from_storage)
+      {
+        llvm::Value *source_storage = GetAddressableStorage(bind.value);
+        copied_from_storage = TryEmitBitcopyAggregateStorageCopy(
+            *this,
+            builder,
+            bind_slot,
+            source_storage,
+            bind.type ? bind.type : source_type,
+            source_type);
+      }
+    }
+
+    if (!adopted_existing_storage && !copied_from_storage)
     {
       init_val = EvaluateIRValue(bind.value);
     }
 
     // Store the initial value
-    if (!adopted_existing_storage && !init_val)
+    if (!adopted_existing_storage && !copied_from_storage && !init_val)
     {
       init_val = llvm::Constant::getNullValue(ty);
       if (log_this_bind)
@@ -556,7 +578,7 @@ using namespace emit_detail;
                                                                    : "other");
       }
     }
-    else if (!adopted_existing_storage)
+    else if (!adopted_existing_storage && !copied_from_storage)
     {
       if (log_this_bind)
       {
@@ -625,7 +647,7 @@ using namespace emit_detail;
                                                                                                      : "other");
       }
     }
-    if (!adopted_existing_storage)
+    if (!adopted_existing_storage && !copied_from_storage)
     {
       llvm::Value *typed_slot = bind_slot;
       llvm::Type *slot_ptr_ty = llvm::PointerType::get(ty, 0);
@@ -635,7 +657,7 @@ using namespace emit_detail;
       }
       builder->CreateStore(init_val, typed_slot);
     }
-    else
+    else if (adopted_existing_storage)
     {
       storage_values_.erase(bind.value.name);
       values_.erase(bind.value.name);

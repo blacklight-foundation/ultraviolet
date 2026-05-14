@@ -70,12 +70,12 @@ public procedure validatedStructuredParallelismCaptureSemanticsObligations() -> 
     ) {
         count = count + 1usize
     }
-    if acceptedObligationEntryMatches(
+    if rejectedSourceObligationEntryMatches(
         "rule.20.Parallel-Closure-Capture-Unique-Err",
         76771usize,
-        "HelloUltraviolet::Reference::Parallelism",
-        "runParallelismCaptureSemanticsReference",
-        "Source/Reference/Parallelism/CaptureSemantics.uv"
+        "HelloUltraviolet::Fixtures::RejectedSource",
+        "validatedParallelismRejectedSourceFixtureCount",
+        "Fixtures/RejectedSource/Parallelism/ParallelClosureCaptureUnique/Source/Main.uv"
     ) {
         count = count + 1usize
     }
@@ -97,21 +97,21 @@ public procedure validatedStructuredParallelismCaptureSemanticsObligations() -> 
     ) {
         count = count + 1usize
     }
-    if acceptedObligationEntryMatches(
+    if rejectedSourceObligationEntryMatches(
         "rule.20.Parallel-Closure-Capture-OuterMove-Err",
         76817usize,
-        "HelloUltraviolet::Reference::Parallelism",
-        "runParallelismCaptureSemanticsReference",
-        "Source/Reference/Parallelism/CaptureSemantics.uv"
+        "HelloUltraviolet::Fixtures::RejectedSource",
+        "validatedParallelismRejectedSourceFixtureCount",
+        "Fixtures/RejectedSource/Parallelism/ParallelClosureCaptureOuterMove/Source/Main.uv"
     ) {
         count = count + 1usize
     }
-    if acceptedObligationEntryMatches(
+    if rejectedSourceObligationEntryMatches(
         "rule.20.Parallel-Escaping-Closure-Spawn-Err",
         76833usize,
-        "HelloUltraviolet::Reference::Parallelism",
-        "runParallelismCaptureSemanticsReference",
-        "Source/Reference/Parallelism/CaptureSemantics.uv"
+        "HelloUltraviolet::Fixtures::RejectedSource",
+        "validatedParallelismRejectedSourceFixtureCount",
+        "Fixtures/RejectedSource/Parallelism/ParallelEscapingClosureSpawn/Source/Main.uv"
     ) {
         count = count + 1usize
     }
@@ -142,30 +142,30 @@ public procedure validatedStructuredParallelismCaptureSemanticsObligations() -> 
     ) {
         count = count + 1usize
     }
-    if acceptedObligationEntryMatches(
+    if rejectedSourceObligationEntryMatches(
         "rule.20.GpuCapture-Shared-Err",
         76894usize,
-        "HelloUltraviolet::Reference::Parallelism",
-        "runParallelismCaptureSemanticsReference",
-        "Source/Reference/Parallelism/CaptureSemantics.uv"
+        "HelloUltraviolet::Fixtures::RejectedSource",
+        "validatedParallelismRejectedSourceFixtureCount",
+        "Fixtures/RejectedSource/Parallelism/GpuCaptureShared/Source/Main.uv"
     ) {
         count = count + 1usize
     }
-    if acceptedObligationEntryMatches(
+    if rejectedSourceObligationEntryMatches(
         "rule.20.GpuCapture-HeapProv-Err",
         76910usize,
-        "HelloUltraviolet::Reference::Parallelism",
-        "runParallelismCaptureSemanticsReference",
-        "Source/Reference/Parallelism/CaptureSemantics.uv"
+        "HelloUltraviolet::Fixtures::RejectedSource",
+        "validatedParallelismRejectedSourceFixtureCount",
+        "Fixtures/RejectedSource/Parallelism/GpuCaptureHeapProvenance/Source/Main.uv"
     ) {
         count = count + 1usize
     }
-    if acceptedObligationEntryMatches(
+    if rejectedSourceObligationEntryMatches(
         "rule.20.GpuCapture-NonGpuSafe-Err",
         76926usize,
-        "HelloUltraviolet::Reference::Parallelism",
-        "runParallelismCaptureSemanticsReference",
-        "Source/Reference/Parallelism/CaptureSemantics.uv"
+        "HelloUltraviolet::Fixtures::RejectedSource",
+        "validatedParallelismRejectedSourceFixtureCount",
+        "Fixtures/RejectedSource/Parallelism/GpuCaptureNonGpuSafe/Source/Main.uv"
     ) {
         count = count + 1usize
     }
@@ -196,12 +196,12 @@ public procedure validatedStructuredParallelismCaptureSemanticsObligations() -> 
     ) {
         count = count + 1usize
     }
-    if acceptedObligationEntryMatches(
+    if rejectedSourceObligationEntryMatches(
         "diagnostics.20.CaptureSemantics",
         76991usize,
-        "HelloUltraviolet::Reference::Parallelism",
-        "runParallelismCaptureSemanticsReference",
-        "Source/Reference/Parallelism/CaptureSemantics.uv"
+        "HelloUltraviolet::Fixtures::RejectedSource",
+        "validatedParallelismRejectedSourceFixtureCount",
+        "Fixtures/RejectedSource/Parallelism/CaptureSemanticsDiagnostics/Source/Main.uv"
     ) {
         count = count + 1usize
     }

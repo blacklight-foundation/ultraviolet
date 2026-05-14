@@ -9,7 +9,37 @@ internal procedure acquireOrderedKeyReadValue() -> i32 {
     return observed
 }
 
+internal procedure expressionMemoryOrderingValue() -> i32 {
+    var shared_value: shared i32 = 3
+    var observed: i32 = 0
+    #shared_value read {
+        observed = observed + ([[relaxed]] shared_value)
+        observed = observed + ([[acquire]] shared_value)
+        observed = observed + ([[release]] shared_value)
+        observed = observed + ([[acqrel]] shared_value)
+        observed = observed + ([[seqcst]] shared_value)
+    }
+    return observed
+}
+
+internal procedure fenceOrderingValue() -> i32 {
+    var shared_value: shared i32 = 1
+    var observed: i32 = 0
+    fence(acquire)
+    #shared_value write {
+        shared_value = 2
+    }
+    fence(release)
+    #shared_value read {
+        observed = shared_value + 0
+    }
+    fence(seqcst)
+    return observed
+}
+
 /// Exercises the Keys MemoryOrdering reference surface.
 public procedure runKeysMemoryOrderingReference() -> bool {
-    return acquireOrderedKeyReadValue() == 1
+    return acquireOrderedKeyReadValue() == 1 &&
+        expressionMemoryOrderingValue() == 15 &&
+        fenceOrderingValue() == 2
 }

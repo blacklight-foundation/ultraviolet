@@ -714,6 +714,20 @@ std::optional<Stmt> BuildStmt(const Stmt& stmt, CtEnv& env) {
           return Stmt{std::move(out)};
         } else if constexpr (std::is_same_v<T, ast::ExprStmt>) {
           auto out = node;
+          if (out.value) {
+            if (const auto* splice = std::get_if<ast::SpliceExprNode>(&out.value->node)) {
+              auto value = EvalSpliceValue(splice->expr, env, splice->span);
+              if (!value.has_value()) {
+                return std::nullopt;
+              }
+              Stmt rendered;
+              if (!RenderStmtSplice(*value, rendered)) {
+                EmitComptimeDiag(env, "E-CTE-0230", splice->span);
+                return std::nullopt;
+              }
+              return rendered;
+            }
+          }
           if (!BuildExprInPlace(out.value, env)) {
             return std::nullopt;
           }
@@ -808,6 +822,22 @@ std::optional<Block> BuildBlock(const Block& block, CtEnv& env) {
       return std::nullopt;
     }
     stmt = std::move(*built);
+  }
+  if (out.tail_opt) {
+    if (const auto* splice = std::get_if<ast::SpliceExprNode>(&out.tail_opt->node)) {
+      auto value = EvalSpliceValue(splice->expr, env, splice->span);
+      if (!value.has_value()) {
+        return std::nullopt;
+      }
+      Stmt rendered;
+      if (!RenderStmtSplice(*value, rendered)) {
+        EmitComptimeDiag(env, "E-CTE-0230", splice->span);
+        return std::nullopt;
+      }
+      out.stmts.push_back(std::move(rendered));
+      out.tail_opt.reset();
+      return out;
+    }
   }
   if (!BuildExprInPlace(out.tail_opt, env)) {
     return std::nullopt;

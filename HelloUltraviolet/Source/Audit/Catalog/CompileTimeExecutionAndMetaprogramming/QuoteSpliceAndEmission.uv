@@ -169,12 +169,12 @@ public procedure validatedCompileTimeExecutionAndMetaprogrammingQuoteSpliceAndEm
     ) {
         count = count + 1usize
     }
-    if acceptedObligationEntryMatches(
+    if rejectedSourceObligationEntryMatches(
         "requirement.22.EmitterEmitWellFormedness",
         85529usize,
-        "HelloUltraviolet::Reference::Comptime",
-        "runComptimeQuoteSpliceEmissionReference",
-        "Source/Reference/Comptime/QuoteSpliceEmission.uv"
+        "HelloUltraviolet::Fixtures::RejectedSource",
+        "validatedComptimeRejectedSourceFixtureCount",
+        "Fixtures/RejectedSource/Comptime/EmitterEmitNonItem/Source/Main.uv"
     ) {
         count = count + 1usize
     }
@@ -259,12 +259,12 @@ public procedure validatedCompileTimeExecutionAndMetaprogrammingQuoteSpliceAndEm
     ) {
         count = count + 1usize
     }
-    if acceptedObligationEntryMatches(
+    if rejectedSourceObligationEntryMatches(
         "diagnostics.22.QuoteSpliceEmissionDiagnosticsReference",
         85683usize,
-        "HelloUltraviolet::Reference::Comptime",
-        "runComptimeQuoteSpliceEmissionReference",
-        "Source/Reference/Comptime/QuoteSpliceEmission.uv"
+        "HelloUltraviolet::Fixtures::RejectedSource",
+        "validatedComptimeRejectedSourceFixtureCount",
+        "Fixtures/RejectedSource/Comptime/QuoteOutsideComptime/Source/Main.uv"
     ) {
         count = count + 1usize
     }

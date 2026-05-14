@@ -692,6 +692,7 @@ std::optional<RuntimeFuncInfo> GetRuntimeFuncInfo(const std::string& symbol) {
       analysis::MakeTypeDynamic({"FileSystem"});
   const analysis::TypeRef t_network = analysis::MakeTypeDynamic({"Network"});
   const analysis::TypeRef t_heap_alloc = analysis::MakeTypeDynamic({"HeapAllocator"});
+  const analysis::TypeRef t_reactor = analysis::MakeTypeDynamic({"Reactor"});
   const analysis::TypeRef t_time = analysis::MakeTypeDynamic({"Time"});
   const analysis::TypeRef t_monotonic_time =
       analysis::MakeTypeDynamic({"MonotonicTime"});
@@ -1182,6 +1183,15 @@ std::optional<RuntimeFuncInfo> GetRuntimeFuncInfo(const std::string& symbol) {
     info.params.push_back(make_param("mask", t_usize, analysis::ParamMode::Move));
     info.params.push_back(make_param("priority", t_i32, analysis::ParamMode::Move));
     info.ret = t_execution_domain;
+    return info;
+  }
+
+  // Reactor methods.
+  if (symbol == BuiltinSymReactorRegister()) {
+    info.params.push_back(make_param("self", t_reactor));
+    info.params.push_back(
+        make_param("future", t_raw_imm_u8, analysis::ParamMode::Move));
+    info.ret = t_raw_mut_u8;
     return info;
   }
 

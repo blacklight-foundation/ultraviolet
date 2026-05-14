@@ -322,12 +322,12 @@ public procedure validatedCompileTimeExecutionAndMetaprogrammingCompileTimeCapab
     ) {
         count = count + 1usize
     }
-    if acceptedObligationEntryMatches(
+    if rejectedSourceObligationEntryMatches(
         "diagnostics.22.CompileTimeCapabilitiesDiagnosticsReference",
         84771usize,
-        "HelloUltraviolet::Reference::Comptime",
-        "runComptimeCompileTimeCapabilitiesReference",
-        "Source/Reference/Comptime/CompileTimeCapabilities.uv"
+        "HelloUltraviolet::Fixtures::RejectedSource",
+        "validatedComptimeRejectedSourceFixtureCount",
+        "Fixtures/RejectedSource/Comptime/EmitterEmitNonItem/Source/Main.uv"
     ) {
         count = count + 1usize
     }

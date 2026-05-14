@@ -22,6 +22,8 @@
 #include "04_analysis/typing/expr/closure_expr.h"
 
 #include <memory>
+#include <optional>
+#include <string_view>
 
 #include "00_core/assert_spec.h"
 #include "00_core/diagnostic_messages.h"
@@ -32,6 +34,31 @@
 #include "04_analysis/typing/types.h"
 
 namespace cursive::analysis::expr {
+
+static bool SameSpan(const std::optional<core::Span>& lhs,
+                     const core::Span& rhs) {
+  if (!lhs.has_value()) {
+    return false;
+  }
+  return lhs->file == rhs.file &&
+         lhs->start_offset == rhs.start_offset &&
+         lhs->end_offset == rhs.end_offset &&
+         lhs->start_line == rhs.start_line &&
+         lhs->start_col == rhs.start_col &&
+         lhs->end_line == rhs.end_line &&
+         lhs->end_col == rhs.end_col;
+}
+
+static bool HasDiagnosticAt(const core::DiagnosticStream& diags,
+                            std::string_view code,
+                            const core::Span& span) {
+  for (const auto& diag : diags) {
+    if (diag.code == code && SameSpan(diag.span, span)) {
+      return true;
+    }
+  }
+  return false;
+}
 
 // =============================================================================
 // TypeClosureExpr - Type check a closure expression
@@ -137,8 +164,10 @@ ExprTypeResult TypeClosureExpr(const ast::ClosureExpr& expr,
   }
 
   if (captures_shared && type_ctx.diags) {
-    if (auto diag = core::MakeDiagnosticById("W-CON-0009", expr.body->span)) {
-      core::Emit(*type_ctx.diags, *diag);
+    if (!HasDiagnosticAt(*type_ctx.diags, "W-CON-0009", expr.body->span)) {
+      if (auto diag = core::MakeDiagnosticById("W-CON-0009", expr.body->span)) {
+        core::Emit(*type_ctx.diags, *diag);
+      }
     }
   }
 

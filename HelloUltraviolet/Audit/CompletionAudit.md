@@ -7,18 +7,18 @@ Objective: execute `.agents/plans/HelloUltravioletReferenceCorpus.md`.
 - `Docs/Audit/UltravioletObligations.csv` and the generated catalog currently
   contain 6,045 primary obligation rows.
 - `HelloUltraviolet/Source/Reference` currently contains 150 `.uv` files,
-  168 public `run...Reference` procedures, and 0 public `run...Reference`
+  176 public `run...Reference` procedures, and 0 public `run...Reference`
   bodies whose implementation is only `return true`.
 - `Source/Main.uv` executes `runReferenceCorpus(context)`, and `Source/Api.uv`
-  directly calls all 168 public reference runners.
+  directly calls all 176 public reference runners.
 - `CatalogSourcePaths.uv` indexes 515 unique catalog source targets, and
   `CatalogSymbols.uv` indexes 522 compiled symbol target tuples. The async
   composition map, filter, take, fold, chain, and until obligations now name
   dedicated reference runners; aggregate combinator obligations name
   `runAsyncCompositionCombinatorsReference`.
 - The generated catalog now records the exercise kind for each primary
-  obligation row: 5,638 accepted-source rows, 45 accepted-project rows,
-  331 rejected-source rows, 22 diagnostic-source rows, 5 artifact-behavior
+  obligation row: 5,593 accepted-source rows, 45 accepted-project rows,
+  374 rejected-source rows, 23 diagnostic-source rows, 6 artifact-behavior
   rows, and 4 reference-model rows. Fixture-backed rows point at compiled
   fixture validators instead of accepted-source reference runners.
 - This pass corrected catalog targets for primitive and union data types,
@@ -37,13 +37,16 @@ Objective: execute `.agents/plans/HelloUltravioletReferenceCorpus.md`.
   `Source/Fixtures/DiagnosticSource`, `Source/Fixtures/OutputDiagnostics`, and
   `Source/Fixtures/ArtifactProjects`, then emits the matching catalog helper
   and import surface for each generated catalog submodule.
-- `Source/Audit/SpecClarifications.uv` now compiles a six-row clarification
+- `Source/Audit/SpecClarifications.uv` now compiles a seven-row clarification
   ledger for sourceability-limited expected-diagnostic obligations. Four rows
   with no current primary source exercise are cataloged as `@ReferenceModel`;
   the orphan requirement row keeps its accepted-project source exercise and is
   also represented in the compiled clarification ledger. The workgroup-size
   row records the SPEC tension between `DEFAULT_GPU_WORKGROUP = (64, 1, 1)` and
   the formal `TopologyValid` equality against `MAX_WORKGROUP_SIZE = 1024`.
+  The fresh async creation row records the intended reading that an async call
+  creates a fresh frame that can materialize at an explicitly expected
+  permission-qualified async type for manual `resume` stepping.
 - `Fixtures/AcceptedProjects/HostedExportLibrary` is a spec-valid shared
   library fixture with public `[[host_export]]` procedures, projected context
   bundle records, visible primitive and C-layout aggregate parameters, a
@@ -65,6 +68,16 @@ Objective: execute `.agents/plans/HelloUltravioletReferenceCorpus.md`.
   `Fixtures/RejectedSource/Expressions/OperatorOperandMismatch/Source/Main.uv`
   and
   `Fixtures/DiagnosticSource/Keys/StaleOkSuppressesReleaseWarning/Source/Main.uv`.
+- The catalog generator now recognizes fixture index wrappers such as
+  `parallelismSpecimenMatches(...)` in addition to direct specimen constructors.
+  Structured-parallelism expected-diagnostic rows now point at the concrete
+  rejected-source fixture files under `Fixtures/RejectedSource/Parallelism`
+  rather than the accepted structured-parallelism reference runners.
+- The catalog generator now also reads every physical fixture `Expected.uv`
+  artifact when assigning fixture-backed obligation targets. Secondary
+  expected-diagnostic obligations recorded beside a fixture's primary
+  diagnostic now map to the same concrete source specimen instead of remaining
+  on accepted-source reference runners.
 - This pass surfaced and corrected a bootstrap semantic-analysis defect:
   long spec-valid binary expression chains in generated catalog code could
   overflow the compiler stack during resolution after name-map collection. The
@@ -116,16 +129,66 @@ Objective: execute `.agents/plans/HelloUltravioletReferenceCorpus.md`.
   runtime has a configured CPU domain constructor, and parallel spawn/dispatch
   work items inherit the domain affinity/default-priority values required by
   `SPECIFICATION.md` §20.2.4 and §20.4.5.
+- This pass expanded async runtime source coverage so the accepted corpus now
+  exercises manual `Async@Suspended.resume`, yield input propagation,
+  `yield release from`, `wait` over `Spawned<T>` handles in inline and CPU
+  execution domains, `wait` over `Tracked<T, E>` values returned by
+  `Context.reactor.register`, streaming race resume continuation, `sync`,
+  `all`, return and streaming `race`, and the
+  map/filter/take/fold/chain/until/loop composition forms. The source remains
+  the reference artifact; bootstrap repairs were made where the compiler
+  accepted or rejected spec-valid async source incorrectly.
+- This pass surfaced and corrected async bootstrap conformance defects in
+  fresh async permission materialization, modal-state pattern narrowing,
+  streaming-race frame propagation, resume argument materialization,
+  alias-aware `yield`/`yield from` lowering, `Async@Suspended.resume`
+  input type specialization, builtin `Reactor.register` method typing, and the
+  runtime ABI declaration needed for `wait` over `Tracked<T, E>`. These repairs
+  are recorded in `Audit/BootstrapNonCompliance.md` as `UVBOOT-0050` and
+  `UVBOOT-0053`.
+- This pass expanded key-system accepted runtime source coverage for memory
+  ordering and speculative execution. `runKeysMemoryOrderingReference` now
+  exercises all five expression memory-order attributes and all three fence
+  orders; `runKeysSpeculativeExecutionReference` now exercises a speculative
+  write block whose body calls a const receiver method on keyed data before
+  committing a covered write.
+- This pass also expanded dynamic key-verification accepted source.
+  `runKeysDynamicVerificationReference` now exercises both a dynamic indexed
+  read and a dynamic indexed write block over two runtime-indexed paths under
+  `[[dynamic]]`.
+- This pass also expanded key-acquisition accepted source.
+  `runKeysAcquisitionBlocksReference` now exercises passing a `shared` value
+  as a procedure argument without acquiring a key at the call site; the callee
+  performs the explicit read acquisition and returns through the key block.
+  It also exercises a local closure that captures a `shared` binding, acquires
+  the key in the closure body, returns through that key block, and is invoked
+  before the captured binding's scope exits. The duplicate `W-CON-0009`
+  bootstrap diagnostic surfaced by this specimen is recorded in
+  `Audit/BootstrapNonCompliance.md` as `UVBOOT-0051`.
+- This pass expanded compile-time quote/splice accepted source.
+  `runComptimeQuoteSpliceEmissionReference` now exercises `quote pattern`,
+  string-valued identifier splices in typed-pattern, identifier-expression, and
+  procedure-parameter positions, an `Ast::Stmt` splice in statement position,
+  expression splicing inside a quoted return statement, and emitted item
+  lowering that calls the generated procedures at runtime. The statement-splice
+  parser and quote-builder repairs are recorded in
+  `Audit/BootstrapNonCompliance.md` as `UVBOOT-0052`.
 - Latest verification:
-  `Cursive.exe build HelloUltraviolet --check --target-profile x86_64-win64 --build-progress off`
-  exited 0 with the expected three warnings plus one info diagnostic;
+  the Visual Studio bootstrap build wrapper rebuilt
+  `LLVMBootstrap/cursive/build/Release/Cursive.exe` with exit code 0 after
+  the async, key, closure diagnostic, and compile-time quote/splice repairs;
   `Cursive.exe build HelloUltraviolet --target-profile x86_64-win64 --build-progress off`
-  exited 0 with the same diagnostic set; `HelloUltraviolet.exe` exited 0 with
-  0-byte stdout/stderr; `HelloUltraviolet.exe --audit` exited 0 with 0-byte
-  stdout/stderr; `python3 Tools/ExtractObligationLedger.py --check` passed
-  with 6,045 obligations; `git diff --check` passed on the touched
-  structured-parallelism and bootstrap files; the Visual Studio bootstrap build
-  wrapper rebuilt `Cursive.exe` with exit code 0; `GenericInfiniteMonomorphization`
+  exited 0 with the expected five warnings plus two info diagnostics;
+  `HelloUltraviolet.exe` exited 0 with 0-byte stdout/stderr;
+  `HelloUltraviolet.exe --audit` exited 0 with 0-byte stdout/stderr;
+  `Cursive.exe build HelloUltraviolet --check --target-profile x86_64-win64 --build-progress off`
+  exited 0 with the same diagnostic set;
+  `python3 Tools/ExtractObligationLedger.py --check` passed with 6,045
+  obligations; a plain `git diff --name-only` was blocked by the local Git LFS
+  filter with exit code 128, so targeted diff inspection used
+  `git -c filter.lfs.process= -c filter.lfs.clean= -c filter.lfs.smudge= -c filter.lfs.required=false`;
+  `git diff --check` passed on the touched compile-time/key reference, audit,
+  parser, quote-builder, and closure diagnostic files; `GenericInfiniteMonomorphization`
   built with exit code 1
   and emitted `E-TYP-2307`; `GenericInstantiationDepthLimit` built with exit
   code 1 and emitted `E-TYP-2308`; the accepted-project fixtures `StaticLibrary`,
@@ -176,14 +239,35 @@ Objective: execute `.agents/plans/HelloUltravioletReferenceCorpus.md`.
   and fixture-validator symbol target tuples named by catalog rows, and
   `HelloUltraviolet.exe` validates them through
   `catalogCompiledSymbolsExecute()`.
+- `Source/Reference/Async/SuspensionForms.uv` exercises `yield`, `yield from`,
+  `wait` over spawned work in both ready and pending paths, and `wait` over a
+  reactor-registered tracked future.
 - `Source/Reference/Async/CompositionForms.uv` exercises async composition
-  map, filter, take, fold, chain, and until through dedicated reference runners,
-  and the generated catalog maps the corresponding Chapter 21 obligations to
-  those runners.
+  sync, all, return race, streaming race, map, filter, take, fold, chain,
+  until, and loop iteration through dedicated reference runners. Streaming
+  race now includes a suspended-yield resume specimen that verifies the
+  previously yielded arm continues when the caller resumes it.
+- `Source/Reference/Async/StateMachine.uv` exercises direct async completion,
+  suspension, manual `Async@Suspended.resume(input)`, and state-pattern
+  observation of `@Completed`, `@Suspended`, and `@Failed`.
+- `Source/Reference/Async/AsyncKeyIntegration.uv` exercises
+  `yield release from` in an async key-acquisition integration path.
 - `Source/Reference/Keys/KeyPaths.uv` exercises root key paths, nested field
   and index key paths, and a record field declared with a `#` key boundary.
   The generated catalog maps the key-boundary parse helpers and field-boundary
   semantic requirement to this runner.
+- `Source/Reference/Keys/AcquisitionBlocks.uv` exercises explicit read and
+  write blocks, ordered multi-path acquisition, a `shared` argument call whose
+  callee performs the explicit key acquisition, a local closure that captures
+  `shared` data and acquires the key in its body, and return control flow
+  through key blocks.
+- `Source/Reference/Keys/MemoryOrdering.uv` exercises expression-level
+  `[[relaxed]]`, `[[acquire]]`, `[[release]]`, `[[acqrel]]`, and `[[seqcst]]`
+  memory-order attributes on shared reads, plus `fence(acquire)`,
+  `fence(release)`, and `fence(seqcst)` in runtime expression contexts.
+- `Source/Reference/Keys/SpeculativeExecution.uv` exercises speculative write
+  fallback/commit behavior for a direct shared write and for a const receiver
+  method call on keyed data followed by a covered write.
 - `Source/Fixtures/RejectedSource` compiles metadata for 370 rejected-source
   fixture specimens, and `HelloUltraviolet.exe` validates that fixture index
   through `rejectedSourceFixturesAreIndexed`.
@@ -531,6 +615,10 @@ Objective: execute `.agents/plans/HelloUltravioletReferenceCorpus.md`.
   with `E-CTE-0220`, exercising the structural identifier restriction by
   attempting to use an identifier splice as an item declaration name inside a
   quote.
+- `Source/Reference/Comptime/QuoteSpliceEmission.uv` exercises accepted
+  quote/splice forms through emitted runtime procedures, including
+  `quote pattern`, expression splices, statement splices, identifier-position
+  string splices, and item emission order.
 - The bootstrap class-implementation checker now evaluates
   `def.ImplementationOrphanRule` for record, enum, and modal `implements`
   clauses in `CheckOrphanRule`, using the first module-path segment as the
@@ -603,14 +691,12 @@ Objective: execute `.agents/plans/HelloUltravioletReferenceCorpus.md`.
   deterministic fixture class is pending SPEC clarification.
 - The project check gate passes:
   `Cursive.exe build HelloUltraviolet --check --target-profile x86_64-win64
-  --build-progress off`, most recently captured in
-  `Build/HelloUltraviolet.generic-mono-fixtures.check.stderr` with exit
-  code 0 and the expected three warnings plus one info diagnostic.
+  --build-progress off`, most recently run with exit code 0 and the expected
+  five warnings plus two info diagnostics.
 - The project build gate passes:
   `Cursive.exe build HelloUltraviolet --target-profile x86_64-win64
-  --build-progress off`, most recently captured in
-  `Build/HelloUltraviolet.generic-mono-fixtures.build.stderr` with exit code 0
-  and the expected three warnings plus one info diagnostic.
+  --build-progress off`, most recently run with exit code 0 and the expected
+  five warnings plus two info diagnostics.
 - The executable gate passes:
   `HelloUltraviolet/build/bin/HelloUltraviolet.exe`.
 - The audit-argument executable gate passes:
@@ -625,11 +711,15 @@ Objective: execute `.agents/plans/HelloUltravioletReferenceCorpus.md`.
 - Rejected-source, diagnostic-source, and output-diagnostic fixtures are
   partially populated. The current fixture set covers 370 rejected-source
   diagnostics, 22 compiling diagnostic-source warning/info/absence cases, and
-  2 output-diagnostic artifact cases; the full expected-diagnostics obligation
-  surface is not yet represented. Of the 382 expected-diagnostic obligations,
-  5 remain uncovered by current expected-diagnostic metadata. Remaining
-  uncovered expected-diagnostic ownership counts are: lowering 2,
-  abstraction/polymorphism 2, statements 1.
+  2 output-diagnostic artifact cases. Of the 382 `oracle.expected-diagnostics`
+  obligations, the generated catalog now maps 350 to rejected-source fixture
+  files, 23 to diagnostic-source fixture files, 4 to artifact-behavior fixture
+  files, 1 to an accepted-project fixture, and 4 to the compiled clarification
+  ledger. The 5
+  sourceability-limited rows in the accepted-project or clarification-ledger
+  buckets still do not have concrete rejecting-source diagnostic fixtures.
+  Their ownership counts are: lowering 2, abstraction/polymorphism 2,
+  statements 1.
   `HelloUltraviolet/Audit/SpecClarificationsNeeded.md` records the current
   sourceability questions for those five rows, and
   `Source/Audit/SpecClarifications.uv` now makes those classifications
@@ -735,10 +825,14 @@ Objective: execute `.agents/plans/HelloUltravioletReferenceCorpus.md`.
   primitive, record, generic record, enum, generic enum, fixed-array,
   raw-pointer, function-pointer, foreign-contract, boundary-unwind, capability
   isolation, and drop-bearing by-value call forms.
+  Async source specimens now include `yield`, `yield from`, `wait` over
+  `Spawned`, and `wait` over `Tracked` with a `Reactor.register` source path.
   Key-system source specimens now exercise accepted key paths, key acquisition,
-  field key boundaries, selected rejected-source obligations, and selected
-  diagnostic-source obligations, with broader source-runtime coverage still
-  incomplete.
+  field key boundaries, memory-order attributes, fence expressions, dynamic
+  indexed reads and writes, shared-argument call-site behavior, key-block
+  control-flow return, speculative const receiver calls, selected
+  rejected-source obligations, and selected diagnostic-source obligations, with
+  broader source-runtime coverage still incomplete.
 
 ## Current Status
 

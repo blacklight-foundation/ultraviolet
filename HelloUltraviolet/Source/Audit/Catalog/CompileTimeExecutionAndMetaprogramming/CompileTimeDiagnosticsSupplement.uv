@@ -7,21 +7,21 @@ public procedure countCompileTimeExecutionAndMetaprogrammingCompileTimeDiagnosti
 
 public procedure validatedCompileTimeExecutionAndMetaprogrammingCompileTimeDiagnosticsSupplementObligations() -> usize {
     var count: usize = 0usize
-    if acceptedObligationEntryMatches(
+    if diagnosticSourceObligationEntryMatches(
         "diagnostics.22.CompileTimeDiagnosticsSupplement",
         86204usize,
-        "HelloUltraviolet::Reference::Comptime",
-        "runComptimeCompileTimeFormsReference",
-        "Source/Reference/Comptime/CompileTimeForms.uv"
+        "HelloUltraviolet::Fixtures::DiagnosticSource",
+        "validatedComptimeDiagnosticSourceFixtureCount",
+        "Fixtures/DiagnosticSource/Comptime/UserDiagnosticWarning/Source/Main.uv"
     ) {
         count = count + 1usize
     }
-    if acceptedObligationEntryMatches(
+    if rejectedSourceObligationEntryMatches(
         "requirement.22.UserDiagnosticBuiltinEmission",
         86280usize,
-        "HelloUltraviolet::Reference::Comptime",
-        "runComptimeCompileTimeFormsReference",
-        "Source/Reference/Comptime/CompileTimeForms.uv"
+        "HelloUltraviolet::Fixtures::RejectedSource",
+        "validatedComptimeRejectedSourceFixtureCount",
+        "Fixtures/RejectedSource/Comptime/UserDiagnosticError/Source/Main.uv"
     ) {
         count = count + 1usize
     }

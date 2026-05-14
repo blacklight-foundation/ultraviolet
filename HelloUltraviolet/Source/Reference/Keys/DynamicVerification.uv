@@ -10,7 +10,18 @@ internal procedure dynamicKeyBlockValue(index: usize) -> i32 {
     return observed
 }
 
+[[dynamic]]
+internal procedure dynamicRuntimeSynchronizedWriteValue(first: usize, second: usize) -> i32 {
+    var values: shared [i32; 4] = [1, 2, 3, 4]
+    #values[first], values[second] dynamic write {
+        values[first] = 10
+        values[second] = 20
+    }
+    return values[first] + values[second]
+}
+
 /// Exercises the Keys DynamicVerification reference surface.
 public procedure runKeysDynamicVerificationReference() -> bool {
-    return dynamicKeyBlockValue(2usize) == 3
+    return dynamicKeyBlockValue(2usize) == 3 &&
+        dynamicRuntimeSynchronizedWriteValue(0usize, 2usize) == 30
 }

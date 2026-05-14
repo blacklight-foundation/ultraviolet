@@ -30,15 +30,22 @@ void IRInstructionVisitor::operator()(const IRStoreVar &store) const
   }
   if (!slot)
   {
-    llvm::Value *value = EvaluateOrDefault(store.value);
-    llvm::Type *slot_ty = nullptr;
+    llvm::Value *value = nullptr;
+    llvm::Type *slot_ty = target_type ? emitter.GetLLVMType(target_type) : nullptr;
     if (auto *alloca = llvm::dyn_cast<llvm::AllocaInst>(source_storage))
     {
-      slot_ty = alloca->getAllocatedType();
+      if (!slot_ty)
+      {
+        slot_ty = alloca->getAllocatedType();
+      }
     }
-    if (!slot_ty && value)
+    if (!slot_ty)
     {
-      slot_ty = value->getType();
+      value = EvaluateOrDefault(store.value);
+      if (value)
+      {
+        slot_ty = value->getType();
+      }
     }
     if (!slot_ty || slot_ty->isVoidTy())
     {
@@ -52,6 +59,33 @@ void IRInstructionVisitor::operator()(const IRStoreVar &store) const
         entry_builder.CreateAlloca(slot_ty, nullptr, store.name);
     emitter.RegisterLocalBindStorage(store.name, new_slot);
 
+    if (TryEmitDerivedAggregateToStorage(
+            emitter,
+            &builder,
+            new_slot,
+            store.value,
+            target_type ? target_type : source_type))
+    {
+      emitter.ReleaseTempStorage(store.value);
+      return;
+    }
+
+    if (TryEmitBitcopyAggregateStorageCopy(
+            emitter,
+            &builder,
+            new_slot,
+            source_storage,
+            target_type ? target_type : source_type,
+            source_type))
+    {
+      emitter.ReleaseTempStorage(store.value);
+      return;
+    }
+
+    if (!value)
+    {
+      value = EvaluateOrDefault(store.value);
+    }
     if (!value)
     {
       value = llvm::Constant::getNullValue(slot_ty);
@@ -82,8 +116,29 @@ void IRInstructionVisitor::operator()(const IRStoreVar &store) const
     emitter.ReleaseTempStorage(store.value);
     return;
   }
+  if (TryEmitDerivedAggregateToStorage(
+          emitter,
+          &builder,
+          slot,
+          store.value,
+          target_type ? target_type : source_type))
+  {
+    emitter.ReleaseTempStorage(store.value);
+    return;
+  }
   if (source_storage)
   {
+    if (TryEmitBitcopyAggregateStorageCopy(
+            emitter,
+            &builder,
+            slot,
+            source_storage,
+            target_type,
+            source_type))
+    {
+      emitter.ReleaseTempStorage(store.value);
+      return;
+    }
     if (source_storage == slot)
     {
       emitter.ForgetTempStorage(store.value);

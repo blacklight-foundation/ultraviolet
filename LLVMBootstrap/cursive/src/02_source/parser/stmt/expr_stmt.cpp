@@ -212,7 +212,8 @@ bool IsExprStartToken(const Token& tok) {
   }
   if (tok.kind == TokenKind::Operator) {
     return tok.lexeme == "!" || tok.lexeme == "-" || tok.lexeme == "&" ||
-           tok.lexeme == "*" || tok.lexeme == "^" || tok.lexeme == "|";
+           tok.lexeme == "*" || tok.lexeme == "^" || tok.lexeme == "|" ||
+           tok.lexeme == "$";
   }
   if (tok.kind == TokenKind::Keyword) {
     return tok.lexeme == "if" ||

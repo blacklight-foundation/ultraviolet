@@ -243,19 +243,19 @@ void RunOptimizationPipeline(llvm::Module& module, const PassConfig& config) {
 
   llvm::OptimizationLevel OptLevel = ToLLVMOptLevel(config.opt_level);
 
-  // Use PassBuilder's default pipeline for standard optimization levels
+  // UV lowering intentionally keeps large fixed-size aggregates in addressable
+  // storage. LLVM's full default pipeline can spend disproportionate time on
+  // those aggregates before object emission, so release levels use the curated
+  // scalar cleanup pipeline below while TargetMachine still receives the
+  // requested codegen optimization level.
   if (OptLevel != llvm::OptimizationLevel::O0) {
-    llvm::ModulePassManager MPM =
-        PB.buildPerModuleDefaultPipeline(OptLevel);
-
-    // Add verification passes if requested
     if (config.verify_input) {
       llvm::ModulePassManager VerifyMPM;
       VerifyMPM.addPass(llvm::VerifierPass());
       VerifyMPM.run(module, AM.MAM);
     }
 
-    MPM.run(module, AM.MAM);
+    RunModulePasses(module, config);
 
     if (config.verify_output) {
       llvm::ModulePassManager VerifyMPM;

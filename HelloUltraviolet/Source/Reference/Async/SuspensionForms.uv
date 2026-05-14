@@ -12,10 +12,42 @@ public procedure asyncDelegatesReference(value: i32) -> AsyncReferenceComputatio
     return resumed + 1
 }
 
+internal procedure asyncTrackedFutureReference(value: i32) -> Future<i32, bool> {
+    return value
+}
+
+internal procedure asyncWaitSpawnedReadyReference(context: Context) -> i32 {
+    return parallel context~>inline() {
+        let handle: Spawned<i32> = spawn {
+            23
+        }
+        wait handle
+    }
+}
+
+internal procedure asyncWaitSpawnedPendingReference(context: Context) -> i32 {
+    return parallel context~>cpu() {
+        let handle: Spawned<i32> = spawn {
+            24
+        }
+        wait handle
+    }
+}
+
+internal procedure asyncWaitTrackedReference(context: Context) -> bool {
+    let tracked: Tracked<i32, bool> =
+        context.reactor~>register(asyncTrackedFutureReference(25))
+    let result: i32 | bool = wait tracked
+    return i32BoolUnionIsValue(result, 25)
+}
+
 /// Exercises the Async SuspensionForms reference surface.
-public procedure runAsyncSuspensionFormsReference() -> bool {
+public procedure runAsyncSuspensionFormsReference(context: Context) -> bool {
     let suspended: AsyncReferenceComputation = asyncSuspendsReference(21)
     let delegated: AsyncReferenceComputation = asyncDelegatesReference(22)
     return asyncSuspendedOutputIs(suspended, 21) &&
-        asyncSuspendedOutputIs(delegated, 22)
+        asyncSuspendedOutputIs(delegated, 22) &&
+        asyncWaitSpawnedReadyReference(context) == 23 &&
+        asyncWaitSpawnedPendingReference(context) == 24 &&
+        asyncWaitTrackedReference(context)
 }

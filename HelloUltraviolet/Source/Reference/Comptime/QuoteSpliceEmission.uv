@@ -16,7 +16,32 @@ public procedure runComptimeQuoteSpliceEmissionReference() -> bool {
             }
         }
         emitter~>emit(second_ast)
+
+        let binding_name = "spliced_reference_value"
+        let binding_pattern: Ast::Pattern = quote pattern { $binding_name: i32 }
+        let binding_expr: Ast::Expr = quote { $binding_name + 1 }
+        let return_statement: Ast::Stmt = quote { return $(binding_expr) }
+        let third_ast: Ast::Item = quote {
+            internal procedure emittedIdentifierAndPatternSpliceReferenceValue() -> i32 {
+                let $(binding_pattern) = 52
+                $(return_statement);
+            }
+        }
+        emitter~>emit(third_ast)
+
+        let parameter_name = "input_value"
+        let fourth_ast: Ast::Item = quote {
+            internal procedure emittedParameterIdentifierSpliceReferenceValue(
+                $parameter_name: i32
+            ) -> i32 {
+                return $parameter_name + 2
+            }
+        }
+        emitter~>emit(fourth_ast)
     }
 
-    return emittedQuoteReferenceValue() == 47 && emittedSplicedReferenceValue() == 42
+    return emittedQuoteReferenceValue() == 47 &&
+        emittedSplicedReferenceValue() == 42 &&
+        emittedIdentifierAndPatternSpliceReferenceValue() == 53 &&
+        emittedParameterIdentifierSpliceReferenceValue(59) == 61
 }

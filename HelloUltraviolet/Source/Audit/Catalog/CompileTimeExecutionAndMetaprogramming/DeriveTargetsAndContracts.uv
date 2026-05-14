@@ -295,12 +295,12 @@ public procedure validatedCompileTimeExecutionAndMetaprogrammingDeriveTargetsAnd
     ) {
         count = count + 1usize
     }
-    if acceptedObligationEntryMatches(
+    if rejectedSourceObligationEntryMatches(
         "diagnostics.22.DeriveTargetsDiagnosticsReference",
         86189usize,
-        "HelloUltraviolet::Reference::Comptime",
-        "runComptimeDeriveTargetsReference",
-        "Source/Reference/Comptime/DeriveTargets.uv"
+        "HelloUltraviolet::Fixtures::RejectedSource",
+        "validatedComptimeRejectedSourceFixtureCount",
+        "Fixtures/RejectedSource/Comptime/DeriveOnProcedure/Source/Main.uv"
     ) {
         count = count + 1usize
     }

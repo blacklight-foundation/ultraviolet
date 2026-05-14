@@ -232,12 +232,12 @@ public procedure validatedCompileTimeExecutionAndMetaprogrammingReflectionObliga
     ) {
         count = count + 1usize
     }
-    if acceptedObligationEntryMatches(
+    if rejectedSourceObligationEntryMatches(
         "diagnostics.22.ReflectionDiagnosticsReference",
         85226usize,
-        "HelloUltraviolet::Reference::Comptime",
-        "runComptimeReflectionReference",
-        "Source/Reference/Comptime/Reflection.uv"
+        "HelloUltraviolet::Fixtures::RejectedSource",
+        "validatedComptimeRejectedSourceFixtureCount",
+        "Fixtures/RejectedSource/Comptime/IntrospectFieldsNonRecord/Source/Main.uv"
     ) {
         count = count + 1usize
     }

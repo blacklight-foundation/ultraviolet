@@ -34,12 +34,12 @@ public procedure validatedStructuredParallelismDispatchObligations() -> usize {
     ) {
         count = count + 1usize
     }
-    if acceptedObligationEntryMatches(
+    if rejectedSourceObligationEntryMatches(
         "requirement.20.DispatchRequiresParallelContext",
         77353usize,
-        "HelloUltraviolet::Reference::Parallelism",
-        "runParallelismDispatchReference",
-        "Source/Reference/Parallelism/Dispatch.uv"
+        "HelloUltraviolet::Fixtures::RejectedSource",
+        "validatedParallelismRejectedSourceFixtureCount",
+        "Fixtures/RejectedSource/Parallelism/DispatchRequiresParallelContext/Source/Main.uv"
     ) {
         count = count + 1usize
     }
@@ -97,48 +97,48 @@ public procedure validatedStructuredParallelismDispatchObligations() -> usize {
     ) {
         count = count + 1usize
     }
-    if acceptedObligationEntryMatches(
+    if rejectedSourceObligationEntryMatches(
         "rule.20.Dispatch-Infer-Err",
         77499usize,
-        "HelloUltraviolet::Reference::Parallelism",
-        "runParallelismDispatchReference",
-        "Source/Reference/Parallelism/Dispatch.uv"
+        "HelloUltraviolet::Fixtures::RejectedSource",
+        "validatedParallelismRejectedSourceFixtureCount",
+        "Fixtures/RejectedSource/Parallelism/DispatchInferFailure/Source/Main.uv"
     ) {
         count = count + 1usize
     }
-    if acceptedObligationEntryMatches(
+    if rejectedSourceObligationEntryMatches(
         "rule.20.Dispatch-Outside-Err",
         77515usize,
-        "HelloUltraviolet::Reference::Parallelism",
-        "runParallelismDispatchReference",
-        "Source/Reference/Parallelism/Dispatch.uv"
+        "HelloUltraviolet::Fixtures::RejectedSource",
+        "validatedParallelismRejectedSourceFixtureCount",
+        "Fixtures/RejectedSource/Parallelism/DispatchOutsideParallel/Source/Main.uv"
     ) {
         count = count + 1usize
     }
-    if acceptedObligationEntryMatches(
+    if rejectedSourceObligationEntryMatches(
         "rule.20.Dispatch-Chunk-Type-Err",
         77531usize,
-        "HelloUltraviolet::Reference::Parallelism",
-        "runParallelismDispatchReference",
-        "Source/Reference/Parallelism/Dispatch.uv"
+        "HelloUltraviolet::Fixtures::RejectedSource",
+        "validatedParallelismRejectedSourceFixtureCount",
+        "Fixtures/RejectedSource/Parallelism/DispatchChunkType/Source/Main.uv"
     ) {
         count = count + 1usize
     }
-    if acceptedObligationEntryMatches(
+    if rejectedSourceObligationEntryMatches(
         "rule.20.Dispatch-Dependency-Err",
         77547usize,
-        "HelloUltraviolet::Reference::Parallelism",
-        "runParallelismDispatchReference",
-        "Source/Reference/Parallelism/Dispatch.uv"
+        "HelloUltraviolet::Fixtures::RejectedSource",
+        "validatedParallelismRejectedSourceFixtureCount",
+        "Fixtures/RejectedSource/Parallelism/DispatchDependencyConflict/Source/Main.uv"
     ) {
         count = count + 1usize
     }
-    if acceptedObligationEntryMatches(
+    if rejectedSourceObligationEntryMatches(
         "rule.20.Dispatch-Reduce-Assoc-Err",
         77563usize,
-        "HelloUltraviolet::Reference::Parallelism",
-        "runParallelismDispatchReference",
-        "Source/Reference/Parallelism/Dispatch.uv"
+        "HelloUltraviolet::Fixtures::RejectedSource",
+        "validatedParallelismRejectedSourceFixtureCount",
+        "Fixtures/RejectedSource/Parallelism/DispatchNonAssociativeReduce/Source/Main.uv"
     ) {
         count = count + 1usize
     }
@@ -268,12 +268,12 @@ public procedure validatedStructuredParallelismDispatchObligations() -> usize {
     ) {
         count = count + 1usize
     }
-    if acceptedObligationEntryMatches(
+    if rejectedSourceObligationEntryMatches(
         "diagnostics.20.Dispatch",
         77839usize,
-        "HelloUltraviolet::Reference::Parallelism",
-        "runParallelismDispatchReference",
-        "Source/Reference/Parallelism/Dispatch.uv"
+        "HelloUltraviolet::Fixtures::RejectedSource",
+        "validatedParallelismRejectedSourceFixtureCount",
+        "Fixtures/RejectedSource/Parallelism/DispatchDiagnostics/Source/Main.uv"
     ) {
         count = count + 1usize
     }

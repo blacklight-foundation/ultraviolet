@@ -340,12 +340,12 @@ public procedure validatedSourceTextAndLexicalStructureLexicalAnalysisObligation
     ) {
         count = count + 1usize
     }
-    if acceptedObligationEntryMatches(
+    if rejectedSourceObligationEntryMatches(
         "Block-Comment-Unterminated",
         8594usize,
-        "HelloUltraviolet::Reference::SourceText",
-        "runSourceTextLiteralsReference",
-        "Source/Reference/SourceText/Literals.uv"
+        "HelloUltraviolet::Fixtures::RejectedSource",
+        "validatedSourceTextRejectedSourceFixtureCount",
+        "Fixtures/RejectedSource/SourceText/UnterminatedBlockComment/Source/Main.uv"
     ) {
         count = count + 1usize
     }
@@ -610,12 +610,12 @@ public procedure validatedSourceTextAndLexicalStructureLexicalAnalysisObligation
     ) {
         count = count + 1usize
     }
-    if acceptedObligationEntryMatches(
+    if rejectedSourceObligationEntryMatches(
         "Lex-Numeric-Err",
         9099usize,
-        "HelloUltraviolet::Reference::SourceText",
-        "runSourceTextLiteralsReference",
-        "Source/Reference/SourceText/Literals.uv"
+        "HelloUltraviolet::Fixtures::RejectedSource",
+        "validatedSourceTextRejectedSourceFixtureCount",
+        "Fixtures/RejectedSource/SourceText/MalformedNumericLiteral/Source/Main.uv"
     ) {
         count = count + 1usize
     }
@@ -709,21 +709,21 @@ public procedure validatedSourceTextAndLexicalStructureLexicalAnalysisObligation
     ) {
         count = count + 1usize
     }
-    if acceptedObligationEntryMatches(
+    if rejectedSourceObligationEntryMatches(
         "Lex-String-Unterminated",
         9276usize,
-        "HelloUltraviolet::Reference::SourceText",
-        "runSourceTextLiteralsReference",
-        "Source/Reference/SourceText/Literals.uv"
+        "HelloUltraviolet::Fixtures::RejectedSource",
+        "validatedSourceTextRejectedSourceFixtureCount",
+        "Fixtures/RejectedSource/SourceText/UnterminatedString/Source/Main.uv"
     ) {
         count = count + 1usize
     }
-    if acceptedObligationEntryMatches(
+    if rejectedSourceObligationEntryMatches(
         "Lex-String-BadEscape",
         9294usize,
-        "HelloUltraviolet::Reference::SourceText",
-        "runSourceTextLiteralsReference",
-        "Source/Reference/SourceText/Literals.uv"
+        "HelloUltraviolet::Fixtures::RejectedSource",
+        "validatedSourceTextRejectedSourceFixtureCount",
+        "Fixtures/RejectedSource/SourceText/InvalidStringEscape/Source/Main.uv"
     ) {
         count = count + 1usize
     }

@@ -3194,3 +3194,434 @@ configured runtime constructor. `C0ExecutionDomain` now carries affinity and
 default priority, the runtime exports the configured constructor for both
 language symbol prefixes, and spawned/dispatch work inherits the enclosing
 domain defaults unless an explicit spawn option supplies a different value.
+
+## UVBOOT-0050: Async State Resume and Composition Lowering
+
+Status: repaired in the workspace bootstrap and verified by:
+
+```text
+LLVMBootstrap/cursive/build/Release/Cursive.exe build HelloUltraviolet --target-profile x86_64-win64 --build-progress off
+HelloUltraviolet/build/bin/HelloUltraviolet.exe
+HelloUltraviolet/build/bin/HelloUltraviolet.exe --audit
+LLVMBootstrap/cursive/build/Release/Cursive.exe build HelloUltraviolet --check --target-profile x86_64-win64 --build-progress off
+python3 Tools/ExtractObligationLedger.py --check
+```
+
+Reference source:
+
+- `Source/Reference/Async/StateMachine.uv`
+- `Source/Reference/Async/CompositionForms.uv`
+- `Source/Reference/Async/AsyncKeyIntegration.uv`
+
+Spec obligations exercised:
+
+- `rule.21.AsyncStateMachine`
+- `rule.21.AsyncResume`
+- `rule.21.AsyncYield`
+- `rule.21.AsyncYieldFrom`
+- `rule.21.AsyncSync`
+- `rule.21.AsyncAll`
+- `rule.21.AsyncRace`
+- `rule.21.AsyncComposition`
+
+Spec basis:
+
+- `SPECIFICATION.md:22695-22734` defines async values as modal state-machine
+  values with `@Completed`, `@Suspended`, and `@Failed` states.
+- `SPECIFICATION.md:23718` defines `Async@Suspended.resume(input)` with a
+  `unique` receiver and an input value.
+- `SPECIFICATION.md:23891-23934` defines streaming race suspension and
+  resumption behavior: the yielded arm remains the active arm when resumed.
+- `SPECIFICATION.md:24369-24373` defines `async` frame creation as allocating
+  a fresh frame.
+
+Spec-valid specimens:
+
+```ultraviolet
+let suspended: unique AsyncReferenceComputation = asyncSuspendsReference(18)
+return if suspended is {
+    @Suspended { output } {
+        let resumed = suspended~>resume(output + 1)
+        if resumed is {
+            @Completed { value } { value == 19 }
+            @Suspended { false }
+            @Failed { false }
+        }
+    }
+    @Completed { false }
+    @Failed { false }
+}
+```
+
+```ultraviolet
+let delegated: AsyncReferenceComputation = asyncYieldReleaseFromReference(42)
+```
+
+Observed bootstrap result before repair:
+
+The compiler accepted portions of the async reference source but either
+miscompiled the runtime behavior or rejected the spec-valid source at later
+bootstrap boundaries. The executable printed the failing compiled reference
+symbol, including:
+
+```text
+catalog compiled symbol failed: runAsyncStateMachineManualResumeReference
+reference failed: catalogCompiledSymbolsExecute
+exit=1
+```
+
+Failure analysis:
+
+Several async-specific bootstrap paths used generic or desugared types after
+the semantic checker had already established a more precise async signature:
+
+- Fresh async creation did not materialize to an explicitly expected
+  permission-qualified async type, preventing ordinary async calls from being
+  manually resumed through the specified `unique` receiver.
+- `if ... is` modal-state narrowing lost the receiver permission on async modal
+  states, so a unique async value narrowed to `Async@Suspended` no longer had
+  the permission required by `resume`.
+- Streaming-race suspension returned the yielded value but did not retain the
+  yielded arm's frame pointer in the async payload, so resumption could not
+  continue the active yielded arm.
+- The resume runtime call did not consistently materialize receiver and input
+  values as addressable pointers for the runtime ABI.
+- `yield` and `yield from` lowering looked up async signatures through the raw
+  return type and missed aliases such as `AsyncReferenceComputation`, causing
+  yielded input values to lower as `unit`.
+- `Async@Suspended.resume(input)` lowering kept the builtin generic parameter
+  `TIn` instead of specializing it from the receiver's concrete async type,
+  so the addressable input temporary could be created with the wrong size.
+
+Bootstrap repair owner:
+
+- `LLVMBootstrap/cursive/src/04_analysis/typing/type_infer.cpp`
+- `LLVMBootstrap/cursive/src/04_analysis/typing/if_case_check.cpp`
+- `LLVMBootstrap/cursive/src/05_codegen/llvm/emit/ir/async/race_yield.cpp`
+- `LLVMBootstrap/cursive/src/05_codegen/llvm/emit/ir/call/direct.cpp`
+- `LLVMBootstrap/cursive/src/05_codegen/lower/expr/yield_expr.cpp`
+- `LLVMBootstrap/cursive/src/05_codegen/lower/expr/yield_from_expr.cpp`
+- `LLVMBootstrap/cursive/src/05_codegen/lower/expr/method_call.cpp`
+
+Repair summary:
+
+Async creation now honors the expected permission-qualified async type when a
+fresh frame is created. Modal-state pattern narrowing preserves receiver
+permission for narrowed async states. Streaming race stores the yielded arm
+frame pointer in the async payload before returning `@Suspended`. Async resume
+calls materialize receiver and input values as runtime ABI pointers. `yield`
+and `yield from` lowering resolve async signatures through aliases. Method-call
+lowering specializes the builtin `resume` input parameter from the receiver's
+concrete `Async<Out, In, Result, Error>` signature before lowering the input
+argument.
+
+Verified bootstrap result after repair:
+
+```text
+Visual Studio bootstrap build wrapper: exit=0, rebuilt method_call.cpp and Cursive.exe
+Cursive.exe build HelloUltraviolet --target-profile x86_64-win64 --build-progress off: exit=0
+HelloUltraviolet.exe: exit=0, 0-byte stdout/stderr
+HelloUltraviolet.exe --audit: exit=0, 0-byte stdout/stderr
+Cursive.exe build HelloUltraviolet --check --target-profile x86_64-win64 --build-progress off: exit=0
+python3 Tools/ExtractObligationLedger.py --check: exit=0, obligations=6045
+```
+
+## UVBOOT-0052: Statement-Position Quote Splice Parsing and Expansion
+
+Status: repaired in the workspace bootstrap and verified by
+`Cursive.exe build HelloUltraviolet --check --target-profile x86_64-win64`.
+
+Reference source:
+
+- `Source/Reference/Comptime/QuoteSpliceEmission.uv`
+
+Spec obligations exercised:
+
+- `rule.22.Parse-Quote-Pattern`
+- `def.22.SpliceCompat`
+- `requirement.22.StringSpliceIdentifierHygiene`
+- `def.22.RenderSplice`
+- `rule.22.CtEval-Quote`
+- `requirement.22.QuoteBuildSpliceOrder`
+- `requirement.22.QuoteSpliceEmissionLowering`
+
+Spec basis:
+
+- `SPECIFICATION.md:25249-25255` defines `quote pattern`, expression splices,
+  and identifier splices.
+- `SPECIFICATION.md:25314-25319` defines splice compatibility, including
+  `SpliceCompat(Stmt, Ast::Stmt)` and string-valued identifier splices.
+- `SPECIFICATION.md:25331-25335` permits `$ident` in identifier-expression,
+  identifier-pattern, typed-pattern, and parameter-binding positions and makes
+  string-valued identifier splices bind in the emission environment.
+- `SPECIFICATION.md:25341-25348` requires quoted statement parsing to use the
+  ordinary statement parser extended with splice nodes and requires statement
+  splices to render `Ast::Stmt` or `Ast::Expr` payloads.
+- `SPECIFICATION.md:25363-25368` defines quote evaluation as parsing the
+  quoted body, building splices, and returning the resulting `Ast`.
+
+Spec-valid specimen:
+
+```ultraviolet
+let binding_name = "spliced_reference_value"
+let binding_pattern: Ast::Pattern = quote pattern { $binding_name: i32 }
+let binding_expr: Ast::Expr = quote { $binding_name + 1 }
+let return_statement: Ast::Stmt = quote { return $(binding_expr) }
+let third_ast: Ast::Item = quote {
+    internal procedure emittedIdentifierAndPatternSpliceReferenceValue() -> i32 {
+        let $(binding_pattern) = 52
+        $(return_statement);
+    }
+}
+emitter~>emit(third_ast)
+```
+
+Observed bootstrap result before repair:
+
+The compiler accepted the outer quote expression but expanded the emitted
+procedure as though the statement-position splice did not contribute the
+spliced `return` statement. The later procedure body check then rejected the
+emitted source:
+
+```text
+error[E-TYP-1507]: Procedure with non-unit return type requires explicit return statement
+  --> .../Source/Reference/Comptime/QuoteSpliceEmission.uv:25:22
+```
+
+Failure analysis:
+
+The parser's statement expression-start predicate did not include the `$`
+operator. In a quoted block, a statement beginning with `$(...)` therefore
+entered the parser's error-statement path instead of producing an expression
+statement containing `SpliceExprNode`. The quote builder also rendered
+expression splices through the expression renderer from expression-statement
+positions, so an `Ast::Stmt` value was not rendered through the statement
+splice renderer when it appeared as a statement body contribution.
+
+Bootstrap repair owner:
+
+- `LLVMBootstrap/cursive/src/02_source/parser/stmt/expr_stmt.cpp`
+- `LLVMBootstrap/cursive/src/03_comptime/quote.cpp`
+
+Repair summary:
+
+The statement expression-start predicate now treats `$` as an expression start,
+allowing `$(` to reach the splice parser in statement position. The quote
+builder now detects expression statements whose value is a splice expression
+and renders them through `RenderStmtSplice`. It also handles a block tail that
+is an `Ast::Stmt` splice by appending the rendered statement and clearing the
+tail expression, so both parsed statement-list and block-tail positions follow
+the statement-splice rendering rule.
+
+Verified bootstrap result after repair:
+
+```text
+Visual Studio bootstrap build wrapper: exit=0, rebuilt expr_stmt.cpp, quote.cpp, and Cursive.exe
+Focused quote statement-splice probe: exit=0
+Cursive.exe build HelloUltraviolet --check --target-profile x86_64-win64 --build-progress off: exit=0, total diagnostic set is five warnings plus two infos
+```
+
+## UVBOOT-0051: Shared Closure Capture Warning Duplication
+
+Status: repaired in the workspace bootstrap and verified by
+`Cursive.exe build HelloUltraviolet --check --target-profile x86_64-win64`.
+
+Reference source:
+
+- `Source/Reference/Keys/AcquisitionBlocks.uv`
+
+Spec obligations exercised:
+
+- `rule.19.ClosureInvocationSharedCaptures`
+- `diag.19.Key-Warn-SharedCapture`
+
+Spec basis:
+
+- `SPECIFICATION.md:17681-17684` defines closure capture sets from free
+  variables in closure bodies.
+- `SPECIFICATION.md:20649-20656` defines local closure invocation with
+  `shared` captures as acquiring required keys using lexical roots, executing
+  the closure body, and releasing keys at invocation end.
+- `SPECIFICATION.md:20706` assigns `W-CON-0009` to the compile-time warning
+  condition "Closure captures `shared` data".
+
+Spec-valid specimen:
+
+```ultraviolet
+internal procedure localClosureSharedCaptureValue() -> i32 {
+    var shared_value: shared i32 = 13
+    let reader = || -> i32 {
+        #shared_value read {
+            return shared_value + 0
+        }
+        return 0
+    }
+    return reader()
+}
+```
+
+Observed bootstrap result before repair:
+
+The compiler accepted the source but emitted `W-CON-0009` twice for the same
+closure-body span:
+
+```text
+warning[W-CON-0009]: Closure captures shared data
+  --> .../Source/Reference/Keys/AcquisitionBlocks.uv:38:28
+warning[W-CON-0009]: Closure captures shared data
+  --> .../Source/Reference/Keys/AcquisitionBlocks.uv:38:28
+```
+
+Bootstrap owner:
+
+- `LLVMBootstrap/cursive/src/04_analysis/typing/expr/closure_expr.cpp`
+
+Failure analysis:
+
+The closure typing path evaluates the shared-capture warning from more than
+one contextual pass over the same closure body. Both passes reached the same
+diagnostic site and appended the same diagnostic id and span. The SPEC defines
+the warning condition for a closure that captures `shared` data; duplicate
+emission for the identical code/span does not add a distinct source condition
+and pollutes the reference corpus diagnostic surface.
+
+Required bootstrap behavior:
+
+For a single closure capture condition at a single source span, the checker
+must emit one `W-CON-0009` diagnostic.
+
+Repair:
+
+- `LLVMBootstrap/cursive/src/04_analysis/typing/expr/closure_expr.cpp` now
+  checks the active diagnostic stream for an existing `W-CON-0009` at the same
+  span before appending the shared-capture warning.
+
+Verified bootstrap result after repair:
+
+```text
+Visual Studio bootstrap build wrapper: exit=0, rebuilt closure_expr.cpp and Cursive.exe
+Cursive.exe build HelloUltraviolet --check --target-profile x86_64-win64 --build-progress off: exit=0, one W-CON-0009 at AcquisitionBlocks.uv:38, total diagnostic set is five warnings plus two infos
+Cursive.exe build HelloUltraviolet --target-profile x86_64-win64 --build-progress off: exit=0, same diagnostic set
+HelloUltraviolet.exe: exit=0, 0-byte stdout/stderr
+HelloUltraviolet.exe --audit: exit=0, 0-byte stdout/stderr
+python3 Tools/ExtractObligationLedger.py --check: exit=0, obligations=6045
+```
+
+## UVBOOT-0053: Reactor Builtin Method Calls and Future Alias Inference
+
+Status: repaired in the workspace bootstrap and verified by
+`Cursive.exe build HelloUltraviolet --check --target-profile x86_64-win64`.
+
+Reference source:
+
+- `Source/Reference/Async/SuspensionForms.uv`
+
+Spec obligations exercised:
+
+- `rule.21.Wait`
+- `rule.21.Wait-Tracked`
+- `rule.21.Wait-Spawned`
+- `rule.13.ContextCapabilityFields`
+
+Spec basis:
+
+- `SPECIFICATION.md:13872-13875` defines the generic `Reactor::run` and
+  `Reactor::register` methods; `register` takes `Future<T, E>` and returns
+  `Tracked<T, E>`.
+- `SPECIFICATION.md:13984-13996` requires calls on dynamic receivers of builtin
+  capability classes, including `Reactor`, to lower to builtin method symbols
+  rather than ordinary vtable-call sequences.
+- `SPECIFICATION.md:29042-29051` includes `Reactor::run` and
+  `Reactor::register` in the builtin method table.
+
+Spec-valid specimen:
+
+```ultraviolet
+internal procedure asyncTrackedFutureReference(value: i32) -> Future<i32, bool> {
+    return value
+}
+
+internal procedure asyncWaitTrackedReference(context: Context) -> bool {
+    let tracked: Tracked<i32, bool> =
+        context.reactor~>register(asyncTrackedFutureReference(25))
+    let result: i32 | bool = wait tracked
+    return i32BoolUnionIsValue(result, 25)
+}
+```
+
+Observed bootstrap result before repair:
+
+The compiler rejected the builtin `Reactor` method call even though
+`context.reactor` has the SPEC-defined dynamic builtin capability type:
+
+```text
+error[E-TYP-2540]: Cannot call non-vtable-eligible procedure on dynamic receiver
+```
+
+After the dynamic builtin receiver path was selected, generic argument
+inference still failed for the `Future<T, E>` parameter when the actual return
+type was represented through the canonical async alias:
+
+```text
+error[E-SEM-2533]: Argument type is incompatible with parameter type
+```
+
+After those semantic defects were repaired, full object emission exposed the
+same source path as a runtime-interface defect:
+
+```text
+[cursive] EmitObjForModule: module=HelloUltraviolet::Reference::Async LLVM module emission failed before object generation
+error[E-OUT-0402]: Failed to emit object file (codegen or write)
+```
+
+Bootstrap owner:
+
+- `LLVMBootstrap/cursive/src/04_analysis/typing/expr/method_call.cpp`
+- `LLVMBootstrap/cursive/src/05_codegen/intrinsics/intrinsics_interface.cpp`
+- `LLVMBootstrap/cursive/runtime/include/cursive_rt.h`
+- `LLVMBootstrap/cursive/runtime/src/concurrency/parallel.c`
+
+Failure analysis:
+
+The method-call checker applied ordinary dynamic-dispatch vtable eligibility
+before recognizing the builtin capability class receiver path. That rejected
+SPEC-defined `Reactor` builtin methods, whose calls are required to lower
+through builtin method symbols. The generic method binder also matched formal
+and actual type paths without first following top-level aliases, so a
+`Future<T, E>` formal did not bind against the actual
+`Async<(), (), T, E>` representation. Once the source reached codegen, the
+runtime declaration table classified `Reactor::register` as a runtime symbol
+but did not provide its concrete type-erased C ABI signature, so
+`RuntimeDeclsCover` rejected the module before object generation.
+
+Required bootstrap behavior:
+
+Calls to `Reactor` methods through `Context.reactor` must use builtin
+capability method typing/lowering, and generic inference for builtin methods
+must bind through aliases such as `Future<T, E>`. A lowered runtime reference
+to `Reactor::register` must also have a matching runtime ABI declaration and
+implementation prototype.
+
+Repair:
+
+- `LLVMBootstrap/cursive/src/04_analysis/typing/expr/method_call.cpp` now keeps
+  builtin capability dynamic receiver calls on the builtin method path instead
+  of applying the ordinary vtable eligibility rejection.
+- Method-call generic binding now follows top-level aliases when comparing
+  applied type paths, allowing `Future<T, E>` to bind against the canonical
+  async representation.
+- `LLVMBootstrap/cursive/src/05_codegen/intrinsics/intrinsics_interface.cpp`
+  now declares the type-erased runtime ABI for `Reactor::register`.
+- The runtime header and implementation now expose the matching
+  `Reactor::register` C prototype.
+
+Verified bootstrap result after repair:
+
+```text
+Visual Studio bootstrap build wrapper: exit=0, rebuilt method_call.cpp and Cursive.exe
+Cursive.exe build HelloUltraviolet --check --target-profile x86_64-win64 --build-progress on --debug pipeline --max-errors 1: exit=0, total diagnostic set is five warnings plus two infos
+Visual Studio bootstrap build wrapper: exit=0, rebuilt intrinsics_interface.cpp, runtime objects, Cursive.exe, and UltravioletRT.lib
+Cursive.exe build HelloUltraviolet --target-profile x86_64-win64 --build-progress off --max-errors 1: exit=0, total diagnostic set is five warnings plus two infos
+HelloUltraviolet.exe: exit=0, 0-byte stdout/stderr
+HelloUltraviolet.exe --audit: exit=0, 0-byte stdout/stderr
+```

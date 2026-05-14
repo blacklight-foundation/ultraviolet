@@ -3355,7 +3355,7 @@ public procedure runReferenceCorpus(context: Context) -> ReferenceResult {
     passed = passed && recordReferenceResult(
         context,
         "runAsyncSuspensionFormsReference",
-        runAsyncSuspensionFormsReference()
+        runAsyncSuspensionFormsReference(context)
     )
     passed = passed && recordReferenceResult(
         context,

@@ -14,34 +14,23 @@ using HelloUltraviolet::Fixtures::RejectedSource::{ validatedExpressionsRejected
 using HelloUltraviolet::Fixtures::RejectedSource::{ validatedFFIRejectedSourceFixtureCount }
 using HelloUltraviolet::Fixtures::RejectedSource::{ validatedKeysRejectedSourceFixtureCount }
 using HelloUltraviolet::Fixtures::RejectedSource::{ validatedNamesRejectedSourceFixtureCount }
+using HelloUltraviolet::Fixtures::RejectedSource::{ validatedParallelismRejectedSourceFixtureCount }
 using HelloUltraviolet::Fixtures::RejectedSource::{ validatedParsingRejectedSourceFixtureCount }
 using HelloUltraviolet::Fixtures::RejectedSource::{ validatedPatternsRejectedSourceFixtureCount }
 using HelloUltraviolet::Fixtures::RejectedSource::{ validatedPolymorphismRejectedSourceFixtureCount }
 using HelloUltraviolet::Fixtures::RejectedSource::{ validatedProceduresRejectedSourceFixtureCount }
+using HelloUltraviolet::Fixtures::RejectedSource::{ validatedSourceTextRejectedSourceFixtureCount }
 using HelloUltraviolet::Fixtures::RejectedSource::{ validatedStatementsRejectedSourceFixtureCount }
 using HelloUltraviolet::Reference::Async::{ runAsyncAsyncKeyIntegrationReference }
 using HelloUltraviolet::Reference::Async::{ runAsyncAsyncTypeReference }
-using HelloUltraviolet::Reference::Async::{ runAsyncCompositionAllReference }
-using HelloUltraviolet::Reference::Async::{ runAsyncCompositionAllSingleReference }
-using HelloUltraviolet::Reference::Async::{ runAsyncCompositionAllSuspendedReference }
 using HelloUltraviolet::Reference::Async::{ runAsyncCompositionChainReference }
 using HelloUltraviolet::Reference::Async::{ runAsyncCompositionCombinatorsReference }
 using HelloUltraviolet::Reference::Async::{ runAsyncCompositionFilterReference }
 using HelloUltraviolet::Reference::Async::{ runAsyncCompositionFoldReference }
 using HelloUltraviolet::Reference::Async::{ runAsyncCompositionFormsReference }
-using HelloUltraviolet::Reference::Async::{ runAsyncCompositionLoopIterationReference }
 using HelloUltraviolet::Reference::Async::{ runAsyncCompositionMapReference }
-using HelloUltraviolet::Reference::Async::{ runAsyncCompositionRaceTuplePatternReference }
-using HelloUltraviolet::Reference::Async::{ runAsyncCompositionReturnRaceReference }
-using HelloUltraviolet::Reference::Async::{ runAsyncCompositionReturnRaceSuspendedReference }
-using HelloUltraviolet::Reference::Async::{ runAsyncCompositionStreamingRaceFailureReference }
-using HelloUltraviolet::Reference::Async::{ runAsyncCompositionStreamingRaceResumeReference }
-using HelloUltraviolet::Reference::Async::{ runAsyncCompositionStreamingRaceReference }
-using HelloUltraviolet::Reference::Async::{ runAsyncCompositionStreamingRaceSuccessReference }
-using HelloUltraviolet::Reference::Async::{ runAsyncCompositionSyncReference }
 using HelloUltraviolet::Reference::Async::{ runAsyncCompositionTakeReference }
 using HelloUltraviolet::Reference::Async::{ runAsyncCompositionUntilReference }
-using HelloUltraviolet::Reference::Async::{ runAsyncStateMachineManualResumeReference }
 using HelloUltraviolet::Reference::Async::{ runAsyncStateMachineReference }
 using HelloUltraviolet::Reference::Async::{ runAsyncSuspensionFormsReference }
 using HelloUltraviolet::Reference::Attributes::{ runAttributesDiagnosticAttributesReference }
@@ -191,47 +180,11 @@ using HelloUltraviolet::Reference::Types::{ runTypesRefinementsReference }
 using HelloUltraviolet::Reference::Types::{ runTypesSubtypingReference }
 
 public procedure expectedCatalogCompiledSymbolCount() -> usize {
-    return 522usize
+    return 559usize
 }
 
 public procedure catalogCompiledSymbolCount() -> usize {
-    return 522usize
-}
-
-internal procedure writeCatalogCompiledSymbolMessage(
-    context: Context,
-    text: string@View
-) -> bool {
-    let output: Outcome<(), IoError> = context.fs~>write_stderr(text)
-    return if output is {
-        @Value {
-            true
-        }
-        @Error {
-            false
-        }
-    }
-}
-
-internal procedure recordCatalogCompiledSymbolResult(
-    context: Context,
-    name: string@View,
-    passed: bool
-) -> bool {
-    if passed {
-        return true
-    }
-
-    if !writeCatalogCompiledSymbolMessage(context, "catalog compiled symbol failed: ") {
-        return false
-    }
-    if !writeCatalogCompiledSymbolMessage(context, name) {
-        return false
-    }
-    if !writeCatalogCompiledSymbolMessage(context, "\n") {
-        return false
-    }
-    return false
+    return 559usize
 }
 
 internal procedure catalogSymbolTargetMatches(
@@ -2003,6 +1956,270 @@ public procedure catalogCompiledSymbolTargetsAreIndexed() -> bool {
         ) &&
         catalogSymbolTargetMatches(
             "HelloUltraviolet::Fixtures::RejectedSource",
+            "validatedParallelismRejectedSourceFixtureCount",
+            "Fixtures/RejectedSource/Parallelism/BarrierDivergence/Source/Main.uv",
+            "HelloUltraviolet::Fixtures::RejectedSource",
+            "validatedParallelismRejectedSourceFixtureCount",
+            "Fixtures/RejectedSource/Parallelism/BarrierDivergence/Source/Main.uv"
+        ) &&
+        catalogSymbolTargetMatches(
+            "HelloUltraviolet::Fixtures::RejectedSource",
+            "validatedParallelismRejectedSourceFixtureCount",
+            "Fixtures/RejectedSource/Parallelism/BarrierOutsideGpuContext/Source/Main.uv",
+            "HelloUltraviolet::Fixtures::RejectedSource",
+            "validatedParallelismRejectedSourceFixtureCount",
+            "Fixtures/RejectedSource/Parallelism/BarrierOutsideGpuContext/Source/Main.uv"
+        ) &&
+        catalogSymbolTargetMatches(
+            "HelloUltraviolet::Fixtures::RejectedSource",
+            "validatedParallelismRejectedSourceFixtureCount",
+            "Fixtures/RejectedSource/Parallelism/CaptureSemanticsDiagnostics/Source/Main.uv",
+            "HelloUltraviolet::Fixtures::RejectedSource",
+            "validatedParallelismRejectedSourceFixtureCount",
+            "Fixtures/RejectedSource/Parallelism/CaptureSemanticsDiagnostics/Source/Main.uv"
+        ) &&
+        catalogSymbolTargetMatches(
+            "HelloUltraviolet::Fixtures::RejectedSource",
+            "validatedParallelismRejectedSourceFixtureCount",
+            "Fixtures/RejectedSource/Parallelism/DeterminismAndNestingDiagnostics/Source/Main.uv",
+            "HelloUltraviolet::Fixtures::RejectedSource",
+            "validatedParallelismRejectedSourceFixtureCount",
+            "Fixtures/RejectedSource/Parallelism/DeterminismAndNestingDiagnostics/Source/Main.uv"
+        ) &&
+        catalogSymbolTargetMatches(
+            "HelloUltraviolet::Fixtures::RejectedSource",
+            "validatedParallelismRejectedSourceFixtureCount",
+            "Fixtures/RejectedSource/Parallelism/DispatchChunkType/Source/Main.uv",
+            "HelloUltraviolet::Fixtures::RejectedSource",
+            "validatedParallelismRejectedSourceFixtureCount",
+            "Fixtures/RejectedSource/Parallelism/DispatchChunkType/Source/Main.uv"
+        ) &&
+        catalogSymbolTargetMatches(
+            "HelloUltraviolet::Fixtures::RejectedSource",
+            "validatedParallelismRejectedSourceFixtureCount",
+            "Fixtures/RejectedSource/Parallelism/DispatchDependencyConflict/Source/Main.uv",
+            "HelloUltraviolet::Fixtures::RejectedSource",
+            "validatedParallelismRejectedSourceFixtureCount",
+            "Fixtures/RejectedSource/Parallelism/DispatchDependencyConflict/Source/Main.uv"
+        ) &&
+        catalogSymbolTargetMatches(
+            "HelloUltraviolet::Fixtures::RejectedSource",
+            "validatedParallelismRejectedSourceFixtureCount",
+            "Fixtures/RejectedSource/Parallelism/DispatchDiagnostics/Source/Main.uv",
+            "HelloUltraviolet::Fixtures::RejectedSource",
+            "validatedParallelismRejectedSourceFixtureCount",
+            "Fixtures/RejectedSource/Parallelism/DispatchDiagnostics/Source/Main.uv"
+        ) &&
+        catalogSymbolTargetMatches(
+            "HelloUltraviolet::Fixtures::RejectedSource",
+            "validatedParallelismRejectedSourceFixtureCount",
+            "Fixtures/RejectedSource/Parallelism/DispatchInferFailure/Source/Main.uv",
+            "HelloUltraviolet::Fixtures::RejectedSource",
+            "validatedParallelismRejectedSourceFixtureCount",
+            "Fixtures/RejectedSource/Parallelism/DispatchInferFailure/Source/Main.uv"
+        ) &&
+        catalogSymbolTargetMatches(
+            "HelloUltraviolet::Fixtures::RejectedSource",
+            "validatedParallelismRejectedSourceFixtureCount",
+            "Fixtures/RejectedSource/Parallelism/DispatchNonAssociativeReduce/Source/Main.uv",
+            "HelloUltraviolet::Fixtures::RejectedSource",
+            "validatedParallelismRejectedSourceFixtureCount",
+            "Fixtures/RejectedSource/Parallelism/DispatchNonAssociativeReduce/Source/Main.uv"
+        ) &&
+        catalogSymbolTargetMatches(
+            "HelloUltraviolet::Fixtures::RejectedSource",
+            "validatedParallelismRejectedSourceFixtureCount",
+            "Fixtures/RejectedSource/Parallelism/DispatchOutsideParallel/Source/Main.uv",
+            "HelloUltraviolet::Fixtures::RejectedSource",
+            "validatedParallelismRejectedSourceFixtureCount",
+            "Fixtures/RejectedSource/Parallelism/DispatchOutsideParallel/Source/Main.uv"
+        ) &&
+        catalogSymbolTargetMatches(
+            "HelloUltraviolet::Fixtures::RejectedSource",
+            "validatedParallelismRejectedSourceFixtureCount",
+            "Fixtures/RejectedSource/Parallelism/DispatchRequiresParallelContext/Source/Main.uv",
+            "HelloUltraviolet::Fixtures::RejectedSource",
+            "validatedParallelismRejectedSourceFixtureCount",
+            "Fixtures/RejectedSource/Parallelism/DispatchRequiresParallelContext/Source/Main.uv"
+        ) &&
+        catalogSymbolTargetMatches(
+            "HelloUltraviolet::Fixtures::RejectedSource",
+            "validatedParallelismRejectedSourceFixtureCount",
+            "Fixtures/RejectedSource/Parallelism/ExecutionDomainsDiagnostics/Source/Main.uv",
+            "HelloUltraviolet::Fixtures::RejectedSource",
+            "validatedParallelismRejectedSourceFixtureCount",
+            "Fixtures/RejectedSource/Parallelism/ExecutionDomainsDiagnostics/Source/Main.uv"
+        ) &&
+        catalogSymbolTargetMatches(
+            "HelloUltraviolet::Fixtures::RejectedSource",
+            "validatedParallelismRejectedSourceFixtureCount",
+            "Fixtures/RejectedSource/Parallelism/GpuCaptureHeapProvenance/Source/Main.uv",
+            "HelloUltraviolet::Fixtures::RejectedSource",
+            "validatedParallelismRejectedSourceFixtureCount",
+            "Fixtures/RejectedSource/Parallelism/GpuCaptureHeapProvenance/Source/Main.uv"
+        ) &&
+        catalogSymbolTargetMatches(
+            "HelloUltraviolet::Fixtures::RejectedSource",
+            "validatedParallelismRejectedSourceFixtureCount",
+            "Fixtures/RejectedSource/Parallelism/GpuCaptureNonGpuSafe/Source/Main.uv",
+            "HelloUltraviolet::Fixtures::RejectedSource",
+            "validatedParallelismRejectedSourceFixtureCount",
+            "Fixtures/RejectedSource/Parallelism/GpuCaptureNonGpuSafe/Source/Main.uv"
+        ) &&
+        catalogSymbolTargetMatches(
+            "HelloUltraviolet::Fixtures::RejectedSource",
+            "validatedParallelismRejectedSourceFixtureCount",
+            "Fixtures/RejectedSource/Parallelism/GpuCaptureShared/Source/Main.uv",
+            "HelloUltraviolet::Fixtures::RejectedSource",
+            "validatedParallelismRejectedSourceFixtureCount",
+            "Fixtures/RejectedSource/Parallelism/GpuCaptureShared/Source/Main.uv"
+        ) &&
+        catalogSymbolTargetMatches(
+            "HelloUltraviolet::Fixtures::RejectedSource",
+            "validatedParallelismRejectedSourceFixtureCount",
+            "Fixtures/RejectedSource/Parallelism/GpuIntrinsicOutside/Source/Main.uv",
+            "HelloUltraviolet::Fixtures::RejectedSource",
+            "validatedParallelismRejectedSourceFixtureCount",
+            "Fixtures/RejectedSource/Parallelism/GpuIntrinsicOutside/Source/Main.uv"
+        ) &&
+        catalogSymbolTargetMatches(
+            "HelloUltraviolet::Fixtures::RejectedSource",
+            "validatedParallelismRejectedSourceFixtureCount",
+            "Fixtures/RejectedSource/Parallelism/GpuPtrAddrSpace/Source/Main.uv",
+            "HelloUltraviolet::Fixtures::RejectedSource",
+            "validatedParallelismRejectedSourceFixtureCount",
+            "Fixtures/RejectedSource/Parallelism/GpuPtrAddrSpace/Source/Main.uv"
+        ) &&
+        catalogSymbolTargetMatches(
+            "HelloUltraviolet::Fixtures::RejectedSource",
+            "validatedParallelismRejectedSourceFixtureCount",
+            "Fixtures/RejectedSource/Parallelism/GpuPtrDerefHostMemory/Source/Main.uv",
+            "HelloUltraviolet::Fixtures::RejectedSource",
+            "validatedParallelismRejectedSourceFixtureCount",
+            "Fixtures/RejectedSource/Parallelism/GpuPtrDerefHostMemory/Source/Main.uv"
+        ) &&
+        catalogSymbolTargetMatches(
+            "HelloUltraviolet::Fixtures::RejectedSource",
+            "validatedParallelismRejectedSourceFixtureCount",
+            "Fixtures/RejectedSource/Parallelism/GpuSafeGenericUnbounded/Source/Main.uv",
+            "HelloUltraviolet::Fixtures::RejectedSource",
+            "validatedParallelismRejectedSourceFixtureCount",
+            "Fixtures/RejectedSource/Parallelism/GpuSafeGenericUnbounded/Source/Main.uv"
+        ) &&
+        catalogSymbolTargetMatches(
+            "HelloUltraviolet::Fixtures::RejectedSource",
+            "validatedParallelismRejectedSourceFixtureCount",
+            "Fixtures/RejectedSource/Parallelism/GpuSafeRecordFieldDiagnostic/Source/Main.uv",
+            "HelloUltraviolet::Fixtures::RejectedSource",
+            "validatedParallelismRejectedSourceFixtureCount",
+            "Fixtures/RejectedSource/Parallelism/GpuSafeRecordFieldDiagnostic/Source/Main.uv"
+        ) &&
+        catalogSymbolTargetMatches(
+            "HelloUltraviolet::Fixtures::RejectedSource",
+            "validatedParallelismRejectedSourceFixtureCount",
+            "Fixtures/RejectedSource/Parallelism/GpuSafeTypeDiagnostic/Source/Main.uv",
+            "HelloUltraviolet::Fixtures::RejectedSource",
+            "validatedParallelismRejectedSourceFixtureCount",
+            "Fixtures/RejectedSource/Parallelism/GpuSafeTypeDiagnostic/Source/Main.uv"
+        ) &&
+        catalogSymbolTargetMatches(
+            "HelloUltraviolet::Fixtures::RejectedSource",
+            "validatedParallelismRejectedSourceFixtureCount",
+            "Fixtures/RejectedSource/Parallelism/KeyBlockGpuContext/Source/Main.uv",
+            "HelloUltraviolet::Fixtures::RejectedSource",
+            "validatedParallelismRejectedSourceFixtureCount",
+            "Fixtures/RejectedSource/Parallelism/KeyBlockGpuContext/Source/Main.uv"
+        ) &&
+        catalogSymbolTargetMatches(
+            "HelloUltraviolet::Fixtures::RejectedSource",
+            "validatedParallelismRejectedSourceFixtureCount",
+            "Fixtures/RejectedSource/Parallelism/NestedGpuParallel/Source/Main.uv",
+            "HelloUltraviolet::Fixtures::RejectedSource",
+            "validatedParallelismRejectedSourceFixtureCount",
+            "Fixtures/RejectedSource/Parallelism/NestedGpuParallel/Source/Main.uv"
+        ) &&
+        catalogSymbolTargetMatches(
+            "HelloUltraviolet::Fixtures::RejectedSource",
+            "validatedParallelismRejectedSourceFixtureCount",
+            "Fixtures/RejectedSource/Parallelism/ParallelCancelOptionType/Source/Main.uv",
+            "HelloUltraviolet::Fixtures::RejectedSource",
+            "validatedParallelismRejectedSourceFixtureCount",
+            "Fixtures/RejectedSource/Parallelism/ParallelCancelOptionType/Source/Main.uv"
+        ) &&
+        catalogSymbolTargetMatches(
+            "HelloUltraviolet::Fixtures::RejectedSource",
+            "validatedParallelismRejectedSourceFixtureCount",
+            "Fixtures/RejectedSource/Parallelism/ParallelClosureCaptureOuterMove/Source/Main.uv",
+            "HelloUltraviolet::Fixtures::RejectedSource",
+            "validatedParallelismRejectedSourceFixtureCount",
+            "Fixtures/RejectedSource/Parallelism/ParallelClosureCaptureOuterMove/Source/Main.uv"
+        ) &&
+        catalogSymbolTargetMatches(
+            "HelloUltraviolet::Fixtures::RejectedSource",
+            "validatedParallelismRejectedSourceFixtureCount",
+            "Fixtures/RejectedSource/Parallelism/ParallelClosureCaptureUnique/Source/Main.uv",
+            "HelloUltraviolet::Fixtures::RejectedSource",
+            "validatedParallelismRejectedSourceFixtureCount",
+            "Fixtures/RejectedSource/Parallelism/ParallelClosureCaptureUnique/Source/Main.uv"
+        ) &&
+        catalogSymbolTargetMatches(
+            "HelloUltraviolet::Fixtures::RejectedSource",
+            "validatedParallelismRejectedSourceFixtureCount",
+            "Fixtures/RejectedSource/Parallelism/ParallelDim3Const/Source/Main.uv",
+            "HelloUltraviolet::Fixtures::RejectedSource",
+            "validatedParallelismRejectedSourceFixtureCount",
+            "Fixtures/RejectedSource/Parallelism/ParallelDim3Const/Source/Main.uv"
+        ) &&
+        catalogSymbolTargetMatches(
+            "HelloUltraviolet::Fixtures::RejectedSource",
+            "validatedParallelismRejectedSourceFixtureCount",
+            "Fixtures/RejectedSource/Parallelism/ParallelDomainNotExecutionDomain/Source/Main.uv",
+            "HelloUltraviolet::Fixtures::RejectedSource",
+            "validatedParallelismRejectedSourceFixtureCount",
+            "Fixtures/RejectedSource/Parallelism/ParallelDomainNotExecutionDomain/Source/Main.uv"
+        ) &&
+        catalogSymbolTargetMatches(
+            "HelloUltraviolet::Fixtures::RejectedSource",
+            "validatedParallelismRejectedSourceFixtureCount",
+            "Fixtures/RejectedSource/Parallelism/ParallelDomainParameter/Source/Main.uv",
+            "HelloUltraviolet::Fixtures::RejectedSource",
+            "validatedParallelismRejectedSourceFixtureCount",
+            "Fixtures/RejectedSource/Parallelism/ParallelDomainParameter/Source/Main.uv"
+        ) &&
+        catalogSymbolTargetMatches(
+            "HelloUltraviolet::Fixtures::RejectedSource",
+            "validatedParallelismRejectedSourceFixtureCount",
+            "Fixtures/RejectedSource/Parallelism/ParallelEscapingClosureSpawn/Source/Main.uv",
+            "HelloUltraviolet::Fixtures::RejectedSource",
+            "validatedParallelismRejectedSourceFixtureCount",
+            "Fixtures/RejectedSource/Parallelism/ParallelEscapingClosureSpawn/Source/Main.uv"
+        ) &&
+        catalogSymbolTargetMatches(
+            "HelloUltraviolet::Fixtures::RejectedSource",
+            "validatedParallelismRejectedSourceFixtureCount",
+            "Fixtures/RejectedSource/Parallelism/ParallelWorkgroupSize/Source/Main.uv",
+            "HelloUltraviolet::Fixtures::RejectedSource",
+            "validatedParallelismRejectedSourceFixtureCount",
+            "Fixtures/RejectedSource/Parallelism/ParallelWorkgroupSize/Source/Main.uv"
+        ) &&
+        catalogSymbolTargetMatches(
+            "HelloUltraviolet::Fixtures::RejectedSource",
+            "validatedParallelismRejectedSourceFixtureCount",
+            "Fixtures/RejectedSource/Parallelism/SpawnInvalidPriorityOption/Source/Main.uv",
+            "HelloUltraviolet::Fixtures::RejectedSource",
+            "validatedParallelismRejectedSourceFixtureCount",
+            "Fixtures/RejectedSource/Parallelism/SpawnInvalidPriorityOption/Source/Main.uv"
+        ) &&
+        catalogSymbolTargetMatches(
+            "HelloUltraviolet::Fixtures::RejectedSource",
+            "validatedParallelismRejectedSourceFixtureCount",
+            "Fixtures/RejectedSource/Parallelism/SpawnOutsideParallel/Source/Main.uv",
+            "HelloUltraviolet::Fixtures::RejectedSource",
+            "validatedParallelismRejectedSourceFixtureCount",
+            "Fixtures/RejectedSource/Parallelism/SpawnOutsideParallel/Source/Main.uv"
+        ) &&
+        catalogSymbolTargetMatches(
+            "HelloUltraviolet::Fixtures::RejectedSource",
             "validatedParsingRejectedSourceFixtureCount",
             "Fixtures/RejectedSource/Parsing/MissingStatementTerminator/Source/Main.uv",
             "HelloUltraviolet::Fixtures::RejectedSource",
@@ -2880,6 +3097,38 @@ public procedure catalogCompiledSymbolTargetsAreIndexed() -> bool {
             "HelloUltraviolet::Fixtures::RejectedSource",
             "validatedProceduresRejectedSourceFixtureCount",
             "Fixtures/RejectedSource/Procedures/VerificationLogicDiagnostic/Source/Main.uv"
+        ) &&
+        catalogSymbolTargetMatches(
+            "HelloUltraviolet::Fixtures::RejectedSource",
+            "validatedSourceTextRejectedSourceFixtureCount",
+            "Fixtures/RejectedSource/SourceText/InvalidStringEscape/Source/Main.uv",
+            "HelloUltraviolet::Fixtures::RejectedSource",
+            "validatedSourceTextRejectedSourceFixtureCount",
+            "Fixtures/RejectedSource/SourceText/InvalidStringEscape/Source/Main.uv"
+        ) &&
+        catalogSymbolTargetMatches(
+            "HelloUltraviolet::Fixtures::RejectedSource",
+            "validatedSourceTextRejectedSourceFixtureCount",
+            "Fixtures/RejectedSource/SourceText/MalformedNumericLiteral/Source/Main.uv",
+            "HelloUltraviolet::Fixtures::RejectedSource",
+            "validatedSourceTextRejectedSourceFixtureCount",
+            "Fixtures/RejectedSource/SourceText/MalformedNumericLiteral/Source/Main.uv"
+        ) &&
+        catalogSymbolTargetMatches(
+            "HelloUltraviolet::Fixtures::RejectedSource",
+            "validatedSourceTextRejectedSourceFixtureCount",
+            "Fixtures/RejectedSource/SourceText/UnterminatedBlockComment/Source/Main.uv",
+            "HelloUltraviolet::Fixtures::RejectedSource",
+            "validatedSourceTextRejectedSourceFixtureCount",
+            "Fixtures/RejectedSource/SourceText/UnterminatedBlockComment/Source/Main.uv"
+        ) &&
+        catalogSymbolTargetMatches(
+            "HelloUltraviolet::Fixtures::RejectedSource",
+            "validatedSourceTextRejectedSourceFixtureCount",
+            "Fixtures/RejectedSource/SourceText/UnterminatedString/Source/Main.uv",
+            "HelloUltraviolet::Fixtures::RejectedSource",
+            "validatedSourceTextRejectedSourceFixtureCount",
+            "Fixtures/RejectedSource/SourceText/UnterminatedString/Source/Main.uv"
         ) &&
         catalogSymbolTargetMatches(
             "HelloUltraviolet::Fixtures::RejectedSource",
@@ -4428,11 +4677,7 @@ public procedure catalogCompiledSymbolTargetsAreIndexed() -> bool {
 }
 
 public procedure catalogCompiledSymbolsExecute(context: Context) -> bool {
-    return recordCatalogCompiledSymbolResult(
-            context,
-            "specClarificationLedgerIsIndexed",
-            specClarificationLedgerIsIndexed()
-        ) &&
+    return specClarificationLedgerIsIndexed() &&
         validatedAcceptedProjectFixtureCount() > 0usize &&
         validatedAcceptedProjectFixtureCount() > 0usize &&
         validatedAcceptedProjectFixtureCount() > 0usize &&
@@ -4651,6 +4896,39 @@ public procedure catalogCompiledSymbolsExecute(context: Context) -> bool {
         validatedKeysRejectedSourceFixtureCount() > 0usize &&
         validatedKeysRejectedSourceFixtureCount() > 0usize &&
         validatedNamesRejectedSourceFixtureCount() > 0usize &&
+        validatedParallelismRejectedSourceFixtureCount() > 0usize &&
+        validatedParallelismRejectedSourceFixtureCount() > 0usize &&
+        validatedParallelismRejectedSourceFixtureCount() > 0usize &&
+        validatedParallelismRejectedSourceFixtureCount() > 0usize &&
+        validatedParallelismRejectedSourceFixtureCount() > 0usize &&
+        validatedParallelismRejectedSourceFixtureCount() > 0usize &&
+        validatedParallelismRejectedSourceFixtureCount() > 0usize &&
+        validatedParallelismRejectedSourceFixtureCount() > 0usize &&
+        validatedParallelismRejectedSourceFixtureCount() > 0usize &&
+        validatedParallelismRejectedSourceFixtureCount() > 0usize &&
+        validatedParallelismRejectedSourceFixtureCount() > 0usize &&
+        validatedParallelismRejectedSourceFixtureCount() > 0usize &&
+        validatedParallelismRejectedSourceFixtureCount() > 0usize &&
+        validatedParallelismRejectedSourceFixtureCount() > 0usize &&
+        validatedParallelismRejectedSourceFixtureCount() > 0usize &&
+        validatedParallelismRejectedSourceFixtureCount() > 0usize &&
+        validatedParallelismRejectedSourceFixtureCount() > 0usize &&
+        validatedParallelismRejectedSourceFixtureCount() > 0usize &&
+        validatedParallelismRejectedSourceFixtureCount() > 0usize &&
+        validatedParallelismRejectedSourceFixtureCount() > 0usize &&
+        validatedParallelismRejectedSourceFixtureCount() > 0usize &&
+        validatedParallelismRejectedSourceFixtureCount() > 0usize &&
+        validatedParallelismRejectedSourceFixtureCount() > 0usize &&
+        validatedParallelismRejectedSourceFixtureCount() > 0usize &&
+        validatedParallelismRejectedSourceFixtureCount() > 0usize &&
+        validatedParallelismRejectedSourceFixtureCount() > 0usize &&
+        validatedParallelismRejectedSourceFixtureCount() > 0usize &&
+        validatedParallelismRejectedSourceFixtureCount() > 0usize &&
+        validatedParallelismRejectedSourceFixtureCount() > 0usize &&
+        validatedParallelismRejectedSourceFixtureCount() > 0usize &&
+        validatedParallelismRejectedSourceFixtureCount() > 0usize &&
+        validatedParallelismRejectedSourceFixtureCount() > 0usize &&
+        validatedParallelismRejectedSourceFixtureCount() > 0usize &&
         validatedParsingRejectedSourceFixtureCount() > 0usize &&
         validatedPatternsRejectedSourceFixtureCount() > 0usize &&
         validatedPatternsRejectedSourceFixtureCount() > 0usize &&
@@ -4761,6 +5039,10 @@ public procedure catalogCompiledSymbolsExecute(context: Context) -> bool {
         validatedProceduresRejectedSourceFixtureCount() > 0usize &&
         validatedProceduresRejectedSourceFixtureCount() > 0usize &&
         validatedProceduresRejectedSourceFixtureCount() > 0usize &&
+        validatedSourceTextRejectedSourceFixtureCount() > 0usize &&
+        validatedSourceTextRejectedSourceFixtureCount() > 0usize &&
+        validatedSourceTextRejectedSourceFixtureCount() > 0usize &&
+        validatedSourceTextRejectedSourceFixtureCount() > 0usize &&
         validatedStatementsRejectedSourceFixtureCount() > 0usize &&
         validatedStatementsRejectedSourceFixtureCount() > 0usize &&
         validatedStatementsRejectedSourceFixtureCount() > 0usize &&
@@ -4797,136 +5079,18 @@ public procedure catalogCompiledSymbolsExecute(context: Context) -> bool {
         validatedStatementsRejectedSourceFixtureCount() > 0usize &&
         validatedStatementsRejectedSourceFixtureCount() > 0usize &&
         validatedStatementsRejectedSourceFixtureCount() > 0usize &&
-        recordCatalogCompiledSymbolResult(
-            context,
-            "runAsyncAsyncKeyIntegrationReference",
-            runAsyncAsyncKeyIntegrationReference()
-        ) &&
-        recordCatalogCompiledSymbolResult(
-            context,
-            "runAsyncAsyncTypeReference",
-            runAsyncAsyncTypeReference()
-        ) &&
-        recordCatalogCompiledSymbolResult(
-            context,
-            "runAsyncCompositionChainReference",
-            runAsyncCompositionChainReference()
-        ) &&
-        recordCatalogCompiledSymbolResult(
-            context,
-            "runAsyncCompositionCombinatorsReference",
-            runAsyncCompositionCombinatorsReference()
-        ) &&
-        recordCatalogCompiledSymbolResult(
-            context,
-            "runAsyncCompositionFilterReference",
-            runAsyncCompositionFilterReference()
-        ) &&
-        recordCatalogCompiledSymbolResult(
-            context,
-            "runAsyncCompositionFoldReference",
-            runAsyncCompositionFoldReference()
-        ) &&
-        recordCatalogCompiledSymbolResult(
-            context,
-            "runAsyncCompositionSyncReference",
-            runAsyncCompositionSyncReference()
-        ) &&
-        recordCatalogCompiledSymbolResult(
-            context,
-            "runAsyncCompositionAllReference",
-            runAsyncCompositionAllReference()
-        ) &&
-        recordCatalogCompiledSymbolResult(
-            context,
-            "runAsyncCompositionAllSuspendedReference",
-            runAsyncCompositionAllSuspendedReference()
-        ) &&
-        recordCatalogCompiledSymbolResult(
-            context,
-            "runAsyncCompositionAllSingleReference",
-            runAsyncCompositionAllSingleReference()
-        ) &&
-        recordCatalogCompiledSymbolResult(
-            context,
-            "runAsyncCompositionReturnRaceReference",
-            runAsyncCompositionReturnRaceReference()
-        ) &&
-        recordCatalogCompiledSymbolResult(
-            context,
-            "runAsyncCompositionReturnRaceSuspendedReference",
-            runAsyncCompositionReturnRaceSuspendedReference()
-        ) &&
-        recordCatalogCompiledSymbolResult(
-            context,
-            "runAsyncCompositionRaceTuplePatternReference",
-            runAsyncCompositionRaceTuplePatternReference()
-        ) &&
-        recordCatalogCompiledSymbolResult(
-            context,
-            "runAsyncCompositionStreamingRaceSuccessReference",
-            runAsyncCompositionStreamingRaceSuccessReference()
-        ) &&
-        recordCatalogCompiledSymbolResult(
-            context,
-            "runAsyncCompositionStreamingRaceFailureReference",
-            runAsyncCompositionStreamingRaceFailureReference()
-        ) &&
-        recordCatalogCompiledSymbolResult(
-            context,
-            "runAsyncCompositionStreamingRaceResumeReference",
-            runAsyncCompositionStreamingRaceResumeReference()
-        ) &&
-        recordCatalogCompiledSymbolResult(
-            context,
-            "runAsyncCompositionStreamingRaceReference",
-            runAsyncCompositionStreamingRaceReference()
-        ) &&
-        recordCatalogCompiledSymbolResult(
-            context,
-            "runAsyncCompositionUntilReference",
-            runAsyncCompositionUntilReference()
-        ) &&
-        recordCatalogCompiledSymbolResult(
-            context,
-            "runAsyncCompositionLoopIterationReference",
-            runAsyncCompositionLoopIterationReference()
-        ) &&
-        recordCatalogCompiledSymbolResult(
-            context,
-            "runAsyncCompositionFormsReference",
-            runAsyncCompositionFormsReference()
-        ) &&
-        recordCatalogCompiledSymbolResult(
-            context,
-            "runAsyncCompositionMapReference",
-            runAsyncCompositionMapReference()
-        ) &&
-        recordCatalogCompiledSymbolResult(
-            context,
-            "runAsyncCompositionTakeReference",
-            runAsyncCompositionTakeReference()
-        ) &&
-        recordCatalogCompiledSymbolResult(
-            context,
-            "runAsyncCompositionUntilReference",
-            runAsyncCompositionUntilReference()
-        ) &&
-        recordCatalogCompiledSymbolResult(
-            context,
-            "runAsyncStateMachineManualResumeReference",
-            runAsyncStateMachineManualResumeReference()
-        ) &&
-        recordCatalogCompiledSymbolResult(
-            context,
-            "runAsyncStateMachineReference",
-            runAsyncStateMachineReference()
-        ) &&
-        recordCatalogCompiledSymbolResult(
-            context,
-            "runAsyncSuspensionFormsReference",
-            runAsyncSuspensionFormsReference()
-        ) &&
+        runAsyncAsyncKeyIntegrationReference() &&
+        runAsyncAsyncTypeReference() &&
+        runAsyncCompositionChainReference() &&
+        runAsyncCompositionCombinatorsReference() &&
+        runAsyncCompositionFilterReference() &&
+        runAsyncCompositionFoldReference() &&
+        runAsyncCompositionFormsReference() &&
+        runAsyncCompositionMapReference() &&
+        runAsyncCompositionTakeReference() &&
+        runAsyncCompositionUntilReference() &&
+        runAsyncStateMachineReference() &&
+        runAsyncSuspensionFormsReference(context) &&
         runAttributesDiagnosticAttributesReference() &&
         runAttributesGeneralAttributesReference() &&
         runAttributesLayoutAttributesReference() &&

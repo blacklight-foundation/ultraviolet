@@ -52,12 +52,12 @@ public procedure validatedStructuredParallelismDeterminismAndNestingObligations(
     ) {
         count = count + 1usize
     }
-    if acceptedObligationEntryMatches(
+    if rejectedSourceObligationEntryMatches(
         "requirement.20.NoNestedGpuParallel",
         78431usize,
-        "HelloUltraviolet::Reference::Parallelism",
-        "runParallelismDeterminismReference",
-        "Source/Reference/Parallelism/Determinism.uv"
+        "HelloUltraviolet::Fixtures::RejectedSource",
+        "validatedParallelismRejectedSourceFixtureCount",
+        "Fixtures/RejectedSource/Parallelism/NestedGpuParallel/Source/Main.uv"
     ) {
         count = count + 1usize
     }
@@ -97,12 +97,12 @@ public procedure validatedStructuredParallelismDeterminismAndNestingObligations(
     ) {
         count = count + 1usize
     }
-    if acceptedObligationEntryMatches(
+    if rejectedSourceObligationEntryMatches(
         "diagnostics.20.DeterminismAndNesting",
         78525usize,
-        "HelloUltraviolet::Reference::Parallelism",
-        "runParallelismDeterminismReference",
-        "Source/Reference/Parallelism/Determinism.uv"
+        "HelloUltraviolet::Fixtures::RejectedSource",
+        "validatedParallelismRejectedSourceFixtureCount",
+        "Fixtures/RejectedSource/Parallelism/DeterminismAndNestingDiagnostics/Source/Main.uv"
     ) {
         count = count + 1usize
     }
