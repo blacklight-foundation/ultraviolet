@@ -837,6 +837,17 @@ static PatternMatchedTypeResult PatternMatchedType(
   return ConcreteModalPatternType(ctx, pattern, expected);
 }
 
+static TypeRef PreserveScrutineePermission(const TypeRef& scrutinee_type,
+                                           const TypeRef& narrowed_type) {
+  if (!scrutinee_type || !narrowed_type) {
+    return narrowed_type;
+  }
+  if (const auto* perm = std::get_if<TypePerm>(&scrutinee_type->node)) {
+    return MakeTypePerm(perm->perm, narrowed_type);
+  }
+  return narrowed_type;
+}
+
 static bool PatternContainsTypedPattern(const ast::PatternPtr& pattern) {
   if (!pattern) {
     return false;
@@ -1557,12 +1568,14 @@ ExprTypeResult TypeIfIsExpr(const ScopeContext& ctx,
   if (!scrutinee_base) {
     return result;
   }
+  const TypeRef scrutinee_match_type =
+      PreserveScrutineePermission(scrutinee.type, scrutinee_base);
 
   const auto case_scope = CaseScopeEnv(ctx,
                                        expr.scrutinee,
                                        env,
                                        expr.pattern,
-                                       scrutinee_base,
+                                       scrutinee_match_type,
                                        ast::Mutability::Let);
   if (!case_scope.ok) {
     result.diag_id = case_scope.diag_id;
@@ -1649,12 +1662,14 @@ CheckResult CheckIfIsExpr(const ScopeContext& ctx,
   if (!scrutinee_base) {
     return result;
   }
+  const TypeRef scrutinee_match_type =
+      PreserveScrutineePermission(scrutinee.type, scrutinee_base);
 
   const auto case_scope = CaseScopeEnv(ctx,
                                        expr.scrutinee,
                                        env,
                                        expr.pattern,
-                                       scrutinee_base,
+                                       scrutinee_match_type,
                                        ast::Mutability::Let);
   if (!case_scope.ok) {
     result.diag_id = case_scope.diag_id;
@@ -1744,7 +1759,8 @@ ExprTypeResult TypeIfCaseExpr(const ScopeContext& ctx,
   if (!scrutinee_base) {
     return result;
   }
-  const TypeRef scrutinee_match_type = scrutinee_base;
+  const TypeRef scrutinee_match_type =
+      PreserveScrutineePermission(scrutinee.type, scrutinee_base);
   const bool has_else = static_cast<bool>(expr.else_expr);
   const bool requires_exhaustive = !has_else;
 
@@ -1909,7 +1925,8 @@ CheckResult CheckIfCaseExpr(const ScopeContext& ctx,
   if (!scrutinee_base) {
     return result;
   }
-  const TypeRef scrutinee_match_type = scrutinee_base;
+  const TypeRef scrutinee_match_type =
+      PreserveScrutineePermission(scrutinee.type, scrutinee_base);
   const bool has_else = static_cast<bool>(expr.else_expr);
   const bool requires_exhaustive = !has_else;
 

@@ -49,6 +49,7 @@
 #include "00_core/symbols.h"
 
 #include <algorithm>
+#include <cstdint>
 #include <iostream>
 #include <variant>
 
@@ -78,6 +79,22 @@ ParamTypeList ParamTypesFromFuncParams(const std::vector<analysis::TypeFuncParam
         types.push_back(param.type);
     }
     return types;
+}
+
+IRValue MakeImmediateI32(std::string name, std::int32_t raw, LowerCtx& ctx) {
+    IRValue value;
+    value.kind = IRValue::Kind::Immediate;
+    value.name = std::move(name);
+    value.literal_id = ++(*ctx.temp_counter);
+    const auto bits = static_cast<std::uint32_t>(raw);
+    value.bytes = {
+        static_cast<std::uint8_t>(bits & 0xffu),
+        static_cast<std::uint8_t>((bits >> 8u) & 0xffu),
+        static_cast<std::uint8_t>((bits >> 16u) & 0xffu),
+        static_cast<std::uint8_t>((bits >> 24u) & 0xffu),
+    };
+    ctx.RegisterValueType(value, analysis::MakeTypePrim("i32"));
+    return value;
 }
 
 // Extract parameter modes from syntax parameters
@@ -886,9 +903,17 @@ LowerResult LowerMethodCall(const ast::Expr& expr_wrapper,
 
     // Handle Context builtin methods (cpu, gpu, inline)
     if (const auto* path = stripped ? std::get_if<analysis::TypePathType>(&stripped->node) : nullptr) {
-    if (analysis::IsContextTypePath(path->path) &&
-        (expr.name == "cpu" || expr.name == "gpu" || expr.name == "inline")) {
+        if (analysis::IsContextTypePath(path->path) &&
+            (expr.name == "cpu" || expr.name == "gpu" || expr.name == "inline")) {
+            const auto sig = analysis::LookupContextMethodSig(expr.name, expr.args.size());
+            if (!sig.has_value()) {
+                ctx.ReportCodegenFailure();
+                return LowerResult{EmptyIR(), ctx.FreshTempValue("method_call")};
+            }
             SPEC_RULE("Lower-MethodCall-ContextBuiltin");
+            analysis::TypeRef result_type = sig->ret;
+            param_modes = ParamModesFromParams(sig->params);
+            param_types = ParamTypesFromParams(scope, sig->params);
             auto recv_result = LowerRecvArgExpr(expr.receiver, ctx, recv_type);
             auto [args_ir, arg_values] =
                 LowerArgs(param_modes,
@@ -898,11 +923,24 @@ LowerResult LowerMethodCall(const ast::Expr& expr_wrapper,
 
             std::vector<IRValue> all_args;
             all_args.push_back(recv_result.value);
-            all_args.insert(all_args.end(), arg_values.begin(), arg_values.end());
 
             const std::string qualified = "Context::" + expr.name;
             std::string callee_sym = BuiltinSym(qualified);
+            if (expr.name == "cpu" && !arg_values.empty()) {
+                callee_sym = BuiltinSymContextCpuConfigured();
+                all_args.push_back(arg_values[0]);
+                if (arg_values.size() > 1) {
+                    all_args.push_back(arg_values[1]);
+                } else {
+                    all_args.push_back(MakeImmediateI32("1", 1, ctx));
+                }
+            } else {
+                all_args.insert(all_args.end(), arg_values.begin(), arg_values.end());
+            }
             IRValue result_value = ctx.FreshTempValue("method_call");
+            if (result_type) {
+                ctx.RegisterValueType(result_value, result_type);
+            }
 
             IRCall call;
             call.callee = IRValue{IRValue::Kind::Symbol, callee_sym, {}};

@@ -60,6 +60,11 @@ LowerResult LowerSyncExpr(const ast::SyncExpr& expr, LowerCtx& ctx) {
 
     // Preserve typed result metadata for LLVM emission.
     analysis::TypeRef sync_value_type = sync.result_type;
+    if (sync.result_type && sync.error_type) {
+        sync_value_type = analysis::IsPrimType(sync.error_type, "!")
+            ? sync.result_type
+            : analysis::MakeTypeUnion({sync.result_type, sync.error_type});
+    }
     if (ctx.expr_type) {
         ast::Expr sync_expr_wrapper;
         sync_expr_wrapper.node = expr;

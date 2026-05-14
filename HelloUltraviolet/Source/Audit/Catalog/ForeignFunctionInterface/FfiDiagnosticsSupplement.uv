@@ -7,12 +7,12 @@ public procedure countForeignFunctionInterfaceFfiDiagnosticsSupplementObligation
 
 public procedure validatedForeignFunctionInterfaceFfiDiagnosticsSupplementObligations() -> usize {
     var count: usize = 0usize
-    if acceptedObligationEntryMatches(
+    if rejectedSourceObligationEntryMatches(
         "diagnostics.23.FfiDiagnosticsSupplement",
         89721usize,
-        "HelloUltraviolet::Reference::FFI",
-        "runFFIFfiSafeReference",
-        "Source/Reference/FFI/FfiSafe.uv"
+        "HelloUltraviolet::Fixtures::RejectedSource",
+        "validatedFFIRejectedSourceFixtureCount",
+        "Fixtures/RejectedSource/FFI/UnsupportedExternABI/Source/Main.uv"
     ) {
         count = count + 1usize
     }

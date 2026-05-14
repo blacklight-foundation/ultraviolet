@@ -1,0 +1,604 @@
+//! Catalog primary-reference ordering check group 0002.
+
+internal procedure catalogPrimaryReferenceOrderGroup0002() -> bool {
+    return catalogPrimaryReferencePrecedes(
+            "Decode-Err",
+            7021usize,
+            "Decode-Ok",
+            7003usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "Decode-Ok",
+            7003usize,
+            "DeinitFn",
+            31005usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "DeinitFn",
+            31005usize,
+            "DiagId-Code",
+            1722usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "DiagId-Code",
+            1722usize,
+            "DirClose-ClosesIterator",
+            13569usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "DirClose-ClosesIterator",
+            13569usize,
+            "DirNext-ClosedFailure",
+            13524usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "DirNext-ClosedFailure",
+            13524usize,
+            "DirNext-Exhausted",
+            13539usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "DirNext-Exhausted",
+            13539usize,
+            "DirNext-YieldsEntry",
+            13554usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "DirNext-YieldsEntry",
+            13554usize,
+            "DirSeq-Read-Err",
+            4216usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "DirSeq-Read-Err",
+            4216usize,
+            "DirSeq-Rel-Fail",
+            4234usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "DirSeq-Rel-Fail",
+            4234usize,
+            "Disc-Add",
+            32656usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "Disc-Add",
+            32656usize,
+            "Disc-Collision",
+            32674usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "Disc-Collision",
+            32674usize,
+            "Disc-Done",
+            32728usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "Disc-Done",
+            32728usize,
+            "Disc-Invalid-Component",
+            32692usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "Disc-Invalid-Component",
+            32692usize,
+            "Disc-Rel-Fail",
+            32710usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "Disc-Rel-Fail",
+            32710usize,
+            "Disc-Skip",
+            32638usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "Disc-Skip",
+            32638usize,
+            "Disc-Start",
+            32621usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "Disc-Start",
+            32621usize,
+            "Doc-Comment",
+            8474usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "Doc-Comment",
+            8474usize,
+            "DynamicContext-NoInherit-Call",
+            28403usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "DynamicContext-NoInherit-Call",
+            28403usize,
+            "DynamicContext-Override",
+            28369usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "DynamicContext-Override",
+            28369usize,
+            "Emit-Append",
+            1575usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "Emit-Append",
+            1575usize,
+            "Emit-IR-Cons-BC",
+            5559usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "Emit-IR-Cons-BC",
+            5559usize,
+            "Emit-IR-Cons-LL",
+            5541usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "Emit-IR-Cons-LL",
+            5541usize,
+            "Emit-IR-Err",
+            5609usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "Emit-IR-Err",
+            5609usize,
+            "Emit-IR-None",
+            5523usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "Emit-IR-None",
+            5523usize,
+            "Emit-Objects-Cons",
+            5503usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "Emit-Objects-Cons",
+            5503usize,
+            "Emit-Objects-Empty",
+            5486usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "Emit-Objects-Empty",
+            5486usize,
+            "Emit-Static-Const",
+            30905usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "Emit-Static-Const",
+            30905usize,
+            "Emit-Static-Init",
+            30923usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "Emit-Static-Init",
+            30923usize,
+            "Emit-Static-Multi",
+            30941usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "Emit-Static-Multi",
+            30941usize,
+            "EmitModuleList-Ok",
+            4770usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "EmitModuleList-Ok",
+            4770usize,
+            "Enum-Disc-Dup",
+            40073usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "Enum-Disc-Dup",
+            40073usize,
+            "Enum-Disc-Invalid",
+            40037usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "Enum-Disc-Invalid",
+            40037usize,
+            "Enum-Disc-Negative",
+            40055usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "Enum-Disc-Negative",
+            40055usize,
+            "Enum-Disc-NotInt",
+            40019usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "Enum-Disc-NotInt",
+            40019usize,
+            "Enum-Empty-Err",
+            40091usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "Enum-Empty-Err",
+            40091usize,
+            "Enum-Lit-Record-MissingField",
+            40272usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "Enum-Lit-Record-MissingField",
+            40272usize,
+            "Enum-Lit-Tuple-Arity-Err",
+            40236usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "Enum-Lit-Tuple-Arity-Err",
+            40236usize,
+            "Enum-Lit-Unknown",
+            40200usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "Enum-Lit-Unknown",
+            40200usize,
+            "Enum-Variant-Dup",
+            40109usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "Enum-Variant-Dup",
+            40109usize,
+            "EvalSigma-Array",
+            36682usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "EvalSigma-Array",
+            36682usize,
+            "EvalSigma-Array-Ctrl",
+            36700usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "EvalSigma-Array-Ctrl",
+            36700usize,
+            "EvalSigma-Enum-Record",
+            40359usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "EvalSigma-Enum-Record",
+            40359usize,
+            "EvalSigma-Enum-Record-Ctrl",
+            40377usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "EvalSigma-Enum-Record-Ctrl",
+            40377usize,
+            "EvalSigma-Enum-Tuple",
+            40323usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "EvalSigma-Enum-Tuple",
+            40323usize,
+            "EvalSigma-Enum-Tuple-Ctrl",
+            40341usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "EvalSigma-Enum-Tuple-Ctrl",
+            40341usize,
+            "EvalSigma-Enum-Unit",
+            40306usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "EvalSigma-Enum-Unit",
+            40306usize,
+            "EvalSigma-Index",
+            36718usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "EvalSigma-Index",
+            36718usize,
+            "EvalSigma-Index-OOB",
+            36736usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "EvalSigma-Index-OOB",
+            36736usize,
+            "EvalSigma-Index-Range",
+            37290usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "EvalSigma-Index-Range",
+            37290usize,
+            "EvalSigma-Index-Range-OOB",
+            37308usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "EvalSigma-Index-Range-OOB",
+            37308usize,
+            "EvalSigma-Range",
+            37939usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "EvalSigma-Range",
+            37939usize,
+            "EvalSigma-Range-Ctrl",
+            37957usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "EvalSigma-Range-Ctrl",
+            37957usize,
+            "EvalSigma-Range-Ctrl-Hi",
+            37975usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "EvalSigma-Range-Ctrl-Hi",
+            37975usize,
+            "EvalSigma-Record",
+            39131usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "EvalSigma-Record",
+            39131usize,
+            "EvalSigma-Record-Ctrl",
+            39149usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "EvalSigma-Record-Ctrl",
+            39149usize,
+            "EvalSigma-Tuple",
+            35944usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "EvalSigma-Tuple",
+            35944usize,
+            "EvalSigma-Tuple-Ctrl",
+            35962usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "EvalSigma-Tuple-Ctrl",
+            35962usize,
+            "EvalSigma-TupleAccess",
+            35980usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "EvalSigma-TupleAccess",
+            35980usize,
+            "EvalSigma-TupleAccess-Ctrl",
+            35998usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "EvalSigma-TupleAccess-Ctrl",
+            35998usize,
+            "Exclusivity-Invariant",
+            26441usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "Exclusivity-Invariant",
+            26441usize,
+            "ExternAbi-Unknown-Err",
+            31647usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "ExternAbi-Unknown-Err",
+            31647usize,
+            "FSCreateWrite-HandleState",
+            13314usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "FSCreateWrite-HandleState",
+            13314usize,
+            "FSExists-False",
+            13195usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "FSExists-False",
+            13195usize,
+            "FSExists-True",
+            13180usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "FSExists-True",
+            13180usize,
+            "FSOpenAppend-HandleState",
+            13299usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "FSOpenAppend-HandleState",
+            13299usize,
+            "FSOpenDir-IteratorState",
+            13509usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "FSOpenDir-IteratorState",
+            13509usize,
+            "FSOpenRead-HandleState",
+            13269usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "FSOpenRead-HandleState",
+            13269usize,
+            "FSOpenWrite-HandleState",
+            13284usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "FSOpenWrite-HandleState",
+            13284usize,
+            "FSPath-Busy",
+            13120usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "FSPath-Busy",
+            13120usize,
+            "FSPath-CreateDirAlreadyExistsNonDir",
+            13090usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "FSPath-CreateDirAlreadyExistsNonDir",
+            13090usize,
+            "FSPath-CreateWriteAlreadyExists",
+            13075usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "FSPath-CreateWriteAlreadyExists",
+            13075usize,
+            "FSPath-InvalidPath-Data",
+            13030usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "FSPath-InvalidPath-Data",
+            13030usize,
+            "FSPath-InvalidPath-NoData",
+            13015usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "FSPath-InvalidPath-NoData",
+            13015usize,
+            "FSPath-NotFound",
+            13045usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "FSPath-NotFound",
+            13045usize,
+            "FSPath-OpenDirInvalidNonDir",
+            13105usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "FSPath-OpenDirInvalidNonDir",
+            13105usize,
+            "FSPath-OtherFailure",
+            13135usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "FSPath-OtherFailure",
+            13135usize,
+            "FSPath-PermissionDenied",
+            13060usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "FSPath-PermissionDenied",
+            13060usize,
+            "FSReadBytes-DelegatesThroughHandle",
+            13344usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "FSReadBytes-DelegatesThroughHandle",
+            13344usize,
+            "FSReadFile-DelegatesThroughHandle",
+            13329usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "FSReadFile-DelegatesThroughHandle",
+            13329usize,
+            "FSReadFile-InvalidUtf8",
+            13150usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "FSReadFile-InvalidUtf8",
+            13150usize,
+            "FSRestrict-Delegate",
+            12936usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "FSRestrict-Delegate",
+            12936usize,
+            "FSRestrict-ExistsInvalidFalse",
+            12966usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "FSRestrict-ExistsInvalidFalse",
+            12966usize,
+            "FSRestrict-InvalidPath",
+            12951usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "FSRestrict-InvalidPath",
+            12951usize,
+            "FieldVisOk-Err",
+            38999usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "FieldVisOk-Err",
+            38999usize,
+            "FileClose-ClosesHandle",
+            13494usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "FileClose-ClosesHandle",
+            13494usize,
+            "FileFlush-ClosedFailure",
+            13404usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "FileFlush-ClosedFailure",
+            13404usize,
+            "FileFlush-RecordsFlushed",
+            13479usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "FileFlush-RecordsFlushed",
+            13479usize,
+            "FileOrder-Rel-Fail",
+            4139usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "FileOrder-Rel-Fail",
+            4139usize,
+            "FileReadAll-AdvancesToEnd",
+            13419usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "FileReadAll-AdvancesToEnd",
+            13419usize,
+            "FileReadAll-ClosedFailure",
+            13359usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "FileReadAll-ClosedFailure",
+            13359usize,
+            "FileReadAll-InvalidUtf8",
+            13165usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "FileReadAll-InvalidUtf8",
+            13165usize,
+            "FileReadAllBytes-AdvancesToEnd",
+            13434usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "FileReadAllBytes-AdvancesToEnd",
+            13434usize,
+            "FileReadAllBytes-ClosedFailure",
+            13374usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "FileReadAllBytes-ClosedFailure",
+            13374usize,
+            "FileWrite-ClosedFailure",
+            13389usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "FileWrite-ClosedFailure",
+            13389usize,
+            "FileWrite-LengthUpdate",
+            13464usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "FileWrite-LengthUpdate",
+            13464usize,
+            "FileWrite-PositionUpdate",
+            13449usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "FileWrite-PositionUpdate",
+            13449usize,
+            "Finalize-Archive",
+            6147usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "Finalize-Archive",
+            6147usize,
+            "Finalize-Link",
+            6129usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "Finalize-Link",
+            6129usize,
+            "Fork-Join-Guarantee",
+            26521usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "Fork-Join-Guarantee",
+            26521usize,
+            "Import-Ok-Covered",
+            33115usize
+        )
+}

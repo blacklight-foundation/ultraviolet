@@ -238,6 +238,7 @@ RuntimeCategoryMap BuildRuntimeCategoryMap() {
   AddRuntimeSymbol(categories, RuntimeSymbolCategory::ExecutionDomain, BuiltinSymExecutionDomainName());
   AddRuntimeSymbol(categories, RuntimeSymbolCategory::ExecutionDomain, BuiltinSymExecutionDomainMaxConcurrency());
   AddRuntimeSymbol(categories, RuntimeSymbolCategory::ExecutionDomain, BuiltinSymContextCpu());
+  AddRuntimeSymbol(categories, RuntimeSymbolCategory::ExecutionDomain, BuiltinSymContextCpuConfigured());
   AddRuntimeSymbol(categories, RuntimeSymbolCategory::ExecutionDomain, BuiltinSymContextGpu());
   AddRuntimeSymbol(categories, RuntimeSymbolCategory::ExecutionDomain, BuiltinSymContextInline());
   AddRuntimeSymbol(categories, RuntimeSymbolCategory::ExecutionDomain, BuiltinSymGpuGlobalId());
@@ -1173,6 +1174,13 @@ std::optional<RuntimeFuncInfo> GetRuntimeFuncInfo(const std::string& symbol) {
   if (symbol == BuiltinSymContextCpu() || symbol == BuiltinSymContextGpu() ||
       symbol == BuiltinSymContextInline()) {
     info.params.push_back(make_param("self", t_context));
+    info.ret = t_execution_domain;
+    return info;
+  }
+  if (symbol == BuiltinSymContextCpuConfigured()) {
+    info.params.push_back(make_param("self", t_context));
+    info.params.push_back(make_param("mask", t_usize, analysis::ParamMode::Move));
+    info.params.push_back(make_param("priority", t_i32, analysis::ParamMode::Move));
     info.ret = t_execution_domain;
     return info;
   }

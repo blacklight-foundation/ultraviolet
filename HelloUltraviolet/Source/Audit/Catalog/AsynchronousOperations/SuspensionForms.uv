@@ -11,8 +11,8 @@ public procedure validatedAsynchronousOperationsSuspensionFormsObligations() -> 
         "grammar.21.SuspensionForms",
         79038usize,
         "HelloUltraviolet::Reference::Async",
-        "runAsyncAsyncTypeReference",
-        "Source/Reference/Async/AsyncType.uv"
+        "runAsyncSuspensionFormsReference",
+        "Source/Reference/Async/SuspensionForms.uv"
     ) {
         count = count + 1usize
     }
@@ -20,8 +20,8 @@ public procedure validatedAsynchronousOperationsSuspensionFormsObligations() -> 
         "parse.21.SuspensionFormsPrimaryExpressions",
         79057usize,
         "HelloUltraviolet::Reference::Async",
-        "runAsyncAsyncTypeReference",
-        "Source/Reference/Async/AsyncType.uv"
+        "runAsyncSuspensionFormsReference",
+        "Source/Reference/Async/SuspensionForms.uv"
     ) {
         count = count + 1usize
     }
@@ -29,8 +29,8 @@ public procedure validatedAsynchronousOperationsSuspensionFormsObligations() -> 
         "rule.21.Parse-Wait-Expr",
         79072usize,
         "HelloUltraviolet::Reference::Async",
-        "runAsyncAsyncTypeReference",
-        "Source/Reference/Async/AsyncType.uv"
+        "runAsyncSuspensionFormsReference",
+        "Source/Reference/Async/SuspensionForms.uv"
     ) {
         count = count + 1usize
     }
@@ -38,8 +38,8 @@ public procedure validatedAsynchronousOperationsSuspensionFormsObligations() -> 
         "rule.21.Parse-Yield-From-Expr",
         79092usize,
         "HelloUltraviolet::Reference::Async",
-        "runAsyncAsyncTypeReference",
-        "Source/Reference/Async/AsyncType.uv"
+        "runAsyncSuspensionFormsReference",
+        "Source/Reference/Async/SuspensionForms.uv"
     ) {
         count = count + 1usize
     }
@@ -47,8 +47,8 @@ public procedure validatedAsynchronousOperationsSuspensionFormsObligations() -> 
         "rule.21.Parse-Yield-Expr",
         79115usize,
         "HelloUltraviolet::Reference::Async",
-        "runAsyncAsyncTypeReference",
-        "Source/Reference/Async/AsyncType.uv"
+        "runAsyncSuspensionFormsReference",
+        "Source/Reference/Async/SuspensionForms.uv"
     ) {
         count = count + 1usize
     }
@@ -56,8 +56,8 @@ public procedure validatedAsynchronousOperationsSuspensionFormsObligations() -> 
         "ast.21.SuspensionForms",
         79138usize,
         "HelloUltraviolet::Reference::Async",
-        "runAsyncAsyncTypeReference",
-        "Source/Reference/Async/AsyncType.uv"
+        "runAsyncSuspensionFormsReference",
+        "Source/Reference/Async/SuspensionForms.uv"
     ) {
         count = count + 1usize
     }
@@ -65,8 +65,8 @@ public procedure validatedAsynchronousOperationsSuspensionFormsObligations() -> 
         "ast.21.SuspensionFormResolution",
         79158usize,
         "HelloUltraviolet::Reference::Async",
-        "runAsyncAsyncTypeReference",
-        "Source/Reference/Async/AsyncType.uv"
+        "runAsyncSuspensionFormsReference",
+        "Source/Reference/Async/SuspensionForms.uv"
     ) {
         count = count + 1usize
     }
@@ -74,8 +74,8 @@ public procedure validatedAsynchronousOperationsSuspensionFormsObligations() -> 
         "ast.21.SuspensionFormEvaluationOrder",
         79177usize,
         "HelloUltraviolet::Reference::Async",
-        "runAsyncAsyncTypeReference",
-        "Source/Reference/Async/AsyncType.uv"
+        "runAsyncSuspensionFormsReference",
+        "Source/Reference/Async/SuspensionForms.uv"
     ) {
         count = count + 1usize
     }
@@ -83,8 +83,8 @@ public procedure validatedAsynchronousOperationsSuspensionFormsObligations() -> 
         "rule.21.T-Wait",
         79200usize,
         "HelloUltraviolet::Reference::Async",
-        "runAsyncAsyncTypeReference",
-        "Source/Reference/Async/AsyncType.uv"
+        "runAsyncSuspensionFormsReference",
+        "Source/Reference/Async/SuspensionForms.uv"
     ) {
         count = count + 1usize
     }
@@ -92,17 +92,17 @@ public procedure validatedAsynchronousOperationsSuspensionFormsObligations() -> 
         "rule.21.T-Wait-Future",
         79218usize,
         "HelloUltraviolet::Reference::Async",
-        "runAsyncAsyncTypeReference",
-        "Source/Reference/Async/AsyncType.uv"
+        "runAsyncSuspensionFormsReference",
+        "Source/Reference/Async/SuspensionForms.uv"
     ) {
         count = count + 1usize
     }
-    if acceptedObligationEntryMatches(
+    if rejectedSourceObligationEntryMatches(
         "rule.21.Wait-Handle-Err",
         79236usize,
-        "HelloUltraviolet::Reference::Async",
-        "runAsyncAsyncTypeReference",
-        "Source/Reference/Async/AsyncType.uv"
+        "HelloUltraviolet::Fixtures::RejectedSource",
+        "validatedExpressionsRejectedSourceFixtureCount",
+        "Fixtures/RejectedSource/Expressions/WaitNonHandle/Source/Main.uv"
     ) {
         count = count + 1usize
     }
@@ -110,26 +110,26 @@ public procedure validatedAsynchronousOperationsSuspensionFormsObligations() -> 
         "rule.21.T-Yield",
         79256usize,
         "HelloUltraviolet::Reference::Async",
-        "runAsyncAsyncTypeReference",
-        "Source/Reference/Async/AsyncType.uv"
+        "runAsyncSuspensionFormsReference",
+        "Source/Reference/Async/SuspensionForms.uv"
     ) {
         count = count + 1usize
     }
-    if acceptedObligationEntryMatches(
+    if rejectedSourceObligationEntryMatches(
         "rule.21.Yield-NotAsync-Err",
         79274usize,
-        "HelloUltraviolet::Reference::Async",
-        "runAsyncAsyncTypeReference",
-        "Source/Reference/Async/AsyncType.uv"
+        "HelloUltraviolet::Fixtures::RejectedSource",
+        "validatedExpressionsRejectedSourceFixtureCount",
+        "Fixtures/RejectedSource/Expressions/YieldOutsideAsync/Source/Main.uv"
     ) {
         count = count + 1usize
     }
-    if acceptedObligationEntryMatches(
+    if rejectedSourceObligationEntryMatches(
         "rule.21.Yield-Out-Err",
         79292usize,
-        "HelloUltraviolet::Reference::Async",
-        "runAsyncAsyncTypeReference",
-        "Source/Reference/Async/AsyncType.uv"
+        "HelloUltraviolet::Fixtures::RejectedSource",
+        "validatedExpressionsRejectedSourceFixtureCount",
+        "Fixtures/RejectedSource/Expressions/YieldTypeMismatch/Source/Main.uv"
     ) {
         count = count + 1usize
     }
@@ -137,44 +137,44 @@ public procedure validatedAsynchronousOperationsSuspensionFormsObligations() -> 
         "rule.21.T-Yield-From",
         79312usize,
         "HelloUltraviolet::Reference::Async",
-        "runAsyncAsyncTypeReference",
-        "Source/Reference/Async/AsyncType.uv"
+        "runAsyncSuspensionFormsReference",
+        "Source/Reference/Async/SuspensionForms.uv"
     ) {
         count = count + 1usize
     }
-    if acceptedObligationEntryMatches(
+    if rejectedSourceObligationEntryMatches(
         "rule.21.YieldFrom-NotAsync-Err",
         79330usize,
-        "HelloUltraviolet::Reference::Async",
-        "runAsyncAsyncTypeReference",
-        "Source/Reference/Async/AsyncType.uv"
+        "HelloUltraviolet::Fixtures::RejectedSource",
+        "validatedExpressionsRejectedSourceFixtureCount",
+        "Fixtures/RejectedSource/Expressions/YieldFromOutsideAsync/Source/Main.uv"
     ) {
         count = count + 1usize
     }
-    if acceptedObligationEntryMatches(
+    if rejectedSourceObligationEntryMatches(
         "rule.21.YieldFrom-Out-Err",
         79348usize,
-        "HelloUltraviolet::Reference::Async",
-        "runAsyncAsyncTypeReference",
-        "Source/Reference/Async/AsyncType.uv"
+        "HelloUltraviolet::Fixtures::RejectedSource",
+        "validatedExpressionsRejectedSourceFixtureCount",
+        "Fixtures/RejectedSource/Expressions/YieldFromOutMismatch/Source/Main.uv"
     ) {
         count = count + 1usize
     }
-    if acceptedObligationEntryMatches(
+    if rejectedSourceObligationEntryMatches(
         "rule.21.YieldFrom-In-Err",
         79367usize,
-        "HelloUltraviolet::Reference::Async",
-        "runAsyncAsyncTypeReference",
-        "Source/Reference/Async/AsyncType.uv"
+        "HelloUltraviolet::Fixtures::RejectedSource",
+        "validatedExpressionsRejectedSourceFixtureCount",
+        "Fixtures/RejectedSource/Expressions/YieldFromInMismatch/Source/Main.uv"
     ) {
         count = count + 1usize
     }
-    if acceptedObligationEntryMatches(
+    if rejectedSourceObligationEntryMatches(
         "rule.21.YieldFrom-ErrType-Err",
         79385usize,
-        "HelloUltraviolet::Reference::Async",
-        "runAsyncAsyncTypeReference",
-        "Source/Reference/Async/AsyncType.uv"
+        "HelloUltraviolet::Fixtures::RejectedSource",
+        "validatedExpressionsRejectedSourceFixtureCount",
+        "Fixtures/RejectedSource/Expressions/YieldFromErrorMismatch/Source/Main.uv"
     ) {
         count = count + 1usize
     }
@@ -182,8 +182,8 @@ public procedure validatedAsynchronousOperationsSuspensionFormsObligations() -> 
         "requirement.21.SuspensionKeyRestrictionsReference",
         79403usize,
         "HelloUltraviolet::Reference::Async",
-        "runAsyncAsyncTypeReference",
-        "Source/Reference/Async/AsyncType.uv"
+        "runAsyncSuspensionFormsReference",
+        "Source/Reference/Async/SuspensionForms.uv"
     ) {
         count = count + 1usize
     }
@@ -191,8 +191,8 @@ public procedure validatedAsynchronousOperationsSuspensionFormsObligations() -> 
         "requirement.21.WaitRuntimeSemantics",
         79418usize,
         "HelloUltraviolet::Reference::Async",
-        "runAsyncAsyncTypeReference",
-        "Source/Reference/Async/AsyncType.uv"
+        "runAsyncSuspensionFormsReference",
+        "Source/Reference/Async/SuspensionForms.uv"
     ) {
         count = count + 1usize
     }
@@ -200,8 +200,8 @@ public procedure validatedAsynchronousOperationsSuspensionFormsObligations() -> 
         "def.21.WaitRuntimeHelpers",
         79440usize,
         "HelloUltraviolet::Reference::Async",
-        "runAsyncAsyncTypeReference",
-        "Source/Reference/Async/AsyncType.uv"
+        "runAsyncSuspensionFormsReference",
+        "Source/Reference/Async/SuspensionForms.uv"
     ) {
         count = count + 1usize
     }
@@ -209,8 +209,8 @@ public procedure validatedAsynchronousOperationsSuspensionFormsObligations() -> 
         "rule.21.EvalSigma-Wait-Spawned-Ready",
         79464usize,
         "HelloUltraviolet::Reference::Async",
-        "runAsyncAsyncTypeReference",
-        "Source/Reference/Async/AsyncType.uv"
+        "runAsyncSuspensionFormsReference",
+        "Source/Reference/Async/SuspensionForms.uv"
     ) {
         count = count + 1usize
     }
@@ -218,8 +218,8 @@ public procedure validatedAsynchronousOperationsSuspensionFormsObligations() -> 
         "rule.21.EvalSigma-Wait-Spawned-Pending",
         79482usize,
         "HelloUltraviolet::Reference::Async",
-        "runAsyncAsyncTypeReference",
-        "Source/Reference/Async/AsyncType.uv"
+        "runAsyncSuspensionFormsReference",
+        "Source/Reference/Async/SuspensionForms.uv"
     ) {
         count = count + 1usize
     }
@@ -227,8 +227,8 @@ public procedure validatedAsynchronousOperationsSuspensionFormsObligations() -> 
         "requirement.21.FailedSpawnedWaitHandledByParallelPanic",
         79501usize,
         "HelloUltraviolet::Reference::Async",
-        "runAsyncAsyncTypeReference",
-        "Source/Reference/Async/AsyncType.uv"
+        "runAsyncSuspensionFormsReference",
+        "Source/Reference/Async/SuspensionForms.uv"
     ) {
         count = count + 1usize
     }
@@ -236,8 +236,8 @@ public procedure validatedAsynchronousOperationsSuspensionFormsObligations() -> 
         "rule.21.EvalSigma-Wait-Tracked-Ready",
         79514usize,
         "HelloUltraviolet::Reference::Async",
-        "runAsyncAsyncTypeReference",
-        "Source/Reference/Async/AsyncType.uv"
+        "runAsyncSuspensionFormsReference",
+        "Source/Reference/Async/SuspensionForms.uv"
     ) {
         count = count + 1usize
     }
@@ -245,8 +245,8 @@ public procedure validatedAsynchronousOperationsSuspensionFormsObligations() -> 
         "rule.21.EvalSigma-Wait-Tracked-Pending",
         79532usize,
         "HelloUltraviolet::Reference::Async",
-        "runAsyncAsyncTypeReference",
-        "Source/Reference/Async/AsyncType.uv"
+        "runAsyncSuspensionFormsReference",
+        "Source/Reference/Async/SuspensionForms.uv"
     ) {
         count = count + 1usize
     }
@@ -254,8 +254,8 @@ public procedure validatedAsynchronousOperationsSuspensionFormsObligations() -> 
         "rule.21.EvalSigma-Wait-Ctrl",
         79551usize,
         "HelloUltraviolet::Reference::Async",
-        "runAsyncAsyncTypeReference",
-        "Source/Reference/Async/AsyncType.uv"
+        "runAsyncSuspensionFormsReference",
+        "Source/Reference/Async/SuspensionForms.uv"
     ) {
         count = count + 1usize
     }
@@ -263,8 +263,8 @@ public procedure validatedAsynchronousOperationsSuspensionFormsObligations() -> 
         "requirement.21.YieldRuntimeSemantics",
         79569usize,
         "HelloUltraviolet::Reference::Async",
-        "runAsyncAsyncTypeReference",
-        "Source/Reference/Async/AsyncType.uv"
+        "runAsyncSuspensionFormsReference",
+        "Source/Reference/Async/SuspensionForms.uv"
     ) {
         count = count + 1usize
     }
@@ -272,8 +272,8 @@ public procedure validatedAsynchronousOperationsSuspensionFormsObligations() -> 
         "def.21.ResumptionHelpers",
         79589usize,
         "HelloUltraviolet::Reference::Async",
-        "runAsyncAsyncTypeReference",
-        "Source/Reference/Async/AsyncType.uv"
+        "runAsyncSuspensionFormsReference",
+        "Source/Reference/Async/SuspensionForms.uv"
     ) {
         count = count + 1usize
     }
@@ -281,8 +281,8 @@ public procedure validatedAsynchronousOperationsSuspensionFormsObligations() -> 
         "rule.21.EvalSigma-Yield",
         79624usize,
         "HelloUltraviolet::Reference::Async",
-        "runAsyncAsyncTypeReference",
-        "Source/Reference/Async/AsyncType.uv"
+        "runAsyncSuspensionFormsReference",
+        "Source/Reference/Async/SuspensionForms.uv"
     ) {
         count = count + 1usize
     }
@@ -290,8 +290,8 @@ public procedure validatedAsynchronousOperationsSuspensionFormsObligations() -> 
         "rule.21.EvalSigma-Yield-Release",
         79643usize,
         "HelloUltraviolet::Reference::Async",
-        "runAsyncAsyncTypeReference",
-        "Source/Reference/Async/AsyncType.uv"
+        "runAsyncSuspensionFormsReference",
+        "Source/Reference/Async/SuspensionForms.uv"
     ) {
         count = count + 1usize
     }
@@ -299,8 +299,8 @@ public procedure validatedAsynchronousOperationsSuspensionFormsObligations() -> 
         "rule.21.EvalSigma-Yield-Resume",
         79662usize,
         "HelloUltraviolet::Reference::Async",
-        "runAsyncAsyncTypeReference",
-        "Source/Reference/Async/AsyncType.uv"
+        "runAsyncSuspensionFormsReference",
+        "Source/Reference/Async/SuspensionForms.uv"
     ) {
         count = count + 1usize
     }
@@ -308,8 +308,8 @@ public procedure validatedAsynchronousOperationsSuspensionFormsObligations() -> 
         "requirement.21.YieldFromRuntimeSemantics",
         79681usize,
         "HelloUltraviolet::Reference::Async",
-        "runAsyncAsyncTypeReference",
-        "Source/Reference/Async/AsyncType.uv"
+        "runAsyncSuspensionFormsReference",
+        "Source/Reference/Async/SuspensionForms.uv"
     ) {
         count = count + 1usize
     }
@@ -317,8 +317,8 @@ public procedure validatedAsynchronousOperationsSuspensionFormsObligations() -> 
         "rule.21.EvalSigma-YieldFrom-Suspended",
         79701usize,
         "HelloUltraviolet::Reference::Async",
-        "runAsyncAsyncTypeReference",
-        "Source/Reference/Async/AsyncType.uv"
+        "runAsyncSuspensionFormsReference",
+        "Source/Reference/Async/SuspensionForms.uv"
     ) {
         count = count + 1usize
     }
@@ -326,8 +326,8 @@ public procedure validatedAsynchronousOperationsSuspensionFormsObligations() -> 
         "rule.21.EvalSigma-YieldFrom-Completed",
         79721usize,
         "HelloUltraviolet::Reference::Async",
-        "runAsyncAsyncTypeReference",
-        "Source/Reference/Async/AsyncType.uv"
+        "runAsyncSuspensionFormsReference",
+        "Source/Reference/Async/SuspensionForms.uv"
     ) {
         count = count + 1usize
     }
@@ -335,8 +335,8 @@ public procedure validatedAsynchronousOperationsSuspensionFormsObligations() -> 
         "rule.21.EvalSigma-YieldFrom-Failed",
         79739usize,
         "HelloUltraviolet::Reference::Async",
-        "runAsyncAsyncTypeReference",
-        "Source/Reference/Async/AsyncType.uv"
+        "runAsyncSuspensionFormsReference",
+        "Source/Reference/Async/SuspensionForms.uv"
     ) {
         count = count + 1usize
     }
@@ -344,8 +344,8 @@ public procedure validatedAsynchronousOperationsSuspensionFormsObligations() -> 
         "rule.21.EvalSigma-YieldFrom-Resume",
         79757usize,
         "HelloUltraviolet::Reference::Async",
-        "runAsyncAsyncTypeReference",
-        "Source/Reference/Async/AsyncType.uv"
+        "runAsyncSuspensionFormsReference",
+        "Source/Reference/Async/SuspensionForms.uv"
     ) {
         count = count + 1usize
     }
@@ -353,8 +353,8 @@ public procedure validatedAsynchronousOperationsSuspensionFormsObligations() -> 
         "def.21.EvalYieldFromContinueSignature",
         79776usize,
         "HelloUltraviolet::Reference::Async",
-        "runAsyncAsyncTypeReference",
-        "Source/Reference/Async/AsyncType.uv"
+        "runAsyncSuspensionFormsReference",
+        "Source/Reference/Async/SuspensionForms.uv"
     ) {
         count = count + 1usize
     }
@@ -362,8 +362,8 @@ public procedure validatedAsynchronousOperationsSuspensionFormsObligations() -> 
         "rule.21.EvalYieldFromContinue-Suspended",
         79791usize,
         "HelloUltraviolet::Reference::Async",
-        "runAsyncAsyncTypeReference",
-        "Source/Reference/Async/AsyncType.uv"
+        "runAsyncSuspensionFormsReference",
+        "Source/Reference/Async/SuspensionForms.uv"
     ) {
         count = count + 1usize
     }
@@ -371,8 +371,8 @@ public procedure validatedAsynchronousOperationsSuspensionFormsObligations() -> 
         "rule.21.EvalYieldFromContinue-Completed",
         79811usize,
         "HelloUltraviolet::Reference::Async",
-        "runAsyncAsyncTypeReference",
-        "Source/Reference/Async/AsyncType.uv"
+        "runAsyncSuspensionFormsReference",
+        "Source/Reference/Async/SuspensionForms.uv"
     ) {
         count = count + 1usize
     }
@@ -380,8 +380,8 @@ public procedure validatedAsynchronousOperationsSuspensionFormsObligations() -> 
         "rule.21.EvalYieldFromContinue-Failed",
         79829usize,
         "HelloUltraviolet::Reference::Async",
-        "runAsyncAsyncTypeReference",
-        "Source/Reference/Async/AsyncType.uv"
+        "runAsyncSuspensionFormsReference",
+        "Source/Reference/Async/SuspensionForms.uv"
     ) {
         count = count + 1usize
     }
@@ -389,8 +389,8 @@ public procedure validatedAsynchronousOperationsSuspensionFormsObligations() -> 
         "def.21.SuspensionLoweringForms",
         79849usize,
         "HelloUltraviolet::Reference::Async",
-        "runAsyncAsyncTypeReference",
-        "Source/Reference/Async/AsyncType.uv"
+        "runAsyncSuspensionFormsReference",
+        "Source/Reference/Async/SuspensionForms.uv"
     ) {
         count = count + 1usize
     }
@@ -398,8 +398,8 @@ public procedure validatedAsynchronousOperationsSuspensionFormsObligations() -> 
         "rule.21.Lower-Wait-Spawned",
         79870usize,
         "HelloUltraviolet::Reference::Async",
-        "runAsyncAsyncTypeReference",
-        "Source/Reference/Async/AsyncType.uv"
+        "runAsyncSuspensionFormsReference",
+        "Source/Reference/Async/SuspensionForms.uv"
     ) {
         count = count + 1usize
     }
@@ -407,8 +407,8 @@ public procedure validatedAsynchronousOperationsSuspensionFormsObligations() -> 
         "rule.21.Lower-Wait-Tracked",
         79888usize,
         "HelloUltraviolet::Reference::Async",
-        "runAsyncAsyncTypeReference",
-        "Source/Reference/Async/AsyncType.uv"
+        "runAsyncSuspensionFormsReference",
+        "Source/Reference/Async/SuspensionForms.uv"
     ) {
         count = count + 1usize
     }
@@ -416,8 +416,8 @@ public procedure validatedAsynchronousOperationsSuspensionFormsObligations() -> 
         "rule.21.Lower-Yield",
         79906usize,
         "HelloUltraviolet::Reference::Async",
-        "runAsyncAsyncTypeReference",
-        "Source/Reference/Async/AsyncType.uv"
+        "runAsyncSuspensionFormsReference",
+        "Source/Reference/Async/SuspensionForms.uv"
     ) {
         count = count + 1usize
     }
@@ -425,8 +425,8 @@ public procedure validatedAsynchronousOperationsSuspensionFormsObligations() -> 
         "rule.21.Lower-Yield-Release",
         79924usize,
         "HelloUltraviolet::Reference::Async",
-        "runAsyncAsyncTypeReference",
-        "Source/Reference/Async/AsyncType.uv"
+        "runAsyncSuspensionFormsReference",
+        "Source/Reference/Async/SuspensionForms.uv"
     ) {
         count = count + 1usize
     }
@@ -434,8 +434,8 @@ public procedure validatedAsynchronousOperationsSuspensionFormsObligations() -> 
         "requirement.21.YieldReleaseReacquireLowering",
         79942usize,
         "HelloUltraviolet::Reference::Async",
-        "runAsyncAsyncTypeReference",
-        "Source/Reference/Async/AsyncType.uv"
+        "runAsyncSuspensionFormsReference",
+        "Source/Reference/Async/SuspensionForms.uv"
     ) {
         count = count + 1usize
     }
@@ -443,8 +443,8 @@ public procedure validatedAsynchronousOperationsSuspensionFormsObligations() -> 
         "rule.21.Lower-YieldFrom",
         79955usize,
         "HelloUltraviolet::Reference::Async",
-        "runAsyncAsyncTypeReference",
-        "Source/Reference/Async/AsyncType.uv"
+        "runAsyncSuspensionFormsReference",
+        "Source/Reference/Async/SuspensionForms.uv"
     ) {
         count = count + 1usize
     }
@@ -452,17 +452,17 @@ public procedure validatedAsynchronousOperationsSuspensionFormsObligations() -> 
         "requirement.21.YieldFromEnterLoweringLoop",
         79973usize,
         "HelloUltraviolet::Reference::Async",
-        "runAsyncAsyncTypeReference",
-        "Source/Reference/Async/AsyncType.uv"
+        "runAsyncSuspensionFormsReference",
+        "Source/Reference/Async/SuspensionForms.uv"
     ) {
         count = count + 1usize
     }
-    if acceptedObligationEntryMatches(
+    if rejectedSourceObligationEntryMatches(
         "diagnostics.21.SuspensionForms",
         79991usize,
-        "HelloUltraviolet::Reference::Async",
-        "runAsyncAsyncTypeReference",
-        "Source/Reference/Async/AsyncType.uv"
+        "HelloUltraviolet::Fixtures::RejectedSource",
+        "validatedExpressionsRejectedSourceFixtureCount",
+        "Fixtures/RejectedSource/Expressions/SuspensionFormsDiagnosticsTable/Source/Main.uv"
     ) {
         count = count + 1usize
     }

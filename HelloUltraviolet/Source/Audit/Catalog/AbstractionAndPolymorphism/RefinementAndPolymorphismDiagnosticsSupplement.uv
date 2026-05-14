@@ -7,21 +7,21 @@ public procedure countAbstractionAndPolymorphismRefinementAndPolymorphismDiagnos
 
 public procedure validatedAbstractionAndPolymorphismRefinementAndPolymorphismDiagnosticsSupplementObligations() -> usize {
     var count: usize = 0usize
-    if acceptedObligationEntryMatches(
+    if rejectedSourceObligationEntryMatches(
         "diag.14.RefinementPolymorphismDiagnosticsOwnership",
         52733usize,
-        "HelloUltraviolet::Reference::Polymorphism",
-        "runPolymorphismGenericParametersReference",
-        "Source/Reference/Polymorphism/GenericParameters.uv"
+        "HelloUltraviolet::Fixtures::RejectedSource",
+        "validatedPolymorphismRejectedSourceFixtureCount",
+        "Fixtures/RejectedSource/Polymorphism/RefinementDiagnosticsOwnership/Source/Main.uv"
     ) {
         count = count + 1usize
     }
-    if acceptedObligationEntryMatches(
+    if rejectedSourceObligationEntryMatches(
         "diag-table.14.RefinementPolymorphismDiagnostics",
         52746usize,
-        "HelloUltraviolet::Reference::Polymorphism",
-        "runPolymorphismGenericParametersReference",
-        "Source/Reference/Polymorphism/GenericParameters.uv"
+        "HelloUltraviolet::Fixtures::RejectedSource",
+        "validatedPolymorphismRejectedSourceFixtureCount",
+        "Fixtures/RejectedSource/Polymorphism/RefinementDiagnosticsTable/Source/Main.uv"
     ) {
         count = count + 1usize
     }

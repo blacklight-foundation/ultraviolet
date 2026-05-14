@@ -11,8 +11,8 @@ public procedure validatedKeySystemNestedReleaseObligations() -> usize {
         "requirement.19.NestedReleaseNoAdditionalSyntax",
         73842usize,
         "HelloUltraviolet::Reference::Keys",
-        "runKeysKeyPathsReference",
-        "Source/Reference/Keys/KeyPaths.uv"
+        "runKeysNestedReleaseReference",
+        "Source/Reference/Keys/NestedRelease.uv"
     ) {
         count = count + 1usize
     }
@@ -20,8 +20,8 @@ public procedure validatedKeySystemNestedReleaseObligations() -> usize {
         "requirement.19.NestedReleaseNoAdditionalParsingRules",
         73857usize,
         "HelloUltraviolet::Reference::Keys",
-        "runKeysKeyPathsReference",
-        "Source/Reference/Keys/KeyPaths.uv"
+        "runKeysNestedReleaseReference",
+        "Source/Reference/Keys/NestedRelease.uv"
     ) {
         count = count + 1usize
     }
@@ -29,8 +29,8 @@ public procedure validatedKeySystemNestedReleaseObligations() -> usize {
         "ast.19.NestedReleaseForm",
         73872usize,
         "HelloUltraviolet::Reference::Keys",
-        "runKeysKeyPathsReference",
-        "Source/Reference/Keys/KeyPaths.uv"
+        "runKeysNestedReleaseReference",
+        "Source/Reference/Keys/NestedRelease.uv"
     ) {
         count = count + 1usize
     }
@@ -38,8 +38,8 @@ public procedure validatedKeySystemNestedReleaseObligations() -> usize {
         "rule.19.K-Nested-Same-Path",
         73887usize,
         "HelloUltraviolet::Reference::Keys",
-        "runKeysKeyPathsReference",
-        "Source/Reference/Keys/KeyPaths.uv"
+        "runKeysNestedReleaseReference",
+        "Source/Reference/Keys/NestedRelease.uv"
     ) {
         count = count + 1usize
     }
@@ -47,8 +47,8 @@ public procedure validatedKeySystemNestedReleaseObligations() -> usize {
         "def.19.SharedParam",
         73908usize,
         "HelloUltraviolet::Reference::Keys",
-        "runKeysKeyPathsReference",
-        "Source/Reference/Keys/KeyPaths.uv"
+        "runKeysNestedReleaseReference",
+        "Source/Reference/Keys/NestedRelease.uv"
     ) {
         count = count + 1usize
     }
@@ -56,8 +56,8 @@ public procedure validatedKeySystemNestedReleaseObligations() -> usize {
         "def.19.DirectCalleeAccesses",
         73922usize,
         "HelloUltraviolet::Reference::Keys",
-        "runKeysKeyPathsReference",
-        "Source/Reference/Keys/KeyPaths.uv"
+        "runKeysNestedReleaseReference",
+        "Source/Reference/Keys/NestedRelease.uv"
     ) {
         count = count + 1usize
     }
@@ -65,8 +65,8 @@ public procedure validatedKeySystemNestedReleaseObligations() -> usize {
         "def.19.CalleeAccessSummary",
         73935usize,
         "HelloUltraviolet::Reference::Keys",
-        "runKeysKeyPathsReference",
-        "Source/Reference/Keys/KeyPaths.uv"
+        "runKeysNestedReleaseReference",
+        "Source/Reference/Keys/NestedRelease.uv"
     ) {
         count = count + 1usize
     }
@@ -74,8 +74,8 @@ public procedure validatedKeySystemNestedReleaseObligations() -> usize {
         "def.19.CalleeAccessInstantiation",
         73948usize,
         "HelloUltraviolet::Reference::Keys",
-        "runKeysKeyPathsReference",
-        "Source/Reference/Keys/KeyPaths.uv"
+        "runKeysNestedReleaseReference",
+        "Source/Reference/Keys/NestedRelease.uv"
     ) {
         count = count + 1usize
     }
@@ -83,17 +83,17 @@ public procedure validatedKeySystemNestedReleaseObligations() -> usize {
         "rule.19.K-Reentrant",
         73963usize,
         "HelloUltraviolet::Reference::Keys",
-        "runKeysKeyPathsReference",
-        "Source/Reference/Keys/KeyPaths.uv"
+        "runKeysNestedReleaseReference",
+        "Source/Reference/Keys/NestedRelease.uv"
     ) {
         count = count + 1usize
     }
-    if acceptedObligationEntryMatches(
+    if diagnosticSourceObligationEntryMatches(
         "requirement.19.UnknownCalleeAccessWarning",
         73978usize,
-        "HelloUltraviolet::Reference::Keys",
-        "runKeysKeyPathsReference",
-        "Source/Reference/Keys/KeyPaths.uv"
+        "HelloUltraviolet::Fixtures::DiagnosticSource",
+        "validatedKeysDiagnosticSourceFixtureCount",
+        "Fixtures/DiagnosticSource/Keys/UnknownCalleeAccessWarning/Source/Main.uv"
     ) {
         count = count + 1usize
     }
@@ -101,26 +101,26 @@ public procedure validatedKeySystemNestedReleaseObligations() -> usize {
         "rule.19.CallSharedArgumentNoKeyAcquisition",
         73993usize,
         "HelloUltraviolet::Reference::Keys",
-        "runKeysKeyPathsReference",
-        "Source/Reference/Keys/KeyPaths.uv"
+        "runKeysNestedReleaseReference",
+        "Source/Reference/Keys/NestedRelease.uv"
     ) {
         count = count + 1usize
     }
-    if acceptedObligationEntryMatches(
+    if diagnosticSourceObligationEntryMatches(
         "requirement.19.StaleOkSuppressesReleaseWarning",
         74008usize,
-        "HelloUltraviolet::Reference::Keys",
-        "runKeysKeyPathsReference",
-        "Source/Reference/Keys/KeyPaths.uv"
+        "HelloUltraviolet::Fixtures::DiagnosticSource",
+        "validatedKeysDiagnosticSourceFixtureCount",
+        "Fixtures/DiagnosticSource/Keys/StaleOkSuppressesReleaseWarning/Source/Main.uv"
     ) {
         count = count + 1usize
     }
-    if acceptedObligationEntryMatches(
+    if rejectedSourceObligationEntryMatches(
         "rule.19.K-Release-SameMode-Err",
         74021usize,
-        "HelloUltraviolet::Reference::Keys",
-        "runKeysKeyPathsReference",
-        "Source/Reference/Keys/KeyPaths.uv"
+        "HelloUltraviolet::Fixtures::RejectedSource",
+        "validatedKeysRejectedSourceFixtureCount",
+        "Fixtures/RejectedSource/Keys/NestedReleaseSameMode/Source/Main.uv"
     ) {
         count = count + 1usize
     }
@@ -128,8 +128,8 @@ public procedure validatedKeySystemNestedReleaseObligations() -> usize {
         "requirement.19.NestedReleaseExecutionSequence",
         74039usize,
         "HelloUltraviolet::Reference::Keys",
-        "runKeysKeyPathsReference",
-        "Source/Reference/Keys/KeyPaths.uv"
+        "runKeysNestedReleaseReference",
+        "Source/Reference/Keys/NestedRelease.uv"
     ) {
         count = count + 1usize
     }
@@ -137,8 +137,8 @@ public procedure validatedKeySystemNestedReleaseObligations() -> usize {
         "rule.19.K-Release-Sequence",
         74058usize,
         "HelloUltraviolet::Reference::Keys",
-        "runKeysKeyPathsReference",
-        "Source/Reference/Keys/KeyPaths.uv"
+        "runKeysNestedReleaseReference",
+        "Source/Reference/Keys/NestedRelease.uv"
     ) {
         count = count + 1usize
     }
@@ -146,8 +146,8 @@ public procedure validatedKeySystemNestedReleaseObligations() -> usize {
         "requirement.19.NestedReleaseInterleavingWindow",
         74078usize,
         "HelloUltraviolet::Reference::Keys",
-        "runKeysKeyPathsReference",
-        "Source/Reference/Keys/KeyPaths.uv"
+        "runKeysNestedReleaseReference",
+        "Source/Reference/Keys/NestedRelease.uv"
     ) {
         count = count + 1usize
     }
@@ -155,8 +155,8 @@ public procedure validatedKeySystemNestedReleaseObligations() -> usize {
         "def.19.HeldKeyAccessors",
         74091usize,
         "HelloUltraviolet::Reference::Keys",
-        "runKeysKeyPathsReference",
-        "Source/Reference/Keys/KeyPaths.uv"
+        "runKeysNestedReleaseReference",
+        "Source/Reference/Keys/NestedRelease.uv"
     ) {
         count = count + 1usize
     }
@@ -164,8 +164,8 @@ public procedure validatedKeySystemNestedReleaseObligations() -> usize {
         "def.19.ReleasedKeyState",
         74107usize,
         "HelloUltraviolet::Reference::Keys",
-        "runKeysKeyPathsReference",
-        "Source/Reference/Keys/KeyPaths.uv"
+        "runKeysNestedReleaseReference",
+        "Source/Reference/Keys/NestedRelease.uv"
     ) {
         count = count + 1usize
     }
@@ -173,8 +173,8 @@ public procedure validatedKeySystemNestedReleaseObligations() -> usize {
         "rule.19.ExecSigma-KeyBlock-Release",
         74127usize,
         "HelloUltraviolet::Reference::Keys",
-        "runKeysKeyPathsReference",
-        "Source/Reference/Keys/KeyPaths.uv"
+        "runKeysNestedReleaseReference",
+        "Source/Reference/Keys/NestedRelease.uv"
     ) {
         count = count + 1usize
     }
@@ -182,17 +182,17 @@ public procedure validatedKeySystemNestedReleaseObligations() -> usize {
         "rule.19.Lower-Stmt-KeyBlock-Release",
         74145usize,
         "HelloUltraviolet::Reference::Keys",
-        "runKeysKeyPathsReference",
-        "Source/Reference/Keys/KeyPaths.uv"
+        "runKeysNestedReleaseReference",
+        "Source/Reference/Keys/NestedRelease.uv"
     ) {
         count = count + 1usize
     }
-    if acceptedObligationEntryMatches(
+    if diagnosticSourceObligationEntryMatches(
         "diagnostics.19.NestedRelease",
         74168usize,
-        "HelloUltraviolet::Reference::Keys",
-        "runKeysKeyPathsReference",
-        "Source/Reference/Keys/KeyPaths.uv"
+        "HelloUltraviolet::Fixtures::DiagnosticSource",
+        "validatedKeysDiagnosticSourceFixtureCount",
+        "Fixtures/DiagnosticSource/Keys/NestedReleaseInterleavingWarning/Source/Main.uv"
     ) {
         count = count + 1usize
     }

@@ -1,0 +1,604 @@
+//! Catalog primary-reference ordering check group 0028.
+
+internal procedure catalogPrimaryReferenceOrderGroup0028() -> bool {
+    return catalogPrimaryReferencePrecedes(
+            "def.RecordValueType",
+            39115usize,
+            "def.RegionActiveType",
+            16267usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.RegionActiveType",
+            16267usize,
+            "def.RegionAliasName",
+            19359usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.RegionAliasName",
+            19359usize,
+            "def.RegionAlloc",
+            18102usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.RegionAlloc",
+            18102usize,
+            "def.RegionAllocProcSig",
+            42284usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.RegionAllocProcSig",
+            42284usize,
+            "def.RegionArena",
+            17785usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.RegionArena",
+            17785usize,
+            "def.RegionBind",
+            16310usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.RegionBind",
+            16310usize,
+            "def.RegionBindingInfo",
+            15830usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.RegionBindingInfo",
+            15830usize,
+            "def.RegionFree",
+            18178usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.RegionFree",
+            18178usize,
+            "def.RegionFreeUncheckedProcSig",
+            42332usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.RegionFreeUncheckedProcSig",
+            42332usize,
+            "def.RegionFreezeProcSig",
+            42308usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.RegionFreezeProcSig",
+            42308usize,
+            "def.RegionNesting",
+            16403usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.RegionNesting",
+            16403usize,
+            "def.RegionNew",
+            18017usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.RegionNew",
+            18017usize,
+            "def.RegionNewScopedProcSig",
+            42272usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.RegionNewScopedProcSig",
+            42272usize,
+            "def.RegionNonBitcopy",
+            42358usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.RegionNonBitcopy",
+            42358usize,
+            "def.RegionOpen",
+            18031usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.RegionOpen",
+            18031usize,
+            "def.RegionOptionsDecl",
+            16237usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.RegionOptionsDecl",
+            16237usize,
+            "def.RegionOptionsExpression",
+            16295usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.RegionOptionsExpression",
+            16295usize,
+            "def.RegionOptionsFields",
+            16220usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.RegionOptionsFields",
+            16220usize,
+            "def.RegionPayload",
+            42245usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.RegionPayload",
+            42245usize,
+            "def.RegionPreallocation",
+            16252usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.RegionPreallocation",
+            16252usize,
+            "def.RegionProcSet",
+            42260usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.RegionProcSet",
+            42260usize,
+            "def.RegionProcedureJudgements",
+            18296usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.RegionProcedureJudgements",
+            18296usize,
+            "def.RegionProvenanceTypeHelpers",
+            42344usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.RegionProvenanceTypeHelpers",
+            42344usize,
+            "def.RegionReset",
+            18147usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.RegionReset",
+            18147usize,
+            "def.RegionResetUncheckedProcSig",
+            42296usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.RegionResetUncheckedProcSig",
+            42296usize,
+            "def.RegionThawProcSig",
+            42320usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.RegionThawProcSig",
+            42320usize,
+            "def.RegionValue",
+            17926usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.RegionValue",
+            17926usize,
+            "def.RelativePathComputation",
+            3355usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.RelativePathComputation",
+            3355usize,
+            "def.ReleaseArena",
+            18223usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.ReleaseArena",
+            18223usize,
+            "def.ReplaceScopeById",
+            17305usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.ReplaceScopeById",
+            17305usize,
+            "def.ReqJudgments",
+            181usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.ReqJudgments",
+            181usize,
+            "def.RequiredOutputs",
+            4788usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.RequiredOutputs",
+            4788usize,
+            "def.ReservedIdentifiers",
+            18865usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.ReservedIdentifiers",
+            18865usize,
+            "def.ReservedKeywords",
+            8271usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.ReservedKeywords",
+            8271usize,
+            "def.ReservedModulePath",
+            18881usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.ReservedModulePath",
+            18881usize,
+            "def.ReservedNamespaces",
+            8315usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.ReservedNamespaces",
+            8315usize,
+            "def.ResetArena",
+            18237usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.ResetArena",
+            18237usize,
+            "def.ResolutionContext",
+            18767usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.ResolutionContext",
+            18767usize,
+            "def.ResolutionEntity",
+            18785usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.ResolutionEntity",
+            18785usize,
+            "def.ResolutionScope",
+            18803usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.ResolutionScope",
+            18803usize,
+            "def.ResolutionScopeStack",
+            18817usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.ResolutionScopeStack",
+            18817usize,
+            "def.ResolutionStateDomain",
+            23943usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.ResolutionStateDomain",
+            23943usize,
+            "def.ResolveAllExprListJudgementSet",
+            23026usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.ResolveAllExprListJudgementSet",
+            23026usize,
+            "def.ResolveArgsReference",
+            22338usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.ResolveArgsReference",
+            22338usize,
+            "def.ResolveArgsSignature",
+            20916usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.ResolveArgsSignature",
+            20916usize,
+            "def.ResolveCalleeJudgementSet",
+            23075usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.ResolveCalleeJudgementSet",
+            23075usize,
+            "def.ResolveDispatchOptJudgementSet",
+            22822usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.ResolveDispatchOptJudgementSet",
+            22822usize,
+            "def.ResolveEnumPayloadJudgementSet",
+            22413usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.ResolveEnumPayloadJudgementSet",
+            22413usize,
+            "def.ResolveEnumRecordSignature",
+            20986usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.ResolveEnumRecordSignature",
+            20986usize,
+            "def.ResolveEnumTupleSignature",
+            20972usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.ResolveEnumTupleSignature",
+            20972usize,
+            "def.ResolveEnumUnitSignature",
+            20958usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.ResolveEnumUnitSignature",
+            20958usize,
+            "def.ResolveExprListJudgementSet",
+            22399usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.ResolveExprListJudgementSet",
+            22399usize,
+            "def.ResolveExprOptNone",
+            21452usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.ResolveExprOptNone",
+            21452usize,
+            "def.ResolveExprOptSome",
+            21466usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.ResolveExprOptSome",
+            21466usize,
+            "def.ResolveExprRuleSet",
+            23692usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.ResolveExprRuleSet",
+            23692usize,
+            "def.ResolveFieldInitsReference",
+            22352usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.ResolveFieldInitsReference",
+            22352usize,
+            "def.ResolveFieldInitsSignature",
+            20930usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.ResolveFieldInitsSignature",
+            20930usize,
+            "def.ResolveIfCaseJudgementSet",
+            23270usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.ResolveIfCaseJudgementSet",
+            23270usize,
+            "def.ResolveKeyClauseJudgementSet",
+            23516usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.ResolveKeyClauseJudgementSet",
+            23516usize,
+            "def.ResolveKeyPathJudgementSet",
+            22480usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.ResolveKeyPathJudgementSet",
+            22480usize,
+            "def.ResolveModalRef",
+            21830usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.ResolveModalRef",
+            21830usize,
+            "def.ResolveParallelOptJudgementSet",
+            22636usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.ResolveParallelOptJudgementSet",
+            22636usize,
+            "def.ResolvePathJudgementSet",
+            21000usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.ResolvePathJudgementSet",
+            21000usize,
+            "def.ResolvePatternSignature",
+            21949usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.ResolvePatternSignature",
+            21949usize,
+            "def.ResolveQualifiedFormSignature",
+            20902usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.ResolveQualifiedFormSignature",
+            20902usize,
+            "def.ResolveRaceJudgementSet",
+            22923usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.ResolveRaceJudgementSet",
+            22923usize,
+            "def.ResolveRecordPathSignature",
+            20944usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.ResolveRecordPathSignature",
+            20944usize,
+            "def.ResolveRuntimeRegionEntry",
+            17941usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.ResolveRuntimeRegionEntry",
+            17941usize,
+            "def.ResolveRuntimeRegionTargetAndTag",
+            17973usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.ResolveRuntimeRegionTargetAndTag",
+            17973usize,
+            "def.ResolveSpawnOptJudgementSet",
+            22720usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.ResolveSpawnOptJudgementSet",
+            22720usize,
+            "def.ResolveStmtSeqJudgementSet",
+            23774usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.ResolveStmtSeqJudgementSet",
+            23774usize,
+            "def.RestrictPathFailure",
+            12908usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.RestrictPathFailure",
+            12908usize,
+            "def.RestrictPathSuccess",
+            12894usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.RestrictPathSuccess",
+            12894usize,
+            "def.RetagRegions",
+            18130usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.RetagRegions",
+            18130usize,
+            "def.Rev",
+            31254usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.Rev",
+            31254usize,
+            "def.RuleApplies",
+            616usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.RuleApplies",
+            616usize,
+            "def.RuleDiagnosticIdentity",
+            673usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.RuleDiagnosticIdentity",
+            673usize,
+            "def.RuleSectionIndex",
+            689usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.RuleSectionIndex",
+            689usize,
+            "def.RuleShape",
+            572usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.RuleShape",
+            572usize,
+            "def.RuleSubstitutions",
+            602usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.RuleSubstitutions",
+            602usize,
+            "def.RuntimeAddressTagLookup",
+            18651usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.RuntimeAddressTagLookup",
+            18651usize,
+            "def.RuntimeAddressTags",
+            17756usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.RuntimeAddressTags",
+            17756usize,
+            "def.RuntimeBindingIdentityAndValue",
+            17378usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.RuntimeBindingIdentityAndValue",
+            17378usize,
+            "def.RuntimeBindingStateLookup",
+            17467usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.RuntimeBindingStateLookup",
+            17467usize,
+            "def.RuntimeBindingTypeAndInfo",
+            17650usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.RuntimeBindingTypeAndInfo",
+            17650usize,
+            "def.RuntimeBindingValueLookup",
+            17453usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.RuntimeBindingValueLookup",
+            17453usize,
+            "def.RuntimeCheck",
+            784usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.RuntimeCheck",
+            784usize,
+            "def.RuntimeCheckBehavior",
+            798usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.RuntimeCheckBehavior",
+            798usize,
+            "def.RuntimeHostPrimitives",
+            12615usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.RuntimeHostPrimitives",
+            12615usize,
+            "def.RuntimeLibName",
+            5641usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.RuntimeLibName",
+            5641usize,
+            "def.RuntimeLibPath",
+            5716usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.RuntimeLibPath",
+            5716usize,
+            "def.RuntimeRegionEntry",
+            17738usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.RuntimeRegionEntry",
+            17738usize,
+            "def.RuntimeRegionStack",
+            17771usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.RuntimeRegionStack",
+            17771usize,
+            "def.RuntimeScopePushPop",
+            17245usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.RuntimeScopePushPop",
+            17245usize,
+            "def.RuntimeTagActive",
+            18668usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.RuntimeTagActive",
+            18668usize,
+            "def.RuntimeValueDomain",
+            18491usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.RuntimeValueDomain",
+            18491usize,
+            "def.SafePointerNicheSet",
+            46198usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.SafePointerNicheSet",
+            46198usize,
+            "def.SafePointerRuntimeConstructors",
+            45962usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.SafePointerRuntimeConstructors",
+            45962usize,
+            "def.SafePointerSizeAlignEquations",
+            46174usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.SafePointerSizeAlignEquations",
+            46174usize,
+            "def.SafePointerTraits",
+            45930usize
+        )
+}

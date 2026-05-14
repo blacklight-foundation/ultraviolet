@@ -1,0 +1,604 @@
+//! CSV-to-catalog membership check group 0008.
+
+internal procedure catalogCsvMembershipGroup0008() -> bool {
+    return csvCatalogKeyMatches(
+            "ResolveFieldPatternList-Empty",
+            22113usize,
+            "ResolveFieldPatternList-Empty",
+            22113usize
+        ) &&
+        csvCatalogKeyMatches(
+            "ResolveFieldPatternListOpt-None",
+            22250usize,
+            "ResolveFieldPatternListOpt-None",
+            22250usize
+        ) &&
+        csvCatalogKeyMatches(
+            "ResolveFieldPatternListOpt-Some",
+            22265usize,
+            "ResolveFieldPatternListOpt-Some",
+            22265usize
+        ) &&
+        csvCatalogKeyMatches(
+            "ResolveGenericParamsOpt-None",
+            21362usize,
+            "ResolveGenericParamsOpt-None",
+            21362usize
+        ) &&
+        csvCatalogKeyMatches(
+            "ResolveGenericParamsOpt-Yes",
+            21480usize,
+            "ResolveGenericParamsOpt-Yes",
+            21480usize
+        ) &&
+        csvCatalogKeyMatches(
+            "ResolveIfCase",
+            23284usize,
+            "ResolveIfCase",
+            23284usize
+        ) &&
+        csvCatalogKeyMatches(
+            "ResolveIfCases-Cons",
+            23319usize,
+            "ResolveIfCases-Cons",
+            23319usize
+        ) &&
+        csvCatalogKeyMatches(
+            "ResolveIfCases-Empty",
+            23302usize,
+            "ResolveIfCases-Empty",
+            23302usize
+        ) &&
+        csvCatalogKeyMatches(
+            "ResolveInvariantOpt-None",
+            21407usize,
+            "ResolveInvariantOpt-None",
+            21407usize
+        ) &&
+        csvCatalogKeyMatches(
+            "ResolveInvariantOpt-Yes",
+            21636usize,
+            "ResolveInvariantOpt-Yes",
+            21636usize
+        ) &&
+        csvCatalogKeyMatches(
+            "ResolveItem-Enum",
+            39979usize,
+            "ResolveItem-Enum",
+            39979usize
+        ) &&
+        csvCatalogKeyMatches(
+            "ResolveItem-ExternBlock",
+            31665usize,
+            "ResolveItem-ExternBlock",
+            31665usize
+        ) &&
+        csvCatalogKeyMatches(
+            "ResolveItem-Import",
+            29968usize,
+            "ResolveItem-Import",
+            29968usize
+        ) &&
+        csvCatalogKeyMatches(
+            "ResolveItem-Record",
+            38898usize,
+            "ResolveItem-Record",
+            38898usize
+        ) &&
+        csvCatalogKeyMatches(
+            "ResolveItem-Static",
+            30767usize,
+            "ResolveItem-Static",
+            30767usize
+        ) &&
+        csvCatalogKeyMatches(
+            "ResolveItem-TypeAlias",
+            41319usize,
+            "ResolveItem-TypeAlias",
+            41319usize
+        ) &&
+        csvCatalogKeyMatches(
+            "ResolveItem-Using",
+            30475usize,
+            "ResolveItem-Using",
+            30475usize
+        ) &&
+        csvCatalogKeyMatches(
+            "ResolveItems-Cons",
+            23925usize,
+            "ResolveItems-Cons",
+            23925usize
+        ) &&
+        csvCatalogKeyMatches(
+            "ResolveItems-Empty",
+            23910usize,
+            "ResolveItems-Empty",
+            23910usize
+        ) &&
+        csvCatalogKeyMatches(
+            "ResolveKeyClauseOpt-None",
+            23530usize,
+            "ResolveKeyClauseOpt-None",
+            23530usize
+        ) &&
+        csvCatalogKeyMatches(
+            "ResolveKeyClauseOpt-Yes",
+            23548usize,
+            "ResolveKeyClauseOpt-Yes",
+            23548usize
+        ) &&
+        csvCatalogKeyMatches(
+            "ResolveKeyPathExpr",
+            22565usize,
+            "ResolveKeyPathExpr",
+            22565usize
+        ) &&
+        csvCatalogKeyMatches(
+            "ResolveKeyPathExpr-Err",
+            22583usize,
+            "ResolveKeyPathExpr-Err",
+            22583usize
+        ) &&
+        csvCatalogKeyMatches(
+            "ResolveKeyPathList-Cons",
+            22618usize,
+            "ResolveKeyPathList-Cons",
+            22618usize
+        ) &&
+        csvCatalogKeyMatches(
+            "ResolveKeyPathList-Empty",
+            22601usize,
+            "ResolveKeyPathList-Empty",
+            22601usize
+        ) &&
+        csvCatalogKeyMatches(
+            "ResolveKeySeg-Field",
+            22494usize,
+            "ResolveKeySeg-Field",
+            22494usize
+        ) &&
+        csvCatalogKeyMatches(
+            "ResolveKeySeg-Index",
+            22512usize,
+            "ResolveKeySeg-Index",
+            22512usize
+        ) &&
+        csvCatalogKeyMatches(
+            "ResolveKeySegs-Cons",
+            22547usize,
+            "ResolveKeySegs-Cons",
+            22547usize
+        ) &&
+        csvCatalogKeyMatches(
+            "ResolveKeySegs-Empty",
+            22530usize,
+            "ResolveKeySegs-Empty",
+            22530usize
+        ) &&
+        csvCatalogKeyMatches(
+            "ResolveModule-Ok",
+            23892usize,
+            "ResolveModule-Ok",
+            23892usize
+        ) &&
+        csvCatalogKeyMatches(
+            "ResolveModulePath-Err",
+            32972usize,
+            "ResolveModulePath-Err",
+            32972usize
+        ) &&
+        csvCatalogKeyMatches(
+            "ResolveModules-Err-Parse",
+            24030usize,
+            "ResolveModules-Err-Parse",
+            24030usize
+        ) &&
+        csvCatalogKeyMatches(
+            "ResolveModules-Err-Resolve",
+            24048usize,
+            "ResolveModules-Err-Resolve",
+            24048usize
+        ) &&
+        csvCatalogKeyMatches(
+            "ResolveModules-Ok",
+            24012usize,
+            "ResolveModules-Ok",
+            24012usize
+        ) &&
+        csvCatalogKeyMatches(
+            "ResolveParallelOpt-Cancel",
+            22650usize,
+            "ResolveParallelOpt-Cancel",
+            22650usize
+        ) &&
+        csvCatalogKeyMatches(
+            "ResolveParallelOpt-Name",
+            22668usize,
+            "ResolveParallelOpt-Name",
+            22668usize
+        ) &&
+        csvCatalogKeyMatches(
+            "ResolveParallelOpts-Cons",
+            22702usize,
+            "ResolveParallelOpts-Cons",
+            22702usize
+        ) &&
+        csvCatalogKeyMatches(
+            "ResolveParallelOpts-Empty",
+            22685usize,
+            "ResolveParallelOpts-Empty",
+            22685usize
+        ) &&
+        csvCatalogKeyMatches(
+            "ResolveParam",
+            21897usize,
+            "ResolveParam",
+            21897usize
+        ) &&
+        csvCatalogKeyMatches(
+            "ResolveParams-Cons",
+            21930usize,
+            "ResolveParams-Cons",
+            21930usize
+        ) &&
+        csvCatalogKeyMatches(
+            "ResolveParams-Empty",
+            21915usize,
+            "ResolveParams-Empty",
+            21915usize
+        ) &&
+        csvCatalogKeyMatches(
+            "ResolvePat-Enum",
+            22044usize,
+            "ResolvePat-Enum",
+            22044usize
+        ) &&
+        csvCatalogKeyMatches(
+            "ResolvePat-Identifier",
+            21978usize,
+            "ResolvePat-Identifier",
+            21978usize
+        ) &&
+        csvCatalogKeyMatches(
+            "ResolvePat-Literal",
+            21993usize,
+            "ResolvePat-Literal",
+            21993usize
+        ) &&
+        csvCatalogKeyMatches(
+            "ResolvePat-Modal",
+            22062usize,
+            "ResolvePat-Modal",
+            22062usize
+        ) &&
+        csvCatalogKeyMatches(
+            "ResolvePat-Range",
+            22080usize,
+            "ResolvePat-Range",
+            22080usize
+        ) &&
+        csvCatalogKeyMatches(
+            "ResolvePat-Record",
+            22026usize,
+            "ResolvePat-Record",
+            22026usize
+        ) &&
+        csvCatalogKeyMatches(
+            "ResolvePat-Tuple",
+            22008usize,
+            "ResolvePat-Tuple",
+            22008usize
+        ) &&
+        csvCatalogKeyMatches(
+            "ResolvePat-Wildcard",
+            21963usize,
+            "ResolvePat-Wildcard",
+            21963usize
+        ) &&
+        csvCatalogKeyMatches(
+            "ResolvePatternList-Cons",
+            22128usize,
+            "ResolvePatternList-Cons",
+            22128usize
+        ) &&
+        csvCatalogKeyMatches(
+            "ResolvePatternList-Empty",
+            22098usize,
+            "ResolvePatternList-Empty",
+            22098usize
+        ) &&
+        csvCatalogKeyMatches(
+            "ResolvePredicateClauseOpt-None",
+            21377usize,
+            "ResolvePredicateClauseOpt-None",
+            21377usize
+        ) &&
+        csvCatalogKeyMatches(
+            "ResolvePredicateClauseOpt-Yes",
+            21549usize,
+            "ResolvePredicateClauseOpt-Yes",
+            21549usize
+        ) &&
+        csvCatalogKeyMatches(
+            "ResolvePredicateReq-Predicate",
+            21582usize,
+            "ResolvePredicateReq-Predicate",
+            21582usize
+        ) &&
+        csvCatalogKeyMatches(
+            "ResolvePredicateReqList-Cons",
+            21600usize,
+            "ResolvePredicateReqList-Cons",
+            21600usize
+        ) &&
+        csvCatalogKeyMatches(
+            "ResolvePredicateReqList-Empty",
+            21567usize,
+            "ResolvePredicateReqList-Empty",
+            21567usize
+        ) &&
+        csvCatalogKeyMatches(
+            "ResolveQual-Apply-Enum-Record",
+            39961usize,
+            "ResolveQual-Apply-Enum-Record",
+            39961usize
+        ) &&
+        csvCatalogKeyMatches(
+            "ResolveQual-Apply-Enum-Tuple",
+            39943usize,
+            "ResolveQual-Apply-Enum-Tuple",
+            39943usize
+        ) &&
+        csvCatalogKeyMatches(
+            "ResolveQual-Apply-RecordLit",
+            38880usize,
+            "ResolveQual-Apply-RecordLit",
+            38880usize
+        ) &&
+        csvCatalogKeyMatches(
+            "ResolveQual-Name-Builtin",
+            21170usize,
+            "ResolveQual-Name-Builtin",
+            21170usize
+        ) &&
+        csvCatalogKeyMatches(
+            "ResolveQual-Name-Enum",
+            21224usize,
+            "ResolveQual-Name-Enum",
+            21224usize
+        ) &&
+        csvCatalogKeyMatches(
+            "ResolveQual-Name-Enum",
+            39925usize,
+            "ResolveQual-Name-Enum",
+            39925usize
+        ) &&
+        csvCatalogKeyMatches(
+            "ResolveQual-Name-Err",
+            21242usize,
+            "ResolveQual-Name-Err",
+            21242usize
+        ) &&
+        csvCatalogKeyMatches(
+            "ResolveQual-Name-Record",
+            21206usize,
+            "ResolveQual-Name-Record",
+            21206usize
+        ) &&
+        csvCatalogKeyMatches(
+            "ResolveQual-Name-Record",
+            38862usize,
+            "ResolveQual-Name-Record",
+            38862usize
+        ) &&
+        csvCatalogKeyMatches(
+            "ResolveQual-Name-Value",
+            21188usize,
+            "ResolveQual-Name-Value",
+            21188usize
+        ) &&
+        csvCatalogKeyMatches(
+            "ResolveRaceArm",
+            22973usize,
+            "ResolveRaceArm",
+            22973usize
+        ) &&
+        csvCatalogKeyMatches(
+            "ResolveRaceArms-Cons",
+            23008usize,
+            "ResolveRaceArms-Cons",
+            23008usize
+        ) &&
+        csvCatalogKeyMatches(
+            "ResolveRaceArms-Empty",
+            22991usize,
+            "ResolveRaceArms-Empty",
+            22991usize
+        ) &&
+        csvCatalogKeyMatches(
+            "ResolveRaceHandler-Return",
+            22937usize,
+            "ResolveRaceHandler-Return",
+            22937usize
+        ) &&
+        csvCatalogKeyMatches(
+            "ResolveRaceHandler-Yield",
+            22955usize,
+            "ResolveRaceHandler-Yield",
+            22955usize
+        ) &&
+        csvCatalogKeyMatches(
+            "ResolveRuntimeLib-Err",
+            5750usize,
+            "ResolveRuntimeLib-Err",
+            5750usize
+        ) &&
+        csvCatalogKeyMatches(
+            "ResolveRuntimeLib-Ok",
+            5732usize,
+            "ResolveRuntimeLib-Ok",
+            5732usize
+        ) &&
+        csvCatalogKeyMatches(
+            "ResolveSpawnOpt-Affinity",
+            22751usize,
+            "ResolveSpawnOpt-Affinity",
+            22751usize
+        ) &&
+        csvCatalogKeyMatches(
+            "ResolveSpawnOpt-Name",
+            22734usize,
+            "ResolveSpawnOpt-Name",
+            22734usize
+        ) &&
+        csvCatalogKeyMatches(
+            "ResolveSpawnOpt-Priority",
+            22769usize,
+            "ResolveSpawnOpt-Priority",
+            22769usize
+        ) &&
+        csvCatalogKeyMatches(
+            "ResolveSpawnOpts-Cons",
+            22804usize,
+            "ResolveSpawnOpts-Cons",
+            22804usize
+        ) &&
+        csvCatalogKeyMatches(
+            "ResolveSpawnOpts-Empty",
+            22787usize,
+            "ResolveSpawnOpts-Empty",
+            22787usize
+        ) &&
+        csvCatalogKeyMatches(
+            "ResolveStmtSeq-Cons",
+            23805usize,
+            "ResolveStmtSeq-Cons",
+            23805usize
+        ) &&
+        csvCatalogKeyMatches(
+            "ResolveStmtSeq-Empty",
+            23788usize,
+            "ResolveStmtSeq-Empty",
+            23788usize
+        ) &&
+        csvCatalogKeyMatches(
+            "ResolveTool-Err-Archiver",
+            6693usize,
+            "ResolveTool-Err-Archiver",
+            6693usize
+        ) &&
+        csvCatalogKeyMatches(
+            "ResolveTool-Err-IR",
+            6711usize,
+            "ResolveTool-Err-IR",
+            6711usize
+        ) &&
+        csvCatalogKeyMatches(
+            "ResolveTool-Err-Linker",
+            6675usize,
+            "ResolveTool-Err-Linker",
+            6675usize
+        ) &&
+        csvCatalogKeyMatches(
+            "ResolveTool-Ok",
+            6657usize,
+            "ResolveTool-Ok",
+            6657usize
+        ) &&
+        csvCatalogKeyMatches(
+            "ResolveType-Apply",
+            21794usize,
+            "ResolveType-Apply",
+            21794usize
+        ) &&
+        csvCatalogKeyMatches(
+            "ResolveType-Dynamic",
+            21776usize,
+            "ResolveType-Dynamic",
+            21776usize
+        ) &&
+        csvCatalogKeyMatches(
+            "ResolveType-Hom",
+            21846usize,
+            "ResolveType-Hom",
+            21846usize
+        ) &&
+        csvCatalogKeyMatches(
+            "ResolveType-ModalState",
+            21812usize,
+            "ResolveType-ModalState",
+            21812usize
+        ) &&
+        csvCatalogKeyMatches(
+            "ResolveType-Path",
+            21758usize,
+            "ResolveType-Path",
+            21758usize
+        ) &&
+        csvCatalogKeyMatches(
+            "ResolveTypeList-Cons",
+            21879usize,
+            "ResolveTypeList-Cons",
+            21879usize
+        ) &&
+        csvCatalogKeyMatches(
+            "ResolveTypeList-Empty",
+            21864usize,
+            "ResolveTypeList-Empty",
+            21864usize
+        ) &&
+        csvCatalogKeyMatches(
+            "ResolveTypeOpt-None",
+            21422usize,
+            "ResolveTypeOpt-None",
+            21422usize
+        ) &&
+        csvCatalogKeyMatches(
+            "ResolveTypeParam",
+            21498usize,
+            "ResolveTypeParam",
+            21498usize
+        ) &&
+        csvCatalogKeyMatches(
+            "ResolveTypeParamList-Cons",
+            21531usize,
+            "ResolveTypeParamList-Cons",
+            21531usize
+        ) &&
+        csvCatalogKeyMatches(
+            "ResolveTypeParamList-Empty",
+            21516usize,
+            "ResolveTypeParamList-Empty",
+            21516usize
+        ) &&
+        csvCatalogKeyMatches(
+            "ResolveTypePath-Ident",
+            21654usize,
+            "ResolveTypePath-Ident",
+            21654usize
+        ) &&
+        csvCatalogKeyMatches(
+            "ResolveTypePath-Ident-Local",
+            21672usize,
+            "ResolveTypePath-Ident-Local",
+            21672usize
+        ) &&
+        csvCatalogKeyMatches(
+            "ResolveTypePath-Qual",
+            21690usize,
+            "ResolveTypePath-Qual",
+            21690usize
+        ) &&
+        csvCatalogKeyMatches(
+            "Scan-Line-Comment",
+            8440usize,
+            "Scan-Line-Comment",
+            8440usize
+        ) &&
+        csvCatalogKeyMatches(
+            "Select-By-Name",
+            3887usize,
+            "Select-By-Name",
+            3887usize
+        )
+}

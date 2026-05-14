@@ -70,12 +70,12 @@ public procedure validatedStatementsAndBlocksExpressionStatementsObligations() -
     ) {
         count = count + 1usize
     }
-    if acceptedObligationEntryMatches(
+    if rejectedSourceObligationEntryMatches(
         "diag.18.ExpressionStatements",
         70368usize,
-        "HelloUltraviolet::Reference::Statements",
-        "runStatementsExpressionStatementsReference",
-        "Source/Reference/Statements/ExpressionStatements.uv"
+        "HelloUltraviolet::Fixtures::RejectedSource",
+        "validatedStatementsRejectedSourceFixtureCount",
+        "Fixtures/RejectedSource/Statements/ExpressionStatementsDiagnostic/Source/Main.uv"
     ) {
         count = count + 1usize
     }

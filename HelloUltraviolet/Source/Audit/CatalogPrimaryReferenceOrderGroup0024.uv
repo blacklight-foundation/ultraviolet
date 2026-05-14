@@ -1,0 +1,604 @@
+//! Catalog primary-reference ordering check group 0024.
+
+internal procedure catalogPrimaryReferenceOrderGroup0024() -> bool {
+    return catalogPrimaryReferencePrecedes(
+            "def.InnermostActiveRegion",
+            16326usize,
+            "def.IntroduceAllBindings",
+            15787usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.IntroduceAllBindings",
+            15787usize,
+            "def.InvalidLayoutAttributeCombinations",
+            27894usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.InvalidLayoutAttributeCombinations",
+            27894usize,
+            "def.IsModulePath",
+            20203usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.IsModulePath",
+            20203usize,
+            "def.IsQuote",
+            9662usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.IsQuote",
+            9662usize,
+            "def.IsRangeType",
+            37679usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.IsRangeType",
+            37679usize,
+            "def.IsRootModule",
+            5359usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.IsRootModule",
+            5359usize,
+            "def.IsTransition",
+            43952usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.IsTransition",
+            43952usize,
+            "def.ItemAttributeList",
+            27164usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.ItemAttributeList",
+            27164usize,
+            "def.ItemKind",
+            289usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.ItemKind",
+            289usize,
+            "def.ItemNames",
+            20245usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.ItemNames",
+            20245usize,
+            "def.ItemNames",
+            33018usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.ItemNames",
+            33018usize,
+            "def.ItemSynchronizationSet",
+            11806usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.ItemSynchronizationSet",
+            11806usize,
+            "def.IteratorElementProvenance",
+            16978usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.IteratorElementProvenance",
+            16978usize,
+            "def.Join",
+            3237usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.Join",
+            3237usize,
+            "def.JoinAllBindings",
+            15864usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.JoinAllBindings",
+            15864usize,
+            "def.JoinAllPermissions",
+            15880usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.JoinAllPermissions",
+            15880usize,
+            "def.JoinAllProvenance",
+            16492usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.JoinAllProvenance",
+            16492usize,
+            "def.JoinComp",
+            3218usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.JoinComp",
+            3218usize,
+            "def.JudgmentSubjectAndEnvironment",
+            587usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.JudgmentSubjectAndEnvironment",
+            587usize,
+            "def.KeywordClassification",
+            9580usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.KeywordClassification",
+            9580usize,
+            "def.KeywordPredicate",
+            8300usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.KeywordPredicate",
+            8300usize,
+            "def.KindPriority",
+            9709usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.KindPriority",
+            9709usize,
+            "def.LLVMTargetConstants",
+            5343usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.LLVMTargetConstants",
+            5343usize,
+            "def.Last",
+            17407usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.Last",
+            17407usize,
+            "def.LastPathComponent",
+            20189usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.LastPathComponent",
+            20189usize,
+            "def.LayoutAttributeApplicability",
+            27909usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.LayoutAttributeApplicability",
+            27909usize,
+            "def.LayoutAttributeAstAttachment",
+            27751usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.LayoutAttributeAstAttachment",
+            27751usize,
+            "def.LexRecovery",
+            828usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.LexRecovery",
+            828usize,
+            "def.LexSensitivePos",
+            6972usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.LexSensitivePos",
+            6972usize,
+            "def.LexState",
+            9999usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.LexState",
+            9999usize,
+            "def.LexemeBinding",
+            8032usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.LexemeBinding",
+            8032usize,
+            "def.LexerIndicesAndLexemes",
+            8117usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.LexerIndicesAndLexemes",
+            8117usize,
+            "def.LexerInput",
+            7982usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.LexerInput",
+            7982usize,
+            "def.LexerOutput",
+            8000usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.LexerOutput",
+            8000usize,
+            "def.LexicalSecurityCheck",
+            9879usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.LexicalSecurityCheck",
+            9879usize,
+            "def.LexicalSecurityDiagnosticSpans",
+            9982usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.LexicalSecurityDiagnosticSpans",
+            9982usize,
+            "def.LexicalSecurityInputs",
+            9798usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.LexicalSecurityInputs",
+            9798usize,
+            "def.LibraryArtifactInputs",
+            5269usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.LibraryArtifactInputs",
+            5269usize,
+            "def.LibraryBoundaryCycle",
+            4589usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.LibraryBoundaryCycle",
+            4589usize,
+            "def.LibraryPred",
+            4714usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.LibraryPred",
+            4714usize,
+            "def.LibraryReady",
+            4728usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.LibraryReady",
+            4728usize,
+            "def.LibraryTopo",
+            4742usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.LibraryTopo",
+            4742usize,
+            "def.LineCommentSkipping",
+            8492usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.LineCommentSkipping",
+            8492usize,
+            "def.LineCount",
+            7262usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.LineCount",
+            7262usize,
+            "def.LineDocTargets",
+            11739usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.LineDocTargets",
+            11739usize,
+            "def.LineEndingConstants",
+            7128usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.LineEndingConstants",
+            7128usize,
+            "def.LineFeed",
+            8171usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.LineFeed",
+            8171usize,
+            "def.LineFeedOrEOFBeforeClose",
+            9220usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.LineFeedOrEOFBeforeClose",
+            9220usize,
+            "def.LineStarts",
+            7248usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.LineStarts",
+            7248usize,
+            "def.LinearizeHeadInvariant",
+            49230usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.LinearizeHeadInvariant",
+            49230usize,
+            "def.LinkArgsOk",
+            5957usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.LinkArgsOk",
+            5957usize,
+            "def.LinkFlags",
+            5929usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.LinkFlags",
+            5929usize,
+            "def.LinkImportLibOpt",
+            5885usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.LinkImportLibOpt",
+            5885usize,
+            "def.LinkInputs",
+            5901usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.LinkInputs",
+            5901usize,
+            "def.LinkJudg",
+            5627usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.LinkJudg",
+            5627usize,
+            "def.LinkMode",
+            5851usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.LinkMode",
+            5851usize,
+            "def.LinkObjs",
+            5837usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.LinkObjs",
+            5837usize,
+            "def.LinkOutputPath",
+            5868usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.LinkOutputPath",
+            5868usize,
+            "def.LinkOutputSummary",
+            2118usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.LinkOutputSummary",
+            2118usize,
+            "def.LinkerSymbols",
+            5821usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.LinkerSymbols",
+            5821usize,
+            "def.ListEndSet",
+            11388usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.ListEndSet",
+            11388usize,
+            "def.ListParsingState",
+            11320usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.ListParsingState",
+            11320usize,
+            "def.LiteralAndCommentRanges",
+            9813usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.LiteralAndCommentRanges",
+            9813usize,
+            "def.LiteralLexingInput",
+            8614usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.LiteralLexingInput",
+            8614usize,
+            "def.LiteralSpan",
+            7311usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.LiteralSpan",
+            7311usize,
+            "def.LiteralTokenizationHelpers",
+            9476usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.LiteralTokenizationHelpers",
+            9476usize,
+            "def.LocalTypePath",
+            21708usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.LocalTypePath",
+            21708usize,
+            "def.LocateLineColumn",
+            7276usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.LocateLineColumn",
+            7276usize,
+            "def.LongestCandidates",
+            9695usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.LongestCandidates",
+            9695usize,
+            "def.LookupBind",
+            17439usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.LookupBind",
+            17439usize,
+            "def.LookupNearestScopeIndex",
+            19291usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.LookupNearestScopeIndex",
+            19291usize,
+            "def.LookupScopeSequence",
+            19277usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.LookupScopeSequence",
+            19277usize,
+            "def.LookupStateMethod",
+            43477usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.LookupStateMethod",
+            43477usize,
+            "def.LookupTransition",
+            43750usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.LookupTransition",
+            43750usize,
+            "def.LoweringChecksJudgementSet",
+            38041usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.LoweringChecksJudgementSet",
+            38041usize,
+            "def.ManifestAssemblyKeys",
+            2733usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.ManifestAssemblyKeys",
+            2733usize,
+            "def.ManifestChecks",
+            3675usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.ManifestChecks",
+            3675usize,
+            "def.ManifestParsing",
+            2168usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.ManifestParsing",
+            2168usize,
+            "def.ManifestSchema",
+            2338usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.ManifestSchema",
+            2338usize,
+            "def.ManifestTableProjections",
+            2555usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.ManifestTableProjections",
+            2555usize,
+            "def.ManifestTopKeys",
+            2575usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.ManifestTopKeys",
+            2575usize,
+            "def.MapEntries",
+            15759usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.MapEntries",
+            15759usize,
+            "def.MapUnion",
+            15773usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.MapUnion",
+            15773usize,
+            "def.MaxErrorCount",
+            871usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.MaxErrorCount",
+            871usize,
+            "def.MaximalMunchInput",
+            9648usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.MaximalMunchInput",
+            9648usize,
+            "def.MethodBindingCheck",
+            16132usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.MethodBindingCheck",
+            16132usize,
+            "def.MethodByName",
+            49643usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.MethodByName",
+            49643usize,
+            "def.MethodParameterBindingMap",
+            16018usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.MethodParameterBindingMap",
+            16018usize,
+            "def.MethodParametersForBinding",
+            16118usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.MethodParametersForBinding",
+            16118usize,
+            "def.MethodReceiverPermissionAdmissibility",
+            29670usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.MethodReceiverPermissionAdmissibility",
+            29670usize,
+            "def.MethodReceiverPermissionMatrix",
+            29688usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.MethodReceiverPermissionMatrix",
+            29688usize,
+            "def.MinimalSpan",
+            28351usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.MinimalSpan",
+            28351usize,
+            "def.ModState",
+            32415usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.ModState",
+            32415usize,
+            "def.ModalAlign",
+            42889usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.ModalAlign",
+            42889usize,
+            "def.ModalBaseLayoutEquation",
+            43125usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.ModalBaseLayoutEquation",
+            43125usize,
+            "def.ModalBits",
+            42877usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.ModalBits",
+            42877usize,
+            "def.ModalDeclAst",
+            41780usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.ModalDeclAst",
+            41780usize,
+            "def.ModalDeclOf",
+            41944usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.ModalDeclOf",
+            41944usize,
+            "def.ModalDiscType",
+            42755usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.ModalDiscType",
+            42755usize,
+            "def.ModalEmptyState",
+            42793usize
+        )
+}

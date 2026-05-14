@@ -1,0 +1,604 @@
+//! Catalog primary-reference ordering check group 0039.
+
+internal procedure catalogPrimaryReferenceOrderGroup0039() -> bool {
+    return catalogPrimaryReferencePrecedes(
+            "requirement.19.ConflictDetectionNoAdditionalParsingRules",
+            73361usize,
+            "requirement.19.ConflictDetectionNoAdditionalSyntax",
+            73346usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "requirement.19.ConflictDetectionNoAdditionalSyntax",
+            73346usize,
+            "requirement.19.DynamicContextStaticSafeLowering",
+            75001usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "requirement.19.DynamicContextStaticSafeLowering",
+            75001usize,
+            "requirement.19.DynamicIndexDisjointnessConservativeSubset",
+            73550usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "requirement.19.DynamicIndexDisjointnessConservativeSubset",
+            73550usize,
+            "requirement.19.DynamicIndexRuntimeOrdering",
+            74921usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "requirement.19.DynamicIndexRuntimeOrdering",
+            74921usize,
+            "requirement.19.DynamicIndexedPathCoarsening",
+            74940usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "requirement.19.DynamicIndexedPathCoarsening",
+            74940usize,
+            "requirement.19.DynamicKeyVerificationNoAdditionalParsingRules",
+            74798usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "requirement.19.DynamicKeyVerificationNoAdditionalParsingRules",
+            74798usize,
+            "requirement.19.DynamicKeyVerificationNoAdditionalSyntax",
+            74783usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "requirement.19.DynamicKeyVerificationNoAdditionalSyntax",
+            74783usize,
+            "requirement.19.EscapingClosureInvocationSharedCaptures",
+            73193usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "requirement.19.EscapingClosureInvocationSharedCaptures",
+            73193usize,
+            "requirement.19.EscapingClosureRuntimeIdentityCoverage",
+            72969usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "requirement.19.EscapingClosureRuntimeIdentityCoverage",
+            72969usize,
+            "requirement.19.EscapingClosureSharedLifetime",
+            72956usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "requirement.19.EscapingClosureSharedLifetime",
+            72956usize,
+            "requirement.19.ExpressionMemoryOrderWellFormedness",
+            75151usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "requirement.19.ExpressionMemoryOrderWellFormedness",
+            75151usize,
+            "requirement.19.FenceContextAndHeldKeys",
+            75206usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "requirement.19.FenceContextAndHeldKeys",
+            75206usize,
+            "requirement.19.FenceEvaluation",
+            75221usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "requirement.19.FenceEvaluation",
+            75221usize,
+            "requirement.19.FenceNoProgramVisibleStorageAccess",
+            75255usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "requirement.19.FenceNoProgramVisibleStorageAccess",
+            75255usize,
+            "requirement.19.FenceOrderingConstraints",
+            75238usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "requirement.19.FenceOrderingConstraints",
+            75238usize,
+            "requirement.19.FieldKeyBoundary",
+            72882usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "requirement.19.FieldKeyBoundary",
+            72882usize,
+            "requirement.19.FineGrainedKeyLoopWarning",
+            73290usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "requirement.19.FineGrainedKeyLoopWarning",
+            73290usize,
+            "requirement.19.IndexEquivalenceConservativeSubset",
+            73480usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "requirement.19.IndexEquivalenceConservativeSubset",
+            73480usize,
+            "requirement.19.KeyAcquisitionEvaluationOrder",
+            72804usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "requirement.19.KeyAcquisitionEvaluationOrder",
+            72804usize,
+            "requirement.19.KeyAnalysisSharedOnly",
+            72228usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "requirement.19.KeyAnalysisSharedOnly",
+            72228usize,
+            "requirement.19.KeyBlockCanonicalOrderReferences",
+            72988usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "requirement.19.KeyBlockCanonicalOrderReferences",
+            72988usize,
+            "requirement.19.KeyCoarseningInlineMarker",
+            72853usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "requirement.19.KeyCoarseningInlineMarker",
+            72853usize,
+            "requirement.19.KeyConflictRuntimeCompatibility",
+            73767usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "requirement.19.KeyConflictRuntimeCompatibility",
+            73767usize,
+            "requirement.19.KeyEscapeDiagnosticPrecedence",
+            73303usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "requirement.19.KeyEscapeDiagnosticPrecedence",
+            73303usize,
+            "requirement.19.KeyEscapeRestrictions",
+            73275usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "requirement.19.KeyEscapeRestrictions",
+            73275usize,
+            "requirement.19.KeyPathWellFormedness",
+            72215usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "requirement.19.KeyPathWellFormedness",
+            72215usize,
+            "requirement.19.KeyScopeBound",
+            73260usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "requirement.19.KeyScopeBound",
+            73260usize,
+            "requirement.19.LocalClosureInvocationSharedCaptures",
+            73175usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "requirement.19.LocalClosureInvocationSharedCaptures",
+            73175usize,
+            "requirement.19.MemoryOrderAttributeAttachment",
+            75133usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "requirement.19.MemoryOrderAttributeAttachment",
+            75133usize,
+            "requirement.19.MemoryOrderDoesNotAlterKeySemantics",
+            75164usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "requirement.19.MemoryOrderDoesNotAlterKeySemantics",
+            75164usize,
+            "requirement.19.MemoryOrderNotInsideSpeculativeBlocks",
+            75177usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "requirement.19.MemoryOrderNotInsideSpeculativeBlocks",
+            75177usize,
+            "requirement.19.MemoryOrderingDefaultsAndKeySemantics",
+            75097usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "requirement.19.MemoryOrderingDefaultsAndKeySemantics",
+            75097usize,
+            "requirement.19.NestedReleaseExecutionSequence",
+            74039usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "requirement.19.NestedReleaseExecutionSequence",
+            74039usize,
+            "requirement.19.NestedReleaseInterleavingWindow",
+            74078usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "requirement.19.NestedReleaseInterleavingWindow",
+            74078usize,
+            "requirement.19.NestedReleaseNoAdditionalParsingRules",
+            73857usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "requirement.19.NestedReleaseNoAdditionalParsingRules",
+            73857usize,
+            "requirement.19.NestedReleaseNoAdditionalSyntax",
+            73842usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "requirement.19.NestedReleaseNoAdditionalSyntax",
+            73842usize,
+            "requirement.19.NoRuntimeSyncMeaning",
+            74870usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "requirement.19.NoRuntimeSyncMeaning",
+            74870usize,
+            "requirement.19.OrderedKeyBlockModifier",
+            72518usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "requirement.19.OrderedKeyBlockModifier",
+            72518usize,
+            "requirement.19.PointerDereferenceKeyAccess",
+            72304usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "requirement.19.PointerDereferenceKeyAccess",
+            72304usize,
+            "requirement.19.ReadThenWriteDiagnosticSurface",
+            73598usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "requirement.19.ReadThenWriteDiagnosticSurface",
+            73598usize,
+            "requirement.19.ReadThenWriteOtherWriteForms",
+            73611usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "requirement.19.ReadThenWriteOtherWriteForms",
+            73611usize,
+            "requirement.19.RestrictiveContextApplies",
+            72657usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "requirement.19.RestrictiveContextApplies",
+            72657usize,
+            "requirement.19.RuntimeKeyRootIdentityConstraints",
+            72379usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "requirement.19.RuntimeKeyRootIdentityConstraints",
+            72379usize,
+            "requirement.19.RuntimeSynchronizationRequirements",
+            74903usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "requirement.19.RuntimeSynchronizationRequirements",
+            74903usize,
+            "requirement.19.ScopeExitKeyRelease",
+            73160usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "requirement.19.ScopeExitKeyRelease",
+            73160usize,
+            "requirement.19.SharedDynamicClassObjects",
+            72322usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "requirement.19.SharedDynamicClassObjects",
+            72322usize,
+            "requirement.19.SharedDynamicClassRejectsMutatingReceivers",
+            72364usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "requirement.19.SharedDynamicClassRejectsMutatingReceivers",
+            72364usize,
+            "requirement.19.SpeculativeAbstractSemanticsAndFallback",
+            74705usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "requirement.19.SpeculativeAbstractSemanticsAndFallback",
+            74705usize,
+            "requirement.19.SpeculativeAtomicity",
+            74692usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "requirement.19.SpeculativeAtomicity",
+            74692usize,
+            "requirement.19.SpeculativePanicDiscardsWrites",
+            74679usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "requirement.19.SpeculativePanicDiscardsWrites",
+            74679usize,
+            "requirement.19.SpeculativePermittedOperations",
+            74296usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "requirement.19.SpeculativePermittedOperations",
+            74296usize,
+            "requirement.19.SpeculativeProhibitedOperations",
+            74314usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "requirement.19.SpeculativeProhibitedOperations",
+            74314usize,
+            "requirement.19.StaleOkSuppressesReleaseWarning",
+            74008usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "requirement.19.StaleOkSuppressesReleaseWarning",
+            74008usize,
+            "requirement.19.StaticAndRuntimeKeySafetyEquivalence",
+            74970usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "requirement.19.StaticAndRuntimeKeySafetyEquivalence",
+            74970usize,
+            "requirement.19.StaticallySafeSoundProofRequired",
+            74835usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "requirement.19.StaticallySafeSoundProofRequired",
+            74835usize,
+            "requirement.19.UnknownCalleeAccessWarning",
+            73978usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "requirement.19.UnknownCalleeAccessWarning",
+            73978usize,
+            "requirement.19.ValidKeyContext",
+            72753usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "requirement.19.ValidKeyContext",
+            72753usize,
+            "requirement.20.CancelTokenParallelAvailability",
+            77944usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "requirement.20.CancelTokenParallelAvailability",
+            77944usize,
+            "requirement.20.CancelTokenStaticSemantics",
+            77919usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "requirement.20.CancelTokenStaticSemantics",
+            77919usize,
+            "requirement.20.CancellationCheckpointLowering",
+            78156usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "requirement.20.CancellationCheckpointLowering",
+            78156usize,
+            "requirement.20.CancellationNoAdditionalParsingRules",
+            77877usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "requirement.20.CancellationNoAdditionalParsingRules",
+            77877usize,
+            "requirement.20.CancellationSyntax",
+            77862usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "requirement.20.CancellationSyntax",
+            77862usize,
+            "requirement.20.CaptureSemanticsGenericLowering",
+            76976usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "requirement.20.CaptureSemanticsGenericLowering",
+            76976usize,
+            "requirement.20.CaptureSemanticsNoAdditionalParsingRules",
+            76668usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "requirement.20.CaptureSemanticsNoAdditionalParsingRules",
+            76668usize,
+            "requirement.20.CaptureSemanticsNoAdditionalRuntimeMechanism",
+            76957usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "requirement.20.CaptureSemanticsNoAdditionalRuntimeMechanism",
+            76957usize,
+            "requirement.20.CaptureSemanticsNoAdditionalSyntax",
+            76653usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "requirement.20.CaptureSemanticsNoAdditionalSyntax",
+            76653usize,
+            "requirement.20.CaptureSetComputationReference",
+            76683usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "requirement.20.CaptureSetComputationReference",
+            76683usize,
+            "requirement.20.CooperativeCancellationBehavior",
+            78076usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "requirement.20.CooperativeCancellationBehavior",
+            78076usize,
+            "requirement.20.DeterminismNestingNoAdditionalParsingRules",
+            78371usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "requirement.20.DeterminismNestingNoAdditionalParsingRules",
+            78371usize,
+            "requirement.20.DeterminismNestingNoAdditionalSyntax",
+            78356usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "requirement.20.DeterminismNestingNoAdditionalSyntax",
+            78356usize,
+            "requirement.20.DispatchChunkSemanticsStatic",
+            77636usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "requirement.20.DispatchChunkSemanticsStatic",
+            77636usize,
+            "requirement.20.DispatchDeterminismConditions",
+            78401usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "requirement.20.DispatchDeterminismConditions",
+            78401usize,
+            "requirement.20.DispatchKeyInferenceRequired",
+            77595usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "requirement.20.DispatchKeyInferenceRequired",
+            77595usize,
+            "requirement.20.DispatchReductionAssociativity",
+            77623usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "requirement.20.DispatchReductionAssociativity",
+            77623usize,
+            "requirement.20.DispatchRequiresParallelContext",
+            77353usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "requirement.20.DispatchRequiresParallelContext",
+            77353usize,
+            "requirement.20.ExecutionDomainContextMethods",
+            75949usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "requirement.20.ExecutionDomainContextMethods",
+            75949usize,
+            "requirement.20.ExecutionDomainDispatchableClass",
+            76276usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "requirement.20.ExecutionDomainDispatchableClass",
+            76276usize,
+            "requirement.20.ExecutionDomainSyntax",
+            75718usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "requirement.20.ExecutionDomainSyntax",
+            75718usize,
+            "requirement.20.ExecutionDomainsNoAdditionalParsingProductions",
+            75750usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "requirement.20.ExecutionDomainsNoAdditionalParsingProductions",
+            75750usize,
+            "requirement.20.GpuBarrierWait",
+            76466usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "requirement.20.GpuBarrierWait",
+            76466usize,
+            "requirement.20.GpuSafeGenericBounds",
+            76289usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "requirement.20.GpuSafeGenericBounds",
+            76289usize,
+            "requirement.20.InlineDomainSemantics",
+            76317usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "requirement.20.InlineDomainSemantics",
+            76317usize,
+            "requirement.20.KeySystemUnavailableInGpuContext",
+            76302usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "requirement.20.KeySystemUnavailableInGpuContext",
+            76302usize,
+            "requirement.20.MovedBindingValidityReference",
+            76942usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "requirement.20.MovedBindingValidityReference",
+            76942usize,
+            "requirement.20.NestedParallelRuntimeSemantics",
+            78446usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "requirement.20.NestedParallelRuntimeSemantics",
+            78446usize,
+            "requirement.20.NoNestedGpuParallel",
+            78431usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "requirement.20.NoNestedGpuParallel",
+            78431usize,
+            "requirement.20.OrderedDispatchSequentialSideEffects",
+            78418usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "requirement.20.OrderedDispatchSequentialSideEffects",
+            78418usize,
+            "requirement.20.PanicHandlingNoAdditionalParsingRules",
+            78216usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "requirement.20.PanicHandlingNoAdditionalParsingRules",
+            78216usize,
+            "requirement.20.PanicHandlingNoAdditionalStaticTypingRules",
+            78246usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "requirement.20.PanicHandlingNoAdditionalStaticTypingRules",
+            78246usize,
+            "requirement.20.PanicHandlingNoAdditionalSyntax",
+            78201usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "requirement.20.PanicHandlingNoAdditionalSyntax",
+            78201usize,
+            "requirement.20.ParallelBlockWellFormedness",
+            75491usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "requirement.20.ParallelBlockWellFormedness",
+            75491usize,
+            "requirement.20.ParallelCancelOptionType",
+            75524usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "requirement.20.ParallelCancelOptionType",
+            75524usize,
+            "requirement.20.ParallelCapturePermissions",
+            76722usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "requirement.20.ParallelCapturePermissions",
+            76722usize,
+            "requirement.20.ParallelClosuresLocalForKeys",
+            76849usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "requirement.20.ParallelClosuresLocalForKeys",
+            76849usize,
+            "requirement.20.ParallelPanicCancellationRequest",
+            78294usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "requirement.20.ParallelPanicCancellationRequest",
+            78294usize,
+            "requirement.20.ParallelPanicPropagationReference",
+            75651usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "requirement.20.ParallelPanicPropagationReference",
+            75651usize,
+            "requirement.20.ParallelWorkItemPanicSemantics",
+            78261usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "requirement.20.ParallelWorkItemPanicSemantics",
+            78261usize,
+            "requirement.20.SpawnDispatchCancellationLowering",
+            78169usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "requirement.20.SpawnDispatchCancellationLowering",
+            78169usize,
+            "requirement.20.SpawnEvaluationProcedure",
+            77163usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "requirement.20.SpawnEvaluationProcedure",
+            77163usize,
+            "requirement.20.SpawnRequiresParallelContext",
+            77115usize
+        )
+}

@@ -79,12 +79,12 @@ public procedure validatedExpressionsLiteralAndNameExpressionsObligations() -> u
     ) {
         count = count + 1usize
     }
-    if acceptedObligationEntryMatches(
+    if rejectedSourceObligationEntryMatches(
         "def.16.QualifiedNameResolution",
         57440usize,
-        "HelloUltraviolet::Reference::Expressions",
-        "runExpressionsLiteralsAndNamesReference",
-        "Source/Reference/Expressions/LiteralsAndNames.uv"
+        "HelloUltraviolet::Fixtures::RejectedSource",
+        "validatedExpressionsRejectedSourceFixtureCount",
+        "Fixtures/RejectedSource/Expressions/QualifiedNameResolution/Source/Main.uv"
     ) {
         count = count + 1usize
     }
@@ -187,30 +187,30 @@ public procedure validatedExpressionsLiteralAndNameExpressionsObligations() -> u
     ) {
         count = count + 1usize
     }
-    if acceptedObligationEntryMatches(
+    if rejectedSourceObligationEntryMatches(
         "def.16.NullLiteralExpected",
         57653usize,
-        "HelloUltraviolet::Reference::Expressions",
-        "runExpressionsLiteralsAndNamesReference",
-        "Source/Reference/Expressions/LiteralsAndNames.uv"
+        "HelloUltraviolet::Fixtures::RejectedSource",
+        "validatedExpressionsRejectedSourceFixtureCount",
+        "Fixtures/RejectedSource/Expressions/NullLiteralExpected/Source/Main.uv"
     ) {
         count = count + 1usize
     }
-    if acceptedObligationEntryMatches(
+    if rejectedSourceObligationEntryMatches(
         "rule.16.Chk-Int-Literal",
         57666usize,
-        "HelloUltraviolet::Reference::Expressions",
-        "runExpressionsLiteralsAndNamesReference",
-        "Source/Reference/Expressions/LiteralsAndNames.uv"
+        "HelloUltraviolet::Fixtures::RejectedSource",
+        "validatedExpressionsRejectedSourceFixtureCount",
+        "Fixtures/RejectedSource/Expressions/IntLiteralCheckRange/Source/Main.uv"
     ) {
         count = count + 1usize
     }
-    if acceptedObligationEntryMatches(
+    if rejectedSourceObligationEntryMatches(
         "rule.16.Chk-Float-Literal-Explicit",
         57682usize,
-        "HelloUltraviolet::Reference::Expressions",
-        "runExpressionsLiteralsAndNamesReference",
-        "Source/Reference/Expressions/LiteralsAndNames.uv"
+        "HelloUltraviolet::Fixtures::RejectedSource",
+        "validatedExpressionsRejectedSourceFixtureCount",
+        "Fixtures/RejectedSource/Expressions/FloatLiteralExplicitRequirement/Source/Main.uv"
     ) {
         count = count + 1usize
     }
@@ -232,39 +232,39 @@ public procedure validatedExpressionsLiteralAndNameExpressionsObligations() -> u
     ) {
         count = count + 1usize
     }
-    if acceptedObligationEntryMatches(
+    if rejectedSourceObligationEntryMatches(
         "def.16.PtrNullExpected",
         57730usize,
-        "HelloUltraviolet::Reference::Expressions",
-        "runExpressionsLiteralsAndNamesReference",
-        "Source/Reference/Expressions/LiteralsAndNames.uv"
+        "HelloUltraviolet::Fixtures::RejectedSource",
+        "validatedExpressionsRejectedSourceFixtureCount",
+        "Fixtures/RejectedSource/Expressions/PtrNullExpectedRequirement/Source/Main.uv"
     ) {
         count = count + 1usize
     }
-    if acceptedObligationEntryMatches(
+    if acceptedProjectObligationEntryMatches(
         "rule.16.Chk-Null-Ptr",
         57743usize,
-        "HelloUltraviolet::Reference::Expressions",
-        "runExpressionsLiteralsAndNamesReference",
-        "Source/Reference/Expressions/LiteralsAndNames.uv"
+        "HelloUltraviolet::Fixtures::AcceptedProjects",
+        "validatedAcceptedProjectFixtureCount",
+        "Fixtures/AcceptedProjects/PtrNullReturn/Source/Library.uv"
     ) {
         count = count + 1usize
     }
-    if acceptedObligationEntryMatches(
+    if rejectedSourceObligationEntryMatches(
         "rule.16.Syn-PtrNull-Err",
         57759usize,
-        "HelloUltraviolet::Reference::Expressions",
-        "runExpressionsLiteralsAndNamesReference",
-        "Source/Reference/Expressions/LiteralsAndNames.uv"
+        "HelloUltraviolet::Fixtures::RejectedSource",
+        "validatedExpressionsRejectedSourceFixtureCount",
+        "Fixtures/RejectedSource/Expressions/PtrNullSynthesis/Source/Main.uv"
     ) {
         count = count + 1usize
     }
-    if acceptedObligationEntryMatches(
+    if rejectedSourceObligationEntryMatches(
         "rule.16.Chk-PtrNull-Err",
         57775usize,
-        "HelloUltraviolet::Reference::Expressions",
-        "runExpressionsLiteralsAndNamesReference",
-        "Source/Reference/Expressions/LiteralsAndNames.uv"
+        "HelloUltraviolet::Fixtures::RejectedSource",
+        "validatedExpressionsRejectedSourceFixtureCount",
+        "Fixtures/RejectedSource/Expressions/PtrNullCheck/Source/Main.uv"
     ) {
         count = count + 1usize
     }
@@ -286,21 +286,21 @@ public procedure validatedExpressionsLiteralAndNameExpressionsObligations() -> u
     ) {
         count = count + 1usize
     }
-    if acceptedObligationEntryMatches(
+    if rejectedSourceObligationEntryMatches(
         "rule.16.Expr-Unresolved-Err",
         57823usize,
-        "HelloUltraviolet::Reference::Expressions",
-        "runExpressionsLiteralsAndNamesReference",
-        "Source/Reference/Expressions/LiteralsAndNames.uv"
+        "HelloUltraviolet::Fixtures::RejectedSource",
+        "validatedExpressionsRejectedSourceFixtureCount",
+        "Fixtures/RejectedSource/Expressions/ExprUnresolved/Source/Main.uv"
     ) {
         count = count + 1usize
     }
-    if acceptedObligationEntryMatches(
+    if rejectedSourceObligationEntryMatches(
         "req.16.QualifiedNameEliminatedBeforeTyping",
         57839usize,
-        "HelloUltraviolet::Reference::Expressions",
-        "runExpressionsLiteralsAndNamesReference",
-        "Source/Reference/Expressions/LiteralsAndNames.uv"
+        "HelloUltraviolet::Fixtures::RejectedSource",
+        "validatedExpressionsRejectedSourceFixtureCount",
+        "Fixtures/RejectedSource/Expressions/QualifiedNameEliminatedBeforeTyping/Source/Main.uv"
     ) {
         count = count + 1usize
     }
@@ -430,12 +430,12 @@ public procedure validatedExpressionsLiteralAndNameExpressionsObligations() -> u
     ) {
         count = count + 1usize
     }
-    if acceptedObligationEntryMatches(
+    if rejectedSourceObligationEntryMatches(
         "diag.16.LiteralAndNameExpressions",
         58078usize,
-        "HelloUltraviolet::Reference::Expressions",
-        "runExpressionsLiteralsAndNamesReference",
-        "Source/Reference/Expressions/LiteralsAndNames.uv"
+        "HelloUltraviolet::Fixtures::RejectedSource",
+        "validatedExpressionsRejectedSourceFixtureCount",
+        "Fixtures/RejectedSource/Expressions/FloatSuffixMismatch/Source/Main.uv"
     ) {
         count = count + 1usize
     }

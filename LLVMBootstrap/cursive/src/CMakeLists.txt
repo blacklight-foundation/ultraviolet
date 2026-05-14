@@ -1155,6 +1155,7 @@ if(MSVC)
   target_link_options(cursive PRIVATE
     "/DELAYLOAD:icuuc72.dll"
     "/DELAYLOAD:icuin72.dll"
+    "/STACK:16777216"
   )
   target_link_options(cursive-lsp PRIVATE
     "/DELAYLOAD:icuuc72.dll"

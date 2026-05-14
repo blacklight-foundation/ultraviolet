@@ -1434,16 +1434,16 @@ std::optional<std::string> ProcedureSymbolForPath(
           }
           return analysis::LookupModalDecl(scope, state->path);
         }
-        const auto *path = std::get_if<analysis::TypePathType>(&type->node);
+        const auto *path = analysis::AppliedTypePath(*type);
         if (!path)
         {
           return nullptr;
         }
         if (out_path)
         {
-          *out_path = path->path;
+          *out_path = *path;
         }
-        return analysis::LookupModalDecl(scope, path->path);
+        return analysis::LookupModalDecl(scope, *path);
       };
       auto modal_decl_for_value = [&](const IRValue &value,
                                       analysis::TypePath *out_path) -> const ast::ModalDecl *
@@ -3158,10 +3158,6 @@ std::optional<std::string> ProcedureSymbolForPath(
             base_modal_type
                 ? std::get_if<analysis::TypeModalState>(&base_modal_type->node)
                 : nullptr;
-        const auto *base_modal_path =
-            base_modal_type
-                ? std::get_if<analysis::TypePathType>(&base_modal_type->node)
-                : nullptr;
         const bool base_is_modal_state = (base_modal_state != nullptr);
         const bool base_is_async_modal_state =
             base_modal_state && analysis::IsAsyncType(base_modal_type);
@@ -3170,9 +3166,12 @@ std::optional<std::string> ProcedureSymbolForPath(
         {
           base_modal_args = base_modal_state->generic_args;
         }
-        else if (base_modal_path)
+        else if (base_modal_type)
         {
-          base_modal_args = base_modal_path->generic_args;
+          if (const auto *base_applied_args = analysis::AppliedTypeArgs(*base_modal_type))
+          {
+            base_modal_args = *base_applied_args;
+          }
         }
         ModalPayloadMemberInfo member;
         if (modal_decl)

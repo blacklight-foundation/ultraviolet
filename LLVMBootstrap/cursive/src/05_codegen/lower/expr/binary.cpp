@@ -152,6 +152,84 @@ void MergeFailures(LowerCtx& base, const LowerCtx& branch) {
   }
 }
 
+void CollectShortCircuitOperands(const ast::Expr& expr,
+                                 const std::string& op,
+                                 std::vector<const ast::Expr*>& operands) {
+  std::vector<const ast::Expr*> stack;
+  stack.push_back(&expr);
+
+  while (!stack.empty()) {
+    const ast::Expr* current = stack.back();
+    stack.pop_back();
+    if (!current) {
+      continue;
+    }
+
+    const auto* binary = std::get_if<ast::BinaryExpr>(&current->node);
+    if (binary && binary->op == op && binary->lhs && binary->rhs) {
+      stack.push_back(binary->rhs.get());
+      stack.push_back(binary->lhs.get());
+      continue;
+    }
+
+    operands.push_back(current);
+  }
+}
+
+LowerResult LowerShortCircuitChain(const std::string& op,
+                                   const std::vector<const ast::Expr*>& operands,
+                                   LowerCtx& ctx) {
+  if (op == "&&") {
+    SPEC_RULE("Lower-Expr-Bin-And");
+  } else {
+    SPEC_RULE("Lower-Expr-Bin-Or");
+  }
+
+  if (operands.empty()) {
+    IRValue value = BoolImmediate(op == "&&");
+    return LowerResult{EmptyIR(), value};
+  }
+
+  auto first_result = LowerExpr(*operands.front(), ctx);
+  std::vector<IRPtr> parts;
+  parts.reserve(operands.size() * 2);
+  parts.push_back(first_result.ir);
+
+  IRValue current_value = first_result.value;
+  for (std::size_t i = 1; i < operands.size(); ++i) {
+    LowerCtx rhs_ctx = MakeBranchCtx(ctx);
+    auto rhs_result = LowerExpr(*operands[i], rhs_ctx);
+
+    MergeLowerCtxTemps(ctx, rhs_ctx);
+    ctx.MergeGeneratedProcsFrom(rhs_ctx);
+    MergeMoveStates(ctx, {&rhs_ctx});
+    MergeFailures(ctx, rhs_ctx);
+
+    IRValue result_value = ctx.FreshTempValue(op == "&&" ? "and" : "or");
+
+    IRIf if_ir;
+    if_ir.cond = current_value;
+    if (op == "&&") {
+      if_ir.then_ir = rhs_result.ir;
+      if_ir.then_value = rhs_result.value;
+      if_ir.else_ir = EmptyIR();
+      if_ir.else_value = BoolImmediate(false);
+    } else {
+      if_ir.then_ir = EmptyIR();
+      if_ir.then_value = BoolImmediate(true);
+      if_ir.else_ir = rhs_result.ir;
+      if_ir.else_value = rhs_result.value;
+    }
+    if_ir.result = result_value;
+
+    ctx.RegisterValueType(result_value, analysis::MakeTypePrim("bool"));
+    parts.push_back(MakeIR(std::move(if_ir)));
+    current_value = result_value;
+  }
+
+  return LowerResult{SeqIR(std::move(parts)), current_value};
+}
+
 // Determine panic reason for binary operator
 // Some operators can trigger panics: division by zero, overflow, invalid shift
 PanicReason BinOpPanicReason(const std::string& op) {
@@ -252,35 +330,10 @@ LowerResult LowerBinOp(const std::string& op,
 LowerResult LowerBinAnd(const ast::Expr& lhs,
                         const ast::Expr& rhs,
                         LowerCtx& ctx) {
-  SPEC_RULE("Lower-Expr-Bin-And");
-
-  auto lhs_result = LowerExpr(lhs, ctx);
-
-  // Create a copy of context for RHS evaluation (may not execute)
-  LowerCtx rhs_ctx = MakeBranchCtx(ctx);
-  auto rhs_result = LowerExpr(rhs, rhs_ctx);
-
-  // Merge context info from branch back to base
-  MergeLowerCtxTemps(ctx, rhs_ctx);
-  ctx.MergeGeneratedProcsFrom(rhs_ctx);
-  MergeMoveStates(ctx, {&rhs_ctx});
-  MergeFailures(ctx, rhs_ctx);
-
-  // Short-circuit: if lhs is false, result is false (don't evaluate rhs)
-  IRValue result_value = ctx.FreshTempValue("and");
-
-  IRIf if_ir;
-  if_ir.cond = lhs_result.value;
-  if_ir.then_ir = rhs_result.ir;      // If true, evaluate RHS
-  if_ir.then_value = rhs_result.value;
-  if_ir.else_ir = EmptyIR();          // If false, skip RHS
-  if_ir.else_value = BoolImmediate(false);
-  if_ir.result = result_value;
-
-  ctx.RegisterValueType(result_value, analysis::MakeTypePrim("bool"));
-
-  return LowerResult{SeqIR({lhs_result.ir, MakeIR(std::move(if_ir))}),
-                     result_value};
+  std::vector<const ast::Expr*> operands;
+  operands.push_back(&lhs);
+  operands.push_back(&rhs);
+  return LowerShortCircuitChain("&&", operands, ctx);
 }
 
 // =============================================================================
@@ -297,35 +350,10 @@ LowerResult LowerBinAnd(const ast::Expr& lhs,
 LowerResult LowerBinOr(const ast::Expr& lhs,
                        const ast::Expr& rhs,
                        LowerCtx& ctx) {
-  SPEC_RULE("Lower-Expr-Bin-Or");
-
-  auto lhs_result = LowerExpr(lhs, ctx);
-
-  // Create a copy of context for RHS evaluation (may not execute)
-  LowerCtx rhs_ctx = MakeBranchCtx(ctx);
-  auto rhs_result = LowerExpr(rhs, rhs_ctx);
-
-  // Merge context info from branch back to base
-  MergeLowerCtxTemps(ctx, rhs_ctx);
-  ctx.MergeGeneratedProcsFrom(rhs_ctx);
-  MergeMoveStates(ctx, {&rhs_ctx});
-  MergeFailures(ctx, rhs_ctx);
-
-  // Short-circuit: if lhs is true, result is true (don't evaluate rhs)
-  IRValue result_value = ctx.FreshTempValue("or");
-
-  IRIf if_ir;
-  if_ir.cond = lhs_result.value;
-  if_ir.then_ir = EmptyIR();          // If true, skip RHS
-  if_ir.then_value = BoolImmediate(true);
-  if_ir.else_ir = rhs_result.ir;      // If false, evaluate RHS
-  if_ir.else_value = rhs_result.value;
-  if_ir.result = result_value;
-
-  ctx.RegisterValueType(result_value, analysis::MakeTypePrim("bool"));
-
-  return LowerResult{SeqIR({lhs_result.ir, MakeIR(std::move(if_ir))}),
-                     result_value};
+  std::vector<const ast::Expr*> operands;
+  operands.push_back(&lhs);
+  operands.push_back(&rhs);
+  return LowerShortCircuitChain("||", operands, ctx);
 }
 
 // =============================================================================
@@ -342,10 +370,16 @@ LowerResult LowerBinaryExpr(const ast::BinaryExpr& expr, LowerCtx& ctx) {
 
   // Handle short-circuit operators specially
   if (op == "&&") {
-    return LowerBinAnd(*expr.lhs, *expr.rhs, ctx);
+    std::vector<const ast::Expr*> operands;
+    CollectShortCircuitOperands(*expr.lhs, op, operands);
+    CollectShortCircuitOperands(*expr.rhs, op, operands);
+    return LowerShortCircuitChain(op, operands, ctx);
   }
   if (op == "||") {
-    return LowerBinOr(*expr.lhs, *expr.rhs, ctx);
+    std::vector<const ast::Expr*> operands;
+    CollectShortCircuitOperands(*expr.lhs, op, operands);
+    CollectShortCircuitOperands(*expr.rhs, op, operands);
+    return LowerShortCircuitChain(op, operands, ctx);
   }
 
   // All other operators use LowerBinOp

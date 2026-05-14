@@ -1,0 +1,604 @@
+//! Catalog primary-reference ordering check group 0059.
+
+internal procedure catalogPrimaryReferenceOrderGroup0059() -> bool {
+    return catalogPrimaryReferencePrecedes(
+            "rule.24.ExecIR-ReadPath",
+            90085usize,
+            "rule.24.ExecIR-ReadPtr",
+            90149usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.24.ExecIR-ReadPtr",
+            90149usize,
+            "rule.24.ExecIR-ReadVar",
+            90069usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.24.ExecIR-ReadVar",
+            90069usize,
+            "rule.24.ExecIR-Region",
+            90655usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.24.ExecIR-Region",
+            90655usize,
+            "rule.24.ExecIR-StoreVar",
+            90101usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.24.ExecIR-StoreVar",
+            90101usize,
+            "rule.24.ExecIR-StoreVarNoDrop",
+            90117usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.24.ExecIR-StoreVarNoDrop",
+            90117usize,
+            "rule.24.ExecIR-WritePtr",
+            90165usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.24.ExecIR-WritePtr",
+            90165usize,
+            "rule.24.HostSessionDestroySigma",
+            94793usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.24.HostSessionDestroySigma",
+            94793usize,
+            "rule.24.HostSessionInitSigma",
+            94761usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.24.HostSessionInitSigma",
+            94761usize,
+            "rule.24.HostedCallSigma-Ok",
+            94777usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.24.HostedCallSigma-Ok",
+            94777usize,
+            "rule.24.Init-Done",
+            94248usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.24.Init-Done",
+            94248usize,
+            "rule.24.Init-Fail",
+            94280usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.24.Init-Fail",
+            94280usize,
+            "rule.24.Init-Next-Module",
+            94216usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.24.Init-Next-Module",
+            94216usize,
+            "rule.24.Init-Ok",
+            94264usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.24.Init-Ok",
+            94264usize,
+            "rule.24.Init-Panic",
+            94232usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.24.Init-Panic",
+            94232usize,
+            "rule.24.Init-Start",
+            94185usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.24.Init-Start",
+            94185usize,
+            "rule.24.Init-Step",
+            94200usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.24.Init-Step",
+            94200usize,
+            "rule.24.InitCallIR",
+            93760usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.24.InitCallIR",
+            93760usize,
+            "rule.24.InitFn",
+            93520usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.24.InitFn",
+            93520usize,
+            "rule.24.Interpret-Project-Deinit-Panic",
+            94901usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.24.Interpret-Project-Deinit-Panic",
+            94901usize,
+            "rule.24.Interpret-Project-Init-Panic",
+            94869usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.24.Interpret-Project-Init-Panic",
+            94869usize,
+            "rule.24.Interpret-Project-Main-Ctrl",
+            94885usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.24.Interpret-Project-Main-Ctrl",
+            94885usize,
+            "rule.24.Interpret-Project-Ok",
+            94853usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.24.Interpret-Project-Ok",
+            94853usize,
+            "rule.24.LLVM-ArgAttrs-NonPtr",
+            97318usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.24.LLVM-ArgAttrs-NonPtr",
+            97318usize,
+            "rule.24.LLVM-ArgAttrs-Ptr",
+            97285usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.24.LLVM-ArgAttrs-Ptr",
+            97285usize,
+            "rule.24.LLVM-ArgAttrs-RawPtr",
+            97302usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.24.LLVM-ArgAttrs-RawPtr",
+            97302usize,
+            "rule.24.LLVM-PtrAttrs-Other",
+            97253usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.24.LLVM-PtrAttrs-Other",
+            97253usize,
+            "rule.24.LLVM-PtrAttrs-RawPtr",
+            97269usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.24.LLVM-PtrAttrs-RawPtr",
+            97269usize,
+            "rule.24.LLVM-PtrAttrs-Valid",
+            97237usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.24.LLVM-PtrAttrs-Valid",
+            97237usize,
+            "rule.24.LLVMArgLower-ByRef",
+            99660usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.24.LLVMArgLower-ByRef",
+            99660usize,
+            "rule.24.LLVMArgLower-ByValue-Other",
+            99644usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.24.LLVMArgLower-ByValue-Other",
+            99644usize,
+            "rule.24.LLVMArgLower-ByValue-PtrValid",
+            99628usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.24.LLVMArgLower-ByValue-PtrValid",
+            99628usize,
+            "rule.24.LLVMArgLower-Err",
+            99786usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.24.LLVMArgLower-Err",
+            99786usize,
+            "rule.24.LLVMCall-ByValue",
+            99739usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.24.LLVMCall-ByValue",
+            99739usize,
+            "rule.24.LLVMCall-Err",
+            99818usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.24.LLVMCall-Err",
+            99818usize,
+            "rule.24.LLVMCall-SRet",
+            99755usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.24.LLVMCall-SRet",
+            99755usize,
+            "rule.24.LLVMRetLower-ByValue",
+            99692usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.24.LLVMRetLower-ByValue",
+            99692usize,
+            "rule.24.LLVMRetLower-ByValue-ZST",
+            99676usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.24.LLVMRetLower-ByValue-ZST",
+            99676usize,
+            "rule.24.LLVMRetLower-Err",
+            99802usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.24.LLVMRetLower-Err",
+            99802usize,
+            "rule.24.LLVMRetLower-SRet",
+            99708usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.24.LLVMRetLower-SRet",
+            99708usize,
+            "rule.24.LLVMTy-Alias",
+            97626usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.24.LLVMTy-Alias",
+            97626usize,
+            "rule.24.LLVMTy-Array",
+            97674usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.24.LLVMTy-Array",
+            97674usize,
+            "rule.24.LLVMTy-BytesManaged",
+            97979usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.24.LLVMTy-BytesManaged",
+            97979usize,
+            "rule.24.LLVMTy-BytesView",
+            97963usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.24.LLVMTy-BytesView",
+            97963usize,
+            "rule.24.LLVMTy-Closure",
+            97610usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.24.LLVMTy-Closure",
+            97610usize,
+            "rule.24.LLVMTy-Dynamic",
+            97915usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.24.LLVMTy-Dynamic",
+            97915usize,
+            "rule.24.LLVMTy-Enum",
+            97801usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.24.LLVMTy-Enum",
+            97801usize,
+            "rule.24.LLVMTy-Err",
+            97995usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.24.LLVMTy-Err",
+            97995usize,
+            "rule.24.LLVMTy-Func",
+            97594usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.24.LLVMTy-Func",
+            97594usize,
+            "rule.24.LLVMTy-Modal-Niche",
+            97849usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.24.LLVMTy-Modal-Niche",
+            97849usize,
+            "rule.24.LLVMTy-Modal-StringBytes",
+            97881usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.24.LLVMTy-Modal-StringBytes",
+            97881usize,
+            "rule.24.LLVMTy-Modal-Tagged",
+            97865usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.24.LLVMTy-Modal-Tagged",
+            97865usize,
+            "rule.24.LLVMTy-ModalState",
+            97899usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.24.LLVMTy-ModalState",
+            97899usize,
+            "rule.24.LLVMTy-Perm",
+            97530usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.24.LLVMTy-Perm",
+            97530usize,
+            "rule.24.LLVMTy-Prim",
+            97514usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.24.LLVMTy-Prim",
+            97514usize,
+            "rule.24.LLVMTy-Ptr",
+            97562usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.24.LLVMTy-Ptr",
+            97562usize,
+            "rule.24.LLVMTy-Range",
+            97706usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.24.LLVMTy-Range",
+            97706usize,
+            "rule.24.LLVMTy-RangeFrom",
+            97738usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.24.LLVMTy-RangeFrom",
+            97738usize,
+            "rule.24.LLVMTy-RangeFull",
+            97786usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.24.LLVMTy-RangeFull",
+            97786usize,
+            "rule.24.LLVMTy-RangeInclusive",
+            97722usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.24.LLVMTy-RangeInclusive",
+            97722usize,
+            "rule.24.LLVMTy-RangeTo",
+            97754usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.24.LLVMTy-RangeTo",
+            97754usize,
+            "rule.24.LLVMTy-RangeToInclusive",
+            97770usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.24.LLVMTy-RangeToInclusive",
+            97770usize,
+            "rule.24.LLVMTy-RawPtr",
+            97578usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.24.LLVMTy-RawPtr",
+            97578usize,
+            "rule.24.LLVMTy-Record",
+            97642usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.24.LLVMTy-Record",
+            97642usize,
+            "rule.24.LLVMTy-Refine",
+            97546usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.24.LLVMTy-Refine",
+            97546usize,
+            "rule.24.LLVMTy-Slice",
+            97690usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.24.LLVMTy-Slice",
+            97690usize,
+            "rule.24.LLVMTy-StringManaged",
+            97947usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.24.LLVMTy-StringManaged",
+            97947usize,
+            "rule.24.LLVMTy-StringView",
+            97931usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.24.LLVMTy-StringView",
+            97931usize,
+            "rule.24.LLVMTy-Tuple",
+            97658usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.24.LLVMTy-Tuple",
+            97658usize,
+            "rule.24.LLVMTy-Union-Niche",
+            97817usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.24.LLVMTy-Union-Niche",
+            97817usize,
+            "rule.24.LLVMTy-Union-Tagged",
+            97833usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.24.LLVMTy-Union-Tagged",
+            97833usize,
+            "rule.24.Layout-Func",
+            91690usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.24.Layout-Func",
+            91690usize,
+            "rule.24.Layout-Perm",
+            91501usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.24.Layout-Perm",
+            91501usize,
+            "rule.24.Layout-Prim",
+            91256usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.24.Layout-Prim",
+            91256usize,
+            "rule.24.Layout-Ptr",
+            91594usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.24.Layout-Ptr",
+            91594usize,
+            "rule.24.Layout-RawPtr",
+            91642usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.24.Layout-RawPtr",
+            91642usize,
+            "rule.24.LibraryImageDestroySigma",
+            94671usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.24.LibraryImageDestroySigma",
+            94671usize,
+            "rule.24.LibraryImageInitSigma",
+            94639usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.24.LibraryImageInitSigma",
+            94639usize,
+            "rule.24.Linkage-BuiltinModalSym",
+            93299usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.24.Linkage-BuiltinModalSym",
+            93299usize,
+            "rule.24.Linkage-BuiltinSym",
+            93315usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.24.Linkage-BuiltinSym",
+            93315usize,
+            "rule.24.Linkage-ClassMethod",
+            93075usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.24.Linkage-ClassMethod",
+            93075usize,
+            "rule.24.Linkage-ClassMethod-Internal",
+            93091usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.24.Linkage-ClassMethod-Internal",
+            93091usize,
+            "rule.24.Linkage-DefaultImpl",
+            93251usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.24.Linkage-DefaultImpl",
+            93251usize,
+            "rule.24.Linkage-DefaultImpl-Internal",
+            93267usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.24.Linkage-DefaultImpl-Internal",
+            93267usize,
+            "rule.24.Linkage-DeinitFn",
+            93187usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.24.Linkage-DeinitFn",
+            93187usize,
+            "rule.24.Linkage-DropGlue",
+            93235usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.24.Linkage-DropGlue",
+            93235usize,
+            "rule.24.Linkage-EntrySym",
+            93331usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.24.Linkage-EntrySym",
+            93331usize,
+            "rule.24.Linkage-ExternProc",
+            93011usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.24.Linkage-ExternProc",
+            93011usize,
+            "rule.24.Linkage-InitFn",
+            93171usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.24.Linkage-InitFn",
+            93171usize,
+            "rule.24.Linkage-LiteralData",
+            93219usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.24.Linkage-LiteralData",
+            93219usize,
+            "rule.24.Linkage-PanicSym",
+            93283usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.24.Linkage-PanicSym",
+            93283usize,
+            "rule.24.Linkage-StateMethod",
+            93107usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.24.Linkage-StateMethod",
+            93107usize,
+            "rule.24.Linkage-StateMethod-Internal",
+            93123usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.24.Linkage-StateMethod-Internal",
+            93123usize,
+            "rule.24.Linkage-StaticBinding",
+            93043usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.24.Linkage-StaticBinding",
+            93043usize,
+            "rule.24.Linkage-StaticBinding-Internal",
+            93059usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.24.Linkage-StaticBinding-Internal",
+            93059usize,
+            "rule.24.Linkage-Transition",
+            93139usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.24.Linkage-Transition",
+            93139usize,
+            "rule.24.Linkage-Transition-Internal",
+            93155usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.24.Linkage-Transition-Internal",
+            93155usize,
+            "rule.24.Linkage-UserItem",
+            92995usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.24.Linkage-UserItem",
+            92995usize,
+            "rule.24.Linkage-UserItem-Internal",
+            93027usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.24.Linkage-UserItem-Internal",
+            93027usize,
+            "rule.24.Linkage-VTable",
+            93203usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.24.Linkage-VTable",
+            93203usize,
+            "rule.24.LoopIterIR-Done",
+            90575usize
+        )
+}

@@ -1,0 +1,69 @@
+//! Accepted hosted-export library fixture.
+
+public record HostedSystemContext {
+    public sys: System
+}
+
+public record HostedFileSystemContext {
+    public fs: $FileSystem
+}
+
+[[layout(C)]]
+public record HostedPair {
+    public left: i32
+    public right: i32
+}
+
+[[layout(C)]]
+public record HostedLarge {
+    public first: i64
+    public second: i64
+    public third: i64
+}
+
+[[host_export("C")]]
+[[mangle("uv_hosted_reference_increment")]]
+public procedure hostedReferenceIncrement(context: HostedSystemContext, value: i32) -> i32 {
+    return value + 1
+}
+
+[[host_export("C")]]
+[[mangle("uv_hosted_reference_pair_sum")]]
+public procedure hostedReferencePairSum(
+    context: HostedSystemContext,
+    pair: HostedPair
+) -> i32 {
+    return pair.left + pair.right
+}
+
+[[host_export("C")]]
+[[mangle("uv_hosted_reference_large_echo")]]
+public procedure hostedReferenceLargeEcho(
+    context: HostedSystemContext,
+    large: HostedLarge
+) -> HostedLarge {
+    return HostedLarge {
+        first: large.first,
+        second: large.second,
+        third: large.third
+    }
+}
+
+[[host_export("C")]]
+[[mangle("uv_hosted_reference_fs_probe")]]
+public procedure hostedReferenceFileSystemProbe(
+    context: HostedFileSystemContext,
+    fallback: i32
+) -> i32 {
+    if context.fs~>exists("HelloUltraviolet") {
+        return fallback + 1
+    }
+    return fallback
+}
+
+[[host_export("C-unwind")]]
+[[unwind("catch")]]
+[[mangle("uv_hosted_reference_catch_value")]]
+public procedure hostedReferenceCatchValue(context: HostedSystemContext) -> i32 {
+    return 7
+}

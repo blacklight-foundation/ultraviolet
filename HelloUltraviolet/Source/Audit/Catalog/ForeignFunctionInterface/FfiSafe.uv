@@ -241,111 +241,111 @@ public procedure validatedForeignFunctionInterfaceFfiSafeObligations() -> usize 
     ) {
         count = count + 1usize
     }
-    if acceptedObligationEntryMatches(
+    if rejectedSourceObligationEntryMatches(
         "rule.23.FfiSafe-Prohibited-Err",
         86779usize,
-        "HelloUltraviolet::Reference::FFI",
-        "runFFIFfiSafeReference",
-        "Source/Reference/FFI/FfiSafe.uv"
+        "HelloUltraviolet::Fixtures::RejectedSource",
+        "validatedFFIRejectedSourceFixtureCount",
+        "Fixtures/RejectedSource/FFI/FfiSafeBoolParameter/Source/Main.uv"
     ) {
         count = count + 1usize
     }
-    if acceptedObligationEntryMatches(
+    if rejectedSourceObligationEntryMatches(
         "rule.23.FfiSafe-Record-LayoutC-Err",
         86795usize,
-        "HelloUltraviolet::Reference::FFI",
-        "runFFIFfiSafeReference",
-        "Source/Reference/FFI/FfiSafe.uv"
+        "HelloUltraviolet::Fixtures::RejectedSource",
+        "validatedFFIRejectedSourceFixtureCount",
+        "Fixtures/RejectedSource/FFI/FfiSafeRecordWithoutLayoutC/Source/Main.uv"
     ) {
         count = count + 1usize
     }
-    if acceptedObligationEntryMatches(
+    if rejectedSourceObligationEntryMatches(
         "rule.23.FfiSafe-Enum-LayoutC-Err",
         86811usize,
-        "HelloUltraviolet::Reference::FFI",
-        "runFFIFfiSafeReference",
-        "Source/Reference/FFI/FfiSafe.uv"
+        "HelloUltraviolet::Fixtures::RejectedSource",
+        "validatedFFIRejectedSourceFixtureCount",
+        "Fixtures/RejectedSource/FFI/FfiSafeEnumWithoutLayoutC/Source/Main.uv"
     ) {
         count = count + 1usize
     }
-    if acceptedObligationEntryMatches(
+    if rejectedSourceObligationEntryMatches(
         "rule.23.FfiSafe-Record-Field-Err",
         86827usize,
-        "HelloUltraviolet::Reference::FFI",
-        "runFFIFfiSafeReference",
-        "Source/Reference/FFI/FfiSafe.uv"
+        "HelloUltraviolet::Fixtures::RejectedSource",
+        "validatedFFIRejectedSourceFixtureCount",
+        "Fixtures/RejectedSource/FFI/FfiSafeRecordNonFfiField/Source/Main.uv"
     ) {
         count = count + 1usize
     }
-    if acceptedObligationEntryMatches(
+    if rejectedSourceObligationEntryMatches(
         "rule.23.FfiSafe-Record-Field-Apply-Err",
         86843usize,
-        "HelloUltraviolet::Reference::FFI",
-        "runFFIFfiSafeReference",
-        "Source/Reference/FFI/FfiSafe.uv"
+        "HelloUltraviolet::Fixtures::RejectedSource",
+        "validatedFFIRejectedSourceFixtureCount",
+        "Fixtures/RejectedSource/FFI/FfiSafeRecordFieldApply/Source/Main.uv"
     ) {
         count = count + 1usize
     }
-    if acceptedObligationEntryMatches(
+    if rejectedSourceObligationEntryMatches(
         "rule.23.FfiSafe-Enum-Field-Err",
         86859usize,
-        "HelloUltraviolet::Reference::FFI",
-        "runFFIFfiSafeReference",
-        "Source/Reference/FFI/FfiSafe.uv"
+        "HelloUltraviolet::Fixtures::RejectedSource",
+        "validatedFFIRejectedSourceFixtureCount",
+        "Fixtures/RejectedSource/FFI/FfiSafeEnumNonFfiPayload/Source/Main.uv"
     ) {
         count = count + 1usize
     }
-    if acceptedObligationEntryMatches(
+    if rejectedSourceObligationEntryMatches(
         "rule.23.FfiSafe-Enum-Field-Apply-Err",
         86875usize,
-        "HelloUltraviolet::Reference::FFI",
-        "runFFIFfiSafeReference",
-        "Source/Reference/FFI/FfiSafe.uv"
+        "HelloUltraviolet::Fixtures::RejectedSource",
+        "validatedFFIRejectedSourceFixtureCount",
+        "Fixtures/RejectedSource/FFI/FfiSafeEnumFieldApply/Source/Main.uv"
     ) {
         count = count + 1usize
     }
-    if acceptedObligationEntryMatches(
+    if rejectedSourceObligationEntryMatches(
         "rule.23.FfiSafe-Incomplete-Err",
         86891usize,
-        "HelloUltraviolet::Reference::FFI",
-        "runFFIFfiSafeReference",
-        "Source/Reference/FFI/FfiSafe.uv"
+        "HelloUltraviolet::Fixtures::RejectedSource",
+        "validatedFFIRejectedSourceFixtureCount",
+        "Fixtures/RejectedSource/FFI/FfiSafeIncompleteLayout/Source/Main.uv"
     ) {
         count = count + 1usize
     }
-    if acceptedObligationEntryMatches(
+    if rejectedSourceObligationEntryMatches(
         "rule.23.FfiSafe-Record-Generic-Unbounded-Err",
         86907usize,
-        "HelloUltraviolet::Reference::FFI",
-        "runFFIFfiSafeReference",
-        "Source/Reference/FFI/FfiSafe.uv"
+        "HelloUltraviolet::Fixtures::RejectedSource",
+        "validatedFFIRejectedSourceFixtureCount",
+        "Fixtures/RejectedSource/FFI/FfiSafeRecordGenericUnbounded/Source/Main.uv"
     ) {
         count = count + 1usize
     }
-    if acceptedObligationEntryMatches(
+    if rejectedSourceObligationEntryMatches(
         "rule.23.FfiSafe-Enum-Generic-Unbounded-Err",
         86923usize,
-        "HelloUltraviolet::Reference::FFI",
-        "runFFIFfiSafeReference",
-        "Source/Reference/FFI/FfiSafe.uv"
+        "HelloUltraviolet::Fixtures::RejectedSource",
+        "validatedFFIRejectedSourceFixtureCount",
+        "Fixtures/RejectedSource/FFI/FfiSafeEnumGenericUnbounded/Source/Main.uv"
     ) {
         count = count + 1usize
     }
-    if acceptedObligationEntryMatches(
+    if rejectedSourceObligationEntryMatches(
         "rule.23.FfiSafe-Record-Apply-Generic-Unbounded-Err",
         86939usize,
-        "HelloUltraviolet::Reference::FFI",
-        "runFFIFfiSafeReference",
-        "Source/Reference/FFI/FfiSafe.uv"
+        "HelloUltraviolet::Fixtures::RejectedSource",
+        "validatedFFIRejectedSourceFixtureCount",
+        "Fixtures/RejectedSource/FFI/FfiSafeRecordApplyGenericUnbounded/Source/Main.uv"
     ) {
         count = count + 1usize
     }
-    if acceptedObligationEntryMatches(
+    if rejectedSourceObligationEntryMatches(
         "rule.23.FfiSafe-Enum-Apply-Generic-Unbounded-Err",
         86955usize,
-        "HelloUltraviolet::Reference::FFI",
-        "runFFIFfiSafeReference",
-        "Source/Reference/FFI/FfiSafe.uv"
+        "HelloUltraviolet::Fixtures::RejectedSource",
+        "validatedFFIRejectedSourceFixtureCount",
+        "Fixtures/RejectedSource/FFI/FfiSafeEnumApplyGenericUnbounded/Source/Main.uv"
     ) {
         count = count + 1usize
     }
@@ -394,12 +394,12 @@ public procedure validatedForeignFunctionInterfaceFfiSafeObligations() -> usize 
     ) {
         count = count + 1usize
     }
-    if acceptedObligationEntryMatches(
+    if rejectedSourceObligationEntryMatches(
         "diagnostics.23.FfiSafeDiagnostics",
         87056usize,
-        "HelloUltraviolet::Reference::FFI",
-        "runFFIFfiSafeReference",
-        "Source/Reference/FFI/FfiSafe.uv"
+        "HelloUltraviolet::Fixtures::RejectedSource",
+        "validatedFFIRejectedSourceFixtureCount",
+        "Fixtures/RejectedSource/FFI/FfiSafeDiagnostics/Source/Main.uv"
     ) {
         count = count + 1usize
     }

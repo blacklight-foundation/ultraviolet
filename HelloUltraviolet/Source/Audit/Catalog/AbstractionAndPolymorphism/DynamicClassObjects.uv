@@ -79,12 +79,12 @@ public procedure validatedAbstractionAndPolymorphismDynamicClassObjectsObligatio
     ) {
         count = count + 1usize
     }
-    if acceptedObligationEntryMatches(
+    if rejectedSourceObligationEntryMatches(
         "def.14.DynamicDispatchEligibility",
         50542usize,
-        "HelloUltraviolet::Reference::Polymorphism",
-        "runPolymorphismDynamicClassObjectsReference",
-        "Source/Reference/Polymorphism/DynamicClassObjects.uv"
+        "HelloUltraviolet::Fixtures::RejectedSource",
+        "validatedPolymorphismRejectedSourceFixtureCount",
+        "Fixtures/RejectedSource/Polymorphism/DynamicGenericMethodNonDispatchable/Source/Main.uv"
     ) {
         count = count + 1usize
     }
@@ -97,12 +97,12 @@ public procedure validatedAbstractionAndPolymorphismDynamicClassObjectsObligatio
     ) {
         count = count + 1usize
     }
-    if acceptedObligationEntryMatches(
+    if rejectedSourceObligationEntryMatches(
         "rule.14.WF-Dynamic-Err",
         50576usize,
-        "HelloUltraviolet::Reference::Polymorphism",
-        "runPolymorphismDynamicClassObjectsReference",
-        "Source/Reference/Polymorphism/DynamicClassObjects.uv"
+        "HelloUltraviolet::Fixtures::RejectedSource",
+        "validatedPolymorphismRejectedSourceFixtureCount",
+        "Fixtures/RejectedSource/Polymorphism/DynamicUndefinedClassType/Source/Main.uv"
     ) {
         count = count + 1usize
     }
@@ -124,12 +124,12 @@ public procedure validatedAbstractionAndPolymorphismDynamicClassObjectsObligatio
     ) {
         count = count + 1usize
     }
-    if acceptedObligationEntryMatches(
+    if rejectedSourceObligationEntryMatches(
         "rule.14.Dynamic-NonDispatchable",
         50624usize,
-        "HelloUltraviolet::Reference::Polymorphism",
-        "runPolymorphismDynamicClassObjectsReference",
-        "Source/Reference/Polymorphism/DynamicClassObjects.uv"
+        "HelloUltraviolet::Fixtures::RejectedSource",
+        "validatedPolymorphismRejectedSourceFixtureCount",
+        "Fixtures/RejectedSource/Polymorphism/DynamicSelfParameterNonDispatchable/Source/Main.uv"
     ) {
         count = count + 1usize
     }
@@ -151,21 +151,21 @@ public procedure validatedAbstractionAndPolymorphismDynamicClassObjectsObligatio
     ) {
         count = count + 1usize
     }
-    if acceptedObligationEntryMatches(
+    if rejectedSourceObligationEntryMatches(
         "rule.14.LookupClassMethod-NotFound",
         50671usize,
-        "HelloUltraviolet::Reference::Polymorphism",
-        "runPolymorphismDynamicClassObjectsReference",
-        "Source/Reference/Polymorphism/DynamicClassObjects.uv"
+        "HelloUltraviolet::Fixtures::RejectedSource",
+        "validatedPolymorphismRejectedSourceFixtureCount",
+        "Fixtures/RejectedSource/Polymorphism/DynamicMissingMethod/Source/Main.uv"
     ) {
         count = count + 1usize
     }
-    if acceptedObligationEntryMatches(
+    if rejectedSourceObligationEntryMatches(
         "req.14.DynamicDispatchDispatchableClassesOnly",
         50687usize,
-        "HelloUltraviolet::Reference::Polymorphism",
-        "runPolymorphismDynamicClassObjectsReference",
-        "Source/Reference/Polymorphism/DynamicClassObjects.uv"
+        "HelloUltraviolet::Fixtures::RejectedSource",
+        "validatedPolymorphismRejectedSourceFixtureCount",
+        "Fixtures/RejectedSource/Polymorphism/DynamicNonDispatchableRequirement/Source/Main.uv"
     ) {
         count = count + 1usize
     }
@@ -340,12 +340,12 @@ public procedure validatedAbstractionAndPolymorphismDynamicClassObjectsObligatio
     ) {
         count = count + 1usize
     }
-    if acceptedObligationEntryMatches(
+    if rejectedSourceObligationEntryMatches(
         "diag.14.DynamicClassObjects",
         50997usize,
-        "HelloUltraviolet::Reference::Polymorphism",
-        "runPolymorphismDynamicClassObjectsReference",
-        "Source/Reference/Polymorphism/DynamicClassObjects.uv"
+        "HelloUltraviolet::Fixtures::RejectedSource",
+        "validatedPolymorphismRejectedSourceFixtureCount",
+        "Fixtures/RejectedSource/Polymorphism/DynamicClassObjectDiagnostics/Source/Main.uv"
     ) {
         count = count + 1usize
     }

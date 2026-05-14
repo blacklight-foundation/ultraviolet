@@ -156,13 +156,11 @@ namespace cursive::core
       "$",
   };
 
-  inline constexpr std::array<std::string_view, 12> kCursive0Punctuators = {
+  inline constexpr std::array<std::string_view, 10> kCursive0Punctuators = {
       "(",
       ")",
       "[",
       "]",
-      "[[",
-      "]]",
       "{",
       "}",
       ",",

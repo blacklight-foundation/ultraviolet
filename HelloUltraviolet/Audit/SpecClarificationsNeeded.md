@@ -16,38 +16,19 @@ while building `HelloUltraviolet` as the reference corpus.
   construction is currently specified as `identifier "{" field_init_list "}"`
   or a state-specific type followed by a field initializer list. The grammar
   therefore clearly admits `GenericCarrier<i32>` in type positions such as
-  `sizeof(GenericCarrier<i32>)`, but it does not clearly admit
-  `GenericCarrier<i32> { value: 1, tag: 2 }` as an expression.
-- Connected construct reading: the intended language likely needs a direct
-  construction form for instantiated generic records, or an explicit rule that
-  a generic record literal uses the bare record identifier and receives its
-  type arguments from the expected type. The current reference corpus exercises
-  generic nominal application through layout queries until this construction
-  spelling is specified.
+  `sizeof(GenericCarrier<i32>)`, and admits the bare record-literal spelling
+  `GenericCarrier { value: 1, tag: 2 }`. The current reference corpus exercises
+  that bare spelling under explicit expected types `GenericCarrier<i32>` and
+  `GenericCarrier<i32, bool>`.
+- Connected construct reading: the intended language appears to construct
+  instantiated generic records by using the bare record identifier and
+  receiving type arguments from the expected type. What remains unclear is
+  whether an explicit type-argument spelling such as
+  `GenericCarrier<i32> { value: 1, tag: 2 }` is intentionally outside the
+  non-modal record literal grammar or should be admitted.
 - Clarification requested: specify the canonical source spelling and typing
   rule for constructing generic record, enum-record, and modal-state values
   whose nominal type has explicit generic arguments.
-
-### Generic Predicate Assumptions Inside Generic Bodies
-
-- Obligation: accepted-source coverage for predicate clauses in generic
-  procedure bodies.
-- SPEC anchors: `SPECIFICATION.md:12628-12670` and
-  `SPECIFICATION.md:12723-12770`.
-- Current reading: predicate clauses such as `|: Bitcopy(T)` and `Clone(T)`
-  are instantiation constraints and should also be available as assumptions
-  while checking the generic body. Otherwise a generic body cannot directly use
-  the capabilities promised by its own predicate clause.
-- Connected construct reading: `T-Generic-Call` checks the predicate clause
-  after substitution at call sites, but `WF-Generic-Proc` currently says the
-  body is checked under the bound type parameters and does not explicitly add
-  predicate requirements to the body environment. The bootstrap currently
-  accepts predicate-clause parsing and call-site substitution but rejects a
-  body-local non-`move` value use of `T` even when `Bitcopy(T)` is present.
-- Clarification requested: state whether generic-body typechecking may assume
-  the declaration's own predicate requirements. If yes, the canonical compiler
-  should carry those requirements into `BitcopyType`, `CloneType`, `DropType`,
-  and `FfiSafeType` queries for type parameters while checking the body.
 
 ### `rule.18.BlockInfo-Res-Err`
 
@@ -124,3 +105,41 @@ while building `HelloUltraviolet` as the reference corpus.
   `LLVMEmitObj_21` failure, or mark `EmitObj-Err` as an internal backend
   failure obligation that is not sourceable from conforming source under the
   supported target profiles.
+
+### `rule.20.WorkgroupSize-Err`
+
+- Obligation: `Docs/Audit/UltravioletObligations.csv:4630`.
+- SPEC anchors: `SPECIFICATION.md:21531-21545` and
+  `SPECIFICATION.md:21831-21837`.
+- Current reading: `WorkgroupSize-Err` rejects GPU dispatch or parallel
+  topology whose workgroup size exceeds the device maximum. The reference
+  corpus uses explicit `(1024usize, 1usize, 1usize)` workgroups for accepted
+  GPU specimens because `MAX_WORKGROUP_SIZE = 1024`.
+- Connected construct reading: `TopologyValid(topo)` is currently written as
+  `topo.WorkgroupSize.0 * topo.WorkgroupSize.1 * topo.WorkgroupSize.2 =
+  MAX_WORKGROUP_SIZE`, while `DEFAULT_GPU_WORKGROUP = (64, 1, 1)`. Taken
+  literally, the default topology is invalid even though the surrounding
+  dynamic semantics define it as the fallback for omitted workgroup options.
+- Clarification requested: specify whether topology validity requires
+  workgroup volume to be less than or equal to `MAX_WORKGROUP_SIZE`, or whether
+  the default GPU workgroup should be changed to a volume of 1024.
+
+### Fresh Async Creation Permission
+
+- Obligation: accepted-source coverage for `Async@Suspended.resume` and manual
+  stepping in Chapter 21.
+- SPEC anchors: `SPECIFICATION.md:22695-22734`,
+  `SPECIFICATION.md:23718`, and `SPECIFICATION.md:24369-24373`.
+- Current reading: `Async@Suspended.resume` is a state method with a `unique`
+  receiver, and async procedure calls allocate a fresh async frame with no
+  aliases. A freshly-created async value can therefore materialize at an
+  explicitly expected `unique Async<...>` type, matching the existing
+  fresh-literal permission materialization rule used for aggregate values.
+- Connected construct reading: without this materialization rule, the specified
+  manual stepping surface cannot be written for an async value produced by an
+  ordinary async call, because unqualified types default to `const` and
+  permission regimes are not implicitly coerced.
+- Clarification requested: state directly whether `AsyncCreateExpr` may
+  materialize at an expected permission-qualified async type, especially
+  `unique Async<...>`, or whether `resume` should use a different receiver
+  permission.

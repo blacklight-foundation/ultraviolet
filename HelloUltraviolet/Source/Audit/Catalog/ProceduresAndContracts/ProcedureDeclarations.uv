@@ -178,30 +178,30 @@ public procedure validatedProceduresAndContractsProcedureDeclarationsObligations
     ) {
         count = count + 1usize
     }
-    if acceptedObligationEntryMatches(
+    if rejectedSourceObligationEntryMatches(
         "def.15.ExplicitReturn",
         53107usize,
-        "HelloUltraviolet::Reference::Procedures",
-        "runProceduresDeclarationsReference",
-        "Source/Reference/Procedures/Declarations.uv"
+        "HelloUltraviolet::Fixtures::RejectedSource",
+        "validatedProceduresRejectedSourceFixtureCount",
+        "Fixtures/RejectedSource/Procedures/ExplicitReturnDefinition/Source/Main.uv"
     ) {
         count = count + 1usize
     }
-    if acceptedObligationEntryMatches(
+    if rejectedSourceObligationEntryMatches(
         "def.15.ReturnAnnOk",
         53122usize,
-        "HelloUltraviolet::Reference::Procedures",
-        "runProceduresDeclarationsReference",
-        "Source/Reference/Procedures/Declarations.uv"
+        "HelloUltraviolet::Fixtures::RejectedSource",
+        "validatedProceduresRejectedSourceFixtureCount",
+        "Fixtures/RejectedSource/Procedures/ReturnAnnotationPresence/Source/Main.uv"
     ) {
         count = count + 1usize
     }
-    if acceptedObligationEntryMatches(
+    if rejectedSourceObligationEntryMatches(
         "rule.15.WF-ProcedureDecl",
         53135usize,
-        "HelloUltraviolet::Reference::Procedures",
-        "runProceduresDeclarationsReference",
-        "Source/Reference/Procedures/Declarations.uv"
+        "HelloUltraviolet::Fixtures::RejectedSource",
+        "validatedProceduresRejectedSourceFixtureCount",
+        "Fixtures/RejectedSource/Procedures/ProcedureDeclarationWellFormedness/Source/Main.uv"
     ) {
         count = count + 1usize
     }
@@ -241,21 +241,21 @@ public procedure validatedProceduresAndContractsProcedureDeclarationsObligations
     ) {
         count = count + 1usize
     }
-    if acceptedObligationEntryMatches(
+    if rejectedSourceObligationEntryMatches(
         "rule.15.WF-ProcedureDecl-MissingReturnType",
         53214usize,
-        "HelloUltraviolet::Reference::Procedures",
-        "runProceduresDeclarationsReference",
-        "Source/Reference/Procedures/Declarations.uv"
+        "HelloUltraviolet::Fixtures::RejectedSource",
+        "validatedProceduresRejectedSourceFixtureCount",
+        "Fixtures/RejectedSource/Procedures/MissingReturnType/Source/Main.uv"
     ) {
         count = count + 1usize
     }
-    if acceptedObligationEntryMatches(
+    if rejectedSourceObligationEntryMatches(
         "rule.15.WF-ProcBody-ExplicitReturn-Err",
         53230usize,
-        "HelloUltraviolet::Reference::Procedures",
-        "runProceduresDeclarationsReference",
-        "Source/Reference/Procedures/Declarations.uv"
+        "HelloUltraviolet::Fixtures::RejectedSource",
+        "validatedProceduresRejectedSourceFixtureCount",
+        "Fixtures/RejectedSource/Procedures/MissingExplicitReturn/Source/Main.uv"
     ) {
         count = count + 1usize
     }
@@ -295,48 +295,48 @@ public procedure validatedProceduresAndContractsProcedureDeclarationsObligations
     ) {
         count = count + 1usize
     }
-    if acceptedObligationEntryMatches(
+    if rejectedSourceObligationEntryMatches(
         "rule.15.Main-Multiple",
         53312usize,
-        "HelloUltraviolet::Reference::Procedures",
-        "runProceduresDeclarationsReference",
-        "Source/Reference/Procedures/Declarations.uv"
+        "HelloUltraviolet::Fixtures::RejectedSource",
+        "validatedProceduresRejectedSourceFixtureCount",
+        "Fixtures/RejectedSource/Procedures/MainMultiple/Source/Main.uv"
     ) {
         count = count + 1usize
     }
-    if acceptedObligationEntryMatches(
+    if rejectedSourceObligationEntryMatches(
         "rule.15.Main-Generic-Err",
         53328usize,
-        "HelloUltraviolet::Reference::Procedures",
-        "runProceduresDeclarationsReference",
-        "Source/Reference/Procedures/Declarations.uv"
+        "HelloUltraviolet::Fixtures::RejectedSource",
+        "validatedProceduresRejectedSourceFixtureCount",
+        "Fixtures/RejectedSource/Procedures/MainGeneric/Source/Main.uv"
     ) {
         count = count + 1usize
     }
-    if acceptedObligationEntryMatches(
+    if rejectedSourceObligationEntryMatches(
         "rule.15.Main-Signature-Err",
         53344usize,
-        "HelloUltraviolet::Reference::Procedures",
-        "runProceduresDeclarationsReference",
-        "Source/Reference/Procedures/Declarations.uv"
+        "HelloUltraviolet::Fixtures::RejectedSource",
+        "validatedProceduresRejectedSourceFixtureCount",
+        "Fixtures/RejectedSource/Procedures/MainSignature/Source/Main.uv"
     ) {
         count = count + 1usize
     }
-    if acceptedObligationEntryMatches(
+    if rejectedSourceObligationEntryMatches(
         "rule.15.Main-Missing",
         53360usize,
-        "HelloUltraviolet::Reference::Procedures",
-        "runProceduresDeclarationsReference",
-        "Source/Reference/Procedures/Declarations.uv"
+        "HelloUltraviolet::Fixtures::RejectedSource",
+        "validatedProceduresRejectedSourceFixtureCount",
+        "Fixtures/RejectedSource/Procedures/MainMissing/Source/Main.uv"
     ) {
         count = count + 1usize
     }
-    if acceptedObligationEntryMatches(
+    if rejectedSourceObligationEntryMatches(
         "def.15.MainDiagRefs",
         53376usize,
-        "HelloUltraviolet::Reference::Procedures",
-        "runProceduresDeclarationsReference",
-        "Source/Reference/Procedures/Declarations.uv"
+        "HelloUltraviolet::Fixtures::RejectedSource",
+        "validatedProceduresRejectedSourceFixtureCount",
+        "Fixtures/RejectedSource/Procedures/MainDiagnosticReferences/Source/Main.uv"
     ) {
         count = count + 1usize
     }
@@ -574,12 +574,12 @@ public procedure validatedProceduresAndContractsProcedureDeclarationsObligations
     ) {
         count = count + 1usize
     }
-    if acceptedObligationEntryMatches(
+    if rejectedSourceObligationEntryMatches(
         "diag.15.ProcedureDeclarations",
         53792usize,
-        "HelloUltraviolet::Reference::Procedures",
-        "runProceduresDeclarationsReference",
-        "Source/Reference/Procedures/Declarations.uv"
+        "HelloUltraviolet::Fixtures::RejectedSource",
+        "validatedProceduresRejectedSourceFixtureCount",
+        "Fixtures/RejectedSource/Procedures/ProcedureDeclarationsDiagnostic/Source/Main.uv"
     ) {
         count = count + 1usize
     }

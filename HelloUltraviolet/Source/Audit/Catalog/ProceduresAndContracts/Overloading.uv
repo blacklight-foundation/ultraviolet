@@ -43,48 +43,48 @@ public procedure validatedProceduresAndContractsOverloadingObligations() -> usiz
     ) {
         count = count + 1usize
     }
-    if acceptedObligationEntryMatches(
+    if rejectedSourceObligationEntryMatches(
         "rule.15.LookupMethod-NotFound",
         54737usize,
-        "HelloUltraviolet::Reference::Procedures",
-        "runProceduresOverloadingReference",
-        "Source/Reference/Procedures/Overloading.uv"
+        "HelloUltraviolet::Fixtures::RejectedSource",
+        "validatedExpressionsRejectedSourceFixtureCount",
+        "Fixtures/RejectedSource/Expressions/MethodNotFound/Source/Main.uv"
     ) {
         count = count + 1usize
     }
-    if acceptedObligationEntryMatches(
+    if rejectedSourceObligationEntryMatches(
         "rule.15.LookupMethod-Ambig",
         54753usize,
-        "HelloUltraviolet::Reference::Procedures",
-        "runProceduresOverloadingReference",
-        "Source/Reference/Procedures/Overloading.uv"
+        "HelloUltraviolet::Fixtures::RejectedSource",
+        "validatedProceduresRejectedSourceFixtureCount",
+        "Fixtures/RejectedSource/Procedures/MethodLookupAmbiguousDefault/Source/Main.uv"
     ) {
         count = count + 1usize
     }
-    if acceptedObligationEntryMatches(
+    if rejectedSourceObligationEntryMatches(
         "req.15.FreeProcedureOverloadResolutionBeforeCallTyping",
         54769usize,
-        "HelloUltraviolet::Reference::Procedures",
-        "runProceduresOverloadingReference",
-        "Source/Reference/Procedures/Overloading.uv"
+        "HelloUltraviolet::Fixtures::RejectedSource",
+        "validatedProceduresRejectedSourceFixtureCount",
+        "Fixtures/RejectedSource/Procedures/OverloadResolutionBeforeCallTyping/Source/Main.uv"
     ) {
         count = count + 1usize
     }
-    if acceptedObligationEntryMatches(
+    if rejectedSourceObligationEntryMatches(
         "req.15.FreeCallOverloadResolutionAlgorithm",
         54782usize,
-        "HelloUltraviolet::Reference::Procedures",
-        "runProceduresOverloadingReference",
-        "Source/Reference/Procedures/Overloading.uv"
+        "HelloUltraviolet::Fixtures::RejectedSource",
+        "validatedProceduresRejectedSourceFixtureCount",
+        "Fixtures/RejectedSource/Procedures/NoMatchingOverload/Source/Main.uv"
     ) {
         count = count + 1usize
     }
-    if acceptedObligationEntryMatches(
+    if rejectedSourceObligationEntryMatches(
         "req.15.DuplicateErasedOverloadSignaturesForbidden",
         54804usize,
-        "HelloUltraviolet::Reference::Procedures",
-        "runProceduresOverloadingReference",
-        "Source/Reference/Procedures/Overloading.uv"
+        "HelloUltraviolet::Fixtures::RejectedSource",
+        "validatedProceduresRejectedSourceFixtureCount",
+        "Fixtures/RejectedSource/Procedures/DuplicateErasedOverloadSignature/Source/Main.uv"
     ) {
         count = count + 1usize
     }
@@ -106,21 +106,21 @@ public procedure validatedProceduresAndContractsOverloadingObligations() -> usiz
     ) {
         count = count + 1usize
     }
-    if acceptedObligationEntryMatches(
+    if rejectedSourceObligationEntryMatches(
         "diag-table.15.Overloading",
         54849usize,
-        "HelloUltraviolet::Reference::Procedures",
-        "runProceduresOverloadingReference",
-        "Source/Reference/Procedures/Overloading.uv"
+        "HelloUltraviolet::Fixtures::RejectedSource",
+        "validatedProceduresRejectedSourceFixtureCount",
+        "Fixtures/RejectedSource/Procedures/OverloadingDiagnosticsTable/Source/Main.uv"
     ) {
         count = count + 1usize
     }
-    if acceptedObligationEntryMatches(
+    if rejectedSourceObligationEntryMatches(
         "diag.15.MethodLookupDiagnostics",
         54866usize,
-        "HelloUltraviolet::Reference::Procedures",
-        "runProceduresOverloadingReference",
-        "Source/Reference/Procedures/Overloading.uv"
+        "HelloUltraviolet::Fixtures::RejectedSource",
+        "validatedProceduresRejectedSourceFixtureCount",
+        "Fixtures/RejectedSource/Procedures/MethodLookupDiagnostics/Source/Main.uv"
     ) {
         count = count + 1usize
     }

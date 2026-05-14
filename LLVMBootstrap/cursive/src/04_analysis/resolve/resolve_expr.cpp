@@ -16,6 +16,7 @@
 #include "04_analysis/resolve/resolver.h"
 
 #include <algorithm>
+#include <unordered_map>
 #include <unordered_set>
 #include <utility>
 #include <type_traits>
@@ -38,6 +39,9 @@ namespace cursive::analysis {
 ResolveResult<std::optional<ast::LoopInvariant>> ResolveInvariantOpt(
     ResolveContext& ctx,
     const std::optional<ast::LoopInvariant>& invariant_opt);
+
+ResExprResult ResolveExpr(ResolveContext& ctx,
+                          const ast::ExprPtr& expr);
 
 namespace {
 
@@ -91,6 +95,75 @@ ResExprResult ResolveComptimeExprWithAttrs(ResolveContext& ctx,
   SPEC_RULE("ResolveExpr-CtExpr");
   return {true, std::nullopt, std::nullopt,
           std::make_shared<ast::Expr>(std::move(out))};
+}
+
+ResExprResult ResolveBinaryChain(ResolveContext& ctx,
+                                 const ast::ExprPtr& expr,
+                                 std::string_view op) {
+  struct Frame {
+    ast::ExprPtr expr;
+    bool finish = false;
+  };
+
+  std::vector<Frame> stack;
+  std::unordered_map<const ast::Expr*, ast::ExprPtr> resolved;
+  stack.push_back(Frame{expr, false});
+
+  while (!stack.empty()) {
+    const Frame frame = std::move(stack.back());
+    stack.pop_back();
+    if (!frame.expr) {
+      continue;
+    }
+
+    const auto* binary = std::get_if<ast::BinaryExpr>(&frame.expr->node);
+    const bool in_chain =
+        binary && binary->op == op && binary->lhs && binary->rhs;
+    if (!in_chain) {
+      if (binary && binary->op == op) {
+        return {false, "ResolveExpr-Ident-Err", frame.expr->span, {},
+                "malformed binary expression"};
+      }
+      const auto leaf = ResolveExpr(ctx, frame.expr);
+      if (!leaf.ok) {
+        return leaf;
+      }
+      resolved[frame.expr.get()] = leaf.value;
+      continue;
+    }
+
+    if (!frame.finish) {
+      stack.push_back(Frame{frame.expr, true});
+      stack.push_back(Frame{binary->rhs, false});
+      stack.push_back(Frame{binary->lhs, false});
+      continue;
+    }
+
+    const auto lhs = resolved.find(binary->lhs.get());
+    const auto rhs = resolved.find(binary->rhs.get());
+    if (lhs == resolved.end() || rhs == resolved.end()) {
+      return {false, std::nullopt, frame.expr->span, {},
+              "internal error: unresolved binary-chain operand"};
+    }
+
+    auto out = *frame.expr;
+    auto& out_node = std::get<ast::BinaryExpr>(out.node);
+    out_node.lhs = lhs->second;
+    out_node.rhs = rhs->second;
+    SPEC_RULE("ResolveExpr-Hom");
+    resolved[frame.expr.get()] = std::make_shared<ast::Expr>(std::move(out));
+  }
+
+  const auto root = resolved.find(expr.get());
+  if (root == resolved.end()) {
+    std::optional<core::Span> span;
+    if (expr) {
+      span = expr->span;
+    }
+    return {false, std::nullopt, span, {},
+            "internal error: unresolved binary-chain root"};
+  }
+  return {true, std::nullopt, std::nullopt, root->second};
 }
 
 // ============================================================================
@@ -1355,23 +1428,7 @@ ResExprResult ResolveExpr(ResolveContext& ctx,
               }
             }
           }
-          const auto resolved_lhs = ResolveExpr(ctx, node.lhs);
-          if (!resolved_lhs.ok) {
-            return {false, resolved_lhs.diag_id, resolved_lhs.span, {},
-                    resolved_lhs.diag_detail, resolved_lhs.diag_children};
-          }
-          const auto resolved_rhs = ResolveExpr(ctx, node.rhs);
-          if (!resolved_rhs.ok) {
-            return {false, resolved_rhs.diag_id, resolved_rhs.span, {},
-                    resolved_rhs.diag_detail, resolved_rhs.diag_children};
-          }
-          auto out = *expr;
-          auto& out_node = std::get<ast::BinaryExpr>(out.node);
-          out_node.lhs = resolved_lhs.value;
-          out_node.rhs = resolved_rhs.value;
-          SPEC_RULE("ResolveExpr-Hom");
-          return {true, std::nullopt, std::nullopt,
-                  std::make_shared<ast::Expr>(std::move(out))};
+          return ResolveBinaryChain(ctx, expr, node.op);
         } else if constexpr (std::is_same_v<T, ast::UnaryExpr>) {
           const auto resolved = ResolveExpr(ctx, node.value);
           if (!resolved.ok) {

@@ -1,0 +1,604 @@
+//! CSV-to-catalog membership check group 0043.
+
+internal procedure catalogCsvMembershipGroup0043() -> bool {
+    return csvCatalogKeyMatches(
+            "rule.13.ReadPtr-Raw-Invalid",
+            46433usize,
+            "rule.13.ReadPtr-Raw-Invalid",
+            46433usize
+        ) &&
+        csvCatalogKeyMatches(
+            "rule.13.ReadPtr-Safe",
+            46028usize,
+            "rule.13.ReadPtr-Safe",
+            46028usize
+        ) &&
+        csvCatalogKeyMatches(
+            "rule.13.Record-FileDir-Err",
+            42227usize,
+            "rule.13.Record-FileDir-Err",
+            42227usize
+        ) &&
+        csvCatalogKeyMatches(
+            "rule.13.Region-Unchecked-Unsafe-Err",
+            42408usize,
+            "rule.13.Region-Unchecked-Unsafe-Err",
+            42408usize
+        ) &&
+        csvCatalogKeyMatches(
+            "rule.13.Size-Bytes-Managed",
+            45600usize,
+            "rule.13.Size-Bytes-Managed",
+            45600usize
+        ) &&
+        csvCatalogKeyMatches(
+            "rule.13.Size-Bytes-Modal",
+            45696usize,
+            "rule.13.Size-Bytes-Modal",
+            45696usize
+        ) &&
+        csvCatalogKeyMatches(
+            "rule.13.Size-Bytes-View",
+            45648usize,
+            "rule.13.Size-Bytes-View",
+            45648usize
+        ) &&
+        csvCatalogKeyMatches(
+            "rule.13.Size-Closure",
+            47367usize,
+            "rule.13.Size-Closure",
+            47367usize
+        ) &&
+        csvCatalogKeyMatches(
+            "rule.13.Size-Func",
+            46878usize,
+            "rule.13.Size-Func",
+            46878usize
+        ) &&
+        csvCatalogKeyMatches(
+            "rule.13.Size-Modal",
+            43005usize,
+            "rule.13.Size-Modal",
+            43005usize
+        ) &&
+        csvCatalogKeyMatches(
+            "rule.13.Size-ModalState",
+            43053usize,
+            "rule.13.Size-ModalState",
+            43053usize
+        ) &&
+        csvCatalogKeyMatches(
+            "rule.13.Size-Ptr",
+            46126usize,
+            "rule.13.Size-Ptr",
+            46126usize
+        ) &&
+        csvCatalogKeyMatches(
+            "rule.13.Size-RawPtr",
+            46483usize,
+            "rule.13.Size-RawPtr",
+            46483usize
+        ) &&
+        csvCatalogKeyMatches(
+            "rule.13.Size-String-Managed",
+            44859usize,
+            "rule.13.Size-String-Managed",
+            44859usize
+        ) &&
+        csvCatalogKeyMatches(
+            "rule.13.Size-String-Modal",
+            44955usize,
+            "rule.13.Size-String-Modal",
+            44955usize
+        ) &&
+        csvCatalogKeyMatches(
+            "rule.13.Size-String-View",
+            44907usize,
+            "rule.13.Size-String-View",
+            44907usize
+        ) &&
+        csvCatalogKeyMatches(
+            "rule.13.State-Specific-WF",
+            42182usize,
+            "rule.13.State-Specific-WF",
+            42182usize
+        ) &&
+        csvCatalogKeyMatches(
+            "rule.13.StateMember-Name-Conflict",
+            43798usize,
+            "rule.13.StateMember-Name-Conflict",
+            43798usize
+        ) &&
+        csvCatalogKeyMatches(
+            "rule.13.StateMemberVisOk-Err",
+            42102usize,
+            "rule.13.StateMemberVisOk-Err",
+            42102usize
+        ) &&
+        csvCatalogKeyMatches(
+            "rule.13.StateMethod-Dup",
+            43504usize,
+            "rule.13.StateMethod-Dup",
+            43504usize
+        ) &&
+        csvCatalogKeyMatches(
+            "rule.13.StringAppend-Err",
+            44754usize,
+            "rule.13.StringAppend-Err",
+            44754usize
+        ) &&
+        csvCatalogKeyMatches(
+            "rule.13.StringAppend-Ok",
+            44738usize,
+            "rule.13.StringAppend-Ok",
+            44738usize
+        ) &&
+        csvCatalogKeyMatches(
+            "rule.13.StringAsView-Ok",
+            44642usize,
+            "rule.13.StringAsView-Ok",
+            44642usize
+        ) &&
+        csvCatalogKeyMatches(
+            "rule.13.StringCloneWith-Err",
+            44722usize,
+            "rule.13.StringCloneWith-Err",
+            44722usize
+        ) &&
+        csvCatalogKeyMatches(
+            "rule.13.StringCloneWith-Ok",
+            44706usize,
+            "rule.13.StringCloneWith-Ok",
+            44706usize
+        ) &&
+        csvCatalogKeyMatches(
+            "rule.13.StringFrom-Err",
+            44626usize,
+            "rule.13.StringFrom-Err",
+            44626usize
+        ) &&
+        csvCatalogKeyMatches(
+            "rule.13.StringFrom-Ok",
+            44610usize,
+            "rule.13.StringFrom-Ok",
+            44610usize
+        ) &&
+        csvCatalogKeyMatches(
+            "rule.13.StringIsEmpty",
+            44786usize,
+            "rule.13.StringIsEmpty",
+            44786usize
+        ) &&
+        csvCatalogKeyMatches(
+            "rule.13.StringLength",
+            44770usize,
+            "rule.13.StringLength",
+            44770usize
+        ) &&
+        csvCatalogKeyMatches(
+            "rule.13.StringSlice-Ok",
+            44658usize,
+            "rule.13.StringSlice-Ok",
+            44658usize
+        ) &&
+        csvCatalogKeyMatches(
+            "rule.13.StringToManaged-Err",
+            44690usize,
+            "rule.13.StringToManaged-Err",
+            44690usize
+        ) &&
+        csvCatalogKeyMatches(
+            "rule.13.StringToManaged-Ok",
+            44674usize,
+            "rule.13.StringToManaged-Ok",
+            44674usize
+        ) &&
+        csvCatalogKeyMatches(
+            "rule.13.Sub-Bytes-State",
+            45217usize,
+            "rule.13.Sub-Bytes-State",
+            45217usize
+        ) &&
+        csvCatalogKeyMatches(
+            "rule.13.Sub-Closure",
+            47299usize,
+            "rule.13.Sub-Closure",
+            47299usize
+        ) &&
+        csvCatalogKeyMatches(
+            "rule.13.Sub-Func",
+            46790usize,
+            "rule.13.Sub-Func",
+            46790usize
+        ) &&
+        csvCatalogKeyMatches(
+            "rule.13.Sub-Ptr-State",
+            45944usize,
+            "rule.13.Sub-Ptr-State",
+            45944usize
+        ) &&
+        csvCatalogKeyMatches(
+            "rule.13.Sub-String-State",
+            44466usize,
+            "rule.13.Sub-String-State",
+            44466usize
+        ) &&
+        csvCatalogKeyMatches(
+            "rule.13.T-Deref-Raw",
+            46323usize,
+            "rule.13.T-Deref-Raw",
+            46323usize
+        ) &&
+        csvCatalogKeyMatches(
+            "rule.13.T-Equiv-Closure",
+            47283usize,
+            "rule.13.T-Equiv-Closure",
+            47283usize
+        ) &&
+        csvCatalogKeyMatches(
+            "rule.13.T-Equiv-Func",
+            46774usize,
+            "rule.13.T-Equiv-Func",
+            46774usize
+        ) &&
+        csvCatalogKeyMatches(
+            "rule.13.T-Modal-Field",
+            43265usize,
+            "rule.13.T-Modal-Field",
+            43265usize
+        ) &&
+        csvCatalogKeyMatches(
+            "rule.13.T-Modal-Field-Perm",
+            43281usize,
+            "rule.13.T-Modal-Field-Perm",
+            43281usize
+        ) &&
+        csvCatalogKeyMatches(
+            "rule.13.T-Modal-Method",
+            43536usize,
+            "rule.13.T-Modal-Method",
+            43536usize
+        ) &&
+        csvCatalogKeyMatches(
+            "rule.13.T-Modal-Method-Body",
+            43600usize,
+            "rule.13.T-Modal-Method-Body",
+            43600usize
+        ) &&
+        csvCatalogKeyMatches(
+            "rule.13.T-Modal-State-Intro",
+            42211usize,
+            "rule.13.T-Modal-State-Intro",
+            42211usize
+        ) &&
+        csvCatalogKeyMatches(
+            "rule.13.T-Modal-Transition",
+            43846usize,
+            "rule.13.T-Modal-Transition",
+            43846usize
+        ) &&
+        csvCatalogKeyMatches(
+            "rule.13.T-Modal-Transition-Body",
+            43894usize,
+            "rule.13.T-Modal-Transition-Body",
+            43894usize
+        ) &&
+        csvCatalogKeyMatches(
+            "rule.13.T-Modal-Widen",
+            44111usize,
+            "rule.13.T-Modal-Widen",
+            44111usize
+        ) &&
+        csvCatalogKeyMatches(
+            "rule.13.T-Modal-Widen-Perm",
+            44127usize,
+            "rule.13.T-Modal-Widen-Perm",
+            44127usize
+        ) &&
+        csvCatalogKeyMatches(
+            "rule.13.T-Proc-As-Value",
+            46806usize,
+            "rule.13.T-Proc-As-Value",
+            46806usize
+        ) &&
+        csvCatalogKeyMatches(
+            "rule.13.Transition-Body-Err",
+            43910usize,
+            "rule.13.Transition-Body-Err",
+            43910usize
+        ) &&
+        csvCatalogKeyMatches(
+            "rule.13.Transition-Dup",
+            43782usize,
+            "rule.13.Transition-Dup",
+            43782usize
+        ) &&
+        csvCatalogKeyMatches(
+            "rule.13.Transition-NotVisible",
+            43878usize,
+            "rule.13.Transition-NotVisible",
+            43878usize
+        ) &&
+        csvCatalogKeyMatches(
+            "rule.13.Transition-Source-Err",
+            43862usize,
+            "rule.13.Transition-Source-Err",
+            43862usize
+        ) &&
+        csvCatalogKeyMatches(
+            "rule.13.Transition-Target-Err",
+            43830usize,
+            "rule.13.Transition-Target-Err",
+            43830usize
+        ) &&
+        csvCatalogKeyMatches(
+            "rule.13.WF-Bytes",
+            45201usize,
+            "rule.13.WF-Bytes",
+            45201usize
+        ) &&
+        csvCatalogKeyMatches(
+            "rule.13.WF-Closure",
+            47267usize,
+            "rule.13.WF-Closure",
+            47267usize
+        ) &&
+        csvCatalogKeyMatches(
+            "rule.13.WF-Func",
+            46758usize,
+            "rule.13.WF-Func",
+            46758usize
+        ) &&
+        csvCatalogKeyMatches(
+            "rule.13.WF-Modal-Payload",
+            42010usize,
+            "rule.13.WF-Modal-Payload",
+            42010usize
+        ) &&
+        csvCatalogKeyMatches(
+            "rule.13.WF-ModalDecl",
+            42086usize,
+            "rule.13.WF-ModalDecl",
+            42086usize
+        ) &&
+        csvCatalogKeyMatches(
+            "rule.13.WF-ModalState",
+            42042usize,
+            "rule.13.WF-ModalState",
+            42042usize
+        ) &&
+        csvCatalogKeyMatches(
+            "rule.13.WF-ModalState-ArgCount-Err",
+            42058usize,
+            "rule.13.WF-ModalState-ArgCount-Err",
+            42058usize
+        ) &&
+        csvCatalogKeyMatches(
+            "rule.13.WF-Ptr",
+            45914usize,
+            "rule.13.WF-Ptr",
+            45914usize
+        ) &&
+        csvCatalogKeyMatches(
+            "rule.13.WF-RawPtr",
+            46307usize,
+            "rule.13.WF-RawPtr",
+            46307usize
+        ) &&
+        csvCatalogKeyMatches(
+            "rule.13.WF-State-Method",
+            43520usize,
+            "rule.13.WF-State-Method",
+            43520usize
+        ) &&
+        csvCatalogKeyMatches(
+            "rule.13.WF-String",
+            44450usize,
+            "rule.13.WF-String",
+            44450usize
+        ) &&
+        csvCatalogKeyMatches(
+            "rule.13.WF-Transition",
+            43814usize,
+            "rule.13.WF-Transition",
+            43814usize
+        ) &&
+        csvCatalogKeyMatches(
+            "rule.13.Warn-Widen-LargePayload",
+            44215usize,
+            "rule.13.Warn-Widen-LargePayload",
+            44215usize
+        ) &&
+        csvCatalogKeyMatches(
+            "rule.13.Warn-Widen-Ok",
+            44231usize,
+            "rule.13.Warn-Widen-Ok",
+            44231usize
+        ) &&
+        csvCatalogKeyMatches(
+            "rule.13.Widen-AlreadyGeneral",
+            44143usize,
+            "rule.13.Widen-AlreadyGeneral",
+            44143usize
+        ) &&
+        csvCatalogKeyMatches(
+            "rule.13.Widen-NonModal",
+            44159usize,
+            "rule.13.Widen-NonModal",
+            44159usize
+        ) &&
+        csvCatalogKeyMatches(
+            "rule.13.WritePtr-Expired",
+            46108usize,
+            "rule.13.WritePtr-Expired",
+            46108usize
+        ) &&
+        csvCatalogKeyMatches(
+            "rule.13.WritePtr-Null",
+            46092usize,
+            "rule.13.WritePtr-Null",
+            46092usize
+        ) &&
+        csvCatalogKeyMatches(
+            "rule.13.WritePtr-Raw",
+            46417usize,
+            "rule.13.WritePtr-Raw",
+            46417usize
+        ) &&
+        csvCatalogKeyMatches(
+            "rule.13.WritePtr-Raw-Imm",
+            46449usize,
+            "rule.13.WritePtr-Raw-Imm",
+            46449usize
+        ) &&
+        csvCatalogKeyMatches(
+            "rule.13.WritePtr-Raw-Invalid",
+            46465usize,
+            "rule.13.WritePtr-Raw-Invalid",
+            46465usize
+        ) &&
+        csvCatalogKeyMatches(
+            "rule.13.WritePtr-Safe",
+            46044usize,
+            "rule.13.WritePtr-Safe",
+            46044usize
+        ) &&
+        csvCatalogKeyMatches(
+            "rule.14.ABI-Dynamic",
+            50824usize,
+            "rule.14.ABI-Dynamic",
+            50824usize
+        ) &&
+        csvCatalogKeyMatches(
+            "rule.14.Align-DynamicClass",
+            50808usize,
+            "rule.14.Align-DynamicClass",
+            50808usize
+        ) &&
+        csvCatalogKeyMatches(
+            "rule.14.AllocRaw-Unsafe-Err",
+            52077usize,
+            "rule.14.AllocRaw-Unsafe-Err",
+            52077usize
+        ) &&
+        csvCatalogKeyMatches(
+            "rule.14.BitcopyDrop-Conflict",
+            52466usize,
+            "rule.14.BitcopyDrop-Conflict",
+            52466usize
+        ) &&
+        csvCatalogKeyMatches(
+            "rule.14.BitcopyDrop-Ok",
+            52450usize,
+            "rule.14.BitcopyDrop-Ok",
+            52450usize
+        ) &&
+        csvCatalogKeyMatches(
+            "rule.14.DeallocRaw-Unsafe-Err",
+            52093usize,
+            "rule.14.DeallocRaw-Unsafe-Err",
+            52093usize
+        ) &&
+        csvCatalogKeyMatches(
+            "rule.14.DispatchSym-Default-Mismatch",
+            50899usize,
+            "rule.14.DispatchSym-Default-Mismatch",
+            50899usize
+        ) &&
+        csvCatalogKeyMatches(
+            "rule.14.DispatchSym-Default-None",
+            50883usize,
+            "rule.14.DispatchSym-Default-None",
+            50883usize
+        ) &&
+        csvCatalogKeyMatches(
+            "rule.14.DispatchSym-Impl",
+            50867usize,
+            "rule.14.DispatchSym-Impl",
+            50867usize
+        ) &&
+        csvCatalogKeyMatches(
+            "rule.14.Dynamic-NonDispatchable",
+            50624usize,
+            "rule.14.Dynamic-NonDispatchable",
+            50624usize
+        ) &&
+        csvCatalogKeyMatches(
+            "rule.14.EffFields-Conflict",
+            49317usize,
+            "rule.14.EffFields-Conflict",
+            49317usize
+        ) &&
+        csvCatalogKeyMatches(
+            "rule.14.EffMethods-Conflict",
+            49272usize,
+            "rule.14.EffMethods-Conflict",
+            49272usize
+        ) &&
+        csvCatalogKeyMatches(
+            "rule.14.EmitVTable-Decl",
+            50979usize,
+            "rule.14.EmitVTable-Decl",
+            50979usize
+        ) &&
+        csvCatalogKeyMatches(
+            "rule.14.Eval-Dynamic-Form",
+            50715usize,
+            "rule.14.Eval-Dynamic-Form",
+            50715usize
+        ) &&
+        csvCatalogKeyMatches(
+            "rule.14.Eval-Dynamic-Form-Ctrl",
+            50731usize,
+            "rule.14.Eval-Dynamic-Form-Ctrl",
+            50731usize
+        ) &&
+        csvCatalogKeyMatches(
+            "rule.14.Generic-Call-ArgCount-Err",
+            48431usize,
+            "rule.14.Generic-Call-ArgCount-Err",
+            48431usize
+        ) &&
+        csvCatalogKeyMatches(
+            "rule.14.GenericCallInference",
+            48377usize,
+            "rule.14.GenericCallInference",
+            48377usize
+        ) &&
+        csvCatalogKeyMatches(
+            "rule.14.Impl-Abstract-Method",
+            49698usize,
+            "rule.14.Impl-Abstract-Method",
+            49698usize
+        ) &&
+        csvCatalogKeyMatches(
+            "rule.14.Impl-AssocType-Missing",
+            49730usize,
+            "rule.14.Impl-AssocType-Missing",
+            49730usize
+        ) &&
+        csvCatalogKeyMatches(
+            "rule.14.Impl-Coherence-Err",
+            49906usize,
+            "rule.14.Impl-Coherence-Err",
+            49906usize
+        ) &&
+        csvCatalogKeyMatches(
+            "rule.14.Impl-Concrete-Default",
+            49778usize,
+            "rule.14.Impl-Concrete-Default",
+            49778usize
+        ) &&
+        csvCatalogKeyMatches(
+            "rule.14.Impl-Concrete-Override",
+            49794usize,
+            "rule.14.Impl-Concrete-Override",
+            49794usize
+        ) &&
+        csvCatalogKeyMatches(
+            "rule.14.Impl-Field",
+            49858usize,
+            "rule.14.Impl-Field",
+            49858usize
+        )
+}

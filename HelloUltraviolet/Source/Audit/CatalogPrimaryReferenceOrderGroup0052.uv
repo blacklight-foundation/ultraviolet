@@ -1,0 +1,604 @@
+//! Catalog primary-reference ordering check group 0052.
+
+internal procedure catalogPrimaryReferenceOrderGroup0052() -> bool {
+    return catalogPrimaryReferencePrecedes(
+            "rule.18.Lower-Loop-Iter",
+            69046usize,
+            "rule.18.Lower-Stmt-Assign",
+            70200usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.18.Lower-Stmt-Assign",
+            70200usize,
+            "rule.18.Lower-Stmt-Break",
+            71880usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.18.Lower-Stmt-Break",
+            71880usize,
+            "rule.18.Lower-Stmt-Break-Unit",
+            71896usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.18.Lower-Stmt-Break-Unit",
+            71896usize,
+            "rule.18.Lower-Stmt-CompoundAssign",
+            70216usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.18.Lower-Stmt-CompoundAssign",
+            70216usize,
+            "rule.18.Lower-Stmt-Continue",
+            71911usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.18.Lower-Stmt-Continue",
+            71911usize,
+            "rule.18.Lower-Stmt-Correctness",
+            68842usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.18.Lower-Stmt-Correctness",
+            68842usize,
+            "rule.18.Lower-Stmt-Defer",
+            70615usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.18.Lower-Stmt-Defer",
+            70615usize,
+            "rule.18.Lower-Stmt-Error",
+            68951usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.18.Lower-Stmt-Error",
+            68951usize,
+            "rule.18.Lower-Stmt-Expr",
+            70350usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.18.Lower-Stmt-Expr",
+            70350usize,
+            "rule.18.Lower-Stmt-Frame-Explicit",
+            71413usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.18.Lower-Stmt-Frame-Explicit",
+            71413usize,
+            "rule.18.Lower-Stmt-Frame-Implicit",
+            71397usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.18.Lower-Stmt-Frame-Implicit",
+            71397usize,
+            "rule.18.Lower-Stmt-Let",
+            69584usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.18.Lower-Stmt-Let",
+            69584usize,
+            "rule.18.Lower-Stmt-Region",
+            71006usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.18.Lower-Stmt-Region",
+            71006usize,
+            "rule.18.Lower-Stmt-Return",
+            71849usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.18.Lower-Stmt-Return",
+            71849usize,
+            "rule.18.Lower-Stmt-Return-Unit",
+            71865usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.18.Lower-Stmt-Return-Unit",
+            71865usize,
+            "rule.18.Lower-Stmt-UnsafeBlock",
+            72075usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.18.Lower-Stmt-UnsafeBlock",
+            72075usize,
+            "rule.18.Lower-Stmt-UsingLocal",
+            69775usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.18.Lower-Stmt-UsingLocal",
+            69775usize,
+            "rule.18.Lower-Stmt-Var",
+            69600usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.18.Lower-Stmt-Var",
+            69600usize,
+            "rule.18.Lower-StmtList-Cons",
+            68903usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.18.Lower-StmtList-Cons",
+            68903usize,
+            "rule.18.Lower-StmtList-Empty",
+            68888usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.18.Lower-StmtList-Empty",
+            68888usize,
+            "rule.18.Parse-Assign-Stmt",
+            69840usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.18.Parse-Assign-Stmt",
+            69840usize,
+            "rule.18.Parse-Binding-Stmt",
+            69099usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.18.Parse-Binding-Stmt",
+            69099usize,
+            "rule.18.Parse-BindingAfterLetVar",
+            69115usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.18.Parse-BindingAfterLetVar",
+            69115usize,
+            "rule.18.Parse-Block",
+            68116usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.18.Parse-Block",
+            68116usize,
+            "rule.18.Parse-Break-Stmt",
+            71483usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.18.Parse-Break-Stmt",
+            71483usize,
+            "rule.18.Parse-Continue-Stmt",
+            71499usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.18.Parse-Continue-Stmt",
+            71499usize,
+            "rule.18.Parse-Defer-Stmt",
+            70402usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.18.Parse-Defer-Stmt",
+            70402usize,
+            "rule.18.Parse-Expr-Stmt",
+            70268usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.18.Parse-Expr-Stmt",
+            70268usize,
+            "rule.18.Parse-Frame-Explicit",
+            71074usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.18.Parse-Frame-Explicit",
+            71074usize,
+            "rule.18.Parse-Frame-Stmt",
+            71058usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.18.Parse-Frame-Stmt",
+            71058usize,
+            "rule.18.Parse-Region-Alias-None",
+            70700usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.18.Parse-Region-Alias-None",
+            70700usize,
+            "rule.18.Parse-Region-Alias-Some",
+            70716usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.18.Parse-Region-Alias-Some",
+            70716usize,
+            "rule.18.Parse-Region-Opts-None",
+            70668usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.18.Parse-Region-Opts-None",
+            70668usize,
+            "rule.18.Parse-Region-Opts-Some",
+            70684usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.18.Parse-Region-Opts-Some",
+            70684usize,
+            "rule.18.Parse-Region-Stmt",
+            70732usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.18.Parse-Region-Stmt",
+            70732usize,
+            "rule.18.Parse-Return-Stmt",
+            71467usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.18.Parse-Return-Stmt",
+            71467usize,
+            "rule.18.Parse-Statement",
+            68084usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.18.Parse-Statement",
+            68084usize,
+            "rule.18.Parse-Statement-Err",
+            68100usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.18.Parse-Statement-Err",
+            68100usize,
+            "rule.18.Parse-Unsafe-Block",
+            71980usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.18.Parse-Unsafe-Block",
+            71980usize,
+            "rule.18.Parse-UsingLocal-Stmt",
+            69652usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.18.Parse-UsingLocal-Stmt",
+            69652usize,
+            "rule.18.ParseStmtSeq-Cons",
+            68255usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.18.ParseStmtSeq-Cons",
+            68255usize,
+            "rule.18.ParseStmtSeq-End",
+            68223usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.18.ParseStmtSeq-End",
+            68223usize,
+            "rule.18.ParseStmtSeq-TailExpr",
+            68239usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.18.ParseStmtSeq-TailExpr",
+            68239usize,
+            "rule.18.Prov-LetVar-Ordinary",
+            69416usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.18.Prov-LetVar-Ordinary",
+            69416usize,
+            "rule.18.Prov-LetVar-Region-Alias",
+            69432usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.18.Prov-LetVar-Region-Alias",
+            69432usize,
+            "rule.18.Prov-LetVar-Region-Fresh",
+            69448usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.18.Prov-LetVar-Region-Fresh",
+            69448usize,
+            "rule.18.Return-Async-Type-Err",
+            71566usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.18.Return-Async-Type-Err",
+            71566usize,
+            "rule.18.Return-Async-Unit-Err",
+            71582usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.18.Return-Async-Unit-Err",
+            71582usize,
+            "rule.18.Return-Type-Err",
+            71598usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.18.Return-Type-Err",
+            71598usize,
+            "rule.18.Return-Unit-Err",
+            71614usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.18.Return-Unit-Err",
+            71614usize,
+            "rule.18.Step-Exec-Defer",
+            68798usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.18.Step-Exec-Defer",
+            68798usize,
+            "rule.18.Step-Exec-Frame-Body",
+            71347usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.18.Step-Exec-Frame-Body",
+            71347usize,
+            "rule.18.Step-Exec-Frame-Enter-Explicit",
+            71331usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.18.Step-Exec-Frame-Enter-Explicit",
+            71331usize,
+            "rule.18.Step-Exec-Frame-Enter-Implicit",
+            71315usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.18.Step-Exec-Frame-Enter-Implicit",
+            71315usize,
+            "rule.18.Step-Exec-Frame-Exit-Ctrl",
+            71379usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.18.Step-Exec-Frame-Exit-Ctrl",
+            71379usize,
+            "rule.18.Step-Exec-Frame-Exit-Ok",
+            71363usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.18.Step-Exec-Frame-Exit-Ok",
+            71363usize,
+            "rule.18.Step-Exec-Other-Ctrl",
+            68750usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.18.Step-Exec-Other-Ctrl",
+            68750usize,
+            "rule.18.Step-Exec-Other-Ok",
+            68734usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.18.Step-Exec-Other-Ok",
+            68734usize,
+            "rule.18.Step-Exec-Region-Body",
+            70956usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.18.Step-Exec-Region-Body",
+            70956usize,
+            "rule.18.Step-Exec-Region-Enter",
+            70924usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.18.Step-Exec-Region-Enter",
+            70924usize,
+            "rule.18.Step-Exec-Region-Enter-Ctrl",
+            70940usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.18.Step-Exec-Region-Enter-Ctrl",
+            70940usize,
+            "rule.18.Step-Exec-Region-Exit-Ctrl",
+            70988usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.18.Step-Exec-Region-Exit-Ctrl",
+            70988usize,
+            "rule.18.Step-Exec-Region-Exit-Ok",
+            70972usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.18.Step-Exec-Region-Exit-Ok",
+            70972usize,
+            "rule.18.Step-ExecSeq-Ctrl",
+            68782usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.18.Step-ExecSeq-Ctrl",
+            68782usize,
+            "rule.18.Step-ExecSeq-Ok",
+            68766usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.18.Step-ExecSeq-Ok",
+            68766usize,
+            "rule.18.T-Assign",
+            69923usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.18.T-Assign",
+            69923usize,
+            "rule.18.T-Block",
+            68470usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.18.T-Block",
+            68470usize,
+            "rule.18.T-Break-Unit",
+            71646usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.18.T-Break-Unit",
+            71646usize,
+            "rule.18.T-Break-Value",
+            71630usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.18.T-Break-Value",
+            71630usize,
+            "rule.18.T-CompoundAssign",
+            69939usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.18.T-CompoundAssign",
+            69939usize,
+            "rule.18.T-Continue",
+            71678usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.18.T-Continue",
+            71678usize,
+            "rule.18.T-DeferStmt",
+            70435usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.18.T-DeferStmt",
+            70435usize,
+            "rule.18.T-ErrorStmt",
+            68375usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.18.T-ErrorStmt",
+            68375usize,
+            "rule.18.T-ExprStmt",
+            70301usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.18.T-ExprStmt",
+            70301usize,
+            "rule.18.T-FrameStmt-Explicit",
+            71154usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.18.T-FrameStmt-Explicit",
+            71154usize,
+            "rule.18.T-FrameStmt-Implicit",
+            71138usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.18.T-FrameStmt-Implicit",
+            71138usize,
+            "rule.18.T-LetStmt-Ann",
+            69276usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.18.T-LetStmt-Ann",
+            69276usize,
+            "rule.18.T-LetStmt-Ann-Mismatch",
+            69292usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.18.T-LetStmt-Ann-Mismatch",
+            69292usize,
+            "rule.18.T-LetStmt-Infer",
+            69308usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.18.T-LetStmt-Infer",
+            69308usize,
+            "rule.18.T-LetStmt-Infer-Err",
+            69324usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.18.T-LetStmt-Infer-Err",
+            69324usize,
+            "rule.18.T-RegionStmt",
+            70808usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.18.T-RegionStmt",
+            70808usize,
+            "rule.18.T-Return-Unit",
+            71550usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.18.T-Return-Unit",
+            71550usize,
+            "rule.18.T-Return-Value",
+            71534usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.18.T-Return-Value",
+            71534usize,
+            "rule.18.T-UnsafeStmt",
+            72013usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.18.T-UnsafeStmt",
+            72013usize,
+            "rule.18.T-UsingLocalStmt",
+            69698usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.18.T-UsingLocalStmt",
+            69698usize,
+            "rule.18.T-UsingLocalStmt-Err",
+            69714usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.18.T-UsingLocalStmt-Err",
+            69714usize,
+            "rule.19.CallSharedArgumentNoKeyAcquisition",
+            73993usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.19.CallSharedArgumentNoKeyAcquisition",
+            73993usize,
+            "rule.19.ExecSigma-KeyBlock",
+            73064usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.19.ExecSigma-KeyBlock",
+            73064usize,
+            "rule.19.ExecSigma-KeyBlock-Ctrl",
+            73080usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.19.ExecSigma-KeyBlock-Ctrl",
+            73080usize,
+            "rule.19.ExecSigma-KeyBlock-Release",
+            74127usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.19.ExecSigma-KeyBlock-Release",
+            74127usize,
+            "rule.19.ExecSigma-KeyBlock-Speculative",
+            74447usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.19.ExecSigma-KeyBlock-Speculative",
+            74447usize,
+            "rule.19.K-Acquire-Covered",
+            72788usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.19.K-Acquire-Covered",
+            72788usize,
+            "rule.19.K-Acquire-New",
+            72772usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.19.K-Acquire-New",
+            72772usize,
+            "rule.19.K-Block-Acquire",
+            72819usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.19.K-Block-Acquire",
+            72819usize,
+            "rule.19.K-Closure-Escape-Keys",
+            72940usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.19.K-Closure-Escape-Keys",
+            72940usize,
+            "rule.19.K-Coarsen-Inline",
+            72866usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.19.K-Coarsen-Inline",
+            72866usize,
+            "rule.19.K-Disjoint-Safe",
+            73493usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.19.K-Disjoint-Safe",
+            73493usize,
+            "rule.19.K-Dynamic-Index-Conflict",
+            73563usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.19.K-Dynamic-Index-Conflict",
+            73563usize,
+            "rule.19.K-Dynamic-Permitted",
+            74985usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.19.K-Dynamic-Permitted",
+            74985usize,
+            "rule.19.K-Mode-Read",
+            72625usize
+        )
+}

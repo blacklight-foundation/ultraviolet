@@ -1785,7 +1785,8 @@ static CheckResult CheckExprImpl(const ScopeContext& ctx,
     }
   }
 
-  // Fresh aggregate literals can materialize at an explicit permission type.
+  // Fresh aggregate literals and async frames can materialize at an explicit
+  // permission type.
   // This keeps let/var annotation checking aligned with literal-introduction
   // behavior instead of requiring an unsafe conversion path.
   if (const auto* expected_perm = std::get_if<TypePerm>(&expected->node)) {
@@ -1795,7 +1796,12 @@ static CheckResult CheckExprImpl(const ScopeContext& ctx,
         std::holds_alternative<ast::TupleExpr>(expr->node) ||
         std::holds_alternative<ast::ArrayExpr>(expr->node) ||
         std::holds_alternative<ast::ArrayRepeatExpr>(expr->node);
-    if (is_aggregate_literal) {
+    const bool is_async_create =
+        (std::holds_alternative<ast::CallExpr>(expr->node) ||
+         std::holds_alternative<ast::MethodCallExpr>(expr->node) ||
+         std::holds_alternative<ast::RaceExpr>(expr->node)) &&
+        AsyncSigOf(ctx, inferred.type).has_value();
+    if (is_aggregate_literal || is_async_create) {
       const auto base_sub = Subtyping(ctx, inferred.type, expected_perm->base);
       if (!base_sub.ok) {
         result.diag_id = base_sub.diag_id;

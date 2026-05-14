@@ -1,0 +1,604 @@
+//! Catalog primary-reference ordering check group 0037.
+
+internal procedure catalogPrimaryReferenceOrderGroup0037() -> bool {
+    return catalogPrimaryReferencePrecedes(
+            "req.B.2.ClosureTypeUnionParameterParentheses",
+            100482usize,
+            "req.B.3.ClosureExprUnionParameterParentheses",
+            100606usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "req.B.3.ClosureExprUnionParameterParentheses",
+            100606usize,
+            "req.BindingActivityDeterministicReactivation",
+            29506usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "req.BindingActivityDeterministicReactivation",
+            29506usize,
+            "req.BindingActivityDiagnosticOwnership",
+            29536usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "req.BindingActivityDiagnosticOwnership",
+            29536usize,
+            "req.BindingActivityNoAliasCreation",
+            29492usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "req.BindingActivityNoAliasCreation",
+            29492usize,
+            "req.BindingActivityNoAstNode",
+            29405usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "req.BindingActivityNoAstNode",
+            29405usize,
+            "req.BindingActivityNoConcreteSyntax",
+            29371usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "req.BindingActivityNoConcreteSyntax",
+            29371usize,
+            "req.BindingActivityNoParsingRules",
+            29389usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "req.BindingActivityNoParsingRules",
+            29389usize,
+            "req.BraceNewlineContinuation",
+            7551usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "req.BraceNewlineContinuation",
+            7551usize,
+            "req.BuiltinStateMethodCalling",
+            43646usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "req.BuiltinStateMethodCalling",
+            43646usize,
+            "req.BytesBuiltinsTyping",
+            45231usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "req.BytesBuiltinsTyping",
+            45231usize,
+            "req.CapInTypeCyclesTerminate",
+            12196usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "req.CapInTypeCyclesTerminate",
+            12196usize,
+            "req.CapInTypeLeastFixedPointAllowed",
+            12182usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "req.CapInTypeLeastFixedPointAllowed",
+            12182usize,
+            "req.ClassDefaultMethodAndVtableOwnership",
+            49437usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "req.ClassDefaultMethodAndVtableOwnership",
+            49437usize,
+            "req.ClassMethodLowering",
+            49425usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "req.ClassMethodLowering",
+            49425usize,
+            "req.ClosureExpressionOwnership",
+            47315usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "req.ClosureExpressionOwnership",
+            47315usize,
+            "req.ClosureLoweringOwnership",
+            47415usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "req.ClosureLoweringOwnership",
+            47415usize,
+            "req.ClosureOperationOwnership",
+            47341usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "req.ClosureOperationOwnership",
+            47341usize,
+            "req.ClosureParamUnionParentheses",
+            46973usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "req.ClosureParamUnionParentheses",
+            46973usize,
+            "req.ClosureTypeOwnershipBoundaries",
+            47253usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "req.ClosureTypeOwnershipBoundaries",
+            47253usize,
+            "req.ColdAttributeSemantics",
+            28076usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "req.ColdAttributeSemantics",
+            28076usize,
+            "req.CommaStatementTermination",
+            7565usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "req.CommaStatementTermination",
+            7565usize,
+            "req.ConstraintGenerationFeatureLocal",
+            25325usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "req.ConstraintGenerationFeatureLocal",
+            25325usize,
+            "req.DecimalRangeNoFloatCore",
+            8970usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "req.DecimalRangeNoFloatCore",
+            8970usize,
+            "req.DependencyAssemblyNoFinalArtifact",
+            4079usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "req.DependencyAssemblyNoFinalArtifact",
+            4079usize,
+            "req.DeprecatedAttributeSemantics",
+            28263usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "req.DeprecatedAttributeSemantics",
+            28263usize,
+            "req.DeriveAttributeSemantics",
+            28527usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "req.DeriveAttributeSemantics",
+            28527usize,
+            "req.DiagnosticCodeOwnership",
+            1546usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "req.DiagnosticCodeOwnership",
+            1546usize,
+            "req.DiagnosticsMetadataParserReuse",
+            28160usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "req.DiagnosticsMetadataParserReuse",
+            28160usize,
+            "req.DiagnosticsMetadataSyntaxParsingAst",
+            28142usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "req.DiagnosticsMetadataSyntaxParsingAst",
+            28142usize,
+            "req.DirectCallCapabilityInclusion",
+            12273usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "req.DirectCallCapabilityInclusion",
+            12273usize,
+            "req.DynamicAttributeSemantics",
+            28277usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "req.DynamicAttributeSemantics",
+            28277usize,
+            "req.DynamicContextLexicalNoCallPropagation",
+            28423usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "req.DynamicContextLexicalNoCallPropagation",
+            28423usize,
+            "req.DynamicContextOverridePropagation",
+            28389usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "req.DynamicContextOverridePropagation",
+            28389usize,
+            "req.DynamicEffectsAndRestrictions",
+            28437usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "req.DynamicEffectsAndRestrictions",
+            28437usize,
+            "req.DynamicScopeDetermination",
+            28291usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "req.DynamicScopeDetermination",
+            28291usize,
+            "req.DynamicTargetRestrictions",
+            28454usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "req.DynamicTargetRestrictions",
+            28454usize,
+            "req.EmitAttributeSemantics",
+            28541usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "req.EmitAttributeSemantics",
+            28541usize,
+            "req.EmptyDynamicScopeWarning",
+            28471usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "req.EmptyDynamicScopeWarning",
+            28471usize,
+            "req.EnumLiteralResolutionOwnership",
+            39767usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "req.EnumLiteralResolutionOwnership",
+            39767usize,
+            "req.EnumTopLevelCommaSeparatorRejected",
+            39753usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "req.EnumTopLevelCommaSeparatorRejected",
+            39753usize,
+            "req.EnumVariantSeparatorSyntax",
+            39521usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "req.EnumVariantSeparatorSyntax",
+            39521usize,
+            "req.ExternBlockDiagnosticOwnership",
+            31715usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "req.ExternBlockDiagnosticOwnership",
+            31715usize,
+            "req.ExternBlockStaticSemanticsScope",
+            31595usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "req.ExternBlockStaticSemanticsScope",
+            31595usize,
+            "req.ExternProcedureDeclSyntaxOwnedByFfiChapter",
+            31450usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "req.ExternProcedureDeclSyntaxOwnedByFfiChapter",
+            31450usize,
+            "req.FeatureLocalSynthesisAndCheckingOwnership",
+            26327usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "req.FeatureLocalSynthesisAndCheckingOwnership",
+            26327usize,
+            "req.FeatureSpecificBJudgmentOwnership",
+            16202usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "req.FeatureSpecificBJudgmentOwnership",
+            16202usize,
+            "req.FfiAttributeOwnership",
+            27434usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "req.FfiAttributeOwnership",
+            27434usize,
+            "req.FilesAttributeSemantics",
+            28555usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "req.FilesAttributeSemantics",
+            28555usize,
+            "req.FixedIdentifiersTokenizedAsIdentifiers",
+            10851usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "req.FixedIdentifiersTokenizedAsIdentifiers",
+            10851usize,
+            "req.FrameSyntheticIdentifierRestriction",
+            16373usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "req.FrameSyntheticIdentifierRestriction",
+            16373usize,
+            "req.FunctionTypeCallLowering",
+            46926usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "req.FunctionTypeCallLowering",
+            46926usize,
+            "req.FunctionTypeTrailingComma",
+            46600usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "req.FunctionTypeTrailingComma",
+            46600usize,
+            "req.GenericArgsTrailingComma",
+            47507usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "req.GenericArgsTrailingComma",
+            47507usize,
+            "req.GenericBoundsAndPredicatesConjunctive",
+            48140usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "req.GenericBoundsAndPredicatesConjunctive",
+            48140usize,
+            "req.GenericCallInferenceElaboration",
+            48495usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "req.GenericCallInferenceElaboration",
+            48495usize,
+            "req.GenericDeclarationParsingDelegated",
+            48228usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "req.GenericDeclarationParsingDelegated",
+            48228usize,
+            "req.GenericInfiniteMonomorphizationRejected",
+            48573usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "req.GenericInfiniteMonomorphizationRejected",
+            48573usize,
+            "req.GenericInstantiationDepthLimit",
+            48585usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "req.GenericInstantiationDepthLimit",
+            48585usize,
+            "req.GenericInstantiationIndependentLowering",
+            48561usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "req.GenericInstantiationIndependentLowering",
+            48561usize,
+            "req.GenericNominalSizeAlignSubstitutedBody",
+            48597usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "req.GenericNominalSizeAlignSubstitutedBody",
+            48597usize,
+            "req.GenericParamInlineBoundsClassOnly",
+            47519usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "req.GenericParamInlineBoundsClassOnly",
+            47519usize,
+            "req.GenericParamsNominalOwnerChapters",
+            48214usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "req.GenericParamsNominalOwnerChapters",
+            48214usize,
+            "req.GenericProcedureCallLowering",
+            48549usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "req.GenericProcedureCallLowering",
+            48549usize,
+            "req.HostedLibraryStaticAddrSessionLocal",
+            31079usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "req.HostedLibraryStaticAddrSessionLocal",
+            31079usize,
+            "req.HostedSessionPoisonFlagLocalization",
+            17350usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "req.HostedSessionPoisonFlagLocalization",
+            17350usize,
+            "req.ImplementationsConcreteOwnerOnly",
+            49605usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "req.ImplementationsConcreteOwnerOnly",
+            49605usize,
+            "req.ImportDeclarationBindingSemanticsScope",
+            29880usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "req.ImportDeclarationBindingSemanticsScope",
+            29880usize,
+            "req.ImportDeclarationDiagnosticOwnership",
+            30035usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "req.ImportDeclarationDiagnosticOwnership",
+            30035usize,
+            "req.ImportDeclarationParserBranch",
+            29828usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "req.ImportDeclarationParserBranch",
+            29828usize,
+            "req.ImportUsingJudgementCanonicalOwner",
+            20354usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "req.ImportUsingJudgementCanonicalOwner",
+            20354usize,
+            "req.InactiveUniqueBindingNoDirectUse",
+            29476usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "req.InactiveUniqueBindingNoDirectUse",
+            29476usize,
+            "req.IndexAccessArrayOwnership",
+            36362usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "req.IndexAccessArrayOwnership",
+            36362usize,
+            "req.IndexAccessSliceExpressionSemantics",
+            36959usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "req.IndexAccessSliceExpressionSemantics",
+            36959usize,
+            "req.IndexAccessSliceOwnership",
+            36929usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "req.IndexAccessSliceOwnership",
+            36929usize,
+            "req.InlineAttributeSemantics",
+            28056usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "req.InlineAttributeSemantics",
+            28056usize,
+            "req.IntroRulePriority",
+            19093usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "req.IntroRulePriority",
+            19093usize,
+            "req.LayoutAlignSemantics",
+            27855usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "req.LayoutAlignSemantics",
+            27855usize,
+            "req.LayoutAttributeConstraints",
+            27927usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "req.LayoutAttributeConstraints",
+            27927usize,
+            "req.LayoutAttributeParserReuse",
+            27735usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "req.LayoutAttributeParserReuse",
+            27735usize,
+            "req.LayoutCEnumSemantics",
+            27786usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "req.LayoutCEnumSemantics",
+            27786usize,
+            "req.LayoutCRecordSemantics",
+            27769usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "req.LayoutCRecordSemantics",
+            27769usize,
+            "req.LayoutExplicitEnumDiscriminant",
+            27803usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "req.LayoutExplicitEnumDiscriminant",
+            27803usize,
+            "req.LayoutPackedRecordSemantics",
+            27822usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "req.LayoutPackedRecordSemantics",
+            27822usize,
+            "req.LeadingBOMWarningPersistence",
+            7893usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "req.LeadingBOMWarningPersistence",
+            7893usize,
+            "req.LexSecureSensitivePositions",
+            6987usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "req.LexSecureSensitivePositions",
+            6987usize,
+            "req.ListOpeningParserStateConvention",
+            11402usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "req.ListOpeningParserStateConvention",
+            11402usize,
+            "req.LoadSourceShortCircuit",
+            32308usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "req.LoadSourceShortCircuit",
+            32308usize,
+            "req.MalformedAttributeSyntaxIllFormed",
+            27195usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "req.MalformedAttributeSyntaxIllFormed",
+            27195usize,
+            "req.ManifestHostPathResolution",
+            2252usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "req.ManifestHostPathResolution",
+            2252usize,
+            "req.ManifestNoAdditionalCaseVerification",
+            2267usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "req.ManifestNoAdditionalCaseVerification",
+            2267usize,
+            "req.MemoryOrderAttributeTargets",
+            27392usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "req.MemoryOrderAttributeTargets",
+            27392usize,
+            "req.ModalRuntimeRepresentation",
+            42741usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "req.ModalRuntimeRepresentation",
+            42741usize,
+            "req.ModalStateMemberDispatch",
+            41766usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "req.ModalStateMemberDispatch",
+            41766usize,
+            "req.ModalTaggedPaddingZero",
+            43139usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "req.ModalTaggedPaddingZero",
+            43139usize,
+            "req.ModalWideningLowering",
+            44263usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "req.ModalWideningLowering",
+            44263usize,
+            "req.ModuleAggregationStaticSemanticsScope",
+            31895usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "req.ModuleAggregationStaticSemanticsScope",
+            31895usize,
+            "req.ModulePathParserOwnership",
+            31767usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "req.ModulePathParserOwnership",
+            31767usize,
+            "req.ModuleToFileMappingNoSurfaceSyntax",
+            31753usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "req.ModuleToFileMappingNoSurfaceSyntax",
+            31753usize,
+            "req.ModuleVisibilityJudgementOwnership",
+            19516usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "req.ModuleVisibilityJudgementOwnership",
+            19516usize,
+            "req.MonotonicTimePrimitiveSemantics",
+            13777usize
+        )
+}

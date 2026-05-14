@@ -146,7 +146,7 @@
 //    Returns true for:
 //      - Identifiers (variable names, type names)
 //      - Literals (all types via IsLiteralToken)
-//      - Punctuators: "(", "[", "[[", "{"
+//      - Punctuators: "(", "[", "{"
 //      - Operators: "!", "-", "&", "*", "^", "@"
 //      - Keywords: if, loop, unsafe, move, transmute, widen,
 //                  sizeof, alignof, parallel, spawn, dispatch,
@@ -160,7 +160,7 @@
 //       return true;
 //     }
 //     if (tok.kind == TokenKind::Punctuator) {
-//       return tok.lexeme == "(" || tok.lexeme == "[" || tok.lexeme == "[[" ||
+//       return tok.lexeme == "(" || tok.lexeme == "[" ||
 //              tok.lexeme == "{";
 //     }
 //     if (tok.kind == TokenKind::Operator) {
@@ -457,8 +457,7 @@ bool IsExprStart(const Token& tok) {
     return true;
   }
   if (tok.kind == TokenKind::Punctuator) {
-    return tok.lexeme == "(" || tok.lexeme == "[" || tok.lexeme == "[[" ||
-           tok.lexeme == "{";
+    return tok.lexeme == "(" || tok.lexeme == "[" || tok.lexeme == "{";
   }
   if (tok.kind == TokenKind::Operator) {
     return tok.lexeme == "!" || tok.lexeme == "-" || tok.lexeme == "&" ||

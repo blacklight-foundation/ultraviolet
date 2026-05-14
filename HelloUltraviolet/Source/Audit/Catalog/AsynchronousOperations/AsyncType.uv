@@ -83,8 +83,8 @@ public procedure validatedAsynchronousOperationsAsyncTypeObligations() -> usize 
         "ast.21.AsyncCombinatorMembers",
         78763usize,
         "HelloUltraviolet::Reference::Async",
-        "runAsyncAsyncTypeReference",
-        "Source/Reference/Async/AsyncType.uv"
+        "runAsyncCompositionCombinatorsReference",
+        "Source/Reference/Async/CompositionForms.uv"
     ) {
         count = count + 1usize
     }
@@ -115,30 +115,30 @@ public procedure validatedAsynchronousOperationsAsyncTypeObligations() -> usize 
     ) {
         count = count + 1usize
     }
-    if acceptedObligationEntryMatches(
+    if rejectedSourceObligationEntryMatches(
         "rule.21.WF-Async-ArgCount-Err",
         78849usize,
-        "HelloUltraviolet::Reference::Async",
-        "runAsyncAsyncTypeReference",
-        "Source/Reference/Async/AsyncType.uv"
+        "HelloUltraviolet::Fixtures::RejectedSource",
+        "validatedExpressionsRejectedSourceFixtureCount",
+        "Fixtures/RejectedSource/Expressions/AsyncTypeArgCount/Source/Main.uv"
     ) {
         count = count + 1usize
     }
-    if acceptedObligationEntryMatches(
+    if rejectedSourceObligationEntryMatches(
         "rule.21.WF-Async-Arg-WF-Err",
         78867usize,
-        "HelloUltraviolet::Reference::Async",
-        "runAsyncAsyncTypeReference",
-        "Source/Reference/Async/AsyncType.uv"
+        "HelloUltraviolet::Fixtures::RejectedSource",
+        "validatedExpressionsRejectedSourceFixtureCount",
+        "Fixtures/RejectedSource/Expressions/AsyncTypeArgIllFormed/Source/Main.uv"
     ) {
         count = count + 1usize
     }
-    if acceptedObligationEntryMatches(
+    if rejectedSourceObligationEntryMatches(
         "rule.21.WF-Async-Path-Err",
         78885usize,
-        "HelloUltraviolet::Reference::Async",
-        "runAsyncAsyncTypeReference",
-        "Source/Reference/Async/AsyncType.uv"
+        "HelloUltraviolet::Fixtures::RejectedSource",
+        "validatedExpressionsRejectedSourceFixtureCount",
+        "Fixtures/RejectedSource/Expressions/AsyncTypePathUnapplied/Source/Main.uv"
     ) {
         count = count + 1usize
     }
@@ -196,12 +196,12 @@ public procedure validatedAsynchronousOperationsAsyncTypeObligations() -> usize 
     ) {
         count = count + 1usize
     }
-    if acceptedObligationEntryMatches(
+    if rejectedSourceObligationEntryMatches(
         "diagnostics.21.AsyncType",
         79019usize,
-        "HelloUltraviolet::Reference::Async",
-        "runAsyncAsyncTypeReference",
-        "Source/Reference/Async/AsyncType.uv"
+        "HelloUltraviolet::Fixtures::RejectedSource",
+        "validatedExpressionsRejectedSourceFixtureCount",
+        "Fixtures/RejectedSource/Expressions/AsyncTypeDiagnosticsTable/Source/Main.uv"
     ) {
         count = count + 1usize
     }

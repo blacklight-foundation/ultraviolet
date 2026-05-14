@@ -19,6 +19,8 @@
 #include "04_analysis/typing/typecheck.h"
 #include "04_analysis/typing/types.h"
 
+#include <vector>
+
 namespace cursive::analysis::expr {
 
 namespace {
@@ -343,6 +345,81 @@ static bool TryAliasTransparentEquiv(const ScopeContext& ctx,
   return true;
 }
 
+static void CollectLogicalBinaryOperands(const ast::ExprPtr& expr,
+                                         std::string_view op,
+                                         std::vector<ast::ExprPtr>& operands) {
+  std::vector<ast::ExprPtr> stack;
+  stack.push_back(expr);
+
+  while (!stack.empty()) {
+    ast::ExprPtr current = std::move(stack.back());
+    stack.pop_back();
+    if (!current) {
+      continue;
+    }
+
+    const auto* binary = std::get_if<ast::BinaryExpr>(&current->node);
+    if (binary && binary->op == op && binary->lhs && binary->rhs) {
+      stack.push_back(binary->rhs);
+      stack.push_back(binary->lhs);
+      continue;
+    }
+
+    operands.push_back(std::move(current));
+  }
+}
+
+static bool CheckLogicalOperand(const ScopeContext& ctx,
+                                const StmtTypeContext& type_ctx,
+                                const ast::ExprPtr& expr,
+                                const TypeEnv& env,
+                                ExprTypeResult& result) {
+  BinaryOperandInfo operand;
+  std::optional<std::string_view> diag_id;
+  if (!LoadBinaryOperandInfo(ctx, type_ctx, expr, env, operand, diag_id)) {
+    result.diag_id = diag_id;
+    return false;
+  }
+
+  const auto operand_bool = AliasTransparentPrimEq(ctx, operand.core, "bool");
+  if (!operand_bool.ok) {
+    result.diag_id = operand_bool.diag_id;
+    return false;
+  }
+
+  if (operand_bool.subtype ||
+      TryCheckOperandAgainst(ctx, type_ctx, expr, MakeTypePrim("bool"), env)) {
+    return true;
+  }
+
+  return false;
+}
+
+static ExprTypeResult TypeLogicalBinaryChain(const ScopeContext& ctx,
+                                             const StmtTypeContext& type_ctx,
+                                             const ast::BinaryExpr& expr,
+                                             const TypeEnv& env) {
+  ExprTypeResult result;
+  std::vector<ast::ExprPtr> operands;
+  CollectLogicalBinaryOperands(expr.lhs, expr.op, operands);
+  CollectLogicalBinaryOperands(expr.rhs, expr.op, operands);
+
+  for (const auto& operand : operands) {
+    if (!CheckLogicalOperand(ctx, type_ctx, operand, env, result)) {
+      if (!result.diag_id.has_value()) {
+        SPEC_RULE("Binary-Operand-Type-Err");
+        SetBinaryOperandTypeMismatch(result, expr.op);
+      }
+      return result;
+    }
+  }
+
+  SPEC_RULE("T-Logical");
+  result.ok = true;
+  result.type = MakeTypePrim("bool");
+  return result;
+}
+
 }  // namespace
 
 // (T-Arith), (T-Bitwise), (T-Shift), (T-Compare-Eq), (T-Compare-Ord), (T-Logical)
@@ -374,6 +451,10 @@ ExprTypeResult TypeBinaryExprImpl(const ScopeContext& ctx,
       result.type = MakeTypePrim("bool");
       return result;
     }
+  }
+
+  if (IsLogicOp(op)) {
+    return TypeLogicalBinaryChain(ctx, type_ctx, expr, env);
   }
 
   BinaryOperandInfo lhs;
@@ -550,33 +631,6 @@ ExprTypeResult TypeBinaryExprImpl(const ScopeContext& ctx,
 
     if (rhs_ord && TryCheckOperandAgainst(ctx, type_ctx, expr.lhs, rhs.core, env)) {
       SPEC_RULE("T-Compare-Ord");
-      result.ok = true;
-      result.type = MakeTypePrim("bool");
-      return result;
-    }
-
-    SPEC_RULE("Binary-Operand-Type-Err");
-    SetBinaryOperandTypeMismatch(result, op);
-    return result;
-  }
-
-  // Logical operators: &&, ||
-  if (IsLogicOp(op)) {
-    const auto lhs_bool = AliasTransparentPrimEq(ctx, lhs.core, "bool");
-    if (!lhs_bool.ok) {
-      result.diag_id = lhs_bool.diag_id;
-      return result;
-    }
-    const auto rhs_bool = AliasTransparentPrimEq(ctx, rhs.core, "bool");
-    if (!rhs_bool.ok) {
-      result.diag_id = rhs_bool.diag_id;
-      return result;
-    }
-
-    if ((lhs_bool.subtype && rhs_bool.subtype) ||
-        (TryCheckOperandAgainst(ctx, type_ctx, expr.lhs, MakeTypePrim("bool"), env) &&
-         TryCheckOperandAgainst(ctx, type_ctx, expr.rhs, MakeTypePrim("bool"), env))) {
-      SPEC_RULE("T-Logical");
       result.ok = true;
       result.type = MakeTypePrim("bool");
       return result;

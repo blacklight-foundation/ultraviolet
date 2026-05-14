@@ -11,8 +11,8 @@ public procedure validatedProceduresAndContractsBehavioralSubtypingObligations()
         "req.15.BehavioralSubtypingNoSurfaceSyntax",
         57089usize,
         "HelloUltraviolet::Reference::Procedures",
-        "runProceduresContractsReference",
-        "Source/Reference/Procedures/Contracts.uv"
+        "runProceduresBehavioralSubtypingReference",
+        "Source/Reference/Procedures/BehavioralSubtyping.uv"
     ) {
         count = count + 1usize
     }
@@ -20,8 +20,8 @@ public procedure validatedProceduresAndContractsBehavioralSubtypingObligations()
         "req.15.BehavioralSubtypingNotParserOwned",
         57104usize,
         "HelloUltraviolet::Reference::Procedures",
-        "runProceduresContractsReference",
-        "Source/Reference/Procedures/Contracts.uv"
+        "runProceduresBehavioralSubtypingReference",
+        "Source/Reference/Procedures/BehavioralSubtyping.uv"
     ) {
         count = count + 1usize
     }
@@ -29,35 +29,35 @@ public procedure validatedProceduresAndContractsBehavioralSubtypingObligations()
         "def.15.BehavioralSubtypingRelationship",
         57119usize,
         "HelloUltraviolet::Reference::Procedures",
-        "runProceduresContractsReference",
-        "Source/Reference/Procedures/Contracts.uv"
+        "runProceduresBehavioralSubtypingReference",
+        "Source/Reference/Procedures/BehavioralSubtyping.uv"
     ) {
         count = count + 1usize
     }
-    if acceptedObligationEntryMatches(
+    if rejectedSourceObligationEntryMatches(
         "req.15.BehavioralSubtypingLiskovRequirement",
         57134usize,
-        "HelloUltraviolet::Reference::Procedures",
-        "runProceduresContractsReference",
-        "Source/Reference/Procedures/Contracts.uv"
+        "HelloUltraviolet::Fixtures::RejectedSource",
+        "validatedProceduresRejectedSourceFixtureCount",
+        "Fixtures/RejectedSource/Procedures/BehavioralSubtypingLiskov/Source/Main.uv"
     ) {
         count = count + 1usize
     }
-    if acceptedObligationEntryMatches(
+    if rejectedSourceObligationEntryMatches(
         "req.15.BehavioralSubtypingPreconditionRule",
         57147usize,
-        "HelloUltraviolet::Reference::Procedures",
-        "runProceduresContractsReference",
-        "Source/Reference/Procedures/Contracts.uv"
+        "HelloUltraviolet::Fixtures::RejectedSource",
+        "validatedProceduresRejectedSourceFixtureCount",
+        "Fixtures/RejectedSource/Procedures/BehavioralSubtypingPrecondition/Source/Main.uv"
     ) {
         count = count + 1usize
     }
-    if acceptedObligationEntryMatches(
+    if rejectedSourceObligationEntryMatches(
         "req.15.BehavioralSubtypingPostconditionRule",
         57163usize,
-        "HelloUltraviolet::Reference::Procedures",
-        "runProceduresContractsReference",
-        "Source/Reference/Procedures/Contracts.uv"
+        "HelloUltraviolet::Fixtures::RejectedSource",
+        "validatedProceduresRejectedSourceFixtureCount",
+        "Fixtures/RejectedSource/Procedures/BehavioralSubtypingPostcondition/Source/Main.uv"
     ) {
         count = count + 1usize
     }
@@ -65,8 +65,8 @@ public procedure validatedProceduresAndContractsBehavioralSubtypingObligations()
         "req.15.BehavioralSubtypingVerificationStrategy",
         57179usize,
         "HelloUltraviolet::Reference::Procedures",
-        "runProceduresContractsReference",
-        "Source/Reference/Procedures/Contracts.uv"
+        "runProceduresBehavioralSubtypingReference",
+        "Source/Reference/Procedures/BehavioralSubtyping.uv"
     ) {
         count = count + 1usize
     }
@@ -74,8 +74,8 @@ public procedure validatedProceduresAndContractsBehavioralSubtypingObligations()
         "req.15.BehavioralSubtypingNoRuntimeChecks",
         57195usize,
         "HelloUltraviolet::Reference::Procedures",
-        "runProceduresContractsReference",
-        "Source/Reference/Procedures/Contracts.uv"
+        "runProceduresBehavioralSubtypingReference",
+        "Source/Reference/Procedures/BehavioralSubtyping.uv"
     ) {
         count = count + 1usize
     }
@@ -83,8 +83,8 @@ public procedure validatedProceduresAndContractsBehavioralSubtypingObligations()
         "req.15.BehavioralSubtypingNoAdditionalRuntimeSemantics",
         57210usize,
         "HelloUltraviolet::Reference::Procedures",
-        "runProceduresContractsReference",
-        "Source/Reference/Procedures/Contracts.uv"
+        "runProceduresBehavioralSubtypingReference",
+        "Source/Reference/Procedures/BehavioralSubtyping.uv"
     ) {
         count = count + 1usize
     }
@@ -92,17 +92,17 @@ public procedure validatedProceduresAndContractsBehavioralSubtypingObligations()
         "req.15.BehavioralSubtypingLoweringNoExtraChecks",
         57225usize,
         "HelloUltraviolet::Reference::Procedures",
-        "runProceduresContractsReference",
-        "Source/Reference/Procedures/Contracts.uv"
+        "runProceduresBehavioralSubtypingReference",
+        "Source/Reference/Procedures/BehavioralSubtyping.uv"
     ) {
         count = count + 1usize
     }
-    if acceptedObligationEntryMatches(
+    if rejectedSourceObligationEntryMatches(
         "diag.15.BehavioralSubtyping",
         57240usize,
-        "HelloUltraviolet::Reference::Procedures",
-        "runProceduresContractsReference",
-        "Source/Reference/Procedures/Contracts.uv"
+        "HelloUltraviolet::Fixtures::RejectedSource",
+        "validatedProceduresRejectedSourceFixtureCount",
+        "Fixtures/RejectedSource/Procedures/BehavioralSubtypingDiagnostics/Source/Main.uv"
     ) {
         count = count + 1usize
     }

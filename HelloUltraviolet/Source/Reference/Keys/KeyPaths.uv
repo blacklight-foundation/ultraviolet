@@ -9,6 +9,24 @@ internal record KeyContainer {
     internal values: [i32; 4]
 }
 
+internal record KeyBoundaryContainer {
+    internal #leaf: KeyLeaf
+    internal value: i32
+}
+
+internal procedure fieldBoundaryKeyPathValue() -> i32 {
+    var container: shared KeyBoundaryContainer =
+        KeyBoundaryContainer {
+            leaf: KeyLeaf { value: 11 },
+            value: 6
+        }
+    var observed: i32 = 0
+    #container read {
+        observed = container.leaf.value + container.value
+    }
+    return observed
+}
+
 internal procedure nestedKeyPathValue() -> i32 {
     var container: shared KeyContainer =
         KeyContainer {
@@ -37,5 +55,6 @@ internal procedure rootKeyPathValue() -> i32 {
 /// Exercises the Keys KeyPaths reference surface.
 public procedure runKeysKeyPathsReference() -> bool {
     return rootKeyPathValue() == 5 &&
-        nestedKeyPathValue() == 9
+        nestedKeyPathValue() == 9 &&
+        fieldBoundaryKeyPathValue() == 17
 }

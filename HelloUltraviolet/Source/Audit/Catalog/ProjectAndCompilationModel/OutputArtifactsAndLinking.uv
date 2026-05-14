@@ -862,12 +862,12 @@ public procedure validatedProjectAndCompilationModelOutputArtifactsAndLinkingObl
     ) {
         count = count + 1usize
     }
-    if acceptedObligationEntryMatches(
+    if acceptedProjectObligationEntryMatches(
         "Link-Ok",
         5985usize,
-        "HelloUltraviolet::Reference::Projects",
-        "runProjectsOutputArtifactsReference",
-        "Source/Reference/Projects/OutputArtifacts.uv"
+        "HelloUltraviolet::Fixtures::AcceptedProjects",
+        "validatedAcceptedProjectFixtureCount",
+        "Fixtures/AcceptedProjects/ExecutableMain/Source/Main.uv"
     ) {
         count = count + 1usize
     }
@@ -907,12 +907,12 @@ public procedure validatedProjectAndCompilationModelOutputArtifactsAndLinkingObl
     ) {
         count = count + 1usize
     }
-    if acceptedObligationEntryMatches(
+    if acceptedProjectObligationEntryMatches(
         "Archive-Ok",
         6075usize,
-        "HelloUltraviolet::Reference::Projects",
-        "runProjectsOutputArtifactsReference",
-        "Source/Reference/Projects/OutputArtifacts.uv"
+        "HelloUltraviolet::Fixtures::AcceptedProjects",
+        "validatedAcceptedProjectFixtureCount",
+        "Fixtures/AcceptedProjects/StaticLibrary/Source/Library.uv"
     ) {
         count = count + 1usize
     }

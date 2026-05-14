@@ -1,0 +1,268 @@
+//! Catalog primary-reference ordering check group 0061.
+
+internal procedure catalogPrimaryReferenceOrderGroup0061() -> bool {
+    return catalogPrimaryReferencePrecedes(
+            "rule.24.Prim-MonotonicTime-Now-Runtime",
+            97053usize,
+            "rule.24.Prim-MonotonicTime-Resolution-Runtime",
+            97069usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.24.Prim-MonotonicTime-Resolution-Runtime",
+            97069usize,
+            "rule.24.Prim-Network-RestrictHost-Runtime",
+            96819usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.24.Prim-Network-RestrictHost-Runtime",
+            96819usize,
+            "rule.24.Prim-Reactor-Register",
+            96992usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.24.Prim-Reactor-Register",
+            96992usize,
+            "rule.24.Prim-Reactor-Run",
+            96976usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.24.Prim-Reactor-Run",
+            96976usize,
+            "rule.24.Prim-Time-Monotonic-Runtime",
+            97021usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.24.Prim-Time-Monotonic-Runtime",
+            97021usize,
+            "rule.24.Prim-Time-Wall-Runtime",
+            97037usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.24.Prim-Time-Wall-Runtime",
+            97037usize,
+            "rule.24.Prim-WallTime-Coarsen-Runtime",
+            97149usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.24.Prim-WallTime-Coarsen-Runtime",
+            97149usize,
+            "rule.24.Prim-WallTime-NowUtc-Runtime",
+            97117usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.24.Prim-WallTime-NowUtc-Runtime",
+            97117usize,
+            "rule.24.Prim-WallTime-Resolution-Runtime",
+            97133usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.24.Prim-WallTime-Resolution-Runtime",
+            97133usize,
+            "rule.24.PtrStateOf-Perm",
+            97221usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.24.PtrStateOf-Perm",
+            97221usize,
+            "rule.24.RawLibraryCallSigma-Ok",
+            94655usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.24.RawLibraryCallSigma-Ok",
+            94655usize,
+            "rule.24.RegionAddr-AddrIsActive",
+            95882usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.24.RegionAddr-AddrIsActive",
+            95882usize,
+            "rule.24.RegionAddr-AddrTagFrom",
+            95897usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.24.RegionAddr-AddrTagFrom",
+            95897usize,
+            "rule.24.RuntimeDecls",
+            96784usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.24.RuntimeDecls",
+            96784usize,
+            "rule.24.SetPoison-Err",
+            100241usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.24.SetPoison-Err",
+            100241usize,
+            "rule.24.SetPoison-OnInitFail",
+            100193usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.24.SetPoison-OnInitFail",
+            100193usize,
+            "rule.24.Size-Func",
+            91658usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.24.Size-Func",
+            91658usize,
+            "rule.24.Size-Perm",
+            91517usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.24.Size-Perm",
+            91517usize,
+            "rule.24.Size-Prim",
+            91224usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.24.Size-Prim",
+            91224usize,
+            "rule.24.Size-Ptr",
+            91562usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.24.Size-Ptr",
+            91562usize,
+            "rule.24.Size-RawPtr",
+            91610usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.24.Size-RawPtr",
+            91610usize,
+            "rule.24.StackFrame-Layout",
+            91906usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.24.StackFrame-Layout",
+            91906usize,
+            "rule.24.StateRef-Global",
+            98175usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.24.StateRef-Global",
+            98175usize,
+            "rule.24.StateRef-Session",
+            98159usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.24.StateRef-Session",
+            98159usize,
+            "rule.24.StringDropSym-Decl",
+            96600usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.24.StringDropSym-Decl",
+            96600usize,
+            "rule.24.StringDropSym-Err",
+            96630usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.24.StringDropSym-Err",
+            96630usize,
+            "rule.24.Topo-Cycle",
+            94038usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.24.Topo-Cycle",
+            94038usize,
+            "rule.24.Topo-Ok",
+            94022usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.24.Topo-Ok",
+            94022usize,
+            "rule.24.Unwind-Abort",
+            95775usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.24.Unwind-Abort",
+            95775usize,
+            "rule.24.Unwind-Step",
+            95759usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.24.Unwind-Step",
+            95759usize,
+            "rule.24.UpdateValid-BindVar",
+            99327usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.24.UpdateValid-BindVar",
+            99327usize,
+            "rule.24.UpdateValid-Err",
+            99565usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.24.UpdateValid-Err",
+            99565usize,
+            "rule.24.UpdateValid-MoveRoot",
+            99373usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.24.UpdateValid-MoveRoot",
+            99373usize,
+            "rule.24.UpdateValid-PartialMove-Init",
+            99389usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.24.UpdateValid-PartialMove-Init",
+            99389usize,
+            "rule.24.UpdateValid-PartialMove-Step",
+            99405usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.24.UpdateValid-PartialMove-Step",
+            99405usize,
+            "rule.24.UpdateValid-StoreVar",
+            99342usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.24.UpdateValid-StoreVar",
+            99342usize,
+            "rule.24.UpdateValid-StoreVarNoDrop",
+            99357usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.24.UpdateValid-StoreVarNoDrop",
+            99357usize,
+            "rule.24.Valid-Bool",
+            91414usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.24.Valid-Bool",
+            91414usize,
+            "rule.24.Valid-Char",
+            91428usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.24.Valid-Char",
+            91428usize,
+            "rule.24.Valid-Never",
+            91471usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.24.Valid-Never",
+            91471usize,
+            "rule.24.Valid-Scalar",
+            91442usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.24.Valid-Scalar",
+            91442usize,
+            "rule.24.Valid-Unit",
+            91457usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.24.Valid-Unit",
+            91457usize,
+            "rules.ProvenanceChecking",
+            16774usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rules.ProvenanceChecking",
+            16774usize,
+            "sem.24.CheckPoisonBehavior",
+            100167usize
+        )
+}

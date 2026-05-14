@@ -11,8 +11,8 @@ public procedure validatedExpressionsAccessAndPlaceExpressionsObligations() -> u
         "grammar.16.AccessAndPlaceExpressions",
         58095usize,
         "HelloUltraviolet::Reference::Expressions",
-        "runExpressionsLiteralsAndNamesReference",
-        "Source/Reference/Expressions/LiteralsAndNames.uv"
+        "runExpressionsAccessAndPlacesReference",
+        "Source/Reference/Expressions/AccessAndPlaces.uv"
     ) {
         count = count + 1usize
     }
@@ -20,8 +20,8 @@ public procedure validatedExpressionsAccessAndPlaceExpressionsObligations() -> u
         "req.16.AccessPostfixOwnership",
         58111usize,
         "HelloUltraviolet::Reference::Expressions",
-        "runExpressionsLiteralsAndNamesReference",
-        "Source/Reference/Expressions/LiteralsAndNames.uv"
+        "runExpressionsAccessAndPlacesReference",
+        "Source/Reference/Expressions/AccessAndPlaces.uv"
     ) {
         count = count + 1usize
     }
@@ -29,8 +29,8 @@ public procedure validatedExpressionsAccessAndPlaceExpressionsObligations() -> u
         "rule.16.Postfix-Field",
         58126usize,
         "HelloUltraviolet::Reference::Expressions",
-        "runExpressionsLiteralsAndNamesReference",
-        "Source/Reference/Expressions/LiteralsAndNames.uv"
+        "runExpressionsAccessAndPlacesReference",
+        "Source/Reference/Expressions/AccessAndPlaces.uv"
     ) {
         count = count + 1usize
     }
@@ -38,8 +38,8 @@ public procedure validatedExpressionsAccessAndPlaceExpressionsObligations() -> u
         "rule.16.Postfix-TupleIndex",
         58142usize,
         "HelloUltraviolet::Reference::Expressions",
-        "runExpressionsLiteralsAndNamesReference",
-        "Source/Reference/Expressions/LiteralsAndNames.uv"
+        "runExpressionsAccessAndPlacesReference",
+        "Source/Reference/Expressions/AccessAndPlaces.uv"
     ) {
         count = count + 1usize
     }
@@ -47,8 +47,8 @@ public procedure validatedExpressionsAccessAndPlaceExpressionsObligations() -> u
         "rule.16.Postfix-Index",
         58158usize,
         "HelloUltraviolet::Reference::Expressions",
-        "runExpressionsLiteralsAndNamesReference",
-        "Source/Reference/Expressions/LiteralsAndNames.uv"
+        "runExpressionsAccessAndPlacesReference",
+        "Source/Reference/Expressions/AccessAndPlaces.uv"
     ) {
         count = count + 1usize
     }
@@ -56,8 +56,8 @@ public procedure validatedExpressionsAccessAndPlaceExpressionsObligations() -> u
         "def.16.IsPlace",
         58174usize,
         "HelloUltraviolet::Reference::Expressions",
-        "runExpressionsLiteralsAndNamesReference",
-        "Source/Reference/Expressions/LiteralsAndNames.uv"
+        "runExpressionsAccessAndPlacesReference",
+        "Source/Reference/Expressions/AccessAndPlaces.uv"
     ) {
         count = count + 1usize
     }
@@ -65,8 +65,8 @@ public procedure validatedExpressionsAccessAndPlaceExpressionsObligations() -> u
         "rule.16.Parse-Place-Deref",
         58187usize,
         "HelloUltraviolet::Reference::Expressions",
-        "runExpressionsLiteralsAndNamesReference",
-        "Source/Reference/Expressions/LiteralsAndNames.uv"
+        "runExpressionsAccessAndPlacesReference",
+        "Source/Reference/Expressions/AccessAndPlaces.uv"
     ) {
         count = count + 1usize
     }
@@ -74,17 +74,17 @@ public procedure validatedExpressionsAccessAndPlaceExpressionsObligations() -> u
         "rule.16.Parse-Place-Postfix",
         58203usize,
         "HelloUltraviolet::Reference::Expressions",
-        "runExpressionsLiteralsAndNamesReference",
-        "Source/Reference/Expressions/LiteralsAndNames.uv"
+        "runExpressionsAccessAndPlacesReference",
+        "Source/Reference/Expressions/AccessAndPlaces.uv"
     ) {
         count = count + 1usize
     }
-    if acceptedObligationEntryMatches(
+    if rejectedSourceObligationEntryMatches(
         "rule.16.Parse-Place-Err",
         58219usize,
-        "HelloUltraviolet::Reference::Expressions",
-        "runExpressionsLiteralsAndNamesReference",
-        "Source/Reference/Expressions/LiteralsAndNames.uv"
+        "HelloUltraviolet::Fixtures::RejectedSource",
+        "validatedExpressionsRejectedSourceFixtureCount",
+        "Fixtures/RejectedSource/Expressions/ParsePlaceError/Source/Main.uv"
     ) {
         count = count + 1usize
     }
@@ -92,8 +92,8 @@ public procedure validatedExpressionsAccessAndPlaceExpressionsObligations() -> u
         "def.16.AccessPlaceAst",
         58237usize,
         "HelloUltraviolet::Reference::Expressions",
-        "runExpressionsLiteralsAndNamesReference",
-        "Source/Reference/Expressions/LiteralsAndNames.uv"
+        "runExpressionsAccessAndPlacesReference",
+        "Source/Reference/Expressions/AccessAndPlaces.uv"
     ) {
         count = count + 1usize
     }
@@ -101,26 +101,26 @@ public procedure validatedExpressionsAccessAndPlaceExpressionsObligations() -> u
         "def.16.PlaceForms0",
         58250usize,
         "HelloUltraviolet::Reference::Expressions",
-        "runExpressionsLiteralsAndNamesReference",
-        "Source/Reference/Expressions/LiteralsAndNames.uv"
+        "runExpressionsAccessAndPlacesReference",
+        "Source/Reference/Expressions/AccessAndPlaces.uv"
     ) {
         count = count + 1usize
     }
-    if acceptedObligationEntryMatches(
+    if rejectedSourceObligationEntryMatches(
         "def.16.FieldVisibility",
         58263usize,
-        "HelloUltraviolet::Reference::Expressions",
-        "runExpressionsLiteralsAndNamesReference",
-        "Source/Reference/Expressions/LiteralsAndNames.uv"
+        "HelloUltraviolet::Fixtures::RejectedSource",
+        "validatedExpressionsRejectedSourceFixtureCount",
+        "Fixtures/RejectedSource/Expressions/FieldVisibility/Source/Main.uv"
     ) {
         count = count + 1usize
     }
-    if acceptedObligationEntryMatches(
+    if rejectedSourceObligationEntryMatches(
         "def.16.IndexClassification",
         58277usize,
-        "HelloUltraviolet::Reference::Expressions",
-        "runExpressionsLiteralsAndNamesReference",
-        "Source/Reference/Expressions/LiteralsAndNames.uv"
+        "HelloUltraviolet::Fixtures::RejectedSource",
+        "validatedExpressionsRejectedSourceFixtureCount",
+        "Fixtures/RejectedSource/Expressions/IndexClassification/Source/Main.uv"
     ) {
         count = count + 1usize
     }
@@ -128,8 +128,8 @@ public procedure validatedExpressionsAccessAndPlaceExpressionsObligations() -> u
         "rule.16.T-Field-Record",
         58294usize,
         "HelloUltraviolet::Reference::Expressions",
-        "runExpressionsLiteralsAndNamesReference",
-        "Source/Reference/Expressions/LiteralsAndNames.uv"
+        "runExpressionsAccessAndPlacesReference",
+        "Source/Reference/Expressions/AccessAndPlaces.uv"
     ) {
         count = count + 1usize
     }
@@ -137,8 +137,8 @@ public procedure validatedExpressionsAccessAndPlaceExpressionsObligations() -> u
         "rule.16.T-Field-Record-Perm",
         58310usize,
         "HelloUltraviolet::Reference::Expressions",
-        "runExpressionsLiteralsAndNamesReference",
-        "Source/Reference/Expressions/LiteralsAndNames.uv"
+        "runExpressionsAccessAndPlacesReference",
+        "Source/Reference/Expressions/AccessAndPlaces.uv"
     ) {
         count = count + 1usize
     }
@@ -146,8 +146,8 @@ public procedure validatedExpressionsAccessAndPlaceExpressionsObligations() -> u
         "rule.16.P-Field-Record",
         58326usize,
         "HelloUltraviolet::Reference::Expressions",
-        "runExpressionsLiteralsAndNamesReference",
-        "Source/Reference/Expressions/LiteralsAndNames.uv"
+        "runExpressionsAccessAndPlacesReference",
+        "Source/Reference/Expressions/AccessAndPlaces.uv"
     ) {
         count = count + 1usize
     }
@@ -155,8 +155,8 @@ public procedure validatedExpressionsAccessAndPlaceExpressionsObligations() -> u
         "rule.16.P-Field-Record-Perm",
         58342usize,
         "HelloUltraviolet::Reference::Expressions",
-        "runExpressionsLiteralsAndNamesReference",
-        "Source/Reference/Expressions/LiteralsAndNames.uv"
+        "runExpressionsAccessAndPlacesReference",
+        "Source/Reference/Expressions/AccessAndPlaces.uv"
     ) {
         count = count + 1usize
     }
@@ -164,8 +164,8 @@ public procedure validatedExpressionsAccessAndPlaceExpressionsObligations() -> u
         "rule.16.T-Tuple-Index",
         58358usize,
         "HelloUltraviolet::Reference::Expressions",
-        "runExpressionsLiteralsAndNamesReference",
-        "Source/Reference/Expressions/LiteralsAndNames.uv"
+        "runExpressionsAccessAndPlacesReference",
+        "Source/Reference/Expressions/AccessAndPlaces.uv"
     ) {
         count = count + 1usize
     }
@@ -173,8 +173,8 @@ public procedure validatedExpressionsAccessAndPlaceExpressionsObligations() -> u
         "rule.16.T-Tuple-Index-Perm",
         58374usize,
         "HelloUltraviolet::Reference::Expressions",
-        "runExpressionsLiteralsAndNamesReference",
-        "Source/Reference/Expressions/LiteralsAndNames.uv"
+        "runExpressionsAccessAndPlacesReference",
+        "Source/Reference/Expressions/AccessAndPlaces.uv"
     ) {
         count = count + 1usize
     }
@@ -182,8 +182,8 @@ public procedure validatedExpressionsAccessAndPlaceExpressionsObligations() -> u
         "rule.16.P-Tuple-Index",
         58390usize,
         "HelloUltraviolet::Reference::Expressions",
-        "runExpressionsLiteralsAndNamesReference",
-        "Source/Reference/Expressions/LiteralsAndNames.uv"
+        "runExpressionsAccessAndPlacesReference",
+        "Source/Reference/Expressions/AccessAndPlaces.uv"
     ) {
         count = count + 1usize
     }
@@ -191,8 +191,8 @@ public procedure validatedExpressionsAccessAndPlaceExpressionsObligations() -> u
         "rule.16.P-Tuple-Index-Perm",
         58406usize,
         "HelloUltraviolet::Reference::Expressions",
-        "runExpressionsLiteralsAndNamesReference",
-        "Source/Reference/Expressions/LiteralsAndNames.uv"
+        "runExpressionsAccessAndPlacesReference",
+        "Source/Reference/Expressions/AccessAndPlaces.uv"
     ) {
         count = count + 1usize
     }
@@ -200,8 +200,8 @@ public procedure validatedExpressionsAccessAndPlaceExpressionsObligations() -> u
         "rule.16.T-Index-Array",
         58422usize,
         "HelloUltraviolet::Reference::Expressions",
-        "runExpressionsLiteralsAndNamesReference",
-        "Source/Reference/Expressions/LiteralsAndNames.uv"
+        "runExpressionsAccessAndPlacesReference",
+        "Source/Reference/Expressions/AccessAndPlaces.uv"
     ) {
         count = count + 1usize
     }
@@ -209,8 +209,8 @@ public procedure validatedExpressionsAccessAndPlaceExpressionsObligations() -> u
         "rule.16.T-Index-Array-Dynamic",
         58438usize,
         "HelloUltraviolet::Reference::Expressions",
-        "runExpressionsLiteralsAndNamesReference",
-        "Source/Reference/Expressions/LiteralsAndNames.uv"
+        "runExpressionsAccessAndPlacesReference",
+        "Source/Reference/Expressions/AccessAndPlaces.uv"
     ) {
         count = count + 1usize
     }
@@ -218,8 +218,8 @@ public procedure validatedExpressionsAccessAndPlaceExpressionsObligations() -> u
         "rule.16.T-Index-Array-Perm",
         58454usize,
         "HelloUltraviolet::Reference::Expressions",
-        "runExpressionsLiteralsAndNamesReference",
-        "Source/Reference/Expressions/LiteralsAndNames.uv"
+        "runExpressionsAccessAndPlacesReference",
+        "Source/Reference/Expressions/AccessAndPlaces.uv"
     ) {
         count = count + 1usize
     }
@@ -227,8 +227,8 @@ public procedure validatedExpressionsAccessAndPlaceExpressionsObligations() -> u
         "rule.16.T-Index-Array-Perm-Dynamic",
         58470usize,
         "HelloUltraviolet::Reference::Expressions",
-        "runExpressionsLiteralsAndNamesReference",
-        "Source/Reference/Expressions/LiteralsAndNames.uv"
+        "runExpressionsAccessAndPlacesReference",
+        "Source/Reference/Expressions/AccessAndPlaces.uv"
     ) {
         count = count + 1usize
     }
@@ -236,8 +236,8 @@ public procedure validatedExpressionsAccessAndPlaceExpressionsObligations() -> u
         "rule.16.T-Index-Slice",
         58486usize,
         "HelloUltraviolet::Reference::Expressions",
-        "runExpressionsLiteralsAndNamesReference",
-        "Source/Reference/Expressions/LiteralsAndNames.uv"
+        "runExpressionsAccessAndPlacesReference",
+        "Source/Reference/Expressions/AccessAndPlaces.uv"
     ) {
         count = count + 1usize
     }
@@ -245,8 +245,8 @@ public procedure validatedExpressionsAccessAndPlaceExpressionsObligations() -> u
         "rule.16.T-Index-Slice-Perm",
         58502usize,
         "HelloUltraviolet::Reference::Expressions",
-        "runExpressionsLiteralsAndNamesReference",
-        "Source/Reference/Expressions/LiteralsAndNames.uv"
+        "runExpressionsAccessAndPlacesReference",
+        "Source/Reference/Expressions/AccessAndPlaces.uv"
     ) {
         count = count + 1usize
     }
@@ -254,8 +254,8 @@ public procedure validatedExpressionsAccessAndPlaceExpressionsObligations() -> u
         "rule.16.T-Slice-From-Array",
         58518usize,
         "HelloUltraviolet::Reference::Expressions",
-        "runExpressionsLiteralsAndNamesReference",
-        "Source/Reference/Expressions/LiteralsAndNames.uv"
+        "runExpressionsAccessAndPlacesReference",
+        "Source/Reference/Expressions/AccessAndPlaces.uv"
     ) {
         count = count + 1usize
     }
@@ -263,8 +263,8 @@ public procedure validatedExpressionsAccessAndPlaceExpressionsObligations() -> u
         "rule.16.T-Slice-From-Array-Perm",
         58534usize,
         "HelloUltraviolet::Reference::Expressions",
-        "runExpressionsLiteralsAndNamesReference",
-        "Source/Reference/Expressions/LiteralsAndNames.uv"
+        "runExpressionsAccessAndPlacesReference",
+        "Source/Reference/Expressions/AccessAndPlaces.uv"
     ) {
         count = count + 1usize
     }
@@ -272,8 +272,8 @@ public procedure validatedExpressionsAccessAndPlaceExpressionsObligations() -> u
         "rule.16.T-Slice-From-Slice",
         58550usize,
         "HelloUltraviolet::Reference::Expressions",
-        "runExpressionsLiteralsAndNamesReference",
-        "Source/Reference/Expressions/LiteralsAndNames.uv"
+        "runExpressionsAccessAndPlacesReference",
+        "Source/Reference/Expressions/AccessAndPlaces.uv"
     ) {
         count = count + 1usize
     }
@@ -281,8 +281,8 @@ public procedure validatedExpressionsAccessAndPlaceExpressionsObligations() -> u
         "rule.16.T-Slice-From-Slice-Perm",
         58566usize,
         "HelloUltraviolet::Reference::Expressions",
-        "runExpressionsLiteralsAndNamesReference",
-        "Source/Reference/Expressions/LiteralsAndNames.uv"
+        "runExpressionsAccessAndPlacesReference",
+        "Source/Reference/Expressions/AccessAndPlaces.uv"
     ) {
         count = count + 1usize
     }
@@ -290,8 +290,8 @@ public procedure validatedExpressionsAccessAndPlaceExpressionsObligations() -> u
         "rule.16.PlaceIndexAndSliceCounterparts",
         58582usize,
         "HelloUltraviolet::Reference::Expressions",
-        "runExpressionsLiteralsAndNamesReference",
-        "Source/Reference/Expressions/LiteralsAndNames.uv"
+        "runExpressionsAccessAndPlacesReference",
+        "Source/Reference/Expressions/AccessAndPlaces.uv"
     ) {
         count = count + 1usize
     }
@@ -299,26 +299,26 @@ public procedure validatedExpressionsAccessAndPlaceExpressionsObligations() -> u
         "rule.16.Coerce-Array-Slice",
         58595usize,
         "HelloUltraviolet::Reference::Expressions",
-        "runExpressionsLiteralsAndNamesReference",
-        "Source/Reference/Expressions/LiteralsAndNames.uv"
+        "runExpressionsAccessAndPlacesReference",
+        "Source/Reference/Expressions/AccessAndPlaces.uv"
     ) {
         count = count + 1usize
     }
-    if acceptedObligationEntryMatches(
+    if rejectedSourceObligationEntryMatches(
         "rule.16.Union-DirectAccess-Err",
         58611usize,
-        "HelloUltraviolet::Reference::Expressions",
-        "runExpressionsLiteralsAndNamesReference",
-        "Source/Reference/Expressions/LiteralsAndNames.uv"
+        "HelloUltraviolet::Fixtures::RejectedSource",
+        "validatedExpressionsRejectedSourceFixtureCount",
+        "Fixtures/RejectedSource/Expressions/UnionDirectAccess/Source/Main.uv"
     ) {
         count = count + 1usize
     }
-    if acceptedObligationEntryMatches(
+    if rejectedSourceObligationEntryMatches(
         "rule.16.ValueUse-NonBitcopyPlace",
         58627usize,
-        "HelloUltraviolet::Reference::Expressions",
-        "runExpressionsLiteralsAndNamesReference",
-        "Source/Reference/Expressions/LiteralsAndNames.uv"
+        "HelloUltraviolet::Fixtures::RejectedSource",
+        "validatedExpressionsRejectedSourceFixtureCount",
+        "Fixtures/RejectedSource/Expressions/ValueUseNonBitcopyPlace/Source/Main.uv"
     ) {
         count = count + 1usize
     }
@@ -326,8 +326,8 @@ public procedure validatedExpressionsAccessAndPlaceExpressionsObligations() -> u
         "rule.16.EvalSigma-FieldAccess",
         58645usize,
         "HelloUltraviolet::Reference::Expressions",
-        "runExpressionsLiteralsAndNamesReference",
-        "Source/Reference/Expressions/LiteralsAndNames.uv"
+        "runExpressionsAccessAndPlacesReference",
+        "Source/Reference/Expressions/AccessAndPlaces.uv"
     ) {
         count = count + 1usize
     }
@@ -335,8 +335,8 @@ public procedure validatedExpressionsAccessAndPlaceExpressionsObligations() -> u
         "rule.16.EvalSigma-TupleAccess",
         58661usize,
         "HelloUltraviolet::Reference::Expressions",
-        "runExpressionsLiteralsAndNamesReference",
-        "Source/Reference/Expressions/LiteralsAndNames.uv"
+        "runExpressionsAccessAndPlacesReference",
+        "Source/Reference/Expressions/AccessAndPlaces.uv"
     ) {
         count = count + 1usize
     }
@@ -344,8 +344,8 @@ public procedure validatedExpressionsAccessAndPlaceExpressionsObligations() -> u
         "rule.16.EvalSigma-Index",
         58677usize,
         "HelloUltraviolet::Reference::Expressions",
-        "runExpressionsLiteralsAndNamesReference",
-        "Source/Reference/Expressions/LiteralsAndNames.uv"
+        "runExpressionsAccessAndPlacesReference",
+        "Source/Reference/Expressions/AccessAndPlaces.uv"
     ) {
         count = count + 1usize
     }
@@ -353,8 +353,8 @@ public procedure validatedExpressionsAccessAndPlaceExpressionsObligations() -> u
         "rule.16.EvalSigma-Index-Range",
         58693usize,
         "HelloUltraviolet::Reference::Expressions",
-        "runExpressionsLiteralsAndNamesReference",
-        "Source/Reference/Expressions/LiteralsAndNames.uv"
+        "runExpressionsAccessAndPlacesReference",
+        "Source/Reference/Expressions/AccessAndPlaces.uv"
     ) {
         count = count + 1usize
     }
@@ -362,8 +362,8 @@ public procedure validatedExpressionsAccessAndPlaceExpressionsObligations() -> u
         "req.16.IndexAccessRuntimeFailuresAndControlPropagation",
         58709usize,
         "HelloUltraviolet::Reference::Expressions",
-        "runExpressionsLiteralsAndNamesReference",
-        "Source/Reference/Expressions/LiteralsAndNames.uv"
+        "runExpressionsAccessAndPlacesReference",
+        "Source/Reference/Expressions/AccessAndPlaces.uv"
     ) {
         count = count + 1usize
     }
@@ -371,8 +371,8 @@ public procedure validatedExpressionsAccessAndPlaceExpressionsObligations() -> u
         "rule.16.Lower-Expr-FieldAccess",
         58724usize,
         "HelloUltraviolet::Reference::Expressions",
-        "runExpressionsLiteralsAndNamesReference",
-        "Source/Reference/Expressions/LiteralsAndNames.uv"
+        "runExpressionsAccessAndPlacesReference",
+        "Source/Reference/Expressions/AccessAndPlaces.uv"
     ) {
         count = count + 1usize
     }
@@ -380,8 +380,8 @@ public procedure validatedExpressionsAccessAndPlaceExpressionsObligations() -> u
         "rule.16.Lower-Expr-TupleAccess",
         58740usize,
         "HelloUltraviolet::Reference::Expressions",
-        "runExpressionsLiteralsAndNamesReference",
-        "Source/Reference/Expressions/LiteralsAndNames.uv"
+        "runExpressionsAccessAndPlacesReference",
+        "Source/Reference/Expressions/AccessAndPlaces.uv"
     ) {
         count = count + 1usize
     }
@@ -389,8 +389,8 @@ public procedure validatedExpressionsAccessAndPlaceExpressionsObligations() -> u
         "rule.16.Lower-Expr-IndexFamily",
         58756usize,
         "HelloUltraviolet::Reference::Expressions",
-        "runExpressionsLiteralsAndNamesReference",
-        "Source/Reference/Expressions/LiteralsAndNames.uv"
+        "runExpressionsAccessAndPlacesReference",
+        "Source/Reference/Expressions/AccessAndPlaces.uv"
     ) {
         count = count + 1usize
     }
@@ -398,8 +398,8 @@ public procedure validatedExpressionsAccessAndPlaceExpressionsObligations() -> u
         "rule.16.Lower-Place-Ident",
         58769usize,
         "HelloUltraviolet::Reference::Expressions",
-        "runExpressionsLiteralsAndNamesReference",
-        "Source/Reference/Expressions/LiteralsAndNames.uv"
+        "runExpressionsAccessAndPlacesReference",
+        "Source/Reference/Expressions/AccessAndPlaces.uv"
     ) {
         count = count + 1usize
     }
@@ -407,8 +407,8 @@ public procedure validatedExpressionsAccessAndPlaceExpressionsObligations() -> u
         "rule.16.Lower-Place-Field",
         58784usize,
         "HelloUltraviolet::Reference::Expressions",
-        "runExpressionsLiteralsAndNamesReference",
-        "Source/Reference/Expressions/LiteralsAndNames.uv"
+        "runExpressionsAccessAndPlacesReference",
+        "Source/Reference/Expressions/AccessAndPlaces.uv"
     ) {
         count = count + 1usize
     }
@@ -416,8 +416,8 @@ public procedure validatedExpressionsAccessAndPlaceExpressionsObligations() -> u
         "rule.16.Lower-Place-Tuple",
         58800usize,
         "HelloUltraviolet::Reference::Expressions",
-        "runExpressionsLiteralsAndNamesReference",
-        "Source/Reference/Expressions/LiteralsAndNames.uv"
+        "runExpressionsAccessAndPlacesReference",
+        "Source/Reference/Expressions/AccessAndPlaces.uv"
     ) {
         count = count + 1usize
     }
@@ -425,8 +425,8 @@ public procedure validatedExpressionsAccessAndPlaceExpressionsObligations() -> u
         "rule.16.Lower-Place-Index",
         58816usize,
         "HelloUltraviolet::Reference::Expressions",
-        "runExpressionsLiteralsAndNamesReference",
-        "Source/Reference/Expressions/LiteralsAndNames.uv"
+        "runExpressionsAccessAndPlacesReference",
+        "Source/Reference/Expressions/AccessAndPlaces.uv"
     ) {
         count = count + 1usize
     }
@@ -434,8 +434,8 @@ public procedure validatedExpressionsAccessAndPlaceExpressionsObligations() -> u
         "rule.16.Lower-Place-Deref",
         58832usize,
         "HelloUltraviolet::Reference::Expressions",
-        "runExpressionsLiteralsAndNamesReference",
-        "Source/Reference/Expressions/LiteralsAndNames.uv"
+        "runExpressionsAccessAndPlacesReference",
+        "Source/Reference/Expressions/AccessAndPlaces.uv"
     ) {
         count = count + 1usize
     }
@@ -443,26 +443,26 @@ public procedure validatedExpressionsAccessAndPlaceExpressionsObligations() -> u
         "req.16.PlaceReadWriteLoweringPreservesAccessBehavior",
         58848usize,
         "HelloUltraviolet::Reference::Expressions",
-        "runExpressionsLiteralsAndNamesReference",
-        "Source/Reference/Expressions/LiteralsAndNames.uv"
+        "runExpressionsAccessAndPlacesReference",
+        "Source/Reference/Expressions/AccessAndPlaces.uv"
     ) {
         count = count + 1usize
     }
-    if acceptedObligationEntryMatches(
+    if rejectedSourceObligationEntryMatches(
         "diag.16.AccessAndPlaceExpressions",
         58863usize,
-        "HelloUltraviolet::Reference::Expressions",
-        "runExpressionsLiteralsAndNamesReference",
-        "Source/Reference/Expressions/LiteralsAndNames.uv"
+        "HelloUltraviolet::Fixtures::RejectedSource",
+        "validatedExpressionsRejectedSourceFixtureCount",
+        "Fixtures/RejectedSource/Expressions/TupleAccessNonTuple/Source/Main.uv"
     ) {
         count = count + 1usize
     }
-    if acceptedObligationEntryMatches(
+    if rejectedSourceObligationEntryMatches(
         "req.16.ArraySliceIndexDiagnosticsAndPanicBehavior",
         58876usize,
-        "HelloUltraviolet::Reference::Expressions",
-        "runExpressionsLiteralsAndNamesReference",
-        "Source/Reference/Expressions/LiteralsAndNames.uv"
+        "HelloUltraviolet::Fixtures::RejectedSource",
+        "validatedExpressionsRejectedSourceFixtureCount",
+        "Fixtures/RejectedSource/Expressions/ArraySliceIndexDiagnostics/Source/Main.uv"
     ) {
         count = count + 1usize
     }

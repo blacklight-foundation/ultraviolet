@@ -1,0 +1,604 @@
+//! Catalog primary-reference ordering check group 0056.
+
+internal procedure catalogPrimaryReferenceOrderGroup0056() -> bool {
+    return catalogPrimaryReferencePrecedes(
+            "rule.22.CtBuiltin-Reflect-TypeName",
+            85164usize,
+            "rule.22.CtBuiltin-Reflect-Variants",
+            85116usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.22.CtBuiltin-Reflect-Variants",
+            85116usize,
+            "rule.22.CtEval-Quote",
+            85621usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.22.CtEval-Quote",
+            85621usize,
+            "rule.22.CtEval-TypeLiteral",
+            85068usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.22.CtEval-TypeLiteral",
+            85068usize,
+            "rule.22.CtExecModule",
+            83876usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.22.CtExecModule",
+            83876usize,
+            "rule.22.CtExpandBlock",
+            83996usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.22.CtExpandBlock",
+            83996usize,
+            "rule.22.CtExpandExpr-CtExpr",
+            84028usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.22.CtExpandExpr-CtExpr",
+            84028usize,
+            "rule.22.CtExpandExpr-CtIf-False",
+            84060usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.22.CtExpandExpr-CtIf-False",
+            84060usize,
+            "rule.22.CtExpandExpr-CtIf-True",
+            84044usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.22.CtExpandExpr-CtIf-True",
+            84044usize,
+            "rule.22.CtExpandExpr-CtLoopIter",
+            84076usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.22.CtExpandExpr-CtLoopIter",
+            84076usize,
+            "rule.22.CtExpandItem-CtProc",
+            83949usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.22.CtExpandItem-CtProc",
+            83949usize,
+            "rule.22.CtExpandItem-DeriveAnnotatedDecl",
+            86130usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.22.CtExpandItem-DeriveAnnotatedDecl",
+            86130usize,
+            "rule.22.CtExpandItem-DeriveTargetDecl",
+            86054usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.22.CtExpandItem-DeriveTargetDecl",
+            86054usize,
+            "rule.22.CtExpandItemSeq-Cons",
+            83907usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.22.CtExpandItemSeq-Cons",
+            83907usize,
+            "rule.22.CtExpandItemSeq-Empty",
+            83892usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.22.CtExpandItemSeq-Empty",
+            83892usize,
+            "rule.22.CtExpandStmt-CtStmt",
+            84012usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.22.CtExpandStmt-CtStmt",
+            84012usize,
+            "rule.22.CtExpandStmtSeq-Cons",
+            83980usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.22.CtExpandStmtSeq-Cons",
+            83980usize,
+            "rule.22.CtExpandStmtSeq-Empty",
+            83965usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.22.CtExpandStmtSeq-Empty",
+            83965usize,
+            "rule.22.CtLoopIterUnroll-Cons",
+            84107usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.22.CtLoopIterUnroll-Cons",
+            84107usize,
+            "rule.22.CtLoopIterUnroll-Empty",
+            84092usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.22.CtLoopIterUnroll-Empty",
+            84092usize,
+            "rule.22.Parse-CtCapRef",
+            84212usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.22.Parse-CtCapRef",
+            84212usize,
+            "rule.22.Parse-CtElseOpt-Block",
+            83414usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.22.Parse-CtElseOpt-Block",
+            83414usize,
+            "rule.22.Parse-CtElseOpt-ElseIf",
+            83430usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.22.Parse-CtElseOpt-ElseIf",
+            83430usize,
+            "rule.22.Parse-CtElseOpt-None",
+            83398usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.22.Parse-CtElseOpt-None",
+            83398usize,
+            "rule.22.Parse-CtExpr",
+            83350usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.22.Parse-CtExpr",
+            83350usize,
+            "rule.22.Parse-CtIf",
+            83366usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.22.Parse-CtIf",
+            83366usize,
+            "rule.22.Parse-CtLoopIter",
+            83382usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.22.Parse-CtLoopIter",
+            83382usize,
+            "rule.22.Parse-CtProc",
+            83318usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.22.Parse-CtProc",
+            83318usize,
+            "rule.22.Parse-CtStmt",
+            83334usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.22.Parse-CtStmt",
+            83334usize,
+            "rule.22.Parse-DeriveClause-Emits",
+            85827usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.22.Parse-DeriveClause-Emits",
+            85827usize,
+            "rule.22.Parse-DeriveClause-Requires",
+            85811usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.22.Parse-DeriveClause-Requires",
+            85811usize,
+            "rule.22.Parse-DeriveClauseList-Cons",
+            85795usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.22.Parse-DeriveClauseList-Cons",
+            85795usize,
+            "rule.22.Parse-DeriveClauseTail-Comma",
+            85859usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.22.Parse-DeriveClauseTail-Comma",
+            85859usize,
+            "rule.22.Parse-DeriveClauseTail-End",
+            85843usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.22.Parse-DeriveClauseTail-End",
+            85843usize,
+            "rule.22.Parse-DeriveContractOpt-None",
+            85763usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.22.Parse-DeriveContractOpt-None",
+            85763usize,
+            "rule.22.Parse-DeriveContractOpt-Yes",
+            85779usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.22.Parse-DeriveContractOpt-Yes",
+            85779usize,
+            "rule.22.Parse-DeriveTargetDecl",
+            85747usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.22.Parse-DeriveTargetDecl",
+            85747usize,
+            "rule.22.Parse-Quote-Pattern",
+            85323usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.22.Parse-Quote-Pattern",
+            85323usize,
+            "rule.22.Parse-Quote-Raw",
+            85291usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.22.Parse-Quote-Raw",
+            85291usize,
+            "rule.22.Parse-Quote-Type",
+            85307usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.22.Parse-Quote-Type",
+            85307usize,
+            "rule.22.Parse-TypeLiteral",
+            84818usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.22.Parse-TypeLiteral",
+            84818usize,
+            "rule.22.RunDeriveSet-Cons",
+            86085usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.22.RunDeriveSet-Cons",
+            86085usize,
+            "rule.22.RunDeriveSet-Empty",
+            86070usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.22.RunDeriveSet-Empty",
+            86070usize,
+            "rule.22.RunDeriveTarget",
+            86101usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.22.RunDeriveTarget",
+            86101usize,
+            "rule.22.T-CtExpr",
+            83628usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.22.T-CtExpr",
+            83628usize,
+            "rule.22.T-CtIf",
+            83644usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.22.T-CtIf",
+            83644usize,
+            "rule.22.T-CtLoopIter",
+            83660usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.22.T-CtLoopIter",
+            83660usize,
+            "rule.22.T-CtProc",
+            83676usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.22.T-CtProc",
+            83676usize,
+            "rule.22.T-CtStmt",
+            83612usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.22.T-CtStmt",
+            83612usize,
+            "rule.22.T-TypeLiteral",
+            84993usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.22.T-TypeLiteral",
+            84993usize,
+            "rule.23.CodeGen-UnwindAbort-Export",
+            89655usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.23.CodeGen-UnwindAbort-Export",
+            89655usize,
+            "rule.23.CodeGen-UnwindAbort-Import",
+            89619usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.23.CodeGen-UnwindAbort-Import",
+            89619usize,
+            "rule.23.CodeGen-UnwindCatch-Export",
+            89673usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.23.CodeGen-UnwindCatch-Export",
+            89673usize,
+            "rule.23.CodeGen-UnwindCatch-Import",
+            89637usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.23.CodeGen-UnwindCatch-Import",
+            89637usize,
+            "rule.23.ExportSig-Ok",
+            87413usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.23.ExportSig-Ok",
+            87413usize,
+            "rule.23.FFI-Arg-RegionLocalRawPtr-Err",
+            88727usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.23.FFI-Arg-RegionLocalRawPtr-Err",
+            88727usize,
+            "rule.23.FFI-Return-RegionLocalRawPtr-Err",
+            88745usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.23.FFI-Return-RegionLocalRawPtr-Err",
+            88745usize,
+            "rule.23.FfiSafe-Alias",
+            86683usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.23.FfiSafe-Alias",
+            86683usize,
+            "rule.23.FfiSafe-Alias-Apply",
+            86699usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.23.FfiSafe-Alias-Apply",
+            86699usize,
+            "rule.23.FfiSafe-Array",
+            86635usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.23.FfiSafe-Array",
+            86635usize,
+            "rule.23.FfiSafe-Enum",
+            86747usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.23.FfiSafe-Enum",
+            86747usize,
+            "rule.23.FfiSafe-Enum-Apply",
+            86763usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.23.FfiSafe-Enum-Apply",
+            86763usize,
+            "rule.23.FfiSafe-Enum-Apply-Generic-Unbounded-Err",
+            86955usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.23.FfiSafe-Enum-Apply-Generic-Unbounded-Err",
+            86955usize,
+            "rule.23.FfiSafe-Enum-Field-Apply-Err",
+            86875usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.23.FfiSafe-Enum-Field-Apply-Err",
+            86875usize,
+            "rule.23.FfiSafe-Enum-Field-Err",
+            86859usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.23.FfiSafe-Enum-Field-Err",
+            86859usize,
+            "rule.23.FfiSafe-Enum-Generic-Unbounded-Err",
+            86923usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.23.FfiSafe-Enum-Generic-Unbounded-Err",
+            86923usize,
+            "rule.23.FfiSafe-Enum-LayoutC-Err",
+            86811usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.23.FfiSafe-Enum-LayoutC-Err",
+            86811usize,
+            "rule.23.FfiSafe-Func",
+            86651usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.23.FfiSafe-Func",
+            86651usize,
+            "rule.23.FfiSafe-Incomplete-Err",
+            86891usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.23.FfiSafe-Incomplete-Err",
+            86891usize,
+            "rule.23.FfiSafe-Perm",
+            86667usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.23.FfiSafe-Perm",
+            86667usize,
+            "rule.23.FfiSafe-Prim",
+            86603usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.23.FfiSafe-Prim",
+            86603usize,
+            "rule.23.FfiSafe-Prohibited-Err",
+            86779usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.23.FfiSafe-Prohibited-Err",
+            86779usize,
+            "rule.23.FfiSafe-RawPtr",
+            86619usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.23.FfiSafe-RawPtr",
+            86619usize,
+            "rule.23.FfiSafe-Record",
+            86715usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.23.FfiSafe-Record",
+            86715usize,
+            "rule.23.FfiSafe-Record-Apply",
+            86731usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.23.FfiSafe-Record-Apply",
+            86731usize,
+            "rule.23.FfiSafe-Record-Apply-Generic-Unbounded-Err",
+            86939usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.23.FfiSafe-Record-Apply-Generic-Unbounded-Err",
+            86939usize,
+            "rule.23.FfiSafe-Record-Field-Apply-Err",
+            86843usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.23.FfiSafe-Record-Field-Apply-Err",
+            86843usize,
+            "rule.23.FfiSafe-Record-Field-Err",
+            86827usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.23.FfiSafe-Record-Field-Err",
+            86827usize,
+            "rule.23.FfiSafe-Record-Generic-Unbounded-Err",
+            86907usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.23.FfiSafe-Record-Generic-Unbounded-Err",
+            86907usize,
+            "rule.23.FfiSafe-Record-LayoutC-Err",
+            86795usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.23.FfiSafe-Record-LayoutC-Err",
+            86795usize,
+            "rule.23.ForeignEnsures-NullResult-Err",
+            89260usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.23.ForeignEnsures-NullResult-Err",
+            89260usize,
+            "rule.23.HostExport-Context-Err",
+            87732usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.23.HostExport-Context-Err",
+            87732usize,
+            "rule.23.HostExport-Context-Move-Err",
+            87764usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.23.HostExport-Context-Move-Err",
+            87764usize,
+            "rule.23.HostExport-Context-Raw-Err",
+            87748usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.23.HostExport-Context-Raw-Err",
+            87748usize,
+            "rule.23.HostExport-Generic-Err",
+            87716usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.23.HostExport-Generic-Err",
+            87716usize,
+            "rule.23.HostExport-Library-Err",
+            87684usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.23.HostExport-Library-Err",
+            87684usize,
+            "rule.23.HostExport-MixedMode-Err",
+            87700usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.23.HostExport-MixedMode-Err",
+            87700usize,
+            "rule.23.HostExportSig-Ok",
+            87668usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.23.HostExportSig-Ok",
+            87668usize,
+            "rule.23.HostThunkParamCarrier-ByRef",
+            87930usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.23.HostThunkParamCarrier-ByRef",
+            87930usize,
+            "rule.23.HostThunkParamCarrier-ByValue-Default",
+            87946usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.23.HostThunkParamCarrier-ByValue-Default",
+            87946usize,
+            "rule.23.HostThunkParamCarrier-Win64-DirectAgg",
+            87962usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.23.HostThunkParamCarrier-Win64-DirectAgg",
+            87962usize,
+            "rule.23.HostThunkParamCarrier-Win64-IndirectAgg",
+            87978usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.23.HostThunkParamCarrier-Win64-IndirectAgg",
+            87978usize,
+            "rule.23.HostThunkRetCarrier-Default",
+            87994usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.23.HostThunkRetCarrier-Default",
+            87994usize,
+            "rule.23.HostThunkRetCarrier-Win64-DirectAgg",
+            88010usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.23.HostThunkRetCarrier-Win64-DirectAgg",
+            88010usize,
+            "rule.23.HostThunkRetCarrier-Win64-SRetAgg",
+            88026usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.23.HostThunkRetCarrier-Win64-SRetAgg",
+            88026usize,
+            "rule.23.Parse-EnsuresPredicate-Error",
+            88996usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.23.Parse-EnsuresPredicate-Error",
+            88996usize,
+            "rule.23.Parse-EnsuresPredicate-NullResult",
+            89012usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.23.Parse-EnsuresPredicate-NullResult",
+            89012usize,
+            "rule.23.Parse-EnsuresPredicate-Plain",
+            89028usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.23.Parse-EnsuresPredicate-Plain",
+            89028usize,
+            "rule.23.Parse-ExternProcDecl",
+            87099usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.23.Parse-ExternProcDecl",
+            87099usize,
+            "rule.23.Parse-ForeignContractClause-Assumes",
+            88945usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.23.Parse-ForeignContractClause-Assumes",
+            88945usize,
+            "rule.23.Parse-ForeignContractClause-Ensures",
+            88961usize
+        )
+}

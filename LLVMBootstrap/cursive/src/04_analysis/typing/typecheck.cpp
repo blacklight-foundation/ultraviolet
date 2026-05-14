@@ -215,6 +215,7 @@ ProcedureDeclResult TypeComptimeProcedureDeclBody(
   }
 
   ScopeContext proc_ctx = ctx;
+  proc_ctx.sigma_source = ctx.sigma_source ? ctx.sigma_source : &ctx.sigma;
   proc_ctx.scopes = BindTypeParams(ctx, decl.generic_params);
   proc_ctx.diagnostics = &diags;
 
@@ -592,6 +593,7 @@ static std::optional<ErasedOverloadSignature> BuildErasedOverloadSignature(
     const ScopeContext& ctx,
     const ast::ProcedureDecl& proc) {
   ScopeContext proc_ctx = ctx;
+  proc_ctx.sigma_source = ctx.sigma_source ? ctx.sigma_source : &ctx.sigma;
   proc_ctx.scopes = BindTypeParams(ctx, proc.generic_params);
   const auto sig =
       BuildProcedureSignature(proc_ctx, proc.params, proc.return_type_opt);

@@ -1551,6 +1551,18 @@ public procedure rejectedSourceFixtureArtifactsExist(context: Context) -> bool {
         )
     artifacts_exist = artifacts_exist && rejectedFixtureArtifactsExist(
             context,
+            "HelloUltraviolet/Fixtures/RejectedSource/Polymorphism/GenericInfiniteMonomorphization/Ultraviolet.toml",
+            "HelloUltraviolet/Fixtures/RejectedSource/Polymorphism/GenericInfiniteMonomorphization/Source/Main.uv",
+            "HelloUltraviolet/Fixtures/RejectedSource/Polymorphism/GenericInfiniteMonomorphization/Expected.uv"
+        )
+    artifacts_exist = artifacts_exist && rejectedFixtureArtifactsExist(
+            context,
+            "HelloUltraviolet/Fixtures/RejectedSource/Polymorphism/GenericInstantiationDepthLimit/Ultraviolet.toml",
+            "HelloUltraviolet/Fixtures/RejectedSource/Polymorphism/GenericInstantiationDepthLimit/Source/Main.uv",
+            "HelloUltraviolet/Fixtures/RejectedSource/Polymorphism/GenericInstantiationDepthLimit/Expected.uv"
+        )
+    artifacts_exist = artifacts_exist && rejectedFixtureArtifactsExist(
+            context,
             "HelloUltraviolet/Fixtures/RejectedSource/Polymorphism/GenericClassBoundNonClass/Ultraviolet.toml",
             "HelloUltraviolet/Fixtures/RejectedSource/Polymorphism/GenericClassBoundNonClass/Source/Main.uv",
             "HelloUltraviolet/Fixtures/RejectedSource/Polymorphism/GenericClassBoundNonClass/Expected.uv"

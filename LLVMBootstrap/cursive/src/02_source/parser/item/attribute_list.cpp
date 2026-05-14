@@ -9,7 +9,7 @@
 //   - ParseAttributeListOpt: Parse optional attribute list [[...]]
 //
 // GRAMMAR:
-//   AttributeList ::= ('[[' AttributeItem (',' AttributeItem)* ']]')*
+//   AttributeList ::= ('[' '[' AttributeItem (',' AttributeItem)* ']' ']')*
 //   AttributeItem ::= AttrName AttrArgsOpt
 //   AttrArgsOpt ::= '(' AttrArgList ')' | ε
 //   AttrArgList ::= AttrArg (',' AttrArg)* (','?)?
@@ -107,6 +107,41 @@ static bool UsesInlineArgGrammar(const AttrName& name) {
 
 static bool UsesBareMarkerAttrGrammar(const AttrName& name) {
   return !name.vendor_prefix_opt.has_value() && name.leaf_name == "cold";
+}
+
+static bool Adjacent(const Token& left, const Token& right) {
+  return left.span.file == right.span.file &&
+         left.span.end_offset == right.span.start_offset;
+}
+
+static bool IsAdjacentPuncPair(const Parser& parser,
+                               std::string_view left_lexeme,
+                               std::string_view right_lexeme) {
+  const Token* left = Tok(parser);
+  if (!left || left->kind != TokenKind::Punctuator ||
+      left->lexeme != left_lexeme) {
+    return false;
+  }
+
+  Parser next = parser;
+  Advance(next);
+  const Token* right = Tok(next);
+  return right && right->kind == TokenKind::Punctuator &&
+         right->lexeme == right_lexeme && Adjacent(*left, *right);
+}
+
+static Parser AdvanceTwo(Parser parser) {
+  Advance(parser);
+  Advance(parser);
+  return parser;
+}
+
+bool IsAttrStart(const Parser& parser) {
+  return IsAdjacentPuncPair(parser, "[", "[");
+}
+
+static bool IsAttrClose(const Parser& parser) {
+  return IsAdjacentPuncPair(parser, "]", "]");
 }
 
 static bool IsLayoutIntTypeLexeme(std::string_view lexeme) {
@@ -423,11 +458,11 @@ ParseElemResult<std::vector<AttributeItem>> ParseAttrSpecListTail(
     return {parser, xs};
   }
 
-  const EndSetToken end_set[] = {EndPunct("]]")};
+  const EndSetToken end_set[] = {EndPunct("]")};
   Parser after = parser;
   Advance(after);
   SkipNewlines(after);
-  if (IsPunc(after, "]]")) {
+  if (IsAttrClose(after)) {
     if (TrailingCommaAllowed(parser, end_set)) {
       SPEC_RULE("Parse-AttrSpecListTail-TrailingComma");
     }
@@ -597,25 +632,15 @@ ParseElemResult<AttributeItem> ParseAttributeItem(Parser parser) {
   return {next, item};
 }
 
-// =============================================================================
-// IsAttrStart - Check if current position starts an attribute list
-// =============================================================================
-
-bool IsAttrStart(const Parser& parser) {
-  return IsPunc(parser, "[[");
-}
-
 ParseElemResult<std::vector<AttributeItem>> ParseAttrBlock(Parser parser) {
   SPEC_RULE("Parse-AttrBlock");
-  Parser next = parser;
-  Advance(next);  // consume [[
+  Parser next = AdvanceTwo(parser);  // consume adjacent `[` `[`
   ParseElemResult<std::vector<AttributeItem>> specs = ParseAttrSpecList(next);
-  if (!IsPunc(specs.parser, "]]")) {
+  if (!IsAttrClose(specs.parser)) {
     EmitAttrSyntaxErr(specs.parser, TokSpan(specs.parser));
     return specs;
   }
-  Parser after = specs.parser;
-  Advance(after);
+  Parser after = AdvanceTwo(specs.parser);  // consume adjacent `]` `]`
   return {after, std::move(specs.elem)};
 }
 
@@ -646,9 +671,9 @@ ParseElemResult<AttributeList> ParseAttrList(Parser parser) {
 // SPEC: Parse-Attribute (lines 6437-6440)
 //   IsAttrStart(P)    Γ ⊢ ParseAttrItem(Advance(Advance(P))) ⇓ (P_1, item)
 //   Γ ⊢ ParseAttrItemTail(P_1, [item]) ⇓ (P_2, items)
-//   IsOp(Tok(P_2), "]]")
+//   IsAttrClose(P_2)
 //   ────────────────────────────────────────────────────────────────────
-//   Γ ⊢ ParseAttrListOpt(P) ⇓ (Advance(P_2), items)
+//   Γ ⊢ ParseAttrListOpt(P) ⇓ (Advance(Advance(P_2)), items)
 //
 // SPEC: Parse-AttrListOpt-None
 //   ¬ IsAttrStart(P)

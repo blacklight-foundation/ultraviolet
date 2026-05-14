@@ -7,12 +7,12 @@ public procedure countAsynchronousOperationsAsyncDiagnosticsSupplementObligation
 
 public procedure validatedAsynchronousOperationsAsyncDiagnosticsSupplementObligations() -> usize {
     var count: usize = 0usize
-    if acceptedObligationEntryMatches(
+    if rejectedSourceObligationEntryMatches(
         "diagnostics.21.AsyncDiagnosticsSupplement",
         83246usize,
-        "HelloUltraviolet::Reference::Async",
-        "runAsyncAsyncTypeReference",
-        "Source/Reference/Async/AsyncType.uv"
+        "HelloUltraviolet::Fixtures::RejectedSource",
+        "validatedExpressionsRejectedSourceFixtureCount",
+        "Fixtures/RejectedSource/Expressions/AsyncDiagnosticsSupplement/Source/Main.uv"
     ) {
         count = count + 1usize
     }

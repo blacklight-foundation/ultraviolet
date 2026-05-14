@@ -393,6 +393,7 @@ void ResetLowerContextForModule(codegen::LowerCtx& ctx,
   ctx.current_closure_counter = 0;
   ctx.generic_instantiation_stack.clear();
   ctx.generic_instantiation_in_progress.clear();
+  ctx.generic_instantiation_decl_stack.clear();
   ctx.active_region_aliases.clear();
   ctx.region_alias_counter = 0;
 }

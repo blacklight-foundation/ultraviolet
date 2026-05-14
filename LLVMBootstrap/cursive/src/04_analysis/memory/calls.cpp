@@ -54,6 +54,7 @@
 
 #include "04_analysis/memory/calls.h"
 
+#include <cstdint>
 #include <map>
 #include <optional>
 #include <string>
@@ -217,6 +218,7 @@ struct CallLookupIndex {
   const void* sigma_key = nullptr;
   const void* module_storage_key = nullptr;
   std::size_t module_count = 0;
+  PathKey current_module_key;
   std::map<PathKey, const ast::ASTModule*> modules_by_path;
   std::unordered_map<const ast::ASTModule*,
                      std::unordered_map<IdKey, const ast::ProcedureDecl*>>
@@ -232,9 +234,11 @@ const CallLookupIndex& GetCallLookupIndex(const ScopeContext& ctx) {
   const void* sigma_key = static_cast<const void*>(sigma_ptr);
   const void* module_storage_key =
       sigma_ptr->mods.empty() ? nullptr : static_cast<const void*>(sigma_ptr->mods.data());
+  const PathKey current_module_key = PathKeyOf(ctx.current_module);
   if (index.sigma_key == sigma_key &&
       index.module_storage_key == module_storage_key &&
-      index.module_count == sigma_ptr->mods.size()) {
+      index.module_count == sigma_ptr->mods.size() &&
+      index.current_module_key == current_module_key) {
     return index;
   }
 
@@ -242,6 +246,7 @@ const CallLookupIndex& GetCallLookupIndex(const ScopeContext& ctx) {
   index.sigma_key = sigma_key;
   index.module_storage_key = module_storage_key;
   index.module_count = sigma_ptr->mods.size();
+  index.current_module_key = current_module_key;
   index.procedures_by_module.reserve(sigma_ptr->mods.size());
   index.externs_by_module.reserve(sigma_ptr->mods.size());
 

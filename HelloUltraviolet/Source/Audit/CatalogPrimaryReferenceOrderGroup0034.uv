@@ -1,0 +1,604 @@
+//! Catalog primary-reference ordering check group 0034.
+
+internal procedure catalogPrimaryReferenceOrderGroup0034() -> bool {
+    return catalogPrimaryReferencePrecedes(
+            "grammar.B.14.RegionGrammar",
+            101041usize,
+            "grammar.B.2.GenericRefinementModalTypeGrammar",
+            100495usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "grammar.B.2.GenericRefinementModalTypeGrammar",
+            100495usize,
+            "grammar.B.2.TypeGrammar",
+            100422usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "grammar.B.2.TypeGrammar",
+            100422usize,
+            "grammar.B.3.ControlAndSpecialExpressionGrammar",
+            100619usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "grammar.B.3.ControlAndSpecialExpressionGrammar",
+            100619usize,
+            "grammar.B.3.ExpressionGrammar",
+            100528usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "grammar.B.3.ExpressionGrammar",
+            100528usize,
+            "grammar.B.4.PatternGrammar",
+            100654usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "grammar.B.4.PatternGrammar",
+            100654usize,
+            "grammar.B.5.StatementGrammar",
+            100685usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "grammar.B.5.StatementGrammar",
+            100685usize,
+            "grammar.B.6.DeclarationGrammar",
+            100722usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "grammar.B.6.DeclarationGrammar",
+            100722usize,
+            "grammar.B.7.ContractGrammar",
+            100806usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "grammar.B.7.ContractGrammar",
+            100806usize,
+            "grammar.B.8.AttributeGrammar",
+            100833usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "grammar.B.8.AttributeGrammar",
+            100833usize,
+            "grammar.B.9.KeySystemGrammar",
+            100889usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "grammar.B.9.KeySystemGrammar",
+            100889usize,
+            "grammar.BytesTypes.Syntax",
+            45029usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "grammar.BytesTypes.Syntax",
+            45029usize,
+            "grammar.ClassesSyntax",
+            48627usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "grammar.ClassesSyntax",
+            48627usize,
+            "grammar.ClosureTypes.Syntax",
+            46956usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "grammar.ClosureTypes.Syntax",
+            46956usize,
+            "grammar.EnumSyntax",
+            39496usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "grammar.EnumSyntax",
+            39496usize,
+            "grammar.ExternBlockShellSyntax",
+            31430usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "grammar.ExternBlockShellSyntax",
+            31430usize,
+            "grammar.FunctionTypes.Syntax",
+            46584usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "grammar.FunctionTypes.Syntax",
+            46584usize,
+            "grammar.GenericParamsAndArgsSyntax",
+            47489usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "grammar.GenericParamsAndArgsSyntax",
+            47489usize,
+            "grammar.GenericProceduresAndTypesSyntax",
+            48198usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "grammar.GenericProceduresAndTypesSyntax",
+            48198usize,
+            "grammar.ImplementationsSyntax",
+            49467usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "grammar.ImplementationsSyntax",
+            49467usize,
+            "grammar.ImportDeclarationSyntax",
+            29808usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "grammar.ImportDeclarationSyntax",
+            29808usize,
+            "grammar.LayoutAttributeSyntax",
+            27712usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "grammar.LayoutAttributeSyntax",
+            27712usize,
+            "grammar.LiteralLexing",
+            8630usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "grammar.LiteralLexing",
+            8630usize,
+            "grammar.ModalDeclarations.Syntax",
+            41650usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "grammar.ModalDeclarations.Syntax",
+            41650usize,
+            "grammar.ModalWidening.Syntax",
+            44051usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "grammar.ModalWidening.Syntax",
+            44051usize,
+            "grammar.ModulePathSyntax",
+            31734usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "grammar.ModulePathSyntax",
+            31734usize,
+            "grammar.OptimizationAttributeSyntax",
+            28001usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "grammar.OptimizationAttributeSyntax",
+            28001usize,
+            "grammar.PermissionFormsSyntax",
+            28915usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "grammar.PermissionFormsSyntax",
+            28915usize,
+            "grammar.PrimitiveTypeSyntax",
+            34973usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "grammar.PrimitiveTypeSyntax",
+            34973usize,
+            "grammar.RangeSyntax",
+            37444usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "grammar.RangeSyntax",
+            37444usize,
+            "grammar.RawPointerTypes.Syntax",
+            46259usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "grammar.RawPointerTypes.Syntax",
+            46259usize,
+            "grammar.RecordSyntax",
+            38521usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "grammar.RecordSyntax",
+            38521usize,
+            "grammar.SafePointerTypes.Syntax",
+            45770usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "grammar.SafePointerTypes.Syntax",
+            45770usize,
+            "grammar.SliceSyntax",
+            36875usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "grammar.SliceSyntax",
+            36875usize,
+            "grammar.StateFields.Syntax",
+            43192usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "grammar.StateFields.Syntax",
+            43192usize,
+            "grammar.StateMethods.Syntax",
+            43391usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "grammar.StateMethods.Syntax",
+            43391usize,
+            "grammar.StaticDeclarationSyntax",
+            30562usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "grammar.StaticDeclarationSyntax",
+            30562usize,
+            "grammar.StringTypes.Syntax",
+            44305usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "grammar.StringTypes.Syntax",
+            44305usize,
+            "grammar.TestAttribute",
+            28630usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "grammar.TestAttribute",
+            28630usize,
+            "grammar.Transitions.Syntax",
+            43690usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "grammar.Transitions.Syntax",
+            43690usize,
+            "grammar.TupleSyntax",
+            35314usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "grammar.TupleSyntax",
+            35314usize,
+            "grammar.TypeAliasSyntax",
+            41228usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "grammar.TypeAliasSyntax",
+            41228usize,
+            "grammar.UnionTypeSyntax",
+            40606usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "grammar.UnionTypeSyntax",
+            40606usize,
+            "grammar.UsingDeclarationSyntax",
+            30052usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "grammar.UsingDeclarationSyntax",
+            30052usize,
+            "lowering.TestHarnessGeneration",
+            28810usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "lowering.TestHarnessGeneration",
+            28810usize,
+            "parse.19.KeyBlockRules",
+            72533usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "parse.19.KeyBlockRules",
+            72533usize,
+            "parse.19.KeyPathRules",
+            72164usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "parse.19.KeyPathRules",
+            72164usize,
+            "parse.19.MemoryOrdering",
+            75057usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "parse.19.MemoryOrdering",
+            75057usize,
+            "parse.19.SpeculativeBlocks",
+            74208usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "parse.19.SpeculativeBlocks",
+            74208usize,
+            "parse.20.DispatchRules",
+            77276usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "parse.20.DispatchRules",
+            77276usize,
+            "parse.20.GpuPtrGenericType",
+            75763usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "parse.20.GpuPtrGenericType",
+            75763usize,
+            "parse.20.ParallelBlockRules",
+            75347usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "parse.20.ParallelBlockRules",
+            75347usize,
+            "parse.20.SpawnRules",
+            77036usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "parse.20.SpawnRules",
+            77036usize,
+            "parse.21.AsyncTypes",
+            78641usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "parse.21.AsyncTypes",
+            78641usize,
+            "parse.21.CompositionOrdinarySurfaces",
+            80288usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "parse.21.CompositionOrdinarySurfaces",
+            80288usize,
+            "parse.21.CompositionPrimaryExpressions",
+            80085usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "parse.21.CompositionPrimaryExpressions",
+            80085usize,
+            "parse.21.SuspensionFormsPrimaryExpressions",
+            79057usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "parse.21.SuspensionFormsPrimaryExpressions",
+            79057usize,
+            "parse.21.UnappliedAsyncPath",
+            78656usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "parse.21.UnappliedAsyncPath",
+            78656usize,
+            "parse.TestAttributeByOrdinaryAttributeParser",
+            28650usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "parse.TestAttributeByOrdinaryAttributeParser",
+            28650usize,
+            "prop.CollectNamesOrderIndependence",
+            19800usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "prop.CollectNamesOrderIndependence",
+            19800usize,
+            "property.TypeSystemMetatheory.Intro",
+            26344usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "property.TypeSystemMetatheory.Intro",
+            26344usize,
+            "refs.Conformance",
+            1036usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "refs.Conformance",
+            1036usize,
+            "refs.FeatureParseRules",
+            10422usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "refs.FeatureParseRules",
+            10422usize,
+            "refs.ModuleDiscoverySection",
+            4370usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "refs.ModuleDiscoverySection",
+            4370usize,
+            "refs.NormativeRefs",
+            993usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "refs.NormativeRefs",
+            993usize,
+            "refs.ReferenceDetails",
+            1015usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "refs.ReferenceDetails",
+            1015usize,
+            "refs.TrailingCommaRules",
+            10898usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "refs.TrailingCommaRules",
+            10898usize,
+            "req.14.AssociatedTypeAbstractAndDefaultBinding",
+            50305usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "req.14.AssociatedTypeAbstractAndDefaultBinding",
+            50305usize,
+            "req.14.AssociatedTypeEqualsMeaning",
+            50070usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "req.14.AssociatedTypeEqualsMeaning",
+            50070usize,
+            "req.14.AssociatedTypeErasureLowering",
+            50381usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "req.14.AssociatedTypeErasureLowering",
+            50381usize,
+            "req.14.AssociatedTypesNoRuntimeSemantics",
+            50366usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "req.14.AssociatedTypesNoRuntimeSemantics",
+            50366usize,
+            "req.14.CapabilityBuiltinMethodLowering",
+            52298usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "req.14.CapabilityBuiltinMethodLowering",
+            52298usize,
+            "req.14.CapabilityClassNamesReserved",
+            52051usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "req.14.CapabilityClassNamesReserved",
+            52051usize,
+            "req.14.CapabilityClassNoFeatureSpecificParser",
+            51568usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "req.14.CapabilityClassNoFeatureSpecificParser",
+            51568usize,
+            "req.14.CapabilityClassSyntaxUsesOrdinaryClassAndDynamicSyntax",
+            51553usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "req.14.CapabilityClassSyntaxUsesOrdinaryClassAndDynamicSyntax",
+            51553usize,
+            "req.14.CapabilityClassesGenericBounds",
+            52038usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "req.14.CapabilityClassesGenericBounds",
+            52038usize,
+            "req.14.CapabilityClassesOrdinaryClasses",
+            52025usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "req.14.CapabilityClassesOrdinaryClasses",
+            52025usize,
+            "req.14.CapabilityClassesUseDynamicDispatchModel",
+            52283usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "req.14.CapabilityClassesUseDynamicDispatchModel",
+            52283usize,
+            "req.14.CharStepDynamicSemantics",
+            52675usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "req.14.CharStepDynamicSemantics",
+            52675usize,
+            "req.14.DropCloneDynamicSemantics",
+            52636usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "req.14.DropCloneDynamicSemantics",
+            52636usize,
+            "req.14.DuplicateClassImplementationForbidden",
+            49980usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "req.14.DuplicateClassImplementationForbidden",
+            49980usize,
+            "req.14.DynamicCastUsesOrdinaryCastParsing",
+            50460usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "req.14.DynamicCastUsesOrdinaryCastParsing",
+            50460usize,
+            "req.14.DynamicDispatchDispatchableClassesOnly",
+            50687usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "req.14.DynamicDispatchDispatchableClassesOnly",
+            50687usize,
+            "req.14.DynamicMethodCallSurfaceSyntax",
+            50429usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "req.14.DynamicMethodCallSurfaceSyntax",
+            50429usize,
+            "req.14.EqLaws",
+            52582usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "req.14.EqLaws",
+            52582usize,
+            "req.14.FoundationalBoundsIntrinsicSatisfaction",
+            52437usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "req.14.FoundationalBoundsIntrinsicSatisfaction",
+            52437usize,
+            "req.14.FoundationalClassesNoFeatureSpecificParser",
+            52345usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "req.14.FoundationalClassesNoFeatureSpecificParser",
+            52345usize,
+            "req.14.FoundationalClassesSyntaxAndReservedNames",
+            52330usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "req.14.FoundationalClassesSyntaxAndReservedNames",
+            52330usize,
+            "req.14.FoundationalIntrinsicCallLowering",
+            52690usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "req.14.FoundationalIntrinsicCallLowering",
+            52690usize,
+            "req.14.FoundationalPredicatesNoSeparateRepresentation",
+            52703usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "req.14.FoundationalPredicatesNoSeparateRepresentation",
+            52703usize,
+            "req.14.GenericParametersAssociatedTypesSupplySites",
+            50292usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "req.14.GenericParametersAssociatedTypesSupplySites",
+            50292usize,
+            "req.14.HashRequiresEqAndEqualValuesHashEqual",
+            52595usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "req.14.HashRequiresEqAndEqualValuesHashEqual",
+            52595usize,
+            "req.14.HasherDynamicSemantics",
+            52649usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "req.14.HasherDynamicSemantics",
+            52649usize,
+            "req.14.HeapAllocatorRawCallsRequireUnsafe",
+            52064usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "req.14.HeapAllocatorRawCallsRequireUnsafe",
+            52064usize,
+            "req.14.ImplementationAssociatedTypeBoundForm",
+            50318usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "req.14.ImplementationAssociatedTypeBoundForm",
+            50318usize,
+            "req.14.ImplementationBodyLowering",
+            50023usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "req.14.ImplementationBodyLowering",
+            50023usize,
+            "req.14.ImplementationOrphanRequirement",
+            49993usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "req.14.ImplementationOrphanRequirement",
+            49993usize,
+            "req.14.ImplementationsNoAdditionalRuntimeState",
+            50008usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "req.14.ImplementationsNoAdditionalRuntimeState",
+            50008usize,
+            "req.14.IntegerStepDynamicSemantics",
+            52662usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "req.14.IntegerStepDynamicSemantics",
+            52662usize,
+            "req.14.IteratorNextContract",
+            52608usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "req.14.IteratorNextContract",
+            52608usize,
+            "req.14.ModalClassImplementationRequiresModalType",
+            49967usize
+        )
+}

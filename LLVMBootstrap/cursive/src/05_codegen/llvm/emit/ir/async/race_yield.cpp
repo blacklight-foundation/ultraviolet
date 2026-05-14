@@ -199,6 +199,7 @@ void IRInstructionVisitor::operator()(const IRRaceYield &r) const
     const IRRaceArm *arm = nullptr;
     llvm::Value *async_value = nullptr;
     llvm::StructType *async_struct = nullptr;
+    llvm::AllocaInst *async_slot = nullptr;
     analysis::TypeRef out_type = nullptr;
     analysis::TypeRef err_type = nullptr;
     AsyncStateDiscs discs{};
@@ -226,61 +227,35 @@ void IRInstructionVisitor::operator()(const IRRaceYield &r) const
     evaluated.push_back(std::move(eval));
   }
 
-  std::optional<std::size_t> first_failed;
-  std::optional<std::size_t> first_suspended;
-  bool all_completed = true;
-  for (std::size_t i = 0; i < evaluated.size(); ++i)
+  llvm::AllocaInst *result_slot = entry_builder.CreateAlloca(stream_struct);
+  builder.CreateStore(llvm::Constant::getNullValue(stream_struct), result_slot);
+
+  for (YieldArmEval &eval : evaluated)
   {
-    const YieldArmEval &eval = evaluated[i];
     if (!eval.async_struct || eval.async_struct->getNumElements() < 1 ||
         !eval.async_struct->getElementType(0)->isIntegerTy())
     {
-      all_completed = false;
-      continue;
+      emitter.SetTempValue(r.result, llvm::Constant::getNullValue(expected));
+      return;
     }
-    llvm::Value *disc = builder.CreateExtractValue(eval.async_value, {0u});
-    auto *state = llvm::dyn_cast<llvm::ConstantInt>(disc);
-    if (!state)
-    {
-      all_completed = false;
-      continue;
-    }
-    const std::uint64_t v = state->getZExtValue();
-    if (eval.discs.failed.has_value() &&
-        v == *eval.discs.failed &&
-        !first_failed.has_value())
-    {
-      first_failed = i;
-    }
-    if (v == eval.discs.suspended && !first_suspended.has_value())
-    {
-      first_suspended = i;
-    }
-    if (v != eval.discs.completed)
-    {
-      all_completed = false;
-    }
+    eval.async_slot = entry_builder.CreateAlloca(eval.async_struct);
+    builder.CreateStore(eval.async_value, eval.async_slot);
   }
 
-  if (first_failed.has_value())
+  auto current_async_value = [&](const YieldArmEval &eval) -> llvm::Value *
   {
-    const YieldArmEval &eval = evaluated[*first_failed];
-    llvm::Value *err_payload =
-        extract_async_payload(eval.async_value, eval.async_struct, eval.err_type);
-    llvm::Value *failed_stream = make_async_fail(err_payload, eval.err_type);
-    if (!failed_stream)
+    if (!eval.async_slot || !eval.async_struct)
     {
-      failed_stream = llvm::Constant::getNullValue(expected);
+      return nullptr;
     }
-    emitter.SetTempValue(r.result, failed_stream);
-    return;
-  }
+    return builder.CreateLoad(eval.async_struct, eval.async_slot);
+  };
 
-  if (first_suspended.has_value())
+  auto emit_suspended_arm = [&](const YieldArmEval &eval)
   {
-    const YieldArmEval &eval = evaluated[*first_suspended];
+    llvm::Value *current_async = current_async_value(eval);
     llvm::Value *out_payload =
-        extract_async_payload(eval.async_value, eval.async_struct, eval.out_type);
+        extract_async_payload(current_async, eval.async_struct, eval.out_type);
     if (!out_payload)
     {
       out_payload = DefaultFor(eval.arm->match_value);
@@ -293,22 +268,131 @@ void IRInstructionVisitor::operator()(const IRRaceYield &r) const
     {
       suspended_stream = llvm::Constant::getNullValue(expected);
     }
-    emitter.SetTempValue(r.result, suspended_stream);
-    return;
-  }
+    builder.CreateStore(suspended_stream, result_slot);
+  };
 
-  if (all_completed)
+  auto emit_failed_arm = [&](const YieldArmEval &eval)
+  {
+    llvm::Value *current_async = current_async_value(eval);
+    llvm::Value *err_payload =
+        extract_async_payload(current_async, eval.async_struct, eval.err_type);
+    llvm::Value *failed_stream = make_async_fail(err_payload, eval.err_type);
+    if (!failed_stream)
+    {
+      failed_stream = llvm::Constant::getNullValue(expected);
+    }
+    builder.CreateStore(failed_stream, result_slot);
+  };
+
+  auto emit_completed_stream = [&]()
   {
     llvm::Value *completed_stream = make_async_complete(nullptr, stream_sig->result);
     if (!completed_stream)
     {
       completed_stream = llvm::Constant::getNullValue(expected);
     }
-    emitter.SetTempValue(r.result, completed_stream);
-    return;
+    builder.CreateStore(completed_stream, result_slot);
+  };
+
+  std::vector<llvm::BasicBlock *> suspended_check(evaluated.size() + 1, nullptr);
+  std::vector<llvm::BasicBlock *> suspended_hit(evaluated.size(), nullptr);
+  std::vector<llvm::BasicBlock *> failed_check(evaluated.size() + 1, nullptr);
+  std::vector<llvm::BasicBlock *> failed_hit(evaluated.size(), nullptr);
+
+  for (std::size_t i = 0; i <= evaluated.size(); ++i)
+  {
+    suspended_check[i] = llvm::BasicBlock::Create(
+        emitter.GetContext(),
+        "race.yield.chk.suspended." + std::to_string(i),
+        func);
+    failed_check[i] = llvm::BasicBlock::Create(
+        emitter.GetContext(),
+        "race.yield.chk.failed." + std::to_string(i),
+        func);
+  }
+  for (std::size_t i = 0; i < evaluated.size(); ++i)
+  {
+    suspended_hit[i] = llvm::BasicBlock::Create(
+        emitter.GetContext(),
+        "race.yield.suspended." + std::to_string(i),
+        func);
+    failed_hit[i] = llvm::BasicBlock::Create(
+        emitter.GetContext(),
+        "race.yield.failed." + std::to_string(i),
+        func);
   }
 
-  emitter.SetTempValue(r.result, llvm::Constant::getNullValue(expected));
+  llvm::BasicBlock *complete_bb =
+      llvm::BasicBlock::Create(emitter.GetContext(), "race.yield.completed", func);
+  llvm::BasicBlock *merge_bb =
+      llvm::BasicBlock::Create(emitter.GetContext(), "race.yield.merge", func);
+
+  builder.CreateBr(suspended_check[0]);
+
+  for (std::size_t i = 0; i < evaluated.size(); ++i)
+  {
+    builder.SetInsertPoint(suspended_check[i]);
+    const YieldArmEval &eval = evaluated[i];
+    llvm::Value *current_async = current_async_value(eval);
+    llvm::Value *disc = builder.CreateExtractValue(current_async, {0u});
+    llvm::Value *is_suspended = EmitTypedEq(
+        &builder,
+        disc,
+        llvm::ConstantInt::get(disc->getType(), eval.discs.suspended));
+    builder.CreateCondBr(
+        AsBool(&builder, is_suspended),
+        suspended_hit[i],
+        suspended_check[i + 1]);
+
+    builder.SetInsertPoint(suspended_hit[i]);
+    emit_suspended_arm(eval);
+    builder.CreateBr(merge_bb);
+  }
+
+  builder.SetInsertPoint(suspended_check[evaluated.size()]);
+  builder.CreateBr(failed_check[0]);
+
+  for (std::size_t i = 0; i < evaluated.size(); ++i)
+  {
+    builder.SetInsertPoint(failed_check[i]);
+    const YieldArmEval &eval = evaluated[i];
+    llvm::Value *current_async = current_async_value(eval);
+    llvm::Value *disc = builder.CreateExtractValue(current_async, {0u});
+    if (eval.discs.failed.has_value())
+    {
+      llvm::Value *is_failed = EmitTypedEq(
+          &builder,
+          disc,
+          llvm::ConstantInt::get(disc->getType(), *eval.discs.failed));
+      builder.CreateCondBr(
+          AsBool(&builder, is_failed),
+          failed_hit[i],
+          failed_check[i + 1]);
+    }
+    else
+    {
+      builder.CreateBr(failed_check[i + 1]);
+    }
+
+    builder.SetInsertPoint(failed_hit[i]);
+    emit_failed_arm(eval);
+    builder.CreateBr(merge_bb);
+  }
+
+  builder.SetInsertPoint(failed_check[evaluated.size()]);
+  builder.CreateBr(complete_bb);
+
+  builder.SetInsertPoint(complete_bb);
+  emit_completed_stream();
+  builder.CreateBr(merge_bb);
+
+  builder.SetInsertPoint(merge_bb);
+  llvm::Value *out = builder.CreateLoad(stream_struct, result_slot);
+  if (!out)
+  {
+    out = llvm::Constant::getNullValue(expected);
+  }
+  emitter.SetTempValue(r.result, out);
 }
 
 } // namespace cursive::codegen::emit_detail

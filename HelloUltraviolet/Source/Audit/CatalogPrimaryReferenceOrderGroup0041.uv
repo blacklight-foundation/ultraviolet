@@ -1,0 +1,604 @@
+//! Catalog primary-reference ordering check group 0041.
+
+internal procedure catalogPrimaryReferenceOrderGroup0041() -> bool {
+    return catalogPrimaryReferencePrecedes(
+            "requirement.22.QuoteCompileTimeOnly",
+            85449usize,
+            "requirement.22.QuoteSpliceEmissionLowering",
+            85668usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "requirement.22.QuoteSpliceEmissionLowering",
+            85668usize,
+            "requirement.22.QuotedContentValidity",
+            85477usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "requirement.22.QuotedContentValidity",
+            85477usize,
+            "requirement.22.ReflectionCanonicalOrder",
+            85037usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "requirement.22.ReflectionCanonicalOrder",
+            85037usize,
+            "requirement.22.ReflectionLowering",
+            85211usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "requirement.22.ReflectionLowering",
+            85211usize,
+            "requirement.22.ReflectionPurityAndImmutability",
+            85196usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "requirement.22.ReflectionPurityAndImmutability",
+            85196usize,
+            "requirement.22.SpliceContextAndTypeCompatibility",
+            85490usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "requirement.22.SpliceContextAndTypeCompatibility",
+            85490usize,
+            "requirement.22.SpliceIdentifierPositionRestrictions",
+            85503usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "requirement.22.SpliceIdentifierPositionRestrictions",
+            85503usize,
+            "requirement.22.StringSpliceIdentifierHygiene",
+            85516usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "requirement.22.StringSpliceIdentifierHygiene",
+            85516usize,
+            "requirement.22.TypeEmitterAvailability",
+            84405usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "requirement.22.TypeEmitterAvailability",
+            84405usize,
+            "requirement.22.TypeEmitterEmitTypeRequirement",
+            84463usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "requirement.22.TypeEmitterEmitTypeRequirement",
+            84463usize,
+            "requirement.22.UserDiagnosticBuiltinEmission",
+            86280usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "requirement.22.UserDiagnosticBuiltinEmission",
+            86280usize,
+            "requirement.23.BoundaryUnwindDynamicEffects",
+            89565usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "requirement.23.BoundaryUnwindDynamicEffects",
+            89565usize,
+            "requirement.23.BoundaryUnwindingParsingNoAdditionalRules",
+            89430usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "requirement.23.BoundaryUnwindingParsingNoAdditionalRules",
+            89430usize,
+            "requirement.23.BoundaryUnwindingSyntax",
+            89415usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "requirement.23.BoundaryUnwindingSyntax",
+            89415usize,
+            "requirement.23.CapabilityIsolationDynamicSemantics",
+            88765usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "requirement.23.CapabilityIsolationDynamicSemantics",
+            88765usize,
+            "requirement.23.CapabilityIsolationLowering",
+            88780usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "requirement.23.CapabilityIsolationLowering",
+            88780usize,
+            "requirement.23.CapabilityIsolationParsingNoAdditionalRules",
+            88664usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "requirement.23.CapabilityIsolationParsingNoAdditionalRules",
+            88664usize,
+            "requirement.23.CapabilityIsolationSemantics",
+            88694usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "requirement.23.CapabilityIsolationSemantics",
+            88694usize,
+            "requirement.23.CapabilityIsolationSyntaxNoAdditionalForm",
+            88649usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "requirement.23.CapabilityIsolationSyntaxNoAdditionalForm",
+            88649usize,
+            "requirement.23.ErrorPredicateWellFormedness",
+            89279usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "requirement.23.ErrorPredicateWellFormedness",
+            89279usize,
+            "requirement.23.ExportAttributeSemantics",
+            88505usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "requirement.23.ExportAttributeSemantics",
+            88505usize,
+            "requirement.23.ExternCallSafety",
+            87229usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "requirement.23.ExternCallSafety",
+            87229usize,
+            "requirement.23.ExternDynamicSemantics",
+            87246usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "requirement.23.ExternDynamicSemantics",
+            87246usize,
+            "requirement.23.ExternFfiConstraints",
+            87212usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "requirement.23.ExternFfiConstraints",
+            87212usize,
+            "requirement.23.ExternLowering",
+            87261usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "requirement.23.ExternLowering",
+            87261usize,
+            "requirement.23.FFIBoundaryDefinition",
+            86297usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "requirement.23.FFIBoundaryDefinition",
+            86297usize,
+            "requirement.23.FfiAttributeConstraints",
+            88560usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "requirement.23.FfiAttributeConstraints",
+            88560usize,
+            "requirement.23.FfiAttributesDynamicSemantics",
+            88586usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "requirement.23.FfiAttributesDynamicSemantics",
+            88586usize,
+            "requirement.23.FfiAttributesLowering",
+            88601usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "requirement.23.FfiAttributesLowering",
+            88601usize,
+            "requirement.23.FfiAttributesParsing",
+            88275usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "requirement.23.FfiAttributesParsing",
+            88275usize,
+            "requirement.23.FfiPassByValueAttributeSemantics",
+            88547usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "requirement.23.FfiPassByValueAttributeSemantics",
+            88547usize,
+            "requirement.23.FfiSafeDynamicSemantics",
+            87026usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "requirement.23.FfiSafeDynamicSemantics",
+            87026usize,
+            "requirement.23.FfiSafeGenericBounds",
+            87011usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "requirement.23.FfiSafeGenericBounds",
+            87011usize,
+            "requirement.23.FfiSafeLowering",
+            87041usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "requirement.23.FfiSafeLowering",
+            87041usize,
+            "requirement.23.FfiSafeParsingNoAdditionalRules",
+            86342usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "requirement.23.FfiSafeParsingNoAdditionalRules",
+            86342usize,
+            "requirement.23.FfiSafeProhibitedCategories",
+            86971usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "requirement.23.FfiSafeProhibitedCategories",
+            86971usize,
+            "requirement.23.FfiSafeRaiiByValueRule",
+            86998usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "requirement.23.FfiSafeRaiiByValueRule",
+            86998usize,
+            "requirement.23.FfiSafeSyntaxNoAdditionalForm",
+            86327usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "requirement.23.FfiSafeSyntaxNoAdditionalForm",
+            86327usize,
+            "requirement.23.ForeignContractsLowering",
+            89373usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "requirement.23.ForeignContractsLowering",
+            89373usize,
+            "requirement.23.ForeignPostconditionDynamicChecks",
+            89358usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "requirement.23.ForeignPostconditionDynamicChecks",
+            89358usize,
+            "requirement.23.ForeignPostconditionPredicateBindings",
+            89175usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "requirement.23.ForeignPostconditionPredicateBindings",
+            89175usize,
+            "requirement.23.ForeignPostconditionStaticVerification",
+            89310usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "requirement.23.ForeignPostconditionStaticVerification",
+            89310usize,
+            "requirement.23.ForeignPreconditionDynamicFailure",
+            89345usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "requirement.23.ForeignPreconditionDynamicFailure",
+            89345usize,
+            "requirement.23.ForeignPreconditionVerificationLowering",
+            89147usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "requirement.23.ForeignPreconditionVerificationLowering",
+            89147usize,
+            "requirement.23.ForeignPredicateContext",
+            89103usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "requirement.23.ForeignPredicateContext",
+            89103usize,
+            "requirement.23.GeneralDestructionAndUnwindCleanupReference",
+            89584usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "requirement.23.GeneralDestructionAndUnwindCleanupReference",
+            89584usize,
+            "requirement.23.HostExportAttributeSemantics",
+            88525usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "requirement.23.HostExportAttributeSemantics",
+            88525usize,
+            "requirement.23.HostedExportBoundaryEntrySequence",
+            87821usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "requirement.23.HostedExportBoundaryEntrySequence",
+            87821usize,
+            "requirement.23.HostedExportCapabilityIsolation",
+            87795usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "requirement.23.HostedExportCapabilityIsolation",
+            87795usize,
+            "requirement.23.HostedExportCatchFailureReturn",
+            87856usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "requirement.23.HostedExportCatchFailureReturn",
+            87856usize,
+            "requirement.23.HostedExportClassification",
+            87518usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "requirement.23.HostedExportClassification",
+            87518usize,
+            "requirement.23.HostedExportForeignVisiblePassKind",
+            87642usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "requirement.23.HostedExportForeignVisiblePassKind",
+            87642usize,
+            "requirement.23.HostedExportForeignVisibleSignature",
+            87629usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "requirement.23.HostedExportForeignVisibleSignature",
+            87629usize,
+            "requirement.23.HostedExportInvalidHandleBehavior",
+            87840usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "requirement.23.HostedExportInvalidHandleBehavior",
+            87840usize,
+            "requirement.23.HostedExportLoweringPreservesRawFfiRules",
+            87871usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "requirement.23.HostedExportLoweringPreservesRawFfiRules",
+            87871usize,
+            "requirement.23.HostedExportNoExtraAbiRewriting",
+            88068usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "requirement.23.HostedExportNoExtraAbiRewriting",
+            88068usize,
+            "requirement.23.HostedExportNoWin64AggregateSplitting",
+            88055usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "requirement.23.HostedExportNoWin64AggregateSplitting",
+            88055usize,
+            "requirement.23.HostedExportParsingClassification",
+            87546usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "requirement.23.HostedExportParsingClassification",
+            87546usize,
+            "requirement.23.HostedExportParsingUsesOrdinaryProcedureParser",
+            87533usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "requirement.23.HostedExportParsingUsesOrdinaryProcedureParser",
+            87533usize,
+            "requirement.23.HostedExportSessionHandleValidity",
+            87782usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "requirement.23.HostedExportSessionHandleValidity",
+            87782usize,
+            "requirement.23.HostedExportThunkAbiDetermination",
+            87884usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "requirement.23.HostedExportThunkAbiDetermination",
+            87884usize,
+            "requirement.23.HostedExportThunkEmissionAndEntrypoint",
+            88195usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "requirement.23.HostedExportThunkEmissionAndEntrypoint",
+            88195usize,
+            "requirement.23.HostedExportThunkForeignVisibleAbi",
+            88176usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "requirement.23.HostedExportThunkForeignVisibleAbi",
+            88176usize,
+            "requirement.23.HostedExportThunkShapeUse",
+            88042usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "requirement.23.HostedExportThunkShapeUse",
+            88042usize,
+            "requirement.23.HostedLibraryLifecycleExports",
+            88120usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "requirement.23.HostedLibraryLifecycleExports",
+            88120usize,
+            "requirement.23.HostedLifecycleExportsBackendGenerated",
+            88137usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "requirement.23.HostedLifecycleExportsBackendGenerated",
+            88137usize,
+            "requirement.23.HostedLifecycleExportsPanicAndDestroyFailure",
+            88150usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "requirement.23.HostedLifecycleExportsPanicAndDestroyFailure",
+            88150usize,
+            "requirement.23.HostedRootCapsMeaning",
+            87601usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "requirement.23.HostedRootCapsMeaning",
+            87601usize,
+            "requirement.23.HostedSessionHandleNoReissue",
+            88163usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "requirement.23.HostedSessionHandleNoReissue",
+            88163usize,
+            "requirement.23.HostedSessionRootCapsGrant",
+            87808usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "requirement.23.HostedSessionRootCapsGrant",
+            87808usize,
+            "requirement.23.HostedStateSymbolResolution",
+            88107usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "requirement.23.HostedStateSymbolResolution",
+            88107usize,
+            "requirement.23.HostedThunkModeIndependentForeignClassification",
+            88081usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "requirement.23.HostedThunkModeIndependentForeignClassification",
+            88081usize,
+            "requirement.23.HostedThunkToSourceCallReconstruction",
+            88094usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "requirement.23.HostedThunkToSourceCallReconstruction",
+            88094usize,
+            "requirement.23.LibraryAttributeSemantics",
+            88366usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "requirement.23.LibraryAttributeSemantics",
+            88366usize,
+            "requirement.23.MangleAttributeSemantics",
+            88327usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "requirement.23.MangleAttributeSemantics",
+            88327usize,
+            "requirement.23.NullResultWellFormedness",
+            89228usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "requirement.23.NullResultWellFormedness",
+            89228usize,
+            "requirement.23.RawDylibResolution",
+            88423usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "requirement.23.RawDylibResolution",
+            88423usize,
+            "requirement.23.RawExportLibraryImageLifecycle",
+            87444usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "requirement.23.RawExportLibraryImageLifecycle",
+            87444usize,
+            "requirement.23.RawExportLowering",
+            87472usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "requirement.23.RawExportLowering",
+            87472usize,
+            "requirement.23.RawExportOrdinaryBodyAndCatchReturn",
+            87431usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "requirement.23.RawExportOrdinaryBodyAndCatchReturn",
+            87431usize,
+            "requirement.23.RawExportParsingClassification",
+            87337usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "requirement.23.RawExportParsingClassification",
+            87337usize,
+            "requirement.23.RawExportParsingUsesOrdinaryProcedureParser",
+            87324usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "requirement.23.RawExportParsingUsesOrdinaryProcedureParser",
+            87324usize,
+            "requirement.23.RawExportedProcedureClassification",
+            87309usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "requirement.23.RawExportedProcedureClassification",
+            87309usize,
+            "requirement.23.SharedLibraryLinkedCallLifecycle",
+            87457usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "requirement.23.SharedLibraryLinkedCallLifecycle",
+            87457usize,
+            "requirement.23.UnsupportedLibraryKindIllFormed",
+            88410usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "requirement.23.UnsupportedLibraryKindIllFormed",
+            88410usize,
+            "requirement.23.UnwindAttributeTargetValidity",
+            88472usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "requirement.23.UnwindAttributeTargetValidity",
+            88472usize,
+            "requirement.23.UnwindCatchAbiRequirement",
+            88485usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "requirement.23.UnwindCatchAbiRequirement",
+            88485usize,
+            "requirement.23.UnwindDefaultMode",
+            88459usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "requirement.23.UnwindDefaultMode",
+            88459usize,
+            "requirement.24.ForeignVisibleABIUsesForeignJudgements",
+            92330usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "requirement.24.ForeignVisibleABIUsesForeignJudgements",
+            92330usize,
+            "requirement.24.LLVMToolAcceptanceAndResolveOwnership",
+            91093usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "requirement.24.LLVMToolAcceptanceAndResolveOwnership",
+            91093usize,
+            "requirement.24.NoAdditionalFeatureLocalCodegenItemRules",
+            90922usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "requirement.24.NoAdditionalFeatureLocalCodegenItemRules",
+            90922usize,
+            "requirement.24.SharedLoweringScope",
+            89742usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "requirement.24.SharedLoweringScope",
+            89742usize,
+            "requirements.21.AsyncCapabilityRequirements",
+            83066usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "requirements.21.AsyncCapabilityRequirements",
+            83066usize,
+            "rule.13.Align-Bytes-Managed",
+            45616usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.13.Align-Bytes-Managed",
+            45616usize,
+            "rule.13.Align-Bytes-Modal",
+            45712usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.13.Align-Bytes-Modal",
+            45712usize,
+            "rule.13.Align-Bytes-View",
+            45664usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.13.Align-Bytes-View",
+            45664usize,
+            "rule.13.Align-Closure",
+            47383usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.13.Align-Closure",
+            47383usize,
+            "rule.13.Align-Func",
+            46894usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.13.Align-Func",
+            46894usize,
+            "rule.13.Align-Modal",
+            43021usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.13.Align-Modal",
+            43021usize,
+            "rule.13.Align-ModalState",
+            43069usize
+        )
+}

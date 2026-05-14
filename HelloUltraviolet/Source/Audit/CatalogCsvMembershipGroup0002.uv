@@ -1,0 +1,604 @@
+//! CSV-to-catalog membership check group 0002.
+
+internal procedure catalogCsvMembershipGroup0002() -> bool {
+    return csvCatalogKeyMatches(
+            "Decode-Err",
+            7021usize,
+            "Decode-Err",
+            7021usize
+        ) &&
+        csvCatalogKeyMatches(
+            "Decode-Ok",
+            7003usize,
+            "Decode-Ok",
+            7003usize
+        ) &&
+        csvCatalogKeyMatches(
+            "DeinitFn",
+            31005usize,
+            "DeinitFn",
+            31005usize
+        ) &&
+        csvCatalogKeyMatches(
+            "DiagId-Code",
+            1722usize,
+            "DiagId-Code",
+            1722usize
+        ) &&
+        csvCatalogKeyMatches(
+            "DirClose-ClosesIterator",
+            13569usize,
+            "DirClose-ClosesIterator",
+            13569usize
+        ) &&
+        csvCatalogKeyMatches(
+            "DirNext-ClosedFailure",
+            13524usize,
+            "DirNext-ClosedFailure",
+            13524usize
+        ) &&
+        csvCatalogKeyMatches(
+            "DirNext-Exhausted",
+            13539usize,
+            "DirNext-Exhausted",
+            13539usize
+        ) &&
+        csvCatalogKeyMatches(
+            "DirNext-YieldsEntry",
+            13554usize,
+            "DirNext-YieldsEntry",
+            13554usize
+        ) &&
+        csvCatalogKeyMatches(
+            "DirSeq-Read-Err",
+            4216usize,
+            "DirSeq-Read-Err",
+            4216usize
+        ) &&
+        csvCatalogKeyMatches(
+            "DirSeq-Rel-Fail",
+            4234usize,
+            "DirSeq-Rel-Fail",
+            4234usize
+        ) &&
+        csvCatalogKeyMatches(
+            "Disc-Add",
+            32656usize,
+            "Disc-Add",
+            32656usize
+        ) &&
+        csvCatalogKeyMatches(
+            "Disc-Collision",
+            32674usize,
+            "Disc-Collision",
+            32674usize
+        ) &&
+        csvCatalogKeyMatches(
+            "Disc-Done",
+            32728usize,
+            "Disc-Done",
+            32728usize
+        ) &&
+        csvCatalogKeyMatches(
+            "Disc-Invalid-Component",
+            32692usize,
+            "Disc-Invalid-Component",
+            32692usize
+        ) &&
+        csvCatalogKeyMatches(
+            "Disc-Rel-Fail",
+            32710usize,
+            "Disc-Rel-Fail",
+            32710usize
+        ) &&
+        csvCatalogKeyMatches(
+            "Disc-Skip",
+            32638usize,
+            "Disc-Skip",
+            32638usize
+        ) &&
+        csvCatalogKeyMatches(
+            "Disc-Start",
+            32621usize,
+            "Disc-Start",
+            32621usize
+        ) &&
+        csvCatalogKeyMatches(
+            "Doc-Comment",
+            8474usize,
+            "Doc-Comment",
+            8474usize
+        ) &&
+        csvCatalogKeyMatches(
+            "DynamicContext-NoInherit-Call",
+            28403usize,
+            "DynamicContext-NoInherit-Call",
+            28403usize
+        ) &&
+        csvCatalogKeyMatches(
+            "DynamicContext-Override",
+            28369usize,
+            "DynamicContext-Override",
+            28369usize
+        ) &&
+        csvCatalogKeyMatches(
+            "Emit-Append",
+            1575usize,
+            "Emit-Append",
+            1575usize
+        ) &&
+        csvCatalogKeyMatches(
+            "Emit-IR-Cons-BC",
+            5559usize,
+            "Emit-IR-Cons-BC",
+            5559usize
+        ) &&
+        csvCatalogKeyMatches(
+            "Emit-IR-Cons-LL",
+            5541usize,
+            "Emit-IR-Cons-LL",
+            5541usize
+        ) &&
+        csvCatalogKeyMatches(
+            "Emit-IR-Err",
+            5609usize,
+            "Emit-IR-Err",
+            5609usize
+        ) &&
+        csvCatalogKeyMatches(
+            "Emit-IR-None",
+            5523usize,
+            "Emit-IR-None",
+            5523usize
+        ) &&
+        csvCatalogKeyMatches(
+            "Emit-Objects-Cons",
+            5503usize,
+            "Emit-Objects-Cons",
+            5503usize
+        ) &&
+        csvCatalogKeyMatches(
+            "Emit-Objects-Empty",
+            5486usize,
+            "Emit-Objects-Empty",
+            5486usize
+        ) &&
+        csvCatalogKeyMatches(
+            "Emit-Static-Const",
+            30905usize,
+            "Emit-Static-Const",
+            30905usize
+        ) &&
+        csvCatalogKeyMatches(
+            "Emit-Static-Init",
+            30923usize,
+            "Emit-Static-Init",
+            30923usize
+        ) &&
+        csvCatalogKeyMatches(
+            "Emit-Static-Multi",
+            30941usize,
+            "Emit-Static-Multi",
+            30941usize
+        ) &&
+        csvCatalogKeyMatches(
+            "EmitModuleList-Ok",
+            4770usize,
+            "EmitModuleList-Ok",
+            4770usize
+        ) &&
+        csvCatalogKeyMatches(
+            "Enum-Disc-Dup",
+            40073usize,
+            "Enum-Disc-Dup",
+            40073usize
+        ) &&
+        csvCatalogKeyMatches(
+            "Enum-Disc-Invalid",
+            40037usize,
+            "Enum-Disc-Invalid",
+            40037usize
+        ) &&
+        csvCatalogKeyMatches(
+            "Enum-Disc-Negative",
+            40055usize,
+            "Enum-Disc-Negative",
+            40055usize
+        ) &&
+        csvCatalogKeyMatches(
+            "Enum-Disc-NotInt",
+            40019usize,
+            "Enum-Disc-NotInt",
+            40019usize
+        ) &&
+        csvCatalogKeyMatches(
+            "Enum-Empty-Err",
+            40091usize,
+            "Enum-Empty-Err",
+            40091usize
+        ) &&
+        csvCatalogKeyMatches(
+            "Enum-Lit-Record-MissingField",
+            40272usize,
+            "Enum-Lit-Record-MissingField",
+            40272usize
+        ) &&
+        csvCatalogKeyMatches(
+            "Enum-Lit-Tuple-Arity-Err",
+            40236usize,
+            "Enum-Lit-Tuple-Arity-Err",
+            40236usize
+        ) &&
+        csvCatalogKeyMatches(
+            "Enum-Lit-Unknown",
+            40200usize,
+            "Enum-Lit-Unknown",
+            40200usize
+        ) &&
+        csvCatalogKeyMatches(
+            "Enum-Variant-Dup",
+            40109usize,
+            "Enum-Variant-Dup",
+            40109usize
+        ) &&
+        csvCatalogKeyMatches(
+            "EvalSigma-Array",
+            36682usize,
+            "EvalSigma-Array",
+            36682usize
+        ) &&
+        csvCatalogKeyMatches(
+            "EvalSigma-Array-Ctrl",
+            36700usize,
+            "EvalSigma-Array-Ctrl",
+            36700usize
+        ) &&
+        csvCatalogKeyMatches(
+            "EvalSigma-Enum-Record",
+            40359usize,
+            "EvalSigma-Enum-Record",
+            40359usize
+        ) &&
+        csvCatalogKeyMatches(
+            "EvalSigma-Enum-Record-Ctrl",
+            40377usize,
+            "EvalSigma-Enum-Record-Ctrl",
+            40377usize
+        ) &&
+        csvCatalogKeyMatches(
+            "EvalSigma-Enum-Tuple",
+            40323usize,
+            "EvalSigma-Enum-Tuple",
+            40323usize
+        ) &&
+        csvCatalogKeyMatches(
+            "EvalSigma-Enum-Tuple-Ctrl",
+            40341usize,
+            "EvalSigma-Enum-Tuple-Ctrl",
+            40341usize
+        ) &&
+        csvCatalogKeyMatches(
+            "EvalSigma-Enum-Unit",
+            40306usize,
+            "EvalSigma-Enum-Unit",
+            40306usize
+        ) &&
+        csvCatalogKeyMatches(
+            "EvalSigma-Index",
+            36718usize,
+            "EvalSigma-Index",
+            36718usize
+        ) &&
+        csvCatalogKeyMatches(
+            "EvalSigma-Index-OOB",
+            36736usize,
+            "EvalSigma-Index-OOB",
+            36736usize
+        ) &&
+        csvCatalogKeyMatches(
+            "EvalSigma-Index-Range",
+            37290usize,
+            "EvalSigma-Index-Range",
+            37290usize
+        ) &&
+        csvCatalogKeyMatches(
+            "EvalSigma-Index-Range-OOB",
+            37308usize,
+            "EvalSigma-Index-Range-OOB",
+            37308usize
+        ) &&
+        csvCatalogKeyMatches(
+            "EvalSigma-Range",
+            37939usize,
+            "EvalSigma-Range",
+            37939usize
+        ) &&
+        csvCatalogKeyMatches(
+            "EvalSigma-Range-Ctrl",
+            37957usize,
+            "EvalSigma-Range-Ctrl",
+            37957usize
+        ) &&
+        csvCatalogKeyMatches(
+            "EvalSigma-Range-Ctrl-Hi",
+            37975usize,
+            "EvalSigma-Range-Ctrl-Hi",
+            37975usize
+        ) &&
+        csvCatalogKeyMatches(
+            "EvalSigma-Record",
+            39131usize,
+            "EvalSigma-Record",
+            39131usize
+        ) &&
+        csvCatalogKeyMatches(
+            "EvalSigma-Record-Ctrl",
+            39149usize,
+            "EvalSigma-Record-Ctrl",
+            39149usize
+        ) &&
+        csvCatalogKeyMatches(
+            "EvalSigma-Tuple",
+            35944usize,
+            "EvalSigma-Tuple",
+            35944usize
+        ) &&
+        csvCatalogKeyMatches(
+            "EvalSigma-Tuple-Ctrl",
+            35962usize,
+            "EvalSigma-Tuple-Ctrl",
+            35962usize
+        ) &&
+        csvCatalogKeyMatches(
+            "EvalSigma-TupleAccess",
+            35980usize,
+            "EvalSigma-TupleAccess",
+            35980usize
+        ) &&
+        csvCatalogKeyMatches(
+            "EvalSigma-TupleAccess-Ctrl",
+            35998usize,
+            "EvalSigma-TupleAccess-Ctrl",
+            35998usize
+        ) &&
+        csvCatalogKeyMatches(
+            "Exclusivity-Invariant",
+            26441usize,
+            "Exclusivity-Invariant",
+            26441usize
+        ) &&
+        csvCatalogKeyMatches(
+            "ExternAbi-Unknown-Err",
+            31647usize,
+            "ExternAbi-Unknown-Err",
+            31647usize
+        ) &&
+        csvCatalogKeyMatches(
+            "FSCreateWrite-HandleState",
+            13314usize,
+            "FSCreateWrite-HandleState",
+            13314usize
+        ) &&
+        csvCatalogKeyMatches(
+            "FSExists-False",
+            13195usize,
+            "FSExists-False",
+            13195usize
+        ) &&
+        csvCatalogKeyMatches(
+            "FSExists-True",
+            13180usize,
+            "FSExists-True",
+            13180usize
+        ) &&
+        csvCatalogKeyMatches(
+            "FSOpenAppend-HandleState",
+            13299usize,
+            "FSOpenAppend-HandleState",
+            13299usize
+        ) &&
+        csvCatalogKeyMatches(
+            "FSOpenDir-IteratorState",
+            13509usize,
+            "FSOpenDir-IteratorState",
+            13509usize
+        ) &&
+        csvCatalogKeyMatches(
+            "FSOpenRead-HandleState",
+            13269usize,
+            "FSOpenRead-HandleState",
+            13269usize
+        ) &&
+        csvCatalogKeyMatches(
+            "FSOpenWrite-HandleState",
+            13284usize,
+            "FSOpenWrite-HandleState",
+            13284usize
+        ) &&
+        csvCatalogKeyMatches(
+            "FSPath-Busy",
+            13120usize,
+            "FSPath-Busy",
+            13120usize
+        ) &&
+        csvCatalogKeyMatches(
+            "FSPath-CreateDirAlreadyExistsNonDir",
+            13090usize,
+            "FSPath-CreateDirAlreadyExistsNonDir",
+            13090usize
+        ) &&
+        csvCatalogKeyMatches(
+            "FSPath-CreateWriteAlreadyExists",
+            13075usize,
+            "FSPath-CreateWriteAlreadyExists",
+            13075usize
+        ) &&
+        csvCatalogKeyMatches(
+            "FSPath-InvalidPath-Data",
+            13030usize,
+            "FSPath-InvalidPath-Data",
+            13030usize
+        ) &&
+        csvCatalogKeyMatches(
+            "FSPath-InvalidPath-NoData",
+            13015usize,
+            "FSPath-InvalidPath-NoData",
+            13015usize
+        ) &&
+        csvCatalogKeyMatches(
+            "FSPath-NotFound",
+            13045usize,
+            "FSPath-NotFound",
+            13045usize
+        ) &&
+        csvCatalogKeyMatches(
+            "FSPath-OpenDirInvalidNonDir",
+            13105usize,
+            "FSPath-OpenDirInvalidNonDir",
+            13105usize
+        ) &&
+        csvCatalogKeyMatches(
+            "FSPath-OtherFailure",
+            13135usize,
+            "FSPath-OtherFailure",
+            13135usize
+        ) &&
+        csvCatalogKeyMatches(
+            "FSPath-PermissionDenied",
+            13060usize,
+            "FSPath-PermissionDenied",
+            13060usize
+        ) &&
+        csvCatalogKeyMatches(
+            "FSReadBytes-DelegatesThroughHandle",
+            13344usize,
+            "FSReadBytes-DelegatesThroughHandle",
+            13344usize
+        ) &&
+        csvCatalogKeyMatches(
+            "FSReadFile-DelegatesThroughHandle",
+            13329usize,
+            "FSReadFile-DelegatesThroughHandle",
+            13329usize
+        ) &&
+        csvCatalogKeyMatches(
+            "FSReadFile-InvalidUtf8",
+            13150usize,
+            "FSReadFile-InvalidUtf8",
+            13150usize
+        ) &&
+        csvCatalogKeyMatches(
+            "FSRestrict-Delegate",
+            12936usize,
+            "FSRestrict-Delegate",
+            12936usize
+        ) &&
+        csvCatalogKeyMatches(
+            "FSRestrict-ExistsInvalidFalse",
+            12966usize,
+            "FSRestrict-ExistsInvalidFalse",
+            12966usize
+        ) &&
+        csvCatalogKeyMatches(
+            "FSRestrict-InvalidPath",
+            12951usize,
+            "FSRestrict-InvalidPath",
+            12951usize
+        ) &&
+        csvCatalogKeyMatches(
+            "FieldVisOk-Err",
+            38999usize,
+            "FieldVisOk-Err",
+            38999usize
+        ) &&
+        csvCatalogKeyMatches(
+            "FileClose-ClosesHandle",
+            13494usize,
+            "FileClose-ClosesHandle",
+            13494usize
+        ) &&
+        csvCatalogKeyMatches(
+            "FileFlush-ClosedFailure",
+            13404usize,
+            "FileFlush-ClosedFailure",
+            13404usize
+        ) &&
+        csvCatalogKeyMatches(
+            "FileFlush-RecordsFlushed",
+            13479usize,
+            "FileFlush-RecordsFlushed",
+            13479usize
+        ) &&
+        csvCatalogKeyMatches(
+            "FileOrder-Rel-Fail",
+            4139usize,
+            "FileOrder-Rel-Fail",
+            4139usize
+        ) &&
+        csvCatalogKeyMatches(
+            "FileReadAll-AdvancesToEnd",
+            13419usize,
+            "FileReadAll-AdvancesToEnd",
+            13419usize
+        ) &&
+        csvCatalogKeyMatches(
+            "FileReadAll-ClosedFailure",
+            13359usize,
+            "FileReadAll-ClosedFailure",
+            13359usize
+        ) &&
+        csvCatalogKeyMatches(
+            "FileReadAll-InvalidUtf8",
+            13165usize,
+            "FileReadAll-InvalidUtf8",
+            13165usize
+        ) &&
+        csvCatalogKeyMatches(
+            "FileReadAllBytes-AdvancesToEnd",
+            13434usize,
+            "FileReadAllBytes-AdvancesToEnd",
+            13434usize
+        ) &&
+        csvCatalogKeyMatches(
+            "FileReadAllBytes-ClosedFailure",
+            13374usize,
+            "FileReadAllBytes-ClosedFailure",
+            13374usize
+        ) &&
+        csvCatalogKeyMatches(
+            "FileWrite-ClosedFailure",
+            13389usize,
+            "FileWrite-ClosedFailure",
+            13389usize
+        ) &&
+        csvCatalogKeyMatches(
+            "FileWrite-LengthUpdate",
+            13464usize,
+            "FileWrite-LengthUpdate",
+            13464usize
+        ) &&
+        csvCatalogKeyMatches(
+            "FileWrite-PositionUpdate",
+            13449usize,
+            "FileWrite-PositionUpdate",
+            13449usize
+        ) &&
+        csvCatalogKeyMatches(
+            "Finalize-Archive",
+            6147usize,
+            "Finalize-Archive",
+            6147usize
+        ) &&
+        csvCatalogKeyMatches(
+            "Finalize-Link",
+            6129usize,
+            "Finalize-Link",
+            6129usize
+        ) &&
+        csvCatalogKeyMatches(
+            "Fork-Join-Guarantee",
+            26521usize,
+            "Fork-Join-Guarantee",
+            26521usize
+        )
+}

@@ -7,12 +7,12 @@ public procedure countStatementsAndBlocksStatementDiagnosticsSupplementObligatio
 
 public procedure validatedStatementsAndBlocksStatementDiagnosticsSupplementObligations() -> usize {
     var count: usize = 0usize
-    if acceptedObligationEntryMatches(
+    if rejectedSourceObligationEntryMatches(
         "diag.18.StatementDiagnosticsSupplement",
         72108usize,
-        "HelloUltraviolet::Reference::Statements",
-        "runStatementsExpressionStatementsReference",
-        "Source/Reference/Statements/ExpressionStatements.uv"
+        "HelloUltraviolet::Fixtures::RejectedSource",
+        "validatedStatementsRejectedSourceFixtureCount",
+        "Fixtures/RejectedSource/Statements/StatementDiagnosticsSupplement/Source/Main.uv"
     ) {
         count = count + 1usize
     }

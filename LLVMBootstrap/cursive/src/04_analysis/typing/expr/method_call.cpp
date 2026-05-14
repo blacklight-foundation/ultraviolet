@@ -39,6 +39,7 @@
 #include "04_analysis/keys/key_paths.h"
 #include "04_analysis/modal/builtin_modal_intrinsics.h"
 #include "04_analysis/modal/modal_transitions.h"
+#include "04_analysis/resolve/scopes_lookup.h"
 #include "04_analysis/memory/calls.h"
 #include "04_analysis/memory/string_bytes.h"
 #include "04_analysis/resolve/scopes.h"
@@ -378,6 +379,100 @@ static bool IsTypeParamName(const std::vector<ast::TypeParam>& params,
 
 static bool TypePathEqLocal(const TypePath& lhs, const TypePath& rhs) {
   return lhs == rhs;
+}
+
+static std::optional<TypePath> ResolveComparableTypePath(
+    const ScopeContext& ctx,
+    const TypePath& path) {
+  ast::Path syntax_path;
+  syntax_path.reserve(path.size());
+  for (const auto& segment : path) {
+    syntax_path.push_back(segment);
+  }
+  if (ctx.sigma.types.find(PathKeyOf(syntax_path)) != ctx.sigma.types.end()) {
+    return path;
+  }
+
+  if (path.size() != 1) {
+    return std::nullopt;
+  }
+
+  const auto resolved = ResolveTypeName(ctx, path[0]);
+  if (!resolved.has_value() || !resolved->origin_opt.has_value()) {
+    return std::nullopt;
+  }
+
+  TypePath full_path = *resolved->origin_opt;
+  full_path.push_back(
+      resolved->target_opt.has_value() ? *resolved->target_opt : path[0]);
+  ast::Path full_syntax_path;
+  full_syntax_path.reserve(full_path.size());
+  for (const auto& segment : full_path) {
+    full_syntax_path.push_back(segment);
+  }
+  if (ctx.sigma.types.find(PathKeyOf(full_syntax_path)) == ctx.sigma.types.end()) {
+    return std::nullopt;
+  }
+  return full_path;
+}
+
+static bool TypePathEqInScope(const ScopeContext& ctx,
+                              const TypePath& lhs,
+                              const TypePath& rhs) {
+  if (TypePathEqLocal(lhs, rhs)) {
+    return true;
+  }
+  const auto lhs_resolved = ResolveComparableTypePath(ctx, lhs);
+  const auto rhs_resolved = ResolveComparableTypePath(ctx, rhs);
+  return lhs_resolved.has_value() &&
+         rhs_resolved.has_value() &&
+         TypePathEqLocal(*lhs_resolved, *rhs_resolved);
+}
+
+static TypeEquivResult TypeEquivInScope(const ScopeContext& ctx,
+                                        const TypeRef& lhs,
+                                        const TypeRef& rhs) {
+  const auto direct = TypeEquiv(lhs, rhs);
+  if (!direct.ok || direct.equiv || !lhs || !rhs) {
+    return direct;
+  }
+
+  const auto* lhs_perm = std::get_if<TypePerm>(&lhs->node);
+  const auto* rhs_perm = std::get_if<TypePerm>(&rhs->node);
+  if (lhs_perm || rhs_perm) {
+    const Permission lhs_permission =
+        lhs_perm ? lhs_perm->perm : Permission::Const;
+    const Permission rhs_permission =
+        rhs_perm ? rhs_perm->perm : Permission::Const;
+    if (lhs_permission != rhs_permission) {
+      return direct;
+    }
+    return TypeEquivInScope(
+        ctx,
+        lhs_perm ? lhs_perm->base : lhs,
+        rhs_perm ? rhs_perm->base : rhs);
+  }
+
+  const TypePath* lhs_path = AppliedTypePath(*lhs);
+  const TypePath* rhs_path = AppliedTypePath(*rhs);
+  const std::vector<TypeRef>* lhs_args = AppliedTypeArgs(*lhs);
+  const std::vector<TypeRef>* rhs_args = AppliedTypeArgs(*rhs);
+  if (lhs_path && rhs_path && lhs_args && rhs_args &&
+      TypePathEqInScope(ctx, *lhs_path, *rhs_path) &&
+      lhs_args->size() == rhs_args->size()) {
+    for (std::size_t i = 0; i < lhs_args->size(); ++i) {
+      const auto arg_equiv = TypeEquivInScope(ctx, (*lhs_args)[i], (*rhs_args)[i]);
+      if (!arg_equiv.ok) {
+        return arg_equiv;
+      }
+      if (!arg_equiv.equiv) {
+        return direct;
+      }
+    }
+    return {true, std::nullopt, true};
+  }
+
+  return direct;
 }
 
 static bool BindTypeParams(const ScopeContext& ctx,
@@ -912,9 +1007,8 @@ ExprTypeResult TypeMethodCallExprImpl(const ScopeContext& ctx,
         MakeTypePerm(Permission::Const, lookup_base);
     const auto expected_action_param =
         MakeTypePerm(Permission::Unique, lookup_base);
-
     const auto pred_param_eq =
-        TypeEquiv(pred_sig->params[0].type, expected_pred_param);
+        TypeEquivInScope(ctx, pred_sig->params[0].type, expected_pred_param);
     if (!pred_param_eq.ok) {
       result.diag_id = pred_param_eq.diag_id;
       return result;
@@ -925,7 +1019,7 @@ ExprTypeResult TypeMethodCallExprImpl(const ScopeContext& ctx,
     }
 
     const auto action_param_eq =
-        TypeEquiv(action_sig->params[0].type, expected_action_param);
+        TypeEquivInScope(ctx, action_sig->params[0].type, expected_action_param);
     if (!action_param_eq.ok) {
       result.diag_id = action_param_eq.diag_id;
       return result;
@@ -2117,6 +2211,8 @@ ExprTypeResult TypeMethodCallExprImpl(const ScopeContext& ctx,
   LowerTypeFn method_lower_type = lower_type;
   if (record_method && lookup.record_decl) {
     ScopeContext record_method_ctx = ctx;
+    record_method_ctx.sigma_source =
+        ctx.sigma_source ? ctx.sigma_source : &ctx.sigma;
     record_method_ctx.scopes =
         cursive::analysis::BindTypeParams(ctx, lookup.record_decl->generic_params);
 

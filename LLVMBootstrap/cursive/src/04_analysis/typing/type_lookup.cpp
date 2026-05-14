@@ -141,6 +141,7 @@ const ast::FieldDecl* LookupFieldDeclImpl(const ast::RecordDecl& record,
 ScopeContext BindRecordFieldTypeScope(const ScopeContext& ctx,
                                       const ast::RecordDecl& record) {
   ScopeContext field_ctx = ctx;
+  field_ctx.sigma_source = ctx.sigma_source ? ctx.sigma_source : &ctx.sigma;
   field_ctx.scopes = BindTypeParams(ctx, record.generic_params);
   return field_ctx;
 }

@@ -1,0 +1,604 @@
+//! Catalog primary-reference ordering check group 0033.
+
+internal procedure catalogPrimaryReferenceOrderGroup0033() -> bool {
+    return catalogPrimaryReferencePrecedes(
+            "diagnostics.22.QuoteSpliceEmissionDiagnosticsReference",
+            85683usize,
+            "diagnostics.22.ReflectionDiagnosticsReference",
+            85226usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "diagnostics.22.ReflectionDiagnosticsReference",
+            85226usize,
+            "diagnostics.23.BoundaryUnwindingDiagnosticOwnership",
+            89706usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "diagnostics.23.BoundaryUnwindingDiagnosticOwnership",
+            89706usize,
+            "diagnostics.23.BoundaryUnwindingNoAdditionalDiagnostics",
+            89693usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "diagnostics.23.BoundaryUnwindingNoAdditionalDiagnostics",
+            89693usize,
+            "diagnostics.23.CapabilityIsolationDiagnosticOwnership",
+            88810usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "diagnostics.23.CapabilityIsolationDiagnosticOwnership",
+            88810usize,
+            "diagnostics.23.CapabilityIsolationDiagnostics",
+            88795usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "diagnostics.23.CapabilityIsolationDiagnostics",
+            88795usize,
+            "diagnostics.23.ExternProcedureDiagnosticOwnership",
+            87292usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "diagnostics.23.ExternProcedureDiagnosticOwnership",
+            87292usize,
+            "diagnostics.23.ExternProcedureDiagnostics",
+            87276usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "diagnostics.23.ExternProcedureDiagnostics",
+            87276usize,
+            "diagnostics.23.FfiAttributeDiagnostics",
+            88616usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "diagnostics.23.FfiAttributeDiagnostics",
+            88616usize,
+            "diagnostics.23.FfiDiagnosticsSupplement",
+            89721usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "diagnostics.23.FfiDiagnosticsSupplement",
+            89721usize,
+            "diagnostics.23.FfiSafeDiagnostics",
+            87056usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "diagnostics.23.FfiSafeDiagnostics",
+            87056usize,
+            "diagnostics.23.ForeignContractDiagnostics",
+            89388usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "diagnostics.23.ForeignContractDiagnostics",
+            89388usize,
+            "diagnostics.23.HostedExportDiagnosticOwnership",
+            88229usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "diagnostics.23.HostedExportDiagnosticOwnership",
+            88229usize,
+            "diagnostics.23.HostedExportDiagnostics",
+            88210usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "diagnostics.23.HostedExportDiagnostics",
+            88210usize,
+            "diagnostics.23.RawExportDiagnosticOwnership",
+            87503usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "diagnostics.23.RawExportDiagnosticOwnership",
+            87503usize,
+            "diagnostics.23.RawExportDiagnostics",
+            87487usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "diagnostics.23.RawExportDiagnostics",
+            87487usize,
+            "diagnostics.AttributeDiagnostics",
+            27483usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "diagnostics.AttributeDiagnostics",
+            27483usize,
+            "diagnostics.CommandLineDiagnostics",
+            101135usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "diagnostics.CommandLineDiagnostics",
+            101135usize,
+            "diagnostics.CoreTypeDiagnostics",
+            26572usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "diagnostics.CoreTypeDiagnostics",
+            26572usize,
+            "diagnostics.DataTypesSupplement",
+            41620usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "diagnostics.DataTypesSupplement",
+            41620usize,
+            "diagnostics.DiagnosticsMetadataAttributes",
+            28605usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "diagnostics.DiagnosticsMetadataAttributes",
+            28605usize,
+            "diagnostics.Enums",
+            40579usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "diagnostics.Enums",
+            40579usize,
+            "diagnostics.ImportDeclarations",
+            30017usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "diagnostics.ImportDeclarations",
+            30017usize,
+            "diagnostics.LayoutAttributeDiagnostics",
+            27979usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "diagnostics.LayoutAttributeDiagnostics",
+            27979usize,
+            "diagnostics.ModalPointerSupplement",
+            47441usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "diagnostics.ModalPointerSupplement",
+            47441usize,
+            "diagnostics.ModuleAggregation",
+            34944usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "diagnostics.ModuleAggregation",
+            34944usize,
+            "diagnostics.NameResolutionAndReservedNames",
+            24069usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "diagnostics.NameResolutionAndReservedNames",
+            24069usize,
+            "diagnostics.OptimizationAttributeDiagnostics",
+            28124usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "diagnostics.OptimizationAttributeDiagnostics",
+            28124usize,
+            "diagnostics.ParsingDiagnostics",
+            12045usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "diagnostics.ParsingDiagnostics",
+            12045usize,
+            "diagnostics.PermissionAdmissibility",
+            29782usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "diagnostics.PermissionAdmissibility",
+            29782usize,
+            "diagnostics.ProjectDiagnostics",
+            6767usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "diagnostics.ProjectDiagnostics",
+            6767usize,
+            "diagnostics.Records",
+            39470usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "diagnostics.Records",
+            39470usize,
+            "diagnostics.RuntimeStateAndMemoryDiagnostics",
+            18702usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "diagnostics.RuntimeStateAndMemoryDiagnostics",
+            18702usize,
+            "diagnostics.SourceLexicalDiagnostics",
+            10319usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "diagnostics.SourceLexicalDiagnostics",
+            10319usize,
+            "diagnostics.StaticDeclarations",
+            31393usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "diagnostics.StaticDeclarations",
+            31393usize,
+            "diagnostics.TestAttributes",
+            28887usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "diagnostics.TestAttributes",
+            28887usize,
+            "diagnostics.Tuples",
+            36153usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "diagnostics.Tuples",
+            36153usize,
+            "diagnostics.UsingDeclarations",
+            30524usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "diagnostics.UsingDeclarations",
+            30524usize,
+            "diagnostics.VendorAttributeDiagnostics",
+            27692usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "diagnostics.VendorAttributeDiagnostics",
+            27692usize,
+            "front-matter.document-organization",
+            19usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "front-matter.document-organization",
+            19usize,
+            "front-matter.feature-section-template",
+            77usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "front-matter.feature-section-template",
+            77usize,
+            "front-matter.language-design-contract",
+            102usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "front-matter.language-design-contract",
+            102usize,
+            "grammar.14.AssociatedType",
+            50055usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "grammar.14.AssociatedType",
+            50055usize,
+            "grammar.14.DynamicClassObjects",
+            50413usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "grammar.14.DynamicClassObjects",
+            50413usize,
+            "grammar.14.OpaqueTypes",
+            51014usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "grammar.14.OpaqueTypes",
+            51014usize,
+            "grammar.14.RefinementTypes",
+            51232usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "grammar.14.RefinementTypes",
+            51232usize,
+            "grammar.15.ContractClauses",
+            54883usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "grammar.15.ContractClauses",
+            54883usize,
+            "grammar.15.Invariants",
+            56088usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "grammar.15.Invariants",
+            56088usize,
+            "grammar.15.MethodsAndReceivers",
+            53809usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "grammar.15.MethodsAndReceivers",
+            53809usize,
+            "grammar.15.Postconditions",
+            55676usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "grammar.15.Postconditions",
+            55676usize,
+            "grammar.15.ProcedureDeclarations",
+            52810usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "grammar.15.ProcedureDeclarations",
+            52810usize,
+            "grammar.16.AccessAndPlaceExpressions",
+            58095usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "grammar.16.AccessAndPlaceExpressions",
+            58095usize,
+            "grammar.16.CallExpressions",
+            58893usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "grammar.16.CallExpressions",
+            58893usize,
+            "grammar.16.CastAndTransmuteExpressions",
+            60383usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "grammar.16.CastAndTransmuteExpressions",
+            60383usize,
+            "grammar.16.ClosureAndPipelineExpressions",
+            63660usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "grammar.16.ClosureAndPipelineExpressions",
+            63660usize,
+            "grammar.16.ConstructionExpressions",
+            61042usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "grammar.16.ConstructionExpressions",
+            61042usize,
+            "grammar.16.ControlExpressions",
+            61709usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "grammar.16.ControlExpressions",
+            61709usize,
+            "grammar.16.EffectfulCoreExpressions",
+            62749usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "grammar.16.EffectfulCoreExpressions",
+            62749usize,
+            "grammar.16.LiteralAndNameExpressions",
+            57313usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "grammar.16.LiteralAndNameExpressions",
+            57313usize,
+            "grammar.16.OperatorExpressions",
+            59646usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "grammar.16.OperatorExpressions",
+            59646usize,
+            "grammar.17.BasicPatterns",
+            65052usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "grammar.17.BasicPatterns",
+            65052usize,
+            "grammar.17.CaseClauses",
+            66820usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "grammar.17.CaseClauses",
+            66820usize,
+            "grammar.17.EnumModalPatterns",
+            66048usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "grammar.17.EnumModalPatterns",
+            66048usize,
+            "grammar.17.RangePatterns",
+            66593usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "grammar.17.RangePatterns",
+            66593usize,
+            "grammar.17.TupleRecordPatterns",
+            65531usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "grammar.17.TupleRecordPatterns",
+            65531usize,
+            "grammar.18.AssignmentStatements",
+            69822usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "grammar.18.AssignmentStatements",
+            69822usize,
+            "grammar.18.BindingStatements",
+            69081usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "grammar.18.BindingStatements",
+            69081usize,
+            "grammar.18.Blocks",
+            68010usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "grammar.18.Blocks",
+            68010usize,
+            "grammar.18.ControlTransferStatements",
+            71448usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "grammar.18.ControlTransferStatements",
+            71448usize,
+            "grammar.18.Defer",
+            70385usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "grammar.18.Defer",
+            70385usize,
+            "grammar.18.ExpressionStatements",
+            70251usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "grammar.18.ExpressionStatements",
+            70251usize,
+            "grammar.18.Frame",
+            71041usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "grammar.18.Frame",
+            71041usize,
+            "grammar.18.LocalUsingStatements",
+            69635usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "grammar.18.LocalUsingStatements",
+            69635usize,
+            "grammar.18.Region",
+            70649usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "grammar.18.Region",
+            70649usize,
+            "grammar.18.UnsafeStatements",
+            71963usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "grammar.18.UnsafeStatements",
+            71963usize,
+            "grammar.19.KeyAcquisitionBlocks",
+            72498usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "grammar.19.KeyAcquisitionBlocks",
+            72498usize,
+            "grammar.19.KeyPaths",
+            72142usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "grammar.19.KeyPaths",
+            72142usize,
+            "grammar.19.MemoryOrdering",
+            75037usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "grammar.19.MemoryOrdering",
+            75037usize,
+            "grammar.19.SpeculativeExecution",
+            74191usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "grammar.19.SpeculativeExecution",
+            74191usize,
+            "grammar.20.Dispatch",
+            77251usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "grammar.20.Dispatch",
+            77251usize,
+            "grammar.20.ExecutionDomainExamples",
+            75731usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "grammar.20.ExecutionDomainExamples",
+            75731usize,
+            "grammar.20.ParallelBlocks",
+            75322usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "grammar.20.ParallelBlocks",
+            75322usize,
+            "grammar.20.Spawn",
+            77015usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "grammar.20.Spawn",
+            77015usize,
+            "grammar.21.CompositionForms",
+            80031usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "grammar.21.CompositionForms",
+            80031usize,
+            "grammar.21.SuspensionForms",
+            79038usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "grammar.21.SuspensionForms",
+            79038usize,
+            "grammar.22.CompileTimeForms",
+            83283usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "grammar.22.CompileTimeForms",
+            83283usize,
+            "grammar.22.DeriveTargetsAndContracts",
+            85700usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "grammar.22.DeriveTargetsAndContracts",
+            85700usize,
+            "grammar.22.QuoteSpliceEmission",
+            85243usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "grammar.22.QuoteSpliceEmission",
+            85243usize,
+            "grammar.22.TypeLiteral",
+            84788usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "grammar.22.TypeLiteral",
+            84788usize,
+            "grammar.23.ExternProcedureDecl",
+            87082usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "grammar.23.ExternProcedureDecl",
+            87082usize,
+            "grammar.23.FfiAttributes",
+            88246usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "grammar.23.FfiAttributes",
+            88246usize,
+            "grammar.23.ForeignContracts",
+            88827usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "grammar.23.ForeignContracts",
+            88827usize,
+            "grammar.24.CleanupItem",
+            95151usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "grammar.24.CleanupItem",
+            95151usize,
+            "grammar.ArraySyntax",
+            36177usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "grammar.ArraySyntax",
+            36177usize,
+            "grammar.AttributeSyntaxAndPlacement",
+            26600usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "grammar.AttributeSyntaxAndPlacement",
+            26600usize,
+            "grammar.B.1.LexicalGrammar",
+            100372usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "grammar.B.1.LexicalGrammar",
+            100372usize,
+            "grammar.B.10.ConcurrencyGrammar",
+            100919usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "grammar.B.10.ConcurrencyGrammar",
+            100919usize,
+            "grammar.B.11.AsyncGrammar",
+            100953usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "grammar.B.11.AsyncGrammar",
+            100953usize,
+            "grammar.B.12.MetaprogrammingGrammar",
+            100982usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "grammar.B.12.MetaprogrammingGrammar",
+            100982usize,
+            "grammar.B.13.FFIGrammar",
+            101015usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "grammar.B.13.FFIGrammar",
+            101015usize,
+            "grammar.B.14.RegionGrammar",
+            101041usize
+        )
+}

@@ -6,8 +6,16 @@ public procedure asyncYieldReleaseReference(value: i32) -> AsyncReferenceComputa
     return resumed
 }
 
+/// Delegates through another async computation with the release modifier.
+public procedure asyncYieldReleaseFromReference(value: i32) -> AsyncReferenceComputation {
+    let resumed: i32 = yield release from asyncSuspendsReference(value)
+    return resumed + 1
+}
+
 /// Exercises the Async AsyncKeyIntegration reference surface.
 public procedure runAsyncAsyncKeyIntegrationReference() -> bool {
     let released: AsyncReferenceComputation = asyncYieldReleaseReference(41)
-    return asyncSuspendedOutputIs(released, 41)
+    let delegated: AsyncReferenceComputation = asyncYieldReleaseFromReference(42)
+    return asyncSuspendedOutputIs(released, 41) &&
+        asyncSuspendedOutputIs(delegated, 42)
 }

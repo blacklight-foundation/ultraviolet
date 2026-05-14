@@ -1,0 +1,604 @@
+//! Catalog primary-reference ordering check group 0035.
+
+internal procedure catalogPrimaryReferenceOrderGroup0035() -> bool {
+    return catalogPrimaryReferencePrecedes(
+            "req.14.ModalClassImplementationRequiresModalType",
+            49967usize,
+            "req.14.OpaqueEquivalenceAndInterfaceExposure",
+            51170usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "req.14.OpaqueEquivalenceAndInterfaceExposure",
+            51170usize,
+            "req.14.OpaqueTypesComposeAsTypeForms",
+            51029usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "req.14.OpaqueTypesComposeAsTypeForms",
+            51029usize,
+            "req.14.OpaqueTypesLowerAsConcrete",
+            51200usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "req.14.OpaqueTypesLowerAsConcrete",
+            51200usize,
+            "req.14.OpaqueTypesNoRuntimeWrapper",
+            51185usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "req.14.OpaqueTypesNoRuntimeWrapper",
+            51185usize,
+            "req.14.RefinementDecidablePredicateFragment",
+            51462usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "req.14.RefinementDecidablePredicateFragment",
+            51462usize,
+            "req.14.RefinementRuntimeCheckLowering",
+            51521usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "req.14.RefinementRuntimeCheckLowering",
+            51521usize,
+            "req.14.RefinementRuntimeRepresentationAndPanic",
+            51490usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "req.14.RefinementRuntimeRepresentationAndPanic",
+            51490usize,
+            "req.14.RefinementSelfBinding",
+            51249usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "req.14.RefinementSelfBinding",
+            51249usize,
+            "req.14.RefinementStaticDefaultDynamicFallback",
+            51475usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "req.14.RefinementStaticDefaultDynamicFallback",
+            51475usize,
+            "req.14.StepPartialInverseContract",
+            52621usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "req.14.StepPartialInverseContract",
+            52621usize,
+            "req.15.BehavioralSubtypingLiskovRequirement",
+            57134usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "req.15.BehavioralSubtypingLiskovRequirement",
+            57134usize,
+            "req.15.BehavioralSubtypingLoweringNoExtraChecks",
+            57225usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "req.15.BehavioralSubtypingLoweringNoExtraChecks",
+            57225usize,
+            "req.15.BehavioralSubtypingNoAdditionalRuntimeSemantics",
+            57210usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "req.15.BehavioralSubtypingNoAdditionalRuntimeSemantics",
+            57210usize,
+            "req.15.BehavioralSubtypingNoRuntimeChecks",
+            57195usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "req.15.BehavioralSubtypingNoRuntimeChecks",
+            57195usize,
+            "req.15.BehavioralSubtypingNoSurfaceSyntax",
+            57089usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "req.15.BehavioralSubtypingNoSurfaceSyntax",
+            57089usize,
+            "req.15.BehavioralSubtypingNotParserOwned",
+            57104usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "req.15.BehavioralSubtypingNotParserOwned",
+            57104usize,
+            "req.15.BehavioralSubtypingPostconditionRule",
+            57163usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "req.15.BehavioralSubtypingPostconditionRule",
+            57163usize,
+            "req.15.BehavioralSubtypingPreconditionRule",
+            57147usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "req.15.BehavioralSubtypingPreconditionRule",
+            57147usize,
+            "req.15.BehavioralSubtypingVerificationStrategy",
+            57179usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "req.15.BehavioralSubtypingVerificationStrategy",
+            57179usize,
+            "req.15.CallerResponsibleForPrecondition",
+            55614usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "req.15.CallerResponsibleForPrecondition",
+            55614usize,
+            "req.15.ClassAndStateMethodsReuseReceiverForms",
+            53826usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "req.15.ClassAndStateMethodsReuseReceiverForms",
+            53826usize,
+            "req.15.ContractClauseLoweringViaVerificationResults",
+            55483usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "req.15.ContractClauseLoweringViaVerificationResults",
+            55483usize,
+            "req.15.ContractClausesNoIndependentRuntimeEffect",
+            55468usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "req.15.ContractClausesNoIndependentRuntimeEffect",
+            55468usize,
+            "req.15.ContractEntryConstraints",
+            55938usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "req.15.ContractEntryConstraints",
+            55938usize,
+            "req.15.ContractEntryRuntimeCapture",
+            55987usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "req.15.ContractEntryRuntimeCapture",
+            55987usize,
+            "req.15.ContractNeverPureForms",
+            55427usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "req.15.ContractNeverPureForms",
+            55427usize,
+            "req.15.ContractResultProperties",
+            55809usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "req.15.ContractResultProperties",
+            55809usize,
+            "req.15.DuplicateErasedOverloadSignaturesForbidden",
+            54804usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "req.15.DuplicateErasedOverloadSignaturesForbidden",
+            54804usize,
+            "req.15.DynamicChecksInjectFacts",
+            56914usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "req.15.DynamicChecksInjectFacts",
+            56914usize,
+            "req.15.ExportedProcedureForeignCallableObligations",
+            53246usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "req.15.ExportedProcedureForeignCallableObligations",
+            53246usize,
+            "req.15.ExternProcedureDeclarationsOwnedByFFI",
+            52828usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "req.15.ExternProcedureDeclarationsOwnedByFFI",
+            52828usize,
+            "req.15.FactGeneration",
+            56779usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "req.15.FactGeneration",
+            56779usize,
+            "req.15.ForeignContractStartDisambiguatesContracts",
+            54905usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "req.15.ForeignContractStartDisambiguatesContracts",
+            54905usize,
+            "req.15.FreeCallOverloadResolutionAlgorithm",
+            54782usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "req.15.FreeCallOverloadResolutionAlgorithm",
+            54782usize,
+            "req.15.FreeProcedureOverloadResolutionBeforeCallTyping",
+            54769usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "req.15.FreeProcedureOverloadResolutionBeforeCallTyping",
+            54769usize,
+            "req.15.InvariantLoweringViaVerificationLogic",
+            56317usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "req.15.InvariantLoweringViaVerificationLogic",
+            56317usize,
+            "req.15.InvariantRuntimeChecks",
+            56302usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "req.15.InvariantRuntimeChecks",
+            56302usize,
+            "req.15.InvariantVerificationModeRules",
+            56287usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "req.15.InvariantVerificationModeRules",
+            56287usize,
+            "req.15.LinearEntailmentSoundAndComplete",
+            56698usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "req.15.LinearEntailmentSoundAndComplete",
+            56698usize,
+            "req.15.LoopInvariantExitFact",
+            56274usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "req.15.LoopInvariantExitFact",
+            56274usize,
+            "req.15.MainProgramEntryHandlingOwnedByChapter24",
+            53777usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "req.15.MainProgramEntryHandlingOwnedByChapter24",
+            53777usize,
+            "req.15.MandatoryProofTechniques",
+            56518usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "req.15.MandatoryProofTechniques",
+            56518usize,
+            "req.15.MethodsLowerAsProceduresWithReceiverFirst",
+            54597usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "req.15.MethodsLowerAsProceduresWithReceiverFirst",
+            54597usize,
+            "req.15.NoRuntimeOverloadSearch",
+            54819usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "req.15.NoRuntimeOverloadSearch",
+            54819usize,
+            "req.15.OverloadResolutionCompleteBeforeLowering",
+            54834usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "req.15.OverloadResolutionCompleteBeforeLowering",
+            54834usize,
+            "req.15.OverloadResolutionNotParserConcern",
+            54692usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "req.15.OverloadResolutionNotParserConcern",
+            54692usize,
+            "req.15.OverloadingNoAdditionalSyntax",
+            54677usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "req.15.OverloadingNoAdditionalSyntax",
+            54677usize,
+            "req.15.OwnerSpecificReceiverRestrictionsReuseCommonForms",
+            54382usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "req.15.OwnerSpecificReceiverRestrictionsReuseCommonForms",
+            54382usize,
+            "req.15.PostconditionLoweringRepresentation",
+            56056usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "req.15.PostconditionLoweringRepresentation",
+            56056usize,
+            "req.15.PostconditionResultRuntimeBinding",
+            55974usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "req.15.PostconditionResultRuntimeBinding",
+            55974usize,
+            "req.15.PreconditionCheckInsertionOwnedByVerificationLogic",
+            55644usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "req.15.PreconditionCheckInsertionOwnedByVerificationLogic",
+            55644usize,
+            "req.15.PreconditionRuntimeEvaluationOrder",
+            55629usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "req.15.PreconditionRuntimeEvaluationOrder",
+            55629usize,
+            "req.15.PreconditionSyntaxDefinition",
+            55515usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "req.15.PreconditionSyntaxDefinition",
+            55515usize,
+            "req.15.PreconditionsParsedByContractBody",
+            55530usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "req.15.PreconditionsParsedByContractBody",
+            55530usize,
+            "req.15.PrivateProceduresExemptFromTypeInvariantPreCall",
+            56244usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "req.15.PrivateProceduresExemptFromTypeInvariantPreCall",
+            56244usize,
+            "req.15.TypeInvariantsForbidPublicMutableFields",
+            56231usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "req.15.TypeInvariantsForbidPublicMutableFields",
+            56231usize,
+            "req.15.TypeNarrowingFromFacts",
+            56802usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "req.15.TypeNarrowingFromFacts",
+            56802usize,
+            "req.15.VerificationFactsNoRuntimeRepresentation",
+            56746usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "req.15.VerificationFactsNoRuntimeRepresentation",
+            56746usize,
+            "req.15.VerificationLogicNoSurfaceSyntax",
+            56349usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "req.15.VerificationLogicNoSurfaceSyntax",
+            56349usize,
+            "req.15.VerificationLogicNotParserOwned",
+            56364usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "req.15.VerificationLogicNotParserOwned",
+            56364usize,
+            "req.16.AccessPostfixOwnership",
+            58111usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "req.16.AccessPostfixOwnership",
+            58111usize,
+            "req.16.ArraySliceIndexDiagnosticsAndPanicBehavior",
+            58876usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "req.16.ArraySliceIndexDiagnosticsAndPanicBehavior",
+            58876usize,
+            "req.16.BlockTypingOwnershipForControlExpressions",
+            61914usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "req.16.BlockTypingOwnershipForControlExpressions",
+            61914usize,
+            "req.16.CallControlPropagation",
+            59484usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "req.16.CallControlPropagation",
+            59484usize,
+            "req.16.CallTypeArgsEvaluationElaboration",
+            59510usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "req.16.CallTypeArgsEvaluationElaboration",
+            59510usize,
+            "req.16.CallTypeArgsLoweringElaboration",
+            59614usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "req.16.CallTypeArgsLoweringElaboration",
+            59614usize,
+            "req.16.CallTypeArgsStaticOwnership",
+            59315usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "req.16.CallTypeArgsStaticOwnership",
+            59315usize,
+            "req.16.ClosureCallResolvedInternalFormRuntime",
+            64641usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "req.16.ClosureCallResolvedInternalFormRuntime",
+            64641usize,
+            "req.16.ClosureInvocationOrdinaryCallSyntax",
+            63705usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "req.16.ClosureInvocationOrdinaryCallSyntax",
+            63705usize,
+            "req.16.ClosureParamInferenceFailure",
+            64456usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "req.16.ClosureParamInferenceFailure",
+            64456usize,
+            "req.16.ClosureParamTrailingComma",
+            63679usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "req.16.ClosureParamTrailingComma",
+            63679usize,
+            "req.16.ClosureSharedDependencyInference",
+            64247usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "req.16.ClosureSharedDependencyInference",
+            64247usize,
+            "req.16.ClosureSharedDependencyInferenceRestated",
+            64469usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "req.16.ClosureSharedDependencyInferenceRestated",
+            64469usize,
+            "req.16.ClosureUnionParamParentheses",
+            63692usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "req.16.ClosureUnionParamParentheses",
+            63692usize,
+            "req.16.ControlExpressionDiagnosticOwnership",
+            62731usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "req.16.ControlExpressionDiagnosticOwnership",
+            62731usize,
+            "req.16.ControlExpressionLoweringOwnership",
+            62703usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "req.16.ControlExpressionLoweringOwnership",
+            62703usize,
+            "req.16.ControlExpressionOwnership",
+            61734usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "req.16.ControlExpressionOwnership",
+            61734usize,
+            "req.16.EffectfulCoreLoweringMechanics",
+            63628usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "req.16.EffectfulCoreLoweringMechanics",
+            63628usize,
+            "req.16.EnumConstructorAndRecordDefaultSyntaxResolution",
+            61064usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "req.16.EnumConstructorAndRecordDefaultSyntaxResolution",
+            61064usize,
+            "req.16.ExternProcedureCallsRequireUnsafe",
+            59341usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "req.16.ExternProcedureCallsRequireUnsafe",
+            59341usize,
+            "req.16.FloatUnaryNegationTotality",
+            60051usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "req.16.FloatUnaryNegationTotality",
+            60051usize,
+            "req.16.IndexAccessRuntimeFailuresAndControlPropagation",
+            58709usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "req.16.IndexAccessRuntimeFailuresAndControlPropagation",
+            58709usize,
+            "req.16.IntToFloatLoweringPreservesSignedness",
+            60773usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "req.16.IntToFloatLoweringPreservesSignedness",
+            60773usize,
+            "req.16.LoopInvariantTypingOwnership",
+            62055usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "req.16.LoopInvariantTypingOwnership",
+            62055usize,
+            "req.16.LowerCapturedIdentRefTemporaries",
+            64869usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "req.16.LowerCapturedIdentRefTemporaries",
+            64869usize,
+            "req.16.LowerClosureCallResolvedInternalForm",
+            64947usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "req.16.LowerClosureCallResolvedInternalForm",
+            64947usize,
+            "req.16.MethodCallControlPropagation",
+            59497usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "req.16.MethodCallControlPropagation",
+            59497usize,
+            "req.16.MethodRecordClosureCallStaticOwnership",
+            59328usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "req.16.MethodRecordClosureCallStaticOwnership",
+            59328usize,
+            "req.16.NamePathEvaluationMayPanicForPoisonedModules",
+            57968usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "req.16.NamePathEvaluationMayPanicForPoisonedModules",
+            57968usize,
+            "req.16.OperatorPrefixSyntaxOwnership",
+            59677usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "req.16.OperatorPrefixSyntaxOwnership",
+            59677usize,
+            "req.16.OperatorUndefinedAndNaNBehavior",
+            60197usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "req.16.OperatorUndefinedAndNaNBehavior",
+            60197usize,
+            "req.16.PatternTypingOwnershipForControlExpressions",
+            61978usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "req.16.PatternTypingOwnershipForControlExpressions",
+            61978usize,
+            "req.16.PipelineDesugaring",
+            64654usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "req.16.PipelineDesugaring",
+            64654usize,
+            "req.16.PlaceReadWriteLoweringPreservesAccessBehavior",
+            58848usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "req.16.PlaceReadWriteLoweringPreservesAccessBehavior",
+            58848usize,
+            "req.16.QualifiedApplicationOwnership",
+            57331usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "req.16.QualifiedApplicationOwnership",
+            57331usize,
+            "req.16.QualifiedApplyParenPreResolution",
+            58912usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "req.16.QualifiedApplyParenPreResolution",
+            58912usize,
+            "req.16.QualifiedBraceApplicationResolution",
+            61293usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "req.16.QualifiedBraceApplicationResolution",
+            61293usize,
+            "req.16.QualifiedNameEliminatedBeforeTyping",
+            57839usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "req.16.QualifiedNameEliminatedBeforeTyping",
+            57839usize,
+            "req.16.QualifiedParenApplicationConstructionResolution",
+            61309usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "req.16.QualifiedParenApplicationConstructionResolution",
+            61309usize,
+            "req.16.QualifiedParenthesizedApplicationResolution",
+            59061usize
+        )
+}

@@ -46,6 +46,22 @@ internal procedure namedParallelValue(context: Context) -> i32 {
     }
 }
 
+internal procedure optionedParallelValue(context: Context) -> i32 {
+    let token: CancelToken@Active = CancelToken::new()
+    return parallel context~>inline() [
+        name: "parallel-block-options-reference",
+        cancel: token,
+        workgroup: (1024usize, 1usize, 1usize),
+        workgroups: (1usize, 1usize, 1usize),
+    ] {
+        if token~>is_cancelled() {
+            0
+        } else {
+            16
+        }
+    }
+}
+
 /// Exercises the Parallelism ParallelBlocks reference surface.
 public procedure runParallelismParallelBlocksReference(context: Context) -> bool {
     let reference: ParallelReference = parallelReference(
@@ -53,5 +69,6 @@ public procedure runParallelismParallelBlocksReference(context: Context) -> bool
         cpuParallelValue(context),
         namedParallelValue(context)
     )
-    return parallelReferenceIsCovered(reference)
+    return parallelReferenceIsCovered(reference) &&
+        optionedParallelValue(context) == 16
 }

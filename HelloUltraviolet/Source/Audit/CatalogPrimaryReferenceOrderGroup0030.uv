@@ -1,0 +1,604 @@
+//! Catalog primary-reference ordering check group 0030.
+
+internal procedure catalogPrimaryReferenceOrderGroup0030() -> bool {
+    return catalogPrimaryReferencePrecedes(
+            "def.StaticSymPath",
+            31051usize,
+            "def.StaticType",
+            31107usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.StaticType",
+            31107usize,
+            "def.StaticUndefined",
+            658usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.StaticUndefined",
+            658usize,
+            "def.StaticVisOk",
+            30663usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.StaticVisOk",
+            30663usize,
+            "def.StmtKind",
+            440usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.StmtKind",
+            440usize,
+            "def.StrictProvenanceLifetimeOrder",
+            16417usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.StrictProvenanceLifetimeOrder",
+            16417usize,
+            "def.StringBuiltinSig",
+            44436usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.StringBuiltinSig",
+            44436usize,
+            "def.StringBuiltinTable",
+            44414usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.StringBuiltinTable",
+            44414usize,
+            "def.StringBytesBuiltinSig",
+            45186usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.StringBytesBuiltinSig",
+            45186usize,
+            "def.StringBytesBuiltinTable",
+            45162usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.StringBytesBuiltinTable",
+            45162usize,
+            "def.StringBytesJudgementSet",
+            44575usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.StringBytesJudgementSet",
+            44575usize,
+            "def.StringBytesJudgementSet",
+            45294usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.StringBytesJudgementSet",
+            45294usize,
+            "def.StringBytesStoreDomains",
+            44506usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.StringBytesStoreDomains",
+            44506usize,
+            "def.StringCharacterValidity",
+            8726usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.StringCharacterValidity",
+            8726usize,
+            "def.StringHelpers",
+            8787usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.StringHelpers",
+            8787usize,
+            "def.StringLiteralVal",
+            44494usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.StringLiteralVal",
+            44494usize,
+            "def.StringManagedLoweringLayout",
+            44831usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.StringManagedLoweringLayout",
+            44831usize,
+            "def.StringRuntimeLength",
+            44816usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.StringRuntimeLength",
+            44816usize,
+            "def.StringStateSet",
+            44402usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.StringStateSet",
+            44402usize,
+            "def.StringTerminator",
+            9205usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.StringTerminator",
+            9205usize,
+            "def.StringValueBits",
+            44987usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.StringValueBits",
+            44987usize,
+            "def.StringValueTypes",
+            44561usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.StringValueTypes",
+            44561usize,
+            "def.StringViewLoweringLayout",
+            44845usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.StringViewLoweringLayout",
+            44845usize,
+            "def.StringViewOf",
+            44802usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.StringViewOf",
+            44802usize,
+            "def.StripLeadBOM",
+            7039usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.StripLeadBOM",
+            7039usize,
+            "def.StructBits",
+            39357usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.StructBits",
+            39357usize,
+            "def.SubBlocks",
+            15743usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.SubBlocks",
+            15743usize,
+            "def.SubstSelf",
+            49015usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.SubstSelf",
+            49015usize,
+            "def.SubstitutionApplication",
+            25409usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.SubstitutionApplication",
+            25409usize,
+            "def.SubstitutionComposition",
+            25433usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.SubstitutionComposition",
+            25433usize,
+            "def.SubstitutionDefinedDomain",
+            25381usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.SubstitutionDefinedDomain",
+            25381usize,
+            "def.SubstitutionDomain",
+            25367usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.SubstitutionDomain",
+            25367usize,
+            "def.SubtypingJudgementSet",
+            24717usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.SubtypingJudgementSet",
+            24717usize,
+            "def.SuffixMatch",
+            8920usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.SuffixMatch",
+            8920usize,
+            "def.SuggestedMaxErrorCount",
+            885usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.SuggestedMaxErrorCount",
+            885usize,
+            "def.Supers",
+            49070usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.Supers",
+            49070usize,
+            "def.SuspendUniquePath",
+            15342usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.SuspendUniquePath",
+            15342usize,
+            "def.SymbolName",
+            5313usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.SymbolName",
+            5313usize,
+            "def.SystemPrimitiveJudgments",
+            13603usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.SystemPrimitiveJudgments",
+            13603usize,
+            "def.SystemPrimitiveStateElidedEquivalences",
+            13618usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.SystemPrimitiveStateElidedEquivalences",
+            13618usize,
+            "def.SystemState",
+            13586usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.SystemState",
+            13586usize,
+            "def.TagAddr",
+            18074usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.TagAddr",
+            18074usize,
+            "def.TagAddrFrom",
+            18088usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.TagAddrFrom",
+            18088usize,
+            "def.TaggedBits",
+            41139usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.TaggedBits",
+            41139usize,
+            "def.TargetArch",
+            1218usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.TargetArch",
+            1218usize,
+            "def.TargetMachineModel",
+            1234usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.TargetMachineModel",
+            1234usize,
+            "def.TargetProfile",
+            1171usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.TargetProfile",
+            1171usize,
+            "def.TargetTriple",
+            1249usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.TargetTriple",
+            1249usize,
+            "def.TemporaryDropOrder",
+            15603usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.TemporaryDropOrder",
+            15603usize,
+            "def.TemporaryEvaluationOrder",
+            15566usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.TemporaryEvaluationOrder",
+            15566usize,
+            "def.TemporaryScope",
+            15536usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.TemporaryScope",
+            15536usize,
+            "def.TemporaryValuePredicate",
+            15552usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.TemporaryValuePredicate",
+            15552usize,
+            "def.TestAttributeArgsOk",
+            28729usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.TestAttributeArgsOk",
+            28729usize,
+            "def.TestCoverage",
+            28698usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.TestCoverage",
+            28698usize,
+            "def.TestDiscoveryOrder",
+            28869usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.TestDiscoveryOrder",
+            28869usize,
+            "def.TestName",
+            28683usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.TestName",
+            28683usize,
+            "def.TimePrimitiveJudgments",
+            13722usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.TimePrimitiveJudgments",
+            13722usize,
+            "def.TimePrimitiveValueConstructors",
+            13737usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.TimePrimitiveValueConstructors",
+            13737usize,
+            "def.TokLine",
+            11444usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.TokLine",
+            11444usize,
+            "def.Token",
+            1448usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.Token",
+            1448usize,
+            "def.TokenCandidates",
+            9676usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.TokenCandidates",
+            9676usize,
+            "def.TokenConsumptionState",
+            11220usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.TokenConsumptionState",
+            11220usize,
+            "def.TokenEOF",
+            8016usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.TokenEOF",
+            8016usize,
+            "def.TokenKind",
+            1400usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.TokenKind",
+            1400usize,
+            "def.TokenKinds",
+            8364usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.TokenKinds",
+            8364usize,
+            "def.TokenizeOutputConstraints",
+            7420usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.TokenizeOutputConstraints",
+            7420usize,
+            "def.TokensBetween",
+            11430usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.TokensBetween",
+            11430usize,
+            "def.ToolVersion",
+            6643usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.ToolVersion",
+            6643usize,
+            "def.ToolchainConfig",
+            3045usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.ToolchainConfig",
+            3045usize,
+            "def.ToolchainKeys",
+            2980usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.ToolchainKeys",
+            2980usize,
+            "def.ToolchainTargetProfileOk",
+            2995usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.ToolchainTargetProfileOk",
+            2995usize,
+            "def.TopDeclConstructs",
+            311usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.TopDeclConstructs",
+            311usize,
+            "def.TopLevelDeclarationPredicate",
+            19766usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.TopLevelDeclarationPredicate",
+            19766usize,
+            "def.TrackedMembersAndDecl",
+            42587usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.TrackedMembersAndDecl",
+            42587usize,
+            "def.TrackedPayload",
+            42571usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.TrackedPayload",
+            42571usize,
+            "def.TrackedTypeBinding",
+            42607usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.TrackedTypeBinding",
+            42607usize,
+            "def.TrackedTypePresence",
+            42558usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.TrackedTypePresence",
+            42558usize,
+            "def.TrailingComma",
+            11416usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.TrailingComma",
+            11416usize,
+            "def.TrailingCommaAllowed",
+            11458usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.TrailingCommaAllowed",
+            11458usize,
+            "def.TransitionBindingCheck",
+            16174usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.TransitionBindingCheck",
+            16174usize,
+            "def.TransitionCollections",
+            43736usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.TransitionCollections",
+            43736usize,
+            "def.TransitionDeclAst",
+            43724usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.TransitionDeclAst",
+            43724usize,
+            "def.TransitionMethodTarget",
+            43928usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.TransitionMethodTarget",
+            43928usize,
+            "def.TransitionSig",
+            43763usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.TransitionSig",
+            43763usize,
+            "def.TransitionTarget",
+            43964usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.TransitionTarget",
+            43964usize,
+            "def.TranslationPhases",
+            527usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.TranslationPhases",
+            527usize,
+            "def.Trunc8",
+            5329usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.Trunc8",
+            5329usize,
+            "def.TupleExpressionAst",
+            35690usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.TupleExpressionAst",
+            35690usize,
+            "def.TupleFields",
+            35705usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.TupleFields",
+            35705usize,
+            "def.TupleLayoutJudgementSet",
+            36016usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.TupleLayoutJudgementSet",
+            36016usize,
+            "def.TupleParen",
+            35570usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.TupleParen",
+            35570usize,
+            "def.TupleScanDelimiterDeltas",
+            35426usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.TupleScanDelimiterDeltas",
+            35426usize,
+            "def.TupleScanDepthAndStep",
+            35450usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.TupleScanDepthAndStep",
+            35450usize,
+            "def.TupleScanPredicates",
+            35466usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.TupleScanPredicates",
+            35466usize,
+            "def.TupleTypeAst",
+            35674usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.TupleTypeAst",
+            35674usize,
+            "def.TupleValueBits",
+            36121usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.TupleValueBits",
+            36121usize,
+            "def.TupleValueOperations",
+            18505usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.TupleValueOperations",
+            18505usize,
+            "def.TupleValueType",
+            35928usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.TupleValueType",
+            35928usize,
+            "def.TypeASTRecordShapes",
+            10540usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.TypeASTRecordShapes",
+            10540usize,
+            "def.TypeASTVariants",
+            10525usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.TypeASTVariants",
+            10525usize,
+            "def.TypeAliasAccessors",
+            41284usize
+        )
+}

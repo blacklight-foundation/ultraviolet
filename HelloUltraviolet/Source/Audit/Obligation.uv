@@ -68,3 +68,123 @@ public procedure acceptedObligationEntryMatches(
         source_path
     )
 }
+
+public procedure acceptedProjectObligationEntryMatches(
+    id: string@View,
+    internal_spec_line: usize,
+    module_path: string@View,
+    symbol: string@View,
+    source_path: string@View
+) -> bool {
+    return obligationEntryMatchesPrimary(
+        obligationEntry(
+            obligationReference(id, internal_spec_line),
+            exerciseReference(
+                acceptedProjectExerciseKind(),
+                referenceLocation(module_path, symbol, source_path)
+            )
+        ),
+        id,
+        internal_spec_line,
+        acceptedProjectExerciseKind(),
+        module_path,
+        symbol,
+        source_path
+    )
+}
+
+public procedure rejectedSourceObligationEntryMatches(
+    id: string@View,
+    internal_spec_line: usize,
+    module_path: string@View,
+    symbol: string@View,
+    source_path: string@View
+) -> bool {
+    return obligationEntryMatchesPrimary(
+        obligationEntry(
+            obligationReference(id, internal_spec_line),
+            exerciseReference(
+                rejectedSourceExerciseKind(),
+                referenceLocation(module_path, symbol, source_path)
+            )
+        ),
+        id,
+        internal_spec_line,
+        rejectedSourceExerciseKind(),
+        module_path,
+        symbol,
+        source_path
+    )
+}
+
+public procedure diagnosticSourceObligationEntryMatches(
+    id: string@View,
+    internal_spec_line: usize,
+    module_path: string@View,
+    symbol: string@View,
+    source_path: string@View
+) -> bool {
+    return obligationEntryMatchesPrimary(
+        obligationEntry(
+            obligationReference(id, internal_spec_line),
+            exerciseReference(
+                diagnosticSourceExerciseKind(),
+                referenceLocation(module_path, symbol, source_path)
+            )
+        ),
+        id,
+        internal_spec_line,
+        diagnosticSourceExerciseKind(),
+        module_path,
+        symbol,
+        source_path
+    )
+}
+
+public procedure artifactBehaviorObligationEntryMatches(
+    id: string@View,
+    internal_spec_line: usize,
+    module_path: string@View,
+    symbol: string@View,
+    source_path: string@View
+) -> bool {
+    return obligationEntryMatchesPrimary(
+        obligationEntry(
+            obligationReference(id, internal_spec_line),
+            exerciseReference(
+                artifactBehaviorExerciseKind(),
+                referenceLocation(module_path, symbol, source_path)
+            )
+        ),
+        id,
+        internal_spec_line,
+        artifactBehaviorExerciseKind(),
+        module_path,
+        symbol,
+        source_path
+    )
+}
+
+public procedure referenceModelObligationEntryMatches(
+    id: string@View,
+    internal_spec_line: usize,
+    module_path: string@View,
+    symbol: string@View,
+    source_path: string@View
+) -> bool {
+    return obligationEntryMatchesPrimary(
+        obligationEntry(
+            obligationReference(id, internal_spec_line),
+            exerciseReference(
+                referenceModelExerciseKind(),
+                referenceLocation(module_path, symbol, source_path)
+            )
+        ),
+        id,
+        internal_spec_line,
+        referenceModelExerciseKind(),
+        module_path,
+        symbol,
+        source_path
+    )
+}

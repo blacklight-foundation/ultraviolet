@@ -682,12 +682,12 @@ public procedure validatedCommonLoweringProgramLifecycleAndBackendSharedLowering
     ) {
         count = count + 1usize
     }
-    if acceptedObligationEntryMatches(
+    if referenceModelObligationEntryMatches(
         "rule.24.LowerIR-Err",
         91031usize,
-        "HelloUltraviolet::Reference::Lowering",
-        "runLoweringSharedJudgmentsReference",
-        "Source/Reference/Lowering/SharedJudgments.uv"
+        "HelloUltraviolet::Audit",
+        "specClarificationLedgerIsIndexed",
+        "Source/Audit/SpecClarifications.uv"
     ) {
         count = count + 1usize
     }
@@ -700,30 +700,30 @@ public procedure validatedCommonLoweringProgramLifecycleAndBackendSharedLowering
     ) {
         count = count + 1usize
     }
-    if acceptedObligationEntryMatches(
+    if artifactBehaviorObligationEntryMatches(
         "def.24.LLVMText21Acceptance",
         91063usize,
-        "HelloUltraviolet::Reference::Lowering",
-        "runLoweringSharedJudgmentsReference",
-        "Source/Reference/Lowering/SharedJudgments.uv"
+        "HelloUltraviolet::Fixtures::ArtifactProjects",
+        "validatedArtifactProjectFixtureCount",
+        "Fixtures/ArtifactProjects/EmitBcLibrary/Source/Library.uv"
     ) {
         count = count + 1usize
     }
-    if acceptedObligationEntryMatches(
+    if artifactBehaviorObligationEntryMatches(
         "rule.24.EmitLLVM-Err",
         91077usize,
-        "HelloUltraviolet::Reference::Lowering",
-        "runLoweringSharedJudgmentsReference",
-        "Source/Reference/Lowering/SharedJudgments.uv"
+        "HelloUltraviolet::Fixtures::OutputDiagnostics",
+        "validatedOutputLoweringDiagnosticFixtureCount",
+        "Source/Fixtures/OutputDiagnostics/Lowering.uv"
     ) {
         count = count + 1usize
     }
-    if acceptedObligationEntryMatches(
+    if artifactBehaviorObligationEntryMatches(
         "requirement.24.LLVMToolAcceptanceAndResolveOwnership",
         91093usize,
-        "HelloUltraviolet::Reference::Lowering",
-        "runLoweringSharedJudgmentsReference",
-        "Source/Reference/Lowering/SharedJudgments.uv"
+        "HelloUltraviolet::Fixtures::OutputDiagnostics",
+        "validatedOutputLoweringDiagnosticFixtureCount",
+        "Source/Fixtures/OutputDiagnostics/Lowering.uv"
     ) {
         count = count + 1usize
     }
@@ -745,12 +745,12 @@ public procedure validatedCommonLoweringProgramLifecycleAndBackendSharedLowering
     ) {
         count = count + 1usize
     }
-    if acceptedObligationEntryMatches(
+    if referenceModelObligationEntryMatches(
         "rule.24.EmitObj-Err",
         91136usize,
-        "HelloUltraviolet::Reference::Lowering",
-        "runLoweringSharedJudgmentsReference",
-        "Source/Reference/Lowering/SharedJudgments.uv"
+        "HelloUltraviolet::Audit",
+        "specClarificationLedgerIsIndexed",
+        "Source/Audit/SpecClarifications.uv"
     ) {
         count = count + 1usize
     }

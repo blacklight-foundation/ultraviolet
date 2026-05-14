@@ -11,8 +11,8 @@ public procedure validatedStructuredParallelismPanicHandlingObligations() -> usi
         "requirement.20.PanicHandlingNoAdditionalSyntax",
         78201usize,
         "HelloUltraviolet::Reference::Parallelism",
-        "runParallelismParallelBlocksReference",
-        "Source/Reference/Parallelism/ParallelBlocks.uv"
+        "runParallelismPanicHandlingReference",
+        "Source/Reference/Parallelism/PanicHandling.uv"
     ) {
         count = count + 1usize
     }
@@ -20,8 +20,8 @@ public procedure validatedStructuredParallelismPanicHandlingObligations() -> usi
         "requirement.20.PanicHandlingNoAdditionalParsingRules",
         78216usize,
         "HelloUltraviolet::Reference::Parallelism",
-        "runParallelismParallelBlocksReference",
-        "Source/Reference/Parallelism/ParallelBlocks.uv"
+        "runParallelismPanicHandlingReference",
+        "Source/Reference/Parallelism/PanicHandling.uv"
     ) {
         count = count + 1usize
     }
@@ -29,8 +29,8 @@ public procedure validatedStructuredParallelismPanicHandlingObligations() -> usi
         "ast.20.ParallelPanicPropagationInputs",
         78231usize,
         "HelloUltraviolet::Reference::Parallelism",
-        "runParallelismParallelBlocksReference",
-        "Source/Reference/Parallelism/ParallelBlocks.uv"
+        "runParallelismPanicHandlingReference",
+        "Source/Reference/Parallelism/PanicHandling.uv"
     ) {
         count = count + 1usize
     }
@@ -38,8 +38,8 @@ public procedure validatedStructuredParallelismPanicHandlingObligations() -> usi
         "requirement.20.PanicHandlingNoAdditionalStaticTypingRules",
         78246usize,
         "HelloUltraviolet::Reference::Parallelism",
-        "runParallelismParallelBlocksReference",
-        "Source/Reference/Parallelism/ParallelBlocks.uv"
+        "runParallelismPanicHandlingReference",
+        "Source/Reference/Parallelism/PanicHandling.uv"
     ) {
         count = count + 1usize
     }
@@ -47,8 +47,8 @@ public procedure validatedStructuredParallelismPanicHandlingObligations() -> usi
         "requirement.20.ParallelWorkItemPanicSemantics",
         78261usize,
         "HelloUltraviolet::Reference::Parallelism",
-        "runParallelismParallelBlocksReference",
-        "Source/Reference/Parallelism/ParallelBlocks.uv"
+        "runParallelismPanicHandlingReference",
+        "Source/Reference/Parallelism/PanicHandling.uv"
     ) {
         count = count + 1usize
     }
@@ -56,8 +56,8 @@ public procedure validatedStructuredParallelismPanicHandlingObligations() -> usi
         "rule.20.EvalSigma-Parallel-Spawn-Panic",
         78278usize,
         "HelloUltraviolet::Reference::Parallelism",
-        "runParallelismParallelBlocksReference",
-        "Source/Reference/Parallelism/ParallelBlocks.uv"
+        "runParallelismPanicHandlingReference",
+        "Source/Reference/Parallelism/PanicHandling.uv"
     ) {
         count = count + 1usize
     }
@@ -65,8 +65,8 @@ public procedure validatedStructuredParallelismPanicHandlingObligations() -> usi
         "requirement.20.ParallelPanicCancellationRequest",
         78294usize,
         "HelloUltraviolet::Reference::Parallelism",
-        "runParallelismParallelBlocksReference",
-        "Source/Reference/Parallelism/ParallelBlocks.uv"
+        "runParallelismPanicHandlingReference",
+        "Source/Reference/Parallelism/PanicHandling.uv"
     ) {
         count = count + 1usize
     }
@@ -74,8 +74,8 @@ public procedure validatedStructuredParallelismPanicHandlingObligations() -> usi
         "def.20.FirstCompletedFailure",
         78307usize,
         "HelloUltraviolet::Reference::Parallelism",
-        "runParallelismParallelBlocksReference",
-        "Source/Reference/Parallelism/ParallelBlocks.uv"
+        "runParallelismPanicHandlingReference",
+        "Source/Reference/Parallelism/PanicHandling.uv"
     ) {
         count = count + 1usize
     }
@@ -83,17 +83,17 @@ public procedure validatedStructuredParallelismPanicHandlingObligations() -> usi
         "rule.20.Lower-Parallel-Join-Panic",
         78322usize,
         "HelloUltraviolet::Reference::Parallelism",
-        "runParallelismParallelBlocksReference",
-        "Source/Reference/Parallelism/ParallelBlocks.uv"
+        "runParallelismPanicHandlingReference",
+        "Source/Reference/Parallelism/PanicHandling.uv"
     ) {
         count = count + 1usize
     }
-    if acceptedObligationEntryMatches(
+    if diagnosticSourceObligationEntryMatches(
         "diagnostics.20.PanicHandling",
         78339usize,
-        "HelloUltraviolet::Reference::Parallelism",
-        "runParallelismParallelBlocksReference",
-        "Source/Reference/Parallelism/ParallelBlocks.uv"
+        "HelloUltraviolet::Fixtures::DiagnosticSource",
+        "validatedParallelismDiagnosticSourceFixtureCount",
+        "Fixtures/DiagnosticSource/Parallelism/PanicHandlingNoAdditionalDiagnostics/Source/Main.uv"
     ) {
         count = count + 1usize
     }

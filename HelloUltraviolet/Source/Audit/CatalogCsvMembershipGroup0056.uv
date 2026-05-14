@@ -1,0 +1,604 @@
+//! CSV-to-catalog membership check group 0056.
+
+internal procedure catalogCsvMembershipGroup0056() -> bool {
+    return csvCatalogKeyMatches(
+            "rule.22.CtBuiltin-Reflect-TypeName",
+            85164usize,
+            "rule.22.CtBuiltin-Reflect-TypeName",
+            85164usize
+        ) &&
+        csvCatalogKeyMatches(
+            "rule.22.CtBuiltin-Reflect-Variants",
+            85116usize,
+            "rule.22.CtBuiltin-Reflect-Variants",
+            85116usize
+        ) &&
+        csvCatalogKeyMatches(
+            "rule.22.CtEval-Quote",
+            85621usize,
+            "rule.22.CtEval-Quote",
+            85621usize
+        ) &&
+        csvCatalogKeyMatches(
+            "rule.22.CtEval-TypeLiteral",
+            85068usize,
+            "rule.22.CtEval-TypeLiteral",
+            85068usize
+        ) &&
+        csvCatalogKeyMatches(
+            "rule.22.CtExecModule",
+            83876usize,
+            "rule.22.CtExecModule",
+            83876usize
+        ) &&
+        csvCatalogKeyMatches(
+            "rule.22.CtExpandBlock",
+            83996usize,
+            "rule.22.CtExpandBlock",
+            83996usize
+        ) &&
+        csvCatalogKeyMatches(
+            "rule.22.CtExpandExpr-CtExpr",
+            84028usize,
+            "rule.22.CtExpandExpr-CtExpr",
+            84028usize
+        ) &&
+        csvCatalogKeyMatches(
+            "rule.22.CtExpandExpr-CtIf-False",
+            84060usize,
+            "rule.22.CtExpandExpr-CtIf-False",
+            84060usize
+        ) &&
+        csvCatalogKeyMatches(
+            "rule.22.CtExpandExpr-CtIf-True",
+            84044usize,
+            "rule.22.CtExpandExpr-CtIf-True",
+            84044usize
+        ) &&
+        csvCatalogKeyMatches(
+            "rule.22.CtExpandExpr-CtLoopIter",
+            84076usize,
+            "rule.22.CtExpandExpr-CtLoopIter",
+            84076usize
+        ) &&
+        csvCatalogKeyMatches(
+            "rule.22.CtExpandItem-CtProc",
+            83949usize,
+            "rule.22.CtExpandItem-CtProc",
+            83949usize
+        ) &&
+        csvCatalogKeyMatches(
+            "rule.22.CtExpandItem-DeriveAnnotatedDecl",
+            86130usize,
+            "rule.22.CtExpandItem-DeriveAnnotatedDecl",
+            86130usize
+        ) &&
+        csvCatalogKeyMatches(
+            "rule.22.CtExpandItem-DeriveTargetDecl",
+            86054usize,
+            "rule.22.CtExpandItem-DeriveTargetDecl",
+            86054usize
+        ) &&
+        csvCatalogKeyMatches(
+            "rule.22.CtExpandItemSeq-Cons",
+            83907usize,
+            "rule.22.CtExpandItemSeq-Cons",
+            83907usize
+        ) &&
+        csvCatalogKeyMatches(
+            "rule.22.CtExpandItemSeq-Empty",
+            83892usize,
+            "rule.22.CtExpandItemSeq-Empty",
+            83892usize
+        ) &&
+        csvCatalogKeyMatches(
+            "rule.22.CtExpandStmt-CtStmt",
+            84012usize,
+            "rule.22.CtExpandStmt-CtStmt",
+            84012usize
+        ) &&
+        csvCatalogKeyMatches(
+            "rule.22.CtExpandStmtSeq-Cons",
+            83980usize,
+            "rule.22.CtExpandStmtSeq-Cons",
+            83980usize
+        ) &&
+        csvCatalogKeyMatches(
+            "rule.22.CtExpandStmtSeq-Empty",
+            83965usize,
+            "rule.22.CtExpandStmtSeq-Empty",
+            83965usize
+        ) &&
+        csvCatalogKeyMatches(
+            "rule.22.CtLoopIterUnroll-Cons",
+            84107usize,
+            "rule.22.CtLoopIterUnroll-Cons",
+            84107usize
+        ) &&
+        csvCatalogKeyMatches(
+            "rule.22.CtLoopIterUnroll-Empty",
+            84092usize,
+            "rule.22.CtLoopIterUnroll-Empty",
+            84092usize
+        ) &&
+        csvCatalogKeyMatches(
+            "rule.22.Parse-CtCapRef",
+            84212usize,
+            "rule.22.Parse-CtCapRef",
+            84212usize
+        ) &&
+        csvCatalogKeyMatches(
+            "rule.22.Parse-CtElseOpt-Block",
+            83414usize,
+            "rule.22.Parse-CtElseOpt-Block",
+            83414usize
+        ) &&
+        csvCatalogKeyMatches(
+            "rule.22.Parse-CtElseOpt-ElseIf",
+            83430usize,
+            "rule.22.Parse-CtElseOpt-ElseIf",
+            83430usize
+        ) &&
+        csvCatalogKeyMatches(
+            "rule.22.Parse-CtElseOpt-None",
+            83398usize,
+            "rule.22.Parse-CtElseOpt-None",
+            83398usize
+        ) &&
+        csvCatalogKeyMatches(
+            "rule.22.Parse-CtExpr",
+            83350usize,
+            "rule.22.Parse-CtExpr",
+            83350usize
+        ) &&
+        csvCatalogKeyMatches(
+            "rule.22.Parse-CtIf",
+            83366usize,
+            "rule.22.Parse-CtIf",
+            83366usize
+        ) &&
+        csvCatalogKeyMatches(
+            "rule.22.Parse-CtLoopIter",
+            83382usize,
+            "rule.22.Parse-CtLoopIter",
+            83382usize
+        ) &&
+        csvCatalogKeyMatches(
+            "rule.22.Parse-CtProc",
+            83318usize,
+            "rule.22.Parse-CtProc",
+            83318usize
+        ) &&
+        csvCatalogKeyMatches(
+            "rule.22.Parse-CtStmt",
+            83334usize,
+            "rule.22.Parse-CtStmt",
+            83334usize
+        ) &&
+        csvCatalogKeyMatches(
+            "rule.22.Parse-DeriveClause-Emits",
+            85827usize,
+            "rule.22.Parse-DeriveClause-Emits",
+            85827usize
+        ) &&
+        csvCatalogKeyMatches(
+            "rule.22.Parse-DeriveClause-Requires",
+            85811usize,
+            "rule.22.Parse-DeriveClause-Requires",
+            85811usize
+        ) &&
+        csvCatalogKeyMatches(
+            "rule.22.Parse-DeriveClauseList-Cons",
+            85795usize,
+            "rule.22.Parse-DeriveClauseList-Cons",
+            85795usize
+        ) &&
+        csvCatalogKeyMatches(
+            "rule.22.Parse-DeriveClauseTail-Comma",
+            85859usize,
+            "rule.22.Parse-DeriveClauseTail-Comma",
+            85859usize
+        ) &&
+        csvCatalogKeyMatches(
+            "rule.22.Parse-DeriveClauseTail-End",
+            85843usize,
+            "rule.22.Parse-DeriveClauseTail-End",
+            85843usize
+        ) &&
+        csvCatalogKeyMatches(
+            "rule.22.Parse-DeriveContractOpt-None",
+            85763usize,
+            "rule.22.Parse-DeriveContractOpt-None",
+            85763usize
+        ) &&
+        csvCatalogKeyMatches(
+            "rule.22.Parse-DeriveContractOpt-Yes",
+            85779usize,
+            "rule.22.Parse-DeriveContractOpt-Yes",
+            85779usize
+        ) &&
+        csvCatalogKeyMatches(
+            "rule.22.Parse-DeriveTargetDecl",
+            85747usize,
+            "rule.22.Parse-DeriveTargetDecl",
+            85747usize
+        ) &&
+        csvCatalogKeyMatches(
+            "rule.22.Parse-Quote-Pattern",
+            85323usize,
+            "rule.22.Parse-Quote-Pattern",
+            85323usize
+        ) &&
+        csvCatalogKeyMatches(
+            "rule.22.Parse-Quote-Raw",
+            85291usize,
+            "rule.22.Parse-Quote-Raw",
+            85291usize
+        ) &&
+        csvCatalogKeyMatches(
+            "rule.22.Parse-Quote-Type",
+            85307usize,
+            "rule.22.Parse-Quote-Type",
+            85307usize
+        ) &&
+        csvCatalogKeyMatches(
+            "rule.22.Parse-TypeLiteral",
+            84818usize,
+            "rule.22.Parse-TypeLiteral",
+            84818usize
+        ) &&
+        csvCatalogKeyMatches(
+            "rule.22.RunDeriveSet-Cons",
+            86085usize,
+            "rule.22.RunDeriveSet-Cons",
+            86085usize
+        ) &&
+        csvCatalogKeyMatches(
+            "rule.22.RunDeriveSet-Empty",
+            86070usize,
+            "rule.22.RunDeriveSet-Empty",
+            86070usize
+        ) &&
+        csvCatalogKeyMatches(
+            "rule.22.RunDeriveTarget",
+            86101usize,
+            "rule.22.RunDeriveTarget",
+            86101usize
+        ) &&
+        csvCatalogKeyMatches(
+            "rule.22.T-CtExpr",
+            83628usize,
+            "rule.22.T-CtExpr",
+            83628usize
+        ) &&
+        csvCatalogKeyMatches(
+            "rule.22.T-CtIf",
+            83644usize,
+            "rule.22.T-CtIf",
+            83644usize
+        ) &&
+        csvCatalogKeyMatches(
+            "rule.22.T-CtLoopIter",
+            83660usize,
+            "rule.22.T-CtLoopIter",
+            83660usize
+        ) &&
+        csvCatalogKeyMatches(
+            "rule.22.T-CtProc",
+            83676usize,
+            "rule.22.T-CtProc",
+            83676usize
+        ) &&
+        csvCatalogKeyMatches(
+            "rule.22.T-CtStmt",
+            83612usize,
+            "rule.22.T-CtStmt",
+            83612usize
+        ) &&
+        csvCatalogKeyMatches(
+            "rule.22.T-TypeLiteral",
+            84993usize,
+            "rule.22.T-TypeLiteral",
+            84993usize
+        ) &&
+        csvCatalogKeyMatches(
+            "rule.23.CodeGen-UnwindAbort-Export",
+            89655usize,
+            "rule.23.CodeGen-UnwindAbort-Export",
+            89655usize
+        ) &&
+        csvCatalogKeyMatches(
+            "rule.23.CodeGen-UnwindAbort-Import",
+            89619usize,
+            "rule.23.CodeGen-UnwindAbort-Import",
+            89619usize
+        ) &&
+        csvCatalogKeyMatches(
+            "rule.23.CodeGen-UnwindCatch-Export",
+            89673usize,
+            "rule.23.CodeGen-UnwindCatch-Export",
+            89673usize
+        ) &&
+        csvCatalogKeyMatches(
+            "rule.23.CodeGen-UnwindCatch-Import",
+            89637usize,
+            "rule.23.CodeGen-UnwindCatch-Import",
+            89637usize
+        ) &&
+        csvCatalogKeyMatches(
+            "rule.23.ExportSig-Ok",
+            87413usize,
+            "rule.23.ExportSig-Ok",
+            87413usize
+        ) &&
+        csvCatalogKeyMatches(
+            "rule.23.FFI-Arg-RegionLocalRawPtr-Err",
+            88727usize,
+            "rule.23.FFI-Arg-RegionLocalRawPtr-Err",
+            88727usize
+        ) &&
+        csvCatalogKeyMatches(
+            "rule.23.FFI-Return-RegionLocalRawPtr-Err",
+            88745usize,
+            "rule.23.FFI-Return-RegionLocalRawPtr-Err",
+            88745usize
+        ) &&
+        csvCatalogKeyMatches(
+            "rule.23.FfiSafe-Alias",
+            86683usize,
+            "rule.23.FfiSafe-Alias",
+            86683usize
+        ) &&
+        csvCatalogKeyMatches(
+            "rule.23.FfiSafe-Alias-Apply",
+            86699usize,
+            "rule.23.FfiSafe-Alias-Apply",
+            86699usize
+        ) &&
+        csvCatalogKeyMatches(
+            "rule.23.FfiSafe-Array",
+            86635usize,
+            "rule.23.FfiSafe-Array",
+            86635usize
+        ) &&
+        csvCatalogKeyMatches(
+            "rule.23.FfiSafe-Enum",
+            86747usize,
+            "rule.23.FfiSafe-Enum",
+            86747usize
+        ) &&
+        csvCatalogKeyMatches(
+            "rule.23.FfiSafe-Enum-Apply",
+            86763usize,
+            "rule.23.FfiSafe-Enum-Apply",
+            86763usize
+        ) &&
+        csvCatalogKeyMatches(
+            "rule.23.FfiSafe-Enum-Apply-Generic-Unbounded-Err",
+            86955usize,
+            "rule.23.FfiSafe-Enum-Apply-Generic-Unbounded-Err",
+            86955usize
+        ) &&
+        csvCatalogKeyMatches(
+            "rule.23.FfiSafe-Enum-Field-Apply-Err",
+            86875usize,
+            "rule.23.FfiSafe-Enum-Field-Apply-Err",
+            86875usize
+        ) &&
+        csvCatalogKeyMatches(
+            "rule.23.FfiSafe-Enum-Field-Err",
+            86859usize,
+            "rule.23.FfiSafe-Enum-Field-Err",
+            86859usize
+        ) &&
+        csvCatalogKeyMatches(
+            "rule.23.FfiSafe-Enum-Generic-Unbounded-Err",
+            86923usize,
+            "rule.23.FfiSafe-Enum-Generic-Unbounded-Err",
+            86923usize
+        ) &&
+        csvCatalogKeyMatches(
+            "rule.23.FfiSafe-Enum-LayoutC-Err",
+            86811usize,
+            "rule.23.FfiSafe-Enum-LayoutC-Err",
+            86811usize
+        ) &&
+        csvCatalogKeyMatches(
+            "rule.23.FfiSafe-Func",
+            86651usize,
+            "rule.23.FfiSafe-Func",
+            86651usize
+        ) &&
+        csvCatalogKeyMatches(
+            "rule.23.FfiSafe-Incomplete-Err",
+            86891usize,
+            "rule.23.FfiSafe-Incomplete-Err",
+            86891usize
+        ) &&
+        csvCatalogKeyMatches(
+            "rule.23.FfiSafe-Perm",
+            86667usize,
+            "rule.23.FfiSafe-Perm",
+            86667usize
+        ) &&
+        csvCatalogKeyMatches(
+            "rule.23.FfiSafe-Prim",
+            86603usize,
+            "rule.23.FfiSafe-Prim",
+            86603usize
+        ) &&
+        csvCatalogKeyMatches(
+            "rule.23.FfiSafe-Prohibited-Err",
+            86779usize,
+            "rule.23.FfiSafe-Prohibited-Err",
+            86779usize
+        ) &&
+        csvCatalogKeyMatches(
+            "rule.23.FfiSafe-RawPtr",
+            86619usize,
+            "rule.23.FfiSafe-RawPtr",
+            86619usize
+        ) &&
+        csvCatalogKeyMatches(
+            "rule.23.FfiSafe-Record",
+            86715usize,
+            "rule.23.FfiSafe-Record",
+            86715usize
+        ) &&
+        csvCatalogKeyMatches(
+            "rule.23.FfiSafe-Record-Apply",
+            86731usize,
+            "rule.23.FfiSafe-Record-Apply",
+            86731usize
+        ) &&
+        csvCatalogKeyMatches(
+            "rule.23.FfiSafe-Record-Apply-Generic-Unbounded-Err",
+            86939usize,
+            "rule.23.FfiSafe-Record-Apply-Generic-Unbounded-Err",
+            86939usize
+        ) &&
+        csvCatalogKeyMatches(
+            "rule.23.FfiSafe-Record-Field-Apply-Err",
+            86843usize,
+            "rule.23.FfiSafe-Record-Field-Apply-Err",
+            86843usize
+        ) &&
+        csvCatalogKeyMatches(
+            "rule.23.FfiSafe-Record-Field-Err",
+            86827usize,
+            "rule.23.FfiSafe-Record-Field-Err",
+            86827usize
+        ) &&
+        csvCatalogKeyMatches(
+            "rule.23.FfiSafe-Record-Generic-Unbounded-Err",
+            86907usize,
+            "rule.23.FfiSafe-Record-Generic-Unbounded-Err",
+            86907usize
+        ) &&
+        csvCatalogKeyMatches(
+            "rule.23.FfiSafe-Record-LayoutC-Err",
+            86795usize,
+            "rule.23.FfiSafe-Record-LayoutC-Err",
+            86795usize
+        ) &&
+        csvCatalogKeyMatches(
+            "rule.23.ForeignEnsures-NullResult-Err",
+            89260usize,
+            "rule.23.ForeignEnsures-NullResult-Err",
+            89260usize
+        ) &&
+        csvCatalogKeyMatches(
+            "rule.23.HostExport-Context-Err",
+            87732usize,
+            "rule.23.HostExport-Context-Err",
+            87732usize
+        ) &&
+        csvCatalogKeyMatches(
+            "rule.23.HostExport-Context-Move-Err",
+            87764usize,
+            "rule.23.HostExport-Context-Move-Err",
+            87764usize
+        ) &&
+        csvCatalogKeyMatches(
+            "rule.23.HostExport-Context-Raw-Err",
+            87748usize,
+            "rule.23.HostExport-Context-Raw-Err",
+            87748usize
+        ) &&
+        csvCatalogKeyMatches(
+            "rule.23.HostExport-Generic-Err",
+            87716usize,
+            "rule.23.HostExport-Generic-Err",
+            87716usize
+        ) &&
+        csvCatalogKeyMatches(
+            "rule.23.HostExport-Library-Err",
+            87684usize,
+            "rule.23.HostExport-Library-Err",
+            87684usize
+        ) &&
+        csvCatalogKeyMatches(
+            "rule.23.HostExport-MixedMode-Err",
+            87700usize,
+            "rule.23.HostExport-MixedMode-Err",
+            87700usize
+        ) &&
+        csvCatalogKeyMatches(
+            "rule.23.HostExportSig-Ok",
+            87668usize,
+            "rule.23.HostExportSig-Ok",
+            87668usize
+        ) &&
+        csvCatalogKeyMatches(
+            "rule.23.HostThunkParamCarrier-ByRef",
+            87930usize,
+            "rule.23.HostThunkParamCarrier-ByRef",
+            87930usize
+        ) &&
+        csvCatalogKeyMatches(
+            "rule.23.HostThunkParamCarrier-ByValue-Default",
+            87946usize,
+            "rule.23.HostThunkParamCarrier-ByValue-Default",
+            87946usize
+        ) &&
+        csvCatalogKeyMatches(
+            "rule.23.HostThunkParamCarrier-Win64-DirectAgg",
+            87962usize,
+            "rule.23.HostThunkParamCarrier-Win64-DirectAgg",
+            87962usize
+        ) &&
+        csvCatalogKeyMatches(
+            "rule.23.HostThunkParamCarrier-Win64-IndirectAgg",
+            87978usize,
+            "rule.23.HostThunkParamCarrier-Win64-IndirectAgg",
+            87978usize
+        ) &&
+        csvCatalogKeyMatches(
+            "rule.23.HostThunkRetCarrier-Default",
+            87994usize,
+            "rule.23.HostThunkRetCarrier-Default",
+            87994usize
+        ) &&
+        csvCatalogKeyMatches(
+            "rule.23.HostThunkRetCarrier-Win64-DirectAgg",
+            88010usize,
+            "rule.23.HostThunkRetCarrier-Win64-DirectAgg",
+            88010usize
+        ) &&
+        csvCatalogKeyMatches(
+            "rule.23.HostThunkRetCarrier-Win64-SRetAgg",
+            88026usize,
+            "rule.23.HostThunkRetCarrier-Win64-SRetAgg",
+            88026usize
+        ) &&
+        csvCatalogKeyMatches(
+            "rule.23.Parse-EnsuresPredicate-Error",
+            88996usize,
+            "rule.23.Parse-EnsuresPredicate-Error",
+            88996usize
+        ) &&
+        csvCatalogKeyMatches(
+            "rule.23.Parse-EnsuresPredicate-NullResult",
+            89012usize,
+            "rule.23.Parse-EnsuresPredicate-NullResult",
+            89012usize
+        ) &&
+        csvCatalogKeyMatches(
+            "rule.23.Parse-EnsuresPredicate-Plain",
+            89028usize,
+            "rule.23.Parse-EnsuresPredicate-Plain",
+            89028usize
+        ) &&
+        csvCatalogKeyMatches(
+            "rule.23.Parse-ExternProcDecl",
+            87099usize,
+            "rule.23.Parse-ExternProcDecl",
+            87099usize
+        ) &&
+        csvCatalogKeyMatches(
+            "rule.23.Parse-ForeignContractClause-Assumes",
+            88945usize,
+            "rule.23.Parse-ForeignContractClause-Assumes",
+            88945usize
+        )
+}

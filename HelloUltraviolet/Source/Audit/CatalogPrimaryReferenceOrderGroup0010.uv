@@ -1,0 +1,604 @@
+//! Catalog primary-reference ordering check group 0010.
+
+internal procedure catalogPrimaryReferenceOrderGroup0010() -> bool {
+    return catalogPrimaryReferencePrecedes(
+            "T-Equiv-Array",
+            24250usize,
+            "T-Equiv-Bytes",
+            24394usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "T-Equiv-Bytes",
+            24394usize,
+            "T-Equiv-Closure",
+            24304usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "T-Equiv-Closure",
+            24304usize,
+            "T-Equiv-Dynamic",
+            24556usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "T-Equiv-Dynamic",
+            24556usize,
+            "T-Equiv-Func",
+            24286usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "T-Equiv-Func",
+            24286usize,
+            "T-Equiv-ModalState",
+            24358usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "T-Equiv-ModalState",
+            24358usize,
+            "T-Equiv-Opaque",
+            24592usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "T-Equiv-Opaque",
+            24592usize,
+            "T-Equiv-Path",
+            24340usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "T-Equiv-Path",
+            24340usize,
+            "T-Equiv-Perm",
+            24214usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "T-Equiv-Perm",
+            24214usize,
+            "T-Equiv-Prim",
+            24196usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "T-Equiv-Prim",
+            24196usize,
+            "T-Equiv-Ptr",
+            24520usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "T-Equiv-Ptr",
+            24520usize,
+            "T-Equiv-Range",
+            24412usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "T-Equiv-Range",
+            24412usize,
+            "T-Equiv-RangeFrom",
+            24448usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "T-Equiv-RangeFrom",
+            24448usize,
+            "T-Equiv-RangeFull",
+            24502usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "T-Equiv-RangeFull",
+            24502usize,
+            "T-Equiv-RangeInclusive",
+            24430usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "T-Equiv-RangeInclusive",
+            24430usize,
+            "T-Equiv-RangeTo",
+            24466usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "T-Equiv-RangeTo",
+            24466usize,
+            "T-Equiv-RangeToInclusive",
+            24484usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "T-Equiv-RangeToInclusive",
+            24484usize,
+            "T-Equiv-RawPtr",
+            24538usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "T-Equiv-RawPtr",
+            24538usize,
+            "T-Equiv-Refine",
+            24610usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "T-Equiv-Refine",
+            24610usize,
+            "T-Equiv-Refine-Norm",
+            24642usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "T-Equiv-Refine-Norm",
+            24642usize,
+            "T-Equiv-Refl",
+            24660usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "T-Equiv-Refl",
+            24660usize,
+            "T-Equiv-Slice",
+            24268usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "T-Equiv-Slice",
+            24268usize,
+            "T-Equiv-String",
+            24376usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "T-Equiv-String",
+            24376usize,
+            "T-Equiv-Sym",
+            24678usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "T-Equiv-Sym",
+            24678usize,
+            "T-Equiv-Trans",
+            24696usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "T-Equiv-Trans",
+            24696usize,
+            "T-Equiv-Tuple",
+            24232usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "T-Equiv-Tuple",
+            24232usize,
+            "T-Equiv-Union",
+            24322usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "T-Equiv-Union",
+            24322usize,
+            "T-Index-Array",
+            36451usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "T-Index-Array",
+            36451usize,
+            "T-Index-Array-Dynamic",
+            36469usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "T-Index-Array-Dynamic",
+            36469usize,
+            "T-Index-Array-Perm",
+            36487usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "T-Index-Array-Perm",
+            36487usize,
+            "T-Index-Array-Perm-Dynamic",
+            36505usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "T-Index-Array-Perm-Dynamic",
+            36505usize,
+            "T-Index-Slice",
+            37007usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "T-Index-Slice",
+            37007usize,
+            "T-Index-Slice-Perm",
+            37025usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "T-Index-Slice-Perm",
+            37025usize,
+            "T-Range-Lift",
+            37779usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "T-Range-Lift",
+            37779usize,
+            "T-Record-Default",
+            39045usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "T-Record-Default",
+            39045usize,
+            "T-Record-Literal",
+            39097usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "T-Record-Literal",
+            39097usize,
+            "T-Slice-From-Array",
+            37043usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "T-Slice-From-Array",
+            37043usize,
+            "T-Slice-From-Array-Perm",
+            37061usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "T-Slice-From-Array-Perm",
+            37061usize,
+            "T-Slice-From-Slice",
+            37079usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "T-Slice-From-Slice",
+            37079usize,
+            "T-Slice-From-Slice-Perm",
+            37097usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "T-Slice-From-Slice-Perm",
+            37097usize,
+            "T-Tuple",
+            35756usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "T-Tuple",
+            35756usize,
+            "T-Tuple-Index",
+            35774usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "T-Tuple-Index",
+            35774usize,
+            "T-Tuple-Index-Perm",
+            35792usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "T-Tuple-Index-Perm",
+            35792usize,
+            "T-Tuple-Unit",
+            35739usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "T-Tuple-Unit",
+            35739usize,
+            "T-Union-Intro",
+            40798usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "T-Union-Intro",
+            40798usize,
+            "Tok-Consume-Keyword",
+            11266usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "Tok-Consume-Keyword",
+            11266usize,
+            "Tok-Consume-Kind",
+            11248usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "Tok-Consume-Kind",
+            11248usize,
+            "Tok-Consume-Operator",
+            11284usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "Tok-Consume-Operator",
+            11284usize,
+            "Tok-Consume-Punct",
+            11302usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "Tok-Consume-Punct",
+            11302usize,
+            "Tokenize-Err",
+            10299usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "Tokenize-Err",
+            10299usize,
+            "Tokenize-Ok",
+            10263usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "Tokenize-Ok",
+            10263usize,
+            "Tokenize-Secure-Err",
+            10281usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "Tokenize-Secure-Err",
+            10281usize,
+            "TopLevelVis-Ok",
+            19780usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "TopLevelVis-Ok",
+            19780usize,
+            "Trailing-Comma-Err",
+            11472usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "Trailing-Comma-Err",
+            11472usize,
+            "Trans-Let-NoReassign",
+            15124usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "Trans-Let-NoReassign",
+            15124usize,
+            "Trans-Move-Field",
+            15016usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "Trans-Move-Field",
+            15016usize,
+            "Trans-Move-Field-Partial",
+            15034usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "Trans-Move-Field-Partial",
+            15034usize,
+            "Trans-Move-Whole",
+            14998usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "Trans-Move-Whole",
+            14998usize,
+            "Trans-Moved-NoAccess",
+            15088usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "Trans-Moved-NoAccess",
+            15088usize,
+            "Trans-Partial-NoAccess",
+            15106usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "Trans-Partial-NoAccess",
+            15106usize,
+            "Trans-Partial-To-Moved",
+            15052usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "Trans-Partial-To-Moved",
+            15052usize,
+            "Trans-Reassign",
+            15070usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "Trans-Reassign",
+            15070usize,
+            "TupleAccess-NotTuple",
+            35896usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "TupleAccess-NotTuple",
+            35896usize,
+            "TupleIndex-NonConst",
+            35860usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "TupleIndex-NonConst",
+            35860usize,
+            "TupleIndex-OOB",
+            35878usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "TupleIndex-OOB",
+            35878usize,
+            "TupleScan-Advance",
+            35553usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "TupleScan-Advance",
+            35553usize,
+            "TupleScan-EOF",
+            35484usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "TupleScan-EOF",
+            35484usize,
+            "TupleScan-EndParen",
+            35502usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "TupleScan-EndParen",
+            35502usize,
+            "TupleScan-Separator",
+            35536usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "TupleScan-Separator",
+            35536usize,
+            "TupleScan-SingletonComma",
+            35519usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "TupleScan-SingletonComma",
+            35519usize,
+            "TypeAlias-Ok",
+            41483usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "TypeAlias-Ok",
+            41483usize,
+            "TypeAlias-Recursive-Err",
+            41500usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "TypeAlias-Recursive-Err",
+            41500usize,
+            "TypeRef-Apply",
+            33444usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "TypeRef-Apply",
+            33444usize,
+            "TypeRef-Array",
+            33515usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "TypeRef-Array",
+            33515usize,
+            "TypeRef-Bytes",
+            33604usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "TypeRef-Bytes",
+            33604usize,
+            "TypeRef-CallTypeArgs",
+            33908usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "TypeRef-CallTypeArgs",
+            33908usize,
+            "TypeRef-Cast",
+            33872usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "TypeRef-Cast",
+            33872usize,
+            "TypeRef-Dynamic",
+            33408usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "TypeRef-Dynamic",
+            33408usize,
+            "TypeRef-EnumLiteral",
+            33836usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "TypeRef-EnumLiteral",
+            33836usize,
+            "TypeRef-EnumPattern",
+            33990usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "TypeRef-EnumPattern",
+            33990usize,
+            "TypeRef-Expr-Sub",
+            33954usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "TypeRef-Expr-Sub",
+            33954usize,
+            "TypeRef-Field-Explicit",
+            34148usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "TypeRef-Field-Explicit",
+            34148usize,
+            "TypeRef-Field-Implicit",
+            34166usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "TypeRef-Field-Implicit",
+            34166usize,
+            "TypeRef-Func",
+            33569usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "TypeRef-Func",
+            33569usize,
+            "TypeRef-IdentifierPattern",
+            34042usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "TypeRef-IdentifierPattern",
+            34042usize,
+            "TypeRef-LiteralPattern",
+            34008usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "TypeRef-LiteralPattern",
+            34008usize,
+            "TypeRef-ModalPattern-None",
+            34095usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "TypeRef-ModalPattern-None",
+            34095usize,
+            "TypeRef-ModalPattern-Record",
+            34112usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "TypeRef-ModalPattern-Record",
+            34112usize,
+            "TypeRef-ModalState",
+            33426usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "TypeRef-ModalState",
+            33426usize,
+            "TypeRef-Path",
+            33354usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "TypeRef-Path",
+            33354usize,
+            "TypeRef-Path-Local",
+            33390usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "TypeRef-Path-Local",
+            33390usize,
+            "TypeRef-Perm",
+            33462usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "TypeRef-Perm",
+            33462usize,
+            "TypeRef-Prim",
+            33480usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "TypeRef-Prim",
+            33480usize,
+            "TypeRef-Ptr",
+            33621usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "TypeRef-Ptr",
+            33621usize,
+            "TypeRef-QualBrace",
+            33854usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "TypeRef-QualBrace",
+            33854usize,
+            "TypeRef-Range",
+            33657usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "TypeRef-Range",
+            33657usize,
+            "TypeRef-RangeFrom",
+            33693usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "TypeRef-RangeFrom",
+            33693usize,
+            "TypeRef-RangeFull",
+            33747usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "TypeRef-RangeFull",
+            33747usize,
+            "TypeRef-RangeInclusive",
+            33675usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "TypeRef-RangeInclusive",
+            33675usize,
+            "TypeRef-RangePattern",
+            34130usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "TypeRef-RangePattern",
+            34130usize,
+            "TypeRef-RangeTo",
+            33711usize
+        )
+}

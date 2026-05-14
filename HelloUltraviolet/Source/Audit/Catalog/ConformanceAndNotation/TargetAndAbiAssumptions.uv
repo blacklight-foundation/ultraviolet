@@ -7,12 +7,12 @@ public procedure countConformanceAndNotationTargetAndAbiAssumptionsObligations()
 
 public procedure validatedConformanceAndNotationTargetAndAbiAssumptionsObligations() -> usize {
     var count: usize = 0usize
-    if acceptedObligationEntryMatches(
+    if artifactBehaviorObligationEntryMatches(
         "def.TargetProfile",
         1171usize,
-        "HelloUltraviolet::Reference::Lowering",
-        "runLoweringLayoutAndABIReference",
-        "Source/Reference/Lowering/LayoutAndABI.uv"
+        "HelloUltraviolet::Fixtures::ArtifactProjects",
+        "validatedArtifactProjectFixtureCount",
+        "Fixtures/ArtifactProjects/AArch64DependencyObject/Source/Library.uv"
     ) {
         count = count + 1usize
     }

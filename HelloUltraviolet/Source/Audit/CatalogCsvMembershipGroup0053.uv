@@ -1,0 +1,604 @@
+//! CSV-to-catalog membership check group 0053.
+
+internal procedure catalogCsvMembershipGroup0053() -> bool {
+    return csvCatalogKeyMatches(
+            "rule.19.K-Mode-Read",
+            72625usize,
+            "rule.19.K-Mode-Read",
+            72625usize
+        ) &&
+        csvCatalogKeyMatches(
+            "rule.19.K-Mode-Write",
+            72641usize,
+            "rule.19.K-Mode-Write",
+            72641usize
+        ) &&
+        csvCatalogKeyMatches(
+            "rule.19.K-Nested-Same-Path",
+            73887usize,
+            "rule.19.K-Nested-Same-Path",
+            73887usize
+        ) &&
+        csvCatalogKeyMatches(
+            "rule.19.K-Ordered-Base-Err",
+            73720usize,
+            "rule.19.K-Ordered-Base-Err",
+            73720usize
+        ) &&
+        csvCatalogKeyMatches(
+            "rule.19.K-Ordered-Ok",
+            73704usize,
+            "rule.19.K-Ordered-Ok",
+            73704usize
+        ) &&
+        csvCatalogKeyMatches(
+            "rule.19.K-Ordered-Redundant-Warn",
+            73736usize,
+            "rule.19.K-Ordered-Redundant-Warn",
+            73736usize
+        ) &&
+        csvCatalogKeyMatches(
+            "rule.19.K-Prefix-Coverage",
+            73509usize,
+            "rule.19.K-Prefix-Coverage",
+            73509usize
+        ) &&
+        csvCatalogKeyMatches(
+            "rule.19.K-RMW-Contention-Warn",
+            73672usize,
+            "rule.19.K-RMW-Contention-Warn",
+            73672usize
+        ) &&
+        csvCatalogKeyMatches(
+            "rule.19.K-RMW-Explicit-Warn",
+            73656usize,
+            "rule.19.K-RMW-Explicit-Warn",
+            73656usize
+        ) &&
+        csvCatalogKeyMatches(
+            "rule.19.K-RMW-Permitted",
+            73640usize,
+            "rule.19.K-RMW-Permitted",
+            73640usize
+        ) &&
+        csvCatalogKeyMatches(
+            "rule.19.K-Read-Block-No-Write",
+            72835usize,
+            "rule.19.K-Read-Block-No-Write",
+            72835usize
+        ) &&
+        csvCatalogKeyMatches(
+            "rule.19.K-Read-Write-Reject",
+            73624usize,
+            "rule.19.K-Read-Write-Reject",
+            73624usize
+        ) &&
+        csvCatalogKeyMatches(
+            "rule.19.K-Reentrant",
+            73963usize,
+            "rule.19.K-Reentrant",
+            73963usize
+        ) &&
+        csvCatalogKeyMatches(
+            "rule.19.K-Release-SameMode-Err",
+            74021usize,
+            "rule.19.K-Release-SameMode-Err",
+            74021usize
+        ) &&
+        csvCatalogKeyMatches(
+            "rule.19.K-Release-Sequence",
+            74058usize,
+            "rule.19.K-Release-Sequence",
+            74058usize
+        ) &&
+        csvCatalogKeyMatches(
+            "rule.19.K-Spec-No-Defer",
+            74411usize,
+            "rule.19.K-Spec-No-Defer",
+            74411usize
+        ) &&
+        csvCatalogKeyMatches(
+            "rule.19.K-Spec-No-Impure-Call",
+            74363usize,
+            "rule.19.K-Spec-No-Impure-Call",
+            74363usize
+        ) &&
+        csvCatalogKeyMatches(
+            "rule.19.K-Spec-No-Memory-Ordering",
+            74379usize,
+            "rule.19.K-Spec-No-Memory-Ordering",
+            74379usize
+        ) &&
+        csvCatalogKeyMatches(
+            "rule.19.K-Spec-No-Nested-Key",
+            74347usize,
+            "rule.19.K-Spec-No-Nested-Key",
+            74347usize
+        ) &&
+        csvCatalogKeyMatches(
+            "rule.19.K-Spec-No-Release",
+            74427usize,
+            "rule.19.K-Spec-No-Release",
+            74427usize
+        ) &&
+        csvCatalogKeyMatches(
+            "rule.19.K-Spec-No-Wait",
+            74395usize,
+            "rule.19.K-Spec-No-Wait",
+            74395usize
+        ) &&
+        csvCatalogKeyMatches(
+            "rule.19.K-Spec-Pure-Body",
+            74280usize,
+            "rule.19.K-Spec-Pure-Body",
+            74280usize
+        ) &&
+        csvCatalogKeyMatches(
+            "rule.19.K-Spec-Write-Required",
+            74264usize,
+            "rule.19.K-Spec-Write-Required",
+            74264usize
+        ) &&
+        csvCatalogKeyMatches(
+            "rule.19.K-Static-Required",
+            74885usize,
+            "rule.19.K-Static-Required",
+            74885usize
+        ) &&
+        csvCatalogKeyMatches(
+            "rule.19.K-Static-Safe",
+            74854usize,
+            "rule.19.K-Static-Safe",
+            74854usize
+        ) &&
+        csvCatalogKeyMatches(
+            "rule.19.K-Witness-Shared-WF",
+            72348usize,
+            "rule.19.K-Witness-Shared-WF",
+            72348usize
+        ) &&
+        csvCatalogKeyMatches(
+            "rule.19.Lower-Expr-Fence",
+            75270usize,
+            "rule.19.Lower-Expr-Fence",
+            75270usize
+        ) &&
+        csvCatalogKeyMatches(
+            "rule.19.Lower-Key-ConflictChecks",
+            73799usize,
+            "rule.19.Lower-Key-ConflictChecks",
+            73799usize
+        ) &&
+        csvCatalogKeyMatches(
+            "rule.19.Lower-KeyAccess-Covered",
+            72456usize,
+            "rule.19.Lower-KeyAccess-Covered",
+            72456usize
+        ) &&
+        csvCatalogKeyMatches(
+            "rule.19.Lower-KeyAccess-Uncovered",
+            72440usize,
+            "rule.19.Lower-KeyAccess-Uncovered",
+            72440usize
+        ) &&
+        csvCatalogKeyMatches(
+            "rule.19.Lower-KeyPath",
+            72424usize,
+            "rule.19.Lower-KeyPath",
+            72424usize
+        ) &&
+        csvCatalogKeyMatches(
+            "rule.19.Lower-Ordered-Access",
+            75285usize,
+            "rule.19.Lower-Ordered-Access",
+            75285usize
+        ) &&
+        csvCatalogKeyMatches(
+            "rule.19.Lower-Stmt-KeyBlock",
+            73239usize,
+            "rule.19.Lower-Stmt-KeyBlock",
+            73239usize
+        ) &&
+        csvCatalogKeyMatches(
+            "rule.19.Lower-Stmt-KeyBlock-Release",
+            74145usize,
+            "rule.19.Lower-Stmt-KeyBlock-Release",
+            74145usize
+        ) &&
+        csvCatalogKeyMatches(
+            "rule.19.Lower-Stmt-KeyBlock-Speculative",
+            74735usize,
+            "rule.19.Lower-Stmt-KeyBlock-Speculative",
+            74735usize
+        ) &&
+        csvCatalogKeyMatches(
+            "rule.19.Spec-Commit-Fail-Fallback",
+            74579usize,
+            "rule.19.Spec-Commit-Fail-Fallback",
+            74579usize
+        ) &&
+        csvCatalogKeyMatches(
+            "rule.19.Spec-Commit-Fail-Retry",
+            74563usize,
+            "rule.19.Spec-Commit-Fail-Retry",
+            74563usize
+        ) &&
+        csvCatalogKeyMatches(
+            "rule.19.Spec-Commit-Success",
+            74547usize,
+            "rule.19.Spec-Commit-Success",
+            74547usize
+        ) &&
+        csvCatalogKeyMatches(
+            "rule.19.Spec-Exec-Ok",
+            74515usize,
+            "rule.19.Spec-Exec-Ok",
+            74515usize
+        ) &&
+        csvCatalogKeyMatches(
+            "rule.19.Spec-Exec-Panic",
+            74531usize,
+            "rule.19.Spec-Exec-Panic",
+            74531usize
+        ) &&
+        csvCatalogKeyMatches(
+            "rule.19.Spec-Fallback",
+            74610usize,
+            "rule.19.Spec-Fallback",
+            74610usize
+        ) &&
+        csvCatalogKeyMatches(
+            "rule.19.Spec-Retry",
+            74595usize,
+            "rule.19.Spec-Retry",
+            74595usize
+        ) &&
+        csvCatalogKeyMatches(
+            "rule.19.Spec-Snapshot",
+            74499usize,
+            "rule.19.Spec-Snapshot",
+            74499usize
+        ) &&
+        csvCatalogKeyMatches(
+            "rule.19.Spec-Start",
+            74484usize,
+            "rule.19.Spec-Start",
+            74484usize
+        ) &&
+        csvCatalogKeyMatches(
+            "rule.19.SpecBlock-Ok",
+            74626usize,
+            "rule.19.SpecBlock-Ok",
+            74626usize
+        ) &&
+        csvCatalogKeyMatches(
+            "rule.19.SpecBlock-Panic",
+            74642usize,
+            "rule.19.SpecBlock-Panic",
+            74642usize
+        ) &&
+        csvCatalogKeyMatches(
+            "rule.19.Step-Exec-KeyBlock-Body",
+            73112usize,
+            "rule.19.Step-Exec-KeyBlock-Body",
+            73112usize
+        ) &&
+        csvCatalogKeyMatches(
+            "rule.19.Step-Exec-KeyBlock-Enter",
+            73096usize,
+            "rule.19.Step-Exec-KeyBlock-Enter",
+            73096usize
+        ) &&
+        csvCatalogKeyMatches(
+            "rule.19.Step-Exec-KeyBlock-Exit-Ctrl",
+            73144usize,
+            "rule.19.Step-Exec-KeyBlock-Exit-Ctrl",
+            73144usize
+        ) &&
+        csvCatalogKeyMatches(
+            "rule.19.Step-Exec-KeyBlock-Exit-Ok",
+            73128usize,
+            "rule.19.Step-Exec-KeyBlock-Exit-Ok",
+            73128usize
+        ) &&
+        csvCatalogKeyMatches(
+            "rule.19.T-Fence",
+            75190usize,
+            "rule.19.T-Fence",
+            75190usize
+        ) &&
+        csvCatalogKeyMatches(
+            "rule.20.Barrier-Divergence-Err",
+            76497usize,
+            "rule.20.Barrier-Divergence-Err",
+            76497usize
+        ) &&
+        csvCatalogKeyMatches(
+            "rule.20.Barrier-Outside-Err",
+            76228usize,
+            "rule.20.Barrier-Outside-Err",
+            76228usize
+        ) &&
+        csvCatalogKeyMatches(
+            "rule.20.Cancel-Child",
+            77996usize,
+            "rule.20.Cancel-Child",
+            77996usize
+        ) &&
+        csvCatalogKeyMatches(
+            "rule.20.Cancel-DoCancel",
+            78028usize,
+            "rule.20.Cancel-DoCancel",
+            78028usize
+        ) &&
+        csvCatalogKeyMatches(
+            "rule.20.Cancel-IsCancelled",
+            78012usize,
+            "rule.20.Cancel-IsCancelled",
+            78012usize
+        ) &&
+        csvCatalogKeyMatches(
+            "rule.20.Cancel-New",
+            77980usize,
+            "rule.20.Cancel-New",
+            77980usize
+        ) &&
+        csvCatalogKeyMatches(
+            "rule.20.Cancel-WaitCancelled-Completed",
+            78044usize,
+            "rule.20.Cancel-WaitCancelled-Completed",
+            78044usize
+        ) &&
+        csvCatalogKeyMatches(
+            "rule.20.Cancel-WaitCancelled-Suspended",
+            78060usize,
+            "rule.20.Cancel-WaitCancelled-Suspended",
+            78060usize
+        ) &&
+        csvCatalogKeyMatches(
+            "rule.20.Dim3Const-Err",
+            75439usize,
+            "rule.20.Dim3Const-Err",
+            75439usize
+        ) &&
+        csvCatalogKeyMatches(
+            "rule.20.Dispatch-Chunk-Type-Err",
+            77531usize,
+            "rule.20.Dispatch-Chunk-Type-Err",
+            77531usize
+        ) &&
+        csvCatalogKeyMatches(
+            "rule.20.Dispatch-Dependency-Err",
+            77547usize,
+            "rule.20.Dispatch-Dependency-Err",
+            77547usize
+        ) &&
+        csvCatalogKeyMatches(
+            "rule.20.Dispatch-DynamicKey-Warn",
+            77579usize,
+            "rule.20.Dispatch-DynamicKey-Warn",
+            77579usize
+        ) &&
+        csvCatalogKeyMatches(
+            "rule.20.Dispatch-Infer-Err",
+            77499usize,
+            "rule.20.Dispatch-Infer-Err",
+            77499usize
+        ) &&
+        csvCatalogKeyMatches(
+            "rule.20.Dispatch-Outside-Err",
+            77515usize,
+            "rule.20.Dispatch-Outside-Err",
+            77515usize
+        ) &&
+        csvCatalogKeyMatches(
+            "rule.20.Dispatch-Reduce-Assoc-Err",
+            77563usize,
+            "rule.20.Dispatch-Reduce-Assoc-Err",
+            77563usize
+        ) &&
+        csvCatalogKeyMatches(
+            "rule.20.DispatchIndexedDisjointness",
+            77608usize,
+            "rule.20.DispatchIndexedDisjointness",
+            77608usize
+        ) &&
+        csvCatalogKeyMatches(
+            "rule.20.EvalSigma-Dispatch",
+            77752usize,
+            "rule.20.EvalSigma-Dispatch",
+            77752usize
+        ) &&
+        csvCatalogKeyMatches(
+            "rule.20.EvalSigma-Dispatch-Chunk-Ctrl",
+            77784usize,
+            "rule.20.EvalSigma-Dispatch-Chunk-Ctrl",
+            77784usize
+        ) &&
+        csvCatalogKeyMatches(
+            "rule.20.EvalSigma-Dispatch-Range-Ctrl",
+            77768usize,
+            "rule.20.EvalSigma-Dispatch-Range-Ctrl",
+            77768usize
+        ) &&
+        csvCatalogKeyMatches(
+            "rule.20.EvalSigma-GPU-Dispatch",
+            76418usize,
+            "rule.20.EvalSigma-GPU-Dispatch",
+            76418usize
+        ) &&
+        csvCatalogKeyMatches(
+            "rule.20.EvalSigma-GPU-Parallel",
+            76402usize,
+            "rule.20.EvalSigma-GPU-Parallel",
+            76402usize
+        ) &&
+        csvCatalogKeyMatches(
+            "rule.20.EvalSigma-GpuBarrier",
+            76481usize,
+            "rule.20.EvalSigma-GpuBarrier",
+            76481usize
+        ) &&
+        csvCatalogKeyMatches(
+            "rule.20.EvalSigma-Parallel",
+            75603usize,
+            "rule.20.EvalSigma-Parallel",
+            75603usize
+        ) &&
+        csvCatalogKeyMatches(
+            "rule.20.EvalSigma-Parallel-Body-Ctrl",
+            75619usize,
+            "rule.20.EvalSigma-Parallel-Body-Ctrl",
+            75619usize
+        ) &&
+        csvCatalogKeyMatches(
+            "rule.20.EvalSigma-Parallel-Domain-Ctrl",
+            75635usize,
+            "rule.20.EvalSigma-Parallel-Domain-Ctrl",
+            75635usize
+        ) &&
+        csvCatalogKeyMatches(
+            "rule.20.EvalSigma-Parallel-Spawn-Panic",
+            78278usize,
+            "rule.20.EvalSigma-Parallel-Spawn-Panic",
+            78278usize
+        ) &&
+        csvCatalogKeyMatches(
+            "rule.20.EvalSigma-Spawn",
+            77183usize,
+            "rule.20.EvalSigma-Spawn",
+            77183usize
+        ) &&
+        csvCatalogKeyMatches(
+            "rule.20.GpuBarrier-Sync",
+            76450usize,
+            "rule.20.GpuBarrier-Sync",
+            76450usize
+        ) &&
+        csvCatalogKeyMatches(
+            "rule.20.GpuCapture-HeapProv-Err",
+            76910usize,
+            "rule.20.GpuCapture-HeapProv-Err",
+            76910usize
+        ) &&
+        csvCatalogKeyMatches(
+            "rule.20.GpuCapture-NonGpuSafe-Err",
+            76926usize,
+            "rule.20.GpuCapture-NonGpuSafe-Err",
+            76926usize
+        ) &&
+        csvCatalogKeyMatches(
+            "rule.20.GpuCapture-Shared-Err",
+            76894usize,
+            "rule.20.GpuCapture-Shared-Err",
+            76894usize
+        ) &&
+        csvCatalogKeyMatches(
+            "rule.20.GpuCaptureOk-Const",
+            76862usize,
+            "rule.20.GpuCaptureOk-Const",
+            76862usize
+        ) &&
+        csvCatalogKeyMatches(
+            "rule.20.GpuCaptureOk-Unique-Move",
+            76878usize,
+            "rule.20.GpuCaptureOk-Unique-Move",
+            76878usize
+        ) &&
+        csvCatalogKeyMatches(
+            "rule.20.GpuExecute-Step",
+            76434usize,
+            "rule.20.GpuExecute-Step",
+            76434usize
+        ) &&
+        csvCatalogKeyMatches(
+            "rule.20.GpuIntrinsic-Outside-Err",
+            76244usize,
+            "rule.20.GpuIntrinsic-Outside-Err",
+            76244usize
+        ) &&
+        csvCatalogKeyMatches(
+            "rule.20.GpuPtr-AddrSpace-Err",
+            76260usize,
+            "rule.20.GpuPtr-AddrSpace-Err",
+            76260usize
+        ) &&
+        csvCatalogKeyMatches(
+            "rule.20.GpuPtr-Deref-Err",
+            76367usize,
+            "rule.20.GpuPtr-Deref-Err",
+            76367usize
+        ) &&
+        csvCatalogKeyMatches(
+            "rule.20.GpuPtr-Deref-Visible",
+            76351usize,
+            "rule.20.GpuPtr-Deref-Visible",
+            76351usize
+        ) &&
+        csvCatalogKeyMatches(
+            "rule.20.GpuSafe-Array",
+            76052usize,
+            "rule.20.GpuSafe-Array",
+            76052usize
+        ) &&
+        csvCatalogKeyMatches(
+            "rule.20.GpuSafe-BytesView",
+            76148usize,
+            "rule.20.GpuSafe-BytesView",
+            76148usize
+        ) &&
+        csvCatalogKeyMatches(
+            "rule.20.GpuSafe-Enum",
+            76116usize,
+            "rule.20.GpuSafe-Enum",
+            76116usize
+        ) &&
+        csvCatalogKeyMatches(
+            "rule.20.GpuSafe-Generic-Unbounded-Err",
+            76196usize,
+            "rule.20.GpuSafe-Generic-Unbounded-Err",
+            76196usize
+        ) &&
+        csvCatalogKeyMatches(
+            "rule.20.GpuSafe-Perm",
+            76084usize,
+            "rule.20.GpuSafe-Perm",
+            76084usize
+        ) &&
+        csvCatalogKeyMatches(
+            "rule.20.GpuSafe-Prim",
+            76020usize,
+            "rule.20.GpuSafe-Prim",
+            76020usize
+        ) &&
+        csvCatalogKeyMatches(
+            "rule.20.GpuSafe-RawPtr",
+            76036usize,
+            "rule.20.GpuSafe-RawPtr",
+            76036usize
+        ) &&
+        csvCatalogKeyMatches(
+            "rule.20.GpuSafe-Record",
+            76100usize,
+            "rule.20.GpuSafe-Record",
+            76100usize
+        ) &&
+        csvCatalogKeyMatches(
+            "rule.20.GpuSafe-Record-Field-Err",
+            76180usize,
+            "rule.20.GpuSafe-Record-Field-Err",
+            76180usize
+        ) &&
+        csvCatalogKeyMatches(
+            "rule.20.GpuSafe-StringView",
+            76132usize,
+            "rule.20.GpuSafe-StringView",
+            76132usize
+        ) &&
+        csvCatalogKeyMatches(
+            "rule.20.GpuSafe-Tuple",
+            76068usize,
+            "rule.20.GpuSafe-Tuple",
+            76068usize
+        )
+}

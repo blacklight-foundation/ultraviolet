@@ -427,6 +427,11 @@ std::string BuiltinSymContextCpu() {
   return project::RuntimePathSig({"context", "cpu"});
 }
 
+std::string BuiltinSymContextCpuConfigured() {
+  SPEC_DEF("BuiltinSym-Context-CpuConfigured", "Section 18.2.1");
+  return project::RuntimePathSig({"context", "cpu_configured"});
+}
+
 std::string BuiltinSymContextGpu() {
   SPEC_DEF("BuiltinSym-Context-Gpu", "Section 18.2.2");
   return project::RuntimePathSig({"context", "gpu"});
@@ -903,13 +908,14 @@ std::vector<std::string> RuntimeSpecSyms() {
   }};
   AppendRuntimeSymbols(syms, kTimeSymbols);
 
-  static const std::array<BuiltinSymbolFactory, 24> kAdditionalBuiltinMethods = {{
+  static const std::array<BuiltinSymbolFactory, 25> kAdditionalBuiltinMethods = {{
       &BuiltinSymAsyncResume,
       &BuiltinSymAsyncAllocFrame,
       &BuiltinSymAsyncFreeFrame,
       &BuiltinSymExecutionDomainName,
       &BuiltinSymExecutionDomainMaxConcurrency,
       &BuiltinSymContextCpu,
+      &BuiltinSymContextCpuConfigured,
       &BuiltinSymContextGpu,
       &BuiltinSymContextInline,
       &BuiltinSymGpuGlobalId,
@@ -1061,13 +1067,14 @@ std::vector<std::string> RuntimeLinkRequiredSyms() {
 
 std::vector<std::string> RuntimeBuiltinNoPanicOutSyms() {
   std::vector<std::string> syms = RuntimeLinkRequiredSyms();
-  static const std::array<BuiltinSymbolFactory, 24> kAdditionalSymbols = {{
+  static const std::array<BuiltinSymbolFactory, 25> kAdditionalSymbols = {{
       &BuiltinSymAsyncResume,
       &BuiltinSymAsyncAllocFrame,
       &BuiltinSymAsyncFreeFrame,
       &BuiltinSymExecutionDomainName,
       &BuiltinSymExecutionDomainMaxConcurrency,
       &BuiltinSymContextCpu,
+      &BuiltinSymContextCpuConfigured,
       &BuiltinSymContextGpu,
       &BuiltinSymContextInline,
       &BuiltinSymGpuGlobalId,

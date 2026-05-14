@@ -7,12 +7,12 @@ public procedure countExpressionsExpressionDiagnosticsSupplementObligations() ->
 
 public procedure validatedExpressionsExpressionDiagnosticsSupplementObligations() -> usize {
     var count: usize = 0usize
-    if acceptedObligationEntryMatches(
+    if rejectedSourceObligationEntryMatches(
         "diag.16.ExpressionDiagnosticsSupplement",
         65011usize,
-        "HelloUltraviolet::Reference::Expressions",
-        "runExpressionsLiteralsAndNamesReference",
-        "Source/Reference/Expressions/LiteralsAndNames.uv"
+        "HelloUltraviolet::Fixtures::RejectedSource",
+        "validatedExpressionsRejectedSourceFixtureCount",
+        "Fixtures/RejectedSource/Expressions/ExpressionDiagnosticsSupplement/Source/Main.uv"
     ) {
         count = count + 1usize
     }

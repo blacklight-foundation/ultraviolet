@@ -313,12 +313,12 @@ public procedure validatedAbstractionAndPolymorphismGenericParametersAndArgument
     ) {
         count = count + 1usize
     }
-    if acceptedObligationEntryMatches(
+    if rejectedSourceObligationEntryMatches(
         "rule.14.WF-Generic-Param",
         48020usize,
-        "HelloUltraviolet::Reference::Polymorphism",
-        "runPolymorphismGenericParametersReference",
-        "Source/Reference/Polymorphism/GenericParameters.uv"
+        "HelloUltraviolet::Fixtures::RejectedSource",
+        "validatedPolymorphismRejectedSourceFixtureCount",
+        "Fixtures/RejectedSource/Polymorphism/DuplicateTypeParameterName/Source/Main.uv"
     ) {
         count = count + 1usize
     }

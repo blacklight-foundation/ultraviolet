@@ -66,8 +66,10 @@ typedef enum {
 
 typedef struct C0ExecutionDomain {
   uint8_t kind;
-  uint8_t _pad[7];
+  uint8_t _pad[3];
+  int32_t priority_hint;
   uint64_t max_concurrency;
+  uint64_t affinity_mask;
 } C0ExecutionDomain;
 
 typedef struct C0Usize3 {
@@ -691,6 +693,10 @@ int32_t cursive_x3a_x3aruntime_x3a_x3asystem_x3a_x3arun(
 // Â§18.2 Context execution domain constructors
 C0DynObject cursive_x3a_x3aruntime_x3a_x3acontext_x3a_x3acpu(
   const C0Context* self);
+C0DynObject cursive_x3a_x3aruntime_x3a_x3acontext_x3a_x3acpu_x5fconfigured(
+  const C0Context* self,
+  uint64_t affinity_mask,
+  int32_t priority_hint);
 C0DynObject cursive_x3a_x3aruntime_x3a_x3acontext_x3a_x3agpu(
   const C0Context* self);
 C0DynObject cursive_x3a_x3aruntime_x3a_x3acontext_x3a_x3ainline(

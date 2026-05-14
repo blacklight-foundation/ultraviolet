@@ -83,7 +83,8 @@ bool IsOp(const Parser& parser, std::string_view op) {
 // IsPunc - Check if current token is a specific punctuator
 // =============================================================================
 //
-// Handles multi-char punctuators: "[[", "]]", "::", etc.
+// Handles multi-char operators such as "::"; attribute delimiters are adjacent
+// punctuator pairs consumed by the attribute parser.
 
 bool IsPunc(const Parser& parser, std::string_view p) {
   const Token* tok = Tok(parser);

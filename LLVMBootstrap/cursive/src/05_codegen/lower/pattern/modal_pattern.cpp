@@ -50,10 +50,13 @@ void RegisterModalPatternBindings(
     const auto& modal_state = std::get<analysis::TypeModalState>(type_hint->node);
     modal_path = modal_state.path;
     modal_args = modal_state.generic_args;
-  } else if (type_hint && std::holds_alternative<analysis::TypePathType>(type_hint->node)) {
-    const auto& modal_ref = std::get<analysis::TypePathType>(type_hint->node);
-    modal_path = modal_ref.path;
-    modal_args = modal_ref.generic_args;
+  } else if (type_hint) {
+    if (const auto* applied_path = analysis::AppliedTypePath(*type_hint)) {
+      modal_path = *applied_path;
+      if (const auto* applied_args = analysis::AppliedTypeArgs(*type_hint)) {
+        modal_args = *applied_args;
+      }
+    }
   }
 
   // Look up the modal declaration

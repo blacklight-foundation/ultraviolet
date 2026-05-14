@@ -151,21 +151,21 @@ public procedure validatedCompileTimeExecutionAndMetaprogrammingCompileTimeForms
     ) {
         count = count + 1usize
     }
-    if acceptedObligationEntryMatches(
+    if rejectedSourceObligationEntryMatches(
         "requirement.22.CompileTimeTypeAvailabilityRejection",
         83581usize,
-        "HelloUltraviolet::Reference::Comptime",
-        "runComptimeCompileTimeFormsReference",
-        "Source/Reference/Comptime/CompileTimeForms.uv"
+        "HelloUltraviolet::Fixtures::RejectedSource",
+        "validatedComptimeRejectedSourceFixtureCount",
+        "Fixtures/RejectedSource/Comptime/ComptimePointerParameter/Source/Main.uv"
     ) {
         count = count + 1usize
     }
-    if acceptedObligationEntryMatches(
+    if rejectedSourceObligationEntryMatches(
         "requirement.22.CompileTimeProhibitedConstructs",
         83594usize,
-        "HelloUltraviolet::Reference::Comptime",
-        "runComptimeCompileTimeFormsReference",
-        "Source/Reference/Comptime/CompileTimeForms.uv"
+        "HelloUltraviolet::Fixtures::RejectedSource",
+        "validatedComptimeRejectedSourceFixtureCount",
+        "Fixtures/RejectedSource/Comptime/ComptimeProhibitedWait/Source/Main.uv"
     ) {
         count = count + 1usize
     }
@@ -223,12 +223,12 @@ public procedure validatedCompileTimeExecutionAndMetaprogrammingCompileTimeForms
     ) {
         count = count + 1usize
     }
-    if acceptedObligationEntryMatches(
+    if rejectedSourceObligationEntryMatches(
         "requirement.22.CompileTimeProcedureContextRestriction",
         83705usize,
-        "HelloUltraviolet::Reference::Comptime",
-        "runComptimeCompileTimeFormsReference",
-        "Source/Reference/Comptime/CompileTimeForms.uv"
+        "HelloUltraviolet::Fixtures::RejectedSource",
+        "validatedComptimeRejectedSourceFixtureCount",
+        "Fixtures/RejectedSource/Comptime/RuntimeCallsComptimeProcedure/Source/Main.uv"
     ) {
         count = count + 1usize
     }
@@ -484,12 +484,12 @@ public procedure validatedCompileTimeExecutionAndMetaprogrammingCompileTimeForms
     ) {
         count = count + 1usize
     }
-    if acceptedObligationEntryMatches(
+    if rejectedSourceObligationEntryMatches(
         "diagnostics.22.CompileTimeFormsDiagnosticsReference",
         84167usize,
-        "HelloUltraviolet::Reference::Comptime",
-        "runComptimeCompileTimeFormsReference",
-        "Source/Reference/Comptime/CompileTimeForms.uv"
+        "HelloUltraviolet::Fixtures::RejectedSource",
+        "validatedComptimeRejectedSourceFixtureCount",
+        "Fixtures/RejectedSource/Comptime/ComptimeIfConditionType/Source/Main.uv"
     ) {
         count = count + 1usize
     }

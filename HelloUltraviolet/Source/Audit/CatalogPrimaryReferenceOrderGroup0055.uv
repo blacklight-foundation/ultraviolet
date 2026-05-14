@@ -1,0 +1,604 @@
+//! Catalog primary-reference ordering check group 0055.
+
+internal procedure catalogPrimaryReferenceOrderGroup0055() -> bool {
+    return catalogPrimaryReferencePrecedes(
+            "rule.21.Lower-Expr-All",
+            82275usize,
+            "rule.21.Lower-Expr-Race-Return",
+            82210usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.21.Lower-Expr-Race-Return",
+            82210usize,
+            "rule.21.Lower-Expr-Race-Stream",
+            82228usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.21.Lower-Expr-Race-Stream",
+            82228usize,
+            "rule.21.Lower-Expr-Sync",
+            82179usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.21.Lower-Expr-Sync",
+            82179usize,
+            "rule.21.Lower-Wait-Key-Illegal",
+            83140usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.21.Lower-Wait-Key-Illegal",
+            83140usize,
+            "rule.21.Lower-Wait-Spawned",
+            79870usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.21.Lower-Wait-Spawned",
+            79870usize,
+            "rule.21.Lower-Wait-Tracked",
+            79888usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.21.Lower-Wait-Tracked",
+            79888usize,
+            "rule.21.Lower-Yield",
+            79906usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.21.Lower-Yield",
+            79906usize,
+            "rule.21.Lower-Yield-Release",
+            79924usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.21.Lower-Yield-Release",
+            79924usize,
+            "rule.21.Lower-Yield-Release-Keys",
+            83158usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.21.Lower-Yield-Release-Keys",
+            83158usize,
+            "rule.21.Lower-YieldFrom",
+            79955usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.21.Lower-YieldFrom",
+            79955usize,
+            "rule.21.Lower-YieldFrom-Release-Keys",
+            83176usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.21.Lower-YieldFrom-Release-Keys",
+            83176usize,
+            "rule.21.P-Async-Create",
+            82617usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.21.P-Async-Create",
+            82617usize,
+            "rule.21.Parse-All-Expr",
+            80270usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.21.Parse-All-Expr",
+            80270usize,
+            "rule.21.Parse-Race-Expr",
+            80120usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.21.Parse-Race-Expr",
+            80120usize,
+            "rule.21.Parse-RaceArm",
+            80158usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.21.Parse-RaceArm",
+            80158usize,
+            "rule.21.Parse-RaceArms-Cons",
+            80140usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.21.Parse-RaceArms-Cons",
+            80140usize,
+            "rule.21.Parse-RaceArmsTail-Comma",
+            80214usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.21.Parse-RaceArmsTail-Comma",
+            80214usize,
+            "rule.21.Parse-RaceArmsTail-End",
+            80178usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.21.Parse-RaceArmsTail-End",
+            80178usize,
+            "rule.21.Parse-RaceArmsTail-TrailingComma",
+            80196usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.21.Parse-RaceArmsTail-TrailingComma",
+            80196usize,
+            "rule.21.Parse-RaceHandler-Return",
+            80250usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.21.Parse-RaceHandler-Return",
+            80250usize,
+            "rule.21.Parse-RaceHandler-Yield",
+            80232usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.21.Parse-RaceHandler-Yield",
+            80232usize,
+            "rule.21.Parse-Sync-Expr",
+            80100usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.21.Parse-Sync-Expr",
+            80100usize,
+            "rule.21.Parse-Wait-Expr",
+            79072usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.21.Parse-Wait-Expr",
+            79072usize,
+            "rule.21.Parse-Yield-Expr",
+            79115usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.21.Parse-Yield-Expr",
+            79115usize,
+            "rule.21.Parse-Yield-From-Expr",
+            79092usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.21.Parse-Yield-From-Expr",
+            79092usize,
+            "rule.21.Prov-Async-Escape-Err",
+            82636usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.21.Prov-Async-Escape-Err",
+            82636usize,
+            "rule.21.Race-Arity-Err",
+            80654usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.21.Race-Arity-Err",
+            80654usize,
+            "rule.21.Race-Handler-Mix-Err",
+            80672usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.21.Race-Handler-Mix-Err",
+            80672usize,
+            "rule.21.Race-Handler-Type-Err",
+            80747usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.21.Race-Handler-Type-Err",
+            80747usize,
+            "rule.21.Race-Operand-Err",
+            80709usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.21.Race-Operand-Err",
+            80709usize,
+            "rule.21.Race-Operand-Out-Err",
+            80690usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.21.Race-Operand-Out-Err",
+            80690usize,
+            "rule.21.Race-Stream-Handler-Type-Err",
+            80768usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.21.Race-Stream-Handler-Type-Err",
+            80768usize,
+            "rule.21.Race-Stream-Operand-Err",
+            80728usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.21.Race-Stream-Operand-Err",
+            80728usize,
+            "rule.21.RaceStepReturn-Completed",
+            81233usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.21.RaceStepReturn-Completed",
+            81233usize,
+            "rule.21.RaceStepReturn-Continue",
+            81272usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.21.RaceStepReturn-Continue",
+            81272usize,
+            "rule.21.RaceStepReturn-Failed",
+            81253usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.21.RaceStepReturn-Failed",
+            81253usize,
+            "rule.21.RaceStepStream-AllComplete",
+            81346usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.21.RaceStepStream-AllComplete",
+            81346usize,
+            "rule.21.RaceStepStream-Failed",
+            81364usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.21.RaceStepStream-Failed",
+            81364usize,
+            "rule.21.RaceStepStream-Yield-Initial",
+            81326usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.21.RaceStepStream-Yield-Initial",
+            81326usize,
+            "rule.21.RaceStepStream-Yield-Resumable",
+            81457usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.21.RaceStepStream-Yield-Resumable",
+            81457usize,
+            "rule.21.ResumeRaceState-Done",
+            81496usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.21.ResumeRaceState-Done",
+            81496usize,
+            "rule.21.ResumeRaceState-Step",
+            81477usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.21.ResumeRaceState-Step",
+            81477usize,
+            "rule.21.Sub-Async",
+            78810usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.21.Sub-Async",
+            78810usize,
+            "rule.21.Sync-Async-Context-Err",
+            80537usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.21.Sync-Async-Context-Err",
+            80537usize,
+            "rule.21.Sync-In-Err",
+            80574usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.21.Sync-In-Err",
+            80574usize,
+            "rule.21.Sync-Out-Err",
+            80555usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.21.Sync-Out-Err",
+            80555usize,
+            "rule.21.Sync-Yield-Err",
+            80483usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.21.Sync-Yield-Err",
+            80483usize,
+            "rule.21.Sync-YieldFrom-Err",
+            80501usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.21.Sync-YieldFrom-Err",
+            80501usize,
+            "rule.21.SyncStep-Suspended",
+            81057usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.21.SyncStep-Suspended",
+            81057usize,
+            "rule.21.T-All",
+            80791usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.21.T-All",
+            80791usize,
+            "rule.21.T-Async-Chain",
+            80971usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.21.T-Async-Chain",
+            80971usize,
+            "rule.21.T-Async-Filter",
+            80917usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.21.T-Async-Filter",
+            80917usize,
+            "rule.21.T-Async-Fold",
+            80953usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.21.T-Async-Fold",
+            80953usize,
+            "rule.21.T-Async-Map",
+            80899usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.21.T-Async-Map",
+            80899usize,
+            "rule.21.T-Async-Take",
+            80935usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.21.T-Async-Take",
+            80935usize,
+            "rule.21.T-Loop-Iter-Async",
+            80412usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.21.T-Loop-Iter-Async",
+            80412usize,
+            "rule.21.T-Race",
+            80612usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.21.T-Race",
+            80612usize,
+            "rule.21.T-Race-Stream",
+            80633usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.21.T-Race-Stream",
+            80633usize,
+            "rule.21.T-Sync",
+            80519usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.21.T-Sync",
+            80519usize,
+            "rule.21.T-Wait",
+            79200usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.21.T-Wait",
+            79200usize,
+            "rule.21.T-Wait-Future",
+            79218usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.21.T-Wait-Future",
+            79218usize,
+            "rule.21.T-Yield",
+            79256usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.21.T-Yield",
+            79256usize,
+            "rule.21.T-Yield-From",
+            79312usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.21.T-Yield-From",
+            79312usize,
+            "rule.21.WF-Async",
+            78831usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.21.WF-Async",
+            78831usize,
+            "rule.21.WF-Async-Arg-WF-Err",
+            78867usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.21.WF-Async-Arg-WF-Err",
+            78867usize,
+            "rule.21.WF-Async-ArgCount-Err",
+            78849usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.21.WF-Async-ArgCount-Err",
+            78849usize,
+            "rule.21.WF-Async-Path-Err",
+            78885usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.21.WF-Async-Path-Err",
+            78885usize,
+            "rule.21.Wait-Handle-Err",
+            79236usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.21.Wait-Handle-Err",
+            79236usize,
+            "rule.21.Warn-Async-LargeCapture",
+            82550usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.21.Warn-Async-LargeCapture",
+            82550usize,
+            "rule.21.Warn-Async-LargeCapture-Ok",
+            82568usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.21.Warn-Async-LargeCapture-Ok",
+            82568usize,
+            "rule.21.Yield-NotAsync-Err",
+            79274usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.21.Yield-NotAsync-Err",
+            79274usize,
+            "rule.21.Yield-Out-Err",
+            79292usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.21.Yield-Out-Err",
+            79292usize,
+            "rule.21.YieldFrom-ErrType-Err",
+            79385usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.21.YieldFrom-ErrType-Err",
+            79385usize,
+            "rule.21.YieldFrom-In-Err",
+            79367usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.21.YieldFrom-In-Err",
+            79367usize,
+            "rule.21.YieldFrom-NotAsync-Err",
+            79330usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.21.YieldFrom-NotAsync-Err",
+            79330usize,
+            "rule.21.YieldFrom-Out-Err",
+            79348usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.21.YieldFrom-Out-Err",
+            79348usize,
+            "rule.22.ComptimePass",
+            83858usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.22.ComptimePass",
+            83858usize,
+            "rule.22.ComptimePass-Cons",
+            83842usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.22.ComptimePass-Cons",
+            83842usize,
+            "rule.22.ComptimePass-Empty",
+            83827usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.22.ComptimePass-Empty",
+            83827usize,
+            "rule.22.CtBuiltin-Diagnostics-CurrentModule",
+            84725usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.22.CtBuiltin-Diagnostics-CurrentModule",
+            84725usize,
+            "rule.22.CtBuiltin-Diagnostics-CurrentSpan",
+            84709usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.22.CtBuiltin-Diagnostics-CurrentSpan",
+            84709usize,
+            "rule.22.CtBuiltin-Diagnostics-Error",
+            84661usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.22.CtBuiltin-Diagnostics-Error",
+            84661usize,
+            "rule.22.CtBuiltin-Diagnostics-Note",
+            84693usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.22.CtBuiltin-Diagnostics-Note",
+            84693usize,
+            "rule.22.CtBuiltin-Diagnostics-Warning",
+            84677usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.22.CtBuiltin-Diagnostics-Warning",
+            84677usize,
+            "rule.22.CtBuiltin-Emit",
+            84501usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.22.CtBuiltin-Emit",
+            84501usize,
+            "rule.22.CtBuiltin-Exists",
+            84597usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.22.CtBuiltin-Exists",
+            84597usize,
+            "rule.22.CtBuiltin-Exists-InvalidPath",
+            84613usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.22.CtBuiltin-Exists-InvalidPath",
+            84613usize,
+            "rule.22.CtBuiltin-ListDir",
+            84629usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.22.CtBuiltin-ListDir",
+            84629usize,
+            "rule.22.CtBuiltin-ListDir-InvalidPath",
+            84645usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.22.CtBuiltin-ListDir-InvalidPath",
+            84645usize,
+            "rule.22.CtBuiltin-ProjectRoot",
+            84517usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.22.CtBuiltin-ProjectRoot",
+            84517usize,
+            "rule.22.CtBuiltin-Read",
+            84533usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.22.CtBuiltin-Read",
+            84533usize,
+            "rule.22.CtBuiltin-Read-InvalidPath",
+            84549usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.22.CtBuiltin-Read-InvalidPath",
+            84549usize,
+            "rule.22.CtBuiltin-ReadBytes",
+            84565usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.22.CtBuiltin-ReadBytes",
+            84565usize,
+            "rule.22.CtBuiltin-ReadBytes-InvalidPath",
+            84581usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.22.CtBuiltin-ReadBytes-InvalidPath",
+            84581usize,
+            "rule.22.CtBuiltin-Reflect-Category",
+            85084usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.22.CtBuiltin-Reflect-Category",
+            85084usize,
+            "rule.22.CtBuiltin-Reflect-Fields",
+            85100usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.22.CtBuiltin-Reflect-Fields",
+            85100usize,
+            "rule.22.CtBuiltin-Reflect-Form",
+            85148usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.22.CtBuiltin-Reflect-Form",
+            85148usize,
+            "rule.22.CtBuiltin-Reflect-ModulePath",
+            85180usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.22.CtBuiltin-Reflect-ModulePath",
+            85180usize,
+            "rule.22.CtBuiltin-Reflect-States",
+            85132usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.22.CtBuiltin-Reflect-States",
+            85132usize,
+            "rule.22.CtBuiltin-Reflect-TypeName",
+            85164usize
+        )
+}

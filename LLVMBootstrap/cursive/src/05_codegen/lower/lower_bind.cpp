@@ -433,10 +433,13 @@ void RegisterBindingsFromPattern(const ast::Pattern& pattern,
                     return true;
                   }
                   if (!require_state_match) {
-                    if (const auto& modal_ref =
-                            std::get_if<analysis::TypePathType>(&stripped->node)) {
-                      modal_path = modal_ref->path;
-                      modal_args = modal_ref->generic_args;
+                    if (const auto* applied_path = analysis::AppliedTypePath(*stripped)) {
+                      modal_path = *applied_path;
+                      if (const auto* applied_args = analysis::AppliedTypeArgs(*stripped)) {
+                        modal_args = *applied_args;
+                      } else {
+                        modal_args.clear();
+                      }
                       return true;
                     }
                   }

@@ -97,12 +97,12 @@ public procedure validatedExpressionsEffectfulCoreExpressionsObligations() -> us
     ) {
         count = count + 1usize
     }
-    if acceptedObligationEntryMatches(
+    if rejectedSourceObligationEntryMatches(
         "def.16.AddressOfStaticHelpers",
         62914usize,
-        "HelloUltraviolet::Reference::Expressions",
-        "runExpressionsEffectfulCoreReference",
-        "Source/Reference/Expressions/EffectfulCore.uv"
+        "HelloUltraviolet::Fixtures::RejectedSource",
+        "validatedExpressionsRejectedSourceFixtureCount",
+        "Fixtures/RejectedSource/Expressions/AddressOfStaticHelpers/Source/Main.uv"
     ) {
         count = count + 1usize
     }
@@ -124,12 +124,12 @@ public procedure validatedExpressionsEffectfulCoreExpressionsObligations() -> us
     ) {
         count = count + 1usize
     }
-    if acceptedObligationEntryMatches(
+    if rejectedSourceObligationEntryMatches(
         "rule.16.T-AddrOf",
         62961usize,
-        "HelloUltraviolet::Reference::Expressions",
-        "runExpressionsEffectfulCoreReference",
-        "Source/Reference/Expressions/EffectfulCore.uv"
+        "HelloUltraviolet::Fixtures::RejectedSource",
+        "validatedExpressionsRejectedSourceFixtureCount",
+        "Fixtures/RejectedSource/Expressions/AddressOfIndexTyping/Source/Main.uv"
     ) {
         count = count + 1usize
     }
@@ -142,21 +142,21 @@ public procedure validatedExpressionsEffectfulCoreExpressionsObligations() -> us
     ) {
         count = count + 1usize
     }
-    if acceptedObligationEntryMatches(
+    if rejectedSourceObligationEntryMatches(
         "rule.16.T-Deref-Raw",
         62993usize,
-        "HelloUltraviolet::Reference::Expressions",
-        "runExpressionsEffectfulCoreReference",
-        "Source/Reference/Expressions/EffectfulCore.uv"
+        "HelloUltraviolet::Fixtures::RejectedSource",
+        "validatedExpressionsRejectedSourceFixtureCount",
+        "Fixtures/RejectedSource/Expressions/RawDerefUnsafeRequirement/Source/Main.uv"
     ) {
         count = count + 1usize
     }
-    if acceptedObligationEntryMatches(
+    if rejectedSourceObligationEntryMatches(
         "rule.16.DerefPlaceTypingFamily",
         63009usize,
-        "HelloUltraviolet::Reference::Expressions",
-        "runExpressionsEffectfulCoreReference",
-        "Source/Reference/Expressions/EffectfulCore.uv"
+        "HelloUltraviolet::Fixtures::RejectedSource",
+        "validatedExpressionsRejectedSourceFixtureCount",
+        "Fixtures/RejectedSource/Expressions/RawDerefPlaceTypingFamily/Source/Main.uv"
     ) {
         count = count + 1usize
     }
@@ -223,12 +223,12 @@ public procedure validatedExpressionsEffectfulCoreExpressionsObligations() -> us
     ) {
         count = count + 1usize
     }
-    if acceptedObligationEntryMatches(
+    if rejectedSourceObligationEntryMatches(
         "rule.16.Async-Try-Infallible-Err",
         63128usize,
-        "HelloUltraviolet::Reference::Expressions",
-        "runExpressionsEffectfulCoreReference",
-        "Source/Reference/Expressions/EffectfulCore.uv"
+        "HelloUltraviolet::Fixtures::RejectedSource",
+        "validatedExpressionsRejectedSourceFixtureCount",
+        "Fixtures/RejectedSource/Expressions/AsyncTryInfallible/Source/Main.uv"
     ) {
         count = count + 1usize
     }
@@ -511,12 +511,12 @@ public procedure validatedExpressionsEffectfulCoreExpressionsObligations() -> us
     ) {
         count = count + 1usize
     }
-    if acceptedObligationEntryMatches(
+    if rejectedSourceObligationEntryMatches(
         "diag.16.EffectfulCoreExpressions",
         63643usize,
-        "HelloUltraviolet::Reference::Expressions",
-        "runExpressionsEffectfulCoreReference",
-        "Source/Reference/Expressions/EffectfulCore.uv"
+        "HelloUltraviolet::Fixtures::RejectedSource",
+        "validatedExpressionsRejectedSourceFixtureCount",
+        "Fixtures/RejectedSource/Expressions/AllocImplicitNoRegion/Source/Main.uv"
     ) {
         count = count + 1usize
     }

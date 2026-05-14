@@ -1,11 +1,37 @@
 //! Coverage checks for accepted project fixture metadata.
 
 public procedure expectedAcceptedProjectFixtureCount() -> usize {
-    return 6usize
+    return 45usize
 }
 
 public procedure acceptedProjectFixtureCount() -> usize {
-    return 6usize
+    return 45usize
+}
+
+internal procedure hostedExportLibraryExpectationMatches(
+    expectation: AcceptedProjectExpectation,
+    expectation_name: string@View,
+    obligation_id: string@View
+) -> bool {
+    return acceptedProjectSpecimenMatches(
+        acceptedProjectSpecimen(
+            "HostedExportLibrary",
+            "Fixtures/AcceptedProjects/HostedExportLibrary",
+            "Fixtures/AcceptedProjects/HostedExportLibrary/Ultraviolet.toml",
+            "Fixtures/AcceptedProjects/HostedExportLibrary/Source/Library.uv",
+            "HostedExportLibrary",
+            "library",
+            expectation
+        ),
+        "HostedExportLibrary",
+        "Fixtures/AcceptedProjects/HostedExportLibrary",
+        "Fixtures/AcceptedProjects/HostedExportLibrary/Ultraviolet.toml",
+        "Fixtures/AcceptedProjects/HostedExportLibrary/Source/Library.uv",
+        "HostedExportLibrary",
+        "library",
+        expectation_name,
+        obligation_id
+    )
 }
 
 public procedure validatedAcceptedProjectFixtureCount() -> usize {
@@ -17,14 +43,17 @@ public procedure validatedAcceptedProjectFixtureCount() -> usize {
             "Fixtures/AcceptedProjects/StaticLibrary/Ultraviolet.toml",
             "Fixtures/AcceptedProjects/StaticLibrary/Source/Library.uv",
             "StaticLibrary",
-            "library"
+            "library",
+            acceptedProjectExpectation("StaticLibraryArchive", "Archive-Ok")
         ),
         "StaticLibrary",
         "Fixtures/AcceptedProjects/StaticLibrary",
         "Fixtures/AcceptedProjects/StaticLibrary/Ultraviolet.toml",
         "Fixtures/AcceptedProjects/StaticLibrary/Source/Library.uv",
         "StaticLibrary",
-        "library"
+        "library",
+        "StaticLibraryArchive",
+        "Archive-Ok"
     ) {
         count = count + 1usize
     }
@@ -35,14 +64,17 @@ public procedure validatedAcceptedProjectFixtureCount() -> usize {
             "Fixtures/AcceptedProjects/ExecutableMain/Ultraviolet.toml",
             "Fixtures/AcceptedProjects/ExecutableMain/Source/Main.uv",
             "ExecutableMain",
-            "executable"
+            "executable",
+            acceptedProjectExpectation("ExecutableLinkOk", "Link-Ok")
         ),
         "ExecutableMain",
         "Fixtures/AcceptedProjects/ExecutableMain",
         "Fixtures/AcceptedProjects/ExecutableMain/Ultraviolet.toml",
         "Fixtures/AcceptedProjects/ExecutableMain/Source/Main.uv",
         "ExecutableMain",
-        "executable"
+        "executable",
+        "ExecutableLinkOk",
+        "Link-Ok"
     ) {
         count = count + 1usize
     }
@@ -53,14 +85,17 @@ public procedure validatedAcceptedProjectFixtureCount() -> usize {
             "Fixtures/AcceptedProjects/PtrNullReturn/Ultraviolet.toml",
             "Fixtures/AcceptedProjects/PtrNullReturn/Source/Library.uv",
             "PtrNullReturn",
-            "library"
+            "library",
+            acceptedProjectExpectation("PtrNullCheckedReturn", "rule.16.Chk-Null-Ptr")
         ),
         "PtrNullReturn",
         "Fixtures/AcceptedProjects/PtrNullReturn",
         "Fixtures/AcceptedProjects/PtrNullReturn/Ultraviolet.toml",
         "Fixtures/AcceptedProjects/PtrNullReturn/Source/Library.uv",
         "PtrNullReturn",
-        "library"
+        "library",
+        "PtrNullCheckedReturn",
+        "rule.16.Chk-Null-Ptr"
     ) {
         count = count + 1usize
     }
@@ -71,14 +106,17 @@ public procedure validatedAcceptedProjectFixtureCount() -> usize {
             "Fixtures/AcceptedProjects/ExpressionSemantics/Ultraviolet.toml",
             "Fixtures/AcceptedProjects/ExpressionSemantics/Source/Library.uv",
             "ExpressionSemantics",
-            "library"
+            "library",
+            acceptedProjectExpectation("AsyncIteratorLoop", "rule.21.T-Loop-Iter-Async")
         ),
         "ExpressionSemantics",
         "Fixtures/AcceptedProjects/ExpressionSemantics",
         "Fixtures/AcceptedProjects/ExpressionSemantics/Ultraviolet.toml",
         "Fixtures/AcceptedProjects/ExpressionSemantics/Source/Library.uv",
         "ExpressionSemantics",
-        "library"
+        "library",
+        "AsyncIteratorLoop",
+        "rule.21.T-Loop-Iter-Async"
     ) {
         count = count + 1usize
     }
@@ -89,14 +127,17 @@ public procedure validatedAcceptedProjectFixtureCount() -> usize {
             "Fixtures/AcceptedProjects/VerificationFactPrecondition/Ultraviolet.toml",
             "Fixtures/AcceptedProjects/VerificationFactPrecondition/Source/Library.uv",
             "VerificationFactPrecondition",
-            "library"
+            "library",
+            acceptedProjectExpectation("DominatedBranchFact", "rule.15.Fact-Dominate")
         ),
         "VerificationFactPrecondition",
         "Fixtures/AcceptedProjects/VerificationFactPrecondition",
         "Fixtures/AcceptedProjects/VerificationFactPrecondition/Ultraviolet.toml",
         "Fixtures/AcceptedProjects/VerificationFactPrecondition/Source/Library.uv",
         "VerificationFactPrecondition",
-        "library"
+        "library",
+        "DominatedBranchFact",
+        "rule.15.Fact-Dominate"
     ) {
         count = count + 1usize
     }
@@ -107,14 +148,401 @@ public procedure validatedAcceptedProjectFixtureCount() -> usize {
             "Fixtures/AcceptedProjects/CrossAssemblyImplementation/Ultraviolet.toml",
             "Fixtures/AcceptedProjects/CrossAssemblyImplementation/Source/CrossAssemblyImplementation/Library.uv",
             "CrossAssemblyImplementation",
-            "library"
+            "library",
+            acceptedProjectExpectation(
+                "CrossAssemblyImplementationOrphanOk",
+                "req.14.ImplementationOrphanRequirement"
+            )
         ),
         "CrossAssemblyImplementation",
         "Fixtures/AcceptedProjects/CrossAssemblyImplementation",
         "Fixtures/AcceptedProjects/CrossAssemblyImplementation/Ultraviolet.toml",
         "Fixtures/AcceptedProjects/CrossAssemblyImplementation/Source/CrossAssemblyImplementation/Library.uv",
         "CrossAssemblyImplementation",
-        "library"
+        "library",
+        "CrossAssemblyImplementationOrphanOk",
+        "req.14.ImplementationOrphanRequirement"
+    ) {
+        count = count + 1usize
+    }
+    if hostedExportLibraryExpectationMatches(
+        acceptedProjectExpectation(
+            "HostedExportClassification",
+            "requirement.23.HostedExportClassification"
+        ),
+        "HostedExportClassification",
+        "requirement.23.HostedExportClassification"
+    ) {
+        count = count + 1usize
+    }
+    if hostedExportLibraryExpectationMatches(
+        acceptedProjectExpectation(
+            "HostedExportProcedureParser",
+            "requirement.23.HostedExportParsingUsesOrdinaryProcedureParser"
+        ),
+        "HostedExportProcedureParser",
+        "requirement.23.HostedExportParsingUsesOrdinaryProcedureParser"
+    ) {
+        count = count + 1usize
+    }
+    if hostedExportLibraryExpectationMatches(
+        acceptedProjectExpectation(
+            "HostedExportParsingClassification",
+            "requirement.23.HostedExportParsingClassification"
+        ),
+        "HostedExportParsingClassification",
+        "requirement.23.HostedExportParsingClassification"
+    ) {
+        count = count + 1usize
+    }
+    if hostedExportLibraryExpectationMatches(
+        acceptedProjectExpectation(
+            "HostedExportProcedureForm",
+            "ast.23.HostedExportProcedureForm"
+        ),
+        "HostedExportProcedureForm",
+        "ast.23.HostedExportProcedureForm"
+    ) {
+        count = count + 1usize
+    }
+    if hostedExportLibraryExpectationMatches(
+        acceptedProjectExpectation(
+            "HostedExportProcedureHelpers",
+            "def.23.HostedExportProcedureHelpers"
+        ),
+        "HostedExportProcedureHelpers",
+        "def.23.HostedExportProcedureHelpers"
+    ) {
+        count = count + 1usize
+    }
+    if hostedExportLibraryExpectationMatches(
+        acceptedProjectExpectation(
+            "HostedRootCapsMeaning",
+            "requirement.23.HostedRootCapsMeaning"
+        ),
+        "HostedRootCapsMeaning",
+        "requirement.23.HostedRootCapsMeaning"
+    ) {
+        count = count + 1usize
+    }
+    if hostedExportLibraryExpectationMatches(
+        acceptedProjectExpectation("HostedExportMeaning", "def.23.HostedExportMeaning"),
+        "HostedExportMeaning",
+        "def.23.HostedExportMeaning"
+    ) {
+        count = count + 1usize
+    }
+    if hostedExportLibraryExpectationMatches(
+        acceptedProjectExpectation(
+            "HostedExportForeignVisibleSignature",
+            "requirement.23.HostedExportForeignVisibleSignature"
+        ),
+        "HostedExportForeignVisibleSignature",
+        "requirement.23.HostedExportForeignVisibleSignature"
+    ) {
+        count = count + 1usize
+    }
+    if hostedExportLibraryExpectationMatches(
+        acceptedProjectExpectation(
+            "HostedExportForeignVisiblePassKind",
+            "requirement.23.HostedExportForeignVisiblePassKind"
+        ),
+        "HostedExportForeignVisiblePassKind",
+        "requirement.23.HostedExportForeignVisiblePassKind"
+    ) {
+        count = count + 1usize
+    }
+    if hostedExportLibraryExpectationMatches(
+        acceptedProjectExpectation(
+            "HostExportSignatureJudgements",
+            "def.23.HostExportSignatureJudgements"
+        ),
+        "HostExportSignatureJudgements",
+        "def.23.HostExportSignatureJudgements"
+    ) {
+        count = count + 1usize
+    }
+    if hostedExportLibraryExpectationMatches(
+        acceptedProjectExpectation("HostExportSigOk", "rule.23.HostExportSig-Ok"),
+        "HostExportSigOk",
+        "rule.23.HostExportSig-Ok"
+    ) {
+        count = count + 1usize
+    }
+    if hostedExportLibraryExpectationMatches(
+        acceptedProjectExpectation(
+            "HostedExportSessionHandleValidity",
+            "requirement.23.HostedExportSessionHandleValidity"
+        ),
+        "HostedExportSessionHandleValidity",
+        "requirement.23.HostedExportSessionHandleValidity"
+    ) {
+        count = count + 1usize
+    }
+    if hostedExportLibraryExpectationMatches(
+        acceptedProjectExpectation(
+            "HostedExportCapabilityIsolation",
+            "requirement.23.HostedExportCapabilityIsolation"
+        ),
+        "HostedExportCapabilityIsolation",
+        "requirement.23.HostedExportCapabilityIsolation"
+    ) {
+        count = count + 1usize
+    }
+    if hostedExportLibraryExpectationMatches(
+        acceptedProjectExpectation(
+            "HostedSessionRootCapsGrant",
+            "requirement.23.HostedSessionRootCapsGrant"
+        ),
+        "HostedSessionRootCapsGrant",
+        "requirement.23.HostedSessionRootCapsGrant"
+    ) {
+        count = count + 1usize
+    }
+    if hostedExportLibraryExpectationMatches(
+        acceptedProjectExpectation(
+            "HostedExportBoundaryEntrySequence",
+            "requirement.23.HostedExportBoundaryEntrySequence"
+        ),
+        "HostedExportBoundaryEntrySequence",
+        "requirement.23.HostedExportBoundaryEntrySequence"
+    ) {
+        count = count + 1usize
+    }
+    if hostedExportLibraryExpectationMatches(
+        acceptedProjectExpectation(
+            "HostedExportInvalidHandleBehavior",
+            "requirement.23.HostedExportInvalidHandleBehavior"
+        ),
+        "HostedExportInvalidHandleBehavior",
+        "requirement.23.HostedExportInvalidHandleBehavior"
+    ) {
+        count = count + 1usize
+    }
+    if hostedExportLibraryExpectationMatches(
+        acceptedProjectExpectation(
+            "HostedExportCatchFailureReturn",
+            "requirement.23.HostedExportCatchFailureReturn"
+        ),
+        "HostedExportCatchFailureReturn",
+        "requirement.23.HostedExportCatchFailureReturn"
+    ) {
+        count = count + 1usize
+    }
+    if hostedExportLibraryExpectationMatches(
+        acceptedProjectExpectation(
+            "HostedExportLoweringPreservesRawFfiRules",
+            "requirement.23.HostedExportLoweringPreservesRawFfiRules"
+        ),
+        "HostedExportLoweringPreservesRawFfiRules",
+        "requirement.23.HostedExportLoweringPreservesRawFfiRules"
+    ) {
+        count = count + 1usize
+    }
+    if hostedExportLibraryExpectationMatches(
+        acceptedProjectExpectation(
+            "HostedExportThunkAbiDetermination",
+            "requirement.23.HostedExportThunkAbiDetermination"
+        ),
+        "HostedExportThunkAbiDetermination",
+        "requirement.23.HostedExportThunkAbiDetermination"
+    ) {
+        count = count + 1usize
+    }
+    if hostedExportLibraryExpectationMatches(
+        acceptedProjectExpectation("HostThunkCarrierHelpers", "def.23.HostThunkCarrierHelpers"),
+        "HostThunkCarrierHelpers",
+        "def.23.HostThunkCarrierHelpers"
+    ) {
+        count = count + 1usize
+    }
+    if hostedExportLibraryExpectationMatches(
+        acceptedProjectExpectation(
+            "HostThunkParamCarrierByRef",
+            "rule.23.HostThunkParamCarrier-ByRef"
+        ),
+        "HostThunkParamCarrierByRef",
+        "rule.23.HostThunkParamCarrier-ByRef"
+    ) {
+        count = count + 1usize
+    }
+    if hostedExportLibraryExpectationMatches(
+        acceptedProjectExpectation(
+            "HostThunkParamCarrierByValueDefault",
+            "rule.23.HostThunkParamCarrier-ByValue-Default"
+        ),
+        "HostThunkParamCarrierByValueDefault",
+        "rule.23.HostThunkParamCarrier-ByValue-Default"
+    ) {
+        count = count + 1usize
+    }
+    if hostedExportLibraryExpectationMatches(
+        acceptedProjectExpectation(
+            "HostThunkParamCarrierWin64DirectAgg",
+            "rule.23.HostThunkParamCarrier-Win64-DirectAgg"
+        ),
+        "HostThunkParamCarrierWin64DirectAgg",
+        "rule.23.HostThunkParamCarrier-Win64-DirectAgg"
+    ) {
+        count = count + 1usize
+    }
+    if hostedExportLibraryExpectationMatches(
+        acceptedProjectExpectation(
+            "HostThunkParamCarrierWin64IndirectAgg",
+            "rule.23.HostThunkParamCarrier-Win64-IndirectAgg"
+        ),
+        "HostThunkParamCarrierWin64IndirectAgg",
+        "rule.23.HostThunkParamCarrier-Win64-IndirectAgg"
+    ) {
+        count = count + 1usize
+    }
+    if hostedExportLibraryExpectationMatches(
+        acceptedProjectExpectation(
+            "HostThunkRetCarrierDefault",
+            "rule.23.HostThunkRetCarrier-Default"
+        ),
+        "HostThunkRetCarrierDefault",
+        "rule.23.HostThunkRetCarrier-Default"
+    ) {
+        count = count + 1usize
+    }
+    if hostedExportLibraryExpectationMatches(
+        acceptedProjectExpectation(
+            "HostThunkRetCarrierWin64DirectAgg",
+            "rule.23.HostThunkRetCarrier-Win64-DirectAgg"
+        ),
+        "HostThunkRetCarrierWin64DirectAgg",
+        "rule.23.HostThunkRetCarrier-Win64-DirectAgg"
+    ) {
+        count = count + 1usize
+    }
+    if hostedExportLibraryExpectationMatches(
+        acceptedProjectExpectation(
+            "HostThunkRetCarrierWin64SRetAgg",
+            "rule.23.HostThunkRetCarrier-Win64-SRetAgg"
+        ),
+        "HostThunkRetCarrierWin64SRetAgg",
+        "rule.23.HostThunkRetCarrier-Win64-SRetAgg"
+    ) {
+        count = count + 1usize
+    }
+    if hostedExportLibraryExpectationMatches(
+        acceptedProjectExpectation(
+            "HostedExportThunkShapeUse",
+            "requirement.23.HostedExportThunkShapeUse"
+        ),
+        "HostedExportThunkShapeUse",
+        "requirement.23.HostedExportThunkShapeUse"
+    ) {
+        count = count + 1usize
+    }
+    if hostedExportLibraryExpectationMatches(
+        acceptedProjectExpectation(
+            "HostedExportNoWin64AggregateSplitting",
+            "requirement.23.HostedExportNoWin64AggregateSplitting"
+        ),
+        "HostedExportNoWin64AggregateSplitting",
+        "requirement.23.HostedExportNoWin64AggregateSplitting"
+    ) {
+        count = count + 1usize
+    }
+    if hostedExportLibraryExpectationMatches(
+        acceptedProjectExpectation(
+            "HostedExportNoExtraAbiRewriting",
+            "requirement.23.HostedExportNoExtraAbiRewriting"
+        ),
+        "HostedExportNoExtraAbiRewriting",
+        "requirement.23.HostedExportNoExtraAbiRewriting"
+    ) {
+        count = count + 1usize
+    }
+    if hostedExportLibraryExpectationMatches(
+        acceptedProjectExpectation(
+            "HostedThunkModeIndependentForeignClassification",
+            "requirement.23.HostedThunkModeIndependentForeignClassification"
+        ),
+        "HostedThunkModeIndependentForeignClassification",
+        "requirement.23.HostedThunkModeIndependentForeignClassification"
+    ) {
+        count = count + 1usize
+    }
+    if hostedExportLibraryExpectationMatches(
+        acceptedProjectExpectation(
+            "HostedThunkToSourceCallReconstruction",
+            "requirement.23.HostedThunkToSourceCallReconstruction"
+        ),
+        "HostedThunkToSourceCallReconstruction",
+        "requirement.23.HostedThunkToSourceCallReconstruction"
+    ) {
+        count = count + 1usize
+    }
+    if hostedExportLibraryExpectationMatches(
+        acceptedProjectExpectation(
+            "HostedStateSymbolResolution",
+            "requirement.23.HostedStateSymbolResolution"
+        ),
+        "HostedStateSymbolResolution",
+        "requirement.23.HostedStateSymbolResolution"
+    ) {
+        count = count + 1usize
+    }
+    if hostedExportLibraryExpectationMatches(
+        acceptedProjectExpectation(
+            "HostedLibraryLifecycleExports",
+            "requirement.23.HostedLibraryLifecycleExports"
+        ),
+        "HostedLibraryLifecycleExports",
+        "requirement.23.HostedLibraryLifecycleExports"
+    ) {
+        count = count + 1usize
+    }
+    if hostedExportLibraryExpectationMatches(
+        acceptedProjectExpectation(
+            "HostedLifecycleExportsBackendGenerated",
+            "requirement.23.HostedLifecycleExportsBackendGenerated"
+        ),
+        "HostedLifecycleExportsBackendGenerated",
+        "requirement.23.HostedLifecycleExportsBackendGenerated"
+    ) {
+        count = count + 1usize
+    }
+    if hostedExportLibraryExpectationMatches(
+        acceptedProjectExpectation(
+            "HostedLifecycleExportsPanicAndDestroyFailure",
+            "requirement.23.HostedLifecycleExportsPanicAndDestroyFailure"
+        ),
+        "HostedLifecycleExportsPanicAndDestroyFailure",
+        "requirement.23.HostedLifecycleExportsPanicAndDestroyFailure"
+    ) {
+        count = count + 1usize
+    }
+    if hostedExportLibraryExpectationMatches(
+        acceptedProjectExpectation(
+            "HostedSessionHandleNoReissue",
+            "requirement.23.HostedSessionHandleNoReissue"
+        ),
+        "HostedSessionHandleNoReissue",
+        "requirement.23.HostedSessionHandleNoReissue"
+    ) {
+        count = count + 1usize
+    }
+    if hostedExportLibraryExpectationMatches(
+        acceptedProjectExpectation(
+            "HostedExportThunkForeignVisibleAbi",
+            "requirement.23.HostedExportThunkForeignVisibleAbi"
+        ),
+        "HostedExportThunkForeignVisibleAbi",
+        "requirement.23.HostedExportThunkForeignVisibleAbi"
+    ) {
+        count = count + 1usize
+    }
+    if hostedExportLibraryExpectationMatches(
+        acceptedProjectExpectation(
+            "HostedExportThunkEmissionAndEntrypoint",
+            "requirement.23.HostedExportThunkEmissionAndEntrypoint"
+        ),
+        "HostedExportThunkEmissionAndEntrypoint",
+        "requirement.23.HostedExportThunkEmissionAndEntrypoint"
     ) {
         count = count + 1usize
     }

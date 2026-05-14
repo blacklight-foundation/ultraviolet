@@ -1,0 +1,604 @@
+//! CSV-to-catalog membership check group 0060.
+
+internal procedure catalogCsvMembershipGroup0060() -> bool {
+    return csvCatalogKeyMatches(
+            "rule.24.LoopIterIR-Done",
+            90575usize,
+            "rule.24.LoopIterIR-Done",
+            90575usize
+        ) &&
+        csvCatalogKeyMatches(
+            "rule.24.LoopIterIR-Step-Break",
+            90623usize,
+            "rule.24.LoopIterIR-Step-Break",
+            90623usize
+        ) &&
+        csvCatalogKeyMatches(
+            "rule.24.LoopIterIR-Step-Continue",
+            90607usize,
+            "rule.24.LoopIterIR-Step-Continue",
+            90607usize
+        ) &&
+        csvCatalogKeyMatches(
+            "rule.24.LoopIterIR-Step-Ctrl",
+            90639usize,
+            "rule.24.LoopIterIR-Step-Ctrl",
+            90639usize
+        ) &&
+        csvCatalogKeyMatches(
+            "rule.24.LoopIterIR-Step-Val",
+            90591usize,
+            "rule.24.LoopIterIR-Step-Val",
+            90591usize
+        ) &&
+        csvCatalogKeyMatches(
+            "rule.24.Lower-AddrOfIR",
+            98753usize,
+            "rule.24.Lower-AddrOfIR",
+            98753usize
+        ) &&
+        csvCatalogKeyMatches(
+            "rule.24.Lower-AllocIR",
+            98327usize,
+            "rule.24.Lower-AllocIR",
+            98327usize
+        ) &&
+        csvCatalogKeyMatches(
+            "rule.24.Lower-BindVarIR",
+            98343usize,
+            "rule.24.Lower-BindVarIR",
+            98343usize
+        ) &&
+        csvCatalogKeyMatches(
+            "rule.24.Lower-BlockIR",
+            98960usize,
+            "rule.24.Lower-BlockIR",
+            98960usize
+        ) &&
+        csvCatalogKeyMatches(
+            "rule.24.Lower-BranchIR-Conditional",
+            99098usize,
+            "rule.24.Lower-BranchIR-Conditional",
+            99098usize
+        ) &&
+        csvCatalogKeyMatches(
+            "rule.24.Lower-BranchIR-Unconditional",
+            99082usize,
+            "rule.24.Lower-BranchIR-Unconditional",
+            99082usize
+        ) &&
+        csvCatalogKeyMatches(
+            "rule.24.Lower-CallIR-Func",
+            98797usize,
+            "rule.24.Lower-CallIR-Func",
+            98797usize
+        ) &&
+        csvCatalogKeyMatches(
+            "rule.24.Lower-CallVTable",
+            98831usize,
+            "rule.24.Lower-CallVTable",
+            98831usize
+        ) &&
+        csvCatalogKeyMatches(
+            "rule.24.Lower-Expr-Correctness",
+            90026usize,
+            "rule.24.Lower-Expr-Correctness",
+            90026usize
+        ) &&
+        csvCatalogKeyMatches(
+            "rule.24.Lower-FrameIR",
+            99052usize,
+            "rule.24.Lower-FrameIR",
+            99052usize
+        ) &&
+        csvCatalogKeyMatches(
+            "rule.24.Lower-IfCaseIR",
+            99020usize,
+            "rule.24.Lower-IfCaseIR",
+            99020usize
+        ) &&
+        csvCatalogKeyMatches(
+            "rule.24.Lower-IfIR",
+            98928usize,
+            "rule.24.Lower-IfIR",
+            98928usize
+        ) &&
+        csvCatalogKeyMatches(
+            "rule.24.Lower-LoopIR",
+            99004usize,
+            "rule.24.Lower-LoopIR",
+            99004usize
+        ) &&
+        csvCatalogKeyMatches(
+            "rule.24.Lower-MoveStateIR",
+            98532usize,
+            "rule.24.Lower-MoveStateIR",
+            98532usize
+        ) &&
+        csvCatalogKeyMatches(
+            "rule.24.Lower-PhiIR",
+            99126usize,
+            "rule.24.Lower-PhiIR",
+            99126usize
+        ) &&
+        csvCatalogKeyMatches(
+            "rule.24.Lower-ReadPathIR-Proc-Gen",
+            98452usize,
+            "rule.24.Lower-ReadPathIR-Proc-Gen",
+            98452usize
+        ) &&
+        csvCatalogKeyMatches(
+            "rule.24.Lower-ReadPathIR-Proc-User",
+            98436usize,
+            "rule.24.Lower-ReadPathIR-Proc-User",
+            98436usize
+        ) &&
+        csvCatalogKeyMatches(
+            "rule.24.Lower-ReadPathIR-Record",
+            98484usize,
+            "rule.24.Lower-ReadPathIR-Record",
+            98484usize
+        ) &&
+        csvCatalogKeyMatches(
+            "rule.24.Lower-ReadPathIR-Runtime",
+            98468usize,
+            "rule.24.Lower-ReadPathIR-Runtime",
+            98468usize
+        ) &&
+        csvCatalogKeyMatches(
+            "rule.24.Lower-ReadPathIR-Static-Gen",
+            98420usize,
+            "rule.24.Lower-ReadPathIR-Static-Gen",
+            98420usize
+        ) &&
+        csvCatalogKeyMatches(
+            "rule.24.Lower-ReadPathIR-Static-User",
+            98404usize,
+            "rule.24.Lower-ReadPathIR-Static-User",
+            98404usize
+        ) &&
+        csvCatalogKeyMatches(
+            "rule.24.Lower-ReadPlaceIR",
+            98564usize,
+            "rule.24.Lower-ReadPlaceIR",
+            98564usize
+        ) &&
+        csvCatalogKeyMatches(
+            "rule.24.Lower-ReadPtrIR",
+            98609usize,
+            "rule.24.Lower-ReadPtrIR",
+            98609usize
+        ) &&
+        csvCatalogKeyMatches(
+            "rule.24.Lower-ReadPtrIR-Expired",
+            98657usize,
+            "rule.24.Lower-ReadPtrIR-Expired",
+            98657usize
+        ) &&
+        csvCatalogKeyMatches(
+            "rule.24.Lower-ReadPtrIR-Null",
+            98641usize,
+            "rule.24.Lower-ReadPtrIR-Null",
+            98641usize
+        ) &&
+        csvCatalogKeyMatches(
+            "rule.24.Lower-ReadPtrIR-Raw",
+            98625usize,
+            "rule.24.Lower-ReadPtrIR-Raw",
+            98625usize
+        ) &&
+        csvCatalogKeyMatches(
+            "rule.24.Lower-ReadVarIR",
+            98359usize,
+            "rule.24.Lower-ReadVarIR",
+            98359usize
+        ) &&
+        csvCatalogKeyMatches(
+            "rule.24.Lower-ReadVarIR-Err",
+            98375usize,
+            "rule.24.Lower-ReadVarIR-Err",
+            98375usize
+        ) &&
+        csvCatalogKeyMatches(
+            "rule.24.Lower-RegionIR",
+            99036usize,
+            "rule.24.Lower-RegionIR",
+            99036usize
+        ) &&
+        csvCatalogKeyMatches(
+            "rule.24.Lower-StaticDeinit",
+            93884usize,
+            "rule.24.Lower-StaticDeinit",
+            93884usize
+        ) &&
+        csvCatalogKeyMatches(
+            "rule.24.Lower-StaticDeinit-Item",
+            93837usize,
+            "rule.24.Lower-StaticDeinit-Item",
+            93837usize
+        ) &&
+        csvCatalogKeyMatches(
+            "rule.24.Lower-StaticDeinitItems-Cons",
+            93868usize,
+            "rule.24.Lower-StaticDeinitItems-Cons",
+            93868usize
+        ) &&
+        csvCatalogKeyMatches(
+            "rule.24.Lower-StaticDeinitItems-Empty",
+            93853usize,
+            "rule.24.Lower-StaticDeinitItems-Empty",
+            93853usize
+        ) &&
+        csvCatalogKeyMatches(
+            "rule.24.Lower-StaticDeinitNames-Cons-NoResp",
+            93821usize,
+            "rule.24.Lower-StaticDeinitNames-Cons-NoResp",
+            93821usize
+        ) &&
+        csvCatalogKeyMatches(
+            "rule.24.Lower-StaticDeinitNames-Cons-Resp",
+            93805usize,
+            "rule.24.Lower-StaticDeinitNames-Cons-Resp",
+            93805usize
+        ) &&
+        csvCatalogKeyMatches(
+            "rule.24.Lower-StaticDeinitNames-Empty",
+            93790usize,
+            "rule.24.Lower-StaticDeinitNames-Empty",
+            93790usize
+        ) &&
+        csvCatalogKeyMatches(
+            "rule.24.Lower-StaticInit",
+            93744usize,
+            "rule.24.Lower-StaticInit",
+            93744usize
+        ) &&
+        csvCatalogKeyMatches(
+            "rule.24.Lower-StaticInit-Item",
+            93697usize,
+            "rule.24.Lower-StaticInit-Item",
+            93697usize
+        ) &&
+        csvCatalogKeyMatches(
+            "rule.24.Lower-StaticInitItems-Cons",
+            93728usize,
+            "rule.24.Lower-StaticInitItems-Cons",
+            93728usize
+        ) &&
+        csvCatalogKeyMatches(
+            "rule.24.Lower-StaticInitItems-Empty",
+            93713usize,
+            "rule.24.Lower-StaticInitItems-Empty",
+            93713usize
+        ) &&
+        csvCatalogKeyMatches(
+            "rule.24.Lower-StoreGlobal",
+            98548usize,
+            "rule.24.Lower-StoreGlobal",
+            98548usize
+        ) &&
+        csvCatalogKeyMatches(
+            "rule.24.Lower-StoreVarIR",
+            98500usize,
+            "rule.24.Lower-StoreVarIR",
+            98500usize
+        ) &&
+        csvCatalogKeyMatches(
+            "rule.24.Lower-StoreVarNoDropIR",
+            98516usize,
+            "rule.24.Lower-StoreVarNoDropIR",
+            98516usize
+        ) &&
+        csvCatalogKeyMatches(
+            "rule.24.Lower-WritePlaceIR",
+            98580usize,
+            "rule.24.Lower-WritePlaceIR",
+            98580usize
+        ) &&
+        csvCatalogKeyMatches(
+            "rule.24.Lower-WritePtrIR",
+            98673usize,
+            "rule.24.Lower-WritePtrIR",
+            98673usize
+        ) &&
+        csvCatalogKeyMatches(
+            "rule.24.Lower-WritePtrIR-Expired",
+            98705usize,
+            "rule.24.Lower-WritePtrIR-Expired",
+            98705usize
+        ) &&
+        csvCatalogKeyMatches(
+            "rule.24.Lower-WritePtrIR-Null",
+            98689usize,
+            "rule.24.Lower-WritePtrIR-Null",
+            98689usize
+        ) &&
+        csvCatalogKeyMatches(
+            "rule.24.Lower-WritePtrIR-Raw",
+            98721usize,
+            "rule.24.Lower-WritePtrIR-Raw",
+            98721usize
+        ) &&
+        csvCatalogKeyMatches(
+            "rule.24.Lower-WritePtrIR-Raw-Err",
+            98737usize,
+            "rule.24.Lower-WritePtrIR-Raw-Err",
+            98737usize
+        ) &&
+        csvCatalogKeyMatches(
+            "rule.24.LowerFieldInits-Cons",
+            90749usize,
+            "rule.24.LowerFieldInits-Cons",
+            90749usize
+        ) &&
+        csvCatalogKeyMatches(
+            "rule.24.LowerFieldInits-Empty",
+            90734usize,
+            "rule.24.LowerFieldInits-Empty",
+            90734usize
+        ) &&
+        csvCatalogKeyMatches(
+            "rule.24.LowerIR-Err",
+            91031usize,
+            "rule.24.LowerIR-Err",
+            91031usize
+        ) &&
+        csvCatalogKeyMatches(
+            "rule.24.LowerIR-Module",
+            91015usize,
+            "rule.24.LowerIR-Module",
+            91015usize
+        ) &&
+        csvCatalogKeyMatches(
+            "rule.24.LowerIRDecl-Err",
+            99142usize,
+            "rule.24.LowerIRDecl-Err",
+            99142usize
+        ) &&
+        csvCatalogKeyMatches(
+            "rule.24.LowerIRDecl-GlobalConst",
+            98266usize,
+            "rule.24.LowerIRDecl-GlobalConst",
+            98266usize
+        ) &&
+        csvCatalogKeyMatches(
+            "rule.24.LowerIRDecl-GlobalZero",
+            98282usize,
+            "rule.24.LowerIRDecl-GlobalZero",
+            98282usize
+        ) &&
+        csvCatalogKeyMatches(
+            "rule.24.LowerIRDecl-Proc-Gen",
+            98250usize,
+            "rule.24.LowerIRDecl-Proc-Gen",
+            98250usize
+        ) &&
+        csvCatalogKeyMatches(
+            "rule.24.LowerIRDecl-Proc-User",
+            98234usize,
+            "rule.24.LowerIRDecl-Proc-User",
+            98234usize
+        ) &&
+        csvCatalogKeyMatches(
+            "rule.24.LowerIRDecl-VTable",
+            98311usize,
+            "rule.24.LowerIRDecl-VTable",
+            98311usize
+        ) &&
+        csvCatalogKeyMatches(
+            "rule.24.LowerIRInstr-CheckPoison",
+            98879usize,
+            "rule.24.LowerIRInstr-CheckPoison",
+            98879usize
+        ) &&
+        csvCatalogKeyMatches(
+            "rule.24.LowerIRInstr-ClearPanic",
+            98847usize,
+            "rule.24.LowerIRInstr-ClearPanic",
+            98847usize
+        ) &&
+        csvCatalogKeyMatches(
+            "rule.24.LowerIRInstr-Empty",
+            98057usize,
+            "rule.24.LowerIRInstr-Empty",
+            98057usize
+        ) &&
+        csvCatalogKeyMatches(
+            "rule.24.LowerIRInstr-Err",
+            99158usize,
+            "rule.24.LowerIRInstr-Err",
+            99158usize
+        ) &&
+        csvCatalogKeyMatches(
+            "rule.24.LowerIRInstr-LowerPanic",
+            98895usize,
+            "rule.24.LowerIRInstr-LowerPanic",
+            98895usize
+        ) &&
+        csvCatalogKeyMatches(
+            "rule.24.LowerIRInstr-PanicCheck",
+            98863usize,
+            "rule.24.LowerIRInstr-PanicCheck",
+            98863usize
+        ) &&
+        csvCatalogKeyMatches(
+            "rule.24.LowerIRInstr-Seq",
+            98072usize,
+            "rule.24.LowerIRInstr-Seq",
+            98072usize
+        ) &&
+        csvCatalogKeyMatches(
+            "rule.24.LowerList-Cons",
+            90718usize,
+            "rule.24.LowerList-Cons",
+            90718usize
+        ) &&
+        csvCatalogKeyMatches(
+            "rule.24.LowerList-Empty",
+            90703usize,
+            "rule.24.LowerList-Empty",
+            90703usize
+        ) &&
+        csvCatalogKeyMatches(
+            "rule.24.LowerOpt-None",
+            90765usize,
+            "rule.24.LowerOpt-None",
+            90765usize
+        ) &&
+        csvCatalogKeyMatches(
+            "rule.24.LowerOpt-Some",
+            90780usize,
+            "rule.24.LowerOpt-Some",
+            90780usize
+        ) &&
+        csvCatalogKeyMatches(
+            "rule.24.Mangle-Class-Method",
+            92780usize,
+            "rule.24.Mangle-Class-Method",
+            92780usize
+        ) &&
+        csvCatalogKeyMatches(
+            "rule.24.Mangle-Closure",
+            92934usize,
+            "rule.24.Mangle-Closure",
+            92934usize
+        ) &&
+        csvCatalogKeyMatches(
+            "rule.24.Mangle-ClosureEnv",
+            92950usize,
+            "rule.24.Mangle-ClosureEnv",
+            92950usize
+        ) &&
+        csvCatalogKeyMatches(
+            "rule.24.Mangle-DefaultImpl",
+            92892usize,
+            "rule.24.Mangle-DefaultImpl",
+            92892usize
+        ) &&
+        csvCatalogKeyMatches(
+            "rule.24.Mangle-ExternProc",
+            92732usize,
+            "rule.24.Mangle-ExternProc",
+            92732usize
+        ) &&
+        csvCatalogKeyMatches(
+            "rule.24.Mangle-HostExport-Proc",
+            92700usize,
+            "rule.24.Mangle-HostExport-Proc",
+            92700usize
+        ) &&
+        csvCatalogKeyMatches(
+            "rule.24.Mangle-Literal",
+            92876usize,
+            "rule.24.Mangle-Literal",
+            92876usize
+        ) &&
+        csvCatalogKeyMatches(
+            "rule.24.Mangle-Main",
+            92748usize,
+            "rule.24.Mangle-Main",
+            92748usize
+        ) &&
+        csvCatalogKeyMatches(
+            "rule.24.Mangle-Proc",
+            92716usize,
+            "rule.24.Mangle-Proc",
+            92716usize
+        ) &&
+        csvCatalogKeyMatches(
+            "rule.24.Mangle-Record-Method",
+            92764usize,
+            "rule.24.Mangle-Record-Method",
+            92764usize
+        ) &&
+        csvCatalogKeyMatches(
+            "rule.24.Mangle-State-Method",
+            92796usize,
+            "rule.24.Mangle-State-Method",
+            92796usize
+        ) &&
+        csvCatalogKeyMatches(
+            "rule.24.Mangle-Static",
+            92828usize,
+            "rule.24.Mangle-Static",
+            92828usize
+        ) &&
+        csvCatalogKeyMatches(
+            "rule.24.Mangle-StaticBinding",
+            92844usize,
+            "rule.24.Mangle-StaticBinding",
+            92844usize
+        ) &&
+        csvCatalogKeyMatches(
+            "rule.24.Mangle-Transition",
+            92812usize,
+            "rule.24.Mangle-Transition",
+            92812usize
+        ) &&
+        csvCatalogKeyMatches(
+            "rule.24.Mangle-VTable",
+            92860usize,
+            "rule.24.Mangle-VTable",
+            92860usize
+        ) &&
+        csvCatalogKeyMatches(
+            "rule.24.MoveState-Field",
+            90227usize,
+            "rule.24.MoveState-Field",
+            90227usize
+        ) &&
+        csvCatalogKeyMatches(
+            "rule.24.MoveState-Root",
+            90211usize,
+            "rule.24.MoveState-Root",
+            90211usize
+        ) &&
+        csvCatalogKeyMatches(
+            "rule.24.PanicSym",
+            95033usize,
+            "rule.24.PanicSym",
+            95033usize
+        ) &&
+        csvCatalogKeyMatches(
+            "rule.24.PoisonFlag-Decl",
+            100109usize,
+            "rule.24.PoisonFlag-Decl",
+            100109usize
+        ) &&
+        csvCatalogKeyMatches(
+            "rule.24.PoisonFlag-Err",
+            100209usize,
+            "rule.24.PoisonFlag-Err",
+            100209usize
+        ) &&
+        csvCatalogKeyMatches(
+            "rule.24.Prim-Heap-AllocRaw",
+            96918usize,
+            "rule.24.Prim-Heap-AllocRaw",
+            96918usize
+        ) &&
+        csvCatalogKeyMatches(
+            "rule.24.Prim-Heap-DeallocRaw",
+            96934usize,
+            "rule.24.Prim-Heap-DeallocRaw",
+            96934usize
+        ) &&
+        csvCatalogKeyMatches(
+            "rule.24.Prim-Heap-WithQuota",
+            96902usize,
+            "rule.24.Prim-Heap-WithQuota",
+            96902usize
+        ) &&
+        csvCatalogKeyMatches(
+            "rule.24.Prim-MonotonicTime-Coarsen-Runtime",
+            97101usize,
+            "rule.24.Prim-MonotonicTime-Coarsen-Runtime",
+            97101usize
+        ) &&
+        csvCatalogKeyMatches(
+            "rule.24.Prim-MonotonicTime-Elapsed-Runtime",
+            97085usize,
+            "rule.24.Prim-MonotonicTime-Elapsed-Runtime",
+            97085usize
+        )
+}

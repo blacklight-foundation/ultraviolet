@@ -1,0 +1,604 @@
+//! Catalog primary-reference ordering check group 0004.
+
+internal procedure catalogPrimaryReferenceOrderGroup0004() -> bool {
+    return catalogPrimaryReferencePrecedes(
+            "Lower-Range-Full",
+            38076usize,
+            "Lower-Range-Inclusive",
+            38147usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "Lower-Range-Inclusive",
+            38147usize,
+            "Lower-Range-To",
+            38093usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "Lower-Range-To",
+            38093usize,
+            "Lower-Range-ToInclusive",
+            38111usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "Lower-Range-ToInclusive",
+            38111usize,
+            "Lower-StaticDeinit",
+            31375usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "Lower-StaticDeinit",
+            31375usize,
+            "Lower-StaticDeinit-Item",
+            31322usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "Lower-StaticDeinit-Item",
+            31322usize,
+            "Lower-StaticDeinitItems-Cons",
+            31357usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "Lower-StaticDeinitItems-Cons",
+            31357usize,
+            "Lower-StaticDeinitItems-Empty",
+            31340usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "Lower-StaticDeinitItems-Empty",
+            31340usize,
+            "Lower-StaticDeinitNames-Cons-NoResp",
+            31304usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "Lower-StaticDeinitNames-Cons-NoResp",
+            31304usize,
+            "Lower-StaticDeinitNames-Cons-Resp",
+            31286usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "Lower-StaticDeinitNames-Cons-Resp",
+            31286usize,
+            "Lower-StaticDeinitNames-Empty",
+            31269usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "Lower-StaticDeinitNames-Empty",
+            31269usize,
+            "Lower-StaticInit",
+            31218usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "Lower-StaticInit",
+            31218usize,
+            "Lower-StaticInit-Item",
+            31165usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "Lower-StaticInit-Item",
+            31165usize,
+            "Lower-StaticInitItems-Cons",
+            31200usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "Lower-StaticInitItems-Cons",
+            31200usize,
+            "Lower-StaticInitItems-Empty",
+            31183usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "Lower-StaticInitItems-Empty",
+            31183usize,
+            "LowerFieldInits-Cons",
+            39416usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "LowerFieldInits-Cons",
+            39416usize,
+            "LowerFieldInits-Empty",
+            39399usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "LowerFieldInits-Empty",
+            39399usize,
+            "Max-Munch",
+            9746usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "Max-Munch",
+            9746usize,
+            "Max-Munch-Err",
+            9764usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "Max-Munch-Err",
+            9764usize,
+            "Missing-Terminator-Err",
+            7579usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "Missing-Terminator-Err",
+            7579usize,
+            "MixedScript-Err",
+            9964usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "MixedScript-Err",
+            9964usize,
+            "Mod-Done",
+            32538usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "Mod-Done",
+            32538usize,
+            "Mod-Scan",
+            32466usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "Mod-Scan",
+            32466usize,
+            "Mod-Scan-Err-Load",
+            32502usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "Mod-Scan-Err-Load",
+            32502usize,
+            "Mod-Scan-Err-Parse",
+            32520usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "Mod-Scan-Err-Parse",
+            32520usize,
+            "Mod-Scan-Err-Read",
+            32484usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "Mod-Scan-Err-Read",
+            32484usize,
+            "Mod-Start",
+            32430usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "Mod-Start",
+            32430usize,
+            "Mod-Start-Err-Unit",
+            32448usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "Mod-Start-Err-Unit",
+            32448usize,
+            "Module-Dir",
+            4306usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "Module-Dir",
+            4306usize,
+            "Module-Path-Rel",
+            31929usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "Module-Path-Rel",
+            31929usize,
+            "Module-Path-Rel-Fail",
+            31947usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "Module-Path-Rel-Fail",
+            31947usize,
+            "Module-Path-Root",
+            31911usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "Module-Path-Root",
+            31911usize,
+            "ModuleList-Ok",
+            5066usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "ModuleList-Ok",
+            5066usize,
+            "ModulePrefix-Current",
+            32900usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "ModulePrefix-Current",
+            32900usize,
+            "ModulePrefix-Direct",
+            32882usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "ModulePrefix-Direct",
+            32882usize,
+            "ModulePrefix-None",
+            32918usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "ModulePrefix-None",
+            32918usize,
+            "Modules-Err",
+            4402usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "Modules-Err",
+            4402usize,
+            "Modules-Ok",
+            4384usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "Modules-Ok",
+            4384usize,
+            "NAA-1",
+            12212usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "NAA-1",
+            12212usize,
+            "NAA-2",
+            12227usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "NAA-2",
+            12227usize,
+            "NAA-3",
+            12242usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "NAA-3",
+            12242usize,
+            "Names-Done",
+            20883usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "Names-Done",
+            20883usize,
+            "Names-Start",
+            20794usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "Names-Start",
+            20794usize,
+            "Names-Step",
+            20811usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "Names-Step",
+            20811usize,
+            "Names-Step-Dup",
+            20847usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "Names-Step-Dup",
+            20847usize,
+            "Names-Step-Err",
+            20865usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "Names-Step-Err",
+            20865usize,
+            "Names-Step-Using-Import-Dup",
+            20829usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "Names-Step-Using-Import-Dup",
+            20829usize,
+            "No-Dangling-Pointers",
+            26425usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "No-Dangling-Pointers",
+            26425usize,
+            "No-Double-Free",
+            26409usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "No-Double-Free",
+            26409usize,
+            "No-Resurrection",
+            26489usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "No-Resurrection",
+            26489usize,
+            "No-Unknown-Ok",
+            1415usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "No-Unknown-Ok",
+            1415usize,
+            "No-Use-After-Free",
+            26393usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "No-Use-After-Free",
+            26393usize,
+            "NoSpan-Decode",
+            7961usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "NoSpan-Decode",
+            7961usize,
+            "NoSpan-External",
+            1982usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "NoSpan-External",
+            1982usize,
+            "Norm-CR",
+            7178usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "Norm-CR",
+            7178usize,
+            "Norm-CRLF",
+            7160usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "Norm-CRLF",
+            7160usize,
+            "Norm-Empty",
+            7143usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "Norm-Empty",
+            7143usize,
+            "Norm-LF",
+            7196usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "Norm-LF",
+            7196usize,
+            "Norm-Other",
+            7214usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "Norm-Other",
+            7214usize,
+            "Order",
+            1758usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "Order",
+            1758usize,
+            "Out-Dirs-Err",
+            6302usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "Out-Dirs-Err",
+            6302usize,
+            "Out-Dirs-Ok",
+            6284usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "Out-Dirs-Ok",
+            6284usize,
+            "Out-Final-Archive-Err",
+            6590usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "Out-Final-Archive-Err",
+            6590usize,
+            "Out-Final-Archive-Ok",
+            6572usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "Out-Final-Archive-Ok",
+            6572usize,
+            "Out-Final-Link-Err",
+            6554usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "Out-Final-Link-Err",
+            6554usize,
+            "Out-Final-Link-Ok",
+            6536usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "Out-Final-Link-Ok",
+            6536usize,
+            "Out-IR-Collision",
+            6427usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "Out-IR-Collision",
+            6427usize,
+            "Out-IR-Cons-BC",
+            6463usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "Out-IR-Cons-BC",
+            6463usize,
+            "Out-IR-Cons-LL",
+            6445usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "Out-IR-Cons-LL",
+            6445usize,
+            "Out-IR-Done-Finalize",
+            6500usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "Out-IR-Done-Finalize",
+            6500usize,
+            "Out-IR-Done-NoFinalize",
+            6518usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "Out-IR-Done-NoFinalize",
+            6518usize,
+            "Out-IR-Err",
+            6481usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "Out-IR-Err",
+            6481usize,
+            "Out-IR-None-Finalize",
+            6391usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "Out-IR-None-Finalize",
+            6391usize,
+            "Out-IR-None-NoFinalize",
+            6409usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "Out-IR-None-NoFinalize",
+            6409usize,
+            "Out-Obj-Collision",
+            6320usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "Out-Obj-Collision",
+            6320usize,
+            "Out-Obj-Cons",
+            6338usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "Out-Obj-Cons",
+            6338usize,
+            "Out-Obj-Done",
+            6374usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "Out-Obj-Done",
+            6374usize,
+            "Out-Obj-Err",
+            6356usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "Out-Obj-Err",
+            6356usize,
+            "Out-Start",
+            6267usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "Out-Start",
+            6267usize,
+            "Output-Pipeline-Dependency",
+            6200usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "Output-Pipeline-Dependency",
+            6200usize,
+            "Output-Pipeline-Err",
+            6218usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "Output-Pipeline-Err",
+            6218usize,
+            "Output-Pipeline-Linkable",
+            6182usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "Output-Pipeline-Linkable",
+            6182usize,
+            "OwnAssemblies-Ok",
+            4463usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "OwnAssemblies-Ok",
+            4463usize,
+            "P-Closure-Capturing",
+            16908usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "P-Closure-Capturing",
+            16908usize,
+            "P-Closure-Escape-Err",
+            16927usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "P-Closure-Escape-Err",
+            16927usize,
+            "P-Closure-NonCapturing",
+            16890usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "P-Closure-NonCapturing",
+            16890usize,
+            "P-If-Cases",
+            16810usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "P-If-Cases",
+            16810usize,
+            "P-If-Is",
+            16792usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "P-If-Is",
+            16792usize,
+            "P-Index-Array",
+            36523usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "P-Index-Array",
+            36523usize,
+            "P-Index-Array-Dynamic",
+            36559usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "P-Index-Array-Dynamic",
+            36559usize,
+            "P-Index-Array-Perm",
+            36541usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "P-Index-Array-Perm",
+            36541usize,
+            "P-Index-Array-Perm-Dynamic",
+            36577usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "P-Index-Array-Perm-Dynamic",
+            36577usize,
+            "P-Index-Slice",
+            37115usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "P-Index-Slice",
+            37115usize,
+            "P-Index-Slice-Perm",
+            37133usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "P-Index-Slice-Perm",
+            37133usize,
+            "P-Loop-Conditional",
+            17054usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "P-Loop-Conditional",
+            17054usize,
+            "P-Loop-Infinite",
+            17036usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "P-Loop-Infinite",
+            17036usize,
+            "P-Loop-Iter",
+            17072usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "P-Loop-Iter",
+            17072usize,
+            "P-Slice-From-Array",
+            37151usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "P-Slice-From-Array",
+            37151usize,
+            "P-Slice-From-Array-Perm",
+            37169usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "P-Slice-From-Array-Perm",
+            37169usize,
+            "P-Slice-From-Slice",
+            37187usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "P-Slice-From-Slice",
+            37187usize,
+            "P-Slice-From-Slice-Perm",
+            37205usize
+        )
+}

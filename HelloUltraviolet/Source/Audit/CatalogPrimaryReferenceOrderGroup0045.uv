@@ -1,0 +1,604 @@
+//! Catalog primary-reference ordering check group 0045.
+
+internal procedure catalogPrimaryReferenceOrderGroup0045() -> bool {
+    return catalogPrimaryReferencePrecedes(
+            "rule.14.WF-Apply",
+            48463usize,
+            "rule.14.WF-Apply-ArgCount-Err",
+            48479usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.14.WF-Apply-ArgCount-Err",
+            48479usize,
+            "rule.14.WF-Class",
+            49393usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.14.WF-Class",
+            49393usize,
+            "rule.14.WF-Class-Method",
+            49345usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.14.WF-Class-Method",
+            49345usize,
+            "rule.14.WF-ClassPath",
+            48983usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.14.WF-ClassPath",
+            48983usize,
+            "rule.14.WF-ClassPath-Err",
+            48999usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.14.WF-ClassPath-Err",
+            48999usize,
+            "rule.14.WF-Dynamic",
+            50560usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.14.WF-Dynamic",
+            50560usize,
+            "rule.14.WF-Dynamic-Err",
+            50576usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.14.WF-Dynamic-Err",
+            50576usize,
+            "rule.14.WF-Generic-Param",
+            48020usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.14.WF-Generic-Param",
+            48020usize,
+            "rule.14.WF-Generic-Proc",
+            48316usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.14.WF-Generic-Proc",
+            48316usize,
+            "rule.14.WF-Impl",
+            49938usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.14.WF-Impl",
+            49938usize,
+            "rule.14.WF-Opaque",
+            51090usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.14.WF-Opaque",
+            51090usize,
+            "rule.14.WF-Opaque-Err",
+            51106usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.14.WF-Opaque-Err",
+            51106usize,
+            "rule.14.WF-Path-Generic-Err",
+            48447usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.14.WF-Path-Generic-Err",
+            48447usize,
+            "rule.14.WF-Refine-Type",
+            51384usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.14.WF-Refine-Type",
+            51384usize,
+            "rule.15.ApplyCancelProc-New",
+            53711usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.15.ApplyCancelProc-New",
+            53711usize,
+            "rule.15.ApplyMethodSigma",
+            54579usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.15.ApplyMethodSigma",
+            54579usize,
+            "rule.15.ApplyMethodSigma-Prim",
+            54563usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.15.ApplyMethodSigma-Prim",
+            54563usize,
+            "rule.15.ApplyProcSigma",
+            53727usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.15.ApplyProcSigma",
+            53727usize,
+            "rule.15.ApplyRegionProc-Alloc",
+            53631usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.15.ApplyRegionProc-Alloc",
+            53631usize,
+            "rule.15.ApplyRegionProc-Free",
+            53695usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.15.ApplyRegionProc-Free",
+            53695usize,
+            "rule.15.ApplyRegionProc-Freeze",
+            53663usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.15.ApplyRegionProc-Freeze",
+            53663usize,
+            "rule.15.ApplyRegionProc-NewScoped",
+            53615usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.15.ApplyRegionProc-NewScoped",
+            53615usize,
+            "rule.15.ApplyRegionProc-Reset",
+            53647usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.15.ApplyRegionProc-Reset",
+            53647usize,
+            "rule.15.ApplyRegionProc-Thaw",
+            53679usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.15.ApplyRegionProc-Thaw",
+            53679usize,
+            "rule.15.Args-Cons",
+            54321usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.15.Args-Cons",
+            54321usize,
+            "rule.15.Args-Cons-Ref",
+            54337usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.15.Args-Cons-Ref",
+            54337usize,
+            "rule.15.Args-Empty",
+            54306usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.15.Args-Empty",
+            54306usize,
+            "rule.15.CG-Item-Procedure",
+            53761usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.15.CG-Item-Procedure",
+            53761usize,
+            "rule.15.Check-Fail",
+            56898usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.15.Check-Fail",
+            56898usize,
+            "rule.15.Check-False",
+            56850usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.15.Check-False",
+            56850usize,
+            "rule.15.Check-Ok",
+            56882usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.15.Check-Ok",
+            56882usize,
+            "rule.15.Check-Panic",
+            56866usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.15.Check-Panic",
+            56866usize,
+            "rule.15.Check-True",
+            56834usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.15.Check-True",
+            56834usize,
+            "rule.15.Contract-Dynamic-Check",
+            56502usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.15.Contract-Dynamic-Check",
+            56502usize,
+            "rule.15.Contract-Dynamic-Elide",
+            56486usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.15.Contract-Dynamic-Elide",
+            56486usize,
+            "rule.15.Contract-Static-Fail",
+            56470usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.15.Contract-Static-Fail",
+            56470usize,
+            "rule.15.Contract-Static-OK",
+            56454usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.15.Contract-Static-OK",
+            56454usize,
+            "rule.15.Ent-And",
+            56611usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.15.Ent-And",
+            56611usize,
+            "rule.15.Ent-Fact",
+            56595usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.15.Ent-Fact",
+            56595usize,
+            "rule.15.Ent-Linear",
+            56659usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.15.Ent-Linear",
+            56659usize,
+            "rule.15.Ent-Or-L",
+            56627usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.15.Ent-Or-L",
+            56627usize,
+            "rule.15.Ent-Or-R",
+            56643usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.15.Ent-Or-R",
+            56643usize,
+            "rule.15.Ent-True",
+            56579usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.15.Ent-True",
+            56579usize,
+            "rule.15.Entry-Type",
+            55956usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.15.Entry-Type",
+            55956usize,
+            "rule.15.EntryCapturePhase",
+            56024usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.15.EntryCapturePhase",
+            56024usize,
+            "rule.15.EvalArgsSigma-Cons-Move",
+            53551usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.15.EvalArgsSigma-Cons-Move",
+            53551usize,
+            "rule.15.EvalArgsSigma-Cons-Ref",
+            53567usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.15.EvalArgsSigma-Cons-Ref",
+            53567usize,
+            "rule.15.EvalArgsSigma-Ctrl-Move",
+            53583usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.15.EvalArgsSigma-Ctrl-Move",
+            53583usize,
+            "rule.15.EvalArgsSigma-Ctrl-Ref",
+            53599usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.15.EvalArgsSigma-Ctrl-Ref",
+            53599usize,
+            "rule.15.EvalArgsSigma-Empty",
+            53536usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.15.EvalArgsSigma-Empty",
+            53536usize,
+            "rule.15.EvalRecvSigma-Ctrl-Move",
+            54518usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.15.EvalRecvSigma-Ctrl-Move",
+            54518usize,
+            "rule.15.EvalRecvSigma-Ctrl-Ref",
+            54534usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.15.EvalRecvSigma-Ctrl-Ref",
+            54534usize,
+            "rule.15.EvalRecvSigma-Move",
+            54454usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.15.EvalRecvSigma-Move",
+            54454usize,
+            "rule.15.EvalRecvSigma-Ref",
+            54502usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.15.EvalRecvSigma-Ref",
+            54502usize,
+            "rule.15.EvalRecvSigma-Ref-Dyn",
+            54470usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.15.EvalRecvSigma-Ref-Dyn",
+            54470usize,
+            "rule.15.EvalRecvSigma-Ref-Dyn-Expired",
+            54486usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.15.EvalRecvSigma-Ref-Dyn-Expired",
+            54486usize,
+            "rule.15.EvalSigma-Call-Proc",
+            53743usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.15.EvalSigma-Call-Proc",
+            53743usize,
+            "rule.15.Fact-Dominate",
+            56763usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.15.Fact-Dominate",
+            56763usize,
+            "rule.15.Insert-LoopInv-Init-Check",
+            57022usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.15.Insert-LoopInv-Init-Check",
+            57022usize,
+            "rule.15.Insert-LoopInv-Maintenance-Check",
+            57038usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.15.Insert-LoopInv-Maintenance-Check",
+            57038usize,
+            "rule.15.Insert-Postcondition-Check",
+            56958usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.15.Insert-Postcondition-Check",
+            56958usize,
+            "rule.15.Insert-Precondition-Check",
+            56942usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.15.Insert-Precondition-Check",
+            56942usize,
+            "rule.15.Insert-Refinement-Check",
+            57054usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.15.Insert-Refinement-Check",
+            57054usize,
+            "rule.15.Insert-TypeInv-Construction-Check",
+            56974usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.15.Insert-TypeInv-Construction-Check",
+            56974usize,
+            "rule.15.Insert-TypeInv-PostCall-Check",
+            57006usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.15.Insert-TypeInv-PostCall-Check",
+            57006usize,
+            "rule.15.Insert-TypeInv-PreCall-Check",
+            56990usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.15.Insert-TypeInv-PreCall-Check",
+            56990usize,
+            "rule.15.LookupMethod-Ambig",
+            54753usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.15.LookupMethod-Ambig",
+            54753usize,
+            "rule.15.LookupMethod-NotFound",
+            54737usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.15.LookupMethod-NotFound",
+            54737usize,
+            "rule.15.Main-Bypass-NonExecutable",
+            53296usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.15.Main-Bypass-NonExecutable",
+            53296usize,
+            "rule.15.Main-Generic-Err",
+            53328usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.15.Main-Generic-Err",
+            53328usize,
+            "rule.15.Main-Missing",
+            53360usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.15.Main-Missing",
+            53360usize,
+            "rule.15.Main-Multiple",
+            53312usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.15.Main-Multiple",
+            53312usize,
+            "rule.15.Main-Ok",
+            53280usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.15.Main-Ok",
+            53280usize,
+            "rule.15.Main-Signature-Err",
+            53344usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.15.Main-Signature-Err",
+            53344usize,
+            "rule.15.Mangle-Class-Method",
+            54626usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.15.Mangle-Class-Method",
+            54626usize,
+            "rule.15.Mangle-Record-Method",
+            54610usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.15.Mangle-Record-Method",
+            54610usize,
+            "rule.15.Mangle-State-Method",
+            54642usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.15.Mangle-State-Method",
+            54642usize,
+            "rule.15.Parse-Contract-Entry",
+            55710usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.15.Parse-Contract-Entry",
+            55710usize,
+            "rule.15.Parse-Contract-Result",
+            55694usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.15.Parse-Contract-Result",
+            55694usize,
+            "rule.15.Parse-ContractBody-PostOnly",
+            54950usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.15.Parse-ContractBody-PostOnly",
+            54950usize,
+            "rule.15.Parse-ContractBody-PreOnly",
+            54982usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.15.Parse-ContractBody-PreOnly",
+            54982usize,
+            "rule.15.Parse-ContractBody-PrePost",
+            54966usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.15.Parse-ContractBody-PrePost",
+            54966usize,
+            "rule.15.Parse-ContractClauseOpt-None",
+            54918usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.15.Parse-ContractClauseOpt-None",
+            54918usize,
+            "rule.15.Parse-ContractClauseOpt-Yes",
+            54934usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.15.Parse-ContractClauseOpt-Yes",
+            54934usize,
+            "rule.15.Parse-InvariantOpt-None",
+            56106usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.15.Parse-InvariantOpt-None",
+            56106usize,
+            "rule.15.Parse-InvariantOpt-Yes",
+            56122usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.15.Parse-InvariantOpt-Yes",
+            56122usize,
+            "rule.15.Parse-MethodDefAfterVis",
+            53841usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.15.Parse-MethodDefAfterVis",
+            53841usize,
+            "rule.15.Parse-MethodParams-Comma",
+            53937usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.15.Parse-MethodParams-Comma",
+            53937usize,
+            "rule.15.Parse-MethodParams-None",
+            53921usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.15.Parse-MethodParams-None",
+            53921usize,
+            "rule.15.Parse-MethodSignature",
+            53889usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.15.Parse-MethodSignature",
+            53889usize,
+            "rule.15.Parse-Override-No",
+            53873usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.15.Parse-Override-No",
+            53873usize,
+            "rule.15.Parse-Override-Yes",
+            53857usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.15.Parse-Override-Yes",
+            53857usize,
+            "rule.15.Parse-Param",
+            52907usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.15.Parse-Param",
+            52907usize,
+            "rule.15.Parse-ParamList-Cons",
+            52891usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.15.Parse-ParamList-Cons",
+            52891usize,
+            "rule.15.Parse-ParamList-Empty",
+            52875usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.15.Parse-ParamList-Empty",
+            52875usize,
+            "rule.15.Parse-ParamMode-Move",
+            52939usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.15.Parse-ParamMode-Move",
+            52939usize,
+            "rule.15.Parse-ParamMode-None",
+            52923usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.15.Parse-ParamMode-None",
+            52923usize,
+            "rule.15.Parse-ParamTail-Comma",
+            52987usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.15.Parse-ParamTail-Comma",
+            52987usize,
+            "rule.15.Parse-ParamTail-End",
+            52955usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.15.Parse-ParamTail-End",
+            52955usize,
+            "rule.15.Parse-ParamTail-TrailingComma",
+            52971usize
+        )
+}

@@ -1,0 +1,604 @@
+//! CSV-to-catalog membership check group 0059.
+
+internal procedure catalogCsvMembershipGroup0059() -> bool {
+    return csvCatalogKeyMatches(
+            "rule.24.ExecIR-ReadPath",
+            90085usize,
+            "rule.24.ExecIR-ReadPath",
+            90085usize
+        ) &&
+        csvCatalogKeyMatches(
+            "rule.24.ExecIR-ReadPtr",
+            90149usize,
+            "rule.24.ExecIR-ReadPtr",
+            90149usize
+        ) &&
+        csvCatalogKeyMatches(
+            "rule.24.ExecIR-ReadVar",
+            90069usize,
+            "rule.24.ExecIR-ReadVar",
+            90069usize
+        ) &&
+        csvCatalogKeyMatches(
+            "rule.24.ExecIR-Region",
+            90655usize,
+            "rule.24.ExecIR-Region",
+            90655usize
+        ) &&
+        csvCatalogKeyMatches(
+            "rule.24.ExecIR-StoreVar",
+            90101usize,
+            "rule.24.ExecIR-StoreVar",
+            90101usize
+        ) &&
+        csvCatalogKeyMatches(
+            "rule.24.ExecIR-StoreVarNoDrop",
+            90117usize,
+            "rule.24.ExecIR-StoreVarNoDrop",
+            90117usize
+        ) &&
+        csvCatalogKeyMatches(
+            "rule.24.ExecIR-WritePtr",
+            90165usize,
+            "rule.24.ExecIR-WritePtr",
+            90165usize
+        ) &&
+        csvCatalogKeyMatches(
+            "rule.24.HostSessionDestroySigma",
+            94793usize,
+            "rule.24.HostSessionDestroySigma",
+            94793usize
+        ) &&
+        csvCatalogKeyMatches(
+            "rule.24.HostSessionInitSigma",
+            94761usize,
+            "rule.24.HostSessionInitSigma",
+            94761usize
+        ) &&
+        csvCatalogKeyMatches(
+            "rule.24.HostedCallSigma-Ok",
+            94777usize,
+            "rule.24.HostedCallSigma-Ok",
+            94777usize
+        ) &&
+        csvCatalogKeyMatches(
+            "rule.24.Init-Done",
+            94248usize,
+            "rule.24.Init-Done",
+            94248usize
+        ) &&
+        csvCatalogKeyMatches(
+            "rule.24.Init-Fail",
+            94280usize,
+            "rule.24.Init-Fail",
+            94280usize
+        ) &&
+        csvCatalogKeyMatches(
+            "rule.24.Init-Next-Module",
+            94216usize,
+            "rule.24.Init-Next-Module",
+            94216usize
+        ) &&
+        csvCatalogKeyMatches(
+            "rule.24.Init-Ok",
+            94264usize,
+            "rule.24.Init-Ok",
+            94264usize
+        ) &&
+        csvCatalogKeyMatches(
+            "rule.24.Init-Panic",
+            94232usize,
+            "rule.24.Init-Panic",
+            94232usize
+        ) &&
+        csvCatalogKeyMatches(
+            "rule.24.Init-Start",
+            94185usize,
+            "rule.24.Init-Start",
+            94185usize
+        ) &&
+        csvCatalogKeyMatches(
+            "rule.24.Init-Step",
+            94200usize,
+            "rule.24.Init-Step",
+            94200usize
+        ) &&
+        csvCatalogKeyMatches(
+            "rule.24.InitCallIR",
+            93760usize,
+            "rule.24.InitCallIR",
+            93760usize
+        ) &&
+        csvCatalogKeyMatches(
+            "rule.24.InitFn",
+            93520usize,
+            "rule.24.InitFn",
+            93520usize
+        ) &&
+        csvCatalogKeyMatches(
+            "rule.24.Interpret-Project-Deinit-Panic",
+            94901usize,
+            "rule.24.Interpret-Project-Deinit-Panic",
+            94901usize
+        ) &&
+        csvCatalogKeyMatches(
+            "rule.24.Interpret-Project-Init-Panic",
+            94869usize,
+            "rule.24.Interpret-Project-Init-Panic",
+            94869usize
+        ) &&
+        csvCatalogKeyMatches(
+            "rule.24.Interpret-Project-Main-Ctrl",
+            94885usize,
+            "rule.24.Interpret-Project-Main-Ctrl",
+            94885usize
+        ) &&
+        csvCatalogKeyMatches(
+            "rule.24.Interpret-Project-Ok",
+            94853usize,
+            "rule.24.Interpret-Project-Ok",
+            94853usize
+        ) &&
+        csvCatalogKeyMatches(
+            "rule.24.LLVM-ArgAttrs-NonPtr",
+            97318usize,
+            "rule.24.LLVM-ArgAttrs-NonPtr",
+            97318usize
+        ) &&
+        csvCatalogKeyMatches(
+            "rule.24.LLVM-ArgAttrs-Ptr",
+            97285usize,
+            "rule.24.LLVM-ArgAttrs-Ptr",
+            97285usize
+        ) &&
+        csvCatalogKeyMatches(
+            "rule.24.LLVM-ArgAttrs-RawPtr",
+            97302usize,
+            "rule.24.LLVM-ArgAttrs-RawPtr",
+            97302usize
+        ) &&
+        csvCatalogKeyMatches(
+            "rule.24.LLVM-PtrAttrs-Other",
+            97253usize,
+            "rule.24.LLVM-PtrAttrs-Other",
+            97253usize
+        ) &&
+        csvCatalogKeyMatches(
+            "rule.24.LLVM-PtrAttrs-RawPtr",
+            97269usize,
+            "rule.24.LLVM-PtrAttrs-RawPtr",
+            97269usize
+        ) &&
+        csvCatalogKeyMatches(
+            "rule.24.LLVM-PtrAttrs-Valid",
+            97237usize,
+            "rule.24.LLVM-PtrAttrs-Valid",
+            97237usize
+        ) &&
+        csvCatalogKeyMatches(
+            "rule.24.LLVMArgLower-ByRef",
+            99660usize,
+            "rule.24.LLVMArgLower-ByRef",
+            99660usize
+        ) &&
+        csvCatalogKeyMatches(
+            "rule.24.LLVMArgLower-ByValue-Other",
+            99644usize,
+            "rule.24.LLVMArgLower-ByValue-Other",
+            99644usize
+        ) &&
+        csvCatalogKeyMatches(
+            "rule.24.LLVMArgLower-ByValue-PtrValid",
+            99628usize,
+            "rule.24.LLVMArgLower-ByValue-PtrValid",
+            99628usize
+        ) &&
+        csvCatalogKeyMatches(
+            "rule.24.LLVMArgLower-Err",
+            99786usize,
+            "rule.24.LLVMArgLower-Err",
+            99786usize
+        ) &&
+        csvCatalogKeyMatches(
+            "rule.24.LLVMCall-ByValue",
+            99739usize,
+            "rule.24.LLVMCall-ByValue",
+            99739usize
+        ) &&
+        csvCatalogKeyMatches(
+            "rule.24.LLVMCall-Err",
+            99818usize,
+            "rule.24.LLVMCall-Err",
+            99818usize
+        ) &&
+        csvCatalogKeyMatches(
+            "rule.24.LLVMCall-SRet",
+            99755usize,
+            "rule.24.LLVMCall-SRet",
+            99755usize
+        ) &&
+        csvCatalogKeyMatches(
+            "rule.24.LLVMRetLower-ByValue",
+            99692usize,
+            "rule.24.LLVMRetLower-ByValue",
+            99692usize
+        ) &&
+        csvCatalogKeyMatches(
+            "rule.24.LLVMRetLower-ByValue-ZST",
+            99676usize,
+            "rule.24.LLVMRetLower-ByValue-ZST",
+            99676usize
+        ) &&
+        csvCatalogKeyMatches(
+            "rule.24.LLVMRetLower-Err",
+            99802usize,
+            "rule.24.LLVMRetLower-Err",
+            99802usize
+        ) &&
+        csvCatalogKeyMatches(
+            "rule.24.LLVMRetLower-SRet",
+            99708usize,
+            "rule.24.LLVMRetLower-SRet",
+            99708usize
+        ) &&
+        csvCatalogKeyMatches(
+            "rule.24.LLVMTy-Alias",
+            97626usize,
+            "rule.24.LLVMTy-Alias",
+            97626usize
+        ) &&
+        csvCatalogKeyMatches(
+            "rule.24.LLVMTy-Array",
+            97674usize,
+            "rule.24.LLVMTy-Array",
+            97674usize
+        ) &&
+        csvCatalogKeyMatches(
+            "rule.24.LLVMTy-BytesManaged",
+            97979usize,
+            "rule.24.LLVMTy-BytesManaged",
+            97979usize
+        ) &&
+        csvCatalogKeyMatches(
+            "rule.24.LLVMTy-BytesView",
+            97963usize,
+            "rule.24.LLVMTy-BytesView",
+            97963usize
+        ) &&
+        csvCatalogKeyMatches(
+            "rule.24.LLVMTy-Closure",
+            97610usize,
+            "rule.24.LLVMTy-Closure",
+            97610usize
+        ) &&
+        csvCatalogKeyMatches(
+            "rule.24.LLVMTy-Dynamic",
+            97915usize,
+            "rule.24.LLVMTy-Dynamic",
+            97915usize
+        ) &&
+        csvCatalogKeyMatches(
+            "rule.24.LLVMTy-Enum",
+            97801usize,
+            "rule.24.LLVMTy-Enum",
+            97801usize
+        ) &&
+        csvCatalogKeyMatches(
+            "rule.24.LLVMTy-Err",
+            97995usize,
+            "rule.24.LLVMTy-Err",
+            97995usize
+        ) &&
+        csvCatalogKeyMatches(
+            "rule.24.LLVMTy-Func",
+            97594usize,
+            "rule.24.LLVMTy-Func",
+            97594usize
+        ) &&
+        csvCatalogKeyMatches(
+            "rule.24.LLVMTy-Modal-Niche",
+            97849usize,
+            "rule.24.LLVMTy-Modal-Niche",
+            97849usize
+        ) &&
+        csvCatalogKeyMatches(
+            "rule.24.LLVMTy-Modal-StringBytes",
+            97881usize,
+            "rule.24.LLVMTy-Modal-StringBytes",
+            97881usize
+        ) &&
+        csvCatalogKeyMatches(
+            "rule.24.LLVMTy-Modal-Tagged",
+            97865usize,
+            "rule.24.LLVMTy-Modal-Tagged",
+            97865usize
+        ) &&
+        csvCatalogKeyMatches(
+            "rule.24.LLVMTy-ModalState",
+            97899usize,
+            "rule.24.LLVMTy-ModalState",
+            97899usize
+        ) &&
+        csvCatalogKeyMatches(
+            "rule.24.LLVMTy-Perm",
+            97530usize,
+            "rule.24.LLVMTy-Perm",
+            97530usize
+        ) &&
+        csvCatalogKeyMatches(
+            "rule.24.LLVMTy-Prim",
+            97514usize,
+            "rule.24.LLVMTy-Prim",
+            97514usize
+        ) &&
+        csvCatalogKeyMatches(
+            "rule.24.LLVMTy-Ptr",
+            97562usize,
+            "rule.24.LLVMTy-Ptr",
+            97562usize
+        ) &&
+        csvCatalogKeyMatches(
+            "rule.24.LLVMTy-Range",
+            97706usize,
+            "rule.24.LLVMTy-Range",
+            97706usize
+        ) &&
+        csvCatalogKeyMatches(
+            "rule.24.LLVMTy-RangeFrom",
+            97738usize,
+            "rule.24.LLVMTy-RangeFrom",
+            97738usize
+        ) &&
+        csvCatalogKeyMatches(
+            "rule.24.LLVMTy-RangeFull",
+            97786usize,
+            "rule.24.LLVMTy-RangeFull",
+            97786usize
+        ) &&
+        csvCatalogKeyMatches(
+            "rule.24.LLVMTy-RangeInclusive",
+            97722usize,
+            "rule.24.LLVMTy-RangeInclusive",
+            97722usize
+        ) &&
+        csvCatalogKeyMatches(
+            "rule.24.LLVMTy-RangeTo",
+            97754usize,
+            "rule.24.LLVMTy-RangeTo",
+            97754usize
+        ) &&
+        csvCatalogKeyMatches(
+            "rule.24.LLVMTy-RangeToInclusive",
+            97770usize,
+            "rule.24.LLVMTy-RangeToInclusive",
+            97770usize
+        ) &&
+        csvCatalogKeyMatches(
+            "rule.24.LLVMTy-RawPtr",
+            97578usize,
+            "rule.24.LLVMTy-RawPtr",
+            97578usize
+        ) &&
+        csvCatalogKeyMatches(
+            "rule.24.LLVMTy-Record",
+            97642usize,
+            "rule.24.LLVMTy-Record",
+            97642usize
+        ) &&
+        csvCatalogKeyMatches(
+            "rule.24.LLVMTy-Refine",
+            97546usize,
+            "rule.24.LLVMTy-Refine",
+            97546usize
+        ) &&
+        csvCatalogKeyMatches(
+            "rule.24.LLVMTy-Slice",
+            97690usize,
+            "rule.24.LLVMTy-Slice",
+            97690usize
+        ) &&
+        csvCatalogKeyMatches(
+            "rule.24.LLVMTy-StringManaged",
+            97947usize,
+            "rule.24.LLVMTy-StringManaged",
+            97947usize
+        ) &&
+        csvCatalogKeyMatches(
+            "rule.24.LLVMTy-StringView",
+            97931usize,
+            "rule.24.LLVMTy-StringView",
+            97931usize
+        ) &&
+        csvCatalogKeyMatches(
+            "rule.24.LLVMTy-Tuple",
+            97658usize,
+            "rule.24.LLVMTy-Tuple",
+            97658usize
+        ) &&
+        csvCatalogKeyMatches(
+            "rule.24.LLVMTy-Union-Niche",
+            97817usize,
+            "rule.24.LLVMTy-Union-Niche",
+            97817usize
+        ) &&
+        csvCatalogKeyMatches(
+            "rule.24.LLVMTy-Union-Tagged",
+            97833usize,
+            "rule.24.LLVMTy-Union-Tagged",
+            97833usize
+        ) &&
+        csvCatalogKeyMatches(
+            "rule.24.Layout-Func",
+            91690usize,
+            "rule.24.Layout-Func",
+            91690usize
+        ) &&
+        csvCatalogKeyMatches(
+            "rule.24.Layout-Perm",
+            91501usize,
+            "rule.24.Layout-Perm",
+            91501usize
+        ) &&
+        csvCatalogKeyMatches(
+            "rule.24.Layout-Prim",
+            91256usize,
+            "rule.24.Layout-Prim",
+            91256usize
+        ) &&
+        csvCatalogKeyMatches(
+            "rule.24.Layout-Ptr",
+            91594usize,
+            "rule.24.Layout-Ptr",
+            91594usize
+        ) &&
+        csvCatalogKeyMatches(
+            "rule.24.Layout-RawPtr",
+            91642usize,
+            "rule.24.Layout-RawPtr",
+            91642usize
+        ) &&
+        csvCatalogKeyMatches(
+            "rule.24.LibraryImageDestroySigma",
+            94671usize,
+            "rule.24.LibraryImageDestroySigma",
+            94671usize
+        ) &&
+        csvCatalogKeyMatches(
+            "rule.24.LibraryImageInitSigma",
+            94639usize,
+            "rule.24.LibraryImageInitSigma",
+            94639usize
+        ) &&
+        csvCatalogKeyMatches(
+            "rule.24.Linkage-BuiltinModalSym",
+            93299usize,
+            "rule.24.Linkage-BuiltinModalSym",
+            93299usize
+        ) &&
+        csvCatalogKeyMatches(
+            "rule.24.Linkage-BuiltinSym",
+            93315usize,
+            "rule.24.Linkage-BuiltinSym",
+            93315usize
+        ) &&
+        csvCatalogKeyMatches(
+            "rule.24.Linkage-ClassMethod",
+            93075usize,
+            "rule.24.Linkage-ClassMethod",
+            93075usize
+        ) &&
+        csvCatalogKeyMatches(
+            "rule.24.Linkage-ClassMethod-Internal",
+            93091usize,
+            "rule.24.Linkage-ClassMethod-Internal",
+            93091usize
+        ) &&
+        csvCatalogKeyMatches(
+            "rule.24.Linkage-DefaultImpl",
+            93251usize,
+            "rule.24.Linkage-DefaultImpl",
+            93251usize
+        ) &&
+        csvCatalogKeyMatches(
+            "rule.24.Linkage-DefaultImpl-Internal",
+            93267usize,
+            "rule.24.Linkage-DefaultImpl-Internal",
+            93267usize
+        ) &&
+        csvCatalogKeyMatches(
+            "rule.24.Linkage-DeinitFn",
+            93187usize,
+            "rule.24.Linkage-DeinitFn",
+            93187usize
+        ) &&
+        csvCatalogKeyMatches(
+            "rule.24.Linkage-DropGlue",
+            93235usize,
+            "rule.24.Linkage-DropGlue",
+            93235usize
+        ) &&
+        csvCatalogKeyMatches(
+            "rule.24.Linkage-EntrySym",
+            93331usize,
+            "rule.24.Linkage-EntrySym",
+            93331usize
+        ) &&
+        csvCatalogKeyMatches(
+            "rule.24.Linkage-ExternProc",
+            93011usize,
+            "rule.24.Linkage-ExternProc",
+            93011usize
+        ) &&
+        csvCatalogKeyMatches(
+            "rule.24.Linkage-InitFn",
+            93171usize,
+            "rule.24.Linkage-InitFn",
+            93171usize
+        ) &&
+        csvCatalogKeyMatches(
+            "rule.24.Linkage-LiteralData",
+            93219usize,
+            "rule.24.Linkage-LiteralData",
+            93219usize
+        ) &&
+        csvCatalogKeyMatches(
+            "rule.24.Linkage-PanicSym",
+            93283usize,
+            "rule.24.Linkage-PanicSym",
+            93283usize
+        ) &&
+        csvCatalogKeyMatches(
+            "rule.24.Linkage-StateMethod",
+            93107usize,
+            "rule.24.Linkage-StateMethod",
+            93107usize
+        ) &&
+        csvCatalogKeyMatches(
+            "rule.24.Linkage-StateMethod-Internal",
+            93123usize,
+            "rule.24.Linkage-StateMethod-Internal",
+            93123usize
+        ) &&
+        csvCatalogKeyMatches(
+            "rule.24.Linkage-StaticBinding",
+            93043usize,
+            "rule.24.Linkage-StaticBinding",
+            93043usize
+        ) &&
+        csvCatalogKeyMatches(
+            "rule.24.Linkage-StaticBinding-Internal",
+            93059usize,
+            "rule.24.Linkage-StaticBinding-Internal",
+            93059usize
+        ) &&
+        csvCatalogKeyMatches(
+            "rule.24.Linkage-Transition",
+            93139usize,
+            "rule.24.Linkage-Transition",
+            93139usize
+        ) &&
+        csvCatalogKeyMatches(
+            "rule.24.Linkage-Transition-Internal",
+            93155usize,
+            "rule.24.Linkage-Transition-Internal",
+            93155usize
+        ) &&
+        csvCatalogKeyMatches(
+            "rule.24.Linkage-UserItem",
+            92995usize,
+            "rule.24.Linkage-UserItem",
+            92995usize
+        ) &&
+        csvCatalogKeyMatches(
+            "rule.24.Linkage-UserItem-Internal",
+            93027usize,
+            "rule.24.Linkage-UserItem-Internal",
+            93027usize
+        ) &&
+        csvCatalogKeyMatches(
+            "rule.24.Linkage-VTable",
+            93203usize,
+            "rule.24.Linkage-VTable",
+            93203usize
+        )
+}

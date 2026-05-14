@@ -54,6 +54,8 @@ internal procedure ffiPrimitiveRecord(
 /// Exercises the FFI FfiSafe reference surface.
 public procedure runFFIFfiSafeReference() -> bool {
     let record_value: FFIPrimitiveRecord = ffiPrimitiveRecord(17, 4u32)
+    let dropping_value: FFIDroppingRecord = FFIDroppingRecord { value: 23 }
+    let dropping_payload: i32 = move dropping_value.value
     let enum_value: FFIPrimitiveEnum = FFIPrimitiveEnum::Value(record_value.signed_value)
     let enum_ok: bool = if enum_value is {
         FFIPrimitiveEnum::Empty {
@@ -63,5 +65,7 @@ public procedure runFFIFfiSafeReference() -> bool {
             payload == 17
         }
     }
-    return record_value.status == 4u32 && enum_ok
+    return record_value.status == 4u32 &&
+        dropping_payload == 23 &&
+        enum_ok
 }

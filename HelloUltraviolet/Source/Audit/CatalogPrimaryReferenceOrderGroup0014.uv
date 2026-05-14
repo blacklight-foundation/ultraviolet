@@ -1,0 +1,604 @@
+//! Catalog primary-reference ordering check group 0014.
+
+internal procedure catalogPrimaryReferenceOrderGroup0014() -> bool {
+    return catalogPrimaryReferencePrecedes(
+            "def.14.TypeOpaqueAst",
+            51062usize,
+            "def.14.TypeOpaqueForm",
+            51075usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.14.TypeOpaqueForm",
+            51075usize,
+            "def.14.TypeRefineAst",
+            51311usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.14.TypeRefineAst",
+            51311usize,
+            "def.14.TypeRefineForm",
+            51324usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.14.TypeRefineForm",
+            51324usize,
+            "def.14.UtcInstantDecl",
+            51855usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.14.UtcInstantDecl",
+            51855usize,
+            "def.14.WallTimeInterface",
+            51710usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.14.WallTimeInterface",
+            51710usize,
+            "def.15.ArgsOkJudg",
+            54280usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.15.ArgsOkJudg",
+            54280usize,
+            "def.15.ArgumentPassingJudgements",
+            53417usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.15.ArgumentPassingJudgements",
+            53417usize,
+            "def.15.BehavioralSubtypingRelationship",
+            57119usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.15.BehavioralSubtypingRelationship",
+            57119usize,
+            "def.15.BindMethodParams",
+            54550usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.15.BindMethodParams",
+            54550usize,
+            "def.15.BindParams",
+            53404usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.15.BindParams",
+            53404usize,
+            "def.15.BodyReturnType",
+            53092usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.15.BodyReturnType",
+            53092usize,
+            "def.15.BuiltinProcedureParams",
+            53460usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.15.BuiltinProcedureParams",
+            53460usize,
+            "def.15.CallJudgements",
+            53431usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.15.CallJudgements",
+            53431usize,
+            "def.15.CallParams",
+            53501usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.15.CallParams",
+            53501usize,
+            "def.15.CallTargets",
+            53444usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.15.CallTargets",
+            53444usize,
+            "def.15.CalleeProc",
+            53487usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.15.CalleeProc",
+            53487usize,
+            "def.15.CheckState",
+            56405usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.15.CheckState",
+            56405usize,
+            "def.15.ClassDefaults",
+            54707usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.15.ClassDefaults",
+            54707usize,
+            "def.15.ContractCheck",
+            56418usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.15.ContractCheck",
+            56418usize,
+            "def.15.ContractClauseAst",
+            55000usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.15.ContractClauseAst",
+            55000usize,
+            "def.15.ContractEnvironments",
+            56817usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.15.ContractEnvironments",
+            56817usize,
+            "def.15.ContractIntrinsicAst",
+            55728usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.15.ContractIntrinsicAst",
+            55728usize,
+            "def.15.ContractKind",
+            56379usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.15.ContractKind",
+            56379usize,
+            "def.15.ContractOpt",
+            55013usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.15.ContractOpt",
+            55013usize,
+            "def.15.ContractPurityHelperPredicates",
+            55407usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.15.ContractPurityHelperPredicates",
+            55407usize,
+            "def.15.ContractPurityJudgementIntro",
+            55045usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.15.ContractPurityJudgementIntro",
+            55045usize,
+            "def.15.DecidablePredicates",
+            56559usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.15.DecidablePredicates",
+            56559usize,
+            "def.15.DeclTyping",
+            53151usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.15.DeclTyping",
+            53151usize,
+            "def.15.DeclTypingItem",
+            53179usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.15.DeclTypingItem",
+            53179usize,
+            "def.15.DynamicScopeAndContext",
+            56433usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.15.DynamicScopeAndContext",
+            56433usize,
+            "def.15.EntryCaptureTiming",
+            56004usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.15.EntryCaptureTiming",
+            56004usize,
+            "def.15.EntryCaptureValue",
+            56041usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.15.EntryCaptureValue",
+            56041usize,
+            "def.15.ExplicitReturn",
+            53107usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.15.ExplicitReturn",
+            53107usize,
+            "def.15.FuncValDefined",
+            53391usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.15.FuncValDefined",
+            53391usize,
+            "def.15.InvariantAst",
+            56153usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.15.InvariantAst",
+            56153usize,
+            "def.15.LinearIntegerEntailment",
+            56675usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.15.LinearIntegerEntailment",
+            56675usize,
+            "def.15.LookupMethod",
+            54720usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.15.LookupMethod",
+            54720usize,
+            "def.15.LoopInvariantAstPreservation",
+            56182usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.15.LoopInvariantAstPreservation",
+            56182usize,
+            "def.15.LoopInvariantEnforcementPoints",
+            56257usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.15.LoopInvariantEnforcementPoints",
+            56257usize,
+            "def.15.MainDiagRefs",
+            53376usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.15.MainDiagRefs",
+            53376usize,
+            "def.15.MainEntryPointDefinitions",
+            53259usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.15.MainEntryPointDefinitions",
+            53259usize,
+            "def.15.MethodDeclAst",
+            54019usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.15.MethodDeclAst",
+            54019usize,
+            "def.15.MethodOf",
+            54411usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.15.MethodOf",
+            54411usize,
+            "def.15.MethodSignaturesAndParams",
+            54120usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.15.MethodSignaturesAndParams",
+            54120usize,
+            "def.15.NegFact",
+            56724usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.15.NegFact",
+            56724usize,
+            "def.15.ParamAst",
+            53050usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.15.ParamAst",
+            53050usize,
+            "def.15.ParamNamesAndBinds",
+            53063usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.15.ParamNamesAndBinds",
+            53063usize,
+            "def.15.PostconditionElisionRules",
+            55789usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.15.PostconditionElisionRules",
+            55789usize,
+            "def.15.PostconditionEvaluationContext",
+            55453usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.15.PostconditionEvaluationContext",
+            55453usize,
+            "def.15.PostconditionOf",
+            55741usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.15.PostconditionOf",
+            55741usize,
+            "def.15.PostconditionProofContext",
+            55758usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.15.PostconditionProofContext",
+            55758usize,
+            "def.15.PreconditionElisionRules",
+            55594usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.15.PreconditionElisionRules",
+            55594usize,
+            "def.15.PreconditionEvaluationContext",
+            55440usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.15.PreconditionEvaluationContext",
+            55440usize,
+            "def.15.PreconditionOf",
+            55545usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.15.PreconditionOf",
+            55545usize,
+            "def.15.PreconditionProofContext",
+            55562usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.15.PreconditionProofContext",
+            55562usize,
+            "def.15.ProcReturn",
+            53077usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.15.ProcReturn",
+            53077usize,
+            "def.15.ProcedureDeclAst",
+            53037usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.15.ProcedureDeclAst",
+            53037usize,
+            "def.15.ProofContextAt",
+            56538usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.15.ProofContextAt",
+            56538usize,
+            "def.15.ProvBindCheck",
+            53166usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.15.ProvBindCheck",
+            53166usize,
+            "def.15.PureOps",
+            55170usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.15.PureOps",
+            55170usize,
+            "def.15.ReceiverAst",
+            54032usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.15.ReceiverAst",
+            54032usize,
+            "def.15.RecordFieldsMethodsAndSelf",
+            54047usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.15.RecordFieldsMethodsAndSelf",
+            54047usize,
+            "def.15.RecvArgMode",
+            54397usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.15.RecvArgMode",
+            54397usize,
+            "def.15.RecvArgOk",
+            54353usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.15.RecvArgOk",
+            54353usize,
+            "def.15.RecvBase",
+            54426usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.15.RecvBase",
+            54426usize,
+            "def.15.RecvBaseType",
+            54293usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.15.RecvBaseType",
+            54293usize,
+            "def.15.RecvMode",
+            54091usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.15.RecvMode",
+            54091usize,
+            "def.15.RecvParams",
+            54439usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.15.RecvParams",
+            54439usize,
+            "def.15.RecvPerm",
+            54105usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.15.RecvPerm",
+            54105usize,
+            "def.15.RecvType",
+            54075usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.15.RecvType",
+            54075usize,
+            "def.15.ReturnAnnOk",
+            53122usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.15.ReturnAnnOk",
+            53122usize,
+            "def.15.ReturnOut",
+            53517usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.15.ReturnOut",
+            53517usize,
+            "def.15.RuntimeCheckInsertionPointsIntro",
+            56929usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.15.RuntimeCheckInsertionPointsIntro",
+            56929usize,
+            "def.15.SelfType",
+            54062usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.15.SelfType",
+            54062usize,
+            "def.15.StaticProofAt",
+            56711usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.15.StaticProofAt",
+            56711usize,
+            "def.15.SynthParams",
+            53474usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.15.SynthParams",
+            53474usize,
+            "def.15.TypeInvariantAstExtensions",
+            56167usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.15.TypeInvariantAstExtensions",
+            56167usize,
+            "def.15.TypeInvariantContext",
+            56197usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.15.TypeInvariantContext",
+            56197usize,
+            "def.15.TypeInvariantEnforcementPoints",
+            56214usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.15.TypeInvariantEnforcementPoints",
+            56214usize,
+            "def.15.VerificationFact",
+            56392usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.15.VerificationFact",
+            56392usize,
+            "def.16.AccessPlaceAst",
+            58237usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.16.AccessPlaceAst",
+            58237usize,
+            "def.16.AddressOfStaticHelpers",
+            62914usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.16.AddressOfStaticHelpers",
+            62914usize,
+            "def.16.ArgAccessors",
+            59032usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.16.ArgAccessors",
+            59032usize,
+            "def.16.ArgAst",
+            59006usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.16.ArgAst",
+            59006usize,
+            "def.16.ArraySegmentLength",
+            61355usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.16.ArraySegmentLength",
+            61355usize,
+            "def.16.BinaryOperatorRuntime",
+            60064usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.16.BinaryOperatorRuntime",
+            60064usize,
+            "def.16.CallExprAst",
+            59019usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.16.CallExprAst",
+            59019usize,
+            "def.16.CallStaticJudgementsAndArgumentTyping",
+            59080usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.16.CallStaticJudgementsAndArgumentTyping",
+            59080usize,
+            "def.16.CapturedIdentifierLoweringHelpers",
+            64837usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.16.CapturedIdentifierLoweringHelpers",
+            64837usize,
+            "def.16.CastDynamicContext",
+            60661usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.16.CastDynamicContext",
+            60661usize,
+            "def.16.CastRuntimeConversionHelpers",
+            60675usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.16.CastRuntimeConversionHelpers",
+            60675usize,
+            "def.16.CastTransmuteExprAst",
+            60490usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.16.CastTransmuteExprAst",
+            60490usize,
+            "def.16.CastValidity",
+            60518usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.16.CastValidity",
+            60518usize,
+            "def.16.ClosureCallRuntimeHelpers",
+            64586usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.16.ClosureCallRuntimeHelpers",
+            64586usize,
+            "def.16.ClosureCaptureBindingAccessors",
+            64260usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.16.ClosureCaptureBindingAccessors",
+            64260usize,
+            "def.16.ClosureCaptureSets",
+            64013usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.16.ClosureCaptureSets",
+            64013usize,
+            "def.16.ClosureCodeSig",
+            64912usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.16.ClosureCodeSig",
+            64912usize,
+            "def.16.ClosureEnvParam",
+            64899usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.16.ClosureEnvParam",
+            64899usize,
+            "def.16.ClosureEnvironmentRuntimeModel",
+            64484usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.16.ClosureEnvironmentRuntimeModel",
+            64484usize,
+            "def.16.ClosureEscapeClassification",
+            64033usize
+        )
+}

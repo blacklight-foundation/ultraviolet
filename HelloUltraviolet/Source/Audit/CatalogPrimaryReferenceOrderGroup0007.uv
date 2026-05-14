@@ -1,0 +1,604 @@
+//! Catalog primary-reference ordering check group 0007.
+
+internal procedure catalogPrimaryReferenceOrderGroup0007() -> bool {
+    return catalogPrimaryReferencePrecedes(
+            "Range-Inclusive",
+            37886usize,
+            "Range-To",
+            37814usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "Range-To",
+            37814usize,
+            "Range-ToInclusive",
+            37832usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "Range-ToInclusive",
+            37832usize,
+            "Reachable-Edge",
+            33272usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "Reachable-Edge",
+            33272usize,
+            "Reachable-Step",
+            33290usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "Reachable-Step",
+            33290usize,
+            "ReadBytes-Err",
+            32222usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "ReadBytes-Err",
+            32222usize,
+            "ReadBytes-Ok",
+            32204usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "ReadBytes-Ok",
+            32204usize,
+            "Region-Alloc-Proc",
+            18328usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "Region-Alloc-Proc",
+            18328usize,
+            "Region-Free-Proc",
+            18400usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "Region-Free-Proc",
+            18400usize,
+            "Region-Freeze-Proc",
+            18364usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "Region-Freeze-Proc",
+            18364usize,
+            "Region-New-Scoped",
+            18310usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "Region-New-Scoped",
+            18310usize,
+            "Region-Reset-Proc",
+            18346usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "Region-Reset-Proc",
+            18346usize,
+            "Region-Thaw-Proc",
+            18382usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "Region-Thaw-Proc",
+            18382usize,
+            "Reject-IllFormed",
+            509usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "Reject-IllFormed",
+            509usize,
+            "Res-Items",
+            23992usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "Res-Items",
+            23992usize,
+            "Res-Names",
+            23974usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "Res-Names",
+            23974usize,
+            "Res-Start",
+            23957usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "Res-Start",
+            23957usize,
+            "Resolve-Canonical",
+            3405usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "Resolve-Canonical",
+            3405usize,
+            "Resolve-Canonical-Err",
+            3423usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "Resolve-Canonical-Err",
+            3423usize,
+            "Resolve-Class-Name",
+            19409usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "Resolve-Class-Name",
+            19409usize,
+            "Resolve-EnumRecord",
+            21138usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "Resolve-EnumRecord",
+            21138usize,
+            "Resolve-EnumRecord",
+            39907usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "Resolve-EnumRecord",
+            39907usize,
+            "Resolve-EnumTuple",
+            21120usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "Resolve-EnumTuple",
+            21120usize,
+            "Resolve-EnumTuple",
+            39889usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "Resolve-EnumTuple",
+            39889usize,
+            "Resolve-EnumUnit",
+            21102usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "Resolve-EnumUnit",
+            21102usize,
+            "Resolve-EnumUnit",
+            39871usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "Resolve-EnumUnit",
+            39871usize,
+            "Resolve-Import-Current",
+            33169usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "Resolve-Import-Current",
+            33169usize,
+            "Resolve-Import-Direct",
+            33151usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "Resolve-Import-Direct",
+            33151usize,
+            "Resolve-Import-Err",
+            33187usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "Resolve-Import-Err",
+            33187usize,
+            "Resolve-Module-Name",
+            19427usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "Resolve-Module-Name",
+            19427usize,
+            "Resolve-ModulePath-Current",
+            32954usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "Resolve-ModulePath-Current",
+            32954usize,
+            "Resolve-ModulePath-Direct",
+            32936usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "Resolve-ModulePath-Direct",
+            32936usize,
+            "Resolve-Qualified",
+            19544usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "Resolve-Qualified",
+            19544usize,
+            "Resolve-RecordPath",
+            21084usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "Resolve-RecordPath",
+            21084usize,
+            "Resolve-RecordPath",
+            38844usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "Resolve-RecordPath",
+            38844usize,
+            "Resolve-Type-Name",
+            19391usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "Resolve-Type-Name",
+            19391usize,
+            "Resolve-Using-Err",
+            33223usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "Resolve-Using-Err",
+            33223usize,
+            "Resolve-Using-Ok",
+            33205usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "Resolve-Using-Ok",
+            33205usize,
+            "Resolve-Value-Name",
+            19373usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "Resolve-Value-Name",
+            19373usize,
+            "ResolveAllExprList-Cons",
+            23057usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "ResolveAllExprList-Cons",
+            23057usize,
+            "ResolveAllExprList-Empty",
+            23040usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "ResolveAllExprList-Empty",
+            23040usize,
+            "ResolveArgs-Cons",
+            21031usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "ResolveArgs-Cons",
+            21031usize,
+            "ResolveArgs-Empty",
+            21014usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "ResolveArgs-Empty",
+            21014usize,
+            "ResolveCallee-Ident-Record",
+            23107usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "ResolveCallee-Ident-Record",
+            23107usize,
+            "ResolveCallee-Ident-Value",
+            23089usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "ResolveCallee-Ident-Value",
+            23089usize,
+            "ResolveCallee-Other",
+            23179usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "ResolveCallee-Other",
+            23179usize,
+            "ResolveCallee-Path-Builtin",
+            23143usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "ResolveCallee-Path-Builtin",
+            23143usize,
+            "ResolveCallee-Path-Record",
+            23161usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "ResolveCallee-Path-Record",
+            23161usize,
+            "ResolveCallee-Path-Value",
+            23125usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "ResolveCallee-Path-Value",
+            23125usize,
+            "ResolveClassPath-Ident",
+            21722usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "ResolveClassPath-Ident",
+            21722usize,
+            "ResolveClassPath-Qual",
+            21740usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "ResolveClassPath-Qual",
+            21740usize,
+            "ResolveContractClauseOpt-None",
+            21392usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "ResolveContractClauseOpt-None",
+            21392usize,
+            "ResolveContractClauseOpt-Yes",
+            21618usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "ResolveContractClauseOpt-Yes",
+            21618usize,
+            "ResolveDispatchOpt-Chunk",
+            22870usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "ResolveDispatchOpt-Chunk",
+            22870usize,
+            "ResolveDispatchOpt-Ordered",
+            22853usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "ResolveDispatchOpt-Ordered",
+            22853usize,
+            "ResolveDispatchOpt-Reduce",
+            22836usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "ResolveDispatchOpt-Reduce",
+            22836usize,
+            "ResolveDispatchOpts-Cons",
+            22905usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "ResolveDispatchOpts-Cons",
+            22905usize,
+            "ResolveDispatchOpts-Empty",
+            22888usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "ResolveDispatchOpts-Empty",
+            22888usize,
+            "ResolveElseBlockOpt-None",
+            23337usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "ResolveElseBlockOpt-None",
+            23337usize,
+            "ResolveElseBlockOpt-Some",
+            23354usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "ResolveElseBlockOpt-Some",
+            23354usize,
+            "ResolveEnumPayload-None",
+            22427usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "ResolveEnumPayload-None",
+            22427usize,
+            "ResolveEnumPayload-Record",
+            22462usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "ResolveEnumPayload-Record",
+            22462usize,
+            "ResolveEnumPayload-Tuple",
+            22444usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "ResolveEnumPayload-Tuple",
+            22444usize,
+            "ResolveEnumPayloadPattern-None",
+            22199usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "ResolveEnumPayloadPattern-None",
+            22199usize,
+            "ResolveEnumPayloadPattern-Record",
+            22232usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "ResolveEnumPayloadPattern-Record",
+            22232usize,
+            "ResolveEnumPayloadPattern-Tuple",
+            22214usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "ResolveEnumPayloadPattern-Tuple",
+            22214usize,
+            "ResolveExpr-All",
+            23656usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "ResolveExpr-All",
+            23656usize,
+            "ResolveExpr-Alloc-Explicit",
+            23756usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "ResolveExpr-Alloc-Explicit",
+            23756usize,
+            "ResolveExpr-Alloc-Explicit-ByAlias",
+            23674usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "ResolveExpr-Alloc-Explicit-ByAlias",
+            23674usize,
+            "ResolveExpr-Alloc-Implicit",
+            23738usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "ResolveExpr-Alloc-Implicit",
+            23738usize,
+            "ResolveExpr-Block",
+            23823usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "ResolveExpr-Block",
+            23823usize,
+            "ResolveExpr-Call",
+            23197usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "ResolveExpr-Call",
+            23197usize,
+            "ResolveExpr-Call-TypeArgs",
+            23215usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "ResolveExpr-Call-TypeArgs",
+            23215usize,
+            "ResolveExpr-Dispatch",
+            23566usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "ResolveExpr-Dispatch",
+            23566usize,
+            "ResolveExpr-EnumLiteral",
+            23252usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "ResolveExpr-EnumLiteral",
+            23252usize,
+            "ResolveExpr-Hom",
+            23720usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "ResolveExpr-Hom",
+            23720usize,
+            "ResolveExpr-Ident",
+            22284usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "ResolveExpr-Ident",
+            22284usize,
+            "ResolveExpr-Ident-Err",
+            22302usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "ResolveExpr-Ident-Err",
+            22302usize,
+            "ResolveExpr-IfCase",
+            23390usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "ResolveExpr-IfCase",
+            23390usize,
+            "ResolveExpr-IfIs",
+            23372usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "ResolveExpr-IfIs",
+            23372usize,
+            "ResolveExpr-LoopConditional",
+            23426usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "ResolveExpr-LoopConditional",
+            23426usize,
+            "ResolveExpr-LoopInfinite",
+            23408usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "ResolveExpr-LoopInfinite",
+            23408usize,
+            "ResolveExpr-LoopIter",
+            23444usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "ResolveExpr-LoopIter",
+            23444usize,
+            "ResolveExpr-Parallel",
+            23462usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "ResolveExpr-Parallel",
+            23462usize,
+            "ResolveExpr-Qualified",
+            22320usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "ResolveExpr-Qualified",
+            22320usize,
+            "ResolveExpr-Race",
+            23638usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "ResolveExpr-Race",
+            23638usize,
+            "ResolveExpr-RecordExpr",
+            23234usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "ResolveExpr-RecordExpr",
+            23234usize,
+            "ResolveExpr-Spawn",
+            23480usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "ResolveExpr-Spawn",
+            23480usize,
+            "ResolveExpr-Sync",
+            23620usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "ResolveExpr-Sync",
+            23620usize,
+            "ResolveExpr-Wait",
+            23498usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "ResolveExpr-Wait",
+            23498usize,
+            "ResolveExpr-Yield",
+            23584usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "ResolveExpr-Yield",
+            23584usize,
+            "ResolveExpr-YieldFrom",
+            23602usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "ResolveExpr-YieldFrom",
+            23602usize,
+            "ResolveExprList-Cons",
+            22381usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "ResolveExprList-Cons",
+            22381usize,
+            "ResolveExprList-Empty",
+            22366usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "ResolveExprList-Empty",
+            22366usize,
+            "ResolveExprOpt-None-Judgement",
+            21437usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "ResolveExprOpt-None-Judgement",
+            21437usize,
+            "ResolveFieldInits-Cons",
+            21066usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "ResolveFieldInits-Cons",
+            21066usize,
+            "ResolveFieldInits-Empty",
+            21049usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "ResolveFieldInits-Empty",
+            21049usize,
+            "ResolveFieldPattern-Explicit",
+            22163usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "ResolveFieldPattern-Explicit",
+            22163usize,
+            "ResolveFieldPattern-Implicit",
+            22146usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "ResolveFieldPattern-Implicit",
+            22146usize,
+            "ResolveFieldPatternList-Cons",
+            22181usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "ResolveFieldPatternList-Cons",
+            22181usize,
+            "ResolveFieldPatternList-Empty",
+            22113usize
+        )
+}

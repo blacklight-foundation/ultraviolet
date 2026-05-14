@@ -1,0 +1,132 @@
+//! Compiled index of obligations whose source-level fixture shape needs SPEC clarification.
+
+public record SpecClarification {
+    public obligation_id: string@View
+    public sourceability: string@View
+    public exercise_kind: string@View
+}
+
+public procedure specClarification(
+    obligation_id: string@View,
+    sourceability: string@View,
+    exercise_kind: string@View
+) -> SpecClarification {
+    return SpecClarification {
+        obligation_id: obligation_id,
+        sourceability: sourceability,
+        exercise_kind: exercise_kind
+    }
+}
+
+public procedure specClarificationMatches(
+    clarification: SpecClarification,
+    obligation_id: string@View,
+    sourceability: string@View,
+    exercise_kind: string@View
+) -> bool {
+    return auditTextEquals(clarification.obligation_id, obligation_id) &&
+        auditTextEquals(clarification.sourceability, sourceability) &&
+        auditTextEquals(clarification.exercise_kind, exercise_kind)
+}
+
+public procedure expectedSpecClarificationCount() -> usize {
+    return 7usize
+}
+
+public procedure specClarificationCount() -> usize {
+    return 7usize
+}
+
+public procedure validatedSpecClarificationCount() -> usize {
+    var count: usize = 0usize
+    if specClarificationMatches(
+        specClarification(
+            "rule.18.BlockInfo-Res-Err",
+            "source-construct-unclear",
+            "ReferenceModel"
+        ),
+        "rule.18.BlockInfo-Res-Err",
+        "source-construct-unclear",
+        "ReferenceModel"
+    ) {
+        count = count + 1usize
+    }
+    if specClarificationMatches(
+        specClarification(
+            "rule.14.Impl-Orphan-Err",
+            "internal-import-metadata",
+            "ReferenceModel"
+        ),
+        "rule.14.Impl-Orphan-Err",
+        "internal-import-metadata",
+        "ReferenceModel"
+    ) {
+        count = count + 1usize
+    }
+    if specClarificationMatches(
+        specClarification(
+            "req.14.ImplementationOrphanRequirement",
+            "accepted-source-plus-internal-diagnostic",
+            "AcceptedProject"
+        ),
+        "req.14.ImplementationOrphanRequirement",
+        "accepted-source-plus-internal-diagnostic",
+        "AcceptedProject"
+    ) {
+        count = count + 1usize
+    }
+    if specClarificationMatches(
+        specClarification(
+            "rule.24.LowerIR-Err",
+            "internal-ir-lowering-failure",
+            "ReferenceModel"
+        ),
+        "rule.24.LowerIR-Err",
+        "internal-ir-lowering-failure",
+        "ReferenceModel"
+    ) {
+        count = count + 1usize
+    }
+    if specClarificationMatches(
+        specClarification(
+            "rule.24.EmitObj-Err",
+            "internal-object-emission-failure",
+            "ReferenceModel"
+        ),
+        "rule.24.EmitObj-Err",
+        "internal-object-emission-failure",
+        "ReferenceModel"
+    ) {
+        count = count + 1usize
+    }
+    if specClarificationMatches(
+        specClarification(
+            "rule.20.WorkgroupSize-Err",
+            "topology-validity-default-conflict",
+            "RejectedSource"
+        ),
+        "rule.20.WorkgroupSize-Err",
+        "topology-validity-default-conflict",
+        "RejectedSource"
+    ) {
+        count = count + 1usize
+    }
+    if specClarificationMatches(
+        specClarification(
+            "Fresh Async Creation Permission",
+            "permission-materialization-clarity",
+            "ReferenceSource"
+        ),
+        "Fresh Async Creation Permission",
+        "permission-materialization-clarity",
+        "ReferenceSource"
+    ) {
+        count = count + 1usize
+    }
+    return count
+}
+
+public procedure specClarificationLedgerIsIndexed() -> bool {
+    return specClarificationCount() == expectedSpecClarificationCount() &&
+        validatedSpecClarificationCount() == expectedSpecClarificationCount()
+}

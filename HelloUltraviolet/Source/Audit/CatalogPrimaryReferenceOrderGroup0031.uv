@@ -1,0 +1,604 @@
+//! Catalog primary-reference ordering check group 0031.
+
+internal procedure catalogPrimaryReferenceOrderGroup0031() -> bool {
+    return catalogPrimaryReferencePrecedes(
+            "def.TypeAliasAccessors",
+            41284usize,
+            "def.TypeAliasDeclAst",
+            41268usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.TypeAliasDeclAst",
+            41268usize,
+            "def.TypeAliasValueBits",
+            41589usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.TypeAliasValueBits",
+            41589usize,
+            "def.TypeAndStatementNodes",
+            274usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.TypeAndStatementNodes",
+            274usize,
+            "def.TypeBytesAst",
+            45114usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.TypeBytesAst",
+            45114usize,
+            "def.TypeClosureAst",
+            47229usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.TypeClosureAst",
+            47229usize,
+            "def.TypeConstructs",
+            366usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.TypeConstructs",
+            366usize,
+            "def.TypeCtor",
+            325usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.TypeCtor",
+            325usize,
+            "def.TypeDeps",
+            34813usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.TypeDeps",
+            34813usize,
+            "def.TypeEqualityConstraint",
+            25297usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.TypeEqualityConstraint",
+            25297usize,
+            "def.TypeEqualityConstraintSet",
+            25311usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.TypeEqualityConstraintSet",
+            25311usize,
+            "def.TypeEquivalenceJudgementSet",
+            24100usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.TypeEquivalenceJudgementSet",
+            24100usize,
+            "def.TypeInferenceJudgementSet",
+            25283usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.TypeInferenceJudgementSet",
+            25283usize,
+            "def.TypeKey",
+            40927usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.TypeKey",
+            40927usize,
+            "def.TypeKeyOrdering",
+            40960usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.TypeKeyOrdering",
+            40960usize,
+            "def.TypeMap",
+            19926usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.TypeMap",
+            19926usize,
+            "def.TypeParamBindings",
+            21347usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.TypeParamBindings",
+            21347usize,
+            "def.TypePaths",
+            41418usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.TypePaths",
+            41418usize,
+            "def.TypePathsOfModalRef",
+            41454usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.TypePathsOfModalRef",
+            41454usize,
+            "def.TypePermissionAndStateOptions",
+            10572usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.TypePermissionAndStateOptions",
+            10572usize,
+            "def.TypePositionExpressions",
+            34797usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.TypePositionExpressions",
+            34797usize,
+            "def.TypePrimAst",
+            35086usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.TypePrimAst",
+            35086usize,
+            "def.TypeRecovery",
+            857usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.TypeRecovery",
+            857usize,
+            "def.TypeRefModalStateAst",
+            41833usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.TypeRefModalStateAst",
+            41833usize,
+            "def.TypeReferenceEnvironmentAliases",
+            33338usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.TypeReferenceEnvironmentAliases",
+            33338usize,
+            "def.TypeRefsArgsJudgementSet",
+            34218usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.TypeRefsArgsJudgementSet",
+            34218usize,
+            "def.TypeRefsExprRules",
+            33926usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.TypeRefsExprRules",
+            33926usize,
+            "def.TypeRefsJudgementSet",
+            33324usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.TypeRefsJudgementSet",
+            33324usize,
+            "def.TypeRender",
+            1929usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.TypeRender",
+            1929usize,
+            "def.TypeRenderLexemes",
+            1873usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.TypeRenderLexemes",
+            1873usize,
+            "def.TypeRenderStateSuffixes",
+            1891usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.TypeRenderStateSuffixes",
+            1891usize,
+            "def.TypeSliceAst",
+            36943usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.TypeSliceAst",
+            36943usize,
+            "def.TypeStringAst",
+            44390usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.TypeStringAst",
+            44390usize,
+            "def.TypeSynchronizationSet",
+            11822usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.TypeSynchronizationSet",
+            11822usize,
+            "def.TypeTokenPredicates",
+            10881usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.TypeTokenPredicates",
+            10881usize,
+            "def.TypeUnionAst",
+            40678usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.TypeUnionAst",
+            40678usize,
+            "def.TypeVariableDomain",
+            25339usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.TypeVariableDomain",
+            25339usize,
+            "def.TypeVariablesOfType",
+            25353usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.TypeVariablesOfType",
+            25353usize,
+            "def.TypeWFJudgementSet",
+            35118usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.TypeWFJudgementSet",
+            35118usize,
+            "def.Under",
+            3312usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.Under",
+            3312usize,
+            "def.UnicodeEscapeValidity",
+            8712usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.UnicodeEscapeValidity",
+            8712usize,
+            "def.UnicodeScalarDomains",
+            6841usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.UnicodeScalarDomains",
+            6841usize,
+            "def.UnificationStateDomain",
+            25447usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.UnificationStateDomain",
+            25447usize,
+            "def.UnionBits",
+            41169usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.UnionBits",
+            41169usize,
+            "def.UnionCase",
+            40848usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.UnionCase",
+            40848usize,
+            "def.UnionLayoutHelpers",
+            41002usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.UnionLayoutHelpers",
+            41002usize,
+            "def.UnionMember",
+            25062usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.UnionMember",
+            25062usize,
+            "def.UnionMember",
+            40748usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.UnionMember",
+            40748usize,
+            "def.UnionMemberLayoutSelection",
+            40982usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.UnionMemberLayoutSelection",
+            40982usize,
+            "def.UnionMemberSets",
+            40694usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.UnionMemberSets",
+            40694usize,
+            "def.UnionMembersEquivalence",
+            24182usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.UnionMembersEquivalence",
+            24182usize,
+            "def.UnionNicheBits",
+            41111usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.UnionNicheBits",
+            41111usize,
+            "def.UnionNicheOrderingHelpers",
+            40865usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.UnionNicheOrderingHelpers",
+            40865usize,
+            "def.UnionPayloadBits",
+            41125usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.UnionPayloadBits",
+            41125usize,
+            "def.UnionPropagationTokens",
+            10865usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.UnionPropagationTokens",
+            10865usize,
+            "def.UnionTaggedBits",
+            41155usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.UnionTaggedBits",
+            41155usize,
+            "def.UnionTypeOrderingKeys",
+            40885usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.UnionTypeOrderingKeys",
+            40885usize,
+            "def.UnionValueBits",
+            41183usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.UnionValueBits",
+            41183usize,
+            "def.UnionValueType",
+            41197usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.UnionValueType",
+            41197usize,
+            "def.UniqueBindingActivityStates",
+            29421usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.UniqueBindingActivityStates",
+            29421usize,
+            "def.UniverseBindings",
+            18835usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.UniverseBindings",
+            18835usize,
+            "def.UniverseProtectedBindings",
+            8332usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.UniverseProtectedBindings",
+            8332usize,
+            "def.UnsafeTokenSpans",
+            9847usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.UnsafeTokenSpans",
+            9847usize,
+            "def.UpdateRegionArena",
+            17800usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.UpdateRegionArena",
+            17800usize,
+            "def.UpdateRegionStack",
+            18003usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.UpdateRegionStack",
+            18003usize,
+            "def.UpdateRuntimeBindingValue",
+            17622usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.UpdateRuntimeBindingValue",
+            17622usize,
+            "def.UpdateScopeStack",
+            17231usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.UpdateScopeStack",
+            17231usize,
+            "def.UsingAlias",
+            19109usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.UsingAlias",
+            19109usize,
+            "def.UsingDeclAst",
+            30241usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.UsingDeclAst",
+            30241usize,
+            "def.UsingImportConflict",
+            20766usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.UsingImportConflict",
+            20766usize,
+            "def.UsingMap",
+            19884usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.UsingMap",
+            19884usize,
+            "def.UsingSpecName",
+            20259usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.UsingSpecName",
+            20259usize,
+            "def.UsingSpecName",
+            30283usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.UsingSpecName",
+            30283usize,
+            "def.UsingSpecNames",
+            20275usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.UsingSpecNames",
+            20275usize,
+            "def.UsingSpecNames",
+            30299usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.UsingSpecNames",
+            30299usize,
+            "def.UsingTypeMap",
+            19912usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.UsingTypeMap",
+            19912usize,
+            "def.UsingValueMap",
+            19898usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.UsingValueMap",
+            19898usize,
+            "def.Utf8",
+            6939usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.Utf8",
+            6939usize,
+            "def.Utf8Len",
+            6860usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.Utf8Len",
+            6860usize,
+            "def.Utf8LexLess",
+            5052usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.Utf8LexLess",
+            5052usize,
+            "def.Utf8Offsets",
+            7232usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.Utf8Offsets",
+            7232usize,
+            "def.Utf8Valid",
+            6925usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.Utf8Valid",
+            6925usize,
+            "def.ValidLayoutAttributeCombinations",
+            27874usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.ValidLayoutAttributeCombinations",
+            27874usize,
+            "def.ValidateModalState",
+            44007usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.ValidateModalState",
+            44007usize,
+            "def.ValueDependencyExpressionSets",
+            34827usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.ValueDependencyExpressionSets",
+            34827usize,
+            "def.ValueDepsEagerLazy",
+            34845usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.ValueDepsEagerLazy",
+            34845usize,
+            "def.ValueReferenceEnvironmentAliases",
+            34408usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.ValueReferenceEnvironmentAliases",
+            34408usize,
+            "def.ValueRefsJudgementSet",
+            34422usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.ValueRefsJudgementSet",
+            34422usize,
+            "def.ValueRefsRules",
+            34562usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.ValueRefsRules",
+            34562usize,
+            "def.VarianceDomain",
+            25112usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.VarianceDomain",
+            25112usize,
+            "def.VarianceOf",
+            25140usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.VarianceOf",
+            25140usize,
+            "def.VarianceOfSignature",
+            25126usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.VarianceOfSignature",
+            25126usize,
+            "def.VarianceSatisfied",
+            25154usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.VarianceSatisfied",
+            25154usize,
+            "def.VarianceSet",
+            47947usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.VarianceSet",
+            47947usize,
+            "def.VariantDeclAst",
+            39798usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.VariantDeclAst",
+            39798usize,
+            "def.VendorAttributeAst",
+            27624usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.VendorAttributeAst",
+            27624usize,
+            "def.VendorAttributeRegistryInitial",
+            27237usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.VendorAttributeRegistryInitial",
+            27237usize,
+            "def.ViewBytes",
+            44522usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.ViewBytes",
+            44522usize,
+            "def.VisibilityOfDeclaration",
+            19648usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.VisibilityOfDeclaration",
+            19648usize,
+            "def.VisibleModuleNames",
+            20175usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.VisibleModuleNames",
+            20175usize,
+            "def.VisibleModulesAndNames",
+            32794usize
+        )
+}

@@ -17,13 +17,15 @@ public procedure ffiExportedRecordValue(value: FFIPrimitiveRecord) -> i32 {
 /// Raw exported procedure using a drop-bearing by-value FfiSafe record.
 [[export("C")]]
 [[mangle("uv_reference_exported_dropping_value")]]
-public procedure ffiExportedDroppingValue(value: FFIDroppingRecord) -> i32 {
-    return 1
+public procedure ffiExportedDroppingValue(move value: FFIDroppingRecord) -> i32 {
+    return move value.value
 }
 
 /// Exercises the FFI ExportedProcedures reference surface.
 public procedure runFFIExportedProceduresReference() -> bool {
     let record_value: FFIPrimitiveRecord = ffiPrimitiveRecord(12, 3u32)
+    let dropping_value: FFIDroppingRecord = FFIDroppingRecord { value: 29 }
     return ffiExportedIncrement(4) == 5 &&
-        ffiExportedRecordValue(record_value) == 12
+        ffiExportedRecordValue(record_value) == 12 &&
+        ffiExportedDroppingValue(move dropping_value) == 29
 }

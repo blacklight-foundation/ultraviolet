@@ -11,8 +11,8 @@ public procedure validatedAsynchronousOperationsAsyncStateMachineObligations() -
         "requirement.21.AsyncStateMachineSyntaxSurface",
         82442usize,
         "HelloUltraviolet::Reference::Async",
-        "runAsyncAsyncTypeReference",
-        "Source/Reference/Async/AsyncType.uv"
+        "runAsyncStateMachineReference",
+        "Source/Reference/Async/StateMachine.uv"
     ) {
         count = count + 1usize
     }
@@ -20,8 +20,8 @@ public procedure validatedAsynchronousOperationsAsyncStateMachineObligations() -
         "def.21.AsyncProcedureDefinition",
         82455usize,
         "HelloUltraviolet::Reference::Async",
-        "runAsyncAsyncTypeReference",
-        "Source/Reference/Async/AsyncType.uv"
+        "runAsyncStateMachineReference",
+        "Source/Reference/Async/StateMachine.uv"
     ) {
         count = count + 1usize
     }
@@ -29,8 +29,8 @@ public procedure validatedAsynchronousOperationsAsyncStateMachineObligations() -
         "requirement.21.AsyncStateMachineParsingSurface",
         82470usize,
         "HelloUltraviolet::Reference::Async",
-        "runAsyncAsyncTypeReference",
-        "Source/Reference/Async/AsyncType.uv"
+        "runAsyncStateMachineReference",
+        "Source/Reference/Async/StateMachine.uv"
     ) {
         count = count + 1usize
     }
@@ -38,8 +38,8 @@ public procedure validatedAsynchronousOperationsAsyncStateMachineObligations() -
         "def.21.AsyncStateMachineHelperForms",
         82487usize,
         "HelloUltraviolet::Reference::Async",
-        "runAsyncAsyncTypeReference",
-        "Source/Reference/Async/AsyncType.uv"
+        "runAsyncStateMachineReference",
+        "Source/Reference/Async/StateMachine.uv"
     ) {
         count = count + 1usize
     }
@@ -47,8 +47,8 @@ public procedure validatedAsynchronousOperationsAsyncStateMachineObligations() -
         "requirement.21.AsyncFrameStoredState",
         82516usize,
         "HelloUltraviolet::Reference::Async",
-        "runAsyncAsyncTypeReference",
-        "Source/Reference/Async/AsyncType.uv"
+        "runAsyncStateMachineReference",
+        "Source/Reference/Async/StateMachine.uv"
     ) {
         count = count + 1usize
     }
@@ -56,44 +56,44 @@ public procedure validatedAsynchronousOperationsAsyncStateMachineObligations() -
         "def.21.LiveAcrossSuspension",
         82535usize,
         "HelloUltraviolet::Reference::Async",
-        "runAsyncAsyncTypeReference",
-        "Source/Reference/Async/AsyncType.uv"
+        "runAsyncStateMachineReference",
+        "Source/Reference/Async/StateMachine.uv"
     ) {
         count = count + 1usize
     }
-    if acceptedObligationEntryMatches(
+    if diagnosticSourceObligationEntryMatches(
         "rule.21.Warn-Async-LargeCapture",
         82550usize,
-        "HelloUltraviolet::Reference::Async",
-        "runAsyncAsyncTypeReference",
-        "Source/Reference/Async/AsyncType.uv"
+        "HelloUltraviolet::Fixtures::DiagnosticSource",
+        "validatedAsyncDiagnosticSourceFixtureCount",
+        "Fixtures/DiagnosticSource/Async/AsyncLargeCaptureWarning/Source/Main.uv"
     ) {
         count = count + 1usize
     }
-    if acceptedObligationEntryMatches(
+    if diagnosticSourceObligationEntryMatches(
         "rule.21.Warn-Async-LargeCapture-Ok",
         82568usize,
-        "HelloUltraviolet::Reference::Async",
-        "runAsyncAsyncTypeReference",
-        "Source/Reference/Async/AsyncType.uv"
+        "HelloUltraviolet::Fixtures::DiagnosticSource",
+        "validatedAsyncDiagnosticSourceFixtureCount",
+        "Fixtures/DiagnosticSource/Async/AsyncLargeCaptureNoWarning/Source/Main.uv"
     ) {
         count = count + 1usize
     }
-    if acceptedObligationEntryMatches(
+    if diagnosticSourceObligationEntryMatches(
         "requirement.21.AsyncLargeCaptureWarningEmission",
         82586usize,
-        "HelloUltraviolet::Reference::Async",
-        "runAsyncAsyncTypeReference",
-        "Source/Reference/Async/AsyncType.uv"
+        "HelloUltraviolet::Fixtures::DiagnosticSource",
+        "validatedAsyncDiagnosticSourceFixtureCount",
+        "Fixtures/DiagnosticSource/Async/AsyncLargeCaptureWarningEmission/Source/Main.uv"
     ) {
         count = count + 1usize
     }
-    if acceptedObligationEntryMatches(
+    if rejectedSourceObligationEntryMatches(
         "rule.21.Async-Capture-Err",
         82599usize,
-        "HelloUltraviolet::Reference::Async",
-        "runAsyncAsyncTypeReference",
-        "Source/Reference/Async/AsyncType.uv"
+        "HelloUltraviolet::Fixtures::RejectedSource",
+        "validatedExpressionsRejectedSourceFixtureCount",
+        "Fixtures/RejectedSource/Expressions/AsyncCaptureOutlivesFrame/Source/Main.uv"
     ) {
         count = count + 1usize
     }
@@ -101,17 +101,17 @@ public procedure validatedAsynchronousOperationsAsyncStateMachineObligations() -
         "rule.21.P-Async-Create",
         82617usize,
         "HelloUltraviolet::Reference::Async",
-        "runAsyncAsyncTypeReference",
-        "Source/Reference/Async/AsyncType.uv"
+        "runAsyncStateMachineReference",
+        "Source/Reference/Async/StateMachine.uv"
     ) {
         count = count + 1usize
     }
-    if acceptedObligationEntryMatches(
+    if rejectedSourceObligationEntryMatches(
         "rule.21.Prov-Async-Escape-Err",
         82636usize,
-        "HelloUltraviolet::Reference::Async",
-        "runAsyncAsyncTypeReference",
-        "Source/Reference/Async/AsyncType.uv"
+        "HelloUltraviolet::Fixtures::RejectedSource",
+        "validatedExpressionsRejectedSourceFixtureCount",
+        "Fixtures/RejectedSource/Expressions/AsyncOperationEscapesRegion/Source/Main.uv"
     ) {
         count = count + 1usize
     }
@@ -119,8 +119,8 @@ public procedure validatedAsynchronousOperationsAsyncStateMachineObligations() -
         "requirement.21.AsyncErrorPropagationTypingReference",
         82655usize,
         "HelloUltraviolet::Reference::Async",
-        "runAsyncAsyncTypeReference",
-        "Source/Reference/Async/AsyncType.uv"
+        "runAsyncStateMachineReference",
+        "Source/Reference/Async/StateMachine.uv"
     ) {
         count = count + 1usize
     }
@@ -128,8 +128,8 @@ public procedure validatedAsynchronousOperationsAsyncStateMachineObligations() -
         "requirement.21.AsyncProcedureCallRuntimeSemantics",
         82670usize,
         "HelloUltraviolet::Reference::Async",
-        "runAsyncAsyncTypeReference",
-        "Source/Reference/Async/AsyncType.uv"
+        "runAsyncStateMachineReference",
+        "Source/Reference/Async/StateMachine.uv"
     ) {
         count = count + 1usize
     }
@@ -137,8 +137,8 @@ public procedure validatedAsynchronousOperationsAsyncStateMachineObligations() -
         "requirement.21.AsyncSettlementRuntimeSemantics",
         82688usize,
         "HelloUltraviolet::Reference::Async",
-        "runAsyncAsyncTypeReference",
-        "Source/Reference/Async/AsyncType.uv"
+        "runAsyncStateMachineReference",
+        "Source/Reference/Async/StateMachine.uv"
     ) {
         count = count + 1usize
     }
@@ -146,8 +146,8 @@ public procedure validatedAsynchronousOperationsAsyncStateMachineObligations() -
         "requirement.21.AsyncResumeRuntimeSemantics",
         82705usize,
         "HelloUltraviolet::Reference::Async",
-        "runAsyncAsyncTypeReference",
-        "Source/Reference/Async/AsyncType.uv"
+        "runAsyncStateMachineReference",
+        "Source/Reference/Async/StateMachine.uv"
     ) {
         count = count + 1usize
     }
@@ -155,8 +155,8 @@ public procedure validatedAsynchronousOperationsAsyncStateMachineObligations() -
         "requirement.21.AsyncFailureRuntimeSemantics",
         82721usize,
         "HelloUltraviolet::Reference::Async",
-        "runAsyncAsyncTypeReference",
-        "Source/Reference/Async/AsyncType.uv"
+        "runAsyncStateMachineReference",
+        "Source/Reference/Async/StateMachine.uv"
     ) {
         count = count + 1usize
     }
@@ -164,8 +164,8 @@ public procedure validatedAsynchronousOperationsAsyncStateMachineObligations() -
         "def.21.AsyncStateMachineLoweringJudgements",
         82741usize,
         "HelloUltraviolet::Reference::Async",
-        "runAsyncAsyncTypeReference",
-        "Source/Reference/Async/AsyncType.uv"
+        "runAsyncStateMachineReference",
+        "Source/Reference/Async/StateMachine.uv"
     ) {
         count = count + 1usize
     }
@@ -173,8 +173,8 @@ public procedure validatedAsynchronousOperationsAsyncStateMachineObligations() -
         "def.21.AsyncStateMachineFrameHelpers",
         82755usize,
         "HelloUltraviolet::Reference::Async",
-        "runAsyncAsyncTypeReference",
-        "Source/Reference/Async/AsyncType.uv"
+        "runAsyncStateMachineReference",
+        "Source/Reference/Async/StateMachine.uv"
     ) {
         count = count + 1usize
     }
@@ -182,8 +182,8 @@ public procedure validatedAsynchronousOperationsAsyncStateMachineObligations() -
         "rule.21.Lower-Async-Proc",
         82771usize,
         "HelloUltraviolet::Reference::Async",
-        "runAsyncAsyncTypeReference",
-        "Source/Reference/Async/AsyncType.uv"
+        "runAsyncStateMachineReference",
+        "Source/Reference/Async/StateMachine.uv"
     ) {
         count = count + 1usize
     }
@@ -191,8 +191,8 @@ public procedure validatedAsynchronousOperationsAsyncStateMachineObligations() -
         "requirement.21.AsyncFrameInitIRSemantics",
         82791usize,
         "HelloUltraviolet::Reference::Async",
-        "runAsyncAsyncTypeReference",
-        "Source/Reference/Async/AsyncType.uv"
+        "runAsyncStateMachineReference",
+        "Source/Reference/Async/StateMachine.uv"
     ) {
         count = count + 1usize
     }
@@ -200,8 +200,8 @@ public procedure validatedAsynchronousOperationsAsyncStateMachineObligations() -
         "rule.21.Lower-Async-Resume",
         82810usize,
         "HelloUltraviolet::Reference::Async",
-        "runAsyncAsyncTypeReference",
-        "Source/Reference/Async/AsyncType.uv"
+        "runAsyncStateMachineReference",
+        "Source/Reference/Async/StateMachine.uv"
     ) {
         count = count + 1usize
     }
@@ -209,8 +209,8 @@ public procedure validatedAsynchronousOperationsAsyncStateMachineObligations() -
         "requirement.21.AsyncResumeSwitchIRSemantics",
         82829usize,
         "HelloUltraviolet::Reference::Async",
-        "runAsyncAsyncTypeReference",
-        "Source/Reference/Async/AsyncType.uv"
+        "runAsyncStateMachineReference",
+        "Source/Reference/Async/StateMachine.uv"
     ) {
         count = count + 1usize
     }
@@ -218,8 +218,8 @@ public procedure validatedAsynchronousOperationsAsyncStateMachineObligations() -
         "rule.21.Lower-Async-Suspend",
         82843usize,
         "HelloUltraviolet::Reference::Async",
-        "runAsyncAsyncTypeReference",
-        "Source/Reference/Async/AsyncType.uv"
+        "runAsyncStateMachineReference",
+        "Source/Reference/Async/StateMachine.uv"
     ) {
         count = count + 1usize
     }
@@ -227,8 +227,8 @@ public procedure validatedAsynchronousOperationsAsyncStateMachineObligations() -
         "rule.21.Lower-Async-Complete",
         82862usize,
         "HelloUltraviolet::Reference::Async",
-        "runAsyncAsyncTypeReference",
-        "Source/Reference/Async/AsyncType.uv"
+        "runAsyncStateMachineReference",
+        "Source/Reference/Async/StateMachine.uv"
     ) {
         count = count + 1usize
     }
@@ -236,8 +236,8 @@ public procedure validatedAsynchronousOperationsAsyncStateMachineObligations() -
         "rule.21.Lower-Async-Fail",
         82881usize,
         "HelloUltraviolet::Reference::Async",
-        "runAsyncAsyncTypeReference",
-        "Source/Reference/Async/AsyncType.uv"
+        "runAsyncStateMachineReference",
+        "Source/Reference/Async/StateMachine.uv"
     ) {
         count = count + 1usize
     }
@@ -245,17 +245,17 @@ public procedure validatedAsynchronousOperationsAsyncStateMachineObligations() -
         "requirement.21.AsyncFailStateIRSemantics",
         82900usize,
         "HelloUltraviolet::Reference::Async",
-        "runAsyncAsyncTypeReference",
-        "Source/Reference/Async/AsyncType.uv"
+        "runAsyncStateMachineReference",
+        "Source/Reference/Async/StateMachine.uv"
     ) {
         count = count + 1usize
     }
-    if acceptedObligationEntryMatches(
+    if diagnosticSourceObligationEntryMatches(
         "diagnostics.21.AsyncStateMachineDiagnostics",
         82916usize,
-        "HelloUltraviolet::Reference::Async",
-        "runAsyncAsyncTypeReference",
-        "Source/Reference/Async/AsyncType.uv"
+        "HelloUltraviolet::Fixtures::DiagnosticSource",
+        "validatedAsyncDiagnosticSourceFixtureCount",
+        "Fixtures/DiagnosticSource/Async/AsyncStateMachineDiagnosticsTable/Source/Main.uv"
     ) {
         count = count + 1usize
     }

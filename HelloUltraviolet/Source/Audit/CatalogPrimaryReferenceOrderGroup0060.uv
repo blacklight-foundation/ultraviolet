@@ -1,0 +1,604 @@
+//! Catalog primary-reference ordering check group 0060.
+
+internal procedure catalogPrimaryReferenceOrderGroup0060() -> bool {
+    return catalogPrimaryReferencePrecedes(
+            "rule.24.LoopIterIR-Done",
+            90575usize,
+            "rule.24.LoopIterIR-Step-Break",
+            90623usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.24.LoopIterIR-Step-Break",
+            90623usize,
+            "rule.24.LoopIterIR-Step-Continue",
+            90607usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.24.LoopIterIR-Step-Continue",
+            90607usize,
+            "rule.24.LoopIterIR-Step-Ctrl",
+            90639usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.24.LoopIterIR-Step-Ctrl",
+            90639usize,
+            "rule.24.LoopIterIR-Step-Val",
+            90591usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.24.LoopIterIR-Step-Val",
+            90591usize,
+            "rule.24.Lower-AddrOfIR",
+            98753usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.24.Lower-AddrOfIR",
+            98753usize,
+            "rule.24.Lower-AllocIR",
+            98327usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.24.Lower-AllocIR",
+            98327usize,
+            "rule.24.Lower-BindVarIR",
+            98343usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.24.Lower-BindVarIR",
+            98343usize,
+            "rule.24.Lower-BlockIR",
+            98960usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.24.Lower-BlockIR",
+            98960usize,
+            "rule.24.Lower-BranchIR-Conditional",
+            99098usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.24.Lower-BranchIR-Conditional",
+            99098usize,
+            "rule.24.Lower-BranchIR-Unconditional",
+            99082usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.24.Lower-BranchIR-Unconditional",
+            99082usize,
+            "rule.24.Lower-CallIR-Func",
+            98797usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.24.Lower-CallIR-Func",
+            98797usize,
+            "rule.24.Lower-CallVTable",
+            98831usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.24.Lower-CallVTable",
+            98831usize,
+            "rule.24.Lower-Expr-Correctness",
+            90026usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.24.Lower-Expr-Correctness",
+            90026usize,
+            "rule.24.Lower-FrameIR",
+            99052usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.24.Lower-FrameIR",
+            99052usize,
+            "rule.24.Lower-IfCaseIR",
+            99020usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.24.Lower-IfCaseIR",
+            99020usize,
+            "rule.24.Lower-IfIR",
+            98928usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.24.Lower-IfIR",
+            98928usize,
+            "rule.24.Lower-LoopIR",
+            99004usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.24.Lower-LoopIR",
+            99004usize,
+            "rule.24.Lower-MoveStateIR",
+            98532usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.24.Lower-MoveStateIR",
+            98532usize,
+            "rule.24.Lower-PhiIR",
+            99126usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.24.Lower-PhiIR",
+            99126usize,
+            "rule.24.Lower-ReadPathIR-Proc-Gen",
+            98452usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.24.Lower-ReadPathIR-Proc-Gen",
+            98452usize,
+            "rule.24.Lower-ReadPathIR-Proc-User",
+            98436usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.24.Lower-ReadPathIR-Proc-User",
+            98436usize,
+            "rule.24.Lower-ReadPathIR-Record",
+            98484usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.24.Lower-ReadPathIR-Record",
+            98484usize,
+            "rule.24.Lower-ReadPathIR-Runtime",
+            98468usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.24.Lower-ReadPathIR-Runtime",
+            98468usize,
+            "rule.24.Lower-ReadPathIR-Static-Gen",
+            98420usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.24.Lower-ReadPathIR-Static-Gen",
+            98420usize,
+            "rule.24.Lower-ReadPathIR-Static-User",
+            98404usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.24.Lower-ReadPathIR-Static-User",
+            98404usize,
+            "rule.24.Lower-ReadPlaceIR",
+            98564usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.24.Lower-ReadPlaceIR",
+            98564usize,
+            "rule.24.Lower-ReadPtrIR",
+            98609usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.24.Lower-ReadPtrIR",
+            98609usize,
+            "rule.24.Lower-ReadPtrIR-Expired",
+            98657usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.24.Lower-ReadPtrIR-Expired",
+            98657usize,
+            "rule.24.Lower-ReadPtrIR-Null",
+            98641usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.24.Lower-ReadPtrIR-Null",
+            98641usize,
+            "rule.24.Lower-ReadPtrIR-Raw",
+            98625usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.24.Lower-ReadPtrIR-Raw",
+            98625usize,
+            "rule.24.Lower-ReadVarIR",
+            98359usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.24.Lower-ReadVarIR",
+            98359usize,
+            "rule.24.Lower-ReadVarIR-Err",
+            98375usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.24.Lower-ReadVarIR-Err",
+            98375usize,
+            "rule.24.Lower-RegionIR",
+            99036usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.24.Lower-RegionIR",
+            99036usize,
+            "rule.24.Lower-StaticDeinit",
+            93884usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.24.Lower-StaticDeinit",
+            93884usize,
+            "rule.24.Lower-StaticDeinit-Item",
+            93837usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.24.Lower-StaticDeinit-Item",
+            93837usize,
+            "rule.24.Lower-StaticDeinitItems-Cons",
+            93868usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.24.Lower-StaticDeinitItems-Cons",
+            93868usize,
+            "rule.24.Lower-StaticDeinitItems-Empty",
+            93853usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.24.Lower-StaticDeinitItems-Empty",
+            93853usize,
+            "rule.24.Lower-StaticDeinitNames-Cons-NoResp",
+            93821usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.24.Lower-StaticDeinitNames-Cons-NoResp",
+            93821usize,
+            "rule.24.Lower-StaticDeinitNames-Cons-Resp",
+            93805usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.24.Lower-StaticDeinitNames-Cons-Resp",
+            93805usize,
+            "rule.24.Lower-StaticDeinitNames-Empty",
+            93790usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.24.Lower-StaticDeinitNames-Empty",
+            93790usize,
+            "rule.24.Lower-StaticInit",
+            93744usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.24.Lower-StaticInit",
+            93744usize,
+            "rule.24.Lower-StaticInit-Item",
+            93697usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.24.Lower-StaticInit-Item",
+            93697usize,
+            "rule.24.Lower-StaticInitItems-Cons",
+            93728usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.24.Lower-StaticInitItems-Cons",
+            93728usize,
+            "rule.24.Lower-StaticInitItems-Empty",
+            93713usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.24.Lower-StaticInitItems-Empty",
+            93713usize,
+            "rule.24.Lower-StoreGlobal",
+            98548usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.24.Lower-StoreGlobal",
+            98548usize,
+            "rule.24.Lower-StoreVarIR",
+            98500usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.24.Lower-StoreVarIR",
+            98500usize,
+            "rule.24.Lower-StoreVarNoDropIR",
+            98516usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.24.Lower-StoreVarNoDropIR",
+            98516usize,
+            "rule.24.Lower-WritePlaceIR",
+            98580usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.24.Lower-WritePlaceIR",
+            98580usize,
+            "rule.24.Lower-WritePtrIR",
+            98673usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.24.Lower-WritePtrIR",
+            98673usize,
+            "rule.24.Lower-WritePtrIR-Expired",
+            98705usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.24.Lower-WritePtrIR-Expired",
+            98705usize,
+            "rule.24.Lower-WritePtrIR-Null",
+            98689usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.24.Lower-WritePtrIR-Null",
+            98689usize,
+            "rule.24.Lower-WritePtrIR-Raw",
+            98721usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.24.Lower-WritePtrIR-Raw",
+            98721usize,
+            "rule.24.Lower-WritePtrIR-Raw-Err",
+            98737usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.24.Lower-WritePtrIR-Raw-Err",
+            98737usize,
+            "rule.24.LowerFieldInits-Cons",
+            90749usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.24.LowerFieldInits-Cons",
+            90749usize,
+            "rule.24.LowerFieldInits-Empty",
+            90734usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.24.LowerFieldInits-Empty",
+            90734usize,
+            "rule.24.LowerIR-Err",
+            91031usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.24.LowerIR-Err",
+            91031usize,
+            "rule.24.LowerIR-Module",
+            91015usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.24.LowerIR-Module",
+            91015usize,
+            "rule.24.LowerIRDecl-Err",
+            99142usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.24.LowerIRDecl-Err",
+            99142usize,
+            "rule.24.LowerIRDecl-GlobalConst",
+            98266usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.24.LowerIRDecl-GlobalConst",
+            98266usize,
+            "rule.24.LowerIRDecl-GlobalZero",
+            98282usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.24.LowerIRDecl-GlobalZero",
+            98282usize,
+            "rule.24.LowerIRDecl-Proc-Gen",
+            98250usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.24.LowerIRDecl-Proc-Gen",
+            98250usize,
+            "rule.24.LowerIRDecl-Proc-User",
+            98234usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.24.LowerIRDecl-Proc-User",
+            98234usize,
+            "rule.24.LowerIRDecl-VTable",
+            98311usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.24.LowerIRDecl-VTable",
+            98311usize,
+            "rule.24.LowerIRInstr-CheckPoison",
+            98879usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.24.LowerIRInstr-CheckPoison",
+            98879usize,
+            "rule.24.LowerIRInstr-ClearPanic",
+            98847usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.24.LowerIRInstr-ClearPanic",
+            98847usize,
+            "rule.24.LowerIRInstr-Empty",
+            98057usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.24.LowerIRInstr-Empty",
+            98057usize,
+            "rule.24.LowerIRInstr-Err",
+            99158usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.24.LowerIRInstr-Err",
+            99158usize,
+            "rule.24.LowerIRInstr-LowerPanic",
+            98895usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.24.LowerIRInstr-LowerPanic",
+            98895usize,
+            "rule.24.LowerIRInstr-PanicCheck",
+            98863usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.24.LowerIRInstr-PanicCheck",
+            98863usize,
+            "rule.24.LowerIRInstr-Seq",
+            98072usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.24.LowerIRInstr-Seq",
+            98072usize,
+            "rule.24.LowerList-Cons",
+            90718usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.24.LowerList-Cons",
+            90718usize,
+            "rule.24.LowerList-Empty",
+            90703usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.24.LowerList-Empty",
+            90703usize,
+            "rule.24.LowerOpt-None",
+            90765usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.24.LowerOpt-None",
+            90765usize,
+            "rule.24.LowerOpt-Some",
+            90780usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.24.LowerOpt-Some",
+            90780usize,
+            "rule.24.Mangle-Class-Method",
+            92780usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.24.Mangle-Class-Method",
+            92780usize,
+            "rule.24.Mangle-Closure",
+            92934usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.24.Mangle-Closure",
+            92934usize,
+            "rule.24.Mangle-ClosureEnv",
+            92950usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.24.Mangle-ClosureEnv",
+            92950usize,
+            "rule.24.Mangle-DefaultImpl",
+            92892usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.24.Mangle-DefaultImpl",
+            92892usize,
+            "rule.24.Mangle-ExternProc",
+            92732usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.24.Mangle-ExternProc",
+            92732usize,
+            "rule.24.Mangle-HostExport-Proc",
+            92700usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.24.Mangle-HostExport-Proc",
+            92700usize,
+            "rule.24.Mangle-Literal",
+            92876usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.24.Mangle-Literal",
+            92876usize,
+            "rule.24.Mangle-Main",
+            92748usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.24.Mangle-Main",
+            92748usize,
+            "rule.24.Mangle-Proc",
+            92716usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.24.Mangle-Proc",
+            92716usize,
+            "rule.24.Mangle-Record-Method",
+            92764usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.24.Mangle-Record-Method",
+            92764usize,
+            "rule.24.Mangle-State-Method",
+            92796usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.24.Mangle-State-Method",
+            92796usize,
+            "rule.24.Mangle-Static",
+            92828usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.24.Mangle-Static",
+            92828usize,
+            "rule.24.Mangle-StaticBinding",
+            92844usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.24.Mangle-StaticBinding",
+            92844usize,
+            "rule.24.Mangle-Transition",
+            92812usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.24.Mangle-Transition",
+            92812usize,
+            "rule.24.Mangle-VTable",
+            92860usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.24.Mangle-VTable",
+            92860usize,
+            "rule.24.MoveState-Field",
+            90227usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.24.MoveState-Field",
+            90227usize,
+            "rule.24.MoveState-Root",
+            90211usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.24.MoveState-Root",
+            90211usize,
+            "rule.24.PanicSym",
+            95033usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.24.PanicSym",
+            95033usize,
+            "rule.24.PoisonFlag-Decl",
+            100109usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.24.PoisonFlag-Decl",
+            100109usize,
+            "rule.24.PoisonFlag-Err",
+            100209usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.24.PoisonFlag-Err",
+            100209usize,
+            "rule.24.Prim-Heap-AllocRaw",
+            96918usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.24.Prim-Heap-AllocRaw",
+            96918usize,
+            "rule.24.Prim-Heap-DeallocRaw",
+            96934usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.24.Prim-Heap-DeallocRaw",
+            96934usize,
+            "rule.24.Prim-Heap-WithQuota",
+            96902usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.24.Prim-Heap-WithQuota",
+            96902usize,
+            "rule.24.Prim-MonotonicTime-Coarsen-Runtime",
+            97101usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.24.Prim-MonotonicTime-Coarsen-Runtime",
+            97101usize,
+            "rule.24.Prim-MonotonicTime-Elapsed-Runtime",
+            97085usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.24.Prim-MonotonicTime-Elapsed-Runtime",
+            97085usize,
+            "rule.24.Prim-MonotonicTime-Now-Runtime",
+            97053usize
+        )
+}

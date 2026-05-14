@@ -1,0 +1,604 @@
+//! Catalog primary-reference ordering check group 0057.
+
+internal procedure catalogPrimaryReferenceOrderGroup0057() -> bool {
+    return catalogPrimaryReferencePrecedes(
+            "rule.23.Parse-ForeignContractClause-Ensures",
+            88961usize,
+            "rule.23.Parse-ForeignContractClauseList-Cons",
+            88897usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.23.Parse-ForeignContractClauseList-Cons",
+            88897usize,
+            "rule.23.Parse-ForeignContractClauseListOpt-None",
+            88865usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.23.Parse-ForeignContractClauseListOpt-None",
+            88865usize,
+            "rule.23.Parse-ForeignContractClauseListOpt-Yes",
+            88881usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.23.Parse-ForeignContractClauseListOpt-Yes",
+            88881usize,
+            "rule.23.Parse-ForeignContractClauseListTail-Cons",
+            88929usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.23.Parse-ForeignContractClauseListTail-Cons",
+            88929usize,
+            "rule.23.Parse-ForeignContractClauseListTail-End",
+            88913usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.23.Parse-ForeignContractClauseListTail-End",
+            88913usize,
+            "rule.23.UnwindMode-Invalid-Err",
+            89545usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.23.UnwindMode-Invalid-Err",
+            89545usize,
+            "rule.23.UnwindMode-Valid",
+            89527usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.23.UnwindMode-Valid",
+            89527usize,
+            "rule.24.ABI-Alias",
+            92051usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.24.ABI-Alias",
+            92051usize,
+            "rule.24.ABI-Array",
+            92099usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.24.ABI-Array",
+            92099usize,
+            "rule.24.ABI-Call",
+            92423usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.24.ABI-Call",
+            92423usize,
+            "rule.24.ABI-Dynamic",
+            92275usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.24.ABI-Dynamic",
+            92275usize,
+            "rule.24.ABI-Enum",
+            92227usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.24.ABI-Enum",
+            92227usize,
+            "rule.24.ABI-ForeignCall",
+            92471usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.24.ABI-ForeignCall",
+            92471usize,
+            "rule.24.ABI-ForeignParam-ByRef",
+            92455usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.24.ABI-ForeignParam-ByRef",
+            92455usize,
+            "rule.24.ABI-ForeignParam-ByValue",
+            92439usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.24.ABI-ForeignParam-ByValue",
+            92439usize,
+            "rule.24.ABI-Func",
+            92035usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.24.ABI-Func",
+            92035usize,
+            "rule.24.ABI-Modal",
+            92259usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.24.ABI-Modal",
+            92259usize,
+            "rule.24.ABI-Param-ByRef-Alias",
+            92343usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.24.ABI-Param-ByRef-Alias",
+            92343usize,
+            "rule.24.ABI-Param-ByRef-Move",
+            92375usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.24.ABI-Param-ByRef-Move",
+            92375usize,
+            "rule.24.ABI-Param-ByValue-Move",
+            92359usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.24.ABI-Param-ByValue-Move",
+            92359usize,
+            "rule.24.ABI-Perm",
+            91987usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.24.ABI-Perm",
+            91987usize,
+            "rule.24.ABI-Prim",
+            91971usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.24.ABI-Prim",
+            91971usize,
+            "rule.24.ABI-Ptr",
+            92003usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.24.ABI-Ptr",
+            92003usize,
+            "rule.24.ABI-Range",
+            92131usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.24.ABI-Range",
+            92131usize,
+            "rule.24.ABI-RangeFrom",
+            92163usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.24.ABI-RangeFrom",
+            92163usize,
+            "rule.24.ABI-RangeFull",
+            92211usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.24.ABI-RangeFull",
+            92211usize,
+            "rule.24.ABI-RangeInclusive",
+            92147usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.24.ABI-RangeInclusive",
+            92147usize,
+            "rule.24.ABI-RangeTo",
+            92179usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.24.ABI-RangeTo",
+            92179usize,
+            "rule.24.ABI-RangeToInclusive",
+            92195usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.24.ABI-RangeToInclusive",
+            92195usize,
+            "rule.24.ABI-RawPtr",
+            92019usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.24.ABI-RawPtr",
+            92019usize,
+            "rule.24.ABI-Record",
+            92067usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.24.ABI-Record",
+            92067usize,
+            "rule.24.ABI-Ret-ByRef",
+            92407usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.24.ABI-Ret-ByRef",
+            92407usize,
+            "rule.24.ABI-Ret-ByValue",
+            92391usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.24.ABI-Ret-ByValue",
+            92391usize,
+            "rule.24.ABI-Slice",
+            92115usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.24.ABI-Slice",
+            92115usize,
+            "rule.24.ABI-StringBytes",
+            92291usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.24.ABI-StringBytes",
+            92291usize,
+            "rule.24.ABI-Tuple",
+            92083usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.24.ABI-Tuple",
+            92083usize,
+            "rule.24.ABI-Union",
+            92243usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.24.ABI-Union",
+            92243usize,
+            "rule.24.Align-Func",
+            91674usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.24.Align-Func",
+            91674usize,
+            "rule.24.Align-Perm",
+            91533usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.24.Align-Perm",
+            91533usize,
+            "rule.24.Align-Prim",
+            91240usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.24.Align-Prim",
+            91240usize,
+            "rule.24.Align-Ptr",
+            91578usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.24.Align-Ptr",
+            91578usize,
+            "rule.24.Align-RawPtr",
+            91626usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.24.Align-RawPtr",
+            91626usize,
+            "rule.24.BindSlot-Err",
+            99533usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.24.BindSlot-Err",
+            99533usize,
+            "rule.24.BindSlot-Local",
+            99295usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.24.BindSlot-Local",
+            99295usize,
+            "rule.24.BindSlot-Param-ByRef",
+            99263usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.24.BindSlot-Param-ByRef",
+            99263usize,
+            "rule.24.BindSlot-Param-ByValue",
+            99247usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.24.BindSlot-Param-ByValue",
+            99247usize,
+            "rule.24.BindSlot-Region",
+            99279usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.24.BindSlot-Region",
+            99279usize,
+            "rule.24.BindSlot-Static",
+            99311usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.24.BindSlot-Static",
+            99311usize,
+            "rule.24.BindValid-Err",
+            99549usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.24.BindValid-Err",
+            99549usize,
+            "rule.24.BindValid-Sigma",
+            99231usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.24.BindValid-Sigma",
+            99231usize,
+            "rule.24.BuiltinModalLayout",
+            95823usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.24.BuiltinModalLayout",
+            95823usize,
+            "rule.24.BuiltinModalSym",
+            95866usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.24.BuiltinModalSym",
+            95866usize,
+            "rule.24.BuiltinSym-Bytes-Err",
+            96571usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.24.BuiltinSym-Bytes-Err",
+            96571usize,
+            "rule.24.BuiltinSym-FileSystem-CreateDir",
+            96092usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.24.BuiltinSym-FileSystem-CreateDir",
+            96092usize,
+            "rule.24.BuiltinSym-FileSystem-CreateWrite",
+            95957usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.24.BuiltinSym-FileSystem-CreateWrite",
+            95957usize,
+            "rule.24.BuiltinSym-FileSystem-EnsureDir",
+            96107usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.24.BuiltinSym-FileSystem-EnsureDir",
+            96107usize,
+            "rule.24.BuiltinSym-FileSystem-Exists",
+            96047usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.24.BuiltinSym-FileSystem-Exists",
+            96047usize,
+            "rule.24.BuiltinSym-FileSystem-Kind",
+            96122usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.24.BuiltinSym-FileSystem-Kind",
+            96122usize,
+            "rule.24.BuiltinSym-FileSystem-OpenAppend",
+            95942usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.24.BuiltinSym-FileSystem-OpenAppend",
+            95942usize,
+            "rule.24.BuiltinSym-FileSystem-OpenDir",
+            96077usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.24.BuiltinSym-FileSystem-OpenDir",
+            96077usize,
+            "rule.24.BuiltinSym-FileSystem-OpenRead",
+            95912usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.24.BuiltinSym-FileSystem-OpenRead",
+            95912usize,
+            "rule.24.BuiltinSym-FileSystem-OpenWrite",
+            95927usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.24.BuiltinSym-FileSystem-OpenWrite",
+            95927usize,
+            "rule.24.BuiltinSym-FileSystem-ReadBytes",
+            95987usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.24.BuiltinSym-FileSystem-ReadBytes",
+            95987usize,
+            "rule.24.BuiltinSym-FileSystem-ReadFile",
+            95972usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.24.BuiltinSym-FileSystem-ReadFile",
+            95972usize,
+            "rule.24.BuiltinSym-FileSystem-Remove",
+            96062usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.24.BuiltinSym-FileSystem-Remove",
+            96062usize,
+            "rule.24.BuiltinSym-FileSystem-Restrict",
+            96137usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.24.BuiltinSym-FileSystem-Restrict",
+            96137usize,
+            "rule.24.BuiltinSym-FileSystem-WriteFile",
+            96002usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.24.BuiltinSym-FileSystem-WriteFile",
+            96002usize,
+            "rule.24.BuiltinSym-FileSystem-WriteStderr",
+            96032usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.24.BuiltinSym-FileSystem-WriteStderr",
+            96032usize,
+            "rule.24.BuiltinSym-FileSystem-WriteStdout",
+            96017usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.24.BuiltinSym-FileSystem-WriteStdout",
+            96017usize,
+            "rule.24.BuiltinSym-HeapAllocator-AllocRaw",
+            96182usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.24.BuiltinSym-HeapAllocator-AllocRaw",
+            96182usize,
+            "rule.24.BuiltinSym-HeapAllocator-DeallocRaw",
+            96197usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.24.BuiltinSym-HeapAllocator-DeallocRaw",
+            96197usize,
+            "rule.24.BuiltinSym-HeapAllocator-WithQuota",
+            96167usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.24.BuiltinSym-HeapAllocator-WithQuota",
+            96167usize,
+            "rule.24.BuiltinSym-MonotonicTime-Coarsen",
+            96317usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.24.BuiltinSym-MonotonicTime-Coarsen",
+            96317usize,
+            "rule.24.BuiltinSym-MonotonicTime-Elapsed",
+            96302usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.24.BuiltinSym-MonotonicTime-Elapsed",
+            96302usize,
+            "rule.24.BuiltinSym-MonotonicTime-Now",
+            96272usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.24.BuiltinSym-MonotonicTime-Now",
+            96272usize,
+            "rule.24.BuiltinSym-MonotonicTime-Resolution",
+            96287usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.24.BuiltinSym-MonotonicTime-Resolution",
+            96287usize,
+            "rule.24.BuiltinSym-Network-RestrictHost",
+            96152usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.24.BuiltinSym-Network-RestrictHost",
+            96152usize,
+            "rule.24.BuiltinSym-Reactor-Register",
+            96227usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.24.BuiltinSym-Reactor-Register",
+            96227usize,
+            "rule.24.BuiltinSym-Reactor-Run",
+            96212usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.24.BuiltinSym-Reactor-Run",
+            96212usize,
+            "rule.24.BuiltinSym-String-Err",
+            96555usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.24.BuiltinSym-String-Err",
+            96555usize,
+            "rule.24.BuiltinSym-System-Argument",
+            96437usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.24.BuiltinSym-System-Argument",
+            96437usize,
+            "rule.24.BuiltinSym-System-ArgumentCount",
+            96422usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.24.BuiltinSym-System-ArgumentCount",
+            96422usize,
+            "rule.24.BuiltinSym-System-CurrentDirectory",
+            96452usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.24.BuiltinSym-System-CurrentDirectory",
+            96452usize,
+            "rule.24.BuiltinSym-System-ExecutablePath",
+            96407usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.24.BuiltinSym-System-ExecutablePath",
+            96407usize,
+            "rule.24.BuiltinSym-System-Exit",
+            96377usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.24.BuiltinSym-System-Exit",
+            96377usize,
+            "rule.24.BuiltinSym-System-GetEnv",
+            96392usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.24.BuiltinSym-System-GetEnv",
+            96392usize,
+            "rule.24.BuiltinSym-System-Run",
+            96467usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.24.BuiltinSym-System-Run",
+            96467usize,
+            "rule.24.BuiltinSym-Time-Monotonic",
+            96242usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.24.BuiltinSym-Time-Monotonic",
+            96242usize,
+            "rule.24.BuiltinSym-Time-Wall",
+            96257usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.24.BuiltinSym-Time-Wall",
+            96257usize,
+            "rule.24.BuiltinSym-WallTime-Coarsen",
+            96362usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.24.BuiltinSym-WallTime-Coarsen",
+            96362usize,
+            "rule.24.BuiltinSym-WallTime-NowUtc",
+            96332usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.24.BuiltinSym-WallTime-NowUtc",
+            96332usize,
+            "rule.24.BuiltinSym-WallTime-Resolution",
+            96347usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.24.BuiltinSym-WallTime-Resolution",
+            96347usize,
+            "rule.24.BytesDropSym-Decl",
+            96615usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.24.BytesDropSym-Decl",
+            96615usize,
+            "rule.24.BytesDropSym-Err",
+            96646usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.24.BytesDropSym-Err",
+            96646usize,
+            "rule.24.CG-Block",
+            90983usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.24.CG-Block",
+            90983usize,
+            "rule.24.CG-Expr",
+            90951usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.24.CG-Expr",
+            90951usize,
+            "rule.24.CG-Module",
+            90935usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.24.CG-Module",
+            90935usize,
+            "rule.24.CG-Place",
+            90999usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.24.CG-Place",
+            90999usize,
+            "rule.24.CG-Project",
+            90906usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.24.CG-Project",
+            90906usize,
+            "rule.24.CG-Stmt",
+            90967usize
+        )
+}

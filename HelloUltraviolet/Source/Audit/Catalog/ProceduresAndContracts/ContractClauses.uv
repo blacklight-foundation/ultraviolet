@@ -88,12 +88,12 @@ public procedure validatedProceduresAndContractsContractClausesObligations() -> 
     ) {
         count = count + 1usize
     }
-    if acceptedObligationEntryMatches(
+    if rejectedSourceObligationEntryMatches(
         "rule.15.WF-Contract",
         55028usize,
-        "HelloUltraviolet::Reference::Procedures",
-        "runProceduresContractsReference",
-        "Source/Reference/Procedures/Contracts.uv"
+        "HelloUltraviolet::Fixtures::RejectedSource",
+        "validatedProceduresRejectedSourceFixtureCount",
+        "Fixtures/RejectedSource/Procedures/ContractPredicateNonBool/Source/Main.uv"
     ) {
         count = count + 1usize
     }
@@ -313,12 +313,12 @@ public procedure validatedProceduresAndContractsContractClausesObligations() -> 
     ) {
         count = count + 1usize
     }
-    if acceptedObligationEntryMatches(
+    if rejectedSourceObligationEntryMatches(
         "req.15.ContractNeverPureForms",
         55427usize,
-        "HelloUltraviolet::Reference::Procedures",
-        "runProceduresContractsReference",
-        "Source/Reference/Procedures/Contracts.uv"
+        "HelloUltraviolet::Fixtures::RejectedSource",
+        "validatedProceduresRejectedSourceFixtureCount",
+        "Fixtures/RejectedSource/Procedures/ContractPredicateImpureMove/Source/Main.uv"
     ) {
         count = count + 1usize
     }
@@ -358,12 +358,12 @@ public procedure validatedProceduresAndContractsContractClausesObligations() -> 
     ) {
         count = count + 1usize
     }
-    if acceptedObligationEntryMatches(
+    if rejectedSourceObligationEntryMatches(
         "diag.15.ContractClauses",
         55498usize,
-        "HelloUltraviolet::Reference::Procedures",
-        "runProceduresContractsReference",
-        "Source/Reference/Procedures/Contracts.uv"
+        "HelloUltraviolet::Fixtures::RejectedSource",
+        "validatedProceduresRejectedSourceFixtureCount",
+        "Fixtures/RejectedSource/Procedures/ContractDynamicAttribute/Source/Main.uv"
     ) {
         count = count + 1usize
     }

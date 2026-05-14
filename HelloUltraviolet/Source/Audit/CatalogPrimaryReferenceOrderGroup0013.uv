@@ -1,0 +1,604 @@
+//! Catalog primary-reference ordering check group 0013.
+
+internal procedure catalogPrimaryReferenceOrderGroup0013() -> bool {
+    return catalogPrimaryReferencePrecedes(
+            "conformance.DiagnosticsMetadataLowering",
+            28589usize,
+            "conformance.ExternBlockDynamicSemantics",
+            31683usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "conformance.ExternBlockDynamicSemantics",
+            31683usize,
+            "conformance.ExternBlockLowering",
+            31699usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "conformance.ExternBlockLowering",
+            31699usize,
+            "conformance.FilesystemPrimitiveOwnership",
+            12660usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "conformance.FilesystemPrimitiveOwnership",
+            12660usize,
+            "conformance.FloatSuffixDefaulting",
+            8667usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "conformance.FloatSuffixDefaulting",
+            8667usize,
+            "conformance.GenericInstantiationDynamicElaboration",
+            48509usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "conformance.GenericInstantiationDynamicElaboration",
+            48509usize,
+            "conformance.GenericMonomorphicInstantiationsDistinct",
+            48521usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "conformance.GenericMonomorphicInstantiationsDistinct",
+            48521usize,
+            "conformance.GenericParamsLoweringInputsOnly",
+            48168usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "conformance.GenericParamsLoweringInputsOnly",
+            48168usize,
+            "conformance.GenericParamsNoRuntimeSemantics",
+            48154usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "conformance.GenericParamsNoRuntimeSemantics",
+            48154usize,
+            "conformance.ImportDeclarationDynamicSemantics",
+            29985usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "conformance.ImportDeclarationDynamicSemantics",
+            29985usize,
+            "conformance.ImportDeclarationLowering",
+            30001usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "conformance.ImportDeclarationLowering",
+            30001usize,
+            "conformance.LayoutAndABIOwnerSections",
+            1265usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "conformance.LayoutAndABIOwnerSections",
+            1265usize,
+            "conformance.LayoutAttributeDynamicSemantics",
+            27947usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "conformance.LayoutAttributeDynamicSemantics",
+            27947usize,
+            "conformance.LayoutAttributeLowering",
+            27963usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "conformance.LayoutAttributeLowering",
+            27963usize,
+            "conformance.ManifestRequired",
+            2237usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "conformance.ManifestRequired",
+            2237usize,
+            "conformance.ModuleAggregationDynamicSemantics",
+            34898usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "conformance.ModuleAggregationDynamicSemantics",
+            34898usize,
+            "conformance.ModuleAggregationEagerGraphLoweringInput",
+            34914usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "conformance.ModuleAggregationEagerGraphLoweringInput",
+            34914usize,
+            "conformance.ModuleAggregationLifecycleLoweringOwnership",
+            34930usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "conformance.ModuleAggregationLifecycleLoweringOwnership",
+            34930usize,
+            "conformance.NoAmbientAuthorityDiscipline",
+            12070usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "conformance.NoAmbientAuthorityDiscipline",
+            12070usize,
+            "conformance.OptimizationAttributeDynamicSemantics",
+            28092usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "conformance.OptimizationAttributeDynamicSemantics",
+            28092usize,
+            "conformance.OptimizationAttributeLowering",
+            28108usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "conformance.OptimizationAttributeLowering",
+            28108usize,
+            "conformance.PermissionAdmissibilityLowering",
+            29766usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "conformance.PermissionAdmissibilityLowering",
+            29766usize,
+            "conformance.PermissionAdmissibilityRuntimeIdentity",
+            29736usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "conformance.PermissionAdmissibilityRuntimeIdentity",
+            29736usize,
+            "conformance.PermissionAdmissibilitySharedKeyGate",
+            29752usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "conformance.PermissionAdmissibilitySharedKeyGate",
+            29752usize,
+            "conformance.PermissionDynamicSemantics",
+            29104usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "conformance.PermissionDynamicSemantics",
+            29104usize,
+            "conformance.PermissionLayoutNeutrality",
+            29124usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "conformance.PermissionLayoutNeutrality",
+            29124usize,
+            "conformance.RFC2119",
+            930usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "conformance.RFC2119",
+            930usize,
+            "conformance.StaticDeclarationDynamicSemantics",
+            30785usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "conformance.StaticDeclarationDynamicSemantics",
+            30785usize,
+            "conformance.TestAttributeDynamicSemantics",
+            28789usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "conformance.TestAttributeDynamicSemantics",
+            28789usize,
+            "conformance.TupleProjectionLexicalDisambiguation",
+            10210usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "conformance.TupleProjectionLexicalDisambiguation",
+            10210usize,
+            "conformance.UnsafeForeignAuthority",
+            12536usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "conformance.UnsafeForeignAuthority",
+            12536usize,
+            "conformance.UsingDeclarationDynamicSemantics",
+            30492usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "conformance.UsingDeclarationDynamicSemantics",
+            30492usize,
+            "conformance.UsingDeclarationLowering",
+            30508usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "conformance.UsingDeclarationLowering",
+            30508usize,
+            "conformance.VendorAttributeDynamicSemantics",
+            27660usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "conformance.VendorAttributeDynamicSemantics",
+            27660usize,
+            "conformance.VendorAttributeLowering",
+            27676usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "conformance.VendorAttributeLowering",
+            27676usize,
+            "conformance.VendorAttributeStaticSemantics",
+            27640usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "conformance.VendorAttributeStaticSemantics",
+            27640usize,
+            "conformance.VendorAttributeSyntaxReuse",
+            27503usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "conformance.VendorAttributeSyntaxReuse",
+            27503usize,
+            "def.14.AbstractAssociatedTypeNames",
+            50249usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.14.AbstractAssociatedTypeNames",
+            50249usize,
+            "def.14.AllocErrorVal",
+            52268usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.14.AllocErrorVal",
+            52268usize,
+            "def.14.AllocationErrorDecl",
+            51785usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.14.AllocationErrorDecl",
+            51785usize,
+            "def.14.AssocTypeBinding",
+            50262usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.14.AssocTypeBinding",
+            50262usize,
+            "def.14.AssocTypeBindsPredicate",
+            50277usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.14.AssocTypeBindsPredicate",
+            50277usize,
+            "def.14.AssocTypeDefault",
+            50221usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.14.AssocTypeDefault",
+            50221usize,
+            "def.14.AssocTypeItemsAndNames",
+            50207usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.14.AssocTypeItemsAndNames",
+            50207usize,
+            "def.14.AssociatedTypeAstMembership",
+            50180usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.14.AssociatedTypeAstMembership",
+            50180usize,
+            "def.14.AssociatedTypeClassAbstractDefaulted",
+            50194usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.14.AssociatedTypeClassAbstractDefaulted",
+            50194usize,
+            "def.14.AssociatedTypeDeclAst",
+            50167usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.14.AssociatedTypeDeclAst",
+            50167usize,
+            "def.14.AssociatedTypeLookupOrder",
+            50331usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.14.AssociatedTypeLookupOrder",
+            50331usize,
+            "def.14.BitcopyType",
+            52482usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.14.BitcopyType",
+            52482usize,
+            "def.14.BitcopyTypeCore",
+            52495usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.14.BitcopyTypeCore",
+            52495usize,
+            "def.14.BuiltInContext",
+            52170usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.14.BuiltInContext",
+            52170usize,
+            "def.14.BuiltinBitcopyType",
+            52518usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.14.BuiltinBitcopyType",
+            52518usize,
+            "def.14.BuiltinDeclLookup",
+            52123usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.14.BuiltinDeclLookup",
+            52123usize,
+            "def.14.BuiltinDropCloneType",
+            52549usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.14.BuiltinDropCloneType",
+            52549usize,
+            "def.14.BuiltinFoundationalClassSignatures",
+            52563usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.14.BuiltinFoundationalClassSignatures",
+            52563usize,
+            "def.14.BuiltinTypeEnvironment",
+            52146usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.14.BuiltinTypeEnvironment",
+            52146usize,
+            "def.14.BuiltinTypesFS",
+            52109usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.14.BuiltinTypesFS",
+            52109usize,
+            "def.14.CapClassSet",
+            51583usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.14.CapClassSet",
+            51583usize,
+            "def.14.CapMethodSig",
+            51969usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.14.CapMethodSig",
+            51969usize,
+            "def.14.CapRecv",
+            51989usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.14.CapRecv",
+            51989usize,
+            "def.14.CapType",
+            51596usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.14.CapType",
+            51596usize,
+            "def.14.CapabilityLoweringSupport",
+            52008usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.14.CapabilityLoweringSupport",
+            52008usize,
+            "def.14.CloneDropTypePredicates",
+            52403usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.14.CloneDropTypePredicates",
+            52403usize,
+            "def.14.ContextBundleBuild",
+            52252usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.14.ContextBundleBuild",
+            52252usize,
+            "def.14.ContextBundleFieldType",
+            52183usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.14.ContextBundleFieldType",
+            52183usize,
+            "def.14.ContextBundleFieldValue",
+            52218usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.14.ContextBundleFieldValue",
+            52218usize,
+            "def.14.ContextBundleType",
+            52204usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.14.ContextBundleType",
+            52204usize,
+            "def.14.ContextDecl",
+            51871usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.14.ContextDecl",
+            51871usize,
+            "def.14.ContextDomainValue",
+            52239usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.14.ContextDomainValue",
+            52239usize,
+            "def.14.DirEntryDecl",
+            51767usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.14.DirEntryDecl",
+            51767usize,
+            "def.14.DurationDecl",
+            51822usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.14.DurationDecl",
+            51822usize,
+            "def.14.DynamicClassLayoutFields",
+            50488usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.14.DynamicClassLayoutFields",
+            50488usize,
+            "def.14.DynamicClassRuntimeValue",
+            50502usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.14.DynamicClassRuntimeValue",
+            50502usize,
+            "def.14.DynamicDispatchEligibility",
+            50542usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.14.DynamicDispatchEligibility",
+            50542usize,
+            "def.14.DynamicDispatchLoweringJudgements",
+            50853usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.14.DynamicDispatchLoweringJudgements",
+            50853usize,
+            "def.14.DynamicDispatchSelection",
+            50747usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.14.DynamicDispatchSelection",
+            50747usize,
+            "def.14.DynamicMethodTarget",
+            50762usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.14.DynamicMethodTarget",
+            50762usize,
+            "def.14.DynamicValueBits",
+            50840usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.14.DynamicValueBits",
+            50840usize,
+            "def.14.DynamicValueType",
+            50702usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.14.DynamicValueType",
+            50702usize,
+            "def.14.ExecutionDomainSupportDecls",
+            51930usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.14.ExecutionDomainSupportDecls",
+            51930usize,
+            "def.14.FileKindDecl",
+            51728usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.14.FileKindDecl",
+            51728usize,
+            "def.14.FileSystemInterface",
+            51609usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.14.FileSystemInterface",
+            51609usize,
+            "def.14.FoundationalClassName",
+            52360usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.14.FoundationalClassName",
+            52360usize,
+            "def.14.FoundationalImplementationPredicates",
+            52417usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.14.FoundationalImplementationPredicates",
+            52417usize,
+            "def.14.FoundationalJudgements",
+            52373usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.14.FoundationalJudgements",
+            52373usize,
+            "def.14.HasCloneDropMethod",
+            52389usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.14.HasCloneDropMethod",
+            52389usize,
+            "def.14.HeapAllocatorInterface",
+            51656usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.14.HeapAllocatorInterface",
+            51656usize,
+            "def.14.ImplAssocType",
+            50235usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.14.ImplAssocType",
+            50235usize,
+            "def.14.IoErrorDecl",
+            51746usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.14.IoErrorDecl",
+            51746usize,
+            "def.14.LookupMethod",
+            50640usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.14.LookupMethod",
+            50640usize,
+            "def.14.MonotonicInstantDecl",
+            51838usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.14.MonotonicInstantDecl",
+            51838usize,
+            "def.14.MonotonicTimeInterface",
+            51691usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.14.MonotonicTimeInterface",
+            51691usize,
+            "def.14.NetworkInterface",
+            51640usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.14.NetworkInterface",
+            51640usize,
+            "def.14.PredicateEquiv",
+            51337usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.14.PredicateEquiv",
+            51337usize,
+            "def.14.ReactorDecl",
+            51949usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.14.ReactorDecl",
+            51949usize,
+            "def.14.SelfOccurs",
+            50515usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.14.SelfOccurs",
+            50515usize,
+            "def.14.SystemDecl",
+            51898usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.14.SystemDecl",
+            51898usize,
+            "def.14.TimeErrorDecl",
+            51802usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.14.TimeErrorDecl",
+            51802usize,
+            "def.14.TimeInterface",
+            51674usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.14.TimeInterface",
+            51674usize,
+            "def.14.TypeDynamicAst",
+            50475usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.14.TypeDynamicAst",
+            50475usize,
+            "def.14.TypeOpaqueAst",
+            51062usize
+        )
+}

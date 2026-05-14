@@ -111,6 +111,7 @@ std::string BuiltinSymExecutionDomainMaxConcurrency();
 // =============================================================================
 
 std::string BuiltinSymContextCpu();
+std::string BuiltinSymContextCpuConfigured();
 std::string BuiltinSymContextGpu();
 std::string BuiltinSymContextInline();
 

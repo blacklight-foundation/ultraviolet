@@ -11,8 +11,8 @@ public procedure validatedExpressionsCastAndTransmuteExpressionsObligations() ->
         "grammar.16.CastAndTransmuteExpressions",
         60383usize,
         "HelloUltraviolet::Reference::Expressions",
-        "runExpressionsLiteralsAndNamesReference",
-        "Source/Reference/Expressions/LiteralsAndNames.uv"
+        "runExpressionsCastsAndTransmutesReference",
+        "Source/Reference/Expressions/CastsAndTransmutes.uv"
     ) {
         count = count + 1usize
     }
@@ -20,8 +20,8 @@ public procedure validatedExpressionsCastAndTransmuteExpressionsObligations() ->
         "req.16.WidenPrefixOwnershipForCastTransmute",
         60399usize,
         "HelloUltraviolet::Reference::Expressions",
-        "runExpressionsLiteralsAndNamesReference",
-        "Source/Reference/Expressions/LiteralsAndNames.uv"
+        "runExpressionsCastsAndTransmutesReference",
+        "Source/Reference/Expressions/CastsAndTransmutes.uv"
     ) {
         count = count + 1usize
     }
@@ -29,8 +29,8 @@ public procedure validatedExpressionsCastAndTransmuteExpressionsObligations() ->
         "rule.16.Parse-Cast",
         60414usize,
         "HelloUltraviolet::Reference::Expressions",
-        "runExpressionsLiteralsAndNamesReference",
-        "Source/Reference/Expressions/LiteralsAndNames.uv"
+        "runExpressionsCastsAndTransmutesReference",
+        "Source/Reference/Expressions/CastsAndTransmutes.uv"
     ) {
         count = count + 1usize
     }
@@ -38,8 +38,8 @@ public procedure validatedExpressionsCastAndTransmuteExpressionsObligations() ->
         "rule.16.Parse-CastTail-None",
         60430usize,
         "HelloUltraviolet::Reference::Expressions",
-        "runExpressionsLiteralsAndNamesReference",
-        "Source/Reference/Expressions/LiteralsAndNames.uv"
+        "runExpressionsCastsAndTransmutesReference",
+        "Source/Reference/Expressions/CastsAndTransmutes.uv"
     ) {
         count = count + 1usize
     }
@@ -47,8 +47,8 @@ public procedure validatedExpressionsCastAndTransmuteExpressionsObligations() ->
         "rule.16.Parse-CastTail-As",
         60446usize,
         "HelloUltraviolet::Reference::Expressions",
-        "runExpressionsLiteralsAndNamesReference",
-        "Source/Reference/Expressions/LiteralsAndNames.uv"
+        "runExpressionsCastsAndTransmutesReference",
+        "Source/Reference/Expressions/CastsAndTransmutes.uv"
     ) {
         count = count + 1usize
     }
@@ -56,8 +56,8 @@ public procedure validatedExpressionsCastAndTransmuteExpressionsObligations() ->
         "rule.16.ParseTransmuteExprFamily",
         60462usize,
         "HelloUltraviolet::Reference::Expressions",
-        "runExpressionsLiteralsAndNamesReference",
-        "Source/Reference/Expressions/LiteralsAndNames.uv"
+        "runExpressionsCastsAndTransmutesReference",
+        "Source/Reference/Expressions/CastsAndTransmutes.uv"
     ) {
         count = count + 1usize
     }
@@ -65,8 +65,8 @@ public procedure validatedExpressionsCastAndTransmuteExpressionsObligations() ->
         "req.16.WidenParsingOwnershipForCastTransmute",
         60475usize,
         "HelloUltraviolet::Reference::Expressions",
-        "runExpressionsLiteralsAndNamesReference",
-        "Source/Reference/Expressions/LiteralsAndNames.uv"
+        "runExpressionsCastsAndTransmutesReference",
+        "Source/Reference/Expressions/CastsAndTransmutes.uv"
     ) {
         count = count + 1usize
     }
@@ -74,8 +74,8 @@ public procedure validatedExpressionsCastAndTransmuteExpressionsObligations() ->
         "def.16.CastTransmuteExprAst",
         60490usize,
         "HelloUltraviolet::Reference::Expressions",
-        "runExpressionsLiteralsAndNamesReference",
-        "Source/Reference/Expressions/LiteralsAndNames.uv"
+        "runExpressionsCastsAndTransmutesReference",
+        "Source/Reference/Expressions/CastsAndTransmutes.uv"
     ) {
         count = count + 1usize
     }
@@ -83,17 +83,17 @@ public procedure validatedExpressionsCastAndTransmuteExpressionsObligations() ->
         "req.16.WidenAstOwnershipForCastTransmute",
         60503usize,
         "HelloUltraviolet::Reference::Expressions",
-        "runExpressionsLiteralsAndNamesReference",
-        "Source/Reference/Expressions/LiteralsAndNames.uv"
+        "runExpressionsCastsAndTransmutesReference",
+        "Source/Reference/Expressions/CastsAndTransmutes.uv"
     ) {
         count = count + 1usize
     }
-    if acceptedObligationEntryMatches(
+    if rejectedSourceObligationEntryMatches(
         "def.16.CastValidity",
         60518usize,
-        "HelloUltraviolet::Reference::Expressions",
-        "runExpressionsLiteralsAndNamesReference",
-        "Source/Reference/Expressions/LiteralsAndNames.uv"
+        "HelloUltraviolet::Fixtures::RejectedSource",
+        "validatedExpressionsRejectedSourceFixtureCount",
+        "Fixtures/RejectedSource/Expressions/CastValidity/Source/Main.uv"
     ) {
         count = count + 1usize
     }
@@ -101,35 +101,35 @@ public procedure validatedExpressionsCastAndTransmuteExpressionsObligations() ->
         "rule.16.T-Cast",
         60533usize,
         "HelloUltraviolet::Reference::Expressions",
-        "runExpressionsLiteralsAndNamesReference",
-        "Source/Reference/Expressions/LiteralsAndNames.uv"
+        "runExpressionsCastsAndTransmutesReference",
+        "Source/Reference/Expressions/CastsAndTransmutes.uv"
     ) {
         count = count + 1usize
     }
-    if acceptedObligationEntryMatches(
+    if rejectedSourceObligationEntryMatches(
         "rule.16.T-Cast-Invalid",
         60549usize,
-        "HelloUltraviolet::Reference::Expressions",
-        "runExpressionsLiteralsAndNamesReference",
-        "Source/Reference/Expressions/LiteralsAndNames.uv"
+        "HelloUltraviolet::Fixtures::RejectedSource",
+        "validatedExpressionsRejectedSourceFixtureCount",
+        "Fixtures/RejectedSource/Expressions/InvalidCast/Source/Main.uv"
     ) {
         count = count + 1usize
     }
-    if acceptedObligationEntryMatches(
+    if rejectedSourceObligationEntryMatches(
         "rule.16.T-Transmute-SizeEq",
         60565usize,
-        "HelloUltraviolet::Reference::Expressions",
-        "runExpressionsLiteralsAndNamesReference",
-        "Source/Reference/Expressions/LiteralsAndNames.uv"
+        "HelloUltraviolet::Fixtures::RejectedSource",
+        "validatedExpressionsRejectedSourceFixtureCount",
+        "Fixtures/RejectedSource/Expressions/TransmuteSizeMismatch/Source/Main.uv"
     ) {
         count = count + 1usize
     }
-    if acceptedObligationEntryMatches(
+    if rejectedSourceObligationEntryMatches(
         "rule.16.T-Transmute-AlignEq",
         60581usize,
-        "HelloUltraviolet::Reference::Expressions",
-        "runExpressionsLiteralsAndNamesReference",
-        "Source/Reference/Expressions/LiteralsAndNames.uv"
+        "HelloUltraviolet::Fixtures::RejectedSource",
+        "validatedExpressionsRejectedSourceFixtureCount",
+        "Fixtures/RejectedSource/Expressions/TransmuteAlignMismatch/Source/Main.uv"
     ) {
         count = count + 1usize
     }
@@ -137,35 +137,35 @@ public procedure validatedExpressionsCastAndTransmuteExpressionsObligations() ->
         "rule.16.T-Transmute",
         60597usize,
         "HelloUltraviolet::Reference::Expressions",
-        "runExpressionsLiteralsAndNamesReference",
-        "Source/Reference/Expressions/LiteralsAndNames.uv"
+        "runExpressionsCastsAndTransmutesReference",
+        "Source/Reference/Expressions/CastsAndTransmutes.uv"
     ) {
         count = count + 1usize
     }
-    if acceptedObligationEntryMatches(
+    if rejectedSourceObligationEntryMatches(
         "rule.16.Transmute-Unsafe-Err",
         60613usize,
-        "HelloUltraviolet::Reference::Expressions",
-        "runExpressionsLiteralsAndNamesReference",
-        "Source/Reference/Expressions/LiteralsAndNames.uv"
+        "HelloUltraviolet::Fixtures::RejectedSource",
+        "validatedExpressionsRejectedSourceFixtureCount",
+        "Fixtures/RejectedSource/Expressions/TransmuteUnsafe/Source/Main.uv"
     ) {
         count = count + 1usize
     }
-    if acceptedObligationEntryMatches(
+    if diagnosticSourceObligationEntryMatches(
         "def.16.ValidTransmuteTarget",
         60629usize,
-        "HelloUltraviolet::Reference::Expressions",
-        "runExpressionsLiteralsAndNamesReference",
-        "Source/Reference/Expressions/LiteralsAndNames.uv"
+        "HelloUltraviolet::Fixtures::DiagnosticSource",
+        "validatedExpressionsDiagnosticSourceFixtureCount",
+        "Fixtures/DiagnosticSource/Expressions/ValidTransmuteTarget/Source/Main.uv"
     ) {
         count = count + 1usize
     }
-    if acceptedObligationEntryMatches(
+    if rejectedSourceObligationEntryMatches(
         "req.16.WidenTypingDiagnosticsOwnershipForCastTransmute",
         60646usize,
-        "HelloUltraviolet::Reference::Expressions",
-        "runExpressionsLiteralsAndNamesReference",
-        "Source/Reference/Expressions/LiteralsAndNames.uv"
+        "HelloUltraviolet::Fixtures::RejectedSource",
+        "validatedExpressionsRejectedSourceFixtureCount",
+        "Fixtures/RejectedSource/Expressions/WidenTypingDiagnosticsOwnership/Source/Main.uv"
     ) {
         count = count + 1usize
     }
@@ -173,8 +173,8 @@ public procedure validatedExpressionsCastAndTransmuteExpressionsObligations() ->
         "def.16.CastDynamicContext",
         60661usize,
         "HelloUltraviolet::Reference::Expressions",
-        "runExpressionsLiteralsAndNamesReference",
-        "Source/Reference/Expressions/LiteralsAndNames.uv"
+        "runExpressionsCastsAndTransmutesReference",
+        "Source/Reference/Expressions/CastsAndTransmutes.uv"
     ) {
         count = count + 1usize
     }
@@ -182,8 +182,8 @@ public procedure validatedExpressionsCastAndTransmuteExpressionsObligations() ->
         "def.16.CastRuntimeConversionHelpers",
         60675usize,
         "HelloUltraviolet::Reference::Expressions",
-        "runExpressionsLiteralsAndNamesReference",
-        "Source/Reference/Expressions/LiteralsAndNames.uv"
+        "runExpressionsCastsAndTransmutesReference",
+        "Source/Reference/Expressions/CastsAndTransmutes.uv"
     ) {
         count = count + 1usize
     }
@@ -191,8 +191,8 @@ public procedure validatedExpressionsCastAndTransmuteExpressionsObligations() ->
         "rule.16.CastVal-Id",
         60709usize,
         "HelloUltraviolet::Reference::Expressions",
-        "runExpressionsLiteralsAndNamesReference",
-        "Source/Reference/Expressions/LiteralsAndNames.uv"
+        "runExpressionsCastsAndTransmutesReference",
+        "Source/Reference/Expressions/CastsAndTransmutes.uv"
     ) {
         count = count + 1usize
     }
@@ -200,8 +200,8 @@ public procedure validatedExpressionsCastAndTransmuteExpressionsObligations() ->
         "rule.16.CastVal-Int-Int-Signed",
         60725usize,
         "HelloUltraviolet::Reference::Expressions",
-        "runExpressionsLiteralsAndNamesReference",
-        "Source/Reference/Expressions/LiteralsAndNames.uv"
+        "runExpressionsCastsAndTransmutesReference",
+        "Source/Reference/Expressions/CastsAndTransmutes.uv"
     ) {
         count = count + 1usize
     }
@@ -209,8 +209,8 @@ public procedure validatedExpressionsCastAndTransmuteExpressionsObligations() ->
         "rule.16.CastVal-Int-Int-Unsigned",
         60741usize,
         "HelloUltraviolet::Reference::Expressions",
-        "runExpressionsLiteralsAndNamesReference",
-        "Source/Reference/Expressions/LiteralsAndNames.uv"
+        "runExpressionsCastsAndTransmutesReference",
+        "Source/Reference/Expressions/CastsAndTransmutes.uv"
     ) {
         count = count + 1usize
     }
@@ -218,8 +218,8 @@ public procedure validatedExpressionsCastAndTransmuteExpressionsObligations() ->
         "rule.16.CastVal-Int-Float",
         60757usize,
         "HelloUltraviolet::Reference::Expressions",
-        "runExpressionsLiteralsAndNamesReference",
-        "Source/Reference/Expressions/LiteralsAndNames.uv"
+        "runExpressionsCastsAndTransmutesReference",
+        "Source/Reference/Expressions/CastsAndTransmutes.uv"
     ) {
         count = count + 1usize
     }
@@ -227,8 +227,8 @@ public procedure validatedExpressionsCastAndTransmuteExpressionsObligations() ->
         "req.16.IntToFloatLoweringPreservesSignedness",
         60773usize,
         "HelloUltraviolet::Reference::Expressions",
-        "runExpressionsLiteralsAndNamesReference",
-        "Source/Reference/Expressions/LiteralsAndNames.uv"
+        "runExpressionsCastsAndTransmutesReference",
+        "Source/Reference/Expressions/CastsAndTransmutes.uv"
     ) {
         count = count + 1usize
     }
@@ -236,8 +236,8 @@ public procedure validatedExpressionsCastAndTransmuteExpressionsObligations() ->
         "rule.16.CastVal-Float-Float",
         60786usize,
         "HelloUltraviolet::Reference::Expressions",
-        "runExpressionsLiteralsAndNamesReference",
-        "Source/Reference/Expressions/LiteralsAndNames.uv"
+        "runExpressionsCastsAndTransmutesReference",
+        "Source/Reference/Expressions/CastsAndTransmutes.uv"
     ) {
         count = count + 1usize
     }
@@ -245,8 +245,8 @@ public procedure validatedExpressionsCastAndTransmuteExpressionsObligations() ->
         "rule.16.CastVal-Float-Int",
         60802usize,
         "HelloUltraviolet::Reference::Expressions",
-        "runExpressionsLiteralsAndNamesReference",
-        "Source/Reference/Expressions/LiteralsAndNames.uv"
+        "runExpressionsCastsAndTransmutesReference",
+        "Source/Reference/Expressions/CastsAndTransmutes.uv"
     ) {
         count = count + 1usize
     }
@@ -254,8 +254,8 @@ public procedure validatedExpressionsCastAndTransmuteExpressionsObligations() ->
         "rule.16.CastVal-Bool-Int",
         60818usize,
         "HelloUltraviolet::Reference::Expressions",
-        "runExpressionsLiteralsAndNamesReference",
-        "Source/Reference/Expressions/LiteralsAndNames.uv"
+        "runExpressionsCastsAndTransmutesReference",
+        "Source/Reference/Expressions/CastsAndTransmutes.uv"
     ) {
         count = count + 1usize
     }
@@ -263,8 +263,8 @@ public procedure validatedExpressionsCastAndTransmuteExpressionsObligations() ->
         "rule.16.CastVal-Int-Bool",
         60836usize,
         "HelloUltraviolet::Reference::Expressions",
-        "runExpressionsLiteralsAndNamesReference",
-        "Source/Reference/Expressions/LiteralsAndNames.uv"
+        "runExpressionsCastsAndTransmutesReference",
+        "Source/Reference/Expressions/CastsAndTransmutes.uv"
     ) {
         count = count + 1usize
     }
@@ -272,8 +272,8 @@ public procedure validatedExpressionsCastAndTransmuteExpressionsObligations() ->
         "rule.16.CastVal-Char-U32",
         60854usize,
         "HelloUltraviolet::Reference::Expressions",
-        "runExpressionsLiteralsAndNamesReference",
-        "Source/Reference/Expressions/LiteralsAndNames.uv"
+        "runExpressionsCastsAndTransmutesReference",
+        "Source/Reference/Expressions/CastsAndTransmutes.uv"
     ) {
         count = count + 1usize
     }
@@ -281,8 +281,8 @@ public procedure validatedExpressionsCastAndTransmuteExpressionsObligations() ->
         "rule.16.CastVal-U32-Char",
         60870usize,
         "HelloUltraviolet::Reference::Expressions",
-        "runExpressionsLiteralsAndNamesReference",
-        "Source/Reference/Expressions/LiteralsAndNames.uv"
+        "runExpressionsCastsAndTransmutesReference",
+        "Source/Reference/Expressions/CastsAndTransmutes.uv"
     ) {
         count = count + 1usize
     }
@@ -290,8 +290,8 @@ public procedure validatedExpressionsCastAndTransmuteExpressionsObligations() ->
         "rule.16.EvalSigma-Cast",
         60886usize,
         "HelloUltraviolet::Reference::Expressions",
-        "runExpressionsLiteralsAndNamesReference",
-        "Source/Reference/Expressions/LiteralsAndNames.uv"
+        "runExpressionsCastsAndTransmutesReference",
+        "Source/Reference/Expressions/CastsAndTransmutes.uv"
     ) {
         count = count + 1usize
     }
@@ -299,8 +299,8 @@ public procedure validatedExpressionsCastAndTransmuteExpressionsObligations() ->
         "rule.16.EvalSigma-Cast-Panic",
         60902usize,
         "HelloUltraviolet::Reference::Expressions",
-        "runExpressionsLiteralsAndNamesReference",
-        "Source/Reference/Expressions/LiteralsAndNames.uv"
+        "runExpressionsCastsAndTransmutesReference",
+        "Source/Reference/Expressions/CastsAndTransmutes.uv"
     ) {
         count = count + 1usize
     }
@@ -308,8 +308,8 @@ public procedure validatedExpressionsCastAndTransmuteExpressionsObligations() ->
         "def.16.TransmuteVal",
         60918usize,
         "HelloUltraviolet::Reference::Expressions",
-        "runExpressionsLiteralsAndNamesReference",
-        "Source/Reference/Expressions/LiteralsAndNames.uv"
+        "runExpressionsCastsAndTransmutesReference",
+        "Source/Reference/Expressions/CastsAndTransmutes.uv"
     ) {
         count = count + 1usize
     }
@@ -317,8 +317,8 @@ public procedure validatedExpressionsCastAndTransmuteExpressionsObligations() ->
         "rule.16.EvalSigma-Transmute",
         60931usize,
         "HelloUltraviolet::Reference::Expressions",
-        "runExpressionsLiteralsAndNamesReference",
-        "Source/Reference/Expressions/LiteralsAndNames.uv"
+        "runExpressionsCastsAndTransmutesReference",
+        "Source/Reference/Expressions/CastsAndTransmutes.uv"
     ) {
         count = count + 1usize
     }
@@ -326,8 +326,8 @@ public procedure validatedExpressionsCastAndTransmuteExpressionsObligations() ->
         "rule.16.EvalSigma-Transmute-Ctrl",
         60947usize,
         "HelloUltraviolet::Reference::Expressions",
-        "runExpressionsLiteralsAndNamesReference",
-        "Source/Reference/Expressions/LiteralsAndNames.uv"
+        "runExpressionsCastsAndTransmutesReference",
+        "Source/Reference/Expressions/CastsAndTransmutes.uv"
     ) {
         count = count + 1usize
     }
@@ -335,8 +335,8 @@ public procedure validatedExpressionsCastAndTransmuteExpressionsObligations() ->
         "req.16.WidenDynamicOwnershipForCastTransmute",
         60963usize,
         "HelloUltraviolet::Reference::Expressions",
-        "runExpressionsLiteralsAndNamesReference",
-        "Source/Reference/Expressions/LiteralsAndNames.uv"
+        "runExpressionsCastsAndTransmutesReference",
+        "Source/Reference/Expressions/CastsAndTransmutes.uv"
     ) {
         count = count + 1usize
     }
@@ -344,8 +344,8 @@ public procedure validatedExpressionsCastAndTransmuteExpressionsObligations() ->
         "rule.16.Lower-Expr-Cast",
         60978usize,
         "HelloUltraviolet::Reference::Expressions",
-        "runExpressionsLiteralsAndNamesReference",
-        "Source/Reference/Expressions/LiteralsAndNames.uv"
+        "runExpressionsCastsAndTransmutesReference",
+        "Source/Reference/Expressions/CastsAndTransmutes.uv"
     ) {
         count = count + 1usize
     }
@@ -353,8 +353,8 @@ public procedure validatedExpressionsCastAndTransmuteExpressionsObligations() ->
         "rule.16.Lower-Expr-Transmute",
         60994usize,
         "HelloUltraviolet::Reference::Expressions",
-        "runExpressionsLiteralsAndNamesReference",
-        "Source/Reference/Expressions/LiteralsAndNames.uv"
+        "runExpressionsCastsAndTransmutesReference",
+        "Source/Reference/Expressions/CastsAndTransmutes.uv"
     ) {
         count = count + 1usize
     }
@@ -362,17 +362,17 @@ public procedure validatedExpressionsCastAndTransmuteExpressionsObligations() ->
         "rule.16.LowerCastTransmuteFamily",
         61010usize,
         "HelloUltraviolet::Reference::Expressions",
-        "runExpressionsLiteralsAndNamesReference",
-        "Source/Reference/Expressions/LiteralsAndNames.uv"
+        "runExpressionsCastsAndTransmutesReference",
+        "Source/Reference/Expressions/CastsAndTransmutes.uv"
     ) {
         count = count + 1usize
     }
-    if acceptedObligationEntryMatches(
+    if rejectedSourceObligationEntryMatches(
         "diag.16.CastAndTransmuteExpressions",
         61025usize,
-        "HelloUltraviolet::Reference::Expressions",
-        "runExpressionsLiteralsAndNamesReference",
-        "Source/Reference/Expressions/LiteralsAndNames.uv"
+        "HelloUltraviolet::Fixtures::RejectedSource",
+        "validatedExpressionsRejectedSourceFixtureCount",
+        "Fixtures/RejectedSource/Expressions/CastAndTransmuteExpressionsDiagnostic/Source/Main.uv"
     ) {
         count = count + 1usize
     }

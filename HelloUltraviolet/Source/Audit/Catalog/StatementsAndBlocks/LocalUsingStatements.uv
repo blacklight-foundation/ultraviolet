@@ -52,12 +52,12 @@ public procedure validatedStatementsAndBlocksLocalUsingStatementsObligations() -
     ) {
         count = count + 1usize
     }
-    if acceptedObligationEntryMatches(
+    if rejectedSourceObligationEntryMatches(
         "rule.18.T-UsingLocalStmt-Err",
         69714usize,
-        "HelloUltraviolet::Reference::Statements",
-        "runStatementsLocalUsingReference",
-        "Source/Reference/Statements/LocalUsing.uv"
+        "HelloUltraviolet::Fixtures::RejectedSource",
+        "validatedStatementsRejectedSourceFixtureCount",
+        "Fixtures/RejectedSource/Statements/UsingLocalUnresolved/Source/Main.uv"
     ) {
         count = count + 1usize
     }
@@ -106,12 +106,12 @@ public procedure validatedStatementsAndBlocksLocalUsingStatementsObligations() -
     ) {
         count = count + 1usize
     }
-    if acceptedObligationEntryMatches(
+    if rejectedSourceObligationEntryMatches(
         "diag.18.LocalUsingStatements",
         69805usize,
-        "HelloUltraviolet::Reference::Statements",
-        "runStatementsLocalUsingReference",
-        "Source/Reference/Statements/LocalUsing.uv"
+        "HelloUltraviolet::Fixtures::RejectedSource",
+        "validatedStatementsRejectedSourceFixtureCount",
+        "Fixtures/RejectedSource/Statements/LocalUsingStatementsDiagnostic/Source/Main.uv"
     ) {
         count = count + 1usize
     }

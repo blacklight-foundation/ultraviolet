@@ -7,6 +7,10 @@ internal procedure asyncCompositionOutcome(should_fail: bool, value: i32) -> i32
     return value
 }
 
+internal procedure asyncCompositionCompletes(value: i32) -> Async<(), (), i32, bool> {
+    return value
+}
+
 internal procedure asyncCompositionMayFail(
     should_fail: bool,
     value: i32
@@ -22,6 +26,51 @@ internal procedure asyncCompositionStreamMayFail(
     let result: i32 = asyncCompositionOutcome(should_fail, value)?
     yield result
     return result
+}
+
+internal procedure asyncCompositionSingleOutput(value: i32) -> Async<i32, (), (), bool> {
+    yield value
+    return ()
+}
+
+internal procedure asyncCompositionTwoOutputs(
+    first: i32,
+    second: i32
+) -> Async<i32, (), (), bool> {
+    yield first
+    yield second
+    return ()
+}
+
+internal procedure asyncCompositionSharedCompletion(value: i32) -> Async<(), (), i32, bool> {
+    return value
+}
+
+internal procedure asyncCompositionUnitSuspends(value: i32) -> Async<(), (), i32, bool> {
+    yield ()
+    return value
+}
+
+internal procedure asyncCompositionCompletesPair(
+    left: i32,
+    right: i32
+) -> Async<(), (), (i32, i32), bool> {
+    return (left, right)
+}
+
+internal procedure asyncCompositionIterates(
+    first: i32,
+    second: i32
+) -> Async<(), (), i32, bool> {
+    var total: i32 = 0
+    loop value in asyncCompositionTwoOutputs(first, second) {
+        total = total + value
+    }
+    return total
+}
+
+internal record AsyncUntilCell {
+    internal value: i32
 }
 
 internal procedure i32BoolUnionIsValue(value: i32 | bool, expected: i32) -> bool {
@@ -42,6 +91,22 @@ internal procedure i32BoolUnionIsFailure(value: i32 | bool) -> bool {
         }
         failed: bool {
             failed
+        }
+    }
+}
+
+internal procedure asyncBoolFailureStateIs(
+    state: Async<(), (), i32, bool>
+) -> bool {
+    return if state is {
+        @Completed {
+            false
+        }
+        @Suspended {
+            false
+        }
+        @Failed { error } {
+            error
         }
     }
 }
@@ -68,6 +133,17 @@ internal procedure pairBoolUnionIsFailure(value: (i32, i32) | bool) -> bool {
         }
         failed: bool {
             failed
+        }
+    }
+}
+
+internal procedure singleBoolUnionIsValue(value: (i32;) | bool, expected: i32) -> bool {
+    return if value is {
+        actual: (i32;) {
+            actual.0 == expected
+        }
+        failed: bool {
+            false
         }
     }
 }
@@ -103,11 +179,52 @@ internal procedure streamBoolIsFailure(state: Stream<i32, bool>) -> bool {
     }
 }
 
-/// Exercises the Async CompositionForms reference surface.
-public procedure runAsyncCompositionFormsReference() -> bool {
-    let completed_value: i32 = sync asyncCompletesReference(31)
+/// Exercises sync over an existing completed async value.
+public procedure runAsyncCompositionSyncExistingFutureReference() -> bool {
+    let completed_value: i32 | bool = sync asyncCompositionCompletes(31)
+    return i32BoolUnionIsValue(completed_value, 31)
+}
+
+/// Exercises sync producing the success member of a result/error union.
+public procedure runAsyncCompositionSyncSuccessReference() -> bool {
     let sync_success: i32 | bool = sync asyncCompositionMayFail(false, 32)
+    return i32BoolUnionIsValue(sync_success, 32)
+}
+
+/// Exercises the result/error union value before async propagation consumes it.
+public procedure runAsyncCompositionOutcomeFailureReference() -> bool {
+    let outcome: i32 | bool = asyncCompositionOutcome(true, 33)
+    return i32BoolUnionIsFailure(outcome)
+}
+
+/// Exercises async error propagation before sync observes the failed state.
+public procedure runAsyncCompositionAsyncFailureStateReference() -> bool {
+    let failed: Async<(), (), i32, bool> = asyncCompositionMayFail(true, 33)
+    return asyncBoolFailureStateIs(failed)
+}
+
+/// Exercises sync producing the error member of a result/error union.
+public procedure runAsyncCompositionSyncFailureReference() -> bool {
     let sync_failure: i32 | bool = sync asyncCompositionMayFail(true, 33)
+    return i32BoolUnionIsFailure(sync_failure)
+}
+
+/// Exercises sync resuming an async value whose output and input are unit.
+public procedure runAsyncCompositionSyncSuspendedUnitReference() -> bool {
+    let sync_resumed: i32 | bool = sync asyncCompositionUnitSuspends(56)
+    return i32BoolUnionIsValue(sync_resumed, 56)
+}
+
+/// Exercises sync over completed and failed async values.
+public procedure runAsyncCompositionSyncReference() -> bool {
+    return runAsyncCompositionSyncExistingFutureReference() &&
+        runAsyncCompositionSyncSuccessReference() &&
+        runAsyncCompositionSyncFailureReference() &&
+        runAsyncCompositionSyncSuspendedUnitReference()
+}
+
+/// Exercises all-expression result ordering and first-failure propagation.
+public procedure runAsyncCompositionAllReference() -> bool {
     let all_success: (i32, i32) | bool = all {
         asyncCompositionMayFail(false, 34),
         asyncCompositionMayFail(false, 35),
@@ -116,6 +233,29 @@ public procedure runAsyncCompositionFormsReference() -> bool {
         asyncCompositionMayFail(true, 36),
         asyncCompositionMayFail(false, 37),
     }
+    return pairBoolUnionIsValue(all_success, 34, 35) &&
+        pairBoolUnionIsFailure(all_failure)
+}
+
+/// Exercises all-expression joining after unit-output async suspension.
+public procedure runAsyncCompositionAllSuspendedReference() -> bool {
+    let all_suspended: (i32, i32) | bool = all {
+        asyncCompositionUnitSuspends(57),
+        asyncCompositionUnitSuspends(58),
+    }
+    return pairBoolUnionIsValue(all_suspended, 57, 58)
+}
+
+/// Exercises all-expression single-result tuple construction.
+public procedure runAsyncCompositionAllSingleReference() -> bool {
+    let all_single: (i32;) | bool = all {
+        asyncCompositionMayFail(false, 59),
+    }
+    return singleBoolUnionIsValue(all_single, 59)
+}
+
+/// Exercises return-mode race completion and failure propagation.
+public procedure runAsyncCompositionReturnRaceReference() -> bool {
     let race_success: i32 | bool = race {
         asyncCompositionMayFail(false, 38) -> |value| value + 1,
         asyncCompositionMayFail(false, 40) -> |value| value + 1,
@@ -124,22 +264,161 @@ public procedure runAsyncCompositionFormsReference() -> bool {
         asyncCompositionMayFail(true, 41) -> |value| value,
         asyncCompositionMayFail(true, 42) -> |value| value,
     }
+    return i32BoolUnionIsValue(race_success, 39) &&
+        i32BoolUnionIsFailure(race_failure)
+}
+
+/// Exercises return-mode race resuming suspended unit-output operands.
+public procedure runAsyncCompositionReturnRaceSuspendedReference() -> bool {
+    let race_suspended: i32 | bool = race {
+        asyncCompositionUnitSuspends(60) -> |value| value + 1,
+        asyncCompositionUnitSuspends(61) -> |value| value + 1,
+    }
+    return i32BoolUnionIsValue(race_suspended, 61)
+}
+
+/// Exercises race-arm tuple patterns over completed async results.
+public procedure runAsyncCompositionRaceTuplePatternReference() -> bool {
+    let race_tuple: i32 | bool = race {
+        asyncCompositionCompletesPair(62, 63) -> |(left, right)| left + right,
+        asyncCompositionCompletesPair(61, 64) -> |(left, right)| left + right,
+    }
+    return i32BoolUnionIsValue(race_tuple, 125)
+}
+
+/// Exercises streaming race yield output and failure propagation.
+public procedure runAsyncCompositionStreamingRaceSuccessReference() -> bool {
     let stream_success: Stream<i32, bool> = race {
         asyncCompositionStreamMayFail(false, 43) -> |output| yield output,
         asyncCompositionStreamMayFail(false, 44) -> |output| yield output + 1,
     }
+    return streamBoolIsSuspendedOutput(stream_success, 43)
+}
+
+/// Exercises streaming race failure propagation.
+public procedure runAsyncCompositionStreamingRaceFailureReference() -> bool {
     let stream_failure: Stream<i32, bool> = race {
         asyncCompositionStreamMayFail(true, 45) -> |output| yield output,
         asyncCompositionStreamMayFail(true, 46) -> |output| yield output,
     }
+    return streamBoolIsFailure(stream_failure)
+}
 
-    return completed_value == 31 &&
-        i32BoolUnionIsValue(sync_success, 32) &&
-        i32BoolUnionIsFailure(sync_failure) &&
-        pairBoolUnionIsValue(all_success, 34, 35) &&
-        pairBoolUnionIsFailure(all_failure) &&
-        i32BoolUnionIsValue(race_success, 39) &&
-        i32BoolUnionIsFailure(race_failure) &&
-        streamBoolIsSuspendedOutput(stream_success, 43) &&
-        streamBoolIsFailure(stream_failure)
+/// Exercises streaming race resumption after the first yielded arm.
+public procedure runAsyncCompositionStreamingRaceResumeReference() -> bool {
+    let stream: unique Stream<i32, bool> = race {
+        asyncCompositionTwoOutputs(65, 66) -> |output| yield output,
+        asyncCompositionTwoOutputs(67, 68) -> |output| yield output,
+    }
+    return if stream is {
+        @Suspended { output } {
+            let resumed = stream~>resume(())
+            let resumed_ok: bool = if resumed is {
+                @Suspended { output: resumed_output } {
+                    resumed_output == 66
+                }
+                @Completed {
+                    false
+                }
+                @Failed {
+                    false
+                }
+            }
+            output == 65 && resumed_ok
+        }
+        @Completed {
+            false
+        }
+        @Failed {
+            false
+        }
+    }
+}
+
+/// Exercises streaming race yield output and failure propagation.
+public procedure runAsyncCompositionStreamingRaceReference() -> bool {
+    return runAsyncCompositionStreamingRaceSuccessReference() &&
+        runAsyncCompositionStreamingRaceFailureReference() &&
+        runAsyncCompositionStreamingRaceResumeReference()
+}
+
+/// Exercises Async map method lookup and runtime wrapper output transformation.
+public procedure runAsyncCompositionMapReference() -> bool {
+    let mapped: Stream<i32, bool> =
+        asyncCompositionSingleOutput(47)~>map(|value: i32| -> i32 value + 1)
+    return streamBoolIsSuspendedOutput(mapped, 48)
+}
+
+/// Exercises Async filter method lookup and pass-through runtime wrapper behavior.
+public procedure runAsyncCompositionFilterReference() -> bool {
+    let filtered: Stream<i32, bool> =
+        asyncCompositionSingleOutput(49)~>filter(|value: const i32| -> bool value == 49)
+    return streamBoolIsSuspendedOutput(filtered, 49)
+}
+
+/// Exercises Async take method lookup and nonzero-count runtime wrapper behavior.
+public procedure runAsyncCompositionTakeReference() -> bool {
+    let taken: Stream<i32, bool> =
+        asyncCompositionSingleOutput(50)~>take(1usize)
+    return streamBoolIsSuspendedOutput(taken, 50)
+}
+
+/// Exercises Async fold method lookup and accumulator completion behavior.
+public procedure runAsyncCompositionFoldReference() -> bool {
+    let folded: Async<(), (), i32, bool> =
+        asyncCompositionSingleOutput(5)~>fold(10, |acc: i32, value: i32| -> i32 acc + value)
+    let fold_result: i32 | bool = sync folded
+    return i32BoolUnionIsValue(fold_result, 15)
+}
+
+/// Exercises Async chain method lookup and chained future completion behavior.
+public procedure runAsyncCompositionChainReference() -> bool {
+    let chained: Async<(), (), i32, bool> =
+        asyncCompositionSharedCompletion(7)~>chain(
+            |value: i32| -> Async<(), (), i32, bool> asyncCompositionSharedCompletion(value + 1)
+        )
+    let chain_result: i32 | bool = sync chained
+    return i32BoolUnionIsValue(chain_result, 8)
+}
+
+/// Exercises until over a shared receiver with const predicate and unique action closures.
+public procedure runAsyncCompositionUntilReference() -> bool {
+    var cell: shared AsyncUntilCell = AsyncUntilCell { value: 51 }
+    let completed: Async<(), (), i32, !> = cell~>until(
+        |value: const AsyncUntilCell| -> bool value.value == 51,
+        |value: unique AsyncUntilCell| -> i32 value.value + 1
+    )
+    let result: i32 = sync completed
+    return result == 52
+}
+
+/// Exercises async iteration over an async value that yields multiple outputs.
+public procedure runAsyncCompositionLoopIterationReference() -> bool {
+    let iterated: Async<(), (), i32, bool> = asyncCompositionIterates(69, 70)
+    let result: i32 | bool = sync iterated
+    return i32BoolUnionIsValue(result, 139)
+}
+
+/// Exercises Async built-in combinator method lookup and runtime wrappers.
+public procedure runAsyncCompositionCombinatorsReference() -> bool {
+    return runAsyncCompositionMapReference() &&
+        runAsyncCompositionFilterReference() &&
+        runAsyncCompositionTakeReference() &&
+        runAsyncCompositionFoldReference() &&
+        runAsyncCompositionChainReference()
+}
+
+/// Exercises the Async CompositionForms reference surface.
+public procedure runAsyncCompositionFormsReference() -> bool {
+    return runAsyncCompositionSyncReference() &&
+        runAsyncCompositionAllReference() &&
+        runAsyncCompositionAllSuspendedReference() &&
+        runAsyncCompositionAllSingleReference() &&
+        runAsyncCompositionReturnRaceReference() &&
+        runAsyncCompositionReturnRaceSuspendedReference() &&
+        runAsyncCompositionRaceTuplePatternReference() &&
+        runAsyncCompositionStreamingRaceReference() &&
+        runAsyncCompositionUntilReference() &&
+        runAsyncCompositionLoopIterationReference() &&
+        runAsyncCompositionCombinatorsReference()
 }

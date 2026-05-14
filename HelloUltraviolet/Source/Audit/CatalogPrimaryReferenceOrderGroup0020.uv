@@ -1,0 +1,604 @@
+//! Catalog primary-reference ordering check group 0020.
+
+internal procedure catalogPrimaryReferenceOrderGroup0020() -> bool {
+    return catalogPrimaryReferencePrecedes(
+            "def.AccessOk",
+            15441usize,
+            "def.AccessPathOk",
+            15328usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.AccessPathOk",
+            15328usize,
+            "def.AccessPathPrefixes",
+            15312usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.AccessPathPrefixes",
+            15312usize,
+            "def.AccessStateOk",
+            15394usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.AccessStateOk",
+            15394usize,
+            "def.ActiveRuntimeRegion",
+            17958usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.ActiveRuntimeRegion",
+            17958usize,
+            "def.AddrOfSym",
+            31093usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.AddrOfSym",
+            31093usize,
+            "def.AddressArithmetic",
+            18567usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.AddressArithmetic",
+            18567usize,
+            "def.AddressPrimitiveJudgments",
+            18553usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.AddressPrimitiveJudgments",
+            18553usize,
+            "def.AggregateAddressCalculation",
+            18595usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.AggregateAddressCalculation",
+            18595usize,
+            "def.AggregateRuntimeValues",
+            18468usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.AggregateRuntimeValues",
+            18468usize,
+            "def.AliasCycle",
+            41469usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.AliasCycle",
+            41469usize,
+            "def.AliasGraph",
+            41404usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.AliasGraph",
+            41404usize,
+            "def.AliasMap",
+            19870usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.AliasMap",
+            19870usize,
+            "def.AliasNormalization",
+            41337usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.AliasNormalization",
+            41337usize,
+            "def.AliasPathNormalization",
+            41373usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.AliasPathNormalization",
+            41373usize,
+            "def.AliasTransparent",
+            41390usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.AliasTransparent",
+            41390usize,
+            "def.AliasingByOverlappingStorage",
+            29271usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.AliasingByOverlappingStorage",
+            29271usize,
+            "def.AllModuleNames",
+            20161usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.AllModuleNames",
+            20161usize,
+            "def.AllocationRegionTagSelection",
+            16667usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.AllocationRegionTagSelection",
+            16667usize,
+            "def.AppendCleanup",
+            17260usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.AppendCleanup",
+            17260usize,
+            "def.ArchiveArgsOk",
+            5971usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.ArchiveArgsOk",
+            5971usize,
+            "def.ArchiveFlags",
+            5943usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.ArchiveFlags",
+            5943usize,
+            "def.ArchiveInputs",
+            5915usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.ArchiveInputs",
+            5915usize,
+            "def.ArenaAppend",
+            17856usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.ArenaAppend",
+            17856usize,
+            "def.ArenaClear",
+            17898usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.ArenaClear",
+            17898usize,
+            "def.ArenaMark",
+            17870usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.ArenaMark",
+            17870usize,
+            "def.ArenaNew",
+            17814usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.ArenaNew",
+            17814usize,
+            "def.ArenaRemove",
+            17912usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.ArenaRemove",
+            17912usize,
+            "def.ArenaResetTo",
+            17884usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.ArenaResetTo",
+            17884usize,
+            "def.ArgumentPassExpression",
+            15376usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.ArgumentPassExpression",
+            15376usize,
+            "def.ArrayAstForms",
+            36344usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.ArrayAstForms",
+            36344usize,
+            "def.ArrayIndexRuntimeHelpers",
+            36665usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.ArrayIndexRuntimeHelpers",
+            36665usize,
+            "def.ArrayLen",
+            36810usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.ArrayLen",
+            36810usize,
+            "def.ArraySegmentLength",
+            36410usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.ArraySegmentLength",
+            36410usize,
+            "def.ArrayValueBits",
+            36824usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.ArrayValueBits",
+            36824usize,
+            "def.ArrayValueType",
+            36649usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.ArrayValueType",
+            36649usize,
+            "def.ArtifactOutputDirectoryUse",
+            5226usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.ArtifactOutputDirectoryUse",
+            5226usize,
+            "def.ArtifactPathContext",
+            5084usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.ArtifactPathContext",
+            5084usize,
+            "def.AsmChecks",
+            3659usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.AsmChecks",
+            3659usize,
+            "def.AsmDeps",
+            4035usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.AsmDeps",
+            4035usize,
+            "def.AsmImportGraph",
+            4529usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.AsmImportGraph",
+            4529usize,
+            "def.AsmLinkKind",
+            2538usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.AsmLinkKind",
+            2538usize,
+            "def.AssemblyAndLinkKinds",
+            2004usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.AssemblyAndLinkKinds",
+            2004usize,
+            "def.AssemblyClassification",
+            2037usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.AssemblyClassification",
+            2037usize,
+            "def.AssemblyProject",
+            4501usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.AssemblyProject",
+            4501usize,
+            "def.AssemblySourceRoots",
+            4420usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.AssemblySourceRoots",
+            4420usize,
+            "def.AssemblyTarget",
+            3529usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.AssemblyTarget",
+            3529usize,
+            "def.AssignmentProvenanceEscapeCheck",
+            17148usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.AssignmentProvenanceEscapeCheck",
+            17148usize,
+            "def.AstTraversalNodeHelpers",
+            34678usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.AstTraversalNodeHelpers",
+            34678usize,
+            "def.AttachExpressionAttributes",
+            27150usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.AttachExpressionAttributes",
+            27150usize,
+            "def.AttenuationOperations",
+            12289usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.AttenuationOperations",
+            12289usize,
+            "def.AttributeArgumentAst",
+            27093usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.AttributeArgumentAst",
+            27093usize,
+            "def.AttributeAstRepresentation",
+            27060usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.AttributeAstRepresentation",
+            27060usize,
+            "def.AttributeByName",
+            27179usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.AttributeByName",
+            27179usize,
+            "def.AttributeLeafToken",
+            27535usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.AttributeLeafToken",
+            27535usize,
+            "def.AttributeListAst",
+            27121usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.AttributeListAst",
+            27121usize,
+            "def.AttributeListWellFormedJudgementSet",
+            27310usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.AttributeListWellFormedJudgementSet",
+            27310usize,
+            "def.AttributeRegistry",
+            27223usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.AttributeRegistry",
+            27223usize,
+            "def.AttributeSpecAst",
+            27107usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.AttributeSpecAst",
+            27107usize,
+            "def.AttributeStaticSemantics.Helpers2",
+            27378usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.AttributeStaticSemantics.Helpers2",
+            27378usize,
+            "def.AttributeTargetDomain",
+            27209usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.AttributeTargetDomain",
+            27209usize,
+            "def.AttributeVendorPrefixAst",
+            27079usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.AttributeVendorPrefixAst",
+            27079usize,
+            "def.BMap",
+            4944usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.BMap",
+            4944usize,
+            "def.BackslashCount",
+            9191usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.BackslashCount",
+            9191usize,
+            "def.BadEscapeAt",
+            9248usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.BadEscapeAt",
+            9248usize,
+            "def.BaseChecks",
+            3645usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.BaseChecks",
+            3645usize,
+            "def.Basename",
+            3369usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.Basename",
+            3369usize,
+            "def.BinaryDigitValue",
+            8853usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.BinaryDigitValue",
+            8853usize,
+            "def.BindCheck",
+            16090usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.BindCheck",
+            16090usize,
+            "def.BindInfo",
+            14775usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.BindInfo",
+            14775usize,
+            "def.BindInfoMap",
+            15801usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.BindInfoMap",
+            15801usize,
+            "def.BindPattern",
+            17722usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.BindPattern",
+            17722usize,
+            "def.BindPatternValue",
+            17679usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.BindPatternValue",
+            17679usize,
+            "def.BindRegionAlias",
+            18059usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.BindRegionAlias",
+            18059usize,
+            "def.BindRuntimeList",
+            17707usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.BindRuntimeList",
+            17707usize,
+            "def.BindRuntimeValue",
+            17665usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.BindRuntimeValue",
+            17665usize,
+            "def.BindingAddresses",
+            18633usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.BindingAddresses",
+            18633usize,
+            "def.BindingDiagnosticReferences",
+            16188usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.BindingDiagnosticReferences",
+            16188usize,
+            "def.BindingEnvironment",
+            14792usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.BindingEnvironment",
+            14792usize,
+            "def.BindingEnvironmentJoin",
+            15174usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.BindingEnvironmentJoin",
+            15174usize,
+            "def.BindingInfoJoin",
+            15142usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.BindingInfoJoin",
+            15142usize,
+            "def.BindingInitializerExpression",
+            15504usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.BindingInitializerExpression",
+            15504usize,
+            "def.BindingInitializerScope",
+            15520usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.BindingInitializerScope",
+            15520usize,
+            "def.BindingIntro",
+            14856usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.BindingIntro",
+            14856usize,
+            "def.BindingJudgmentSet",
+            15956usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.BindingJudgmentSet",
+            15956usize,
+            "def.BindingKindDomain",
+            19814usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.BindingKindDomain",
+            19814usize,
+            "def.BindingLookup",
+            14822usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.BindingLookup",
+            14822usize,
+            "def.BindingMovabilityOperator",
+            15457usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.BindingMovabilityOperator",
+            15457usize,
+            "def.BindingNameSet",
+            20668usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.BindingNameSet",
+            20668usize,
+            "def.BindingNameSource",
+            20738usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.BindingNameSource",
+            20738usize,
+            "def.BindingNames",
+            15850usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.BindingNames",
+            15850usize,
+            "def.BindingProvenance",
+            17118usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.BindingProvenance",
+            17118usize,
+            "def.BindingScopeJoin",
+            15158usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.BindingScopeJoin",
+            15158usize,
+            "def.BindingScopeStackOps",
+            14807usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.BindingScopeStackOps",
+            14807usize,
+            "def.BindingSourceDomain",
+            19828usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.BindingSourceDomain",
+            19828usize,
+            "def.BindingStateDomain",
+            14761usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.BindingStateDomain",
+            14761usize,
+            "def.BindingStateJoin",
+            14965usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.BindingStateJoin",
+            14965usize,
+            "def.BindingStateTransitionSet",
+            14984usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.BindingStateTransitionSet",
+            14984usize,
+            "def.BindingUpdate",
+            14839usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.BindingUpdate",
+            14839usize,
+            "def.BlockCommentState",
+            8507usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.BlockCommentState",
+            8507usize,
+            "def.BlockEnter",
+            18418usize
+        )
+}

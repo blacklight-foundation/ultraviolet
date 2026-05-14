@@ -2241,6 +2241,26 @@ public procedure genericCallArgCountExpectedDiagnosticFileMatches(context: Conte
     )
 }
 
+public procedure genericInfiniteMonomorphizationExpectedDiagnosticFileMatches(
+    context: Context
+) -> bool {
+    return expectedDiagnosticFileMatches(
+        context,
+        "HelloUltraviolet/Fixtures/RejectedSource/Polymorphism/GenericInfiniteMonomorphization/Expected.uv",
+        "//! Expected diagnostic metadata for the GenericInfiniteMonomorphization rejected-source specimen.\n\nexpectedDiagnostic(\"E-TYP-2307\", \"req.GenericInfiniteMonomorphizationRejected\")\n"
+    )
+}
+
+public procedure genericInstantiationDepthLimitExpectedDiagnosticFileMatches(
+    context: Context
+) -> bool {
+    return expectedDiagnosticFileMatches(
+        context,
+        "HelloUltraviolet/Fixtures/RejectedSource/Polymorphism/GenericInstantiationDepthLimit/Expected.uv",
+        "//! Expected diagnostic metadata for the GenericInstantiationDepthLimit rejected-source specimen.\n\nexpectedDiagnostic(\"E-TYP-2308\", \"req.GenericInstantiationDepthLimit\")\n"
+    )
+}
+
 public procedure genericClassBoundNonClassExpectedDiagnosticFileMatches(
     context: Context
 ) -> bool {

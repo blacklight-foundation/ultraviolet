@@ -59,14 +59,14 @@ void IRInstructionVisitor::operator()(const IRSpawn &spawn) const
       affinity_mask = llvm::ConstantInt::get(usize_ty, 0);
     }
   }
-  llvm::Value *priority_hint = llvm::ConstantInt::get(i32_ty, 1);
+  llvm::Value *priority_hint = llvm::ConstantInt::get(i32_ty, -1, true);
   if (spawn.priority.has_value())
   {
     priority_hint =
         CoerceTo(&builder, EvaluateOrDefault(*spawn.priority), i32_ty);
     if (!priority_hint)
     {
-      priority_hint = llvm::ConstantInt::get(i32_ty, 1);
+      priority_hint = llvm::ConstantInt::get(i32_ty, -1, true);
     }
   }
 

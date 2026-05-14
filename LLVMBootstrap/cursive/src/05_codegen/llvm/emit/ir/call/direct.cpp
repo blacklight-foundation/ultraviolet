@@ -628,7 +628,8 @@ void IRInstructionVisitor::operator()(const IRCall &call) const
       auto invoke_callable =
           [&](const IRValue &callee,
               const std::vector<std::pair<llvm::Value *, analysis::TypeRef>> &call_args,
-              std::string_view stem) -> llvm::Value *
+              std::string_view stem,
+              analysis::TypeRef expected_ret_type) -> llvm::Value *
       {
         IRCall inner;
         inner.callee = callee;
@@ -673,7 +674,11 @@ void IRInstructionVisitor::operator()(const IRCall &call) const
         inner.result.kind = IRValue::Kind::Opaque;
         inner.result.name = call.result.name + "." + std::string(stem) + ".ret." +
                             std::to_string(temp_index++);
-        const analysis::TypeRef callable_ret_type = infer_callable_ret_type(callee);
+        analysis::TypeRef callable_ret_type = infer_callable_ret_type(callee);
+        if (!callable_ret_type)
+        {
+          callable_ret_type = expected_ret_type;
+        }
         (*this)(inner);
         llvm::Value *out = emitter.EvaluateIRValue(inner.result);
         if (!out && callable_ret_type)
@@ -914,7 +919,8 @@ void IRInstructionVisitor::operator()(const IRCall &call) const
         llvm::Value *mapped = invoke_callable(
             call.args[1],
             {{output, source_sig->out}},
-            "map_fn");
+            "map_fn",
+            result_sig->out);
         store_payload_to_slot(async_slot, mapped, result_sig->out);
         builder.CreateBr(merge_bb);
 
@@ -958,7 +964,8 @@ void IRInstructionVisitor::operator()(const IRCall &call) const
         llvm::Value *pred_val = invoke_callable(
             call.args[1],
             {{output, source_sig->out}},
-            "filter_pred");
+            "filter_pred",
+            analysis::MakeTypePrim("bool"));
         builder.CreateCondBr(AsBool(&builder, pred_val), exit_bb, resume_bb);
 
         builder.SetInsertPoint(resume_bb);
@@ -1085,7 +1092,8 @@ void IRInstructionVisitor::operator()(const IRCall &call) const
         llvm::Value *next_acc = invoke_callable(
             call.args[2],
             {{acc, acc_type}, {out, source_sig->out}},
-            "fold_fn");
+            "fold_fn",
+            acc_type);
         if (next_acc->getType() != acc_ll)
         {
           if (llvm::Value *coerced = CoerceTo(&builder, next_acc, acc_ll))
@@ -1178,7 +1186,8 @@ void IRInstructionVisitor::operator()(const IRCall &call) const
         llvm::Value *chained_async = invoke_callable(
             call.args[1],
             {{completed_value, source_sig->result}},
-            "chain_fn");
+            "chain_fn",
+            result_async_type);
         store_result(chained_async);
         builder.CreateBr(merge_bb);
 

@@ -1,0 +1,604 @@
+//! Catalog primary-reference ordering check group 0046.
+
+internal procedure catalogPrimaryReferenceOrderGroup0046() -> bool {
+    return catalogPrimaryReferencePrecedes(
+            "rule.15.Parse-ParamTail-TrailingComma",
+            52971usize,
+            "rule.15.Parse-Procedure",
+            52843usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.15.Parse-Procedure",
+            52843usize,
+            "rule.15.Parse-Receiver-Explicit",
+            54001usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.15.Parse-Receiver-Explicit",
+            54001usize,
+            "rule.15.Parse-Receiver-Short-Const",
+            53953usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.15.Parse-Receiver-Short-Const",
+            53953usize,
+            "rule.15.Parse-Receiver-Short-Shared",
+            53985usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.15.Parse-Receiver-Short-Shared",
+            53985usize,
+            "rule.15.Parse-Receiver-Short-Unique",
+            53969usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.15.Parse-Receiver-Short-Unique",
+            53969usize,
+            "rule.15.Parse-ReturnOpt-Arrow",
+            53019usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.15.Parse-ReturnOpt-Arrow",
+            53019usize,
+            "rule.15.Parse-ReturnOpt-None",
+            53003usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.15.Parse-ReturnOpt-None",
+            53003usize,
+            "rule.15.Parse-Signature",
+            52859usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.15.Parse-Signature",
+            52859usize,
+            "rule.15.Parse-StateMethodSignature-Receiver",
+            53905usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.15.Parse-StateMethodSignature-Receiver",
+            53905usize,
+            "rule.15.ParseLoopInvariantOpt",
+            56138usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.15.ParseLoopInvariantOpt",
+            56138usize,
+            "rule.15.Post-Valid",
+            55773usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.15.Post-Valid",
+            55773usize,
+            "rule.15.Pre-Satisfied",
+            55578usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.15.Pre-Satisfied",
+            55578usize,
+            "rule.15.ProcedureDeclOkJudgement",
+            53201usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.15.ProcedureDeclOkJudgement",
+            53201usize,
+            "rule.15.Propagate-Postcondition",
+            55874usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.15.Propagate-Postcondition",
+            55874usize,
+            "rule.15.Pure-Array",
+            55311usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.15.Pure-Array",
+            55311usize,
+            "rule.15.Pure-Binary",
+            55154usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.15.Pure-Binary",
+            55154usize,
+            "rule.15.Pure-Block",
+            55279usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.15.Pure-Block",
+            55279usize,
+            "rule.15.Pure-Call-Builtin",
+            55343usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.15.Pure-Call-Builtin",
+            55343usize,
+            "rule.15.Pure-Call-Procedure",
+            55359usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.15.Pure-Call-Procedure",
+            55359usize,
+            "rule.15.Pure-Cast",
+            55183usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.15.Pure-Cast",
+            55183usize,
+            "rule.15.Pure-Comptime",
+            55391usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.15.Pure-Comptime",
+            55391usize,
+            "rule.15.Pure-Field",
+            55090usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.15.Pure-Field",
+            55090usize,
+            "rule.15.Pure-Ident",
+            55074usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.15.Pure-Ident",
+            55074usize,
+            "rule.15.Pure-If",
+            55199usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.15.Pure-If",
+            55199usize,
+            "rule.15.Pure-If-Case",
+            55247usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.15.Pure-If-Case",
+            55247usize,
+            "rule.15.Pure-If-Case-No-Else",
+            55263usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.15.Pure-If-Case-No-Else",
+            55263usize,
+            "rule.15.Pure-If-Is",
+            55215usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.15.Pure-If-Is",
+            55215usize,
+            "rule.15.Pure-If-Is-No-Else",
+            55231usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.15.Pure-If-Is-No-Else",
+            55231usize,
+            "rule.15.Pure-Index",
+            55122usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.15.Pure-Index",
+            55122usize,
+            "rule.15.Pure-Literal",
+            55058usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.15.Pure-Literal",
+            55058usize,
+            "rule.15.Pure-Method-Const",
+            55375usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.15.Pure-Method-Const",
+            55375usize,
+            "rule.15.Pure-Record",
+            55327usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.15.Pure-Record",
+            55327usize,
+            "rule.15.Pure-Tuple",
+            55295usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.15.Pure-Tuple",
+            55295usize,
+            "rule.15.Pure-Tuple-Access",
+            55106usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.15.Pure-Tuple-Access",
+            55106usize,
+            "rule.15.Pure-Unary",
+            55138usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.15.Pure-Unary",
+            55138usize,
+            "rule.15.Record-Method-Dup",
+            54264usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.15.Record-Method-Dup",
+            54264usize,
+            "rule.15.Record-Method-RecvSelf-Err",
+            54155usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.15.Record-Method-RecvSelf-Err",
+            54155usize,
+            "rule.15.Recv-Const",
+            54171usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.15.Recv-Const",
+            54171usize,
+            "rule.15.Recv-Explicit",
+            54139usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.15.Recv-Explicit",
+            54139usize,
+            "rule.15.Recv-Shared",
+            54201usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.15.Recv-Shared",
+            54201usize,
+            "rule.15.Recv-Unique",
+            54186usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.15.Recv-Unique",
+            54186usize,
+            "rule.15.Result-Generic",
+            55906usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.15.Result-Generic",
+            55906usize,
+            "rule.15.Result-Generic-Constraint",
+            55922usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.15.Result-Generic-Constraint",
+            55922usize,
+            "rule.15.Result-Is-Predicate",
+            55842usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.15.Result-Is-Predicate",
+            55842usize,
+            "rule.15.Result-Modal",
+            55890usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.15.Result-Modal",
+            55890usize,
+            "rule.15.Result-Narrowing",
+            55858usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.15.Result-Narrowing",
+            55858usize,
+            "rule.15.Result-Union-Type",
+            55826usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.15.Result-Union-Type",
+            55826usize,
+            "rule.15.T-Record-Method-Body",
+            54232usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.15.T-Record-Method-Body",
+            54232usize,
+            "rule.15.T-Record-MethodCall",
+            54366usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.15.T-Record-MethodCall",
+            54366usize,
+            "rule.15.WF-Contract",
+            55028usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.15.WF-Contract",
+            55028usize,
+            "rule.15.WF-ProcBody-ExplicitReturn-Err",
+            53230usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.15.WF-ProcBody-ExplicitReturn-Err",
+            53230usize,
+            "rule.15.WF-ProcedureDecl",
+            53135usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.15.WF-ProcedureDecl",
+            53135usize,
+            "rule.15.WF-ProcedureDecl-MissingReturnType",
+            53214usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.15.WF-ProcedureDecl-MissingReturnType",
+            53214usize,
+            "rule.15.WF-Record-Method",
+            54216usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.15.WF-Record-Method",
+            54216usize,
+            "rule.15.WF-Record-Methods",
+            54248usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.15.WF-Record-Methods",
+            54248usize,
+            "rule.16.ArgsT-Cons",
+            59123usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.16.ArgsT-Cons",
+            59123usize,
+            "rule.16.ArgsT-Cons-Ref",
+            59139usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.16.ArgsT-Cons-Ref",
+            59139usize,
+            "rule.16.ArgsT-Empty",
+            59108usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.16.ArgsT-Empty",
+            59108usize,
+            "rule.16.ArgumentListParsingFamily",
+            58991usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.16.ArgumentListParsingFamily",
+            58991usize,
+            "rule.16.Async-Try-Infallible-Err",
+            63128usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.16.Async-Try-Infallible-Err",
+            63128usize,
+            "rule.16.AsyncIteratorLoopTypingFamily",
+            62116usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.16.AsyncIteratorLoopTypingFamily",
+            62116usize,
+            "rule.16.B-Closure-Capturing",
+            64300usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.16.B-Closure-Capturing",
+            64300usize,
+            "rule.16.B-Closure-MoveCapture-Immovable-Err",
+            64336usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.16.B-Closure-MoveCapture-Immovable-Err",
+            64336usize,
+            "rule.16.B-Closure-MoveCapture-Moved-Err",
+            64319usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.16.B-Closure-MoveCapture-Moved-Err",
+            64319usize,
+            "rule.16.B-Closure-NonCapturing",
+            64284usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.16.B-Closure-NonCapturing",
+            64284usize,
+            "rule.16.B-Closure-RefCapture-Moved-Err",
+            64353usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.16.B-Closure-RefCapture-Moved-Err",
+            64353usize,
+            "rule.16.B-Pipeline",
+            64440usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.16.B-Pipeline",
+            64440usize,
+            "rule.16.Call-Arg-NotPlace",
+            59283usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.16.Call-Arg-NotPlace",
+            59283usize,
+            "rule.16.Call-Arg-Packed-Unsafe-Err",
+            59267usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.16.Call-Arg-Packed-Unsafe-Err",
+            59267usize,
+            "rule.16.Call-ArgCount-Err",
+            59203usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.16.Call-ArgCount-Err",
+            59203usize,
+            "rule.16.Call-ArgType-Err",
+            59219usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.16.Call-ArgType-Err",
+            59219usize,
+            "rule.16.Call-Callee-NotFunc",
+            59187usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.16.Call-Callee-NotFunc",
+            59187usize,
+            "rule.16.Call-Move-Missing",
+            59235usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.16.Call-Move-Missing",
+            59235usize,
+            "rule.16.Call-Move-Unexpected",
+            59251usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.16.Call-Move-Unexpected",
+            59251usize,
+            "rule.16.Capture-Const",
+            64135usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.16.Capture-Const",
+            64135usize,
+            "rule.16.Capture-Shared",
+            64151usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.16.Capture-Shared",
+            64151usize,
+            "rule.16.Capture-Unique-Err",
+            64167usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.16.Capture-Unique-Err",
+            64167usize,
+            "rule.16.CastVal-Bool-Int",
+            60818usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.16.CastVal-Bool-Int",
+            60818usize,
+            "rule.16.CastVal-Char-U32",
+            60854usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.16.CastVal-Char-U32",
+            60854usize,
+            "rule.16.CastVal-Float-Float",
+            60786usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.16.CastVal-Float-Float",
+            60786usize,
+            "rule.16.CastVal-Float-Int",
+            60802usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.16.CastVal-Float-Int",
+            60802usize,
+            "rule.16.CastVal-Id",
+            60709usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.16.CastVal-Id",
+            60709usize,
+            "rule.16.CastVal-Int-Bool",
+            60836usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.16.CastVal-Int-Bool",
+            60836usize,
+            "rule.16.CastVal-Int-Float",
+            60757usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.16.CastVal-Int-Float",
+            60757usize,
+            "rule.16.CastVal-Int-Int-Signed",
+            60725usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.16.CastVal-Int-Int-Signed",
+            60725usize,
+            "rule.16.CastVal-Int-Int-Unsigned",
+            60741usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.16.CastVal-Int-Int-Unsigned",
+            60741usize,
+            "rule.16.CastVal-U32-Char",
+            60870usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.16.CastVal-U32-Char",
+            60870usize,
+            "rule.16.CheckIfFamily",
+            61965usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.16.CheckIfFamily",
+            61965usize,
+            "rule.16.CheckIfIsAndIfCaseFamily",
+            62041usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.16.CheckIfIsAndIfCaseFamily",
+            62041usize,
+            "rule.16.Chk-Call-Generic-Infer",
+            59299usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.16.Chk-Call-Generic-Infer",
+            59299usize,
+            "rule.16.Chk-Float-Literal-Explicit",
+            57682usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.16.Chk-Float-Literal-Explicit",
+            57682usize,
+            "rule.16.Chk-Float-Literal-Infer",
+            57698usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.16.Chk-Float-Literal-Infer",
+            57698usize,
+            "rule.16.Chk-Int-Literal",
+            57666usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.16.Chk-Int-Literal",
+            57666usize,
+            "rule.16.Chk-Null-Literal",
+            57714usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.16.Chk-Null-Literal",
+            57714usize,
+            "rule.16.Chk-Null-Ptr",
+            57743usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.16.Chk-Null-Ptr",
+            57743usize,
+            "rule.16.Chk-PtrNull-Err",
+            57775usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.16.Chk-PtrNull-Err",
+            57775usize,
+            "rule.16.Chk-Unsafe-Expr",
+            62945usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.16.Chk-Unsafe-Expr",
+            62945usize,
+            "rule.16.Coerce-Array-Slice",
+            58595usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.16.Coerce-Array-Slice",
+            58595usize,
+            "rule.16.ConstructionListAndShorthandParsingFamily",
+            61238usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.16.ConstructionListAndShorthandParsingFamily",
+            61238usize,
+            "rule.16.ControlExpressionParsingRemainderFamily",
+            61846usize
+        )
+}

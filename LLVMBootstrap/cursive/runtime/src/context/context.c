@@ -69,9 +69,19 @@ void cursive_x3a_x3aruntime_x3a_x3acontext_x5finit(C0Context* out) {
   out->time.vtable = NULL;
 }
 
-static C0ExecutionDomain g_cpu_domain = {C0_DOMAIN_CPU, {0}, 4};
-static C0ExecutionDomain g_gpu_domain = {C0_DOMAIN_GPU, {0}, 1};
-static C0ExecutionDomain g_inline_domain = {C0_DOMAIN_INLINE, {0}, 1};
+static C0ExecutionDomain g_cpu_domain = {C0_DOMAIN_CPU, {0}, 1, 4, 0};
+static C0ExecutionDomain g_gpu_domain = {C0_DOMAIN_GPU, {0}, 1, 1, 0};
+static C0ExecutionDomain g_inline_domain = {C0_DOMAIN_INLINE, {0}, 1, 1, 0};
+
+static int32_t c0_context_priority_rank(int32_t priority_hint) {
+  if (priority_hint <= 0) {
+    return 0;
+  }
+  if (priority_hint == 1) {
+    return 1;
+  }
+  return 2;
+}
 
 C0DynObject cursive_x3a_x3aruntime_x3a_x3acontext_x3a_x3acpu(
     const C0Context* self) {
@@ -79,6 +89,37 @@ C0DynObject cursive_x3a_x3aruntime_x3a_x3acontext_x3a_x3acpu(
   C0DynObject out;
   out.data = &g_cpu_domain;
   out.vtable = NULL;
+  return out;
+}
+
+C0DynObject cursive_x3a_x3aruntime_x3a_x3acontext_x3a_x3acpu_x5fconfigured(
+    const C0Context* self,
+    uint64_t affinity_mask,
+    int32_t priority_hint) {
+  (void)self;
+  const int32_t priority_rank = c0_context_priority_rank(priority_hint);
+  if (affinity_mask == 0 && priority_rank == 1) {
+    return cursive_x3a_x3aruntime_x3a_x3acontext_x3a_x3acpu(self);
+  }
+
+  C0ExecutionDomain* domain =
+      (C0ExecutionDomain*)c0_heap_alloc_raw(sizeof(C0ExecutionDomain));
+  C0DynObject out;
+  out.data = NULL;
+  out.vtable = NULL;
+  if (!domain) {
+    return out;
+  }
+
+  domain->kind = C0_DOMAIN_CPU;
+  domain->_pad[0] = 0;
+  domain->_pad[1] = 0;
+  domain->_pad[2] = 0;
+  domain->priority_hint = priority_rank;
+  domain->max_concurrency = 4;
+  domain->affinity_mask = affinity_mask;
+
+  out.data = domain;
   return out;
 }
 

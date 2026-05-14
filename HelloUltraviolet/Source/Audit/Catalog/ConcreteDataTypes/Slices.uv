@@ -196,12 +196,12 @@ public procedure validatedConcreteDataTypesSlicesObligations() -> usize {
     ) {
         count = count + 1usize
     }
-    if acceptedObligationEntryMatches(
+    if rejectedSourceObligationEntryMatches(
         "Index-NonIndexable",
         37241usize,
-        "HelloUltraviolet::Reference::DataTypes",
-        "runDataTypesSlicesReference",
-        "Source/Reference/DataTypes/Slices.uv"
+        "HelloUltraviolet::Fixtures::RejectedSource",
+        "validatedExpressionsRejectedSourceFixtureCount",
+        "Fixtures/RejectedSource/Expressions/IndexNonIndexable/Source/Main.uv"
     ) {
         count = count + 1usize
     }

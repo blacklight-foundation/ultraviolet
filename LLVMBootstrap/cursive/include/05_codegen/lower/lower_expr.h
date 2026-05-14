@@ -106,6 +106,11 @@ struct LoweredCaptureEnv {
   std::vector<IRPtr> ir_parts;
 };
 
+struct GenericInstantiationFrame {
+  std::string base_symbol;
+  std::vector<analysis::TypeRef> args;
+};
+
 struct ScopeInfo {
   std::vector<std::string> variables;     // Variables in declaration order
   std::vector<std::string> aliases;       // Scoped local aliases
@@ -529,6 +534,7 @@ struct LowerCtx {
   // Generic instantiation recursion guard (Section 9.3.4 / E-TYP-2307).
   std::vector<std::string> generic_instantiation_stack;
   std::unordered_set<std::string> generic_instantiation_in_progress;
+  std::vector<GenericInstantiationFrame> generic_instantiation_decl_stack;
 
   // Active source-level generic substitution while lowering a monomorphized
   // procedure body. Analysis maps remain keyed to the generic source body, so

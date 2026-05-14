@@ -21,13 +21,28 @@ internal procedure cpuDomainReference(context: Context) -> i32 {
     }
 }
 
+internal procedure cpuMaskDomainReference(context: Context) -> i32 {
+    let affinity: CpuSet = 1u64
+    return parallel context~>cpu(affinity) {
+        14
+    }
+}
+
+internal procedure cpuMaskPriorityDomainReference(context: Context) -> i32 {
+    let affinity: CpuSet = 1u64
+    let priority: Priority = Priority::Normal
+    return parallel context~>cpu(affinity, priority) {
+        15
+    }
+}
+
 internal procedure gpuDomainReference(context: Context) -> usize {
     let payload: GpuSafePayload<i32> = GpuSafePayload { value: 1 }
     return parallel context~>gpu() [
-        workgroup: (1usize, 1usize, 1usize),
+        workgroup: (1024usize, 1usize, 1usize),
         workgroups: (1usize, 1usize, 1usize)
     ] {
-        dispatch index in 0usize..1usize [reduce: +, workgroup: (1usize, 1usize, 1usize)] {
+        dispatch index in 0usize..1usize [reduce: +, workgroup: (1024usize, 1usize, 1usize)] {
             gpu_barrier()
             gpu_linear_id() + (payload.value as usize) + index
         }
@@ -37,5 +52,8 @@ internal procedure gpuDomainReference(context: Context) -> usize {
 /// Exercises the Parallelism ExecutionDomains reference surface.
 public procedure runParallelismExecutionDomainsReference(context: Context) -> bool {
     return inlineDomainReference(context) == 11 &&
-        cpuDomainReference(context) == 12
+        cpuDomainReference(context) == 12 &&
+        cpuMaskDomainReference(context) == 14 &&
+        cpuMaskPriorityDomainReference(context) == 15 &&
+        gpuDomainReference(context) == 1usize
 }

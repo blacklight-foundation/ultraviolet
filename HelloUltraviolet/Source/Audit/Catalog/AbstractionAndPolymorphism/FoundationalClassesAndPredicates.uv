@@ -7,12 +7,12 @@ public procedure countAbstractionAndPolymorphismFoundationalClassesAndPredicates
 
 public procedure validatedAbstractionAndPolymorphismFoundationalClassesAndPredicatesObligations() -> usize {
     var count: usize = 0usize
-    if acceptedObligationEntryMatches(
+    if rejectedSourceObligationEntryMatches(
         "req.14.FoundationalClassesSyntaxAndReservedNames",
         52330usize,
-        "HelloUltraviolet::Reference::Polymorphism",
-        "runPolymorphismClassesReference",
-        "Source/Reference/Polymorphism/Classes.uv"
+        "HelloUltraviolet::Fixtures::RejectedSource",
+        "validatedPolymorphismRejectedSourceFixtureCount",
+        "Fixtures/RejectedSource/Polymorphism/FoundationalClassNameReserved/Source/Main.uv"
     ) {
         count = count + 1usize
     }
@@ -88,12 +88,12 @@ public procedure validatedAbstractionAndPolymorphismFoundationalClassesAndPredic
     ) {
         count = count + 1usize
     }
-    if acceptedObligationEntryMatches(
+    if rejectedSourceObligationEntryMatches(
         "rule.14.BitcopyDrop-Conflict",
         52466usize,
-        "HelloUltraviolet::Reference::Polymorphism",
-        "runPolymorphismClassesReference",
-        "Source/Reference/Polymorphism/Classes.uv"
+        "HelloUltraviolet::Fixtures::RejectedSource",
+        "validatedPolymorphismRejectedSourceFixtureCount",
+        "Fixtures/RejectedSource/Polymorphism/BitcopyDropConflict/Source/Main.uv"
     ) {
         count = count + 1usize
     }
@@ -232,12 +232,12 @@ public procedure validatedAbstractionAndPolymorphismFoundationalClassesAndPredic
     ) {
         count = count + 1usize
     }
-    if acceptedObligationEntryMatches(
+    if rejectedSourceObligationEntryMatches(
         "diag.14.FoundationalClasses",
         52718usize,
-        "HelloUltraviolet::Reference::Polymorphism",
-        "runPolymorphismClassesReference",
-        "Source/Reference/Polymorphism/Classes.uv"
+        "HelloUltraviolet::Fixtures::RejectedSource",
+        "validatedPolymorphismRejectedSourceFixtureCount",
+        "Fixtures/RejectedSource/Polymorphism/BitcopyFieldNonBitcopy/Source/Main.uv"
     ) {
         count = count + 1usize
     }

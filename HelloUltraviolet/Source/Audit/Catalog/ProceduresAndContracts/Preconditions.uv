@@ -11,8 +11,8 @@ public procedure validatedProceduresAndContractsPreconditionsObligations() -> us
         "req.15.PreconditionSyntaxDefinition",
         55515usize,
         "HelloUltraviolet::Reference::Procedures",
-        "runProceduresContractsReference",
-        "Source/Reference/Procedures/Contracts.uv"
+        "runProceduresPreconditionsReference",
+        "Source/Reference/Procedures/Preconditions.uv"
     ) {
         count = count + 1usize
     }
@@ -20,8 +20,8 @@ public procedure validatedProceduresAndContractsPreconditionsObligations() -> us
         "req.15.PreconditionsParsedByContractBody",
         55530usize,
         "HelloUltraviolet::Reference::Procedures",
-        "runProceduresContractsReference",
-        "Source/Reference/Procedures/Contracts.uv"
+        "runProceduresPreconditionsReference",
+        "Source/Reference/Procedures/Preconditions.uv"
     ) {
         count = count + 1usize
     }
@@ -29,8 +29,8 @@ public procedure validatedProceduresAndContractsPreconditionsObligations() -> us
         "def.15.PreconditionOf",
         55545usize,
         "HelloUltraviolet::Reference::Procedures",
-        "runProceduresContractsReference",
-        "Source/Reference/Procedures/Contracts.uv"
+        "runProceduresPreconditionsReference",
+        "Source/Reference/Procedures/Preconditions.uv"
     ) {
         count = count + 1usize
     }
@@ -38,8 +38,8 @@ public procedure validatedProceduresAndContractsPreconditionsObligations() -> us
         "def.15.PreconditionProofContext",
         55562usize,
         "HelloUltraviolet::Reference::Procedures",
-        "runProceduresContractsReference",
-        "Source/Reference/Procedures/Contracts.uv"
+        "runProceduresPreconditionsReference",
+        "Source/Reference/Procedures/Preconditions.uv"
     ) {
         count = count + 1usize
     }
@@ -47,8 +47,8 @@ public procedure validatedProceduresAndContractsPreconditionsObligations() -> us
         "rule.15.Pre-Satisfied",
         55578usize,
         "HelloUltraviolet::Reference::Procedures",
-        "runProceduresContractsReference",
-        "Source/Reference/Procedures/Contracts.uv"
+        "runProceduresPreconditionsReference",
+        "Source/Reference/Procedures/Preconditions.uv"
     ) {
         count = count + 1usize
     }
@@ -56,17 +56,17 @@ public procedure validatedProceduresAndContractsPreconditionsObligations() -> us
         "def.15.PreconditionElisionRules",
         55594usize,
         "HelloUltraviolet::Reference::Procedures",
-        "runProceduresContractsReference",
-        "Source/Reference/Procedures/Contracts.uv"
+        "runProceduresPreconditionsReference",
+        "Source/Reference/Procedures/Preconditions.uv"
     ) {
         count = count + 1usize
     }
-    if acceptedObligationEntryMatches(
+    if rejectedSourceObligationEntryMatches(
         "req.15.CallerResponsibleForPrecondition",
         55614usize,
-        "HelloUltraviolet::Reference::Procedures",
-        "runProceduresContractsReference",
-        "Source/Reference/Procedures/Contracts.uv"
+        "HelloUltraviolet::Fixtures::RejectedSource",
+        "validatedProceduresRejectedSourceFixtureCount",
+        "Fixtures/RejectedSource/Procedures/PreconditionCallerObligation/Source/Main.uv"
     ) {
         count = count + 1usize
     }
@@ -74,8 +74,8 @@ public procedure validatedProceduresAndContractsPreconditionsObligations() -> us
         "req.15.PreconditionRuntimeEvaluationOrder",
         55629usize,
         "HelloUltraviolet::Reference::Procedures",
-        "runProceduresContractsReference",
-        "Source/Reference/Procedures/Contracts.uv"
+        "runProceduresPreconditionsReference",
+        "Source/Reference/Procedures/Preconditions.uv"
     ) {
         count = count + 1usize
     }
@@ -83,17 +83,17 @@ public procedure validatedProceduresAndContractsPreconditionsObligations() -> us
         "req.15.PreconditionCheckInsertionOwnedByVerificationLogic",
         55644usize,
         "HelloUltraviolet::Reference::Procedures",
-        "runProceduresContractsReference",
-        "Source/Reference/Procedures/Contracts.uv"
+        "runProceduresPreconditionsReference",
+        "Source/Reference/Procedures/Preconditions.uv"
     ) {
         count = count + 1usize
     }
-    if acceptedObligationEntryMatches(
+    if rejectedSourceObligationEntryMatches(
         "diag.15.Preconditions",
         55659usize,
-        "HelloUltraviolet::Reference::Procedures",
-        "runProceduresContractsReference",
-        "Source/Reference/Procedures/Contracts.uv"
+        "HelloUltraviolet::Fixtures::RejectedSource",
+        "validatedProceduresRejectedSourceFixtureCount",
+        "Fixtures/RejectedSource/Procedures/PreconditionsDiagnostic/Source/Main.uv"
     ) {
         count = count + 1usize
     }

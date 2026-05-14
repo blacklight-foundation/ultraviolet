@@ -11,8 +11,8 @@ public procedure validatedStatementsAndBlocksFrameObligations() -> usize {
         "grammar.18.Frame",
         71041usize,
         "HelloUltraviolet::Reference::Statements",
-        "runStatementsExpressionStatementsReference",
-        "Source/Reference/Statements/ExpressionStatements.uv"
+        "runStatementsFrameReference",
+        "Source/Reference/Statements/Frame.uv"
     ) {
         count = count + 1usize
     }
@@ -20,8 +20,8 @@ public procedure validatedStatementsAndBlocksFrameObligations() -> usize {
         "rule.18.Parse-Frame-Stmt",
         71058usize,
         "HelloUltraviolet::Reference::Statements",
-        "runStatementsExpressionStatementsReference",
-        "Source/Reference/Statements/ExpressionStatements.uv"
+        "runStatementsFrameReference",
+        "Source/Reference/Statements/Frame.uv"
     ) {
         count = count + 1usize
     }
@@ -29,8 +29,8 @@ public procedure validatedStatementsAndBlocksFrameObligations() -> usize {
         "rule.18.Parse-Frame-Explicit",
         71074usize,
         "HelloUltraviolet::Reference::Statements",
-        "runStatementsExpressionStatementsReference",
-        "Source/Reference/Statements/ExpressionStatements.uv"
+        "runStatementsFrameReference",
+        "Source/Reference/Statements/Frame.uv"
     ) {
         count = count + 1usize
     }
@@ -38,8 +38,8 @@ public procedure validatedStatementsAndBlocksFrameObligations() -> usize {
         "def.18.FrameStmtAst",
         71092usize,
         "HelloUltraviolet::Reference::Statements",
-        "runStatementsExpressionStatementsReference",
-        "Source/Reference/Statements/ExpressionStatements.uv"
+        "runStatementsFrameReference",
+        "Source/Reference/Statements/Frame.uv"
     ) {
         count = count + 1usize
     }
@@ -47,8 +47,8 @@ public procedure validatedStatementsAndBlocksFrameObligations() -> usize {
         "def.18.InnermostActiveRegion",
         71105usize,
         "HelloUltraviolet::Reference::Statements",
-        "runStatementsExpressionStatementsReference",
-        "Source/Reference/Statements/ExpressionStatements.uv"
+        "runStatementsFrameReference",
+        "Source/Reference/Statements/Frame.uv"
     ) {
         count = count + 1usize
     }
@@ -56,8 +56,8 @@ public procedure validatedStatementsAndBlocksFrameObligations() -> usize {
         "def.18.FrameBind",
         71121usize,
         "HelloUltraviolet::Reference::Statements",
-        "runStatementsExpressionStatementsReference",
-        "Source/Reference/Statements/ExpressionStatements.uv"
+        "runStatementsFrameReference",
+        "Source/Reference/Statements/Frame.uv"
     ) {
         count = count + 1usize
     }
@@ -65,8 +65,8 @@ public procedure validatedStatementsAndBlocksFrameObligations() -> usize {
         "rule.18.T-FrameStmt-Implicit",
         71138usize,
         "HelloUltraviolet::Reference::Statements",
-        "runStatementsExpressionStatementsReference",
-        "Source/Reference/Statements/ExpressionStatements.uv"
+        "runStatementsFrameReference",
+        "Source/Reference/Statements/Frame.uv"
     ) {
         count = count + 1usize
     }
@@ -74,26 +74,26 @@ public procedure validatedStatementsAndBlocksFrameObligations() -> usize {
         "rule.18.T-FrameStmt-Explicit",
         71154usize,
         "HelloUltraviolet::Reference::Statements",
-        "runStatementsExpressionStatementsReference",
-        "Source/Reference/Statements/ExpressionStatements.uv"
+        "runStatementsFrameReference",
+        "Source/Reference/Statements/Frame.uv"
     ) {
         count = count + 1usize
     }
-    if acceptedObligationEntryMatches(
+    if rejectedSourceObligationEntryMatches(
         "rule.18.Frame-NoActiveRegion-Err",
         71170usize,
-        "HelloUltraviolet::Reference::Statements",
-        "runStatementsExpressionStatementsReference",
-        "Source/Reference/Statements/ExpressionStatements.uv"
+        "HelloUltraviolet::Fixtures::RejectedSource",
+        "validatedStatementsRejectedSourceFixtureCount",
+        "Fixtures/RejectedSource/Statements/FrameNoActiveRegion/Source/Main.uv"
     ) {
         count = count + 1usize
     }
-    if acceptedObligationEntryMatches(
+    if rejectedSourceObligationEntryMatches(
         "rule.18.Frame-Target-NotActive-Err",
         71186usize,
-        "HelloUltraviolet::Reference::Statements",
-        "runStatementsExpressionStatementsReference",
-        "Source/Reference/Statements/ExpressionStatements.uv"
+        "HelloUltraviolet::Fixtures::RejectedSource",
+        "validatedStatementsRejectedSourceFixtureCount",
+        "Fixtures/RejectedSource/Statements/FrameTargetNotActive/Source/Main.uv"
     ) {
         count = count + 1usize
     }
@@ -101,8 +101,8 @@ public procedure validatedStatementsAndBlocksFrameObligations() -> usize {
         "req.18.FrameSyntheticRegionBinding",
         71202usize,
         "HelloUltraviolet::Reference::Statements",
-        "runStatementsExpressionStatementsReference",
-        "Source/Reference/Statements/ExpressionStatements.uv"
+        "runStatementsFrameReference",
+        "Source/Reference/Statements/Frame.uv"
     ) {
         count = count + 1usize
     }
@@ -110,8 +110,8 @@ public procedure validatedStatementsAndBlocksFrameObligations() -> usize {
         "req.18.FrameBindingState",
         71215usize,
         "HelloUltraviolet::Reference::Statements",
-        "runStatementsExpressionStatementsReference",
-        "Source/Reference/Statements/ExpressionStatements.uv"
+        "runStatementsFrameReference",
+        "Source/Reference/Statements/Frame.uv"
     ) {
         count = count + 1usize
     }
@@ -119,8 +119,8 @@ public procedure validatedStatementsAndBlocksFrameObligations() -> usize {
         "req.18.FrameProvenance",
         71228usize,
         "HelloUltraviolet::Reference::Statements",
-        "runStatementsExpressionStatementsReference",
-        "Source/Reference/Statements/ExpressionStatements.uv"
+        "runStatementsFrameReference",
+        "Source/Reference/Statements/Frame.uv"
     ) {
         count = count + 1usize
     }
@@ -128,8 +128,8 @@ public procedure validatedStatementsAndBlocksFrameObligations() -> usize {
         "def.18.FrameTargetResolution",
         71243usize,
         "HelloUltraviolet::Reference::Statements",
-        "runStatementsExpressionStatementsReference",
-        "Source/Reference/Statements/ExpressionStatements.uv"
+        "runStatementsFrameReference",
+        "Source/Reference/Statements/Frame.uv"
     ) {
         count = count + 1usize
     }
@@ -137,8 +137,8 @@ public procedure validatedStatementsAndBlocksFrameObligations() -> usize {
         "def.18.FrameEnter",
         71257usize,
         "HelloUltraviolet::Reference::Statements",
-        "runStatementsExpressionStatementsReference",
-        "Source/Reference/Statements/ExpressionStatements.uv"
+        "runStatementsFrameReference",
+        "Source/Reference/Statements/Frame.uv"
     ) {
         count = count + 1usize
     }
@@ -146,8 +146,8 @@ public procedure validatedStatementsAndBlocksFrameObligations() -> usize {
         "rule.18.ExecSigma-Frame-Implicit",
         71270usize,
         "HelloUltraviolet::Reference::Statements",
-        "runStatementsExpressionStatementsReference",
-        "Source/Reference/Statements/ExpressionStatements.uv"
+        "runStatementsFrameReference",
+        "Source/Reference/Statements/Frame.uv"
     ) {
         count = count + 1usize
     }
@@ -155,8 +155,8 @@ public procedure validatedStatementsAndBlocksFrameObligations() -> usize {
         "rule.18.ExecSigma-Frame-Explicit",
         71286usize,
         "HelloUltraviolet::Reference::Statements",
-        "runStatementsExpressionStatementsReference",
-        "Source/Reference/Statements/ExpressionStatements.uv"
+        "runStatementsFrameReference",
+        "Source/Reference/Statements/Frame.uv"
     ) {
         count = count + 1usize
     }
@@ -164,8 +164,8 @@ public procedure validatedStatementsAndBlocksFrameObligations() -> usize {
         "def.18.FrameReset",
         71302usize,
         "HelloUltraviolet::Reference::Statements",
-        "runStatementsExpressionStatementsReference",
-        "Source/Reference/Statements/ExpressionStatements.uv"
+        "runStatementsFrameReference",
+        "Source/Reference/Statements/Frame.uv"
     ) {
         count = count + 1usize
     }
@@ -173,8 +173,8 @@ public procedure validatedStatementsAndBlocksFrameObligations() -> usize {
         "rule.18.Step-Exec-Frame-Enter-Implicit",
         71315usize,
         "HelloUltraviolet::Reference::Statements",
-        "runStatementsExpressionStatementsReference",
-        "Source/Reference/Statements/ExpressionStatements.uv"
+        "runStatementsFrameReference",
+        "Source/Reference/Statements/Frame.uv"
     ) {
         count = count + 1usize
     }
@@ -182,8 +182,8 @@ public procedure validatedStatementsAndBlocksFrameObligations() -> usize {
         "rule.18.Step-Exec-Frame-Enter-Explicit",
         71331usize,
         "HelloUltraviolet::Reference::Statements",
-        "runStatementsExpressionStatementsReference",
-        "Source/Reference/Statements/ExpressionStatements.uv"
+        "runStatementsFrameReference",
+        "Source/Reference/Statements/Frame.uv"
     ) {
         count = count + 1usize
     }
@@ -191,8 +191,8 @@ public procedure validatedStatementsAndBlocksFrameObligations() -> usize {
         "rule.18.Step-Exec-Frame-Body",
         71347usize,
         "HelloUltraviolet::Reference::Statements",
-        "runStatementsExpressionStatementsReference",
-        "Source/Reference/Statements/ExpressionStatements.uv"
+        "runStatementsFrameReference",
+        "Source/Reference/Statements/Frame.uv"
     ) {
         count = count + 1usize
     }
@@ -200,8 +200,8 @@ public procedure validatedStatementsAndBlocksFrameObligations() -> usize {
         "rule.18.Step-Exec-Frame-Exit-Ok",
         71363usize,
         "HelloUltraviolet::Reference::Statements",
-        "runStatementsExpressionStatementsReference",
-        "Source/Reference/Statements/ExpressionStatements.uv"
+        "runStatementsFrameReference",
+        "Source/Reference/Statements/Frame.uv"
     ) {
         count = count + 1usize
     }
@@ -209,8 +209,8 @@ public procedure validatedStatementsAndBlocksFrameObligations() -> usize {
         "rule.18.Step-Exec-Frame-Exit-Ctrl",
         71379usize,
         "HelloUltraviolet::Reference::Statements",
-        "runStatementsExpressionStatementsReference",
-        "Source/Reference/Statements/ExpressionStatements.uv"
+        "runStatementsFrameReference",
+        "Source/Reference/Statements/Frame.uv"
     ) {
         count = count + 1usize
     }
@@ -218,8 +218,8 @@ public procedure validatedStatementsAndBlocksFrameObligations() -> usize {
         "rule.18.Lower-Stmt-Frame-Implicit",
         71397usize,
         "HelloUltraviolet::Reference::Statements",
-        "runStatementsExpressionStatementsReference",
-        "Source/Reference/Statements/ExpressionStatements.uv"
+        "runStatementsFrameReference",
+        "Source/Reference/Statements/Frame.uv"
     ) {
         count = count + 1usize
     }
@@ -227,17 +227,17 @@ public procedure validatedStatementsAndBlocksFrameObligations() -> usize {
         "rule.18.Lower-Stmt-Frame-Explicit",
         71413usize,
         "HelloUltraviolet::Reference::Statements",
-        "runStatementsExpressionStatementsReference",
-        "Source/Reference/Statements/ExpressionStatements.uv"
+        "runStatementsFrameReference",
+        "Source/Reference/Statements/Frame.uv"
     ) {
         count = count + 1usize
     }
-    if acceptedObligationEntryMatches(
+    if rejectedSourceObligationEntryMatches(
         "diag.18.Frame",
         71431usize,
-        "HelloUltraviolet::Reference::Statements",
-        "runStatementsExpressionStatementsReference",
-        "Source/Reference/Statements/ExpressionStatements.uv"
+        "HelloUltraviolet::Fixtures::RejectedSource",
+        "validatedStatementsRejectedSourceFixtureCount",
+        "Fixtures/RejectedSource/Statements/FrameDiagnostic/Source/Main.uv"
     ) {
         count = count + 1usize
     }

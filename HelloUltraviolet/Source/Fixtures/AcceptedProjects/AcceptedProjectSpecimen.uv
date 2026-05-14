@@ -9,6 +9,22 @@ public record AcceptedProjectSpecimen {
     public source_path: string@View
     public assembly_name: string@View
     public assembly_kind: string@View
+    public expectation: AcceptedProjectExpectation
+}
+
+public record AcceptedProjectExpectation {
+    public name: string@View
+    public obligation_id: string@View
+}
+
+public procedure acceptedProjectExpectation(
+    name: string@View,
+    obligation_id: string@View
+) -> AcceptedProjectExpectation {
+    return AcceptedProjectExpectation {
+        name: name,
+        obligation_id: obligation_id
+    }
 }
 
 public procedure acceptedProjectSpecimen(
@@ -17,7 +33,8 @@ public procedure acceptedProjectSpecimen(
     manifest_path: string@View,
     source_path: string@View,
     assembly_name: string@View,
-    assembly_kind: string@View
+    assembly_kind: string@View,
+    expectation: AcceptedProjectExpectation
 ) -> AcceptedProjectSpecimen {
     return AcceptedProjectSpecimen {
         name: name,
@@ -25,8 +42,18 @@ public procedure acceptedProjectSpecimen(
         manifest_path: manifest_path,
         source_path: source_path,
         assembly_name: assembly_name,
-        assembly_kind: assembly_kind
+        assembly_kind: assembly_kind,
+        expectation: expectation
     }
+}
+
+public procedure acceptedProjectExpectationMatches(
+    expectation: AcceptedProjectExpectation,
+    name: string@View,
+    obligation_id: string@View
+) -> bool {
+    return auditTextEquals(expectation.name, name) &&
+        auditTextEquals(expectation.obligation_id, obligation_id)
 }
 
 public procedure acceptedProjectSpecimenMatches(
@@ -36,12 +63,15 @@ public procedure acceptedProjectSpecimenMatches(
     manifest_path: string@View,
     source_path: string@View,
     assembly_name: string@View,
-    assembly_kind: string@View
+    assembly_kind: string@View,
+    expectation_name: string@View,
+    obligation_id: string@View
 ) -> bool {
     return auditTextEquals(specimen.name, name) &&
         auditTextEquals(specimen.fixture_path, fixture_path) &&
         auditTextEquals(specimen.manifest_path, manifest_path) &&
         auditTextEquals(specimen.source_path, source_path) &&
         auditTextEquals(specimen.assembly_name, assembly_name) &&
-        auditTextEquals(specimen.assembly_kind, assembly_kind)
+        auditTextEquals(specimen.assembly_kind, assembly_kind) &&
+        acceptedProjectExpectationMatches(specimen.expectation, expectation_name, obligation_id)
 }

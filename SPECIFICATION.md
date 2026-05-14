@@ -1905,9 +1905,10 @@ Ambig = {"+", "-", "*", "&", "|"}
 RangeCont = {"..", "..="}
 BeginsOperand(t) ⇔ t.kind ∈ {Identifier, IntLiteral, FloatLiteral, StringLiteral, CharLiteral, BoolLiteral, NullLiteral} ∨ (t.kind = Punctuator ∧ t.lexeme ∈ {"(", "[", "{"}) ∨ (t.kind = Operator ∧ t.lexeme ∈ {"!", "-", "&", "*", "^"}) ∨ (t.kind = Keyword ∧ t.lexeme ∈ {"if", "loop", "unsafe", "comptime", "quote", "move", "transmute", "widen", "parallel", "spawn", "dispatch", "yield", "sync", "race", "all"})
 UnaryOnly = {"!", "~", "?"}
-AttrClose(t) ⇔ t.kind = Punctuator ∧ t.lexeme = "]]"
+Adjacent(t_1, t_2) ⇔ t_1.span.end_offset = t_2.span.start_offset
+AttrCloseBefore(K, i) ⇔ ∃ j. j+1 < i ∧ K[j].kind = Punctuator ∧ K[j].lexeme = "]" ∧ K[j+1].kind = Punctuator ∧ K[j+1].lexeme = "]" ∧ Adjacent(K[j], K[j+1]) ∧ Prev(K, i) = K[j+1]
 
-Continue(K, i) ⇔ Depth(K, i) > 0 ∨ (∃ t. Prev(K, i) = t ∧ (t.lexeme = "," ∨ (t.kind = Operator ∧ ((((t.lexeme ∈ Ambig ∨ t.lexeme ∈ RangeCont) ∧ ∃ u. Next(K, i) = u ∧ BeginsOperand(u)) ∨ (t.lexeme ∉ UnaryOnly ∧ t.lexeme ∉ RangeCont)))))) ∨ (∃ u. Next(K, i) = u ∧ u.lexeme ∈ {".", "::", "~>"}) ∨ (∃ t, u. Prev(K, i) = t ∧ AttrClose(t) ∧ Next(K, i) = u ∧ BeginsOperand(u))
+Continue(K, i) ⇔ Depth(K, i) > 0 ∨ (∃ t. Prev(K, i) = t ∧ (t.lexeme = "," ∨ (t.kind = Operator ∧ ((((t.lexeme ∈ Ambig ∨ t.lexeme ∈ RangeCont) ∧ ∃ u. Next(K, i) = u ∧ BeginsOperand(u)) ∨ (t.lexeme ∉ UnaryOnly ∧ t.lexeme ∉ RangeCont)))))) ∨ (∃ u. Next(K, i) = u ∧ u.lexeme ∈ {".", "::", "~>"}) ∨ (∃ u. AttrCloseBefore(K, i) ∧ Next(K, i) = u ∧ BeginsOperand(u))
 
 For `t.lexeme ∈ RangeCont`, continuation across newline MUST require `Next(K, i)` to begin an operand. This permits split forms like `a .. \n b` and `.. \n b`, while allowing newline termination after complete `a ..` and `..` forms.
 
@@ -2143,7 +2144,9 @@ TokenKind ∈ {Identifier, Keyword(k), IntLiteral, FloatLiteral, StringLiteral, 
 OperatorSet = {"+", "-", "*", "/", "%", "**", "==", "!=", "<", "<=", ">", ">=", "&&", "||", "!", "&", "|", "^", "<<", ">>", "=", "+=", "-=", "*=", "/=", "%=", "&=", "|:", "^=", "<<=", ">>=", ":=", "<:", "..", "..=", "=>", "->", "::", "~", "~>", "~!", "~%", "?", "#", "@", "$"}
 
 **Punctuator Set.**
-PunctuatorSet = {"(", ")", "[", "]", "[[", "]]", "{", "}", ",", ":", ";", "."}
+PunctuatorSet = {"(", ")", "[", "]", "{", "}", ",", ":", ";", "."}
+
+The attribute delimiters spelled `[[` and `]]` are not token kinds. They tokenize as adjacent punctuator pairs `Punctuator("[") Punctuator("[")` and `Punctuator("]") Punctuator("]")`; attribute parsing consumes those adjacent token pairs.
 
 OperatorSet ∩ PunctuatorSet = ∅
 
@@ -6484,7 +6487,9 @@ This section owns core type-inference and alias-cycle diagnostics that are not s
 
 ```ebnf
 attribute_list    ::= attribute+
-attribute         ::= "[[" attribute_spec ("," attribute_spec)* "]]"
+attribute         ::= attr_open attribute_spec ("," attribute_spec)* attr_close
+attr_open         ::= "[" "["    (* adjacent tokens; no whitespace or comments between them *)
+attr_close        ::= "]" "]"    (* adjacent tokens; no whitespace or comments between them *)
 attribute_spec    ::= attribute_name ("(" attribute_args ")")?
 attribute_name    ::= identifier
                     | "dynamic"
@@ -6508,12 +6513,12 @@ An attribute list MUST appear immediately before the declaration or expression i
 #### 9.1.2 Parsing
 
 **(Parse-AttrListOpt-None)**
-¬ IsPunc(Tok(P), "[[")
+¬ AttrOpen(P)
 ──────────────────────────────────────────────
 Γ ⊢ ParseAttrListOpt(P) ⇓ (P, ⊥)
 
 **(Parse-AttrListOpt-Yes)**
-IsPunc(Tok(P), "[[")    Γ ⊢ ParseAttrList(P) ⇓ (P_1, attrs)
+AttrOpen(P)    Γ ⊢ ParseAttrList(P) ⇓ (P_1, attrs)
 ──────────────────────────────────────────────
 Γ ⊢ ParseAttrListOpt(P) ⇓ (P_1, attrs)
 
@@ -6523,19 +6528,19 @@ IsPunc(Tok(P), "[[")    Γ ⊢ ParseAttrList(P) ⇓ (P_1, attrs)
 Γ ⊢ ParseAttrList(P) ⇓ (P_2, attrs)
 
 **(Parse-AttrListTail-End)**
-¬ IsPunc(Tok(P), "[[")
+¬ AttrOpen(P)
 ──────────────────────────────────────────────
 Γ ⊢ ParseAttrListTail(P, attrs) ⇓ (P, attrs)
 
 **(Parse-AttrListTail-Cons)**
-IsPunc(Tok(P), "[[")    Γ ⊢ ParseAttrBlock(P) ⇓ (P_1, attrs_0)    Γ ⊢ ParseAttrListTail(P_1, attrs ++ attrs_0) ⇓ (P_2, attrs_1)
+AttrOpen(P)    Γ ⊢ ParseAttrBlock(P) ⇓ (P_1, attrs_0)    Γ ⊢ ParseAttrListTail(P_1, attrs ++ attrs_0) ⇓ (P_2, attrs_1)
 ────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
 Γ ⊢ ParseAttrListTail(P, attrs) ⇓ (P_2, attrs_1)
 
 **(Parse-AttrBlock)**
-IsPunc(Tok(P), "[[")    P_0 = Advance(P)    Γ ⊢ ParseAttrSpecList(P_0) ⇓ (P_1, specs)    IsPunc(Tok(P_1), "]]")
+AttrOpen(P)    P_0 = Advance(Advance(P))    Γ ⊢ ParseAttrSpecList(P_0) ⇓ (P_1, specs)    AttrClose(P_1)
 ────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
-Γ ⊢ ParseAttrBlock(P) ⇓ (Advance(P_1), specs)
+Γ ⊢ ParseAttrBlock(P) ⇓ (Advance(Advance(P_1)), specs)
 
 **(Parse-AttrSpecList-Cons)**
 Γ ⊢ ParseAttrSpec(P) ⇓ (P_1, s)    Γ ⊢ ParseAttrSpecListTail(P_1, [s]) ⇓ (P_2, specs)
@@ -6548,7 +6553,7 @@ IsPunc(Tok(P), "[[")    P_0 = Advance(P)    Γ ⊢ ParseAttrSpecList(P_0) ⇓ (P
 Γ ⊢ ParseAttrSpecListTail(P, xs) ⇓ (P, xs)
 
 **(Parse-AttrSpecListTail-TrailingComma)**
-IsPunc(Tok(P), ",")    IsPunc(Tok(Advance(P)), "]]")    TrailingCommaAllowed(P_0, P, {Punctuator("]]")})
+IsPunc(Tok(P), ",")    AttrClose(Advance(P))    TrailingCommaAllowed(P_0, P, {AttrClose})
 ────────────────────────────────────────────────────────────────────────────────────────────────
 Γ ⊢ ParseAttrSpecListTail(P, xs) ⇓ (Advance(P), xs)
 
@@ -6791,7 +6796,7 @@ Unknown attribute-name rejection is owned by §9.1.7.
 #### 9.3.1 Syntax
 
 ```ebnf
-layout_attribute ::= "[[" "layout" "(" layout_args ")" "]]"
+layout_attribute ::= attr_open "layout" "(" layout_args ")" attr_close
 layout_args      ::= layout_kind ("," layout_kind)*
 layout_kind      ::= "C" | "packed" | "align" "(" integer_literal ")" | int_type
 int_type         ::= "i8" | "i16" | "i32" | "i64" | "u8" | "u16" | "u32" | "u64"
@@ -6888,10 +6893,10 @@ Layout attributes constrain the layout and ABI calculations used by Chapter 24. 
 #### 9.4.1 Syntax
 
 ```ebnf
-inline_attribute ::= "[[" "inline" ("(" inline_mode ")")? "]]"
+inline_attribute ::= attr_open "inline" ("(" inline_mode ")")? attr_close
 inline_mode      ::= "always" | "never" | "default"
 
-cold_attribute   ::= "[[" "cold" "]]"
+cold_attribute   ::= attr_open "cold" attr_close
 ```
 
 #### 9.4.2 Parsing
@@ -7052,7 +7057,7 @@ For `[[dynamic]]`, runtime synchronization or runtime verification MUST be inser
 #### 9.6.1 Syntax
 
 ```ebnf
-test_attribute      ::= "[[" "test" ("(" test_attribute_args ")")? "]]"
+test_attribute      ::= attr_open "test" ("(" test_attribute_args ")")? attr_close
 test_attribute_args ::= test_attribute_arg ("," test_attribute_arg)*
 test_attribute_arg  ::= "name" ":" string_literal
                       | "covers" "(" string_literal ")"
@@ -21304,7 +21309,7 @@ When `InDynamicContext` and `StaticallySafe(P)` both hold, runtime synchronizati
 #### 19.7.1 Syntax
 
 ```ebnf
-memory_order_attribute ::= "[[" memory_order "]]"
+memory_order_attribute ::= attr_open memory_order attr_close
 memory_order           ::= "relaxed" | "acquire" | "release" | "acqrel" | "seqcst"
 fence_expr             ::= "fence" "(" fence_order ")"
 fence_order            ::= "acquire" | "release" | "seqcst"
@@ -25380,7 +25385,7 @@ Diagnostics for quote, splice, and emission are defined by §22.6.
 #### 22.5.1 Syntax
 
 ```ebnf
-derive_attribute    ::= "[[" "derive" "(" derive_target_list ")" "]]"
+derive_attribute    ::= attr_open "derive" "(" derive_target_list ")" attr_close
 derive_target_list  ::= identifier ("," identifier)*
 derive_target_decl  ::= "derive" "target" identifier "(" "target" ":" "Type" ")" derive_contract_opt block_expr
 derive_contract_opt ::= "|:" derive_clause ("," derive_clause)*

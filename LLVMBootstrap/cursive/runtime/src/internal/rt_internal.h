@@ -620,7 +620,7 @@ _Static_assert(sizeof(C0BytesView) == 16, "bytes@View layout");
 _Static_assert(sizeof(C0BytesManaged) == 24, "bytes@Managed layout");
 _Static_assert(sizeof(C0DynObject) == 16, "dynamic object layout");
 _Static_assert(sizeof(C0Context) == 80, "Context layout");
-_Static_assert(sizeof(C0ExecutionDomain) == 16, "ExecutionDomain layout");
+_Static_assert(sizeof(C0ExecutionDomain) == 24, "ExecutionDomain layout");
 _Static_assert(sizeof(C0Duration) == 16, "Duration layout");
 _Static_assert(sizeof(C0MonotonicInstant) == 32, "MonotonicInstant layout");
 _Static_assert(sizeof(C0UtcInstant) == 16, "UtcInstant layout");

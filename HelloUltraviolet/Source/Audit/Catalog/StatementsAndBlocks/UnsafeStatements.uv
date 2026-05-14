@@ -11,8 +11,8 @@ public procedure validatedStatementsAndBlocksUnsafeStatementsObligations() -> us
         "grammar.18.UnsafeStatements",
         71963usize,
         "HelloUltraviolet::Reference::Statements",
-        "runStatementsExpressionStatementsReference",
-        "Source/Reference/Statements/ExpressionStatements.uv"
+        "runStatementsUnsafeReference",
+        "Source/Reference/Statements/Unsafe.uv"
     ) {
         count = count + 1usize
     }
@@ -20,8 +20,8 @@ public procedure validatedStatementsAndBlocksUnsafeStatementsObligations() -> us
         "rule.18.Parse-Unsafe-Block",
         71980usize,
         "HelloUltraviolet::Reference::Statements",
-        "runStatementsExpressionStatementsReference",
-        "Source/Reference/Statements/ExpressionStatements.uv"
+        "runStatementsUnsafeReference",
+        "Source/Reference/Statements/Unsafe.uv"
     ) {
         count = count + 1usize
     }
@@ -29,8 +29,8 @@ public procedure validatedStatementsAndBlocksUnsafeStatementsObligations() -> us
         "def.18.UnsafeBlockStmtAst",
         71998usize,
         "HelloUltraviolet::Reference::Statements",
-        "runStatementsExpressionStatementsReference",
-        "Source/Reference/Statements/ExpressionStatements.uv"
+        "runStatementsUnsafeReference",
+        "Source/Reference/Statements/Unsafe.uv"
     ) {
         count = count + 1usize
     }
@@ -38,8 +38,8 @@ public procedure validatedStatementsAndBlocksUnsafeStatementsObligations() -> us
         "rule.18.T-UnsafeStmt",
         72013usize,
         "HelloUltraviolet::Reference::Statements",
-        "runStatementsExpressionStatementsReference",
-        "Source/Reference/Statements/ExpressionStatements.uv"
+        "runStatementsUnsafeReference",
+        "Source/Reference/Statements/Unsafe.uv"
     ) {
         count = count + 1usize
     }
@@ -47,17 +47,17 @@ public procedure validatedStatementsAndBlocksUnsafeStatementsObligations() -> us
         "req.18.UnsafeStatementStateAndProvenance",
         72029usize,
         "HelloUltraviolet::Reference::Statements",
-        "runStatementsExpressionStatementsReference",
-        "Source/Reference/Statements/ExpressionStatements.uv"
+        "runStatementsUnsafeReference",
+        "Source/Reference/Statements/Unsafe.uv"
     ) {
         count = count + 1usize
     }
-    if acceptedObligationEntryMatches(
+    if rejectedSourceObligationEntryMatches(
         "diag.18.UnsafeRequiredOperationOwnership",
         72042usize,
-        "HelloUltraviolet::Reference::Statements",
-        "runStatementsExpressionStatementsReference",
-        "Source/Reference/Statements/ExpressionStatements.uv"
+        "HelloUltraviolet::Fixtures::RejectedSource",
+        "validatedStatementsRejectedSourceFixtureCount",
+        "Fixtures/RejectedSource/Statements/UnsafeRequiredOperationOwnershipDiagnostic/Source/Main.uv"
     ) {
         count = count + 1usize
     }
@@ -65,8 +65,8 @@ public procedure validatedStatementsAndBlocksUnsafeStatementsObligations() -> us
         "rule.18.ExecSigma-UnsafeStmt",
         72057usize,
         "HelloUltraviolet::Reference::Statements",
-        "runStatementsExpressionStatementsReference",
-        "Source/Reference/Statements/ExpressionStatements.uv"
+        "runStatementsUnsafeReference",
+        "Source/Reference/Statements/Unsafe.uv"
     ) {
         count = count + 1usize
     }
@@ -74,17 +74,17 @@ public procedure validatedStatementsAndBlocksUnsafeStatementsObligations() -> us
         "rule.18.Lower-Stmt-UnsafeBlock",
         72075usize,
         "HelloUltraviolet::Reference::Statements",
-        "runStatementsExpressionStatementsReference",
-        "Source/Reference/Statements/ExpressionStatements.uv"
+        "runStatementsUnsafeReference",
+        "Source/Reference/Statements/Unsafe.uv"
     ) {
         count = count + 1usize
     }
-    if acceptedObligationEntryMatches(
+    if rejectedSourceObligationEntryMatches(
         "diag.18.UnsafeStatements",
         72093usize,
-        "HelloUltraviolet::Reference::Statements",
-        "runStatementsExpressionStatementsReference",
-        "Source/Reference/Statements/ExpressionStatements.uv"
+        "HelloUltraviolet::Fixtures::RejectedSource",
+        "validatedStatementsRejectedSourceFixtureCount",
+        "Fixtures/RejectedSource/Statements/UnsafeStatementsDiagnostic/Source/Main.uv"
     ) {
         count = count + 1usize
     }

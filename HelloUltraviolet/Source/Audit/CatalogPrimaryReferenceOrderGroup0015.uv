@@ -1,0 +1,604 @@
+//! Catalog primary-reference ordering check group 0015.
+
+internal procedure catalogPrimaryReferenceOrderGroup0015() -> bool {
+    return catalogPrimaryReferencePrecedes(
+            "def.16.ClosureEscapeClassification",
+            64033usize,
+            "def.16.ClosureLoweringCaptureTypes",
+            64735usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.16.ClosureLoweringCaptureTypes",
+            64735usize,
+            "def.16.ClosureParameterAccessors",
+            64048usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.16.ClosureParameterAccessors",
+            64048usize,
+            "def.16.ClosurePipelineAstForms",
+            63994usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.16.ClosurePipelineAstForms",
+            63994usize,
+            "def.16.ConstructionExprAst",
+            61266usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.16.ConstructionExprAst",
+            61266usize,
+            "def.16.ControlAstHelpers",
+            61874usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.16.ControlAstHelpers",
+            61874usize,
+            "def.16.ControlExprAst",
+            61861usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.16.ControlExprAst",
+            61861usize,
+            "def.16.EffectfulCoreExprAst",
+            62882usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.16.EffectfulCoreExprAst",
+            62882usize,
+            "def.16.EvaluationJudgements",
+            57854usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.16.EvaluationJudgements",
+            57854usize,
+            "def.16.ExprStateAndTerminalExpr",
+            63355usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.16.ExprStateAndTerminalExpr",
+            63355usize,
+            "def.16.FieldInitAst",
+            61253usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.16.FieldInitAst",
+            61253usize,
+            "def.16.FieldInitNamesAndSet",
+            61279usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.16.FieldInitNamesAndSet",
+            61279usize,
+            "def.16.FieldVisibility",
+            58263usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.16.FieldVisibility",
+            58263usize,
+            "def.16.IndexClassification",
+            58277usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.16.IndexClassification",
+            58277usize,
+            "def.16.IsPlace",
+            58174usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.16.IsPlace",
+            58174usize,
+            "def.16.LiteralKindAndToken",
+            57412usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.16.LiteralKindAndToken",
+            57412usize,
+            "def.16.LiteralNameExprAst",
+            57426usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.16.LiteralNameExprAst",
+            57426usize,
+            "def.16.LiteralRuntimeValues",
+            57869usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.16.LiteralRuntimeValues",
+            57869usize,
+            "def.16.LoopIterJudgement",
+            62339usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.16.LoopIterJudgement",
+            62339usize,
+            "def.16.LoopIterableTypePredicates",
+            62288usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.16.LoopIterableTypePredicates",
+            62288usize,
+            "def.16.LoopIteratorRuntime",
+            62306usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.16.LoopIteratorRuntime",
+            62306usize,
+            "def.16.LoopTypeInference",
+            61890usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.16.LoopTypeInference",
+            61890usize,
+            "def.16.LowerCaptureEnv",
+            64817usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.16.LowerCaptureEnv",
+            64817usize,
+            "def.16.LowerPipelineCallablePredicates",
+            64978usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.16.LowerPipelineCallablePredicates",
+            64978usize,
+            "def.16.MarkMoved",
+            64554usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.16.MarkMoved",
+            64554usize,
+            "def.16.MovedArg",
+            59046usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.16.MovedArg",
+            59046usize,
+            "def.16.NullLiteralExpected",
+            57653usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.16.NullLiteralExpected",
+            57653usize,
+            "def.16.NumericLiteralParsingHelpers",
+            57498usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.16.NumericLiteralParsingHelpers",
+            57498usize,
+            "def.16.NumericLiteralTypeSets",
+            57481usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.16.NumericLiteralTypeSets",
+            57481usize,
+            "def.16.OperatorBitShiftArithmeticRuntime",
+            60013usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.16.OperatorBitShiftArithmeticRuntime",
+            60013usize,
+            "def.16.OperatorComparisonRuntime",
+            59993usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.16.OperatorComparisonRuntime",
+            59993usize,
+            "def.16.OperatorRuntimeJudgementsAndValuePredicates",
+            59971usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.16.OperatorRuntimeJudgementsAndValuePredicates",
+            59971usize,
+            "def.16.OperatorSets",
+            59763usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.16.OperatorSets",
+            59763usize,
+            "def.16.OperatorStaticTypes",
+            59781usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.16.OperatorStaticTypes",
+            59781usize,
+            "def.16.PlaceForms0",
+            58250usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.16.PlaceForms0",
+            58250usize,
+            "def.16.PtrNullExpected",
+            57730usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.16.PtrNullExpected",
+            57730usize,
+            "def.16.QualifiedNameResolution",
+            57440usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.16.QualifiedNameResolution",
+            57440usize,
+            "def.16.RangeAndOperatorExprAst",
+            59749usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.16.RangeAndOperatorExprAst",
+            59749usize,
+            "def.16.RecordDefaultConstructionEligibility",
+            61498usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.16.RecordDefaultConstructionEligibility",
+            61498usize,
+            "def.16.RecordFieldNameSet",
+            61394usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.16.RecordFieldNameSet",
+            61394usize,
+            "def.16.SuccessMember",
+            63070usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.16.SuccessMember",
+            63070usize,
+            "def.16.SuccessMemberAsync",
+            63099usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.16.SuccessMemberAsync",
+            63099usize,
+            "def.16.TransmuteVal",
+            60918usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.16.TransmuteVal",
+            60918usize,
+            "def.16.UnaryOperatorLoweringPanicCheck",
+            60292usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.16.UnaryOperatorLoweringPanicCheck",
+            60292usize,
+            "def.16.UnaryOperatorRuntime",
+            60033usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.16.UnaryOperatorRuntime",
+            60033usize,
+            "def.16.ValidTransmuteTarget",
+            60629usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.16.ValidTransmuteTarget",
+            60629usize,
+            "def.16.ValuePathType",
+            57458usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.16.ValuePathType",
+            57458usize,
+            "def.17.BindOrder",
+            66963usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.17.BindOrder",
+            66963usize,
+            "def.17.CaseClauseParsingGroup",
+            66839usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.17.CaseClauseParsingGroup",
+            66839usize,
+            "def.17.CaseScopeJudgements",
+            66978usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.17.CaseScopeJudgements",
+            66978usize,
+            "def.17.ConstPat",
+            66742usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.17.ConstPat",
+            66742usize,
+            "def.17.EnumCaseAnalysisGroup",
+            67645usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.17.EnumCaseAnalysisGroup",
+            67645usize,
+            "def.17.EnumCaseCoverageHelpers",
+            67600usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.17.EnumCaseCoverageHelpers",
+            67600usize,
+            "def.17.EnumModalPayloadPatterns",
+            66259usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.17.EnumModalPayloadPatterns",
+            66259usize,
+            "def.17.ExhaustivenessIrrefutabilityHelpers",
+            67578usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.17.ExhaustivenessIrrefutabilityHelpers",
+            67578usize,
+            "def.17.FieldPatternAstAndAccessors",
+            65775usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.17.FieldPatternAstAndAccessors",
+            65775usize,
+            "def.17.IfCaseAst",
+            66950usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.17.IfCaseAst",
+            66950usize,
+            "def.17.IfCaseEvaluationJudgements",
+            67231usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.17.IfCaseEvaluationJudgements",
+            67231usize,
+            "def.17.IfCaseValueCorrect",
+            67373usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.17.IfCaseValueCorrect",
+            67373usize,
+            "def.17.MatchModalJudgement",
+            66435usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.17.MatchModalJudgement",
+            66435usize,
+            "def.17.MatchRecordJudgement",
+            65921usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.17.MatchRecordJudgement",
+            65921usize,
+            "def.17.ModalCaseAnalysisGroup",
+            67674usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.17.ModalCaseAnalysisGroup",
+            67674usize,
+            "def.17.ModalCaseCoverageHelpers",
+            67614usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.17.ModalCaseCoverageHelpers",
+            67614usize,
+            "def.17.OtherCaseAnalysisGroup",
+            67780usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.17.OtherCaseAnalysisGroup",
+            67780usize,
+            "def.17.PatternAstForms",
+            65136usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.17.PatternAstForms",
+            65136usize,
+            "def.17.PatternBindingEnvironment",
+            65382usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.17.PatternBindingEnvironment",
+            65382usize,
+            "def.17.PatternJudgements",
+            65152usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.17.PatternJudgements",
+            65152usize,
+            "def.17.PatternLoweringJudgements",
+            67343usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.17.PatternLoweringJudgements",
+            67343usize,
+            "def.17.PatternMatchingJudgementAndLiteralTypes",
+            65397usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.17.PatternMatchingJudgementAndLiteralTypes",
+            65397usize,
+            "def.17.PatternNameExtractionJudgement",
+            65196usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.17.PatternNameExtractionJudgement",
+            65196usize,
+            "def.17.PatternTagHelpers",
+            67402usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.17.PatternTagHelpers",
+            67402usize,
+            "def.17.PermWrap",
+            65165usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.17.PermWrap",
+            65165usize,
+            "def.17.RangePatternAst",
+            66676usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.17.RangePatternAst",
+            66676usize,
+            "def.17.ScrutineeBindingAndRefinement",
+            66993usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.17.ScrutineeBindingAndRefinement",
+            66993usize,
+            "def.17.UnionCaseAnalysisGroup",
+            67719usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.17.UnionCaseAnalysisGroup",
+            67719usize,
+            "def.17.UnionCaseCoverageHelpers",
+            67627usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.17.UnionCaseCoverageHelpers",
+            67627usize,
+            "def.17.UnionOrSingle",
+            67008usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.17.UnionOrSingle",
+            67008usize,
+            "def.18.AssignmentAstForms",
+            69890usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.18.AssignmentAstForms",
+            69890usize,
+            "def.18.AssignmentRootBinding",
+            70060usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.18.AssignmentRootBinding",
+            70060usize,
+            "def.18.AttachStmtAttrs",
+            68071usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.18.AttachStmtAttrs",
+            68071usize,
+            "def.18.BindPattern",
+            69524usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.18.BindPattern",
+            69524usize,
+            "def.18.BindPatternRuntimeHelpers",
+            69479usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.18.BindPatternRuntimeHelpers",
+            69479usize,
+            "def.18.BindRegionAlias",
+            70865usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.18.BindRegionAlias",
+            70865usize,
+            "def.18.BindVal",
+            69466usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.18.BindVal",
+            69466usize,
+            "def.18.BindingAstAndAccessors",
+            69178usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.18.BindingAstAndAccessors",
+            69178usize,
+            "def.18.BindingEnvironmentHelpers",
+            68318usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.18.BindingEnvironmentHelpers",
+            68318usize,
+            "def.18.BlockExit",
+            68562usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.18.BlockExit",
+            68562usize,
+            "def.18.BlockExitOutcome",
+            68546usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.18.BlockExitOutcome",
+            68546usize,
+            "def.18.BlockLoopLoweringTotality",
+            68998usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.18.BlockLoopLoweringTotality",
+            68998usize,
+            "def.18.ControlAndStatementOutcomes",
+            68527usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.18.ControlAndStatementOutcomes",
+            68527usize,
+            "def.18.ControlTransferAstForms",
+            71517usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.18.ControlTransferAstForms",
+            71517usize,
+            "def.18.DeferSafe",
+            70543usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.18.DeferSafe",
+            70543usize,
+            "def.18.DeferStmtAst",
+            70420usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.18.DeferStmtAst",
+            70420usize,
+            "def.18.DropOnAssign",
+            70075usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.18.DropOnAssign",
+            70075usize,
+            "def.18.DropSubvalueJudgement",
+            70092usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.18.DropSubvalueJudgement",
+            70092usize,
+            "def.18.EvalBlockBindSigma",
+            68606usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.18.EvalBlockBindSigma",
+            68606usize,
+            "def.18.EvalBlockBodySigma",
+            68575usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.18.EvalBlockBodySigma",
+            68575usize,
+            "def.18.EvalBlockSigma",
+            68593usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.18.EvalBlockSigma",
+            68593usize,
+            "def.18.EvalInScopeSigma",
+            68619usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.18.EvalInScopeSigma",
+            68619usize,
+            "def.18.ExecState",
+            68721usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.18.ExecState",
+            68721usize,
+            "def.18.ExprStmtAst",
+            70286usize
+        )
+}

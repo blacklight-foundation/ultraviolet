@@ -115,12 +115,12 @@ public procedure validatedKeySystemKeyPathsObligations() -> usize {
     ) {
         count = count + 1usize
     }
-    if acceptedObligationEntryMatches(
+    if rejectedSourceObligationEntryMatches(
         "requirement.19.SharedDynamicClassRejectsMutatingReceivers",
         72364usize,
-        "HelloUltraviolet::Reference::Keys",
-        "runKeysKeyPathsReference",
-        "Source/Reference/Keys/KeyPaths.uv"
+        "HelloUltraviolet::Fixtures::RejectedSource",
+        "validatedKeysRejectedSourceFixtureCount",
+        "Fixtures/RejectedSource/Keys/SharedDynamicMutatingReceiver/Source/Main.uv"
     ) {
         count = count + 1usize
     }
@@ -178,12 +178,12 @@ public procedure validatedKeySystemKeyPathsObligations() -> usize {
     ) {
         count = count + 1usize
     }
-    if acceptedObligationEntryMatches(
+    if rejectedSourceObligationEntryMatches(
         "diagnostics.19.KeyPaths",
         72474usize,
-        "HelloUltraviolet::Reference::Keys",
-        "runKeysKeyPathsReference",
-        "Source/Reference/Keys/KeyPaths.uv"
+        "HelloUltraviolet::Fixtures::RejectedSource",
+        "validatedKeysRejectedSourceFixtureCount",
+        "Fixtures/RejectedSource/Keys/KeyPathsDiagnostic/Source/Main.uv"
     ) {
         count = count + 1usize
     }

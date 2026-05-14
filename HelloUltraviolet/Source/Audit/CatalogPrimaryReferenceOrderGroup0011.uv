@@ -1,0 +1,604 @@
+//! Catalog primary-reference ordering check group 0011.
+
+internal procedure catalogPrimaryReferenceOrderGroup0011() -> bool {
+    return catalogPrimaryReferencePrecedes(
+            "TypeRef-RangeTo",
+            33711usize,
+            "TypeRef-RangeToInclusive",
+            33729usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "TypeRef-RangeToInclusive",
+            33729usize,
+            "TypeRef-RawPtr",
+            33639usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "TypeRef-RawPtr",
+            33639usize,
+            "TypeRef-RecordExpr",
+            33818usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "TypeRef-RecordExpr",
+            33818usize,
+            "TypeRef-RecordPattern",
+            33972usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "TypeRef-RecordPattern",
+            33972usize,
+            "TypeRef-Ref-Apply",
+            33782usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "TypeRef-Ref-Apply",
+            33782usize,
+            "TypeRef-Ref-ModalState",
+            33800usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "TypeRef-Ref-ModalState",
+            33800usize,
+            "TypeRef-Ref-Path",
+            33764usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "TypeRef-Ref-Path",
+            33764usize,
+            "TypeRef-Slice",
+            33533usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "TypeRef-Slice",
+            33533usize,
+            "TypeRef-String",
+            33587usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "TypeRef-String",
+            33587usize,
+            "TypeRef-Transmute",
+            33890usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "TypeRef-Transmute",
+            33890usize,
+            "TypeRef-Tuple",
+            33497usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "TypeRef-Tuple",
+            33497usize,
+            "TypeRef-TuplePattern",
+            34077usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "TypeRef-TuplePattern",
+            34077usize,
+            "TypeRef-TypedPattern",
+            34059usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "TypeRef-TypedPattern",
+            34059usize,
+            "TypeRef-Union",
+            33551usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "TypeRef-Union",
+            33551usize,
+            "TypeRef-Using",
+            33372usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "TypeRef-Using",
+            33372usize,
+            "TypeRef-WildcardPattern",
+            34025usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "TypeRef-WildcardPattern",
+            34025usize,
+            "TypeRefsArgs-Cons",
+            34249usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "TypeRefsArgs-Cons",
+            34249usize,
+            "TypeRefsArgs-Empty",
+            34232usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "TypeRefsArgs-Empty",
+            34232usize,
+            "TypeRefsEnumPayload-None",
+            34267usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "TypeRefsEnumPayload-None",
+            34267usize,
+            "TypeRefsEnumPayload-Record",
+            34302usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "TypeRefsEnumPayload-Record",
+            34302usize,
+            "TypeRefsEnumPayload-Tuple",
+            34284usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "TypeRefsEnumPayload-Tuple",
+            34284usize,
+            "TypeRefsExprs-Cons",
+            34200usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "TypeRefsExprs-Cons",
+            34200usize,
+            "TypeRefsExprs-Empty",
+            34183usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "TypeRefsExprs-Empty",
+            34183usize,
+            "TypeRefsFields-Cons",
+            34337usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "TypeRefsFields-Cons",
+            34337usize,
+            "TypeRefsFields-Empty",
+            34320usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "TypeRefsFields-Empty",
+            34320usize,
+            "TypeRefsPayload-None",
+            34355usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "TypeRefsPayload-None",
+            34355usize,
+            "TypeRefsPayload-Record",
+            34390usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "TypeRefsPayload-Record",
+            34390usize,
+            "TypeRefsPayload-Tuple",
+            34372usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "TypeRefsPayload-Tuple",
+            34372usize,
+            "Unify-Apply",
+            25821usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "Unify-Apply",
+            25821usize,
+            "Unify-Apply-Fail",
+            25839usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "Unify-Apply-Fail",
+            25839usize,
+            "Unify-Array",
+            25586usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "Unify-Array",
+            25586usize,
+            "Unify-Array-Len-Fail",
+            25604usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "Unify-Array-Len-Fail",
+            25604usize,
+            "Unify-Closure",
+            25713usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "Unify-Closure",
+            25713usize,
+            "Unify-Closure-Fail",
+            25731usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "Unify-Closure-Fail",
+            25731usize,
+            "Unify-Ctor-Mismatch",
+            26026usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "Unify-Ctor-Mismatch",
+            26026usize,
+            "Unify-Empty",
+            25461usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "Unify-Empty",
+            25461usize,
+            "Unify-Eq",
+            25478usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "Unify-Eq",
+            25478usize,
+            "Unify-Err",
+            26062usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "Unify-Err",
+            26062usize,
+            "Unify-Func",
+            25676usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "Unify-Func",
+            25676usize,
+            "Unify-Func-Fail",
+            25695usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "Unify-Func-Fail",
+            25695usize,
+            "Unify-Occurs-Fail",
+            25532usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "Unify-Occurs-Fail",
+            25532usize,
+            "Unify-Ok",
+            26044usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "Unify-Ok",
+            26044usize,
+            "Unify-Perm",
+            25640usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "Unify-Perm",
+            25640usize,
+            "Unify-Perm-Fail",
+            25658usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "Unify-Perm-Fail",
+            25658usize,
+            "Unify-Prim-Fail",
+            25983usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "Unify-Prim-Fail",
+            25983usize,
+            "Unify-Ptr",
+            25749usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "Unify-Ptr",
+            25749usize,
+            "Unify-Ptr-State-Fail",
+            25767usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "Unify-Ptr-State-Fail",
+            25767usize,
+            "Unify-Range",
+            25857usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "Unify-Range",
+            25857usize,
+            "Unify-RangeFrom",
+            25893usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "Unify-RangeFrom",
+            25893usize,
+            "Unify-RangeInclusive",
+            25875usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "Unify-RangeInclusive",
+            25875usize,
+            "Unify-RangeTo",
+            25911usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "Unify-RangeTo",
+            25911usize,
+            "Unify-RangeToInclusive",
+            25929usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "Unify-RangeToInclusive",
+            25929usize,
+            "Unify-RawPtr",
+            25785usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "Unify-RawPtr",
+            25785usize,
+            "Unify-RawPtr-Qual-Fail",
+            25803usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "Unify-RawPtr-Qual-Fail",
+            25803usize,
+            "Unify-Refine",
+            25947usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "Unify-Refine",
+            25947usize,
+            "Unify-Refine-Pred-Fail",
+            25965usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "Unify-Refine-Pred-Fail",
+            25965usize,
+            "Unify-Rigid-Fail",
+            26001usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "Unify-Rigid-Fail",
+            26001usize,
+            "Unify-Slice",
+            25622usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "Unify-Slice",
+            25622usize,
+            "Unify-Tuple",
+            25550usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "Unify-Tuple",
+            25550usize,
+            "Unify-Tuple-Fail",
+            25568usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "Unify-Tuple-Fail",
+            25568usize,
+            "Unify-Var-L",
+            25496usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "Unify-Var-L",
+            25496usize,
+            "Unify-Var-R",
+            25514usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "Unify-Var-R",
+            25514usize,
+            "Union-DirectAccess-Err",
+            40816usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "Union-DirectAccess-Err",
+            40816usize,
+            "Using-Alias-Dup",
+            19161usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "Using-Alias-Dup",
+            19161usize,
+            "Using-Alias-Ok",
+            19125usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "Using-Alias-Ok",
+            19125usize,
+            "Using-Alias-Reserved",
+            19179usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "Using-Alias-Reserved",
+            19179usize,
+            "Using-Alias-Unresolved",
+            19143usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "Using-Alias-Unresolved",
+            19143usize,
+            "Using-Item",
+            30313usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "Using-Item",
+            30313usize,
+            "Using-Item-Public-Err",
+            30331usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "Using-Item-Public-Err",
+            30331usize,
+            "Using-List",
+            30349usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "Using-List",
+            30349usize,
+            "Using-List-Dup",
+            30403usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "Using-List-Dup",
+            30403usize,
+            "Using-List-Public-Err",
+            30421usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "Using-List-Public-Err",
+            30421usize,
+            "Using-Wildcard",
+            30385usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "Using-Wildcard",
+            30385usize,
+            "Using-Wildcard-Warn",
+            30367usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "Using-Wildcard-Warn",
+            30367usize,
+            "Validate-Module-Keyword-Err",
+            19243usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "Validate-Module-Keyword-Err",
+            19243usize,
+            "Validate-Module-Ok",
+            19225usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "Validate-Module-Ok",
+            19225usize,
+            "Validate-ModulePath-Ok",
+            23842usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "Validate-ModulePath-Ok",
+            23842usize,
+            "Validate-ModulePath-Reserved-Err",
+            23860usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "Validate-ModulePath-Reserved-Err",
+            23860usize,
+            "ValidateManifest-Err",
+            3723usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "ValidateManifest-Err",
+            3723usize,
+            "ValidateManifest-Ok",
+            3705usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "ValidateManifest-Ok",
+            3705usize,
+            "ValueRef-Expr-Sub",
+            34590usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "ValueRef-Expr-Sub",
+            34590usize,
+            "ValueRef-Ident",
+            34436usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "ValueRef-Ident",
+            34436usize,
+            "ValueRef-Ident-Local",
+            34454usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "ValueRef-Ident-Local",
+            34454usize,
+            "ValueRef-Qual",
+            34472usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "ValueRef-Qual",
+            34472usize,
+            "ValueRef-Qual-Local",
+            34490usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "ValueRef-Qual-Local",
+            34490usize,
+            "ValueRef-QualApply",
+            34508usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "ValueRef-QualApply",
+            34508usize,
+            "ValueRef-QualApply-Brace",
+            34544usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "ValueRef-QualApply-Brace",
+            34544usize,
+            "ValueRef-QualApply-Local",
+            34526usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "ValueRef-QualApply-Local",
+            34526usize,
+            "ValueRefsArgs-Cons",
+            34625usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "ValueRefsArgs-Cons",
+            34625usize,
+            "ValueRefsArgs-Empty",
+            34608usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "ValueRefsArgs-Empty",
+            34608usize,
+            "ValueRefsFields-Cons",
+            34660usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "ValueRefsFields-Cons",
+            34660usize,
+            "ValueRefsFields-Empty",
+            34643usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "ValueRefsFields-Empty",
+            34643usize,
+            "WF-Acyclic-Eager",
+            34880usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "WF-Acyclic-Eager",
+            34880usize,
+            "WF-Array",
+            36392usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "WF-Array",
+            36392usize,
+            "WF-Assembly",
+            3511usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "WF-Assembly",
+            3511usize,
+            "WF-Assembly-Count",
+            2661usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "WF-Assembly-Count",
+            2661usize,
+            "WF-Assembly-Count-Err",
+            2679usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "WF-Assembly-Count-Err",
+            2679usize,
+            "WF-Assembly-EmitIR",
+            2502usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "WF-Assembly-EmitIR",
+            2502usize,
+            "WF-Assembly-EmitIR-Err",
+            2520usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "WF-Assembly-EmitIR-Err",
+            2520usize,
+            "WF-Assembly-EmitIRType",
+            2856usize
+        )
+}

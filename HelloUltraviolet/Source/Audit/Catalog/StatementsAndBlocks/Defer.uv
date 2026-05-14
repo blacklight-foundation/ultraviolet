@@ -11,8 +11,8 @@ public procedure validatedStatementsAndBlocksDeferObligations() -> usize {
         "grammar.18.Defer",
         70385usize,
         "HelloUltraviolet::Reference::Statements",
-        "runStatementsExpressionStatementsReference",
-        "Source/Reference/Statements/ExpressionStatements.uv"
+        "runStatementsDeferReference",
+        "Source/Reference/Statements/Defer.uv"
     ) {
         count = count + 1usize
     }
@@ -20,8 +20,8 @@ public procedure validatedStatementsAndBlocksDeferObligations() -> usize {
         "rule.18.Parse-Defer-Stmt",
         70402usize,
         "HelloUltraviolet::Reference::Statements",
-        "runStatementsExpressionStatementsReference",
-        "Source/Reference/Statements/ExpressionStatements.uv"
+        "runStatementsDeferReference",
+        "Source/Reference/Statements/Defer.uv"
     ) {
         count = count + 1usize
     }
@@ -29,8 +29,8 @@ public procedure validatedStatementsAndBlocksDeferObligations() -> usize {
         "def.18.DeferStmtAst",
         70420usize,
         "HelloUltraviolet::Reference::Statements",
-        "runStatementsExpressionStatementsReference",
-        "Source/Reference/Statements/ExpressionStatements.uv"
+        "runStatementsDeferReference",
+        "Source/Reference/Statements/Defer.uv"
     ) {
         count = count + 1usize
     }
@@ -38,26 +38,26 @@ public procedure validatedStatementsAndBlocksDeferObligations() -> usize {
         "rule.18.T-DeferStmt",
         70435usize,
         "HelloUltraviolet::Reference::Statements",
-        "runStatementsExpressionStatementsReference",
-        "Source/Reference/Statements/ExpressionStatements.uv"
+        "runStatementsDeferReference",
+        "Source/Reference/Statements/Defer.uv"
     ) {
         count = count + 1usize
     }
-    if acceptedObligationEntryMatches(
+    if rejectedSourceObligationEntryMatches(
         "rule.18.Defer-NonUnit-Err",
         70451usize,
-        "HelloUltraviolet::Reference::Statements",
-        "runStatementsExpressionStatementsReference",
-        "Source/Reference/Statements/ExpressionStatements.uv"
+        "HelloUltraviolet::Fixtures::RejectedSource",
+        "validatedStatementsRejectedSourceFixtureCount",
+        "Fixtures/RejectedSource/Statements/DeferNonUnit/Source/Main.uv"
     ) {
         count = count + 1usize
     }
-    if acceptedObligationEntryMatches(
+    if rejectedSourceObligationEntryMatches(
         "rule.18.Defer-NonLocal-Err",
         70467usize,
-        "HelloUltraviolet::Reference::Statements",
-        "runStatementsExpressionStatementsReference",
-        "Source/Reference/Statements/ExpressionStatements.uv"
+        "HelloUltraviolet::Fixtures::RejectedSource",
+        "validatedStatementsRejectedSourceFixtureCount",
+        "Fixtures/RejectedSource/Statements/DeferNonLocal/Source/Main.uv"
     ) {
         count = count + 1usize
     }
@@ -65,8 +65,8 @@ public procedure validatedStatementsAndBlocksDeferObligations() -> usize {
         "rule.18.HasNonLocalCtrl-Return",
         70483usize,
         "HelloUltraviolet::Reference::Statements",
-        "runStatementsExpressionStatementsReference",
-        "Source/Reference/Statements/ExpressionStatements.uv"
+        "runStatementsDeferReference",
+        "Source/Reference/Statements/Defer.uv"
     ) {
         count = count + 1usize
     }
@@ -74,8 +74,8 @@ public procedure validatedStatementsAndBlocksDeferObligations() -> usize {
         "rule.18.HasNonLocalCtrl-Break",
         70498usize,
         "HelloUltraviolet::Reference::Statements",
-        "runStatementsExpressionStatementsReference",
-        "Source/Reference/Statements/ExpressionStatements.uv"
+        "runStatementsDeferReference",
+        "Source/Reference/Statements/Defer.uv"
     ) {
         count = count + 1usize
     }
@@ -83,8 +83,8 @@ public procedure validatedStatementsAndBlocksDeferObligations() -> usize {
         "rule.18.HasNonLocalCtrl-Continue",
         70514usize,
         "HelloUltraviolet::Reference::Statements",
-        "runStatementsExpressionStatementsReference",
-        "Source/Reference/Statements/ExpressionStatements.uv"
+        "runStatementsDeferReference",
+        "Source/Reference/Statements/Defer.uv"
     ) {
         count = count + 1usize
     }
@@ -92,8 +92,8 @@ public procedure validatedStatementsAndBlocksDeferObligations() -> usize {
         "req.18.HasNonLocalCtrlPropagation",
         70530usize,
         "HelloUltraviolet::Reference::Statements",
-        "runStatementsExpressionStatementsReference",
-        "Source/Reference/Statements/ExpressionStatements.uv"
+        "runStatementsDeferReference",
+        "Source/Reference/Statements/Defer.uv"
     ) {
         count = count + 1usize
     }
@@ -101,8 +101,8 @@ public procedure validatedStatementsAndBlocksDeferObligations() -> usize {
         "def.18.DeferSafe",
         70543usize,
         "HelloUltraviolet::Reference::Statements",
-        "runStatementsExpressionStatementsReference",
-        "Source/Reference/Statements/ExpressionStatements.uv"
+        "runStatementsDeferReference",
+        "Source/Reference/Statements/Defer.uv"
     ) {
         count = count + 1usize
     }
@@ -110,8 +110,8 @@ public procedure validatedStatementsAndBlocksDeferObligations() -> usize {
         "req.18.DeferStateAndProvenancePreservation",
         70556usize,
         "HelloUltraviolet::Reference::Statements",
-        "runStatementsExpressionStatementsReference",
-        "Source/Reference/Statements/ExpressionStatements.uv"
+        "runStatementsDeferReference",
+        "Source/Reference/Statements/Defer.uv"
     ) {
         count = count + 1usize
     }
@@ -119,8 +119,8 @@ public procedure validatedStatementsAndBlocksDeferObligations() -> usize {
         "rule.18.ExecSigma-Defer",
         70571usize,
         "HelloUltraviolet::Reference::Statements",
-        "runStatementsExpressionStatementsReference",
-        "Source/Reference/Statements/ExpressionStatements.uv"
+        "runStatementsDeferReference",
+        "Source/Reference/Statements/Defer.uv"
     ) {
         count = count + 1usize
     }
@@ -128,8 +128,8 @@ public procedure validatedStatementsAndBlocksDeferObligations() -> usize {
         "req.18.DeferCleanupSmallStep",
         70587usize,
         "HelloUltraviolet::Reference::Statements",
-        "runStatementsExpressionStatementsReference",
-        "Source/Reference/Statements/ExpressionStatements.uv"
+        "runStatementsDeferReference",
+        "Source/Reference/Statements/Defer.uv"
     ) {
         count = count + 1usize
     }
@@ -137,8 +137,8 @@ public procedure validatedStatementsAndBlocksDeferObligations() -> usize {
         "req.18.DeferCleanupBigStep",
         70600usize,
         "HelloUltraviolet::Reference::Statements",
-        "runStatementsExpressionStatementsReference",
-        "Source/Reference/Statements/ExpressionStatements.uv"
+        "runStatementsDeferReference",
+        "Source/Reference/Statements/Defer.uv"
     ) {
         count = count + 1usize
     }
@@ -146,17 +146,17 @@ public procedure validatedStatementsAndBlocksDeferObligations() -> usize {
         "rule.18.Lower-Stmt-Defer",
         70615usize,
         "HelloUltraviolet::Reference::Statements",
-        "runStatementsExpressionStatementsReference",
-        "Source/Reference/Statements/ExpressionStatements.uv"
+        "runStatementsDeferReference",
+        "Source/Reference/Statements/Defer.uv"
     ) {
         count = count + 1usize
     }
-    if acceptedObligationEntryMatches(
+    if rejectedSourceObligationEntryMatches(
         "diag.18.Defer",
         70632usize,
-        "HelloUltraviolet::Reference::Statements",
-        "runStatementsExpressionStatementsReference",
-        "Source/Reference/Statements/ExpressionStatements.uv"
+        "HelloUltraviolet::Fixtures::RejectedSource",
+        "validatedStatementsRejectedSourceFixtureCount",
+        "Fixtures/RejectedSource/Statements/DeferDiagnostic/Source/Main.uv"
     ) {
         count = count + 1usize
     }

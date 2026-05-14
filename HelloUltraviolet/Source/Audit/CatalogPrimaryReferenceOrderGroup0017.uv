@@ -1,0 +1,604 @@
+//! Catalog primary-reference ordering check group 0017.
+
+internal procedure catalogPrimaryReferenceOrderGroup0017() -> bool {
+    return catalogPrimaryReferencePrecedes(
+            "def.20.ParallelGpuTopologyOptions",
+            75558usize,
+            "def.20.ParallelLoweringJudgments",
+            75666usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.20.ParallelLoweringJudgments",
+            75666usize,
+            "def.20.ParallelState",
+            75539usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.20.ParallelState",
+            75539usize,
+            "def.20.SpawnHandleAndEnqueue",
+            77146usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.20.SpawnHandleAndEnqueue",
+            77146usize,
+            "def.20.SpawnOptionValidation",
+            77096usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.20.SpawnOptionValidation",
+            77096usize,
+            "def.21.AllLoopSignature",
+            81675usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.21.AllLoopSignature",
+            81675usize,
+            "def.21.AllStateAndInitSignature",
+            81566usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.21.AllStateAndInitSignature",
+            81566usize,
+            "def.21.AllStepSignature",
+            81601usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.21.AllStepSignature",
+            81601usize,
+            "def.21.AsyncCombinatorRuntimeWrappers",
+            81780usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.21.AsyncCombinatorRuntimeWrappers",
+            81780usize,
+            "def.21.AsyncCombinatorTypes",
+            80863usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.21.AsyncCombinatorTypes",
+            80863usize,
+            "def.21.AsyncComposeIR",
+            82166usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.21.AsyncComposeIR",
+            82166usize,
+            "def.21.AsyncKeyExistingAstForms",
+            82969usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.21.AsyncKeyExistingAstForms",
+            82969usize,
+            "def.21.AsyncKeyIR",
+            83127usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.21.AsyncKeyIR",
+            83127usize,
+            "def.21.AsyncProcedureDefinition",
+            82455usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.21.AsyncProcedureDefinition",
+            82455usize,
+            "def.21.AsyncSigAndBodyReturnType",
+            78783usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.21.AsyncSigAndBodyReturnType",
+            78783usize,
+            "def.21.AsyncStateMachineFrameHelpers",
+            82755usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.21.AsyncStateMachineFrameHelpers",
+            82755usize,
+            "def.21.AsyncStateMachineHelperForms",
+            82487usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.21.AsyncStateMachineHelperForms",
+            82487usize,
+            "def.21.AsyncStateMachineLoweringJudgements",
+            82741usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.21.AsyncStateMachineLoweringJudgements",
+            82741usize,
+            "def.21.AsyncTypeLoweringForms",
+            78935usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.21.AsyncTypeLoweringForms",
+            78935usize,
+            "def.21.CancelAllSignature",
+            81402usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.21.CancelAllSignature",
+            81402usize,
+            "def.21.EvalYieldFromContinueSignature",
+            79776usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.21.EvalYieldFromContinueSignature",
+            79776usize,
+            "def.21.LiveAcrossSuspension",
+            82535usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.21.LiveAcrossSuspension",
+            82535usize,
+            "def.21.RaceMode",
+            80594usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.21.RaceMode",
+            80594usize,
+            "def.21.RaceSelectionAndState",
+            81169usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.21.RaceSelectionAndState",
+            81169usize,
+            "def.21.RaceStepReturnSignature",
+            81218usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.21.RaceStepReturnSignature",
+            81218usize,
+            "def.21.RaceStepStreamSignature",
+            81311usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.21.RaceStepStreamSignature",
+            81311usize,
+            "def.21.RaceStreamSuspensionState",
+            81437usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.21.RaceStreamSuspensionState",
+            81437usize,
+            "def.21.ResumptionHelpers",
+            79589usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.21.ResumptionHelpers",
+            79589usize,
+            "def.21.SuspensionLoweringForms",
+            79849usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.21.SuspensionLoweringForms",
+            79849usize,
+            "def.21.SyncStepSignature",
+            81042usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.21.SyncStepSignature",
+            81042usize,
+            "def.21.SyncYieldContainment",
+            80467usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.21.SyncYieldContainment",
+            80467usize,
+            "def.21.UntilType",
+            80846usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.21.UntilType",
+            80846usize,
+            "def.21.WaitRuntimeHelpers",
+            79440usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.21.WaitRuntimeHelpers",
+            79440usize,
+            "def.22.AstForms",
+            85341usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.22.AstForms",
+            85341usize,
+            "def.22.BindDeriveTargetInputs",
+            86117usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.22.BindDeriveTargetInputs",
+            86117usize,
+            "def.22.CaptureQuotedTokens",
+            85278usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.22.CaptureQuotedTokens",
+            85278usize,
+            "def.22.CompileTimeJudgementSets",
+            83495usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.22.CompileTimeJudgementSets",
+            83495usize,
+            "def.22.CompileTimeTypingEnvironment",
+            83535usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.22.CompileTimeTypingEnvironment",
+            83535usize,
+            "def.22.ComptimeDiagnosticsInterface",
+            84370usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.22.ComptimeDiagnosticsInterface",
+            84370usize,
+            "def.22.CtAvailabilityAndForbiddenTypes",
+            83548usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.22.CtAvailabilityAndForbiddenTypes",
+            83548usize,
+            "def.22.CtCapBindings",
+            84433usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.22.CtCapBindings",
+            84433usize,
+            "def.22.CtCapName",
+            84199usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.22.CtCapName",
+            84199usize,
+            "def.22.CtCapabilitiesAndBuiltinTypes",
+            84243usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.22.CtCapabilitiesAndBuiltinTypes",
+            84243usize,
+            "def.22.CtCapabilityDynamicHelpers",
+            84478usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.22.CtCapabilityDynamicHelpers",
+            84478usize,
+            "def.22.CtDynamicHelpers",
+            83760usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.22.CtDynamicHelpers",
+            83760usize,
+            "def.22.CtExecutionState",
+            83467usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.22.CtExecutionState",
+            83467usize,
+            "def.22.CtExpandItemResult",
+            83923usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.22.CtExpandItemResult",
+            83923usize,
+            "def.22.CtLiteralType",
+            85408usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.22.CtLiteralType",
+            85408usize,
+            "def.22.CtLiteralize",
+            84123usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.22.CtLiteralize",
+            84123usize,
+            "def.22.CtNodeForms",
+            83448usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.22.CtNodeForms",
+            83448usize,
+            "def.22.CtParseJudg",
+            83305usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.22.CtParseJudg",
+            83305usize,
+            "def.22.CtReflectionInfoFields",
+            84266usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.22.CtReflectionInfoFields",
+            84266usize,
+            "def.22.CtValueConversionHelpers",
+            84282usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.22.CtValueConversionHelpers",
+            84282usize,
+            "def.22.CtValueForms",
+            83514usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.22.CtValueForms",
+            83514usize,
+            "def.22.DeriveGraphAndOrder",
+            85892usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.22.DeriveGraphAndOrder",
+            85892usize,
+            "def.22.DeriveParseJudg",
+            85721usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.22.DeriveParseJudg",
+            85721usize,
+            "def.22.DeriveTargetDecl",
+            85877usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.22.DeriveTargetDecl",
+            85877usize,
+            "def.22.ExpectedAstKind",
+            85390usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.22.ExpectedAstKind",
+            85390usize,
+            "def.22.IntrospectInterface",
+            84328usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.22.IntrospectInterface",
+            84328usize,
+            "def.22.ParseQuotedBody",
+            85544usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.22.ParseQuotedBody",
+            85544usize,
+            "def.22.Phase2ModuleOrder",
+            83747usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.22.Phase2ModuleOrder",
+            83747usize,
+            "def.22.ProjectFilesInterface",
+            84350usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.22.ProjectFilesInterface",
+            84350usize,
+            "def.22.QuoteJudg",
+            85377usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.22.QuoteJudg",
+            85377usize,
+            "def.22.QuoteParseJudg",
+            85265usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.22.QuoteParseJudg",
+            85265usize,
+            "def.22.QuoteSpliceHygieneForms",
+            85360usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.22.QuoteSpliceHygieneForms",
+            85360usize,
+            "def.22.ReflectFields",
+            84916usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.22.ReflectFields",
+            84916usize,
+            "def.22.ReflectJudgementsAndTypeLiteralExpr",
+            84861usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.22.ReflectJudgementsAndTypeLiteralExpr",
+            84861usize,
+            "def.22.ReflectParseJudg",
+            84805usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.22.ReflectParseJudg",
+            84805usize,
+            "def.22.ReflectStates",
+            84950usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.22.ReflectStates",
+            84950usize,
+            "def.22.ReflectVariants",
+            84933usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.22.ReflectVariants",
+            84933usize,
+            "def.22.Reflectable",
+            84836usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.22.Reflectable",
+            84836usize,
+            "def.22.ReflectionPayloadAndModuleHelpers",
+            84968usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.22.ReflectionPayloadAndModuleHelpers",
+            84968usize,
+            "def.22.RenderSplice",
+            85561usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.22.RenderSplice",
+            85561usize,
+            "def.22.ResolveQuoteKind",
+            85462usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.22.ResolveQuoteKind",
+            85462usize,
+            "def.22.SpliceCompat",
+            85429usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.22.SpliceCompat",
+            85429usize,
+            "def.22.TypeCategory",
+            84875usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.22.TypeCategory",
+            84875usize,
+            "def.22.TypeEmitterInterface",
+            84312usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.22.TypeEmitterInterface",
+            84312usize,
+            "def.23.BoundaryUnwindCodeGenerationEffects",
+            89599usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.23.BoundaryUnwindCodeGenerationEffects",
+            89599usize,
+            "def.23.CapabilityIsolationHelpers",
+            88710usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.23.CapabilityIsolationHelpers",
+            88710usize,
+            "def.23.DetermineUnwindMode",
+            89480usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.23.DetermineUnwindMode",
+            89480usize,
+            "def.23.ExportSignatureHelpers",
+            87399usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.23.ExportSignatureHelpers",
+            87399usize,
+            "def.23.ExternAbiStrings",
+            87167usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.23.ExternAbiStrings",
+            87167usize,
+            "def.23.ExternProcedureDerivedForms",
+            87134usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.23.ExternProcedureDerivedForms",
+            87134usize,
+            "def.23.ExternProcedureMeaning",
+            87154usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.23.ExternProcedureMeaning",
+            87154usize,
+            "def.23.ExternSignatureRequirements",
+            87189usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.23.ExternSignatureRequirements",
+            87189usize,
+            "def.23.FFIBoundary",
+            86310usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.23.FFIBoundary",
+            86310usize,
+            "def.23.FfiAliasHelpers",
+            86440usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.23.FfiAliasHelpers",
+            86440usize,
+            "def.23.FfiByValueHelpers",
+            86588usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.23.FfiByValueHelpers",
+            86588usize,
+            "def.23.FfiFieldAndPayloadTypeParamHelpers",
+            86529usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.23.FfiFieldAndPayloadTypeParamHelpers",
+            86529usize,
+            "def.23.FfiLayoutAndPayloadHelpers",
+            86411usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.23.FfiLayoutAndPayloadHelpers",
+            86411usize,
+            "def.23.FfiPrimitiveTypes",
+            86398usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.23.FfiPrimitiveTypes",
+            86398usize,
+            "def.23.FfiSafeJudgements",
+            86385usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.23.FfiSafeJudgements",
+            86385usize,
+            "def.23.FfiSafePredicateClauseHelpers",
+            86543usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.23.FfiSafePredicateClauseHelpers",
+            86543usize,
+            "def.23.FfiSafePredicateMeaning",
+            86372usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.23.FfiSafePredicateMeaning",
+            86372usize,
+            "def.23.FfiSafeTypePredicateAstForm",
+            86357usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.23.FfiSafeTypePredicateAstForm",
+            86357usize,
+            "def.23.FfiTypeParameterSetHelper",
+            86427usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.23.FfiTypeParameterSetHelper",
+            86427usize,
+            "def.23.ForeignContractStart",
+            88852usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.23.ForeignContractStart",
+            88852usize,
+            "def.23.ForeignContractVerificationSummary",
+            89325usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.23.ForeignContractVerificationSummary",
+            89325usize,
+            "def.23.ForeignEnsuresKindAndExpr",
+            88977usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.23.ForeignEnsuresKindAndExpr",
+            88977usize,
+            "def.23.ForeignPostconditionClassification",
+            89195usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.23.ForeignPostconditionClassification",
+            89195usize,
+            "def.23.ForeignPostconditionVerificationModes",
+            89292usize
+        )
+}

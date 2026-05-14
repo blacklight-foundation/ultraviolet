@@ -257,6 +257,8 @@ struct ParallelContext {
     size_t pending_count;
     cursive_rt_condition_t done_cv;
     C0CancelId cancel_token;
+    uint64_t domain_affinity_mask;
+    int32_t domain_priority_hint;
     WorkItem* first_panic;    // First panicked work item
     uint32_t context_panic_code;
     int panic_count;          // Number of panics
@@ -467,6 +469,13 @@ static int32_t c0_priority_rank(int32_t priority_hint) {
         return 1;
     }
     return 2;
+}
+
+static int32_t c0_effective_priority_rank(ParallelContext* ctx, int32_t priority_hint) {
+    if (priority_hint < 0) {
+        return ctx ? ctx->domain_priority_hint : 1;
+    }
+    return c0_priority_rank(priority_hint);
 }
 
 static int c0_thread_priority_from_rank(int32_t rank) {
@@ -1036,6 +1045,8 @@ void* cursive_parallel_begin(C0DynObject domain,
     const C0ExecutionDomain* dom = (const C0ExecutionDomain*)domain.data;
     const uint32_t domain_kind = dom ? dom->kind : (uint32_t)C0_DOMAIN_CPU;
     const int inline_domain = dom && dom->kind == C0_DOMAIN_INLINE;
+    const uint64_t domain_affinity_mask = dom ? dom->affinity_mask : 0;
+    const int32_t domain_priority_hint = dom ? c0_priority_rank(dom->priority_hint) : 1;
     ParallelContext* prev_ctx = c0_current_ctx();
     if (c0_debug_flag_enabled("CURSIVE_DEBUG_PARALLEL_RUNTIME")) {
         char dbg[256];
@@ -1057,6 +1068,10 @@ void* cursive_parallel_begin(C0DynObject domain,
             pos += c0_u64_to_dec((uint64_t)dom->kind, dbg + pos);
             pos += c0_copy_cstr(dbg + pos, " max=");
             pos += c0_u64_to_dec((uint64_t)dom->max_concurrency, dbg + pos);
+            pos += c0_copy_cstr(dbg + pos, " affinity=");
+            pos += c0_u64_to_dec(dom->affinity_mask, dbg + pos);
+            pos += c0_copy_cstr(dbg + pos, " priority=");
+            pos += c0_u64_to_dec((uint64_t)c0_priority_rank(dom->priority_hint), dbg + pos);
         } else {
             pos += c0_copy_cstr(dbg + pos, " kind=null");
         }
@@ -1078,6 +1093,8 @@ void* cursive_parallel_begin(C0DynObject domain,
     ctx->pending_count = 0;
     cursive_rt_condition_init(&ctx->done_cv);
     ctx->cancel_token = cancel_token;
+    ctx->domain_affinity_mask = domain_affinity_mask;
+    ctx->domain_priority_hint = domain_priority_hint;
     ctx->first_panic = NULL;
     ctx->context_panic_code = 0;
     ctx->panic_count = 0;
@@ -1254,6 +1271,7 @@ void* cursive_spawn_create(void* env, size_t env_size,
                             size_t result_size,
                             uint64_t affinity_mask,
                             int32_t priority_hint) {
+    ParallelContext* current_ctx = c0_current_ctx();
     if (c0_debug_flag_enabled("CURSIVE_DEBUG_PARALLEL_RUNTIME")) {
         static int spawn_count = 0;
         spawn_count++;
@@ -1290,13 +1308,15 @@ void* cursive_spawn_create(void* env, size_t env_size,
     item->state = WORK_PENDING;
     item->task_id = c0_fresh_task_id();
     item->completion_seq = 0;
-    item->owner_ctx = c0_current_ctx();
+    item->owner_ctx = current_ctx;
     item->hosted_env = hosted_env;
     item->body = body;
     item->result = result_size > 0 ? c0_heap_alloc_raw(result_size) : NULL;
     item->result_size = result_size;
-    item->affinity_mask = affinity_mask;
-    item->priority_hint = c0_priority_rank(priority_hint);
+    item->affinity_mask = affinity_mask != 0
+                              ? affinity_mask
+                              : (current_ctx ? current_ctx->domain_affinity_mask : 0);
+    item->priority_hint = c0_effective_priority_rank(current_ctx, priority_hint);
     item->panic_code = 0;
     item->next = NULL;
     item->all_next = NULL;
@@ -1308,13 +1328,13 @@ void* cursive_spawn_create(void* env, size_t env_size,
 
     if (body == NULL) {
         item->state = WORK_COMPLETED;
-        c0_record_item_settlement(c0_current_ctx(), item);
+        c0_record_item_settlement(current_ctx, item);
         if (item->done_event) {
             cursive_rt_event_set(item->done_event);
         }
-    } else if (c0_current_ctx() && c0_current_ctx()->pool) {
-        c0_enqueue_item(c0_current_ctx()->pool, item);
-    } else if (!c0_current_ctx()) {
+    } else if (current_ctx && current_ctx->pool) {
+        c0_enqueue_item(current_ctx->pool, item);
+    } else if (!current_ctx) {
         // Defensive fallback for invalid outside-parallel runtime entry.
         C0WorkHintScope hints;
         c0_apply_work_hints(item, &hints);
@@ -1327,10 +1347,10 @@ void* cursive_spawn_create(void* env, size_t env_size,
         // Inline/no-pool parallel domains keep spawned work pending until wait/join.
     }
 
-    if (c0_current_ctx()) {
-        c0_register_spawn_handle(c0_current_ctx(), handle);
-        item->all_next = c0_current_ctx()->all_items;
-        c0_current_ctx()->all_items = item;
+    if (current_ctx) {
+        c0_register_spawn_handle(current_ctx, handle);
+        item->all_next = current_ctx->all_items;
+        current_ctx->all_items = item;
     }
     
     return handle;
@@ -1728,8 +1748,8 @@ void cursive_dispatch_run(C0Range range, size_t elem_size, size_t result_size,
         item->body = c0_dispatch_chunk;
         item->result = reduce_result;
         item->result_size = result_size;
-        item->affinity_mask = 0;
-        item->priority_hint = c0_priority_rank(1);
+        item->affinity_mask = c0_current_ctx() ? c0_current_ctx()->domain_affinity_mask : 0;
+        item->priority_hint = c0_current_ctx() ? c0_current_ctx()->domain_priority_hint : 1;
         item->panic_code = 0;
         item->next = NULL;
         item->all_next = NULL;
@@ -1817,8 +1837,8 @@ void cursive_dispatch_run(C0Range range, size_t elem_size, size_t result_size,
                            ? c0_heap_alloc_raw(result_size)
                            : NULL;
         item->result_size = result_size;
-        item->affinity_mask = 0;
-        item->priority_hint = c0_priority_rank(1);
+        item->affinity_mask = ctx ? ctx->domain_affinity_mask : 0;
+        item->priority_hint = ctx ? ctx->domain_priority_hint : 1;
         item->panic_code = 0;
         item->next = NULL;
         item->all_next = NULL;

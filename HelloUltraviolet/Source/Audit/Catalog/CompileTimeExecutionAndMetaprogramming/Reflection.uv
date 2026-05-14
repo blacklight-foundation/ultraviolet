@@ -11,8 +11,8 @@ public procedure validatedCompileTimeExecutionAndMetaprogrammingReflectionObliga
         "grammar.22.TypeLiteral",
         84788usize,
         "HelloUltraviolet::Reference::Comptime",
-        "runComptimeCompileTimeFormsReference",
-        "Source/Reference/Comptime/CompileTimeForms.uv"
+        "runComptimeReflectionReference",
+        "Source/Reference/Comptime/Reflection.uv"
     ) {
         count = count + 1usize
     }
@@ -20,8 +20,8 @@ public procedure validatedCompileTimeExecutionAndMetaprogrammingReflectionObliga
         "def.22.ReflectParseJudg",
         84805usize,
         "HelloUltraviolet::Reference::Comptime",
-        "runComptimeCompileTimeFormsReference",
-        "Source/Reference/Comptime/CompileTimeForms.uv"
+        "runComptimeReflectionReference",
+        "Source/Reference/Comptime/Reflection.uv"
     ) {
         count = count + 1usize
     }
@@ -29,8 +29,8 @@ public procedure validatedCompileTimeExecutionAndMetaprogrammingReflectionObliga
         "rule.22.Parse-TypeLiteral",
         84818usize,
         "HelloUltraviolet::Reference::Comptime",
-        "runComptimeCompileTimeFormsReference",
-        "Source/Reference/Comptime/CompileTimeForms.uv"
+        "runComptimeReflectionReference",
+        "Source/Reference/Comptime/Reflection.uv"
     ) {
         count = count + 1usize
     }
@@ -38,8 +38,8 @@ public procedure validatedCompileTimeExecutionAndMetaprogrammingReflectionObliga
         "def.22.Reflectable",
         84836usize,
         "HelloUltraviolet::Reference::Comptime",
-        "runComptimeCompileTimeFormsReference",
-        "Source/Reference/Comptime/CompileTimeForms.uv"
+        "runComptimeReflectionReference",
+        "Source/Reference/Comptime/Reflection.uv"
     ) {
         count = count + 1usize
     }
@@ -47,8 +47,8 @@ public procedure validatedCompileTimeExecutionAndMetaprogrammingReflectionObliga
         "def.22.ReflectJudgementsAndTypeLiteralExpr",
         84861usize,
         "HelloUltraviolet::Reference::Comptime",
-        "runComptimeCompileTimeFormsReference",
-        "Source/Reference/Comptime/CompileTimeForms.uv"
+        "runComptimeReflectionReference",
+        "Source/Reference/Comptime/Reflection.uv"
     ) {
         count = count + 1usize
     }
@@ -56,8 +56,8 @@ public procedure validatedCompileTimeExecutionAndMetaprogrammingReflectionObliga
         "def.22.TypeCategory",
         84875usize,
         "HelloUltraviolet::Reference::Comptime",
-        "runComptimeCompileTimeFormsReference",
-        "Source/Reference/Comptime/CompileTimeForms.uv"
+        "runComptimeReflectionReference",
+        "Source/Reference/Comptime/Reflection.uv"
     ) {
         count = count + 1usize
     }
@@ -65,8 +65,8 @@ public procedure validatedCompileTimeExecutionAndMetaprogrammingReflectionObliga
         "def.22.ReflectFields",
         84916usize,
         "HelloUltraviolet::Reference::Comptime",
-        "runComptimeCompileTimeFormsReference",
-        "Source/Reference/Comptime/CompileTimeForms.uv"
+        "runComptimeReflectionReference",
+        "Source/Reference/Comptime/Reflection.uv"
     ) {
         count = count + 1usize
     }
@@ -74,8 +74,8 @@ public procedure validatedCompileTimeExecutionAndMetaprogrammingReflectionObliga
         "def.22.ReflectVariants",
         84933usize,
         "HelloUltraviolet::Reference::Comptime",
-        "runComptimeCompileTimeFormsReference",
-        "Source/Reference/Comptime/CompileTimeForms.uv"
+        "runComptimeReflectionReference",
+        "Source/Reference/Comptime/Reflection.uv"
     ) {
         count = count + 1usize
     }
@@ -83,8 +83,8 @@ public procedure validatedCompileTimeExecutionAndMetaprogrammingReflectionObliga
         "def.22.ReflectStates",
         84950usize,
         "HelloUltraviolet::Reference::Comptime",
-        "runComptimeCompileTimeFormsReference",
-        "Source/Reference/Comptime/CompileTimeForms.uv"
+        "runComptimeReflectionReference",
+        "Source/Reference/Comptime/Reflection.uv"
     ) {
         count = count + 1usize
     }
@@ -92,8 +92,8 @@ public procedure validatedCompileTimeExecutionAndMetaprogrammingReflectionObliga
         "def.22.ReflectionPayloadAndModuleHelpers",
         84968usize,
         "HelloUltraviolet::Reference::Comptime",
-        "runComptimeCompileTimeFormsReference",
-        "Source/Reference/Comptime/CompileTimeForms.uv"
+        "runComptimeReflectionReference",
+        "Source/Reference/Comptime/Reflection.uv"
     ) {
         count = count + 1usize
     }
@@ -101,8 +101,8 @@ public procedure validatedCompileTimeExecutionAndMetaprogrammingReflectionObliga
         "rule.22.T-TypeLiteral",
         84993usize,
         "HelloUltraviolet::Reference::Comptime",
-        "runComptimeCompileTimeFormsReference",
-        "Source/Reference/Comptime/CompileTimeForms.uv"
+        "runComptimeReflectionReference",
+        "Source/Reference/Comptime/Reflection.uv"
     ) {
         count = count + 1usize
     }
@@ -110,17 +110,17 @@ public procedure validatedCompileTimeExecutionAndMetaprogrammingReflectionObliga
         "requirement.22.IntrospectCategoryValidity",
         85009usize,
         "HelloUltraviolet::Reference::Comptime",
-        "runComptimeCompileTimeFormsReference",
-        "Source/Reference/Comptime/CompileTimeForms.uv"
+        "runComptimeReflectionReference",
+        "Source/Reference/Comptime/Reflection.uv"
     ) {
         count = count + 1usize
     }
-    if acceptedObligationEntryMatches(
+    if rejectedSourceObligationEntryMatches(
         "requirement.22.IntrospectMemberValidity",
         85022usize,
-        "HelloUltraviolet::Reference::Comptime",
-        "runComptimeCompileTimeFormsReference",
-        "Source/Reference/Comptime/CompileTimeForms.uv"
+        "HelloUltraviolet::Fixtures::RejectedSource",
+        "validatedComptimeRejectedSourceFixtureCount",
+        "Fixtures/RejectedSource/Comptime/IntrospectFieldsNonRecord/Source/Main.uv"
     ) {
         count = count + 1usize
     }
@@ -128,8 +128,8 @@ public procedure validatedCompileTimeExecutionAndMetaprogrammingReflectionObliga
         "requirement.22.ReflectionCanonicalOrder",
         85037usize,
         "HelloUltraviolet::Reference::Comptime",
-        "runComptimeCompileTimeFormsReference",
-        "Source/Reference/Comptime/CompileTimeForms.uv"
+        "runComptimeReflectionReference",
+        "Source/Reference/Comptime/Reflection.uv"
     ) {
         count = count + 1usize
     }
@@ -137,8 +137,8 @@ public procedure validatedCompileTimeExecutionAndMetaprogrammingReflectionObliga
         "requirement.22.IntrospectImplementsFormSemantics",
         85053usize,
         "HelloUltraviolet::Reference::Comptime",
-        "runComptimeCompileTimeFormsReference",
-        "Source/Reference/Comptime/CompileTimeForms.uv"
+        "runComptimeReflectionReference",
+        "Source/Reference/Comptime/Reflection.uv"
     ) {
         count = count + 1usize
     }
@@ -146,8 +146,8 @@ public procedure validatedCompileTimeExecutionAndMetaprogrammingReflectionObliga
         "rule.22.CtEval-TypeLiteral",
         85068usize,
         "HelloUltraviolet::Reference::Comptime",
-        "runComptimeCompileTimeFormsReference",
-        "Source/Reference/Comptime/CompileTimeForms.uv"
+        "runComptimeReflectionReference",
+        "Source/Reference/Comptime/Reflection.uv"
     ) {
         count = count + 1usize
     }
@@ -155,8 +155,8 @@ public procedure validatedCompileTimeExecutionAndMetaprogrammingReflectionObliga
         "rule.22.CtBuiltin-Reflect-Category",
         85084usize,
         "HelloUltraviolet::Reference::Comptime",
-        "runComptimeCompileTimeFormsReference",
-        "Source/Reference/Comptime/CompileTimeForms.uv"
+        "runComptimeReflectionReference",
+        "Source/Reference/Comptime/Reflection.uv"
     ) {
         count = count + 1usize
     }
@@ -164,8 +164,8 @@ public procedure validatedCompileTimeExecutionAndMetaprogrammingReflectionObliga
         "rule.22.CtBuiltin-Reflect-Fields",
         85100usize,
         "HelloUltraviolet::Reference::Comptime",
-        "runComptimeCompileTimeFormsReference",
-        "Source/Reference/Comptime/CompileTimeForms.uv"
+        "runComptimeReflectionReference",
+        "Source/Reference/Comptime/Reflection.uv"
     ) {
         count = count + 1usize
     }
@@ -173,8 +173,8 @@ public procedure validatedCompileTimeExecutionAndMetaprogrammingReflectionObliga
         "rule.22.CtBuiltin-Reflect-Variants",
         85116usize,
         "HelloUltraviolet::Reference::Comptime",
-        "runComptimeCompileTimeFormsReference",
-        "Source/Reference/Comptime/CompileTimeForms.uv"
+        "runComptimeReflectionReference",
+        "Source/Reference/Comptime/Reflection.uv"
     ) {
         count = count + 1usize
     }
@@ -182,8 +182,8 @@ public procedure validatedCompileTimeExecutionAndMetaprogrammingReflectionObliga
         "rule.22.CtBuiltin-Reflect-States",
         85132usize,
         "HelloUltraviolet::Reference::Comptime",
-        "runComptimeCompileTimeFormsReference",
-        "Source/Reference/Comptime/CompileTimeForms.uv"
+        "runComptimeReflectionReference",
+        "Source/Reference/Comptime/Reflection.uv"
     ) {
         count = count + 1usize
     }
@@ -191,8 +191,8 @@ public procedure validatedCompileTimeExecutionAndMetaprogrammingReflectionObliga
         "rule.22.CtBuiltin-Reflect-Form",
         85148usize,
         "HelloUltraviolet::Reference::Comptime",
-        "runComptimeCompileTimeFormsReference",
-        "Source/Reference/Comptime/CompileTimeForms.uv"
+        "runComptimeReflectionReference",
+        "Source/Reference/Comptime/Reflection.uv"
     ) {
         count = count + 1usize
     }
@@ -200,8 +200,8 @@ public procedure validatedCompileTimeExecutionAndMetaprogrammingReflectionObliga
         "rule.22.CtBuiltin-Reflect-TypeName",
         85164usize,
         "HelloUltraviolet::Reference::Comptime",
-        "runComptimeCompileTimeFormsReference",
-        "Source/Reference/Comptime/CompileTimeForms.uv"
+        "runComptimeReflectionReference",
+        "Source/Reference/Comptime/Reflection.uv"
     ) {
         count = count + 1usize
     }
@@ -209,8 +209,8 @@ public procedure validatedCompileTimeExecutionAndMetaprogrammingReflectionObliga
         "rule.22.CtBuiltin-Reflect-ModulePath",
         85180usize,
         "HelloUltraviolet::Reference::Comptime",
-        "runComptimeCompileTimeFormsReference",
-        "Source/Reference/Comptime/CompileTimeForms.uv"
+        "runComptimeReflectionReference",
+        "Source/Reference/Comptime/Reflection.uv"
     ) {
         count = count + 1usize
     }
@@ -218,8 +218,8 @@ public procedure validatedCompileTimeExecutionAndMetaprogrammingReflectionObliga
         "requirement.22.ReflectionPurityAndImmutability",
         85196usize,
         "HelloUltraviolet::Reference::Comptime",
-        "runComptimeCompileTimeFormsReference",
-        "Source/Reference/Comptime/CompileTimeForms.uv"
+        "runComptimeReflectionReference",
+        "Source/Reference/Comptime/Reflection.uv"
     ) {
         count = count + 1usize
     }
@@ -227,8 +227,8 @@ public procedure validatedCompileTimeExecutionAndMetaprogrammingReflectionObliga
         "requirement.22.ReflectionLowering",
         85211usize,
         "HelloUltraviolet::Reference::Comptime",
-        "runComptimeCompileTimeFormsReference",
-        "Source/Reference/Comptime/CompileTimeForms.uv"
+        "runComptimeReflectionReference",
+        "Source/Reference/Comptime/Reflection.uv"
     ) {
         count = count + 1usize
     }
@@ -236,8 +236,8 @@ public procedure validatedCompileTimeExecutionAndMetaprogrammingReflectionObliga
         "diagnostics.22.ReflectionDiagnosticsReference",
         85226usize,
         "HelloUltraviolet::Reference::Comptime",
-        "runComptimeCompileTimeFormsReference",
-        "Source/Reference/Comptime/CompileTimeForms.uv"
+        "runComptimeReflectionReference",
+        "Source/Reference/Comptime/Reflection.uv"
     ) {
         count = count + 1usize
     }

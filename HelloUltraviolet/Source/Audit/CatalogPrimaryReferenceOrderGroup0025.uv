@@ -1,0 +1,604 @@
+//! Catalog primary-reference ordering check group 0025.
+
+internal procedure catalogPrimaryReferenceOrderGroup0025() -> bool {
+    return catalogPrimaryReferencePrecedes(
+            "def.ModalEmptyState",
+            42793usize,
+            "def.ModalEmptyStates",
+            42841usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.ModalEmptyStates",
+            42841usize,
+            "def.ModalFieldVisible",
+            43253usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.ModalFieldVisible",
+            43253usize,
+            "def.ModalLayoutJudgementSet",
+            42961usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.ModalLayoutJudgementSet",
+            42961usize,
+            "def.ModalNicheApplies",
+            42817usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.ModalNicheApplies",
+            42817usize,
+            "def.ModalNicheBits",
+            42865usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.ModalNicheBits",
+            42865usize,
+            "def.ModalPath",
+            41886usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.ModalPath",
+            41886usize,
+            "def.ModalPayloadAlign",
+            42925usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.ModalPayloadAlign",
+            42925usize,
+            "def.ModalPayloadBits",
+            42949usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.ModalPayloadBits",
+            42949usize,
+            "def.ModalPayloadMap",
+            41994usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.ModalPayloadMap",
+            41994usize,
+            "def.ModalPayloadNames",
+            42198usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.ModalPayloadNames",
+            42198usize,
+            "def.ModalPayloadSize",
+            42913usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.ModalPayloadSize",
+            42913usize,
+            "def.ModalPayloadState",
+            42805usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.ModalPayloadState",
+            42805usize,
+            "def.ModalPayloadSubstitution",
+            41968usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.ModalPayloadSubstitution",
+            41968usize,
+            "def.ModalRefAccessors",
+            41927usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.ModalRefAccessors",
+            41927usize,
+            "def.ModalRefAst",
+            41821usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.ModalRefAst",
+            41821usize,
+            "def.ModalRefRender",
+            1965usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.ModalRefRender",
+            1965usize,
+            "def.ModalRefSubst",
+            41956usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.ModalRefSubst",
+            41956usize,
+            "def.ModalRefValueBits",
+            43162usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.ModalRefValueBits",
+            43162usize,
+            "def.ModalSelfRef",
+            41899usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.ModalSelfRef",
+            41899usize,
+            "def.ModalSelfTypes",
+            41914usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.ModalSelfTypes",
+            41914usize,
+            "def.ModalSingleFieldPayload",
+            42780usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.ModalSingleFieldPayload",
+            42780usize,
+            "def.ModalSize",
+            42901usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.ModalSize",
+            42901usize,
+            "def.ModalStateAccessors",
+            41845usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.ModalStateAccessors",
+            41845usize,
+            "def.ModalStateLayoutEquation",
+            43101usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.ModalStateLayoutEquation",
+            43101usize,
+            "def.ModalStateLayoutMetrics",
+            42767usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.ModalStateLayoutMetrics",
+            42767usize,
+            "def.ModalStatePayload",
+            41862usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.ModalStatePayload",
+            41862usize,
+            "def.ModalStateSizeBound",
+            44275usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.ModalStateSizeBound",
+            44275usize,
+            "def.ModalStateValueBits",
+            42829usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.ModalStateValueBits",
+            42829usize,
+            "def.ModalTaggedBits",
+            43150usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.ModalTaggedBits",
+            43150usize,
+            "def.ModalTypeRef.Parser",
+            41722usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.ModalTypeRef.Parser",
+            41722usize,
+            "def.ModalValRuntime",
+            42705usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.ModalValRuntime",
+            42705usize,
+            "def.ModalValValueType",
+            42729usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.ModalValValueType",
+            42729usize,
+            "def.ModalWidening.AST",
+            44085usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.ModalWidening.AST",
+            44085usize,
+            "def.ModalWideningDynamic",
+            44249usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.ModalWideningDynamic",
+            44249usize,
+            "def.ModalWideningThreshold",
+            44099usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.ModalWideningThreshold",
+            44099usize,
+            "def.ModuleAggregationInputsOutputs",
+            32098usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.ModuleAggregationInputsOutputs",
+            32098usize,
+            "def.ModuleAssemblyPathHelpers",
+            32763usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.ModuleAssemblyPathHelpers",
+            32763usize,
+            "def.ModuleByPath",
+            20231usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.ModuleByPath",
+            20231usize,
+            "def.ModuleByPath",
+            32990usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.ModuleByPath",
+            32990usize,
+            "def.ModuleDeclNames",
+            20340usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.ModuleDeclNames",
+            20340usize,
+            "def.ModuleDependencyGraphs",
+            34860usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.ModuleDependencyGraphs",
+            34860usize,
+            "def.ModuleDirOf",
+            31965usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.ModuleDirOf",
+            31965usize,
+            "def.ModuleDirectoryFiles",
+            4324usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.ModuleDirectoryFiles",
+            4324usize,
+            "def.ModuleDocs",
+            11772usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.ModuleDocs",
+            11772usize,
+            "def.ModuleEmissionOrder",
+            5037usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.ModuleEmissionOrder",
+            5037usize,
+            "def.ModuleEmissionPathContext",
+            5021usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.ModuleEmissionPathContext",
+            5021usize,
+            "def.ModuleInitializationDependencyEnvironment",
+            33256usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.ModuleInitializationDependencyEnvironment",
+            33256usize,
+            "def.ModuleInitializationPathHelpers",
+            33308usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.ModuleInitializationPathHelpers",
+            33308usize,
+            "def.ModuleMap",
+            32115usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.ModuleMap",
+            32115usize,
+            "def.ModuleNameMap",
+            19856usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.ModuleNameMap",
+            19856usize,
+            "def.ModuleNameValidationHelpers",
+            19211usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.ModuleNameValidationHelpers",
+            19211usize,
+            "def.ModuleOfExternProc",
+            19606usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.ModuleOfExternProc",
+            19606usize,
+            "def.ModuleOfItem",
+            19592usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.ModuleOfItem",
+            19592usize,
+            "def.ModuleOfPath",
+            33004usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.ModuleOfPath",
+            33004usize,
+            "def.ModulePathKeys",
+            7388usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.ModulePathKeys",
+            7388usize,
+            "def.ModulePathMangle",
+            4960usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.ModulePathMangle",
+            4960usize,
+            "def.ModulePathPrefix",
+            32816usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.ModulePathPrefix",
+            32816usize,
+            "def.ModulePaths",
+            4515usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.ModulePaths",
+            4515usize,
+            "def.MonomorphizationSpecialization",
+            48535usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.MonomorphizationSpecialization",
+            48535usize,
+            "def.MoveExpressionInnerPlace",
+            15942usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.MoveExpressionInnerPlace",
+            15942usize,
+            "def.MoveExpressionPredicate",
+            15472usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.MoveExpressionPredicate",
+            15472usize,
+            "def.NFC",
+            7345usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.NFC",
+            7345usize,
+            "def.NameCollectAfterParse",
+            32157usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.NameCollectAfterParse",
+            32157usize,
+            "def.NameCollectionStateDomain",
+            20780usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.NameCollectionStateDomain",
+            20780usize,
+            "def.NameInfoOfBinding",
+            20724usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.NameInfoOfBinding",
+            20724usize,
+            "def.NameInfoShape",
+            19842usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.NameInfoShape",
+            19842usize,
+            "def.NameIntroductionScopeSequence",
+            18961usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.NameIntroductionScopeSequence",
+            18961usize,
+            "def.NameMapSource",
+            20752usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.NameMapSource",
+            20752usize,
+            "def.NameMapUnion",
+            20710usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.NameMapUnion",
+            20710usize,
+            "def.NameResolutionKeywordKeys",
+            18927usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.NameResolutionKeywordKeys",
+            18927usize,
+            "def.NearestScope",
+            17422usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.NearestScope",
+            17422usize,
+            "def.NestingDepth",
+            7435usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.NestingDepth",
+            7435usize,
+            "def.NetworkPrimitiveJudgments",
+            13816usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.NetworkPrimitiveJudgments",
+            13816usize,
+            "def.NewlineContinuationTokenSets",
+            7471usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.NewlineContinuationTokenSets",
+            7471usize,
+            "def.NewlineTokens",
+            8086usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.NewlineTokens",
+            8086usize,
+            "def.NicheCompatible",
+            44175usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.NicheCompatible",
+            44175usize,
+            "def.NoDuplicateBindingNames",
+            20682usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.NoDuplicateBindingNames",
+            20682usize,
+            "def.NoLibraryInterior",
+            4575usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.NoLibraryInterior",
+            4575usize,
+            "def.NoSpecificResolveExpr",
+            23706usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.NoSpecificResolveExpr",
+            23706usize,
+            "def.NoSpecificTypeRefsExpr",
+            33940usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.NoSpecificTypeRefsExpr",
+            33940usize,
+            "def.NoSpecificValueRefsExpr",
+            34576usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.NoSpecificValueRefsExpr",
+            34576usize,
+            "def.NonCharacter",
+            8221usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.NonCharacter",
+            8221usize,
+            "def.NonFilesystemHostPrimitiveSets",
+            12568usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.NonFilesystemHostPrimitiveSets",
+            12568usize,
+            "def.Normalize",
+            3298usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.Normalize",
+            3298usize,
+            "def.NormalizeOutsideIdentifiers",
+            6955usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.NormalizeOutsideIdentifiers",
+            6955usize,
+            "def.NormativeKeywords",
+            915usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.NormativeKeywords",
+            915usize,
+            "def.NumericCoreEnd",
+            8984usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.NumericCoreEnd",
+            8984usize,
+            "def.NumericDigitRuns",
+            8902usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.NumericDigitRuns",
+            8902usize,
+            "def.NumericFloatCorePredicates",
+            9016usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.NumericFloatCorePredicates",
+            9016usize,
+            "def.NumericKind",
+            9032usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.NumericKind",
+            9032usize,
+            "def.NumericLexemeValidation",
+            9084usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.NumericLexemeValidation",
+            9084usize,
+            "def.NumericPrimitiveTypeSets",
+            35100usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.NumericPrimitiveTypeSets",
+            35100usize,
+            "def.NumericScanEnd",
+            9002usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.NumericScanEnd",
+            9002usize,
+            "def.NumericSuffixSets",
+            8769usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.NumericSuffixSets",
+            8769usize,
+            "def.NumericUnderscorePredicates",
+            8883usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.NumericUnderscorePredicates",
+            8883usize,
+            "def.NumericValues",
+            8867usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.NumericValues",
+            8867usize,
+            "def.ObjPath",
+            5116usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.ObjPath",
+            5116usize,
+            "def.ObjPaths",
+            5241usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.ObjPaths",
+            5241usize,
+            "def.ObjectPath",
+            4975usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.ObjectPath",
+            4975usize,
+            "def.ObservableBehavior",
+            12427usize
+        )
+}

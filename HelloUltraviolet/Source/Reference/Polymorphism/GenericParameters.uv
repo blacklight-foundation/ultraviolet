@@ -35,6 +35,12 @@ Clone(TValue)
     return move value
 }
 
+internal procedure duplicateBitcopyGenericValue<TValue>(value: TValue) -> (TValue, TValue)
+|: Bitcopy(TValue)
+{
+    return (value, value)
+}
+
 internal procedure classBoundGenericValue<TValue <: ClassReadable>(value: TValue) -> i32 {
     return value~>classValue()
 }
@@ -62,6 +68,11 @@ public procedure runPolymorphismGenericParametersReference() -> bool {
     let defaulted_value: i32 = defaultedGenericValue<i32>(17, 23)
     let alias_value: i32 = genericAliasValue<i32>(31)
     let multi_predicate_value: i32 = multiPredicateGenericValue<i32>(29)
+    let duplicated_value: (i32, i32) = duplicateBitcopyGenericValue<i32>(59)
+    let inferred_default_carrier: GenericCarrier<i32> =
+        GenericCarrier { value: 43, tag: 47 }
+    let inferred_explicit_carrier: GenericCarrier<i32, bool> =
+        GenericCarrier { value: 53, tag: true }
     let defaulted_carrier_layout: bool =
         sizeof(GenericCarrier<i32>) == 2usize * sizeof(i32) &&
             alignof(GenericCarrier<i32>) == alignof(i32)
@@ -75,6 +86,12 @@ public procedure runPolymorphismGenericParametersReference() -> bool {
             defaulted_value == 17 &&
                 alias_value == 31 &&
                 multi_predicate_value == 29 &&
+                duplicated_value.0 == 59 &&
+                duplicated_value.1 == 59 &&
+                inferred_default_carrier.value == 43 &&
+                inferred_default_carrier.tag == 47 &&
+                inferred_explicit_carrier.value == 53 &&
+                inferred_explicit_carrier.tag &&
                 defaulted_carrier_layout &&
                 explicit_carrier_layout &&
                 classBoundGenericValue<ClassOwner>(owner) == 11 &&

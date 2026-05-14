@@ -1,0 +1,604 @@
+//! CSV-to-catalog membership check group 0028.
+
+internal procedure catalogCsvMembershipGroup0028() -> bool {
+    return csvCatalogKeyMatches(
+            "def.RecordValueType",
+            39115usize,
+            "def.RecordValueType",
+            39115usize
+        ) &&
+        csvCatalogKeyMatches(
+            "def.RegionActiveType",
+            16267usize,
+            "def.RegionActiveType",
+            16267usize
+        ) &&
+        csvCatalogKeyMatches(
+            "def.RegionAliasName",
+            19359usize,
+            "def.RegionAliasName",
+            19359usize
+        ) &&
+        csvCatalogKeyMatches(
+            "def.RegionAlloc",
+            18102usize,
+            "def.RegionAlloc",
+            18102usize
+        ) &&
+        csvCatalogKeyMatches(
+            "def.RegionAllocProcSig",
+            42284usize,
+            "def.RegionAllocProcSig",
+            42284usize
+        ) &&
+        csvCatalogKeyMatches(
+            "def.RegionArena",
+            17785usize,
+            "def.RegionArena",
+            17785usize
+        ) &&
+        csvCatalogKeyMatches(
+            "def.RegionBind",
+            16310usize,
+            "def.RegionBind",
+            16310usize
+        ) &&
+        csvCatalogKeyMatches(
+            "def.RegionBindingInfo",
+            15830usize,
+            "def.RegionBindingInfo",
+            15830usize
+        ) &&
+        csvCatalogKeyMatches(
+            "def.RegionFree",
+            18178usize,
+            "def.RegionFree",
+            18178usize
+        ) &&
+        csvCatalogKeyMatches(
+            "def.RegionFreeUncheckedProcSig",
+            42332usize,
+            "def.RegionFreeUncheckedProcSig",
+            42332usize
+        ) &&
+        csvCatalogKeyMatches(
+            "def.RegionFreezeProcSig",
+            42308usize,
+            "def.RegionFreezeProcSig",
+            42308usize
+        ) &&
+        csvCatalogKeyMatches(
+            "def.RegionNesting",
+            16403usize,
+            "def.RegionNesting",
+            16403usize
+        ) &&
+        csvCatalogKeyMatches(
+            "def.RegionNew",
+            18017usize,
+            "def.RegionNew",
+            18017usize
+        ) &&
+        csvCatalogKeyMatches(
+            "def.RegionNewScopedProcSig",
+            42272usize,
+            "def.RegionNewScopedProcSig",
+            42272usize
+        ) &&
+        csvCatalogKeyMatches(
+            "def.RegionNonBitcopy",
+            42358usize,
+            "def.RegionNonBitcopy",
+            42358usize
+        ) &&
+        csvCatalogKeyMatches(
+            "def.RegionOpen",
+            18031usize,
+            "def.RegionOpen",
+            18031usize
+        ) &&
+        csvCatalogKeyMatches(
+            "def.RegionOptionsDecl",
+            16237usize,
+            "def.RegionOptionsDecl",
+            16237usize
+        ) &&
+        csvCatalogKeyMatches(
+            "def.RegionOptionsExpression",
+            16295usize,
+            "def.RegionOptionsExpression",
+            16295usize
+        ) &&
+        csvCatalogKeyMatches(
+            "def.RegionOptionsFields",
+            16220usize,
+            "def.RegionOptionsFields",
+            16220usize
+        ) &&
+        csvCatalogKeyMatches(
+            "def.RegionPayload",
+            42245usize,
+            "def.RegionPayload",
+            42245usize
+        ) &&
+        csvCatalogKeyMatches(
+            "def.RegionPreallocation",
+            16252usize,
+            "def.RegionPreallocation",
+            16252usize
+        ) &&
+        csvCatalogKeyMatches(
+            "def.RegionProcSet",
+            42260usize,
+            "def.RegionProcSet",
+            42260usize
+        ) &&
+        csvCatalogKeyMatches(
+            "def.RegionProcedureJudgements",
+            18296usize,
+            "def.RegionProcedureJudgements",
+            18296usize
+        ) &&
+        csvCatalogKeyMatches(
+            "def.RegionProvenanceTypeHelpers",
+            42344usize,
+            "def.RegionProvenanceTypeHelpers",
+            42344usize
+        ) &&
+        csvCatalogKeyMatches(
+            "def.RegionReset",
+            18147usize,
+            "def.RegionReset",
+            18147usize
+        ) &&
+        csvCatalogKeyMatches(
+            "def.RegionResetUncheckedProcSig",
+            42296usize,
+            "def.RegionResetUncheckedProcSig",
+            42296usize
+        ) &&
+        csvCatalogKeyMatches(
+            "def.RegionThawProcSig",
+            42320usize,
+            "def.RegionThawProcSig",
+            42320usize
+        ) &&
+        csvCatalogKeyMatches(
+            "def.RegionValue",
+            17926usize,
+            "def.RegionValue",
+            17926usize
+        ) &&
+        csvCatalogKeyMatches(
+            "def.RelativePathComputation",
+            3355usize,
+            "def.RelativePathComputation",
+            3355usize
+        ) &&
+        csvCatalogKeyMatches(
+            "def.ReleaseArena",
+            18223usize,
+            "def.ReleaseArena",
+            18223usize
+        ) &&
+        csvCatalogKeyMatches(
+            "def.ReplaceScopeById",
+            17305usize,
+            "def.ReplaceScopeById",
+            17305usize
+        ) &&
+        csvCatalogKeyMatches(
+            "def.ReqJudgments",
+            181usize,
+            "def.ReqJudgments",
+            181usize
+        ) &&
+        csvCatalogKeyMatches(
+            "def.RequiredOutputs",
+            4788usize,
+            "def.RequiredOutputs",
+            4788usize
+        ) &&
+        csvCatalogKeyMatches(
+            "def.ReservedIdentifiers",
+            18865usize,
+            "def.ReservedIdentifiers",
+            18865usize
+        ) &&
+        csvCatalogKeyMatches(
+            "def.ReservedKeywords",
+            8271usize,
+            "def.ReservedKeywords",
+            8271usize
+        ) &&
+        csvCatalogKeyMatches(
+            "def.ReservedModulePath",
+            18881usize,
+            "def.ReservedModulePath",
+            18881usize
+        ) &&
+        csvCatalogKeyMatches(
+            "def.ReservedNamespaces",
+            8315usize,
+            "def.ReservedNamespaces",
+            8315usize
+        ) &&
+        csvCatalogKeyMatches(
+            "def.ResetArena",
+            18237usize,
+            "def.ResetArena",
+            18237usize
+        ) &&
+        csvCatalogKeyMatches(
+            "def.ResolutionContext",
+            18767usize,
+            "def.ResolutionContext",
+            18767usize
+        ) &&
+        csvCatalogKeyMatches(
+            "def.ResolutionEntity",
+            18785usize,
+            "def.ResolutionEntity",
+            18785usize
+        ) &&
+        csvCatalogKeyMatches(
+            "def.ResolutionScope",
+            18803usize,
+            "def.ResolutionScope",
+            18803usize
+        ) &&
+        csvCatalogKeyMatches(
+            "def.ResolutionScopeStack",
+            18817usize,
+            "def.ResolutionScopeStack",
+            18817usize
+        ) &&
+        csvCatalogKeyMatches(
+            "def.ResolutionStateDomain",
+            23943usize,
+            "def.ResolutionStateDomain",
+            23943usize
+        ) &&
+        csvCatalogKeyMatches(
+            "def.ResolveAllExprListJudgementSet",
+            23026usize,
+            "def.ResolveAllExprListJudgementSet",
+            23026usize
+        ) &&
+        csvCatalogKeyMatches(
+            "def.ResolveArgsReference",
+            22338usize,
+            "def.ResolveArgsReference",
+            22338usize
+        ) &&
+        csvCatalogKeyMatches(
+            "def.ResolveArgsSignature",
+            20916usize,
+            "def.ResolveArgsSignature",
+            20916usize
+        ) &&
+        csvCatalogKeyMatches(
+            "def.ResolveCalleeJudgementSet",
+            23075usize,
+            "def.ResolveCalleeJudgementSet",
+            23075usize
+        ) &&
+        csvCatalogKeyMatches(
+            "def.ResolveDispatchOptJudgementSet",
+            22822usize,
+            "def.ResolveDispatchOptJudgementSet",
+            22822usize
+        ) &&
+        csvCatalogKeyMatches(
+            "def.ResolveEnumPayloadJudgementSet",
+            22413usize,
+            "def.ResolveEnumPayloadJudgementSet",
+            22413usize
+        ) &&
+        csvCatalogKeyMatches(
+            "def.ResolveEnumRecordSignature",
+            20986usize,
+            "def.ResolveEnumRecordSignature",
+            20986usize
+        ) &&
+        csvCatalogKeyMatches(
+            "def.ResolveEnumTupleSignature",
+            20972usize,
+            "def.ResolveEnumTupleSignature",
+            20972usize
+        ) &&
+        csvCatalogKeyMatches(
+            "def.ResolveEnumUnitSignature",
+            20958usize,
+            "def.ResolveEnumUnitSignature",
+            20958usize
+        ) &&
+        csvCatalogKeyMatches(
+            "def.ResolveExprListJudgementSet",
+            22399usize,
+            "def.ResolveExprListJudgementSet",
+            22399usize
+        ) &&
+        csvCatalogKeyMatches(
+            "def.ResolveExprOptNone",
+            21452usize,
+            "def.ResolveExprOptNone",
+            21452usize
+        ) &&
+        csvCatalogKeyMatches(
+            "def.ResolveExprOptSome",
+            21466usize,
+            "def.ResolveExprOptSome",
+            21466usize
+        ) &&
+        csvCatalogKeyMatches(
+            "def.ResolveExprRuleSet",
+            23692usize,
+            "def.ResolveExprRuleSet",
+            23692usize
+        ) &&
+        csvCatalogKeyMatches(
+            "def.ResolveFieldInitsReference",
+            22352usize,
+            "def.ResolveFieldInitsReference",
+            22352usize
+        ) &&
+        csvCatalogKeyMatches(
+            "def.ResolveFieldInitsSignature",
+            20930usize,
+            "def.ResolveFieldInitsSignature",
+            20930usize
+        ) &&
+        csvCatalogKeyMatches(
+            "def.ResolveIfCaseJudgementSet",
+            23270usize,
+            "def.ResolveIfCaseJudgementSet",
+            23270usize
+        ) &&
+        csvCatalogKeyMatches(
+            "def.ResolveKeyClauseJudgementSet",
+            23516usize,
+            "def.ResolveKeyClauseJudgementSet",
+            23516usize
+        ) &&
+        csvCatalogKeyMatches(
+            "def.ResolveKeyPathJudgementSet",
+            22480usize,
+            "def.ResolveKeyPathJudgementSet",
+            22480usize
+        ) &&
+        csvCatalogKeyMatches(
+            "def.ResolveModalRef",
+            21830usize,
+            "def.ResolveModalRef",
+            21830usize
+        ) &&
+        csvCatalogKeyMatches(
+            "def.ResolveParallelOptJudgementSet",
+            22636usize,
+            "def.ResolveParallelOptJudgementSet",
+            22636usize
+        ) &&
+        csvCatalogKeyMatches(
+            "def.ResolvePathJudgementSet",
+            21000usize,
+            "def.ResolvePathJudgementSet",
+            21000usize
+        ) &&
+        csvCatalogKeyMatches(
+            "def.ResolvePatternSignature",
+            21949usize,
+            "def.ResolvePatternSignature",
+            21949usize
+        ) &&
+        csvCatalogKeyMatches(
+            "def.ResolveQualifiedFormSignature",
+            20902usize,
+            "def.ResolveQualifiedFormSignature",
+            20902usize
+        ) &&
+        csvCatalogKeyMatches(
+            "def.ResolveRaceJudgementSet",
+            22923usize,
+            "def.ResolveRaceJudgementSet",
+            22923usize
+        ) &&
+        csvCatalogKeyMatches(
+            "def.ResolveRecordPathSignature",
+            20944usize,
+            "def.ResolveRecordPathSignature",
+            20944usize
+        ) &&
+        csvCatalogKeyMatches(
+            "def.ResolveRuntimeRegionEntry",
+            17941usize,
+            "def.ResolveRuntimeRegionEntry",
+            17941usize
+        ) &&
+        csvCatalogKeyMatches(
+            "def.ResolveRuntimeRegionTargetAndTag",
+            17973usize,
+            "def.ResolveRuntimeRegionTargetAndTag",
+            17973usize
+        ) &&
+        csvCatalogKeyMatches(
+            "def.ResolveSpawnOptJudgementSet",
+            22720usize,
+            "def.ResolveSpawnOptJudgementSet",
+            22720usize
+        ) &&
+        csvCatalogKeyMatches(
+            "def.ResolveStmtSeqJudgementSet",
+            23774usize,
+            "def.ResolveStmtSeqJudgementSet",
+            23774usize
+        ) &&
+        csvCatalogKeyMatches(
+            "def.RestrictPathFailure",
+            12908usize,
+            "def.RestrictPathFailure",
+            12908usize
+        ) &&
+        csvCatalogKeyMatches(
+            "def.RestrictPathSuccess",
+            12894usize,
+            "def.RestrictPathSuccess",
+            12894usize
+        ) &&
+        csvCatalogKeyMatches(
+            "def.RetagRegions",
+            18130usize,
+            "def.RetagRegions",
+            18130usize
+        ) &&
+        csvCatalogKeyMatches(
+            "def.Rev",
+            31254usize,
+            "def.Rev",
+            31254usize
+        ) &&
+        csvCatalogKeyMatches(
+            "def.RuleApplies",
+            616usize,
+            "def.RuleApplies",
+            616usize
+        ) &&
+        csvCatalogKeyMatches(
+            "def.RuleDiagnosticIdentity",
+            673usize,
+            "def.RuleDiagnosticIdentity",
+            673usize
+        ) &&
+        csvCatalogKeyMatches(
+            "def.RuleSectionIndex",
+            689usize,
+            "def.RuleSectionIndex",
+            689usize
+        ) &&
+        csvCatalogKeyMatches(
+            "def.RuleShape",
+            572usize,
+            "def.RuleShape",
+            572usize
+        ) &&
+        csvCatalogKeyMatches(
+            "def.RuleSubstitutions",
+            602usize,
+            "def.RuleSubstitutions",
+            602usize
+        ) &&
+        csvCatalogKeyMatches(
+            "def.RuntimeAddressTagLookup",
+            18651usize,
+            "def.RuntimeAddressTagLookup",
+            18651usize
+        ) &&
+        csvCatalogKeyMatches(
+            "def.RuntimeAddressTags",
+            17756usize,
+            "def.RuntimeAddressTags",
+            17756usize
+        ) &&
+        csvCatalogKeyMatches(
+            "def.RuntimeBindingIdentityAndValue",
+            17378usize,
+            "def.RuntimeBindingIdentityAndValue",
+            17378usize
+        ) &&
+        csvCatalogKeyMatches(
+            "def.RuntimeBindingStateLookup",
+            17467usize,
+            "def.RuntimeBindingStateLookup",
+            17467usize
+        ) &&
+        csvCatalogKeyMatches(
+            "def.RuntimeBindingTypeAndInfo",
+            17650usize,
+            "def.RuntimeBindingTypeAndInfo",
+            17650usize
+        ) &&
+        csvCatalogKeyMatches(
+            "def.RuntimeBindingValueLookup",
+            17453usize,
+            "def.RuntimeBindingValueLookup",
+            17453usize
+        ) &&
+        csvCatalogKeyMatches(
+            "def.RuntimeCheck",
+            784usize,
+            "def.RuntimeCheck",
+            784usize
+        ) &&
+        csvCatalogKeyMatches(
+            "def.RuntimeCheckBehavior",
+            798usize,
+            "def.RuntimeCheckBehavior",
+            798usize
+        ) &&
+        csvCatalogKeyMatches(
+            "def.RuntimeHostPrimitives",
+            12615usize,
+            "def.RuntimeHostPrimitives",
+            12615usize
+        ) &&
+        csvCatalogKeyMatches(
+            "def.RuntimeLibName",
+            5641usize,
+            "def.RuntimeLibName",
+            5641usize
+        ) &&
+        csvCatalogKeyMatches(
+            "def.RuntimeLibPath",
+            5716usize,
+            "def.RuntimeLibPath",
+            5716usize
+        ) &&
+        csvCatalogKeyMatches(
+            "def.RuntimeRegionEntry",
+            17738usize,
+            "def.RuntimeRegionEntry",
+            17738usize
+        ) &&
+        csvCatalogKeyMatches(
+            "def.RuntimeRegionStack",
+            17771usize,
+            "def.RuntimeRegionStack",
+            17771usize
+        ) &&
+        csvCatalogKeyMatches(
+            "def.RuntimeScopePushPop",
+            17245usize,
+            "def.RuntimeScopePushPop",
+            17245usize
+        ) &&
+        csvCatalogKeyMatches(
+            "def.RuntimeTagActive",
+            18668usize,
+            "def.RuntimeTagActive",
+            18668usize
+        ) &&
+        csvCatalogKeyMatches(
+            "def.RuntimeValueDomain",
+            18491usize,
+            "def.RuntimeValueDomain",
+            18491usize
+        ) &&
+        csvCatalogKeyMatches(
+            "def.SafePointerNicheSet",
+            46198usize,
+            "def.SafePointerNicheSet",
+            46198usize
+        ) &&
+        csvCatalogKeyMatches(
+            "def.SafePointerRuntimeConstructors",
+            45962usize,
+            "def.SafePointerRuntimeConstructors",
+            45962usize
+        ) &&
+        csvCatalogKeyMatches(
+            "def.SafePointerSizeAlignEquations",
+            46174usize,
+            "def.SafePointerSizeAlignEquations",
+            46174usize
+        )
+}

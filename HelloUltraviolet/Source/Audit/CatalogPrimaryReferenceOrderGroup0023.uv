@@ -1,0 +1,604 @@
+//! Catalog primary-reference ordering check group 0023.
+
+internal procedure catalogPrimaryReferenceOrderGroup0023() -> bool {
+    return catalogPrimaryReferencePrecedes(
+            "def.FileFlushedQuery",
+            12829usize,
+            "def.FileHandleQueries",
+            12778usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.FileHandleQueries",
+            12778usize,
+            "def.FileHandleStateAndMode",
+            13210usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.FileHandleStateAndMode",
+            13210usize,
+            "def.FileKey",
+            4109usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.FileKey",
+            4109usize,
+            "def.FileLengthAndByteLength",
+            13229usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.FileLengthAndByteLength",
+            13229usize,
+            "def.FileMembersAndDecl",
+            42641usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.FileMembersAndDecl",
+            42641usize,
+            "def.FileOrdering",
+            4125usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.FileOrdering",
+            4125usize,
+            "def.FilesystemEntryQueries",
+            12758usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.FilesystemEntryQueries",
+            12758usize,
+            "def.FilesystemExplicitStateJudgments",
+            12843usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.FilesystemExplicitStateJudgments",
+            12843usize,
+            "def.FilesystemHostPrimitiveSets",
+            12552usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.FilesystemHostPrimitiveSets",
+            12552usize,
+            "def.FilesystemPathErrorOperationSets",
+            12981usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.FilesystemPathErrorOperationSets",
+            12981usize,
+            "def.FilesystemPathErrorPredicates",
+            12997usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.FilesystemPathErrorPredicates",
+            12997usize,
+            "def.FilesystemPathOperationSet",
+            12922usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.FilesystemPathOperationSet",
+            12922usize,
+            "def.FilesystemPrimitiveJudgments",
+            12674usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.FilesystemPrimitiveJudgments",
+            12674usize,
+            "def.FilesystemPrimitiveResultTypes",
+            12688usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.FilesystemPrimitiveResultTypes",
+            12688usize,
+            "def.FilesystemStateElidedEquivalences",
+            12859usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.FilesystemStateElidedEquivalences",
+            12859usize,
+            "def.FilesystemStateProjections",
+            12740usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.FilesystemStateProjections",
+            12740usize,
+            "def.FilesystemStateTypes",
+            12724usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.FilesystemStateTypes",
+            12724usize,
+            "def.FilterContinuedNewlines",
+            7503usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.FilterContinuedNewlines",
+            7503usize,
+            "def.FinalArtifactLibraryName",
+            4989usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.FinalArtifactLibraryName",
+            4989usize,
+            "def.FinalArtifactNames",
+            5004usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.FinalArtifactNames",
+            5004usize,
+            "def.FindInnermostDynamic",
+            28330usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.FindInnermostDynamic",
+            28330usize,
+            "def.FindProjectRoot",
+            2324usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.FindProjectRoot",
+            2324usize,
+            "def.FiniteLoopProvenance",
+            17007usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.FiniteLoopProvenance",
+            17007usize,
+            "def.FirstBadCharEscape",
+            9376usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.FirstBadCharEscape",
+            9376usize,
+            "def.FirstBadStringEscape",
+            9262usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.FirstBadStringEscape",
+            9262usize,
+            "def.FirstByName",
+            49255usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.FirstByName",
+            49255usize,
+            "def.FirstFail",
+            3689usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.FirstFail",
+            3689usize,
+            "def.FirstFieldByName",
+            49300usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.FirstFieldByName",
+            49300usize,
+            "def.FixedIdentifierLexemes",
+            10830usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.FixedIdentifierLexemes",
+            10830usize,
+            "def.Fold",
+            4157usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.Fold",
+            4157usize,
+            "def.FoldPath",
+            4095usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.FoldPath",
+            4095usize,
+            "def.FrameBind",
+            16343usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.FrameBind",
+            16343usize,
+            "def.FrameEnter",
+            18045usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.FrameEnter",
+            18045usize,
+            "def.FrameMark",
+            18192usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.FrameMark",
+            18192usize,
+            "def.FrameProvenance",
+            16946usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.FrameProvenance",
+            16946usize,
+            "def.FrameTarget",
+            16445usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.FrameTarget",
+            16445usize,
+            "def.FrameTargetProvenanceOrder",
+            16460usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.FrameTargetProvenanceOrder",
+            16460usize,
+            "def.FreshBindId",
+            17393usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.FreshBindId",
+            17393usize,
+            "def.FreshRegion",
+            16281usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.FreshRegion",
+            16281usize,
+            "def.FreshRegionExpression",
+            16685usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.FreshRegionExpression",
+            16685usize,
+            "def.FreshRegionTag",
+            16653usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.FreshRegionTag",
+            16653usize,
+            "def.FreshRuntimeAddress",
+            17828usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.FreshRuntimeAddress",
+            17828usize,
+            "def.FreshRuntimeRegionTagAndArena",
+            17988usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.FreshRuntimeRegionTagAndArena",
+            17988usize,
+            "def.FreshRuntimeRegionTags",
+            18116usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.FreshRuntimeRegionTags",
+            18116usize,
+            "def.FunctionRuntimeValue",
+            46836usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.FunctionRuntimeValue",
+            46836usize,
+            "def.FunctionTypes.AST",
+            46744usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.FunctionTypes.AST",
+            46744usize,
+            "def.FutureReserved",
+            8286usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.FutureReserved",
+            8286usize,
+            "def.GeneralTypePositionSetHelpers",
+            34721usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.GeneralTypePositionSetHelpers",
+            34721usize,
+            "def.GenericApplyAst",
+            48287usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.GenericApplyAst",
+            48287usize,
+            "def.GenericCalleeProc",
+            48332usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.GenericCalleeProc",
+            48332usize,
+            "def.GenericCloseException",
+            9782usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.GenericCloseException",
+            9782usize,
+            "def.GenericDeclarationAccessors",
+            48301usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.GenericDeclarationAccessors",
+            48301usize,
+            "def.GenericDeclarationAstExtensions",
+            48270usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.GenericDeclarationAstExtensions",
+            48270usize,
+            "def.GenericDefaultWellFormedness",
+            48006usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.GenericDefaultWellFormedness",
+            48006usize,
+            "def.GenericInferenceFreshArgs",
+            48346usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.GenericInferenceFreshArgs",
+            48346usize,
+            "def.GenericParamAst",
+            47959usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.GenericParamAst",
+            47959usize,
+            "def.GenericParamHelpers",
+            47987usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.GenericParamHelpers",
+            47987usize,
+            "def.GenericParseRules",
+            12011usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.GenericParseRules",
+            12011usize,
+            "def.GlobalResolutionTables",
+            18750usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.GlobalResolutionTables",
+            18750usize,
+            "def.GraphAccessors",
+            4545usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.GraphAccessors",
+            4545usize,
+            "def.GraphPathReach",
+            4560usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.GraphPathReach",
+            4560usize,
+            "def.HasErrorDiagnostics",
+            32401usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.HasErrorDiagnostics",
+            32401usize,
+            "def.HexDigitValue",
+            8808usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.HexDigitValue",
+            8808usize,
+            "def.HostPrimitiveMappingAndFailure",
+            12629usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.HostPrimitiveMappingAndFailure",
+            12629usize,
+            "def.HostPrimitiveUniverse",
+            12587usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.HostPrimitiveUniverse",
+            12587usize,
+            "def.HostedLibraryImportsLinkedLibrary",
+            4617usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.HostedLibraryImportsLinkedLibrary",
+            4617usize,
+            "def.IROpt",
+            2134usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.IROpt",
+            2134usize,
+            "def.IRPath",
+            5130usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.IRPath",
+            5130usize,
+            "def.IRPaths",
+            5255usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.IRPaths",
+            5255usize,
+            "def.IRSet",
+            4802usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.IRSet",
+            4802usize,
+            "def.IdentifierCharacters",
+            8186usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.IdentifierCharacters",
+            8186usize,
+            "def.IdentifierKeys",
+            7373usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.IdentifierKeys",
+            7373usize,
+            "def.IdentifierLexingInput",
+            9497usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.IdentifierLexingInput",
+            9497usize,
+            "def.IdentifierScan",
+            9511usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.IdentifierScan",
+            9511usize,
+            "def.IdentitySubstitution",
+            25395usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.IdentitySubstitution",
+            25395usize,
+            "def.IllFormed",
+            644usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.IllFormed",
+            644usize,
+            "def.ImplementationOrphanRule",
+            49669usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.ImplementationOrphanRule",
+            49669usize,
+            "def.ImplementerFields",
+            49617usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.ImplementerFields",
+            49617usize,
+            "def.ImplementerMethods",
+            49630usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.ImplementerMethods",
+            49630usize,
+            "def.ImplementsAccessor",
+            49578usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.ImplementsAccessor",
+            49578usize,
+            "def.ImportCoveragePredicates",
+            33068usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.ImportCoveragePredicates",
+            33068usize,
+            "def.ImportDeclAst",
+            29862usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.ImportDeclAst",
+            29862usize,
+            "def.ImportDeclarationsOfModule",
+            32779usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.ImportDeclarationsOfModule",
+            32779usize,
+            "def.ImportLibOpt",
+            2150usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.ImportLibOpt",
+            2150usize,
+            "def.ImportLibPath",
+            5192usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.ImportLibPath",
+            5192usize,
+            "def.ImportLibSet",
+            4834usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.ImportLibSet",
+            4834usize,
+            "def.ImportOkJudgementSet",
+            33083usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.ImportOkJudgementSet",
+            33083usize,
+            "def.ImportedLibraries",
+            4699usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.ImportedLibraries",
+            4699usize,
+            "def.ImportsExecutable",
+            4603usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.ImportsExecutable",
+            4603usize,
+            "def.InDynamicContext",
+            28247usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.InDynamicContext",
+            28247usize,
+            "def.InOuter",
+            18989usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.InOuter",
+            18989usize,
+            "def.InScope",
+            18975usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.InScope",
+            18975usize,
+            "def.IndexAndSliceValueOperations",
+            18535usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.IndexAndSliceValueOperations",
+            18535usize,
+            "def.InferTypeArgs",
+            48359usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.InferTypeArgs",
+            48359usize,
+            "def.InfiniteLoopProvenance",
+            16992usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.InfiniteLoopProvenance",
+            16992usize,
+            "def.InitSym",
+            30959usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.InitSym",
+            30959usize,
+            "def.InitialBindingEnvironment",
+            16062usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.InitialBindingEnvironment",
+            16062usize,
+            "def.InitialPermissionEnvironment",
+            16076usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.InitialPermissionEnvironment",
+            16076usize,
+            "def.InitializationResponsibility",
+            15487usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.InitializationResponsibility",
+            15487usize,
+            "def.InnermostActiveRegion",
+            16326usize
+        )
+}

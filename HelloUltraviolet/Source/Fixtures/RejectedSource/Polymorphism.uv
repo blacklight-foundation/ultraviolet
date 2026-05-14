@@ -1,7 +1,7 @@
 //! Rejected polymorphism specimens.
 
 public procedure polymorphismRejectedSourceFixtureCount() -> usize {
-    return 46usize
+    return 48usize
 }
 
 public procedure validatedPolymorphismRejectedSourceFixtureCount() -> usize {
@@ -207,6 +207,40 @@ public procedure validatedPolymorphismRejectedSourceFixtureCount() -> usize {
         "Fixtures/RejectedSource/Polymorphism/GenericCallArgCount/Expected.uv",
         "E-TYP-2303",
         "rule.14.Generic-Call-ArgCount-Err"
+    ) {
+        count = count + 1usize
+    }
+    if rejectedSpecimenMatches(
+        rejectedSpecimen(
+            "GenericInfiniteMonomorphization",
+            "Fixtures/RejectedSource/Polymorphism/GenericInfiniteMonomorphization",
+            "Fixtures/RejectedSource/Polymorphism/GenericInfiniteMonomorphization/Source/Main.uv",
+            "Fixtures/RejectedSource/Polymorphism/GenericInfiniteMonomorphization/Expected.uv",
+            expectedDiagnostic("E-TYP-2307", "req.GenericInfiniteMonomorphizationRejected")
+        ),
+        "GenericInfiniteMonomorphization",
+        "Fixtures/RejectedSource/Polymorphism/GenericInfiniteMonomorphization",
+        "Fixtures/RejectedSource/Polymorphism/GenericInfiniteMonomorphization/Source/Main.uv",
+        "Fixtures/RejectedSource/Polymorphism/GenericInfiniteMonomorphization/Expected.uv",
+        "E-TYP-2307",
+        "req.GenericInfiniteMonomorphizationRejected"
+    ) {
+        count = count + 1usize
+    }
+    if rejectedSpecimenMatches(
+        rejectedSpecimen(
+            "GenericInstantiationDepthLimit",
+            "Fixtures/RejectedSource/Polymorphism/GenericInstantiationDepthLimit",
+            "Fixtures/RejectedSource/Polymorphism/GenericInstantiationDepthLimit/Source/Main.uv",
+            "Fixtures/RejectedSource/Polymorphism/GenericInstantiationDepthLimit/Expected.uv",
+            expectedDiagnostic("E-TYP-2308", "req.GenericInstantiationDepthLimit")
+        ),
+        "GenericInstantiationDepthLimit",
+        "Fixtures/RejectedSource/Polymorphism/GenericInstantiationDepthLimit",
+        "Fixtures/RejectedSource/Polymorphism/GenericInstantiationDepthLimit/Source/Main.uv",
+        "Fixtures/RejectedSource/Polymorphism/GenericInstantiationDepthLimit/Expected.uv",
+        "E-TYP-2308",
+        "req.GenericInstantiationDepthLimit"
     ) {
         count = count + 1usize
     }

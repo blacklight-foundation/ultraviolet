@@ -1876,6 +1876,7 @@ ProcedureDeclResult TypeProcedureDecl(
     return result;
   }
   ScopeContext proc_ctx = ctx;
+  proc_ctx.sigma_source = ctx.sigma_source ? ctx.sigma_source : &ctx.sigma;
   proc_ctx.scopes = BindTypeParams(ctx, decl.generic_params);
 
   // Process where clauses
@@ -2294,6 +2295,7 @@ ProcedureDeclResult TypeProcedureDeclSignature(
     return result;
   }
   ScopeContext proc_ctx = ctx;
+  proc_ctx.sigma_source = ctx.sigma_source ? ctx.sigma_source : &ctx.sigma;
   proc_ctx.scopes = BindTypeParams(ctx, decl.generic_params);
 
   // Build signature
@@ -2335,6 +2337,7 @@ ProcedureDeclResult TypeProcedureDeclBody(
   }
 
   ScopeContext proc_ctx = ctx;
+  proc_ctx.sigma_source = ctx.sigma_source ? ctx.sigma_source : &ctx.sigma;
   proc_ctx.scopes = BindTypeParams(ctx, decl.generic_params);
 
   // Rebuild parameter environment

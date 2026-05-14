@@ -11,8 +11,8 @@ public procedure validatedKeySystemSpeculativeExecutionObligations() -> usize {
         "grammar.19.SpeculativeExecution",
         74191usize,
         "HelloUltraviolet::Reference::Keys",
-        "runKeysKeyPathsReference",
-        "Source/Reference/Keys/KeyPaths.uv"
+        "runKeysSpeculativeExecutionReference",
+        "Source/Reference/Keys/SpeculativeExecution.uv"
     ) {
         count = count + 1usize
     }
@@ -20,8 +20,8 @@ public procedure validatedKeySystemSpeculativeExecutionObligations() -> usize {
         "parse.19.SpeculativeBlocks",
         74208usize,
         "HelloUltraviolet::Reference::Keys",
-        "runKeysKeyPathsReference",
-        "Source/Reference/Keys/KeyPaths.uv"
+        "runKeysSpeculativeExecutionReference",
+        "Source/Reference/Keys/SpeculativeExecution.uv"
     ) {
         count = count + 1usize
     }
@@ -29,8 +29,8 @@ public procedure validatedKeySystemSpeculativeExecutionObligations() -> usize {
         "ast.19.SpeculativeBlockForm",
         74223usize,
         "HelloUltraviolet::Reference::Keys",
-        "runKeysKeyPathsReference",
-        "Source/Reference/Keys/KeyPaths.uv"
+        "runKeysSpeculativeExecutionReference",
+        "Source/Reference/Keys/SpeculativeExecution.uv"
     ) {
         count = count + 1usize
     }
@@ -38,8 +38,8 @@ public procedure validatedKeySystemSpeculativeExecutionObligations() -> usize {
         "def.19.SpeculativeSetsAndStates",
         74236usize,
         "HelloUltraviolet::Reference::Keys",
-        "runKeysKeyPathsReference",
-        "Source/Reference/Keys/KeyPaths.uv"
+        "runKeysSpeculativeExecutionReference",
+        "Source/Reference/Keys/SpeculativeExecution.uv"
     ) {
         count = count + 1usize
     }
@@ -47,8 +47,8 @@ public procedure validatedKeySystemSpeculativeExecutionObligations() -> usize {
         "rule.19.K-Spec-Write-Required",
         74264usize,
         "HelloUltraviolet::Reference::Keys",
-        "runKeysKeyPathsReference",
-        "Source/Reference/Keys/KeyPaths.uv"
+        "runKeysSpeculativeExecutionReference",
+        "Source/Reference/Keys/SpeculativeExecution.uv"
     ) {
         count = count + 1usize
     }
@@ -56,8 +56,8 @@ public procedure validatedKeySystemSpeculativeExecutionObligations() -> usize {
         "rule.19.K-Spec-Pure-Body",
         74280usize,
         "HelloUltraviolet::Reference::Keys",
-        "runKeysKeyPathsReference",
-        "Source/Reference/Keys/KeyPaths.uv"
+        "runKeysSpeculativeExecutionReference",
+        "Source/Reference/Keys/SpeculativeExecution.uv"
     ) {
         count = count + 1usize
     }
@@ -65,8 +65,8 @@ public procedure validatedKeySystemSpeculativeExecutionObligations() -> usize {
         "requirement.19.SpeculativePermittedOperations",
         74296usize,
         "HelloUltraviolet::Reference::Keys",
-        "runKeysKeyPathsReference",
-        "Source/Reference/Keys/KeyPaths.uv"
+        "runKeysSpeculativeExecutionReference",
+        "Source/Reference/Keys/SpeculativeExecution.uv"
     ) {
         count = count + 1usize
     }
@@ -74,8 +74,8 @@ public procedure validatedKeySystemSpeculativeExecutionObligations() -> usize {
         "requirement.19.SpeculativeProhibitedOperations",
         74314usize,
         "HelloUltraviolet::Reference::Keys",
-        "runKeysKeyPathsReference",
-        "Source/Reference/Keys/KeyPaths.uv"
+        "runKeysSpeculativeExecutionReference",
+        "Source/Reference/Keys/SpeculativeExecution.uv"
     ) {
         count = count + 1usize
     }
@@ -83,8 +83,8 @@ public procedure validatedKeySystemSpeculativeExecutionObligations() -> usize {
         "def.19.IsCallLike",
         74334usize,
         "HelloUltraviolet::Reference::Keys",
-        "runKeysKeyPathsReference",
-        "Source/Reference/Keys/KeyPaths.uv"
+        "runKeysSpeculativeExecutionReference",
+        "Source/Reference/Keys/SpeculativeExecution.uv"
     ) {
         count = count + 1usize
     }
@@ -92,17 +92,17 @@ public procedure validatedKeySystemSpeculativeExecutionObligations() -> usize {
         "rule.19.K-Spec-No-Nested-Key",
         74347usize,
         "HelloUltraviolet::Reference::Keys",
-        "runKeysKeyPathsReference",
-        "Source/Reference/Keys/KeyPaths.uv"
+        "runKeysSpeculativeExecutionReference",
+        "Source/Reference/Keys/SpeculativeExecution.uv"
     ) {
         count = count + 1usize
     }
-    if acceptedObligationEntryMatches(
+    if rejectedSourceObligationEntryMatches(
         "rule.19.K-Spec-No-Impure-Call",
         74363usize,
-        "HelloUltraviolet::Reference::Keys",
-        "runKeysKeyPathsReference",
-        "Source/Reference/Keys/KeyPaths.uv"
+        "HelloUltraviolet::Fixtures::RejectedSource",
+        "validatedKeysRejectedSourceFixtureCount",
+        "Fixtures/RejectedSource/Keys/SpeculativeImpureCall/Source/Main.uv"
     ) {
         count = count + 1usize
     }
@@ -110,35 +110,35 @@ public procedure validatedKeySystemSpeculativeExecutionObligations() -> usize {
         "rule.19.K-Spec-No-Memory-Ordering",
         74379usize,
         "HelloUltraviolet::Reference::Keys",
-        "runKeysKeyPathsReference",
-        "Source/Reference/Keys/KeyPaths.uv"
+        "runKeysSpeculativeExecutionReference",
+        "Source/Reference/Keys/SpeculativeExecution.uv"
     ) {
         count = count + 1usize
     }
-    if acceptedObligationEntryMatches(
+    if rejectedSourceObligationEntryMatches(
         "rule.19.K-Spec-No-Wait",
         74395usize,
-        "HelloUltraviolet::Reference::Keys",
-        "runKeysKeyPathsReference",
-        "Source/Reference/Keys/KeyPaths.uv"
+        "HelloUltraviolet::Fixtures::RejectedSource",
+        "validatedKeysRejectedSourceFixtureCount",
+        "Fixtures/RejectedSource/Keys/SpeculativeWait/Source/Main.uv"
     ) {
         count = count + 1usize
     }
-    if acceptedObligationEntryMatches(
+    if rejectedSourceObligationEntryMatches(
         "rule.19.K-Spec-No-Defer",
         74411usize,
-        "HelloUltraviolet::Reference::Keys",
-        "runKeysKeyPathsReference",
-        "Source/Reference/Keys/KeyPaths.uv"
+        "HelloUltraviolet::Fixtures::RejectedSource",
+        "validatedKeysRejectedSourceFixtureCount",
+        "Fixtures/RejectedSource/Keys/SpeculativeDefer/Source/Main.uv"
     ) {
         count = count + 1usize
     }
-    if acceptedObligationEntryMatches(
+    if rejectedSourceObligationEntryMatches(
         "rule.19.K-Spec-No-Release",
         74427usize,
-        "HelloUltraviolet::Reference::Keys",
-        "runKeysKeyPathsReference",
-        "Source/Reference/Keys/KeyPaths.uv"
+        "HelloUltraviolet::Fixtures::RejectedSource",
+        "validatedKeysRejectedSourceFixtureCount",
+        "Fixtures/RejectedSource/Keys/SpeculativeReleaseMode/Source/Main.uv"
     ) {
         count = count + 1usize
     }
@@ -146,8 +146,8 @@ public procedure validatedKeySystemSpeculativeExecutionObligations() -> usize {
         "rule.19.ExecSigma-KeyBlock-Speculative",
         74447usize,
         "HelloUltraviolet::Reference::Keys",
-        "runKeysKeyPathsReference",
-        "Source/Reference/Keys/KeyPaths.uv"
+        "runKeysSpeculativeExecutionReference",
+        "Source/Reference/Keys/SpeculativeExecution.uv"
     ) {
         count = count + 1usize
     }
@@ -155,8 +155,8 @@ public procedure validatedKeySystemSpeculativeExecutionObligations() -> usize {
         "def.19.SpecLoop",
         74463usize,
         "HelloUltraviolet::Reference::Keys",
-        "runKeysKeyPathsReference",
-        "Source/Reference/Keys/KeyPaths.uv"
+        "runKeysSpeculativeExecutionReference",
+        "Source/Reference/Keys/SpeculativeExecution.uv"
     ) {
         count = count + 1usize
     }
@@ -164,8 +164,8 @@ public procedure validatedKeySystemSpeculativeExecutionObligations() -> usize {
         "rule.19.Spec-Start",
         74484usize,
         "HelloUltraviolet::Reference::Keys",
-        "runKeysKeyPathsReference",
-        "Source/Reference/Keys/KeyPaths.uv"
+        "runKeysSpeculativeExecutionReference",
+        "Source/Reference/Keys/SpeculativeExecution.uv"
     ) {
         count = count + 1usize
     }
@@ -173,8 +173,8 @@ public procedure validatedKeySystemSpeculativeExecutionObligations() -> usize {
         "rule.19.Spec-Snapshot",
         74499usize,
         "HelloUltraviolet::Reference::Keys",
-        "runKeysKeyPathsReference",
-        "Source/Reference/Keys/KeyPaths.uv"
+        "runKeysSpeculativeExecutionReference",
+        "Source/Reference/Keys/SpeculativeExecution.uv"
     ) {
         count = count + 1usize
     }
@@ -182,8 +182,8 @@ public procedure validatedKeySystemSpeculativeExecutionObligations() -> usize {
         "rule.19.Spec-Exec-Ok",
         74515usize,
         "HelloUltraviolet::Reference::Keys",
-        "runKeysKeyPathsReference",
-        "Source/Reference/Keys/KeyPaths.uv"
+        "runKeysSpeculativeExecutionReference",
+        "Source/Reference/Keys/SpeculativeExecution.uv"
     ) {
         count = count + 1usize
     }
@@ -191,8 +191,8 @@ public procedure validatedKeySystemSpeculativeExecutionObligations() -> usize {
         "rule.19.Spec-Exec-Panic",
         74531usize,
         "HelloUltraviolet::Reference::Keys",
-        "runKeysKeyPathsReference",
-        "Source/Reference/Keys/KeyPaths.uv"
+        "runKeysSpeculativeExecutionReference",
+        "Source/Reference/Keys/SpeculativeExecution.uv"
     ) {
         count = count + 1usize
     }
@@ -200,8 +200,8 @@ public procedure validatedKeySystemSpeculativeExecutionObligations() -> usize {
         "rule.19.Spec-Commit-Success",
         74547usize,
         "HelloUltraviolet::Reference::Keys",
-        "runKeysKeyPathsReference",
-        "Source/Reference/Keys/KeyPaths.uv"
+        "runKeysSpeculativeExecutionReference",
+        "Source/Reference/Keys/SpeculativeExecution.uv"
     ) {
         count = count + 1usize
     }
@@ -209,8 +209,8 @@ public procedure validatedKeySystemSpeculativeExecutionObligations() -> usize {
         "rule.19.Spec-Commit-Fail-Retry",
         74563usize,
         "HelloUltraviolet::Reference::Keys",
-        "runKeysKeyPathsReference",
-        "Source/Reference/Keys/KeyPaths.uv"
+        "runKeysSpeculativeExecutionReference",
+        "Source/Reference/Keys/SpeculativeExecution.uv"
     ) {
         count = count + 1usize
     }
@@ -218,8 +218,8 @@ public procedure validatedKeySystemSpeculativeExecutionObligations() -> usize {
         "rule.19.Spec-Commit-Fail-Fallback",
         74579usize,
         "HelloUltraviolet::Reference::Keys",
-        "runKeysKeyPathsReference",
-        "Source/Reference/Keys/KeyPaths.uv"
+        "runKeysSpeculativeExecutionReference",
+        "Source/Reference/Keys/SpeculativeExecution.uv"
     ) {
         count = count + 1usize
     }
@@ -227,8 +227,8 @@ public procedure validatedKeySystemSpeculativeExecutionObligations() -> usize {
         "rule.19.Spec-Retry",
         74595usize,
         "HelloUltraviolet::Reference::Keys",
-        "runKeysKeyPathsReference",
-        "Source/Reference/Keys/KeyPaths.uv"
+        "runKeysSpeculativeExecutionReference",
+        "Source/Reference/Keys/SpeculativeExecution.uv"
     ) {
         count = count + 1usize
     }
@@ -236,8 +236,8 @@ public procedure validatedKeySystemSpeculativeExecutionObligations() -> usize {
         "rule.19.Spec-Fallback",
         74610usize,
         "HelloUltraviolet::Reference::Keys",
-        "runKeysKeyPathsReference",
-        "Source/Reference/Keys/KeyPaths.uv"
+        "runKeysSpeculativeExecutionReference",
+        "Source/Reference/Keys/SpeculativeExecution.uv"
     ) {
         count = count + 1usize
     }
@@ -245,8 +245,8 @@ public procedure validatedKeySystemSpeculativeExecutionObligations() -> usize {
         "rule.19.SpecBlock-Ok",
         74626usize,
         "HelloUltraviolet::Reference::Keys",
-        "runKeysKeyPathsReference",
-        "Source/Reference/Keys/KeyPaths.uv"
+        "runKeysSpeculativeExecutionReference",
+        "Source/Reference/Keys/SpeculativeExecution.uv"
     ) {
         count = count + 1usize
     }
@@ -254,8 +254,8 @@ public procedure validatedKeySystemSpeculativeExecutionObligations() -> usize {
         "rule.19.SpecBlock-Panic",
         74642usize,
         "HelloUltraviolet::Reference::Keys",
-        "runKeysKeyPathsReference",
-        "Source/Reference/Keys/KeyPaths.uv"
+        "runKeysSpeculativeExecutionReference",
+        "Source/Reference/Keys/SpeculativeExecution.uv"
     ) {
         count = count + 1usize
     }
@@ -263,8 +263,8 @@ public procedure validatedKeySystemSpeculativeExecutionObligations() -> usize {
         "def.19.SpeculativeRuntimeHelpers",
         74658usize,
         "HelloUltraviolet::Reference::Keys",
-        "runKeysKeyPathsReference",
-        "Source/Reference/Keys/KeyPaths.uv"
+        "runKeysSpeculativeExecutionReference",
+        "Source/Reference/Keys/SpeculativeExecution.uv"
     ) {
         count = count + 1usize
     }
@@ -272,8 +272,8 @@ public procedure validatedKeySystemSpeculativeExecutionObligations() -> usize {
         "requirement.19.SpeculativePanicDiscardsWrites",
         74679usize,
         "HelloUltraviolet::Reference::Keys",
-        "runKeysKeyPathsReference",
-        "Source/Reference/Keys/KeyPaths.uv"
+        "runKeysSpeculativeExecutionReference",
+        "Source/Reference/Keys/SpeculativeExecution.uv"
     ) {
         count = count + 1usize
     }
@@ -281,8 +281,8 @@ public procedure validatedKeySystemSpeculativeExecutionObligations() -> usize {
         "requirement.19.SpeculativeAtomicity",
         74692usize,
         "HelloUltraviolet::Reference::Keys",
-        "runKeysKeyPathsReference",
-        "Source/Reference/Keys/KeyPaths.uv"
+        "runKeysSpeculativeExecutionReference",
+        "Source/Reference/Keys/SpeculativeExecution.uv"
     ) {
         count = count + 1usize
     }
@@ -290,8 +290,8 @@ public procedure validatedKeySystemSpeculativeExecutionObligations() -> usize {
         "requirement.19.SpeculativeAbstractSemanticsAndFallback",
         74705usize,
         "HelloUltraviolet::Reference::Keys",
-        "runKeysKeyPathsReference",
-        "Source/Reference/Keys/KeyPaths.uv"
+        "runKeysSpeculativeExecutionReference",
+        "Source/Reference/Keys/SpeculativeExecution.uv"
     ) {
         count = count + 1usize
     }
@@ -299,8 +299,8 @@ public procedure validatedKeySystemSpeculativeExecutionObligations() -> usize {
         "def.19.SpeculativeIR",
         74722usize,
         "HelloUltraviolet::Reference::Keys",
-        "runKeysKeyPathsReference",
-        "Source/Reference/Keys/KeyPaths.uv"
+        "runKeysSpeculativeExecutionReference",
+        "Source/Reference/Keys/SpeculativeExecution.uv"
     ) {
         count = count + 1usize
     }
@@ -308,17 +308,17 @@ public procedure validatedKeySystemSpeculativeExecutionObligations() -> usize {
         "rule.19.Lower-Stmt-KeyBlock-Speculative",
         74735usize,
         "HelloUltraviolet::Reference::Keys",
-        "runKeysKeyPathsReference",
-        "Source/Reference/Keys/KeyPaths.uv"
+        "runKeysSpeculativeExecutionReference",
+        "Source/Reference/Keys/SpeculativeExecution.uv"
     ) {
         count = count + 1usize
     }
-    if acceptedObligationEntryMatches(
+    if rejectedSourceObligationEntryMatches(
         "diagnostics.19.SpeculativeExecution",
         74755usize,
-        "HelloUltraviolet::Reference::Keys",
-        "runKeysKeyPathsReference",
-        "Source/Reference/Keys/KeyPaths.uv"
+        "HelloUltraviolet::Fixtures::RejectedSource",
+        "validatedKeysRejectedSourceFixtureCount",
+        "Fixtures/RejectedSource/Keys/SpeculativeNestedKeyBlock/Source/Main.uv"
     ) {
         count = count + 1usize
     }

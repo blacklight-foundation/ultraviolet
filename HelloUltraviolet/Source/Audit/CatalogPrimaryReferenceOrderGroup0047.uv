@@ -1,0 +1,604 @@
+//! Catalog primary-reference ordering check group 0047.
+
+internal procedure catalogPrimaryReferenceOrderGroup0047() -> bool {
+    return catalogPrimaryReferencePrecedes(
+            "rule.16.ControlExpressionParsingRemainderFamily",
+            61846usize,
+            "rule.16.DerefPlaceTypingFamily",
+            63009usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.16.DerefPlaceTypingFamily",
+            63009usize,
+            "rule.16.EnumLiteralTypingFamily",
+            61485usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.16.EnumLiteralTypingFamily",
+            61485usize,
+            "rule.16.EvalIfCasesFamily",
+            62259usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.16.EvalIfCasesFamily",
+            62259usize,
+            "rule.16.EvalSigma-AddressOf",
+            63162usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.16.EvalSigma-AddressOf",
+            63162usize,
+            "rule.16.EvalSigma-Alloc-Explicit",
+            63242usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.16.EvalSigma-Alloc-Explicit",
+            63242usize,
+            "rule.16.EvalSigma-Alloc-Explicit-Ctrl",
+            63258usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.16.EvalSigma-Alloc-Explicit-Ctrl",
+            63258usize,
+            "rule.16.EvalSigma-Alloc-Implicit",
+            63210usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.16.EvalSigma-Alloc-Implicit",
+            63210usize,
+            "rule.16.EvalSigma-Alloc-Implicit-Ctrl",
+            63226usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.16.EvalSigma-Alloc-Implicit-Ctrl",
+            63226usize,
+            "rule.16.EvalSigma-Bin-And-False",
+            60117usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.16.EvalSigma-Bin-And-False",
+            60117usize,
+            "rule.16.EvalSigma-Bin-And-True",
+            60133usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.16.EvalSigma-Bin-And-True",
+            60133usize,
+            "rule.16.EvalSigma-Bin-Or-False",
+            60165usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.16.EvalSigma-Bin-Or-False",
+            60165usize,
+            "rule.16.EvalSigma-Bin-Or-True",
+            60149usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.16.EvalSigma-Bin-Or-True",
+            60149usize,
+            "rule.16.EvalSigma-Binary",
+            60181usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.16.EvalSigma-Binary",
+            60181usize,
+            "rule.16.EvalSigma-Block",
+            62272usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.16.EvalSigma-Block",
+            62272usize,
+            "rule.16.EvalSigma-Call-CancelProc",
+            59404usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.16.EvalSigma-Call-CancelProc",
+            59404usize,
+            "rule.16.EvalSigma-Call-CancelProc-Ctrl-Args",
+            59420usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.16.EvalSigma-Call-CancelProc-Ctrl-Args",
+            59420usize,
+            "rule.16.EvalSigma-Call-Closure",
+            59356usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.16.EvalSigma-Call-Closure",
+            59356usize,
+            "rule.16.EvalSigma-Call-Proc",
+            59436usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.16.EvalSigma-Call-Proc",
+            59436usize,
+            "rule.16.EvalSigma-Call-Record",
+            59452usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.16.EvalSigma-Call-Record",
+            59452usize,
+            "rule.16.EvalSigma-Call-RegionProc",
+            59372usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.16.EvalSigma-Call-RegionProc",
+            59372usize,
+            "rule.16.EvalSigma-Call-RegionProc-Ctrl-Args",
+            59388usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.16.EvalSigma-Call-RegionProc-Ctrl-Args",
+            59388usize,
+            "rule.16.EvalSigma-Cast",
+            60886usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.16.EvalSigma-Cast",
+            60886usize,
+            "rule.16.EvalSigma-Cast-Panic",
+            60902usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.16.EvalSigma-Cast-Panic",
+            60902usize,
+            "rule.16.EvalSigma-Closure-Capturing",
+            64536usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.16.EvalSigma-Closure-Capturing",
+            64536usize,
+            "rule.16.EvalSigma-Closure-NonCapturing",
+            64520usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.16.EvalSigma-Closure-NonCapturing",
+            64520usize,
+            "rule.16.EvalSigma-ClosureCall",
+            64568usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.16.EvalSigma-ClosureCall",
+            64568usize,
+            "rule.16.EvalSigma-ClosureCall-Ctrl",
+            64608usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.16.EvalSigma-ClosureCall-Ctrl",
+            64608usize,
+            "rule.16.EvalSigma-ClosureCall-Ctrl-Args",
+            64624usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.16.EvalSigma-ClosureCall-Ctrl-Args",
+            64624usize,
+            "rule.16.EvalSigma-Deref",
+            63178usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.16.EvalSigma-Deref",
+            63178usize,
+            "rule.16.EvalSigma-ErrorExpr",
+            57953usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.16.EvalSigma-ErrorExpr",
+            57953usize,
+            "rule.16.EvalSigma-FieldAccess",
+            58645usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.16.EvalSigma-FieldAccess",
+            58645usize,
+            "rule.16.EvalSigma-Ident",
+            57921usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.16.EvalSigma-Ident",
+            57921usize,
+            "rule.16.EvalSigma-If-Cases",
+            62227usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.16.EvalSigma-If-Cases",
+            62227usize,
+            "rule.16.EvalSigma-If-Cases-Ctrl",
+            62243usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.16.EvalSigma-If-Cases-Ctrl",
+            62243usize,
+            "rule.16.EvalSigma-If-Ctrl",
+            62179usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.16.EvalSigma-If-Ctrl",
+            62179usize,
+            "rule.16.EvalSigma-If-False-None",
+            62147usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.16.EvalSigma-If-False-None",
+            62147usize,
+            "rule.16.EvalSigma-If-False-Some",
+            62163usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.16.EvalSigma-If-False-Some",
+            62163usize,
+            "rule.16.EvalSigma-If-Is",
+            62195usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.16.EvalSigma-If-Is",
+            62195usize,
+            "rule.16.EvalSigma-If-Is-Ctrl",
+            62211usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.16.EvalSigma-If-Is-Ctrl",
+            62211usize,
+            "rule.16.EvalSigma-If-True",
+            62131usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.16.EvalSigma-If-True",
+            62131usize,
+            "rule.16.EvalSigma-Index",
+            58677usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.16.EvalSigma-Index",
+            58677usize,
+            "rule.16.EvalSigma-Index-Range",
+            58693usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.16.EvalSigma-Index-Range",
+            58693usize,
+            "rule.16.EvalSigma-Literal",
+            57890usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.16.EvalSigma-Literal",
+            57890usize,
+            "rule.16.EvalSigma-Loop-Cond-Body-Ctrl",
+            62496usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.16.EvalSigma-Loop-Cond-Body-Ctrl",
+            62496usize,
+            "rule.16.EvalSigma-Loop-Cond-Break",
+            62464usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.16.EvalSigma-Loop-Cond-Break",
+            62464usize,
+            "rule.16.EvalSigma-Loop-Cond-Continue",
+            62448usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.16.EvalSigma-Loop-Cond-Continue",
+            62448usize,
+            "rule.16.EvalSigma-Loop-Cond-Ctrl",
+            62480usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.16.EvalSigma-Loop-Cond-Ctrl",
+            62480usize,
+            "rule.16.EvalSigma-Loop-Cond-False",
+            62416usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.16.EvalSigma-Loop-Cond-False",
+            62416usize,
+            "rule.16.EvalSigma-Loop-Cond-True-Step",
+            62432usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.16.EvalSigma-Loop-Cond-True-Step",
+            62432usize,
+            "rule.16.EvalSigma-Loop-Infinite-Break",
+            62384usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.16.EvalSigma-Loop-Infinite-Break",
+            62384usize,
+            "rule.16.EvalSigma-Loop-Infinite-Continue",
+            62368usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.16.EvalSigma-Loop-Infinite-Continue",
+            62368usize,
+            "rule.16.EvalSigma-Loop-Infinite-Ctrl",
+            62400usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.16.EvalSigma-Loop-Infinite-Ctrl",
+            62400usize,
+            "rule.16.EvalSigma-Loop-Infinite-Step",
+            62352usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.16.EvalSigma-Loop-Infinite-Step",
+            62352usize,
+            "rule.16.EvalSigma-Loop-Iter",
+            62512usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.16.EvalSigma-Loop-Iter",
+            62512usize,
+            "rule.16.EvalSigma-Loop-Iter-Ctrl",
+            62528usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.16.EvalSigma-Loop-Iter-Ctrl",
+            62528usize,
+            "rule.16.EvalSigma-MethodCall",
+            59468usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.16.EvalSigma-MethodCall",
+            59468usize,
+            "rule.16.EvalSigma-Move",
+            63194usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.16.EvalSigma-Move",
+            63194usize,
+            "rule.16.EvalSigma-Path",
+            57937usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.16.EvalSigma-Path",
+            57937usize,
+            "rule.16.EvalSigma-Pipeline-Closure",
+            64684usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.16.EvalSigma-Pipeline-Closure",
+            64684usize,
+            "rule.16.EvalSigma-Pipeline-Ctrl-Left",
+            64701usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.16.EvalSigma-Pipeline-Ctrl-Left",
+            64701usize,
+            "rule.16.EvalSigma-Pipeline-Ctrl-Right",
+            64717usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.16.EvalSigma-Pipeline-Ctrl-Right",
+            64717usize,
+            "rule.16.EvalSigma-Pipeline-Func",
+            64667usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.16.EvalSigma-Pipeline-Func",
+            64667usize,
+            "rule.16.EvalSigma-Propagate-Ctrl",
+            63339usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.16.EvalSigma-Propagate-Ctrl",
+            63339usize,
+            "rule.16.EvalSigma-Propagate-Error",
+            63306usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.16.EvalSigma-Propagate-Error",
+            63306usize,
+            "rule.16.EvalSigma-Propagate-Error-Async",
+            63322usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.16.EvalSigma-Propagate-Error-Async",
+            63322usize,
+            "rule.16.EvalSigma-Propagate-Success",
+            63274usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.16.EvalSigma-Propagate-Success",
+            63274usize,
+            "rule.16.EvalSigma-Propagate-Success-Async",
+            63290usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.16.EvalSigma-Propagate-Success-Async",
+            63290usize,
+            "rule.16.EvalSigma-PtrNull",
+            57906usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.16.EvalSigma-PtrNull",
+            57906usize,
+            "rule.16.EvalSigma-Range",
+            60085usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.16.EvalSigma-Range",
+            60085usize,
+            "rule.16.EvalSigma-Transmute",
+            60931usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.16.EvalSigma-Transmute",
+            60931usize,
+            "rule.16.EvalSigma-Transmute-Ctrl",
+            60947usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.16.EvalSigma-Transmute-Ctrl",
+            60947usize,
+            "rule.16.EvalSigma-TupleAccess",
+            58661usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.16.EvalSigma-TupleAccess",
+            58661usize,
+            "rule.16.EvalSigma-Unary",
+            60101usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.16.EvalSigma-Unary",
+            60101usize,
+            "rule.16.EvalSigma-UnsafeBlock",
+            63146usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.16.EvalSigma-UnsafeBlock",
+            63146usize,
+            "rule.16.EvalSigmaArrayConstructionFamily",
+            61559usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.16.EvalSigmaArrayConstructionFamily",
+            61559usize,
+            "rule.16.EvalSigmaEnumConstructionFamily",
+            61585usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.16.EvalSigmaEnumConstructionFamily",
+            61585usize,
+            "rule.16.EvalSigmaRecordConstructionFamily",
+            61572usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.16.EvalSigmaRecordConstructionFamily",
+            61572usize,
+            "rule.16.EvalSigmaTupleConstructionFamily",
+            61546usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.16.EvalSigmaTupleConstructionFamily",
+            61546usize,
+            "rule.16.Expr-Unresolved-Err",
+            57823usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.16.Expr-Unresolved-Err",
+            57823usize,
+            "rule.16.IfCaseTypingFamily",
+            62028usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.16.IfCaseTypingFamily",
+            62028usize,
+            "rule.16.Infer-Closure-Params",
+            64199usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.16.Infer-Closure-Params",
+            64199usize,
+            "rule.16.Infer-Closure-Params-Err",
+            64215usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.16.Infer-Closure-Params-Err",
+            64215usize,
+            "rule.16.Infer-Closure-Return",
+            64231usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.16.Infer-Closure-Return",
+            64231usize,
+            "rule.16.K-Closure-Escape-Type",
+            64119usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.16.K-Closure-Escape-Type",
+            64119usize,
+            "rule.16.Layout-ClosureEnv",
+            64751usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.16.Layout-ClosureEnv",
+            64751usize,
+            "rule.16.Layout-ClosureEnv-Empty",
+            64767usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.16.Layout-ClosureEnv-Empty",
+            64767usize,
+            "rule.16.LoopIter-Done",
+            62544usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.16.LoopIter-Done",
+            62544usize,
+            "rule.16.LoopIter-Step-Break",
+            62592usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.16.LoopIter-Step-Break",
+            62592usize,
+            "rule.16.LoopIter-Step-Continue",
+            62576usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.16.LoopIter-Step-Continue",
+            62576usize,
+            "rule.16.LoopIter-Step-Ctrl",
+            62608usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.16.LoopIter-Step-Ctrl",
+            62608usize,
+            "rule.16.LoopIter-Step-Val",
+            62560usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.16.LoopIter-Step-Val",
+            62560usize,
+            "rule.16.Lower-Args-Cons-Move",
+            59540usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.16.Lower-Args-Cons-Move",
+            59540usize,
+            "rule.16.Lower-Args-Cons-Ref",
+            59556usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.16.Lower-Args-Cons-Ref",
+            59556usize,
+            "rule.16.Lower-Args-Empty",
+            59525usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.16.Lower-Args-Empty",
+            59525usize,
+            "rule.16.Lower-CallIR-RecordCtor",
+            61674usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.16.Lower-CallIR-RecordCtor",
+            61674usize,
+            "rule.16.Lower-CapturedIdent-Move",
+            64882usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.16.Lower-CapturedIdent-Move",
+            64882usize,
+            "rule.16.Lower-CapturedIdent-Ref",
+            64852usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.16.Lower-CapturedIdent-Ref",
+            64852usize,
+            "rule.16.Lower-Closure-Call",
+            64929usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.16.Lower-Closure-Call",
+            64929usize,
+            "rule.16.Lower-Expr-AddressOf",
+            63548usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.16.Lower-Expr-AddressOf",
+            63548usize,
+            "rule.16.Lower-Expr-Alloc",
+            63580usize
+        )
+}

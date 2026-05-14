@@ -26,9 +26,22 @@ internal procedure nonReducingDispatchReference(context: Context) -> bool {
     }
 }
 
+internal procedure trailingOptionDispatchReference(context: Context) -> i32 {
+    return parallel context~>inline() {
+        dispatch index in 0usize..3usize [
+            reduce: +,
+            chunk: 1usize,
+            ordered,
+        ] {
+            index as i32
+        }
+    }
+}
+
 /// Exercises the Parallelism Dispatch reference surface.
 public procedure runParallelismDispatchReference(context: Context) -> bool {
     return reducingDispatchReference(context) == 6 &&
         keyedDispatchReference(context) == 6 &&
-        nonReducingDispatchReference(context)
+        nonReducingDispatchReference(context) &&
+        trailingOptionDispatchReference(context) == 3
 }

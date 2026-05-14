@@ -223,12 +223,12 @@ public procedure validatedAbstractionAndPolymorphismClassesObligations() -> usiz
     ) {
         count = count + 1usize
     }
-    if acceptedObligationEntryMatches(
+    if rejectedSourceObligationEntryMatches(
         "rule.14.WF-ClassPath-Err",
         48999usize,
-        "HelloUltraviolet::Reference::Polymorphism",
-        "runPolymorphismClassesReference",
-        "Source/Reference/Polymorphism/Classes.uv"
+        "HelloUltraviolet::Fixtures::RejectedSource",
+        "validatedPolymorphismRejectedSourceFixtureCount",
+        "Fixtures/RejectedSource/Polymorphism/GenericClassBoundNonClass/Source/Main.uv"
     ) {
         count = count + 1usize
     }
@@ -331,12 +331,12 @@ public procedure validatedAbstractionAndPolymorphismClassesObligations() -> usiz
     ) {
         count = count + 1usize
     }
-    if acceptedObligationEntryMatches(
+    if rejectedSourceObligationEntryMatches(
         "rule.14.Superclass-Cycle",
         49214usize,
-        "HelloUltraviolet::Reference::Polymorphism",
-        "runPolymorphismClassesReference",
-        "Source/Reference/Polymorphism/Classes.uv"
+        "HelloUltraviolet::Fixtures::RejectedSource",
+        "validatedPolymorphismRejectedSourceFixtureCount",
+        "Fixtures/RejectedSource/Polymorphism/SuperclassCycle/Source/Main.uv"
     ) {
         count = count + 1usize
     }
@@ -439,12 +439,12 @@ public procedure validatedAbstractionAndPolymorphismClassesObligations() -> usiz
     ) {
         count = count + 1usize
     }
-    if acceptedObligationEntryMatches(
+    if rejectedSourceObligationEntryMatches(
         "rule.14.WF-Class",
         49393usize,
-        "HelloUltraviolet::Reference::Polymorphism",
-        "runPolymorphismClassesReference",
-        "Source/Reference/Polymorphism/Classes.uv"
+        "HelloUltraviolet::Fixtures::RejectedSource",
+        "validatedPolymorphismRejectedSourceFixtureCount",
+        "Fixtures/RejectedSource/Polymorphism/DuplicateClassProcedureName/Source/Main.uv"
     ) {
         count = count + 1usize
     }
@@ -475,12 +475,12 @@ public procedure validatedAbstractionAndPolymorphismClassesObligations() -> usiz
     ) {
         count = count + 1usize
     }
-    if acceptedObligationEntryMatches(
+    if rejectedSourceObligationEntryMatches(
         "diag.Classes",
         49451usize,
-        "HelloUltraviolet::Reference::Polymorphism",
-        "runPolymorphismClassesReference",
-        "Source/Reference/Polymorphism/Classes.uv"
+        "HelloUltraviolet::Fixtures::RejectedSource",
+        "validatedPolymorphismRejectedSourceFixtureCount",
+        "Fixtures/RejectedSource/Polymorphism/ClassMemberNameConflict/Source/Main.uv"
     ) {
         count = count + 1usize
     }

@@ -1,0 +1,604 @@
+//! Catalog primary-reference ordering check group 0005.
+
+internal procedure catalogPrimaryReferenceOrderGroup0005() -> bool {
+    return catalogPrimaryReferencePrecedes(
+            "P-Slice-From-Slice-Perm",
+            37205usize,
+            "P-Tuple-Index",
+            35810usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "P-Tuple-Index",
+            35810usize,
+            "P-Tuple-Index-Perm",
+            35828usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "P-Tuple-Index-Perm",
+            35828usize,
+            "Parse-AliasOpt-None",
+            11110usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "Parse-AliasOpt-None",
+            11110usize,
+            "Parse-AliasOpt-Yes",
+            11128usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "Parse-AliasOpt-Yes",
+            11128usize,
+            "Parse-Array-Literal",
+            36308usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "Parse-Array-Literal",
+            36308usize,
+            "Parse-Array-Segment-Elem",
+            36219usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "Parse-Array-Segment-Elem",
+            36219usize,
+            "Parse-Array-Segment-List-Comma",
+            36290usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "Parse-Array-Segment-List-Comma",
+            36290usize,
+            "Parse-Array-Segment-List-Empty",
+            36255usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "Parse-Array-Segment-List-Empty",
+            36255usize,
+            "Parse-Array-Segment-List-Single",
+            36272usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "Parse-Array-Segment-List-Single",
+            36272usize,
+            "Parse-Array-Segment-Repeat",
+            36237usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "Parse-Array-Segment-Repeat",
+            36237usize,
+            "Parse-Array-Type",
+            36201usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "Parse-Array-Type",
+            36201usize,
+            "Parse-AttrArg-Ident",
+            27039usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "Parse-AttrArg-Ident",
+            27039usize,
+            "Parse-AttrArg-Literal",
+            27021usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "Parse-AttrArg-Literal",
+            27021usize,
+            "Parse-AttrArg-Named-Call",
+            27003usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "Parse-AttrArg-Named-Call",
+            27003usize,
+            "Parse-AttrArg-Named-Ident",
+            26985usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "Parse-AttrArg-Named-Ident",
+            26985usize,
+            "Parse-AttrArg-Named-Literal",
+            26967usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "Parse-AttrArg-Named-Literal",
+            26967usize,
+            "Parse-AttrArgList-Cons",
+            26895usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "Parse-AttrArgList-Cons",
+            26895usize,
+            "Parse-AttrArgListTail-Comma",
+            26949usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "Parse-AttrArgListTail-Comma",
+            26949usize,
+            "Parse-AttrArgListTail-End",
+            26913usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "Parse-AttrArgListTail-End",
+            26913usize,
+            "Parse-AttrArgListTail-TrailingComma",
+            26931usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "Parse-AttrArgListTail-TrailingComma",
+            26931usize,
+            "Parse-AttrArgsOpt-None",
+            26859usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "Parse-AttrArgsOpt-None",
+            26859usize,
+            "Parse-AttrArgsOpt-Yes",
+            26877usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "Parse-AttrArgsOpt-Yes",
+            26877usize,
+            "Parse-AttrBlock",
+            26751usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "Parse-AttrBlock",
+            26751usize,
+            "Parse-AttrList-Cons",
+            26697usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "Parse-AttrList-Cons",
+            26697usize,
+            "Parse-AttrListOpt-None",
+            26661usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "Parse-AttrListOpt-None",
+            26661usize,
+            "Parse-AttrListOpt-Yes",
+            26679usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "Parse-AttrListOpt-Yes",
+            26679usize,
+            "Parse-AttrListTail-Cons",
+            26733usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "Parse-AttrListTail-Cons",
+            26733usize,
+            "Parse-AttrListTail-End",
+            26715usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "Parse-AttrListTail-End",
+            26715usize,
+            "Parse-AttrName-Plain",
+            27549usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "Parse-AttrName-Plain",
+            27549usize,
+            "Parse-AttrName-Vendor",
+            27567usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "Parse-AttrName-Vendor",
+            27567usize,
+            "Parse-AttrSpec",
+            26841usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "Parse-AttrSpec",
+            26841usize,
+            "Parse-AttrSpecList-Cons",
+            26769usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "Parse-AttrSpecList-Cons",
+            26769usize,
+            "Parse-AttrSpecListTail-Comma",
+            26823usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "Parse-AttrSpecListTail-Comma",
+            26823usize,
+            "Parse-AttrSpecListTail-End",
+            26787usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "Parse-AttrSpecListTail-End",
+            26787usize,
+            "Parse-AttrSpecListTail-TrailingComma",
+            26805usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "Parse-AttrSpecListTail-TrailingComma",
+            26805usize,
+            "Parse-ClassPath",
+            10966usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "Parse-ClassPath",
+            10966usize,
+            "Parse-Enum",
+            39537usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "Parse-Enum",
+            39537usize,
+            "Parse-EnumBody",
+            39555usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "Parse-EnumBody",
+            39555usize,
+            "Parse-ExternAbiOpt-Ident",
+            31520usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "Parse-ExternAbiOpt-Ident",
+            31520usize,
+            "Parse-ExternAbiOpt-None",
+            31484usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "Parse-ExternAbiOpt-None",
+            31484usize,
+            "Parse-ExternAbiOpt-String",
+            31502usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "Parse-ExternAbiOpt-String",
+            31502usize,
+            "Parse-ExternBlock",
+            31466usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "Parse-ExternBlock",
+            31466usize,
+            "Parse-ExternItemList-Cons",
+            31556usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "Parse-ExternItemList-Cons",
+            31556usize,
+            "Parse-ExternItemList-End",
+            31538usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "Parse-ExternItemList-End",
+            31538usize,
+            "Parse-Ident",
+            10912usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "Parse-Ident",
+            10912usize,
+            "Parse-Ident-Err",
+            10930usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "Parse-Ident-Err",
+            10930usize,
+            "Parse-Import",
+            29844usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "Parse-Import",
+            29844usize,
+            "Parse-KeyBoundaryOpt-No",
+            11200usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "Parse-KeyBoundaryOpt-No",
+            11200usize,
+            "Parse-KeyBoundaryOpt-Yes",
+            11182usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "Parse-KeyBoundaryOpt-Yes",
+            11182usize,
+            "Parse-Manifest-Err",
+            2219usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "Parse-Manifest-Err",
+            2219usize,
+            "Parse-Manifest-Missing",
+            2201usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "Parse-Manifest-Missing",
+            2201usize,
+            "Parse-Manifest-Ok",
+            2183usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "Parse-Manifest-Ok",
+            2183usize,
+            "Parse-ModalOpt-No",
+            11092usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "Parse-ModalOpt-No",
+            11092usize,
+            "Parse-ModalOpt-Yes",
+            11074usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "Parse-ModalOpt-Yes",
+            11074usize,
+            "Parse-ModulePath",
+            31783usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "Parse-ModulePath",
+            31783usize,
+            "Parse-ModulePathTail-Cons",
+            31819usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "Parse-ModulePathTail-Cons",
+            31819usize,
+            "Parse-ModulePathTail-End",
+            31801usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "Parse-ModulePathTail-End",
+            31801usize,
+            "Parse-Never-Type",
+            35052usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "Parse-Never-Type",
+            35052usize,
+            "Parse-Prim-Type",
+            35016usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "Parse-Prim-Type",
+            35016usize,
+            "Parse-QualifiedHead",
+            11020usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "Parse-QualifiedHead",
+            11020usize,
+            "Parse-Range-Full",
+            37520usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "Parse-Range-Full",
+            37520usize,
+            "Parse-Range-Lhs",
+            37538usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "Parse-Range-Lhs",
+            37538usize,
+            "Parse-Range-To",
+            37484usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "Parse-Range-To",
+            37484usize,
+            "Parse-Range-ToInc",
+            37502usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "Parse-Range-ToInc",
+            37502usize,
+            "Parse-RangeTail-Exclusive",
+            37592usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "Parse-RangeTail-Exclusive",
+            37592usize,
+            "Parse-RangeTail-From",
+            37574usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "Parse-RangeTail-From",
+            37574usize,
+            "Parse-RangeTail-Inclusive",
+            37610usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "Parse-RangeTail-Inclusive",
+            37610usize,
+            "Parse-RangeTail-None",
+            37556usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "Parse-RangeTail-None",
+            37556usize,
+            "Parse-Record",
+            38547usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "Parse-Record",
+            38547usize,
+            "Parse-Record-Literal",
+            38727usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "Parse-Record-Literal",
+            38727usize,
+            "Parse-RecordBody",
+            38565usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "Parse-RecordBody",
+            38565usize,
+            "Parse-RecordFieldDeclAfterVis",
+            38673usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "Parse-RecordFieldDeclAfterVis",
+            38673usize,
+            "Parse-RecordFieldInitOpt-None",
+            38691usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "Parse-RecordFieldInitOpt-None",
+            38691usize,
+            "Parse-RecordFieldInitOpt-Yes",
+            38709usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "Parse-RecordFieldInitOpt-Yes",
+            38709usize,
+            "Parse-RecordMember-AssociatedType",
+            38637usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "Parse-RecordMember-AssociatedType",
+            38637usize,
+            "Parse-RecordMember-Field",
+            38655usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "Parse-RecordMember-Field",
+            38655usize,
+            "Parse-RecordMember-Method",
+            38619usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "Parse-RecordMember-Method",
+            38619usize,
+            "Parse-RecordMemberList-Cons",
+            38601usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "Parse-RecordMemberList-Cons",
+            38601usize,
+            "Parse-RecordMemberList-End",
+            38583usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "Parse-RecordMemberList-End",
+            38583usize,
+            "Parse-Slice-Type",
+            36911usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "Parse-Slice-Type",
+            36911usize,
+            "Parse-Static-Decl",
+            30611usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "Parse-Static-Decl",
+            30611usize,
+            "Parse-Syntax-Err",
+            12025usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "Parse-Syntax-Err",
+            12025usize,
+            "Parse-Tuple-Literal",
+            35584usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "Parse-Tuple-Literal",
+            35584usize,
+            "Parse-Tuple-Type",
+            35354usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "Parse-Tuple-Type",
+            35354usize,
+            "Parse-TupleExprElems-Empty",
+            35602usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "Parse-TupleExprElems-Empty",
+            35602usize,
+            "Parse-TupleExprElems-Many",
+            35638usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "Parse-TupleExprElems-Many",
+            35638usize,
+            "Parse-TupleExprElems-Single",
+            35620usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "Parse-TupleExprElems-Single",
+            35620usize,
+            "Parse-TupleTypeElems-Empty",
+            35372usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "Parse-TupleTypeElems-Empty",
+            35372usize,
+            "Parse-TupleTypeElems-Many",
+            35408usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "Parse-TupleTypeElems-Many",
+            35408usize,
+            "Parse-TupleTypeElems-One",
+            35390usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "Parse-TupleTypeElems-One",
+            35390usize,
+            "Parse-Type-Alias",
+            41250usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "Parse-Type-Alias",
+            41250usize,
+            "Parse-TypeAnnotOpt-None",
+            11146usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "Parse-TypeAnnotOpt-None",
+            11146usize,
+            "Parse-TypeAnnotOpt-Yes",
+            11164usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "Parse-TypeAnnotOpt-Yes",
+            11164usize,
+            "Parse-TypePath",
+            10948usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "Parse-TypePath",
+            10948usize,
+            "Parse-TypePathTail-Cons",
+            11002usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "Parse-TypePathTail-Cons",
+            11002usize,
+            "Parse-TypePathTail-End",
+            10984usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "Parse-TypePathTail-End",
+            10984usize,
+            "Parse-UnionTail-Cons",
+            40660usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "Parse-UnionTail-Cons",
+            40660usize,
+            "Parse-UnionTail-None",
+            40642usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "Parse-UnionTail-None",
+            40642usize,
+            "Parse-Unit-Type",
+            35034usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "Parse-Unit-Type",
+            35034usize,
+            "Parse-Using-Item",
+            30115usize
+        )
+}

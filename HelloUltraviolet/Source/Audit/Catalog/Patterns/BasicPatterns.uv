@@ -142,12 +142,12 @@ public procedure validatedPatternsBasicPatternsObligations() -> usize {
     ) {
         count = count + 1usize
     }
-    if acceptedObligationEntryMatches(
+    if rejectedSourceObligationEntryMatches(
         "rule.17.Pat-Dup-R-Err",
         65284usize,
-        "HelloUltraviolet::Reference::Patterns",
-        "runPatternsBasicPatternsReference",
-        "Source/Reference/Patterns/BasicPatterns.uv"
+        "HelloUltraviolet::Fixtures::RejectedSource",
+        "validatedPatternsRejectedSourceFixtureCount",
+        "Fixtures/RejectedSource/Patterns/DuplicatePatternBinding/Source/Main.uv"
     ) {
         count = count + 1usize
     }
@@ -268,12 +268,12 @@ public procedure validatedPatternsBasicPatternsObligations() -> usize {
     ) {
         count = count + 1usize
     }
-    if acceptedObligationEntryMatches(
+    if rejectedSourceObligationEntryMatches(
         "diag.17.BasicPatterns",
         65514usize,
-        "HelloUltraviolet::Reference::Patterns",
-        "runPatternsBasicPatternsReference",
-        "Source/Reference/Patterns/BasicPatterns.uv"
+        "HelloUltraviolet::Fixtures::RejectedSource",
+        "validatedPatternsRejectedSourceFixtureCount",
+        "Fixtures/RejectedSource/Patterns/BasicPatternsDiagnostic/Source/Main.uv"
     ) {
         count = count + 1usize
     }

@@ -1,11 +1,11 @@
 //! Runtime path checks for source files referenced by generated catalog rows.
 
 public procedure expectedCatalogSourcePathCount() -> usize {
-    return 66usize
+    return 515usize
 }
 
 public procedure catalogSourcePathCount() -> usize {
-    return 66usize
+    return 515usize
 }
 
 internal procedure catalogSourcePathExists(context: Context, source_path: string@View) -> bool {
@@ -14,8 +14,381 @@ internal procedure catalogSourcePathExists(context: Context, source_path: string
 
 public procedure catalogSourcePathsExist(context: Context) -> bool {
     return catalogSourcePathCount() == expectedCatalogSourcePathCount() &&
+        catalogSourcePathExists(context, "HelloUltraviolet/Fixtures/AcceptedProjects/CrossAssemblyImplementation/Source/CrossAssemblyImplementation/Library.uv") &&
+        catalogSourcePathExists(context, "HelloUltraviolet/Fixtures/AcceptedProjects/ExecutableMain/Source/Main.uv") &&
+        catalogSourcePathExists(context, "HelloUltraviolet/Fixtures/AcceptedProjects/ExpressionSemantics/Source/Library.uv") &&
+        catalogSourcePathExists(context, "HelloUltraviolet/Fixtures/AcceptedProjects/HostedExportLibrary/Source/Library.uv") &&
+        catalogSourcePathExists(context, "HelloUltraviolet/Fixtures/AcceptedProjects/PtrNullReturn/Source/Library.uv") &&
+        catalogSourcePathExists(context, "HelloUltraviolet/Fixtures/AcceptedProjects/StaticLibrary/Source/Library.uv") &&
+        catalogSourcePathExists(context, "HelloUltraviolet/Fixtures/AcceptedProjects/VerificationFactPrecondition/Source/Library.uv") &&
+        catalogSourcePathExists(context, "HelloUltraviolet/Fixtures/ArtifactProjects/AArch64DependencyObject/Source/Library.uv") &&
+        catalogSourcePathExists(context, "HelloUltraviolet/Fixtures/ArtifactProjects/EmitBcLibrary/Source/Library.uv") &&
+        catalogSourcePathExists(context, "HelloUltraviolet/Fixtures/ArtifactProjects/ReducedEmptyDispatchPanic/Source/Main.uv") &&
+        catalogSourcePathExists(context, "HelloUltraviolet/Fixtures/DiagnosticSource/Async/AsyncLargeCaptureNoWarning/Source/Main.uv") &&
+        catalogSourcePathExists(context, "HelloUltraviolet/Fixtures/DiagnosticSource/Async/AsyncLargeCaptureWarning/Source/Main.uv") &&
+        catalogSourcePathExists(context, "HelloUltraviolet/Fixtures/DiagnosticSource/Async/AsyncLargeCaptureWarningEmission/Source/Main.uv") &&
+        catalogSourcePathExists(context, "HelloUltraviolet/Fixtures/DiagnosticSource/Async/AsyncStateMachineDiagnosticsTable/Source/Main.uv") &&
+        catalogSourcePathExists(context, "HelloUltraviolet/Fixtures/DiagnosticSource/Async/StaleValueMarkIRDiagnostics/Source/Main.uv") &&
+        catalogSourcePathExists(context, "HelloUltraviolet/Fixtures/DiagnosticSource/Comptime/ProjectFilesInvalidPath/Source/Main.uv") &&
+        catalogSourcePathExists(context, "HelloUltraviolet/Fixtures/DiagnosticSource/Comptime/UserDiagnosticNote/Source/Main.uv") &&
+        catalogSourcePathExists(context, "HelloUltraviolet/Fixtures/DiagnosticSource/Comptime/UserDiagnosticWarning/Source/Main.uv") &&
+        catalogSourcePathExists(context, "HelloUltraviolet/Fixtures/DiagnosticSource/Expressions/ValidTransmuteTarget/Source/Main.uv") &&
+        catalogSourcePathExists(context, "HelloUltraviolet/Fixtures/DiagnosticSource/Keys/DynamicKeyRuntimeInfo/Source/Main.uv") &&
+        catalogSourcePathExists(context, "HelloUltraviolet/Fixtures/DiagnosticSource/Keys/FineGrainedLoopKeyWarning/Source/Main.uv") &&
+        catalogSourcePathExists(context, "HelloUltraviolet/Fixtures/DiagnosticSource/Keys/NestedReleaseInterleavingWarning/Source/Main.uv") &&
+        catalogSourcePathExists(context, "HelloUltraviolet/Fixtures/DiagnosticSource/Keys/OrderedRedundantWarning/Source/Main.uv") &&
+        catalogSourcePathExists(context, "HelloUltraviolet/Fixtures/DiagnosticSource/Keys/ReadThenWriteContentionWarning/Source/Main.uv") &&
+        catalogSourcePathExists(context, "HelloUltraviolet/Fixtures/DiagnosticSource/Keys/ReadThenWriteExplicitWarning/Source/Main.uv") &&
+        catalogSourcePathExists(context, "HelloUltraviolet/Fixtures/DiagnosticSource/Keys/SharedClosureCaptureWarning/Source/Main.uv") &&
+        catalogSourcePathExists(context, "HelloUltraviolet/Fixtures/DiagnosticSource/Keys/StaleAfterYieldReleaseWarning/Source/Main.uv") &&
+        catalogSourcePathExists(context, "HelloUltraviolet/Fixtures/DiagnosticSource/Keys/StaleOkSuppressesReleaseWarning/Source/Main.uv") &&
+        catalogSourcePathExists(context, "HelloUltraviolet/Fixtures/DiagnosticSource/Keys/UnknownCalleeAccessWarning/Source/Main.uv") &&
+        catalogSourcePathExists(context, "HelloUltraviolet/Fixtures/DiagnosticSource/Parallelism/CancellationNoAdditionalDiagnostics/Source/Main.uv") &&
+        catalogSourcePathExists(context, "HelloUltraviolet/Fixtures/DiagnosticSource/Parallelism/DispatchDynamicKeyWarning/Source/Main.uv") &&
+        catalogSourcePathExists(context, "HelloUltraviolet/Fixtures/DiagnosticSource/Parallelism/PanicHandlingNoAdditionalDiagnostics/Source/Main.uv") &&
+        catalogSourcePathExists(context, "HelloUltraviolet/Fixtures/RejectedSource/Comptime/ComptimeIfConditionType/Source/Main.uv") &&
+        catalogSourcePathExists(context, "HelloUltraviolet/Fixtures/RejectedSource/Comptime/ComptimePointerParameter/Source/Main.uv") &&
+        catalogSourcePathExists(context, "HelloUltraviolet/Fixtures/RejectedSource/Comptime/ComptimeProhibitedWait/Source/Main.uv") &&
+        catalogSourcePathExists(context, "HelloUltraviolet/Fixtures/RejectedSource/Comptime/DeriveMissingEmittedClass/Source/Main.uv") &&
+        catalogSourcePathExists(context, "HelloUltraviolet/Fixtures/RejectedSource/Comptime/DeriveMissingRequiredClass/Source/Main.uv") &&
+        catalogSourcePathExists(context, "HelloUltraviolet/Fixtures/RejectedSource/Comptime/DeriveOnProcedure/Source/Main.uv") &&
+        catalogSourcePathExists(context, "HelloUltraviolet/Fixtures/RejectedSource/Comptime/DeriveTargetProhibitedWait/Source/Main.uv") &&
+        catalogSourcePathExists(context, "HelloUltraviolet/Fixtures/RejectedSource/Comptime/DeriveTargetUserError/Source/Main.uv") &&
+        catalogSourcePathExists(context, "HelloUltraviolet/Fixtures/RejectedSource/Comptime/EmitterEmitNonItem/Source/Main.uv") &&
+        catalogSourcePathExists(context, "HelloUltraviolet/Fixtures/RejectedSource/Comptime/IntrospectFieldsNonRecord/Source/Main.uv") &&
+        catalogSourcePathExists(context, "HelloUltraviolet/Fixtures/RejectedSource/Comptime/InvalidQuotedContent/Source/Main.uv") &&
+        catalogSourcePathExists(context, "HelloUltraviolet/Fixtures/RejectedSource/Comptime/QuoteOutsideComptime/Source/Main.uv") &&
+        catalogSourcePathExists(context, "HelloUltraviolet/Fixtures/RejectedSource/Comptime/RuntimeCallsComptimeProcedure/Source/Main.uv") &&
+        catalogSourcePathExists(context, "HelloUltraviolet/Fixtures/RejectedSource/Comptime/SpliceIdentifierStructuralName/Source/Main.uv") &&
+        catalogSourcePathExists(context, "HelloUltraviolet/Fixtures/RejectedSource/Comptime/SpliceTypeMismatch/Source/Main.uv") &&
+        catalogSourcePathExists(context, "HelloUltraviolet/Fixtures/RejectedSource/Comptime/UnknownDeriveTarget/Source/Main.uv") &&
+        catalogSourcePathExists(context, "HelloUltraviolet/Fixtures/RejectedSource/Comptime/UserDiagnosticError/Source/Main.uv") &&
+        catalogSourcePathExists(context, "HelloUltraviolet/Fixtures/RejectedSource/Expressions/AddressOfIndexTyping/Source/Main.uv") &&
+        catalogSourcePathExists(context, "HelloUltraviolet/Fixtures/RejectedSource/Expressions/AddressOfStaticHelpers/Source/Main.uv") &&
+        catalogSourcePathExists(context, "HelloUltraviolet/Fixtures/RejectedSource/Expressions/AllOperandRequiresInput/Source/Main.uv") &&
+        catalogSourcePathExists(context, "HelloUltraviolet/Fixtures/RejectedSource/Expressions/AllOperandYields/Source/Main.uv") &&
+        catalogSourcePathExists(context, "HelloUltraviolet/Fixtures/RejectedSource/Expressions/AllocImplicitNoRegion/Source/Main.uv") &&
+        catalogSourcePathExists(context, "HelloUltraviolet/Fixtures/RejectedSource/Expressions/ArgsTConsRef/Source/Main.uv") &&
+        catalogSourcePathExists(context, "HelloUltraviolet/Fixtures/RejectedSource/Expressions/ArrayIndexNonConst/Source/Main.uv") &&
+        catalogSourcePathExists(context, "HelloUltraviolet/Fixtures/RejectedSource/Expressions/ArrayIndexOutOfBounds/Source/Main.uv") &&
+        catalogSourcePathExists(context, "HelloUltraviolet/Fixtures/RejectedSource/Expressions/ArraySliceIndexDiagnostics/Source/Main.uv") &&
+        catalogSourcePathExists(context, "HelloUltraviolet/Fixtures/RejectedSource/Expressions/AsyncCaptureOutlivesFrame/Source/Main.uv") &&
+        catalogSourcePathExists(context, "HelloUltraviolet/Fixtures/RejectedSource/Expressions/AsyncCompositionDiagnosticsTable/Source/Main.uv") &&
+        catalogSourcePathExists(context, "HelloUltraviolet/Fixtures/RejectedSource/Expressions/AsyncDiagnosticsSupplement/Source/Main.uv") &&
+        catalogSourcePathExists(context, "HelloUltraviolet/Fixtures/RejectedSource/Expressions/AsyncIteratorLoopTypingFamily/Source/Main.uv") &&
+        catalogSourcePathExists(context, "HelloUltraviolet/Fixtures/RejectedSource/Expressions/AsyncOperationEscapesRegion/Source/Main.uv") &&
+        catalogSourcePathExists(context, "HelloUltraviolet/Fixtures/RejectedSource/Expressions/AsyncTryInfallible/Source/Main.uv") &&
+        catalogSourcePathExists(context, "HelloUltraviolet/Fixtures/RejectedSource/Expressions/AsyncTypeArgCount/Source/Main.uv") &&
+        catalogSourcePathExists(context, "HelloUltraviolet/Fixtures/RejectedSource/Expressions/AsyncTypeArgIllFormed/Source/Main.uv") &&
+        catalogSourcePathExists(context, "HelloUltraviolet/Fixtures/RejectedSource/Expressions/AsyncTypeDiagnosticsTable/Source/Main.uv") &&
+        catalogSourcePathExists(context, "HelloUltraviolet/Fixtures/RejectedSource/Expressions/AsyncTypePathUnapplied/Source/Main.uv") &&
+        catalogSourcePathExists(context, "HelloUltraviolet/Fixtures/RejectedSource/Expressions/CallArgCount/Source/Main.uv") &&
+        catalogSourcePathExists(context, "HelloUltraviolet/Fixtures/RejectedSource/Expressions/CallArgNotPlace/Source/Main.uv") &&
+        catalogSourcePathExists(context, "HelloUltraviolet/Fixtures/RejectedSource/Expressions/CallArgPackedUnsafe/Source/Main.uv") &&
+        catalogSourcePathExists(context, "HelloUltraviolet/Fixtures/RejectedSource/Expressions/CallArgType/Source/Main.uv") &&
+        catalogSourcePathExists(context, "HelloUltraviolet/Fixtures/RejectedSource/Expressions/CallExpressionsDiagnostic/Source/Main.uv") &&
+        catalogSourcePathExists(context, "HelloUltraviolet/Fixtures/RejectedSource/Expressions/CallMoveMissing/Source/Main.uv") &&
+        catalogSourcePathExists(context, "HelloUltraviolet/Fixtures/RejectedSource/Expressions/CallMoveUnexpected/Source/Main.uv") &&
+        catalogSourcePathExists(context, "HelloUltraviolet/Fixtures/RejectedSource/Expressions/CallNonFunction/Source/Main.uv") &&
+        catalogSourcePathExists(context, "HelloUltraviolet/Fixtures/RejectedSource/Expressions/CallStaticJudgementsAndArgumentTyping/Source/Main.uv") &&
+        catalogSourcePathExists(context, "HelloUltraviolet/Fixtures/RejectedSource/Expressions/CastAndTransmuteExpressionsDiagnostic/Source/Main.uv") &&
+        catalogSourcePathExists(context, "HelloUltraviolet/Fixtures/RejectedSource/Expressions/CastValidity/Source/Main.uv") &&
+        catalogSourcePathExists(context, "HelloUltraviolet/Fixtures/RejectedSource/Expressions/ClosureAndPipelineExpressionsDiagnostic/Source/Main.uv") &&
+        catalogSourcePathExists(context, "HelloUltraviolet/Fixtures/RejectedSource/Expressions/ClosureCaptureUnique/Source/Main.uv") &&
+        catalogSourcePathExists(context, "HelloUltraviolet/Fixtures/RejectedSource/Expressions/ClosureMoveCaptureImmovable/Source/Main.uv") &&
+        catalogSourcePathExists(context, "HelloUltraviolet/Fixtures/RejectedSource/Expressions/ClosureMoveCaptureMoved/Source/Main.uv") &&
+        catalogSourcePathExists(context, "HelloUltraviolet/Fixtures/RejectedSource/Expressions/ClosureParamInference/Source/Main.uv") &&
+        catalogSourcePathExists(context, "HelloUltraviolet/Fixtures/RejectedSource/Expressions/ClosureParamInferenceRequirement/Source/Main.uv") &&
+        catalogSourcePathExists(context, "HelloUltraviolet/Fixtures/RejectedSource/Expressions/ClosureRefCaptureMoved/Source/Main.uv") &&
+        catalogSourcePathExists(context, "HelloUltraviolet/Fixtures/RejectedSource/Expressions/ConstructionExpressionsDiagnostic/Source/Main.uv") &&
+        catalogSourcePathExists(context, "HelloUltraviolet/Fixtures/RejectedSource/Expressions/ControlExpressionDiagnosticOwnership/Source/Main.uv") &&
+        catalogSourcePathExists(context, "HelloUltraviolet/Fixtures/RejectedSource/Expressions/ExprUnresolved/Source/Main.uv") &&
+        catalogSourcePathExists(context, "HelloUltraviolet/Fixtures/RejectedSource/Expressions/ExpressionDiagnosticsSupplement/Source/Main.uv") &&
+        catalogSourcePathExists(context, "HelloUltraviolet/Fixtures/RejectedSource/Expressions/ExternCallUnsafeRequirement/Source/Main.uv") &&
+        catalogSourcePathExists(context, "HelloUltraviolet/Fixtures/RejectedSource/Expressions/FieldInitNamesAndSet/Source/Main.uv") &&
+        catalogSourcePathExists(context, "HelloUltraviolet/Fixtures/RejectedSource/Expressions/FieldVisibility/Source/Main.uv") &&
+        catalogSourcePathExists(context, "HelloUltraviolet/Fixtures/RejectedSource/Expressions/FloatLiteralExplicitRequirement/Source/Main.uv") &&
+        catalogSourcePathExists(context, "HelloUltraviolet/Fixtures/RejectedSource/Expressions/FloatSuffixMismatch/Source/Main.uv") &&
+        catalogSourcePathExists(context, "HelloUltraviolet/Fixtures/RejectedSource/Expressions/IfConditionNonBool/Source/Main.uv") &&
+        catalogSourcePathExists(context, "HelloUltraviolet/Fixtures/RejectedSource/Expressions/IndexClassification/Source/Main.uv") &&
+        catalogSourcePathExists(context, "HelloUltraviolet/Fixtures/RejectedSource/Expressions/IndexNonIndexable/Source/Main.uv") &&
+        catalogSourcePathExists(context, "HelloUltraviolet/Fixtures/RejectedSource/Expressions/IntLiteralCheckRange/Source/Main.uv") &&
+        catalogSourcePathExists(context, "HelloUltraviolet/Fixtures/RejectedSource/Expressions/InvalidCast/Source/Main.uv") &&
+        catalogSourcePathExists(context, "HelloUltraviolet/Fixtures/RejectedSource/Expressions/LoopAsyncEnclosingReturn/Source/Main.uv") &&
+        catalogSourcePathExists(context, "HelloUltraviolet/Fixtures/RejectedSource/Expressions/MethodNotFound/Source/Main.uv") &&
+        catalogSourcePathExists(context, "HelloUltraviolet/Fixtures/RejectedSource/Expressions/NullLiteralExpected/Source/Main.uv") &&
+        catalogSourcePathExists(context, "HelloUltraviolet/Fixtures/RejectedSource/Expressions/OperatorOperandMismatch/Source/Main.uv") &&
+        catalogSourcePathExists(context, "HelloUltraviolet/Fixtures/RejectedSource/Expressions/OperatorStaticTypes/Source/Main.uv") &&
+        catalogSourcePathExists(context, "HelloUltraviolet/Fixtures/RejectedSource/Expressions/ParsePlaceError/Source/Main.uv") &&
+        catalogSourcePathExists(context, "HelloUltraviolet/Fixtures/RejectedSource/Expressions/PipelineArgCount/Source/Main.uv") &&
+        catalogSourcePathExists(context, "HelloUltraviolet/Fixtures/RejectedSource/Expressions/PipelineNotCallable/Source/Main.uv") &&
+        catalogSourcePathExists(context, "HelloUltraviolet/Fixtures/RejectedSource/Expressions/PipelineTypeMismatch/Source/Main.uv") &&
+        catalogSourcePathExists(context, "HelloUltraviolet/Fixtures/RejectedSource/Expressions/PtrNullCheck/Source/Main.uv") &&
+        catalogSourcePathExists(context, "HelloUltraviolet/Fixtures/RejectedSource/Expressions/PtrNullExpectedRequirement/Source/Main.uv") &&
+        catalogSourcePathExists(context, "HelloUltraviolet/Fixtures/RejectedSource/Expressions/PtrNullSynthesis/Source/Main.uv") &&
+        catalogSourcePathExists(context, "HelloUltraviolet/Fixtures/RejectedSource/Expressions/QualifiedNameEliminatedBeforeTyping/Source/Main.uv") &&
+        catalogSourcePathExists(context, "HelloUltraviolet/Fixtures/RejectedSource/Expressions/QualifiedNameResolution/Source/Main.uv") &&
+        catalogSourcePathExists(context, "HelloUltraviolet/Fixtures/RejectedSource/Expressions/RaceHandlerMix/Source/Main.uv") &&
+        catalogSourcePathExists(context, "HelloUltraviolet/Fixtures/RejectedSource/Expressions/RaceHandlerTypeMismatch/Source/Main.uv") &&
+        catalogSourcePathExists(context, "HelloUltraviolet/Fixtures/RejectedSource/Expressions/RaceOperandNonAsync/Source/Main.uv") &&
+        catalogSourcePathExists(context, "HelloUltraviolet/Fixtures/RejectedSource/Expressions/RaceOperandYields/Source/Main.uv") &&
+        catalogSourcePathExists(context, "HelloUltraviolet/Fixtures/RejectedSource/Expressions/RaceStreamHandlerTypeMismatch/Source/Main.uv") &&
+        catalogSourcePathExists(context, "HelloUltraviolet/Fixtures/RejectedSource/Expressions/RaceStreamOperandNeedsInput/Source/Main.uv") &&
+        catalogSourcePathExists(context, "HelloUltraviolet/Fixtures/RejectedSource/Expressions/RaceTooFewArms/Source/Main.uv") &&
+        catalogSourcePathExists(context, "HelloUltraviolet/Fixtures/RejectedSource/Expressions/RawDerefPlaceTypingFamily/Source/Main.uv") &&
+        catalogSourcePathExists(context, "HelloUltraviolet/Fixtures/RejectedSource/Expressions/RawDerefUnsafeRequirement/Source/Main.uv") &&
+        catalogSourcePathExists(context, "HelloUltraviolet/Fixtures/RejectedSource/Expressions/RecordDefaultConstructionEligibility/Source/Main.uv") &&
+        catalogSourcePathExists(context, "HelloUltraviolet/Fixtures/RejectedSource/Expressions/RecordDefaultInit/Source/Main.uv") &&
+        catalogSourcePathExists(context, "HelloUltraviolet/Fixtures/RejectedSource/Expressions/RecordFieldInitDuplicate/Source/Main.uv") &&
+        catalogSourcePathExists(context, "HelloUltraviolet/Fixtures/RejectedSource/Expressions/RecordFieldInitMissing/Source/Main.uv") &&
+        catalogSourcePathExists(context, "HelloUltraviolet/Fixtures/RejectedSource/Expressions/RecordFieldNameSet/Source/Main.uv") &&
+        catalogSourcePathExists(context, "HelloUltraviolet/Fixtures/RejectedSource/Expressions/RecordFieldNonBitcopyMove/Source/Main.uv") &&
+        catalogSourcePathExists(context, "HelloUltraviolet/Fixtures/RejectedSource/Expressions/RecordFieldUnknown/Source/Main.uv") &&
+        catalogSourcePathExists(context, "HelloUltraviolet/Fixtures/RejectedSource/Expressions/SuspensionFormsDiagnosticsTable/Source/Main.uv") &&
+        catalogSourcePathExists(context, "HelloUltraviolet/Fixtures/RejectedSource/Expressions/SyncContainsYield/Source/Main.uv") &&
+        catalogSourcePathExists(context, "HelloUltraviolet/Fixtures/RejectedSource/Expressions/SyncContainsYieldFrom/Source/Main.uv") &&
+        catalogSourcePathExists(context, "HelloUltraviolet/Fixtures/RejectedSource/Expressions/SyncInsideAsync/Source/Main.uv") &&
+        catalogSourcePathExists(context, "HelloUltraviolet/Fixtures/RejectedSource/Expressions/SyncOperandRequiresInput/Source/Main.uv") &&
+        catalogSourcePathExists(context, "HelloUltraviolet/Fixtures/RejectedSource/Expressions/SyncOperandYields/Source/Main.uv") &&
+        catalogSourcePathExists(context, "HelloUltraviolet/Fixtures/RejectedSource/Expressions/TransmuteAlignMismatch/Source/Main.uv") &&
+        catalogSourcePathExists(context, "HelloUltraviolet/Fixtures/RejectedSource/Expressions/TransmuteSizeMismatch/Source/Main.uv") &&
+        catalogSourcePathExists(context, "HelloUltraviolet/Fixtures/RejectedSource/Expressions/TransmuteUnsafe/Source/Main.uv") &&
+        catalogSourcePathExists(context, "HelloUltraviolet/Fixtures/RejectedSource/Expressions/TupleAccessNonTuple/Source/Main.uv") &&
+        catalogSourcePathExists(context, "HelloUltraviolet/Fixtures/RejectedSource/Expressions/UnionDirectAccess/Source/Main.uv") &&
+        catalogSourcePathExists(context, "HelloUltraviolet/Fixtures/RejectedSource/Expressions/ValueUseNonBitcopyPlace/Source/Main.uv") &&
+        catalogSourcePathExists(context, "HelloUltraviolet/Fixtures/RejectedSource/Expressions/WaitNonHandle/Source/Main.uv") &&
+        catalogSourcePathExists(context, "HelloUltraviolet/Fixtures/RejectedSource/Expressions/WidenTypingDiagnosticsOwnership/Source/Main.uv") &&
+        catalogSourcePathExists(context, "HelloUltraviolet/Fixtures/RejectedSource/Expressions/YieldFromErrorMismatch/Source/Main.uv") &&
+        catalogSourcePathExists(context, "HelloUltraviolet/Fixtures/RejectedSource/Expressions/YieldFromInMismatch/Source/Main.uv") &&
+        catalogSourcePathExists(context, "HelloUltraviolet/Fixtures/RejectedSource/Expressions/YieldFromOutMismatch/Source/Main.uv") &&
+        catalogSourcePathExists(context, "HelloUltraviolet/Fixtures/RejectedSource/Expressions/YieldFromOutsideAsync/Source/Main.uv") &&
+        catalogSourcePathExists(context, "HelloUltraviolet/Fixtures/RejectedSource/Expressions/YieldOutsideAsync/Source/Main.uv") &&
+        catalogSourcePathExists(context, "HelloUltraviolet/Fixtures/RejectedSource/Expressions/YieldTypeMismatch/Source/Main.uv") &&
+        catalogSourcePathExists(context, "HelloUltraviolet/Fixtures/RejectedSource/FFI/BoundaryUnwindingDiagnosticOwnership/Source/Main.uv") &&
+        catalogSourcePathExists(context, "HelloUltraviolet/Fixtures/RejectedSource/FFI/BoundaryUnwindingNoAdditionalDiagnostics/Source/Main.uv") &&
+        catalogSourcePathExists(context, "HelloUltraviolet/Fixtures/RejectedSource/FFI/CapabilityIsolationDiagnosticOwnership/Source/Main.uv") &&
+        catalogSourcePathExists(context, "HelloUltraviolet/Fixtures/RejectedSource/FFI/CapabilityIsolationDiagnostics/Source/Main.uv") &&
+        catalogSourcePathExists(context, "HelloUltraviolet/Fixtures/RejectedSource/FFI/ErrorPredicateWellFormedness/Source/Main.uv") &&
+        catalogSourcePathExists(context, "HelloUltraviolet/Fixtures/RejectedSource/FFI/ExternCallSafety/Source/Main.uv") &&
+        catalogSourcePathExists(context, "HelloUltraviolet/Fixtures/RejectedSource/FFI/ExternGenericSignature/Source/Main.uv") &&
+        catalogSourcePathExists(context, "HelloUltraviolet/Fixtures/RejectedSource/FFI/FfiArgRegionLocalRawPtr/Source/Main.uv") &&
+        catalogSourcePathExists(context, "HelloUltraviolet/Fixtures/RejectedSource/FFI/FfiAttributeDiagnostics/Source/Main.uv") &&
+        catalogSourcePathExists(context, "HelloUltraviolet/Fixtures/RejectedSource/FFI/FfiPassByValueRequired/Source/Main.uv") &&
+        catalogSourcePathExists(context, "HelloUltraviolet/Fixtures/RejectedSource/FFI/FfiReturnRegionLocalRawPtr/Source/Main.uv") &&
+        catalogSourcePathExists(context, "HelloUltraviolet/Fixtures/RejectedSource/FFI/FfiSafeBoolParameter/Source/Main.uv") &&
+        catalogSourcePathExists(context, "HelloUltraviolet/Fixtures/RejectedSource/FFI/FfiSafeDiagnostics/Source/Main.uv") &&
+        catalogSourcePathExists(context, "HelloUltraviolet/Fixtures/RejectedSource/FFI/FfiSafeEnumApplyGenericUnbounded/Source/Main.uv") &&
+        catalogSourcePathExists(context, "HelloUltraviolet/Fixtures/RejectedSource/FFI/FfiSafeEnumFieldApply/Source/Main.uv") &&
+        catalogSourcePathExists(context, "HelloUltraviolet/Fixtures/RejectedSource/FFI/FfiSafeEnumGenericUnbounded/Source/Main.uv") &&
+        catalogSourcePathExists(context, "HelloUltraviolet/Fixtures/RejectedSource/FFI/FfiSafeEnumNonFfiPayload/Source/Main.uv") &&
+        catalogSourcePathExists(context, "HelloUltraviolet/Fixtures/RejectedSource/FFI/FfiSafeEnumWithoutLayoutC/Source/Main.uv") &&
+        catalogSourcePathExists(context, "HelloUltraviolet/Fixtures/RejectedSource/FFI/FfiSafeIncompleteLayout/Source/Main.uv") &&
+        catalogSourcePathExists(context, "HelloUltraviolet/Fixtures/RejectedSource/FFI/FfiSafeRecordApplyGenericUnbounded/Source/Main.uv") &&
+        catalogSourcePathExists(context, "HelloUltraviolet/Fixtures/RejectedSource/FFI/FfiSafeRecordFieldApply/Source/Main.uv") &&
+        catalogSourcePathExists(context, "HelloUltraviolet/Fixtures/RejectedSource/FFI/FfiSafeRecordGenericUnbounded/Source/Main.uv") &&
+        catalogSourcePathExists(context, "HelloUltraviolet/Fixtures/RejectedSource/FFI/FfiSafeRecordNonFfiField/Source/Main.uv") &&
+        catalogSourcePathExists(context, "HelloUltraviolet/Fixtures/RejectedSource/FFI/FfiSafeRecordWithoutLayoutC/Source/Main.uv") &&
+        catalogSourcePathExists(context, "HelloUltraviolet/Fixtures/RejectedSource/FFI/ForeignContractDiagnostics/Source/Main.uv") &&
+        catalogSourcePathExists(context, "HelloUltraviolet/Fixtures/RejectedSource/FFI/ForeignEnsuresNullResult/Source/Main.uv") &&
+        catalogSourcePathExists(context, "HelloUltraviolet/Fixtures/RejectedSource/FFI/ForeignPostconditionPredicateBindings/Source/Main.uv") &&
+        catalogSourcePathExists(context, "HelloUltraviolet/Fixtures/RejectedSource/FFI/ForeignPredicateContext/Source/Main.uv") &&
+        catalogSourcePathExists(context, "HelloUltraviolet/Fixtures/RejectedSource/FFI/HostExportGeneric/Source/Main.uv") &&
+        catalogSourcePathExists(context, "HelloUltraviolet/Fixtures/RejectedSource/FFI/HostExportMissingContext/Source/Main.uv") &&
+        catalogSourcePathExists(context, "HelloUltraviolet/Fixtures/RejectedSource/FFI/HostExportMixedMode/Source/Main.uv") &&
+        catalogSourcePathExists(context, "HelloUltraviolet/Fixtures/RejectedSource/FFI/HostExportMoveContext/Source/Main.uv") &&
+        catalogSourcePathExists(context, "HelloUltraviolet/Fixtures/RejectedSource/FFI/HostExportOutsideLibrary/Source/Main.uv") &&
+        catalogSourcePathExists(context, "HelloUltraviolet/Fixtures/RejectedSource/FFI/HostExportRawContext/Source/Main.uv") &&
+        catalogSourcePathExists(context, "HelloUltraviolet/Fixtures/RejectedSource/FFI/HostedExportDiagnosticOwnership/Source/Main.uv") &&
+        catalogSourcePathExists(context, "HelloUltraviolet/Fixtures/RejectedSource/FFI/HostedExportDiagnostics/Source/Main.uv") &&
+        catalogSourcePathExists(context, "HelloUltraviolet/Fixtures/RejectedSource/FFI/InvalidUnwindMode/Source/Main.uv") &&
+        catalogSourcePathExists(context, "HelloUltraviolet/Fixtures/RejectedSource/FFI/MangleOnNonFFIProcedure/Source/Main.uv") &&
+        catalogSourcePathExists(context, "HelloUltraviolet/Fixtures/RejectedSource/FFI/NullResultWellFormedness/Source/Main.uv") &&
+        catalogSourcePathExists(context, "HelloUltraviolet/Fixtures/RejectedSource/FFI/RawExportNonPublic/Source/Main.uv") &&
+        catalogSourcePathExists(context, "HelloUltraviolet/Fixtures/RejectedSource/FFI/RawExportUnsupportedABI/Source/Main.uv") &&
+        catalogSourcePathExists(context, "HelloUltraviolet/Fixtures/RejectedSource/FFI/UnsupportedExternABI/Source/Main.uv") &&
+        catalogSourcePathExists(context, "HelloUltraviolet/Fixtures/RejectedSource/FFI/UnsupportedLibraryKind/Source/Main.uv") &&
+        catalogSourcePathExists(context, "HelloUltraviolet/Fixtures/RejectedSource/FFI/UnwindCatchABIMismatch/Source/Main.uv") &&
+        catalogSourcePathExists(context, "HelloUltraviolet/Fixtures/RejectedSource/FFI/UnwindOnNonFFIProcedure/Source/Main.uv") &&
+        catalogSourcePathExists(context, "HelloUltraviolet/Fixtures/RejectedSource/Keys/AsyncKeyRestrictionsYieldHeld/Source/Main.uv") &&
+        catalogSourcePathExists(context, "HelloUltraviolet/Fixtures/RejectedSource/Keys/ConflictDetectionDiagnostic/Source/Main.uv") &&
+        catalogSourcePathExists(context, "HelloUltraviolet/Fixtures/RejectedSource/Keys/EscapingClosureSharedLifetime/Source/Main.uv") &&
+        catalogSourcePathExists(context, "HelloUltraviolet/Fixtures/RejectedSource/Keys/KeyEscapeDeferredAccess/Source/Main.uv") &&
+        catalogSourcePathExists(context, "HelloUltraviolet/Fixtures/RejectedSource/Keys/KeyEscapePrecedence/Source/Main.uv") &&
+        catalogSourcePathExists(context, "HelloUltraviolet/Fixtures/RejectedSource/Keys/KeyPathsDiagnostic/Source/Main.uv") &&
+        catalogSourcePathExists(context, "HelloUltraviolet/Fixtures/RejectedSource/Keys/MemoryOrderingDiagnostic/Source/Main.uv") &&
+        catalogSourcePathExists(context, "HelloUltraviolet/Fixtures/RejectedSource/Keys/NestedReleaseSameMode/Source/Main.uv") &&
+        catalogSourcePathExists(context, "HelloUltraviolet/Fixtures/RejectedSource/Keys/OrderedDifferentBase/Source/Main.uv") &&
+        catalogSourcePathExists(context, "HelloUltraviolet/Fixtures/RejectedSource/Keys/SharedCapturingClosureYieldKeys/Source/Main.uv") &&
+        catalogSourcePathExists(context, "HelloUltraviolet/Fixtures/RejectedSource/Keys/SharedClosureYieldKeys/Source/Main.uv") &&
+        catalogSourcePathExists(context, "HelloUltraviolet/Fixtures/RejectedSource/Keys/SharedDynamicMutatingReceiver/Source/Main.uv") &&
+        catalogSourcePathExists(context, "HelloUltraviolet/Fixtures/RejectedSource/Keys/SharedReadThenWrite/Source/Main.uv") &&
+        catalogSourcePathExists(context, "HelloUltraviolet/Fixtures/RejectedSource/Keys/SpeculativeDefer/Source/Main.uv") &&
+        catalogSourcePathExists(context, "HelloUltraviolet/Fixtures/RejectedSource/Keys/SpeculativeImpureCall/Source/Main.uv") &&
+        catalogSourcePathExists(context, "HelloUltraviolet/Fixtures/RejectedSource/Keys/SpeculativeMemoryOrder/Source/Main.uv") &&
+        catalogSourcePathExists(context, "HelloUltraviolet/Fixtures/RejectedSource/Keys/SpeculativeNestedKeyBlock/Source/Main.uv") &&
+        catalogSourcePathExists(context, "HelloUltraviolet/Fixtures/RejectedSource/Keys/SpeculativeReleaseMode/Source/Main.uv") &&
+        catalogSourcePathExists(context, "HelloUltraviolet/Fixtures/RejectedSource/Keys/SpeculativeWait/Source/Main.uv") &&
+        catalogSourcePathExists(context, "HelloUltraviolet/Fixtures/RejectedSource/Keys/WaitWhileKeyHeldLowering/Source/Main.uv") &&
+        catalogSourcePathExists(context, "HelloUltraviolet/Fixtures/RejectedSource/Keys/YieldFromWhileKeyHeld/Source/Main.uv") &&
+        catalogSourcePathExists(context, "HelloUltraviolet/Fixtures/RejectedSource/Names/DuplicateModuleDeclaration/Source/Main.uv") &&
+        catalogSourcePathExists(context, "HelloUltraviolet/Fixtures/RejectedSource/Parsing/MissingStatementTerminator/Source/Main.uv") &&
+        catalogSourcePathExists(context, "HelloUltraviolet/Fixtures/RejectedSource/Patterns/BasicPatternsDiagnostic/Source/Main.uv") &&
+        catalogSourcePathExists(context, "HelloUltraviolet/Fixtures/RejectedSource/Patterns/CaseClausesDiagnostic/Source/Main.uv") &&
+        catalogSourcePathExists(context, "HelloUltraviolet/Fixtures/RejectedSource/Patterns/DuplicatePatternBinding/Source/Main.uv") &&
+        catalogSourcePathExists(context, "HelloUltraviolet/Fixtures/RejectedSource/Patterns/EnumModalPatternsDiagnostic/Source/Main.uv") &&
+        catalogSourcePathExists(context, "HelloUltraviolet/Fixtures/RejectedSource/Patterns/ExhaustivenessAndReachabilityDiagnostic/Source/Main.uv") &&
+        catalogSourcePathExists(context, "HelloUltraviolet/Fixtures/RejectedSource/Patterns/IfCaseEnumNonExhaustive/Source/Main.uv") &&
+        catalogSourcePathExists(context, "HelloUltraviolet/Fixtures/RejectedSource/Patterns/IfCaseModalNonExhaustive/Source/Main.uv") &&
+        catalogSourcePathExists(context, "HelloUltraviolet/Fixtures/RejectedSource/Patterns/IfCaseUnionNonExhaustive/Source/Main.uv") &&
+        catalogSourcePathExists(context, "HelloUltraviolet/Fixtures/RejectedSource/Patterns/IfCaseUnreachable/Source/Main.uv") &&
+        catalogSourcePathExists(context, "HelloUltraviolet/Fixtures/RejectedSource/Patterns/ParsePatternError/Source/Main.uv") &&
+        catalogSourcePathExists(context, "HelloUltraviolet/Fixtures/RejectedSource/Patterns/PatternDiagnosticsSupplement/Source/Main.uv") &&
+        catalogSourcePathExists(context, "HelloUltraviolet/Fixtures/RejectedSource/Patterns/RangePatternEmpty/Source/Main.uv") &&
+        catalogSourcePathExists(context, "HelloUltraviolet/Fixtures/RejectedSource/Patterns/RangePatternNonConst/Source/Main.uv") &&
+        catalogSourcePathExists(context, "HelloUltraviolet/Fixtures/RejectedSource/Patterns/RangePatternsDiagnostic/Source/Main.uv") &&
+        catalogSourcePathExists(context, "HelloUltraviolet/Fixtures/RejectedSource/Patterns/RecordPatternUnknownField/Source/Main.uv") &&
+        catalogSourcePathExists(context, "HelloUltraviolet/Fixtures/RejectedSource/Patterns/TuplePatternArity/Source/Main.uv") &&
+        catalogSourcePathExists(context, "HelloUltraviolet/Fixtures/RejectedSource/Patterns/TupleRecordPatternsDiagnostic/Source/Main.uv") &&
+        catalogSourcePathExists(context, "HelloUltraviolet/Fixtures/RejectedSource/Polymorphism/AssociatedTypeMissingBinding/Source/Main.uv") &&
+        catalogSourcePathExists(context, "HelloUltraviolet/Fixtures/RejectedSource/Polymorphism/AssociatedTypeUnboundMember/Source/Main.uv") &&
+        catalogSourcePathExists(context, "HelloUltraviolet/Fixtures/RejectedSource/Polymorphism/BitcopyDropConflict/Source/Main.uv") &&
+        catalogSourcePathExists(context, "HelloUltraviolet/Fixtures/RejectedSource/Polymorphism/BitcopyFieldNonBitcopy/Source/Main.uv") &&
+        catalogSourcePathExists(context, "HelloUltraviolet/Fixtures/RejectedSource/Polymorphism/CapabilityClassNameReserved/Source/Main.uv") &&
+        catalogSourcePathExists(context, "HelloUltraviolet/Fixtures/RejectedSource/Polymorphism/CapabilityClassesDiagnostics/Source/Main.uv") &&
+        catalogSourcePathExists(context, "HelloUltraviolet/Fixtures/RejectedSource/Polymorphism/ClassMemberNameConflict/Source/Main.uv") &&
+        catalogSourcePathExists(context, "HelloUltraviolet/Fixtures/RejectedSource/Polymorphism/DuplicateAssociatedTypeName/Source/Main.uv") &&
+        catalogSourcePathExists(context, "HelloUltraviolet/Fixtures/RejectedSource/Polymorphism/DuplicateClassImplementationRequirement/Source/Main.uv") &&
+        catalogSourcePathExists(context, "HelloUltraviolet/Fixtures/RejectedSource/Polymorphism/DuplicateClassImplementationRule/Source/Main.uv") &&
+        catalogSourcePathExists(context, "HelloUltraviolet/Fixtures/RejectedSource/Polymorphism/DuplicateClassProcedureName/Source/Main.uv") &&
+        catalogSourcePathExists(context, "HelloUltraviolet/Fixtures/RejectedSource/Polymorphism/DuplicateTypeParameterName/Source/Main.uv") &&
+        catalogSourcePathExists(context, "HelloUltraviolet/Fixtures/RejectedSource/Polymorphism/DynamicClassObjectDiagnostics/Source/Main.uv") &&
+        catalogSourcePathExists(context, "HelloUltraviolet/Fixtures/RejectedSource/Polymorphism/DynamicGenericMethodNonDispatchable/Source/Main.uv") &&
+        catalogSourcePathExists(context, "HelloUltraviolet/Fixtures/RejectedSource/Polymorphism/DynamicMissingMethod/Source/Main.uv") &&
+        catalogSourcePathExists(context, "HelloUltraviolet/Fixtures/RejectedSource/Polymorphism/DynamicNonDispatchableRequirement/Source/Main.uv") &&
+        catalogSourcePathExists(context, "HelloUltraviolet/Fixtures/RejectedSource/Polymorphism/DynamicSelfParameterNonDispatchable/Source/Main.uv") &&
+        catalogSourcePathExists(context, "HelloUltraviolet/Fixtures/RejectedSource/Polymorphism/DynamicUndefinedClassType/Source/Main.uv") &&
+        catalogSourcePathExists(context, "HelloUltraviolet/Fixtures/RejectedSource/Polymorphism/FoundationalClassNameReserved/Source/Main.uv") &&
+        catalogSourcePathExists(context, "HelloUltraviolet/Fixtures/RejectedSource/Polymorphism/GenericCallArgCount/Source/Main.uv") &&
+        catalogSourcePathExists(context, "HelloUltraviolet/Fixtures/RejectedSource/Polymorphism/GenericClassBoundNonClass/Source/Main.uv") &&
+        catalogSourcePathExists(context, "HelloUltraviolet/Fixtures/RejectedSource/Polymorphism/GenericInfiniteMonomorphization/Source/Main.uv") &&
+        catalogSourcePathExists(context, "HelloUltraviolet/Fixtures/RejectedSource/Polymorphism/GenericInstantiationDepthLimit/Source/Main.uv") &&
+        catalogSourcePathExists(context, "HelloUltraviolet/Fixtures/RejectedSource/Polymorphism/GenericPathMissingArguments/Source/Main.uv") &&
+        catalogSourcePathExists(context, "HelloUltraviolet/Fixtures/RejectedSource/Polymorphism/GenericTypeApplyArgCount/Source/Main.uv") &&
+        catalogSourcePathExists(context, "HelloUltraviolet/Fixtures/RejectedSource/Polymorphism/HeapAllocRawUnsafe/Source/Main.uv") &&
+        catalogSourcePathExists(context, "HelloUltraviolet/Fixtures/RejectedSource/Polymorphism/HeapAllocatorRawCallRequiresUnsafe/Source/Main.uv") &&
+        catalogSourcePathExists(context, "HelloUltraviolet/Fixtures/RejectedSource/Polymorphism/HeapDeallocRawUnsafe/Source/Main.uv") &&
+        catalogSourcePathExists(context, "HelloUltraviolet/Fixtures/RejectedSource/Polymorphism/ImplementationAbstractMethodSignatureMismatch/Source/Main.uv") &&
+        catalogSourcePathExists(context, "HelloUltraviolet/Fixtures/RejectedSource/Polymorphism/ImplementationDefaultMethodSignatureMismatch/Source/Main.uv") &&
+        catalogSourcePathExists(context, "HelloUltraviolet/Fixtures/RejectedSource/Polymorphism/ImplementationFieldTypeMismatch/Source/Main.uv") &&
+        catalogSourcePathExists(context, "HelloUltraviolet/Fixtures/RejectedSource/Polymorphism/ImplementationMissingAbstractMethod/Source/Main.uv") &&
+        catalogSourcePathExists(context, "HelloUltraviolet/Fixtures/RejectedSource/Polymorphism/ImplementationMissingRequiredField/Source/Main.uv") &&
+        catalogSourcePathExists(context, "HelloUltraviolet/Fixtures/RejectedSource/Polymorphism/NonModalImplementsModalClass/Source/Main.uv") &&
+        catalogSourcePathExists(context, "HelloUltraviolet/Fixtures/RejectedSource/Polymorphism/OpaqueMemberNotDefined/Source/Main.uv") &&
+        catalogSourcePathExists(context, "HelloUltraviolet/Fixtures/RejectedSource/Polymorphism/OpaqueReturnMissingImplementation/Source/Main.uv") &&
+        catalogSourcePathExists(context, "HelloUltraviolet/Fixtures/RejectedSource/Polymorphism/OpaqueUndefinedClassType/Source/Main.uv") &&
+        catalogSourcePathExists(context, "HelloUltraviolet/Fixtures/RejectedSource/Polymorphism/OverrideAbstractMethod/Source/Main.uv") &&
+        catalogSourcePathExists(context, "HelloUltraviolet/Fixtures/RejectedSource/Polymorphism/OverrideMissingOnDefault/Source/Main.uv") &&
+        catalogSourcePathExists(context, "HelloUltraviolet/Fixtures/RejectedSource/Polymorphism/OverrideNoConcrete/Source/Main.uv") &&
+        catalogSourcePathExists(context, "HelloUltraviolet/Fixtures/RejectedSource/Polymorphism/RefinementDiagnosticsOwnership/Source/Main.uv") &&
+        catalogSourcePathExists(context, "HelloUltraviolet/Fixtures/RejectedSource/Polymorphism/RefinementDiagnosticsTable/Source/Main.uv") &&
+        catalogSourcePathExists(context, "HelloUltraviolet/Fixtures/RejectedSource/Polymorphism/RefinementInlineSelfConstraint/Source/Main.uv") &&
+        catalogSourcePathExists(context, "HelloUltraviolet/Fixtures/RejectedSource/Polymorphism/RefinementPredicateNonBool/Source/Main.uv") &&
+        catalogSourcePathExists(context, "HelloUltraviolet/Fixtures/RejectedSource/Polymorphism/RefinementStaticDefaultRequirement/Source/Main.uv") &&
+        catalogSourcePathExists(context, "HelloUltraviolet/Fixtures/RejectedSource/Polymorphism/RefinementStaticProofFailure/Source/Main.uv") &&
+        catalogSourcePathExists(context, "HelloUltraviolet/Fixtures/RejectedSource/Polymorphism/SuperclassCycle/Source/Main.uv") &&
+        catalogSourcePathExists(context, "HelloUltraviolet/Fixtures/RejectedSource/Procedures/BehavioralSubtypingDiagnostics/Source/Main.uv") &&
+        catalogSourcePathExists(context, "HelloUltraviolet/Fixtures/RejectedSource/Procedures/BehavioralSubtypingLiskov/Source/Main.uv") &&
+        catalogSourcePathExists(context, "HelloUltraviolet/Fixtures/RejectedSource/Procedures/BehavioralSubtypingPostcondition/Source/Main.uv") &&
+        catalogSourcePathExists(context, "HelloUltraviolet/Fixtures/RejectedSource/Procedures/BehavioralSubtypingPrecondition/Source/Main.uv") &&
+        catalogSourcePathExists(context, "HelloUltraviolet/Fixtures/RejectedSource/Procedures/ContractDynamicAttribute/Source/Main.uv") &&
+        catalogSourcePathExists(context, "HelloUltraviolet/Fixtures/RejectedSource/Procedures/ContractEntryCapability/Source/Main.uv") &&
+        catalogSourcePathExists(context, "HelloUltraviolet/Fixtures/RejectedSource/Procedures/ContractEntryMovedParameter/Source/Main.uv") &&
+        catalogSourcePathExists(context, "HelloUltraviolet/Fixtures/RejectedSource/Procedures/ContractEntryNonBitcopy/Source/Main.uv") &&
+        catalogSourcePathExists(context, "HelloUltraviolet/Fixtures/RejectedSource/Procedures/ContractEntryOutsidePostcondition/Source/Main.uv") &&
+        catalogSourcePathExists(context, "HelloUltraviolet/Fixtures/RejectedSource/Procedures/ContractPredicateImpureMove/Source/Main.uv") &&
+        catalogSourcePathExists(context, "HelloUltraviolet/Fixtures/RejectedSource/Procedures/ContractPredicateNonBool/Source/Main.uv") &&
+        catalogSourcePathExists(context, "HelloUltraviolet/Fixtures/RejectedSource/Procedures/ContractResultOutsidePostcondition/Source/Main.uv") &&
+        catalogSourcePathExists(context, "HelloUltraviolet/Fixtures/RejectedSource/Procedures/DuplicateErasedOverloadSignature/Source/Main.uv") &&
+        catalogSourcePathExists(context, "HelloUltraviolet/Fixtures/RejectedSource/Procedures/ExplicitReturnDefinition/Source/Main.uv") &&
+        catalogSourcePathExists(context, "HelloUltraviolet/Fixtures/RejectedSource/Procedures/InvariantDiagnostics/Source/Main.uv") &&
+        catalogSourcePathExists(context, "HelloUltraviolet/Fixtures/RejectedSource/Procedures/InvariantPublicMutableField/Source/Main.uv") &&
+        catalogSourcePathExists(context, "HelloUltraviolet/Fixtures/RejectedSource/Procedures/MainDiagnosticReferences/Source/Main.uv") &&
+        catalogSourcePathExists(context, "HelloUltraviolet/Fixtures/RejectedSource/Procedures/MainGeneric/Source/Main.uv") &&
+        catalogSourcePathExists(context, "HelloUltraviolet/Fixtures/RejectedSource/Procedures/MainMissing/Source/Main.uv") &&
+        catalogSourcePathExists(context, "HelloUltraviolet/Fixtures/RejectedSource/Procedures/MainMultiple/Source/Main.uv") &&
+        catalogSourcePathExists(context, "HelloUltraviolet/Fixtures/RejectedSource/Procedures/MainSignature/Source/Main.uv") &&
+        catalogSourcePathExists(context, "HelloUltraviolet/Fixtures/RejectedSource/Procedures/MethodLookupAmbiguousDefault/Source/Main.uv") &&
+        catalogSourcePathExists(context, "HelloUltraviolet/Fixtures/RejectedSource/Procedures/MethodLookupDiagnostics/Source/Main.uv") &&
+        catalogSourcePathExists(context, "HelloUltraviolet/Fixtures/RejectedSource/Procedures/MethodsAndReceiversDiagnostic/Source/Main.uv") &&
+        catalogSourcePathExists(context, "HelloUltraviolet/Fixtures/RejectedSource/Procedures/MissingExplicitReturn/Source/Main.uv") &&
+        catalogSourcePathExists(context, "HelloUltraviolet/Fixtures/RejectedSource/Procedures/MissingReturnType/Source/Main.uv") &&
+        catalogSourcePathExists(context, "HelloUltraviolet/Fixtures/RejectedSource/Procedures/NoMatchingOverload/Source/Main.uv") &&
+        catalogSourcePathExists(context, "HelloUltraviolet/Fixtures/RejectedSource/Procedures/OverloadResolutionBeforeCallTyping/Source/Main.uv") &&
+        catalogSourcePathExists(context, "HelloUltraviolet/Fixtures/RejectedSource/Procedures/OverloadingDiagnosticsTable/Source/Main.uv") &&
+        catalogSourcePathExists(context, "HelloUltraviolet/Fixtures/RejectedSource/Procedures/PostconditionsDiagnostic/Source/Main.uv") &&
+        catalogSourcePathExists(context, "HelloUltraviolet/Fixtures/RejectedSource/Procedures/PreconditionCallerObligation/Source/Main.uv") &&
+        catalogSourcePathExists(context, "HelloUltraviolet/Fixtures/RejectedSource/Procedures/PreconditionsDiagnostic/Source/Main.uv") &&
+        catalogSourcePathExists(context, "HelloUltraviolet/Fixtures/RejectedSource/Procedures/ProcedureDeclarationWellFormedness/Source/Main.uv") &&
+        catalogSourcePathExists(context, "HelloUltraviolet/Fixtures/RejectedSource/Procedures/ProcedureDeclarationsDiagnostic/Source/Main.uv") &&
+        catalogSourcePathExists(context, "HelloUltraviolet/Fixtures/RejectedSource/Procedures/RecordMethodBodyExplicitReturn/Source/Main.uv") &&
+        catalogSourcePathExists(context, "HelloUltraviolet/Fixtures/RejectedSource/Procedures/RecordMethodCallArgumentType/Source/Main.uv") &&
+        catalogSourcePathExists(context, "HelloUltraviolet/Fixtures/RejectedSource/Procedures/RecordMethodDuplicate/Source/Main.uv") &&
+        catalogSourcePathExists(context, "HelloUltraviolet/Fixtures/RejectedSource/Procedures/RecordMethodReceiverNotSelf/Source/Main.uv") &&
+        catalogSourcePathExists(context, "HelloUltraviolet/Fixtures/RejectedSource/Procedures/RecordMethodWellFormedness/Source/Main.uv") &&
+        catalogSourcePathExists(context, "HelloUltraviolet/Fixtures/RejectedSource/Procedures/ResultGenericConstraint/Source/Main.uv") &&
+        catalogSourcePathExists(context, "HelloUltraviolet/Fixtures/RejectedSource/Procedures/ReturnAnnotationPresence/Source/Main.uv") &&
+        catalogSourcePathExists(context, "HelloUltraviolet/Fixtures/RejectedSource/Procedures/SelfTypeDefinition/Source/Main.uv") &&
+        catalogSourcePathExists(context, "HelloUltraviolet/Fixtures/RejectedSource/Procedures/UnsatisfiedPrecondition/Source/Main.uv") &&
+        catalogSourcePathExists(context, "HelloUltraviolet/Fixtures/RejectedSource/Procedures/VerificationFactNoRuntimeRepresentation/Source/Main.uv") &&
+        catalogSourcePathExists(context, "HelloUltraviolet/Fixtures/RejectedSource/Procedures/VerificationLogicDiagnostic/Source/Main.uv") &&
+        catalogSourcePathExists(context, "HelloUltraviolet/Fixtures/RejectedSource/Statements/AssignConst/Source/Main.uv") &&
+        catalogSourcePathExists(context, "HelloUltraviolet/Fixtures/RejectedSource/Statements/AssignImmutableLet/Source/Main.uv") &&
+        catalogSourcePathExists(context, "HelloUltraviolet/Fixtures/RejectedSource/Statements/AssignNotPlace/Source/Main.uv") &&
+        catalogSourcePathExists(context, "HelloUltraviolet/Fixtures/RejectedSource/Statements/AssignTypeMismatch/Source/Main.uv") &&
+        catalogSourcePathExists(context, "HelloUltraviolet/Fixtures/RejectedSource/Statements/AssignmentProvenanceEscape/Source/Main.uv") &&
+        catalogSourcePathExists(context, "HelloUltraviolet/Fixtures/RejectedSource/Statements/AssignmentStatementsDiagnostic/Source/Main.uv") &&
+        catalogSourcePathExists(context, "HelloUltraviolet/Fixtures/RejectedSource/Statements/AsyncReturnTypeMismatch/Source/Main.uv") &&
+        catalogSourcePathExists(context, "HelloUltraviolet/Fixtures/RejectedSource/Statements/AsyncReturnUnitMismatch/Source/Main.uv") &&
+        catalogSourcePathExists(context, "HelloUltraviolet/Fixtures/RejectedSource/Statements/BindingStatementsDiagnostic/Source/Main.uv") &&
+        catalogSourcePathExists(context, "HelloUltraviolet/Fixtures/RejectedSource/Statements/BlocksDiagnostic/Source/Main.uv") &&
+        catalogSourcePathExists(context, "HelloUltraviolet/Fixtures/RejectedSource/Statements/BreakOutsideLoop/Source/Main.uv") &&
+        catalogSourcePathExists(context, "HelloUltraviolet/Fixtures/RejectedSource/Statements/ContinueOutsideLoop/Source/Main.uv") &&
+        catalogSourcePathExists(context, "HelloUltraviolet/Fixtures/RejectedSource/Statements/DeferDiagnostic/Source/Main.uv") &&
+        catalogSourcePathExists(context, "HelloUltraviolet/Fixtures/RejectedSource/Statements/DeferNonLocal/Source/Main.uv") &&
+        catalogSourcePathExists(context, "HelloUltraviolet/Fixtures/RejectedSource/Statements/DeferNonUnit/Source/Main.uv") &&
+        catalogSourcePathExists(context, "HelloUltraviolet/Fixtures/RejectedSource/Statements/ExpressionStatementsDiagnostic/Source/Main.uv") &&
+        catalogSourcePathExists(context, "HelloUltraviolet/Fixtures/RejectedSource/Statements/FrameDiagnostic/Source/Main.uv") &&
+        catalogSourcePathExists(context, "HelloUltraviolet/Fixtures/RejectedSource/Statements/FrameNoActiveRegion/Source/Main.uv") &&
+        catalogSourcePathExists(context, "HelloUltraviolet/Fixtures/RejectedSource/Statements/FrameTargetNotActive/Source/Main.uv") &&
+        catalogSourcePathExists(context, "HelloUltraviolet/Fixtures/RejectedSource/Statements/LetAnnotationMismatch/Source/Main.uv") &&
+        catalogSourcePathExists(context, "HelloUltraviolet/Fixtures/RejectedSource/Statements/LetInferenceFailure/Source/Main.uv") &&
+        catalogSourcePathExists(context, "HelloUltraviolet/Fixtures/RejectedSource/Statements/LetRefutablePattern/Source/Main.uv") &&
+        catalogSourcePathExists(context, "HelloUltraviolet/Fixtures/RejectedSource/Statements/LocalUsingStatementsDiagnostic/Source/Main.uv") &&
+        catalogSourcePathExists(context, "HelloUltraviolet/Fixtures/RejectedSource/Statements/MissingRequiredTerminator/Source/Main.uv") &&
+        catalogSourcePathExists(context, "HelloUltraviolet/Fixtures/RejectedSource/Statements/RegionDiagnostic/Source/Main.uv") &&
+        catalogSourcePathExists(context, "HelloUltraviolet/Fixtures/RejectedSource/Statements/ReturnAtModuleScope/Source/Main.uv") &&
+        catalogSourcePathExists(context, "HelloUltraviolet/Fixtures/RejectedSource/Statements/ReturnTypeMismatch/Source/Main.uv") &&
+        catalogSourcePathExists(context, "HelloUltraviolet/Fixtures/RejectedSource/Statements/ReturnUnitMismatch/Source/Main.uv") &&
+        catalogSourcePathExists(context, "HelloUltraviolet/Fixtures/RejectedSource/Statements/StatementDiagnosticsSupplement/Source/Main.uv") &&
+        catalogSourcePathExists(context, "HelloUltraviolet/Fixtures/RejectedSource/Statements/StatementParseError/Source/Main.uv") &&
+        catalogSourcePathExists(context, "HelloUltraviolet/Fixtures/RejectedSource/Statements/SyncStatementRecovery/Source/Main.uv") &&
+        catalogSourcePathExists(context, "HelloUltraviolet/Fixtures/RejectedSource/Statements/UniqueNonMoveBinding/Source/Main.uv") &&
+        catalogSourcePathExists(context, "HelloUltraviolet/Fixtures/RejectedSource/Statements/UnsafeRequiredOperationOwnershipDiagnostic/Source/Main.uv") &&
+        catalogSourcePathExists(context, "HelloUltraviolet/Fixtures/RejectedSource/Statements/UnsafeStatementsDiagnostic/Source/Main.uv") &&
+        catalogSourcePathExists(context, "HelloUltraviolet/Fixtures/RejectedSource/Statements/UsingLocalUnresolved/Source/Main.uv") &&
+        catalogSourcePathExists(context, "HelloUltraviolet/Fixtures/RejectedSource/Statements/VarAnnotationMismatch/Source/Main.uv") &&
+        catalogSourcePathExists(context, "HelloUltraviolet/Source/Audit/SpecClarifications.uv") &&
+        catalogSourcePathExists(context, "HelloUltraviolet/Source/Fixtures/OutputDiagnostics/Lowering.uv") &&
+        catalogSourcePathExists(context, "HelloUltraviolet/Source/Reference/Async/AsyncKeyIntegration.uv") &&
         catalogSourcePathExists(context, "HelloUltraviolet/Source/Reference/Async/AsyncType.uv") &&
+        catalogSourcePathExists(context, "HelloUltraviolet/Source/Reference/Async/CompositionForms.uv") &&
+        catalogSourcePathExists(context, "HelloUltraviolet/Source/Reference/Async/StateMachine.uv") &&
+        catalogSourcePathExists(context, "HelloUltraviolet/Source/Reference/Async/SuspensionForms.uv") &&
+        catalogSourcePathExists(context, "HelloUltraviolet/Source/Reference/Attributes/DiagnosticAttributes.uv") &&
         catalogSourcePathExists(context, "HelloUltraviolet/Source/Reference/Attributes/GeneralAttributes.uv") &&
+        catalogSourcePathExists(context, "HelloUltraviolet/Source/Reference/Attributes/LayoutAttributes.uv") &&
+        catalogSourcePathExists(context, "HelloUltraviolet/Source/Reference/Attributes/OptimizationAttributes.uv") &&
+        catalogSourcePathExists(context, "HelloUltraviolet/Source/Reference/Attributes/VendorAttributes.uv") &&
         catalogSourcePathExists(context, "HelloUltraviolet/Source/Reference/Authority/BindingRuntimeState.uv") &&
         catalogSourcePathExists(context, "HelloUltraviolet/Source/Reference/Authority/Capabilities.uv") &&
         catalogSourcePathExists(context, "HelloUltraviolet/Source/Reference/Authority/FileSystem.uv") &&
@@ -23,61 +396,137 @@ public procedure catalogSourcePathsExist(context: Context) -> bool {
         catalogSourcePathExists(context, "HelloUltraviolet/Source/Reference/Authority/RegionsAndFrames.uv") &&
         catalogSourcePathExists(context, "HelloUltraviolet/Source/Reference/Authority/System.uv") &&
         catalogSourcePathExists(context, "HelloUltraviolet/Source/Reference/Authority/Time.uv") &&
+        catalogSourcePathExists(context, "HelloUltraviolet/Source/Reference/Comptime/CompileTimeCapabilities.uv") &&
         catalogSourcePathExists(context, "HelloUltraviolet/Source/Reference/Comptime/CompileTimeForms.uv") &&
+        catalogSourcePathExists(context, "HelloUltraviolet/Source/Reference/Comptime/DeriveTargets.uv") &&
+        catalogSourcePathExists(context, "HelloUltraviolet/Source/Reference/Comptime/QuoteSpliceEmission.uv") &&
+        catalogSourcePathExists(context, "HelloUltraviolet/Source/Reference/Comptime/Reflection.uv") &&
         catalogSourcePathExists(context, "HelloUltraviolet/Source/Reference/Conformance/BehaviorClassification.uv") &&
         catalogSourcePathExists(context, "HelloUltraviolet/Source/Reference/Conformance/ConstructVocabulary.uv") &&
         catalogSourcePathExists(context, "HelloUltraviolet/Source/Reference/Conformance/TranslationOrdering.uv") &&
         catalogSourcePathExists(context, "HelloUltraviolet/Source/Reference/DataTypes/Arrays.uv") &&
         catalogSourcePathExists(context, "HelloUltraviolet/Source/Reference/DataTypes/Enums.uv") &&
+        catalogSourcePathExists(context, "HelloUltraviolet/Source/Reference/DataTypes/Primitives.uv") &&
         catalogSourcePathExists(context, "HelloUltraviolet/Source/Reference/DataTypes/Ranges.uv") &&
         catalogSourcePathExists(context, "HelloUltraviolet/Source/Reference/DataTypes/Records.uv") &&
         catalogSourcePathExists(context, "HelloUltraviolet/Source/Reference/DataTypes/Slices.uv") &&
         catalogSourcePathExists(context, "HelloUltraviolet/Source/Reference/DataTypes/Tuples.uv") &&
         catalogSourcePathExists(context, "HelloUltraviolet/Source/Reference/DataTypes/TypeAliases.uv") &&
+        catalogSourcePathExists(context, "HelloUltraviolet/Source/Reference/DataTypes/Unions.uv") &&
         catalogSourcePathExists(context, "HelloUltraviolet/Source/Reference/Diagnostics/DiagnosticOrdering.uv") &&
         catalogSourcePathExists(context, "HelloUltraviolet/Source/Reference/Diagnostics/DiagnosticRecords.uv") &&
         catalogSourcePathExists(context, "HelloUltraviolet/Source/Reference/Diagnostics/RenderingInputs.uv") &&
         catalogSourcePathExists(context, "HelloUltraviolet/Source/Reference/Diagnostics/SourceSpans.uv") &&
+        catalogSourcePathExists(context, "HelloUltraviolet/Source/Reference/Expressions/AccessAndPlaces.uv") &&
+        catalogSourcePathExists(context, "HelloUltraviolet/Source/Reference/Expressions/Calls.uv") &&
+        catalogSourcePathExists(context, "HelloUltraviolet/Source/Reference/Expressions/CastsAndTransmutes.uv") &&
+        catalogSourcePathExists(context, "HelloUltraviolet/Source/Reference/Expressions/ClosuresAndPipelines.uv") &&
         catalogSourcePathExists(context, "HelloUltraviolet/Source/Reference/Expressions/Construction.uv") &&
         catalogSourcePathExists(context, "HelloUltraviolet/Source/Reference/Expressions/Control.uv") &&
         catalogSourcePathExists(context, "HelloUltraviolet/Source/Reference/Expressions/EffectfulCore.uv") &&
         catalogSourcePathExists(context, "HelloUltraviolet/Source/Reference/Expressions/LiteralsAndNames.uv") &&
+        catalogSourcePathExists(context, "HelloUltraviolet/Source/Reference/Expressions/Operators.uv") &&
+        catalogSourcePathExists(context, "HelloUltraviolet/Source/Reference/FFI/Attributes.uv") &&
+        catalogSourcePathExists(context, "HelloUltraviolet/Source/Reference/FFI/BoundaryUnwinding.uv") &&
+        catalogSourcePathExists(context, "HelloUltraviolet/Source/Reference/FFI/CapabilityIsolation.uv") &&
+        catalogSourcePathExists(context, "HelloUltraviolet/Source/Reference/FFI/ExportedProcedures.uv") &&
+        catalogSourcePathExists(context, "HelloUltraviolet/Source/Reference/FFI/ExternProcedures.uv") &&
         catalogSourcePathExists(context, "HelloUltraviolet/Source/Reference/FFI/FfiSafe.uv") &&
+        catalogSourcePathExists(context, "HelloUltraviolet/Source/Reference/FFI/ForeignContracts.uv") &&
+        catalogSourcePathExists(context, "HelloUltraviolet/Source/Reference/Keys/AcquisitionBlocks.uv") &&
+        catalogSourcePathExists(context, "HelloUltraviolet/Source/Reference/Keys/ConflictDetection.uv") &&
+        catalogSourcePathExists(context, "HelloUltraviolet/Source/Reference/Keys/DynamicVerification.uv") &&
         catalogSourcePathExists(context, "HelloUltraviolet/Source/Reference/Keys/KeyPaths.uv") &&
+        catalogSourcePathExists(context, "HelloUltraviolet/Source/Reference/Keys/MemoryOrdering.uv") &&
+        catalogSourcePathExists(context, "HelloUltraviolet/Source/Reference/Keys/NestedRelease.uv") &&
+        catalogSourcePathExists(context, "HelloUltraviolet/Source/Reference/Keys/SpeculativeExecution.uv") &&
+        catalogSourcePathExists(context, "HelloUltraviolet/Source/Reference/Lowering/BackendRequirements.uv") &&
+        catalogSourcePathExists(context, "HelloUltraviolet/Source/Reference/Lowering/CleanupDropUnwinding.uv") &&
+        catalogSourcePathExists(context, "HelloUltraviolet/Source/Reference/Lowering/InitializationLifecycle.uv") &&
         catalogSourcePathExists(context, "HelloUltraviolet/Source/Reference/Lowering/LayoutAndABI.uv") &&
+        catalogSourcePathExists(context, "HelloUltraviolet/Source/Reference/Lowering/RuntimeInterface.uv") &&
         catalogSourcePathExists(context, "HelloUltraviolet/Source/Reference/Lowering/SharedJudgments.uv") &&
+        catalogSourcePathExists(context, "HelloUltraviolet/Source/Reference/Lowering/SymbolsManglingLinkage.uv") &&
+        catalogSourcePathExists(context, "HelloUltraviolet/Source/Reference/ModalTypes/Bytes.uv") &&
+        catalogSourcePathExists(context, "HelloUltraviolet/Source/Reference/ModalTypes/Closures.uv") &&
+        catalogSourcePathExists(context, "HelloUltraviolet/Source/Reference/ModalTypes/FunctionTypes.uv") &&
         catalogSourcePathExists(context, "HelloUltraviolet/Source/Reference/ModalTypes/ModalDeclarations.uv") &&
+        catalogSourcePathExists(context, "HelloUltraviolet/Source/Reference/ModalTypes/Pointers.uv") &&
+        catalogSourcePathExists(context, "HelloUltraviolet/Source/Reference/ModalTypes/StateFields.uv") &&
+        catalogSourcePathExists(context, "HelloUltraviolet/Source/Reference/ModalTypes/StateMethods.uv") &&
+        catalogSourcePathExists(context, "HelloUltraviolet/Source/Reference/ModalTypes/Strings.uv") &&
+        catalogSourcePathExists(context, "HelloUltraviolet/Source/Reference/ModalTypes/Transitions.uv") &&
+        catalogSourcePathExists(context, "HelloUltraviolet/Source/Reference/ModalTypes/Widening.uv") &&
         catalogSourcePathExists(context, "HelloUltraviolet/Source/Reference/Modules/Aggregation.uv") &&
         catalogSourcePathExists(context, "HelloUltraviolet/Source/Reference/Modules/ExternBlocks.uv") &&
+        catalogSourcePathExists(context, "HelloUltraviolet/Source/Reference/Modules/Imports.uv") &&
+        catalogSourcePathExists(context, "HelloUltraviolet/Source/Reference/Modules/Statics.uv") &&
+        catalogSourcePathExists(context, "HelloUltraviolet/Source/Reference/Modules/Usings.uv") &&
+        catalogSourcePathExists(context, "HelloUltraviolet/Source/Reference/Names/Disambiguation.uv") &&
+        catalogSourcePathExists(context, "HelloUltraviolet/Source/Reference/Names/Imports.uv") &&
         catalogSourcePathExists(context, "HelloUltraviolet/Source/Reference/Names/QualifiedResolution.uv") &&
+        catalogSourcePathExists(context, "HelloUltraviolet/Source/Reference/Names/UsingDeclarations.uv") &&
         catalogSourcePathExists(context, "HelloUltraviolet/Source/Reference/Names/Visibility.uv") &&
+        catalogSourcePathExists(context, "HelloUltraviolet/Source/Reference/Parallelism/Cancellation.uv") &&
+        catalogSourcePathExists(context, "HelloUltraviolet/Source/Reference/Parallelism/CaptureSemantics.uv") &&
+        catalogSourcePathExists(context, "HelloUltraviolet/Source/Reference/Parallelism/Determinism.uv") &&
+        catalogSourcePathExists(context, "HelloUltraviolet/Source/Reference/Parallelism/Dispatch.uv") &&
+        catalogSourcePathExists(context, "HelloUltraviolet/Source/Reference/Parallelism/ExecutionDomains.uv") &&
+        catalogSourcePathExists(context, "HelloUltraviolet/Source/Reference/Parallelism/PanicHandling.uv") &&
         catalogSourcePathExists(context, "HelloUltraviolet/Source/Reference/Parallelism/ParallelBlocks.uv") &&
+        catalogSourcePathExists(context, "HelloUltraviolet/Source/Reference/Parallelism/Spawn.uv") &&
+        catalogSourcePathExists(context, "HelloUltraviolet/Source/Reference/Parsing/AttributeParsing.uv") &&
         catalogSourcePathExists(context, "HelloUltraviolet/Source/Reference/Parsing/ItemSequencing.uv") &&
         catalogSourcePathExists(context, "HelloUltraviolet/Source/Reference/Parsing/RecoverySpecimens.uv") &&
         catalogSourcePathExists(context, "HelloUltraviolet/Source/Reference/Parsing/Terminators.uv") &&
         catalogSourcePathExists(context, "HelloUltraviolet/Source/Reference/Patterns/BasicPatterns.uv") &&
+        catalogSourcePathExists(context, "HelloUltraviolet/Source/Reference/Patterns/CaseClauses.uv") &&
+        catalogSourcePathExists(context, "HelloUltraviolet/Source/Reference/Patterns/EnumModalPatterns.uv") &&
+        catalogSourcePathExists(context, "HelloUltraviolet/Source/Reference/Patterns/Exhaustiveness.uv") &&
+        catalogSourcePathExists(context, "HelloUltraviolet/Source/Reference/Patterns/RangePatterns.uv") &&
+        catalogSourcePathExists(context, "HelloUltraviolet/Source/Reference/Patterns/TupleRecordPatterns.uv") &&
+        catalogSourcePathExists(context, "HelloUltraviolet/Source/Reference/Permissions/ActivityStates.uv") &&
+        catalogSourcePathExists(context, "HelloUltraviolet/Source/Reference/Permissions/Admissibility.uv") &&
+        catalogSourcePathExists(context, "HelloUltraviolet/Source/Reference/Permissions/AliasExclusivity.uv") &&
         catalogSourcePathExists(context, "HelloUltraviolet/Source/Reference/Permissions/PermissionForms.uv") &&
         catalogSourcePathExists(context, "HelloUltraviolet/Source/Reference/Polymorphism/AssociatedTypes.uv") &&
+        catalogSourcePathExists(context, "HelloUltraviolet/Source/Reference/Polymorphism/CapabilityClasses.uv") &&
         catalogSourcePathExists(context, "HelloUltraviolet/Source/Reference/Polymorphism/Classes.uv") &&
         catalogSourcePathExists(context, "HelloUltraviolet/Source/Reference/Polymorphism/DynamicClassObjects.uv") &&
         catalogSourcePathExists(context, "HelloUltraviolet/Source/Reference/Polymorphism/GenericParameters.uv") &&
+        catalogSourcePathExists(context, "HelloUltraviolet/Source/Reference/Polymorphism/GenericProcedures.uv") &&
         catalogSourcePathExists(context, "HelloUltraviolet/Source/Reference/Polymorphism/Implementations.uv") &&
+        catalogSourcePathExists(context, "HelloUltraviolet/Source/Reference/Polymorphism/OpaqueTypes.uv") &&
+        catalogSourcePathExists(context, "HelloUltraviolet/Source/Reference/Procedures/BehavioralSubtyping.uv") &&
         catalogSourcePathExists(context, "HelloUltraviolet/Source/Reference/Procedures/Contracts.uv") &&
         catalogSourcePathExists(context, "HelloUltraviolet/Source/Reference/Procedures/Declarations.uv") &&
+        catalogSourcePathExists(context, "HelloUltraviolet/Source/Reference/Procedures/Invariants.uv") &&
         catalogSourcePathExists(context, "HelloUltraviolet/Source/Reference/Procedures/Overloading.uv") &&
+        catalogSourcePathExists(context, "HelloUltraviolet/Source/Reference/Procedures/Postconditions.uv") &&
+        catalogSourcePathExists(context, "HelloUltraviolet/Source/Reference/Procedures/Preconditions.uv") &&
         catalogSourcePathExists(context, "HelloUltraviolet/Source/Reference/Procedures/Receivers.uv") &&
+        catalogSourcePathExists(context, "HelloUltraviolet/Source/Reference/Procedures/Verification.uv") &&
         catalogSourcePathExists(context, "HelloUltraviolet/Source/Reference/Projects/AssemblyModel.uv") &&
         catalogSourcePathExists(context, "HelloUltraviolet/Source/Reference/Projects/ManifestModel.uv") &&
         catalogSourcePathExists(context, "HelloUltraviolet/Source/Reference/Projects/ModuleDiscovery.uv") &&
         catalogSourcePathExists(context, "HelloUltraviolet/Source/Reference/Projects/OutputArtifacts.uv") &&
         catalogSourcePathExists(context, "HelloUltraviolet/Source/Reference/SourceText/Identifiers.uv") &&
         catalogSourcePathExists(context, "HelloUltraviolet/Source/Reference/SourceText/Literals.uv") &&
+        catalogSourcePathExists(context, "HelloUltraviolet/Source/Reference/SourceText/LogicalLines.uv") &&
         catalogSourcePathExists(context, "HelloUltraviolet/Source/Reference/SourceText/OperatorsAndPunctuation.uv") &&
+        catalogSourcePathExists(context, "HelloUltraviolet/Source/Reference/SourceText/UnicodeNormalization.uv") &&
         catalogSourcePathExists(context, "HelloUltraviolet/Source/Reference/Statements/Assignment.uv") &&
+        catalogSourcePathExists(context, "HelloUltraviolet/Source/Reference/Statements/Bindings.uv") &&
         catalogSourcePathExists(context, "HelloUltraviolet/Source/Reference/Statements/Blocks.uv") &&
+        catalogSourcePathExists(context, "HelloUltraviolet/Source/Reference/Statements/ControlTransfer.uv") &&
+        catalogSourcePathExists(context, "HelloUltraviolet/Source/Reference/Statements/Defer.uv") &&
         catalogSourcePathExists(context, "HelloUltraviolet/Source/Reference/Statements/ExpressionStatements.uv") &&
+        catalogSourcePathExists(context, "HelloUltraviolet/Source/Reference/Statements/Frame.uv") &&
         catalogSourcePathExists(context, "HelloUltraviolet/Source/Reference/Statements/LocalUsing.uv") &&
+        catalogSourcePathExists(context, "HelloUltraviolet/Source/Reference/Statements/Region.uv") &&
+        catalogSourcePathExists(context, "HelloUltraviolet/Source/Reference/Statements/Unsafe.uv") &&
         catalogSourcePathExists(context, "HelloUltraviolet/Source/Reference/Types/Equivalence.uv") &&
         catalogSourcePathExists(context, "HelloUltraviolet/Source/Reference/Types/Inference.uv") &&
+        catalogSourcePathExists(context, "HelloUltraviolet/Source/Reference/Types/Refinements.uv") &&
         catalogSourcePathExists(context, "HelloUltraviolet/Source/Reference/Types/Subtyping.uv")
 }

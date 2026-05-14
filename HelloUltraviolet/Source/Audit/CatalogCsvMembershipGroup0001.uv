@@ -1,0 +1,604 @@
+//! CSV-to-catalog membership check group 0001.
+
+internal procedure catalogCsvMembershipGroup0001() -> bool {
+    return csvCatalogKeyMatches(
+            "Access-Err",
+            19748usize,
+            "Access-Err",
+            19748usize
+        ) &&
+        csvCatalogKeyMatches(
+            "Access-Internal",
+            19694usize,
+            "Access-Internal",
+            19694usize
+        ) &&
+        csvCatalogKeyMatches(
+            "Access-Internal-Err",
+            19730usize,
+            "Access-Internal-Err",
+            19730usize
+        ) &&
+        csvCatalogKeyMatches(
+            "Access-Private",
+            19712usize,
+            "Access-Private",
+            19712usize
+        ) &&
+        csvCatalogKeyMatches(
+            "Access-Public",
+            19676usize,
+            "Access-Public",
+            19676usize
+        ) &&
+        csvCatalogKeyMatches(
+            "AliasExpand-None",
+            32832usize,
+            "AliasExpand-None",
+            32832usize
+        ) &&
+        csvCatalogKeyMatches(
+            "AliasExpand-Yes",
+            32850usize,
+            "AliasExpand-Yes",
+            32850usize
+        ) &&
+        csvCatalogKeyMatches(
+            "Align-Alias",
+            41553usize,
+            "Align-Alias",
+            41553usize
+        ) &&
+        csvCatalogKeyMatches(
+            "Align-Array",
+            36774usize,
+            "Align-Array",
+            36774usize
+        ) &&
+        csvCatalogKeyMatches(
+            "Align-Enum",
+            40460usize,
+            "Align-Enum",
+            40460usize
+        ) &&
+        csvCatalogKeyMatches(
+            "Align-Range",
+            38201usize,
+            "Align-Range",
+            38201usize
+        ) &&
+        csvCatalogKeyMatches(
+            "Align-RangeFrom",
+            38309usize,
+            "Align-RangeFrom",
+            38309usize
+        ) &&
+        csvCatalogKeyMatches(
+            "Align-RangeFull",
+            38470usize,
+            "Align-RangeFull",
+            38470usize
+        ) &&
+        csvCatalogKeyMatches(
+            "Align-RangeInclusive",
+            38255usize,
+            "Align-RangeInclusive",
+            38255usize
+        ) &&
+        csvCatalogKeyMatches(
+            "Align-RangeTo",
+            38363usize,
+            "Align-RangeTo",
+            38363usize
+        ) &&
+        csvCatalogKeyMatches(
+            "Align-RangeToInclusive",
+            38417usize,
+            "Align-RangeToInclusive",
+            38417usize
+        ) &&
+        csvCatalogKeyMatches(
+            "Align-Record",
+            39293usize,
+            "Align-Record",
+            39293usize
+        ) &&
+        csvCatalogKeyMatches(
+            "Align-Slice",
+            37345usize,
+            "Align-Slice",
+            37345usize
+        ) &&
+        csvCatalogKeyMatches(
+            "Align-Tuple",
+            36085usize,
+            "Align-Tuple",
+            36085usize
+        ) &&
+        csvCatalogKeyMatches(
+            "Align-Union",
+            41075usize,
+            "Align-Union",
+            41075usize
+        ) &&
+        csvCatalogKeyMatches(
+            "AlignOf-Perm",
+            29170usize,
+            "AlignOf-Perm",
+            29170usize
+        ) &&
+        csvCatalogKeyMatches(
+            "ApplyRecordCtorSigma",
+            39181usize,
+            "ApplyRecordCtorSigma",
+            39181usize
+        ) &&
+        csvCatalogKeyMatches(
+            "ApplyRecordCtorSigma-Ctrl",
+            39199usize,
+            "ApplyRecordCtorSigma-Ctrl",
+            39199usize
+        ) &&
+        csvCatalogKeyMatches(
+            "Archive-Fail",
+            6111usize,
+            "Archive-Fail",
+            6111usize
+        ) &&
+        csvCatalogKeyMatches(
+            "Archive-NotFound",
+            6093usize,
+            "Archive-NotFound",
+            6093usize
+        ) &&
+        csvCatalogKeyMatches(
+            "Archive-Ok",
+            6075usize,
+            "Archive-Ok",
+            6075usize
+        ) &&
+        csvCatalogKeyMatches(
+            "AssembleIR-Err",
+            6747usize,
+            "AssembleIR-Err",
+            6747usize
+        ) &&
+        csvCatalogKeyMatches(
+            "AssembleIR-Ok",
+            6729usize,
+            "AssembleIR-Ok",
+            6729usize
+        ) &&
+        csvCatalogKeyMatches(
+            "Assembly-Graph-Err",
+            4649usize,
+            "Assembly-Graph-Err",
+            4649usize
+        ) &&
+        csvCatalogKeyMatches(
+            "Assembly-Graph-HostedImport-Err",
+            4667usize,
+            "Assembly-Graph-HostedImport-Err",
+            4667usize
+        ) &&
+        csvCatalogKeyMatches(
+            "Assembly-Graph-Ok",
+            4631usize,
+            "Assembly-Graph-Ok",
+            4631usize
+        ) &&
+        csvCatalogKeyMatches(
+            "Async-Key-Safety",
+            26553usize,
+            "Async-Key-Safety",
+            26553usize
+        ) &&
+        csvCatalogKeyMatches(
+            "Attach-Doc-Line",
+            11721usize,
+            "Attach-Doc-Line",
+            11721usize
+        ) &&
+        csvCatalogKeyMatches(
+            "Attach-Doc-Module",
+            11754usize,
+            "Attach-Doc-Module",
+            11754usize
+        ) &&
+        csvCatalogKeyMatches(
+            "Attach-Token-Ok",
+            1463usize,
+            "Attach-Token-Ok",
+            1463usize
+        ) &&
+        csvCatalogKeyMatches(
+            "Attach-Tokens-Ok",
+            1481usize,
+            "Attach-Tokens-Ok",
+            1481usize
+        ) &&
+        csvCatalogKeyMatches(
+            "AttrList-Ok",
+            27324usize,
+            "AttrList-Ok",
+            27324usize
+        ) &&
+        csvCatalogKeyMatches(
+            "AttrList-Target-Err",
+            27360usize,
+            "AttrList-Target-Err",
+            27360usize
+        ) &&
+        csvCatalogKeyMatches(
+            "AttrList-Unknown",
+            27342usize,
+            "AttrList-Unknown",
+            27342usize
+        ) &&
+        csvCatalogKeyMatches(
+            "Bind-Class",
+            20437usize,
+            "Bind-Class",
+            20437usize
+        ) &&
+        csvCatalogKeyMatches(
+            "Bind-Enum",
+            20420usize,
+            "Bind-Enum",
+            20420usize
+        ) &&
+        csvCatalogKeyMatches(
+            "Bind-Enum",
+            39836usize,
+            "Bind-Enum",
+            39836usize
+        ) &&
+        csvCatalogKeyMatches(
+            "Bind-ErrorItem",
+            20561usize,
+            "Bind-ErrorItem",
+            20561usize
+        ) &&
+        csvCatalogKeyMatches(
+            "Bind-ExternBlock",
+            20385usize,
+            "Bind-ExternBlock",
+            20385usize
+        ) &&
+        csvCatalogKeyMatches(
+            "Bind-ExternBlock",
+            31611usize,
+            "Bind-ExternBlock",
+            31611usize
+        ) &&
+        csvCatalogKeyMatches(
+            "Bind-Import",
+            20489usize,
+            "Bind-Import",
+            20489usize
+        ) &&
+        csvCatalogKeyMatches(
+            "Bind-Import",
+            29932usize,
+            "Bind-Import",
+            29932usize
+        ) &&
+        csvCatalogKeyMatches(
+            "Bind-Import-Err",
+            20507usize,
+            "Bind-Import-Err",
+            20507usize
+        ) &&
+        csvCatalogKeyMatches(
+            "Bind-Import-Err",
+            29950usize,
+            "Bind-Import-Err",
+            29950usize
+        ) &&
+        csvCatalogKeyMatches(
+            "Bind-Procedure",
+            20368usize,
+            "Bind-Procedure",
+            20368usize
+        ) &&
+        csvCatalogKeyMatches(
+            "Bind-Record",
+            20403usize,
+            "Bind-Record",
+            20403usize
+        ) &&
+        csvCatalogKeyMatches(
+            "Bind-Record",
+            38827usize,
+            "Bind-Record",
+            38827usize
+        ) &&
+        csvCatalogKeyMatches(
+            "Bind-Static",
+            20471usize,
+            "Bind-Static",
+            20471usize
+        ) &&
+        csvCatalogKeyMatches(
+            "Bind-Static",
+            30677usize,
+            "Bind-Static",
+            30677usize
+        ) &&
+        csvCatalogKeyMatches(
+            "Bind-TypeAlias",
+            20454usize,
+            "Bind-TypeAlias",
+            20454usize
+        ) &&
+        csvCatalogKeyMatches(
+            "Bind-TypeAlias",
+            41302usize,
+            "Bind-TypeAlias",
+            41302usize
+        ) &&
+        csvCatalogKeyMatches(
+            "Bind-Using",
+            20525usize,
+            "Bind-Using",
+            20525usize
+        ) &&
+        csvCatalogKeyMatches(
+            "Bind-Using",
+            30439usize,
+            "Bind-Using",
+            30439usize
+        ) &&
+        csvCatalogKeyMatches(
+            "Bind-Using-Err",
+            20543usize,
+            "Bind-Using-Err",
+            20543usize
+        ) &&
+        csvCatalogKeyMatches(
+            "Bind-Using-Err",
+            30457usize,
+            "Bind-Using-Err",
+            30457usize
+        ) &&
+        csvCatalogKeyMatches(
+            "Block-Comment-Unterminated",
+            8594usize,
+            "Block-Comment-Unterminated",
+            8594usize
+        ) &&
+        csvCatalogKeyMatches(
+            "Block-Done",
+            8558usize,
+            "Block-Done",
+            8558usize
+        ) &&
+        csvCatalogKeyMatches(
+            "Block-End",
+            8540usize,
+            "Block-End",
+            8540usize
+        ) &&
+        csvCatalogKeyMatches(
+            "Block-Start",
+            8522usize,
+            "Block-Start",
+            8522usize
+        ) &&
+        csvCatalogKeyMatches(
+            "Block-Step",
+            8576usize,
+            "Block-Step",
+            8576usize
+        ) &&
+        csvCatalogKeyMatches(
+            "Build-Libraries-Ok",
+            5803usize,
+            "Build-Libraries-Ok",
+            5803usize
+        ) &&
+        csvCatalogKeyMatches(
+            "Build-LibrariesSeq-Cons",
+            5785usize,
+            "Build-LibrariesSeq-Cons",
+            5785usize
+        ) &&
+        csvCatalogKeyMatches(
+            "Build-LibrariesSeq-Empty",
+            5768usize,
+            "Build-LibrariesSeq-Empty",
+            5768usize
+        ) &&
+        csvCatalogKeyMatches(
+            "BuildAssembly-Err-Modules",
+            3979usize,
+            "BuildAssembly-Err-Modules",
+            3979usize
+        ) &&
+        csvCatalogKeyMatches(
+            "BuildAssembly-Err-Resolve",
+            3943usize,
+            "BuildAssembly-Err-Resolve",
+            3943usize
+        ) &&
+        csvCatalogKeyMatches(
+            "BuildAssembly-Err-Root",
+            3961usize,
+            "BuildAssembly-Err-Root",
+            3961usize
+        ) &&
+        csvCatalogKeyMatches(
+            "BuildAssembly-Ok",
+            3925usize,
+            "BuildAssembly-Ok",
+            3925usize
+        ) &&
+        csvCatalogKeyMatches(
+            "Chk-Null-Ptr",
+            26259usize,
+            "Chk-Null-Ptr",
+            26259usize
+        ) &&
+        csvCatalogKeyMatches(
+            "Chk-PtrNull-Err",
+            26309usize,
+            "Chk-PtrNull-Err",
+            26309usize
+        ) &&
+        csvCatalogKeyMatches(
+            "Chk-Subsumption",
+            26241usize,
+            "Chk-Subsumption",
+            26241usize
+        ) &&
+        csvCatalogKeyMatches(
+            "Chk-Subsumption-Modal-NonNiche",
+            26223usize,
+            "Chk-Subsumption-Modal-NonNiche",
+            26223usize
+        ) &&
+        csvCatalogKeyMatches(
+            "Code",
+            1690usize,
+            "Code",
+            1690usize
+        ) &&
+        csvCatalogKeyMatches(
+            "CodegenIR-LLVM",
+            5407usize,
+            "CodegenIR-LLVM",
+            5407usize
+        ) &&
+        csvCatalogKeyMatches(
+            "CodegenObj-LLVM",
+            5389usize,
+            "CodegenObj-LLVM",
+            5389usize
+        ) &&
+        csvCatalogKeyMatches(
+            "Coerce-Array-Slice",
+            37223usize,
+            "Coerce-Array-Slice",
+            37223usize
+        ) &&
+        csvCatalogKeyMatches(
+            "Collect-Dup",
+            20632usize,
+            "Collect-Dup",
+            20632usize
+        ) &&
+        csvCatalogKeyMatches(
+            "Collect-Err",
+            20650usize,
+            "Collect-Err",
+            20650usize
+        ) &&
+        csvCatalogKeyMatches(
+            "Collect-Ok",
+            20578usize,
+            "Collect-Ok",
+            20578usize
+        ) &&
+        csvCatalogKeyMatches(
+            "Collect-Scan",
+            20596usize,
+            "Collect-Scan",
+            20596usize
+        ) &&
+        csvCatalogKeyMatches(
+            "Collect-Using-Import-Dup",
+            20614usize,
+            "Collect-Using-Import-Dup",
+            20614usize
+        ) &&
+        csvCatalogKeyMatches(
+            "CompilationUnit-Rel-Fail",
+            4352usize,
+            "CompilationUnit-Rel-Fail",
+            4352usize
+        ) &&
+        csvCatalogKeyMatches(
+            "Confusable-Err",
+            9946usize,
+            "Confusable-Err",
+            9946usize
+        ) &&
+        csvCatalogKeyMatches(
+            "ConstLen-Err",
+            24164usize,
+            "ConstLen-Err",
+            24164usize
+        ) &&
+        csvCatalogKeyMatches(
+            "ConstLen-Lit",
+            24128usize,
+            "ConstLen-Lit",
+            24128usize
+        ) &&
+        csvCatalogKeyMatches(
+            "ConstLen-Path",
+            24146usize,
+            "ConstLen-Path",
+            24146usize
+        ) &&
+        csvCatalogKeyMatches(
+            "ConsumeTerminatorOpt-Opt-No",
+            11650usize,
+            "ConsumeTerminatorOpt-Opt-No",
+            11650usize
+        ) &&
+        csvCatalogKeyMatches(
+            "ConsumeTerminatorOpt-Opt-Yes",
+            11632usize,
+            "ConsumeTerminatorOpt-Opt-Yes",
+            11632usize
+        ) &&
+        csvCatalogKeyMatches(
+            "ConsumeTerminatorOpt-Req-No",
+            11614usize,
+            "ConsumeTerminatorOpt-Req-No",
+            11614usize
+        ) &&
+        csvCatalogKeyMatches(
+            "ConsumeTerminatorOpt-Req-Yes",
+            11596usize,
+            "ConsumeTerminatorOpt-Req-Yes",
+            11596usize
+        ) &&
+        csvCatalogKeyMatches(
+            "ConsumeTerminatorReq-No",
+            11686usize,
+            "ConsumeTerminatorReq-No",
+            11686usize
+        ) &&
+        csvCatalogKeyMatches(
+            "ConsumeTerminatorReq-Yes",
+            11668usize,
+            "ConsumeTerminatorReq-Yes",
+            11668usize
+        ) &&
+        csvCatalogKeyMatches(
+            "Data-Race-Freedom",
+            26505usize,
+            "Data-Race-Freedom",
+            26505usize
+        ) &&
+        csvCatalogKeyMatches(
+            "DeclNames-Empty",
+            20289usize,
+            "DeclNames-Empty",
+            20289usize
+        ) &&
+        csvCatalogKeyMatches(
+            "DeclNames-Item",
+            20322usize,
+            "DeclNames-Item",
+            20322usize
+        ) &&
+        csvCatalogKeyMatches(
+            "DeclNames-Using",
+            20304usize,
+            "DeclNames-Using",
+            20304usize
+        )
+}

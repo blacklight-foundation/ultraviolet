@@ -102,7 +102,7 @@
 // =============================================================================
 //
 // - SPEC line 2112 defines OperatorSet (44 operators)
-// - SPEC line 2115 defines PunctuatorSet (12 punctuators)
+// - SPEC line 2115 defines PunctuatorSet (10 punctuators)
 // - SPEC line 2117: OperatorSet INTERSECT PunctuatorSet = empty
 //
 // - Candidate generation follows spec Candidates(T, i) at line 2410-2415:
@@ -152,6 +152,19 @@ bool IsSuppressed(std::size_t index, const std::vector<ScalarRange>& ranges) {
 
 bool IsPunc(const Token& tok, std::string_view lexeme) {
   return tok.kind == TokenKind::Punctuator && tok.lexeme == lexeme;
+}
+
+bool Adjacent(const Token& left, const Token& right) {
+  return left.span.file == right.span.file &&
+         left.span.end_offset == right.span.start_offset;
+}
+
+bool IsAdjacentPuncPair(const Token& left,
+                        const Token& right,
+                        std::string_view left_lexeme,
+                        std::string_view right_lexeme) {
+  return IsPunc(left, left_lexeme) && IsPunc(right, right_lexeme) &&
+         Adjacent(left, right);
 }
 
 bool BeginsOperand(const Token& tok) {
@@ -317,8 +330,16 @@ bool ContinuesLineImpl(const std::vector<Token>& tokens,
 
   if (!cont && ctx.prev_index[i] != static_cast<std::size_t>(-1) &&
       ctx.next_index[i] != static_cast<std::size_t>(-1)) {
-    const Token& prev = tokens[ctx.prev_index[i]];
-    if (IsPunc(prev, "]]")) {
+    const std::size_t close_right_index = ctx.prev_index[i];
+    const std::size_t close_left_index =
+        close_right_index < ctx.prev_index.size()
+            ? ctx.prev_index[close_right_index]
+            : static_cast<std::size_t>(-1);
+    if (close_left_index != static_cast<std::size_t>(-1) &&
+        IsAdjacentPuncPair(tokens[close_left_index],
+                           tokens[close_right_index],
+                           "]",
+                           "]")) {
       const Token& next = tokens[ctx.next_index[i]];
       if (BeginsOperand(next)) {
         cont = true;

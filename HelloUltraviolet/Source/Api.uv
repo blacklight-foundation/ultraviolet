@@ -128,6 +128,8 @@ using HelloUltraviolet::Fixtures::RejectedSource::{ associatedTypeUnboundMemberE
 using HelloUltraviolet::Fixtures::RejectedSource::{ genericTypeApplyArgCountExpectedDiagnosticFileMatches }
 using HelloUltraviolet::Fixtures::RejectedSource::{ genericPathMissingArgumentsExpectedDiagnosticFileMatches }
 using HelloUltraviolet::Fixtures::RejectedSource::{ genericCallArgCountExpectedDiagnosticFileMatches }
+using HelloUltraviolet::Fixtures::RejectedSource::{ genericInfiniteMonomorphizationExpectedDiagnosticFileMatches }
+using HelloUltraviolet::Fixtures::RejectedSource::{ genericInstantiationDepthLimitExpectedDiagnosticFileMatches }
 using HelloUltraviolet::Fixtures::RejectedSource::{ genericClassBoundNonClassExpectedDiagnosticFileMatches }
 using HelloUltraviolet::Fixtures::RejectedSource::{ overrideAbstractMethodExpectedDiagnosticFileMatches }
 using HelloUltraviolet::Fixtures::RejectedSource::{ overrideMissingOnDefaultExpectedDiagnosticFileMatches }
@@ -541,8 +543,34 @@ using HelloUltraviolet::Reference::Parallelism::{ runParallelismPanicHandlingRef
 using HelloUltraviolet::Reference::Parallelism::{ runParallelismDeterminismReference }
 using HelloUltraviolet::Reference::Async::{ runAsyncAsyncTypeReference }
 using HelloUltraviolet::Reference::Async::{ runAsyncSuspensionFormsReference }
+using HelloUltraviolet::Reference::Async::{ runAsyncCompositionSyncExistingFutureReference }
+using HelloUltraviolet::Reference::Async::{ runAsyncCompositionSyncSuccessReference }
+using HelloUltraviolet::Reference::Async::{ runAsyncCompositionOutcomeFailureReference }
+using HelloUltraviolet::Reference::Async::{ runAsyncCompositionAsyncFailureStateReference }
+using HelloUltraviolet::Reference::Async::{ runAsyncCompositionSyncFailureReference }
+using HelloUltraviolet::Reference::Async::{ runAsyncCompositionSyncSuspendedUnitReference }
+using HelloUltraviolet::Reference::Async::{ runAsyncCompositionSyncReference }
+using HelloUltraviolet::Reference::Async::{ runAsyncCompositionAllReference }
+using HelloUltraviolet::Reference::Async::{ runAsyncCompositionAllSuspendedReference }
+using HelloUltraviolet::Reference::Async::{ runAsyncCompositionAllSingleReference }
+using HelloUltraviolet::Reference::Async::{ runAsyncCompositionReturnRaceReference }
+using HelloUltraviolet::Reference::Async::{ runAsyncCompositionReturnRaceSuspendedReference }
+using HelloUltraviolet::Reference::Async::{ runAsyncCompositionRaceTuplePatternReference }
+using HelloUltraviolet::Reference::Async::{ runAsyncCompositionStreamingRaceSuccessReference }
+using HelloUltraviolet::Reference::Async::{ runAsyncCompositionStreamingRaceFailureReference }
+using HelloUltraviolet::Reference::Async::{ runAsyncCompositionStreamingRaceResumeReference }
+using HelloUltraviolet::Reference::Async::{ runAsyncCompositionStreamingRaceReference }
+using HelloUltraviolet::Reference::Async::{ runAsyncCompositionMapReference }
+using HelloUltraviolet::Reference::Async::{ runAsyncCompositionFilterReference }
+using HelloUltraviolet::Reference::Async::{ runAsyncCompositionTakeReference }
+using HelloUltraviolet::Reference::Async::{ runAsyncCompositionFoldReference }
+using HelloUltraviolet::Reference::Async::{ runAsyncCompositionChainReference }
+using HelloUltraviolet::Reference::Async::{ runAsyncCompositionUntilReference }
+using HelloUltraviolet::Reference::Async::{ runAsyncCompositionLoopIterationReference }
+using HelloUltraviolet::Reference::Async::{ runAsyncCompositionCombinatorsReference }
 using HelloUltraviolet::Reference::Async::{ runAsyncCompositionFormsReference }
 using HelloUltraviolet::Reference::Async::{ runAsyncStateMachineReference }
+using HelloUltraviolet::Reference::Async::{ runAsyncStateMachineManualResumeReference }
 using HelloUltraviolet::Reference::Async::{ runAsyncAsyncKeyIntegrationReference }
 using HelloUltraviolet::Reference::Comptime::{ runComptimeCompileTimeFormsReference }
 using HelloUltraviolet::Reference::Comptime::{ runComptimeCompileTimeCapabilitiesReference }
@@ -1358,6 +1386,16 @@ public procedure runReferenceCorpus(context: Context) -> ReferenceResult {
         context,
         "genericCallArgCountExpectedDiagnosticFileMatches",
         genericCallArgCountExpectedDiagnosticFileMatches(context)
+    )
+    passed = passed && recordReferenceResult(
+        context,
+        "genericInfiniteMonomorphizationExpectedDiagnosticFileMatches",
+        genericInfiniteMonomorphizationExpectedDiagnosticFileMatches(context)
+    )
+    passed = passed && recordReferenceResult(
+        context,
+        "genericInstantiationDepthLimitExpectedDiagnosticFileMatches",
+        genericInstantiationDepthLimitExpectedDiagnosticFileMatches(context)
     )
     passed = passed && recordReferenceResult(
         context,
@@ -3321,6 +3359,131 @@ public procedure runReferenceCorpus(context: Context) -> ReferenceResult {
     )
     passed = passed && recordReferenceResult(
         context,
+        "runAsyncCompositionSyncExistingFutureReference",
+        runAsyncCompositionSyncExistingFutureReference()
+    )
+    passed = passed && recordReferenceResult(
+        context,
+        "runAsyncCompositionSyncSuccessReference",
+        runAsyncCompositionSyncSuccessReference()
+    )
+    passed = passed && recordReferenceResult(
+        context,
+        "runAsyncCompositionOutcomeFailureReference",
+        runAsyncCompositionOutcomeFailureReference()
+    )
+    passed = passed && recordReferenceResult(
+        context,
+        "runAsyncCompositionAsyncFailureStateReference",
+        runAsyncCompositionAsyncFailureStateReference()
+    )
+    passed = passed && recordReferenceResult(
+        context,
+        "runAsyncCompositionSyncFailureReference",
+        runAsyncCompositionSyncFailureReference()
+    )
+    passed = passed && recordReferenceResult(
+        context,
+        "runAsyncCompositionSyncSuspendedUnitReference",
+        runAsyncCompositionSyncSuspendedUnitReference()
+    )
+    passed = passed && recordReferenceResult(
+        context,
+        "runAsyncCompositionSyncReference",
+        runAsyncCompositionSyncReference()
+    )
+    passed = passed && recordReferenceResult(
+        context,
+        "runAsyncCompositionAllReference",
+        runAsyncCompositionAllReference()
+    )
+    passed = passed && recordReferenceResult(
+        context,
+        "runAsyncCompositionAllSuspendedReference",
+        runAsyncCompositionAllSuspendedReference()
+    )
+    passed = passed && recordReferenceResult(
+        context,
+        "runAsyncCompositionAllSingleReference",
+        runAsyncCompositionAllSingleReference()
+    )
+    passed = passed && recordReferenceResult(
+        context,
+        "runAsyncCompositionReturnRaceReference",
+        runAsyncCompositionReturnRaceReference()
+    )
+    passed = passed && recordReferenceResult(
+        context,
+        "runAsyncCompositionReturnRaceSuspendedReference",
+        runAsyncCompositionReturnRaceSuspendedReference()
+    )
+    passed = passed && recordReferenceResult(
+        context,
+        "runAsyncCompositionRaceTuplePatternReference",
+        runAsyncCompositionRaceTuplePatternReference()
+    )
+    passed = passed && recordReferenceResult(
+        context,
+        "runAsyncCompositionStreamingRaceSuccessReference",
+        runAsyncCompositionStreamingRaceSuccessReference()
+    )
+    passed = passed && recordReferenceResult(
+        context,
+        "runAsyncCompositionStreamingRaceFailureReference",
+        runAsyncCompositionStreamingRaceFailureReference()
+    )
+    passed = passed && recordReferenceResult(
+        context,
+        "runAsyncCompositionStreamingRaceResumeReference",
+        runAsyncCompositionStreamingRaceResumeReference()
+    )
+    passed = passed && recordReferenceResult(
+        context,
+        "runAsyncCompositionStreamingRaceReference",
+        runAsyncCompositionStreamingRaceReference()
+    )
+    passed = passed && recordReferenceResult(
+        context,
+        "runAsyncCompositionMapReference",
+        runAsyncCompositionMapReference()
+    )
+    passed = passed && recordReferenceResult(
+        context,
+        "runAsyncCompositionFilterReference",
+        runAsyncCompositionFilterReference()
+    )
+    passed = passed && recordReferenceResult(
+        context,
+        "runAsyncCompositionTakeReference",
+        runAsyncCompositionTakeReference()
+    )
+    passed = passed && recordReferenceResult(
+        context,
+        "runAsyncCompositionFoldReference",
+        runAsyncCompositionFoldReference()
+    )
+    passed = passed && recordReferenceResult(
+        context,
+        "runAsyncCompositionChainReference",
+        runAsyncCompositionChainReference()
+    )
+    passed = passed && recordReferenceResult(
+        context,
+        "runAsyncCompositionUntilReference",
+        runAsyncCompositionUntilReference()
+    )
+    passed = passed && recordReferenceResult(
+        context,
+        "runAsyncCompositionLoopIterationReference",
+        runAsyncCompositionLoopIterationReference()
+    )
+    passed = passed && recordReferenceResult(
+        context,
+        "runAsyncCompositionCombinatorsReference",
+        runAsyncCompositionCombinatorsReference()
+    )
+    passed = passed && recordReferenceResult(
+        context,
         "runAsyncCompositionFormsReference",
         runAsyncCompositionFormsReference()
     )
@@ -3328,6 +3491,11 @@ public procedure runReferenceCorpus(context: Context) -> ReferenceResult {
         context,
         "runAsyncStateMachineReference",
         runAsyncStateMachineReference()
+    )
+    passed = passed && recordReferenceResult(
+        context,
+        "runAsyncStateMachineManualResumeReference",
+        runAsyncStateMachineManualResumeReference()
     )
     passed = passed && recordReferenceResult(
         context,

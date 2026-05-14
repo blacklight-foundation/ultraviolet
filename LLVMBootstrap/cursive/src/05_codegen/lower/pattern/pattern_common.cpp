@@ -112,14 +112,15 @@ analysis::TypeRef ResolvePatternAliasType(const analysis::TypeRef& type,
     return stripped;
   }
 
-  const auto* path = std::get_if<analysis::TypePathType>(&stripped->node);
-  if (!path) {
+  const auto* path = analysis::AppliedTypePath(*stripped);
+  const auto* generic_args = analysis::AppliedTypeArgs(*stripped);
+  if (!path || !generic_args) {
     return stripped;
   }
 
   ast::TypePath syntax_path;
-  syntax_path.reserve(path->path.size());
-  for (const auto& segment : path->path) {
+  syntax_path.reserve(path->size());
+  for (const auto& segment : *path) {
     syntax_path.push_back(segment);
   }
   const ast::TypeAliasDecl* alias = nullptr;
@@ -152,14 +153,14 @@ analysis::TypeRef ResolvePatternAliasType(const analysis::TypeRef& type,
 
   analysis::TypeRef resolved = *lowered;
   if (alias->generic_params && !alias->generic_params->params.empty()) {
-    if (path->generic_args.size() > alias->generic_params->params.size()) {
+    if (generic_args->size() > alias->generic_params->params.size()) {
       return stripped;
     }
     analysis::TypeSubst subst =
         analysis::BuildSubstitution(alias->generic_params->params,
-                                    path->generic_args);
+                                    *generic_args);
     resolved = analysis::InstantiateType(resolved, subst);
-  } else if (!path->generic_args.empty()) {
+  } else if (!generic_args->empty()) {
     return stripped;
   }
 
@@ -684,10 +685,13 @@ void CollectPatternBindingsInOrder(const ast::Pattern& pattern,
               return true;
             }
             if (!require_state_match) {
-              if (const auto* modal_ref =
-                      std::get_if<analysis::TypePathType>(&stripped->node)) {
-                modal_path = modal_ref->path;
-                modal_args = modal_ref->generic_args;
+              if (const auto* applied_path = analysis::AppliedTypePath(*stripped)) {
+                modal_path = *applied_path;
+                if (const auto* applied_args = analysis::AppliedTypeArgs(*stripped)) {
+                  modal_args = *applied_args;
+                } else {
+                  modal_args.clear();
+                }
                 return true;
               }
             }

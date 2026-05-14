@@ -2975,3 +2975,222 @@ Declaration typing now lowers each same-name free-procedure signature in the
 procedure's generic scope, erases generic parameters to a canonical type
 variable, compares parameter modes and `TypeKeyOf` parameter types, and reports
 `E-SEM-3032` on duplicate erased overload signatures.
+
+## UVBOOT-0047: Generic Monomorphization Diagnostics
+
+Status: repaired in the workspace bootstrap and verified by:
+
+```text
+LLVMBootstrap/cursive/build/windows/Release/Cursive.exe build HelloUltraviolet/Fixtures/RejectedSource/Polymorphism/GenericInfiniteMonomorphization --target-profile x86_64-win64 --build-progress off
+LLVMBootstrap/cursive/build/windows/Release/Cursive.exe build HelloUltraviolet/Fixtures/RejectedSource/Polymorphism/GenericInstantiationDepthLimit --target-profile x86_64-win64 --build-progress off
+LLVMBootstrap/cursive/build/windows/Release/Cursive.exe build HelloUltraviolet --check --target-profile x86_64-win64 --build-progress off
+LLVMBootstrap/cursive/build/windows/Release/Cursive.exe build HelloUltraviolet --target-profile x86_64-win64 --build-progress off
+HelloUltraviolet/build/bin/HelloUltraviolet.exe
+HelloUltraviolet/build/bin/HelloUltraviolet.exe --audit
+```
+
+Reference source:
+
+- `Fixtures/RejectedSource/Polymorphism/GenericInfiniteMonomorphization/Source/Main.uv`
+- `Fixtures/RejectedSource/Polymorphism/GenericInstantiationDepthLimit/Source/Main.uv`
+
+Spec obligations exercised:
+
+- `req.GenericInfiniteMonomorphizationRejected`
+- `req.GenericInstantiationDepthLimit`
+
+Spec basis:
+
+- `SPECIFICATION.md:12818` requires infinite monomorphization recursion to be
+  rejected.
+- `SPECIFICATION.md:12819` sets the maximum instantiation depth to 128.
+- `SPECIFICATION.md:14132-14133` defines `E-TYP-2307` and `E-TYP-2308`.
+
+Observed bootstrap result before repair:
+
+Spec-valid generic-instantiation fixtures reached lowering and caused an
+unhandled stack overflow instead of reporting the required SPEC diagnostics.
+
+Verified bootstrap result after repair:
+
+```text
+GenericInfiniteMonomorphization: exit=1, E-TYP-2307
+GenericInstantiationDepthLimit: exit=1, E-TYP-2308
+```
+
+Bootstrap repair owner:
+
+- `LLVMBootstrap/cursive/src/05_codegen/lower/expr/call.cpp`
+- `LLVMBootstrap/cursive/include/05_codegen/lower/lower_expr.h`
+- `LLVMBootstrap/cursive/src/06_driver/pipeline.cpp`
+- `LLVMBootstrap/cursive/src/CMakeLists.txt`
+
+Repair summary:
+
+Generic-call lowering now records active generic declaration frames, detects
+same-declaration recursion with changed instantiation arguments, and emits
+`E-TYP-2307`. The same path checks active instantiation depth against
+`MonomorphizeContext::kMaxDepth` and emits `E-TYP-2308`. The Windows bootstrap
+compiler executable reserves enough native stack for the SPEC-defined
+128-instantiation boundary.
+
+## UVBOOT-0048: Binary Expression Resolution Stack Overflow
+
+Status: repaired in the workspace bootstrap and verified by:
+
+```text
+LLVMBootstrap/cursive/build/Release/Cursive.exe build HelloUltraviolet --check --target-profile x86_64-win64 --build-progress off
+LLVMBootstrap/cursive/build/Release/Cursive.exe build HelloUltraviolet --target-profile x86_64-win64 --build-progress off
+HelloUltraviolet/build/bin/HelloUltraviolet.exe
+HelloUltraviolet/build/bin/HelloUltraviolet.exe --audit
+```
+
+Reference source:
+
+- `Source/Reference/Parallelism/ExecutionDomains.uv`
+- `Source/Reference/Parallelism/CaptureSemantics.uv`
+- generated catalog and reference-runner aggregation source containing long
+  binary expression chains
+
+Spec obligations exercised:
+
+- `ResolveExpr-Hom`
+- `requirement.20.ExecutionDomainContextMethods`
+- `rule.20.T-GpuIntrinsic`
+- `rule.20.EvalSigma-GPU-Parallel`
+- `rule.20.EvalSigma-GPU-Dispatch`
+- `rule.20.EvalSigma-GpuBarrier`
+
+Spec basis:
+
+- `SPECIFICATION.md:7430-7549` requires expression resolution to traverse
+  expression substructure homomorphically.
+- `SPECIFICATION.md:21683-21693` defines `ctx.gpu()` as an execution-domain
+  constructor.
+- `SPECIFICATION.md:21781-21794` defines GPU intrinsic calls in GPU contexts.
+- `SPECIFICATION.md:21840-21866` defines GPU parallel, dispatch, and barrier
+  dynamic semantics.
+
+Spec-valid specimen:
+
+```ultraviolet
+return parallel context~>gpu() [
+    workgroup: (1024usize, 1usize, 1usize),
+    workgroups: (1usize, 1usize, 1usize)
+] {
+    dispatch index in 0usize..1usize [reduce: +, workgroup: (1024usize, 1usize, 1usize)] {
+        gpu_barrier()
+        gpu_linear_id() + (payload.value as usize) + index
+    }
+}
+```
+
+Observed bootstrap result before repair:
+
+When the existing GPU reference functions were made reachable from the
+accepted runtime flow, `Cursive.exe build HelloUltraviolet --check` crashed
+with an unhandled stack overflow in `ResolveExpr` while resolving binary
+expressions. A minimal GPU probe compiled cleanly, isolating the crash to the
+full corpus' long generated expression chains rather than the GPU construct.
+
+Bootstrap repair owner:
+
+- `LLVMBootstrap/cursive/src/04_analysis/resolve/resolve_expr.cpp`
+
+Repair summary:
+
+Expression resolution now resolves same-operator binary chains iteratively for
+all binary operators while preserving the original AST shape. The existing
+region-allocation `^` special case still runs before the iterative chain path.
+
+## UVBOOT-0049: Configured CPU Execution Domain Lowering
+
+Status: repaired in the workspace bootstrap and verified by:
+
+```text
+LLVMBootstrap/cursive/build/Release/Cursive.exe build HelloUltraviolet --check --target-profile x86_64-win64 --build-progress off
+LLVMBootstrap/cursive/build/Release/Cursive.exe build HelloUltraviolet --target-profile x86_64-win64 --build-progress off
+HelloUltraviolet/build/bin/HelloUltraviolet.exe
+HelloUltraviolet/build/bin/HelloUltraviolet.exe --audit
+python3 Tools/ExtractObligationLedger.py --check
+git -c filter.lfs.process= -c filter.lfs.clean=cat -c filter.lfs.smudge=cat \
+  -c filter.lfs.required=false diff --check -- \
+  HelloUltraviolet/Source/Reference/Parallelism/ParallelBlocks.uv \
+  HelloUltraviolet/Source/Reference/Parallelism/Spawn.uv \
+  HelloUltraviolet/Source/Reference/Parallelism/Dispatch.uv \
+  HelloUltraviolet/Source/Reference/Parallelism/ExecutionDomains.uv \
+  LLVMBootstrap/cursive/include/05_codegen/intrinsics/builtins.h \
+  LLVMBootstrap/cursive/src/05_codegen/intrinsics/builtins.cpp \
+  LLVMBootstrap/cursive/src/05_codegen/intrinsics/intrinsics_interface.cpp \
+  LLVMBootstrap/cursive/src/05_codegen/lower/expr/method_call.cpp \
+  LLVMBootstrap/cursive/src/05_codegen/llvm/emit/ir/async/spawn.cpp \
+  LLVMBootstrap/cursive/runtime/include/cursive_rt.h \
+  LLVMBootstrap/cursive/runtime/include/cursive_rt_language_symbols.h \
+  LLVMBootstrap/cursive/runtime/src/context/context.c \
+  LLVMBootstrap/cursive/runtime/src/concurrency/parallel.c \
+  LLVMBootstrap/cursive/runtime/src/internal/rt_internal.h
+```
+
+Reference source:
+
+- `Source/Reference/Parallelism/ExecutionDomains.uv`
+
+Spec obligations exercised:
+
+- `requirement.20.ExecutionDomainContextMethods`
+- `rule.20.T-Parallel`
+- `rule.20.DomainCtorOk`
+- `rule.20.ResolveSpawnOpt-Affinity`
+- `rule.20.ResolveSpawnOpt-Priority`
+
+Spec basis:
+
+- `SPECIFICATION.md:21489-21490` accepts `ctx.cpu(mask)` and
+  `ctx.cpu(mask, priority)` when the arguments typecheck as `CpuSet` and
+  `Priority`.
+- `SPECIFICATION.md:21683-21690` defines `ctx.cpu(mask)` as a CPU execution
+  domain restricted to the mask and `ctx.cpu(mask, priority)` as the same domain
+  with a default task priority.
+- `SPECIFICATION.md:22120-22121` requires spawn affinity and priority to govern
+  worker selection and task priority.
+
+Spec-valid specimen:
+
+```ultraviolet
+internal procedure cpuMaskPriorityDomainReference(context: Context) -> i32 {
+    let affinity: CpuSet = 1u64
+    let priority: Priority = Priority::Normal
+    return parallel context~>cpu(affinity, priority) {
+        15
+    }
+}
+```
+
+Observed bootstrap result before repair:
+
+`Cursive.exe build HelloUltraviolet --check` accepted the source, but full
+codegen failed at `LLVMBootstrap/cursive/src/05_codegen/lower/expr/call.cpp:1310`
+because `Context` method-call lowering invoked `LowerArgs` with empty
+parameter mode/type lists for `ctx.cpu(mask)` and `ctx.cpu(mask, priority)`.
+After the lowering arity defect was repaired, the final link step exposed the
+matching runtime gap: the configured CPU domain constructor was not exported
+from the Ultraviolet runtime archive.
+
+Bootstrap repair owner:
+
+- `LLVMBootstrap/cursive/src/05_codegen/lower/expr/method_call.cpp`
+- `LLVMBootstrap/cursive/src/05_codegen/intrinsics/builtins.cpp`
+- `LLVMBootstrap/cursive/src/05_codegen/intrinsics/intrinsics_interface.cpp`
+- `LLVMBootstrap/cursive/runtime/include/cursive_rt.h`
+- `LLVMBootstrap/cursive/runtime/include/cursive_rt_language_symbols.h`
+- `LLVMBootstrap/cursive/runtime/src/context/context.c`
+- `LLVMBootstrap/cursive/runtime/src/concurrency/parallel.c`
+
+Repair summary:
+
+Context method-call lowering now uses the semantic `Context` method signature
+for configured CPU-domain arguments and routes nonzero-arity `cpu` calls to a
+configured runtime constructor. `C0ExecutionDomain` now carries affinity and
+default priority, the runtime exports the configured constructor for both
+language symbol prefixes, and spawned/dispatch work inherits the enclosing
+domain defaults unless an explicit spawn option supplies a different value.

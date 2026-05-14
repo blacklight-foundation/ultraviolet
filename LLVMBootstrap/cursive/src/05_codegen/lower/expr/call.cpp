@@ -33,6 +33,8 @@
 #include <vector>
 
 #include "00_core/assert_spec.h"
+#include "00_core/diagnostic_messages.h"
+#include "00_core/diagnostic_render.h"
 #include "00_core/process_config.h"
 #include "00_core/symbols.h"
 #include "04_analysis/contracts/verification.h"
@@ -48,6 +50,7 @@
 #include "04_analysis/modal/modal_transitions.h"
 #include "04_analysis/resolve/scopes.h"
 #include "04_analysis/typing/subtyping.h"
+#include "04_analysis/typing/type_equiv.h"
 #include "04_analysis/typing/type_expr.h"
 #include "05_codegen/abi/abi.h"
 #include "05_codegen/checks/checks.h"
@@ -1027,6 +1030,70 @@ std::string MonomorphizedProcSymbol(const GenericProcInfo& info,
   return ScopedSym(inst_path);
 }
 
+std::string GenericProcBaseSymbol(const GenericProcInfo& info) {
+  return ScopedSym(info.full_path);
+}
+
+std::vector<analysis::TypeRef> GenericInstantiationArgs(
+    const GenericProcInfo& info,
+    const analysis::TypeSubst& subst) {
+  std::vector<analysis::TypeRef> args;
+  if (!info.decl || !info.decl->generic_params.has_value()) {
+    return args;
+  }
+  args.reserve(info.decl->generic_params->params.size());
+  for (const auto& param : info.decl->generic_params->params) {
+    const auto it = subst.find(param.name);
+    if (it != subst.end()) {
+      args.push_back(it->second);
+    } else {
+      args.push_back(nullptr);
+    }
+  }
+  return args;
+}
+
+bool GenericArgsEquivalent(const std::vector<analysis::TypeRef>& lhs,
+                           const std::vector<analysis::TypeRef>& rhs) {
+  if (lhs.size() != rhs.size()) {
+    return false;
+  }
+  for (std::size_t i = 0; i < lhs.size(); ++i) {
+    if (!lhs[i] || !rhs[i]) {
+      if (lhs[i] != rhs[i]) {
+        return false;
+      }
+      continue;
+    }
+    if (!analysis::TypeEquiv(lhs[i], rhs[i]).equiv) {
+      return false;
+    }
+  }
+  return true;
+}
+
+void EmitGenericInstantiationDiagnostic(std::string_view code) {
+  if (auto diag = core::MakeDiagnosticById(code)) {
+    std::cerr << core::Render(*diag) << "\n";
+    return;
+  }
+  std::cerr << "error[" << code << "]: generic instantiation failed\n";
+}
+
+bool GenericInstantiationWouldRecurse(const LowerCtx& ctx,
+                                      const std::string& base_symbol,
+                                      const std::vector<analysis::TypeRef>& args) {
+  for (const auto& frame : ctx.generic_instantiation_decl_stack) {
+    if (frame.base_symbol != base_symbol) {
+      continue;
+    }
+    if (!GenericArgsEquivalent(frame.args, args)) {
+      return true;
+    }
+  }
+  return false;
+}
+
 void RegisterProvisionalGenericProcSig(const GenericProcInfo& info,
                                        const analysis::TypeSubst& subst,
                                        const std::string& symbol,
@@ -1409,6 +1476,26 @@ LowerResult LowerCallExpr(const ast::Expr& expr_wrapper,
     log_call_stage("lookup-generic-subst-start");
     if (auto subst = LookupGenericSubstForCall(expr, *generic_info, ctx)) {
       log_call_stage("lookup-generic-subst-finish");
+      const std::string base_symbol = GenericProcBaseSymbol(*generic_info);
+      const std::vector<analysis::TypeRef> inst_args =
+          GenericInstantiationArgs(*generic_info, *subst);
+      if (GenericInstantiationWouldRecurse(ctx, base_symbol, inst_args)) {
+        EmitGenericInstantiationDiagnostic("E-TYP-2307");
+        ctx.ReportCodegenFailure();
+        return LowerResult{
+            EmptyIR(),
+            ctx.FreshTempValue("generic_monomorphization_recursion_err"),
+        };
+      }
+      if (ctx.generic_instantiation_stack.size() >=
+          analysis::MonomorphizeContext::kMaxDepth) {
+        EmitGenericInstantiationDiagnostic("E-TYP-2308");
+        ctx.ReportCodegenFailure();
+        return LowerResult{
+            EmptyIR(),
+            ctx.FreshTempValue("generic_monomorphization_depth_err"),
+        };
+      }
       const std::string inst_symbol = MonomorphizedProcSymbol(*generic_info, *subst);
       auto log_generic = [&](std::string_view stage) {
         if (!debug_call) {
@@ -1425,16 +1512,15 @@ LowerResult LowerCallExpr(const ast::Expr& expr_wrapper,
 
       if (ctx.generic_instantiation_in_progress.find(inst_symbol) ==
           ctx.generic_instantiation_in_progress.end()) {
-        if (ctx.generic_instantiation_stack.size() >=
-            analysis::MonomorphizeContext::kMaxDepth) {
-          log_generic("instantiate-depth-limit");
-          ctx.ReportCodegenFailure();
-        } else if (!ctx.LookupProcModule(inst_symbol)) {
+        if (!ctx.LookupProcModule(inst_symbol)) {
           log_generic("instantiate-start");
           ctx.generic_instantiation_in_progress.insert(inst_symbol);
           ctx.generic_instantiation_stack.push_back(inst_symbol);
+          ctx.generic_instantiation_decl_stack.push_back(
+              GenericInstantiationFrame{base_symbol, inst_args});
           ProcIR inst_proc = LowerProcInstantiated(
               *generic_info->decl, generic_info->module_path, inst_symbol, *subst, ctx);
+          ctx.generic_instantiation_decl_stack.pop_back();
           ctx.generic_instantiation_stack.pop_back();
           ctx.generic_instantiation_in_progress.erase(inst_symbol);
           if (generic_info->decl->contract.has_value() &&

@@ -5,10 +5,37 @@ public procedure asyncCompletesReference(value: i32) -> AsyncReferenceFuture {
     return value
 }
 
+/// Exercises manual async stepping by resuming a suspended async value.
+public procedure runAsyncStateMachineManualResumeReference() -> bool {
+    let suspended: unique AsyncReferenceComputation = asyncSuspendsReference(18)
+    return if suspended is {
+        @Suspended { output } {
+            let resumed = suspended~>resume(output + 1)
+            if resumed is {
+                @Completed { value } {
+                    value == 19
+                }
+                @Suspended {
+                    false
+                }
+                @Failed {
+                    false
+                }
+            }
+        }
+        @Completed {
+            false
+        }
+        @Failed {
+            false
+        }
+    }
+}
+
 /// Exercises the Async StateMachine reference surface.
 public procedure runAsyncStateMachineReference() -> bool {
     let completed: AsyncReferenceFuture = asyncCompletesReference(17)
-    return if completed is {
+    let completed_ok: bool = if completed is {
         @Completed { value } {
             value == 17
         }
@@ -19,4 +46,5 @@ public procedure runAsyncStateMachineReference() -> bool {
             false
         }
     }
+    return completed_ok && runAsyncStateMachineManualResumeReference()
 }

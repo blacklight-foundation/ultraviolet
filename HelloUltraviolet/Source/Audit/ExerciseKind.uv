@@ -10,6 +10,9 @@ public modal ExerciseKind {
     @RejectedSource {
     }
 
+    @DiagnosticSource {
+    }
+
     @ArtifactBehavior {
     }
 
@@ -21,6 +24,7 @@ public type ExerciseKindValue =
     ExerciseKind@AcceptedSource |
     ExerciseKind@AcceptedProject |
     ExerciseKind@RejectedSource |
+    ExerciseKind@DiagnosticSource |
     ExerciseKind@ArtifactBehavior |
     ExerciseKind@ReferenceModel
 
@@ -34,6 +38,10 @@ public procedure acceptedProjectExerciseKind() -> ExerciseKindValue {
 
 public procedure rejectedSourceExerciseKind() -> ExerciseKindValue {
     return ExerciseKind@RejectedSource {}
+}
+
+public procedure diagnosticSourceExerciseKind() -> ExerciseKindValue {
+    return ExerciseKind@DiagnosticSource {}
 }
 
 public procedure artifactBehaviorExerciseKind() -> ExerciseKindValue {
@@ -51,6 +59,7 @@ public procedure exerciseKindEquals(left: ExerciseKindValue, right: ExerciseKind
                 @AcceptedSource { true }
                 @AcceptedProject { false }
                 @RejectedSource { false }
+                @DiagnosticSource { false }
                 @ArtifactBehavior { false }
                 @ReferenceModel { false }
             }
@@ -60,6 +69,7 @@ public procedure exerciseKindEquals(left: ExerciseKindValue, right: ExerciseKind
                 @AcceptedSource { false }
                 @AcceptedProject { true }
                 @RejectedSource { false }
+                @DiagnosticSource { false }
                 @ArtifactBehavior { false }
                 @ReferenceModel { false }
             }
@@ -69,6 +79,17 @@ public procedure exerciseKindEquals(left: ExerciseKindValue, right: ExerciseKind
                 @AcceptedSource { false }
                 @AcceptedProject { false }
                 @RejectedSource { true }
+                @DiagnosticSource { false }
+                @ArtifactBehavior { false }
+                @ReferenceModel { false }
+            }
+        }
+        @DiagnosticSource {
+            if right is {
+                @AcceptedSource { false }
+                @AcceptedProject { false }
+                @RejectedSource { false }
+                @DiagnosticSource { true }
                 @ArtifactBehavior { false }
                 @ReferenceModel { false }
             }
@@ -78,6 +99,7 @@ public procedure exerciseKindEquals(left: ExerciseKindValue, right: ExerciseKind
                 @AcceptedSource { false }
                 @AcceptedProject { false }
                 @RejectedSource { false }
+                @DiagnosticSource { false }
                 @ArtifactBehavior { true }
                 @ReferenceModel { false }
             }
@@ -87,6 +109,7 @@ public procedure exerciseKindEquals(left: ExerciseKindValue, right: ExerciseKind
                 @AcceptedSource { false }
                 @AcceptedProject { false }
                 @RejectedSource { false }
+                @DiagnosticSource { false }
                 @ArtifactBehavior { false }
                 @ReferenceModel { true }
             }

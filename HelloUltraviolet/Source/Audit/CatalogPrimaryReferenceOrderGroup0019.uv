@@ -1,0 +1,604 @@
+//! Catalog primary-reference ordering check group 0019.
+
+internal procedure catalogPrimaryReferenceOrderGroup0019() -> bool {
+    return catalogPrimaryReferencePrecedes(
+            "def.24.LLVMDeclType",
+            96771usize,
+            "def.24.LLVMEmitObj21",
+            91123usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.24.LLVMEmitObj21",
+            91123usize,
+            "def.24.LLVMHeader",
+            97171usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.24.LLVMHeader",
+            97171usize,
+            "def.24.LLVMInstrHelpers",
+            98026usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.24.LLVMInstrHelpers",
+            98026usize,
+            "def.24.LLVMOptionalArgumentAttrs",
+            97334usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.24.LLVMOptionalArgumentAttrs",
+            97334usize,
+            "def.24.LLVMPrimitiveTypeHelpers",
+            97443usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.24.LLVMPrimitiveTypeHelpers",
+            97443usize,
+            "def.24.LLVMText21Acceptance",
+            91063usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.24.LLVMText21Acceptance",
+            91063usize,
+            "def.24.LLVMToolchain",
+            97402usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.24.LLVMToolchain",
+            97402usize,
+            "def.24.LLVMTyJudg",
+            97430usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.24.LLVMTyJudg",
+            97430usize,
+            "def.24.LLVMUBAndPoisonAvoidance",
+            97352usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.24.LLVMUBAndPoisonAvoidance",
+            97352usize,
+            "def.24.LayoutJudgements",
+            91211usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.24.LayoutJudgements",
+            91211usize,
+            "def.24.LibraryImageJudg",
+            94489usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.24.LibraryImageJudg",
+            94489usize,
+            "def.24.LibraryImageStateDefinitions",
+            94502usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.24.LibraryImageStateDefinitions",
+            94502usize,
+            "def.24.LibraryStateSymbolDefinitions",
+            93931usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.24.LibraryStateSymbolDefinitions",
+            93931usize,
+            "def.24.LinkName",
+            92665usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.24.LinkName",
+            92665usize,
+            "def.24.LinkageDefinitions",
+            92981usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.24.LinkageDefinitions",
+            92981usize,
+            "def.24.LiteralEmitJudg",
+            99907usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.24.LiteralEmitJudg",
+            99907usize,
+            "def.24.LiteralSymbolHashing",
+            92592usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.24.LiteralSymbolHashing",
+            92592usize,
+            "def.24.LoopIterIRJudgement",
+            90530usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.24.LoopIterIRJudgement",
+            90530usize,
+            "def.24.LowerExprJudgementsAndRetType",
+            90011usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.24.LowerExprJudgementsAndRetType",
+            90011usize,
+            "def.24.LowerExprTotal",
+            90042usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.24.LowerExprTotal",
+            90042usize,
+            "def.24.LowerIRJudg",
+            98013usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.24.LowerIRJudg",
+            98013usize,
+            "def.24.LowerPanic",
+            95123usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.24.LowerPanic",
+            95123usize,
+            "def.24.MangleJudgementAndConstructors",
+            92516usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.24.MangleJudgementAndConstructors",
+            92516usize,
+            "def.24.MemoryInstructionHelpers",
+            98088usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.24.MemoryInstructionHelpers",
+            98088usize,
+            "def.24.MemoryIntrinsics",
+            97379usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.24.MemoryIntrinsics",
+            97379usize,
+            "def.24.MethodAndTransitionParams",
+            89868usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.24.MethodAndTransitionParams",
+            89868usize,
+            "def.24.ModuleItems",
+            90893usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.24.ModuleItems",
+            90893usize,
+            "def.24.NonRecordFOk",
+            95323usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.24.NonRecordFOk",
+            95323usize,
+            "def.24.OpaquePointerModel",
+            97186usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.24.OpaquePointerModel",
+            97186usize,
+            "def.24.PanicCheck",
+            95110usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.24.PanicCheck",
+            95110usize,
+            "def.24.PanicOutAddr",
+            94968usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.24.PanicOutAddr",
+            94968usize,
+            "def.24.PanicOutCodegenParams",
+            89854usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.24.PanicOutCodegenParams",
+            89854usize,
+            "def.24.PanicReasonCodes",
+            95048usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.24.PanicReasonCodes",
+            95048usize,
+            "def.24.PanicRecordAndPanicOut",
+            92487usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.24.PanicRecordAndPanicOut",
+            92487usize,
+            "def.24.PanicRecordInit",
+            94408usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.24.PanicRecordInit",
+            94408usize,
+            "def.24.PanicRecordOf",
+            94981usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.24.PanicRecordOf",
+            94981usize,
+            "def.24.PanicSites",
+            95073usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.24.PanicSites",
+            95073usize,
+            "def.24.ParamInitHelpers",
+            98210usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.24.ParamInitHelpers",
+            98210usize,
+            "def.24.PathOfTypeAndClassPath",
+            92571usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.24.PathOfTypeAndClassPath",
+            92571usize,
+            "def.24.PathSymbolHelpers",
+            92532usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.24.PathSymbolHelpers",
+            92532usize,
+            "def.24.PhiLowerForm",
+            99113usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.24.PhiLowerForm",
+            99113usize,
+            "def.24.PointerPrimitiveSizeAndAlignment",
+            91156usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.24.PointerPrimitiveSizeAndAlignment",
+            91156usize,
+            "def.24.PoisonFlagStorage",
+            100124usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.24.PoisonFlagStorage",
+            100124usize,
+            "def.24.PoisonJudg",
+            100083usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.24.PoisonJudg",
+            100083usize,
+            "def.24.PoisonSet",
+            100096usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.24.PoisonSet",
+            100096usize,
+            "def.24.ProcSymbol",
+            98391usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.24.ProcSymbol",
+            98391usize,
+            "def.24.ProcessInvocationNormalization",
+            94373usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.24.ProcessInvocationNormalization",
+            94373usize,
+            "def.24.ProjectInitializationItems",
+            94054usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.24.ProjectInitializationItems",
+            94054usize,
+            "def.24.PtrType",
+            98596usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.24.PtrType",
+            98596usize,
+            "def.24.ReactorJudg",
+            96950usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.24.ReactorJudg",
+            96950usize,
+            "def.24.RecordType",
+            95181usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.24.RecordType",
+            95181usize,
+            "def.24.RefSyms",
+            90796usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.24.RefSyms",
+            90796usize,
+            "def.24.ReleaseValue",
+            95211usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.24.ReleaseValue",
+            95211usize,
+            "def.24.ResponsibleBinding",
+            95138usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.24.ResponsibleBinding",
+            95138usize,
+            "def.24.Rev",
+            93776usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.24.Rev",
+            93776usize,
+            "def.24.RuntimeDeclJudg",
+            96664usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.24.RuntimeDeclJudg",
+            96664usize,
+            "def.24.RuntimeDeclarationCoverage",
+            96800usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.24.RuntimeDeclarationCoverage",
+            96800usize,
+            "def.24.RuntimeIfcJudg",
+            95797usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.24.RuntimeIfcJudg",
+            95797usize,
+            "def.24.RuntimeMethodAndSymbolSets",
+            96677usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.24.RuntimeMethodAndSymbolSets",
+            96677usize,
+            "def.24.RuntimeSigBuiltinModalAndMethodDispatch",
+            96752usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.24.RuntimeSigBuiltinModalAndMethodDispatch",
+            96752usize,
+            "def.24.ScopedRawAndHostBodySymbols",
+            92611usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.24.ScopedRawAndHostBodySymbols",
+            92611usize,
+            "def.24.SeqIR",
+            89886usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.24.SeqIR",
+            89886usize,
+            "def.24.SeqIRList",
+            93669usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.24.SeqIRList",
+            93669usize,
+            "def.24.StackFrameForm",
+            91886usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.24.StackFrameForm",
+            91886usize,
+            "def.24.StateRefJudg",
+            98145usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.24.StateRefJudg",
+            98145usize,
+            "def.24.StaticAddr",
+            93604usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.24.StaticAddr",
+            93604usize,
+            "def.24.StaticBindInfo",
+            93656usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.24.StaticBindInfo",
+            93656usize,
+            "def.24.StaticBindList",
+            93418usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.24.StaticBindList",
+            93418usize,
+            "def.24.StaticBindTypes",
+            93405usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.24.StaticBindTypes",
+            93405usize,
+            "def.24.StaticBinding",
+            93431usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.24.StaticBinding",
+            93431usize,
+            "def.24.StaticItemOf",
+            93578usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.24.StaticItemOf",
+            93578usize,
+            "def.24.StaticItems",
+            93565usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.24.StaticItems",
+            93565usize,
+            "def.24.StaticName",
+            93390usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.24.StaticName",
+            93390usize,
+            "def.24.StaticStoreIR",
+            93683usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.24.StaticStoreIR",
+            93683usize,
+            "def.24.StaticSym",
+            93444usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.24.StaticSym",
+            93444usize,
+            "def.24.StaticSymPath",
+            93591usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.24.StaticSymPath",
+            93591usize,
+            "def.24.StaticType",
+            93643usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.24.StaticType",
+            93643usize,
+            "def.24.StaticTypeBySymbol",
+            98131usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.24.StaticTypeBySymbol",
+            98131usize,
+            "def.24.StringBuiltinSymbols",
+            96513usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.24.StringBuiltinSymbols",
+            96513usize,
+            "def.24.StringBytesAndRawBytes",
+            99920usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.24.StringBytesAndRawBytes",
+            99920usize,
+            "def.24.StringBytesBuiltinMethodSets",
+            96497usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.24.StringBytesBuiltinMethodSets",
+            96497usize,
+            "def.24.StructElems",
+            97479usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.24.StructElems",
+            97479usize,
+            "def.24.StructuredIRLoweringForms",
+            98976usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.24.StructuredIRLoweringForms",
+            98976usize,
+            "def.24.TaggedElems",
+            97497usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.24.TaggedElems",
+            97497usize,
+            "def.24.UniqueEmits",
+            90871usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.24.UniqueEmits",
+            90871usize,
+            "def.24.VTableEmissionHelpers",
+            99849usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.24.VTableEmissionHelpers",
+            99849usize,
+            "def.24.VTableJudg",
+            99836usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.24.VTableJudg",
+            99836usize,
+            "def.24.ValidValueFallback",
+            91485usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.24.ValidValueFallback",
+            91485usize,
+            "def.24.ValidValueJudgement",
+            91401usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.24.ValidValueJudgement",
+            91401usize,
+            "def.24.ValueBitsPerm",
+            91549usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.24.ValueBitsPerm",
+            91549usize,
+            "def.24.WritePanicRecord",
+            94994usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.24.WritePanicRecord",
+            94994usize,
+            "def.ASTFile",
+            31875usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.ASTFile",
+            31875usize,
+            "def.ASTItemSet",
+            10494usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.ASTItemSet",
+            10494usize,
+            "def.ASTModule",
+            31858usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.ASTModule",
+            31858usize,
+            "def.ASTModuleOfProjectPath",
+            32129usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.ASTModuleOfProjectPath",
+            32129usize,
+            "def.ASTNodeUniverse",
+            10438usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.ASTNodeUniverse",
+            10438usize,
+            "def.ASTParseCtorDefaults",
+            10454usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.ASTParseCtorDefaults",
+            10454usize,
+            "def.AbortOnErrorCount",
+            899usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.AbortOnErrorCount",
+            899usize,
+            "def.AbsPath",
+            3253usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "def.AbsPath",
+            3253usize,
+            "def.AccessOk",
+            15441usize
+        )
+}

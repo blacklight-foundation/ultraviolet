@@ -11,8 +11,8 @@ public procedure validatedAbstractionAndPolymorphismOpaqueTypesObligations() -> 
         "grammar.14.OpaqueTypes",
         51014usize,
         "HelloUltraviolet::Reference::Polymorphism",
-        "runPolymorphismAssociatedTypesReference",
-        "Source/Reference/Polymorphism/AssociatedTypes.uv"
+        "runPolymorphismOpaqueTypesReference",
+        "Source/Reference/Polymorphism/OpaqueTypes.uv"
     ) {
         count = count + 1usize
     }
@@ -20,8 +20,8 @@ public procedure validatedAbstractionAndPolymorphismOpaqueTypesObligations() -> 
         "req.14.OpaqueTypesComposeAsTypeForms",
         51029usize,
         "HelloUltraviolet::Reference::Polymorphism",
-        "runPolymorphismAssociatedTypesReference",
-        "Source/Reference/Polymorphism/AssociatedTypes.uv"
+        "runPolymorphismOpaqueTypesReference",
+        "Source/Reference/Polymorphism/OpaqueTypes.uv"
     ) {
         count = count + 1usize
     }
@@ -29,8 +29,8 @@ public procedure validatedAbstractionAndPolymorphismOpaqueTypesObligations() -> 
         "rule.14.Parse-Opaque-Type",
         51044usize,
         "HelloUltraviolet::Reference::Polymorphism",
-        "runPolymorphismAssociatedTypesReference",
-        "Source/Reference/Polymorphism/AssociatedTypes.uv"
+        "runPolymorphismOpaqueTypesReference",
+        "Source/Reference/Polymorphism/OpaqueTypes.uv"
     ) {
         count = count + 1usize
     }
@@ -38,8 +38,8 @@ public procedure validatedAbstractionAndPolymorphismOpaqueTypesObligations() -> 
         "def.14.TypeOpaqueAst",
         51062usize,
         "HelloUltraviolet::Reference::Polymorphism",
-        "runPolymorphismAssociatedTypesReference",
-        "Source/Reference/Polymorphism/AssociatedTypes.uv"
+        "runPolymorphismOpaqueTypesReference",
+        "Source/Reference/Polymorphism/OpaqueTypes.uv"
     ) {
         count = count + 1usize
     }
@@ -47,8 +47,8 @@ public procedure validatedAbstractionAndPolymorphismOpaqueTypesObligations() -> 
         "def.14.TypeOpaqueForm",
         51075usize,
         "HelloUltraviolet::Reference::Polymorphism",
-        "runPolymorphismAssociatedTypesReference",
-        "Source/Reference/Polymorphism/AssociatedTypes.uv"
+        "runPolymorphismOpaqueTypesReference",
+        "Source/Reference/Polymorphism/OpaqueTypes.uv"
     ) {
         count = count + 1usize
     }
@@ -56,17 +56,17 @@ public procedure validatedAbstractionAndPolymorphismOpaqueTypesObligations() -> 
         "rule.14.WF-Opaque",
         51090usize,
         "HelloUltraviolet::Reference::Polymorphism",
-        "runPolymorphismAssociatedTypesReference",
-        "Source/Reference/Polymorphism/AssociatedTypes.uv"
+        "runPolymorphismOpaqueTypesReference",
+        "Source/Reference/Polymorphism/OpaqueTypes.uv"
     ) {
         count = count + 1usize
     }
-    if acceptedObligationEntryMatches(
+    if rejectedSourceObligationEntryMatches(
         "rule.14.WF-Opaque-Err",
         51106usize,
-        "HelloUltraviolet::Reference::Polymorphism",
-        "runPolymorphismAssociatedTypesReference",
-        "Source/Reference/Polymorphism/AssociatedTypes.uv"
+        "HelloUltraviolet::Fixtures::RejectedSource",
+        "validatedPolymorphismRejectedSourceFixtureCount",
+        "Fixtures/RejectedSource/Polymorphism/OpaqueUndefinedClassType/Source/Main.uv"
     ) {
         count = count + 1usize
     }
@@ -74,8 +74,8 @@ public procedure validatedAbstractionAndPolymorphismOpaqueTypesObligations() -> 
         "rule.14.T-Equiv-Opaque",
         51122usize,
         "HelloUltraviolet::Reference::Polymorphism",
-        "runPolymorphismAssociatedTypesReference",
-        "Source/Reference/Polymorphism/AssociatedTypes.uv"
+        "runPolymorphismOpaqueTypesReference",
+        "Source/Reference/Polymorphism/OpaqueTypes.uv"
     ) {
         count = count + 1usize
     }
@@ -83,8 +83,8 @@ public procedure validatedAbstractionAndPolymorphismOpaqueTypesObligations() -> 
         "rule.14.T-Opaque-Return",
         51138usize,
         "HelloUltraviolet::Reference::Polymorphism",
-        "runPolymorphismAssociatedTypesReference",
-        "Source/Reference/Polymorphism/AssociatedTypes.uv"
+        "runPolymorphismOpaqueTypesReference",
+        "Source/Reference/Polymorphism/OpaqueTypes.uv"
     ) {
         count = count + 1usize
     }
@@ -92,17 +92,17 @@ public procedure validatedAbstractionAndPolymorphismOpaqueTypesObligations() -> 
         "rule.14.T-Opaque-Project",
         51154usize,
         "HelloUltraviolet::Reference::Polymorphism",
-        "runPolymorphismAssociatedTypesReference",
-        "Source/Reference/Polymorphism/AssociatedTypes.uv"
+        "runPolymorphismOpaqueTypesReference",
+        "Source/Reference/Polymorphism/OpaqueTypes.uv"
     ) {
         count = count + 1usize
     }
-    if acceptedObligationEntryMatches(
+    if rejectedSourceObligationEntryMatches(
         "req.14.OpaqueEquivalenceAndInterfaceExposure",
         51170usize,
-        "HelloUltraviolet::Reference::Polymorphism",
-        "runPolymorphismAssociatedTypesReference",
-        "Source/Reference/Polymorphism/AssociatedTypes.uv"
+        "HelloUltraviolet::Fixtures::RejectedSource",
+        "validatedPolymorphismRejectedSourceFixtureCount",
+        "Fixtures/RejectedSource/Polymorphism/OpaqueMemberNotDefined/Source/Main.uv"
     ) {
         count = count + 1usize
     }
@@ -110,8 +110,8 @@ public procedure validatedAbstractionAndPolymorphismOpaqueTypesObligations() -> 
         "req.14.OpaqueTypesNoRuntimeWrapper",
         51185usize,
         "HelloUltraviolet::Reference::Polymorphism",
-        "runPolymorphismAssociatedTypesReference",
-        "Source/Reference/Polymorphism/AssociatedTypes.uv"
+        "runPolymorphismOpaqueTypesReference",
+        "Source/Reference/Polymorphism/OpaqueTypes.uv"
     ) {
         count = count + 1usize
     }
@@ -119,17 +119,17 @@ public procedure validatedAbstractionAndPolymorphismOpaqueTypesObligations() -> 
         "req.14.OpaqueTypesLowerAsConcrete",
         51200usize,
         "HelloUltraviolet::Reference::Polymorphism",
-        "runPolymorphismAssociatedTypesReference",
-        "Source/Reference/Polymorphism/AssociatedTypes.uv"
+        "runPolymorphismOpaqueTypesReference",
+        "Source/Reference/Polymorphism/OpaqueTypes.uv"
     ) {
         count = count + 1usize
     }
-    if acceptedObligationEntryMatches(
+    if rejectedSourceObligationEntryMatches(
         "diag.14.OpaqueTypes",
         51215usize,
-        "HelloUltraviolet::Reference::Polymorphism",
-        "runPolymorphismAssociatedTypesReference",
-        "Source/Reference/Polymorphism/AssociatedTypes.uv"
+        "HelloUltraviolet::Fixtures::RejectedSource",
+        "validatedPolymorphismRejectedSourceFixtureCount",
+        "Fixtures/RejectedSource/Polymorphism/OpaqueReturnMissingImplementation/Source/Main.uv"
     ) {
         count = count + 1usize
     }

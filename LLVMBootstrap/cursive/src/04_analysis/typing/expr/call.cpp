@@ -12,6 +12,7 @@
 #include <cctype>
 #include <cstdint>
 #include <map>
+#include <memory>
 #include <optional>
 #include <string>
 #include <unordered_map>
@@ -121,6 +122,7 @@ struct CallLookupIndex {
   const void* sigma_key = nullptr;
   const void* module_storage_key = nullptr;
   std::size_t module_count = 0;
+  PathKey current_module_key;
   std::map<PathKey, const ast::ASTModule*> modules_by_path;
   std::unordered_map<const ast::ASTModule*,
                      std::unordered_map<IdKey, std::vector<ProcLikeLookupEntry>>>
@@ -138,9 +140,11 @@ static const CallLookupIndex& GetCallLookupIndex(const ScopeContext& ctx) {
   const void* sigma_key = static_cast<const void*>(sigma_ptr);
   const void* module_storage_key =
       sigma.mods.empty() ? nullptr : static_cast<const void*>(sigma.mods.data());
+  const PathKey current_module_key = PathKeyOf(ctx.current_module);
   if (index.sigma_key == sigma_key &&
       index.module_storage_key == module_storage_key &&
-      index.module_count == sigma.mods.size()) {
+      index.module_count == sigma.mods.size() &&
+      index.current_module_key == current_module_key) {
     return index;
   }
 
@@ -148,6 +152,7 @@ static const CallLookupIndex& GetCallLookupIndex(const ScopeContext& ctx) {
   index.sigma_key = sigma_key;
   index.module_storage_key = module_storage_key;
   index.module_count = sigma.mods.size();
+  index.current_module_key = current_module_key;
   index.procedures_by_module.reserve(sigma.mods.size());
   index.externs_by_module.reserve(sigma.mods.size());
 
@@ -247,7 +252,7 @@ static std::vector<ProcLikeLookupEntry> FindProceduresInModule(
 
 struct CalleeProcedureLookupResult {
   const ast::ProcedureDecl* proc = nullptr;
-  std::optional<ast::ProcedureDecl> proc_view;
+  std::shared_ptr<ast::ProcedureDecl> proc_view;
   bool is_comptime_proc = false;
   ast::ModulePath origin;
   std::string name;
@@ -332,8 +337,9 @@ static std::optional<CalleeProcedureLookupResult> LookupProcedureForCallee(
   if (proc->proc) {
     result.proc = proc->proc;
   } else if (proc->comptime_proc) {
-    result.proc_view = AsProcedureDecl(*proc->comptime_proc);
-    result.proc = &*result.proc_view;
+    result.proc_view =
+        std::make_shared<ast::ProcedureDecl>(AsProcedureDecl(*proc->comptime_proc));
+    result.proc = result.proc_view.get();
     result.is_comptime_proc = true;
   }
   result.origin = *origin;
@@ -914,7 +920,7 @@ class ProcedureKeyAccessSummaryBuilder {
     }
 
     const auto lookup = LookupProcedureForCallee(ctx_, call.callee);
-    if (!lookup.has_value() || !lookup->proc || lookup->proc_view.has_value()) {
+    if (!lookup.has_value() || !lookup->proc || lookup->proc_view) {
       // Extern / unresolved / compiler-synthesized callees remain unknown.
       summary.unknown = true;
       return;
@@ -1234,7 +1240,7 @@ static void EmitUnknownCalleeAccessWarningIfNeeded(
   }
 
   const auto lookup = LookupProcedureForCallee(ctx, node.callee);
-  if (!lookup.has_value() || !lookup->proc || lookup->proc_view.has_value()) {
+  if (!lookup.has_value() || !lookup->proc || lookup->proc_view) {
     return;
   }
 

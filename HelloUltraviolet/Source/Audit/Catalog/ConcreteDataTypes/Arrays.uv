@@ -214,21 +214,21 @@ public procedure validatedConcreteDataTypesArraysObligations() -> usize {
     ) {
         count = count + 1usize
     }
-    if acceptedObligationEntryMatches(
+    if rejectedSourceObligationEntryMatches(
         "Index-Array-NonConst-Err",
         36595usize,
-        "HelloUltraviolet::Reference::DataTypes",
-        "runDataTypesArraysReference",
-        "Source/Reference/DataTypes/Arrays.uv"
+        "HelloUltraviolet::Fixtures::RejectedSource",
+        "validatedExpressionsRejectedSourceFixtureCount",
+        "Fixtures/RejectedSource/Expressions/ArrayIndexNonConst/Source/Main.uv"
     ) {
         count = count + 1usize
     }
-    if acceptedObligationEntryMatches(
+    if rejectedSourceObligationEntryMatches(
         "Index-Array-OOB-Err",
         36613usize,
-        "HelloUltraviolet::Reference::DataTypes",
-        "runDataTypesArraysReference",
-        "Source/Reference/DataTypes/Arrays.uv"
+        "HelloUltraviolet::Fixtures::RejectedSource",
+        "validatedExpressionsRejectedSourceFixtureCount",
+        "Fixtures/RejectedSource/Expressions/ArrayIndexOutOfBounds/Source/Main.uv"
     ) {
         count = count + 1usize
     }

@@ -9,7 +9,7 @@ extern "C" {
     public procedure importedReferenceArray(value: [i32; 2]) -> i32
     public procedure importedReferencePointer(value: *mut i32) -> i32
     public procedure importedReferenceFunction(value: FFIFunctionPointer) -> i32
-    public procedure importedReferenceDroppingRecord(value: FFIDroppingRecord) -> i32
+    public procedure importedReferenceDroppingRecord(move value: FFIDroppingRecord) -> i32
 }
 
 /// Foreign-visible primitive provider used by the imported primitive procedure.
@@ -84,6 +84,13 @@ public procedure ffiImportedReferenceFunctionProvider(value: FFIFunctionPointer)
     return value(7)
 }
 
+/// Foreign-visible drop-bearing record provider used by the imported by-value procedure.
+[[export("C")]]
+[[mangle("importedReferenceDroppingRecord")]]
+public procedure ffiImportedReferenceDroppingRecordProvider(move value: FFIDroppingRecord) -> i32 {
+    return move value.value
+}
+
 internal procedure callImportedReferencePrimitive(value: i32) -> i32 {
     return unsafe { importedReferencePrimitive(value) }
 }
@@ -120,6 +127,10 @@ internal procedure callImportedReferenceFunction(callback: FFIFunctionPointer) -
     return unsafe { importedReferenceFunction(callback) }
 }
 
+internal procedure callImportedReferenceDroppingRecord(move value: FFIDroppingRecord) -> i32 {
+    return unsafe { importedReferenceDroppingRecord(move value) }
+}
+
 /// Exercises the FFI ExternProcedures reference surface.
 public procedure runFFIExternProceduresReference() -> bool {
     let record_value: FFIPrimitiveRecord = ffiPrimitiveRecord(9, 2u32)
@@ -128,6 +139,7 @@ public procedure runFFIExternProceduresReference() -> bool {
     let generic_enum: FFIGenericEnum<i32> = FFIGenericEnum::Value(19)
     let array_value: [i32; 2] = [3, 5]
     let pointer_value: *mut i32 = null
+    let dropping_record: FFIDroppingRecord = FFIDroppingRecord { value: 23 }
 
     let primitive_ok: bool = callImportedReferencePrimitive(10) == 11
     let record_ok: bool = callImportedReferenceRecord(record_value) == 11
@@ -137,6 +149,8 @@ public procedure runFFIExternProceduresReference() -> bool {
     let array_ok: bool = callImportedReferenceArray(array_value) == 8
     let pointer_ok: bool = callImportedReferencePointer(pointer_value) == 0
     let function_ok: bool = callImportedReferenceFunction(ffiCallbackReference) == 8
+    let dropping_record_ok: bool =
+        callImportedReferenceDroppingRecord(move dropping_record) == 23
 
     return primitive_ok &&
         record_ok &&
@@ -145,5 +159,6 @@ public procedure runFFIExternProceduresReference() -> bool {
         generic_enum_ok &&
         array_ok &&
         pointer_ok &&
-        function_ok
+        function_ok &&
+        dropping_record_ok
 }

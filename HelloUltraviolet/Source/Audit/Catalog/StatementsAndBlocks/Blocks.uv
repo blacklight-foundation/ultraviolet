@@ -52,12 +52,12 @@ public procedure validatedStatementsAndBlocksBlocksObligations() -> usize {
     ) {
         count = count + 1usize
     }
-    if acceptedObligationEntryMatches(
+    if rejectedSourceObligationEntryMatches(
         "rule.18.Parse-Statement-Err",
         68100usize,
-        "HelloUltraviolet::Reference::Statements",
-        "runStatementsBlocksReference",
-        "Source/Reference/Statements/Blocks.uv"
+        "HelloUltraviolet::Fixtures::RejectedSource",
+        "validatedStatementsRejectedSourceFixtureCount",
+        "Fixtures/RejectedSource/Statements/StatementParseError/Source/Main.uv"
     ) {
         count = count + 1usize
     }
@@ -88,12 +88,12 @@ public procedure validatedStatementsAndBlocksBlocksObligations() -> usize {
     ) {
         count = count + 1usize
     }
-    if acceptedObligationEntryMatches(
+    if rejectedSourceObligationEntryMatches(
         "rule.18.ConsumeTerminatorOpt-Req-No",
         68161usize,
-        "HelloUltraviolet::Reference::Statements",
-        "runStatementsBlocksReference",
-        "Source/Reference/Statements/Blocks.uv"
+        "HelloUltraviolet::Fixtures::RejectedSource",
+        "validatedStatementsRejectedSourceFixtureCount",
+        "Fixtures/RejectedSource/Statements/MissingRequiredTerminator/Source/Main.uv"
     ) {
         count = count + 1usize
     }
@@ -151,12 +151,12 @@ public procedure validatedStatementsAndBlocksBlocksObligations() -> usize {
     ) {
         count = count + 1usize
     }
-    if acceptedObligationEntryMatches(
+    if rejectedSourceObligationEntryMatches(
         "def.18.SyncStmt",
         68271usize,
-        "HelloUltraviolet::Reference::Statements",
-        "runStatementsBlocksReference",
-        "Source/Reference/Statements/Blocks.uv"
+        "HelloUltraviolet::Fixtures::RejectedSource",
+        "validatedStatementsRejectedSourceFixtureCount",
+        "Fixtures/RejectedSource/Statements/SyncStatementRecovery/Source/Main.uv"
     ) {
         count = count + 1usize
     }
@@ -232,12 +232,12 @@ public procedure validatedStatementsAndBlocksBlocksObligations() -> usize {
     ) {
         count = count + 1usize
     }
-    if acceptedObligationEntryMatches(
+    if referenceModelObligationEntryMatches(
         "rule.18.BlockInfo-Res-Err",
         68406usize,
-        "HelloUltraviolet::Reference::Statements",
-        "runStatementsBlocksReference",
-        "Source/Reference/Statements/Blocks.uv"
+        "HelloUltraviolet::Audit",
+        "specClarificationLedgerIsIndexed",
+        "Source/Audit/SpecClarifications.uv"
     ) {
         count = count + 1usize
     }
@@ -610,12 +610,12 @@ public procedure validatedStatementsAndBlocksBlocksObligations() -> usize {
     ) {
         count = count + 1usize
     }
-    if acceptedObligationEntryMatches(
+    if rejectedSourceObligationEntryMatches(
         "diag.18.Blocks",
         69064usize,
-        "HelloUltraviolet::Reference::Statements",
-        "runStatementsBlocksReference",
-        "Source/Reference/Statements/Blocks.uv"
+        "HelloUltraviolet::Fixtures::RejectedSource",
+        "validatedStatementsRejectedSourceFixtureCount",
+        "Fixtures/RejectedSource/Statements/BlocksDiagnostic/Source/Main.uv"
     ) {
         count = count + 1usize
     }

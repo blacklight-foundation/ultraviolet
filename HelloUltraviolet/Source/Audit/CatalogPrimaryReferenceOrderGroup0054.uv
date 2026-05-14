@@ -1,0 +1,604 @@
+//! Catalog primary-reference ordering check group 0054.
+
+internal procedure catalogPrimaryReferenceOrderGroup0054() -> bool {
+    return catalogPrimaryReferencePrecedes(
+            "rule.20.GpuSafeType-Err",
+            76164usize,
+            "rule.20.KeyBlock-GPU-Err",
+            76513usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.20.KeyBlock-GPU-Err",
+            76513usize,
+            "rule.20.Lower-Cancel-New",
+            78111usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.20.Lower-Cancel-New",
+            78111usize,
+            "rule.20.Lower-Cancel-Request",
+            78126usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.20.Lower-Cancel-Request",
+            78126usize,
+            "rule.20.Lower-Cancel-Wait",
+            78141usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.20.Lower-Cancel-Wait",
+            78141usize,
+            "rule.20.Lower-Deterministic-Dispatch",
+            78493usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.20.Lower-Deterministic-Dispatch",
+            78493usize,
+            "rule.20.Lower-Domain-CPU",
+            76547usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.20.Lower-Domain-CPU",
+            76547usize,
+            "rule.20.Lower-Domain-GPU",
+            76562usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.20.Lower-Domain-GPU",
+            76562usize,
+            "rule.20.Lower-Domain-Inline",
+            76577usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.20.Lower-Domain-Inline",
+            76577usize,
+            "rule.20.Lower-Expr-Dispatch",
+            77821usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.20.Lower-Expr-Dispatch",
+            77821usize,
+            "rule.20.Lower-Expr-GpuBarrier",
+            76608usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.20.Lower-Expr-GpuBarrier",
+            76608usize,
+            "rule.20.Lower-Expr-Parallel",
+            75679usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.20.Lower-Expr-Parallel",
+            75679usize,
+            "rule.20.Lower-Expr-Parallel-GPU",
+            76592usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.20.Lower-Expr-Parallel-GPU",
+            76592usize,
+            "rule.20.Lower-Expr-Spawn",
+            77214usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.20.Lower-Expr-Spawn",
+            77214usize,
+            "rule.20.Lower-Nested-Parallel",
+            78509usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.20.Lower-Nested-Parallel",
+            78509usize,
+            "rule.20.Lower-Parallel-Join-Panic",
+            78322usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.20.Lower-Parallel-Join-Panic",
+            78322usize,
+            "rule.20.Parallel-Closure-Capture-Const",
+            76739usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.20.Parallel-Closure-Capture-Const",
+            76739usize,
+            "rule.20.Parallel-Closure-Capture-OuterMove-Err",
+            76817usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.20.Parallel-Closure-Capture-OuterMove-Err",
+            76817usize,
+            "rule.20.Parallel-Closure-Capture-Shared",
+            76755usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.20.Parallel-Closure-Capture-Shared",
+            76755usize,
+            "rule.20.Parallel-Closure-Capture-Unique-Err",
+            76771usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.20.Parallel-Closure-Capture-Unique-Err",
+            76771usize,
+            "rule.20.Parallel-Closure-Capture-Unique-Move-Ok",
+            76801usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.20.Parallel-Closure-Capture-Unique-Move-Ok",
+            76801usize,
+            "rule.20.Parallel-Domain-Param-Err",
+            75508usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.20.Parallel-Domain-Param-Err",
+            75508usize,
+            "rule.20.Parallel-Escaping-Closure-Spawn-Err",
+            76833usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.20.Parallel-Escaping-Closure-Spawn-Err",
+            76833usize,
+            "rule.20.T-Dispatch",
+            77366usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.20.T-Dispatch",
+            77366usize,
+            "rule.20.T-Dispatch-Reduce",
+            77382usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.20.T-Dispatch-Reduce",
+            77382usize,
+            "rule.20.T-GPU-Dispatch",
+            77398usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.20.T-GPU-Dispatch",
+            77398usize,
+            "rule.20.T-GPU-Dispatch-Reduce",
+            77414usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.20.T-GPU-Dispatch-Reduce",
+            77414usize,
+            "rule.20.T-GpuIntrinsic",
+            76212usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.20.T-GpuIntrinsic",
+            76212usize,
+            "rule.20.T-Parallel",
+            75475usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.20.T-Parallel",
+            75475usize,
+            "rule.20.T-Spawn",
+            77128usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.20.T-Spawn",
+            77128usize,
+            "rule.20.WorkgroupSize-Err",
+            76529usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.20.WorkgroupSize-Err",
+            76529usize,
+            "rule.21.A-Closure-Yield-Keys-Err",
+            83019usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.21.A-Closure-Yield-Keys-Err",
+            83019usize,
+            "rule.21.All-In-Err",
+            80828usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.21.All-In-Err",
+            80828usize,
+            "rule.21.All-Out-Err",
+            80810usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.21.All-Out-Err",
+            80810usize,
+            "rule.21.AllLoop-AllCompleted",
+            81690usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.21.AllLoop-AllCompleted",
+            81690usize,
+            "rule.21.AllLoop-Continue",
+            81726usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.21.AllLoop-Continue",
+            81726usize,
+            "rule.21.AllLoop-Failed",
+            81708usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.21.AllLoop-Failed",
+            81708usize,
+            "rule.21.AllStep-Complete",
+            81616usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.21.AllStep-Complete",
+            81616usize,
+            "rule.21.AllStep-Failed",
+            81635usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.21.AllStep-Failed",
+            81635usize,
+            "rule.21.AllStep-Resume",
+            81655usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.21.AllStep-Resume",
+            81655usize,
+            "rule.21.Async-Capture-Err",
+            82599usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.21.Async-Capture-Err",
+            82599usize,
+            "rule.21.CancelAll",
+            81417usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.21.CancelAll",
+            81417usize,
+            "rule.21.EvalSigma-All",
+            81745usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.21.EvalSigma-All",
+            81745usize,
+            "rule.21.EvalSigma-Chain-Create",
+            82092usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.21.EvalSigma-Chain-Create",
+            82092usize,
+            "rule.21.EvalSigma-Chain-Resume-Chained",
+            82128usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.21.EvalSigma-Chain-Resume-Chained",
+            82128usize,
+            "rule.21.EvalSigma-Chain-Resume-Source-Complete",
+            82110usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.21.EvalSigma-Chain-Resume-Source-Complete",
+            82110usize,
+            "rule.21.EvalSigma-Chain-Resume-Source-Failed",
+            82146usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.21.EvalSigma-Chain-Resume-Source-Failed",
+            82146usize,
+            "rule.21.EvalSigma-Filter-Create",
+            81875usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.21.EvalSigma-Filter-Create",
+            81875usize,
+            "rule.21.EvalSigma-Filter-Resume-Complete",
+            81930usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.21.EvalSigma-Filter-Resume-Complete",
+            81930usize,
+            "rule.21.EvalSigma-Filter-Resume-Pass",
+            81893usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.21.EvalSigma-Filter-Resume-Pass",
+            81893usize,
+            "rule.21.EvalSigma-Filter-Resume-Skip",
+            81911usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.21.EvalSigma-Filter-Resume-Skip",
+            81911usize,
+            "rule.21.EvalSigma-Fold-Create",
+            82020usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.21.EvalSigma-Fold-Create",
+            82020usize,
+            "rule.21.EvalSigma-Fold-Resume-Accumulate",
+            82038usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.21.EvalSigma-Fold-Resume-Accumulate",
+            82038usize,
+            "rule.21.EvalSigma-Fold-Resume-Complete",
+            82056usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.21.EvalSigma-Fold-Resume-Complete",
+            82056usize,
+            "rule.21.EvalSigma-Fold-Resume-Failed",
+            82074usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.21.EvalSigma-Fold-Resume-Failed",
+            82074usize,
+            "rule.21.EvalSigma-Map-Create",
+            81803usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.21.EvalSigma-Map-Create",
+            81803usize,
+            "rule.21.EvalSigma-Map-Resume-Complete",
+            81839usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.21.EvalSigma-Map-Resume-Complete",
+            81839usize,
+            "rule.21.EvalSigma-Map-Resume-Failed",
+            81857usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.21.EvalSigma-Map-Resume-Failed",
+            81857usize,
+            "rule.21.EvalSigma-Map-Resume-Yield",
+            81821usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.21.EvalSigma-Map-Resume-Yield",
+            81821usize,
+            "rule.21.EvalSigma-Race-Return",
+            81292usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.21.EvalSigma-Race-Return",
+            81292usize,
+            "rule.21.EvalSigma-Race-Stream",
+            81383usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.21.EvalSigma-Race-Stream",
+            81383usize,
+            "rule.21.EvalSigma-Race-Stream-Resume",
+            81513usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.21.EvalSigma-Race-Stream-Resume",
+            81513usize,
+            "rule.21.EvalSigma-Sync-Completed",
+            81094usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.21.EvalSigma-Sync-Completed",
+            81094usize,
+            "rule.21.EvalSigma-Sync-Failed",
+            81112usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.21.EvalSigma-Sync-Failed",
+            81112usize,
+            "rule.21.EvalSigma-Sync-Suspended",
+            81075usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.21.EvalSigma-Sync-Suspended",
+            81075usize,
+            "rule.21.EvalSigma-Take-Create",
+            81948usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.21.EvalSigma-Take-Create",
+            81948usize,
+            "rule.21.EvalSigma-Take-Resume-Done",
+            81984usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.21.EvalSigma-Take-Resume-Done",
+            81984usize,
+            "rule.21.EvalSigma-Take-Resume-Source-Complete",
+            82002usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.21.EvalSigma-Take-Resume-Source-Complete",
+            82002usize,
+            "rule.21.EvalSigma-Take-Resume-Yield",
+            81966usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.21.EvalSigma-Take-Resume-Yield",
+            81966usize,
+            "rule.21.EvalSigma-Wait-Ctrl",
+            79551usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.21.EvalSigma-Wait-Ctrl",
+            79551usize,
+            "rule.21.EvalSigma-Wait-Spawned-Pending",
+            79482usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.21.EvalSigma-Wait-Spawned-Pending",
+            79482usize,
+            "rule.21.EvalSigma-Wait-Spawned-Ready",
+            79464usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.21.EvalSigma-Wait-Spawned-Ready",
+            79464usize,
+            "rule.21.EvalSigma-Wait-Tracked-Pending",
+            79532usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.21.EvalSigma-Wait-Tracked-Pending",
+            79532usize,
+            "rule.21.EvalSigma-Wait-Tracked-Ready",
+            79514usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.21.EvalSigma-Wait-Tracked-Ready",
+            79514usize,
+            "rule.21.EvalSigma-Yield",
+            79624usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.21.EvalSigma-Yield",
+            79624usize,
+            "rule.21.EvalSigma-Yield-Release",
+            79643usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.21.EvalSigma-Yield-Release",
+            79643usize,
+            "rule.21.EvalSigma-Yield-Resume",
+            79662usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.21.EvalSigma-Yield-Resume",
+            79662usize,
+            "rule.21.EvalSigma-YieldFrom-Completed",
+            79721usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.21.EvalSigma-YieldFrom-Completed",
+            79721usize,
+            "rule.21.EvalSigma-YieldFrom-Failed",
+            79739usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.21.EvalSigma-YieldFrom-Failed",
+            79739usize,
+            "rule.21.EvalSigma-YieldFrom-Resume",
+            79757usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.21.EvalSigma-YieldFrom-Resume",
+            79757usize,
+            "rule.21.EvalSigma-YieldFrom-Suspended",
+            79701usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.21.EvalSigma-YieldFrom-Suspended",
+            79701usize,
+            "rule.21.EvalYieldFromContinue-Completed",
+            79811usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.21.EvalYieldFromContinue-Completed",
+            79811usize,
+            "rule.21.EvalYieldFromContinue-Failed",
+            79829usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.21.EvalYieldFromContinue-Failed",
+            79829usize,
+            "rule.21.EvalYieldFromContinue-Suspended",
+            79791usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.21.EvalYieldFromContinue-Suspended",
+            79791usize,
+            "rule.21.InitAll",
+            81582usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.21.InitAll",
+            81582usize,
+            "rule.21.InitRace",
+            81199usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.21.InitRace",
+            81199usize,
+            "rule.21.Loop-Async-Err",
+            80434usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.21.Loop-Async-Err",
+            80434usize,
+            "rule.21.Lower-Async-Alias",
+            78999usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.21.Lower-Async-Alias",
+            78999usize,
+            "rule.21.Lower-Async-Chain",
+            82381usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.21.Lower-Async-Chain",
+            82381usize,
+            "rule.21.Lower-Async-Complete",
+            82862usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.21.Lower-Async-Complete",
+            82862usize,
+            "rule.21.Lower-Async-Fail",
+            82881usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.21.Lower-Async-Fail",
+            82881usize,
+            "rule.21.Lower-Async-Filter",
+            82333usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.21.Lower-Async-Filter",
+            82333usize,
+            "rule.21.Lower-Async-Fold",
+            82365usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.21.Lower-Async-Fold",
+            82365usize,
+            "rule.21.Lower-Async-Map",
+            82317usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.21.Lower-Async-Map",
+            82317usize,
+            "rule.21.Lower-Async-Proc",
+            82771usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.21.Lower-Async-Proc",
+            82771usize,
+            "rule.21.Lower-Async-Resume",
+            82810usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.21.Lower-Async-Resume",
+            82810usize,
+            "rule.21.Lower-Async-Suspend",
+            82843usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.21.Lower-Async-Suspend",
+            82843usize,
+            "rule.21.Lower-Async-Take",
+            82349usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.21.Lower-Async-Take",
+            82349usize,
+            "rule.21.Lower-Async-Type",
+            78979usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.21.Lower-Async-Type",
+            78979usize,
+            "rule.21.Lower-Closure-Yield-Shared",
+            83194usize
+        ) &&
+        catalogPrimaryReferencePrecedes(
+            "rule.21.Lower-Closure-Yield-Shared",
+            83194usize,
+            "rule.21.Lower-Expr-All",
+            82275usize
+        )
+}
