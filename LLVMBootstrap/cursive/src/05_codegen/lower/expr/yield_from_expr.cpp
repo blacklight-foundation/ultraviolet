@@ -81,7 +81,8 @@ LowerResult LowerYieldFromExpr(const ast::YieldFromExpr& expr, LowerCtx& ctx) {
     // Relying only on the generic LowerExpr fallback can lose precision in
     // transformed/reconstructed expression contexts.
     analysis::TypeRef result_type;
-    if (const auto source_sig = analysis::GetAsyncSig(source_type)) {
+    const analysis::ScopeContext& scope = ScopeForLowering(ctx);
+    if (const auto source_sig = analysis::AsyncSigOf(scope, source_type)) {
         result_type = source_sig->result;
     }
     if (!result_type && ctx.expr_type) {

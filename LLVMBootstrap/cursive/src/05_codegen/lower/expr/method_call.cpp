@@ -915,11 +915,11 @@ LowerResult LowerMethodCall(const ast::Expr& expr_wrapper,
             param_modes = ParamModesFromParams(sig->params);
             param_types = ParamTypesFromParams(scope, sig->params);
             auto recv_result = LowerRecvArgExpr(expr.receiver, ctx, recv_type);
-            auto [args_ir, arg_values] =
-                LowerArgs(param_modes,
-                          expr.args,
-                          ctx,
-                          param_types.empty() ? nullptr : &param_types);
+	    auto [args_ir, arg_values] =
+	        LowerArgs(param_modes,
+	                  expr.args,
+	                  ctx,
+	                  param_types.empty() ? nullptr : &param_types);
 
             std::vector<IRValue> all_args;
             all_args.push_back(recv_result.value);
@@ -1193,13 +1193,26 @@ LowerResult LowerMethodCall(const ast::Expr& expr_wrapper,
         } else {
             recv_result = LowerMovePlace(*expr.receiver, ctx);
         }
-    } else {
-        recv_result = LowerRecvArgExpr(expr.receiver, ctx, recv_type);
-    }
-    auto [args_ir, arg_values] =
-        LowerArgs(param_modes,
-                  expr.args,
-                  ctx,
+	    } else {
+	        recv_result = LowerRecvArgExpr(expr.receiver, ctx, recv_type);
+	    }
+	    if (analysis::IdEq(expr.name, "resume") &&
+	        expr.args.size() == 1 &&
+	        param_types.size() == 1 &&
+	        stripped) {
+	        const auto* modal = std::get_if<analysis::TypeModalState>(&stripped->node);
+	        if (modal &&
+	            analysis::IdEq(modal->state, "Suspended") &&
+	            analysis::IsAsyncModalPath(modal->path)) {
+	            if (const auto sig = analysis::AsyncSigOf(scope, stripped)) {
+	                param_types[0] = sig->in;
+	            }
+	        }
+	    }
+	    auto [args_ir, arg_values] =
+	        LowerArgs(param_modes,
+	                  expr.args,
+	                  ctx,
                   param_types.empty() ? nullptr : &param_types);
 
     // Build argument list with receiver first

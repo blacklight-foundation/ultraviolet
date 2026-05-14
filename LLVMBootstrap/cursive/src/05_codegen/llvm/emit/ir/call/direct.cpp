@@ -1223,6 +1223,89 @@ void IRInstructionVisitor::operator()(const IRCall &call) const
   {
     llvm::Type *opaque_ptr_ty = emitter.GetOpaquePtr();
     auto *opaque_ptr_ptr_ty = llvm::cast<llvm::PointerType>(opaque_ptr_ty);
+    llvm::Function *func =
+        builder.GetInsertBlock() ? builder.GetInsertBlock()->getParent() : nullptr;
+
+    auto materialize_resume_pointer =
+        [&](std::size_t index, std::string_view name) -> llvm::Value *
+    {
+      if (index >= args.size() || index >= call.args.size() || !func)
+      {
+        return llvm::ConstantPointerNull::get(opaque_ptr_ptr_ty);
+      }
+
+      if (llvm::Value *storage = emitter.GetAddressableStorage(call.args[index]))
+      {
+        if (llvm::Value *coerced = CoerceTo(&builder, storage, opaque_ptr_ty))
+        {
+          return coerced;
+        }
+        if (storage->getType()->isPointerTy())
+        {
+          return builder.CreateBitCast(storage, opaque_ptr_ty);
+        }
+      }
+
+      llvm::Value *value = args[index];
+      if (!value)
+      {
+        return llvm::ConstantPointerNull::get(opaque_ptr_ptr_ty);
+      }
+
+      analysis::TypeRef value_type = ctx ? ctx->LookupValueType(call.args[index]) : nullptr;
+      if (index == 1 && value_type && IsUnitTypeRef(analysis::StripPerm(value_type)))
+      {
+        return llvm::ConstantPointerNull::get(opaque_ptr_ptr_ty);
+      }
+
+      llvm::Type *storage_ty = value_type ? emitter.GetLLVMType(value_type) : nullptr;
+      if (!storage_ty || storage_ty->isVoidTy())
+      {
+        storage_ty = value->getType();
+      }
+      if (!storage_ty || storage_ty->isVoidTy())
+      {
+        return llvm::ConstantPointerNull::get(opaque_ptr_ptr_ty);
+      }
+
+      llvm::IRBuilder<> entry_builder(
+          &func->getEntryBlock(),
+          func->getEntryBlock().begin());
+      llvm::AllocaInst *slot = entry_builder.CreateAlloca(
+          storage_ty,
+          nullptr,
+          llvm::Twine("async.resume.") + llvm::StringRef(name.data(), name.size()));
+      llvm::Value *stored = value;
+      if (stored->getType() != storage_ty)
+      {
+        if (llvm::Value *typed = CoerceToTyped(
+                emitter,
+                &builder,
+                stored,
+                storage_ty,
+                value_type,
+                value_type))
+        {
+          stored = typed;
+        }
+        else if (llvm::Value *plain = CoerceTo(&builder, stored, storage_ty))
+        {
+          stored = plain;
+        }
+        else
+        {
+          stored = llvm::Constant::getNullValue(storage_ty);
+        }
+      }
+      builder.CreateStore(stored, slot);
+      return builder.CreateBitCast(slot, opaque_ptr_ty);
+    };
+
+    args[0] = materialize_resume_pointer(0, "suspended");
+    if (args.size() >= 2)
+    {
+      args[1] = materialize_resume_pointer(1, "input");
+    }
 
     llvm::Value *panic_arg_value =
         LoadLocalValue(emitter, &builder, std::string(kPanicOutName));

@@ -122,7 +122,8 @@ void IRInstructionVisitor::operator()(const IRRaceYield &r) const
   };
 
   auto make_async_suspended = [&](llvm::Value *out_value,
-                                  const analysis::TypeRef &out_type) -> llvm::Value *
+                                  const analysis::TypeRef &out_type,
+                                  llvm::Value *frame_ptr = nullptr) -> llvm::Value *
   {
     if (stream_struct->getNumElements() < 1 ||
         !stream_struct->getElementType(0)->isIntegerTy())
@@ -188,6 +189,34 @@ void IRInstructionVisitor::operator()(const IRRaceYield &r) const
                 llvm::ConstantInt::get(i64_ty, copy_size));
           }
         }
+      }
+    }
+
+    llvm::Value *payload_i8 = CreateTaggedPayloadI8Ptr(
+        emitter,
+        &builder,
+        stream_struct,
+        stream_slot,
+        ::cursive::analysis::layout::kPtrAlign);
+    if (payload_i8 && frame_ptr)
+    {
+      llvm::Type *i8_ty = llvm::Type::getInt8Ty(emitter.GetContext());
+      llvm::Type *i64_ty = llvm::Type::getInt64Ty(emitter.GetContext());
+      llvm::Value *frame_slot_i8 = builder.CreateGEP(
+          i8_ty,
+          payload_i8,
+          llvm::ConstantInt::get(i64_ty, kAsyncPayloadFramePtrOffset));
+      llvm::Value *frame_slot = builder.CreateBitCast(
+          frame_slot_i8,
+          llvm::PointerType::get(emitter.GetOpaquePtr(), 0));
+      llvm::Value *stored_frame = CoerceTo(&builder, frame_ptr, emitter.GetOpaquePtr());
+      if (!stored_frame && frame_ptr->getType()->isPointerTy())
+      {
+        stored_frame = builder.CreateBitCast(frame_ptr, emitter.GetOpaquePtr());
+      }
+      if (stored_frame)
+      {
+        builder.CreateStore(stored_frame, frame_slot);
       }
     }
 
@@ -263,7 +292,28 @@ void IRInstructionVisitor::operator()(const IRRaceYield &r) const
     emitter.SetTempValue(eval.arm->match_value, out_payload);
     emitter.EmitIR(eval.arm->handler_ir);
     llvm::Value *handler_value = EvaluateOrDefault(eval.arm->handler_result);
-    llvm::Value *suspended_stream = make_async_suspended(handler_value, stream_sig->out);
+    llvm::Value *resume_frame = nullptr;
+    llvm::Value *arm_payload_i8 = CreateTaggedPayloadI8Ptr(
+        emitter,
+        &builder,
+        eval.async_struct,
+        eval.async_slot,
+        ::cursive::analysis::layout::kPtrAlign);
+    if (arm_payload_i8)
+    {
+      llvm::Type *i8_ty = llvm::Type::getInt8Ty(emitter.GetContext());
+      llvm::Type *i64_ty = llvm::Type::getInt64Ty(emitter.GetContext());
+      llvm::Value *frame_slot_i8 = builder.CreateGEP(
+          i8_ty,
+          arm_payload_i8,
+          llvm::ConstantInt::get(i64_ty, kAsyncPayloadFramePtrOffset));
+      llvm::Value *frame_slot = builder.CreateBitCast(
+          frame_slot_i8,
+          llvm::PointerType::get(emitter.GetOpaquePtr(), 0));
+      resume_frame = builder.CreateLoad(emitter.GetOpaquePtr(), frame_slot);
+    }
+    llvm::Value *suspended_stream =
+        make_async_suspended(handler_value, stream_sig->out, resume_frame);
     if (!suspended_stream)
     {
       suspended_stream = llvm::Constant::getNullValue(expected);

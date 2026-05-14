@@ -50,7 +50,8 @@ LowerResult LowerYieldExpr(const ast::YieldExpr& expr, LowerCtx& ctx) {
 
     // `yield e` evaluates to the async input type (`In`) at resume points.
     analysis::TypeRef yield_type = analysis::MakeTypePrim("()");
-    if (const auto sig = analysis::GetAsyncSig(ctx.proc_ret_type)) {
+    const analysis::ScopeContext& scope = ScopeForLowering(ctx);
+    if (const auto sig = analysis::AsyncSigOf(scope, ctx.proc_ret_type)) {
         if (sig->in) {
             yield_type = sig->in;
         }

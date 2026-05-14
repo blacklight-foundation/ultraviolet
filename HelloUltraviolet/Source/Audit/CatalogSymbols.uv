@@ -21,14 +21,27 @@ using HelloUltraviolet::Fixtures::RejectedSource::{ validatedProceduresRejectedS
 using HelloUltraviolet::Fixtures::RejectedSource::{ validatedStatementsRejectedSourceFixtureCount }
 using HelloUltraviolet::Reference::Async::{ runAsyncAsyncKeyIntegrationReference }
 using HelloUltraviolet::Reference::Async::{ runAsyncAsyncTypeReference }
+using HelloUltraviolet::Reference::Async::{ runAsyncCompositionAllReference }
+using HelloUltraviolet::Reference::Async::{ runAsyncCompositionAllSingleReference }
+using HelloUltraviolet::Reference::Async::{ runAsyncCompositionAllSuspendedReference }
 using HelloUltraviolet::Reference::Async::{ runAsyncCompositionChainReference }
 using HelloUltraviolet::Reference::Async::{ runAsyncCompositionCombinatorsReference }
 using HelloUltraviolet::Reference::Async::{ runAsyncCompositionFilterReference }
 using HelloUltraviolet::Reference::Async::{ runAsyncCompositionFoldReference }
 using HelloUltraviolet::Reference::Async::{ runAsyncCompositionFormsReference }
+using HelloUltraviolet::Reference::Async::{ runAsyncCompositionLoopIterationReference }
 using HelloUltraviolet::Reference::Async::{ runAsyncCompositionMapReference }
+using HelloUltraviolet::Reference::Async::{ runAsyncCompositionRaceTuplePatternReference }
+using HelloUltraviolet::Reference::Async::{ runAsyncCompositionReturnRaceReference }
+using HelloUltraviolet::Reference::Async::{ runAsyncCompositionReturnRaceSuspendedReference }
+using HelloUltraviolet::Reference::Async::{ runAsyncCompositionStreamingRaceFailureReference }
+using HelloUltraviolet::Reference::Async::{ runAsyncCompositionStreamingRaceResumeReference }
+using HelloUltraviolet::Reference::Async::{ runAsyncCompositionStreamingRaceReference }
+using HelloUltraviolet::Reference::Async::{ runAsyncCompositionStreamingRaceSuccessReference }
+using HelloUltraviolet::Reference::Async::{ runAsyncCompositionSyncReference }
 using HelloUltraviolet::Reference::Async::{ runAsyncCompositionTakeReference }
 using HelloUltraviolet::Reference::Async::{ runAsyncCompositionUntilReference }
+using HelloUltraviolet::Reference::Async::{ runAsyncStateMachineManualResumeReference }
 using HelloUltraviolet::Reference::Async::{ runAsyncStateMachineReference }
 using HelloUltraviolet::Reference::Async::{ runAsyncSuspensionFormsReference }
 using HelloUltraviolet::Reference::Attributes::{ runAttributesDiagnosticAttributesReference }
@@ -185,6 +198,21 @@ public procedure catalogCompiledSymbolCount() -> usize {
     return 522usize
 }
 
+internal procedure writeCatalogCompiledSymbolMessage(
+    context: Context,
+    text: string@View
+) -> bool {
+    let output: Outcome<(), IoError> = context.fs~>write_stderr(text)
+    return if output is {
+        @Value {
+            true
+        }
+        @Error {
+            false
+        }
+    }
+}
+
 internal procedure recordCatalogCompiledSymbolResult(
     context: Context,
     name: string@View,
@@ -194,39 +222,16 @@ internal procedure recordCatalogCompiledSymbolResult(
         return true
     }
 
-    let prefix: Outcome<(), IoError> = context.fs~>write_stderr("catalog compiled symbol failed: ")
-    let prefix_written: bool = if prefix is {
-        @Value {
-            true
-        }
-        @Error {
-            false
-        }
-    }
-    if !prefix_written
+    if !writeCatalogCompiledSymbolMessage(context, "catalog compiled symbol failed: ") {
         return false
-
-    let label: Outcome<(), IoError> = context.fs~>write_stderr(name)
-    let label_written: bool = if label is {
-        @Value {
-            true
-        }
-        @Error {
-            false
-        }
     }
-    if !label_written
+    if !writeCatalogCompiledSymbolMessage(context, name) {
         return false
-
-    let suffix: Outcome<(), IoError> = context.fs~>write_stderr("\n")
-    return if suffix is {
-        @Value {
-            false
-        }
-        @Error {
-            false
-        }
     }
+    if !writeCatalogCompiledSymbolMessage(context, "\n") {
+        return false
+    }
+    return false
 }
 
 internal procedure catalogSymbolTargetMatches(
@@ -4824,6 +4829,71 @@ public procedure catalogCompiledSymbolsExecute(context: Context) -> bool {
         ) &&
         recordCatalogCompiledSymbolResult(
             context,
+            "runAsyncCompositionSyncReference",
+            runAsyncCompositionSyncReference()
+        ) &&
+        recordCatalogCompiledSymbolResult(
+            context,
+            "runAsyncCompositionAllReference",
+            runAsyncCompositionAllReference()
+        ) &&
+        recordCatalogCompiledSymbolResult(
+            context,
+            "runAsyncCompositionAllSuspendedReference",
+            runAsyncCompositionAllSuspendedReference()
+        ) &&
+        recordCatalogCompiledSymbolResult(
+            context,
+            "runAsyncCompositionAllSingleReference",
+            runAsyncCompositionAllSingleReference()
+        ) &&
+        recordCatalogCompiledSymbolResult(
+            context,
+            "runAsyncCompositionReturnRaceReference",
+            runAsyncCompositionReturnRaceReference()
+        ) &&
+        recordCatalogCompiledSymbolResult(
+            context,
+            "runAsyncCompositionReturnRaceSuspendedReference",
+            runAsyncCompositionReturnRaceSuspendedReference()
+        ) &&
+        recordCatalogCompiledSymbolResult(
+            context,
+            "runAsyncCompositionRaceTuplePatternReference",
+            runAsyncCompositionRaceTuplePatternReference()
+        ) &&
+        recordCatalogCompiledSymbolResult(
+            context,
+            "runAsyncCompositionStreamingRaceSuccessReference",
+            runAsyncCompositionStreamingRaceSuccessReference()
+        ) &&
+        recordCatalogCompiledSymbolResult(
+            context,
+            "runAsyncCompositionStreamingRaceFailureReference",
+            runAsyncCompositionStreamingRaceFailureReference()
+        ) &&
+        recordCatalogCompiledSymbolResult(
+            context,
+            "runAsyncCompositionStreamingRaceResumeReference",
+            runAsyncCompositionStreamingRaceResumeReference()
+        ) &&
+        recordCatalogCompiledSymbolResult(
+            context,
+            "runAsyncCompositionStreamingRaceReference",
+            runAsyncCompositionStreamingRaceReference()
+        ) &&
+        recordCatalogCompiledSymbolResult(
+            context,
+            "runAsyncCompositionUntilReference",
+            runAsyncCompositionUntilReference()
+        ) &&
+        recordCatalogCompiledSymbolResult(
+            context,
+            "runAsyncCompositionLoopIterationReference",
+            runAsyncCompositionLoopIterationReference()
+        ) &&
+        recordCatalogCompiledSymbolResult(
+            context,
             "runAsyncCompositionFormsReference",
             runAsyncCompositionFormsReference()
         ) &&
@@ -4841,6 +4911,11 @@ public procedure catalogCompiledSymbolsExecute(context: Context) -> bool {
             context,
             "runAsyncCompositionUntilReference",
             runAsyncCompositionUntilReference()
+        ) &&
+        recordCatalogCompiledSymbolResult(
+            context,
+            "runAsyncStateMachineManualResumeReference",
+            runAsyncStateMachineManualResumeReference()
         ) &&
         recordCatalogCompiledSymbolResult(
             context,
