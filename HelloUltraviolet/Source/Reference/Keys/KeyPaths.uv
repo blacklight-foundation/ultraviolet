@@ -9,9 +9,29 @@ internal record KeyContainer {
     internal values: [i32; 4]
 }
 
+internal record KeyPointerBox {
+    internal pointer: Ptr<KeyLeaf>@Valid
+}
+
 internal record KeyBoundaryContainer {
     internal #leaf: KeyLeaf
     internal value: i32
+}
+
+internal class SharedDynamicKeyReadable {
+    internal procedure readKeyValue(~) -> i32
+}
+
+internal record SharedDynamicKeyOwner <: SharedDynamicKeyReadable {
+    internal value: i32
+
+    internal procedure readKeyValue(~) -> i32 {
+        return self.value
+    }
+}
+
+internal record SharedDynamicKeyBox {
+    internal owner: $SharedDynamicKeyReadable
 }
 
 internal procedure fieldBoundaryKeyPathValue() -> i32 {
@@ -23,6 +43,28 @@ internal procedure fieldBoundaryKeyPathValue() -> i32 {
     var observed: i32 = 0
     #container read {
         observed = container.leaf.value + container.value
+    }
+    return observed
+}
+
+internal procedure pointerDereferenceKeyPathValue() -> i32 {
+    var leaf: KeyLeaf = KeyLeaf { value: 13 }
+    var pointer_box: shared KeyPointerBox =
+        KeyPointerBox { pointer: &leaf }
+    var observed: i32 = 0
+    #pointer_box.pointer read {
+        observed = (*pointer_box.pointer).value
+    }
+    return observed
+}
+
+internal procedure sharedDynamicMethodKeyPathValue() -> i32 {
+    let owner: SharedDynamicKeyOwner = SharedDynamicKeyOwner { value: 15 }
+    var dynamic_box: shared SharedDynamicKeyBox =
+        SharedDynamicKeyBox { owner: owner as $SharedDynamicKeyReadable }
+    var observed: i32 = 0
+    #dynamic_box.owner read {
+        observed = dynamic_box.owner~>readKeyValue()
     }
     return observed
 }
@@ -56,5 +98,7 @@ internal procedure rootKeyPathValue() -> i32 {
 public procedure runKeysKeyPathsReference() -> bool {
     return rootKeyPathValue() == 5 &&
         nestedKeyPathValue() == 9 &&
-        fieldBoundaryKeyPathValue() == 17
+        fieldBoundaryKeyPathValue() == 17 &&
+        pointerDereferenceKeyPathValue() == 13 &&
+        sharedDynamicMethodKeyPathValue() == 15
 }

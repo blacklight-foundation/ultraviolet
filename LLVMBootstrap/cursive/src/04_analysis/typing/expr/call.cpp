@@ -2402,10 +2402,95 @@ static std::optional<long long> ConstIntValue(const ScopeContext& ctx,
   return std::nullopt;
 }
 
+static std::optional<bool> BoolLiteralValue(const ast::ExprPtr& expr) {
+  if (!expr) {
+    return std::nullopt;
+  }
+  const auto* lit = std::get_if<ast::LiteralExpr>(&expr->node);
+  if (!lit || lit->literal.kind != lexer::TokenKind::BoolLiteral) {
+    return std::nullopt;
+  }
+  if (lit->literal.lexeme == "true") {
+    return true;
+  }
+  if (lit->literal.lexeme == "false") {
+    return false;
+  }
+  return std::nullopt;
+}
+
+static std::optional<bool> ComptimeProcedureLiteralBoolReturn(
+    const ast::ProcedureDecl& proc) {
+  if (!proc.body) {
+    return std::nullopt;
+  }
+  if (proc.body->stmts.empty() && proc.body->tail_opt) {
+    return BoolLiteralValue(proc.body->tail_opt);
+  }
+  if (proc.body->stmts.size() != 1 || proc.body->tail_opt) {
+    return std::nullopt;
+  }
+  const auto* ret = std::get_if<ast::ReturnStmt>(&proc.body->stmts.front());
+  if (!ret) {
+    return std::nullopt;
+  }
+  return BoolLiteralValue(ret->value_opt);
+}
+
+static std::optional<bool> ProveComptimeBoolPredicate(
+    const ScopeContext& ctx,
+    const ast::ExprPtr& expr) {
+  if (!expr) {
+    return std::nullopt;
+  }
+  if (const auto literal = BoolLiteralValue(expr)) {
+    return literal;
+  }
+  if (const auto* unary = std::get_if<ast::UnaryExpr>(&expr->node);
+      unary && unary->op == "!") {
+    const auto inner = ProveComptimeBoolPredicate(ctx, unary->value);
+    if (inner.has_value()) {
+      return !*inner;
+    }
+    return std::nullopt;
+  }
+  if (const auto* binary = std::get_if<ast::BinaryExpr>(&expr->node)) {
+    if (binary->op == "&&") {
+      const auto left = ProveComptimeBoolPredicate(ctx, binary->lhs);
+      const auto right = ProveComptimeBoolPredicate(ctx, binary->rhs);
+      if (left.has_value() && right.has_value()) {
+        return *left && *right;
+      }
+      return std::nullopt;
+    }
+    if (binary->op == "||") {
+      const auto left = ProveComptimeBoolPredicate(ctx, binary->lhs);
+      const auto right = ProveComptimeBoolPredicate(ctx, binary->rhs);
+      if (left.has_value() && right.has_value()) {
+        return *left || *right;
+      }
+      return std::nullopt;
+    }
+  }
+  const auto* call = std::get_if<ast::CallExpr>(&expr->node);
+  if (!call || !call->args.empty()) {
+    return std::nullopt;
+  }
+  const auto lookup = LookupProcedureForCallee(ctx, call->callee);
+  if (!lookup.has_value() || !lookup->is_comptime_proc || !lookup->proc) {
+    return std::nullopt;
+  }
+  SPEC_RULE("Pure-Comptime");
+  return ComptimeProcedureLiteralBoolReturn(*lookup->proc);
+}
+
 static std::optional<bool> ProveSimplePredicate(const ScopeContext& ctx,
                                                 const ast::ExprPtr& expr) {
   if (!expr) {
     return std::nullopt;
+  }
+  if (const auto comptime_bool = ProveComptimeBoolPredicate(ctx, expr)) {
+    return comptime_bool;
   }
   const auto* binary = std::get_if<ast::BinaryExpr>(&expr->node);
   if (!binary) {
@@ -2431,6 +2516,99 @@ static std::optional<bool> ProveSimplePredicate(const ScopeContext& ctx,
   if (binary->op == "==") return *left == *right;
   if (binary->op == "!=") return *left != *right;
   return std::nullopt;
+}
+
+static bool PatternBindsName(const ast::PatternPtr& pattern,
+                             std::string_view name) {
+  if (!pattern) {
+    return false;
+  }
+  return std::visit(
+      [&](const auto& node) -> bool {
+        using T = std::decay_t<decltype(node)>;
+        if constexpr (std::is_same_v<T, ast::IdentifierPattern>) {
+          return IdEq(node.name, name);
+        } else if constexpr (std::is_same_v<T, ast::TypedPattern>) {
+          return IdEq(node.name, name);
+        } else if constexpr (std::is_same_v<T, ast::TuplePattern>) {
+          for (const auto& element : node.elements) {
+            if (PatternBindsName(element, name)) {
+              return true;
+            }
+          }
+          return false;
+        } else if constexpr (std::is_same_v<T, ast::RecordPattern>) {
+          for (const auto& field : node.fields) {
+            if (field.pattern_opt) {
+              if (PatternBindsName(field.pattern_opt, name)) {
+                return true;
+              }
+            } else if (IdEq(field.name, name)) {
+              return true;
+            }
+          }
+          return false;
+        } else if constexpr (std::is_same_v<T, ast::EnumPattern>) {
+          if (!node.payload_opt.has_value()) {
+            return false;
+          }
+          return std::visit(
+              [&](const auto& payload) -> bool {
+                using P = std::decay_t<decltype(payload)>;
+                if constexpr (std::is_same_v<P, ast::TuplePayloadPattern>) {
+                  for (const auto& element : payload.elements) {
+                    if (PatternBindsName(element, name)) {
+                      return true;
+                    }
+                  }
+                  return false;
+                } else {
+                  for (const auto& field : payload.fields) {
+                    if (field.pattern_opt) {
+                      if (PatternBindsName(field.pattern_opt, name)) {
+                        return true;
+                      }
+                    } else if (IdEq(field.name, name)) {
+                      return true;
+                    }
+                  }
+                  return false;
+                }
+              },
+              *node.payload_opt);
+        } else if constexpr (std::is_same_v<T, ast::ModalPattern>) {
+          if (!node.fields_opt.has_value()) {
+            return false;
+          }
+          for (const auto& field : node.fields_opt->fields) {
+            if (field.pattern_opt) {
+              if (PatternBindsName(field.pattern_opt, name)) {
+                return true;
+              }
+            } else if (IdEq(field.name, name)) {
+              return true;
+            }
+          }
+          return false;
+        } else if constexpr (std::is_same_v<T, ast::RangePattern>) {
+          return PatternBindsName(node.lo, name) ||
+                 PatternBindsName(node.hi, name);
+        }
+        return false;
+      },
+      pattern->node);
+}
+
+static bool AnyPatternBindsName(
+    const ast::PatternPtr& pattern,
+    const std::vector<std::pair<std::string, ast::ExprPtr>>& bindings) {
+  for (const auto& [name, replacement] : bindings) {
+    (void)replacement;
+    if (PatternBindsName(pattern, name)) {
+      return true;
+    }
+  }
+  return false;
 }
 
 static ast::ExprPtr SubstituteForeignPredicate(
@@ -2528,6 +2706,77 @@ static ast::ExprPtr SubstituteForeignPredicate(
         } else if constexpr (std::is_same_v<T, ast::CastExpr>) {
           auto out = node;
           out.value = SubstituteForeignPredicate(ctx, node.value, bindings);
+          return MakeExprNode(expr->span, out);
+        } else if constexpr (std::is_same_v<T, ast::TupleExpr>) {
+          auto out = node;
+          for (auto& element : out.elements) {
+            element = SubstituteForeignPredicate(ctx, element, bindings);
+          }
+          return MakeExprNode(expr->span, out);
+        } else if constexpr (std::is_same_v<T, ast::ArrayExpr>) {
+          auto out = node;
+          for (auto& segment : out.elements) {
+            std::visit(
+                [&](auto& typed_segment) {
+                  typed_segment.value =
+                      SubstituteForeignPredicate(ctx, typed_segment.value, bindings);
+                  if constexpr (std::is_same_v<
+                                    std::decay_t<decltype(typed_segment)>,
+                                    ast::ArrayRepeatSegment>) {
+                    typed_segment.count =
+                        SubstituteForeignPredicate(ctx, typed_segment.count, bindings);
+                  }
+                },
+                segment);
+          }
+          return MakeExprNode(expr->span, out);
+        } else if constexpr (std::is_same_v<T, ast::ArrayRepeatExpr>) {
+          auto out = node;
+          out.value = SubstituteForeignPredicate(ctx, node.value, bindings);
+          out.count = SubstituteForeignPredicate(ctx, node.count, bindings);
+          return MakeExprNode(expr->span, out);
+        } else if constexpr (std::is_same_v<T, ast::RecordExpr>) {
+          auto out = node;
+          for (auto& field : out.fields) {
+            field.value = SubstituteForeignPredicate(ctx, field.value, bindings);
+          }
+          return MakeExprNode(expr->span, out);
+        } else if constexpr (std::is_same_v<T, ast::IfExpr>) {
+          auto out = node;
+          out.cond = SubstituteForeignPredicate(ctx, node.cond, bindings);
+          out.then_expr = SubstituteForeignPredicate(ctx, node.then_expr, bindings);
+          out.else_expr = SubstituteForeignPredicate(ctx, node.else_expr, bindings);
+          return MakeExprNode(expr->span, out);
+        } else if constexpr (std::is_same_v<T, ast::IfIsExpr>) {
+          auto out = node;
+          out.scrutinee =
+              SubstituteForeignPredicate(ctx, node.scrutinee, bindings);
+          if (!AnyPatternBindsName(node.pattern, bindings)) {
+            out.then_expr =
+                SubstituteForeignPredicate(ctx, node.then_expr, bindings);
+          }
+          out.else_expr =
+              SubstituteForeignPredicate(ctx, node.else_expr, bindings);
+          return MakeExprNode(expr->span, out);
+        } else if constexpr (std::is_same_v<T, ast::IfCaseExpr>) {
+          auto out = node;
+          out.scrutinee =
+              SubstituteForeignPredicate(ctx, node.scrutinee, bindings);
+          for (auto& arm : out.cases) {
+            if (!AnyPatternBindsName(arm.pattern, bindings)) {
+              arm.body = SubstituteForeignPredicate(ctx, arm.body, bindings);
+            }
+          }
+          out.else_expr =
+              SubstituteForeignPredicate(ctx, node.else_expr, bindings);
+          return MakeExprNode(expr->span, out);
+        } else if constexpr (std::is_same_v<T, ast::BlockExpr>) {
+          auto out = node;
+          if (out.block) {
+            out.block = std::make_shared<ast::Block>(*out.block);
+            out.block->tail_opt =
+                SubstituteForeignPredicate(ctx, out.block->tail_opt, bindings);
+          }
           return MakeExprNode(expr->span, out);
         } else if constexpr (std::is_same_v<T, ast::RangeExpr>) {
           auto out = node;
@@ -2782,6 +3031,10 @@ static std::optional<std::string_view> CheckCallSitePrecondition(
                   : (pre_subst ? pre_subst->span : core::Span{});
   const auto proof = StaticProofAt(proof_ctx, proof_location, pre_subst);
   if (proof.provable) {
+    return std::nullopt;
+  }
+  if (const auto simple = ProveSimplePredicate(ctx, pre_subst);
+      simple.has_value() && *simple) {
     return std::nullopt;
   }
 

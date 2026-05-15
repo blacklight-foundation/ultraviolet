@@ -37,6 +37,7 @@
 #include "05_codegen/llvm/llvm_types.h"
 
 #include "llvm/IR/DerivedTypes.h"
+#include "llvm/IR/DataLayout.h"
 #include "llvm/IR/Function.h"
 #include "llvm/IR/Module.h"
 #include "llvm/IR/IRBuilder.h"
@@ -215,7 +216,31 @@ llvm::AllocaInst* CreateEntryAlloca(llvm::Function* func,
   }
   llvm::IRBuilder<> entry_builder(&func->getEntryBlock(),
                                    func->getEntryBlock().begin());
-  return entry_builder.CreateAlloca(ty, nullptr, name);
+  llvm::AllocaInst* slot = entry_builder.CreateAlloca(ty, nullptr, name);
+  if (llvm::Module* module = func->getParent()) {
+    const llvm::Align align = module->getDataLayout().getABITypeAlign(ty);
+    if (align.value() > 0) {
+      slot->setAlignment(align);
+    }
+  }
+  return slot;
+}
+
+void EnsureAllocaABIAlignment(llvm::Value* storage, llvm::Type* ty) {
+  auto* alloca = llvm::dyn_cast_or_null<llvm::AllocaInst>(
+      storage ? storage->stripPointerCasts() : nullptr);
+  if (!alloca || !ty) {
+    return;
+  }
+  llvm::Function* func = alloca->getFunction();
+  llvm::Module* module = func ? func->getParent() : nullptr;
+  if (!module) {
+    return;
+  }
+  const llvm::Align required = module->getDataLayout().getABITypeAlign(ty);
+  if (required > alloca->getAlign()) {
+    alloca->setAlignment(required);
+  }
 }
 
 llvm::AllocaInst* AcquireReusableEntryAlloca(llvm::Function* func,
@@ -925,6 +950,7 @@ llvm::Value* EmitABICall(LLVMEmitter& emitter,
       sret_alloca = AcquireReusableEntryAlloca(func, ret_ty, "sret", ordinal);
     }
     call_args[0] = sret_alloca;
+    EnsureAllocaABIAlignment(sret_alloca, ret_ty);
     if (result_storage_out) {
       *result_storage_out = sret_alloca;
     }

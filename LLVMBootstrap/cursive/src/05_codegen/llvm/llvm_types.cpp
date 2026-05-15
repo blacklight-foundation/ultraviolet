@@ -630,6 +630,12 @@ std::vector<llvm::Type*> ComputeTaggedElements(
     AppendPad(elems, ctx, total_size - payload_end);
   }
 
+  if (payload_align > 1) {
+    if (llvm::Type* marker = GetAlignmentMarkerType(ctx, payload_align)) {
+      elems.push_back(llvm::ArrayType::get(marker, 0));
+    }
+  }
+
   return elems;
 }
 

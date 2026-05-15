@@ -366,11 +366,25 @@ record MutablePair {
     other: usize
 }
 
+record SelfAssignBag {
+    count: usize
+    values: [usize; 8]
+}
+
 procedure makeMutatedPair(seed: usize) -> MutablePair {
     var pair: MutablePair = MutablePair { value: 0usize, other: 7usize }
     pair.value = seed + 1usize
     pair.other = seed + 2usize
     return pair
+}
+
+procedure appendSelfAssignValue(bag: SelfAssignBag, value: usize) -> SelfAssignBag {
+    var out: SelfAssignBag = bag
+    [[dynamic]] {
+        out.values[out.count] = value
+    }
+    out.count = out.count + 1usize
+    return out
 }
 
 procedure aggregateFieldMutationExitCode() -> i32 {
@@ -380,6 +394,40 @@ procedure aggregateFieldMutationExitCode() -> i32 {
     }
     if (pair.other != 12usize) {
         return 51
+    }
+    return 0
+}
+
+procedure aggregateSelfAssignmentReturnExitCode() -> i32 {
+    var bag: SelfAssignBag = SelfAssignBag {
+        count: 0usize,
+        values: [0usize; 8]
+    }
+    var index: usize = 0usize
+    loop index < 6usize {
+        bag = appendSelfAssignValue(bag, index)
+        index = index + 1usize
+    }
+    if (bag.count != 6usize) {
+        return 60
+    }
+    if (bag.values[0usize] != 0usize) {
+        return 61
+    }
+    if (bag.values[1usize] != 1usize) {
+        return 62
+    }
+    if (bag.values[2usize] != 2usize) {
+        return 63
+    }
+    if (bag.values[3usize] != 3usize) {
+        return 64
+    }
+    if (bag.values[4usize] != 4usize) {
+        return 65
+    }
+    if (bag.values[5usize] != 5usize) {
+        return 66
     }
     return 0
 }
@@ -421,10 +469,27 @@ procedure timeCapabilityExitCode(time: $Time) -> i32 {
     return 0
 }
 
+procedure timeElapsedLoopExitCode(time: $Time) -> i32 {
+    let monotonic: $MonotonicTime = time~>monotonic()
+    var index: usize = 0usize
+    loop index < 1usize {
+        let start: MonotonicInstant = monotonic~>now()
+        let end: MonotonicInstant = monotonic~>now()
+        let elapsed: Outcome<Duration, TimeError> = monotonic~>elapsed(start, end)
+        let _ = elapsed
+        index = index + 1usize
+    }
+    return 0
+}
+
 public procedure main(move ctx: Context) -> i32 {
     let time_code: i32 = timeCapabilityExitCode(ctx.time)
     if (time_code != 0) {
         return time_code
+    }
+    let time_loop_code: i32 = timeElapsedLoopExitCode(ctx.time)
+    if (time_loop_code != 0) {
+        return time_loop_code
     }
     let aggregate_code: i32 = consumeAggregate(chooseAggregate(10))
     if (aggregate_code != 0) {
@@ -453,6 +518,10 @@ public procedure main(move ctx: Context) -> i32 {
     let aggregate_field_mutation_code: i32 = aggregateFieldMutationExitCode()
     if (aggregate_field_mutation_code != 0) {
         return aggregate_field_mutation_code
+    }
+    let aggregate_self_assignment_code: i32 = aggregateSelfAssignmentReturnExitCode()
+    if (aggregate_self_assignment_code != 0) {
+        return aggregate_self_assignment_code
     }
     let non_capturing_code: i32 = nonCapturingClosureExitCode()
     if (non_capturing_code != 0) {
@@ -504,7 +573,7 @@ int main() {
               Quote(CURSIVE_TEST_TARGET_PROFILE) + " " +
               Quote(project_root.generic_string()) + " --assembly sret --out-dir " +
               Quote(out_root.generic_string()) +
-              " --build-progress on --incremental off > " +
+              " --build-progress on --incremental off --opt-level O2 > " +
               Quote(compile_log.generic_string()) + " 2>&1");
   const int compile_result = RunCommand(compile_command);
   if (compile_result != 0) {

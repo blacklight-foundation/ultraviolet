@@ -59,24 +59,26 @@ void IRInstructionVisitor::operator()(const IRStoreVar &store) const
         entry_builder.CreateAlloca(slot_ty, nullptr, store.name);
     emitter.RegisterLocalBindStorage(store.name, new_slot);
 
-    if (TryEmitDerivedAggregateToStorage(
-            emitter,
-            &builder,
-            new_slot,
-            store.value,
-            target_type ? target_type : source_type))
+    if (source_storage)
     {
-      emitter.ReleaseTempStorage(store.value);
-      return;
+      if (TryEmitBitcopyAggregateStorageCopy(
+              emitter,
+              &builder,
+              new_slot,
+              source_storage,
+              target_type ? target_type : source_type,
+              source_type))
+      {
+        emitter.ReleaseTempStorage(store.value);
+        return;
+      }
     }
-
-    if (TryEmitBitcopyAggregateStorageCopy(
-            emitter,
-            &builder,
-            new_slot,
-            source_storage,
-            target_type ? target_type : source_type,
-            source_type))
+    else if (TryEmitDerivedAggregateToStorage(
+                 emitter,
+                 &builder,
+                 new_slot,
+                 store.value,
+                 target_type ? target_type : source_type))
     {
       emitter.ReleaseTempStorage(store.value);
       return;
@@ -116,16 +118,6 @@ void IRInstructionVisitor::operator()(const IRStoreVar &store) const
     emitter.ReleaseTempStorage(store.value);
     return;
   }
-  if (TryEmitDerivedAggregateToStorage(
-          emitter,
-          &builder,
-          slot,
-          store.value,
-          target_type ? target_type : source_type))
-  {
-    emitter.ReleaseTempStorage(store.value);
-    return;
-  }
   if (source_storage)
   {
     if (TryEmitBitcopyAggregateStorageCopy(
@@ -144,6 +136,16 @@ void IRInstructionVisitor::operator()(const IRStoreVar &store) const
       emitter.ForgetTempStorage(store.value);
       return;
     }
+  }
+  else if (TryEmitDerivedAggregateToStorage(
+               emitter,
+               &builder,
+               slot,
+               store.value,
+               target_type ? target_type : source_type))
+  {
+    emitter.ReleaseTempStorage(store.value);
+    return;
   }
   llvm::Value *value = EvaluateOrDefault(store.value);
   if (auto *alloca = llvm::dyn_cast<llvm::AllocaInst>(slot))

@@ -1,12 +1,66 @@
 //! Reference specimens for Procedures / Preconditions.
 
-internal procedure preconditionReference(value: i32) -> i32
+internal procedure preconditionNoClauseReference(value: i32) -> i32 {
+    return value
+}
+
+internal procedure preconditionPositiveReference(value: i32) -> i32
 |: value > 0
 {
     return value
 }
 
+internal procedure preconditionPrePostReference(value: i32) -> i32
+|: value > 0 => @result >= value
+{
+    return value + 1
+}
+
+internal procedure preconditionPostOnlyReference(value: i32) -> i32
+|: => @result == value
+{
+    return value
+}
+
+[[dynamic]]
+internal procedure preconditionDynamicReference(value: i32) -> i32
+|: value > 0
+{
+    return value
+}
+
+internal procedure preconditionCallAfterThenFact(value: i32) -> bool {
+    if value > 0 {
+        return preconditionPositiveReference(value) == value
+    }
+    return value <= 0
+}
+
+internal procedure preconditionCallAfterFallthroughNegFact(value: i32) -> bool {
+    if value <= 0 {
+        return true
+    }
+    return preconditionPositiveReference(value) == value
+}
+
+internal procedure preconditionCallAfterLinearEntailment(value: i32) -> bool {
+    if value >= 2 {
+        return preconditionPrePostReference(value) == value + 1
+    }
+    return value < 2
+}
+
 /// Exercises the Procedures Preconditions reference surface.
 public procedure runProceduresPreconditionsReference() -> bool {
-    return preconditionReference(6) == 6
+    return preconditionNoClauseReference(-6) == -6 &&
+        preconditionPositiveReference(6) == 6 &&
+        preconditionPrePostReference(6) == 7 &&
+        preconditionPostOnlyReference(-6) == -6 &&
+        preconditionDynamicReference(6) == 6 &&
+        preconditionCallAfterThenFact(6) &&
+        preconditionCallAfterThenFact(0) &&
+        preconditionCallAfterFallthroughNegFact(6) &&
+        preconditionCallAfterFallthroughNegFact(0) &&
+        preconditionCallAfterLinearEntailment(6) &&
+        preconditionCallAfterLinearEntailment(0)
 }

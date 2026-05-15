@@ -4,6 +4,8 @@
 // =============================================================================
 #include "05_codegen/llvm/emit/llvm_emit_helpers.h"
 
+#include <algorithm>
+
 namespace cursive::codegen {
 
 using namespace emit_detail;
@@ -121,7 +123,6 @@ using namespace emit_detail;
     snapshot.values = values_;
     snapshot.storage_values = storage_values_;
     snapshot.preferred_result_storage = preferred_result_storage_;
-    snapshot.reusable_aggregate_storage = reusable_aggregate_storage_;
     return snapshot;
   }
 
@@ -135,7 +136,6 @@ using namespace emit_detail;
     values_ = snapshot.values;
     storage_values_ = snapshot.storage_values;
     preferred_result_storage_ = snapshot.preferred_result_storage;
-    reusable_aggregate_storage_ = snapshot.reusable_aggregate_storage;
     for (const auto &[name, storage] : persistent_home_storage)
     {
       if (storage && !local_home_storage_.contains(name))
@@ -191,7 +191,10 @@ using namespace emit_detail;
     if (!func) {
       return;
     }
-    reusable_aggregate_storage_[func][ty].push_back(alloca);
+    auto &bucket = reusable_aggregate_storage_[func][ty];
+    if (std::find(bucket.begin(), bucket.end(), alloca) == bucket.end()) {
+      bucket.push_back(alloca);
+    }
   }
 
   void LLVMEmitter::ForgetTempStorage(const IRValue &value)
@@ -326,17 +329,30 @@ using namespace emit_detail;
     llvm::IRBuilder<> entry_builder(&func->getEntryBlock(), func->getEntryBlock().begin());
     llvm::Value *bind_slot = nullptr;
     bool adopted_existing_storage = false;
+    auto is_current_bind_alias = [&](const std::string &name) -> bool
+    {
+      return name == bind.name ||
+             (!bind.stable_name.empty() && name == bind.stable_name);
+    };
     auto aliases_live_local_storage = [&](llvm::Value *storage) -> bool
     {
-      for (const auto &[_, local_storage] : local_home_storage_)
+      for (const auto &[name, local_storage] : local_home_storage_)
       {
+        if (is_current_bind_alias(name))
+        {
+          continue;
+        }
         if (SameStorageObject(storage, local_storage))
         {
           return true;
         }
       }
-      for (const auto &[_, local_storage] : locals_)
+      for (const auto &[name, local_storage] : locals_)
       {
+        if (is_current_bind_alias(name))
+        {
+          continue;
+        }
         if (SameStorageObject(storage, local_storage))
         {
           return true;
@@ -539,15 +555,9 @@ using namespace emit_detail;
     bool copied_from_storage = false;
     if (!adopted_existing_storage)
     {
-      copied_from_storage = TryEmitDerivedAggregateToStorage(
-          *this,
-          builder,
-          bind_slot,
-          bind.value,
-          bind.type ? bind.type : source_type);
-      if (!copied_from_storage)
+      llvm::Value *source_storage = GetAddressableStorage(bind.value);
+      if (source_storage)
       {
-        llvm::Value *source_storage = GetAddressableStorage(bind.value);
         copied_from_storage = TryEmitBitcopyAggregateStorageCopy(
             *this,
             builder,
@@ -555,6 +565,15 @@ using namespace emit_detail;
             source_storage,
             bind.type ? bind.type : source_type,
             source_type);
+      }
+      else
+      {
+        copied_from_storage = TryEmitDerivedAggregateToStorage(
+            *this,
+            builder,
+            bind_slot,
+            bind.value,
+            bind.type ? bind.type : source_type);
       }
     }
 

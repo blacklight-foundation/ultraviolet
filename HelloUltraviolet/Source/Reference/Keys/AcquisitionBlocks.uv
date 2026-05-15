@@ -1,5 +1,7 @@
 //! Reference specimens for Keys / AcquisitionBlocks.
 
+internal type EscapingSharedKeyReader = || -> i32 [shared: { shared_value: shared i32 }]
+
 internal procedure readAndWriteKeyBlockValue() -> i32 {
     var shared_value: shared i32 = 1
     var observed: i32 = 0
@@ -44,6 +46,21 @@ internal procedure localClosureSharedCaptureValue() -> i32 {
     return reader()
 }
 
+internal procedure invokeEscapingSharedKeyReader(reader: EscapingSharedKeyReader) -> i32 {
+    return reader()
+}
+
+internal procedure escapingClosureSharedCaptureValue() -> i32 {
+    var shared_value: shared i32 = 31
+    let reader: EscapingSharedKeyReader = || -> i32 {
+        #shared_value read {
+            return shared_value + 0
+        }
+        return 0
+    }
+    return invokeEscapingSharedKeyReader(reader)
+}
+
 internal procedure inlineCoarsenedFieldKeyValue() -> i32 {
     var container: shared KeyContainer =
         KeyContainer {
@@ -70,12 +87,51 @@ internal procedure inlineCoarsenedIndexKeyValue() -> i32 {
     return observed
 }
 
+internal procedure keyBlockBreakReleaseValue() -> i32 {
+    var shared_value: shared i32 = 1
+    var observed: i32 = 0
+    loop {
+        #shared_value write {
+            shared_value = 29
+            break
+        }
+    }
+    #shared_value read {
+        observed = shared_value + 0
+    }
+    return observed
+}
+
+internal procedure keyBlockContinueReleaseValue() -> i32 {
+    var shared_value: shared i32 = 1
+    var index: i32 = 0
+    var observed: i32 = 0
+    loop {
+        index = index + 1
+        #shared_value write {
+            if index == 1 {
+                shared_value = 2
+                continue
+            }
+            shared_value = 12
+        }
+        break
+    }
+    #shared_value read {
+        observed = shared_value + 0
+    }
+    return observed
+}
+
 /// Exercises the Keys AcquisitionBlocks reference surface.
 public procedure runKeysAcquisitionBlocksReference() -> bool {
     return readAndWriteKeyBlockValue() == 2 &&
         orderedKeyBlockValue() == 3 &&
         sharedArgumentNoCallSiteAcquisitionValue() == 8 &&
         localClosureSharedCaptureValue() == 13 &&
+        escapingClosureSharedCaptureValue() == 31 &&
         inlineCoarsenedFieldKeyValue() == 17 &&
-        inlineCoarsenedIndexKeyValue() == 23
+        inlineCoarsenedIndexKeyValue() == 23 &&
+        keyBlockBreakReleaseValue() == 29 &&
+        keyBlockContinueReleaseValue() == 12
 }

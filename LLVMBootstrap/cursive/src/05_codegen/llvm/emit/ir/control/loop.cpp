@@ -27,11 +27,8 @@ void IRInstructionVisitor::operator()(const IRLoop &loop) const
   llvm::AllocaInst *loop_result_slot = nullptr;
   if (loop_result_ty && !loop_result_ty->isVoidTy())
   {
-    llvm::IRBuilder<> entry_builder(
-        &func->getEntryBlock(),
-        func->getEntryBlock().begin());
     loop_result_slot =
-        entry_builder.CreateAlloca(loop_result_ty, nullptr, "loop.result.slot");
+        CreateEntryAlloca(func, loop_result_ty, "loop.result.slot");
 
     llvm::Value *init_value = llvm::Constant::getNullValue(loop_result_ty);
     if (loop.kind == IRLoopKind::Conditional || loop.kind == IRLoopKind::Iter)

@@ -3998,3 +3998,277 @@ Cursive.exe build HelloUltraviolet --target-profile x86_64-win64 --build-progres
 HelloUltraviolet.exe: exit=0, 0-byte stdout/stderr
 HelloUltraviolet.exe --audit: exit=0, 0-byte stdout/stderr
 ```
+
+## UVBOOT-0057: Return Postcondition `@result is` Proof Reduction
+
+Spec-valid source:
+
+```ultraviolet
+internal type PostconditionUnion = i32 | bool
+
+internal procedure postconditionUnionNumericReference() -> PostconditionUnion
+|: => if @result is numeric_value: i32 { numeric_value > 0 } else { false }
+{
+    return 7
+}
+
+internal procedure postconditionUnionBooleanReference() -> PostconditionUnion
+|: => if @result is {
+    numeric_value: i32 {
+        numeric_value > 0
+    }
+    flag_value: bool {
+        flag_value
+    }
+}
+{
+    return true
+}
+```
+
+Observed bootstrap result before repair:
+
+```text
+error[E-SEM-2801]: Contract predicate not provable outside `[[dynamic]]` scope
+  --> C:/dev/ultraviolet/HelloUltraviolet/Source/Reference/Procedures/Postconditions.uv:42:5
+42 |     return 7
+```
+
+Bootstrap owner:
+
+- `LLVMBootstrap/cursive/src/04_analysis/typing/stmt/return_stmt.cpp`
+
+Failure analysis:
+
+The return-postcondition verifier substituted `@result` for simple expression
+forms only, so predicates using `if @result is ...` and `if @result is { ... }`
+were passed to the static prover with no reduced result branch. Even after
+result substitution, the verifier had no return-point reduction for a known
+concrete returned value selecting a typed-pattern branch, and branch bodies were
+represented as block expressions whose tail value was not exposed to the proof.
+
+Required bootstrap behavior:
+
+For postcondition proof at a concrete return site, `@result` substitution must
+apply through if, if-is, if-case, call, aggregate, and block expression forms.
+When the substituted scrutinee has a concrete non-union type, typed-pattern
+if-is and if-case branches can be reduced to the matching branch, with
+whole-value pattern bindings substituted into that branch body. Expression
+blocks with no statements and a tail expression must expose their tail value to
+the proof reducer.
+
+Repair:
+
+- Return postcondition substitution now traverses if, if-is, if-case, calls,
+  qualified applies, method calls, casts, records, and expression blocks.
+- Return postcondition proof now simplifies field access over returned record
+  literals and expression-block tails.
+- Return postcondition proof now reduces known typed-pattern if-is and if-case
+  branches for concrete non-union scrutinee types and substitutes whole-value
+  pattern bindings into the selected branch.
+
+Source correction made during the same slice:
+
+The first draft of the propagation postcondition specimen used
+`PostconditionUnion?` inside a procedure returning `PostconditionUnion`. §16.8.4
+defines `SuccessMember(R, U)` as the one union member of `U` that is not a
+subtype of the enclosing return type `R`, with all other members propagated.
+Because both members of `i32 | bool` are subtypes of `i32 | bool`, that source
+has no unique success member and was corrected to a `bool`-returning propagation
+reference.
+
+Verified bootstrap result after repair:
+
+```text
+Visual Studio bootstrap build wrapper: exit=0, rebuilt Cursive.exe
+Cursive.exe build HelloUltraviolet --check --target-profile x86_64-win64 --build-progress off --max-errors 1: exit=0, total diagnostic set is six warnings plus two infos
+```
+
+## UVBOOT-0058: Pure Contract Predicate Proof Coverage
+
+Spec-valid source:
+
+```ultraviolet
+internal procedure contractPureIfIsNoElseReference(value: ContractPureUnion) -> i32
+|: {
+    let matched_unit: () = if value is _: i32 {
+        ()
+    };
+    true
+}
+{
+    return 1
+}
+
+internal procedure contractPureCastExercise(value: i32) -> bool {
+    if value as i64 > 0 {
+        return contractPureCastReference(value) == value
+    }
+
+    return false
+}
+
+internal procedure contractPureRecordExercise(value: i32) -> bool {
+    if (ContractPureBox {
+        value: value,
+        values: [value, value + 1, value + 2],
+        pair: (value, value + 1)
+    }.value > 0) {
+        return contractPureRecordReference(value) == value
+    }
+
+    return false
+}
+
+internal procedure contractPureComptimeExercise(value: i32) -> bool {
+    return contractPureComptimeReference(value) == value
+}
+```
+
+Observed bootstrap results before repair:
+
+```text
+error[E-SRC-0520]: expected expression at `}`
+  --> C:/dev/ultraviolet/HelloUltraviolet/Source/Reference/Procedures/Contracts.uv:115:5
+
+error[E-SEM-2801]: Contract predicate not provable outside `[[dynamic]]` scope
+  --> C:/dev/ultraviolet/HelloUltraviolet/Source/Reference/Procedures/Contracts.uv:236:5
+236 |     if value as i64 > 0 {
+
+error[E-SEM-2801]: Contract predicate not provable outside `[[dynamic]]` scope
+  --> C:/dev/ultraviolet/HelloUltraviolet/Source/Reference/Procedures/Contracts.uv:330:5
+330 |     if (ContractPureBox {
+
+error[E-SEM-2801]: Contract predicate not provable outside `[[dynamic]]` scope
+  --> C:/dev/ultraviolet/HelloUltraviolet/Source/Reference/Procedures/Contracts.uv:366:5
+366 |     return contractPureComptimeReference(value) == value
+```
+
+Bootstrap owners:
+
+- `LLVMBootstrap/cursive/src/02_source/parser/item/contract_clause.cpp`
+- `LLVMBootstrap/cursive/src/04_analysis/contracts/verification.cpp`
+- `LLVMBootstrap/cursive/src/04_analysis/typing/expr/call.cpp`
+
+Failure analysis:
+
+The contract-clause parser propagated the non-braced contract-arrow stop rule
+into braced predicate blocks, so a pure block predicate containing a no-else
+`if is` expression with unit result was rejected before semantic analysis.
+
+After parser repair, call-site precondition proof failed for spec-valid pure
+predicate forms because proof equality and substitution covered only a narrow
+expression subset. `Pure-Cast`, `Pure-Record`, aggregate predicates, block
+predicates, control-flow predicates, and call predicates require structural
+comparison and actual-parameter substitution through the same expression forms
+that the contract purity rules admit. Record predicates also exposed mixed
+resolved and source-spelled type paths in otherwise identical predicate ASTs.
+
+The compile-time predicate specimen exposed a final proof gap: `Pure-Comptime`
+allows compile-time procedure calls inside contract predicates, and the
+bootstrap already types those calls in contract-predicate contexts, but
+call-site precondition checking did not fold a compile-time boolean predicate
+that reduces to `true`.
+
+Required bootstrap behavior:
+
+Braced contract predicate blocks must parse as full block expressions. Static
+proof must compare and substitute the full pure-predicate source surface
+admitted by §15.4.4, including casts, tuples, arrays, records, field/index
+access, if/if-is/if-case, blocks, builtin calls, ordinary pure calls, method
+calls, ranges, `@entry`, and compile-time predicate calls. Equivalent local and
+resolved type paths must compare as the same predicate target when they name
+the same final declaration. Compile-time boolean predicates with literal
+results must contribute to call-site precondition proof.
+
+Repair:
+
+- Braced contract predicates now keep full block-expression parsing instead of
+  using the contract-arrow stop rule meant for non-braced preconditions.
+- Static predicate equality now structurally compares the pure predicate AST
+  surface needed by the Procedures / Contracts reference specimens.
+- Call-site precondition substitution now traverses aggregate, control-flow,
+  block, range, entry, call, method, and cast expression forms.
+- Call-site precondition checking now accepts a proven simple predicate after
+  substitution, including no-argument compile-time boolean predicates that
+  return a literal `true`.
+
+Verified bootstrap result after repair:
+
+```text
+Visual Studio bootstrap build wrapper: exit=0, rebuilt Cursive.exe
+Cursive.exe build HelloUltraviolet --check --target-profile x86_64-win64 --build-progress off --max-errors 1: exit=0, total diagnostic set is six warnings plus two infos
+Cursive.exe build HelloUltraviolet --target-profile x86_64-win64 --build-progress off: exit=0, total diagnostic set is six warnings plus two infos
+HelloUltraviolet.exe: exit=0, 0-byte stdout/stderr
+HelloUltraviolet.exe --audit: exit=0, 0-byte stdout/stderr
+Tools/ExtractObligationLedger.py --check: exit=0, obligations=6045
+```
+
+## UVBOOT-0059: Escaping Closure Expected-Type Alias Normalization
+
+Spec-valid source:
+
+```ultraviolet
+internal type EscapingSharedKeyReader = || -> i32 [shared: { shared_value: shared i32 }]
+
+internal procedure escapingClosureSharedCaptureValue() -> i32 {
+    var shared_value: shared i32 = 31
+    let reader: EscapingSharedKeyReader = || -> i32 {
+        #shared_value read {
+            return shared_value + 0
+        }
+        return 0
+    }
+    return invokeEscapingSharedKeyReader(reader)
+}
+```
+
+Observed bootstrap result before repair:
+
+```text
+error[E-MOD-2402]: Type annotation incompatible with inferred type
+  --> C:/dev/ultraviolet/HelloUltraviolet/Source/Reference/Keys/AcquisitionBlocks.uv:55:5
+55 |     let reader: EscapingSharedKeyReader = || -> i32 {
+55 |     ^
+```
+
+Bootstrap owner:
+
+- `LLVMBootstrap/cursive/src/04_analysis/typing/type_infer.cpp`
+
+Failure analysis:
+
+`SPECIFICATION.md` §16.9.4 permits the shared dependency set for an escaping
+closure to be inferred when the closure is checked against an expected closure
+type, and §13.11 defines the dependency-set form on closure types. The source
+above gives the closure expression an expected closure type through a type
+alias. The bootstrap checker only recognized raw `TypeClosure` expected shapes
+in the closure-specific checking path. When the expected type was a type alias,
+the checker fell through to ordinary synthesis, produced a local capturing
+closure without the expected dependency set, and reported an annotation
+mismatch.
+
+Required bootstrap behavior:
+
+Expected-type checking for closure expressions must normalize type aliases
+before deciding whether the expected type is a closure or function shape. A
+type alias that expands to `|| -> R [shared: {...}]` must drive the same
+parameter and dependency-set checking as the expanded closure type.
+
+Repair:
+
+- Closure expected-type checking in `type_infer.cpp` now normalizes aliases
+  before inspecting the expected type for `TypeFunc` or `TypeClosure`.
+- The original expected type remains the recorded/checking target; only the
+  shape test uses the normalized type.
+
+Verified bootstrap result after repair:
+
+```text
+Visual Studio bootstrap build wrapper: exit=0, rebuilt Cursive.exe
+Cursive.exe build HelloUltraviolet --check --target-profile x86_64-win64 --build-progress off --max-errors 5: exit=0, total diagnostic set is seven warnings plus two infos
+Cursive.exe build HelloUltraviolet --target-profile x86_64-win64 --build-progress off --max-errors 5: exit=0, total diagnostic set is seven warnings plus two infos
+HelloUltraviolet.exe: exit=0, 0-byte stdout/stderr
+HelloUltraviolet.exe --audit: exit=0, 0-byte stdout/stderr
+Tools/ExtractObligationLedger.py --check: exit=0, obligations=6045
+```

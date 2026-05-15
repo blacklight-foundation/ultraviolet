@@ -29,9 +29,16 @@ Objective: execute `.agents/plans/HelloUltravioletReferenceCorpus.md`.
   membership groups and 61 primary-reference ordering groups, and generated
   symbol execution now passes `Context` to context-taking reference runners.
 - The key-path reference source now includes a record field declared with a
-  `#` key boundary and shared access through that field. The catalog rows for
+  `#` key boundary, shared access through that field, a shared safe-pointer
+  dereference key boundary, and an accepted `shared $Class` method call where
+  every vtable-eligible method has a const receiver. The catalog rows for
   `Parse-KeyBoundaryOpt-Yes`, `Parse-KeyBoundaryOpt-No`, and
-  `requirement.19.FieldKeyBoundary` point at `runKeysKeyPathsReference`.
+  `requirement.19.FieldKeyBoundary` point at `runKeysKeyPathsReference`; the
+  same executable runner now directly covers the sourceable forms for
+  `requirement.19.PointerDereferenceKeyAccess`,
+  `requirement.19.SharedDynamicClassObjects`,
+  `rule.19.K-Witness-Shared-WF`, and
+  `def.19.SharedDynamicMethodCallKeyPath`.
 - The catalog generator now derives fixture-backed obligation targets from
   `Source/Fixtures/AcceptedProjects`, `Source/Fixtures/RejectedSource`,
   `Source/Fixtures/DiagnosticSource`, `Source/Fixtures/OutputDiagnostics`, and
@@ -168,11 +175,18 @@ Objective: execute `.agents/plans/HelloUltravioletReferenceCorpus.md`.
   performs the explicit read acquisition and returns through the key block.
   It also exercises a local closure that captures a `shared` binding, acquires
   the key in the closure body, returns through that key block, and is invoked
-  before the captured binding's scope exits. It now also exercises inline
+  before the captured binding's scope exits. It also exercises an escaping
+  closure with an explicit shared dependency-set alias, invokes that closure
+  before the captured binding's scope exits, and relies on the closure body to
+  acquire the shared key. It now also exercises inline
   key coarsening markers on field and index segments through
-  `#container.#leaf.value` and `#leaves[#1usize].value` key paths. The
-  duplicate `W-CON-0009` bootstrap diagnostic surfaced by this specimen is
-  recorded in `Audit/BootstrapNonCompliance.md` as `UVBOOT-0051`.
+  `#container.#leaf.value` and `#leaves[#1usize].value` key paths, plus
+  explicit key-block exits through `break` and `continue` followed by later
+  key-protected reads of the same shared path. The duplicate `W-CON-0009`
+  bootstrap diagnostic surfaced by this specimen is recorded in
+  `Audit/BootstrapNonCompliance.md` as `UVBOOT-0051`. The type-alias expected
+  closure check repair required for the escaping closure specimen is recorded
+  as `UVBOOT-0059`.
 - This pass expanded key conflict-detection accepted source.
   `runKeysConflictDetectionReference` now exercises disjoint multi-path reads,
   prefix coverage under a root read key, a read-then-write assignment permitted
@@ -917,15 +931,20 @@ Objective: execute `.agents/plans/HelloUltravioletReferenceCorpus.md`.
   discharge forms. `UVBOOT-0056` records the bootstrap repairs needed for
   full contract predicate parsing, pure block predicates, stable `@entry`
   proof, and non-runtime compile-time procedure metadata for
-  `Pure-Comptime`.
+  `Pure-Comptime`. `UVBOOT-0058` records the later bootstrap repairs needed for
+  braced no-else `if is` predicate parsing, pure-predicate proof equality,
+  aggregate and control-flow precondition substitution, and literal
+  compile-time boolean predicate proof.
   Key-system source specimens now exercise accepted key paths, key acquisition,
   field key boundaries, inline coarsening markers, memory-order attributes,
-  fence expressions, dynamic indexed reads and writes, shared-argument
-  call-site behavior, key-block control-flow return, covering-write
-  read-then-write behavior, root-key nested write coverage, speculative const
-  receiver calls, selected rejected-source obligations, and selected
-  diagnostic-source obligations, with broader source-runtime coverage still
-  incomplete.
+  fence expressions, dynamic indexed reads and writes, shared safe-pointer
+  dereference key boundaries, accepted shared dynamic class object method
+  calls, shared-argument call-site behavior, key-block control-flow return,
+  local and escaping closure shared captures, key-block `break` and `continue`
+  control-flow exits, covering-write read-then-write behavior, root-key nested
+  write coverage, speculative const receiver calls, selected rejected-source
+  obligations, and selected diagnostic-source obligations, with broader
+  source-runtime coverage still incomplete.
 
 ## Current Status
 

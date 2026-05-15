@@ -1228,13 +1228,6 @@ namespace {
         return false;
       }
 
-      if ((target_ll->isStructTy() || target_ll->isArrayTy()) &&
-          TryEmitDerivedAggregateToStorage(
-              emitter, builder, dst_storage, value, target_type))
-      {
-        return true;
-      }
-
       analysis::TypeRef source_type = LookupStorageValueType(emitter, value);
       if (llvm::Value *source_storage = emitter.GetAddressableStorage(value))
       {
@@ -1253,6 +1246,12 @@ namespace {
         {
           return true;
         }
+      }
+      else if ((target_ll->isStructTy() || target_ll->isArrayTy()) &&
+               TryEmitDerivedAggregateToStorage(
+                   emitter, builder, dst_storage, value, target_type))
+      {
+        return true;
       }
 
       llvm::Value *stored = emitter.EvaluateIRValue(value);

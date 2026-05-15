@@ -36,6 +36,7 @@ namespace cursive::ast
 
   // Forward declarations for helper functions
   bool IsOp(const Parser &parser, std::string_view op);
+  bool IsPunc(const Parser &parser, std::string_view p);
 
   // Forward declaration for predicate parsing
   ParseElemResult<ExprPtr> ParsePredicateExpr(Parser parser);
@@ -151,7 +152,9 @@ namespace cursive::ast
 
     // Parse precondition
     Parser pre_parser = next;
-    pre_parser.stop_before_contract_arrow = true;
+    if (!IsPunc(pre_parser, "{")) {
+      pre_parser.stop_before_contract_arrow = true;
+    }
     ParseElemResult<ExprPtr> pre = ParsePredicateExpr(pre_parser);
     clause.precondition = pre.elem;
     next = pre.parser;

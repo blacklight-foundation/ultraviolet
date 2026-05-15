@@ -1355,7 +1355,16 @@ static CheckResult CheckExprImpl(const ScopeContext& ctx,
   }
 
   if (const auto* closure = std::get_if<ast::ClosureExpr>(&expr->node)) {
-    const auto expected_strip = StripPerm(expected);
+    TypeRef expected_for_closure = expected;
+    const auto normalized_expected = NormalizeAliasType(ctx, expected);
+    if (!normalized_expected.ok) {
+      result.diag_id = normalized_expected.diag_id;
+      return result;
+    }
+    if (normalized_expected.type) {
+      expected_for_closure = normalized_expected.type;
+    }
+    const auto expected_strip = StripPerm(expected_for_closure);
     const auto* expected_func =
         expected_strip ? std::get_if<TypeFunc>(&expected_strip->node) : nullptr;
     const auto* expected_closure = expected_strip

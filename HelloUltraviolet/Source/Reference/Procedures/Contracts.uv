@@ -110,8 +110,9 @@ internal procedure contractPureIfIsReference(value: ContractPureUnion) -> i32
 
 internal procedure contractPureIfIsNoElseReference(value: ContractPureUnion) -> i32
 |: {
-    if value is _: i32 {
-    }
+    let matched_unit: () = if value is _: i32 {
+        ()
+    };
     true
 }
 {
@@ -207,15 +208,202 @@ internal procedure flowFactDischargesPrecondition(value: i32) -> bool {
     return value == 0
 }
 
+internal procedure contractPureFieldExercise(box: ContractPureBox) -> bool {
+    if box.value > 0 {
+        return contractPureFieldReference(box) == box.value
+    }
+
+    return false
+}
+
+internal procedure contractPureTupleAccessExercise(pair: (i32, i32)) -> bool {
+    if pair.0 > 0 && pair.1 > pair.0 {
+        return contractPureTupleAccessReference(pair) == pair.1
+    }
+
+    return false
+}
+
+internal procedure contractPureIndexExercise(values: [i32; 3]) -> bool {
+    if values[0usize] > 0 && values[2usize] > values[1usize] {
+        return contractPureIndexReference(values) == values[2usize]
+    }
+
+    return false
+}
+
+internal procedure contractPureCastExercise(value: i32) -> bool {
+    if value as i64 > 0 {
+        return contractPureCastReference(value) == value
+    }
+
+    return false
+}
+
+internal procedure contractPureIfExercise(value: i32) -> bool {
+    if if value > 0 { true } else { false } {
+        return contractPureIfReference(value) == value
+    }
+
+    return false
+}
+
+internal procedure contractPureIfIsExercise(value: ContractPureUnion) -> bool {
+    if if value is numeric_value: i32 { numeric_value == numeric_value } else { true } {
+        return contractPureIfIsReference(value) == 1
+    }
+
+    return false
+}
+
+internal procedure contractPureIfIsNoElseExercise(value: ContractPureUnion) -> bool {
+    if ({
+        let matched_unit: () = if value is _: i32 {
+            ()
+        };
+        true
+    }) {
+        return contractPureIfIsNoElseReference(value) == 1
+    }
+
+    return false
+}
+
+internal procedure contractPureIfCaseExercise(value: ContractPureUnion) -> bool {
+    if if value is {
+        numeric_value: i32 {
+            numeric_value == numeric_value
+        }
+        else {
+            true
+        }
+    } {
+        return contractPureIfCaseReference(value) == 1
+    }
+
+    return false
+}
+
+internal procedure contractPureIfCaseNoElseExercise(value: ContractPureUnion) -> bool {
+    if if value is {
+        numeric_value: i32 {
+            numeric_value == numeric_value
+        }
+        flag_value: bool {
+            flag_value == flag_value
+        }
+    } {
+        return contractPureIfCaseNoElseReference(value) == 1
+    }
+
+    return false
+}
+
+internal procedure contractPureBlockExercise(value: i32) -> bool {
+    if ({
+        let local_value: i32 = value;
+        local_value > 0
+    }) {
+        return contractPureBlockReference(value) == value
+    }
+
+    return false
+}
+
+internal procedure contractPureTupleExercise(value: i32) -> bool {
+    if (value, value + 1).1 > value {
+        return contractPureTupleReference(value) == value
+    }
+
+    return false
+}
+
+internal procedure contractPureArrayExercise(value: i32) -> bool {
+    if [value, value + 1, value + 2][2usize] > value {
+        return contractPureArrayReference(value) == value
+    }
+
+    return false
+}
+
+internal procedure contractPureRecordExercise(value: i32) -> bool {
+    if (ContractPureBox {
+        value: value,
+        values: [value, value + 1, value + 2],
+        pair: (value, value + 1)
+    }.value > 0) {
+        return contractPureRecordReference(value) == value
+    }
+
+    return false
+}
+
+internal procedure contractPureBuiltinCallExercise(value: i32) -> bool {
+    if sizeof(i32) == 4usize && value > 0 {
+        return contractPureBuiltinCallReference(value) == value
+    }
+
+    return false
+}
+
+internal procedure contractPureProcedureCallExercise(value: i32) -> bool {
+    if contractPureProcedure(value) {
+        return contractPureProcedureCallReference(value) == value
+    }
+
+    return false
+}
+
+internal procedure contractPureMethodCallExercise(box: ContractPureBox) -> bool {
+    if box~>valueAtLeast(1) {
+        return contractPureMethodCallReference(box) == box.value
+    }
+
+    return false
+}
+
+internal procedure contractPureComptimeExercise(value: i32) -> bool {
+    return contractPureComptimeReference(value) == value
+}
+
 /// Exercises the Procedures Contracts reference surface.
 public procedure runProceduresContractsReference() -> bool {
+    let box: ContractPureBox = ContractPureBox {
+        value: 4,
+        values: [4, 5, 6],
+        pair: (4, 5)
+    }
+    let values: [i32; 3] = [4, 5, 6]
     return contractReference(4) &&
         contractNoClauseReference(3) == 3 &&
         contractPostOnlyReference(4) == 5 &&
         contractPreOnlyReference(4) == 4 &&
         contractEntryReference(4) == 6 &&
         contractPureLiteralReference(4) == 4 &&
+        contractPureIdentifierReference(true, 4) == 4 &&
+        contractPureFieldExercise(box) &&
+        contractPureTupleAccessExercise((4, 5)) &&
+        contractPureIndexExercise(values) &&
+        contractPureUnaryReference(false, 4) == 4 &&
         contractPureBinaryReference(4) == 4 &&
+        contractPureCastExercise(4) &&
+        contractPureIfExercise(4) &&
+        contractPureIfIsExercise(4) &&
+        contractPureIfIsExercise(false) &&
+        contractPureIfIsNoElseExercise(4) &&
+        contractPureIfIsNoElseExercise(false) &&
+        contractPureIfCaseExercise(4) &&
+        contractPureIfCaseExercise(false) &&
+        contractPureIfCaseNoElseExercise(4) &&
+        contractPureIfCaseNoElseExercise(false) &&
+        contractPureBlockExercise(4) &&
+        contractPureTupleExercise(4) &&
+        contractPureArrayExercise(4) &&
+        contractPureRecordExercise(4) &&
+        contractPureBuiltinCallExercise(4) &&
+        contractPureProcedureCallExercise(4) &&
+        contractPureMethodCallExercise(box) &&
+        contractPureComptimeExercise(4) &&
         flowFactDischargesPrecondition(5) &&
         flowFactDischargesPrecondition(0)
 }

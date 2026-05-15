@@ -144,6 +144,192 @@ bool IsLiteralFalse(const ast::ExprPtr& expr) {
   return false;
 }
 
+static bool AstTypeStructEqualInternal(const ast::TypePtr& a,
+                                       const ast::TypePtr& b);
+static bool PatternStructEqualInternal(const ast::PatternPtr& a,
+                                       const ast::PatternPtr& b);
+static bool BlockStructEqualInternal(const ast::BlockPtr& a,
+                                     const ast::BlockPtr& b);
+static bool ExprStructEqualInternal(const ast::ExprPtr& a,
+                                    const ast::ExprPtr& b);
+
+static bool TypePathStructEqual(const ast::TypePath& a,
+                                const ast::TypePath& b) {
+  if (a.size() == b.size()) {
+    for (std::size_t i = 0; i < a.size(); ++i) {
+      if (!IdEq(a[i], b[i])) {
+        return false;
+      }
+    }
+    return true;
+  }
+
+  if (a.size() == 1 && !b.empty()) {
+    return IdEq(a.front(), b.back());
+  }
+  if (b.size() == 1 && !a.empty()) {
+    return IdEq(a.back(), b.front());
+  }
+  return false;
+}
+
+static bool ExprVectorStructEqual(const std::vector<ast::ExprPtr>& a,
+                                  const std::vector<ast::ExprPtr>& b) {
+  if (a.size() != b.size()) {
+    return false;
+  }
+  for (std::size_t i = 0; i < a.size(); ++i) {
+    if (!ExprStructEqualInternal(a[i], b[i])) {
+      return false;
+    }
+  }
+  return true;
+}
+
+static bool TypeVectorStructEqual(const std::vector<ast::TypePtr>& a,
+                                  const std::vector<ast::TypePtr>& b) {
+  if (a.size() != b.size()) {
+    return false;
+  }
+  for (std::size_t i = 0; i < a.size(); ++i) {
+    if (!AstTypeStructEqualInternal(a[i], b[i])) {
+      return false;
+    }
+  }
+  return true;
+}
+
+static bool ArgListStructEqual(const std::vector<ast::Arg>& a,
+                               const std::vector<ast::Arg>& b) {
+  if (a.size() != b.size()) {
+    return false;
+  }
+  for (std::size_t i = 0; i < a.size(); ++i) {
+    if (a[i].moved != b[i].moved ||
+        !ExprStructEqualInternal(a[i].value, b[i].value)) {
+      return false;
+    }
+  }
+  return true;
+}
+
+static bool FieldInitListStructEqual(const std::vector<ast::FieldInit>& a,
+                                     const std::vector<ast::FieldInit>& b) {
+  if (a.size() != b.size()) {
+    return false;
+  }
+  for (std::size_t i = 0; i < a.size(); ++i) {
+    if (a[i].name != b[i].name ||
+        !ExprStructEqualInternal(a[i].value, b[i].value)) {
+      return false;
+    }
+  }
+  return true;
+}
+
+static bool ApplyArgsStructEqual(const ast::ApplyArgs& a,
+                                 const ast::ApplyArgs& b) {
+  if (a.index() != b.index()) {
+    return false;
+  }
+  if (std::holds_alternative<ast::ParenArgs>(a)) {
+    return ArgListStructEqual(std::get<ast::ParenArgs>(a).args,
+                              std::get<ast::ParenArgs>(b).args);
+  }
+  return FieldInitListStructEqual(std::get<ast::BraceArgs>(a).fields,
+                                  std::get<ast::BraceArgs>(b).fields);
+}
+
+static bool ModalRefStructEqual(const ast::ModalRef& a,
+                                const ast::ModalRef& b) {
+  if (a.index() != b.index()) {
+    return false;
+  }
+  if (std::holds_alternative<ast::TypePath>(a)) {
+    return TypePathStructEqual(std::get<ast::TypePath>(a),
+                               std::get<ast::TypePath>(b));
+  }
+  const auto& left = std::get<ast::GenericTypeRef>(a);
+  const auto& right = std::get<ast::GenericTypeRef>(b);
+  return TypePathStructEqual(left.path, right.path) &&
+         TypeVectorStructEqual(left.generic_args, right.generic_args);
+}
+
+static bool ModalStateRefStructEqual(const ast::ModalStateRef& a,
+                                     const ast::ModalStateRef& b) {
+  return a.state == b.state &&
+         ModalRefStructEqual(a.modal_ref, b.modal_ref);
+}
+
+static bool RecordTargetStructEqual(
+    const std::variant<ast::TypePath, ast::ModalStateRef>& a,
+    const std::variant<ast::TypePath, ast::ModalStateRef>& b) {
+  if (a.index() != b.index()) {
+    return false;
+  }
+  if (std::holds_alternative<ast::TypePath>(a)) {
+    return TypePathStructEqual(std::get<ast::TypePath>(a),
+                               std::get<ast::TypePath>(b));
+  }
+  return ModalStateRefStructEqual(std::get<ast::ModalStateRef>(a),
+                                  std::get<ast::ModalStateRef>(b));
+}
+
+static bool EnumPayloadStructEqual(const ast::EnumPayload& a,
+                                   const ast::EnumPayload& b) {
+  if (a.index() != b.index()) {
+    return false;
+  }
+  if (std::holds_alternative<ast::EnumPayloadParen>(a)) {
+    return ExprVectorStructEqual(std::get<ast::EnumPayloadParen>(a).elements,
+                                 std::get<ast::EnumPayloadParen>(b).elements);
+  }
+  return FieldInitListStructEqual(std::get<ast::EnumPayloadBrace>(a).fields,
+                                  std::get<ast::EnumPayloadBrace>(b).fields);
+}
+
+static bool ArraySegmentStructEqual(const ast::ArraySegment& a,
+                                    const ast::ArraySegment& b) {
+  if (a.index() != b.index()) {
+    return false;
+  }
+  if (std::holds_alternative<ast::ArrayElemSegment>(a)) {
+    return ExprStructEqualInternal(std::get<ast::ArrayElemSegment>(a).value,
+                                   std::get<ast::ArrayElemSegment>(b).value);
+  }
+  const auto& left = std::get<ast::ArrayRepeatSegment>(a);
+  const auto& right = std::get<ast::ArrayRepeatSegment>(b);
+  return ExprStructEqualInternal(left.value, right.value) &&
+         ExprStructEqualInternal(left.count, right.count);
+}
+
+static bool ArraySegmentsStructEqual(const std::vector<ast::ArraySegment>& a,
+                                     const std::vector<ast::ArraySegment>& b) {
+  if (a.size() != b.size()) {
+    return false;
+  }
+  for (std::size_t i = 0; i < a.size(); ++i) {
+    if (!ArraySegmentStructEqual(a[i], b[i])) {
+      return false;
+    }
+  }
+  return true;
+}
+
+static bool IfCasesStructEqual(const std::vector<ast::IfCaseClause>& a,
+                               const std::vector<ast::IfCaseClause>& b) {
+  if (a.size() != b.size()) {
+    return false;
+  }
+  for (std::size_t i = 0; i < a.size(); ++i) {
+    if (!PatternStructEqualInternal(a[i].pattern, b[i].pattern) ||
+        !ExprStructEqualInternal(a[i].body, b[i].body)) {
+      return false;
+    }
+  }
+  return true;
+}
+
 // Simple structural equality of expressions
 bool ExprStructEqualInternal(const ast::ExprPtr& a,
                              const ast::ExprPtr& b) {
@@ -165,13 +351,79 @@ bool ExprStructEqualInternal(const ast::ExprPtr& a,
           return node_a.path == node_b->path && node_a.name == node_b->name;
         } else if constexpr (std::is_same_v<T, ast::PathExpr>) {
           return node_a.path == node_b->path && node_a.name == node_b->name;
+        } else if constexpr (std::is_same_v<T, ast::EnumLiteralExpr>) {
+          if (!TypePathStructEqual(node_a.path, node_b->path) ||
+              node_a.payload_opt.has_value() != node_b->payload_opt.has_value()) {
+            return false;
+          }
+          return !node_a.payload_opt ||
+                 EnumPayloadStructEqual(*node_a.payload_opt,
+                                        *node_b->payload_opt);
+        } else if constexpr (std::is_same_v<T, ast::TypeLiteralExpr>) {
+          return AstTypeStructEqualInternal(node_a.type, node_b->type);
+        } else if constexpr (std::is_same_v<T, ast::RangeExpr>) {
+          return node_a.kind == node_b->kind &&
+                 ExprStructEqualInternal(node_a.lhs, node_b->lhs) &&
+                 ExprStructEqualInternal(node_a.rhs, node_b->rhs);
         } else if constexpr (std::is_same_v<T, ast::BinaryExpr>) {
           return node_a.op == node_b->op &&
                  ExprStructEqualInternal(node_a.lhs, node_b->lhs) &&
                  ExprStructEqualInternal(node_a.rhs, node_b->rhs);
+        } else if constexpr (std::is_same_v<T, ast::CastExpr>) {
+          return ExprStructEqualInternal(node_a.value, node_b->value) &&
+                 AstTypeStructEqualInternal(node_a.type, node_b->type);
         } else if constexpr (std::is_same_v<T, ast::UnaryExpr>) {
           return node_a.op == node_b->op &&
                  ExprStructEqualInternal(node_a.value, node_b->value);
+        } else if constexpr (std::is_same_v<T, ast::DerefExpr>) {
+          return ExprStructEqualInternal(node_a.value, node_b->value);
+        } else if constexpr (std::is_same_v<T, ast::AddressOfExpr>) {
+          return ExprStructEqualInternal(node_a.place, node_b->place);
+        } else if constexpr (std::is_same_v<T, ast::MoveExpr>) {
+          return ExprStructEqualInternal(node_a.place, node_b->place);
+        } else if constexpr (std::is_same_v<T, ast::AllocExpr>) {
+          return node_a.region_opt == node_b->region_opt &&
+                 ExprStructEqualInternal(node_a.value, node_b->value);
+        } else if constexpr (std::is_same_v<T, ast::PtrNullExpr>) {
+          return true;
+        } else if constexpr (std::is_same_v<T, ast::TupleExpr>) {
+          return ExprVectorStructEqual(node_a.elements, node_b->elements);
+        } else if constexpr (std::is_same_v<T, ast::ArrayExpr>) {
+          return ArraySegmentsStructEqual(node_a.elements, node_b->elements);
+        } else if constexpr (std::is_same_v<T, ast::ArrayRepeatExpr>) {
+          return ExprStructEqualInternal(node_a.value, node_b->value) &&
+                 ExprStructEqualInternal(node_a.count, node_b->count);
+        } else if constexpr (std::is_same_v<T, ast::SizeofExpr>) {
+          return AstTypeStructEqualInternal(node_a.type, node_b->type);
+        } else if constexpr (std::is_same_v<T, ast::AlignofExpr>) {
+          return AstTypeStructEqualInternal(node_a.type, node_b->type);
+        } else if constexpr (std::is_same_v<T, ast::RecordExpr>) {
+          return RecordTargetStructEqual(node_a.target, node_b->target) &&
+                 FieldInitListStructEqual(node_a.fields, node_b->fields);
+        } else if constexpr (std::is_same_v<T, ast::IfExpr>) {
+          return ExprStructEqualInternal(node_a.cond, node_b->cond) &&
+                 ExprStructEqualInternal(node_a.then_expr, node_b->then_expr) &&
+                 ExprStructEqualInternal(node_a.else_expr, node_b->else_expr);
+        } else if constexpr (std::is_same_v<T, ast::IfIsExpr>) {
+          return ExprStructEqualInternal(node_a.scrutinee, node_b->scrutinee) &&
+                 PatternStructEqualInternal(node_a.pattern, node_b->pattern) &&
+                 ExprStructEqualInternal(node_a.then_expr, node_b->then_expr) &&
+                 ExprStructEqualInternal(node_a.else_expr, node_b->else_expr);
+        } else if constexpr (std::is_same_v<T, ast::IfCaseExpr>) {
+          return ExprStructEqualInternal(node_a.scrutinee, node_b->scrutinee) &&
+                 IfCasesStructEqual(node_a.cases, node_b->cases) &&
+                 ExprStructEqualInternal(node_a.else_expr, node_b->else_expr);
+        } else if constexpr (std::is_same_v<T, ast::BlockExpr>) {
+          return BlockStructEqualInternal(node_a.block, node_b->block);
+        } else if constexpr (std::is_same_v<T, ast::ComptimeExpr>) {
+          return ExprStructEqualInternal(node_a.body, node_b->body);
+        } else if constexpr (std::is_same_v<T, ast::TransmuteExpr>) {
+          return AstTypeStructEqualInternal(node_a.from, node_b->from) &&
+                 AstTypeStructEqualInternal(node_a.to, node_b->to) &&
+                 ExprStructEqualInternal(node_a.value, node_b->value);
+        } else if constexpr (std::is_same_v<T, ast::PipelineExpr>) {
+          return ExprStructEqualInternal(node_a.lhs, node_b->lhs) &&
+                 ExprStructEqualInternal(node_a.rhs, node_b->rhs);
         } else if constexpr (std::is_same_v<T, ast::FieldAccessExpr>) {
           return node_a.name == node_b->name &&
                  ExprStructEqualInternal(node_a.base, node_b->base);
@@ -182,81 +434,27 @@ bool ExprStructEqualInternal(const ast::ExprPtr& a,
           return ExprStructEqualInternal(node_a.base, node_b->base) &&
                  ExprStructEqualInternal(node_a.index, node_b->index);
         } else if constexpr (std::is_same_v<T, ast::CallExpr>) {
-          if (!ExprStructEqualInternal(node_a.callee, node_b->callee)) {
+          if (!ExprStructEqualInternal(node_a.callee, node_b->callee) ||
+              !TypeVectorStructEqual(node_a.generic_args,
+                                     node_b->generic_args)) {
             return false;
           }
-          if (node_a.args.size() != node_b->args.size()) {
-            return false;
-          }
-          for (std::size_t i = 0; i < node_a.args.size(); ++i) {
-            if (node_a.args[i].moved != node_b->args[i].moved) {
-              return false;
-            }
-            if (!ExprStructEqualInternal(node_a.args[i].value,
-                                         node_b->args[i].value)) {
-              return false;
-            }
-          }
-          return true;
+          return ArgListStructEqual(node_a.args, node_b->args);
+        } else if constexpr (std::is_same_v<T, ast::CallTypeArgsExpr>) {
+          return ExprStructEqualInternal(node_a.callee, node_b->callee) &&
+                 TypeVectorStructEqual(node_a.type_args, node_b->type_args) &&
+                 ArgListStructEqual(node_a.args, node_b->args);
         } else if constexpr (std::is_same_v<T, ast::QualifiedApplyExpr>) {
-          if (node_a.path != node_b->path || node_a.name != node_b->name) {
-            return false;
-          }
-          if (node_a.args.index() != node_b->args.index()) {
-            return false;
-          }
-          if (std::holds_alternative<ast::ParenArgs>(node_a.args)) {
-            const auto& lhs = std::get<ast::ParenArgs>(node_a.args);
-            const auto& rhs = std::get<ast::ParenArgs>(node_b->args);
-            if (lhs.args.size() != rhs.args.size()) {
-              return false;
-            }
-            for (std::size_t i = 0; i < lhs.args.size(); ++i) {
-              if (lhs.args[i].moved != rhs.args[i].moved) {
-                return false;
-              }
-              if (!ExprStructEqualInternal(lhs.args[i].value,
-                                           rhs.args[i].value)) {
-                return false;
-              }
-            }
-            return true;
-          }
-          const auto& lhs = std::get<ast::BraceArgs>(node_a.args);
-          const auto& rhs = std::get<ast::BraceArgs>(node_b->args);
-          if (lhs.fields.size() != rhs.fields.size()) {
-            return false;
-          }
-          for (std::size_t i = 0; i < lhs.fields.size(); ++i) {
-            if (lhs.fields[i].name != rhs.fields[i].name) {
-              return false;
-            }
-            if (!ExprStructEqualInternal(lhs.fields[i].value,
-                                         rhs.fields[i].value)) {
-              return false;
-            }
-          }
-          return true;
+          return node_a.path == node_b->path && node_a.name == node_b->name &&
+                 ApplyArgsStructEqual(node_a.args, node_b->args);
         } else if constexpr (std::is_same_v<T, ast::MethodCallExpr>) {
           if (node_a.name != node_b->name) {
             return false;
           }
-          if (!ExprStructEqualInternal(node_a.receiver, node_b->receiver)) {
-            return false;
-          }
-          if (node_a.args.size() != node_b->args.size()) {
-            return false;
-          }
-          for (std::size_t i = 0; i < node_a.args.size(); ++i) {
-            if (node_a.args[i].moved != node_b->args[i].moved) {
-              return false;
-            }
-            if (!ExprStructEqualInternal(node_a.args[i].value,
-                                         node_b->args[i].value)) {
-              return false;
-            }
-          }
-          return true;
+          return ExprStructEqualInternal(node_a.receiver, node_b->receiver) &&
+                 ArgListStructEqual(node_a.args, node_b->args);
+        } else if constexpr (std::is_same_v<T, ast::PropagateExpr>) {
+          return ExprStructEqualInternal(node_a.value, node_b->value);
         } else if constexpr (std::is_same_v<T, ast::EntryExpr>) {
           return ExprStructEqualInternal(node_a.expr, node_b->expr);
         } else if constexpr (std::is_same_v<T, ast::ResultExpr>) {
@@ -264,7 +462,302 @@ bool ExprStructEqualInternal(const ast::ExprPtr& a,
         }
         return false;
       },
+	      a->node);
+}
+
+static bool TypeModalRefStructEqual(const ast::TypeModalRef& a,
+                                    const ast::TypeModalRef& b) {
+  if (a.index() != b.index()) {
+    return false;
+  }
+  if (std::holds_alternative<ast::TypePathType>(a)) {
+    const auto& left = std::get<ast::TypePathType>(a);
+    const auto& right = std::get<ast::TypePathType>(b);
+    return TypePathStructEqual(left.path, right.path) &&
+           TypeVectorStructEqual(left.generic_args, right.generic_args);
+  }
+  const auto& left = std::get<ast::TypeApply>(a);
+  const auto& right = std::get<ast::TypeApply>(b);
+  return TypePathStructEqual(left.path, right.path) &&
+         TypeVectorStructEqual(left.args, right.args);
+}
+
+static bool FuncParamsStructEqual(
+    const std::vector<ast::TypeFuncParam>& a,
+    const std::vector<ast::TypeFuncParam>& b) {
+  if (a.size() != b.size()) {
+    return false;
+  }
+  for (std::size_t i = 0; i < a.size(); ++i) {
+    if (a[i].mode != b[i].mode ||
+        !AstTypeStructEqualInternal(a[i].type, b[i].type)) {
+      return false;
+    }
+  }
+  return true;
+}
+
+static bool SharedDepsStructEqual(const std::vector<ast::SharedDep>& a,
+                                  const std::vector<ast::SharedDep>& b) {
+  if (a.size() != b.size()) {
+    return false;
+  }
+  for (std::size_t i = 0; i < a.size(); ++i) {
+    if (a[i].name != b[i].name ||
+        !AstTypeStructEqualInternal(a[i].type, b[i].type)) {
+      return false;
+    }
+  }
+  return true;
+}
+
+static bool AstTypeStructEqualInternal(const ast::TypePtr& a,
+                                       const ast::TypePtr& b) {
+  if (!a && !b) return true;
+  if (!a || !b) return false;
+
+  return std::visit(
+      [&](const auto& node_a) -> bool {
+        using T = std::decay_t<decltype(node_a)>;
+        const auto* node_b = std::get_if<T>(&b->node);
+        if (!node_b) return false;
+
+        if constexpr (std::is_same_v<T, ast::TypePrim>) {
+          return node_a.name == node_b->name;
+        } else if constexpr (std::is_same_v<T, ast::TypePermType>) {
+          return node_a.perm == node_b->perm &&
+                 AstTypeStructEqualInternal(node_a.base, node_b->base);
+        } else if constexpr (std::is_same_v<T, ast::TypeUnion>) {
+          return TypeVectorStructEqual(node_a.types, node_b->types);
+        } else if constexpr (std::is_same_v<T, ast::TypeFunc>) {
+          return FuncParamsStructEqual(node_a.params, node_b->params) &&
+                 AstTypeStructEqualInternal(node_a.ret, node_b->ret);
+        } else if constexpr (std::is_same_v<T, ast::TypeClosure>) {
+          return FuncParamsStructEqual(node_a.params, node_b->params) &&
+                 AstTypeStructEqualInternal(node_a.ret, node_b->ret) &&
+                 node_a.deps_opt.has_value() == node_b->deps_opt.has_value() &&
+                 (!node_a.deps_opt ||
+                  SharedDepsStructEqual(*node_a.deps_opt, *node_b->deps_opt));
+        } else if constexpr (std::is_same_v<T, ast::TypeTuple>) {
+          return TypeVectorStructEqual(node_a.elements, node_b->elements);
+        } else if constexpr (std::is_same_v<T, ast::TypeArray>) {
+          return AstTypeStructEqualInternal(node_a.element, node_b->element) &&
+                 ExprStructEqualInternal(node_a.length, node_b->length);
+        } else if constexpr (std::is_same_v<T, ast::TypeSlice>) {
+          return AstTypeStructEqualInternal(node_a.element, node_b->element);
+        } else if constexpr (std::is_same_v<T, ast::TypeSafePtr>) {
+          return node_a.state == node_b->state &&
+                 AstTypeStructEqualInternal(node_a.element, node_b->element);
+        } else if constexpr (std::is_same_v<T, ast::TypeRawPtr>) {
+          return node_a.qual == node_b->qual &&
+                 AstTypeStructEqualInternal(node_a.element, node_b->element);
+        } else if constexpr (std::is_same_v<T, ast::TypeString>) {
+          return node_a.state == node_b->state;
+        } else if constexpr (std::is_same_v<T, ast::TypeBytes>) {
+          return node_a.state == node_b->state;
+        } else if constexpr (std::is_same_v<T, ast::TypeDynamic>) {
+          return TypePathStructEqual(node_a.path, node_b->path);
+        } else if constexpr (std::is_same_v<T, ast::TypeModalState>) {
+          return node_a.state == node_b->state &&
+                 TypeModalRefStructEqual(node_a.modal_ref, node_b->modal_ref);
+        } else if constexpr (std::is_same_v<T, ast::TypePathType>) {
+          return TypePathStructEqual(node_a.path, node_b->path) &&
+                 TypeVectorStructEqual(node_a.generic_args, node_b->generic_args);
+        } else if constexpr (std::is_same_v<T, ast::TypeApply>) {
+          return TypePathStructEqual(node_a.path, node_b->path) &&
+                 TypeVectorStructEqual(node_a.args, node_b->args);
+        } else if constexpr (std::is_same_v<T, ast::SpliceExprNode>) {
+          return ExprStructEqualInternal(node_a.expr, node_b->expr);
+        } else if constexpr (std::is_same_v<T, ast::TypeOpaque>) {
+          return TypePathStructEqual(node_a.path, node_b->path);
+        } else if constexpr (std::is_same_v<T, ast::TypeRefine>) {
+          return AstTypeStructEqualInternal(node_a.base, node_b->base) &&
+                 ExprStructEqualInternal(node_a.predicate, node_b->predicate);
+        } else if constexpr (std::is_same_v<T, ast::TypeRange>) {
+          return AstTypeStructEqualInternal(node_a.base, node_b->base);
+        } else if constexpr (std::is_same_v<T, ast::TypeRangeInclusive>) {
+          return AstTypeStructEqualInternal(node_a.base, node_b->base);
+        } else if constexpr (std::is_same_v<T, ast::TypeRangeFrom>) {
+          return AstTypeStructEqualInternal(node_a.base, node_b->base);
+        } else if constexpr (std::is_same_v<T, ast::TypeRangeTo>) {
+          return AstTypeStructEqualInternal(node_a.base, node_b->base);
+        } else if constexpr (std::is_same_v<T, ast::TypeRangeToInclusive>) {
+          return AstTypeStructEqualInternal(node_a.base, node_b->base);
+        } else if constexpr (std::is_same_v<T, ast::TypeRangeFull>) {
+          return true;
+        }
+        return false;
+      },
       a->node);
+}
+
+static bool SpliceIdentStructEqual(
+    const std::optional<ast::SpliceIdentNode>& a,
+    const std::optional<ast::SpliceIdentNode>& b) {
+  if (a.has_value() != b.has_value()) {
+    return false;
+  }
+  return !a || ExprStructEqualInternal(a->name_expr, b->name_expr);
+}
+
+static bool FieldPatternStructEqual(const ast::FieldPattern& a,
+                                    const ast::FieldPattern& b);
+
+static bool FieldPatternListStructEqual(
+    const std::vector<ast::FieldPattern>& a,
+    const std::vector<ast::FieldPattern>& b) {
+  if (a.size() != b.size()) {
+    return false;
+  }
+  for (std::size_t i = 0; i < a.size(); ++i) {
+    if (!FieldPatternStructEqual(a[i], b[i])) {
+      return false;
+    }
+  }
+  return true;
+}
+
+static bool PatternVectorStructEqual(const std::vector<ast::PatternPtr>& a,
+                                     const std::vector<ast::PatternPtr>& b) {
+  if (a.size() != b.size()) {
+    return false;
+  }
+  for (std::size_t i = 0; i < a.size(); ++i) {
+    if (!PatternStructEqualInternal(a[i], b[i])) {
+      return false;
+    }
+  }
+  return true;
+}
+
+static bool EnumPayloadPatternStructEqual(const ast::EnumPayloadPattern& a,
+                                          const ast::EnumPayloadPattern& b) {
+  if (a.index() != b.index()) {
+    return false;
+  }
+  if (std::holds_alternative<ast::TuplePayloadPattern>(a)) {
+    return PatternVectorStructEqual(
+        std::get<ast::TuplePayloadPattern>(a).elements,
+        std::get<ast::TuplePayloadPattern>(b).elements);
+  }
+  return FieldPatternListStructEqual(
+      std::get<ast::RecordPayloadPattern>(a).fields,
+      std::get<ast::RecordPayloadPattern>(b).fields);
+}
+
+static bool PatternStructEqualInternal(const ast::PatternPtr& a,
+                                       const ast::PatternPtr& b) {
+  if (!a && !b) return true;
+  if (!a || !b) return false;
+
+  return std::visit(
+      [&](const auto& node_a) -> bool {
+        using T = std::decay_t<decltype(node_a)>;
+        const auto* node_b = std::get_if<T>(&b->node);
+        if (!node_b) return false;
+
+        if constexpr (std::is_same_v<T, ast::LiteralPattern>) {
+          return node_a.literal.kind == node_b->literal.kind &&
+                 node_a.literal.lexeme == node_b->literal.lexeme;
+        } else if constexpr (std::is_same_v<T, ast::WildcardPattern>) {
+          return true;
+        } else if constexpr (std::is_same_v<T, ast::IdentifierPattern>) {
+          return node_a.name == node_b->name &&
+                 SpliceIdentStructEqual(node_a.name_splice_opt,
+                                        node_b->name_splice_opt);
+        } else if constexpr (std::is_same_v<T, ast::TypedPattern>) {
+          return node_a.name == node_b->name &&
+                 AstTypeStructEqualInternal(node_a.type, node_b->type) &&
+                 SpliceIdentStructEqual(node_a.name_splice_opt,
+                                        node_b->name_splice_opt);
+        } else if constexpr (std::is_same_v<T, ast::SpliceExprNode>) {
+          return ExprStructEqualInternal(node_a.expr, node_b->expr);
+        } else if constexpr (std::is_same_v<T, ast::TuplePattern>) {
+          return PatternVectorStructEqual(node_a.elements, node_b->elements);
+        } else if constexpr (std::is_same_v<T, ast::RecordPattern>) {
+          return TypePathStructEqual(node_a.path, node_b->path) &&
+                 FieldPatternListStructEqual(node_a.fields, node_b->fields);
+        } else if constexpr (std::is_same_v<T, ast::EnumPattern>) {
+          return TypePathStructEqual(node_a.path, node_b->path) &&
+                 node_a.name == node_b->name &&
+                 node_a.payload_opt.has_value() ==
+                     node_b->payload_opt.has_value() &&
+                 (!node_a.payload_opt ||
+                  EnumPayloadPatternStructEqual(*node_a.payload_opt,
+                                                *node_b->payload_opt));
+        } else if constexpr (std::is_same_v<T, ast::ModalPattern>) {
+          return node_a.state == node_b->state &&
+                 node_a.fields_opt.has_value() ==
+                     node_b->fields_opt.has_value() &&
+                 (!node_a.fields_opt ||
+                  FieldPatternListStructEqual(node_a.fields_opt->fields,
+                                              node_b->fields_opt->fields));
+        } else if constexpr (std::is_same_v<T, ast::RangePattern>) {
+          return node_a.kind == node_b->kind &&
+                 PatternStructEqualInternal(node_a.lo, node_b->lo) &&
+                 PatternStructEqualInternal(node_a.hi, node_b->hi);
+        }
+        return false;
+      },
+      a->node);
+}
+
+static bool FieldPatternStructEqual(const ast::FieldPattern& a,
+                                    const ast::FieldPattern& b) {
+  return a.name == b.name &&
+         PatternStructEqualInternal(a.pattern_opt, b.pattern_opt);
+}
+
+static bool BindingStructEqual(const ast::Binding& a, const ast::Binding& b) {
+  return PatternStructEqualInternal(a.pat, b.pat) &&
+         AstTypeStructEqualInternal(a.type_opt, b.type_opt) &&
+         a.op.kind == b.op.kind &&
+         a.op.lexeme == b.op.lexeme &&
+         ExprStructEqualInternal(a.init, b.init);
+}
+
+static bool StmtStructEqualInternal(const ast::Stmt& a, const ast::Stmt& b) {
+  if (a.index() != b.index()) {
+    return false;
+  }
+  return std::visit(
+      [&](const auto& node_a) -> bool {
+        using T = std::decay_t<decltype(node_a)>;
+        const auto* node_b = std::get_if<T>(&b);
+        if (!node_b) return false;
+
+        if constexpr (std::is_same_v<T, ast::LetStmt> ||
+                      std::is_same_v<T, ast::VarStmt>) {
+          return BindingStructEqual(node_a.binding, node_b->binding);
+        } else if constexpr (std::is_same_v<T, ast::ExprStmt>) {
+          return ExprStructEqualInternal(node_a.value, node_b->value);
+        } else if constexpr (std::is_same_v<T, ast::ReturnStmt>) {
+          return ExprStructEqualInternal(node_a.value_opt, node_b->value_opt);
+        } else if constexpr (std::is_same_v<T, ast::BreakStmt>) {
+          return ExprStructEqualInternal(node_a.value_opt, node_b->value_opt);
+        } else if constexpr (std::is_same_v<T, ast::ContinueStmt>) {
+          return true;
+        } else if constexpr (std::is_same_v<T, ast::UnsafeBlockStmt>) {
+          return BlockStructEqualInternal(node_a.body, node_b->body);
+        }
+        return false;
+      },
+      a);
+}
+
+static bool BlockStructEqualInternal(const ast::BlockPtr& a,
+                                     const ast::BlockPtr& b) {
+  if (!a && !b) return true;
+  if (!a || !b) return false;
+  if (a->stmts.size() != b->stmts.size()) {
+    return false;
+  }
+  for (std::size_t i = 0; i < a->stmts.size(); ++i) {
+    if (!StmtStructEqualInternal(a->stmts[i], b->stmts[i])) {
+      return false;
+    }
+  }
+  return ExprStructEqualInternal(a->tail_opt, b->tail_opt);
 }
 
 struct LinearExpr {

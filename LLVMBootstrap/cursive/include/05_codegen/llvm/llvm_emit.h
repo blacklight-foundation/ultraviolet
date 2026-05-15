@@ -159,12 +159,9 @@ public:
     std::unordered_map<std::string, llvm::Value*> locals;
     std::unordered_map<std::string, llvm::Value*> local_home_storage;
     std::unordered_map<std::string, analysis::TypeRef> local_types;
-  std::unordered_map<std::string, llvm::Value*> values;
-  std::unordered_map<std::string, llvm::Value*> storage_values;
-  std::unordered_map<std::string, llvm::Value*> preferred_result_storage;
-  std::unordered_map<llvm::Function*,
-                     std::unordered_map<llvm::Type*, std::vector<llvm::AllocaInst*>>>
-      reusable_aggregate_storage;
+    std::unordered_map<std::string, llvm::Value*> values;
+    std::unordered_map<std::string, llvm::Value*> storage_values;
+    std::unordered_map<std::string, llvm::Value*> preferred_result_storage;
   };
   FlowStateSnapshot SaveFlowState() const;
   void RestoreFlowState(const FlowStateSnapshot& snapshot);

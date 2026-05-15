@@ -1,12 +1,124 @@
 //! Reference specimens for Procedures / Postconditions.
 
-internal procedure postconditionReference(value: i32) -> bool
+internal type PostconditionUnion = i32 | bool
+
+internal modal PostconditionModal {
+    @Ready {
+        internal value: i32
+    }
+}
+
+internal procedure postconditionResultReference(value: i32) -> bool
 |: => @result
 {
     return value == value
 }
 
+internal procedure postconditionNoClauseReference(value: i32) -> i32 {
+    return value
+}
+
+internal procedure postconditionPreOnlyReference(value: i32) -> i32
+|: value > 0
+{
+    return value
+}
+
+internal procedure postconditionPrePostReference(value: i32) -> i32
+|: value > 0 => @result == value + 1
+{
+    return value + 1
+}
+
+internal procedure postconditionEntryCaptureReference(value: i32) -> i32
+|: value > 0 => @entry(value) == value && @result == value + 2
+{
+    return value + 2
+}
+
+internal procedure postconditionUnionNumericReference() -> PostconditionUnion
+|: => if @result is numeric_value: i32 { numeric_value > 0 } else { false }
+{
+    return 7
+}
+
+internal procedure postconditionUnionBooleanReference() -> PostconditionUnion
+|: => if @result is {
+    numeric_value: i32 {
+        numeric_value > 0
+    }
+    flag_value: bool {
+        flag_value
+    }
+}
+{
+    return true
+}
+
+internal procedure postconditionPropagationSource(should_fail: bool) -> PostconditionUnion {
+    if should_fail {
+        return false
+    }
+    return 9
+}
+
+[[dynamic]]
+internal procedure postconditionPropagationReference(
+    should_fail: bool
+) -> bool
+|: => @result != should_fail
+{
+    let value: i32 = postconditionPropagationSource(should_fail)?
+    return value == 9
+}
+
+internal procedure postconditionModalReference(value: i32) -> PostconditionModal@Ready
+|: value > 0 => @result.value == value
+{
+    return PostconditionModal@Ready { value: value }
+}
+
+internal procedure postconditionGenericReference<TValue>(move value: TValue) -> TValue
+|: => true
+{
+    return move value
+}
+
+internal procedure postconditionUnionIsNumeric(value: PostconditionUnion, expected: i32) -> bool {
+    return if value is numeric_value: i32 {
+        numeric_value == expected
+    } else {
+        false
+    }
+}
+
+internal procedure postconditionUnionIsFlag(value: PostconditionUnion, expected: bool) -> bool {
+    return if value is {
+        numeric_value: i32 {
+            false
+        }
+        flag_value: bool {
+            flag_value == expected
+        }
+    }
+}
+
 /// Exercises the Procedures Postconditions reference surface.
 public procedure runProceduresPostconditionsReference() -> bool {
-    return postconditionReference(8)
+    let propagated_value: bool =
+        postconditionPropagationReference(false)
+    let propagated_error: bool =
+        postconditionPropagationReference(true)
+    let modal_value: PostconditionModal@Ready = postconditionModalReference(13)
+    return postconditionResultReference(8) &&
+        postconditionNoClauseReference(-8) == -8 &&
+        postconditionPreOnlyReference(8) == 8 &&
+        postconditionPrePostReference(8) == 9 &&
+        postconditionEntryCaptureReference(8) == 10 &&
+        postconditionUnionIsNumeric(postconditionUnionNumericReference(), 7) &&
+        postconditionUnionIsFlag(postconditionUnionBooleanReference(), true) &&
+        propagated_value &&
+        !propagated_error &&
+        modal_value.value == 13 &&
+        postconditionGenericReference<i32>(21) == 21
 }
