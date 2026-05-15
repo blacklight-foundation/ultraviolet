@@ -88,6 +88,12 @@ std::shared_ptr<const ModuleCodegen> FindCodegenModuleEntry(
 bool PopulateCodegenModules(CodegenCache& cache, const project::Project& project);
 void ConfigureCodegenContextForProject(CodegenCache& cache,
                                        const project::Project& project);
+bool ValidateLowerability(const project::Project& cache_project,
+                          const project::Project& target_project,
+                          const analysis::ScopeContext& sema_ctx,
+                          const analysis::NameMapBuildResult& name_maps,
+                          const analysis::TypecheckResult& typechecked,
+                          core::DiagnosticStream& diags);
 
 // Diagnostic helpers
 void AppendDiags(core::DiagnosticStream& out, const core::DiagnosticStream& add);

@@ -57,6 +57,14 @@ public procedure missingStatementTerminatorExpectedDiagnosticFileMatches(context
     )
 }
 
+public procedure enumCommaSeparatorExpectedDiagnosticFileMatches(context: Context) -> bool {
+    return expectedDiagnosticFileMatches(
+        context,
+        "HelloUltraviolet/Fixtures/RejectedSource/Parsing/EnumCommaSeparator/Expected.uv",
+        "//! Expected diagnostic metadata for the EnumCommaSeparator rejected-source specimen.\n\nexpectedDiagnostic(\"E-SRC-0520\", \"req.EnumTopLevelCommaSeparatorRejected\")\n"
+    )
+}
+
 public procedure duplicateModuleDeclarationExpectedDiagnosticFileMatches(context: Context) -> bool {
     return expectedDiagnosticFileMatches(
         context,
@@ -453,6 +461,14 @@ public procedure arrayIndexOutOfBoundsExpectedDiagnosticFileMatches(context: Con
     )
 }
 
+public procedure arrayIndexNonUsizeExpectedDiagnosticFileMatches(context: Context) -> bool {
+    return expectedDiagnosticFileMatches(
+        context,
+        "HelloUltraviolet/Fixtures/RejectedSource/Expressions/ArrayIndexNonUsize/Expected.uv",
+        "//! Expected diagnostic metadata for the ArrayIndexNonUsize rejected-source specimen.\n\nexpectedDiagnostic(\"E-TYP-1812\", \"Index-Array-NonUsize\")\n"
+    )
+}
+
 public procedure ptrNullSynthesisExpectedDiagnosticFileMatches(context: Context) -> bool {
     return expectedDiagnosticFileMatches(
         context,
@@ -564,6 +580,14 @@ public procedure tupleAccessNonTupleExpectedDiagnosticFileMatches(context: Conte
         context,
         "HelloUltraviolet/Fixtures/RejectedSource/Expressions/TupleAccessNonTuple/Expected.uv",
         "//! Expected diagnostic metadata for the TupleAccessNonTuple rejected-source specimen.\n\nexpectedDiagnostic(\"E-SEM-2524\", \"diag.16.AccessAndPlaceExpressions\")\n"
+    )
+}
+
+public procedure tupleIndexOutOfBoundsExpectedDiagnosticFileMatches(context: Context) -> bool {
+    return expectedDiagnosticFileMatches(
+        context,
+        "HelloUltraviolet/Fixtures/RejectedSource/Expressions/TupleIndexOutOfBounds/Expected.uv",
+        "//! Expected diagnostic metadata for the TupleIndexOutOfBounds rejected-source specimen.\n\nexpectedDiagnostic(\"E-TYP-1801\", \"TupleIndex-OOB\")\n"
     )
 }
 
@@ -1116,6 +1140,14 @@ public procedure recordFieldInitDuplicateExpectedDiagnosticFileMatches(context: 
         context,
         "HelloUltraviolet/Fixtures/RejectedSource/Expressions/RecordFieldInitDuplicate/Expected.uv",
         "//! Expected diagnostic metadata for the RecordFieldInitDuplicate rejected-source specimen.\n\nexpectedDiagnostic(\"E-TYP-1903\", \"rule.16.Record-FieldInit-Dup\")\n"
+    )
+}
+
+public procedure recordDuplicateFieldExpectedDiagnosticFileMatches(context: Context) -> bool {
+    return expectedDiagnosticFileMatches(
+        context,
+        "HelloUltraviolet/Fixtures/RejectedSource/Expressions/RecordDuplicateField/Expected.uv",
+        "//! Expected diagnostic metadata for the RecordDuplicateField rejected-source specimen.\n\nexpectedDiagnostic(\"E-TYP-1901\", \"WF-Record-DupField\")\n"
     )
 }
 
@@ -1888,6 +1920,78 @@ public procedure fieldVisibilityExpectedDiagnosticFileMatches(context: Context) 
         context,
         "HelloUltraviolet/Fixtures/RejectedSource/Expressions/FieldVisibility/Expected.uv",
         "//! Expected diagnostic metadata for the FieldVisibility rejected-source specimen.\n\nexpectedDiagnostic(\"E-TYP-1905\", \"def.16.FieldVisibility\")\n"
+    )
+}
+
+public procedure recordFieldVisibilityViolationExpectedDiagnosticFileMatches(
+    context: Context
+) -> bool {
+    return expectedDiagnosticFileMatches(
+        context,
+        "HelloUltraviolet/Fixtures/RejectedSource/Expressions/RecordFieldVisibilityViolation/Expected.uv",
+        "//! Expected diagnostic metadata for the RecordFieldVisibilityViolation rejected-source specimen.\n\nexpectedDiagnostic(\"E-TYP-1906\", \"FieldVisOk-Err\")\n"
+    )
+}
+
+public procedure enumEmptyExpectedDiagnosticFileMatches(context: Context) -> bool {
+    return expectedDiagnosticFileMatches(
+        context,
+        "HelloUltraviolet/Fixtures/RejectedSource/Expressions/EnumEmpty/Expected.uv",
+        "//! Expected diagnostic metadata for the EnumEmpty rejected-source specimen.\n\nexpectedDiagnostic(\"E-TYP-2001\", \"Enum-Empty-Err\")\n"
+    )
+}
+
+public procedure enumDuplicateVariantExpectedDiagnosticFileMatches(context: Context) -> bool {
+    return expectedDiagnosticFileMatches(
+        context,
+        "HelloUltraviolet/Fixtures/RejectedSource/Expressions/EnumDuplicateVariant/Expected.uv",
+        "//! Expected diagnostic metadata for the EnumDuplicateVariant rejected-source specimen.\n\nexpectedDiagnostic(\"E-TYP-2002\", \"Enum-Variant-Dup\")\n"
+    )
+}
+
+public procedure enumDuplicateDiscriminantExpectedDiagnosticFileMatches(
+    context: Context
+) -> bool {
+    return expectedDiagnosticFileMatches(
+        context,
+        "HelloUltraviolet/Fixtures/RejectedSource/Expressions/EnumDuplicateDiscriminant/Expected.uv",
+        "//! Expected diagnostic metadata for the EnumDuplicateDiscriminant rejected-source specimen.\n\nexpectedDiagnostic(\"E-TYP-1923\", \"Enum-Disc-Dup\")\n"
+    )
+}
+
+public procedure enumInvalidDiscriminantExpectedDiagnosticFileMatches(
+    context: Context
+) -> bool {
+    return expectedDiagnosticFileMatches(
+        context,
+        "HelloUltraviolet/Fixtures/RejectedSource/Expressions/EnumInvalidDiscriminant/Expected.uv",
+        "//! Expected diagnostic metadata for the EnumInvalidDiscriminant rejected-source specimen.\n\nexpectedDiagnostic(\"E-TYP-1921\", \"Enum-Disc-Invalid\")\n"
+    )
+}
+
+public procedure enumUnknownVariantExpectedDiagnosticFileMatches(context: Context) -> bool {
+    return expectedDiagnosticFileMatches(
+        context,
+        "HelloUltraviolet/Fixtures/RejectedSource/Expressions/EnumUnknownVariant/Expected.uv",
+        "//! Expected diagnostic metadata for the EnumUnknownVariant rejected-source specimen.\n\nexpectedDiagnostic(\"E-TYP-2007\", \"Enum-Lit-Unknown\")\n"
+    )
+}
+
+public procedure enumTupleArityExpectedDiagnosticFileMatches(context: Context) -> bool {
+    return expectedDiagnosticFileMatches(
+        context,
+        "HelloUltraviolet/Fixtures/RejectedSource/Expressions/EnumTupleArity/Expected.uv",
+        "//! Expected diagnostic metadata for the EnumTupleArity rejected-source specimen.\n\nexpectedDiagnostic(\"E-TYP-2008\", \"Enum-Lit-Tuple-Arity-Err\")\n"
+    )
+}
+
+public procedure enumRecordMissingFieldExpectedDiagnosticFileMatches(
+    context: Context
+) -> bool {
+    return expectedDiagnosticFileMatches(
+        context,
+        "HelloUltraviolet/Fixtures/RejectedSource/Expressions/EnumRecordMissingField/Expected.uv",
+        "//! Expected diagnostic metadata for the EnumRecordMissingField rejected-source specimen.\n\nexpectedDiagnostic(\"E-TYP-2009\", \"Enum-Lit-Record-MissingField\")\n"
     )
 }
 
@@ -3276,5 +3380,41 @@ public procedure deriveTargetProhibitedWaitExpectedDiagnosticFileMatches(
         context,
         "HelloUltraviolet/Fixtures/RejectedSource/Comptime/DeriveTargetProhibitedWait/Expected.uv",
         "//! Expected diagnostic metadata for the DeriveTargetProhibitedWait rejected-source specimen.\n\nexpectedDiagnostic(\"E-CTE-0320\", \"requirement.22.DeriveTargetBodyRestrictions\")\n"
+    )
+}
+
+public procedure constMutationExpectedDiagnosticFileMatches(context: Context) -> bool {
+    return expectedDiagnosticFileMatches(
+        context,
+        "HelloUltraviolet/Fixtures/RejectedSource/Permissions/ConstMutation/Expected.uv",
+        "//! Expected diagnostic metadata for the ConstMutation rejected-source specimen.\n\nexpectedDiagnostic(\"E-TYP-1601\", \"diagnostics.PermissionAdmissibility\")\n"
+    )
+}
+
+public procedure uniqueInactiveUseExpectedDiagnosticFileMatches(context: Context) -> bool {
+    return expectedDiagnosticFileMatches(
+        context,
+        "HelloUltraviolet/Fixtures/RejectedSource/Permissions/UniqueInactiveUse/Expected.uv",
+        "//! Expected diagnostic metadata for the UniqueInactiveUse rejected-source specimen.\n\nexpectedDiagnostic(\"E-TYP-1602\", \"diagnostics.PermissionAdmissibility\")\n"
+    )
+}
+
+public procedure sharedMutationWithoutKeyExpectedDiagnosticFileMatches(
+    context: Context
+) -> bool {
+    return expectedDiagnosticFileMatches(
+        context,
+        "HelloUltraviolet/Fixtures/RejectedSource/Permissions/SharedMutationWithoutKey/Expected.uv",
+        "//! Expected diagnostic metadata for the SharedMutationWithoutKey rejected-source specimen.\n\nexpectedDiagnostic(\"E-TYP-1604\", \"diagnostics.PermissionAdmissibility\")\n"
+    )
+}
+
+public procedure receiverPermissionMismatchExpectedDiagnosticFileMatches(
+    context: Context
+) -> bool {
+    return expectedDiagnosticFileMatches(
+        context,
+        "HelloUltraviolet/Fixtures/RejectedSource/Permissions/ReceiverPermissionMismatch/Expected.uv",
+        "//! Expected diagnostic metadata for the ReceiverPermissionMismatch rejected-source specimen.\n\nexpectedDiagnostic(\"E-TYP-1605\", \"diagnostics.PermissionAdmissibility\")\n"
     )
 }

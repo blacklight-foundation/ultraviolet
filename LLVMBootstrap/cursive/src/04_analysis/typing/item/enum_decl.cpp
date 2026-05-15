@@ -226,9 +226,9 @@ EnumDeclResult TypeEnumDecl(
 
   // Check variant names are distinct
   if (!DistinctVariantNames(decl.variants)) {
-    SPEC_RULE("WF-EnumDecl-DupVariant");
+    SPEC_RULE("Enum-Variant-Dup");
     result.ok = false;
-    result.diag_id = "E-TYP-2505";
+    result.diag_id = "E-TYP-2002";
     return result;
   }
 
@@ -450,9 +450,9 @@ EnumDeclResult TypeEnumDeclSignature(
 
   // Check variant names are distinct
   if (!DistinctVariantNames(decl.variants)) {
-    SPEC_RULE("WF-EnumDecl-DupVariant");
+    SPEC_RULE("Enum-Variant-Dup");
     result.ok = false;
-    result.diag_id = "E-TYP-2505";
+    result.diag_id = "E-TYP-2002";
     return result;
   }
 

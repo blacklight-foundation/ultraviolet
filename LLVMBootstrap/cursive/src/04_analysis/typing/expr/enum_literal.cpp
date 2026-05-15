@@ -35,6 +35,8 @@ namespace {
 
 static inline void SpecDefsEnumLiteral() {
   SPEC_DEF("T-Enum-Lit-Unit", "5.2.12");
+  SPEC_DEF("Enum-Lit-Tuple-Arity-Err", "12.7.4");
+  SPEC_DEF("Enum-Lit-Record-MissingField", "12.7.4");
   SPEC_DEF("T-Enum-Lit-Tuple", "5.2.12");
   SPEC_DEF("T-Enum-Lit-Record", "5.2.12");
 }
@@ -174,6 +176,8 @@ CheckResult CheckEnumLiteralPayloadAgainst(
     }
     const auto& paren = std::get<ast::EnumPayloadParen>(expr_payload);
     if (paren.elements.size() != tuple_payload.elements.size()) {
+      SPEC_RULE("Enum-Lit-Tuple-Arity-Err");
+      result.diag_id = "E-TYP-2008";
       return result;
     }
 
@@ -224,12 +228,19 @@ CheckResult CheckEnumLiteralPayloadAgainst(
   }
 
   if (field_types.size() != seen.size()) {
+    SPEC_RULE("Enum-Lit-Record-MissingField");
+    result.diag_id = "E-TYP-2009";
     return result;
   }
 
   for (const auto& field_init : brace.fields) {
     const auto it = field_types.find(IdKeyOf(field_init.name));
     if (it == field_types.end()) {
+      SPEC_RULE("Enum-Lit-Record-MissingField");
+      result.diag_id = "E-TYP-2009";
+      if (field_init.value) {
+        result.diag_span = field_init.value->span;
+      }
       return result;
     }
     const auto check =

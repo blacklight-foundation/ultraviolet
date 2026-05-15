@@ -1,11 +1,73 @@
 //! Reference specimens for Statements / Blocks.
 
-/// Exercises the Statements Blocks reference surface.
-public procedure runStatementsBlocksReference() -> bool {
+internal procedure blockTailExpressionValue() -> i32 {
     let value: i32 = {
         let left: i32 = 10
         let right: i32 = 5
         left + right
     }
-    return value == 15
+    return value
+}
+
+internal procedure blockTailExpressionAfterNewlineValue() -> i32 {
+    let value: i32 = {
+
+        21
+    }
+    return value
+}
+
+internal procedure blockUnitNoTailValue() -> i32 {
+    var value: i32 = 1
+    {
+        value = value + 2
+    }
+    return value
+}
+
+internal procedure emptyBlockSequenceValue() -> i32 {
+    var value: i32 = 4
+    {}
+    value = value + 1
+    return value
+}
+
+internal procedure blockReturnTailValue() -> i32 {
+    {
+        return 29
+    }
+    return 0
+}
+
+internal procedure nestedBlockScopeValue() -> i32 {
+    let outer_value: i32 = 8
+    let nested_value: i32 = {
+        let inner_value: i32 = outer_value + 3
+        {
+            let deeper_value: i32 = inner_value + 4
+            deeper_value
+        }
+    }
+    return nested_value
+}
+
+internal procedure statementSequenceStopsOnReturnValue() -> i32 {
+    var value: i32 = 0
+    {
+        value = 7
+        return value
+        value = 99
+    }
+    return value
+}
+
+/// Exercises the Statements Blocks reference surface.
+public procedure runStatementsBlocksReference() -> bool {
+    return blockTailExpressionValue() == 15 &&
+        blockTailExpressionAfterNewlineValue() == 21 &&
+        blockUnitNoTailValue() == 3 &&
+        emptyBlockSequenceValue() == 5 &&
+        blockReturnTailValue() == 29 &&
+        nestedBlockScopeValue() == 15 &&
+        statementSequenceStopsOnReturnValue() == 7
 }

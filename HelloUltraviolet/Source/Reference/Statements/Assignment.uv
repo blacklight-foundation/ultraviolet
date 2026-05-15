@@ -1,9 +1,76 @@
 //! Reference specimens for Statements / Assignment.
 
-/// Exercises the Statements Assignment reference surface.
-public procedure runStatementsAssignmentReference() -> bool {
+internal record AssignmentCell {
+    internal left: i32
+    internal right: i32
+}
+
+internal record AssignmentPayload {
+    internal value: i32
+}
+
+internal procedure directAssignmentValue() -> i32 {
     var value: i32 = 1
     value = value + 2
     value = value * 3
-    return value == 9
+    return value
+}
+
+internal procedure compoundAssignmentValue() -> i32 {
+    var value: i32 = 20
+    value += 7
+    value -= 3
+    value *= 2
+    value /= 4
+    value %= 5
+    return value
+}
+
+internal procedure fieldAssignmentValue() -> i32 {
+    var cell: AssignmentCell = AssignmentCell { left: 3, right: 5 }
+    cell.right = cell.left + 9
+    return cell.right
+}
+
+internal procedure tupleAssignmentValue() -> i32 {
+    var pair: (i32, i32) = (4, 6)
+    pair.1 = pair.0 + 8
+    return pair.1
+}
+
+internal procedure indexAssignmentValue() -> i32 {
+    var values: [i32; 3] = [1, 2, 3]
+    values[1usize] = values[0usize] + values[2usize]
+    return values[1usize]
+}
+
+internal procedure immovableAssignmentValue() -> i32 {
+    var payload: AssignmentPayload := AssignmentPayload { value: 7 }
+    payload.value = payload.value + 4
+    payload = AssignmentPayload { value: payload.value + 2 }
+    return payload.value
+}
+
+internal procedure assignmentInitializerControlValue() -> i32 {
+    var value: i32 = 1
+    value = { return 43 }
+    return value
+}
+
+internal procedure compoundAssignmentControlValue() -> i32 {
+    var value: i32 = 1
+    value += { return 47 }
+    return value
+}
+
+/// Exercises the Statements Assignment reference surface.
+public procedure runStatementsAssignmentReference() -> bool {
+    return directAssignmentValue() == 9 &&
+        compoundAssignmentValue() == 2 &&
+        fieldAssignmentValue() == 12 &&
+        tupleAssignmentValue() == 12 &&
+        indexAssignmentValue() == 4 &&
+        immovableAssignmentValue() == 13 &&
+        assignmentInitializerControlValue() == 43 &&
+        compoundAssignmentControlValue() == 47
 }

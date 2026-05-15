@@ -2909,7 +2909,42 @@ int cursive::driver::RunCompiler(int argc, char** argv) {
           check_ms = std::chrono::duration_cast<std::chrono::milliseconds>(
               std::chrono::steady_clock::now() - sema_start).count();
           if (typecheck_ok && opts->check_only) {
-            phase4_ok = true;  // --check: skip codegen, report success
+            const auto lowerability_start = std::chrono::steady_clock::now();
+            progress("Validating",
+                     sema_project.assembly.name + " lowerability");
+            log_machine("phase=lowerability");
+            core::Conformance::SetPhase("lowerability");
+
+            if (!assembly_graph.has_value()) {
+              EmitInternalDiagnostic(
+                  diags, cursive::core::Severity::Error, std::nullopt,
+                  "Failed to construct assembly import graph for lowerability validation: " +
+                      sema_project.assembly.name);
+              phase4_ok = false;
+            } else {
+              auto output_project = analysis::BuildOutputProjectForAssembly(
+                  sema_project, *assembly_graph, sema_project.assembly.name);
+              if (!output_project.has_value()) {
+                if (const auto diag = core::MakeDiagnosticById("E-OUT-0417")) {
+                  core::Emit(diags, *diag);
+                }
+                phase4_ok = false;
+              } else {
+                phase4_ok = driver::ValidateLowerability(sema_project,
+                                                         *output_project,
+                                                         ctx,
+                                                         name_maps,
+                                                         typechecked,
+                                                         diags);
+              }
+            }
+
+            codegen_ms = std::chrono::duration_cast<std::chrono::milliseconds>(
+                std::chrono::steady_clock::now() - lowerability_start).count();
+            log_machine("phase=lowerability finish ok=" +
+                        std::string(phase4_ok ? "true" : "false") +
+                        " emitted_diags=" + std::to_string(diags.size()) +
+                        " elapsed_ms=" + std::to_string(codegen_ms));
           } else if (typecheck_ok) {
             const auto codegen_start = std::chrono::steady_clock::now();
             progress("Compiling",
@@ -3123,6 +3158,7 @@ int cursive::driver::RunCompiler(int argc, char** argv) {
                                                      *name_maps_ptr,
                                                      *typechecked_ptr);
                       if (cache) {
+                        ConfigureCodegenContextForProject(*cache, p);
                         cache->ctx.log_enabled = log_enabled;
                         cache->ctx.log_to_console = log_to_console;
                         cache->ctx.log_to_file = log_to_file;

@@ -1,8 +1,37 @@
 //! Reference specimens for Statements / LocalUsing.
 
-/// Exercises the Statements LocalUsing reference surface.
-public procedure runStatementsLocalUsingReference() -> bool {
+internal procedure localUsingReadAliasValue() -> i32 {
     let source_value: i32 = 19
     using source_value as alias_value
-    return alias_value == 19
+    return alias_value
+}
+
+internal procedure localUsingAliasChainValue() -> i32 {
+    let source_value: i32 = 23
+    using source_value as first_alias
+    using first_alias as second_alias
+    return second_alias
+}
+
+internal procedure localUsingAliasIdentityValue() -> i32 {
+    var source_value: i32 = 29
+    using source_value as alias_value
+    alias_value = alias_value + 2
+    return source_value
+}
+
+internal procedure localUsingNoRuntimeEffectValue() -> i32 {
+    var source_value: i32 = 31
+    let before_using: i32 = source_value
+    using source_value as alias_value
+    let after_using: i32 = source_value
+    return before_using + after_using + alias_value
+}
+
+/// Exercises the Statements LocalUsing reference surface.
+public procedure runStatementsLocalUsingReference() -> bool {
+    return localUsingReadAliasValue() == 19 &&
+        localUsingAliasChainValue() == 23 &&
+        localUsingAliasIdentityValue() == 31 &&
+        localUsingNoRuntimeEffectValue() == 93
 }

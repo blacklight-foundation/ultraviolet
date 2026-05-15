@@ -223,12 +223,12 @@ public procedure validatedConcreteDataTypesRecordsObligations() -> usize {
     ) {
         count = count + 1usize
     }
-    if acceptedObligationEntryMatches(
+    if rejectedSourceObligationEntryMatches(
         "WF-Record-DupField",
         38963usize,
-        "HelloUltraviolet::Reference::DataTypes",
-        "runDataTypesRecordsReference",
-        "Source/Reference/DataTypes/Records.uv"
+        "HelloUltraviolet::Fixtures::RejectedSource",
+        "validatedExpressionsRejectedSourceFixtureCount",
+        "Fixtures/RejectedSource/Expressions/RecordDuplicateField/Source/Main.uv"
     ) {
         count = count + 1usize
     }
@@ -241,12 +241,12 @@ public procedure validatedConcreteDataTypesRecordsObligations() -> usize {
     ) {
         count = count + 1usize
     }
-    if acceptedObligationEntryMatches(
+    if rejectedSourceObligationEntryMatches(
         "FieldVisOk-Err",
         38999usize,
-        "HelloUltraviolet::Reference::DataTypes",
-        "runDataTypesRecordsReference",
-        "Source/Reference/DataTypes/Records.uv"
+        "HelloUltraviolet::Fixtures::RejectedSource",
+        "validatedExpressionsRejectedSourceFixtureCount",
+        "Fixtures/RejectedSource/Expressions/RecordFieldVisibilityViolation/Source/Main.uv"
     ) {
         count = count + 1usize
     }
@@ -493,12 +493,12 @@ public procedure validatedConcreteDataTypesRecordsObligations() -> usize {
     ) {
         count = count + 1usize
     }
-    if acceptedObligationEntryMatches(
+    if rejectedSourceObligationEntryMatches(
         "diagnostics.Records",
         39470usize,
-        "HelloUltraviolet::Reference::DataTypes",
-        "runDataTypesRecordsReference",
-        "Source/Reference/DataTypes/Records.uv"
+        "HelloUltraviolet::Fixtures::RejectedSource",
+        "validatedExpressionsRejectedSourceFixtureCount",
+        "Fixtures/RejectedSource/Expressions/RecordDuplicateField/Source/Main.uv"
     ) {
         count = count + 1usize
     }

@@ -133,12 +133,12 @@ public procedure validatedPermissionsAndBindingStatePermissionAdmissibilityOblig
     ) {
         count = count + 1usize
     }
-    if acceptedObligationEntryMatches(
+    if rejectedSourceObligationEntryMatches(
         "diagnostics.PermissionAdmissibility",
         29782usize,
-        "HelloUltraviolet::Reference::Permissions",
-        "runPermissionsAdmissibilityReference",
-        "Source/Reference/Permissions/Admissibility.uv"
+        "HelloUltraviolet::Fixtures::RejectedSource",
+        "validatedPermissionsRejectedSourceFixtureCount",
+        "Fixtures/RejectedSource/Permissions/ReceiverPermissionMismatch/Source/Main.uv"
     ) {
         count = count + 1usize
     }

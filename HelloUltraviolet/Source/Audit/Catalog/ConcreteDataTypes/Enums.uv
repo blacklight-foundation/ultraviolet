@@ -124,12 +124,12 @@ public procedure validatedConcreteDataTypesEnumsObligations() -> usize {
     ) {
         count = count + 1usize
     }
-    if acceptedObligationEntryMatches(
+    if rejectedSourceObligationEntryMatches(
         "req.EnumTopLevelCommaSeparatorRejected",
         39753usize,
-        "HelloUltraviolet::Reference::DataTypes",
-        "runDataTypesEnumsReference",
-        "Source/Reference/DataTypes/Enums.uv"
+        "HelloUltraviolet::Fixtures::RejectedSource",
+        "validatedParsingRejectedSourceFixtureCount",
+        "Fixtures/RejectedSource/Parsing/EnumCommaSeparator/Source/Main.uv"
     ) {
         count = count + 1usize
     }
@@ -259,57 +259,57 @@ public procedure validatedConcreteDataTypesEnumsObligations() -> usize {
     ) {
         count = count + 1usize
     }
-    if acceptedObligationEntryMatches(
+    if referenceModelObligationEntryMatches(
         "Enum-Disc-NotInt",
         40019usize,
-        "HelloUltraviolet::Reference::DataTypes",
-        "runDataTypesEnumsReference",
-        "Source/Reference/DataTypes/Enums.uv"
+        "HelloUltraviolet::Audit",
+        "specClarificationLedgerIsIndexed",
+        "Source/Audit/SpecClarifications.uv"
     ) {
         count = count + 1usize
     }
-    if acceptedObligationEntryMatches(
+    if rejectedSourceObligationEntryMatches(
         "Enum-Disc-Invalid",
         40037usize,
-        "HelloUltraviolet::Reference::DataTypes",
-        "runDataTypesEnumsReference",
-        "Source/Reference/DataTypes/Enums.uv"
+        "HelloUltraviolet::Fixtures::RejectedSource",
+        "validatedExpressionsRejectedSourceFixtureCount",
+        "Fixtures/RejectedSource/Expressions/EnumInvalidDiscriminant/Source/Main.uv"
     ) {
         count = count + 1usize
     }
-    if acceptedObligationEntryMatches(
+    if referenceModelObligationEntryMatches(
         "Enum-Disc-Negative",
         40055usize,
-        "HelloUltraviolet::Reference::DataTypes",
-        "runDataTypesEnumsReference",
-        "Source/Reference/DataTypes/Enums.uv"
+        "HelloUltraviolet::Audit",
+        "specClarificationLedgerIsIndexed",
+        "Source/Audit/SpecClarifications.uv"
     ) {
         count = count + 1usize
     }
-    if acceptedObligationEntryMatches(
+    if rejectedSourceObligationEntryMatches(
         "Enum-Disc-Dup",
         40073usize,
-        "HelloUltraviolet::Reference::DataTypes",
-        "runDataTypesEnumsReference",
-        "Source/Reference/DataTypes/Enums.uv"
+        "HelloUltraviolet::Fixtures::RejectedSource",
+        "validatedExpressionsRejectedSourceFixtureCount",
+        "Fixtures/RejectedSource/Expressions/EnumDuplicateDiscriminant/Source/Main.uv"
     ) {
         count = count + 1usize
     }
-    if acceptedObligationEntryMatches(
+    if rejectedSourceObligationEntryMatches(
         "Enum-Empty-Err",
         40091usize,
-        "HelloUltraviolet::Reference::DataTypes",
-        "runDataTypesEnumsReference",
-        "Source/Reference/DataTypes/Enums.uv"
+        "HelloUltraviolet::Fixtures::RejectedSource",
+        "validatedExpressionsRejectedSourceFixtureCount",
+        "Fixtures/RejectedSource/Expressions/EnumEmpty/Source/Main.uv"
     ) {
         count = count + 1usize
     }
-    if acceptedObligationEntryMatches(
+    if rejectedSourceObligationEntryMatches(
         "Enum-Variant-Dup",
         40109usize,
-        "HelloUltraviolet::Reference::DataTypes",
-        "runDataTypesEnumsReference",
-        "Source/Reference/DataTypes/Enums.uv"
+        "HelloUltraviolet::Fixtures::RejectedSource",
+        "validatedExpressionsRejectedSourceFixtureCount",
+        "Fixtures/RejectedSource/Expressions/EnumDuplicateVariant/Source/Main.uv"
     ) {
         count = count + 1usize
     }
@@ -349,12 +349,12 @@ public procedure validatedConcreteDataTypesEnumsObligations() -> usize {
     ) {
         count = count + 1usize
     }
-    if acceptedObligationEntryMatches(
+    if rejectedSourceObligationEntryMatches(
         "Enum-Lit-Unknown",
         40200usize,
-        "HelloUltraviolet::Reference::DataTypes",
-        "runDataTypesEnumsReference",
-        "Source/Reference/DataTypes/Enums.uv"
+        "HelloUltraviolet::Fixtures::RejectedSource",
+        "validatedExpressionsRejectedSourceFixtureCount",
+        "Fixtures/RejectedSource/Expressions/EnumUnknownVariant/Source/Main.uv"
     ) {
         count = count + 1usize
     }
@@ -367,12 +367,12 @@ public procedure validatedConcreteDataTypesEnumsObligations() -> usize {
     ) {
         count = count + 1usize
     }
-    if acceptedObligationEntryMatches(
+    if rejectedSourceObligationEntryMatches(
         "Enum-Lit-Tuple-Arity-Err",
         40236usize,
-        "HelloUltraviolet::Reference::DataTypes",
-        "runDataTypesEnumsReference",
-        "Source/Reference/DataTypes/Enums.uv"
+        "HelloUltraviolet::Fixtures::RejectedSource",
+        "validatedExpressionsRejectedSourceFixtureCount",
+        "Fixtures/RejectedSource/Expressions/EnumTupleArity/Source/Main.uv"
     ) {
         count = count + 1usize
     }
@@ -385,12 +385,12 @@ public procedure validatedConcreteDataTypesEnumsObligations() -> usize {
     ) {
         count = count + 1usize
     }
-    if acceptedObligationEntryMatches(
+    if rejectedSourceObligationEntryMatches(
         "Enum-Lit-Record-MissingField",
         40272usize,
-        "HelloUltraviolet::Reference::DataTypes",
-        "runDataTypesEnumsReference",
-        "Source/Reference/DataTypes/Enums.uv"
+        "HelloUltraviolet::Fixtures::RejectedSource",
+        "validatedExpressionsRejectedSourceFixtureCount",
+        "Fixtures/RejectedSource/Expressions/EnumRecordMissingField/Source/Main.uv"
     ) {
         count = count + 1usize
     }
@@ -538,12 +538,12 @@ public procedure validatedConcreteDataTypesEnumsObligations() -> usize {
     ) {
         count = count + 1usize
     }
-    if acceptedObligationEntryMatches(
+    if rejectedSourceObligationEntryMatches(
         "diagnostics.Enums",
         40579usize,
-        "HelloUltraviolet::Reference::DataTypes",
-        "runDataTypesEnumsReference",
-        "Source/Reference/DataTypes/Enums.uv"
+        "HelloUltraviolet::Fixtures::RejectedSource",
+        "validatedExpressionsRejectedSourceFixtureCount",
+        "Fixtures/RejectedSource/Expressions/EnumEmpty/Source/Main.uv"
     ) {
         count = count + 1usize
     }

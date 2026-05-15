@@ -1,7 +1,6 @@
 //! Reference specimens for Statements / Defer.
 
-/// Exercises the Statements Defer reference surface.
-public procedure runStatementsDeferReference() -> bool {
+internal procedure deferScopeExitValue() -> i32 {
     var value: i32 = 0
     {
         defer {
@@ -9,5 +8,55 @@ public procedure runStatementsDeferReference() -> bool {
         }
         value = value + 2
     }
-    return value == 3
+    return value
+}
+
+internal procedure deferNestedCleanupValue() -> i32 {
+    var value: i32 = 1
+    {
+        defer {
+            value = value * 3
+        }
+        defer {
+            value = value + 2
+        }
+    }
+    return value
+}
+
+internal procedure deferSafeLoopControlValue() -> i32 {
+    var value: i32 = 0
+    {
+        defer {
+            var index: i32 = 0
+            loop {
+                index = index + 1
+                if index < 2 {
+                    continue
+                }
+                break
+            }
+            value = value + index
+        }
+    }
+    return value
+}
+
+internal procedure deferCleanupAfterBlockTailValue() -> i32 {
+    var value: i32 = 0
+    let block_value: i32 = {
+        defer {
+            value = value + 5
+        }
+        7
+    }
+    return value + block_value
+}
+
+/// Exercises the Statements Defer reference surface.
+public procedure runStatementsDeferReference() -> bool {
+    return deferScopeExitValue() == 3 &&
+        deferNestedCleanupValue() == 9 &&
+        deferSafeLoopControlValue() == 2 &&
+        deferCleanupAfterBlockTailValue() == 12
 }

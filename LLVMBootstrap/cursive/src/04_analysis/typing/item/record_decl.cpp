@@ -496,7 +496,7 @@ RecordDeclResult TypeRecordDecl(
   if (!DistinctFieldNames(fields)) {
     SPEC_RULE("WF-Record-DupField");
     result.ok = false;
-    result.diag_id = "WF-Record-DupField";
+    result.diag_id = "E-TYP-1901";
     return result;
   }
 
@@ -1078,7 +1078,7 @@ RecordDeclResult TypeRecordDeclSignature(
   if (!DistinctFieldNames(fields)) {
     SPEC_RULE("WF-Record-DupField");
     result.ok = false;
-    result.diag_id = "WF-Record-DupField";
+    result.diag_id = "E-TYP-1901";
     return result;
   }
 

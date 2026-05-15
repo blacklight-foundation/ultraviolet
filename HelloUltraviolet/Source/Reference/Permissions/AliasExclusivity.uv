@@ -5,20 +5,46 @@ internal procedure consumePermissionCell(move cell: unique PermissionCell) -> i3
     return consumed.value + 0
 }
 
+internal procedure inspectConstPermissionCell(cell: const PermissionCell) -> i32 {
+    return cell~>readConst()
+}
+
+internal procedure inspectSharedPermissionCell(cell: shared PermissionCell) -> i32 {
+    #cell read {
+        return cell.value + 0
+    }
+    return 0
+}
+
+internal procedure inspectUniquePermissionCell(cell: unique PermissionCell) -> i32 {
+    return cell~>readUnique()
+}
+
 internal procedure aliasExclusivityValue() -> i32 {
-    let unique_cell: unique PermissionCell = PermissionCell { value: 6 }
+    var unique_cell: unique PermissionCell = PermissionCell { value: 6 }
+    let unique_const_view: i32 = inspectConstPermissionCell(unique_cell)
+    let unique_shared_view: i32 = inspectSharedPermissionCell(unique_cell)
+    let unique_preserved: i32 = inspectUniquePermissionCell(unique_cell)
     let consumed: i32 = consumePermissionCell(move unique_cell)
     var shared_cell: shared PermissionCell = PermissionCell { value: 7 }
     var shared_sum: i32 = 0
+    let shared_const_view: i32 = inspectConstPermissionCell(shared_cell)
+    let shared_shared_view: i32 = inspectSharedPermissionCell(shared_cell)
     #shared_cell write {
         let first: i32 = shared_cell~>readShared()
         let second: i32 = shared_cell~>readConst()
         shared_sum = first + second
     }
-    return consumed + shared_sum
+    return unique_const_view +
+        unique_shared_view +
+        unique_preserved +
+        consumed +
+        shared_const_view +
+        shared_shared_view +
+        shared_sum
 }
 
 /// Exercises the Permissions AliasExclusivity reference surface.
 public procedure runPermissionsAliasExclusivityReference() -> bool {
-    return aliasExclusivityValue() == 20
+    return aliasExclusivityValue() == 52
 }

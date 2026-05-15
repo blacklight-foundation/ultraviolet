@@ -1,10 +1,42 @@
 //! Reference specimens for Statements / Unsafe.
 
-/// Exercises the Statements Unsafe reference surface.
-public procedure runStatementsUnsafeReference() -> bool {
+internal procedure unsafeStatementValue() -> i32 {
     var value: i32 = 0
     unsafe {
         value = value + 1
     }
-    return value == 1
+    return value
+}
+
+internal procedure unsafeStatementTailIgnoredValue() -> i32 {
+    var value: i32 = 2
+    unsafe {
+        value = value + 3
+        value + 5
+    }
+    return value
+}
+
+internal procedure unsafeRequiredOperationValue() -> i32 {
+    let source_value: i32 = 7
+    var transmuted_value: i32 = 0
+    unsafe {
+        transmuted_value = transmute<i32, i32>(source_value)
+    }
+    return transmuted_value
+}
+
+internal procedure unsafeStatementControlValue() -> i32 {
+    unsafe {
+        return 11
+    }
+    return 0
+}
+
+/// Exercises the Statements Unsafe reference surface.
+public procedure runStatementsUnsafeReference() -> bool {
+    return unsafeStatementValue() == 1 &&
+        unsafeStatementTailIgnoredValue() == 5 &&
+        unsafeRequiredOperationValue() == 7 &&
+        unsafeStatementControlValue() == 11
 }

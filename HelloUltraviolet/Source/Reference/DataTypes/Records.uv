@@ -6,6 +6,28 @@ public record RecordReference {
     public is_active: bool
 }
 
+public record EmptyRecordReference {}
+
+public record RecordMemberReference {
+    public type CountType = i32
+
+    public value: i32 = 5
+    public label: string@View = "default"
+
+    public procedure readValue(~) -> i32 {
+        return self.value
+    }
+
+    public procedure addToValue(~, amount: i32) -> i32 {
+        return self.value + amount
+    }
+}
+
+public record RecordLayoutReference {
+    public flag: bool
+    public value: i32
+}
+
 public procedure recordReference(
     name: string@View,
     count: usize,
@@ -18,8 +40,57 @@ public procedure recordReference(
     }
 }
 
+internal procedure recordShorthandLiteralReference() -> bool {
+    let name: string@View = "shorthand"
+    let count: usize = 8usize
+    let is_active: bool = true
+    let reference: RecordReference = RecordReference { name, count, is_active }
+    return reference.name == "shorthand" && reference.count == 8usize && reference.is_active
+}
+
+internal procedure recordOutOfOrderLiteralReference() -> bool {
+    let reference: RecordReference = RecordReference {
+        is_active: true,
+        count: 13usize,
+        name: "out-of-order"
+    }
+    return reference.name == "out-of-order" && reference.count == 13usize && reference.is_active
+}
+
+internal procedure recordDefaultConstructorReference() -> bool {
+    let reference: RecordMemberReference = RecordMemberReference()
+    return reference.value == 5 &&
+        reference.label == "default" &&
+        reference~>readValue() == 5 &&
+        reference~>addToValue(7) == 12
+}
+
+internal procedure recordLiteralControlReference(should_return: bool) -> usize {
+    let reference: RecordReference = RecordReference {
+        name: "control",
+        count: if should_return { return 21usize } else { 34usize },
+        is_active: true
+    }
+    return reference.count
+}
+
+internal procedure recordLayoutReference() -> bool {
+    return sizeof(EmptyRecordReference) == 0usize &&
+        alignof(EmptyRecordReference) == 1usize &&
+        sizeof(RecordLayoutReference) == 8usize &&
+        alignof(RecordLayoutReference) == alignof(i32)
+}
+
 /// Exercises the DataTypes Records reference surface.
 public procedure runDataTypesRecordsReference() -> bool {
     let reference: RecordReference = recordReference("records", 3usize, true)
-    return reference.is_active && reference.count == 3usize
+    return reference.name == "records" &&
+        reference.is_active &&
+        reference.count == 3usize &&
+        recordShorthandLiteralReference() &&
+        recordOutOfOrderLiteralReference() &&
+        recordDefaultConstructorReference() &&
+        recordLiteralControlReference(false) == 34usize &&
+        recordLiteralControlReference(true) == 21usize &&
+        recordLayoutReference()
 }

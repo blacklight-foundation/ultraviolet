@@ -88,19 +88,33 @@ bool ContainsTransmuteWarningCandidate(const ast::ExprPtr& expr) {
 bool IsUniqueMoveInitCompatible(const TypeRef& annotated,
                                 const ast::ExprPtr& init,
                                 const PlaceTypeFn& type_place) {
-  if (!init || PermOfType(annotated) != Permission::Unique) {
+  if (!init) {
     return false;
   }
-  const auto* move_expr = std::get_if<ast::MoveExpr>(&init->node);
-  if (!move_expr || !move_expr->place) {
-    return false;
+
+  if (PermOfType(annotated) == Permission::Const) {
+    const auto place = type_place(init);
+    if (!place.ok || PermOfType(place.type) != Permission::Unique) {
+      return false;
+    }
+    const auto eq = TypeEquiv(StripPerm(place.type), StripPerm(annotated));
+    return eq.ok && eq.equiv;
   }
-  const auto place = type_place(move_expr->place);
-  if (!place.ok) {
-    return false;
+
+  if (PermOfType(annotated) == Permission::Unique) {
+    const auto* move_expr = std::get_if<ast::MoveExpr>(&init->node);
+    if (!move_expr || !move_expr->place) {
+      return false;
+    }
+    const auto place = type_place(move_expr->place);
+    if (!place.ok) {
+      return false;
+    }
+    const auto eq = TypeEquiv(StripPerm(place.type), StripPerm(annotated));
+    return eq.ok && eq.equiv;
   }
-  const auto eq = TypeEquiv(StripPerm(place.type), StripPerm(annotated));
-  return eq.ok && eq.equiv;
+
+  return false;
 }
 
 std::optional<std::string_view> ValidateBindingAttributes(

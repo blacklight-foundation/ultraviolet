@@ -1,0 +1,12 @@
+//! Rejected enum specimen for missing record-variant fields.
+
+public enum RecordMissingFieldPayload {
+    Named {
+        first: i32,
+        second: bool
+    }
+}
+
+public procedure enumRecordMissingFieldReference() -> RecordMissingFieldPayload {
+    return RecordMissingFieldPayload::Named { first: 1 }
+}

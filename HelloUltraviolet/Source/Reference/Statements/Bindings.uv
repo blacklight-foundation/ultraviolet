@@ -1,9 +1,116 @@
 //! Reference specimens for Statements / Bindings.
 
-/// Exercises the Statements Bindings reference surface.
-public procedure runStatementsBindingsReference() -> bool {
+internal record BindingPatternRecord {
+    internal count: i32
+    internal is_ready: bool
+}
+
+internal record BindingImmovablePayload {
+    internal value: i32
+}
+
+internal record BindingPermissionCell {
+    internal value: i32
+
+    internal procedure readConst(~) -> i32 {
+        return self.value
+    }
+}
+
+internal procedure annotatedBindingValue() -> i32 {
     let immutable_value: i32 = 3
     var mutable_value: i32 = immutable_value
     mutable_value = mutable_value + 4
-    return mutable_value == 7
+    return mutable_value
+}
+
+internal procedure inferredBindingValue() -> i32 {
+    let immutable_value = 8
+    var mutable_value = immutable_value
+    mutable_value = mutable_value + 5
+    return mutable_value
+}
+
+internal procedure tuplePatternBindingValue() -> i32 {
+    let pair: (i32, bool) = (11, true)
+    let (count, is_ready) = pair
+    if is_ready
+        return count
+    return 0
+}
+
+internal procedure recordPatternBindingValue() -> i32 {
+    let record_value: BindingPatternRecord =
+        BindingPatternRecord { count: 13, is_ready: true }
+    let BindingPatternRecord { count, is_ready } = record_value
+    if is_ready
+        return count
+    return 0
+}
+
+internal procedure immovableBindingValue() -> i32 {
+    let payload: BindingImmovablePayload := BindingImmovablePayload { value: 17 }
+    return payload.value
+}
+
+internal procedure movedUniqueBindingValue() -> i32 {
+    let source: unique i32 = 19
+    let target: unique i32 = move source
+    let value: i32 = move target
+    return value
+}
+
+internal procedure suspendedUniqueBindingValue() -> i32 {
+    let source: unique BindingPermissionCell = BindingPermissionCell { value: 23 }
+    let view: const BindingPermissionCell = source
+    return view~>readConst()
+}
+
+internal procedure freshRegionBindingValue() -> i32 {
+    let options: RegionOptions = RegionOptions { stack_size: 0usize, name: "binding-fresh" }
+    let opened: unique Region@Active = Region::new_scoped(options)
+    let allocated: i32 = opened~>alloc(29)
+    var score: i32 = 0
+    if allocated == 29
+        score = score + 1
+    let freed: Region@Freed = unsafe { opened~>free_unchecked() }
+    return score
+}
+
+internal procedure reboundRegionBindingValue() -> i32 {
+    let options: RegionOptions = RegionOptions { stack_size: 0usize, name: "binding-alias" }
+    let opened: unique Region@Active = Region::new_scoped(options)
+    let alias: unique Region@Active = move opened
+    let allocated: i32 = alias~>alloc(31)
+    var score: i32 = 0
+    if allocated == 31
+        score = score + 1
+    let freed: Region@Freed = unsafe { alias~>free_unchecked() }
+    return score
+}
+
+internal procedure letInitializerControlValue() -> i32 {
+    let value: i32 = { return 37 }
+    return value
+}
+
+internal procedure varInitializerControlValue() -> i32 {
+    var value: i32 = { return 41 }
+    value = value + 1
+    return value
+}
+
+/// Exercises the Statements Bindings reference surface.
+public procedure runStatementsBindingsReference() -> bool {
+    return annotatedBindingValue() == 7 &&
+        inferredBindingValue() == 13 &&
+        tuplePatternBindingValue() == 11 &&
+        recordPatternBindingValue() == 13 &&
+        immovableBindingValue() == 17 &&
+        movedUniqueBindingValue() == 19 &&
+        suspendedUniqueBindingValue() == 23 &&
+        freshRegionBindingValue() == 1 &&
+        reboundRegionBindingValue() == 1 &&
+        letInitializerControlValue() == 37 &&
+        varInitializerControlValue() == 41
 }

@@ -1,11 +1,11 @@
 //! Runtime path checks for source files referenced by generated catalog rows.
 
 public procedure expectedCatalogSourcePathCount() -> usize {
-    return 552usize
+    return 565usize
 }
 
 public procedure catalogSourcePathCount() -> usize {
-    return 552usize
+    return 565usize
 }
 
 internal procedure catalogSourcePathExists(context: Context, source_path: string@View) -> bool {
@@ -70,6 +70,7 @@ public procedure catalogSourcePathsExist(context: Context) -> bool {
         catalogSourcePathExists(context, "HelloUltraviolet/Fixtures/RejectedSource/Expressions/AllocImplicitNoRegion/Source/Main.uv") &&
         catalogSourcePathExists(context, "HelloUltraviolet/Fixtures/RejectedSource/Expressions/ArgsTConsRef/Source/Main.uv") &&
         catalogSourcePathExists(context, "HelloUltraviolet/Fixtures/RejectedSource/Expressions/ArrayIndexNonConst/Source/Main.uv") &&
+        catalogSourcePathExists(context, "HelloUltraviolet/Fixtures/RejectedSource/Expressions/ArrayIndexNonUsize/Source/Main.uv") &&
         catalogSourcePathExists(context, "HelloUltraviolet/Fixtures/RejectedSource/Expressions/ArrayIndexOutOfBounds/Source/Main.uv") &&
         catalogSourcePathExists(context, "HelloUltraviolet/Fixtures/RejectedSource/Expressions/ArraySliceIndexDiagnostics/Source/Main.uv") &&
         catalogSourcePathExists(context, "HelloUltraviolet/Fixtures/RejectedSource/Expressions/AsyncCaptureOutlivesFrame/Source/Main.uv") &&
@@ -102,6 +103,13 @@ public procedure catalogSourcePathsExist(context: Context) -> bool {
         catalogSourcePathExists(context, "HelloUltraviolet/Fixtures/RejectedSource/Expressions/ClosureRefCaptureMoved/Source/Main.uv") &&
         catalogSourcePathExists(context, "HelloUltraviolet/Fixtures/RejectedSource/Expressions/ConstructionExpressionsDiagnostic/Source/Main.uv") &&
         catalogSourcePathExists(context, "HelloUltraviolet/Fixtures/RejectedSource/Expressions/ControlExpressionDiagnosticOwnership/Source/Main.uv") &&
+        catalogSourcePathExists(context, "HelloUltraviolet/Fixtures/RejectedSource/Expressions/EnumDuplicateDiscriminant/Source/Main.uv") &&
+        catalogSourcePathExists(context, "HelloUltraviolet/Fixtures/RejectedSource/Expressions/EnumDuplicateVariant/Source/Main.uv") &&
+        catalogSourcePathExists(context, "HelloUltraviolet/Fixtures/RejectedSource/Expressions/EnumEmpty/Source/Main.uv") &&
+        catalogSourcePathExists(context, "HelloUltraviolet/Fixtures/RejectedSource/Expressions/EnumInvalidDiscriminant/Source/Main.uv") &&
+        catalogSourcePathExists(context, "HelloUltraviolet/Fixtures/RejectedSource/Expressions/EnumRecordMissingField/Source/Main.uv") &&
+        catalogSourcePathExists(context, "HelloUltraviolet/Fixtures/RejectedSource/Expressions/EnumTupleArity/Source/Main.uv") &&
+        catalogSourcePathExists(context, "HelloUltraviolet/Fixtures/RejectedSource/Expressions/EnumUnknownVariant/Source/Main.uv") &&
         catalogSourcePathExists(context, "HelloUltraviolet/Fixtures/RejectedSource/Expressions/ExprUnresolved/Source/Main.uv") &&
         catalogSourcePathExists(context, "HelloUltraviolet/Fixtures/RejectedSource/Expressions/ExpressionDiagnosticsSupplement/Source/Main.uv") &&
         catalogSourcePathExists(context, "HelloUltraviolet/Fixtures/RejectedSource/Expressions/ExternCallUnsafeRequirement/Source/Main.uv") &&
@@ -139,11 +147,13 @@ public procedure catalogSourcePathsExist(context: Context) -> bool {
         catalogSourcePathExists(context, "HelloUltraviolet/Fixtures/RejectedSource/Expressions/RawDerefUnsafeRequirement/Source/Main.uv") &&
         catalogSourcePathExists(context, "HelloUltraviolet/Fixtures/RejectedSource/Expressions/RecordDefaultConstructionEligibility/Source/Main.uv") &&
         catalogSourcePathExists(context, "HelloUltraviolet/Fixtures/RejectedSource/Expressions/RecordDefaultInit/Source/Main.uv") &&
+        catalogSourcePathExists(context, "HelloUltraviolet/Fixtures/RejectedSource/Expressions/RecordDuplicateField/Source/Main.uv") &&
         catalogSourcePathExists(context, "HelloUltraviolet/Fixtures/RejectedSource/Expressions/RecordFieldInitDuplicate/Source/Main.uv") &&
         catalogSourcePathExists(context, "HelloUltraviolet/Fixtures/RejectedSource/Expressions/RecordFieldInitMissing/Source/Main.uv") &&
         catalogSourcePathExists(context, "HelloUltraviolet/Fixtures/RejectedSource/Expressions/RecordFieldNameSet/Source/Main.uv") &&
         catalogSourcePathExists(context, "HelloUltraviolet/Fixtures/RejectedSource/Expressions/RecordFieldNonBitcopyMove/Source/Main.uv") &&
         catalogSourcePathExists(context, "HelloUltraviolet/Fixtures/RejectedSource/Expressions/RecordFieldUnknown/Source/Main.uv") &&
+        catalogSourcePathExists(context, "HelloUltraviolet/Fixtures/RejectedSource/Expressions/RecordFieldVisibilityViolation/Source/Main.uv") &&
         catalogSourcePathExists(context, "HelloUltraviolet/Fixtures/RejectedSource/Expressions/SuspensionFormsDiagnosticsTable/Source/Main.uv") &&
         catalogSourcePathExists(context, "HelloUltraviolet/Fixtures/RejectedSource/Expressions/SyncContainsYield/Source/Main.uv") &&
         catalogSourcePathExists(context, "HelloUltraviolet/Fixtures/RejectedSource/Expressions/SyncContainsYieldFrom/Source/Main.uv") &&
@@ -154,6 +164,7 @@ public procedure catalogSourcePathsExist(context: Context) -> bool {
         catalogSourcePathExists(context, "HelloUltraviolet/Fixtures/RejectedSource/Expressions/TransmuteSizeMismatch/Source/Main.uv") &&
         catalogSourcePathExists(context, "HelloUltraviolet/Fixtures/RejectedSource/Expressions/TransmuteUnsafe/Source/Main.uv") &&
         catalogSourcePathExists(context, "HelloUltraviolet/Fixtures/RejectedSource/Expressions/TupleAccessNonTuple/Source/Main.uv") &&
+        catalogSourcePathExists(context, "HelloUltraviolet/Fixtures/RejectedSource/Expressions/TupleIndexOutOfBounds/Source/Main.uv") &&
         catalogSourcePathExists(context, "HelloUltraviolet/Fixtures/RejectedSource/Expressions/UnionDirectAccess/Source/Main.uv") &&
         catalogSourcePathExists(context, "HelloUltraviolet/Fixtures/RejectedSource/Expressions/ValueUseNonBitcopyPlace/Source/Main.uv") &&
         catalogSourcePathExists(context, "HelloUltraviolet/Fixtures/RejectedSource/Expressions/WaitNonHandle/Source/Main.uv") &&
@@ -264,6 +275,7 @@ public procedure catalogSourcePathsExist(context: Context) -> bool {
         catalogSourcePathExists(context, "HelloUltraviolet/Fixtures/RejectedSource/Parallelism/ParallelWorkgroupSize/Source/Main.uv") &&
         catalogSourcePathExists(context, "HelloUltraviolet/Fixtures/RejectedSource/Parallelism/SpawnInvalidPriorityOption/Source/Main.uv") &&
         catalogSourcePathExists(context, "HelloUltraviolet/Fixtures/RejectedSource/Parallelism/SpawnOutsideParallel/Source/Main.uv") &&
+        catalogSourcePathExists(context, "HelloUltraviolet/Fixtures/RejectedSource/Parsing/EnumCommaSeparator/Source/Main.uv") &&
         catalogSourcePathExists(context, "HelloUltraviolet/Fixtures/RejectedSource/Parsing/MissingStatementTerminator/Source/Main.uv") &&
         catalogSourcePathExists(context, "HelloUltraviolet/Fixtures/RejectedSource/Patterns/BasicPatternsDiagnostic/Source/Main.uv") &&
         catalogSourcePathExists(context, "HelloUltraviolet/Fixtures/RejectedSource/Patterns/CaseClausesDiagnostic/Source/Main.uv") &&
@@ -282,6 +294,7 @@ public procedure catalogSourcePathsExist(context: Context) -> bool {
         catalogSourcePathExists(context, "HelloUltraviolet/Fixtures/RejectedSource/Patterns/RecordPatternUnknownField/Source/Main.uv") &&
         catalogSourcePathExists(context, "HelloUltraviolet/Fixtures/RejectedSource/Patterns/TuplePatternArity/Source/Main.uv") &&
         catalogSourcePathExists(context, "HelloUltraviolet/Fixtures/RejectedSource/Patterns/TupleRecordPatternsDiagnostic/Source/Main.uv") &&
+        catalogSourcePathExists(context, "HelloUltraviolet/Fixtures/RejectedSource/Permissions/ReceiverPermissionMismatch/Source/Main.uv") &&
         catalogSourcePathExists(context, "HelloUltraviolet/Fixtures/RejectedSource/Polymorphism/AssociatedTypeMissingBinding/Source/Main.uv") &&
         catalogSourcePathExists(context, "HelloUltraviolet/Fixtures/RejectedSource/Polymorphism/AssociatedTypeUnboundMember/Source/Main.uv") &&
         catalogSourcePathExists(context, "HelloUltraviolet/Fixtures/RejectedSource/Polymorphism/BitcopyDropConflict/Source/Main.uv") &&

@@ -1,11 +1,101 @@
 //! Reference specimens for DataTypes / Enums.
 
 public enum EnumReference {
-    Idle
-    Count(i32)
+    Idle = 0
+    Count(i32) = 1
     Named {
         value: i32
+    } = 2
+}
+
+public enum UnitEnumReference {
+    First
+    Second = 3
+}
+
+public enum WideDiscriminantEnumReference {
+    Low = 0
+    High = 256
+}
+
+public enum GenericEnumReference<TValue> |: Bitcopy(TValue) {
+    Item(TValue)
+}
+
+internal procedure enumReferencePayloadValue(value: EnumReference) -> i32 {
+    return if value is {
+        EnumReference::Idle {
+            0
+        }
+        EnumReference::Count(payload_value) {
+            payload_value
+        }
+        EnumReference::Named { value: payload_value } {
+            payload_value
+        }
     }
+}
+
+internal procedure enumUnitReference() -> bool {
+    let first: UnitEnumReference = UnitEnumReference::First
+    let second: UnitEnumReference = UnitEnumReference::Second
+    let first_ok: bool = if first is {
+        UnitEnumReference::First {
+            true
+        }
+        UnitEnumReference::Second {
+            false
+        }
+    }
+    let second_ok: bool = if second is {
+        UnitEnumReference::First {
+            false
+        }
+        UnitEnumReference::Second {
+            true
+        }
+    }
+    return first_ok && second_ok
+}
+
+internal procedure enumQualifiedResolutionReference() -> bool {
+    let named_value: i32 = 11
+    let named: EnumReference = EnumReference::Named { value: named_value }
+    let count: EnumReference = EnumReference::Count(13)
+    return enumReferencePayloadValue(named) == 11 &&
+        enumReferencePayloadValue(count) == 13
+}
+
+internal procedure enumGenericReference() -> bool {
+    let item: GenericEnumReference<i32> = GenericEnumReference::Item(17)
+    return if item is {
+        GenericEnumReference::Item(value) {
+            value == 17
+        }
+    }
+}
+
+internal procedure enumTupleControlReference(should_return: bool) -> i32 {
+    let value: EnumReference = EnumReference::Count(
+        if should_return { return 29 } else { 31 }
+    )
+    return enumReferencePayloadValue(value)
+}
+
+internal procedure enumRecordControlReference(should_return: bool) -> i32 {
+    let value: EnumReference = EnumReference::Named {
+        value: if should_return { return 37 } else { 41 }
+    }
+    return enumReferencePayloadValue(value)
+}
+
+internal procedure enumLayoutReference() -> bool {
+    return sizeof(EnumReference) == 8usize &&
+        alignof(EnumReference) == alignof(i32) &&
+        sizeof(UnitEnumReference) == sizeof(u8) &&
+        alignof(UnitEnumReference) == alignof(u8) &&
+        sizeof(WideDiscriminantEnumReference) == sizeof(u16) &&
+        alignof(WideDiscriminantEnumReference) == alignof(u16)
 }
 
 /// Exercises the DataTypes Enums reference surface.
@@ -47,5 +137,15 @@ public procedure runDataTypesEnumsReference() -> bool {
             value == 7
         }
     }
-    return idle_ok && count_ok && named_ok
+    return idle_ok &&
+        count_ok &&
+        named_ok &&
+        enumUnitReference() &&
+        enumQualifiedResolutionReference() &&
+        enumGenericReference() &&
+        enumTupleControlReference(false) == 31 &&
+        enumTupleControlReference(true) == 29 &&
+        enumRecordControlReference(false) == 41 &&
+        enumRecordControlReference(true) == 37 &&
+        enumLayoutReference()
 }

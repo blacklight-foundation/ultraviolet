@@ -16,19 +16,38 @@ internal record PermissionCell {
     }
 }
 
+internal procedure permissionQualifiedLayoutMatches() -> bool {
+    return sizeof(const PermissionCell) == sizeof(PermissionCell) &&
+        alignof(const PermissionCell) == alignof(PermissionCell) &&
+        sizeof(shared PermissionCell) == sizeof(PermissionCell) &&
+        alignof(shared PermissionCell) == alignof(PermissionCell) &&
+        sizeof(unique PermissionCell) == sizeof(PermissionCell) &&
+        alignof(unique PermissionCell) == alignof(PermissionCell)
+}
+
 internal procedure permissionQualifiedBindingValue() -> i32 {
-    let const_cell: const PermissionCell = PermissionCell { value: 1 }
-    var shared_cell: shared PermissionCell = PermissionCell { value: 2 }
-    let unique_cell: unique PermissionCell = PermissionCell { value: 3 }
-    var observed: i32 = const_cell~>readConst()
+    let default_const_cell: PermissionCell = PermissionCell { value: 1 }
+    let explicit_const_cell: const PermissionCell = PermissionCell { value: 2 }
+    var shared_cell: shared PermissionCell = PermissionCell { value: 3 }
+    var unique_cell: unique PermissionCell = PermissionCell { value: 4 }
+    var observed: i32 = default_const_cell~>readConst() + explicit_const_cell~>readConst()
+    #shared_cell read {
+        observed = observed + shared_cell.value
+        observed = observed + shared_cell~>readConst()
+    }
     #shared_cell write {
+        shared_cell.value = shared_cell.value + 1
         observed = observed + shared_cell~>readShared()
     }
+    observed = observed + unique_cell~>readConst()
+    observed = observed + unique_cell~>readShared()
+    unique_cell.value = 6
     observed = observed + unique_cell~>readUnique()
     return observed
 }
 
 /// Exercises the Permissions PermissionForms reference surface.
 public procedure runPermissionsPermissionFormsReference() -> bool {
-    return permissionQualifiedBindingValue() == 6
+    return permissionQualifiedBindingValue() == 27 &&
+        permissionQualifiedLayoutMatches()
 }

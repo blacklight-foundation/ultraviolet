@@ -29,6 +29,7 @@ void NormalizeBindingPattern(std::shared_ptr<Pattern>& pat,
 
 bool IsPunc(const Parser& parser, std::string_view punc);
 bool IsKw(const Parser& parser, std::string_view kw);
+void SkipNewlines(Parser& parser);
 
 namespace {
 
@@ -85,15 +86,18 @@ ParseElemResult<ExprPtr> ParseCtBlockExpr(Parser parser) {
 
   Parser after_l = next;
   Advance(after_l);
+  SkipNewlines(after_l);
   ParseElemResult<ExprPtr> value = ParseExpr(after_l);
-  if (!IsPunc(value.parser, "}")) {
-    EmitParseSyntaxErr(value.parser, TokSpan(value.parser));
-    Parser sync = value.parser;
+  Parser before_r = value.parser;
+  SkipNewlines(before_r);
+  if (!IsPunc(before_r, "}")) {
+    EmitParseSyntaxErr(before_r, TokSpan(before_r));
+    Parser sync = before_r;
     SyncStmt(sync);
     return {sync, MakeExpr(SpanBetween(start, sync), ErrorExpr{})};
   }
 
-  Parser after_r = value.parser;
+  Parser after_r = before_r;
   Advance(after_r);
 
   SPEC_RULE("Parse-CtExpr");

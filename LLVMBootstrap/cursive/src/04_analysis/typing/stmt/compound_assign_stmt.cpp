@@ -380,6 +380,10 @@ namespace
       if (perm->perm == Permission::Const)
       {
         SPEC_RULE("Assign-Const-Err");
+        if (!IsRootIdentifierPlace(node.place))
+        {
+          return {false, "E-TYP-1601", {}, {}};
+        }
         return {false, "E-SEM-3132", {}, {}};
       }
     }

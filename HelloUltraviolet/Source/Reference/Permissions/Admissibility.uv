@@ -1,18 +1,27 @@
 //! Reference specimens for Permissions / Admissibility.
 
 internal procedure receiverAdmissibilityValue() -> i32 {
-    var shared_cell: shared PermissionCell = PermissionCell { value: 4 }
-    let unique_cell: unique PermissionCell = PermissionCell { value: 5 }
-    var observed: i32 = unique_cell~>readConst()
-    observed = observed + unique_cell~>readShared()
+    let const_cell: const PermissionCell = PermissionCell { value: 1 }
+    var shared_cell: shared PermissionCell = PermissionCell { value: 2 }
+    let unique_cell: unique PermissionCell = PermissionCell { value: 3 }
+    var observed: i32 = inspectConstPermissionCell(const_cell)
+    observed = observed + inspectConstPermissionCell(shared_cell)
+    observed = observed + inspectSharedPermissionCell(shared_cell)
+    observed = observed + inspectConstPermissionCell(unique_cell)
+    observed = observed + inspectSharedPermissionCell(unique_cell)
+    observed = observed + inspectUniquePermissionCell(unique_cell)
+    observed = observed + const_cell~>readConst()
     #shared_cell write {
         observed = observed + shared_cell~>readConst()
         observed = observed + shared_cell~>readShared()
     }
+    observed = observed + unique_cell~>readConst()
+    observed = observed + unique_cell~>readShared()
+    observed = observed + unique_cell~>readUnique()
     return observed
 }
 
 /// Exercises the Permissions Admissibility reference surface.
 public procedure runPermissionsAdmissibilityReference() -> bool {
-    return receiverAdmissibilityValue() == 18
+    return receiverAdmissibilityValue() == 28
 }

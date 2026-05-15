@@ -19,6 +19,14 @@ internal enum ComptimeReflectedEnum {
 internal modal ComptimeReflectedModal {
     @Ready {
         internal value: i32
+
+        internal procedure readValue(~) -> i32 {
+            return self.value
+        }
+
+        internal transition finish() -> @Done {
+            return ComptimeReflectedModal@Done {}
+        }
     }
 
     @Done {}
@@ -28,6 +36,19 @@ internal class ComptimeReflectedClass {}
 
 internal record ComptimeReflectedImplementation <: ComptimeReflectedClass {
     internal value: i32
+}
+
+comptime internal procedure reflectedSourceSpanHasExtent(span: SourceSpan) -> bool {
+    return span.file != "" &&
+        span.start_line > 0usize &&
+        span.start_col > 0usize &&
+        (
+            span.end_line > span.start_line ||
+            (
+                span.end_line == span.start_line &&
+                span.end_col >= span.start_col
+            )
+        )
 }
 
 /// Exercises the Comptime Reflection reference surface.
@@ -50,20 +71,48 @@ public procedure runComptimeReflectionReference() -> bool {
     let qualified_module_path_ok: bool = comptime { introspect~>module_path(
         Type::<HelloUltraviolet::Reference::Comptime::ComptimeReflectedRecord>
     ) == diagnostics~>current_module() }
-    let span_line_ok: bool = comptime { diagnostics~>current_span().start_line > 0usize }
+    let span_line_ok: bool = comptime {
+        reflectedSourceSpanHasExtent(diagnostics~>current_span())
+    }
 
     var reflected_field_count: usize = 0usize
     var named_field_count: usize = 0usize
+    var reflected_field_index_total: usize = 0usize
+    var reflected_field_visibility_count: usize = 0usize
+    var reflected_field_primitive_type_count: usize = 0usize
+    var reflected_field_span_count: usize = 0usize
     comptime loop field in introspect~>fields(Type::<ComptimeReflectedRecord>) {
         reflected_field_count = reflected_field_count + 1usize
+        reflected_field_index_total = reflected_field_index_total + comptime { field.index }
         named_field_count = named_field_count +
             comptime if field.name == "first" { 1usize } else { 0usize }
         named_field_count = named_field_count +
             comptime if field.name == "second" { 1usize } else { 0usize }
+        reflected_field_visibility_count = reflected_field_visibility_count +
+            comptime if field.visibility == "internal" { 1usize } else { 0usize }
+        reflected_field_primitive_type_count = reflected_field_primitive_type_count +
+            comptime if introspect~>category(field.type) == TypeCategory::Primitive {
+                1usize
+            } else {
+                0usize
+            }
+        reflected_field_span_count = reflected_field_span_count +
+            comptime if reflectedSourceSpanHasExtent(field.span) {
+                1usize
+            } else {
+                0usize
+            }
     }
 
     var reflected_variant_count: usize = 0usize
     var named_variant_count: usize = 0usize
+    var unit_variant_count: usize = 0usize
+    var tuple_variant_count: usize = 0usize
+    var record_variant_count: usize = 0usize
+    var variant_payload_type_count: usize = 0usize
+    var variant_payload_primitive_type_count: usize = 0usize
+    var variant_payload_field_name_count: usize = 0usize
+    var reflected_variant_span_count: usize = 0usize
     comptime loop variant in introspect~>variants(Type::<ComptimeReflectedEnum>) {
         reflected_variant_count = reflected_variant_count + 1usize
         named_variant_count = named_variant_count +
@@ -72,16 +121,63 @@ public procedure runComptimeReflectionReference() -> bool {
             comptime if variant.name == "Value" { 1usize } else { 0usize }
         named_variant_count = named_variant_count +
             comptime if variant.name == "Named" { 1usize } else { 0usize }
+        unit_variant_count = unit_variant_count +
+            comptime if variant.payload_kind == "unit" { 1usize } else { 0usize }
+        tuple_variant_count = tuple_variant_count +
+            comptime if variant.payload_kind == "tuple" { 1usize } else { 0usize }
+        record_variant_count = record_variant_count +
+            comptime if variant.payload_kind == "record" { 1usize } else { 0usize }
+        comptime loop payload_type in variant.payload_types {
+            variant_payload_type_count = variant_payload_type_count + 1usize
+            variant_payload_primitive_type_count = variant_payload_primitive_type_count +
+                comptime if introspect~>category(payload_type) == TypeCategory::Primitive {
+                    1usize
+                } else {
+                    0usize
+                }
+        }
+        comptime loop field_name in variant.field_names {
+            variant_payload_field_name_count = variant_payload_field_name_count +
+                comptime if field_name == "value" { 1usize } else { 0usize }
+        }
+        reflected_variant_span_count = reflected_variant_span_count +
+            comptime if reflectedSourceSpanHasExtent(variant.span) {
+                1usize
+            } else {
+                0usize
+            }
     }
 
     var reflected_state_count: usize = 0usize
     var named_state_count: usize = 0usize
+    var state_field_name_count: usize = 0usize
+    var state_method_name_count: usize = 0usize
+    var state_transition_name_count: usize = 0usize
+    var reflected_state_span_count: usize = 0usize
     comptime loop state in introspect~>states(Type::<ComptimeReflectedModal>) {
         reflected_state_count = reflected_state_count + 1usize
         named_state_count = named_state_count +
             comptime if state.name == "Ready" { 1usize } else { 0usize }
         named_state_count = named_state_count +
             comptime if state.name == "Done" { 1usize } else { 0usize }
+        comptime loop field_name in state.field_names {
+            state_field_name_count = state_field_name_count +
+                comptime if field_name == "value" { 1usize } else { 0usize }
+        }
+        comptime loop method_name in state.method_names {
+            state_method_name_count = state_method_name_count +
+                comptime if method_name == "readValue" { 1usize } else { 0usize }
+        }
+        comptime loop transition_name in state.transition_names {
+            state_transition_name_count = state_transition_name_count +
+                comptime if transition_name == "finish" { 1usize } else { 0usize }
+        }
+        reflected_state_span_count = reflected_state_span_count +
+            comptime if reflectedSourceSpanHasExtent(state.span) {
+                1usize
+            } else {
+                0usize
+            }
     }
 
     return record_category_ok &&
@@ -94,8 +190,23 @@ public procedure runComptimeReflectionReference() -> bool {
         span_line_ok &&
         reflected_field_count == 2usize &&
         named_field_count == 2usize &&
+        reflected_field_index_total == 1usize &&
+        reflected_field_visibility_count == 2usize &&
+        reflected_field_primitive_type_count == 2usize &&
+        reflected_field_span_count == 2usize &&
         reflected_variant_count == 3usize &&
         named_variant_count == 3usize &&
+        unit_variant_count == 1usize &&
+        tuple_variant_count == 1usize &&
+        record_variant_count == 1usize &&
+        variant_payload_type_count == 2usize &&
+        variant_payload_primitive_type_count == 2usize &&
+        variant_payload_field_name_count == 1usize &&
+        reflected_variant_span_count == 3usize &&
         reflected_state_count == 2usize &&
-        named_state_count == 2usize
+        named_state_count == 2usize &&
+        state_field_name_count == 1usize &&
+        state_method_name_count == 1usize &&
+        state_transition_name_count == 1usize &&
+        reflected_state_span_count == 2usize
 }

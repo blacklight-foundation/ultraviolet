@@ -3,6 +3,7 @@
 public record PrimitiveReference {
     public signed_value: i32
     public unsigned_value: usize
+    public codepoint: char
     public enabled: bool
     public label: string@View
 }
@@ -10,23 +11,133 @@ public record PrimitiveReference {
 public procedure primitiveReference(
     signed_value: i32,
     unsigned_value: usize,
+    codepoint: char,
     enabled: bool,
     label: string@View
 ) -> PrimitiveReference {
     return PrimitiveReference {
         signed_value: signed_value,
         unsigned_value: unsigned_value,
+        codepoint: codepoint,
         enabled: enabled,
         label: label
     }
 }
 
+internal procedure primitiveSignedIntegerReference() -> bool {
+    let eight: i8 = 8i8
+    let sixteen: i16 = 16i16
+    let thirty_two: i32 = -32
+    let sixty_four: i64 = 64i64
+    let one_twenty_eight: i128 = 128i128
+    let pointer_sized: isize = 8isize
+    return eight == 8i8 &&
+        sixteen == 16i16 &&
+        thirty_two == -32 &&
+        sixty_four == 64i64 &&
+        one_twenty_eight == 128i128 &&
+        pointer_sized == 8isize
+}
+
+internal procedure primitiveUnsignedIntegerReference() -> bool {
+    let eight: u8 = 8u8
+    let sixteen: u16 = 16u16
+    let thirty_two: u32 = 32u32
+    let sixty_four: u64 = 64u64
+    let one_twenty_eight: u128 = 128u128
+    let pointer_sized: usize = 8usize
+    return eight == 8u8 &&
+        sixteen == 16u16 &&
+        thirty_two == 32u32 &&
+        sixty_four == 64u64 &&
+        one_twenty_eight == 128u128 &&
+        pointer_sized == 8usize
+}
+
+internal procedure primitiveFloatReference() -> bool {
+    let half: f16 = 1.5f16
+    let single: f32 = 2.5f32
+    let double: f64 = 3.5f64
+    return half > 1.0f16 &&
+        single > 2.0f32 &&
+        double > 3.0f64
+}
+
+internal procedure primitiveDefaultNumericReference() -> bool {
+    let default_int: i32 = 17
+    let default_float: f32 = 1.25
+    return default_int == 17 &&
+        default_float > 1.0f32 &&
+        default_float < 2.0f32
+}
+
+internal procedure primitiveUnitValueReference(value: ()) -> bool {
+    let consumed: () = value
+    return sizeof(()) == 0usize && alignof(()) == 1usize
+}
+
+internal procedure primitiveValueTypeReference() -> bool {
+    let boolean_value: bool = true
+    let character_value: char = 'Z'
+    let unit_value: () = ()
+    return boolean_value &&
+        character_value == 'Z' &&
+        primitiveUnitValueReference(unit_value)
+}
+
+internal procedure primitiveLayoutReference() -> bool {
+    return sizeof(i8) == 1usize &&
+        alignof(i8) == 1usize &&
+        sizeof(i16) == 2usize &&
+        alignof(i16) == 2usize &&
+        sizeof(i32) == 4usize &&
+        alignof(i32) == 4usize &&
+        sizeof(i64) == 8usize &&
+        alignof(i64) == 8usize &&
+        sizeof(i128) == 16usize &&
+        alignof(i128) == 16usize &&
+        sizeof(u8) == 1usize &&
+        alignof(u8) == 1usize &&
+        sizeof(u16) == 2usize &&
+        alignof(u16) == 2usize &&
+        sizeof(u32) == 4usize &&
+        alignof(u32) == 4usize &&
+        sizeof(u64) == 8usize &&
+        alignof(u64) == 8usize &&
+        sizeof(u128) == 16usize &&
+        alignof(u128) == 16usize &&
+        sizeof(isize) == sizeof(usize) &&
+        alignof(isize) == alignof(usize) &&
+        sizeof(f16) == 2usize &&
+        alignof(f16) == 2usize &&
+        sizeof(f32) == 4usize &&
+        alignof(f32) == 4usize &&
+        sizeof(f64) == 8usize &&
+        alignof(f64) == 8usize &&
+        sizeof(bool) == 1usize &&
+        alignof(bool) == 1usize &&
+        sizeof(char) == 4usize &&
+        alignof(char) == 4usize &&
+        sizeof(()) == 0usize &&
+        alignof(()) == 1usize &&
+        sizeof(!) == 0usize &&
+        alignof(!) == 1usize
+}
+
 /// Exercises the DataTypes Primitives reference surface.
 public procedure runDataTypesPrimitivesReference() -> bool {
     let reference: PrimitiveReference =
-        primitiveReference(-7, 7usize, true, "primitive reference")
+        primitiveReference(-7, 7usize, 'P', true, "primitive reference")
     let unit_value: () = ()
     return reference.enabled &&
         reference.signed_value + 14 == 7 &&
-        reference.unsigned_value == 7usize
+        reference.unsigned_value == 7usize &&
+        reference.codepoint == 'P' &&
+        primitiveUnitValueReference(unit_value) &&
+        primitiveSignedIntegerReference() &&
+        primitiveUnsignedIntegerReference() &&
+        primitiveFloatReference() &&
+        primitiveDefaultNumericReference() &&
+        primitiveValueTypeReference() &&
+        primitiveLayoutReference()
 }

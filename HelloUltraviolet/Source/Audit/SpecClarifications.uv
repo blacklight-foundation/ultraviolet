@@ -30,15 +30,27 @@ public procedure specClarificationMatches(
 }
 
 public procedure expectedSpecClarificationCount() -> usize {
-    return 9usize
+    return 14usize
 }
 
 public procedure specClarificationCount() -> usize {
-    return 9usize
+    return 14usize
 }
 
 public procedure validatedSpecClarificationCount() -> usize {
     var count: usize = 0usize
+    if specClarificationMatches(
+        specClarification(
+            "Const Permission Mutation Diagnostic Ownership",
+            "diagnostic-code-overlap",
+            "RejectedSource"
+        ),
+        "Const Permission Mutation Diagnostic Ownership",
+        "diagnostic-code-overlap",
+        "RejectedSource"
+    ) {
+        count = count + 1usize
+    }
     if specClarificationMatches(
         specClarification(
             "rule.18.BlockInfo-Res-Err",
@@ -144,6 +156,54 @@ public procedure validatedSpecClarificationCount() -> usize {
         "Contract Predicate Comptime Procedure Context",
         "contract-comptime-context",
         "ReferenceSource"
+    ) {
+        count = count + 1usize
+    }
+    if specClarificationMatches(
+        specClarification(
+            "WF-Union-TooFew",
+            "internal-ast-recovery-diagnostic",
+            "ReferenceModel"
+        ),
+        "WF-Union-TooFew",
+        "internal-ast-recovery-diagnostic",
+        "ReferenceModel"
+    ) {
+        count = count + 1usize
+    }
+    if specClarificationMatches(
+        specClarification(
+            "TupleIndex-NonConst",
+            "internal-ast-recovery-diagnostic",
+            "ReferenceModel"
+        ),
+        "TupleIndex-NonConst",
+        "internal-ast-recovery-diagnostic",
+        "ReferenceModel"
+    ) {
+        count = count + 1usize
+    }
+    if specClarificationMatches(
+        specClarification(
+            "Enum-Disc-NotInt",
+            "internal-ast-recovery-diagnostic",
+            "ReferenceModel"
+        ),
+        "Enum-Disc-NotInt",
+        "internal-ast-recovery-diagnostic",
+        "ReferenceModel"
+    ) {
+        count = count + 1usize
+    }
+    if specClarificationMatches(
+        specClarification(
+            "Enum-Disc-Negative",
+            "internal-ast-recovery-diagnostic",
+            "ReferenceModel"
+        ),
+        "Enum-Disc-Negative",
+        "internal-ast-recovery-diagnostic",
+        "ReferenceModel"
     ) {
         count = count + 1usize
     }

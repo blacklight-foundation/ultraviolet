@@ -3626,6 +3626,216 @@ HelloUltraviolet.exe: exit=0, 0-byte stdout/stderr
 HelloUltraviolet.exe --audit: exit=0, 0-byte stdout/stderr
 ```
 
+## UVBOOT-0066: Permission Diagnostic Routing and Shared Write Gate
+
+Spec-defined rejected source:
+
+```ultraviolet
+public procedure constMutationPermissionReference() -> i32 {
+    var cell: const PermissionDiagnosticCell = PermissionDiagnosticCell { value: 1 }
+    cell.value = 2
+    return cell.value + 0
+}
+
+public procedure uniqueInactiveUseReference() -> i32 {
+    var cell: unique PermissionDiagnosticCell = PermissionDiagnosticCell { value: 1 }
+    return consumeAfterBorrow(cell, move cell)
+}
+
+public procedure sharedMutationWithoutKeyReference() -> i32 {
+    var cell: shared PermissionDiagnosticCell = PermissionDiagnosticCell { value: 1 }
+    cell.value = 2
+    return cell.value + 0
+}
+```
+
+Observed bootstrap results before repair:
+
+```text
+ConstMutation: emitted E-SEM-3132 for aggregate const-path mutation
+UniqueInactiveUse: the initial non-overlapping source shape compiled; the ArgPass source shape correctly exposed E-TYP-1602
+SharedMutationWithoutKey: exited 0 instead of emitting E-TYP-1604
+ReceiverPermissionMismatch: emitted E-TYP-1605 as specified
+```
+
+Bootstrap owners:
+
+- `LLVMBootstrap/cursive/src/04_analysis/typing/stmt/assign_stmt.cpp`
+- `LLVMBootstrap/cursive/src/04_analysis/typing/stmt/compound_assign_stmt.cpp`
+- `LLVMBootstrap/cursive/src/04_analysis/memory/borrow_bind.cpp`
+
+Failure analysis:
+
+`SPECIFICATION.md` §10.4.7 defines permission-admissibility diagnostics
+`E-TYP-1601`, `E-TYP-1602`, `E-TYP-1604`, and `E-TYP-1605`. The shared-write
+assignment path checked for read-then-write and covering-key conflicts, but
+when no key was held and no more specific key conflict applied, it marked the
+write as if a key existed and allowed the assignment to compile.
+
+Const mutation also has overlapping SPEC ownership: §10.4.7 names
+`E-TYP-1601` for mutation through a `const` path, while §18.11 names
+`E-SEM-3132` for assignment through `const` permission. The implemented
+reading, recorded in `Audit/SpecClarificationsNeeded.md`, is that aggregate
+const-path mutation exercises `E-TYP-1601`, while direct assignment to a root
+`const` binding keeps the Chapter 18 assignment diagnostic.
+
+Required bootstrap behavior:
+
+- Aggregate mutation through a `const` permission-qualified path emits
+  `E-TYP-1601`.
+- Moving a unique value while it is inactive from an earlier non-consuming
+  admissible argument emits `E-TYP-1602`.
+- Direct mutation through a `shared` field path without a held write key emits
+  `E-TYP-1604` unless a more specific key-system diagnostic applies.
+- Incompatible receiver permission calls emit `E-TYP-1605`.
+
+Repair:
+
+- Assignment typing now distinguishes root-identifier const assignment from
+  aggregate const-path mutation when routing the diagnostic code.
+- Binding-state assignment diagnostics use the same distinction, preventing a
+  second Chapter 18 diagnostic on the aggregate const-path fixture.
+- Shared assignment typing now emits `E-TYP-1604` when no covering write key is
+  held and no more specific key-system diagnostic owns the failure.
+- The rejected-source permission fixtures now exercise `E-TYP-1601`,
+  `E-TYP-1602`, `E-TYP-1604`, and `E-TYP-1605`.
+
+Verified bootstrap result after repair:
+
+```text
+Visual Studio bootstrap build wrapper, target=cursive: exit=0, rebuilt Cursive.exe
+Cursive.exe build HelloUltraviolet/Fixtures/RejectedSource/Permissions/ConstMutation --check --target-profile x86_64-win64 --build-progress off --max-errors 8: exit=1, emitted E-TYP-1601
+Cursive.exe build HelloUltraviolet/Fixtures/RejectedSource/Permissions/UniqueInactiveUse --check --target-profile x86_64-win64 --build-progress off --max-errors 8: exit=1, emitted E-TYP-1602
+Cursive.exe build HelloUltraviolet/Fixtures/RejectedSource/Permissions/SharedMutationWithoutKey --check --target-profile x86_64-win64 --build-progress off --max-errors 8: exit=1, emitted E-TYP-1604
+Cursive.exe build HelloUltraviolet/Fixtures/RejectedSource/Permissions/ReceiverPermissionMismatch --check --target-profile x86_64-win64 --build-progress off --max-errors 8: exit=1, emitted E-TYP-1605
+Cursive.exe build HelloUltraviolet --check --target-profile x86_64-win64 --build-progress off --max-errors 20: exit=0, total diagnostic set is eight warnings plus two infos
+Cursive.exe build HelloUltraviolet --target-profile x86_64-win64 --build-progress off --max-errors 20: exit=0, total diagnostic set is eight warnings plus two infos
+HelloUltraviolet.exe: exit=0, 0-byte stdout/stderr
+HelloUltraviolet.exe --audit: exit=0, 0-byte stdout/stderr
+python3 Tools/ExtractObligationLedger.py --check: exit=0, obligations=6045
+git -c filter.lfs.process= -c filter.lfs.required=false diff --check: exit=0
+```
+
+## UVBOOT-0064: Enum Diagnostics Must Preserve SPEC Codes
+
+Status: repaired in the workspace bootstrap and verified by direct rejected
+fixture builds plus `HelloUltraviolet --check`.
+
+Rejected-source specimens:
+
+- `Fixtures/RejectedSource/Expressions/EnumDuplicateVariant`
+- `Fixtures/RejectedSource/Expressions/EnumUnknownVariant`
+- `Fixtures/RejectedSource/Expressions/EnumTupleArity`
+- `Fixtures/RejectedSource/Expressions/EnumRecordMissingField`
+
+Spec obligations exercised:
+
+- `Enum-Variant-Dup`
+- `Enum-Lit-Unknown`
+- `Enum-Lit-Tuple-Arity-Err`
+- `Enum-Lit-Record-MissingField`
+
+Observed bootstrap result before repair:
+
+```text
+EnumDuplicateVariant: error[E-TYP-2505] Name conflict among class members
+EnumUnknownVariant: error[E-MOD-1301] Unresolved name
+EnumTupleArity: error[E-SEM-3161] Return type mismatch
+EnumRecordMissingField: error[E-SEM-3161] Return type mismatch
+```
+
+Bootstrap owners:
+
+- `LLVMBootstrap/cursive/src/04_analysis/typing/item/enum_decl.cpp`
+- `LLVMBootstrap/cursive/src/04_analysis/resolve/resolve_qual.cpp`
+- `LLVMBootstrap/cursive/src/04_analysis/resolve/resolve_module.cpp`
+- `LLVMBootstrap/cursive/src/04_analysis/typing/expr/enum_literal.cpp`
+
+Failure analysis:
+
+The bootstrap used a class-member duplicate diagnostic for duplicate enum
+variants, resolved an unknown variant as a generic missing name, and allowed
+enum payload shape mismatches to fall through until the enclosing return
+statement produced a generic type mismatch. Each source form is a spec-defined
+enum diagnostic, so the enum owner path must report the enum diagnostic code
+directly.
+
+Required bootstrap behavior:
+
+Duplicate enum variant names report `E-TYP-2002`. Qualified enum construction
+against an existing enum path with a missing variant reports `E-TYP-2007`.
+Tuple-like enum literal arity mismatches report `E-TYP-2008`. Record-like enum
+literal missing or unknown fields report `E-TYP-2009`.
+
+Repair:
+
+- Enum declaration duplicate-variant checks now use `Enum-Variant-Dup` and
+  `E-TYP-2002`.
+- Qualified enum resolution now distinguishes an existing enum path with a
+  missing variant from a generic unresolved name and emits `E-TYP-2007`.
+- Resolver diagnostic mapping now carries `E-TYP-2007` through to the
+  diagnostic registry.
+- Enum literal payload checking now emits `E-TYP-2008` for tuple arity
+  mismatches and `E-TYP-2009` for missing or unknown record payload fields.
+
+Verified bootstrap result after repair:
+
+```text
+Visual Studio bootstrap build wrapper: exit=0, rebuilt Cursive.exe
+EnumDuplicateVariant: exit=1, error[E-TYP-2002]
+EnumUnknownVariant: exit=1, error[E-TYP-2007]
+EnumTupleArity: exit=1, error[E-TYP-2008]
+EnumRecordMissingField: exit=1, error[E-TYP-2009]
+Cursive.exe build HelloUltraviolet --check --target-profile x86_64-win64 --build-progress off --max-errors 20: exit=0, total diagnostic set is seven warnings plus two infos
+```
+
+## UVBOOT-0063: Record Duplicate Field Diagnostic Uses SPEC Code
+
+Spec-valid rejected source:
+
+```ultraviolet
+public record DuplicateRecordFieldPayload {
+    public value: i32
+    public value: bool
+}
+```
+
+Observed bootstrap result before repair:
+
+```text
+error: Static rule failed without assigned diagnostic code: WF-Record-DupField
+  --> C:/dev/ultraviolet/HelloUltraviolet/Fixtures/RejectedSource/Expressions/RecordDuplicateField/Source/Main.uv:3:8
+3 | public record DuplicateRecordFieldPayload {
+3 |
+```
+
+Bootstrap owners:
+
+- `LLVMBootstrap/cursive/src/04_analysis/typing/item/record_decl.cpp`
+- `LLVMBootstrap/cursive/src/04_analysis/composite/records.cpp`
+
+Failure analysis:
+
+`SPECIFICATION.md` §12.6.7 assigns `E-TYP-1901` to duplicate field names in
+record declarations, and the formal rule `WF-Record-DupField` carries
+`c = Code(WF-Record-DupField)`. The bootstrap detected the correct static rule
+but returned the rule identifier as the diagnostic id, so the typecheck
+diagnostic layer rendered the fallback uncoded static-rule message.
+
+Repair:
+
+- The duplicate-field checks in `record_decl.cpp` now return `E-TYP-1901`.
+- The shared composite record well-formedness helper in `records.cpp` now also
+  returns `E-TYP-1901`.
+
+Verified bootstrap result after repair:
+
+```text
+Visual Studio bootstrap build wrapper: exit=0, rebuilt Cursive.exe
+Cursive.exe build HelloUltraviolet/Fixtures/RejectedSource/Expressions/RecordDuplicateField --check --target-profile x86_64-win64 --build-progress off --max-errors 4: exit=1, emits E-TYP-1901
+Cursive.exe build HelloUltraviolet --check --target-profile x86_64-win64 --build-progress off --max-errors 12: exit=0, total diagnostic set is seven warnings plus two infos
+```
+
 ## UVBOOT-0054: Compile-Time Procedure Ordinary Control Propagation
 
 Status: repaired in the workspace bootstrap and verified by
@@ -4204,6 +4414,130 @@ HelloUltraviolet.exe --audit: exit=0, 0-byte stdout/stderr
 Tools/ExtractObligationLedger.py --check: exit=0, obligations=6045
 ```
 
+## UVBOOT-0061: Multiline Compile-Time Expression Brace Boundary
+
+Spec-valid source:
+
+```ultraviolet
+let span_line_ok: bool = comptime {
+    reflectedSourceSpanHasExtent(diagnostics~>current_span())
+}
+```
+
+Observed bootstrap result before repair:
+
+```text
+Cursive.exe build HelloUltraviolet --check --target-profile x86_64-win64 --build-progress off --max-errors 12: exit=0
+Cursive.exe build HelloUltraviolet --target-profile x86_64-win64 --build-progress off --max-errors 12: exit=1
+[cursive] codegen failure at C:\Dev\Ultraviolet\LLVMBootstrap\cursive\src\05_codegen\lower\expr\expr_common.cpp:254
+[cursive] EnsureCodegenModule: lowering failed for module 'HelloUltraviolet::Reference::Comptime' (resolve_failed=false, codegen_failed=true)
+error: project codegen context preparation failed
+```
+
+Temporary parser/evaluator tracing identified an `ErrorExpr [61:40-67:1]`
+inside the `ComptimeExpr [61:30-67:6]`.
+
+Bootstrap owner:
+
+- `LLVMBootstrap/cursive/src/02_source/parser/expr/comptime_expr.cpp`
+
+Failure analysis:
+
+`SPECIFICATION.md` §22.1 defines `comptime_expr ::= attribute_list? "comptime"
+"{" expression "}"`, and §4.1.7 defines newline filtering around delimiter
+depth and continuation. A compile-time expression block therefore accepts an
+ordinary expression split across lines inside the braces. The bootstrap
+`ParseCtBlockExpr` path parsed immediately after `{` and required `}`
+immediately after the expression. The retained newline after `{` became the
+start of an error expression, and the parse failure survived the `--check` path
+until full code generation rejected the unexpanded compile-time expression.
+
+Required bootstrap behavior:
+
+`comptime { expression }` must accept newlines around the expression boundary
+consistently with ordinary expression whitespace. Parse failures inside the
+compile-time expression block must be reported during parsing or checking
+instead of surfacing later as a codegen context preparation failure.
+
+Repair:
+
+- `ParseCtBlockExpr` now skips retained newlines after `{` before parsing the
+  expression.
+- `ParseCtBlockExpr` now skips retained newlines before requiring the closing
+  `}`.
+
+Verified bootstrap result after repair:
+
+```text
+Visual Studio bootstrap build wrapper: exit=0, rebuilt Cursive.exe
+Cursive.exe build HelloUltraviolet --check --target-profile x86_64-win64 --build-progress off --max-errors 12: exit=0, total diagnostic set is seven warnings plus two infos
+Cursive.exe build HelloUltraviolet --target-profile x86_64-win64 --build-progress off --max-errors 12: exit=0, total diagnostic set is seven warnings plus two infos
+HelloUltraviolet.exe: exit=0, 0-byte stdout/stderr
+HelloUltraviolet.exe --audit: exit=0, 0-byte stdout/stderr
+Tools/ExtractObligationLedger.py --check: exit=0, obligations=6045
+```
+
+## UVBOOT-0060: Keyword-Named Compile-Time Metadata Field Access
+
+Spec-valid source:
+
+```ultraviolet
+comptime loop field in introspect~>fields(Type::<ComptimeReflectedRecord>) {
+    reflected_field_primitive_type_count = reflected_field_primitive_type_count +
+        comptime if introspect~>category(field.type) == TypeCategory::Primitive {
+            1usize
+        } else {
+            0usize
+        }
+}
+```
+
+Observed bootstrap result before repair:
+
+```text
+error[E-SRC-0520]: Generic syntax error (unexpected token)
+  --> C:/dev/ultraviolet/HelloUltraviolet/Source/Reference/Comptime/Reflection.uv:85:52
+85 |             comptime if introspect~>category(field.type) == TypeCategory::Primitive {
+85 |                                                    ^^^^
+```
+
+Bootstrap owners:
+
+- `LLVMBootstrap/cursive/src/02_source/parser/expr/postfix.cpp`
+- `LLVMBootstrap/cursive/src/02_source/parser/expr/field_access.cpp`
+
+Failure analysis:
+
+`SPECIFICATION.md` §22.2.3 defines `FieldInfoFields` with a field named
+`type`, and §22.3.5 requires `introspect.fields(ty)` to return those
+`FieldInfo` values. The accepted source must therefore be able to select the
+metadata field as `field.type`. The bootstrap lexer tokenizes `type` as a
+keyword, and the dot-field parsing path accepted only `Identifier` tokens after
+`.`. General identifier parsing already preserved keyword lexemes for selected
+identifier slots, but dot-field parsing bypassed that logic and rejected the
+SPEC-defined metadata field before semantic analysis.
+
+Required bootstrap behavior:
+
+Dot-field selection must accept keyword tokens as field selector names. The
+selector position reads an existing member name and does not introduce a local
+binder, so reserved-binder diagnostics do not apply there. Semantic analysis
+still resolves the selected lexeme against the receiver type's fields.
+
+Repair:
+
+- Dot-field parsing in the postfix parser now accepts either an identifier token
+  or a keyword token for the selector lexeme.
+- The standalone field-access parser path was updated with the same selector
+  rule.
+
+Verified bootstrap result after repair:
+
+```text
+Visual Studio bootstrap build wrapper: exit=0, rebuilt Cursive.exe
+Cursive.exe build HelloUltraviolet --check --target-profile x86_64-win64 --build-progress off --max-errors 12: exit=0, total diagnostic set is seven warnings plus two infos
+```
+
 ## UVBOOT-0059: Escaping Closure Expected-Type Alias Normalization
 
 Spec-valid source:
@@ -4271,4 +4605,146 @@ Cursive.exe build HelloUltraviolet --target-profile x86_64-win64 --build-progres
 HelloUltraviolet.exe: exit=0, 0-byte stdout/stderr
 HelloUltraviolet.exe --audit: exit=0, 0-byte stdout/stderr
 Tools/ExtractObligationLedger.py --check: exit=0, obligations=6045
+```
+
+## UVBOOT-0062: Unique Place Binding to Const Suspends Instead of Moving
+
+Spec-valid source:
+
+```ultraviolet
+internal record BindingPermissionCell {
+    internal value: i32
+
+    internal procedure readConst(~) -> i32 {
+        return self.value
+    }
+}
+
+internal procedure suspendedUniqueBindingValue() -> i32 {
+    let source: unique BindingPermissionCell = BindingPermissionCell { value: 23 }
+    let view: const BindingPermissionCell = source
+    return view~>readConst()
+}
+```
+
+Observed bootstrap result before repair:
+
+```text
+error[E-UNS-0107]: Non-`Bitcopy` place expression used as value
+  --> C:/dev/ultraviolet/HelloUltraviolet/Source/Reference/Statements/Bindings.uv:65:5
+65 |     let view: const BindingPermissionCell = source
+65 |     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+```
+
+Bootstrap owners:
+
+- `LLVMBootstrap/cursive/src/04_analysis/typing/stmt/let_stmt.cpp`
+- `LLVMBootstrap/cursive/src/04_analysis/typing/stmt/var_stmt.cpp`
+
+Failure analysis:
+
+`SPECIFICATION.md` §18.2.4 defines `SuspendUniqueBind`: when a binding
+initializer is a place, the initializer has `unique` permission, and the binding
+type has `const` permission, the compiler suspends the unique path. This is an
+accepted binding-state path, not a value copy of a non-`Bitcopy` place.
+
+The bootstrap annotation checker ran ordinary expected-expression checking
+before the binding-state rule could apply. That path treated `source` as an
+ordinary non-`Bitcopy` place value use and emitted `E-UNS-0107`.
+
+Required bootstrap behavior:
+
+Annotated `let` and `var` binding checks must accept a `unique` place
+initializer when the annotated binding type is the same underlying type with
+`const` permission. The memory/binding pass then applies
+`SuspendUniqueBind`/`DowngradeUniqueBind_inplace` to suspend the unique path.
+
+Repair:
+
+- The annotated binding compatibility helper in both `let_stmt.cpp` and
+  `var_stmt.cpp` now recognizes the `unique` place to `const` binding case.
+- The existing explicit `move` compatibility for `unique` bindings is
+  preserved.
+
+Verified bootstrap result after repair:
+
+```text
+Visual Studio bootstrap build wrapper: exit=0, rebuilt Cursive.exe
+Cursive.exe build HelloUltraviolet --check --target-profile x86_64-win64 --build-progress off --max-errors 12: exit=0, total diagnostic set is seven warnings plus two infos
+Cursive.exe build HelloUltraviolet --target-profile x86_64-win64 --build-progress off --max-errors 12: exit=0, total diagnostic set is seven warnings plus two infos
+HelloUltraviolet.exe: exit=0, 0-byte stdout/stderr
+HelloUltraviolet.exe --audit: exit=0, 0-byte stdout/stderr
+```
+
+## UVBOOT-0065: Binary16 Comparison and Runtime Helper ABI
+
+Spec-valid source:
+
+```ultraviolet
+internal procedure primitiveFloatReference() -> bool {
+    let half: f16 = 1.5f16
+    let single: f32 = 2.5f32
+    let double: f64 = 3.5f64
+    return half > 1.0f16 &&
+        single > 2.0f32 &&
+        double > 3.0f64
+}
+```
+
+Observed bootstrap results before repair:
+
+```text
+Cursive.exe build HelloUltraviolet --target-profile x86_64-win64 --build-progress off --max-errors 12: exit=1
+lld-link: error: undefined symbol: __extendhfsf2
+HelloUltraviolet.exe: exit=1
+catalog compiled symbol failed: runDataTypesPrimitivesReference
+reference failed: catalogCompiledSymbolsExecute
+```
+
+Bootstrap owners:
+
+- `LLVMBootstrap/cursive/runtime/src/compat/rtc_stubs.c`
+- `LLVMBootstrap/cursive/src/05_codegen/llvm/emit/ir/ops/binary.cpp`
+
+Failure analysis:
+
+`SPECIFICATION.md` §12.1 defines `f16` as IEEE 754 binary16, and
+§24.2/Appendix D map `f16` to LLVM `half` with size and alignment of two
+bytes. The source above exercises an ordered comparison between representable
+binary16 values, so `1.5f16 > 1.0f16` must evaluate to true.
+
+The bootstrap first failed to link because the CRT-free Windows runtime archive
+did not provide the half-float conversion helper referenced by LLVM lowering.
+After adding the helper, the program linked but the comparison still evaluated
+false. The Windows x64 helper ABI passes the half value through `xmm0`; the
+initial helper read a `uint16_t` integer argument and therefore converted the
+wrong bits.
+
+Required bootstrap behavior:
+
+The compiler must lower ordered binary16 comparisons to the same IEEE ordered
+truth values as the specification: NaN operands are unordered, signed zeroes
+compare equal, and finite/infinite non-NaN operands compare by numeric value.
+The CRT-free runtime must also expose half conversion helpers with the ABI that
+LLVM-generated Windows x64 calls use.
+
+Repair:
+
+- The LLVM binary-operation lowering now emits direct binary16 ordered
+  comparison logic for `half` relational operators. It bitcasts operands to
+  `i16`, rejects NaN operands, treats `+0` and `-0` as equal, and compares
+  non-zero values through an IEEE sortable key.
+- The Windows runtime half helpers now separate bit-level conversion from the
+  exported ABI wrapper. On x64, `__extendhfsf2` receives the low half lane from
+  `xmm0`, and `__truncsfhf2` returns the half bits in `xmm0`.
+
+Verified bootstrap result after repair:
+
+```text
+Visual Studio bootstrap build wrapper, target=cursive: exit=0, rebuilt Cursive.exe
+Visual Studio bootstrap build wrapper, target=ultraviolet0_rt: exit=0, rebuilt UltravioletRT.lib
+Cursive.exe build HelloUltraviolet --check --target-profile x86_64-win64 --build-progress off --max-errors 12: exit=0, total diagnostic set is seven warnings plus two infos
+Cursive.exe build HelloUltraviolet --target-profile x86_64-win64 --build-progress off --max-errors 12: exit=0, total diagnostic set is seven warnings plus two infos
+HelloUltraviolet.exe: exit=0, 0-byte stdout/stderr
+HelloUltraviolet.exe --audit: exit=0, 0-byte stdout/stderr
 ```

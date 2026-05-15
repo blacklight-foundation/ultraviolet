@@ -1,13 +1,22 @@
 //! Reference specimens for Permissions / ActivityStates.
 
 internal procedure uniqueActivityValue() -> i32 {
-    let unique_cell: unique PermissionCell = PermissionCell { value: 9 }
-    let first_read: i32 = unique_cell~>readConst()
-    let second_read: i32 = unique_cell~>readUnique()
-    return first_read + second_read
+    var unique_cell: unique PermissionCell = PermissionCell { value: 9 }
+    let const_use: i32 = inspectConstPermissionCell(unique_cell)
+    unique_cell.value = 10
+    let active_after_const: i32 = unique_cell~>readUnique()
+    let shared_use: i32 = inspectSharedPermissionCell(unique_cell)
+    unique_cell.value = 11
+    let active_after_shared: i32 = unique_cell~>readUnique()
+    let unique_use: i32 = inspectUniquePermissionCell(unique_cell)
+    return const_use +
+        active_after_const +
+        shared_use +
+        active_after_shared +
+        unique_use
 }
 
 /// Exercises the Permissions ActivityStates reference surface.
 public procedure runPermissionsActivityStatesReference() -> bool {
-    return uniqueActivityValue() == 18
+    return uniqueActivityValue() == 51
 }

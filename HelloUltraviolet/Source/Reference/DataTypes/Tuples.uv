@@ -1,9 +1,71 @@
 //! Reference specimens for DataTypes / Tuples.
 
+internal record TupleScanRecord {
+    internal value: i32
+}
+
+internal procedure tupleNestedScannerReference() -> bool {
+    let nested: ((i32, i32), [i32; 2], TupleScanRecord) = (
+        (1, 2),
+        [3, 4],
+        TupleScanRecord { value: 5 },
+    )
+    return nested.0.1 == 2 &&
+        nested.1[1usize] == 4 &&
+        nested.2.value == 5
+}
+
+internal procedure tuplePlaceProjectionReference() -> bool {
+    var pair: (i32, bool) = (3, false)
+    pair.0 = pair.0 + 4
+    pair.1 = true
+    return pair.0 == 7 && pair.1
+}
+
+internal procedure tupleConstructionControlReference(flag: bool) -> i32 {
+    let pair: (i32, i32) = (
+        if flag {
+            return 11
+        } else {
+            1
+        },
+        2
+    )
+    return pair.0
+}
+
+internal procedure tupleAccessControlReference(flag: bool) -> i32 {
+    return (if flag {
+        return 13
+    } else {
+        (1, 2)
+    }).0
+}
+
+internal procedure tupleLayoutReference() -> bool {
+    return sizeof(()) == 0usize &&
+        alignof(()) == 1usize &&
+        sizeof((i32;)) == sizeof(i32) &&
+        alignof((i32;)) == alignof(i32) &&
+        sizeof((i32, bool)) == 8usize &&
+        alignof((i32, bool)) == alignof(i32)
+}
+
 /// Exercises the DataTypes Tuples reference surface.
 public procedure runDataTypesTuplesReference() -> bool {
     let unit_value: () = ()
     let single: (i32;) = (7;)
-    let pair: (i32, bool) = (7, true)
-    return single.0 == pair.0 && pair.1
+    let pair: (i32, bool) = (
+        7,
+        true,
+    )
+    return single.0 == pair.0 &&
+        pair.1 &&
+        tupleNestedScannerReference() &&
+        tuplePlaceProjectionReference() &&
+        tupleConstructionControlReference(false) == 1 &&
+        tupleConstructionControlReference(true) == 11 &&
+        tupleAccessControlReference(false) == 1 &&
+        tupleAccessControlReference(true) == 13 &&
+        tupleLayoutReference()
 }

@@ -3,6 +3,7 @@
 public type DataUnionReference = i32 | bool
 public type ReorderedDataUnionReference = bool | i32
 public type ExpandedDataUnionReference = bool | i64 | i32
+public type NicheDataUnionReference = () | Ptr<i32>@Valid
 
 public procedure numericUnionReference() -> DataUnionReference {
     return 9
@@ -10,6 +11,19 @@ public procedure numericUnionReference() -> DataUnionReference {
 
 public procedure booleanUnionReference() -> DataUnionReference {
     return true
+}
+
+internal procedure falseUnionReference() -> DataUnionReference {
+    return false
+}
+
+internal procedure wideUnionReference() -> ExpandedDataUnionReference {
+    let wide_value: i64 = 64
+    return wide_value
+}
+
+internal procedure emptyNicheUnionReference() -> NicheDataUnionReference {
+    return ()
 }
 
 internal procedure reorderedUnionReference(
@@ -44,6 +58,15 @@ internal procedure unionPropagatesSuccess(value: DataUnionReference) -> bool {
     return numeric == 9
 }
 
+internal procedure unionLayoutReference() -> bool {
+    return sizeof(DataUnionReference) == 8usize &&
+        alignof(DataUnionReference) == alignof(i32) &&
+        sizeof(ExpandedDataUnionReference) == 16usize &&
+        alignof(ExpandedDataUnionReference) == alignof(i64) &&
+        sizeof(NicheDataUnionReference) == sizeof(Ptr<i32>@Valid) &&
+        alignof(NicheDataUnionReference) == alignof(Ptr<i32>@Valid)
+}
+
 internal procedure expandedUnionValue(value: ExpandedDataUnionReference) -> i32 {
     return if value is {
         flag_value: bool {
@@ -62,12 +85,33 @@ internal procedure expandedUnionValue(value: ExpandedDataUnionReference) -> i32 
     }
 }
 
+internal procedure nicheUnionValue(value: NicheDataUnionReference) -> i32 {
+    return if value is {
+        empty_value: () {
+            0
+        }
+        pointer_value: Ptr<i32>@Valid {
+            *pointer_value
+        }
+    }
+}
+
+internal procedure nicheUnionPointerValue() -> i32 {
+    var payload: i32 = 17
+    let value: NicheDataUnionReference = &payload
+    return nicheUnionValue(value)
+}
+
 /// Exercises the DataTypes Unions reference surface.
 public procedure runDataTypesUnionsReference() -> bool {
     let numeric: DataUnionReference = numericUnionReference()
     let boolean: DataUnionReference = booleanUnionReference()
+    let false_boolean: DataUnionReference = falseUnionReference()
     let reordered: ReorderedDataUnionReference = reorderedUnionReference(numeric)
+    let reordered_boolean: ReorderedDataUnionReference = reorderedUnionReference(boolean)
     let expanded: ExpandedDataUnionReference = expandedUnionReference(numeric)
+    let wide: ExpandedDataUnionReference = wideUnionReference()
+    let empty_niche: NicheDataUnionReference = emptyNicheUnionReference()
     let reordered_ok: bool = if reordered is {
         flag_value: bool {
             flag_value == false
@@ -76,10 +120,24 @@ public procedure runDataTypesUnionsReference() -> bool {
             numeric_value == 9
         }
     }
+    let reordered_boolean_ok: bool = if reordered_boolean is {
+        flag_value: bool {
+            flag_value
+        }
+        numeric_value: i32 {
+            numeric_value == 0
+        }
+    }
     return unionPatternValue(numeric) == 9 &&
         unionPatternValue(boolean) == 1 &&
         reordered_ok &&
+        reordered_boolean_ok &&
         expandedUnionValue(expanded) == 9 &&
+        expandedUnionValue(wide) == 64 &&
         unionPropagatesSuccess(numeric) &&
-        unionPropagatesSuccess(boolean)
+        unionPropagatesSuccess(boolean) &&
+        !unionPropagatesSuccess(false_boolean) &&
+        unionLayoutReference() &&
+        nicheUnionValue(empty_niche) == 0 &&
+        nicheUnionPointerValue() == 17
 }

@@ -367,6 +367,198 @@ llvm::Value *ResolveAddrTuplePointer(LLVMEmitter &emitter,
   return builder.CreateBitCast(field_ptr, llvm::PointerType::get(target_ty, 0));
 }
 
+llvm::Value *PointerFromValue(LLVMEmitter &emitter,
+                              llvm::IRBuilder<> &builder,
+                              llvm::Value *value,
+                              llvm::Type *pointee_type = nullptr)
+{
+  if (!value)
+  {
+    return nullptr;
+  }
+
+  llvm::Type *target_ptr_ty =
+      pointee_type ? llvm::PointerType::get(pointee_type, 0)
+                   : emitter.GetOpaquePtr();
+  if (value->getType()->isPointerTy())
+  {
+    if (pointee_type && value->getType() != target_ptr_ty)
+    {
+      return builder.CreateBitCast(value, target_ptr_ty);
+    }
+    return value;
+  }
+  if (value->getType()->isIntegerTy())
+  {
+    return builder.CreateIntToPtr(value, target_ptr_ty);
+  }
+  return nullptr;
+}
+
+llvm::Value *ResolveAddrIndexPointer(LLVMEmitter &emitter,
+                                     llvm::IRBuilder<> &builder,
+                                     const IRValue &ptr,
+                                     const DerivedValueInfo &derived,
+                                     analysis::TypeRef &out_type)
+{
+  out_type = nullptr;
+  const LowerCtx *ctx = emitter.GetCurrentCtx();
+  if (!ctx)
+  {
+    return nullptr;
+  }
+
+  const analysis::ScopeContext &scope = BuildScope(ctx);
+  if (analysis::TypeRef ptr_type = ctx->LookupValueType(ptr))
+  {
+    out_type = DirectPointeeTypeOrNull(scope, ptr_type);
+  }
+
+  analysis::TypeRef base_type = nullptr;
+  if (analysis::TypeRef base_value_type = ctx->LookupValueType(derived.base))
+  {
+    base_type = DirectPointeeTypeOrNull(scope, base_value_type);
+    if (!base_type)
+    {
+      base_type = ResolveAliasOrSelf(scope, base_value_type);
+    }
+  }
+  base_type = ResolveAliasOrSelf(scope, base_type);
+
+  analysis::TypeRef elem_type = nullptr;
+  const auto *array_type =
+      base_type ? std::get_if<analysis::TypeArray>(&base_type->node) : nullptr;
+  const auto *slice_type =
+      base_type ? std::get_if<analysis::TypeSlice>(&base_type->node) : nullptr;
+  if (array_type)
+  {
+    elem_type = ResolveAliasOrSelf(scope, array_type->element);
+  }
+  else if (slice_type)
+  {
+    elem_type = ResolveAliasOrSelf(scope, slice_type->element);
+  }
+  if (!out_type)
+  {
+    out_type = elem_type;
+  }
+  out_type = ResolveAliasOrSelf(scope, out_type);
+  if (!elem_type)
+  {
+    elem_type = out_type;
+  }
+  if (!elem_type)
+  {
+    ReportCodegenFailure(emitter);
+    return nullptr;
+  }
+
+  llvm::Type *elem_ll = emitter.GetLLVMType(elem_type);
+  llvm::Type *target_ll = emitter.GetLLVMType(out_type ? out_type : elem_type);
+  if (!elem_ll || elem_ll->isVoidTy() || !target_ll || target_ll->isVoidTy())
+  {
+    ReportCodegenFailure(emitter);
+    return nullptr;
+  }
+
+  llvm::Type *i64_ty = llvm::Type::getInt64Ty(emitter.GetContext());
+  llvm::Value *index = emitter.EvaluateIRValue(derived.index);
+  if ((!index || !index->getType()->isIntegerTy()) &&
+      derived.range.lo.has_value())
+  {
+    index = emitter.EvaluateIRValue(*derived.range.lo);
+  }
+  if (!index || !index->getType()->isIntegerTy())
+  {
+    index = llvm::ConstantInt::get(i64_ty, 0);
+  }
+  if (index->getType()->getIntegerBitWidth() != 64)
+  {
+    index = builder.CreateIntCast(index, i64_ty, false);
+  }
+
+  llvm::Value *base_storage = emitter.GetAddressableStorage(derived.base);
+  llvm::Value *base_value = nullptr;
+  llvm::Value *base_ptr = base_storage;
+  if (!base_ptr)
+  {
+    base_value = emitter.EvaluateIRValue(derived.base);
+    base_ptr = PointerFromValue(emitter, builder, base_value);
+  }
+  if (!base_ptr)
+  {
+    ReportCodegenFailure(emitter);
+    return nullptr;
+  }
+
+  llvm::Value *elem_ptr = nullptr;
+  if (array_type)
+  {
+    if (llvm::Type *array_ll = emitter.GetLLVMType(base_type))
+    {
+      llvm::Value *array_ptr =
+          PointerFromValue(emitter, builder, base_ptr, array_ll);
+      if (array_ptr)
+      {
+        llvm::Value *zero = llvm::ConstantInt::get(i64_ty, 0);
+        elem_ptr = builder.CreateGEP(array_ll, array_ptr, {zero, index});
+      }
+    }
+  }
+  else if (slice_type)
+  {
+    if (!base_value)
+    {
+      base_value = emitter.EvaluateIRValue(derived.base);
+    }
+
+    llvm::Value *data_ptr = nullptr;
+    if (base_value && base_value->getType()->isStructTy())
+    {
+      data_ptr = builder.CreateExtractValue(base_value, {0u});
+    }
+    else if (llvm::Type *slice_ll = emitter.GetLLVMType(base_type))
+    {
+      if (base_ptr && base_ptr->getType()->isPointerTy())
+      {
+        llvm::Value *typed_slice_ptr =
+            builder.CreateBitCast(base_ptr, llvm::PointerType::get(slice_ll, 0));
+        llvm::Value *loaded_slice = builder.CreateLoad(slice_ll, typed_slice_ptr);
+        if (loaded_slice && loaded_slice->getType()->isStructTy())
+        {
+          data_ptr = builder.CreateExtractValue(loaded_slice, {0u});
+        }
+      }
+    }
+
+    llvm::Value *elem_base_ptr =
+        PointerFromValue(emitter, builder, data_ptr, elem_ll);
+    if (elem_base_ptr)
+    {
+      elem_ptr = builder.CreateGEP(elem_ll, elem_base_ptr, index);
+    }
+  }
+
+  if (!elem_ptr)
+  {
+    llvm::Value *elem_base_ptr =
+        PointerFromValue(emitter, builder, base_ptr, elem_ll);
+    if (!elem_base_ptr)
+    {
+      ReportCodegenFailure(emitter);
+      return nullptr;
+    }
+    elem_ptr = builder.CreateGEP(elem_ll, elem_base_ptr, index);
+  }
+
+  llvm::Type *target_ptr_ty = llvm::PointerType::get(target_ll, 0);
+  if (elem_ptr->getType() != target_ptr_ty)
+  {
+    elem_ptr = builder.CreateBitCast(elem_ptr, target_ptr_ty);
+  }
+  return elem_ptr;
+}
+
 bool EmitStoreToPointer(LLVMEmitter &emitter,
                         llvm::IRBuilder<> &builder,
                         llvm::Value *ptr,
@@ -376,11 +568,16 @@ bool EmitStoreToPointer(LLVMEmitter &emitter,
   const LowerCtx *ctx = emitter.GetCurrentCtx();
   analysis::TypeRef source_type =
       ctx ? ctx->LookupValueType(value_ref) : nullptr;
+  if (!source_type && value_ref.kind == IRValue::Kind::Local)
+  {
+    source_type = emitter.LookupLocalType(value_ref.name);
+  }
 
   if (llvm::Value *source_storage = emitter.GetAddressableStorage(value_ref))
   {
+    analysis::TypeRef copy_source_type = source_type ? source_type : target_type;
     if (TryEmitBitcopyAggregateStorageCopy(
-            emitter, &builder, ptr, source_storage, target_type, source_type))
+            emitter, &builder, ptr, source_storage, target_type, copy_source_type))
     {
       emitter.ReleaseTempStorage(value_ref);
       return true;
@@ -674,6 +871,20 @@ void IRInstructionVisitor::operator()(const IRWritePtr &write) const
       }
       (void)EmitStoreToPointer(
           emitter, builder, tuple_ptr, write.value, target_type);
+      return;
+    }
+    if (const DerivedValueInfo *derived =
+            active_ctx->LookupDerivedValue(write.ptr);
+        derived && derived->kind == DerivedValueInfo::Kind::AddrIndex)
+    {
+      llvm::Value *index_ptr =
+          ResolveAddrIndexPointer(emitter, builder, write.ptr, *derived, target_type);
+      if (!index_ptr)
+      {
+        return;
+      }
+      (void)EmitStoreToPointer(
+          emitter, builder, index_ptr, write.value, target_type);
       return;
     }
   }

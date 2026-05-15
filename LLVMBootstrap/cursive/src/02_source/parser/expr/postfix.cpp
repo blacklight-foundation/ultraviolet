@@ -115,7 +115,7 @@ ParseElemResult<ExprPtr> PostfixStep(Parser parser, ExprPtr expr,
     const Token* tok = Tok(next);
 
     // Field access: expr.name
-    if (tok && IsIdentTok(*tok)) {
+    if (tok && (IsIdentTok(*tok) || tok->kind == TokenKind::Keyword)) {
       SPEC_RULE("Postfix-Field");
       Identifier name = tok->lexeme;
       Parser after = next;

@@ -753,6 +753,9 @@ StmtTypeResult TypeAssignStmt(const ScopeContext& ctx,
   if (const auto* perm = std::get_if<TypePerm>(&place_type.type->node)) {
     if (perm->perm == Permission::Const) {
       SPEC_RULE("Assign-Const-Err");
+      if (!IsRootIdentifierPlace(node.place)) {
+        return {false, "E-TYP-1601", {}, {}};
+      }
       return {false, "E-SEM-3132", {}, {}};
     }
   }
@@ -783,6 +786,7 @@ StmtTypeResult TypeAssignStmt(const ScopeContext& ctx,
         if (covering_mode.has_value()) {
           return {false, "E-CON-0005", {}, {}};
         }
+        return {false, "E-TYP-1604", {}, {}};
       }
       shared_write_with_key = true;
     }

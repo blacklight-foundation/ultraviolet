@@ -5,6 +5,26 @@ while building `HelloUltraviolet` as the reference corpus.
 
 ## Current Items
 
+### Const Permission Mutation Diagnostic Ownership
+
+- Obligations: `Docs/Audit/UltravioletObligations.csv:1773` and the Chapter 18
+  assignment diagnostic rows for `Assign-Const-Err`.
+- SPEC anchors: `SPECIFICATION.md:7428` and
+  `SPECIFICATION.md:19604-19608`.
+- Current reading: `E-TYP-1601` is the Chapter 10 permission-admissibility
+  diagnostic for mutation through an aggregate permission-qualified path such
+  as `cell.value = 2` where `cell` has `const PermissionDiagnosticCell`.
+  `E-SEM-3132` is the Chapter 18 statement diagnostic for assigning directly
+  to a root binding whose own type is `const`, such as `value = 2` where
+  `value: const i32`.
+- Connected construct reading: Chapter 10 owns the permission regime and
+  admissibility matrix, while Chapter 18 owns assignment statement typing.
+  Splitting root binding assignment from aggregate path mutation preserves both
+  diagnostic surfaces and keeps the permission-specific fixture sourceable.
+- Clarification requested: state whether this split is the intended diagnostic
+  ownership boundary, or whether one of `E-TYP-1601` / `E-SEM-3132` should be
+  retired or restricted to a narrower condition.
+
 ### Generic Record Literal Construction
 
 - Obligation: accepted-source coverage for generic nominal type application and
@@ -187,3 +207,71 @@ while building `HelloUltraviolet` as the reference corpus.
   an allowed static context for `Pure-Comptime`, and that implementations may
   retain non-runtime compile-time procedure metadata after expansion for that
   analysis.
+
+### `WF-Union-TooFew`
+
+- Obligation: `Docs/Audit/UltravioletObligations.csv:2400`.
+- SPEC anchor: `SPECIFICATION.md:10398-10401`.
+- Current reading: `WF-Union-TooFew` is a semantic well-formedness rule for an
+  already-formed `TypeUnion([T_1, ... T_n])` with fewer than two members.
+- Connected construct reading: ordinary source union syntax is defined as
+  `non_perm_type ("|" non_perm_type)+`, so source that parses as a union type
+  already contains at least two member positions. A text such as `type T = i32 |`
+  is a parse error before semantic union well-formedness receives a
+  single-member `TypeUnion`.
+- Clarification requested: identify the source or recovery path that should
+  construct a fewer-than-two-member `TypeUnion`, or classify
+  `WF-Union-TooFew` as an internal AST/recovery consistency diagnostic rather
+  than an ordinary source-level diagnostic obligation.
+
+### `TupleIndex-NonConst`
+
+- Obligation: `Docs/Audit/UltravioletObligations.csv:2125`.
+- SPEC anchor: `SPECIFICATION.md:8911`, `SPECIFICATION.md:9048-9052`, and
+  `SPECIFICATION.md:16038`.
+- Current reading: `TupleIndex-NonConst` is a semantic diagnostic for a tuple
+  projection AST whose index is not a compile-time constant tuple index.
+- Connected construct reading: ordinary source tuple projection grammar is
+  `postfix_expr "." int_literal`, and the formal definition
+  `ConstTupleIndex(i) <=> exists n in Z. i = n` makes every source-level tuple
+  projection index constant by construction. Expressions such as `value.index`
+  are field access forms, while `value.(index)` does not match the tuple
+  projection grammar.
+- Clarification requested: identify the source or recovery path that should
+  construct a tuple projection with a non-constant index, or classify
+  `TupleIndex-NonConst` as an internal AST/recovery consistency diagnostic
+  rather than an ordinary source-level diagnostic obligation.
+
+### `Enum-Disc-NotInt`
+
+- Obligation: `Docs/Audit/UltravioletObligations.csv:2368`.
+- SPEC anchor: `SPECIFICATION.md:2211`, `SPECIFICATION.md:10102-10105`,
+  and `SPECIFICATION.md:10185-10189`.
+- Current reading: `Enum-Disc-NotInt` is a semantic consistency diagnostic for
+  an enum variant discriminant token whose kind is not `IntLiteral`.
+- Connected construct reading: ordinary enum discriminant source parses through
+  `Parse-VariantDiscriminantOpt-Yes`, and that rule consumes the token only
+  when `t.kind = IntLiteral`. The lexical grammar for `integer_literal` has no
+  non-integer alternative at this position. A source form such as `Case = name`
+  therefore fails during parsing or recovery before semantic discriminant
+  validation receives a non-int discriminant token.
+- Clarification requested: identify the source or recovery path that should
+  construct an enum discriminant token whose kind is not `IntLiteral`, or
+  classify `Enum-Disc-NotInt` as an internal AST/recovery consistency
+  diagnostic rather than an ordinary source-level diagnostic obligation.
+
+### `Enum-Disc-Negative`
+
+- Obligation: `Docs/Audit/UltravioletObligations.csv:2370`.
+- SPEC anchor: `SPECIFICATION.md:2211`, `SPECIFICATION.md:10102-10105`,
+  and `SPECIFICATION.md:10195-10199`.
+- Current reading: `Enum-Disc-Negative` is a semantic consistency diagnostic
+  for an enum variant discriminant token whose integer value is negative.
+- Connected construct reading: ordinary source discriminants are parsed as
+  `integer_literal`, and `integer_literal` has no leading sign. A text such as
+  `Case = -1` is an operator token followed by an integer literal, not a
+  single negative `IntLiteral` consumed by `Parse-VariantDiscriminantOpt-Yes`.
+- Clarification requested: specify whether enum discriminants intentionally
+  admit signed integer literals, or classify `Enum-Disc-Negative` as an
+  internal AST/recovery consistency diagnostic rather than an ordinary
+  source-level diagnostic obligation.

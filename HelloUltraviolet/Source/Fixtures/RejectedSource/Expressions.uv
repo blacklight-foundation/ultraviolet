@@ -1,7 +1,7 @@
 //! Rejected expression specimens.
 
 public procedure expressionsRejectedSourceFixtureCount() -> usize {
-    return 101usize
+    return 112usize
 }
 
 public procedure validatedExpressionsRejectedSourceFixtureCount() -> usize {
@@ -71,6 +71,23 @@ public procedure validatedExpressionsRejectedSourceFixtureCount() -> usize {
         "Fixtures/RejectedSource/Expressions/ArrayIndexOutOfBounds/Expected.uv",
         "E-UNS-0103",
         "Index-Array-OOB-Err"
+    ) {
+        count = count + 1usize
+    }
+    if rejectedSpecimenMatches(
+        rejectedSpecimen(
+            "ArrayIndexNonUsize",
+            "Fixtures/RejectedSource/Expressions/ArrayIndexNonUsize",
+            "Fixtures/RejectedSource/Expressions/ArrayIndexNonUsize/Source/Main.uv",
+            "Fixtures/RejectedSource/Expressions/ArrayIndexNonUsize/Expected.uv",
+            expectedDiagnostic("E-TYP-1812", "Index-Array-NonUsize")
+        ),
+        "ArrayIndexNonUsize",
+        "Fixtures/RejectedSource/Expressions/ArrayIndexNonUsize",
+        "Fixtures/RejectedSource/Expressions/ArrayIndexNonUsize/Source/Main.uv",
+        "Fixtures/RejectedSource/Expressions/ArrayIndexNonUsize/Expected.uv",
+        "E-TYP-1812",
+        "Index-Array-NonUsize"
     ) {
         count = count + 1usize
     }
@@ -309,6 +326,23 @@ public procedure validatedExpressionsRejectedSourceFixtureCount() -> usize {
         "Fixtures/RejectedSource/Expressions/TupleAccessNonTuple/Expected.uv",
         "E-SEM-2524",
         "diag.16.AccessAndPlaceExpressions"
+    ) {
+        count = count + 1usize
+    }
+    if rejectedSpecimenMatches(
+        rejectedSpecimen(
+            "TupleIndexOutOfBounds",
+            "Fixtures/RejectedSource/Expressions/TupleIndexOutOfBounds",
+            "Fixtures/RejectedSource/Expressions/TupleIndexOutOfBounds/Source/Main.uv",
+            "Fixtures/RejectedSource/Expressions/TupleIndexOutOfBounds/Expected.uv",
+            expectedDiagnostic("E-TYP-1801", "TupleIndex-OOB")
+        ),
+        "TupleIndexOutOfBounds",
+        "Fixtures/RejectedSource/Expressions/TupleIndexOutOfBounds",
+        "Fixtures/RejectedSource/Expressions/TupleIndexOutOfBounds/Source/Main.uv",
+        "Fixtures/RejectedSource/Expressions/TupleIndexOutOfBounds/Expected.uv",
+        "E-TYP-1801",
+        "TupleIndex-OOB"
     ) {
         count = count + 1usize
     }
@@ -632,6 +666,23 @@ public procedure validatedExpressionsRejectedSourceFixtureCount() -> usize {
         "Fixtures/RejectedSource/Expressions/RecordFieldInitDuplicate/Expected.uv",
         "E-TYP-1903",
         "rule.16.Record-FieldInit-Dup"
+    ) {
+        count = count + 1usize
+    }
+    if rejectedSpecimenMatches(
+        rejectedSpecimen(
+            "RecordDuplicateField",
+            "Fixtures/RejectedSource/Expressions/RecordDuplicateField",
+            "Fixtures/RejectedSource/Expressions/RecordDuplicateField/Source/Main.uv",
+            "Fixtures/RejectedSource/Expressions/RecordDuplicateField/Expected.uv",
+            expectedDiagnostic("E-TYP-1901", "WF-Record-DupField")
+        ),
+        "RecordDuplicateField",
+        "Fixtures/RejectedSource/Expressions/RecordDuplicateField",
+        "Fixtures/RejectedSource/Expressions/RecordDuplicateField/Source/Main.uv",
+        "Fixtures/RejectedSource/Expressions/RecordDuplicateField/Expected.uv",
+        "E-TYP-1901",
+        "WF-Record-DupField"
     ) {
         count = count + 1usize
     }
@@ -1618,6 +1669,142 @@ public procedure validatedExpressionsRejectedSourceFixtureCount() -> usize {
         "Fixtures/RejectedSource/Expressions/FieldVisibility/Expected.uv",
         "E-TYP-1905",
         "def.16.FieldVisibility"
+    ) {
+        count = count + 1usize
+    }
+    if rejectedSpecimenMatches(
+        rejectedSpecimen(
+            "RecordFieldVisibilityViolation",
+            "Fixtures/RejectedSource/Expressions/RecordFieldVisibilityViolation",
+            "Fixtures/RejectedSource/Expressions/RecordFieldVisibilityViolation/Source/Main.uv",
+            "Fixtures/RejectedSource/Expressions/RecordFieldVisibilityViolation/Expected.uv",
+            expectedDiagnostic("E-TYP-1906", "FieldVisOk-Err")
+        ),
+        "RecordFieldVisibilityViolation",
+        "Fixtures/RejectedSource/Expressions/RecordFieldVisibilityViolation",
+        "Fixtures/RejectedSource/Expressions/RecordFieldVisibilityViolation/Source/Main.uv",
+        "Fixtures/RejectedSource/Expressions/RecordFieldVisibilityViolation/Expected.uv",
+        "E-TYP-1906",
+        "FieldVisOk-Err"
+    ) {
+        count = count + 1usize
+    }
+    if rejectedSpecimenMatches(
+        rejectedSpecimen(
+            "EnumEmpty",
+            "Fixtures/RejectedSource/Expressions/EnumEmpty",
+            "Fixtures/RejectedSource/Expressions/EnumEmpty/Source/Main.uv",
+            "Fixtures/RejectedSource/Expressions/EnumEmpty/Expected.uv",
+            expectedDiagnostic("E-TYP-2001", "Enum-Empty-Err")
+        ),
+        "EnumEmpty",
+        "Fixtures/RejectedSource/Expressions/EnumEmpty",
+        "Fixtures/RejectedSource/Expressions/EnumEmpty/Source/Main.uv",
+        "Fixtures/RejectedSource/Expressions/EnumEmpty/Expected.uv",
+        "E-TYP-2001",
+        "Enum-Empty-Err"
+    ) {
+        count = count + 1usize
+    }
+    if rejectedSpecimenMatches(
+        rejectedSpecimen(
+            "EnumDuplicateVariant",
+            "Fixtures/RejectedSource/Expressions/EnumDuplicateVariant",
+            "Fixtures/RejectedSource/Expressions/EnumDuplicateVariant/Source/Main.uv",
+            "Fixtures/RejectedSource/Expressions/EnumDuplicateVariant/Expected.uv",
+            expectedDiagnostic("E-TYP-2002", "Enum-Variant-Dup")
+        ),
+        "EnumDuplicateVariant",
+        "Fixtures/RejectedSource/Expressions/EnumDuplicateVariant",
+        "Fixtures/RejectedSource/Expressions/EnumDuplicateVariant/Source/Main.uv",
+        "Fixtures/RejectedSource/Expressions/EnumDuplicateVariant/Expected.uv",
+        "E-TYP-2002",
+        "Enum-Variant-Dup"
+    ) {
+        count = count + 1usize
+    }
+    if rejectedSpecimenMatches(
+        rejectedSpecimen(
+            "EnumDuplicateDiscriminant",
+            "Fixtures/RejectedSource/Expressions/EnumDuplicateDiscriminant",
+            "Fixtures/RejectedSource/Expressions/EnumDuplicateDiscriminant/Source/Main.uv",
+            "Fixtures/RejectedSource/Expressions/EnumDuplicateDiscriminant/Expected.uv",
+            expectedDiagnostic("E-TYP-1923", "Enum-Disc-Dup")
+        ),
+        "EnumDuplicateDiscriminant",
+        "Fixtures/RejectedSource/Expressions/EnumDuplicateDiscriminant",
+        "Fixtures/RejectedSource/Expressions/EnumDuplicateDiscriminant/Source/Main.uv",
+        "Fixtures/RejectedSource/Expressions/EnumDuplicateDiscriminant/Expected.uv",
+        "E-TYP-1923",
+        "Enum-Disc-Dup"
+    ) {
+        count = count + 1usize
+    }
+    if rejectedSpecimenMatches(
+        rejectedSpecimen(
+            "EnumInvalidDiscriminant",
+            "Fixtures/RejectedSource/Expressions/EnumInvalidDiscriminant",
+            "Fixtures/RejectedSource/Expressions/EnumInvalidDiscriminant/Source/Main.uv",
+            "Fixtures/RejectedSource/Expressions/EnumInvalidDiscriminant/Expected.uv",
+            expectedDiagnostic("E-TYP-1921", "Enum-Disc-Invalid")
+        ),
+        "EnumInvalidDiscriminant",
+        "Fixtures/RejectedSource/Expressions/EnumInvalidDiscriminant",
+        "Fixtures/RejectedSource/Expressions/EnumInvalidDiscriminant/Source/Main.uv",
+        "Fixtures/RejectedSource/Expressions/EnumInvalidDiscriminant/Expected.uv",
+        "E-TYP-1921",
+        "Enum-Disc-Invalid"
+    ) {
+        count = count + 1usize
+    }
+    if rejectedSpecimenMatches(
+        rejectedSpecimen(
+            "EnumUnknownVariant",
+            "Fixtures/RejectedSource/Expressions/EnumUnknownVariant",
+            "Fixtures/RejectedSource/Expressions/EnumUnknownVariant/Source/Main.uv",
+            "Fixtures/RejectedSource/Expressions/EnumUnknownVariant/Expected.uv",
+            expectedDiagnostic("E-TYP-2007", "Enum-Lit-Unknown")
+        ),
+        "EnumUnknownVariant",
+        "Fixtures/RejectedSource/Expressions/EnumUnknownVariant",
+        "Fixtures/RejectedSource/Expressions/EnumUnknownVariant/Source/Main.uv",
+        "Fixtures/RejectedSource/Expressions/EnumUnknownVariant/Expected.uv",
+        "E-TYP-2007",
+        "Enum-Lit-Unknown"
+    ) {
+        count = count + 1usize
+    }
+    if rejectedSpecimenMatches(
+        rejectedSpecimen(
+            "EnumTupleArity",
+            "Fixtures/RejectedSource/Expressions/EnumTupleArity",
+            "Fixtures/RejectedSource/Expressions/EnumTupleArity/Source/Main.uv",
+            "Fixtures/RejectedSource/Expressions/EnumTupleArity/Expected.uv",
+            expectedDiagnostic("E-TYP-2008", "Enum-Lit-Tuple-Arity-Err")
+        ),
+        "EnumTupleArity",
+        "Fixtures/RejectedSource/Expressions/EnumTupleArity",
+        "Fixtures/RejectedSource/Expressions/EnumTupleArity/Source/Main.uv",
+        "Fixtures/RejectedSource/Expressions/EnumTupleArity/Expected.uv",
+        "E-TYP-2008",
+        "Enum-Lit-Tuple-Arity-Err"
+    ) {
+        count = count + 1usize
+    }
+    if rejectedSpecimenMatches(
+        rejectedSpecimen(
+            "EnumRecordMissingField",
+            "Fixtures/RejectedSource/Expressions/EnumRecordMissingField",
+            "Fixtures/RejectedSource/Expressions/EnumRecordMissingField/Source/Main.uv",
+            "Fixtures/RejectedSource/Expressions/EnumRecordMissingField/Expected.uv",
+            expectedDiagnostic("E-TYP-2009", "Enum-Lit-Record-MissingField")
+        ),
+        "EnumRecordMissingField",
+        "Fixtures/RejectedSource/Expressions/EnumRecordMissingField",
+        "Fixtures/RejectedSource/Expressions/EnumRecordMissingField/Source/Main.uv",
+        "Fixtures/RejectedSource/Expressions/EnumRecordMissingField/Expected.uv",
+        "E-TYP-2009",
+        "Enum-Lit-Record-MissingField"
     ) {
         count = count + 1usize
     }

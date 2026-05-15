@@ -162,7 +162,7 @@ RecordWfResult CheckRecordWf(const ScopeContext& ctx,
     const auto key = IdKeyOf(field->name);
     if (!seen.insert(key).second) {
       SPEC_RULE("WF-Record-DupField");
-      result.diag_id = "WF-Record-DupField";
+      result.diag_id = "E-TYP-1901";
       return result;
     }
   }

@@ -17,6 +17,7 @@ using HelloUltraviolet::Fixtures::RejectedSource::{ validatedNamesRejectedSource
 using HelloUltraviolet::Fixtures::RejectedSource::{ validatedParallelismRejectedSourceFixtureCount }
 using HelloUltraviolet::Fixtures::RejectedSource::{ validatedParsingRejectedSourceFixtureCount }
 using HelloUltraviolet::Fixtures::RejectedSource::{ validatedPatternsRejectedSourceFixtureCount }
+using HelloUltraviolet::Fixtures::RejectedSource::{ validatedPermissionsRejectedSourceFixtureCount }
 using HelloUltraviolet::Fixtures::RejectedSource::{ validatedPolymorphismRejectedSourceFixtureCount }
 using HelloUltraviolet::Fixtures::RejectedSource::{ validatedProceduresRejectedSourceFixtureCount }
 using HelloUltraviolet::Fixtures::RejectedSource::{ validatedSourceTextRejectedSourceFixtureCount }
@@ -180,11 +181,11 @@ using HelloUltraviolet::Reference::Types::{ runTypesRefinementsReference }
 using HelloUltraviolet::Reference::Types::{ runTypesSubtypingReference }
 
 public procedure expectedCatalogCompiledSymbolCount() -> usize {
-    return 559usize
+    return 572usize
 }
 
 public procedure catalogCompiledSymbolCount() -> usize {
-    return 559usize
+    return 572usize
 }
 
 internal procedure catalogSymbolTargetMatches(
@@ -198,6 +199,39 @@ internal procedure catalogSymbolTargetMatches(
     return auditTextEquals(module_path, expected_module_path) &&
         auditTextEquals(symbol, expected_symbol) &&
         auditTextEquals(source_path, expected_source_path)
+}
+
+internal procedure writeCatalogSymbolMessage(context: Context, text: string@View) -> bool {
+    let output: Outcome<(), IoError> = context.fs~>write_stderr(text)
+    return if output is {
+        @Value {
+            true
+        }
+        @Error {
+            false
+        }
+    }
+}
+
+internal procedure recordCatalogSymbolExecution(
+    context: Context,
+    symbol: string@View,
+    passed: bool
+) -> bool {
+    if passed {
+        return true
+    }
+
+    if (!writeCatalogSymbolMessage(context, "catalog compiled symbol failed: ")) {
+        return false
+    }
+    if (!writeCatalogSymbolMessage(context, symbol)) {
+        return false
+    }
+    if (!writeCatalogSymbolMessage(context, "\n")) {
+        return false
+    }
+    return false
 }
 
 public procedure catalogCompiledSymbolTargetsAreIndexed() -> bool {
@@ -669,6 +703,14 @@ public procedure catalogCompiledSymbolTargetsAreIndexed() -> bool {
         catalogSymbolTargetMatches(
             "HelloUltraviolet::Fixtures::RejectedSource",
             "validatedExpressionsRejectedSourceFixtureCount",
+            "Fixtures/RejectedSource/Expressions/ArrayIndexNonUsize/Source/Main.uv",
+            "HelloUltraviolet::Fixtures::RejectedSource",
+            "validatedExpressionsRejectedSourceFixtureCount",
+            "Fixtures/RejectedSource/Expressions/ArrayIndexNonUsize/Source/Main.uv"
+        ) &&
+        catalogSymbolTargetMatches(
+            "HelloUltraviolet::Fixtures::RejectedSource",
+            "validatedExpressionsRejectedSourceFixtureCount",
             "Fixtures/RejectedSource/Expressions/ArrayIndexOutOfBounds/Source/Main.uv",
             "HelloUltraviolet::Fixtures::RejectedSource",
             "validatedExpressionsRejectedSourceFixtureCount",
@@ -921,6 +963,62 @@ public procedure catalogCompiledSymbolTargetsAreIndexed() -> bool {
             "HelloUltraviolet::Fixtures::RejectedSource",
             "validatedExpressionsRejectedSourceFixtureCount",
             "Fixtures/RejectedSource/Expressions/ControlExpressionDiagnosticOwnership/Source/Main.uv"
+        ) &&
+        catalogSymbolTargetMatches(
+            "HelloUltraviolet::Fixtures::RejectedSource",
+            "validatedExpressionsRejectedSourceFixtureCount",
+            "Fixtures/RejectedSource/Expressions/EnumDuplicateDiscriminant/Source/Main.uv",
+            "HelloUltraviolet::Fixtures::RejectedSource",
+            "validatedExpressionsRejectedSourceFixtureCount",
+            "Fixtures/RejectedSource/Expressions/EnumDuplicateDiscriminant/Source/Main.uv"
+        ) &&
+        catalogSymbolTargetMatches(
+            "HelloUltraviolet::Fixtures::RejectedSource",
+            "validatedExpressionsRejectedSourceFixtureCount",
+            "Fixtures/RejectedSource/Expressions/EnumDuplicateVariant/Source/Main.uv",
+            "HelloUltraviolet::Fixtures::RejectedSource",
+            "validatedExpressionsRejectedSourceFixtureCount",
+            "Fixtures/RejectedSource/Expressions/EnumDuplicateVariant/Source/Main.uv"
+        ) &&
+        catalogSymbolTargetMatches(
+            "HelloUltraviolet::Fixtures::RejectedSource",
+            "validatedExpressionsRejectedSourceFixtureCount",
+            "Fixtures/RejectedSource/Expressions/EnumEmpty/Source/Main.uv",
+            "HelloUltraviolet::Fixtures::RejectedSource",
+            "validatedExpressionsRejectedSourceFixtureCount",
+            "Fixtures/RejectedSource/Expressions/EnumEmpty/Source/Main.uv"
+        ) &&
+        catalogSymbolTargetMatches(
+            "HelloUltraviolet::Fixtures::RejectedSource",
+            "validatedExpressionsRejectedSourceFixtureCount",
+            "Fixtures/RejectedSource/Expressions/EnumInvalidDiscriminant/Source/Main.uv",
+            "HelloUltraviolet::Fixtures::RejectedSource",
+            "validatedExpressionsRejectedSourceFixtureCount",
+            "Fixtures/RejectedSource/Expressions/EnumInvalidDiscriminant/Source/Main.uv"
+        ) &&
+        catalogSymbolTargetMatches(
+            "HelloUltraviolet::Fixtures::RejectedSource",
+            "validatedExpressionsRejectedSourceFixtureCount",
+            "Fixtures/RejectedSource/Expressions/EnumRecordMissingField/Source/Main.uv",
+            "HelloUltraviolet::Fixtures::RejectedSource",
+            "validatedExpressionsRejectedSourceFixtureCount",
+            "Fixtures/RejectedSource/Expressions/EnumRecordMissingField/Source/Main.uv"
+        ) &&
+        catalogSymbolTargetMatches(
+            "HelloUltraviolet::Fixtures::RejectedSource",
+            "validatedExpressionsRejectedSourceFixtureCount",
+            "Fixtures/RejectedSource/Expressions/EnumTupleArity/Source/Main.uv",
+            "HelloUltraviolet::Fixtures::RejectedSource",
+            "validatedExpressionsRejectedSourceFixtureCount",
+            "Fixtures/RejectedSource/Expressions/EnumTupleArity/Source/Main.uv"
+        ) &&
+        catalogSymbolTargetMatches(
+            "HelloUltraviolet::Fixtures::RejectedSource",
+            "validatedExpressionsRejectedSourceFixtureCount",
+            "Fixtures/RejectedSource/Expressions/EnumUnknownVariant/Source/Main.uv",
+            "HelloUltraviolet::Fixtures::RejectedSource",
+            "validatedExpressionsRejectedSourceFixtureCount",
+            "Fixtures/RejectedSource/Expressions/EnumUnknownVariant/Source/Main.uv"
         ) &&
         catalogSymbolTargetMatches(
             "HelloUltraviolet::Fixtures::RejectedSource",
@@ -1221,6 +1319,14 @@ public procedure catalogCompiledSymbolTargetsAreIndexed() -> bool {
         catalogSymbolTargetMatches(
             "HelloUltraviolet::Fixtures::RejectedSource",
             "validatedExpressionsRejectedSourceFixtureCount",
+            "Fixtures/RejectedSource/Expressions/RecordDuplicateField/Source/Main.uv",
+            "HelloUltraviolet::Fixtures::RejectedSource",
+            "validatedExpressionsRejectedSourceFixtureCount",
+            "Fixtures/RejectedSource/Expressions/RecordDuplicateField/Source/Main.uv"
+        ) &&
+        catalogSymbolTargetMatches(
+            "HelloUltraviolet::Fixtures::RejectedSource",
+            "validatedExpressionsRejectedSourceFixtureCount",
             "Fixtures/RejectedSource/Expressions/RecordFieldInitDuplicate/Source/Main.uv",
             "HelloUltraviolet::Fixtures::RejectedSource",
             "validatedExpressionsRejectedSourceFixtureCount",
@@ -1257,6 +1363,14 @@ public procedure catalogCompiledSymbolTargetsAreIndexed() -> bool {
             "HelloUltraviolet::Fixtures::RejectedSource",
             "validatedExpressionsRejectedSourceFixtureCount",
             "Fixtures/RejectedSource/Expressions/RecordFieldUnknown/Source/Main.uv"
+        ) &&
+        catalogSymbolTargetMatches(
+            "HelloUltraviolet::Fixtures::RejectedSource",
+            "validatedExpressionsRejectedSourceFixtureCount",
+            "Fixtures/RejectedSource/Expressions/RecordFieldVisibilityViolation/Source/Main.uv",
+            "HelloUltraviolet::Fixtures::RejectedSource",
+            "validatedExpressionsRejectedSourceFixtureCount",
+            "Fixtures/RejectedSource/Expressions/RecordFieldVisibilityViolation/Source/Main.uv"
         ) &&
         catalogSymbolTargetMatches(
             "HelloUltraviolet::Fixtures::RejectedSource",
@@ -1337,6 +1451,14 @@ public procedure catalogCompiledSymbolTargetsAreIndexed() -> bool {
             "HelloUltraviolet::Fixtures::RejectedSource",
             "validatedExpressionsRejectedSourceFixtureCount",
             "Fixtures/RejectedSource/Expressions/TupleAccessNonTuple/Source/Main.uv"
+        ) &&
+        catalogSymbolTargetMatches(
+            "HelloUltraviolet::Fixtures::RejectedSource",
+            "validatedExpressionsRejectedSourceFixtureCount",
+            "Fixtures/RejectedSource/Expressions/TupleIndexOutOfBounds/Source/Main.uv",
+            "HelloUltraviolet::Fixtures::RejectedSource",
+            "validatedExpressionsRejectedSourceFixtureCount",
+            "Fixtures/RejectedSource/Expressions/TupleIndexOutOfBounds/Source/Main.uv"
         ) &&
         catalogSymbolTargetMatches(
             "HelloUltraviolet::Fixtures::RejectedSource",
@@ -2221,6 +2343,14 @@ public procedure catalogCompiledSymbolTargetsAreIndexed() -> bool {
         catalogSymbolTargetMatches(
             "HelloUltraviolet::Fixtures::RejectedSource",
             "validatedParsingRejectedSourceFixtureCount",
+            "Fixtures/RejectedSource/Parsing/EnumCommaSeparator/Source/Main.uv",
+            "HelloUltraviolet::Fixtures::RejectedSource",
+            "validatedParsingRejectedSourceFixtureCount",
+            "Fixtures/RejectedSource/Parsing/EnumCommaSeparator/Source/Main.uv"
+        ) &&
+        catalogSymbolTargetMatches(
+            "HelloUltraviolet::Fixtures::RejectedSource",
+            "validatedParsingRejectedSourceFixtureCount",
             "Fixtures/RejectedSource/Parsing/MissingStatementTerminator/Source/Main.uv",
             "HelloUltraviolet::Fixtures::RejectedSource",
             "validatedParsingRejectedSourceFixtureCount",
@@ -2361,6 +2491,14 @@ public procedure catalogCompiledSymbolTargetsAreIndexed() -> bool {
             "HelloUltraviolet::Fixtures::RejectedSource",
             "validatedPatternsRejectedSourceFixtureCount",
             "Fixtures/RejectedSource/Patterns/TupleRecordPatternsDiagnostic/Source/Main.uv"
+        ) &&
+        catalogSymbolTargetMatches(
+            "HelloUltraviolet::Fixtures::RejectedSource",
+            "validatedPermissionsRejectedSourceFixtureCount",
+            "Fixtures/RejectedSource/Permissions/ReceiverPermissionMismatch/Source/Main.uv",
+            "HelloUltraviolet::Fixtures::RejectedSource",
+            "validatedPermissionsRejectedSourceFixtureCount",
+            "Fixtures/RejectedSource/Permissions/ReceiverPermissionMismatch/Source/Main.uv"
         ) &&
         catalogSymbolTargetMatches(
             "HelloUltraviolet::Fixtures::RejectedSource",
@@ -4677,563 +4815,2866 @@ public procedure catalogCompiledSymbolTargetsAreIndexed() -> bool {
 }
 
 public procedure catalogCompiledSymbolsExecute(context: Context) -> bool {
-    return specClarificationLedgerIsIndexed() &&
-        validatedAcceptedProjectFixtureCount() > 0usize &&
-        validatedAcceptedProjectFixtureCount() > 0usize &&
-        validatedAcceptedProjectFixtureCount() > 0usize &&
-        validatedAcceptedProjectFixtureCount() > 0usize &&
-        validatedAcceptedProjectFixtureCount() > 0usize &&
-        validatedAcceptedProjectFixtureCount() > 0usize &&
-        validatedAcceptedProjectFixtureCount() > 0usize &&
-        validatedArtifactProjectFixtureCount() > 0usize &&
-        validatedArtifactProjectFixtureCount() > 0usize &&
-        validatedArtifactProjectFixtureCount() > 0usize &&
-        validatedAsyncDiagnosticSourceFixtureCount() > 0usize &&
-        validatedAsyncDiagnosticSourceFixtureCount() > 0usize &&
-        validatedAsyncDiagnosticSourceFixtureCount() > 0usize &&
-        validatedAsyncDiagnosticSourceFixtureCount() > 0usize &&
-        validatedAsyncDiagnosticSourceFixtureCount() > 0usize &&
-        validatedComptimeDiagnosticSourceFixtureCount() > 0usize &&
-        validatedComptimeDiagnosticSourceFixtureCount() > 0usize &&
-        validatedComptimeDiagnosticSourceFixtureCount() > 0usize &&
-        validatedExpressionsDiagnosticSourceFixtureCount() > 0usize &&
-        validatedKeysDiagnosticSourceFixtureCount() > 0usize &&
-        validatedKeysDiagnosticSourceFixtureCount() > 0usize &&
-        validatedKeysDiagnosticSourceFixtureCount() > 0usize &&
-        validatedKeysDiagnosticSourceFixtureCount() > 0usize &&
-        validatedKeysDiagnosticSourceFixtureCount() > 0usize &&
-        validatedKeysDiagnosticSourceFixtureCount() > 0usize &&
-        validatedKeysDiagnosticSourceFixtureCount() > 0usize &&
-        validatedKeysDiagnosticSourceFixtureCount() > 0usize &&
-        validatedKeysDiagnosticSourceFixtureCount() > 0usize &&
-        validatedKeysDiagnosticSourceFixtureCount() > 0usize &&
-        validatedParallelismDiagnosticSourceFixtureCount() > 0usize &&
-        validatedParallelismDiagnosticSourceFixtureCount() > 0usize &&
-        validatedParallelismDiagnosticSourceFixtureCount() > 0usize &&
-        validatedOutputLoweringDiagnosticFixtureCount() > 0usize &&
-        validatedComptimeRejectedSourceFixtureCount() > 0usize &&
-        validatedComptimeRejectedSourceFixtureCount() > 0usize &&
-        validatedComptimeRejectedSourceFixtureCount() > 0usize &&
-        validatedComptimeRejectedSourceFixtureCount() > 0usize &&
-        validatedComptimeRejectedSourceFixtureCount() > 0usize &&
-        validatedComptimeRejectedSourceFixtureCount() > 0usize &&
-        validatedComptimeRejectedSourceFixtureCount() > 0usize &&
-        validatedComptimeRejectedSourceFixtureCount() > 0usize &&
-        validatedComptimeRejectedSourceFixtureCount() > 0usize &&
-        validatedComptimeRejectedSourceFixtureCount() > 0usize &&
-        validatedComptimeRejectedSourceFixtureCount() > 0usize &&
-        validatedComptimeRejectedSourceFixtureCount() > 0usize &&
-        validatedComptimeRejectedSourceFixtureCount() > 0usize &&
-        validatedComptimeRejectedSourceFixtureCount() > 0usize &&
-        validatedComptimeRejectedSourceFixtureCount() > 0usize &&
-        validatedComptimeRejectedSourceFixtureCount() > 0usize &&
-        validatedComptimeRejectedSourceFixtureCount() > 0usize &&
-        validatedExpressionsRejectedSourceFixtureCount() > 0usize &&
-        validatedExpressionsRejectedSourceFixtureCount() > 0usize &&
-        validatedExpressionsRejectedSourceFixtureCount() > 0usize &&
-        validatedExpressionsRejectedSourceFixtureCount() > 0usize &&
-        validatedExpressionsRejectedSourceFixtureCount() > 0usize &&
-        validatedExpressionsRejectedSourceFixtureCount() > 0usize &&
-        validatedExpressionsRejectedSourceFixtureCount() > 0usize &&
-        validatedExpressionsRejectedSourceFixtureCount() > 0usize &&
-        validatedExpressionsRejectedSourceFixtureCount() > 0usize &&
-        validatedExpressionsRejectedSourceFixtureCount() > 0usize &&
-        validatedExpressionsRejectedSourceFixtureCount() > 0usize &&
-        validatedExpressionsRejectedSourceFixtureCount() > 0usize &&
-        validatedExpressionsRejectedSourceFixtureCount() > 0usize &&
-        validatedExpressionsRejectedSourceFixtureCount() > 0usize &&
-        validatedExpressionsRejectedSourceFixtureCount() > 0usize &&
-        validatedExpressionsRejectedSourceFixtureCount() > 0usize &&
-        validatedExpressionsRejectedSourceFixtureCount() > 0usize &&
-        validatedExpressionsRejectedSourceFixtureCount() > 0usize &&
-        validatedExpressionsRejectedSourceFixtureCount() > 0usize &&
-        validatedExpressionsRejectedSourceFixtureCount() > 0usize &&
-        validatedExpressionsRejectedSourceFixtureCount() > 0usize &&
-        validatedExpressionsRejectedSourceFixtureCount() > 0usize &&
-        validatedExpressionsRejectedSourceFixtureCount() > 0usize &&
-        validatedExpressionsRejectedSourceFixtureCount() > 0usize &&
-        validatedExpressionsRejectedSourceFixtureCount() > 0usize &&
-        validatedExpressionsRejectedSourceFixtureCount() > 0usize &&
-        validatedExpressionsRejectedSourceFixtureCount() > 0usize &&
-        validatedExpressionsRejectedSourceFixtureCount() > 0usize &&
-        validatedExpressionsRejectedSourceFixtureCount() > 0usize &&
-        validatedExpressionsRejectedSourceFixtureCount() > 0usize &&
-        validatedExpressionsRejectedSourceFixtureCount() > 0usize &&
-        validatedExpressionsRejectedSourceFixtureCount() > 0usize &&
-        validatedExpressionsRejectedSourceFixtureCount() > 0usize &&
-        validatedExpressionsRejectedSourceFixtureCount() > 0usize &&
-        validatedExpressionsRejectedSourceFixtureCount() > 0usize &&
-        validatedExpressionsRejectedSourceFixtureCount() > 0usize &&
-        validatedExpressionsRejectedSourceFixtureCount() > 0usize &&
-        validatedExpressionsRejectedSourceFixtureCount() > 0usize &&
-        validatedExpressionsRejectedSourceFixtureCount() > 0usize &&
-        validatedExpressionsRejectedSourceFixtureCount() > 0usize &&
-        validatedExpressionsRejectedSourceFixtureCount() > 0usize &&
-        validatedExpressionsRejectedSourceFixtureCount() > 0usize &&
-        validatedExpressionsRejectedSourceFixtureCount() > 0usize &&
-        validatedExpressionsRejectedSourceFixtureCount() > 0usize &&
-        validatedExpressionsRejectedSourceFixtureCount() > 0usize &&
-        validatedExpressionsRejectedSourceFixtureCount() > 0usize &&
-        validatedExpressionsRejectedSourceFixtureCount() > 0usize &&
-        validatedExpressionsRejectedSourceFixtureCount() > 0usize &&
-        validatedExpressionsRejectedSourceFixtureCount() > 0usize &&
-        validatedExpressionsRejectedSourceFixtureCount() > 0usize &&
-        validatedExpressionsRejectedSourceFixtureCount() > 0usize &&
-        validatedExpressionsRejectedSourceFixtureCount() > 0usize &&
-        validatedExpressionsRejectedSourceFixtureCount() > 0usize &&
-        validatedExpressionsRejectedSourceFixtureCount() > 0usize &&
-        validatedExpressionsRejectedSourceFixtureCount() > 0usize &&
-        validatedExpressionsRejectedSourceFixtureCount() > 0usize &&
-        validatedExpressionsRejectedSourceFixtureCount() > 0usize &&
-        validatedExpressionsRejectedSourceFixtureCount() > 0usize &&
-        validatedExpressionsRejectedSourceFixtureCount() > 0usize &&
-        validatedExpressionsRejectedSourceFixtureCount() > 0usize &&
-        validatedExpressionsRejectedSourceFixtureCount() > 0usize &&
-        validatedExpressionsRejectedSourceFixtureCount() > 0usize &&
-        validatedExpressionsRejectedSourceFixtureCount() > 0usize &&
-        validatedExpressionsRejectedSourceFixtureCount() > 0usize &&
-        validatedExpressionsRejectedSourceFixtureCount() > 0usize &&
-        validatedExpressionsRejectedSourceFixtureCount() > 0usize &&
-        validatedExpressionsRejectedSourceFixtureCount() > 0usize &&
-        validatedExpressionsRejectedSourceFixtureCount() > 0usize &&
-        validatedExpressionsRejectedSourceFixtureCount() > 0usize &&
-        validatedExpressionsRejectedSourceFixtureCount() > 0usize &&
-        validatedExpressionsRejectedSourceFixtureCount() > 0usize &&
-        validatedExpressionsRejectedSourceFixtureCount() > 0usize &&
-        validatedExpressionsRejectedSourceFixtureCount() > 0usize &&
-        validatedExpressionsRejectedSourceFixtureCount() > 0usize &&
-        validatedExpressionsRejectedSourceFixtureCount() > 0usize &&
-        validatedExpressionsRejectedSourceFixtureCount() > 0usize &&
-        validatedExpressionsRejectedSourceFixtureCount() > 0usize &&
-        validatedExpressionsRejectedSourceFixtureCount() > 0usize &&
-        validatedExpressionsRejectedSourceFixtureCount() > 0usize &&
-        validatedExpressionsRejectedSourceFixtureCount() > 0usize &&
-        validatedExpressionsRejectedSourceFixtureCount() > 0usize &&
-        validatedExpressionsRejectedSourceFixtureCount() > 0usize &&
-        validatedExpressionsRejectedSourceFixtureCount() > 0usize &&
-        validatedExpressionsRejectedSourceFixtureCount() > 0usize &&
-        validatedExpressionsRejectedSourceFixtureCount() > 0usize &&
-        validatedExpressionsRejectedSourceFixtureCount() > 0usize &&
-        validatedExpressionsRejectedSourceFixtureCount() > 0usize &&
-        validatedExpressionsRejectedSourceFixtureCount() > 0usize &&
-        validatedExpressionsRejectedSourceFixtureCount() > 0usize &&
-        validatedExpressionsRejectedSourceFixtureCount() > 0usize &&
-        validatedExpressionsRejectedSourceFixtureCount() > 0usize &&
-        validatedExpressionsRejectedSourceFixtureCount() > 0usize &&
-        validatedExpressionsRejectedSourceFixtureCount() > 0usize &&
-        validatedExpressionsRejectedSourceFixtureCount() > 0usize &&
-        validatedExpressionsRejectedSourceFixtureCount() > 0usize &&
-        validatedExpressionsRejectedSourceFixtureCount() > 0usize &&
-        validatedExpressionsRejectedSourceFixtureCount() > 0usize &&
-        validatedExpressionsRejectedSourceFixtureCount() > 0usize &&
-        validatedExpressionsRejectedSourceFixtureCount() > 0usize &&
-        validatedExpressionsRejectedSourceFixtureCount() > 0usize &&
-        validatedExpressionsRejectedSourceFixtureCount() > 0usize &&
-        validatedFFIRejectedSourceFixtureCount() > 0usize &&
-        validatedFFIRejectedSourceFixtureCount() > 0usize &&
-        validatedFFIRejectedSourceFixtureCount() > 0usize &&
-        validatedFFIRejectedSourceFixtureCount() > 0usize &&
-        validatedFFIRejectedSourceFixtureCount() > 0usize &&
-        validatedFFIRejectedSourceFixtureCount() > 0usize &&
-        validatedFFIRejectedSourceFixtureCount() > 0usize &&
-        validatedFFIRejectedSourceFixtureCount() > 0usize &&
-        validatedFFIRejectedSourceFixtureCount() > 0usize &&
-        validatedFFIRejectedSourceFixtureCount() > 0usize &&
-        validatedFFIRejectedSourceFixtureCount() > 0usize &&
-        validatedFFIRejectedSourceFixtureCount() > 0usize &&
-        validatedFFIRejectedSourceFixtureCount() > 0usize &&
-        validatedFFIRejectedSourceFixtureCount() > 0usize &&
-        validatedFFIRejectedSourceFixtureCount() > 0usize &&
-        validatedFFIRejectedSourceFixtureCount() > 0usize &&
-        validatedFFIRejectedSourceFixtureCount() > 0usize &&
-        validatedFFIRejectedSourceFixtureCount() > 0usize &&
-        validatedFFIRejectedSourceFixtureCount() > 0usize &&
-        validatedFFIRejectedSourceFixtureCount() > 0usize &&
-        validatedFFIRejectedSourceFixtureCount() > 0usize &&
-        validatedFFIRejectedSourceFixtureCount() > 0usize &&
-        validatedFFIRejectedSourceFixtureCount() > 0usize &&
-        validatedFFIRejectedSourceFixtureCount() > 0usize &&
-        validatedFFIRejectedSourceFixtureCount() > 0usize &&
-        validatedFFIRejectedSourceFixtureCount() > 0usize &&
-        validatedFFIRejectedSourceFixtureCount() > 0usize &&
-        validatedFFIRejectedSourceFixtureCount() > 0usize &&
-        validatedFFIRejectedSourceFixtureCount() > 0usize &&
-        validatedFFIRejectedSourceFixtureCount() > 0usize &&
-        validatedFFIRejectedSourceFixtureCount() > 0usize &&
-        validatedFFIRejectedSourceFixtureCount() > 0usize &&
-        validatedFFIRejectedSourceFixtureCount() > 0usize &&
-        validatedFFIRejectedSourceFixtureCount() > 0usize &&
-        validatedFFIRejectedSourceFixtureCount() > 0usize &&
-        validatedFFIRejectedSourceFixtureCount() > 0usize &&
-        validatedFFIRejectedSourceFixtureCount() > 0usize &&
-        validatedFFIRejectedSourceFixtureCount() > 0usize &&
-        validatedFFIRejectedSourceFixtureCount() > 0usize &&
-        validatedFFIRejectedSourceFixtureCount() > 0usize &&
-        validatedFFIRejectedSourceFixtureCount() > 0usize &&
-        validatedFFIRejectedSourceFixtureCount() > 0usize &&
-        validatedFFIRejectedSourceFixtureCount() > 0usize &&
-        validatedFFIRejectedSourceFixtureCount() > 0usize &&
-        validatedFFIRejectedSourceFixtureCount() > 0usize &&
-        validatedKeysRejectedSourceFixtureCount() > 0usize &&
-        validatedKeysRejectedSourceFixtureCount() > 0usize &&
-        validatedKeysRejectedSourceFixtureCount() > 0usize &&
-        validatedKeysRejectedSourceFixtureCount() > 0usize &&
-        validatedKeysRejectedSourceFixtureCount() > 0usize &&
-        validatedKeysRejectedSourceFixtureCount() > 0usize &&
-        validatedKeysRejectedSourceFixtureCount() > 0usize &&
-        validatedKeysRejectedSourceFixtureCount() > 0usize &&
-        validatedKeysRejectedSourceFixtureCount() > 0usize &&
-        validatedKeysRejectedSourceFixtureCount() > 0usize &&
-        validatedKeysRejectedSourceFixtureCount() > 0usize &&
-        validatedKeysRejectedSourceFixtureCount() > 0usize &&
-        validatedKeysRejectedSourceFixtureCount() > 0usize &&
-        validatedKeysRejectedSourceFixtureCount() > 0usize &&
-        validatedKeysRejectedSourceFixtureCount() > 0usize &&
-        validatedKeysRejectedSourceFixtureCount() > 0usize &&
-        validatedKeysRejectedSourceFixtureCount() > 0usize &&
-        validatedKeysRejectedSourceFixtureCount() > 0usize &&
-        validatedKeysRejectedSourceFixtureCount() > 0usize &&
-        validatedKeysRejectedSourceFixtureCount() > 0usize &&
-        validatedKeysRejectedSourceFixtureCount() > 0usize &&
-        validatedNamesRejectedSourceFixtureCount() > 0usize &&
-        validatedParallelismRejectedSourceFixtureCount() > 0usize &&
-        validatedParallelismRejectedSourceFixtureCount() > 0usize &&
-        validatedParallelismRejectedSourceFixtureCount() > 0usize &&
-        validatedParallelismRejectedSourceFixtureCount() > 0usize &&
-        validatedParallelismRejectedSourceFixtureCount() > 0usize &&
-        validatedParallelismRejectedSourceFixtureCount() > 0usize &&
-        validatedParallelismRejectedSourceFixtureCount() > 0usize &&
-        validatedParallelismRejectedSourceFixtureCount() > 0usize &&
-        validatedParallelismRejectedSourceFixtureCount() > 0usize &&
-        validatedParallelismRejectedSourceFixtureCount() > 0usize &&
-        validatedParallelismRejectedSourceFixtureCount() > 0usize &&
-        validatedParallelismRejectedSourceFixtureCount() > 0usize &&
-        validatedParallelismRejectedSourceFixtureCount() > 0usize &&
-        validatedParallelismRejectedSourceFixtureCount() > 0usize &&
-        validatedParallelismRejectedSourceFixtureCount() > 0usize &&
-        validatedParallelismRejectedSourceFixtureCount() > 0usize &&
-        validatedParallelismRejectedSourceFixtureCount() > 0usize &&
-        validatedParallelismRejectedSourceFixtureCount() > 0usize &&
-        validatedParallelismRejectedSourceFixtureCount() > 0usize &&
-        validatedParallelismRejectedSourceFixtureCount() > 0usize &&
-        validatedParallelismRejectedSourceFixtureCount() > 0usize &&
-        validatedParallelismRejectedSourceFixtureCount() > 0usize &&
-        validatedParallelismRejectedSourceFixtureCount() > 0usize &&
-        validatedParallelismRejectedSourceFixtureCount() > 0usize &&
-        validatedParallelismRejectedSourceFixtureCount() > 0usize &&
-        validatedParallelismRejectedSourceFixtureCount() > 0usize &&
-        validatedParallelismRejectedSourceFixtureCount() > 0usize &&
-        validatedParallelismRejectedSourceFixtureCount() > 0usize &&
-        validatedParallelismRejectedSourceFixtureCount() > 0usize &&
-        validatedParallelismRejectedSourceFixtureCount() > 0usize &&
-        validatedParallelismRejectedSourceFixtureCount() > 0usize &&
-        validatedParallelismRejectedSourceFixtureCount() > 0usize &&
-        validatedParallelismRejectedSourceFixtureCount() > 0usize &&
-        validatedParsingRejectedSourceFixtureCount() > 0usize &&
-        validatedPatternsRejectedSourceFixtureCount() > 0usize &&
-        validatedPatternsRejectedSourceFixtureCount() > 0usize &&
-        validatedPatternsRejectedSourceFixtureCount() > 0usize &&
-        validatedPatternsRejectedSourceFixtureCount() > 0usize &&
-        validatedPatternsRejectedSourceFixtureCount() > 0usize &&
-        validatedPatternsRejectedSourceFixtureCount() > 0usize &&
-        validatedPatternsRejectedSourceFixtureCount() > 0usize &&
-        validatedPatternsRejectedSourceFixtureCount() > 0usize &&
-        validatedPatternsRejectedSourceFixtureCount() > 0usize &&
-        validatedPatternsRejectedSourceFixtureCount() > 0usize &&
-        validatedPatternsRejectedSourceFixtureCount() > 0usize &&
-        validatedPatternsRejectedSourceFixtureCount() > 0usize &&
-        validatedPatternsRejectedSourceFixtureCount() > 0usize &&
-        validatedPatternsRejectedSourceFixtureCount() > 0usize &&
-        validatedPatternsRejectedSourceFixtureCount() > 0usize &&
-        validatedPatternsRejectedSourceFixtureCount() > 0usize &&
-        validatedPatternsRejectedSourceFixtureCount() > 0usize &&
-        validatedPolymorphismRejectedSourceFixtureCount() > 0usize &&
-        validatedPolymorphismRejectedSourceFixtureCount() > 0usize &&
-        validatedPolymorphismRejectedSourceFixtureCount() > 0usize &&
-        validatedPolymorphismRejectedSourceFixtureCount() > 0usize &&
-        validatedPolymorphismRejectedSourceFixtureCount() > 0usize &&
-        validatedPolymorphismRejectedSourceFixtureCount() > 0usize &&
-        validatedPolymorphismRejectedSourceFixtureCount() > 0usize &&
-        validatedPolymorphismRejectedSourceFixtureCount() > 0usize &&
-        validatedPolymorphismRejectedSourceFixtureCount() > 0usize &&
-        validatedPolymorphismRejectedSourceFixtureCount() > 0usize &&
-        validatedPolymorphismRejectedSourceFixtureCount() > 0usize &&
-        validatedPolymorphismRejectedSourceFixtureCount() > 0usize &&
-        validatedPolymorphismRejectedSourceFixtureCount() > 0usize &&
-        validatedPolymorphismRejectedSourceFixtureCount() > 0usize &&
-        validatedPolymorphismRejectedSourceFixtureCount() > 0usize &&
-        validatedPolymorphismRejectedSourceFixtureCount() > 0usize &&
-        validatedPolymorphismRejectedSourceFixtureCount() > 0usize &&
-        validatedPolymorphismRejectedSourceFixtureCount() > 0usize &&
-        validatedPolymorphismRejectedSourceFixtureCount() > 0usize &&
-        validatedPolymorphismRejectedSourceFixtureCount() > 0usize &&
-        validatedPolymorphismRejectedSourceFixtureCount() > 0usize &&
-        validatedPolymorphismRejectedSourceFixtureCount() > 0usize &&
-        validatedPolymorphismRejectedSourceFixtureCount() > 0usize &&
-        validatedPolymorphismRejectedSourceFixtureCount() > 0usize &&
-        validatedPolymorphismRejectedSourceFixtureCount() > 0usize &&
-        validatedPolymorphismRejectedSourceFixtureCount() > 0usize &&
-        validatedPolymorphismRejectedSourceFixtureCount() > 0usize &&
-        validatedPolymorphismRejectedSourceFixtureCount() > 0usize &&
-        validatedPolymorphismRejectedSourceFixtureCount() > 0usize &&
-        validatedPolymorphismRejectedSourceFixtureCount() > 0usize &&
-        validatedPolymorphismRejectedSourceFixtureCount() > 0usize &&
-        validatedPolymorphismRejectedSourceFixtureCount() > 0usize &&
-        validatedPolymorphismRejectedSourceFixtureCount() > 0usize &&
-        validatedPolymorphismRejectedSourceFixtureCount() > 0usize &&
-        validatedPolymorphismRejectedSourceFixtureCount() > 0usize &&
-        validatedPolymorphismRejectedSourceFixtureCount() > 0usize &&
-        validatedPolymorphismRejectedSourceFixtureCount() > 0usize &&
-        validatedPolymorphismRejectedSourceFixtureCount() > 0usize &&
-        validatedPolymorphismRejectedSourceFixtureCount() > 0usize &&
-        validatedPolymorphismRejectedSourceFixtureCount() > 0usize &&
-        validatedPolymorphismRejectedSourceFixtureCount() > 0usize &&
-        validatedPolymorphismRejectedSourceFixtureCount() > 0usize &&
-        validatedPolymorphismRejectedSourceFixtureCount() > 0usize &&
-        validatedPolymorphismRejectedSourceFixtureCount() > 0usize &&
-        validatedPolymorphismRejectedSourceFixtureCount() > 0usize &&
-        validatedPolymorphismRejectedSourceFixtureCount() > 0usize &&
-        validatedPolymorphismRejectedSourceFixtureCount() > 0usize &&
-        validatedProceduresRejectedSourceFixtureCount() > 0usize &&
-        validatedProceduresRejectedSourceFixtureCount() > 0usize &&
-        validatedProceduresRejectedSourceFixtureCount() > 0usize &&
-        validatedProceduresRejectedSourceFixtureCount() > 0usize &&
-        validatedProceduresRejectedSourceFixtureCount() > 0usize &&
-        validatedProceduresRejectedSourceFixtureCount() > 0usize &&
-        validatedProceduresRejectedSourceFixtureCount() > 0usize &&
-        validatedProceduresRejectedSourceFixtureCount() > 0usize &&
-        validatedProceduresRejectedSourceFixtureCount() > 0usize &&
-        validatedProceduresRejectedSourceFixtureCount() > 0usize &&
-        validatedProceduresRejectedSourceFixtureCount() > 0usize &&
-        validatedProceduresRejectedSourceFixtureCount() > 0usize &&
-        validatedProceduresRejectedSourceFixtureCount() > 0usize &&
-        validatedProceduresRejectedSourceFixtureCount() > 0usize &&
-        validatedProceduresRejectedSourceFixtureCount() > 0usize &&
-        validatedProceduresRejectedSourceFixtureCount() > 0usize &&
-        validatedProceduresRejectedSourceFixtureCount() > 0usize &&
-        validatedProceduresRejectedSourceFixtureCount() > 0usize &&
-        validatedProceduresRejectedSourceFixtureCount() > 0usize &&
-        validatedProceduresRejectedSourceFixtureCount() > 0usize &&
-        validatedProceduresRejectedSourceFixtureCount() > 0usize &&
-        validatedProceduresRejectedSourceFixtureCount() > 0usize &&
-        validatedProceduresRejectedSourceFixtureCount() > 0usize &&
-        validatedProceduresRejectedSourceFixtureCount() > 0usize &&
-        validatedProceduresRejectedSourceFixtureCount() > 0usize &&
-        validatedProceduresRejectedSourceFixtureCount() > 0usize &&
-        validatedProceduresRejectedSourceFixtureCount() > 0usize &&
-        validatedProceduresRejectedSourceFixtureCount() > 0usize &&
-        validatedProceduresRejectedSourceFixtureCount() > 0usize &&
-        validatedProceduresRejectedSourceFixtureCount() > 0usize &&
-        validatedProceduresRejectedSourceFixtureCount() > 0usize &&
-        validatedProceduresRejectedSourceFixtureCount() > 0usize &&
-        validatedProceduresRejectedSourceFixtureCount() > 0usize &&
-        validatedProceduresRejectedSourceFixtureCount() > 0usize &&
-        validatedProceduresRejectedSourceFixtureCount() > 0usize &&
-        validatedProceduresRejectedSourceFixtureCount() > 0usize &&
-        validatedProceduresRejectedSourceFixtureCount() > 0usize &&
-        validatedProceduresRejectedSourceFixtureCount() > 0usize &&
-        validatedProceduresRejectedSourceFixtureCount() > 0usize &&
-        validatedProceduresRejectedSourceFixtureCount() > 0usize &&
-        validatedProceduresRejectedSourceFixtureCount() > 0usize &&
-        validatedProceduresRejectedSourceFixtureCount() > 0usize &&
-        validatedProceduresRejectedSourceFixtureCount() > 0usize &&
-        validatedProceduresRejectedSourceFixtureCount() > 0usize &&
-        validatedProceduresRejectedSourceFixtureCount() > 0usize &&
-        validatedSourceTextRejectedSourceFixtureCount() > 0usize &&
-        validatedSourceTextRejectedSourceFixtureCount() > 0usize &&
-        validatedSourceTextRejectedSourceFixtureCount() > 0usize &&
-        validatedSourceTextRejectedSourceFixtureCount() > 0usize &&
-        validatedStatementsRejectedSourceFixtureCount() > 0usize &&
-        validatedStatementsRejectedSourceFixtureCount() > 0usize &&
-        validatedStatementsRejectedSourceFixtureCount() > 0usize &&
-        validatedStatementsRejectedSourceFixtureCount() > 0usize &&
-        validatedStatementsRejectedSourceFixtureCount() > 0usize &&
-        validatedStatementsRejectedSourceFixtureCount() > 0usize &&
-        validatedStatementsRejectedSourceFixtureCount() > 0usize &&
-        validatedStatementsRejectedSourceFixtureCount() > 0usize &&
-        validatedStatementsRejectedSourceFixtureCount() > 0usize &&
-        validatedStatementsRejectedSourceFixtureCount() > 0usize &&
-        validatedStatementsRejectedSourceFixtureCount() > 0usize &&
-        validatedStatementsRejectedSourceFixtureCount() > 0usize &&
-        validatedStatementsRejectedSourceFixtureCount() > 0usize &&
-        validatedStatementsRejectedSourceFixtureCount() > 0usize &&
-        validatedStatementsRejectedSourceFixtureCount() > 0usize &&
-        validatedStatementsRejectedSourceFixtureCount() > 0usize &&
-        validatedStatementsRejectedSourceFixtureCount() > 0usize &&
-        validatedStatementsRejectedSourceFixtureCount() > 0usize &&
-        validatedStatementsRejectedSourceFixtureCount() > 0usize &&
-        validatedStatementsRejectedSourceFixtureCount() > 0usize &&
-        validatedStatementsRejectedSourceFixtureCount() > 0usize &&
-        validatedStatementsRejectedSourceFixtureCount() > 0usize &&
-        validatedStatementsRejectedSourceFixtureCount() > 0usize &&
-        validatedStatementsRejectedSourceFixtureCount() > 0usize &&
-        validatedStatementsRejectedSourceFixtureCount() > 0usize &&
-        validatedStatementsRejectedSourceFixtureCount() > 0usize &&
-        validatedStatementsRejectedSourceFixtureCount() > 0usize &&
-        validatedStatementsRejectedSourceFixtureCount() > 0usize &&
-        validatedStatementsRejectedSourceFixtureCount() > 0usize &&
-        validatedStatementsRejectedSourceFixtureCount() > 0usize &&
-        validatedStatementsRejectedSourceFixtureCount() > 0usize &&
-        validatedStatementsRejectedSourceFixtureCount() > 0usize &&
-        validatedStatementsRejectedSourceFixtureCount() > 0usize &&
-        validatedStatementsRejectedSourceFixtureCount() > 0usize &&
-        validatedStatementsRejectedSourceFixtureCount() > 0usize &&
-        validatedStatementsRejectedSourceFixtureCount() > 0usize &&
-        runAsyncAsyncKeyIntegrationReference() &&
-        runAsyncAsyncTypeReference() &&
-        runAsyncCompositionChainReference() &&
-        runAsyncCompositionCombinatorsReference() &&
-        runAsyncCompositionFilterReference() &&
-        runAsyncCompositionFoldReference() &&
-        runAsyncCompositionFormsReference() &&
-        runAsyncCompositionMapReference() &&
-        runAsyncCompositionTakeReference() &&
-        runAsyncCompositionUntilReference() &&
-        runAsyncStateMachineReference() &&
-        runAsyncSuspensionFormsReference(context) &&
-        runAttributesDiagnosticAttributesReference() &&
-        runAttributesGeneralAttributesReference() &&
-        runAttributesLayoutAttributesReference() &&
-        runAttributesOptimizationAttributesReference() &&
-        runAttributesVendorAttributesReference() &&
-        runAuthorityBindingRuntimeStateReference() &&
-        runAuthorityCapabilitiesReference() &&
-        runAuthorityFileSystemReference() &&
-        runAuthorityNetworkReference() &&
-        runAuthorityRegionsAndFramesReference() &&
-        runAuthoritySystemReference() &&
-        runAuthorityTimeReference(context) &&
-        runComptimeCompileTimeCapabilitiesReference() &&
-        runComptimeCompileTimeFormsReference() &&
-        runComptimeDeriveTargetsReference() &&
-        runComptimeQuoteSpliceEmissionReference() &&
-        runComptimeReflectionReference() &&
-        runConformanceBehaviorClassificationReference() &&
-        runConformanceConstructVocabularyReference() &&
-        runConformanceTranslationOrderingReference() &&
-        runDataTypesArraysReference() &&
-        runDataTypesEnumsReference() &&
-        runDataTypesPrimitivesReference() &&
-        runDataTypesRangesReference() &&
-        runDataTypesRecordsReference() &&
-        runDataTypesSlicesReference() &&
-        runDataTypesTuplesReference() &&
-        runDataTypesTypeAliasesReference() &&
-        runDataTypesUnionsReference() &&
-        runDiagnosticsDiagnosticOrderingReference() &&
-        runDiagnosticsDiagnosticRecordsReference() &&
-        runDiagnosticsRenderingInputsReference() &&
-        runDiagnosticsSourceSpansReference() &&
-        runExpressionsAccessAndPlacesReference() &&
-        runExpressionsCallsReference() &&
-        runExpressionsCastsAndTransmutesReference() &&
-        runExpressionsClosuresAndPipelinesReference() &&
-        runExpressionsConstructionReference() &&
-        runExpressionsControlReference() &&
-        runExpressionsEffectfulCoreReference() &&
-        runExpressionsLiteralsAndNamesReference() &&
-        runExpressionsOperatorsReference() &&
-        runFFIAttributesReference() &&
-        runFFIBoundaryUnwindingReference() &&
-        runFFICapabilityIsolationReference() &&
-        runFFIExportedProceduresReference() &&
-        runFFIExternProceduresReference() &&
-        runFFIFfiSafeReference() &&
-        runFFIForeignContractsReference() &&
-        runKeysAcquisitionBlocksReference() &&
-        runKeysConflictDetectionReference() &&
-        runKeysDynamicVerificationReference() &&
-        runKeysKeyPathsReference() &&
-        runKeysMemoryOrderingReference() &&
-        runKeysNestedReleaseReference() &&
-        runKeysSpeculativeExecutionReference() &&
-        runLoweringBackendRequirementsReference() &&
-        runLoweringCleanupDropUnwindingReference() &&
-        runLoweringInitializationLifecycleReference() &&
-        runLoweringLayoutAndABIReference() &&
-        runLoweringRuntimeInterfaceReference() &&
-        runLoweringSharedJudgmentsReference() &&
-        runLoweringSymbolsManglingLinkageReference() &&
-        runModalTypesBytesReference() &&
-        runModalTypesClosuresReference() &&
-        runModalTypesFunctionTypesReference() &&
-        runModalTypesModalDeclarationsReference() &&
-        runModalTypesPointersReference() &&
-        runModalTypesStateFieldsReference() &&
-        runModalTypesStateMethodsReference() &&
-        runModalTypesStringsReference() &&
-        runModalTypesTransitionsReference() &&
-        runModalTypesWideningReference() &&
-        runModulesAggregationReference() &&
-        runModulesExternBlocksReference() &&
-        runModulesImportsReference() &&
-        runModulesStaticsReference() &&
-        runModulesUsingsReference() &&
-        runNamesDisambiguationReference() &&
-        runNamesImportsReference() &&
-        runNamesQualifiedResolutionReference() &&
-        runNamesUsingDeclarationsReference() &&
-        runNamesVisibilityReference() &&
-        runParallelismCancellationReference(context) &&
-        runParallelismCaptureSemanticsReference(context) &&
-        runParallelismDeterminismReference(context) &&
-        runParallelismDispatchReference(context) &&
-        runParallelismExecutionDomainsReference(context) &&
-        runParallelismPanicHandlingReference(context) &&
-        runParallelismParallelBlocksReference(context) &&
-        runParallelismSpawnReference(context) &&
-        runParsingAttributeParsingReference() &&
-        runParsingItemSequencingReference() &&
-        runParsingRecoverySpecimensReference() &&
-        runParsingTerminatorsReference() &&
-        runPatternsBasicPatternsReference() &&
-        runPatternsCaseClausesReference() &&
-        runPatternsEnumModalPatternsReference() &&
-        runPatternsExhaustivenessReference() &&
-        runPatternsRangePatternsReference() &&
-        runPatternsTupleRecordPatternsReference() &&
-        runPermissionsActivityStatesReference() &&
-        runPermissionsAdmissibilityReference() &&
-        runPermissionsAliasExclusivityReference() &&
-        runPermissionsPermissionFormsReference() &&
-        runPolymorphismAssociatedTypesReference() &&
-        runPolymorphismCapabilityClassesReference(context) &&
-        runPolymorphismClassesReference() &&
-        runPolymorphismDynamicClassObjectsReference() &&
-        runPolymorphismGenericParametersReference() &&
-        runPolymorphismGenericProceduresReference() &&
-        runPolymorphismImplementationsReference() &&
-        runPolymorphismOpaqueTypesReference() &&
-        runProceduresBehavioralSubtypingReference() &&
-        runProceduresContractsReference() &&
-        runProceduresDeclarationsReference() &&
-        runProceduresInvariantsReference() &&
-        runProceduresOverloadingReference() &&
-        runProceduresPostconditionsReference() &&
-        runProceduresPreconditionsReference() &&
-        runProceduresReceiversReference() &&
-        runProceduresVerificationReference() &&
-        runProjectsAssemblyModelReference() &&
-        runProjectsManifestModelReference() &&
-        runProjectsModuleDiscoveryReference() &&
-        runProjectsOutputArtifactsReference() &&
-        runSourceTextIdentifiersReference() &&
-        runSourceTextLiteralsReference() &&
-        runSourceTextLogicalLinesReference() &&
-        runSourceTextOperatorsAndPunctuationReference() &&
-        runSourceTextUnicodeNormalizationReference() &&
-        runStatementsAssignmentReference() &&
-        runStatementsBindingsReference() &&
-        runStatementsBlocksReference() &&
-        runStatementsControlTransferReference() &&
-        runStatementsDeferReference() &&
-        runStatementsExpressionStatementsReference() &&
-        runStatementsFrameReference() &&
-        runStatementsLocalUsingReference() &&
-        runStatementsRegionReference() &&
-        runStatementsUnsafeReference() &&
-        runTypesEquivalenceReference() &&
-        runTypesInferenceReference() &&
-        runTypesRefinementsReference() &&
+    var passed: bool = true
+    passed = recordCatalogSymbolExecution(
+        context,
+        "specClarificationLedgerIsIndexed",
+        specClarificationLedgerIsIndexed()
+    ) && passed
+    passed = recordCatalogSymbolExecution(
+        context,
+        "validatedAcceptedProjectFixtureCount",
+        validatedAcceptedProjectFixtureCount() > 0usize
+    ) && passed
+    passed = recordCatalogSymbolExecution(
+        context,
+        "validatedAcceptedProjectFixtureCount",
+        validatedAcceptedProjectFixtureCount() > 0usize
+    ) && passed
+    passed = recordCatalogSymbolExecution(
+        context,
+        "validatedAcceptedProjectFixtureCount",
+        validatedAcceptedProjectFixtureCount() > 0usize
+    ) && passed
+    passed = recordCatalogSymbolExecution(
+        context,
+        "validatedAcceptedProjectFixtureCount",
+        validatedAcceptedProjectFixtureCount() > 0usize
+    ) && passed
+    passed = recordCatalogSymbolExecution(
+        context,
+        "validatedAcceptedProjectFixtureCount",
+        validatedAcceptedProjectFixtureCount() > 0usize
+    ) && passed
+    passed = recordCatalogSymbolExecution(
+        context,
+        "validatedAcceptedProjectFixtureCount",
+        validatedAcceptedProjectFixtureCount() > 0usize
+    ) && passed
+    passed = recordCatalogSymbolExecution(
+        context,
+        "validatedAcceptedProjectFixtureCount",
+        validatedAcceptedProjectFixtureCount() > 0usize
+    ) && passed
+    passed = recordCatalogSymbolExecution(
+        context,
+        "validatedArtifactProjectFixtureCount",
+        validatedArtifactProjectFixtureCount() > 0usize
+    ) && passed
+    passed = recordCatalogSymbolExecution(
+        context,
+        "validatedArtifactProjectFixtureCount",
+        validatedArtifactProjectFixtureCount() > 0usize
+    ) && passed
+    passed = recordCatalogSymbolExecution(
+        context,
+        "validatedArtifactProjectFixtureCount",
+        validatedArtifactProjectFixtureCount() > 0usize
+    ) && passed
+    passed = recordCatalogSymbolExecution(
+        context,
+        "validatedAsyncDiagnosticSourceFixtureCount",
+        validatedAsyncDiagnosticSourceFixtureCount() > 0usize
+    ) && passed
+    passed = recordCatalogSymbolExecution(
+        context,
+        "validatedAsyncDiagnosticSourceFixtureCount",
+        validatedAsyncDiagnosticSourceFixtureCount() > 0usize
+    ) && passed
+    passed = recordCatalogSymbolExecution(
+        context,
+        "validatedAsyncDiagnosticSourceFixtureCount",
+        validatedAsyncDiagnosticSourceFixtureCount() > 0usize
+    ) && passed
+    passed = recordCatalogSymbolExecution(
+        context,
+        "validatedAsyncDiagnosticSourceFixtureCount",
+        validatedAsyncDiagnosticSourceFixtureCount() > 0usize
+    ) && passed
+    passed = recordCatalogSymbolExecution(
+        context,
+        "validatedAsyncDiagnosticSourceFixtureCount",
+        validatedAsyncDiagnosticSourceFixtureCount() > 0usize
+    ) && passed
+    passed = recordCatalogSymbolExecution(
+        context,
+        "validatedComptimeDiagnosticSourceFixtureCount",
+        validatedComptimeDiagnosticSourceFixtureCount() > 0usize
+    ) && passed
+    passed = recordCatalogSymbolExecution(
+        context,
+        "validatedComptimeDiagnosticSourceFixtureCount",
+        validatedComptimeDiagnosticSourceFixtureCount() > 0usize
+    ) && passed
+    passed = recordCatalogSymbolExecution(
+        context,
+        "validatedComptimeDiagnosticSourceFixtureCount",
+        validatedComptimeDiagnosticSourceFixtureCount() > 0usize
+    ) && passed
+    passed = recordCatalogSymbolExecution(
+        context,
+        "validatedExpressionsDiagnosticSourceFixtureCount",
+        validatedExpressionsDiagnosticSourceFixtureCount() > 0usize
+    ) && passed
+    passed = recordCatalogSymbolExecution(
+        context,
+        "validatedKeysDiagnosticSourceFixtureCount",
+        validatedKeysDiagnosticSourceFixtureCount() > 0usize
+    ) && passed
+    passed = recordCatalogSymbolExecution(
+        context,
+        "validatedKeysDiagnosticSourceFixtureCount",
+        validatedKeysDiagnosticSourceFixtureCount() > 0usize
+    ) && passed
+    passed = recordCatalogSymbolExecution(
+        context,
+        "validatedKeysDiagnosticSourceFixtureCount",
+        validatedKeysDiagnosticSourceFixtureCount() > 0usize
+    ) && passed
+    passed = recordCatalogSymbolExecution(
+        context,
+        "validatedKeysDiagnosticSourceFixtureCount",
+        validatedKeysDiagnosticSourceFixtureCount() > 0usize
+    ) && passed
+    passed = recordCatalogSymbolExecution(
+        context,
+        "validatedKeysDiagnosticSourceFixtureCount",
+        validatedKeysDiagnosticSourceFixtureCount() > 0usize
+    ) && passed
+    passed = recordCatalogSymbolExecution(
+        context,
+        "validatedKeysDiagnosticSourceFixtureCount",
+        validatedKeysDiagnosticSourceFixtureCount() > 0usize
+    ) && passed
+    passed = recordCatalogSymbolExecution(
+        context,
+        "validatedKeysDiagnosticSourceFixtureCount",
+        validatedKeysDiagnosticSourceFixtureCount() > 0usize
+    ) && passed
+    passed = recordCatalogSymbolExecution(
+        context,
+        "validatedKeysDiagnosticSourceFixtureCount",
+        validatedKeysDiagnosticSourceFixtureCount() > 0usize
+    ) && passed
+    passed = recordCatalogSymbolExecution(
+        context,
+        "validatedKeysDiagnosticSourceFixtureCount",
+        validatedKeysDiagnosticSourceFixtureCount() > 0usize
+    ) && passed
+    passed = recordCatalogSymbolExecution(
+        context,
+        "validatedKeysDiagnosticSourceFixtureCount",
+        validatedKeysDiagnosticSourceFixtureCount() > 0usize
+    ) && passed
+    passed = recordCatalogSymbolExecution(
+        context,
+        "validatedParallelismDiagnosticSourceFixtureCount",
+        validatedParallelismDiagnosticSourceFixtureCount() > 0usize
+    ) && passed
+    passed = recordCatalogSymbolExecution(
+        context,
+        "validatedParallelismDiagnosticSourceFixtureCount",
+        validatedParallelismDiagnosticSourceFixtureCount() > 0usize
+    ) && passed
+    passed = recordCatalogSymbolExecution(
+        context,
+        "validatedParallelismDiagnosticSourceFixtureCount",
+        validatedParallelismDiagnosticSourceFixtureCount() > 0usize
+    ) && passed
+    passed = recordCatalogSymbolExecution(
+        context,
+        "validatedOutputLoweringDiagnosticFixtureCount",
+        validatedOutputLoweringDiagnosticFixtureCount() > 0usize
+    ) && passed
+    passed = recordCatalogSymbolExecution(
+        context,
+        "validatedComptimeRejectedSourceFixtureCount",
+        validatedComptimeRejectedSourceFixtureCount() > 0usize
+    ) && passed
+    passed = recordCatalogSymbolExecution(
+        context,
+        "validatedComptimeRejectedSourceFixtureCount",
+        validatedComptimeRejectedSourceFixtureCount() > 0usize
+    ) && passed
+    passed = recordCatalogSymbolExecution(
+        context,
+        "validatedComptimeRejectedSourceFixtureCount",
+        validatedComptimeRejectedSourceFixtureCount() > 0usize
+    ) && passed
+    passed = recordCatalogSymbolExecution(
+        context,
+        "validatedComptimeRejectedSourceFixtureCount",
+        validatedComptimeRejectedSourceFixtureCount() > 0usize
+    ) && passed
+    passed = recordCatalogSymbolExecution(
+        context,
+        "validatedComptimeRejectedSourceFixtureCount",
+        validatedComptimeRejectedSourceFixtureCount() > 0usize
+    ) && passed
+    passed = recordCatalogSymbolExecution(
+        context,
+        "validatedComptimeRejectedSourceFixtureCount",
+        validatedComptimeRejectedSourceFixtureCount() > 0usize
+    ) && passed
+    passed = recordCatalogSymbolExecution(
+        context,
+        "validatedComptimeRejectedSourceFixtureCount",
+        validatedComptimeRejectedSourceFixtureCount() > 0usize
+    ) && passed
+    passed = recordCatalogSymbolExecution(
+        context,
+        "validatedComptimeRejectedSourceFixtureCount",
+        validatedComptimeRejectedSourceFixtureCount() > 0usize
+    ) && passed
+    passed = recordCatalogSymbolExecution(
+        context,
+        "validatedComptimeRejectedSourceFixtureCount",
+        validatedComptimeRejectedSourceFixtureCount() > 0usize
+    ) && passed
+    passed = recordCatalogSymbolExecution(
+        context,
+        "validatedComptimeRejectedSourceFixtureCount",
+        validatedComptimeRejectedSourceFixtureCount() > 0usize
+    ) && passed
+    passed = recordCatalogSymbolExecution(
+        context,
+        "validatedComptimeRejectedSourceFixtureCount",
+        validatedComptimeRejectedSourceFixtureCount() > 0usize
+    ) && passed
+    passed = recordCatalogSymbolExecution(
+        context,
+        "validatedComptimeRejectedSourceFixtureCount",
+        validatedComptimeRejectedSourceFixtureCount() > 0usize
+    ) && passed
+    passed = recordCatalogSymbolExecution(
+        context,
+        "validatedComptimeRejectedSourceFixtureCount",
+        validatedComptimeRejectedSourceFixtureCount() > 0usize
+    ) && passed
+    passed = recordCatalogSymbolExecution(
+        context,
+        "validatedComptimeRejectedSourceFixtureCount",
+        validatedComptimeRejectedSourceFixtureCount() > 0usize
+    ) && passed
+    passed = recordCatalogSymbolExecution(
+        context,
+        "validatedComptimeRejectedSourceFixtureCount",
+        validatedComptimeRejectedSourceFixtureCount() > 0usize
+    ) && passed
+    passed = recordCatalogSymbolExecution(
+        context,
+        "validatedComptimeRejectedSourceFixtureCount",
+        validatedComptimeRejectedSourceFixtureCount() > 0usize
+    ) && passed
+    passed = recordCatalogSymbolExecution(
+        context,
+        "validatedComptimeRejectedSourceFixtureCount",
+        validatedComptimeRejectedSourceFixtureCount() > 0usize
+    ) && passed
+    passed = recordCatalogSymbolExecution(
+        context,
+        "validatedExpressionsRejectedSourceFixtureCount",
+        validatedExpressionsRejectedSourceFixtureCount() > 0usize
+    ) && passed
+    passed = recordCatalogSymbolExecution(
+        context,
+        "validatedExpressionsRejectedSourceFixtureCount",
+        validatedExpressionsRejectedSourceFixtureCount() > 0usize
+    ) && passed
+    passed = recordCatalogSymbolExecution(
+        context,
+        "validatedExpressionsRejectedSourceFixtureCount",
+        validatedExpressionsRejectedSourceFixtureCount() > 0usize
+    ) && passed
+    passed = recordCatalogSymbolExecution(
+        context,
+        "validatedExpressionsRejectedSourceFixtureCount",
+        validatedExpressionsRejectedSourceFixtureCount() > 0usize
+    ) && passed
+    passed = recordCatalogSymbolExecution(
+        context,
+        "validatedExpressionsRejectedSourceFixtureCount",
+        validatedExpressionsRejectedSourceFixtureCount() > 0usize
+    ) && passed
+    passed = recordCatalogSymbolExecution(
+        context,
+        "validatedExpressionsRejectedSourceFixtureCount",
+        validatedExpressionsRejectedSourceFixtureCount() > 0usize
+    ) && passed
+    passed = recordCatalogSymbolExecution(
+        context,
+        "validatedExpressionsRejectedSourceFixtureCount",
+        validatedExpressionsRejectedSourceFixtureCount() > 0usize
+    ) && passed
+    passed = recordCatalogSymbolExecution(
+        context,
+        "validatedExpressionsRejectedSourceFixtureCount",
+        validatedExpressionsRejectedSourceFixtureCount() > 0usize
+    ) && passed
+    passed = recordCatalogSymbolExecution(
+        context,
+        "validatedExpressionsRejectedSourceFixtureCount",
+        validatedExpressionsRejectedSourceFixtureCount() > 0usize
+    ) && passed
+    passed = recordCatalogSymbolExecution(
+        context,
+        "validatedExpressionsRejectedSourceFixtureCount",
+        validatedExpressionsRejectedSourceFixtureCount() > 0usize
+    ) && passed
+    passed = recordCatalogSymbolExecution(
+        context,
+        "validatedExpressionsRejectedSourceFixtureCount",
+        validatedExpressionsRejectedSourceFixtureCount() > 0usize
+    ) && passed
+    passed = recordCatalogSymbolExecution(
+        context,
+        "validatedExpressionsRejectedSourceFixtureCount",
+        validatedExpressionsRejectedSourceFixtureCount() > 0usize
+    ) && passed
+    passed = recordCatalogSymbolExecution(
+        context,
+        "validatedExpressionsRejectedSourceFixtureCount",
+        validatedExpressionsRejectedSourceFixtureCount() > 0usize
+    ) && passed
+    passed = recordCatalogSymbolExecution(
+        context,
+        "validatedExpressionsRejectedSourceFixtureCount",
+        validatedExpressionsRejectedSourceFixtureCount() > 0usize
+    ) && passed
+    passed = recordCatalogSymbolExecution(
+        context,
+        "validatedExpressionsRejectedSourceFixtureCount",
+        validatedExpressionsRejectedSourceFixtureCount() > 0usize
+    ) && passed
+    passed = recordCatalogSymbolExecution(
+        context,
+        "validatedExpressionsRejectedSourceFixtureCount",
+        validatedExpressionsRejectedSourceFixtureCount() > 0usize
+    ) && passed
+    passed = recordCatalogSymbolExecution(
+        context,
+        "validatedExpressionsRejectedSourceFixtureCount",
+        validatedExpressionsRejectedSourceFixtureCount() > 0usize
+    ) && passed
+    passed = recordCatalogSymbolExecution(
+        context,
+        "validatedExpressionsRejectedSourceFixtureCount",
+        validatedExpressionsRejectedSourceFixtureCount() > 0usize
+    ) && passed
+    passed = recordCatalogSymbolExecution(
+        context,
+        "validatedExpressionsRejectedSourceFixtureCount",
+        validatedExpressionsRejectedSourceFixtureCount() > 0usize
+    ) && passed
+    passed = recordCatalogSymbolExecution(
+        context,
+        "validatedExpressionsRejectedSourceFixtureCount",
+        validatedExpressionsRejectedSourceFixtureCount() > 0usize
+    ) && passed
+    passed = recordCatalogSymbolExecution(
+        context,
+        "validatedExpressionsRejectedSourceFixtureCount",
+        validatedExpressionsRejectedSourceFixtureCount() > 0usize
+    ) && passed
+    passed = recordCatalogSymbolExecution(
+        context,
+        "validatedExpressionsRejectedSourceFixtureCount",
+        validatedExpressionsRejectedSourceFixtureCount() > 0usize
+    ) && passed
+    passed = recordCatalogSymbolExecution(
+        context,
+        "validatedExpressionsRejectedSourceFixtureCount",
+        validatedExpressionsRejectedSourceFixtureCount() > 0usize
+    ) && passed
+    passed = recordCatalogSymbolExecution(
+        context,
+        "validatedExpressionsRejectedSourceFixtureCount",
+        validatedExpressionsRejectedSourceFixtureCount() > 0usize
+    ) && passed
+    passed = recordCatalogSymbolExecution(
+        context,
+        "validatedExpressionsRejectedSourceFixtureCount",
+        validatedExpressionsRejectedSourceFixtureCount() > 0usize
+    ) && passed
+    passed = recordCatalogSymbolExecution(
+        context,
+        "validatedExpressionsRejectedSourceFixtureCount",
+        validatedExpressionsRejectedSourceFixtureCount() > 0usize
+    ) && passed
+    passed = recordCatalogSymbolExecution(
+        context,
+        "validatedExpressionsRejectedSourceFixtureCount",
+        validatedExpressionsRejectedSourceFixtureCount() > 0usize
+    ) && passed
+    passed = recordCatalogSymbolExecution(
+        context,
+        "validatedExpressionsRejectedSourceFixtureCount",
+        validatedExpressionsRejectedSourceFixtureCount() > 0usize
+    ) && passed
+    passed = recordCatalogSymbolExecution(
+        context,
+        "validatedExpressionsRejectedSourceFixtureCount",
+        validatedExpressionsRejectedSourceFixtureCount() > 0usize
+    ) && passed
+    passed = recordCatalogSymbolExecution(
+        context,
+        "validatedExpressionsRejectedSourceFixtureCount",
+        validatedExpressionsRejectedSourceFixtureCount() > 0usize
+    ) && passed
+    passed = recordCatalogSymbolExecution(
+        context,
+        "validatedExpressionsRejectedSourceFixtureCount",
+        validatedExpressionsRejectedSourceFixtureCount() > 0usize
+    ) && passed
+    passed = recordCatalogSymbolExecution(
+        context,
+        "validatedExpressionsRejectedSourceFixtureCount",
+        validatedExpressionsRejectedSourceFixtureCount() > 0usize
+    ) && passed
+    passed = recordCatalogSymbolExecution(
+        context,
+        "validatedExpressionsRejectedSourceFixtureCount",
+        validatedExpressionsRejectedSourceFixtureCount() > 0usize
+    ) && passed
+    passed = recordCatalogSymbolExecution(
+        context,
+        "validatedExpressionsRejectedSourceFixtureCount",
+        validatedExpressionsRejectedSourceFixtureCount() > 0usize
+    ) && passed
+    passed = recordCatalogSymbolExecution(
+        context,
+        "validatedExpressionsRejectedSourceFixtureCount",
+        validatedExpressionsRejectedSourceFixtureCount() > 0usize
+    ) && passed
+    passed = recordCatalogSymbolExecution(
+        context,
+        "validatedExpressionsRejectedSourceFixtureCount",
+        validatedExpressionsRejectedSourceFixtureCount() > 0usize
+    ) && passed
+    passed = recordCatalogSymbolExecution(
+        context,
+        "validatedExpressionsRejectedSourceFixtureCount",
+        validatedExpressionsRejectedSourceFixtureCount() > 0usize
+    ) && passed
+    passed = recordCatalogSymbolExecution(
+        context,
+        "validatedExpressionsRejectedSourceFixtureCount",
+        validatedExpressionsRejectedSourceFixtureCount() > 0usize
+    ) && passed
+    passed = recordCatalogSymbolExecution(
+        context,
+        "validatedExpressionsRejectedSourceFixtureCount",
+        validatedExpressionsRejectedSourceFixtureCount() > 0usize
+    ) && passed
+    passed = recordCatalogSymbolExecution(
+        context,
+        "validatedExpressionsRejectedSourceFixtureCount",
+        validatedExpressionsRejectedSourceFixtureCount() > 0usize
+    ) && passed
+    passed = recordCatalogSymbolExecution(
+        context,
+        "validatedExpressionsRejectedSourceFixtureCount",
+        validatedExpressionsRejectedSourceFixtureCount() > 0usize
+    ) && passed
+    passed = recordCatalogSymbolExecution(
+        context,
+        "validatedExpressionsRejectedSourceFixtureCount",
+        validatedExpressionsRejectedSourceFixtureCount() > 0usize
+    ) && passed
+    passed = recordCatalogSymbolExecution(
+        context,
+        "validatedExpressionsRejectedSourceFixtureCount",
+        validatedExpressionsRejectedSourceFixtureCount() > 0usize
+    ) && passed
+    passed = recordCatalogSymbolExecution(
+        context,
+        "validatedExpressionsRejectedSourceFixtureCount",
+        validatedExpressionsRejectedSourceFixtureCount() > 0usize
+    ) && passed
+    passed = recordCatalogSymbolExecution(
+        context,
+        "validatedExpressionsRejectedSourceFixtureCount",
+        validatedExpressionsRejectedSourceFixtureCount() > 0usize
+    ) && passed
+    passed = recordCatalogSymbolExecution(
+        context,
+        "validatedExpressionsRejectedSourceFixtureCount",
+        validatedExpressionsRejectedSourceFixtureCount() > 0usize
+    ) && passed
+    passed = recordCatalogSymbolExecution(
+        context,
+        "validatedExpressionsRejectedSourceFixtureCount",
+        validatedExpressionsRejectedSourceFixtureCount() > 0usize
+    ) && passed
+    passed = recordCatalogSymbolExecution(
+        context,
+        "validatedExpressionsRejectedSourceFixtureCount",
+        validatedExpressionsRejectedSourceFixtureCount() > 0usize
+    ) && passed
+    passed = recordCatalogSymbolExecution(
+        context,
+        "validatedExpressionsRejectedSourceFixtureCount",
+        validatedExpressionsRejectedSourceFixtureCount() > 0usize
+    ) && passed
+    passed = recordCatalogSymbolExecution(
+        context,
+        "validatedExpressionsRejectedSourceFixtureCount",
+        validatedExpressionsRejectedSourceFixtureCount() > 0usize
+    ) && passed
+    passed = recordCatalogSymbolExecution(
+        context,
+        "validatedExpressionsRejectedSourceFixtureCount",
+        validatedExpressionsRejectedSourceFixtureCount() > 0usize
+    ) && passed
+    passed = recordCatalogSymbolExecution(
+        context,
+        "validatedExpressionsRejectedSourceFixtureCount",
+        validatedExpressionsRejectedSourceFixtureCount() > 0usize
+    ) && passed
+    passed = recordCatalogSymbolExecution(
+        context,
+        "validatedExpressionsRejectedSourceFixtureCount",
+        validatedExpressionsRejectedSourceFixtureCount() > 0usize
+    ) && passed
+    passed = recordCatalogSymbolExecution(
+        context,
+        "validatedExpressionsRejectedSourceFixtureCount",
+        validatedExpressionsRejectedSourceFixtureCount() > 0usize
+    ) && passed
+    passed = recordCatalogSymbolExecution(
+        context,
+        "validatedExpressionsRejectedSourceFixtureCount",
+        validatedExpressionsRejectedSourceFixtureCount() > 0usize
+    ) && passed
+    passed = recordCatalogSymbolExecution(
+        context,
+        "validatedExpressionsRejectedSourceFixtureCount",
+        validatedExpressionsRejectedSourceFixtureCount() > 0usize
+    ) && passed
+    passed = recordCatalogSymbolExecution(
+        context,
+        "validatedExpressionsRejectedSourceFixtureCount",
+        validatedExpressionsRejectedSourceFixtureCount() > 0usize
+    ) && passed
+    passed = recordCatalogSymbolExecution(
+        context,
+        "validatedExpressionsRejectedSourceFixtureCount",
+        validatedExpressionsRejectedSourceFixtureCount() > 0usize
+    ) && passed
+    passed = recordCatalogSymbolExecution(
+        context,
+        "validatedExpressionsRejectedSourceFixtureCount",
+        validatedExpressionsRejectedSourceFixtureCount() > 0usize
+    ) && passed
+    passed = recordCatalogSymbolExecution(
+        context,
+        "validatedExpressionsRejectedSourceFixtureCount",
+        validatedExpressionsRejectedSourceFixtureCount() > 0usize
+    ) && passed
+    passed = recordCatalogSymbolExecution(
+        context,
+        "validatedExpressionsRejectedSourceFixtureCount",
+        validatedExpressionsRejectedSourceFixtureCount() > 0usize
+    ) && passed
+    passed = recordCatalogSymbolExecution(
+        context,
+        "validatedExpressionsRejectedSourceFixtureCount",
+        validatedExpressionsRejectedSourceFixtureCount() > 0usize
+    ) && passed
+    passed = recordCatalogSymbolExecution(
+        context,
+        "validatedExpressionsRejectedSourceFixtureCount",
+        validatedExpressionsRejectedSourceFixtureCount() > 0usize
+    ) && passed
+    passed = recordCatalogSymbolExecution(
+        context,
+        "validatedExpressionsRejectedSourceFixtureCount",
+        validatedExpressionsRejectedSourceFixtureCount() > 0usize
+    ) && passed
+    passed = recordCatalogSymbolExecution(
+        context,
+        "validatedExpressionsRejectedSourceFixtureCount",
+        validatedExpressionsRejectedSourceFixtureCount() > 0usize
+    ) && passed
+    passed = recordCatalogSymbolExecution(
+        context,
+        "validatedExpressionsRejectedSourceFixtureCount",
+        validatedExpressionsRejectedSourceFixtureCount() > 0usize
+    ) && passed
+    passed = recordCatalogSymbolExecution(
+        context,
+        "validatedExpressionsRejectedSourceFixtureCount",
+        validatedExpressionsRejectedSourceFixtureCount() > 0usize
+    ) && passed
+    passed = recordCatalogSymbolExecution(
+        context,
+        "validatedExpressionsRejectedSourceFixtureCount",
+        validatedExpressionsRejectedSourceFixtureCount() > 0usize
+    ) && passed
+    passed = recordCatalogSymbolExecution(
+        context,
+        "validatedExpressionsRejectedSourceFixtureCount",
+        validatedExpressionsRejectedSourceFixtureCount() > 0usize
+    ) && passed
+    passed = recordCatalogSymbolExecution(
+        context,
+        "validatedExpressionsRejectedSourceFixtureCount",
+        validatedExpressionsRejectedSourceFixtureCount() > 0usize
+    ) && passed
+    passed = recordCatalogSymbolExecution(
+        context,
+        "validatedExpressionsRejectedSourceFixtureCount",
+        validatedExpressionsRejectedSourceFixtureCount() > 0usize
+    ) && passed
+    passed = recordCatalogSymbolExecution(
+        context,
+        "validatedExpressionsRejectedSourceFixtureCount",
+        validatedExpressionsRejectedSourceFixtureCount() > 0usize
+    ) && passed
+    passed = recordCatalogSymbolExecution(
+        context,
+        "validatedExpressionsRejectedSourceFixtureCount",
+        validatedExpressionsRejectedSourceFixtureCount() > 0usize
+    ) && passed
+    passed = recordCatalogSymbolExecution(
+        context,
+        "validatedExpressionsRejectedSourceFixtureCount",
+        validatedExpressionsRejectedSourceFixtureCount() > 0usize
+    ) && passed
+    passed = recordCatalogSymbolExecution(
+        context,
+        "validatedExpressionsRejectedSourceFixtureCount",
+        validatedExpressionsRejectedSourceFixtureCount() > 0usize
+    ) && passed
+    passed = recordCatalogSymbolExecution(
+        context,
+        "validatedExpressionsRejectedSourceFixtureCount",
+        validatedExpressionsRejectedSourceFixtureCount() > 0usize
+    ) && passed
+    passed = recordCatalogSymbolExecution(
+        context,
+        "validatedExpressionsRejectedSourceFixtureCount",
+        validatedExpressionsRejectedSourceFixtureCount() > 0usize
+    ) && passed
+    passed = recordCatalogSymbolExecution(
+        context,
+        "validatedExpressionsRejectedSourceFixtureCount",
+        validatedExpressionsRejectedSourceFixtureCount() > 0usize
+    ) && passed
+    passed = recordCatalogSymbolExecution(
+        context,
+        "validatedExpressionsRejectedSourceFixtureCount",
+        validatedExpressionsRejectedSourceFixtureCount() > 0usize
+    ) && passed
+    passed = recordCatalogSymbolExecution(
+        context,
+        "validatedExpressionsRejectedSourceFixtureCount",
+        validatedExpressionsRejectedSourceFixtureCount() > 0usize
+    ) && passed
+    passed = recordCatalogSymbolExecution(
+        context,
+        "validatedExpressionsRejectedSourceFixtureCount",
+        validatedExpressionsRejectedSourceFixtureCount() > 0usize
+    ) && passed
+    passed = recordCatalogSymbolExecution(
+        context,
+        "validatedExpressionsRejectedSourceFixtureCount",
+        validatedExpressionsRejectedSourceFixtureCount() > 0usize
+    ) && passed
+    passed = recordCatalogSymbolExecution(
+        context,
+        "validatedExpressionsRejectedSourceFixtureCount",
+        validatedExpressionsRejectedSourceFixtureCount() > 0usize
+    ) && passed
+    passed = recordCatalogSymbolExecution(
+        context,
+        "validatedExpressionsRejectedSourceFixtureCount",
+        validatedExpressionsRejectedSourceFixtureCount() > 0usize
+    ) && passed
+    passed = recordCatalogSymbolExecution(
+        context,
+        "validatedExpressionsRejectedSourceFixtureCount",
+        validatedExpressionsRejectedSourceFixtureCount() > 0usize
+    ) && passed
+    passed = recordCatalogSymbolExecution(
+        context,
+        "validatedExpressionsRejectedSourceFixtureCount",
+        validatedExpressionsRejectedSourceFixtureCount() > 0usize
+    ) && passed
+    passed = recordCatalogSymbolExecution(
+        context,
+        "validatedExpressionsRejectedSourceFixtureCount",
+        validatedExpressionsRejectedSourceFixtureCount() > 0usize
+    ) && passed
+    passed = recordCatalogSymbolExecution(
+        context,
+        "validatedExpressionsRejectedSourceFixtureCount",
+        validatedExpressionsRejectedSourceFixtureCount() > 0usize
+    ) && passed
+    passed = recordCatalogSymbolExecution(
+        context,
+        "validatedExpressionsRejectedSourceFixtureCount",
+        validatedExpressionsRejectedSourceFixtureCount() > 0usize
+    ) && passed
+    passed = recordCatalogSymbolExecution(
+        context,
+        "validatedExpressionsRejectedSourceFixtureCount",
+        validatedExpressionsRejectedSourceFixtureCount() > 0usize
+    ) && passed
+    passed = recordCatalogSymbolExecution(
+        context,
+        "validatedExpressionsRejectedSourceFixtureCount",
+        validatedExpressionsRejectedSourceFixtureCount() > 0usize
+    ) && passed
+    passed = recordCatalogSymbolExecution(
+        context,
+        "validatedExpressionsRejectedSourceFixtureCount",
+        validatedExpressionsRejectedSourceFixtureCount() > 0usize
+    ) && passed
+    passed = recordCatalogSymbolExecution(
+        context,
+        "validatedExpressionsRejectedSourceFixtureCount",
+        validatedExpressionsRejectedSourceFixtureCount() > 0usize
+    ) && passed
+    passed = recordCatalogSymbolExecution(
+        context,
+        "validatedExpressionsRejectedSourceFixtureCount",
+        validatedExpressionsRejectedSourceFixtureCount() > 0usize
+    ) && passed
+    passed = recordCatalogSymbolExecution(
+        context,
+        "validatedExpressionsRejectedSourceFixtureCount",
+        validatedExpressionsRejectedSourceFixtureCount() > 0usize
+    ) && passed
+    passed = recordCatalogSymbolExecution(
+        context,
+        "validatedExpressionsRejectedSourceFixtureCount",
+        validatedExpressionsRejectedSourceFixtureCount() > 0usize
+    ) && passed
+    passed = recordCatalogSymbolExecution(
+        context,
+        "validatedExpressionsRejectedSourceFixtureCount",
+        validatedExpressionsRejectedSourceFixtureCount() > 0usize
+    ) && passed
+    passed = recordCatalogSymbolExecution(
+        context,
+        "validatedExpressionsRejectedSourceFixtureCount",
+        validatedExpressionsRejectedSourceFixtureCount() > 0usize
+    ) && passed
+    passed = recordCatalogSymbolExecution(
+        context,
+        "validatedExpressionsRejectedSourceFixtureCount",
+        validatedExpressionsRejectedSourceFixtureCount() > 0usize
+    ) && passed
+    passed = recordCatalogSymbolExecution(
+        context,
+        "validatedExpressionsRejectedSourceFixtureCount",
+        validatedExpressionsRejectedSourceFixtureCount() > 0usize
+    ) && passed
+    passed = recordCatalogSymbolExecution(
+        context,
+        "validatedExpressionsRejectedSourceFixtureCount",
+        validatedExpressionsRejectedSourceFixtureCount() > 0usize
+    ) && passed
+    passed = recordCatalogSymbolExecution(
+        context,
+        "validatedExpressionsRejectedSourceFixtureCount",
+        validatedExpressionsRejectedSourceFixtureCount() > 0usize
+    ) && passed
+    passed = recordCatalogSymbolExecution(
+        context,
+        "validatedExpressionsRejectedSourceFixtureCount",
+        validatedExpressionsRejectedSourceFixtureCount() > 0usize
+    ) && passed
+    passed = recordCatalogSymbolExecution(
+        context,
+        "validatedExpressionsRejectedSourceFixtureCount",
+        validatedExpressionsRejectedSourceFixtureCount() > 0usize
+    ) && passed
+    passed = recordCatalogSymbolExecution(
+        context,
+        "validatedExpressionsRejectedSourceFixtureCount",
+        validatedExpressionsRejectedSourceFixtureCount() > 0usize
+    ) && passed
+    passed = recordCatalogSymbolExecution(
+        context,
+        "validatedExpressionsRejectedSourceFixtureCount",
+        validatedExpressionsRejectedSourceFixtureCount() > 0usize
+    ) && passed
+    passed = recordCatalogSymbolExecution(
+        context,
+        "validatedExpressionsRejectedSourceFixtureCount",
+        validatedExpressionsRejectedSourceFixtureCount() > 0usize
+    ) && passed
+    passed = recordCatalogSymbolExecution(
+        context,
+        "validatedExpressionsRejectedSourceFixtureCount",
+        validatedExpressionsRejectedSourceFixtureCount() > 0usize
+    ) && passed
+    passed = recordCatalogSymbolExecution(
+        context,
+        "validatedExpressionsRejectedSourceFixtureCount",
+        validatedExpressionsRejectedSourceFixtureCount() > 0usize
+    ) && passed
+    passed = recordCatalogSymbolExecution(
+        context,
+        "validatedExpressionsRejectedSourceFixtureCount",
+        validatedExpressionsRejectedSourceFixtureCount() > 0usize
+    ) && passed
+    passed = recordCatalogSymbolExecution(
+        context,
+        "validatedExpressionsRejectedSourceFixtureCount",
+        validatedExpressionsRejectedSourceFixtureCount() > 0usize
+    ) && passed
+    passed = recordCatalogSymbolExecution(
+        context,
+        "validatedExpressionsRejectedSourceFixtureCount",
+        validatedExpressionsRejectedSourceFixtureCount() > 0usize
+    ) && passed
+    passed = recordCatalogSymbolExecution(
+        context,
+        "validatedFFIRejectedSourceFixtureCount",
+        validatedFFIRejectedSourceFixtureCount() > 0usize
+    ) && passed
+    passed = recordCatalogSymbolExecution(
+        context,
+        "validatedFFIRejectedSourceFixtureCount",
+        validatedFFIRejectedSourceFixtureCount() > 0usize
+    ) && passed
+    passed = recordCatalogSymbolExecution(
+        context,
+        "validatedFFIRejectedSourceFixtureCount",
+        validatedFFIRejectedSourceFixtureCount() > 0usize
+    ) && passed
+    passed = recordCatalogSymbolExecution(
+        context,
+        "validatedFFIRejectedSourceFixtureCount",
+        validatedFFIRejectedSourceFixtureCount() > 0usize
+    ) && passed
+    passed = recordCatalogSymbolExecution(
+        context,
+        "validatedFFIRejectedSourceFixtureCount",
+        validatedFFIRejectedSourceFixtureCount() > 0usize
+    ) && passed
+    passed = recordCatalogSymbolExecution(
+        context,
+        "validatedFFIRejectedSourceFixtureCount",
+        validatedFFIRejectedSourceFixtureCount() > 0usize
+    ) && passed
+    passed = recordCatalogSymbolExecution(
+        context,
+        "validatedFFIRejectedSourceFixtureCount",
+        validatedFFIRejectedSourceFixtureCount() > 0usize
+    ) && passed
+    passed = recordCatalogSymbolExecution(
+        context,
+        "validatedFFIRejectedSourceFixtureCount",
+        validatedFFIRejectedSourceFixtureCount() > 0usize
+    ) && passed
+    passed = recordCatalogSymbolExecution(
+        context,
+        "validatedFFIRejectedSourceFixtureCount",
+        validatedFFIRejectedSourceFixtureCount() > 0usize
+    ) && passed
+    passed = recordCatalogSymbolExecution(
+        context,
+        "validatedFFIRejectedSourceFixtureCount",
+        validatedFFIRejectedSourceFixtureCount() > 0usize
+    ) && passed
+    passed = recordCatalogSymbolExecution(
+        context,
+        "validatedFFIRejectedSourceFixtureCount",
+        validatedFFIRejectedSourceFixtureCount() > 0usize
+    ) && passed
+    passed = recordCatalogSymbolExecution(
+        context,
+        "validatedFFIRejectedSourceFixtureCount",
+        validatedFFIRejectedSourceFixtureCount() > 0usize
+    ) && passed
+    passed = recordCatalogSymbolExecution(
+        context,
+        "validatedFFIRejectedSourceFixtureCount",
+        validatedFFIRejectedSourceFixtureCount() > 0usize
+    ) && passed
+    passed = recordCatalogSymbolExecution(
+        context,
+        "validatedFFIRejectedSourceFixtureCount",
+        validatedFFIRejectedSourceFixtureCount() > 0usize
+    ) && passed
+    passed = recordCatalogSymbolExecution(
+        context,
+        "validatedFFIRejectedSourceFixtureCount",
+        validatedFFIRejectedSourceFixtureCount() > 0usize
+    ) && passed
+    passed = recordCatalogSymbolExecution(
+        context,
+        "validatedFFIRejectedSourceFixtureCount",
+        validatedFFIRejectedSourceFixtureCount() > 0usize
+    ) && passed
+    passed = recordCatalogSymbolExecution(
+        context,
+        "validatedFFIRejectedSourceFixtureCount",
+        validatedFFIRejectedSourceFixtureCount() > 0usize
+    ) && passed
+    passed = recordCatalogSymbolExecution(
+        context,
+        "validatedFFIRejectedSourceFixtureCount",
+        validatedFFIRejectedSourceFixtureCount() > 0usize
+    ) && passed
+    passed = recordCatalogSymbolExecution(
+        context,
+        "validatedFFIRejectedSourceFixtureCount",
+        validatedFFIRejectedSourceFixtureCount() > 0usize
+    ) && passed
+    passed = recordCatalogSymbolExecution(
+        context,
+        "validatedFFIRejectedSourceFixtureCount",
+        validatedFFIRejectedSourceFixtureCount() > 0usize
+    ) && passed
+    passed = recordCatalogSymbolExecution(
+        context,
+        "validatedFFIRejectedSourceFixtureCount",
+        validatedFFIRejectedSourceFixtureCount() > 0usize
+    ) && passed
+    passed = recordCatalogSymbolExecution(
+        context,
+        "validatedFFIRejectedSourceFixtureCount",
+        validatedFFIRejectedSourceFixtureCount() > 0usize
+    ) && passed
+    passed = recordCatalogSymbolExecution(
+        context,
+        "validatedFFIRejectedSourceFixtureCount",
+        validatedFFIRejectedSourceFixtureCount() > 0usize
+    ) && passed
+    passed = recordCatalogSymbolExecution(
+        context,
+        "validatedFFIRejectedSourceFixtureCount",
+        validatedFFIRejectedSourceFixtureCount() > 0usize
+    ) && passed
+    passed = recordCatalogSymbolExecution(
+        context,
+        "validatedFFIRejectedSourceFixtureCount",
+        validatedFFIRejectedSourceFixtureCount() > 0usize
+    ) && passed
+    passed = recordCatalogSymbolExecution(
+        context,
+        "validatedFFIRejectedSourceFixtureCount",
+        validatedFFIRejectedSourceFixtureCount() > 0usize
+    ) && passed
+    passed = recordCatalogSymbolExecution(
+        context,
+        "validatedFFIRejectedSourceFixtureCount",
+        validatedFFIRejectedSourceFixtureCount() > 0usize
+    ) && passed
+    passed = recordCatalogSymbolExecution(
+        context,
+        "validatedFFIRejectedSourceFixtureCount",
+        validatedFFIRejectedSourceFixtureCount() > 0usize
+    ) && passed
+    passed = recordCatalogSymbolExecution(
+        context,
+        "validatedFFIRejectedSourceFixtureCount",
+        validatedFFIRejectedSourceFixtureCount() > 0usize
+    ) && passed
+    passed = recordCatalogSymbolExecution(
+        context,
+        "validatedFFIRejectedSourceFixtureCount",
+        validatedFFIRejectedSourceFixtureCount() > 0usize
+    ) && passed
+    passed = recordCatalogSymbolExecution(
+        context,
+        "validatedFFIRejectedSourceFixtureCount",
+        validatedFFIRejectedSourceFixtureCount() > 0usize
+    ) && passed
+    passed = recordCatalogSymbolExecution(
+        context,
+        "validatedFFIRejectedSourceFixtureCount",
+        validatedFFIRejectedSourceFixtureCount() > 0usize
+    ) && passed
+    passed = recordCatalogSymbolExecution(
+        context,
+        "validatedFFIRejectedSourceFixtureCount",
+        validatedFFIRejectedSourceFixtureCount() > 0usize
+    ) && passed
+    passed = recordCatalogSymbolExecution(
+        context,
+        "validatedFFIRejectedSourceFixtureCount",
+        validatedFFIRejectedSourceFixtureCount() > 0usize
+    ) && passed
+    passed = recordCatalogSymbolExecution(
+        context,
+        "validatedFFIRejectedSourceFixtureCount",
+        validatedFFIRejectedSourceFixtureCount() > 0usize
+    ) && passed
+    passed = recordCatalogSymbolExecution(
+        context,
+        "validatedFFIRejectedSourceFixtureCount",
+        validatedFFIRejectedSourceFixtureCount() > 0usize
+    ) && passed
+    passed = recordCatalogSymbolExecution(
+        context,
+        "validatedFFIRejectedSourceFixtureCount",
+        validatedFFIRejectedSourceFixtureCount() > 0usize
+    ) && passed
+    passed = recordCatalogSymbolExecution(
+        context,
+        "validatedFFIRejectedSourceFixtureCount",
+        validatedFFIRejectedSourceFixtureCount() > 0usize
+    ) && passed
+    passed = recordCatalogSymbolExecution(
+        context,
+        "validatedFFIRejectedSourceFixtureCount",
+        validatedFFIRejectedSourceFixtureCount() > 0usize
+    ) && passed
+    passed = recordCatalogSymbolExecution(
+        context,
+        "validatedFFIRejectedSourceFixtureCount",
+        validatedFFIRejectedSourceFixtureCount() > 0usize
+    ) && passed
+    passed = recordCatalogSymbolExecution(
+        context,
+        "validatedFFIRejectedSourceFixtureCount",
+        validatedFFIRejectedSourceFixtureCount() > 0usize
+    ) && passed
+    passed = recordCatalogSymbolExecution(
+        context,
+        "validatedFFIRejectedSourceFixtureCount",
+        validatedFFIRejectedSourceFixtureCount() > 0usize
+    ) && passed
+    passed = recordCatalogSymbolExecution(
+        context,
+        "validatedFFIRejectedSourceFixtureCount",
+        validatedFFIRejectedSourceFixtureCount() > 0usize
+    ) && passed
+    passed = recordCatalogSymbolExecution(
+        context,
+        "validatedFFIRejectedSourceFixtureCount",
+        validatedFFIRejectedSourceFixtureCount() > 0usize
+    ) && passed
+    passed = recordCatalogSymbolExecution(
+        context,
+        "validatedFFIRejectedSourceFixtureCount",
+        validatedFFIRejectedSourceFixtureCount() > 0usize
+    ) && passed
+    passed = recordCatalogSymbolExecution(
+        context,
+        "validatedKeysRejectedSourceFixtureCount",
+        validatedKeysRejectedSourceFixtureCount() > 0usize
+    ) && passed
+    passed = recordCatalogSymbolExecution(
+        context,
+        "validatedKeysRejectedSourceFixtureCount",
+        validatedKeysRejectedSourceFixtureCount() > 0usize
+    ) && passed
+    passed = recordCatalogSymbolExecution(
+        context,
+        "validatedKeysRejectedSourceFixtureCount",
+        validatedKeysRejectedSourceFixtureCount() > 0usize
+    ) && passed
+    passed = recordCatalogSymbolExecution(
+        context,
+        "validatedKeysRejectedSourceFixtureCount",
+        validatedKeysRejectedSourceFixtureCount() > 0usize
+    ) && passed
+    passed = recordCatalogSymbolExecution(
+        context,
+        "validatedKeysRejectedSourceFixtureCount",
+        validatedKeysRejectedSourceFixtureCount() > 0usize
+    ) && passed
+    passed = recordCatalogSymbolExecution(
+        context,
+        "validatedKeysRejectedSourceFixtureCount",
+        validatedKeysRejectedSourceFixtureCount() > 0usize
+    ) && passed
+    passed = recordCatalogSymbolExecution(
+        context,
+        "validatedKeysRejectedSourceFixtureCount",
+        validatedKeysRejectedSourceFixtureCount() > 0usize
+    ) && passed
+    passed = recordCatalogSymbolExecution(
+        context,
+        "validatedKeysRejectedSourceFixtureCount",
+        validatedKeysRejectedSourceFixtureCount() > 0usize
+    ) && passed
+    passed = recordCatalogSymbolExecution(
+        context,
+        "validatedKeysRejectedSourceFixtureCount",
+        validatedKeysRejectedSourceFixtureCount() > 0usize
+    ) && passed
+    passed = recordCatalogSymbolExecution(
+        context,
+        "validatedKeysRejectedSourceFixtureCount",
+        validatedKeysRejectedSourceFixtureCount() > 0usize
+    ) && passed
+    passed = recordCatalogSymbolExecution(
+        context,
+        "validatedKeysRejectedSourceFixtureCount",
+        validatedKeysRejectedSourceFixtureCount() > 0usize
+    ) && passed
+    passed = recordCatalogSymbolExecution(
+        context,
+        "validatedKeysRejectedSourceFixtureCount",
+        validatedKeysRejectedSourceFixtureCount() > 0usize
+    ) && passed
+    passed = recordCatalogSymbolExecution(
+        context,
+        "validatedKeysRejectedSourceFixtureCount",
+        validatedKeysRejectedSourceFixtureCount() > 0usize
+    ) && passed
+    passed = recordCatalogSymbolExecution(
+        context,
+        "validatedKeysRejectedSourceFixtureCount",
+        validatedKeysRejectedSourceFixtureCount() > 0usize
+    ) && passed
+    passed = recordCatalogSymbolExecution(
+        context,
+        "validatedKeysRejectedSourceFixtureCount",
+        validatedKeysRejectedSourceFixtureCount() > 0usize
+    ) && passed
+    passed = recordCatalogSymbolExecution(
+        context,
+        "validatedKeysRejectedSourceFixtureCount",
+        validatedKeysRejectedSourceFixtureCount() > 0usize
+    ) && passed
+    passed = recordCatalogSymbolExecution(
+        context,
+        "validatedKeysRejectedSourceFixtureCount",
+        validatedKeysRejectedSourceFixtureCount() > 0usize
+    ) && passed
+    passed = recordCatalogSymbolExecution(
+        context,
+        "validatedKeysRejectedSourceFixtureCount",
+        validatedKeysRejectedSourceFixtureCount() > 0usize
+    ) && passed
+    passed = recordCatalogSymbolExecution(
+        context,
+        "validatedKeysRejectedSourceFixtureCount",
+        validatedKeysRejectedSourceFixtureCount() > 0usize
+    ) && passed
+    passed = recordCatalogSymbolExecution(
+        context,
+        "validatedKeysRejectedSourceFixtureCount",
+        validatedKeysRejectedSourceFixtureCount() > 0usize
+    ) && passed
+    passed = recordCatalogSymbolExecution(
+        context,
+        "validatedKeysRejectedSourceFixtureCount",
+        validatedKeysRejectedSourceFixtureCount() > 0usize
+    ) && passed
+    passed = recordCatalogSymbolExecution(
+        context,
+        "validatedNamesRejectedSourceFixtureCount",
+        validatedNamesRejectedSourceFixtureCount() > 0usize
+    ) && passed
+    passed = recordCatalogSymbolExecution(
+        context,
+        "validatedParallelismRejectedSourceFixtureCount",
+        validatedParallelismRejectedSourceFixtureCount() > 0usize
+    ) && passed
+    passed = recordCatalogSymbolExecution(
+        context,
+        "validatedParallelismRejectedSourceFixtureCount",
+        validatedParallelismRejectedSourceFixtureCount() > 0usize
+    ) && passed
+    passed = recordCatalogSymbolExecution(
+        context,
+        "validatedParallelismRejectedSourceFixtureCount",
+        validatedParallelismRejectedSourceFixtureCount() > 0usize
+    ) && passed
+    passed = recordCatalogSymbolExecution(
+        context,
+        "validatedParallelismRejectedSourceFixtureCount",
+        validatedParallelismRejectedSourceFixtureCount() > 0usize
+    ) && passed
+    passed = recordCatalogSymbolExecution(
+        context,
+        "validatedParallelismRejectedSourceFixtureCount",
+        validatedParallelismRejectedSourceFixtureCount() > 0usize
+    ) && passed
+    passed = recordCatalogSymbolExecution(
+        context,
+        "validatedParallelismRejectedSourceFixtureCount",
+        validatedParallelismRejectedSourceFixtureCount() > 0usize
+    ) && passed
+    passed = recordCatalogSymbolExecution(
+        context,
+        "validatedParallelismRejectedSourceFixtureCount",
+        validatedParallelismRejectedSourceFixtureCount() > 0usize
+    ) && passed
+    passed = recordCatalogSymbolExecution(
+        context,
+        "validatedParallelismRejectedSourceFixtureCount",
+        validatedParallelismRejectedSourceFixtureCount() > 0usize
+    ) && passed
+    passed = recordCatalogSymbolExecution(
+        context,
+        "validatedParallelismRejectedSourceFixtureCount",
+        validatedParallelismRejectedSourceFixtureCount() > 0usize
+    ) && passed
+    passed = recordCatalogSymbolExecution(
+        context,
+        "validatedParallelismRejectedSourceFixtureCount",
+        validatedParallelismRejectedSourceFixtureCount() > 0usize
+    ) && passed
+    passed = recordCatalogSymbolExecution(
+        context,
+        "validatedParallelismRejectedSourceFixtureCount",
+        validatedParallelismRejectedSourceFixtureCount() > 0usize
+    ) && passed
+    passed = recordCatalogSymbolExecution(
+        context,
+        "validatedParallelismRejectedSourceFixtureCount",
+        validatedParallelismRejectedSourceFixtureCount() > 0usize
+    ) && passed
+    passed = recordCatalogSymbolExecution(
+        context,
+        "validatedParallelismRejectedSourceFixtureCount",
+        validatedParallelismRejectedSourceFixtureCount() > 0usize
+    ) && passed
+    passed = recordCatalogSymbolExecution(
+        context,
+        "validatedParallelismRejectedSourceFixtureCount",
+        validatedParallelismRejectedSourceFixtureCount() > 0usize
+    ) && passed
+    passed = recordCatalogSymbolExecution(
+        context,
+        "validatedParallelismRejectedSourceFixtureCount",
+        validatedParallelismRejectedSourceFixtureCount() > 0usize
+    ) && passed
+    passed = recordCatalogSymbolExecution(
+        context,
+        "validatedParallelismRejectedSourceFixtureCount",
+        validatedParallelismRejectedSourceFixtureCount() > 0usize
+    ) && passed
+    passed = recordCatalogSymbolExecution(
+        context,
+        "validatedParallelismRejectedSourceFixtureCount",
+        validatedParallelismRejectedSourceFixtureCount() > 0usize
+    ) && passed
+    passed = recordCatalogSymbolExecution(
+        context,
+        "validatedParallelismRejectedSourceFixtureCount",
+        validatedParallelismRejectedSourceFixtureCount() > 0usize
+    ) && passed
+    passed = recordCatalogSymbolExecution(
+        context,
+        "validatedParallelismRejectedSourceFixtureCount",
+        validatedParallelismRejectedSourceFixtureCount() > 0usize
+    ) && passed
+    passed = recordCatalogSymbolExecution(
+        context,
+        "validatedParallelismRejectedSourceFixtureCount",
+        validatedParallelismRejectedSourceFixtureCount() > 0usize
+    ) && passed
+    passed = recordCatalogSymbolExecution(
+        context,
+        "validatedParallelismRejectedSourceFixtureCount",
+        validatedParallelismRejectedSourceFixtureCount() > 0usize
+    ) && passed
+    passed = recordCatalogSymbolExecution(
+        context,
+        "validatedParallelismRejectedSourceFixtureCount",
+        validatedParallelismRejectedSourceFixtureCount() > 0usize
+    ) && passed
+    passed = recordCatalogSymbolExecution(
+        context,
+        "validatedParallelismRejectedSourceFixtureCount",
+        validatedParallelismRejectedSourceFixtureCount() > 0usize
+    ) && passed
+    passed = recordCatalogSymbolExecution(
+        context,
+        "validatedParallelismRejectedSourceFixtureCount",
+        validatedParallelismRejectedSourceFixtureCount() > 0usize
+    ) && passed
+    passed = recordCatalogSymbolExecution(
+        context,
+        "validatedParallelismRejectedSourceFixtureCount",
+        validatedParallelismRejectedSourceFixtureCount() > 0usize
+    ) && passed
+    passed = recordCatalogSymbolExecution(
+        context,
+        "validatedParallelismRejectedSourceFixtureCount",
+        validatedParallelismRejectedSourceFixtureCount() > 0usize
+    ) && passed
+    passed = recordCatalogSymbolExecution(
+        context,
+        "validatedParallelismRejectedSourceFixtureCount",
+        validatedParallelismRejectedSourceFixtureCount() > 0usize
+    ) && passed
+    passed = recordCatalogSymbolExecution(
+        context,
+        "validatedParallelismRejectedSourceFixtureCount",
+        validatedParallelismRejectedSourceFixtureCount() > 0usize
+    ) && passed
+    passed = recordCatalogSymbolExecution(
+        context,
+        "validatedParallelismRejectedSourceFixtureCount",
+        validatedParallelismRejectedSourceFixtureCount() > 0usize
+    ) && passed
+    passed = recordCatalogSymbolExecution(
+        context,
+        "validatedParallelismRejectedSourceFixtureCount",
+        validatedParallelismRejectedSourceFixtureCount() > 0usize
+    ) && passed
+    passed = recordCatalogSymbolExecution(
+        context,
+        "validatedParallelismRejectedSourceFixtureCount",
+        validatedParallelismRejectedSourceFixtureCount() > 0usize
+    ) && passed
+    passed = recordCatalogSymbolExecution(
+        context,
+        "validatedParallelismRejectedSourceFixtureCount",
+        validatedParallelismRejectedSourceFixtureCount() > 0usize
+    ) && passed
+    passed = recordCatalogSymbolExecution(
+        context,
+        "validatedParallelismRejectedSourceFixtureCount",
+        validatedParallelismRejectedSourceFixtureCount() > 0usize
+    ) && passed
+    passed = recordCatalogSymbolExecution(
+        context,
+        "validatedParsingRejectedSourceFixtureCount",
+        validatedParsingRejectedSourceFixtureCount() > 0usize
+    ) && passed
+    passed = recordCatalogSymbolExecution(
+        context,
+        "validatedParsingRejectedSourceFixtureCount",
+        validatedParsingRejectedSourceFixtureCount() > 0usize
+    ) && passed
+    passed = recordCatalogSymbolExecution(
+        context,
+        "validatedPatternsRejectedSourceFixtureCount",
+        validatedPatternsRejectedSourceFixtureCount() > 0usize
+    ) && passed
+    passed = recordCatalogSymbolExecution(
+        context,
+        "validatedPatternsRejectedSourceFixtureCount",
+        validatedPatternsRejectedSourceFixtureCount() > 0usize
+    ) && passed
+    passed = recordCatalogSymbolExecution(
+        context,
+        "validatedPatternsRejectedSourceFixtureCount",
+        validatedPatternsRejectedSourceFixtureCount() > 0usize
+    ) && passed
+    passed = recordCatalogSymbolExecution(
+        context,
+        "validatedPatternsRejectedSourceFixtureCount",
+        validatedPatternsRejectedSourceFixtureCount() > 0usize
+    ) && passed
+    passed = recordCatalogSymbolExecution(
+        context,
+        "validatedPatternsRejectedSourceFixtureCount",
+        validatedPatternsRejectedSourceFixtureCount() > 0usize
+    ) && passed
+    passed = recordCatalogSymbolExecution(
+        context,
+        "validatedPatternsRejectedSourceFixtureCount",
+        validatedPatternsRejectedSourceFixtureCount() > 0usize
+    ) && passed
+    passed = recordCatalogSymbolExecution(
+        context,
+        "validatedPatternsRejectedSourceFixtureCount",
+        validatedPatternsRejectedSourceFixtureCount() > 0usize
+    ) && passed
+    passed = recordCatalogSymbolExecution(
+        context,
+        "validatedPatternsRejectedSourceFixtureCount",
+        validatedPatternsRejectedSourceFixtureCount() > 0usize
+    ) && passed
+    passed = recordCatalogSymbolExecution(
+        context,
+        "validatedPatternsRejectedSourceFixtureCount",
+        validatedPatternsRejectedSourceFixtureCount() > 0usize
+    ) && passed
+    passed = recordCatalogSymbolExecution(
+        context,
+        "validatedPatternsRejectedSourceFixtureCount",
+        validatedPatternsRejectedSourceFixtureCount() > 0usize
+    ) && passed
+    passed = recordCatalogSymbolExecution(
+        context,
+        "validatedPatternsRejectedSourceFixtureCount",
+        validatedPatternsRejectedSourceFixtureCount() > 0usize
+    ) && passed
+    passed = recordCatalogSymbolExecution(
+        context,
+        "validatedPatternsRejectedSourceFixtureCount",
+        validatedPatternsRejectedSourceFixtureCount() > 0usize
+    ) && passed
+    passed = recordCatalogSymbolExecution(
+        context,
+        "validatedPatternsRejectedSourceFixtureCount",
+        validatedPatternsRejectedSourceFixtureCount() > 0usize
+    ) && passed
+    passed = recordCatalogSymbolExecution(
+        context,
+        "validatedPatternsRejectedSourceFixtureCount",
+        validatedPatternsRejectedSourceFixtureCount() > 0usize
+    ) && passed
+    passed = recordCatalogSymbolExecution(
+        context,
+        "validatedPatternsRejectedSourceFixtureCount",
+        validatedPatternsRejectedSourceFixtureCount() > 0usize
+    ) && passed
+    passed = recordCatalogSymbolExecution(
+        context,
+        "validatedPatternsRejectedSourceFixtureCount",
+        validatedPatternsRejectedSourceFixtureCount() > 0usize
+    ) && passed
+    passed = recordCatalogSymbolExecution(
+        context,
+        "validatedPatternsRejectedSourceFixtureCount",
+        validatedPatternsRejectedSourceFixtureCount() > 0usize
+    ) && passed
+    passed = recordCatalogSymbolExecution(
+        context,
+        "validatedPermissionsRejectedSourceFixtureCount",
+        validatedPermissionsRejectedSourceFixtureCount() > 0usize
+    ) && passed
+    passed = recordCatalogSymbolExecution(
+        context,
+        "validatedPolymorphismRejectedSourceFixtureCount",
+        validatedPolymorphismRejectedSourceFixtureCount() > 0usize
+    ) && passed
+    passed = recordCatalogSymbolExecution(
+        context,
+        "validatedPolymorphismRejectedSourceFixtureCount",
+        validatedPolymorphismRejectedSourceFixtureCount() > 0usize
+    ) && passed
+    passed = recordCatalogSymbolExecution(
+        context,
+        "validatedPolymorphismRejectedSourceFixtureCount",
+        validatedPolymorphismRejectedSourceFixtureCount() > 0usize
+    ) && passed
+    passed = recordCatalogSymbolExecution(
+        context,
+        "validatedPolymorphismRejectedSourceFixtureCount",
+        validatedPolymorphismRejectedSourceFixtureCount() > 0usize
+    ) && passed
+    passed = recordCatalogSymbolExecution(
+        context,
+        "validatedPolymorphismRejectedSourceFixtureCount",
+        validatedPolymorphismRejectedSourceFixtureCount() > 0usize
+    ) && passed
+    passed = recordCatalogSymbolExecution(
+        context,
+        "validatedPolymorphismRejectedSourceFixtureCount",
+        validatedPolymorphismRejectedSourceFixtureCount() > 0usize
+    ) && passed
+    passed = recordCatalogSymbolExecution(
+        context,
+        "validatedPolymorphismRejectedSourceFixtureCount",
+        validatedPolymorphismRejectedSourceFixtureCount() > 0usize
+    ) && passed
+    passed = recordCatalogSymbolExecution(
+        context,
+        "validatedPolymorphismRejectedSourceFixtureCount",
+        validatedPolymorphismRejectedSourceFixtureCount() > 0usize
+    ) && passed
+    passed = recordCatalogSymbolExecution(
+        context,
+        "validatedPolymorphismRejectedSourceFixtureCount",
+        validatedPolymorphismRejectedSourceFixtureCount() > 0usize
+    ) && passed
+    passed = recordCatalogSymbolExecution(
+        context,
+        "validatedPolymorphismRejectedSourceFixtureCount",
+        validatedPolymorphismRejectedSourceFixtureCount() > 0usize
+    ) && passed
+    passed = recordCatalogSymbolExecution(
+        context,
+        "validatedPolymorphismRejectedSourceFixtureCount",
+        validatedPolymorphismRejectedSourceFixtureCount() > 0usize
+    ) && passed
+    passed = recordCatalogSymbolExecution(
+        context,
+        "validatedPolymorphismRejectedSourceFixtureCount",
+        validatedPolymorphismRejectedSourceFixtureCount() > 0usize
+    ) && passed
+    passed = recordCatalogSymbolExecution(
+        context,
+        "validatedPolymorphismRejectedSourceFixtureCount",
+        validatedPolymorphismRejectedSourceFixtureCount() > 0usize
+    ) && passed
+    passed = recordCatalogSymbolExecution(
+        context,
+        "validatedPolymorphismRejectedSourceFixtureCount",
+        validatedPolymorphismRejectedSourceFixtureCount() > 0usize
+    ) && passed
+    passed = recordCatalogSymbolExecution(
+        context,
+        "validatedPolymorphismRejectedSourceFixtureCount",
+        validatedPolymorphismRejectedSourceFixtureCount() > 0usize
+    ) && passed
+    passed = recordCatalogSymbolExecution(
+        context,
+        "validatedPolymorphismRejectedSourceFixtureCount",
+        validatedPolymorphismRejectedSourceFixtureCount() > 0usize
+    ) && passed
+    passed = recordCatalogSymbolExecution(
+        context,
+        "validatedPolymorphismRejectedSourceFixtureCount",
+        validatedPolymorphismRejectedSourceFixtureCount() > 0usize
+    ) && passed
+    passed = recordCatalogSymbolExecution(
+        context,
+        "validatedPolymorphismRejectedSourceFixtureCount",
+        validatedPolymorphismRejectedSourceFixtureCount() > 0usize
+    ) && passed
+    passed = recordCatalogSymbolExecution(
+        context,
+        "validatedPolymorphismRejectedSourceFixtureCount",
+        validatedPolymorphismRejectedSourceFixtureCount() > 0usize
+    ) && passed
+    passed = recordCatalogSymbolExecution(
+        context,
+        "validatedPolymorphismRejectedSourceFixtureCount",
+        validatedPolymorphismRejectedSourceFixtureCount() > 0usize
+    ) && passed
+    passed = recordCatalogSymbolExecution(
+        context,
+        "validatedPolymorphismRejectedSourceFixtureCount",
+        validatedPolymorphismRejectedSourceFixtureCount() > 0usize
+    ) && passed
+    passed = recordCatalogSymbolExecution(
+        context,
+        "validatedPolymorphismRejectedSourceFixtureCount",
+        validatedPolymorphismRejectedSourceFixtureCount() > 0usize
+    ) && passed
+    passed = recordCatalogSymbolExecution(
+        context,
+        "validatedPolymorphismRejectedSourceFixtureCount",
+        validatedPolymorphismRejectedSourceFixtureCount() > 0usize
+    ) && passed
+    passed = recordCatalogSymbolExecution(
+        context,
+        "validatedPolymorphismRejectedSourceFixtureCount",
+        validatedPolymorphismRejectedSourceFixtureCount() > 0usize
+    ) && passed
+    passed = recordCatalogSymbolExecution(
+        context,
+        "validatedPolymorphismRejectedSourceFixtureCount",
+        validatedPolymorphismRejectedSourceFixtureCount() > 0usize
+    ) && passed
+    passed = recordCatalogSymbolExecution(
+        context,
+        "validatedPolymorphismRejectedSourceFixtureCount",
+        validatedPolymorphismRejectedSourceFixtureCount() > 0usize
+    ) && passed
+    passed = recordCatalogSymbolExecution(
+        context,
+        "validatedPolymorphismRejectedSourceFixtureCount",
+        validatedPolymorphismRejectedSourceFixtureCount() > 0usize
+    ) && passed
+    passed = recordCatalogSymbolExecution(
+        context,
+        "validatedPolymorphismRejectedSourceFixtureCount",
+        validatedPolymorphismRejectedSourceFixtureCount() > 0usize
+    ) && passed
+    passed = recordCatalogSymbolExecution(
+        context,
+        "validatedPolymorphismRejectedSourceFixtureCount",
+        validatedPolymorphismRejectedSourceFixtureCount() > 0usize
+    ) && passed
+    passed = recordCatalogSymbolExecution(
+        context,
+        "validatedPolymorphismRejectedSourceFixtureCount",
+        validatedPolymorphismRejectedSourceFixtureCount() > 0usize
+    ) && passed
+    passed = recordCatalogSymbolExecution(
+        context,
+        "validatedPolymorphismRejectedSourceFixtureCount",
+        validatedPolymorphismRejectedSourceFixtureCount() > 0usize
+    ) && passed
+    passed = recordCatalogSymbolExecution(
+        context,
+        "validatedPolymorphismRejectedSourceFixtureCount",
+        validatedPolymorphismRejectedSourceFixtureCount() > 0usize
+    ) && passed
+    passed = recordCatalogSymbolExecution(
+        context,
+        "validatedPolymorphismRejectedSourceFixtureCount",
+        validatedPolymorphismRejectedSourceFixtureCount() > 0usize
+    ) && passed
+    passed = recordCatalogSymbolExecution(
+        context,
+        "validatedPolymorphismRejectedSourceFixtureCount",
+        validatedPolymorphismRejectedSourceFixtureCount() > 0usize
+    ) && passed
+    passed = recordCatalogSymbolExecution(
+        context,
+        "validatedPolymorphismRejectedSourceFixtureCount",
+        validatedPolymorphismRejectedSourceFixtureCount() > 0usize
+    ) && passed
+    passed = recordCatalogSymbolExecution(
+        context,
+        "validatedPolymorphismRejectedSourceFixtureCount",
+        validatedPolymorphismRejectedSourceFixtureCount() > 0usize
+    ) && passed
+    passed = recordCatalogSymbolExecution(
+        context,
+        "validatedPolymorphismRejectedSourceFixtureCount",
+        validatedPolymorphismRejectedSourceFixtureCount() > 0usize
+    ) && passed
+    passed = recordCatalogSymbolExecution(
+        context,
+        "validatedPolymorphismRejectedSourceFixtureCount",
+        validatedPolymorphismRejectedSourceFixtureCount() > 0usize
+    ) && passed
+    passed = recordCatalogSymbolExecution(
+        context,
+        "validatedPolymorphismRejectedSourceFixtureCount",
+        validatedPolymorphismRejectedSourceFixtureCount() > 0usize
+    ) && passed
+    passed = recordCatalogSymbolExecution(
+        context,
+        "validatedPolymorphismRejectedSourceFixtureCount",
+        validatedPolymorphismRejectedSourceFixtureCount() > 0usize
+    ) && passed
+    passed = recordCatalogSymbolExecution(
+        context,
+        "validatedPolymorphismRejectedSourceFixtureCount",
+        validatedPolymorphismRejectedSourceFixtureCount() > 0usize
+    ) && passed
+    passed = recordCatalogSymbolExecution(
+        context,
+        "validatedPolymorphismRejectedSourceFixtureCount",
+        validatedPolymorphismRejectedSourceFixtureCount() > 0usize
+    ) && passed
+    passed = recordCatalogSymbolExecution(
+        context,
+        "validatedPolymorphismRejectedSourceFixtureCount",
+        validatedPolymorphismRejectedSourceFixtureCount() > 0usize
+    ) && passed
+    passed = recordCatalogSymbolExecution(
+        context,
+        "validatedPolymorphismRejectedSourceFixtureCount",
+        validatedPolymorphismRejectedSourceFixtureCount() > 0usize
+    ) && passed
+    passed = recordCatalogSymbolExecution(
+        context,
+        "validatedPolymorphismRejectedSourceFixtureCount",
+        validatedPolymorphismRejectedSourceFixtureCount() > 0usize
+    ) && passed
+    passed = recordCatalogSymbolExecution(
+        context,
+        "validatedPolymorphismRejectedSourceFixtureCount",
+        validatedPolymorphismRejectedSourceFixtureCount() > 0usize
+    ) && passed
+    passed = recordCatalogSymbolExecution(
+        context,
+        "validatedPolymorphismRejectedSourceFixtureCount",
+        validatedPolymorphismRejectedSourceFixtureCount() > 0usize
+    ) && passed
+    passed = recordCatalogSymbolExecution(
+        context,
+        "validatedProceduresRejectedSourceFixtureCount",
+        validatedProceduresRejectedSourceFixtureCount() > 0usize
+    ) && passed
+    passed = recordCatalogSymbolExecution(
+        context,
+        "validatedProceduresRejectedSourceFixtureCount",
+        validatedProceduresRejectedSourceFixtureCount() > 0usize
+    ) && passed
+    passed = recordCatalogSymbolExecution(
+        context,
+        "validatedProceduresRejectedSourceFixtureCount",
+        validatedProceduresRejectedSourceFixtureCount() > 0usize
+    ) && passed
+    passed = recordCatalogSymbolExecution(
+        context,
+        "validatedProceduresRejectedSourceFixtureCount",
+        validatedProceduresRejectedSourceFixtureCount() > 0usize
+    ) && passed
+    passed = recordCatalogSymbolExecution(
+        context,
+        "validatedProceduresRejectedSourceFixtureCount",
+        validatedProceduresRejectedSourceFixtureCount() > 0usize
+    ) && passed
+    passed = recordCatalogSymbolExecution(
+        context,
+        "validatedProceduresRejectedSourceFixtureCount",
+        validatedProceduresRejectedSourceFixtureCount() > 0usize
+    ) && passed
+    passed = recordCatalogSymbolExecution(
+        context,
+        "validatedProceduresRejectedSourceFixtureCount",
+        validatedProceduresRejectedSourceFixtureCount() > 0usize
+    ) && passed
+    passed = recordCatalogSymbolExecution(
+        context,
+        "validatedProceduresRejectedSourceFixtureCount",
+        validatedProceduresRejectedSourceFixtureCount() > 0usize
+    ) && passed
+    passed = recordCatalogSymbolExecution(
+        context,
+        "validatedProceduresRejectedSourceFixtureCount",
+        validatedProceduresRejectedSourceFixtureCount() > 0usize
+    ) && passed
+    passed = recordCatalogSymbolExecution(
+        context,
+        "validatedProceduresRejectedSourceFixtureCount",
+        validatedProceduresRejectedSourceFixtureCount() > 0usize
+    ) && passed
+    passed = recordCatalogSymbolExecution(
+        context,
+        "validatedProceduresRejectedSourceFixtureCount",
+        validatedProceduresRejectedSourceFixtureCount() > 0usize
+    ) && passed
+    passed = recordCatalogSymbolExecution(
+        context,
+        "validatedProceduresRejectedSourceFixtureCount",
+        validatedProceduresRejectedSourceFixtureCount() > 0usize
+    ) && passed
+    passed = recordCatalogSymbolExecution(
+        context,
+        "validatedProceduresRejectedSourceFixtureCount",
+        validatedProceduresRejectedSourceFixtureCount() > 0usize
+    ) && passed
+    passed = recordCatalogSymbolExecution(
+        context,
+        "validatedProceduresRejectedSourceFixtureCount",
+        validatedProceduresRejectedSourceFixtureCount() > 0usize
+    ) && passed
+    passed = recordCatalogSymbolExecution(
+        context,
+        "validatedProceduresRejectedSourceFixtureCount",
+        validatedProceduresRejectedSourceFixtureCount() > 0usize
+    ) && passed
+    passed = recordCatalogSymbolExecution(
+        context,
+        "validatedProceduresRejectedSourceFixtureCount",
+        validatedProceduresRejectedSourceFixtureCount() > 0usize
+    ) && passed
+    passed = recordCatalogSymbolExecution(
+        context,
+        "validatedProceduresRejectedSourceFixtureCount",
+        validatedProceduresRejectedSourceFixtureCount() > 0usize
+    ) && passed
+    passed = recordCatalogSymbolExecution(
+        context,
+        "validatedProceduresRejectedSourceFixtureCount",
+        validatedProceduresRejectedSourceFixtureCount() > 0usize
+    ) && passed
+    passed = recordCatalogSymbolExecution(
+        context,
+        "validatedProceduresRejectedSourceFixtureCount",
+        validatedProceduresRejectedSourceFixtureCount() > 0usize
+    ) && passed
+    passed = recordCatalogSymbolExecution(
+        context,
+        "validatedProceduresRejectedSourceFixtureCount",
+        validatedProceduresRejectedSourceFixtureCount() > 0usize
+    ) && passed
+    passed = recordCatalogSymbolExecution(
+        context,
+        "validatedProceduresRejectedSourceFixtureCount",
+        validatedProceduresRejectedSourceFixtureCount() > 0usize
+    ) && passed
+    passed = recordCatalogSymbolExecution(
+        context,
+        "validatedProceduresRejectedSourceFixtureCount",
+        validatedProceduresRejectedSourceFixtureCount() > 0usize
+    ) && passed
+    passed = recordCatalogSymbolExecution(
+        context,
+        "validatedProceduresRejectedSourceFixtureCount",
+        validatedProceduresRejectedSourceFixtureCount() > 0usize
+    ) && passed
+    passed = recordCatalogSymbolExecution(
+        context,
+        "validatedProceduresRejectedSourceFixtureCount",
+        validatedProceduresRejectedSourceFixtureCount() > 0usize
+    ) && passed
+    passed = recordCatalogSymbolExecution(
+        context,
+        "validatedProceduresRejectedSourceFixtureCount",
+        validatedProceduresRejectedSourceFixtureCount() > 0usize
+    ) && passed
+    passed = recordCatalogSymbolExecution(
+        context,
+        "validatedProceduresRejectedSourceFixtureCount",
+        validatedProceduresRejectedSourceFixtureCount() > 0usize
+    ) && passed
+    passed = recordCatalogSymbolExecution(
+        context,
+        "validatedProceduresRejectedSourceFixtureCount",
+        validatedProceduresRejectedSourceFixtureCount() > 0usize
+    ) && passed
+    passed = recordCatalogSymbolExecution(
+        context,
+        "validatedProceduresRejectedSourceFixtureCount",
+        validatedProceduresRejectedSourceFixtureCount() > 0usize
+    ) && passed
+    passed = recordCatalogSymbolExecution(
+        context,
+        "validatedProceduresRejectedSourceFixtureCount",
+        validatedProceduresRejectedSourceFixtureCount() > 0usize
+    ) && passed
+    passed = recordCatalogSymbolExecution(
+        context,
+        "validatedProceduresRejectedSourceFixtureCount",
+        validatedProceduresRejectedSourceFixtureCount() > 0usize
+    ) && passed
+    passed = recordCatalogSymbolExecution(
+        context,
+        "validatedProceduresRejectedSourceFixtureCount",
+        validatedProceduresRejectedSourceFixtureCount() > 0usize
+    ) && passed
+    passed = recordCatalogSymbolExecution(
+        context,
+        "validatedProceduresRejectedSourceFixtureCount",
+        validatedProceduresRejectedSourceFixtureCount() > 0usize
+    ) && passed
+    passed = recordCatalogSymbolExecution(
+        context,
+        "validatedProceduresRejectedSourceFixtureCount",
+        validatedProceduresRejectedSourceFixtureCount() > 0usize
+    ) && passed
+    passed = recordCatalogSymbolExecution(
+        context,
+        "validatedProceduresRejectedSourceFixtureCount",
+        validatedProceduresRejectedSourceFixtureCount() > 0usize
+    ) && passed
+    passed = recordCatalogSymbolExecution(
+        context,
+        "validatedProceduresRejectedSourceFixtureCount",
+        validatedProceduresRejectedSourceFixtureCount() > 0usize
+    ) && passed
+    passed = recordCatalogSymbolExecution(
+        context,
+        "validatedProceduresRejectedSourceFixtureCount",
+        validatedProceduresRejectedSourceFixtureCount() > 0usize
+    ) && passed
+    passed = recordCatalogSymbolExecution(
+        context,
+        "validatedProceduresRejectedSourceFixtureCount",
+        validatedProceduresRejectedSourceFixtureCount() > 0usize
+    ) && passed
+    passed = recordCatalogSymbolExecution(
+        context,
+        "validatedProceduresRejectedSourceFixtureCount",
+        validatedProceduresRejectedSourceFixtureCount() > 0usize
+    ) && passed
+    passed = recordCatalogSymbolExecution(
+        context,
+        "validatedProceduresRejectedSourceFixtureCount",
+        validatedProceduresRejectedSourceFixtureCount() > 0usize
+    ) && passed
+    passed = recordCatalogSymbolExecution(
+        context,
+        "validatedProceduresRejectedSourceFixtureCount",
+        validatedProceduresRejectedSourceFixtureCount() > 0usize
+    ) && passed
+    passed = recordCatalogSymbolExecution(
+        context,
+        "validatedProceduresRejectedSourceFixtureCount",
+        validatedProceduresRejectedSourceFixtureCount() > 0usize
+    ) && passed
+    passed = recordCatalogSymbolExecution(
+        context,
+        "validatedProceduresRejectedSourceFixtureCount",
+        validatedProceduresRejectedSourceFixtureCount() > 0usize
+    ) && passed
+    passed = recordCatalogSymbolExecution(
+        context,
+        "validatedProceduresRejectedSourceFixtureCount",
+        validatedProceduresRejectedSourceFixtureCount() > 0usize
+    ) && passed
+    passed = recordCatalogSymbolExecution(
+        context,
+        "validatedProceduresRejectedSourceFixtureCount",
+        validatedProceduresRejectedSourceFixtureCount() > 0usize
+    ) && passed
+    passed = recordCatalogSymbolExecution(
+        context,
+        "validatedProceduresRejectedSourceFixtureCount",
+        validatedProceduresRejectedSourceFixtureCount() > 0usize
+    ) && passed
+    passed = recordCatalogSymbolExecution(
+        context,
+        "validatedSourceTextRejectedSourceFixtureCount",
+        validatedSourceTextRejectedSourceFixtureCount() > 0usize
+    ) && passed
+    passed = recordCatalogSymbolExecution(
+        context,
+        "validatedSourceTextRejectedSourceFixtureCount",
+        validatedSourceTextRejectedSourceFixtureCount() > 0usize
+    ) && passed
+    passed = recordCatalogSymbolExecution(
+        context,
+        "validatedSourceTextRejectedSourceFixtureCount",
+        validatedSourceTextRejectedSourceFixtureCount() > 0usize
+    ) && passed
+    passed = recordCatalogSymbolExecution(
+        context,
+        "validatedSourceTextRejectedSourceFixtureCount",
+        validatedSourceTextRejectedSourceFixtureCount() > 0usize
+    ) && passed
+    passed = recordCatalogSymbolExecution(
+        context,
+        "validatedStatementsRejectedSourceFixtureCount",
+        validatedStatementsRejectedSourceFixtureCount() > 0usize
+    ) && passed
+    passed = recordCatalogSymbolExecution(
+        context,
+        "validatedStatementsRejectedSourceFixtureCount",
+        validatedStatementsRejectedSourceFixtureCount() > 0usize
+    ) && passed
+    passed = recordCatalogSymbolExecution(
+        context,
+        "validatedStatementsRejectedSourceFixtureCount",
+        validatedStatementsRejectedSourceFixtureCount() > 0usize
+    ) && passed
+    passed = recordCatalogSymbolExecution(
+        context,
+        "validatedStatementsRejectedSourceFixtureCount",
+        validatedStatementsRejectedSourceFixtureCount() > 0usize
+    ) && passed
+    passed = recordCatalogSymbolExecution(
+        context,
+        "validatedStatementsRejectedSourceFixtureCount",
+        validatedStatementsRejectedSourceFixtureCount() > 0usize
+    ) && passed
+    passed = recordCatalogSymbolExecution(
+        context,
+        "validatedStatementsRejectedSourceFixtureCount",
+        validatedStatementsRejectedSourceFixtureCount() > 0usize
+    ) && passed
+    passed = recordCatalogSymbolExecution(
+        context,
+        "validatedStatementsRejectedSourceFixtureCount",
+        validatedStatementsRejectedSourceFixtureCount() > 0usize
+    ) && passed
+    passed = recordCatalogSymbolExecution(
+        context,
+        "validatedStatementsRejectedSourceFixtureCount",
+        validatedStatementsRejectedSourceFixtureCount() > 0usize
+    ) && passed
+    passed = recordCatalogSymbolExecution(
+        context,
+        "validatedStatementsRejectedSourceFixtureCount",
+        validatedStatementsRejectedSourceFixtureCount() > 0usize
+    ) && passed
+    passed = recordCatalogSymbolExecution(
+        context,
+        "validatedStatementsRejectedSourceFixtureCount",
+        validatedStatementsRejectedSourceFixtureCount() > 0usize
+    ) && passed
+    passed = recordCatalogSymbolExecution(
+        context,
+        "validatedStatementsRejectedSourceFixtureCount",
+        validatedStatementsRejectedSourceFixtureCount() > 0usize
+    ) && passed
+    passed = recordCatalogSymbolExecution(
+        context,
+        "validatedStatementsRejectedSourceFixtureCount",
+        validatedStatementsRejectedSourceFixtureCount() > 0usize
+    ) && passed
+    passed = recordCatalogSymbolExecution(
+        context,
+        "validatedStatementsRejectedSourceFixtureCount",
+        validatedStatementsRejectedSourceFixtureCount() > 0usize
+    ) && passed
+    passed = recordCatalogSymbolExecution(
+        context,
+        "validatedStatementsRejectedSourceFixtureCount",
+        validatedStatementsRejectedSourceFixtureCount() > 0usize
+    ) && passed
+    passed = recordCatalogSymbolExecution(
+        context,
+        "validatedStatementsRejectedSourceFixtureCount",
+        validatedStatementsRejectedSourceFixtureCount() > 0usize
+    ) && passed
+    passed = recordCatalogSymbolExecution(
+        context,
+        "validatedStatementsRejectedSourceFixtureCount",
+        validatedStatementsRejectedSourceFixtureCount() > 0usize
+    ) && passed
+    passed = recordCatalogSymbolExecution(
+        context,
+        "validatedStatementsRejectedSourceFixtureCount",
+        validatedStatementsRejectedSourceFixtureCount() > 0usize
+    ) && passed
+    passed = recordCatalogSymbolExecution(
+        context,
+        "validatedStatementsRejectedSourceFixtureCount",
+        validatedStatementsRejectedSourceFixtureCount() > 0usize
+    ) && passed
+    passed = recordCatalogSymbolExecution(
+        context,
+        "validatedStatementsRejectedSourceFixtureCount",
+        validatedStatementsRejectedSourceFixtureCount() > 0usize
+    ) && passed
+    passed = recordCatalogSymbolExecution(
+        context,
+        "validatedStatementsRejectedSourceFixtureCount",
+        validatedStatementsRejectedSourceFixtureCount() > 0usize
+    ) && passed
+    passed = recordCatalogSymbolExecution(
+        context,
+        "validatedStatementsRejectedSourceFixtureCount",
+        validatedStatementsRejectedSourceFixtureCount() > 0usize
+    ) && passed
+    passed = recordCatalogSymbolExecution(
+        context,
+        "validatedStatementsRejectedSourceFixtureCount",
+        validatedStatementsRejectedSourceFixtureCount() > 0usize
+    ) && passed
+    passed = recordCatalogSymbolExecution(
+        context,
+        "validatedStatementsRejectedSourceFixtureCount",
+        validatedStatementsRejectedSourceFixtureCount() > 0usize
+    ) && passed
+    passed = recordCatalogSymbolExecution(
+        context,
+        "validatedStatementsRejectedSourceFixtureCount",
+        validatedStatementsRejectedSourceFixtureCount() > 0usize
+    ) && passed
+    passed = recordCatalogSymbolExecution(
+        context,
+        "validatedStatementsRejectedSourceFixtureCount",
+        validatedStatementsRejectedSourceFixtureCount() > 0usize
+    ) && passed
+    passed = recordCatalogSymbolExecution(
+        context,
+        "validatedStatementsRejectedSourceFixtureCount",
+        validatedStatementsRejectedSourceFixtureCount() > 0usize
+    ) && passed
+    passed = recordCatalogSymbolExecution(
+        context,
+        "validatedStatementsRejectedSourceFixtureCount",
+        validatedStatementsRejectedSourceFixtureCount() > 0usize
+    ) && passed
+    passed = recordCatalogSymbolExecution(
+        context,
+        "validatedStatementsRejectedSourceFixtureCount",
+        validatedStatementsRejectedSourceFixtureCount() > 0usize
+    ) && passed
+    passed = recordCatalogSymbolExecution(
+        context,
+        "validatedStatementsRejectedSourceFixtureCount",
+        validatedStatementsRejectedSourceFixtureCount() > 0usize
+    ) && passed
+    passed = recordCatalogSymbolExecution(
+        context,
+        "validatedStatementsRejectedSourceFixtureCount",
+        validatedStatementsRejectedSourceFixtureCount() > 0usize
+    ) && passed
+    passed = recordCatalogSymbolExecution(
+        context,
+        "validatedStatementsRejectedSourceFixtureCount",
+        validatedStatementsRejectedSourceFixtureCount() > 0usize
+    ) && passed
+    passed = recordCatalogSymbolExecution(
+        context,
+        "validatedStatementsRejectedSourceFixtureCount",
+        validatedStatementsRejectedSourceFixtureCount() > 0usize
+    ) && passed
+    passed = recordCatalogSymbolExecution(
+        context,
+        "validatedStatementsRejectedSourceFixtureCount",
+        validatedStatementsRejectedSourceFixtureCount() > 0usize
+    ) && passed
+    passed = recordCatalogSymbolExecution(
+        context,
+        "validatedStatementsRejectedSourceFixtureCount",
+        validatedStatementsRejectedSourceFixtureCount() > 0usize
+    ) && passed
+    passed = recordCatalogSymbolExecution(
+        context,
+        "validatedStatementsRejectedSourceFixtureCount",
+        validatedStatementsRejectedSourceFixtureCount() > 0usize
+    ) && passed
+    passed = recordCatalogSymbolExecution(
+        context,
+        "validatedStatementsRejectedSourceFixtureCount",
+        validatedStatementsRejectedSourceFixtureCount() > 0usize
+    ) && passed
+    passed = recordCatalogSymbolExecution(
+        context,
+        "runAsyncAsyncKeyIntegrationReference",
+        runAsyncAsyncKeyIntegrationReference()
+    ) && passed
+    passed = recordCatalogSymbolExecution(
+        context,
+        "runAsyncAsyncTypeReference",
+        runAsyncAsyncTypeReference()
+    ) && passed
+    passed = recordCatalogSymbolExecution(
+        context,
+        "runAsyncCompositionChainReference",
+        runAsyncCompositionChainReference()
+    ) && passed
+    passed = recordCatalogSymbolExecution(
+        context,
+        "runAsyncCompositionCombinatorsReference",
+        runAsyncCompositionCombinatorsReference()
+    ) && passed
+    passed = recordCatalogSymbolExecution(
+        context,
+        "runAsyncCompositionFilterReference",
+        runAsyncCompositionFilterReference()
+    ) && passed
+    passed = recordCatalogSymbolExecution(
+        context,
+        "runAsyncCompositionFoldReference",
+        runAsyncCompositionFoldReference()
+    ) && passed
+    passed = recordCatalogSymbolExecution(
+        context,
+        "runAsyncCompositionFormsReference",
+        runAsyncCompositionFormsReference()
+    ) && passed
+    passed = recordCatalogSymbolExecution(
+        context,
+        "runAsyncCompositionMapReference",
+        runAsyncCompositionMapReference()
+    ) && passed
+    passed = recordCatalogSymbolExecution(
+        context,
+        "runAsyncCompositionTakeReference",
+        runAsyncCompositionTakeReference()
+    ) && passed
+    passed = recordCatalogSymbolExecution(
+        context,
+        "runAsyncCompositionUntilReference",
+        runAsyncCompositionUntilReference()
+    ) && passed
+    passed = recordCatalogSymbolExecution(
+        context,
+        "runAsyncStateMachineReference",
+        runAsyncStateMachineReference()
+    ) && passed
+    passed = recordCatalogSymbolExecution(
+        context,
+        "runAsyncSuspensionFormsReference",
+        runAsyncSuspensionFormsReference(context)
+    ) && passed
+    passed = recordCatalogSymbolExecution(
+        context,
+        "runAttributesDiagnosticAttributesReference",
+        runAttributesDiagnosticAttributesReference()
+    ) && passed
+    passed = recordCatalogSymbolExecution(
+        context,
+        "runAttributesGeneralAttributesReference",
+        runAttributesGeneralAttributesReference()
+    ) && passed
+    passed = recordCatalogSymbolExecution(
+        context,
+        "runAttributesLayoutAttributesReference",
+        runAttributesLayoutAttributesReference()
+    ) && passed
+    passed = recordCatalogSymbolExecution(
+        context,
+        "runAttributesOptimizationAttributesReference",
+        runAttributesOptimizationAttributesReference()
+    ) && passed
+    passed = recordCatalogSymbolExecution(
+        context,
+        "runAttributesVendorAttributesReference",
+        runAttributesVendorAttributesReference()
+    ) && passed
+    passed = recordCatalogSymbolExecution(
+        context,
+        "runAuthorityBindingRuntimeStateReference",
+        runAuthorityBindingRuntimeStateReference()
+    ) && passed
+    passed = recordCatalogSymbolExecution(
+        context,
+        "runAuthorityCapabilitiesReference",
+        runAuthorityCapabilitiesReference()
+    ) && passed
+    passed = recordCatalogSymbolExecution(
+        context,
+        "runAuthorityFileSystemReference",
+        runAuthorityFileSystemReference()
+    ) && passed
+    passed = recordCatalogSymbolExecution(
+        context,
+        "runAuthorityNetworkReference",
+        runAuthorityNetworkReference()
+    ) && passed
+    passed = recordCatalogSymbolExecution(
+        context,
+        "runAuthorityRegionsAndFramesReference",
+        runAuthorityRegionsAndFramesReference()
+    ) && passed
+    passed = recordCatalogSymbolExecution(
+        context,
+        "runAuthoritySystemReference",
+        runAuthoritySystemReference()
+    ) && passed
+    passed = recordCatalogSymbolExecution(
+        context,
+        "runAuthorityTimeReference",
+        runAuthorityTimeReference(context)
+    ) && passed
+    passed = recordCatalogSymbolExecution(
+        context,
+        "runComptimeCompileTimeCapabilitiesReference",
+        runComptimeCompileTimeCapabilitiesReference()
+    ) && passed
+    passed = recordCatalogSymbolExecution(
+        context,
+        "runComptimeCompileTimeFormsReference",
+        runComptimeCompileTimeFormsReference()
+    ) && passed
+    passed = recordCatalogSymbolExecution(
+        context,
+        "runComptimeDeriveTargetsReference",
+        runComptimeDeriveTargetsReference()
+    ) && passed
+    passed = recordCatalogSymbolExecution(
+        context,
+        "runComptimeQuoteSpliceEmissionReference",
+        runComptimeQuoteSpliceEmissionReference()
+    ) && passed
+    passed = recordCatalogSymbolExecution(
+        context,
+        "runComptimeReflectionReference",
+        runComptimeReflectionReference()
+    ) && passed
+    passed = recordCatalogSymbolExecution(
+        context,
+        "runConformanceBehaviorClassificationReference",
+        runConformanceBehaviorClassificationReference()
+    ) && passed
+    passed = recordCatalogSymbolExecution(
+        context,
+        "runConformanceConstructVocabularyReference",
+        runConformanceConstructVocabularyReference()
+    ) && passed
+    passed = recordCatalogSymbolExecution(
+        context,
+        "runConformanceTranslationOrderingReference",
+        runConformanceTranslationOrderingReference()
+    ) && passed
+    passed = recordCatalogSymbolExecution(
+        context,
+        "runDataTypesArraysReference",
+        runDataTypesArraysReference()
+    ) && passed
+    passed = recordCatalogSymbolExecution(
+        context,
+        "runDataTypesEnumsReference",
+        runDataTypesEnumsReference()
+    ) && passed
+    passed = recordCatalogSymbolExecution(
+        context,
+        "runDataTypesPrimitivesReference",
+        runDataTypesPrimitivesReference()
+    ) && passed
+    passed = recordCatalogSymbolExecution(
+        context,
+        "runDataTypesRangesReference",
+        runDataTypesRangesReference()
+    ) && passed
+    passed = recordCatalogSymbolExecution(
+        context,
+        "runDataTypesRecordsReference",
+        runDataTypesRecordsReference()
+    ) && passed
+    passed = recordCatalogSymbolExecution(
+        context,
+        "runDataTypesSlicesReference",
+        runDataTypesSlicesReference()
+    ) && passed
+    passed = recordCatalogSymbolExecution(
+        context,
+        "runDataTypesTuplesReference",
+        runDataTypesTuplesReference()
+    ) && passed
+    passed = recordCatalogSymbolExecution(
+        context,
+        "runDataTypesTypeAliasesReference",
+        runDataTypesTypeAliasesReference()
+    ) && passed
+    passed = recordCatalogSymbolExecution(
+        context,
+        "runDataTypesUnionsReference",
+        runDataTypesUnionsReference()
+    ) && passed
+    passed = recordCatalogSymbolExecution(
+        context,
+        "runDiagnosticsDiagnosticOrderingReference",
+        runDiagnosticsDiagnosticOrderingReference()
+    ) && passed
+    passed = recordCatalogSymbolExecution(
+        context,
+        "runDiagnosticsDiagnosticRecordsReference",
+        runDiagnosticsDiagnosticRecordsReference()
+    ) && passed
+    passed = recordCatalogSymbolExecution(
+        context,
+        "runDiagnosticsRenderingInputsReference",
+        runDiagnosticsRenderingInputsReference()
+    ) && passed
+    passed = recordCatalogSymbolExecution(
+        context,
+        "runDiagnosticsSourceSpansReference",
+        runDiagnosticsSourceSpansReference()
+    ) && passed
+    passed = recordCatalogSymbolExecution(
+        context,
+        "runExpressionsAccessAndPlacesReference",
+        runExpressionsAccessAndPlacesReference()
+    ) && passed
+    passed = recordCatalogSymbolExecution(
+        context,
+        "runExpressionsCallsReference",
+        runExpressionsCallsReference()
+    ) && passed
+    passed = recordCatalogSymbolExecution(
+        context,
+        "runExpressionsCastsAndTransmutesReference",
+        runExpressionsCastsAndTransmutesReference()
+    ) && passed
+    passed = recordCatalogSymbolExecution(
+        context,
+        "runExpressionsClosuresAndPipelinesReference",
+        runExpressionsClosuresAndPipelinesReference()
+    ) && passed
+    passed = recordCatalogSymbolExecution(
+        context,
+        "runExpressionsConstructionReference",
+        runExpressionsConstructionReference()
+    ) && passed
+    passed = recordCatalogSymbolExecution(
+        context,
+        "runExpressionsControlReference",
+        runExpressionsControlReference()
+    ) && passed
+    passed = recordCatalogSymbolExecution(
+        context,
+        "runExpressionsEffectfulCoreReference",
+        runExpressionsEffectfulCoreReference()
+    ) && passed
+    passed = recordCatalogSymbolExecution(
+        context,
+        "runExpressionsLiteralsAndNamesReference",
+        runExpressionsLiteralsAndNamesReference()
+    ) && passed
+    passed = recordCatalogSymbolExecution(
+        context,
+        "runExpressionsOperatorsReference",
+        runExpressionsOperatorsReference()
+    ) && passed
+    passed = recordCatalogSymbolExecution(
+        context,
+        "runFFIAttributesReference",
+        runFFIAttributesReference()
+    ) && passed
+    passed = recordCatalogSymbolExecution(
+        context,
+        "runFFIBoundaryUnwindingReference",
+        runFFIBoundaryUnwindingReference()
+    ) && passed
+    passed = recordCatalogSymbolExecution(
+        context,
+        "runFFICapabilityIsolationReference",
+        runFFICapabilityIsolationReference()
+    ) && passed
+    passed = recordCatalogSymbolExecution(
+        context,
+        "runFFIExportedProceduresReference",
+        runFFIExportedProceduresReference()
+    ) && passed
+    passed = recordCatalogSymbolExecution(
+        context,
+        "runFFIExternProceduresReference",
+        runFFIExternProceduresReference()
+    ) && passed
+    passed = recordCatalogSymbolExecution(
+        context,
+        "runFFIFfiSafeReference",
+        runFFIFfiSafeReference()
+    ) && passed
+    passed = recordCatalogSymbolExecution(
+        context,
+        "runFFIForeignContractsReference",
+        runFFIForeignContractsReference()
+    ) && passed
+    passed = recordCatalogSymbolExecution(
+        context,
+        "runKeysAcquisitionBlocksReference",
+        runKeysAcquisitionBlocksReference()
+    ) && passed
+    passed = recordCatalogSymbolExecution(
+        context,
+        "runKeysConflictDetectionReference",
+        runKeysConflictDetectionReference()
+    ) && passed
+    passed = recordCatalogSymbolExecution(
+        context,
+        "runKeysDynamicVerificationReference",
+        runKeysDynamicVerificationReference()
+    ) && passed
+    passed = recordCatalogSymbolExecution(
+        context,
+        "runKeysKeyPathsReference",
+        runKeysKeyPathsReference()
+    ) && passed
+    passed = recordCatalogSymbolExecution(
+        context,
+        "runKeysMemoryOrderingReference",
+        runKeysMemoryOrderingReference()
+    ) && passed
+    passed = recordCatalogSymbolExecution(
+        context,
+        "runKeysNestedReleaseReference",
+        runKeysNestedReleaseReference()
+    ) && passed
+    passed = recordCatalogSymbolExecution(
+        context,
+        "runKeysSpeculativeExecutionReference",
+        runKeysSpeculativeExecutionReference()
+    ) && passed
+    passed = recordCatalogSymbolExecution(
+        context,
+        "runLoweringBackendRequirementsReference",
+        runLoweringBackendRequirementsReference()
+    ) && passed
+    passed = recordCatalogSymbolExecution(
+        context,
+        "runLoweringCleanupDropUnwindingReference",
+        runLoweringCleanupDropUnwindingReference()
+    ) && passed
+    passed = recordCatalogSymbolExecution(
+        context,
+        "runLoweringInitializationLifecycleReference",
+        runLoweringInitializationLifecycleReference()
+    ) && passed
+    passed = recordCatalogSymbolExecution(
+        context,
+        "runLoweringLayoutAndABIReference",
+        runLoweringLayoutAndABIReference()
+    ) && passed
+    passed = recordCatalogSymbolExecution(
+        context,
+        "runLoweringRuntimeInterfaceReference",
+        runLoweringRuntimeInterfaceReference()
+    ) && passed
+    passed = recordCatalogSymbolExecution(
+        context,
+        "runLoweringSharedJudgmentsReference",
+        runLoweringSharedJudgmentsReference()
+    ) && passed
+    passed = recordCatalogSymbolExecution(
+        context,
+        "runLoweringSymbolsManglingLinkageReference",
+        runLoweringSymbolsManglingLinkageReference()
+    ) && passed
+    passed = recordCatalogSymbolExecution(
+        context,
+        "runModalTypesBytesReference",
+        runModalTypesBytesReference()
+    ) && passed
+    passed = recordCatalogSymbolExecution(
+        context,
+        "runModalTypesClosuresReference",
+        runModalTypesClosuresReference()
+    ) && passed
+    passed = recordCatalogSymbolExecution(
+        context,
+        "runModalTypesFunctionTypesReference",
+        runModalTypesFunctionTypesReference()
+    ) && passed
+    passed = recordCatalogSymbolExecution(
+        context,
+        "runModalTypesModalDeclarationsReference",
+        runModalTypesModalDeclarationsReference()
+    ) && passed
+    passed = recordCatalogSymbolExecution(
+        context,
+        "runModalTypesPointersReference",
+        runModalTypesPointersReference()
+    ) && passed
+    passed = recordCatalogSymbolExecution(
+        context,
+        "runModalTypesStateFieldsReference",
+        runModalTypesStateFieldsReference()
+    ) && passed
+    passed = recordCatalogSymbolExecution(
+        context,
+        "runModalTypesStateMethodsReference",
+        runModalTypesStateMethodsReference()
+    ) && passed
+    passed = recordCatalogSymbolExecution(
+        context,
+        "runModalTypesStringsReference",
+        runModalTypesStringsReference()
+    ) && passed
+    passed = recordCatalogSymbolExecution(
+        context,
+        "runModalTypesTransitionsReference",
+        runModalTypesTransitionsReference()
+    ) && passed
+    passed = recordCatalogSymbolExecution(
+        context,
+        "runModalTypesWideningReference",
+        runModalTypesWideningReference()
+    ) && passed
+    passed = recordCatalogSymbolExecution(
+        context,
+        "runModulesAggregationReference",
+        runModulesAggregationReference()
+    ) && passed
+    passed = recordCatalogSymbolExecution(
+        context,
+        "runModulesExternBlocksReference",
+        runModulesExternBlocksReference()
+    ) && passed
+    passed = recordCatalogSymbolExecution(
+        context,
+        "runModulesImportsReference",
+        runModulesImportsReference()
+    ) && passed
+    passed = recordCatalogSymbolExecution(
+        context,
+        "runModulesStaticsReference",
+        runModulesStaticsReference()
+    ) && passed
+    passed = recordCatalogSymbolExecution(
+        context,
+        "runModulesUsingsReference",
+        runModulesUsingsReference()
+    ) && passed
+    passed = recordCatalogSymbolExecution(
+        context,
+        "runNamesDisambiguationReference",
+        runNamesDisambiguationReference()
+    ) && passed
+    passed = recordCatalogSymbolExecution(
+        context,
+        "runNamesImportsReference",
+        runNamesImportsReference()
+    ) && passed
+    passed = recordCatalogSymbolExecution(
+        context,
+        "runNamesQualifiedResolutionReference",
+        runNamesQualifiedResolutionReference()
+    ) && passed
+    passed = recordCatalogSymbolExecution(
+        context,
+        "runNamesUsingDeclarationsReference",
+        runNamesUsingDeclarationsReference()
+    ) && passed
+    passed = recordCatalogSymbolExecution(
+        context,
+        "runNamesVisibilityReference",
+        runNamesVisibilityReference()
+    ) && passed
+    passed = recordCatalogSymbolExecution(
+        context,
+        "runParallelismCancellationReference",
+        runParallelismCancellationReference(context)
+    ) && passed
+    passed = recordCatalogSymbolExecution(
+        context,
+        "runParallelismCaptureSemanticsReference",
+        runParallelismCaptureSemanticsReference(context)
+    ) && passed
+    passed = recordCatalogSymbolExecution(
+        context,
+        "runParallelismDeterminismReference",
+        runParallelismDeterminismReference(context)
+    ) && passed
+    passed = recordCatalogSymbolExecution(
+        context,
+        "runParallelismDispatchReference",
+        runParallelismDispatchReference(context)
+    ) && passed
+    passed = recordCatalogSymbolExecution(
+        context,
+        "runParallelismExecutionDomainsReference",
+        runParallelismExecutionDomainsReference(context)
+    ) && passed
+    passed = recordCatalogSymbolExecution(
+        context,
+        "runParallelismPanicHandlingReference",
+        runParallelismPanicHandlingReference(context)
+    ) && passed
+    passed = recordCatalogSymbolExecution(
+        context,
+        "runParallelismParallelBlocksReference",
+        runParallelismParallelBlocksReference(context)
+    ) && passed
+    passed = recordCatalogSymbolExecution(
+        context,
+        "runParallelismSpawnReference",
+        runParallelismSpawnReference(context)
+    ) && passed
+    passed = recordCatalogSymbolExecution(
+        context,
+        "runParsingAttributeParsingReference",
+        runParsingAttributeParsingReference()
+    ) && passed
+    passed = recordCatalogSymbolExecution(
+        context,
+        "runParsingItemSequencingReference",
+        runParsingItemSequencingReference()
+    ) && passed
+    passed = recordCatalogSymbolExecution(
+        context,
+        "runParsingRecoverySpecimensReference",
+        runParsingRecoverySpecimensReference()
+    ) && passed
+    passed = recordCatalogSymbolExecution(
+        context,
+        "runParsingTerminatorsReference",
+        runParsingTerminatorsReference()
+    ) && passed
+    passed = recordCatalogSymbolExecution(
+        context,
+        "runPatternsBasicPatternsReference",
+        runPatternsBasicPatternsReference()
+    ) && passed
+    passed = recordCatalogSymbolExecution(
+        context,
+        "runPatternsCaseClausesReference",
+        runPatternsCaseClausesReference()
+    ) && passed
+    passed = recordCatalogSymbolExecution(
+        context,
+        "runPatternsEnumModalPatternsReference",
+        runPatternsEnumModalPatternsReference()
+    ) && passed
+    passed = recordCatalogSymbolExecution(
+        context,
+        "runPatternsExhaustivenessReference",
+        runPatternsExhaustivenessReference()
+    ) && passed
+    passed = recordCatalogSymbolExecution(
+        context,
+        "runPatternsRangePatternsReference",
+        runPatternsRangePatternsReference()
+    ) && passed
+    passed = recordCatalogSymbolExecution(
+        context,
+        "runPatternsTupleRecordPatternsReference",
+        runPatternsTupleRecordPatternsReference()
+    ) && passed
+    passed = recordCatalogSymbolExecution(
+        context,
+        "runPermissionsActivityStatesReference",
+        runPermissionsActivityStatesReference()
+    ) && passed
+    passed = recordCatalogSymbolExecution(
+        context,
+        "runPermissionsAdmissibilityReference",
+        runPermissionsAdmissibilityReference()
+    ) && passed
+    passed = recordCatalogSymbolExecution(
+        context,
+        "runPermissionsAliasExclusivityReference",
+        runPermissionsAliasExclusivityReference()
+    ) && passed
+    passed = recordCatalogSymbolExecution(
+        context,
+        "runPermissionsPermissionFormsReference",
+        runPermissionsPermissionFormsReference()
+    ) && passed
+    passed = recordCatalogSymbolExecution(
+        context,
+        "runPolymorphismAssociatedTypesReference",
+        runPolymorphismAssociatedTypesReference()
+    ) && passed
+    passed = recordCatalogSymbolExecution(
+        context,
+        "runPolymorphismCapabilityClassesReference",
+        runPolymorphismCapabilityClassesReference(context)
+    ) && passed
+    passed = recordCatalogSymbolExecution(
+        context,
+        "runPolymorphismClassesReference",
+        runPolymorphismClassesReference()
+    ) && passed
+    passed = recordCatalogSymbolExecution(
+        context,
+        "runPolymorphismDynamicClassObjectsReference",
+        runPolymorphismDynamicClassObjectsReference()
+    ) && passed
+    passed = recordCatalogSymbolExecution(
+        context,
+        "runPolymorphismGenericParametersReference",
+        runPolymorphismGenericParametersReference()
+    ) && passed
+    passed = recordCatalogSymbolExecution(
+        context,
+        "runPolymorphismGenericProceduresReference",
+        runPolymorphismGenericProceduresReference()
+    ) && passed
+    passed = recordCatalogSymbolExecution(
+        context,
+        "runPolymorphismImplementationsReference",
+        runPolymorphismImplementationsReference()
+    ) && passed
+    passed = recordCatalogSymbolExecution(
+        context,
+        "runPolymorphismOpaqueTypesReference",
+        runPolymorphismOpaqueTypesReference()
+    ) && passed
+    passed = recordCatalogSymbolExecution(
+        context,
+        "runProceduresBehavioralSubtypingReference",
+        runProceduresBehavioralSubtypingReference()
+    ) && passed
+    passed = recordCatalogSymbolExecution(
+        context,
+        "runProceduresContractsReference",
+        runProceduresContractsReference()
+    ) && passed
+    passed = recordCatalogSymbolExecution(
+        context,
+        "runProceduresDeclarationsReference",
+        runProceduresDeclarationsReference()
+    ) && passed
+    passed = recordCatalogSymbolExecution(
+        context,
+        "runProceduresInvariantsReference",
+        runProceduresInvariantsReference()
+    ) && passed
+    passed = recordCatalogSymbolExecution(
+        context,
+        "runProceduresOverloadingReference",
+        runProceduresOverloadingReference()
+    ) && passed
+    passed = recordCatalogSymbolExecution(
+        context,
+        "runProceduresPostconditionsReference",
+        runProceduresPostconditionsReference()
+    ) && passed
+    passed = recordCatalogSymbolExecution(
+        context,
+        "runProceduresPreconditionsReference",
+        runProceduresPreconditionsReference()
+    ) && passed
+    passed = recordCatalogSymbolExecution(
+        context,
+        "runProceduresReceiversReference",
+        runProceduresReceiversReference()
+    ) && passed
+    passed = recordCatalogSymbolExecution(
+        context,
+        "runProceduresVerificationReference",
+        runProceduresVerificationReference()
+    ) && passed
+    passed = recordCatalogSymbolExecution(
+        context,
+        "runProjectsAssemblyModelReference",
+        runProjectsAssemblyModelReference()
+    ) && passed
+    passed = recordCatalogSymbolExecution(
+        context,
+        "runProjectsManifestModelReference",
+        runProjectsManifestModelReference()
+    ) && passed
+    passed = recordCatalogSymbolExecution(
+        context,
+        "runProjectsModuleDiscoveryReference",
+        runProjectsModuleDiscoveryReference()
+    ) && passed
+    passed = recordCatalogSymbolExecution(
+        context,
+        "runProjectsOutputArtifactsReference",
+        runProjectsOutputArtifactsReference()
+    ) && passed
+    passed = recordCatalogSymbolExecution(
+        context,
+        "runSourceTextIdentifiersReference",
+        runSourceTextIdentifiersReference()
+    ) && passed
+    passed = recordCatalogSymbolExecution(
+        context,
+        "runSourceTextLiteralsReference",
+        runSourceTextLiteralsReference()
+    ) && passed
+    passed = recordCatalogSymbolExecution(
+        context,
+        "runSourceTextLogicalLinesReference",
+        runSourceTextLogicalLinesReference()
+    ) && passed
+    passed = recordCatalogSymbolExecution(
+        context,
+        "runSourceTextOperatorsAndPunctuationReference",
+        runSourceTextOperatorsAndPunctuationReference()
+    ) && passed
+    passed = recordCatalogSymbolExecution(
+        context,
+        "runSourceTextUnicodeNormalizationReference",
+        runSourceTextUnicodeNormalizationReference()
+    ) && passed
+    passed = recordCatalogSymbolExecution(
+        context,
+        "runStatementsAssignmentReference",
+        runStatementsAssignmentReference()
+    ) && passed
+    passed = recordCatalogSymbolExecution(
+        context,
+        "runStatementsBindingsReference",
+        runStatementsBindingsReference()
+    ) && passed
+    passed = recordCatalogSymbolExecution(
+        context,
+        "runStatementsBlocksReference",
+        runStatementsBlocksReference()
+    ) && passed
+    passed = recordCatalogSymbolExecution(
+        context,
+        "runStatementsControlTransferReference",
+        runStatementsControlTransferReference()
+    ) && passed
+    passed = recordCatalogSymbolExecution(
+        context,
+        "runStatementsDeferReference",
+        runStatementsDeferReference()
+    ) && passed
+    passed = recordCatalogSymbolExecution(
+        context,
+        "runStatementsExpressionStatementsReference",
+        runStatementsExpressionStatementsReference()
+    ) && passed
+    passed = recordCatalogSymbolExecution(
+        context,
+        "runStatementsFrameReference",
+        runStatementsFrameReference()
+    ) && passed
+    passed = recordCatalogSymbolExecution(
+        context,
+        "runStatementsLocalUsingReference",
+        runStatementsLocalUsingReference()
+    ) && passed
+    passed = recordCatalogSymbolExecution(
+        context,
+        "runStatementsRegionReference",
+        runStatementsRegionReference()
+    ) && passed
+    passed = recordCatalogSymbolExecution(
+        context,
+        "runStatementsUnsafeReference",
+        runStatementsUnsafeReference()
+    ) && passed
+    passed = recordCatalogSymbolExecution(
+        context,
+        "runTypesEquivalenceReference",
+        runTypesEquivalenceReference()
+    ) && passed
+    passed = recordCatalogSymbolExecution(
+        context,
+        "runTypesInferenceReference",
+        runTypesInferenceReference()
+    ) && passed
+    passed = recordCatalogSymbolExecution(
+        context,
+        "runTypesRefinementsReference",
+        runTypesRefinementsReference()
+    ) && passed
+    passed = recordCatalogSymbolExecution(
+        context,
+        "runTypesSubtypingReference",
         runTypesSubtypingReference()
+    ) && passed
+    return passed
 }

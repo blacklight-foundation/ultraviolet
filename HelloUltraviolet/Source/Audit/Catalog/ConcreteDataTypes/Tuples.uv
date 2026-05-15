@@ -286,30 +286,30 @@ public procedure validatedConcreteDataTypesTuplesObligations() -> usize {
     ) {
         count = count + 1usize
     }
-    if acceptedObligationEntryMatches(
+    if referenceModelObligationEntryMatches(
         "TupleIndex-NonConst",
         35860usize,
-        "HelloUltraviolet::Reference::DataTypes",
-        "runDataTypesTuplesReference",
-        "Source/Reference/DataTypes/Tuples.uv"
+        "HelloUltraviolet::Audit",
+        "specClarificationLedgerIsIndexed",
+        "Source/Audit/SpecClarifications.uv"
     ) {
         count = count + 1usize
     }
-    if acceptedObligationEntryMatches(
+    if rejectedSourceObligationEntryMatches(
         "TupleIndex-OOB",
         35878usize,
-        "HelloUltraviolet::Reference::DataTypes",
-        "runDataTypesTuplesReference",
-        "Source/Reference/DataTypes/Tuples.uv"
+        "HelloUltraviolet::Fixtures::RejectedSource",
+        "validatedExpressionsRejectedSourceFixtureCount",
+        "Fixtures/RejectedSource/Expressions/TupleIndexOutOfBounds/Source/Main.uv"
     ) {
         count = count + 1usize
     }
-    if acceptedObligationEntryMatches(
+    if rejectedSourceObligationEntryMatches(
         "TupleAccess-NotTuple",
         35896usize,
-        "HelloUltraviolet::Reference::DataTypes",
-        "runDataTypesTuplesReference",
-        "Source/Reference/DataTypes/Tuples.uv"
+        "HelloUltraviolet::Fixtures::RejectedSource",
+        "validatedExpressionsRejectedSourceFixtureCount",
+        "Fixtures/RejectedSource/Expressions/TupleAccessNonTuple/Source/Main.uv"
     ) {
         count = count + 1usize
     }

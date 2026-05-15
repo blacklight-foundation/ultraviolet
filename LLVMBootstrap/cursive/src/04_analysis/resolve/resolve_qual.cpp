@@ -319,6 +319,33 @@ ResolveEnumPathResult ResolveEnumRecord(const ResolveQualContext& ctx,
   return {true, std::nullopt, resolved.path};
 }
 
+std::optional<TypePath> ResolveExistingEnumPath(const ResolveQualContext& ctx,
+                                                const ast::ModulePath& path) {
+  if (!ctx.ctx || !ctx.name_maps || !ctx.module_names || !ctx.resolve_type_path) {
+    return std::nullopt;
+  }
+  const auto resolved =
+      ctx.resolve_type_path(*ctx.ctx, *ctx.name_maps, *ctx.module_names, path);
+  if (!resolved.ok) {
+    return std::nullopt;
+  }
+  if (!FindEnumDecl(*ctx.ctx, resolved.path)) {
+    return std::nullopt;
+  }
+  return resolved.path;
+}
+
+bool EnumVariantMissing(const ResolveQualContext& ctx,
+                        const ast::ModulePath& path,
+                        std::string_view name) {
+  const auto enum_path = ResolveExistingEnumPath(ctx, path);
+  if (!enum_path.has_value()) {
+    return false;
+  }
+  const auto* decl = FindEnumDecl(*ctx.ctx, *enum_path);
+  return decl && !FindVariant(*decl, name);
+}
+
 ResolveQualifiedFormResult ResolveQualifiedForm(const ResolveQualContext& ctx,
                                                 const ast::Expr& expr) {
   SpecDefsResolveQual();
@@ -401,6 +428,10 @@ ResolveQualifiedFormResult ResolveQualifiedForm(const ResolveQualContext& ctx,
             literal.payload_opt = std::nullopt;
             SPEC_RULE("ResolveQual-Name-Enum");
             return {true, std::nullopt, MakeExpr(expr.span, literal)};
+          }
+          if (EnumVariantMissing(ctx, node.path, node.name)) {
+            SPEC_RULE("Enum-Lit-Unknown");
+            return {false, "E-TYP-2007", {}};
           }
           SPEC_RULE("ResolveQual-Name-Err");
           return {false, "ResolveExpr-Ident-Err", {}};
@@ -501,6 +532,10 @@ ResolveQualifiedFormResult ResolveQualifiedForm(const ResolveQualContext& ctx,
               SPEC_RULE("ResolveQual-Apply-Enum-Tuple");
               return {true, std::nullopt, MakeExpr(expr.span, literal)};
             }
+            if (EnumVariantMissing(ctx, node.path, node.name)) {
+              SPEC_RULE("Enum-Lit-Unknown");
+              return {false, "E-TYP-2007", {}};
+            }
             SPEC_RULE("ResolveQual-Apply-Err");
             return {false, "ResolveExpr-Ident-Err", {}};
           }
@@ -530,6 +565,10 @@ ResolveQualifiedFormResult ResolveQualifiedForm(const ResolveQualContext& ctx,
               literal.payload_opt = ast::EnumPayload{payload};
               SPEC_RULE("ResolveQual-Apply-Enum-Record");
               return {true, std::nullopt, MakeExpr(expr.span, literal)};
+            }
+            if (EnumVariantMissing(ctx, node.path, node.name)) {
+              SPEC_RULE("Enum-Lit-Unknown");
+              return {false, "E-TYP-2007", {}};
             }
             SPEC_RULE("ResolveQual-Apply-Brace-Err");
             return {false, "ResolveExpr-Ident-Err", {}};

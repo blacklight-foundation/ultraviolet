@@ -311,6 +311,134 @@ llvm::Value *EmitStringBytesContentEq(LLVMEmitter &emitter,
   return builder.CreateAnd(lengths_equal, bytes_equal);
 }
 
+llvm::Value *HalfBits(LLVMEmitter &emitter,
+                      llvm::IRBuilder<> &builder,
+                      llvm::Value *value)
+{
+  if (!value || !value->getType()->isHalfTy())
+  {
+    return nullptr;
+  }
+  llvm::Type *i16_ty = llvm::Type::getInt16Ty(emitter.GetContext());
+  return builder.CreateBitCast(value, i16_ty, "f16.bits");
+}
+
+llvm::Value *HalfIsNaN(LLVMEmitter &emitter,
+                       llvm::IRBuilder<> &builder,
+                       llvm::Value *bits)
+{
+  llvm::Type *i16_ty = llvm::Type::getInt16Ty(emitter.GetContext());
+  llvm::Value *exponent = builder.CreateAnd(
+      bits, llvm::ConstantInt::get(i16_ty, 0x7C00u), "f16.exponent");
+  llvm::Value *fraction = builder.CreateAnd(
+      bits, llvm::ConstantInt::get(i16_ty, 0x03FFu), "f16.fraction");
+  llvm::Value *exponent_all_ones = builder.CreateICmpEQ(
+      exponent, llvm::ConstantInt::get(i16_ty, 0x7C00u), "f16.nan_exponent");
+  llvm::Value *fraction_nonzero = builder.CreateICmpNE(
+      fraction, llvm::ConstantInt::get(i16_ty, 0u), "f16.nan_fraction");
+  return builder.CreateAnd(exponent_all_ones, fraction_nonzero, "f16.isnan");
+}
+
+llvm::Value *HalfIsZero(LLVMEmitter &emitter,
+                        llvm::IRBuilder<> &builder,
+                        llvm::Value *bits)
+{
+  llvm::Type *i16_ty = llvm::Type::getInt16Ty(emitter.GetContext());
+  llvm::Value *magnitude = builder.CreateAnd(
+      bits, llvm::ConstantInt::get(i16_ty, 0x7FFFu), "f16.magnitude");
+  return builder.CreateICmpEQ(
+      magnitude, llvm::ConstantInt::get(i16_ty, 0u), "f16.iszero");
+}
+
+llvm::Value *HalfSortKey(LLVMEmitter &emitter,
+                         llvm::IRBuilder<> &builder,
+                         llvm::Value *bits)
+{
+  llvm::Type *i16_ty = llvm::Type::getInt16Ty(emitter.GetContext());
+  llvm::Value *sign = builder.CreateAnd(
+      bits, llvm::ConstantInt::get(i16_ty, 0x8000u), "f16.sign");
+  llvm::Value *is_negative = builder.CreateICmpNE(
+      sign, llvm::ConstantInt::get(i16_ty, 0u), "f16.is_negative");
+  llvm::Value *negative_key = builder.CreateXor(
+      bits, llvm::ConstantInt::get(i16_ty, 0xFFFFu), "f16.negative_key");
+  llvm::Value *positive_key = builder.CreateOr(
+      bits, llvm::ConstantInt::get(i16_ty, 0x8000u), "f16.positive_key");
+  return builder.CreateSelect(is_negative, negative_key, positive_key,
+                              "f16.sort_key");
+}
+
+llvm::Value *EmitHalfOrderedCompare(LLVMEmitter &emitter,
+                                    llvm::IRBuilder<> &builder,
+                                    const std::string &op,
+                                    llvm::Value *lhs,
+                                    llvm::Value *rhs)
+{
+  if (!lhs || !rhs || !lhs->getType()->isHalfTy() ||
+      !rhs->getType()->isHalfTy())
+  {
+    return nullptr;
+  }
+
+  llvm::Value *lhs_bits = HalfBits(emitter, builder, lhs);
+  llvm::Value *rhs_bits = HalfBits(emitter, builder, rhs);
+  if (!lhs_bits || !rhs_bits)
+  {
+    return nullptr;
+  }
+
+  llvm::Value *lhs_nan = HalfIsNaN(emitter, builder, lhs_bits);
+  llvm::Value *rhs_nan = HalfIsNaN(emitter, builder, rhs_bits);
+  llvm::Value *ordered = builder.CreateNot(
+      builder.CreateOr(lhs_nan, rhs_nan, "f16.nan"), "f16.ordered");
+
+  llvm::Value *lhs_zero = HalfIsZero(emitter, builder, lhs_bits);
+  llvm::Value *rhs_zero = HalfIsZero(emitter, builder, rhs_bits);
+  llvm::Value *both_zero = builder.CreateAnd(lhs_zero, rhs_zero, "f16.both_zero");
+  llvm::Value *bits_equal =
+      builder.CreateICmpEQ(lhs_bits, rhs_bits, "f16.bits_equal");
+  llvm::Value *equal =
+      builder.CreateAnd(ordered,
+                        builder.CreateOr(bits_equal, both_zero, "f16.equal_raw"),
+                        "f16.equal");
+
+  llvm::Value *lhs_key = HalfSortKey(emitter, builder, lhs_bits);
+  llvm::Value *rhs_key = HalfSortKey(emitter, builder, rhs_bits);
+  llvm::Value *less_key =
+      builder.CreateICmpULT(lhs_key, rhs_key, "f16.less_key");
+  llvm::Value *greater_key =
+      builder.CreateICmpUGT(lhs_key, rhs_key, "f16.greater_key");
+  llvm::Value *less =
+      builder.CreateAnd(ordered,
+                        builder.CreateAnd(builder.CreateNot(both_zero),
+                                          less_key,
+                                          "f16.less_nonzero"),
+                        "f16.less");
+  llvm::Value *greater =
+      builder.CreateAnd(ordered,
+                        builder.CreateAnd(builder.CreateNot(both_zero),
+                                          greater_key,
+                                          "f16.greater_nonzero"),
+                        "f16.greater");
+
+  if (op == "<")
+  {
+    return less;
+  }
+  if (op == "<=")
+  {
+    return builder.CreateOr(less, equal, "f16.less_equal");
+  }
+  if (op == ">")
+  {
+    return greater;
+  }
+  if (op == ">=")
+  {
+    return builder.CreateOr(greater, equal, "f16.greater_equal");
+  }
+  return nullptr;
+}
+
 }  // namespace
 
 void IRInstructionVisitor::operator()(const IRBinaryOp &bin) const
@@ -576,31 +704,63 @@ void IRInstructionVisitor::operator()(const IRBinaryOp &bin) const
   }
   else if (op == "<")
   {
-    result = lhs->getType()->isFloatingPointTy() ? builder.CreateFCmpOLT(lhs, rhs)
-                                                 : (int_ops_signed
-                                                        ? builder.CreateICmpSLT(lhs, rhs)
-                                                        : builder.CreateICmpULT(lhs, rhs));
+    if (llvm::Value *half_compare =
+            EmitHalfOrderedCompare(emitter, builder, op, lhs, rhs))
+    {
+      result = half_compare;
+    }
+    else
+    {
+      result = lhs->getType()->isFloatingPointTy() ? builder.CreateFCmpOLT(lhs, rhs)
+                                                   : (int_ops_signed
+                                                          ? builder.CreateICmpSLT(lhs, rhs)
+                                                          : builder.CreateICmpULT(lhs, rhs));
+    }
   }
   else if (op == "<=")
   {
-    result = lhs->getType()->isFloatingPointTy() ? builder.CreateFCmpOLE(lhs, rhs)
-                                                 : (int_ops_signed
-                                                        ? builder.CreateICmpSLE(lhs, rhs)
-                                                        : builder.CreateICmpULE(lhs, rhs));
+    if (llvm::Value *half_compare =
+            EmitHalfOrderedCompare(emitter, builder, op, lhs, rhs))
+    {
+      result = half_compare;
+    }
+    else
+    {
+      result = lhs->getType()->isFloatingPointTy() ? builder.CreateFCmpOLE(lhs, rhs)
+                                                   : (int_ops_signed
+                                                          ? builder.CreateICmpSLE(lhs, rhs)
+                                                          : builder.CreateICmpULE(lhs, rhs));
+    }
   }
   else if (op == ">")
   {
-    result = lhs->getType()->isFloatingPointTy() ? builder.CreateFCmpOGT(lhs, rhs)
-                                                 : (int_ops_signed
-                                                        ? builder.CreateICmpSGT(lhs, rhs)
-                                                        : builder.CreateICmpUGT(lhs, rhs));
+    if (llvm::Value *half_compare =
+            EmitHalfOrderedCompare(emitter, builder, op, lhs, rhs))
+    {
+      result = half_compare;
+    }
+    else
+    {
+      result = lhs->getType()->isFloatingPointTy() ? builder.CreateFCmpOGT(lhs, rhs)
+                                                   : (int_ops_signed
+                                                          ? builder.CreateICmpSGT(lhs, rhs)
+                                                          : builder.CreateICmpUGT(lhs, rhs));
+    }
   }
   else if (op == ">=")
   {
-    result = lhs->getType()->isFloatingPointTy() ? builder.CreateFCmpOGE(lhs, rhs)
-                                                 : (int_ops_signed
-                                                        ? builder.CreateICmpSGE(lhs, rhs)
-                                                        : builder.CreateICmpUGE(lhs, rhs));
+    if (llvm::Value *half_compare =
+            EmitHalfOrderedCompare(emitter, builder, op, lhs, rhs))
+    {
+      result = half_compare;
+    }
+    else
+    {
+      result = lhs->getType()->isFloatingPointTy() ? builder.CreateFCmpOGE(lhs, rhs)
+                                                   : (int_ops_signed
+                                                          ? builder.CreateICmpSGE(lhs, rhs)
+                                                          : builder.CreateICmpUGE(lhs, rhs));
+    }
   }
   else if (op == "&")
   {

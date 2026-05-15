@@ -61,12 +61,12 @@ public procedure validatedConcreteDataTypesUnionTypesObligations() -> usize {
     ) {
         count = count + 1usize
     }
-    if acceptedObligationEntryMatches(
+    if referenceModelObligationEntryMatches(
         "WF-Union-TooFew",
         40730usize,
-        "HelloUltraviolet::Reference::DataTypes",
-        "runDataTypesUnionsReference",
-        "Source/Reference/DataTypes/Unions.uv"
+        "HelloUltraviolet::Audit",
+        "specClarificationLedgerIsIndexed",
+        "Source/Audit/SpecClarifications.uv"
     ) {
         count = count + 1usize
     }
@@ -106,12 +106,12 @@ public procedure validatedConcreteDataTypesUnionTypesObligations() -> usize {
     ) {
         count = count + 1usize
     }
-    if acceptedObligationEntryMatches(
+    if rejectedSourceObligationEntryMatches(
         "Union-DirectAccess-Err",
         40816usize,
-        "HelloUltraviolet::Reference::DataTypes",
-        "runDataTypesUnionsReference",
-        "Source/Reference/DataTypes/Unions.uv"
+        "HelloUltraviolet::Fixtures::RejectedSource",
+        "validatedExpressionsRejectedSourceFixtureCount",
+        "Fixtures/RejectedSource/Expressions/UnionDirectAccess/Source/Main.uv"
     ) {
         count = count + 1usize
     }

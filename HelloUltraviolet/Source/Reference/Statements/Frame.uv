@@ -1,7 +1,6 @@
 //! Reference specimens for Statements / Frame.
 
-/// Exercises the Statements Frame reference surface.
-public procedure runStatementsFrameReference() -> bool {
+internal procedure implicitAndExplicitFrameValue() -> i32 {
     var value: i32 = 0
     region as scratch {
         frame {
@@ -11,5 +10,67 @@ public procedure runStatementsFrameReference() -> bool {
             value = value + 2
         }
     }
-    return value == 3
+    return value
+}
+
+internal procedure nestedFrameTargetValue() -> i32 {
+    var value: i32 = 0
+    region as outer_region {
+        region as inner_region {
+            frame {
+                value = value + 1
+            }
+            outer_region.frame {
+                value = value + 2
+            }
+            inner_region.frame {
+                value = value + 4
+            }
+        }
+    }
+    return value
+}
+
+internal procedure implicitFrameControlValue() -> i32 {
+    region {
+        frame {
+            return 19
+        }
+    }
+    return 0
+}
+
+internal procedure explicitFrameControlValue() -> i32 {
+    region as scratch {
+        scratch.frame {
+            return 23
+        }
+    }
+    return 0
+}
+
+internal procedure frameAllocationValue() -> i32 {
+    var value: i32 = 0
+    region as scratch {
+        frame {
+            let implicit_value: i32 = ^29
+            if implicit_value == 29
+                value = value + 1
+        }
+        scratch.frame {
+            let explicit_value: i32 = scratch ^ 31
+            if explicit_value == 31
+                value = value + 2
+        }
+    }
+    return value
+}
+
+/// Exercises the Statements Frame reference surface.
+public procedure runStatementsFrameReference() -> bool {
+    return implicitAndExplicitFrameValue() == 3 &&
+        nestedFrameTargetValue() == 7 &&
+        implicitFrameControlValue() == 19 &&
+        explicitFrameControlValue() == 23 &&
+        frameAllocationValue() == 3
 }

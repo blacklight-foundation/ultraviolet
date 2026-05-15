@@ -29,6 +29,7 @@
 
 #include "00_core/assert_spec.h"
 #include "00_core/build_log_policy.h"
+#include "00_core/diagnostic_messages.h"
 #include "00_core/diagnostics.h"
 #include "00_core/host/services.h"
 #include "00_core/host_primitives.h"
@@ -1376,6 +1377,36 @@ bool PopulateCodegenModules(CodegenCache& cache, const project::Project& project
 void ConfigureCodegenContextForProject(CodegenCache& cache,
                                        const project::Project& project) {
   ConfigureCodegenContextForProjectImpl(cache, project);
+}
+
+bool ValidateLowerability(const project::Project& cache_project,
+                          const project::Project& target_project,
+                          const analysis::ScopeContext& sema_ctx,
+                          const analysis::NameMapBuildResult& name_maps,
+                          const analysis::TypecheckResult& typechecked,
+                          core::DiagnosticStream& diags) {
+  LogCodegenProgress("lowerability-start assembly=" +
+                     target_project.assembly.name +
+                     " modules=" +
+                     std::to_string(target_project.modules.size()));
+
+  auto cache = BuildCodegenCache(cache_project, sema_ctx, name_maps, typechecked);
+  if (!cache || !cache->ok.load()) {
+    core::EmitDiagnosticById(diags, "E-OUT-0411");
+    LogCodegenProgress("lowerability-finish ok=false stage=cache-build");
+    return false;
+  }
+
+  ConfigureCodegenContextForProject(*cache, target_project);
+  if (!PopulateCodegenModules(*cache, target_project)) {
+    core::EmitDiagnosticById(diags, "E-OUT-0411");
+    LogCodegenProgress("lowerability-finish ok=false stage=module-populate");
+    return false;
+  }
+
+  LogCodegenProgress("lowerability-finish ok=true lowered=" +
+                     std::to_string(cache->modules.size()));
+  return true;
 }
 
 std::optional<std::size_t> EnsureCodegenModule(CodegenCache& cache,

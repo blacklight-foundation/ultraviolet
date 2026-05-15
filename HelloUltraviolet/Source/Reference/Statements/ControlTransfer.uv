@@ -1,7 +1,60 @@
 //! Reference specimens for Statements / ControlTransfer.
 
-/// Exercises the Statements ControlTransfer reference surface.
-public procedure runStatementsControlTransferReference() -> bool {
+internal record ControlDropRecord {
+    internal value: unique i32
+
+    internal procedure drop(~!) -> () {
+    }
+}
+
+internal procedure consumeControlDropRecord(move value: ControlDropRecord) -> i32 {
+    return move value.value
+}
+
+internal procedure returnValueReference() -> i32 {
+    return 3
+}
+
+internal procedure returnUnitReference(flag: bool) -> () {
+    if flag {
+        return
+    }
+    return
+}
+
+internal procedure returnUnitObservedValue() -> i32 {
+    returnUnitReference(true)
+    return 5
+}
+
+internal procedure returnExpressionControlValue() -> i32 {
+    return { return 7 }
+}
+
+internal procedure breakValueReference() -> i32 {
+    let value: i32 = loop true {
+        break 11
+    }
+    return value
+}
+
+internal procedure breakUnitReferenceValue() -> i32 {
+    var value: i32 = 13
+    loop {
+        value = value + 2
+        break
+    }
+    return value
+}
+
+internal procedure breakExpressionControlValue() -> i32 {
+    let value: i32 = loop true {
+        break { return 17 }
+    }
+    return value
+}
+
+internal procedure continueReferenceValue() -> i32 {
     var index: i32 = 0
     var total: i32 = 0
     loop {
@@ -14,5 +67,29 @@ public procedure runStatementsControlTransferReference() -> bool {
             break
         }
     }
-    return total == 4
+    return total
+}
+
+internal procedure returnTemporaryCleanupValue() -> i32 {
+    return consumeControlDropRecord(ControlDropRecord { value: 19 })
+}
+
+internal procedure breakTemporaryCleanupValue() -> i32 {
+    let value: i32 = loop true {
+        break consumeControlDropRecord(ControlDropRecord { value: 23 })
+    }
+    return value
+}
+
+/// Exercises the Statements ControlTransfer reference surface.
+public procedure runStatementsControlTransferReference() -> bool {
+    return returnValueReference() == 3 &&
+        returnUnitObservedValue() == 5 &&
+        returnExpressionControlValue() == 7 &&
+        breakValueReference() == 11 &&
+        breakUnitReferenceValue() == 15 &&
+        breakExpressionControlValue() == 17 &&
+        continueReferenceValue() == 4 &&
+        returnTemporaryCleanupValue() == 19 &&
+        breakTemporaryCleanupValue() == 23
 }

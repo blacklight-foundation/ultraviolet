@@ -895,6 +895,16 @@ static std::optional<IdKey> PlaceRoot(const ast::ExprPtr& expr) {
   return std::nullopt;
 }
 
+static bool IsRootIdentifierPlace(const ast::ExprPtr& expr) {
+  if (!expr) {
+    return false;
+  }
+  if (const auto* attributed = std::get_if<ast::AttributedExpr>(&expr->node)) {
+    return IsRootIdentifierPlace(attributed->expr);
+  }
+  return std::holds_alternative<ast::IdentifierExpr>(expr->node);
+}
+
 static bool PlaceWritesThroughDeref(const ast::ExprPtr& expr) {
   if (!expr) {
     return false;
@@ -3236,6 +3246,9 @@ static BindResult BindStmt(const ScopeContext& ctx,
           if (IsPlaceExpr(place)) {
             if (PlaceConstPerm(ctx, in.env, place)) {
               SPEC_RULE("B-Assign-Const-Err");
+              if (!IsRootIdentifierPlace(place)) {
+                return ErrorResult(std::string_view("E-TYP-1601"), std::optional<core::Span>(node.span));
+              }
               return ErrorResult(std::string_view("E-SEM-3132"), std::optional<core::Span>(node.span));
             }
             const auto root = PlaceRoot(place);

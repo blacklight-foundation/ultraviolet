@@ -122,7 +122,7 @@ std::optional<ParseElemResult<ExprPtr>> TryParseFieldAccess(Parser parser,
   Advance(next);
   const Token* tok = Tok(next);
 
-  if (tok && IsIdentTok(*tok)) {
+  if (tok && (IsIdentTok(*tok) || tok->kind == TokenKind::Keyword)) {
     SPEC_RULE("Postfix-Field");
     Identifier name = tok->lexeme;
     Parser after = next;

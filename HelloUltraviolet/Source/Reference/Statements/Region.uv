@@ -1,10 +1,60 @@
 //! Reference specimens for Statements / Region.
 
-/// Exercises the Statements Region reference surface.
-public procedure runStatementsRegionReference() -> bool {
+internal procedure anonymousRegionValue() -> i32 {
     var value: i32 = 0
-    region as scratch {
+    region {
         value = value + 1
     }
-    return value == 1
+    return value
+}
+
+internal procedure aliasedRegionValue() -> i32 {
+    var value: i32 = 0
+    region as scratch {
+        let allocated: i32 = scratch ^ 3
+        if allocated == 3
+            value = value + 2
+    }
+    return value
+}
+
+internal procedure optionRegionValue() -> i32 {
+    var value: i32 = 0
+    region (RegionOptions { stack_size: 0usize, name: "region-options" }) {
+        value = value + 4
+    }
+    return value
+}
+
+internal procedure optionAliasedRegionValue() -> i32 {
+    var value: i32 = 0
+    region (RegionOptions { stack_size: 0usize, name: "region-alias-options" }) as scratch {
+        let allocated: i32 = scratch ^ 5
+        if allocated == 5
+            value = value + 8
+    }
+    return value
+}
+
+internal procedure regionOptionControlValue() -> i32 {
+    region ({ return 13 }) {
+    }
+    return 0
+}
+
+internal procedure regionBodyControlValue() -> i32 {
+    region {
+        return 17
+    }
+    return 0
+}
+
+/// Exercises the Statements Region reference surface.
+public procedure runStatementsRegionReference() -> bool {
+    return anonymousRegionValue() == 1 &&
+        aliasedRegionValue() == 2 &&
+        optionRegionValue() == 4 &&
+        optionAliasedRegionValue() == 8 &&
+        regionOptionControlValue() == 13 &&
+        regionBodyControlValue() == 17
 }

@@ -67,6 +67,9 @@ std::optional<std::string_view> CodeForResolveDiag(
   if (diag_id == "E-CON-0031") {
     return "E-CON-0031";
   }
+  if (diag_id == "E-TYP-2007") {
+    return "E-TYP-2007";
+  }
   if (diag_id == "ResolveModulePath-Err") {
     return "E-MOD-1107";
   }

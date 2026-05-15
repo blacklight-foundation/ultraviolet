@@ -1,10 +1,58 @@
 //! Reference specimens for DataTypes / Arrays.
 
-/// Exercises the DataTypes Arrays reference surface.
-public procedure runDataTypesArraysReference() -> bool {
+internal procedure arrayElementSegmentReference() -> bool {
+    let empty: [i32; 0] = []
     let values: [i32; 3] = [1, 2, 3]
     let repeated: [i32; 3] = [4; 3]
-    return values[0usize] == 1 &&
+    return sizeof([i32; 0]) == 0usize &&
+        values[0usize] == 1 &&
         values[2usize] == 3 &&
         repeated[1usize] == 4
+}
+
+internal procedure arrayPlaceIndexReference() -> bool {
+    var values: [i32; 3] = [1, 2, 3]
+    values[1usize] = values[0usize] + values[2usize]
+    return values[1usize] == 4
+}
+
+[[dynamic]]
+internal procedure dynamicArrayIndexReference(index: usize) -> i32 {
+    let values: [i32; 3] = [5, 6, 7]
+    return values[index]
+}
+
+[[dynamic]]
+internal procedure dynamicArrayPlaceReference(index: usize) -> i32 {
+    var values: [i32; 3] = [8, 9, 10]
+    values[index] = 12
+    return values[index]
+}
+
+internal procedure arrayConstructionControlReference(flag: bool) -> i32 {
+    let values: [i32; 2] = [
+        if flag {
+            return 19
+        } else {
+            1
+        },
+        2,
+    ]
+    return values[0usize]
+}
+
+internal procedure arrayLayoutReference() -> bool {
+    return sizeof([i32; 3]) == 3usize * sizeof(i32) &&
+        alignof([i32; 3]) == alignof(i32)
+}
+
+/// Exercises the DataTypes Arrays reference surface.
+public procedure runDataTypesArraysReference() -> bool {
+    return arrayElementSegmentReference() &&
+        arrayPlaceIndexReference() &&
+        dynamicArrayIndexReference(2usize) == 7 &&
+        dynamicArrayPlaceReference(1usize) == 12 &&
+        arrayConstructionControlReference(false) == 1 &&
+        arrayConstructionControlReference(true) == 19 &&
+        arrayLayoutReference()
 }

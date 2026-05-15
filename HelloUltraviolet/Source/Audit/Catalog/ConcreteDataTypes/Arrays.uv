@@ -232,12 +232,12 @@ public procedure validatedConcreteDataTypesArraysObligations() -> usize {
     ) {
         count = count + 1usize
     }
-    if acceptedObligationEntryMatches(
+    if rejectedSourceObligationEntryMatches(
         "Index-Array-NonUsize",
         36631usize,
-        "HelloUltraviolet::Reference::DataTypes",
-        "runDataTypesArraysReference",
-        "Source/Reference/DataTypes/Arrays.uv"
+        "HelloUltraviolet::Fixtures::RejectedSource",
+        "validatedExpressionsRejectedSourceFixtureCount",
+        "Fixtures/RejectedSource/Expressions/ArrayIndexNonUsize/Source/Main.uv"
     ) {
         count = count + 1usize
     }

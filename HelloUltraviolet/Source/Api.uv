@@ -46,6 +46,7 @@ using HelloUltraviolet::Fixtures::RejectedSource::{ invalidStringEscapeExpectedD
 using HelloUltraviolet::Fixtures::RejectedSource::{ malformedNumericLiteralExpectedDiagnosticFileMatches }
 using HelloUltraviolet::Fixtures::RejectedSource::{ unterminatedBlockCommentExpectedDiagnosticFileMatches }
 using HelloUltraviolet::Fixtures::RejectedSource::{ missingStatementTerminatorExpectedDiagnosticFileMatches }
+using HelloUltraviolet::Fixtures::RejectedSource::{ enumCommaSeparatorExpectedDiagnosticFileMatches }
 using HelloUltraviolet::Fixtures::RejectedSource::{ duplicateModuleDeclarationExpectedDiagnosticFileMatches }
 using HelloUltraviolet::Fixtures::RejectedSource::{ mainMissingExpectedDiagnosticFileMatches }
 using HelloUltraviolet::Fixtures::RejectedSource::{ mainMultipleExpectedDiagnosticFileMatches }
@@ -72,6 +73,10 @@ using HelloUltraviolet::Fixtures::RejectedSource::{ deferNonLocalExpectedDiagnos
 using HelloUltraviolet::Fixtures::RejectedSource::{ assignConstExpectedDiagnosticFileMatches }
 using HelloUltraviolet::Fixtures::RejectedSource::{ letRefutablePatternExpectedDiagnosticFileMatches }
 using HelloUltraviolet::Fixtures::RejectedSource::{ uniqueNonMoveBindingExpectedDiagnosticFileMatches }
+using HelloUltraviolet::Fixtures::RejectedSource::{ constMutationExpectedDiagnosticFileMatches }
+using HelloUltraviolet::Fixtures::RejectedSource::{ uniqueInactiveUseExpectedDiagnosticFileMatches }
+using HelloUltraviolet::Fixtures::RejectedSource::{ sharedMutationWithoutKeyExpectedDiagnosticFileMatches }
+using HelloUltraviolet::Fixtures::RejectedSource::{ receiverPermissionMismatchExpectedDiagnosticFileMatches }
 using HelloUltraviolet::Fixtures::RejectedSource::{ frameNoActiveRegionExpectedDiagnosticFileMatches }
 using HelloUltraviolet::Fixtures::RejectedSource::{ frameTargetNotActiveExpectedDiagnosticFileMatches }
 using HelloUltraviolet::Fixtures::RejectedSource::{ blocksDiagnosticExpectedDiagnosticFileMatches }
@@ -168,6 +173,7 @@ using HelloUltraviolet::Fixtures::RejectedSource::{ callNonFunctionExpectedDiagn
 using HelloUltraviolet::Fixtures::RejectedSource::{ indexNonIndexableExpectedDiagnosticFileMatches }
 using HelloUltraviolet::Fixtures::RejectedSource::{ arrayIndexNonConstExpectedDiagnosticFileMatches }
 using HelloUltraviolet::Fixtures::RejectedSource::{ arrayIndexOutOfBoundsExpectedDiagnosticFileMatches }
+using HelloUltraviolet::Fixtures::RejectedSource::{ arrayIndexNonUsizeExpectedDiagnosticFileMatches }
 using HelloUltraviolet::Fixtures::RejectedSource::{ ptrNullSynthesisExpectedDiagnosticFileMatches }
 using HelloUltraviolet::Fixtures::RejectedSource::{ ptrNullCheckExpectedDiagnosticFileMatches }
 using HelloUltraviolet::Fixtures::RejectedSource::{ callArgCountExpectedDiagnosticFileMatches }
@@ -182,6 +188,7 @@ using HelloUltraviolet::Fixtures::RejectedSource::{ parsePlaceErrorExpectedDiagn
 using HelloUltraviolet::Fixtures::RejectedSource::{ operatorOperandMismatchExpectedDiagnosticFileMatches }
 using HelloUltraviolet::Fixtures::RejectedSource::{ ifConditionNonBoolExpectedDiagnosticFileMatches }
 using HelloUltraviolet::Fixtures::RejectedSource::{ tupleAccessNonTupleExpectedDiagnosticFileMatches }
+using HelloUltraviolet::Fixtures::RejectedSource::{ tupleIndexOutOfBoundsExpectedDiagnosticFileMatches }
 using HelloUltraviolet::Fixtures::RejectedSource::{ closureCaptureUniqueExpectedDiagnosticFileMatches }
 using HelloUltraviolet::Fixtures::RejectedSource::{ closureMoveCaptureMovedExpectedDiagnosticFileMatches }
 using HelloUltraviolet::Fixtures::RejectedSource::{ closureRefCaptureMovedExpectedDiagnosticFileMatches }
@@ -246,6 +253,7 @@ using HelloUltraviolet::Fixtures::RejectedSource::{ transmuteAlignMismatchExpect
 using HelloUltraviolet::Fixtures::RejectedSource::{ transmuteUnsafeExpectedDiagnosticFileMatches }
 using HelloUltraviolet::Fixtures::RejectedSource::{ valueUseNonBitcopyPlaceExpectedDiagnosticFileMatches }
 using HelloUltraviolet::Fixtures::RejectedSource::{ recordFieldInitDuplicateExpectedDiagnosticFileMatches }
+using HelloUltraviolet::Fixtures::RejectedSource::{ recordDuplicateFieldExpectedDiagnosticFileMatches }
 using HelloUltraviolet::Fixtures::RejectedSource::{ recordFieldInitMissingExpectedDiagnosticFileMatches }
 using HelloUltraviolet::Fixtures::RejectedSource::{ recordFieldUnknownExpectedDiagnosticFileMatches }
 using HelloUltraviolet::Fixtures::RejectedSource::{ recordFieldNonBitcopyMoveExpectedDiagnosticFileMatches }
@@ -337,6 +345,14 @@ using HelloUltraviolet::Fixtures::RejectedSource::{ qualifiedNameEliminatedBefor
 using HelloUltraviolet::Fixtures::RejectedSource::{ recordFieldNameSetExpectedDiagnosticFileMatches }
 using HelloUltraviolet::Fixtures::RejectedSource::{ controlExpressionDiagnosticOwnershipExpectedDiagnosticFileMatches }
 using HelloUltraviolet::Fixtures::RejectedSource::{ fieldVisibilityExpectedDiagnosticFileMatches }
+using HelloUltraviolet::Fixtures::RejectedSource::{ recordFieldVisibilityViolationExpectedDiagnosticFileMatches }
+using HelloUltraviolet::Fixtures::RejectedSource::{ enumEmptyExpectedDiagnosticFileMatches }
+using HelloUltraviolet::Fixtures::RejectedSource::{ enumDuplicateVariantExpectedDiagnosticFileMatches }
+using HelloUltraviolet::Fixtures::RejectedSource::{ enumDuplicateDiscriminantExpectedDiagnosticFileMatches }
+using HelloUltraviolet::Fixtures::RejectedSource::{ enumInvalidDiscriminantExpectedDiagnosticFileMatches }
+using HelloUltraviolet::Fixtures::RejectedSource::{ enumUnknownVariantExpectedDiagnosticFileMatches }
+using HelloUltraviolet::Fixtures::RejectedSource::{ enumTupleArityExpectedDiagnosticFileMatches }
+using HelloUltraviolet::Fixtures::RejectedSource::{ enumRecordMissingFieldExpectedDiagnosticFileMatches }
 using HelloUltraviolet::Fixtures::RejectedSource::{ addressOfStaticHelpersExpectedDiagnosticFileMatches }
 using HelloUltraviolet::Fixtures::RejectedSource::{ addressOfIndexTypingExpectedDiagnosticFileMatches }
 using HelloUltraviolet::Fixtures::RejectedSource::{ rawDerefUnsafeRequirementExpectedDiagnosticFileMatches }
@@ -979,6 +995,11 @@ public procedure runReferenceCorpus(context: Context) -> ReferenceResult {
     )
     passed = passed && recordReferenceResult(
         context,
+        "enumCommaSeparatorExpectedDiagnosticFileMatches",
+        enumCommaSeparatorExpectedDiagnosticFileMatches(context)
+    )
+    passed = passed && recordReferenceResult(
+        context,
         "duplicateModuleDeclarationExpectedDiagnosticFileMatches",
         duplicateModuleDeclarationExpectedDiagnosticFileMatches(context)
     )
@@ -1106,6 +1127,26 @@ public procedure runReferenceCorpus(context: Context) -> ReferenceResult {
         context,
         "uniqueNonMoveBindingExpectedDiagnosticFileMatches",
         uniqueNonMoveBindingExpectedDiagnosticFileMatches(context)
+    )
+    passed = passed && recordReferenceResult(
+        context,
+        "constMutationExpectedDiagnosticFileMatches",
+        constMutationExpectedDiagnosticFileMatches(context)
+    )
+    passed = passed && recordReferenceResult(
+        context,
+        "uniqueInactiveUseExpectedDiagnosticFileMatches",
+        uniqueInactiveUseExpectedDiagnosticFileMatches(context)
+    )
+    passed = passed && recordReferenceResult(
+        context,
+        "sharedMutationWithoutKeyExpectedDiagnosticFileMatches",
+        sharedMutationWithoutKeyExpectedDiagnosticFileMatches(context)
+    )
+    passed = passed && recordReferenceResult(
+        context,
+        "receiverPermissionMismatchExpectedDiagnosticFileMatches",
+        receiverPermissionMismatchExpectedDiagnosticFileMatches(context)
     )
     passed = passed && recordReferenceResult(
         context,
@@ -1589,6 +1630,11 @@ public procedure runReferenceCorpus(context: Context) -> ReferenceResult {
     )
     passed = passed && recordReferenceResult(
         context,
+        "arrayIndexNonUsizeExpectedDiagnosticFileMatches",
+        arrayIndexNonUsizeExpectedDiagnosticFileMatches(context)
+    )
+    passed = passed && recordReferenceResult(
+        context,
         "ptrNullSynthesisExpectedDiagnosticFileMatches",
         ptrNullSynthesisExpectedDiagnosticFileMatches(context)
     )
@@ -1656,6 +1702,11 @@ public procedure runReferenceCorpus(context: Context) -> ReferenceResult {
         context,
         "tupleAccessNonTupleExpectedDiagnosticFileMatches",
         tupleAccessNonTupleExpectedDiagnosticFileMatches(context)
+    )
+    passed = passed && recordReferenceResult(
+        context,
+        "tupleIndexOutOfBoundsExpectedDiagnosticFileMatches",
+        tupleIndexOutOfBoundsExpectedDiagnosticFileMatches(context)
     )
     passed = passed && recordReferenceResult(
         context,
@@ -1976,6 +2027,11 @@ public procedure runReferenceCorpus(context: Context) -> ReferenceResult {
         context,
         "recordFieldInitDuplicateExpectedDiagnosticFileMatches",
         recordFieldInitDuplicateExpectedDiagnosticFileMatches(context)
+    )
+    passed = passed && recordReferenceResult(
+        context,
+        "recordDuplicateFieldExpectedDiagnosticFileMatches",
+        recordDuplicateFieldExpectedDiagnosticFileMatches(context)
     )
     passed = passed && recordReferenceResult(
         context,
@@ -2431,6 +2487,46 @@ public procedure runReferenceCorpus(context: Context) -> ReferenceResult {
         context,
         "fieldVisibilityExpectedDiagnosticFileMatches",
         fieldVisibilityExpectedDiagnosticFileMatches(context)
+    )
+    passed = passed && recordReferenceResult(
+        context,
+        "recordFieldVisibilityViolationExpectedDiagnosticFileMatches",
+        recordFieldVisibilityViolationExpectedDiagnosticFileMatches(context)
+    )
+    passed = passed && recordReferenceResult(
+        context,
+        "enumEmptyExpectedDiagnosticFileMatches",
+        enumEmptyExpectedDiagnosticFileMatches(context)
+    )
+    passed = passed && recordReferenceResult(
+        context,
+        "enumDuplicateVariantExpectedDiagnosticFileMatches",
+        enumDuplicateVariantExpectedDiagnosticFileMatches(context)
+    )
+    passed = passed && recordReferenceResult(
+        context,
+        "enumDuplicateDiscriminantExpectedDiagnosticFileMatches",
+        enumDuplicateDiscriminantExpectedDiagnosticFileMatches(context)
+    )
+    passed = passed && recordReferenceResult(
+        context,
+        "enumInvalidDiscriminantExpectedDiagnosticFileMatches",
+        enumInvalidDiscriminantExpectedDiagnosticFileMatches(context)
+    )
+    passed = passed && recordReferenceResult(
+        context,
+        "enumUnknownVariantExpectedDiagnosticFileMatches",
+        enumUnknownVariantExpectedDiagnosticFileMatches(context)
+    )
+    passed = passed && recordReferenceResult(
+        context,
+        "enumTupleArityExpectedDiagnosticFileMatches",
+        enumTupleArityExpectedDiagnosticFileMatches(context)
+    )
+    passed = passed && recordReferenceResult(
+        context,
+        "enumRecordMissingFieldExpectedDiagnosticFileMatches",
+        enumRecordMissingFieldExpectedDiagnosticFileMatches(context)
     )
     passed = passed && recordReferenceResult(
         context,
@@ -3599,6 +3695,6 @@ public procedure runReferenceCorpus(context: Context) -> ReferenceResult {
     )
     return referenceResult(
         passed,
-        490
+        498
     )
 }
