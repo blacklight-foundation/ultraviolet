@@ -57,7 +57,8 @@ static ast::ExprPtr MakeUnitExpr(const core::Span& span) {
 }
 
 static ast::ExprPtr SubstituteResultEntry(const ast::ExprPtr& expr,
-                                          const ast::ExprPtr& result_expr);
+                                          const ast::ExprPtr& result_expr,
+                                          const TypeEnv* env);
 
 static ExprTypeResult TypeExprWithCurrentEnv(const ScopeContext& ctx,
                                              const StmtTypeContext& type_ctx,
@@ -335,7 +336,8 @@ static std::optional<std::string_view> VerifyPostconditionAtReturn(
   const auto result_expr = return_value ? return_value
       : MakeUnitExpr(type_ctx.contract->postcondition->span);
   const auto pred =
-      SubstituteResultEntry(type_ctx.contract->postcondition, result_expr);
+      SubstituteResultEntry(type_ctx.contract->postcondition, result_expr,
+                            type_ctx.env_ref);
   StaticProofContext proof_ctx;
   if (type_ctx.proof_ctx) {
     proof_ctx = *type_ctx.proof_ctx;
@@ -353,8 +355,46 @@ static std::optional<std::string_view> VerifyPostconditionAtReturn(
 }
 
 // Helper to substitute @result references in postcondition expression
+static bool EntryExprCurrentValueStable(const ast::ExprPtr& expr,
+                                        const TypeEnv* env) {
+  if (!expr) {
+    return false;
+  }
+  return std::visit(
+      [&](const auto& node) -> bool {
+        using T = std::decay_t<decltype(node)>;
+        if constexpr (std::is_same_v<T, ast::LiteralExpr> ||
+                      std::is_same_v<T, ast::PtrNullExpr> ||
+                      std::is_same_v<T, ast::ResultExpr>) {
+          return true;
+        } else if constexpr (std::is_same_v<T, ast::IdentifierExpr>) {
+          if (!env) {
+            return false;
+          }
+          const auto mut = MutOf(*env, node.name);
+          return mut.has_value() && *mut == ast::Mutability::Let;
+        } else if constexpr (std::is_same_v<T, ast::FieldAccessExpr>) {
+          return EntryExprCurrentValueStable(node.base, env);
+        } else if constexpr (std::is_same_v<T, ast::TupleAccessExpr>) {
+          return EntryExprCurrentValueStable(node.base, env);
+        } else if constexpr (std::is_same_v<T, ast::IndexAccessExpr>) {
+          return EntryExprCurrentValueStable(node.base, env) &&
+                 EntryExprCurrentValueStable(node.index, env);
+        } else if constexpr (std::is_same_v<T, ast::UnaryExpr>) {
+          return EntryExprCurrentValueStable(node.value, env);
+        } else if constexpr (std::is_same_v<T, ast::BinaryExpr>) {
+          return EntryExprCurrentValueStable(node.lhs, env) &&
+                 EntryExprCurrentValueStable(node.rhs, env);
+        } else {
+          return false;
+        }
+      },
+      expr->node);
+}
+
 static ast::ExprPtr SubstituteResultEntry(const ast::ExprPtr& expr,
-                                          const ast::ExprPtr& result_expr) {
+                                          const ast::ExprPtr& result_expr,
+                                          const TypeEnv* env) {
   if (!expr) {
     return expr;
   }
@@ -366,15 +406,42 @@ static ast::ExprPtr SubstituteResultEntry(const ast::ExprPtr& expr,
         using T = std::decay_t<decltype(node)>;
         if constexpr (std::is_same_v<T, ast::BinaryExpr>) {
           auto out = node;
-          out.lhs = SubstituteResultEntry(node.lhs, result_expr);
-          out.rhs = SubstituteResultEntry(node.rhs, result_expr);
+          out.lhs = SubstituteResultEntry(node.lhs, result_expr, env);
+          out.rhs = SubstituteResultEntry(node.rhs, result_expr, env);
           auto new_expr = std::make_shared<ast::Expr>();
           new_expr->span = expr->span;
           new_expr->node = std::move(out);
           return new_expr;
         } else if constexpr (std::is_same_v<T, ast::UnaryExpr>) {
           auto out = node;
-          out.value = SubstituteResultEntry(node.value, result_expr);
+          out.value = SubstituteResultEntry(node.value, result_expr, env);
+          auto new_expr = std::make_shared<ast::Expr>();
+          new_expr->span = expr->span;
+          new_expr->node = std::move(out);
+          return new_expr;
+        } else if constexpr (std::is_same_v<T, ast::EntryExpr>) {
+          if (EntryExprCurrentValueStable(node.expr, env)) {
+            return SubstituteResultEntry(node.expr, result_expr, env);
+          }
+          return expr;
+        } else if constexpr (std::is_same_v<T, ast::FieldAccessExpr>) {
+          auto out = node;
+          out.base = SubstituteResultEntry(node.base, result_expr, env);
+          auto new_expr = std::make_shared<ast::Expr>();
+          new_expr->span = expr->span;
+          new_expr->node = std::move(out);
+          return new_expr;
+        } else if constexpr (std::is_same_v<T, ast::TupleAccessExpr>) {
+          auto out = node;
+          out.base = SubstituteResultEntry(node.base, result_expr, env);
+          auto new_expr = std::make_shared<ast::Expr>();
+          new_expr->span = expr->span;
+          new_expr->node = std::move(out);
+          return new_expr;
+        } else if constexpr (std::is_same_v<T, ast::IndexAccessExpr>) {
+          auto out = node;
+          out.base = SubstituteResultEntry(node.base, result_expr, env);
+          out.index = SubstituteResultEntry(node.index, result_expr, env);
           auto new_expr = std::make_shared<ast::Expr>();
           new_expr->span = expr->span;
           new_expr->node = std::move(out);

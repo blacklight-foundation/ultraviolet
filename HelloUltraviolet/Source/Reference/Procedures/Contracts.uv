@@ -1,28 +1,221 @@
 //! Reference specimens for Procedures / Contracts.
 
+internal record ContractPureBox {
+    internal value: i32
+    internal values: [i32; 3]
+    internal pair: (i32, i32)
+
+    internal procedure valueAtLeast(~, threshold: i32) -> bool {
+        return self.value >= threshold
+    }
+}
+
+internal type ContractPureUnion = i32 | bool
+
+comptime internal procedure contractCompileTimePredicate() -> bool {
+    return true
+}
+
+internal procedure contractPureProcedure(value: i32) -> bool {
+    return value > 0
+}
+
+internal procedure contractNoClauseReference(value: i32) -> i32 {
+    return value
+}
+
 internal procedure contractReference(value: i32) -> bool
 |: value > 0 => @result
 {
     return value > 0
 }
 
-internal procedure valueRequiresPositive(value: i32) -> i32
+internal procedure contractPostOnlyReference(value: i32) -> i32
+|: => @result == value + 1
+{
+    return value + 1
+}
+
+internal procedure contractPreOnlyReference(value: i32) -> i32
 |: value > 0
+{
+    return value
+}
+
+internal procedure contractEntryReference(value: i32) -> i32
+|: value > 0 => @entry(value) == value && @result == value + 2
+{
+    return value + 2
+}
+
+internal procedure contractPureLiteralReference(value: i32) -> i32
+|: true
+{
+    return value
+}
+
+internal procedure contractPureIdentifierReference(predicate: bool, value: i32) -> i32
+|: predicate
+{
+    return value
+}
+
+internal procedure contractPureFieldReference(box: ContractPureBox) -> i32
+|: box.value > 0
+{
+    return box.value
+}
+
+internal procedure contractPureTupleAccessReference(pair: (i32, i32)) -> i32
+|: pair.0 > 0 && pair.1 > pair.0
+{
+    return pair.1
+}
+
+internal procedure contractPureIndexReference(values: [i32; 3]) -> i32
+|: values[0usize] > 0 && values[2usize] > values[1usize]
+{
+    return values[2usize]
+}
+
+internal procedure contractPureUnaryReference(blocked: bool, value: i32) -> i32
+|: !blocked
+{
+    return value
+}
+
+internal procedure contractPureBinaryReference(value: i32) -> i32
+|: value > 0 && value < 100
+{
+    return value
+}
+
+internal procedure contractPureCastReference(value: i32) -> i32
+|: value as i64 > 0
+{
+    return value
+}
+
+internal procedure contractPureIfReference(value: i32) -> i32
+|: if value > 0 { true } else { false }
+{
+    return value
+}
+
+internal procedure contractPureIfIsReference(value: ContractPureUnion) -> i32
+|: if value is numeric_value: i32 { numeric_value == numeric_value } else { true }
+{
+    return 1
+}
+
+internal procedure contractPureIfIsNoElseReference(value: ContractPureUnion) -> i32
+|: {
+    if value is _: i32 {
+    }
+    true
+}
+{
+    return 1
+}
+
+internal procedure contractPureIfCaseReference(value: ContractPureUnion) -> i32
+|: if value is {
+    numeric_value: i32 {
+        numeric_value == numeric_value
+    }
+    else {
+        true
+    }
+}
+{
+    return 1
+}
+
+internal procedure contractPureIfCaseNoElseReference(value: ContractPureUnion) -> i32
+|: if value is {
+    numeric_value: i32 {
+        numeric_value == numeric_value
+    }
+    flag_value: bool {
+        flag_value == flag_value
+    }
+}
+{
+    return 1
+}
+
+internal procedure contractPureBlockReference(value: i32) -> i32
+|: {
+    let local_value: i32 = value
+    local_value > 0
+}
+{
+    return value
+}
+
+internal procedure contractPureTupleReference(value: i32) -> i32
+|: (value, value + 1).1 > value
+{
+    return value
+}
+
+internal procedure contractPureArrayReference(value: i32) -> i32
+|: [value, value + 1, value + 2][2usize] > value
+{
+    return value
+}
+
+internal procedure contractPureRecordReference(value: i32) -> i32
+|: ContractPureBox {
+    value: value,
+    values: [value, value + 1, value + 2],
+    pair: (value, value + 1)
+}.value > 0
+{
+    return value
+}
+
+internal procedure contractPureBuiltinCallReference(value: i32) -> i32
+|: sizeof(i32) == 4usize && value > 0
+{
+    return value
+}
+
+internal procedure contractPureProcedureCallReference(value: i32) -> i32
+|: contractPureProcedure(value)
+{
+    return value
+}
+
+internal procedure contractPureMethodCallReference(box: ContractPureBox) -> i32
+|: box~>valueAtLeast(1)
+{
+    return box.value
+}
+
+internal procedure contractPureComptimeReference(value: i32) -> i32
+|: contractCompileTimePredicate()
 {
     return value
 }
 
 internal procedure flowFactDischargesPrecondition(value: i32) -> bool {
     if value > 0 {
-        return valueRequiresPositive(value) == value
+        return contractPreOnlyReference(value) == value
     }
 
-    return true
+    return value == 0
 }
 
 /// Exercises the Procedures Contracts reference surface.
 public procedure runProceduresContractsReference() -> bool {
     return contractReference(4) &&
+        contractNoClauseReference(3) == 3 &&
+        contractPostOnlyReference(4) == 5 &&
+        contractPreOnlyReference(4) == 4 &&
+        contractEntryReference(4) == 6 &&
+        contractPureLiteralReference(4) == 4 &&
+        contractPureBinaryReference(4) == 4 &&
         flowFactDischargesPrecondition(5) &&
         flowFactDischargesPrecondition(0)
 }

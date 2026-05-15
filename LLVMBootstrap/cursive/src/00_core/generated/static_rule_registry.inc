@@ -2332,6 +2332,7 @@ static const StaticRuleMeta kStaticRules[] = {
     {"ProvLifetime-Ok", "DeclJudg", std::nullopt, "04_analysis/provenance/prov_args.cpp", std::nullopt, false},
     {"PtrNullExpected", "ExprJudg", std::nullopt, "04_analysis/typing/expr/null_ptr.cpp", std::nullopt, false},
     {"PtrStateOf-Perm", "LLVMEmitJudg", std::nullopt, "05_codegen/llvm/llvm_attr.cpp", std::string_view("PtrStateOf(T) = s"), false},
+    {"Pure-Comptime", "DeclJudg", std::nullopt, "04_analysis/contracts/contract_check.cpp", std::string_view("ComptimeProc(f)\nΓ ⊢ e_1 pure\n…\nΓ ⊢ e_n pure"), false},
     {"PureExpr", "DeclJudg", std::nullopt, "04_analysis/contracts/contract_purity.cpp", std::nullopt, false},
     {"PureOp", "DeclJudg", std::nullopt, "04_analysis/contracts/contract_purity.cpp", std::nullopt, false},
     {"Range-Exclusive", "ExprJudg", std::nullopt, "04_analysis/typing/expr/range.cpp", std::string_view("Γ; R; L ⊢ e_1 : T\nΓ; R; L ⊢ e_2 : T"), false},

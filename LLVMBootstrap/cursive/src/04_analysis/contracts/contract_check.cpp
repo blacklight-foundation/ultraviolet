@@ -265,9 +265,34 @@ namespace cursive::analysis
       return nullptr;
     }
 
+    const ast::ComptimeProcedureDecl *FindComptimeProcedureInModule(
+        const ast::ASTModule &module,
+        std::string_view name)
+    {
+      for (const auto &proc : module.comptime_procedures)
+      {
+        if (IdEq(proc.name, name))
+        {
+          return &proc;
+        }
+      }
+      for (const auto &item : module.items)
+      {
+        if (const auto *proc = std::get_if<ast::ComptimeProcedureDecl>(&item))
+        {
+          if (IdEq(proc->name, name))
+          {
+            return proc;
+          }
+        }
+      }
+      return nullptr;
+    }
+
     struct ContractProcedureLookupResult
     {
       const ast::ProcedureDecl *proc = nullptr;
+      const ast::ComptimeProcedureDecl *comptime_proc = nullptr;
       ast::ModulePath origin;
     };
 
@@ -357,11 +382,16 @@ namespace cursive::analysis
         return std::nullopt;
       }
       const auto *proc = FindProcedureInModule(*module, name);
-      if (!proc)
+      if (proc)
+      {
+        return ContractProcedureLookupResult{proc, nullptr, *origin};
+      }
+      const auto *comptime_proc = FindComptimeProcedureInModule(*module, name);
+      if (!comptime_proc)
       {
         return std::nullopt;
       }
-      return ContractProcedureLookupResult{proc, *origin};
+      return ContractProcedureLookupResult{nullptr, comptime_proc, *origin};
     }
 
     bool HasCapabilityParams(const ast::ProcedureDecl &proc)
@@ -1767,7 +1797,16 @@ namespace cursive::analysis
                 return true;
               }
               const auto callee_proc = LookupProcedureForCallee(*ctx->scope_ctx, node.callee);
-              if (!callee_proc.has_value() || !callee_proc->proc)
+              if (!callee_proc.has_value())
+              {
+                return true;
+              }
+              if (callee_proc->comptime_proc)
+              {
+                SPEC_RULE("Pure-Comptime");
+                return false;
+              }
+              if (!callee_proc->proc)
               {
                 return true;
               }

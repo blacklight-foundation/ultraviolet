@@ -34,11 +34,6 @@ ExprTypeResult TypeBlockExprImpl(const ScopeContext& ctx,
                                  const PlaceTypeFn& type_place) {
   SpecDefsBlockExpr();
 
-  // Blocks may have side effects, so require purity check
-  if (type_ctx.require_pure) {
-    return {false, "E-SEM-2802", {}};
-  }
-
   if (!expr.block) {
     return {false, std::nullopt, {}};
   }

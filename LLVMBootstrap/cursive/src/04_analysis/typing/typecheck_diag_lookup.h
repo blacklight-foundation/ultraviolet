@@ -36,6 +36,16 @@ inline core::Diagnostic MakeUncodedStaticTypecheckDiagnostic(
   core::Diagnostic diag;
   diag.severity = core::Severity::Error;
   diag.span = span;
+  if (rule_id == "WF-ProcedureDecl-MissingReturnType") {
+    diag.message =
+        "Procedure declaration requires explicit return type annotation";
+    return diag;
+  }
+  if (rule_id == "WF-ExternProcDecl-MissingReturnType") {
+    diag.message =
+        "Extern procedure declaration requires explicit return type annotation";
+    return diag;
+  }
   diag.message = "Static rule failed without assigned diagnostic code: " +
       std::string(rule_id);
   return diag;

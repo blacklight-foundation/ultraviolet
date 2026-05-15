@@ -165,3 +165,25 @@ while building `HelloUltraviolet` as the reference corpus.
   lifecycle transitions preserve unique permission on their returned target
   state, or whether the built-in receiver/return signatures should be changed
   so the full lifecycle chain is sourceable.
+
+### Contract Predicate Comptime Procedure Context
+
+- Obligations: accepted-source coverage for `rule.15.Pure-Comptime` inside
+  ordinary procedure contract predicates.
+- SPEC anchors: `SPECIFICATION.md:14931-14934`,
+  `SPECIFICATION.md:24725-24728`, and `SPECIFICATION.md:24749-24794`.
+- Current reading: an ordinary contract predicate is a static verification
+  context. `Pure-Comptime` therefore permits a contract predicate to call a
+  compile-time procedure when the call is used only to verify the contract
+  predicate; runtime procedure bodies still follow the Chapter 22 restriction
+  on naming or calling compile-time procedures.
+- Connected construct reading: Chapter 22 says `CtProc` declarations are
+  Phase 2 bindings and do not survive into the expanded Phase 3 module set.
+  Chapter 15 nevertheless gives `Pure-Comptime` as an ordinary contract
+  purity rule. The intended implementation model is to remove the compile-time
+  procedure from runtime items while retaining enough compile-time procedure
+  metadata for contract purity and contract expression typechecking.
+- Clarification requested: state directly that contract predicate checking is
+  an allowed static context for `Pure-Comptime`, and that implementations may
+  retain non-runtime compile-time procedure metadata after expansion for that
+  analysis.

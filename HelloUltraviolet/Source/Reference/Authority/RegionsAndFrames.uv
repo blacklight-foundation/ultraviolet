@@ -37,8 +37,21 @@ internal procedure allocationExpressionValue() -> i32 {
     var score: i32 = 0
     region as scratch {
         let implicit_value: i32 = ^7
+        let explicit_value: i32 = scratch ^ 11
         if implicit_value == 7
             score = score + 1
+        if explicit_value == 11
+            score = score + 2
+        frame {
+            let frame_value: i32 = ^13
+            if frame_value == 13
+                score = score + 4
+        }
+        scratch.frame {
+            let explicit_frame_value: i32 = scratch ^ 17
+            if explicit_frame_value == 17
+                score = score + 8
+        }
     }
     return score
 }
@@ -68,5 +81,9 @@ public procedure runAuthorityRegionsAndFramesReference() -> bool {
             value = value + 3
         }
     }
-    return allocationExpressionValue() == 1
+    return value == 6 &&
+        explicitRegionOptionsValue() == 3 &&
+        nestedFrameTargetValue() == 15 &&
+        allocationExpressionValue() == 15 &&
+        scopedRegionBuiltinValue() == 1
 }

@@ -30,11 +30,11 @@ public procedure specClarificationMatches(
 }
 
 public procedure expectedSpecClarificationCount() -> usize {
-    return 8usize
+    return 9usize
 }
 
 public procedure specClarificationCount() -> usize {
-    return 8usize
+    return 9usize
 }
 
 public procedure validatedSpecClarificationCount() -> usize {
@@ -131,6 +131,18 @@ public procedure validatedSpecClarificationCount() -> usize {
         ),
         "Region Lifecycle Transition Permission",
         "region-lifecycle-return-permission",
+        "ReferenceSource"
+    ) {
+        count = count + 1usize
+    }
+    if specClarificationMatches(
+        specClarification(
+            "Contract Predicate Comptime Procedure Context",
+            "contract-comptime-context",
+            "ReferenceSource"
+        ),
+        "Contract Predicate Comptime Procedure Context",
+        "contract-comptime-context",
         "ReferenceSource"
     ) {
         count = count + 1usize

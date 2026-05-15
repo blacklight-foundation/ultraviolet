@@ -61,6 +61,7 @@ using ASTItem = std::variant<
 struct ASTModule {
   Path path;
   std::vector<ASTItem> items;
+  std::vector<ComptimeProcedureDecl> comptime_procedures;
   DocList module_doc;
 };
 

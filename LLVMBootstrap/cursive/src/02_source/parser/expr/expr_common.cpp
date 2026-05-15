@@ -646,14 +646,14 @@ ParseElemResult<ExprPtr> ParseExprNoBrace(Parser parser) {
 // ParsePredicateExpr - Parse predicate expressions (for where/contract/invariant)
 // =============================================================================
 //
-// Spec: predicate_expr ::= logical_or_expr
-// Note: Supports range predicates of the form "expr in range_expr".
+// Spec: ParsePredicateExpr delegates to ParseExpr. Contract purity rules later
+// decide which expression forms are valid predicates.
 
 ParseElemResult<ExprPtr> ParsePredicateExpr(Parser parser) {
   SPEC_RULE("ParsePredicateExpr");
   SPEC_RULE("Parse-Predicate-Expr");
   return ParseExprWithLeadingAttrs(
-      parser, [](Parser next) { return ParseLogicalOr(next, false, true); });
+      parser, [](Parser next) { return ParseRange(next, true, true); });
 }
 
 // =============================================================================

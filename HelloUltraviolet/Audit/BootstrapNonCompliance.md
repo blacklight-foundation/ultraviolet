@@ -3714,3 +3714,287 @@ Verified bootstrap result after repair:
 Visual Studio bootstrap build wrapper: exit=0, rebuilt eval.cpp and Cursive.exe
 Cursive.exe build HelloUltraviolet --check --target-profile x86_64-win64 --build-progress off --max-errors 1: exit=0, total diagnostic set is five warnings plus two infos
 ```
+
+## UVBOOT-0055: Region and Frame Target Lowering Uses Stable Region Locals
+
+Status: repaired in the workspace bootstrap and verified by
+`Cursive.exe build HelloUltraviolet --target-profile x86_64-win64`.
+
+Reference source:
+
+- `Source/Reference/Authority/RegionsAndFrames.uv`
+
+Spec obligations exercised:
+
+- `rule.18.Region`
+- `rule.18.Region-Options`
+- `rule.18.Frame-Implicit`
+- `rule.18.Frame-Explicit`
+- `rule.16.Alloc-Implicit`
+- `rule.16.Alloc-Explicit`
+- `req.18.RegionArenaCapability`
+- `req.18.FrameAllocationAuthority`
+
+Spec basis:
+
+- `SPECIFICATION.md:10769-10783` defines region statements with optional
+  region options, optional aliases, and scoped execution.
+- `SPECIFICATION.md:10881-10883` defines the `Region::new_scoped` builtin
+  constructor returning an active region.
+- `SPECIFICATION.md:19933-19949` defines implicit and explicit frame
+  statements and requires an explicit frame target to be an active region.
+- `SPECIFICATION.md:20008-20035` defines allocation expressions with implicit
+  allocation in the current region and explicit allocation through
+  `region ^ expr`.
+
+Spec-valid specimen:
+
+```ultraviolet
+internal procedure allocationExpressionValue() -> i32 {
+    region as scratch {
+        let implicit_value: i32 = ^7
+        let explicit_value: i32 = scratch ^ 11
+        frame {
+            let frame_value: i32 = ^13
+            frame scratch {
+                let target_value: i32 = scratch ^ 17
+                return implicit_value + explicit_value + frame_value + target_value
+            }
+        }
+    }
+    return 0
+}
+```
+
+Observed bootstrap result before repair:
+
+The first expanded region/frame specimen reached lowering as spec-valid
+source but failed module preparation because an implicit allocation stored the
+stable lowered region alias as though it were a source identifier:
+
+```text
+[cursive] EnsureCodegenModule: lowering failed for module 'HelloUltraviolet::Reference::Authority' (resolve_failed=true, codegen_failed=false) unresolved=[__bind_42_scratch]
+error: project codegen context preparation failed
+```
+
+After the implicit allocation path was corrected, object emission still failed
+for explicit frame targets and region-provenance bindings whose source aliases
+were used after region-scope lowering had already introduced stable locals:
+
+```text
+[cursive] codegen failure at .../ir_storage_emit.cpp:434
+[cursive] EmitObjForModule: module=HelloUltraviolet::Reference::Authority LLVM module emission failed before object generation
+error[E-OUT-0402]: Failed to emit object file (codegen or write)
+```
+
+The remaining explicit allocation specimen built but executed with runtime
+panic code `0x0005` because `scratch ^ 11` lowered `scratch` as an ordinary
+local read instead of using the region-handle local created for the region
+alias.
+
+Bootstrap owner:
+
+- `LLVMBootstrap/cursive/src/05_codegen/lower/expr/alloc_expr.cpp`
+- `LLVMBootstrap/cursive/src/05_codegen/lower/stmt/frame_stmt.cpp`
+- `LLVMBootstrap/cursive/src/05_codegen/lower/stmt/let_stmt.cpp`
+- `LLVMBootstrap/cursive/src/05_codegen/lower/stmt/var_stmt.cpp`
+- `LLVMBootstrap/cursive/src/05_codegen/lower/expr/loop_iter.cpp`
+- `LLVMBootstrap/cursive/src/05_codegen/globals/binding_storage.cpp`
+
+Failure analysis:
+
+Region aliases have source-level names during analysis and stable lowered local
+names during IR/codegen. The region/frame lowering paths mixed those two name
+spaces. Implicit allocation, explicit allocation, explicit frame targets, and
+region-provenance binding storage each needed to carry the stable region local
+when the source target was a known region binding.
+
+Required bootstrap behavior:
+
+Region and frame lowering must preserve the analysis meaning of a source alias
+while emitting IR that targets the stable region-handle local. Allocations,
+frame scopes, and bindings derived from region provenance must all target that
+same stable local through object emission and runtime execution.
+
+Repair:
+
+- `alloc_expr.cpp` now uses the active stable region local for implicit
+  allocation and translates explicit region bindings such as `scratch ^ value`
+  to the stable region local before lowering the allocation.
+- `frame_stmt.cpp` now resolves explicit frame targets through the stable
+  region binding when the target name is a local region alias.
+- `let_stmt.cpp`, `var_stmt.cpp`, and `loop_iter.cpp` now translate
+  region-provenance bindings to stable region locals before recording binding
+  storage metadata.
+- `binding_storage.cpp` now resolves bound region targets through the stable
+  binding name.
+
+Verified bootstrap result after repair:
+
+```text
+Visual Studio bootstrap build wrapper: exit=0, rebuilt alloc_expr.cpp and Cursive.exe
+Cursive.exe build HelloUltraviolet --check --target-profile x86_64-win64 --build-progress off --max-errors 1: exit=0, total diagnostic set is six warnings plus two infos
+Cursive.exe build HelloUltraviolet --target-profile x86_64-win64 --build-progress off --max-errors 1: exit=0, total diagnostic set is six warnings plus two infos
+HelloUltraviolet.exe: exit=0, 0-byte stdout/stderr
+HelloUltraviolet.exe --audit: exit=0, 0-byte stdout/stderr
+python3 Tools/ExtractObligationLedger.py --check: exit=0, obligations=6045
+```
+
+## UVBOOT-0056: Contract Predicate Source Forms and Compile-Time Procedure Metadata
+
+Reference source:
+
+- `Source/Reference/Procedures/Contracts.uv`
+
+Spec obligations exercised:
+
+- `grammar.15.ContractClauses`
+- `rule.15.WF-Contract`
+- `rule.15.Pure-Block`
+- `rule.15.Pure-Comptime`
+- `req.15.ContractEntryConstraints`
+- `req.15.ContractClauseLoweringViaVerificationResults`
+
+Spec basis:
+
+- `SPECIFICATION.md:14772-14812` defines contract clause syntax for
+  pre-only, pre/post, and post-only forms.
+- `SPECIFICATION.md:14821-14934` defines contract predicate well-formedness
+  and the pure expression forms allowed in contract predicates, including
+  block expressions and compile-time procedure calls.
+- `SPECIFICATION.md:14947-14953` defines precondition and postcondition
+  evaluation contexts and states that contract clauses affect execution only
+  through verification and inserted checks.
+- `SPECIFICATION.md:15020-15125` defines `@result` and `@entry(expr)`,
+  including the entry-state capture semantics.
+- `SPECIFICATION.md:24725-24728` requires runtime procedure bodies to avoid
+  naming or calling compile-time procedures, while `SPECIFICATION.md:24749-24794`
+  removes `CtProc` declarations from expanded runtime items.
+
+Spec-valid specimens:
+
+```ultraviolet
+internal procedure contractEntryReference(value: i32) -> i32
+|: value > 0 => @entry(value) == value && @result == value + 2
+{
+    return value + 2
+}
+
+internal procedure contractPureBlockReference(value: i32) -> i32
+|: {
+    let local_value: i32 = value
+    local_value > 0
+}
+{
+    return value
+}
+
+internal procedure contractPureComptimeReference(value: i32) -> i32
+|: contractCompileTimePredicate()
+{
+    return value
+}
+```
+
+Observed bootstrap result before repair:
+
+The first full contract-clause specimen exposed four separate bootstrap
+non-conformance points:
+
+```text
+|: { let local_value: i32 = value; local_value > 0 }
+```
+
+initially failed during parsing because the predicate parser did not delegate
+to the full expression parser for block expressions.
+
+```text
+error[E-SEM-2801]: Contract predicate not provable outside dynamic context
+```
+
+was reported for a return whose postcondition used
+`@entry(value) == value && @result == value + 2`, even though the entry value
+and returned value were statically stable at the return point.
+
+```text
+error[E-SEM-2802]: Impure expression in contract predicate
+```
+
+was reported for an `if` expression and then for a block expression inside a
+contract predicate, even though §15.4 admits both forms when their children are
+pure.
+
+```text
+error[E-SEM-2802]: Impure expression in contract predicate
+```
+
+was also reported for `contractCompileTimePredicate()` inside a contract
+predicate. The expanded module had correctly removed the `CtProc` from runtime
+items under §22, but the later contract checker no longer had enough
+compile-time procedure metadata to apply `Pure-Comptime`.
+
+Bootstrap owner:
+
+- `LLVMBootstrap/cursive/src/02_source/parser/expr/expr_common.cpp`
+- `LLVMBootstrap/cursive/src/04_analysis/typing/stmt/return_stmt.cpp`
+- `LLVMBootstrap/cursive/src/04_analysis/typing/expr/block_expr.cpp`
+- `LLVMBootstrap/cursive/src/04_analysis/contracts/contract_check.cpp`
+- `LLVMBootstrap/cursive/src/04_analysis/typing/expr/call.cpp`
+- `LLVMBootstrap/cursive/include/02_source/ast/nodes/ast_module.h`
+- `LLVMBootstrap/cursive/src/03_comptime/pass.cpp`
+- `LLVMBootstrap/cursive/src/04_analysis/composite/function_types.cpp`
+- `LLVMBootstrap/cursive/src/04_analysis/typing/expr/path.cpp`
+- `LLVMBootstrap/cursive/src/00_core/generated/static_rule_registry.inc`
+
+Failure analysis:
+
+The parser treated contract predicates as a narrower expression category than
+the SPEC defines. Contract typing also applied an early purity-context
+restriction to block expressions instead of letting the contract purity
+judgment validate the block's statements and tail expression. Postcondition
+proof substituted `@entry(expr)` only when the expression had already been
+captured by a runtime check path, so statically stable entry expressions were
+not available to the proof context. Finally, Phase 2 correctly removed
+compile-time procedure declarations from runtime items, but the analysis
+module lost the non-runtime metadata needed by `Pure-Comptime`.
+
+Required bootstrap behavior:
+
+Contract predicates must parse through the same expression parser used by
+ordinary expressions. The contract checker must decide purity using §15.4,
+including pure block expressions and compile-time procedure calls. Static
+postcondition proof must substitute stable `@entry(expr)` values at return
+points. Compile-time procedures must remain absent from runtime items while
+remaining visible as non-runtime metadata to contract predicate analysis.
+
+Repair:
+
+- `ParsePredicateExpr` now delegates to the full expression parser.
+- Return postcondition checking now substitutes stable `@entry(expr)` values
+  for return-point proof.
+- Block expression typing no longer rejects contract-predicate block
+  expressions before the contract purity checker can validate them.
+- Contract purity and call typing now recognize compile-time procedures in
+  contract-predicate contexts.
+- Expanded modules now retain a non-runtime `comptime_procedures` metadata
+  list, and the call, path, function-type, and contract-check lookup paths use
+  that metadata without reintroducing `CtProc` items into runtime output.
+- The static rule registry was regenerated after adding the bootstrap
+  `Pure-Comptime` rule reference.
+
+Spec clarification recorded:
+
+`HelloUltraviolet/Audit/SpecClarificationsNeeded.md` records the intended
+reading that ordinary contract predicate checking is a static context for
+`Pure-Comptime`, while runtime procedure bodies still cannot name or call
+compile-time procedures.
+
+Verified bootstrap result after repair:
+
+```text
+Visual Studio bootstrap build wrapper: exit=0, rebuilt Cursive.exe
+Cursive.exe build HelloUltraviolet --check --target-profile x86_64-win64 --build-progress off --max-errors 1: exit=0, total diagnostic set is six warnings plus two infos
+Cursive.exe build HelloUltraviolet --target-profile x86_64-win64 --build-progress off: exit=0, total diagnostic set is six warnings plus two infos
+HelloUltraviolet.exe: exit=0, 0-byte stdout/stderr
+HelloUltraviolet.exe --audit: exit=0, 0-byte stdout/stderr
+```

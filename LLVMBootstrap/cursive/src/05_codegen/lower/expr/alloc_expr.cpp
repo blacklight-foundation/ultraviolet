@@ -63,16 +63,28 @@ LowerResult LowerAllocExpr(const ast::Expr& expr,
     ir_alloc.value = value_result.value;
     ir_alloc.type = value_type;
 
-    // Handle explicit named allocation by lowering the source alias.
+    // Handle explicit named allocation by targeting the lowered region local.
     if (alloc.region_opt) {
-        ast::IdentifierExpr ident;
-        ident.name = *alloc.region_opt;
-        ast::Expr region_expr;
-        region_expr.span = expr.span;
-        region_expr.node = ident;
+        IRPtr region_ir = EmptyIR();
+        if (const BindingState* binding = ctx.GetBindingState(*alloc.region_opt)) {
+            IRValue region_value;
+            region_value.kind = IRValue::Kind::Local;
+            region_value.name = ctx.StableBindingName(*alloc.region_opt);
+            if (binding->type) {
+                ctx.RegisterValueType(region_value, binding->type);
+            }
+            ir_alloc.region = region_value;
+        } else {
+            ast::IdentifierExpr ident;
+            ident.name = *alloc.region_opt;
+            ast::Expr region_expr;
+            region_expr.span = expr.span;
+            region_expr.node = ident;
 
-        auto region_result = LowerExpr(region_expr, ctx);
-        ir_alloc.region = region_result.value;
+            auto region_result = LowerExpr(region_expr, ctx);
+            region_ir = region_result.ir;
+            ir_alloc.region = region_result.value;
+        }
 
         IRValue ptr_value = ctx.FreshTempValue("alloc_ptr");
         ir_alloc.result = ptr_value;
@@ -87,7 +99,7 @@ LowerResult LowerAllocExpr(const ast::Expr& expr,
         }
 
         return LowerResult{
-            SeqIR({value_result.ir, region_result.ir, MakeIR(std::move(ir_alloc))}),
+            SeqIR({value_result.ir, region_ir, MakeIR(std::move(ir_alloc))}),
             alloc_val
         };
     }

@@ -321,6 +321,11 @@ struct ProcedureLookupResult {
 static ProcedureLookupResult FindProcedure(
     const ast::ASTModule& module,
     std::string_view name) {
+  for (const auto& decl : module.comptime_procedures) {
+    if (IdEq(decl.name, name)) {
+      return ProcedureLookupResult{nullptr, &decl, nullptr};
+    }
+  }
   for (const auto& item : module.items) {
     if (const auto* decl = std::get_if<ast::ProcedureDecl>(&item)) {
       if (IdEq(decl->name, name)) {

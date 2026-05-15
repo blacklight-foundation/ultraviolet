@@ -106,6 +106,11 @@ static const ast::ASTModule* FindModuleByPath(const ScopeContext& ctx,
 
 static bool ModuleHasComptimeProcedure(const ast::ASTModule& module,
                                        std::string_view name) {
+  for (const auto& proc : module.comptime_procedures) {
+    if (IdEq(proc.name, name)) {
+      return true;
+    }
+  }
   for (const auto& item : module.items) {
     if (const auto* proc = std::get_if<ast::ComptimeProcedureDecl>(&item);
         proc != nullptr && IdEq(proc->name, name)) {

@@ -37,8 +37,8 @@ Objective: execute `.agents/plans/HelloUltravioletReferenceCorpus.md`.
   `Source/Fixtures/DiagnosticSource`, `Source/Fixtures/OutputDiagnostics`, and
   `Source/Fixtures/ArtifactProjects`, then emits the matching catalog helper
   and import surface for each generated catalog submodule.
-- `Source/Audit/SpecClarifications.uv` now compiles a seven-row clarification
-  ledger for sourceability-limited expected-diagnostic obligations. Four rows
+- `Source/Audit/SpecClarifications.uv` now compiles a nine-row clarification
+  ledger for sourceability-limited and permission-clarity obligations. Four rows
   with no current primary source exercise are cataloged as `@ReferenceModel`;
   the orphan requirement row keeps its accepted-project source exercise and is
   also represented in the compiled clarification ledger. The workgroup-size
@@ -47,6 +47,12 @@ Objective: execute `.agents/plans/HelloUltravioletReferenceCorpus.md`.
   The fresh async creation row records the intended reading that an async call
   creates a fresh frame that can materialize at an explicitly expected
   permission-qualified async type for manual `resume` stepping.
+  The region lifecycle row records the intended reading that consumed unique
+  region lifecycle transitions preserve cleanup authority on the returned
+  modal state. The contract predicate compile-time procedure row records the
+  intended reading that contract predicate checking is a static context for
+  `Pure-Comptime` while compile-time procedures remain absent from runtime
+  items.
 - `Fixtures/AcceptedProjects/HostedExportLibrary` is a spec-valid shared
   library fixture with public `[[host_export]]` procedures, projected context
   bundle records, visible primitive and C-layout aggregate parameters, a
@@ -184,6 +190,20 @@ Objective: execute `.agents/plans/HelloUltravioletReferenceCorpus.md`.
   same module directory, a discovered child module directory, multiple files
   inside that child module, import binding of the child module alias, and
   qualified calls/types crossing the parent-child module boundary.
+- This pass expanded authority region/frame accepted source.
+  `runAuthorityRegionsAndFramesReference` now exercises region statements with
+  explicit options and alias binding, implicit and explicit frame statements,
+  nested region/frame target selection, implicit allocation in the active
+  region, explicit `region ^ expr` allocation, frame-scoped allocation,
+  explicit region allocation from inside a frame, and `Region::new_scoped`
+  with allocation plus explicit cleanup. The reset/freeze/thaw lifecycle chain
+  is recorded in the clarification ledger because the SPEC return signatures
+  for those unique receiver transitions need a permission-preservation rule.
+- This pass surfaced and corrected region/frame bootstrap lowering defects:
+  implicit allocation, explicit allocation, explicit frame targets, and
+  region-provenance binding storage now translate source region aliases to the
+  stable region locals used by IR emission. The repair is recorded in
+  `Audit/BootstrapNonCompliance.md` as `UVBOOT-0055`.
 - This pass expanded backend lowering accepted source.
   `runLoweringBackendRequirementsReference` now exercises function values,
   record/tuple/array aggregate construction and mutation, enum unit/tuple/record
@@ -211,12 +231,13 @@ Objective: execute `.agents/plans/HelloUltravioletReferenceCorpus.md`.
   the Visual Studio bootstrap build wrapper rebuilt
   `LLVMBootstrap/cursive/build/Release/Cursive.exe` with exit code 0 after
   the async, key, closure diagnostic, compile-time quote/splice, and
-  compile-time evaluator repairs;
-  `Cursive.exe build HelloUltraviolet --target-profile x86_64-win64 --build-progress off`
+  compile-time evaluator repairs, and rebuilt it again after the region/frame
+  lowering repair;
+  `Cursive.exe build HelloUltraviolet --target-profile x86_64-win64 --build-progress off --max-errors 1`
   exited 0 with the expected six warnings plus two info diagnostics;
   `HelloUltraviolet.exe` exited 0 with 0-byte stdout/stderr;
   `HelloUltraviolet.exe --audit` exited 0 with 0-byte stdout/stderr;
-  `Cursive.exe build HelloUltraviolet --check --target-profile x86_64-win64 --build-progress off`
+  `Cursive.exe build HelloUltraviolet --check --target-profile x86_64-win64 --build-progress off --max-errors 1`
   exited 0 with the same diagnostic set;
   `python3 Tools/ExtractObligationLedger.py --check` passed with 6,045
   obligations; a plain `git diff --name-only` was blocked by the local Git LFS
@@ -252,7 +273,7 @@ Objective: execute `.agents/plans/HelloUltravioletReferenceCorpus.md`.
   `python3 Tools/ExtractObligationLedger.py --check`.
 - `HelloUltraviolet/Source/Main.uv` calls the executable reference corpus through
   `runReferenceCorpus(context)`.
-- All 150 files under `HelloUltraviolet/Source/Reference` contain executable
+- All 153 files under `HelloUltraviolet/Source/Reference` contain executable
   reference bodies; the count of public `run...Reference` procedures whose
   body is only `return true` is `0`.
 - The generated catalog contains 6,045 primary obligation rows in
@@ -888,6 +909,15 @@ Objective: execute `.agents/plans/HelloUltravioletReferenceCorpus.md`.
   qualified procedure calls, qualified record and enum constructors, qualified
   enum patterns, first-class qualified procedure values, and qualified class
   paths in implementation clauses.
+  Procedure contract source specimens now include no-clause, pre-only,
+  post-only, pre/post, `@result`, stable `@entry`, pure literal, identifier,
+  field, tuple access, index, unary, binary, cast, if, if-is, if-case, block,
+  tuple, array, record, builtin call, ordinary procedure call, const receiver
+  method call, compile-time procedure call, and flow-fact precondition
+  discharge forms. `UVBOOT-0056` records the bootstrap repairs needed for
+  full contract predicate parsing, pure block predicates, stable `@entry`
+  proof, and non-runtime compile-time procedure metadata for
+  `Pure-Comptime`.
   Key-system source specimens now exercise accepted key paths, key acquisition,
   field key boundaries, inline coarsening markers, memory-order attributes,
   fence expressions, dynamic indexed reads and writes, shared-argument

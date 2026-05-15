@@ -974,6 +974,13 @@ ComptimeResult ComptimePass(const std::vector<ast::ASTModule>& modules,
     if (!expanded_items.has_value() || core::HasError(result.diags)) {
       return result;
     }
+    out.comptime_procedures.clear();
+    out.comptime_procedures.reserve(env.procs.size());
+    for (const auto& item : module.items) {
+      if (const auto* proc = std::get_if<ast::ComptimeProcedureDecl>(&item)) {
+        out.comptime_procedures.push_back(*proc);
+      }
+    }
     out.items = std::move(*expanded_items);
     next_hygiene = env.next_hygiene;
     expanded[module_index] = std::move(out);

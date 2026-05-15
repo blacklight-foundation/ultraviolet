@@ -162,6 +162,10 @@ static const CallLookupIndex& GetCallLookupIndex(const ScopeContext& ctx) {
 
     auto& proc_map = index.procedures_by_module[mod_ptr];
     auto& ext_map = index.externs_by_module[mod_ptr];
+    for (const auto& proc : mod.comptime_procedures) {
+      proc_map[IdKeyOf(proc.name)].push_back(
+          ProcLikeLookupEntry{nullptr, &proc});
+    }
     for (const auto& item : mod.items) {
       if (const auto* proc = std::get_if<ast::ProcedureDecl>(&item)) {
         proc_map[IdKeyOf(proc->name)].push_back(
@@ -280,6 +284,13 @@ static bool IsComptimeTypingEnv(const TypeEnv& env) {
          BindOf(env, "emitter").has_value() ||
          BindOf(env, "files").has_value() ||
          BindOf(env, "target").has_value();
+}
+
+static bool AllowsComptimeProcedureCall(const StmtTypeContext& type_ctx,
+                                        const TypeEnv& env) {
+  return IsComptimeTypingEnv(env) ||
+         (type_ctx.require_pure &&
+          type_ctx.contract_phase != ContractPhase::None);
 }
 
 static std::optional<CalleeProcedureLookupResult> LookupProcedureForCallee(
@@ -442,7 +453,7 @@ static OverloadCandidateCheck CheckFreeProcedureOverloadCandidate(
     const ExprTypeFn& type_expr,
     const ArgCheckFn& check_expr) {
   OverloadCandidateCheck out;
-  if (is_comptime_proc && !IsComptimeTypingEnv(env)) {
+  if (is_comptime_proc && !AllowsComptimeProcedureCall(type_ctx, env)) {
     out.hard_error = true;
     out.diag_id = "E-CTE-0034";
     return out;
@@ -2966,6 +2977,20 @@ ExprTypeResult TypeCallExprImpl(const ScopeContext& ctx,
   SpecDefsCall();
 
   auto type_expr = [&](const ast::ExprPtr& inner) {
+    if (inner == node.callee && AllowsComptimeProcedureCall(type_ctx, env)) {
+      const auto lookup = LookupProcedureForCallee(ctx, inner);
+      if (lookup && lookup->is_comptime_proc && lookup->proc) {
+        ExprTypeResult r;
+        const auto proc_type = ProcType(ctx, *lookup->proc);
+        if (!proc_type.ok) {
+          r.diag_id = proc_type.diag_id;
+          return r;
+        }
+        r.ok = true;
+        r.type = proc_type.type;
+        return r;
+      }
+    }
     return TypeExpr(ctx, type_ctx, inner, env);
   };
 
@@ -3057,7 +3082,8 @@ ExprTypeResult TypeCallExprImpl(const ScopeContext& ctx,
   };
 
   if (const auto lookup = LookupProcedureForCallee(ctx, node.callee);
-      lookup && lookup->is_comptime_proc && !IsComptimeTypingEnv(env)) {
+      lookup && lookup->is_comptime_proc &&
+      !AllowsComptimeProcedureCall(type_ctx, env)) {
     ExprTypeResult r;
     r.diag_id = "E-CTE-0034";
     return r;
