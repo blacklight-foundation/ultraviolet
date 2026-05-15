@@ -22,8 +22,31 @@ internal procedure coveredKeyAccessValue() -> i32 {
     return observed
 }
 
+internal procedure coveringWriteReadThenWriteValue() -> i32 {
+    var shared_value: shared i32 = 5
+    #shared_value write {
+        shared_value = shared_value + 4
+    }
+    return shared_value + 0
+}
+
+internal procedure coveringRootWriteValue() -> i32 {
+    var container: shared KeyContainer =
+        KeyContainer {
+            leaf: KeyLeaf { value: 10 },
+            values: [1, 2, 3, 4]
+        }
+    #container write {
+        container.leaf.value = 21
+        container.values[2usize] = container.leaf.value + 0
+    }
+    return container.leaf.value + container.values[2usize]
+}
+
 /// Exercises the Keys ConflictDetection reference surface.
 public procedure runKeysConflictDetectionReference() -> bool {
     return disjointKeyAccessValue() == 3 &&
-        coveredKeyAccessValue() == 9
+        coveredKeyAccessValue() == 9 &&
+        coveringWriteReadThenWriteValue() == 9 &&
+        coveringRootWriteValue() == 42
 }

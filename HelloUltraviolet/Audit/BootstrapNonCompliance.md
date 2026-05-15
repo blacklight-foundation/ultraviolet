@@ -3625,3 +3625,92 @@ Cursive.exe build HelloUltraviolet --target-profile x86_64-win64 --build-progres
 HelloUltraviolet.exe: exit=0, 0-byte stdout/stderr
 HelloUltraviolet.exe --audit: exit=0, 0-byte stdout/stderr
 ```
+
+## UVBOOT-0054: Compile-Time Procedure Ordinary Control Propagation
+
+Status: repaired in the workspace bootstrap and verified by
+`Cursive.exe build HelloUltraviolet --check --target-profile x86_64-win64`.
+
+Reference source:
+
+- `Source/Reference/Comptime/CompileTimeForms.uv`
+
+Spec obligations exercised:
+
+- `rule.22.Parse-CtProc`
+- `rule.22.T-CtProc`
+- `requirement.22.CtEvalOrdinarySemantics`
+- `requirement.22.CompileTimeProcedureContextRestriction`
+
+Spec basis:
+
+- `SPECIFICATION.md:24713-24718` defines `CtProc` as well-formed with optional
+  generic parameters and a body checked in the compile-time environment.
+- `SPECIFICATION.md:24723-24725` requires compile-time procedures to be
+  callable from compile-time contexts and rejected from runtime contexts.
+- `SPECIFICATION.md:24750-24751` requires `CtEval` and `CtExec` for ordinary
+  forms inside compile-time execution to preserve ordinary child order, scope,
+  pattern binding, control propagation, and operator semantics.
+
+Spec-valid specimen:
+
+```ultraviolet
+comptime internal procedure chooseComptimeReferenceValue<TValue>(
+    first: TValue,
+    second: TValue,
+    choose_first: bool
+) -> TValue
+{
+    if choose_first {
+        return first
+    }
+    return second
+}
+
+let generic_chosen: usize =
+    comptime { chooseComptimeReferenceValue(31usize, 37usize, true) }
+```
+
+Observed bootstrap result before repair:
+
+The compile-time pass failed to evaluate the ordinary `if` expression inside
+the compile-time procedure body. The unexpanded call then reached Phase 3 as
+though it were a runtime reference to a compile-time procedure:
+
+```text
+error[E-CTE-0034]: Compile-time procedure referenced from runtime context
+```
+
+Bootstrap owner:
+
+- `LLVMBootstrap/cursive/src/03_comptime/eval.cpp`
+
+Failure analysis:
+
+The Phase 2 compile-time evaluator handled literal, identifier, binary,
+block, call, method-call, type-literal, and quote expressions, but it did not
+evaluate ordinary `if` expressions. `EvalBlock` also discarded a `return`
+propagated through an expression statement. That violated the SPEC rule that
+ordinary forms inside compile-time execution preserve ordinary control
+propagation. A compile-time procedure whose selected ordinary `if` branch
+returned a value therefore failed to produce a compile-time result.
+
+Required bootstrap behavior:
+
+`CtEval` must evaluate ordinary `if` expressions in compile-time contexts by
+evaluating the condition, selecting the matching branch, and propagating
+ordinary return flow through expression statements.
+
+Repair:
+
+- `LLVMBootstrap/cursive/src/03_comptime/eval.cpp` now evaluates ordinary
+  `IfExpr` in compile-time execution.
+- `EvalBlock` now returns an expression-statement result when that result
+  carries compile-time `return` propagation.
+
+Verified bootstrap result after repair:
+
+```text
+Visual Studio bootstrap build wrapper: exit=0, rebuilt eval.cpp and Cursive.exe
+Cursive.exe build HelloUltraviolet --check --target-profile x86_64-win64 --build-progress off --max-errors 1: exit=0, total diagnostic set is five warnings plus two infos
+```

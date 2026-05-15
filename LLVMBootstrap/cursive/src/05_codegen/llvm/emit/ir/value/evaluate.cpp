@@ -2400,7 +2400,11 @@ std::optional<std::string> ProcedureSymbolForPath(
           }
           else
           {
-            field_offset = 0;
+            if (current_ctx_)
+            {
+              current_ctx_->ReportCodegenFailure();
+            }
+            break;
           }
         }
         if (!field_offset.has_value())

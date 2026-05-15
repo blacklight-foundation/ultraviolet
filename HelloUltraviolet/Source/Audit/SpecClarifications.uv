@@ -30,11 +30,11 @@ public procedure specClarificationMatches(
 }
 
 public procedure expectedSpecClarificationCount() -> usize {
-    return 7usize
+    return 8usize
 }
 
 public procedure specClarificationCount() -> usize {
-    return 7usize
+    return 8usize
 }
 
 public procedure validatedSpecClarificationCount() -> usize {
@@ -119,6 +119,18 @@ public procedure validatedSpecClarificationCount() -> usize {
         ),
         "Fresh Async Creation Permission",
         "permission-materialization-clarity",
+        "ReferenceSource"
+    ) {
+        count = count + 1usize
+    }
+    if specClarificationMatches(
+        specClarification(
+            "Region Lifecycle Transition Permission",
+            "region-lifecycle-return-permission",
+            "ReferenceSource"
+        ),
+        "Region Lifecycle Transition Permission",
+        "region-lifecycle-return-permission",
         "ReferenceSource"
     ) {
         count = count + 1usize

@@ -1,9 +1,26 @@
 //! Reference specimens for Names / QualifiedResolution.
 
+import HelloUltraviolet::Reference::DataTypes as QualifiedDataTypes
+
 internal record QualifiedNameReference {
     internal path_segments: usize
     internal terminal_name_present: bool
 }
+
+internal class QualifiedLocalReadable {
+    internal procedure qualifiedLocalValue(~) -> i32
+}
+
+internal record QualifiedLocalOwner <: HelloUltraviolet::Reference::Names::QualifiedLocalReadable {
+    internal value: i32
+
+    internal procedure qualifiedLocalValue(~) -> i32 {
+        return self.value
+    }
+}
+
+internal type QualifiedRecordFactory =
+    (string@View, usize, bool) -> QualifiedDataTypes::RecordReference
 
 internal procedure qualifiedNameReference(
     path_segments: usize,
@@ -17,6 +34,77 @@ internal procedure qualifiedNameReference(
 
 internal procedure qualifiedNameCanResolve(reference: QualifiedNameReference) -> bool {
     return reference.path_segments > 0usize && reference.terminal_name_present
+}
+
+internal procedure qualifiedModuleAliasProcedureValue() -> usize {
+    let reference: QualifiedDataTypes::RecordReference =
+        QualifiedDataTypes::recordReference("qualified-call", 34usize, true)
+    return reference.count
+}
+
+internal procedure qualifiedRecordLiteralValue() -> usize {
+    let reference: QualifiedDataTypes::RecordReference =
+        QualifiedDataTypes::RecordReference {
+            name: "qualified-record",
+            count: 55usize,
+            is_active: true
+        }
+    return reference.count
+}
+
+internal procedure qualifiedEnumConstructorsValue() -> i32 {
+    let idle: QualifiedDataTypes::EnumReference = QualifiedDataTypes::EnumReference::Idle
+    let count: QualifiedDataTypes::EnumReference = QualifiedDataTypes::EnumReference::Count(7)
+    let named: QualifiedDataTypes::EnumReference =
+        QualifiedDataTypes::EnumReference::Named { value: 11 }
+
+    let idle_score: i32 = if idle is {
+        QualifiedDataTypes::EnumReference::Idle {
+            1
+        }
+        QualifiedDataTypes::EnumReference::Count(value) {
+            value
+        }
+        QualifiedDataTypes::EnumReference::Named { value } {
+            value
+        }
+    }
+    let count_score: i32 = if count is {
+        QualifiedDataTypes::EnumReference::Idle {
+            0
+        }
+        QualifiedDataTypes::EnumReference::Count(value) {
+            value
+        }
+        QualifiedDataTypes::EnumReference::Named { value } {
+            value
+        }
+    }
+    let named_score: i32 = if named is {
+        QualifiedDataTypes::EnumReference::Idle {
+            0
+        }
+        QualifiedDataTypes::EnumReference::Count(value) {
+            value
+        }
+        QualifiedDataTypes::EnumReference::Named { value } {
+            value
+        }
+    }
+    return idle_score + count_score + named_score
+}
+
+internal procedure qualifiedProcedureValueValue() -> usize {
+    let make_record: QualifiedRecordFactory = QualifiedDataTypes::recordReference
+    let reference: QualifiedDataTypes::RecordReference =
+        make_record("qualified-procedure-value", 89usize, true)
+    return reference.count
+}
+
+internal procedure qualifiedClassPathValue() -> i32 {
+    let owner: HelloUltraviolet::Reference::Names::QualifiedLocalOwner =
+        HelloUltraviolet::Reference::Names::QualifiedLocalOwner { value: 144 }
+    return owner~>qualifiedLocalValue()
 }
 
 /// Exercises the Names QualifiedResolution reference surface.
@@ -37,5 +125,11 @@ public procedure runNamesQualifiedResolutionReference() -> bool {
             false
         }
     }
-    return qualifiedNameCanResolve(path) && variant_ok
+    return qualifiedNameCanResolve(path) &&
+        variant_ok &&
+        qualifiedModuleAliasProcedureValue() == 34usize &&
+        qualifiedRecordLiteralValue() == 55usize &&
+        qualifiedEnumConstructorsValue() == 19 &&
+        qualifiedProcedureValueValue() == 89usize &&
+        qualifiedClassPathValue() == 144
 }

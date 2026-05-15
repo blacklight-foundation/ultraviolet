@@ -6,13 +6,43 @@ comptime internal procedure addComptimeReferenceValue(value: usize) -> usize
     return value + 2usize
 }
 
+comptime internal procedure chooseComptimeReferenceValue<TValue>(
+    first: TValue,
+    second: TValue,
+    choose_first: bool
+) -> TValue
+{
+    if choose_first {
+        return first
+    }
+    return second
+}
+
 internal procedure compileTimeFormsValue() -> usize {
     var total: usize = comptime { addComptimeReferenceValue(5usize) }
+    comptime {
+        let current_module = diagnostics~>current_module()
+    }
+
     let selected: usize = comptime if true { 7usize } else { missingRejectedBranch() }
     let else_if_selected: usize =
-        comptime if false { missingFirstBranch() } else comptime if true { 11usize } else { 13usize }
+        comptime if false { missingFirstBranch() } else comptime if true {
+            11usize
+        } else {
+            13usize
+        }
+    let false_else_selected: usize =
+        comptime if false { missingFalseElseBranch() } else { 17usize }
+
+    comptime if false {
+        total = total + missingFalseNoElseBranch()
+    }
 
     comptime loop value: usize in [1usize, 2usize, 3usize] {
+        total = total + comptime { value }
+    }
+
+    comptime loop value in [4usize, 5usize] {
         total = total + comptime { value }
     }
 
@@ -20,10 +50,21 @@ internal procedure compileTimeFormsValue() -> usize {
         total = total + comptime { value }
     }
 
-    return total + selected + else_if_selected
+    let chosen: usize = comptime { addComptimeReferenceValue(17usize) }
+    let generic_chosen: usize =
+        comptime { chooseComptimeReferenceValue(31usize, 37usize, true) }
+    let literal_number: usize = comptime { 3usize }
+    let literal_bool: bool = comptime { true }
+    let literal_tuple: (usize, bool) = comptime { (29usize, true) }
+
+    if literal_bool && literal_tuple.1 {
+        return total + selected + else_if_selected + false_else_selected +
+            chosen + generic_chosen + literal_number + literal_tuple.0
+    }
+    return 0usize
 }
 
 /// Exercises the Comptime CompileTimeForms reference surface.
 public procedure runComptimeCompileTimeFormsReference() -> bool {
-    return compileTimeFormsValue() == 31usize
+    return compileTimeFormsValue() == 139usize
 }

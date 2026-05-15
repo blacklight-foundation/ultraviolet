@@ -361,6 +361,29 @@ procedure aggregateLocalCopyExitCode() -> i32 {
     return 0
 }
 
+record MutablePair {
+    value: usize
+    other: usize
+}
+
+procedure makeMutatedPair(seed: usize) -> MutablePair {
+    var pair: MutablePair = MutablePair { value: 0usize, other: 7usize }
+    pair.value = seed + 1usize
+    pair.other = seed + 2usize
+    return pair
+}
+
+procedure aggregateFieldMutationExitCode() -> i32 {
+    let pair: MutablePair = makeMutatedPair(10usize)
+    if (pair.value != 11usize) {
+        return 50
+    }
+    if (pair.other != 12usize) {
+        return 51
+    }
+    return 0
+}
+
 procedure nonCapturingClosureExitCode() -> i32 {
     let non_capturing = |value: i32| -> i32 value + 1
     let empty = || 5
@@ -426,6 +449,10 @@ public procedure main(move ctx: Context) -> i32 {
     let aggregate_local_copy_code: i32 = aggregateLocalCopyExitCode()
     if (aggregate_local_copy_code != 0) {
         return aggregate_local_copy_code
+    }
+    let aggregate_field_mutation_code: i32 = aggregateFieldMutationExitCode()
+    if (aggregate_field_mutation_code != 0) {
+        return aggregate_field_mutation_code
     }
     let non_capturing_code: i32 = nonCapturingClosureExitCode()
     if (non_capturing_code != 0) {

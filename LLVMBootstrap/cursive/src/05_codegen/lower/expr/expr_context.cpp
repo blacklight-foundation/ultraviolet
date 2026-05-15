@@ -8,6 +8,7 @@
 #include <iostream>
 
 #include "00_core/assert_spec.h"
+#include "04_analysis/layout/layout.h"
 #include "04_analysis/resolve/scopes.h"
 #include "04_analysis/resolve/resolve_items.h"
 #include "05_codegen/abi/abi.h"
@@ -618,6 +619,8 @@ LoweredCaptureEnv LowerCtx::LowerParallelCaptureEnv(
   }
 
   auto env_type = analysis::MakeTypeTuple(env_fields);
+  const auto env_layout =
+      analysis::layout::RecordLayoutOf(ScopeForLowering(*this), env_fields);
   lowered.env_info.env_type = env_type;
 
   IRValue env_ptr = FreshTempValue(std::string(env_prefix) + "_env_ptr");
@@ -663,6 +666,9 @@ LoweredCaptureEnv LowerCtx::LowerParallelCaptureEnv(
 
     CaptureAccess access;
     access.index = i;
+    if (env_layout && i < env_layout->offsets.size()) {
+      access.byte_offset = env_layout->offsets[i];
+    }
     access.value_type = cap.type;
     access.by_ref = by_ref;
     access.field_type = by_ref
@@ -702,6 +708,7 @@ LoweredCaptureEnv LowerCtx::LowerParallelCaptureEnv(
     field_info.kind = DerivedValueInfo::Kind::AddrTuple;
     field_info.base = env_ptr;
     field_info.tuple_index = i;
+    field_info.byte_offset = access.byte_offset;
     RegisterDerivedValue(field_ptr, field_info);
     RegisterValueType(
         field_ptr,

@@ -7,9 +7,19 @@
 namespace cursive::codegen::emit_detail {
 
 void IRInstructionVisitor::operator()(const IRReadPlace &) const
-{}
+{
+  if (const LowerCtx *ctx = emitter.GetCurrentCtx())
+  {
+    const_cast<LowerCtx *>(ctx)->ReportCodegenFailure();
+  }
+}
 
 void IRInstructionVisitor::operator()(const IRWritePlace &) const
-{}
+{
+  if (const LowerCtx *ctx = emitter.GetCurrentCtx())
+  {
+    const_cast<LowerCtx *>(ctx)->ReportCodegenFailure();
+  }
+}
 
 } // namespace cursive::codegen::emit_detail

@@ -44,10 +44,38 @@ internal procedure localClosureSharedCaptureValue() -> i32 {
     return reader()
 }
 
+internal procedure inlineCoarsenedFieldKeyValue() -> i32 {
+    var container: shared KeyContainer =
+        KeyContainer {
+            leaf: KeyLeaf { value: 17 },
+            values: [1, 2, 3, 4]
+        }
+    var observed: i32 = 0
+    #container.#leaf.value read {
+        observed = container.leaf.value + 0
+    }
+    return observed
+}
+
+internal procedure inlineCoarsenedIndexKeyValue() -> i32 {
+    var leaves: shared [KeyLeaf; 2] =
+        [
+            KeyLeaf { value: 19 },
+            KeyLeaf { value: 23 }
+        ]
+    var observed: i32 = 0
+    #leaves[#1usize].value read {
+        observed = leaves[1usize].value + 0
+    }
+    return observed
+}
+
 /// Exercises the Keys AcquisitionBlocks reference surface.
 public procedure runKeysAcquisitionBlocksReference() -> bool {
     return readAndWriteKeyBlockValue() == 2 &&
         orderedKeyBlockValue() == 3 &&
         sharedArgumentNoCallSiteAcquisitionValue() == 8 &&
-        localClosureSharedCaptureValue() == 13
+        localClosureSharedCaptureValue() == 13 &&
+        inlineCoarsenedFieldKeyValue() == 17 &&
+        inlineCoarsenedIndexKeyValue() == 23
 }

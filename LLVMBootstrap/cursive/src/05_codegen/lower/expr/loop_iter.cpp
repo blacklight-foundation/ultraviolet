@@ -80,6 +80,15 @@ ProvInfo BindProvInfo(const ProvInfo& init) {
   return init;
 }
 
+ProvInfo StableRegionProv(const ProvInfo& info, const LowerCtx& ctx) {
+  ProvInfo stable = info;
+  if (stable.kind == analysis::ProvenanceKind::Region &&
+      stable.region.has_value() && !stable.region->empty()) {
+    stable.region = ctx.StableBindingName(*stable.region);
+  }
+  return stable;
+}
+
 // ---------------------------------------------------------------------------
 // Helper: LoopPatternType
 // ---------------------------------------------------------------------------
@@ -195,7 +204,7 @@ LowerResult LowerLoopIter(const ast::Expr& expr,
 
   // Compute provenance for the loop binding
   const ProvInfo iter_prov = ExprProvInfo(*loop_expr.iter, ctx);
-  const ProvInfo bind_prov = BindProvInfo(iter_prov);
+  const ProvInfo bind_prov = StableRegionProv(BindProvInfo(iter_prov), ctx);
 
   // Register pattern bindings with the computed provenance
   RegisterPatternBindings(*loop_expr.pattern, pattern_type, ctx, false,

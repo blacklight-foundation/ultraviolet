@@ -1,0 +1,25 @@
+//! Public API for the Modules / Aggregation submodule reference.
+
+/// Contribution carried across a real submodule boundary.
+public record SubmoduleAggregationContribution {
+    public left: i32
+    public right: i32
+}
+
+/// Builds a submodule aggregation contribution.
+public procedure submoduleAggregationContribution(
+    left: i32,
+    right: i32
+) -> SubmoduleAggregationContribution {
+    return SubmoduleAggregationContribution {
+        left: left,
+        right: right
+    }
+}
+
+/// Reads a value through the submodule compilation unit.
+public procedure submoduleAggregationValue(
+    contribution: SubmoduleAggregationContribution
+) -> i32 {
+    return contribution.left + contribution.right + submoduleAggregationOffset()
+}

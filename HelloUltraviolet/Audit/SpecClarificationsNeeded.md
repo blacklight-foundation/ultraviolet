@@ -143,3 +143,25 @@ while building `HelloUltraviolet` as the reference corpus.
   materialize at an expected permission-qualified async type, especially
   `unique Async<...>`, or whether `resume` should use a different receiver
   permission.
+
+### Region Lifecycle Transition Permission
+
+- Obligations: `Docs/Audit/UltravioletObligations.csv:2494`,
+  `Docs/Audit/UltravioletObligations.csv:2495`, and
+  `Docs/Audit/UltravioletObligations.csv:2496`.
+- SPEC anchors: `SPECIFICATION.md:10881-10883`,
+  `SPECIFICATION.md:10892-10895`, and `SPECIFICATION.md:11364`.
+- Current reading: `Region::reset_unchecked`, `Region::freeze`, and
+  `Region::thaw` are lifecycle transitions on a unique region receiver, but
+  their formal `RegionProcSig` return types are bare modal-state types rather
+  than `unique Region@...`.
+- Connected construct reading: follow-up region lifecycle operations require a
+  unique receiver, and the region arena requirements say active or frozen
+  regions must be freed exactly once. With the bare return types read
+  literally, accepted source can create and free an active scoped region, but
+  cannot write a full reset/freeze/thaw/free chain that both typechecks and
+  preserves the required cleanup authority.
+- Clarification requested: specify whether these consumed unique region
+  lifecycle transitions preserve unique permission on their returned target
+  state, or whether the built-in receiver/return signatures should be changed
+  so the full lifecycle chain is sourceable.

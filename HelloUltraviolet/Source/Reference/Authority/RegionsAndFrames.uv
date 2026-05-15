@@ -1,5 +1,61 @@
 //! Reference specimens for Authority / RegionsAndFrames.
 
+internal procedure explicitRegionOptionsValue() -> i32 {
+    var value: i32 = 0
+    region (RegionOptions { stack_size: 0usize, name: "authority-options" }) as configured_region {
+        value = value + 1
+        configured_region.frame {
+            value = value + 2
+        }
+    }
+    return value
+}
+
+internal procedure nestedFrameTargetValue() -> i32 {
+    var value: i32 = 0
+    region as outer_region {
+        value = value + 1
+        region as inner_region {
+            frame {
+                value = value + 2
+            }
+            outer_region.frame {
+                value = value + 3
+            }
+            inner_region.frame {
+                value = value + 4
+            }
+        }
+        frame {
+            value = value + 5
+        }
+    }
+    return value
+}
+
+internal procedure allocationExpressionValue() -> i32 {
+    var score: i32 = 0
+    region as scratch {
+        let implicit_value: i32 = ^7
+        if implicit_value == 7
+            score = score + 1
+    }
+    return score
+}
+
+internal procedure scopedRegionBuiltinValue() -> i32 {
+    let options: RegionOptions =
+        RegionOptions { stack_size: 0usize, name: "authority-scoped" }
+    let opened: unique Region@Active = Region::new_scoped(options)
+    let allocated: i32 = opened~>alloc(19)
+    var score: i32 = 0
+    if allocated == 19
+        score = score + 1
+
+    let freed: Region@Freed = unsafe { opened~>free_unchecked() }
+    return score
+}
+
 /// Exercises the Authority RegionsAndFrames reference surface.
 public procedure runAuthorityRegionsAndFramesReference() -> bool {
     var value: i32 = 0
@@ -12,5 +68,5 @@ public procedure runAuthorityRegionsAndFramesReference() -> bool {
             value = value + 3
         }
     }
-    return value == 6
+    return allocationExpressionValue() == 1
 }

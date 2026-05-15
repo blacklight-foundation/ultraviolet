@@ -74,13 +74,6 @@ void IRInstructionVisitor::operator()(const IRReturn &ret) const
     {
       llvm::Value *out_ptr =
           ResolveProcedureOutPtr(emitter, &builder, func, sym, sig);
-      if (out_ptr &&
-          TryEmitDerivedAggregateToStorage(
-              emitter, &builder, out_ptr, ret.value, sig->ret))
-      {
-        builder.CreateRetVoid();
-        return;
-      }
       llvm::Value *source_storage = emitter.GetAddressableStorage(ret.value);
       if (out_ptr && source_storage)
       {
@@ -131,6 +124,13 @@ void IRInstructionVisitor::operator()(const IRReturn &ret) const
           builder.CreateRetVoid();
           return;
         }
+      }
+      if (out_ptr &&
+          TryEmitDerivedAggregateToStorage(
+              emitter, &builder, out_ptr, ret.value, sig->ret))
+      {
+        builder.CreateRetVoid();
+        return;
       }
     }
 

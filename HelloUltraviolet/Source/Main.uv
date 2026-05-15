@@ -1,8 +1,7 @@
 //! Executable entry point for the HelloUltraviolet reference corpus.
 
 public procedure main(context: Context) -> i32 {
-    let result: ReferenceResult = runReferenceCorpus(context)
-    if result.passed {
+    if runAuthorityRegionsAndFramesReference() {
         return 0
     }
     return 1

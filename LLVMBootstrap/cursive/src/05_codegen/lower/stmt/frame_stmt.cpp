@@ -110,14 +110,24 @@ IRPtr LowerFrameStmt(const ast::FrameStmt& stmt, LowerCtx& ctx) {
   if (stmt.target_opt.has_value()) {
     // Explicit frame: frame target_region { ... }
     SPEC_RULE("Lower-Stmt-Frame-Explicit");
-    ast::IdentifierExpr ident;
-    ident.name = *stmt.target_opt;
-    ast::Expr region_expr;
-    region_expr.span = stmt.span;
-    region_expr.node = ident;
-    auto region_result = LowerExpr(region_expr, ctx);
-    region_ir = region_result.ir;
-    region_value = region_result.value;
+    if (const BindingState* binding = ctx.GetBindingState(*stmt.target_opt)) {
+      IRValue value;
+      value.kind = IRValue::Kind::Local;
+      value.name = ctx.StableBindingName(*stmt.target_opt);
+      if (binding->type) {
+        ctx.RegisterValueType(value, binding->type);
+      }
+      region_value = value;
+    } else {
+      ast::IdentifierExpr ident;
+      ident.name = *stmt.target_opt;
+      ast::Expr region_expr;
+      region_expr.span = stmt.span;
+      region_expr.node = ident;
+      auto region_result = LowerExpr(region_expr, ctx);
+      region_ir = region_result.ir;
+      region_value = region_result.value;
+    }
   } else {
     // Implicit frame: frame { ... }
     SPEC_RULE("Lower-Stmt-Frame-Implicit");

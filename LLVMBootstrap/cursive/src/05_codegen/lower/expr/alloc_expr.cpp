@@ -63,15 +63,10 @@ LowerResult LowerAllocExpr(const ast::Expr& expr,
     ir_alloc.value = value_result.value;
     ir_alloc.type = value_type;
 
-    std::optional<ast::Identifier> resolved_region = alloc.region_opt;
-    if (!resolved_region.has_value() && !ctx.active_region_aliases.empty()) {
-        resolved_region = ctx.active_region_aliases.back();
-    }
-
-    // Handle named or inherited active-region allocation.
-    if (resolved_region) {
+    // Handle explicit named allocation by lowering the source alias.
+    if (alloc.region_opt) {
         ast::IdentifierExpr ident;
-        ident.name = *resolved_region;
+        ident.name = *alloc.region_opt;
         ast::Expr region_expr;
         region_expr.span = expr.span;
         region_expr.node = ident;
@@ -99,6 +94,13 @@ LowerResult LowerAllocExpr(const ast::Expr& expr,
 
     // Implicit region allocation: ^expr
     // Uses the innermost active region
+    if (!ctx.active_region_aliases.empty()) {
+        IRValue region_value;
+        region_value.kind = IRValue::Kind::Local;
+        region_value.name = ctx.active_region_aliases.back();
+        ir_alloc.region = region_value;
+    }
+
     IRValue ptr_value = ctx.FreshTempValue("alloc_ptr");
     ir_alloc.result = ptr_value;
 

@@ -6,13 +6,13 @@ Objective: execute `.agents/plans/HelloUltravioletReferenceCorpus.md`.
 
 - `Docs/Audit/UltravioletObligations.csv` and the generated catalog currently
   contain 6,045 primary obligation rows.
-- `HelloUltraviolet/Source/Reference` currently contains 150 `.uv` files,
+- `HelloUltraviolet/Source/Reference` currently contains 153 `.uv` files,
   176 public `run...Reference` procedures, and 0 public `run...Reference`
   bodies whose implementation is only `return true`.
 - `Source/Main.uv` executes `runReferenceCorpus(context)`, and `Source/Api.uv`
   directly calls all 176 public reference runners.
-- `CatalogSourcePaths.uv` indexes 515 unique catalog source targets, and
-  `CatalogSymbols.uv` indexes 522 compiled symbol target tuples. The async
+- `CatalogSourcePaths.uv` indexes 552 unique catalog source targets, and
+  `CatalogSymbols.uv` indexes 559 compiled symbol target tuples. The async
   composition map, filter, take, fold, chain, and until obligations now name
   dedicated reference runners; aggregate combinator obligations name
   `runAsyncCompositionCombinatorsReference`.
@@ -162,9 +162,34 @@ Objective: execute `.agents/plans/HelloUltravioletReferenceCorpus.md`.
   performs the explicit read acquisition and returns through the key block.
   It also exercises a local closure that captures a `shared` binding, acquires
   the key in the closure body, returns through that key block, and is invoked
-  before the captured binding's scope exits. The duplicate `W-CON-0009`
-  bootstrap diagnostic surfaced by this specimen is recorded in
-  `Audit/BootstrapNonCompliance.md` as `UVBOOT-0051`.
+  before the captured binding's scope exits. It now also exercises inline
+  key coarsening markers on field and index segments through
+  `#container.#leaf.value` and `#leaves[#1usize].value` key paths. The
+  duplicate `W-CON-0009` bootstrap diagnostic surfaced by this specimen is
+  recorded in `Audit/BootstrapNonCompliance.md` as `UVBOOT-0051`.
+- This pass expanded key conflict-detection accepted source.
+  `runKeysConflictDetectionReference` now exercises disjoint multi-path reads,
+  prefix coverage under a root read key, a read-then-write assignment permitted
+  by a covering write key, and nested field/index writes covered by a root
+  write key. The read-then-write specimen intentionally emits the SPEC
+  `W-CON-0006` diagnostic while still compiling and executing.
+- This pass expanded qualified name-resolution accepted source.
+  `runNamesQualifiedResolutionReference` now exercises an imported module alias,
+  qualified procedure calls, qualified record brace construction, qualified
+  unit/tuple/record enum constructors and patterns, a first-class qualified
+  procedure value, a qualified type alias target, and a qualified class path in
+  a record implementation clause.
+- This pass expanded module aggregation accepted source.
+  `runModulesAggregationReference` now exercises multiple `.uv` files in the
+  same module directory, a discovered child module directory, multiple files
+  inside that child module, import binding of the child module alias, and
+  qualified calls/types crossing the parent-child module boundary.
+- This pass expanded backend lowering accepted source.
+  `runLoweringBackendRequirementsReference` now exercises function values,
+  record/tuple/array aggregate construction and mutation, enum unit/tuple/record
+  payload construction and pattern lowering, loop break-value phi lowering,
+  closure environment calls, slice views, string literal data, bytes views, and
+  runtime byte-slice reads.
 - This pass expanded compile-time quote/splice accepted source.
   `runComptimeQuoteSpliceEmissionReference` now exercises `quote pattern`,
   string-valued identifier splices in typed-pattern, identifier-expression, and
@@ -173,12 +198,22 @@ Objective: execute `.agents/plans/HelloUltravioletReferenceCorpus.md`.
   lowering that calls the generated procedures at runtime. The statement-splice
   parser and quote-builder repairs are recorded in
   `Audit/BootstrapNonCompliance.md` as `UVBOOT-0052`.
+- This pass expanded compile-time form accepted source.
+  `runComptimeCompileTimeFormsReference` now exercises generic compile-time
+  procedure declarations and calls, ordinary `if` return propagation inside a
+  compile-time procedure body, multiline erased `comptime` statement blocks,
+  `comptime if` selected-branch behavior with no-else, else-block, and
+  else-if forms, annotated and inferred-element `comptime loop` unrolling,
+  empty loop unrolling, and literalization of integer, boolean, and tuple
+  compile-time values. The ordinary-control propagation repair is recorded in
+  `Audit/BootstrapNonCompliance.md` as `UVBOOT-0054`.
 - Latest verification:
   the Visual Studio bootstrap build wrapper rebuilt
   `LLVMBootstrap/cursive/build/Release/Cursive.exe` with exit code 0 after
-  the async, key, closure diagnostic, and compile-time quote/splice repairs;
+  the async, key, closure diagnostic, compile-time quote/splice, and
+  compile-time evaluator repairs;
   `Cursive.exe build HelloUltraviolet --target-profile x86_64-win64 --build-progress off`
-  exited 0 with the expected five warnings plus two info diagnostics;
+  exited 0 with the expected six warnings plus two info diagnostics;
   `HelloUltraviolet.exe` exited 0 with 0-byte stdout/stderr;
   `HelloUltraviolet.exe --audit` exited 0 with 0-byte stdout/stderr;
   `Cursive.exe build HelloUltraviolet --check --target-profile x86_64-win64 --build-progress off`
@@ -232,13 +267,18 @@ Objective: execute `.agents/plans/HelloUltravioletReferenceCorpus.md`.
 - `CatalogPrimaryReferences.uv` checks that the 6,045 generated primary
   obligation references are unique by sorting `(id, internal_spec_line)` keys
   and verifying strict adjacent ordering in compiled Ultraviolet source.
-- `CatalogSourcePaths.uv` checks the 515 unique source files referenced by
+- `CatalogSourcePaths.uv` checks the 552 unique source files referenced by
   generated catalog rows, and `HelloUltraviolet.exe` validates their runtime
   existence through `catalogSourcePathsExist(context)`.
-- `CatalogSymbols.uv` imports and executes the 522 compiled reference
+- `CatalogSymbols.uv` imports and executes the 559 compiled reference
   and fixture-validator symbol target tuples named by catalog rows, and
   `HelloUltraviolet.exe` validates them through
   `catalogCompiledSymbolsExecute()`.
+- `Source/Reference/Modules/Aggregation.uv`,
+  `Source/Reference/Modules/AggregationHelpers.uv`, and
+  `Source/Reference/Modules/AggregationSubmodule/*.uv` exercise compilation
+  unit aggregation across same-directory files, module discovery for a child
+  directory, and import-qualified access across that module boundary.
 - `Source/Reference/Async/SuspensionForms.uv` exercises `yield`, `yield from`,
   `wait` over spawned work in both ready and pending paths, and `wait` over a
   reactor-registered tracked future.
@@ -252,6 +292,10 @@ Objective: execute `.agents/plans/HelloUltravioletReferenceCorpus.md`.
   observation of `@Completed`, `@Suspended`, and `@Failed`.
 - `Source/Reference/Async/AsyncKeyIntegration.uv` exercises
   `yield release from` in an async key-acquisition integration path.
+- `Source/Reference/Names/QualifiedResolution.uv` exercises imported module
+  aliases, qualified value resolution, qualified type paths, qualified record
+  and enum construction, qualified enum patterns, first-class qualified
+  procedure values, and qualified class paths in implementation clauses.
 - `Source/Reference/Keys/KeyPaths.uv` exercises root key paths, nested field
   and index key paths, and a record field declared with a `#` key boundary.
   The generated catalog maps the key-boundary parse helpers and field-boundary
@@ -260,7 +304,11 @@ Objective: execute `.agents/plans/HelloUltravioletReferenceCorpus.md`.
   write blocks, ordered multi-path acquisition, a `shared` argument call whose
   callee performs the explicit key acquisition, a local closure that captures
   `shared` data and acquires the key in its body, and return control flow
-  through key blocks.
+  through key blocks. It also exercises inline key coarsening markers on
+  field and index key-path segments.
+- `Source/Reference/Keys/ConflictDetection.uv` exercises disjoint key paths,
+  prefix coverage, covering write permission for read-then-write assignment,
+  and nested field/index writes covered by a root write key.
 - `Source/Reference/Keys/MemoryOrdering.uv` exercises expression-level
   `[[relaxed]]`, `[[acquire]]`, `[[release]]`, `[[acqrel]]`, and `[[seqcst]]`
   memory-order attributes on shared reads, plus `fence(acquire)`,
@@ -314,6 +362,9 @@ Objective: execute `.agents/plans/HelloUltravioletReferenceCorpus.md`.
   `sizeof`/`alignof` layout queries; module-scope initialization; defer cleanup
   and user `drop` lowering for a non-`Bitcopy` record; runtime string/bytes
   interface calls; exported symbol mangling; and backend arithmetic/branching.
+  `BackendRequirements.uv` now also exercises function values, aggregate
+  memory operations, enum payloads, loop phi values, closure calls, slice
+  views, string literal data, and bytes view reads.
   `HelloUltraviolet.exe` exercises those flows through the seven
   `runLowering...Reference` functions.
 - The `Source/Reference/ModalTypes` files now contain executable source
@@ -825,14 +876,26 @@ Objective: execute `.agents/plans/HelloUltravioletReferenceCorpus.md`.
   primitive, record, generic record, enum, generic enum, fixed-array,
   raw-pointer, function-pointer, foreign-contract, boundary-unwind, capability
   isolation, and drop-bearing by-value call forms.
+  Backend source specimens now exercise function values, aggregate memory
+  operations, enum payload lowering, loop phi values, closure calls, slice
+  views, string literal data, and bytes view reads.
   Async source specimens now include `yield`, `yield from`, `wait` over
   `Spawned`, and `wait` over `Tracked` with a `Reactor.register` source path.
+  Module aggregation source specimens now include same-module multi-file
+  compilation units, child-module discovery, child-module multi-file
+  aggregation, and import-qualified parent-to-child access.
+  Name-resolution source specimens now include imported module aliases,
+  qualified procedure calls, qualified record and enum constructors, qualified
+  enum patterns, first-class qualified procedure values, and qualified class
+  paths in implementation clauses.
   Key-system source specimens now exercise accepted key paths, key acquisition,
-  field key boundaries, memory-order attributes, fence expressions, dynamic
-  indexed reads and writes, shared-argument call-site behavior, key-block
-  control-flow return, speculative const receiver calls, selected
-  rejected-source obligations, and selected diagnostic-source obligations, with
-  broader source-runtime coverage still incomplete.
+  field key boundaries, inline coarsening markers, memory-order attributes,
+  fence expressions, dynamic indexed reads and writes, shared-argument
+  call-site behavior, key-block control-flow return, covering-write
+  read-then-write behavior, root-key nested write coverage, speculative const
+  receiver calls, selected rejected-source obligations, and selected
+  diagnostic-source obligations, with broader source-runtime coverage still
+  incomplete.
 
 ## Current Status
 

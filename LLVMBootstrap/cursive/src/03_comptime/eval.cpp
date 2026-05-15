@@ -529,6 +529,9 @@ EvalResult EvalBlock(const Block& block, CtEnv& env) {
       if (!value.ok) {
         return value;
       }
+      if (value.returned) {
+        return value;
+      }
       continue;
     }
 
@@ -733,6 +736,25 @@ EvalResult EvalExpr(const ExprPtr& expr, CtEnv& env) {
             return out;
           }
           return {};
+        } else if constexpr (std::is_same_v<T, ast::IfExpr>) {
+          auto cond = EvalExpr(node.cond, env);
+          if (!cond.ok) {
+            return cond;
+          }
+          bool cond_bool = false;
+          if (!TryGetCtBool(cond.value, cond_bool)) {
+            return {};
+          }
+          if (cond_bool) {
+            return EvalExpr(node.then_expr, env);
+          }
+          if (node.else_expr) {
+            return EvalExpr(node.else_expr, env);
+          }
+          EvalResult out;
+          out.ok = true;
+          out.value = MakeCtUnit();
+          return out;
         } else if constexpr (std::is_same_v<T, ast::BlockExpr>) {
           return EvalBlock(*node.block, env);
         } else if constexpr (std::is_same_v<T, ast::ComptimeExpr>) {

@@ -1918,6 +1918,33 @@ namespace {
       {
         return std::nullopt;
       }
+      if (analysis::TypeRef no_perm = analysis::StripPerm(stripped))
+      {
+        stripped = no_perm;
+      }
+      for (std::size_t depth = 0; depth < 8 && stripped; ++depth)
+      {
+        analysis::TypeRef pointee;
+        if (const auto *raw = std::get_if<analysis::TypeRawPtr>(&stripped->node))
+        {
+          pointee = raw->element;
+        }
+        else if (const auto *ptr = std::get_if<analysis::TypePtr>(&stripped->node))
+        {
+          pointee = ptr->element;
+        }
+        else
+        {
+          break;
+        }
+
+        analysis::TypeRef resolved_pointee = ResolveAliasTypeInScope(scope, pointee);
+        stripped = resolved_pointee ? resolved_pointee : pointee;
+        if (analysis::TypeRef no_perm = analysis::StripPerm(stripped))
+        {
+          stripped = no_perm;
+        }
+      }
 
       if (const auto *tuple = std::get_if<analysis::TypeTuple>(&stripped->node))
       {

@@ -1,5 +1,20 @@
 //! Reference specimens for Lowering / BackendRequirements.
 
+internal type BackendBinary = (i32, i32) -> i32
+
+internal record BackendAggregate {
+    internal left: i32
+    internal right: i32
+}
+
+internal enum BackendVariant {
+    Empty
+    Pair(BackendAggregate)
+    Named {
+        value: i32
+    }
+}
+
 internal procedure backendArithmeticValue(left: i32, right: i32) -> i32 {
     let sum: i32 = left + right
     let product: i32 = sum * 3
@@ -13,8 +28,102 @@ internal procedure backendBranchValue(flag: bool) -> i32 {
     return backendArithmeticValue(2, 3)
 }
 
+internal procedure backendFunctionPointerValue(left: i32, right: i32) -> i32 {
+    let operation: BackendBinary = backendArithmeticValue
+    return operation(left, right)
+}
+
+internal procedure backendAggregateValue() -> i32 {
+    var aggregate: BackendAggregate = BackendAggregate {
+        left: 8,
+        right: 13
+    }
+    let copied: BackendAggregate = aggregate
+    aggregate.right = copied.left + copied.right
+    let pair: (i32, i32) = (aggregate.left, aggregate.right)
+    let values: [i32; 3] = [pair.0, pair.1, 2]
+    return values[0usize] + values[1usize] + values[2usize]
+}
+
+internal procedure backendEnumValue() -> i32 {
+    let first: BackendVariant = BackendVariant::Empty
+    let second: BackendVariant = BackendVariant::Pair(
+        BackendAggregate { left: 3, right: 5 }
+    )
+    let third: BackendVariant = BackendVariant::Named { value: 7 }
+    let first_value: i32 = if first is {
+        BackendVariant::Empty {
+            11
+        }
+        BackendVariant::Pair(value) {
+            value.left + value.right
+        }
+        BackendVariant::Named { value } {
+            value
+        }
+    }
+    let second_value: i32 = if second is {
+        BackendVariant::Empty {
+            0
+        }
+        BackendVariant::Pair(value) {
+            value.left + value.right
+        }
+        BackendVariant::Named { value } {
+            value
+        }
+    }
+    let third_value: i32 = if third is {
+        BackendVariant::Empty {
+            0
+        }
+        BackendVariant::Pair(value) {
+            value.left + value.right
+        }
+        BackendVariant::Named { value } {
+            value
+        }
+    }
+    return first_value + second_value + third_value
+}
+
+internal procedure backendLoopPhiValue(limit: i32) -> i32 {
+    var index: i32 = 0
+    var total: i32 = 0
+    return loop true {
+        index = index + 1
+        total = total + index
+        if index >= limit {
+            break total
+        }
+    }
+}
+
+internal procedure backendClosureValue(seed: i32) -> i32 {
+    let captured: i32 = 5
+    let add_captured = |value: i32| -> i32 value + captured
+    return add_captured(seed)
+}
+
+internal procedure backendSliceAndStringValue() -> usize {
+    let values: [u8; 3] = [3u8, 5u8, 8u8]
+    let value_slice: const [u8] = values[..]
+    let text: string@View = "ir"
+    let text_view: bytes@View = bytes::view_string(text)
+    let text_data: const [u8] = bytes::as_slice(text_view)
+    return value_slice[2usize] as usize +
+        string::length(text) +
+        text_data[0usize] as usize
+}
+
 /// Exercises the Lowering BackendRequirements reference surface.
 public procedure runLoweringBackendRequirementsReference() -> bool {
     return backendBranchValue(true) == 22 &&
-        backendBranchValue(false) == 12
+        backendBranchValue(false) == 12 &&
+        backendFunctionPointerValue(4, 5) == 22 &&
+        backendAggregateValue() == 31 &&
+        backendEnumValue() == 26 &&
+        backendLoopPhiValue(4) == 10 &&
+        backendClosureValue(8) == 13 &&
+        backendSliceAndStringValue() == 115usize
 }

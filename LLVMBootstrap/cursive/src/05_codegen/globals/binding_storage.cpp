@@ -130,7 +130,7 @@ std::optional<std::string> ResolveBindRegionTarget(const IRBindVar& bind,
     return std::nullopt;
   }
 
-  return region;
+  return ctx.StableBindingName(*region);
 }
 
 std::optional<BindSlot> ResolveBindSlot(const IRBindVar& bind,

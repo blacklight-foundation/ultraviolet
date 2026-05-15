@@ -57,6 +57,15 @@ ProvInfo BindProvInfo(const ProvInfo& init) {
   return init;
 }
 
+ProvInfo StableRegionProv(const ProvInfo& info, const LowerCtx& ctx) {
+  ProvInfo stable = info;
+  if (stable.kind == analysis::ProvenanceKind::Region &&
+      stable.region.has_value() && !stable.region->empty()) {
+    stable.region = ctx.StableBindingName(*stable.region);
+  }
+  return stable;
+}
+
 // Extract provenance info from an expression using context lookups.
 ProvInfo ExprProvInfo(const ast::Expr& expr, const LowerCtx& ctx) {
   ProvInfo info;
@@ -207,7 +216,7 @@ IRPtr LowerLetStmt(const ast::LetStmt& stmt, LowerCtx& ctx) {
   if (binding.init) {
     init_prov = ExprProvInfo(*binding.init, ctx);
   }
-  const ProvInfo bind_prov = BindProvInfo(init_prov);
+  const ProvInfo bind_prov = StableRegionProv(BindProvInfo(init_prov), ctx);
 
   // Check if this is an immovable binding (:= operator)
   const bool immovable = binding.op.lexeme == ":=";

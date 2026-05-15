@@ -17942,8 +17942,10 @@ Pipeline expressions desugar to function or closure application: `e_1 => e_2 ≡
 
 ClosureEnvFields(C) = [(x_i, T_i) | x_i ∈ CaptureSet(C) ∧ CaptureType(C, x_i) = T_i]
 
-CaptureType(C, x) = Ptr<T_x>@Valid ⇔ x ∈ ConstCaptures(C) ∪ SharedCaptures(C) ∧ Γ(x) = T_x
+CaptureType(C, x) = Ptr<T_x>@Valid ⇔ x ∈ RefCaptureSet(C) ∧ Γ(x) = T_x
 CaptureType(C, x) = T_x ⇔ x ∈ MoveCaptureSet(C) ∧ Γ(x) = T_x
+
+ConstCaptures(C) ⊆ RefCaptureSet(C) and SharedCaptures(C) ⊆ RefCaptureSet(C). Const and shared captures therefore use the reference-capture environment representation; their additional permission and key-acquisition constraints are defined by §16.9.4 and Chapter 19.
 
 **(Layout-ClosureEnv)**
 C = ClosureExpr(params, ret_type_opt, body)    ClosureEnvFields(C) = fields    RecordLayout(fields) ⇓ ⟨size, align, offsets⟩
@@ -17973,7 +17975,7 @@ LowerCaptureEnv(C, offsets) ⇓ ⟨IR, env_ptr⟩ ⇔
   env_ptr = Alloc(size, align) ∧
   IR = SeqIR(AllocIR(size, align), [StoreCapture(env_ptr, offsets[i], x_i) | x_i ∈ captures, i ∈ 1..|captures|])
 
-StoreCapture(env_ptr, offset, x) = StoreIR(GEP(env_ptr, offset), LoadLocal(x))    if x ∈ RefCaptureSet(C)
+StoreCapture(env_ptr, offset, x) = StoreIR(GEP(env_ptr, offset), Ptr@Valid(AddrOfBind(x)))    if x ∈ RefCaptureSet(C)
 StoreCapture(env_ptr, offset, x) = MoveIR(GEP(env_ptr, offset), x)    if x ∈ MoveCaptureSet(C)
 
 IsCaptured(C, x) ⇔ x ∈ CaptureSet(C)
