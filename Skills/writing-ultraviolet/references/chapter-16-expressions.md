@@ -75,4 +75,4 @@ Use for unresolved names, invalid access, bad method/static call, argument misma
 
 ## Spec Fallback
 
-Open `SPECIFICATION.md` chapter `16` and Appendix B expression grammar for exact expression forms.
+Open `references/SPECIFICATION.md` chapter `16` and Appendix B expression grammar for exact expression forms.

@@ -32,4 +32,4 @@ Use this chapter to classify whether a behavior should produce a compile-time di
 
 ## Spec Fallback
 
-Open `SPECIFICATION.md` chapter `1` for exact behavior categories and judgment names.
+Open `references/SPECIFICATION.md` chapter `1` for exact behavior categories and judgment names.

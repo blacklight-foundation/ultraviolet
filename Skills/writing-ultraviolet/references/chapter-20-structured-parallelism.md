@@ -56,4 +56,4 @@ Use for invalid domain, capture violation, missing key, invalid dispatch range, 
 
 ## Spec Fallback
 
-Open `SPECIFICATION.md` chapter `20` for structured parallelism.
+Open `references/SPECIFICATION.md` chapter `20` for structured parallelism.

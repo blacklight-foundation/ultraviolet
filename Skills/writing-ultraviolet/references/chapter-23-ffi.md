@@ -47,4 +47,4 @@ Use for non-`FfiSafe` by-value passing, invalid extern/export shape, bad ABI att
 
 ## Spec Fallback
 
-Open `SPECIFICATION.md` chapter `23` for FFI rules.
+Open `references/SPECIFICATION.md` chapter `23` for FFI rules.

@@ -33,4 +33,4 @@ Use for initialization, layout, ABI, symbol, cleanup, runtime interface, backend
 
 ## Spec Fallback
 
-Open `SPECIFICATION.md` chapter `24` and Appendix D for lowering, runtime, layout, and ABI behavior.
+Open `references/SPECIFICATION.md` chapter `24` and Appendix D for lowering, runtime, layout, and ABI behavior.

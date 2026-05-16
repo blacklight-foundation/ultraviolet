@@ -58,4 +58,4 @@ Use for invalid compile-time context, missing compile-time capability, invalid r
 
 ## Spec Fallback
 
-Open `SPECIFICATION.md` chapter `22` for compile-time execution.
+Open `references/SPECIFICATION.md` chapter `22` for compile-time execution.

@@ -48,4 +48,4 @@ Use for duplicate states, invalid state names, unavailable state members, invali
 
 ## Spec Fallback
 
-Open `SPECIFICATION.md` chapter `13` for modal and special type rules.
+Open `references/SPECIFICATION.md` chapter `13` for modal and special type rules.

@@ -7,15 +7,21 @@ description: Use when writing, reviewing, explaining, debugging, or repairing Ul
 
 ## Overview
 
-Use this skill to write and review correct, idiomatic Ultraviolet source while minimizing routine reads of `SPECIFICATION.md`. The skill is organized by the Ultraviolet specification chapters first, then by cross-cutting authoring guides.
+Use this skill to write and review correct, idiomatic Ultraviolet source while minimizing routine reads of bundled `references/SPECIFICATION.md`. The skill is organized by the Ultraviolet specification chapters first, then by cross-cutting authoring guides.
 
 ## Workflow
 
 1. Read `references/authoring-workflow.md` for the default authoring loop.
 2. Read `references/chapter-map.md` to route the task to chapter files and guides.
 3. Read the smallest relevant chapter file or guide. Prefer one focused file plus `references/idioms-common-fixes-and-examples.md` for normal code generation.
-4. Use `SPECIFICATION.md` only when a reference file explicitly says to fall back, when the user asks for proof, or when source-valid behavior conflicts with compiler behavior.
+4. Use bundled `references/SPECIFICATION.md` only when a reference file explicitly says to fall back, when the user asks for proof, or when source-valid behavior conflicts with compiler behavior.
 5. If the compiler rejects source that matches the authoritative spec, use `references/compiler-mismatch-workflow.md` and preserve the spec-valid source form unless the source has an independent defect.
+
+## Bundled Specification
+
+- `references/SPECIFICATION.md` is the skill-local copy of the authoritative Ultraviolet specification.
+- Treat that bundled copy as the fallback spec when using this skill outside the source repository.
+- Refresh it from the repository-root `SPECIFICATION.md` before publishing a new skill version when the language spec changes.
 
 ## Chapter References
 
@@ -47,6 +53,7 @@ Use this skill to write and review correct, idiomatic Ultraviolet source while m
 
 ## Appendix References
 
+- `references/SPECIFICATION.md`
 - `references/appendix-a-diagnostic-index.md`
 - `references/appendix-b-complete-grammar.md`
 - `references/appendix-c-ast-form-index.md`

@@ -32,4 +32,4 @@ Use with chapter 24 and Appendix A for layout, ABI, runtime, and backend diagnos
 
 ## Spec Fallback
 
-Open `SPECIFICATION.md` Appendix D for layout, ABI, and runtime cross-indexes.
+Open `references/SPECIFICATION.md` Appendix D for layout, ABI, and runtime cross-indexes.

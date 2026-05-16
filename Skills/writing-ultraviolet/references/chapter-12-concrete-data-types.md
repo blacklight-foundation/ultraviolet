@@ -47,4 +47,4 @@ Use for bad field names, missing fields, duplicate variants, invalid tuple/array
 
 ## Spec Fallback
 
-Open `SPECIFICATION.md` chapter `12` for concrete data type rules and diagnostics.
+Open `references/SPECIFICATION.md` chapter `12` for concrete data type rules and diagnostics.

@@ -32,4 +32,4 @@ Use chapter-specific diagnostic tables first, then Appendix A only as a lookup i
 
 ## Spec Fallback
 
-Open `SPECIFICATION.md` chapter `2` for source span, code selection, ordering, and rendering rules.
+Open `references/SPECIFICATION.md` chapter `2` for source span, code selection, ordering, and rendering rules.

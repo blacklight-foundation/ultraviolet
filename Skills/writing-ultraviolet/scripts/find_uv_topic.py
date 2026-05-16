@@ -8,6 +8,10 @@ from collections import OrderedDict
 
 
 TOPICS: "OrderedDict[str, list[str]]" = OrderedDict([
+    ("specification spec normative fallback proof", [
+        "SPECIFICATION.md",
+        "chapter-map.md",
+    ]),
     ("move ownership responsibility partial drop lifetime", [
         "guide-memory-responsibility-permissions.md",
         "chapter-06-abstract-machine-responsibility-authority-memory.md",

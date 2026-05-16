@@ -44,4 +44,4 @@ Common project diagnostics include malformed manifest, unknown keys, invalid ass
 
 ## Spec Fallback
 
-Open `SPECIFICATION.md` chapter `3` for manifest key tables, source root rules, output paths, and project diagnostics.
+Open `references/SPECIFICATION.md` chapter `3` for manifest key tables, source root rules, output paths, and project diagnostics.

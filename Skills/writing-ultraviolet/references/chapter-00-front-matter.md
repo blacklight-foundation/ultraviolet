@@ -35,4 +35,4 @@ Use owning chapters for concrete diagnostic codes. This chapter explains why dia
 
 ## Spec Fallback
 
-Open `SPECIFICATION.md` section `0.4 Language Design Contract` when explaining design rules exactly.
+Open `references/SPECIFICATION.md` section `0.4 Language Design Contract` when explaining design rules exactly.

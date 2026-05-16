@@ -23,7 +23,8 @@ These prompts should not trigger this skill unless they mention UV:
 ## Output Assertions
 
 - Reads `SKILL.md`, `chapter-map.md`, then focused chapter or guide files.
-- Does not open `SPECIFICATION.md` for routine authoring.
+- Does not open bundled `references/SPECIFICATION.md` for routine authoring.
+- Uses bundled `references/SPECIFICATION.md` for spec fallback instead of the repository-root spec path.
 - Uses `.uv`, `Ultraviolet.toml`, and `Source/Main.uv` for minimal project examples.
 - Uses explicit visibility, explicit return types, and explicit non-unit `return`.
 - Uses `.` for field access, `::` for qualification, and `~>` for method calls.

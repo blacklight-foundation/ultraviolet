@@ -52,4 +52,4 @@ Use parser diagnostics for malformed grammar, then owner chapters for semantic f
 
 ## Spec Fallback
 
-Open `SPECIFICATION.md` Appendix B for exact grammar.
+Open `references/SPECIFICATION.md` Appendix B for exact grammar.

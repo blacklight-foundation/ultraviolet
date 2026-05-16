@@ -88,4 +88,4 @@ Use for invalid suspension context, held-key suspension errors, bad composition 
 
 ## Spec Fallback
 
-Open `SPECIFICATION.md` chapter `21` for async rules.
+Open `references/SPECIFICATION.md` chapter `21` for async rules.

@@ -46,4 +46,4 @@ Use for ambiguous names, inaccessible entities, unresolved paths, invalid public
 
 ## Spec Fallback
 
-Open `SPECIFICATION.md` chapter `7` for exact name lookup and visibility rules.
+Open `references/SPECIFICATION.md` chapter `7` for exact name lookup and visibility rules.

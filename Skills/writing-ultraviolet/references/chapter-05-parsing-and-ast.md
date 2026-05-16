@@ -36,4 +36,4 @@ Use parser diagnostics for malformed forms, recovery points, bad attribute place
 
 ## Spec Fallback
 
-Open `SPECIFICATION.md` chapter `5` and Appendix C for AST ownership.
+Open `references/SPECIFICATION.md` chapter `5` and Appendix C for AST ownership.

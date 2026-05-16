@@ -31,4 +31,4 @@ Use this file to map code families to owner chapters.
 
 ## Spec Fallback
 
-Open `SPECIFICATION.md` Appendix A for the full diagnostic index.
+Open `references/SPECIFICATION.md` Appendix A for the full diagnostic index.

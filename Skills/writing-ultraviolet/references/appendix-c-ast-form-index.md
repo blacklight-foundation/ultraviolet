@@ -32,4 +32,4 @@ Use when a diagnostic appears to be emitted from the wrong owner surface.
 
 ## Spec Fallback
 
-Open `SPECIFICATION.md` Appendix C for the AST form index.
+Open `references/SPECIFICATION.md` Appendix C for the AST form index.

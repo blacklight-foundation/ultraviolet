@@ -50,4 +50,4 @@ Use for invalid receiver permission, alias/exclusivity violations, inactive uniq
 
 ## Spec Fallback
 
-Open `SPECIFICATION.md` chapter `10` for permission forms, alias rules, activity states, and admissibility.
+Open `references/SPECIFICATION.md` chapter `10` for permission forms, alias rules, activity states, and admissibility.

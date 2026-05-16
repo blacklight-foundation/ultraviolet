@@ -51,4 +51,4 @@ Use for invalid imports/usings, duplicate module items, aggregation conflicts, s
 
 ## Spec Fallback
 
-Open `SPECIFICATION.md` chapter `11` for import, using, static, extern shell, and aggregation rules.
+Open `references/SPECIFICATION.md` chapter `11` for import, using, static, extern shell, and aggregation rules.

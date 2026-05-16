@@ -7,11 +7,11 @@
 3. Use `idioms-common-fixes-and-examples.md` for ordinary snippets and project shape.
 4. Write source that follows the local `AGENTS.md` style: explicit visibility, explicit non-unit returns, narrow capabilities, PascalCase types/modules/files, camelCase procedures, snake_case locals/params/fields.
 5. Validate with the local compiler or test surface when the task asks for runnable code or a repair.
-6. Open `SPECIFICATION.md` only through a chapter file's `Spec Fallback` section for uncovered edge cases, proof requests, or source-valid/compiler-invalid conflicts.
+6. Open `references/SPECIFICATION.md` only through a chapter file's `Spec Fallback` section for uncovered edge cases, proof requests, or source-valid/compiler-invalid conflicts.
 
 ## Source Authority
 
-`SPECIFICATION.md` is normative. `HelloUltraviolet/Source/Reference/**` is the accepted source corpus. `README.md` explains public intent and project shape. `AGENTS.md` defines local style and the rule for compiler conformance work.
+`references/SPECIFICATION.md` is the bundled normative spec copy. In the source repository, refresh it from the repository-root `SPECIFICATION.md` before publishing a new skill version. `HelloUltraviolet/Source/Reference/**` is the accepted source corpus. `README.md` explains public intent and project shape. `AGENTS.md` defines local style and the rule for compiler conformance work.
 
 When current compiler behavior rejects, misparses, mischecks, mislowers, or miscompiles spec-valid source, preserve the source form and diagnose the canonical compiler owner path.
 

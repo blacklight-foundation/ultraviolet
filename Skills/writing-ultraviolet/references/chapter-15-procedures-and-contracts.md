@@ -40,4 +40,4 @@ Use for invalid signatures, missing return, receiver misuse, overload ambiguity,
 
 ## Spec Fallback
 
-Open `SPECIFICATION.md` chapter `15` for procedures, methods, contracts, invariants, verification, and entry rules.
+Open `references/SPECIFICATION.md` chapter `15` for procedures, methods, contracts, invariants, verification, and entry rules.

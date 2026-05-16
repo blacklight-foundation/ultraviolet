@@ -42,4 +42,4 @@ Use for BOM handling, invalid UTF-8, invalid escapes, malformed literals, keywor
 
 ## Spec Fallback
 
-Open `SPECIFICATION.md` chapter `4` and Appendix B lexical grammar for exact token rules.
+Open `references/SPECIFICATION.md` chapter `4` and Appendix B lexical grammar for exact token rules.

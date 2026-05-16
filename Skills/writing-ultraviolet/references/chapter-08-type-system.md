@@ -40,4 +40,4 @@ Use for type mismatch, failed inference, invalid refinement, incompatible permis
 
 ## Spec Fallback
 
-Open `SPECIFICATION.md` chapter `8` for exact type judgments.
+Open `references/SPECIFICATION.md` chapter `8` for exact type judgments.

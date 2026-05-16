@@ -55,4 +55,4 @@ Important memory diagnostics include moved/partially moved access, immutable rea
 
 ## Spec Fallback
 
-Open `SPECIFICATION.md` sections `6.1` through `6.6` for authority, binding state, regions, provenance, dynamic runtime state, and memory diagnostics.
+Open `references/SPECIFICATION.md` sections `6.1` through `6.6` for authority, binding state, regions, provenance, dynamic runtime state, and memory diagnostics.

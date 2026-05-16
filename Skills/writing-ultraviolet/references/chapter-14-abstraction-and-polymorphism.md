@@ -44,4 +44,4 @@ Use for malformed generic lists, unsatisfied predicates, duplicate implementatio
 
 ## Spec Fallback
 
-Open `SPECIFICATION.md` chapter `14` for abstraction, polymorphism, class, and predicate rules.
+Open `references/SPECIFICATION.md` chapter `14` for abstraction, polymorphism, class, and predicate rules.

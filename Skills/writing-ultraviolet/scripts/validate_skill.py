@@ -10,6 +10,7 @@ from pathlib import Path
 
 
 REQUIRED_REFERENCES = [
+    "SPECIFICATION.md",
     "authoring-workflow.md",
     "chapter-map.md",
     *[f"chapter-{index:02d}-{slug}.md" for index, slug in [
@@ -205,6 +206,10 @@ def main() -> int:
     for ref_path in references.glob("*.md"):
         ref_text = ref_path.read_text(encoding="utf-8")
         check(placeholder_marker not in ref_text, f"{ref_path.name} contains placeholder marker")
+        if ref_path.name == "SPECIFICATION.md":
+            check("# Ultraviolet Language Specification" in ref_text, "bundled SPECIFICATION.md has unexpected content")
+            check("### 0.4 Language Design Contract" in ref_text, "bundled SPECIFICATION.md missing design contract")
+            continue
         check(ref_text.isascii(), f"{ref_path.name} contains non-ASCII text")
         if re.match(r"chapter-\d\d-", ref_path.name) or ref_path.name.startswith("appendix-"):
             for heading in CHAPTER_HEADINGS:

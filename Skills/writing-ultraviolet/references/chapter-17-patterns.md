@@ -55,4 +55,4 @@ Use for invalid pattern shape, duplicate bindings, unreachable cases, non-exhaus
 
 ## Spec Fallback
 
-Open `SPECIFICATION.md` chapter `17` and Appendix B pattern grammar for exact forms.
+Open `references/SPECIFICATION.md` chapter `17` and Appendix B pattern grammar for exact forms.

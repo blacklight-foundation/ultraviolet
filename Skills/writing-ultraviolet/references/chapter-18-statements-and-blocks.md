@@ -51,4 +51,4 @@ Use for immutable assignment, moved binding access, bad expression statement, in
 
 ## Spec Fallback
 
-Open `SPECIFICATION.md` chapter `18` for block and statement rules.
+Open `references/SPECIFICATION.md` chapter `18` for block and statement rules.

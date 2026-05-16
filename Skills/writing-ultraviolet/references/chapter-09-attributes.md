@@ -41,4 +41,4 @@ Use for unknown attributes, duplicate attributes, invalid placement, bad argumen
 
 ## Spec Fallback
 
-Open `SPECIFICATION.md` chapter `9` and Appendix B attribute grammar for exact attribute forms.
+Open `references/SPECIFICATION.md` chapter `9` and Appendix B attribute grammar for exact attribute forms.

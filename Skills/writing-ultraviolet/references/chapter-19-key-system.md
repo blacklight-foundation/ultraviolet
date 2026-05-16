@@ -75,4 +75,4 @@ Use for malformed key path, missing key, conflicting key modes, invalid release,
 
 ## Spec Fallback
 
-Open `SPECIFICATION.md` chapter `19` for key and memory ordering rules.
+Open `references/SPECIFICATION.md` chapter `19` for key and memory ordering rules.
