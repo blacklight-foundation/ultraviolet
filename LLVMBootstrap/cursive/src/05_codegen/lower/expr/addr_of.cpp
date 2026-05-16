@@ -49,15 +49,7 @@ IRRange ToIRRange(const RangeVal& range) {
 
 // Check if index bounds check is needed
 bool AddrOfNeedsIndexCheck(const ast::Expr& base, const LowerCtx& ctx) {
-  if (!ctx.expr_type) {
-    return true;
-  }
-  analysis::TypeRef base_type = ctx.expr_type(base);
-  analysis::TypeRef stripped = analysis::StripPerm(base_type);
-  if (stripped && std::holds_alternative<analysis::TypeArray>(stripped->node)) {
-    return true;
-  }
-  return true;
+  return NeedsIndexCheck(base, ctx);
 }
 
 // addr_of dynamic attribute handling now uses shared utilities from expr_common.h

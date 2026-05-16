@@ -2869,9 +2869,8 @@ std::optional<std::string> ProcedureSymbolForPath(
       case DerivedValueInfo::Kind::Index:
       {
         llvm::Type *i64_ty = llvm::Type::getInt64Ty(context_);
-        llvm::Value *base = EvaluateIRValue(derived->base);
         llvm::Value *index = EvaluateIRValue(derived->index);
-        if (!base || !index || !index->getType()->isIntegerTy())
+        if (!index || !index->getType()->isIntegerTy())
         {
           break;
         }
@@ -2895,6 +2894,54 @@ std::optional<std::string> ProcedureSymbolForPath(
         }
         llvm::Type *elem_ll = elem_type ? GetLLVMType(elem_type) : nullptr;
         if (!elem_ll)
+        {
+          break;
+        }
+
+        if (llvm::Value *base_storage = GetAddressableStorage(derived->base))
+        {
+          if (base_type && std::holds_alternative<analysis::TypeArray>(base_type->node))
+          {
+            if (llvm::Type *array_ll = GetLLVMType(base_type))
+            {
+              llvm::Value *array_ptr = builder->CreateBitCast(
+                  base_storage, llvm::PointerType::get(array_ll, 0));
+              llvm::Value *elem_ptr = builder->CreateGEP(
+                  array_ll,
+                  array_ptr,
+                  {llvm::ConstantInt::get(i64_ty, 0), index});
+              materialized = builder->CreateLoad(elem_ll, elem_ptr);
+              break;
+            }
+          }
+
+          if (base_type && std::holds_alternative<analysis::TypeSlice>(base_type->node))
+          {
+            if (llvm::Type *slice_ll = GetLLVMType(base_type))
+            {
+              llvm::Value *slice_ptr = builder->CreateBitCast(
+                  base_storage, llvm::PointerType::get(slice_ll, 0));
+              llvm::Value *slice_value = builder->CreateLoad(slice_ll, slice_ptr);
+              if (slice_value && slice_value->getType()->isStructTy())
+              {
+                llvm::Value *data_ptr = builder->CreateExtractValue(slice_value, {0u});
+                llvm::Value *coerced = pointer_from_value(data_ptr);
+                if (coerced)
+                {
+                  llvm::Value *elem_base_ptr = builder->CreateBitCast(
+                      coerced, llvm::PointerType::get(elem_ll, 0));
+                  llvm::Value *elem_ptr = builder->CreateGEP(
+                      elem_ll, elem_base_ptr, index);
+                  materialized = builder->CreateLoad(elem_ll, elem_ptr);
+                  break;
+                }
+              }
+            }
+          }
+        }
+
+        llvm::Value *base = EvaluateIRValue(derived->base);
+        if (!base)
         {
           break;
         }

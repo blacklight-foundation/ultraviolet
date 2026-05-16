@@ -1,7 +1,7 @@
 //! Rejected key-system specimens.
 
 public procedure keysRejectedSourceFixtureCount() -> usize {
-    return 25usize
+    return 26usize
 }
 
 public procedure validatedKeysRejectedSourceFixtureCount() -> usize {
@@ -241,6 +241,23 @@ public procedure validatedKeysRejectedSourceFixtureCount() -> usize {
         "Fixtures/RejectedSource/Keys/KeyPathsDiagnostic/Expected.uv",
         "E-CON-0033",
         "diagnostics.19.KeyPaths"
+    ) {
+        count = count + 1usize
+    }
+    if rejectedSpecimenMatches(
+        rejectedSpecimen(
+            "DynamicKeyStaticRequired",
+            "Fixtures/RejectedSource/Keys/DynamicKeyStaticRequired",
+            "Fixtures/RejectedSource/Keys/DynamicKeyStaticRequired/Source/Main.uv",
+            "Fixtures/RejectedSource/Keys/DynamicKeyStaticRequired/Expected.uv",
+            expectedDiagnostic("E-CON-0020", "rule.19.K-Static-Required")
+        ),
+        "DynamicKeyStaticRequired",
+        "Fixtures/RejectedSource/Keys/DynamicKeyStaticRequired",
+        "Fixtures/RejectedSource/Keys/DynamicKeyStaticRequired/Source/Main.uv",
+        "Fixtures/RejectedSource/Keys/DynamicKeyStaticRequired/Expected.uv",
+        "E-CON-0020",
+        "rule.19.K-Static-Required"
     ) {
         count = count + 1usize
     }

@@ -12,10 +12,12 @@ public procedure fineGrainedLoopKeyWarningReference() -> i32 {
     var container: shared LoopKeyContainer =
         LoopKeyContainer { leaf: LoopKeyLeaf { value: 1 } }
     var index: usize = 0usize
+    var total: i32 = 0
     loop index < 4usize {
         #container.leaf.value read {
+            total = total + container.leaf.value
         }
         index = index + 1usize
     }
-    return 0
+    return total
 }

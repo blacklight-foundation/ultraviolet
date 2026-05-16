@@ -15,16 +15,15 @@ void IRInstructionVisitor::operator()(const IRCheckSliceLen &check) const
     {
       return llvm::ConstantInt::get(i64, *static_len);
     }
-    llvm::Value *dynamic_len = DynamicLengthOf(value);
-    if (!dynamic_len || !dynamic_len->getType()->isIntegerTy())
+    if (llvm::Value *dynamic_len = DynamicLengthOf(value))
     {
-      return nullptr;
+      if (dynamic_len->getType()->getIntegerBitWidth() != 64)
+      {
+        dynamic_len = builder.CreateIntCast(dynamic_len, i64, false);
+      }
+      return dynamic_len;
     }
-    if (dynamic_len->getType()->getIntegerBitWidth() != 64)
-    {
-      dynamic_len = builder.CreateIntCast(dynamic_len, i64, false);
-    }
-    return dynamic_len;
+    return nullptr;
   };
 
   llvm::Value *base_len = length_value(check.base);

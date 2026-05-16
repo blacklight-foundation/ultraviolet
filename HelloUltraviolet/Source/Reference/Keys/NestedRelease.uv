@@ -24,6 +24,20 @@ internal procedure nestedReleaseWriteFromReadValue() -> i32 {
     return observed
 }
 
+internal procedure staleOkNestedReleaseValue() -> i32 {
+    var shared_value: shared i32 = 5
+    var observed: i32 = 0
+    #shared_value read {
+        [[stale_ok]]
+        let before_release: i32 = shared_value + 0
+        #shared_value release write {
+            shared_value = before_release + 8
+        }
+        observed = before_release + shared_value
+    }
+    return observed
+}
+
 internal procedure nestedReleaseSharedArgumentRead(value: shared KeyLeaf) -> i32 {
     var observed: i32 = 0
     #value read {
@@ -49,5 +63,6 @@ internal procedure reentrantCalleeCoveredValue() -> i32 {
 public procedure runKeysNestedReleaseReference() -> bool {
     return nestedReleaseValue() == 2 &&
         nestedReleaseWriteFromReadValue() == 7 &&
+        staleOkNestedReleaseValue() == 18 &&
         reentrantCalleeCoveredValue() == 11
 }

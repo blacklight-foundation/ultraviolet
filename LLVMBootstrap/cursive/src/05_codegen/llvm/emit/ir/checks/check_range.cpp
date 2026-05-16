@@ -9,8 +9,9 @@ namespace cursive::codegen::emit_detail {
 void IRInstructionVisitor::operator()(const IRCheckRange &check) const
 {
   auto len_opt = StaticLengthOf(check.base);
-  llvm::Value *dynamic_len = nullptr;
-  if (!len_opt.has_value())
+  llvm::Value *dynamic_len =
+      len_opt.has_value() ? nullptr : DynamicLengthOf(check.base);
+  if (!len_opt.has_value() && dynamic_len == nullptr)
   {
     llvm::Value *base = EvaluateOrDefault(check.base);
     if (base)
@@ -18,10 +19,6 @@ void IRInstructionVisitor::operator()(const IRCheckRange &check) const
       if (auto *arr_ty = llvm::dyn_cast<llvm::ArrayType>(base->getType()))
       {
         len_opt = arr_ty->getNumElements();
-      }
-      else
-      {
-        dynamic_len = DynamicLengthOf(check.base);
       }
     }
   }

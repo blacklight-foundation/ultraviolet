@@ -5714,3 +5714,247 @@ Cursive.exe build HelloUltraviolet --target-profile x86_64-win64 --build-progres
 HelloUltraviolet.exe: exit=0, 0-byte stdout/stderr
 HelloUltraviolet.exe --audit: exit=0, 0-byte stdout/stderr
 ```
+
+## UVBOOT-0079: Qualified Modal State Literals And Qualified Record Patterns
+
+Status: repaired in the bootstrap.
+
+Spec-valid source exercised:
+
+```ultraviolet
+let opened: QualifiedModalTypes::ModalReference@Open =
+    QualifiedModalTypes::ModalReference@Open { value: 29 }
+return opened~>readValue()
+```
+
+```ultraviolet
+let QualifiedDataTypes::RecordReference {
+    count: resolved_count,
+    is_active
+} = reference
+```
+
+Observed bootstrap results before repair:
+
+```text
+error[E-SRC-0520]: Generic syntax error (unexpected token)
+  --> C:/dev/ultraviolet/HelloUltraviolet/Source/Reference/Names/QualifiedResolution.uv:142:5
+142 |     return opened.value
+```
+
+After the parser accepted the qualified modal-state literal, the resolver then
+reported:
+
+```text
+error[E-MOD-1301]: Unresolved name: identifier not found in any accessible scope
+note: unresolved type path `QualifiedDataTypes`
+```
+
+Failure analysis:
+
+`SPECIFICATION.md` defines `modal_state_expr ::= modal_type_ref "@" identifier
+"{" field_init_list? "}"`, and `ResolveModalRef` accepts a modal reference
+whose base is a resolved `TypePath` or `TypeApply`. A qualified module alias
+therefore remains a valid modal-state literal base.
+
+`SPECIFICATION.md` also defines `record_pattern ::= type_path "{" ... "}"`.
+The qualified pattern `QualifiedDataTypes::RecordReference { ... }` is a
+record pattern because the joined type path names a record. The bootstrap
+parser initially treated the first `::` as an enum-pattern separator, and the
+resolver only tried the joined record-pattern interpretation after the prefix
+had already resolved as a type.
+
+Required bootstrap behavior:
+
+Qualified modal-state record literals must parse as record literals whose
+target is a `ModalStateRef`. Qualified record patterns must resolve a joined
+type path when the parsed enum-shaped pattern has a record payload and the
+prefix is a module path or module alias rather than an enum type.
+
+Repair:
+
+- `LLVMBootstrap/cursive/src/02_source/parser/expr/primary.cpp` now scans a
+  full type path before deciding whether an identifier starts a modal-state
+  record literal.
+- `LLVMBootstrap/cursive/src/04_analysis/resolve/resolve_pattern.cpp` now
+  resolves enum-shaped record-payload patterns through the joined record type
+  path when the prefix does not resolve as an enum type.
+- `LLVMBootstrap/cursive/src/04_analysis/resolve/resolve_expr.cpp`,
+  `LLVMBootstrap/cursive/src/04_analysis/resolve/resolve_items.cpp`,
+  `LLVMBootstrap/cursive/src/04_analysis/resolve/resolve_module.cpp`, and
+  `LLVMBootstrap/cursive/src/04_analysis/resolve/resolve_types.cpp` now
+  preserve resolver diagnostic context for these paths.
+
+Source correction:
+
+The first draft read `opened.value` from another module. That is not
+SPEC-valid: §13.2.4 defines `ModalFieldVisible` by the declaring modal module.
+The reference now observes the constructed state through the public state
+method `opened~>readValue()`, while same-module modal field reads remain
+covered in `Reference::ModalTypes`.
+
+Verified bootstrap result after repair:
+
+```text
+Visual Studio bootstrap build wrapper, target=cursive: exit=0, rebuilt primary.cpp, resolve_pattern.cpp, resolve_expr.cpp, resolve_items.cpp, resolve_module.cpp, resolve_types.cpp, and Cursive.exe
+Cursive.exe build HelloUltraviolet --check --target-profile x86_64-win64 --build-progress on --max-errors 20: exit=0, warnings=10, infos=3, duration=162.42s
+Cursive.exe build HelloUltraviolet --target-profile x86_64-win64 --build-progress on --max-errors 20: exit=0, warnings=10, infos=3, duration=427.00s
+HelloUltraviolet.exe: exit=0
+HelloUltraviolet.exe --audit: exit=0
+```
+
+## UVBOOT-0080: Slice Bounds Checks Must Use Runtime Fat-Pointer Length
+
+Status: repaired in the bootstrap.
+
+Spec-valid source exercised:
+
+```ultraviolet
+var backing: shared [i32; 4] = [1, 2, 3, 4]
+let values: shared [i32] = backing[..]
+let index: usize = 2usize
+var observed: i32 = 0
+#values[index], values[index] read {
+    observed = values[index] + values[index]
+}
+return observed
+```
+
+Observed bootstrap result before repair:
+
+```text
+HelloUltraviolet.exe: exit=6
+```
+
+The narrowed corpus printed `debug: runKeysConflictDetectionReference` and
+then exited with runtime bounds failure code `6`. Disassembly showed the full
+corpus emitting slice bounds comparisons against `1` for `values[index]`, while
+the same slice source in an isolated scratch project compared against the
+runtime slice length `4`.
+
+Failure analysis:
+
+`SPECIFICATION.md` §12.4 defines array-to-slice coercion and slice indexing:
+`Coerce-Array-Slice` permits `TypePerm(p, TypeArray(T, n))` to become
+`TypePerm(p, TypeSlice(T))`, while `T-Index-Slice` and `P-Index-Slice` require
+only a `usize` index. Once the fixed array is viewed as a slice, bounds checks
+must use the slice fat pointer's runtime length. A stale static length from a
+different value in the same module cannot constrain the emitted check.
+
+The bootstrap LLVM emitter consulted `StaticLengthOf` before `DynamicLengthOf`
+for index, range, and slice-length checks. In the full corpus that let stale
+static metadata select length `1` for a `shared [i32]` slice whose runtime
+length field was `4`.
+
+Required bootstrap behavior:
+
+Bounds and slice-length checks for runtime slice values must prefer the dynamic
+length stored in the fat pointer. Static length is still valid for fixed-array
+values and for values whose runtime representation has no dynamic length field.
+
+Repair:
+
+- `LLVMBootstrap/cursive/src/05_codegen/llvm/emit/ir/checks/check_index.cpp`
+  now asks `DynamicLengthOf` before falling back to `StaticLengthOf`.
+- `LLVMBootstrap/cursive/src/05_codegen/llvm/emit/ir/checks/check_range.cpp`
+  applies the same runtime-length preference for range checks.
+- `LLVMBootstrap/cursive/src/05_codegen/llvm/emit/ir/checks/check_slice_len.cpp`
+  now computes both compared slice lengths from dynamic fat-pointer lengths
+  when available, with integer widening to `i64` before comparison.
+
+Verified bootstrap result after repair:
+
+```text
+Visual Studio bootstrap build wrapper, target=cursive: exit=0, rebuilt Cursive.exe
+Cursive.exe build HelloUltraviolet --check --target-profile x86_64-win64 --build-progress on --max-errors 20: exit=0, warnings=11, infos=3, duration=184.89s
+Cursive.exe build HelloUltraviolet --target-profile x86_64-win64 --build-progress on --max-errors 20: exit=0, warnings=11, infos=3, reused=57, rebuilt=2, duration=247.95s
+HelloUltraviolet.exe: exit=0
+HelloUltraviolet.exe --audit: exit=0
+python3 Tools/ExtractObligationLedger.py --check: exit=0, obligations=6045
+```
+
+## UVBOOT-0081: Dynamic Indexed Key Safety In Parallel Context Requires Dynamic Mode
+
+Status: repaired in the bootstrap.
+
+Spec-valid rejected-source specimen:
+
+```ultraviolet
+public procedure dynamicKeyStaticRequiredReference(context: Context, index: usize) -> i32 {
+    var backing: shared [i32; 4] = [1, 2, 3, 4]
+    let values: shared [i32] = backing[..]
+    return parallel context~>inline() {
+        let first: Spawned<i32> = spawn {
+            var observed: i32 = 0
+            #values[index] write {
+                values[index] = 11
+                observed = 11
+            }
+            observed
+        }
+        let second: Spawned<i32> = spawn {
+            var observed: i32 = 0
+            #values[index] write {
+                values[index] = 13
+                observed = 13
+            }
+            observed
+        }
+        (wait first) + (wait second)
+    }
+}
+```
+
+Observed bootstrap result before repair:
+
+```text
+Cursive.exe build .agents/tmp/DynamicKeyStaticRequiredProbe --check --target-profile x86_64-win64 --build-progress on --max-errors 8: exit=0
+```
+
+Failure analysis:
+
+`SPECIFICATION.md` §19.6.4 defines `K-Static-Required`: if key safety is not
+statically safe and the access is outside a dynamic context, the program is
+rejected. §19.6.5 and §19.6.6 define the `[[dynamic]]` path: incomparable
+dynamic indices require runtime ordering and may lower to runtime
+synchronization. §19.6.7 assigns `E-CON-0020` to non-statically-provable key
+safety outside `[[dynamic]]`, and `I-CON-0011` to runtime synchronization
+emitted under `[[dynamic]]`.
+
+The bootstrap treated local absence of same-body key conflicts as a sufficient
+static proof for dynamic indexed paths even inside a parallel context. That
+accepted two spawned tasks that each wrote `values[index]` through a runtime
+index outside `[[dynamic]]`. The local body of each spawned task contains one
+keyed path, but the cross-task relationship is not statically disjoint.
+
+Required bootstrap behavior:
+
+Dynamic indexed key paths in a parallel context require a sound static proof
+that covers cross-task access. When the compiler has only local body
+disjointness, the access is not statically safe outside `[[dynamic]]` and must
+emit `E-CON-0020`. The same source under `[[dynamic]]` is valid and must lower
+runtime synchronization, surfacing `I-CON-0011`.
+
+Repair:
+
+- `LLVMBootstrap/cursive/src/04_analysis/typing/stmt/key_block_stmt.cpp` now
+  carries dynamic-path classification into static-safety classification.
+- In parallel contexts, local disjointness is no longer accepted as the
+  disjoint-path proof for dynamic keyed paths; the checker therefore routes the
+  non-`[[dynamic]]` source to `E-CON-0020` and allows the `[[dynamic]]` source
+  to emit runtime synchronization.
+
+Permanent corpus coverage:
+
+- `Fixtures/RejectedSource/Keys/DynamicKeyStaticRequired` rejects with
+  `E-CON-0020` for `rule.19.K-Static-Required`.
+- `Fixtures/DiagnosticSource/Keys/DynamicKeyRuntimeSyncInfo` compiles with
+  `I-CON-0011` for `diagnostics.19.DynamicKeyVerification`.
+
+Verified bootstrap result after repair:
+
+```text
+Visual Studio bootstrap build wrapper, target=cursive: exit=0, rebuilt key_block_stmt.cpp and Cursive.exe
+Cursive.exe build HelloUltraviolet/Fixtures/RejectedSource/Keys/DynamicKeyStaticRequired --check --target-profile x86_64-win64 --build-progress on --max-errors 8: exit=1, E-CON-0020
+Cursive.exe build HelloUltraviolet/Fixtures/DiagnosticSource/Keys/DynamicKeyRuntimeSyncInfo --check --target-profile x86_64-win64 --build-progress on --max-errors 8: exit=0, I-CON-0011
+```

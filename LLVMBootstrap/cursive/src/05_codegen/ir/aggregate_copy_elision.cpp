@@ -185,6 +185,9 @@ bool ValueRefsName(const IRValue& value,
   if (!derived) {
     return false;
   }
+  if (derived->kind == DerivedValueInfo::Kind::AddrLocal) {
+    return NameMatches(derived->name, primary, stable);
+  }
   if (!value.name.empty() && !visiting.insert(value.name).second) {
     return false;
   }
@@ -555,6 +558,251 @@ bool NodeWritesName(const IR& ir,
   return false;
 }
 
+bool ValueMatchesName(const IRValue& value,
+                      std::string_view primary,
+                      std::string_view stable = {}) {
+  return value.kind == IRValue::Kind::Local &&
+         NameMatches(value.name, primary, stable);
+}
+
+bool AnyValueRefsName(const std::vector<IRValue>& values,
+                      const LowerCtx& ctx,
+                      std::string_view primary,
+                      std::string_view stable = {}) {
+  return std::any_of(values.begin(),
+                     values.end(),
+                     [&](const IRValue& value) {
+                       return ValueRefsName(value, ctx, primary, stable);
+                     });
+}
+
+bool RefSymsContainName(const std::vector<std::string>& ref_syms,
+                        std::string_view primary,
+                        std::string_view stable = {}) {
+  return std::any_of(ref_syms.begin(),
+                     ref_syms.end(),
+                     [&](const std::string& name) {
+                       return NameMatches(name, primary, stable);
+                     });
+}
+
+bool IrEscapesReturnLocal(const IRPtr& ir,
+                          const LowerCtx& ctx,
+                          std::string_view primary,
+                          std::string_view stable = {});
+
+bool NodeEscapesReturnLocal(const IR& ir,
+                            const LowerCtx& ctx,
+                            std::string_view primary,
+                            std::string_view stable) {
+  auto refs = [&](const IRValue& value) {
+    return ValueRefsName(value, ctx, primary, stable);
+  };
+  auto refs_many = [&](const std::vector<IRValue>& values) {
+    return AnyValueRefsName(values, ctx, primary, stable);
+  };
+  auto escapes_ir = [&](const IRPtr& nested) {
+    return IrEscapesReturnLocal(nested, ctx, primary, stable);
+  };
+  auto place_refs = [&](const IRPlace& place) {
+    return PlaceRefsName(place, primary, stable);
+  };
+  auto escape_if_refs = [&]() {
+    return NodeRefsName(ir, ctx, primary, stable);
+  };
+
+  return std::visit(
+      [&](const auto& node) -> bool {
+        using T = std::decay_t<decltype(node)>;
+        if constexpr (std::is_same_v<T, IRSeq>) {
+          for (const IRPtr& item : node.items) {
+            if (escapes_ir(item)) {
+              return true;
+            }
+          }
+          return false;
+        } else if constexpr (std::is_same_v<T, IRCall>) {
+          return refs(node.callee) || refs_many(node.args);
+        } else if constexpr (std::is_same_v<T, IRCallVTable>) {
+          return refs(node.base) || refs_many(node.args);
+        } else if constexpr (std::is_same_v<T, IRStoreGlobal>) {
+          return false;
+        } else if constexpr (std::is_same_v<T, IRReadVar>) {
+          return false;
+        } else if constexpr (std::is_same_v<T, IRBindVar>) {
+          return NodeDefinesName(ir, primary, stable);
+        } else if constexpr (std::is_same_v<T, IRStoreVar>) {
+          return false;
+        } else if constexpr (std::is_same_v<T, IRStoreVarNoDrop>) {
+          return false;
+        } else if constexpr (std::is_same_v<T, IRReadPlace>) {
+          return false;
+        } else if constexpr (std::is_same_v<T, IRWritePlace>) {
+          return false;
+        } else if constexpr (std::is_same_v<T, IRAddrOf>) {
+          return false;
+        } else if constexpr (std::is_same_v<T, IRReadPtr>) {
+          return false;
+        } else if constexpr (std::is_same_v<T, IRWritePtr>) {
+          return refs(node.value);
+        } else if constexpr (std::is_same_v<T, IRUnaryOp>) {
+          return false;
+        } else if constexpr (std::is_same_v<T, IRBinaryOp>) {
+          return false;
+        } else if constexpr (std::is_same_v<T, IRCast>) {
+          return false;
+        } else if constexpr (std::is_same_v<T, IRTransmute>) {
+          return false;
+        } else if constexpr (std::is_same_v<T, IRCheckIndex>) {
+          return false;
+        } else if constexpr (std::is_same_v<T, IRCheckRange>) {
+          return false;
+        } else if constexpr (std::is_same_v<T, IRCheckSliceLen>) {
+          return false;
+        } else if constexpr (std::is_same_v<T, IRCheckOp>) {
+          return false;
+        } else if constexpr (std::is_same_v<T, IRCheckCast>) {
+          return false;
+        } else if constexpr (std::is_same_v<T, IRAlloc>) {
+          return node.region.has_value() && refs(*node.region);
+        } else if constexpr (std::is_same_v<T, IRContextBundleBuild>) {
+          return refs(node.root_ctx);
+        } else if constexpr (std::is_same_v<T, IRReturn>) {
+          if (ValueMatchesName(node.value, primary, stable)) {
+            return false;
+          }
+          return refs(node.value);
+        } else if constexpr (std::is_same_v<T, IRResult>) {
+          return refs(node.value);
+        } else if constexpr (std::is_same_v<T, IRBreak>) {
+          return node.value.has_value() && refs(*node.value);
+        } else if constexpr (std::is_same_v<T, IRContinue>) {
+          return false;
+        } else if constexpr (std::is_same_v<T, IRDefer>) {
+          return false;
+        } else if constexpr (std::is_same_v<T, IRMoveState>) {
+          return place_refs(node.place);
+        } else if constexpr (std::is_same_v<T, IRIf>) {
+          return escapes_ir(node.then_ir) ||
+                 refs(node.then_value) ||
+                 escapes_ir(node.else_ir) ||
+                 refs(node.else_value);
+        } else if constexpr (std::is_same_v<T, IRBlock>) {
+          return escapes_ir(node.setup) ||
+                 escapes_ir(node.body) ||
+                 refs(node.value);
+        } else if constexpr (std::is_same_v<T, IRLoop>) {
+          return escapes_ir(node.iter_ir) ||
+                 (node.iter_value.has_value() && refs(*node.iter_value)) ||
+                 escapes_ir(node.cond_ir) ||
+                 (node.cond_value.has_value() && refs(*node.cond_value)) ||
+                 escapes_ir(node.body_ir) ||
+                 refs(node.body_value);
+        } else if constexpr (std::is_same_v<T, IRIfCase>) {
+          for (const IRIfCaseClause& arm : node.arms) {
+            if (escapes_ir(arm.body) ||
+                escapes_ir(arm.cleanup_ir) ||
+                refs(arm.value)) {
+              return true;
+            }
+          }
+          return false;
+        } else if constexpr (std::is_same_v<T, IRRegion>) {
+          return refs(node.owner) ||
+                 escapes_ir(node.body) ||
+                 refs(node.value);
+        } else if constexpr (std::is_same_v<T, IRFrame>) {
+          return (node.region.has_value() && refs(*node.region)) ||
+                 escapes_ir(node.body) ||
+                 refs(node.value);
+        } else if constexpr (std::is_same_v<T, IRBranch>) {
+          return node.cond.has_value() && refs(*node.cond);
+        } else if constexpr (std::is_same_v<T, IRPhi>) {
+          for (const IRIncoming& incoming : node.incoming) {
+            if (refs(incoming.value)) {
+              return true;
+            }
+          }
+          return refs(node.value);
+        } else if constexpr (std::is_same_v<T, IRClearPanic>) {
+          return false;
+        } else if constexpr (std::is_same_v<T, IRPanicCheck>) {
+          return false;
+        } else if constexpr (std::is_same_v<T, IRCleanupPanicCheck>) {
+          return escapes_ir(node.cleanup_ir);
+        } else if constexpr (std::is_same_v<T, IRInitPanicHandle>) {
+          return escapes_ir(node.cleanup_ir);
+        } else if constexpr (std::is_same_v<T, IRInitPanicRaise>) {
+          return escapes_ir(node.cleanup_ir);
+        } else if constexpr (std::is_same_v<T, IRCheckPoison>) {
+          return false;
+        } else if constexpr (std::is_same_v<T, IRLowerPanic>) {
+          return escapes_ir(node.cleanup_ir);
+        } else {
+          return escape_if_refs();
+        }
+      },
+      ir.node);
+}
+
+bool IrEscapesReturnLocal(const IRPtr& ir,
+                          const LowerCtx& ctx,
+                          std::string_view primary,
+                          std::string_view stable) {
+  return ir && NodeEscapesReturnLocal(*ir, ctx, primary, stable);
+}
+
+bool FindForwardableSourceParam(const ProcIR& proc,
+                                const LowerCtx& ctx,
+                                const IRBindVar& return_bind,
+                                std::size_t bind_index,
+                                const std::vector<const IR*>& linear,
+                                IRAggregateCopyElision& info) {
+  if (return_bind.value.kind != IRValue::Kind::Local ||
+      return_bind.value.name.empty()) {
+    return false;
+  }
+
+  const IRParam* source_param = nullptr;
+  std::size_t source_param_index = 0;
+  for (std::size_t i = 0; i < proc.params.size(); ++i) {
+    const IRParam& param = proc.params[i];
+    if (param.mode.has_value()) {
+      continue;
+    }
+    if (!NameMatches(return_bind.value.name, param.name, param.stable_name)) {
+      continue;
+    }
+    if (!TypeEquivalent(param.type, proc.ret)) {
+      return false;
+    }
+    source_param = &param;
+    source_param_index = i;
+    break;
+  }
+  if (!source_param) {
+    return false;
+  }
+
+  for (std::size_t i = bind_index + 1; i < linear.size(); ++i) {
+    const IR& node = *linear[i];
+    if (NodeWritesName(node, source_param->name, source_param->stable_name) ||
+        NodeRefsName(node,
+                     ctx,
+                     source_param->name,
+                     source_param->stable_name,
+                     return_bind.name,
+                     return_bind.stable_name)) {
+      return false;
+    }
+  }
+
+  info.source_param = source_param->name;
+  info.source_param_stable_name = source_param->stable_name;
+  info.source_param_index = source_param_index;
+  return true;
+}
+
 }  // namespace
 
 std::optional<IRAggregateCopyElision> AnalyzeAggregateCopyElision(
@@ -592,9 +840,6 @@ std::optional<IRAggregateCopyElision> AnalyzeAggregateCopyElision(
     if (!NameMatches(return_value.name, bind->name, bind->stable_name)) {
       continue;
     }
-    if (bind->value.kind != IRValue::Kind::Local || bind->value.name.empty()) {
-      return std::nullopt;
-    }
     return_bind = bind;
     bind_index = i;
     break;
@@ -602,25 +847,10 @@ std::optional<IRAggregateCopyElision> AnalyzeAggregateCopyElision(
   if (!return_bind || !TypeEquivalent(return_bind->type, proc.ret)) {
     return std::nullopt;
   }
-
-  const IRParam* source_param = nullptr;
-  std::size_t source_param_index = 0;
-  for (std::size_t i = 0; i < proc.params.size(); ++i) {
-    const IRParam& param = proc.params[i];
-    if (param.mode.has_value()) {
-      continue;
-    }
-    if (!NameMatches(return_bind->value.name, param.name, param.stable_name)) {
-      continue;
-    }
-    if (!TypeEquivalent(param.type, proc.ret)) {
-      return std::nullopt;
-    }
-    source_param = &param;
-    source_param_index = i;
-    break;
-  }
-  if (!source_param) {
+  if (ValueRefsName(return_bind->value,
+                    ctx,
+                    return_bind->name,
+                    return_bind->stable_name)) {
     return std::nullopt;
   }
 
@@ -631,15 +861,10 @@ std::optional<IRAggregateCopyElision> AnalyzeAggregateCopyElision(
                         return_bind->stable_name)) {
       return std::nullopt;
     }
-    if (NodeWritesName(node,
-                       source_param->name,
-                       source_param->stable_name) ||
-        NodeRefsName(node,
-                     ctx,
-                     source_param->name,
-                     source_param->stable_name,
-                     return_bind->name,
-                     return_bind->stable_name)) {
+    if (NodeEscapesReturnLocal(node,
+                               ctx,
+                               return_bind->name,
+                               return_bind->stable_name)) {
       return std::nullopt;
     }
   }
@@ -648,9 +873,8 @@ std::optional<IRAggregateCopyElision> AnalyzeAggregateCopyElision(
   info.return_local_uses_sret = true;
   info.return_local = return_bind->name;
   info.return_local_stable_name = return_bind->stable_name;
-  info.source_param = source_param->name;
-  info.source_param_stable_name = source_param->stable_name;
-  info.source_param_index = source_param_index;
+  (void)FindForwardableSourceParam(
+      proc, ctx, *return_bind, bind_index, linear, info);
   return info;
 }
 

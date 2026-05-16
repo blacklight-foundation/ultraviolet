@@ -360,3 +360,52 @@ while building `HelloUltraviolet` as the reference corpus.
 - Clarification requested: correct the public SPEC spelling from
   `TypeAlias-Reultraviolet-Err` to `TypeAlias-Recursive-Err` so the public
   rule name matches the obligation ledger and the diagnostic fixture.
+
+### Qualified Record Pattern Versus Enum Record Payload Pattern
+
+- Obligation: accepted-source coverage for `record_pattern`, `enum_pattern`,
+  `Parse-Pattern-Record`, and `Parse-Pattern-Enum`.
+- SPEC anchor: `SPECIFICATION.md:18216-18234`,
+  `SPECIFICATION.md:18379-18394`, and `SPECIFICATION.md:30517-30521`.
+- Current reading: `QualifiedDataTypes::RecordReference { ... }` is a record
+  pattern when the joined `type_path` names a record. `EnumType::Variant { ... }`
+  is an enum pattern when the prefix resolves to an enum type and the final
+  identifier names a variant.
+- Connected construct reading: both record patterns and enum record-payload
+  patterns can have the token shape `A::B { ... }`. The parser cannot fully
+  disambiguate that spelling from tokens alone when `A` might be a module
+  alias or a type name. The intended reading follows the language's qualified
+  disambiguation design: resolution decides whether the prefix is an enum type
+  or whether the joined path is a record type.
+- Clarification requested: state the disambiguation rule for `A::B { ... }`
+  in pattern position directly, including module aliases, record type paths,
+  and enum variant record payloads.
+
+### Direct Shared Mutation And Implicit Key Acquisition
+
+- Obligations: `Docs/Audit/UltravioletObligations.csv:1773`,
+  `Docs/Audit/UltravioletObligations.csv:4394`,
+  `Docs/Audit/UltravioletObligations.csv:4409`,
+  `Docs/Audit/UltravioletObligations.csv:4410`, and
+  `Docs/Audit/UltravioletObligations.csv:4461`.
+- SPEC anchors: `SPECIFICATION.md:7431`,
+  `SPECIFICATION.md:20380-20386`, `SPECIFICATION.md:20528-20534`,
+  and `SPECIFICATION.md:20786-20792`.
+- Current reading: an ordinary direct field mutation through a `shared` path
+  is permitted when `KeyPath(e)` and `RequiredMode(e)` are defined and no
+  Chapter 19 scope or escape rule forbids the access. If the path is not
+  already covered by a held key, `Lower-KeyAccess-Uncovered` establishes an
+  implicit acquisition in the current scope.
+- Connected construct reading: Chapter 10 says shared-operation admissibility
+  determines whether the operation may proceed to key-mediated access, while
+  Chapter 19 defines that key-mediated access and states that being outside an
+  explicit `#` block does not itself make ordinary `shared` access invalid.
+  The most coherent reading is that `E-TYP-1604` applies only when a direct
+  shared field mutation cannot establish a valid key-mediated write at all,
+  or when a more specific key-system rule such as read-then-write rejection
+  owns the failure. It should not mean "outside an explicit key block" when an
+  implicit acquisition is otherwise valid.
+- Clarification requested: specify whether `E-TYP-1604` rejects all direct
+  shared field mutation without a pre-existing covering write key, or only
+  rejects direct shared field mutation for which Chapter 19 cannot establish a
+  valid key context.

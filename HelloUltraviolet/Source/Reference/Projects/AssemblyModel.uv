@@ -19,6 +19,28 @@ internal record AssemblyReference {
     internal root_order: usize
 }
 
+internal record AssemblyImportEdgeReference {
+    internal from_assembly: string@View
+    internal to_assembly: string@View
+    internal source_module: string@View
+    internal import_path: string@View
+}
+
+internal record AssemblyGraphReference {
+    internal imports_executable: bool
+    internal has_library_boundary_cycle: bool
+    internal hosted_library_imports_linked_library: bool
+    internal emitted_assembly_count: usize
+    internal imported_library_count: usize
+}
+
+internal record AssemblyGraphPathReference {
+    internal starts_at_root: bool
+    internal reaches_target: bool
+    internal has_library_interior: bool
+    internal closes_cycle: bool
+}
+
 internal procedure assemblyReference(
     name: string@View,
     kind: AssemblyKindReference,
@@ -57,6 +79,96 @@ internal procedure assemblyIsLinkedLibrary(assembly: AssemblyReference) -> bool 
     }
 }
 
+internal procedure assemblyImportEdgeReference(
+    from_assembly: string@View,
+    to_assembly: string@View,
+    source_module: string@View,
+    import_path: string@View
+) -> AssemblyImportEdgeReference {
+    return AssemblyImportEdgeReference {
+        from_assembly: from_assembly,
+        to_assembly: to_assembly,
+        source_module: source_module,
+        import_path: import_path
+    }
+}
+
+internal procedure assemblyImportEdgeMatches(
+    edge: AssemblyImportEdgeReference,
+    from_assembly: string@View,
+    to_assembly: string@View,
+    source_module: string@View,
+    import_path: string@View
+) -> bool {
+    return auditTextEquals(edge.from_assembly, from_assembly) &&
+        auditTextEquals(edge.to_assembly, to_assembly) &&
+        auditTextEquals(edge.source_module, source_module) &&
+        auditTextEquals(edge.import_path, import_path)
+}
+
+internal procedure assemblyGraphReference(
+    imports_executable: bool,
+    has_library_boundary_cycle: bool,
+    hosted_library_imports_linked_library: bool,
+    emitted_assembly_count: usize,
+    imported_library_count: usize
+) -> AssemblyGraphReference {
+    return AssemblyGraphReference {
+        imports_executable: imports_executable,
+        has_library_boundary_cycle: has_library_boundary_cycle,
+        hosted_library_imports_linked_library: hosted_library_imports_linked_library,
+        emitted_assembly_count: emitted_assembly_count,
+        imported_library_count: imported_library_count
+    }
+}
+
+internal procedure assemblyGraphPathReference(
+    starts_at_root: bool,
+    reaches_target: bool,
+    has_library_interior: bool,
+    closes_cycle: bool
+) -> AssemblyGraphPathReference {
+    return AssemblyGraphPathReference {
+        starts_at_root: starts_at_root,
+        reaches_target: reaches_target,
+        has_library_interior: has_library_interior,
+        closes_cycle: closes_cycle
+    }
+}
+
+internal procedure assemblyGraphIsValid(graph: AssemblyGraphReference) -> bool {
+    return !graph.imports_executable &&
+        !graph.has_library_boundary_cycle &&
+        !graph.hosted_library_imports_linked_library
+}
+
+internal procedure noLibraryInterior(path: AssemblyGraphPathReference) -> bool {
+    return path.starts_at_root && path.reaches_target && !path.has_library_interior
+}
+
+internal procedure libraryBoundaryCycle(path: AssemblyGraphPathReference) -> bool {
+    return path.starts_at_root &&
+        path.reaches_target &&
+        path.has_library_interior &&
+        path.closes_cycle
+}
+
+internal procedure executableGraphReference() -> AssemblyGraphReference {
+    return assemblyGraphReference(false, false, false, 3usize, 1usize)
+}
+
+internal procedure importsExecutableGraphReference() -> AssemblyGraphReference {
+    return assemblyGraphReference(true, false, false, 1usize, 0usize)
+}
+
+internal procedure libraryCycleGraphReference() -> AssemblyGraphReference {
+    return assemblyGraphReference(false, true, false, 1usize, 2usize)
+}
+
+internal procedure hostedImportGraphReference() -> AssemblyGraphReference {
+    return assemblyGraphReference(false, false, true, 1usize, 1usize)
+}
+
 /// Exercises the Projects AssemblyModel reference surface.
 public procedure runProjectsAssemblyModelReference() -> bool {
     let executable: AssemblyReference = assemblyReference(
@@ -71,7 +183,57 @@ public procedure runProjectsAssemblyModelReference() -> bool {
         LinkKindReference::Static,
         2usize
     )
+    let dependency: AssemblyReference = assemblyReference(
+        "ReferenceDependency",
+        AssemblyKindReference::Dependency,
+        LinkKindReference::None,
+        3usize
+    )
+    let graph_edge: AssemblyImportEdgeReference = assemblyImportEdgeReference(
+        "HelloUltraviolet",
+        "ReferenceLibrary",
+        "HelloUltraviolet::Reference::Projects",
+        "ReferenceLibrary"
+    )
+    let dependency_edge: AssemblyImportEdgeReference = assemblyImportEdgeReference(
+        "HelloUltraviolet",
+        "ReferenceDependency",
+        "HelloUltraviolet::Reference::Projects",
+        "ReferenceDependency"
+    )
+    let dependency_path: AssemblyGraphPathReference =
+        assemblyGraphPathReference(true, true, false, false)
+    let library_cycle_path: AssemblyGraphPathReference =
+        assemblyGraphPathReference(true, true, true, true)
+    let valid_graph: AssemblyGraphReference = executableGraphReference()
+    let imports_executable_graph: AssemblyGraphReference = importsExecutableGraphReference()
+    let library_cycle_graph: AssemblyGraphReference = libraryCycleGraphReference()
+    let hosted_import_graph: AssemblyGraphReference = hostedImportGraphReference()
     return !assemblyIsLinkedLibrary(executable) &&
         assemblyIsLinkedLibrary(library) &&
-        executable.root_order < library.root_order
+        !assemblyIsLinkedLibrary(dependency) &&
+        executable.root_order < library.root_order &&
+        library.root_order < dependency.root_order &&
+        assemblyImportEdgeMatches(
+            graph_edge,
+            "HelloUltraviolet",
+            "ReferenceLibrary",
+            "HelloUltraviolet::Reference::Projects",
+            "ReferenceLibrary"
+        ) &&
+        assemblyImportEdgeMatches(
+            dependency_edge,
+            "HelloUltraviolet",
+            "ReferenceDependency",
+            "HelloUltraviolet::Reference::Projects",
+            "ReferenceDependency"
+        ) &&
+        noLibraryInterior(dependency_path) &&
+        libraryBoundaryCycle(library_cycle_path) &&
+        assemblyGraphIsValid(valid_graph) &&
+        valid_graph.emitted_assembly_count == 3usize &&
+        valid_graph.imported_library_count == 1usize &&
+        !assemblyGraphIsValid(imports_executable_graph) &&
+        !assemblyGraphIsValid(library_cycle_graph) &&
+        !assemblyGraphIsValid(hosted_import_graph)
 }

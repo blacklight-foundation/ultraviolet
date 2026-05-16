@@ -1,5 +1,7 @@
 //! Reference specimens for Projects / OutputArtifacts.
 
+using HelloUltraviolet::Audit::{ auditTextEquals }
+
 internal enum OutputArtifactKindReference {
     ExecutableImage
     ObjectFile
@@ -7,10 +9,71 @@ internal enum OutputArtifactKindReference {
     MapFile
 }
 
+internal enum OutputAssemblyKindReference {
+    Executable
+    SharedLibrary
+    StaticLibrary
+    Dependency
+}
+
+internal enum OutputIrKindReference {
+    None
+    Ll
+    Bc
+}
+
+internal enum OutputTargetReference {
+    X86_64Win64
+    AArch64Aapcs64
+}
+
 internal record OutputArtifactReference {
     internal kind: OutputArtifactKindReference
     internal is_required_for_run: bool
     internal order: usize
+}
+
+internal record OutputPathsReference {
+    internal root: string@View
+    internal obj_dir: string@View
+    internal ir_dir: string@View
+    internal bin_dir: string@View
+    internal lib_dir: string@View
+}
+
+internal record OutputProjectReference {
+    internal assembly_name: string@View
+    internal kind: OutputAssemblyKindReference
+    internal emit_ir: OutputIrKindReference
+    internal target: OutputTargetReference
+    internal module_count: usize
+    internal imported_library_count: usize
+}
+
+internal record OutputModuleReference {
+    internal path: string@View
+    internal folded_path: string@View
+    internal index: usize
+}
+
+internal record OutputArtifactPathsReference {
+    internal object_path: string@View
+    internal ir_path: string@View
+    internal primary_path: string@View
+    internal import_lib_path: string@View
+    internal symbol_name: string@View
+}
+
+internal record OutputTargetConstantsReference {
+    internal object_extension: string@View
+    internal exe_suffix: string@View
+    internal library_prefix: string@View
+    internal shared_suffix: string@View
+    internal static_suffix: string@View
+    internal import_suffix: string@View
+    internal emits_import_lib: bool
+    internal llvm_triple: string@View
+    internal llvm_data_layout: string@View
 }
 
 internal procedure outputArtifactReference(
@@ -32,6 +95,263 @@ internal procedure outputArtifactPrecedes(
     return left.order < right.order
 }
 
+internal procedure outputPathsReference(
+    root: string@View,
+    obj_dir: string@View,
+    ir_dir: string@View,
+    bin_dir: string@View,
+    lib_dir: string@View
+) -> OutputPathsReference {
+    return OutputPathsReference {
+        root: root,
+        obj_dir: obj_dir,
+        ir_dir: ir_dir,
+        bin_dir: bin_dir,
+        lib_dir: lib_dir
+    }
+}
+
+internal procedure executableProjectReference() -> OutputProjectReference {
+    return OutputProjectReference {
+        assembly_name: "ArtifactRoot",
+        kind: OutputAssemblyKindReference::Executable,
+        emit_ir: OutputIrKindReference::Ll,
+        target: OutputTargetReference::X86_64Win64,
+        module_count: 3usize,
+        imported_library_count: 2usize
+    }
+}
+
+internal procedure sharedLibraryProjectReference() -> OutputProjectReference {
+    return OutputProjectReference {
+        assembly_name: "ArtifactLibrary",
+        kind: OutputAssemblyKindReference::SharedLibrary,
+        emit_ir: OutputIrKindReference::Bc,
+        target: OutputTargetReference::X86_64Win64,
+        module_count: 2usize,
+        imported_library_count: 1usize
+    }
+}
+
+internal procedure staticLibraryProjectReference() -> OutputProjectReference {
+    return OutputProjectReference {
+        assembly_name: "ArtifactArchive",
+        kind: OutputAssemblyKindReference::StaticLibrary,
+        emit_ir: OutputIrKindReference::None,
+        target: OutputTargetReference::AArch64Aapcs64,
+        module_count: 2usize,
+        imported_library_count: 0usize
+    }
+}
+
+internal procedure irArtifactCount(project: OutputProjectReference) -> usize {
+    return if project.emit_ir is {
+        OutputIrKindReference::None {
+            0usize
+        }
+        OutputIrKindReference::Ll {
+            project.module_count
+        }
+        OutputIrKindReference::Bc {
+            project.module_count
+        }
+    }
+}
+
+internal procedure primaryArtifactCount(project: OutputProjectReference) -> usize {
+    return if project.kind is {
+        OutputAssemblyKindReference::Executable {
+            1usize
+        }
+        OutputAssemblyKindReference::SharedLibrary {
+            1usize
+        }
+        OutputAssemblyKindReference::StaticLibrary {
+            1usize
+        }
+        OutputAssemblyKindReference::Dependency {
+            0usize
+        }
+    }
+}
+
+internal procedure emitsImportLibrary(target: OutputTargetReference) -> bool {
+    return if target is {
+        OutputTargetReference::X86_64Win64 {
+            true
+        }
+        OutputTargetReference::AArch64Aapcs64 {
+            false
+        }
+    }
+}
+
+internal procedure importLibraryCount(project: OutputProjectReference) -> usize {
+    return if project.kind is {
+        OutputAssemblyKindReference::Executable {
+            0usize
+        }
+        OutputAssemblyKindReference::SharedLibrary {
+            if emitsImportLibrary(project.target) {
+                1usize
+            } else {
+                0usize
+            }
+        }
+        OutputAssemblyKindReference::StaticLibrary {
+            0usize
+        }
+        OutputAssemblyKindReference::Dependency {
+            0usize
+        }
+    }
+}
+
+internal procedure requiredOutputCount(project: OutputProjectReference) -> usize {
+    return project.module_count +
+        irArtifactCount(project) +
+        primaryArtifactCount(project) +
+        importLibraryCount(project)
+}
+
+internal procedure libraryArtifactInputCount(project: OutputProjectReference) -> usize {
+    return project.imported_library_count
+}
+
+internal procedure win64TargetConstantsReference() -> OutputTargetConstantsReference {
+    return OutputTargetConstantsReference {
+        object_extension: ".obj",
+        exe_suffix: ".exe",
+        library_prefix: "",
+        shared_suffix: ".dll",
+        static_suffix: ".lib",
+        import_suffix: ".lib",
+        emits_import_lib: true,
+        llvm_triple: "x86_64-pc-windows-msvc",
+        llvm_data_layout: "e-m:w-p270:32:32-p271:32:32-p272:64:64-i64:64-f80:128-n8:16:32:64-S128"
+    }
+}
+
+internal procedure aarch64TargetConstantsReference() -> OutputTargetConstantsReference {
+    return OutputTargetConstantsReference {
+        object_extension: ".o",
+        exe_suffix: "",
+        library_prefix: "lib",
+        shared_suffix: ".so",
+        static_suffix: ".a",
+        import_suffix: ".so.import",
+        emits_import_lib: false,
+        llvm_triple: "aarch64-unknown-linux-gnu",
+        llvm_data_layout: "e-m:e-i8:8:32-i16:16:32-i64:64-i128:128-n32:64-S128"
+    }
+}
+
+internal procedure outputModuleReference(
+    path: string@View,
+    folded_path: string@View,
+    index: usize
+) -> OutputModuleReference {
+    return OutputModuleReference {
+        path: path,
+        folded_path: folded_path,
+        index: index
+    }
+}
+
+internal procedure moduleEmissionPrecedes(
+    left: OutputModuleReference,
+    right: OutputModuleReference
+) -> bool {
+    if auditTextEquals(left.folded_path, right.folded_path) {
+        return left.index < right.index && left.path != right.path
+    }
+    return left.index < right.index
+}
+
+internal procedure rootModuleSymbolName(module: OutputModuleReference) -> string@View {
+    if auditTextEquals(module.path, "ArtifactRoot") {
+        return "main"
+    }
+    return "mod0002"
+}
+
+internal procedure artifactPathsReference(
+    object_path: string@View,
+    ir_path: string@View,
+    primary_path: string@View,
+    import_lib_path: string@View,
+    symbol_name: string@View
+) -> OutputArtifactPathsReference {
+    return OutputArtifactPathsReference {
+        object_path: object_path,
+        ir_path: ir_path,
+        primary_path: primary_path,
+        import_lib_path: import_lib_path,
+        symbol_name: symbol_name
+    }
+}
+
+internal procedure artifactPathsMatch(
+    paths: OutputArtifactPathsReference,
+    object_path: string@View,
+    ir_path: string@View,
+    primary_path: string@View,
+    import_lib_path: string@View,
+    symbol_name: string@View
+) -> bool {
+    return auditTextEquals(paths.object_path, object_path) &&
+        auditTextEquals(paths.ir_path, ir_path) &&
+        auditTextEquals(paths.primary_path, primary_path) &&
+        auditTextEquals(paths.import_lib_path, import_lib_path) &&
+        auditTextEquals(paths.symbol_name, symbol_name)
+}
+
+internal procedure targetConstantsMatch(
+    constants: OutputTargetConstantsReference,
+    object_extension: string@View,
+    exe_suffix: string@View,
+    library_prefix: string@View,
+    shared_suffix: string@View,
+    static_suffix: string@View,
+    import_suffix: string@View,
+    emits_import_lib: bool,
+    llvm_triple: string@View
+) -> bool {
+    return auditTextEquals(constants.object_extension, object_extension) &&
+        auditTextEquals(constants.exe_suffix, exe_suffix) &&
+        auditTextEquals(constants.library_prefix, library_prefix) &&
+        auditTextEquals(constants.shared_suffix, shared_suffix) &&
+        auditTextEquals(constants.static_suffix, static_suffix) &&
+        auditTextEquals(constants.import_suffix, import_suffix) &&
+        constants.emits_import_lib == emits_import_lib &&
+        auditTextEquals(constants.llvm_triple, llvm_triple) &&
+        string::length(constants.llvm_data_layout) > 0usize
+}
+
+internal procedure outputPathsMatch(
+    paths: OutputPathsReference,
+    root: string@View,
+    obj_dir: string@View,
+    ir_dir: string@View,
+    bin_dir: string@View,
+    lib_dir: string@View
+) -> bool {
+    return auditTextEquals(paths.root, root) &&
+        auditTextEquals(paths.obj_dir, obj_dir) &&
+        auditTextEquals(paths.ir_dir, ir_dir) &&
+        auditTextEquals(paths.bin_dir, bin_dir) &&
+        auditTextEquals(paths.lib_dir, lib_dir)
+}
+
+internal procedure outputPathMangleReference() -> bool {
+    let alphanumeric_prefix: string@View = "Module123"
+    let escaped_prefix: string@View = "Reference_x3A_x3AGPU_x20Kernel"
+    let object_path: string@View = "Project/build/obj/Reference_x3A_x3AGPU_x20Kernel.obj"
+    return auditTextEquals(alphanumeric_prefix, "Module123") &&
+        auditTextEquals(escaped_prefix, "Reference_x3A_x3AGPU_x20Kernel") &&
+        auditTextEquals(object_path, "Project/build/obj/Reference_x3A_x3AGPU_x20Kernel.obj")
+}
+
 /// Exercises the Projects OutputArtifacts reference surface.
 public procedure runProjectsOutputArtifactsReference() -> bool {
     let object_file: OutputArtifactReference =
@@ -40,8 +360,120 @@ public procedure runProjectsOutputArtifactsReference() -> bool {
         outputArtifactReference(OutputArtifactKindReference::ExecutableImage, true, 2usize)
     let runtime: OutputArtifactReference =
         outputArtifactReference(OutputArtifactKindReference::DependencyRuntime, true, 3usize)
+    let default_paths: OutputPathsReference = outputPathsReference(
+        "Project/build",
+        "Project/build/obj",
+        "Project/build/ir",
+        "Project/build/bin",
+        "Project/build/lib"
+    )
+    let configured_paths: OutputPathsReference = outputPathsReference(
+        "Project/out",
+        "Project/out/obj",
+        "Project/out/ir",
+        "Project/out/bin",
+        "Project/out/lib"
+    )
+    let executable_project: OutputProjectReference = executableProjectReference()
+    let shared_project: OutputProjectReference = sharedLibraryProjectReference()
+    let static_project: OutputProjectReference = staticLibraryProjectReference()
+    let root_module: OutputModuleReference =
+        outputModuleReference("ArtifactRoot", "artifactroot", 1usize)
+    let child_module: OutputModuleReference =
+        outputModuleReference("ArtifactRoot::Child", "artifactroot::child", 2usize)
+    let executable_paths: OutputArtifactPathsReference = artifactPathsReference(
+        "Project/build/obj/ArtifactRoot.obj",
+        "Project/build/ir/ArtifactRoot.ll",
+        "Project/build/bin/ArtifactRoot.exe",
+        "",
+        rootModuleSymbolName(root_module)
+    )
+    let shared_paths: OutputArtifactPathsReference = artifactPathsReference(
+        "Project/out/obj/ArtifactLibrary.obj",
+        "Project/out/ir/ArtifactLibrary.bc",
+        "Project/out/bin/ArtifactLibrary.dll",
+        "Project/out/lib/ArtifactLibrary.lib",
+        "mod0002"
+    )
+    let static_paths: OutputArtifactPathsReference = artifactPathsReference(
+        "Project/out/obj/ArtifactArchive.o",
+        "",
+        "Project/out/lib/libArtifactArchive.a",
+        "",
+        "mod0002"
+    )
+    let win64_constants: OutputTargetConstantsReference = win64TargetConstantsReference()
+    let aarch64_constants: OutputTargetConstantsReference = aarch64TargetConstantsReference()
     return outputArtifactPrecedes(object_file, executable) &&
         outputArtifactPrecedes(executable, runtime) &&
         executable.is_required_for_run &&
-        runtime.is_required_for_run
+        runtime.is_required_for_run &&
+        outputPathsMatch(
+            default_paths,
+            "Project/build",
+            "Project/build/obj",
+            "Project/build/ir",
+            "Project/build/bin",
+            "Project/build/lib"
+        ) &&
+        outputPathsMatch(
+            configured_paths,
+            "Project/out",
+            "Project/out/obj",
+            "Project/out/ir",
+            "Project/out/bin",
+            "Project/out/lib"
+        ) &&
+        requiredOutputCount(executable_project) == 7usize &&
+        requiredOutputCount(shared_project) == 6usize &&
+        requiredOutputCount(static_project) == 3usize &&
+        libraryArtifactInputCount(executable_project) == 2usize &&
+        moduleEmissionPrecedes(root_module, child_module) &&
+        artifactPathsMatch(
+            executable_paths,
+            "Project/build/obj/ArtifactRoot.obj",
+            "Project/build/ir/ArtifactRoot.ll",
+            "Project/build/bin/ArtifactRoot.exe",
+            "",
+            "main"
+        ) &&
+        artifactPathsMatch(
+            shared_paths,
+            "Project/out/obj/ArtifactLibrary.obj",
+            "Project/out/ir/ArtifactLibrary.bc",
+            "Project/out/bin/ArtifactLibrary.dll",
+            "Project/out/lib/ArtifactLibrary.lib",
+            "mod0002"
+        ) &&
+        artifactPathsMatch(
+            static_paths,
+            "Project/out/obj/ArtifactArchive.o",
+            "",
+            "Project/out/lib/libArtifactArchive.a",
+            "",
+            "mod0002"
+        ) &&
+        targetConstantsMatch(
+            win64_constants,
+            ".obj",
+            ".exe",
+            "",
+            ".dll",
+            ".lib",
+            ".lib",
+            true,
+            "x86_64-pc-windows-msvc"
+        ) &&
+        targetConstantsMatch(
+            aarch64_constants,
+            ".o",
+            "",
+            "lib",
+            ".so",
+            ".a",
+            ".so.import",
+            false,
+            "aarch64-unknown-linux-gnu"
+        ) &&
+        outputPathMangleReference()
 }

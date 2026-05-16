@@ -31,6 +31,7 @@
 #include "llvm/IR/LegacyPassManager.h"
 #include "llvm/IR/Module.h"
 #include "llvm/IR/PassManager.h"
+#include "llvm/IR/Instructions.h"
 #include "llvm/IR/Verifier.h"
 #include "llvm/MC/TargetRegistry.h"
 #include "llvm/Passes/PassBuilder.h"
@@ -151,6 +152,57 @@ void AddScalarCleanupPipeline(llvm::FunctionPassManager& FPM,
   FPM.addPass(llvm::SimplifyCFGPass());
 }
 
+bool TypeContainsLargeArray(llvm::Type* type) {
+  if (!type) {
+    return false;
+  }
+  if (auto* array = llvm::dyn_cast<llvm::ArrayType>(type)) {
+    if (array->getNumElements() >= 128) {
+      return true;
+    }
+    return TypeContainsLargeArray(array->getElementType());
+  }
+  if (auto* structure = llvm::dyn_cast<llvm::StructType>(type)) {
+    for (llvm::Type* element : structure->elements()) {
+      if (TypeContainsLargeArray(element)) {
+        return true;
+      }
+    }
+  }
+  return false;
+}
+
+bool UsesStorageHeavyAggregate(const llvm::Function& func) {
+  for (const llvm::Argument& arg : func.args()) {
+    if (arg.hasStructRetAttr()) {
+      return true;
+    }
+  }
+  for (const llvm::BasicBlock& block : func) {
+    for (const llvm::Instruction& inst : block) {
+      if (const auto* alloca = llvm::dyn_cast<llvm::AllocaInst>(&inst)) {
+        if (TypeContainsLargeArray(alloca->getAllocatedType())) {
+          return true;
+        }
+      }
+    }
+  }
+  return false;
+}
+
+void AddStorageHeavyCleanupPipeline(llvm::FunctionPassManager& FPM) {
+  // Large fixed-size aggregate storage is intentionally addressable after UV
+  // lowering. Avoid aggregate-splitting and global value numbering passes that
+  // can turn bounded storage cleanup into superlinear compiler work.
+  FPM.addPass(llvm::PromotePass());
+  FPM.addPass(llvm::EarlyCSEPass());
+  FPM.addPass(llvm::InstCombinePass());
+  FPM.addPass(llvm::SimplifyCFGPass());
+  FPM.addPass(llvm::DSEPass());
+  FPM.addPass(llvm::ADCEPass());
+  FPM.addPass(llvm::SimplifyCFGPass());
+}
+
 }  // namespace
 
 // =============================================================================
@@ -200,8 +252,9 @@ void RunModulePasses(llvm::Module& module, const PassConfig& config) {
     MPM.addPass(llvm::VerifierPass());
   }
 
-  // Create a function pass manager for function-level optimizations
+  // Create function pass managers for function-level optimizations.
   llvm::FunctionPassManager FPM;
+  llvm::FunctionPassManager storage_heavy_fpm;
 
   // Add optimization passes based on level
   switch (config.opt_level) {
@@ -212,6 +265,7 @@ void RunModulePasses(llvm::Module& module, const PassConfig& config) {
     case OptLevel::O1:
       // Basic optimization
       AddScalarCleanupPipeline(FPM, /*aggressive=*/false);
+      AddStorageHeavyCleanupPipeline(storage_heavy_fpm);
       break;
 
     case OptLevel::O2:
@@ -219,11 +273,13 @@ void RunModulePasses(llvm::Module& module, const PassConfig& config) {
     case OptLevel::Oz:
       // Standard optimization
       AddScalarCleanupPipeline(FPM, /*aggressive=*/false);
+      AddStorageHeavyCleanupPipeline(storage_heavy_fpm);
       break;
 
     case OptLevel::O3:
       // Aggressive optimization
       AddScalarCleanupPipeline(FPM, /*aggressive=*/true);
+      AddStorageHeavyCleanupPipeline(storage_heavy_fpm);
       break;
   }
 
@@ -231,8 +287,16 @@ void RunModulePasses(llvm::Module& module, const PassConfig& config) {
     MPM.addPass(llvm::AlwaysInlinerPass(/*InsertLifetime=*/false));
   }
 
-  // Wrap function passes in a module pass adapter
-  MPM.addPass(llvm::createModuleToFunctionPassAdaptor(std::move(FPM)));
+  for (auto& func : module) {
+    if (func.isDeclaration()) {
+      continue;
+    }
+    if (config.opt_level != OptLevel::O0 && UsesStorageHeavyAggregate(func)) {
+      storage_heavy_fpm.run(func, AM.FAM);
+    } else {
+      FPM.run(func, AM.FAM);
+    }
+  }
 
   // Add module-level passes
   if (config.opt_level != OptLevel::O0) {

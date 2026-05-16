@@ -1396,6 +1396,7 @@ static StaticSafetyClassification ClassifyStaticSafety(
     const std::vector<ast::KeyPathExpr>& paths,
     const ast::Block& body,
     bool speculative_only,
+    bool has_dynamic_key_path,
     bool provably_disjoint) {
   StaticSafetyClassification classification;
 
@@ -1407,7 +1408,9 @@ static StaticSafetyClassification ClassifyStaticSafety(
     classification.conditions.insert(StaticSafetyCondition::SpeculativeOnly);
   }
 
-  if (provably_disjoint) {
+  const bool local_disjoint_proof_is_sufficient =
+      provably_disjoint && (!type_ctx.in_parallel || !has_dynamic_key_path);
+  if (local_disjoint_proof_is_sufficient) {
     classification.conditions.insert(StaticSafetyCondition::DisjointPaths);
   }
 
@@ -1907,6 +1910,7 @@ StmtTypeResult TypeKeyBlockStmt(const ScopeContext& ctx,
                   });
   const auto safety = ClassifyStaticSafety(ctx, type_ctx, env, node.paths,
                                            *node.body, has_speculative_mod,
+                                           has_dynamic_key_path,
                                            provably_disjoint_indices);
 
   if (has_dynamic_key_path) {

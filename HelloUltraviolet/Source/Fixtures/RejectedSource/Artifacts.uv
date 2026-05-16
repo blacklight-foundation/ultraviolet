@@ -2007,6 +2007,12 @@ public procedure rejectedSourceFixtureArtifactsExist(context: Context) -> bool {
         )
     artifacts_exist = artifacts_exist && rejectedFixtureArtifactsExist(
             context,
+            "HelloUltraviolet/Fixtures/RejectedSource/Keys/DynamicKeyStaticRequired/Ultraviolet.toml",
+            "HelloUltraviolet/Fixtures/RejectedSource/Keys/DynamicKeyStaticRequired/Source/Main.uv",
+            "HelloUltraviolet/Fixtures/RejectedSource/Keys/DynamicKeyStaticRequired/Expected.uv"
+        )
+    artifacts_exist = artifacts_exist && rejectedFixtureArtifactsExist(
+            context,
             "HelloUltraviolet/Fixtures/RejectedSource/Keys/KeyEscapeDeferredAccess/Ultraviolet.toml",
             "HelloUltraviolet/Fixtures/RejectedSource/Keys/KeyEscapeDeferredAccess/Source/Main.uv",
             "HelloUltraviolet/Fixtures/RejectedSource/Keys/KeyEscapeDeferredAccess/Expected.uv"

@@ -2919,6 +2919,14 @@ public procedure keyPathsDiagnosticExpectedDiagnosticFileMatches(context: Contex
     )
 }
 
+public procedure dynamicKeyStaticRequiredExpectedDiagnosticFileMatches(context: Context) -> bool {
+    return expectedDiagnosticFileMatches(
+        context,
+        "HelloUltraviolet/Fixtures/RejectedSource/Keys/DynamicKeyStaticRequired/Expected.uv",
+        "//! Expected diagnostic metadata for the DynamicKeyStaticRequired rejected-source specimen.\n\nexpectedDiagnostic(\"E-CON-0020\", \"rule.19.K-Static-Required\")\n"
+    )
+}
+
 public procedure keyEscapeDeferredAccessExpectedDiagnosticFileMatches(context: Context) -> bool {
     return expectedDiagnosticFileMatches(
         context,

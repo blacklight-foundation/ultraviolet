@@ -51,6 +51,20 @@ internal procedure keyBlockDefaultMemoryOrderingValue() -> i32 {
     return observed
 }
 
+internal procedure expressionOrderingOverridesKeyBlockDefaultValue() -> i32 {
+    var shared_value: shared i32 = 4
+    var observed: i32 = 0
+    [[relaxed]]
+    #shared_value read {
+        observed = ([[seqcst]] shared_value) + 0
+    }
+    [[seqcst]]
+    #shared_value read {
+        observed = observed + ([[relaxed]] shared_value)
+    }
+    return observed
+}
+
 internal procedure fenceOrderingValue() -> i32 {
     var shared_value: shared i32 = 1
     var observed: i32 = 0
@@ -71,5 +85,6 @@ public procedure runKeysMemoryOrderingReference() -> bool {
     return acquireOrderedKeyReadValue() == 1 &&
         expressionMemoryOrderingValue() == 15 &&
         keyBlockDefaultMemoryOrderingValue() == 7 &&
+        expressionOrderingOverridesKeyBlockDefaultValue() == 8 &&
         fenceOrderingValue() == 2
 }

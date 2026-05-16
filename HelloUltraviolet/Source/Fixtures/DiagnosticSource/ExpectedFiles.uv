@@ -115,6 +115,14 @@ public procedure dynamicKeyRuntimeInfoExpectedDiagnosticFileMatches(context: Con
     )
 }
 
+public procedure dynamicKeyRuntimeSyncInfoExpectedDiagnosticFileMatches(context: Context) -> bool {
+    return diagnosticExpectedFileMatches(
+        context,
+        "HelloUltraviolet/Fixtures/DiagnosticSource/Keys/DynamicKeyRuntimeSyncInfo/Expected.uv",
+        "//! Expected diagnostic metadata for the DynamicKeyRuntimeSyncInfo diagnostic-source specimen.\n\nexpectedDiagnostic(\"I-CON-0011\", \"diagnostics.19.DynamicKeyVerification\")\n"
+    )
+}
+
 public procedure staleAfterYieldReleaseWarningExpectedDiagnosticFileMatches(context: Context) -> bool {
     return diagnosticExpectedFileMatches(
         context,

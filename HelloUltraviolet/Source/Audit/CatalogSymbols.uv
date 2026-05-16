@@ -422,6 +422,14 @@ public procedure catalogCompiledSymbolTargetsAreIndexed() -> bool {
         catalogSymbolTargetMatches(
             "HelloUltraviolet::Fixtures::DiagnosticSource",
             "validatedKeysDiagnosticSourceFixtureCount",
+            "Fixtures/DiagnosticSource/Keys/DynamicKeyRuntimeSyncInfo/Source/Main.uv",
+            "HelloUltraviolet::Fixtures::DiagnosticSource",
+            "validatedKeysDiagnosticSourceFixtureCount",
+            "Fixtures/DiagnosticSource/Keys/DynamicKeyRuntimeSyncInfo/Source/Main.uv"
+        ) &&
+        catalogSymbolTargetMatches(
+            "HelloUltraviolet::Fixtures::DiagnosticSource",
+            "validatedKeysDiagnosticSourceFixtureCount",
             "Fixtures/DiagnosticSource/Keys/FineGrainedLoopKeyWarning/Source/Main.uv",
             "HelloUltraviolet::Fixtures::DiagnosticSource",
             "validatedKeysDiagnosticSourceFixtureCount",
@@ -2010,6 +2018,14 @@ public procedure catalogCompiledSymbolTargetsAreIndexed() -> bool {
             "HelloUltraviolet::Fixtures::RejectedSource",
             "validatedKeysRejectedSourceFixtureCount",
             "Fixtures/RejectedSource/Keys/ConflictDetectionDiagnostic/Source/Main.uv"
+        ) &&
+        catalogSymbolTargetMatches(
+            "HelloUltraviolet::Fixtures::RejectedSource",
+            "validatedKeysRejectedSourceFixtureCount",
+            "Fixtures/RejectedSource/Keys/DynamicKeyStaticRequired/Source/Main.uv",
+            "HelloUltraviolet::Fixtures::RejectedSource",
+            "validatedKeysRejectedSourceFixtureCount",
+            "Fixtures/RejectedSource/Keys/DynamicKeyStaticRequired/Source/Main.uv"
         ) &&
         catalogSymbolTargetMatches(
             "HelloUltraviolet::Fixtures::RejectedSource",
@@ -7528,7 +7544,7 @@ public procedure catalogCompiledSymbolsExecute(context: Context) -> bool {
     passed = recordCatalogSymbolExecution(
         context,
         "runKeysDynamicVerificationReference",
-        runKeysDynamicVerificationReference()
+        runKeysDynamicVerificationReference(context)
     ) && passed
     passed = recordCatalogSymbolExecution(
         context,

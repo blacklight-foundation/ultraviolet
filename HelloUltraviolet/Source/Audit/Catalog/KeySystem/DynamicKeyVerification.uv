@@ -61,12 +61,12 @@ public procedure validatedKeySystemDynamicKeyVerificationObligations() -> usize 
     ) {
         count = count + 1usize
     }
-    if acceptedObligationEntryMatches(
+    if rejectedSourceObligationEntryMatches(
         "rule.19.K-Static-Required",
         74885usize,
-        "HelloUltraviolet::Reference::Keys",
-        "runKeysDynamicVerificationReference",
-        "Source/Reference/Keys/DynamicVerification.uv"
+        "HelloUltraviolet::Fixtures::RejectedSource",
+        "validatedKeysRejectedSourceFixtureCount",
+        "Fixtures/RejectedSource/Keys/DynamicKeyStaticRequired/Source/Main.uv"
     ) {
         count = count + 1usize
     }

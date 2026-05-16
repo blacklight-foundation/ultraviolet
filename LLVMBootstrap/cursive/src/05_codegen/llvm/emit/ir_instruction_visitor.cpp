@@ -414,6 +414,12 @@ bool IRInstructionVisitor::IsDynamicSequenceType(const analysis::TypeRef &type) 
 
 llvm::Value *IRInstructionVisitor::DynamicLengthOf(const IRValue &value) const
 {
+  analysis::TypeRef normalized_type = NormalizeValueType(value);
+  if (!IsDynamicSequenceType(normalized_type))
+  {
+    return nullptr;
+  }
+
   llvm::Value *runtime_value = EvaluateOrDefault(value);
   if (!runtime_value)
   {
@@ -427,12 +433,6 @@ llvm::Value *IRInstructionVisitor::DynamicLengthOf(const IRValue &value) const
     {
       return builder.CreateExtractValue(runtime_value, {1u});
     }
-  }
-
-  analysis::TypeRef normalized_type = NormalizeValueType(value);
-  if (!IsDynamicSequenceType(normalized_type))
-  {
-    return nullptr;
   }
 
   if (!runtime_value->getType()->isPointerTy())

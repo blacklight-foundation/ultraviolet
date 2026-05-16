@@ -2069,12 +2069,14 @@ ResolveStmtResult ResolveStmt(ResolveContext& ctx,
           if (node.binding.pat) {
             const auto pat = ResolvePattern(ctx, node.binding.pat);
             if (!pat.ok) {
-              return {false, pat.diag_id, pat.span, {}};
+              return {false, pat.diag_id, pat.span, {},
+                      pat.diag_detail, pat.diag_children};
             }
             out.binding.pat = pat.value;
             const auto bind = BindPattern(ctx, pat.value);
             if (!bind.ok) {
-              return {false, bind.diag_id, bind.span, {}};
+              return {false, bind.diag_id, bind.span, {},
+                      "while binding let pattern"};
             }
           }
           SPEC_RULE("ResolveStmt-Let");
@@ -2096,12 +2098,14 @@ ResolveStmtResult ResolveStmt(ResolveContext& ctx,
           if (node.binding.pat) {
             const auto pat = ResolvePattern(ctx, node.binding.pat);
             if (!pat.ok) {
-              return {false, pat.diag_id, pat.span, {}};
+              return {false, pat.diag_id, pat.span, {},
+                      pat.diag_detail, pat.diag_children};
             }
             out.binding.pat = pat.value;
             const auto bind = BindPattern(ctx, pat.value);
             if (!bind.ok) {
-              return {false, bind.diag_id, bind.span, {}};
+              return {false, bind.diag_id, bind.span, {},
+                      "while binding var pattern"};
             }
           }
           SPEC_RULE("ResolveStmt-Var");

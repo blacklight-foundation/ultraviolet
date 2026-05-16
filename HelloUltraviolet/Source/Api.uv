@@ -418,6 +418,7 @@ using HelloUltraviolet::Fixtures::DiagnosticSource::{ unknownCalleeAccessWarning
 using HelloUltraviolet::Fixtures::DiagnosticSource::{ sharedClosureCaptureWarningExpectedDiagnosticFileMatches }
 using HelloUltraviolet::Fixtures::DiagnosticSource::{ nestedReleaseInterleavingWarningExpectedDiagnosticFileMatches }
 using HelloUltraviolet::Fixtures::DiagnosticSource::{ dynamicKeyRuntimeInfoExpectedDiagnosticFileMatches }
+using HelloUltraviolet::Fixtures::DiagnosticSource::{ dynamicKeyRuntimeSyncInfoExpectedDiagnosticFileMatches }
 using HelloUltraviolet::Fixtures::DiagnosticSource::{ staleAfterYieldReleaseWarningExpectedDiagnosticFileMatches }
 using HelloUltraviolet::Fixtures::DiagnosticSource::{ staleOkSuppressesReleaseWarningExpectedDiagnosticFileMatches }
 using HelloUltraviolet::Fixtures::DiagnosticSource::{ speculativeLargeStructWarningExpectedDiagnosticFileMatches }
@@ -447,6 +448,7 @@ using HelloUltraviolet::Fixtures::RejectedSource::{ speculativeOutsideWriteExpec
 using HelloUltraviolet::Fixtures::RejectedSource::{ speculativeImpureCallExpectedDiagnosticFileMatches }
 using HelloUltraviolet::Fixtures::RejectedSource::{ sharedReadThenWriteExpectedDiagnosticFileMatches }
 using HelloUltraviolet::Fixtures::RejectedSource::{ keyPathsDiagnosticExpectedDiagnosticFileMatches }
+using HelloUltraviolet::Fixtures::RejectedSource::{ dynamicKeyStaticRequiredExpectedDiagnosticFileMatches }
 using HelloUltraviolet::Fixtures::RejectedSource::{ keyEscapeDeferredAccessExpectedDiagnosticFileMatches }
 using HelloUltraviolet::Fixtures::RejectedSource::{ keyEscapePrecedenceExpectedDiagnosticFileMatches }
 using HelloUltraviolet::Fixtures::RejectedSource::{ conflictDetectionDiagnosticExpectedDiagnosticFileMatches }
@@ -831,6 +833,11 @@ public procedure runReferenceCorpus(context: Context) -> ReferenceResult {
         context,
         "dynamicKeyRuntimeInfoExpectedDiagnosticFileMatches",
         dynamicKeyRuntimeInfoExpectedDiagnosticFileMatches(context)
+    ) && passed
+    passed = recordReferenceResult(
+        context,
+        "dynamicKeyRuntimeSyncInfoExpectedDiagnosticFileMatches",
+        dynamicKeyRuntimeSyncInfoExpectedDiagnosticFileMatches(context)
     ) && passed
     passed = recordReferenceResult(
         context,
@@ -2934,6 +2941,11 @@ public procedure runReferenceCorpus(context: Context) -> ReferenceResult {
     ) && passed
     passed = recordReferenceResult(
         context,
+        "dynamicKeyStaticRequiredExpectedDiagnosticFileMatches",
+        dynamicKeyStaticRequiredExpectedDiagnosticFileMatches(context)
+    ) && passed
+    passed = recordReferenceResult(
+        context,
         "keyEscapeDeferredAccessExpectedDiagnosticFileMatches",
         keyEscapeDeferredAccessExpectedDiagnosticFileMatches(context)
     ) && passed
@@ -3575,7 +3587,7 @@ public procedure runReferenceCorpus(context: Context) -> ReferenceResult {
     passed = recordReferenceResult(
         context,
         "runKeysDynamicVerificationReference",
-        runKeysDynamicVerificationReference()
+        runKeysDynamicVerificationReference(context)
     ) && passed
     passed = recordReferenceResult(
         context,

@@ -1,7 +1,7 @@
 //! Diagnostic key-system specimens.
 
 public procedure keysDiagnosticSourceFixtureCount() -> usize {
-    return 12usize
+    return 13usize
 }
 
 public procedure validatedKeysDiagnosticSourceFixtureCount() -> usize {
@@ -138,6 +138,23 @@ public procedure validatedKeysDiagnosticSourceFixtureCount() -> usize {
         "Fixtures/DiagnosticSource/Keys/DynamicKeyRuntimeInfo/Source/Main.uv",
         "Fixtures/DiagnosticSource/Keys/DynamicKeyRuntimeInfo/Expected.uv",
         "I-CON-0013",
+        "diagnostics.19.DynamicKeyVerification"
+    ) {
+        count = count + 1usize
+    }
+    if diagnosticSpecimenMatches(
+        diagnosticSpecimen(
+            "DynamicKeyRuntimeSyncInfo",
+            "Fixtures/DiagnosticSource/Keys/DynamicKeyRuntimeSyncInfo",
+            "Fixtures/DiagnosticSource/Keys/DynamicKeyRuntimeSyncInfo/Source/Main.uv",
+            "Fixtures/DiagnosticSource/Keys/DynamicKeyRuntimeSyncInfo/Expected.uv",
+            expectedDiagnostic("I-CON-0011", "diagnostics.19.DynamicKeyVerification")
+        ),
+        "DynamicKeyRuntimeSyncInfo",
+        "Fixtures/DiagnosticSource/Keys/DynamicKeyRuntimeSyncInfo",
+        "Fixtures/DiagnosticSource/Keys/DynamicKeyRuntimeSyncInfo/Source/Main.uv",
+        "Fixtures/DiagnosticSource/Keys/DynamicKeyRuntimeSyncInfo/Expected.uv",
+        "I-CON-0011",
         "diagnostics.19.DynamicKeyVerification"
     ) {
         count = count + 1usize

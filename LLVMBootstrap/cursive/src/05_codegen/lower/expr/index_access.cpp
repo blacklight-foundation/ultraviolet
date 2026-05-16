@@ -37,6 +37,44 @@ IRRange ToIRRange(const RangeVal& range) {
     return out;
 }
 
+analysis::TypeRef IndexedElementType(const ast::Expr& access,
+                                     const ast::Expr& base,
+                                     LowerCtx& ctx) {
+    if (ctx.expr_type) {
+        if (analysis::TypeRef access_type = ctx.expr_type(access)) {
+            return access_type;
+        }
+    }
+
+    analysis::TypeRef base_type = ctx.expr_type ? ctx.expr_type(base) : nullptr;
+    std::optional<analysis::Permission> perm;
+    for (int depth = 0; base_type && depth < 8; ++depth) {
+        if (const auto* p = std::get_if<analysis::TypePerm>(&base_type->node)) {
+            perm = p->perm;
+            base_type = p->base;
+            continue;
+        }
+        if (const auto* refine = std::get_if<analysis::TypeRefine>(&base_type->node)) {
+            base_type = refine->base;
+            continue;
+        }
+        break;
+    }
+
+    analysis::TypeRef elem_type = nullptr;
+    if (base_type) {
+        if (const auto* arr = std::get_if<analysis::TypeArray>(&base_type->node)) {
+            elem_type = arr->element;
+        } else if (const auto* slice = std::get_if<analysis::TypeSlice>(&base_type->node)) {
+            elem_type = slice->element;
+        }
+    }
+    if (elem_type && perm.has_value()) {
+        elem_type = analysis::MakeTypePerm(*perm, elem_type);
+    }
+    return elem_type;
+}
+
 }  // namespace
 
 // =============================================================================
@@ -133,6 +171,48 @@ LowerResult LowerIndexAccess(const ast::IndexAccessExpr& expr, LowerCtx& ctx) {
 
     // Scalar index access
     SPEC_RULE("Lower-Expr-Index-Scalar");
+
+    if (IsPlaceExpr(*expr.base)) {
+        auto base_addr =
+            LowerAddrOf(*expr.base, ctx, AddressUseKind::TransientNoEscape);
+        auto index_result = LowerExpr(*expr.index, ctx);
+
+        const bool needs_check = NeedsIndexCheck(*expr.base, ctx);
+        IRCheckIndex check;
+        check.base = base_addr.value;
+        check.index = index_result.value;
+
+        IRValue elem_ptr = ctx.FreshTempValue("index_elem_addr");
+        if (analysis::TypeRef elem_type = IndexedElementType(access_expr, *expr.base, ctx)) {
+            ctx.RegisterValueType(elem_ptr,
+                                  analysis::MakeTypePtr(elem_type,
+                                                        analysis::PtrState::Valid));
+        }
+        DerivedValueInfo addr_info;
+        addr_info.kind = DerivedValueInfo::Kind::AddrIndex;
+        addr_info.base = base_addr.value;
+        addr_info.index = index_result.value;
+        ctx.RegisterDerivedValue(elem_ptr, addr_info);
+
+        IRValue elem_value = ctx.FreshTempValue("index_elem");
+        if (analysis::TypeRef elem_type = IndexedElementType(access_expr, *expr.base, ctx)) {
+            ctx.RegisterValueType(elem_value, elem_type);
+        }
+        DerivedValueInfo load_info;
+        load_info.kind = DerivedValueInfo::Kind::LoadFromAddr;
+        load_info.base = elem_ptr;
+        ctx.RegisterDerivedValue(elem_value, load_info);
+
+        std::vector<IRPtr> seq;
+        seq.push_back(base_addr.ir);
+        seq.push_back(index_result.ir);
+        seq.push_back(key_ir);
+        if (needs_check) {
+            seq.push_back(MakeIR(std::move(check)));
+            seq.push_back(PanicFollowup(ctx));
+        }
+        return LowerResult{SeqIR(std::move(seq)), elem_value};
+    }
 
     auto index_result = LowerExpr(*expr.index, ctx);
 

@@ -42,6 +42,44 @@ std::string ModulePathString(const std::vector<std::string>& path) {
   return out;
 }
 
+analysis::TypeRef IndexedElementType(const ast::Expr& access,
+                                     const ast::Expr& base,
+                                     LowerCtx& ctx) {
+  if (ctx.expr_type) {
+    if (analysis::TypeRef access_type = ctx.expr_type(access)) {
+      return access_type;
+    }
+  }
+
+  analysis::TypeRef base_type = ctx.expr_type ? ctx.expr_type(base) : nullptr;
+  std::optional<analysis::Permission> perm;
+  for (int depth = 0; base_type && depth < 8; ++depth) {
+    if (const auto* p = std::get_if<analysis::TypePerm>(&base_type->node)) {
+      perm = p->perm;
+      base_type = p->base;
+      continue;
+    }
+    if (const auto* refine = std::get_if<analysis::TypeRefine>(&base_type->node)) {
+      base_type = refine->base;
+      continue;
+    }
+    break;
+  }
+
+  analysis::TypeRef elem_type = nullptr;
+  if (base_type) {
+    if (const auto* arr = std::get_if<analysis::TypeArray>(&base_type->node)) {
+      elem_type = arr->element;
+    } else if (const auto* slice = std::get_if<analysis::TypeSlice>(&base_type->node)) {
+      elem_type = slice->element;
+    }
+  }
+  if (elem_type && perm.has_value()) {
+    elem_type = analysis::MakeTypePerm(*perm, elem_type);
+  }
+  return elem_type;
+}
+
 }  // namespace
 
 LowerResult LowerReadPlace(const ast::Expr& place, LowerCtx& ctx) {
@@ -192,10 +230,9 @@ LowerResult LowerReadPlace(const ast::Expr& place, LowerCtx& ctx) {
           return node.expr ? LowerReadPlace(*node.expr, ctx)
                            : LowerResult{EmptyIR(), ctx.FreshTempValue("place_attr")};
         } else if constexpr (std::is_same_v<T, ast::IndexAccessExpr>) {
-          auto base_result = LowerReadPlace(*node.base, ctx);
-
           if (std::holds_alternative<ast::RangeExpr>(node.index->node)) {
             SPEC_RULE("Lower-ReadPlace-Index-Range");
+            auto base_result = LowerReadPlace(*node.base, ctx);
             const auto& range_node = std::get<ast::RangeExpr>(node.index->node);
             auto range_result = LowerRangeExpr(range_node, ctx);
 
@@ -222,6 +259,7 @@ LowerResult LowerReadPlace(const ast::Expr& place, LowerCtx& ctx) {
 
           if (IsRangeIndexExpr(*node.index, ctx)) {
             SPEC_RULE("Lower-ReadPlace-Index-Range");
+            auto base_result = LowerReadPlace(*node.base, ctx);
             auto range_result = LowerExpr(*node.index, ctx);
             const auto range_kind = RangeIndexKindOf(*node.index, ctx);
 
@@ -253,24 +291,37 @@ LowerResult LowerReadPlace(const ast::Expr& place, LowerCtx& ctx) {
           }
 
           SPEC_RULE("Lower-ReadPlace-Index-Scalar");
+          auto base_addr =
+              LowerAddrOf(*node.base, ctx, AddressUseKind::TransientNoEscape);
           auto index_result = LowerExpr(*node.index, ctx);
           const bool needs_check = NeedsIndexCheck(*node.base, ctx);
           IRCheckIndex check;
-          check.base = base_result.value;
+          check.base = base_addr.value;
           check.index = index_result.value;
 
-          IRValue elem_value = ctx.FreshTempValue("place_index_elem");
-          if (ctx.expr_type) {
-            ctx.RegisterValueType(elem_value, ctx.expr_type(place));
+          IRValue elem_ptr = ctx.FreshTempValue("place_index_addr");
+          if (analysis::TypeRef elem_type = IndexedElementType(place, *node.base, ctx)) {
+            ctx.RegisterValueType(
+                elem_ptr,
+                analysis::MakeTypePtr(elem_type, analysis::PtrState::Valid));
           }
-          DerivedValueInfo info;
-          info.kind = DerivedValueInfo::Kind::Index;
-          info.base = base_result.value;
-          info.index = index_result.value;
-          ctx.RegisterDerivedValue(elem_value, info);
+          DerivedValueInfo addr_info;
+          addr_info.kind = DerivedValueInfo::Kind::AddrIndex;
+          addr_info.base = base_addr.value;
+          addr_info.index = index_result.value;
+          ctx.RegisterDerivedValue(elem_ptr, addr_info);
+
+          IRValue elem_value = ctx.FreshTempValue("place_index_elem");
+          if (analysis::TypeRef elem_type = IndexedElementType(place, *node.base, ctx)) {
+            ctx.RegisterValueType(elem_value, elem_type);
+          }
+          DerivedValueInfo load_info;
+          load_info.kind = DerivedValueInfo::Kind::LoadFromAddr;
+          load_info.base = elem_ptr;
+          ctx.RegisterDerivedValue(elem_value, load_info);
 
           std::vector<IRPtr> seq;
-          seq.push_back(base_result.ir);
+          seq.push_back(base_addr.ir);
           seq.push_back(index_result.ir);
           seq.push_back(LowerImplicitKeyAccess(place, ast::KeyMode::Read, ctx));
           if (needs_check) {
@@ -773,17 +824,6 @@ IRPtr LowerWritePlaceImpl(const ast::Expr& place,
           auto base_addr =
               LowerAddrOf(*node.base, ctx, AddressUseKind::TransientNoEscape);
 
-          analysis::TypeRef base_type;
-          if (ctx.expr_type) {
-            base_type = ctx.expr_type(*node.base);
-          }
-          IRValue base_value = ctx.FreshTempValue("place_index_base");
-          ctx.RegisterValueType(base_value, base_type);
-          IRReadPtr read_base;
-          read_base.ptr = base_addr.value;
-          read_base.result = base_value;
-          IRPtr base_read_ir = MakeIR(std::move(read_base));
-
           if (std::holds_alternative<ast::RangeExpr>(node.index->node)) {
             SPEC_RULE(allow_drop ? "Lower-WritePlace-Index-Range"
                                  : "LowerWriteSub-Index-Range");
@@ -791,11 +831,11 @@ IRPtr LowerWritePlaceImpl(const ast::Expr& place,
             auto range_result = LowerRangeExpr(range_node, ctx);
 
             IRCheckRange check;
-            check.base = base_value;
+            check.base = base_addr.value;
             check.range = ToIRRange(range_result.value);
 
             IRCheckSliceLen len_check;
-            len_check.base = base_value;
+            len_check.base = base_addr.value;
             len_check.range = ToIRRange(range_result.value);
             len_check.value = value;
 
@@ -819,7 +859,7 @@ IRPtr LowerWritePlaceImpl(const ast::Expr& place,
             addr_marker.result = ptr_value;
 
             IRPtr key_ir = LowerImplicitKeyAccess(place, ast::KeyMode::Write, ctx);
-            return SeqIR({base_addr.ir, base_read_ir, range_result.ir, key_ir,
+            return SeqIR({base_addr.ir, range_result.ir, key_ir,
                           MakeIR(std::move(check)),
                           PanicFollowup(ctx),
                           MakeIR(std::move(len_check)),
@@ -835,14 +875,14 @@ IRPtr LowerWritePlaceImpl(const ast::Expr& place,
             const auto range_kind = RangeIndexKindOf(*node.index, ctx);
 
             IRCheckRange check;
-            check.base = base_value;
+            check.base = base_addr.value;
             check.range_value = range_result.value;
             if (range_kind.has_value()) {
               check.range.kind = ToIRRangeKind(*range_kind);
             }
 
             IRCheckSliceLen len_check;
-            len_check.base = base_value;
+            len_check.base = base_addr.value;
             len_check.range_value = range_result.value;
             if (range_kind.has_value()) {
               len_check.range.kind = ToIRRangeKind(*range_kind);
@@ -872,7 +912,7 @@ IRPtr LowerWritePlaceImpl(const ast::Expr& place,
             addr_marker.result = ptr_value;
 
             IRPtr key_ir = LowerImplicitKeyAccess(place, ast::KeyMode::Write, ctx);
-            return SeqIR({base_addr.ir, base_read_ir, range_result.ir, key_ir,
+            return SeqIR({base_addr.ir, range_result.ir, key_ir,
                           MakeIR(std::move(check)),
                           PanicFollowup(ctx),
                           MakeIR(std::move(len_check)),
@@ -887,7 +927,7 @@ IRPtr LowerWritePlaceImpl(const ast::Expr& place,
 
           const bool needs_check = NeedsIndexCheck(*node.base, ctx);
           IRCheckIndex check;
-          check.base = base_value;
+          check.base = base_addr.value;
           check.index = index_result.value;
 
           IRValue ptr_value = ctx.FreshTempValue("addr_of_index");
@@ -925,7 +965,6 @@ IRPtr LowerWritePlaceImpl(const ast::Expr& place,
 
           std::vector<IRPtr> seq;
           seq.push_back(base_addr.ir);
-          seq.push_back(base_read_ir);
           seq.push_back(index_result.ir);
           seq.push_back(LowerImplicitKeyAccess(place, ast::KeyMode::Write, ctx));
           if (needs_check) {

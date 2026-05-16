@@ -87,6 +87,12 @@ public procedure diagnosticSourceFixtureArtifactsExist(context: Context) -> bool
         )
     artifacts_exist = artifacts_exist && diagnosticFixtureArtifactsExist(
             context,
+            "HelloUltraviolet/Fixtures/DiagnosticSource/Keys/DynamicKeyRuntimeSyncInfo/Ultraviolet.toml",
+            "HelloUltraviolet/Fixtures/DiagnosticSource/Keys/DynamicKeyRuntimeSyncInfo/Source/Main.uv",
+            "HelloUltraviolet/Fixtures/DiagnosticSource/Keys/DynamicKeyRuntimeSyncInfo/Expected.uv"
+        )
+    artifacts_exist = artifacts_exist && diagnosticFixtureArtifactsExist(
+            context,
             "HelloUltraviolet/Fixtures/DiagnosticSource/Keys/StaleAfterYieldReleaseWarning/Ultraviolet.toml",
             "HelloUltraviolet/Fixtures/DiagnosticSource/Keys/StaleAfterYieldReleaseWarning/Source/Main.uv",
             "HelloUltraviolet/Fixtures/DiagnosticSource/Keys/StaleAfterYieldReleaseWarning/Expected.uv"

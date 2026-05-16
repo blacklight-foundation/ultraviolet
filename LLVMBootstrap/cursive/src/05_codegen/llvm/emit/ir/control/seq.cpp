@@ -547,6 +547,7 @@ void IRInstructionVisitor::operator()(const IRSeq &seq) const
     }
     const IRAggregateCopyElision &info = *sig->aggregate_copy_elision;
     if (!info.return_local_uses_sret ||
+        info.source_param.empty() ||
         info.source_param_index >= call.args.size())
     {
       return false;

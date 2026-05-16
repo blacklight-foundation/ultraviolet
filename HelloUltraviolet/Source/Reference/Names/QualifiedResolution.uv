@@ -139,7 +139,7 @@ internal procedure qualifiedGenericTypeApplyValue() -> i32 {
 internal procedure qualifiedModalStateValue() -> i32 {
     let opened: QualifiedModalTypes::ModalReference@Open =
         QualifiedModalTypes::ModalReference@Open { value: 29 }
-    return opened.value
+    return opened~>readValue()
 }
 
 internal procedure qualifiedProcedureValueValue() -> usize {

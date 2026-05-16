@@ -183,7 +183,8 @@ ResPatternResult ResolvePattern(ResolveContext& ctx,
         } else if constexpr (std::is_same_v<T, ast::TypedPattern>) {
           const auto resolved = ResolveType(ctx, node.type);
           if (!resolved.ok) {
-            return {false, resolved.diag_id, resolved.span, {}};
+            return {false, resolved.diag_id, resolved.span, {},
+                    resolved.diag_detail, resolved.diag_children};
           }
           auto out = *pattern;
           auto& out_node = std::get<ast::TypedPattern>(out.node);
@@ -205,11 +206,17 @@ ResPatternResult ResolvePattern(ResolveContext& ctx,
         } else if constexpr (std::is_same_v<T, ast::RecordPattern>) {
           const auto resolved_path = ResolveTypePath(ctx, node.path);
           if (!resolved_path.ok) {
-            return {false, resolved_path.diag_id, resolved_path.span, {}};
+            return {false, resolved_path.diag_id,
+                    resolved_path.span.has_value()
+                        ? resolved_path.span
+                        : std::optional<core::Span>(pattern->span),
+                    {}, resolved_path.diag_detail,
+                    resolved_path.diag_children};
           }
           const auto fields = ResolveFieldPatternList(ctx, node.fields);
           if (!fields.ok) {
-            return {false, fields.diag_id, fields.span, {}};
+            return {false, fields.diag_id, fields.span, {},
+                    fields.diag_detail, fields.diag_children};
           }
           auto out = *pattern;
           auto& out_node = std::get<ast::RecordPattern>(out.node);
@@ -219,26 +226,50 @@ ResPatternResult ResolvePattern(ResolveContext& ctx,
           return {true, std::nullopt, std::nullopt,
                   std::make_shared<ast::Pattern>(std::move(out))};
         } else if constexpr (std::is_same_v<T, ast::EnumPattern>) {
-          const auto resolved_path = ResolveTypePath(ctx, node.path);
-          if (!resolved_path.ok) {
-            return {false, resolved_path.diag_id, resolved_path.span, {}};
-          }
-          const auto* decl = ctx.ctx ? FindEnumDecl(*ctx.ctx, resolved_path.value)
-                                     : nullptr;
           const bool record_payload =
               node.payload_opt &&
               std::holds_alternative<ast::RecordPayloadPattern>(*node.payload_opt);
+          const auto resolved_path = ResolveTypePath(ctx, node.path);
+          if (!resolved_path.ok) {
+            if (record_payload) {
+              const ast::TypePath joined = FullPath(node.path, node.name);
+              const auto resolved_rec = ResolveTypePath(ctx, joined);
+              if (resolved_rec.ok) {
+                const auto fields = ResolveFieldPatternList(
+                    ctx,
+                    std::get<ast::RecordPayloadPattern>(*node.payload_opt).fields);
+                if (!fields.ok) {
+                  return {false, fields.diag_id, fields.span, {},
+                          fields.diag_detail, fields.diag_children};
+                }
+                ast::RecordPattern rec;
+                rec.path = resolved_rec.value;
+                rec.fields = fields.value;
+                auto out = std::make_shared<ast::Pattern>();
+                out->span = pattern->span;
+                out->node = std::move(rec);
+                SPEC_RULE("ResolvePat-Enum-Record-Fallback");
+                return {true, std::nullopt, std::nullopt, out};
+              }
+            }
+            return {false, resolved_path.diag_id, resolved_path.span, {},
+                    resolved_path.diag_detail, resolved_path.diag_children};
+          }
+          const auto* decl = ctx.ctx ? FindEnumDecl(*ctx.ctx, resolved_path.value)
+                                     : nullptr;
           if (!decl && record_payload) {
             const ast::TypePath joined = FullPath(node.path, node.name);
             const auto resolved_rec = ResolveTypePath(ctx, joined);
             if (!resolved_rec.ok) {
-              return {false, resolved_rec.diag_id, resolved_rec.span, {}};
+              return {false, resolved_rec.diag_id, resolved_rec.span, {},
+                      resolved_rec.diag_detail, resolved_rec.diag_children};
             }
             const auto fields = ResolveFieldPatternList(
                 ctx,
                 std::get<ast::RecordPayloadPattern>(*node.payload_opt).fields);
             if (!fields.ok) {
-              return {false, fields.diag_id, fields.span, {}};
+              return {false, fields.diag_id, fields.span, {},
+                      fields.diag_detail, fields.diag_children};
             }
             ast::RecordPattern rec;
             rec.path = resolved_rec.value;

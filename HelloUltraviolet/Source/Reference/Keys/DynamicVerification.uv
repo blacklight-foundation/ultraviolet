@@ -20,8 +20,78 @@ internal procedure dynamicRuntimeSynchronizedWriteValue(first: usize, second: us
     return values[first] + values[second]
 }
 
+[[dynamic]]
+internal procedure dynamicParallelRuntimeSynchronizedWriteValue(
+    context: Context,
+    index: usize
+) -> i32 {
+    var backing: shared [i32; 4] = [1, 2, 3, 4]
+    let values: shared [i32] = backing[..]
+    return parallel context~>inline() {
+        let first: Spawned<i32> = spawn {
+            var observed: i32 = 0
+            #values[index] write {
+                values[index] = 11
+                observed = 11
+            }
+            observed
+        }
+        let second: Spawned<i32> = spawn {
+            var observed: i32 = 0
+            #values[index] write {
+                values[index] = 13
+                observed = 13
+            }
+            observed
+        }
+        (wait first) + (wait second)
+    }
+}
+
+[[dynamic]]
+internal procedure dynamicPrefixCoarsenedReadValue(index: usize) -> i32 {
+    var backing: shared [i32; 4] = [5, 6, 7, 8]
+    let values: shared [i32] = backing[..]
+    var observed: i32 = 0
+    #values dynamic read {
+        observed = values[index] + values[0usize]
+    }
+    return observed
+}
+
+[[dynamic]]
+internal procedure dynamicSpeculativeOnlyWriteValue(index: usize) -> i32 {
+    var backing: shared [i32; 4] = [1, 2, 3, 4]
+    let values: shared [i32] = backing[..]
+    #values[index] speculative write {
+        values[index] = values[index] + 10
+    }
+    var observed: i32 = 0
+    #values[index] read {
+        observed = values[index] + 0
+    }
+    return observed
+}
+
+internal procedure readSharedLeafForDynamic(value: shared KeyLeaf) -> i32 {
+    #value read {
+        return value.value + 0
+    }
+    return 0
+}
+
+[[dynamic]]
+internal procedure dynamicUniqueOriginSharedViewValue() -> i32 {
+    var leaf: unique KeyLeaf = KeyLeaf { value: 33 }
+    return readSharedLeafForDynamic(leaf)
+}
+
 /// Exercises the Keys DynamicVerification reference surface.
-public procedure runKeysDynamicVerificationReference() -> bool {
+public procedure runKeysDynamicVerificationReference(context: Context) -> bool {
     return dynamicKeyBlockValue(2usize) == 3 &&
-        dynamicRuntimeSynchronizedWriteValue(0usize, 2usize) == 30
+        dynamicRuntimeSynchronizedWriteValue(0usize, 2usize) == 30 &&
+        dynamicParallelRuntimeSynchronizedWriteValue(context, 1usize) == 24 &&
+        dynamicPrefixCoarsenedReadValue(2usize) == 12 &&
+        dynamicSpeculativeOnlyWriteValue(1usize) == 12 &&
+        dynamicUniqueOriginSharedViewValue() == 33
 }

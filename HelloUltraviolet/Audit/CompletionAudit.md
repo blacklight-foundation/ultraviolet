@@ -11,14 +11,14 @@ Objective: execute `.agents/plans/HelloUltravioletReferenceCorpus.md`.
   bodies whose implementation is only `return true`.
 - `Source/Main.uv` executes `runReferenceCorpus(context)`, and `Source/Api.uv`
   directly calls all 188 public reference runners.
-- `CatalogSourcePaths.uv` indexes 588 unique catalog source targets, and
-  `CatalogSymbols.uv` indexes 595 compiled symbol target tuples. The async
+- `CatalogSourcePaths.uv` indexes 591 unique catalog source targets, and
+  `CatalogSymbols.uv` indexes 598 compiled symbol target tuples. The async
   composition map, filter, take, fold, chain, and until obligations now name
   dedicated reference runners; aggregate combinator obligations name
   `runAsyncCompositionCombinatorsReference`.
 - The generated catalog now records the exercise kind for each primary
-  obligation row: 5,523 accepted-source rows, 45 accepted-project rows,
-  432 rejected-source rows, 26 diagnostic-source rows, 11 artifact-behavior
+  obligation row: 5,522 accepted-source rows, 45 accepted-project rows,
+  433 rejected-source rows, 26 diagnostic-source rows, 11 artifact-behavior
   rows, and 8 reference-model rows. Fixture-backed rows point at compiled
   fixture validators instead of accepted-source reference runners.
 - This pass corrected catalog targets for primitive, record, and union data types,
@@ -108,6 +108,12 @@ Objective: execute `.agents/plans/HelloUltravioletReferenceCorpus.md`.
   that drive artifact behavior, such as
   `Fixtures/ArtifactProjects/EmitBcLibrary/Source/Library.uv`, instead of
   using only the artifact-project metadata source as their catalog target.
+- Project output artifact source now exercises the Chapter 3.6 output model
+  directly: default and configured output roots, object/IR/bin/lib directories,
+  required-output counts, primary artifact selection, import-library emission,
+  library artifact inputs, module emission ordering, root and non-root symbol
+  names, target-profile suffix/triple/data-layout constants, and the
+  `BMap`/module-path mangling shape used by object paths.
 - Rejected-source and diagnostic-source catalog rows now record the physical
   fixture source files that exercise each expected diagnostic or diagnostic
   absence, such as
@@ -221,9 +227,17 @@ Objective: execute `.agents/plans/HelloUltravioletReferenceCorpus.md`.
   `rule.19.K-Spec-No-Nested-Key`, and the fence-expression branch of
   `rule.19.K-Spec-No-Memory-Ordering`.
 - This pass also expanded dynamic key-verification accepted source.
-  `runKeysDynamicVerificationReference` now exercises both a dynamic indexed
-  read and a dynamic indexed write block over two runtime-indexed paths under
-  `[[dynamic]]`.
+  `runKeysDynamicVerificationReference` now exercises a dynamic indexed read,
+  a dynamic indexed write block over two runtime-indexed paths, prefix
+  coarsening for a dynamic slice read, runtime synchronization for conflicting
+  dynamic indexed writes in spawned parallel tasks under `[[dynamic]]`,
+  speculative dynamic-index write behavior with a follow-up explicit read, and
+  temporary shared viewing from a unique-origin value under `[[dynamic]]`. It
+  also added rejected and diagnostic-source specimens for the dynamic-key
+  static-required rule:
+  `DynamicKeyStaticRequired` rejects a non-`[[dynamic]]` parallel dynamic-key
+  write with `E-CON-0020`, while `DynamicKeyRuntimeSyncInfo` compiles the
+  matching `[[dynamic]]` form and emits `I-CON-0011`.
 - This pass also expanded key-acquisition accepted source.
   `runKeysAcquisitionBlocksReference` now exercises passing a `shared` value
   as a procedure argument without acquiring a key at the call site; the callee
@@ -270,7 +284,8 @@ Objective: execute `.agents/plans/HelloUltravioletReferenceCorpus.md`.
   `ReceiverPermissionMismatch` rejected-source fixtures exercise
   `E-TYP-1601`, `E-TYP-1602`, `E-TYP-1604`, and `E-TYP-1605`; `E-TYP-1603`
   remains covered by `Expressions/CallArgNotPlace`. The const root-assignment
-  versus aggregate-path mutation diagnostic ownership question is recorded in
+  versus aggregate-path mutation diagnostic ownership question and the direct
+  shared-mutation versus implicit-key-acquisition question are recorded in
   `SpecClarificationsNeeded.md`, and the bootstrap repair is recorded as
   `UVBOOT-0066`.
 - This pass expanded qualified name-resolution accepted source.
@@ -420,12 +435,12 @@ Objective: execute `.agents/plans/HelloUltravioletReferenceCorpus.md`.
   `python3 .agents/scripts/generate_hello_catalog.py` completed after the
   generator skipped unchanged generated files and retried transient filesystem
   write failures;
-  the generated catalog still contains 6,045 rows with 5,523 accepted-source,
-  45 accepted-project, 432 rejected-source, 26 diagnostic-source,
+  the generated catalog still contains 6,045 rows with 5,522 accepted-source,
+  45 accepted-project, 433 rejected-source, 26 diagnostic-source,
   11 artifact-behavior, and 8 reference-model primary rows;
-  rejected-source fixture metadata now indexes 425 expected diagnostic entries
-  across 404 physical `Expected.uv` artifacts;
-  diagnostic-source fixture metadata now indexes 27 compiling warning, info, or
+  rejected-source fixture metadata now indexes 426 expected diagnostic entries
+  across 405 physical `Expected.uv` artifacts;
+  diagnostic-source fixture metadata now indexes 28 compiling warning, info, or
   expected-absence specimens;
   output-diagnostic fixture metadata now indexes 8 diagnostic artifact entries;
   `python3 Tools/ExtractObligationLedger.py --check` passed with 6,045
@@ -676,8 +691,8 @@ Objective: execute `.agents/plans/HelloUltravioletReferenceCorpus.md`.
   code 1 and renders `E-CLI-0001 (error): unknown command`, exercising
   `diagnostics.CommandLineDiagnostics` through the command-line diagnostic
   surface.
-- `Source/Fixtures/RejectedSource` compiles metadata for 425 rejected-source
-  expected diagnostic entries across 404 physical `Expected.uv` artifacts, and
+- `Source/Fixtures/RejectedSource` compiles metadata for 426 rejected-source
+  expected diagnostic entries across 405 physical `Expected.uv` artifacts, and
   `HelloUltraviolet.exe` validates that fixture index
   through `rejectedSourceFixturesAreIndexed`.
 - The rejected-source fixture projects under
@@ -753,11 +768,19 @@ Objective: execute `.agents/plans/HelloUltravioletReferenceCorpus.md`.
 - `Fixtures/DiagnosticSource/Expressions/ValidTransmuteTarget` builds with exit
   code 0 and emits `W-SAFE-0100` for a valid unsafe transmute whose target type
   is known to admit invalid bit patterns.
-- The 25 key-system rejected-source fixtures under
+- The 26 key-system rejected-source fixtures under
   `Fixtures/RejectedSource/Keys` reject with their expected `E-CON-*`
-  diagnostics, and the 12 key-system diagnostic-source fixtures under
+  diagnostics, and the 13 key-system diagnostic-source fixtures under
   `Fixtures/DiagnosticSource/Keys` compile with their expected `W-CON-*` or
   `I-CON-*` diagnostics or prove expected diagnostic absence.
+  `FineGrainedLoopKeyWarning` now performs a repeated keyed field read inside
+  the loop, `NestedReleaseInterleavingWarning` reads through the nested release
+  block, and `DynamicKeyRuntimeInfo` performs a dynamic indexed read through
+  the keyed path while still emitting the expected warning/info diagnostics.
+  `DynamicKeyStaticRequired` covers the required `E-CON-0020` rejection for
+  non-statically-safe key access outside `[[dynamic]]`, and
+  `DynamicKeyRuntimeSyncInfo` covers the required `I-CON-0011` runtime-sync
+  diagnostic under `[[dynamic]]`.
 - `Fixtures/DiagnosticSource/Parallelism/DispatchDynamicKeyWarning` compiles
   with exit code 0 and emits `W-CON-0140` for dispatch partition specs with
   non-static index expressions.
@@ -1119,12 +1142,15 @@ Objective: execute `.agents/plans/HelloUltravioletReferenceCorpus.md`.
   target-machine, or object-emission pass setup failures.
 - The project check gate passes:
   `Cursive.exe build HelloUltraviolet --check --target-profile x86_64-win64
-  --build-progress off --max-errors 20`, most recently run with exit code 0
-  and the expected ten warnings plus three info diagnostics.
+  --build-progress on --max-errors 20`, most recently run with exit code 0
+  in 176.24s and the expected 12 warnings plus 9 info diagnostics after
+  expanding the project output artifact source specimen.
 - The project build gate passes:
   `Cursive.exe build HelloUltraviolet --target-profile x86_64-win64
   --build-progress on --max-errors 20`, most recently run with exit code 0
-  in 136.89s and the expected ten warnings plus three info diagnostics.
+  in 211.36s with 58 objects reused, 1 rebuilt, and the expected 12 warnings
+  plus 9 info diagnostics after expanding the project output artifact source
+  specimen.
 - The executable gate passes:
   `HelloUltraviolet/build/bin/HelloUltraviolet.exe`, most recently run with
   exit code 0 and no output.
@@ -1139,8 +1165,8 @@ Objective: execute `.agents/plans/HelloUltravioletReferenceCorpus.md`.
 ## Completion Blockers
 
 - Rejected-source, diagnostic-source, and output-diagnostic fixtures are
-  partially populated. The current fixture set covers 425 rejected-source
-  diagnostic entries, 27 compiling diagnostic-source warning/info/absence
+  partially populated. The current fixture set covers 426 rejected-source
+  diagnostic entries, 28 compiling diagnostic-source warning/info/absence
   specimens, and 4 output-diagnostic artifact cases. Of the 382
   `oracle.expected-diagnostics`
   obligations, the generated catalog now maps 350 to rejected-source fixture
@@ -1369,18 +1395,28 @@ Objective: execute `.agents/plans/HelloUltravioletReferenceCorpus.md`.
   variants, tuple payload arity mismatches, and record payload missing fields.
   Key-system source specimens now exercise accepted key paths, key acquisition,
   field key boundaries, inline coarsening markers, expression-level and
-  key-block-default memory-order attributes, fence expressions, dynamic indexed
-  reads and writes, shared safe-pointer
+  key-block-default memory-order attributes, ordering override behavior, fence
+  expressions, dynamic indexed reads and writes, duplicate equivalent slice
+  keys through const, variable, and folded indices, constant-offset dynamic
+  slice keys, shared safe-pointer
   dereference key boundaries, accepted shared dynamic class object method
   calls, shared-argument call-site behavior, key-block control-flow return,
   local and escaping closure shared captures, key-block `break` and `continue`
   control-flow exits, explicit read/write context classification for
   let-initializer, assignment, operand, condition, argument, and receiver
   positions, covering-write read-then-write behavior, root-key nested write
-  coverage, speculative const receiver calls, multi-path speculative writes,
-  speculative panic cleanup through a catch boundary, selected
-  rejected-source obligations, and selected diagnostic-source obligations, with
-  broader source-runtime coverage still incomplete.
+  coverage, release-block stale-observation marking, dynamic prefix coarsening,
+  dynamic runtime synchronization for conflicting spawned writes, dynamic
+  unique-origin shared viewing, speculative const receiver calls, field and
+  indexed-field speculative writes, dynamic indexed speculative writes,
+  multi-path speculative writes, speculative panic cleanup through a catch
+  boundary, selected rejected-source obligations, and selected
+  diagnostic-source obligations. `UVBOOT-0080` records the bootstrap repair
+  needed for shared
+  slice bounds checks to prefer the runtime fat-pointer length over stale
+  static length metadata. `UVBOOT-0081` records the bootstrap repair that
+  prevents local same-body disjointness from proving dynamic indexed key
+  safety in parallel contexts outside `[[dynamic]]`.
   Expression closure and pipeline source specimens now exercise noncapturing
   function-typed closure literals, capturing closure-typed literals, typed and
   inferred closure parameters, typed and inferred returns, trailing-comma
@@ -1404,6 +1440,19 @@ Objective: execute `.agents/plans/HelloUltravioletReferenceCorpus.md`.
   `UVBOOT-0069` records the later backend repair needed for indirect closure
   calls whose actual callable type carries `move` parameter modes while stale
   concrete closure-code signature recovery supplies borrowed modes.
+  Names qualified-resolution source specimens now exercise imported module
+  aliases, full qualified procedure paths, qualified record literals,
+  qualified enum constructors and patterns, qualified generic type
+  applications, qualified modal-state literals, qualified procedure values,
+  qualified function-typed parameters, qualified record destructuring
+  patterns, local `using` aliases, full class paths, and dynamic class paths.
+  `UVBOOT-0079` records the bootstrap repairs needed for qualified
+  modal-state literal parsing, qualified record-pattern disambiguation through
+  module aliases, and resolver diagnostic context propagation. The
+  cross-module modal-state observation uses a public state method because
+  §13.2.4 restricts direct modal payload field visibility to the declaring
+  module. The record-pattern versus enum-record-payload token-shape ambiguity
+  is indexed through the clarification ledger.
 
 ## Current Status
 

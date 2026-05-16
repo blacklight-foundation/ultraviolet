@@ -1,0 +1,25 @@
+//! Rejected key-system specimen for dynamic key paths outside a dynamic context.
+
+public procedure dynamicKeyStaticRequiredReference(context: Context, index: usize) -> i32 {
+    var backing: shared [i32; 4] = [1, 2, 3, 4]
+    let values: shared [i32] = backing[..]
+    return parallel context~>inline() {
+        let first: Spawned<i32> = spawn {
+            var observed: i32 = 0
+            #values[index] write {
+                values[index] = 11
+                observed = 11
+            }
+            observed
+        }
+        let second: Spawned<i32> = spawn {
+            var observed: i32 = 0
+            #values[index] write {
+                values[index] = 13
+                observed = 13
+            }
+            observed
+        }
+        (wait first) + (wait second)
+    }
+}

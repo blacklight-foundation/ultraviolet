@@ -41,6 +41,30 @@ internal procedure speculativeMultiPathWriteValue() -> i32 {
     return values[0usize] + values[1usize]
 }
 
+internal procedure speculativeRecordFieldWriteValue() -> i32 {
+    var counter: shared SpeculativeKeyCounter = SpeculativeKeyCounter { value: 7 }
+    #counter.value speculative write {
+        let next_value: i32 = counter.value + 4
+        counter.value = next_value
+    }
+    return counter.value + 0
+}
+
+internal procedure speculativeIndexedFieldWriteValue() -> i32 {
+    var leaves: shared [KeyLeaf; 2] =
+        [
+            KeyLeaf { value: 2 },
+            KeyLeaf { value: 4 }
+        ]
+    #leaves[0usize].value, leaves[1usize].value speculative write {
+        let left: i32 = leaves[0usize].value + 0
+        let right: i32 = leaves[1usize].value + 0
+        leaves[0usize].value = right + 3
+        leaves[1usize].value = left + 5
+    }
+    return leaves[0usize].value + leaves[1usize].value
+}
+
 /// Foreign-visible C-unwind boundary used to execute the speculative panic path.
 [[dynamic]]
 [[export("C-unwind")]]
@@ -65,5 +89,7 @@ public procedure runKeysSpeculativeExecutionReference() -> bool {
     return speculativeWriteValue() == 2 &&
         speculativeConstReceiverCallValue() == 6 &&
         speculativeMultiPathWriteValue() == 26 &&
+        speculativeRecordFieldWriteValue() == 11 &&
+        speculativeIndexedFieldWriteValue() == 14 &&
         callSpeculativePanicBoundary() == 0
 }
