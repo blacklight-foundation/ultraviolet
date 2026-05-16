@@ -1,0 +1,55 @@
+//! Diagnostic source-text and lexical specimens.
+
+public procedure sourceTextDiagnosticSourceFixtureCount() -> usize {
+    return 2usize
+}
+
+internal procedure sourceTextDiagnosticFixtureMatches(
+    name: string@View,
+    fixture_path: string@View,
+    source_path: string@View,
+    expected_path: string@View,
+    expected_code: string@View,
+    obligation_id: string@View
+) -> bool {
+    return diagnosticSpecimenMatches(
+        diagnosticSpecimen(
+            name,
+            fixture_path,
+            source_path,
+            expected_path,
+            expectedDiagnostic(expected_code, obligation_id)
+        ),
+        name,
+        fixture_path,
+        source_path,
+        expected_path,
+        expected_code,
+        obligation_id
+    )
+}
+
+public procedure validatedSourceTextDiagnosticSourceFixtureCount() -> usize {
+    var count: usize = 0usize
+    if sourceTextDiagnosticFixtureMatches(
+        "LeadingBOMWarning",
+        "Fixtures/DiagnosticSource/SourceText/LeadingBOMWarning",
+        "Fixtures/DiagnosticSource/SourceText/LeadingBOMWarning/Source/Main.uv",
+        "Fixtures/DiagnosticSource/SourceText/LeadingBOMWarning/Expected.uv",
+        "W-SRC-0101",
+        "Span-BOM-Warn"
+    ) {
+        count = count + 1usize
+    }
+    if sourceTextDiagnosticFixtureMatches(
+        "DecimalLeadingZeroWarning",
+        "Fixtures/DiagnosticSource/SourceText/DecimalLeadingZeroWarning",
+        "Fixtures/DiagnosticSource/SourceText/DecimalLeadingZeroWarning/Source/Main.uv",
+        "Fixtures/DiagnosticSource/SourceText/DecimalLeadingZeroWarning/Expected.uv",
+        "W-SRC-0301",
+        "Warn-DecimalLeadingZero"
+    ) {
+        count = count + 1usize
+    }
+    return count
+}

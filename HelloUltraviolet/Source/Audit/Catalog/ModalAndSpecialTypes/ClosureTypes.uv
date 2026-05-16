@@ -295,12 +295,12 @@ public procedure validatedModalAndSpecialTypesClosureTypesObligations() -> usize
     ) {
         count = count + 1usize
     }
-    if acceptedObligationEntryMatches(
+    if rejectedSourceObligationEntryMatches(
         "diagnostics.ModalPointerSupplement",
         47441usize,
-        "HelloUltraviolet::Reference::ModalTypes",
-        "runModalTypesClosuresReference",
-        "Source/Reference/ModalTypes/Closures.uv"
+        "HelloUltraviolet::Fixtures::RejectedSource",
+        "validatedPatternsRejectedSourceFixtureCount",
+        "Fixtures/RejectedSource/Patterns/IfCaseModalNonExhaustive/Source/Main.uv"
     ) {
         count = count + 1usize
     }

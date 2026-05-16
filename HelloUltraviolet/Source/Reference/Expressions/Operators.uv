@@ -1,11 +1,117 @@
 //! Reference specimens for Expressions / Operators.
 
+internal procedure operatorUnexpectedRightOperand() -> bool {
+    let zero: i32 = 0
+    return (1 / zero) == 1
+}
+
+internal procedure operatorBoolean(value: bool) -> bool {
+    return value
+}
+
+internal procedure arithmeticOperatorsReference() -> bool {
+    let additive: i32 = 8 + 4 - 3
+    let multiplicative: i32 = additive * 2 / 3
+    let remainder: i32 = 14 % 5
+    let power_left: i32 = 3 ** 3
+    let power_right_associative: i32 = 2 ** 3 ** 2
+    let float_power: f64 = 2.0f64 ** 3.0f64
+    let float_remainder: f64 = 5.5f64 % 2.0f64
+
+    return multiplicative == 6 &&
+        remainder == 4 &&
+        power_left == 27 &&
+        power_right_associative == 512 &&
+        float_power == 8.0f64 &&
+        float_remainder > 1.49f64 &&
+        float_remainder < 1.51f64
+}
+
+internal procedure bitwiseShiftOperatorsReference() -> bool {
+    let signed_bitwise: i32 = (12 & 10) | (12 ^ 10)
+    let unsigned_bitwise: u32 = (12u32 & 10u32) | 1u32
+    let signed_shift: i32 = (1 << 5u32) >> 2u32
+    let unsigned_shift: u32 = (3u32 << 4u32) >> 1u32
+    let bit_not_zero: i32 = !0
+    let bit_not_all: i32 = !(-1)
+
+    return signed_bitwise == 14 &&
+        unsigned_bitwise == 9u32 &&
+        signed_shift == 8 &&
+        unsigned_shift == 24u32 &&
+        bit_not_zero == -1 &&
+        bit_not_all == 0
+}
+
+internal procedure comparisonOperatorsReference() -> bool {
+    let integer_comparison: bool = 7 == 7 && 7 != 8 && 7 > 3 && 3 <= 3
+    let boolean_comparison: bool = true == true && true != false
+    let character_comparison: bool = 'B' > 'A' && 'B' >= 'B' && 'A' < 'B'
+    let string_comparison: bool = "operator" == "operator" && "operator" != "operand"
+    let float_comparison: bool = 3.5f64 > 3.0f64 && 3.5f64 <= 3.5f64
+
+    return integer_comparison &&
+        boolean_comparison &&
+        character_comparison &&
+        string_comparison &&
+        float_comparison
+}
+
+internal procedure logicalOperatorsReference() -> bool {
+    let skipped_and: bool = false && operatorUnexpectedRightOperand()
+    let evaluated_and_true: bool = true && operatorBoolean(true)
+    let evaluated_and_false: bool = true && operatorBoolean(false)
+    let skipped_or: bool = true || operatorUnexpectedRightOperand()
+    let evaluated_or_true: bool = false || operatorBoolean(true)
+    let evaluated_or_false: bool = false || operatorBoolean(false)
+
+    return !skipped_and &&
+        evaluated_and_true &&
+        !evaluated_and_false &&
+        skipped_or &&
+        evaluated_or_true &&
+        !evaluated_or_false
+}
+
+internal procedure unaryOperatorsReference() -> bool {
+    let not_boolean: bool = !false
+    let negative_integer: i32 = -6
+    let negative_float: f64 = -1.5f64
+
+    return not_boolean &&
+        negative_integer == -6 &&
+        negative_float < -1.0f64
+}
+
+internal procedure rangeOperatorsReference() -> bool {
+    let values: [i32; 5] = [10, 20, 30, 40, 50]
+    let exclusive: [i32] = values[1usize..3usize]
+    let inclusive: [i32] = values[1usize..=3usize]
+    let from_start: [i32] = values[2usize..]
+    let to_end: [i32] = values[..3usize]
+    let to_inclusive_end: [i32] = values[..=2usize]
+    let full: [i32] = values[..]
+
+    return exclusive[0usize] == 20 &&
+        exclusive[1usize] == 30 &&
+        inclusive[0usize] == 20 &&
+        inclusive[2usize] == 40 &&
+        from_start[0usize] == 30 &&
+        from_start[2usize] == 50 &&
+        to_end[0usize] == 10 &&
+        to_end[2usize] == 30 &&
+        to_inclusive_end[0usize] == 10 &&
+        to_inclusive_end[2usize] == 30 &&
+        full[0usize] == 10 &&
+        full[4usize] == 50
+}
+
 /// Exercises the Expressions Operators reference surface.
 public procedure runExpressionsOperatorsReference() -> bool {
-    let arithmetic: i32 = ((8 + 4) - 3) * 2 / 3
-    let remainder: i32 = 14 % 5
-    let comparison: bool = arithmetic == 6 && remainder == 4 && 7 > 3 && 3 <= 3
-    let logical: bool = !(false) && (true || false)
-    let negative: i32 = -arithmetic
-    return comparison && logical && negative == -6
+    return arithmeticOperatorsReference() &&
+        bitwiseShiftOperatorsReference() &&
+        comparisonOperatorsReference() &&
+        logicalOperatorsReference() &&
+        unaryOperatorsReference() &&
+        rangeOperatorsReference()
 }

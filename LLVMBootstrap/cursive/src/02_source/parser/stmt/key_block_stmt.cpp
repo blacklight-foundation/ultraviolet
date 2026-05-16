@@ -591,14 +591,7 @@ ParseElemResult<Stmt> ParseKeyBlockStmt(Parser parser) {
   ModeModifiersResult modifiers = ParseKeyBlockModsOpt(paths.parser);
 
   // Parse the optional mode specifier: `read`, `write`, or `release read|write`.
-  Parser mode_start = modifiers.parser;
   KeyModeSpecOptResult mode_spec = ParseKeyModeSpecOpt(modifiers.parser);
-
-  if (HasKeyBlockMod(modifiers.mods, KeyBlockMod::Speculative) &&
-      (!mode_spec.mode.has_value() || *mode_spec.mode != KeyMode::Write)) {
-    EmitParseSyntaxErr(mode_start, TokSpan(mode_start));
-    mode_spec.mode = KeyMode::Write;
-  }
 
   // Parse block body
   ParseElemResult<std::shared_ptr<Block>> body = ParseBlock(mode_spec.parser);

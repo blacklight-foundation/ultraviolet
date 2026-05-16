@@ -998,26 +998,25 @@ void IRInstructionVisitor::operator()(const IRCall &call) const
           }
         }
 
-        llvm::BasicBlock *zero_bb =
-            llvm::BasicBlock::Create(emitter.GetContext(), "ac.take.zero", func);
-        llvm::BasicBlock *nonzero_bb =
-            llvm::BasicBlock::Create(emitter.GetContext(), "ac.take.nonzero", func);
-        llvm::BasicBlock *merge_bb =
-            llvm::BasicBlock::Create(emitter.GetContext(), "ac.take.merge", func);
-        llvm::Value *is_zero = builder.CreateICmpEQ(
-            count, llvm::ConstantInt::get(i64_ty, 0));
-        builder.CreateCondBr(is_zero, zero_bb, nonzero_bb);
+        const std::string take_sym = BuiltinSymAsyncTake();
+        llvm::Function *take_fn = emitter.GetModule().getFunction(take_sym);
+        if (!take_fn)
+        {
+          llvm::FunctionType *take_ty = llvm::FunctionType::get(
+              expected_result_ty,
+              {opaque_ptr_ty, i64_ty, opaque_ptr_ty},
+              false);
+          take_fn = llvm::Function::Create(
+              take_ty,
+              llvm::GlobalValue::ExternalLinkage,
+              take_sym,
+              &emitter.GetModule());
+          take_fn->setCallingConv(llvm::CallingConv::C);
+        }
 
-        builder.SetInsertPoint(zero_bb);
-        llvm::Value *completed = make_async_complete(nullptr, result_sig->result);
-        store_result(completed);
-        builder.CreateBr(merge_bb);
-
-        builder.SetInsertPoint(nonzero_bb);
-        store_result(builder.CreateLoad(async_struct, async_slot));
-        builder.CreateBr(merge_bb);
-
-        builder.SetInsertPoint(merge_bb);
+        llvm::Value *source_ptr = builder.CreateBitCast(async_slot, opaque_ptr_ty);
+        llvm::Value *taken = builder.CreateCall(take_fn, {source_ptr, count, panic_ptr});
+        store_result(taken);
         finish_from(nullptr);
         return;
       }
@@ -1213,6 +1212,7 @@ void IRInstructionVisitor::operator()(const IRCall &call) const
   const LowerCtx *ctx = emitter.GetCurrentCtx();
   const LowerCtx::ProcSigInfo *sig = nullptr;
   LowerCtx::ProcSigInfo inferred_sig;
+  LowerCtx::ProcSigInfo callable_type_adjusted_sig;
   LowerCtx::ProcSigInfo closure_adjusted_sig;
   LowerCtx::ProcSigInfo hosted_adjusted_sig;
   std::string callee_symbol = call.callee.name;
@@ -1897,6 +1897,85 @@ void IRInstructionVisitor::operator()(const IRCall &call) const
       if (!sig && !callee_symbol.empty())
       {
         sig = ctx->LookupProcSig(callee_symbol);
+      }
+    }
+  }
+
+  if (sig && ctx && call.callee.kind != IRValue::Kind::Symbol)
+  {
+    analysis::TypeRef callable_type =
+        analysis::StripPerm(ctx->LookupValueType(call.callee));
+    if (!callable_type)
+    {
+      callable_type = ctx->LookupValueType(call.callee);
+    }
+    if (!callable_type && call.callee.kind == IRValue::Kind::Local)
+    {
+      callable_type =
+          analysis::StripPerm(emitter.LookupLocalType(call.callee.name));
+      if (!callable_type)
+      {
+        callable_type = emitter.LookupLocalType(call.callee.name);
+      }
+    }
+    if (callable_type)
+    {
+      const analysis::ScopeContext scope = BuildScope(ctx);
+      if (analysis::TypeRef resolved =
+              ResolveAliasTypeInScope(scope, callable_type))
+      {
+        callable_type = analysis::StripPerm(resolved);
+        if (!callable_type)
+        {
+          callable_type = resolved;
+        }
+      }
+    }
+
+    if (const auto *fn_type = callable_type
+                                  ? std::get_if<analysis::TypeFunc>(
+                                        &callable_type->node)
+                                  : nullptr)
+    {
+      const bool compatible =
+          fn_type->params.size() == sig->params.size() ||
+          (fn_type->params.size() + 1 == sig->params.size() &&
+           sig->params.back().name == std::string(kPanicOutName));
+      if (compatible)
+      {
+        callable_type_adjusted_sig = *sig;
+        for (std::size_t i = 0; i < fn_type->params.size(); ++i)
+        {
+          callable_type_adjusted_sig.params[i].mode = fn_type->params[i].mode;
+          callable_type_adjusted_sig.params[i].type = fn_type->params[i].type;
+        }
+        callable_type_adjusted_sig.ret = fn_type->ret;
+        sig = &callable_type_adjusted_sig;
+      }
+    }
+    else if (const auto *closure = callable_type
+                                      ? std::get_if<analysis::TypeClosure>(
+                                            &callable_type->node)
+                                      : nullptr)
+    {
+      const bool compatible =
+          closure->params.size() + 1 == sig->params.size() ||
+          (closure->params.size() + 2 == sig->params.size() &&
+           sig->params.back().name == std::string(kPanicOutName));
+      if (compatible)
+      {
+        callable_type_adjusted_sig = *sig;
+        for (std::size_t i = 0; i < closure->params.size(); ++i)
+        {
+          callable_type_adjusted_sig.params[i + 1].mode =
+              closure->params[i].first
+                  ? std::optional<analysis::ParamMode>(analysis::ParamMode::Move)
+                  : std::nullopt;
+          callable_type_adjusted_sig.params[i + 1].type =
+              closure->params[i].second;
+        }
+        callable_type_adjusted_sig.ret = closure->ret;
+        sig = &callable_type_adjusted_sig;
       }
     }
   }

@@ -36,17 +36,45 @@ internal record ImplementationOverrideOwner <: ImplementationReadable {
     }
 }
 
+internal class ImplementationMarker {}
+
+internal enum ImplementationChoice <: ImplementationMarker {
+    First
+    Second
+}
+
+internal modal ImplementationState <: ImplementationMarker {
+    @Ready {}
+}
+
 /// Exercises the Polymorphism Implementations reference surface.
 public procedure runPolymorphismImplementationsReference() -> bool {
     let owner: ImplementationOwner = ImplementationOwner { required_value: 23 }
     let override_owner: ImplementationOverrideOwner =
         ImplementationOverrideOwner { required_value: 31 }
+    let choice: ImplementationChoice = ImplementationChoice::Second
+    let state: ImplementationState = widen ImplementationState@Ready {}
+    let enum_implementation_ok: bool = if choice is {
+        ImplementationChoice::First {
+            false
+        }
+        ImplementationChoice::Second {
+            true
+        }
+    }
+    let modal_implementation_ok: bool = if state is {
+        @Ready {
+            true
+        }
+    }
     let reference: PolymorphismReference = polymorphismReference(
-        9usize,
+        11usize,
         owner~>readValue() == 23 &&
             owner~>defaultValue() == 29 &&
             override_owner~>readValue() == 31 &&
-            override_owner~>defaultValue() == 32,
+            override_owner~>defaultValue() == 32 &&
+            enum_implementation_ok &&
+            modal_implementation_ok,
         true
     )
     return polymorphismReferenceIsCovered(reference) && reference.dynamically_dispatchable

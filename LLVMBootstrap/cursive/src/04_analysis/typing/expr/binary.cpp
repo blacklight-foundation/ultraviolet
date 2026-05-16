@@ -18,6 +18,7 @@
 #include "04_analysis/typing/type_predicates.h"
 #include "04_analysis/typing/typecheck.h"
 #include "04_analysis/typing/types.h"
+#include "02_source/ast/ast_utils.h"
 
 #include <vector>
 
@@ -280,12 +281,28 @@ static bool LoadBinaryOperandInfo(const ScopeContext& ctx,
                                   const ast::ExprPtr& expr,
                                   const TypeEnv& env,
                                   BinaryOperandInfo& out,
-                                  std::optional<std::string_view>& diag_id) {
+                                  std::optional<std::string_view>& diag_id,
+                                  std::string* diag_detail,
+                                  std::optional<core::Span>* diag_span) {
   out.typed =
       TypeExpr(ctx, WithSharedAccessMode(type_ctx, ast::KeyMode::Read), expr,
                env);
   if (!out.typed.ok) {
     diag_id = out.typed.diag_id;
+    if (diag_detail) {
+      *diag_detail = std::string("logical operand ") +
+                     (expr ? ast::node_kind(*expr) : "<missing>") +
+                     " failed to type";
+      if (!out.typed.diag_detail.empty()) {
+        *diag_detail += ": " + out.typed.diag_detail;
+      }
+    }
+    if (diag_span) {
+      *diag_span = out.typed.diag_span.has_value()
+                       ? out.typed.diag_span
+                       : (expr ? std::optional<core::Span>(expr->span)
+                               : std::nullopt);
+    }
     return false;
   }
 
@@ -376,7 +393,8 @@ static bool CheckLogicalOperand(const ScopeContext& ctx,
                                 ExprTypeResult& result) {
   BinaryOperandInfo operand;
   std::optional<std::string_view> diag_id;
-  if (!LoadBinaryOperandInfo(ctx, type_ctx, expr, env, operand, diag_id)) {
+  if (!LoadBinaryOperandInfo(ctx, type_ctx, expr, env, operand, diag_id,
+                             &result.diag_detail, &result.diag_span)) {
     result.diag_id = diag_id;
     return false;
   }
@@ -392,6 +410,11 @@ static bool CheckLogicalOperand(const ScopeContext& ctx,
     return true;
   }
 
+  result.diag_detail =
+      std::string("logical operand ") +
+      (expr ? ast::node_kind(*expr) : "<missing>") +
+      " has type " + TypeToString(operand.typed.type);
+  result.diag_span = expr ? std::optional<core::Span>(expr->span) : std::nullopt;
   return false;
 }
 
@@ -408,7 +431,15 @@ static ExprTypeResult TypeLogicalBinaryChain(const ScopeContext& ctx,
     if (!CheckLogicalOperand(ctx, type_ctx, operand, env, result)) {
       if (!result.diag_id.has_value()) {
         SPEC_RULE("Binary-Operand-Type-Err");
+        const std::string detail = result.diag_detail;
+        const std::optional<core::Span> span = result.diag_span;
         SetBinaryOperandTypeMismatch(result, expr.op);
+        if (!detail.empty()) {
+          result.diag_detail = detail;
+        }
+        if (span.has_value()) {
+          result.diag_span = span;
+        }
       }
       return result;
     }
@@ -459,14 +490,16 @@ ExprTypeResult TypeBinaryExprImpl(const ScopeContext& ctx,
 
   BinaryOperandInfo lhs;
   std::optional<std::string_view> lhs_diag_id;
-  if (!LoadBinaryOperandInfo(ctx, type_ctx, expr.lhs, env, lhs, lhs_diag_id)) {
+  if (!LoadBinaryOperandInfo(ctx, type_ctx, expr.lhs, env, lhs, lhs_diag_id,
+                             nullptr, nullptr)) {
     result.diag_id = lhs_diag_id;
     return result;
   }
 
   BinaryOperandInfo rhs;
   std::optional<std::string_view> rhs_diag_id;
-  if (!LoadBinaryOperandInfo(ctx, type_ctx, expr.rhs, env, rhs, rhs_diag_id)) {
+  if (!LoadBinaryOperandInfo(ctx, type_ctx, expr.rhs, env, rhs, rhs_diag_id,
+                             nullptr, nullptr)) {
     result.diag_id = rhs_diag_id;
     return result;
   }

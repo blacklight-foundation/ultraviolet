@@ -178,12 +178,12 @@ public procedure validatedModuleLevelFormsUsingDeclarationsObligations() -> usiz
     ) {
         count = count + 1usize
     }
-    if acceptedObligationEntryMatches(
+    if rejectedSourceObligationEntryMatches(
         "Using-List-Dup",
         30403usize,
-        "HelloUltraviolet::Reference::Modules",
-        "runModulesUsingsReference",
-        "Source/Reference/Modules/Usings.uv"
+        "HelloUltraviolet::Fixtures::RejectedSource",
+        "validatedModulesRejectedSourceFixtureCount",
+        "Fixtures/RejectedSource/Modules/UsingListDuplicate/Source/Main.uv"
     ) {
         count = count + 1usize
     }
@@ -205,12 +205,12 @@ public procedure validatedModuleLevelFormsUsingDeclarationsObligations() -> usiz
     ) {
         count = count + 1usize
     }
-    if acceptedObligationEntryMatches(
+    if rejectedSourceObligationEntryMatches(
         "Bind-Using-Err",
         30457usize,
-        "HelloUltraviolet::Reference::Modules",
-        "runModulesUsingsReference",
-        "Source/Reference/Modules/Usings.uv"
+        "HelloUltraviolet::Fixtures::RejectedSource",
+        "validatedModulesRejectedSourceFixtureCount",
+        "Fixtures/RejectedSource/Modules/UsingListDuplicate/Source/Main.uv"
     ) {
         count = count + 1usize
     }
@@ -241,12 +241,12 @@ public procedure validatedModuleLevelFormsUsingDeclarationsObligations() -> usiz
     ) {
         count = count + 1usize
     }
-    if acceptedObligationEntryMatches(
+    if rejectedSourceObligationEntryMatches(
         "diagnostics.UsingDeclarations",
         30524usize,
-        "HelloUltraviolet::Reference::Modules",
-        "runModulesUsingsReference",
-        "Source/Reference/Modules/Usings.uv"
+        "HelloUltraviolet::Fixtures::RejectedSource",
+        "validatedModulesRejectedSourceFixtureCount",
+        "Fixtures/RejectedSource/Modules/UsingListDuplicate/Source/Main.uv"
     ) {
         count = count + 1usize
     }

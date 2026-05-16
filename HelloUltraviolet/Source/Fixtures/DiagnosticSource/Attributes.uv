@@ -1,0 +1,27 @@
+//! Diagnostic attribute specimens.
+
+public procedure attributesDiagnosticSourceFixtureCount() -> usize {
+    return 1usize
+}
+
+public procedure validatedAttributesDiagnosticSourceFixtureCount() -> usize {
+    var count: usize = 0usize
+    if diagnosticSpecimenMatches(
+        diagnosticSpecimen(
+            "InlineAlwaysRecursive",
+            "Fixtures/DiagnosticSource/Attributes/InlineAlwaysRecursive",
+            "Fixtures/DiagnosticSource/Attributes/InlineAlwaysRecursive/Source/Main.uv",
+            "Fixtures/DiagnosticSource/Attributes/InlineAlwaysRecursive/Expected.uv",
+            expectedDiagnostic("W-MOD-2452", "diagnostics.OptimizationAttributeDiagnostics")
+        ),
+        "InlineAlwaysRecursive",
+        "Fixtures/DiagnosticSource/Attributes/InlineAlwaysRecursive",
+        "Fixtures/DiagnosticSource/Attributes/InlineAlwaysRecursive/Source/Main.uv",
+        "Fixtures/DiagnosticSource/Attributes/InlineAlwaysRecursive/Expected.uv",
+        "W-MOD-2452",
+        "diagnostics.OptimizationAttributeDiagnostics"
+    ) {
+        count = count + 1usize
+    }
+    return count
+}

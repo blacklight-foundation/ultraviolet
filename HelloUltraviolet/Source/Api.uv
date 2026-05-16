@@ -16,12 +16,19 @@ using HelloUltraviolet::Fixtures::ArtifactProjects::{ reducedEmptyDispatchPanicE
 using HelloUltraviolet::Fixtures::DiagnosticSource::{ diagnosticSourceFixturesAreIndexed }
 using HelloUltraviolet::Fixtures::DiagnosticSource::{ diagnosticSourceFixtureArtifactsExist }
 using HelloUltraviolet::Fixtures::DiagnosticSource::{ validTransmuteTargetExpectedDiagnosticFileMatches }
+using HelloUltraviolet::Fixtures::DiagnosticSource::{ inlineAlwaysRecursiveExpectedDiagnosticFileMatches }
+using HelloUltraviolet::Fixtures::DiagnosticSource::{ leadingBOMWarningExpectedDiagnosticFileMatches }
+using HelloUltraviolet::Fixtures::DiagnosticSource::{ decimalLeadingZeroWarningExpectedDiagnosticFileMatches }
 using HelloUltraviolet::Fixtures::OutputDiagnostics::{ outputDiagnosticFixturesAreIndexed }
 using HelloUltraviolet::Fixtures::OutputDiagnostics::{ outputDiagnosticFixtureArtifactsExist }
 using HelloUltraviolet::Fixtures::OutputDiagnostics::{ llvmToolResolveOwnershipExpectedDiagnosticFileMatches }
 using HelloUltraviolet::Fixtures::OutputDiagnostics::{ llvmToolResolveOwnershipConformanceLogMatches }
 using HelloUltraviolet::Fixtures::OutputDiagnostics::{ emitLLVMRenderFailureExpectedDiagnosticFileMatches }
 using HelloUltraviolet::Fixtures::OutputDiagnostics::{ emitLLVMRenderFailureConformanceLogMatches }
+using HelloUltraviolet::Fixtures::OutputDiagnostics::{ manifestParseErrorExpectedDiagnosticFileMatches }
+using HelloUltraviolet::Fixtures::OutputDiagnostics::{ manifestParseErrorConformanceLogMatches }
+using HelloUltraviolet::Fixtures::OutputDiagnostics::{ unknownCommandExpectedDiagnosticFileMatches }
+using HelloUltraviolet::Fixtures::OutputDiagnostics::{ unknownCommandOutputMatches }
 using HelloUltraviolet::Fixtures::RejectedSource::{ rejectedSourceFixturesAreIndexed }
 using HelloUltraviolet::Fixtures::RejectedSource::{ rejectedSourceFixtureArtifactsExist }
 using HelloUltraviolet::Fixtures::RejectedSource::{ userDiagnosticErrorExpectedDiagnosticFileMatches }
@@ -45,9 +52,23 @@ using HelloUltraviolet::Fixtures::RejectedSource::{ unterminatedStringExpectedDi
 using HelloUltraviolet::Fixtures::RejectedSource::{ invalidStringEscapeExpectedDiagnosticFileMatches }
 using HelloUltraviolet::Fixtures::RejectedSource::{ malformedNumericLiteralExpectedDiagnosticFileMatches }
 using HelloUltraviolet::Fixtures::RejectedSource::{ unterminatedBlockCommentExpectedDiagnosticFileMatches }
+using HelloUltraviolet::Fixtures::RejectedSource::{ leadingBOMEmbeddedBOMExpectedDiagnosticFileMatches }
+using HelloUltraviolet::Fixtures::RejectedSource::{ prohibitedControlCharacterExpectedDiagnosticFileMatches }
+using HelloUltraviolet::Fixtures::RejectedSource::{ invalidUTF8ExpectedDiagnosticFileMatches }
 using HelloUltraviolet::Fixtures::RejectedSource::{ missingStatementTerminatorExpectedDiagnosticFileMatches }
 using HelloUltraviolet::Fixtures::RejectedSource::{ enumCommaSeparatorExpectedDiagnosticFileMatches }
+using HelloUltraviolet::Fixtures::RejectedSource::{ unknownAttributeExpectedDiagnosticFileMatches }
+using HelloUltraviolet::Fixtures::RejectedSource::{ testMissingPostconditionExpectedDiagnosticFileMatches }
+using HelloUltraviolet::Fixtures::RejectedSource::{ packedLayoutOnEnumExpectedDiagnosticFileMatches }
+using HelloUltraviolet::Fixtures::RejectedSource::{ reservedVendorNamespaceExpectedDiagnosticFileMatches }
+using HelloUltraviolet::Fixtures::RejectedSource::{ typeAliasCycleExpectedDiagnosticFileMatches }
 using HelloUltraviolet::Fixtures::RejectedSource::{ duplicateModuleDeclarationExpectedDiagnosticFileMatches }
+using HelloUltraviolet::Fixtures::RejectedSource::{ staticMissingTypeAnnotationExpectedDiagnosticFileMatches }
+using HelloUltraviolet::Fixtures::RejectedSource::{ missingImportExpectedDiagnosticFileMatches }
+using HelloUltraviolet::Fixtures::RejectedSource::{ usingListDuplicateExpectedDiagnosticFileMatches }
+using HelloUltraviolet::Fixtures::RejectedSource::{ reservedModuleKeywordExpectedDiagnosticFileMatches }
+using HelloUltraviolet::Fixtures::RejectedSource::{ privateAccessExpectedDiagnosticFileMatches }
+using HelloUltraviolet::Fixtures::RejectedSource::{ internalAccessExpectedDiagnosticFileMatches }
 using HelloUltraviolet::Fixtures::RejectedSource::{ mainMissingExpectedDiagnosticFileMatches }
 using HelloUltraviolet::Fixtures::RejectedSource::{ mainMultipleExpectedDiagnosticFileMatches }
 using HelloUltraviolet::Fixtures::RejectedSource::{ mainGenericExpectedDiagnosticFileMatches }
@@ -399,6 +420,8 @@ using HelloUltraviolet::Fixtures::DiagnosticSource::{ nestedReleaseInterleavingW
 using HelloUltraviolet::Fixtures::DiagnosticSource::{ dynamicKeyRuntimeInfoExpectedDiagnosticFileMatches }
 using HelloUltraviolet::Fixtures::DiagnosticSource::{ staleAfterYieldReleaseWarningExpectedDiagnosticFileMatches }
 using HelloUltraviolet::Fixtures::DiagnosticSource::{ staleOkSuppressesReleaseWarningExpectedDiagnosticFileMatches }
+using HelloUltraviolet::Fixtures::DiagnosticSource::{ speculativeLargeStructWarningExpectedDiagnosticFileMatches }
+using HelloUltraviolet::Fixtures::DiagnosticSource::{ speculativeExpensiveBodyWarningExpectedDiagnosticFileMatches }
 using HelloUltraviolet::Fixtures::DiagnosticSource::{ asyncLargeCaptureWarningExpectedDiagnosticFileMatches }
 using HelloUltraviolet::Fixtures::DiagnosticSource::{ asyncLargeCaptureWarningEmissionExpectedDiagnosticFileMatches }
 using HelloUltraviolet::Fixtures::DiagnosticSource::{ asyncLargeCaptureNoWarningExpectedDiagnosticFileMatches }
@@ -411,12 +434,16 @@ using HelloUltraviolet::Fixtures::DiagnosticSource::{ userDiagnosticWarningExpec
 using HelloUltraviolet::Fixtures::DiagnosticSource::{ userDiagnosticNoteExpectedDiagnosticFileMatches }
 using HelloUltraviolet::Fixtures::DiagnosticSource::{ projectFilesInvalidPathExpectedDiagnosticFileMatches }
 using HelloUltraviolet::Fixtures::RejectedSource::{ speculativeReleaseModeExpectedDiagnosticFileMatches }
+using HelloUltraviolet::Fixtures::RejectedSource::{ speculativeReadModeExpectedDiagnosticFileMatches }
 using HelloUltraviolet::Fixtures::RejectedSource::{ orderedDifferentBaseExpectedDiagnosticFileMatches }
 using HelloUltraviolet::Fixtures::RejectedSource::{ nestedReleaseSameModeExpectedDiagnosticFileMatches }
 using HelloUltraviolet::Fixtures::RejectedSource::{ speculativeNestedKeyBlockExpectedDiagnosticFileMatches }
+using HelloUltraviolet::Fixtures::RejectedSource::{ speculativeNestedKeyRuleExpectedDiagnosticFileMatches }
 using HelloUltraviolet::Fixtures::RejectedSource::{ speculativeDeferExpectedDiagnosticFileMatches }
 using HelloUltraviolet::Fixtures::RejectedSource::{ speculativeWaitExpectedDiagnosticFileMatches }
 using HelloUltraviolet::Fixtures::RejectedSource::{ speculativeMemoryOrderExpectedDiagnosticFileMatches }
+using HelloUltraviolet::Fixtures::RejectedSource::{ speculativeFenceExpectedDiagnosticFileMatches }
+using HelloUltraviolet::Fixtures::RejectedSource::{ speculativeOutsideWriteExpectedDiagnosticFileMatches }
 using HelloUltraviolet::Fixtures::RejectedSource::{ speculativeImpureCallExpectedDiagnosticFileMatches }
 using HelloUltraviolet::Fixtures::RejectedSource::{ sharedReadThenWriteExpectedDiagnosticFileMatches }
 using HelloUltraviolet::Fixtures::RejectedSource::{ keyPathsDiagnosticExpectedDiagnosticFileMatches }
@@ -526,6 +553,7 @@ using HelloUltraviolet::Reference::Expressions::{ runExpressionsConstructionRefe
 using HelloUltraviolet::Reference::Expressions::{ runExpressionsControlReference }
 using HelloUltraviolet::Reference::Expressions::{ runExpressionsEffectfulCoreReference }
 using HelloUltraviolet::Reference::Expressions::{ runExpressionsClosuresAndPipelinesReference }
+using HelloUltraviolet::Reference::Expressions::{ runExpressionsClosuresAndPipelinesReferenceWithReport }
 using HelloUltraviolet::Reference::Patterns::{ runPatternsBasicPatternsReference }
 using HelloUltraviolet::Reference::Patterns::{ runPatternsTupleRecordPatternsReference }
 using HelloUltraviolet::Reference::Patterns::{ runPatternsEnumModalPatternsReference }
@@ -581,6 +609,17 @@ using HelloUltraviolet::Reference::Async::{ runAsyncCompositionFilterReference }
 using HelloUltraviolet::Reference::Async::{ runAsyncCompositionTakeReference }
 using HelloUltraviolet::Reference::Async::{ runAsyncCompositionFoldReference }
 using HelloUltraviolet::Reference::Async::{ runAsyncCompositionChainReference }
+using HelloUltraviolet::Reference::Async::{ runAsyncCompositionMapCompletionReference }
+using HelloUltraviolet::Reference::Async::{ runAsyncCompositionMapFailureReference }
+using HelloUltraviolet::Reference::Async::{ runAsyncCompositionFilterSkipReference }
+using HelloUltraviolet::Reference::Async::{ runAsyncCompositionFilterCompletionReference }
+using HelloUltraviolet::Reference::Async::{ runAsyncCompositionTakeZeroReference }
+using HelloUltraviolet::Reference::Async::{ runAsyncCompositionTakeResumeDoneReference }
+using HelloUltraviolet::Reference::Async::{ runAsyncCompositionTakeSourceCompleteReference }
+using HelloUltraviolet::Reference::Async::{ runAsyncCompositionFoldFailureReference }
+using HelloUltraviolet::Reference::Async::{ runAsyncCompositionChainSourceFailureReference }
+using HelloUltraviolet::Reference::Async::{ runAsyncCompositionChainSuspendedContinuationReference }
+using HelloUltraviolet::Reference::Async::{ runAsyncCompositionCombinatorRuntimeReference }
 using HelloUltraviolet::Reference::Async::{ runAsyncCompositionUntilReference }
 using HelloUltraviolet::Reference::Async::{ runAsyncCompositionLoopIterationReference }
 using HelloUltraviolet::Reference::Async::{ runAsyncCompositionCombinatorsReference }
@@ -658,3041 +697,3236 @@ internal procedure recordReferenceResult(
 
 public procedure runReferenceCorpus(context: Context) -> ReferenceResult {
     var passed: bool = true
-    passed = passed && recordReferenceResult(
+    passed = recordReferenceResult(
         context,
         "catalogCoverageIsComplete",
         catalogCoverageIsComplete()
-    )
-    passed = passed && recordReferenceResult(
+    ) && passed
+    passed = recordReferenceResult(
         context,
         "catalogMatchesCsvObligations",
         catalogMatchesCsvObligations()
-    )
-    passed = passed && recordReferenceResult(
+    ) && passed
+    passed = recordReferenceResult(
         context,
         "catalogPrimaryReferencesAreUnique",
         catalogPrimaryReferencesAreUnique()
-    )
-    passed = passed && recordReferenceResult(
+    ) && passed
+    passed = recordReferenceResult(
         context,
         "catalogSourcePathsExist",
         catalogSourcePathsExist(context)
-    )
-    passed = passed && recordReferenceResult(
+    ) && passed
+    passed = recordReferenceResult(
         context,
         "catalogCompiledSymbolsExecute",
         catalogCompiledSymbolsExecute(context)
-    )
-    passed = passed && recordReferenceResult(
+    ) && passed
+    passed = recordReferenceResult(
         context,
         "acceptedProjectFixturesAreIndexed",
         acceptedProjectFixturesAreIndexed()
-    )
-    passed = passed && recordReferenceResult(
+    ) && passed
+    passed = recordReferenceResult(
         context,
         "acceptedProjectFixtureArtifactsExist",
         acceptedProjectFixtureArtifactsExist(context)
-    )
-    passed = passed && recordReferenceResult(
+    ) && passed
+    passed = recordReferenceResult(
         context,
         "artifactProjectFixturesAreIndexed",
         artifactProjectFixturesAreIndexed()
-    )
-    passed = passed && recordReferenceResult(
+    ) && passed
+    passed = recordReferenceResult(
         context,
         "artifactProjectFixtureSourceArtifactsExist",
         artifactProjectFixtureSourceArtifactsExist(context)
-    )
-    passed = passed && recordReferenceResult(
+    ) && passed
+    passed = recordReferenceResult(
         context,
         "artifactProjectRuntimeErasureArtifactsMatch",
         artifactProjectRuntimeErasureArtifactsMatch(context)
-    )
-    passed = passed && recordReferenceResult(
+    ) && passed
+    passed = recordReferenceResult(
         context,
         "artifactProjectAArch64DependencyObjectArtifactsExist",
         artifactProjectAArch64DependencyObjectArtifactsExist(context)
-    )
-    passed = passed && recordReferenceResult(
+    ) && passed
+    passed = recordReferenceResult(
         context,
         "artifactProjectEmitBcLibraryArtifactsExist",
         artifactProjectEmitBcLibraryArtifactsExist(context)
-    )
-    passed = passed && recordReferenceResult(
+    ) && passed
+    passed = recordReferenceResult(
         context,
         "reducedEmptyDispatchPanicExpectedArtifactMatches",
         reducedEmptyDispatchPanicExpectedArtifactMatches(context)
-    )
-    passed = passed && recordReferenceResult(
+    ) && passed
+    passed = recordReferenceResult(
         context,
         "diagnosticSourceFixturesAreIndexed",
         diagnosticSourceFixturesAreIndexed()
-    )
-    passed = passed && recordReferenceResult(
+    ) && passed
+    passed = recordReferenceResult(
         context,
         "diagnosticSourceFixtureArtifactsExist",
         diagnosticSourceFixtureArtifactsExist(context)
-    )
-    passed = passed && recordReferenceResult(
+    ) && passed
+    passed = recordReferenceResult(
         context,
         "validTransmuteTargetExpectedDiagnosticFileMatches",
         validTransmuteTargetExpectedDiagnosticFileMatches(context)
-    )
-    passed = passed && recordReferenceResult(
+    ) && passed
+    passed = recordReferenceResult(
+        context,
+        "inlineAlwaysRecursiveExpectedDiagnosticFileMatches",
+        inlineAlwaysRecursiveExpectedDiagnosticFileMatches(context)
+    ) && passed
+    passed = recordReferenceResult(
+        context,
+        "leadingBOMWarningExpectedDiagnosticFileMatches",
+        leadingBOMWarningExpectedDiagnosticFileMatches(context)
+    ) && passed
+    passed = recordReferenceResult(
+        context,
+        "decimalLeadingZeroWarningExpectedDiagnosticFileMatches",
+        decimalLeadingZeroWarningExpectedDiagnosticFileMatches(context)
+    ) && passed
+    passed = recordReferenceResult(
         context,
         "fineGrainedLoopKeyWarningExpectedDiagnosticFileMatches",
         fineGrainedLoopKeyWarningExpectedDiagnosticFileMatches(context)
-    )
-    passed = passed && recordReferenceResult(
+    ) && passed
+    passed = recordReferenceResult(
         context,
         "readThenWriteExplicitWarningExpectedDiagnosticFileMatches",
         readThenWriteExplicitWarningExpectedDiagnosticFileMatches(context)
-    )
-    passed = passed && recordReferenceResult(
+    ) && passed
+    passed = recordReferenceResult(
         context,
         "readThenWriteContentionWarningExpectedDiagnosticFileMatches",
         readThenWriteContentionWarningExpectedDiagnosticFileMatches(context)
-    )
-    passed = passed && recordReferenceResult(
+    ) && passed
+    passed = recordReferenceResult(
         context,
         "orderedRedundantWarningExpectedDiagnosticFileMatches",
         orderedRedundantWarningExpectedDiagnosticFileMatches(context)
-    )
-    passed = passed && recordReferenceResult(
+    ) && passed
+    passed = recordReferenceResult(
         context,
         "unknownCalleeAccessWarningExpectedDiagnosticFileMatches",
         unknownCalleeAccessWarningExpectedDiagnosticFileMatches(context)
-    )
-    passed = passed && recordReferenceResult(
+    ) && passed
+    passed = recordReferenceResult(
         context,
         "sharedClosureCaptureWarningExpectedDiagnosticFileMatches",
         sharedClosureCaptureWarningExpectedDiagnosticFileMatches(context)
-    )
-    passed = passed && recordReferenceResult(
+    ) && passed
+    passed = recordReferenceResult(
         context,
         "nestedReleaseInterleavingWarningExpectedDiagnosticFileMatches",
         nestedReleaseInterleavingWarningExpectedDiagnosticFileMatches(context)
-    )
-    passed = passed && recordReferenceResult(
+    ) && passed
+    passed = recordReferenceResult(
         context,
         "dynamicKeyRuntimeInfoExpectedDiagnosticFileMatches",
         dynamicKeyRuntimeInfoExpectedDiagnosticFileMatches(context)
-    )
-    passed = passed && recordReferenceResult(
+    ) && passed
+    passed = recordReferenceResult(
         context,
         "staleAfterYieldReleaseWarningExpectedDiagnosticFileMatches",
         staleAfterYieldReleaseWarningExpectedDiagnosticFileMatches(context)
-    )
-    passed = passed && recordReferenceResult(
+    ) && passed
+    passed = recordReferenceResult(
         context,
         "staleOkSuppressesReleaseWarningExpectedDiagnosticFileMatches",
         staleOkSuppressesReleaseWarningExpectedDiagnosticFileMatches(context)
-    )
-    passed = passed && recordReferenceResult(
+    ) && passed
+    passed = recordReferenceResult(
+        context,
+        "speculativeLargeStructWarningExpectedDiagnosticFileMatches",
+        speculativeLargeStructWarningExpectedDiagnosticFileMatches(context)
+    ) && passed
+    passed = recordReferenceResult(
+        context,
+        "speculativeExpensiveBodyWarningExpectedDiagnosticFileMatches",
+        speculativeExpensiveBodyWarningExpectedDiagnosticFileMatches(context)
+    ) && passed
+    passed = recordReferenceResult(
         context,
         "asyncLargeCaptureWarningExpectedDiagnosticFileMatches",
         asyncLargeCaptureWarningExpectedDiagnosticFileMatches(context)
-    )
-    passed = passed && recordReferenceResult(
+    ) && passed
+    passed = recordReferenceResult(
         context,
         "asyncLargeCaptureWarningEmissionExpectedDiagnosticFileMatches",
         asyncLargeCaptureWarningEmissionExpectedDiagnosticFileMatches(context)
-    )
-    passed = passed && recordReferenceResult(
+    ) && passed
+    passed = recordReferenceResult(
         context,
         "asyncLargeCaptureNoWarningExpectedDiagnosticFileMatches",
         asyncLargeCaptureNoWarningExpectedDiagnosticFileMatches(context)
-    )
-    passed = passed && recordReferenceResult(
+    ) && passed
+    passed = recordReferenceResult(
         context,
         "asyncStateMachineDiagnosticsTableExpectedDiagnosticFileMatches",
         asyncStateMachineDiagnosticsTableExpectedDiagnosticFileMatches(context)
-    )
-    passed = passed && recordReferenceResult(
+    ) && passed
+    passed = recordReferenceResult(
         context,
         "staleValueMarkIRDiagnosticsExpectedDiagnosticFileMatches",
         staleValueMarkIRDiagnosticsExpectedDiagnosticFileMatches(context)
-    )
-    passed = passed && recordReferenceResult(
+    ) && passed
+    passed = recordReferenceResult(
         context,
         "dispatchDynamicKeyWarningExpectedDiagnosticFileMatches",
         dispatchDynamicKeyWarningExpectedDiagnosticFileMatches(context)
-    )
-    passed = passed && recordReferenceResult(
+    ) && passed
+    passed = recordReferenceResult(
         context,
         "cancellationNoAdditionalDiagnosticsExpectedDiagnosticFileMatches",
         cancellationNoAdditionalDiagnosticsExpectedDiagnosticFileMatches(context)
-    )
-    passed = passed && recordReferenceResult(
+    ) && passed
+    passed = recordReferenceResult(
         context,
         "panicHandlingNoAdditionalDiagnosticsExpectedDiagnosticFileMatches",
         panicHandlingNoAdditionalDiagnosticsExpectedDiagnosticFileMatches(context)
-    )
-    passed = passed && recordReferenceResult(
+    ) && passed
+    passed = recordReferenceResult(
         context,
         "userDiagnosticWarningExpectedDiagnosticFileMatches",
         userDiagnosticWarningExpectedDiagnosticFileMatches(context)
-    )
-    passed = passed && recordReferenceResult(
+    ) && passed
+    passed = recordReferenceResult(
         context,
         "userDiagnosticNoteExpectedDiagnosticFileMatches",
         userDiagnosticNoteExpectedDiagnosticFileMatches(context)
-    )
-    passed = passed && recordReferenceResult(
+    ) && passed
+    passed = recordReferenceResult(
         context,
         "projectFilesInvalidPathExpectedDiagnosticFileMatches",
         projectFilesInvalidPathExpectedDiagnosticFileMatches(context)
-    )
-    passed = passed && recordReferenceResult(
+    ) && passed
+    passed = recordReferenceResult(
         context,
         "outputDiagnosticFixturesAreIndexed",
         outputDiagnosticFixturesAreIndexed()
-    )
-    passed = passed && recordReferenceResult(
+    ) && passed
+    passed = recordReferenceResult(
         context,
         "outputDiagnosticFixtureArtifactsExist",
         outputDiagnosticFixtureArtifactsExist(context)
-    )
-    passed = passed && recordReferenceResult(
+    ) && passed
+    passed = recordReferenceResult(
         context,
         "llvmToolResolveOwnershipExpectedDiagnosticFileMatches",
         llvmToolResolveOwnershipExpectedDiagnosticFileMatches(context)
-    )
-    passed = passed && recordReferenceResult(
+    ) && passed
+    passed = recordReferenceResult(
         context,
         "llvmToolResolveOwnershipConformanceLogMatches",
         llvmToolResolveOwnershipConformanceLogMatches(context)
-    )
-    passed = passed && recordReferenceResult(
+    ) && passed
+    passed = recordReferenceResult(
         context,
         "emitLLVMRenderFailureExpectedDiagnosticFileMatches",
         emitLLVMRenderFailureExpectedDiagnosticFileMatches(context)
-    )
-    passed = passed && recordReferenceResult(
+    ) && passed
+    passed = recordReferenceResult(
         context,
         "emitLLVMRenderFailureConformanceLogMatches",
         emitLLVMRenderFailureConformanceLogMatches(context)
-    )
-    passed = passed && recordReferenceResult(
+    ) && passed
+    passed = recordReferenceResult(
+        context,
+        "manifestParseErrorExpectedDiagnosticFileMatches",
+        manifestParseErrorExpectedDiagnosticFileMatches(context)
+    ) && passed
+    passed = recordReferenceResult(
+        context,
+        "manifestParseErrorConformanceLogMatches",
+        manifestParseErrorConformanceLogMatches(context)
+    ) && passed
+    passed = recordReferenceResult(
+        context,
+        "unknownCommandExpectedDiagnosticFileMatches",
+        unknownCommandExpectedDiagnosticFileMatches(context)
+    ) && passed
+    passed = recordReferenceResult(
+        context,
+        "unknownCommandOutputMatches",
+        unknownCommandOutputMatches(context)
+    ) && passed
+    passed = recordReferenceResult(
         context,
         "rejectedSourceFixturesAreIndexed",
         rejectedSourceFixturesAreIndexed()
-    )
-    passed = passed && recordReferenceResult(
+    ) && passed
+    passed = recordReferenceResult(
         context,
         "rejectedSourceFixtureArtifactsExist",
         rejectedSourceFixtureArtifactsExist(context)
-    )
-    passed = passed && recordReferenceResult(
+    ) && passed
+    passed = recordReferenceResult(
         context,
         "userDiagnosticErrorExpectedDiagnosticFileMatches",
         userDiagnosticErrorExpectedDiagnosticFileMatches(context)
-    )
-    passed = passed && recordReferenceResult(
+    ) && passed
+    passed = recordReferenceResult(
         context,
         "quoteOutsideComptimeExpectedDiagnosticFileMatches",
         quoteOutsideComptimeExpectedDiagnosticFileMatches(context)
-    )
-    passed = passed && recordReferenceResult(
+    ) && passed
+    passed = recordReferenceResult(
         context,
         "invalidQuotedContentExpectedDiagnosticFileMatches",
         invalidQuotedContentExpectedDiagnosticFileMatches(context)
-    )
-    passed = passed && recordReferenceResult(
+    ) && passed
+    passed = recordReferenceResult(
         context,
         "spliceTypeMismatchExpectedDiagnosticFileMatches",
         spliceTypeMismatchExpectedDiagnosticFileMatches(context)
-    )
-    passed = passed && recordReferenceResult(
+    ) && passed
+    passed = recordReferenceResult(
         context,
         "spliceIdentifierStructuralNameExpectedDiagnosticFileMatches",
         spliceIdentifierStructuralNameExpectedDiagnosticFileMatches(context)
-    )
-    passed = passed && recordReferenceResult(
+    ) && passed
+    passed = recordReferenceResult(
         context,
         "comptimeIfConditionTypeExpectedDiagnosticFileMatches",
         comptimeIfConditionTypeExpectedDiagnosticFileMatches(context)
-    )
-    passed = passed && recordReferenceResult(
+    ) && passed
+    passed = recordReferenceResult(
         context,
         "runtimeCallsComptimeProcedureExpectedDiagnosticFileMatches",
         runtimeCallsComptimeProcedureExpectedDiagnosticFileMatches(context)
-    )
-    passed = passed && recordReferenceResult(
+    ) && passed
+    passed = recordReferenceResult(
         context,
         "introspectFieldsNonRecordExpectedDiagnosticFileMatches",
         introspectFieldsNonRecordExpectedDiagnosticFileMatches(context)
-    )
-    passed = passed && recordReferenceResult(
+    ) && passed
+    passed = recordReferenceResult(
         context,
         "comptimePointerParameterExpectedDiagnosticFileMatches",
         comptimePointerParameterExpectedDiagnosticFileMatches(context)
-    )
-    passed = passed && recordReferenceResult(
+    ) && passed
+    passed = recordReferenceResult(
         context,
         "comptimeProhibitedWaitExpectedDiagnosticFileMatches",
         comptimeProhibitedWaitExpectedDiagnosticFileMatches(context)
-    )
-    passed = passed && recordReferenceResult(
+    ) && passed
+    passed = recordReferenceResult(
         context,
         "emitterEmitNonItemExpectedDiagnosticFileMatches",
         emitterEmitNonItemExpectedDiagnosticFileMatches(context)
-    )
-    passed = passed && recordReferenceResult(
+    ) && passed
+    passed = recordReferenceResult(
         context,
         "deriveOnProcedureExpectedDiagnosticFileMatches",
         deriveOnProcedureExpectedDiagnosticFileMatches(context)
-    )
-    passed = passed && recordReferenceResult(
+    ) && passed
+    passed = recordReferenceResult(
         context,
         "unknownDeriveTargetExpectedDiagnosticFileMatches",
         unknownDeriveTargetExpectedDiagnosticFileMatches(context)
-    )
-    passed = passed && recordReferenceResult(
+    ) && passed
+    passed = recordReferenceResult(
         context,
         "deriveMissingRequiredClassExpectedDiagnosticFileMatches",
         deriveMissingRequiredClassExpectedDiagnosticFileMatches(context)
-    )
-    passed = passed && recordReferenceResult(
+    ) && passed
+    passed = recordReferenceResult(
         context,
         "deriveMissingEmittedClassExpectedDiagnosticFileMatches",
         deriveMissingEmittedClassExpectedDiagnosticFileMatches(context)
-    )
-    passed = passed && recordReferenceResult(
+    ) && passed
+    passed = recordReferenceResult(
         context,
         "deriveTargetUserErrorExpectedDiagnosticFileMatches",
         deriveTargetUserErrorExpectedDiagnosticFileMatches(context)
-    )
-    passed = passed && recordReferenceResult(
+    ) && passed
+    passed = recordReferenceResult(
         context,
         "deriveTargetProhibitedWaitExpectedDiagnosticFileMatches",
         deriveTargetProhibitedWaitExpectedDiagnosticFileMatches(context)
-    )
-    passed = passed && recordReferenceResult(
+    ) && passed
+    passed = recordReferenceResult(
         context,
         "unterminatedStringExpectedDiagnosticFileMatches",
         unterminatedStringExpectedDiagnosticFileMatches(context)
-    )
-    passed = passed && recordReferenceResult(
+    ) && passed
+    passed = recordReferenceResult(
         context,
         "invalidStringEscapeExpectedDiagnosticFileMatches",
         invalidStringEscapeExpectedDiagnosticFileMatches(context)
-    )
-    passed = passed && recordReferenceResult(
+    ) && passed
+    passed = recordReferenceResult(
         context,
         "malformedNumericLiteralExpectedDiagnosticFileMatches",
         malformedNumericLiteralExpectedDiagnosticFileMatches(context)
-    )
-    passed = passed && recordReferenceResult(
+    ) && passed
+    passed = recordReferenceResult(
         context,
         "unterminatedBlockCommentExpectedDiagnosticFileMatches",
         unterminatedBlockCommentExpectedDiagnosticFileMatches(context)
-    )
-    passed = passed && recordReferenceResult(
+    ) && passed
+    passed = recordReferenceResult(
+        context,
+        "leadingBOMEmbeddedBOMExpectedDiagnosticFileMatches",
+        leadingBOMEmbeddedBOMExpectedDiagnosticFileMatches(context)
+    ) && passed
+    passed = recordReferenceResult(
+        context,
+        "prohibitedControlCharacterExpectedDiagnosticFileMatches",
+        prohibitedControlCharacterExpectedDiagnosticFileMatches(context)
+    ) && passed
+    passed = recordReferenceResult(
+        context,
+        "invalidUTF8ExpectedDiagnosticFileMatches",
+        invalidUTF8ExpectedDiagnosticFileMatches(context)
+    ) && passed
+    passed = recordReferenceResult(
         context,
         "missingStatementTerminatorExpectedDiagnosticFileMatches",
         missingStatementTerminatorExpectedDiagnosticFileMatches(context)
-    )
-    passed = passed && recordReferenceResult(
+    ) && passed
+    passed = recordReferenceResult(
         context,
         "enumCommaSeparatorExpectedDiagnosticFileMatches",
         enumCommaSeparatorExpectedDiagnosticFileMatches(context)
-    )
-    passed = passed && recordReferenceResult(
+    ) && passed
+    passed = recordReferenceResult(
+        context,
+        "unknownAttributeExpectedDiagnosticFileMatches",
+        unknownAttributeExpectedDiagnosticFileMatches(context)
+    ) && passed
+    passed = recordReferenceResult(
+        context,
+        "testMissingPostconditionExpectedDiagnosticFileMatches",
+        testMissingPostconditionExpectedDiagnosticFileMatches(context)
+    ) && passed
+    passed = recordReferenceResult(
+        context,
+        "packedLayoutOnEnumExpectedDiagnosticFileMatches",
+        packedLayoutOnEnumExpectedDiagnosticFileMatches(context)
+    ) && passed
+    passed = recordReferenceResult(
+        context,
+        "reservedVendorNamespaceExpectedDiagnosticFileMatches",
+        reservedVendorNamespaceExpectedDiagnosticFileMatches(context)
+    ) && passed
+    passed = recordReferenceResult(
+        context,
+        "typeAliasCycleExpectedDiagnosticFileMatches",
+        typeAliasCycleExpectedDiagnosticFileMatches(context)
+    ) && passed
+    passed = recordReferenceResult(
         context,
         "duplicateModuleDeclarationExpectedDiagnosticFileMatches",
         duplicateModuleDeclarationExpectedDiagnosticFileMatches(context)
-    )
-    passed = passed && recordReferenceResult(
+    ) && passed
+    passed = recordReferenceResult(
+        context,
+        "staticMissingTypeAnnotationExpectedDiagnosticFileMatches",
+        staticMissingTypeAnnotationExpectedDiagnosticFileMatches(context)
+    ) && passed
+    passed = recordReferenceResult(
+        context,
+        "missingImportExpectedDiagnosticFileMatches",
+        missingImportExpectedDiagnosticFileMatches(context)
+    ) && passed
+    passed = recordReferenceResult(
+        context,
+        "usingListDuplicateExpectedDiagnosticFileMatches",
+        usingListDuplicateExpectedDiagnosticFileMatches(context)
+    ) && passed
+    passed = recordReferenceResult(
+        context,
+        "reservedModuleKeywordExpectedDiagnosticFileMatches",
+        reservedModuleKeywordExpectedDiagnosticFileMatches(context)
+    ) && passed
+    passed = recordReferenceResult(
+        context,
+        "privateAccessExpectedDiagnosticFileMatches",
+        privateAccessExpectedDiagnosticFileMatches(context)
+    ) && passed
+    passed = recordReferenceResult(
+        context,
+        "internalAccessExpectedDiagnosticFileMatches",
+        internalAccessExpectedDiagnosticFileMatches(context)
+    ) && passed
+    passed = recordReferenceResult(
         context,
         "mainMissingExpectedDiagnosticFileMatches",
         mainMissingExpectedDiagnosticFileMatches(context)
-    )
-    passed = passed && recordReferenceResult(
+    ) && passed
+    passed = recordReferenceResult(
         context,
         "mainMultipleExpectedDiagnosticFileMatches",
         mainMultipleExpectedDiagnosticFileMatches(context)
-    )
-    passed = passed && recordReferenceResult(
+    ) && passed
+    passed = recordReferenceResult(
         context,
         "mainGenericExpectedDiagnosticFileMatches",
         mainGenericExpectedDiagnosticFileMatches(context)
-    )
-    passed = passed && recordReferenceResult(
+    ) && passed
+    passed = recordReferenceResult(
         context,
         "mainSignatureExpectedDiagnosticFileMatches",
         mainSignatureExpectedDiagnosticFileMatches(context)
-    )
-    passed = passed && recordReferenceResult(
+    ) && passed
+    passed = recordReferenceResult(
         context,
         "breakOutsideLoopExpectedDiagnosticFileMatches",
         breakOutsideLoopExpectedDiagnosticFileMatches(context)
-    )
-    passed = passed && recordReferenceResult(
+    ) && passed
+    passed = recordReferenceResult(
         context,
         "continueOutsideLoopExpectedDiagnosticFileMatches",
         continueOutsideLoopExpectedDiagnosticFileMatches(context)
-    )
-    passed = passed && recordReferenceResult(
+    ) && passed
+    passed = recordReferenceResult(
         context,
         "assignImmutableLetExpectedDiagnosticFileMatches",
         assignImmutableLetExpectedDiagnosticFileMatches(context)
-    )
-    passed = passed && recordReferenceResult(
+    ) && passed
+    passed = recordReferenceResult(
         context,
         "letAnnotationMismatchExpectedDiagnosticFileMatches",
         letAnnotationMismatchExpectedDiagnosticFileMatches(context)
-    )
-    passed = passed && recordReferenceResult(
+    ) && passed
+    passed = recordReferenceResult(
         context,
         "varAnnotationMismatchExpectedDiagnosticFileMatches",
         varAnnotationMismatchExpectedDiagnosticFileMatches(context)
-    )
-    passed = passed && recordReferenceResult(
+    ) && passed
+    passed = recordReferenceResult(
         context,
         "assignTypeMismatchExpectedDiagnosticFileMatches",
         assignTypeMismatchExpectedDiagnosticFileMatches(context)
-    )
-    passed = passed && recordReferenceResult(
+    ) && passed
+    passed = recordReferenceResult(
         context,
         "assignmentProvenanceEscapeExpectedDiagnosticFileMatches",
         assignmentProvenanceEscapeExpectedDiagnosticFileMatches(context)
-    )
-    passed = passed && recordReferenceResult(
+    ) && passed
+    passed = recordReferenceResult(
         context,
         "statementParseErrorExpectedDiagnosticFileMatches",
         statementParseErrorExpectedDiagnosticFileMatches(context)
-    )
-    passed = passed && recordReferenceResult(
+    ) && passed
+    passed = recordReferenceResult(
         context,
         "syncStatementRecoveryExpectedDiagnosticFileMatches",
         syncStatementRecoveryExpectedDiagnosticFileMatches(context)
-    )
-    passed = passed && recordReferenceResult(
+    ) && passed
+    passed = recordReferenceResult(
         context,
         "missingRequiredTerminatorExpectedDiagnosticFileMatches",
         missingRequiredTerminatorExpectedDiagnosticFileMatches(context)
-    )
-    passed = passed && recordReferenceResult(
+    ) && passed
+    passed = recordReferenceResult(
         context,
         "letInferenceFailureExpectedDiagnosticFileMatches",
         letInferenceFailureExpectedDiagnosticFileMatches(context)
-    )
-    passed = passed && recordReferenceResult(
+    ) && passed
+    passed = recordReferenceResult(
         context,
         "usingLocalUnresolvedExpectedDiagnosticFileMatches",
         usingLocalUnresolvedExpectedDiagnosticFileMatches(context)
-    )
-    passed = passed && recordReferenceResult(
+    ) && passed
+    passed = recordReferenceResult(
         context,
         "assignNotPlaceExpectedDiagnosticFileMatches",
         assignNotPlaceExpectedDiagnosticFileMatches(context)
-    )
-    passed = passed && recordReferenceResult(
+    ) && passed
+    passed = recordReferenceResult(
         context,
         "returnTypeMismatchExpectedDiagnosticFileMatches",
         returnTypeMismatchExpectedDiagnosticFileMatches(context)
-    )
-    passed = passed && recordReferenceResult(
+    ) && passed
+    passed = recordReferenceResult(
         context,
         "returnUnitMismatchExpectedDiagnosticFileMatches",
         returnUnitMismatchExpectedDiagnosticFileMatches(context)
-    )
-    passed = passed && recordReferenceResult(
+    ) && passed
+    passed = recordReferenceResult(
         context,
         "returnAtModuleScopeExpectedDiagnosticFileMatches",
         returnAtModuleScopeExpectedDiagnosticFileMatches(context)
-    )
-    passed = passed && recordReferenceResult(
+    ) && passed
+    passed = recordReferenceResult(
         context,
         "deferNonUnitExpectedDiagnosticFileMatches",
         deferNonUnitExpectedDiagnosticFileMatches(context)
-    )
-    passed = passed && recordReferenceResult(
+    ) && passed
+    passed = recordReferenceResult(
         context,
         "deferNonLocalExpectedDiagnosticFileMatches",
         deferNonLocalExpectedDiagnosticFileMatches(context)
-    )
-    passed = passed && recordReferenceResult(
+    ) && passed
+    passed = recordReferenceResult(
         context,
         "assignConstExpectedDiagnosticFileMatches",
         assignConstExpectedDiagnosticFileMatches(context)
-    )
-    passed = passed && recordReferenceResult(
+    ) && passed
+    passed = recordReferenceResult(
         context,
         "letRefutablePatternExpectedDiagnosticFileMatches",
         letRefutablePatternExpectedDiagnosticFileMatches(context)
-    )
-    passed = passed && recordReferenceResult(
+    ) && passed
+    passed = recordReferenceResult(
         context,
         "uniqueNonMoveBindingExpectedDiagnosticFileMatches",
         uniqueNonMoveBindingExpectedDiagnosticFileMatches(context)
-    )
-    passed = passed && recordReferenceResult(
+    ) && passed
+    passed = recordReferenceResult(
         context,
         "constMutationExpectedDiagnosticFileMatches",
         constMutationExpectedDiagnosticFileMatches(context)
-    )
-    passed = passed && recordReferenceResult(
+    ) && passed
+    passed = recordReferenceResult(
         context,
         "uniqueInactiveUseExpectedDiagnosticFileMatches",
         uniqueInactiveUseExpectedDiagnosticFileMatches(context)
-    )
-    passed = passed && recordReferenceResult(
+    ) && passed
+    passed = recordReferenceResult(
         context,
         "sharedMutationWithoutKeyExpectedDiagnosticFileMatches",
         sharedMutationWithoutKeyExpectedDiagnosticFileMatches(context)
-    )
-    passed = passed && recordReferenceResult(
+    ) && passed
+    passed = recordReferenceResult(
         context,
         "receiverPermissionMismatchExpectedDiagnosticFileMatches",
         receiverPermissionMismatchExpectedDiagnosticFileMatches(context)
-    )
-    passed = passed && recordReferenceResult(
+    ) && passed
+    passed = recordReferenceResult(
         context,
         "frameNoActiveRegionExpectedDiagnosticFileMatches",
         frameNoActiveRegionExpectedDiagnosticFileMatches(context)
-    )
-    passed = passed && recordReferenceResult(
+    ) && passed
+    passed = recordReferenceResult(
         context,
         "frameTargetNotActiveExpectedDiagnosticFileMatches",
         frameTargetNotActiveExpectedDiagnosticFileMatches(context)
-    )
-    passed = passed && recordReferenceResult(
+    ) && passed
+    passed = recordReferenceResult(
         context,
         "blocksDiagnosticExpectedDiagnosticFileMatches",
         blocksDiagnosticExpectedDiagnosticFileMatches(context)
-    )
-    passed = passed && recordReferenceResult(
+    ) && passed
+    passed = recordReferenceResult(
         context,
         "bindingStatementsDiagnosticExpectedDiagnosticFileMatches",
         bindingStatementsDiagnosticExpectedDiagnosticFileMatches(context)
-    )
-    passed = passed && recordReferenceResult(
+    ) && passed
+    passed = recordReferenceResult(
         context,
         "localUsingStatementsDiagnosticExpectedDiagnosticFileMatches",
         localUsingStatementsDiagnosticExpectedDiagnosticFileMatches(context)
-    )
-    passed = passed && recordReferenceResult(
+    ) && passed
+    passed = recordReferenceResult(
         context,
         "assignmentStatementsDiagnosticExpectedDiagnosticFileMatches",
         assignmentStatementsDiagnosticExpectedDiagnosticFileMatches(context)
-    )
-    passed = passed && recordReferenceResult(
+    ) && passed
+    passed = recordReferenceResult(
         context,
         "expressionStatementsDiagnosticExpectedDiagnosticFileMatches",
         expressionStatementsDiagnosticExpectedDiagnosticFileMatches(context)
-    )
-    passed = passed && recordReferenceResult(
+    ) && passed
+    passed = recordReferenceResult(
         context,
         "deferDiagnosticExpectedDiagnosticFileMatches",
         deferDiagnosticExpectedDiagnosticFileMatches(context)
-    )
-    passed = passed && recordReferenceResult(
+    ) && passed
+    passed = recordReferenceResult(
         context,
         "regionDiagnosticExpectedDiagnosticFileMatches",
         regionDiagnosticExpectedDiagnosticFileMatches(context)
-    )
-    passed = passed && recordReferenceResult(
+    ) && passed
+    passed = recordReferenceResult(
         context,
         "frameDiagnosticExpectedDiagnosticFileMatches",
         frameDiagnosticExpectedDiagnosticFileMatches(context)
-    )
-    passed = passed && recordReferenceResult(
+    ) && passed
+    passed = recordReferenceResult(
         context,
         "unsafeRequiredOperationOwnershipDiagnosticExpectedDiagnosticFileMatches",
         unsafeRequiredOperationOwnershipDiagnosticExpectedDiagnosticFileMatches(context)
-    )
-    passed = passed && recordReferenceResult(
+    ) && passed
+    passed = recordReferenceResult(
         context,
         "unsafeStatementsDiagnosticExpectedDiagnosticFileMatches",
         unsafeStatementsDiagnosticExpectedDiagnosticFileMatches(context)
-    )
-    passed = passed && recordReferenceResult(
+    ) && passed
+    passed = recordReferenceResult(
         context,
         "statementDiagnosticsSupplementExpectedDiagnosticFileMatches",
         statementDiagnosticsSupplementExpectedDiagnosticFileMatches(context)
-    )
-    passed = passed && recordReferenceResult(
+    ) && passed
+    passed = recordReferenceResult(
         context,
         "asyncReturnTypeMismatchExpectedDiagnosticFileMatches",
         asyncReturnTypeMismatchExpectedDiagnosticFileMatches(context)
-    )
-    passed = passed && recordReferenceResult(
+    ) && passed
+    passed = recordReferenceResult(
         context,
         "asyncReturnUnitMismatchExpectedDiagnosticFileMatches",
         asyncReturnUnitMismatchExpectedDiagnosticFileMatches(context)
-    )
-    passed = passed && recordReferenceResult(
+    ) && passed
+    passed = recordReferenceResult(
         context,
         "missingExplicitReturnExpectedDiagnosticFileMatches",
         missingExplicitReturnExpectedDiagnosticFileMatches(context)
-    )
-    passed = passed && recordReferenceResult(
+    ) && passed
+    passed = recordReferenceResult(
         context,
         "missingReturnTypeExpectedDiagnosticFileMatches",
         missingReturnTypeExpectedDiagnosticFileMatches(context)
-    )
-    passed = passed && recordReferenceResult(
+    ) && passed
+    passed = recordReferenceResult(
         context,
         "noMatchingOverloadExpectedDiagnosticFileMatches",
         noMatchingOverloadExpectedDiagnosticFileMatches(context)
-    )
-    passed = passed && recordReferenceResult(
+    ) && passed
+    passed = recordReferenceResult(
         context,
         "duplicateErasedOverloadSignatureExpectedDiagnosticFileMatches",
         duplicateErasedOverloadSignatureExpectedDiagnosticFileMatches(context)
-    )
-    passed = passed && recordReferenceResult(
+    ) && passed
+    passed = recordReferenceResult(
         context,
         "overloadingDiagnosticsTableExpectedDiagnosticFileMatches",
         overloadingDiagnosticsTableExpectedDiagnosticFileMatches(context)
-    )
-    passed = passed && recordReferenceResult(
+    ) && passed
+    passed = recordReferenceResult(
         context,
         "overloadResolutionBeforeCallTypingExpectedDiagnosticFileMatches",
         overloadResolutionBeforeCallTypingExpectedDiagnosticFileMatches(context)
-    )
-    passed = passed && recordReferenceResult(
+    ) && passed
+    passed = recordReferenceResult(
         context,
         "verificationFactNoRuntimeRepresentationExpectedDiagnosticFileMatches",
         verificationFactNoRuntimeRepresentationExpectedDiagnosticFileMatches(context)
-    )
-    passed = passed && recordReferenceResult(
+    ) && passed
+    passed = recordReferenceResult(
         context,
         "explicitReturnDefinitionExpectedDiagnosticFileMatches",
         explicitReturnDefinitionExpectedDiagnosticFileMatches(context)
-    )
-    passed = passed && recordReferenceResult(
+    ) && passed
+    passed = recordReferenceResult(
         context,
         "returnAnnotationPresenceExpectedDiagnosticFileMatches",
         returnAnnotationPresenceExpectedDiagnosticFileMatches(context)
-    )
-    passed = passed && recordReferenceResult(
+    ) && passed
+    passed = recordReferenceResult(
         context,
         "procedureDeclarationWellFormednessExpectedDiagnosticFileMatches",
         procedureDeclarationWellFormednessExpectedDiagnosticFileMatches(context)
-    )
-    passed = passed && recordReferenceResult(
+    ) && passed
+    passed = recordReferenceResult(
         context,
         "mainDiagnosticReferencesExpectedDiagnosticFileMatches",
         mainDiagnosticReferencesExpectedDiagnosticFileMatches(context)
-    )
-    passed = passed && recordReferenceResult(
+    ) && passed
+    passed = recordReferenceResult(
         context,
         "procedureDeclarationsDiagnosticExpectedDiagnosticFileMatches",
         procedureDeclarationsDiagnosticExpectedDiagnosticFileMatches(context)
-    )
-    passed = passed && recordReferenceResult(
+    ) && passed
+    passed = recordReferenceResult(
         context,
         "selfTypeDefinitionExpectedDiagnosticFileMatches",
         selfTypeDefinitionExpectedDiagnosticFileMatches(context)
-    )
-    passed = passed && recordReferenceResult(
+    ) && passed
+    passed = recordReferenceResult(
         context,
         "recordMethodWellFormednessExpectedDiagnosticFileMatches",
         recordMethodWellFormednessExpectedDiagnosticFileMatches(context)
-    )
-    passed = passed && recordReferenceResult(
+    ) && passed
+    passed = recordReferenceResult(
         context,
         "methodsAndReceiversDiagnosticExpectedDiagnosticFileMatches",
         methodsAndReceiversDiagnosticExpectedDiagnosticFileMatches(context)
-    )
-    passed = passed && recordReferenceResult(
+    ) && passed
+    passed = recordReferenceResult(
         context,
         "postconditionsDiagnosticExpectedDiagnosticFileMatches",
         postconditionsDiagnosticExpectedDiagnosticFileMatches(context)
-    )
-    passed = passed && recordReferenceResult(
+    ) && passed
+    passed = recordReferenceResult(
         context,
         "preconditionsDiagnosticExpectedDiagnosticFileMatches",
         preconditionsDiagnosticExpectedDiagnosticFileMatches(context)
-    )
-    passed = passed && recordReferenceResult(
+    ) && passed
+    passed = recordReferenceResult(
         context,
         "verificationLogicDiagnosticExpectedDiagnosticFileMatches",
         verificationLogicDiagnosticExpectedDiagnosticFileMatches(context)
-    )
-    passed = passed && recordReferenceResult(
+    ) && passed
+    passed = recordReferenceResult(
         context,
         "recordMethodBodyExplicitReturnExpectedDiagnosticFileMatches",
         recordMethodBodyExplicitReturnExpectedDiagnosticFileMatches(context)
-    )
-    passed = passed && recordReferenceResult(
+    ) && passed
+    passed = recordReferenceResult(
         context,
         "recordMethodCallArgumentTypeExpectedDiagnosticFileMatches",
         recordMethodCallArgumentTypeExpectedDiagnosticFileMatches(context)
-    )
-    passed = passed && recordReferenceResult(
+    ) && passed
+    passed = recordReferenceResult(
         context,
         "methodLookupDiagnosticsExpectedDiagnosticFileMatches",
         methodLookupDiagnosticsExpectedDiagnosticFileMatches(context)
-    )
-    passed = passed && recordReferenceResult(
+    ) && passed
+    passed = recordReferenceResult(
         context,
         "invariantPublicMutableFieldExpectedDiagnosticFileMatches",
         invariantPublicMutableFieldExpectedDiagnosticFileMatches(context)
-    )
-    passed = passed && recordReferenceResult(
+    ) && passed
+    passed = recordReferenceResult(
         context,
         "invariantDiagnosticsExpectedDiagnosticFileMatches",
         invariantDiagnosticsExpectedDiagnosticFileMatches(context)
-    )
-    passed = passed && recordReferenceResult(
+    ) && passed
+    passed = recordReferenceResult(
         context,
         "behavioralSubtypingPreconditionExpectedDiagnosticFileMatches",
         behavioralSubtypingPreconditionExpectedDiagnosticFileMatches(context)
-    )
-    passed = passed && recordReferenceResult(
+    ) && passed
+    passed = recordReferenceResult(
         context,
         "behavioralSubtypingPostconditionExpectedDiagnosticFileMatches",
         behavioralSubtypingPostconditionExpectedDiagnosticFileMatches(context)
-    )
-    passed = passed && recordReferenceResult(
+    ) && passed
+    passed = recordReferenceResult(
         context,
         "behavioralSubtypingLiskovExpectedDiagnosticFileMatches",
         behavioralSubtypingLiskovExpectedDiagnosticFileMatches(context)
-    )
-    passed = passed && recordReferenceResult(
+    ) && passed
+    passed = recordReferenceResult(
         context,
         "behavioralSubtypingDiagnosticsExpectedDiagnosticFileMatches",
         behavioralSubtypingDiagnosticsExpectedDiagnosticFileMatches(context)
-    )
-    passed = passed && recordReferenceResult(
+    ) && passed
+    passed = recordReferenceResult(
         context,
         "resultGenericConstraintExpectedDiagnosticFileMatches",
         resultGenericConstraintExpectedDiagnosticFileMatches(context)
-    )
-    passed = passed && recordReferenceResult(
+    ) && passed
+    passed = recordReferenceResult(
         context,
         "methodLookupAmbiguousDefaultExpectedDiagnosticFileMatches",
         methodLookupAmbiguousDefaultExpectedDiagnosticFileMatches(context)
-    )
-    passed = passed && recordReferenceResult(
+    ) && passed
+    passed = recordReferenceResult(
         context,
         "implementationMissingRequiredFieldExpectedDiagnosticFileMatches",
         implementationMissingRequiredFieldExpectedDiagnosticFileMatches(context)
-    )
-    passed = passed && recordReferenceResult(
+    ) && passed
+    passed = recordReferenceResult(
         context,
         "implementationFieldTypeMismatchExpectedDiagnosticFileMatches",
         implementationFieldTypeMismatchExpectedDiagnosticFileMatches(context)
-    )
-    passed = passed && recordReferenceResult(
+    ) && passed
+    passed = recordReferenceResult(
         context,
         "duplicateClassImplementationRuleExpectedDiagnosticFileMatches",
         duplicateClassImplementationRuleExpectedDiagnosticFileMatches(context)
-    )
-    passed = passed && recordReferenceResult(
+    ) && passed
+    passed = recordReferenceResult(
         context,
         "duplicateClassImplementationRequirementExpectedDiagnosticFileMatches",
         duplicateClassImplementationRequirementExpectedDiagnosticFileMatches(context)
-    )
-    passed = passed && recordReferenceResult(
+    ) && passed
+    passed = recordReferenceResult(
         context,
         "nonModalImplementsModalClassExpectedDiagnosticFileMatches",
         nonModalImplementsModalClassExpectedDiagnosticFileMatches(context)
-    )
-    passed = passed && recordReferenceResult(
+    ) && passed
+    passed = recordReferenceResult(
         context,
         "implementationMissingAbstractMethodExpectedDiagnosticFileMatches",
         implementationMissingAbstractMethodExpectedDiagnosticFileMatches(context)
-    )
-    passed = passed && recordReferenceResult(
+    ) && passed
+    passed = recordReferenceResult(
         context,
         "duplicateAssociatedTypeNameExpectedDiagnosticFileMatches",
         duplicateAssociatedTypeNameExpectedDiagnosticFileMatches(context)
-    )
-    passed = passed && recordReferenceResult(
+    ) && passed
+    passed = recordReferenceResult(
         context,
         "associatedTypeMissingBindingExpectedDiagnosticFileMatches",
         associatedTypeMissingBindingExpectedDiagnosticFileMatches(context)
-    )
-    passed = passed && recordReferenceResult(
+    ) && passed
+    passed = recordReferenceResult(
         context,
         "associatedTypeUnboundMemberExpectedDiagnosticFileMatches",
         associatedTypeUnboundMemberExpectedDiagnosticFileMatches(context)
-    )
-    passed = passed && recordReferenceResult(
+    ) && passed
+    passed = recordReferenceResult(
         context,
         "genericTypeApplyArgCountExpectedDiagnosticFileMatches",
         genericTypeApplyArgCountExpectedDiagnosticFileMatches(context)
-    )
-    passed = passed && recordReferenceResult(
+    ) && passed
+    passed = recordReferenceResult(
         context,
         "genericPathMissingArgumentsExpectedDiagnosticFileMatches",
         genericPathMissingArgumentsExpectedDiagnosticFileMatches(context)
-    )
-    passed = passed && recordReferenceResult(
+    ) && passed
+    passed = recordReferenceResult(
         context,
         "genericCallArgCountExpectedDiagnosticFileMatches",
         genericCallArgCountExpectedDiagnosticFileMatches(context)
-    )
-    passed = passed && recordReferenceResult(
+    ) && passed
+    passed = recordReferenceResult(
         context,
         "genericInfiniteMonomorphizationExpectedDiagnosticFileMatches",
         genericInfiniteMonomorphizationExpectedDiagnosticFileMatches(context)
-    )
-    passed = passed && recordReferenceResult(
+    ) && passed
+    passed = recordReferenceResult(
         context,
         "genericInstantiationDepthLimitExpectedDiagnosticFileMatches",
         genericInstantiationDepthLimitExpectedDiagnosticFileMatches(context)
-    )
-    passed = passed && recordReferenceResult(
+    ) && passed
+    passed = recordReferenceResult(
         context,
         "genericClassBoundNonClassExpectedDiagnosticFileMatches",
         genericClassBoundNonClassExpectedDiagnosticFileMatches(context)
-    )
-    passed = passed && recordReferenceResult(
+    ) && passed
+    passed = recordReferenceResult(
         context,
         "overrideAbstractMethodExpectedDiagnosticFileMatches",
         overrideAbstractMethodExpectedDiagnosticFileMatches(context)
-    )
-    passed = passed && recordReferenceResult(
+    ) && passed
+    passed = recordReferenceResult(
         context,
         "overrideMissingOnDefaultExpectedDiagnosticFileMatches",
         overrideMissingOnDefaultExpectedDiagnosticFileMatches(context)
-    )
-    passed = passed && recordReferenceResult(
+    ) && passed
+    passed = recordReferenceResult(
         context,
         "implementationAbstractMethodSignatureMismatchExpectedDiagnosticFileMatches",
         implementationAbstractMethodSignatureMismatchExpectedDiagnosticFileMatches(context)
-    )
-    passed = passed && recordReferenceResult(
+    ) && passed
+    passed = recordReferenceResult(
         context,
         "implementationDefaultMethodSignatureMismatchExpectedDiagnosticFileMatches",
         implementationDefaultMethodSignatureMismatchExpectedDiagnosticFileMatches(context)
-    )
-    passed = passed && recordReferenceResult(
+    ) && passed
+    passed = recordReferenceResult(
         context,
         "dynamicUndefinedClassTypeExpectedDiagnosticFileMatches",
         dynamicUndefinedClassTypeExpectedDiagnosticFileMatches(context)
-    )
-    passed = passed && recordReferenceResult(
+    ) && passed
+    passed = recordReferenceResult(
         context,
         "dynamicSelfParameterNonDispatchableExpectedDiagnosticFileMatches",
         dynamicSelfParameterNonDispatchableExpectedDiagnosticFileMatches(context)
-    )
-    passed = passed && recordReferenceResult(
+    ) && passed
+    passed = recordReferenceResult(
         context,
         "dynamicNonDispatchableRequirementExpectedDiagnosticFileMatches",
         dynamicNonDispatchableRequirementExpectedDiagnosticFileMatches(context)
-    )
-    passed = passed && recordReferenceResult(
+    ) && passed
+    passed = recordReferenceResult(
         context,
         "dynamicGenericMethodNonDispatchableExpectedDiagnosticFileMatches",
         dynamicGenericMethodNonDispatchableExpectedDiagnosticFileMatches(context)
-    )
-    passed = passed && recordReferenceResult(
+    ) && passed
+    passed = recordReferenceResult(
         context,
         "dynamicMissingMethodExpectedDiagnosticFileMatches",
         dynamicMissingMethodExpectedDiagnosticFileMatches(context)
-    )
-    passed = passed && recordReferenceResult(
+    ) && passed
+    passed = recordReferenceResult(
         context,
         "dynamicClassObjectDiagnosticsExpectedDiagnosticFileMatches",
         dynamicClassObjectDiagnosticsExpectedDiagnosticFileMatches(context)
-    )
-    passed = passed && recordReferenceResult(
+    ) && passed
+    passed = recordReferenceResult(
         context,
         "opaqueUndefinedClassTypeExpectedDiagnosticFileMatches",
         opaqueUndefinedClassTypeExpectedDiagnosticFileMatches(context)
-    )
-    passed = passed && recordReferenceResult(
+    ) && passed
+    passed = recordReferenceResult(
         context,
         "opaqueMemberNotDefinedExpectedDiagnosticFileMatches",
         opaqueMemberNotDefinedExpectedDiagnosticFileMatches(context)
-    )
-    passed = passed && recordReferenceResult(
+    ) && passed
+    passed = recordReferenceResult(
         context,
         "opaqueReturnMissingImplementationExpectedDiagnosticFileMatches",
         opaqueReturnMissingImplementationExpectedDiagnosticFileMatches(context)
-    )
-    passed = passed && recordReferenceResult(
+    ) && passed
+    passed = recordReferenceResult(
         context,
         "bitcopyDropConflictExpectedDiagnosticFileMatches",
         bitcopyDropConflictExpectedDiagnosticFileMatches(context)
-    )
-    passed = passed && recordReferenceResult(
+    ) && passed
+    passed = recordReferenceResult(
         context,
         "bitcopyFieldNonBitcopyExpectedDiagnosticFileMatches",
         bitcopyFieldNonBitcopyExpectedDiagnosticFileMatches(context)
-    )
-    passed = passed && recordReferenceResult(
+    ) && passed
+    passed = recordReferenceResult(
         context,
         "capabilityClassNameReservedExpectedDiagnosticFileMatches",
         capabilityClassNameReservedExpectedDiagnosticFileMatches(context)
-    )
-    passed = passed && recordReferenceResult(
+    ) && passed
+    passed = recordReferenceResult(
         context,
         "foundationalClassNameReservedExpectedDiagnosticFileMatches",
         foundationalClassNameReservedExpectedDiagnosticFileMatches(context)
-    )
-    passed = passed && recordReferenceResult(
+    ) && passed
+    passed = recordReferenceResult(
         context,
         "refinementPredicateNonBoolExpectedDiagnosticFileMatches",
         refinementPredicateNonBoolExpectedDiagnosticFileMatches(context)
-    )
-    passed = passed && recordReferenceResult(
+    ) && passed
+    passed = recordReferenceResult(
         context,
         "refinementPredicateImpureExpectedDiagnosticFileMatches",
         refinementPredicateImpureExpectedDiagnosticFileMatches(context)
-    )
-    passed = passed && recordReferenceResult(
+    ) && passed
+    passed = recordReferenceResult(
         context,
         "refinementStaticProofFailureExpectedDiagnosticFileMatches",
         refinementStaticProofFailureExpectedDiagnosticFileMatches(context)
-    )
-    passed = passed && recordReferenceResult(
+    ) && passed
+    passed = recordReferenceResult(
         context,
         "refinementInlineSelfConstraintExpectedDiagnosticFileMatches",
         refinementInlineSelfConstraintExpectedDiagnosticFileMatches(context)
-    )
-    passed = passed && recordReferenceResult(
+    ) && passed
+    passed = recordReferenceResult(
         context,
         "refinementStaticDefaultRequirementExpectedDiagnosticFileMatches",
         refinementStaticDefaultRequirementExpectedDiagnosticFileMatches(context)
-    )
-    passed = passed && recordReferenceResult(
+    ) && passed
+    passed = recordReferenceResult(
         context,
         "refinementDiagnosticsOwnershipExpectedDiagnosticFileMatches",
         refinementDiagnosticsOwnershipExpectedDiagnosticFileMatches(context)
-    )
-    passed = passed && recordReferenceResult(
+    ) && passed
+    passed = recordReferenceResult(
         context,
         "refinementDiagnosticsTableExpectedDiagnosticFileMatches",
         refinementDiagnosticsTableExpectedDiagnosticFileMatches(context)
-    )
-    passed = passed && recordReferenceResult(
+    ) && passed
+    passed = recordReferenceResult(
         context,
         "duplicateTypeParameterNameExpectedDiagnosticFileMatches",
         duplicateTypeParameterNameExpectedDiagnosticFileMatches(context)
-    )
-    passed = passed && recordReferenceResult(
+    ) && passed
+    passed = recordReferenceResult(
         context,
         "duplicateClassProcedureNameExpectedDiagnosticFileMatches",
         duplicateClassProcedureNameExpectedDiagnosticFileMatches(context)
-    )
-    passed = passed && recordReferenceResult(
+    ) && passed
+    passed = recordReferenceResult(
         context,
         "classMemberNameConflictExpectedDiagnosticFileMatches",
         classMemberNameConflictExpectedDiagnosticFileMatches(context)
-    )
-    passed = passed && recordReferenceResult(
+    ) && passed
+    passed = recordReferenceResult(
         context,
         "superclassCycleExpectedDiagnosticFileMatches",
         superclassCycleExpectedDiagnosticFileMatches(context)
-    )
-    passed = passed && recordReferenceResult(
+    ) && passed
+    passed = recordReferenceResult(
         context,
         "overrideNoConcreteExpectedDiagnosticFileMatches",
         overrideNoConcreteExpectedDiagnosticFileMatches(context)
-    )
-    passed = passed && recordReferenceResult(
+    ) && passed
+    passed = recordReferenceResult(
         context,
         "heapAllocatorRawCallRequiresUnsafeExpectedDiagnosticFileMatches",
         heapAllocatorRawCallRequiresUnsafeExpectedDiagnosticFileMatches(context)
-    )
-    passed = passed && recordReferenceResult(
+    ) && passed
+    passed = recordReferenceResult(
         context,
         "heapAllocRawUnsafeExpectedDiagnosticFileMatches",
         heapAllocRawUnsafeExpectedDiagnosticFileMatches(context)
-    )
-    passed = passed && recordReferenceResult(
+    ) && passed
+    passed = recordReferenceResult(
         context,
         "heapDeallocRawUnsafeExpectedDiagnosticFileMatches",
         heapDeallocRawUnsafeExpectedDiagnosticFileMatches(context)
-    )
-    passed = passed && recordReferenceResult(
+    ) && passed
+    passed = recordReferenceResult(
         context,
         "capabilityClassesDiagnosticsExpectedDiagnosticFileMatches",
         capabilityClassesDiagnosticsExpectedDiagnosticFileMatches(context)
-    )
-    passed = passed && recordReferenceResult(
+    ) && passed
+    passed = recordReferenceResult(
         context,
         "callNonFunctionExpectedDiagnosticFileMatches",
         callNonFunctionExpectedDiagnosticFileMatches(context)
-    )
-    passed = passed && recordReferenceResult(
+    ) && passed
+    passed = recordReferenceResult(
         context,
         "indexNonIndexableExpectedDiagnosticFileMatches",
         indexNonIndexableExpectedDiagnosticFileMatches(context)
-    )
-    passed = passed && recordReferenceResult(
+    ) && passed
+    passed = recordReferenceResult(
         context,
         "arrayIndexNonConstExpectedDiagnosticFileMatches",
         arrayIndexNonConstExpectedDiagnosticFileMatches(context)
-    )
-    passed = passed && recordReferenceResult(
+    ) && passed
+    passed = recordReferenceResult(
         context,
         "arrayIndexOutOfBoundsExpectedDiagnosticFileMatches",
         arrayIndexOutOfBoundsExpectedDiagnosticFileMatches(context)
-    )
-    passed = passed && recordReferenceResult(
+    ) && passed
+    passed = recordReferenceResult(
         context,
         "arrayIndexNonUsizeExpectedDiagnosticFileMatches",
         arrayIndexNonUsizeExpectedDiagnosticFileMatches(context)
-    )
-    passed = passed && recordReferenceResult(
+    ) && passed
+    passed = recordReferenceResult(
         context,
         "ptrNullSynthesisExpectedDiagnosticFileMatches",
         ptrNullSynthesisExpectedDiagnosticFileMatches(context)
-    )
-    passed = passed && recordReferenceResult(
+    ) && passed
+    passed = recordReferenceResult(
         context,
         "ptrNullCheckExpectedDiagnosticFileMatches",
         ptrNullCheckExpectedDiagnosticFileMatches(context)
-    )
-    passed = passed && recordReferenceResult(
+    ) && passed
+    passed = recordReferenceResult(
         context,
         "callArgCountExpectedDiagnosticFileMatches",
         callArgCountExpectedDiagnosticFileMatches(context)
-    )
-    passed = passed && recordReferenceResult(
+    ) && passed
+    passed = recordReferenceResult(
         context,
         "callArgTypeExpectedDiagnosticFileMatches",
         callArgTypeExpectedDiagnosticFileMatches(context)
-    )
-    passed = passed && recordReferenceResult(
+    ) && passed
+    passed = recordReferenceResult(
         context,
         "exprUnresolvedExpectedDiagnosticFileMatches",
         exprUnresolvedExpectedDiagnosticFileMatches(context)
-    )
-    passed = passed && recordReferenceResult(
+    ) && passed
+    passed = recordReferenceResult(
         context,
         "unionDirectAccessExpectedDiagnosticFileMatches",
         unionDirectAccessExpectedDiagnosticFileMatches(context)
-    )
-    passed = passed && recordReferenceResult(
+    ) && passed
+    passed = recordReferenceResult(
         context,
         "allocImplicitNoRegionExpectedDiagnosticFileMatches",
         allocImplicitNoRegionExpectedDiagnosticFileMatches(context)
-    )
-    passed = passed && recordReferenceResult(
+    ) && passed
+    passed = recordReferenceResult(
         context,
         "callArgNotPlaceExpectedDiagnosticFileMatches",
         callArgNotPlaceExpectedDiagnosticFileMatches(context)
-    )
-    passed = passed && recordReferenceResult(
+    ) && passed
+    passed = recordReferenceResult(
         context,
         "callArgPackedUnsafeExpectedDiagnosticFileMatches",
         callArgPackedUnsafeExpectedDiagnosticFileMatches(context)
-    )
-    passed = passed && recordReferenceResult(
+    ) && passed
+    passed = recordReferenceResult(
         context,
         "floatSuffixMismatchExpectedDiagnosticFileMatches",
         floatSuffixMismatchExpectedDiagnosticFileMatches(context)
-    )
-    passed = passed && recordReferenceResult(
+    ) && passed
+    passed = recordReferenceResult(
         context,
         "parsePlaceErrorExpectedDiagnosticFileMatches",
         parsePlaceErrorExpectedDiagnosticFileMatches(context)
-    )
-    passed = passed && recordReferenceResult(
+    ) && passed
+    passed = recordReferenceResult(
         context,
         "operatorOperandMismatchExpectedDiagnosticFileMatches",
         operatorOperandMismatchExpectedDiagnosticFileMatches(context)
-    )
-    passed = passed && recordReferenceResult(
+    ) && passed
+    passed = recordReferenceResult(
         context,
         "ifConditionNonBoolExpectedDiagnosticFileMatches",
         ifConditionNonBoolExpectedDiagnosticFileMatches(context)
-    )
-    passed = passed && recordReferenceResult(
+    ) && passed
+    passed = recordReferenceResult(
         context,
         "tupleAccessNonTupleExpectedDiagnosticFileMatches",
         tupleAccessNonTupleExpectedDiagnosticFileMatches(context)
-    )
-    passed = passed && recordReferenceResult(
+    ) && passed
+    passed = recordReferenceResult(
         context,
         "tupleIndexOutOfBoundsExpectedDiagnosticFileMatches",
         tupleIndexOutOfBoundsExpectedDiagnosticFileMatches(context)
-    )
-    passed = passed && recordReferenceResult(
+    ) && passed
+    passed = recordReferenceResult(
         context,
         "closureCaptureUniqueExpectedDiagnosticFileMatches",
         closureCaptureUniqueExpectedDiagnosticFileMatches(context)
-    )
-    passed = passed && recordReferenceResult(
+    ) && passed
+    passed = recordReferenceResult(
         context,
         "closureMoveCaptureMovedExpectedDiagnosticFileMatches",
         closureMoveCaptureMovedExpectedDiagnosticFileMatches(context)
-    )
-    passed = passed && recordReferenceResult(
+    ) && passed
+    passed = recordReferenceResult(
         context,
         "closureRefCaptureMovedExpectedDiagnosticFileMatches",
         closureRefCaptureMovedExpectedDiagnosticFileMatches(context)
-    )
-    passed = passed && recordReferenceResult(
+    ) && passed
+    passed = recordReferenceResult(
         context,
         "closureMoveCaptureImmovableExpectedDiagnosticFileMatches",
         closureMoveCaptureImmovableExpectedDiagnosticFileMatches(context)
-    )
-    passed = passed && recordReferenceResult(
+    ) && passed
+    passed = recordReferenceResult(
         context,
         "callMoveUnexpectedExpectedDiagnosticFileMatches",
         callMoveUnexpectedExpectedDiagnosticFileMatches(context)
-    )
-    passed = passed && recordReferenceResult(
+    ) && passed
+    passed = recordReferenceResult(
         context,
         "callMoveMissingExpectedDiagnosticFileMatches",
         callMoveMissingExpectedDiagnosticFileMatches(context)
-    )
-    passed = passed && recordReferenceResult(
+    ) && passed
+    passed = recordReferenceResult(
         context,
         "methodNotFoundExpectedDiagnosticFileMatches",
         methodNotFoundExpectedDiagnosticFileMatches(context)
-    )
-    passed = passed && recordReferenceResult(
+    ) && passed
+    passed = recordReferenceResult(
         context,
         "pipelineNotCallableExpectedDiagnosticFileMatches",
         pipelineNotCallableExpectedDiagnosticFileMatches(context)
-    )
-    passed = passed && recordReferenceResult(
+    ) && passed
+    passed = recordReferenceResult(
         context,
         "pipelineTypeMismatchExpectedDiagnosticFileMatches",
         pipelineTypeMismatchExpectedDiagnosticFileMatches(context)
-    )
-    passed = passed && recordReferenceResult(
+    ) && passed
+    passed = recordReferenceResult(
         context,
         "pipelineArgCountExpectedDiagnosticFileMatches",
         pipelineArgCountExpectedDiagnosticFileMatches(context)
-    )
-    passed = passed && recordReferenceResult(
+    ) && passed
+    passed = recordReferenceResult(
         context,
         "closureParamInferenceExpectedDiagnosticFileMatches",
         closureParamInferenceExpectedDiagnosticFileMatches(context)
-    )
-    passed = passed && recordReferenceResult(
+    ) && passed
+    passed = recordReferenceResult(
         context,
         "closureParamInferenceRequirementExpectedDiagnosticFileMatches",
         closureParamInferenceRequirementExpectedDiagnosticFileMatches(context)
-    )
-    passed = passed && recordReferenceResult(
+    ) && passed
+    passed = recordReferenceResult(
         context,
         "externCallUnsafeRequirementExpectedDiagnosticFileMatches",
         externCallUnsafeRequirementExpectedDiagnosticFileMatches(context)
-    )
-    passed = passed && recordReferenceResult(
+    ) && passed
+    passed = recordReferenceResult(
         context,
         "externGenericSignatureExpectedDiagnosticFileMatches",
         externGenericSignatureExpectedDiagnosticFileMatches(context)
-    )
-    passed = passed && recordReferenceResult(
+    ) && passed
+    passed = recordReferenceResult(
         context,
         "externCallSafetyExpectedDiagnosticFileMatches",
         externCallSafetyExpectedDiagnosticFileMatches(context)
-    )
-    passed = passed && recordReferenceResult(
+    ) && passed
+    passed = recordReferenceResult(
         context,
         "unsupportedExternABIExpectedDiagnosticFileMatches",
         unsupportedExternABIExpectedDiagnosticFileMatches(context)
-    )
-    passed = passed && recordReferenceResult(
+    ) && passed
+    passed = recordReferenceResult(
         context,
         "invalidUnwindModeExpectedDiagnosticFileMatches",
         invalidUnwindModeExpectedDiagnosticFileMatches(context)
-    )
-    passed = passed && recordReferenceResult(
+    ) && passed
+    passed = recordReferenceResult(
         context,
         "unwindOnNonFFIProcedureExpectedDiagnosticFileMatches",
         unwindOnNonFFIProcedureExpectedDiagnosticFileMatches(context)
-    )
-    passed = passed && recordReferenceResult(
+    ) && passed
+    passed = recordReferenceResult(
         context,
         "boundaryUnwindingDiagnosticOwnershipExpectedDiagnosticFileMatches",
         boundaryUnwindingDiagnosticOwnershipExpectedDiagnosticFileMatches(context)
-    )
-    passed = passed && recordReferenceResult(
+    ) && passed
+    passed = recordReferenceResult(
         context,
         "unwindCatchABIMismatchExpectedDiagnosticFileMatches",
         unwindCatchABIMismatchExpectedDiagnosticFileMatches(context)
-    )
-    passed = passed && recordReferenceResult(
+    ) && passed
+    passed = recordReferenceResult(
         context,
         "boundaryUnwindingNoAdditionalDiagnosticsExpectedDiagnosticFileMatches",
         boundaryUnwindingNoAdditionalDiagnosticsExpectedDiagnosticFileMatches(context)
-    )
-    passed = passed && recordReferenceResult(
+    ) && passed
+    passed = recordReferenceResult(
         context,
         "unsupportedLibraryKindExpectedDiagnosticFileMatches",
         unsupportedLibraryKindExpectedDiagnosticFileMatches(context)
-    )
-    passed = passed && recordReferenceResult(
+    ) && passed
+    passed = recordReferenceResult(
         context,
         "mangleOnNonFFIProcedureExpectedDiagnosticFileMatches",
         mangleOnNonFFIProcedureExpectedDiagnosticFileMatches(context)
-    )
-    passed = passed && recordReferenceResult(
+    ) && passed
+    passed = recordReferenceResult(
         context,
         "ffiAttributeDiagnosticsExpectedDiagnosticFileMatches",
         ffiAttributeDiagnosticsExpectedDiagnosticFileMatches(context)
-    )
-    passed = passed && recordReferenceResult(
+    ) && passed
+    passed = recordReferenceResult(
         context,
         "hostExportOutsideLibraryExpectedDiagnosticFileMatches",
         hostExportOutsideLibraryExpectedDiagnosticFileMatches(context)
-    )
-    passed = passed && recordReferenceResult(
+    ) && passed
+    passed = recordReferenceResult(
         context,
         "hostExportMixedModeExpectedDiagnosticFileMatches",
         hostExportMixedModeExpectedDiagnosticFileMatches(context)
-    )
-    passed = passed && recordReferenceResult(
+    ) && passed
+    passed = recordReferenceResult(
         context,
         "hostExportGenericExpectedDiagnosticFileMatches",
         hostExportGenericExpectedDiagnosticFileMatches(context)
-    )
-    passed = passed && recordReferenceResult(
+    ) && passed
+    passed = recordReferenceResult(
         context,
         "hostedExportDiagnosticsExpectedDiagnosticFileMatches",
         hostedExportDiagnosticsExpectedDiagnosticFileMatches(context)
-    )
-    passed = passed && recordReferenceResult(
+    ) && passed
+    passed = recordReferenceResult(
         context,
         "hostExportMissingContextExpectedDiagnosticFileMatches",
         hostExportMissingContextExpectedDiagnosticFileMatches(context)
-    )
-    passed = passed && recordReferenceResult(
+    ) && passed
+    passed = recordReferenceResult(
         context,
         "hostedExportDiagnosticOwnershipExpectedDiagnosticFileMatches",
         hostedExportDiagnosticOwnershipExpectedDiagnosticFileMatches(context)
-    )
-    passed = passed && recordReferenceResult(
+    ) && passed
+    passed = recordReferenceResult(
         context,
         "hostExportRawContextExpectedDiagnosticFileMatches",
         hostExportRawContextExpectedDiagnosticFileMatches(context)
-    )
-    passed = passed && recordReferenceResult(
+    ) && passed
+    passed = recordReferenceResult(
         context,
         "hostExportMoveContextExpectedDiagnosticFileMatches",
         hostExportMoveContextExpectedDiagnosticFileMatches(context)
-    )
-    passed = passed && recordReferenceResult(
+    ) && passed
+    passed = recordReferenceResult(
         context,
         "rawExportNonPublicExpectedDiagnosticFileMatches",
         rawExportNonPublicExpectedDiagnosticFileMatches(context)
-    )
-    passed = passed && recordReferenceResult(
+    ) && passed
+    passed = recordReferenceResult(
         context,
         "rawExportUnsupportedABIExpectedDiagnosticFileMatches",
         rawExportUnsupportedABIExpectedDiagnosticFileMatches(context)
-    )
-    passed = passed && recordReferenceResult(
+    ) && passed
+    passed = recordReferenceResult(
         context,
         "ffiSafeBoolParameterExpectedDiagnosticFileMatches",
         ffiSafeBoolParameterExpectedDiagnosticFileMatches(context)
-    )
-    passed = passed && recordReferenceResult(
+    ) && passed
+    passed = recordReferenceResult(
         context,
         "capabilityIsolationDiagnosticsExpectedDiagnosticFileMatches",
         capabilityIsolationDiagnosticsExpectedDiagnosticFileMatches(context)
-    )
-    passed = passed && recordReferenceResult(
+    ) && passed
+    passed = recordReferenceResult(
         context,
         "capabilityIsolationDiagnosticOwnershipExpectedDiagnosticFileMatches",
         capabilityIsolationDiagnosticOwnershipExpectedDiagnosticFileMatches(context)
-    )
-    passed = passed && recordReferenceResult(
+    ) && passed
+    passed = recordReferenceResult(
         context,
         "ffiSafeDiagnosticsExpectedDiagnosticFileMatches",
         ffiSafeDiagnosticsExpectedDiagnosticFileMatches(context)
-    )
-    passed = passed && recordReferenceResult(
+    ) && passed
+    passed = recordReferenceResult(
         context,
         "ffiSafeRecordWithoutLayoutCExpectedDiagnosticFileMatches",
         ffiSafeRecordWithoutLayoutCExpectedDiagnosticFileMatches(context)
-    )
-    passed = passed && recordReferenceResult(
+    ) && passed
+    passed = recordReferenceResult(
         context,
         "ffiSafeEnumWithoutLayoutCExpectedDiagnosticFileMatches",
         ffiSafeEnumWithoutLayoutCExpectedDiagnosticFileMatches(context)
-    )
-    passed = passed && recordReferenceResult(
+    ) && passed
+    passed = recordReferenceResult(
         context,
         "ffiSafeRecordNonFfiFieldExpectedDiagnosticFileMatches",
         ffiSafeRecordNonFfiFieldExpectedDiagnosticFileMatches(context)
-    )
-    passed = passed && recordReferenceResult(
+    ) && passed
+    passed = recordReferenceResult(
         context,
         "ffiSafeEnumNonFfiPayloadExpectedDiagnosticFileMatches",
         ffiSafeEnumNonFfiPayloadExpectedDiagnosticFileMatches(context)
-    )
-    passed = passed && recordReferenceResult(
+    ) && passed
+    passed = recordReferenceResult(
         context,
         "ffiSafeRecordFieldApplyExpectedDiagnosticFileMatches",
         ffiSafeRecordFieldApplyExpectedDiagnosticFileMatches(context)
-    )
-    passed = passed && recordReferenceResult(
+    ) && passed
+    passed = recordReferenceResult(
         context,
         "ffiSafeEnumFieldApplyExpectedDiagnosticFileMatches",
         ffiSafeEnumFieldApplyExpectedDiagnosticFileMatches(context)
-    )
-    passed = passed && recordReferenceResult(
+    ) && passed
+    passed = recordReferenceResult(
         context,
         "ffiSafeIncompleteLayoutExpectedDiagnosticFileMatches",
         ffiSafeIncompleteLayoutExpectedDiagnosticFileMatches(context)
-    )
-    passed = passed && recordReferenceResult(
+    ) && passed
+    passed = recordReferenceResult(
         context,
         "ffiSafeRecordGenericUnboundedExpectedDiagnosticFileMatches",
         ffiSafeRecordGenericUnboundedExpectedDiagnosticFileMatches(context)
-    )
-    passed = passed && recordReferenceResult(
+    ) && passed
+    passed = recordReferenceResult(
         context,
         "ffiSafeEnumGenericUnboundedExpectedDiagnosticFileMatches",
         ffiSafeEnumGenericUnboundedExpectedDiagnosticFileMatches(context)
-    )
-    passed = passed && recordReferenceResult(
+    ) && passed
+    passed = recordReferenceResult(
         context,
         "ffiSafeRecordApplyGenericUnboundedExpectedDiagnosticFileMatches",
         ffiSafeRecordApplyGenericUnboundedExpectedDiagnosticFileMatches(context)
-    )
-    passed = passed && recordReferenceResult(
+    ) && passed
+    passed = recordReferenceResult(
         context,
         "ffiSafeEnumApplyGenericUnboundedExpectedDiagnosticFileMatches",
         ffiSafeEnumApplyGenericUnboundedExpectedDiagnosticFileMatches(context)
-    )
-    passed = passed && recordReferenceResult(
+    ) && passed
+    passed = recordReferenceResult(
         context,
         "ffiPassByValueRequiredExpectedDiagnosticFileMatches",
         ffiPassByValueRequiredExpectedDiagnosticFileMatches(context)
-    )
-    passed = passed && recordReferenceResult(
+    ) && passed
+    passed = recordReferenceResult(
         context,
         "ffiArgRegionLocalRawPtrExpectedDiagnosticFileMatches",
         ffiArgRegionLocalRawPtrExpectedDiagnosticFileMatches(context)
-    )
-    passed = passed && recordReferenceResult(
+    ) && passed
+    passed = recordReferenceResult(
         context,
         "ffiReturnRegionLocalRawPtrExpectedDiagnosticFileMatches",
         ffiReturnRegionLocalRawPtrExpectedDiagnosticFileMatches(context)
-    )
-    passed = passed && recordReferenceResult(
+    ) && passed
+    passed = recordReferenceResult(
         context,
         "foreignPredicateContextExpectedDiagnosticFileMatches",
         foreignPredicateContextExpectedDiagnosticFileMatches(context)
-    )
-    passed = passed && recordReferenceResult(
+    ) && passed
+    passed = recordReferenceResult(
         context,
         "foreignPostconditionPredicateBindingsExpectedDiagnosticFileMatches",
         foreignPostconditionPredicateBindingsExpectedDiagnosticFileMatches(context)
-    )
-    passed = passed && recordReferenceResult(
+    ) && passed
+    passed = recordReferenceResult(
         context,
         "nullResultWellFormednessExpectedDiagnosticFileMatches",
         nullResultWellFormednessExpectedDiagnosticFileMatches(context)
-    )
-    passed = passed && recordReferenceResult(
+    ) && passed
+    passed = recordReferenceResult(
         context,
         "foreignEnsuresNullResultExpectedDiagnosticFileMatches",
         foreignEnsuresNullResultExpectedDiagnosticFileMatches(context)
-    )
-    passed = passed && recordReferenceResult(
+    ) && passed
+    passed = recordReferenceResult(
         context,
         "errorPredicateWellFormednessExpectedDiagnosticFileMatches",
         errorPredicateWellFormednessExpectedDiagnosticFileMatches(context)
-    )
-    passed = passed && recordReferenceResult(
+    ) && passed
+    passed = recordReferenceResult(
         context,
         "foreignContractDiagnosticsExpectedDiagnosticFileMatches",
         foreignContractDiagnosticsExpectedDiagnosticFileMatches(context)
-    )
-    passed = passed && recordReferenceResult(
+    ) && passed
+    passed = recordReferenceResult(
         context,
         "invalidCastExpectedDiagnosticFileMatches",
         invalidCastExpectedDiagnosticFileMatches(context)
-    )
-    passed = passed && recordReferenceResult(
+    ) && passed
+    passed = recordReferenceResult(
         context,
         "transmuteSizeMismatchExpectedDiagnosticFileMatches",
         transmuteSizeMismatchExpectedDiagnosticFileMatches(context)
-    )
-    passed = passed && recordReferenceResult(
+    ) && passed
+    passed = recordReferenceResult(
         context,
         "transmuteAlignMismatchExpectedDiagnosticFileMatches",
         transmuteAlignMismatchExpectedDiagnosticFileMatches(context)
-    )
-    passed = passed && recordReferenceResult(
+    ) && passed
+    passed = recordReferenceResult(
         context,
         "transmuteUnsafeExpectedDiagnosticFileMatches",
         transmuteUnsafeExpectedDiagnosticFileMatches(context)
-    )
-    passed = passed && recordReferenceResult(
+    ) && passed
+    passed = recordReferenceResult(
         context,
         "valueUseNonBitcopyPlaceExpectedDiagnosticFileMatches",
         valueUseNonBitcopyPlaceExpectedDiagnosticFileMatches(context)
-    )
-    passed = passed && recordReferenceResult(
+    ) && passed
+    passed = recordReferenceResult(
         context,
         "recordFieldInitDuplicateExpectedDiagnosticFileMatches",
         recordFieldInitDuplicateExpectedDiagnosticFileMatches(context)
-    )
-    passed = passed && recordReferenceResult(
+    ) && passed
+    passed = recordReferenceResult(
         context,
         "recordDuplicateFieldExpectedDiagnosticFileMatches",
         recordDuplicateFieldExpectedDiagnosticFileMatches(context)
-    )
-    passed = passed && recordReferenceResult(
+    ) && passed
+    passed = recordReferenceResult(
         context,
         "recordFieldInitMissingExpectedDiagnosticFileMatches",
         recordFieldInitMissingExpectedDiagnosticFileMatches(context)
-    )
-    passed = passed && recordReferenceResult(
+    ) && passed
+    passed = recordReferenceResult(
         context,
         "recordFieldUnknownExpectedDiagnosticFileMatches",
         recordFieldUnknownExpectedDiagnosticFileMatches(context)
-    )
-    passed = passed && recordReferenceResult(
+    ) && passed
+    passed = recordReferenceResult(
         context,
         "recordFieldNonBitcopyMoveExpectedDiagnosticFileMatches",
         recordFieldNonBitcopyMoveExpectedDiagnosticFileMatches(context)
-    )
-    passed = passed && recordReferenceResult(
+    ) && passed
+    passed = recordReferenceResult(
         context,
         "recordDefaultInitExpectedDiagnosticFileMatches",
         recordDefaultInitExpectedDiagnosticFileMatches(context)
-    )
-    passed = passed && recordReferenceResult(
+    ) && passed
+    passed = recordReferenceResult(
         context,
         "callExpressionsDiagnosticExpectedDiagnosticFileMatches",
         callExpressionsDiagnosticExpectedDiagnosticFileMatches(context)
-    )
-    passed = passed && recordReferenceResult(
+    ) && passed
+    passed = recordReferenceResult(
         context,
         "castAndTransmuteExpressionsDiagnosticExpectedDiagnosticFileMatches",
         castAndTransmuteExpressionsDiagnosticExpectedDiagnosticFileMatches(context)
-    )
-    passed = passed && recordReferenceResult(
+    ) && passed
+    passed = recordReferenceResult(
         context,
         "constructionExpressionsDiagnosticExpectedDiagnosticFileMatches",
         constructionExpressionsDiagnosticExpectedDiagnosticFileMatches(context)
-    )
-    passed = passed && recordReferenceResult(
+    ) && passed
+    passed = recordReferenceResult(
         context,
         "closureAndPipelineExpressionsDiagnosticExpectedDiagnosticFileMatches",
         closureAndPipelineExpressionsDiagnosticExpectedDiagnosticFileMatches(context)
-    )
-    passed = passed && recordReferenceResult(
+    ) && passed
+    passed = recordReferenceResult(
         context,
         "expressionDiagnosticsSupplementExpectedDiagnosticFileMatches",
         expressionDiagnosticsSupplementExpectedDiagnosticFileMatches(context)
-    )
-    passed = passed && recordReferenceResult(
+    ) && passed
+    passed = recordReferenceResult(
         context,
         "asyncTryInfallibleExpectedDiagnosticFileMatches",
         asyncTryInfallibleExpectedDiagnosticFileMatches(context)
-    )
-    passed = passed && recordReferenceResult(
+    ) && passed
+    passed = recordReferenceResult(
         context,
         "yieldOutsideAsyncExpectedDiagnosticFileMatches",
         yieldOutsideAsyncExpectedDiagnosticFileMatches(context)
-    )
-    passed = passed && recordReferenceResult(
+    ) && passed
+    passed = recordReferenceResult(
         context,
         "waitNonHandleExpectedDiagnosticFileMatches",
         waitNonHandleExpectedDiagnosticFileMatches(context)
-    )
-    passed = passed && recordReferenceResult(
+    ) && passed
+    passed = recordReferenceResult(
         context,
         "yieldTypeMismatchExpectedDiagnosticFileMatches",
         yieldTypeMismatchExpectedDiagnosticFileMatches(context)
-    )
-    passed = passed && recordReferenceResult(
+    ) && passed
+    passed = recordReferenceResult(
         context,
         "yieldFromOutsideAsyncExpectedDiagnosticFileMatches",
         yieldFromOutsideAsyncExpectedDiagnosticFileMatches(context)
-    )
-    passed = passed && recordReferenceResult(
+    ) && passed
+    passed = recordReferenceResult(
         context,
         "yieldFromOutMismatchExpectedDiagnosticFileMatches",
         yieldFromOutMismatchExpectedDiagnosticFileMatches(context)
-    )
-    passed = passed && recordReferenceResult(
+    ) && passed
+    passed = recordReferenceResult(
         context,
         "yieldFromInMismatchExpectedDiagnosticFileMatches",
         yieldFromInMismatchExpectedDiagnosticFileMatches(context)
-    )
-    passed = passed && recordReferenceResult(
+    ) && passed
+    passed = recordReferenceResult(
         context,
         "yieldFromErrorMismatchExpectedDiagnosticFileMatches",
         yieldFromErrorMismatchExpectedDiagnosticFileMatches(context)
-    )
-    passed = passed && recordReferenceResult(
+    ) && passed
+    passed = recordReferenceResult(
         context,
         "syncContainsYieldExpectedDiagnosticFileMatches",
         syncContainsYieldExpectedDiagnosticFileMatches(context)
-    )
-    passed = passed && recordReferenceResult(
+    ) && passed
+    passed = recordReferenceResult(
         context,
         "syncContainsYieldFromExpectedDiagnosticFileMatches",
         syncContainsYieldFromExpectedDiagnosticFileMatches(context)
-    )
-    passed = passed && recordReferenceResult(
+    ) && passed
+    passed = recordReferenceResult(
         context,
         "syncInsideAsyncExpectedDiagnosticFileMatches",
         syncInsideAsyncExpectedDiagnosticFileMatches(context)
-    )
-    passed = passed && recordReferenceResult(
+    ) && passed
+    passed = recordReferenceResult(
         context,
         "syncOperandYieldsExpectedDiagnosticFileMatches",
         syncOperandYieldsExpectedDiagnosticFileMatches(context)
-    )
-    passed = passed && recordReferenceResult(
+    ) && passed
+    passed = recordReferenceResult(
         context,
         "syncOperandRequiresInputExpectedDiagnosticFileMatches",
         syncOperandRequiresInputExpectedDiagnosticFileMatches(context)
-    )
-    passed = passed && recordReferenceResult(
+    ) && passed
+    passed = recordReferenceResult(
         context,
         "raceTooFewArmsExpectedDiagnosticFileMatches",
         raceTooFewArmsExpectedDiagnosticFileMatches(context)
-    )
-    passed = passed && recordReferenceResult(
+    ) && passed
+    passed = recordReferenceResult(
         context,
         "raceHandlerMixExpectedDiagnosticFileMatches",
         raceHandlerMixExpectedDiagnosticFileMatches(context)
-    )
-    passed = passed && recordReferenceResult(
+    ) && passed
+    passed = recordReferenceResult(
         context,
         "raceOperandYieldsExpectedDiagnosticFileMatches",
         raceOperandYieldsExpectedDiagnosticFileMatches(context)
-    )
-    passed = passed && recordReferenceResult(
+    ) && passed
+    passed = recordReferenceResult(
         context,
         "raceOperandNonAsyncExpectedDiagnosticFileMatches",
         raceOperandNonAsyncExpectedDiagnosticFileMatches(context)
-    )
-    passed = passed && recordReferenceResult(
+    ) && passed
+    passed = recordReferenceResult(
         context,
         "raceStreamOperandNeedsInputExpectedDiagnosticFileMatches",
         raceStreamOperandNeedsInputExpectedDiagnosticFileMatches(context)
-    )
-    passed = passed && recordReferenceResult(
+    ) && passed
+    passed = recordReferenceResult(
         context,
         "raceHandlerTypeMismatchExpectedDiagnosticFileMatches",
         raceHandlerTypeMismatchExpectedDiagnosticFileMatches(context)
-    )
-    passed = passed && recordReferenceResult(
+    ) && passed
+    passed = recordReferenceResult(
         context,
         "raceStreamHandlerTypeMismatchExpectedDiagnosticFileMatches",
         raceStreamHandlerTypeMismatchExpectedDiagnosticFileMatches(context)
-    )
-    passed = passed && recordReferenceResult(
+    ) && passed
+    passed = recordReferenceResult(
         context,
         "allOperandYieldsExpectedDiagnosticFileMatches",
         allOperandYieldsExpectedDiagnosticFileMatches(context)
-    )
-    passed = passed && recordReferenceResult(
+    ) && passed
+    passed = recordReferenceResult(
         context,
         "allOperandRequiresInputExpectedDiagnosticFileMatches",
         allOperandRequiresInputExpectedDiagnosticFileMatches(context)
-    )
-    passed = passed && recordReferenceResult(
+    ) && passed
+    passed = recordReferenceResult(
         context,
         "asyncTypeArgCountExpectedDiagnosticFileMatches",
         asyncTypeArgCountExpectedDiagnosticFileMatches(context)
-    )
-    passed = passed && recordReferenceResult(
+    ) && passed
+    passed = recordReferenceResult(
         context,
         "asyncTypeArgIllFormedExpectedDiagnosticFileMatches",
         asyncTypeArgIllFormedExpectedDiagnosticFileMatches(context)
-    )
-    passed = passed && recordReferenceResult(
+    ) && passed
+    passed = recordReferenceResult(
         context,
         "asyncTypePathUnappliedExpectedDiagnosticFileMatches",
         asyncTypePathUnappliedExpectedDiagnosticFileMatches(context)
-    )
-    passed = passed && recordReferenceResult(
+    ) && passed
+    passed = recordReferenceResult(
         context,
         "asyncTypeDiagnosticsTableExpectedDiagnosticFileMatches",
         asyncTypeDiagnosticsTableExpectedDiagnosticFileMatches(context)
-    )
-    passed = passed && recordReferenceResult(
+    ) && passed
+    passed = recordReferenceResult(
         context,
         "suspensionFormsDiagnosticsTableExpectedDiagnosticFileMatches",
         suspensionFormsDiagnosticsTableExpectedDiagnosticFileMatches(context)
-    )
-    passed = passed && recordReferenceResult(
+    ) && passed
+    passed = recordReferenceResult(
         context,
         "asyncCompositionDiagnosticsTableExpectedDiagnosticFileMatches",
         asyncCompositionDiagnosticsTableExpectedDiagnosticFileMatches(context)
-    )
-    passed = passed && recordReferenceResult(
+    ) && passed
+    passed = recordReferenceResult(
         context,
         "loopAsyncEnclosingReturnExpectedDiagnosticFileMatches",
         loopAsyncEnclosingReturnExpectedDiagnosticFileMatches(context)
-    )
-    passed = passed && recordReferenceResult(
+    ) && passed
+    passed = recordReferenceResult(
         context,
         "asyncCaptureOutlivesFrameExpectedDiagnosticFileMatches",
         asyncCaptureOutlivesFrameExpectedDiagnosticFileMatches(context)
-    )
-    passed = passed && recordReferenceResult(
+    ) && passed
+    passed = recordReferenceResult(
         context,
         "asyncOperationEscapesRegionExpectedDiagnosticFileMatches",
         asyncOperationEscapesRegionExpectedDiagnosticFileMatches(context)
-    )
-    passed = passed && recordReferenceResult(
+    ) && passed
+    passed = recordReferenceResult(
         context,
         "asyncDiagnosticsSupplementExpectedDiagnosticFileMatches",
         asyncDiagnosticsSupplementExpectedDiagnosticFileMatches(context)
-    )
-    passed = passed && recordReferenceResult(
+    ) && passed
+    passed = recordReferenceResult(
         context,
         "spawnOutsideParallelExpectedDiagnosticFileMatches",
         spawnOutsideParallelExpectedDiagnosticFileMatches(context)
-    )
-    passed = passed && recordReferenceResult(
+    ) && passed
+    passed = recordReferenceResult(
         context,
         "dispatchOutsideParallelExpectedDiagnosticFileMatches",
         dispatchOutsideParallelExpectedDiagnosticFileMatches(context)
-    )
-    passed = passed && recordReferenceResult(
+    ) && passed
+    passed = recordReferenceResult(
         context,
         "parallelDomainNotExecutionDomainExpectedDiagnosticFileMatches",
         parallelDomainNotExecutionDomainExpectedDiagnosticFileMatches(context)
-    )
-    passed = passed && recordReferenceResult(
+    ) && passed
+    passed = recordReferenceResult(
         context,
         "parallelCancelOptionTypeExpectedDiagnosticFileMatches",
         parallelCancelOptionTypeExpectedDiagnosticFileMatches(context)
-    )
-    passed = passed && recordReferenceResult(
+    ) && passed
+    passed = recordReferenceResult(
         context,
         "parallelDim3ConstExpectedDiagnosticFileMatches",
         parallelDim3ConstExpectedDiagnosticFileMatches(context)
-    )
-    passed = passed && recordReferenceResult(
+    ) && passed
+    passed = recordReferenceResult(
         context,
         "parallelWorkgroupSizeExpectedDiagnosticFileMatches",
         parallelWorkgroupSizeExpectedDiagnosticFileMatches(context)
-    )
-    passed = passed && recordReferenceResult(
+    ) && passed
+    passed = recordReferenceResult(
         context,
         "dispatchChunkTypeExpectedDiagnosticFileMatches",
         dispatchChunkTypeExpectedDiagnosticFileMatches(context)
-    )
-    passed = passed && recordReferenceResult(
+    ) && passed
+    passed = recordReferenceResult(
         context,
         "dispatchNonAssociativeReduceExpectedDiagnosticFileMatches",
         dispatchNonAssociativeReduceExpectedDiagnosticFileMatches(context)
-    )
-    passed = passed && recordReferenceResult(
+    ) && passed
+    passed = recordReferenceResult(
         context,
         "nestedGpuParallelExpectedDiagnosticFileMatches",
         nestedGpuParallelExpectedDiagnosticFileMatches(context)
-    )
-    passed = passed && recordReferenceResult(
+    ) && passed
+    passed = recordReferenceResult(
         context,
         "gpuIntrinsicOutsideExpectedDiagnosticFileMatches",
         gpuIntrinsicOutsideExpectedDiagnosticFileMatches(context)
-    )
-    passed = passed && recordReferenceResult(
+    ) && passed
+    passed = recordReferenceResult(
         context,
         "barrierOutsideGpuContextExpectedDiagnosticFileMatches",
         barrierOutsideGpuContextExpectedDiagnosticFileMatches(context)
-    )
-    passed = passed && recordReferenceResult(
+    ) && passed
+    passed = recordReferenceResult(
         context,
         "parallelDomainParameterExpectedDiagnosticFileMatches",
         parallelDomainParameterExpectedDiagnosticFileMatches(context)
-    )
-    passed = passed && recordReferenceResult(
+    ) && passed
+    passed = recordReferenceResult(
         context,
         "spawnInvalidPriorityOptionExpectedDiagnosticFileMatches",
         spawnInvalidPriorityOptionExpectedDiagnosticFileMatches(context)
-    )
-    passed = passed && recordReferenceResult(
+    ) && passed
+    passed = recordReferenceResult(
         context,
         "dispatchRequiresParallelContextExpectedDiagnosticFileMatches",
         dispatchRequiresParallelContextExpectedDiagnosticFileMatches(context)
-    )
-    passed = passed && recordReferenceResult(
+    ) && passed
+    passed = recordReferenceResult(
         context,
         "dispatchDiagnosticsExpectedDiagnosticFileMatches",
         dispatchDiagnosticsExpectedDiagnosticFileMatches(context)
-    )
-    passed = passed && recordReferenceResult(
+    ) && passed
+    passed = recordReferenceResult(
         context,
         "executionDomainsDiagnosticsExpectedDiagnosticFileMatches",
         executionDomainsDiagnosticsExpectedDiagnosticFileMatches(context)
-    )
-    passed = passed && recordReferenceResult(
+    ) && passed
+    passed = recordReferenceResult(
         context,
         "determinismAndNestingDiagnosticsExpectedDiagnosticFileMatches",
         determinismAndNestingDiagnosticsExpectedDiagnosticFileMatches(context)
-    )
-    passed = passed && recordReferenceResult(
+    ) && passed
+    passed = recordReferenceResult(
         context,
         "keyBlockGpuContextExpectedDiagnosticFileMatches",
         keyBlockGpuContextExpectedDiagnosticFileMatches(context)
-    )
-    passed = passed && recordReferenceResult(
+    ) && passed
+    passed = recordReferenceResult(
         context,
         "barrierDivergenceExpectedDiagnosticFileMatches",
         barrierDivergenceExpectedDiagnosticFileMatches(context)
-    )
-    passed = passed && recordReferenceResult(
+    ) && passed
+    passed = recordReferenceResult(
         context,
         "gpuCaptureSharedExpectedDiagnosticFileMatches",
         gpuCaptureSharedExpectedDiagnosticFileMatches(context)
-    )
-    passed = passed && recordReferenceResult(
+    ) && passed
+    passed = recordReferenceResult(
         context,
         "gpuCaptureNonGpuSafeExpectedDiagnosticFileMatches",
         gpuCaptureNonGpuSafeExpectedDiagnosticFileMatches(context)
-    )
-    passed = passed && recordReferenceResult(
+    ) && passed
+    passed = recordReferenceResult(
         context,
         "captureSemanticsDiagnosticsExpectedDiagnosticFileMatches",
         captureSemanticsDiagnosticsExpectedDiagnosticFileMatches(context)
-    )
-    passed = passed && recordReferenceResult(
+    ) && passed
+    passed = recordReferenceResult(
         context,
         "parallelClosureCaptureUniqueExpectedDiagnosticFileMatches",
         parallelClosureCaptureUniqueExpectedDiagnosticFileMatches(context)
-    )
-    passed = passed && recordReferenceResult(
+    ) && passed
+    passed = recordReferenceResult(
         context,
         "parallelClosureCaptureOuterMoveExpectedDiagnosticFileMatches",
         parallelClosureCaptureOuterMoveExpectedDiagnosticFileMatches(context)
-    )
-    passed = passed && recordReferenceResult(
+    ) && passed
+    passed = recordReferenceResult(
         context,
         "parallelEscapingClosureSpawnExpectedDiagnosticFileMatches",
         parallelEscapingClosureSpawnExpectedDiagnosticFileMatches(context)
-    )
-    passed = passed && recordReferenceResult(
+    ) && passed
+    passed = recordReferenceResult(
         context,
         "dispatchInferFailureExpectedDiagnosticFileMatches",
         dispatchInferFailureExpectedDiagnosticFileMatches(context)
-    )
-    passed = passed && recordReferenceResult(
+    ) && passed
+    passed = recordReferenceResult(
         context,
         "dispatchDependencyConflictExpectedDiagnosticFileMatches",
         dispatchDependencyConflictExpectedDiagnosticFileMatches(context)
-    )
-    passed = passed && recordReferenceResult(
+    ) && passed
+    passed = recordReferenceResult(
         context,
         "gpuCaptureHeapProvenanceExpectedDiagnosticFileMatches",
         gpuCaptureHeapProvenanceExpectedDiagnosticFileMatches(context)
-    )
-    passed = passed && recordReferenceResult(
+    ) && passed
+    passed = recordReferenceResult(
         context,
         "gpuSafeTypeDiagnosticExpectedDiagnosticFileMatches",
         gpuSafeTypeDiagnosticExpectedDiagnosticFileMatches(context)
-    )
-    passed = passed && recordReferenceResult(
+    ) && passed
+    passed = recordReferenceResult(
         context,
         "gpuSafeRecordFieldDiagnosticExpectedDiagnosticFileMatches",
         gpuSafeRecordFieldDiagnosticExpectedDiagnosticFileMatches(context)
-    )
-    passed = passed && recordReferenceResult(
+    ) && passed
+    passed = recordReferenceResult(
         context,
         "gpuSafeGenericUnboundedExpectedDiagnosticFileMatches",
         gpuSafeGenericUnboundedExpectedDiagnosticFileMatches(context)
-    )
-    passed = passed && recordReferenceResult(
+    ) && passed
+    passed = recordReferenceResult(
         context,
         "gpuPtrAddrSpaceExpectedDiagnosticFileMatches",
         gpuPtrAddrSpaceExpectedDiagnosticFileMatches(context)
-    )
-    passed = passed && recordReferenceResult(
+    ) && passed
+    passed = recordReferenceResult(
         context,
         "gpuPtrDerefHostMemoryExpectedDiagnosticFileMatches",
         gpuPtrDerefHostMemoryExpectedDiagnosticFileMatches(context)
-    )
-    passed = passed && recordReferenceResult(
+    ) && passed
+    passed = recordReferenceResult(
         context,
         "nullLiteralExpectedExpectedDiagnosticFileMatches",
         nullLiteralExpectedExpectedDiagnosticFileMatches(context)
-    )
-    passed = passed && recordReferenceResult(
+    ) && passed
+    passed = recordReferenceResult(
         context,
         "ptrNullExpectedRequirementExpectedDiagnosticFileMatches",
         ptrNullExpectedRequirementExpectedDiagnosticFileMatches(context)
-    )
-    passed = passed && recordReferenceResult(
+    ) && passed
+    passed = recordReferenceResult(
         context,
         "indexClassificationExpectedDiagnosticFileMatches",
         indexClassificationExpectedDiagnosticFileMatches(context)
-    )
-    passed = passed && recordReferenceResult(
+    ) && passed
+    passed = recordReferenceResult(
         context,
         "arraySliceIndexDiagnosticsExpectedDiagnosticFileMatches",
         arraySliceIndexDiagnosticsExpectedDiagnosticFileMatches(context)
-    )
-    passed = passed && recordReferenceResult(
+    ) && passed
+    passed = recordReferenceResult(
         context,
         "callStaticJudgementsAndArgumentTypingExpectedDiagnosticFileMatches",
         callStaticJudgementsAndArgumentTypingExpectedDiagnosticFileMatches(context)
-    )
-    passed = passed && recordReferenceResult(
+    ) && passed
+    passed = recordReferenceResult(
         context,
         "argsTConsRefExpectedDiagnosticFileMatches",
         argsTConsRefExpectedDiagnosticFileMatches(context)
-    )
-    passed = passed && recordReferenceResult(
+    ) && passed
+    passed = recordReferenceResult(
         context,
         "operatorStaticTypesExpectedDiagnosticFileMatches",
         operatorStaticTypesExpectedDiagnosticFileMatches(context)
-    )
-    passed = passed && recordReferenceResult(
+    ) && passed
+    passed = recordReferenceResult(
         context,
         "castValidityExpectedDiagnosticFileMatches",
         castValidityExpectedDiagnosticFileMatches(context)
-    )
-    passed = passed && recordReferenceResult(
+    ) && passed
+    passed = recordReferenceResult(
         context,
         "fieldInitNamesAndSetExpectedDiagnosticFileMatches",
         fieldInitNamesAndSetExpectedDiagnosticFileMatches(context)
-    )
-    passed = passed && recordReferenceResult(
+    ) && passed
+    passed = recordReferenceResult(
         context,
         "recordDefaultConstructionEligibilityExpectedDiagnosticFileMatches",
         recordDefaultConstructionEligibilityExpectedDiagnosticFileMatches(context)
-    )
-    passed = passed && recordReferenceResult(
+    ) && passed
+    passed = recordReferenceResult(
         context,
         "intLiteralCheckRangeExpectedDiagnosticFileMatches",
         intLiteralCheckRangeExpectedDiagnosticFileMatches(context)
-    )
-    passed = passed && recordReferenceResult(
+    ) && passed
+    passed = recordReferenceResult(
         context,
         "floatLiteralExplicitRequirementExpectedDiagnosticFileMatches",
         floatLiteralExplicitRequirementExpectedDiagnosticFileMatches(context)
-    )
-    passed = passed && recordReferenceResult(
+    ) && passed
+    passed = recordReferenceResult(
         context,
         "qualifiedNameResolutionExpectedDiagnosticFileMatches",
         qualifiedNameResolutionExpectedDiagnosticFileMatches(context)
-    )
-    passed = passed && recordReferenceResult(
+    ) && passed
+    passed = recordReferenceResult(
         context,
         "qualifiedNameEliminatedBeforeTypingExpectedDiagnosticFileMatches",
         qualifiedNameEliminatedBeforeTypingExpectedDiagnosticFileMatches(context)
-    )
-    passed = passed && recordReferenceResult(
+    ) && passed
+    passed = recordReferenceResult(
         context,
         "recordFieldNameSetExpectedDiagnosticFileMatches",
         recordFieldNameSetExpectedDiagnosticFileMatches(context)
-    )
-    passed = passed && recordReferenceResult(
+    ) && passed
+    passed = recordReferenceResult(
         context,
         "controlExpressionDiagnosticOwnershipExpectedDiagnosticFileMatches",
         controlExpressionDiagnosticOwnershipExpectedDiagnosticFileMatches(context)
-    )
-    passed = passed && recordReferenceResult(
+    ) && passed
+    passed = recordReferenceResult(
         context,
         "fieldVisibilityExpectedDiagnosticFileMatches",
         fieldVisibilityExpectedDiagnosticFileMatches(context)
-    )
-    passed = passed && recordReferenceResult(
+    ) && passed
+    passed = recordReferenceResult(
         context,
         "recordFieldVisibilityViolationExpectedDiagnosticFileMatches",
         recordFieldVisibilityViolationExpectedDiagnosticFileMatches(context)
-    )
-    passed = passed && recordReferenceResult(
+    ) && passed
+    passed = recordReferenceResult(
         context,
         "enumEmptyExpectedDiagnosticFileMatches",
         enumEmptyExpectedDiagnosticFileMatches(context)
-    )
-    passed = passed && recordReferenceResult(
+    ) && passed
+    passed = recordReferenceResult(
         context,
         "enumDuplicateVariantExpectedDiagnosticFileMatches",
         enumDuplicateVariantExpectedDiagnosticFileMatches(context)
-    )
-    passed = passed && recordReferenceResult(
+    ) && passed
+    passed = recordReferenceResult(
         context,
         "enumDuplicateDiscriminantExpectedDiagnosticFileMatches",
         enumDuplicateDiscriminantExpectedDiagnosticFileMatches(context)
-    )
-    passed = passed && recordReferenceResult(
+    ) && passed
+    passed = recordReferenceResult(
         context,
         "enumInvalidDiscriminantExpectedDiagnosticFileMatches",
         enumInvalidDiscriminantExpectedDiagnosticFileMatches(context)
-    )
-    passed = passed && recordReferenceResult(
+    ) && passed
+    passed = recordReferenceResult(
         context,
         "enumUnknownVariantExpectedDiagnosticFileMatches",
         enumUnknownVariantExpectedDiagnosticFileMatches(context)
-    )
-    passed = passed && recordReferenceResult(
+    ) && passed
+    passed = recordReferenceResult(
         context,
         "enumTupleArityExpectedDiagnosticFileMatches",
         enumTupleArityExpectedDiagnosticFileMatches(context)
-    )
-    passed = passed && recordReferenceResult(
+    ) && passed
+    passed = recordReferenceResult(
         context,
         "enumRecordMissingFieldExpectedDiagnosticFileMatches",
         enumRecordMissingFieldExpectedDiagnosticFileMatches(context)
-    )
-    passed = passed && recordReferenceResult(
+    ) && passed
+    passed = recordReferenceResult(
         context,
         "addressOfStaticHelpersExpectedDiagnosticFileMatches",
         addressOfStaticHelpersExpectedDiagnosticFileMatches(context)
-    )
-    passed = passed && recordReferenceResult(
+    ) && passed
+    passed = recordReferenceResult(
         context,
         "addressOfIndexTypingExpectedDiagnosticFileMatches",
         addressOfIndexTypingExpectedDiagnosticFileMatches(context)
-    )
-    passed = passed && recordReferenceResult(
+    ) && passed
+    passed = recordReferenceResult(
         context,
         "rawDerefUnsafeRequirementExpectedDiagnosticFileMatches",
         rawDerefUnsafeRequirementExpectedDiagnosticFileMatches(context)
-    )
-    passed = passed && recordReferenceResult(
+    ) && passed
+    passed = recordReferenceResult(
         context,
         "rawDerefPlaceTypingFamilyExpectedDiagnosticFileMatches",
         rawDerefPlaceTypingFamilyExpectedDiagnosticFileMatches(context)
-    )
-    passed = passed && recordReferenceResult(
+    ) && passed
+    passed = recordReferenceResult(
         context,
         "asyncIteratorLoopTypingFamilyExpectedDiagnosticFileMatches",
         asyncIteratorLoopTypingFamilyExpectedDiagnosticFileMatches(context)
-    )
-    passed = passed && recordReferenceResult(
+    ) && passed
+    passed = recordReferenceResult(
         context,
         "widenTypingDiagnosticsOwnershipExpectedDiagnosticFileMatches",
         widenTypingDiagnosticsOwnershipExpectedDiagnosticFileMatches(context)
-    )
-    passed = passed && recordReferenceResult(
+    ) && passed
+    passed = recordReferenceResult(
         context,
         "duplicatePatternBindingExpectedDiagnosticFileMatches",
         duplicatePatternBindingExpectedDiagnosticFileMatches(context)
-    )
-    passed = passed && recordReferenceResult(
+    ) && passed
+    passed = recordReferenceResult(
         context,
         "tuplePatternArityExpectedDiagnosticFileMatches",
         tuplePatternArityExpectedDiagnosticFileMatches(context)
-    )
-    passed = passed && recordReferenceResult(
+    ) && passed
+    passed = recordReferenceResult(
         context,
         "recordPatternUnknownFieldExpectedDiagnosticFileMatches",
         recordPatternUnknownFieldExpectedDiagnosticFileMatches(context)
-    )
-    passed = passed && recordReferenceResult(
+    ) && passed
+    passed = recordReferenceResult(
         context,
         "rangePatternNonConstExpectedDiagnosticFileMatches",
         rangePatternNonConstExpectedDiagnosticFileMatches(context)
-    )
-    passed = passed && recordReferenceResult(
+    ) && passed
+    passed = recordReferenceResult(
         context,
         "rangePatternEmptyExpectedDiagnosticFileMatches",
         rangePatternEmptyExpectedDiagnosticFileMatches(context)
-    )
-    passed = passed && recordReferenceResult(
+    ) && passed
+    passed = recordReferenceResult(
         context,
         "ifCaseEnumNonExhaustiveExpectedDiagnosticFileMatches",
         ifCaseEnumNonExhaustiveExpectedDiagnosticFileMatches(context)
-    )
-    passed = passed && recordReferenceResult(
+    ) && passed
+    passed = recordReferenceResult(
         context,
         "ifCaseModalNonExhaustiveExpectedDiagnosticFileMatches",
         ifCaseModalNonExhaustiveExpectedDiagnosticFileMatches(context)
-    )
-    passed = passed && recordReferenceResult(
+    ) && passed
+    passed = recordReferenceResult(
         context,
         "ifCaseUnionNonExhaustiveExpectedDiagnosticFileMatches",
         ifCaseUnionNonExhaustiveExpectedDiagnosticFileMatches(context)
-    )
-    passed = passed && recordReferenceResult(
+    ) && passed
+    passed = recordReferenceResult(
         context,
         "ifCaseUnreachableExpectedDiagnosticFileMatches",
         ifCaseUnreachableExpectedDiagnosticFileMatches(context)
-    )
-    passed = passed && recordReferenceResult(
+    ) && passed
+    passed = recordReferenceResult(
         context,
         "recordMethodReceiverNotSelfExpectedDiagnosticFileMatches",
         recordMethodReceiverNotSelfExpectedDiagnosticFileMatches(context)
-    )
-    passed = passed && recordReferenceResult(
+    ) && passed
+    passed = recordReferenceResult(
         context,
         "recordMethodDuplicateExpectedDiagnosticFileMatches",
         recordMethodDuplicateExpectedDiagnosticFileMatches(context)
-    )
-    passed = passed && recordReferenceResult(
+    ) && passed
+    passed = recordReferenceResult(
         context,
         "parsePatternErrorExpectedDiagnosticFileMatches",
         parsePatternErrorExpectedDiagnosticFileMatches(context)
-    )
-    passed = passed && recordReferenceResult(
+    ) && passed
+    passed = recordReferenceResult(
         context,
         "basicPatternsDiagnosticExpectedDiagnosticFileMatches",
         basicPatternsDiagnosticExpectedDiagnosticFileMatches(context)
-    )
-    passed = passed && recordReferenceResult(
+    ) && passed
+    passed = recordReferenceResult(
         context,
         "tupleRecordPatternsDiagnosticExpectedDiagnosticFileMatches",
         tupleRecordPatternsDiagnosticExpectedDiagnosticFileMatches(context)
-    )
-    passed = passed && recordReferenceResult(
+    ) && passed
+    passed = recordReferenceResult(
         context,
         "enumModalPatternsDiagnosticExpectedDiagnosticFileMatches",
         enumModalPatternsDiagnosticExpectedDiagnosticFileMatches(context)
-    )
-    passed = passed && recordReferenceResult(
+    ) && passed
+    passed = recordReferenceResult(
         context,
         "rangePatternsDiagnosticExpectedDiagnosticFileMatches",
         rangePatternsDiagnosticExpectedDiagnosticFileMatches(context)
-    )
-    passed = passed && recordReferenceResult(
+    ) && passed
+    passed = recordReferenceResult(
         context,
         "caseClausesDiagnosticExpectedDiagnosticFileMatches",
         caseClausesDiagnosticExpectedDiagnosticFileMatches(context)
-    )
-    passed = passed && recordReferenceResult(
+    ) && passed
+    passed = recordReferenceResult(
         context,
         "exhaustivenessAndReachabilityDiagnosticExpectedDiagnosticFileMatches",
         exhaustivenessAndReachabilityDiagnosticExpectedDiagnosticFileMatches(context)
-    )
-    passed = passed && recordReferenceResult(
+    ) && passed
+    passed = recordReferenceResult(
         context,
         "patternDiagnosticsSupplementExpectedDiagnosticFileMatches",
         patternDiagnosticsSupplementExpectedDiagnosticFileMatches(context)
-    )
-    passed = passed && recordReferenceResult(
+    ) && passed
+    passed = recordReferenceResult(
         context,
         "contractResultOutsidePostconditionExpectedDiagnosticFileMatches",
         contractResultOutsidePostconditionExpectedDiagnosticFileMatches(context)
-    )
-    passed = passed && recordReferenceResult(
+    ) && passed
+    passed = recordReferenceResult(
         context,
         "unsatisfiedPreconditionExpectedDiagnosticFileMatches",
         unsatisfiedPreconditionExpectedDiagnosticFileMatches(context)
-    )
-    passed = passed && recordReferenceResult(
+    ) && passed
+    passed = recordReferenceResult(
         context,
         "preconditionCallerObligationExpectedDiagnosticFileMatches",
         preconditionCallerObligationExpectedDiagnosticFileMatches(context)
-    )
-    passed = passed && recordReferenceResult(
+    ) && passed
+    passed = recordReferenceResult(
         context,
         "contractEntryOutsidePostconditionExpectedDiagnosticFileMatches",
         contractEntryOutsidePostconditionExpectedDiagnosticFileMatches(context)
-    )
-    passed = passed && recordReferenceResult(
+    ) && passed
+    passed = recordReferenceResult(
         context,
         "contractEntryNonBitcopyExpectedDiagnosticFileMatches",
         contractEntryNonBitcopyExpectedDiagnosticFileMatches(context)
-    )
-    passed = passed && recordReferenceResult(
+    ) && passed
+    passed = recordReferenceResult(
         context,
         "contractPredicateNonBoolExpectedDiagnosticFileMatches",
         contractPredicateNonBoolExpectedDiagnosticFileMatches(context)
-    )
-    passed = passed && recordReferenceResult(
+    ) && passed
+    passed = recordReferenceResult(
         context,
         "contractPredicateImpureMoveExpectedDiagnosticFileMatches",
         contractPredicateImpureMoveExpectedDiagnosticFileMatches(context)
-    )
-    passed = passed && recordReferenceResult(
+    ) && passed
+    passed = recordReferenceResult(
         context,
         "contractDynamicAttributeExpectedDiagnosticFileMatches",
         contractDynamicAttributeExpectedDiagnosticFileMatches(context)
-    )
-    passed = passed && recordReferenceResult(
+    ) && passed
+    passed = recordReferenceResult(
         context,
         "contractEntryMovedParameterExpectedDiagnosticFileMatches",
         contractEntryMovedParameterExpectedDiagnosticFileMatches(context)
-    )
-    passed = passed && recordReferenceResult(
+    ) && passed
+    passed = recordReferenceResult(
         context,
         "contractEntrySideEffectExpectedDiagnosticFileMatches",
         contractEntrySideEffectExpectedDiagnosticFileMatches(context)
-    )
-    passed = passed && recordReferenceResult(
+    ) && passed
+    passed = recordReferenceResult(
         context,
         "contractEntryCapabilityExpectedDiagnosticFileMatches",
         contractEntryCapabilityExpectedDiagnosticFileMatches(context)
-    )
-    passed = passed && recordReferenceResult(
+    ) && passed
+    passed = recordReferenceResult(
         context,
         "speculativeReleaseModeExpectedDiagnosticFileMatches",
         speculativeReleaseModeExpectedDiagnosticFileMatches(context)
-    )
-    passed = passed && recordReferenceResult(
+    ) && passed
+    passed = recordReferenceResult(
+        context,
+        "speculativeReadModeExpectedDiagnosticFileMatches",
+        speculativeReadModeExpectedDiagnosticFileMatches(context)
+    ) && passed
+    passed = recordReferenceResult(
         context,
         "orderedDifferentBaseExpectedDiagnosticFileMatches",
         orderedDifferentBaseExpectedDiagnosticFileMatches(context)
-    )
-    passed = passed && recordReferenceResult(
+    ) && passed
+    passed = recordReferenceResult(
         context,
         "nestedReleaseSameModeExpectedDiagnosticFileMatches",
         nestedReleaseSameModeExpectedDiagnosticFileMatches(context)
-    )
-    passed = passed && recordReferenceResult(
+    ) && passed
+    passed = recordReferenceResult(
         context,
         "speculativeNestedKeyBlockExpectedDiagnosticFileMatches",
         speculativeNestedKeyBlockExpectedDiagnosticFileMatches(context)
-    )
-    passed = passed && recordReferenceResult(
+    ) && passed
+    passed = recordReferenceResult(
+        context,
+        "speculativeNestedKeyRuleExpectedDiagnosticFileMatches",
+        speculativeNestedKeyRuleExpectedDiagnosticFileMatches(context)
+    ) && passed
+    passed = recordReferenceResult(
         context,
         "speculativeDeferExpectedDiagnosticFileMatches",
         speculativeDeferExpectedDiagnosticFileMatches(context)
-    )
-    passed = passed && recordReferenceResult(
+    ) && passed
+    passed = recordReferenceResult(
         context,
         "speculativeWaitExpectedDiagnosticFileMatches",
         speculativeWaitExpectedDiagnosticFileMatches(context)
-    )
-    passed = passed && recordReferenceResult(
+    ) && passed
+    passed = recordReferenceResult(
         context,
         "speculativeMemoryOrderExpectedDiagnosticFileMatches",
         speculativeMemoryOrderExpectedDiagnosticFileMatches(context)
-    )
-    passed = passed && recordReferenceResult(
+    ) && passed
+    passed = recordReferenceResult(
+        context,
+        "speculativeFenceExpectedDiagnosticFileMatches",
+        speculativeFenceExpectedDiagnosticFileMatches(context)
+    ) && passed
+    passed = recordReferenceResult(
+        context,
+        "speculativeOutsideWriteExpectedDiagnosticFileMatches",
+        speculativeOutsideWriteExpectedDiagnosticFileMatches(context)
+    ) && passed
+    passed = recordReferenceResult(
         context,
         "speculativeImpureCallExpectedDiagnosticFileMatches",
         speculativeImpureCallExpectedDiagnosticFileMatches(context)
-    )
-    passed = passed && recordReferenceResult(
+    ) && passed
+    passed = recordReferenceResult(
         context,
         "sharedReadThenWriteExpectedDiagnosticFileMatches",
         sharedReadThenWriteExpectedDiagnosticFileMatches(context)
-    )
-    passed = passed && recordReferenceResult(
+    ) && passed
+    passed = recordReferenceResult(
         context,
         "keyPathsDiagnosticExpectedDiagnosticFileMatches",
         keyPathsDiagnosticExpectedDiagnosticFileMatches(context)
-    )
-    passed = passed && recordReferenceResult(
+    ) && passed
+    passed = recordReferenceResult(
         context,
         "keyEscapeDeferredAccessExpectedDiagnosticFileMatches",
         keyEscapeDeferredAccessExpectedDiagnosticFileMatches(context)
-    )
-    passed = passed && recordReferenceResult(
+    ) && passed
+    passed = recordReferenceResult(
         context,
         "keyEscapePrecedenceExpectedDiagnosticFileMatches",
         keyEscapePrecedenceExpectedDiagnosticFileMatches(context)
-    )
-    passed = passed && recordReferenceResult(
+    ) && passed
+    passed = recordReferenceResult(
         context,
         "conflictDetectionDiagnosticExpectedDiagnosticFileMatches",
         conflictDetectionDiagnosticExpectedDiagnosticFileMatches(context)
-    )
-    passed = passed && recordReferenceResult(
+    ) && passed
+    passed = recordReferenceResult(
         context,
         "memoryOrderingDiagnosticExpectedDiagnosticFileMatches",
         memoryOrderingDiagnosticExpectedDiagnosticFileMatches(context)
-    )
-    passed = passed && recordReferenceResult(
+    ) && passed
+    passed = recordReferenceResult(
         context,
         "escapingClosureSharedLifetimeExpectedDiagnosticFileMatches",
         escapingClosureSharedLifetimeExpectedDiagnosticFileMatches(context)
-    )
-    passed = passed && recordReferenceResult(
+    ) && passed
+    passed = recordReferenceResult(
         context,
         "sharedDynamicMutatingReceiverExpectedDiagnosticFileMatches",
         sharedDynamicMutatingReceiverExpectedDiagnosticFileMatches(context)
-    )
-    passed = passed && recordReferenceResult(
+    ) && passed
+    passed = recordReferenceResult(
         context,
         "asyncKeyRestrictionsYieldHeldExpectedDiagnosticFileMatches",
         asyncKeyRestrictionsYieldHeldExpectedDiagnosticFileMatches(context)
-    )
-    passed = passed && recordReferenceResult(
+    ) && passed
+    passed = recordReferenceResult(
         context,
         "yieldFromWhileKeyHeldExpectedDiagnosticFileMatches",
         yieldFromWhileKeyHeldExpectedDiagnosticFileMatches(context)
-    )
-    passed = passed && recordReferenceResult(
+    ) && passed
+    passed = recordReferenceResult(
         context,
         "waitWhileKeyHeldLoweringExpectedDiagnosticFileMatches",
         waitWhileKeyHeldLoweringExpectedDiagnosticFileMatches(context)
-    )
-    passed = passed && recordReferenceResult(
+    ) && passed
+    passed = recordReferenceResult(
         context,
         "sharedClosureYieldKeysExpectedDiagnosticFileMatches",
         sharedClosureYieldKeysExpectedDiagnosticFileMatches(context)
-    )
-    passed = passed && recordReferenceResult(
+    ) && passed
+    passed = recordReferenceResult(
         context,
         "sharedCapturingClosureYieldKeysExpectedDiagnosticFileMatches",
         sharedCapturingClosureYieldKeysExpectedDiagnosticFileMatches(context)
-    )
-    passed = passed && recordReferenceResult(
+    ) && passed
+    passed = recordReferenceResult(
         context,
         "runConformanceConstructVocabularyReference",
         runConformanceConstructVocabularyReference()
-    )
-    passed = passed && recordReferenceResult(
+    ) && passed
+    passed = recordReferenceResult(
         context,
         "runConformanceBehaviorClassificationReference",
         runConformanceBehaviorClassificationReference()
-    )
-    passed = passed && recordReferenceResult(
+    ) && passed
+    passed = recordReferenceResult(
         context,
         "runConformanceTranslationOrderingReference",
         runConformanceTranslationOrderingReference()
-    )
-    passed = passed && recordReferenceResult(
+    ) && passed
+    passed = recordReferenceResult(
         context,
         "runDiagnosticsSourceSpansReference",
         runDiagnosticsSourceSpansReference()
-    )
-    passed = passed && recordReferenceResult(
+    ) && passed
+    passed = recordReferenceResult(
         context,
         "runDiagnosticsDiagnosticRecordsReference",
         runDiagnosticsDiagnosticRecordsReference()
-    )
-    passed = passed && recordReferenceResult(
+    ) && passed
+    passed = recordReferenceResult(
         context,
         "runDiagnosticsDiagnosticOrderingReference",
         runDiagnosticsDiagnosticOrderingReference()
-    )
-    passed = passed && recordReferenceResult(
+    ) && passed
+    passed = recordReferenceResult(
         context,
         "runDiagnosticsRenderingInputsReference",
         runDiagnosticsRenderingInputsReference()
-    )
-    passed = passed && recordReferenceResult(
+    ) && passed
+    passed = recordReferenceResult(
         context,
         "runProjectsManifestModelReference",
         runProjectsManifestModelReference()
-    )
-    passed = passed && recordReferenceResult(
+    ) && passed
+    passed = recordReferenceResult(
         context,
         "runProjectsAssemblyModelReference",
         runProjectsAssemblyModelReference()
-    )
-    passed = passed && recordReferenceResult(
+    ) && passed
+    passed = recordReferenceResult(
         context,
         "runProjectsModuleDiscoveryReference",
         runProjectsModuleDiscoveryReference()
-    )
-    passed = passed && recordReferenceResult(
+    ) && passed
+    passed = recordReferenceResult(
         context,
         "runProjectsOutputArtifactsReference",
         runProjectsOutputArtifactsReference()
-    )
-    passed = passed && recordReferenceResult(
+    ) && passed
+    passed = recordReferenceResult(
         context,
         "runSourceTextUnicodeNormalizationReference",
         runSourceTextUnicodeNormalizationReference()
-    )
-    passed = passed && recordReferenceResult(
+    ) && passed
+    passed = recordReferenceResult(
         context,
         "runSourceTextLogicalLinesReference",
         runSourceTextLogicalLinesReference()
-    )
-    passed = passed && recordReferenceResult(
+    ) && passed
+    passed = recordReferenceResult(
         context,
         "runSourceTextLiteralsReference",
         runSourceTextLiteralsReference()
-    )
-    passed = passed && recordReferenceResult(
+    ) && passed
+    passed = recordReferenceResult(
         context,
         "runSourceTextIdentifiersReference",
         runSourceTextIdentifiersReference()
-    )
-    passed = passed && recordReferenceResult(
+    ) && passed
+    passed = recordReferenceResult(
         context,
         "runSourceTextOperatorsAndPunctuationReference",
         runSourceTextOperatorsAndPunctuationReference()
-    )
-    passed = passed && recordReferenceResult(
+    ) && passed
+    passed = recordReferenceResult(
         context,
         "runParsingItemSequencingReference",
         runParsingItemSequencingReference()
-    )
-    passed = passed && recordReferenceResult(
+    ) && passed
+    passed = recordReferenceResult(
         context,
         "runParsingAttributeParsingReference",
         runParsingAttributeParsingReference()
-    )
-    passed = passed && recordReferenceResult(
+    ) && passed
+    passed = recordReferenceResult(
         context,
         "runParsingTerminatorsReference",
         runParsingTerminatorsReference()
-    )
-    passed = passed && recordReferenceResult(
+    ) && passed
+    passed = recordReferenceResult(
         context,
         "runParsingRecoverySpecimensReference",
         runParsingRecoverySpecimensReference()
-    )
-    passed = passed && recordReferenceResult(
+    ) && passed
+    passed = recordReferenceResult(
         context,
         "runAuthorityCapabilitiesReference",
         runAuthorityCapabilitiesReference()
-    )
-    passed = passed && recordReferenceResult(
+    ) && passed
+    passed = recordReferenceResult(
         context,
         "runAuthorityFileSystemReference",
         runAuthorityFileSystemReference()
-    )
-    passed = passed && recordReferenceResult(
+    ) && passed
+    passed = recordReferenceResult(
         context,
         "runAuthoritySystemReference",
         runAuthoritySystemReference()
-    )
-    passed = passed && recordReferenceResult(
+    ) && passed
+    passed = recordReferenceResult(
         context,
         "runAuthorityTimeReference",
         runAuthorityTimeReference(context)
-    )
-    passed = passed && recordReferenceResult(
+    ) && passed
+    passed = recordReferenceResult(
         context,
         "runAuthorityNetworkReference",
         runAuthorityNetworkReference()
-    )
-    passed = passed && recordReferenceResult(
+    ) && passed
+    passed = recordReferenceResult(
         context,
         "runAuthorityRegionsAndFramesReference",
         runAuthorityRegionsAndFramesReference()
-    )
-    passed = passed && recordReferenceResult(
+    ) && passed
+    passed = recordReferenceResult(
         context,
         "runAuthorityBindingRuntimeStateReference",
         runAuthorityBindingRuntimeStateReference()
-    )
-    passed = passed && recordReferenceResult(
+    ) && passed
+    passed = recordReferenceResult(
         context,
         "runNamesImportsReference",
         runNamesImportsReference()
-    )
-    passed = passed && recordReferenceResult(
+    ) && passed
+    passed = recordReferenceResult(
         context,
         "runNamesUsingDeclarationsReference",
         runNamesUsingDeclarationsReference()
-    )
-    passed = passed && recordReferenceResult(
+    ) && passed
+    passed = recordReferenceResult(
         context,
         "runNamesVisibilityReference",
         runNamesVisibilityReference()
-    )
-    passed = passed && recordReferenceResult(
+    ) && passed
+    passed = recordReferenceResult(
         context,
         "runNamesQualifiedResolutionReference",
         runNamesQualifiedResolutionReference()
-    )
-    passed = passed && recordReferenceResult(
+    ) && passed
+    passed = recordReferenceResult(
         context,
         "runNamesDisambiguationReference",
         runNamesDisambiguationReference()
-    )
-    passed = passed && recordReferenceResult(
+    ) && passed
+    passed = recordReferenceResult(
         context,
         "runTypesEquivalenceReference",
         runTypesEquivalenceReference()
-    )
-    passed = passed && recordReferenceResult(
+    ) && passed
+    passed = recordReferenceResult(
         context,
         "runTypesSubtypingReference",
         runTypesSubtypingReference()
-    )
-    passed = passed && recordReferenceResult(
+    ) && passed
+    passed = recordReferenceResult(
         context,
         "runTypesInferenceReference",
         runTypesInferenceReference()
-    )
-    passed = passed && recordReferenceResult(
+    ) && passed
+    passed = recordReferenceResult(
         context,
         "runTypesRefinementsReference",
         runTypesRefinementsReference()
-    )
-    passed = passed && recordReferenceResult(
+    ) && passed
+    passed = recordReferenceResult(
         context,
         "runAttributesGeneralAttributesReference",
         runAttributesGeneralAttributesReference()
-    )
-    passed = passed && recordReferenceResult(
+    ) && passed
+    passed = recordReferenceResult(
         context,
         "runAttributesVendorAttributesReference",
         runAttributesVendorAttributesReference()
-    )
-    passed = passed && recordReferenceResult(
+    ) && passed
+    passed = recordReferenceResult(
         context,
         "runAttributesLayoutAttributesReference",
         runAttributesLayoutAttributesReference()
-    )
-    passed = passed && recordReferenceResult(
+    ) && passed
+    passed = recordReferenceResult(
         context,
         "runAttributesOptimizationAttributesReference",
         runAttributesOptimizationAttributesReference()
-    )
-    passed = passed && recordReferenceResult(
+    ) && passed
+    passed = recordReferenceResult(
         context,
         "runAttributesDiagnosticAttributesReference",
         runAttributesDiagnosticAttributesReference()
-    )
-    passed = passed && recordReferenceResult(
+    ) && passed
+    passed = recordReferenceResult(
         context,
         "runPermissionsPermissionFormsReference",
         runPermissionsPermissionFormsReference()
-    )
-    passed = passed && recordReferenceResult(
+    ) && passed
+    passed = recordReferenceResult(
         context,
         "runPermissionsAliasExclusivityReference",
         runPermissionsAliasExclusivityReference()
-    )
-    passed = passed && recordReferenceResult(
+    ) && passed
+    passed = recordReferenceResult(
         context,
         "runPermissionsActivityStatesReference",
         runPermissionsActivityStatesReference()
-    )
-    passed = passed && recordReferenceResult(
+    ) && passed
+    passed = recordReferenceResult(
         context,
         "runPermissionsAdmissibilityReference",
         runPermissionsAdmissibilityReference()
-    )
-    passed = passed && recordReferenceResult(
+    ) && passed
+    passed = recordReferenceResult(
         context,
         "runModulesImportsReference",
         runModulesImportsReference()
-    )
-    passed = passed && recordReferenceResult(
+    ) && passed
+    passed = recordReferenceResult(
         context,
         "runModulesUsingsReference",
         runModulesUsingsReference()
-    )
-    passed = passed && recordReferenceResult(
+    ) && passed
+    passed = recordReferenceResult(
         context,
         "runModulesStaticsReference",
         runModulesStaticsReference()
-    )
-    passed = passed && recordReferenceResult(
+    ) && passed
+    passed = recordReferenceResult(
         context,
         "runModulesExternBlocksReference",
         runModulesExternBlocksReference()
-    )
-    passed = passed && recordReferenceResult(
+    ) && passed
+    passed = recordReferenceResult(
         context,
         "runModulesAggregationReference",
         runModulesAggregationReference()
-    )
-    passed = passed && recordReferenceResult(
+    ) && passed
+    passed = recordReferenceResult(
         context,
         "runDataTypesPrimitivesReference",
         runDataTypesPrimitivesReference()
-    )
-    passed = passed && recordReferenceResult(
+    ) && passed
+    passed = recordReferenceResult(
         context,
         "runDataTypesTuplesReference",
         runDataTypesTuplesReference()
-    )
-    passed = passed && recordReferenceResult(
+    ) && passed
+    passed = recordReferenceResult(
         context,
         "runDataTypesArraysReference",
         runDataTypesArraysReference()
-    )
-    passed = passed && recordReferenceResult(
+    ) && passed
+    passed = recordReferenceResult(
         context,
         "runDataTypesSlicesReference",
         runDataTypesSlicesReference()
-    )
-    passed = passed && recordReferenceResult(
+    ) && passed
+    passed = recordReferenceResult(
         context,
         "runDataTypesRangesReference",
         runDataTypesRangesReference()
-    )
-    passed = passed && recordReferenceResult(
+    ) && passed
+    passed = recordReferenceResult(
         context,
         "runDataTypesRecordsReference",
         runDataTypesRecordsReference()
-    )
-    passed = passed && recordReferenceResult(
+    ) && passed
+    passed = recordReferenceResult(
         context,
         "runDataTypesEnumsReference",
         runDataTypesEnumsReference()
-    )
-    passed = passed && recordReferenceResult(
+    ) && passed
+    passed = recordReferenceResult(
         context,
         "runDataTypesUnionsReference",
         runDataTypesUnionsReference()
-    )
-    passed = passed && recordReferenceResult(
+    ) && passed
+    passed = recordReferenceResult(
         context,
         "runDataTypesTypeAliasesReference",
         runDataTypesTypeAliasesReference()
-    )
-    passed = passed && recordReferenceResult(
+    ) && passed
+    passed = recordReferenceResult(
         context,
         "runModalTypesModalDeclarationsReference",
         runModalTypesModalDeclarationsReference()
-    )
-    passed = passed && recordReferenceResult(
+    ) && passed
+    passed = recordReferenceResult(
         context,
         "runModalTypesStateFieldsReference",
         runModalTypesStateFieldsReference()
-    )
-    passed = passed && recordReferenceResult(
+    ) && passed
+    passed = recordReferenceResult(
         context,
         "runModalTypesStateMethodsReference",
         runModalTypesStateMethodsReference()
-    )
-    passed = passed && recordReferenceResult(
+    ) && passed
+    passed = recordReferenceResult(
         context,
         "runModalTypesTransitionsReference",
         runModalTypesTransitionsReference()
-    )
-    passed = passed && recordReferenceResult(
+    ) && passed
+    passed = recordReferenceResult(
         context,
         "runModalTypesWideningReference",
         runModalTypesWideningReference()
-    )
-    passed = passed && recordReferenceResult(
+    ) && passed
+    passed = recordReferenceResult(
         context,
         "runModalTypesStringsReference",
         runModalTypesStringsReference()
-    )
-    passed = passed && recordReferenceResult(
+    ) && passed
+    passed = recordReferenceResult(
         context,
         "runModalTypesBytesReference",
         runModalTypesBytesReference()
-    )
-    passed = passed && recordReferenceResult(
+    ) && passed
+    passed = recordReferenceResult(
         context,
         "runModalTypesPointersReference",
         runModalTypesPointersReference()
-    )
-    passed = passed && recordReferenceResult(
+    ) && passed
+    passed = recordReferenceResult(
         context,
         "runModalTypesFunctionTypesReference",
         runModalTypesFunctionTypesReference()
-    )
-    passed = passed && recordReferenceResult(
+    ) && passed
+    passed = recordReferenceResult(
         context,
         "runModalTypesClosuresReference",
         runModalTypesClosuresReference()
-    )
-    passed = passed && recordReferenceResult(
+    ) && passed
+    passed = recordReferenceResult(
         context,
         "runPolymorphismGenericParametersReference",
         runPolymorphismGenericParametersReference()
-    )
-    passed = passed && recordReferenceResult(
+    ) && passed
+    passed = recordReferenceResult(
         context,
         "runPolymorphismGenericProceduresReference",
         runPolymorphismGenericProceduresReference()
-    )
-    passed = passed && recordReferenceResult(
+    ) && passed
+    passed = recordReferenceResult(
         context,
         "runPolymorphismClassesReference",
         runPolymorphismClassesReference()
-    )
-    passed = passed && recordReferenceResult(
+    ) && passed
+    passed = recordReferenceResult(
         context,
         "runPolymorphismImplementationsReference",
         runPolymorphismImplementationsReference()
-    )
-    passed = passed && recordReferenceResult(
+    ) && passed
+    passed = recordReferenceResult(
         context,
         "runPolymorphismAssociatedTypesReference",
         runPolymorphismAssociatedTypesReference()
-    )
-    passed = passed && recordReferenceResult(
+    ) && passed
+    passed = recordReferenceResult(
         context,
         "runPolymorphismDynamicClassObjectsReference",
         runPolymorphismDynamicClassObjectsReference()
-    )
-    passed = passed && recordReferenceResult(
+    ) && passed
+    passed = recordReferenceResult(
         context,
         "runPolymorphismOpaqueTypesReference",
         runPolymorphismOpaqueTypesReference()
-    )
-    passed = passed && recordReferenceResult(
+    ) && passed
+    passed = recordReferenceResult(
         context,
         "runPolymorphismCapabilityClassesReference",
         runPolymorphismCapabilityClassesReference(context)
-    )
-    passed = passed && recordReferenceResult(
+    ) && passed
+    passed = recordReferenceResult(
         context,
         "runProceduresDeclarationsReference",
         runProceduresDeclarationsReference()
-    )
-    passed = passed && recordReferenceResult(
+    ) && passed
+    passed = recordReferenceResult(
         context,
         "runProceduresReceiversReference",
         runProceduresReceiversReference()
-    )
-    passed = passed && recordReferenceResult(
+    ) && passed
+    passed = recordReferenceResult(
         context,
         "runProceduresOverloadingReference",
         runProceduresOverloadingReference()
-    )
-    passed = passed && recordReferenceResult(
+    ) && passed
+    passed = recordReferenceResult(
         context,
         "runProceduresContractsReference",
         runProceduresContractsReference()
-    )
-    passed = passed && recordReferenceResult(
+    ) && passed
+    passed = recordReferenceResult(
         context,
         "runProceduresPreconditionsReference",
         runProceduresPreconditionsReference()
-    )
-    passed = passed && recordReferenceResult(
+    ) && passed
+    passed = recordReferenceResult(
         context,
         "runProceduresPostconditionsReference",
         runProceduresPostconditionsReference()
-    )
-    passed = passed && recordReferenceResult(
+    ) && passed
+    passed = recordReferenceResult(
         context,
         "runProceduresInvariantsReference",
         runProceduresInvariantsReference()
-    )
-    passed = passed && recordReferenceResult(
+    ) && passed
+    passed = recordReferenceResult(
         context,
         "runProceduresVerificationReference",
         runProceduresVerificationReference()
-    )
-    passed = passed && recordReferenceResult(
+    ) && passed
+    passed = recordReferenceResult(
         context,
         "runProceduresBehavioralSubtypingReference",
         runProceduresBehavioralSubtypingReference()
-    )
-    passed = passed && recordReferenceResult(
+    ) && passed
+    passed = recordReferenceResult(
         context,
         "runExpressionsLiteralsAndNamesReference",
         runExpressionsLiteralsAndNamesReference()
-    )
-    passed = passed && recordReferenceResult(
+    ) && passed
+    passed = recordReferenceResult(
         context,
         "runExpressionsAccessAndPlacesReference",
         runExpressionsAccessAndPlacesReference()
-    )
-    passed = passed && recordReferenceResult(
+    ) && passed
+    passed = recordReferenceResult(
         context,
         "runExpressionsCallsReference",
         runExpressionsCallsReference()
-    )
-    passed = passed && recordReferenceResult(
+    ) && passed
+    passed = recordReferenceResult(
         context,
         "runExpressionsOperatorsReference",
         runExpressionsOperatorsReference()
-    )
-    passed = passed && recordReferenceResult(
+    ) && passed
+    passed = recordReferenceResult(
         context,
         "runExpressionsCastsAndTransmutesReference",
         runExpressionsCastsAndTransmutesReference()
-    )
-    passed = passed && recordReferenceResult(
+    ) && passed
+    passed = recordReferenceResult(
         context,
         "runExpressionsConstructionReference",
         runExpressionsConstructionReference()
-    )
-    passed = passed && recordReferenceResult(
+    ) && passed
+    passed = recordReferenceResult(
         context,
         "runExpressionsControlReference",
         runExpressionsControlReference()
-    )
-    passed = passed && recordReferenceResult(
+    ) && passed
+    passed = recordReferenceResult(
         context,
         "runExpressionsEffectfulCoreReference",
         runExpressionsEffectfulCoreReference()
-    )
-    passed = passed && recordReferenceResult(
+    ) && passed
+    passed = recordReferenceResult(
         context,
         "runExpressionsClosuresAndPipelinesReference",
         runExpressionsClosuresAndPipelinesReference()
-    )
-    passed = passed && recordReferenceResult(
+    ) && passed
+    passed = recordReferenceResult(
+        context,
+        "runExpressionsClosuresAndPipelinesReferenceWithReport",
+        runExpressionsClosuresAndPipelinesReferenceWithReport(context)
+    ) && passed
+    passed = recordReferenceResult(
         context,
         "runPatternsBasicPatternsReference",
         runPatternsBasicPatternsReference()
-    )
-    passed = passed && recordReferenceResult(
+    ) && passed
+    passed = recordReferenceResult(
         context,
         "runPatternsTupleRecordPatternsReference",
         runPatternsTupleRecordPatternsReference()
-    )
-    passed = passed && recordReferenceResult(
+    ) && passed
+    passed = recordReferenceResult(
         context,
         "runPatternsEnumModalPatternsReference",
         runPatternsEnumModalPatternsReference()
-    )
-    passed = passed && recordReferenceResult(
+    ) && passed
+    passed = recordReferenceResult(
         context,
         "runPatternsRangePatternsReference",
         runPatternsRangePatternsReference()
-    )
-    passed = passed && recordReferenceResult(
+    ) && passed
+    passed = recordReferenceResult(
         context,
         "runPatternsCaseClausesReference",
         runPatternsCaseClausesReference()
-    )
-    passed = passed && recordReferenceResult(
+    ) && passed
+    passed = recordReferenceResult(
         context,
         "runPatternsExhaustivenessReference",
         runPatternsExhaustivenessReference()
-    )
-    passed = passed && recordReferenceResult(
+    ) && passed
+    passed = recordReferenceResult(
         context,
         "runStatementsBlocksReference",
         runStatementsBlocksReference()
-    )
-    passed = passed && recordReferenceResult(
+    ) && passed
+    passed = recordReferenceResult(
         context,
         "runStatementsBindingsReference",
         runStatementsBindingsReference()
-    )
-    passed = passed && recordReferenceResult(
+    ) && passed
+    passed = recordReferenceResult(
         context,
         "runStatementsLocalUsingReference",
         runStatementsLocalUsingReference()
-    )
-    passed = passed && recordReferenceResult(
+    ) && passed
+    passed = recordReferenceResult(
         context,
         "runStatementsAssignmentReference",
         runStatementsAssignmentReference()
-    )
-    passed = passed && recordReferenceResult(
+    ) && passed
+    passed = recordReferenceResult(
         context,
         "runStatementsExpressionStatementsReference",
         runStatementsExpressionStatementsReference()
-    )
-    passed = passed && recordReferenceResult(
+    ) && passed
+    passed = recordReferenceResult(
         context,
         "runStatementsDeferReference",
         runStatementsDeferReference()
-    )
-    passed = passed && recordReferenceResult(
+    ) && passed
+    passed = recordReferenceResult(
         context,
         "runStatementsRegionReference",
         runStatementsRegionReference()
-    )
-    passed = passed && recordReferenceResult(
+    ) && passed
+    passed = recordReferenceResult(
         context,
         "runStatementsFrameReference",
         runStatementsFrameReference()
-    )
-    passed = passed && recordReferenceResult(
+    ) && passed
+    passed = recordReferenceResult(
         context,
         "runStatementsControlTransferReference",
         runStatementsControlTransferReference()
-    )
-    passed = passed && recordReferenceResult(
+    ) && passed
+    passed = recordReferenceResult(
         context,
         "runStatementsUnsafeReference",
         runStatementsUnsafeReference()
-    )
-    passed = passed && recordReferenceResult(
+    ) && passed
+    passed = recordReferenceResult(
         context,
         "runKeysKeyPathsReference",
         runKeysKeyPathsReference()
-    )
-    passed = passed && recordReferenceResult(
+    ) && passed
+    passed = recordReferenceResult(
         context,
         "runKeysAcquisitionBlocksReference",
         runKeysAcquisitionBlocksReference()
-    )
-    passed = passed && recordReferenceResult(
+    ) && passed
+    passed = recordReferenceResult(
         context,
         "runKeysConflictDetectionReference",
         runKeysConflictDetectionReference()
-    )
-    passed = passed && recordReferenceResult(
+    ) && passed
+    passed = recordReferenceResult(
         context,
         "runKeysNestedReleaseReference",
         runKeysNestedReleaseReference()
-    )
-    passed = passed && recordReferenceResult(
+    ) && passed
+    passed = recordReferenceResult(
         context,
         "runKeysSpeculativeExecutionReference",
         runKeysSpeculativeExecutionReference()
-    )
-    passed = passed && recordReferenceResult(
+    ) && passed
+    passed = recordReferenceResult(
         context,
         "runKeysDynamicVerificationReference",
         runKeysDynamicVerificationReference()
-    )
-    passed = passed && recordReferenceResult(
+    ) && passed
+    passed = recordReferenceResult(
         context,
         "runKeysMemoryOrderingReference",
         runKeysMemoryOrderingReference()
-    )
-    passed = passed && recordReferenceResult(
+    ) && passed
+    passed = recordReferenceResult(
         context,
         "runParallelismParallelBlocksReference",
         runParallelismParallelBlocksReference(context)
-    )
-    passed = passed && recordReferenceResult(
+    ) && passed
+    passed = recordReferenceResult(
         context,
         "runParallelismExecutionDomainsReference",
         runParallelismExecutionDomainsReference(context)
-    )
-    passed = passed && recordReferenceResult(
+    ) && passed
+    passed = recordReferenceResult(
         context,
         "runParallelismCaptureSemanticsReference",
         runParallelismCaptureSemanticsReference(context)
-    )
-    passed = passed && recordReferenceResult(
+    ) && passed
+    passed = recordReferenceResult(
         context,
         "runParallelismSpawnReference",
         runParallelismSpawnReference(context)
-    )
-    passed = passed && recordReferenceResult(
+    ) && passed
+    passed = recordReferenceResult(
         context,
         "runParallelismDispatchReference",
         runParallelismDispatchReference(context)
-    )
-    passed = passed && recordReferenceResult(
+    ) && passed
+    passed = recordReferenceResult(
         context,
         "runParallelismCancellationReference",
         runParallelismCancellationReference(context)
-    )
-    passed = passed && recordReferenceResult(
+    ) && passed
+    passed = recordReferenceResult(
         context,
         "runParallelismPanicHandlingReference",
         runParallelismPanicHandlingReference(context)
-    )
-    passed = passed && recordReferenceResult(
+    ) && passed
+    passed = recordReferenceResult(
         context,
         "runParallelismDeterminismReference",
         runParallelismDeterminismReference(context)
-    )
-    passed = passed && recordReferenceResult(
+    ) && passed
+    passed = recordReferenceResult(
         context,
         "runAsyncAsyncTypeReference",
         runAsyncAsyncTypeReference()
-    )
-    passed = passed && recordReferenceResult(
+    ) && passed
+    passed = recordReferenceResult(
         context,
         "runAsyncSuspensionFormsReference",
         runAsyncSuspensionFormsReference(context)
-    )
-    passed = passed && recordReferenceResult(
+    ) && passed
+    passed = recordReferenceResult(
         context,
         "runAsyncCompositionSyncExistingFutureReference",
         runAsyncCompositionSyncExistingFutureReference()
-    )
-    passed = passed && recordReferenceResult(
+    ) && passed
+    passed = recordReferenceResult(
         context,
         "runAsyncCompositionSyncSuccessReference",
         runAsyncCompositionSyncSuccessReference()
-    )
-    passed = passed && recordReferenceResult(
+    ) && passed
+    passed = recordReferenceResult(
         context,
         "runAsyncCompositionOutcomeFailureReference",
         runAsyncCompositionOutcomeFailureReference()
-    )
-    passed = passed && recordReferenceResult(
+    ) && passed
+    passed = recordReferenceResult(
         context,
         "runAsyncCompositionAsyncFailureStateReference",
         runAsyncCompositionAsyncFailureStateReference()
-    )
-    passed = passed && recordReferenceResult(
+    ) && passed
+    passed = recordReferenceResult(
         context,
         "runAsyncCompositionSyncFailureReference",
         runAsyncCompositionSyncFailureReference()
-    )
-    passed = passed && recordReferenceResult(
+    ) && passed
+    passed = recordReferenceResult(
         context,
         "runAsyncCompositionSyncSuspendedUnitReference",
         runAsyncCompositionSyncSuspendedUnitReference()
-    )
-    passed = passed && recordReferenceResult(
+    ) && passed
+    passed = recordReferenceResult(
         context,
         "runAsyncCompositionSyncReference",
         runAsyncCompositionSyncReference()
-    )
-    passed = passed && recordReferenceResult(
+    ) && passed
+    passed = recordReferenceResult(
         context,
         "runAsyncCompositionAllReference",
         runAsyncCompositionAllReference()
-    )
-    passed = passed && recordReferenceResult(
+    ) && passed
+    passed = recordReferenceResult(
         context,
         "runAsyncCompositionAllSuspendedReference",
         runAsyncCompositionAllSuspendedReference()
-    )
-    passed = passed && recordReferenceResult(
+    ) && passed
+    passed = recordReferenceResult(
         context,
         "runAsyncCompositionAllSingleReference",
         runAsyncCompositionAllSingleReference()
-    )
-    passed = passed && recordReferenceResult(
+    ) && passed
+    passed = recordReferenceResult(
         context,
         "runAsyncCompositionReturnRaceReference",
         runAsyncCompositionReturnRaceReference()
-    )
-    passed = passed && recordReferenceResult(
+    ) && passed
+    passed = recordReferenceResult(
         context,
         "runAsyncCompositionReturnRaceSuspendedReference",
         runAsyncCompositionReturnRaceSuspendedReference()
-    )
-    passed = passed && recordReferenceResult(
+    ) && passed
+    passed = recordReferenceResult(
         context,
         "runAsyncCompositionRaceTuplePatternReference",
         runAsyncCompositionRaceTuplePatternReference()
-    )
-    passed = passed && recordReferenceResult(
+    ) && passed
+    passed = recordReferenceResult(
         context,
         "runAsyncCompositionStreamingRaceSuccessReference",
         runAsyncCompositionStreamingRaceSuccessReference()
-    )
-    passed = passed && recordReferenceResult(
+    ) && passed
+    passed = recordReferenceResult(
         context,
         "runAsyncCompositionStreamingRaceFailureReference",
         runAsyncCompositionStreamingRaceFailureReference()
-    )
-    passed = passed && recordReferenceResult(
+    ) && passed
+    passed = recordReferenceResult(
         context,
         "runAsyncCompositionStreamingRaceResumeReference",
         runAsyncCompositionStreamingRaceResumeReference()
-    )
-    passed = passed && recordReferenceResult(
+    ) && passed
+    passed = recordReferenceResult(
         context,
         "runAsyncCompositionStreamingRaceReference",
         runAsyncCompositionStreamingRaceReference()
-    )
-    passed = passed && recordReferenceResult(
+    ) && passed
+    passed = recordReferenceResult(
         context,
         "runAsyncCompositionMapReference",
         runAsyncCompositionMapReference()
-    )
-    passed = passed && recordReferenceResult(
+    ) && passed
+    passed = recordReferenceResult(
         context,
         "runAsyncCompositionFilterReference",
         runAsyncCompositionFilterReference()
-    )
-    passed = passed && recordReferenceResult(
+    ) && passed
+    passed = recordReferenceResult(
         context,
         "runAsyncCompositionTakeReference",
         runAsyncCompositionTakeReference()
-    )
-    passed = passed && recordReferenceResult(
+    ) && passed
+    passed = recordReferenceResult(
         context,
         "runAsyncCompositionFoldReference",
         runAsyncCompositionFoldReference()
-    )
-    passed = passed && recordReferenceResult(
+    ) && passed
+    passed = recordReferenceResult(
         context,
         "runAsyncCompositionChainReference",
         runAsyncCompositionChainReference()
-    )
-    passed = passed && recordReferenceResult(
+    ) && passed
+    passed = recordReferenceResult(
+        context,
+        "runAsyncCompositionMapCompletionReference",
+        runAsyncCompositionMapCompletionReference()
+    ) && passed
+    passed = recordReferenceResult(
+        context,
+        "runAsyncCompositionMapFailureReference",
+        runAsyncCompositionMapFailureReference()
+    ) && passed
+    passed = recordReferenceResult(
+        context,
+        "runAsyncCompositionFilterSkipReference",
+        runAsyncCompositionFilterSkipReference()
+    ) && passed
+    passed = recordReferenceResult(
+        context,
+        "runAsyncCompositionFilterCompletionReference",
+        runAsyncCompositionFilterCompletionReference()
+    ) && passed
+    passed = recordReferenceResult(
+        context,
+        "runAsyncCompositionTakeZeroReference",
+        runAsyncCompositionTakeZeroReference()
+    ) && passed
+    passed = recordReferenceResult(
+        context,
+        "runAsyncCompositionTakeResumeDoneReference",
+        runAsyncCompositionTakeResumeDoneReference()
+    ) && passed
+    passed = recordReferenceResult(
+        context,
+        "runAsyncCompositionTakeSourceCompleteReference",
+        runAsyncCompositionTakeSourceCompleteReference()
+    ) && passed
+    passed = recordReferenceResult(
+        context,
+        "runAsyncCompositionFoldFailureReference",
+        runAsyncCompositionFoldFailureReference()
+    ) && passed
+    passed = recordReferenceResult(
+        context,
+        "runAsyncCompositionChainSourceFailureReference",
+        runAsyncCompositionChainSourceFailureReference()
+    ) && passed
+    passed = recordReferenceResult(
+        context,
+        "runAsyncCompositionChainSuspendedContinuationReference",
+        runAsyncCompositionChainSuspendedContinuationReference()
+    ) && passed
+    passed = recordReferenceResult(
+        context,
+        "runAsyncCompositionCombinatorRuntimeReference",
+        runAsyncCompositionCombinatorRuntimeReference()
+    ) && passed
+    passed = recordReferenceResult(
         context,
         "runAsyncCompositionUntilReference",
         runAsyncCompositionUntilReference()
-    )
-    passed = passed && recordReferenceResult(
+    ) && passed
+    passed = recordReferenceResult(
         context,
         "runAsyncCompositionLoopIterationReference",
         runAsyncCompositionLoopIterationReference()
-    )
-    passed = passed && recordReferenceResult(
+    ) && passed
+    passed = recordReferenceResult(
         context,
         "runAsyncCompositionCombinatorsReference",
         runAsyncCompositionCombinatorsReference()
-    )
-    passed = passed && recordReferenceResult(
+    ) && passed
+    passed = recordReferenceResult(
         context,
         "runAsyncCompositionFormsReference",
         runAsyncCompositionFormsReference()
-    )
-    passed = passed && recordReferenceResult(
+    ) && passed
+    passed = recordReferenceResult(
         context,
         "runAsyncStateMachineReference",
         runAsyncStateMachineReference()
-    )
-    passed = passed && recordReferenceResult(
+    ) && passed
+    passed = recordReferenceResult(
         context,
         "runAsyncStateMachineManualResumeReference",
         runAsyncStateMachineManualResumeReference()
-    )
-    passed = passed && recordReferenceResult(
+    ) && passed
+    passed = recordReferenceResult(
         context,
         "runAsyncAsyncKeyIntegrationReference",
         runAsyncAsyncKeyIntegrationReference()
-    )
-    passed = passed && recordReferenceResult(
+    ) && passed
+    passed = recordReferenceResult(
         context,
         "runComptimeCompileTimeFormsReference",
         runComptimeCompileTimeFormsReference()
-    )
-    passed = passed && recordReferenceResult(
+    ) && passed
+    passed = recordReferenceResult(
         context,
         "runComptimeCompileTimeCapabilitiesReference",
         runComptimeCompileTimeCapabilitiesReference()
-    )
-    passed = passed && recordReferenceResult(
+    ) && passed
+    passed = recordReferenceResult(
         context,
         "runComptimeReflectionReference",
         runComptimeReflectionReference()
-    )
-    passed = passed && recordReferenceResult(
+    ) && passed
+    passed = recordReferenceResult(
         context,
         "runComptimeQuoteSpliceEmissionReference",
         runComptimeQuoteSpliceEmissionReference()
-    )
-    passed = passed && recordReferenceResult(
+    ) && passed
+    passed = recordReferenceResult(
         context,
         "runComptimeDeriveTargetsReference",
         runComptimeDeriveTargetsReference()
-    )
-    passed = passed && recordReferenceResult(
+    ) && passed
+    passed = recordReferenceResult(
         context,
         "runFFIFfiSafeReference",
         runFFIFfiSafeReference()
-    )
-    passed = passed && recordReferenceResult(
+    ) && passed
+    passed = recordReferenceResult(
         context,
         "runFFIExternProceduresReference",
         runFFIExternProceduresReference()
-    )
-    passed = passed && recordReferenceResult(
+    ) && passed
+    passed = recordReferenceResult(
         context,
         "runFFIExportedProceduresReference",
         runFFIExportedProceduresReference()
-    )
-    passed = passed && recordReferenceResult(
+    ) && passed
+    passed = recordReferenceResult(
         context,
         "runFFIAttributesReference",
         runFFIAttributesReference()
-    )
-    passed = passed && recordReferenceResult(
+    ) && passed
+    passed = recordReferenceResult(
         context,
         "runFFICapabilityIsolationReference",
         runFFICapabilityIsolationReference()
-    )
-    passed = passed && recordReferenceResult(
+    ) && passed
+    passed = recordReferenceResult(
         context,
         "runFFIForeignContractsReference",
         runFFIForeignContractsReference()
-    )
-    passed = passed && recordReferenceResult(
+    ) && passed
+    passed = recordReferenceResult(
         context,
         "runFFIBoundaryUnwindingReference",
         runFFIBoundaryUnwindingReference()
-    )
-    passed = passed && recordReferenceResult(
+    ) && passed
+    passed = recordReferenceResult(
         context,
         "runLoweringSharedJudgmentsReference",
         runLoweringSharedJudgmentsReference()
-    )
-    passed = passed && recordReferenceResult(
+    ) && passed
+    passed = recordReferenceResult(
         context,
         "runLoweringLayoutAndABIReference",
         runLoweringLayoutAndABIReference()
-    )
-    passed = passed && recordReferenceResult(
+    ) && passed
+    passed = recordReferenceResult(
         context,
         "runLoweringSymbolsManglingLinkageReference",
         runLoweringSymbolsManglingLinkageReference()
-    )
-    passed = passed && recordReferenceResult(
+    ) && passed
+    passed = recordReferenceResult(
         context,
         "runLoweringInitializationLifecycleReference",
         runLoweringInitializationLifecycleReference()
-    )
-    passed = passed && recordReferenceResult(
+    ) && passed
+    passed = recordReferenceResult(
         context,
         "runLoweringCleanupDropUnwindingReference",
         runLoweringCleanupDropUnwindingReference()
-    )
-    passed = passed && recordReferenceResult(
+    ) && passed
+    passed = recordReferenceResult(
         context,
         "runLoweringRuntimeInterfaceReference",
         runLoweringRuntimeInterfaceReference()
-    )
-    passed = passed && recordReferenceResult(
+    ) && passed
+    passed = recordReferenceResult(
         context,
         "runLoweringBackendRequirementsReference",
         runLoweringBackendRequirementsReference()
-    )
+    ) && passed
     return referenceResult(
         passed,
         498

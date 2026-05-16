@@ -142,12 +142,12 @@ public procedure validatedAttributesAndMetadataLayoutAttributesObligations() -> 
     ) {
         count = count + 1usize
     }
-    if acceptedObligationEntryMatches(
+    if rejectedSourceObligationEntryMatches(
         "diagnostics.LayoutAttributeDiagnostics",
         27979usize,
-        "HelloUltraviolet::Reference::Attributes",
-        "runAttributesLayoutAttributesReference",
-        "Source/Reference/Attributes/LayoutAttributes.uv"
+        "HelloUltraviolet::Fixtures::RejectedSource",
+        "validatedAttributesRejectedSourceFixtureCount",
+        "Fixtures/RejectedSource/Attributes/PackedLayoutOnEnum/Source/Main.uv"
     ) {
         count = count + 1usize
     }

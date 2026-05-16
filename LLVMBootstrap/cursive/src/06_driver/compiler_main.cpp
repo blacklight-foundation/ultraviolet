@@ -2974,6 +2974,8 @@ int cursive::driver::RunCompiler(int argc, char** argv) {
                 &typechecked.dynamic_refine_checks;
             const auto* generic_call_substs =
                 &typechecked.generic_call_substs;
+            const auto* selected_call_targets =
+                &typechecked.selected_call_targets;
             lower_ctx.expr_types =
                 const_cast<analysis::ExprTypeMap*>(expr_types);
             lower_ctx.dynamic_refine_checks =
@@ -2982,6 +2984,9 @@ int cursive::driver::RunCompiler(int argc, char** argv) {
             lower_ctx.generic_call_substs =
                 const_cast<analysis::GenericCallSubstMap*>(
                     generic_call_substs);
+            lower_ctx.selected_call_targets =
+                const_cast<analysis::SelectedCallTargetMap*>(
+                    selected_call_targets);
             lower_ctx.expr_type =
                 [expr_types](const ast::Expr& expr) -> analysis::TypeRef {
               if (!expr_types) {

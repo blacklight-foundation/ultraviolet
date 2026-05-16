@@ -21,6 +21,58 @@ using namespace emit_detail;
     return left->stripPointerCasts() == right->stripPointerCasts();
   }
 
+  bool MatchesAggregateReturnLocal(const IRBindVar &bind,
+                                   const IRAggregateCopyElision &info)
+  {
+    if (!info.return_local_uses_sret)
+    {
+      return false;
+    }
+    return bind.name == info.return_local ||
+           (!info.return_local_stable_name.empty() &&
+            bind.name == info.return_local_stable_name) ||
+           (!bind.stable_name.empty() &&
+            (bind.stable_name == info.return_local ||
+             bind.stable_name == info.return_local_stable_name));
+  }
+
+  llvm::Value *SRetStorageForAggregateReturnLocal(LLVMEmitter &emitter,
+                                                   llvm::Function *func,
+                                                   const IRBindVar &bind,
+                                                   llvm::Type *bind_ty)
+  {
+    if (!func || !bind_ty || func->arg_size() == 0)
+    {
+      return nullptr;
+    }
+    const LowerCtx *ctx = emitter.GetCurrentCtx();
+    if (!ctx)
+    {
+      return nullptr;
+    }
+    const std::string symbol = std::string(func->getName());
+    const LowerCtx::ProcSigInfo *sig = ctx->LookupProcSig(symbol);
+    if (!sig || !sig->aggregate_copy_elision.has_value() ||
+        !MatchesAggregateReturnLocal(bind, *sig->aggregate_copy_elision))
+    {
+      return nullptr;
+    }
+    ABICallResult abi = ComputeProcABI(emitter, symbol, sig->params, sig->ret);
+    if (!abi.valid || !abi.has_sret)
+    {
+      return nullptr;
+    }
+    llvm::Value *out = func->getArg(0);
+    llvm::Type *target_ptr_ty = llvm::PointerType::get(bind_ty, 0);
+    if (out->getType() == target_ptr_ty)
+    {
+      return out;
+    }
+    auto *builder =
+        static_cast<llvm::IRBuilder<> *>(emitter.GetBuilderRaw());
+    return builder ? builder->CreateBitCast(out, target_ptr_ty) : nullptr;
+  }
+
   } // namespace
 
   llvm::Value *LLVMEmitter::GetAddressableStorage(const IRValue &value)
@@ -407,6 +459,13 @@ using namespace emit_detail;
     const bool use_region_slot =
         bind_slot_info.has_value() &&
         bind_slot_info->kind == BindSlot::Kind::RegionSlot;
+    if ((!bind_slot || !bind_slot->getType()->isPointerTy()) &&
+        !use_region_slot &&
+        aggregate_bind_ty)
+    {
+      bind_slot =
+          SRetStorageForAggregateReturnLocal(*this, func, bind, ty);
+    }
     if ((!bind_slot || !bind_slot->getType()->isPointerTy()) &&
         !use_region_slot &&
         aggregate_bind_ty)

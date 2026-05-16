@@ -50,21 +50,56 @@ while building `HelloUltraviolet` as the reference corpus.
   rule for constructing generic record, enum-record, and modal-state values
   whose nominal type has explicit generic arguments.
 
+### Overloaded Procedure Symbol Identity
+
+- Obligations: `Docs/Audit/UltravioletObligations.csv:3298`,
+  `Docs/Audit/UltravioletObligations.csv:3301`,
+  `Docs/Audit/UltravioletObligations.csv:3302`, and
+  `Docs/Audit/UltravioletObligations.csv:5551`.
+- SPEC anchors: `SPECIFICATION.md:14739-14752`,
+  `SPECIFICATION.md:14756-14760`, and
+  `SPECIFICATION.md:27857-27880`.
+- Current reading: free-procedure overload resolution selects a unique
+  declaration before lowering, and lowering consumes that selected declaration
+  identity. For same-name overloads without an explicit external link name,
+  the backend must preserve declaration identity in its internal symbol table
+  so the selected overload body is the body that executes.
+- Connected construct reading: Chapter 15 permits same-name overloads whose
+  erased parameter signatures differ and requires no runtime overload search.
+  Chapter 24 defines ordinary procedure item paths as module path plus name.
+  Taken literally, that item path is insufficient to identify multiple
+  same-module procedure declarations with the same name, so the implementation
+  needs either a specified overload symbol component or an explicit statement
+  that the selected symbol is a declaration identity rather than only
+  `PathOfModule(ModuleOf(proc)) ++ [name]`.
+- Clarification requested: specify the canonical internal symbol identity for
+  overloaded free procedures, especially whether non-exported overload symbols
+  include an overload-set component derived from the selected declaration while
+  `[[mangle]]`, `[[export]]`, `[[host_export]]`, and `main` keep their existing
+  ABI-facing names.
+
 ### `rule.18.BlockInfo-Res-Err`
 
 - Obligation: `Docs/Audit/UltravioletObligations.csv:4143`.
-- SPEC anchor: `SPECIFICATION.md:19106-19113`.
+- SPEC anchor: `SPECIFICATION.md:19091-19121`.
 - Current reading: `BlockInfo-Res-Err` is intended to reject a block expression
   when statement typing contributes a non-empty `Res` set whose result entries
   have no common type.
-- Connected construct reading: the inspected Chapter 18 statement forms produce
-  `Res = []` for expression, unsafe, region, and frame statements, and loop
-  `break` values flow through `Brk`. The bootstrap owner path,
-  `TypeBlockInfo` in
-  `LLVMBootstrap/cursive/src/04_analysis/typing/stmt/stmt_common.cpp`, forwards
-  nested statement-block results of type `!` into `flow.results`; that gives a
-  source path for `BlockInfo-Res`, but has not produced a heterogeneous
-  non-empty `Res` set for `BlockInfo-Res-Err`.
+- Connected construct reading: the inspected Chapter 18 statement rules produce
+  `Res = []` for let, var, assignment, expression, defer, region, frame, return,
+  continue, and unsafe statements; `break` values flow through `Brk`, not `Res`;
+  and `CtStmt` is expanded away before it contributes a runtime statement. The
+  SPEC does not currently expose a statement rule that appends a non-`!` type to
+  `Res`.
+- Bootstrap evidence: `TypeBlockInfo` in
+  `LLVMBootstrap/cursive/src/04_analysis/typing/stmt/stmt_common.cpp` checks
+  `ResType(stmts_typed.flow.results)` and can emit `BlockInfo-Res-Err` when
+  `flow.results` is heterogeneous. The source-facing bootstrap producers
+  inspected so far append to `flow.results` only when a nested statement-block
+  body has type `!`: `TypeScopedStmtBody`, `unsafe_block_stmt.cpp`, and
+  `key_block_stmt.cpp`. Expression-statement flow collection recurses into
+  nested block expressions only to forward nested statement flow; ordinary tail
+  expression values do not populate `Res`.
 - Clarification requested: identify the source construct that can create a
   heterogeneous non-empty `Res` set, or mark `BlockInfo-Res-Err` as an internal
   consistency diagnostic rather than a source-level diagnostic obligation.
@@ -79,13 +114,14 @@ while building `HelloUltraviolet` as the reference corpus.
   implementation relations, requiring at least one side of `T <: Cl` to be
   defined in the current assembly.
 - Connected construct reading: the source syntax attaches implementation to the
-  defining record, enum, or modal declaration, and `SPECIFICATION.md:13111`
+  defining record, enum, or modal declaration, and `SPECIFICATION.md:13116`
   says standalone extension implementation blocks are outside the language
   surface. Under that surface, ordinary source can express the valid
-  cross-assembly case where a local type implements an imported class; it
-  cannot spell a rejecting case where both the implementing type and the class
-  are foreign. `Fixtures/AcceptedProjects/CrossAssemblyImplementation`
-  exercises the valid cross-assembly source surface.
+  cross-assembly case where a local record, enum, or modal type implements an
+  imported class; it cannot spell a rejecting case where both the implementing
+  type and the class are foreign.
+  `Fixtures/AcceptedProjects/CrossAssemblyImplementation` exercises the valid
+  cross-assembly source surface for all three implementer forms.
 - Clarification requested: identify an existing source spelling that presents a
   foreign implementing type and foreign class to the current assembly, or mark
   the rejecting orphan rule as an internal/imported-metadata consistency
@@ -94,7 +130,7 @@ while building `HelloUltraviolet` as the reference corpus.
 ### `rule.24.LowerIR-Err`
 
 - Obligation: `Docs/Audit/UltravioletObligations.csv:5457`.
-- SPEC anchor: `SPECIFICATION.md:27263-27270`.
+- SPEC anchor: `SPECIFICATION.md:27271-27279`.
 - Current reading: `LowerIR-Err` is the backend owner for a failed
   `LowerIRDecl(d_i)` while lowering module IR to LLVM IR.
 - Connected construct reading: a semantically valid source program should
@@ -108,11 +144,14 @@ while building `HelloUltraviolet` as the reference corpus.
   lowering failure fixture, or identify a spec-defined source-level condition
   that is semantically valid and is nevertheless required to report
   `LowerIR-Err`.
+- Bootstrap owner path:
+  `LLVMBootstrap/cursive/src/06_driver/pipeline.cpp` records `LowerIR-Err`
+  when module materialization fails before an LLVM module is available.
 
 ### `rule.24.EmitObj-Err`
 
 - Obligation: `Docs/Audit/UltravioletObligations.csv:5464`.
-- SPEC anchor: `SPECIFICATION.md:27291-27300`.
+- SPEC anchor: `SPECIFICATION.md:27297-27307`.
 - Current reading: `EmitObj-Err` owns failure of `LLVMEmitObj_21(LLVMIR)` after
   a module has already been lowered to LLVM IR.
 - Connected construct reading: the SPEC target profiles are
@@ -125,6 +164,10 @@ while building `HelloUltraviolet` as the reference corpus.
   `LLVMEmitObj_21` failure, or mark `EmitObj-Err` as an internal backend
   failure obligation that is not sourceable from conforming source under the
   supported target profiles.
+- Bootstrap owner path:
+  `LLVMBootstrap/cursive/src/06_driver/pipeline.cpp` records `EmitObj-Err`
+  for LLVM module verification failure, target-machine creation failure, and
+  object-emission pass setup failure after a module exists.
 
 ### `rule.20.WorkgroupSize-Err`
 
@@ -224,6 +267,31 @@ while building `HelloUltraviolet` as the reference corpus.
   `WF-Union-TooFew` as an internal AST/recovery consistency diagnostic rather
   than an ordinary source-level diagnostic obligation.
 
+### Hex Digit Underscores Adjacent To `E`
+
+- Obligation: accepted-source literal lexing coverage for
+  `hex_integer`, `hex_digit`, `NumericUnderscoreOk`, and
+  `Lex-Numeric-Err`.
+- SPEC anchors: `SPECIFICATION.md:2111`,
+  `SPECIFICATION.md:2211-2215`, and
+  `SPECIFICATION.md:2272-2276`.
+- Current reading: uppercase `A` through `F` are valid `hex_digit` characters,
+  and underscores are valid separators between based-integer digits. The
+  `AdjacentExponentUnderscore` predicate is intended to protect decimal float
+  exponent spelling, not to make valid uppercase hex digit sequences such as
+  `0xDE_AD` malformed.
+- Connected construct reading: the literal grammar and `HexRun` both treat
+  uppercase `E` as a hex digit in based integer context. Applying
+  `AdjacentExponentUnderscore` to every numeric lexeme makes `E` act as an
+  exponent marker even when the scanner is inside a `0x` based integer, which
+  conflicts with the based-integer grammar. The compiled reference source uses
+  `0xCA_FEu32` to exercise uppercase grouped hex without relying on the
+  disputed adjacency.
+- Clarification requested: scope `AdjacentExponentUnderscore` to decimal
+  float exponent cores, or state directly that based integer underscores are
+  forbidden next to the hex digits `e` and `E` despite the `hex_integer`
+  grammar.
+
 ### `TupleIndex-NonConst`
 
 - Obligation: `Docs/Audit/UltravioletObligations.csv:2125`.
@@ -275,3 +343,20 @@ while building `HelloUltraviolet` as the reference corpus.
   admit signed integer literals, or classify `Enum-Disc-Negative` as an
   internal AST/recovery consistency diagnostic rather than an ordinary
   source-level diagnostic obligation.
+
+### `TypeAlias-Recursive-Err`
+
+- Obligation: `Docs/Audit/UltravioletObligations.csv:2442`.
+- SPEC anchor: `SPECIFICATION.md:10644-10652` and
+  `Docs/Internal/UltravioletSpecification.obligations.md:41505-41518`.
+- Current reading: recursive type aliases are sourceable through ordinary
+  `type` declarations and report `TypeAlias-Recursive-Err`, whose diagnostic
+  code is `E-TYP-1506` through the Chapter 8 core type diagnostics table.
+- Connected construct reading: the public SPEC rule conclusion currently says
+  `Code(TypeAlias-Reultraviolet-Err)`, while the extracted internal
+  obligation ledger and CSV row consistently use `TypeAlias-Recursive-Err`.
+  The intended rule identity is `TypeAlias-Recursive-Err`; the public spelling
+  appears to be a mechanical replacement typo in the generated SPEC text.
+- Clarification requested: correct the public SPEC spelling from
+  `TypeAlias-Reultraviolet-Err` to `TypeAlias-Recursive-Err` so the public
+  rule name matches the obligation ledger and the diagnostic fixture.

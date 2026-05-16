@@ -40,6 +40,40 @@ public modal ModalReference {
     }
 }
 
+[[reflect]]
+internal modal GenericModalReference<TValue> |: Bitcopy(TValue) {
+    @Empty {}
+
+    @Present {
+        internal value: TValue
+
+        internal procedure read(~) -> TValue {
+            return self.value
+        }
+    }
+}
+
+internal modal ModalNicheReference {
+    @Absent {}
+
+    @Present {
+        internal pointer: Ptr<i32>@Valid
+    }
+}
+
+internal modal ModalTaggedReference {
+    @Empty {}
+
+    @Small {
+        internal value: i32
+    }
+
+    @Wide {
+        internal left: i64
+        internal right: i32
+    }
+}
+
 public type ModalReferenceValue = ModalReference@Closed | ModalReference@Open
 
 public procedure closedModalReference() -> ModalReferenceValue {
@@ -50,10 +84,72 @@ internal procedure modalReferenceOpenValue(reference: ModalReference@Open) -> i3
     return reference.value
 }
 
+internal procedure genericModalPresentValue(
+    reference: GenericModalReference<i32>@Present
+) -> i32 {
+    return reference.value
+}
+
+internal procedure genericModalRead(
+    reference: GenericModalReference<i32>@Present
+) -> i32 {
+    return reference~>read()
+}
+
+internal procedure modalNicheGeneralValue() -> i32 {
+    var payload: i32 = 29
+    let present: ModalNicheReference@Present = ModalNicheReference@Present {
+        pointer: &payload
+    }
+    let general: ModalNicheReference = widen present
+    return if general is {
+        @Absent {
+            0
+        }
+        @Present { pointer } {
+            *pointer
+        }
+    }
+}
+
+internal procedure modalTaggedGeneralValue() -> i32 {
+    let wide: ModalTaggedReference@Wide = ModalTaggedReference@Wide {
+        left: 40,
+        right: 2
+    }
+    let general: ModalTaggedReference = widen wide
+    return if general is {
+        @Empty {
+            0
+        }
+        @Small { value } {
+            value
+        }
+        @Wide { left, right } {
+            (left as i32) + right
+        }
+    }
+}
+
+internal procedure modalLayoutReference() -> bool {
+    return sizeof(ModalReference@Closed) == 0usize &&
+        sizeof(ModalReference@Open) == sizeof(i32) &&
+        alignof(ModalReference@Open) == alignof(i32) &&
+        sizeof(ModalNicheReference@Absent) == 0usize &&
+        sizeof(ModalNicheReference) == sizeof(Ptr<i32>@Valid) &&
+        alignof(ModalNicheReference) == alignof(Ptr<i32>@Valid) &&
+        sizeof(ModalTaggedReference) >= sizeof(ModalTaggedReference@Wide) &&
+        alignof(ModalTaggedReference) >= alignof(ModalTaggedReference@Wide)
+}
+
 /// Exercises the ModalTypes ModalDeclarations reference surface.
 public procedure runModalTypesModalDeclarationsReference() -> bool {
     let reference: ModalReferenceValue = closedModalReference()
     let open_reference: ModalReference@Open = ModalReference@Open { value: 17 }
+    let generic_present: GenericModalReference<i32>@Present =
+        GenericModalReference<i32>@Present { value: 23 }
+    let generic_empty: GenericModalReference<i32> =
+        widen GenericModalReference<i32>@Empty {}
     let state_specific_value: bool = if reference is {
         @Closed {
             true
@@ -63,5 +159,18 @@ public procedure runModalTypesModalDeclarationsReference() -> bool {
         }
     }
     return state_specific_value &&
-        modalReferenceOpenValue(open_reference) == 17
+        modalReferenceOpenValue(open_reference) == 17 &&
+        genericModalPresentValue(generic_present) == 23 &&
+        genericModalRead(generic_present) == 23 &&
+        if generic_empty is {
+            @Empty {
+                true
+            }
+            @Present {
+                false
+            }
+        } &&
+        modalNicheGeneralValue() == 29 &&
+        modalTaggedGeneralValue() == 42 &&
+        modalLayoutReference()
 }

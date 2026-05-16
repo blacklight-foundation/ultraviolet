@@ -106,12 +106,12 @@ public procedure validatedAttributesAndMetadataVendorAttributesObligations() -> 
     ) {
         count = count + 1usize
     }
-    if acceptedObligationEntryMatches(
+    if rejectedSourceObligationEntryMatches(
         "diagnostics.VendorAttributeDiagnostics",
         27692usize,
-        "HelloUltraviolet::Reference::Attributes",
-        "runAttributesVendorAttributesReference",
-        "Source/Reference/Attributes/VendorAttributes.uv"
+        "HelloUltraviolet::Fixtures::RejectedSource",
+        "validatedAttributesRejectedSourceFixtureCount",
+        "Fixtures/RejectedSource/Attributes/ReservedVendorNamespace/Source/Main.uv"
     ) {
         count = count + 1usize
     }

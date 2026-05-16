@@ -106,21 +106,21 @@ public procedure validatedNameResolutionAndVisibilityVisibilityAndAccessibilityO
     ) {
         count = count + 1usize
     }
-    if acceptedObligationEntryMatches(
+    if rejectedSourceObligationEntryMatches(
         "Access-Internal-Err",
         19730usize,
-        "HelloUltraviolet::Reference::Names",
-        "runNamesVisibilityReference",
-        "Source/Reference/Names/Visibility.uv"
+        "HelloUltraviolet::Fixtures::RejectedSource",
+        "validatedNamesRejectedSourceFixtureCount",
+        "Fixtures/RejectedSource/Names/InternalAccess/Source/InternalAccess/Library.uv"
     ) {
         count = count + 1usize
     }
-    if acceptedObligationEntryMatches(
+    if rejectedSourceObligationEntryMatches(
         "Access-Err",
         19748usize,
-        "HelloUltraviolet::Reference::Names",
-        "runNamesVisibilityReference",
-        "Source/Reference/Names/Visibility.uv"
+        "HelloUltraviolet::Fixtures::RejectedSource",
+        "validatedNamesRejectedSourceFixtureCount",
+        "Fixtures/RejectedSource/Names/PrivateAccess/Source/Main.uv"
     ) {
         count = count + 1usize
     }

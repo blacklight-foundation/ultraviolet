@@ -1,14 +1,263 @@
 //! Reference specimens for Expressions / ClosuresAndPipelines.
 
+internal type IntUnaryFunction = (i32) -> i32
+
+internal type MoveIntFunction = (move i32) -> i32
+
+internal type IntUnaryClosure = |i32| -> i32
+
+internal type MoveIntClosure = |move i32| -> i32
+
+internal type IntPairClosure = |i32, i32| -> i32
+
+internal type UnionClosure = |(i32 | bool)| -> i32
+
+internal procedure pipelineIncrement(value: i32) -> i32 {
+    return value + 1
+}
+
+internal procedure pipelineDouble(value: i32) -> i32 {
+    return value * 2
+}
+
+internal procedure applyUnaryFunction(closure: IntUnaryFunction, value: i32) -> i32 {
+    return closure(value)
+}
+
+internal procedure applyMoveFunction(closure: MoveIntFunction, value: i32) -> i32 {
+    return closure(move value)
+}
+
+internal procedure applyMoveClosure(closure: MoveIntClosure, value: i32) -> i32 {
+    return closure(move value)
+}
+
+internal procedure closureParameterFormsReference() -> bool {
+    let explicit_single = |value: i32| -> i32 value + 1
+    let explicit_many = |left: i32, right: i32,| -> i32 left + right
+    let inferred_param: IntUnaryFunction = |value| value + 2
+    let inferred_return = |value: i32| value + 3
+    let move_typed: MoveIntFunction = |move value: i32| -> i32 value + 4
+    let move_untyped: MoveIntFunction = |move value| value + 5
+
+    return explicit_single(4) == 5 &&
+        explicit_many(4, 5) == 9 &&
+        inferred_param(4) == 6 &&
+        inferred_return(4) == 7 &&
+        applyMoveFunction(move_typed, 4) == 8 &&
+        applyMoveFunction(move_untyped, 4) == 9
+}
+
+internal procedure closureBodyFormsReference() -> bool {
+    let expression_body = |value: i32| -> i32 value + 1
+    let block_body = |value: i32| -> i32 {
+        let adjusted: i32 = value + 2
+        return adjusted
+    }
+    let empty = || -> i32 5
+
+    return expression_body(4) == 5 &&
+        block_body(4) == 6 &&
+        empty() == 5
+}
+
+internal procedure closureCaptureReference() -> bool {
+    let base_value: i32 = 3
+    let add_captured: IntUnaryClosure = |value: i32| -> i32 value + base_value
+    let pair_bias: i32 = 1
+    let pair_captured: IntPairClosure =
+        |left: i32, right: i32| -> i32 left + right + pair_bias
+    let move_base: i32 = 2
+    let move_add_captured: MoveIntClosure = |move value: i32| -> i32 value + move_base
+    let moved_value: i32 = 11
+    let move_capture = || -> i32 move moved_value
+
+    return add_captured(4) == 7 &&
+        pair_captured(2, 3) == 6 &&
+        applyMoveClosure(move_add_captured, 6) == 8 &&
+        move_capture() == 11
+}
+
+internal procedure closureCaptureReferenceWithReport(context: Context) -> bool {
+    let base_value: i32 = 3
+    let add_captured: IntUnaryClosure = |value: i32| -> i32 value + base_value
+    let pair_bias: i32 = 1
+    let pair_captured: IntPairClosure =
+        |left: i32, right: i32| -> i32 left + right + pair_bias
+    let move_base: i32 = 2
+    let move_add_captured: MoveIntClosure = |move value: i32| -> i32 value + move_base
+    let moved_value: i32 = 11
+    let move_capture = || -> i32 move moved_value
+
+    var passed: bool = true
+    passed = recordClosurePipelineReturn(
+        context,
+        "closureCaptureReference.add_captured(4) == 7",
+        add_captured(4) == 7
+    ) && passed
+    passed = recordClosurePipelineReturn(
+        context,
+        "closureCaptureReference.pair_captured(2, 3) == 6",
+        pair_captured(2, 3) == 6
+    ) && passed
+    passed = recordClosurePipelineReturn(
+        context,
+        "closureCaptureReference.applyMoveClosure(move_add_captured, 6) == 8",
+        applyMoveClosure(move_add_captured, 6) == 8
+    ) && passed
+    passed = recordClosurePipelineReturn(
+        context,
+        "closureCaptureReference.move_capture() == 11",
+        move_capture() == 11
+    ) && passed
+    return passed
+}
+
+internal procedure closureUnionParameterReference() -> bool {
+    let bias: i32 = 2
+    let union_reader: UnionClosure = |value: (i32 | bool)| -> i32 {
+        return if value is {
+            number: i32 {
+                number + bias
+            }
+            flag: bool {
+                if flag {
+                    1 + bias
+                } else {
+                    bias
+                }
+            }
+        }
+    }
+
+    return union_reader(5) == 7 &&
+        union_reader(true) == 3 &&
+        union_reader(false) == 2
+}
+
+internal procedure closureCallControlReference() -> i32 {
+    let reader = || -> i32 {
+        return 17
+    }
+    return reader()
+}
+
+internal procedure closureArgumentControlReference() -> i32 {
+    let add_one = |value: i32| -> i32 value + 1
+    return add_one({ return 19 })
+}
+
+internal procedure pipelineFormsReference() -> bool {
+    let base_value: i32 = 3
+    let add_captured: IntUnaryClosure = |value: i32| -> i32 value + base_value
+    let function_pipeline: i32 = 4 => pipelineIncrement
+    let closure_pipeline: i32 = 4 => add_captured
+    let chained_pipeline: i32 = 4 => pipelineIncrement => pipelineDouble
+    let expected_pipeline: i32 = 4 => (|value: i32| -> i32 value + 6)
+
+    return function_pipeline == 5 &&
+        closure_pipeline == 7 &&
+        chained_pipeline == 10 &&
+        expected_pipeline == 10
+}
+
+internal procedure writeClosurePipelineMessage(context: Context, text: string@View) -> bool {
+    let output: Outcome<(), IoError> = context.fs~>write_stderr(text)
+    return if output is {
+        @Value {
+            true
+        }
+        @Error {
+            false
+        }
+    }
+}
+
+internal procedure recordClosurePipelineReturn(
+    context: Context,
+    name: string@View,
+    passed: bool
+) -> bool {
+    if passed {
+        return true
+    }
+
+    if (!writeClosurePipelineMessage(context, "closure/pipeline return failed: ")) {
+        return false
+    }
+    if (!writeClosurePipelineMessage(context, name)) {
+        return false
+    }
+    if (!writeClosurePipelineMessage(context, "\n")) {
+        return false
+    }
+    return false
+}
+
 /// Exercises the Expressions ClosuresAndPipelines reference surface.
 public procedure runExpressionsClosuresAndPipelinesReference() -> bool {
-    let base_value: i32 = 3
-    let non_capturing = |value: i32| -> i32 value + 1
-    let capturing = |value: i32| -> i32 value + base_value
-    let empty = || 5
-    let call_ok: bool = non_capturing(4) == 5
-    let capture_ok: bool = capturing(4) == 7
-    let empty_ok: bool = empty() == 5
-    let pipeline_value: i32 = 8 => non_capturing
-    return call_ok && capture_ok && empty_ok && pipeline_value == 9
+    let direct_call = |value: i32| -> i32 value + 1
+
+    return direct_call(4) == 5 &&
+        applyUnaryFunction(direct_call, 5) == 6 &&
+        closureParameterFormsReference() &&
+        closureBodyFormsReference() &&
+        closureCaptureReference() &&
+        closureUnionParameterReference() &&
+        closureCallControlReference() == 17 &&
+        closureArgumentControlReference() == 19 &&
+        pipelineFormsReference()
+}
+
+/// Exercises the Expressions ClosuresAndPipelines surface and reports the failing return.
+public procedure runExpressionsClosuresAndPipelinesReferenceWithReport(context: Context) -> bool {
+    let direct_call = |value: i32| -> i32 value + 1
+
+    var passed: bool = true
+    passed = recordClosurePipelineReturn(
+        context,
+        "direct_call(4) == 5",
+        direct_call(4) == 5
+    ) && passed
+    passed = recordClosurePipelineReturn(
+        context,
+        "applyUnaryFunction(direct_call, 5) == 6",
+        applyUnaryFunction(direct_call, 5) == 6
+    ) && passed
+    passed = recordClosurePipelineReturn(
+        context,
+        "closureParameterFormsReference()",
+        closureParameterFormsReference()
+    ) && passed
+    passed = recordClosurePipelineReturn(
+        context,
+        "closureBodyFormsReference()",
+        closureBodyFormsReference()
+    ) && passed
+    passed = recordClosurePipelineReturn(
+        context,
+        "closureCaptureReference()",
+        closureCaptureReferenceWithReport(context)
+    ) && passed
+    passed = recordClosurePipelineReturn(
+        context,
+        "closureUnionParameterReference()",
+        closureUnionParameterReference()
+    ) && passed
+    passed = recordClosurePipelineReturn(
+        context,
+        "closureCallControlReference() == 17",
+        closureCallControlReference() == 17
+    ) && passed
+    passed = recordClosurePipelineReturn(
+        context,
+        "closureArgumentControlReference() == 19",
+        closureArgumentControlReference() == 19
+    ) && passed
+    passed = recordClosurePipelineReturn(
+        context,
+        "pipelineFormsReference()",
+        pipelineFormsReference()
+    ) && passed
+    return passed
 }

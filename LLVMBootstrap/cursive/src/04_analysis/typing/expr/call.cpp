@@ -520,6 +520,7 @@ static OverloadCandidateCheck CheckFreeProcedureOverloadCandidate(
 
 struct FreeProcedureOverloadResolution {
   bool applies = false;
+  ast::ModulePath origin;
   const ast::ProcedureDecl* selected = nullptr;
   std::optional<ast::ProcedureDecl> selected_view;
   TypeRef return_type;
@@ -540,6 +541,7 @@ static FreeProcedureOverloadResolution ResolveFreeProcedureOverload(
     return out;
   }
   out.applies = true;
+  out.origin = overloads->origin;
   SPEC_RULE("FreeProcedureOverloadResolutionBeforeCallTyping");
 
   struct Viable {
@@ -2419,22 +2421,185 @@ static std::optional<bool> BoolLiteralValue(const ast::ExprPtr& expr) {
   return std::nullopt;
 }
 
+struct ComptimeBoolProofEnv {
+  std::unordered_map<std::string, long long> ints;
+  std::unordered_map<std::string, bool> bools;
+};
+
+static std::optional<std::string> SimpleBindingName(
+    const ast::PatternPtr& pattern) {
+  if (!pattern) {
+    return std::nullopt;
+  }
+  if (const auto* ident = std::get_if<ast::IdentifierPattern>(&pattern->node)) {
+    return ident->name;
+  }
+  if (const auto* typed = std::get_if<ast::TypedPattern>(&pattern->node)) {
+    return typed->name;
+  }
+  return std::nullopt;
+}
+
+static std::optional<long long> ComptimeProofIntValue(
+    const ScopeContext& ctx,
+    const ast::ExprPtr& expr,
+    const ComptimeBoolProofEnv& env);
+
+static std::optional<bool> ComptimeProofBoolValue(
+    const ScopeContext& ctx,
+    const ast::ExprPtr& expr,
+    const ComptimeBoolProofEnv& env) {
+  if (!expr) {
+    return std::nullopt;
+  }
+  if (const auto literal = BoolLiteralValue(expr)) {
+    return literal;
+  }
+  if (const auto* ident = std::get_if<ast::IdentifierExpr>(&expr->node)) {
+    const auto found = env.bools.find(ident->name);
+    if (found != env.bools.end()) {
+      return found->second;
+    }
+  }
+  if (const auto* unary = std::get_if<ast::UnaryExpr>(&expr->node);
+      unary && unary->op == "!") {
+    const auto inner = ComptimeProofBoolValue(ctx, unary->value, env);
+    if (inner.has_value()) {
+      return !*inner;
+    }
+    return std::nullopt;
+  }
+  const auto* binary = std::get_if<ast::BinaryExpr>(&expr->node);
+  if (!binary) {
+    return std::nullopt;
+  }
+  if (binary->op == "&&" || binary->op == "||") {
+    const auto left = ComptimeProofBoolValue(ctx, binary->lhs, env);
+    const auto right = ComptimeProofBoolValue(ctx, binary->rhs, env);
+    if (!left.has_value() || !right.has_value()) {
+      return std::nullopt;
+    }
+    return binary->op == "&&" ? (*left && *right) : (*left || *right);
+  }
+  if (binary->op == "==" || binary->op == "!=") {
+    const auto left_bool = ComptimeProofBoolValue(ctx, binary->lhs, env);
+    const auto right_bool = ComptimeProofBoolValue(ctx, binary->rhs, env);
+    if (left_bool.has_value() && right_bool.has_value()) {
+      const bool same = *left_bool == *right_bool;
+      return binary->op == "==" ? same : !same;
+    }
+  }
+  const auto left_int = ComptimeProofIntValue(ctx, binary->lhs, env);
+  const auto right_int = ComptimeProofIntValue(ctx, binary->rhs, env);
+  if (!left_int.has_value() || !right_int.has_value()) {
+    return std::nullopt;
+  }
+  if (binary->op == "==") {
+    return *left_int == *right_int;
+  }
+  if (binary->op == "!=") {
+    return *left_int != *right_int;
+  }
+  if (binary->op == "<") {
+    return *left_int < *right_int;
+  }
+  if (binary->op == "<=") {
+    return *left_int <= *right_int;
+  }
+  if (binary->op == ">") {
+    return *left_int > *right_int;
+  }
+  if (binary->op == ">=") {
+    return *left_int >= *right_int;
+  }
+  return std::nullopt;
+}
+
+static std::optional<long long> ComptimeProofIntValue(
+    const ScopeContext& ctx,
+    const ast::ExprPtr& expr,
+    const ComptimeBoolProofEnv& env) {
+  if (!expr) {
+    return std::nullopt;
+  }
+  if (const auto literal = ConstIntValue(ctx, expr)) {
+    return literal;
+  }
+  if (const auto* ident = std::get_if<ast::IdentifierExpr>(&expr->node)) {
+    const auto found = env.ints.find(ident->name);
+    if (found != env.ints.end()) {
+      return found->second;
+    }
+  }
+  const auto* binary = std::get_if<ast::BinaryExpr>(&expr->node);
+  if (!binary) {
+    return std::nullopt;
+  }
+  const auto left = ComptimeProofIntValue(ctx, binary->lhs, env);
+  const auto right = ComptimeProofIntValue(ctx, binary->rhs, env);
+  if (!left.has_value() || !right.has_value()) {
+    return std::nullopt;
+  }
+  if (binary->op == "+") {
+    return *left + *right;
+  }
+  if (binary->op == "-") {
+    return *left - *right;
+  }
+  if (binary->op == "*") {
+    return *left * *right;
+  }
+  if (binary->op == "/" && *right != 0) {
+    return *left / *right;
+  }
+  return std::nullopt;
+}
+
+static bool BindComptimeProofLocal(const ScopeContext& ctx,
+                                   const ast::Binding& binding,
+                                   ComptimeBoolProofEnv& env) {
+  const auto name = SimpleBindingName(binding.pat);
+  if (!name.has_value()) {
+    return false;
+  }
+  if (const auto int_value = ComptimeProofIntValue(ctx, binding.init, env)) {
+    env.ints[*name] = *int_value;
+    env.bools.erase(*name);
+    return true;
+  }
+  if (const auto bool_value = ComptimeProofBoolValue(ctx, binding.init, env)) {
+    env.bools[*name] = *bool_value;
+    env.ints.erase(*name);
+    return true;
+  }
+  return false;
+}
+
 static std::optional<bool> ComptimeProcedureLiteralBoolReturn(
+    const ScopeContext& ctx,
     const ast::ProcedureDecl& proc) {
   if (!proc.body) {
     return std::nullopt;
   }
+  ComptimeBoolProofEnv env;
   if (proc.body->stmts.empty() && proc.body->tail_opt) {
-    return BoolLiteralValue(proc.body->tail_opt);
+    return ComptimeProofBoolValue(ctx, proc.body->tail_opt, env);
   }
-  if (proc.body->stmts.size() != 1 || proc.body->tail_opt) {
+
+  if (proc.body->stmts.empty() || proc.body->tail_opt) {
     return std::nullopt;
   }
-  const auto* ret = std::get_if<ast::ReturnStmt>(&proc.body->stmts.front());
+  for (std::size_t i = 0; i + 1 < proc.body->stmts.size(); ++i) {
+    const auto* let_stmt = std::get_if<ast::LetStmt>(&proc.body->stmts[i]);
+    if (!let_stmt || !BindComptimeProofLocal(ctx, let_stmt->binding, env)) {
+      return std::nullopt;
+    }
+  }
+  const auto* ret = std::get_if<ast::ReturnStmt>(&proc.body->stmts.back());
   if (!ret) {
     return std::nullopt;
   }
-  return BoolLiteralValue(ret->value_opt);
+  return ComptimeProofBoolValue(ctx, ret->value_opt, env);
 }
 
 static std::optional<bool> ProveComptimeBoolPredicate(
@@ -2481,7 +2646,7 @@ static std::optional<bool> ProveComptimeBoolPredicate(
     return std::nullopt;
   }
   SPEC_RULE("Pure-Comptime");
-  return ComptimeProcedureLiteralBoolReturn(*lookup->proc);
+  return ComptimeProcedureLiteralBoolReturn(ctx, *lookup->proc);
 }
 
 static std::optional<bool> ProveSimplePredicate(const ScopeContext& ctx,
@@ -3380,6 +3545,10 @@ ExprTypeResult TypeCallExprImpl(const ScopeContext& ctx,
               CheckFfiBoundaryRegionLocalRawPointerArgs(ctx, type_ctx, node, env)) {
         r.diag_id = *ffi_diag;
         return r;
+      }
+      if (ctx.selected_call_targets && !overload.selected_view.has_value()) {
+        (*ctx.selected_call_targets)[&node] =
+            SelectedCallTarget{overload.origin, overload.selected};
       }
       r.ok = true;
       r.type = overload.return_type;

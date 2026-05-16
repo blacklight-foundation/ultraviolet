@@ -1,0 +1,95 @@
+//! Rejected attribute specimens.
+
+public procedure attributesRejectedSourceFixtureCount() -> usize {
+    return 5usize
+}
+
+public procedure validatedAttributesRejectedSourceFixtureCount() -> usize {
+    var count: usize = 0usize
+    if rejectedSpecimenMatches(
+        rejectedSpecimen(
+            "UnknownAttribute",
+            "Fixtures/RejectedSource/Attributes/UnknownAttribute",
+            "Fixtures/RejectedSource/Attributes/UnknownAttribute/Source/Main.uv",
+            "Fixtures/RejectedSource/Attributes/UnknownAttribute/Expected.uv",
+            expectedDiagnostic("E-MOD-2451", "AttrList-Unknown")
+        ),
+        "UnknownAttribute",
+        "Fixtures/RejectedSource/Attributes/UnknownAttribute",
+        "Fixtures/RejectedSource/Attributes/UnknownAttribute/Source/Main.uv",
+        "Fixtures/RejectedSource/Attributes/UnknownAttribute/Expected.uv",
+        "E-MOD-2451",
+        "AttrList-Unknown"
+    ) {
+        count = count + 1usize
+    }
+    if rejectedSpecimenMatches(
+        rejectedSpecimen(
+            "UnknownAttribute",
+            "Fixtures/RejectedSource/Attributes/UnknownAttribute",
+            "Fixtures/RejectedSource/Attributes/UnknownAttribute/Source/Main.uv",
+            "Fixtures/RejectedSource/Attributes/UnknownAttribute/Expected.uv",
+            expectedDiagnostic("E-MOD-2451", "diagnostics.AttributeDiagnostics")
+        ),
+        "UnknownAttribute",
+        "Fixtures/RejectedSource/Attributes/UnknownAttribute",
+        "Fixtures/RejectedSource/Attributes/UnknownAttribute/Source/Main.uv",
+        "Fixtures/RejectedSource/Attributes/UnknownAttribute/Expected.uv",
+        "E-MOD-2451",
+        "diagnostics.AttributeDiagnostics"
+    ) {
+        count = count + 1usize
+    }
+    if rejectedSpecimenMatches(
+        rejectedSpecimen(
+            "TestMissingPostcondition",
+            "Fixtures/RejectedSource/Attributes/TestMissingPostcondition",
+            "Fixtures/RejectedSource/Attributes/TestMissingPostcondition/Source/Main.uv",
+            "Fixtures/RejectedSource/Attributes/TestMissingPostcondition/Expected.uv",
+            expectedDiagnostic("E-TST-0106", "diagnostics.TestAttributes")
+        ),
+        "TestMissingPostcondition",
+        "Fixtures/RejectedSource/Attributes/TestMissingPostcondition",
+        "Fixtures/RejectedSource/Attributes/TestMissingPostcondition/Source/Main.uv",
+        "Fixtures/RejectedSource/Attributes/TestMissingPostcondition/Expected.uv",
+        "E-TST-0106",
+        "diagnostics.TestAttributes"
+    ) {
+        count = count + 1usize
+    }
+    if rejectedSpecimenMatches(
+        rejectedSpecimen(
+            "PackedLayoutOnEnum",
+            "Fixtures/RejectedSource/Attributes/PackedLayoutOnEnum",
+            "Fixtures/RejectedSource/Attributes/PackedLayoutOnEnum/Source/Main.uv",
+            "Fixtures/RejectedSource/Attributes/PackedLayoutOnEnum/Expected.uv",
+            expectedDiagnostic("E-MOD-2454", "diagnostics.LayoutAttributeDiagnostics")
+        ),
+        "PackedLayoutOnEnum",
+        "Fixtures/RejectedSource/Attributes/PackedLayoutOnEnum",
+        "Fixtures/RejectedSource/Attributes/PackedLayoutOnEnum/Source/Main.uv",
+        "Fixtures/RejectedSource/Attributes/PackedLayoutOnEnum/Expected.uv",
+        "E-MOD-2454",
+        "diagnostics.LayoutAttributeDiagnostics"
+    ) {
+        count = count + 1usize
+    }
+    if rejectedSpecimenMatches(
+        rejectedSpecimen(
+            "ReservedVendorNamespace",
+            "Fixtures/RejectedSource/Attributes/ReservedVendorNamespace",
+            "Fixtures/RejectedSource/Attributes/ReservedVendorNamespace/Source/Main.uv",
+            "Fixtures/RejectedSource/Attributes/ReservedVendorNamespace/Expected.uv",
+            expectedDiagnostic("E-CNF-0402", "diagnostics.VendorAttributeDiagnostics")
+        ),
+        "ReservedVendorNamespace",
+        "Fixtures/RejectedSource/Attributes/ReservedVendorNamespace",
+        "Fixtures/RejectedSource/Attributes/ReservedVendorNamespace/Source/Main.uv",
+        "Fixtures/RejectedSource/Attributes/ReservedVendorNamespace/Expected.uv",
+        "E-CNF-0402",
+        "diagnostics.VendorAttributeDiagnostics"
+    ) {
+        count = count + 1usize
+    }
+    return count
+}

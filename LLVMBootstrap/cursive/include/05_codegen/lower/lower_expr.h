@@ -280,6 +280,7 @@ struct LowerCtx {
   analysis::ExprTypeMap* expr_types = nullptr;
   analysis::DynamicRefineExprMap* dynamic_refine_checks = nullptr;
   analysis::GenericCallSubstMap* generic_call_substs = nullptr;
+  analysis::SelectedCallTargetMap* selected_call_targets = nullptr;
 
   // Name resolution lookup
   std::function<std::optional<std::vector<std::string>>(const std::string&)> resolve_name;
@@ -341,6 +342,7 @@ struct LowerCtx {
     bool ffi_import = false;
     FfiImportUnwindMode ffi_import_unwind_mode =
         FfiImportUnwindMode::Abort;
+    std::optional<IRAggregateCopyElision> aggregate_copy_elision;
   };
   struct ForeignContractInfo {
     bool dynamic = false;

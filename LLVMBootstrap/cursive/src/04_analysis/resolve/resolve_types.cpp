@@ -16,10 +16,12 @@
 
 #include "04_analysis/resolve/resolver.h"
 
+#include <string>
 #include <utility>
 #include <type_traits>
 
 #include "00_core/assert_spec.h"
+#include "00_core/symbols.h"
 #include "04_analysis/caps/cap_concurrency.h"
 #include "04_analysis/resolve/scopes.h"
 #include "04_analysis/resolve/scopes_intro.h"
@@ -86,6 +88,10 @@ ast::Path FullPath(const ast::Path& path, std::string_view name) {
   return out;
 }
 
+std::string UnresolvedTypePathDetail(const ast::TypePath& path) {
+  return "unresolved type path `" + core::StringOfPath(path) + "`";
+}
+
 }  // namespace
 
 ResTypePathResult ResolveTypePath(ResolveContext& ctx,
@@ -109,7 +115,8 @@ ResTypePathResult ResolveTypePath(ResolveContext& ctx,
     }
     const auto ent = ResolveTypeName(*ctx.ctx, path[0]);
     if (!ent.has_value()) {
-      return {false, "ResolveExpr-Ident-Err", std::nullopt, {}};
+      return {false, "ResolveExpr-Ident-Err", std::nullopt, {},
+              UnresolvedTypePathDetail(path)};
     }
     const auto name = ent->target_opt.value_or(path[0]);
     if (ent->origin_opt.has_value()) {
@@ -131,11 +138,13 @@ ResTypePathResult ResolveTypePath(ResolveContext& ctx,
       ResolveQualified(*ctx.ctx, *ctx.name_maps, *ctx.module_names, prefix,
                        name, EntityKind::Type, ctx.can_access);
   if (!qualified.ok || !qualified.entity.has_value()) {
-    return {false, qualified.diag_id, std::nullopt, {}};
+    return {false, qualified.diag_id, std::nullopt, {},
+            UnresolvedTypePathDetail(path)};
   }
   const auto ent = *qualified.entity;
   if (!ent.origin_opt.has_value()) {
-    return {false, "ResolveExpr-Ident-Err", std::nullopt, {}};
+    return {false, "ResolveExpr-Ident-Err", std::nullopt, {},
+            UnresolvedTypePathDetail(path)};
   }
   const auto resolved_name = ent.target_opt.value_or(name);
   SPEC_RULE("ResolveTypePath-Qual");
@@ -207,7 +216,12 @@ ResTypeResult ResolveType(ResolveContext& ctx,
         if constexpr (std::is_same_v<T, ast::TypePathType>) {
           const auto resolved = ResolveTypePath(ctx, node.path);
           if (!resolved.ok) {
-            return {false, resolved.diag_id, std::nullopt, {}};
+            const std::optional<core::Span> resolved_span =
+                resolved.span.has_value()
+                    ? resolved.span
+                    : std::optional<core::Span>(type->span);
+            return {false, resolved.diag_id, resolved_span, {},
+                    resolved.diag_detail};
           }
           RecordLanguageServiceTypePathReference(
               ctx.language_service, *ctx.ctx, resolved.value, type->span);
@@ -228,7 +242,12 @@ ResTypeResult ResolveType(ResolveContext& ctx,
         } else if constexpr (std::is_same_v<T, ast::TypeApply>) {
           const auto resolved = ResolveTypePath(ctx, node.path);
           if (!resolved.ok) {
-            return {false, resolved.diag_id, std::nullopt, {}};
+            const std::optional<core::Span> resolved_span =
+                resolved.span.has_value()
+                    ? resolved.span
+                    : std::optional<core::Span>(type->span);
+            return {false, resolved.diag_id, resolved_span, {},
+                    resolved.diag_detail};
           }
           RecordLanguageServiceTypePathReference(
               ctx.language_service, *ctx.ctx, resolved.value, type->span);
@@ -280,7 +299,12 @@ ResTypeResult ResolveType(ResolveContext& ctx,
         } else if constexpr (std::is_same_v<T, ast::TypeModalState>) {
           const auto resolved = ResolveTypePath(ctx, node.path);
           if (!resolved.ok) {
-            return {false, resolved.diag_id, std::nullopt, {}};
+            const std::optional<core::Span> resolved_span =
+                resolved.span.has_value()
+                    ? resolved.span
+                    : std::optional<core::Span>(type->span);
+            return {false, resolved.diag_id, resolved_span, {},
+                    resolved.diag_detail};
           }
           RecordLanguageServiceTypePathReference(
               ctx.language_service, *ctx.ctx, resolved.value, type->span);

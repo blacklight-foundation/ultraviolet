@@ -341,9 +341,6 @@ bool ValidateModulePath(const std::vector<std::string>& components,
     }
     if (core::IsKeyword(comp)) {
       SPEC_RULE("WF-Module-Path-Reserved");
-      // Validate-Module-Keyword-Err and WF-Module-Path-Reserved both denote
-      // reserved-keyword misuse in module naming contexts.
-      EmitExternal(diags, "E-CNF-0401");
       EmitExternal(diags, "E-MOD-1105");
       return false;
     }

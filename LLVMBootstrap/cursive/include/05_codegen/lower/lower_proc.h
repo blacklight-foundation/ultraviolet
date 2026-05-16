@@ -1,6 +1,7 @@
 #pragma once
 
 #include <map>
+#include <optional>
 #include <string>
 #include <vector>
 
@@ -18,7 +19,8 @@ namespace cursive::codegen {
 // Handles parameter binding, body lowering, and return handling.
 ProcIR LowerProc(const ast::ProcedureDecl& decl,
                  const ast::ModulePath& module_path,
-                 LowerCtx& ctx);
+                 LowerCtx& ctx,
+                 std::optional<std::string> symbol_override = std::nullopt);
 
 // Lower a generic procedure as a concrete instantiation.
 ProcIR LowerProcInstantiated(const ast::ProcedureDecl& decl,

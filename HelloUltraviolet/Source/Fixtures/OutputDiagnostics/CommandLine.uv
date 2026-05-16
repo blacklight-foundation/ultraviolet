@@ -1,0 +1,45 @@
+//! Output-diagnostic command-line specimens.
+
+public procedure outputCommandLineDiagnosticFixtureCount() -> usize {
+    return 2usize
+}
+
+public procedure validatedOutputCommandLineDiagnosticFixtureCount() -> usize {
+    var count: usize = 0usize
+    let unknown_command: DiagnosticSpecimen = diagnosticSpecimen(
+        "UnknownCommand",
+        "Fixtures/OutputDiagnostics/CommandLine/UnknownCommand",
+        "Fixtures/OutputDiagnostics/CommandLine/UnknownCommand/Invocation.txt",
+        "Fixtures/OutputDiagnostics/CommandLine/UnknownCommand/Expected.uv",
+        expectedDiagnostic("E-CLI-0001", "diagnostics.CommandLineDiagnostics")
+    )
+    if diagnosticSpecimenMatches(
+        unknown_command,
+        "UnknownCommand",
+        "Fixtures/OutputDiagnostics/CommandLine/UnknownCommand",
+        "Fixtures/OutputDiagnostics/CommandLine/UnknownCommand/Invocation.txt",
+        "Fixtures/OutputDiagnostics/CommandLine/UnknownCommand/Expected.uv",
+        "E-CLI-0001",
+        "diagnostics.CommandLineDiagnostics"
+    ) {
+        count = count + 1usize
+    }
+    if diagnosticSpecimenMatches(
+        diagnosticSpecimen(
+            "UnknownCommand",
+            "Fixtures/OutputDiagnostics/CommandLine/UnknownCommand",
+            "Fixtures/OutputDiagnostics/CommandLine/UnknownCommand/Invocation.txt",
+            "Fixtures/OutputDiagnostics/CommandLine/UnknownCommand/Expected.uv",
+            expectedDiagnostic("E-CLI-0001", "command-line.UnknownCommandInvocation")
+        ),
+        "UnknownCommand",
+        "Fixtures/OutputDiagnostics/CommandLine/UnknownCommand",
+        "Fixtures/OutputDiagnostics/CommandLine/UnknownCommand/Invocation.txt",
+        "Fixtures/OutputDiagnostics/CommandLine/UnknownCommand/Expected.uv",
+        "E-CLI-0001",
+        "command-line.UnknownCommandInvocation"
+    ) {
+        count = count + 1usize
+    }
+    return count
+}

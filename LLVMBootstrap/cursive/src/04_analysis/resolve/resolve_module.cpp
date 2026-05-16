@@ -158,6 +158,31 @@ std::optional<core::Span> SpanOfItem(const ast::ASTItem& item) {
       item);
 }
 
+std::string ResolveItemDetail(const ast::ASTItem& item) {
+  return std::visit(
+      [](const auto& it) -> std::string {
+        using T = std::decay_t<decltype(it)>;
+        if constexpr (std::is_same_v<T, ast::ProcedureDecl>) {
+          return "while resolving procedure `" + it.name + "`";
+        } else if constexpr (std::is_same_v<T, ast::ComptimeProcedureDecl>) {
+          return "while resolving comptime procedure `" + it.name + "`";
+        } else if constexpr (std::is_same_v<T, ast::RecordDecl>) {
+          return "while resolving record `" + it.name + "`";
+        } else if constexpr (std::is_same_v<T, ast::EnumDecl>) {
+          return "while resolving enum `" + it.name + "`";
+        } else if constexpr (std::is_same_v<T, ast::ModalDecl>) {
+          return "while resolving modal `" + it.name + "`";
+        } else if constexpr (std::is_same_v<T, ast::ClassDecl>) {
+          return "while resolving class `" + it.name + "`";
+        } else if constexpr (std::is_same_v<T, ast::TypeAliasDecl>) {
+          return "while resolving type alias `" + it.name + "`";
+        } else {
+          return "while resolving item";
+        }
+      },
+      item);
+}
+
 core::DiagnosticStream EmitResolveDiag(
     core::DiagnosticStream diags,
     std::string_view diag_id,
@@ -807,8 +832,12 @@ ResItemsResult ResolveItems(ResolveContext& ctx,
     const auto resolved = ResolveItem(ctx, item);
     if (!resolved.ok) {
       SPEC_RULE("ResolveItems-Err");
-      return {false, resolved.diag_id, resolved.span, {},
-              resolved.diag_detail, resolved.diag_children};
+      std::string detail = resolved.diag_detail;
+      if (detail.empty()) {
+        detail = ResolveItemDetail(item);
+      }
+      return {false, resolved.diag_id, resolved.span, {}, detail,
+              resolved.diag_children};
     }
     result.value.push_back(resolved.value);
     SPEC_RULE("ResolveItems-Cons");

@@ -1,7 +1,7 @@
 //! Rejected procedure specimens.
 
 public procedure proceduresRejectedSourceFixtureCount() -> usize {
-    return 46usize
+    return 47usize
 }
 
 public procedure validatedProceduresRejectedSourceFixtureCount() -> usize {
@@ -360,6 +360,23 @@ public procedure validatedProceduresRejectedSourceFixtureCount() -> usize {
         "Fixtures/RejectedSource/Procedures/ContractDynamicAttribute/Expected.uv",
         "E-CON-0410",
         "diag.15.ContractClauses"
+    ) {
+        count = count + 1usize
+    }
+    if rejectedSpecimenMatches(
+        rejectedSpecimen(
+            "ContractDynamicAttribute",
+            "Fixtures/RejectedSource/Procedures/ContractDynamicAttribute",
+            "Fixtures/RejectedSource/Procedures/ContractDynamicAttribute/Source/Main.uv",
+            "Fixtures/RejectedSource/Procedures/ContractDynamicAttribute/Expected.uv",
+            expectedDiagnostic("E-CON-0410", "diagnostics.DiagnosticsMetadataAttributes")
+        ),
+        "ContractDynamicAttribute",
+        "Fixtures/RejectedSource/Procedures/ContractDynamicAttribute",
+        "Fixtures/RejectedSource/Procedures/ContractDynamicAttribute/Source/Main.uv",
+        "Fixtures/RejectedSource/Procedures/ContractDynamicAttribute/Expected.uv",
+        "E-CON-0410",
+        "diagnostics.DiagnosticsMetadataAttributes"
     ) {
         count = count + 1usize
     }

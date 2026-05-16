@@ -461,9 +461,13 @@ void cursive_x3a_x3aruntime_x3a_x3aregion_x3a_x3aaddr_x5ftag_x5fscope(const void
 void* cursive_x3a_x3aruntime_x3a_x3aasync_x3a_x3aalloc_x5fframe(uint64_t size, uint64_t align);
 void cursive_x3a_x3aruntime_x3a_x3aasync_x3a_x3afree_x5fframe(void* frame);
 C0AsyncResumeValue cursive_x3a_x3aruntime_x3a_x3aasync_x3a_x3aresume(
-  const C0AsyncResumeValue* suspended,
-  const void* input,
-  void* panic_out);
+    const C0AsyncResumeValue* suspended,
+    const void* input,
+    void* panic_out);
+C0AsyncResumeValue cursive_x3a_x3aruntime_x3a_x3aasync_x3a_x3atake(
+    const C0AsyncResumeValue* source,
+    uint64_t count,
+    void* panic_out);
 
 // String builtins
 void cursive_x3a_x3aruntime_x3a_x3astring_x3a_x3afrom(

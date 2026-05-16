@@ -97,12 +97,12 @@ public procedure validatedModuleLevelFormsStaticDeclarationsObligations() -> usi
     ) {
         count = count + 1usize
     }
-    if acceptedObligationEntryMatches(
+    if rejectedSourceObligationEntryMatches(
         "WF-StaticDecl-MissingType",
         30731usize,
-        "HelloUltraviolet::Reference::Modules",
-        "runModulesStaticsReference",
-        "Source/Reference/Modules/Statics.uv"
+        "HelloUltraviolet::Fixtures::RejectedSource",
+        "validatedModulesRejectedSourceFixtureCount",
+        "Fixtures/RejectedSource/Modules/StaticMissingTypeAnnotation/Source/Main.uv"
     ) {
         count = count + 1usize
     }
@@ -466,12 +466,12 @@ public procedure validatedModuleLevelFormsStaticDeclarationsObligations() -> usi
     ) {
         count = count + 1usize
     }
-    if acceptedObligationEntryMatches(
+    if rejectedSourceObligationEntryMatches(
         "diagnostics.StaticDeclarations",
         31393usize,
-        "HelloUltraviolet::Reference::Modules",
-        "runModulesStaticsReference",
-        "Source/Reference/Modules/Statics.uv"
+        "HelloUltraviolet::Fixtures::RejectedSource",
+        "validatedModulesRejectedSourceFixtureCount",
+        "Fixtures/RejectedSource/Modules/StaticMissingTypeAnnotation/Source/Main.uv"
     ) {
         count = count + 1usize
     }

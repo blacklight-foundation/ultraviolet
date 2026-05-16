@@ -2,7 +2,7 @@
 
 
 public procedure countConcreteDataTypesRangesObligations() -> usize {
-    return 63usize
+    return 62usize
 }
 
 public procedure validatedConcreteDataTypesRangesObligations() -> usize {
@@ -559,15 +559,6 @@ public procedure validatedConcreteDataTypesRangesObligations() -> usize {
     if acceptedObligationEntryMatches(
         "req.RangeDiagnosticOwnership",
         38504usize,
-        "HelloUltraviolet::Reference::DataTypes",
-        "runDataTypesRangesReference",
-        "Source/Reference/DataTypes/Ranges.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
-        "grammar.RecordSyntax",
-        38521usize,
         "HelloUltraviolet::Reference::DataTypes",
         "runDataTypesRangesReference",
         "Source/Reference/DataTypes/Ranges.uv"

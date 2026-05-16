@@ -1,15 +1,83 @@
 //! Reference specimens for Expressions / CastsAndTransmutes.
 
+internal procedure integerCastReference() -> bool {
+    let small_value: i32 = 7
+    let identity_cast: i32 = small_value as i32
+    let widened_value: i64 = small_value as i64
+    let signed_to_unsigned: u8 = (-1) as u8
+    let unsigned_to_signed: i8 = 255u8 as i8
+    let unsigned_to_wide: u64 = 3000000000u32 as u64
+
+    return identity_cast == 7 &&
+        widened_value == 7 &&
+        signed_to_unsigned == 255u8 &&
+        unsigned_to_signed == -1 &&
+        unsigned_to_wide == 3000000000u64
+}
+
+internal procedure floatCastReference() -> bool {
+    let signed_to_float: f64 = (-7) as f64
+    let unsigned_to_float: f64 = 3000000000u32 as f64
+    let widened_float: f64 = 1.5f32 as f64
+    let narrowed_float: f32 = 2.25f64 as f32
+    let truncated_positive: i32 = 3.75f64 as i32
+    let truncated_negative: i32 = (-3.75f64) as i32
+
+    return signed_to_float == -7.0f64 &&
+        unsigned_to_float > 2999999999.0f64 &&
+        widened_float == 1.5f64 &&
+        narrowed_float == 2.25f32 &&
+        truncated_positive == 3 &&
+        truncated_negative == -3
+}
+
+internal procedure booleanCastReference() -> bool {
+    let true_as_int: i32 = true as i32
+    let false_as_int: i32 = false as i32
+    let zero_as_bool: bool = 0 as bool
+    let nonzero_as_bool: bool = 2 as bool
+
+    return true_as_int == 1 &&
+        false_as_int == 0 &&
+        !zero_as_bool &&
+        nonzero_as_bool
+}
+
+internal procedure characterCastReference() -> bool {
+    let codepoint: u32 = 'A' as u32
+    let character: char = 65u32 as char
+
+    return codepoint == 65u32 &&
+        character == 'A'
+}
+
+internal procedure transmuteValueReference() -> bool {
+    let small_value: i32 = 7
+    var identity_value: i32 = 0
+    var reinterpreted_value: u32 = 0u32
+    unsafe {
+        identity_value = transmute<i32, i32>(small_value)
+        reinterpreted_value = transmute<i32, u32>(-1)
+    }
+
+    return identity_value == 7 &&
+        reinterpreted_value == 4294967295u32
+}
+
+internal procedure transmuteControlReference() -> i32 {
+    unsafe {
+        let value: i32 = transmute<i32, i32>({ return 31 })
+        return value
+    }
+    return 0
+}
+
 /// Exercises the Expressions CastsAndTransmutes reference surface.
 public procedure runExpressionsCastsAndTransmutesReference() -> bool {
-    let small_value: i32 = 7
-    let widened_value: i64 = small_value as i64
-    let bool_as_int: i32 = true as i32
-    let int_as_bool: bool = 1 as bool
-    var transmuted_value: i32 = 0
-    unsafe {
-        transmuted_value = transmute<i32, i32>(small_value)
-    }
-    return widened_value == 7 && bool_as_int == 1 && int_as_bool &&
-        transmuted_value == 7
+    return integerCastReference() &&
+        floatCastReference() &&
+        booleanCastReference() &&
+        characterCastReference() &&
+        transmuteValueReference() &&
+        transmuteControlReference() == 31
 }

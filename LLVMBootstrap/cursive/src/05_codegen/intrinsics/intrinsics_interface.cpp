@@ -270,6 +270,7 @@ RuntimeCategoryMap BuildRuntimeCategoryMap() {
   AddRuntimeSymbol(categories, RuntimeSymbolCategory::Async, BuiltinSymAsyncCreateSuspended());
   AddRuntimeSymbol(categories, RuntimeSymbolCategory::Async, BuiltinSymAsyncAllocFrame());
   AddRuntimeSymbol(categories, RuntimeSymbolCategory::Async, BuiltinSymAsyncFreeFrame());
+  AddRuntimeSymbol(categories, RuntimeSymbolCategory::Async, BuiltinSymAsyncTake());
 
   // Reactor
   // Note: Reactor does not currently have a dedicated RuntimeSymbolCategory.

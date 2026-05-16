@@ -385,12 +385,12 @@ public procedure validatedAttributesAndMetadataAttributeSyntaxAndPlacementObliga
     ) {
         count = count + 1usize
     }
-    if acceptedObligationEntryMatches(
+    if rejectedSourceObligationEntryMatches(
         "AttrList-Unknown",
         27342usize,
-        "HelloUltraviolet::Reference::Attributes",
-        "runAttributesGeneralAttributesReference",
-        "Source/Reference/Attributes/GeneralAttributes.uv"
+        "HelloUltraviolet::Fixtures::RejectedSource",
+        "validatedAttributesRejectedSourceFixtureCount",
+        "Fixtures/RejectedSource/Attributes/UnknownAttribute/Source/Main.uv"
     ) {
         count = count + 1usize
     }
@@ -466,12 +466,12 @@ public procedure validatedAttributesAndMetadataAttributeSyntaxAndPlacementObliga
     ) {
         count = count + 1usize
     }
-    if acceptedObligationEntryMatches(
+    if rejectedSourceObligationEntryMatches(
         "diagnostics.AttributeDiagnostics",
         27483usize,
-        "HelloUltraviolet::Reference::Attributes",
-        "runAttributesGeneralAttributesReference",
-        "Source/Reference/Attributes/GeneralAttributes.uv"
+        "HelloUltraviolet::Fixtures::RejectedSource",
+        "validatedAttributesRejectedSourceFixtureCount",
+        "Fixtures/RejectedSource/Attributes/UnknownAttribute/Source/Main.uv"
     ) {
         count = count + 1usize
     }

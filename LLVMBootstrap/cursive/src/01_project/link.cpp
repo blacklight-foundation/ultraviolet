@@ -1380,9 +1380,8 @@ std::vector<std::string> BuildWindowsLinkArgs(
     }
 
     // The bundled Windows runtime uses ICU for filesystem key normalization.
-    // When linking with /NODEFAULTLIB we must provide both the ICU import
-    // library search path and the minimal CRT support library that defines
-    // compiler helper symbols such as __chkstk.
+    // With /NODEFAULTLIB the compiler must name the CRT import libraries that
+    // generated code can reference, including UCRT math symbols such as pow.
     const auto extern_dir = tool.parent_path().parent_path().parent_path();
     const auto bundled_icu_lib_dir = extern_dir / "icu" / "win64" / "lib64";
     std::error_code icu_ec;
@@ -1396,6 +1395,7 @@ std::vector<std::string> BuildWindowsLinkArgs(
   if (plan.target_profile == TargetProfile::X86_64Win64) {
     args.push_back("kernel32.lib");
     args.push_back("msvcrt.lib");
+    args.push_back("ucrt.lib");
     args.push_back("icuuc.lib");
     args.push_back("icuin.lib");
     args.push_back("icudt.lib");
@@ -1489,6 +1489,7 @@ std::vector<std::string> BuildPosixLinkArgs(
     args.push_back(PathArgString(input));
   }
   if (ObjectFormatOf(plan.target_profile) == ObjectFormat::Elf) {
+    args.push_back("-lm");
     args.push_back("-lc");
   }
   return args;

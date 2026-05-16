@@ -18,6 +18,7 @@ struct TypecheckResult {
   ExprTypeMap expr_types;
   DynamicRefineExprMap dynamic_refine_checks;
   GenericCallSubstMap generic_call_substs;
+  SelectedCallTargetMap selected_call_targets;
   std::optional<InitPlan> init_plan;
 };
 

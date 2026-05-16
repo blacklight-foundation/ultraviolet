@@ -2,6 +2,22 @@
 
 internal type EscapingSharedKeyReader = || -> i32 [shared: { shared_value: shared i32 }]
 
+internal record KeyModeContextCell {
+    internal value: i32
+
+    internal procedure readConst(~) -> i32 {
+        return self.value
+    }
+
+    internal procedure readShared(~%) -> i32 {
+        return self.value + 1
+    }
+}
+
+internal procedure readConstModeContext(value: const KeyModeContextCell) -> i32 {
+    return value.value + 0
+}
+
 internal procedure readAndWriteKeyBlockValue() -> i32 {
     var shared_value: shared i32 = 1
     var observed: i32 = 0
@@ -19,6 +35,45 @@ internal procedure orderedKeyBlockValue() -> i32 {
     var observed: i32 = 0
     #values[0usize], values[1usize] ordered read {
         observed = values[0usize] + values[1usize]
+    }
+    return observed
+}
+
+internal procedure defaultReadKeyBlockValue() -> i32 {
+    var shared_value: shared i32 = 5
+    var observed: i32 = 0
+    #shared_value {
+        observed = shared_value + 0
+    }
+    return observed
+}
+
+internal procedure canonicalOrderFromUnsortedPathsValue() -> i32 {
+    var container: shared KeyContainer =
+        KeyContainer {
+            leaf: KeyLeaf { value: 29 },
+            values: [1, 2, 3, 4]
+        }
+    var observed: i32 = 0
+    #container.values[1usize], container.leaf.value read {
+        observed = container.leaf.value + container.values[1usize]
+    }
+    return observed
+}
+
+internal procedure keyModeContextValue() -> i32 {
+    var cell: shared KeyModeContextCell = KeyModeContextCell { value: 6 }
+    var observed: i32 = 0
+    #cell read {
+        let initializer_read: shared i32 = cell.value
+        observed = initializer_read + cell~>readConst()
+        if cell.value > 0 {
+            observed = observed + readConstModeContext(cell)
+        }
+    }
+    #cell write {
+        cell.value = observed + 7
+        observed = cell~>readShared()
     }
     return observed
 }
@@ -123,15 +178,26 @@ internal procedure keyBlockContinueReleaseValue() -> i32 {
     return observed
 }
 
+internal procedure keyBlockReturnReleaseValue() -> i32 {
+    var shared_value: shared i32 = 37
+    #shared_value read {
+        return shared_value + 0
+    }
+}
+
 /// Exercises the Keys AcquisitionBlocks reference surface.
 public procedure runKeysAcquisitionBlocksReference() -> bool {
     return readAndWriteKeyBlockValue() == 2 &&
         orderedKeyBlockValue() == 3 &&
+        defaultReadKeyBlockValue() == 5 &&
+        canonicalOrderFromUnsortedPathsValue() == 31 &&
+        keyModeContextValue() == 26 &&
         sharedArgumentNoCallSiteAcquisitionValue() == 8 &&
         localClosureSharedCaptureValue() == 13 &&
         escapingClosureSharedCaptureValue() == 31 &&
         inlineCoarsenedFieldKeyValue() == 17 &&
         inlineCoarsenedIndexKeyValue() == 23 &&
         keyBlockBreakReleaseValue() == 29 &&
-        keyBlockContinueReleaseValue() == 12
+        keyBlockContinueReleaseValue() == 12 &&
+        keyBlockReturnReleaseValue() == 37
 }

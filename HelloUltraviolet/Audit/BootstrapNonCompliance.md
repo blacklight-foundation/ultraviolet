@@ -2170,7 +2170,8 @@ WidenTypingDiagnosticsOwnership: E-TYP-2071
 
 ## UVBOOT-0032: Free Procedure Overload Sets
 
-Status: repaired for semantic checking and the standalone library build.
+Status: repaired for semantic checking, lowering, standalone build, and
+runtime execution.
 
 Spec-valid specimen:
 
@@ -2226,6 +2227,10 @@ Bootstrap owner:
 
 - `LLVMBootstrap/cursive/src/04_analysis/resolve/collect_toplevel.cpp`
 - `LLVMBootstrap/cursive/src/04_analysis/typing/expr/call.cpp`
+- `LLVMBootstrap/cursive/src/05_codegen/symbols/mangle.cpp`
+- `LLVMBootstrap/cursive/src/05_codegen/lower/lower_module.cpp`
+- `LLVMBootstrap/cursive/src/05_codegen/lower/lower_proc.cpp`
+- `LLVMBootstrap/cursive/src/05_codegen/lower/expr/call.cpp`
 
 Failure analysis:
 
@@ -2242,6 +2247,10 @@ same name when their erased parameter-mode/type signatures differ. Call typing
 must resolve that overload set before ordinary call typing and hand lowering the
 selected procedure symbol.
 
+Lowering must retain the selected declaration from semantic analysis, and
+internal symbols for same-name non-ABI overload declarations must remain
+distinct so the selected overload body is the body that executes.
+
 Repair:
 
 - `collect_toplevel.cpp` now permits same-name free procedure declarations to
@@ -2251,9 +2260,19 @@ Repair:
   direct free calls against the candidate set before ordinary call typing. It
   filters by arity and argument compatibility, applies exact-match preference,
   and reports `E-SEM-3031` or `E-SEM-3030` for failed selection.
+- Typechecking now records the selected overload target for each resolved call,
+  and call lowering consumes that selected target instead of re-resolving by
+  name.
+- `mangle.cpp`, `lower_module.cpp`, and `lower_proc.cpp` now assign distinct
+  internal symbols to non-ABI same-name procedure overload declarations within
+  a module. This preserves selected overload identity during signature
+  registration, body emission, and direct call lowering.
 - `Fixtures/RejectedSource/Procedures/NoMatchingOverload` now exercises the
   no-matching-candidate diagnostic path for
   `req.15.FreeCallOverloadResolutionAlgorithm`.
+- `HelloUltraviolet/Source/Reference/Procedures/Overloading.uv` now exercises
+  arity-based free overload selection, parameter-type free overload selection,
+  and same-name receiver method lookup as executable reference source.
 
 Verified results after repair:
 
@@ -2261,6 +2280,9 @@ Verified results after repair:
 FreeProcedureOverloadResolution --check: EXIT 0
 FreeProcedureOverloadResolution build: EXIT 0
 NoMatchingOverload --check: E-SEM-3031, EXIT 1
+OverloadProbe runtime: EXIT 8
+HelloUltraviolet --check: EXIT 0
+HelloUltraviolet build/run/audit: EXIT 0/0/0
 ```
 
 ## UVBOOT-0033: Shared Dynamic Class Receiver Well-Formedness
@@ -3292,12 +3314,21 @@ the semantic checker had already established a more precise async signature:
 - `Async@Suspended.resume(input)` lowering kept the builtin generic parameter
   `TIn` instead of specializing it from the receiver's concrete async type,
   so the addressable input temporary could be created with the wrong size.
+- `yield` resume continuations loaded the runtime input but did not leave an
+  addressable materialized value for the following source binding, so
+  `let resumed = yield value` could bind the default value instead of the
+  caller-provided resume input.
+- Builtin `Async@Suspended.resume` dispatch could queue an instantiated generic
+  state-method body before selecting the runtime builtin symbol. The builtin
+  declaration body is intentionally empty, so the generated method did not
+  execute the SPEC-defined runtime resume operation.
 
 Bootstrap repair owner:
 
 - `LLVMBootstrap/cursive/src/04_analysis/typing/type_infer.cpp`
 - `LLVMBootstrap/cursive/src/04_analysis/typing/if_case_check.cpp`
 - `LLVMBootstrap/cursive/src/05_codegen/llvm/emit/ir/async/race_yield.cpp`
+- `LLVMBootstrap/cursive/src/05_codegen/llvm/emit/ir/async/yield.cpp`
 - `LLVMBootstrap/cursive/src/05_codegen/llvm/emit/ir/call/direct.cpp`
 - `LLVMBootstrap/cursive/src/05_codegen/lower/expr/yield_expr.cpp`
 - `LLVMBootstrap/cursive/src/05_codegen/lower/expr/yield_from_expr.cpp`
@@ -3313,16 +3344,21 @@ calls materialize receiver and input values as runtime ABI pointers. `yield`
 and `yield from` lowering resolve async signatures through aliases. Method-call
 lowering specializes the builtin `resume` input parameter from the receiver's
 concrete `Async<Out, In, Result, Error>` signature before lowering the input
-argument.
+argument. Yield resume lowering now materializes the resume input into
+addressable continuation storage and preserves that storage for the following
+binding. Builtin modal runtime methods such as `Async@Suspended.resume` are
+selected before generic state-method instantiation, so `a~>resume(input)`
+routes to `runtime::async::resume`.
 
 Verified bootstrap result after repair:
 
 ```text
-Visual Studio bootstrap build wrapper: exit=0, rebuilt method_call.cpp and Cursive.exe
-Cursive.exe build HelloUltraviolet --target-profile x86_64-win64 --build-progress off: exit=0
+Visual Studio bootstrap build wrapper: exit=0, rebuilt method_call.cpp, yield.cpp, and Cursive.exe
+Cursive.exe clean HelloUltraviolet: exit=0
+Cursive.exe build HelloUltraviolet --target-profile x86_64-win64 --build-progress off --max-errors 20: exit=0, 8 warnings, 2 infos
 HelloUltraviolet.exe: exit=0, 0-byte stdout/stderr
 HelloUltraviolet.exe --audit: exit=0, 0-byte stdout/stderr
-Cursive.exe build HelloUltraviolet --check --target-profile x86_64-win64 --build-progress off: exit=0
+Cursive.exe build HelloUltraviolet --check --target-profile x86_64-win64 --build-progress off --max-errors 20: exit=0, 8 warnings, 2 infos
 python3 Tools/ExtractObligationLedger.py --check: exit=0, obligations=6045
 ```
 
@@ -3622,6 +3658,151 @@ Visual Studio bootstrap build wrapper: exit=0, rebuilt method_call.cpp and Cursi
 Cursive.exe build HelloUltraviolet --check --target-profile x86_64-win64 --build-progress on --debug pipeline --max-errors 1: exit=0, total diagnostic set is five warnings plus two infos
 Visual Studio bootstrap build wrapper: exit=0, rebuilt intrinsics_interface.cpp, runtime objects, Cursive.exe, and UltravioletRT.lib
 Cursive.exe build HelloUltraviolet --target-profile x86_64-win64 --build-progress off --max-errors 1: exit=0, total diagnostic set is five warnings plus two infos
+HelloUltraviolet.exe: exit=0, 0-byte stdout/stderr
+HelloUltraviolet.exe --audit: exit=0, 0-byte stdout/stderr
+```
+
+## UVBOOT-0077: Compile-Time Reflection Type Names Exclude Source Spans
+
+Spec-valid accepted source:
+
+```ultraviolet
+derive target EmitComptimeDeriveReference(target: Type) |: emits ComptimeDeriveClass {
+    let target_name = introspect~>type_name(target)
+    let target_module = introspect~>module_path(target)
+    let ast: Ast::Item = if target_name ==
+        "HelloUltraviolet::Reference::Comptime::ComptimeDerivedReference" &&
+        target_module == diagnostics~>current_module()
+    {
+        quote {
+            internal procedure emittedComptimeDeriveReferenceValue() -> i32 {
+                return 37
+            }
+        }
+    } else {
+        quote {
+            internal procedure emittedComptimeDeriveReferenceValue() -> i32 {
+                return 0
+            }
+        }
+    }
+    emitter~>emit(ast)
+}
+```
+
+Observed bootstrap result before repair:
+
+```text
+Cursive.exe build HelloUltraviolet --check --target-profile x86_64-win64 --build-progress off --max-errors 40: exit=0
+warning[W-CTE-0071]: HelloUltraviolet::Reference::Comptime::ComptimeDerivedReference [54:10-56:2]
+warning[W-CTE-0071]: HelloUltraviolet::Reference::Comptime
+
+Cursive.exe build HelloUltraviolet --target-profile x86_64-win64 --build-progress on --max-errors 20: exit=0
+HelloUltraviolet.exe: exit=1
+catalog compiled symbol failed: runComptimeDeriveTargetsReference
+reference failed: catalogCompiledSymbolsExecute
+reference failed: runComptimeDeriveTargetsReference
+```
+
+Failure analysis:
+
+`SPECIFICATION.md` §22.3.5 defines `CtBuiltin-Reflect-TypeName` as returning
+`CtString(TypeRender(T))`. `TypeRender(TypePath(...))` renders the type path
+text and does not include diagnostic or source span decoration. The bootstrap
+reflection builtin used the AST debug renderer with default dump options, whose
+default includes source spans. As a result, `introspect.type_name(target)` for
+a derive target subject returned
+`HelloUltraviolet::Reference::Comptime::ComptimeDerivedReference [54:10-56:2]`
+instead of the SPEC `TypeRender` string.
+
+Required bootstrap behavior:
+
+Compile-time reflection type-name strings must be stable SPEC renderings of
+types, not debug dumps. Source spans remain available through the dedicated
+reflection metadata fields and `diagnostics.current_span`; they are not part of
+`type_name`.
+
+Repair:
+
+- `LLVMBootstrap/cursive/src/03_comptime/reflect.cpp` now renders
+  `introspect.type_name` with `ast::DumpOptions.include_spans = false`.
+
+Verified bootstrap result after repair:
+
+```text
+Visual Studio bootstrap build wrapper, target=cursive: exit=0, rebuilt reflect.cpp and Cursive.exe
+Cursive.exe build HelloUltraviolet --check --target-profile x86_64-win64 --build-progress off --max-errors 20: exit=0, warnings=10, infos=3
+Cursive.exe build HelloUltraviolet --target-profile x86_64-win64 --build-progress on --max-errors 20: exit=0, warnings=10, infos=3, duration=366.10s
+HelloUltraviolet.exe: exit=0, 0-byte stdout/stderr
+HelloUltraviolet.exe --audit: exit=0, 0-byte stdout/stderr
+```
+
+## UVBOOT-0076: Pure-Comptime Proof Handles Computed Boolean Predicate Bodies
+
+Spec-valid accepted source:
+
+```ultraviolet
+comptime internal procedure contractCompileTimePredicate() -> bool {
+    let lower: usize = 2usize
+    let upper: usize = 3usize
+    return lower < upper && upper == lower + 1usize
+}
+
+internal procedure contractPureComptimeReference(value: i32) -> i32
+|: contractCompileTimePredicate()
+{
+    return value
+}
+
+internal procedure contractPureComptimeExercise(value: i32) -> bool {
+    return contractPureComptimeReference(value) == value
+}
+```
+
+Observed bootstrap result before repair:
+
+```text
+Cursive.exe build HelloUltraviolet --check --target-profile x86_64-win64 --build-progress off --max-errors 20: exit=1
+error[E-SEM-2801]: Contract predicate not provable outside `[[dynamic]]` scope
+  --> C:/dev/ultraviolet/HelloUltraviolet/Source/Reference/Procedures/Contracts.uv:368:5
+368 |     return contractPureComptimeReference(value) == value
+```
+
+Failure analysis:
+
+`SPECIFICATION.md` §15 admits `Pure-Comptime` as a contract predicate purity
+rule, and Chapter 22 defines compile-time procedures as Phase 2-only callable
+bindings in compile-time contexts. The predicate above is a no-argument
+compile-time procedure whose result is deterministically `true`, but the
+bootstrap prover recognized only compile-time boolean procedures whose bodies
+returned the literal token `true`.
+
+That literal-only recognizer made the reference source look unprovable at the
+ordinary call site even though the predicate body used only immutable locals,
+constant integer literals, pure integer arithmetic, and pure boolean
+comparison/conjunction.
+
+Required bootstrap behavior:
+
+Static contract proof for `Pure-Comptime` must evaluate simple no-argument
+compile-time boolean predicates whose bodies compute a constant boolean result
+through immutable local bindings and pure constant expressions. Literal
+`return true` is one valid case, not the whole proof surface.
+
+Repair:
+
+`LLVMBootstrap/cursive/src/04_analysis/typing/expr/call.cpp` now proves
+no-argument compile-time boolean predicates with immutable `let` locals,
+constant integer and boolean expressions, arithmetic, comparisons, equality,
+negation, conjunction, and disjunction before using that result in contract
+precondition checking.
+
+Verified bootstrap result after repair:
+
+```text
+Visual Studio bootstrap build wrapper, target=cursive: exit=0, rebuilt call.cpp and Cursive.exe
+Cursive.exe build HelloUltraviolet --check --target-profile x86_64-win64 --build-progress off --max-errors 20: exit=0, warnings=10, infos=3
+Cursive.exe build HelloUltraviolet --target-profile x86_64-win64 --build-progress on --max-errors 20: exit=0, warnings=10, infos=3, duration=384.56s
 HelloUltraviolet.exe: exit=0, 0-byte stdout/stderr
 HelloUltraviolet.exe --audit: exit=0, 0-byte stdout/stderr
 ```
@@ -4745,6 +4926,791 @@ Visual Studio bootstrap build wrapper, target=cursive: exit=0, rebuilt Cursive.e
 Visual Studio bootstrap build wrapper, target=ultraviolet0_rt: exit=0, rebuilt UltravioletRT.lib
 Cursive.exe build HelloUltraviolet --check --target-profile x86_64-win64 --build-progress off --max-errors 12: exit=0, total diagnostic set is seven warnings plus two infos
 Cursive.exe build HelloUltraviolet --target-profile x86_64-win64 --build-progress off --max-errors 12: exit=0, total diagnostic set is seven warnings plus two infos
+HelloUltraviolet.exe: exit=0, 0-byte stdout/stderr
+HelloUltraviolet.exe --audit: exit=0, 0-byte stdout/stderr
+```
+
+## UVBOOT-0066: Floating Exponentiation Link Inputs
+
+Spec-valid source:
+
+```ultraviolet
+internal procedure arithmeticOperatorsReference() -> bool {
+    let float_power: f64 = 2.0f64 ** 3.0f64
+    return float_power == 8.0f64
+}
+```
+
+Observed bootstrap result before repair:
+
+```text
+Cursive.exe build HelloUltraviolet --target-profile x86_64-win64 --build-progress off --max-errors 20: exit=1
+lld-link: error: undefined symbol: pow
+>>> referenced by ...HelloUltraviolet_x3a_x3aReference_x3a_x3aExpressions.obj:
+>>> (HelloUltraviolet_x3a_x3aReference_x3a_x3aExpressions_x3a_x3aarithmeticOperatorsReference)
+```
+
+Bootstrap owner:
+
+- `LLVMBootstrap/cursive/src/01_project/link.cpp`
+
+Failure analysis:
+
+`SPECIFICATION.md` §16.4.1 includes `**` in the arithmetic operator grammar,
+§16.4.4 types arithmetic operators over numeric operands, §16.4.5 defines
+floating `**` through IEEE 754 pow semantics, and §16.4.6 requires binary
+operators to lower through `LowerBinOp`.
+
+The compiler already lowered floating exponentiation to LLVM's pow intrinsic,
+which code generation materialized as a `pow` runtime symbol. The Windows final
+link used `/NODEFAULTLIB` and provided `msvcrt.lib`, but did not name the UCRT
+math import library that satisfies `pow`. The source was accepted by check
+mode, and final artifact generation failed only at link time.
+
+Required bootstrap behavior:
+
+Generated artifacts that use SPEC floating exponentiation must include the
+platform math runtime inputs required by the compiler's lowering strategy.
+
+Repair:
+
+- Windows link arguments now include `ucrt.lib` alongside the existing CRT and
+  ICU import libraries.
+- ELF link arguments now include `-lm` before `-lc` so the same lowered pow
+  dependency is provided for ELF targets.
+
+Verified bootstrap result after repair:
+
+```text
+Visual Studio bootstrap build wrapper, target=cursive: exit=0, rebuilt Cursive.exe
+Cursive.exe clean HelloUltraviolet: exit=0, removed build artifacts
+Cursive.exe build HelloUltraviolet --check --target-profile x86_64-win64 --build-progress off --max-errors 20: exit=0, total diagnostic set is eight warnings plus two infos
+Cursive.exe build HelloUltraviolet --target-profile x86_64-win64 --build-progress off --max-errors 20: exit=0, total diagnostic set is eight warnings plus two infos
+HelloUltraviolet.exe: exit=0, 0-byte stdout/stderr
+HelloUltraviolet.exe --audit: exit=0, 0-byte stdout/stderr
+```
+
+## UVBOOT-0067: Callable Alias and Indirect Closure Call Lowering
+
+Spec-valid source:
+
+```ultraviolet
+internal type IntUnaryClosure = |i32| -> i32
+internal type MoveIntClosure = |move i32| -> i32
+
+internal procedure applyMoveClosure(closure: MoveIntClosure, value: i32) -> i32 {
+    return closure(move value)
+}
+
+internal procedure closureCaptureReference() -> bool {
+    let base_value: i32 = 3
+    let add_captured: IntUnaryClosure = |value: i32| -> i32 value + base_value
+    let move_base: i32 = 2
+    let move_add_captured: MoveIntClosure = |move value: i32| -> i32 value + move_base
+
+    return add_captured(4) == 7 &&
+        applyMoveClosure(move_add_captured, 6) == 8
+}
+
+internal procedure pipelineFormsReference() -> bool {
+    let base_value: i32 = 3
+    let add_captured: IntUnaryClosure = |value: i32| -> i32 value + base_value
+    let closure_pipeline: i32 = 4 => add_captured
+    return closure_pipeline == 7
+}
+```
+
+Observed bootstrap results before repair:
+
+```text
+Cursive.exe build HelloUltraviolet --check --target-profile x86_64-win64 --build-progress off --max-errors 20: exit=1
+error[E-SEM-2538]: Pipeline RHS is not callable
+  --> .../ClosuresAndPipelines.uv:98:33
+98 |     let closure_pipeline: i32 = 4 => add_captured
+
+Cursive.exe build HelloUltraviolet --target-profile x86_64-win64 --build-progress off --max-errors 20: exit=0
+HelloUltraviolet.exe: exit=5
+
+Focused pass-through probe after alias dispatch repair:
+probeApplyMoveClosure(move_add_captured, 6): exit=0
+direct move-parameter closure call: exit=8
+```
+
+Bootstrap owners:
+
+- `LLVMBootstrap/cursive/src/04_analysis/typing/expr/pipeline_expr.cpp`
+- `LLVMBootstrap/cursive/src/05_codegen/lower/expr/call.cpp`
+- `LLVMBootstrap/cursive/src/05_codegen/lower/expr/closure_expr.cpp`
+- `LLVMBootstrap/cursive/src/05_codegen/lower/expr/pipeline_expr.cpp`
+
+Failure analysis:
+
+`SPECIFICATION.md` §16.9 defines closure type syntax and closure invocation
+through ordinary call syntax. §16.9.4 types capturing closures as
+`TypeClosure`, §16.9.5 evaluates closure calls by applying the closure
+environment and code pointer, and §16.9.3/§16.9.4 allow pipeline right-hand
+sides whose type is either `TypeFunc` or `TypeClosure`.
+
+The reference source used type aliases for those callable types. The bootstrap
+pipeline typechecker and lowering paths checked only the raw type node and did
+not normalize aliases before deciding whether the right-hand side was callable.
+After pipeline alias normalization, ordinary call lowering still recognized only
+raw `TypeClosure`, so `closure(move value)` where `closure` had alias type
+`MoveIntClosure` was lowered as a generic indirect function call instead of a
+closure call.
+
+The final failing boundary was an indirect closure call through a non-`move`
+procedure parameter. Direct invocation of the captured move-parameter closure
+returned `8`, while invoking the same closure through
+`probeApplyMoveClosure(closure: MoveIntClosure, value: i32)` returned `0`.
+Lowering had extracted the closure code pointer but did not register the
+env-augmented callable signature needed by LLVM call emission, so the indirect
+call did not use the closure code ABI.
+
+Required bootstrap behavior:
+
+Callable type aliases must be normalized before closure/pipeline callable
+shape checks in typing and lowering. A call whose callee has alias-normalized
+`TypeClosure` must lower as `LowerClosureCall`, using the closure parameter
+modes for argument lowering. The extracted closure code pointer must carry an
+env-augmented function type so backend call emission can use the correct ABI for
+indirect closure calls.
+
+Repair:
+
+- Pipeline typechecking and lowering now normalize callable aliases before
+  checking or lowering `TypeFunc`/`TypeClosure` pipeline right-hand sides.
+- Closure-expression lowering normalizes callable aliases when deriving
+  contextual parameter modes and return types.
+- Ordinary call lowering normalizes callable aliases before dispatching to
+  `LowerClosureCall`.
+- `LowerClosureCall` now lowers arguments through the closure parameter modes
+  and registers the extracted code pointer with an env-augmented function type.
+
+Source correction made during diagnosis:
+
+Noncapturing closure literals in `closureParameterFormsReference` were changed
+from `TypeClosure` aliases to `TypeFunc` aliases. This was a source correction,
+not a bootstrap repair: `SPECIFICATION.md` §16.9.4 types noncapturing closure
+expressions as `TypeFunc`, while capturing closures type as `TypeClosure`.
+
+Verified bootstrap result after repair:
+
+```text
+Visual Studio bootstrap build wrapper, target=cursive: exit=0, rebuilt Cursive.exe
+Cursive.exe clean HelloUltraviolet: exit=0, removed build artifacts
+Cursive.exe build HelloUltraviolet --check --target-profile x86_64-win64 --build-progress off --max-errors 20: exit=0, total diagnostic set is eight warnings plus two infos
+Cursive.exe build HelloUltraviolet --target-profile x86_64-win64 --build-progress off --max-errors 20: exit=0, total diagnostic set is eight warnings plus two infos
+HelloUltraviolet.exe: exit=0, 0-byte stdout/stderr
+HelloUltraviolet.exe --audit: exit=0, 0-byte stdout/stderr
+python3 Tools/ExtractObligationLedger.py --check: exit=0, obligations=6045
+git diff --check: exit=0, with existing CRLF notices only
+```
+
+## UVBOOT-0068: Generic Predicate Bounds in Procedure Body Checking
+
+Spec-valid source:
+
+```ultraviolet
+internal procedure callReferenceSelect<TFirst; TSecond>(
+    first: TFirst,
+    second: TSecond
+) -> TSecond |: Bitcopy(TFirst) Bitcopy(TSecond) {
+    return second
+}
+```
+
+Observed bootstrap result before repair:
+
+```text
+error[E-UNS-0107]: Non-`Bitcopy` place expression used as value
+  --> .../Expressions/Calls.uv
+```
+
+Bootstrap owners:
+
+- `LLVMBootstrap/cursive/include/04_analysis/typing/context.h`
+- `LLVMBootstrap/cursive/include/04_analysis/generics/generic_params.h`
+- `LLVMBootstrap/cursive/src/04_analysis/generics/generic_params.cpp`
+- `LLVMBootstrap/cursive/src/04_analysis/typing/type_predicates.cpp`
+- `LLVMBootstrap/cursive/src/04_analysis/typing/item/procedure_decl.cpp`
+
+Failure analysis:
+
+`SPECIFICATION.md` defines procedure predicate clauses as part of the generic
+procedure contract, and value use of a local requires the type to satisfy
+`BitcopyType(T)`. The bootstrap checked the predicate clause at call sites, but
+the generic procedure body context did not attach direct predicate facts such as
+`Bitcopy(TSecond)` to the `TSecond` type-parameter entity. As a result, the
+body checker treated `second: TSecond` as a non-`Bitcopy` place even though the
+procedure's own predicate clause supplied the required fact.
+
+Repair:
+
+Generic type-parameter binding now accepts the active predicate clause and
+attaches direct predicate bounds to the type-parameter entity. `BitcopyType`
+consults those predicate bounds when checking an uninstantiated type parameter,
+and procedure signature/body contexts bind generic parameters with the
+procedure predicate clause in scope.
+
+Verified bootstrap result after repair:
+
+```text
+Visual Studio bootstrap build wrapper, target=cursive: exit=0, rebuilt Cursive.exe
+Cursive.exe build HelloUltraviolet --check --target-profile x86_64-win64 --build-progress off --max-errors 20: exit=0, total diagnostic set is eight warnings plus two infos
+Cursive.exe build HelloUltraviolet --target-profile x86_64-win64 --build-progress off --max-errors 20: exit=0, total diagnostic set is eight warnings plus two infos
+```
+
+## UVBOOT-0069: Indirect Closure Call ABI Mode Recovery
+
+Spec-valid source:
+
+```ultraviolet
+internal type MoveIntClosure = |move i32| -> i32
+
+internal procedure applyMoveClosure(closure: MoveIntClosure, value: i32) -> i32 {
+    return closure(move value)
+}
+
+internal procedure closureCaptureReference() -> bool {
+    let move_base: i32 = 2
+    let move_add_captured: MoveIntClosure = |move value: i32| -> i32 value + move_base
+    return applyMoveClosure(move_add_captured, 6) == 8
+}
+```
+
+Observed bootstrap result before repair:
+
+```text
+HelloUltraviolet.exe: exit=1
+closure/pipeline return failed: closureCaptureReference.applyMoveClosure(move_add_captured, 6) == 8
+```
+
+Bootstrap owners:
+
+- `LLVMBootstrap/cursive/src/05_codegen/llvm/emit/ir/call/direct.cpp`
+- `LLVMBootstrap/cursive/src/05_codegen/llvm/llvm_call.cpp`
+
+Failure analysis:
+
+`SPECIFICATION.md` §16.9 types `|move i32| -> i32` as a closure whose ordinary
+call syntax consumes the argument by move. The lowering path had the correct
+callee type for the indirect closure-code call:
+`(move * imm u8, move i32) -> i32`. During LLVM call emission, however, a stale
+concrete closure-code signature from another procedure was selected for the
+opaque closure-code value. That stale signature marked the `i32` parameter as a
+borrowed parameter, so the ABI classifier passed the address of `value` instead
+of the moved `i32` value expected by the closure code.
+
+Repair:
+
+Indirect non-symbol calls now reconcile a recovered concrete signature with the
+callee value's actual callable type before ABI classification. When the callee
+type is `TypeFunc`, the function type's parameter modes and types replace the
+recovered signature's corresponding source parameters. When the callee type is
+`TypeClosure`, the closure parameter modes are applied after the hidden
+environment parameter. LLVM call materialization also loads a by-value argument
+from addressable storage when the ABI target is a non-pointer value but the
+lowered source value is a pointer.
+
+Verified bootstrap result after repair:
+
+```text
+Visual Studio bootstrap build wrapper, target=cursive: exit=0, rebuilt Cursive.exe
+Cursive.exe build HelloUltraviolet --target-profile x86_64-win64 --build-progress off --max-errors 20: exit=0, total diagnostic set is eight warnings plus two infos
+HelloUltraviolet.exe: exit=0, 0-byte stdout/stderr
+```
+
+## UVBOOT-0070: Panic Cleanup Reaches Catch Export Boundaries
+
+Spec-valid source:
+
+```ultraviolet
+extern "C-unwind" {
+    [[unwind("catch")]]
+    public procedure importedSpeculativePanicBoundary() -> i32
+}
+
+[[dynamic]]
+[[export("C-unwind")]]
+[[unwind("catch")]]
+[[mangle("importedSpeculativePanicBoundary")]]
+public procedure ffiImportedSpeculativePanicBoundaryProvider() -> i32 {
+    var values: shared [i32; 2] = [1, 2]
+
+    #values[1usize] speculative write {
+        values[4usize] = 99
+    } commit {
+        values[1usize] = 3
+    }
+
+    return 1
+}
+```
+
+Observed bootstrap result before repair:
+
+```text
+HelloUltraviolet.exe: exit=6
+```
+
+Bootstrap owners:
+
+- `LLVMBootstrap/cursive/src/05_codegen/checks/checks.cpp`
+- `LLVMBootstrap/cursive/src/05_codegen/llvm/emit/ir/control/return.cpp`
+
+Failure analysis:
+
+`SPECIFICATION.md` §16.2.6 and §24.2.1 require a failing dynamic array bounds
+check to raise the `Bounds` panic code. `SPECIFICATION.md` §19.2 requires key
+blocks to release their acquired paths on every exit mode, including panic.
+The exported `C-unwind` catch boundary is the source boundary that converts the
+panic into the catch return value after cleanup. The bootstrap emitted a bare
+panic follow-up check after the bounds check, so lowering reached the catch
+return path before running the cleanup plan for the active speculative key
+block.
+
+Repair:
+
+`PanicCheck` now emits an `IRCleanupPanicCheck` carrying the cleanup plan to
+the function root, and catch-export return lowering clears the panic state and
+returns the ABI zero value after that cleanup path has run.
+
+Verified bootstrap result after repair:
+
+```text
+Visual Studio bootstrap build wrapper, target=cursive: exit=0, rebuilt Cursive.exe
+Cursive.exe build HelloUltraviolet --target-profile x86_64-win64 --build-progress off --max-errors 20: exit=0
+HelloUltraviolet.exe: exit=0, 0-byte stdout/stderr
+```
+
+## UVBOOT-0071: Dynamic Fixed-Array Bounds Checks Use Source Length
+
+Spec-valid source:
+
+```ultraviolet
+[[dynamic]]
+internal procedure dynamicOrderedSameBaseKeyAccessValue(
+    first: usize,
+    second: usize
+) -> i32 {
+    var values: shared [i32; 4] = [1, 2, 3, 4]
+    var observed: i32 = 0
+
+    #values[first], values[second] dynamic ordered read {
+        observed = values[first] + values[second]
+    }
+
+    return observed
+}
+```
+
+Observed bootstrap result before repair:
+
+```text
+dynamicOrderedSameBaseKeyAccessValue(0usize, 2usize): exit=6
+```
+
+Bootstrap owner:
+
+- `LLVMBootstrap/cursive/src/05_codegen/llvm/emit/ir_instruction_visitor.cpp`
+
+Failure analysis:
+
+`SPECIFICATION.md` §12.3 defines fixed-size array types by their source
+length, and §16.2.6 checks dynamic array indexing against `Len(v_b)`. The
+bootstrap lowered the specimen with a bounds check against the LLVM storage
+shape instead of the source `[i32; 4]` length; disassembly showed the second
+index compared against length `1`. The same owner path could also emit a
+length `4` check for a source `[i32; 3]` specimen, confirming that the lowered
+storage representation rather than the source array type was driving the
+check.
+
+Repair:
+
+`IRInstructionVisitor::StaticLengthOf` now uses the visitor's `LookupValueType`
+helper, so the emitter's local source type table is consulted before falling
+back to lowered storage or derived-value metadata.
+
+Verified bootstrap result after repair:
+
+```text
+Visual Studio bootstrap build wrapper, target=cursive: exit=0, rebuilt Cursive.exe
+Cursive.exe build HelloUltraviolet --target-profile x86_64-win64 --build-progress off --max-errors 20: exit=0
+HelloUltraviolet.exe: exit=0, 0-byte stdout/stderr
+```
+
+## UVBOOT-0072: Speculative Non-Write Key Blocks Preserve Semantic Diagnostics
+
+Spec-valid rejected source:
+
+```ultraviolet
+public procedure speculativeReadModeReference() -> i32 {
+    var shared_value: shared i32 = 1
+    var observed: i32 = 0
+
+    #shared_value speculative read {
+        observed = shared_value
+    }
+
+    return observed
+}
+```
+
+Observed bootstrap result before repair:
+
+```text
+Cursive.exe build HelloUltraviolet/Fixtures/RejectedSource/Keys/SpeculativeReadMode --check --target-profile x86_64-win64 --build-progress off --max-errors 8: exit=1
+error[E-CON-0091]: Write to path outside keyed set in speculative block
+```
+
+Expected SPEC result:
+
+```text
+error[E-CON-0095]: `speculative` without `write` modifier
+```
+
+Bootstrap owner:
+
+- `LLVMBootstrap/cursive/src/02_source/parser/stmt/key_block_stmt.cpp`
+
+Failure analysis:
+
+`SPECIFICATION.md` §19.5.4 defines `K-Spec-Write-Required` as the static
+semantic rule for `#P speculative M {B}` when `M` is not `write`, and
+§19.5.7 assigns that condition to `E-CON-0095`. The bootstrap parser consumed
+the `read` mode, emitted a generic parse error, then rewrote the AST mode to
+`write`. That bypassed the semantic checker's `E-CON-0095` branch and allowed
+later speculative-body purity checking to report `E-CON-0091`.
+
+Repair:
+
+The parser now preserves the parsed or omitted key-block mode. The semantic
+checker receives the original `speculative read` shape and emits the SPEC
+diagnostic for `K-Spec-Write-Required`.
+
+Verified bootstrap result after repair:
+
+```text
+Visual Studio bootstrap build wrapper, target=cursive: exit=0, rebuilt Cursive.exe
+Cursive.exe build HelloUltraviolet/Fixtures/RejectedSource/Keys/SpeculativeReadMode --check --target-profile x86_64-win64 --build-progress off --max-errors 8: exit=1
+error[E-CON-0095]: `speculative` without `write` modifier
+```
+
+## UVBOOT-0073: Directory Module Keyword Paths Emit Module Aggregation Diagnostics
+
+Spec-valid rejected-source specimen:
+
+```text
+HelloUltraviolet/Fixtures/RejectedSource/Modules/ReservedModuleKeyword/
+  Ultraviolet.toml
+  Source/if/Main.uv
+```
+
+```ultraviolet
+//! Rejected module aggregation specimen for a reserved keyword module path.
+
+public procedure reservedModuleKeywordReference() -> i32 {
+    return 1
+}
+```
+
+Observed bootstrap result before repair:
+
+```text
+Cursive.exe build HelloUltraviolet/Fixtures/RejectedSource/Modules/ReservedModuleKeyword --check --target-profile x86_64-win64 --build-progress off --max-errors 20: exit=1
+error[E-CNF-0401]: Reserved keyword used as identifier
+error[E-MOD-1105]: Module path component is a reserved keyword
+```
+
+Expected SPEC result:
+
+```text
+error[E-MOD-1105]: Module path component is a reserved keyword
+```
+
+Bootstrap owner:
+
+- `LLVMBootstrap/cursive/src/01_project/module_discovery.cpp`
+
+Failure analysis:
+
+`SPECIFICATION.md` §11.5 defines `WF-Module-Path-Reserved` for directory-derived
+module path components and §11.5.7 assigns that condition to `E-MOD-1105`.
+`SPECIFICATION.md` §7.2 separately defines `Validate-Module-Keyword-Err` for
+module-scope name validation, and the bootstrap maps that source-name path to
+`E-CNF-0401`. The module-discovery path was emitting both codes from
+`ValidateModulePath`, so a source-root child directory named with a reserved
+keyword reported the source-identifier diagnostic as well as the module
+aggregation diagnostic.
+
+Repair:
+
+`ValidateModulePath` now reports `WF-Module-Path-Reserved` through
+`E-MOD-1105` only. Parser and resolver paths that validate reserved keywords in
+source identifier positions continue to own `E-CNF-0401`.
+
+Verified bootstrap result after repair:
+
+```text
+Visual Studio bootstrap build wrapper, target=cursive: exit=0, rebuilt Cursive.exe
+Cursive.exe build HelloUltraviolet/Fixtures/RejectedSource/Modules/ReservedModuleKeyword --check --target-profile x86_64-win64 --build-progress off --max-errors 20: exit=1
+error[E-MOD-1105]: Module path component is a reserved keyword
+python3 Tools/ExtractObligationLedger.py --check: exit=0, obligations=6045
+Cursive.exe build HelloUltraviolet --check --target-profile x86_64-win64 --build-progress off --max-errors 20: exit=0, warnings=10, infos=3
+Cursive.exe build HelloUltraviolet --target-profile x86_64-win64 --build-progress off --max-errors 20: exit=0, warnings=10, infos=3
+HelloUltraviolet.exe: exit=0, 0-byte stdout/stderr
+HelloUltraviolet.exe --audit: exit=0, 0-byte stdout/stderr
+```
+
+## UVBOOT-0074: Type Alias Recursive Rule Maps to Core Diagnostic Code
+
+Spec-valid rejected source:
+
+```ultraviolet
+public type AliasCycleA = AliasCycleB
+public type AliasCycleB = AliasCycleA
+```
+
+Observed bootstrap result before repair:
+
+```text
+Cursive.exe build HelloUltraviolet/Fixtures/RejectedSource/DataTypes/TypeAliasCycle --check --target-profile x86_64-win64 --build-progress off --max-errors 20: exit=1
+error: Internal error: unknown diagnostic id 'TypeAlias-Recursive-Err'
+error: Internal error: unknown diagnostic id 'TypeAlias-Recursive-Err'
+```
+
+Expected SPEC result:
+
+```text
+error[E-TYP-1506]: Type alias cycle detected
+```
+
+Bootstrap owner:
+
+- `LLVMBootstrap/cursive/src/04_analysis/typing/typecheck_diag_lookup.h`
+
+Failure analysis:
+
+`SPECIFICATION.md` §12.9 defines `AliasCycle(p)` over the alias graph, and the
+internal obligation ledger names the rejecting rule `TypeAlias-Recursive-Err`.
+`SPECIFICATION.md` §8.5 owns alias-cycle diagnostics and assigns type alias
+cycles to `E-TYP-1506`. The type alias checker returned
+`TypeAlias-Recursive-Err`, but the typecheck diagnostic lookup did not map that
+rule id to the SPEC code, causing the user-facing diagnostic renderer to emit an
+internal unknown-diagnostic failure instead of `E-TYP-1506`.
+
+The public `SPECIFICATION.md` currently spells the rule conclusion as
+`TypeAlias-Reultraviolet-Err`; `HelloUltraviolet/Audit/SpecClarificationsNeeded.md`
+records that as a public SPEC typo because the internal obligation ledger and
+CSV use `TypeAlias-Recursive-Err`.
+
+Repair:
+
+`LookupTypecheckDiagCode` now maps `TypeAlias-Recursive-Err` to `E-TYP-1506`.
+
+Verified bootstrap result after repair:
+
+```text
+Visual Studio bootstrap build wrapper, target=cursive: exit=0, rebuilt Cursive.exe
+Cursive.exe build HelloUltraviolet/Fixtures/RejectedSource/DataTypes/TypeAliasCycle --check --target-profile x86_64-win64 --build-progress off --max-errors 20: exit=1
+error[E-TYP-1506]: Type alias cycle detected
+python3 Tools/ExtractObligationLedger.py --check: exit=0, obligations=6045
+Cursive.exe build HelloUltraviolet --check --target-profile x86_64-win64 --build-progress off --max-errors 20: exit=0, warnings=10, infos=3
+Cursive.exe build HelloUltraviolet --target-profile x86_64-win64 --build-progress off --max-errors 20: exit=0, warnings=10, infos=3
+HelloUltraviolet.exe: exit=0, 0-byte stdout/stderr
+HelloUltraviolet.exe --audit: exit=0, 0-byte stdout/stderr
+```
+
+## UVBOOT-0075: Compile-Time Aggregate And Enum Literalization Reaches Phase 3
+
+Spec-valid accepted source:
+
+```ultraviolet
+internal record ComptimeLiteralRecord {
+    internal value: usize
+    internal flag: bool
+}
+
+internal enum ComptimeLiteralEnum {
+    Empty
+    Count(usize)
+    Named {
+        value: usize
+    }
+}
+
+internal modal ComptimeLiteralModal {
+    @Ready {
+        internal value: usize
+    }
+}
+
+let literal_array: [usize; 3] = comptime { [2usize, 4usize, 6usize] }
+let literal_record: ComptimeLiteralRecord =
+    comptime { ComptimeLiteralRecord { value: 43usize, flag: true } }
+let literal_enum_unit: ComptimeLiteralEnum =
+    comptime { ComptimeLiteralEnum::Empty }
+let literal_enum_tuple: ComptimeLiteralEnum =
+    comptime { ComptimeLiteralEnum::Count(5usize) }
+let literal_enum_record: ComptimeLiteralEnum =
+    comptime { ComptimeLiteralEnum::Named { value: 7usize } }
+let literal_modal_state: ComptimeLiteralModal@Ready =
+    comptime { ComptimeLiteralModal@Ready { value: 11usize } }
+```
+
+Observed bootstrap results before repair:
+
+```text
+Cursive.exe build HelloUltraviolet --check --target-profile x86_64-win64 --build-progress off --max-errors 20: exit=1
+[cursive] codegen failure at C:\Dev\Ultraviolet\LLVMBootstrap\cursive\src\05_codegen\lower\expr\expr_common.cpp:254
+[cursive] EnsureCodegenModule: lowering failed for module 'HelloUltraviolet::Reference::Comptime' (resolve_failed=false, codegen_failed=true)
+error[E-OUT-0411]: LLVM IR lowering failed
+
+Cursive.exe build HelloUltraviolet --check --target-profile x86_64-win64 --build-progress off --max-errors 20: exit=1
+error[E-MOD-2402]: Type annotation incompatible with inferred type
+  --> C:/dev/ultraviolet/HelloUltraviolet/Source/Reference/Comptime/CompileTimeForms.uv:75:5
+75 |     let literal_enum_tuple: ComptimeLiteralEnum =
+```
+
+Failure analysis:
+
+`SPECIFICATION.md` §22.1.5 requires every `CtExpr` to be replaced before
+Phase 3 by `CtLiteralize` or a compatible `CtAst` payload. The same section
+defines `CtLiteralize` for `CtArray`, `CtRecord`, `CtModalState`, and enum
+values with unit, tuple, and record payloads. It also states that expression
+constructors outside Chapter 22 use the ordinary child order, scope creation,
+pattern binding, control propagation, and operator semantics during
+compile-time execution.
+
+The bootstrap already had literalization support for aggregate and enum
+compile-time values, but Phase 2 evaluation did not construct all required
+`CtValue` forms. Record literals did not evaluate to `CtRecord` or
+`CtModalState`, and enum payload constructors arrived from the parser as
+`QualifiedApplyExpr` before Phase 3 enum resolution. Those unevaluated
+compile-time expressions survived to lowering and triggered `E-OUT-0411`.
+
+After the evaluator repair, tuple-payload enum literalization produced an
+`EnumLiteralExpr` with the source-local enum path `ComptimeLiteralEnum`.
+Existing `QualifiedApplyExpr` resolution canonicalized enum constructor paths,
+but already-materialized `EnumLiteralExpr` nodes only resolved their payload
+children. The checker therefore inferred `ComptimeLiteralEnum` instead of the
+fully qualified
+`HelloUltraviolet::Reference::Comptime::ComptimeLiteralEnum`.
+
+Required bootstrap behavior:
+
+Phase 2 `CtEval` must construct `CtArray`, `CtRecord`, `CtModalState`, and
+`CtEnum` values for ordinary source literal constructors whose members are
+compile-time evaluable. After literalization, Phase 3 must canonicalize
+already-materialized enum literal paths the same way it canonicalizes
+qualified enum constructor syntax.
+
+Repair:
+
+- `LLVMBootstrap/cursive/src/03_comptime/eval.cpp` now evaluates record
+  literals into `CtRecord` or `CtModalState`, evaluates parser-level
+  `QualifiedApplyExpr` enum constructors into tuple or record `CtEnum`
+  payloads, and evaluates already-materialized `EnumLiteralExpr` payloads.
+- `LLVMBootstrap/cursive/src/04_analysis/resolve/resolve_expr.cpp` now
+  canonicalizes already-materialized `EnumLiteralExpr` paths through the
+  existing `ResolveEnumUnit`, `ResolveEnumTuple`, and `ResolveEnumRecord`
+  paths while preserving normal payload resolution.
+
+Verified bootstrap result after repair:
+
+```text
+Visual Studio bootstrap build wrapper, target=cursive: exit=0, rebuilt eval.cpp and Cursive.exe
+Visual Studio bootstrap build wrapper, target=cursive: exit=0, rebuilt resolve_expr.cpp and Cursive.exe
+Cursive.exe build HelloUltraviolet --check --target-profile x86_64-win64 --build-progress off --max-errors 20: exit=0, warnings=10, infos=3
+Cursive.exe build HelloUltraviolet --target-profile x86_64-win64 --build-progress on --max-errors 20: exit=0, warnings=10, infos=3, duration=122.09s
+HelloUltraviolet.exe: exit=0, 0-byte stdout/stderr
+HelloUltraviolet.exe --audit: exit=0, 0-byte stdout/stderr
+```
+
+## UVBOOT-0078: Async Take Lowering Preserves Remaining Count Across Resume
+
+Spec-valid accepted source:
+
+```ultraviolet
+public procedure runAsyncCompositionTakeResumeDoneReference() -> bool {
+    let taken = asyncCompositionTwoOutputs(84, 85)~>take(1usize)
+
+    if taken is @Suspended(output, _) {
+        let resumed = taken~>resume(())
+        let resumed_completed: bool = if resumed is @Completed(_) {
+            true
+        } else {
+            false
+        }
+
+        return output == 84 && resumed_completed
+    }
+
+    return false
+}
+```
+
+Observed bootstrap result before repair:
+
+```text
+Cursive.exe build HelloUltraviolet --target-profile x86_64-win64 --build-progress on --max-errors 20: exit=0, warnings=10, infos=3
+HelloUltraviolet.exe: exit=1
+catalog compiled symbol failed: runAsyncCompositionCombinatorsReference
+catalog compiled symbol failed: runAsyncCompositionFormsReference
+reference failed: catalogCompiledSymbolsExecute
+reference failed: runAsyncCompositionTakeResumeDoneReference
+reference failed: runAsyncCompositionCombinatorRuntimeReference
+reference failed: runAsyncCompositionCombinatorsReference
+reference failed: runAsyncCompositionFormsReference
+program_exit=1
+```
+
+Failure analysis:
+
+`SPECIFICATION.md` §21.3.5 defines `take` as a stateful async wrapper
+`TakeAsync = <source, remaining>`. `EvalSigma-Take-Resume-Yield` yields the
+source output while storing the wrapper state with `remaining - 1`.
+`EvalSigma-Take-Resume-Done` then completes when the stored remaining count is
+zero, and `EvalSigma-Take-Resume-Source-Complete` completes when the source
+completes before the count is exhausted.
+
+The bootstrap lowering for `AsyncCombinatorKind::Take` only inspected the
+original count. For nonzero counts it returned the source async value unchanged
+after the first yield. Resuming `asyncCompositionTwoOutputs(84, 85)~>take(1)`
+therefore resumed the source stream directly and yielded `85` instead of
+completing the take wrapper.
+
+Required bootstrap behavior:
+
+The emitted value for `take(n)` must carry wrapper state across suspension.
+After each yielded source output, the wrapper must store the decremented
+remaining count and route the next resume through the `take` wrapper rather
+than directly through the source continuation.
+
+Repair:
+
+- `LLVMBootstrap/cursive/runtime/src/memory/async.c` now defines a take frame
+  containing the source async value and remaining count, returns completed unit
+  for `take(0)`, forwards source completion/failure, and resumes through the
+  wrapper frame when a yielded value leaves remaining output budget.
+- `LLVMBootstrap/cursive/runtime/include/cursive_rt.h` and
+  `LLVMBootstrap/cursive/runtime/include/cursive_rt_language_symbols.h`
+  declare and map the runtime `ultraviolet::runtime::async::take` entry point.
+- `LLVMBootstrap/cursive/src/05_codegen/intrinsics/builtins.cpp`,
+  `LLVMBootstrap/cursive/include/05_codegen/intrinsics/builtins.h`, and
+  `LLVMBootstrap/cursive/src/05_codegen/intrinsics/intrinsics_interface.cpp`
+  register the async take runtime symbol.
+- `LLVMBootstrap/cursive/src/05_codegen/llvm/emit/ir/call/direct.cpp` now
+  lowers the take combinator through the runtime entry point so the wrapper
+  state is preserved in emitted programs.
+
+Verified bootstrap result after repair:
+
+```text
+Visual Studio bootstrap build wrapper, target=cursive: exit=0, rebuilt runtime async.c, builtins, direct.cpp, and Cursive.exe
+Cursive.exe build HelloUltraviolet --check --target-profile x86_64-win64 --build-progress off --max-errors 20: exit=0, warnings=10, infos=3
+Cursive.exe build HelloUltraviolet --target-profile x86_64-win64 --build-progress on --max-errors 20: exit=0, warnings=10, infos=3, duration=330.44s
 HelloUltraviolet.exe: exit=0, 0-byte stdout/stderr
 HelloUltraviolet.exe --audit: exit=0, 0-byte stdout/stderr
 ```

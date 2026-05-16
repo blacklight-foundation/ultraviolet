@@ -1125,7 +1125,8 @@ StmtTypeResult TypeReturnStmt(const ScopeContext& ctx,
           SPEC_RULE("Return-Async-Type-Err");
           return {false, "E-CON-0203", {}, {}};
         }
-        return {false, check.diag_id, {}, {}};
+        return {false, check.diag_id, {}, {}, check.diag_detail,
+                check.diag_span};
       }
       if (const auto diag =
               CheckEscapingClosureReturn(node.value_opt, env, async_sig->result);
@@ -1217,7 +1218,8 @@ StmtTypeResult TypeReturnStmt(const ScopeContext& ctx,
         SPEC_RULE("Return-Type-Err");
         return {false, "E-SEM-3161", {}, {}};
       }
-      return {false, check.diag_id, {}, {}};
+      return {false, check.diag_id, {}, {}, check.diag_detail,
+              check.diag_span};
     }
     if (const auto diag =
             CheckEscapingClosureReturn(node.value_opt, env, type_ctx.return_type);

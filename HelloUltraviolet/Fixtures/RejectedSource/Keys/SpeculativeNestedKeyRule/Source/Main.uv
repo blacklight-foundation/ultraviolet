@@ -1,0 +1,11 @@
+//! Rejected key-system specimen for nested key blocks inside speculative execution.
+
+public procedure speculativeNestedKeyRuleReference() -> i32 {
+    var shared_value: shared i32 = 1
+    #shared_value speculative write {
+        #shared_value write {
+            shared_value = 2
+        }
+    }
+    return 0
+}

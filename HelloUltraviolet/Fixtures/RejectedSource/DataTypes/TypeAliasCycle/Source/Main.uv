@@ -1,0 +1,4 @@
+//! Rejected core type diagnostic specimen for recursive type aliases.
+
+public type AliasCycleA = AliasCycleB
+public type AliasCycleB = AliasCycleA

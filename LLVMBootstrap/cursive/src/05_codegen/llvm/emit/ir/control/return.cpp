@@ -4,6 +4,8 @@
 // =============================================================================
 #include "../../ir_instruction_visitor.h"
 
+#include "05_codegen/llvm/llvm_ir_panic.h"
+
 namespace cursive::codegen::emit_detail {
 
 namespace {
@@ -33,6 +35,55 @@ bool CanSkipAliasedSRetStore(const LowerCtx *ctx,
   return equiv.ok && equiv.equiv;
 }
 
+bool IsCatchExportBoundary(const LowerCtx *ctx, const std::string &symbol)
+{
+  if (!ctx)
+  {
+    return false;
+  }
+  const auto mode = ctx->LookupExportUnwindMode(symbol);
+  return mode.has_value() && *mode == LowerCtx::ExportUnwindMode::Catch;
+}
+
+bool EmitCatchExportPanicReturn(LLVMEmitter &emitter,
+                                llvm::IRBuilder<> &builder,
+                                llvm::Function *func,
+                                llvm::Type *ret_ty)
+{
+  llvm::Value *panic_flag = LoadPanicFlag(emitter, &builder);
+  if (!panic_flag)
+  {
+    return false;
+  }
+
+  llvm::BasicBlock *current = builder.GetInsertBlock();
+  if (!current || current->getTerminator())
+  {
+    return false;
+  }
+
+  llvm::BasicBlock *panic_bb =
+      llvm::BasicBlock::Create(emitter.GetContext(), "catch_export_panic", func);
+  llvm::BasicBlock *ok_bb =
+      llvm::BasicBlock::Create(emitter.GetContext(), "catch_export_ok", func);
+
+  builder.CreateCondBr(panic_flag, panic_bb, ok_bb);
+
+  builder.SetInsertPoint(panic_bb);
+  ClearPanicRecord(emitter, &builder);
+  if (!ret_ty || ret_ty->isVoidTy())
+  {
+    builder.CreateRetVoid();
+  }
+  else
+  {
+    builder.CreateRet(llvm::Constant::getNullValue(ret_ty));
+  }
+
+  builder.SetInsertPoint(ok_bb);
+  return true;
+}
+
 } // namespace
 
 void IRInstructionVisitor::operator()(const IRReturn &ret) const
@@ -42,6 +93,7 @@ void IRInstructionVisitor::operator()(const IRReturn &ret) const
   const LowerCtx *ctx = emitter.GetCurrentCtx();
   const std::string sym = std::string(func->getName());
   const LowerCtx::ProcSigInfo *sig = ctx ? ctx->LookupProcSig(sym) : nullptr;
+  const bool catch_export_boundary = IsCatchExportBoundary(ctx, sym);
   analysis::TypeRef source_type = LookupValueType(ret.value);
   const bool debug_return = core::IsDebugEnabled("return") &&
                             sym.find("PropagationMaybeDouble") != std::string::npos;
@@ -66,6 +118,11 @@ void IRInstructionVisitor::operator()(const IRReturn &ret) const
               << " sig_ret="
               << (sig && sig->ret ? analysis::TypeToString(sig->ret) : std::string("<null>"))
               << " llvm_ret=" << ret_ty_text << "\n";
+  }
+
+  if (catch_export_boundary)
+  {
+    EmitCatchExportPanicReturn(emitter, builder, func, ret_ty);
   }
 
   if (ret_ty->isVoidTy())

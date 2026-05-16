@@ -416,6 +416,46 @@ std::string MangleProc(const ast::ModulePath& module_path,
   return ScopedSym(ItemPathProc(module_path, proc));
 }
 
+std::string MangleProcInModule(const ast::ASTModule& module,
+                               const ast::ProcedureDecl& proc) {
+  auto participates_in_overload_set = [](const ast::ProcedureDecl& decl) {
+    if (decl.name == "main") {
+      return false;
+    }
+    if (analysis::HasAttribute(decl.attrs, analysis::attrs::kHostExport)) {
+      return false;
+    }
+    return !LinkName(decl.attrs, decl.name).has_value();
+  };
+
+  if (!participates_in_overload_set(proc)) {
+    return MangleProc(module.path, proc);
+  }
+
+  std::size_t overload_count = 0;
+  std::size_t overload_index = 0;
+  for (const auto& item : module.items) {
+    const auto* candidate = std::get_if<ast::ProcedureDecl>(&item);
+    if (!candidate || candidate->name != proc.name ||
+        !participates_in_overload_set(*candidate)) {
+      continue;
+    }
+    if (candidate == &proc) {
+      overload_index = overload_count;
+    }
+    ++overload_count;
+  }
+
+  if (overload_count <= 1) {
+    return MangleProc(module.path, proc);
+  }
+
+  auto item_path = ItemPathProc(module.path, proc);
+  item_path.push_back("$overload");
+  item_path.push_back(std::to_string(overload_index));
+  return ScopedSym(item_path);
+}
+
 std::string MangleMethod(const analysis::TypePath& record_path,
                          const ast::MethodDecl& method) {
   SPEC_RULE("Mangle-Record-Method");

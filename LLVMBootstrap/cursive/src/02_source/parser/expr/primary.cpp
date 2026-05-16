@@ -99,6 +99,11 @@ struct TupleScanResult {
   bool is_tuple = false;
 };
 
+struct RecordLiteralStart {
+  bool is_record_literal = false;
+  std::size_t path_segments = 0;
+};
+
 int ParenDelta(const Token& tok) {
   if (tok.kind != TokenKind::Punctuator) {
     return 0;
@@ -188,6 +193,56 @@ bool TupleParen(Parser parser) {
   if (IsPunc(next, ")")) return true;
   TupleScanResult scan = TupleScan(next);
   return scan.is_tuple;
+}
+
+RecordLiteralStart ScanRecordLiteralStart(Parser parser) {
+  RecordLiteralStart result;
+  const Token* head = Tok(parser);
+  if (!head || !IsIdentTok(*head)) {
+    return result;
+  }
+
+  Parser after_path = parser;
+  Advance(after_path);
+  result.path_segments = 1;
+
+  while (const Token* separator = Tok(after_path)) {
+    if (!IsOpTok(*separator, "::")) {
+      break;
+    }
+
+    Parser after_separator = after_path;
+    Advance(after_separator);
+    const Token* segment = Tok(after_separator);
+    if (!segment || !IsIdentTok(*segment)) {
+      return result;
+    }
+
+    after_path = after_separator;
+    Advance(after_path);
+    ++result.path_segments;
+  }
+
+  const Token* look = Tok(after_path);
+  if (look && IsOpTok(*look, "@")) {
+    result.is_record_literal = true;
+    return result;
+  }
+
+  if (look && IsPuncTok(*look, "{") && result.path_segments == 1) {
+    result.is_record_literal = true;
+    return result;
+  }
+
+  if (look && IsOpTok(*look, "<")) {
+    Parser after_angles = SkipAngles(after_path);
+    const Token* after = Tok(after_angles);
+    if (after && IsOpTok(*after, "@")) {
+      result.is_record_literal = true;
+    }
+  }
+
+  return result;
 }
 
 std::optional<ParseElemResult<ExprPtr>> TryParseSpliceExpr(Parser parser) {
@@ -670,22 +725,8 @@ ParseElemResult<ExprPtr> ParsePrimary(Parser parser, bool allow_brace) {
 
     // Record literal (TypeName{...} or ModalType@State{...})
     if (allow_brace) {
-      Parser next = parser;
-      Advance(next);
-      const Token* look = Tok(next);
-      bool record_literal = false;
-      if (look && IsOpTok(*look, "@")) {
-        record_literal = true;
-      } else if (look && IsPuncTok(*look, "{")) {
-        record_literal = true;
-      } else if (look && IsOpTok(*look, "<")) {
-        Parser after_angles = SkipAngles(next);
-        const Token* after = Tok(after_angles);
-        if (after && IsOpTok(*after, "@")) {
-          record_literal = true;
-        }
-      }
-      if (record_literal) {
+      RecordLiteralStart record_start = ScanRecordLiteralStart(parser);
+      if (record_start.is_record_literal) {
         return ParseRecordLiteral(parser, allow_brace);
       }
     }

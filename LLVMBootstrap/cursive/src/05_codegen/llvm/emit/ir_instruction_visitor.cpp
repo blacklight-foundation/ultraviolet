@@ -186,12 +186,7 @@ std::optional<std::uint64_t> IRInstructionVisitor::StaticRangeLength(const IRRan
 
 std::optional<std::uint64_t> IRInstructionVisitor::StaticLengthOf(const IRValue &value) const
 {
-  const LowerCtx *ctx = emitter.GetCurrentCtx();
-  if (!ctx)
-  {
-    return std::nullopt;
-  }
-  analysis::TypeRef type = analysis::StripPerm(ctx->LookupValueType(value));
+  analysis::TypeRef type = analysis::StripPerm(LookupValueType(value));
   for (int depth = 0; type && depth < 4; ++depth)
   {
     if (auto *arr = std::get_if<analysis::TypeArray>(&type->node))
@@ -211,6 +206,11 @@ std::optional<std::uint64_t> IRInstructionVisitor::StaticLengthOf(const IRValue 
     break;
   }
 
+  const LowerCtx *ctx = emitter.GetCurrentCtx();
+  if (!ctx)
+  {
+    return std::nullopt;
+  }
   if (const DerivedValueInfo *derived = ctx->LookupDerivedValue(value))
   {
     auto loop_range_trip_count =

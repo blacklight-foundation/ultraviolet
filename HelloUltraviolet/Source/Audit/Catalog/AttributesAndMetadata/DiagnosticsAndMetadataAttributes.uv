@@ -268,12 +268,12 @@ public procedure validatedAttributesAndMetadataDiagnosticsAndMetadataAttributesO
     ) {
         count = count + 1usize
     }
-    if acceptedObligationEntryMatches(
+    if rejectedSourceObligationEntryMatches(
         "diagnostics.DiagnosticsMetadataAttributes",
         28605usize,
-        "HelloUltraviolet::Reference::Attributes",
-        "runAttributesDiagnosticAttributesReference",
-        "Source/Reference/Attributes/DiagnosticAttributes.uv"
+        "HelloUltraviolet::Fixtures::RejectedSource",
+        "validatedProceduresRejectedSourceFixtureCount",
+        "Fixtures/RejectedSource/Procedures/ContractDynamicAttribute/Source/Main.uv"
     ) {
         count = count + 1usize
     }

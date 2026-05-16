@@ -4,15 +4,22 @@ using HelloUltraviolet::Audit::{ specClarificationLedgerIsIndexed }
 using HelloUltraviolet::Fixtures::AcceptedProjects::{ validatedAcceptedProjectFixtureCount }
 using HelloUltraviolet::Fixtures::ArtifactProjects::{ validatedArtifactProjectFixtureCount }
 using HelloUltraviolet::Fixtures::DiagnosticSource::{ validatedAsyncDiagnosticSourceFixtureCount }
+using HelloUltraviolet::Fixtures::DiagnosticSource::{ validatedAttributesDiagnosticSourceFixtureCount }
 using HelloUltraviolet::Fixtures::DiagnosticSource::{ validatedComptimeDiagnosticSourceFixtureCount }
 using HelloUltraviolet::Fixtures::DiagnosticSource::{ validatedExpressionsDiagnosticSourceFixtureCount }
 using HelloUltraviolet::Fixtures::DiagnosticSource::{ validatedKeysDiagnosticSourceFixtureCount }
 using HelloUltraviolet::Fixtures::DiagnosticSource::{ validatedParallelismDiagnosticSourceFixtureCount }
+using HelloUltraviolet::Fixtures::DiagnosticSource::{ validatedSourceTextDiagnosticSourceFixtureCount }
+using HelloUltraviolet::Fixtures::OutputDiagnostics::{ validatedOutputCommandLineDiagnosticFixtureCount }
 using HelloUltraviolet::Fixtures::OutputDiagnostics::{ validatedOutputLoweringDiagnosticFixtureCount }
+using HelloUltraviolet::Fixtures::OutputDiagnostics::{ validatedOutputProjectDiagnosticFixtureCount }
+using HelloUltraviolet::Fixtures::RejectedSource::{ validatedAttributesRejectedSourceFixtureCount }
 using HelloUltraviolet::Fixtures::RejectedSource::{ validatedComptimeRejectedSourceFixtureCount }
+using HelloUltraviolet::Fixtures::RejectedSource::{ validatedDataTypesRejectedSourceFixtureCount }
 using HelloUltraviolet::Fixtures::RejectedSource::{ validatedExpressionsRejectedSourceFixtureCount }
 using HelloUltraviolet::Fixtures::RejectedSource::{ validatedFFIRejectedSourceFixtureCount }
 using HelloUltraviolet::Fixtures::RejectedSource::{ validatedKeysRejectedSourceFixtureCount }
+using HelloUltraviolet::Fixtures::RejectedSource::{ validatedModulesRejectedSourceFixtureCount }
 using HelloUltraviolet::Fixtures::RejectedSource::{ validatedNamesRejectedSourceFixtureCount }
 using HelloUltraviolet::Fixtures::RejectedSource::{ validatedParallelismRejectedSourceFixtureCount }
 using HelloUltraviolet::Fixtures::RejectedSource::{ validatedParsingRejectedSourceFixtureCount }
@@ -181,11 +188,11 @@ using HelloUltraviolet::Reference::Types::{ runTypesRefinementsReference }
 using HelloUltraviolet::Reference::Types::{ runTypesSubtypingReference }
 
 public procedure expectedCatalogCompiledSymbolCount() -> usize {
-    return 572usize
+    return 596usize
 }
 
 public procedure catalogCompiledSymbolCount() -> usize {
-    return 572usize
+    return 596usize
 }
 
 internal procedure catalogSymbolTargetMatches(
@@ -366,6 +373,14 @@ public procedure catalogCompiledSymbolTargetsAreIndexed() -> bool {
         ) &&
         catalogSymbolTargetMatches(
             "HelloUltraviolet::Fixtures::DiagnosticSource",
+            "validatedAttributesDiagnosticSourceFixtureCount",
+            "Fixtures/DiagnosticSource/Attributes/InlineAlwaysRecursive/Source/Main.uv",
+            "HelloUltraviolet::Fixtures::DiagnosticSource",
+            "validatedAttributesDiagnosticSourceFixtureCount",
+            "Fixtures/DiagnosticSource/Attributes/InlineAlwaysRecursive/Source/Main.uv"
+        ) &&
+        catalogSymbolTargetMatches(
+            "HelloUltraviolet::Fixtures::DiagnosticSource",
             "validatedComptimeDiagnosticSourceFixtureCount",
             "Fixtures/DiagnosticSource/Comptime/ProjectFilesInvalidPath/Source/Main.uv",
             "HelloUltraviolet::Fixtures::DiagnosticSource",
@@ -501,12 +516,84 @@ public procedure catalogCompiledSymbolTargetsAreIndexed() -> bool {
             "Fixtures/DiagnosticSource/Parallelism/PanicHandlingNoAdditionalDiagnostics/Source/Main.uv"
         ) &&
         catalogSymbolTargetMatches(
+            "HelloUltraviolet::Fixtures::DiagnosticSource",
+            "validatedSourceTextDiagnosticSourceFixtureCount",
+            "Fixtures/DiagnosticSource/SourceText/DecimalLeadingZeroWarning/Source/Main.uv",
+            "HelloUltraviolet::Fixtures::DiagnosticSource",
+            "validatedSourceTextDiagnosticSourceFixtureCount",
+            "Fixtures/DiagnosticSource/SourceText/DecimalLeadingZeroWarning/Source/Main.uv"
+        ) &&
+        catalogSymbolTargetMatches(
+            "HelloUltraviolet::Fixtures::DiagnosticSource",
+            "validatedSourceTextDiagnosticSourceFixtureCount",
+            "Fixtures/DiagnosticSource/SourceText/LeadingBOMWarning/Source/Main.uv",
+            "HelloUltraviolet::Fixtures::DiagnosticSource",
+            "validatedSourceTextDiagnosticSourceFixtureCount",
+            "Fixtures/DiagnosticSource/SourceText/LeadingBOMWarning/Source/Main.uv"
+        ) &&
+        catalogSymbolTargetMatches(
+            "HelloUltraviolet::Fixtures::OutputDiagnostics",
+            "validatedOutputCommandLineDiagnosticFixtureCount",
+            "Fixtures/OutputDiagnostics/CommandLine/UnknownCommand/Invocation.txt",
+            "HelloUltraviolet::Fixtures::OutputDiagnostics",
+            "validatedOutputCommandLineDiagnosticFixtureCount",
+            "Fixtures/OutputDiagnostics/CommandLine/UnknownCommand/Invocation.txt"
+        ) &&
+        catalogSymbolTargetMatches(
             "HelloUltraviolet::Fixtures::OutputDiagnostics",
             "validatedOutputLoweringDiagnosticFixtureCount",
-            "Source/Fixtures/OutputDiagnostics/Lowering.uv",
+            "Fixtures/OutputDiagnostics/Lowering/EmitLLVMRenderFailure/Source/Library.uv",
             "HelloUltraviolet::Fixtures::OutputDiagnostics",
             "validatedOutputLoweringDiagnosticFixtureCount",
-            "Source/Fixtures/OutputDiagnostics/Lowering.uv"
+            "Fixtures/OutputDiagnostics/Lowering/EmitLLVMRenderFailure/Source/Library.uv"
+        ) &&
+        catalogSymbolTargetMatches(
+            "HelloUltraviolet::Fixtures::OutputDiagnostics",
+            "validatedOutputLoweringDiagnosticFixtureCount",
+            "Fixtures/OutputDiagnostics/Lowering/LlvmToolResolveOwnership/Source/Library.uv",
+            "HelloUltraviolet::Fixtures::OutputDiagnostics",
+            "validatedOutputLoweringDiagnosticFixtureCount",
+            "Fixtures/OutputDiagnostics/Lowering/LlvmToolResolveOwnership/Source/Library.uv"
+        ) &&
+        catalogSymbolTargetMatches(
+            "HelloUltraviolet::Fixtures::OutputDiagnostics",
+            "validatedOutputProjectDiagnosticFixtureCount",
+            "Fixtures/OutputDiagnostics/Projects/ManifestParseError/Ultraviolet.toml",
+            "HelloUltraviolet::Fixtures::OutputDiagnostics",
+            "validatedOutputProjectDiagnosticFixtureCount",
+            "Fixtures/OutputDiagnostics/Projects/ManifestParseError/Ultraviolet.toml"
+        ) &&
+        catalogSymbolTargetMatches(
+            "HelloUltraviolet::Fixtures::RejectedSource",
+            "validatedAttributesRejectedSourceFixtureCount",
+            "Fixtures/RejectedSource/Attributes/PackedLayoutOnEnum/Source/Main.uv",
+            "HelloUltraviolet::Fixtures::RejectedSource",
+            "validatedAttributesRejectedSourceFixtureCount",
+            "Fixtures/RejectedSource/Attributes/PackedLayoutOnEnum/Source/Main.uv"
+        ) &&
+        catalogSymbolTargetMatches(
+            "HelloUltraviolet::Fixtures::RejectedSource",
+            "validatedAttributesRejectedSourceFixtureCount",
+            "Fixtures/RejectedSource/Attributes/ReservedVendorNamespace/Source/Main.uv",
+            "HelloUltraviolet::Fixtures::RejectedSource",
+            "validatedAttributesRejectedSourceFixtureCount",
+            "Fixtures/RejectedSource/Attributes/ReservedVendorNamespace/Source/Main.uv"
+        ) &&
+        catalogSymbolTargetMatches(
+            "HelloUltraviolet::Fixtures::RejectedSource",
+            "validatedAttributesRejectedSourceFixtureCount",
+            "Fixtures/RejectedSource/Attributes/TestMissingPostcondition/Source/Main.uv",
+            "HelloUltraviolet::Fixtures::RejectedSource",
+            "validatedAttributesRejectedSourceFixtureCount",
+            "Fixtures/RejectedSource/Attributes/TestMissingPostcondition/Source/Main.uv"
+        ) &&
+        catalogSymbolTargetMatches(
+            "HelloUltraviolet::Fixtures::RejectedSource",
+            "validatedAttributesRejectedSourceFixtureCount",
+            "Fixtures/RejectedSource/Attributes/UnknownAttribute/Source/Main.uv",
+            "HelloUltraviolet::Fixtures::RejectedSource",
+            "validatedAttributesRejectedSourceFixtureCount",
+            "Fixtures/RejectedSource/Attributes/UnknownAttribute/Source/Main.uv"
         ) &&
         catalogSymbolTargetMatches(
             "HelloUltraviolet::Fixtures::RejectedSource",
@@ -643,6 +730,14 @@ public procedure catalogCompiledSymbolTargetsAreIndexed() -> bool {
             "HelloUltraviolet::Fixtures::RejectedSource",
             "validatedComptimeRejectedSourceFixtureCount",
             "Fixtures/RejectedSource/Comptime/UserDiagnosticError/Source/Main.uv"
+        ) &&
+        catalogSymbolTargetMatches(
+            "HelloUltraviolet::Fixtures::RejectedSource",
+            "validatedDataTypesRejectedSourceFixtureCount",
+            "Fixtures/RejectedSource/DataTypes/TypeAliasCycle/Source/Main.uv",
+            "HelloUltraviolet::Fixtures::RejectedSource",
+            "validatedDataTypesRejectedSourceFixtureCount",
+            "Fixtures/RejectedSource/DataTypes/TypeAliasCycle/Source/Main.uv"
         ) &&
         catalogSymbolTargetMatches(
             "HelloUltraviolet::Fixtures::RejectedSource",
@@ -2015,6 +2110,14 @@ public procedure catalogCompiledSymbolTargetsAreIndexed() -> bool {
         catalogSymbolTargetMatches(
             "HelloUltraviolet::Fixtures::RejectedSource",
             "validatedKeysRejectedSourceFixtureCount",
+            "Fixtures/RejectedSource/Keys/SpeculativeFence/Source/Main.uv",
+            "HelloUltraviolet::Fixtures::RejectedSource",
+            "validatedKeysRejectedSourceFixtureCount",
+            "Fixtures/RejectedSource/Keys/SpeculativeFence/Source/Main.uv"
+        ) &&
+        catalogSymbolTargetMatches(
+            "HelloUltraviolet::Fixtures::RejectedSource",
+            "validatedKeysRejectedSourceFixtureCount",
             "Fixtures/RejectedSource/Keys/SpeculativeImpureCall/Source/Main.uv",
             "HelloUltraviolet::Fixtures::RejectedSource",
             "validatedKeysRejectedSourceFixtureCount",
@@ -2035,6 +2138,30 @@ public procedure catalogCompiledSymbolTargetsAreIndexed() -> bool {
             "HelloUltraviolet::Fixtures::RejectedSource",
             "validatedKeysRejectedSourceFixtureCount",
             "Fixtures/RejectedSource/Keys/SpeculativeNestedKeyBlock/Source/Main.uv"
+        ) &&
+        catalogSymbolTargetMatches(
+            "HelloUltraviolet::Fixtures::RejectedSource",
+            "validatedKeysRejectedSourceFixtureCount",
+            "Fixtures/RejectedSource/Keys/SpeculativeNestedKeyRule/Source/Main.uv",
+            "HelloUltraviolet::Fixtures::RejectedSource",
+            "validatedKeysRejectedSourceFixtureCount",
+            "Fixtures/RejectedSource/Keys/SpeculativeNestedKeyRule/Source/Main.uv"
+        ) &&
+        catalogSymbolTargetMatches(
+            "HelloUltraviolet::Fixtures::RejectedSource",
+            "validatedKeysRejectedSourceFixtureCount",
+            "Fixtures/RejectedSource/Keys/SpeculativeOutsideWrite/Source/Main.uv",
+            "HelloUltraviolet::Fixtures::RejectedSource",
+            "validatedKeysRejectedSourceFixtureCount",
+            "Fixtures/RejectedSource/Keys/SpeculativeOutsideWrite/Source/Main.uv"
+        ) &&
+        catalogSymbolTargetMatches(
+            "HelloUltraviolet::Fixtures::RejectedSource",
+            "validatedKeysRejectedSourceFixtureCount",
+            "Fixtures/RejectedSource/Keys/SpeculativeReadMode/Source/Main.uv",
+            "HelloUltraviolet::Fixtures::RejectedSource",
+            "validatedKeysRejectedSourceFixtureCount",
+            "Fixtures/RejectedSource/Keys/SpeculativeReadMode/Source/Main.uv"
         ) &&
         catalogSymbolTargetMatches(
             "HelloUltraviolet::Fixtures::RejectedSource",
@@ -2070,11 +2197,59 @@ public procedure catalogCompiledSymbolTargetsAreIndexed() -> bool {
         ) &&
         catalogSymbolTargetMatches(
             "HelloUltraviolet::Fixtures::RejectedSource",
+            "validatedModulesRejectedSourceFixtureCount",
+            "Fixtures/RejectedSource/Modules/MissingImport/Source/Main.uv",
+            "HelloUltraviolet::Fixtures::RejectedSource",
+            "validatedModulesRejectedSourceFixtureCount",
+            "Fixtures/RejectedSource/Modules/MissingImport/Source/Main.uv"
+        ) &&
+        catalogSymbolTargetMatches(
+            "HelloUltraviolet::Fixtures::RejectedSource",
+            "validatedModulesRejectedSourceFixtureCount",
+            "Fixtures/RejectedSource/Modules/ReservedModuleKeyword/Source/if/Main.uv",
+            "HelloUltraviolet::Fixtures::RejectedSource",
+            "validatedModulesRejectedSourceFixtureCount",
+            "Fixtures/RejectedSource/Modules/ReservedModuleKeyword/Source/if/Main.uv"
+        ) &&
+        catalogSymbolTargetMatches(
+            "HelloUltraviolet::Fixtures::RejectedSource",
+            "validatedModulesRejectedSourceFixtureCount",
+            "Fixtures/RejectedSource/Modules/StaticMissingTypeAnnotation/Source/Main.uv",
+            "HelloUltraviolet::Fixtures::RejectedSource",
+            "validatedModulesRejectedSourceFixtureCount",
+            "Fixtures/RejectedSource/Modules/StaticMissingTypeAnnotation/Source/Main.uv"
+        ) &&
+        catalogSymbolTargetMatches(
+            "HelloUltraviolet::Fixtures::RejectedSource",
+            "validatedModulesRejectedSourceFixtureCount",
+            "Fixtures/RejectedSource/Modules/UsingListDuplicate/Source/Main.uv",
+            "HelloUltraviolet::Fixtures::RejectedSource",
+            "validatedModulesRejectedSourceFixtureCount",
+            "Fixtures/RejectedSource/Modules/UsingListDuplicate/Source/Main.uv"
+        ) &&
+        catalogSymbolTargetMatches(
+            "HelloUltraviolet::Fixtures::RejectedSource",
             "validatedNamesRejectedSourceFixtureCount",
             "Fixtures/RejectedSource/Names/DuplicateModuleDeclaration/Source/Main.uv",
             "HelloUltraviolet::Fixtures::RejectedSource",
             "validatedNamesRejectedSourceFixtureCount",
             "Fixtures/RejectedSource/Names/DuplicateModuleDeclaration/Source/Main.uv"
+        ) &&
+        catalogSymbolTargetMatches(
+            "HelloUltraviolet::Fixtures::RejectedSource",
+            "validatedNamesRejectedSourceFixtureCount",
+            "Fixtures/RejectedSource/Names/InternalAccess/Source/InternalAccess/Library.uv",
+            "HelloUltraviolet::Fixtures::RejectedSource",
+            "validatedNamesRejectedSourceFixtureCount",
+            "Fixtures/RejectedSource/Names/InternalAccess/Source/InternalAccess/Library.uv"
+        ) &&
+        catalogSymbolTargetMatches(
+            "HelloUltraviolet::Fixtures::RejectedSource",
+            "validatedNamesRejectedSourceFixtureCount",
+            "Fixtures/RejectedSource/Names/PrivateAccess/Source/Main.uv",
+            "HelloUltraviolet::Fixtures::RejectedSource",
+            "validatedNamesRejectedSourceFixtureCount",
+            "Fixtures/RejectedSource/Names/PrivateAccess/Source/Main.uv"
         ) &&
         catalogSymbolTargetMatches(
             "HelloUltraviolet::Fixtures::RejectedSource",
@@ -3247,10 +3422,34 @@ public procedure catalogCompiledSymbolTargetsAreIndexed() -> bool {
         catalogSymbolTargetMatches(
             "HelloUltraviolet::Fixtures::RejectedSource",
             "validatedSourceTextRejectedSourceFixtureCount",
+            "Fixtures/RejectedSource/SourceText/InvalidUTF8/Source/Main.uv",
+            "HelloUltraviolet::Fixtures::RejectedSource",
+            "validatedSourceTextRejectedSourceFixtureCount",
+            "Fixtures/RejectedSource/SourceText/InvalidUTF8/Source/Main.uv"
+        ) &&
+        catalogSymbolTargetMatches(
+            "HelloUltraviolet::Fixtures::RejectedSource",
+            "validatedSourceTextRejectedSourceFixtureCount",
+            "Fixtures/RejectedSource/SourceText/LeadingBOMEmbeddedBOM/Source/Main.uv",
+            "HelloUltraviolet::Fixtures::RejectedSource",
+            "validatedSourceTextRejectedSourceFixtureCount",
+            "Fixtures/RejectedSource/SourceText/LeadingBOMEmbeddedBOM/Source/Main.uv"
+        ) &&
+        catalogSymbolTargetMatches(
+            "HelloUltraviolet::Fixtures::RejectedSource",
+            "validatedSourceTextRejectedSourceFixtureCount",
             "Fixtures/RejectedSource/SourceText/MalformedNumericLiteral/Source/Main.uv",
             "HelloUltraviolet::Fixtures::RejectedSource",
             "validatedSourceTextRejectedSourceFixtureCount",
             "Fixtures/RejectedSource/SourceText/MalformedNumericLiteral/Source/Main.uv"
+        ) &&
+        catalogSymbolTargetMatches(
+            "HelloUltraviolet::Fixtures::RejectedSource",
+            "validatedSourceTextRejectedSourceFixtureCount",
+            "Fixtures/RejectedSource/SourceText/ProhibitedControlCharacter/Source/Main.uv",
+            "HelloUltraviolet::Fixtures::RejectedSource",
+            "validatedSourceTextRejectedSourceFixtureCount",
+            "Fixtures/RejectedSource/SourceText/ProhibitedControlCharacter/Source/Main.uv"
         ) &&
         catalogSymbolTargetMatches(
             "HelloUltraviolet::Fixtures::RejectedSource",
@@ -4898,6 +5097,11 @@ public procedure catalogCompiledSymbolsExecute(context: Context) -> bool {
     ) && passed
     passed = recordCatalogSymbolExecution(
         context,
+        "validatedAttributesDiagnosticSourceFixtureCount",
+        validatedAttributesDiagnosticSourceFixtureCount() > 0usize
+    ) && passed
+    passed = recordCatalogSymbolExecution(
+        context,
         "validatedComptimeDiagnosticSourceFixtureCount",
         validatedComptimeDiagnosticSourceFixtureCount() > 0usize
     ) && passed
@@ -4983,13 +5187,53 @@ public procedure catalogCompiledSymbolsExecute(context: Context) -> bool {
     ) && passed
     passed = recordCatalogSymbolExecution(
         context,
+        "validatedSourceTextDiagnosticSourceFixtureCount",
+        validatedSourceTextDiagnosticSourceFixtureCount() > 0usize
+    ) && passed
+    passed = recordCatalogSymbolExecution(
+        context,
+        "validatedSourceTextDiagnosticSourceFixtureCount",
+        validatedSourceTextDiagnosticSourceFixtureCount() > 0usize
+    ) && passed
+    passed = recordCatalogSymbolExecution(
+        context,
+        "validatedOutputCommandLineDiagnosticFixtureCount",
+        validatedOutputCommandLineDiagnosticFixtureCount() > 0usize
+    ) && passed
+    passed = recordCatalogSymbolExecution(
+        context,
         "validatedOutputLoweringDiagnosticFixtureCount",
         validatedOutputLoweringDiagnosticFixtureCount() > 0usize
     ) && passed
     passed = recordCatalogSymbolExecution(
         context,
-        "validatedComptimeRejectedSourceFixtureCount",
-        validatedComptimeRejectedSourceFixtureCount() > 0usize
+        "validatedOutputLoweringDiagnosticFixtureCount",
+        validatedOutputLoweringDiagnosticFixtureCount() > 0usize
+    ) && passed
+    passed = recordCatalogSymbolExecution(
+        context,
+        "validatedOutputProjectDiagnosticFixtureCount",
+        validatedOutputProjectDiagnosticFixtureCount() > 0usize
+    ) && passed
+    passed = recordCatalogSymbolExecution(
+        context,
+        "validatedAttributesRejectedSourceFixtureCount",
+        validatedAttributesRejectedSourceFixtureCount() > 0usize
+    ) && passed
+    passed = recordCatalogSymbolExecution(
+        context,
+        "validatedAttributesRejectedSourceFixtureCount",
+        validatedAttributesRejectedSourceFixtureCount() > 0usize
+    ) && passed
+    passed = recordCatalogSymbolExecution(
+        context,
+        "validatedAttributesRejectedSourceFixtureCount",
+        validatedAttributesRejectedSourceFixtureCount() > 0usize
+    ) && passed
+    passed = recordCatalogSymbolExecution(
+        context,
+        "validatedAttributesRejectedSourceFixtureCount",
+        validatedAttributesRejectedSourceFixtureCount() > 0usize
     ) && passed
     passed = recordCatalogSymbolExecution(
         context,
@@ -5073,6 +5317,16 @@ public procedure catalogCompiledSymbolsExecute(context: Context) -> bool {
     ) && passed
     passed = recordCatalogSymbolExecution(
         context,
+        "validatedComptimeRejectedSourceFixtureCount",
+        validatedComptimeRejectedSourceFixtureCount() > 0usize
+    ) && passed
+    passed = recordCatalogSymbolExecution(
+        context,
+        "validatedDataTypesRejectedSourceFixtureCount",
+        validatedDataTypesRejectedSourceFixtureCount() > 0usize
+    ) && passed
+    passed = recordCatalogSymbolExecution(
+        context,
         "validatedExpressionsRejectedSourceFixtureCount",
         validatedExpressionsRejectedSourceFixtureCount() > 0usize
     ) && passed
@@ -5960,6 +6214,56 @@ public procedure catalogCompiledSymbolsExecute(context: Context) -> bool {
         context,
         "validatedKeysRejectedSourceFixtureCount",
         validatedKeysRejectedSourceFixtureCount() > 0usize
+    ) && passed
+    passed = recordCatalogSymbolExecution(
+        context,
+        "validatedKeysRejectedSourceFixtureCount",
+        validatedKeysRejectedSourceFixtureCount() > 0usize
+    ) && passed
+    passed = recordCatalogSymbolExecution(
+        context,
+        "validatedKeysRejectedSourceFixtureCount",
+        validatedKeysRejectedSourceFixtureCount() > 0usize
+    ) && passed
+    passed = recordCatalogSymbolExecution(
+        context,
+        "validatedKeysRejectedSourceFixtureCount",
+        validatedKeysRejectedSourceFixtureCount() > 0usize
+    ) && passed
+    passed = recordCatalogSymbolExecution(
+        context,
+        "validatedKeysRejectedSourceFixtureCount",
+        validatedKeysRejectedSourceFixtureCount() > 0usize
+    ) && passed
+    passed = recordCatalogSymbolExecution(
+        context,
+        "validatedModulesRejectedSourceFixtureCount",
+        validatedModulesRejectedSourceFixtureCount() > 0usize
+    ) && passed
+    passed = recordCatalogSymbolExecution(
+        context,
+        "validatedModulesRejectedSourceFixtureCount",
+        validatedModulesRejectedSourceFixtureCount() > 0usize
+    ) && passed
+    passed = recordCatalogSymbolExecution(
+        context,
+        "validatedModulesRejectedSourceFixtureCount",
+        validatedModulesRejectedSourceFixtureCount() > 0usize
+    ) && passed
+    passed = recordCatalogSymbolExecution(
+        context,
+        "validatedModulesRejectedSourceFixtureCount",
+        validatedModulesRejectedSourceFixtureCount() > 0usize
+    ) && passed
+    passed = recordCatalogSymbolExecution(
+        context,
+        "validatedNamesRejectedSourceFixtureCount",
+        validatedNamesRejectedSourceFixtureCount() > 0usize
+    ) && passed
+    passed = recordCatalogSymbolExecution(
+        context,
+        "validatedNamesRejectedSourceFixtureCount",
+        validatedNamesRejectedSourceFixtureCount() > 0usize
     ) && passed
     passed = recordCatalogSymbolExecution(
         context,
@@ -6690,6 +6994,21 @@ public procedure catalogCompiledSymbolsExecute(context: Context) -> bool {
         context,
         "validatedProceduresRejectedSourceFixtureCount",
         validatedProceduresRejectedSourceFixtureCount() > 0usize
+    ) && passed
+    passed = recordCatalogSymbolExecution(
+        context,
+        "validatedSourceTextRejectedSourceFixtureCount",
+        validatedSourceTextRejectedSourceFixtureCount() > 0usize
+    ) && passed
+    passed = recordCatalogSymbolExecution(
+        context,
+        "validatedSourceTextRejectedSourceFixtureCount",
+        validatedSourceTextRejectedSourceFixtureCount() > 0usize
+    ) && passed
+    passed = recordCatalogSymbolExecution(
+        context,
+        "validatedSourceTextRejectedSourceFixtureCount",
+        validatedSourceTextRejectedSourceFixtureCount() > 0usize
     ) && passed
     passed = recordCatalogSymbolExecution(
         context,

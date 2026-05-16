@@ -121,6 +121,10 @@ LowerResult LowerClosureCall(
 // Check if a type is a closure type (tuple of (Ptr, FuncPtr))
 bool IsClosureType(const analysis::TypeRef& type);
 
+// Normalize a callable type alias before closure/function shape checks.
+analysis::TypeRef NormalizeCallableAliasForLowering(const analysis::TypeRef& type,
+                                                    const LowerCtx& ctx);
+
 // Extract the function type from a closure type
 analysis::TypeRef GetClosureFuncType(const analysis::TypeRef& closure_type);
 

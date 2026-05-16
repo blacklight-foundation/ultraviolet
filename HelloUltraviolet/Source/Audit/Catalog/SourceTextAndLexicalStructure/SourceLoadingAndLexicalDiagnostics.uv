@@ -7,12 +7,12 @@ public procedure countSourceTextAndLexicalStructureSourceLoadingAndLexicalDiagno
 
 public procedure validatedSourceTextAndLexicalStructureSourceLoadingAndLexicalDiagnosticsObligations() -> usize {
     var count: usize = 0usize
-    if acceptedObligationEntryMatches(
+    if rejectedSourceObligationEntryMatches(
         "diagnostics.SourceLexicalDiagnostics",
         10319usize,
-        "HelloUltraviolet::Reference::SourceText",
-        "runSourceTextLiteralsReference",
-        "Source/Reference/SourceText/Literals.uv"
+        "HelloUltraviolet::Fixtures::RejectedSource",
+        "validatedSourceTextRejectedSourceFixtureCount",
+        "Fixtures/RejectedSource/SourceText/InvalidUTF8/Source/Main.uv"
     ) {
         count = count + 1usize
     }

@@ -743,7 +743,8 @@ bool IsPackedRecord(const ScopeContext& ctx, const TypePath& path) {
 
 AddrOfOkResult AddrOfOk(const ScopeContext& ctx,
                         const ast::ExprPtr& expr,
-                        const ExprTypeFn& type_expr) {
+                        const ExprTypeFn& type_expr,
+                        const ArgCheckFn* check_expr) {
   if (!IsPlaceExprForCallLocal(expr)) {
     return {false, std::nullopt};
   }
@@ -767,6 +768,16 @@ AddrOfOkResult AddrOfOk(const ScopeContext& ctx,
   if (!index) {
     return {true, std::nullopt};
   }
+  if (check_expr) {
+    const auto checked = (*check_expr)(index->index, MakeTypePrim("usize"));
+    if (checked.ok) {
+      return {true, std::nullopt};
+    }
+    if (!IsExpectedTypeMismatch(checked)) {
+      return {false, checked.diag_id};
+    }
+  }
+
   const auto idx_type = type_expr(index->index);
   if (!idx_type.ok) {
     return {false, idx_type.diag_id};
@@ -1162,7 +1173,7 @@ CallTypeResult TypeCall(const ScopeContext& ctx,
       }
       if (!IsFunctionValueType(ctx, params[i].type) &&
           HasSourceProvenanceLocal(args[i].value)) {
-        const auto addr_ok = AddrOfOk(ctx, args[i].value, type_expr);
+        const auto addr_ok = AddrOfOk(ctx, args[i].value, type_expr, check_expr);
         if (!addr_ok.ok) {
           if (addr_ok.diag_id ==
               std::optional<std::string_view>("E-TYP-2105")) {
@@ -1405,7 +1416,7 @@ CallTypeResult TypeCallWithSubst(const ScopeContext& ctx,
       }
       if (!IsFunctionValueType(ctx, InstantiateType(params[i].type, subst)) &&
           HasSourceProvenanceLocal(args[i].value)) {
-        const auto addr_ok = AddrOfOk(ctx, args[i].value, type_expr);
+        const auto addr_ok = AddrOfOk(ctx, args[i].value, type_expr, check_expr);
         if (!addr_ok.ok) {
           if (addr_ok.diag_id ==
               std::optional<std::string_view>("E-TYP-2105")) {

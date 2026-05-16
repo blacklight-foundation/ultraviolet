@@ -2,8 +2,10 @@
 #include <filesystem>
 #include <fstream>
 #include <iostream>
+#include <optional>
 #include <sstream>
 #include <string>
+#include <string_view>
 
 #ifndef CURSIVE_TEST_COMPILER_PATH
 #error "CURSIVE_TEST_COMPILER_PATH must be defined"
@@ -63,6 +65,56 @@ bool WriteFile(const std::filesystem::path& path, std::string_view contents) {
     return false;
   }
   return true;
+}
+
+std::optional<std::string> ReadFile(const std::filesystem::path& path) {
+  std::ifstream file(path, std::ios::binary);
+  if (!file) {
+    std::cerr << "failed to open " << path << " for reading\n";
+    return std::nullopt;
+  }
+  std::ostringstream text;
+  text << file.rdbuf();
+  return text.str();
+}
+
+std::optional<std::string_view> FunctionBody(
+    std::string_view module_ir,
+    std::string_view signature) {
+  std::size_t start = std::string_view::npos;
+  for (std::size_t pos = module_ir.find(signature);
+       pos != std::string_view::npos;
+       pos = module_ir.find(signature, pos + signature.size())) {
+    const std::size_t line_start =
+        module_ir.rfind('\n', pos) == std::string_view::npos
+            ? 0
+            : module_ir.rfind('\n', pos) + 1;
+    if (module_ir.substr(line_start, 7) == "define ") {
+      start = line_start;
+      break;
+    }
+  }
+  if (start == std::string_view::npos) {
+    return std::nullopt;
+  }
+  const std::size_t next =
+      module_ir.find("\ndefine ", start + signature.size());
+  const std::size_t end =
+      next == std::string_view::npos ? module_ir.size() : next;
+  return module_ir.substr(start, end - start);
+}
+
+std::size_t CountOccurrences(std::string_view body, std::string_view needle) {
+  std::size_t count = 0;
+  std::size_t pos = 0;
+  while (true) {
+    pos = body.find(needle, pos);
+    if (pos == std::string_view::npos) {
+      return count;
+    }
+    ++count;
+    pos += needle.size();
+  }
 }
 
 int RunCommand(const std::string& command) {
@@ -578,6 +630,25 @@ int main() {
   const int compile_result = RunCommand(compile_command);
   if (compile_result != 0) {
     std::cerr << "fixture compile failed; see " << compile_log << "\n";
+    return 1;
+  }
+
+  const std::filesystem::path ir_file = out_root / "ir" / "sret.ll";
+  const auto ir_text = ReadFile(ir_file);
+  if (!ir_text.has_value()) {
+    return 1;
+  }
+  const auto append_body =
+      FunctionBody(*ir_text, "@sret_x3a_x3aappendSelfAssignValue");
+  if (!append_body.has_value()) {
+    std::cerr << "appendSelfAssignValue was not emitted in LLVM IR\n";
+    return 1;
+  }
+  const std::size_t aggregate_memcpys =
+      CountOccurrences(*append_body, "llvm.memcpy");
+  if (aggregate_memcpys > 1) {
+    std::cerr << "aggregate self-update return still emitted "
+              << aggregate_memcpys << " memcpy calls\n";
     return 1;
   }
 

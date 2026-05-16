@@ -2,6 +2,7 @@
 
 enum {
   C0_ASYNC_DISC_SUSPENDED = 0,
+  C0_ASYNC_DISC_COMPLETED = 1,
 };
 
 enum { C0_ASYNC_PAYLOAD_FRAME_PTR_OFFSET = 8 };
@@ -18,6 +19,66 @@ typedef void (*C0AsyncResumeFn)(void* hosted_env,
                                 void* frame,
                                 void* input,
                                 void* panic_out);
+
+typedef struct C0AsyncTakeFrame {
+  C0AsyncFrameHeader header;
+  C0AsyncResumeValue source;
+  uint64_t remaining;
+} C0AsyncTakeFrame;
+
+static void c0_async_store_frame(C0AsyncResumeValue* value, void* frame) {
+  if (!value) {
+    return;
+  }
+  c0_memcpy(value->payload + C0_ASYNC_PAYLOAD_FRAME_PTR_OFFSET,
+            &frame,
+            sizeof(frame));
+}
+
+static C0AsyncResumeValue c0_async_completed_unit(void) {
+  C0AsyncResumeValue out;
+  c0_memset(&out, 0, sizeof(out));
+  out.disc = C0_ASYNC_DISC_COMPLETED;
+  return out;
+}
+
+static void c0_async_take_resume(void* hosted_env,
+                                 C0AsyncResumeValue* out,
+                                 void* frame,
+                                 void* input,
+                                 void* panic_out) {
+  (void)hosted_env;
+  if (!out) {
+    return;
+  }
+  c0_memset(out, 0, sizeof(*out));
+  C0AsyncTakeFrame* take_frame = (C0AsyncTakeFrame*)frame;
+  if (!take_frame) {
+    return;
+  }
+
+  if (take_frame->remaining == 0) {
+    *out = c0_async_completed_unit();
+    cursive_x3a_x3aruntime_x3a_x3aasync_x3a_x3afree_x5fframe(frame);
+    return;
+  }
+
+  C0AsyncResumeValue resumed =
+      cursive_x3a_x3aruntime_x3a_x3aasync_x3a_x3aresume(
+          &take_frame->source,
+          input,
+          panic_out);
+  take_frame->source = resumed;
+  if (resumed.disc == C0_ASYNC_DISC_SUSPENDED) {
+    take_frame->remaining = take_frame->remaining - 1;
+    *out = resumed;
+    c0_async_store_frame(out, frame);
+    return;
+  }
+
+  *out = resumed;
+  cursive_x3a_x3aruntime_x3a_x3aasync_x3a_x3afree_x5fframe(frame);
+}
 
 void* cursive_x3a_x3aruntime_x3a_x3aasync_x3a_x3aalloc_x5fframe(uint64_t size,
                                                                uint64_t align) {
@@ -106,5 +167,40 @@ C0AsyncResumeValue cursive_x3a_x3aruntime_x3a_x3aasync_x3a_x3aresume(
 
   C0AsyncResumeFn resume_fn = (C0AsyncResumeFn)header.resume_fn;
   resume_fn(header.hosted_env, &out, frame, (void*)input, panic_out);
+  return out;
+}
+
+C0AsyncResumeValue cursive_x3a_x3aruntime_x3a_x3aasync_x3a_x3atake(
+    const C0AsyncResumeValue* source,
+    uint64_t count,
+    void* panic_out) {
+  (void)panic_out;
+  C0AsyncResumeValue out;
+  c0_memset(&out, 0, sizeof(out));
+  if (!source) {
+    return out;
+  }
+  if (count == 0) {
+    return c0_async_completed_unit();
+  }
+  if (source->disc != C0_ASYNC_DISC_SUSPENDED) {
+    return *source;
+  }
+
+  C0AsyncTakeFrame* frame =
+      (C0AsyncTakeFrame*)cursive_x3a_x3aruntime_x3a_x3aasync_x3a_x3aalloc_x5fframe(
+          (uint64_t)sizeof(C0AsyncTakeFrame),
+          (uint64_t)sizeof(void*));
+  if (!frame) {
+    return *source;
+  }
+
+  c0_memset(frame, 0, sizeof(*frame));
+  frame->header.resume_fn = (void*)&c0_async_take_resume;
+  frame->source = *source;
+  frame->remaining = count - 1;
+
+  out = *source;
+  c0_async_store_frame(&out, frame);
   return out;
 }

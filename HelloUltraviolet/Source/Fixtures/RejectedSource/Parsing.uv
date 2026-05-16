@@ -1,7 +1,7 @@
 //! Rejected parsing specimens.
 
 public procedure parsingRejectedSourceFixtureCount() -> usize {
-    return 2usize
+    return 4usize
 }
 
 public procedure validatedParsingRejectedSourceFixtureCount() -> usize {
@@ -37,6 +37,40 @@ public procedure validatedParsingRejectedSourceFixtureCount() -> usize {
         "Fixtures/RejectedSource/Parsing/EnumCommaSeparator/Expected.uv",
         "E-SRC-0520",
         "req.EnumTopLevelCommaSeparatorRejected"
+    ) {
+        count = count + 1usize
+    }
+    if rejectedSpecimenMatches(
+        rejectedSpecimen(
+            "EnumCommaSeparator",
+            "Fixtures/RejectedSource/Parsing/EnumCommaSeparator",
+            "Fixtures/RejectedSource/Parsing/EnumCommaSeparator/Source/Main.uv",
+            "Fixtures/RejectedSource/Parsing/EnumCommaSeparator/Expected.uv",
+            expectedDiagnostic("E-SRC-0520", "Parse-Syntax-Err")
+        ),
+        "EnumCommaSeparator",
+        "Fixtures/RejectedSource/Parsing/EnumCommaSeparator",
+        "Fixtures/RejectedSource/Parsing/EnumCommaSeparator/Source/Main.uv",
+        "Fixtures/RejectedSource/Parsing/EnumCommaSeparator/Expected.uv",
+        "E-SRC-0520",
+        "Parse-Syntax-Err"
+    ) {
+        count = count + 1usize
+    }
+    if rejectedSpecimenMatches(
+        rejectedSpecimen(
+            "EnumCommaSeparator",
+            "Fixtures/RejectedSource/Parsing/EnumCommaSeparator",
+            "Fixtures/RejectedSource/Parsing/EnumCommaSeparator/Source/Main.uv",
+            "Fixtures/RejectedSource/Parsing/EnumCommaSeparator/Expected.uv",
+            expectedDiagnostic("E-SRC-0520", "diagnostics.ParsingDiagnostics")
+        ),
+        "EnumCommaSeparator",
+        "Fixtures/RejectedSource/Parsing/EnumCommaSeparator",
+        "Fixtures/RejectedSource/Parsing/EnumCommaSeparator/Source/Main.uv",
+        "Fixtures/RejectedSource/Parsing/EnumCommaSeparator/Expected.uv",
+        "E-SRC-0520",
+        "diagnostics.ParsingDiagnostics"
     ) {
         count = count + 1usize
     }

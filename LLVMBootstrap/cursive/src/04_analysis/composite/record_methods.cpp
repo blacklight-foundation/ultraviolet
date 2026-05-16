@@ -123,14 +123,29 @@ struct AddrOfOkResult {
   std::optional<std::string_view> diag_id;
 };
 
+template <typename TResult>
+bool IsExpectedTypeMismatchLocal(const TResult& check) {
+  return !check.diag_id.has_value() || *check.diag_id == "E-SEM-2526";
+}
+
 static AddrOfOkResult AddrOfOk(const ast::ExprPtr& expr,
-                               const ExprTypeFn& type_expr) {
+                               const ExprTypeFn& type_expr,
+                               const ArgCheckFn* check_expr) {
   if (!IsPlaceExpr(expr)) {
     return {false, std::nullopt};
   }
   const auto* index = std::get_if<ast::IndexAccessExpr>(&expr->node);
   if (!index) {
     return {true, std::nullopt};
+  }
+  if (check_expr) {
+    const auto checked = (*check_expr)(index->index, MakeTypePrim("usize"));
+    if (checked.ok) {
+      return {true, std::nullopt};
+    }
+    if (!IsExpectedTypeMismatchLocal(checked)) {
+      return {false, checked.diag_id};
+    }
   }
   const auto idx_type = type_expr(index->index);
   if (!idx_type.ok) {
@@ -318,7 +333,8 @@ RecvBaseTypeResult RecvBaseType(const ast::ExprPtr& base,
 
 RecvArgOkResult RecvArgOk(const ast::ExprPtr& base,
                           const std::optional<ParamMode>& mode,
-                          const ExprTypeFn& type_expr) {
+                          const ExprTypeFn& type_expr,
+                          const ArgCheckFn* check_expr) {
   SpecDefsRecordMethods();
   RecvArgOkResult result;
   if (!base) {
@@ -330,7 +346,7 @@ RecvArgOkResult RecvArgOk(const ast::ExprPtr& base,
       return result;
     }
     if (HasSourceProvenance(base)) {
-      const auto addr_ok = AddrOfOk(base, type_expr);
+      const auto addr_ok = AddrOfOk(base, type_expr, check_expr);
       if (!addr_ok.ok) {
         result.diag_id = addr_ok.diag_id;
         return result;
@@ -501,7 +517,7 @@ ArgsOkResult ArgsOk(const ScopeContext& ctx,
         continue;
       }
       if (HasSourceProvenance(args[i].value)) {
-        const auto addr_ok = AddrOfOk(args[i].value, type_expr);
+        const auto addr_ok = AddrOfOk(args[i].value, type_expr, check_expr);
         if (!addr_ok.ok) {
           result.diag_id = addr_ok.diag_id;
           return result;
@@ -675,7 +691,7 @@ ArgsOkResult ArgsOkWithSubst(const ScopeContext& ctx,
         continue;
       }
       if (HasSourceProvenance(args[i].value)) {
-        const auto addr_ok = AddrOfOk(args[i].value, type_expr);
+        const auto addr_ok = AddrOfOk(args[i].value, type_expr, check_expr);
         if (!addr_ok.ok) {
           result.diag_id = addr_ok.diag_id;
           return result;

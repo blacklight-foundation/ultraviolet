@@ -89,6 +89,7 @@
 #include "04_analysis/attributes/ffi_library_attrs.h"
 #include "04_analysis/composite/classes.h"
 #include "04_analysis/composite/record_methods.h"
+#include "04_analysis/generics/monomorphize.h"
 #include "04_analysis/typing/types.h"
 #include "05_codegen/ir/ir_control_flow.h"
 
@@ -118,6 +119,7 @@ const analysis::ScopeContext& BuildScope(const ast::ModulePath& module_path,
     analysis::ExprTypeMap* expr_types = nullptr;
     analysis::DynamicRefineExprMap* dynamic_refine_checks = nullptr;
     analysis::GenericCallSubstMap* generic_call_substs = nullptr;
+    analysis::SelectedCallTargetMap* selected_call_targets = nullptr;
     analysis::ScopeContext scope;
   };
 
@@ -131,7 +133,8 @@ const analysis::ScopeContext& BuildScope(const ast::ModulePath& module_path,
       cache.target_profile != ctx.target_profile ||
       cache.expr_types != ctx.expr_types ||
       cache.dynamic_refine_checks != ctx.dynamic_refine_checks ||
-      cache.generic_call_substs != ctx.generic_call_substs) {
+      cache.generic_call_substs != ctx.generic_call_substs ||
+      cache.selected_call_targets != ctx.selected_call_targets) {
     cache.ctx = &ctx;
     cache.sigma = ctx.sigma;
     cache.module_path = module_path;
@@ -139,6 +142,7 @@ const analysis::ScopeContext& BuildScope(const ast::ModulePath& module_path,
     cache.expr_types = ctx.expr_types;
     cache.dynamic_refine_checks = ctx.dynamic_refine_checks;
     cache.generic_call_substs = ctx.generic_call_substs;
+    cache.selected_call_targets = ctx.selected_call_targets;
     cache.scope = analysis::ScopeContext{};
     cache.scope.sigma = *ctx.sigma;
     cache.scope.sigma_source = ctx.sigma;
@@ -147,6 +151,7 @@ const analysis::ScopeContext& BuildScope(const ast::ModulePath& module_path,
     cache.scope.expr_types = ctx.expr_types;
     cache.scope.dynamic_refine_checks = ctx.dynamic_refine_checks;
     cache.scope.generic_call_substs = ctx.generic_call_substs;
+    cache.scope.selected_call_targets = ctx.selected_call_targets;
   }
   return cache.scope;
 }
@@ -500,6 +505,52 @@ IRParam LowerParam(const ast::Param& param,
   return out;
 }
 
+analysis::TypeRef ApplyTypeSubst(
+    const analysis::TypeRef& type,
+    const std::optional<analysis::TypeSubst>& type_subst) {
+  if (!type || !type_subst.has_value() || type_subst->empty()) {
+    return type;
+  }
+  return analysis::InstantiateType(type, *type_subst);
+}
+
+IRParam LowerParamWithSubst(
+    const ast::Param& param,
+    const analysis::ScopeContext& scope,
+    const analysis::TypeRef& self_type,
+    const LowerCtx& ctx,
+    const std::optional<analysis::TypeSubst>& type_subst) {
+  IRParam out = LowerParam(param, scope, self_type, ctx);
+  out.type = ApplyTypeSubst(out.type, type_subst);
+  return out;
+}
+
+std::vector<analysis::TypeRef> ModalGenericArgsForSubst(
+    const ast::ModalDecl& modal,
+    const std::optional<analysis::TypeSubst>& type_subst) {
+  std::vector<analysis::TypeRef> args;
+  if (!modal.generic_params.has_value() ||
+      modal.generic_params->params.empty()) {
+    return args;
+  }
+
+  args.reserve(modal.generic_params->params.size());
+  for (const auto& param : modal.generic_params->params) {
+    analysis::TypeRef arg;
+    if (type_subst.has_value()) {
+      const auto it = type_subst->find(param.name);
+      if (it != type_subst->end()) {
+        arg = it->second;
+      }
+    }
+    if (!arg) {
+      arg = analysis::MakeTypePath({param.name});
+    }
+    args.push_back(arg);
+  }
+  return args;
+}
+
 analysis::VerificationModeAttribute ResolveForeignVerificationMode(
     const ast::AttributeList& proc_attrs) {
   if (const auto proc_mode = analysis::ResolveVerificationModeAttribute(proc_attrs);
@@ -555,6 +606,11 @@ std::string HostedThunkSymbol(const ast::ModulePath& module_path,
 std::string InternalProcSymbol(const ast::ModulePath& module_path,
                                const ast::ProcedureDecl& decl) {
   return MangleProc(module_path, decl);
+}
+
+std::string InternalProcSymbol(const ast::ASTModule& module,
+                               const ast::ProcedureDecl& decl) {
+  return MangleProcInModule(module, decl);
 }
 
 LowerCtx::ExportUnwindMode ExportUnwindModeFor(
@@ -773,34 +829,69 @@ ProcIR LowerRecordMethod(const ast::RecordDecl& record,
   return proc;
 }
 
+ProcIR LowerStateMethodWithSymbol(
+    const ast::ModalDecl& modal,
+    const ast::StateBlock& state,
+    const ast::StateMethodDecl& method,
+    const ast::ModulePath& module_path,
+    const std::string& symbol,
+    const std::optional<analysis::TypeSubst>& type_subst,
+    LowerCtx& ctx) {
+  const auto& scope = BuildScope(module_path, ctx);
+
+  analysis::TypePath modal_path = module_path;
+  modal_path.push_back(modal.name);
+  auto state_type = analysis::MakeTypeModalState(
+      modal_path, state.name, ModalGenericArgsForSubst(modal, type_subst));
+  const auto recv_type = analysis::RecvTypeForReceiver(
+      scope, state_type, method.receiver,
+      [&](const std::shared_ptr<ast::Type>& type) {
+        analysis::LowerTypeResult lowered = LowerTypeForMethod(scope, type, ctx);
+        lowered.type = ApplyTypeSubst(lowered.type, type_subst);
+        return lowered;
+      });
+  const auto recv_mode = analysis::RecvModeOf(method.receiver);
+
+  std::vector<IRParam> params;
+  params.push_back(IRParam{
+      recv_mode,
+      "self",
+      "self",
+      recv_type.ok ? recv_type.type
+                   : analysis::MakeTypePerm(analysis::Permission::Const,
+                                            state_type)});
+  for (const auto& param : method.params) {
+    params.push_back(
+        LowerParamWithSubst(param, scope, state_type, ctx, type_subst));
+  }
+
+  auto ret_type = LowerReturnType(scope, method.return_type_opt, state_type, ctx);
+  ret_type = ApplyTypeSubst(ret_type, type_subst);
+  const bool prev_dynamic_checks = ctx.dynamic_checks;
+  ctx.dynamic_checks =
+      analysis::IsDynamicDecl(method) || analysis::IsDynamicDecl(modal);
+  auto proc =
+      LowerProcLike(symbol, params, ret_type, *method.body, module_path, ctx);
+  ctx.dynamic_checks = prev_dynamic_checks;
+  ApplyProcAttrs(method.attrs, proc);
+  return proc;
+}
+
 ProcIR LowerStateMethod(const ast::ModalDecl& modal,
                         const ast::StateBlock& state,
                         const ast::StateMethodDecl& method,
                         const ast::ModulePath& module_path,
                         LowerCtx& ctx) {
-  const auto& scope = BuildScope(module_path, ctx);
-
   analysis::TypePath modal_path = module_path;
   modal_path.push_back(modal.name);
-  auto state_type = analysis::MakeTypeModalState(modal_path, state.name);
-  auto recv_type = analysis::MakeTypePerm(analysis::Permission::Const, state_type);
-
-  std::vector<IRParam> params;
-  params.push_back(IRParam{std::nullopt, "self", "self", recv_type});
-  for (const auto& param : method.params) {
-    params.push_back(LowerParam(param, scope, nullptr, ctx));
-  }
-
-  const auto ret_type =
-      LowerReturnType(scope, method.return_type_opt, nullptr, ctx);
-  const std::string sym = MangleStateMethod(modal_path, state.name, method);
-  const bool prev_dynamic_checks = ctx.dynamic_checks;
-  ctx.dynamic_checks =
-      analysis::IsDynamicDecl(method) || analysis::IsDynamicDecl(modal);
-  auto proc = LowerProcLike(sym, params, ret_type, *method.body, module_path, ctx);
-  ctx.dynamic_checks = prev_dynamic_checks;
-  ApplyProcAttrs(method.attrs, proc);
-  return proc;
+  return LowerStateMethodWithSymbol(
+      modal,
+      state,
+      method,
+      module_path,
+      MangleStateMethod(modal_path, state.name, method),
+      std::nullopt,
+      ctx);
 }
 
 ProcIR LowerTransition(const ast::ModalDecl& modal,
@@ -887,9 +978,11 @@ std::vector<ProcIR> LowerClassMethodBody(const ast::ClassDecl& class_decl,
 
 ProcIR BuildProcedureSignature(const ast::ProcedureDecl& decl,
                                const ast::ModulePath& module_path,
-                               LowerCtx& ctx) {
+                               LowerCtx& ctx,
+                               std::optional<std::string> symbol_override =
+                                   std::nullopt) {
   ProcIR ir;
-  ir.symbol = InternalProcSymbol(module_path, decl);
+  ir.symbol = symbol_override.value_or(InternalProcSymbol(module_path, decl));
 
   const auto& scope = BuildScope(module_path, ctx);
   for (const auto& param : decl.params) {
@@ -909,6 +1002,13 @@ ProcIR BuildProcedureSignature(const ast::ProcedureDecl& decl,
     AppendPanicOutParamIfNeeded(ir, ctx);
   }
   return ir;
+}
+
+ProcIR BuildProcedureSignature(const ast::ProcedureDecl& decl,
+                               const ast::ASTModule& module,
+                               LowerCtx& ctx) {
+  return BuildProcedureSignature(
+      decl, module.path, ctx, InternalProcSymbol(module, decl));
 }
 
 std::optional<LowerCtx::LocalContractInfo> BuildLocalContractInfo(
@@ -968,15 +1068,26 @@ ProcIR BuildStateMethodSignature(const ast::ModalDecl& modal,
   analysis::TypePath modal_path = module_path;
   modal_path.push_back(modal.name);
   auto state_type = analysis::MakeTypeModalState(modal_path, state.name);
-  auto recv_type = analysis::MakeTypePerm(analysis::Permission::Const, state_type);
+  const auto recv_type = analysis::RecvTypeForReceiver(
+      scope, state_type, method.receiver,
+      [&](const std::shared_ptr<ast::Type>& type) {
+        return LowerTypeForMethod(scope, type, ctx);
+      });
+  const auto recv_mode = analysis::RecvModeOf(method.receiver);
 
   ProcIR ir;
   ir.symbol = MangleStateMethod(modal_path, state.name, method);
-  ir.params.push_back(IRParam{std::nullopt, "self", "self", recv_type});
+  ir.params.push_back(IRParam{
+      recv_mode,
+      "self",
+      "self",
+      recv_type.ok ? recv_type.type
+                   : analysis::MakeTypePerm(analysis::Permission::Const,
+                                            state_type)});
   for (const auto& param : method.params) {
-    ir.params.push_back(LowerParam(param, scope, nullptr, ctx));
+    ir.params.push_back(LowerParam(param, scope, state_type, ctx));
   }
-  ir.ret = LowerReturnType(scope, method.return_type_opt, nullptr, ctx);
+  ir.ret = LowerReturnType(scope, method.return_type_opt, state_type, ctx);
   AppendPanicOutParamIfNeeded(ir, ctx);
   return ir;
 }
@@ -1050,6 +1161,144 @@ std::vector<ProcIR> BuildClassMethodSignatures(const ast::ClassDecl& class_decl,
 
 }  // namespace
 
+ProcIR LowerStateMethodInstantiated(
+    const ast::ModalDecl& modal,
+    const ast::StateBlock& state,
+    const ast::StateMethodDecl& method,
+    const ast::ModulePath& module_path,
+    const std::string& symbol_override,
+    const std::map<std::string, analysis::TypeRef>& type_subst,
+    LowerCtx& ctx) {
+  struct InstantiationCtxSnapshot {
+    std::vector<std::string> module_path;
+    std::vector<ScopeInfo> scope_stack;
+    std::unordered_map<std::string, std::vector<BindingState>> binding_states;
+    std::unordered_map<std::string, DerivedValueInfo> derived_values;
+    std::vector<TempValue>* temp_sink = nullptr;
+    int temp_depth = 0;
+    std::optional<int> suppress_temp_at_depth;
+    std::vector<ParallelCollectItem>* parallel_collect = nullptr;
+    int parallel_collect_depth = 0;
+    std::optional<CaptureEnvInfo> capture_env;
+    analysis::TypeRef proc_ret_type;
+    std::optional<std::string> current_proc_symbol;
+    std::uint64_t current_closure_counter = 0;
+    std::shared_ptr<const std::unordered_map<const ast::Expr*,
+                                             analysis::ProvenanceKind>>
+        expr_prov;
+    std::shared_ptr<const std::unordered_map<const ast::Expr*, std::string>>
+        expr_region;
+    std::shared_ptr<const std::unordered_map<const ast::Expr*, std::string>>
+        expr_region_tags;
+    std::vector<std::string> active_region_aliases;
+    bool dynamic_checks = false;
+    const ast::Expr* active_contract_postcondition = nullptr;
+    std::optional<IRValue> contract_result_value;
+    std::unordered_map<const ast::EntryExpr*, IRValue> contract_entry_values;
+    std::unordered_map<std::string, IRValue> contract_param_entry_values;
+    bool lowering_contract_postcondition = false;
+    std::optional<analysis::TypeSubst> active_generic_type_subst;
+
+    explicit InstantiationCtxSnapshot(const LowerCtx& source)
+        : module_path(source.module_path),
+          scope_stack(source.scope_stack),
+          binding_states(source.binding_states),
+          derived_values(source.values.derived_values),
+          temp_sink(source.temp_sink),
+          temp_depth(source.temp_depth),
+          suppress_temp_at_depth(source.suppress_temp_at_depth),
+          parallel_collect(source.parallel_collect),
+          parallel_collect_depth(source.parallel_collect_depth),
+          capture_env(source.capture_env),
+          proc_ret_type(source.proc_ret_type),
+          current_proc_symbol(source.current_proc_symbol),
+          current_closure_counter(source.current_closure_counter),
+          expr_prov(source.expr_prov),
+          expr_region(source.expr_region),
+          expr_region_tags(source.expr_region_tags),
+          active_region_aliases(source.active_region_aliases),
+          dynamic_checks(source.dynamic_checks),
+          active_contract_postcondition(source.active_contract_postcondition),
+          contract_result_value(source.contract_result_value),
+          contract_entry_values(source.contract_entry_values),
+          contract_param_entry_values(source.contract_param_entry_values),
+          lowering_contract_postcondition(source.lowering_contract_postcondition),
+          active_generic_type_subst(source.active_generic_type_subst) {}
+
+    void Restore(LowerCtx& target) const {
+      target.module_path = module_path;
+      target.scope_stack = scope_stack;
+      target.binding_states = binding_states;
+      auto preserved_derived = std::move(target.values.derived_values);
+      target.values.derived_values = derived_values;
+      for (auto& [name, info] : preserved_derived) {
+        target.values.derived_values.emplace(std::move(name), std::move(info));
+      }
+      target.temp_sink = temp_sink;
+      target.temp_depth = temp_depth;
+      target.suppress_temp_at_depth = suppress_temp_at_depth;
+      target.parallel_collect = parallel_collect;
+      target.parallel_collect_depth = parallel_collect_depth;
+      target.capture_env = capture_env;
+      target.proc_ret_type = proc_ret_type;
+      target.current_proc_symbol = current_proc_symbol;
+      target.current_closure_counter = current_closure_counter;
+      target.expr_prov = expr_prov;
+      target.expr_region = expr_region;
+      target.expr_region_tags = expr_region_tags;
+      target.active_region_aliases = active_region_aliases;
+      target.dynamic_checks = dynamic_checks;
+      target.active_contract_postcondition = active_contract_postcondition;
+      target.contract_result_value = contract_result_value;
+      target.contract_entry_values = contract_entry_values;
+      target.contract_param_entry_values = contract_param_entry_values;
+      target.lowering_contract_postcondition = lowering_contract_postcondition;
+      target.active_generic_type_subst = active_generic_type_subst;
+    }
+  };
+
+  InstantiationCtxSnapshot snapshot(ctx);
+  ctx.module_path.clear();
+  ctx.scope_stack.clear();
+  ctx.binding_states.clear();
+  ctx.values.derived_values.clear();
+  ctx.temp_sink = nullptr;
+  ctx.temp_depth = 0;
+  ctx.suppress_temp_at_depth.reset();
+  ctx.parallel_collect = nullptr;
+  ctx.parallel_collect_depth = 0;
+  ctx.capture_env.reset();
+  ctx.proc_ret_type = nullptr;
+  ctx.current_proc_symbol = symbol_override;
+  ctx.current_closure_counter = 0;
+  ctx.expr_prov.reset();
+  ctx.expr_region.reset();
+  ctx.expr_region_tags.reset();
+  ctx.active_region_aliases.clear();
+  ctx.active_contract_postcondition = nullptr;
+  ctx.contract_result_value.reset();
+  ctx.contract_entry_values.clear();
+  ctx.contract_param_entry_values.clear();
+  ctx.lowering_contract_postcondition = false;
+  ctx.active_generic_type_subst = type_subst;
+
+  std::vector<std::string> inserted_value_type_keys;
+  auto* prev_value_type_insert_sink = ctx.values.value_type_insert_sink;
+  ctx.values.value_type_insert_sink = &inserted_value_type_keys;
+
+  ProcIR ir = LowerStateMethodWithSymbol(
+      modal, state, method, module_path, symbol_override, type_subst, ctx);
+  ctx.values.value_type_insert_sink = prev_value_type_insert_sink;
+  snapshot.Restore(ctx);
+  if (prev_value_type_insert_sink && !inserted_value_type_keys.empty()) {
+    prev_value_type_insert_sink->insert(prev_value_type_insert_sink->end(),
+                                        inserted_value_type_keys.begin(),
+                                        inserted_value_type_keys.end());
+  }
+
+  return ir;
+}
+
 bool RegisterModuleSignatures(const ast::ASTModule& module, LowerCtx& ctx) {
   ctx.module_path = module.path;
 
@@ -1080,7 +1329,7 @@ bool RegisterModuleSignatures(const ast::ASTModule& module, LowerCtx& ctx) {
                 !node.generic_params->params.empty()) {
               return;
             }
-            auto sig = BuildProcedureSignature(node, module.path, ctx);
+            auto sig = BuildProcedureSignature(node, module, ctx);
             const LinkageKind proc_linkage =
                 LinkageOf(node);
             register_user_proc(sig, proc_linkage, node.vis);
@@ -1119,10 +1368,16 @@ bool RegisterModuleSignatures(const ast::ASTModule& module, LowerCtx& ctx) {
               }
             }
           } else if constexpr (std::is_same_v<T, ast::ModalDecl>) {
+            const bool generic_modal =
+                node.generic_params.has_value() &&
+                !node.generic_params->params.empty();
             for (const auto& state : node.states) {
               for (const auto& member : state.members) {
                 if (const auto* method =
                         std::get_if<ast::StateMethodDecl>(&member)) {
+                  if (generic_modal) {
+                    continue;
+                  }
                   register_user_proc(
                       BuildStateMethodSignature(node, state, *method, module.path, ctx),
                       LinkageOf(*method),
@@ -1131,6 +1386,9 @@ bool RegisterModuleSignatures(const ast::ASTModule& module, LowerCtx& ctx) {
               }
               for (const auto& member : state.members) {
                 if (const auto* trans = std::get_if<ast::TransitionDecl>(&member)) {
+                  if (generic_modal) {
+                    continue;
+                  }
                   register_user_proc(
                       BuildTransitionSignature(node, state, *trans, module.path, ctx),
                       LinkageOf(*trans),
@@ -1303,7 +1561,8 @@ IRDecls LowerModule(const ast::ASTModule& module, LowerCtx& ctx) {
             } else {
               SPEC_RULE("CG-Item-Procedure");
             }
-            auto proc = LowerProc(node, module.path, ctx);
+            auto proc = LowerProc(node, module.path, ctx,
+                                  InternalProcSymbol(module, node));
             if (ctx.resolve_failed || ctx.codegen_failed) {
               return;
             }
@@ -1335,10 +1594,16 @@ IRDecls LowerModule(const ast::ASTModule& module, LowerCtx& ctx) {
             return;
           } else if constexpr (std::is_same_v<T, ast::ModalDecl>) {
             SPEC_RULE("CG-Item-Modal");
+            const bool generic_modal =
+                node.generic_params.has_value() &&
+                !node.generic_params->params.empty();
             for (const auto& state : node.states) {
               for (const auto& member : state.members) {
                 if (const auto* method = std::get_if<ast::StateMethodDecl>(&member)) {
                   SPEC_RULE("CG-Item-StateMethod");
+                  if (generic_modal) {
+                    continue;
+                  }
                   auto proc = LowerStateMethod(node, state, *method, module.path, ctx);
                   register_proc(proc, true, LinkageOf(*method));
                   decls.push_back(std::move(proc));
@@ -1347,6 +1612,9 @@ IRDecls LowerModule(const ast::ASTModule& module, LowerCtx& ctx) {
               for (const auto& member : state.members) {
                 if (const auto* trans = std::get_if<ast::TransitionDecl>(&member)) {
                   SPEC_RULE("CG-Item-Transition");
+                  if (generic_modal) {
+                    continue;
+                  }
                   auto proc = LowerTransition(node, state, *trans, module.path, ctx);
                   register_proc(proc, true, LinkageOf(*trans));
                   decls.push_back(std::move(proc));

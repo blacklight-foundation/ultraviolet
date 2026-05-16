@@ -70,12 +70,12 @@ public procedure validatedAttributesAndMetadataOptimizationAttributesObligations
     ) {
         count = count + 1usize
     }
-    if acceptedObligationEntryMatches(
+    if diagnosticSourceObligationEntryMatches(
         "diagnostics.OptimizationAttributeDiagnostics",
         28124usize,
-        "HelloUltraviolet::Reference::Attributes",
-        "runAttributesOptimizationAttributesReference",
-        "Source/Reference/Attributes/OptimizationAttributes.uv"
+        "HelloUltraviolet::Fixtures::DiagnosticSource",
+        "validatedAttributesDiagnosticSourceFixtureCount",
+        "Fixtures/DiagnosticSource/Attributes/InlineAlwaysRecursive/Source/Main.uv"
     ) {
         count = count + 1usize
     }

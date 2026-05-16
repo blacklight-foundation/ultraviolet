@@ -59,6 +59,10 @@ namespace cursive::analysis {
 ScopeList BindTypeParams(
     const ScopeContext& ctx,
     const std::optional<ast::GenericParams>& params_opt);
+ScopeList BindTypeParams(
+    const ScopeContext& ctx,
+    const std::optional<ast::GenericParams>& params_opt,
+    const std::optional<ast::PredicateClause>& predicate_clause_opt);
 
 namespace {
 
@@ -1877,7 +1881,8 @@ ProcedureDeclResult TypeProcedureDecl(
   }
   ScopeContext proc_ctx = ctx;
   proc_ctx.sigma_source = ctx.sigma_source ? ctx.sigma_source : &ctx.sigma;
-  proc_ctx.scopes = BindTypeParams(ctx, decl.generic_params);
+  proc_ctx.scopes =
+      BindTypeParams(ctx, decl.generic_params, decl.predicate_clause_opt);
 
   // Process where clauses
   std::vector<std::string> type_param_names;
@@ -2296,7 +2301,8 @@ ProcedureDeclResult TypeProcedureDeclSignature(
   }
   ScopeContext proc_ctx = ctx;
   proc_ctx.sigma_source = ctx.sigma_source ? ctx.sigma_source : &ctx.sigma;
-  proc_ctx.scopes = BindTypeParams(ctx, decl.generic_params);
+  proc_ctx.scopes =
+      BindTypeParams(ctx, decl.generic_params, decl.predicate_clause_opt);
 
   // Build signature
   const auto sig =
@@ -2338,7 +2344,8 @@ ProcedureDeclResult TypeProcedureDeclBody(
 
   ScopeContext proc_ctx = ctx;
   proc_ctx.sigma_source = ctx.sigma_source ? ctx.sigma_source : &ctx.sigma;
-  proc_ctx.scopes = BindTypeParams(ctx, decl.generic_params);
+  proc_ctx.scopes =
+      BindTypeParams(ctx, decl.generic_params, decl.predicate_clause_opt);
 
   // Rebuild parameter environment
   TypeEnv env;

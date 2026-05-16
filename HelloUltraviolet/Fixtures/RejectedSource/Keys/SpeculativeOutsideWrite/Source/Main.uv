@@ -1,0 +1,11 @@
+//! Rejected key-system specimen for writing outside the speculative keyed set.
+
+public procedure speculativeOutsideWriteReference() -> i32 {
+    var covered: shared i32 = 1
+    var outside: shared i32 = 2
+    #covered speculative write {
+        outside = 5
+        covered = covered + 1
+    }
+    return 0
+}

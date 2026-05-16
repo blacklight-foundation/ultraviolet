@@ -34,12 +34,12 @@ public procedure validatedProjectAndCompilationModelProjectRootAndManifestObliga
     ) {
         count = count + 1usize
     }
-    if acceptedObligationEntryMatches(
+    if artifactBehaviorObligationEntryMatches(
         "Parse-Manifest-Err",
         2219usize,
-        "HelloUltraviolet::Reference::Projects",
-        "runProjectsManifestModelReference",
-        "Source/Reference/Projects/ManifestModel.uv"
+        "HelloUltraviolet::Fixtures::OutputDiagnostics",
+        "validatedOutputProjectDiagnosticFixtureCount",
+        "Fixtures/OutputDiagnostics/Projects/ManifestParseError/Ultraviolet.toml"
     ) {
         count = count + 1usize
     }

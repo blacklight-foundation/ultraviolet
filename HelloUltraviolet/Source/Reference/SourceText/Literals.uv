@@ -13,25 +13,143 @@ internal procedure sourceTextLiteralByte(text: string@View, index: usize) -> u8 
     return data[index]
 }
 
-/// Exercises the SourceText Literals reference surface.
-public procedure runSourceTextLiteralsReference() -> bool {
+internal procedure sourceTextIntegerBasesReference() -> bool {
     let decimal_value: i32 = 1_024
+    let multiple_underscore_value: i32 = 12__34
     let hex_value: i32 = 0x10
+    let hex_grouped: u32 = 0xCA_FEu32
     let octal_value: i32 = 0o10
+    let octal_grouped: u16 = 0o7_1u16
     let binary_value: i32 = 0b1010
-    let float_value: f32 = 1.5f32
-    let inferred_float: f64 = 2.5
+    let binary_grouped: u8 = 0b1010_0101u8
+
+    return decimal_value == 1024 &&
+        multiple_underscore_value == 1234 &&
+        hex_value == 16 &&
+        hex_grouped == 51966u32 &&
+        octal_value == 8 &&
+        octal_grouped == 57u16 &&
+        binary_value == 10 &&
+        binary_grouped == 165u8
+}
+
+internal procedure sourceTextIntegerSuffixesReference() -> bool {
+    let signed_8: i8 = 7i8
+    let signed_16: i16 = 300i16
+    let signed_32: i32 = 40000i32
+    let signed_64: i64 = 500000i64
+    let signed_128: i128 = 600000i128
+    let signed_pointer: isize = 70isize
+    let unsigned_8: u8 = 8u8
+    let unsigned_16: u16 = 900u16
+    let unsigned_32: u32 = 1000u32
+    let unsigned_64: u64 = 1100u64
+    let unsigned_128: u128 = 1200u128
+    let unsigned_pointer: usize = 13usize
+
+    return signed_8 == 7i8 &&
+        signed_16 == 300i16 &&
+        signed_32 == 40000i32 &&
+        signed_64 == 500000i64 &&
+        signed_128 == 600000i128 &&
+        signed_pointer == 70isize &&
+        unsigned_8 == 8u8 &&
+        unsigned_16 == 900u16 &&
+        unsigned_32 == 1000u32 &&
+        unsigned_64 == 1100u64 &&
+        unsigned_128 == 1200u128 &&
+        unsigned_pointer == 13usize
+}
+
+internal procedure sourceTextFloatSuffixesReference() -> bool {
+    let inferred_width: f32 = 1.5f
+    let explicit_f16: f16 = 1.25f16
+    let explicit_f32: f32 = 2.5f32
+    let explicit_f64: f64 = 3.75f64
+    let exponent_lower: f32 = 1.25e2f32
+    let exponent_upper: f64 = 2.5E-1f64
+    let omitted_fraction: f32 = 7.f32
+    let unsuffixed_expected: f64 = 8.5
+
+    return inferred_width > 1.0f32 &&
+        explicit_f16 > 1.0f16 &&
+        explicit_f32 > 2.0f32 &&
+        explicit_f64 > 3.0f64 &&
+        exponent_lower == 125.0f32 &&
+        exponent_upper < 1.0f64 &&
+        omitted_fraction == 7.0f32 &&
+        unsuffixed_expected == 8.5f64
+}
+
+internal procedure sourceTextStringEscapesReference() -> bool {
+    let simple: string@View = "\n\r\t\\\"\'\0"
+    let byte_escape: string@View = "\x41\x7a"
+    let unicode_escape: string@View = "\u{41}\u{7A}\u{20AC}"
+
+    return sourceTextLiteralLength(simple) == 7usize &&
+        sourceTextLiteralByte(simple, 0usize) == 10u8 &&
+        sourceTextLiteralByte(simple, 1usize) == 13u8 &&
+        sourceTextLiteralByte(simple, 2usize) == 9u8 &&
+        sourceTextLiteralByte(simple, 3usize) == 92u8 &&
+        sourceTextLiteralByte(simple, 4usize) == 34u8 &&
+        sourceTextLiteralByte(simple, 5usize) == 39u8 &&
+        sourceTextLiteralByte(simple, 6usize) == 0u8 &&
+        sourceTextLiteralLength(byte_escape) == 2usize &&
+        sourceTextLiteralByte(byte_escape, 0usize) == 65u8 &&
+        sourceTextLiteralByte(byte_escape, 1usize) == 122u8 &&
+        sourceTextLiteralLength(unicode_escape) == 5usize &&
+        sourceTextLiteralByte(unicode_escape, 0usize) == 65u8 &&
+        sourceTextLiteralByte(unicode_escape, 1usize) == 122u8 &&
+        sourceTextLiteralByte(unicode_escape, 2usize) == 226u8 &&
+        sourceTextLiteralByte(unicode_escape, 3usize) == 130u8 &&
+        sourceTextLiteralByte(unicode_escape, 4usize) == 172u8
+}
+
+internal procedure sourceTextCharEscapesReference() -> bool {
     let letter: char = 'A'
     let newline: char = '\n'
-    let escaped: string@View = "A\n\x42\u{43}"
-    return decimal_value == 1024 &&
-        hex_value == 16 &&
-        octal_value == 8 &&
-        binary_value == 10 &&
-        float_value > 1.0f32 &&
-        inferred_float > 2.0f64 &&
-        letter == 'A' &&
+    let apostrophe: char = '\''
+    let byte_escape: char = '\x42'
+    let unicode_escape: char = '\u{43}'
+
+    return letter == 'A' &&
         newline == '\n' &&
+        apostrophe == '\'' &&
+        byte_escape == 'B' &&
+        unicode_escape == 'C'
+}
+
+internal procedure sourceTextUnitScore(value: ()) -> usize {
+    return 1usize
+}
+
+internal procedure sourceTextBasicLiteralsReference() -> bool {
+    let truth: bool = true
+    let falsehood: bool = false
+    let pointer: *mut i32 = null
+    let unit_value: () = ()
+
+    return truth &&
+        !falsehood &&
+        pointer == null &&
+        sourceTextUnitScore(unit_value) == 1usize
+}
+
+internal procedure sourceTextTupleProjectionLexingReference() -> bool {
+    let nested: ((i32, i32), i32) = ((10, 20), 30)
+    return nested.0.1 == 20 && nested.1 == 30
+}
+
+/// Exercises the SourceText Literals reference surface.
+public procedure runSourceTextLiteralsReference() -> bool {
+    let escaped: string@View = "A\n\x42\u{43}"
+    return sourceTextIntegerBasesReference() &&
+        sourceTextIntegerSuffixesReference() &&
+        sourceTextFloatSuffixesReference() &&
+        sourceTextStringEscapesReference() &&
+        sourceTextCharEscapesReference() &&
+        sourceTextBasicLiteralsReference() &&
+        sourceTextTupleProjectionLexingReference() &&
         sourceTextLiteralLength(escaped) == 4usize &&
         sourceTextLiteralByte(escaped, 0usize) == 65u8 &&
         sourceTextLiteralByte(escaped, 2usize) == 66u8 &&

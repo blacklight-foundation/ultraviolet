@@ -30,11 +30,11 @@ public procedure specClarificationMatches(
 }
 
 public procedure expectedSpecClarificationCount() -> usize {
-    return 14usize
+    return 17usize
 }
 
 public procedure specClarificationCount() -> usize {
-    return 14usize
+    return 17usize
 }
 
 public procedure validatedSpecClarificationCount() -> usize {
@@ -161,6 +161,18 @@ public procedure validatedSpecClarificationCount() -> usize {
     }
     if specClarificationMatches(
         specClarification(
+            "Overloaded Procedure Symbol Identity",
+            "backend-symbol-identity-clarity",
+            "ReferenceSource"
+        ),
+        "Overloaded Procedure Symbol Identity",
+        "backend-symbol-identity-clarity",
+        "ReferenceSource"
+    ) {
+        count = count + 1usize
+    }
+    if specClarificationMatches(
+        specClarification(
             "WF-Union-TooFew",
             "internal-ast-recovery-diagnostic",
             "ReferenceModel"
@@ -168,6 +180,18 @@ public procedure validatedSpecClarificationCount() -> usize {
         "WF-Union-TooFew",
         "internal-ast-recovery-diagnostic",
         "ReferenceModel"
+    ) {
+        count = count + 1usize
+    }
+    if specClarificationMatches(
+        specClarification(
+            "Hex Digit Underscores Adjacent To E",
+            "literal-underscore-grammar-conflict",
+            "ReferenceSource"
+        ),
+        "Hex Digit Underscores Adjacent To E",
+        "literal-underscore-grammar-conflict",
+        "ReferenceSource"
     ) {
         count = count + 1usize
     }
@@ -204,6 +228,18 @@ public procedure validatedSpecClarificationCount() -> usize {
         "Enum-Disc-Negative",
         "internal-ast-recovery-diagnostic",
         "ReferenceModel"
+    ) {
+        count = count + 1usize
+    }
+    if specClarificationMatches(
+        specClarification(
+            "TypeAlias-Recursive-Err",
+            "public-spec-rule-name-typo",
+            "RejectedSource"
+        ),
+        "TypeAlias-Recursive-Err",
+        "public-spec-rule-name-typo",
+        "RejectedSource"
     ) {
         count = count + 1usize
     }

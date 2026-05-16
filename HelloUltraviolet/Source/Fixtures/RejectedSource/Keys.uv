@@ -1,7 +1,7 @@
 //! Rejected key-system specimens.
 
 public procedure keysRejectedSourceFixtureCount() -> usize {
-    return 21usize
+    return 25usize
 }
 
 public procedure validatedKeysRejectedSourceFixtureCount() -> usize {
@@ -20,6 +20,23 @@ public procedure validatedKeysRejectedSourceFixtureCount() -> usize {
         "Fixtures/RejectedSource/Keys/SpeculativeReleaseMode/Expected.uv",
         "E-CON-0094",
         "rule.19.K-Spec-No-Release"
+    ) {
+        count = count + 1usize
+    }
+    if rejectedSpecimenMatches(
+        rejectedSpecimen(
+            "SpeculativeReadMode",
+            "Fixtures/RejectedSource/Keys/SpeculativeReadMode",
+            "Fixtures/RejectedSource/Keys/SpeculativeReadMode/Source/Main.uv",
+            "Fixtures/RejectedSource/Keys/SpeculativeReadMode/Expected.uv",
+            expectedDiagnostic("E-CON-0095", "rule.19.K-Spec-Write-Required")
+        ),
+        "SpeculativeReadMode",
+        "Fixtures/RejectedSource/Keys/SpeculativeReadMode",
+        "Fixtures/RejectedSource/Keys/SpeculativeReadMode/Source/Main.uv",
+        "Fixtures/RejectedSource/Keys/SpeculativeReadMode/Expected.uv",
+        "E-CON-0095",
+        "rule.19.K-Spec-Write-Required"
     ) {
         count = count + 1usize
     }
@@ -76,6 +93,23 @@ public procedure validatedKeysRejectedSourceFixtureCount() -> usize {
     }
     if rejectedSpecimenMatches(
         rejectedSpecimen(
+            "SpeculativeNestedKeyRule",
+            "Fixtures/RejectedSource/Keys/SpeculativeNestedKeyRule",
+            "Fixtures/RejectedSource/Keys/SpeculativeNestedKeyRule/Source/Main.uv",
+            "Fixtures/RejectedSource/Keys/SpeculativeNestedKeyRule/Expected.uv",
+            expectedDiagnostic("E-CON-0090", "rule.19.K-Spec-No-Nested-Key")
+        ),
+        "SpeculativeNestedKeyRule",
+        "Fixtures/RejectedSource/Keys/SpeculativeNestedKeyRule",
+        "Fixtures/RejectedSource/Keys/SpeculativeNestedKeyRule/Source/Main.uv",
+        "Fixtures/RejectedSource/Keys/SpeculativeNestedKeyRule/Expected.uv",
+        "E-CON-0090",
+        "rule.19.K-Spec-No-Nested-Key"
+    ) {
+        count = count + 1usize
+    }
+    if rejectedSpecimenMatches(
+        rejectedSpecimen(
             "SpeculativeDefer",
             "Fixtures/RejectedSource/Keys/SpeculativeDefer",
             "Fixtures/RejectedSource/Keys/SpeculativeDefer/Source/Main.uv",
@@ -122,6 +156,40 @@ public procedure validatedKeysRejectedSourceFixtureCount() -> usize {
         "Fixtures/RejectedSource/Keys/SpeculativeMemoryOrder/Expected.uv",
         "E-CON-0096",
         "requirement.19.MemoryOrderNotInsideSpeculativeBlocks"
+    ) {
+        count = count + 1usize
+    }
+    if rejectedSpecimenMatches(
+        rejectedSpecimen(
+            "SpeculativeFence",
+            "Fixtures/RejectedSource/Keys/SpeculativeFence",
+            "Fixtures/RejectedSource/Keys/SpeculativeFence/Source/Main.uv",
+            "Fixtures/RejectedSource/Keys/SpeculativeFence/Expected.uv",
+            expectedDiagnostic("E-CON-0096", "rule.19.K-Spec-No-Memory-Ordering")
+        ),
+        "SpeculativeFence",
+        "Fixtures/RejectedSource/Keys/SpeculativeFence",
+        "Fixtures/RejectedSource/Keys/SpeculativeFence/Source/Main.uv",
+        "Fixtures/RejectedSource/Keys/SpeculativeFence/Expected.uv",
+        "E-CON-0096",
+        "rule.19.K-Spec-No-Memory-Ordering"
+    ) {
+        count = count + 1usize
+    }
+    if rejectedSpecimenMatches(
+        rejectedSpecimen(
+            "SpeculativeOutsideWrite",
+            "Fixtures/RejectedSource/Keys/SpeculativeOutsideWrite",
+            "Fixtures/RejectedSource/Keys/SpeculativeOutsideWrite/Source/Main.uv",
+            "Fixtures/RejectedSource/Keys/SpeculativeOutsideWrite/Expected.uv",
+            expectedDiagnostic("E-CON-0091", "rule.19.K-Spec-Pure-Body")
+        ),
+        "SpeculativeOutsideWrite",
+        "Fixtures/RejectedSource/Keys/SpeculativeOutsideWrite",
+        "Fixtures/RejectedSource/Keys/SpeculativeOutsideWrite/Source/Main.uv",
+        "Fixtures/RejectedSource/Keys/SpeculativeOutsideWrite/Expected.uv",
+        "E-CON-0091",
+        "rule.19.K-Spec-Pure-Body"
     ) {
         count = count + 1usize
     }

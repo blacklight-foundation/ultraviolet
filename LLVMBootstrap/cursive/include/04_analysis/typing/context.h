@@ -25,6 +25,12 @@ using DynamicRefineExprMap =
     std::unordered_map<const ast::Expr*, std::vector<TypeRef>>;
 using GenericCallSubstMap = std::unordered_map<const ast::CallExpr*, TypeSubst>;
 
+struct SelectedCallTarget {
+  ast::ModulePath module_path;
+  const ast::ProcedureDecl* proc = nullptr;
+};
+using SelectedCallTargetMap =
+    std::unordered_map<const ast::CallExpr*, SelectedCallTarget>;
 
 enum class EntityKind {
   Value,
@@ -48,6 +54,7 @@ struct Entity {
   std::optional<core::Span> declaration_span;
   std::string language_symbol_id;
   std::vector<ast::TypeBound> type_param_class_bounds = {};
+  std::vector<std::string> type_param_predicate_bounds = {};
 };
 
 using TypeDecl = std::variant<ast::RecordDecl,
@@ -78,6 +85,7 @@ struct ScopeContext {
   ExprTypeMap* expr_types = nullptr;
   DynamicRefineExprMap* dynamic_refine_checks = nullptr;
   GenericCallSubstMap* generic_call_substs = nullptr;
+  SelectedCallTargetMap* selected_call_targets = nullptr;
   ast::ModulePath current_module;
   ScopeList scopes;
 };

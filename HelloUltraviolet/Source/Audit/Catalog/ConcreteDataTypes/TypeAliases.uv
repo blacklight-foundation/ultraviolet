@@ -2,11 +2,20 @@
 
 
 public procedure countConcreteDataTypesTypeAliasesObligations() -> usize {
-    return 21usize
+    return 22usize
 }
 
 public procedure validatedConcreteDataTypesTypeAliasesObligations() -> usize {
     var count: usize = 0usize
+    if acceptedObligationEntryMatches(
+        "grammar.TypeAliasSyntax",
+        41228usize,
+        "HelloUltraviolet::Reference::DataTypes",
+        "runDataTypesTypeAliasesReference",
+        "Source/Reference/DataTypes/TypeAliases.uv"
+    ) {
+        count = count + 1usize
+    }
     if acceptedObligationEntryMatches(
         "Parse-Type-Alias",
         41250usize,
@@ -106,12 +115,12 @@ public procedure validatedConcreteDataTypesTypeAliasesObligations() -> usize {
     ) {
         count = count + 1usize
     }
-    if acceptedObligationEntryMatches(
+    if rejectedSourceObligationEntryMatches(
         "def.AliasCycle",
         41469usize,
-        "HelloUltraviolet::Reference::DataTypes",
-        "runDataTypesTypeAliasesReference",
-        "Source/Reference/DataTypes/TypeAliases.uv"
+        "HelloUltraviolet::Fixtures::RejectedSource",
+        "validatedDataTypesRejectedSourceFixtureCount",
+        "Fixtures/RejectedSource/DataTypes/TypeAliasCycle/Source/Main.uv"
     ) {
         count = count + 1usize
     }
@@ -124,12 +133,12 @@ public procedure validatedConcreteDataTypesTypeAliasesObligations() -> usize {
     ) {
         count = count + 1usize
     }
-    if acceptedObligationEntryMatches(
+    if rejectedSourceObligationEntryMatches(
         "TypeAlias-Recursive-Err",
         41500usize,
-        "HelloUltraviolet::Reference::DataTypes",
-        "runDataTypesTypeAliasesReference",
-        "Source/Reference/DataTypes/TypeAliases.uv"
+        "HelloUltraviolet::Fixtures::RejectedSource",
+        "validatedDataTypesRejectedSourceFixtureCount",
+        "Fixtures/RejectedSource/DataTypes/TypeAliasCycle/Source/Main.uv"
     ) {
         count = count + 1usize
     }
@@ -178,21 +187,21 @@ public procedure validatedConcreteDataTypesTypeAliasesObligations() -> usize {
     ) {
         count = count + 1usize
     }
-    if acceptedObligationEntryMatches(
+    if rejectedSourceObligationEntryMatches(
         "req.TypeAliasDiagnosticOwnership",
         41603usize,
-        "HelloUltraviolet::Reference::DataTypes",
-        "runDataTypesTypeAliasesReference",
-        "Source/Reference/DataTypes/TypeAliases.uv"
+        "HelloUltraviolet::Fixtures::RejectedSource",
+        "validatedDataTypesRejectedSourceFixtureCount",
+        "Fixtures/RejectedSource/DataTypes/TypeAliasCycle/Source/Main.uv"
     ) {
         count = count + 1usize
     }
-    if acceptedObligationEntryMatches(
+    if rejectedSourceObligationEntryMatches(
         "diagnostics.DataTypesSupplement",
         41620usize,
-        "HelloUltraviolet::Reference::DataTypes",
-        "runDataTypesTypeAliasesReference",
-        "Source/Reference/DataTypes/TypeAliases.uv"
+        "HelloUltraviolet::Fixtures::RejectedSource",
+        "validatedExpressionsRejectedSourceFixtureCount",
+        "Fixtures/RejectedSource/Expressions/UnionDirectAccess/Source/Main.uv"
     ) {
         count = count + 1usize
     }

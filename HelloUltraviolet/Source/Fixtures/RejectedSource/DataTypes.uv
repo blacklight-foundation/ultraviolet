@@ -1,0 +1,78 @@
+//! Rejected data type specimens.
+
+public procedure dataTypesRejectedSourceFixtureCount() -> usize {
+    return 4usize
+}
+
+public procedure validatedDataTypesRejectedSourceFixtureCount() -> usize {
+    var count: usize = 0usize
+    if rejectedSpecimenMatches(
+        rejectedSpecimen(
+            "TypeAliasCycle",
+            "Fixtures/RejectedSource/DataTypes/TypeAliasCycle",
+            "Fixtures/RejectedSource/DataTypes/TypeAliasCycle/Source/Main.uv",
+            "Fixtures/RejectedSource/DataTypes/TypeAliasCycle/Expected.uv",
+            expectedDiagnostic("E-TYP-1506", "def.AliasCycle")
+        ),
+        "TypeAliasCycle",
+        "Fixtures/RejectedSource/DataTypes/TypeAliasCycle",
+        "Fixtures/RejectedSource/DataTypes/TypeAliasCycle/Source/Main.uv",
+        "Fixtures/RejectedSource/DataTypes/TypeAliasCycle/Expected.uv",
+        "E-TYP-1506",
+        "def.AliasCycle"
+    ) {
+        count = count + 1usize
+    }
+    if rejectedSpecimenMatches(
+        rejectedSpecimen(
+            "TypeAliasCycle",
+            "Fixtures/RejectedSource/DataTypes/TypeAliasCycle",
+            "Fixtures/RejectedSource/DataTypes/TypeAliasCycle/Source/Main.uv",
+            "Fixtures/RejectedSource/DataTypes/TypeAliasCycle/Expected.uv",
+            expectedDiagnostic("E-TYP-1506", "TypeAlias-Recursive-Err")
+        ),
+        "TypeAliasCycle",
+        "Fixtures/RejectedSource/DataTypes/TypeAliasCycle",
+        "Fixtures/RejectedSource/DataTypes/TypeAliasCycle/Source/Main.uv",
+        "Fixtures/RejectedSource/DataTypes/TypeAliasCycle/Expected.uv",
+        "E-TYP-1506",
+        "TypeAlias-Recursive-Err"
+    ) {
+        count = count + 1usize
+    }
+    if rejectedSpecimenMatches(
+        rejectedSpecimen(
+            "TypeAliasCycle",
+            "Fixtures/RejectedSource/DataTypes/TypeAliasCycle",
+            "Fixtures/RejectedSource/DataTypes/TypeAliasCycle/Source/Main.uv",
+            "Fixtures/RejectedSource/DataTypes/TypeAliasCycle/Expected.uv",
+            expectedDiagnostic("E-TYP-1506", "req.TypeAliasDiagnosticOwnership")
+        ),
+        "TypeAliasCycle",
+        "Fixtures/RejectedSource/DataTypes/TypeAliasCycle",
+        "Fixtures/RejectedSource/DataTypes/TypeAliasCycle/Source/Main.uv",
+        "Fixtures/RejectedSource/DataTypes/TypeAliasCycle/Expected.uv",
+        "E-TYP-1506",
+        "req.TypeAliasDiagnosticOwnership"
+    ) {
+        count = count + 1usize
+    }
+    if rejectedSpecimenMatches(
+        rejectedSpecimen(
+            "TypeAliasCycle",
+            "Fixtures/RejectedSource/DataTypes/TypeAliasCycle",
+            "Fixtures/RejectedSource/DataTypes/TypeAliasCycle/Source/Main.uv",
+            "Fixtures/RejectedSource/DataTypes/TypeAliasCycle/Expected.uv",
+            expectedDiagnostic("E-TYP-1506", "diagnostics.CoreTypeDiagnostics")
+        ),
+        "TypeAliasCycle",
+        "Fixtures/RejectedSource/DataTypes/TypeAliasCycle",
+        "Fixtures/RejectedSource/DataTypes/TypeAliasCycle/Source/Main.uv",
+        "Fixtures/RejectedSource/DataTypes/TypeAliasCycle/Expected.uv",
+        "E-TYP-1506",
+        "diagnostics.CoreTypeDiagnostics"
+    ) {
+        count = count + 1usize
+    }
+    return count
+}

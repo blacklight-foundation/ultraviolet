@@ -698,6 +698,7 @@ add_library(cursive_codegen STATIC
   05_codegen/intrinsics/intrinsics_calls.cpp
   05_codegen/intrinsics/intrinsics_decls.cpp
   05_codegen/intrinsics/intrinsics_interface.cpp
+  05_codegen/ir/aggregate_copy_elision.cpp
   05_codegen/ir/ir_dump.cpp
   05_codegen/ir/ir_model.cpp
   05_codegen/llvm/llvm_attr.cpp

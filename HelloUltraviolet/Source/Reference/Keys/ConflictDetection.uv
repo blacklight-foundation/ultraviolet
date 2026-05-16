@@ -9,6 +9,16 @@ internal procedure disjointKeyAccessValue() -> i32 {
     return observed
 }
 
+[[dynamic]]
+internal procedure dynamicOrderedSameBaseKeyAccessValue(first: usize, second: usize) -> i32 {
+    var values: shared [i32; 4] = [1, 2, 3, 4]
+    var observed: i32 = 0
+    #values[first], values[second] dynamic ordered read {
+        observed = values[first] + values[second]
+    }
+    return observed
+}
+
 internal procedure coveredKeyAccessValue() -> i32 {
     var container: shared KeyContainer =
         KeyContainer {
@@ -30,6 +40,14 @@ internal procedure coveringWriteReadThenWriteValue() -> i32 {
     return shared_value + 0
 }
 
+internal procedure coveringWriteCompoundRewriteValue() -> i32 {
+    var shared_value: shared i32 = 5
+    #shared_value write {
+        shared_value += 4
+    }
+    return shared_value + 0
+}
+
 internal procedure coveringRootWriteValue() -> i32 {
     var container: shared KeyContainer =
         KeyContainer {
@@ -46,7 +64,9 @@ internal procedure coveringRootWriteValue() -> i32 {
 /// Exercises the Keys ConflictDetection reference surface.
 public procedure runKeysConflictDetectionReference() -> bool {
     return disjointKeyAccessValue() == 3 &&
+        dynamicOrderedSameBaseKeyAccessValue(0usize, 2usize) == 4 &&
         coveredKeyAccessValue() == 9 &&
         coveringWriteReadThenWriteValue() == 9 &&
+        coveringWriteCompoundRewriteValue() == 9 &&
         coveringRootWriteValue() == 42
 }

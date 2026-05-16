@@ -1488,7 +1488,10 @@ std::optional<EvalResult> EvalIntrospectMethod(const ast::MethodCallExpr& call,
       return std::optional<EvalResult>{EvalResult{}};
     }
     SPEC_RULE("CtBuiltin-Reflect-TypeName");
-    return std::optional<EvalResult>{MakeStringResult(ast::to_string(**type))};
+    ast::DumpOptions render_options;
+    render_options.include_spans = false;
+    return std::optional<EvalResult>{
+        MakeStringResult(ast::to_string(**type, render_options))};
   }
 
   if (IdEq(call.name, "module_path")) {

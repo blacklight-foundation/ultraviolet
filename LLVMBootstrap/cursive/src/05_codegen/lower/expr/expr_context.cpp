@@ -39,6 +39,7 @@ const analysis::ScopeContext& ScopeForLowering(const LowerCtx& ctx) {
     analysis::ExprTypeMap* expr_types = nullptr;
     analysis::DynamicRefineExprMap* dynamic_refine_checks = nullptr;
     analysis::GenericCallSubstMap* generic_call_substs = nullptr;
+    analysis::SelectedCallTargetMap* selected_call_targets = nullptr;
     std::vector<std::string> module_path;
     std::optional<project::TargetProfile> target_profile;
     analysis::NameMapTable name_maps;
@@ -54,12 +55,14 @@ const analysis::ScopeContext& ScopeForLowering(const LowerCtx& ctx) {
   if (sigma_changed || cache.expr_types != ctx.expr_types ||
       cache.dynamic_refine_checks != ctx.dynamic_refine_checks ||
       cache.generic_call_substs != ctx.generic_call_substs ||
+      cache.selected_call_targets != ctx.selected_call_targets ||
       cache.module_path != ctx.module_path ||
       cache.target_profile != ctx.target_profile) {
     cache.sigma = ctx.sigma;
     cache.expr_types = ctx.expr_types;
     cache.dynamic_refine_checks = ctx.dynamic_refine_checks;
     cache.generic_call_substs = ctx.generic_call_substs;
+    cache.selected_call_targets = ctx.selected_call_targets;
     cache.module_path = ctx.module_path;
     cache.target_profile = ctx.target_profile;
     cache.scope = analysis::ScopeContext{};
@@ -70,6 +73,7 @@ const analysis::ScopeContext& ScopeForLowering(const LowerCtx& ctx) {
     cache.scope.expr_types = ctx.expr_types;
     cache.scope.dynamic_refine_checks = ctx.dynamic_refine_checks;
     cache.scope.generic_call_substs = ctx.generic_call_substs;
+    cache.scope.selected_call_targets = ctx.selected_call_targets;
 
     if (sigma_changed || cache.name_maps.empty()) {
       analysis::ScopeContext name_ctx = cache.scope;
@@ -1077,10 +1081,14 @@ void LowerCtx::RegisterProcSig(const ProcIR& proc) {
   info.params = proc.params;
   info.ret = proc.ret;
   info.abi = proc.abi;
+  info.aggregate_copy_elision = proc.aggregate_copy_elision;
 
   if (auto existing = proc_sigs.find(proc.symbol); existing != proc_sigs.end()) {
     info.ffi_import = existing->second.ffi_import;
     info.ffi_import_unwind_mode = existing->second.ffi_import_unwind_mode;
+    if (!info.aggregate_copy_elision.has_value()) {
+      info.aggregate_copy_elision = existing->second.aggregate_copy_elision;
+    }
     if (!info.abi.has_value()) {
       info.abi = existing->second.abi;
     }
@@ -1089,6 +1097,9 @@ void LowerCtx::RegisterProcSig(const ProcIR& proc) {
     if (base_it != baseline_tables->proc_sigs.end()) {
       info.ffi_import = base_it->second.ffi_import;
       info.ffi_import_unwind_mode = base_it->second.ffi_import_unwind_mode;
+      if (!info.aggregate_copy_elision.has_value()) {
+        info.aggregate_copy_elision = base_it->second.aggregate_copy_elision;
+      }
       if (!info.abi.has_value()) {
         info.abi = base_it->second.abi;
       }

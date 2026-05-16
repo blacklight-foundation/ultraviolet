@@ -1434,7 +1434,7 @@ static const StaticRuleMeta kStaticRules[] = {
     {"Max-Munch", "ParseJudgment", std::nullopt, "02_source/lexer/lexer.cpp", std::string_view("PickLongest(C) = (k, j)"), false},
     {"Max-Munch-Err", "ParseJudgment", std::nullopt, "02_source/lexer/lexer.cpp", std::string_view("Candidates(T, i) = ∅\nc = Code(Max-Munch-Err)"), false},
     {"MemIntrinsics-Copy", "LLVMEmitJudg", std::nullopt, "05_codegen/llvm/llvm_ub_safe.cpp", std::nullopt, false},
-    {"MemIntrinsics-Move", "LLVMEmitJudg", std::nullopt, "05_codegen/llvm/emit/llvm_emit_helpers.cpp", std::nullopt, false},
+    {"MemIntrinsics-Move", "LLVMEmitJudg", std::nullopt, "05_codegen/llvm/llvm_ub_safe.cpp", std::nullopt, false},
     {"MemIntrinsics-Set", "LLVMEmitJudg", std::nullopt, "05_codegen/llvm/llvm_ub_safe.cpp", std::nullopt, false},
     {"Merge-Empty", "DeclJudg", std::nullopt, "04_analysis/composite/class_linearization.cpp", std::string_view("∀ L ∈ Ls, L = []"), false},
     {"Merge-Fail", "DeclJudg", std::nullopt, "04_analysis/composite/class_linearization.cpp", std::string_view("¬ ∃ h. HeadOk(h, Ls)"), false},

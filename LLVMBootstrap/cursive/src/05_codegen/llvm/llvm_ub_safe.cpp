@@ -34,10 +34,12 @@
 #include "05_codegen/llvm/llvm_ir_panic.h"
 
 #include "llvm/IR/Function.h"
+#include "llvm/IR/GlobalObject.h"
 #include "llvm/IR/IRBuilder.h"
 #include "llvm/IR/Instructions.h"
 #include "llvm/IR/Intrinsics.h"
 #include "llvm/IR/Module.h"
+#include "llvm/IR/Operator.h"
 #include "llvm/Support/raw_ostream.h"
 
 #include <string>
@@ -444,9 +446,60 @@ void EmitMemCpy(LLVMEmitter& emitter,
 bool MemcpyOverlapUnknown(const llvm::Value* dst,
                           const llvm::Value* src,
                           const llvm::Value* size) {
-  (void)dst;
-  (void)src;
   (void)size;
+  if (!dst || !src) {
+    return true;
+  }
+
+  auto strip_known_base = [](const llvm::Value* value) -> const llvm::Value* {
+    const llvm::Value* current = value;
+    for (unsigned depth = 0; current && depth < 16; ++depth) {
+      const llvm::Value* stripped = current->stripPointerCasts();
+      if (stripped != current) {
+        current = stripped;
+        continue;
+      }
+      if (const auto* gep = llvm::dyn_cast<llvm::GEPOperator>(current)) {
+        current = gep->getPointerOperand();
+        continue;
+      }
+      break;
+    }
+    return current ? current->stripPointerCasts() : nullptr;
+  };
+
+  const llvm::Value* dst_base = strip_known_base(dst);
+  const llvm::Value* src_base = strip_known_base(src);
+  if (!dst_base || !src_base) {
+    return true;
+  }
+  if (dst_base == src_base) {
+    return true;
+  }
+
+  const bool distinct_allocas =
+      llvm::isa<llvm::AllocaInst>(dst_base) &&
+      llvm::isa<llvm::AllocaInst>(src_base);
+  if (distinct_allocas) {
+    return false;
+  }
+
+  const bool distinct_globals =
+      llvm::isa<llvm::GlobalObject>(dst_base) &&
+      llvm::isa<llvm::GlobalObject>(src_base);
+  if (distinct_globals) {
+    return false;
+  }
+
+  const bool alloca_to_arg =
+      (llvm::isa<llvm::AllocaInst>(dst_base) &&
+       llvm::isa<llvm::Argument>(src_base)) ||
+      (llvm::isa<llvm::AllocaInst>(src_base) &&
+       llvm::isa<llvm::Argument>(dst_base));
+  if (alloca_to_arg) {
+    return false;
+  }
+
   return true;
 }
 

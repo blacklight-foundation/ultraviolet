@@ -439,12 +439,12 @@ public procedure validatedConcreteDataTypesTuplesObligations() -> usize {
     ) {
         count = count + 1usize
     }
-    if acceptedObligationEntryMatches(
+    if rejectedSourceObligationEntryMatches(
         "diagnostics.Tuples",
         36153usize,
-        "HelloUltraviolet::Reference::DataTypes",
-        "runDataTypesTuplesReference",
-        "Source/Reference/DataTypes/Tuples.uv"
+        "HelloUltraviolet::Fixtures::RejectedSource",
+        "validatedExpressionsRejectedSourceFixtureCount",
+        "Fixtures/RejectedSource/Expressions/TupleIndexOutOfBounds/Source/Main.uv"
     ) {
         count = count + 1usize
     }

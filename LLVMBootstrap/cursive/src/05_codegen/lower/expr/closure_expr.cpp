@@ -21,7 +21,11 @@
 #include "05_codegen/ir/ir_model.h"
 #include "05_codegen/abi/abi.h"
 #include "05_codegen/checks/checks.h"
+#include "04_analysis/generics/monomorphize.h"
 #include "04_analysis/layout/layout.h"
+#include "04_analysis/resolve/scopes.h"
+#include "04_analysis/typing/type_lower.h"
+#include "04_analysis/typing/type_predicates.h"
 #include "05_codegen/symbols/mangle.h"
 #include "05_codegen/cleanup/cleanup.h"
 #include "04_analysis/typing/types.h"
@@ -32,6 +36,38 @@ namespace cursive::codegen {
 namespace {
 
 constexpr std::string_view kClosureEnvParamName = "__env";
+
+const ast::TypeAliasDecl* LookupCallableTypeAlias(
+    const analysis::TypePath& path,
+    const LowerCtx& ctx) {
+  if (!ctx.sigma || path.empty()) {
+    return nullptr;
+  }
+  if (path.size() > 1) {
+    const auto it = ctx.sigma->types.find(analysis::PathKeyOf(path));
+    if (it == ctx.sigma->types.end()) {
+      return nullptr;
+    }
+    return std::get_if<ast::TypeAliasDecl>(&it->second);
+  }
+
+  ast::Path resolved;
+  if (ctx.resolve_type_name) {
+    if (auto resolved_path = ctx.resolve_type_name(path[0])) {
+      resolved = *resolved_path;
+    }
+  }
+  if (resolved.empty()) {
+    resolved = ctx.module_path;
+    resolved.push_back(path[0]);
+  }
+
+  const auto it = ctx.sigma->types.find(analysis::PathKeyOf(resolved));
+  if (it == ctx.sigma->types.end()) {
+    return nullptr;
+  }
+  return std::get_if<ast::TypeAliasDecl>(&it->second);
+}
 
 // =============================================================================
 // CaptureBinding - Information about a single captured variable
@@ -644,6 +680,59 @@ ClosureVal MakeNonCapturingClosureVal(const std::string& code_sym) {
   return val;
 }
 
+analysis::TypeRef NormalizeCallableAliasForLowering(const analysis::TypeRef& type,
+                                                    const LowerCtx& ctx) {
+  analysis::TypeRef current = analysis::StripPerm(type);
+  if (!current) {
+    current = type;
+  }
+
+  for (std::uint32_t depth = 0; depth < 32; ++depth) {
+    if (!current) {
+      return type;
+    }
+    if (std::holds_alternative<analysis::TypeFunc>(current->node) ||
+        std::holds_alternative<analysis::TypeClosure>(current->node)) {
+      return current;
+    }
+
+    const auto* path = analysis::AppliedTypePath(*current);
+    const auto* args = analysis::AppliedTypeArgs(*current);
+    if (!path || !args) {
+      return current;
+    }
+
+    const auto* alias = LookupCallableTypeAlias(*path, ctx);
+    if (!alias) {
+      return current;
+    }
+
+    const auto lowered = analysis::LowerType(ScopeForLowering(ctx), alias->type);
+    if (!lowered.ok || !lowered.type) {
+      return current;
+    }
+
+    analysis::TypeRef expanded = lowered.type;
+    if (alias->generic_params.has_value()) {
+      const auto& params = alias->generic_params->params;
+      if (args->size() > params.size()) {
+        return current;
+      }
+      const auto subst = analysis::BuildSubstitution(params, *args);
+      expanded = analysis::InstantiateType(expanded, subst);
+    } else if (!args->empty()) {
+      return current;
+    }
+
+    current = analysis::StripPerm(expanded);
+    if (!current) {
+      current = expanded;
+    }
+  }
+
+  return current ? current : type;
+}
+
 // =============================================================================
 // LowerClosureExpr - Lower a closure expression
 // =============================================================================
@@ -1132,12 +1221,44 @@ LowerResult LowerClosureCall(
   // Step 2: Extract env_ptr and code_ptr from closure value
   // The closure value is a tuple (env_ptr, code_ptr)
   analysis::TypeRef closure_result_type = nullptr;
+  analysis::TypeRef closure_code_type = nullptr;
+  ParamModeList param_modes;
+  ParamTypeList param_types;
   if (ctx.expr_type) {
     if (analysis::TypeRef callee_type = ctx.expr_type(closure_expr)) {
-      if (analysis::TypeRef func_type = GetClosureFuncType(callee_type)) {
+      analysis::TypeRef callable_type =
+          NormalizeCallableAliasForLowering(callee_type, ctx);
+      if (analysis::TypeRef func_type = GetClosureFuncType(callable_type)) {
         if (const auto* fn = std::get_if<analysis::TypeFunc>(&func_type->node)) {
           closure_result_type = fn->ret;
+          param_modes.reserve(fn->params.size());
+          param_types.reserve(fn->params.size());
+          for (const auto& param : fn->params) {
+            param_modes.push_back(param.mode);
+            param_types.push_back(param.type);
+          }
         }
+      }
+      if (const auto* closure =
+              callable_type ? std::get_if<analysis::TypeClosure>(&callable_type->node)
+                            : nullptr) {
+        std::vector<analysis::TypeFuncParam> code_params;
+        analysis::TypeFuncParam env_param;
+        env_param.mode = analysis::ParamMode::Move;
+        env_param.type = analysis::MakeTypeRawPtr(
+            analysis::RawPtrQual::Imm,
+            analysis::MakeTypePrim("u8"));
+        code_params.push_back(std::move(env_param));
+        for (const auto& [is_move, param_type] : closure->params) {
+          analysis::TypeFuncParam code_param;
+          if (is_move) {
+            code_param.mode = analysis::ParamMode::Move;
+          }
+          code_param.type = param_type;
+          code_params.push_back(std::move(code_param));
+        }
+        closure_code_type =
+            analysis::MakeTypeFunc(std::move(code_params), closure->ret);
       }
     }
   }
@@ -1155,19 +1276,34 @@ LowerResult LowerClosureCall(
   code_info.base = closure_result.value;
   code_info.tuple_index = 1;
   ctx.RegisterDerivedValue(code_ptr, code_info);
+  if (closure_code_type) {
+    ctx.RegisterValueType(code_ptr, closure_code_type);
+  }
 
-  // Step 3: Lower arguments
-  std::vector<IRPtr> arg_parts;
+  // Step 3: Lower arguments with the closure parameter modes.
+  IRPtr args_ir = EmptyIR();
   std::vector<IRValue> arg_values;
-
-  for (const auto& arg : args) {
-    if (arg.value) {
-      LowerResult arg_result = LowerExpr(*arg.value, ctx);
-      if (arg_result.ir && !std::holds_alternative<IROpaque>(arg_result.ir->node)) {
-        arg_parts.push_back(arg_result.ir);
+  if (param_modes.size() == args.size()) {
+    auto lowered_args = LowerArgs(
+        param_modes,
+        args,
+        ctx,
+        param_types.size() == args.size() ? &param_types : nullptr);
+    args_ir = lowered_args.first;
+    arg_values = std::move(lowered_args.second);
+  } else {
+    ctx.ReportCodegenFailure();
+    std::vector<IRPtr> arg_parts;
+    for (const auto& arg : args) {
+      if (arg.value) {
+        LowerResult arg_result = LowerExpr(*arg.value, ctx);
+        if (arg_result.ir && !std::holds_alternative<IROpaque>(arg_result.ir->node)) {
+          arg_parts.push_back(arg_result.ir);
+        }
+        arg_values.push_back(arg_result.value);
       }
-      arg_values.push_back(arg_result.value);
     }
+    args_ir = SeqIR(std::move(arg_parts));
   }
 
   // Step 4: Build argument list: [env_ptr] ++ args
@@ -1196,8 +1332,8 @@ LowerResult LowerClosureCall(
   if (closure_result.ir && !std::holds_alternative<IROpaque>(closure_result.ir->node)) {
     parts.push_back(closure_result.ir);
   }
-  for (auto& part : arg_parts) {
-    parts.push_back(std::move(part));
+  if (args_ir && !std::holds_alternative<IROpaque>(args_ir->node)) {
+    parts.push_back(args_ir);
   }
   parts.push_back(MakeIR(std::move(call)));
   parts.push_back(PanicFollowup(ctx));
@@ -1348,7 +1484,9 @@ LowerResult LowerClosureExpr(const ast::Expr& expr,
 
   if (ctx.expr_type) {
     if (analysis::TypeRef closure_type = ctx.expr_type(expr)) {
-      if (analysis::TypeRef func_type = GetClosureFuncType(closure_type)) {
+      analysis::TypeRef callable_type =
+          NormalizeCallableAliasForLowering(closure_type, ctx);
+      if (analysis::TypeRef func_type = GetClosureFuncType(callable_type)) {
         if (const auto* fn = std::get_if<analysis::TypeFunc>(&func_type->node)) {
           inferred_ret_type = fn->ret;
           inferred_param_types.reserve(fn->params.size());

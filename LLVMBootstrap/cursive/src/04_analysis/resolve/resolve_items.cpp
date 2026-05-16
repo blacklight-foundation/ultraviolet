@@ -114,7 +114,8 @@ ResTypeResult ResolveTypeOpt(ResolveContext& ctx,
   }
   const auto resolved = ResolveType(ctx, type_opt);
   if (!resolved.ok) {
-    return {false, resolved.diag_id, resolved.span, {}};
+    return {false, resolved.diag_id, resolved.span, {},
+            resolved.diag_detail, resolved.diag_children};
   }
   SPEC_RULE("ResolveTypeOpt-Some");
   return {true, std::nullopt, std::nullopt, resolved.value};
@@ -705,7 +706,8 @@ ResolveResult<ast::ASTItem> ResolveItem(ResolveContext& ctx,
           out.params = resolved_params.value;
           const auto resolved_ret = ResolveTypeOpt(proc_res, node.return_type_opt);
           if (!resolved_ret.ok) {
-            return {false, resolved_ret.diag_id, resolved_ret.span, {}};
+            return {false, resolved_ret.diag_id, resolved_ret.span, {},
+                    resolved_ret.diag_detail, resolved_ret.diag_children};
           }
           out.return_type_opt = resolved_ret.value;
           if (node.body) {

@@ -1069,23 +1069,28 @@ TypecheckResult TypecheckModules(
   ExprTypeMap* prev_expr_types = ctx.expr_types;
   DynamicRefineExprMap* prev_dynamic_refine_checks = ctx.dynamic_refine_checks;
   GenericCallSubstMap* prev_generic_call_substs = ctx.generic_call_substs;
+  SelectedCallTargetMap* prev_selected_call_targets = ctx.selected_call_targets;
   ctx.expr_types = &result.expr_types;
   ctx.dynamic_refine_checks = &result.dynamic_refine_checks;
   ctx.generic_call_substs = &result.generic_call_substs;
+  ctx.selected_call_targets = &result.selected_call_targets;
   struct ExprTypesReset {
     ScopeContext& ctx;
     ExprTypeMap* prev;
     DynamicRefineExprMap* prev_dynamic_refine_checks;
     GenericCallSubstMap* prev_generic_call_substs;
+    SelectedCallTargetMap* prev_selected_call_targets;
     ~ExprTypesReset() {
       ctx.expr_types = prev;
       ctx.dynamic_refine_checks = prev_dynamic_refine_checks;
       ctx.generic_call_substs = prev_generic_call_substs;
+      ctx.selected_call_targets = prev_selected_call_targets;
     }
   } expr_types_reset{ctx,
                      prev_expr_types,
                      prev_dynamic_refine_checks,
-                     prev_generic_call_substs};
+                     prev_generic_call_substs,
+                     prev_selected_call_targets};
 
   const auto decls = DeclTypingModules(ctx, modules, *name_maps);
   if (!decls.diags.empty()) {

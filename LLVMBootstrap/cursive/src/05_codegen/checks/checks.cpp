@@ -551,7 +551,11 @@ IRPtr ClearPanic(LowerCtx& /*ctx*/) {
 IRPtr PanicCheck(LowerCtx& ctx) {
   SPEC_RULE("PanicCheck");
   IRPtr trace_ir = EmitRuntimeTrace("PanicCheck", ctx);
-  return SeqIR({trace_ir, MakeIR(IRPanicCheck{})});
+
+  IRCleanupPanicCheck check;
+  check.cleanup_ir =
+      EmitCleanupOnPanic(ComputeCleanupPlanToFunctionRoot(ctx), ctx);
+  return SeqIR({trace_ir, MakeIR(std::move(check))});
 }
 
 IRPtr PanicFollowup(LowerCtx& ctx) {

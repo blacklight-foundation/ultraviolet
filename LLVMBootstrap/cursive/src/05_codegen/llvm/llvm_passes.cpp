@@ -40,12 +40,14 @@
 #include "llvm/Target/TargetMachine.h"
 #include "llvm/Target/TargetOptions.h"
 #include "llvm/TargetParser/Host.h"
+#include "llvm/Transforms/IPO/AlwaysInliner.h"
 #include "llvm/Transforms/IPO/GlobalDCE.h"
 #include "llvm/Transforms/InstCombine/InstCombine.h"
 #include "llvm/Transforms/Scalar/ADCE.h"
 #include "llvm/Transforms/Scalar/DeadStoreElimination.h"
 #include "llvm/Transforms/Scalar/EarlyCSE.h"
 #include "llvm/Transforms/Scalar/GVN.h"
+#include "llvm/Transforms/Scalar/MemCpyOptimizer.h"
 #include "llvm/Transforms/Scalar/NewGVN.h"
 #include "llvm/Transforms/Scalar/Reassociate.h"
 #include "llvm/Transforms/Scalar/SROA.h"
@@ -130,6 +132,25 @@ llvm::FunctionPassManager BuildRequiredO0FunctionPipeline() {
   return FPM;
 }
 
+void AddScalarCleanupPipeline(llvm::FunctionPassManager& FPM,
+                              bool aggressive) {
+  FPM.addPass(llvm::SROAPass(llvm::SROAOptions::ModifyCFG));
+  FPM.addPass(llvm::PromotePass());
+  FPM.addPass(llvm::EarlyCSEPass());
+  FPM.addPass(llvm::InstCombinePass());
+  FPM.addPass(llvm::SimplifyCFGPass());
+  FPM.addPass(llvm::MemCpyOptPass());
+  FPM.addPass(llvm::ReassociatePass());
+  FPM.addPass(llvm::NewGVNPass());
+  FPM.addPass(llvm::DSEPass());
+  FPM.addPass(llvm::ADCEPass());
+  if (aggressive) {
+    FPM.addPass(llvm::InstCombinePass());
+  }
+  FPM.addPass(llvm::MemCpyOptPass());
+  FPM.addPass(llvm::SimplifyCFGPass());
+}
+
 }  // namespace
 
 // =============================================================================
@@ -190,35 +211,24 @@ void RunModulePasses(llvm::Module& module, const PassConfig& config) {
 
     case OptLevel::O1:
       // Basic optimization
-      FPM.addPass(llvm::PromotePass());
-      FPM.addPass(llvm::EarlyCSEPass());
-      FPM.addPass(llvm::SimplifyCFGPass());
+      AddScalarCleanupPipeline(FPM, /*aggressive=*/false);
       break;
 
     case OptLevel::O2:
     case OptLevel::Os:
     case OptLevel::Oz:
       // Standard optimization
-      FPM.addPass(llvm::PromotePass());
-      FPM.addPass(llvm::EarlyCSEPass());
-      FPM.addPass(llvm::SimplifyCFGPass());
-      FPM.addPass(llvm::ReassociatePass());
-      FPM.addPass(llvm::NewGVNPass());
-      FPM.addPass(llvm::DSEPass());
-      FPM.addPass(llvm::ADCEPass());
+      AddScalarCleanupPipeline(FPM, /*aggressive=*/false);
       break;
 
     case OptLevel::O3:
       // Aggressive optimization
-      FPM.addPass(llvm::PromotePass());
-      FPM.addPass(llvm::EarlyCSEPass());
-      FPM.addPass(llvm::SimplifyCFGPass());
-      FPM.addPass(llvm::ReassociatePass());
-      FPM.addPass(llvm::NewGVNPass());
-      FPM.addPass(llvm::DSEPass());
-      FPM.addPass(llvm::ADCEPass());
-      FPM.addPass(llvm::InstCombinePass());
+      AddScalarCleanupPipeline(FPM, /*aggressive=*/true);
       break;
+  }
+
+  if (config.opt_level != OptLevel::O0 && config.inline_functions) {
+    MPM.addPass(llvm::AlwaysInlinerPass(/*InsertLifetime=*/false));
   }
 
   // Wrap function passes in a module pass adapter

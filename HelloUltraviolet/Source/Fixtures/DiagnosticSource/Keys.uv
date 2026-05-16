@@ -1,7 +1,7 @@
 //! Diagnostic key-system specimens.
 
 public procedure keysDiagnosticSourceFixtureCount() -> usize {
-    return 10usize
+    return 12usize
 }
 
 public procedure validatedKeysDiagnosticSourceFixtureCount() -> usize {
@@ -176,6 +176,40 @@ public procedure validatedKeysDiagnosticSourceFixtureCount() -> usize {
         "Fixtures/DiagnosticSource/Keys/StaleOkSuppressesReleaseWarning/Expected.uv",
         "W-CON-0011",
         "requirement.19.StaleOkSuppressesReleaseWarning"
+    ) {
+        count = count + 1usize
+    }
+    if diagnosticSpecimenMatches(
+        diagnosticSpecimen(
+            "SpeculativeLargeStructWarning",
+            "Fixtures/DiagnosticSource/Keys/SpeculativeLargeStructWarning",
+            "Fixtures/DiagnosticSource/Keys/SpeculativeLargeStructWarning/Source/Main.uv",
+            "Fixtures/DiagnosticSource/Keys/SpeculativeLargeStructWarning/Expected.uv",
+            expectedDiagnostic("W-CON-0020", "diagnostics.19.SpeculativeExecution")
+        ),
+        "SpeculativeLargeStructWarning",
+        "Fixtures/DiagnosticSource/Keys/SpeculativeLargeStructWarning",
+        "Fixtures/DiagnosticSource/Keys/SpeculativeLargeStructWarning/Source/Main.uv",
+        "Fixtures/DiagnosticSource/Keys/SpeculativeLargeStructWarning/Expected.uv",
+        "W-CON-0020",
+        "diagnostics.19.SpeculativeExecution"
+    ) {
+        count = count + 1usize
+    }
+    if diagnosticSpecimenMatches(
+        diagnosticSpecimen(
+            "SpeculativeExpensiveBodyWarning",
+            "Fixtures/DiagnosticSource/Keys/SpeculativeExpensiveBodyWarning",
+            "Fixtures/DiagnosticSource/Keys/SpeculativeExpensiveBodyWarning/Source/Main.uv",
+            "Fixtures/DiagnosticSource/Keys/SpeculativeExpensiveBodyWarning/Expected.uv",
+            expectedDiagnostic("W-CON-0021", "diagnostics.19.SpeculativeExecution")
+        ),
+        "SpeculativeExpensiveBodyWarning",
+        "Fixtures/DiagnosticSource/Keys/SpeculativeExpensiveBodyWarning",
+        "Fixtures/DiagnosticSource/Keys/SpeculativeExpensiveBodyWarning/Source/Main.uv",
+        "Fixtures/DiagnosticSource/Keys/SpeculativeExpensiveBodyWarning/Expected.uv",
+        "W-CON-0021",
+        "diagnostics.19.SpeculativeExecution"
     ) {
         count = count + 1usize
     }

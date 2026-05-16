@@ -7,12 +7,12 @@ public procedure countParsingAndAstInfrastructureParsingDiagnosticsSupplementObl
 
 public procedure validatedParsingAndAstInfrastructureParsingDiagnosticsSupplementObligations() -> usize {
     var count: usize = 0usize
-    if acceptedObligationEntryMatches(
+    if rejectedSourceObligationEntryMatches(
         "diagnostics.ParsingDiagnostics",
         12045usize,
-        "HelloUltraviolet::Reference::Parsing",
-        "runParsingItemSequencingReference",
-        "Source/Reference/Parsing/ItemSequencing.uv"
+        "HelloUltraviolet::Fixtures::RejectedSource",
+        "validatedParsingRejectedSourceFixtureCount",
+        "Fixtures/RejectedSource/Parsing/EnumCommaSeparator/Source/Main.uv"
     ) {
         count = count + 1usize
     }

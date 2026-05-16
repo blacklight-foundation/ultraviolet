@@ -1,7 +1,7 @@
 //! Rejected expression specimens.
 
 public procedure expressionsRejectedSourceFixtureCount() -> usize {
-    return 112usize
+    return 115usize
 }
 
 public procedure validatedExpressionsRejectedSourceFixtureCount() -> usize {
@@ -195,6 +195,23 @@ public procedure validatedExpressionsRejectedSourceFixtureCount() -> usize {
     }
     if rejectedSpecimenMatches(
         rejectedSpecimen(
+            "UnionDirectAccess",
+            "Fixtures/RejectedSource/Expressions/UnionDirectAccess",
+            "Fixtures/RejectedSource/Expressions/UnionDirectAccess/Source/Main.uv",
+            "Fixtures/RejectedSource/Expressions/UnionDirectAccess/Expected.uv",
+            expectedDiagnostic("E-TYP-2202", "diagnostics.DataTypesSupplement")
+        ),
+        "UnionDirectAccess",
+        "Fixtures/RejectedSource/Expressions/UnionDirectAccess",
+        "Fixtures/RejectedSource/Expressions/UnionDirectAccess/Source/Main.uv",
+        "Fixtures/RejectedSource/Expressions/UnionDirectAccess/Expected.uv",
+        "E-TYP-2202",
+        "diagnostics.DataTypesSupplement"
+    ) {
+        count = count + 1usize
+    }
+    if rejectedSpecimenMatches(
+        rejectedSpecimen(
             "AllocImplicitNoRegion",
             "Fixtures/RejectedSource/Expressions/AllocImplicitNoRegion",
             "Fixtures/RejectedSource/Expressions/AllocImplicitNoRegion/Source/Main.uv",
@@ -207,6 +224,23 @@ public procedure validatedExpressionsRejectedSourceFixtureCount() -> usize {
         "Fixtures/RejectedSource/Expressions/AllocImplicitNoRegion/Expected.uv",
         "E-MEM-3021",
         "diag.16.EffectfulCoreExpressions"
+    ) {
+        count = count + 1usize
+    }
+    if rejectedSpecimenMatches(
+        rejectedSpecimen(
+            "AllocImplicitNoRegion",
+            "Fixtures/RejectedSource/Expressions/AllocImplicitNoRegion",
+            "Fixtures/RejectedSource/Expressions/AllocImplicitNoRegion/Source/Main.uv",
+            "Fixtures/RejectedSource/Expressions/AllocImplicitNoRegion/Expected.uv",
+            expectedDiagnostic("E-MEM-3021", "diagnostics.RuntimeStateAndMemoryDiagnostics")
+        ),
+        "AllocImplicitNoRegion",
+        "Fixtures/RejectedSource/Expressions/AllocImplicitNoRegion",
+        "Fixtures/RejectedSource/Expressions/AllocImplicitNoRegion/Source/Main.uv",
+        "Fixtures/RejectedSource/Expressions/AllocImplicitNoRegion/Expected.uv",
+        "E-MEM-3021",
+        "diagnostics.RuntimeStateAndMemoryDiagnostics"
     ) {
         count = count + 1usize
     }
@@ -343,6 +377,23 @@ public procedure validatedExpressionsRejectedSourceFixtureCount() -> usize {
         "Fixtures/RejectedSource/Expressions/TupleIndexOutOfBounds/Expected.uv",
         "E-TYP-1801",
         "TupleIndex-OOB"
+    ) {
+        count = count + 1usize
+    }
+    if rejectedSpecimenMatches(
+        rejectedSpecimen(
+            "TupleIndexOutOfBounds",
+            "Fixtures/RejectedSource/Expressions/TupleIndexOutOfBounds",
+            "Fixtures/RejectedSource/Expressions/TupleIndexOutOfBounds/Source/Main.uv",
+            "Fixtures/RejectedSource/Expressions/TupleIndexOutOfBounds/Expected.uv",
+            expectedDiagnostic("E-TYP-1801", "diagnostics.Tuples")
+        ),
+        "TupleIndexOutOfBounds",
+        "Fixtures/RejectedSource/Expressions/TupleIndexOutOfBounds",
+        "Fixtures/RejectedSource/Expressions/TupleIndexOutOfBounds/Source/Main.uv",
+        "Fixtures/RejectedSource/Expressions/TupleIndexOutOfBounds/Expected.uv",
+        "E-TYP-1801",
+        "diagnostics.Tuples"
     ) {
         count = count + 1usize
     }

@@ -1,6 +1,7 @@
 #pragma once
 
 #include <cstdint>
+#include <cstddef>
 #include <optional>
 #include <span>
 #include <string>
@@ -111,6 +112,11 @@ std::string MangleClosureEnv(const std::string& closure_sym);
 // With attribute-aware LinkName resolution
 std::string MangleProc(const ast::ModulePath& module_path,
                        const ast::ProcedureDecl& proc);
+
+// Mangle a procedure declaration with module-local overload identity when its
+// name is part of an overload set.
+std::string MangleProcInModule(const ast::ASTModule& module,
+                               const ast::ProcedureDecl& proc);
 
 // (Mangle-Record-Method): Mangle record method
 std::string MangleMethod(const analysis::TypePath& record_path,

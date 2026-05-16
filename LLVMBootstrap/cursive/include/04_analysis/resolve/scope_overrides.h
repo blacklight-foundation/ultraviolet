@@ -114,7 +114,11 @@ class ScopedLeadingScope final {
 
 inline ScopeList MakeProcLikeScopes(const ScopeContext& base, Scope proc_scope) {
   ScopeList scopes;
-  scopes.reserve(3);
+  const auto local_scopes = LocalScopes(base.scopes);
+  scopes.reserve(local_scopes.size() + 3);
+  for (const auto& local_scope : local_scopes) {
+    scopes.push_back(local_scope);
+  }
   scopes.push_back(std::move(proc_scope));
   scopes.push_back(ModuleScope(base.scopes));
   scopes.push_back(UniverseScope(base.scopes));

@@ -8,6 +8,15 @@ public procedure countConcreteDataTypesUnionTypesObligations() -> usize {
 public procedure validatedConcreteDataTypesUnionTypesObligations() -> usize {
     var count: usize = 0usize
     if acceptedObligationEntryMatches(
+        "grammar.UnionTypeSyntax",
+        40606usize,
+        "HelloUltraviolet::Reference::DataTypes",
+        "runDataTypesUnionsReference",
+        "Source/Reference/DataTypes/Unions.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
         "req.UnionIntroductionSemantic",
         40626usize,
         "HelloUltraviolet::Reference::DataTypes",
@@ -298,15 +307,6 @@ public procedure validatedConcreteDataTypesUnionTypesObligations() -> usize {
     if acceptedObligationEntryMatches(
         "req.UnionDiagnosticOwnership",
         41211usize,
-        "HelloUltraviolet::Reference::DataTypes",
-        "runDataTypesUnionsReference",
-        "Source/Reference/DataTypes/Unions.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
-        "grammar.TypeAliasSyntax",
-        41228usize,
         "HelloUltraviolet::Reference::DataTypes",
         "runDataTypesUnionsReference",
         "Source/Reference/DataTypes/Unions.uv"

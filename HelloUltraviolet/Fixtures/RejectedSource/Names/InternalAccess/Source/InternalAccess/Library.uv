@@ -1,0 +1,11 @@
+//! Rejected name-resolution specimen for cross-assembly internal access.
+
+public import InternalProvider
+
+public procedure internalAccessReference() -> i32 {
+    return InternalProvider::internalProviderValue()
+}
+
+public procedure main(context: Context) -> i32 {
+    return internalAccessReference()
+}

@@ -6,19 +6,19 @@ Objective: execute `.agents/plans/HelloUltravioletReferenceCorpus.md`.
 
 - `Docs/Audit/UltravioletObligations.csv` and the generated catalog currently
   contain 6,045 primary obligation rows.
-- `HelloUltraviolet/Source/Reference` currently contains 153 `.uv` files,
-  176 public `run...Reference` procedures, and 0 public `run...Reference`
+- `HelloUltraviolet/Source/Reference` currently contains 154 `.uv` files,
+  188 public `run...Reference` procedures, and 0 public `run...Reference`
   bodies whose implementation is only `return true`.
 - `Source/Main.uv` executes `runReferenceCorpus(context)`, and `Source/Api.uv`
-  directly calls all 176 public reference runners.
-- `CatalogSourcePaths.uv` indexes 564 unique catalog source targets, and
-  `CatalogSymbols.uv` indexes 571 compiled symbol target tuples. The async
+  directly calls all 188 public reference runners.
+- `CatalogSourcePaths.uv` indexes 588 unique catalog source targets, and
+  `CatalogSymbols.uv` indexes 595 compiled symbol target tuples. The async
   composition map, filter, take, fold, chain, and until obligations now name
   dedicated reference runners; aggregate combinator obligations name
   `runAsyncCompositionCombinatorsReference`.
 - The generated catalog now records the exercise kind for each primary
-  obligation row: 5,573 accepted-source rows, 45 accepted-project rows,
-  390 rejected-source rows, 23 diagnostic-source rows, 6 artifact-behavior
+  obligation row: 5,523 accepted-source rows, 45 accepted-project rows,
+  432 rejected-source rows, 26 diagnostic-source rows, 11 artifact-behavior
   rows, and 8 reference-model rows. Fixture-backed rows point at compiled
   fixture validators instead of accepted-source reference runners.
 - This pass corrected catalog targets for primitive, record, and union data types,
@@ -39,13 +39,26 @@ Objective: execute `.agents/plans/HelloUltravioletReferenceCorpus.md`.
   `requirement.19.SharedDynamicClassObjects`,
   `rule.19.K-Witness-Shared-WF`, and
   `def.19.SharedDynamicMethodCallKeyPath`.
+- The key-system reference source now also exercises default read-mode key
+  blocks, canonical sorting from an intentionally unsorted key-path list,
+  key-block cleanup through direct `return`, dynamic and ordered same-base
+  multi-index reads under `[[dynamic]]`, compound read-modify-write under a
+  covering write key, release-write nested inside an outer read key,
+  reentrant shared-parameter callee summary coverage, and a dedicated
+  `keyModeContextValue` specimen for read/write context classification over a
+  shared record path.
+- Key memory-ordering source now exercises both expression-level memory-order
+  overrides and key-block default memory-order attributes for `[[relaxed]]`,
+  `[[acquire]]`, `[[release]]`, `[[acqrel]]`, and `[[seqcst]]`, plus
+  `fence(acquire)`, `fence(release)`, and `fence(seqcst)`.
 - The catalog generator now derives fixture-backed obligation targets from
   `Source/Fixtures/AcceptedProjects`, `Source/Fixtures/RejectedSource`,
   `Source/Fixtures/DiagnosticSource`, `Source/Fixtures/OutputDiagnostics`, and
   `Source/Fixtures/ArtifactProjects`, then emits the matching catalog helper
   and import surface for each generated catalog submodule.
-- `Source/Audit/SpecClarifications.uv` now compiles a thirteen-row clarification
-  ledger for sourceability-limited and permission-clarity obligations. Six rows
+- `Source/Audit/SpecClarifications.uv` now compiles a seventeen-row clarification
+  ledger for sourceability-limited, permission-clarity, and backend identity
+  obligations. Six rows
   with no current primary source exercise are cataloged as `@ReferenceModel`;
   the orphan requirement row keeps its accepted-project source exercise and is
   also represented in the compiled clarification ledger. The workgroup-size
@@ -54,6 +67,8 @@ Objective: execute `.agents/plans/HelloUltravioletReferenceCorpus.md`.
   The fresh async creation row records the intended reading that an async call
   creates a fresh frame that can materialize at an explicitly expected
   permission-qualified async type for manual `resume` stepping.
+  The hex literal underscore row records the SPEC tension between uppercase
+  `E` as a hex digit and exponent-adjacent underscore rejection.
   The region lifecycle row records the intended reading that consumed unique
   region lifecycle transitions preserve cleanup authority on the returned
   modal state. The contract predicate compile-time procedure row records the
@@ -70,7 +85,14 @@ Objective: execute `.agents/plans/HelloUltravioletReferenceCorpus.md`.
   negative rows record the current reading that ordinary source discriminants
   parse only unsigned `integer_literal` tokens, making those two semantic
   discriminant diagnostics internal AST/recovery diagnostics unless the SPEC
-  identifies a source recovery path.
+  identifies a source recovery path. The overloaded procedure symbol identity
+  row records the current reading that Chapter 15 selected-procedure lowering
+  requires backend declaration identity for same-name overloads, while Chapter
+  24 should clarify the canonical internal symbol component used for those
+  overload declarations. The recursive type-alias row records the public SPEC
+  typo where `TypeAlias-Recursive-Err` appears as
+  `TypeAlias-Reultraviolet-Err` in the generated public SPEC text, while the
+  internal obligation ledger and CSV use the intended rule name.
 - `Fixtures/AcceptedProjects/HostedExportLibrary` is a spec-valid shared
   library fixture with public `[[host_export]]` procedures, projected context
   bundle records, visible primitive and C-layout aggregate parameters, a
@@ -162,6 +184,13 @@ Objective: execute `.agents/plans/HelloUltravioletReferenceCorpus.md`.
   map/filter/take/fold/chain/until/loop composition forms. The source remains
   the reference artifact; bootstrap repairs were made where the compiler
   accepted or rejected spec-valid async source incorrectly.
+- This pass expanded async composition runtime source coverage with
+  `Source/Reference/Async/CombinatorRuntimeForms.uv`. The file exercises
+  runtime resume behavior for map completion/failure, filter skip/completion,
+  take zero/resume-done/source-complete, fold failure, chain source failure,
+  and chain suspended-continuation paths. The `take(1usize)` resume-done
+  specimen surfaced a bootstrap runtime/lowering defect now recorded as
+  `UVBOOT-0078`.
 - This pass surfaced and corrected async bootstrap conformance defects in
   fresh async permission materialization, modal-state pattern narrowing,
   streaming-race frame propagation, resume argument materialization,
@@ -170,12 +199,27 @@ Objective: execute `.agents/plans/HelloUltravioletReferenceCorpus.md`.
   runtime ABI declaration needed for `wait` over `Tracked<T, E>`. These repairs
   are recorded in `Audit/BootstrapNonCompliance.md` as `UVBOOT-0050` and
   `UVBOOT-0053`.
+- This pass also corrected the remaining async manual-resume runtime path:
+  `yield` resume continuation lowering now preserves the caller-provided input
+  as addressable continuation storage, and builtin `Async@Suspended.resume`
+  dispatch selects `runtime::async::resume` before generic state-method
+  instantiation. `runAsyncStateMachineManualResumeReference` and
+  `runAsyncCompositionStreamingRaceResumeReference` now execute through the
+  catalog symbol runner and the full corpus executable exits 0.
 - This pass expanded key-system accepted runtime source coverage for memory
   ordering and speculative execution. `runKeysMemoryOrderingReference` now
   exercises all five expression memory-order attributes and all three fence
   orders; `runKeysSpeculativeExecutionReference` now exercises a speculative
   write block whose body calls a const receiver method on keyed data before
-  committing a covered write.
+  committing a covered write, a multi-path speculative write block, and a
+  `C-unwind` catch boundary that converts a speculative bounds panic after key
+  cleanup. The catch-boundary cleanup repair is recorded in
+  `Audit/BootstrapNonCompliance.md` as `UVBOOT-0070`. The
+  `SpeculativeReadMode`, `SpeculativeOutsideWrite`, `SpeculativeNestedKeyRule`,
+  and `SpeculativeFence` rejected-source fixtures now exercise
+  `rule.19.K-Spec-Write-Required`, `rule.19.K-Spec-Pure-Body`,
+  `rule.19.K-Spec-No-Nested-Key`, and the fence-expression branch of
+  `rule.19.K-Spec-No-Memory-Ordering`.
 - This pass also expanded dynamic key-verification accepted source.
   `runKeysDynamicVerificationReference` now exercises both a dynamic indexed
   read and a dynamic indexed write block over two runtime-indexed paths under
@@ -192,18 +236,43 @@ Objective: execute `.agents/plans/HelloUltravioletReferenceCorpus.md`.
   acquire the shared key. It now also exercises inline
   key coarsening markers on field and index segments through
   `#container.#leaf.value` and `#leaves[#1usize].value` key paths, plus
-  explicit key-block exits through `break` and `continue` followed by later
-  key-protected reads of the same shared path. The duplicate `W-CON-0009`
+  default read-mode key blocks, canonical sorting of an unsorted multi-path
+  key list, and explicit key-block exits through `break`, `continue`, and
+  direct `return`. `keyModeContextValue` exercises let-initializer reads,
+  assignment right-hand-side reads, arithmetic operand reads, if-condition
+  reads, a `~` const receiver call, a `const` parameter argument, assignment
+  left-hand-side writes, and a `~%` shared receiver call while preserving the
+  SPEC permission-qualified `shared i32` type of the field read. The duplicate
+  `W-CON-0009`
   bootstrap diagnostic surfaced by this specimen is recorded in
   `Audit/BootstrapNonCompliance.md` as `UVBOOT-0051`. The type-alias expected
   closure check repair required for the escaping closure specimen is recorded
   as `UVBOOT-0059`.
 - This pass expanded key conflict-detection accepted source.
   `runKeysConflictDetectionReference` now exercises disjoint multi-path reads,
-  prefix coverage under a root read key, a read-then-write assignment permitted
-  by a covering write key, and nested field/index writes covered by a root
-  write key. The read-then-write specimen intentionally emits the SPEC
-  `W-CON-0006` diagnostic while still compiling and executing.
+  dynamic and ordered same-base multi-index reads under `[[dynamic]]`, prefix
+  coverage under a root read key, expanded and compound read-then-write forms
+  permitted by a covering write key, and nested field/index writes covered by
+  a root write key. The read-then-write specimens intentionally emit the SPEC
+  `W-CON-0006` and `W-CON-0004` diagnostics while still compiling and
+  executing. The dynamic ordered same-base specimen surfaced the bootstrap
+  source-array length repair recorded as `UVBOOT-0071`.
+- This pass expanded Chapter 10 permission accepted and rejected source.
+  `runPermissionsPermissionFormsReference`,
+  `runPermissionsAliasExclusivityReference`,
+  `runPermissionsActivityStatesReference`, and
+  `runPermissionsAdmissibilityReference` now exercise default and explicit
+  `const`, `shared`, and `unique` bindings, receiver shorthand forms,
+  shared field writes under an explicit key, unique field mutation and
+  reactivation after non-consuming uses, layout neutrality for
+  permission-qualified types, and accepted admissibility pairs. The
+  `ConstMutation`, `UniqueInactiveUse`, `SharedMutationWithoutKey`, and
+  `ReceiverPermissionMismatch` rejected-source fixtures exercise
+  `E-TYP-1601`, `E-TYP-1602`, `E-TYP-1604`, and `E-TYP-1605`; `E-TYP-1603`
+  remains covered by `Expressions/CallArgNotPlace`. The const root-assignment
+  versus aggregate-path mutation diagnostic ownership question is recorded in
+  `SpecClarificationsNeeded.md`, and the bootstrap repair is recorded as
+  `UVBOOT-0066`.
 - This pass expanded qualified name-resolution accepted source.
   `runNamesQualifiedResolutionReference` now exercises an imported module alias,
   qualified procedure calls, qualified record brace construction, qualified
@@ -243,15 +312,26 @@ Objective: execute `.agents/plans/HelloUltravioletReferenceCorpus.md`.
   lowering that calls the generated procedures at runtime. The statement-splice
   parser and quote-builder repairs are recorded in
   `Audit/BootstrapNonCompliance.md` as `UVBOOT-0052`.
+- This pass expanded compile-time derive-target accepted source.
+  `runComptimeDeriveTargetsReference` now exercises derive-target fixed input
+  binding by branching on `introspect.type_name(target)` and
+  `introspect.module_path(target)` before emitting runtime declarations. The
+  accepted source now makes `RunDeriveTarget` target binding, contract-ordered
+  execution, pending emitted items, and emitted declaration lowering observable
+  through the generated functions' return values. The reflection type-name
+  rendering repair is recorded in `Audit/BootstrapNonCompliance.md` as
+  `UVBOOT-0077`.
 - This pass expanded compile-time form accepted source.
   `runComptimeCompileTimeFormsReference` now exercises generic compile-time
   procedure declarations and calls, ordinary `if` return propagation inside a
   compile-time procedure body, multiline erased `comptime` statement blocks,
   `comptime if` selected-branch behavior with no-else, else-block, and
   else-if forms, annotated and inferred-element `comptime loop` unrolling,
-  empty loop unrolling, and literalization of integer, boolean, and tuple
+  empty loop unrolling, and literalization of integer, boolean, tuple, array,
+  record, unit enum, tuple-payload enum, record-payload enum, and modal-state
   compile-time values. The ordinary-control propagation repair is recorded in
-  `Audit/BootstrapNonCompliance.md` as `UVBOOT-0054`.
+  `Audit/BootstrapNonCompliance.md` as `UVBOOT-0054`, and the aggregate/enum
+  literalization repairs are recorded as `UVBOOT-0075`.
 - This pass expanded compile-time reflection accepted source.
   `runComptimeReflectionReference` now exercises all `SourceSpan` fields on the
   current compile-time diagnostic span and on reflected field, variant, and
@@ -266,23 +346,128 @@ Objective: execute `.agents/plans/HelloUltravioletReferenceCorpus.md`.
   recorded as `UVBOOT-0061`. The span validation helper accepts both same-line
   and multiline spans by ordering columns only when the start and end line are
   the same.
+- This pass expanded operator-expression accepted source.
+  `runExpressionsOperatorsReference` now exercises additive, multiplicative,
+  remainder, integer and floating exponentiation, right-associative `**`
+  parsing, bitwise operators, shifts with `u32` counts, integer and boolean
+  unary `!`, signed and floating unary negation, primitive/string comparisons,
+  logical short-circuit evaluation with non-evaluated panic operands, and all
+  six range-expression forms through slice bounds. The final-artifact repair
+  required for floating exponentiation's lowered `pow` dependency is recorded
+  in `Audit/BootstrapNonCompliance.md` as `UVBOOT-0066`.
+- This pass expanded cast/transmute accepted source.
+  `runExpressionsCastsAndTransmutesReference` now exercises identity casts,
+  signed-to-signed and signed-to-unsigned integer casts, unsigned-to-signed and
+  unsigned-to-wide integer casts, signedness-preserving int-to-float casts,
+  float-to-float casts, truncating positive and negative float-to-int casts,
+  bool-to-int and int-to-bool casts, `char`/`u32` casts, unsafe transmute value
+  reinterpretation, and transmute operand control propagation. The initial
+  source shape was corrected to satisfy SPEC `ExplicitReturn`, which requires a
+  final `ReturnStmt` in a non-unit procedure body.
 - Latest verification:
-  the Visual Studio bootstrap build wrapper rebuilt
-  `LLVMBootstrap/cursive/build/windows/Release/Cursive.exe` with exit code 0
-  after the enum diagnostic repairs;
+  `Fixtures/DiagnosticSource/SourceText/LeadingBOMWarning` exited 0 and
+  emitted `W-SRC-0101`;
+  `Fixtures/DiagnosticSource/SourceText/DecimalLeadingZeroWarning` exited 0
+  and emitted `W-SRC-0301`;
+  `Fixtures/RejectedSource/SourceText/LeadingBOMEmbeddedBOM` exited 1 and
+  emitted both `W-SRC-0101` and `E-SRC-0103`;
+  `Fixtures/RejectedSource/SourceText/ProhibitedControlCharacter` exited 1 and
+  emitted `E-SRC-0104`;
+  `Fixtures/RejectedSource/SourceText/InvalidUTF8` exited 1 and emitted
+  `E-SRC-0101`;
+  `Fixtures/RejectedSource/Parsing/EnumCommaSeparator` exited 1 and emitted
+  `E-SRC-0520`;
+  `Fixtures/RejectedSource/Expressions/TupleIndexOutOfBounds` exited 1 and
+  emitted `E-TYP-1801`;
+  `Fixtures/RejectedSource/Names/PrivateAccess` exited 1 and emitted
+  `E-MOD-1207`;
+  `Fixtures/RejectedSource/Modules/StaticMissingTypeAnnotation` exited 1 and
+  emitted `E-TYP-1505`;
+  `Fixtures/RejectedSource/Attributes/UnknownAttribute` exited 1 and emitted
+  `E-MOD-2451`;
+  `Fixtures/RejectedSource/Modules/MissingImport` exited 1 and emitted
+  `E-MOD-1202`;
+  `Fixtures/RejectedSource/Modules/UsingListDuplicate` exited 1 and emitted
+  `E-MOD-1206`;
+  `Fixtures/RejectedSource/Attributes/PackedLayoutOnEnum` exited 1 and emitted
+  `E-MOD-2454`;
+  `Fixtures/RejectedSource/Attributes/ReservedVendorNamespace` exited 1 and
+  emitted `E-CNF-0402`;
+  `Fixtures/RejectedSource/Modules/ReservedModuleKeyword` exited 1 and emitted
+  `E-MOD-1105`;
+  `Fixtures/RejectedSource/DataTypes/TypeAliasCycle` exited 1 and emitted
+  `E-TYP-1506`;
+  `Fixtures/RejectedSource/Expressions/UnionDirectAccess` exited 1 and emitted
+  `E-TYP-2202`;
+  `Fixtures/RejectedSource/Procedures/ContractDynamicAttribute` exited 1 and
+  emitted `E-CON-0410`;
+  `Fixtures/RejectedSource/Attributes/TestMissingPostcondition` exited 1 and
+  emitted `E-TST-0106`;
+  `Fixtures/RejectedSource/Patterns/IfCaseModalNonExhaustive` exited 1 and
+  emitted `E-TYP-2060`;
+  `Fixtures/RejectedSource/Expressions/AllocImplicitNoRegion` exited 1 and
+  emitted `E-MEM-3021`;
+  `Fixtures/OutputDiagnostics/Projects/ManifestParseError` exited 1 and
+  emitted `E-PRJ-0102`;
+  `Build/bin/uv.exe definitely_unknown_command` exited 1 and emitted
+  `E-CLI-0001`;
+  `Fixtures/DiagnosticSource/Keys/SpeculativeLargeStructWarning` exited 0 and
+  emitted `W-CON-0020`;
+  `Fixtures/DiagnosticSource/Keys/SpeculativeExpensiveBodyWarning` exited 0 and
+  emitted `W-CON-0021`;
+  `Fixtures/DiagnosticSource/Attributes/InlineAlwaysRecursive` exited 0 and
+  emitted `W-MOD-2452`;
+  `python3 .agents/scripts/generate_hello_catalog.py` completed after the
+  generator skipped unchanged generated files and retried transient filesystem
+  write failures;
+  the generated catalog still contains 6,045 rows with 5,523 accepted-source,
+  45 accepted-project, 432 rejected-source, 26 diagnostic-source,
+  11 artifact-behavior, and 8 reference-model primary rows;
+  rejected-source fixture metadata now indexes 425 expected diagnostic entries
+  across 404 physical `Expected.uv` artifacts;
+  diagnostic-source fixture metadata now indexes 27 compiling warning, info, or
+  expected-absence specimens;
+  output-diagnostic fixture metadata now indexes 8 diagnostic artifact entries;
+  `python3 Tools/ExtractObligationLedger.py --check` passed with 6,045
+  obligations;
+  a source audit counted 176 public `run...Reference` procedures under
+  `Source/Reference`, 0 public `run...Reference` procedures implemented only as
+  `return true`, and 0 missing direct calls from `Source/Api.uv`;
   `Cursive.exe build HelloUltraviolet --check --target-profile x86_64-win64 --build-progress off --max-errors 20`
-  exited 0 with the expected seven warnings plus two info diagnostics after
-  the enum fixture and catalog expansion;
-  `Cursive.exe build HelloUltraviolet --target-profile x86_64-win64 --build-progress off --max-errors 20`
-  exited 0 with the same diagnostic set;
+  exited 0 with ten warnings plus three info diagnostics;
+  `Cursive.exe build HelloUltraviolet --target-profile x86_64-win64 --build-progress on --max-errors 20`
+  exited 0 in 366.10s with the same diagnostic set and emitted
+  `HelloUltraviolet/build/bin/HelloUltraviolet.exe`;
+  `HelloUltraviolet.exe` exited 0 with 0-byte stdout/stderr;
+  `HelloUltraviolet.exe --audit` exited 0 with 0-byte stdout/stderr.
+- Previous verification:
+  `Fixtures/RejectedSource/Names/PrivateAccess` and
+  `Fixtures/RejectedSource/Names/InternalAccess` each exited 1 with
+  `E-MOD-1207`, exercising the private and cross-assembly internal access
+  rejection paths;
+  `python3 Tools/ExtractObligationLedger.py --check` passed with 6,045
+  obligations;
+  a source audit counted 176 public `run...Reference` procedures under
+  `Source/Reference` and 0 missing direct calls from `Source/Api.uv`;
+  a focused data-type grammar catalog audit confirmed
+  `grammar.RecordSyntax`, `grammar.EnumSyntax`, `grammar.UnionTypeSyntax`, and
+  `grammar.TypeAliasSyntax` map to the records, enums, unions, and type-alias
+  reference runners respectively;
+  `Cursive.exe build HelloUltraviolet --check --target-profile x86_64-win64 --build-progress off --max-errors 20`
+  exited 0 with ten warnings plus three info diagnostics;
+  `Cursive.exe build HelloUltraviolet --target-profile x86_64-win64 --build-progress on --max-errors 20`
+  exited 0 in 146.91s with the same diagnostic set, reusing 58 object files
+  and rebuilding 1 object file for
+  `HelloUltraviolet::Audit::Catalog::ConcreteDataTypes`;
   `HelloUltraviolet.exe` exited 0 with 0-byte stdout/stderr;
   `HelloUltraviolet.exe --audit` exited 0 with 0-byte stdout/stderr;
-  `python3 Tools/ExtractObligationLedger.py --check` passed with 6,045
-  obligations; a plain `git diff --name-only` was blocked by the local Git LFS
-  filter with exit code 128, so targeted diff inspection used
-  `git -c filter.lfs.process= -c filter.lfs.clean= -c filter.lfs.smudge= -c filter.lfs.required=false`;
-  `git diff --check` passed on the touched enum reference, audit, fixture,
-  generator, and bootstrap diagnostic files; `GenericInfiniteMonomorphization`
+  targeted `git -c filter.lfs.process= -c filter.lfs.clean=cat -c filter.lfs.smudge=cat -c filter.lfs.required=false diff --check`
+  over the regenerated concrete data-type catalog files and
+  `Audit/CompletionAudit.md` exited 0;
+  a targeted trailing-whitespace scan over the ignored catalog generator, the
+  regenerated concrete data-type catalog files, and `Audit/CompletionAudit.md`
+  exited 0;
+  `GenericInfiniteMonomorphization`
   built with exit code 1
   and emitted `E-TYP-2307`; `GenericInstantiationDepthLimit` built with exit
   code 1 and emitted `E-TYP-2308`; the accepted-project fixtures `StaticLibrary`,
@@ -326,10 +511,10 @@ Objective: execute `.agents/plans/HelloUltravioletReferenceCorpus.md`.
 - `CatalogPrimaryReferences.uv` checks that the 6,045 generated primary
   obligation references are unique by sorting `(id, internal_spec_line)` keys
   and verifying strict adjacent ordering in compiled Ultraviolet source.
-- `CatalogSourcePaths.uv` checks the 564 unique source files referenced by
+- `CatalogSourcePaths.uv` checks the 588 unique source targets referenced by
   generated catalog rows, and `HelloUltraviolet.exe` validates their runtime
   existence through `catalogSourcePathsExist(context)`.
-- `CatalogSymbols.uv` imports and executes the 571 compiled reference
+- `CatalogSymbols.uv` imports and executes the 595 compiled reference
   and fixture-validator symbol target tuples named by catalog rows, and
   `HelloUltraviolet.exe` validates them through
   `catalogCompiledSymbolsExecute()`. Failed compiled-symbol execution prints
@@ -347,6 +532,10 @@ Objective: execute `.agents/plans/HelloUltravioletReferenceCorpus.md`.
   until, and loop iteration through dedicated reference runners. Streaming
   race now includes a suspended-yield resume specimen that verifies the
   previously yielded arm continues when the caller resumes it.
+- `Source/Reference/Async/CombinatorRuntimeForms.uv` exercises concrete
+  map/filter/take/fold/chain resume semantics, including completion,
+  failure, skipped yields, source completion, and suspended continuation
+  propagation.
 - `Source/Reference/Async/StateMachine.uv` exercises direct async completion,
   suspension, manual `Async@Suspended.resume(input)`, and state-pattern
   observation of `@Completed`, `@Suspended`, and `@Failed`.
@@ -361,23 +550,135 @@ Objective: execute `.agents/plans/HelloUltravioletReferenceCorpus.md`.
   The generated catalog maps the key-boundary parse helpers and field-boundary
   semantic requirement to this runner.
 - `Source/Reference/Keys/AcquisitionBlocks.uv` exercises explicit read and
-  write blocks, ordered multi-path acquisition, a `shared` argument call whose
-  callee performs the explicit key acquisition, a local closure that captures
-  `shared` data and acquires the key in its body, and return control flow
-  through key blocks. It also exercises inline key coarsening markers on
-  field and index key-path segments.
+  write blocks, omitted-mode default-read blocks, ordered multi-path
+  acquisition, canonical sorting from an unsorted multi-path list, a `shared`
+  argument call whose callee performs the explicit key acquisition, a local
+  closure that captures `shared` data and acquires the key in its body, and
+  return, break, and continue control flow through key blocks. It also
+  exercises inline key coarsening markers on field and index key-path
+  segments, plus concrete read/write context classification through
+  `keyModeContextValue`.
 - `Source/Reference/Keys/ConflictDetection.uv` exercises disjoint key paths,
-  prefix coverage, covering write permission for read-then-write assignment,
-  and nested field/index writes covered by a root write key.
+  dynamic and ordered same-base multi-index reads under `[[dynamic]]`, prefix
+  coverage, covering write permission for expanded and compound
+  read-then-write assignment forms, and nested field/index writes covered by a
+  root write key.
+- `Source/Reference/Keys/NestedRelease.uv` exercises release-read nested inside
+  an outer write key, release-write nested inside an outer read key, and
+  direct plus forwarded shared-parameter callee access summaries covered by an
+  outer key.
 - `Source/Reference/Keys/MemoryOrdering.uv` exercises expression-level
   `[[relaxed]]`, `[[acquire]]`, `[[release]]`, `[[acqrel]]`, and `[[seqcst]]`
   memory-order attributes on shared reads, plus `fence(acquire)`,
   `fence(release)`, and `fence(seqcst)` in runtime expression contexts.
 - `Source/Reference/Keys/SpeculativeExecution.uv` exercises speculative write
   fallback/commit behavior for a direct shared write and for a const receiver
-  method call on keyed data followed by a covered write.
-- `Source/Fixtures/RejectedSource` compiles metadata for 382 rejected-source
-  fixture specimens, and `HelloUltraviolet.exe` validates that fixture index
+  method call on keyed data followed by a covered write, multi-path
+  speculative writes, and an imported `C-unwind` catch boundary for a
+  speculative bounds panic.
+- `Fixtures/RejectedSource/Keys/SpeculativeReadMode`,
+  `SpeculativeOutsideWrite`, `SpeculativeNestedKeyRule`, and
+  `SpeculativeFence` reject with `E-CON-0095`, `E-CON-0091`, `E-CON-0090`,
+  and `E-CON-0096`, exercising the SPEC's separate speculative key-block
+  rejection rules as rejected source.
+- `Fixtures/RejectedSource/Names/PrivateAccess` and
+  `Fixtures/RejectedSource/Names/InternalAccess` reject with `E-MOD-1207`,
+  exercising `Access-Err`, `Access-Internal-Err`, and
+  `diagnostics.NameResolutionAndReservedNames` through concrete visibility
+  diagnostic specimens.
+- `Fixtures/DiagnosticSource/SourceText/LeadingBOMWarning` builds with exit
+  code 0 and emits `W-SRC-0101`, exercising `Span-BOM-Warn` through a source
+  file whose first bytes are `EF BB BF`.
+- `Fixtures/DiagnosticSource/SourceText/DecimalLeadingZeroWarning` builds with
+  exit code 0 and emits `W-SRC-0301`, exercising
+  `Warn-DecimalLeadingZero` through the decimal literal `001`.
+- `Fixtures/RejectedSource/SourceText/LeadingBOMEmbeddedBOM` rejects with
+  `W-SRC-0101` and `E-SRC-0103`, exercising
+  `req.LeadingBOMWarningPersistence` and `Span-BOM-Embedded` through a source
+  file whose first bytes are `EF BB BF EF BB BF`.
+- `Fixtures/RejectedSource/SourceText/ProhibitedControlCharacter` rejects with
+  `E-SRC-0104`, exercising `Span-Prohibited` through a raw U+0001 byte outside
+  a literal or comment span.
+- `Fixtures/RejectedSource/SourceText/InvalidUTF8` rejects with
+  `E-SRC-0101`, exercising `NoSpan-Decode` and
+  `diagnostics.SourceLexicalDiagnostics` through an invalid `FF` byte in source
+  text.
+- `Fixtures/RejectedSource/Parsing/EnumCommaSeparator` rejects with
+  `E-SRC-0520`, exercising `req.EnumTopLevelCommaSeparatorRejected`,
+  `Parse-Syntax-Err`, and `diagnostics.ParsingDiagnostics` through a generic
+  parser syntax error.
+- `Fixtures/RejectedSource/Expressions/TupleIndexOutOfBounds` rejects with
+  `E-TYP-1801`, exercising `TupleIndex-OOB` and `diagnostics.Tuples` through
+  an out-of-bounds tuple projection.
+- `Fixtures/RejectedSource/Modules/StaticMissingTypeAnnotation` rejects with
+  `E-TYP-1505`, exercising `WF-StaticDecl-MissingType` and
+  `diagnostics.StaticDeclarations` through a module-scope `let` declaration
+  without a type annotation.
+- `Fixtures/RejectedSource/Attributes/UnknownAttribute` rejects with
+  `E-MOD-2451`, exercising `AttrList-Unknown` and
+  `diagnostics.AttributeDiagnostics` through an unknown attribute name on a
+  procedure declaration.
+- `Fixtures/RejectedSource/Modules/MissingImport` rejects with `E-MOD-1202`,
+  exercising `Import-Path-Err`, `Bind-Import-Err`,
+  `Resolve-Import-Err`, and `diagnostics.ImportDeclarations` through a
+  top-level import declaration whose module path cannot resolve.
+- `Fixtures/RejectedSource/Modules/UsingListDuplicate` rejects with
+  `E-MOD-1206`, exercising `Using-List-Dup`, `Bind-Using-Err`, and
+  `diagnostics.UsingDeclarations` through a top-level using declaration whose
+  list names the same item twice.
+- `Fixtures/RejectedSource/Attributes/PackedLayoutOnEnum` rejects with
+  `E-MOD-2454`, exercising `diagnostics.LayoutAttributeDiagnostics` through
+  `[[layout(packed)]]` applied to an enum declaration.
+- `Fixtures/RejectedSource/Attributes/ReservedVendorNamespace` rejects with
+  `E-CNF-0402`, exercising `diagnostics.VendorAttributeDiagnostics` through
+  the reserved `ultraviolet::...` vendor-attribute namespace.
+- `Fixtures/RejectedSource/Modules/ReservedModuleKeyword` rejects with
+  `E-MOD-1105`, exercising `WF-Module-Path-Reserved` and
+  `diagnostics.ModuleAggregation` through a source-root child directory named
+  with a reserved language keyword. `UVBOOT-0073` records the bootstrap repair
+  that removed the extra parser-style `E-CNF-0401` diagnostic from the
+  directory-derived module path validation path.
+- `Fixtures/RejectedSource/DataTypes/TypeAliasCycle` rejects with
+  `E-TYP-1506`, exercising `def.AliasCycle`,
+  `TypeAlias-Recursive-Err`, `req.TypeAliasDiagnosticOwnership`, and
+  `diagnostics.CoreTypeDiagnostics` through mutually recursive source-level
+  type aliases. `UVBOOT-0074` records the bootstrap repair that maps the
+  type-alias recursive rule id to the SPEC diagnostic code, and
+  `SpecClarificationsNeeded.md` records the public SPEC spelling typo for the
+  same rule.
+- `Fixtures/RejectedSource/Expressions/UnionDirectAccess` rejects with
+  `E-TYP-2202`, exercising `diagnostics.DataTypesSupplement` through direct
+  field access on a union value without prior pattern matching.
+- `Fixtures/RejectedSource/Procedures/ContractDynamicAttribute` rejects with
+  `E-CON-0410`, exercising `diagnostics.DiagnosticsMetadataAttributes` through
+  `[[dynamic]]` applied directly to a contract predicate expression.
+- `Fixtures/RejectedSource/Attributes/TestMissingPostcondition` rejects with
+  `E-TST-0106`, exercising `diagnostics.TestAttributes` through a
+  source-native `[[test]]` procedure that has explicit visibility, explicit
+  return type, and a body but lacks the required postcondition.
+- `Fixtures/RejectedSource/Patterns/IfCaseModalNonExhaustive` rejects with
+  `E-TYP-2060`, exercising `diagnostics.ModalPointerSupplement` through
+  non-exhaustive `if ... is` analysis on a general modal value.
+- `Fixtures/RejectedSource/Expressions/AllocImplicitNoRegion` rejects with
+  `E-MEM-3021`, exercising `diagnostics.RuntimeStateAndMemoryDiagnostics`
+  through region allocation `^` outside an active region scope.
+- `Fixtures/DiagnosticSource/Attributes/InlineAlwaysRecursive` builds with
+  exit code 0 and emits `W-MOD-2452`, exercising
+  `diagnostics.OptimizationAttributeDiagnostics` through a recursive
+  `[[inline(always)]]` procedure whose inlining cannot be honored.
+- `Fixtures/OutputDiagnostics/Projects/ManifestParseError` rejects with
+  `E-PRJ-0102`, exercising `Parse-Manifest-Err`, `Step-Parse-Err`,
+  `LoadProject-Err`, and `diagnostics.ProjectDiagnostics` through a malformed
+  `Ultraviolet.toml` artifact. Its conformance log records diagnostic emission
+  and ill-formed-project rejection for the project-load path.
+- `Fixtures/OutputDiagnostics/CommandLine/UnknownCommand` records
+  `Build/bin/uv.exe definitely_unknown_command`; that invocation exits with
+  code 1 and renders `E-CLI-0001 (error): unknown command`, exercising
+  `diagnostics.CommandLineDiagnostics` through the command-line diagnostic
+  surface.
+- `Source/Fixtures/RejectedSource` compiles metadata for 425 rejected-source
+  expected diagnostic entries across 404 physical `Expected.uv` artifacts, and
+  `HelloUltraviolet.exe` validates that fixture index
   through `rejectedSourceFixturesAreIndexed`.
 - The rejected-source fixture projects under
   `HelloUltraviolet/Fixtures/RejectedSource` fail with their expected SPEC
@@ -391,19 +692,20 @@ Objective: execute `.agents/plans/HelloUltravioletReferenceCorpus.md`.
 - `HelloUltraviolet.exe` verifies runtime existence of each rejected fixture
   manifest, invalid source file, and `Expected.uv` artifact through
   `rejectedSourceFixtureArtifactsExist(context)`.
-- `ExpectedFiles.uv` reads the 382 current rejected-source `Expected.uv`
+- `ExpectedFiles.uv` reads the 403 current rejected-source `Expected.uv`
   artifacts and `HelloUltraviolet.exe` validates exact metadata content through
-  one named check per specimen.
-- `Source/Fixtures/DiagnosticSource` compiles metadata for 22 diagnostic-source
+  one named check per physical fixture artifact.
+- `Source/Fixtures/DiagnosticSource` compiles metadata for 27 diagnostic-source
   fixture specimens whose source is expected to compile while emitting SPEC
   warnings or informational diagnostics, or while proving a SPEC diagnostic is
   absent, and `HelloUltraviolet.exe` validates the index, artifact paths, and
   exact `Expected.uv` metadata through the diagnostic-source fixture checks.
 - `Source/Fixtures/OutputDiagnostics` compiles metadata for the
-  `LlvmToolResolveOwnership` and `EmitLLVMRenderFailure` output-diagnostic
-  fixtures, and `HelloUltraviolet.exe` validates the index, source artifacts,
-  exact `Expected.uv` metadata, and conformance-log ownership markers through
-  the output-diagnostic fixture checks.
+  `LlvmToolResolveOwnership`, `EmitLLVMRenderFailure`, `ManifestParseError`,
+  and `UnknownCommand` output-diagnostic fixtures, and `HelloUltraviolet.exe`
+  validates the index, source artifacts, exact `Expected.uv` metadata, captured
+  command output, and conformance-log ownership markers through the
+  output-diagnostic fixture checks.
 - `Fixtures/OutputDiagnostics/Lowering/LlvmToolResolveOwnership` builds with
   exit code 1 and emits `E-OUT-0403` when bitcode emission requests
   `llvm-as` from an unavailable toolchain. The conformance log records
@@ -451,9 +753,9 @@ Objective: execute `.agents/plans/HelloUltravioletReferenceCorpus.md`.
 - `Fixtures/DiagnosticSource/Expressions/ValidTransmuteTarget` builds with exit
   code 0 and emits `W-SAFE-0100` for a valid unsafe transmute whose target type
   is known to admit invalid bit patterns.
-- The 21 key-system rejected-source fixtures under
+- The 25 key-system rejected-source fixtures under
   `Fixtures/RejectedSource/Keys` reject with their expected `E-CON-*`
-  diagnostics, and the 10 key-system diagnostic-source fixtures under
+  diagnostics, and the 12 key-system diagnostic-source fixtures under
   `Fixtures/DiagnosticSource/Keys` compile with their expected `W-CON-*` or
   `I-CON-*` diagnostics or prove expected diagnostic absence.
 - `Fixtures/DiagnosticSource/Parallelism/DispatchDynamicKeyWarning` compiles
@@ -485,6 +787,11 @@ Objective: execute `.agents/plans/HelloUltravioletReferenceCorpus.md`.
   `W-CON-0011` for stale binding use after `yield release`, while
   `Fixtures/DiagnosticSource/Keys/StaleOkSuppressesReleaseWarning` uses the
   same source shape with `[[stale_ok]]` and verifies `W-CON-0011` is absent.
+- `Fixtures/DiagnosticSource/Keys/SpeculativeLargeStructWarning` compiles with
+  exit code 0 and emits `W-CON-0020` for a speculative block over a large
+  aggregate. `Fixtures/DiagnosticSource/Keys/SpeculativeExpensiveBodyWarning`
+  compiles with exit code 0 and emits `W-CON-0021` for a speculative block body
+  that calls a const receiver method before writing under the speculative key.
 - `Fixtures/RejectedSource/Expressions/YieldOutsideAsync` rejects with
   `E-CON-0210`, exercising `rule.21.Yield-NotAsync-Err` by using `yield` in a
   non-async-returning procedure.
@@ -730,6 +1037,10 @@ Objective: execute `.agents/plans/HelloUltravioletReferenceCorpus.md`.
   quote/splice forms through emitted runtime procedures, including
   `quote pattern`, expression splices, statement splices, identifier-position
   string splices, and item emission order.
+- `Source/Reference/Comptime/DeriveTargets.uv` exercises accepted derive
+  targets whose emitted declarations depend on `target` metadata supplied by
+  `BindDeriveTargetInputs`, plus `requires`/`emits` contract ordering and
+  emitted declaration lowering.
 - The bootstrap class-implementation checker now evaluates
   `def.ImplementationOrphanRule` for record, enum, and modal `implements`
   clauses in `CheckOrphanRule`, using the first module-path segment as the
@@ -763,11 +1074,13 @@ Objective: execute `.agents/plans/HelloUltravioletReferenceCorpus.md`.
   entrypoints selected by `[[mangle(... )]]`.
 - `Fixtures/AcceptedProjects/CrossAssemblyImplementation` builds as a valid
   multi-assembly library project. The selected library assembly imports a
-  dependency assembly, implements the dependency's public required-field class
-  with a local record, and returns the implemented field value. This exercises
-  the valid source surface for `def.ImplementationOrphanRule` and
-  `req.14.ImplementationOrphanRequirement`: the implementing type is local to
-  the current assembly while the class is imported from another assembly.
+  dependency assembly, implements the dependency's public classes with a local
+  record, enum, and modal declaration, and returns the implemented record field
+  value after constructing the enum and modal values. This exercises the valid
+  source surface for `def.ImplementationOrphanRule` and
+  `req.14.ImplementationOrphanRequirement` across all three implementer forms:
+  the implementing type is local to the current assembly while the class is
+  imported from another assembly.
   Building this fixture required a bootstrap correction in
   `collect_toplevel.cpp` and `item/import_decl.cpp` so import validation uses
   the semantic AST module set being analyzed rather than the selected
@@ -799,30 +1112,37 @@ Objective: execute `.agents/plans/HelloUltravioletReferenceCorpus.md`.
   `LowerIR-Err`; `EmitObj-Err` remains reserved for failures of
   `LLVMEmitObj_21` after a module exists. `rule.24.LowerIR-Err` and
   `rule.24.EmitObj-Err` are cataloged as reference-model rows while their
-  deterministic fixture class is pending SPEC clarification.
+  deterministic fixture class is pending SPEC clarification. The bootstrap
+  owner path is `LLVMBootstrap/cursive/src/06_driver/pipeline.cpp`: it records
+  `LowerIR-Err` when module materialization fails before an LLVM module is
+  available, and records `EmitObj-Err` only after a module exists for verifier,
+  target-machine, or object-emission pass setup failures.
 - The project check gate passes:
   `Cursive.exe build HelloUltraviolet --check --target-profile x86_64-win64
-  --build-progress off`, most recently run with exit code 0 and the expected
-  seven warnings plus two info diagnostics.
+  --build-progress off --max-errors 20`, most recently run with exit code 0
+  and the expected ten warnings plus three info diagnostics.
 - The project build gate passes:
   `Cursive.exe build HelloUltraviolet --target-profile x86_64-win64
-  --build-progress off`, most recently run with exit code 0 and the expected
-  seven warnings plus two info diagnostics.
+  --build-progress on --max-errors 20`, most recently run with exit code 0
+  in 136.89s and the expected ten warnings plus three info diagnostics.
 - The executable gate passes:
-  `HelloUltraviolet/build/bin/HelloUltraviolet.exe`.
+  `HelloUltraviolet/build/bin/HelloUltraviolet.exe`, most recently run with
+  exit code 0 and no output.
 - The audit-argument executable gate passes:
-  `HelloUltraviolet/build/bin/HelloUltraviolet.exe --audit`.
+  `HelloUltraviolet/build/bin/HelloUltraviolet.exe --audit`, most recently
+  run with exit code 0 and no output.
 - The focused bootstrap regression gate passes:
   `cursive_codegen_abi_sret_test.exe`.
 - Whitespace validation passes:
-  `git -c filter.lfs.process= -c filter.lfs.clean=cat -c filter.lfs.smudge=cat -c filter.lfs.required=false diff --check -- HelloUltraviolet ...bootstrap files...`.
+  `git -c filter.lfs.process= -c filter.lfs.clean=cat -c filter.lfs.smudge=cat -c filter.lfs.required=false diff --check`.
 
 ## Completion Blockers
 
 - Rejected-source, diagnostic-source, and output-diagnostic fixtures are
-  partially populated. The current fixture set covers 382 rejected-source
-  diagnostics, 22 compiling diagnostic-source warning/info/absence cases, and
-  2 output-diagnostic artifact cases. Of the 382 `oracle.expected-diagnostics`
+  partially populated. The current fixture set covers 425 rejected-source
+  diagnostic entries, 27 compiling diagnostic-source warning/info/absence
+  specimens, and 4 output-diagnostic artifact cases. Of the 382
+  `oracle.expected-diagnostics`
   obligations, the generated catalog now maps 350 to rejected-source fixture
   files, 23 to diagnostic-source fixture files, 4 to artifact-behavior fixture
   files, 1 to an accepted-project fixture, and 4 to the compiled clarification
@@ -836,36 +1156,46 @@ Objective: execute `.agents/plans/HelloUltravioletReferenceCorpus.md`.
   `Source/Audit/SpecClarifications.uv` now makes those classifications
   executable in the reference corpus.
 - `Fixtures/BootstrapNonCompliance/Procedures/FreeProcedureOverloadResolution`
-  now passes both semantic checking and the standalone library build after the
-  bootstrap repair in `collect_toplevel.cpp` and `expr/call.cpp`. The
-  `NoMatchingOverload` rejected-source fixture covers the no-match branch of
-  the free-call overload selection algorithm.
+  now passes semantic checking, standalone build, and runtime execution after
+  the bootstrap repair in `collect_toplevel.cpp`, `expr/call.cpp`,
+  `mangle.cpp`, `lower_module.cpp`, `lower_proc.cpp`, and
+  `lower/expr/call.cpp`. The `NoMatchingOverload` rejected-source fixture
+  covers the no-match branch of the free-call overload selection algorithm,
+  while `Source/Reference/Procedures/Overloading.uv` now exercises arity-based
+  selection, parameter-type selection, and same-name method lookup through
+  executable return values.
 - `rule.18.BlockInfo-Res-Err` is cataloged as a reference-model row pending
   source-construct clarification. The row rejects block result prefixes whose
-  `Res` set has no common type, but the Chapter 18 rules inspected here
-  produce `Res = []` for expression, unsafe, region, and frame statements, and
-  route `break` values through `Brk` instead of `Res`. A corrected probe using
+  `Res` set has no common type, but the Chapter 18 rules inspected here produce
+  `Res = []` for let, var, assignment, expression, defer, region, frame, return,
+  continue, and unsafe statements; route `break` values through `Brk` instead
+  of `Res`; and expand `CtStmt` away before it contributes a runtime statement.
+  A corrected probe using
   two block-expression statement prefixes with incompatible tail types was
   rejected as `E-SEM-3161` at the enclosing `return`, not as
   `BlockInfo-Res-Err`. The bootstrap owner path is `TypeBlockInfo` in
   `LLVMBootstrap/cursive/src/04_analysis/typing/stmt/stmt_common.cpp`; it
-  forwards only nested statement-block results with type `!` into
-  `flow.results`, which can exercise `BlockInfo-Res` but does not create a
-  heterogeneous `Res` set for `BlockInfo-Res-Err`. This is tracked in
+  checks `ResType(stmts_typed.flow.results)` and can emit `BlockInfo-Res-Err`
+  when the vector is heterogeneous, but the inspected source-facing producers
+  append only nested statement-block results of type `!` into `flow.results`.
+  That can exercise `BlockInfo-Res` without creating a heterogeneous `Res` set
+  for `BlockInfo-Res-Err`. This is tracked in
   `HelloUltraviolet/Audit/SpecClarificationsNeeded.md`.
 - `rule.14.Impl-Orphan-Err` is cataloged as a reference-model row, while
   `req.14.ImplementationOrphanRequirement` is cataloged as an accepted-project
   row. Both remain sourceability-limited as concrete expected-diagnostic
   obligations. The accepted
   `CrossAssemblyImplementation` fixture now exercises the valid cross-assembly
-  implementation surface for the same orphan requirement. `SPECIFICATION.md:13033` states that class
-  implementation occurs at the defining record, enum, or modal declaration and
-  that standalone extension implementation blocks are not part of the language.
-  Under that surface, an ordinary source implementation always has the
-  implementing declaration in the current assembly. The bootstrap checker now
-  owns the rule and emits `E-TYP-2507` if an implementation relation is ever
-  presented outside that owner context; there is no current SPEC-valid source
-  spelling for the rejecting case. This is tracked in
+  implementation surface for the same orphan requirement with a local record,
+  enum, and modal declaration implementing imported classes.
+  `SPECIFICATION.md:13116` states that class implementation occurs at the
+  defining record, enum, or modal declaration and that standalone extension
+  implementation blocks are not part of the language. Under that surface, an
+  ordinary source implementation always has the implementing declaration in the
+  current assembly. The bootstrap checker now owns the rule and emits
+  `E-TYP-2507` if an implementation relation is ever presented outside that
+  owner context; there is no current SPEC-valid source spelling for the
+  rejecting case. This is tracked in
   `HelloUltraviolet/Audit/SpecClarificationsNeeded.md`.
 - `Fixtures/RejectedSource/Patterns/TuplePatternArity` rejects with
   `E-TYP-1803`, exercising `rule.17.Pat-Tuple-R-Arity-Err` through a tuple
@@ -939,6 +1269,10 @@ Objective: execute `.agents/plans/HelloUltravioletReferenceCorpus.md`.
   Backend source specimens now exercise function values, aggregate memory
   operations, enum payload lowering, loop phi values, closure calls, slice
   views, string literal data, and bytes view reads.
+  Compile-time derive-target source specimens now exercise target metadata
+  binding, target-name rendering, module-path rendering, derives ordered by
+  `emits`/`requires`, pending emission transfer, and runtime execution of the
+  emitted declarations.
   Compile-time reflection source specimens now exercise category, implements,
   type-name, module-path, full `SourceSpan` field access, and the complete
   `FieldInfo`, `VariantInfo`, and `StateInfo` metadata field surfaces, including
@@ -947,7 +1281,15 @@ Objective: execute `.agents/plans/HelloUltravioletReferenceCorpus.md`.
   `Spawned`, and `wait` over `Tracked` with a `Reactor.register` source path.
   Module aggregation source specimens now include same-module multi-file
   compilation units, child-module discovery, child-module multi-file
-  aggregation, and import-qualified parent-to-child access.
+  aggregation, import-qualified parent-to-child access, and reserved keyword
+  module path rejection through a concrete child directory specimen.
+  Source-text literal specimens now include grouped decimal and based integer
+  lexemes, all integer suffixes, contextual and explicit float suffixes,
+  exponent forms, simple, byte, and Unicode escape sequences, char escapes,
+  boolean, null, and unit literals, and tuple-projection lexical
+  disambiguation. Source-text operator and punctuator specimens now include
+  arithmetic compound assignments, all six range/slice token shapes, the
+  `:=` binding operator, and the `~>` method-call suffix.
   Name-resolution source specimens now include imported module aliases,
   qualified procedure calls, qualified record and enum constructors, qualified
   enum patterns, first-class qualified procedure values, and qualified class
@@ -963,7 +1305,9 @@ Objective: execute `.agents/plans/HelloUltravioletReferenceCorpus.md`.
   `Pure-Comptime`. `UVBOOT-0058` records the later bootstrap repairs needed for
   braced no-else `if is` predicate parsing, pure-predicate proof equality,
   aggregate and control-flow precondition substitution, and literal
-  compile-time boolean predicate proof.
+  compile-time boolean predicate proof. `UVBOOT-0076` records the bootstrap
+  repair needed for a no-argument compile-time boolean predicate whose body
+  computes `true` through immutable local bindings and constant expressions.
   Statement source specimens now exercise block statement sequences, empty and
   unit blocks, tail expressions, return-tail control, annotated and inferred
   `let`/`var` bindings, tuple and record binding patterns, `:=` immovable
@@ -990,8 +1334,9 @@ Objective: execute `.agents/plans/HelloUltravioletReferenceCorpus.md`.
   exhaustive type-case analysis, success and error propagation through `?`,
   tagged union layout, niche union layout for `() | Ptr<T>@Valid`, and runtime
   value extraction from both empty and payload niche cases. The concrete
-  `Union-DirectAccess-Err` row now points at the existing rejected source
-  specimen, and `WF-Union-TooFew` is indexed through the clarification ledger.
+  `Union-DirectAccess-Err` row and `diagnostics.DataTypesSupplement` table row
+  now point at the existing rejected source specimen, and `WF-Union-TooFew` is
+  indexed through the clarification ledger.
   Tuple and array source specimens now exercise nested tuple scanning,
   multiline tuple construction, tuple place projection assignment, tuple and
   array construction control propagation, tuple access control propagation,
@@ -1000,6 +1345,9 @@ Objective: execute `.agents/plans/HelloUltravioletReferenceCorpus.md`.
   array layout. `TupleIndex-OOB`, `TupleAccess-NotTuple`, and
   `Index-Array-NonUsize` now point at rejected-source specimens, while
   `TupleIndex-NonConst` is indexed through the clarification ledger.
+  Type-alias source specimens now include a mutually recursive alias cycle
+  rejected-source fixture that exercises alias-cycle detection and the Chapter
+  8 core type diagnostics table.
   Record source specimens now exercise field declarations with and without
   default initializers, associated type members, record methods, shorthand and
   out-of-order field initializers, default record construction, record literal
@@ -1020,15 +1368,42 @@ Objective: execute `.agents/plans/HelloUltravioletReferenceCorpus.md`.
   SPEC-assigned diagnostics for duplicate enum variants, unknown enum
   variants, tuple payload arity mismatches, and record payload missing fields.
   Key-system source specimens now exercise accepted key paths, key acquisition,
-  field key boundaries, inline coarsening markers, memory-order attributes,
-  fence expressions, dynamic indexed reads and writes, shared safe-pointer
+  field key boundaries, inline coarsening markers, expression-level and
+  key-block-default memory-order attributes, fence expressions, dynamic indexed
+  reads and writes, shared safe-pointer
   dereference key boundaries, accepted shared dynamic class object method
   calls, shared-argument call-site behavior, key-block control-flow return,
   local and escaping closure shared captures, key-block `break` and `continue`
-  control-flow exits, covering-write read-then-write behavior, root-key nested
-  write coverage, speculative const receiver calls, selected rejected-source
-  obligations, and selected diagnostic-source obligations, with broader
-  source-runtime coverage still incomplete.
+  control-flow exits, explicit read/write context classification for
+  let-initializer, assignment, operand, condition, argument, and receiver
+  positions, covering-write read-then-write behavior, root-key nested write
+  coverage, speculative const receiver calls, multi-path speculative writes,
+  speculative panic cleanup through a catch boundary, selected
+  rejected-source obligations, and selected diagnostic-source obligations, with
+  broader source-runtime coverage still incomplete.
+  Expression closure and pipeline source specimens now exercise noncapturing
+  function-typed closure literals, capturing closure-typed literals, typed and
+  inferred closure parameters, typed and inferred returns, trailing-comma
+  parameter lists, empty parameter lists, block and expression bodies, `move`
+  parameters, explicit move capture, parenthesized union parameter annotations,
+  closure-call callee and argument control propagation, function pipelines,
+  captured-closure pipelines, chained pipelines, and expected-type closure
+  literals on a pipeline right-hand side. `UVBOOT-0067` records the bootstrap
+  repairs needed for callable-alias normalization in closure/pipeline typing
+  and lowering, ordinary closure-call dispatch through callable aliases, and
+  indirect closure code-pointer ABI typing. The source also corrects an earlier
+  reference mistake by assigning noncapturing closure literals to function
+  aliases, matching `SPECIFICATION.md` §16.9.4.
+  Expression call source specimens now exercise no-argument calls, positional
+  calls, multiline trailing-comma argument lists, argument evaluation and
+  control-flow propagation, `move` arguments, generic calls, qualified generic
+  calls with predicate clauses, function values, closure values, record
+  construction calls, method calls, and region argument control propagation.
+  `UVBOOT-0068` records the bootstrap repair needed for generic procedure
+  predicate bounds to satisfy `Bitcopy(T)` inside the checked procedure body.
+  `UVBOOT-0069` records the later backend repair needed for indirect closure
+  calls whose actual callable type carries `move` parameter modes while stale
+  concrete closure-code signature recovery supplies borrowed modes.
 
 ## Current Status
 

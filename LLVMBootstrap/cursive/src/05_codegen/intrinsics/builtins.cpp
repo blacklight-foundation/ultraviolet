@@ -726,6 +726,11 @@ std::string BuiltinSymAsyncFreeFrame() {
   return project::RuntimePathSig({"async", "free_frame"});
 }
 
+std::string BuiltinSymAsyncTake() {
+  SPEC_DEF("BuiltinSym-Async-Take", "Section 21.3.5");
+  return project::RuntimePathSig({"async", "take"});
+}
+
 // =============================================================================
 // Section 6.8 Panic symbol
 // =============================================================================
@@ -908,10 +913,11 @@ std::vector<std::string> RuntimeSpecSyms() {
   }};
   AppendRuntimeSymbols(syms, kTimeSymbols);
 
-  static const std::array<BuiltinSymbolFactory, 25> kAdditionalBuiltinMethods = {{
+  static const std::array<BuiltinSymbolFactory, 26> kAdditionalBuiltinMethods = {{
       &BuiltinSymAsyncResume,
       &BuiltinSymAsyncAllocFrame,
       &BuiltinSymAsyncFreeFrame,
+      &BuiltinSymAsyncTake,
       &BuiltinSymExecutionDomainName,
       &BuiltinSymExecutionDomainMaxConcurrency,
       &BuiltinSymContextCpu,
@@ -1067,10 +1073,11 @@ std::vector<std::string> RuntimeLinkRequiredSyms() {
 
 std::vector<std::string> RuntimeBuiltinNoPanicOutSyms() {
   std::vector<std::string> syms = RuntimeLinkRequiredSyms();
-  static const std::array<BuiltinSymbolFactory, 25> kAdditionalSymbols = {{
+  static const std::array<BuiltinSymbolFactory, 26> kAdditionalSymbols = {{
       &BuiltinSymAsyncResume,
       &BuiltinSymAsyncAllocFrame,
       &BuiltinSymAsyncFreeFrame,
+      &BuiltinSymAsyncTake,
       &BuiltinSymExecutionDomainName,
       &BuiltinSymExecutionDomainMaxConcurrency,
       &BuiltinSymContextCpu,

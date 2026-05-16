@@ -33,6 +33,7 @@
 #include <set>
 #include <sstream>
 #include <string_view>
+#include <utility>
 
 #include "00_core/assert_spec.h"
 #include "00_core/diagnostic_messages.h"
@@ -556,6 +557,29 @@ Scope BuildParamScope(
   return scope;
 }
 
+static void AttachPredicateBoundsToParamScope(
+    Scope& scope,
+    const std::optional<ast::PredicateClause>& predicate_clause_opt) {
+  if (!predicate_clause_opt.has_value()) {
+    return;
+  }
+
+  for (const auto& predicate : *predicate_clause_opt) {
+    if (!predicate.type) {
+      continue;
+    }
+    const auto* path = std::get_if<ast::TypePathType>(&predicate.type->node);
+    if (!path || path->path.size() != 1 || !path->generic_args.empty()) {
+      continue;
+    }
+    const auto it = scope.find(IdKeyOf(path->path[0]));
+    if (it == scope.end() || it->second.kind != EntityKind::Type) {
+      continue;
+    }
+    it->second.type_param_predicate_bounds.push_back(predicate.pred);
+  }
+}
+
 ScopeList BindTypeParams(
     const ScopeContext& ctx,
     const ast::GenericParams& params) {
@@ -585,6 +609,29 @@ ScopeList BindTypeParams(
   ScopeList scopes;
   scopes.reserve(ctx.scopes.size() + 1);
   scopes.push_back(BuildParamScope(ctx, params_opt));
+  scopes.insert(scopes.end(), ctx.scopes.begin(), ctx.scopes.end());
+  RecordBindTypeParamsRule(ctx, params_opt, scopes.size());
+  return scopes;
+}
+
+ScopeList BindTypeParams(
+    const ScopeContext& ctx,
+    const std::optional<ast::GenericParams>& params_opt,
+    const std::optional<ast::PredicateClause>& predicate_clause_opt) {
+  SpecDefsGenericParams();
+  SPEC_RULE("BindTypeParams");
+
+  if (!params_opt.has_value()) {
+    RecordBindTypeParamsRule(ctx, params_opt, ctx.scopes.size());
+    return ctx.scopes;
+  }
+
+  Scope param_scope = BuildParamScope(ctx, params_opt);
+  AttachPredicateBoundsToParamScope(param_scope, predicate_clause_opt);
+
+  ScopeList scopes;
+  scopes.reserve(ctx.scopes.size() + 1);
+  scopes.push_back(std::move(param_scope));
   scopes.insert(scopes.end(), ctx.scopes.begin(), ctx.scopes.end());
   RecordBindTypeParamsRule(ctx, params_opt, scopes.size());
   return scopes;

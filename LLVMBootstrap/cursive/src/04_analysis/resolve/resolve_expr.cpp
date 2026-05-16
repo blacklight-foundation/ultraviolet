@@ -22,6 +22,7 @@
 #include <type_traits>
 
 #include "00_core/assert_spec.h"
+#include "00_core/symbols.h"
 #include "02_source/attributes/attribute_registry.h"
 #include "04_analysis/caps/cap_system.h"
 #include "04_analysis/language_service/facts.h"
@@ -51,6 +52,13 @@ bool IsComptimeResolutionEnv(const ScopeContext& ctx) {
   };
   return has("diagnostics") || has("introspect") || has("emitter") ||
          has("files") || has("target");
+}
+
+std::string QualifiedNameDetail(const ast::Path& path,
+                                std::string_view name) {
+  ast::Path full_path = path;
+  full_path.emplace_back(name);
+  return "unresolved qualified name `" + core::StringOfPath(full_path) + "`";
 }
 
 Scope BuildComptimeCapabilityScope(const ast::AttributeList* attrs) {
@@ -403,7 +411,8 @@ ResTypeResult ResolveTypeOpt(ResolveContext& ctx,
   }
   const auto resolved = ResolveType(ctx, type_opt);
   if (!resolved.ok) {
-    return {false, resolved.diag_id, resolved.span, {}};
+    return {false, resolved.diag_id, resolved.span, {},
+            resolved.diag_detail, resolved.diag_children};
   }
   SPEC_RULE("ResolveTypeOpt-Some");
   return {true, std::nullopt, std::nullopt, resolved.value};
@@ -853,7 +862,8 @@ ResolveTypeRef(ResolveContext& ctx,
         if constexpr (std::is_same_v<T, ast::TypePath>) {
           const auto resolved = ResolveTypePath(ctx, node);
           if (!resolved.ok) {
-            return {false, resolved.diag_id, resolved.span, {}};
+            return {false, resolved.diag_id, resolved.span, {},
+                    resolved.diag_detail};
           }
           SPEC_RULE("ResolveTypeRef-Path");
           result.ok = true;
@@ -862,7 +872,8 @@ ResolveTypeRef(ResolveContext& ctx,
         } else {
           const auto resolved = ResolveTypePath(ctx, node.path);
           if (!resolved.ok) {
-            return {false, resolved.diag_id, resolved.span, {}};
+            return {false, resolved.diag_id, resolved.span, {},
+                    resolved.diag_detail};
           }
           ast::ModalStateRef out = node;
           out.path = resolved.value;
@@ -1061,8 +1072,10 @@ ResExprResult ResolveExpr(ResolveContext& ctx,
           const auto resolved = ResolveQualifiedForm(qual_ctx, *expr);
           if (!resolved.ok) {
             const auto diag = resolved.diag_id.value_or("ResolveExpr-Ident-Err");
+            const std::string detail =
+                QualifiedNameDetail(node.path, node.name);
             SPEC_RULE("ResolveExpr-Qualified-Err");
-            return {false, diag, expr->span, {}};
+            return {false, diag, expr->span, {}, detail};
           }
           SPEC_RULE("ResolveExpr-Qualified");
           return {true, std::nullopt, std::nullopt, resolved.expr};
@@ -1097,6 +1110,26 @@ ResExprResult ResolveExpr(ResolveContext& ctx,
           auto out = *expr;
           auto& out_node = std::get<ast::EnumLiteralExpr>(out.node);
           out_node.payload_opt = payload.value;
+          if (node.path.size() > 1) {
+            const ast::ModulePath enum_path(node.path.begin(),
+                                            node.path.end() - 1);
+            const ast::Identifier& variant_name = node.path.back();
+            const auto qual_ctx = BuildResolveQualContext(ctx);
+            ResolveEnumPathResult resolved_enum;
+            if (!node.payload_opt.has_value()) {
+              resolved_enum = ResolveEnumUnit(qual_ctx, enum_path, variant_name);
+            } else if (std::holds_alternative<ast::EnumPayloadParen>(
+                           *node.payload_opt)) {
+              resolved_enum =
+                  ResolveEnumTuple(qual_ctx, enum_path, variant_name);
+            } else {
+              resolved_enum =
+                  ResolveEnumRecord(qual_ctx, enum_path, variant_name);
+            }
+            if (resolved_enum.ok) {
+              out_node.path = FullPath(resolved_enum.path, variant_name);
+            }
+          }
           SPEC_RULE("ResolveExpr-EnumLiteral");
           return {true, std::nullopt, std::nullopt,
                   std::make_shared<ast::Expr>(std::move(out))};
@@ -1161,7 +1194,11 @@ ResExprResult ResolveExpr(ResolveContext& ctx,
         } else if constexpr (std::is_same_v<T, ast::RecordExpr>) {
           const auto target = ResolveTypeRef(ctx, node.target);
           if (!target.ok) {
-            return {false, target.diag_id, target.span, {},
+            const std::optional<core::Span> target_span =
+                target.span.has_value()
+                    ? target.span
+                    : std::optional<core::Span>(expr->span);
+            return {false, target.diag_id, target_span, {},
                     target.diag_detail, target.diag_children};
           }
           const auto fields = ResolveFieldInits(ctx, node.fields);
@@ -2025,7 +2062,8 @@ ResolveStmtResult ResolveStmt(ResolveContext& ctx,
           out.binding.init = init.value;
           const auto ty = ResolveTypeOpt(ctx, node.binding.type_opt);
           if (!ty.ok) {
-            return {false, ty.diag_id, ty.span, {}};
+            return {false, ty.diag_id, ty.span, {},
+                    ty.diag_detail, ty.diag_children};
           }
           out.binding.type_opt = ty.value;
           if (node.binding.pat) {
@@ -2051,7 +2089,8 @@ ResolveStmtResult ResolveStmt(ResolveContext& ctx,
           out.binding.init = init.value;
           const auto ty = ResolveTypeOpt(ctx, node.binding.type_opt);
           if (!ty.ok) {
-            return {false, ty.diag_id, ty.span, {}};
+            return {false, ty.diag_id, ty.span, {},
+                    ty.diag_detail, ty.diag_children};
           }
           out.binding.type_opt = ty.value;
           if (node.binding.pat) {

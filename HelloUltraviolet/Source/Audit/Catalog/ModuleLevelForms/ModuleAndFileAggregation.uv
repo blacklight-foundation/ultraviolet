@@ -169,12 +169,12 @@ public procedure validatedModuleLevelFormsModuleAndFileAggregationObligations() 
     ) {
         count = count + 1usize
     }
-    if acceptedObligationEntryMatches(
+    if rejectedSourceObligationEntryMatches(
         "WF-Module-Path-Reserved",
         32044usize,
-        "HelloUltraviolet::Reference::Modules",
-        "runModulesAggregationReference",
-        "Source/Reference/Modules/Aggregation.uv"
+        "HelloUltraviolet::Fixtures::RejectedSource",
+        "validatedModulesRejectedSourceFixtureCount",
+        "Fixtures/RejectedSource/Modules/ReservedModuleKeyword/Source/if/Main.uv"
     ) {
         count = count + 1usize
     }
@@ -781,12 +781,12 @@ public procedure validatedModuleLevelFormsModuleAndFileAggregationObligations() 
     ) {
         count = count + 1usize
     }
-    if acceptedObligationEntryMatches(
+    if rejectedSourceObligationEntryMatches(
         "Resolve-Import-Err",
         33187usize,
-        "HelloUltraviolet::Reference::Modules",
-        "runModulesAggregationReference",
-        "Source/Reference/Modules/Aggregation.uv"
+        "HelloUltraviolet::Fixtures::RejectedSource",
+        "validatedModulesRejectedSourceFixtureCount",
+        "Fixtures/RejectedSource/Modules/MissingImport/Source/Main.uv"
     ) {
         count = count + 1usize
     }
@@ -1690,12 +1690,12 @@ public procedure validatedModuleLevelFormsModuleAndFileAggregationObligations() 
     ) {
         count = count + 1usize
     }
-    if acceptedObligationEntryMatches(
+    if rejectedSourceObligationEntryMatches(
         "diagnostics.ModuleAggregation",
         34944usize,
-        "HelloUltraviolet::Reference::Modules",
-        "runModulesAggregationReference",
-        "Source/Reference/Modules/Aggregation.uv"
+        "HelloUltraviolet::Fixtures::RejectedSource",
+        "validatedModulesRejectedSourceFixtureCount",
+        "Fixtures/RejectedSource/Modules/ReservedModuleKeyword/Source/if/Main.uv"
     ) {
         count = count + 1usize
     }

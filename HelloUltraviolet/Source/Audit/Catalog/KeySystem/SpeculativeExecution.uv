@@ -43,21 +43,21 @@ public procedure validatedKeySystemSpeculativeExecutionObligations() -> usize {
     ) {
         count = count + 1usize
     }
-    if acceptedObligationEntryMatches(
+    if rejectedSourceObligationEntryMatches(
         "rule.19.K-Spec-Write-Required",
         74264usize,
-        "HelloUltraviolet::Reference::Keys",
-        "runKeysSpeculativeExecutionReference",
-        "Source/Reference/Keys/SpeculativeExecution.uv"
+        "HelloUltraviolet::Fixtures::RejectedSource",
+        "validatedKeysRejectedSourceFixtureCount",
+        "Fixtures/RejectedSource/Keys/SpeculativeReadMode/Source/Main.uv"
     ) {
         count = count + 1usize
     }
-    if acceptedObligationEntryMatches(
+    if rejectedSourceObligationEntryMatches(
         "rule.19.K-Spec-Pure-Body",
         74280usize,
-        "HelloUltraviolet::Reference::Keys",
-        "runKeysSpeculativeExecutionReference",
-        "Source/Reference/Keys/SpeculativeExecution.uv"
+        "HelloUltraviolet::Fixtures::RejectedSource",
+        "validatedKeysRejectedSourceFixtureCount",
+        "Fixtures/RejectedSource/Keys/SpeculativeOutsideWrite/Source/Main.uv"
     ) {
         count = count + 1usize
     }
@@ -88,12 +88,12 @@ public procedure validatedKeySystemSpeculativeExecutionObligations() -> usize {
     ) {
         count = count + 1usize
     }
-    if acceptedObligationEntryMatches(
+    if rejectedSourceObligationEntryMatches(
         "rule.19.K-Spec-No-Nested-Key",
         74347usize,
-        "HelloUltraviolet::Reference::Keys",
-        "runKeysSpeculativeExecutionReference",
-        "Source/Reference/Keys/SpeculativeExecution.uv"
+        "HelloUltraviolet::Fixtures::RejectedSource",
+        "validatedKeysRejectedSourceFixtureCount",
+        "Fixtures/RejectedSource/Keys/SpeculativeNestedKeyRule/Source/Main.uv"
     ) {
         count = count + 1usize
     }
@@ -106,12 +106,12 @@ public procedure validatedKeySystemSpeculativeExecutionObligations() -> usize {
     ) {
         count = count + 1usize
     }
-    if acceptedObligationEntryMatches(
+    if rejectedSourceObligationEntryMatches(
         "rule.19.K-Spec-No-Memory-Ordering",
         74379usize,
-        "HelloUltraviolet::Reference::Keys",
-        "runKeysSpeculativeExecutionReference",
-        "Source/Reference/Keys/SpeculativeExecution.uv"
+        "HelloUltraviolet::Fixtures::RejectedSource",
+        "validatedKeysRejectedSourceFixtureCount",
+        "Fixtures/RejectedSource/Keys/SpeculativeFence/Source/Main.uv"
     ) {
         count = count + 1usize
     }

@@ -21,6 +21,24 @@ public procedure diagnosticSourceFixtureArtifactsExist(context: Context) -> bool
         )
     artifacts_exist = artifacts_exist && diagnosticFixtureArtifactsExist(
             context,
+            "HelloUltraviolet/Fixtures/DiagnosticSource/Attributes/InlineAlwaysRecursive/Ultraviolet.toml",
+            "HelloUltraviolet/Fixtures/DiagnosticSource/Attributes/InlineAlwaysRecursive/Source/Main.uv",
+            "HelloUltraviolet/Fixtures/DiagnosticSource/Attributes/InlineAlwaysRecursive/Expected.uv"
+        )
+    artifacts_exist = artifacts_exist && diagnosticFixtureArtifactsExist(
+            context,
+            "HelloUltraviolet/Fixtures/DiagnosticSource/SourceText/LeadingBOMWarning/Ultraviolet.toml",
+            "HelloUltraviolet/Fixtures/DiagnosticSource/SourceText/LeadingBOMWarning/Source/Main.uv",
+            "HelloUltraviolet/Fixtures/DiagnosticSource/SourceText/LeadingBOMWarning/Expected.uv"
+        )
+    artifacts_exist = artifacts_exist && diagnosticFixtureArtifactsExist(
+            context,
+            "HelloUltraviolet/Fixtures/DiagnosticSource/SourceText/DecimalLeadingZeroWarning/Ultraviolet.toml",
+            "HelloUltraviolet/Fixtures/DiagnosticSource/SourceText/DecimalLeadingZeroWarning/Source/Main.uv",
+            "HelloUltraviolet/Fixtures/DiagnosticSource/SourceText/DecimalLeadingZeroWarning/Expected.uv"
+        )
+    artifacts_exist = artifacts_exist && diagnosticFixtureArtifactsExist(
+            context,
             "HelloUltraviolet/Fixtures/DiagnosticSource/Keys/FineGrainedLoopKeyWarning/Ultraviolet.toml",
             "HelloUltraviolet/Fixtures/DiagnosticSource/Keys/FineGrainedLoopKeyWarning/Source/Main.uv",
             "HelloUltraviolet/Fixtures/DiagnosticSource/Keys/FineGrainedLoopKeyWarning/Expected.uv"
@@ -78,6 +96,18 @@ public procedure diagnosticSourceFixtureArtifactsExist(context: Context) -> bool
             "HelloUltraviolet/Fixtures/DiagnosticSource/Keys/StaleOkSuppressesReleaseWarning/Ultraviolet.toml",
             "HelloUltraviolet/Fixtures/DiagnosticSource/Keys/StaleOkSuppressesReleaseWarning/Source/Main.uv",
             "HelloUltraviolet/Fixtures/DiagnosticSource/Keys/StaleOkSuppressesReleaseWarning/Expected.uv"
+        )
+    artifacts_exist = artifacts_exist && diagnosticFixtureArtifactsExist(
+            context,
+            "HelloUltraviolet/Fixtures/DiagnosticSource/Keys/SpeculativeLargeStructWarning/Ultraviolet.toml",
+            "HelloUltraviolet/Fixtures/DiagnosticSource/Keys/SpeculativeLargeStructWarning/Source/Main.uv",
+            "HelloUltraviolet/Fixtures/DiagnosticSource/Keys/SpeculativeLargeStructWarning/Expected.uv"
+        )
+    artifacts_exist = artifacts_exist && diagnosticFixtureArtifactsExist(
+            context,
+            "HelloUltraviolet/Fixtures/DiagnosticSource/Keys/SpeculativeExpensiveBodyWarning/Ultraviolet.toml",
+            "HelloUltraviolet/Fixtures/DiagnosticSource/Keys/SpeculativeExpensiveBodyWarning/Source/Main.uv",
+            "HelloUltraviolet/Fixtures/DiagnosticSource/Keys/SpeculativeExpensiveBodyWarning/Expected.uv"
         )
     artifacts_exist = artifacts_exist && diagnosticFixtureArtifactsExist(
             context,

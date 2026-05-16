@@ -161,6 +161,7 @@ std::string BuiltinSymAsyncCreateFailed();
 std::string BuiltinSymAsyncCreateSuspended();
 std::string BuiltinSymAsyncAllocFrame();
 std::string BuiltinSymAsyncFreeFrame();
+std::string BuiltinSymAsyncTake();
 
 // =============================================================================
 // Section 6.12.14 String/Bytes builtin symbols

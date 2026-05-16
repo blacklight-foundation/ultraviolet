@@ -421,12 +421,12 @@ public procedure validatedNameResolutionAndVisibilityTopLevelNameCollectionOblig
     ) {
         count = count + 1usize
     }
-    if acceptedObligationEntryMatches(
+    if rejectedSourceObligationEntryMatches(
         "Bind-Import-Err",
         20507usize,
-        "HelloUltraviolet::Reference::Names",
-        "runNamesQualifiedResolutionReference",
-        "Source/Reference/Names/QualifiedResolution.uv"
+        "HelloUltraviolet::Fixtures::RejectedSource",
+        "validatedModulesRejectedSourceFixtureCount",
+        "Fixtures/RejectedSource/Modules/MissingImport/Source/Main.uv"
     ) {
         count = count + 1usize
     }
@@ -439,12 +439,12 @@ public procedure validatedNameResolutionAndVisibilityTopLevelNameCollectionOblig
     ) {
         count = count + 1usize
     }
-    if acceptedObligationEntryMatches(
+    if rejectedSourceObligationEntryMatches(
         "Bind-Using-Err",
         20543usize,
-        "HelloUltraviolet::Reference::Names",
-        "runNamesQualifiedResolutionReference",
-        "Source/Reference/Names/QualifiedResolution.uv"
+        "HelloUltraviolet::Fixtures::RejectedSource",
+        "validatedModulesRejectedSourceFixtureCount",
+        "Fixtures/RejectedSource/Modules/UsingListDuplicate/Source/Main.uv"
     ) {
         count = count + 1usize
     }

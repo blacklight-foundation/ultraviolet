@@ -1147,6 +1147,20 @@ llvm::Value* EmitABICall(LLVMEmitter& emitter,
                                   arg)) {
       arg = slice_arg;
     }
+    if (target_ty && !target_ty->isPointerTy() &&
+        arg->getType()->isPointerTy()) {
+      llvm::Value* storage = existing_arg_storage(arg_lookup_index, target_ty);
+      if (!storage) {
+        storage = arg;
+      }
+      llvm::Type* target_ptr_ty = llvm::PointerType::get(target_ty, 0);
+      if (storage->getType() != target_ptr_ty) {
+        storage = CoerceValue(builder, storage, target_ptr_ty);
+      }
+      if (storage) {
+        arg = builder->CreateLoad(target_ty, storage);
+      }
+    }
     if (IsValidPtrType(params[i].type) && is_null_pointer_arg(arg)) {
       if (llvm::Value* recovered = recover_pointer_value_arg(arg_lookup_index, target_ty)) {
         arg = recovered;

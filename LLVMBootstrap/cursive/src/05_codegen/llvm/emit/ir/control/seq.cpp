@@ -508,6 +508,54 @@ void IRInstructionVisitor::operator()(const IRSeq &seq) const
     return false;
   };
 
+  auto can_forward_aggregate_self_update_call =
+      [&](const IRCall &call, const ForwardTargetInfo &target) -> bool
+  {
+    if (!target.name)
+    {
+      return false;
+    }
+    const LowerCtx *active_ctx = emitter.GetCurrentCtx();
+    if (!active_ctx)
+    {
+      return false;
+    }
+
+    std::string callee_symbol;
+    if (call.callee.kind == IRValue::Kind::Symbol)
+    {
+      callee_symbol = call.callee.name;
+    }
+    else if (call.callee.kind == IRValue::Kind::Local)
+    {
+      if (std::optional<std::string> alias =
+              emitter.LookupSymbolAlias(call.callee.name))
+      {
+        callee_symbol = *alias;
+      }
+    }
+    if (callee_symbol.empty())
+    {
+      return false;
+    }
+
+    const LowerCtx::ProcSigInfo *sig =
+        active_ctx->LookupProcSig(callee_symbol);
+    if (!sig || !sig->aggregate_copy_elision.has_value())
+    {
+      return false;
+    }
+    const IRAggregateCopyElision &info = *sig->aggregate_copy_elision;
+    if (!info.return_local_uses_sret ||
+        info.source_param_index >= call.args.size())
+    {
+      return false;
+    }
+    return value_references_target(value_references_target,
+                                   call.args[info.source_param_index],
+                                   *target.name);
+  };
+
   for (std::size_t index = 0; index < seq.items.size(); ++index)
   {
     if (builder.GetInsertBlock()->getTerminator())
@@ -537,8 +585,11 @@ void IRInstructionVisitor::operator()(const IRSeq &seq) const
                 find_call_producing(find_call_producing, item, *target.value))
         {
           llvm::Value *home_slot = ensure_home_slot(target);
+          const bool reads_target =
+              ir_reads_target(ir_reads_target, item, target);
           if (home_slot && home_slot->getType()->isPointerTy() &&
-              !ir_reads_target(ir_reads_target, item, target))
+              (!reads_target ||
+               can_forward_aggregate_self_update_call(*call, target)))
           {
             emitter.SetPreferredResultStorage(call->result, home_slot);
             break;

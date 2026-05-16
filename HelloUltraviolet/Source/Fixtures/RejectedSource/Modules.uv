@@ -1,0 +1,197 @@
+//! Rejected module-level form specimens.
+
+public procedure modulesRejectedSourceFixtureCount() -> usize {
+    return 11usize
+}
+
+public procedure validatedModulesRejectedSourceFixtureCount() -> usize {
+    var count: usize = 0usize
+    if rejectedSpecimenMatches(
+        rejectedSpecimen(
+            "StaticMissingTypeAnnotation",
+            "Fixtures/RejectedSource/Modules/StaticMissingTypeAnnotation",
+            "Fixtures/RejectedSource/Modules/StaticMissingTypeAnnotation/Source/Main.uv",
+            "Fixtures/RejectedSource/Modules/StaticMissingTypeAnnotation/Expected.uv",
+            expectedDiagnostic("E-TYP-1505", "WF-StaticDecl-MissingType")
+        ),
+        "StaticMissingTypeAnnotation",
+        "Fixtures/RejectedSource/Modules/StaticMissingTypeAnnotation",
+        "Fixtures/RejectedSource/Modules/StaticMissingTypeAnnotation/Source/Main.uv",
+        "Fixtures/RejectedSource/Modules/StaticMissingTypeAnnotation/Expected.uv",
+        "E-TYP-1505",
+        "WF-StaticDecl-MissingType"
+    ) {
+        count = count + 1usize
+    }
+    if rejectedSpecimenMatches(
+        rejectedSpecimen(
+            "StaticMissingTypeAnnotation",
+            "Fixtures/RejectedSource/Modules/StaticMissingTypeAnnotation",
+            "Fixtures/RejectedSource/Modules/StaticMissingTypeAnnotation/Source/Main.uv",
+            "Fixtures/RejectedSource/Modules/StaticMissingTypeAnnotation/Expected.uv",
+            expectedDiagnostic("E-TYP-1505", "diagnostics.StaticDeclarations")
+        ),
+        "StaticMissingTypeAnnotation",
+        "Fixtures/RejectedSource/Modules/StaticMissingTypeAnnotation",
+        "Fixtures/RejectedSource/Modules/StaticMissingTypeAnnotation/Source/Main.uv",
+        "Fixtures/RejectedSource/Modules/StaticMissingTypeAnnotation/Expected.uv",
+        "E-TYP-1505",
+        "diagnostics.StaticDeclarations"
+    ) {
+        count = count + 1usize
+    }
+    if rejectedSpecimenMatches(
+        rejectedSpecimen(
+            "MissingImport",
+            "Fixtures/RejectedSource/Modules/MissingImport",
+            "Fixtures/RejectedSource/Modules/MissingImport/Source/Main.uv",
+            "Fixtures/RejectedSource/Modules/MissingImport/Expected.uv",
+            expectedDiagnostic("E-MOD-1202", "Import-Path-Err")
+        ),
+        "MissingImport",
+        "Fixtures/RejectedSource/Modules/MissingImport",
+        "Fixtures/RejectedSource/Modules/MissingImport/Source/Main.uv",
+        "Fixtures/RejectedSource/Modules/MissingImport/Expected.uv",
+        "E-MOD-1202",
+        "Import-Path-Err"
+    ) {
+        count = count + 1usize
+    }
+    if rejectedSpecimenMatches(
+        rejectedSpecimen(
+            "MissingImport",
+            "Fixtures/RejectedSource/Modules/MissingImport",
+            "Fixtures/RejectedSource/Modules/MissingImport/Source/Main.uv",
+            "Fixtures/RejectedSource/Modules/MissingImport/Expected.uv",
+            expectedDiagnostic("E-MOD-1202", "Bind-Import-Err")
+        ),
+        "MissingImport",
+        "Fixtures/RejectedSource/Modules/MissingImport",
+        "Fixtures/RejectedSource/Modules/MissingImport/Source/Main.uv",
+        "Fixtures/RejectedSource/Modules/MissingImport/Expected.uv",
+        "E-MOD-1202",
+        "Bind-Import-Err"
+    ) {
+        count = count + 1usize
+    }
+    if rejectedSpecimenMatches(
+        rejectedSpecimen(
+            "MissingImport",
+            "Fixtures/RejectedSource/Modules/MissingImport",
+            "Fixtures/RejectedSource/Modules/MissingImport/Source/Main.uv",
+            "Fixtures/RejectedSource/Modules/MissingImport/Expected.uv",
+            expectedDiagnostic("E-MOD-1202", "Resolve-Import-Err")
+        ),
+        "MissingImport",
+        "Fixtures/RejectedSource/Modules/MissingImport",
+        "Fixtures/RejectedSource/Modules/MissingImport/Source/Main.uv",
+        "Fixtures/RejectedSource/Modules/MissingImport/Expected.uv",
+        "E-MOD-1202",
+        "Resolve-Import-Err"
+    ) {
+        count = count + 1usize
+    }
+    if rejectedSpecimenMatches(
+        rejectedSpecimen(
+            "MissingImport",
+            "Fixtures/RejectedSource/Modules/MissingImport",
+            "Fixtures/RejectedSource/Modules/MissingImport/Source/Main.uv",
+            "Fixtures/RejectedSource/Modules/MissingImport/Expected.uv",
+            expectedDiagnostic("E-MOD-1202", "diagnostics.ImportDeclarations")
+        ),
+        "MissingImport",
+        "Fixtures/RejectedSource/Modules/MissingImport",
+        "Fixtures/RejectedSource/Modules/MissingImport/Source/Main.uv",
+        "Fixtures/RejectedSource/Modules/MissingImport/Expected.uv",
+        "E-MOD-1202",
+        "diagnostics.ImportDeclarations"
+    ) {
+        count = count + 1usize
+    }
+    if rejectedSpecimenMatches(
+        rejectedSpecimen(
+            "UsingListDuplicate",
+            "Fixtures/RejectedSource/Modules/UsingListDuplicate",
+            "Fixtures/RejectedSource/Modules/UsingListDuplicate/Source/Main.uv",
+            "Fixtures/RejectedSource/Modules/UsingListDuplicate/Expected.uv",
+            expectedDiagnostic("E-MOD-1206", "Using-List-Dup")
+        ),
+        "UsingListDuplicate",
+        "Fixtures/RejectedSource/Modules/UsingListDuplicate",
+        "Fixtures/RejectedSource/Modules/UsingListDuplicate/Source/Main.uv",
+        "Fixtures/RejectedSource/Modules/UsingListDuplicate/Expected.uv",
+        "E-MOD-1206",
+        "Using-List-Dup"
+    ) {
+        count = count + 1usize
+    }
+    if rejectedSpecimenMatches(
+        rejectedSpecimen(
+            "UsingListDuplicate",
+            "Fixtures/RejectedSource/Modules/UsingListDuplicate",
+            "Fixtures/RejectedSource/Modules/UsingListDuplicate/Source/Main.uv",
+            "Fixtures/RejectedSource/Modules/UsingListDuplicate/Expected.uv",
+            expectedDiagnostic("E-MOD-1206", "Bind-Using-Err")
+        ),
+        "UsingListDuplicate",
+        "Fixtures/RejectedSource/Modules/UsingListDuplicate",
+        "Fixtures/RejectedSource/Modules/UsingListDuplicate/Source/Main.uv",
+        "Fixtures/RejectedSource/Modules/UsingListDuplicate/Expected.uv",
+        "E-MOD-1206",
+        "Bind-Using-Err"
+    ) {
+        count = count + 1usize
+    }
+    if rejectedSpecimenMatches(
+        rejectedSpecimen(
+            "UsingListDuplicate",
+            "Fixtures/RejectedSource/Modules/UsingListDuplicate",
+            "Fixtures/RejectedSource/Modules/UsingListDuplicate/Source/Main.uv",
+            "Fixtures/RejectedSource/Modules/UsingListDuplicate/Expected.uv",
+            expectedDiagnostic("E-MOD-1206", "diagnostics.UsingDeclarations")
+        ),
+        "UsingListDuplicate",
+        "Fixtures/RejectedSource/Modules/UsingListDuplicate",
+        "Fixtures/RejectedSource/Modules/UsingListDuplicate/Source/Main.uv",
+        "Fixtures/RejectedSource/Modules/UsingListDuplicate/Expected.uv",
+        "E-MOD-1206",
+        "diagnostics.UsingDeclarations"
+    ) {
+        count = count + 1usize
+    }
+    if rejectedSpecimenMatches(
+        rejectedSpecimen(
+            "ReservedModuleKeyword",
+            "Fixtures/RejectedSource/Modules/ReservedModuleKeyword",
+            "Fixtures/RejectedSource/Modules/ReservedModuleKeyword/Source/if/Main.uv",
+            "Fixtures/RejectedSource/Modules/ReservedModuleKeyword/Expected.uv",
+            expectedDiagnostic("E-MOD-1105", "WF-Module-Path-Reserved")
+        ),
+        "ReservedModuleKeyword",
+        "Fixtures/RejectedSource/Modules/ReservedModuleKeyword",
+        "Fixtures/RejectedSource/Modules/ReservedModuleKeyword/Source/if/Main.uv",
+        "Fixtures/RejectedSource/Modules/ReservedModuleKeyword/Expected.uv",
+        "E-MOD-1105",
+        "WF-Module-Path-Reserved"
+    ) {
+        count = count + 1usize
+    }
+    if rejectedSpecimenMatches(
+        rejectedSpecimen(
+            "ReservedModuleKeyword",
+            "Fixtures/RejectedSource/Modules/ReservedModuleKeyword",
+            "Fixtures/RejectedSource/Modules/ReservedModuleKeyword/Source/if/Main.uv",
+            "Fixtures/RejectedSource/Modules/ReservedModuleKeyword/Expected.uv",
+            expectedDiagnostic("E-MOD-1105", "diagnostics.ModuleAggregation")
+        ),
+        "ReservedModuleKeyword",
+        "Fixtures/RejectedSource/Modules/ReservedModuleKeyword",
+        "Fixtures/RejectedSource/Modules/ReservedModuleKeyword/Source/if/Main.uv",
+        "Fixtures/RejectedSource/Modules/ReservedModuleKeyword/Expected.uv",
+        "E-MOD-1105",
+        "diagnostics.ModuleAggregation"
+    ) {
+        count = count + 1usize
+    }
+    return count
+}

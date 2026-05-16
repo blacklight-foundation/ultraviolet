@@ -6,6 +6,14 @@ internal record TokenReference {
     internal has_attribute_delimiters: bool
 }
 
+internal record TokenMethodReference {
+    internal value: i32
+
+    internal procedure readTokenValue(~) -> i32 {
+        return self.value
+    }
+}
+
 internal procedure tokenReference(
     operator_count: usize,
     punctuator_count: usize,
@@ -24,6 +32,39 @@ internal procedure tokenReferenceCoversCoreSurface(reference: TokenReference) ->
         reference.has_attribute_delimiters
 }
 
+internal procedure compoundAssignmentTokensReference() -> bool {
+    var arithmetic: i32 = 8
+    arithmetic += 4
+    arithmetic -= 3
+    arithmetic *= 2
+    arithmetic /= 3
+    arithmetic %= 5
+
+    return arithmetic == 1
+}
+
+internal procedure rangeAndSuffixTokensReference() -> bool {
+    let values: [i32; 5] = [3, 5, 8, 13, 21]
+    let exclusive: [i32] = values[1usize..3usize]
+    let inclusive: [i32] = values[1usize..=3usize]
+    let from_start: [i32] = values[2usize..]
+    let to_end: [i32] = values[..3usize]
+    let to_inclusive_end: [i32] = values[..=2usize]
+    let full: [i32] = values[..]
+
+    return exclusive[1usize] == 8 &&
+        inclusive[2usize] == 13 &&
+        from_start[2usize] == 21 &&
+        to_end[2usize] == 8 &&
+        to_inclusive_end[2usize] == 8 &&
+        full[4usize] == 21
+}
+
+internal procedure bindingAndReceiverTokensReference() -> bool {
+    let payload: TokenMethodReference := TokenMethodReference { value: 17 }
+    return payload~>readTokenValue() == 17
+}
+
 /// Exercises the SourceText OperatorsAndPunctuation reference surface.
 public procedure runSourceTextOperatorsAndPunctuationReference() -> bool {
     let arithmetic: i32 = ((8 + 4) - 2) * 3 / 5 % 5
@@ -36,5 +77,8 @@ public procedure runSourceTextOperatorsAndPunctuationReference() -> bool {
         bitwise == 3 &&
         shifted == 4 &&
         ranges_ok &&
-        tokenReferenceCoversCoreSurface(reference)
+        tokenReferenceCoversCoreSurface(reference) &&
+        compoundAssignmentTokensReference() &&
+        rangeAndSuffixTokensReference() &&
+        bindingAndReceiverTokensReference()
 }

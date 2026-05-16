@@ -7,12 +7,12 @@ public procedure countNameResolutionAndVisibilityNameResolutionAndReservedNameDi
 
 public procedure validatedNameResolutionAndVisibilityNameResolutionAndReservedNameDiagnosticsObligations() -> usize {
     var count: usize = 0usize
-    if acceptedObligationEntryMatches(
+    if rejectedSourceObligationEntryMatches(
         "diagnostics.NameResolutionAndReservedNames",
         24069usize,
-        "HelloUltraviolet::Reference::Names",
-        "runNamesQualifiedResolutionReference",
-        "Source/Reference/Names/QualifiedResolution.uv"
+        "HelloUltraviolet::Fixtures::RejectedSource",
+        "validatedNamesRejectedSourceFixtureCount",
+        "Fixtures/RejectedSource/Names/PrivateAccess/Source/Main.uv"
     ) {
         count = count + 1usize
     }

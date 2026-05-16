@@ -1,5 +1,24 @@
 //! Reference specimens for Comptime / CompileTimeForms.
 
+internal record ComptimeLiteralRecord {
+    internal value: usize
+    internal flag: bool
+}
+
+internal enum ComptimeLiteralEnum {
+    Empty
+    Count(usize)
+    Named {
+        value: usize
+    }
+}
+
+internal modal ComptimeLiteralModal {
+    @Ready {
+        internal value: usize
+    }
+}
+
 comptime internal procedure addComptimeReferenceValue(value: usize) -> usize
 |: value > 0usize => @result > value
 {
@@ -56,15 +75,63 @@ internal procedure compileTimeFormsValue() -> usize {
     let literal_number: usize = comptime { 3usize }
     let literal_bool: bool = comptime { true }
     let literal_tuple: (usize, bool) = comptime { (29usize, true) }
+    let literal_array: [usize; 3] = comptime { [2usize, 4usize, 6usize] }
+    let literal_record: ComptimeLiteralRecord =
+        comptime { ComptimeLiteralRecord { value: 43usize, flag: true } }
+    let literal_enum_unit: ComptimeLiteralEnum =
+        comptime { ComptimeLiteralEnum::Empty }
+    let literal_enum_tuple: ComptimeLiteralEnum =
+        comptime { ComptimeLiteralEnum::Count(5usize) }
+    let literal_enum_record: ComptimeLiteralEnum =
+        comptime { ComptimeLiteralEnum::Named { value: 7usize } }
+    let literal_modal_state: ComptimeLiteralModal@Ready =
+        comptime { ComptimeLiteralModal@Ready { value: 11usize } }
+    let literal_enum_unit_value: usize = if literal_enum_unit is {
+        ComptimeLiteralEnum::Empty {
+            13usize
+        }
+        ComptimeLiteralEnum::Count(value) {
+            value
+        }
+        ComptimeLiteralEnum::Named { value } {
+            value
+        }
+    }
+    let literal_enum_tuple_value: usize = if literal_enum_tuple is {
+        ComptimeLiteralEnum::Empty {
+            0usize
+        }
+        ComptimeLiteralEnum::Count(value) {
+            value
+        }
+        ComptimeLiteralEnum::Named { value } {
+            value
+        }
+    }
+    let literal_enum_record_value: usize = if literal_enum_record is {
+        ComptimeLiteralEnum::Empty {
+            0usize
+        }
+        ComptimeLiteralEnum::Count(value) {
+            value
+        }
+        ComptimeLiteralEnum::Named { value } {
+            value
+        }
+    }
 
-    if literal_bool && literal_tuple.1 {
+    if literal_bool && literal_tuple.1 && literal_record.flag {
         return total + selected + else_if_selected + false_else_selected +
-            chosen + generic_chosen + literal_number + literal_tuple.0
+            chosen + generic_chosen + literal_number + literal_tuple.0 +
+            literal_array[0usize] + literal_array[1usize] + literal_array[2usize] +
+            literal_record.value + literal_enum_unit_value +
+            literal_enum_tuple_value + literal_enum_record_value +
+            literal_modal_state.value
     }
     return 0usize
 }
 
 /// Exercises the Comptime CompileTimeForms reference surface.
 public procedure runComptimeCompileTimeFormsReference() -> bool {
-    return compileTimeFormsValue() == 139usize
+    return compileTimeFormsValue() == 230usize
 }

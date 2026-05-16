@@ -4,9 +4,21 @@ internal class ComptimeDeriveClass {}
 
 derive target EmitComptimeDeriveReference(target: Type) |: emits ComptimeDeriveClass {
     let target_name = introspect~>type_name(target)
-    let ast = quote {
-        internal procedure emittedComptimeDeriveReferenceValue() -> i32 {
-            return 37
+    let target_module = introspect~>module_path(target)
+    let ast: Ast::Item = if target_name ==
+        "HelloUltraviolet::Reference::Comptime::ComptimeDerivedReference" &&
+        target_module == diagnostics~>current_module()
+    {
+        quote {
+            internal procedure emittedComptimeDeriveReferenceValue() -> i32 {
+                return 37
+            }
+        }
+    } else {
+        quote {
+            internal procedure emittedComptimeDeriveReferenceValue() -> i32 {
+                return 0
+            }
         }
     }
     emitter~>emit(ast)
@@ -14,9 +26,21 @@ derive target EmitComptimeDeriveReference(target: Type) |: emits ComptimeDeriveC
 
 derive target RequireComptimeDeriveReference(target: Type) |: requires ComptimeDeriveClass {
     let target_name = introspect~>type_name(target)
-    let ast = quote {
-        internal procedure emittedRequiredComptimeDeriveReferenceValue() -> i32 {
-            return 41
+    let target_module = introspect~>module_path(target)
+    let ast: Ast::Item = if target_name ==
+        "HelloUltraviolet::Reference::Comptime::ComptimeDerivedReference" &&
+        target_module == diagnostics~>current_module()
+    {
+        quote {
+            internal procedure emittedRequiredComptimeDeriveReferenceValue() -> i32 {
+                return 41
+            }
+        }
+    } else {
+        quote {
+            internal procedure emittedRequiredComptimeDeriveReferenceValue() -> i32 {
+                return 0
+            }
         }
     }
     emitter~>emit(ast)

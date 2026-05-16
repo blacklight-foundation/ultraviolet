@@ -1,7 +1,7 @@
 //! Rejected pattern specimens.
 
 public procedure patternsRejectedSourceFixtureCount() -> usize {
-    return 17usize
+    return 18usize
 }
 
 public procedure validatedPatternsRejectedSourceFixtureCount() -> usize {
@@ -122,6 +122,23 @@ public procedure validatedPatternsRejectedSourceFixtureCount() -> usize {
         "Fixtures/RejectedSource/Patterns/IfCaseModalNonExhaustive/Expected.uv",
         "E-TYP-2060",
         "rule.17.IfCase-Modal-NonExhaustive"
+    ) {
+        count = count + 1usize
+    }
+    if rejectedSpecimenMatches(
+        rejectedSpecimen(
+            "IfCaseModalNonExhaustive",
+            "Fixtures/RejectedSource/Patterns/IfCaseModalNonExhaustive",
+            "Fixtures/RejectedSource/Patterns/IfCaseModalNonExhaustive/Source/Main.uv",
+            "Fixtures/RejectedSource/Patterns/IfCaseModalNonExhaustive/Expected.uv",
+            expectedDiagnostic("E-TYP-2060", "diagnostics.ModalPointerSupplement")
+        ),
+        "IfCaseModalNonExhaustive",
+        "Fixtures/RejectedSource/Patterns/IfCaseModalNonExhaustive",
+        "Fixtures/RejectedSource/Patterns/IfCaseModalNonExhaustive/Source/Main.uv",
+        "Fixtures/RejectedSource/Patterns/IfCaseModalNonExhaustive/Expected.uv",
+        "E-TYP-2060",
+        "diagnostics.ModalPointerSupplement"
     ) {
         count = count + 1usize
     }

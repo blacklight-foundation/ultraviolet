@@ -729,7 +729,7 @@ std::optional<ProcedureCalleeInfo> ResolveProcedureCalleeInfo(
         continue;
       }
       return ProcedureCalleeInfo{
-          MangleProc(module.path, *proc),
+          MangleProcInModule(module, *proc),
           module.path,
           proc,
           nullptr};
@@ -757,6 +757,30 @@ std::optional<ProcedureCalleeInfo> ResolveProcedureCalleeInfo(
     }
   }
 
+  return std::nullopt;
+}
+
+std::optional<ProcedureCalleeInfo> ResolveSelectedProcedureCalleeInfo(
+    const ast::CallExpr& expr,
+    LowerCtx& ctx) {
+  if (!ctx.sigma || !ctx.selected_call_targets) {
+    return std::nullopt;
+  }
+  const auto selected = ctx.selected_call_targets->find(&expr);
+  if (selected == ctx.selected_call_targets->end() || !selected->second.proc) {
+    return std::nullopt;
+  }
+
+  for (const auto& module : ctx.sigma->mods) {
+    if (!PathEq(module.path, selected->second.module_path)) {
+      continue;
+    }
+    return ProcedureCalleeInfo{
+        MangleProcInModule(module, *selected->second.proc),
+        module.path,
+        selected->second.proc,
+        nullptr};
+  }
   return std::nullopt;
 }
 
@@ -1448,10 +1472,8 @@ LowerResult LowerCallExpr(const ast::Expr& expr_wrapper,
 
   if (expr.callee && ctx.expr_type) {
     analysis::TypeRef callee_type =
-        analysis::StripPerm(ctx.expr_type(*expr.callee));
-    if (!callee_type) {
-      callee_type = ctx.expr_type(*expr.callee);
-    }
+        NormalizeCallableAliasForLowering(ctx.expr_type(*expr.callee), ctx);
+    callee_type = analysis::StripPerm(callee_type);
     if (callee_type &&
         std::holds_alternative<analysis::TypeClosure>(callee_type->node)) {
       return LowerClosureCall(*expr.callee, expr.args, ctx);
@@ -1626,12 +1648,21 @@ LowerResult LowerCallExpr(const ast::Expr& expr_wrapper,
   }
   log_call_stage("resolve-generic-miss");
 
-  // Lower the callee expression
-  auto callee_result = LowerExpr(*expr.callee, ctx);
+  auto selected_proc_info = ResolveSelectedProcedureCalleeInfo(expr, ctx);
+  LowerResult callee_result;
+  if (selected_proc_info.has_value()) {
+    callee_result.ir = EmptyIR();
+    callee_result.value.kind = IRValue::Kind::Symbol;
+    callee_result.value.name = selected_proc_info->symbol;
+  } else {
+    callee_result = LowerExpr(*expr.callee, ctx);
+  }
   std::string callee_lookup_symbol = callee_result.value.name;
   std::optional<ProcedureCalleeInfo> resolved_proc_info;
   if (callee_result.value.kind == IRValue::Kind::Symbol) {
-    resolved_proc_info = ResolveProcedureCalleeInfo(expr.callee, ctx);
+    resolved_proc_info = selected_proc_info.has_value()
+                             ? selected_proc_info
+                             : ResolveProcedureCalleeInfo(expr.callee, ctx);
     if (resolved_proc_info.has_value()) {
       callee_lookup_symbol = resolved_proc_info->symbol;
       RegisterResolvedSourceSignatureIfMissing(*resolved_proc_info, ctx);

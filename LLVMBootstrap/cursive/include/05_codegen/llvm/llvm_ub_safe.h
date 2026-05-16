@@ -134,7 +134,7 @@ llvm::Value* CoerceInteger(llvm::IRBuilderBase* builder,
 // MemIntrinsics - Use LLVM memory intrinsics for bulk operations
 
 // (MemIntrinsics-Copy)
-// Emit memory copy using llvm.memmove (not memcpy, overlap unknown per spec)
+// Emit llvm.memcpy only when non-overlap is proven; otherwise use memmove.
 void EmitMemCpy(LLVMEmitter& emitter,
                 llvm::Value* dst,
                 llvm::Value* src,

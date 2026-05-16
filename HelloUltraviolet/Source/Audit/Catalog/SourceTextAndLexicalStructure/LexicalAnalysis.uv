@@ -628,12 +628,12 @@ public procedure validatedSourceTextAndLexicalStructureLexicalAnalysisObligation
     ) {
         count = count + 1usize
     }
-    if acceptedObligationEntryMatches(
+    if diagnosticSourceObligationEntryMatches(
         "Warn-DecimalLeadingZero",
         9133usize,
-        "HelloUltraviolet::Reference::SourceText",
-        "runSourceTextLiteralsReference",
-        "Source/Reference/SourceText/Literals.uv"
+        "HelloUltraviolet::Fixtures::DiagnosticSource",
+        "validatedSourceTextDiagnosticSourceFixtureCount",
+        "Fixtures/DiagnosticSource/SourceText/DecimalLeadingZeroWarning/Source/Main.uv"
     ) {
         count = count + 1usize
     }

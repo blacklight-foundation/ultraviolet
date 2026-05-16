@@ -75,6 +75,7 @@
 #include "05_codegen/lower/lower_stmt.h"
 #include "04_analysis/layout/layout.h"
 #include "05_codegen/intrinsics/async_frame.h"
+#include "05_codegen/ir/aggregate_copy_elision.h"
 #include "05_codegen/symbols/mangle.h"
 #include "00_core/assert_spec.h"
 #include "00_core/process_config.h"
@@ -173,6 +174,7 @@ analysis::ScopeContext ScopeForModule(const ModulePath& module_path,
   scope.expr_types = ctx.expr_types;
   scope.dynamic_refine_checks = ctx.dynamic_refine_checks;
   scope.generic_call_substs = ctx.generic_call_substs;
+  scope.selected_call_targets = ctx.selected_call_targets;
   return scope;
 }
 
@@ -1046,14 +1048,15 @@ IRPtr EmitPreconditionCheck(const ExprPtr& precond, LowerCtx& ctx) {
 
 ProcIR LowerProc(const ProcedureDecl& decl,
                  const ModulePath& module_path,
-                 LowerCtx& ctx) {
+                 LowerCtx& ctx,
+                 std::optional<std::string> symbol_override) {
   SPEC_RULE("Lower-Proc");
 
   ProcIR ir;
   const bool debug_proc = core::IsDebugEnabled("codegen");
 
   // Mangle symbol name
-  ir.symbol = InternalProcSymbol(module_path, decl);
+  ir.symbol = symbol_override.value_or(InternalProcSymbol(module_path, decl));
   ir.defining_module_path = module_path;
   ir.inline_mode = InlineModeFor(decl.attrs);
   ir.cold = analysis::HasAttribute(decl.attrs, analysis::attrs::kCold);
@@ -1261,6 +1264,10 @@ ProcIR LowerProc(const ProcedureDecl& decl,
   }
 
   ir.body = SeqIR(std::move(body_seq));
+
+  if (!ir.abi.has_value()) {
+    ir.aggregate_copy_elision = AnalyzeAggregateCopyElision(ir, ctx);
+  }
 
   if (IsAsyncProc(scope, ir.ret)) {
     log_stage("async-lower-start");

@@ -61,12 +61,12 @@ public procedure validatedModuleLevelFormsImportDeclarationsObligations() -> usi
     ) {
         count = count + 1usize
     }
-    if acceptedObligationEntryMatches(
+    if rejectedSourceObligationEntryMatches(
         "Import-Path-Err",
         29914usize,
-        "HelloUltraviolet::Reference::Modules",
-        "runModulesImportsReference",
-        "Source/Reference/Modules/Imports.uv"
+        "HelloUltraviolet::Fixtures::RejectedSource",
+        "validatedModulesRejectedSourceFixtureCount",
+        "Fixtures/RejectedSource/Modules/MissingImport/Source/Main.uv"
     ) {
         count = count + 1usize
     }
@@ -79,12 +79,12 @@ public procedure validatedModuleLevelFormsImportDeclarationsObligations() -> usi
     ) {
         count = count + 1usize
     }
-    if acceptedObligationEntryMatches(
+    if rejectedSourceObligationEntryMatches(
         "Bind-Import-Err",
         29950usize,
-        "HelloUltraviolet::Reference::Modules",
-        "runModulesImportsReference",
-        "Source/Reference/Modules/Imports.uv"
+        "HelloUltraviolet::Fixtures::RejectedSource",
+        "validatedModulesRejectedSourceFixtureCount",
+        "Fixtures/RejectedSource/Modules/MissingImport/Source/Main.uv"
     ) {
         count = count + 1usize
     }
@@ -115,12 +115,12 @@ public procedure validatedModuleLevelFormsImportDeclarationsObligations() -> usi
     ) {
         count = count + 1usize
     }
-    if acceptedObligationEntryMatches(
+    if rejectedSourceObligationEntryMatches(
         "diagnostics.ImportDeclarations",
         30017usize,
-        "HelloUltraviolet::Reference::Modules",
-        "runModulesImportsReference",
-        "Source/Reference/Modules/Imports.uv"
+        "HelloUltraviolet::Fixtures::RejectedSource",
+        "validatedModulesRejectedSourceFixtureCount",
+        "Fixtures/RejectedSource/Modules/MissingImport/Source/Main.uv"
     ) {
         count = count + 1usize
     }

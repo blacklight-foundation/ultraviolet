@@ -1,12 +1,15 @@
 //! Coverage checks for rejected-source fixture metadata.
 
 public procedure expectedRejectedSourceFixtureCount() -> usize {
-    return 386usize
+    return 425usize
 }
 
 public procedure rejectedSourceFixtureCount() -> usize {
     return sourceTextRejectedSourceFixtureCount() +
         parsingRejectedSourceFixtureCount() +
+        attributesRejectedSourceFixtureCount() +
+        dataTypesRejectedSourceFixtureCount() +
+        modulesRejectedSourceFixtureCount() +
         namesRejectedSourceFixtureCount() +
         proceduresRejectedSourceFixtureCount() +
         statementsRejectedSourceFixtureCount() +
@@ -23,6 +26,9 @@ public procedure rejectedSourceFixtureCount() -> usize {
 public procedure validatedRejectedSourceFixtureCount() -> usize {
     return validatedSourceTextRejectedSourceFixtureCount() +
         validatedParsingRejectedSourceFixtureCount() +
+        validatedAttributesRejectedSourceFixtureCount() +
+        validatedDataTypesRejectedSourceFixtureCount() +
+        validatedModulesRejectedSourceFixtureCount() +
         validatedNamesRejectedSourceFixtureCount() +
         validatedProceduresRejectedSourceFixtureCount() +
         validatedStatementsRejectedSourceFixtureCount() +

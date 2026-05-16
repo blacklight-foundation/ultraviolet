@@ -1727,6 +1727,8 @@ static CheckResult CheckExprImpl(const ScopeContext& ctx,
                                             type_ident, if_case_check, nullptr);
   if (!inferred.ok) {
     result.diag_id = inferred.diag_id;
+    result.diag_detail = inferred.diag_detail;
+    result.diag_span = inferred.diag_span;
     return result;
   }
   if (IsNonBitcopyPlaceValueUse(ctx, expr, inferred.type)) {

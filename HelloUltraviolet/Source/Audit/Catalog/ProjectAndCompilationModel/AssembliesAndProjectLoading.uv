@@ -43,12 +43,12 @@ public procedure validatedProjectAndCompilationModelAssembliesAndProjectLoadingO
     ) {
         count = count + 1usize
     }
-    if acceptedObligationEntryMatches(
+    if artifactBehaviorObligationEntryMatches(
         "Step-Parse-Err",
         3576usize,
-        "HelloUltraviolet::Reference::Projects",
-        "runProjectsManifestModelReference",
-        "Source/Reference/Projects/ManifestModel.uv"
+        "HelloUltraviolet::Fixtures::OutputDiagnostics",
+        "validatedOutputProjectDiagnosticFixtureCount",
+        "Fixtures/OutputDiagnostics/Projects/ManifestParseError/Ultraviolet.toml"
     ) {
         count = count + 1usize
     }
@@ -268,12 +268,12 @@ public procedure validatedProjectAndCompilationModelAssembliesAndProjectLoadingO
     ) {
         count = count + 1usize
     }
-    if acceptedObligationEntryMatches(
+    if artifactBehaviorObligationEntryMatches(
         "LoadProject-Err",
         4017usize,
-        "HelloUltraviolet::Reference::Projects",
-        "runProjectsManifestModelReference",
-        "Source/Reference/Projects/ManifestModel.uv"
+        "HelloUltraviolet::Fixtures::OutputDiagnostics",
+        "validatedOutputProjectDiagnosticFixtureCount",
+        "Fixtures/OutputDiagnostics/Projects/ManifestParseError/Ultraviolet.toml"
     ) {
         count = count + 1usize
     }

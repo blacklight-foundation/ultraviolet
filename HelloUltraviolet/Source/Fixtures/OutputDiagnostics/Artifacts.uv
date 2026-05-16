@@ -27,6 +27,18 @@ public procedure outputDiagnosticFixtureArtifactsExist(context: Context) -> bool
             "HelloUltraviolet/Fixtures/OutputDiagnostics/Lowering/EmitLLVMRenderFailure/Source/Library.uv",
             "HelloUltraviolet/Fixtures/OutputDiagnostics/Lowering/EmitLLVMRenderFailure/Expected.uv"
         ) &&
+        outputDiagnosticFixtureArtifactsExistAtPaths(
+            context,
+            "HelloUltraviolet/Fixtures/OutputDiagnostics/Projects/ManifestParseError/Ultraviolet.toml",
+            "HelloUltraviolet/Fixtures/OutputDiagnostics/Projects/ManifestParseError/Source/Main.uv",
+            "HelloUltraviolet/Fixtures/OutputDiagnostics/Projects/ManifestParseError/Expected.uv"
+        ) &&
+        outputDiagnosticFixtureArtifactsExistAtPaths(
+            context,
+            "HelloUltraviolet/Fixtures/OutputDiagnostics/CommandLine/UnknownCommand/Invocation.txt",
+            "HelloUltraviolet/Fixtures/OutputDiagnostics/CommandLine/UnknownCommand/Output.txt",
+            "HelloUltraviolet/Fixtures/OutputDiagnostics/CommandLine/UnknownCommand/Expected.uv"
+        ) &&
         context.fs~>exists(
             "HelloUltraviolet/Fixtures/OutputDiagnostics/Lowering/EmitLLVMRenderFailure/Tools/llvm-as.exe"
         )
@@ -66,6 +78,30 @@ public procedure emitLLVMRenderFailureExpectedDiagnosticFileMatches(
         context,
         "HelloUltraviolet/Fixtures/OutputDiagnostics/Lowering/EmitLLVMRenderFailure/Expected.uv",
         "//! Expected diagnostic metadata for the EmitLLVMRenderFailure output-diagnostic specimen.\n\nexpectedDiagnostic(\"E-OUT-0403\", \"rule.24.EmitLLVM-Err\")\n"
+    )
+}
+
+public procedure manifestParseErrorExpectedDiagnosticFileMatches(context: Context) -> bool {
+    return outputDiagnosticExpectedFileMatches(
+        context,
+        "HelloUltraviolet/Fixtures/OutputDiagnostics/Projects/ManifestParseError/Expected.uv",
+        "//! Expected diagnostic metadata for the ManifestParseError output-diagnostic specimen.\n\nexpectedDiagnostic(\"E-PRJ-0102\", \"Parse-Manifest-Err\")\nexpectedDiagnostic(\"E-PRJ-0102\", \"Step-Parse-Err\")\nexpectedDiagnostic(\"E-PRJ-0102\", \"LoadProject-Err\")\nexpectedDiagnostic(\"E-PRJ-0102\", \"diagnostics.ProjectDiagnostics\")\n"
+    )
+}
+
+public procedure unknownCommandExpectedDiagnosticFileMatches(context: Context) -> bool {
+    return outputDiagnosticExpectedFileMatches(
+        context,
+        "HelloUltraviolet/Fixtures/OutputDiagnostics/CommandLine/UnknownCommand/Expected.uv",
+        "//! Expected diagnostic metadata for the UnknownCommand output-diagnostic specimen.\n\nexpectedDiagnostic(\"E-CLI-0001\", \"diagnostics.CommandLineDiagnostics\")\nexpectedDiagnostic(\"E-CLI-0001\", \"command-line.UnknownCommandInvocation\")\n"
+    )
+}
+
+public procedure unknownCommandOutputMatches(context: Context) -> bool {
+    return outputDiagnosticExpectedFileMatches(
+        context,
+        "HelloUltraviolet/Fixtures/OutputDiagnostics/CommandLine/UnknownCommand/Output.txt",
+        "E-CLI-0001 (error): unknown command\n"
     )
 }
 
@@ -123,4 +159,12 @@ public procedure emitLLVMRenderFailureConformanceLogMatches(context: Context) ->
         artifactTextContains(context, conformance_log_path, "\tOutput-Pipeline-Err\t") &&
         artifactTextExcludes(context, conformance_log_path, "\tEmitObj-Err\t") &&
         artifactTextExcludes(context, conformance_log_path, "\tResolveTool-Err-IR\t")
+}
+
+public procedure manifestParseErrorConformanceLogMatches(context: Context) -> bool {
+    let conformance_log_path: string@View =
+        "HelloUltraviolet/Fixtures/OutputDiagnostics/Projects/ManifestParseError/build/main/logs/conformance/ManifestParseError.conformance.log"
+    return artifactTextContains(context, conformance_log_path, "\tDiag-Emit\t") &&
+        artifactTextContains(context, conformance_log_path, "code%3DE-PRJ-0102") &&
+        artifactTextContains(context, conformance_log_path, "\tReject-IllFormed\t")
 }

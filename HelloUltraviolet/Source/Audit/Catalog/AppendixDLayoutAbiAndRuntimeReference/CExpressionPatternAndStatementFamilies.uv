@@ -7,12 +7,12 @@ public procedure countAppendixDLayoutAbiAndRuntimeReferenceCExpressionPatternAnd
 
 public procedure validatedAppendixDLayoutAbiAndRuntimeReferenceCExpressionPatternAndStatementFamiliesObligations() -> usize {
     var count: usize = 0usize
-    if acceptedObligationEntryMatches(
+    if artifactBehaviorObligationEntryMatches(
         "diagnostics.CommandLineDiagnostics",
         101135usize,
-        "HelloUltraviolet::Reference::Lowering",
-        "runLoweringLayoutAndABIReference",
-        "Source/Reference/Lowering/LayoutAndABI.uv"
+        "HelloUltraviolet::Fixtures::OutputDiagnostics",
+        "validatedOutputCommandLineDiagnosticFixtureCount",
+        "Fixtures/OutputDiagnostics/CommandLine/UnknownCommand/Invocation.txt"
     ) {
         count = count + 1usize
     }

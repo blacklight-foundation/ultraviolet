@@ -118,6 +118,9 @@ LowerResult LowerPipelineExpr(const ast::BinaryExpr& expr, LowerCtx& ctx) {
   if (ctx.expr_type) {
     rhs_type = ctx.expr_type(*expr.rhs);
   }
+  if (rhs_type) {
+    rhs_type = NormalizeCallableAliasForLowering(rhs_type, ctx);
+  }
 
   // Create the result value
   IRValue result_value = ctx.FreshTempValue("pipeline");
@@ -262,6 +265,9 @@ LowerResult LowerPipelineExpr(const ast::PipelineExpr& expr, LowerCtx& ctx) {
   analysis::TypeRef rhs_type;
   if (ctx.expr_type) {
     rhs_type = ctx.expr_type(*expr.rhs);
+  }
+  if (rhs_type) {
+    rhs_type = NormalizeCallableAliasForLowering(rhs_type, ctx);
   }
 
   // Create the result value

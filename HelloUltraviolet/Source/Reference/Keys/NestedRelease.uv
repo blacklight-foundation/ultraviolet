@@ -12,7 +12,42 @@ internal procedure nestedReleaseValue() -> i32 {
     return shared_value + 0
 }
 
+internal procedure nestedReleaseWriteFromReadValue() -> i32 {
+    var shared_value: shared i32 = 2
+    var observed: i32 = 0
+    #shared_value read {
+        #shared_value release write {
+            shared_value = 7
+        }
+        observed = shared_value + 0
+    }
+    return observed
+}
+
+internal procedure nestedReleaseSharedArgumentRead(value: shared KeyLeaf) -> i32 {
+    var observed: i32 = 0
+    #value read {
+        observed = value.value + 0
+    }
+    return observed
+}
+
+internal procedure nestedReleaseForwardSharedArgument(value: shared KeyLeaf) -> i32 {
+    return nestedReleaseSharedArgumentRead(value)
+}
+
+internal procedure reentrantCalleeCoveredValue() -> i32 {
+    var leaf: shared KeyLeaf = KeyLeaf { value: 11 }
+    var observed: i32 = 0
+    #leaf read {
+        observed = nestedReleaseForwardSharedArgument(leaf)
+    }
+    return observed
+}
+
 /// Exercises the Keys NestedRelease reference surface.
 public procedure runKeysNestedReleaseReference() -> bool {
-    return nestedReleaseValue() == 2
+    return nestedReleaseValue() == 2 &&
+        nestedReleaseWriteFromReadValue() == 7 &&
+        reentrantCalleeCoveredValue() == 11
 }

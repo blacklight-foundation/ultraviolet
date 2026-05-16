@@ -550,6 +550,35 @@ static bool IsBuiltinBitcopyPath(const TypePath& path) {
           IdEq(path[0], "System"));
 }
 
+static bool TypeParamHasPredicateBound(const ScopeContext& ctx,
+                                       const TypePath& path,
+                                       std::string_view predicate_name) {
+  if (path.size() != 1) {
+    return false;
+  }
+
+  const auto key = IdKeyOf(path[0]);
+  for (const auto& scope : ctx.scopes) {
+    const auto it = scope.find(key);
+    if (it == scope.end()) {
+      continue;
+    }
+    const Entity& entity = it->second;
+    if (entity.kind != EntityKind::Type ||
+        (entity.target_opt.has_value() && !IdEq(*entity.target_opt, path[0]))) {
+      continue;
+    }
+    return std::any_of(
+        entity.type_param_predicate_bounds.begin(),
+        entity.type_param_predicate_bounds.end(),
+        [&](const std::string& bound) {
+          return IdEq(bound, predicate_name);
+        });
+  }
+
+  return false;
+}
+
 static bool IsGpuSafePrim(std::string_view name) {
   SPEC_RULE("GpuSafePrimTypes");
   return name == "i8" || name == "i16" || name == "i32" || name == "i64" ||
@@ -888,6 +917,12 @@ static bool BitcopyTypeImpl(const ScopeContext& ctx,
 
           if (IsBuiltinBitcopyPath(applied_path)) {
             return true;
+          }
+          if constexpr (std::is_same_v<T, TypePathType>) {
+            if (node.generic_args.empty() &&
+                TypeParamHasPredicateBound(ctx, applied_path, "Bitcopy")) {
+              return true;
+            }
           }
           ast::Path ast_path(applied_path.begin(), applied_path.end());
           const auto key = PathKeyOf(ast_path);

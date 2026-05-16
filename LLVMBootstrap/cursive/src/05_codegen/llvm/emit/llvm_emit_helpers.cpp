@@ -1101,12 +1101,7 @@ namespace cursive::codegen::emit_detail {
           llvm::ConstantInt::get(llvm::Type::getInt64Ty(emitter.GetContext()),
                                  static_cast<std::uint64_t>(*size));
       const std::uint64_t copy_align = std::max<std::uint64_t>(1, *align);
-      SPEC_RULE("MemIntrinsics-Move");
-      builder->CreateMemMove(dst_storage,
-                             llvm::MaybeAlign(copy_align),
-                             src_storage,
-                             llvm::MaybeAlign(copy_align),
-                             size_value);
+      EmitAggMemcpy(emitter, dst_storage, src_storage, size_value, copy_align);
       return true;
     }
 

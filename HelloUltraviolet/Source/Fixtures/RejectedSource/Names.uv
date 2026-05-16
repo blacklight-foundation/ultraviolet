@@ -1,7 +1,7 @@
 //! Rejected name-resolution specimens.
 
 public procedure namesRejectedSourceFixtureCount() -> usize {
-    return 1usize
+    return 4usize
 }
 
 public procedure validatedNamesRejectedSourceFixtureCount() -> usize {
@@ -20,6 +20,57 @@ public procedure validatedNamesRejectedSourceFixtureCount() -> usize {
         "Fixtures/RejectedSource/Names/DuplicateModuleDeclaration/Expected.uv",
         "E-MOD-1302",
         "Collect-Dup"
+    ) {
+        count = count + 1usize
+    }
+    if rejectedSpecimenMatches(
+        rejectedSpecimen(
+            "PrivateAccess",
+            "Fixtures/RejectedSource/Names/PrivateAccess",
+            "Fixtures/RejectedSource/Names/PrivateAccess/Source/Main.uv",
+            "Fixtures/RejectedSource/Names/PrivateAccess/Expected.uv",
+            expectedDiagnostic("E-MOD-1207", "Access-Err")
+        ),
+        "PrivateAccess",
+        "Fixtures/RejectedSource/Names/PrivateAccess",
+        "Fixtures/RejectedSource/Names/PrivateAccess/Source/Main.uv",
+        "Fixtures/RejectedSource/Names/PrivateAccess/Expected.uv",
+        "E-MOD-1207",
+        "Access-Err"
+    ) {
+        count = count + 1usize
+    }
+    if rejectedSpecimenMatches(
+        rejectedSpecimen(
+            "PrivateAccess",
+            "Fixtures/RejectedSource/Names/PrivateAccess",
+            "Fixtures/RejectedSource/Names/PrivateAccess/Source/Main.uv",
+            "Fixtures/RejectedSource/Names/PrivateAccess/Expected.uv",
+            expectedDiagnostic("E-MOD-1207", "diagnostics.NameResolutionAndReservedNames")
+        ),
+        "PrivateAccess",
+        "Fixtures/RejectedSource/Names/PrivateAccess",
+        "Fixtures/RejectedSource/Names/PrivateAccess/Source/Main.uv",
+        "Fixtures/RejectedSource/Names/PrivateAccess/Expected.uv",
+        "E-MOD-1207",
+        "diagnostics.NameResolutionAndReservedNames"
+    ) {
+        count = count + 1usize
+    }
+    if rejectedSpecimenMatches(
+        rejectedSpecimen(
+            "InternalAccess",
+            "Fixtures/RejectedSource/Names/InternalAccess",
+            "Fixtures/RejectedSource/Names/InternalAccess/Source/InternalAccess/Library.uv",
+            "Fixtures/RejectedSource/Names/InternalAccess/Expected.uv",
+            expectedDiagnostic("E-MOD-1207", "Access-Internal-Err")
+        ),
+        "InternalAccess",
+        "Fixtures/RejectedSource/Names/InternalAccess",
+        "Fixtures/RejectedSource/Names/InternalAccess/Source/InternalAccess/Library.uv",
+        "Fixtures/RejectedSource/Names/InternalAccess/Expected.uv",
+        "E-MOD-1207",
+        "Access-Internal-Err"
     ) {
         count = count + 1usize
     }

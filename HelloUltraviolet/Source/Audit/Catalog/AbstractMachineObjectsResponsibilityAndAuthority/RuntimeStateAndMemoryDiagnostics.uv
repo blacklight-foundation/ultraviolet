@@ -7,12 +7,12 @@ public procedure countAbstractMachineObjectsResponsibilityAndAuthorityRuntimeSta
 
 public procedure validatedAbstractMachineObjectsResponsibilityAndAuthorityRuntimeStateAndMemoryDiagnosticsObligations() -> usize {
     var count: usize = 0usize
-    if acceptedObligationEntryMatches(
+    if rejectedSourceObligationEntryMatches(
         "diagnostics.RuntimeStateAndMemoryDiagnostics",
         18702usize,
-        "HelloUltraviolet::Reference::Authority",
-        "runAuthorityCapabilitiesReference",
-        "Source/Reference/Authority/Capabilities.uv"
+        "HelloUltraviolet::Fixtures::RejectedSource",
+        "validatedExpressionsRejectedSourceFixtureCount",
+        "Fixtures/RejectedSource/Expressions/AllocImplicitNoRegion/Source/Main.uv"
     ) {
         count = count + 1usize
     }

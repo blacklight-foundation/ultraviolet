@@ -23,6 +23,7 @@
 #include "05_codegen/intrinsics/intrinsics_interface.h"
 #include "05_codegen/lower/expr/call.h"
 #include "05_codegen/lower/expr/expr_common.h"
+#include "05_codegen/lower/lower_module.h"
 #include "05_codegen/symbols/mangle.h"
 #include "04_analysis/caps/cap_concurrency.h"
 #include "04_analysis/caps/cap_filesystem.h"
@@ -40,11 +41,14 @@
 #include "04_analysis/memory/string_bytes.h"
 #include "04_analysis/resolve/scopes_lookup.h"
 #include "04_analysis/typing/type_expr.h"
+#include "04_analysis/typing/type_equiv.h"
 #include "04_analysis/typing/type_lower.h"
 #include "04_analysis/typing/type_predicates.h"
 #include "04_analysis/typing/types.h"
 #include "04_analysis/memory/calls.h"
 #include "00_core/assert_spec.h"
+#include "00_core/diagnostic_messages.h"
+#include "00_core/diagnostic_render.h"
 #include "00_core/process_config.h"
 #include "00_core/symbols.h"
 
@@ -212,6 +216,308 @@ const ast::ModalDecl* ResolveModalDeclForDispatch(
         return decl;
     }
     return nullptr;
+}
+
+bool HasTypeParams(const std::optional<ast::GenericParams>& params) {
+    return params.has_value() && !params->params.empty();
+}
+
+const ast::StateBlock* FindStateBlock(const ast::ModalDecl& modal,
+                                      std::string_view state) {
+    for (const auto& candidate : modal.states) {
+        if (analysis::IdEq(candidate.name, state)) {
+            return &candidate;
+        }
+    }
+    return nullptr;
+}
+
+std::optional<analysis::TypeSubst> ModalSubstForState(
+    const ast::ModalDecl& modal_decl,
+    const analysis::TypeModalState& modal_type,
+    const LowerCtx& ctx) {
+    if (!HasTypeParams(modal_decl.generic_params)) {
+        return std::nullopt;
+    }
+    analysis::TypeSubst subst = analysis::BuildModalRefSubstitution(
+        modal_decl.generic_params->params, modal_type.generic_args);
+    for (auto& entry : subst) {
+        entry.second = InstantiateActiveGenericType(entry.second, ctx);
+    }
+    for (const auto& param : modal_decl.generic_params->params) {
+        const auto it = subst.find(param.name);
+        if (it == subst.end() || !it->second) {
+            return std::nullopt;
+        }
+    }
+    return subst;
+}
+
+analysis::TypeRef ApplyModalSubst(const analysis::TypeRef& type,
+                                  const std::optional<analysis::TypeSubst>& subst) {
+    if (!type || !subst.has_value() || subst->empty()) {
+        return type;
+    }
+    return analysis::InstantiateType(type, *subst);
+}
+
+void ApplyModalSubstToParams(ParamTypeList& param_types,
+                             const std::optional<analysis::TypeSubst>& subst) {
+    if (!subst.has_value() || subst->empty()) {
+        return;
+    }
+    for (auto& param_type : param_types) {
+        param_type = ApplyModalSubst(param_type, subst);
+    }
+}
+
+std::vector<analysis::TypeRef> GenericStateMethodArgs(
+    const ast::ModalDecl& modal_decl,
+    const analysis::TypeSubst& subst) {
+    std::vector<analysis::TypeRef> args;
+    if (!modal_decl.generic_params.has_value()) {
+        return args;
+    }
+    args.reserve(modal_decl.generic_params->params.size());
+    for (const auto& param : modal_decl.generic_params->params) {
+        const auto it = subst.find(param.name);
+        args.push_back(it != subst.end() ? it->second : nullptr);
+    }
+    return args;
+}
+
+std::string GenericStateMethodBaseSymbol(const analysis::TypePath& modal_path,
+                                         const std::string& state,
+                                         const ast::StateMethodDecl& method) {
+    return MangleStateMethod(modal_path, state, method);
+}
+
+std::string MonomorphizedStateMethodSymbol(
+    const analysis::TypePath& modal_path,
+    const std::string& state,
+    const ast::StateMethodDecl& method,
+    const ast::ModalDecl& modal_decl,
+    const analysis::TypeSubst& subst) {
+    std::vector<std::string> inst_path =
+        ItemPathStateMethod(modal_path, state, method);
+    inst_path.push_back("inst");
+    if (modal_decl.generic_params.has_value()) {
+        for (const auto& param : modal_decl.generic_params->params) {
+            const auto it = subst.find(param.name);
+            inst_path.push_back(
+                it != subst.end() && it->second
+                    ? analysis::TypeToString(it->second)
+                    : std::string("_"));
+        }
+    }
+    return ScopedSym(inst_path);
+}
+
+analysis::TypeRef LowerSourceTypeWithSubst(
+    const analysis::ScopeContext& scope,
+    const std::shared_ptr<ast::Type>& type,
+    const analysis::TypeSubst& subst) {
+    return analysis::InstantiateType(LowerMethodSourceType(scope, type), subst);
+}
+
+void RegisterProvisionalGenericStateMethodSig(
+    const ast::ModalDecl& modal_decl,
+    const ast::StateBlock& state,
+    const ast::StateMethodDecl& method,
+    const ast::ModulePath& module_path,
+    const analysis::TypePath& modal_path,
+    const analysis::TypeSubst& subst,
+    const std::string& symbol,
+    LowerCtx& ctx) {
+    if (ctx.LookupProcSig(symbol)) {
+        return;
+    }
+
+    const analysis::ScopeContext& scope = ScopeForLowering(ctx);
+    const std::vector<analysis::TypeRef> generic_args =
+        GenericStateMethodArgs(modal_decl, subst);
+    const analysis::TypeRef state_type =
+        analysis::MakeTypeModalState(modal_path, state.name, generic_args);
+    const auto recv_type = analysis::RecvTypeForReceiver(
+        scope, state_type, method.receiver,
+        [&](const std::shared_ptr<ast::Type>& type) {
+            analysis::LowerTypeResult lowered;
+            lowered.ok = true;
+            lowered.type = LowerSourceTypeWithSubst(scope, type, subst);
+            return lowered;
+        });
+
+    ProcIR provisional;
+    provisional.symbol = symbol;
+    provisional.params.push_back(IRParam{
+        analysis::RecvModeOf(method.receiver),
+        "self",
+        "self",
+        recv_type.ok ? recv_type.type
+                     : analysis::MakeTypePerm(analysis::Permission::Const,
+                                              state_type)});
+    for (const auto& param : method.params) {
+        IRParam ir_param;
+        ir_param.mode = param.mode.has_value()
+                            ? std::optional<analysis::ParamMode>(
+                                  analysis::ParamMode::Move)
+                            : std::nullopt;
+        ir_param.name = param.name;
+        ir_param.stable_name = ir_param.name;
+        ir_param.type = LowerSourceTypeWithSubst(scope, param.type, subst);
+        if (!ir_param.type) {
+            ir_param.type = analysis::MakeTypePrim("()");
+        }
+        provisional.params.push_back(std::move(ir_param));
+    }
+    provisional.ret = method.return_type_opt
+                          ? LowerSourceTypeWithSubst(scope,
+                                                     method.return_type_opt,
+                                                     subst)
+                          : analysis::MakeTypePrim("()");
+    if (!provisional.ret) {
+        provisional.ret = analysis::MakeTypePrim("()");
+    }
+    if (ctx.NeedsPanicOutForSymbol(symbol)) {
+        provisional.params.push_back(PanicOutParam());
+    }
+
+    ctx.RegisterProcSig(provisional);
+    ctx.RegisterProcLinkage(symbol, LinkageOf(method));
+}
+
+bool GenericArgsEquivalent(const std::vector<analysis::TypeRef>& lhs,
+                           const std::vector<analysis::TypeRef>& rhs) {
+    if (lhs.size() != rhs.size()) {
+        return false;
+    }
+    for (std::size_t i = 0; i < lhs.size(); ++i) {
+        if (!lhs[i] || !rhs[i]) {
+            if (lhs[i] != rhs[i]) {
+                return false;
+            }
+            continue;
+        }
+        if (!analysis::TypeEquiv(lhs[i], rhs[i]).equiv) {
+            return false;
+        }
+    }
+    return true;
+}
+
+void EmitGenericInstantiationDiagnostic(std::string_view code) {
+    if (auto diag = core::MakeDiagnosticById(code)) {
+        std::cerr << core::Render(*diag) << "\n";
+        return;
+    }
+    std::cerr << "error[" << code << "]: generic instantiation failed\n";
+}
+
+bool GenericInstantiationWouldRecurse(
+    const LowerCtx& ctx,
+    const std::string& base_symbol,
+    const std::vector<analysis::TypeRef>& args) {
+    for (const auto& frame : ctx.generic_instantiation_decl_stack) {
+        if (frame.base_symbol != base_symbol) {
+            continue;
+        }
+        if (!GenericArgsEquivalent(frame.args, args)) {
+            return true;
+        }
+    }
+    return false;
+}
+
+std::optional<std::string> EnsureGenericStateMethodInstantiation(
+    const analysis::ScopeContext& scope,
+    const analysis::TypeRef& recv_type,
+    std::string_view name,
+    LowerCtx& ctx) {
+    const auto stripped = analysis::StripPerm(recv_type);
+    const auto* modal_type =
+        stripped ? std::get_if<analysis::TypeModalState>(&stripped->node)
+                 : nullptr;
+    if (!modal_type) {
+        return std::nullopt;
+    }
+
+    analysis::TypePath modal_path = modal_type->path;
+    const ast::ModalDecl* modal_decl =
+        ResolveModalDeclForDispatch(scope, modal_path);
+    if (!modal_decl || !HasTypeParams(modal_decl->generic_params)) {
+        return std::nullopt;
+    }
+
+    const ast::StateBlock* state = FindStateBlock(*modal_decl, modal_type->state);
+    if (!state) {
+        return std::nullopt;
+    }
+    const ast::StateMethodDecl* method =
+        analysis::LookupStateMethodDecl(*modal_decl, modal_type->state, name);
+    if (!method) {
+        return std::nullopt;
+    }
+    const auto subst = ModalSubstForState(*modal_decl, *modal_type, ctx);
+    if (!subst.has_value()) {
+        return std::nullopt;
+    }
+
+    ast::ModulePath module_path = modal_path;
+    if (!module_path.empty()) {
+        module_path.pop_back();
+    }
+
+    const std::string base_symbol =
+        GenericStateMethodBaseSymbol(modal_path, modal_type->state, *method);
+    const std::vector<analysis::TypeRef> inst_args =
+        GenericStateMethodArgs(*modal_decl, *subst);
+    if (GenericInstantiationWouldRecurse(ctx, base_symbol, inst_args)) {
+        EmitGenericInstantiationDiagnostic("E-TYP-2307");
+        ctx.ReportCodegenFailure();
+        return std::nullopt;
+    }
+    if (ctx.generic_instantiation_stack.size() >=
+        analysis::MonomorphizeContext::kMaxDepth) {
+        EmitGenericInstantiationDiagnostic("E-TYP-2308");
+        ctx.ReportCodegenFailure();
+        return std::nullopt;
+    }
+
+    const std::string inst_symbol = MonomorphizedStateMethodSymbol(
+        modal_path, modal_type->state, *method, *modal_decl, *subst);
+    if (!ctx.LookupProcSig(inst_symbol)) {
+        RegisterProvisionalGenericStateMethodSig(*modal_decl,
+                                                 *state,
+                                                 *method,
+                                                 module_path,
+                                                 modal_path,
+                                                 *subst,
+                                                 inst_symbol,
+                                                 ctx);
+    }
+    if (ctx.generic_instantiation_in_progress.find(inst_symbol) ==
+        ctx.generic_instantiation_in_progress.end()) {
+        if (!ctx.LookupProcModule(inst_symbol)) {
+            ctx.generic_instantiation_in_progress.insert(inst_symbol);
+            ctx.generic_instantiation_stack.push_back(inst_symbol);
+            ctx.generic_instantiation_decl_stack.push_back(
+                GenericInstantiationFrame{base_symbol, inst_args});
+            ProcIR inst_proc = LowerStateMethodInstantiated(*modal_decl,
+                                                            *state,
+                                                            *method,
+                                                            module_path,
+                                                            inst_symbol,
+                                                            *subst,
+                                                            ctx);
+            ctx.generic_instantiation_decl_stack.pop_back();
+            ctx.generic_instantiation_stack.pop_back();
+            ctx.generic_instantiation_in_progress.erase(inst_symbol);
+            ctx.QueueExtraProc(std::move(inst_proc), LinkageOf(*method),
+                               &module_path);
+        }
+    }
+
+    return inst_symbol;
 }
 
 const ast::Expr* UnwrapReceiverExpr(const ast::ExprPtr& expr) {
@@ -1133,16 +1439,28 @@ LowerResult LowerMethodCall(const ast::Expr& expr_wrapper,
             analysis::TypePath modal_path = modal_info->first;
             const auto* modal_decl = ResolveModalDeclForDispatch(scope, modal_path);
             if (modal_decl) {
+                const auto stripped_recv = analysis::StripPerm(recv_type);
+                const auto* modal_recv =
+                    stripped_recv
+                        ? std::get_if<analysis::TypeModalState>(&stripped_recv->node)
+                        : nullptr;
+                const auto modal_subst =
+                    modal_recv ? ModalSubstForState(*modal_decl, *modal_recv, ctx)
+                               : std::nullopt;
                 if (const auto* state_method =
                         analysis::LookupStateMethodDecl(*modal_decl, modal_info->second, expr.name)) {
                     param_modes = ParamModesFromParams(state_method->params);
                     param_types = ParamTypesFromParams(scope, state_method->params);
+                    ApplyModalSubstToParams(param_types, modal_subst);
                     resolved_method_result_type =
                         LowerMethodReturnType(scope, state_method->return_type_opt, ctx);
+                    resolved_method_result_type =
+                        ApplyModalSubst(resolved_method_result_type, modal_subst);
                 } else if (const auto* transition =
                                analysis::LookupTransitionDecl(*modal_decl, modal_info->second, expr.name)) {
                     param_modes = ParamModesFromParams(transition->params);
                     param_types = ParamTypesFromParams(scope, transition->params);
+                    ApplyModalSubstToParams(param_types, modal_subst);
                     move_receiver = true;
                     receiver_key_mode = ast::KeyMode::Write;
                 }
@@ -1250,7 +1568,33 @@ LowerResult LowerMethodCall(const ast::Expr& expr_wrapper,
                     }
                 }
             }
-            if (auto sym = MethodSymbol(sym_scope, recv_type_for_sym, expr.name)) {
+            std::optional<std::string> builtin_modal_symbol;
+            if (auto modal_info = ModalStateInfo(recv_type_for_sym)) {
+                builtin_modal_symbol = analysis::LookupBuiltinModalRuntimeSymbol(
+                    modal_info->first, modal_info->second, expr.name);
+            }
+            if (builtin_modal_symbol) {
+                callee_sym = *builtin_modal_symbol;
+                if (ShouldTraceMethodCall(expr.name)) {
+                    std::cerr << "[cursive] method-call-symbol"
+                              << " name=" << expr.name
+                              << " symbol=" << callee_sym
+                              << " recv_type="
+                              << analysis::TypeToString(recv_type_for_sym)
+                              << "\n";
+                }
+            } else if (auto inst_sym = EnsureGenericStateMethodInstantiation(
+                    sym_scope, recv_type_for_sym, expr.name, ctx)) {
+                callee_sym = *inst_sym;
+                if (ShouldTraceMethodCall(expr.name)) {
+                    std::cerr << "[cursive] method-call-symbol"
+                              << " name=" << expr.name
+                              << " symbol=" << callee_sym
+                              << " recv_type="
+                              << analysis::TypeToString(recv_type_for_sym)
+                              << "\n";
+                }
+            } else if (auto sym = MethodSymbol(sym_scope, recv_type_for_sym, expr.name)) {
                 callee_sym = *sym;
                 if (ShouldTraceMethodCall(expr.name)) {
                     std::cerr << "[cursive] method-call-symbol"

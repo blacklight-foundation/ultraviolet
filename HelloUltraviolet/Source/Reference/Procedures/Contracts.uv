@@ -13,7 +13,9 @@ internal record ContractPureBox {
 internal type ContractPureUnion = i32 | bool
 
 comptime internal procedure contractCompileTimePredicate() -> bool {
-    return true
+    let lower: usize = 2usize
+    let upper: usize = 3usize
+    return lower < upper && upper == lower + 1usize
 }
 
 internal procedure contractPureProcedure(value: i32) -> bool {

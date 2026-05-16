@@ -25,12 +25,12 @@ public procedure validatedParsingAndAstInfrastructureParsingDiagnosticsObligatio
     ) {
         count = count + 1usize
     }
-    if acceptedObligationEntryMatches(
+    if rejectedSourceObligationEntryMatches(
         "Parse-Syntax-Err",
         12025usize,
-        "HelloUltraviolet::Reference::Parsing",
-        "runParsingItemSequencingReference",
-        "Source/Reference/Parsing/ItemSequencing.uv"
+        "HelloUltraviolet::Fixtures::RejectedSource",
+        "validatedParsingRejectedSourceFixtureCount",
+        "Fixtures/RejectedSource/Parsing/EnumCommaSeparator/Source/Main.uv"
     ) {
         count = count + 1usize
     }

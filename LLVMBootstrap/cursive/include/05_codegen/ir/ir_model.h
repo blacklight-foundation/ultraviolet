@@ -704,6 +704,15 @@ enum class IRInlineMode {
   Never,
 };
 
+struct IRAggregateCopyElision {
+  bool return_local_uses_sret = false;
+  std::string return_local;
+  std::string return_local_stable_name;
+  std::string source_param;
+  std::string source_param_stable_name;
+  std::size_t source_param_index = 0;
+};
+
 struct ProcIR {
   std::string symbol;
   std::vector<std::string> defining_module_path;
@@ -713,6 +722,7 @@ struct ProcIR {
   std::optional<std::string> abi;
   IRInlineMode inline_mode = IRInlineMode::Default;
   bool cold = false;
+  std::optional<IRAggregateCopyElision> aggregate_copy_elision;
 };
 
 struct GlobalConst {

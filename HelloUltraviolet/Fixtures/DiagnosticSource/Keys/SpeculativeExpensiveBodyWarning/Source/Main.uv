@@ -1,0 +1,20 @@
+//! Diagnostic key-system specimen for a speculative block whose body is re-execution-expensive.
+
+internal record SpeculativeDiagnosticCounter {
+    internal value: i32
+
+    internal procedure nextValue(~) -> i32 {
+        return self.value + 1
+    }
+}
+
+public procedure speculativeExpensiveBodyWarningReference() -> i32 {
+    var counter: shared SpeculativeDiagnosticCounter = SpeculativeDiagnosticCounter {
+        value: 5
+    }
+    #counter speculative write {
+        let next_value: i32 = counter~>nextValue()
+        counter.value = next_value
+    }
+    return counter.value + 0
+}

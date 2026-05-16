@@ -1,16 +1,182 @@
 //! Reference specimens for Expressions / Calls.
 
-public procedure callReferenceAdd(left: i32, right: i32) -> i32 {
+internal type CallUnaryFunction = (i32) -> i32
+
+internal type CallMoveFunction = (move i32) -> i32
+
+internal type CallUnaryClosure = |i32| -> i32
+
+internal record CallDefaultRecord {
+    internal value: i32 = 29
+    internal is_ready: bool = true
+}
+
+internal record CallMethodReference {
+    internal value: i32 = 11
+
+    internal procedure readValue(~) -> i32 {
+        return self.value
+    }
+
+    internal procedure addToValue(~, amount: i32) -> i32 {
+        return self.value + amount
+    }
+}
+
+internal procedure callReferenceNoArgs() -> i32 {
+    return 3
+}
+
+internal procedure callReferenceAdd(left: i32, right: i32) -> i32 {
     return left + right
 }
 
-public procedure callReferenceApply(value: i32) -> i32 {
+internal procedure callReferenceApply(value: i32) -> i32 {
     return callReferenceAdd(value, 4)
+}
+
+internal procedure callReferenceIncrement(value: i32) -> i32 {
+    return value + 1
+}
+
+internal procedure callReferenceMove(move value: i32) -> i32 {
+    return value + 2
+}
+
+internal procedure callReferenceIdentity<TValue>(move value: TValue) -> TValue {
+    return move value
+}
+
+internal procedure callReferenceSelect<TFirst; TSecond>(
+    first: TFirst,
+    second: TSecond
+) -> TSecond
+|: Bitcopy(TFirst)
+Bitcopy(TSecond)
+{
+    return second
+}
+
+internal procedure callFunctionValue(function: CallUnaryFunction, value: i32) -> i32 {
+    return function(value)
+}
+
+internal procedure callMoveFunctionValue(function: CallMoveFunction, value: i32) -> i32 {
+    return function(move value)
+}
+
+internal procedure callClosureValue(closure: CallUnaryClosure, value: i32) -> i32 {
+    return closure(value)
+}
+
+internal procedure callParsingFormsReference() -> bool {
+    let no_args: i32 = callReferenceNoArgs()
+    let two_args: i32 = callReferenceAdd(2, 3)
+    let trailing_comma: i32 = callReferenceAdd(
+        4,
+        5,
+    )
+    let nested_call: i32 = callReferenceApply(callReferenceAdd(1, 2))
+
+    return no_args == 3 &&
+        two_args == 5 &&
+        trailing_comma == 9 &&
+        nested_call == 7
+}
+
+internal procedure callArgumentSemanticsReference() -> bool {
+    let source_value: i32 = 5
+    let by_reference_place: i32 = callReferenceIncrement(source_value)
+    let by_reference_temporary: i32 = callReferenceIncrement(6 + 1)
+    let moved_source: i32 = 8
+    let consuming_place: i32 = callReferenceMove(move moved_source)
+    let consuming_temporary: i32 = callReferenceMove(9 + 1)
+
+    return by_reference_place == 6 &&
+        by_reference_temporary == 8 &&
+        consuming_place == 10 &&
+        consuming_temporary == 12
+}
+
+internal procedure callGenericFormsReference() -> bool {
+    let explicit_bool: bool = callReferenceIdentity<
+        bool,
+    >(true)
+    let explicit_second: bool = callReferenceSelect<
+        i32,
+        bool,
+    >(17, true)
+    let inferred_value: i32 = callReferenceIdentity(19)
+    let expected_value: i32 = callReferenceIdentity(23)
+
+    return explicit_bool &&
+        explicit_second &&
+        inferred_value == 19 &&
+        expected_value == 23
+}
+
+internal procedure callCalleeFormsReference() -> bool {
+    let function: CallUnaryFunction = callReferenceIncrement
+    let move_function: CallMoveFunction = callReferenceMove
+    let closure_bias: i32 = 4
+    let closure: CallUnaryClosure = |value: i32| -> i32 value + closure_bias
+
+    return function(5) == 6 &&
+        callFunctionValue(function, 6) == 7 &&
+        callMoveFunctionValue(move_function, 7) == 9 &&
+        closure(8) == 12 &&
+        callClosureValue(closure, 9) == 13
+}
+
+internal procedure callQualifiedAndBuiltInFormsReference() -> bool {
+    let token: CancelToken@Active = CancelToken::new()
+    let child: CancelToken@Active = token~>child()
+    let options: RegionOptions = RegionOptions {
+        stack_size: 0usize,
+        name: "call-reference-region"
+    }
+    let opened: unique Region@Active = Region::new_scoped(options)
+    let allocated: i32 = opened~>alloc(31)
+    let freed: Region@Freed = unsafe { opened~>free_unchecked() }
+    let default_record: CallDefaultRecord = CallDefaultRecord()
+
+    return !child~>is_cancelled() &&
+        allocated == 31 &&
+        default_record.value == 29 &&
+        default_record.is_ready
+}
+
+internal procedure callMethodFormsReference() -> bool {
+    let reference: CallMethodReference = CallMethodReference()
+
+    return reference~>readValue() == 11 &&
+        reference~>addToValue(7) == 18
+}
+
+internal procedure callArgumentControlReference() -> i32 {
+    return callReferenceAdd({ return 37 }, 1)
+}
+
+internal procedure methodArgumentControlReference() -> i32 {
+    let reference: CallMethodReference = CallMethodReference()
+    return reference~>addToValue({ return 41 })
+}
+
+internal procedure regionCallArgumentControlReference() -> i32 {
+    let opened: unique Region@Active = Region::new_scoped({ return 43 })
+    let freed: Region@Freed = unsafe { opened~>free_unchecked() }
+    return 0
 }
 
 /// Exercises the Expressions Calls reference surface.
 public procedure runExpressionsCallsReference() -> bool {
-    let direct_call: i32 = callReferenceAdd(2, 3)
-    let nested_call: i32 = callReferenceApply(callReferenceAdd(1, 2))
-    return direct_call == 5 && nested_call == 7
+    return callParsingFormsReference() &&
+        callArgumentSemanticsReference() &&
+        callGenericFormsReference() &&
+        callCalleeFormsReference() &&
+        callQualifiedAndBuiltInFormsReference() &&
+        callMethodFormsReference() &&
+        callArgumentControlReference() == 37 &&
+        methodArgumentControlReference() == 41 &&
+        regionCallArgumentControlReference() == 43
 }

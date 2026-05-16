@@ -8,6 +8,15 @@ public procedure countConcreteDataTypesEnumsObligations() -> usize {
 public procedure validatedConcreteDataTypesEnumsObligations() -> usize {
     var count: usize = 0usize
     if acceptedObligationEntryMatches(
+        "grammar.EnumSyntax",
+        39496usize,
+        "HelloUltraviolet::Reference::DataTypes",
+        "runDataTypesEnumsReference",
+        "Source/Reference/DataTypes/Enums.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
         "req.EnumVariantSeparatorSyntax",
         39521usize,
         "HelloUltraviolet::Reference::DataTypes",
@@ -544,15 +553,6 @@ public procedure validatedConcreteDataTypesEnumsObligations() -> usize {
         "HelloUltraviolet::Fixtures::RejectedSource",
         "validatedExpressionsRejectedSourceFixtureCount",
         "Fixtures/RejectedSource/Expressions/EnumEmpty/Source/Main.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
-        "grammar.UnionTypeSyntax",
-        40606usize,
-        "HelloUltraviolet::Reference::DataTypes",
-        "runDataTypesEnumsReference",
-        "Source/Reference/DataTypes/Enums.uv"
     ) {
         count = count + 1usize
     }

@@ -1,0 +1,13 @@
+//! Diagnostic optimization attribute specimen for failed inline(always).
+
+[[inline(always)]]
+public procedure inlineAlwaysRecursive(value: i32) -> i32 {
+    if value <= 0 {
+        return 0
+    }
+    return inlineAlwaysRecursive(value - 1)
+}
+
+public procedure callInlineAlwaysRecursive() -> i32 {
+    return inlineAlwaysRecursive(2)
+}

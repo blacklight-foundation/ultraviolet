@@ -512,9 +512,23 @@ void IRInstructionVisitor::operator()(const IRYield &y) const
     {
       resume_input = DefaultFor(y.result);
     }
-    emitter.SetTempValue(y.result, resume_input);
+    llvm::Type *resume_type = resume_input ? resume_input->getType() : nullptr;
+    if (resume_type && !resume_type->isVoidTy())
+    {
+      llvm::IRBuilder<> entry_builder(
+          &func->getEntryBlock(),
+          func->getEntryBlock().begin());
+      llvm::AllocaInst *resume_slot =
+          entry_builder.CreateAlloca(resume_type, nullptr, "yield_input");
+      builder.CreateStore(resume_input, resume_slot);
+      emitter.SetTempStorage(y.result, resume_slot);
+    }
+    else
+    {
+      emitter.SetTempValue(y.result, resume_input);
+    }
   }
-  if (!emitter.GetTempValue(y.result))
+  if (!emitter.GetTempValue(y.result) && !emitter.GetTempStorage(y.result))
   {
     emitter.SetTempValue(y.result, DefaultFor(y.result));
   }

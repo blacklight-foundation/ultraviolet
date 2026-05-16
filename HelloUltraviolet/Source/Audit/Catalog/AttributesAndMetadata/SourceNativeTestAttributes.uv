@@ -115,12 +115,12 @@ public procedure validatedAttributesAndMetadataSourceNativeTestAttributesObligat
     ) {
         count = count + 1usize
     }
-    if acceptedObligationEntryMatches(
+    if rejectedSourceObligationEntryMatches(
         "diagnostics.TestAttributes",
         28887usize,
-        "HelloUltraviolet::Reference::Attributes",
-        "runAttributesGeneralAttributesReference",
-        "Source/Reference/Attributes/GeneralAttributes.uv"
+        "HelloUltraviolet::Fixtures::RejectedSource",
+        "validatedAttributesRejectedSourceFixtureCount",
+        "Fixtures/RejectedSource/Attributes/TestMissingPostcondition/Source/Main.uv"
     ) {
         count = count + 1usize
     }

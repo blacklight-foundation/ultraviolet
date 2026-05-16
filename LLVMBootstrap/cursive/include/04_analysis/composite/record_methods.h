@@ -49,7 +49,8 @@ struct RecvArgOkResult {
 
 RecvArgOkResult RecvArgOk(const ast::ExprPtr& base,
                           const std::optional<ParamMode>& mode,
-                          const ExprTypeFn& type_expr);
+                          const ExprTypeFn& type_expr,
+                          const ArgCheckFn* check_expr = nullptr);
 
 struct ArgsOkResult {
   bool ok = false;

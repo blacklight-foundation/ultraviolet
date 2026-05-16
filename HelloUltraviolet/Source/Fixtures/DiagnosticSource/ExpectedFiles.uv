@@ -25,6 +25,32 @@ public procedure validTransmuteTargetExpectedDiagnosticFileMatches(context: Cont
     )
 }
 
+public procedure inlineAlwaysRecursiveExpectedDiagnosticFileMatches(context: Context) -> bool {
+    return diagnosticExpectedFileMatches(
+        context,
+        "HelloUltraviolet/Fixtures/DiagnosticSource/Attributes/InlineAlwaysRecursive/Expected.uv",
+        "//! Expected diagnostic metadata for the InlineAlwaysRecursive diagnostic-source specimen.\n\nexpectedDiagnostic(\"W-MOD-2452\", \"diagnostics.OptimizationAttributeDiagnostics\")\n"
+    )
+}
+
+public procedure leadingBOMWarningExpectedDiagnosticFileMatches(context: Context) -> bool {
+    return diagnosticExpectedFileMatches(
+        context,
+        "HelloUltraviolet/Fixtures/DiagnosticSource/SourceText/LeadingBOMWarning/Expected.uv",
+        "//! Expected diagnostic metadata for the LeadingBOMWarning diagnostic-source specimen.\n\nexpectedDiagnostic(\"W-SRC-0101\", \"Span-BOM-Warn\")\n"
+    )
+}
+
+public procedure decimalLeadingZeroWarningExpectedDiagnosticFileMatches(
+    context: Context
+) -> bool {
+    return diagnosticExpectedFileMatches(
+        context,
+        "HelloUltraviolet/Fixtures/DiagnosticSource/SourceText/DecimalLeadingZeroWarning/Expected.uv",
+        "//! Expected diagnostic metadata for the DecimalLeadingZeroWarning diagnostic-source specimen.\n\nexpectedDiagnostic(\"W-SRC-0301\", \"Warn-DecimalLeadingZero\")\n"
+    )
+}
+
 public procedure fineGrainedLoopKeyWarningExpectedDiagnosticFileMatches(context: Context) -> bool {
     return diagnosticExpectedFileMatches(
         context,
@@ -102,6 +128,26 @@ public procedure staleOkSuppressesReleaseWarningExpectedDiagnosticFileMatches(co
         context,
         "HelloUltraviolet/Fixtures/DiagnosticSource/Keys/StaleOkSuppressesReleaseWarning/Expected.uv",
         "//! Expected diagnostic-absence metadata for the StaleOkSuppressesReleaseWarning diagnostic-source specimen.\n\nexpectedDiagnosticAbsent(\"W-CON-0011\", \"requirement.19.StaleOkSuppressesReleaseWarning\")\n"
+    )
+}
+
+public procedure speculativeLargeStructWarningExpectedDiagnosticFileMatches(
+    context: Context
+) -> bool {
+    return diagnosticExpectedFileMatches(
+        context,
+        "HelloUltraviolet/Fixtures/DiagnosticSource/Keys/SpeculativeLargeStructWarning/Expected.uv",
+        "//! Expected diagnostic metadata for the SpeculativeLargeStructWarning diagnostic-source specimen.\n\nexpectedDiagnostic(\"W-CON-0020\", \"diagnostics.19.SpeculativeExecution\")\n"
+    )
+}
+
+public procedure speculativeExpensiveBodyWarningExpectedDiagnosticFileMatches(
+    context: Context
+) -> bool {
+    return diagnosticExpectedFileMatches(
+        context,
+        "HelloUltraviolet/Fixtures/DiagnosticSource/Keys/SpeculativeExpensiveBodyWarning/Expected.uv",
+        "//! Expected diagnostic metadata for the SpeculativeExpensiveBodyWarning diagnostic-source specimen.\n\nexpectedDiagnostic(\"W-CON-0021\", \"diagnostics.19.SpeculativeExecution\")\n"
     )
 }
 

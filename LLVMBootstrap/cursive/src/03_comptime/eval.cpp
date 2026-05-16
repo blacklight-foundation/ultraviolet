@@ -616,6 +616,50 @@ EvalResult EvalExpr(const ExprPtr& expr, CtEnv& env) {
           out.ok = true;
           out.value = enum_value;
           return out;
+        } else if constexpr (std::is_same_v<T, ast::QualifiedApplyExpr>) {
+          auto enum_value = std::make_shared<CtEnum>();
+          enum_value->path = node.path;
+          enum_value->variant = node.name;
+
+          bool ok = true;
+          std::visit(
+              [&](const auto& args) {
+                using A = std::decay_t<decltype(args)>;
+                if constexpr (std::is_same_v<A, ast::ParenArgs>) {
+                  CtTuplePayload tuple;
+                  tuple.elements.reserve(args.args.size());
+                  for (const auto& arg : args.args) {
+                    auto value = EvalExpr(arg.value, env);
+                    if (!value.ok) {
+                      ok = false;
+                      return;
+                    }
+                    tuple.elements.push_back(value.value);
+                  }
+                  enum_value->payload = std::move(tuple);
+                } else if constexpr (std::is_same_v<A, ast::BraceArgs>) {
+                  CtRecordPayload record;
+                  record.fields.reserve(args.fields.size());
+                  for (const auto& field : args.fields) {
+                    auto value = EvalExpr(field.value, env);
+                    if (!value.ok) {
+                      ok = false;
+                      return;
+                    }
+                    record.fields.push_back({field.name, value.value});
+                  }
+                  enum_value->payload = std::move(record);
+                }
+              },
+              node.args);
+          if (!ok) {
+            return {};
+          }
+
+          EvalResult out;
+          out.ok = true;
+          out.value = enum_value;
+          return out;
         } else if constexpr (std::is_same_v<T, ast::ResultExpr>) {
           if (!env.contract_result_value.has_value()) {
             return {};
@@ -812,6 +856,35 @@ EvalResult EvalExpr(const ExprPtr& expr, CtEnv& env) {
           out.ok = true;
           out.value = array;
           return out;
+        } else if constexpr (std::is_same_v<T, ast::RecordExpr>) {
+          auto fields = std::vector<std::pair<Identifier, CtValue>>{};
+          fields.reserve(node.fields.size());
+          for (const auto& field : node.fields) {
+            auto value = EvalExpr(field.value, env);
+            if (!value.ok) {
+              return value;
+            }
+            fields.push_back({field.name, value.value});
+          }
+
+          EvalResult out;
+          out.ok = true;
+          if (const auto* target = std::get_if<TypePath>(&node.target)) {
+            auto record = std::make_shared<CtRecord>();
+            record->path = *target;
+            record->fields = std::move(fields);
+            out.value = record;
+            return out;
+          }
+          if (const auto* target =
+                  std::get_if<ast::ModalStateRef>(&node.target)) {
+            auto state = std::make_shared<CtModalState>();
+            state->target = *target;
+            state->fields = std::move(fields);
+            out.value = state;
+            return out;
+          }
+          return {};
         } else if constexpr (std::is_same_v<T, ast::EnumLiteralExpr>) {
           if (node.path.empty()) {
             return {};
@@ -820,7 +893,41 @@ EvalResult EvalExpr(const ExprPtr& expr, CtEnv& env) {
           enum_value->path.assign(node.path.begin(), node.path.end() - 1);
           enum_value->variant = node.path.back();
           if (node.payload_opt.has_value()) {
-            return {};
+            bool ok = true;
+            std::visit(
+                [&](const auto& payload) {
+                  using P = std::decay_t<decltype(payload)>;
+                  if constexpr (std::is_same_v<P, ast::EnumPayloadParen>) {
+                    CtTuplePayload tuple;
+                    tuple.elements.reserve(payload.elements.size());
+                    for (const auto& elem : payload.elements) {
+                      auto value = EvalExpr(elem, env);
+                      if (!value.ok) {
+                        ok = false;
+                        return;
+                      }
+                      tuple.elements.push_back(value.value);
+                    }
+                    enum_value->payload = std::move(tuple);
+                  } else if constexpr (std::is_same_v<P,
+                                                       ast::EnumPayloadBrace>) {
+                    CtRecordPayload record;
+                    record.fields.reserve(payload.fields.size());
+                    for (const auto& field : payload.fields) {
+                      auto value = EvalExpr(field.value, env);
+                      if (!value.ok) {
+                        ok = false;
+                        return;
+                      }
+                      record.fields.push_back({field.name, value.value});
+                    }
+                    enum_value->payload = std::move(record);
+                  }
+                },
+                *node.payload_opt);
+            if (!ok) {
+              return {};
+            }
           }
           EvalResult out;
           out.ok = true;
