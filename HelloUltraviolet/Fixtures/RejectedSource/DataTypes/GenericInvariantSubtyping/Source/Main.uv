@@ -1,0 +1,12 @@
+//! Rejected subtyping specimen for invariant generic parameters.
+
+internal record InvariantArray<TValue> {
+    internal values: [TValue; 1usize]
+}
+
+internal procedure genericInvariantSubtypingViolation() -> bool {
+    let values: [i32; 1usize] = [1]
+    let source: InvariantArray<i32> = InvariantArray { values: values }
+    let target: InvariantArray<bool> = source
+    return target.values[0usize]
+}

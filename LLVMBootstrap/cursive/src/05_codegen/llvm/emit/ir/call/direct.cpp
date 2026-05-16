@@ -4,6 +4,8 @@
 // =============================================================================
 #include "../../ir_instruction_visitor.h"
 
+#include <functional>
+
 namespace cursive::codegen::emit_detail {
 
 void IRInstructionVisitor::operator()(const IRCall &call) const
@@ -1216,6 +1218,8 @@ void IRInstructionVisitor::operator()(const IRCall &call) const
   LowerCtx::ProcSigInfo closure_adjusted_sig;
   LowerCtx::ProcSigInfo hosted_adjusted_sig;
   std::string callee_symbol = call.callee.name;
+  bool sig_is_concrete_local_callable = false;
+  bool callee_is_closure_code_component = false;
   const bool is_async_resume_runtime_symbol =
       (call.callee.kind == IRValue::Kind::Symbol) &&
       (call.callee.name == BuiltinSymAsyncResume());
@@ -1531,6 +1535,66 @@ void IRInstructionVisitor::operator()(const IRCall &call) const
     // Prefer concrete closure-code signatures over inferred function types.
     // This preserves ABI decisions (notably sret) when analysis-level closure
     // types are still partially inferred.
+    std::function<std::optional<std::string>(const IRValue &, unsigned)> closure_code_symbol =
+        [&](const IRValue &value, unsigned depth) -> std::optional<std::string>
+    {
+      if (depth > 8)
+      {
+        return std::nullopt;
+      }
+      if (value.kind == IRValue::Kind::Symbol)
+      {
+        return value.name;
+      }
+      const DerivedValueInfo *derived = ctx->LookupDerivedValue(value);
+      if (!derived)
+      {
+        return std::nullopt;
+      }
+      if (derived->kind == DerivedValueInfo::Kind::TupleLit &&
+          derived->elements.size() > 1)
+      {
+        return closure_code_symbol(derived->elements[1], depth + 1);
+      }
+      if (derived->kind == DerivedValueInfo::Kind::Tuple &&
+          derived->tuple_index == 1)
+      {
+        return closure_code_symbol(derived->base, depth + 1);
+      }
+      if (derived->kind == DerivedValueInfo::Kind::LoadFromAddr ||
+          derived->kind == DerivedValueInfo::Kind::AddrTuple ||
+          derived->kind == DerivedValueInfo::Kind::AddrLocal)
+      {
+        return closure_code_symbol(derived->base, depth + 1);
+      }
+      return std::nullopt;
+    };
+    std::function<bool(const IRValue &, unsigned)> is_closure_code_component =
+        [&](const IRValue &value, unsigned depth) -> bool
+    {
+      if (depth > 8)
+      {
+        return false;
+      }
+      const DerivedValueInfo *derived = ctx->LookupDerivedValue(value);
+      if (!derived)
+      {
+        return false;
+      }
+      if (derived->kind == DerivedValueInfo::Kind::Tuple &&
+          derived->tuple_index == 1)
+      {
+        return true;
+      }
+      if (derived->kind == DerivedValueInfo::Kind::LoadFromAddr ||
+          derived->kind == DerivedValueInfo::Kind::AddrTuple ||
+          derived->kind == DerivedValueInfo::Kind::AddrLocal)
+      {
+        return is_closure_code_component(derived->base, depth + 1);
+      }
+      return false;
+    };
+
     if (call.callee.kind == IRValue::Kind::Opaque)
     {
       if (const DerivedValueInfo *derived = ctx->LookupDerivedValue(call.callee))
@@ -1552,10 +1616,29 @@ void IRInstructionVisitor::operator()(const IRCall &call) const
                 {
                   sig = concrete;
                   callee_symbol = code_elem.name;
+                  sig_is_concrete_local_callable = true;
+                  callee_is_closure_code_component = true;
                 }
               }
             }
           }
+        }
+      }
+    }
+
+    if (!sig)
+    {
+      if (std::optional<std::string> closure_symbol =
+              closure_code_symbol(call.callee, 0))
+      {
+        if (const LowerCtx::ProcSigInfo *concrete =
+                ctx->LookupProcSig(*closure_symbol))
+        {
+          sig = concrete;
+          callee_symbol = *closure_symbol;
+          sig_is_concrete_local_callable = true;
+          callee_is_closure_code_component =
+              is_closure_code_component(call.callee, 0);
         }
       }
     }
@@ -1716,30 +1799,71 @@ void IRInstructionVisitor::operator()(const IRCall &call) const
     // binding states are popped after lowering; recover from the local
     // alloca store to keep indirect-call emission aligned with spec
     // LoweredSigOf/NeedsPanicOut requirements.
-    if (!sig && call.callee.kind == IRValue::Kind::Local)
+    if (call.callee.kind == IRValue::Kind::Local)
     {
       if (llvm::Value *local_slot = emitter.GetLocal(call.callee.name))
       {
-        llvm::Function *stored_fn = nullptr;
-        if (auto *alloca = llvm::dyn_cast<llvm::AllocaInst>(local_slot))
+        std::function<llvm::Function *(llvm::Value *, unsigned)> stored_function_from_value =
+            [&](llvm::Value *value, unsigned depth) -> llvm::Function *
         {
-          for (llvm::User *user : alloca->users())
+          if (!value || depth > 8)
           {
-            auto *store = llvm::dyn_cast<llvm::StoreInst>(user);
-            if (!store || store->getPointerOperand() != alloca)
+            return nullptr;
+          }
+          if (llvm::Function *fn = FunctionFromLLVMValue(value))
+          {
+            return fn;
+          }
+          if (auto *load = llvm::dyn_cast<llvm::LoadInst>(value))
+          {
+            return stored_function_from_value(load->getPointerOperand(), depth + 1);
+          }
+          if (auto *cast = llvm::dyn_cast<llvm::CastInst>(value))
+          {
+            return stored_function_from_value(cast->getOperand(0), depth + 1);
+          }
+          if (auto *alloca = llvm::dyn_cast<llvm::AllocaInst>(value))
+          {
+            for (llvm::User *user : alloca->users())
             {
-              continue;
-            }
-            if (llvm::Function *fn = FunctionFromLLVMValue(store->getValueOperand()))
-            {
-              stored_fn = fn;
-              break;
+              auto *store = llvm::dyn_cast<llvm::StoreInst>(user);
+              if (!store || store->getPointerOperand() != alloca)
+              {
+                continue;
+              }
+              if (llvm::Function *fn =
+                      stored_function_from_value(store->getValueOperand(), depth + 1))
+              {
+                return fn;
+              }
             }
           }
-        }
-        else
+          return nullptr;
+        };
+
+        llvm::Function *stored_fn = stored_function_from_value(local_slot, 0);
+        if (!stored_fn)
         {
-          stored_fn = FunctionFromLLVMValue(local_slot);
+          if (auto *alloca = llvm::dyn_cast<llvm::AllocaInst>(local_slot))
+          {
+            for (llvm::User *user : alloca->users())
+            {
+              auto *store = llvm::dyn_cast<llvm::StoreInst>(user);
+              if (!store || store->getPointerOperand() != alloca)
+              {
+                continue;
+              }
+              if (llvm::Function *fn = FunctionFromLLVMValue(store->getValueOperand()))
+              {
+                stored_fn = fn;
+                break;
+              }
+            }
+          }
+          else
+          {
+            stored_fn = FunctionFromLLVMValue(local_slot);
+          }
         }
 
         if (stored_fn)
@@ -1749,6 +1873,7 @@ void IRInstructionVisitor::operator()(const IRCall &call) const
           {
             sig = concrete;
             callee_symbol = stored_name;
+            sig_is_concrete_local_callable = true;
           }
         }
       }
@@ -1829,6 +1954,125 @@ void IRInstructionVisitor::operator()(const IRCall &call) const
     }
   }
 
+  auto extract_value_index = [](llvm::Value *value) -> std::optional<unsigned>
+  {
+    auto *extract = llvm::dyn_cast_or_null<llvm::ExtractValueInst>(value);
+    if (!extract || extract->getNumIndices() != 1)
+    {
+      return std::nullopt;
+    }
+    return *extract->idx_begin();
+  };
+
+  std::function<llvm::Function *(llvm::Value *, unsigned)> function_from_value;
+  std::function<llvm::Function *(llvm::Value *, unsigned, unsigned)>
+      function_from_aggregate_element;
+
+  function_from_value = [&](llvm::Value *value, unsigned depth) -> llvm::Function *
+  {
+    if (!value || depth > 8)
+    {
+      return nullptr;
+    }
+    if (llvm::Function *fn = FunctionFromLLVMValue(value))
+    {
+      return fn;
+    }
+    if (auto *extract = llvm::dyn_cast<llvm::ExtractValueInst>(value))
+    {
+      if (extract->getNumIndices() == 1)
+      {
+        return function_from_aggregate_element(
+            extract->getAggregateOperand(), *extract->idx_begin(), depth + 1);
+      }
+    }
+    if (auto *load = llvm::dyn_cast<llvm::LoadInst>(value))
+    {
+      return function_from_value(load->getPointerOperand(), depth + 1);
+    }
+    if (auto *cast = llvm::dyn_cast<llvm::CastInst>(value))
+    {
+      return function_from_value(cast->getOperand(0), depth + 1);
+    }
+    return nullptr;
+  };
+
+  function_from_aggregate_element =
+      [&](llvm::Value *aggregate, unsigned index, unsigned depth) -> llvm::Function *
+  {
+    if (!aggregate || depth > 8)
+    {
+      return nullptr;
+    }
+    if (auto *insert = llvm::dyn_cast<llvm::InsertValueInst>(aggregate))
+    {
+      if (insert->getNumIndices() == 1 && *insert->idx_begin() == index)
+      {
+        return function_from_value(insert->getInsertedValueOperand(), depth + 1);
+      }
+      return function_from_aggregate_element(
+          insert->getAggregateOperand(), index, depth + 1);
+    }
+    if (auto *load = llvm::dyn_cast<llvm::LoadInst>(aggregate))
+    {
+      return function_from_aggregate_element(
+          load->getPointerOperand(), index, depth + 1);
+    }
+    if (auto *cast = llvm::dyn_cast<llvm::CastInst>(aggregate))
+    {
+      return function_from_aggregate_element(cast->getOperand(0), index, depth + 1);
+    }
+    if (auto *constant = llvm::dyn_cast<llvm::Constant>(aggregate))
+    {
+      if (llvm::Constant *element = constant->getAggregateElement(index))
+      {
+        return function_from_value(element, depth + 1);
+      }
+    }
+    if (auto *alloca = llvm::dyn_cast<llvm::AllocaInst>(aggregate))
+    {
+      llvm::Function *found = nullptr;
+      for (llvm::User *user : alloca->users())
+      {
+        auto *store = llvm::dyn_cast<llvm::StoreInst>(user);
+        if (!store || store->getPointerOperand() != alloca)
+        {
+          continue;
+        }
+        llvm::Function *stored =
+            function_from_aggregate_element(store->getValueOperand(), index, depth + 1);
+        if (!stored)
+        {
+          continue;
+        }
+        if (found && found != stored)
+        {
+          return nullptr;
+        }
+        found = stored;
+      }
+      return found;
+    }
+    return nullptr;
+  };
+
+  const std::optional<unsigned> callee_extract_index = extract_value_index(callee);
+  if (ctx && callee_extract_index.has_value() && *callee_extract_index == 1)
+  {
+    if (llvm::Function *closure_fn = function_from_value(callee, 0))
+    {
+      const std::string closure_name = std::string(closure_fn->getName());
+      if (const LowerCtx::ProcSigInfo *concrete = ctx->LookupProcSig(closure_name))
+      {
+        sig = concrete;
+        callee_symbol = closure_name;
+        sig_is_concrete_local_callable = true;
+        callee_is_closure_code_component = true;
+        callee = closure_fn;
+      }
+    }
+  }
+
   const bool unresolved_drop_glue =
       call.callee.kind == IRValue::Kind::Symbol &&
       (IsDropGlueSymbol(callee_symbol) || IsDropGlueSymbol(call.callee.name));
@@ -1868,6 +2112,19 @@ void IRInstructionVisitor::operator()(const IRCall &call) const
       args.insert(args.begin(), env_ptr);
       callee = code_ptr;
       callee_is_closure_pair = true;
+      if (ctx)
+      {
+        if (llvm::Function *closure_fn = FunctionFromLLVMValue(callee))
+        {
+          const std::string closure_name = std::string(closure_fn->getName());
+          if (const LowerCtx::ProcSigInfo *concrete = ctx->LookupProcSig(closure_name))
+          {
+            sig = concrete;
+            callee_symbol = closure_name;
+            sig_is_concrete_local_callable = true;
+          }
+        }
+      }
     }
   }
 
@@ -1901,7 +2158,8 @@ void IRInstructionVisitor::operator()(const IRCall &call) const
     }
   }
 
-  if (sig && ctx && call.callee.kind != IRValue::Kind::Symbol)
+  if (sig && ctx && call.callee.kind != IRValue::Kind::Symbol &&
+      !sig_is_concrete_local_callable)
   {
     analysis::TypeRef callable_type =
         analysis::StripPerm(ctx->LookupValueType(call.callee));
@@ -1978,6 +2236,14 @@ void IRInstructionVisitor::operator()(const IRCall &call) const
         sig = &callable_type_adjusted_sig;
       }
     }
+  }
+
+  if (sig_is_concrete_local_callable &&
+      callee_is_closure_code_component &&
+      sig &&
+      sig->params.size() + 1 == args.size())
+  {
+    args.erase(args.begin());
   }
 
   llvm::Value *call_result = nullptr;
@@ -2306,6 +2572,54 @@ void IRInstructionVisitor::operator()(const IRCall &call) const
       }
     }
     call_result = repacked;
+  }
+
+  if (call_result && call_result_type && sig && sig->ret)
+  {
+    analysis::TypeRef source_ret = analysis::StripPerm(sig->ret);
+    if (!source_ret)
+    {
+      source_ret = sig->ret;
+    }
+    analysis::TypeRef target_ret = analysis::StripPerm(call_result_type);
+    if (!target_ret)
+    {
+      target_ret = call_result_type;
+    }
+
+    bool same_ret = false;
+    if (source_ret && target_ret)
+    {
+      const auto eq = analysis::TypeEquiv(source_ret, target_ret);
+      same_ret = eq.ok && eq.equiv;
+    }
+
+    if (!same_ret)
+    {
+      llvm::Type *target_ty = ExpectedLLVMType(call.result);
+      if (!target_ty && target_ret)
+      {
+        target_ty = emitter.GetLLVMType(target_ret);
+      }
+      if (target_ty && call_result->getType() != target_ty)
+      {
+        llvm::Value *coerced = CoerceToTyped(
+            emitter,
+            &builder,
+            call_result,
+            target_ty,
+            source_ret,
+            target_ret);
+        if (!coerced)
+        {
+          coerced = CoerceTo(&builder, call_result, target_ty);
+        }
+        if (coerced)
+        {
+          call_result = coerced;
+        }
+      }
+    }
   }
 
   bool never_call = false;

@@ -419,6 +419,7 @@ struct LowerCtx {
     std::uint64_t frame_size = 0;
     std::uint64_t frame_align = 1;
     std::unordered_map<std::string, AsyncFrameSlot> slots;
+    std::unordered_map<std::string, std::vector<std::string>> slot_aliases;
     std::vector<std::string> slot_order;
     std::vector<std::string> param_names;
   };

@@ -62,6 +62,11 @@ using HelloUltraviolet::Fixtures::RejectedSource::{ testMissingPostconditionExpe
 using HelloUltraviolet::Fixtures::RejectedSource::{ packedLayoutOnEnumExpectedDiagnosticFileMatches }
 using HelloUltraviolet::Fixtures::RejectedSource::{ reservedVendorNamespaceExpectedDiagnosticFileMatches }
 using HelloUltraviolet::Fixtures::RejectedSource::{ typeAliasCycleExpectedDiagnosticFileMatches }
+using HelloUltraviolet::Fixtures::RejectedSource::{ noIntegerNumericSubtypingExpectedDiagnosticFileMatches }
+using HelloUltraviolet::Fixtures::RejectedSource::{ noFloatNumericSubtypingExpectedDiagnosticFileMatches }
+using HelloUltraviolet::Fixtures::RejectedSource::{ genericInvariantSubtypingExpectedDiagnosticFileMatches }
+using HelloUltraviolet::Fixtures::RejectedSource::{ genericCovariantSubtypingExpectedDiagnosticFileMatches }
+using HelloUltraviolet::Fixtures::RejectedSource::{ genericContravariantSubtypingExpectedDiagnosticFileMatches }
 using HelloUltraviolet::Fixtures::RejectedSource::{ duplicateModuleDeclarationExpectedDiagnosticFileMatches }
 using HelloUltraviolet::Fixtures::RejectedSource::{ staticMissingTypeAnnotationExpectedDiagnosticFileMatches }
 using HelloUltraviolet::Fixtures::RejectedSource::{ missingImportExpectedDiagnosticFileMatches }
@@ -494,6 +499,7 @@ using HelloUltraviolet::Reference::Names::{ runNamesQualifiedResolutionReference
 using HelloUltraviolet::Reference::Names::{ runNamesDisambiguationReference }
 using HelloUltraviolet::Reference::Types::{ runTypesEquivalenceReference }
 using HelloUltraviolet::Reference::Types::{ runTypesSubtypingReference }
+using HelloUltraviolet::Reference::Types::{ runTypesSubtypingReferenceWithReport }
 using HelloUltraviolet::Reference::Types::{ runTypesInferenceReference }
 using HelloUltraviolet::Reference::Types::{ runTypesRefinementsReference }
 using HelloUltraviolet::Reference::Attributes::{ runAttributesGeneralAttributesReference }
@@ -1128,6 +1134,31 @@ public procedure runReferenceCorpus(context: Context) -> ReferenceResult {
         context,
         "typeAliasCycleExpectedDiagnosticFileMatches",
         typeAliasCycleExpectedDiagnosticFileMatches(context)
+    ) && passed
+    passed = recordReferenceResult(
+        context,
+        "noIntegerNumericSubtypingExpectedDiagnosticFileMatches",
+        noIntegerNumericSubtypingExpectedDiagnosticFileMatches(context)
+    ) && passed
+    passed = recordReferenceResult(
+        context,
+        "noFloatNumericSubtypingExpectedDiagnosticFileMatches",
+        noFloatNumericSubtypingExpectedDiagnosticFileMatches(context)
+    ) && passed
+    passed = recordReferenceResult(
+        context,
+        "genericInvariantSubtypingExpectedDiagnosticFileMatches",
+        genericInvariantSubtypingExpectedDiagnosticFileMatches(context)
+    ) && passed
+    passed = recordReferenceResult(
+        context,
+        "genericCovariantSubtypingExpectedDiagnosticFileMatches",
+        genericCovariantSubtypingExpectedDiagnosticFileMatches(context)
+    ) && passed
+    passed = recordReferenceResult(
+        context,
+        "genericContravariantSubtypingExpectedDiagnosticFileMatches",
+        genericContravariantSubtypingExpectedDiagnosticFileMatches(context)
     ) && passed
     passed = recordReferenceResult(
         context,

@@ -335,13 +335,13 @@ public procedure validatedExpressionsRejectedSourceFixtureCount() -> usize {
             "Fixtures/RejectedSource/Expressions/IfConditionNonBool",
             "Fixtures/RejectedSource/Expressions/IfConditionNonBool/Source/Main.uv",
             "Fixtures/RejectedSource/Expressions/IfConditionNonBool/Expected.uv",
-            expectedDiagnostic("", "diag.16.ControlExpressions")
+            expectedDiagnostic("E-SEM-2526", "diag.16.ControlExpressions")
         ),
         "IfConditionNonBool",
         "Fixtures/RejectedSource/Expressions/IfConditionNonBool",
         "Fixtures/RejectedSource/Expressions/IfConditionNonBool/Source/Main.uv",
         "Fixtures/RejectedSource/Expressions/IfConditionNonBool/Expected.uv",
-        "",
+        "E-SEM-2526",
         "diag.16.ControlExpressions"
     ) {
         count = count + 1usize
@@ -607,13 +607,13 @@ public procedure validatedExpressionsRejectedSourceFixtureCount() -> usize {
             "Fixtures/RejectedSource/Expressions/ExternCallUnsafeRequirement",
             "Fixtures/RejectedSource/Expressions/ExternCallUnsafeRequirement/Source/Main.uv",
             "Fixtures/RejectedSource/Expressions/ExternCallUnsafeRequirement/Expected.uv",
-            expectedDiagnostic("", "req.16.ExternProcedureCallsRequireUnsafe")
+            expectedDiagnostic("E-TYP-2106", "req.16.ExternProcedureCallsRequireUnsafe")
         ),
         "ExternCallUnsafeRequirement",
         "Fixtures/RejectedSource/Expressions/ExternCallUnsafeRequirement",
         "Fixtures/RejectedSource/Expressions/ExternCallUnsafeRequirement/Source/Main.uv",
         "Fixtures/RejectedSource/Expressions/ExternCallUnsafeRequirement/Expected.uv",
-        "",
+        "E-TYP-2106",
         "req.16.ExternProcedureCallsRequireUnsafe"
     ) {
         count = count + 1usize
@@ -675,13 +675,13 @@ public procedure validatedExpressionsRejectedSourceFixtureCount() -> usize {
             "Fixtures/RejectedSource/Expressions/TransmuteUnsafe",
             "Fixtures/RejectedSource/Expressions/TransmuteUnsafe/Source/Main.uv",
             "Fixtures/RejectedSource/Expressions/TransmuteUnsafe/Expected.uv",
-            expectedDiagnostic("", "rule.16.Transmute-Unsafe-Err")
+            expectedDiagnostic("E-MEM-3030", "rule.16.Transmute-Unsafe-Err")
         ),
         "TransmuteUnsafe",
         "Fixtures/RejectedSource/Expressions/TransmuteUnsafe",
         "Fixtures/RejectedSource/Expressions/TransmuteUnsafe/Source/Main.uv",
         "Fixtures/RejectedSource/Expressions/TransmuteUnsafe/Expected.uv",
-        "",
+        "E-MEM-3030",
         "rule.16.Transmute-Unsafe-Err"
     ) {
         count = count + 1usize
@@ -1695,13 +1695,13 @@ public procedure validatedExpressionsRejectedSourceFixtureCount() -> usize {
             "Fixtures/RejectedSource/Expressions/ControlExpressionDiagnosticOwnership",
             "Fixtures/RejectedSource/Expressions/ControlExpressionDiagnosticOwnership/Source/Main.uv",
             "Fixtures/RejectedSource/Expressions/ControlExpressionDiagnosticOwnership/Expected.uv",
-            expectedDiagnostic("", "req.16.ControlExpressionDiagnosticOwnership")
+            expectedDiagnostic("E-SEM-2526", "req.16.ControlExpressionDiagnosticOwnership")
         ),
         "ControlExpressionDiagnosticOwnership",
         "Fixtures/RejectedSource/Expressions/ControlExpressionDiagnosticOwnership",
         "Fixtures/RejectedSource/Expressions/ControlExpressionDiagnosticOwnership/Source/Main.uv",
         "Fixtures/RejectedSource/Expressions/ControlExpressionDiagnosticOwnership/Expected.uv",
-        "",
+        "E-SEM-2526",
         "req.16.ControlExpressionDiagnosticOwnership"
     ) {
         count = count + 1usize
@@ -1899,13 +1899,13 @@ public procedure validatedExpressionsRejectedSourceFixtureCount() -> usize {
             "Fixtures/RejectedSource/Expressions/RawDerefUnsafeRequirement",
             "Fixtures/RejectedSource/Expressions/RawDerefUnsafeRequirement/Source/Main.uv",
             "Fixtures/RejectedSource/Expressions/RawDerefUnsafeRequirement/Expected.uv",
-            expectedDiagnostic("", "rule.16.T-Deref-Raw")
+            expectedDiagnostic("E-TYP-2103", "rule.16.T-Deref-Raw")
         ),
         "RawDerefUnsafeRequirement",
         "Fixtures/RejectedSource/Expressions/RawDerefUnsafeRequirement",
         "Fixtures/RejectedSource/Expressions/RawDerefUnsafeRequirement/Source/Main.uv",
         "Fixtures/RejectedSource/Expressions/RawDerefUnsafeRequirement/Expected.uv",
-        "",
+        "E-TYP-2103",
         "rule.16.T-Deref-Raw"
     ) {
         count = count + 1usize
@@ -1916,13 +1916,13 @@ public procedure validatedExpressionsRejectedSourceFixtureCount() -> usize {
             "Fixtures/RejectedSource/Expressions/RawDerefPlaceTypingFamily",
             "Fixtures/RejectedSource/Expressions/RawDerefPlaceTypingFamily/Source/Main.uv",
             "Fixtures/RejectedSource/Expressions/RawDerefPlaceTypingFamily/Expected.uv",
-            expectedDiagnostic("", "rule.16.DerefPlaceTypingFamily")
+            expectedDiagnostic("E-TYP-2103", "rule.16.DerefPlaceTypingFamily")
         ),
         "RawDerefPlaceTypingFamily",
         "Fixtures/RejectedSource/Expressions/RawDerefPlaceTypingFamily",
         "Fixtures/RejectedSource/Expressions/RawDerefPlaceTypingFamily/Source/Main.uv",
         "Fixtures/RejectedSource/Expressions/RawDerefPlaceTypingFamily/Expected.uv",
-        "",
+        "E-TYP-2103",
         "rule.16.DerefPlaceTypingFamily"
     ) {
         count = count + 1usize

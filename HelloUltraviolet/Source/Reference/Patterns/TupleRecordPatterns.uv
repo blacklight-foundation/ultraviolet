@@ -1,20 +1,71 @@
 //! Reference specimens for Patterns / TupleRecordPatterns.
 
-using HelloUltraviolet::Reference::DataTypes::{ RecordReference, recordReference }
+using HelloUltraviolet::Reference::DataTypes::{
+    EmptyRecordReference,
+    RecordReference,
+    recordReference,
+}
 
 /// Exercises the Patterns TupleRecordPatterns reference surface.
 public procedure runPatternsTupleRecordPatternsReference() -> bool {
+    let unit_value: () = ()
+    let empty_tuple_hit: bool = if unit_value is () {
+        true
+    } else {
+        false
+    }
+
     let pair: (i32, bool) = (13, true)
     let (count, is_ready) = pair
+    let tuple_hit: bool = if pair is (13, bound_ready) {
+        bound_ready
+    } else {
+        false
+    }
+    let trailing_tuple_hit: bool = if pair is (13, true,) {
+        true
+    } else {
+        false
+    }
+
     let singleton: (i32;) = (21;)
     let (single_count;) = singleton
+    let singleton_hit: bool = if singleton is (single_value;) {
+        single_value == 21
+    } else {
+        false
+    }
 
     let reference: RecordReference = recordReference("pattern-record", 34usize, true)
     let RecordReference { count: record_count, is_active } = reference
+    let explicit_record_hit: bool = if reference is RecordReference {
+        name: pattern_name,
+        count: pattern_count: usize,
+        is_active: pattern_active,
+    } {
+        pattern_name == "pattern-record" &&
+            pattern_count == 34usize &&
+            pattern_active
+    } else {
+        false
+    }
 
-    return count == 13 &&
+    let empty_record: EmptyRecordReference = EmptyRecordReference()
+    let empty_record_hit: bool = if empty_record is EmptyRecordReference {} {
+        true
+    } else {
+        false
+    }
+
+    return empty_tuple_hit &&
+        count == 13 &&
         is_ready &&
+        tuple_hit &&
+        trailing_tuple_hit &&
         single_count == 21 &&
+        singleton_hit &&
         record_count == 34usize &&
-        is_active
+        is_active &&
+        explicit_record_hit &&
+        empty_record_hit
 }

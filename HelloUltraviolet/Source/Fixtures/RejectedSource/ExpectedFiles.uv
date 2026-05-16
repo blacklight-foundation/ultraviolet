@@ -131,6 +131,56 @@ public procedure typeAliasCycleExpectedDiagnosticFileMatches(context: Context) -
     )
 }
 
+public procedure noIntegerNumericSubtypingExpectedDiagnosticFileMatches(
+    context: Context
+) -> bool {
+    return expectedDiagnosticFileMatches(
+        context,
+        "HelloUltraviolet/Fixtures/RejectedSource/DataTypes/NoIntegerNumericSubtyping/Expected.uv",
+        "//! Expected diagnostic metadata for the NoIntegerNumericSubtyping rejected-source specimen.\n\nexpectedDiagnostic(\"E-MOD-2402\", \"req.NoIntegerNumericSubtyping\")\n"
+    )
+}
+
+public procedure noFloatNumericSubtypingExpectedDiagnosticFileMatches(
+    context: Context
+) -> bool {
+    return expectedDiagnosticFileMatches(
+        context,
+        "HelloUltraviolet/Fixtures/RejectedSource/DataTypes/NoFloatNumericSubtyping/Expected.uv",
+        "//! Expected diagnostic metadata for the NoFloatNumericSubtyping rejected-source specimen.\n\nexpectedDiagnostic(\"E-MOD-2402\", \"req.NoFloatNumericSubtyping\")\n"
+    )
+}
+
+public procedure genericInvariantSubtypingExpectedDiagnosticFileMatches(
+    context: Context
+) -> bool {
+    return expectedDiagnosticFileMatches(
+        context,
+        "HelloUltraviolet/Fixtures/RejectedSource/DataTypes/GenericInvariantSubtyping/Expected.uv",
+        "//! Expected diagnostic metadata for the GenericInvariantSubtyping rejected-source specimen.\n\nexpectedDiagnostic(\"E-TYP-1520\", \"Sub-Generic-Invariant-Err\")\n"
+    )
+}
+
+public procedure genericCovariantSubtypingExpectedDiagnosticFileMatches(
+    context: Context
+) -> bool {
+    return expectedDiagnosticFileMatches(
+        context,
+        "HelloUltraviolet/Fixtures/RejectedSource/DataTypes/GenericCovariantSubtyping/Expected.uv",
+        "//! Expected diagnostic metadata for the GenericCovariantSubtyping rejected-source specimen.\n\nexpectedDiagnostic(\"E-TYP-1521\", \"Sub-Generic-Covariant-Err\")\n"
+    )
+}
+
+public procedure genericContravariantSubtypingExpectedDiagnosticFileMatches(
+    context: Context
+) -> bool {
+    return expectedDiagnosticFileMatches(
+        context,
+        "HelloUltraviolet/Fixtures/RejectedSource/DataTypes/GenericContravariantSubtyping/Expected.uv",
+        "//! Expected diagnostic metadata for the GenericContravariantSubtyping rejected-source specimen.\n\nexpectedDiagnostic(\"E-TYP-1521\", \"Sub-Generic-Contravariant-Err\")\n"
+    )
+}
+
 public procedure duplicateModuleDeclarationExpectedDiagnosticFileMatches(context: Context) -> bool {
     return expectedDiagnosticFileMatches(
         context,
@@ -433,7 +483,7 @@ public procedure frameDiagnosticExpectedDiagnosticFileMatches(context: Context) 
     return expectedDiagnosticFileMatches(
         context,
         "HelloUltraviolet/Fixtures/RejectedSource/Statements/FrameDiagnostic/Expected.uv",
-        "//! Expected diagnostic metadata for the FrameDiagnostic rejected-source specimen.\n\nexpectedDiagnostic(\"\", \"diag.18.Frame\")\n"
+        "//! Expected diagnostic metadata for the FrameDiagnostic rejected-source specimen.\n\nexpectedDiagnostic(\"E-MEM-1207\", \"diag.18.Frame\")\n"
     )
 }
 
@@ -443,7 +493,7 @@ public procedure unsafeRequiredOperationOwnershipDiagnosticExpectedDiagnosticFil
     return expectedDiagnosticFileMatches(
         context,
         "HelloUltraviolet/Fixtures/RejectedSource/Statements/UnsafeRequiredOperationOwnershipDiagnostic/Expected.uv",
-        "//! Expected diagnostic metadata for the UnsafeRequiredOperationOwnershipDiagnostic rejected-source specimen.\n\nexpectedDiagnostic(\"\", \"diag.18.UnsafeRequiredOperationOwnership\")\n"
+        "//! Expected diagnostic metadata for the UnsafeRequiredOperationOwnershipDiagnostic rejected-source specimen.\n\nexpectedDiagnostic(\"E-MEM-3030\", \"diag.18.UnsafeRequiredOperationOwnership\")\n"
     )
 }
 
@@ -687,7 +737,7 @@ public procedure ifConditionNonBoolExpectedDiagnosticFileMatches(context: Contex
     return expectedDiagnosticFileMatches(
         context,
         "HelloUltraviolet/Fixtures/RejectedSource/Expressions/IfConditionNonBool/Expected.uv",
-        "//! Expected diagnostic metadata for the IfConditionNonBool rejected-source specimen.\n\nexpectedDiagnostic(\"\", \"diag.16.ControlExpressions\")\n"
+        "//! Expected diagnostic metadata for the IfConditionNonBool rejected-source specimen.\n\nexpectedDiagnostic(\"E-SEM-2526\", \"diag.16.ControlExpressions\")\n"
     )
 }
 
@@ -1239,7 +1289,7 @@ public procedure transmuteUnsafeExpectedDiagnosticFileMatches(context: Context) 
     return expectedDiagnosticFileMatches(
         context,
         "HelloUltraviolet/Fixtures/RejectedSource/Expressions/TransmuteUnsafe/Expected.uv",
-        "//! Expected diagnostic metadata for the TransmuteUnsafe rejected-source specimen.\n\nexpectedDiagnostic(\"\", \"rule.16.Transmute-Unsafe-Err\")\n"
+        "//! Expected diagnostic metadata for the TransmuteUnsafe rejected-source specimen.\n\nexpectedDiagnostic(\"E-MEM-3030\", \"rule.16.Transmute-Unsafe-Err\")\n"
     )
 }
 
@@ -1875,7 +1925,7 @@ public procedure frameNoActiveRegionExpectedDiagnosticFileMatches(
     return expectedDiagnosticFileMatches(
         context,
         "HelloUltraviolet/Fixtures/RejectedSource/Statements/FrameNoActiveRegion/Expected.uv",
-        "//! Expected diagnostic metadata for the FrameNoActiveRegion rejected-source specimen.\n\nexpectedDiagnostic(\"\", \"rule.18.Frame-NoActiveRegion-Err\")\n"
+        "//! Expected diagnostic metadata for the FrameNoActiveRegion rejected-source specimen.\n\nexpectedDiagnostic(\"E-MEM-1207\", \"rule.18.Frame-NoActiveRegion-Err\")\n"
     )
 }
 
@@ -1885,7 +1935,7 @@ public procedure frameTargetNotActiveExpectedDiagnosticFileMatches(
     return expectedDiagnosticFileMatches(
         context,
         "HelloUltraviolet/Fixtures/RejectedSource/Statements/FrameTargetNotActive/Expected.uv",
-        "//! Expected diagnostic metadata for the FrameTargetNotActive rejected-source specimen.\n\nexpectedDiagnostic(\"\", \"rule.18.Frame-Target-NotActive-Err\")\n"
+        "//! Expected diagnostic metadata for the FrameTargetNotActive rejected-source specimen.\n\nexpectedDiagnostic(\"E-MEM-1208\", \"rule.18.Frame-Target-NotActive-Err\")\n"
     )
 }
 
@@ -2027,7 +2077,7 @@ public procedure controlExpressionDiagnosticOwnershipExpectedDiagnosticFileMatch
     return expectedDiagnosticFileMatches(
         context,
         "HelloUltraviolet/Fixtures/RejectedSource/Expressions/ControlExpressionDiagnosticOwnership/Expected.uv",
-        "//! Expected diagnostic metadata for the ControlExpressionDiagnosticOwnership rejected-source specimen.\n\nexpectedDiagnostic(\"\", \"req.16.ControlExpressionDiagnosticOwnership\")\n"
+        "//! Expected diagnostic metadata for the ControlExpressionDiagnosticOwnership rejected-source specimen.\n\nexpectedDiagnostic(\"E-SEM-2526\", \"req.16.ControlExpressionDiagnosticOwnership\")\n"
     )
 }
 
@@ -2133,7 +2183,7 @@ public procedure rawDerefUnsafeRequirementExpectedDiagnosticFileMatches(
     return expectedDiagnosticFileMatches(
         context,
         "HelloUltraviolet/Fixtures/RejectedSource/Expressions/RawDerefUnsafeRequirement/Expected.uv",
-        "//! Expected diagnostic metadata for the RawDerefUnsafeRequirement rejected-source specimen.\n\nexpectedDiagnostic(\"\", \"rule.16.T-Deref-Raw\")\n"
+        "//! Expected diagnostic metadata for the RawDerefUnsafeRequirement rejected-source specimen.\n\nexpectedDiagnostic(\"E-TYP-2103\", \"rule.16.T-Deref-Raw\")\n"
     )
 }
 
@@ -2143,7 +2193,7 @@ public procedure rawDerefPlaceTypingFamilyExpectedDiagnosticFileMatches(
     return expectedDiagnosticFileMatches(
         context,
         "HelloUltraviolet/Fixtures/RejectedSource/Expressions/RawDerefPlaceTypingFamily/Expected.uv",
-        "//! Expected diagnostic metadata for the RawDerefPlaceTypingFamily rejected-source specimen.\n\nexpectedDiagnostic(\"\", \"rule.16.DerefPlaceTypingFamily\")\n"
+        "//! Expected diagnostic metadata for the RawDerefPlaceTypingFamily rejected-source specimen.\n\nexpectedDiagnostic(\"E-TYP-2103\", \"rule.16.DerefPlaceTypingFamily\")\n"
     )
 }
 
@@ -2339,7 +2389,7 @@ public procedure methodLookupAmbiguousDefaultExpectedDiagnosticFileMatches(conte
     return expectedDiagnosticFileMatches(
         context,
         "HelloUltraviolet/Fixtures/RejectedSource/Procedures/MethodLookupAmbiguousDefault/Expected.uv",
-        "//! Expected diagnostic metadata for the MethodLookupAmbiguousDefault rejected-source specimen.\n\nexpectedDiagnostic(\"\", \"rule.15.LookupMethod-Ambig\")\n"
+        "//! Expected diagnostic metadata for the MethodLookupAmbiguousDefault rejected-source specimen.\n\nexpectedDiagnostic(\"E-MOD-1307\", \"rule.15.LookupMethod-Ambig\")\n"
     )
 }
 

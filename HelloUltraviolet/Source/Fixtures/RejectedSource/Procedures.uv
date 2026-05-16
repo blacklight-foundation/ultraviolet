@@ -794,13 +794,13 @@ public procedure validatedProceduresRejectedSourceFixtureCount() -> usize {
             "Fixtures/RejectedSource/Procedures/MethodLookupAmbiguousDefault",
             "Fixtures/RejectedSource/Procedures/MethodLookupAmbiguousDefault/Source/Main.uv",
             "Fixtures/RejectedSource/Procedures/MethodLookupAmbiguousDefault/Expected.uv",
-            expectedDiagnostic("", "rule.15.LookupMethod-Ambig")
+            expectedDiagnostic("E-MOD-1307", "rule.15.LookupMethod-Ambig")
         ),
         "MethodLookupAmbiguousDefault",
         "Fixtures/RejectedSource/Procedures/MethodLookupAmbiguousDefault",
         "Fixtures/RejectedSource/Procedures/MethodLookupAmbiguousDefault/Source/Main.uv",
         "Fixtures/RejectedSource/Procedures/MethodLookupAmbiguousDefault/Expected.uv",
-        "",
+        "E-MOD-1307",
         "rule.15.LookupMethod-Ambig"
     ) {
         count = count + 1usize

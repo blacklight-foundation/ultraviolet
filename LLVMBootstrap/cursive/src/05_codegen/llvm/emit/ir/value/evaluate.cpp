@@ -740,10 +740,26 @@ std::optional<std::string> ProcedureSymbolForPath(
         }
         if (const auto *raw = std::get_if<analysis::TypeRawPtr>(&current->node))
         {
+          if (analysis::TypeRef resolved = ResolveAliasTypeInScope(scope, raw->element))
+          {
+            if (analysis::TypeRef stripped = analysis::StripPerm(resolved))
+            {
+              return stripped;
+            }
+            return resolved;
+          }
           return analysis::StripPerm(raw->element);
         }
         if (const auto *ptr = std::get_if<analysis::TypePtr>(&current->node))
         {
+          if (analysis::TypeRef resolved = ResolveAliasTypeInScope(scope, ptr->element))
+          {
+            if (analysis::TypeRef stripped = analysis::StripPerm(resolved))
+            {
+              return stripped;
+            }
+            return resolved;
+          }
           return analysis::StripPerm(ptr->element);
         }
         return ResolveAliasTypeInScope(scope, current);
@@ -1422,6 +1438,14 @@ std::optional<std::string> ProcedureSymbolForPath(
                                      analysis::TypePath *out_path) -> const ast::ModalDecl *
       {
         type = strip_perm(type);
+        if (analysis::TypeRef resolved = ResolveAliasTypeInScope(scope, type))
+        {
+          type = strip_perm(resolved);
+          if (!type)
+          {
+            type = resolved;
+          }
+        }
         if (!type)
         {
           return nullptr;
@@ -3192,10 +3216,43 @@ std::optional<std::string> ProcedureSymbolForPath(
       }
       case DerivedValueInfo::Kind::ModalField:
       {
-        analysis::TypePath modal_path;
-        const ast::ModalDecl *modal_decl =
-            modal_decl_for_payload_value(*derived, &modal_path);
         analysis::TypeRef base_modal_type = strip_perm(lookup_value_type(derived->base));
+        if (!base_modal_type)
+        {
+          if (const DerivedValueInfo *base_derived =
+                  ctx->LookupDerivedValue(derived->base))
+          {
+            if (base_derived->kind == DerivedValueInfo::Kind::UnionPayload)
+            {
+              analysis::TypeRef union_type =
+                  strip_perm(lookup_value_type(base_derived->base));
+              if (analysis::TypeRef resolved =
+                      ResolveAliasTypeInScope(scope, union_type))
+              {
+                union_type = strip_perm(resolved);
+                if (!union_type)
+                {
+                  union_type = resolved;
+                }
+              }
+              if (union_type &&
+                  std::holds_alternative<analysis::TypeUnion>(union_type->node))
+              {
+                const auto &uni = std::get<analysis::TypeUnion>(union_type->node);
+                std::vector<analysis::TypeRef> members = uni.members;
+                if (const auto layout =
+                        ::cursive::analysis::layout::UnionLayoutOf(scope, uni))
+                {
+                  members = layout->member_list;
+                }
+                if (base_derived->union_index < members.size())
+                {
+                  base_modal_type = strip_perm(members[base_derived->union_index]);
+                }
+              }
+            }
+          }
+        }
         if (analysis::TypeRef resolved =
                 ResolveAliasTypeInScope(scope, base_modal_type))
         {
@@ -3204,6 +3261,13 @@ std::optional<std::string> ProcedureSymbolForPath(
           {
             base_modal_type = resolved;
           }
+        }
+        analysis::TypePath modal_path;
+        const ast::ModalDecl *modal_decl =
+            modal_decl_for_type(base_modal_type, &modal_path);
+        if (!modal_decl)
+        {
+          modal_decl = modal_decl_for_payload_value(*derived, &modal_path);
         }
         const auto *base_modal_state =
             base_modal_type

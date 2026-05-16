@@ -25,6 +25,42 @@ internal procedure diagnosticAttributeTargetIsValid(
         (reference.applies_to_declaration || reference.applies_to_expression)
 }
 
+[[deprecated("diagnostic metadata deprecated reference")]]
+internal procedure diagnosticDeprecatedAttributeValue() -> i32 {
+    return 3
+}
+
+[[dynamic]]
+internal procedure diagnosticDynamicAttributeValue(index: usize) -> i32 {
+    var values: shared [i32; 2] = [2, 5]
+    var observed: i32 = 0
+    #values[index] dynamic read {
+        observed = values[index] + 0
+    }
+    return observed
+}
+
+internal procedure diagnosticStaleOkAttributeValue() -> i32 {
+    var shared_value: shared i32 = 5
+    var observed: i32 = 0
+    #shared_value read {
+        [[stale_ok]]
+        let before_release: i32 = shared_value + 0
+        #shared_value release write {
+            shared_value = before_release + 4
+        }
+        observed = before_release + shared_value
+    }
+    return observed
+}
+
+internal procedure diagnosticCompileTimeAttributeValue() -> bool {
+    let files_ok: bool =
+        [[files]] comptime { files~>exists("Ultraviolet.toml").value == true }
+    let emit_ok: bool = [[emit]] comptime { true }
+    return files_ok && emit_ok
+}
+
 /// Exercises the Attributes DiagnosticAttributes reference surface.
 public procedure runAttributesDiagnosticAttributesReference() -> bool {
     let deprecated: DiagnosticAttributeReference =
@@ -32,5 +68,9 @@ public procedure runAttributesDiagnosticAttributesReference() -> bool {
     let emitted: DiagnosticAttributeReference =
         diagnosticAttributeReference(true, false, true)
     return diagnosticAttributeTargetIsValid(deprecated) &&
-        diagnosticAttributeTargetIsValid(emitted)
+        diagnosticAttributeTargetIsValid(emitted) &&
+        diagnosticDeprecatedAttributeValue() == 3 &&
+        diagnosticDynamicAttributeValue(1usize) == 5 &&
+        diagnosticStaleOkAttributeValue() == 14 &&
+        diagnosticCompileTimeAttributeValue()
 }

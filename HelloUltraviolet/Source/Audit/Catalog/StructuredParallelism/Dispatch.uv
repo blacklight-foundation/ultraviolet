@@ -9,7 +9,7 @@ public procedure validatedStructuredParallelismDispatchObligations() -> usize {
     var count: usize = 0usize
     if acceptedObligationEntryMatches(
         "grammar.20.Dispatch",
-        77251usize,
+        77258usize,
         "HelloUltraviolet::Reference::Parallelism",
         "runParallelismDispatchReference",
         "Source/Reference/Parallelism/Dispatch.uv"
@@ -18,7 +18,7 @@ public procedure validatedStructuredParallelismDispatchObligations() -> usize {
     }
     if acceptedObligationEntryMatches(
         "parse.20.DispatchRules",
-        77276usize,
+        77283usize,
         "HelloUltraviolet::Reference::Parallelism",
         "runParallelismDispatchReference",
         "Source/Reference/Parallelism/Dispatch.uv"
@@ -27,7 +27,7 @@ public procedure validatedStructuredParallelismDispatchObligations() -> usize {
     }
     if acceptedObligationEntryMatches(
         "ast.20.DispatchForms",
-        77310usize,
+        77317usize,
         "HelloUltraviolet::Reference::Parallelism",
         "runParallelismDispatchReference",
         "Source/Reference/Parallelism/Dispatch.uv"
@@ -36,7 +36,7 @@ public procedure validatedStructuredParallelismDispatchObligations() -> usize {
     }
     if rejectedSourceObligationEntryMatches(
         "requirement.20.DispatchRequiresParallelContext",
-        77353usize,
+        77360usize,
         "HelloUltraviolet::Fixtures::RejectedSource",
         "validatedParallelismRejectedSourceFixtureCount",
         "Fixtures/RejectedSource/Parallelism/DispatchRequiresParallelContext/Source/Main.uv"
@@ -45,7 +45,7 @@ public procedure validatedStructuredParallelismDispatchObligations() -> usize {
     }
     if acceptedObligationEntryMatches(
         "rule.20.T-Dispatch",
-        77366usize,
+        77373usize,
         "HelloUltraviolet::Reference::Parallelism",
         "runParallelismDispatchReference",
         "Source/Reference/Parallelism/Dispatch.uv"
@@ -54,7 +54,7 @@ public procedure validatedStructuredParallelismDispatchObligations() -> usize {
     }
     if acceptedObligationEntryMatches(
         "rule.20.T-Dispatch-Reduce",
-        77382usize,
+        77389usize,
         "HelloUltraviolet::Reference::Parallelism",
         "runParallelismDispatchReference",
         "Source/Reference/Parallelism/Dispatch.uv"
@@ -63,7 +63,7 @@ public procedure validatedStructuredParallelismDispatchObligations() -> usize {
     }
     if acceptedObligationEntryMatches(
         "rule.20.T-GPU-Dispatch",
-        77398usize,
+        77405usize,
         "HelloUltraviolet::Reference::Parallelism",
         "runParallelismDispatchReference",
         "Source/Reference/Parallelism/Dispatch.uv"
@@ -72,7 +72,7 @@ public procedure validatedStructuredParallelismDispatchObligations() -> usize {
     }
     if acceptedObligationEntryMatches(
         "rule.20.T-GPU-Dispatch-Reduce",
-        77414usize,
+        77421usize,
         "HelloUltraviolet::Reference::Parallelism",
         "runParallelismDispatchReference",
         "Source/Reference/Parallelism/Dispatch.uv"
@@ -81,7 +81,7 @@ public procedure validatedStructuredParallelismDispatchObligations() -> usize {
     }
     if acceptedObligationEntryMatches(
         "def.20.DispatchAccessInference",
-        77430usize,
+        77437usize,
         "HelloUltraviolet::Reference::Parallelism",
         "runParallelismDispatchReference",
         "Source/Reference/Parallelism/Dispatch.uv"
@@ -90,7 +90,7 @@ public procedure validatedStructuredParallelismDispatchObligations() -> usize {
     }
     if acceptedObligationEntryMatches(
         "def.20.DispatchOptionsAndDynamicKeys",
-        77468usize,
+        77475usize,
         "HelloUltraviolet::Reference::Parallelism",
         "runParallelismDispatchReference",
         "Source/Reference/Parallelism/Dispatch.uv"
@@ -99,7 +99,7 @@ public procedure validatedStructuredParallelismDispatchObligations() -> usize {
     }
     if rejectedSourceObligationEntryMatches(
         "rule.20.Dispatch-Infer-Err",
-        77499usize,
+        77506usize,
         "HelloUltraviolet::Fixtures::RejectedSource",
         "validatedParallelismRejectedSourceFixtureCount",
         "Fixtures/RejectedSource/Parallelism/DispatchInferFailure/Source/Main.uv"
@@ -108,7 +108,7 @@ public procedure validatedStructuredParallelismDispatchObligations() -> usize {
     }
     if rejectedSourceObligationEntryMatches(
         "rule.20.Dispatch-Outside-Err",
-        77515usize,
+        77522usize,
         "HelloUltraviolet::Fixtures::RejectedSource",
         "validatedParallelismRejectedSourceFixtureCount",
         "Fixtures/RejectedSource/Parallelism/DispatchOutsideParallel/Source/Main.uv"
@@ -117,7 +117,7 @@ public procedure validatedStructuredParallelismDispatchObligations() -> usize {
     }
     if rejectedSourceObligationEntryMatches(
         "rule.20.Dispatch-Chunk-Type-Err",
-        77531usize,
+        77538usize,
         "HelloUltraviolet::Fixtures::RejectedSource",
         "validatedParallelismRejectedSourceFixtureCount",
         "Fixtures/RejectedSource/Parallelism/DispatchChunkType/Source/Main.uv"
@@ -126,7 +126,7 @@ public procedure validatedStructuredParallelismDispatchObligations() -> usize {
     }
     if rejectedSourceObligationEntryMatches(
         "rule.20.Dispatch-Dependency-Err",
-        77547usize,
+        77554usize,
         "HelloUltraviolet::Fixtures::RejectedSource",
         "validatedParallelismRejectedSourceFixtureCount",
         "Fixtures/RejectedSource/Parallelism/DispatchDependencyConflict/Source/Main.uv"
@@ -135,7 +135,7 @@ public procedure validatedStructuredParallelismDispatchObligations() -> usize {
     }
     if rejectedSourceObligationEntryMatches(
         "rule.20.Dispatch-Reduce-Assoc-Err",
-        77563usize,
+        77570usize,
         "HelloUltraviolet::Fixtures::RejectedSource",
         "validatedParallelismRejectedSourceFixtureCount",
         "Fixtures/RejectedSource/Parallelism/DispatchNonAssociativeReduce/Source/Main.uv"
@@ -144,7 +144,7 @@ public procedure validatedStructuredParallelismDispatchObligations() -> usize {
     }
     if diagnosticSourceObligationEntryMatches(
         "rule.20.Dispatch-DynamicKey-Warn",
-        77579usize,
+        77586usize,
         "HelloUltraviolet::Fixtures::DiagnosticSource",
         "validatedParallelismDiagnosticSourceFixtureCount",
         "Fixtures/DiagnosticSource/Parallelism/DispatchDynamicKeyWarning/Source/Main.uv"
@@ -153,7 +153,7 @@ public procedure validatedStructuredParallelismDispatchObligations() -> usize {
     }
     if acceptedObligationEntryMatches(
         "requirement.20.DispatchKeyInferenceRequired",
-        77595usize,
+        77602usize,
         "HelloUltraviolet::Reference::Parallelism",
         "runParallelismDispatchReference",
         "Source/Reference/Parallelism/Dispatch.uv"
@@ -162,7 +162,7 @@ public procedure validatedStructuredParallelismDispatchObligations() -> usize {
     }
     if acceptedObligationEntryMatches(
         "rule.20.DispatchIndexedDisjointness",
-        77608usize,
+        77615usize,
         "HelloUltraviolet::Reference::Parallelism",
         "runParallelismDispatchReference",
         "Source/Reference/Parallelism/Dispatch.uv"
@@ -171,7 +171,7 @@ public procedure validatedStructuredParallelismDispatchObligations() -> usize {
     }
     if acceptedObligationEntryMatches(
         "requirement.20.DispatchReductionAssociativity",
-        77623usize,
+        77630usize,
         "HelloUltraviolet::Reference::Parallelism",
         "runParallelismDispatchReference",
         "Source/Reference/Parallelism/Dispatch.uv"
@@ -180,7 +180,7 @@ public procedure validatedStructuredParallelismDispatchObligations() -> usize {
     }
     if acceptedObligationEntryMatches(
         "requirement.20.DispatchChunkSemanticsStatic",
-        77636usize,
+        77643usize,
         "HelloUltraviolet::Reference::Parallelism",
         "runParallelismDispatchReference",
         "Source/Reference/Parallelism/Dispatch.uv"
@@ -189,7 +189,7 @@ public procedure validatedStructuredParallelismDispatchObligations() -> usize {
     }
     if acceptedObligationEntryMatches(
         "def.20.DispatchPartitionSpec",
-        77651usize,
+        77658usize,
         "HelloUltraviolet::Reference::Parallelism",
         "runParallelismDispatchReference",
         "Source/Reference/Parallelism/Dispatch.uv"
@@ -198,7 +198,7 @@ public procedure validatedStructuredParallelismDispatchObligations() -> usize {
     }
     if acceptedObligationEntryMatches(
         "def.20.DispatchIndexAndPathDisjointness",
-        77666usize,
+        77673usize,
         "HelloUltraviolet::Reference::Parallelism",
         "runParallelismDispatchReference",
         "Source/Reference/Parallelism/Dispatch.uv"
@@ -207,7 +207,7 @@ public procedure validatedStructuredParallelismDispatchObligations() -> usize {
     }
     if acceptedObligationEntryMatches(
         "def.20.DispatchPartitioning",
-        77709usize,
+        77716usize,
         "HelloUltraviolet::Reference::Parallelism",
         "runParallelismDispatchReference",
         "Source/Reference/Parallelism/Dispatch.uv"
@@ -216,7 +216,7 @@ public procedure validatedStructuredParallelismDispatchObligations() -> usize {
     }
     if acceptedObligationEntryMatches(
         "def.20.DispatchReductionAndChunking",
-        77730usize,
+        77737usize,
         "HelloUltraviolet::Reference::Parallelism",
         "runParallelismDispatchReference",
         "Source/Reference/Parallelism/Dispatch.uv"
@@ -225,7 +225,7 @@ public procedure validatedStructuredParallelismDispatchObligations() -> usize {
     }
     if acceptedObligationEntryMatches(
         "rule.20.EvalSigma-Dispatch",
-        77752usize,
+        77759usize,
         "HelloUltraviolet::Reference::Parallelism",
         "runParallelismDispatchReference",
         "Source/Reference/Parallelism/Dispatch.uv"
@@ -234,7 +234,7 @@ public procedure validatedStructuredParallelismDispatchObligations() -> usize {
     }
     if acceptedObligationEntryMatches(
         "rule.20.EvalSigma-Dispatch-Range-Ctrl",
-        77768usize,
+        77775usize,
         "HelloUltraviolet::Reference::Parallelism",
         "runParallelismDispatchReference",
         "Source/Reference/Parallelism/Dispatch.uv"
@@ -243,7 +243,7 @@ public procedure validatedStructuredParallelismDispatchObligations() -> usize {
     }
     if acceptedObligationEntryMatches(
         "rule.20.EvalSigma-Dispatch-Chunk-Ctrl",
-        77784usize,
+        77791usize,
         "HelloUltraviolet::Reference::Parallelism",
         "runParallelismDispatchReference",
         "Source/Reference/Parallelism/Dispatch.uv"
@@ -252,7 +252,7 @@ public procedure validatedStructuredParallelismDispatchObligations() -> usize {
     }
     if acceptedObligationEntryMatches(
         "def.20.DispatchRun",
-        77800usize,
+        77807usize,
         "HelloUltraviolet::Reference::Parallelism",
         "runParallelismDispatchReference",
         "Source/Reference/Parallelism/Dispatch.uv"
@@ -261,7 +261,7 @@ public procedure validatedStructuredParallelismDispatchObligations() -> usize {
     }
     if acceptedObligationEntryMatches(
         "rule.20.Lower-Expr-Dispatch",
-        77821usize,
+        77828usize,
         "HelloUltraviolet::Reference::Parallelism",
         "runParallelismDispatchReference",
         "Source/Reference/Parallelism/Dispatch.uv"
@@ -270,7 +270,7 @@ public procedure validatedStructuredParallelismDispatchObligations() -> usize {
     }
     if rejectedSourceObligationEntryMatches(
         "diagnostics.20.Dispatch",
-        77839usize,
+        77846usize,
         "HelloUltraviolet::Fixtures::RejectedSource",
         "validatedParallelismRejectedSourceFixtureCount",
         "Fixtures/RejectedSource/Parallelism/DispatchDiagnostics/Source/Main.uv"

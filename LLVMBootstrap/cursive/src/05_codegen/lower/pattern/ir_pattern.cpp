@@ -113,7 +113,9 @@ IRPatternPtr LowerIRPattern(const ast::Pattern& pattern, LowerCtx& ctx) {
         } else if constexpr (std::is_same_v<T, ast::WildcardPattern>) {
           out->node = IRWildcardPattern{};
         } else if constexpr (std::is_same_v<T, ast::IdentifierPattern>) {
-          out->node = IRIdentifierPattern{node.name};
+          const std::string stable_name = ctx.StableBindingName(node.name);
+          out->node = IRIdentifierPattern{
+              stable_name.empty() ? node.name : stable_name};
         } else if constexpr (std::is_same_v<T, ast::TypedPattern>) {
           analysis::TypeRef type;
           if (node.type) {
@@ -122,7 +124,10 @@ IRPatternPtr LowerIRPattern(const ast::Pattern& pattern, LowerCtx& ctx) {
               type = *lowered;
             }
           }
-          out->node = IRTypedPattern{node.name, type};
+          const std::string stable_name = ctx.StableBindingName(node.name);
+          out->node = IRTypedPattern{
+              stable_name.empty() ? node.name : stable_name,
+              type};
         } else if constexpr (std::is_same_v<T, ast::TuplePattern>) {
           out->node = IRTuplePattern{LowerIRPatternList(node.elements, ctx)};
         } else if constexpr (std::is_same_v<T, ast::RecordPattern>) {

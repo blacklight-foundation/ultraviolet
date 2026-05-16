@@ -369,13 +369,13 @@ public procedure validatedStatementsRejectedSourceFixtureCount() -> usize {
             "Fixtures/RejectedSource/Statements/FrameNoActiveRegion",
             "Fixtures/RejectedSource/Statements/FrameNoActiveRegion/Source/Main.uv",
             "Fixtures/RejectedSource/Statements/FrameNoActiveRegion/Expected.uv",
-            expectedDiagnostic("", "rule.18.Frame-NoActiveRegion-Err")
+            expectedDiagnostic("E-MEM-1207", "rule.18.Frame-NoActiveRegion-Err")
         ),
         "FrameNoActiveRegion",
         "Fixtures/RejectedSource/Statements/FrameNoActiveRegion",
         "Fixtures/RejectedSource/Statements/FrameNoActiveRegion/Source/Main.uv",
         "Fixtures/RejectedSource/Statements/FrameNoActiveRegion/Expected.uv",
-        "",
+        "E-MEM-1207",
         "rule.18.Frame-NoActiveRegion-Err"
     ) {
         count = count + 1usize
@@ -386,13 +386,13 @@ public procedure validatedStatementsRejectedSourceFixtureCount() -> usize {
             "Fixtures/RejectedSource/Statements/FrameTargetNotActive",
             "Fixtures/RejectedSource/Statements/FrameTargetNotActive/Source/Main.uv",
             "Fixtures/RejectedSource/Statements/FrameTargetNotActive/Expected.uv",
-            expectedDiagnostic("", "rule.18.Frame-Target-NotActive-Err")
+            expectedDiagnostic("E-MEM-1208", "rule.18.Frame-Target-NotActive-Err")
         ),
         "FrameTargetNotActive",
         "Fixtures/RejectedSource/Statements/FrameTargetNotActive",
         "Fixtures/RejectedSource/Statements/FrameTargetNotActive/Source/Main.uv",
         "Fixtures/RejectedSource/Statements/FrameTargetNotActive/Expected.uv",
-        "",
+        "E-MEM-1208",
         "rule.18.Frame-Target-NotActive-Err"
     ) {
         count = count + 1usize
@@ -522,13 +522,13 @@ public procedure validatedStatementsRejectedSourceFixtureCount() -> usize {
             "Fixtures/RejectedSource/Statements/FrameDiagnostic",
             "Fixtures/RejectedSource/Statements/FrameDiagnostic/Source/Main.uv",
             "Fixtures/RejectedSource/Statements/FrameDiagnostic/Expected.uv",
-            expectedDiagnostic("", "diag.18.Frame")
+            expectedDiagnostic("E-MEM-1207", "diag.18.Frame")
         ),
         "FrameDiagnostic",
         "Fixtures/RejectedSource/Statements/FrameDiagnostic",
         "Fixtures/RejectedSource/Statements/FrameDiagnostic/Source/Main.uv",
         "Fixtures/RejectedSource/Statements/FrameDiagnostic/Expected.uv",
-        "",
+        "E-MEM-1207",
         "diag.18.Frame"
     ) {
         count = count + 1usize
@@ -539,13 +539,13 @@ public procedure validatedStatementsRejectedSourceFixtureCount() -> usize {
             "Fixtures/RejectedSource/Statements/UnsafeRequiredOperationOwnershipDiagnostic",
             "Fixtures/RejectedSource/Statements/UnsafeRequiredOperationOwnershipDiagnostic/Source/Main.uv",
             "Fixtures/RejectedSource/Statements/UnsafeRequiredOperationOwnershipDiagnostic/Expected.uv",
-            expectedDiagnostic("", "diag.18.UnsafeRequiredOperationOwnership")
+            expectedDiagnostic("E-MEM-3030", "diag.18.UnsafeRequiredOperationOwnership")
         ),
         "UnsafeRequiredOperationOwnershipDiagnostic",
         "Fixtures/RejectedSource/Statements/UnsafeRequiredOperationOwnershipDiagnostic",
         "Fixtures/RejectedSource/Statements/UnsafeRequiredOperationOwnershipDiagnostic/Source/Main.uv",
         "Fixtures/RejectedSource/Statements/UnsafeRequiredOperationOwnershipDiagnostic/Expected.uv",
-        "",
+        "E-MEM-3030",
         "diag.18.UnsafeRequiredOperationOwnership"
     ) {
         count = count + 1usize

@@ -2,8 +2,8 @@
 
 /// Exercises the Patterns CaseClauses reference surface.
 public procedure runPatternsCaseClausesReference() -> bool {
-    let value: i32 = 2
-    let result: i32 = if value is {
+    let scrutinee: i32 = 2
+    let head_result: i32 = if scrutinee is {
         1 {
             10
         }
@@ -14,5 +14,63 @@ public procedure runPatternsCaseClausesReference() -> bool {
             30
         }
     }
-    return result == 20
+
+    let tail_result: i32 = if 3 is {
+        1 {
+            10
+        }
+        2 {
+            20
+        }
+        3 {
+            30
+        }
+        else {
+            40
+        }
+    }
+
+    let else_result: i32 = if 9 is {
+        1 {
+            10
+        }
+        2 {
+            20
+        }
+        else {
+            90
+        }
+    }
+
+    let union_value: BasicPatternUnionReference = true
+    let narrowed_result: i32 = if union_value is {
+        value: i32 {
+            value
+        }
+        value: bool {
+            if value { 1 } else { 0 }
+        }
+    }
+
+    let complement_value: BasicPatternUnionReference = 12
+    let complement_result: i32 = if complement_value is {
+        value: bool {
+            0
+        }
+        else {
+            complement_value
+        }
+    }
+
+    var no_else_score: i32 = 0
+    if 1 is 1 {
+        no_else_score = 1
+    }
+
+    return head_result == 20 &&
+        tail_result == 30 &&
+        else_result == 90 &&
+        narrowed_result == 1 &&
+        complement_result == 12 &&
+        no_else_score == 1
 }

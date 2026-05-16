@@ -315,6 +315,17 @@ std::optional<std::uint64_t> LowerCtx::CurrentRuntimeScopeId() const {
 void LowerCtx::MarkMoved(const std::string& name) {
   auto it = binding_states.find(name);
   if (it == binding_states.end() || it->second.empty()) {
+    for (auto& [source_name, states] : binding_states) {
+      if (states.empty()) {
+        continue;
+      }
+      BindingState& state = states.back();
+      if (state.stable_name == name) {
+        SPEC_RULE("UpdateValid-MoveRoot");
+        state.is_moved = true;
+        return;
+      }
+    }
     SPEC_RULE("UpdateValid-Err");
     ReportCodegenFailure();
     return;
@@ -354,6 +365,16 @@ const BindingState* LowerCtx::GetBindingState(const std::string& name) const {
   auto it = binding_states.find(name);
   if (it != binding_states.end() && !it->second.empty()) {
     return &it->second.back();
+  }
+  for (const auto& [source_name, states] : binding_states) {
+    (void)source_name;
+    if (states.empty()) {
+      continue;
+    }
+    const BindingState& state = states.back();
+    if (state.stable_name == name) {
+      return &state;
+    }
   }
   return nullptr;
 }

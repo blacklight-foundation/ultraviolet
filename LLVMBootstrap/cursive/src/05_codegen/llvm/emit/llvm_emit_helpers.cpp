@@ -2926,6 +2926,237 @@ namespace {
       return builder->CreateLoad(target_ty, target_slot);
     }
 
+    llvm::Value *RepackAsyncToAsync(LLVMEmitter &emitter,
+                                    llvm::IRBuilder<> *builder,
+                                    llvm::Value *value,
+                                    llvm::Type *target_ty,
+                                    const analysis::TypeRef &source_type,
+                                    const analysis::TypeRef &target_type)
+    {
+      if (!builder || !value || !target_ty || !source_type || !target_type)
+      {
+        return nullptr;
+      }
+
+      const std::optional<analysis::AsyncSig> source_sig =
+          analysis::GetAsyncSig(source_type);
+      const std::optional<analysis::AsyncSig> target_sig =
+          analysis::GetAsyncSig(target_type);
+      if (!source_sig.has_value() || !target_sig.has_value())
+      {
+        return nullptr;
+      }
+
+      llvm::Type *source_ty = emitter.GetLLVMType(source_type);
+      auto *source_struct_ty = llvm::dyn_cast_or_null<llvm::StructType>(source_ty);
+      auto *target_struct_ty = llvm::dyn_cast<llvm::StructType>(target_ty);
+      llvm::Function *current_fn =
+          builder->GetInsertBlock() ? builder->GetInsertBlock()->getParent() : nullptr;
+      const LowerCtx *ctx = emitter.GetCurrentCtx();
+      if (!source_struct_ty || !target_struct_ty || !current_fn || !ctx)
+      {
+        return nullptr;
+      }
+
+      llvm::IRBuilder<> entry_builder(
+          &current_fn->getEntryBlock(),
+          current_fn->getEntryBlock().begin());
+      llvm::Value *source_storage = nullptr;
+      if (value->getType()->isPointerTy())
+      {
+        source_storage = TypedStoragePointer(emitter, builder, value, source_struct_ty);
+      }
+      else
+      {
+        llvm::Value *source_value = value;
+        if (source_value->getType() != source_struct_ty)
+        {
+          if (llvm::Value *coerced = CoerceTo(builder, source_value, source_struct_ty))
+          {
+            source_value = coerced;
+          }
+        }
+        if (source_value->getType() != source_struct_ty)
+        {
+          return nullptr;
+        }
+        llvm::AllocaInst *slot = entry_builder.CreateAlloca(source_struct_ty);
+        builder->CreateStore(source_value, slot);
+        source_storage = slot;
+      }
+      if (!source_storage)
+      {
+        return nullptr;
+      }
+
+      const analysis::ScopeContext scope = BuildScope(ctx);
+      llvm::AllocaInst *target_slot = entry_builder.CreateAlloca(target_struct_ty);
+      EmitStorageMemZero(emitter, builder, target_slot, scope, target_type);
+
+      llvm::Value *source_value =
+          builder->CreateLoad(source_struct_ty, source_storage);
+      llvm::Value *source_disc = builder->CreateExtractValue(source_value, {0u});
+      if (!source_disc || !source_disc->getType()->isIntegerTy())
+      {
+        return nullptr;
+      }
+
+      const llvm::DataLayout &dl = emitter.GetModule().getDataLayout();
+      llvm::Type *i64_ty = llvm::Type::getInt64Ty(emitter.GetContext());
+      llvm::Value *source_payload = CreateTaggedPayloadI8Ptr(
+          emitter,
+          builder,
+          source_struct_ty,
+          source_storage,
+          ::cursive::analysis::layout::kPtrAlign);
+      llvm::Value *target_payload = CreateTaggedPayloadI8Ptr(
+          emitter,
+          builder,
+          target_struct_ty,
+          target_slot,
+          ::cursive::analysis::layout::kPtrAlign);
+      if (!source_payload || !target_payload)
+      {
+        return nullptr;
+      }
+
+      auto store_disc = [&](std::uint64_t disc_value) -> void
+      {
+        llvm::Value *disc_ptr =
+            builder->CreateStructGEP(target_struct_ty, target_slot, 0);
+        builder->CreateStore(
+            llvm::ConstantInt::get(source_disc->getType(), disc_value),
+            disc_ptr);
+      };
+
+      auto copy_raw_payload = [&]() -> void
+      {
+        const std::uint64_t source_size =
+            static_cast<std::uint64_t>(dl.getTypeAllocSize(source_struct_ty));
+        const std::uint64_t target_size =
+            static_cast<std::uint64_t>(dl.getTypeAllocSize(target_struct_ty));
+        constexpr std::uint64_t payload_offset = kAsyncPayloadFramePtrOffset;
+        if (source_size <= payload_offset || target_size <= payload_offset)
+        {
+          return;
+        }
+        const std::uint64_t copy_size =
+            std::min(source_size - payload_offset, target_size - payload_offset);
+        if (copy_size == 0)
+        {
+          return;
+        }
+        builder->CreateMemCpy(
+            target_payload,
+            llvm::Align(1),
+            source_payload,
+            llvm::Align(1),
+            llvm::ConstantInt::get(i64_ty, copy_size));
+      };
+
+      auto store_payload = [&](const analysis::TypeRef &source_payload_type,
+                               const analysis::TypeRef &target_payload_type) -> void
+      {
+        if (!source_payload_type || !target_payload_type ||
+            IsUnitTypeRef(target_payload_type) ||
+            IsNeverTypeRef(target_payload_type))
+        {
+          return;
+        }
+        llvm::Type *source_payload_ty = emitter.GetLLVMType(source_payload_type);
+        llvm::Type *target_payload_ty = emitter.GetLLVMType(target_payload_type);
+        if (!source_payload_ty || !target_payload_ty ||
+            source_payload_ty->isVoidTy() || target_payload_ty->isVoidTy())
+        {
+          return;
+        }
+        llvm::Value *typed_source_payload = builder->CreateBitCast(
+            source_payload, llvm::PointerType::get(source_payload_ty, 0));
+        llvm::Value *payload_value =
+            builder->CreateLoad(source_payload_ty, typed_source_payload);
+        if (payload_value->getType() != target_payload_ty)
+        {
+          if (llvm::Value *coerced = CoerceToTyped(
+                  emitter,
+                  builder,
+                  payload_value,
+                  target_payload_ty,
+                  source_payload_type,
+                  target_payload_type))
+          {
+            payload_value = coerced;
+          }
+          else if (llvm::Value *plain =
+                       CoerceTo(builder, payload_value, target_payload_ty))
+          {
+            payload_value = plain;
+          }
+          else
+          {
+            payload_value = llvm::Constant::getNullValue(target_payload_ty);
+          }
+        }
+        llvm::Value *typed_target_payload = builder->CreateBitCast(
+            target_payload, llvm::PointerType::get(target_payload_ty, 0));
+        builder->CreateStore(payload_value, typed_target_payload);
+      };
+
+      const AsyncStateDiscs source_discs =
+          LoweredAsyncStateDiscs(scope, *source_sig);
+      const AsyncStateDiscs target_discs =
+          LoweredAsyncStateDiscs(scope, *target_sig);
+
+      llvm::BasicBlock *completed_bb =
+          llvm::BasicBlock::Create(
+              emitter.GetContext(), "async.repack.completed", current_fn);
+      llvm::BasicBlock *default_bb =
+          llvm::BasicBlock::Create(
+              emitter.GetContext(), "async.repack.default", current_fn);
+      llvm::BasicBlock *merge_bb =
+          llvm::BasicBlock::Create(
+              emitter.GetContext(), "async.repack.merge", current_fn);
+      llvm::SwitchInst *switch_inst =
+          builder->CreateSwitch(source_disc, default_bb, 2);
+      switch_inst->addCase(
+          llvm::ConstantInt::get(
+              llvm::cast<llvm::IntegerType>(source_disc->getType()),
+              source_discs.completed),
+          completed_bb);
+
+      llvm::BasicBlock *failed_bb = nullptr;
+      if (source_discs.failed.has_value() && target_discs.failed.has_value())
+      {
+        failed_bb = llvm::BasicBlock::Create(
+            emitter.GetContext(), "async.repack.failed", current_fn);
+        switch_inst->addCase(
+            llvm::ConstantInt::get(
+                llvm::cast<llvm::IntegerType>(source_disc->getType()),
+                *source_discs.failed),
+            failed_bb);
+      }
+
+      builder->SetInsertPoint(completed_bb);
+      store_disc(target_discs.completed);
+      store_payload(source_sig->result, target_sig->result);
+      builder->CreateBr(merge_bb);
+
+      if (failed_bb)
+      {
+        builder->SetInsertPoint(failed_bb);
+        store_disc(*target_discs.failed);
+        store_payload(source_sig->err, target_sig->err);
+        builder->CreateBr(merge_bb);
+      }
+
+      builder->SetInsertPoint(default_bb);
+      store_disc(0);
+      copy_raw_payload();
+      builder->CreateBr(merge_bb);
+
+      builder->SetInsertPoint(merge_bb);
+      return builder->CreateLoad(target_struct_ty, target_slot);
+    }
+
     llvm::Value *CoerceToTyped(LLVMEmitter &emitter,
                                llvm::IRBuilder<> *builder,
                                llvm::Value *value,
@@ -2953,9 +3184,41 @@ namespace {
       };
       analysis::TypeRef stripped_source = ResolveAliasType(ctx, source_type);
       analysis::TypeRef stripped_target = ResolveAliasType(ctx, target_type);
-      if (IsBoolType(stripped_target))
+      const auto *source_func =
+          stripped_source ? std::get_if<analysis::TypeFunc>(&stripped_source->node) : nullptr;
+      const auto *target_closure =
+          stripped_target ? std::get_if<analysis::TypeClosure>(&stripped_target->node) : nullptr;
+      if (source_func && target_closure && target_ty &&
+          IsClosurePairLLVMType(target_ty))
       {
-        return CoerceBoolTo(builder, value, target_ty);
+        llvm::Value *code_ptr = CoerceOrNullOpaquePtr(emitter, builder, value);
+        llvm::Value *env_ptr = NullOpaquePtr(emitter);
+        llvm::Value *closure_value = llvm::UndefValue::get(target_ty);
+        closure_value = builder->CreateInsertValue(closure_value, env_ptr, {0u});
+        closure_value = builder->CreateInsertValue(closure_value, code_ptr, {1u});
+        return closure_value;
+      }
+
+      if (stripped_source && stripped_target &&
+          analysis::GetAsyncSig(stripped_source).has_value() &&
+          analysis::GetAsyncSig(stripped_target).has_value())
+      {
+        bool same_async_type = false;
+        const auto async_equiv = analysis::TypeEquiv(stripped_source, stripped_target);
+        same_async_type = async_equiv.ok && async_equiv.equiv;
+        if (!same_async_type)
+        {
+          if (llvm::Value *repacked = RepackAsyncToAsync(
+                  emitter,
+                  builder,
+                  value,
+                  target_ty,
+                  stripped_source,
+                  stripped_target))
+          {
+            return repacked;
+          }
+        }
       }
 
       const auto *source_union =
@@ -2969,6 +3232,11 @@ namespace {
         {
           return unpacked;
         }
+      }
+
+      if (IsBoolType(stripped_target))
+      {
+        return CoerceBoolTo(builder, value, target_ty);
       }
 
       const auto *source_array =
@@ -3022,6 +3290,115 @@ namespace {
             out = builder->CreateInsertValue(out, coerced, {static_cast<unsigned>(i)});
           }
           return out;
+        }
+      }
+
+      const auto *source_tuple =
+          stripped_source ? std::get_if<analysis::TypeTuple>(&stripped_source->node) : nullptr;
+      const auto *target_tuple =
+          stripped_target ? std::get_if<analysis::TypeTuple>(&stripped_target->node) : nullptr;
+      if (source_tuple && target_tuple &&
+          source_tuple->elements.size() == target_tuple->elements.size() &&
+          ctx && ctx->sigma)
+      {
+        llvm::Type *source_ll = emitter.GetLLVMType(stripped_source);
+        auto *source_struct_ty = llvm::dyn_cast_or_null<llvm::StructType>(source_ll);
+        auto *target_struct_ty = llvm::dyn_cast<llvm::StructType>(target_ty);
+        llvm::Function *current_fn =
+            builder->GetInsertBlock() ? builder->GetInsertBlock()->getParent() : nullptr;
+        const analysis::ScopeContext scope = BuildScope(ctx);
+        const auto source_layout =
+            ::cursive::analysis::layout::RecordLayoutOf(scope, source_tuple->elements);
+        const auto target_layout =
+            ::cursive::analysis::layout::RecordLayoutOf(scope, target_tuple->elements);
+
+        if (source_struct_ty && target_struct_ty && current_fn &&
+            source_layout.has_value() && target_layout.has_value() &&
+            source_layout->offsets.size() == source_tuple->elements.size() &&
+            target_layout->offsets.size() == target_tuple->elements.size())
+        {
+          llvm::IRBuilder<> entry_builder(
+              &current_fn->getEntryBlock(),
+              current_fn->getEntryBlock().begin());
+          llvm::Value *source_storage = nullptr;
+          if (value->getType()->isPointerTy())
+          {
+            source_storage = TypedStoragePointer(emitter, builder, value, source_struct_ty);
+          }
+          else
+          {
+            llvm::Value *source_value = value;
+            if (source_value->getType() != source_struct_ty)
+            {
+              if (llvm::Value *coerced = CoerceTo(builder, source_value, source_struct_ty))
+              {
+                source_value = coerced;
+              }
+            }
+            if (source_value->getType() == source_struct_ty)
+            {
+              llvm::AllocaInst *slot = entry_builder.CreateAlloca(source_struct_ty);
+              builder->CreateStore(source_value, slot);
+              source_storage = slot;
+            }
+          }
+
+          if (source_storage)
+          {
+            llvm::AllocaInst *target_slot = entry_builder.CreateAlloca(target_struct_ty);
+            EmitStorageMemZero(emitter, builder, target_slot, scope, stripped_target);
+
+            for (std::size_t i = 0; i < source_tuple->elements.size(); ++i)
+            {
+              llvm::Type *source_elem_ty = emitter.GetLLVMType(source_tuple->elements[i]);
+              llvm::Type *target_elem_ty = emitter.GetLLVMType(target_tuple->elements[i]);
+              if (!source_elem_ty || !target_elem_ty)
+              {
+                continue;
+              }
+
+              llvm::Value *source_elem_ptr = ByteOffsetPointer(
+                  emitter,
+                  builder,
+                  source_storage,
+                  source_elem_ty,
+                  source_layout->offsets[i]);
+              llvm::Value *target_elem_ptr = ByteOffsetPointer(
+                  emitter,
+                  builder,
+                  target_slot,
+                  target_elem_ty,
+                  target_layout->offsets[i]);
+              if (!source_elem_ptr || !target_elem_ptr)
+              {
+                continue;
+              }
+
+              llvm::LoadInst *source_load =
+                  builder->CreateLoad(source_elem_ty, source_elem_ptr);
+              source_load->setAlignment(llvm::Align(1));
+              llvm::Value *coerced = CoerceToTyped(
+                  emitter,
+                  builder,
+                  source_load,
+                  target_elem_ty,
+                  source_tuple->elements[i],
+                  target_tuple->elements[i]);
+              if (!coerced)
+              {
+                coerced = CoerceTo(builder, source_load, target_elem_ty);
+              }
+              if (!coerced)
+              {
+                coerced = llvm::Constant::getNullValue(target_elem_ty);
+              }
+
+              llvm::StoreInst *store = builder->CreateStore(coerced, target_elem_ptr);
+              store->setAlignment(llvm::Align(1));
+            }
+
+            return builder->CreateLoad(target_struct_ty, target_slot);
+          }
         }
       }
 

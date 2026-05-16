@@ -9,6 +9,11 @@ public procedure runPatternsBasicPatternsReference() -> bool {
     } else {
         false
     }
+    let bool_literal_hit: bool = if true is true {
+        true
+    } else {
+        false
+    }
     let wildcard_hit: bool = if 7 is _ {
         true
     } else {
@@ -29,6 +34,12 @@ public procedure runPatternsBasicPatternsReference() -> bool {
     } else {
         false
     }
+    let permission_wrapped_value: const i32 = 11
+    let permission_wrapped_hit: bool = if permission_wrapped_value is wrapped_value {
+        wrapped_value == 11
+    } else {
+        false
+    }
     let union_value: BasicPatternUnionReference = 9
     let typed_union_hit: bool = if union_value is {
         value: i32 {
@@ -46,11 +57,23 @@ public procedure runPatternsBasicPatternsReference() -> bool {
             true
         }
     }
+    let bool_union_value: BasicPatternUnionReference = true
+    let typed_union_bool_hit: bool = if bool_union_value is {
+        value: i32 {
+            false
+        }
+        value: bool {
+            value
+        }
+    }
     return literal_hit &&
+        bool_literal_hit &&
         wildcard_hit &&
         identifier_hit &&
         typed_discard_hit &&
         typed_identifier_hit &&
+        permission_wrapped_hit &&
         typed_union_hit &&
-        typed_else_hit
+        typed_else_hit &&
+        typed_union_bool_hit
 }

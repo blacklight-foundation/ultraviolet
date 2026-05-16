@@ -5958,3 +5958,488 @@ Visual Studio bootstrap build wrapper, target=cursive: exit=0, rebuilt key_block
 Cursive.exe build HelloUltraviolet/Fixtures/RejectedSource/Keys/DynamicKeyStaticRequired --check --target-profile x86_64-win64 --build-progress on --max-errors 8: exit=1, E-CON-0020
 Cursive.exe build HelloUltraviolet/Fixtures/DiagnosticSource/Keys/DynamicKeyRuntimeSyncInfo --check --target-profile x86_64-win64 --build-progress on --max-errors 8: exit=0, I-CON-0011
 ```
+
+## UVBOOT-0082: Static Destructuring Bindings Need Pattern-Typed Value Lookup
+
+Status: repaired in the workspace bootstrap and verified by
+`Cursive.exe build HelloUltraviolet --check --target-profile x86_64-win64`.
+
+Reference source:
+
+- `Source/Reference/Modules/Statics.uv`
+
+Spec obligations exercised:
+
+- `grammar.StaticDeclarationSyntax`
+- `def.StaticDeclTopLevelItems`
+- `req.StaticDeclModuleScopeBindingSemantics`
+- `Bind-Static`
+- `WF-StaticDecl`
+- `ResolveItem-Static`
+- `def.24.StaticName`
+- `def.24.StaticBindTypes`
+- `def.24.StaticBindList`
+- `def.24.StaticBinding`
+- `rule.24.Emit-Static-Multi`
+
+Spec basis:
+
+- `SPECIFICATION.md` §11.3 defines module-scope `let` and `var` static
+  declarations.
+- `SPECIFICATION.md` §11.3 defines `Bind-Static` as binding every name in
+  `PatNames(pat)`.
+- `SPECIFICATION.md` §11.3 requires `WF-StaticDecl` to type the declaration
+  pattern against the annotated type.
+- `SPECIFICATION.md` §24 defines `StaticBindTypes`, `StaticBindList`,
+  `StaticBinding`, and `Emit-Static-Multi` for static declarations whose
+  binding pattern introduces multiple names.
+
+Spec-valid specimen:
+
+```ultraviolet
+internal let (STATIC_MULTI_LEFT, STATIC_MULTI_RIGHT): (i32, i32) = (5, 6)
+internal let STATIC_RUNTIME_INIT_VALUE: i32 = staticInitializerReference()
+
+internal procedure staticInitializerReference() -> i32 {
+    return STATIC_REFERENCE_VALUE + STATIC_MULTI_RIGHT
+}
+
+internal procedure staticMultiBindingReference() -> bool {
+    return STATIC_MULTI_LEFT + STATIC_MULTI_RIGHT == STATIC_REFERENCE_VALUE
+}
+```
+
+Observed bootstrap result before repair:
+
+```text
+Cursive.exe build HelloUltraviolet --check --target-profile x86_64-win64 --build-progress on --max-errors 20: exit=1
+
+error: Static rule failed without assigned diagnostic code: ResolveExpr-Ident-Err
+  --> C:/dev/ultraviolet/HelloUltraviolet/Source/Reference/Modules/Statics.uv:10:5
+10 |     return STATIC_REFERENCE_VALUE + STATIC_MULTI_RIGHT
+10 |     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+error: Static rule failed without assigned diagnostic code: ResolveExpr-Ident-Err
+  --> C:/dev/ultraviolet/HelloUltraviolet/Source/Reference/Modules/Statics.uv:23:5
+23 |     return STATIC_MULTI_LEFT + STATIC_MULTI_RIGHT == STATIC_REFERENCE_VALUE
+23 |     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+```
+
+Bootstrap owner:
+
+- `LLVMBootstrap/cursive/src/04_analysis/composite/function_types.cpp`
+
+Failure analysis:
+
+The collection pass already implemented `Bind-Static` by adding every
+`PatNames(pat)` name from a static declaration to the module value map.
+Expression typechecking then called `LookupModuleStaticInModule` to recover the
+value type for a resolved static name. That lookup only recognized
+`IdentifierPattern` and `TypedPattern`, so names introduced by a tuple-pattern
+static declaration were present in the resolver map but had no value type during
+expression typing.
+
+Required bootstrap behavior:
+
+Static value lookup must use the same binding surface as `Bind-Static`.
+For a static declaration whose pattern introduces multiple names, lookup should
+first identify declarations whose pattern binds the requested name, then type
+the pattern against the static annotation and return the requested binding's
+pattern-derived type.
+
+Repair:
+
+- `LLVMBootstrap/cursive/src/04_analysis/composite/function_types.cpp` now
+  includes the canonical pattern-typing helper.
+- `LookupModuleStaticInModule` now filters static declarations through
+  `PatNames`, lowers the static annotation once, invokes
+  `TypePatternAgainstType`, and returns the matching binding type from the
+  pattern-typed binding list.
+
+Permanent corpus coverage:
+
+- `Source/Reference/Modules/Statics.uv` now exercises identifier static
+  bindings, tuple-valued statics, tuple-pattern multi-binding statics,
+  cross-static initialization through a procedure call, private mutable static
+  storage, and runtime reads from destructured static binding names.
+
+Verified bootstrap result after repair:
+
+```text
+Visual Studio bootstrap build wrapper, target=cursive: exit=0, rebuilt function_types.cpp and Cursive.exe
+Cursive.exe build HelloUltraviolet --check --target-profile x86_64-win64 --build-progress on --max-errors 20: exit=0, 12 warnings, 9 infos, 184.23s
+Cursive.exe build HelloUltraviolet --target-profile x86_64-win64 --build-progress on --max-errors 20: exit=0, 12 warnings, 9 infos, 782.70s
+HelloUltraviolet/build/bin/HelloUltraviolet.exe: exit=0
+HelloUltraviolet/build/bin/HelloUltraviolet.exe --audit: exit=0
+python3 Tools/ExtractObligationLedger.py --check: exit=0, PASS obligations=6045
+```
+
+## UVBOOT-0084: Static Rule Diagnostic Codes Missing From Typecheck Routing
+
+Status: repaired in the workspace bootstrap for SPEC-assigned codes. Remaining
+uncoded Chapter 15 cases are recorded in the SPEC clarification ledger.
+
+Rejected reference sources:
+
+- `Fixtures/RejectedSource/Statements/FrameNoActiveRegion/Source/Main.uv`
+- `Fixtures/RejectedSource/Statements/FrameTargetNotActive/Source/Main.uv`
+- `Fixtures/RejectedSource/Statements/FrameDiagnostic/Source/Main.uv`
+- `Fixtures/RejectedSource/Statements/UnsafeRequiredOperationOwnershipDiagnostic/Source/Main.uv`
+- `Fixtures/RejectedSource/Expressions/IfConditionNonBool/Source/Main.uv`
+- `Fixtures/RejectedSource/Expressions/TransmuteUnsafe/Source/Main.uv`
+- `Fixtures/RejectedSource/Expressions/ControlExpressionDiagnosticOwnership/Source/Main.uv`
+- `Fixtures/RejectedSource/Expressions/RawDerefUnsafeRequirement/Source/Main.uv`
+- `Fixtures/RejectedSource/Expressions/RawDerefPlaceTypingFamily/Source/Main.uv`
+- `Fixtures/RejectedSource/Procedures/MethodLookupAmbiguousDefault/Source/Main.uv`
+
+Spec obligations exercised:
+
+- `rule.18.Frame-NoActiveRegion-Err`
+- `rule.18.Frame-Target-NotActive-Err`
+- `diag.18.UnsafeRequiredOperationOwnership`
+- `diag.16.ControlExpressions`
+- `rule.16.Transmute-Unsafe-Err`
+- `req.16.ControlExpressionDiagnosticOwnership`
+- `rule.16.T-Deref-Raw`
+- `rule.16.DerefPlaceTypingFamily`
+- `rule.15.LookupMethod-Ambig`
+
+Spec basis:
+
+- `SPECIFICATION.md:4640-4650` assigns `E-MEM-1207`, `E-MEM-1208`, and
+  `E-MEM-3030`.
+- `SPECIFICATION.md:5834` assigns `E-MOD-1307`.
+- `SPECIFICATION.md:12465` assigns `E-TYP-2103`.
+- `SPECIFICATION.md:18039` assigns `E-SEM-2526`.
+
+Observed bootstrap result before repair:
+
+```text
+error: Static rule failed without assigned diagnostic code: Frame-NoActiveRegion-Err
+error: Static rule failed without assigned diagnostic code: Frame-Target-NotActive-Err
+error: Static rule failed without assigned diagnostic code: Transmute-Unsafe-Err
+error: Static rule failed without assigned diagnostic code: If-Cond-NotBool
+error: Static rule failed without assigned diagnostic code: Deref-Raw-Unsafe
+error: Static rule failed without assigned diagnostic code: LookupMethod-Ambig
+```
+
+Bootstrap owner:
+
+- `LLVMBootstrap/cursive/src/04_analysis/typing/typecheck_diag_lookup.h`
+
+Failure analysis:
+
+The typecheck paths returned static rule labels, and the generated diagnostic
+registry retained these labels without concrete codes. For rules whose SPEC
+diagnostic surface already assigns a code, the typecheck diagnostic resolver
+needed to translate the rule label before emitting the user-facing diagnostic.
+
+Required bootstrap behavior:
+
+SPEC-assigned static-rule diagnostics must emit the SPEC diagnostic code rather
+than falling through to the uncoded static-rule path. Cases where the SPEC
+requires a diagnostic but does not assign a code must remain explicit uncoded
+static diagnostics and be tracked for SPEC clarification.
+
+Repair:
+
+- `typecheck_diag_lookup.h` now maps the affected static rule labels to
+  `E-MEM-1207`, `E-MEM-1208`, `E-MEM-3030`, `E-SEM-2526`, `E-TYP-2103`, and
+  `E-MOD-1307`.
+
+Spec clarification recorded:
+
+`HelloUltraviolet/Audit/SpecClarificationsNeeded.md` records that
+`WF-ProcedureDecl-MissingReturnType`, `ReturnAnnOk`, non-boolean
+`WF-Contract`, and `Transmute-Unsafe-Err` need direct code-assignment clarity.
+
+Verified bootstrap result after repair:
+
+```text
+Visual Studio bootstrap build wrapper, target=cursive: exit=0, rebuilt typecheck.cpp, record_decl.cpp, item_common.cpp, procedure_decl.cpp, and Cursive.exe
+Cursive.exe build HelloUltraviolet/Fixtures/RejectedSource/Statements/FrameNoActiveRegion --check --target-profile x86_64-win64 --build-progress off --max-errors 4: exit=1, error[E-MEM-1207]
+Cursive.exe build HelloUltraviolet/Fixtures/RejectedSource/Statements/FrameTargetNotActive --check --target-profile x86_64-win64 --build-progress off --max-errors 4: exit=1, error[E-MEM-1208]
+Cursive.exe build HelloUltraviolet/Fixtures/RejectedSource/Statements/UnsafeRequiredOperationOwnershipDiagnostic --check --target-profile x86_64-win64 --build-progress off --max-errors 4: exit=1, error[E-MEM-3030]
+Cursive.exe build HelloUltraviolet/Fixtures/RejectedSource/Expressions/IfConditionNonBool --check --target-profile x86_64-win64 --build-progress off --max-errors 4: exit=1, error[E-SEM-2526]
+Cursive.exe build HelloUltraviolet/Fixtures/RejectedSource/Expressions/TransmuteUnsafe --check --target-profile x86_64-win64 --build-progress off --max-errors 4: exit=1, error[E-MEM-3030]
+Cursive.exe build HelloUltraviolet/Fixtures/RejectedSource/Expressions/RawDerefUnsafeRequirement --check --target-profile x86_64-win64 --build-progress off --max-errors 4: exit=1, error[E-TYP-2103]
+Cursive.exe build HelloUltraviolet/Fixtures/RejectedSource/Expressions/RawDerefPlaceTypingFamily --check --target-profile x86_64-win64 --build-progress off --max-errors 4: exit=1, error[E-TYP-2103]
+Cursive.exe build HelloUltraviolet/Fixtures/RejectedSource/Procedures/MethodLookupAmbiguousDefault --check --target-profile x86_64-win64 --build-progress off --max-errors 4: exit=1, error[E-MOD-1307]
+```
+
+## UVBOOT-0083: Empty Tuple Pattern Must Match Unit Values
+
+Status: repaired in the workspace bootstrap and verified by:
+
+```text
+LLVMBootstrap/cursive/build/Release/Cursive.exe build HelloUltraviolet --target-profile x86_64-win64 --build-progress on --max-errors 20
+HelloUltraviolet/build/bin/HelloUltraviolet.exe
+HelloUltraviolet/build/bin/HelloUltraviolet.exe --audit
+```
+
+Reference source:
+
+- `Source/Reference/Patterns/TupleRecordPatterns.uv`
+
+Spec obligations exercised:
+
+- `rule.17.Parse-TuplePatternElems-Empty`
+- `rule.17.Pat-Tuple-R`
+- `rule.17.Match-Tuple`
+- `rule.16.T-Unit-Literal`
+
+Spec basis:
+
+- `SPECIFICATION.md:9020` types the empty tuple expression as `TypePrim("()")`.
+- `SPECIFICATION.md:18216-18242` parses `()` in pattern position as
+  `TuplePattern([])`.
+- `SPECIFICATION.md:18317-18364` defines tuple-pattern typing and runtime
+  matching by element count and elementwise binding.
+
+Spec-valid specimen:
+
+```ultraviolet
+let unit_value: () = ()
+let empty_tuple_hit: bool = if unit_value is () {
+    true
+} else {
+    false
+}
+```
+
+Observed bootstrap result before repair:
+
+```text
+HelloUltraviolet/build/bin/HelloUltraviolet.exe: exit=1
+
+catalog compiled symbol failed: runPatternsTupleRecordPatternsReference
+reference failed: catalogCompiledSymbolsExecute
+reference failed: runPatternsTupleRecordPatternsReference
+```
+
+The focused scratch specimen returned `exit=1` until the empty tuple pattern
+was evaluated separately from non-empty tuple aggregate matching.
+
+Bootstrap owner:
+
+- `LLVMBootstrap/cursive/src/05_codegen/llvm/emit/ir/control/if_case.cpp`
+
+Failure analysis:
+
+`IRTuplePattern` lowering required every tuple-pattern scrutinee to lower as an
+LLVM struct value with a `TypeTuple` source type. Unit values lower as the
+primitive unit type `TypePrim("()")` and carry no LLVM struct payload. The empty
+tuple pattern therefore typechecked and lowered but evaluated to false at
+runtime.
+
+Required bootstrap behavior:
+
+The empty tuple pattern is the source spelling that matches the unit value. Its
+match result does not need to inspect an LLVM aggregate payload; it succeeds
+when the normalized scrutinee type is `TypePrim("()")`, and also succeeds for
+an internal zero-element `TypeTuple` if such a value reaches pattern lowering.
+
+Repair:
+
+- `LLVMBootstrap/cursive/src/05_codegen/llvm/emit/ir/control/if_case.cpp` now
+  handles `IRTuplePattern` with no elements before aggregate tuple extraction.
+  It returns true for `TypePrim("()")` and for zero-element `TypeTuple`, and
+  keeps the existing struct extraction path for non-empty tuple patterns.
+
+Spec clarification recorded:
+
+`HelloUltraviolet/Audit/SpecClarificationsNeeded.md` records that the SPEC
+should add an explicit static rule for `TuplePattern([]) ◁ TypePrim("()")`, or
+state a different unit-pattern spelling if this intended reading changes.
+
+Permanent corpus coverage:
+
+- `Source/Reference/Patterns/TupleRecordPatterns.uv` exercises `if unit_value
+  is ()` in the executable pattern reference runner.
+
+Verified bootstrap result after repair:
+
+```text
+Visual Studio bootstrap build wrapper, target=cursive: exit=0, rebuilt if_case.cpp and Cursive.exe
+.agents/tmp/UVPatternProbeImports/build/bin/UVPatternProbeImports.exe: exit=0
+LLVMBootstrap/cursive/build/Release/Cursive.exe build HelloUltraviolet --target-profile x86_64-win64 --build-progress on --max-errors 20: exit=0, 14 warnings, 10 infos, 499.07s
+HelloUltraviolet/build/bin/HelloUltraviolet.exe: exit=0
+HelloUltraviolet/build/bin/HelloUltraviolet.exe --audit: exit=0
+python3 Tools/ExtractObligationLedger.py --check: exit=0, PASS obligations=6045
+```
+
+## UVBOOT-0085: Async Suspension Frame Slots Miss Stable Binding Names
+
+Status: repaired in the workspace bootstrap and verified by:
+
+```text
+Visual Studio bootstrap build wrapper, Config=Release: exit=0
+LLVMBootstrap/cursive/build/Release/Cursive.exe build .agents/tmp/AsyncSuspendedProbe --target-profile x86_64-win64 --build-progress off --incremental off --max-errors 20: exit=0
+.agents/tmp/AsyncSuspendedProbe/build/bin/AsyncSuspendedProbe.exe: exit=0
+LLVMBootstrap/cursive/build/Release/Cursive.exe build HelloUltraviolet --target-profile x86_64-win64 --build-progress on --incremental on --max-errors 30: exit=0
+HelloUltraviolet/build/bin/HelloUltraviolet.exe: exit=0
+HelloUltraviolet/build/bin/HelloUltraviolet.exe --audit: exit=0
+```
+
+Reference source:
+
+- `Source/Reference/Async/StateMachine.uv`
+- `Source/Reference/Async/CompositionForms.uv`
+- `Source/Reference/Async/CombinatorRuntimeForms.uv`
+
+Spec obligations exercised:
+
+- `rule.21.AsyncYield`
+- `rule.21.AsyncResume`
+- `rule.21.AsyncSync`
+- `rule.21.AsyncComposition`
+
+Spec-valid specimen:
+
+```ultraviolet
+internal procedure asyncCompositionUnitSuspends(value: i32)
+    -> Async<(), (), i32, bool> {
+    yield ()
+    return value
+}
+
+let suspended: unique Async<(), (), i32, bool> = asyncCompositionUnitSuspends(57)
+return if suspended is {
+    @Suspended {
+        let resumed = suspended~>resume(())
+        if resumed is {
+            @Completed { value } { value == 57 }
+            @Suspended { false }
+            @Failed { false }
+        }
+    }
+    @Completed { false }
+    @Failed { false }
+}
+```
+
+Observed bootstrap result before repair:
+
+```text
+catalog compiled symbol failed: runAsyncCompositionCombinatorsReference
+catalog compiled symbol failed: runAsyncCompositionFormsReference
+reference failed: runAsyncCompositionSyncSuspendedUnitReference
+reference failed: runAsyncCompositionSyncReference
+reference failed: runAsyncCompositionAllSuspendedReference
+reference failed: runAsyncCompositionReturnRaceSuspendedReference
+reference failed: runAsyncCompositionStreamingRaceResumeReference
+reference failed: runAsyncCompositionStreamingRaceReference
+reference failed: runAsyncCompositionFilterSkipReference
+reference failed: runAsyncCompositionChainSuspendedContinuationReference
+reference failed: runAsyncCompositionCombinatorRuntimeReference
+reference failed: runAsyncCompositionLoopIterationReference
+reference failed: runAsyncCompositionCombinatorsReference
+reference failed: runAsyncCompositionFormsReference
+```
+
+The focused async-suspension probe returned `exit=1` for manual resume. Its
+generated resume function completed with payload `0` instead of the original
+parameter value because the async frame did not contain the live parameter slot.
+
+Bootstrap owner:
+
+- `LLVMBootstrap/cursive/include/05_codegen/lower/lower_expr.h`
+- `LLVMBootstrap/cursive/src/05_codegen/lower/lower_proc.cpp`
+- `LLVMBootstrap/cursive/src/05_codegen/llvm/emit/proc_emit.cpp`
+- `LLVMBootstrap/cursive/src/05_codegen/llvm/emit/ir_storage_emit.cpp`
+
+Failure analysis:
+
+Lowered identifier reads use stable binding names to distinguish source
+bindings across scopes. Async liveness and frame-slot collection still keyed
+parameter and binding slots by source names. After a suspension point, the
+resume prelude therefore did not restore values read through stable names, and
+some fallback addressable reads materialized zero-initialized storage.
+
+Required bootstrap behavior:
+
+Async frame slot collection must preserve every local or parameter value used
+after a suspension point under the same local identity that the lowered body
+will read on resume. Source names and stable names for the same binding must
+refer to the same restored storage.
+
+Repair:
+
+- Async procedure metadata now records canonical stable slot names plus
+  source-name aliases.
+- Async resume setup registers all aliases to the same restored local storage.
+- Async bind emission reuses an existing stable async slot when a binding's
+  stable name is the collected frame slot.
+- Async liveness collection treats `IRReadVar` as a use after suspension.
+
+## UVBOOT-0086: Iterator Loop Patterns Bound Source Names After Stable Body Lowering
+
+Status: repaired in the workspace bootstrap and verified by:
+
+```text
+Visual Studio bootstrap build wrapper, Config=Release: exit=0
+LLVMBootstrap/cursive/build/Release/Cursive.exe build .agents/tmp/AsyncSuspendedProbe --target-profile x86_64-win64 --build-progress off --incremental off --max-errors 20: exit=0
+.agents/tmp/AsyncSuspendedProbe/build/bin/AsyncSuspendedProbe.exe: exit=0
+LLVMBootstrap/cursive/build/Release/Cursive.exe build HelloUltraviolet --target-profile x86_64-win64 --build-progress on --incremental on --max-errors 30: exit=0
+HelloUltraviolet/build/bin/HelloUltraviolet.exe: exit=0
+HelloUltraviolet/build/bin/HelloUltraviolet.exe --audit: exit=0
+```
+
+Reference source:
+
+- `Source/Reference/Async/CompositionForms.uv`
+
+Spec obligations exercised:
+
+- `rule.16.Lower-Loop-Iter`
+- `rule.17.Pat-Ident-R`
+- `rule.17.Match-Ident`
+- `rule.21.T-Loop-Iter-Async`
+
+Spec-valid specimen:
+
+```ultraviolet
+internal procedure asyncCompositionIterates(first: i32, second: i32)
+    -> Async<(), (), i32, bool> {
+    var total: i32 = 0
+    loop value in asyncCompositionTwoOutputs(first, second) {
+        total = total + value
+    }
+    return total
+}
+```
+
+Observed bootstrap result before repair:
+
+```text
+.agents/tmp/AsyncSuspendedProbe/build/bin/AsyncSuspendedProbe.exe: exit=3
+```
+
+The generated IR stored each async output into a local named from the source
+pattern, while the loop body read the stable binding name. The body addition
+therefore lowered as `total + 0` instead of `total + value`.
+
+Bootstrap owner:
+
+- `LLVMBootstrap/cursive/src/05_codegen/lower/expr/loop_iter.cpp`
+- `LLVMBootstrap/cursive/src/05_codegen/lower/pattern/ir_pattern.cpp`
+
+Failure analysis:
+
+`LowerLoopIter` registered pattern bindings and lowered the loop body while the
+loop scope was active, so body identifier reads correctly used stable binding
+names. It then popped the loop scope before lowering the IR pattern used by the
+LLVM loop emitter. That IR pattern retained the source name, splitting the
+runtime loop-value store from the body read.
+
+Required bootstrap behavior:
+
+The IR pattern that drives iterator value storage must use the same binding
+identity as the lowered loop body. Pattern binding identity is part of the
+lowered loop contract, not only semantic-analysis bookkeeping.
+
+Repair:
+
+- `LowerLoopIter` now lowers the IR pattern before popping the loop scope.
+- IR pattern lowering uses stable binding names for identifier and typed
+  patterns when such names are available.

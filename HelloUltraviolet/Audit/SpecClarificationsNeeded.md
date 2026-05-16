@@ -381,6 +381,56 @@ while building `HelloUltraviolet` as the reference corpus.
   in pattern position directly, including module aliases, record type paths,
   and enum variant record payloads.
 
+### Empty Tuple Pattern Unit Type
+
+- Obligations: `Docs/Audit/UltravioletObligations.csv:3968`,
+  `Docs/Audit/UltravioletObligations.csv:3985`, and
+  `Docs/Audit/UltravioletObligations.csv:3992`.
+- SPEC anchors: `SPECIFICATION.md:9020`,
+  `SPECIFICATION.md:18216-18242`, and `SPECIFICATION.md:18317-18364`.
+- Current reading: `()` in pattern position is the empty tuple pattern and is
+  the pattern form for the unit value whose source expression type is
+  `TypePrim("()")`.
+- Connected construct reading: source has no separate unit-pattern production.
+  `Parse-TuplePatternElems-Empty` creates `TuplePattern([])` for `()`, and
+  `T-Tuple-Unit` types the corresponding empty tuple expression as the unit
+  primitive. The intended design therefore treats `TuplePattern([])` against
+  `TypePrim("()")` as the zero-element tuple-pattern case, with
+  `Match-Tuple` binding the empty environment.
+- Clarification requested: add an explicit static rule for
+  `TuplePattern([]) ◁ TypePrim("()")`, or state a different source spelling for
+  matching unit values if empty tuple patterns are intended to exclude unit.
+
+### Static Rule Diagnostic Code Assignment
+
+- Obligations: `Docs/Audit/UltravioletObligations.csv:3192`,
+  `Docs/Audit/UltravioletObligations.csv:3198`,
+  `Docs/Audit/UltravioletObligations.csv:3314`, and
+  `Docs/Audit/UltravioletObligations.csv:3662`.
+- SPEC anchors: `SPECIFICATION.md:14263`,
+  `SPECIFICATION.md:14289-14293`, `SPECIFICATION.md:14821-14825`,
+  `SPECIFICATION.md:16574-16578`, `SPECIFICATION.md:15523-15547`, and
+  `SPECIFICATION.md:4640-4650`.
+- Current reading: missing procedure return annotations and non-boolean
+  contract predicates are sourceable static rejections with required
+  diagnostics, but the Chapter 15 diagnostic supplement does not assign a
+  concrete diagnostic code to either condition. These remain uncoded static
+  diagnostics in the reference corpus until the SPEC assigns a code.
+  `Transmute-Unsafe-Err` is sourceable and its rule asks for
+  `Code(Transmute-Unsafe-Err)`; the connected Chapter 6 unsafe-operation
+  diagnostic `E-MEM-3030` is the intended code because the rejection is use of
+  an unsafe operation outside an unsafe span.
+- Connected construct reading: Chapter 15 already assigns separate codes for
+  non-unit procedures lacking explicit trailing `return`, contract proof
+  failures, and contract purity. Reusing those rows for missing annotations or
+  non-boolean predicates would collapse distinct obligations. Chapter 16 owns
+  transmute size, alignment, invalid-target warnings, and invalid casts, while
+  Chapter 6 owns the generic unsafe-operation boundary.
+- Clarification requested: assign explicit codes for
+  `WF-ProcedureDecl-MissingReturnType`, `ReturnAnnOk`, and the non-boolean
+  `WF-Contract` failure, and state whether `Code(Transmute-Unsafe-Err)` is
+  `E-MEM-3030` or a newly assigned expression diagnostic.
+
 ### Direct Shared Mutation And Implicit Key Acquisition
 
 - Obligations: `Docs/Audit/UltravioletObligations.csv:1773`,
@@ -409,3 +459,81 @@ while building `HelloUltraviolet` as the reference corpus.
   shared field mutation without a pre-existing covering write key, or only
   rejects direct shared field mutation for which Chapter 19 cannot establish a
   valid key context.
+
+### Procedure Call Postcondition Facts
+
+- Obligations: `Docs/Audit/UltravioletObligations.csv:3341`,
+  `Docs/Audit/UltravioletObligations.csv:3352`,
+  `Docs/Audit/UltravioletObligations.csv:3357`, and
+  `Docs/Audit/UltravioletObligations.csv:3363`.
+- SPEC anchors: `SPECIFICATION.md:15043-15057`,
+  `SPECIFICATION.md:15286-15349`, and `SPECIFICATION.md:15418-15421`.
+- Current reading: a statically verified procedure or method call is checked
+  against the callee precondition, and the callee body is checked against its
+  own postcondition, but the call expression does not automatically add the
+  callee postcondition to `ProofContextAt(S)` for the caller.
+- Connected construct reading: §15.8 defines `ProofContextAt(S)` as flow facts
+  plus enclosing contract precondition facts, and it explicitly states that
+  successful dynamic checks inject verification facts. It does not list static
+  callee postconditions as generated facts after call or method-call
+  expressions. The intended reading therefore appears to be that postcondition
+  facts are local obligations unless a separate fact-generation rule is added.
+- Clarification requested: state whether successful statically verified calls
+  generate caller-visible verification facts from their callee postconditions,
+  including dynamic class method calls whose selected implementation satisfies
+  behavioral subtyping.
+
+### Generic Variance Source And Diagnostic Codes
+
+- Obligations: `Docs/Audit/UltravioletObligations.csv:1505`,
+  `Docs/Audit/UltravioletObligations.csv:1506`,
+  `Docs/Audit/UltravioletObligations.csv:1507`,
+  `Docs/Audit/UltravioletObligations.csv:1508`,
+  `Docs/Audit/UltravioletObligations.csv:1509`,
+  `Docs/Audit/UltravioletObligations.csv:1510`,
+  `Docs/Audit/UltravioletObligations.csv:1511`, and
+  `Docs/Audit/UltravioletObligations.csv:1512`.
+- SPEC anchors: `SPECIFICATION.md:6107-6133`,
+  `SPECIFICATION.md:12475-12531`, `SPECIFICATION.md:12617-12619`,
+  and `SPECIFICATION.md:6474-6480`.
+- Current reading: `VarianceOf(path, i)` uses the effective semantic
+  variance of the generic declaration parameter. Source generic parameter
+  syntax does not provide `+`, `-`, `=`, or `±` markers, and
+  `Parse-TypeParam` produces variance `⊥`; therefore the intended reading is
+  that semantic analysis computes the variance from member positions before
+  applying `Sub-Generic`.
+- Connected construct reading: the formal `Sub-Generic-Invariant-Err`,
+  `Sub-Generic-Covariant-Err`, and `Sub-Generic-Contravariant-Err` rules assign
+  `E-TYP-1520` to invariant mismatch and `E-TYP-1521` to covariant or
+  contravariant mismatch. The core type diagnostics table describes
+  `E-TYP-1520` as the general variance-instantiation violation and
+  `E-TYP-1521` as the invariant exact-match condition. The reference corpus
+  follows the formal rules because those rules are closer to the checked
+  subtyping judgment.
+- Clarification requested: state whether variance is source-annotated or
+  inferred, define where `params[i].variance` is populated, and align the
+  `E-TYP-1520`/`E-TYP-1521` diagnostic table conditions with the formal
+  subtyping error rules.
+
+### Noncapturing Closure Function Type And Closure Value Representation
+
+- Obligations: `Docs/Audit/UltravioletObligations.csv:3877`,
+  `Docs/Audit/UltravioletObligations.csv:3919`, and
+  `Docs/Audit/UltravioletObligations.csv:3928`.
+- SPEC anchors: `SPECIFICATION.md:17699-17704`,
+  `SPECIFICATION.md:17874-17894`, `SPECIFICATION.md:17960-17963`,
+  and `SPECIFICATION.md:18007-18025`.
+- Current reading: a noncapturing closure expression may type as `TypeFunc`
+  in direct function contexts, while lowering still materializes it as a
+  closure value with null environment when the expected or annotated target is
+  `TypeClosure`.
+- Connected construct reading: §16.9 assigns `TypeFunc` to noncapturing
+  closures, but the runtime and lowering rules describe `ClosureVal(null, sym)`
+  and `Lower-Closure-Call` for closure values. The coherent reading is that
+  expression typing may expose the function type where no closure value is
+  required, while checked conversion to a closure type keeps the closure pair
+  representation and closure-call ABI.
+- Clarification requested: state whether noncapturing closure expressions are
+  always function-typed, contextually closure-typed when checked against
+  `TypeClosure`, or function-typed with an explicit conversion rule to
+  `ClosureVal(null, sym)`.

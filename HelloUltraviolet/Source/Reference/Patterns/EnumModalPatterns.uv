@@ -1,6 +1,6 @@
 //! Reference specimens for Patterns / EnumModalPatterns.
 
-using HelloUltraviolet::Reference::DataTypes::{ EnumReference }
+using HelloUltraviolet::Reference::DataTypes::{ EnumReference, UnitEnumReference }
 using HelloUltraviolet::Reference::ModalTypes::{ ModalReference, ModalReferenceValue }
 
 /// Exercises the Patterns EnumModalPatterns reference surface.
@@ -10,10 +10,31 @@ public procedure runPatternsEnumModalPatternsReference() -> bool {
         EnumReference::Idle {
             false
         }
-        EnumReference::Count(value) {
+        EnumReference::Count(value,) {
             value == 41
         }
         EnumReference::Named { value } {
+            false
+        }
+    }
+    let enum_record_reference: EnumReference = EnumReference::Named { value: 42 }
+    let enum_record_hit: bool = if enum_record_reference is {
+        EnumReference::Idle {
+            false
+        }
+        EnumReference::Count(_) {
+            false
+        }
+        EnumReference::Named { value } {
+            value == 42
+        }
+    }
+    let unit_enum_reference: UnitEnumReference = UnitEnumReference::First
+    let enum_unit_hit: bool = if unit_enum_reference is {
+        UnitEnumReference::First {
+            true
+        }
+        UnitEnumReference::Second {
             false
         }
     }
@@ -27,6 +48,26 @@ public procedure runPatternsEnumModalPatternsReference() -> bool {
             false
         }
     }
+    let closed_reference: ModalReferenceValue = ModalReference@Closed {}
+    let modal_empty_hit: bool = if closed_reference is {
+        @Closed {
+            true
+        }
+        @Open {
+            false
+        }
+    }
+    let open_state: ModalReference@Open = ModalReference@Open { value: 43 }
+    let modal_state_hit: bool = if open_state is {
+        @Open { value } {
+            value == 43
+        }
+    }
 
-    return enum_hit && modal_hit
+    return enum_hit &&
+        enum_record_hit &&
+        enum_unit_hit &&
+        modal_hit &&
+        modal_empty_hit &&
+        modal_state_hit
 }

@@ -114,9 +114,12 @@ analysis::TypeRef ResolvePatternAliasType(const analysis::TypeRef& type,
 
   const auto* path = analysis::AppliedTypePath(*stripped);
   const auto* generic_args = analysis::AppliedTypeArgs(*stripped);
-  if (!path || !generic_args) {
+  if (!path) {
     return stripped;
   }
+  const std::vector<analysis::TypeRef> empty_args;
+  const std::vector<analysis::TypeRef>& alias_args =
+      generic_args ? *generic_args : empty_args;
 
   ast::TypePath syntax_path;
   syntax_path.reserve(path->size());
@@ -153,14 +156,14 @@ analysis::TypeRef ResolvePatternAliasType(const analysis::TypeRef& type,
 
   analysis::TypeRef resolved = *lowered;
   if (alias->generic_params && !alias->generic_params->params.empty()) {
-    if (generic_args->size() > alias->generic_params->params.size()) {
+    if (alias_args.size() > alias->generic_params->params.size()) {
       return stripped;
     }
     analysis::TypeSubst subst =
         analysis::BuildSubstitution(alias->generic_params->params,
-                                    *generic_args);
+                                    alias_args);
     resolved = analysis::InstantiateType(resolved, subst);
-  } else if (!generic_args->empty()) {
+  } else if (!alias_args.empty()) {
     return stripped;
   }
 
@@ -686,6 +689,9 @@ void CollectPatternBindingsInOrder(const ast::Pattern& pattern,
             }
             if (!require_state_match) {
               if (const auto* applied_path = analysis::AppliedTypePath(*stripped)) {
+                if (!LookupModalDecl(*applied_path, ctx)) {
+                  return false;
+                }
                 modal_path = *applied_path;
                 if (const auto* applied_args = analysis::AppliedTypeArgs(*stripped)) {
                   modal_args = *applied_args;

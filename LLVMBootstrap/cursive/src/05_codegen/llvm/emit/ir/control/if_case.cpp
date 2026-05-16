@@ -959,12 +959,35 @@ void IRInstructionVisitor::operator()(const IRIfCase &if_case) const
           }
           else if constexpr (std::is_same_v<P, IRTuplePattern>)
           {
-            if (!subject || !subject_type)
+            if (!subject_type)
             {
               return llvm::ConstantInt::getFalse(emitter.GetContext());
             }
             const analysis::TypeRef stripped_subject =
                 normalize_match_type(subject_type);
+            if (pat.elements.empty())
+            {
+              if (!stripped_subject)
+              {
+                return llvm::ConstantInt::getFalse(emitter.GetContext());
+              }
+              if (const auto *prim =
+                      std::get_if<analysis::TypePrim>(&stripped_subject->node))
+              {
+                return prim->name == "()"
+                           ? llvm::ConstantInt::getTrue(emitter.GetContext())
+                           : llvm::ConstantInt::getFalse(emitter.GetContext());
+              }
+              const auto *empty_tuple =
+                  std::get_if<analysis::TypeTuple>(&stripped_subject->node);
+              return empty_tuple && empty_tuple->elements.empty()
+                         ? llvm::ConstantInt::getTrue(emitter.GetContext())
+                         : llvm::ConstantInt::getFalse(emitter.GetContext());
+            }
+            if (!subject)
+            {
+              return llvm::ConstantInt::getFalse(emitter.GetContext());
+            }
             const auto *tuple_type =
                 stripped_subject
                     ? std::get_if<analysis::TypeTuple>(&stripped_subject->node)

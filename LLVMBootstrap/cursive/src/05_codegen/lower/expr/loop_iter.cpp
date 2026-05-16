@@ -222,13 +222,15 @@ LowerResult LowerLoopIter(const ast::Expr& expr,
     }
   }
 
+  IRPatternPtr loop_pattern = LowerIRPattern(*loop_expr.pattern, ctx);
+
   // Pop the loop scope
   ctx.PopScope();
 
   // Create iter loop IR
   IRLoop loop;
   loop.kind = IRLoopKind::Iter;
-  loop.pattern = LowerIRPattern(*loop_expr.pattern, ctx);
+  loop.pattern = loop_pattern;
   loop.iter_ir = iter_result.ir;
   loop.iter_value = iter_result.value;
   loop.body_ir = body_result.ir;

@@ -34,7 +34,9 @@ internal procedure applyMoveClosure(closure: MoveIntClosure, value: i32) -> i32 
 
 internal procedure closureParameterFormsReference() -> bool {
     let explicit_single = |value: i32| -> i32 value + 1
-    let explicit_many = |left: i32, right: i32,| -> i32 left + right
+    let explicit_many =
+        |left: i32, right: i32,
+        | -> i32 left + right
     let inferred_param: IntUnaryFunction = |value| value + 2
     let inferred_return = |value: i32| value + 3
     let move_typed: MoveIntFunction = |move value: i32| -> i32 value + 4
@@ -46,6 +48,50 @@ internal procedure closureParameterFormsReference() -> bool {
         inferred_return(4) == 7 &&
         applyMoveFunction(move_typed, 4) == 8 &&
         applyMoveFunction(move_untyped, 4) == 9
+}
+
+internal procedure closureParameterFormsReferenceWithReport(context: Context) -> bool {
+    let explicit_single = |value: i32| -> i32 value + 1
+    let explicit_many =
+        |left: i32, right: i32,
+        | -> i32 left + right
+    let inferred_param: IntUnaryFunction = |value| value + 2
+    let inferred_return = |value: i32| value + 3
+    let move_typed: MoveIntFunction = |move value: i32| -> i32 value + 4
+    let move_untyped: MoveIntFunction = |move value| value + 5
+
+    var passed: bool = true
+    passed = recordClosurePipelineReturn(
+        context,
+        "closureParameterFormsReference.explicit_single(4) == 5",
+        explicit_single(4) == 5
+    ) && passed
+    passed = recordClosurePipelineReturn(
+        context,
+        "closureParameterFormsReference.explicit_many(4, 5) == 9",
+        explicit_many(4, 5) == 9
+    ) && passed
+    passed = recordClosurePipelineReturn(
+        context,
+        "closureParameterFormsReference.inferred_param(4) == 6",
+        inferred_param(4) == 6
+    ) && passed
+    passed = recordClosurePipelineReturn(
+        context,
+        "closureParameterFormsReference.inferred_return(4) == 7",
+        inferred_return(4) == 7
+    ) && passed
+    passed = recordClosurePipelineReturn(
+        context,
+        "closureParameterFormsReference.applyMoveFunction(move_typed, 4) == 8",
+        applyMoveFunction(move_typed, 4) == 8
+    ) && passed
+    passed = recordClosurePipelineReturn(
+        context,
+        "closureParameterFormsReference.applyMoveFunction(move_untyped, 4) == 9",
+        applyMoveFunction(move_untyped, 4) == 9
+    ) && passed
+    return passed
 }
 
 internal procedure closureBodyFormsReference() -> bool {
@@ -133,6 +179,42 @@ internal procedure closureUnionParameterReference() -> bool {
     return union_reader(5) == 7 &&
         union_reader(true) == 3 &&
         union_reader(false) == 2
+}
+
+internal procedure closureUnionParameterReferenceWithReport(context: Context) -> bool {
+    let bias: i32 = 2
+    let union_reader: UnionClosure = |value: (i32 | bool)| -> i32 {
+        return if value is {
+            number: i32 {
+                number + bias
+            }
+            flag: bool {
+                if flag {
+                    1 + bias
+                } else {
+                    bias
+                }
+            }
+        }
+    }
+
+    var passed: bool = true
+    passed = recordClosurePipelineReturn(
+        context,
+        "closureUnionParameterReference.union_reader(5) == 7",
+        union_reader(5) == 7
+    ) && passed
+    passed = recordClosurePipelineReturn(
+        context,
+        "closureUnionParameterReference.union_reader(true) == 3",
+        union_reader(true) == 3
+    ) && passed
+    passed = recordClosurePipelineReturn(
+        context,
+        "closureUnionParameterReference.union_reader(false) == 2",
+        union_reader(false) == 2
+    ) && passed
+    return passed
 }
 
 internal procedure closureCallControlReference() -> i32 {
@@ -227,7 +309,7 @@ public procedure runExpressionsClosuresAndPipelinesReferenceWithReport(context: 
     passed = recordClosurePipelineReturn(
         context,
         "closureParameterFormsReference()",
-        closureParameterFormsReference()
+        closureParameterFormsReferenceWithReport(context)
     ) && passed
     passed = recordClosurePipelineReturn(
         context,
@@ -242,7 +324,7 @@ public procedure runExpressionsClosuresAndPipelinesReferenceWithReport(context: 
     passed = recordClosurePipelineReturn(
         context,
         "closureUnionParameterReference()",
-        closureUnionParameterReference()
+        closureUnionParameterReferenceWithReport(context)
     ) && passed
     passed = recordClosurePipelineReturn(
         context,

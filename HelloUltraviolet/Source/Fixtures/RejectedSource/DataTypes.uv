@@ -1,7 +1,7 @@
 //! Rejected data type specimens.
 
 public procedure dataTypesRejectedSourceFixtureCount() -> usize {
-    return 4usize
+    return 9usize
 }
 
 public procedure validatedDataTypesRejectedSourceFixtureCount() -> usize {
@@ -71,6 +71,91 @@ public procedure validatedDataTypesRejectedSourceFixtureCount() -> usize {
         "Fixtures/RejectedSource/DataTypes/TypeAliasCycle/Expected.uv",
         "E-TYP-1506",
         "diagnostics.CoreTypeDiagnostics"
+    ) {
+        count = count + 1usize
+    }
+    if rejectedSpecimenMatches(
+        rejectedSpecimen(
+            "NoIntegerNumericSubtyping",
+            "Fixtures/RejectedSource/DataTypes/NoIntegerNumericSubtyping",
+            "Fixtures/RejectedSource/DataTypes/NoIntegerNumericSubtyping/Source/Main.uv",
+            "Fixtures/RejectedSource/DataTypes/NoIntegerNumericSubtyping/Expected.uv",
+            expectedDiagnostic("E-MOD-2402", "req.NoIntegerNumericSubtyping")
+        ),
+        "NoIntegerNumericSubtyping",
+        "Fixtures/RejectedSource/DataTypes/NoIntegerNumericSubtyping",
+        "Fixtures/RejectedSource/DataTypes/NoIntegerNumericSubtyping/Source/Main.uv",
+        "Fixtures/RejectedSource/DataTypes/NoIntegerNumericSubtyping/Expected.uv",
+        "E-MOD-2402",
+        "req.NoIntegerNumericSubtyping"
+    ) {
+        count = count + 1usize
+    }
+    if rejectedSpecimenMatches(
+        rejectedSpecimen(
+            "NoFloatNumericSubtyping",
+            "Fixtures/RejectedSource/DataTypes/NoFloatNumericSubtyping",
+            "Fixtures/RejectedSource/DataTypes/NoFloatNumericSubtyping/Source/Main.uv",
+            "Fixtures/RejectedSource/DataTypes/NoFloatNumericSubtyping/Expected.uv",
+            expectedDiagnostic("E-MOD-2402", "req.NoFloatNumericSubtyping")
+        ),
+        "NoFloatNumericSubtyping",
+        "Fixtures/RejectedSource/DataTypes/NoFloatNumericSubtyping",
+        "Fixtures/RejectedSource/DataTypes/NoFloatNumericSubtyping/Source/Main.uv",
+        "Fixtures/RejectedSource/DataTypes/NoFloatNumericSubtyping/Expected.uv",
+        "E-MOD-2402",
+        "req.NoFloatNumericSubtyping"
+    ) {
+        count = count + 1usize
+    }
+    if rejectedSpecimenMatches(
+        rejectedSpecimen(
+            "GenericInvariantSubtyping",
+            "Fixtures/RejectedSource/DataTypes/GenericInvariantSubtyping",
+            "Fixtures/RejectedSource/DataTypes/GenericInvariantSubtyping/Source/Main.uv",
+            "Fixtures/RejectedSource/DataTypes/GenericInvariantSubtyping/Expected.uv",
+            expectedDiagnostic("E-TYP-1520", "Sub-Generic-Invariant-Err")
+        ),
+        "GenericInvariantSubtyping",
+        "Fixtures/RejectedSource/DataTypes/GenericInvariantSubtyping",
+        "Fixtures/RejectedSource/DataTypes/GenericInvariantSubtyping/Source/Main.uv",
+        "Fixtures/RejectedSource/DataTypes/GenericInvariantSubtyping/Expected.uv",
+        "E-TYP-1520",
+        "Sub-Generic-Invariant-Err"
+    ) {
+        count = count + 1usize
+    }
+    if rejectedSpecimenMatches(
+        rejectedSpecimen(
+            "GenericCovariantSubtyping",
+            "Fixtures/RejectedSource/DataTypes/GenericCovariantSubtyping",
+            "Fixtures/RejectedSource/DataTypes/GenericCovariantSubtyping/Source/Main.uv",
+            "Fixtures/RejectedSource/DataTypes/GenericCovariantSubtyping/Expected.uv",
+            expectedDiagnostic("E-TYP-1521", "Sub-Generic-Covariant-Err")
+        ),
+        "GenericCovariantSubtyping",
+        "Fixtures/RejectedSource/DataTypes/GenericCovariantSubtyping",
+        "Fixtures/RejectedSource/DataTypes/GenericCovariantSubtyping/Source/Main.uv",
+        "Fixtures/RejectedSource/DataTypes/GenericCovariantSubtyping/Expected.uv",
+        "E-TYP-1521",
+        "Sub-Generic-Covariant-Err"
+    ) {
+        count = count + 1usize
+    }
+    if rejectedSpecimenMatches(
+        rejectedSpecimen(
+            "GenericContravariantSubtyping",
+            "Fixtures/RejectedSource/DataTypes/GenericContravariantSubtyping",
+            "Fixtures/RejectedSource/DataTypes/GenericContravariantSubtyping/Source/Main.uv",
+            "Fixtures/RejectedSource/DataTypes/GenericContravariantSubtyping/Expected.uv",
+            expectedDiagnostic("E-TYP-1521", "Sub-Generic-Contravariant-Err")
+        ),
+        "GenericContravariantSubtyping",
+        "Fixtures/RejectedSource/DataTypes/GenericContravariantSubtyping",
+        "Fixtures/RejectedSource/DataTypes/GenericContravariantSubtyping/Source/Main.uv",
+        "Fixtures/RejectedSource/DataTypes/GenericContravariantSubtyping/Expected.uv",
+        "E-TYP-1521",
+        "Sub-Generic-Contravariant-Err"
     ) {
         count = count + 1usize
     }

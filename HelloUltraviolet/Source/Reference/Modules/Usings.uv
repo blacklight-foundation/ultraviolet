@@ -1,9 +1,65 @@
 //! Reference specimens for Modules / Usings.
 
-using HelloUltraviolet::Reference::DataTypes::{ RecordReference, recordReference }
+using HelloUltraviolet::Reference::DataTypes::RecordReference as ModuleUsingRecord
+using HelloUltraviolet::Reference::DataTypes::{
+    EmptyRecordReference as ModuleUsingEmptyRecord,
+    RecordLayoutReference,
+    RecordMemberReference as ModuleUsingMemberRecord,
+    recordReference as makeModuleUsingRecord,
+}
+
+internal record ModuleUsingBindingReference {
+    internal imported_value_name: string@View
+    internal imported_type_name: string@View
+    internal alias_count: usize
+    internal runtime_action_count: usize
+}
+
+internal procedure moduleUsingBindingReference(
+    imported_value_name: string@View,
+    imported_type_name: string@View,
+    alias_count: usize,
+    runtime_action_count: usize
+) -> ModuleUsingBindingReference {
+    return ModuleUsingBindingReference {
+        imported_value_name: imported_value_name,
+        imported_type_name: imported_type_name,
+        alias_count: alias_count,
+        runtime_action_count: runtime_action_count
+    }
+}
+
+internal procedure moduleUsingItemAliasReference() -> bool {
+    let reference: ModuleUsingRecord = makeModuleUsingRecord("module-using", 12usize, true)
+    return reference.is_active && reference.count == 12usize
+}
+
+internal procedure moduleUsingListSpecifierReference() -> bool {
+    let member: ModuleUsingMemberRecord = ModuleUsingMemberRecord()
+    let layout: RecordLayoutReference = RecordLayoutReference { flag: true, value: 9 }
+    return member~>readValue() == 5 &&
+        member~>addToValue(7) == 12 &&
+        layout.flag &&
+        layout.value == 9 &&
+        sizeof(ModuleUsingEmptyRecord) == 0usize
+}
+
+internal procedure moduleUsingIntroducesNoRuntimeAction() -> bool {
+    let binding: ModuleUsingBindingReference = moduleUsingBindingReference(
+        "makeModuleUsingRecord",
+        "ModuleUsingRecord",
+        4usize,
+        0usize
+    )
+    return binding.imported_value_name == "makeModuleUsingRecord" &&
+        binding.imported_type_name == "ModuleUsingRecord" &&
+        binding.alias_count == 4usize &&
+        binding.runtime_action_count == 0usize
+}
 
 /// Exercises the Modules Usings reference surface.
 public procedure runModulesUsingsReference() -> bool {
-    let reference: RecordReference = recordReference("module-using", 12usize, true)
-    return reference.is_active && reference.count == 12usize
+    return moduleUsingItemAliasReference() &&
+        moduleUsingListSpecifierReference() &&
+        moduleUsingIntroducesNoRuntimeAction()
 }

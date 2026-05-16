@@ -2,9 +2,41 @@
 
 internal let STATIC_REFERENCE_VALUE: i32 = 11
 internal let STATIC_REFERENCE_PAIR: (i32, i32) = (7, 4)
+internal let (STATIC_MULTI_LEFT, STATIC_MULTI_RIGHT): (i32, i32) = (5, 6)
+internal let STATIC_RUNTIME_INIT_VALUE: i32 = staticInitializerReference()
+private var _STATIC_MUTABLE_REFERENCE: i32 = 0
+
+internal procedure staticInitializerReference() -> i32 {
+    return STATIC_REFERENCE_VALUE + STATIC_MULTI_RIGHT
+}
+
+internal procedure staticIdentifierBindingReference() -> bool {
+    return STATIC_REFERENCE_VALUE == 11
+}
+
+internal procedure staticTupleValueReference() -> bool {
+    let (left, right): (i32, i32) = STATIC_REFERENCE_PAIR
+    return left + right == STATIC_REFERENCE_VALUE
+}
+
+internal procedure staticMultiBindingReference() -> bool {
+    return STATIC_MULTI_LEFT + STATIC_MULTI_RIGHT == STATIC_REFERENCE_VALUE
+}
+
+internal procedure staticRuntimeInitializationReference() -> bool {
+    return STATIC_RUNTIME_INIT_VALUE == 17
+}
+
+internal procedure staticMutableStorageReference() -> bool {
+    _STATIC_MUTABLE_REFERENCE = STATIC_RUNTIME_INIT_VALUE + 1
+    return _STATIC_MUTABLE_REFERENCE == 18
+}
 
 /// Exercises the Modules Statics reference surface.
 public procedure runModulesStaticsReference() -> bool {
-    let (left, right): (i32, i32) = STATIC_REFERENCE_PAIR
-    return STATIC_REFERENCE_VALUE == 11 && left + right == STATIC_REFERENCE_VALUE
+    return staticIdentifierBindingReference() &&
+        staticTupleValueReference() &&
+        staticMultiBindingReference() &&
+        staticRuntimeInitializationReference() &&
+        staticMutableStorageReference()
 }

@@ -1,16 +1,52 @@
 //! Reference specimens for Projects / ManifestModel.
 
+internal enum ManifestParseStatusReference {
+    Parsed
+    Missing
+    InvalidToml
+}
+
+internal enum ManifestEmitIrReference {
+    None
+    Ll
+    Bc
+    Invalid
+}
+
 internal record ManifestAssemblyReference {
     internal name: string@View
     internal kind: string@View
     internal root: string@View
+    internal out_dir: string@View
+    internal emit_ir: ManifestEmitIrReference
+    internal link_kind: string@View
+    internal has_known_keys: bool
     internal has_required_keys: bool
+    internal required_types_are_strings: bool
+    internal optional_types_are_valid: bool
+    internal name_is_identifier: bool
+    internal kind_is_valid: bool
+    internal root_is_relative: bool
+    internal out_dir_is_relative: bool
 }
 
 internal record ManifestReference {
+    internal parse_status: ManifestParseStatusReference
     internal assembly_count: usize
+    internal assembly_field_is_table: bool
+    internal assembly_names_are_distinct: bool
+    internal top_keys_are_known: bool
     internal has_toolchain: bool
+    internal toolchain_keys_are_known: bool
+    internal toolchain_types_are_valid: bool
+    internal toolchain_target_profile: string@View
     internal has_build: bool
+    internal build_keys_are_known: bool
+    internal build_types_are_valid: bool
+    internal build_incremental_present: bool
+    internal build_incremental: bool
+    internal build_progress_present: bool
+    internal build_progress: bool
     internal primary_assembly: ManifestAssemblyReference
 }
 
@@ -18,40 +54,380 @@ internal procedure manifestAssemblyReference(
     name: string@View,
     kind: string@View,
     root: string@View,
-    has_required_keys: bool
+    out_dir: string@View,
+    emit_ir: ManifestEmitIrReference,
+    link_kind: string@View,
+    has_known_keys: bool,
+    has_required_keys: bool,
+    required_types_are_strings: bool,
+    optional_types_are_valid: bool,
+    name_is_identifier: bool,
+    kind_is_valid: bool,
+    root_is_relative: bool,
+    out_dir_is_relative: bool
 ) -> ManifestAssemblyReference {
     return ManifestAssemblyReference {
         name: name,
         kind: kind,
         root: root,
-        has_required_keys: has_required_keys
+        out_dir: out_dir,
+        emit_ir: emit_ir,
+        link_kind: link_kind,
+        has_known_keys: has_known_keys,
+        has_required_keys: has_required_keys,
+        required_types_are_strings: required_types_are_strings,
+        optional_types_are_valid: optional_types_are_valid,
+        name_is_identifier: name_is_identifier,
+        kind_is_valid: kind_is_valid,
+        root_is_relative: root_is_relative,
+        out_dir_is_relative: out_dir_is_relative
     }
 }
 
 internal procedure manifestReference(
+    parse_status: ManifestParseStatusReference,
     assembly_count: usize,
+    assembly_field_is_table: bool,
+    assembly_names_are_distinct: bool,
+    top_keys_are_known: bool,
     has_toolchain: bool,
+    toolchain_keys_are_known: bool,
+    toolchain_types_are_valid: bool,
+    toolchain_target_profile: string@View,
     has_build: bool,
+    build_keys_are_known: bool,
+    build_types_are_valid: bool,
+    build_incremental_present: bool,
+    build_incremental: bool,
+    build_progress_present: bool,
+    build_progress: bool,
     primary_assembly: ManifestAssemblyReference
 ) -> ManifestReference {
     return ManifestReference {
+        parse_status: parse_status,
         assembly_count: assembly_count,
+        assembly_field_is_table: assembly_field_is_table,
+        assembly_names_are_distinct: assembly_names_are_distinct,
+        top_keys_are_known: top_keys_are_known,
         has_toolchain: has_toolchain,
+        toolchain_keys_are_known: toolchain_keys_are_known,
+        toolchain_types_are_valid: toolchain_types_are_valid,
+        toolchain_target_profile: toolchain_target_profile,
         has_build: has_build,
+        build_keys_are_known: build_keys_are_known,
+        build_types_are_valid: build_types_are_valid,
+        build_incremental_present: build_incremental_present,
+        build_incremental: build_incremental,
+        build_progress_present: build_progress_present,
+        build_progress: build_progress,
         primary_assembly: primary_assembly
     }
 }
 
+internal procedure manifestWasParsed(manifest: ManifestReference) -> bool {
+    return if manifest.parse_status is {
+        ManifestParseStatusReference::Parsed {
+            true
+        }
+        ManifestParseStatusReference::Missing {
+            false
+        }
+        ManifestParseStatusReference::InvalidToml {
+            false
+        }
+    }
+}
+
+internal procedure manifestLoadFailsWithoutFallback(manifest: ManifestReference) -> bool {
+    return !manifestWasParsed(manifest)
+}
+
+internal procedure manifestAssemblyLinkKindIsValid(assembly: ManifestAssemblyReference) -> bool {
+    if auditTextEquals(assembly.kind, "library") {
+        return auditTextEquals(assembly.link_kind, "") ||
+            auditTextEquals(assembly.link_kind, "shared") ||
+            auditTextEquals(assembly.link_kind, "static")
+    }
+    return auditTextEquals(assembly.link_kind, "")
+}
+
+internal procedure manifestAssemblyEmitIrIsValid(assembly: ManifestAssemblyReference) -> bool {
+    return if assembly.emit_ir is {
+        ManifestEmitIrReference::None {
+            true
+        }
+        ManifestEmitIrReference::Ll {
+            true
+        }
+        ManifestEmitIrReference::Bc {
+            true
+        }
+        ManifestEmitIrReference::Invalid {
+            false
+        }
+    }
+}
+
+internal procedure manifestAssemblyChecksOk(assembly: ManifestAssemblyReference) -> bool {
+    return assembly.has_known_keys &&
+        assembly.has_required_keys &&
+        assembly.required_types_are_strings &&
+        assembly.optional_types_are_valid &&
+        assembly.name_is_identifier &&
+        assembly.kind_is_valid &&
+        manifestAssemblyLinkKindIsValid(assembly) &&
+        manifestAssemblyEmitIrIsValid(assembly) &&
+        assembly.root_is_relative &&
+        assembly.out_dir_is_relative
+}
+
+internal procedure manifestBuildIncremental(manifest: ManifestReference) -> bool {
+    if manifest.has_build && manifest.build_incremental_present {
+        return manifest.build_incremental
+    }
+    return false
+}
+
+internal procedure manifestBuildProgress(manifest: ManifestReference) -> bool {
+    if manifest.has_build && manifest.build_progress_present {
+        return manifest.build_progress
+    }
+    return true
+}
+
+internal procedure manifestSelectedTargetProfile(
+    manifest: ManifestReference,
+    cli_target_profile: string@View
+) -> string@View {
+    if cli_target_profile != "" {
+        return cli_target_profile
+    }
+    if manifest.has_toolchain && manifest.toolchain_target_profile != "" {
+        return manifest.toolchain_target_profile
+    }
+    return "error"
+}
+
+internal procedure manifestFirstFailure(manifest: ManifestReference) -> string@View {
+    if !manifest.top_keys_are_known {
+        return "WF-TopKeys-Err"
+    }
+    if !manifest.assembly_field_is_table {
+        return "WF-Assembly-Table-Err"
+    }
+    if manifest.assembly_count == 0usize {
+        return "WF-Assembly-Count-Err"
+    }
+    if !manifest.assembly_names_are_distinct {
+        return "WF-Assembly-Name-Dup"
+    }
+    if !manifest.primary_assembly.has_known_keys {
+        return "WF-Assembly-Keys-Err"
+    }
+    if !manifest.primary_assembly.has_required_keys ||
+        !manifest.primary_assembly.required_types_are_strings {
+        return "WF-Assembly-Required-Types-Err"
+    }
+    if !manifest.primary_assembly.optional_types_are_valid {
+        return "WF-Assembly-OutDirType-Err"
+    }
+    if !manifest.primary_assembly.name_is_identifier {
+        return "WF-Assembly-Name-Err"
+    }
+    if !manifest.primary_assembly.kind_is_valid {
+        return "WF-Assembly-Kind-Err"
+    }
+    if !manifestAssemblyLinkKindIsValid(manifest.primary_assembly) {
+        if !auditTextEquals(manifest.primary_assembly.kind, "library") &&
+            !auditTextEquals(manifest.primary_assembly.link_kind, "") {
+            return "WF-Assembly-LinkKind-Use-Err"
+        }
+        return "WF-Assembly-LinkKind-Err"
+    }
+    if !manifestAssemblyEmitIrIsValid(manifest.primary_assembly) {
+        return "WF-Assembly-EmitIR-Err"
+    }
+    if !manifest.primary_assembly.root_is_relative {
+        return "WF-Assembly-Root-Path-Err"
+    }
+    if !manifest.primary_assembly.out_dir_is_relative {
+        return "WF-Assembly-OutDir-Path-Err"
+    }
+    if manifest.has_toolchain &&
+        (!manifest.toolchain_keys_are_known || !manifest.toolchain_types_are_valid) {
+        return "WF-Toolchain-Err"
+    }
+    if manifest.has_build && (!manifest.build_keys_are_known || !manifest.build_types_are_valid) {
+        return "WF-Build-Err"
+    }
+    return ""
+}
+
 internal procedure manifestIsLoadable(manifest: ManifestReference) -> bool {
-    return manifest.assembly_count > 0usize &&
-        manifest.primary_assembly.has_required_keys
+    return manifestWasParsed(manifest) &&
+        manifestFirstFailure(manifest) == "" &&
+        manifestAssemblyChecksOk(manifest.primary_assembly)
+}
+
+internal procedure validManifestReference() -> ManifestReference {
+    let assembly: ManifestAssemblyReference = manifestAssemblyReference(
+        "HelloUltraviolet",
+        "executable",
+        "Source",
+        "build",
+        ManifestEmitIrReference::Ll,
+        "",
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true
+    )
+    return manifestReference(
+        ManifestParseStatusReference::Parsed,
+        1usize,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        "x86_64-win64",
+        true,
+        true,
+        true,
+        true,
+        true,
+        false,
+        true,
+        assembly
+    )
+}
+
+internal procedure invalidTopKeyManifestReference() -> ManifestReference {
+    let manifest: ManifestReference = validManifestReference()
+    return manifestReference(
+        manifest.parse_status,
+        manifest.assembly_count,
+        manifest.assembly_field_is_table,
+        manifest.assembly_names_are_distinct,
+        false,
+        manifest.has_toolchain,
+        manifest.toolchain_keys_are_known,
+        manifest.toolchain_types_are_valid,
+        manifest.toolchain_target_profile,
+        manifest.has_build,
+        manifest.build_keys_are_known,
+        manifest.build_types_are_valid,
+        manifest.build_incremental_present,
+        manifest.build_incremental,
+        manifest.build_progress_present,
+        manifest.build_progress,
+        manifest.primary_assembly
+    )
+}
+
+internal procedure duplicateAssemblyNameManifestReference() -> ManifestReference {
+    let manifest: ManifestReference = validManifestReference()
+    return manifestReference(
+        manifest.parse_status,
+        2usize,
+        manifest.assembly_field_is_table,
+        false,
+        manifest.top_keys_are_known,
+        manifest.has_toolchain,
+        manifest.toolchain_keys_are_known,
+        manifest.toolchain_types_are_valid,
+        manifest.toolchain_target_profile,
+        manifest.has_build,
+        manifest.build_keys_are_known,
+        manifest.build_types_are_valid,
+        manifest.build_incremental_present,
+        manifest.build_incremental,
+        manifest.build_progress_present,
+        manifest.build_progress,
+        manifest.primary_assembly
+    )
+}
+
+internal procedure invalidExecutableLinkKindManifestReference() -> ManifestReference {
+    let assembly: ManifestAssemblyReference = manifestAssemblyReference(
+        "BadExecutable",
+        "executable",
+        "Source",
+        "",
+        ManifestEmitIrReference::None,
+        "static",
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true
+    )
+    return manifestReference(
+        ManifestParseStatusReference::Parsed,
+        1usize,
+        true,
+        true,
+        true,
+        false,
+        true,
+        true,
+        "",
+        false,
+        true,
+        true,
+        false,
+        false,
+        false,
+        true,
+        assembly
+    )
+}
+
+internal procedure missingManifestReference() -> ManifestReference {
+    let manifest: ManifestReference = validManifestReference()
+    return manifestReference(
+        ManifestParseStatusReference::Missing,
+        manifest.assembly_count,
+        manifest.assembly_field_is_table,
+        manifest.assembly_names_are_distinct,
+        manifest.top_keys_are_known,
+        manifest.has_toolchain,
+        manifest.toolchain_keys_are_known,
+        manifest.toolchain_types_are_valid,
+        manifest.toolchain_target_profile,
+        manifest.has_build,
+        manifest.build_keys_are_known,
+        manifest.build_types_are_valid,
+        manifest.build_incremental_present,
+        manifest.build_incremental,
+        manifest.build_progress_present,
+        manifest.build_progress,
+        manifest.primary_assembly
+    )
 }
 
 /// Exercises the Projects ManifestModel reference surface.
 public procedure runProjectsManifestModelReference() -> bool {
-    let assembly: ManifestAssemblyReference =
-        manifestAssemblyReference("HelloUltraviolet", "executable", "Source", true)
-    let manifest: ManifestReference =
-        manifestReference(1usize, false, true, assembly)
-    return manifestIsLoadable(manifest)
+    let manifest: ManifestReference = validManifestReference()
+    let invalid_top_key: ManifestReference = invalidTopKeyManifestReference()
+    let duplicate_name: ManifestReference = duplicateAssemblyNameManifestReference()
+    let invalid_link_kind: ManifestReference = invalidExecutableLinkKindManifestReference()
+    let missing_manifest: ManifestReference = missingManifestReference()
+    return manifestIsLoadable(manifest) &&
+        manifestFirstFailure(invalid_top_key) == "WF-TopKeys-Err" &&
+        manifestFirstFailure(duplicate_name) == "WF-Assembly-Name-Dup" &&
+        manifestFirstFailure(invalid_link_kind) == "WF-Assembly-LinkKind-Use-Err" &&
+        manifestLoadFailsWithoutFallback(missing_manifest) &&
+        manifestSelectedTargetProfile(manifest, "aarch64-aapcs64") == "aarch64-aapcs64" &&
+        manifestSelectedTargetProfile(manifest, "") == "x86_64-win64" &&
+        manifestBuildIncremental(manifest) &&
+        manifestBuildProgress(manifest)
 }

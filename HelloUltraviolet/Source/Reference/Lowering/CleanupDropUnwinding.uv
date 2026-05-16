@@ -1,5 +1,23 @@
 //! Reference specimens for Lowering / CleanupDropUnwinding.
 
+extern "C-unwind" {
+    /// Imports the same-image cleanup defer panic catch boundary.
+    [[unwind("catch")]]
+    public procedure importedCleanupDeferPanicBoundary() -> i32
+
+    /// Imports the same-image cleanup direct-drop panic catch boundary.
+    [[unwind("catch")]]
+    public procedure importedCleanupDropPanicBoundary() -> i32
+
+    /// Imports the same-image cleanup child-drop panic catch boundary.
+    [[unwind("catch")]]
+    public procedure importedCleanupChildDropPanicBoundary() -> i32
+}
+
+private var _CLEANUP_DEFER_TRACE: i32 = 0
+private var _CLEANUP_DROP_TRACE: i32 = 0
+private var _CLEANUP_RUNTIME_PANIC_INDEX: usize = 1usize
+
 internal procedure cleanupDeferValue(seed: i32) -> i32 {
     var value: i32 = seed
     {
@@ -18,13 +36,125 @@ internal record LoweringDropRecord {
     }
 }
 
+private let _LOWERING_STATIC_DROP_RECORD: LoweringDropRecord =
+    LoweringDropRecord { value: 0 }
+
+internal record CleanupTraceDropRecord {
+    internal amount: i32
+    internal payload: LoweringDropRecord
+
+    internal procedure drop(~!) -> () {
+        _CLEANUP_DROP_TRACE = _CLEANUP_DROP_TRACE + self.amount
+    }
+}
+
+internal record CleanupPanickingDropRecord {
+    internal amount: i32
+    internal payload: LoweringDropRecord
+
+    [[dynamic]]
+    internal procedure drop(~!) -> () {
+        _CLEANUP_DROP_TRACE = _CLEANUP_DROP_TRACE + self.amount
+        let values: [i32; 1] = [1]
+        let index: usize = _CLEANUP_RUNTIME_PANIC_INDEX
+        let ignored: i32 = values[index]
+    }
+}
+
+internal record CleanupChildPanickingDropRecord {
+    internal child: CleanupPanickingDropRecord
+}
+
 internal procedure cleanupDropValue(move value: LoweringDropRecord) -> i32 {
     return move value.value
+}
+
+/// C-unwind boundary whose deferred cleanup panics after an earlier defer runs.
+[[dynamic]]
+[[export("C-unwind")]]
+[[unwind("catch")]]
+[[mangle("importedCleanupDeferPanicBoundary")]]
+public procedure cleanupDeferPanicBoundaryProvider() -> i32 {
+    _CLEANUP_DEFER_TRACE = 0
+    defer {
+        _CLEANUP_DEFER_TRACE = _CLEANUP_DEFER_TRACE + 100
+    }
+    defer {
+        let values: [i32; 1] = [1]
+        var index: usize = 1usize
+        let ignored: i32 = values[index]
+    }
+    defer {
+        _CLEANUP_DEFER_TRACE = _CLEANUP_DEFER_TRACE + 1
+    }
+    return 5
+}
+
+/// C-unwind boundary whose direct binding drop panics during cleanup.
+[[export("C-unwind")]]
+[[unwind("catch")]]
+[[mangle("importedCleanupDropPanicBoundary")]]
+public procedure cleanupDropPanicBoundaryProvider() -> i32 {
+    _CLEANUP_DROP_TRACE = 0
+    let first: CleanupTraceDropRecord = CleanupTraceDropRecord {
+        amount: 100,
+        payload: LoweringDropRecord { value: 0 }
+    }
+    let panicking: CleanupPanickingDropRecord = CleanupPanickingDropRecord {
+        amount: 10,
+        payload: LoweringDropRecord { value: 0 }
+    }
+    let last: CleanupTraceDropRecord = CleanupTraceDropRecord {
+        amount: 1,
+        payload: LoweringDropRecord { value: 0 }
+    }
+    return 5
+}
+
+/// C-unwind boundary whose child value drop panics during cleanup.
+[[export("C-unwind")]]
+[[unwind("catch")]]
+[[mangle("importedCleanupChildDropPanicBoundary")]]
+public procedure cleanupChildDropPanicBoundaryProvider() -> i32 {
+    _CLEANUP_DROP_TRACE = 0
+    let first: CleanupTraceDropRecord = CleanupTraceDropRecord {
+        amount: 100,
+        payload: LoweringDropRecord { value: 0 }
+    }
+    let panicking: CleanupChildPanickingDropRecord = CleanupChildPanickingDropRecord {
+        child: CleanupPanickingDropRecord {
+            amount: 10,
+            payload: LoweringDropRecord { value: 0 }
+        }
+    }
+    let last: CleanupTraceDropRecord = CleanupTraceDropRecord {
+        amount: 1,
+        payload: LoweringDropRecord { value: 0 }
+    }
+    return 5
+}
+
+internal procedure cleanupDeferPanicValue() -> i32 {
+    let caught_value: i32 = unsafe { importedCleanupDeferPanicBoundary() }
+    return caught_value + _CLEANUP_DEFER_TRACE
+}
+
+internal procedure cleanupDropPanicValue() -> i32 {
+    let caught_value: i32 = unsafe { importedCleanupDropPanicBoundary() }
+    return caught_value + _CLEANUP_DROP_TRACE
+}
+
+internal procedure cleanupChildDropPanicValue() -> i32 {
+    let caught_value: i32 = unsafe { importedCleanupChildDropPanicBoundary() }
+    return caught_value + _CLEANUP_DROP_TRACE
 }
 
 /// Exercises the Lowering CleanupDropUnwinding reference surface.
 public procedure runLoweringCleanupDropUnwindingReference() -> bool {
     let record_value: LoweringDropRecord = LoweringDropRecord { value: 7 }
     return cleanupDeferValue(1) == 12 &&
-        cleanupDropValue(move record_value) == 7
+        cleanupDropValue(move record_value) == 7 &&
+        cleanupDeferPanicValue() == 101 &&
+        cleanupDropPanicValue() == 111 &&
+        cleanupChildDropPanicValue() == 111
 }

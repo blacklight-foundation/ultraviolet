@@ -1,29 +1,36 @@
 //! Reference specimens for Procedures / BehavioralSubtyping.
 
-internal record BehavioralSubtypingReference {
-    internal weakens_precondition: bool
-    internal strengthens_postcondition: bool
+internal class BehavioralReadableClass {
+    internal procedure readBehavioralValue(~, value: i32) -> i32
+    |: value > 0 => @result >= value
 }
 
-internal procedure behavioralSubtypingReference(
-    weakens_precondition: bool,
-    strengthens_postcondition: bool
-) -> BehavioralSubtypingReference {
-    return BehavioralSubtypingReference {
-        weakens_precondition: weakens_precondition,
-        strengthens_postcondition: strengthens_postcondition
+internal record BehavioralReadableOwner <: BehavioralReadableClass {
+    internal procedure readBehavioralValue(~, value: i32) -> i32
+    |: value >= 0 => @result > value
+    {
+        return value + 1
     }
 }
 
-internal procedure behavioralSubtypingIsValid(
-    reference: BehavioralSubtypingReference
-) -> bool {
-    return reference.weakens_precondition && reference.strengthens_postcondition
+internal procedure makeBehavioralReadable() -> opaque BehavioralReadableClass {
+    return BehavioralReadableOwner()
+}
+
+internal procedure readOpaqueBehavioralValue(
+    value: opaque BehavioralReadableClass,
+    argument: i32
+) -> i32
+|: argument > 0
+{
+    return value~>readBehavioralValue(argument)
 }
 
 /// Exercises the Procedures BehavioralSubtyping reference surface.
 public procedure runProceduresBehavioralSubtypingReference() -> bool {
-    let valid: BehavioralSubtypingReference = behavioralSubtypingReference(true, true)
-    let invalid: BehavioralSubtypingReference = behavioralSubtypingReference(false, true)
-    return behavioralSubtypingIsValid(valid) && !behavioralSubtypingIsValid(invalid)
+    let owner: BehavioralReadableOwner = BehavioralReadableOwner()
+    let opaque_owner: opaque BehavioralReadableClass = makeBehavioralReadable()
+    return owner~>readBehavioralValue(0) == 1 &&
+        owner~>readBehavioralValue(8) == 9 &&
+        readOpaqueBehavioralValue(opaque_owner, 11) == 12
 }

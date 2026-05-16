@@ -79,6 +79,7 @@
 #include "04_analysis/resolve/scopes_lookup.h"
 #include "04_analysis/typing/type_lower.h"
 #include "04_analysis/typing/type_equiv.h"
+#include "04_analysis/typing/type_pattern.h"
 #include "04_analysis/memory/string_bytes.h"
 #include "04_analysis/resolve/visibility.h"
 
@@ -283,28 +284,36 @@ static ModuleStaticLookupResult LookupModuleStaticInModule(
     if (!decl || !decl->binding.pat) {
       continue;
     }
-    const auto& pat = *decl->binding.pat;
+    bool binds_name = false;
+    for (const auto& bound_name : PatNames(decl->binding.pat)) {
+      if (IdEq(bound_name, name)) {
+        binds_name = true;
+        break;
+      }
+    }
+    if (!binds_name) {
+      continue;
+    }
+
     const auto ann_type = ast::BindingAnnotationTypeOpt(decl->binding);
     if (!ann_type) {
       continue;
     }
-    if (const auto* ident = std::get_if<ast::IdentifierPattern>(&pat.node)) {
-      if (IdEq(ident->name, name)) {
-        const auto lowered = LowerTypeLocal(ctx, ann_type);
-        if (!lowered.ok) {
-          return {false, lowered.diag_id, {}, false};
-        }
-        return {true, std::nullopt, lowered.type,
-                decl->mut == ast::Mutability::Var};
-      }
-    } else if (const auto* typed =
-                   std::get_if<ast::TypedPattern>(&pat.node)) {
-      if (!IdEq(typed->name, "_") && IdEq(typed->name, name)) {
-        const auto lowered = LowerTypeLocal(ctx, ann_type);
-        if (!lowered.ok) {
-          return {false, lowered.diag_id, {}, false};
-        }
-        return {true, std::nullopt, lowered.type,
+
+    const auto lowered = LowerTypeLocal(ctx, ann_type);
+    if (!lowered.ok) {
+      return {false, lowered.diag_id, {}, false};
+    }
+
+    const auto pattern_result =
+        TypePatternAgainstType(ctx, decl->binding.pat, lowered.type);
+    if (!pattern_result.ok) {
+      return {false, pattern_result.diag_id, {}, false};
+    }
+
+    for (const auto& binding : pattern_result.bindings) {
+      if (IdEq(binding.first, name)) {
+        return {true, std::nullopt, binding.second,
                 decl->mut == ast::Mutability::Var};
       }
     }

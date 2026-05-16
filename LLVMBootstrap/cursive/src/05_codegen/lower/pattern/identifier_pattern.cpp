@@ -17,6 +17,7 @@
 
 #include "00_core/assert_spec.h"
 #include "05_codegen/ir/ir_model.h"
+#include "05_codegen/lower/expr/closure_expr.h"
 #include "05_codegen/lower/lower_pat.h"
 
 namespace cursive::codegen {
@@ -89,8 +90,30 @@ IRPtr LowerIdentifierPatternBindings(const ast::IdentifierPattern& pattern,
   if (const DerivedValueInfo* derived = ctx.LookupDerivedValue(value)) {
     IRValue local_value;
     local_value.kind = IRValue::Kind::Local;
-    local_value.name = pattern.name;
+    local_value.name = bind.stable_name.empty() ? pattern.name : bind.stable_name;
     ctx.RegisterDerivedValue(local_value, *derived);
+  } else {
+    analysis::TypeRef target_type =
+        NormalizeCallableAliasForLowering(bind.type, ctx);
+    const bool target_is_closure =
+        target_type &&
+        std::holds_alternative<analysis::TypeClosure>(target_type->node);
+    if (target_is_closure && value.kind == IRValue::Kind::Symbol) {
+      IRValue env_null;
+      env_null.kind = IRValue::Kind::Immediate;
+      env_null.name = "null";
+      env_null.bytes = {0, 0, 0, 0, 0, 0, 0, 0};
+
+      DerivedValueInfo closure_info;
+      closure_info.kind = DerivedValueInfo::Kind::TupleLit;
+      closure_info.elements.push_back(env_null);
+      closure_info.elements.push_back(value);
+
+      IRValue local_value;
+      local_value.kind = IRValue::Kind::Local;
+      local_value.name = bind.stable_name.empty() ? pattern.name : bind.stable_name;
+      ctx.RegisterDerivedValue(local_value, closure_info);
+    }
   }
 
   return MakeIR(std::move(bind));

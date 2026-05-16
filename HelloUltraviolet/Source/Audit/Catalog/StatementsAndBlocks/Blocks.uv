@@ -9,7 +9,7 @@ public procedure validatedStatementsAndBlocksBlocksObligations() -> usize {
     var count: usize = 0usize
     if acceptedObligationEntryMatches(
         "grammar.18.Blocks",
-        68010usize,
+        68017usize,
         "HelloUltraviolet::Reference::Statements",
         "runStatementsBlocksReference",
         "Source/Reference/Statements/Blocks.uv"
@@ -18,7 +18,7 @@ public procedure validatedStatementsAndBlocksBlocksObligations() -> usize {
     }
     if acceptedObligationEntryMatches(
         "req.18.BlockStatementExternalDefinitions",
-        68040usize,
+        68047usize,
         "HelloUltraviolet::Reference::Statements",
         "runStatementsBlocksReference",
         "Source/Reference/Statements/Blocks.uv"
@@ -27,7 +27,7 @@ public procedure validatedStatementsAndBlocksBlocksObligations() -> usize {
     }
     if acceptedObligationEntryMatches(
         "def.18.StatementTerminators",
-        68056usize,
+        68063usize,
         "HelloUltraviolet::Reference::Statements",
         "runStatementsBlocksReference",
         "Source/Reference/Statements/Blocks.uv"
@@ -36,7 +36,7 @@ public procedure validatedStatementsAndBlocksBlocksObligations() -> usize {
     }
     if acceptedObligationEntryMatches(
         "def.18.AttachStmtAttrs",
-        68071usize,
+        68078usize,
         "HelloUltraviolet::Reference::Statements",
         "runStatementsBlocksReference",
         "Source/Reference/Statements/Blocks.uv"
@@ -45,7 +45,7 @@ public procedure validatedStatementsAndBlocksBlocksObligations() -> usize {
     }
     if acceptedObligationEntryMatches(
         "rule.18.Parse-Statement",
-        68084usize,
+        68091usize,
         "HelloUltraviolet::Reference::Statements",
         "runStatementsBlocksReference",
         "Source/Reference/Statements/Blocks.uv"
@@ -54,7 +54,7 @@ public procedure validatedStatementsAndBlocksBlocksObligations() -> usize {
     }
     if rejectedSourceObligationEntryMatches(
         "rule.18.Parse-Statement-Err",
-        68100usize,
+        68107usize,
         "HelloUltraviolet::Fixtures::RejectedSource",
         "validatedStatementsRejectedSourceFixtureCount",
         "Fixtures/RejectedSource/Statements/StatementParseError/Source/Main.uv"
@@ -63,7 +63,7 @@ public procedure validatedStatementsAndBlocksBlocksObligations() -> usize {
     }
     if acceptedObligationEntryMatches(
         "rule.18.Parse-Block",
-        68116usize,
+        68123usize,
         "HelloUltraviolet::Reference::Statements",
         "runStatementsBlocksReference",
         "Source/Reference/Statements/Blocks.uv"
@@ -72,7 +72,7 @@ public procedure validatedStatementsAndBlocksBlocksObligations() -> usize {
     }
     if acceptedObligationEntryMatches(
         "def.18.RequiredStatementTerminators",
-        68132usize,
+        68139usize,
         "HelloUltraviolet::Reference::Statements",
         "runStatementsBlocksReference",
         "Source/Reference/Statements/Blocks.uv"
@@ -81,7 +81,7 @@ public procedure validatedStatementsAndBlocksBlocksObligations() -> usize {
     }
     if acceptedObligationEntryMatches(
         "rule.18.ConsumeTerminatorOpt-Req-Yes",
-        68145usize,
+        68152usize,
         "HelloUltraviolet::Reference::Statements",
         "runStatementsBlocksReference",
         "Source/Reference/Statements/Blocks.uv"
@@ -90,7 +90,7 @@ public procedure validatedStatementsAndBlocksBlocksObligations() -> usize {
     }
     if rejectedSourceObligationEntryMatches(
         "rule.18.ConsumeTerminatorOpt-Req-No",
-        68161usize,
+        68168usize,
         "HelloUltraviolet::Fixtures::RejectedSource",
         "validatedStatementsRejectedSourceFixtureCount",
         "Fixtures/RejectedSource/Statements/MissingRequiredTerminator/Source/Main.uv"
@@ -99,7 +99,7 @@ public procedure validatedStatementsAndBlocksBlocksObligations() -> usize {
     }
     if acceptedObligationEntryMatches(
         "rule.18.ConsumeTerminatorOpt-Opt-Yes",
-        68177usize,
+        68184usize,
         "HelloUltraviolet::Reference::Statements",
         "runStatementsBlocksReference",
         "Source/Reference/Statements/Blocks.uv"
@@ -108,7 +108,7 @@ public procedure validatedStatementsAndBlocksBlocksObligations() -> usize {
     }
     if acceptedObligationEntryMatches(
         "rule.18.ConsumeTerminatorOpt-Opt-No",
-        68193usize,
+        68200usize,
         "HelloUltraviolet::Reference::Statements",
         "runStatementsBlocksReference",
         "Source/Reference/Statements/Blocks.uv"
@@ -117,7 +117,7 @@ public procedure validatedStatementsAndBlocksBlocksObligations() -> usize {
     }
     if acceptedObligationEntryMatches(
         "def.18.SkipNL",
-        68209usize,
+        68216usize,
         "HelloUltraviolet::Reference::Statements",
         "runStatementsBlocksReference",
         "Source/Reference/Statements/Blocks.uv"
@@ -126,7 +126,7 @@ public procedure validatedStatementsAndBlocksBlocksObligations() -> usize {
     }
     if acceptedObligationEntryMatches(
         "rule.18.ParseStmtSeq-End",
-        68223usize,
+        68230usize,
         "HelloUltraviolet::Reference::Statements",
         "runStatementsBlocksReference",
         "Source/Reference/Statements/Blocks.uv"
@@ -135,7 +135,7 @@ public procedure validatedStatementsAndBlocksBlocksObligations() -> usize {
     }
     if acceptedObligationEntryMatches(
         "rule.18.ParseStmtSeq-TailExpr",
-        68239usize,
+        68246usize,
         "HelloUltraviolet::Reference::Statements",
         "runStatementsBlocksReference",
         "Source/Reference/Statements/Blocks.uv"
@@ -144,7 +144,7 @@ public procedure validatedStatementsAndBlocksBlocksObligations() -> usize {
     }
     if acceptedObligationEntryMatches(
         "rule.18.ParseStmtSeq-Cons",
-        68255usize,
+        68262usize,
         "HelloUltraviolet::Reference::Statements",
         "runStatementsBlocksReference",
         "Source/Reference/Statements/Blocks.uv"
@@ -153,7 +153,7 @@ public procedure validatedStatementsAndBlocksBlocksObligations() -> usize {
     }
     if rejectedSourceObligationEntryMatches(
         "def.18.SyncStmt",
-        68271usize,
+        68278usize,
         "HelloUltraviolet::Fixtures::RejectedSource",
         "validatedStatementsRejectedSourceFixtureCount",
         "Fixtures/RejectedSource/Statements/SyncStatementRecovery/Source/Main.uv"
@@ -162,7 +162,7 @@ public procedure validatedStatementsAndBlocksBlocksObligations() -> usize {
     }
     if acceptedObligationEntryMatches(
         "def.18.StatementAstForms",
-        68286usize,
+        68293usize,
         "HelloUltraviolet::Reference::Statements",
         "runStatementsBlocksReference",
         "Source/Reference/Statements/Blocks.uv"
@@ -171,7 +171,7 @@ public procedure validatedStatementsAndBlocksBlocksObligations() -> usize {
     }
     if acceptedObligationEntryMatches(
         "def.18.LastStmtAndResultType",
-        68299usize,
+        68306usize,
         "HelloUltraviolet::Reference::Statements",
         "runStatementsBlocksReference",
         "Source/Reference/Statements/Blocks.uv"
@@ -180,7 +180,7 @@ public procedure validatedStatementsAndBlocksBlocksObligations() -> usize {
     }
     if acceptedObligationEntryMatches(
         "def.18.BindingEnvironmentHelpers",
-        68318usize,
+        68325usize,
         "HelloUltraviolet::Reference::Statements",
         "runStatementsBlocksReference",
         "Source/Reference/Statements/Blocks.uv"
@@ -189,7 +189,7 @@ public procedure validatedStatementsAndBlocksBlocksObligations() -> usize {
     }
     if acceptedObligationEntryMatches(
         "def.18.StatementTypingJudgements",
-        68335usize,
+        68342usize,
         "HelloUltraviolet::Reference::Statements",
         "runStatementsBlocksReference",
         "Source/Reference/Statements/Blocks.uv"
@@ -198,7 +198,7 @@ public procedure validatedStatementsAndBlocksBlocksObligations() -> usize {
     }
     if acceptedObligationEntryMatches(
         "def.18.LoopFlag",
-        68348usize,
+        68355usize,
         "HelloUltraviolet::Reference::Statements",
         "runStatementsBlocksReference",
         "Source/Reference/Statements/Blocks.uv"
@@ -207,7 +207,7 @@ public procedure validatedStatementsAndBlocksBlocksObligations() -> usize {
     }
     if acceptedObligationEntryMatches(
         "def.18.ScopeStackTypeHelpers",
-        68361usize,
+        68368usize,
         "HelloUltraviolet::Reference::Statements",
         "runStatementsBlocksReference",
         "Source/Reference/Statements/Blocks.uv"
@@ -216,7 +216,7 @@ public procedure validatedStatementsAndBlocksBlocksObligations() -> usize {
     }
     if acceptedObligationEntryMatches(
         "rule.18.T-ErrorStmt",
-        68375usize,
+        68382usize,
         "HelloUltraviolet::Reference::Statements",
         "runStatementsBlocksReference",
         "Source/Reference/Statements/Blocks.uv"
@@ -225,7 +225,7 @@ public procedure validatedStatementsAndBlocksBlocksObligations() -> usize {
     }
     if acceptedObligationEntryMatches(
         "rule.18.BlockInfo-Res",
-        68390usize,
+        68397usize,
         "HelloUltraviolet::Reference::Statements",
         "runStatementsBlocksReference",
         "Source/Reference/Statements/Blocks.uv"
@@ -234,7 +234,7 @@ public procedure validatedStatementsAndBlocksBlocksObligations() -> usize {
     }
     if referenceModelObligationEntryMatches(
         "rule.18.BlockInfo-Res-Err",
-        68406usize,
+        68413usize,
         "HelloUltraviolet::Audit",
         "specClarificationLedgerIsIndexed",
         "Source/Audit/SpecClarifications.uv"
@@ -243,7 +243,7 @@ public procedure validatedStatementsAndBlocksBlocksObligations() -> usize {
     }
     if acceptedObligationEntryMatches(
         "rule.18.BlockInfo-Tail",
-        68422usize,
+        68429usize,
         "HelloUltraviolet::Reference::Statements",
         "runStatementsBlocksReference",
         "Source/Reference/Statements/Blocks.uv"
@@ -252,7 +252,7 @@ public procedure validatedStatementsAndBlocksBlocksObligations() -> usize {
     }
     if acceptedObligationEntryMatches(
         "rule.18.BlockInfo-ReturnTail",
-        68438usize,
+        68445usize,
         "HelloUltraviolet::Reference::Statements",
         "runStatementsBlocksReference",
         "Source/Reference/Statements/Blocks.uv"
@@ -261,7 +261,7 @@ public procedure validatedStatementsAndBlocksBlocksObligations() -> usize {
     }
     if acceptedObligationEntryMatches(
         "rule.18.BlockInfo-Unit",
-        68454usize,
+        68461usize,
         "HelloUltraviolet::Reference::Statements",
         "runStatementsBlocksReference",
         "Source/Reference/Statements/Blocks.uv"
@@ -270,7 +270,7 @@ public procedure validatedStatementsAndBlocksBlocksObligations() -> usize {
     }
     if acceptedObligationEntryMatches(
         "rule.18.T-Block",
-        68470usize,
+        68477usize,
         "HelloUltraviolet::Reference::Statements",
         "runStatementsBlocksReference",
         "Source/Reference/Statements/Blocks.uv"
@@ -279,7 +279,7 @@ public procedure validatedStatementsAndBlocksBlocksObligations() -> usize {
     }
     if acceptedObligationEntryMatches(
         "req.18.BlockCheckingModeValidation",
-        68486usize,
+        68493usize,
         "HelloUltraviolet::Reference::Statements",
         "runStatementsBlocksReference",
         "Source/Reference/Statements/Blocks.uv"
@@ -288,7 +288,7 @@ public procedure validatedStatementsAndBlocksBlocksObligations() -> usize {
     }
     if acceptedObligationEntryMatches(
         "req.18.BlockExprExpressionFormOwnership",
-        68499usize,
+        68506usize,
         "HelloUltraviolet::Reference::Statements",
         "runStatementsBlocksReference",
         "Source/Reference/Statements/Blocks.uv"
@@ -297,7 +297,7 @@ public procedure validatedStatementsAndBlocksBlocksObligations() -> usize {
     }
     if acceptedObligationEntryMatches(
         "def.18.StatementExecutionJudgements",
-        68514usize,
+        68521usize,
         "HelloUltraviolet::Reference::Statements",
         "runStatementsBlocksReference",
         "Source/Reference/Statements/Blocks.uv"
@@ -306,7 +306,7 @@ public procedure validatedStatementsAndBlocksBlocksObligations() -> usize {
     }
     if acceptedObligationEntryMatches(
         "def.18.ControlAndStatementOutcomes",
-        68527usize,
+        68534usize,
         "HelloUltraviolet::Reference::Statements",
         "runStatementsBlocksReference",
         "Source/Reference/Statements/Blocks.uv"
@@ -315,7 +315,7 @@ public procedure validatedStatementsAndBlocksBlocksObligations() -> usize {
     }
     if acceptedObligationEntryMatches(
         "def.18.BlockExitOutcome",
-        68546usize,
+        68553usize,
         "HelloUltraviolet::Reference::Statements",
         "runStatementsBlocksReference",
         "Source/Reference/Statements/Blocks.uv"
@@ -324,7 +324,7 @@ public procedure validatedStatementsAndBlocksBlocksObligations() -> usize {
     }
     if acceptedObligationEntryMatches(
         "def.18.BlockExit",
-        68562usize,
+        68569usize,
         "HelloUltraviolet::Reference::Statements",
         "runStatementsBlocksReference",
         "Source/Reference/Statements/Blocks.uv"
@@ -333,7 +333,7 @@ public procedure validatedStatementsAndBlocksBlocksObligations() -> usize {
     }
     if acceptedObligationEntryMatches(
         "def.18.EvalBlockBodySigma",
-        68575usize,
+        68582usize,
         "HelloUltraviolet::Reference::Statements",
         "runStatementsBlocksReference",
         "Source/Reference/Statements/Blocks.uv"
@@ -342,7 +342,7 @@ public procedure validatedStatementsAndBlocksBlocksObligations() -> usize {
     }
     if acceptedObligationEntryMatches(
         "def.18.EvalBlockSigma",
-        68593usize,
+        68600usize,
         "HelloUltraviolet::Reference::Statements",
         "runStatementsBlocksReference",
         "Source/Reference/Statements/Blocks.uv"
@@ -351,7 +351,7 @@ public procedure validatedStatementsAndBlocksBlocksObligations() -> usize {
     }
     if acceptedObligationEntryMatches(
         "def.18.EvalBlockBindSigma",
-        68606usize,
+        68613usize,
         "HelloUltraviolet::Reference::Statements",
         "runStatementsBlocksReference",
         "Source/Reference/Statements/Blocks.uv"
@@ -360,7 +360,7 @@ public procedure validatedStatementsAndBlocksBlocksObligations() -> usize {
     }
     if acceptedObligationEntryMatches(
         "def.18.EvalInScopeSigma",
-        68619usize,
+        68626usize,
         "HelloUltraviolet::Reference::Statements",
         "runStatementsBlocksReference",
         "Source/Reference/Statements/Blocks.uv"
@@ -369,7 +369,7 @@ public procedure validatedStatementsAndBlocksBlocksObligations() -> usize {
     }
     if acceptedObligationEntryMatches(
         "def.18.PlaceEvaluationHelpersGroup",
-        68632usize,
+        68639usize,
         "HelloUltraviolet::Reference::Statements",
         "runStatementsBlocksReference",
         "Source/Reference/Statements/Blocks.uv"
@@ -378,7 +378,7 @@ public procedure validatedStatementsAndBlocksBlocksObligations() -> usize {
     }
     if acceptedObligationEntryMatches(
         "def.18.PlaceJudgements",
-        68645usize,
+        68652usize,
         "HelloUltraviolet::Reference::Statements",
         "runStatementsBlocksReference",
         "Source/Reference/Statements/Blocks.uv"
@@ -387,7 +387,7 @@ public procedure validatedStatementsAndBlocksBlocksObligations() -> usize {
     }
     if acceptedObligationEntryMatches(
         "rule.18.ExecSeq-Empty",
-        68659usize,
+        68666usize,
         "HelloUltraviolet::Reference::Statements",
         "runStatementsBlocksReference",
         "Source/Reference/Statements/Blocks.uv"
@@ -396,7 +396,7 @@ public procedure validatedStatementsAndBlocksBlocksObligations() -> usize {
     }
     if acceptedObligationEntryMatches(
         "rule.18.ExecSeq-Cons-Ok",
-        68674usize,
+        68681usize,
         "HelloUltraviolet::Reference::Statements",
         "runStatementsBlocksReference",
         "Source/Reference/Statements/Blocks.uv"
@@ -405,7 +405,7 @@ public procedure validatedStatementsAndBlocksBlocksObligations() -> usize {
     }
     if acceptedObligationEntryMatches(
         "rule.18.ExecSeq-Cons-Ctrl",
-        68690usize,
+        68697usize,
         "HelloUltraviolet::Reference::Statements",
         "runStatementsBlocksReference",
         "Source/Reference/Statements/Blocks.uv"
@@ -414,7 +414,7 @@ public procedure validatedStatementsAndBlocksBlocksObligations() -> usize {
     }
     if acceptedObligationEntryMatches(
         "rule.18.ExecSigma-Error",
-        68706usize,
+        68713usize,
         "HelloUltraviolet::Reference::Statements",
         "runStatementsBlocksReference",
         "Source/Reference/Statements/Blocks.uv"
@@ -423,7 +423,7 @@ public procedure validatedStatementsAndBlocksBlocksObligations() -> usize {
     }
     if acceptedObligationEntryMatches(
         "def.18.ExecState",
-        68721usize,
+        68728usize,
         "HelloUltraviolet::Reference::Statements",
         "runStatementsBlocksReference",
         "Source/Reference/Statements/Blocks.uv"
@@ -432,7 +432,7 @@ public procedure validatedStatementsAndBlocksBlocksObligations() -> usize {
     }
     if acceptedObligationEntryMatches(
         "rule.18.Step-Exec-Other-Ok",
-        68734usize,
+        68741usize,
         "HelloUltraviolet::Reference::Statements",
         "runStatementsBlocksReference",
         "Source/Reference/Statements/Blocks.uv"
@@ -441,7 +441,7 @@ public procedure validatedStatementsAndBlocksBlocksObligations() -> usize {
     }
     if acceptedObligationEntryMatches(
         "rule.18.Step-Exec-Other-Ctrl",
-        68750usize,
+        68757usize,
         "HelloUltraviolet::Reference::Statements",
         "runStatementsBlocksReference",
         "Source/Reference/Statements/Blocks.uv"
@@ -450,7 +450,7 @@ public procedure validatedStatementsAndBlocksBlocksObligations() -> usize {
     }
     if acceptedObligationEntryMatches(
         "rule.18.Step-ExecSeq-Ok",
-        68766usize,
+        68773usize,
         "HelloUltraviolet::Reference::Statements",
         "runStatementsBlocksReference",
         "Source/Reference/Statements/Blocks.uv"
@@ -459,7 +459,7 @@ public procedure validatedStatementsAndBlocksBlocksObligations() -> usize {
     }
     if acceptedObligationEntryMatches(
         "rule.18.Step-ExecSeq-Ctrl",
-        68782usize,
+        68789usize,
         "HelloUltraviolet::Reference::Statements",
         "runStatementsBlocksReference",
         "Source/Reference/Statements/Blocks.uv"
@@ -468,7 +468,7 @@ public procedure validatedStatementsAndBlocksBlocksObligations() -> usize {
     }
     if acceptedObligationEntryMatches(
         "rule.18.Step-Exec-Defer",
-        68798usize,
+        68805usize,
         "HelloUltraviolet::Reference::Statements",
         "runStatementsBlocksReference",
         "Source/Reference/Statements/Blocks.uv"
@@ -477,7 +477,7 @@ public procedure validatedStatementsAndBlocksBlocksObligations() -> usize {
     }
     if acceptedObligationEntryMatches(
         "req.18.BlockExprEvalDelegatesToBlock",
-        68814usize,
+        68821usize,
         "HelloUltraviolet::Reference::Statements",
         "runStatementsBlocksReference",
         "Source/Reference/Statements/Blocks.uv"
@@ -486,7 +486,7 @@ public procedure validatedStatementsAndBlocksBlocksObligations() -> usize {
     }
     if acceptedObligationEntryMatches(
         "def.18.LowerStatementJudgements",
-        68829usize,
+        68836usize,
         "HelloUltraviolet::Reference::Statements",
         "runStatementsBlocksReference",
         "Source/Reference/Statements/Blocks.uv"
@@ -495,7 +495,7 @@ public procedure validatedStatementsAndBlocksBlocksObligations() -> usize {
     }
     if acceptedObligationEntryMatches(
         "rule.18.Lower-Stmt-Correctness",
-        68842usize,
+        68849usize,
         "HelloUltraviolet::Reference::Statements",
         "runStatementsBlocksReference",
         "Source/Reference/Statements/Blocks.uv"
@@ -504,7 +504,7 @@ public procedure validatedStatementsAndBlocksBlocksObligations() -> usize {
     }
     if acceptedObligationEntryMatches(
         "rule.18.Lower-Block-Correctness",
-        68858usize,
+        68865usize,
         "HelloUltraviolet::Reference::Statements",
         "runStatementsBlocksReference",
         "Source/Reference/Statements/Blocks.uv"
@@ -513,7 +513,7 @@ public procedure validatedStatementsAndBlocksBlocksObligations() -> usize {
     }
     if acceptedObligationEntryMatches(
         "def.18.StatementLoweringTotality",
-        68874usize,
+        68881usize,
         "HelloUltraviolet::Reference::Statements",
         "runStatementsBlocksReference",
         "Source/Reference/Statements/Blocks.uv"
@@ -522,7 +522,7 @@ public procedure validatedStatementsAndBlocksBlocksObligations() -> usize {
     }
     if acceptedObligationEntryMatches(
         "rule.18.Lower-StmtList-Empty",
-        68888usize,
+        68895usize,
         "HelloUltraviolet::Reference::Statements",
         "runStatementsBlocksReference",
         "Source/Reference/Statements/Blocks.uv"
@@ -531,7 +531,7 @@ public procedure validatedStatementsAndBlocksBlocksObligations() -> usize {
     }
     if acceptedObligationEntryMatches(
         "rule.18.Lower-StmtList-Cons",
-        68903usize,
+        68910usize,
         "HelloUltraviolet::Reference::Statements",
         "runStatementsBlocksReference",
         "Source/Reference/Statements/Blocks.uv"
@@ -540,7 +540,7 @@ public procedure validatedStatementsAndBlocksBlocksObligations() -> usize {
     }
     if acceptedObligationEntryMatches(
         "rule.18.Lower-Block-Tail",
-        68919usize,
+        68926usize,
         "HelloUltraviolet::Reference::Statements",
         "runStatementsBlocksReference",
         "Source/Reference/Statements/Blocks.uv"
@@ -549,7 +549,7 @@ public procedure validatedStatementsAndBlocksBlocksObligations() -> usize {
     }
     if acceptedObligationEntryMatches(
         "rule.18.Lower-Block-Unit",
-        68935usize,
+        68942usize,
         "HelloUltraviolet::Reference::Statements",
         "runStatementsBlocksReference",
         "Source/Reference/Statements/Blocks.uv"
@@ -558,7 +558,7 @@ public procedure validatedStatementsAndBlocksBlocksObligations() -> usize {
     }
     if acceptedObligationEntryMatches(
         "rule.18.Lower-Stmt-Error",
-        68951usize,
+        68958usize,
         "HelloUltraviolet::Reference::Statements",
         "runStatementsBlocksReference",
         "Source/Reference/Statements/Blocks.uv"
@@ -567,7 +567,7 @@ public procedure validatedStatementsAndBlocksBlocksObligations() -> usize {
     }
     if acceptedObligationEntryMatches(
         "req.18.TemporaryCleanupLowering",
-        68966usize,
+        68973usize,
         "HelloUltraviolet::Reference::Statements",
         "runStatementsBlocksReference",
         "Source/Reference/Statements/Blocks.uv"
@@ -576,7 +576,7 @@ public procedure validatedStatementsAndBlocksBlocksObligations() -> usize {
     }
     if acceptedObligationEntryMatches(
         "def.18.BlockLoopLoweringTotality",
-        68998usize,
+        69005usize,
         "HelloUltraviolet::Reference::Statements",
         "runStatementsBlocksReference",
         "Source/Reference/Statements/Blocks.uv"
@@ -585,7 +585,7 @@ public procedure validatedStatementsAndBlocksBlocksObligations() -> usize {
     }
     if acceptedObligationEntryMatches(
         "rule.18.Lower-Loop-Infinite",
-        69014usize,
+        69021usize,
         "HelloUltraviolet::Reference::Statements",
         "runStatementsBlocksReference",
         "Source/Reference/Statements/Blocks.uv"
@@ -594,7 +594,7 @@ public procedure validatedStatementsAndBlocksBlocksObligations() -> usize {
     }
     if acceptedObligationEntryMatches(
         "rule.18.Lower-Loop-Cond",
-        69030usize,
+        69037usize,
         "HelloUltraviolet::Reference::Statements",
         "runStatementsBlocksReference",
         "Source/Reference/Statements/Blocks.uv"
@@ -603,7 +603,7 @@ public procedure validatedStatementsAndBlocksBlocksObligations() -> usize {
     }
     if acceptedObligationEntryMatches(
         "rule.18.Lower-Loop-Iter",
-        69046usize,
+        69053usize,
         "HelloUltraviolet::Reference::Statements",
         "runStatementsBlocksReference",
         "Source/Reference/Statements/Blocks.uv"
@@ -612,7 +612,7 @@ public procedure validatedStatementsAndBlocksBlocksObligations() -> usize {
     }
     if rejectedSourceObligationEntryMatches(
         "diag.18.Blocks",
-        69064usize,
+        69071usize,
         "HelloUltraviolet::Fixtures::RejectedSource",
         "validatedStatementsRejectedSourceFixtureCount",
         "Fixtures/RejectedSource/Statements/BlocksDiagnostic/Source/Main.uv"

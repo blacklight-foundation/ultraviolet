@@ -51,7 +51,31 @@ inline core::Diagnostic MakeUncodedStaticTypecheckDiagnostic(
   return diag;
 }
 
+inline std::optional<std::string> LookupStaticRuleCodeOverride(
+    std::string_view diag_id) {
+  static constexpr std::pair<std::string_view, std::string_view> kOverrides[] = {
+      {"Deref-Raw-Unsafe", "E-TYP-2103"},
+      {"Frame-NoActiveRegion-Err", "E-MEM-1207"},
+      {"Frame-Target-NotActive-Err", "E-MEM-1208"},
+      {"If-Cond-NotBool", "E-SEM-2526"},
+      {"LookupMethod-Ambig", "E-MOD-1307"},
+      {"Transmute-Unsafe-Err", "E-MEM-3030"},
+  };
+
+  for (const auto& [rule_id, code] : kOverrides) {
+    if (diag_id == rule_id) {
+      return std::string(code);
+    }
+  }
+
+  return std::nullopt;
+}
+
 inline std::optional<std::string> LookupTypecheckDiagCode(std::string_view diag_id) {
+  if (const auto code = LookupStaticRuleCodeOverride(diag_id);
+      code.has_value()) {
+    return code;
+  }
   if (diag_id == "LookupMethod-NotFound") {
     return "E-SEM-2536";
   }

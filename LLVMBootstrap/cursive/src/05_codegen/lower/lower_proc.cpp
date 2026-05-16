@@ -56,6 +56,7 @@
 
 #include "05_codegen/lower/lower_proc.h"
 
+#include <algorithm>
 #include <map>
 #include <iostream>
 #include <string_view>
@@ -284,6 +285,7 @@ std::uint64_t AlignUp(std::uint64_t value, std::uint64_t align) {
 struct AsyncIRInfo {
   std::size_t next_state = 1;
   std::unordered_map<std::string, analysis::TypeRef> slot_types;
+  std::unordered_map<std::string, std::vector<std::string>> slot_aliases;
   std::vector<std::string> slot_order;
 };
 
@@ -602,12 +604,23 @@ IRPtr EmitEntryCapturesForPostcondition(const ast::ExprPtr& postcond, LowerCtx& 
 
 void AddAsyncSlot(AsyncIRInfo& info,
                   const std::string& name,
-                  const analysis::TypeRef& type) {
+                  const analysis::TypeRef& type,
+                  const std::vector<std::string>& aliases = {}) {
   if (!type) {
     return;
   }
   if (info.slot_types.emplace(name, type).second) {
     info.slot_order.push_back(name);
+  }
+  auto& known_aliases = info.slot_aliases[name];
+  for (const auto& alias : aliases) {
+    if (alias.empty() || alias == name) {
+      continue;
+    }
+    if (std::find(known_aliases.begin(), known_aliases.end(), alias) ==
+        known_aliases.end()) {
+      known_aliases.push_back(alias);
+    }
   }
 }
 
@@ -615,6 +628,17 @@ void AddLocalUse(const IRValue& value, std::unordered_set<std::string>& uses) {
   if (value.kind == IRValue::Kind::Local && !value.name.empty()) {
     uses.insert(value.name);
   }
+}
+
+void AddLocalNameUse(const std::string& name, std::unordered_set<std::string>& uses) {
+  if (!name.empty()) {
+    uses.insert(name);
+  }
+}
+
+std::string StableOrSourceName(const std::string& source_name,
+                               const std::string& stable_name) {
+  return stable_name.empty() ? source_name : stable_name;
 }
 
 bool CollectUsesAfterSuspension(IRPtr& ir,
@@ -758,6 +782,8 @@ bool CollectUsesAfterSuspension(IRPtr& ir,
             for (const auto& arg : node.args) {
               AddLocalUse(arg, uses);
             }
+          } else if constexpr (std::is_same_v<T, IRReadVar>) {
+            AddLocalNameUse(node.name, uses);
           } else if constexpr (std::is_same_v<T, IRCallVTable>) {
             AddLocalUse(node.base, uses);
             for (const auto& arg : node.args) {
@@ -846,8 +872,11 @@ void CollectAsyncSlotsFromBindings(const IRPtr& ir,
       [&](const auto& node) {
         using T = std::decay_t<decltype(node)>;
         if constexpr (std::is_same_v<T, IRBindVar>) {
-          if (uses_after_suspension.find(node.name) != uses_after_suspension.end()) {
-            AddAsyncSlot(info, node.name, node.type);
+          const std::string slot_name =
+              StableOrSourceName(node.name, node.stable_name);
+          if (uses_after_suspension.find(node.name) != uses_after_suspension.end() ||
+              uses_after_suspension.find(slot_name) != uses_after_suspension.end()) {
+            AddAsyncSlot(info, slot_name, node.type, {node.name});
           }
         } else if constexpr (std::is_same_v<T, IRSeq>) {
           for (const auto& item : node.items) {
@@ -1282,8 +1311,11 @@ ProcIR LowerProc(const ProcedureDecl& decl,
           continue;
         }
         param_names.push_back(param.name);
-        if (uses_after_suspension.find(param.name) != uses_after_suspension.end()) {
-          AddAsyncSlot(async_ir, param.name, param.type);
+        const std::string slot_name =
+            StableOrSourceName(param.name, param.stable_name);
+        if (uses_after_suspension.find(param.name) != uses_after_suspension.end() ||
+            uses_after_suspension.find(slot_name) != uses_after_suspension.end()) {
+          AddAsyncSlot(async_ir, slot_name, param.type, {param.name});
         }
       }
       CollectAsyncSlotsFromBindings(ir.body, async_ir, uses_after_suspension);
@@ -1301,6 +1333,7 @@ ProcIR LowerProc(const ProcedureDecl& decl,
           ctx.NeedsPanicOutForSymbol(async_info.resume_symbol);
       async_info.param_names = param_names;
       async_info.slot_order = async_ir.slot_order;
+      async_info.slot_aliases = async_ir.slot_aliases;
 
       std::uint64_t offset = kAsyncFrameHeaderSize;
       std::uint64_t frame_align = kAsyncFrameHeaderAlign;

@@ -1,31 +1,86 @@
 //! Reference specimens for Modules / ExternBlocks.
 
+extern {
+    public procedure moduleExternDefaultAbiValue(value: i32) -> i32
+}
+
+extern C {
+    internal procedure moduleExternIdentifierAbiValue(value: i32) -> i32
+}
+
+extern "C-unwind" {
+    [[unwind("catch")]]
+    internal procedure moduleExternStringAbiValue(value: i32) -> i32
+}
+
+[[library(name: "Kernel32")]]
+extern "C" {
+    [[mangle("GetTickCount")]]
+    internal procedure moduleExternBlockLibraryTickCount() -> u32
+}
+
 internal record ExternBlockReference {
     internal has_abi: bool
     internal item_count: usize
     internal contributes_runtime_body: bool
+    internal call_value: i32
 }
 
 internal procedure externBlockReference(
     has_abi: bool,
     item_count: usize,
-    contributes_runtime_body: bool
+    contributes_runtime_body: bool,
+    call_value: i32
 ) -> ExternBlockReference {
     return ExternBlockReference {
         has_abi: has_abi,
         item_count: item_count,
-        contributes_runtime_body: contributes_runtime_body
+        contributes_runtime_body: contributes_runtime_body,
+        call_value: call_value
     }
 }
 
 internal procedure externBlockShellIsValid(reference: ExternBlockReference) -> bool {
     return reference.has_abi &&
         reference.item_count > 0usize &&
-        !reference.contributes_runtime_body
+        !reference.contributes_runtime_body &&
+        reference.call_value == 42
+}
+
+/// Foreign-visible provider for the default-ABI extern declaration.
+[[export("C")]]
+[[mangle("moduleExternDefaultAbiValue")]]
+public procedure moduleExternDefaultAbiValueProvider(value: i32) -> i32 {
+    return value + 1
+}
+
+/// Foreign-visible provider for the identifier-ABI extern declaration.
+[[export("C")]]
+[[mangle("moduleExternIdentifierAbiValue")]]
+public procedure moduleExternIdentifierAbiValueProvider(value: i32) -> i32 {
+    return value + 2
+}
+
+/// Foreign-visible provider for the string-ABI extern declaration.
+[[export("C-unwind")]]
+[[unwind("catch")]]
+[[mangle("moduleExternStringAbiValue")]]
+public procedure moduleExternStringAbiValueProvider(value: i32) -> i32 {
+    return value + 3
+}
+
+internal procedure moduleExternBlockCallValue() -> i32 {
+    let default_value: i32 = unsafe { moduleExternDefaultAbiValue(10) }
+    let identifier_value: i32 = unsafe { moduleExternIdentifierAbiValue(13) }
+    let string_value: i32 = unsafe { moduleExternStringAbiValue(13) }
+    return default_value + identifier_value + string_value
 }
 
 /// Exercises the Modules ExternBlocks reference surface.
 public procedure runModulesExternBlocksReference() -> bool {
-    let block: ExternBlockReference = externBlockReference(true, 1usize, false)
-    return externBlockShellIsValid(block)
+    let block: ExternBlockReference =
+        externBlockReference(true, 4usize, false, moduleExternBlockCallValue())
+    let tick_count: u32 = unsafe { moduleExternBlockLibraryTickCount() }
+    return externBlockShellIsValid(block) &&
+        tick_count >= 0u32
 }

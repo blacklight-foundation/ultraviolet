@@ -99,6 +99,36 @@ public procedure rejectedSourceFixtureArtifactsExist(context: Context) -> bool {
         )
     artifacts_exist = artifacts_exist && rejectedFixtureArtifactsExist(
             context,
+            "HelloUltraviolet/Fixtures/RejectedSource/DataTypes/NoIntegerNumericSubtyping/Ultraviolet.toml",
+            "HelloUltraviolet/Fixtures/RejectedSource/DataTypes/NoIntegerNumericSubtyping/Source/Main.uv",
+            "HelloUltraviolet/Fixtures/RejectedSource/DataTypes/NoIntegerNumericSubtyping/Expected.uv"
+        )
+    artifacts_exist = artifacts_exist && rejectedFixtureArtifactsExist(
+            context,
+            "HelloUltraviolet/Fixtures/RejectedSource/DataTypes/NoFloatNumericSubtyping/Ultraviolet.toml",
+            "HelloUltraviolet/Fixtures/RejectedSource/DataTypes/NoFloatNumericSubtyping/Source/Main.uv",
+            "HelloUltraviolet/Fixtures/RejectedSource/DataTypes/NoFloatNumericSubtyping/Expected.uv"
+        )
+    artifacts_exist = artifacts_exist && rejectedFixtureArtifactsExist(
+            context,
+            "HelloUltraviolet/Fixtures/RejectedSource/DataTypes/GenericInvariantSubtyping/Ultraviolet.toml",
+            "HelloUltraviolet/Fixtures/RejectedSource/DataTypes/GenericInvariantSubtyping/Source/Main.uv",
+            "HelloUltraviolet/Fixtures/RejectedSource/DataTypes/GenericInvariantSubtyping/Expected.uv"
+        )
+    artifacts_exist = artifacts_exist && rejectedFixtureArtifactsExist(
+            context,
+            "HelloUltraviolet/Fixtures/RejectedSource/DataTypes/GenericCovariantSubtyping/Ultraviolet.toml",
+            "HelloUltraviolet/Fixtures/RejectedSource/DataTypes/GenericCovariantSubtyping/Source/Main.uv",
+            "HelloUltraviolet/Fixtures/RejectedSource/DataTypes/GenericCovariantSubtyping/Expected.uv"
+        )
+    artifacts_exist = artifacts_exist && rejectedFixtureArtifactsExist(
+            context,
+            "HelloUltraviolet/Fixtures/RejectedSource/DataTypes/GenericContravariantSubtyping/Ultraviolet.toml",
+            "HelloUltraviolet/Fixtures/RejectedSource/DataTypes/GenericContravariantSubtyping/Source/Main.uv",
+            "HelloUltraviolet/Fixtures/RejectedSource/DataTypes/GenericContravariantSubtyping/Expected.uv"
+        )
+    artifacts_exist = artifacts_exist && rejectedFixtureArtifactsExist(
+            context,
             "HelloUltraviolet/Fixtures/RejectedSource/Modules/StaticMissingTypeAnnotation/Ultraviolet.toml",
             "HelloUltraviolet/Fixtures/RejectedSource/Modules/StaticMissingTypeAnnotation/Source/Main.uv",
             "HelloUltraviolet/Fixtures/RejectedSource/Modules/StaticMissingTypeAnnotation/Expected.uv"

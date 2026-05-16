@@ -7,6 +7,45 @@ internal enum OptimizationAttributeReferenceKind {
     Cold
 }
 
+internal record OptimizationMethodAttributeRecord {
+    internal value: i32
+
+    [[inline(never)]]
+    internal procedure readNeverInlinedValue(~) -> i32 {
+        return self.value
+    }
+
+    [[cold]]
+    internal procedure readColdValue(~) -> i32 {
+        return self.value + 1
+    }
+}
+
+[[inline]]
+internal procedure optimizationBareInlineValue() -> i32 {
+    return 2
+}
+
+[[inline(default)]]
+internal procedure optimizationDefaultInlineValue() -> i32 {
+    return 3
+}
+
+[[inline(always)]]
+internal procedure optimizationAlwaysInlineValue() -> i32 {
+    return 5
+}
+
+[[inline(never)]]
+internal procedure optimizationNeverInlineValue() -> i32 {
+    return 7
+}
+
+[[cold]]
+internal procedure optimizationColdValue() -> i32 {
+    return 11
+}
+
 internal procedure optimizationAttributeAppliesToCallable(
     kind: OptimizationAttributeReferenceKind
 ) -> bool {
@@ -26,6 +65,19 @@ internal procedure optimizationAttributeAppliesToCallable(
     }
 }
 
+internal procedure optimizationConcreteAttributeValue() -> i32 {
+    let method_owner: OptimizationMethodAttributeRecord = OptimizationMethodAttributeRecord {
+        value: 13
+    }
+    return optimizationBareInlineValue() +
+        optimizationDefaultInlineValue() +
+        optimizationAlwaysInlineValue() +
+        optimizationNeverInlineValue() +
+        optimizationColdValue() +
+        method_owner~>readNeverInlinedValue() +
+        method_owner~>readColdValue()
+}
+
 /// Exercises the Attributes OptimizationAttributes reference surface.
 public procedure runAttributesOptimizationAttributesReference() -> bool {
     return optimizationAttributeAppliesToCallable(
@@ -33,5 +85,6 @@ public procedure runAttributesOptimizationAttributesReference() -> bool {
     ) &&
         optimizationAttributeAppliesToCallable(OptimizationAttributeReferenceKind::InlineAlways) &&
         optimizationAttributeAppliesToCallable(OptimizationAttributeReferenceKind::InlineNever) &&
-        optimizationAttributeAppliesToCallable(OptimizationAttributeReferenceKind::Cold)
+        optimizationAttributeAppliesToCallable(OptimizationAttributeReferenceKind::Cold) &&
+        optimizationConcreteAttributeValue() == 55
 }

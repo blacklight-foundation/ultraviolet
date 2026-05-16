@@ -30,11 +30,11 @@ public procedure specClarificationMatches(
 }
 
 public procedure expectedSpecClarificationCount() -> usize {
-    return 19usize
+    return 24usize
 }
 
 public procedure specClarificationCount() -> usize {
-    return 19usize
+    return 24usize
 }
 
 public procedure validatedSpecClarificationCount() -> usize {
@@ -257,6 +257,30 @@ public procedure validatedSpecClarificationCount() -> usize {
     }
     if specClarificationMatches(
         specClarification(
+            "Empty Tuple Pattern Unit Type",
+            "unit-tuple-pattern-static-semantics",
+            "ReferenceSource"
+        ),
+        "Empty Tuple Pattern Unit Type",
+        "unit-tuple-pattern-static-semantics",
+        "ReferenceSource"
+    ) {
+        count = count + 1usize
+    }
+    if specClarificationMatches(
+        specClarification(
+            "Static Rule Diagnostic Code Assignment",
+            "diagnostic-code-assignment",
+            "RejectedSource"
+        ),
+        "Static Rule Diagnostic Code Assignment",
+        "diagnostic-code-assignment",
+        "RejectedSource"
+    ) {
+        count = count + 1usize
+    }
+    if specClarificationMatches(
+        specClarification(
             "Direct Shared Mutation And Implicit Key Acquisition",
             "permission-key-diagnostic-overlap",
             "RejectedSource"
@@ -264,6 +288,42 @@ public procedure validatedSpecClarificationCount() -> usize {
         "Direct Shared Mutation And Implicit Key Acquisition",
         "permission-key-diagnostic-overlap",
         "RejectedSource"
+    ) {
+        count = count + 1usize
+    }
+    if specClarificationMatches(
+        specClarification(
+            "Procedure Call Postcondition Facts",
+            "callee-postcondition-fact-generation",
+            "ReferenceSource"
+        ),
+        "Procedure Call Postcondition Facts",
+        "callee-postcondition-fact-generation",
+        "ReferenceSource"
+    ) {
+        count = count + 1usize
+    }
+    if specClarificationMatches(
+        specClarification(
+            "Generic Variance Source And Diagnostic Codes",
+            "variance-source-diagnostic-code-alignment",
+            "ReferenceSourceRejectedSource"
+        ),
+        "Generic Variance Source And Diagnostic Codes",
+        "variance-source-diagnostic-code-alignment",
+        "ReferenceSourceRejectedSource"
+    ) {
+        count = count + 1usize
+    }
+    if specClarificationMatches(
+        specClarification(
+            "Noncapturing Closure Function Type And Closure Value Representation",
+            "closure-function-representation-contexts",
+            "ReferenceSource"
+        ),
+        "Noncapturing Closure Function Type And Closure Value Representation",
+        "closure-function-representation-contexts",
+        "ReferenceSource"
     ) {
         count = count + 1usize
     }

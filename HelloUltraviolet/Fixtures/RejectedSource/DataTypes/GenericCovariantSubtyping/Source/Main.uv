@@ -1,0 +1,15 @@
+//! Rejected subtyping specimen for covariant generic parameters.
+
+internal type NarrowValue = i32
+
+internal type WideValue = i32 | bool
+
+internal record CovariantBox<TValue> {
+    internal value: TValue
+}
+
+internal procedure genericCovariantSubtypingViolation() -> bool {
+    let source: CovariantBox<WideValue> = CovariantBox { value: true }
+    let target: CovariantBox<NarrowValue> = source
+    return target.value == 1
+}

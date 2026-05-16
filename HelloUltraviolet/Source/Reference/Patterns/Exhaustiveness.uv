@@ -3,7 +3,7 @@
 /// Exercises the Patterns Exhaustiveness reference surface.
 public procedure runPatternsExhaustivenessReference() -> bool {
     let reference: ModalReferenceValue = ModalReference@Closed {}
-    return if reference is {
+    let modal_exhaustive: bool = if reference is {
         @Closed {
             true
         }
@@ -11,4 +11,44 @@ public procedure runPatternsExhaustivenessReference() -> bool {
             false
         }
     }
+
+    let enum_reference: EnumReference = EnumReference::Idle
+    let enum_exhaustive: bool = if enum_reference is {
+        EnumReference::Idle {
+            true
+        }
+        EnumReference::Count(_) {
+            false
+        }
+        EnumReference::Named { value: _ } {
+            false
+        }
+    }
+
+    let union_reference: BasicPatternUnionReference = 5
+    let union_exhaustive: bool = if union_reference is {
+        value: i32 {
+            value == 5
+        }
+        value: bool {
+            false
+        }
+    }
+
+    let other_checked: bool = if 4 is 4 {
+        true
+    } else {
+        false
+    }
+
+    var no_else_score: i32 = 0
+    if 4 is 4 {
+        no_else_score = 1
+    }
+
+    return modal_exhaustive &&
+        enum_exhaustive &&
+        union_exhaustive &&
+        other_checked &&
+        no_else_score == 1
 }

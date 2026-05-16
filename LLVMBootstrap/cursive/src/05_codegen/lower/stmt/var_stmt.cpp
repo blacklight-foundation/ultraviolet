@@ -31,6 +31,7 @@
 #include "05_codegen/dyn_dispatch/dyn_dispatch.h"
 #include "05_codegen/ir/ir_model.h"
 #include "04_analysis/layout/layout.h"
+#include "05_codegen/lower/expr/closure_expr.h"
 #include "05_codegen/lower/expr/expr_common.h"
 #include "05_codegen/lower/lower_expr.h"
 #include "05_codegen/lower/lower_pat.h"
@@ -108,6 +109,38 @@ std::optional<std::string> SimplePatternBindingName(const ast::PatternPtr& pat) 
     return typed->name;
   }
   return std::nullopt;
+}
+
+void RegisterSimpleClosureBindingDerived(const std::string& name,
+                                         const analysis::TypeRef& type,
+                                         const IRValue& value,
+                                         LowerCtx& ctx) {
+  IRValue local_value;
+  local_value.kind = IRValue::Kind::Local;
+  const std::string stable_name = ctx.StableBindingName(name);
+  local_value.name = stable_name.empty() ? name : stable_name;
+  if (const DerivedValueInfo* derived = ctx.LookupDerivedValue(value)) {
+    ctx.RegisterDerivedValue(local_value, *derived);
+    return;
+  }
+
+  analysis::TypeRef target = NormalizeCallableAliasForLowering(type, ctx);
+  const bool target_is_closure =
+      target && std::holds_alternative<analysis::TypeClosure>(target->node);
+  if (!target_is_closure || value.kind != IRValue::Kind::Symbol) {
+    return;
+  }
+
+  IRValue env_null;
+  env_null.kind = IRValue::Kind::Immediate;
+  env_null.name = "null";
+  env_null.bytes = {0, 0, 0, 0, 0, 0, 0, 0};
+
+  DerivedValueInfo closure_info;
+  closure_info.kind = DerivedValueInfo::Kind::TupleLit;
+  closure_info.elements.push_back(env_null);
+  closure_info.elements.push_back(value);
+  ctx.RegisterDerivedValue(local_value, closure_info);
 }
 
 }  // namespace
@@ -234,6 +267,9 @@ IRPtr LowerVarStmt(const ast::VarStmt& stmt, LowerCtx& ctx) {
                             bind_prov.kind, bind_prov.region,
                             bind_prov.region_tag);
     bind_ir = LowerBindPattern(*binding.pat, init_result.value, ctx);
+    if (const auto simple_name = SimplePatternBindingName(binding.pat)) {
+      RegisterSimpleClosureBindingDerived(*simple_name, var_type, init_result.value, ctx);
+    }
   } else {
     // Anonymous binding: create a single binding with synthetic name
     IRBindVar bind;

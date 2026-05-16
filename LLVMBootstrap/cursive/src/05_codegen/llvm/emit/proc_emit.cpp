@@ -420,6 +420,19 @@ using namespace emit_detail;
           RegisterLocalBindStorage(slot_name, local_slot);
         }
         SetLocalType(slot_name, slot.type);
+        if (const auto alias_it = async_info->slot_aliases.find(slot_name);
+            alias_it != async_info->slot_aliases.end())
+        {
+          for (const auto &alias : alias_it->second)
+          {
+            if (alias.empty() || alias == slot_name)
+            {
+              continue;
+            }
+            RegisterLocalBindStorage(alias, local_slot);
+            SetLocalType(alias, slot.type);
+          }
+        }
       }
 
       if (async_info->is_resume)

@@ -13,6 +13,40 @@ internal enum AttributeTargetReference {
     TypeAlias
 }
 
+[[deprecated("record attribute target")]]
+internal record GeneralDeprecatedRecord {
+    internal value: i32
+}
+
+internal record GeneralDeprecatedFieldRecord {
+    [[deprecated("field attribute target")]]
+    internal value: i32
+}
+
+internal record GeneralMethodAttributeRecord {
+    internal value: i32
+
+    [[inline(never)]]
+    internal procedure readValue(~) -> i32 {
+        return self.value
+    }
+}
+
+[[deprecated("enum attribute target")]]
+internal enum GeneralDeprecatedEnum {
+    Value
+}
+
+[[dynamic]]
+internal modal GeneralDynamicModal {
+    @Ready {
+        internal value: i32
+    }
+}
+
+[[deprecated("type alias attribute target")]]
+internal type GeneralDeprecatedAlias = i32
+
 internal record GeneralAttributeReference {
     internal name_segments: usize
     internal argument_count: usize
@@ -37,6 +71,55 @@ internal procedure generalAttributeHasValidName(
     return reference.name_segments > 0usize
 }
 
+[[inline]]
+internal procedure generalBareInlineAttributeValue() -> i32 {
+    return 5
+}
+
+[[inline(default), cold]]
+internal procedure generalSpecListAttributeValue() -> i32 {
+    return 7
+}
+
+[[inline(never)]]
+[[cold]]
+internal procedure generalMultipleAttributeListValue() -> i32 {
+    return 11
+}
+
+internal procedure generalBindingAttributeValue() -> i32 {
+    [[deprecated("binding attribute target")]]
+    let binding_value: i32 = 13
+    return 13
+}
+
+internal procedure generalStatementAndExpressionAttributeValue() -> i32 {
+    [[files]]
+    comptime {
+        let exists = files~>exists("Ultraviolet.toml")
+    }
+
+    let file_attribute_ok: bool =
+        [[files]] comptime { files~>exists("Ultraviolet.toml").value == true }
+    return if file_attribute_ok { 17 } else { 0 }
+}
+
+internal procedure generalConcreteAttributeValue() -> i32 {
+    let method_owner: GeneralMethodAttributeRecord = GeneralMethodAttributeRecord {
+        value: 19
+    }
+    let modal_value: GeneralDynamicModal@Ready = GeneralDynamicModal@Ready {
+        value: 23
+    }
+    return generalBareInlineAttributeValue() +
+        generalSpecListAttributeValue() +
+        generalMultipleAttributeListValue() +
+        generalBindingAttributeValue() +
+        generalStatementAndExpressionAttributeValue() +
+        method_owner~>readValue() +
+        modal_value.value
+}
+
 /// Exercises the Attributes GeneralAttributes reference surface.
 public procedure runAttributesGeneralAttributesReference() -> bool {
     let marker: GeneralAttributeReference =
@@ -45,5 +128,6 @@ public procedure runAttributesGeneralAttributesReference() -> bool {
         generalAttributeReference(1usize, 2usize, AttributeTargetReference::Expression)
     return generalAttributeHasValidName(marker) &&
         generalAttributeHasValidName(configured) &&
-        configured.argument_count == 2usize
+        configured.argument_count == 2usize &&
+        generalConcreteAttributeValue() == 95
 }

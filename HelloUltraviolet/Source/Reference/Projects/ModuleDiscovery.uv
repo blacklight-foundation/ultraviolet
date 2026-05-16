@@ -1,30 +1,123 @@
 //! Reference specimens for Projects / ModuleDiscovery.
 
+internal enum ModuleDiscoveryOutcomeReference {
+    Skipped
+    Added
+    Collision
+    InvalidComponent
+    RelativizeFailed
+}
+
 internal record ModuleDiscoveryReference {
     internal source_root: string@View
+    internal relative_path: string@View
     internal module_path: string@View
+    internal folded_module_path: string@View
+    internal has_uv_files: bool
     internal source_file_count: usize
+    internal first_file_order: usize
+    internal second_file_order: usize
     internal directory_order: usize
+    internal relative_path_is_available: bool
+    internal components_are_identifiers: bool
+    internal components_are_keywords: bool
+}
+
+internal record SourceRootReference {
+    internal root: string@View
+    internal is_directory: bool
+    internal includes_self: bool
+    internal directory_count: usize
+}
+
+internal record ModuleOwnerReference {
+    internal module_path: string@View
+    internal module_directory: string@View
+    internal assembly_source_root: string@View
+    internal owning_source_root: string@View
+    internal assembly_root_depth: usize
+    internal owner_root_depth: usize
+    internal has_unique_owner: bool
 }
 
 internal procedure moduleDiscoveryReference(
     source_root: string@View,
+    relative_path: string@View,
     module_path: string@View,
+    folded_module_path: string@View,
+    has_uv_files: bool,
     source_file_count: usize,
-    directory_order: usize
+    first_file_order: usize,
+    second_file_order: usize,
+    directory_order: usize,
+    relative_path_is_available: bool,
+    components_are_identifiers: bool,
+    components_are_keywords: bool
 ) -> ModuleDiscoveryReference {
     return ModuleDiscoveryReference {
         source_root: source_root,
+        relative_path: relative_path,
         module_path: module_path,
+        folded_module_path: folded_module_path,
+        has_uv_files: has_uv_files,
         source_file_count: source_file_count,
-        directory_order: directory_order
+        first_file_order: first_file_order,
+        second_file_order: second_file_order,
+        directory_order: directory_order,
+        relative_path_is_available: relative_path_is_available,
+        components_are_identifiers: components_are_identifiers,
+        components_are_keywords: components_are_keywords
     }
+}
+
+internal procedure sourceRootReference(
+    root: string@View,
+    is_directory: bool,
+    includes_self: bool,
+    directory_count: usize
+) -> SourceRootReference {
+    return SourceRootReference {
+        root: root,
+        is_directory: is_directory,
+        includes_self: includes_self,
+        directory_count: directory_count
+    }
+}
+
+internal procedure moduleOwnerReference(
+    module_path: string@View,
+    module_directory: string@View,
+    assembly_source_root: string@View,
+    owning_source_root: string@View,
+    assembly_root_depth: usize,
+    owner_root_depth: usize,
+    has_unique_owner: bool
+) -> ModuleOwnerReference {
+    return ModuleOwnerReference {
+        module_path: module_path,
+        module_directory: module_directory,
+        assembly_source_root: assembly_source_root,
+        owning_source_root: owning_source_root,
+        assembly_root_depth: assembly_root_depth,
+        owner_root_depth: owner_root_depth,
+        has_unique_owner: has_unique_owner
+    }
+}
+
+internal procedure sourceRootIsWellFormed(root: SourceRootReference) -> bool {
+    return root.is_directory && root.includes_self && root.directory_count > 0usize
 }
 
 internal procedure moduleDiscoveryHasCompilationUnit(
     module: ModuleDiscoveryReference
 ) -> bool {
-    return module.source_file_count > 0usize
+    return module.has_uv_files && module.source_file_count > 0usize
+}
+
+internal procedure moduleDiscoveryDirectoryIsSourceRoot(
+    module: ModuleDiscoveryReference
+) -> bool {
+    return auditTextEquals(module.relative_path, "")
 }
 
 internal procedure moduleDiscoveryPrecedes(
@@ -34,17 +127,290 @@ internal procedure moduleDiscoveryPrecedes(
     return left.directory_order < right.directory_order
 }
 
+internal procedure moduleDiscoveryCompilationUnitIsOrdered(
+    module: ModuleDiscoveryReference
+) -> bool {
+    if module.source_file_count <= 1usize {
+        return true
+    }
+    return module.first_file_order < module.second_file_order
+}
+
+internal procedure moduleDiscoveryPathMatches(
+    module: ModuleDiscoveryReference,
+    expected_module_path: string@View
+) -> bool {
+    return auditTextEquals(module.module_path, expected_module_path)
+}
+
+internal procedure moduleDiscoveryPathIsWellFormed(
+    module: ModuleDiscoveryReference
+) -> bool {
+    return module.components_are_identifiers && !module.components_are_keywords
+}
+
+internal procedure moduleDiscoveryOutcome(
+    module: ModuleDiscoveryReference,
+    has_seen_folded_path: bool,
+    seen_module_path: string@View
+) -> ModuleDiscoveryOutcomeReference {
+    if !module.relative_path_is_available {
+        return ModuleDiscoveryOutcomeReference::RelativizeFailed
+    }
+    if !moduleDiscoveryHasCompilationUnit(module) {
+        return ModuleDiscoveryOutcomeReference::Skipped
+    }
+    if !moduleDiscoveryPathIsWellFormed(module) {
+        return ModuleDiscoveryOutcomeReference::InvalidComponent
+    }
+    if has_seen_folded_path && !auditTextEquals(seen_module_path, module.module_path) {
+        return ModuleDiscoveryOutcomeReference::Collision
+    }
+    return ModuleDiscoveryOutcomeReference::Added
+}
+
+internal procedure moduleDiscoveryOutcomeCode(outcome: ModuleDiscoveryOutcomeReference) -> usize {
+    return if outcome is {
+        ModuleDiscoveryOutcomeReference::Skipped {
+            0usize
+        }
+        ModuleDiscoveryOutcomeReference::Added {
+            1usize
+        }
+        ModuleDiscoveryOutcomeReference::Collision {
+            2usize
+        }
+        ModuleDiscoveryOutcomeReference::InvalidComponent {
+            3usize
+        }
+        ModuleDiscoveryOutcomeReference::RelativizeFailed {
+            4usize
+        }
+    }
+}
+
+internal procedure moduleDiscoveryOutcomeIsAdded(
+    outcome: ModuleDiscoveryOutcomeReference
+) -> bool {
+    return moduleDiscoveryOutcomeCode(outcome) == 1usize
+}
+
+internal procedure moduleDiscoveryOutcomeIsSkipped(
+    outcome: ModuleDiscoveryOutcomeReference
+) -> bool {
+    return moduleDiscoveryOutcomeCode(outcome) == 0usize
+}
+
+internal procedure moduleDiscoveryOutcomeIsCollision(
+    outcome: ModuleDiscoveryOutcomeReference
+) -> bool {
+    return moduleDiscoveryOutcomeCode(outcome) == 2usize
+}
+
+internal procedure moduleDiscoveryOutcomeIsInvalidComponent(
+    outcome: ModuleDiscoveryOutcomeReference
+) -> bool {
+    return moduleDiscoveryOutcomeCode(outcome) == 3usize
+}
+
+internal procedure moduleDiscoveryOutcomeIsRelativizeFailed(
+    outcome: ModuleDiscoveryOutcomeReference
+) -> bool {
+    return moduleDiscoveryOutcomeCode(outcome) == 4usize
+}
+
+internal procedure moduleDiscoveryOutcomeIsError(
+    outcome: ModuleDiscoveryOutcomeReference
+) -> bool {
+    return moduleDiscoveryOutcomeCode(outcome) >= 2usize
+}
+
+internal procedure moduleOwnerIsDeepestUnique(owner: ModuleOwnerReference) -> bool {
+    return owner.has_unique_owner && owner.owner_root_depth >= owner.assembly_root_depth
+}
+
+internal procedure moduleIsOwnedByAssembly(owner: ModuleOwnerReference) -> bool {
+    return moduleOwnerIsDeepestUnique(owner) &&
+        auditTextEquals(owner.owning_source_root, owner.assembly_source_root)
+}
+
+internal procedure moduleIsFilteredFromAssembly(owner: ModuleOwnerReference) -> bool {
+    return moduleOwnerIsDeepestUnique(owner) &&
+        !auditTextEquals(owner.owning_source_root, owner.assembly_source_root)
+}
+
+internal procedure rootModuleReference() -> ModuleDiscoveryReference {
+    return moduleDiscoveryReference(
+        "Source",
+        "",
+        "HelloUltraviolet",
+        "helloultraviolet",
+        true,
+        2usize,
+        1usize,
+        2usize,
+        1usize,
+        true,
+        true,
+        false
+    )
+}
+
+internal procedure nestedModuleReference() -> ModuleDiscoveryReference {
+    return moduleDiscoveryReference(
+        "Source",
+        "Reference/Projects",
+        "HelloUltraviolet::Reference::Projects",
+        "helloultraviolet::reference::projects",
+        true,
+        4usize,
+        1usize,
+        2usize,
+        2usize,
+        true,
+        true,
+        false
+    )
+}
+
+internal procedure skippedDirectoryReference() -> ModuleDiscoveryReference {
+    return moduleDiscoveryReference(
+        "Source",
+        "Reference",
+        "HelloUltraviolet::Reference",
+        "helloultraviolet::reference",
+        false,
+        0usize,
+        0usize,
+        0usize,
+        3usize,
+        true,
+        true,
+        false
+    )
+}
+
+internal procedure collidingDirectoryReference() -> ModuleDiscoveryReference {
+    return moduleDiscoveryReference(
+        "Source",
+        "data",
+        "HelloUltraviolet::data",
+        "helloultraviolet::data",
+        true,
+        1usize,
+        1usize,
+        1usize,
+        4usize,
+        true,
+        true,
+        false
+    )
+}
+
+internal procedure invalidComponentDirectoryReference() -> ModuleDiscoveryReference {
+    return moduleDiscoveryReference(
+        "Source",
+        "if",
+        "HelloUltraviolet::if",
+        "helloultraviolet::if",
+        true,
+        1usize,
+        1usize,
+        1usize,
+        5usize,
+        true,
+        true,
+        true
+    )
+}
+
+internal procedure relativeFailureDirectoryReference() -> ModuleDiscoveryReference {
+    return moduleDiscoveryReference(
+        "Source",
+        "../Outside",
+        "Outside",
+        "outside",
+        true,
+        1usize,
+        1usize,
+        1usize,
+        6usize,
+        false,
+        true,
+        false
+    )
+}
+
 /// Exercises the Projects ModuleDiscovery reference surface.
 public procedure runProjectsModuleDiscoveryReference() -> bool {
-    let root_module: ModuleDiscoveryReference =
-        moduleDiscoveryReference("Source", "HelloUltraviolet", 2usize, 1usize)
-    let reference_module: ModuleDiscoveryReference = moduleDiscoveryReference(
+    let source_root: SourceRootReference = sourceRootReference("Source", true, true, 6usize)
+    let root_module: ModuleDiscoveryReference = rootModuleReference()
+    let nested_module: ModuleDiscoveryReference = nestedModuleReference()
+    let skipped_directory: ModuleDiscoveryReference = skippedDirectoryReference()
+    let colliding_directory: ModuleDiscoveryReference = collidingDirectoryReference()
+    let invalid_component: ModuleDiscoveryReference = invalidComponentDirectoryReference()
+    let relative_failure: ModuleDiscoveryReference = relativeFailureDirectoryReference()
+    let root_owner: ModuleOwnerReference = moduleOwnerReference(
+        "HelloUltraviolet::Reference::Projects",
+        "Source/Reference/Projects",
         "Source",
-        "HelloUltraviolet::Reference",
-        20usize,
-        2usize
+        "Source",
+        1usize,
+        1usize,
+        true
     )
-    return moduleDiscoveryHasCompilationUnit(root_module) &&
-        moduleDiscoveryHasCompilationUnit(reference_module) &&
-        moduleDiscoveryPrecedes(root_module, reference_module)
+    let nested_owner: ModuleOwnerReference = moduleOwnerReference(
+        "Tools::Parser",
+        "Source/Tools/Parser",
+        "Source",
+        "Source/Tools",
+        1usize,
+        2usize,
+        true
+    )
+    let ambiguous_owner: ModuleOwnerReference = moduleOwnerReference(
+        "Ambiguous::Shared",
+        "Shared",
+        "Source",
+        "",
+        1usize,
+        0usize,
+        false
+    )
+    return sourceRootIsWellFormed(source_root) &&
+        moduleDiscoveryDirectoryIsSourceRoot(root_module) &&
+        moduleDiscoveryHasCompilationUnit(root_module) &&
+        moduleDiscoveryHasCompilationUnit(nested_module) &&
+        !moduleDiscoveryHasCompilationUnit(skipped_directory) &&
+        moduleDiscoveryCompilationUnitIsOrdered(root_module) &&
+        moduleDiscoveryCompilationUnitIsOrdered(nested_module) &&
+        moduleDiscoveryPrecedes(root_module, nested_module) &&
+        moduleDiscoveryPathMatches(root_module, "HelloUltraviolet") &&
+        moduleDiscoveryPathMatches(nested_module, "HelloUltraviolet::Reference::Projects") &&
+        moduleDiscoveryOutcomeIsAdded(
+            moduleDiscoveryOutcome(root_module, false, "")
+        ) &&
+        moduleDiscoveryOutcomeIsAdded(
+            moduleDiscoveryOutcome(nested_module, false, "")
+        ) &&
+        moduleDiscoveryOutcomeIsSkipped(
+            moduleDiscoveryOutcome(skipped_directory, false, "")
+        ) &&
+        moduleDiscoveryOutcomeIsCollision(
+            moduleDiscoveryOutcome(
+                colliding_directory,
+                true,
+                "HelloUltraviolet::Data"
+            )
+        ) &&
+        moduleDiscoveryOutcomeIsError(moduleDiscoveryOutcome(colliding_directory, true, "Other")) &&
+        moduleDiscoveryOutcomeIsInvalidComponent(
+            moduleDiscoveryOutcome(invalid_component, false, "")
+        ) &&
+        moduleDiscoveryOutcomeIsRelativizeFailed(
+            moduleDiscoveryOutcome(relative_failure, false, "")
+        ) &&
+        moduleIsOwnedByAssembly(root_owner) &&
+        moduleIsFilteredFromAssembly(nested_owner) &&
+        !moduleOwnerIsDeepestUnique(ambiguous_owner)
 }

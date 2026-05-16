@@ -413,16 +413,19 @@ using namespace emit_detail;
       return false;
     };
     analysis::TypeRef source_type = nullptr;
-    if (const LowerCtx *ctx = GetCurrentCtx())
-    {
-      source_type = ctx->LookupValueType(bind.value);
-    }
-    if (!source_type && bind.value.kind == IRValue::Kind::Local)
+    if (bind.value.kind == IRValue::Kind::Local)
     {
       const auto it = local_types_.find(bind.value.name);
       if (it != local_types_.end())
       {
         source_type = it->second;
+      }
+    }
+    if (!source_type)
+    {
+      if (const LowerCtx *ctx = GetCurrentCtx())
+      {
+        source_type = ctx->LookupValueType(bind.value);
       }
     }
     llvm::Type *source_llvm_ty = source_type ? GetLLVMType(source_type) : nullptr;
@@ -449,10 +452,17 @@ using namespace emit_detail;
         bind_slot_info = std::move(fallback_slot);
       }
     }
+    const std::string async_slot_name =
+        !bind.stable_name.empty() &&
+                async_state_ &&
+                async_state_->info &&
+                async_state_->info->slots.contains(bind.stable_name)
+            ? bind.stable_name
+            : bind.name;
     if (async_state_ && async_state_->info &&
-        async_state_->info->slots.contains(bind.name))
+        async_state_->info->slots.contains(async_slot_name))
     {
-      bind_slot = GetLocal(bind.name);
+      bind_slot = GetLocal(async_slot_name);
     }
 
     const bool aggregate_bind_ty = ty && (ty->isStructTy() || ty->isArrayTy());

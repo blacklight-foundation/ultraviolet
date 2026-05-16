@@ -202,12 +202,14 @@ static std::optional<ast::ExprPtr> FindStaticInit(
     if (!decl || !decl->binding.pat) {
       continue;
     }
-    const auto& pat = *decl->binding.pat;
-    const auto* ident = std::get_if<ast::IdentifierPattern>(&pat.node);
-    if (!ident) {
-      continue;
+    bool name_matches = false;
+    for (const auto& binding_name : PatNames(decl->binding.pat)) {
+      if (IdEq(binding_name, name)) {
+        name_matches = true;
+        break;
+      }
     }
-    if (!IdEq(ident->name, name)) {
+    if (!name_matches) {
       continue;
     }
     if (decl->binding.op.kind != lexer::TokenKind::Operator ||
@@ -217,6 +219,19 @@ static std::optional<ast::ExprPtr> FindStaticInit(
     return decl->binding.init;
   }
   return std::nullopt;
+}
+
+static std::optional<ast::ExprPtr> FindCurrentModuleStaticInit(
+    const ScopeContext& ctx,
+    std::string_view name) {
+  if (ctx.current_module.empty()) {
+    return std::nullopt;
+  }
+  const auto* module = FindModule(ctx, ctx.current_module);
+  if (!module) {
+    return std::nullopt;
+  }
+  return FindStaticInit(*module, name);
 }
 
 static source::ModuleNames ModuleNamesForConstLen(const ScopeContext& ctx) {
@@ -340,19 +355,46 @@ ConstLenResult ConstLen(const ScopeContext& ctx, const ast::ExprPtr& expr) {
         } else if constexpr (std::is_same_v<T, ast::IdentifierExpr>) {
           const auto ent = ResolveValueName(ctx, node.name);
           if (!ent || !ent->origin_opt) {
-            SPEC_RULE("ConstLen-Err");
-            return {false, "ConstLen-Err", std::nullopt};
+            const auto init = FindCurrentModuleStaticInit(ctx, node.name);
+            if (!init.has_value()) {
+              SPEC_RULE("ConstLen-Err");
+              return {false, "ConstLen-Err", std::nullopt};
+            }
+            const auto nested = ConstLen(ctx, *init);
+            if (!nested.ok) {
+              return nested;
+            }
+            SPEC_RULE("ConstLen-Path");
+            return nested;
           }
           const auto* module = FindModule(ctx, *ent->origin_opt);
           if (!module) {
-            SPEC_RULE("ConstLen-Err");
-            return {false, "ConstLen-Err", std::nullopt};
+            const auto init = FindCurrentModuleStaticInit(ctx, node.name);
+            if (!init.has_value()) {
+              SPEC_RULE("ConstLen-Err");
+              return {false, "ConstLen-Err", std::nullopt};
+            }
+            const auto nested = ConstLen(ctx, *init);
+            if (!nested.ok) {
+              return nested;
+            }
+            SPEC_RULE("ConstLen-Path");
+            return nested;
           }
           const auto resolved_name = ent->target_opt.value_or(node.name);
           const auto init = FindStaticInit(*module, resolved_name);
           if (!init.has_value()) {
-            SPEC_RULE("ConstLen-Err");
-            return {false, "ConstLen-Err", std::nullopt};
+            const auto current_init = FindCurrentModuleStaticInit(ctx, node.name);
+            if (!current_init.has_value()) {
+              SPEC_RULE("ConstLen-Err");
+              return {false, "ConstLen-Err", std::nullopt};
+            }
+            const auto nested = ConstLen(ctx, *current_init);
+            if (!nested.ok) {
+              return nested;
+            }
+            SPEC_RULE("ConstLen-Path");
+            return nested;
           }
           const auto nested = ConstLen(ctx, *init);
           if (!nested.ok) {
@@ -364,16 +406,49 @@ ConstLenResult ConstLen(const ScopeContext& ctx, const ast::ExprPtr& expr) {
           const auto resolved =
               ResolveValuePathForConstLen(ctx, node.path, node.name);
           if (!resolved.has_value()) {
+            if (node.path.empty()) {
+              const auto init = FindCurrentModuleStaticInit(ctx, node.name);
+              if (init.has_value()) {
+                const auto nested = ConstLen(ctx, *init);
+                if (!nested.ok) {
+                  return nested;
+                }
+                SPEC_RULE("ConstLen-Path");
+                return nested;
+              }
+            }
             SPEC_RULE("ConstLen-Err");
             return {false, "ConstLen-Err", std::nullopt};
           }
           const auto* module = FindModule(ctx, resolved->first);
           if (!module) {
+            if (node.path.empty()) {
+              const auto init = FindCurrentModuleStaticInit(ctx, node.name);
+              if (init.has_value()) {
+                const auto nested = ConstLen(ctx, *init);
+                if (!nested.ok) {
+                  return nested;
+                }
+                SPEC_RULE("ConstLen-Path");
+                return nested;
+              }
+            }
             SPEC_RULE("ConstLen-Err");
             return {false, "ConstLen-Err", std::nullopt};
           }
           const auto init = FindStaticInit(*module, resolved->second);
           if (!init.has_value()) {
+            if (node.path.empty()) {
+              const auto current_init = FindCurrentModuleStaticInit(ctx, node.name);
+              if (current_init.has_value()) {
+                const auto nested = ConstLen(ctx, *current_init);
+                if (!nested.ok) {
+                  return nested;
+                }
+                SPEC_RULE("ConstLen-Path");
+                return nested;
+              }
+            }
             SPEC_RULE("ConstLen-Err");
             return {false, "ConstLen-Err", std::nullopt};
           }

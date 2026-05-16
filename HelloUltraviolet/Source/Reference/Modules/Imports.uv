@@ -1,36 +1,70 @@
 //! Reference specimens for Modules / Imports.
 
+import HelloUltraviolet::Reference::Modules::AggregationSubmodule
+internal import HelloUltraviolet::Reference::Modules::AggregationSubmodule as ImportedSubmodule
+private import HelloUltraviolet::Reference::Modules::AggregationSubmodule as PrivateSubmodule
+
 internal record ImportDeclarationReference {
     internal path_segments: usize
     internal has_alias: bool
     internal introduces_module_alias: bool
+    internal imported_value: i32
 }
 
 internal procedure importDeclarationReference(
     path_segments: usize,
     has_alias: bool,
-    introduces_module_alias: bool
+    introduces_module_alias: bool,
+    imported_value: i32
 ) -> ImportDeclarationReference {
     return ImportDeclarationReference {
         path_segments: path_segments,
         has_alias: has_alias,
-        introduces_module_alias: introduces_module_alias
+        introduces_module_alias: introduces_module_alias,
+        imported_value: imported_value
     }
 }
 
 internal procedure importDeclarationBindsName(
     reference: ImportDeclarationReference
 ) -> bool {
-    return reference.path_segments > 0usize && reference.introduces_module_alias
+    return reference.path_segments > 0usize &&
+        reference.introduces_module_alias &&
+        reference.imported_value > 0
+}
+
+internal procedure defaultImportAliasValue() -> i32 {
+    let contribution: AggregationSubmodule::SubmoduleAggregationContribution =
+        AggregationSubmodule::submoduleAggregationContribution(3, 5)
+    return AggregationSubmodule::submoduleAggregationValue(contribution)
+}
+
+internal procedure explicitImportAliasValue() -> i32 {
+    let contribution: ImportedSubmodule::SubmoduleAggregationContribution =
+        ImportedSubmodule::submoduleAggregationContribution(8, 13)
+    return ImportedSubmodule::submoduleAggregationValue(contribution)
+}
+
+internal procedure privateImportAliasValue() -> i32 {
+    let contribution: PrivateSubmodule::SubmoduleAggregationContribution =
+        PrivateSubmodule::submoduleAggregationContribution(21, 34)
+    return PrivateSubmodule::submoduleAggregationValue(contribution)
 }
 
 /// Exercises the Modules Imports reference surface.
 public procedure runModulesImportsReference() -> bool {
     let plain_import: ImportDeclarationReference =
-        importDeclarationReference(3usize, false, true)
+        importDeclarationReference(5usize, false, true, defaultImportAliasValue())
     let aliased_import: ImportDeclarationReference =
-        importDeclarationReference(3usize, true, true)
+        importDeclarationReference(5usize, true, true, explicitImportAliasValue())
+    let private_import: ImportDeclarationReference =
+        importDeclarationReference(5usize, true, true, privateImportAliasValue())
     return importDeclarationBindsName(plain_import) &&
         importDeclarationBindsName(aliased_import) &&
-        aliased_import.has_alias
+        importDeclarationBindsName(private_import) &&
+        plain_import.imported_value == 8 &&
+        aliased_import.imported_value == 21 &&
+        private_import.imported_value == 55 &&
+        aliased_import.has_alias &&
+        private_import.has_alias
 }

@@ -1,51 +1,370 @@
 //! Reference specimens for Types / Subtyping.
 
-internal enum SubtypingReferenceKind {
-    Exact
-    Widened
-    Rejected
+internal type SubtypingI32Alias = i32
+
+internal type SubtypingUsizeAlias = usize
+
+internal type SubtypingIntOrBool = i32 | bool
+
+internal type SubtypingWideUnion = i32 | bool | string@View
+
+internal type SubtypingNarrowUnion = i32 | bool
+
+internal type SubtypingTupleNarrow = (i32, bool)
+
+internal type SubtypingTupleWide = (SubtypingIntOrBool, bool)
+
+internal type SubtypingFunctionNarrow = () -> i32
+
+internal type SubtypingFunctionWide = () -> SubtypingIntOrBool
+
+internal type SubtypingClosureNarrow = || -> i32
+
+internal type SubtypingClosureWide = || -> SubtypingIntOrBool
+
+internal type SubtypingAsyncNarrow = Async<(), (), i32, bool>
+
+internal type SubtypingAsyncWide = Async<(), (), SubtypingIntOrBool, bool>
+
+internal type SubtypingValidPointer = Ptr<i32>@Valid
+
+internal type SubtypingGeneralPointer = Ptr<i32>
+
+internal let SUBTYPING_ARRAY_LENGTH: usize = 3usize
+
+internal record SubtypingCovariantBox<TValue> {
+    internal value: TValue
 }
 
-internal record SubtypingReference {
-    internal kind: SubtypingReferenceKind
-    internal preserves_value: bool
+internal record SubtypingContravariantSink<TValue> {
+    internal callback: (TValue) -> i32
 }
 
-internal procedure subtypingReference(
-    kind: SubtypingReferenceKind,
-    preserves_value: bool
-) -> SubtypingReference {
-    return SubtypingReference {
-        kind: kind,
-        preserves_value: preserves_value
+internal record SubtypingInvariantSlice<TValue> {
+    internal values: [TValue]
+}
+
+internal record SubtypingBivariantMarker<TValue> {
+    internal marker: i32
+}
+
+internal modal SubtypingNicheModal {
+    @Absent {}
+
+    @Present {
+        internal pointer: Ptr<i32>@Valid
     }
 }
 
-internal procedure subtypingReferenceIsAccepted(reference: SubtypingReference) -> bool {
-    return if reference.kind is {
-        SubtypingReferenceKind::Exact {
-            reference.preserves_value
+internal procedure subtypingUnionValue(value: SubtypingIntOrBool) -> i32 {
+    return if value is {
+        number: i32 {
+            number
         }
-        SubtypingReferenceKind::Widened {
-            reference.preserves_value
+        flag: bool {
+            if flag { 1 } else { 0 }
         }
-        SubtypingReferenceKind::Rejected {
+    }
+}
+
+internal procedure subtypingWideUnionValue(value: SubtypingWideUnion) -> i32 {
+    return if value is {
+        number: i32 {
+            number
+        }
+        flag: bool {
+            if flag { 2 } else { 3 }
+        }
+        text: string@View {
+            string::length(text) as i32
+        }
+    }
+}
+
+internal procedure subtypingFunctionReturnsInt() -> i32 {
+    return 17
+}
+
+internal procedure subtypingAsyncCompletes(value: i32) -> SubtypingAsyncNarrow {
+    return value
+}
+
+internal procedure subtypingGeneralPointerValue(pointer: SubtypingGeneralPointer) -> i32 {
+    return sizeof(Ptr<i32>) as i32
+}
+
+internal procedure subtypingAcceptsGeneralPointer(pointer: SubtypingGeneralPointer) -> i32 {
+    return sizeof(Ptr<i32>) as i32
+}
+
+internal procedure subtypingNeverValue(should_return: bool) -> i32 {
+    let value: i32 = if should_return {
+        return 29
+    } else {
+        31
+    }
+    return value
+}
+
+internal procedure subtypingPermissionReference() -> bool {
+    let const_alias: const SubtypingI32Alias = 61
+    let const_base: const i32 = const_alias
+    return const_base == 61
+}
+
+internal procedure subtypingReflexiveAndTransitiveReference() -> bool {
+    let original: SubtypingI32Alias = 67
+    let same: SubtypingI32Alias = original
+    let intermediate: SubtypingNarrowUnion = same
+    let transitive: SubtypingWideUnion = intermediate
+    return subtypingWideUnionValue(transitive) == 67
+}
+
+internal procedure subtypingUnionReference() -> bool {
+    let member_value: i32 = 5
+    let member_result: i32 = subtypingUnionValue(member_value)
+
+    let narrow_union: SubtypingNarrowUnion = true
+    let wide_union: SubtypingWideUnion = narrow_union
+    let width_result: i32 = subtypingWideUnionValue(wide_union)
+
+    return member_result == 5 && width_result == 2
+}
+
+internal procedure subtypingTupleReference() -> bool {
+    let narrow_tuple: SubtypingTupleNarrow = (8, true)
+    let wide_tuple: SubtypingTupleWide = narrow_tuple
+    return subtypingUnionValue(wide_tuple.0) == 8 && wide_tuple.1
+}
+
+internal procedure subtypingArraySliceAndRangeReference() -> bool {
+    let array: [i32; SUBTYPING_ARRAY_LENGTH] = [3, 5, 8]
+    let same_length_array: [i32; 3usize] = array
+
+    let alias_values: [SubtypingI32Alias; 3] = [13, 21, 34]
+    let alias_array: [i32; 3usize] = alias_values
+    let alias_slice: [SubtypingI32Alias] = alias_values[..]
+    let slice: [i32] = alias_slice
+
+    let exclusive: Range<SubtypingUsizeAlias> = 1usize..3usize
+    let inclusive: RangeInclusive<SubtypingUsizeAlias> = 1usize..=3usize
+    let from_start: RangeFrom<SubtypingUsizeAlias> = 1usize..
+    let to_end: RangeTo<SubtypingUsizeAlias> = ..3usize
+    let to_inclusive_end: RangeToInclusive<SubtypingUsizeAlias> = ..=3usize
+    let full: RangeFull = ..
+
+    let exclusive_general: Range<usize> = exclusive
+    let inclusive_general: RangeInclusive<usize> = inclusive
+    let from_start_general: RangeFrom<usize> = from_start
+    let to_end_general: RangeTo<usize> = to_end
+    let to_inclusive_general: RangeToInclusive<usize> = to_inclusive_end
+    let full_general: RangeFull = full
+
+    let values: [i32; 5] = [10, 20, 30, 40, 50]
+    let exclusive_slice: [i32] = values[exclusive_general]
+    let inclusive_slice: [i32] = values[inclusive_general]
+    let from_start_slice: [i32] = values[from_start_general]
+    let to_end_slice: [i32] = values[to_end_general]
+    let to_inclusive_slice: [i32] = values[to_inclusive_general]
+    let full_slice: [i32] = values[full_general]
+
+    return same_length_array[2usize] == 8 &&
+        alias_array[0usize] == 13 &&
+        slice[1usize] == 21 &&
+        exclusive_slice[1usize] == 30 &&
+        inclusive_slice[2usize] == 40 &&
+        from_start_slice[2usize] == 40 &&
+        to_end_slice[2usize] == 30 &&
+        to_inclusive_slice[3usize] == 40 &&
+        full_slice[4usize] == 50
+}
+
+internal procedure subtypingPointerAndModalReference() -> bool {
+    var payload: i32 = 41
+    let valid_pointer: SubtypingValidPointer = &payload
+    let general_pointer: SubtypingGeneralPointer = valid_pointer
+
+    let present: SubtypingNicheModal@Present = SubtypingNicheModal@Present {
+        pointer: valid_pointer
+    }
+    let general_modal: SubtypingNicheModal = present
+    let modal_value: i32 = if general_modal is {
+        @Absent {
+            0
+        }
+        @Present { pointer } {
+            *pointer
+        }
+    }
+
+    return subtypingGeneralPointerValue(general_pointer) == sizeof(Ptr<i32>) as i32 &&
+        modal_value == 41
+}
+
+internal procedure subtypingFunctionReference() -> bool {
+    let narrow: SubtypingFunctionNarrow = subtypingFunctionReturnsInt
+    let wide: SubtypingFunctionWide = narrow
+    return subtypingUnionValue(wide()) == 17
+}
+
+internal procedure subtypingClosureReference() -> bool {
+    let narrow: SubtypingClosureNarrow = || -> i32 19
+    let wide: SubtypingClosureWide = move narrow
+    return subtypingUnionValue(wide()) == 19
+}
+
+internal procedure subtypingAsyncReference() -> bool {
+    let narrow: SubtypingAsyncNarrow = subtypingAsyncCompletes(23)
+    let wide: SubtypingAsyncWide = narrow
+    return if wide is {
+        @Completed { value } {
+            subtypingUnionValue(value) == 23
+        }
+        @Suspended {
+            false
+        }
+        @Failed {
             false
         }
     }
 }
 
+internal procedure subtypingGenericReference() -> bool {
+    var payload: i32 = 43
+    let valid_pointer: SubtypingValidPointer = &payload
+
+    let covariant_narrow: SubtypingCovariantBox<SubtypingValidPointer> =
+        SubtypingCovariantBox { value: valid_pointer }
+    let covariant_wide: SubtypingCovariantBox<SubtypingGeneralPointer> = covariant_narrow
+
+    let contravariant_general: SubtypingContravariantSink<SubtypingGeneralPointer> =
+        SubtypingContravariantSink {
+            callback: subtypingAcceptsGeneralPointer
+        }
+    let contravariant_valid: SubtypingContravariantSink<SubtypingValidPointer> =
+        contravariant_general
+
+    let invariant_source_values: [i32; 2] = [47, 53]
+    let invariant_values: [i32] = invariant_source_values[..]
+    let invariant_exact: SubtypingInvariantSlice<i32> =
+        SubtypingInvariantSlice { values: invariant_values }
+    let invariant_same: SubtypingInvariantSlice<i32> = invariant_exact
+
+    let bivariant_i32: SubtypingBivariantMarker<i32> =
+        SubtypingBivariantMarker { marker: 59 }
+    let bivariant_bool: SubtypingBivariantMarker<bool> = bivariant_i32
+
+    return subtypingGeneralPointerValue(covariant_wide.value) == sizeof(Ptr<i32>) as i32 &&
+        contravariant_valid.callback(valid_pointer) == sizeof(Ptr<i32>) as i32 &&
+        invariant_same.values[1usize] == 53 &&
+        bivariant_bool.marker == 59
+}
+
+internal procedure writeSubtypingMessage(context: Context, text: string@View) -> bool {
+    let output: Outcome<(), IoError> = context.fs~>write_stderr(text)
+    return if output is {
+        @Value {
+            true
+        }
+        @Error {
+            false
+        }
+    }
+}
+
+internal procedure recordSubtypingReturn(
+    context: Context,
+    name: string@View,
+    passed: bool
+) -> bool {
+    if passed {
+        return true
+    }
+
+    if (!writeSubtypingMessage(context, "subtyping return failed: ")) {
+        return false
+    }
+    if (!writeSubtypingMessage(context, name)) {
+        return false
+    }
+    if (!writeSubtypingMessage(context, "\n")) {
+        return false
+    }
+    return false
+}
+
 /// Exercises the Types Subtyping reference surface.
 public procedure runTypesSubtypingReference() -> bool {
-    let small_value: i32 = 7
-    let widened_value: i64 = small_value as i64
-    let exact: SubtypingReference =
-        subtypingReference(SubtypingReferenceKind::Exact, true)
-    let widened: SubtypingReference =
-        subtypingReference(SubtypingReferenceKind::Widened, widened_value == 7)
-    let rejected: SubtypingReference =
-        subtypingReference(SubtypingReferenceKind::Rejected, false)
-    return subtypingReferenceIsAccepted(exact) &&
-        subtypingReferenceIsAccepted(widened) &&
-        !subtypingReferenceIsAccepted(rejected)
+    return subtypingNeverValue(false) == 31 &&
+        subtypingPermissionReference() &&
+        subtypingReflexiveAndTransitiveReference() &&
+        subtypingUnionReference() &&
+        subtypingTupleReference() &&
+        subtypingArraySliceAndRangeReference() &&
+        subtypingPointerAndModalReference() &&
+        subtypingFunctionReference() &&
+        subtypingClosureReference() &&
+        subtypingAsyncReference() &&
+        subtypingGenericReference()
+}
+
+/// Exercises the Types Subtyping surface and reports the failing return.
+public procedure runTypesSubtypingReferenceWithReport(context: Context) -> bool {
+    var passed: bool = true
+    passed = recordSubtypingReturn(
+        context,
+        "subtypingNeverValue(false) == 31",
+        subtypingNeverValue(false) == 31
+    ) && passed
+    passed = recordSubtypingReturn(
+        context,
+        "subtypingPermissionReference()",
+        subtypingPermissionReference()
+    ) && passed
+    passed = recordSubtypingReturn(
+        context,
+        "subtypingReflexiveAndTransitiveReference()",
+        subtypingReflexiveAndTransitiveReference()
+    ) && passed
+    passed = recordSubtypingReturn(
+        context,
+        "subtypingUnionReference()",
+        subtypingUnionReference()
+    ) && passed
+    passed = recordSubtypingReturn(
+        context,
+        "subtypingTupleReference()",
+        subtypingTupleReference()
+    ) && passed
+    passed = recordSubtypingReturn(
+        context,
+        "subtypingArraySliceAndRangeReference()",
+        subtypingArraySliceAndRangeReference()
+    ) && passed
+    passed = recordSubtypingReturn(
+        context,
+        "subtypingPointerAndModalReference()",
+        subtypingPointerAndModalReference()
+    ) && passed
+    passed = recordSubtypingReturn(
+        context,
+        "subtypingFunctionReference()",
+        subtypingFunctionReference()
+    ) && passed
+    passed = recordSubtypingReturn(
+        context,
+        "subtypingClosureReference()",
+        subtypingClosureReference()
+    ) && passed
+    passed = recordSubtypingReturn(
+        context,
+        "subtypingAsyncReference()",
+        subtypingAsyncReference()
+    ) && passed
+    passed = recordSubtypingReturn(
+        context,
+        "subtypingGenericReference()",
+        subtypingGenericReference()
+    ) && passed
+    return passed
 }

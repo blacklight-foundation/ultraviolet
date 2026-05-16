@@ -202,7 +202,9 @@ LowerResult LowerIdentifier(const ast::Expr& expr,
     // Case 1: Local binding - check if binding exists in scope
     if (const BindingState* binding = ctx.GetBindingState(name)) {
         SPEC_RULE("Lower-Expr-Ident-Local");
-        return LowerLocalIdentifierRead(expr, *binding, name, ctx);
+        const std::string ir_name =
+            binding->stable_name.empty() ? name : binding->stable_name;
+        return LowerLocalIdentifierRead(expr, *binding, ir_name, ctx);
     }
 
     // Case 2: Capture - check if identifier is captured in spawn/dispatch body

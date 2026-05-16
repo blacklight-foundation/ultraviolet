@@ -1,11 +1,11 @@
 //! Runtime path checks for source files referenced by generated catalog rows.
 
 public procedure expectedCatalogSourcePathCount() -> usize {
-    return 589usize
+    return 595usize
 }
 
 public procedure catalogSourcePathCount() -> usize {
-    return 589usize
+    return 595usize
 }
 
 internal procedure catalogSourcePathExists(context: Context, source_path: string@View) -> bool {
@@ -34,7 +34,6 @@ public procedure catalogSourcePathsExist(context: Context) -> bool {
         catalogSourcePathExists(context, "HelloUltraviolet/Fixtures/DiagnosticSource/Comptime/UserDiagnosticNote/Source/Main.uv") &&
         catalogSourcePathExists(context, "HelloUltraviolet/Fixtures/DiagnosticSource/Comptime/UserDiagnosticWarning/Source/Main.uv") &&
         catalogSourcePathExists(context, "HelloUltraviolet/Fixtures/DiagnosticSource/Expressions/ValidTransmuteTarget/Source/Main.uv") &&
-        catalogSourcePathExists(context, "HelloUltraviolet/Fixtures/DiagnosticSource/Keys/DynamicKeyRuntimeInfo/Source/Main.uv") &&
         catalogSourcePathExists(context, "HelloUltraviolet/Fixtures/DiagnosticSource/Keys/DynamicKeyRuntimeSyncInfo/Source/Main.uv") &&
         catalogSourcePathExists(context, "HelloUltraviolet/Fixtures/DiagnosticSource/Keys/FineGrainedLoopKeyWarning/Source/Main.uv") &&
         catalogSourcePathExists(context, "HelloUltraviolet/Fixtures/DiagnosticSource/Keys/NestedReleaseInterleavingWarning/Source/Main.uv") &&
@@ -75,6 +74,11 @@ public procedure catalogSourcePathsExist(context: Context) -> bool {
         catalogSourcePathExists(context, "HelloUltraviolet/Fixtures/RejectedSource/Comptime/SpliceTypeMismatch/Source/Main.uv") &&
         catalogSourcePathExists(context, "HelloUltraviolet/Fixtures/RejectedSource/Comptime/UnknownDeriveTarget/Source/Main.uv") &&
         catalogSourcePathExists(context, "HelloUltraviolet/Fixtures/RejectedSource/Comptime/UserDiagnosticError/Source/Main.uv") &&
+        catalogSourcePathExists(context, "HelloUltraviolet/Fixtures/RejectedSource/DataTypes/GenericContravariantSubtyping/Source/Main.uv") &&
+        catalogSourcePathExists(context, "HelloUltraviolet/Fixtures/RejectedSource/DataTypes/GenericCovariantSubtyping/Source/Main.uv") &&
+        catalogSourcePathExists(context, "HelloUltraviolet/Fixtures/RejectedSource/DataTypes/GenericInvariantSubtyping/Source/Main.uv") &&
+        catalogSourcePathExists(context, "HelloUltraviolet/Fixtures/RejectedSource/DataTypes/NoFloatNumericSubtyping/Source/Main.uv") &&
+        catalogSourcePathExists(context, "HelloUltraviolet/Fixtures/RejectedSource/DataTypes/NoIntegerNumericSubtyping/Source/Main.uv") &&
         catalogSourcePathExists(context, "HelloUltraviolet/Fixtures/RejectedSource/DataTypes/TypeAliasCycle/Source/Main.uv") &&
         catalogSourcePathExists(context, "HelloUltraviolet/Fixtures/RejectedSource/Expressions/AddressOfIndexTyping/Source/Main.uv") &&
         catalogSourcePathExists(context, "HelloUltraviolet/Fixtures/RejectedSource/Expressions/AddressOfStaticHelpers/Source/Main.uv") &&

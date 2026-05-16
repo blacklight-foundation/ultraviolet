@@ -258,6 +258,29 @@ IRPtr LowerTypedPatternBindings(const ast::TypedPattern& pattern,
   bind.prov_region = lookup_bind_region(pattern.name);
   bind.prov_region_tag = lookup_bind_region_tag(pattern.name);
 
+  IRValue local_value;
+  local_value.kind = IRValue::Kind::Local;
+  local_value.name = bind.stable_name.empty() ? pattern.name : bind.stable_name;
+  if (const DerivedValueInfo* derived = ctx.LookupDerivedValue(bind_value)) {
+    ctx.RegisterDerivedValue(local_value, *derived);
+  } else {
+    analysis::TypeRef target = ResolveAliasTypeForPattern(bind.type, ctx);
+    const bool target_is_closure =
+        target && std::holds_alternative<analysis::TypeClosure>(target->node);
+    if (target_is_closure && bind_value.kind == IRValue::Kind::Symbol) {
+      IRValue env_null;
+      env_null.kind = IRValue::Kind::Immediate;
+      env_null.name = "null";
+      env_null.bytes = {0, 0, 0, 0, 0, 0, 0, 0};
+
+      DerivedValueInfo closure_info;
+      closure_info.kind = DerivedValueInfo::Kind::TupleLit;
+      closure_info.elements.push_back(env_null);
+      closure_info.elements.push_back(bind_value);
+      ctx.RegisterDerivedValue(local_value, closure_info);
+    }
+  }
+
   return MakeIR(std::move(bind));
 }
 
