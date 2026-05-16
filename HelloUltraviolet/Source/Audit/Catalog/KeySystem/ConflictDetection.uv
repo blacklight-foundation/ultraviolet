@@ -127,7 +127,7 @@ public procedure validatedKeySystemConflictDetectionObligations() -> usize {
     if rejectedSourceObligationEntryMatches(
         "requirement.19.ReadThenWriteDiagnosticSurface",
         73605usize,
-        "HelloUltraviolet::Fixtures::RejectedSource",
+        "HelloUltraviolet::Audit::FixtureCatalog::RejectedSource",
         "validatedKeysRejectedSourceFixtureCount",
         "Fixtures/RejectedSource/Keys/SharedReadThenWrite/Source/Main.uv"
     ) {
@@ -163,7 +163,7 @@ public procedure validatedKeySystemConflictDetectionObligations() -> usize {
     if diagnosticSourceObligationEntryMatches(
         "rule.19.K-RMW-Explicit-Warn",
         73663usize,
-        "HelloUltraviolet::Fixtures::DiagnosticSource",
+        "HelloUltraviolet::Audit::FixtureCatalog::DiagnosticSource",
         "validatedKeysDiagnosticSourceFixtureCount",
         "Fixtures/DiagnosticSource/Keys/ReadThenWriteExplicitWarning/Source/Main.uv"
     ) {
@@ -172,7 +172,7 @@ public procedure validatedKeySystemConflictDetectionObligations() -> usize {
     if diagnosticSourceObligationEntryMatches(
         "rule.19.K-RMW-Contention-Warn",
         73679usize,
-        "HelloUltraviolet::Fixtures::DiagnosticSource",
+        "HelloUltraviolet::Audit::FixtureCatalog::DiagnosticSource",
         "validatedKeysDiagnosticSourceFixtureCount",
         "Fixtures/DiagnosticSource/Keys/ReadThenWriteContentionWarning/Source/Main.uv"
     ) {
@@ -199,7 +199,7 @@ public procedure validatedKeySystemConflictDetectionObligations() -> usize {
     if rejectedSourceObligationEntryMatches(
         "rule.19.K-Ordered-Base-Err",
         73727usize,
-        "HelloUltraviolet::Fixtures::RejectedSource",
+        "HelloUltraviolet::Audit::FixtureCatalog::RejectedSource",
         "validatedKeysRejectedSourceFixtureCount",
         "Fixtures/RejectedSource/Keys/OrderedDifferentBase/Source/Main.uv"
     ) {
@@ -208,7 +208,7 @@ public procedure validatedKeySystemConflictDetectionObligations() -> usize {
     if diagnosticSourceObligationEntryMatches(
         "rule.19.K-Ordered-Redundant-Warn",
         73743usize,
-        "HelloUltraviolet::Fixtures::DiagnosticSource",
+        "HelloUltraviolet::Audit::FixtureCatalog::DiagnosticSource",
         "validatedKeysDiagnosticSourceFixtureCount",
         "Fixtures/DiagnosticSource/Keys/OrderedRedundantWarning/Source/Main.uv"
     ) {
@@ -253,7 +253,7 @@ public procedure validatedKeySystemConflictDetectionObligations() -> usize {
     if rejectedSourceObligationEntryMatches(
         "diagnostics.19.ConflictDetection",
         73824usize,
-        "HelloUltraviolet::Fixtures::RejectedSource",
+        "HelloUltraviolet::Audit::FixtureCatalog::RejectedSource",
         "validatedKeysRejectedSourceFixtureCount",
         "Fixtures/RejectedSource/Keys/ConflictDetectionDiagnostic/Source/Main.uv"
     ) {

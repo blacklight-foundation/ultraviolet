@@ -1,0 +1,79 @@
+//! Compiled symbol execution checks for ReferenceAsync.
+
+using HelloUltraviolet::Reference::Async::{ runAsyncAsyncKeyIntegrationReference }
+using HelloUltraviolet::Reference::Async::{ runAsyncAsyncTypeReference }
+using HelloUltraviolet::Reference::Async::{ runAsyncCompositionChainReference }
+using HelloUltraviolet::Reference::Async::{ runAsyncCompositionCombinatorsReference }
+using HelloUltraviolet::Reference::Async::{ runAsyncCompositionFilterReference }
+using HelloUltraviolet::Reference::Async::{ runAsyncCompositionFoldReference }
+using HelloUltraviolet::Reference::Async::{ runAsyncCompositionFormsReference }
+using HelloUltraviolet::Reference::Async::{ runAsyncCompositionMapReference }
+using HelloUltraviolet::Reference::Async::{ runAsyncCompositionTakeReference }
+using HelloUltraviolet::Reference::Async::{ runAsyncCompositionUntilReference }
+using HelloUltraviolet::Reference::Async::{ runAsyncStateMachineReference }
+using HelloUltraviolet::Reference::Async::{ runAsyncSuspensionFormsReference }
+
+public procedure catalogCompiledSymbolsExecuteReferenceAsync(context: Context) -> bool {
+    var passed: bool = true
+    passed = recordCatalogSymbolExecution(
+        context,
+        "runAsyncAsyncKeyIntegrationReference",
+        runAsyncAsyncKeyIntegrationReference()
+    ) && passed
+    passed = recordCatalogSymbolExecution(
+        context,
+        "runAsyncAsyncTypeReference",
+        runAsyncAsyncTypeReference()
+    ) && passed
+    passed = recordCatalogSymbolExecution(
+        context,
+        "runAsyncCompositionChainReference",
+        runAsyncCompositionChainReference()
+    ) && passed
+    passed = recordCatalogSymbolExecution(
+        context,
+        "runAsyncCompositionCombinatorsReference",
+        runAsyncCompositionCombinatorsReference()
+    ) && passed
+    passed = recordCatalogSymbolExecution(
+        context,
+        "runAsyncCompositionFilterReference",
+        runAsyncCompositionFilterReference()
+    ) && passed
+    passed = recordCatalogSymbolExecution(
+        context,
+        "runAsyncCompositionFoldReference",
+        runAsyncCompositionFoldReference()
+    ) && passed
+    passed = recordCatalogSymbolExecution(
+        context,
+        "runAsyncCompositionFormsReference",
+        runAsyncCompositionFormsReference()
+    ) && passed
+    passed = recordCatalogSymbolExecution(
+        context,
+        "runAsyncCompositionMapReference",
+        runAsyncCompositionMapReference()
+    ) && passed
+    passed = recordCatalogSymbolExecution(
+        context,
+        "runAsyncCompositionTakeReference",
+        runAsyncCompositionTakeReference()
+    ) && passed
+    passed = recordCatalogSymbolExecution(
+        context,
+        "runAsyncCompositionUntilReference",
+        runAsyncCompositionUntilReference()
+    ) && passed
+    passed = recordCatalogSymbolExecution(
+        context,
+        "runAsyncStateMachineReference",
+        runAsyncStateMachineReference()
+    ) && passed
+    passed = recordCatalogSymbolExecution(
+        context,
+        "runAsyncSuspensionFormsReference",
+        runAsyncSuspensionFormsReference(context)
+    ) && passed
+    return passed
+}

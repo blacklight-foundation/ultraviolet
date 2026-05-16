@@ -64,7 +64,7 @@ public procedure validatedAsynchronousOperationsAsyncStateMachineObligations() -
     if diagnosticSourceObligationEntryMatches(
         "rule.21.Warn-Async-LargeCapture",
         82557usize,
-        "HelloUltraviolet::Fixtures::DiagnosticSource",
+        "HelloUltraviolet::Audit::FixtureCatalog::DiagnosticSource",
         "validatedAsyncDiagnosticSourceFixtureCount",
         "Fixtures/DiagnosticSource/Async/AsyncLargeCaptureWarning/Source/Main.uv"
     ) {
@@ -73,7 +73,7 @@ public procedure validatedAsynchronousOperationsAsyncStateMachineObligations() -
     if diagnosticSourceObligationEntryMatches(
         "rule.21.Warn-Async-LargeCapture-Ok",
         82575usize,
-        "HelloUltraviolet::Fixtures::DiagnosticSource",
+        "HelloUltraviolet::Audit::FixtureCatalog::DiagnosticSource",
         "validatedAsyncDiagnosticSourceFixtureCount",
         "Fixtures/DiagnosticSource/Async/AsyncLargeCaptureNoWarning/Source/Main.uv"
     ) {
@@ -82,7 +82,7 @@ public procedure validatedAsynchronousOperationsAsyncStateMachineObligations() -
     if diagnosticSourceObligationEntryMatches(
         "requirement.21.AsyncLargeCaptureWarningEmission",
         82593usize,
-        "HelloUltraviolet::Fixtures::DiagnosticSource",
+        "HelloUltraviolet::Audit::FixtureCatalog::DiagnosticSource",
         "validatedAsyncDiagnosticSourceFixtureCount",
         "Fixtures/DiagnosticSource/Async/AsyncLargeCaptureWarningEmission/Source/Main.uv"
     ) {
@@ -91,7 +91,7 @@ public procedure validatedAsynchronousOperationsAsyncStateMachineObligations() -
     if rejectedSourceObligationEntryMatches(
         "rule.21.Async-Capture-Err",
         82606usize,
-        "HelloUltraviolet::Fixtures::RejectedSource",
+        "HelloUltraviolet::Audit::FixtureCatalog::RejectedSource",
         "validatedExpressionsRejectedSourceFixtureCount",
         "Fixtures/RejectedSource/Expressions/AsyncCaptureOutlivesFrame/Source/Main.uv"
     ) {
@@ -109,7 +109,7 @@ public procedure validatedAsynchronousOperationsAsyncStateMachineObligations() -
     if rejectedSourceObligationEntryMatches(
         "rule.21.Prov-Async-Escape-Err",
         82643usize,
-        "HelloUltraviolet::Fixtures::RejectedSource",
+        "HelloUltraviolet::Audit::FixtureCatalog::RejectedSource",
         "validatedExpressionsRejectedSourceFixtureCount",
         "Fixtures/RejectedSource/Expressions/AsyncOperationEscapesRegion/Source/Main.uv"
     ) {
@@ -253,7 +253,7 @@ public procedure validatedAsynchronousOperationsAsyncStateMachineObligations() -
     if diagnosticSourceObligationEntryMatches(
         "diagnostics.21.AsyncStateMachineDiagnostics",
         82923usize,
-        "HelloUltraviolet::Fixtures::DiagnosticSource",
+        "HelloUltraviolet::Audit::FixtureCatalog::DiagnosticSource",
         "validatedAsyncDiagnosticSourceFixtureCount",
         "Fixtures/DiagnosticSource/Async/AsyncStateMachineDiagnosticsTable/Source/Main.uv"
     ) {

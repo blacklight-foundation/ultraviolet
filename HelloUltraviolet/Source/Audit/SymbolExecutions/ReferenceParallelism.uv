@@ -1,0 +1,55 @@
+//! Compiled symbol execution checks for ReferenceParallelism.
+
+using HelloUltraviolet::Reference::Parallelism::{ runParallelismCancellationReference }
+using HelloUltraviolet::Reference::Parallelism::{ runParallelismCaptureSemanticsReference }
+using HelloUltraviolet::Reference::Parallelism::{ runParallelismDeterminismReference }
+using HelloUltraviolet::Reference::Parallelism::{ runParallelismDispatchReference }
+using HelloUltraviolet::Reference::Parallelism::{ runParallelismExecutionDomainsReference }
+using HelloUltraviolet::Reference::Parallelism::{ runParallelismPanicHandlingReference }
+using HelloUltraviolet::Reference::Parallelism::{ runParallelismParallelBlocksReference }
+using HelloUltraviolet::Reference::Parallelism::{ runParallelismSpawnReference }
+
+public procedure catalogCompiledSymbolsExecuteReferenceParallelism(context: Context) -> bool {
+    var passed: bool = true
+    passed = recordCatalogSymbolExecution(
+        context,
+        "runParallelismCancellationReference",
+        runParallelismCancellationReference(context)
+    ) && passed
+    passed = recordCatalogSymbolExecution(
+        context,
+        "runParallelismCaptureSemanticsReference",
+        runParallelismCaptureSemanticsReference(context)
+    ) && passed
+    passed = recordCatalogSymbolExecution(
+        context,
+        "runParallelismDeterminismReference",
+        runParallelismDeterminismReference(context)
+    ) && passed
+    passed = recordCatalogSymbolExecution(
+        context,
+        "runParallelismDispatchReference",
+        runParallelismDispatchReference(context)
+    ) && passed
+    passed = recordCatalogSymbolExecution(
+        context,
+        "runParallelismExecutionDomainsReference",
+        runParallelismExecutionDomainsReference(context)
+    ) && passed
+    passed = recordCatalogSymbolExecution(
+        context,
+        "runParallelismPanicHandlingReference",
+        runParallelismPanicHandlingReference(context)
+    ) && passed
+    passed = recordCatalogSymbolExecution(
+        context,
+        "runParallelismParallelBlocksReference",
+        runParallelismParallelBlocksReference(context)
+    ) && passed
+    passed = recordCatalogSymbolExecution(
+        context,
+        "runParallelismSpawnReference",
+        runParallelismSpawnReference(context)
+    ) && passed
+    return passed
+}

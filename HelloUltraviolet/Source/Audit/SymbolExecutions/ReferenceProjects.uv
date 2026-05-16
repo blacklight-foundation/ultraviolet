@@ -1,0 +1,31 @@
+//! Compiled symbol execution checks for ReferenceProjects.
+
+using HelloUltraviolet::Reference::Projects::{ runProjectsAssemblyModelReference }
+using HelloUltraviolet::Reference::Projects::{ runProjectsManifestModelReference }
+using HelloUltraviolet::Reference::Projects::{ runProjectsModuleDiscoveryReference }
+using HelloUltraviolet::Reference::Projects::{ runProjectsOutputArtifactsReference }
+
+public procedure catalogCompiledSymbolsExecuteReferenceProjects(context: Context) -> bool {
+    var passed: bool = true
+    passed = recordCatalogSymbolExecution(
+        context,
+        "runProjectsAssemblyModelReference",
+        runProjectsAssemblyModelReference()
+    ) && passed
+    passed = recordCatalogSymbolExecution(
+        context,
+        "runProjectsManifestModelReference",
+        runProjectsManifestModelReference()
+    ) && passed
+    passed = recordCatalogSymbolExecution(
+        context,
+        "runProjectsModuleDiscoveryReference",
+        runProjectsModuleDiscoveryReference()
+    ) && passed
+    passed = recordCatalogSymbolExecution(
+        context,
+        "runProjectsOutputArtifactsReference",
+        runProjectsOutputArtifactsReference()
+    ) && passed
+    return passed
+}

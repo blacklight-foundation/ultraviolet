@@ -1,0 +1,67 @@
+//! Compiled symbol execution checks for ReferenceModalTypes.
+
+using HelloUltraviolet::Reference::ModalTypes::{ runModalTypesBytesReference }
+using HelloUltraviolet::Reference::ModalTypes::{ runModalTypesClosuresReference }
+using HelloUltraviolet::Reference::ModalTypes::{ runModalTypesFunctionTypesReference }
+using HelloUltraviolet::Reference::ModalTypes::{ runModalTypesModalDeclarationsReference }
+using HelloUltraviolet::Reference::ModalTypes::{ runModalTypesPointersReference }
+using HelloUltraviolet::Reference::ModalTypes::{ runModalTypesStateFieldsReference }
+using HelloUltraviolet::Reference::ModalTypes::{ runModalTypesStateMethodsReference }
+using HelloUltraviolet::Reference::ModalTypes::{ runModalTypesStringsReference }
+using HelloUltraviolet::Reference::ModalTypes::{ runModalTypesTransitionsReference }
+using HelloUltraviolet::Reference::ModalTypes::{ runModalTypesWideningReference }
+
+public procedure catalogCompiledSymbolsExecuteReferenceModalTypes(context: Context) -> bool {
+    var passed: bool = true
+    passed = recordCatalogSymbolExecution(
+        context,
+        "runModalTypesBytesReference",
+        runModalTypesBytesReference()
+    ) && passed
+    passed = recordCatalogSymbolExecution(
+        context,
+        "runModalTypesClosuresReference",
+        runModalTypesClosuresReference()
+    ) && passed
+    passed = recordCatalogSymbolExecution(
+        context,
+        "runModalTypesFunctionTypesReference",
+        runModalTypesFunctionTypesReference()
+    ) && passed
+    passed = recordCatalogSymbolExecution(
+        context,
+        "runModalTypesModalDeclarationsReference",
+        runModalTypesModalDeclarationsReference()
+    ) && passed
+    passed = recordCatalogSymbolExecution(
+        context,
+        "runModalTypesPointersReference",
+        runModalTypesPointersReference()
+    ) && passed
+    passed = recordCatalogSymbolExecution(
+        context,
+        "runModalTypesStateFieldsReference",
+        runModalTypesStateFieldsReference()
+    ) && passed
+    passed = recordCatalogSymbolExecution(
+        context,
+        "runModalTypesStateMethodsReference",
+        runModalTypesStateMethodsReference()
+    ) && passed
+    passed = recordCatalogSymbolExecution(
+        context,
+        "runModalTypesStringsReference",
+        runModalTypesStringsReference()
+    ) && passed
+    passed = recordCatalogSymbolExecution(
+        context,
+        "runModalTypesTransitionsReference",
+        runModalTypesTransitionsReference()
+    ) && passed
+    passed = recordCatalogSymbolExecution(
+        context,
+        "runModalTypesWideningReference",
+        runModalTypesWideningReference()
+    ) && passed
+    return passed
+}

@@ -1,0 +1,37 @@
+//! Compiled symbol execution checks for ReferenceNames.
+
+using HelloUltraviolet::Reference::Names::{ runNamesDisambiguationReference }
+using HelloUltraviolet::Reference::Names::{ runNamesImportsReference }
+using HelloUltraviolet::Reference::Names::{ runNamesQualifiedResolutionReference }
+using HelloUltraviolet::Reference::Names::{ runNamesUsingDeclarationsReference }
+using HelloUltraviolet::Reference::Names::{ runNamesVisibilityReference }
+
+public procedure catalogCompiledSymbolsExecuteReferenceNames(context: Context) -> bool {
+    var passed: bool = true
+    passed = recordCatalogSymbolExecution(
+        context,
+        "runNamesDisambiguationReference",
+        runNamesDisambiguationReference()
+    ) && passed
+    passed = recordCatalogSymbolExecution(
+        context,
+        "runNamesImportsReference",
+        runNamesImportsReference()
+    ) && passed
+    passed = recordCatalogSymbolExecution(
+        context,
+        "runNamesQualifiedResolutionReference",
+        runNamesQualifiedResolutionReference()
+    ) && passed
+    passed = recordCatalogSymbolExecution(
+        context,
+        "runNamesUsingDeclarationsReference",
+        runNamesUsingDeclarationsReference()
+    ) && passed
+    passed = recordCatalogSymbolExecution(
+        context,
+        "runNamesVisibilityReference",
+        runNamesVisibilityReference()
+    ) && passed
+    return passed
+}

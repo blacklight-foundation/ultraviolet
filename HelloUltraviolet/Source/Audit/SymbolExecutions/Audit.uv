@@ -1,0 +1,13 @@
+//! Compiled symbol execution checks for Audit.
+
+using HelloUltraviolet::Audit::{ specClarificationLedgerIsIndexed }
+
+public procedure catalogCompiledSymbolsExecuteAudit(context: Context) -> bool {
+    var passed: bool = true
+    passed = recordCatalogSymbolExecution(
+        context,
+        "specClarificationLedgerIsIndexed",
+        specClarificationLedgerIsIndexed()
+    ) && passed
+    return passed
+}

@@ -1,0 +1,34 @@
+//! Shared support for generated compiled-symbol execution checks.
+
+internal procedure writeCatalogSymbolMessage(context: Context, text: string@View) -> bool {
+    let output: Outcome<(), IoError> = context.fs~>write_stderr(text)
+    return if output is {
+        @Value {
+            true
+        }
+        @Error {
+            false
+        }
+    }
+}
+
+internal procedure recordCatalogSymbolExecution(
+    context: Context,
+    symbol: string@View,
+    passed: bool
+) -> bool {
+    if passed {
+        return true
+    }
+
+    if (!writeCatalogSymbolMessage(context, "catalog compiled symbol failed: ")) {
+        return false
+    }
+    if (!writeCatalogSymbolMessage(context, symbol)) {
+        return false
+    }
+    if (!writeCatalogSymbolMessage(context, "\n")) {
+        return false
+    }
+    return false
+}

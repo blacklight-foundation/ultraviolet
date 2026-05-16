@@ -53,9 +53,9 @@ Objective: execute `.agents/plans/HelloUltravioletReferenceCorpus.md`.
   `[[acquire]]`, `[[release]]`, `[[acqrel]]`, and `[[seqcst]]`, plus
   `fence(acquire)`, `fence(release)`, and `fence(seqcst)`.
 - The catalog generator now derives fixture-backed obligation targets from
-  `Source/Fixtures/AcceptedProjects`, `Source/Fixtures/RejectedSource`,
-  `Source/Fixtures/DiagnosticSource`, `Source/Fixtures/OutputDiagnostics`, and
-  `Source/Fixtures/ArtifactProjects`, then emits the matching catalog helper
+  `Source/Audit/FixtureCatalog/AcceptedProjects`, `Source/Audit/FixtureCatalog/RejectedSource`,
+  `Source/Audit/FixtureCatalog/DiagnosticSource`, `Source/Audit/FixtureCatalog/OutputDiagnostics`, and
+  `Source/Audit/FixtureCatalog/ArtifactProjects`, then emits the matching catalog helper
   and import surface for each generated catalog submodule.
 - `Source/Audit/SpecClarifications.uv` now compiles a twenty-four-row clarification
   ledger for sourceability-limited, permission-clarity, and backend identity
@@ -767,7 +767,7 @@ Objective: execute `.agents/plans/HelloUltravioletReferenceCorpus.md`.
   code 1 and renders `E-CLI-0001 (error): unknown command`, exercising
   `diagnostics.CommandLineDiagnostics` through the command-line diagnostic
   surface.
-- `Source/Fixtures/RejectedSource` compiles metadata for 426 rejected-source
+- `Source/Audit/FixtureCatalog/RejectedSource` compiles metadata for 426 rejected-source
   expected diagnostic entries across 405 physical `Expected.uv` artifacts, and
   `HelloUltraviolet.exe` validates that fixture index
   through `rejectedSourceFixturesAreIndexed`.
@@ -786,12 +786,12 @@ Objective: execute `.agents/plans/HelloUltravioletReferenceCorpus.md`.
 - `ExpectedFiles.uv` reads the 403 current rejected-source `Expected.uv`
   artifacts and `HelloUltraviolet.exe` validates exact metadata content through
   one named check per physical fixture artifact.
-- `Source/Fixtures/DiagnosticSource` compiles metadata for 27 diagnostic-source
+- `Source/Audit/FixtureCatalog/DiagnosticSource` compiles metadata for 27 diagnostic-source
   fixture specimens whose source is expected to compile while emitting SPEC
   warnings or informational diagnostics, or while proving a SPEC diagnostic is
   absent, and `HelloUltraviolet.exe` validates the index, artifact paths, and
   exact `Expected.uv` metadata through the diagnostic-source fixture checks.
-- `Source/Fixtures/OutputDiagnostics` compiles metadata for the
+- `Source/Audit/FixtureCatalog/OutputDiagnostics` compiles metadata for the
   `LlvmToolResolveOwnership`, `EmitLLVMRenderFailure`, `ManifestParseError`,
   and `UnknownCommand` output-diagnostic fixtures, and `HelloUltraviolet.exe`
   validates the index, source artifacts, exact `Expected.uv` metadata, captured
@@ -1146,7 +1146,7 @@ Objective: execute `.agents/plans/HelloUltravioletReferenceCorpus.md`.
   `def.ImplementationOrphanRule` for record, enum, and modal `implements`
   clauses in `CheckOrphanRule`, using the first module-path segment as the
   assembly identity and routing violations to `E-TYP-2507`.
-- `Source/Fixtures/AcceptedProjects` compiles metadata for 45 accepted-project
+- `Source/Audit/FixtureCatalog/AcceptedProjects` compiles metadata for 45 accepted-project
   obligation expectations across 7 buildable project fixtures, and
   `HelloUltraviolet.exe` validates both the index and artifact paths through
   accepted-project fixture checks. The generated catalog maps these
@@ -1186,7 +1186,7 @@ Objective: execute `.agents/plans/HelloUltravioletReferenceCorpus.md`.
   `collect_toplevel.cpp` and `item/import_decl.cpp` so import validation uses
   the semantic AST module set being analyzed rather than the selected
   assembly's initial module list.
-- `Source/Fixtures/ArtifactProjects` compiles metadata for 7 artifact project
+- `Source/Audit/FixtureCatalog/ArtifactProjects` compiles metadata for 7 artifact project
   fixture specimens, and `HelloUltraviolet.exe` validates the index,
   source/manifest paths, and emitted-IR erasure checks through artifact-project
   fixture checks.

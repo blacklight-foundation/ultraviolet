@@ -91,7 +91,7 @@ public procedure validatedKeySystemNestedReleaseObligations() -> usize {
     if diagnosticSourceObligationEntryMatches(
         "requirement.19.UnknownCalleeAccessWarning",
         73985usize,
-        "HelloUltraviolet::Fixtures::DiagnosticSource",
+        "HelloUltraviolet::Audit::FixtureCatalog::DiagnosticSource",
         "validatedKeysDiagnosticSourceFixtureCount",
         "Fixtures/DiagnosticSource/Keys/UnknownCalleeAccessWarning/Source/Main.uv"
     ) {
@@ -109,7 +109,7 @@ public procedure validatedKeySystemNestedReleaseObligations() -> usize {
     if diagnosticSourceObligationEntryMatches(
         "requirement.19.StaleOkSuppressesReleaseWarning",
         74015usize,
-        "HelloUltraviolet::Fixtures::DiagnosticSource",
+        "HelloUltraviolet::Audit::FixtureCatalog::DiagnosticSource",
         "validatedKeysDiagnosticSourceFixtureCount",
         "Fixtures/DiagnosticSource/Keys/StaleOkSuppressesReleaseWarning/Source/Main.uv"
     ) {
@@ -118,7 +118,7 @@ public procedure validatedKeySystemNestedReleaseObligations() -> usize {
     if rejectedSourceObligationEntryMatches(
         "rule.19.K-Release-SameMode-Err",
         74028usize,
-        "HelloUltraviolet::Fixtures::RejectedSource",
+        "HelloUltraviolet::Audit::FixtureCatalog::RejectedSource",
         "validatedKeysRejectedSourceFixtureCount",
         "Fixtures/RejectedSource/Keys/NestedReleaseSameMode/Source/Main.uv"
     ) {
@@ -190,7 +190,7 @@ public procedure validatedKeySystemNestedReleaseObligations() -> usize {
     if diagnosticSourceObligationEntryMatches(
         "diagnostics.19.NestedRelease",
         74175usize,
-        "HelloUltraviolet::Fixtures::DiagnosticSource",
+        "HelloUltraviolet::Audit::FixtureCatalog::DiagnosticSource",
         "validatedKeysDiagnosticSourceFixtureCount",
         "Fixtures/DiagnosticSource/Keys/NestedReleaseInterleavingWarning/Source/Main.uv"
     ) {

@@ -1,0 +1,31 @@
+//! Compiled symbol execution checks for ReferencePermissions.
+
+using HelloUltraviolet::Reference::Permissions::{ runPermissionsActivityStatesReference }
+using HelloUltraviolet::Reference::Permissions::{ runPermissionsAdmissibilityReference }
+using HelloUltraviolet::Reference::Permissions::{ runPermissionsAliasExclusivityReference }
+using HelloUltraviolet::Reference::Permissions::{ runPermissionsPermissionFormsReference }
+
+public procedure catalogCompiledSymbolsExecuteReferencePermissions(context: Context) -> bool {
+    var passed: bool = true
+    passed = recordCatalogSymbolExecution(
+        context,
+        "runPermissionsActivityStatesReference",
+        runPermissionsActivityStatesReference()
+    ) && passed
+    passed = recordCatalogSymbolExecution(
+        context,
+        "runPermissionsAdmissibilityReference",
+        runPermissionsAdmissibilityReference()
+    ) && passed
+    passed = recordCatalogSymbolExecution(
+        context,
+        "runPermissionsAliasExclusivityReference",
+        runPermissionsAliasExclusivityReference()
+    ) && passed
+    passed = recordCatalogSymbolExecution(
+        context,
+        "runPermissionsPermissionFormsReference",
+        runPermissionsPermissionFormsReference()
+    ) && passed
+    return passed
+}

@@ -46,7 +46,7 @@ public procedure validatedAsynchronousOperationsAsyncKeyIntegrationObligations()
     if rejectedSourceObligationEntryMatches(
         "requirement.21.AsyncKeyRestrictions",
         83009usize,
-        "HelloUltraviolet::Fixtures::RejectedSource",
+        "HelloUltraviolet::Audit::FixtureCatalog::RejectedSource",
         "validatedKeysRejectedSourceFixtureCount",
         "Fixtures/RejectedSource/Keys/AsyncKeyRestrictionsYieldHeld/Source/Main.uv"
     ) {
@@ -55,7 +55,7 @@ public procedure validatedAsynchronousOperationsAsyncKeyIntegrationObligations()
     if rejectedSourceObligationEntryMatches(
         "rule.21.A-Closure-Yield-Keys-Err",
         83026usize,
-        "HelloUltraviolet::Fixtures::RejectedSource",
+        "HelloUltraviolet::Audit::FixtureCatalog::RejectedSource",
         "validatedKeysRejectedSourceFixtureCount",
         "Fixtures/RejectedSource/Keys/SharedClosureYieldKeys/Source/Main.uv"
     ) {
@@ -64,7 +64,7 @@ public procedure validatedAsynchronousOperationsAsyncKeyIntegrationObligations()
     if rejectedSourceObligationEntryMatches(
         "requirement.21.SharedCapturingClosureYieldKeys",
         83045usize,
-        "HelloUltraviolet::Fixtures::RejectedSource",
+        "HelloUltraviolet::Audit::FixtureCatalog::RejectedSource",
         "validatedKeysRejectedSourceFixtureCount",
         "Fixtures/RejectedSource/Keys/SharedCapturingClosureYieldKeys/Source/Main.uv"
     ) {
@@ -73,7 +73,7 @@ public procedure validatedAsynchronousOperationsAsyncKeyIntegrationObligations()
     if diagnosticSourceObligationEntryMatches(
         "requirement.21.YieldReleaseStalenessWarning",
         83058usize,
-        "HelloUltraviolet::Fixtures::DiagnosticSource",
+        "HelloUltraviolet::Audit::FixtureCatalog::DiagnosticSource",
         "validatedKeysDiagnosticSourceFixtureCount",
         "Fixtures/DiagnosticSource/Keys/StaleAfterYieldReleaseWarning/Source/Main.uv"
     ) {
@@ -127,7 +127,7 @@ public procedure validatedAsynchronousOperationsAsyncKeyIntegrationObligations()
     if rejectedSourceObligationEntryMatches(
         "rule.21.Lower-Wait-Key-Illegal",
         83147usize,
-        "HelloUltraviolet::Fixtures::RejectedSource",
+        "HelloUltraviolet::Audit::FixtureCatalog::RejectedSource",
         "validatedKeysRejectedSourceFixtureCount",
         "Fixtures/RejectedSource/Keys/WaitWhileKeyHeldLowering/Source/Main.uv"
     ) {
@@ -163,7 +163,7 @@ public procedure validatedAsynchronousOperationsAsyncKeyIntegrationObligations()
     if diagnosticSourceObligationEntryMatches(
         "requirement.21.StaleValueMarkIRDiagnostics",
         83219usize,
-        "HelloUltraviolet::Fixtures::DiagnosticSource",
+        "HelloUltraviolet::Audit::FixtureCatalog::DiagnosticSource",
         "validatedAsyncDiagnosticSourceFixtureCount",
         "Fixtures/DiagnosticSource/Async/StaleValueMarkIRDiagnostics/Source/Main.uv"
     ) {
@@ -172,7 +172,7 @@ public procedure validatedAsynchronousOperationsAsyncKeyIntegrationObligations()
     if rejectedSourceObligationEntryMatches(
         "diagnostics.21.AsyncKeyDiagnostics",
         83234usize,
-        "HelloUltraviolet::Fixtures::RejectedSource",
+        "HelloUltraviolet::Audit::FixtureCatalog::RejectedSource",
         "validatedKeysRejectedSourceFixtureCount",
         "Fixtures/RejectedSource/Keys/YieldFromWhileKeyHeld/Source/Main.uv"
     ) {

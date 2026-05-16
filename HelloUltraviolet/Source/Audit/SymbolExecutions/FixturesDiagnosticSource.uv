@@ -1,0 +1,49 @@
+//! Compiled symbol execution checks for FixturesDiagnosticSource.
+
+using HelloUltraviolet::Audit::FixtureCatalog::DiagnosticSource::{ validatedAsyncDiagnosticSourceFixtureCount }
+using HelloUltraviolet::Audit::FixtureCatalog::DiagnosticSource::{ validatedAttributesDiagnosticSourceFixtureCount }
+using HelloUltraviolet::Audit::FixtureCatalog::DiagnosticSource::{ validatedComptimeDiagnosticSourceFixtureCount }
+using HelloUltraviolet::Audit::FixtureCatalog::DiagnosticSource::{ validatedExpressionsDiagnosticSourceFixtureCount }
+using HelloUltraviolet::Audit::FixtureCatalog::DiagnosticSource::{ validatedKeysDiagnosticSourceFixtureCount }
+using HelloUltraviolet::Audit::FixtureCatalog::DiagnosticSource::{ validatedParallelismDiagnosticSourceFixtureCount }
+using HelloUltraviolet::Audit::FixtureCatalog::DiagnosticSource::{ validatedSourceTextDiagnosticSourceFixtureCount }
+
+public procedure catalogCompiledSymbolsExecuteFixturesDiagnosticSource(context: Context) -> bool {
+    var passed: bool = true
+    passed = recordCatalogSymbolExecution(
+        context,
+        "validatedAsyncDiagnosticSourceFixtureCount",
+        validatedAsyncDiagnosticSourceFixtureCount() > 0usize
+    ) && passed
+    passed = recordCatalogSymbolExecution(
+        context,
+        "validatedAttributesDiagnosticSourceFixtureCount",
+        validatedAttributesDiagnosticSourceFixtureCount() > 0usize
+    ) && passed
+    passed = recordCatalogSymbolExecution(
+        context,
+        "validatedComptimeDiagnosticSourceFixtureCount",
+        validatedComptimeDiagnosticSourceFixtureCount() > 0usize
+    ) && passed
+    passed = recordCatalogSymbolExecution(
+        context,
+        "validatedExpressionsDiagnosticSourceFixtureCount",
+        validatedExpressionsDiagnosticSourceFixtureCount() > 0usize
+    ) && passed
+    passed = recordCatalogSymbolExecution(
+        context,
+        "validatedKeysDiagnosticSourceFixtureCount",
+        validatedKeysDiagnosticSourceFixtureCount() > 0usize
+    ) && passed
+    passed = recordCatalogSymbolExecution(
+        context,
+        "validatedParallelismDiagnosticSourceFixtureCount",
+        validatedParallelismDiagnosticSourceFixtureCount() > 0usize
+    ) && passed
+    passed = recordCatalogSymbolExecution(
+        context,
+        "validatedSourceTextDiagnosticSourceFixtureCount",
+        validatedSourceTextDiagnosticSourceFixtureCount() > 0usize
+    ) && passed
+    return passed
+}

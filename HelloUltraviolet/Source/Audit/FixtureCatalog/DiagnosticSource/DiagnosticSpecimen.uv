@@ -1,0 +1,83 @@
+//! Metadata for source specimens that are expected to emit diagnostics and still compile.
+
+using HelloUltraviolet::Audit::{ auditTextEquals }
+using HelloUltraviolet::Audit::FixtureCatalog::RejectedSource::{ ExpectedDiagnostic }
+using HelloUltraviolet::Audit::FixtureCatalog::RejectedSource::{ expectedDiagnostic }
+using HelloUltraviolet::Audit::FixtureCatalog::RejectedSource::{ expectedDiagnosticMatches }
+
+public record DiagnosticSpecimen {
+    public name: string@View
+    public fixture_path: string@View
+    public source_path: string@View
+    public expected_path: string@View
+    public expected: ExpectedDiagnostic
+}
+
+public procedure diagnosticSpecimen(
+    name: string@View,
+    fixture_path: string@View,
+    source_path: string@View,
+    expected_path: string@View,
+    expected: ExpectedDiagnostic
+) -> DiagnosticSpecimen {
+    return DiagnosticSpecimen {
+        name: name,
+        fixture_path: fixture_path,
+        source_path: source_path,
+        expected_path: expected_path,
+        expected: expected
+    }
+}
+
+public procedure diagnosticSpecimenMatches(
+    specimen: DiagnosticSpecimen,
+    name: string@View,
+    fixture_path: string@View,
+    source_path: string@View,
+    expected_path: string@View,
+    expected_code: string@View,
+    obligation_id: string@View
+) -> bool {
+    return auditTextEquals(specimen.name, name) &&
+        auditTextEquals(specimen.fixture_path, fixture_path) &&
+        auditTextEquals(specimen.source_path, source_path) &&
+        auditTextEquals(specimen.expected_path, expected_path) &&
+        expectedDiagnosticMatches(specimen.expected, expected_code, obligation_id)
+}
+
+public procedure expectedDiagnosticAbsent(
+    code: string@View,
+    obligation_id: string@View
+) -> ExpectedDiagnostic {
+    return expectedDiagnostic(code, obligation_id)
+}
+
+public procedure diagnosticAbsenceSpecimen(
+    name: string@View,
+    fixture_path: string@View,
+    source_path: string@View,
+    expected_path: string@View,
+    expected: ExpectedDiagnostic
+) -> DiagnosticSpecimen {
+    return diagnosticSpecimen(name, fixture_path, source_path, expected_path, expected)
+}
+
+public procedure diagnosticAbsenceSpecimenMatches(
+    specimen: DiagnosticSpecimen,
+    name: string@View,
+    fixture_path: string@View,
+    source_path: string@View,
+    expected_path: string@View,
+    absent_code: string@View,
+    obligation_id: string@View
+) -> bool {
+    return diagnosticSpecimenMatches(
+        specimen,
+        name,
+        fixture_path,
+        source_path,
+        expected_path,
+        absent_code,
+        obligation_id
+    )
+}

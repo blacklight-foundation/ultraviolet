@@ -1,0 +1,43 @@
+//! Compiled symbol execution checks for ReferencePatterns.
+
+using HelloUltraviolet::Reference::Patterns::{ runPatternsBasicPatternsReference }
+using HelloUltraviolet::Reference::Patterns::{ runPatternsCaseClausesReference }
+using HelloUltraviolet::Reference::Patterns::{ runPatternsEnumModalPatternsReference }
+using HelloUltraviolet::Reference::Patterns::{ runPatternsExhaustivenessReference }
+using HelloUltraviolet::Reference::Patterns::{ runPatternsRangePatternsReference }
+using HelloUltraviolet::Reference::Patterns::{ runPatternsTupleRecordPatternsReference }
+
+public procedure catalogCompiledSymbolsExecuteReferencePatterns(context: Context) -> bool {
+    var passed: bool = true
+    passed = recordCatalogSymbolExecution(
+        context,
+        "runPatternsBasicPatternsReference",
+        runPatternsBasicPatternsReference()
+    ) && passed
+    passed = recordCatalogSymbolExecution(
+        context,
+        "runPatternsCaseClausesReference",
+        runPatternsCaseClausesReference()
+    ) && passed
+    passed = recordCatalogSymbolExecution(
+        context,
+        "runPatternsEnumModalPatternsReference",
+        runPatternsEnumModalPatternsReference()
+    ) && passed
+    passed = recordCatalogSymbolExecution(
+        context,
+        "runPatternsExhaustivenessReference",
+        runPatternsExhaustivenessReference()
+    ) && passed
+    passed = recordCatalogSymbolExecution(
+        context,
+        "runPatternsRangePatternsReference",
+        runPatternsRangePatternsReference()
+    ) && passed
+    passed = recordCatalogSymbolExecution(
+        context,
+        "runPatternsTupleRecordPatternsReference",
+        runPatternsTupleRecordPatternsReference()
+    ) && passed
+    return passed
+}

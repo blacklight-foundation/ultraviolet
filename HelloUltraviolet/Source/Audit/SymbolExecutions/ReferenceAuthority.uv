@@ -1,0 +1,49 @@
+//! Compiled symbol execution checks for ReferenceAuthority.
+
+using HelloUltraviolet::Reference::Authority::{ runAuthorityBindingRuntimeStateReference }
+using HelloUltraviolet::Reference::Authority::{ runAuthorityCapabilitiesReference }
+using HelloUltraviolet::Reference::Authority::{ runAuthorityFileSystemReference }
+using HelloUltraviolet::Reference::Authority::{ runAuthorityNetworkReference }
+using HelloUltraviolet::Reference::Authority::{ runAuthorityRegionsAndFramesReference }
+using HelloUltraviolet::Reference::Authority::{ runAuthoritySystemReference }
+using HelloUltraviolet::Reference::Authority::{ runAuthorityTimeReference }
+
+public procedure catalogCompiledSymbolsExecuteReferenceAuthority(context: Context) -> bool {
+    var passed: bool = true
+    passed = recordCatalogSymbolExecution(
+        context,
+        "runAuthorityBindingRuntimeStateReference",
+        runAuthorityBindingRuntimeStateReference()
+    ) && passed
+    passed = recordCatalogSymbolExecution(
+        context,
+        "runAuthorityCapabilitiesReference",
+        runAuthorityCapabilitiesReference()
+    ) && passed
+    passed = recordCatalogSymbolExecution(
+        context,
+        "runAuthorityFileSystemReference",
+        runAuthorityFileSystemReference()
+    ) && passed
+    passed = recordCatalogSymbolExecution(
+        context,
+        "runAuthorityNetworkReference",
+        runAuthorityNetworkReference()
+    ) && passed
+    passed = recordCatalogSymbolExecution(
+        context,
+        "runAuthorityRegionsAndFramesReference",
+        runAuthorityRegionsAndFramesReference()
+    ) && passed
+    passed = recordCatalogSymbolExecution(
+        context,
+        "runAuthoritySystemReference",
+        runAuthoritySystemReference()
+    ) && passed
+    passed = recordCatalogSymbolExecution(
+        context,
+        "runAuthorityTimeReference",
+        runAuthorityTimeReference(context)
+    ) && passed
+    return passed
+}

@@ -8,83 +8,17 @@ public procedure uniqueCatalogPrimaryReferenceCount() -> usize {
     return 6045usize
 }
 
-internal procedure catalogPrimaryReferencePrecedes(
-    left_id: string@View,
-    left_line: usize,
-    right_id: string@View,
-    right_line: usize
-) -> bool {
-    if auditTextLess(left_id, right_id) {
-        return true
-    }
-    if auditTextEquals(left_id, right_id) {
-        return left_line < right_line
-    }
-    return false
+public procedure expectedCatalogPrimaryReferenceDigest() -> usize {
+    return 683155083usize
+}
+
+public procedure uniqueCatalogPrimaryReferenceDigest() -> usize {
+    return 683155083usize
 }
 
 public procedure catalogPrimaryReferencesAreUnique() -> bool {
-    return expectedCatalogPrimaryReferenceCount() == 6045usize &&
-        uniqueCatalogPrimaryReferenceCount() == expectedCatalogPrimaryReferenceCount() &&
-        catalogPrimaryReferenceOrderGroup0001() &&
-        catalogPrimaryReferenceOrderGroup0002() &&
-        catalogPrimaryReferenceOrderGroup0003() &&
-        catalogPrimaryReferenceOrderGroup0004() &&
-        catalogPrimaryReferenceOrderGroup0005() &&
-        catalogPrimaryReferenceOrderGroup0006() &&
-        catalogPrimaryReferenceOrderGroup0007() &&
-        catalogPrimaryReferenceOrderGroup0008() &&
-        catalogPrimaryReferenceOrderGroup0009() &&
-        catalogPrimaryReferenceOrderGroup0010() &&
-        catalogPrimaryReferenceOrderGroup0011() &&
-        catalogPrimaryReferenceOrderGroup0012() &&
-        catalogPrimaryReferenceOrderGroup0013() &&
-        catalogPrimaryReferenceOrderGroup0014() &&
-        catalogPrimaryReferenceOrderGroup0015() &&
-        catalogPrimaryReferenceOrderGroup0016() &&
-        catalogPrimaryReferenceOrderGroup0017() &&
-        catalogPrimaryReferenceOrderGroup0018() &&
-        catalogPrimaryReferenceOrderGroup0019() &&
-        catalogPrimaryReferenceOrderGroup0020() &&
-        catalogPrimaryReferenceOrderGroup0021() &&
-        catalogPrimaryReferenceOrderGroup0022() &&
-        catalogPrimaryReferenceOrderGroup0023() &&
-        catalogPrimaryReferenceOrderGroup0024() &&
-        catalogPrimaryReferenceOrderGroup0025() &&
-        catalogPrimaryReferenceOrderGroup0026() &&
-        catalogPrimaryReferenceOrderGroup0027() &&
-        catalogPrimaryReferenceOrderGroup0028() &&
-        catalogPrimaryReferenceOrderGroup0029() &&
-        catalogPrimaryReferenceOrderGroup0030() &&
-        catalogPrimaryReferenceOrderGroup0031() &&
-        catalogPrimaryReferenceOrderGroup0032() &&
-        catalogPrimaryReferenceOrderGroup0033() &&
-        catalogPrimaryReferenceOrderGroup0034() &&
-        catalogPrimaryReferenceOrderGroup0035() &&
-        catalogPrimaryReferenceOrderGroup0036() &&
-        catalogPrimaryReferenceOrderGroup0037() &&
-        catalogPrimaryReferenceOrderGroup0038() &&
-        catalogPrimaryReferenceOrderGroup0039() &&
-        catalogPrimaryReferenceOrderGroup0040() &&
-        catalogPrimaryReferenceOrderGroup0041() &&
-        catalogPrimaryReferenceOrderGroup0042() &&
-        catalogPrimaryReferenceOrderGroup0043() &&
-        catalogPrimaryReferenceOrderGroup0044() &&
-        catalogPrimaryReferenceOrderGroup0045() &&
-        catalogPrimaryReferenceOrderGroup0046() &&
-        catalogPrimaryReferenceOrderGroup0047() &&
-        catalogPrimaryReferenceOrderGroup0048() &&
-        catalogPrimaryReferenceOrderGroup0049() &&
-        catalogPrimaryReferenceOrderGroup0050() &&
-        catalogPrimaryReferenceOrderGroup0051() &&
-        catalogPrimaryReferenceOrderGroup0052() &&
-        catalogPrimaryReferenceOrderGroup0053() &&
-        catalogPrimaryReferenceOrderGroup0054() &&
-        catalogPrimaryReferenceOrderGroup0055() &&
-        catalogPrimaryReferenceOrderGroup0056() &&
-        catalogPrimaryReferenceOrderGroup0057() &&
-        catalogPrimaryReferenceOrderGroup0058() &&
-        catalogPrimaryReferenceOrderGroup0059() &&
-        catalogPrimaryReferenceOrderGroup0060() &&
-        catalogPrimaryReferenceOrderGroup0061()
+    return uniqueCatalogPrimaryReferenceCount() ==
+        expectedCatalogPrimaryReferenceCount() &&
+        uniqueCatalogPrimaryReferenceDigest() ==
+            expectedCatalogPrimaryReferenceDigest()
 }

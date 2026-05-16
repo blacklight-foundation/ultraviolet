@@ -1,0 +1,61 @@
+//! Compiled symbol execution checks for ReferenceExpressions.
+
+using HelloUltraviolet::Reference::Expressions::{ runExpressionsAccessAndPlacesReference }
+using HelloUltraviolet::Reference::Expressions::{ runExpressionsCallsReference }
+using HelloUltraviolet::Reference::Expressions::{ runExpressionsCastsAndTransmutesReference }
+using HelloUltraviolet::Reference::Expressions::{ runExpressionsClosuresAndPipelinesReference }
+using HelloUltraviolet::Reference::Expressions::{ runExpressionsConstructionReference }
+using HelloUltraviolet::Reference::Expressions::{ runExpressionsControlReference }
+using HelloUltraviolet::Reference::Expressions::{ runExpressionsEffectfulCoreReference }
+using HelloUltraviolet::Reference::Expressions::{ runExpressionsLiteralsAndNamesReference }
+using HelloUltraviolet::Reference::Expressions::{ runExpressionsOperatorsReference }
+
+public procedure catalogCompiledSymbolsExecuteReferenceExpressions(context: Context) -> bool {
+    var passed: bool = true
+    passed = recordCatalogSymbolExecution(
+        context,
+        "runExpressionsAccessAndPlacesReference",
+        runExpressionsAccessAndPlacesReference()
+    ) && passed
+    passed = recordCatalogSymbolExecution(
+        context,
+        "runExpressionsCallsReference",
+        runExpressionsCallsReference()
+    ) && passed
+    passed = recordCatalogSymbolExecution(
+        context,
+        "runExpressionsCastsAndTransmutesReference",
+        runExpressionsCastsAndTransmutesReference()
+    ) && passed
+    passed = recordCatalogSymbolExecution(
+        context,
+        "runExpressionsClosuresAndPipelinesReference",
+        runExpressionsClosuresAndPipelinesReference()
+    ) && passed
+    passed = recordCatalogSymbolExecution(
+        context,
+        "runExpressionsConstructionReference",
+        runExpressionsConstructionReference()
+    ) && passed
+    passed = recordCatalogSymbolExecution(
+        context,
+        "runExpressionsControlReference",
+        runExpressionsControlReference()
+    ) && passed
+    passed = recordCatalogSymbolExecution(
+        context,
+        "runExpressionsEffectfulCoreReference",
+        runExpressionsEffectfulCoreReference()
+    ) && passed
+    passed = recordCatalogSymbolExecution(
+        context,
+        "runExpressionsLiteralsAndNamesReference",
+        runExpressionsLiteralsAndNamesReference()
+    ) && passed
+    passed = recordCatalogSymbolExecution(
+        context,
+        "runExpressionsOperatorsReference",
+        runExpressionsOperatorsReference()
+    ) && passed
+    return passed
+}

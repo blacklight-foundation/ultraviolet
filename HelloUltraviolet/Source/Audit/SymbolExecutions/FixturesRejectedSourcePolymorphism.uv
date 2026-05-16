@@ -1,0 +1,13 @@
+//! Compiled symbol execution checks for FixturesRejectedSourcePolymorphism.
+
+using HelloUltraviolet::Audit::FixtureCatalog::RejectedSource::{ validatedPolymorphismRejectedSourceFixtureCount }
+
+public procedure catalogCompiledSymbolsExecuteFixturesRejectedSourcePolymorphism(context: Context) -> bool {
+    var passed: bool = true
+    passed = recordCatalogSymbolExecution(
+        context,
+        "validatedPolymorphismRejectedSourceFixtureCount",
+        validatedPolymorphismRejectedSourceFixtureCount() > 0usize
+    ) && passed
+    return passed
+}

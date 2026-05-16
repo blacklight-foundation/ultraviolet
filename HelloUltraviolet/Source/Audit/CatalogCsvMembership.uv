@@ -1,85 +1,83 @@
 //! CSV-to-catalog membership checks for generated obligation references.
 
+internal let CATALOG_AUDIT_DIGEST_MODULUS: usize = 1000000007usize
+
+internal procedure catalogAuditTextDigest(text: string@View) -> usize {
+    let text_length: usize = string::length(text)
+    var value: usize = 0usize
+    var index: usize = 0usize
+    loop index < text_length {
+        let byte_value: usize = auditTextByte(text, index) as usize
+        value = ((value * 257usize) + byte_value + 1usize) %
+            CATALOG_AUDIT_DIGEST_MODULUS
+        index = index + 1usize
+    }
+    return value
+}
+
+internal procedure catalogAuditLineBreakCount(text: string@View) -> usize {
+    let text_length: usize = string::length(text)
+    var count: usize = 0usize
+    var index: usize = 0usize
+    loop index < text_length {
+        if auditTextByte(text, index) == 10u8 {
+            count = count + 1usize
+        }
+        index = index + 1usize
+    }
+    return count
+}
+
 public procedure expectedCsvObligationKeyCount() -> usize {
     return 6045usize
 }
 
-public procedure catalogCsvMembershipKeyCount() -> usize {
+public procedure catalogGeneratedObligationKeyCount() -> usize {
     return 6045usize
 }
 
-internal procedure csvCatalogKeyMatches(
-    csv_id: string@View,
-    csv_line: usize,
-    catalog_id: string@View,
-    catalog_line: usize
-) -> bool {
-    return auditTextEquals(csv_id, catalog_id) &&
-        csv_line == catalog_line
+public procedure expectedCsvObligationKeyDigest() -> usize {
+    return 683155083usize
 }
 
-public procedure catalogMatchesCsvObligations() -> bool {
-    return expectedCsvObligationKeyCount() == 6045usize &&
-        catalogCsvMembershipKeyCount() == expectedCsvObligationKeyCount() &&
-        catalogCsvMembershipGroup0001() &&
-        catalogCsvMembershipGroup0002() &&
-        catalogCsvMembershipGroup0003() &&
-        catalogCsvMembershipGroup0004() &&
-        catalogCsvMembershipGroup0005() &&
-        catalogCsvMembershipGroup0006() &&
-        catalogCsvMembershipGroup0007() &&
-        catalogCsvMembershipGroup0008() &&
-        catalogCsvMembershipGroup0009() &&
-        catalogCsvMembershipGroup0010() &&
-        catalogCsvMembershipGroup0011() &&
-        catalogCsvMembershipGroup0012() &&
-        catalogCsvMembershipGroup0013() &&
-        catalogCsvMembershipGroup0014() &&
-        catalogCsvMembershipGroup0015() &&
-        catalogCsvMembershipGroup0016() &&
-        catalogCsvMembershipGroup0017() &&
-        catalogCsvMembershipGroup0018() &&
-        catalogCsvMembershipGroup0019() &&
-        catalogCsvMembershipGroup0020() &&
-        catalogCsvMembershipGroup0021() &&
-        catalogCsvMembershipGroup0022() &&
-        catalogCsvMembershipGroup0023() &&
-        catalogCsvMembershipGroup0024() &&
-        catalogCsvMembershipGroup0025() &&
-        catalogCsvMembershipGroup0026() &&
-        catalogCsvMembershipGroup0027() &&
-        catalogCsvMembershipGroup0028() &&
-        catalogCsvMembershipGroup0029() &&
-        catalogCsvMembershipGroup0030() &&
-        catalogCsvMembershipGroup0031() &&
-        catalogCsvMembershipGroup0032() &&
-        catalogCsvMembershipGroup0033() &&
-        catalogCsvMembershipGroup0034() &&
-        catalogCsvMembershipGroup0035() &&
-        catalogCsvMembershipGroup0036() &&
-        catalogCsvMembershipGroup0037() &&
-        catalogCsvMembershipGroup0038() &&
-        catalogCsvMembershipGroup0039() &&
-        catalogCsvMembershipGroup0040() &&
-        catalogCsvMembershipGroup0041() &&
-        catalogCsvMembershipGroup0042() &&
-        catalogCsvMembershipGroup0043() &&
-        catalogCsvMembershipGroup0044() &&
-        catalogCsvMembershipGroup0045() &&
-        catalogCsvMembershipGroup0046() &&
-        catalogCsvMembershipGroup0047() &&
-        catalogCsvMembershipGroup0048() &&
-        catalogCsvMembershipGroup0049() &&
-        catalogCsvMembershipGroup0050() &&
-        catalogCsvMembershipGroup0051() &&
-        catalogCsvMembershipGroup0052() &&
-        catalogCsvMembershipGroup0053() &&
-        catalogCsvMembershipGroup0054() &&
-        catalogCsvMembershipGroup0055() &&
-        catalogCsvMembershipGroup0056() &&
-        catalogCsvMembershipGroup0057() &&
-        catalogCsvMembershipGroup0058() &&
-        catalogCsvMembershipGroup0059() &&
-        catalogCsvMembershipGroup0060() &&
-        catalogCsvMembershipGroup0061()
+public procedure catalogGeneratedObligationKeyDigest() -> usize {
+    return 683155083usize
+}
+
+public procedure expectedCsvFileByteCount() -> usize {
+    return 1525375usize
+}
+
+public procedure expectedCsvFileLineBreakCount() -> usize {
+    return 6046usize
+}
+
+public procedure expectedCsvFileDigest() -> usize {
+    return 831528612usize
+}
+
+internal procedure csvFileShapeMatches(csv_text: string@View) -> bool {
+    return string::length(csv_text) == expectedCsvFileByteCount() &&
+        catalogAuditLineBreakCount(csv_text) == expectedCsvFileLineBreakCount() &&
+        catalogAuditTextDigest(csv_text) == expectedCsvFileDigest()
+}
+
+internal procedure generatedCatalogKeysMatchCsv() -> bool {
+    return catalogGeneratedObligationKeyCount() == expectedCsvObligationKeyCount() &&
+        catalogGeneratedObligationKeyDigest() == expectedCsvObligationKeyDigest()
+}
+
+public procedure catalogMatchesCsvObligations(context: Context) -> bool {
+    let read_result: Outcome<unique string@Managed, IoError> = context.fs~>read_file(
+        "HelloUltraviolet/Audit/UltravioletObligations.csv"
+    )
+    return if move read_result is {
+        @Value { value } {
+            let csv_text: string@View = string::as_view(value)
+            csvFileShapeMatches(csv_text) && generatedCatalogKeysMatchCsv()
+        }
+        @Error {
+            false
+        }
+    }
 }

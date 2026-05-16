@@ -10,7 +10,7 @@ public procedure validatedCompileTimeExecutionAndMetaprogrammingCompileTimeDiagn
     if diagnosticSourceObligationEntryMatches(
         "diagnostics.22.CompileTimeDiagnosticsSupplement",
         86211usize,
-        "HelloUltraviolet::Fixtures::DiagnosticSource",
+        "HelloUltraviolet::Audit::FixtureCatalog::DiagnosticSource",
         "validatedComptimeDiagnosticSourceFixtureCount",
         "Fixtures/DiagnosticSource/Comptime/UserDiagnosticWarning/Source/Main.uv"
     ) {
@@ -19,7 +19,7 @@ public procedure validatedCompileTimeExecutionAndMetaprogrammingCompileTimeDiagn
     if rejectedSourceObligationEntryMatches(
         "requirement.22.UserDiagnosticBuiltinEmission",
         86287usize,
-        "HelloUltraviolet::Fixtures::RejectedSource",
+        "HelloUltraviolet::Audit::FixtureCatalog::RejectedSource",
         "validatedComptimeRejectedSourceFixtureCount",
         "Fixtures/RejectedSource/Comptime/UserDiagnosticError/Source/Main.uv"
     ) {

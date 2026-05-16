@@ -1,0 +1,31 @@
+//! Compiled symbol execution checks for ReferenceTypes.
+
+using HelloUltraviolet::Reference::Types::{ runTypesEquivalenceReference }
+using HelloUltraviolet::Reference::Types::{ runTypesInferenceReference }
+using HelloUltraviolet::Reference::Types::{ runTypesRefinementsReference }
+using HelloUltraviolet::Reference::Types::{ runTypesSubtypingReference }
+
+public procedure catalogCompiledSymbolsExecuteReferenceTypes(context: Context) -> bool {
+    var passed: bool = true
+    passed = recordCatalogSymbolExecution(
+        context,
+        "runTypesEquivalenceReference",
+        runTypesEquivalenceReference()
+    ) && passed
+    passed = recordCatalogSymbolExecution(
+        context,
+        "runTypesInferenceReference",
+        runTypesInferenceReference()
+    ) && passed
+    passed = recordCatalogSymbolExecution(
+        context,
+        "runTypesRefinementsReference",
+        runTypesRefinementsReference()
+    ) && passed
+    passed = recordCatalogSymbolExecution(
+        context,
+        "runTypesSubtypingReference",
+        runTypesSubtypingReference()
+    ) && passed
+    return passed
+}

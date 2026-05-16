@@ -3065,6 +3065,7 @@ LLVMBootstrap/cursive/build/Release/Cursive.exe build HelloUltraviolet --check -
 LLVMBootstrap/cursive/build/Release/Cursive.exe build HelloUltraviolet --target-profile x86_64-win64 --build-progress off
 HelloUltraviolet/build/bin/HelloUltraviolet.exe
 HelloUltraviolet/build/bin/HelloUltraviolet.exe --audit
+LLVMBootstrap/cursive/build/Release/cursive_resolver_binary_chain_conformance_test.exe
 ```
 
 Reference source:
@@ -3085,8 +3086,12 @@ Spec obligations exercised:
 
 Spec basis:
 
-- `SPECIFICATION.md:7430-7549` requires expression resolution to traverse
+- `SPECIFICATION.md:5734-5738` requires expression resolution to traverse
   expression substructure homomorphically.
+- `SPECIFICATION.md:16272-16290` defines logical operator expressions as
+  unbounded left chains in the grammar.
+- `SPECIFICATION.md:20546` requires subexpressions to preserve left-to-right
+  evaluation order.
 - `SPECIFICATION.md:21683-21693` defines `ctx.gpu()` as an execution-domain
   constructor.
 - `SPECIFICATION.md:21781-21794` defines GPU intrinsic calls in GPU contexts.
@@ -3124,6 +3129,10 @@ Repair summary:
 Expression resolution now resolves same-operator binary chains iteratively for
 all binary operators while preserving the original AST shape. The existing
 region-allocation `^` special case still runs before the iterative chain path.
+The focused compiler regression
+`cursive_resolver_binary_chain_conformance_test` now builds a catalog-scale
+generated membership expression with `--check`, covering the source shape that
+exposed this resolver defect without relying on conformance trace volume.
 
 ## UVBOOT-0049: Configured CPU Execution Domain Lowering
 

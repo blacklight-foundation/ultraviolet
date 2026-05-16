@@ -64,7 +64,7 @@ public procedure validatedKeySystemDynamicKeyVerificationObligations() -> usize 
     if rejectedSourceObligationEntryMatches(
         "rule.19.K-Static-Required",
         74892usize,
-        "HelloUltraviolet::Fixtures::RejectedSource",
+        "HelloUltraviolet::Audit::FixtureCatalog::RejectedSource",
         "validatedKeysRejectedSourceFixtureCount",
         "Fixtures/RejectedSource/Keys/DynamicKeyStaticRequired/Source/Main.uv"
     ) {
@@ -136,7 +136,7 @@ public procedure validatedKeySystemDynamicKeyVerificationObligations() -> usize 
     if diagnosticSourceObligationEntryMatches(
         "diagnostics.19.DynamicKeyVerification",
         75023usize,
-        "HelloUltraviolet::Fixtures::DiagnosticSource",
+        "HelloUltraviolet::Audit::FixtureCatalog::DiagnosticSource",
         "validatedKeysDiagnosticSourceFixtureCount",
         "Fixtures/DiagnosticSource/Keys/DynamicKeyRuntimeSyncInfo/Source/Main.uv"
     ) {

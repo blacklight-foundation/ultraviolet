@@ -1,0 +1,31 @@
+//! Compiled symbol execution checks for ReferenceDiagnostics.
+
+using HelloUltraviolet::Reference::Diagnostics::{ runDiagnosticsDiagnosticOrderingReference }
+using HelloUltraviolet::Reference::Diagnostics::{ runDiagnosticsDiagnosticRecordsReference }
+using HelloUltraviolet::Reference::Diagnostics::{ runDiagnosticsRenderingInputsReference }
+using HelloUltraviolet::Reference::Diagnostics::{ runDiagnosticsSourceSpansReference }
+
+public procedure catalogCompiledSymbolsExecuteReferenceDiagnostics(context: Context) -> bool {
+    var passed: bool = true
+    passed = recordCatalogSymbolExecution(
+        context,
+        "runDiagnosticsDiagnosticOrderingReference",
+        runDiagnosticsDiagnosticOrderingReference()
+    ) && passed
+    passed = recordCatalogSymbolExecution(
+        context,
+        "runDiagnosticsDiagnosticRecordsReference",
+        runDiagnosticsDiagnosticRecordsReference()
+    ) && passed
+    passed = recordCatalogSymbolExecution(
+        context,
+        "runDiagnosticsRenderingInputsReference",
+        runDiagnosticsRenderingInputsReference()
+    ) && passed
+    passed = recordCatalogSymbolExecution(
+        context,
+        "runDiagnosticsSourceSpansReference",
+        runDiagnosticsSourceSpansReference()
+    ) && passed
+    return passed
+}
