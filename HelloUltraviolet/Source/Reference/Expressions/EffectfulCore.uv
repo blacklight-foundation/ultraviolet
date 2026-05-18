@@ -4,9 +4,10 @@
 public procedure runExpressionsEffectfulCoreReference() -> bool {
     let source_value: i32 = 11
     let moved_value: i32 = move source_value
+    let copied_value: i32 = copy moved_value
     var unsafe_value: i32 = 0
     unsafe {
         unsafe_value = moved_value + 1
     }
-    return moved_value == 11 && unsafe_value == 12
+    return moved_value == 11 && copied_value == 11 && unsafe_value == 12
 }

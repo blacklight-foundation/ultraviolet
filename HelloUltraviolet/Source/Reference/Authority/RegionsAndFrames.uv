@@ -65,7 +65,7 @@ internal procedure scopedRegionBuiltinValue() -> i32 {
     if allocated == 19
         score = score + 1
 
-    let freed: Region@Freed = unsafe { opened~>free_unchecked() }
+    let freed: unique Region@Freed = unsafe { opened~>free_unchecked() }
     return score
 }
 

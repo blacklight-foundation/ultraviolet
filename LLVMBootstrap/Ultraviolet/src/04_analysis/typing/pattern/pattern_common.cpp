@@ -430,7 +430,7 @@ static PatternTypeResult TypePatternAgainstTypeImpl(const ScopeContext& ctx,
       std::vector<std::pair<std::string, TypeRef>> merged_bindings;
 
       for (const auto& member : union_type->members) {
-        const auto member_result = TypePatternAgainstTypeImpl(ctx, pattern, member);
+        const auto member_result = TypePatternAgainstType(ctx, pattern, member);
         if (!member_result.ok) {
           if (member_result.diag_id.has_value() && !first_diag.has_value()) {
             first_diag = member_result.diag_id;

@@ -1139,6 +1139,111 @@ static ast::ExprPtr BindingNonNegativeFact(const std::string& name,
   return MakeProofExpr(span, std::move(comparison));
 }
 
+static void CollectProofExprNames(const ast::ExprPtr& expr,
+                                  std::unordered_set<IdKey>& out) {
+  if (!expr) {
+    return;
+  }
+  std::visit(
+      [&](const auto& node) {
+        using T = std::decay_t<decltype(node)>;
+        if constexpr (std::is_same_v<T, ast::IdentifierExpr>) {
+          out.insert(IdKeyOf(node.name));
+        } else if constexpr (std::is_same_v<T, ast::PathExpr>) {
+          if (node.path.empty()) {
+            out.insert(IdKeyOf(node.name));
+          }
+        } else if constexpr (std::is_same_v<T, ast::BinaryExpr>) {
+          CollectProofExprNames(node.lhs, out);
+          CollectProofExprNames(node.rhs, out);
+        } else if constexpr (std::is_same_v<T, ast::UnaryExpr>) {
+          CollectProofExprNames(node.value, out);
+        } else if constexpr (std::is_same_v<T, ast::FieldAccessExpr>) {
+          CollectProofExprNames(node.base, out);
+        } else if constexpr (std::is_same_v<T, ast::TupleAccessExpr>) {
+          CollectProofExprNames(node.base, out);
+        } else if constexpr (std::is_same_v<T, ast::IndexAccessExpr>) {
+          CollectProofExprNames(node.base, out);
+          CollectProofExprNames(node.index, out);
+        } else if constexpr (std::is_same_v<T, ast::CastExpr>) {
+          CollectProofExprNames(node.value, out);
+        } else if constexpr (std::is_same_v<T, ast::AttributedExpr>) {
+          CollectProofExprNames(node.expr, out);
+        }
+      },
+      expr->node);
+}
+
+static std::optional<IdKey> MutatedRootName(const ast::ExprPtr& place) {
+  if (!place) {
+    return std::nullopt;
+  }
+  return std::visit(
+      [&](const auto& node) -> std::optional<IdKey> {
+        using T = std::decay_t<decltype(node)>;
+        if constexpr (std::is_same_v<T, ast::IdentifierExpr>) {
+          return IdKeyOf(node.name);
+        } else if constexpr (std::is_same_v<T, ast::FieldAccessExpr>) {
+          return MutatedRootName(node.base);
+        } else if constexpr (std::is_same_v<T, ast::TupleAccessExpr>) {
+          return MutatedRootName(node.base);
+        } else if constexpr (std::is_same_v<T, ast::IndexAccessExpr>) {
+          return MutatedRootName(node.base);
+        } else if constexpr (std::is_same_v<T, ast::AttributedExpr>) {
+          return MutatedRootName(node.expr);
+        } else {
+          return std::nullopt;
+        }
+      },
+      place->node);
+}
+
+static std::shared_ptr<StaticProofContext> RemoveFactsForMutations(
+    const std::shared_ptr<StaticProofContext>& current_proof_ctx,
+    const std::unordered_set<IdKey>& mutated_names) {
+  if (!current_proof_ctx || mutated_names.empty()) {
+    return current_proof_ctx;
+  }
+
+  auto proof_ctx = std::make_shared<StaticProofContext>(*current_proof_ctx);
+  proof_ctx->facts.erase(
+      std::remove_if(
+          proof_ctx->facts.begin(), proof_ctx->facts.end(),
+          [&](const VerificationFact& fact) {
+            std::unordered_set<IdKey> fact_names;
+            CollectProofExprNames(fact.predicate, fact_names);
+            for (const IdKey& name : mutated_names) {
+              if (fact_names.find(name) != fact_names.end()) {
+                return true;
+              }
+            }
+            return false;
+          }),
+      proof_ctx->facts.end());
+  return proof_ctx;
+}
+
+static std::shared_ptr<StaticProofContext> InvalidateAssignedProofFacts(
+    const std::shared_ptr<StaticProofContext>& current_proof_ctx,
+    const ast::Stmt& stmt) {
+  std::unordered_set<IdKey> mutated_names;
+  std::visit(
+      [&](const auto& node) {
+        using T = std::decay_t<decltype(node)>;
+        if constexpr (std::is_same_v<T, ast::AssignStmt>) {
+          if (const auto name = MutatedRootName(node.place)) {
+            mutated_names.insert(*name);
+          }
+        } else if constexpr (std::is_same_v<T, ast::CompoundAssignStmt>) {
+          if (const auto name = MutatedRootName(node.place)) {
+            mutated_names.insert(*name);
+          }
+        }
+      },
+      stmt);
+  return RemoveFactsForMutations(current_proof_ctx, mutated_names);
+}
+
 struct DirectCallFactView {
   const ast::ExprPtr* callee = nullptr;
   const std::vector<ast::Arg>* args = nullptr;
@@ -1465,33 +1570,44 @@ static std::shared_ptr<StaticProofContext> LetBindingProofContextForStmt(
     const TypeEnv& env,
     const std::shared_ptr<StaticProofContext>& current_proof_ctx,
     const ast::Stmt& stmt) {
-  const auto* let_stmt = std::get_if<ast::LetStmt>(&stmt);
-  if (!let_stmt || !let_stmt->binding.init) {
+  const ast::Binding* binding = nullptr;
+  core::Span span;
+  if (const auto* let_stmt = std::get_if<ast::LetStmt>(&stmt)) {
+    binding = &let_stmt->binding;
+    span = let_stmt->span;
+  } else if (const auto* var_stmt = std::get_if<ast::VarStmt>(&stmt)) {
+    binding = &var_stmt->binding;
+    span = var_stmt->span;
+  }
+  if (!binding || !binding->init) {
     return current_proof_ctx;
   }
 
-  const auto binding_name = SimpleBindingName(let_stmt->binding.pat);
+  const auto binding_name = SimpleBindingName(binding->pat);
   if (!binding_name.has_value()) {
     return current_proof_ctx;
   }
 
   auto proof_ctx = CallPostconditionProofContextForLet(
-      ctx, env, current_proof_ctx, *let_stmt, *binding_name);
+      ctx, env, current_proof_ctx,
+      ast::LetStmt{*binding, span}, *binding_name);
 
   ContractContext contract_ctx;
   contract_ctx.scope_ctx = &ctx;
-  const auto purity = CheckPurity(contract_ctx, let_stmt->binding.init);
+  const auto purity = CheckPurity(contract_ctx, binding->init);
   if (!purity.ok) {
     return proof_ctx;
   }
 
-  proof_ctx = ExtendProofContextWithPredicate(
+  const core::Span fact_span = binding->init ? binding->init->span : span;
+  proof_ctx = ExtendProofContextWithPredicateAt(
       proof_ctx,
-      BindingEqualityFact(*binding_name, let_stmt->binding.init,
-                          let_stmt->span));
-  if (BindingHasUnsignedAnnotation(let_stmt->binding)) {
-    proof_ctx = ExtendProofContextWithPredicate(
-        proof_ctx, BindingNonNegativeFact(*binding_name, let_stmt->span));
+      BindingEqualityFact(*binding_name, binding->init, fact_span),
+      fact_span);
+  if (BindingHasUnsignedAnnotation(*binding)) {
+    proof_ctx = ExtendProofContextWithPredicateAt(
+        proof_ctx, BindingNonNegativeFact(*binding_name, fact_span),
+        fact_span);
   }
   return proof_ctx;
 }
@@ -1501,8 +1617,10 @@ static std::shared_ptr<StaticProofContext> FallthroughProofContextForStmt(
     const TypeEnv& env,
     const std::shared_ptr<StaticProofContext>& current_proof_ctx,
     const ast::Stmt& stmt) {
+  const auto invalidated =
+      InvalidateAssignedProofFacts(current_proof_ctx, stmt);
   const auto with_binding_fact =
-      LetBindingProofContextForStmt(ctx, env, current_proof_ctx, stmt);
+      LetBindingProofContextForStmt(ctx, env, invalidated, stmt);
 
   const auto* expr_stmt = std::get_if<ast::ExprStmt>(&stmt);
   if (!expr_stmt || !expr_stmt->value) {

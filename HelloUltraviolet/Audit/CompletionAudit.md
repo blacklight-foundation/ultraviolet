@@ -1564,7 +1564,7 @@ Latest full-corpus verification:
 - `HelloUltraviolet/build/bin/HelloUltraviolet.exe`: exit 0.
 - `HelloUltraviolet/build/bin/HelloUltraviolet.exe --audit`: exit 0.
 - `python3 Tools/ExtractObligationLedger.py --check`: exit 0,
-  `PASS obligations=6045`.
+  `PASS obligations=6049`.
 - `GIT_LFS_SKIP_SMUDGE=1 git -c filter.lfs.process= -c filter.lfs.required=false diff --check -- ...`:
   exit 0 for the touched HelloUltraviolet and bootstrap compiler paths.
 - `Fixtures/RejectedSource/Procedures/BehavioralSubtypingPrecondition`: exit 1

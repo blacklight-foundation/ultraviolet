@@ -9,7 +9,7 @@ public procedure validatedCommonLoweringProgramLifecycleAndBackendBackendRequire
     var count: usize = 0usize
     if acceptedObligationEntryMatches(
         "def.24.LLVMHeader",
-        97178usize,
+        97420usize,
         "HelloUltraviolet::Reference::Lowering",
         "runLoweringBackendRequirementsReference",
         "Source/Reference/Lowering/BackendRequirements.uv"
@@ -18,7 +18,7 @@ public procedure validatedCommonLoweringProgramLifecycleAndBackendBackendRequire
     }
     if acceptedObligationEntryMatches(
         "def.24.OpaquePointerModel",
-        97193usize,
+        97435usize,
         "HelloUltraviolet::Reference::Lowering",
         "runLoweringBackendRequirementsReference",
         "Source/Reference/Lowering/BackendRequirements.uv"
@@ -27,7 +27,7 @@ public procedure validatedCommonLoweringProgramLifecycleAndBackendBackendRequire
     }
     if acceptedObligationEntryMatches(
         "def.24.LLVMAttrJudg",
-        97215usize,
+        97457usize,
         "HelloUltraviolet::Reference::Lowering",
         "runLoweringBackendRequirementsReference",
         "Source/Reference/Lowering/BackendRequirements.uv"
@@ -36,7 +36,7 @@ public procedure validatedCommonLoweringProgramLifecycleAndBackendBackendRequire
     }
     if acceptedObligationEntryMatches(
         "rule.24.PtrStateOf-Perm",
-        97228usize,
+        97470usize,
         "HelloUltraviolet::Reference::Lowering",
         "runLoweringBackendRequirementsReference",
         "Source/Reference/Lowering/BackendRequirements.uv"
@@ -45,123 +45,6 @@ public procedure validatedCommonLoweringProgramLifecycleAndBackendBackendRequire
     }
     if acceptedObligationEntryMatches(
         "rule.24.LLVM-PtrAttrs-Valid",
-        97244usize,
-        "HelloUltraviolet::Reference::Lowering",
-        "runLoweringBackendRequirementsReference",
-        "Source/Reference/Lowering/BackendRequirements.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
-        "rule.24.LLVM-PtrAttrs-Other",
-        97260usize,
-        "HelloUltraviolet::Reference::Lowering",
-        "runLoweringBackendRequirementsReference",
-        "Source/Reference/Lowering/BackendRequirements.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
-        "rule.24.LLVM-PtrAttrs-RawPtr",
-        97276usize,
-        "HelloUltraviolet::Reference::Lowering",
-        "runLoweringBackendRequirementsReference",
-        "Source/Reference/Lowering/BackendRequirements.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
-        "rule.24.LLVM-ArgAttrs-Ptr",
-        97292usize,
-        "HelloUltraviolet::Reference::Lowering",
-        "runLoweringBackendRequirementsReference",
-        "Source/Reference/Lowering/BackendRequirements.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
-        "rule.24.LLVM-ArgAttrs-RawPtr",
-        97309usize,
-        "HelloUltraviolet::Reference::Lowering",
-        "runLoweringBackendRequirementsReference",
-        "Source/Reference/Lowering/BackendRequirements.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
-        "rule.24.LLVM-ArgAttrs-NonPtr",
-        97325usize,
-        "HelloUltraviolet::Reference::Lowering",
-        "runLoweringBackendRequirementsReference",
-        "Source/Reference/Lowering/BackendRequirements.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
-        "def.24.LLVMOptionalArgumentAttrs",
-        97341usize,
-        "HelloUltraviolet::Reference::Lowering",
-        "runLoweringBackendRequirementsReference",
-        "Source/Reference/Lowering/BackendRequirements.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
-        "def.24.LLVMUBAndPoisonAvoidance",
-        97359usize,
-        "HelloUltraviolet::Reference::Lowering",
-        "runLoweringBackendRequirementsReference",
-        "Source/Reference/Lowering/BackendRequirements.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
-        "def.24.MemoryIntrinsics",
-        97386usize,
-        "HelloUltraviolet::Reference::Lowering",
-        "runLoweringBackendRequirementsReference",
-        "Source/Reference/Lowering/BackendRequirements.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
-        "def.24.LLVMToolchain",
-        97409usize,
-        "HelloUltraviolet::Reference::Lowering",
-        "runLoweringBackendRequirementsReference",
-        "Source/Reference/Lowering/BackendRequirements.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
-        "req.24.HostedCompilerLLVMVersion",
-        97422usize,
-        "HelloUltraviolet::Reference::Lowering",
-        "runLoweringBackendRequirementsReference",
-        "Source/Reference/Lowering/BackendRequirements.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
-        "def.24.LLVMTyJudg",
-        97437usize,
-        "HelloUltraviolet::Reference::Lowering",
-        "runLoweringBackendRequirementsReference",
-        "Source/Reference/Lowering/BackendRequirements.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
-        "def.24.LLVMPrimitiveTypeHelpers",
-        97450usize,
-        "HelloUltraviolet::Reference::Lowering",
-        "runLoweringBackendRequirementsReference",
-        "Source/Reference/Lowering/BackendRequirements.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
-        "def.24.StructElems",
         97486usize,
         "HelloUltraviolet::Reference::Lowering",
         "runLoweringBackendRequirementsReference",
@@ -170,8 +53,8 @@ public procedure validatedCommonLoweringProgramLifecycleAndBackendBackendRequire
         count = count + 1usize
     }
     if acceptedObligationEntryMatches(
-        "def.24.TaggedElems",
-        97504usize,
+        "rule.24.LLVM-PtrAttrs-Other",
+        97502usize,
         "HelloUltraviolet::Reference::Lowering",
         "runLoweringBackendRequirementsReference",
         "Source/Reference/Lowering/BackendRequirements.uv"
@@ -179,8 +62,8 @@ public procedure validatedCommonLoweringProgramLifecycleAndBackendBackendRequire
         count = count + 1usize
     }
     if acceptedObligationEntryMatches(
-        "rule.24.LLVMTy-Prim",
-        97521usize,
+        "rule.24.LLVM-PtrAttrs-RawPtr",
+        97518usize,
         "HelloUltraviolet::Reference::Lowering",
         "runLoweringBackendRequirementsReference",
         "Source/Reference/Lowering/BackendRequirements.uv"
@@ -188,8 +71,8 @@ public procedure validatedCommonLoweringProgramLifecycleAndBackendBackendRequire
         count = count + 1usize
     }
     if acceptedObligationEntryMatches(
-        "rule.24.LLVMTy-Perm",
-        97537usize,
+        "rule.24.LLVM-ArgAttrs-Ptr",
+        97534usize,
         "HelloUltraviolet::Reference::Lowering",
         "runLoweringBackendRequirementsReference",
         "Source/Reference/Lowering/BackendRequirements.uv"
@@ -197,8 +80,8 @@ public procedure validatedCommonLoweringProgramLifecycleAndBackendBackendRequire
         count = count + 1usize
     }
     if acceptedObligationEntryMatches(
-        "rule.24.LLVMTy-Refine",
-        97553usize,
+        "rule.24.LLVM-ArgAttrs-RawPtr",
+        97551usize,
         "HelloUltraviolet::Reference::Lowering",
         "runLoweringBackendRequirementsReference",
         "Source/Reference/Lowering/BackendRequirements.uv"
@@ -206,8 +89,8 @@ public procedure validatedCommonLoweringProgramLifecycleAndBackendBackendRequire
         count = count + 1usize
     }
     if acceptedObligationEntryMatches(
-        "rule.24.LLVMTy-Ptr",
-        97569usize,
+        "rule.24.LLVM-ArgAttrs-NonPtr",
+        97567usize,
         "HelloUltraviolet::Reference::Lowering",
         "runLoweringBackendRequirementsReference",
         "Source/Reference/Lowering/BackendRequirements.uv"
@@ -215,8 +98,8 @@ public procedure validatedCommonLoweringProgramLifecycleAndBackendBackendRequire
         count = count + 1usize
     }
     if acceptedObligationEntryMatches(
-        "rule.24.LLVMTy-RawPtr",
-        97585usize,
+        "def.24.LLVMOptionalArgumentAttrs",
+        97583usize,
         "HelloUltraviolet::Reference::Lowering",
         "runLoweringBackendRequirementsReference",
         "Source/Reference/Lowering/BackendRequirements.uv"
@@ -224,7 +107,7 @@ public procedure validatedCommonLoweringProgramLifecycleAndBackendBackendRequire
         count = count + 1usize
     }
     if acceptedObligationEntryMatches(
-        "rule.24.LLVMTy-Func",
+        "def.24.LLVMUBAndPoisonAvoidance",
         97601usize,
         "HelloUltraviolet::Reference::Lowering",
         "runLoweringBackendRequirementsReference",
@@ -233,8 +116,125 @@ public procedure validatedCommonLoweringProgramLifecycleAndBackendBackendRequire
         count = count + 1usize
     }
     if acceptedObligationEntryMatches(
+        "def.24.MemoryIntrinsics",
+        97628usize,
+        "HelloUltraviolet::Reference::Lowering",
+        "runLoweringBackendRequirementsReference",
+        "Source/Reference/Lowering/BackendRequirements.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "def.24.LLVMToolchain",
+        97651usize,
+        "HelloUltraviolet::Reference::Lowering",
+        "runLoweringBackendRequirementsReference",
+        "Source/Reference/Lowering/BackendRequirements.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "req.24.HostedCompilerLLVMVersion",
+        97664usize,
+        "HelloUltraviolet::Reference::Lowering",
+        "runLoweringBackendRequirementsReference",
+        "Source/Reference/Lowering/BackendRequirements.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "def.24.LLVMTyJudg",
+        97679usize,
+        "HelloUltraviolet::Reference::Lowering",
+        "runLoweringBackendRequirementsReference",
+        "Source/Reference/Lowering/BackendRequirements.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "def.24.LLVMPrimitiveTypeHelpers",
+        97692usize,
+        "HelloUltraviolet::Reference::Lowering",
+        "runLoweringBackendRequirementsReference",
+        "Source/Reference/Lowering/BackendRequirements.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "def.24.StructElems",
+        97728usize,
+        "HelloUltraviolet::Reference::Lowering",
+        "runLoweringBackendRequirementsReference",
+        "Source/Reference/Lowering/BackendRequirements.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "def.24.TaggedElems",
+        97746usize,
+        "HelloUltraviolet::Reference::Lowering",
+        "runLoweringBackendRequirementsReference",
+        "Source/Reference/Lowering/BackendRequirements.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "rule.24.LLVMTy-Prim",
+        97763usize,
+        "HelloUltraviolet::Reference::Lowering",
+        "runLoweringBackendRequirementsReference",
+        "Source/Reference/Lowering/BackendRequirements.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "rule.24.LLVMTy-Perm",
+        97779usize,
+        "HelloUltraviolet::Reference::Lowering",
+        "runLoweringBackendRequirementsReference",
+        "Source/Reference/Lowering/BackendRequirements.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "rule.24.LLVMTy-Refine",
+        97795usize,
+        "HelloUltraviolet::Reference::Lowering",
+        "runLoweringBackendRequirementsReference",
+        "Source/Reference/Lowering/BackendRequirements.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "rule.24.LLVMTy-Ptr",
+        97811usize,
+        "HelloUltraviolet::Reference::Lowering",
+        "runLoweringBackendRequirementsReference",
+        "Source/Reference/Lowering/BackendRequirements.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "rule.24.LLVMTy-RawPtr",
+        97827usize,
+        "HelloUltraviolet::Reference::Lowering",
+        "runLoweringBackendRequirementsReference",
+        "Source/Reference/Lowering/BackendRequirements.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "rule.24.LLVMTy-Func",
+        97843usize,
+        "HelloUltraviolet::Reference::Lowering",
+        "runLoweringBackendRequirementsReference",
+        "Source/Reference/Lowering/BackendRequirements.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
         "rule.24.LLVMTy-Closure",
-        97617usize,
+        97859usize,
         "HelloUltraviolet::Reference::Lowering",
         "runLoweringBackendRequirementsReference",
         "Source/Reference/Lowering/BackendRequirements.uv"
@@ -243,7 +243,7 @@ public procedure validatedCommonLoweringProgramLifecycleAndBackendBackendRequire
     }
     if acceptedObligationEntryMatches(
         "rule.24.LLVMTy-Alias",
-        97633usize,
+        97875usize,
         "HelloUltraviolet::Reference::Lowering",
         "runLoweringBackendRequirementsReference",
         "Source/Reference/Lowering/BackendRequirements.uv"
@@ -252,7 +252,7 @@ public procedure validatedCommonLoweringProgramLifecycleAndBackendBackendRequire
     }
     if acceptedObligationEntryMatches(
         "rule.24.LLVMTy-Record",
-        97649usize,
+        97891usize,
         "HelloUltraviolet::Reference::Lowering",
         "runLoweringBackendRequirementsReference",
         "Source/Reference/Lowering/BackendRequirements.uv"
@@ -261,7 +261,7 @@ public procedure validatedCommonLoweringProgramLifecycleAndBackendBackendRequire
     }
     if acceptedObligationEntryMatches(
         "rule.24.LLVMTy-Tuple",
-        97665usize,
+        97907usize,
         "HelloUltraviolet::Reference::Lowering",
         "runLoweringBackendRequirementsReference",
         "Source/Reference/Lowering/BackendRequirements.uv"
@@ -270,7 +270,7 @@ public procedure validatedCommonLoweringProgramLifecycleAndBackendBackendRequire
     }
     if acceptedObligationEntryMatches(
         "rule.24.LLVMTy-Array",
-        97681usize,
+        97923usize,
         "HelloUltraviolet::Reference::Lowering",
         "runLoweringBackendRequirementsReference",
         "Source/Reference/Lowering/BackendRequirements.uv"
@@ -279,7 +279,7 @@ public procedure validatedCommonLoweringProgramLifecycleAndBackendBackendRequire
     }
     if acceptedObligationEntryMatches(
         "rule.24.LLVMTy-Slice",
-        97697usize,
+        97939usize,
         "HelloUltraviolet::Reference::Lowering",
         "runLoweringBackendRequirementsReference",
         "Source/Reference/Lowering/BackendRequirements.uv"
@@ -288,7 +288,7 @@ public procedure validatedCommonLoweringProgramLifecycleAndBackendBackendRequire
     }
     if acceptedObligationEntryMatches(
         "rule.24.LLVMTy-Range",
-        97713usize,
+        97955usize,
         "HelloUltraviolet::Reference::Lowering",
         "runLoweringBackendRequirementsReference",
         "Source/Reference/Lowering/BackendRequirements.uv"
@@ -297,7 +297,7 @@ public procedure validatedCommonLoweringProgramLifecycleAndBackendBackendRequire
     }
     if acceptedObligationEntryMatches(
         "rule.24.LLVMTy-RangeInclusive",
-        97729usize,
+        97971usize,
         "HelloUltraviolet::Reference::Lowering",
         "runLoweringBackendRequirementsReference",
         "Source/Reference/Lowering/BackendRequirements.uv"
@@ -306,7 +306,7 @@ public procedure validatedCommonLoweringProgramLifecycleAndBackendBackendRequire
     }
     if acceptedObligationEntryMatches(
         "rule.24.LLVMTy-RangeFrom",
-        97745usize,
+        97987usize,
         "HelloUltraviolet::Reference::Lowering",
         "runLoweringBackendRequirementsReference",
         "Source/Reference/Lowering/BackendRequirements.uv"
@@ -315,7 +315,7 @@ public procedure validatedCommonLoweringProgramLifecycleAndBackendBackendRequire
     }
     if acceptedObligationEntryMatches(
         "rule.24.LLVMTy-RangeTo",
-        97761usize,
+        98003usize,
         "HelloUltraviolet::Reference::Lowering",
         "runLoweringBackendRequirementsReference",
         "Source/Reference/Lowering/BackendRequirements.uv"
@@ -324,7 +324,7 @@ public procedure validatedCommonLoweringProgramLifecycleAndBackendBackendRequire
     }
     if acceptedObligationEntryMatches(
         "rule.24.LLVMTy-RangeToInclusive",
-        97777usize,
+        98019usize,
         "HelloUltraviolet::Reference::Lowering",
         "runLoweringBackendRequirementsReference",
         "Source/Reference/Lowering/BackendRequirements.uv"
@@ -333,7 +333,7 @@ public procedure validatedCommonLoweringProgramLifecycleAndBackendBackendRequire
     }
     if acceptedObligationEntryMatches(
         "rule.24.LLVMTy-RangeFull",
-        97793usize,
+        98035usize,
         "HelloUltraviolet::Reference::Lowering",
         "runLoweringBackendRequirementsReference",
         "Source/Reference/Lowering/BackendRequirements.uv"
@@ -342,7 +342,7 @@ public procedure validatedCommonLoweringProgramLifecycleAndBackendBackendRequire
     }
     if acceptedObligationEntryMatches(
         "rule.24.LLVMTy-Enum",
-        97808usize,
+        98050usize,
         "HelloUltraviolet::Reference::Lowering",
         "runLoweringBackendRequirementsReference",
         "Source/Reference/Lowering/BackendRequirements.uv"
@@ -351,7 +351,7 @@ public procedure validatedCommonLoweringProgramLifecycleAndBackendBackendRequire
     }
     if acceptedObligationEntryMatches(
         "rule.24.LLVMTy-Union-Niche",
-        97824usize,
+        98066usize,
         "HelloUltraviolet::Reference::Lowering",
         "runLoweringBackendRequirementsReference",
         "Source/Reference/Lowering/BackendRequirements.uv"
@@ -360,7 +360,7 @@ public procedure validatedCommonLoweringProgramLifecycleAndBackendBackendRequire
     }
     if acceptedObligationEntryMatches(
         "rule.24.LLVMTy-Union-Tagged",
-        97840usize,
+        98082usize,
         "HelloUltraviolet::Reference::Lowering",
         "runLoweringBackendRequirementsReference",
         "Source/Reference/Lowering/BackendRequirements.uv"
@@ -369,7 +369,7 @@ public procedure validatedCommonLoweringProgramLifecycleAndBackendBackendRequire
     }
     if acceptedObligationEntryMatches(
         "rule.24.LLVMTy-Modal-Niche",
-        97856usize,
+        98098usize,
         "HelloUltraviolet::Reference::Lowering",
         "runLoweringBackendRequirementsReference",
         "Source/Reference/Lowering/BackendRequirements.uv"
@@ -378,7 +378,7 @@ public procedure validatedCommonLoweringProgramLifecycleAndBackendBackendRequire
     }
     if acceptedObligationEntryMatches(
         "rule.24.LLVMTy-Modal-Tagged",
-        97872usize,
+        98114usize,
         "HelloUltraviolet::Reference::Lowering",
         "runLoweringBackendRequirementsReference",
         "Source/Reference/Lowering/BackendRequirements.uv"
@@ -387,7 +387,7 @@ public procedure validatedCommonLoweringProgramLifecycleAndBackendBackendRequire
     }
     if acceptedObligationEntryMatches(
         "rule.24.LLVMTy-Modal-StringBytes",
-        97888usize,
+        98130usize,
         "HelloUltraviolet::Reference::Lowering",
         "runLoweringBackendRequirementsReference",
         "Source/Reference/Lowering/BackendRequirements.uv"
@@ -396,7 +396,7 @@ public procedure validatedCommonLoweringProgramLifecycleAndBackendBackendRequire
     }
     if acceptedObligationEntryMatches(
         "rule.24.LLVMTy-ModalState",
-        97906usize,
+        98148usize,
         "HelloUltraviolet::Reference::Lowering",
         "runLoweringBackendRequirementsReference",
         "Source/Reference/Lowering/BackendRequirements.uv"
@@ -405,7 +405,7 @@ public procedure validatedCommonLoweringProgramLifecycleAndBackendBackendRequire
     }
     if acceptedObligationEntryMatches(
         "rule.24.LLVMTy-Dynamic",
-        97922usize,
+        98164usize,
         "HelloUltraviolet::Reference::Lowering",
         "runLoweringBackendRequirementsReference",
         "Source/Reference/Lowering/BackendRequirements.uv"
@@ -414,7 +414,7 @@ public procedure validatedCommonLoweringProgramLifecycleAndBackendBackendRequire
     }
     if acceptedObligationEntryMatches(
         "rule.24.LLVMTy-StringView",
-        97938usize,
+        98180usize,
         "HelloUltraviolet::Reference::Lowering",
         "runLoweringBackendRequirementsReference",
         "Source/Reference/Lowering/BackendRequirements.uv"
@@ -423,7 +423,7 @@ public procedure validatedCommonLoweringProgramLifecycleAndBackendBackendRequire
     }
     if acceptedObligationEntryMatches(
         "rule.24.LLVMTy-StringManaged",
-        97954usize,
+        98196usize,
         "HelloUltraviolet::Reference::Lowering",
         "runLoweringBackendRequirementsReference",
         "Source/Reference/Lowering/BackendRequirements.uv"
@@ -432,7 +432,7 @@ public procedure validatedCommonLoweringProgramLifecycleAndBackendBackendRequire
     }
     if acceptedObligationEntryMatches(
         "rule.24.LLVMTy-BytesView",
-        97970usize,
+        98212usize,
         "HelloUltraviolet::Reference::Lowering",
         "runLoweringBackendRequirementsReference",
         "Source/Reference/Lowering/BackendRequirements.uv"
@@ -441,7 +441,7 @@ public procedure validatedCommonLoweringProgramLifecycleAndBackendBackendRequire
     }
     if acceptedObligationEntryMatches(
         "rule.24.LLVMTy-BytesManaged",
-        97986usize,
+        98228usize,
         "HelloUltraviolet::Reference::Lowering",
         "runLoweringBackendRequirementsReference",
         "Source/Reference/Lowering/BackendRequirements.uv"
@@ -450,7 +450,7 @@ public procedure validatedCommonLoweringProgramLifecycleAndBackendBackendRequire
     }
     if acceptedObligationEntryMatches(
         "rule.24.LLVMTy-Err",
-        98002usize,
+        98244usize,
         "HelloUltraviolet::Reference::Lowering",
         "runLoweringBackendRequirementsReference",
         "Source/Reference/Lowering/BackendRequirements.uv"
@@ -459,7 +459,7 @@ public procedure validatedCommonLoweringProgramLifecycleAndBackendBackendRequire
     }
     if acceptedObligationEntryMatches(
         "def.24.LowerIRJudg",
-        98020usize,
+        98262usize,
         "HelloUltraviolet::Reference::Lowering",
         "runLoweringBackendRequirementsReference",
         "Source/Reference/Lowering/BackendRequirements.uv"
@@ -468,7 +468,7 @@ public procedure validatedCommonLoweringProgramLifecycleAndBackendBackendRequire
     }
     if acceptedObligationEntryMatches(
         "def.24.LLVMInstrHelpers",
-        98033usize,
+        98275usize,
         "HelloUltraviolet::Reference::Lowering",
         "runLoweringBackendRequirementsReference",
         "Source/Reference/Lowering/BackendRequirements.uv"
@@ -477,7 +477,7 @@ public procedure validatedCommonLoweringProgramLifecycleAndBackendBackendRequire
     }
     if acceptedObligationEntryMatches(
         "rule.24.LowerIRInstr-Empty",
-        98064usize,
+        98306usize,
         "HelloUltraviolet::Reference::Lowering",
         "runLoweringBackendRequirementsReference",
         "Source/Reference/Lowering/BackendRequirements.uv"
@@ -486,7 +486,7 @@ public procedure validatedCommonLoweringProgramLifecycleAndBackendBackendRequire
     }
     if acceptedObligationEntryMatches(
         "rule.24.LowerIRInstr-Seq",
-        98079usize,
+        98321usize,
         "HelloUltraviolet::Reference::Lowering",
         "runLoweringBackendRequirementsReference",
         "Source/Reference/Lowering/BackendRequirements.uv"
@@ -495,7 +495,7 @@ public procedure validatedCommonLoweringProgramLifecycleAndBackendBackendRequire
     }
     if acceptedObligationEntryMatches(
         "def.24.MemoryInstructionHelpers",
-        98095usize,
+        98337usize,
         "HelloUltraviolet::Reference::Lowering",
         "runLoweringBackendRequirementsReference",
         "Source/Reference/Lowering/BackendRequirements.uv"
@@ -504,7 +504,7 @@ public procedure validatedCommonLoweringProgramLifecycleAndBackendBackendRequire
     }
     if acceptedObligationEntryMatches(
         "def.24.ConstBytesEncoding",
-        98112usize,
+        98354usize,
         "HelloUltraviolet::Reference::Lowering",
         "runLoweringBackendRequirementsReference",
         "Source/Reference/Lowering/BackendRequirements.uv"
@@ -513,7 +513,7 @@ public procedure validatedCommonLoweringProgramLifecycleAndBackendBackendRequire
     }
     if acceptedObligationEntryMatches(
         "def.24.StaticTypeBySymbol",
-        98138usize,
+        98380usize,
         "HelloUltraviolet::Reference::Lowering",
         "runLoweringBackendRequirementsReference",
         "Source/Reference/Lowering/BackendRequirements.uv"
@@ -522,7 +522,7 @@ public procedure validatedCommonLoweringProgramLifecycleAndBackendBackendRequire
     }
     if acceptedObligationEntryMatches(
         "def.24.StateRefJudg",
-        98152usize,
+        98394usize,
         "HelloUltraviolet::Reference::Lowering",
         "runLoweringBackendRequirementsReference",
         "Source/Reference/Lowering/BackendRequirements.uv"
@@ -531,7 +531,7 @@ public procedure validatedCommonLoweringProgramLifecycleAndBackendBackendRequire
     }
     if acceptedObligationEntryMatches(
         "rule.24.StateRef-Session",
-        98166usize,
+        98408usize,
         "HelloUltraviolet::Reference::Lowering",
         "runLoweringBackendRequirementsReference",
         "Source/Reference/Lowering/BackendRequirements.uv"
@@ -540,7 +540,7 @@ public procedure validatedCommonLoweringProgramLifecycleAndBackendBackendRequire
     }
     if acceptedObligationEntryMatches(
         "rule.24.StateRef-Global",
-        98182usize,
+        98424usize,
         "HelloUltraviolet::Reference::Lowering",
         "runLoweringBackendRequirementsReference",
         "Source/Reference/Lowering/BackendRequirements.uv"
@@ -549,7 +549,7 @@ public procedure validatedCommonLoweringProgramLifecycleAndBackendBackendRequire
     }
     if acceptedObligationEntryMatches(
         "def.24.CallSignatureHelpers",
-        98198usize,
+        98440usize,
         "HelloUltraviolet::Reference::Lowering",
         "runLoweringBackendRequirementsReference",
         "Source/Reference/Lowering/BackendRequirements.uv"
@@ -558,141 +558,6 @@ public procedure validatedCommonLoweringProgramLifecycleAndBackendBackendRequire
     }
     if acceptedObligationEntryMatches(
         "def.24.ParamInitHelpers",
-        98217usize,
-        "HelloUltraviolet::Reference::Lowering",
-        "runLoweringBackendRequirementsReference",
-        "Source/Reference/Lowering/BackendRequirements.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
-        "rule.24.LowerIRDecl-Proc-User",
-        98241usize,
-        "HelloUltraviolet::Reference::Lowering",
-        "runLoweringBackendRequirementsReference",
-        "Source/Reference/Lowering/BackendRequirements.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
-        "rule.24.LowerIRDecl-Proc-Gen",
-        98257usize,
-        "HelloUltraviolet::Reference::Lowering",
-        "runLoweringBackendRequirementsReference",
-        "Source/Reference/Lowering/BackendRequirements.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
-        "rule.24.LowerIRDecl-GlobalConst",
-        98273usize,
-        "HelloUltraviolet::Reference::Lowering",
-        "runLoweringBackendRequirementsReference",
-        "Source/Reference/Lowering/BackendRequirements.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
-        "rule.24.LowerIRDecl-GlobalZero",
-        98289usize,
-        "HelloUltraviolet::Reference::Lowering",
-        "runLoweringBackendRequirementsReference",
-        "Source/Reference/Lowering/BackendRequirements.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
-        "req.24.HostedStateInitializerTemplates",
-        98305usize,
-        "HelloUltraviolet::Reference::Lowering",
-        "runLoweringBackendRequirementsReference",
-        "Source/Reference/Lowering/BackendRequirements.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
-        "rule.24.LowerIRDecl-VTable",
-        98318usize,
-        "HelloUltraviolet::Reference::Lowering",
-        "runLoweringBackendRequirementsReference",
-        "Source/Reference/Lowering/BackendRequirements.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
-        "rule.24.Lower-AllocIR",
-        98334usize,
-        "HelloUltraviolet::Reference::Lowering",
-        "runLoweringBackendRequirementsReference",
-        "Source/Reference/Lowering/BackendRequirements.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
-        "rule.24.Lower-BindVarIR",
-        98350usize,
-        "HelloUltraviolet::Reference::Lowering",
-        "runLoweringBackendRequirementsReference",
-        "Source/Reference/Lowering/BackendRequirements.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
-        "rule.24.Lower-ReadVarIR",
-        98366usize,
-        "HelloUltraviolet::Reference::Lowering",
-        "runLoweringBackendRequirementsReference",
-        "Source/Reference/Lowering/BackendRequirements.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
-        "rule.24.Lower-ReadVarIR-Err",
-        98382usize,
-        "HelloUltraviolet::Reference::Lowering",
-        "runLoweringBackendRequirementsReference",
-        "Source/Reference/Lowering/BackendRequirements.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
-        "def.24.ProcSymbol",
-        98398usize,
-        "HelloUltraviolet::Reference::Lowering",
-        "runLoweringBackendRequirementsReference",
-        "Source/Reference/Lowering/BackendRequirements.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
-        "rule.24.Lower-ReadPathIR-Static-User",
-        98411usize,
-        "HelloUltraviolet::Reference::Lowering",
-        "runLoweringBackendRequirementsReference",
-        "Source/Reference/Lowering/BackendRequirements.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
-        "rule.24.Lower-ReadPathIR-Static-Gen",
-        98427usize,
-        "HelloUltraviolet::Reference::Lowering",
-        "runLoweringBackendRequirementsReference",
-        "Source/Reference/Lowering/BackendRequirements.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
-        "rule.24.Lower-ReadPathIR-Proc-User",
-        98443usize,
-        "HelloUltraviolet::Reference::Lowering",
-        "runLoweringBackendRequirementsReference",
-        "Source/Reference/Lowering/BackendRequirements.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
-        "rule.24.Lower-ReadPathIR-Proc-Gen",
         98459usize,
         "HelloUltraviolet::Reference::Lowering",
         "runLoweringBackendRequirementsReference",
@@ -701,8 +566,143 @@ public procedure validatedCommonLoweringProgramLifecycleAndBackendBackendRequire
         count = count + 1usize
     }
     if acceptedObligationEntryMatches(
+        "rule.24.LowerIRDecl-Proc-User",
+        98483usize,
+        "HelloUltraviolet::Reference::Lowering",
+        "runLoweringBackendRequirementsReference",
+        "Source/Reference/Lowering/BackendRequirements.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "rule.24.LowerIRDecl-Proc-Gen",
+        98499usize,
+        "HelloUltraviolet::Reference::Lowering",
+        "runLoweringBackendRequirementsReference",
+        "Source/Reference/Lowering/BackendRequirements.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "rule.24.LowerIRDecl-GlobalConst",
+        98515usize,
+        "HelloUltraviolet::Reference::Lowering",
+        "runLoweringBackendRequirementsReference",
+        "Source/Reference/Lowering/BackendRequirements.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "rule.24.LowerIRDecl-GlobalZero",
+        98531usize,
+        "HelloUltraviolet::Reference::Lowering",
+        "runLoweringBackendRequirementsReference",
+        "Source/Reference/Lowering/BackendRequirements.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "req.24.HostedStateInitializerTemplates",
+        98547usize,
+        "HelloUltraviolet::Reference::Lowering",
+        "runLoweringBackendRequirementsReference",
+        "Source/Reference/Lowering/BackendRequirements.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "rule.24.LowerIRDecl-VTable",
+        98560usize,
+        "HelloUltraviolet::Reference::Lowering",
+        "runLoweringBackendRequirementsReference",
+        "Source/Reference/Lowering/BackendRequirements.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "rule.24.Lower-AllocIR",
+        98576usize,
+        "HelloUltraviolet::Reference::Lowering",
+        "runLoweringBackendRequirementsReference",
+        "Source/Reference/Lowering/BackendRequirements.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "rule.24.Lower-BindVarIR",
+        98592usize,
+        "HelloUltraviolet::Reference::Lowering",
+        "runLoweringBackendRequirementsReference",
+        "Source/Reference/Lowering/BackendRequirements.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "rule.24.Lower-ReadVarIR",
+        98608usize,
+        "HelloUltraviolet::Reference::Lowering",
+        "runLoweringBackendRequirementsReference",
+        "Source/Reference/Lowering/BackendRequirements.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "rule.24.Lower-ReadVarIR-Err",
+        98624usize,
+        "HelloUltraviolet::Reference::Lowering",
+        "runLoweringBackendRequirementsReference",
+        "Source/Reference/Lowering/BackendRequirements.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "def.24.ProcSymbol",
+        98640usize,
+        "HelloUltraviolet::Reference::Lowering",
+        "runLoweringBackendRequirementsReference",
+        "Source/Reference/Lowering/BackendRequirements.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "rule.24.Lower-ReadPathIR-Static-User",
+        98653usize,
+        "HelloUltraviolet::Reference::Lowering",
+        "runLoweringBackendRequirementsReference",
+        "Source/Reference/Lowering/BackendRequirements.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "rule.24.Lower-ReadPathIR-Static-Gen",
+        98669usize,
+        "HelloUltraviolet::Reference::Lowering",
+        "runLoweringBackendRequirementsReference",
+        "Source/Reference/Lowering/BackendRequirements.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "rule.24.Lower-ReadPathIR-Proc-User",
+        98685usize,
+        "HelloUltraviolet::Reference::Lowering",
+        "runLoweringBackendRequirementsReference",
+        "Source/Reference/Lowering/BackendRequirements.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "rule.24.Lower-ReadPathIR-Proc-Gen",
+        98701usize,
+        "HelloUltraviolet::Reference::Lowering",
+        "runLoweringBackendRequirementsReference",
+        "Source/Reference/Lowering/BackendRequirements.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
         "rule.24.Lower-ReadPathIR-Runtime",
-        98475usize,
+        98717usize,
         "HelloUltraviolet::Reference::Lowering",
         "runLoweringBackendRequirementsReference",
         "Source/Reference/Lowering/BackendRequirements.uv"
@@ -711,7 +711,7 @@ public procedure validatedCommonLoweringProgramLifecycleAndBackendBackendRequire
     }
     if acceptedObligationEntryMatches(
         "rule.24.Lower-ReadPathIR-Record",
-        98491usize,
+        98733usize,
         "HelloUltraviolet::Reference::Lowering",
         "runLoweringBackendRequirementsReference",
         "Source/Reference/Lowering/BackendRequirements.uv"
@@ -720,7 +720,7 @@ public procedure validatedCommonLoweringProgramLifecycleAndBackendBackendRequire
     }
     if acceptedObligationEntryMatches(
         "rule.24.Lower-StoreVarIR",
-        98507usize,
+        98749usize,
         "HelloUltraviolet::Reference::Lowering",
         "runLoweringBackendRequirementsReference",
         "Source/Reference/Lowering/BackendRequirements.uv"
@@ -729,7 +729,7 @@ public procedure validatedCommonLoweringProgramLifecycleAndBackendBackendRequire
     }
     if acceptedObligationEntryMatches(
         "rule.24.Lower-StoreVarNoDropIR",
-        98523usize,
+        98765usize,
         "HelloUltraviolet::Reference::Lowering",
         "runLoweringBackendRequirementsReference",
         "Source/Reference/Lowering/BackendRequirements.uv"
@@ -738,7 +738,7 @@ public procedure validatedCommonLoweringProgramLifecycleAndBackendBackendRequire
     }
     if acceptedObligationEntryMatches(
         "rule.24.Lower-MoveStateIR",
-        98539usize,
+        98781usize,
         "HelloUltraviolet::Reference::Lowering",
         "runLoweringBackendRequirementsReference",
         "Source/Reference/Lowering/BackendRequirements.uv"
@@ -747,7 +747,7 @@ public procedure validatedCommonLoweringProgramLifecycleAndBackendBackendRequire
     }
     if acceptedObligationEntryMatches(
         "rule.24.Lower-StoreGlobal",
-        98555usize,
+        98797usize,
         "HelloUltraviolet::Reference::Lowering",
         "runLoweringBackendRequirementsReference",
         "Source/Reference/Lowering/BackendRequirements.uv"
@@ -756,7 +756,7 @@ public procedure validatedCommonLoweringProgramLifecycleAndBackendBackendRequire
     }
     if acceptedObligationEntryMatches(
         "rule.24.Lower-ReadPlaceIR",
-        98571usize,
+        98813usize,
         "HelloUltraviolet::Reference::Lowering",
         "runLoweringBackendRequirementsReference",
         "Source/Reference/Lowering/BackendRequirements.uv"
@@ -765,7 +765,7 @@ public procedure validatedCommonLoweringProgramLifecycleAndBackendBackendRequire
     }
     if acceptedObligationEntryMatches(
         "rule.24.Lower-WritePlaceIR",
-        98587usize,
+        98829usize,
         "HelloUltraviolet::Reference::Lowering",
         "runLoweringBackendRequirementsReference",
         "Source/Reference/Lowering/BackendRequirements.uv"
@@ -774,7 +774,7 @@ public procedure validatedCommonLoweringProgramLifecycleAndBackendBackendRequire
     }
     if acceptedObligationEntryMatches(
         "def.24.PtrType",
-        98603usize,
+        98845usize,
         "HelloUltraviolet::Reference::Lowering",
         "runLoweringBackendRequirementsReference",
         "Source/Reference/Lowering/BackendRequirements.uv"
@@ -783,7 +783,7 @@ public procedure validatedCommonLoweringProgramLifecycleAndBackendBackendRequire
     }
     if acceptedObligationEntryMatches(
         "rule.24.Lower-ReadPtrIR",
-        98616usize,
+        98858usize,
         "HelloUltraviolet::Reference::Lowering",
         "runLoweringBackendRequirementsReference",
         "Source/Reference/Lowering/BackendRequirements.uv"
@@ -792,7 +792,7 @@ public procedure validatedCommonLoweringProgramLifecycleAndBackendBackendRequire
     }
     if acceptedObligationEntryMatches(
         "rule.24.Lower-ReadPtrIR-Raw",
-        98632usize,
+        98874usize,
         "HelloUltraviolet::Reference::Lowering",
         "runLoweringBackendRequirementsReference",
         "Source/Reference/Lowering/BackendRequirements.uv"
@@ -801,7 +801,7 @@ public procedure validatedCommonLoweringProgramLifecycleAndBackendBackendRequire
     }
     if acceptedObligationEntryMatches(
         "rule.24.Lower-ReadPtrIR-Null",
-        98648usize,
+        98890usize,
         "HelloUltraviolet::Reference::Lowering",
         "runLoweringBackendRequirementsReference",
         "Source/Reference/Lowering/BackendRequirements.uv"
@@ -810,7 +810,7 @@ public procedure validatedCommonLoweringProgramLifecycleAndBackendBackendRequire
     }
     if acceptedObligationEntryMatches(
         "rule.24.Lower-ReadPtrIR-Expired",
-        98664usize,
+        98906usize,
         "HelloUltraviolet::Reference::Lowering",
         "runLoweringBackendRequirementsReference",
         "Source/Reference/Lowering/BackendRequirements.uv"
@@ -819,7 +819,7 @@ public procedure validatedCommonLoweringProgramLifecycleAndBackendBackendRequire
     }
     if acceptedObligationEntryMatches(
         "rule.24.Lower-WritePtrIR",
-        98680usize,
+        98922usize,
         "HelloUltraviolet::Reference::Lowering",
         "runLoweringBackendRequirementsReference",
         "Source/Reference/Lowering/BackendRequirements.uv"
@@ -828,7 +828,7 @@ public procedure validatedCommonLoweringProgramLifecycleAndBackendBackendRequire
     }
     if acceptedObligationEntryMatches(
         "rule.24.Lower-WritePtrIR-Null",
-        98696usize,
+        98938usize,
         "HelloUltraviolet::Reference::Lowering",
         "runLoweringBackendRequirementsReference",
         "Source/Reference/Lowering/BackendRequirements.uv"
@@ -837,7 +837,7 @@ public procedure validatedCommonLoweringProgramLifecycleAndBackendBackendRequire
     }
     if acceptedObligationEntryMatches(
         "rule.24.Lower-WritePtrIR-Expired",
-        98712usize,
+        98954usize,
         "HelloUltraviolet::Reference::Lowering",
         "runLoweringBackendRequirementsReference",
         "Source/Reference/Lowering/BackendRequirements.uv"
@@ -846,7 +846,7 @@ public procedure validatedCommonLoweringProgramLifecycleAndBackendBackendRequire
     }
     if acceptedObligationEntryMatches(
         "rule.24.Lower-WritePtrIR-Raw",
-        98728usize,
+        98970usize,
         "HelloUltraviolet::Reference::Lowering",
         "runLoweringBackendRequirementsReference",
         "Source/Reference/Lowering/BackendRequirements.uv"
@@ -855,7 +855,7 @@ public procedure validatedCommonLoweringProgramLifecycleAndBackendBackendRequire
     }
     if acceptedObligationEntryMatches(
         "rule.24.Lower-WritePtrIR-Raw-Err",
-        98744usize,
+        98986usize,
         "HelloUltraviolet::Reference::Lowering",
         "runLoweringBackendRequirementsReference",
         "Source/Reference/Lowering/BackendRequirements.uv"
@@ -864,7 +864,7 @@ public procedure validatedCommonLoweringProgramLifecycleAndBackendBackendRequire
     }
     if acceptedObligationEntryMatches(
         "rule.24.Lower-AddrOfIR",
-        98760usize,
+        99002usize,
         "HelloUltraviolet::Reference::Lowering",
         "runLoweringBackendRequirementsReference",
         "Source/Reference/Lowering/BackendRequirements.uv"
@@ -873,7 +873,7 @@ public procedure validatedCommonLoweringProgramLifecycleAndBackendBackendRequire
     }
     if acceptedObligationEntryMatches(
         "def.24.CallLoweringHelpers",
-        98776usize,
+        99018usize,
         "HelloUltraviolet::Reference::Lowering",
         "runLoweringBackendRequirementsReference",
         "Source/Reference/Lowering/BackendRequirements.uv"
@@ -882,7 +882,7 @@ public procedure validatedCommonLoweringProgramLifecycleAndBackendBackendRequire
     }
     if acceptedObligationEntryMatches(
         "rule.24.Lower-CallIR-Func",
-        98804usize,
+        99046usize,
         "HelloUltraviolet::Reference::Lowering",
         "runLoweringBackendRequirementsReference",
         "Source/Reference/Lowering/BackendRequirements.uv"
@@ -891,7 +891,7 @@ public procedure validatedCommonLoweringProgramLifecycleAndBackendBackendRequire
     }
     if acceptedObligationEntryMatches(
         "def.24.DynamicDispatchHelpers",
-        98820usize,
+        99062usize,
         "HelloUltraviolet::Reference::Lowering",
         "runLoweringBackendRequirementsReference",
         "Source/Reference/Lowering/BackendRequirements.uv"
@@ -900,7 +900,7 @@ public procedure validatedCommonLoweringProgramLifecycleAndBackendBackendRequire
     }
     if acceptedObligationEntryMatches(
         "rule.24.Lower-CallVTable",
-        98838usize,
+        99080usize,
         "HelloUltraviolet::Reference::Lowering",
         "runLoweringBackendRequirementsReference",
         "Source/Reference/Lowering/BackendRequirements.uv"
@@ -909,7 +909,7 @@ public procedure validatedCommonLoweringProgramLifecycleAndBackendBackendRequire
     }
     if acceptedObligationEntryMatches(
         "rule.24.LowerIRInstr-ClearPanic",
-        98854usize,
+        99096usize,
         "HelloUltraviolet::Reference::Lowering",
         "runLoweringBackendRequirementsReference",
         "Source/Reference/Lowering/BackendRequirements.uv"
@@ -918,7 +918,7 @@ public procedure validatedCommonLoweringProgramLifecycleAndBackendBackendRequire
     }
     if acceptedObligationEntryMatches(
         "rule.24.LowerIRInstr-PanicCheck",
-        98870usize,
+        99112usize,
         "HelloUltraviolet::Reference::Lowering",
         "runLoweringBackendRequirementsReference",
         "Source/Reference/Lowering/BackendRequirements.uv"
@@ -927,7 +927,7 @@ public procedure validatedCommonLoweringProgramLifecycleAndBackendBackendRequire
     }
     if acceptedObligationEntryMatches(
         "rule.24.LowerIRInstr-CheckPoison",
-        98886usize,
+        99128usize,
         "HelloUltraviolet::Reference::Lowering",
         "runLoweringBackendRequirementsReference",
         "Source/Reference/Lowering/BackendRequirements.uv"
@@ -936,7 +936,7 @@ public procedure validatedCommonLoweringProgramLifecycleAndBackendBackendRequire
     }
     if acceptedObligationEntryMatches(
         "rule.24.LowerIRInstr-LowerPanic",
-        98902usize,
+        99144usize,
         "HelloUltraviolet::Reference::Lowering",
         "runLoweringBackendRequirementsReference",
         "Source/Reference/Lowering/BackendRequirements.uv"
@@ -945,7 +945,7 @@ public procedure validatedCommonLoweringProgramLifecycleAndBackendBackendRequire
     }
     if acceptedObligationEntryMatches(
         "def.24.IfLoweringHelpers",
-        98918usize,
+        99160usize,
         "HelloUltraviolet::Reference::Lowering",
         "runLoweringBackendRequirementsReference",
         "Source/Reference/Lowering/BackendRequirements.uv"
@@ -954,7 +954,7 @@ public procedure validatedCommonLoweringProgramLifecycleAndBackendBackendRequire
     }
     if acceptedObligationEntryMatches(
         "rule.24.Lower-IfIR",
-        98935usize,
+        99177usize,
         "HelloUltraviolet::Reference::Lowering",
         "runLoweringBackendRequirementsReference",
         "Source/Reference/Lowering/BackendRequirements.uv"
@@ -963,7 +963,7 @@ public procedure validatedCommonLoweringProgramLifecycleAndBackendBackendRequire
     }
     if acceptedObligationEntryMatches(
         "def.24.BlockCleanupLoweringHelpers",
-        98951usize,
+        99193usize,
         "HelloUltraviolet::Reference::Lowering",
         "runLoweringBackendRequirementsReference",
         "Source/Reference/Lowering/BackendRequirements.uv"
@@ -972,7 +972,7 @@ public procedure validatedCommonLoweringProgramLifecycleAndBackendBackendRequire
     }
     if acceptedObligationEntryMatches(
         "rule.24.Lower-BlockIR",
-        98967usize,
+        99209usize,
         "HelloUltraviolet::Reference::Lowering",
         "runLoweringBackendRequirementsReference",
         "Source/Reference/Lowering/BackendRequirements.uv"
@@ -981,132 +981,6 @@ public procedure validatedCommonLoweringProgramLifecycleAndBackendBackendRequire
     }
     if acceptedObligationEntryMatches(
         "def.24.StructuredIRLoweringForms",
-        98983usize,
-        "HelloUltraviolet::Reference::Lowering",
-        "runLoweringBackendRequirementsReference",
-        "Source/Reference/Lowering/BackendRequirements.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
-        "rule.24.Lower-LoopIR",
-        99011usize,
-        "HelloUltraviolet::Reference::Lowering",
-        "runLoweringBackendRequirementsReference",
-        "Source/Reference/Lowering/BackendRequirements.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
-        "rule.24.Lower-IfCaseIR",
-        99027usize,
-        "HelloUltraviolet::Reference::Lowering",
-        "runLoweringBackendRequirementsReference",
-        "Source/Reference/Lowering/BackendRequirements.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
-        "rule.24.Lower-RegionIR",
-        99043usize,
-        "HelloUltraviolet::Reference::Lowering",
-        "runLoweringBackendRequirementsReference",
-        "Source/Reference/Lowering/BackendRequirements.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
-        "rule.24.Lower-FrameIR",
-        99059usize,
-        "HelloUltraviolet::Reference::Lowering",
-        "runLoweringBackendRequirementsReference",
-        "Source/Reference/Lowering/BackendRequirements.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
-        "def.24.BranchLowerForms",
-        99075usize,
-        "HelloUltraviolet::Reference::Lowering",
-        "runLoweringBackendRequirementsReference",
-        "Source/Reference/Lowering/BackendRequirements.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
-        "rule.24.Lower-BranchIR-Unconditional",
-        99089usize,
-        "HelloUltraviolet::Reference::Lowering",
-        "runLoweringBackendRequirementsReference",
-        "Source/Reference/Lowering/BackendRequirements.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
-        "rule.24.Lower-BranchIR-Conditional",
-        99105usize,
-        "HelloUltraviolet::Reference::Lowering",
-        "runLoweringBackendRequirementsReference",
-        "Source/Reference/Lowering/BackendRequirements.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
-        "def.24.PhiLowerForm",
-        99120usize,
-        "HelloUltraviolet::Reference::Lowering",
-        "runLoweringBackendRequirementsReference",
-        "Source/Reference/Lowering/BackendRequirements.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
-        "rule.24.Lower-PhiIR",
-        99133usize,
-        "HelloUltraviolet::Reference::Lowering",
-        "runLoweringBackendRequirementsReference",
-        "Source/Reference/Lowering/BackendRequirements.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
-        "rule.24.LowerIRDecl-Err",
-        99149usize,
-        "HelloUltraviolet::Reference::Lowering",
-        "runLoweringBackendRequirementsReference",
-        "Source/Reference/Lowering/BackendRequirements.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
-        "rule.24.LowerIRInstr-Err",
-        99165usize,
-        "HelloUltraviolet::Reference::Lowering",
-        "runLoweringBackendRequirementsReference",
-        "Source/Reference/Lowering/BackendRequirements.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
-        "def.24.BindStorageJudg",
-        99183usize,
-        "HelloUltraviolet::Reference::Lowering",
-        "runLoweringBackendRequirementsReference",
-        "Source/Reference/Lowering/BackendRequirements.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
-        "def.24.BindRegionTarget",
-        99206usize,
-        "HelloUltraviolet::Reference::Lowering",
-        "runLoweringBackendRequirementsReference",
-        "Source/Reference/Lowering/BackendRequirements.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
-        "req.24.ResolveTargetNearestLiveAlias",
         99225usize,
         "HelloUltraviolet::Reference::Lowering",
         "runLoweringBackendRequirementsReference",
@@ -1115,8 +989,134 @@ public procedure validatedCommonLoweringProgramLifecycleAndBackendBackendRequire
         count = count + 1usize
     }
     if acceptedObligationEntryMatches(
+        "rule.24.Lower-LoopIR",
+        99253usize,
+        "HelloUltraviolet::Reference::Lowering",
+        "runLoweringBackendRequirementsReference",
+        "Source/Reference/Lowering/BackendRequirements.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "rule.24.Lower-IfCaseIR",
+        99269usize,
+        "HelloUltraviolet::Reference::Lowering",
+        "runLoweringBackendRequirementsReference",
+        "Source/Reference/Lowering/BackendRequirements.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "rule.24.Lower-RegionIR",
+        99285usize,
+        "HelloUltraviolet::Reference::Lowering",
+        "runLoweringBackendRequirementsReference",
+        "Source/Reference/Lowering/BackendRequirements.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "rule.24.Lower-FrameIR",
+        99301usize,
+        "HelloUltraviolet::Reference::Lowering",
+        "runLoweringBackendRequirementsReference",
+        "Source/Reference/Lowering/BackendRequirements.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "def.24.BranchLowerForms",
+        99317usize,
+        "HelloUltraviolet::Reference::Lowering",
+        "runLoweringBackendRequirementsReference",
+        "Source/Reference/Lowering/BackendRequirements.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "rule.24.Lower-BranchIR-Unconditional",
+        99331usize,
+        "HelloUltraviolet::Reference::Lowering",
+        "runLoweringBackendRequirementsReference",
+        "Source/Reference/Lowering/BackendRequirements.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "rule.24.Lower-BranchIR-Conditional",
+        99347usize,
+        "HelloUltraviolet::Reference::Lowering",
+        "runLoweringBackendRequirementsReference",
+        "Source/Reference/Lowering/BackendRequirements.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "def.24.PhiLowerForm",
+        99362usize,
+        "HelloUltraviolet::Reference::Lowering",
+        "runLoweringBackendRequirementsReference",
+        "Source/Reference/Lowering/BackendRequirements.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "rule.24.Lower-PhiIR",
+        99375usize,
+        "HelloUltraviolet::Reference::Lowering",
+        "runLoweringBackendRequirementsReference",
+        "Source/Reference/Lowering/BackendRequirements.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "rule.24.LowerIRDecl-Err",
+        99391usize,
+        "HelloUltraviolet::Reference::Lowering",
+        "runLoweringBackendRequirementsReference",
+        "Source/Reference/Lowering/BackendRequirements.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "rule.24.LowerIRInstr-Err",
+        99407usize,
+        "HelloUltraviolet::Reference::Lowering",
+        "runLoweringBackendRequirementsReference",
+        "Source/Reference/Lowering/BackendRequirements.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "def.24.BindStorageJudg",
+        99425usize,
+        "HelloUltraviolet::Reference::Lowering",
+        "runLoweringBackendRequirementsReference",
+        "Source/Reference/Lowering/BackendRequirements.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "def.24.BindRegionTarget",
+        99448usize,
+        "HelloUltraviolet::Reference::Lowering",
+        "runLoweringBackendRequirementsReference",
+        "Source/Reference/Lowering/BackendRequirements.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "req.24.ResolveTargetNearestLiveAlias",
+        99467usize,
+        "HelloUltraviolet::Reference::Lowering",
+        "runLoweringBackendRequirementsReference",
+        "Source/Reference/Lowering/BackendRequirements.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
         "rule.24.BindValid-Sigma",
-        99238usize,
+        99480usize,
         "HelloUltraviolet::Reference::Lowering",
         "runLoweringBackendRequirementsReference",
         "Source/Reference/Lowering/BackendRequirements.uv"
@@ -1125,7 +1125,7 @@ public procedure validatedCommonLoweringProgramLifecycleAndBackendBackendRequire
     }
     if acceptedObligationEntryMatches(
         "rule.24.BindSlot-Param-ByValue",
-        99254usize,
+        99496usize,
         "HelloUltraviolet::Reference::Lowering",
         "runLoweringBackendRequirementsReference",
         "Source/Reference/Lowering/BackendRequirements.uv"
@@ -1134,7 +1134,7 @@ public procedure validatedCommonLoweringProgramLifecycleAndBackendBackendRequire
     }
     if acceptedObligationEntryMatches(
         "rule.24.BindSlot-Param-ByRef",
-        99270usize,
+        99512usize,
         "HelloUltraviolet::Reference::Lowering",
         "runLoweringBackendRequirementsReference",
         "Source/Reference/Lowering/BackendRequirements.uv"
@@ -1143,7 +1143,7 @@ public procedure validatedCommonLoweringProgramLifecycleAndBackendBackendRequire
     }
     if acceptedObligationEntryMatches(
         "rule.24.BindSlot-Region",
-        99286usize,
+        99528usize,
         "HelloUltraviolet::Reference::Lowering",
         "runLoweringBackendRequirementsReference",
         "Source/Reference/Lowering/BackendRequirements.uv"
@@ -1152,7 +1152,7 @@ public procedure validatedCommonLoweringProgramLifecycleAndBackendBackendRequire
     }
     if acceptedObligationEntryMatches(
         "rule.24.BindSlot-Local",
-        99302usize,
+        99544usize,
         "HelloUltraviolet::Reference::Lowering",
         "runLoweringBackendRequirementsReference",
         "Source/Reference/Lowering/BackendRequirements.uv"
@@ -1161,7 +1161,7 @@ public procedure validatedCommonLoweringProgramLifecycleAndBackendBackendRequire
     }
     if acceptedObligationEntryMatches(
         "rule.24.BindSlot-Static",
-        99318usize,
+        99560usize,
         "HelloUltraviolet::Reference::Lowering",
         "runLoweringBackendRequirementsReference",
         "Source/Reference/Lowering/BackendRequirements.uv"
@@ -1170,7 +1170,7 @@ public procedure validatedCommonLoweringProgramLifecycleAndBackendBackendRequire
     }
     if acceptedObligationEntryMatches(
         "rule.24.UpdateValid-BindVar",
-        99334usize,
+        99576usize,
         "HelloUltraviolet::Reference::Lowering",
         "runLoweringBackendRequirementsReference",
         "Source/Reference/Lowering/BackendRequirements.uv"
@@ -1179,7 +1179,7 @@ public procedure validatedCommonLoweringProgramLifecycleAndBackendBackendRequire
     }
     if acceptedObligationEntryMatches(
         "rule.24.UpdateValid-StoreVar",
-        99349usize,
+        99591usize,
         "HelloUltraviolet::Reference::Lowering",
         "runLoweringBackendRequirementsReference",
         "Source/Reference/Lowering/BackendRequirements.uv"
@@ -1188,141 +1188,6 @@ public procedure validatedCommonLoweringProgramLifecycleAndBackendBackendRequire
     }
     if acceptedObligationEntryMatches(
         "rule.24.UpdateValid-StoreVarNoDrop",
-        99364usize,
-        "HelloUltraviolet::Reference::Lowering",
-        "runLoweringBackendRequirementsReference",
-        "Source/Reference/Lowering/BackendRequirements.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
-        "rule.24.UpdateValid-MoveRoot",
-        99380usize,
-        "HelloUltraviolet::Reference::Lowering",
-        "runLoweringBackendRequirementsReference",
-        "Source/Reference/Lowering/BackendRequirements.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
-        "rule.24.UpdateValid-PartialMove-Init",
-        99396usize,
-        "HelloUltraviolet::Reference::Lowering",
-        "runLoweringBackendRequirementsReference",
-        "Source/Reference/Lowering/BackendRequirements.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
-        "rule.24.UpdateValid-PartialMove-Step",
-        99412usize,
-        "HelloUltraviolet::Reference::Lowering",
-        "runLoweringBackendRequirementsReference",
-        "Source/Reference/Lowering/BackendRequirements.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
-        "def.24.DropOnAssignHelpers",
-        99428usize,
-        "HelloUltraviolet::Reference::Lowering",
-        "runLoweringBackendRequirementsReference",
-        "Source/Reference/Lowering/BackendRequirements.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
-        "rule.24.DropOnAssign-NotApplicable",
-        99444usize,
-        "HelloUltraviolet::Reference::Lowering",
-        "runLoweringBackendRequirementsReference",
-        "Source/Reference/Lowering/BackendRequirements.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
-        "rule.24.DropOnAssign-Record-Valid",
-        99460usize,
-        "HelloUltraviolet::Reference::Lowering",
-        "runLoweringBackendRequirementsReference",
-        "Source/Reference/Lowering/BackendRequirements.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
-        "rule.24.DropOnAssign-Record-Partial",
-        99476usize,
-        "HelloUltraviolet::Reference::Lowering",
-        "runLoweringBackendRequirementsReference",
-        "Source/Reference/Lowering/BackendRequirements.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
-        "rule.24.DropOnAssign-Record-Moved",
-        99492usize,
-        "HelloUltraviolet::Reference::Lowering",
-        "runLoweringBackendRequirementsReference",
-        "Source/Reference/Lowering/BackendRequirements.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
-        "rule.24.DropOnAssign-Aggregate-Ok",
-        99508usize,
-        "HelloUltraviolet::Reference::Lowering",
-        "runLoweringBackendRequirementsReference",
-        "Source/Reference/Lowering/BackendRequirements.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
-        "rule.24.DropOnAssign-Aggregate-Moved",
-        99524usize,
-        "HelloUltraviolet::Reference::Lowering",
-        "runLoweringBackendRequirementsReference",
-        "Source/Reference/Lowering/BackendRequirements.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
-        "rule.24.BindSlot-Err",
-        99540usize,
-        "HelloUltraviolet::Reference::Lowering",
-        "runLoweringBackendRequirementsReference",
-        "Source/Reference/Lowering/BackendRequirements.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
-        "rule.24.BindValid-Err",
-        99556usize,
-        "HelloUltraviolet::Reference::Lowering",
-        "runLoweringBackendRequirementsReference",
-        "Source/Reference/Lowering/BackendRequirements.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
-        "rule.24.UpdateValid-Err",
-        99572usize,
-        "HelloUltraviolet::Reference::Lowering",
-        "runLoweringBackendRequirementsReference",
-        "Source/Reference/Lowering/BackendRequirements.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
-        "rule.24.DropOnAssign-Err",
-        99588usize,
-        "HelloUltraviolet::Reference::Lowering",
-        "runLoweringBackendRequirementsReference",
-        "Source/Reference/Lowering/BackendRequirements.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
-        "def.24.LLVMCallJudg",
         99606usize,
         "HelloUltraviolet::Reference::Lowering",
         "runLoweringBackendRequirementsReference",
@@ -1331,8 +1196,143 @@ public procedure validatedCommonLoweringProgramLifecycleAndBackendBackendRequire
         count = count + 1usize
     }
     if acceptedObligationEntryMatches(
+        "rule.24.UpdateValid-MoveRoot",
+        99622usize,
+        "HelloUltraviolet::Reference::Lowering",
+        "runLoweringBackendRequirementsReference",
+        "Source/Reference/Lowering/BackendRequirements.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "rule.24.UpdateValid-PartialMove-Init",
+        99638usize,
+        "HelloUltraviolet::Reference::Lowering",
+        "runLoweringBackendRequirementsReference",
+        "Source/Reference/Lowering/BackendRequirements.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "rule.24.UpdateValid-PartialMove-Step",
+        99654usize,
+        "HelloUltraviolet::Reference::Lowering",
+        "runLoweringBackendRequirementsReference",
+        "Source/Reference/Lowering/BackendRequirements.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "def.24.DropOnAssignHelpers",
+        99670usize,
+        "HelloUltraviolet::Reference::Lowering",
+        "runLoweringBackendRequirementsReference",
+        "Source/Reference/Lowering/BackendRequirements.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "rule.24.DropOnAssign-NotApplicable",
+        99686usize,
+        "HelloUltraviolet::Reference::Lowering",
+        "runLoweringBackendRequirementsReference",
+        "Source/Reference/Lowering/BackendRequirements.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "rule.24.DropOnAssign-Record-Valid",
+        99702usize,
+        "HelloUltraviolet::Reference::Lowering",
+        "runLoweringBackendRequirementsReference",
+        "Source/Reference/Lowering/BackendRequirements.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "rule.24.DropOnAssign-Record-Partial",
+        99718usize,
+        "HelloUltraviolet::Reference::Lowering",
+        "runLoweringBackendRequirementsReference",
+        "Source/Reference/Lowering/BackendRequirements.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "rule.24.DropOnAssign-Record-Moved",
+        99734usize,
+        "HelloUltraviolet::Reference::Lowering",
+        "runLoweringBackendRequirementsReference",
+        "Source/Reference/Lowering/BackendRequirements.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "rule.24.DropOnAssign-Aggregate-Ok",
+        99750usize,
+        "HelloUltraviolet::Reference::Lowering",
+        "runLoweringBackendRequirementsReference",
+        "Source/Reference/Lowering/BackendRequirements.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "rule.24.DropOnAssign-Aggregate-Moved",
+        99766usize,
+        "HelloUltraviolet::Reference::Lowering",
+        "runLoweringBackendRequirementsReference",
+        "Source/Reference/Lowering/BackendRequirements.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "rule.24.BindSlot-Err",
+        99782usize,
+        "HelloUltraviolet::Reference::Lowering",
+        "runLoweringBackendRequirementsReference",
+        "Source/Reference/Lowering/BackendRequirements.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "rule.24.BindValid-Err",
+        99798usize,
+        "HelloUltraviolet::Reference::Lowering",
+        "runLoweringBackendRequirementsReference",
+        "Source/Reference/Lowering/BackendRequirements.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "rule.24.UpdateValid-Err",
+        99814usize,
+        "HelloUltraviolet::Reference::Lowering",
+        "runLoweringBackendRequirementsReference",
+        "Source/Reference/Lowering/BackendRequirements.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "rule.24.DropOnAssign-Err",
+        99830usize,
+        "HelloUltraviolet::Reference::Lowering",
+        "runLoweringBackendRequirementsReference",
+        "Source/Reference/Lowering/BackendRequirements.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "def.24.LLVMCallJudg",
+        99848usize,
+        "HelloUltraviolet::Reference::Lowering",
+        "runLoweringBackendRequirementsReference",
+        "Source/Reference/Lowering/BackendRequirements.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
         "def.24.LLVMCallSigFields",
-        99619usize,
+        99861usize,
         "HelloUltraviolet::Reference::Lowering",
         "runLoweringBackendRequirementsReference",
         "Source/Reference/Lowering/BackendRequirements.uv"
@@ -1341,7 +1341,7 @@ public procedure validatedCommonLoweringProgramLifecycleAndBackendBackendRequire
     }
     if acceptedObligationEntryMatches(
         "rule.24.LLVMArgLower-ByValue-PtrValid",
-        99635usize,
+        99877usize,
         "HelloUltraviolet::Reference::Lowering",
         "runLoweringBackendRequirementsReference",
         "Source/Reference/Lowering/BackendRequirements.uv"
@@ -1350,7 +1350,7 @@ public procedure validatedCommonLoweringProgramLifecycleAndBackendBackendRequire
     }
     if acceptedObligationEntryMatches(
         "rule.24.LLVMArgLower-ByValue-Other",
-        99651usize,
+        99893usize,
         "HelloUltraviolet::Reference::Lowering",
         "runLoweringBackendRequirementsReference",
         "Source/Reference/Lowering/BackendRequirements.uv"
@@ -1359,7 +1359,7 @@ public procedure validatedCommonLoweringProgramLifecycleAndBackendBackendRequire
     }
     if acceptedObligationEntryMatches(
         "rule.24.LLVMArgLower-ByRef",
-        99667usize,
+        99909usize,
         "HelloUltraviolet::Reference::Lowering",
         "runLoweringBackendRequirementsReference",
         "Source/Reference/Lowering/BackendRequirements.uv"
@@ -1368,7 +1368,7 @@ public procedure validatedCommonLoweringProgramLifecycleAndBackendBackendRequire
     }
     if acceptedObligationEntryMatches(
         "rule.24.LLVMRetLower-ByValue-ZST",
-        99683usize,
+        99925usize,
         "HelloUltraviolet::Reference::Lowering",
         "runLoweringBackendRequirementsReference",
         "Source/Reference/Lowering/BackendRequirements.uv"
@@ -1377,7 +1377,7 @@ public procedure validatedCommonLoweringProgramLifecycleAndBackendBackendRequire
     }
     if acceptedObligationEntryMatches(
         "rule.24.LLVMRetLower-ByValue",
-        99699usize,
+        99941usize,
         "HelloUltraviolet::Reference::Lowering",
         "runLoweringBackendRequirementsReference",
         "Source/Reference/Lowering/BackendRequirements.uv"
@@ -1386,7 +1386,7 @@ public procedure validatedCommonLoweringProgramLifecycleAndBackendBackendRequire
     }
     if acceptedObligationEntryMatches(
         "rule.24.LLVMRetLower-SRet",
-        99715usize,
+        99957usize,
         "HelloUltraviolet::Reference::Lowering",
         "runLoweringBackendRequirementsReference",
         "Source/Reference/Lowering/BackendRequirements.uv"
@@ -1395,7 +1395,7 @@ public procedure validatedCommonLoweringProgramLifecycleAndBackendBackendRequire
     }
     if acceptedObligationEntryMatches(
         "def.24.LLVMCallArgLists",
-        99731usize,
+        99973usize,
         "HelloUltraviolet::Reference::Lowering",
         "runLoweringBackendRequirementsReference",
         "Source/Reference/Lowering/BackendRequirements.uv"
@@ -1404,7 +1404,7 @@ public procedure validatedCommonLoweringProgramLifecycleAndBackendBackendRequire
     }
     if acceptedObligationEntryMatches(
         "rule.24.LLVMCall-ByValue",
-        99746usize,
+        99988usize,
         "HelloUltraviolet::Reference::Lowering",
         "runLoweringBackendRequirementsReference",
         "Source/Reference/Lowering/BackendRequirements.uv"
@@ -1413,7 +1413,7 @@ public procedure validatedCommonLoweringProgramLifecycleAndBackendBackendRequire
     }
     if acceptedObligationEntryMatches(
         "rule.24.LLVMCall-SRet",
-        99762usize,
+        100004usize,
         "HelloUltraviolet::Reference::Lowering",
         "runLoweringBackendRequirementsReference",
         "Source/Reference/Lowering/BackendRequirements.uv"
@@ -1422,7 +1422,7 @@ public procedure validatedCommonLoweringProgramLifecycleAndBackendBackendRequire
     }
     if acceptedObligationEntryMatches(
         "def.24.ByRefAccess",
-        99778usize,
+        100020usize,
         "HelloUltraviolet::Reference::Lowering",
         "runLoweringBackendRequirementsReference",
         "Source/Reference/Lowering/BackendRequirements.uv"
@@ -1431,7 +1431,7 @@ public procedure validatedCommonLoweringProgramLifecycleAndBackendBackendRequire
     }
     if acceptedObligationEntryMatches(
         "rule.24.LLVMArgLower-Err",
-        99793usize,
+        100035usize,
         "HelloUltraviolet::Reference::Lowering",
         "runLoweringBackendRequirementsReference",
         "Source/Reference/Lowering/BackendRequirements.uv"
@@ -1440,7 +1440,7 @@ public procedure validatedCommonLoweringProgramLifecycleAndBackendBackendRequire
     }
     if acceptedObligationEntryMatches(
         "rule.24.LLVMRetLower-Err",
-        99809usize,
+        100051usize,
         "HelloUltraviolet::Reference::Lowering",
         "runLoweringBackendRequirementsReference",
         "Source/Reference/Lowering/BackendRequirements.uv"
@@ -1449,7 +1449,7 @@ public procedure validatedCommonLoweringProgramLifecycleAndBackendBackendRequire
     }
     if acceptedObligationEntryMatches(
         "rule.24.LLVMCall-Err",
-        99825usize,
+        100067usize,
         "HelloUltraviolet::Reference::Lowering",
         "runLoweringBackendRequirementsReference",
         "Source/Reference/Lowering/BackendRequirements.uv"
@@ -1458,7 +1458,7 @@ public procedure validatedCommonLoweringProgramLifecycleAndBackendBackendRequire
     }
     if acceptedObligationEntryMatches(
         "def.24.VTableJudg",
-        99843usize,
+        100085usize,
         "HelloUltraviolet::Reference::Lowering",
         "runLoweringBackendRequirementsReference",
         "Source/Reference/Lowering/BackendRequirements.uv"
@@ -1467,7 +1467,7 @@ public procedure validatedCommonLoweringProgramLifecycleAndBackendBackendRequire
     }
     if acceptedObligationEntryMatches(
         "def.24.VTableEmissionHelpers",
-        99856usize,
+        100098usize,
         "HelloUltraviolet::Reference::Lowering",
         "runLoweringBackendRequirementsReference",
         "Source/Reference/Lowering/BackendRequirements.uv"
@@ -1476,7 +1476,7 @@ public procedure validatedCommonLoweringProgramLifecycleAndBackendBackendRequire
     }
     if acceptedObligationEntryMatches(
         "rule.24.EmitDropGlue-Decl",
-        99880usize,
+        100122usize,
         "HelloUltraviolet::Reference::Lowering",
         "runLoweringBackendRequirementsReference",
         "Source/Reference/Lowering/BackendRequirements.uv"
@@ -1485,7 +1485,7 @@ public procedure validatedCommonLoweringProgramLifecycleAndBackendBackendRequire
     }
     if acceptedObligationEntryMatches(
         "rule.24.EmitVTable-Err",
-        99896usize,
+        100138usize,
         "HelloUltraviolet::Reference::Lowering",
         "runLoweringBackendRequirementsReference",
         "Source/Reference/Lowering/BackendRequirements.uv"
@@ -1494,7 +1494,7 @@ public procedure validatedCommonLoweringProgramLifecycleAndBackendBackendRequire
     }
     if acceptedObligationEntryMatches(
         "def.24.LiteralEmitJudg",
-        99914usize,
+        100156usize,
         "HelloUltraviolet::Reference::Lowering",
         "runLoweringBackendRequirementsReference",
         "Source/Reference/Lowering/BackendRequirements.uv"
@@ -1503,7 +1503,7 @@ public procedure validatedCommonLoweringProgramLifecycleAndBackendBackendRequire
     }
     if acceptedObligationEntryMatches(
         "def.24.StringBytesAndRawBytes",
-        99927usize,
+        100169usize,
         "HelloUltraviolet::Reference::Lowering",
         "runLoweringBackendRequirementsReference",
         "Source/Reference/Lowering/BackendRequirements.uv"
@@ -1512,7 +1512,7 @@ public procedure validatedCommonLoweringProgramLifecycleAndBackendBackendRequire
     }
     if acceptedObligationEntryMatches(
         "rule.24.EmitLiteralData-Decl",
-        99950usize,
+        100192usize,
         "HelloUltraviolet::Reference::Lowering",
         "runLoweringBackendRequirementsReference",
         "Source/Reference/Lowering/BackendRequirements.uv"
@@ -1521,7 +1521,7 @@ public procedure validatedCommonLoweringProgramLifecycleAndBackendBackendRequire
     }
     if acceptedObligationEntryMatches(
         "rule.24.EmitLiteral-String",
-        99966usize,
+        100208usize,
         "HelloUltraviolet::Reference::Lowering",
         "runLoweringBackendRequirementsReference",
         "Source/Reference/Lowering/BackendRequirements.uv"
@@ -1530,7 +1530,7 @@ public procedure validatedCommonLoweringProgramLifecycleAndBackendBackendRequire
     }
     if acceptedObligationEntryMatches(
         "req.24.EmitLiteral-String-Utf8Valid",
-        99982usize,
+        100224usize,
         "HelloUltraviolet::Reference::Lowering",
         "runLoweringBackendRequirementsReference",
         "Source/Reference/Lowering/BackendRequirements.uv"
@@ -1539,7 +1539,7 @@ public procedure validatedCommonLoweringProgramLifecycleAndBackendBackendRequire
     }
     if acceptedObligationEntryMatches(
         "rule.24.EmitLiteral-Bytes",
-        99995usize,
+        100237usize,
         "HelloUltraviolet::Reference::Lowering",
         "runLoweringBackendRequirementsReference",
         "Source/Reference/Lowering/BackendRequirements.uv"
@@ -1548,7 +1548,7 @@ public procedure validatedCommonLoweringProgramLifecycleAndBackendBackendRequire
     }
     if acceptedObligationEntryMatches(
         "req.24.EmitLiteral-Bytes-UndefinedRawBytes",
-        100011usize,
+        100253usize,
         "HelloUltraviolet::Reference::Lowering",
         "runLoweringBackendRequirementsReference",
         "Source/Reference/Lowering/BackendRequirements.uv"
@@ -1557,7 +1557,7 @@ public procedure validatedCommonLoweringProgramLifecycleAndBackendBackendRequire
     }
     if acceptedObligationEntryMatches(
         "rule.24.EmitLiteral-Char",
-        100024usize,
+        100266usize,
         "HelloUltraviolet::Reference::Lowering",
         "runLoweringBackendRequirementsReference",
         "Source/Reference/Lowering/BackendRequirements.uv"
@@ -1566,7 +1566,7 @@ public procedure validatedCommonLoweringProgramLifecycleAndBackendBackendRequire
     }
     if acceptedObligationEntryMatches(
         "rule.24.EmitLiteral-Int",
-        100040usize,
+        100282usize,
         "HelloUltraviolet::Reference::Lowering",
         "runLoweringBackendRequirementsReference",
         "Source/Reference/Lowering/BackendRequirements.uv"
@@ -1575,7 +1575,7 @@ public procedure validatedCommonLoweringProgramLifecycleAndBackendBackendRequire
     }
     if acceptedObligationEntryMatches(
         "rule.24.EmitLiteral-Float",
-        100056usize,
+        100298usize,
         "HelloUltraviolet::Reference::Lowering",
         "runLoweringBackendRequirementsReference",
         "Source/Reference/Lowering/BackendRequirements.uv"
@@ -1584,7 +1584,7 @@ public procedure validatedCommonLoweringProgramLifecycleAndBackendBackendRequire
     }
     if acceptedObligationEntryMatches(
         "rule.24.EmitLiteral-Err",
-        100072usize,
+        100314usize,
         "HelloUltraviolet::Reference::Lowering",
         "runLoweringBackendRequirementsReference",
         "Source/Reference/Lowering/BackendRequirements.uv"
@@ -1593,7 +1593,7 @@ public procedure validatedCommonLoweringProgramLifecycleAndBackendBackendRequire
     }
     if acceptedObligationEntryMatches(
         "def.24.PoisonJudg",
-        100090usize,
+        100332usize,
         "HelloUltraviolet::Reference::Lowering",
         "runLoweringBackendRequirementsReference",
         "Source/Reference/Lowering/BackendRequirements.uv"
@@ -1602,7 +1602,7 @@ public procedure validatedCommonLoweringProgramLifecycleAndBackendBackendRequire
     }
     if acceptedObligationEntryMatches(
         "def.24.PoisonSet",
-        100103usize,
+        100345usize,
         "HelloUltraviolet::Reference::Lowering",
         "runLoweringBackendRequirementsReference",
         "Source/Reference/Lowering/BackendRequirements.uv"
@@ -1611,7 +1611,7 @@ public procedure validatedCommonLoweringProgramLifecycleAndBackendBackendRequire
     }
     if acceptedObligationEntryMatches(
         "rule.24.PoisonFlag-Decl",
-        100116usize,
+        100358usize,
         "HelloUltraviolet::Reference::Lowering",
         "runLoweringBackendRequirementsReference",
         "Source/Reference/Lowering/BackendRequirements.uv"
@@ -1620,7 +1620,7 @@ public procedure validatedCommonLoweringProgramLifecycleAndBackendBackendRequire
     }
     if acceptedObligationEntryMatches(
         "def.24.PoisonFlagStorage",
-        100131usize,
+        100373usize,
         "HelloUltraviolet::Reference::Lowering",
         "runLoweringBackendRequirementsReference",
         "Source/Reference/Lowering/BackendRequirements.uv"
@@ -1629,7 +1629,7 @@ public procedure validatedCommonLoweringProgramLifecycleAndBackendBackendRequire
     }
     if acceptedObligationEntryMatches(
         "req.24.HostedPoisonFlagTemplate",
-        100145usize,
+        100387usize,
         "HelloUltraviolet::Reference::Lowering",
         "runLoweringBackendRequirementsReference",
         "Source/Reference/Lowering/BackendRequirements.uv"
@@ -1638,7 +1638,7 @@ public procedure validatedCommonLoweringProgramLifecycleAndBackendBackendRequire
     }
     if acceptedObligationEntryMatches(
         "rule.24.CheckPoison-Use",
-        100158usize,
+        100400usize,
         "HelloUltraviolet::Reference::Lowering",
         "runLoweringBackendRequirementsReference",
         "Source/Reference/Lowering/BackendRequirements.uv"
@@ -1647,7 +1647,7 @@ public procedure validatedCommonLoweringProgramLifecycleAndBackendBackendRequire
     }
     if acceptedObligationEntryMatches(
         "sem.24.CheckPoisonBehavior",
-        100174usize,
+        100416usize,
         "HelloUltraviolet::Reference::Lowering",
         "runLoweringBackendRequirementsReference",
         "Source/Reference/Lowering/BackendRequirements.uv"
@@ -1656,7 +1656,7 @@ public procedure validatedCommonLoweringProgramLifecycleAndBackendBackendRequire
     }
     if acceptedObligationEntryMatches(
         "req.24.HostedPoisonStateIsolation",
-        100187usize,
+        100429usize,
         "HelloUltraviolet::Reference::Lowering",
         "runLoweringBackendRequirementsReference",
         "Source/Reference/Lowering/BackendRequirements.uv"
@@ -1665,7 +1665,7 @@ public procedure validatedCommonLoweringProgramLifecycleAndBackendBackendRequire
     }
     if acceptedObligationEntryMatches(
         "rule.24.SetPoison-OnInitFail",
-        100200usize,
+        100442usize,
         "HelloUltraviolet::Reference::Lowering",
         "runLoweringBackendRequirementsReference",
         "Source/Reference/Lowering/BackendRequirements.uv"
@@ -1674,7 +1674,7 @@ public procedure validatedCommonLoweringProgramLifecycleAndBackendBackendRequire
     }
     if acceptedObligationEntryMatches(
         "rule.24.PoisonFlag-Err",
-        100216usize,
+        100458usize,
         "HelloUltraviolet::Reference::Lowering",
         "runLoweringBackendRequirementsReference",
         "Source/Reference/Lowering/BackendRequirements.uv"
@@ -1683,7 +1683,7 @@ public procedure validatedCommonLoweringProgramLifecycleAndBackendBackendRequire
     }
     if acceptedObligationEntryMatches(
         "rule.24.CheckPoison-Err",
-        100232usize,
+        100474usize,
         "HelloUltraviolet::Reference::Lowering",
         "runLoweringBackendRequirementsReference",
         "Source/Reference/Lowering/BackendRequirements.uv"
@@ -1692,7 +1692,7 @@ public procedure validatedCommonLoweringProgramLifecycleAndBackendBackendRequire
     }
     if acceptedObligationEntryMatches(
         "rule.24.SetPoison-Err",
-        100248usize,
+        100490usize,
         "HelloUltraviolet::Reference::Lowering",
         "runLoweringBackendRequirementsReference",
         "Source/Reference/Lowering/BackendRequirements.uv"

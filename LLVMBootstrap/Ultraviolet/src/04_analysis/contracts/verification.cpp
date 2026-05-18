@@ -78,6 +78,7 @@
 #include <utility>
 
 #include "00_core/assert_spec.h"
+#include "00_core/numeric_literals.h"
 
 namespace ultraviolet::analysis {
 
@@ -882,23 +883,17 @@ static bool MergeLinear(LinearExpr& dst,
 }
 
 static std::optional<std::int64_t> ParseIntLiteral(std::string_view lexeme) {
-  std::string cleaned;
-  cleaned.reserve(lexeme.size());
-  for (const char ch : lexeme) {
-    if (ch != '_') {
-      cleaned.push_back(ch);
-    }
-  }
-  try {
-    std::size_t idx = 0;
-    const auto value = std::stoll(cleaned, &idx, 0);
-    if (idx != cleaned.size()) {
-      return std::nullopt;
-    }
-    return value;
-  } catch (...) {
+  const std::string_view core_text = core::StripIntSuffix(lexeme);
+  const auto value = core::ParseIntCore(core_text);
+  if (!value.has_value() || !core::UInt128FitsU64(*value)) {
     return std::nullopt;
   }
+  const auto as_u64 = core::UInt128ToU64(*value);
+  if (as_u64 > static_cast<std::uint64_t>(
+                   std::numeric_limits<std::int64_t>::max())) {
+    return std::nullopt;
+  }
+  return static_cast<std::int64_t>(as_u64);
 }
 
 static std::optional<std::string> ExprKey(const ast::ExprPtr& expr);
@@ -1954,29 +1949,9 @@ ConstValue EvaluateConstant(const ast::ExprPtr& expr) {
     return result;
   }
 
-  auto parse_int = [](std::string_view lexeme) -> std::optional<std::int64_t> {
-    std::string cleaned;
-    cleaned.reserve(lexeme.size());
-    for (const char ch : lexeme) {
-      if (ch != '_') {
-        cleaned.push_back(ch);
-      }
-    }
-    try {
-      std::size_t idx = 0;
-      const auto value = std::stoll(cleaned, &idx, 0);
-      if (idx != cleaned.size()) {
-        return std::nullopt;
-      }
-      return value;
-    } catch (...) {
-      return std::nullopt;
-    }
-  };
-
   if (const auto* lit = std::get_if<ast::LiteralExpr>(&expr->node)) {
     if (lit->literal.kind == ast::TokenKind::IntLiteral) {
-      const auto parsed = parse_int(lit->literal.lexeme);
+      const auto parsed = ParseIntLiteral(lit->literal.lexeme);
       if (parsed.has_value()) {
         result.value = *parsed;
         result.known = true;

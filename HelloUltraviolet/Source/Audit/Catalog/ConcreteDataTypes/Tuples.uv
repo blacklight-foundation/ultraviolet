@@ -9,7 +9,7 @@ public procedure validatedConcreteDataTypesTuplesObligations() -> usize {
     var count: usize = 0usize
     if acceptedObligationEntryMatches(
         "grammar.TupleSyntax",
-        35319usize,
+        35367usize,
         "HelloUltraviolet::Reference::DataTypes",
         "runDataTypesTuplesReference",
         "Source/Reference/DataTypes/Tuples.uv"
@@ -18,7 +18,7 @@ public procedure validatedConcreteDataTypesTuplesObligations() -> usize {
     }
     if acceptedObligationEntryMatches(
         "req.TupleSingletonCommaIllFormed",
-        35343usize,
+        35391usize,
         "HelloUltraviolet::Reference::DataTypes",
         "runDataTypesTuplesReference",
         "Source/Reference/DataTypes/Tuples.uv"
@@ -27,7 +27,7 @@ public procedure validatedConcreteDataTypesTuplesObligations() -> usize {
     }
     if acceptedObligationEntryMatches(
         "Parse-Tuple-Type",
-        35359usize,
+        35407usize,
         "HelloUltraviolet::Reference::DataTypes",
         "runDataTypesTuplesReference",
         "Source/Reference/DataTypes/Tuples.uv"
@@ -36,7 +36,7 @@ public procedure validatedConcreteDataTypesTuplesObligations() -> usize {
     }
     if acceptedObligationEntryMatches(
         "Parse-TupleTypeElems-Empty",
-        35377usize,
+        35425usize,
         "HelloUltraviolet::Reference::DataTypes",
         "runDataTypesTuplesReference",
         "Source/Reference/DataTypes/Tuples.uv"
@@ -45,7 +45,7 @@ public procedure validatedConcreteDataTypesTuplesObligations() -> usize {
     }
     if acceptedObligationEntryMatches(
         "Parse-TupleTypeElems-One",
-        35395usize,
+        35443usize,
         "HelloUltraviolet::Reference::DataTypes",
         "runDataTypesTuplesReference",
         "Source/Reference/DataTypes/Tuples.uv"
@@ -54,7 +54,7 @@ public procedure validatedConcreteDataTypesTuplesObligations() -> usize {
     }
     if acceptedObligationEntryMatches(
         "Parse-TupleTypeElems-Many",
-        35413usize,
+        35461usize,
         "HelloUltraviolet::Reference::DataTypes",
         "runDataTypesTuplesReference",
         "Source/Reference/DataTypes/Tuples.uv"
@@ -63,7 +63,7 @@ public procedure validatedConcreteDataTypesTuplesObligations() -> usize {
     }
     if acceptedObligationEntryMatches(
         "def.TupleScanDelimiterDeltas",
-        35431usize,
+        35479usize,
         "HelloUltraviolet::Reference::DataTypes",
         "runDataTypesTuplesReference",
         "Source/Reference/DataTypes/Tuples.uv"
@@ -72,7 +72,7 @@ public procedure validatedConcreteDataTypesTuplesObligations() -> usize {
     }
     if acceptedObligationEntryMatches(
         "def.TupleScanDepthAndStep",
-        35455usize,
+        35503usize,
         "HelloUltraviolet::Reference::DataTypes",
         "runDataTypesTuplesReference",
         "Source/Reference/DataTypes/Tuples.uv"
@@ -81,7 +81,7 @@ public procedure validatedConcreteDataTypesTuplesObligations() -> usize {
     }
     if acceptedObligationEntryMatches(
         "def.TupleScanPredicates",
-        35471usize,
+        35519usize,
         "HelloUltraviolet::Reference::DataTypes",
         "runDataTypesTuplesReference",
         "Source/Reference/DataTypes/Tuples.uv"
@@ -90,7 +90,7 @@ public procedure validatedConcreteDataTypesTuplesObligations() -> usize {
     }
     if acceptedObligationEntryMatches(
         "TupleScan-EOF",
-        35489usize,
+        35537usize,
         "HelloUltraviolet::Reference::DataTypes",
         "runDataTypesTuplesReference",
         "Source/Reference/DataTypes/Tuples.uv"
@@ -99,7 +99,7 @@ public procedure validatedConcreteDataTypesTuplesObligations() -> usize {
     }
     if acceptedObligationEntryMatches(
         "TupleScan-EndParen",
-        35507usize,
+        35555usize,
         "HelloUltraviolet::Reference::DataTypes",
         "runDataTypesTuplesReference",
         "Source/Reference/DataTypes/Tuples.uv"
@@ -108,7 +108,7 @@ public procedure validatedConcreteDataTypesTuplesObligations() -> usize {
     }
     if acceptedObligationEntryMatches(
         "TupleScan-SingletonComma",
-        35524usize,
+        35572usize,
         "HelloUltraviolet::Reference::DataTypes",
         "runDataTypesTuplesReference",
         "Source/Reference/DataTypes/Tuples.uv"
@@ -117,33 +117,6 @@ public procedure validatedConcreteDataTypesTuplesObligations() -> usize {
     }
     if acceptedObligationEntryMatches(
         "TupleScan-Separator",
-        35541usize,
-        "HelloUltraviolet::Reference::DataTypes",
-        "runDataTypesTuplesReference",
-        "Source/Reference/DataTypes/Tuples.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
-        "TupleScan-Advance",
-        35558usize,
-        "HelloUltraviolet::Reference::DataTypes",
-        "runDataTypesTuplesReference",
-        "Source/Reference/DataTypes/Tuples.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
-        "def.TupleParen",
-        35575usize,
-        "HelloUltraviolet::Reference::DataTypes",
-        "runDataTypesTuplesReference",
-        "Source/Reference/DataTypes/Tuples.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
-        "Parse-Tuple-Literal",
         35589usize,
         "HelloUltraviolet::Reference::DataTypes",
         "runDataTypesTuplesReference",
@@ -152,8 +125,35 @@ public procedure validatedConcreteDataTypesTuplesObligations() -> usize {
         count = count + 1usize
     }
     if acceptedObligationEntryMatches(
+        "TupleScan-Advance",
+        35606usize,
+        "HelloUltraviolet::Reference::DataTypes",
+        "runDataTypesTuplesReference",
+        "Source/Reference/DataTypes/Tuples.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "def.TupleParen",
+        35623usize,
+        "HelloUltraviolet::Reference::DataTypes",
+        "runDataTypesTuplesReference",
+        "Source/Reference/DataTypes/Tuples.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "Parse-Tuple-Literal",
+        35637usize,
+        "HelloUltraviolet::Reference::DataTypes",
+        "runDataTypesTuplesReference",
+        "Source/Reference/DataTypes/Tuples.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
         "Parse-TupleExprElems-Empty",
-        35607usize,
+        35655usize,
         "HelloUltraviolet::Reference::DataTypes",
         "runDataTypesTuplesReference",
         "Source/Reference/DataTypes/Tuples.uv"
@@ -162,7 +162,7 @@ public procedure validatedConcreteDataTypesTuplesObligations() -> usize {
     }
     if acceptedObligationEntryMatches(
         "Parse-TupleExprElems-Single",
-        35625usize,
+        35673usize,
         "HelloUltraviolet::Reference::DataTypes",
         "runDataTypesTuplesReference",
         "Source/Reference/DataTypes/Tuples.uv"
@@ -171,7 +171,7 @@ public procedure validatedConcreteDataTypesTuplesObligations() -> usize {
     }
     if acceptedObligationEntryMatches(
         "Parse-TupleExprElems-Many",
-        35643usize,
+        35691usize,
         "HelloUltraviolet::Reference::DataTypes",
         "runDataTypesTuplesReference",
         "Source/Reference/DataTypes/Tuples.uv"
@@ -180,7 +180,7 @@ public procedure validatedConcreteDataTypesTuplesObligations() -> usize {
     }
     if acceptedObligationEntryMatches(
         "Postfix-TupleIndex",
-        35661usize,
+        35709usize,
         "HelloUltraviolet::Reference::DataTypes",
         "runDataTypesTuplesReference",
         "Source/Reference/DataTypes/Tuples.uv"
@@ -189,7 +189,7 @@ public procedure validatedConcreteDataTypesTuplesObligations() -> usize {
     }
     if acceptedObligationEntryMatches(
         "def.TupleTypeAst",
-        35679usize,
+        35727usize,
         "HelloUltraviolet::Reference::DataTypes",
         "runDataTypesTuplesReference",
         "Source/Reference/DataTypes/Tuples.uv"
@@ -198,7 +198,7 @@ public procedure validatedConcreteDataTypesTuplesObligations() -> usize {
     }
     if acceptedObligationEntryMatches(
         "def.TupleExpressionAst",
-        35695usize,
+        35743usize,
         "HelloUltraviolet::Reference::DataTypes",
         "runDataTypesTuplesReference",
         "Source/Reference/DataTypes/Tuples.uv"
@@ -207,7 +207,7 @@ public procedure validatedConcreteDataTypesTuplesObligations() -> usize {
     }
     if acceptedObligationEntryMatches(
         "def.TupleFields",
-        35710usize,
+        35758usize,
         "HelloUltraviolet::Reference::DataTypes",
         "runDataTypesTuplesReference",
         "Source/Reference/DataTypes/Tuples.uv"
@@ -216,7 +216,7 @@ public procedure validatedConcreteDataTypesTuplesObligations() -> usize {
     }
     if acceptedObligationEntryMatches(
         "WF-Tuple",
-        35726usize,
+        35774usize,
         "HelloUltraviolet::Reference::DataTypes",
         "runDataTypesTuplesReference",
         "Source/Reference/DataTypes/Tuples.uv"
@@ -225,7 +225,7 @@ public procedure validatedConcreteDataTypesTuplesObligations() -> usize {
     }
     if acceptedObligationEntryMatches(
         "T-Tuple-Unit",
-        35744usize,
+        35792usize,
         "HelloUltraviolet::Reference::DataTypes",
         "runDataTypesTuplesReference",
         "Source/Reference/DataTypes/Tuples.uv"
@@ -234,7 +234,7 @@ public procedure validatedConcreteDataTypesTuplesObligations() -> usize {
     }
     if acceptedObligationEntryMatches(
         "T-Tuple",
-        35761usize,
+        35809usize,
         "HelloUltraviolet::Reference::DataTypes",
         "runDataTypesTuplesReference",
         "Source/Reference/DataTypes/Tuples.uv"
@@ -243,7 +243,7 @@ public procedure validatedConcreteDataTypesTuplesObligations() -> usize {
     }
     if acceptedObligationEntryMatches(
         "T-Tuple-Index",
-        35779usize,
+        35827usize,
         "HelloUltraviolet::Reference::DataTypes",
         "runDataTypesTuplesReference",
         "Source/Reference/DataTypes/Tuples.uv"
@@ -252,7 +252,7 @@ public procedure validatedConcreteDataTypesTuplesObligations() -> usize {
     }
     if acceptedObligationEntryMatches(
         "T-Tuple-Index-Perm",
-        35797usize,
+        35845usize,
         "HelloUltraviolet::Reference::DataTypes",
         "runDataTypesTuplesReference",
         "Source/Reference/DataTypes/Tuples.uv"
@@ -261,7 +261,7 @@ public procedure validatedConcreteDataTypesTuplesObligations() -> usize {
     }
     if acceptedObligationEntryMatches(
         "P-Tuple-Index",
-        35815usize,
+        35863usize,
         "HelloUltraviolet::Reference::DataTypes",
         "runDataTypesTuplesReference",
         "Source/Reference/DataTypes/Tuples.uv"
@@ -270,7 +270,7 @@ public procedure validatedConcreteDataTypesTuplesObligations() -> usize {
     }
     if acceptedObligationEntryMatches(
         "P-Tuple-Index-Perm",
-        35833usize,
+        35881usize,
         "HelloUltraviolet::Reference::DataTypes",
         "runDataTypesTuplesReference",
         "Source/Reference/DataTypes/Tuples.uv"
@@ -279,7 +279,7 @@ public procedure validatedConcreteDataTypesTuplesObligations() -> usize {
     }
     if acceptedObligationEntryMatches(
         "def.ConstTupleIndex",
-        35851usize,
+        35899usize,
         "HelloUltraviolet::Reference::DataTypes",
         "runDataTypesTuplesReference",
         "Source/Reference/DataTypes/Tuples.uv"
@@ -288,7 +288,7 @@ public procedure validatedConcreteDataTypesTuplesObligations() -> usize {
     }
     if referenceModelObligationEntryMatches(
         "TupleIndex-NonConst",
-        35865usize,
+        35913usize,
         "HelloUltraviolet::Audit",
         "runSpecClarificationReferenceModels",
         "Source/Audit/SpecClarificationReferenceModels.uv"
@@ -297,7 +297,7 @@ public procedure validatedConcreteDataTypesTuplesObligations() -> usize {
     }
     if rejectedSourceObligationEntryMatches(
         "TupleIndex-OOB",
-        35883usize,
+        35934usize,
         "HelloUltraviolet::Audit::FixtureCatalog::RejectedSource",
         "validatedExpressionsRejectedSourceFixtureCount",
         "Fixtures/RejectedSource/Expressions/TupleIndexOutOfBounds/Source/Main.uv"
@@ -306,7 +306,7 @@ public procedure validatedConcreteDataTypesTuplesObligations() -> usize {
     }
     if rejectedSourceObligationEntryMatches(
         "TupleAccess-NotTuple",
-        35901usize,
+        35952usize,
         "HelloUltraviolet::Audit::FixtureCatalog::RejectedSource",
         "validatedExpressionsRejectedSourceFixtureCount",
         "Fixtures/RejectedSource/Expressions/TupleAccessNonTuple/Source/Main.uv"
@@ -315,7 +315,7 @@ public procedure validatedConcreteDataTypesTuplesObligations() -> usize {
     }
     if acceptedObligationEntryMatches(
         "req.TuplePatternRulesOwnership",
-        35919usize,
+        35970usize,
         "HelloUltraviolet::Reference::DataTypes",
         "runDataTypesTuplesReference",
         "Source/Reference/DataTypes/Tuples.uv"
@@ -324,7 +324,7 @@ public procedure validatedConcreteDataTypesTuplesObligations() -> usize {
     }
     if acceptedObligationEntryMatches(
         "def.TupleValueType",
-        35933usize,
+        35984usize,
         "HelloUltraviolet::Reference::DataTypes",
         "runDataTypesTuplesReference",
         "Source/Reference/DataTypes/Tuples.uv"
@@ -333,7 +333,7 @@ public procedure validatedConcreteDataTypesTuplesObligations() -> usize {
     }
     if acceptedObligationEntryMatches(
         "EvalSigma-Tuple",
-        35949usize,
+        36000usize,
         "HelloUltraviolet::Reference::DataTypes",
         "runDataTypesTuplesReference",
         "Source/Reference/DataTypes/Tuples.uv"
@@ -342,7 +342,7 @@ public procedure validatedConcreteDataTypesTuplesObligations() -> usize {
     }
     if acceptedObligationEntryMatches(
         "EvalSigma-Tuple-Ctrl",
-        35967usize,
+        36018usize,
         "HelloUltraviolet::Reference::DataTypes",
         "runDataTypesTuplesReference",
         "Source/Reference/DataTypes/Tuples.uv"
@@ -351,7 +351,7 @@ public procedure validatedConcreteDataTypesTuplesObligations() -> usize {
     }
     if acceptedObligationEntryMatches(
         "EvalSigma-TupleAccess",
-        35985usize,
+        36036usize,
         "HelloUltraviolet::Reference::DataTypes",
         "runDataTypesTuplesReference",
         "Source/Reference/DataTypes/Tuples.uv"
@@ -360,33 +360,6 @@ public procedure validatedConcreteDataTypesTuplesObligations() -> usize {
     }
     if acceptedObligationEntryMatches(
         "EvalSigma-TupleAccess-Ctrl",
-        36003usize,
-        "HelloUltraviolet::Reference::DataTypes",
-        "runDataTypesTuplesReference",
-        "Source/Reference/DataTypes/Tuples.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
-        "def.TupleLayoutJudgementSet",
-        36021usize,
-        "HelloUltraviolet::Reference::DataTypes",
-        "runDataTypesTuplesReference",
-        "Source/Reference/DataTypes/Tuples.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
-        "Layout-Tuple-Empty",
-        36037usize,
-        "HelloUltraviolet::Reference::DataTypes",
-        "runDataTypesTuplesReference",
-        "Source/Reference/DataTypes/Tuples.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
-        "Layout-Tuple-Cons",
         36054usize,
         "HelloUltraviolet::Reference::DataTypes",
         "runDataTypesTuplesReference",
@@ -395,7 +368,7 @@ public procedure validatedConcreteDataTypesTuplesObligations() -> usize {
         count = count + 1usize
     }
     if acceptedObligationEntryMatches(
-        "Size-Tuple",
+        "def.TupleLayoutJudgementSet",
         36072usize,
         "HelloUltraviolet::Reference::DataTypes",
         "runDataTypesTuplesReference",
@@ -404,8 +377,35 @@ public procedure validatedConcreteDataTypesTuplesObligations() -> usize {
         count = count + 1usize
     }
     if acceptedObligationEntryMatches(
+        "Layout-Tuple-Empty",
+        36088usize,
+        "HelloUltraviolet::Reference::DataTypes",
+        "runDataTypesTuplesReference",
+        "Source/Reference/DataTypes/Tuples.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "Layout-Tuple-Cons",
+        36105usize,
+        "HelloUltraviolet::Reference::DataTypes",
+        "runDataTypesTuplesReference",
+        "Source/Reference/DataTypes/Tuples.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "Size-Tuple",
+        36123usize,
+        "HelloUltraviolet::Reference::DataTypes",
+        "runDataTypesTuplesReference",
+        "Source/Reference/DataTypes/Tuples.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
         "Align-Tuple",
-        36090usize,
+        36141usize,
         "HelloUltraviolet::Reference::DataTypes",
         "runDataTypesTuplesReference",
         "Source/Reference/DataTypes/Tuples.uv"
@@ -414,7 +414,7 @@ public procedure validatedConcreteDataTypesTuplesObligations() -> usize {
     }
     if acceptedObligationEntryMatches(
         "Layout-Tuple",
-        36108usize,
+        36159usize,
         "HelloUltraviolet::Reference::DataTypes",
         "runDataTypesTuplesReference",
         "Source/Reference/DataTypes/Tuples.uv"
@@ -423,7 +423,7 @@ public procedure validatedConcreteDataTypesTuplesObligations() -> usize {
     }
     if acceptedObligationEntryMatches(
         "def.TupleValueBits",
-        36126usize,
+        36177usize,
         "HelloUltraviolet::Reference::DataTypes",
         "runDataTypesTuplesReference",
         "Source/Reference/DataTypes/Tuples.uv"
@@ -432,7 +432,7 @@ public procedure validatedConcreteDataTypesTuplesObligations() -> usize {
     }
     if acceptedObligationEntryMatches(
         "Lower-Expr-Tuple",
-        36140usize,
+        36191usize,
         "HelloUltraviolet::Reference::DataTypes",
         "runDataTypesTuplesReference",
         "Source/Reference/DataTypes/Tuples.uv"
@@ -441,7 +441,7 @@ public procedure validatedConcreteDataTypesTuplesObligations() -> usize {
     }
     if rejectedSourceObligationEntryMatches(
         "diagnostics.Tuples",
-        36158usize,
+        36209usize,
         "HelloUltraviolet::Audit::FixtureCatalog::RejectedSource",
         "validatedExpressionsRejectedSourceFixtureCount",
         "Fixtures/RejectedSource/Expressions/TupleIndexOutOfBounds/Source/Main.uv"

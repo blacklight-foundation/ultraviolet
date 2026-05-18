@@ -3372,5 +3372,6 @@ static const StaticRuleMeta kStaticRules[] = {
     {"WritePanicRecord", "CleanupJudg", std::nullopt, "05_codegen/cleanup/unwind.cpp", std::nullopt, false},
     {"ZeroableType", "TypeInfJudg", std::nullopt, "04_analysis/typing/type_predicates.cpp", std::nullopt, false},
     {"dispatchable", "DeclJudg", std::nullopt, "04_analysis/composite/classes.cpp", std::nullopt, false},
+    {"req.ElseContinuationAcrossNewline", "ParseJudgment", std::nullopt, "02_source/lexer/lexer.cpp", std::nullopt, false},
     {"vtable_eligible", "DeclJudg", std::nullopt, "04_analysis/composite/classes.cpp", std::nullopt, false},
 };

@@ -2,14 +2,14 @@
 
 
 public procedure countExpressionsEffectfulCoreExpressionsObligations() -> usize {
-    return 57usize
+    return 61usize
 }
 
 public procedure validatedExpressionsEffectfulCoreExpressionsObligations() -> usize {
     var count: usize = 0usize
     if acceptedObligationEntryMatches(
         "grammar.16.EffectfulCoreExpressions",
-        62754usize,
+        62894usize,
         "HelloUltraviolet::Reference::Expressions",
         "runExpressionsEffectfulCoreReference",
         "Source/Reference/Expressions/EffectfulCore.uv"
@@ -18,7 +18,7 @@ public procedure validatedExpressionsEffectfulCoreExpressionsObligations() -> us
     }
     if acceptedObligationEntryMatches(
         "req.16.RegionAliasAllocRewrite",
-        62774usize,
+        62915usize,
         "HelloUltraviolet::Reference::Expressions",
         "runExpressionsEffectfulCoreReference",
         "Source/Reference/Expressions/EffectfulCore.uv"
@@ -27,7 +27,7 @@ public procedure validatedExpressionsEffectfulCoreExpressionsObligations() -> us
     }
     if acceptedObligationEntryMatches(
         "rule.16.Parse-Unary-Deref",
-        62789usize,
+        62930usize,
         "HelloUltraviolet::Reference::Expressions",
         "runExpressionsEffectfulCoreReference",
         "Source/Reference/Expressions/EffectfulCore.uv"
@@ -36,7 +36,7 @@ public procedure validatedExpressionsEffectfulCoreExpressionsObligations() -> us
     }
     if acceptedObligationEntryMatches(
         "rule.16.Parse-Unary-AddressOf",
-        62805usize,
+        62946usize,
         "HelloUltraviolet::Reference::Expressions",
         "runExpressionsEffectfulCoreReference",
         "Source/Reference/Expressions/EffectfulCore.uv"
@@ -45,7 +45,16 @@ public procedure validatedExpressionsEffectfulCoreExpressionsObligations() -> us
     }
     if acceptedObligationEntryMatches(
         "rule.16.Parse-Unary-Move",
-        62821usize,
+        62962usize,
+        "HelloUltraviolet::Reference::Expressions",
+        "runExpressionsEffectfulCoreReference",
+        "Source/Reference/Expressions/EffectfulCore.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "rule.16.Parse-Unary-Copy",
+        62978usize,
         "HelloUltraviolet::Reference::Expressions",
         "runExpressionsEffectfulCoreReference",
         "Source/Reference/Expressions/EffectfulCore.uv"
@@ -54,7 +63,7 @@ public procedure validatedExpressionsEffectfulCoreExpressionsObligations() -> us
     }
     if acceptedObligationEntryMatches(
         "rule.16.Postfix-Propagate",
-        62837usize,
+        62994usize,
         "HelloUltraviolet::Reference::Expressions",
         "runExpressionsEffectfulCoreReference",
         "Source/Reference/Expressions/EffectfulCore.uv"
@@ -63,7 +72,7 @@ public procedure validatedExpressionsEffectfulCoreExpressionsObligations() -> us
     }
     if acceptedObligationEntryMatches(
         "rule.16.Parse-Alloc-Implicit",
-        62853usize,
+        63010usize,
         "HelloUltraviolet::Reference::Expressions",
         "runExpressionsEffectfulCoreReference",
         "Source/Reference/Expressions/EffectfulCore.uv"
@@ -72,7 +81,7 @@ public procedure validatedExpressionsEffectfulCoreExpressionsObligations() -> us
     }
     if acceptedObligationEntryMatches(
         "rule.16.Parse-Unsafe-Expr",
-        62869usize,
+        63026usize,
         "HelloUltraviolet::Reference::Expressions",
         "runExpressionsEffectfulCoreReference",
         "Source/Reference/Expressions/EffectfulCore.uv"
@@ -81,7 +90,7 @@ public procedure validatedExpressionsEffectfulCoreExpressionsObligations() -> us
     }
     if acceptedObligationEntryMatches(
         "def.16.EffectfulCoreExprAst",
-        62887usize,
+        63044usize,
         "HelloUltraviolet::Reference::Expressions",
         "runExpressionsEffectfulCoreReference",
         "Source/Reference/Expressions/EffectfulCore.uv"
@@ -90,7 +99,7 @@ public procedure validatedExpressionsEffectfulCoreExpressionsObligations() -> us
     }
     if acceptedObligationEntryMatches(
         "rule.16.ResolveExpr-Alloc-Explicit-ByAlias",
-        62900usize,
+        63057usize,
         "HelloUltraviolet::Reference::Expressions",
         "runExpressionsEffectfulCoreReference",
         "Source/Reference/Expressions/EffectfulCore.uv"
@@ -99,7 +108,7 @@ public procedure validatedExpressionsEffectfulCoreExpressionsObligations() -> us
     }
     if rejectedSourceObligationEntryMatches(
         "def.16.AddressOfStaticHelpers",
-        62919usize,
+        63076usize,
         "HelloUltraviolet::Audit::FixtureCatalog::RejectedSource",
         "validatedExpressionsRejectedSourceFixtureCount",
         "Fixtures/RejectedSource/Expressions/AddressOfStaticHelpers/Source/Main.uv"
@@ -108,7 +117,7 @@ public procedure validatedExpressionsEffectfulCoreExpressionsObligations() -> us
     }
     if acceptedObligationEntryMatches(
         "rule.16.T-Unsafe-Expr",
-        62934usize,
+        63091usize,
         "HelloUltraviolet::Reference::Expressions",
         "runExpressionsEffectfulCoreReference",
         "Source/Reference/Expressions/EffectfulCore.uv"
@@ -117,7 +126,7 @@ public procedure validatedExpressionsEffectfulCoreExpressionsObligations() -> us
     }
     if acceptedObligationEntryMatches(
         "rule.16.Chk-Unsafe-Expr",
-        62950usize,
+        63107usize,
         "HelloUltraviolet::Reference::Expressions",
         "runExpressionsEffectfulCoreReference",
         "Source/Reference/Expressions/EffectfulCore.uv"
@@ -126,7 +135,7 @@ public procedure validatedExpressionsEffectfulCoreExpressionsObligations() -> us
     }
     if rejectedSourceObligationEntryMatches(
         "rule.16.T-AddrOf",
-        62966usize,
+        63123usize,
         "HelloUltraviolet::Audit::FixtureCatalog::RejectedSource",
         "validatedExpressionsRejectedSourceFixtureCount",
         "Fixtures/RejectedSource/Expressions/AddressOfIndexTyping/Source/Main.uv"
@@ -135,7 +144,7 @@ public procedure validatedExpressionsEffectfulCoreExpressionsObligations() -> us
     }
     if acceptedObligationEntryMatches(
         "rule.16.T-Deref-Ptr",
-        62982usize,
+        63139usize,
         "HelloUltraviolet::Reference::Expressions",
         "runExpressionsEffectfulCoreReference",
         "Source/Reference/Expressions/EffectfulCore.uv"
@@ -144,7 +153,7 @@ public procedure validatedExpressionsEffectfulCoreExpressionsObligations() -> us
     }
     if rejectedSourceObligationEntryMatches(
         "rule.16.T-Deref-Raw",
-        62998usize,
+        63155usize,
         "HelloUltraviolet::Audit::FixtureCatalog::RejectedSource",
         "validatedExpressionsRejectedSourceFixtureCount",
         "Fixtures/RejectedSource/Expressions/RawDerefUnsafeRequirement/Source/Main.uv"
@@ -153,7 +162,7 @@ public procedure validatedExpressionsEffectfulCoreExpressionsObligations() -> us
     }
     if rejectedSourceObligationEntryMatches(
         "rule.16.DerefPlaceTypingFamily",
-        63014usize,
+        63171usize,
         "HelloUltraviolet::Audit::FixtureCatalog::RejectedSource",
         "validatedExpressionsRejectedSourceFixtureCount",
         "Fixtures/RejectedSource/Expressions/RawDerefPlaceTypingFamily/Source/Main.uv"
@@ -162,16 +171,25 @@ public procedure validatedExpressionsEffectfulCoreExpressionsObligations() -> us
     }
     if acceptedObligationEntryMatches(
         "rule.16.T-Move",
-        63027usize,
+        63184usize,
         "HelloUltraviolet::Reference::Expressions",
         "runExpressionsEffectfulCoreReference",
         "Source/Reference/Expressions/EffectfulCore.uv"
     ) {
         count = count + 1usize
     }
+    if rejectedSourceObligationEntryMatches(
+        "rule.16.T-Copy",
+        63200usize,
+        "HelloUltraviolet::Audit::FixtureCatalog::RejectedSource",
+        "validatedExpressionsRejectedSourceFixtureCount",
+        "Fixtures/RejectedSource/Expressions/CallCopyNonBitcopy/Source/Main.uv"
+    ) {
+        count = count + 1usize
+    }
     if acceptedObligationEntryMatches(
         "rule.16.T-Alloc-Explicit",
-        63043usize,
+        63216usize,
         "HelloUltraviolet::Reference::Expressions",
         "runExpressionsEffectfulCoreReference",
         "Source/Reference/Expressions/EffectfulCore.uv"
@@ -180,7 +198,7 @@ public procedure validatedExpressionsEffectfulCoreExpressionsObligations() -> us
     }
     if acceptedObligationEntryMatches(
         "rule.16.T-Alloc-Implicit",
-        63059usize,
+        63232usize,
         "HelloUltraviolet::Reference::Expressions",
         "runExpressionsEffectfulCoreReference",
         "Source/Reference/Expressions/EffectfulCore.uv"
@@ -189,7 +207,7 @@ public procedure validatedExpressionsEffectfulCoreExpressionsObligations() -> us
     }
     if acceptedObligationEntryMatches(
         "def.16.SuccessMember",
-        63075usize,
+        63248usize,
         "HelloUltraviolet::Reference::Expressions",
         "runExpressionsEffectfulCoreReference",
         "Source/Reference/Expressions/EffectfulCore.uv"
@@ -198,7 +216,7 @@ public procedure validatedExpressionsEffectfulCoreExpressionsObligations() -> us
     }
     if acceptedObligationEntryMatches(
         "rule.16.T-Propagate",
-        63088usize,
+        63261usize,
         "HelloUltraviolet::Reference::Expressions",
         "runExpressionsEffectfulCoreReference",
         "Source/Reference/Expressions/EffectfulCore.uv"
@@ -207,7 +225,7 @@ public procedure validatedExpressionsEffectfulCoreExpressionsObligations() -> us
     }
     if acceptedObligationEntryMatches(
         "def.16.SuccessMemberAsync",
-        63104usize,
+        63277usize,
         "HelloUltraviolet::Reference::Expressions",
         "runExpressionsEffectfulCoreReference",
         "Source/Reference/Expressions/EffectfulCore.uv"
@@ -216,7 +234,7 @@ public procedure validatedExpressionsEffectfulCoreExpressionsObligations() -> us
     }
     if acceptedObligationEntryMatches(
         "rule.16.T-Async-Try",
-        63117usize,
+        63290usize,
         "HelloUltraviolet::Reference::Expressions",
         "runExpressionsEffectfulCoreReference",
         "Source/Reference/Expressions/EffectfulCore.uv"
@@ -225,7 +243,7 @@ public procedure validatedExpressionsEffectfulCoreExpressionsObligations() -> us
     }
     if rejectedSourceObligationEntryMatches(
         "rule.16.Async-Try-Infallible-Err",
-        63133usize,
+        63306usize,
         "HelloUltraviolet::Audit::FixtureCatalog::RejectedSource",
         "validatedExpressionsRejectedSourceFixtureCount",
         "Fixtures/RejectedSource/Expressions/AsyncTryInfallible/Source/Main.uv"
@@ -234,7 +252,7 @@ public procedure validatedExpressionsEffectfulCoreExpressionsObligations() -> us
     }
     if acceptedObligationEntryMatches(
         "rule.16.EvalSigma-UnsafeBlock",
-        63151usize,
+        63324usize,
         "HelloUltraviolet::Reference::Expressions",
         "runExpressionsEffectfulCoreReference",
         "Source/Reference/Expressions/EffectfulCore.uv"
@@ -243,7 +261,7 @@ public procedure validatedExpressionsEffectfulCoreExpressionsObligations() -> us
     }
     if acceptedObligationEntryMatches(
         "rule.16.EvalSigma-AddressOf",
-        63167usize,
+        63340usize,
         "HelloUltraviolet::Reference::Expressions",
         "runExpressionsEffectfulCoreReference",
         "Source/Reference/Expressions/EffectfulCore.uv"
@@ -252,7 +270,7 @@ public procedure validatedExpressionsEffectfulCoreExpressionsObligations() -> us
     }
     if acceptedObligationEntryMatches(
         "rule.16.EvalSigma-Deref",
-        63183usize,
+        63356usize,
         "HelloUltraviolet::Reference::Expressions",
         "runExpressionsEffectfulCoreReference",
         "Source/Reference/Expressions/EffectfulCore.uv"
@@ -261,7 +279,16 @@ public procedure validatedExpressionsEffectfulCoreExpressionsObligations() -> us
     }
     if acceptedObligationEntryMatches(
         "rule.16.EvalSigma-Move",
-        63199usize,
+        63372usize,
+        "HelloUltraviolet::Reference::Expressions",
+        "runExpressionsEffectfulCoreReference",
+        "Source/Reference/Expressions/EffectfulCore.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "rule.16.EvalSigma-Copy",
+        63388usize,
         "HelloUltraviolet::Reference::Expressions",
         "runExpressionsEffectfulCoreReference",
         "Source/Reference/Expressions/EffectfulCore.uv"
@@ -270,7 +297,7 @@ public procedure validatedExpressionsEffectfulCoreExpressionsObligations() -> us
     }
     if acceptedObligationEntryMatches(
         "rule.16.EvalSigma-Alloc-Implicit",
-        63215usize,
+        63409usize,
         "HelloUltraviolet::Reference::Expressions",
         "runExpressionsEffectfulCoreReference",
         "Source/Reference/Expressions/EffectfulCore.uv"
@@ -279,7 +306,7 @@ public procedure validatedExpressionsEffectfulCoreExpressionsObligations() -> us
     }
     if acceptedObligationEntryMatches(
         "rule.16.EvalSigma-Alloc-Implicit-Ctrl",
-        63231usize,
+        63425usize,
         "HelloUltraviolet::Reference::Expressions",
         "runExpressionsEffectfulCoreReference",
         "Source/Reference/Expressions/EffectfulCore.uv"
@@ -288,7 +315,7 @@ public procedure validatedExpressionsEffectfulCoreExpressionsObligations() -> us
     }
     if acceptedObligationEntryMatches(
         "rule.16.EvalSigma-Alloc-Explicit",
-        63247usize,
+        63441usize,
         "HelloUltraviolet::Reference::Expressions",
         "runExpressionsEffectfulCoreReference",
         "Source/Reference/Expressions/EffectfulCore.uv"
@@ -297,7 +324,7 @@ public procedure validatedExpressionsEffectfulCoreExpressionsObligations() -> us
     }
     if acceptedObligationEntryMatches(
         "rule.16.EvalSigma-Alloc-Explicit-Ctrl",
-        63263usize,
+        63457usize,
         "HelloUltraviolet::Reference::Expressions",
         "runExpressionsEffectfulCoreReference",
         "Source/Reference/Expressions/EffectfulCore.uv"
@@ -306,7 +333,7 @@ public procedure validatedExpressionsEffectfulCoreExpressionsObligations() -> us
     }
     if acceptedObligationEntryMatches(
         "rule.16.EvalSigma-Propagate-Success",
-        63279usize,
+        63473usize,
         "HelloUltraviolet::Reference::Expressions",
         "runExpressionsEffectfulCoreReference",
         "Source/Reference/Expressions/EffectfulCore.uv"
@@ -315,7 +342,7 @@ public procedure validatedExpressionsEffectfulCoreExpressionsObligations() -> us
     }
     if acceptedObligationEntryMatches(
         "rule.16.EvalSigma-Propagate-Success-Async",
-        63295usize,
+        63489usize,
         "HelloUltraviolet::Reference::Expressions",
         "runExpressionsEffectfulCoreReference",
         "Source/Reference/Expressions/EffectfulCore.uv"
@@ -324,7 +351,7 @@ public procedure validatedExpressionsEffectfulCoreExpressionsObligations() -> us
     }
     if acceptedObligationEntryMatches(
         "rule.16.EvalSigma-Propagate-Error",
-        63311usize,
+        63505usize,
         "HelloUltraviolet::Reference::Expressions",
         "runExpressionsEffectfulCoreReference",
         "Source/Reference/Expressions/EffectfulCore.uv"
@@ -333,114 +360,6 @@ public procedure validatedExpressionsEffectfulCoreExpressionsObligations() -> us
     }
     if acceptedObligationEntryMatches(
         "rule.16.EvalSigma-Propagate-Error-Async",
-        63327usize,
-        "HelloUltraviolet::Reference::Expressions",
-        "runExpressionsEffectfulCoreReference",
-        "Source/Reference/Expressions/EffectfulCore.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
-        "rule.16.EvalSigma-Propagate-Ctrl",
-        63344usize,
-        "HelloUltraviolet::Reference::Expressions",
-        "runExpressionsEffectfulCoreReference",
-        "Source/Reference/Expressions/EffectfulCore.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
-        "def.16.ExprStateAndTerminalExpr",
-        63360usize,
-        "HelloUltraviolet::Reference::Expressions",
-        "runExpressionsEffectfulCoreReference",
-        "Source/Reference/Expressions/EffectfulCore.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
-        "rule.16.StepSigma-Pure",
-        63375usize,
-        "HelloUltraviolet::Reference::Expressions",
-        "runExpressionsEffectfulCoreReference",
-        "Source/Reference/Expressions/EffectfulCore.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
-        "rule.16.StepSigma-Alloc-Implicit",
-        63391usize,
-        "HelloUltraviolet::Reference::Expressions",
-        "runExpressionsEffectfulCoreReference",
-        "Source/Reference/Expressions/EffectfulCore.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
-        "rule.16.StepSigma-Alloc-Implicit-Ctrl",
-        63407usize,
-        "HelloUltraviolet::Reference::Expressions",
-        "runExpressionsEffectfulCoreReference",
-        "Source/Reference/Expressions/EffectfulCore.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
-        "rule.16.StepSigma-Alloc-Explicit",
-        63423usize,
-        "HelloUltraviolet::Reference::Expressions",
-        "runExpressionsEffectfulCoreReference",
-        "Source/Reference/Expressions/EffectfulCore.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
-        "rule.16.StepSigma-Alloc-Explicit-Ctrl",
-        63439usize,
-        "HelloUltraviolet::Reference::Expressions",
-        "runExpressionsEffectfulCoreReference",
-        "Source/Reference/Expressions/EffectfulCore.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
-        "rule.16.StepSigma-Block",
-        63455usize,
-        "HelloUltraviolet::Reference::Expressions",
-        "runExpressionsEffectfulCoreReference",
-        "Source/Reference/Expressions/EffectfulCore.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
-        "rule.16.StepSigma-UnsafeBlock",
-        63471usize,
-        "HelloUltraviolet::Reference::Expressions",
-        "runExpressionsEffectfulCoreReference",
-        "Source/Reference/Expressions/EffectfulCore.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
-        "rule.16.StepSigma-Loop",
-        63487usize,
-        "HelloUltraviolet::Reference::Expressions",
-        "runExpressionsEffectfulCoreReference",
-        "Source/Reference/Expressions/EffectfulCore.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
-        "rule.16.StepSigma-Stateful-Other",
-        63503usize,
-        "HelloUltraviolet::Reference::Expressions",
-        "runExpressionsEffectfulCoreReference",
-        "Source/Reference/Expressions/EffectfulCore.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
-        "rule.16.Lower-Expr-UnsafeBlock",
         63521usize,
         "HelloUltraviolet::Reference::Expressions",
         "runExpressionsEffectfulCoreReference",
@@ -449,8 +368,8 @@ public procedure validatedExpressionsEffectfulCoreExpressionsObligations() -> us
         count = count + 1usize
     }
     if acceptedObligationEntryMatches(
-        "rule.16.Lower-Expr-Move",
-        63537usize,
+        "rule.16.EvalSigma-Propagate-Ctrl",
+        63538usize,
         "HelloUltraviolet::Reference::Expressions",
         "runExpressionsEffectfulCoreReference",
         "Source/Reference/Expressions/EffectfulCore.uv"
@@ -458,8 +377,8 @@ public procedure validatedExpressionsEffectfulCoreExpressionsObligations() -> us
         count = count + 1usize
     }
     if acceptedObligationEntryMatches(
-        "rule.16.Lower-Expr-AddressOf",
-        63553usize,
+        "def.16.ExprStateAndTerminalExpr",
+        63554usize,
         "HelloUltraviolet::Reference::Expressions",
         "runExpressionsEffectfulCoreReference",
         "Source/Reference/Expressions/EffectfulCore.uv"
@@ -467,7 +386,7 @@ public procedure validatedExpressionsEffectfulCoreExpressionsObligations() -> us
         count = count + 1usize
     }
     if acceptedObligationEntryMatches(
-        "rule.16.Lower-Expr-Deref",
+        "rule.16.StepSigma-Pure",
         63569usize,
         "HelloUltraviolet::Reference::Expressions",
         "runExpressionsEffectfulCoreReference",
@@ -476,7 +395,7 @@ public procedure validatedExpressionsEffectfulCoreExpressionsObligations() -> us
         count = count + 1usize
     }
     if acceptedObligationEntryMatches(
-        "rule.16.Lower-Expr-Alloc",
+        "rule.16.StepSigma-Alloc-Implicit",
         63585usize,
         "HelloUltraviolet::Reference::Expressions",
         "runExpressionsEffectfulCoreReference",
@@ -485,7 +404,7 @@ public procedure validatedExpressionsEffectfulCoreExpressionsObligations() -> us
         count = count + 1usize
     }
     if acceptedObligationEntryMatches(
-        "rule.16.Lower-Expr-Propagate-Success",
+        "rule.16.StepSigma-Alloc-Implicit-Ctrl",
         63601usize,
         "HelloUltraviolet::Reference::Expressions",
         "runExpressionsEffectfulCoreReference",
@@ -494,7 +413,7 @@ public procedure validatedExpressionsEffectfulCoreExpressionsObligations() -> us
         count = count + 1usize
     }
     if acceptedObligationEntryMatches(
-        "rule.16.Lower-Expr-Propagate-Return",
+        "rule.16.StepSigma-Alloc-Explicit",
         63617usize,
         "HelloUltraviolet::Reference::Expressions",
         "runExpressionsEffectfulCoreReference",
@@ -503,8 +422,125 @@ public procedure validatedExpressionsEffectfulCoreExpressionsObligations() -> us
         count = count + 1usize
     }
     if acceptedObligationEntryMatches(
-        "req.16.EffectfulCoreLoweringMechanics",
+        "rule.16.StepSigma-Alloc-Explicit-Ctrl",
         63633usize,
+        "HelloUltraviolet::Reference::Expressions",
+        "runExpressionsEffectfulCoreReference",
+        "Source/Reference/Expressions/EffectfulCore.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "rule.16.StepSigma-Block",
+        63649usize,
+        "HelloUltraviolet::Reference::Expressions",
+        "runExpressionsEffectfulCoreReference",
+        "Source/Reference/Expressions/EffectfulCore.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "rule.16.StepSigma-UnsafeBlock",
+        63665usize,
+        "HelloUltraviolet::Reference::Expressions",
+        "runExpressionsEffectfulCoreReference",
+        "Source/Reference/Expressions/EffectfulCore.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "rule.16.StepSigma-Loop",
+        63681usize,
+        "HelloUltraviolet::Reference::Expressions",
+        "runExpressionsEffectfulCoreReference",
+        "Source/Reference/Expressions/EffectfulCore.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "rule.16.StepSigma-Stateful-Other",
+        63697usize,
+        "HelloUltraviolet::Reference::Expressions",
+        "runExpressionsEffectfulCoreReference",
+        "Source/Reference/Expressions/EffectfulCore.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "rule.16.Lower-Expr-UnsafeBlock",
+        63715usize,
+        "HelloUltraviolet::Reference::Expressions",
+        "runExpressionsEffectfulCoreReference",
+        "Source/Reference/Expressions/EffectfulCore.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "rule.16.Lower-Expr-Move",
+        63731usize,
+        "HelloUltraviolet::Reference::Expressions",
+        "runExpressionsEffectfulCoreReference",
+        "Source/Reference/Expressions/EffectfulCore.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "rule.16.Lower-Expr-Copy",
+        63747usize,
+        "HelloUltraviolet::Reference::Expressions",
+        "runExpressionsEffectfulCoreReference",
+        "Source/Reference/Expressions/EffectfulCore.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "rule.16.Lower-Expr-AddressOf",
+        63763usize,
+        "HelloUltraviolet::Reference::Expressions",
+        "runExpressionsEffectfulCoreReference",
+        "Source/Reference/Expressions/EffectfulCore.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "rule.16.Lower-Expr-Deref",
+        63779usize,
+        "HelloUltraviolet::Reference::Expressions",
+        "runExpressionsEffectfulCoreReference",
+        "Source/Reference/Expressions/EffectfulCore.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "rule.16.Lower-Expr-Alloc",
+        63795usize,
+        "HelloUltraviolet::Reference::Expressions",
+        "runExpressionsEffectfulCoreReference",
+        "Source/Reference/Expressions/EffectfulCore.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "rule.16.Lower-Expr-Propagate-Success",
+        63811usize,
+        "HelloUltraviolet::Reference::Expressions",
+        "runExpressionsEffectfulCoreReference",
+        "Source/Reference/Expressions/EffectfulCore.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "rule.16.Lower-Expr-Propagate-Return",
+        63827usize,
+        "HelloUltraviolet::Reference::Expressions",
+        "runExpressionsEffectfulCoreReference",
+        "Source/Reference/Expressions/EffectfulCore.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "req.16.EffectfulCoreLoweringMechanics",
+        63843usize,
         "HelloUltraviolet::Reference::Expressions",
         "runExpressionsEffectfulCoreReference",
         "Source/Reference/Expressions/EffectfulCore.uv"
@@ -513,7 +549,7 @@ public procedure validatedExpressionsEffectfulCoreExpressionsObligations() -> us
     }
     if rejectedSourceObligationEntryMatches(
         "diag.16.EffectfulCoreExpressions",
-        63648usize,
+        63858usize,
         "HelloUltraviolet::Audit::FixtureCatalog::RejectedSource",
         "validatedExpressionsRejectedSourceFixtureCount",
         "Fixtures/RejectedSource/Expressions/AllocImplicitNoRegion/Source/Main.uv"

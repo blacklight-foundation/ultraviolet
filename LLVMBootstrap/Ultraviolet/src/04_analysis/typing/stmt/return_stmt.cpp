@@ -16,6 +16,7 @@
 #include <memory>
 #include <optional>
 #include <string_view>
+#include <type_traits>
 
 #include "00_core/assert_spec.h"
 #include "00_core/span.h"
@@ -70,6 +71,32 @@ static ast::ExprPtr MakeExprNodeLocal(const core::Span& span,
 static ast::ExprPtr SubstituteResultEntry(const ast::ExprPtr& expr,
                                           const ast::ExprPtr& result_expr,
                                           const TypeEnv* env);
+
+static bool IsReturnMovePlace(const ast::ExprPtr& expr) {
+  if (!expr) {
+    return false;
+  }
+  return std::visit(
+      [&](const auto& node) -> bool {
+        using T = std::decay_t<decltype(node)>;
+        if constexpr (std::is_same_v<T, ast::IdentifierExpr>) {
+          return true;
+        } else if constexpr (std::is_same_v<T, ast::FieldAccessExpr>) {
+          return IsReturnMovePlace(node.base);
+        } else if constexpr (std::is_same_v<T, ast::TupleAccessExpr>) {
+          return IsReturnMovePlace(node.base);
+        } else if constexpr (std::is_same_v<T, ast::IndexAccessExpr>) {
+          return IsReturnMovePlace(node.base);
+        } else if constexpr (std::is_same_v<T, ast::DerefExpr>) {
+          return true;
+        } else if constexpr (std::is_same_v<T, ast::AttributedExpr>) {
+          return IsReturnMovePlace(node.expr);
+        } else {
+          return false;
+        }
+      },
+      expr->node);
+}
 
 static ExprTypeResult TypeExprWithCurrentEnv(const ScopeContext& ctx,
                                              const StmtTypeContext& type_ctx,
@@ -1120,7 +1147,7 @@ StmtTypeResult TypeReturnStmt(const ScopeContext& ctx,
         std::holds_alternative<ast::MoveExpr>(value->node)) {
       return value;
     }
-    if (!IsPlaceExprForCall(value)) {
+    if (!IsReturnMovePlace(value)) {
       return value;
     }
     auto out = std::make_shared<ast::Expr>();

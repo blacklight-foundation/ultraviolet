@@ -9,7 +9,7 @@ public procedure validatedPermissionsAndBindingStatePermissionFormsObligations()
     var count: usize = 0usize
     if acceptedObligationEntryMatches(
         "grammar.PermissionFormsSyntax",
-        28920usize,
+        28968usize,
         "HelloUltraviolet::Reference::Permissions",
         "runPermissionsPermissionFormsReference",
         "Source/Reference/Permissions/PermissionForms.uv"
@@ -18,7 +18,7 @@ public procedure validatedPermissionsAndBindingStatePermissionFormsObligations()
     }
     if acceptedObligationEntryMatches(
         "req.PermissionQualifierTypeGrammarPlacement",
-        28939usize,
+        28987usize,
         "HelloUltraviolet::Reference::Permissions",
         "runPermissionsPermissionFormsReference",
         "Source/Reference/Permissions/PermissionForms.uv"
@@ -27,33 +27,6 @@ public procedure validatedPermissionsAndBindingStatePermissionFormsObligations()
     }
     if acceptedObligationEntryMatches(
         "req.PermissionParserOwnership",
-        28955usize,
-        "HelloUltraviolet::Reference::Permissions",
-        "runPermissionsPermissionFormsReference",
-        "Source/Reference/Permissions/PermissionForms.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
-        "req.ParseReceiverCanonicalOwner",
-        28969usize,
-        "HelloUltraviolet::Reference::Permissions",
-        "runPermissionsPermissionFormsReference",
-        "Source/Reference/Permissions/PermissionForms.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
-        "def.PermissionAstForms",
-        28985usize,
-        "HelloUltraviolet::Reference::Permissions",
-        "runPermissionsPermissionFormsReference",
-        "Source/Reference/Permissions/PermissionForms.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
-        "def.PermissionQualifiedTypeAst",
         29003usize,
         "HelloUltraviolet::Reference::Permissions",
         "runPermissionsPermissionFormsReference",
@@ -62,8 +35,8 @@ public procedure validatedPermissionsAndBindingStatePermissionFormsObligations()
         count = count + 1usize
     }
     if acceptedObligationEntryMatches(
-        "def.PermissionQualifierSemantics",
-        29019usize,
+        "req.ParseReceiverCanonicalOwner",
+        29017usize,
         "HelloUltraviolet::Reference::Permissions",
         "runPermissionsPermissionFormsReference",
         "Source/Reference/Permissions/PermissionForms.uv"
@@ -71,7 +44,7 @@ public procedure validatedPermissionsAndBindingStatePermissionFormsObligations()
         count = count + 1usize
     }
     if acceptedObligationEntryMatches(
-        "req.PermissionRegimesDistinct",
+        "def.PermissionAstForms",
         29033usize,
         "HelloUltraviolet::Reference::Permissions",
         "runPermissionsPermissionFormsReference",
@@ -80,8 +53,8 @@ public procedure validatedPermissionsAndBindingStatePermissionFormsObligations()
         count = count + 1usize
     }
     if acceptedObligationEntryMatches(
-        "def.PermissionRegimeProperties",
-        29047usize,
+        "def.PermissionQualifiedTypeAst",
+        29051usize,
         "HelloUltraviolet::Reference::Permissions",
         "runPermissionsPermissionFormsReference",
         "Source/Reference/Permissions/PermissionForms.uv"
@@ -89,7 +62,7 @@ public procedure validatedPermissionsAndBindingStatePermissionFormsObligations()
         count = count + 1usize
     }
     if acceptedObligationEntryMatches(
-        "req.PermissionRegimeConstraints",
+        "def.PermissionQualifierSemantics",
         29067usize,
         "HelloUltraviolet::Reference::Permissions",
         "runPermissionsPermissionFormsReference",
@@ -98,8 +71,35 @@ public procedure validatedPermissionsAndBindingStatePermissionFormsObligations()
         count = count + 1usize
     }
     if acceptedObligationEntryMatches(
+        "req.PermissionRegimesDistinct",
+        29081usize,
+        "HelloUltraviolet::Reference::Permissions",
+        "runPermissionsPermissionFormsReference",
+        "Source/Reference/Permissions/PermissionForms.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "def.PermissionRegimeProperties",
+        29095usize,
+        "HelloUltraviolet::Reference::Permissions",
+        "runPermissionsPermissionFormsReference",
+        "Source/Reference/Permissions/PermissionForms.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "req.PermissionRegimeConstraints",
+        29115usize,
+        "HelloUltraviolet::Reference::Permissions",
+        "runPermissionsPermissionFormsReference",
+        "Source/Reference/Permissions/PermissionForms.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
         "def.SharedPermissionOperationMatrix",
-        29085usize,
+        29133usize,
         "HelloUltraviolet::Reference::Permissions",
         "runPermissionsPermissionFormsReference",
         "Source/Reference/Permissions/PermissionForms.uv"
@@ -108,7 +108,7 @@ public procedure validatedPermissionsAndBindingStatePermissionFormsObligations()
     }
     if acceptedObligationEntryMatches(
         "conformance.PermissionDynamicSemantics",
-        29109usize,
+        29157usize,
         "HelloUltraviolet::Reference::Permissions",
         "runPermissionsPermissionFormsReference",
         "Source/Reference/Permissions/PermissionForms.uv"
@@ -117,7 +117,7 @@ public procedure validatedPermissionsAndBindingStatePermissionFormsObligations()
     }
     if acceptedObligationEntryMatches(
         "conformance.PermissionLayoutNeutrality",
-        29129usize,
+        29177usize,
         "HelloUltraviolet::Reference::Permissions",
         "runPermissionsPermissionFormsReference",
         "Source/Reference/Permissions/PermissionForms.uv"
@@ -126,33 +126,6 @@ public procedure validatedPermissionsAndBindingStatePermissionFormsObligations()
     }
     if acceptedObligationEntryMatches(
         "Layout-Perm",
-        29143usize,
-        "HelloUltraviolet::Reference::Permissions",
-        "runPermissionsPermissionFormsReference",
-        "Source/Reference/Permissions/PermissionForms.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
-        "SizeOf-Perm",
-        29159usize,
-        "HelloUltraviolet::Reference::Permissions",
-        "runPermissionsPermissionFormsReference",
-        "Source/Reference/Permissions/PermissionForms.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
-        "AlignOf-Perm",
-        29175usize,
-        "HelloUltraviolet::Reference::Permissions",
-        "runPermissionsPermissionFormsReference",
-        "Source/Reference/Permissions/PermissionForms.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
-        "req.PermissionFormsLoweringDiagnostics",
         29191usize,
         "HelloUltraviolet::Reference::Permissions",
         "runPermissionsPermissionFormsReference",
@@ -161,8 +134,35 @@ public procedure validatedPermissionsAndBindingStatePermissionFormsObligations()
         count = count + 1usize
     }
     if acceptedObligationEntryMatches(
-        "req.PermissionFormsDiagnosticOwnership",
+        "SizeOf-Perm",
         29207usize,
+        "HelloUltraviolet::Reference::Permissions",
+        "runPermissionsPermissionFormsReference",
+        "Source/Reference/Permissions/PermissionForms.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "AlignOf-Perm",
+        29223usize,
+        "HelloUltraviolet::Reference::Permissions",
+        "runPermissionsPermissionFormsReference",
+        "Source/Reference/Permissions/PermissionForms.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "req.PermissionFormsLoweringDiagnostics",
+        29239usize,
+        "HelloUltraviolet::Reference::Permissions",
+        "runPermissionsPermissionFormsReference",
+        "Source/Reference/Permissions/PermissionForms.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "req.PermissionFormsDiagnosticOwnership",
+        29255usize,
         "HelloUltraviolet::Reference::Permissions",
         "runPermissionsPermissionFormsReference",
         "Source/Reference/Permissions/PermissionForms.uv"

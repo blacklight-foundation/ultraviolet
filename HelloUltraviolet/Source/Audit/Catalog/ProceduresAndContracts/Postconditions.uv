@@ -9,7 +9,7 @@ public procedure validatedProceduresAndContractsPostconditionsObligations() -> u
     var count: usize = 0usize
     if acceptedObligationEntryMatches(
         "grammar.15.Postconditions",
-        55681usize,
+        55795usize,
         "HelloUltraviolet::Reference::Procedures",
         "runProceduresPostconditionsReference",
         "Source/Reference/Procedures/Postconditions.uv"
@@ -18,7 +18,7 @@ public procedure validatedProceduresAndContractsPostconditionsObligations() -> u
     }
     if acceptedObligationEntryMatches(
         "rule.15.Parse-Contract-Result",
-        55699usize,
+        55813usize,
         "HelloUltraviolet::Reference::Procedures",
         "runProceduresPostconditionsReference",
         "Source/Reference/Procedures/Postconditions.uv"
@@ -27,7 +27,7 @@ public procedure validatedProceduresAndContractsPostconditionsObligations() -> u
     }
     if acceptedObligationEntryMatches(
         "rule.15.Parse-Contract-Entry",
-        55715usize,
+        55829usize,
         "HelloUltraviolet::Reference::Procedures",
         "runProceduresPostconditionsReference",
         "Source/Reference/Procedures/Postconditions.uv"
@@ -36,69 +36,6 @@ public procedure validatedProceduresAndContractsPostconditionsObligations() -> u
     }
     if acceptedObligationEntryMatches(
         "def.15.ContractIntrinsicAst",
-        55733usize,
-        "HelloUltraviolet::Reference::Procedures",
-        "runProceduresPostconditionsReference",
-        "Source/Reference/Procedures/Postconditions.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
-        "def.15.PostconditionOf",
-        55746usize,
-        "HelloUltraviolet::Reference::Procedures",
-        "runProceduresPostconditionsReference",
-        "Source/Reference/Procedures/Postconditions.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
-        "def.15.PostconditionProofContext",
-        55763usize,
-        "HelloUltraviolet::Reference::Procedures",
-        "runProceduresPostconditionsReference",
-        "Source/Reference/Procedures/Postconditions.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
-        "rule.15.Post-Valid",
-        55778usize,
-        "HelloUltraviolet::Reference::Procedures",
-        "runProceduresPostconditionsReference",
-        "Source/Reference/Procedures/Postconditions.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
-        "def.15.PostconditionElisionRules",
-        55794usize,
-        "HelloUltraviolet::Reference::Procedures",
-        "runProceduresPostconditionsReference",
-        "Source/Reference/Procedures/Postconditions.uv"
-    ) {
-        count = count + 1usize
-    }
-    if rejectedSourceObligationEntryMatches(
-        "req.15.ContractResultProperties",
-        55814usize,
-        "HelloUltraviolet::Audit::FixtureCatalog::RejectedSource",
-        "validatedProceduresRejectedSourceFixtureCount",
-        "Fixtures/RejectedSource/Procedures/ContractResultOutsidePostcondition/Source/Main.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
-        "rule.15.Result-Union-Type",
-        55831usize,
-        "HelloUltraviolet::Reference::Procedures",
-        "runProceduresPostconditionsReference",
-        "Source/Reference/Procedures/Postconditions.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
-        "rule.15.Result-Is-Predicate",
         55847usize,
         "HelloUltraviolet::Reference::Procedures",
         "runProceduresPostconditionsReference",
@@ -107,8 +44,71 @@ public procedure validatedProceduresAndContractsPostconditionsObligations() -> u
         count = count + 1usize
     }
     if acceptedObligationEntryMatches(
+        "def.15.PostconditionOf",
+        55860usize,
+        "HelloUltraviolet::Reference::Procedures",
+        "runProceduresPostconditionsReference",
+        "Source/Reference/Procedures/Postconditions.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "def.15.PostconditionProofContext",
+        55877usize,
+        "HelloUltraviolet::Reference::Procedures",
+        "runProceduresPostconditionsReference",
+        "Source/Reference/Procedures/Postconditions.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "rule.15.Post-Valid",
+        55892usize,
+        "HelloUltraviolet::Reference::Procedures",
+        "runProceduresPostconditionsReference",
+        "Source/Reference/Procedures/Postconditions.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "def.15.PostconditionElisionRules",
+        55908usize,
+        "HelloUltraviolet::Reference::Procedures",
+        "runProceduresPostconditionsReference",
+        "Source/Reference/Procedures/Postconditions.uv"
+    ) {
+        count = count + 1usize
+    }
+    if rejectedSourceObligationEntryMatches(
+        "req.15.ContractResultProperties",
+        55928usize,
+        "HelloUltraviolet::Audit::FixtureCatalog::RejectedSource",
+        "validatedProceduresRejectedSourceFixtureCount",
+        "Fixtures/RejectedSource/Procedures/ContractResultOutsidePostcondition/Source/Main.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "rule.15.Result-Union-Type",
+        55945usize,
+        "HelloUltraviolet::Reference::Procedures",
+        "runProceduresPostconditionsReference",
+        "Source/Reference/Procedures/Postconditions.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "rule.15.Result-Is-Predicate",
+        55961usize,
+        "HelloUltraviolet::Reference::Procedures",
+        "runProceduresPostconditionsReference",
+        "Source/Reference/Procedures/Postconditions.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
         "rule.15.Result-Narrowing",
-        55863usize,
+        55977usize,
         "HelloUltraviolet::Reference::Procedures",
         "runProceduresPostconditionsReference",
         "Source/Reference/Procedures/Postconditions.uv"
@@ -117,7 +117,7 @@ public procedure validatedProceduresAndContractsPostconditionsObligations() -> u
     }
     if acceptedObligationEntryMatches(
         "rule.15.Propagate-Postcondition",
-        55879usize,
+        55993usize,
         "HelloUltraviolet::Reference::Procedures",
         "runProceduresPostconditionsReference",
         "Source/Reference/Procedures/Postconditions.uv"
@@ -126,69 +126,6 @@ public procedure validatedProceduresAndContractsPostconditionsObligations() -> u
     }
     if acceptedObligationEntryMatches(
         "rule.15.Result-Modal",
-        55895usize,
-        "HelloUltraviolet::Reference::Procedures",
-        "runProceduresPostconditionsReference",
-        "Source/Reference/Procedures/Postconditions.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
-        "rule.15.Result-Generic",
-        55911usize,
-        "HelloUltraviolet::Reference::Procedures",
-        "runProceduresPostconditionsReference",
-        "Source/Reference/Procedures/Postconditions.uv"
-    ) {
-        count = count + 1usize
-    }
-    if rejectedSourceObligationEntryMatches(
-        "rule.15.Result-Generic-Constraint",
-        55927usize,
-        "HelloUltraviolet::Audit::FixtureCatalog::RejectedSource",
-        "validatedProceduresRejectedSourceFixtureCount",
-        "Fixtures/RejectedSource/Procedures/ResultGenericConstraint/Source/Main.uv"
-    ) {
-        count = count + 1usize
-    }
-    if rejectedSourceObligationEntryMatches(
-        "req.15.ContractEntryConstraints",
-        55943usize,
-        "HelloUltraviolet::Audit::FixtureCatalog::RejectedSource",
-        "validatedProceduresRejectedSourceFixtureCount",
-        "Fixtures/RejectedSource/Procedures/ContractEntryOutsidePostcondition/Source/Main.uv"
-    ) {
-        count = count + 1usize
-    }
-    if rejectedSourceObligationEntryMatches(
-        "rule.15.Entry-Type",
-        55961usize,
-        "HelloUltraviolet::Audit::FixtureCatalog::RejectedSource",
-        "validatedProceduresRejectedSourceFixtureCount",
-        "Fixtures/RejectedSource/Procedures/ContractEntryNonBitcopy/Source/Main.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
-        "req.15.PostconditionResultRuntimeBinding",
-        55979usize,
-        "HelloUltraviolet::Reference::Procedures",
-        "runProceduresPostconditionsReference",
-        "Source/Reference/Procedures/Postconditions.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
-        "req.15.ContractEntryRuntimeCapture",
-        55992usize,
-        "HelloUltraviolet::Reference::Procedures",
-        "runProceduresPostconditionsReference",
-        "Source/Reference/Procedures/Postconditions.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
-        "def.15.EntryCaptureTiming",
         56009usize,
         "HelloUltraviolet::Reference::Procedures",
         "runProceduresPostconditionsReference",
@@ -197,8 +134,71 @@ public procedure validatedProceduresAndContractsPostconditionsObligations() -> u
         count = count + 1usize
     }
     if acceptedObligationEntryMatches(
+        "rule.15.Result-Generic",
+        56025usize,
+        "HelloUltraviolet::Reference::Procedures",
+        "runProceduresPostconditionsReference",
+        "Source/Reference/Procedures/Postconditions.uv"
+    ) {
+        count = count + 1usize
+    }
+    if rejectedSourceObligationEntryMatches(
+        "rule.15.Result-Generic-Constraint",
+        56041usize,
+        "HelloUltraviolet::Audit::FixtureCatalog::RejectedSource",
+        "validatedProceduresRejectedSourceFixtureCount",
+        "Fixtures/RejectedSource/Procedures/ResultGenericConstraint/Source/Main.uv"
+    ) {
+        count = count + 1usize
+    }
+    if rejectedSourceObligationEntryMatches(
+        "req.15.ContractEntryConstraints",
+        56057usize,
+        "HelloUltraviolet::Audit::FixtureCatalog::RejectedSource",
+        "validatedProceduresRejectedSourceFixtureCount",
+        "Fixtures/RejectedSource/Procedures/ContractEntryOutsidePostcondition/Source/Main.uv"
+    ) {
+        count = count + 1usize
+    }
+    if rejectedSourceObligationEntryMatches(
+        "rule.15.Entry-Type",
+        56075usize,
+        "HelloUltraviolet::Audit::FixtureCatalog::RejectedSource",
+        "validatedProceduresRejectedSourceFixtureCount",
+        "Fixtures/RejectedSource/Procedures/ContractEntryNonBitcopy/Source/Main.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "req.15.PostconditionResultRuntimeBinding",
+        56093usize,
+        "HelloUltraviolet::Reference::Procedures",
+        "runProceduresPostconditionsReference",
+        "Source/Reference/Procedures/Postconditions.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "req.15.ContractEntryRuntimeCapture",
+        56106usize,
+        "HelloUltraviolet::Reference::Procedures",
+        "runProceduresPostconditionsReference",
+        "Source/Reference/Procedures/Postconditions.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "def.15.EntryCaptureTiming",
+        56123usize,
+        "HelloUltraviolet::Reference::Procedures",
+        "runProceduresPostconditionsReference",
+        "Source/Reference/Procedures/Postconditions.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
         "rule.15.EntryCapturePhase",
-        56029usize,
+        56143usize,
         "HelloUltraviolet::Reference::Procedures",
         "runProceduresPostconditionsReference",
         "Source/Reference/Procedures/Postconditions.uv"
@@ -207,7 +207,7 @@ public procedure validatedProceduresAndContractsPostconditionsObligations() -> u
     }
     if acceptedObligationEntryMatches(
         "def.15.EntryCaptureValue",
-        56046usize,
+        56160usize,
         "HelloUltraviolet::Reference::Procedures",
         "runProceduresPostconditionsReference",
         "Source/Reference/Procedures/Postconditions.uv"
@@ -216,7 +216,7 @@ public procedure validatedProceduresAndContractsPostconditionsObligations() -> u
     }
     if acceptedObligationEntryMatches(
         "req.15.PostconditionLoweringRepresentation",
-        56061usize,
+        56175usize,
         "HelloUltraviolet::Reference::Procedures",
         "runProceduresPostconditionsReference",
         "Source/Reference/Procedures/Postconditions.uv"
@@ -225,7 +225,7 @@ public procedure validatedProceduresAndContractsPostconditionsObligations() -> u
     }
     if rejectedSourceObligationEntryMatches(
         "diag.15.Postconditions",
-        56076usize,
+        56190usize,
         "HelloUltraviolet::Audit::FixtureCatalog::RejectedSource",
         "validatedProceduresRejectedSourceFixtureCount",
         "Fixtures/RejectedSource/Procedures/PostconditionsDiagnostic/Source/Main.uv"

@@ -45,10 +45,17 @@ public procedure runExpressionsIfControlReference() -> bool {
     } else {
         40
     }
+    let newline_else_value: i32 = if true {
+        50
+    }
+    else {
+        60
+    }
     let tailless_score: i32 = controlNoElseIfReference()
     let chained_value: i32 = controlElseIfReference(0)
     return true_value == 10 &&
         false_value == 40 &&
+        newline_else_value == 50 &&
         tailless_score == 3 &&
         chained_value == 2
 }
@@ -110,14 +117,11 @@ public procedure runExpressionsIfCaseControlReference() -> bool {
     }
 
     let left_to_right_result: i32 = if 1 is {
-        _ {
+        1 {
             11
         }
-        1 {
+        _ {
             99
-        }
-        else {
-            0
         }
     }
 

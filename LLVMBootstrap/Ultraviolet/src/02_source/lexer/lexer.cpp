@@ -96,6 +96,7 @@
 //     d. After non-unary operators: filter; `..` / `..=` additionally require
 //        the following token to begin an operand
 //     e. Before ., ::, ~>: filter (method chaining)
+//     f. Between } and else: filter (if/else continuation)
 //
 // =============================================================================
 // REFACTORING NOTES:
@@ -152,6 +153,10 @@ bool IsSuppressed(std::size_t index, const std::vector<ScalarRange>& ranges) {
 
 bool IsPunc(const Token& tok, std::string_view lexeme) {
   return tok.kind == TokenKind::Punctuator && tok.lexeme == lexeme;
+}
+
+bool IsKw(const Token& tok, std::string_view lexeme) {
+  return tok.kind == TokenKind::Keyword && tok.lexeme == lexeme;
 }
 
 bool Adjacent(const Token& left, const Token& right) {
@@ -344,6 +349,16 @@ bool ContinuesLineImpl(const std::vector<Token>& tokens,
       if (BeginsOperand(next)) {
         cont = true;
       }
+    }
+  }
+
+  if (!cont && ctx.prev_index[i] != static_cast<std::size_t>(-1) &&
+      ctx.next_index[i] != static_cast<std::size_t>(-1)) {
+    const Token& prev = tokens[ctx.prev_index[i]];
+    const Token& next = tokens[ctx.next_index[i]];
+    if (IsPunc(prev, "}") && IsKw(next, "else")) {
+      SPEC_RULE("req.ElseContinuationAcrossNewline");
+      cont = true;
     }
   }
 

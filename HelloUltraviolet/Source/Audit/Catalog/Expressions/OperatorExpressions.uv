@@ -9,7 +9,7 @@ public procedure validatedExpressionsOperatorExpressionsObligations() -> usize {
     var count: usize = 0usize
     if acceptedObligationEntryMatches(
         "grammar.16.OperatorExpressions",
-        59651usize,
+        59786usize,
         "HelloUltraviolet::Reference::Expressions",
         "runExpressionsOperatorsReference",
         "Source/Reference/Expressions/Operators.uv"
@@ -18,87 +18,6 @@ public procedure validatedExpressionsOperatorExpressionsObligations() -> usize {
     }
     if acceptedObligationEntryMatches(
         "req.16.OperatorPrefixSyntaxOwnership",
-        59682usize,
-        "HelloUltraviolet::Reference::Expressions",
-        "runExpressionsOperatorsReference",
-        "Source/Reference/Expressions/Operators.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
-        "rule.16.ParseRangeFamily",
-        59697usize,
-        "HelloUltraviolet::Reference::Expressions",
-        "runExpressionsOperatorsReference",
-        "Source/Reference/Expressions/Operators.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
-        "rule.16.ParseLeftChainFamily",
-        59710usize,
-        "HelloUltraviolet::Reference::Expressions",
-        "runExpressionsOperatorsReference",
-        "Source/Reference/Expressions/Operators.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
-        "rule.16.ParsePowerFamily",
-        59723usize,
-        "HelloUltraviolet::Reference::Expressions",
-        "runExpressionsOperatorsReference",
-        "Source/Reference/Expressions/Operators.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
-        "rule.16.Parse-Unary-Prefix",
-        59736usize,
-        "HelloUltraviolet::Reference::Expressions",
-        "runExpressionsOperatorsReference",
-        "Source/Reference/Expressions/Operators.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
-        "def.16.RangeAndOperatorExprAst",
-        59754usize,
-        "HelloUltraviolet::Reference::Expressions",
-        "runExpressionsOperatorsReference",
-        "Source/Reference/Expressions/Operators.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
-        "def.16.OperatorSets",
-        59768usize,
-        "HelloUltraviolet::Reference::Expressions",
-        "runExpressionsOperatorsReference",
-        "Source/Reference/Expressions/Operators.uv"
-    ) {
-        count = count + 1usize
-    }
-    if rejectedSourceObligationEntryMatches(
-        "def.16.OperatorStaticTypes",
-        59786usize,
-        "HelloUltraviolet::Audit::FixtureCatalog::RejectedSource",
-        "validatedExpressionsRejectedSourceFixtureCount",
-        "Fixtures/RejectedSource/Expressions/OperatorStaticTypes/Source/Main.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
-        "rule.16.T-Range-Lift",
-        59801usize,
-        "HelloUltraviolet::Reference::Expressions",
-        "runExpressionsOperatorsReference",
-        "Source/Reference/Expressions/Operators.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
-        "rule.16.RangeTypingFamily",
         59817usize,
         "HelloUltraviolet::Reference::Expressions",
         "runExpressionsOperatorsReference",
@@ -107,8 +26,89 @@ public procedure validatedExpressionsOperatorExpressionsObligations() -> usize {
         count = count + 1usize
     }
     if acceptedObligationEntryMatches(
+        "rule.16.ParseRangeFamily",
+        59832usize,
+        "HelloUltraviolet::Reference::Expressions",
+        "runExpressionsOperatorsReference",
+        "Source/Reference/Expressions/Operators.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "rule.16.ParseLeftChainFamily",
+        59845usize,
+        "HelloUltraviolet::Reference::Expressions",
+        "runExpressionsOperatorsReference",
+        "Source/Reference/Expressions/Operators.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "rule.16.ParsePowerFamily",
+        59858usize,
+        "HelloUltraviolet::Reference::Expressions",
+        "runExpressionsOperatorsReference",
+        "Source/Reference/Expressions/Operators.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "rule.16.Parse-Unary-Prefix",
+        59871usize,
+        "HelloUltraviolet::Reference::Expressions",
+        "runExpressionsOperatorsReference",
+        "Source/Reference/Expressions/Operators.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "def.16.RangeAndOperatorExprAst",
+        59889usize,
+        "HelloUltraviolet::Reference::Expressions",
+        "runExpressionsOperatorsReference",
+        "Source/Reference/Expressions/Operators.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "def.16.OperatorSets",
+        59903usize,
+        "HelloUltraviolet::Reference::Expressions",
+        "runExpressionsOperatorsReference",
+        "Source/Reference/Expressions/Operators.uv"
+    ) {
+        count = count + 1usize
+    }
+    if rejectedSourceObligationEntryMatches(
+        "def.16.OperatorStaticTypes",
+        59921usize,
+        "HelloUltraviolet::Audit::FixtureCatalog::RejectedSource",
+        "validatedExpressionsRejectedSourceFixtureCount",
+        "Fixtures/RejectedSource/Expressions/OperatorStaticTypes/Source/Main.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "rule.16.T-Range-Lift",
+        59936usize,
+        "HelloUltraviolet::Reference::Expressions",
+        "runExpressionsOperatorsReference",
+        "Source/Reference/Expressions/Operators.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "rule.16.RangeTypingFamily",
+        59952usize,
+        "HelloUltraviolet::Reference::Expressions",
+        "runExpressionsOperatorsReference",
+        "Source/Reference/Expressions/Operators.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
         "rule.16.T-Not-Bool",
-        59830usize,
+        59965usize,
         "HelloUltraviolet::Reference::Expressions",
         "runExpressionsOperatorsReference",
         "Source/Reference/Expressions/Operators.uv"
@@ -117,7 +117,7 @@ public procedure validatedExpressionsOperatorExpressionsObligations() -> usize {
     }
     if acceptedObligationEntryMatches(
         "rule.16.T-Not-Int",
-        59846usize,
+        59981usize,
         "HelloUltraviolet::Reference::Expressions",
         "runExpressionsOperatorsReference",
         "Source/Reference/Expressions/Operators.uv"
@@ -126,7 +126,7 @@ public procedure validatedExpressionsOperatorExpressionsObligations() -> usize {
     }
     if acceptedObligationEntryMatches(
         "rule.16.T-Neg",
-        59862usize,
+        59997usize,
         "HelloUltraviolet::Reference::Expressions",
         "runExpressionsOperatorsReference",
         "Source/Reference/Expressions/Operators.uv"
@@ -135,7 +135,7 @@ public procedure validatedExpressionsOperatorExpressionsObligations() -> usize {
     }
     if acceptedObligationEntryMatches(
         "rule.16.T-Arith",
-        59878usize,
+        60013usize,
         "HelloUltraviolet::Reference::Expressions",
         "runExpressionsOperatorsReference",
         "Source/Reference/Expressions/Operators.uv"
@@ -144,7 +144,7 @@ public procedure validatedExpressionsOperatorExpressionsObligations() -> usize {
     }
     if acceptedObligationEntryMatches(
         "rule.16.T-Bitwise",
-        59894usize,
+        60029usize,
         "HelloUltraviolet::Reference::Expressions",
         "runExpressionsOperatorsReference",
         "Source/Reference/Expressions/Operators.uv"
@@ -153,7 +153,7 @@ public procedure validatedExpressionsOperatorExpressionsObligations() -> usize {
     }
     if acceptedObligationEntryMatches(
         "rule.16.T-Shift",
-        59910usize,
+        60045usize,
         "HelloUltraviolet::Reference::Expressions",
         "runExpressionsOperatorsReference",
         "Source/Reference/Expressions/Operators.uv"
@@ -162,7 +162,7 @@ public procedure validatedExpressionsOperatorExpressionsObligations() -> usize {
     }
     if acceptedObligationEntryMatches(
         "rule.16.T-Compare-Eq",
-        59926usize,
+        60061usize,
         "HelloUltraviolet::Reference::Expressions",
         "runExpressionsOperatorsReference",
         "Source/Reference/Expressions/Operators.uv"
@@ -171,7 +171,7 @@ public procedure validatedExpressionsOperatorExpressionsObligations() -> usize {
     }
     if acceptedObligationEntryMatches(
         "rule.16.T-Compare-Ord",
-        59942usize,
+        60077usize,
         "HelloUltraviolet::Reference::Expressions",
         "runExpressionsOperatorsReference",
         "Source/Reference/Expressions/Operators.uv"
@@ -180,7 +180,7 @@ public procedure validatedExpressionsOperatorExpressionsObligations() -> usize {
     }
     if acceptedObligationEntryMatches(
         "rule.16.T-Logical",
-        59958usize,
+        60093usize,
         "HelloUltraviolet::Reference::Expressions",
         "runExpressionsOperatorsReference",
         "Source/Reference/Expressions/Operators.uv"
@@ -189,7 +189,7 @@ public procedure validatedExpressionsOperatorExpressionsObligations() -> usize {
     }
     if acceptedObligationEntryMatches(
         "def.16.OperatorRuntimeJudgementsAndValuePredicates",
-        59976usize,
+        60111usize,
         "HelloUltraviolet::Reference::Expressions",
         "runExpressionsOperatorsReference",
         "Source/Reference/Expressions/Operators.uv"
@@ -198,7 +198,7 @@ public procedure validatedExpressionsOperatorExpressionsObligations() -> usize {
     }
     if acceptedObligationEntryMatches(
         "def.16.OperatorComparisonRuntime",
-        59998usize,
+        60133usize,
         "HelloUltraviolet::Reference::Expressions",
         "runExpressionsOperatorsReference",
         "Source/Reference/Expressions/Operators.uv"
@@ -207,7 +207,7 @@ public procedure validatedExpressionsOperatorExpressionsObligations() -> usize {
     }
     if acceptedObligationEntryMatches(
         "def.16.OperatorBitShiftArithmeticRuntime",
-        60018usize,
+        60153usize,
         "HelloUltraviolet::Reference::Expressions",
         "runExpressionsOperatorsReference",
         "Source/Reference/Expressions/Operators.uv"
@@ -216,7 +216,7 @@ public procedure validatedExpressionsOperatorExpressionsObligations() -> usize {
     }
     if acceptedObligationEntryMatches(
         "def.16.UnaryOperatorRuntime",
-        60038usize,
+        60173usize,
         "HelloUltraviolet::Reference::Expressions",
         "runExpressionsOperatorsReference",
         "Source/Reference/Expressions/Operators.uv"
@@ -225,7 +225,7 @@ public procedure validatedExpressionsOperatorExpressionsObligations() -> usize {
     }
     if acceptedObligationEntryMatches(
         "req.16.FloatUnaryNegationTotality",
-        60056usize,
+        60191usize,
         "HelloUltraviolet::Reference::Expressions",
         "runExpressionsOperatorsReference",
         "Source/Reference/Expressions/Operators.uv"
@@ -234,7 +234,7 @@ public procedure validatedExpressionsOperatorExpressionsObligations() -> usize {
     }
     if acceptedObligationEntryMatches(
         "def.16.BinaryOperatorRuntime",
-        60069usize,
+        60204usize,
         "HelloUltraviolet::Reference::Expressions",
         "runExpressionsOperatorsReference",
         "Source/Reference/Expressions/Operators.uv"
@@ -243,7 +243,7 @@ public procedure validatedExpressionsOperatorExpressionsObligations() -> usize {
     }
     if acceptedObligationEntryMatches(
         "rule.16.EvalSigma-Range",
-        60090usize,
+        60225usize,
         "HelloUltraviolet::Reference::Expressions",
         "runExpressionsOperatorsReference",
         "Source/Reference/Expressions/Operators.uv"
@@ -252,7 +252,7 @@ public procedure validatedExpressionsOperatorExpressionsObligations() -> usize {
     }
     if acceptedObligationEntryMatches(
         "rule.16.EvalSigma-Unary",
-        60106usize,
+        60241usize,
         "HelloUltraviolet::Reference::Expressions",
         "runExpressionsOperatorsReference",
         "Source/Reference/Expressions/Operators.uv"
@@ -261,7 +261,7 @@ public procedure validatedExpressionsOperatorExpressionsObligations() -> usize {
     }
     if acceptedObligationEntryMatches(
         "rule.16.EvalSigma-Bin-And-False",
-        60122usize,
+        60257usize,
         "HelloUltraviolet::Reference::Expressions",
         "runExpressionsOperatorsReference",
         "Source/Reference/Expressions/Operators.uv"
@@ -270,7 +270,7 @@ public procedure validatedExpressionsOperatorExpressionsObligations() -> usize {
     }
     if acceptedObligationEntryMatches(
         "rule.16.EvalSigma-Bin-And-True",
-        60138usize,
+        60273usize,
         "HelloUltraviolet::Reference::Expressions",
         "runExpressionsOperatorsReference",
         "Source/Reference/Expressions/Operators.uv"
@@ -279,7 +279,7 @@ public procedure validatedExpressionsOperatorExpressionsObligations() -> usize {
     }
     if acceptedObligationEntryMatches(
         "rule.16.EvalSigma-Bin-Or-True",
-        60154usize,
+        60289usize,
         "HelloUltraviolet::Reference::Expressions",
         "runExpressionsOperatorsReference",
         "Source/Reference/Expressions/Operators.uv"
@@ -288,7 +288,7 @@ public procedure validatedExpressionsOperatorExpressionsObligations() -> usize {
     }
     if acceptedObligationEntryMatches(
         "rule.16.EvalSigma-Bin-Or-False",
-        60170usize,
+        60305usize,
         "HelloUltraviolet::Reference::Expressions",
         "runExpressionsOperatorsReference",
         "Source/Reference/Expressions/Operators.uv"
@@ -297,7 +297,7 @@ public procedure validatedExpressionsOperatorExpressionsObligations() -> usize {
     }
     if acceptedObligationEntryMatches(
         "rule.16.EvalSigma-Binary",
-        60186usize,
+        60321usize,
         "HelloUltraviolet::Reference::Expressions",
         "runExpressionsOperatorsReference",
         "Source/Reference/Expressions/Operators.uv"
@@ -306,7 +306,7 @@ public procedure validatedExpressionsOperatorExpressionsObligations() -> usize {
     }
     if acceptedObligationEntryMatches(
         "req.16.OperatorUndefinedAndNaNBehavior",
-        60202usize,
+        60337usize,
         "HelloUltraviolet::Reference::Expressions",
         "runExpressionsOperatorsReference",
         "Source/Reference/Expressions/Operators.uv"
@@ -315,7 +315,7 @@ public procedure validatedExpressionsOperatorExpressionsObligations() -> usize {
     }
     if acceptedObligationEntryMatches(
         "rule.16.Lower-Expr-Unary",
-        60217usize,
+        60352usize,
         "HelloUltraviolet::Reference::Expressions",
         "runExpressionsOperatorsReference",
         "Source/Reference/Expressions/Operators.uv"
@@ -324,7 +324,7 @@ public procedure validatedExpressionsOperatorExpressionsObligations() -> usize {
     }
     if acceptedObligationEntryMatches(
         "rule.16.Lower-Expr-Bin-And",
-        60233usize,
+        60368usize,
         "HelloUltraviolet::Reference::Expressions",
         "runExpressionsOperatorsReference",
         "Source/Reference/Expressions/Operators.uv"
@@ -333,7 +333,7 @@ public procedure validatedExpressionsOperatorExpressionsObligations() -> usize {
     }
     if acceptedObligationEntryMatches(
         "rule.16.Lower-Expr-Bin-Or",
-        60249usize,
+        60384usize,
         "HelloUltraviolet::Reference::Expressions",
         "runExpressionsOperatorsReference",
         "Source/Reference/Expressions/Operators.uv"
@@ -342,7 +342,7 @@ public procedure validatedExpressionsOperatorExpressionsObligations() -> usize {
     }
     if acceptedObligationEntryMatches(
         "rule.16.Lower-Expr-Binary",
-        60265usize,
+        60400usize,
         "HelloUltraviolet::Reference::Expressions",
         "runExpressionsOperatorsReference",
         "Source/Reference/Expressions/Operators.uv"
@@ -351,7 +351,7 @@ public procedure validatedExpressionsOperatorExpressionsObligations() -> usize {
     }
     if acceptedObligationEntryMatches(
         "rule.16.Lower-Expr-Range",
-        60281usize,
+        60416usize,
         "HelloUltraviolet::Reference::Expressions",
         "runExpressionsOperatorsReference",
         "Source/Reference/Expressions/Operators.uv"
@@ -360,7 +360,7 @@ public procedure validatedExpressionsOperatorExpressionsObligations() -> usize {
     }
     if acceptedObligationEntryMatches(
         "def.16.UnaryOperatorLoweringPanicCheck",
-        60297usize,
+        60432usize,
         "HelloUltraviolet::Reference::Expressions",
         "runExpressionsOperatorsReference",
         "Source/Reference/Expressions/Operators.uv"
@@ -369,7 +369,7 @@ public procedure validatedExpressionsOperatorExpressionsObligations() -> usize {
     }
     if acceptedObligationEntryMatches(
         "rule.16.Lower-UnOp-Ok",
-        60311usize,
+        60446usize,
         "HelloUltraviolet::Reference::Expressions",
         "runExpressionsOperatorsReference",
         "Source/Reference/Expressions/Operators.uv"
@@ -378,7 +378,7 @@ public procedure validatedExpressionsOperatorExpressionsObligations() -> usize {
     }
     if acceptedObligationEntryMatches(
         "rule.16.Lower-UnOp-Panic",
-        60327usize,
+        60462usize,
         "HelloUltraviolet::Reference::Expressions",
         "runExpressionsOperatorsReference",
         "Source/Reference/Expressions/Operators.uv"
@@ -387,7 +387,7 @@ public procedure validatedExpressionsOperatorExpressionsObligations() -> usize {
     }
     if acceptedObligationEntryMatches(
         "req.16.UnaryNegationLoweringOverflowChecks",
-        60343usize,
+        60478usize,
         "HelloUltraviolet::Reference::Expressions",
         "runExpressionsOperatorsReference",
         "Source/Reference/Expressions/Operators.uv"
@@ -396,7 +396,7 @@ public procedure validatedExpressionsOperatorExpressionsObligations() -> usize {
     }
     if acceptedObligationEntryMatches(
         "rule.16.LowerBinaryAndRangeRemainderFamily",
-        60356usize,
+        60491usize,
         "HelloUltraviolet::Reference::Expressions",
         "runExpressionsOperatorsReference",
         "Source/Reference/Expressions/Operators.uv"
@@ -405,7 +405,7 @@ public procedure validatedExpressionsOperatorExpressionsObligations() -> usize {
     }
     if rejectedSourceObligationEntryMatches(
         "diag.16.OperatorExpressions",
-        60371usize,
+        60506usize,
         "HelloUltraviolet::Audit::FixtureCatalog::RejectedSource",
         "validatedExpressionsRejectedSourceFixtureCount",
         "Fixtures/RejectedSource/Expressions/OperatorOperandMismatch/Source/Main.uv"

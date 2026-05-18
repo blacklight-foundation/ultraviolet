@@ -2,139 +2,13 @@
 
 
 public procedure countCommonLoweringProgramLifecycleAndBackendLayoutAndAbiFrameworkObligations() -> usize {
-    return 75usize
+    return 74usize
 }
 
 public procedure validatedCommonLoweringProgramLifecycleAndBackendLayoutAndAbiFrameworkObligations() -> usize {
     var count: usize = 0usize
     if acceptedObligationEntryMatches(
         "def.24.PointerPrimitiveSizeAndAlignment",
-        91163usize,
-        "HelloUltraviolet::Reference::Lowering",
-        "runLoweringLayoutAndABIReference",
-        "Source/Reference/Lowering/LayoutAndABI.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
-        "def.24.LayoutJudgements",
-        91218usize,
-        "HelloUltraviolet::Reference::Lowering",
-        "runLoweringLayoutAndABIReference",
-        "Source/Reference/Lowering/LayoutAndABI.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
-        "rule.24.Size-Prim",
-        91231usize,
-        "HelloUltraviolet::Reference::Lowering",
-        "runLoweringLayoutAndABIReference",
-        "Source/Reference/Lowering/LayoutAndABI.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
-        "rule.24.Align-Prim",
-        91247usize,
-        "HelloUltraviolet::Reference::Lowering",
-        "runLoweringLayoutAndABIReference",
-        "Source/Reference/Lowering/LayoutAndABI.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
-        "rule.24.Layout-Prim",
-        91263usize,
-        "HelloUltraviolet::Reference::Lowering",
-        "runLoweringLayoutAndABIReference",
-        "Source/Reference/Lowering/LayoutAndABI.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
-        "def.24.ConstantEncodingHelpers",
-        91279usize,
-        "HelloUltraviolet::Reference::Lowering",
-        "runLoweringLayoutAndABIReference",
-        "Source/Reference/Lowering/LayoutAndABI.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
-        "rule.24.Encode-Bool",
-        91296usize,
-        "HelloUltraviolet::Reference::Lowering",
-        "runLoweringLayoutAndABIReference",
-        "Source/Reference/Lowering/LayoutAndABI.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
-        "rule.24.Encode-Char",
-        91312usize,
-        "HelloUltraviolet::Reference::Lowering",
-        "runLoweringLayoutAndABIReference",
-        "Source/Reference/Lowering/LayoutAndABI.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
-        "rule.24.Encode-Int",
-        91328usize,
-        "HelloUltraviolet::Reference::Lowering",
-        "runLoweringLayoutAndABIReference",
-        "Source/Reference/Lowering/LayoutAndABI.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
-        "rule.24.Encode-Float",
-        91344usize,
-        "HelloUltraviolet::Reference::Lowering",
-        "runLoweringLayoutAndABIReference",
-        "Source/Reference/Lowering/LayoutAndABI.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
-        "rule.24.Encode-Unit",
-        91360usize,
-        "HelloUltraviolet::Reference::Lowering",
-        "runLoweringLayoutAndABIReference",
-        "Source/Reference/Lowering/LayoutAndABI.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
-        "rule.24.Encode-Never",
-        91376usize,
-        "HelloUltraviolet::Reference::Lowering",
-        "runLoweringLayoutAndABIReference",
-        "Source/Reference/Lowering/LayoutAndABI.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
-        "rule.24.Encode-RawPtr-Null",
-        91392usize,
-        "HelloUltraviolet::Reference::Lowering",
-        "runLoweringLayoutAndABIReference",
-        "Source/Reference/Lowering/LayoutAndABI.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
-        "def.24.ValidValueJudgement",
-        91408usize,
-        "HelloUltraviolet::Reference::Lowering",
-        "runLoweringLayoutAndABIReference",
-        "Source/Reference/Lowering/LayoutAndABI.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
-        "rule.24.Valid-Bool",
         91421usize,
         "HelloUltraviolet::Reference::Lowering",
         "runLoweringLayoutAndABIReference",
@@ -143,8 +17,134 @@ public procedure validatedCommonLoweringProgramLifecycleAndBackendLayoutAndAbiFr
         count = count + 1usize
     }
     if acceptedObligationEntryMatches(
+        "def.24.LayoutJudgements",
+        91476usize,
+        "HelloUltraviolet::Reference::Lowering",
+        "runLoweringLayoutAndABIReference",
+        "Source/Reference/Lowering/LayoutAndABI.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "rule.24.Size-Prim",
+        91489usize,
+        "HelloUltraviolet::Reference::Lowering",
+        "runLoweringLayoutAndABIReference",
+        "Source/Reference/Lowering/LayoutAndABI.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "rule.24.Align-Prim",
+        91505usize,
+        "HelloUltraviolet::Reference::Lowering",
+        "runLoweringLayoutAndABIReference",
+        "Source/Reference/Lowering/LayoutAndABI.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "rule.24.Layout-Prim",
+        91521usize,
+        "HelloUltraviolet::Reference::Lowering",
+        "runLoweringLayoutAndABIReference",
+        "Source/Reference/Lowering/LayoutAndABI.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "def.24.ConstantEncodingHelpers",
+        91537usize,
+        "HelloUltraviolet::Reference::Lowering",
+        "runLoweringLayoutAndABIReference",
+        "Source/Reference/Lowering/LayoutAndABI.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "rule.24.Encode-Bool",
+        91554usize,
+        "HelloUltraviolet::Reference::Lowering",
+        "runLoweringLayoutAndABIReference",
+        "Source/Reference/Lowering/LayoutAndABI.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "rule.24.Encode-Char",
+        91570usize,
+        "HelloUltraviolet::Reference::Lowering",
+        "runLoweringLayoutAndABIReference",
+        "Source/Reference/Lowering/LayoutAndABI.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "rule.24.Encode-Int",
+        91586usize,
+        "HelloUltraviolet::Reference::Lowering",
+        "runLoweringLayoutAndABIReference",
+        "Source/Reference/Lowering/LayoutAndABI.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "rule.24.Encode-Float",
+        91602usize,
+        "HelloUltraviolet::Reference::Lowering",
+        "runLoweringLayoutAndABIReference",
+        "Source/Reference/Lowering/LayoutAndABI.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "rule.24.Encode-Unit",
+        91618usize,
+        "HelloUltraviolet::Reference::Lowering",
+        "runLoweringLayoutAndABIReference",
+        "Source/Reference/Lowering/LayoutAndABI.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "rule.24.Encode-Never",
+        91634usize,
+        "HelloUltraviolet::Reference::Lowering",
+        "runLoweringLayoutAndABIReference",
+        "Source/Reference/Lowering/LayoutAndABI.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "rule.24.Encode-RawPtr-Null",
+        91650usize,
+        "HelloUltraviolet::Reference::Lowering",
+        "runLoweringLayoutAndABIReference",
+        "Source/Reference/Lowering/LayoutAndABI.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "def.24.ValidValueJudgement",
+        91666usize,
+        "HelloUltraviolet::Reference::Lowering",
+        "runLoweringLayoutAndABIReference",
+        "Source/Reference/Lowering/LayoutAndABI.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "rule.24.Valid-Bool",
+        91679usize,
+        "HelloUltraviolet::Reference::Lowering",
+        "runLoweringLayoutAndABIReference",
+        "Source/Reference/Lowering/LayoutAndABI.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
         "rule.24.Valid-Char",
-        91435usize,
+        91693usize,
         "HelloUltraviolet::Reference::Lowering",
         "runLoweringLayoutAndABIReference",
         "Source/Reference/Lowering/LayoutAndABI.uv"
@@ -153,7 +153,7 @@ public procedure validatedCommonLoweringProgramLifecycleAndBackendLayoutAndAbiFr
     }
     if acceptedObligationEntryMatches(
         "rule.24.Valid-Scalar",
-        91449usize,
+        91707usize,
         "HelloUltraviolet::Reference::Lowering",
         "runLoweringLayoutAndABIReference",
         "Source/Reference/Lowering/LayoutAndABI.uv"
@@ -162,7 +162,7 @@ public procedure validatedCommonLoweringProgramLifecycleAndBackendLayoutAndAbiFr
     }
     if acceptedObligationEntryMatches(
         "rule.24.Valid-Unit",
-        91464usize,
+        91722usize,
         "HelloUltraviolet::Reference::Lowering",
         "runLoweringLayoutAndABIReference",
         "Source/Reference/Lowering/LayoutAndABI.uv"
@@ -171,7 +171,7 @@ public procedure validatedCommonLoweringProgramLifecycleAndBackendLayoutAndAbiFr
     }
     if acceptedObligationEntryMatches(
         "rule.24.Valid-Never",
-        91478usize,
+        91736usize,
         "HelloUltraviolet::Reference::Lowering",
         "runLoweringLayoutAndABIReference",
         "Source/Reference/Lowering/LayoutAndABI.uv"
@@ -180,7 +180,7 @@ public procedure validatedCommonLoweringProgramLifecycleAndBackendLayoutAndAbiFr
     }
     if acceptedObligationEntryMatches(
         "def.24.ValidValueFallback",
-        91492usize,
+        91750usize,
         "HelloUltraviolet::Reference::Lowering",
         "runLoweringLayoutAndABIReference",
         "Source/Reference/Lowering/LayoutAndABI.uv"
@@ -189,7 +189,7 @@ public procedure validatedCommonLoweringProgramLifecycleAndBackendLayoutAndAbiFr
     }
     if acceptedObligationEntryMatches(
         "rule.24.Layout-Perm",
-        91508usize,
+        91766usize,
         "HelloUltraviolet::Reference::Lowering",
         "runLoweringLayoutAndABIReference",
         "Source/Reference/Lowering/LayoutAndABI.uv"
@@ -198,7 +198,7 @@ public procedure validatedCommonLoweringProgramLifecycleAndBackendLayoutAndAbiFr
     }
     if acceptedObligationEntryMatches(
         "rule.24.Size-Perm",
-        91524usize,
+        91782usize,
         "HelloUltraviolet::Reference::Lowering",
         "runLoweringLayoutAndABIReference",
         "Source/Reference/Lowering/LayoutAndABI.uv"
@@ -207,7 +207,7 @@ public procedure validatedCommonLoweringProgramLifecycleAndBackendLayoutAndAbiFr
     }
     if acceptedObligationEntryMatches(
         "rule.24.Align-Perm",
-        91540usize,
+        91798usize,
         "HelloUltraviolet::Reference::Lowering",
         "runLoweringLayoutAndABIReference",
         "Source/Reference/Lowering/LayoutAndABI.uv"
@@ -216,7 +216,7 @@ public procedure validatedCommonLoweringProgramLifecycleAndBackendLayoutAndAbiFr
     }
     if acceptedObligationEntryMatches(
         "def.24.ValueBitsPerm",
-        91556usize,
+        91814usize,
         "HelloUltraviolet::Reference::Lowering",
         "runLoweringLayoutAndABIReference",
         "Source/Reference/Lowering/LayoutAndABI.uv"
@@ -225,7 +225,7 @@ public procedure validatedCommonLoweringProgramLifecycleAndBackendLayoutAndAbiFr
     }
     if acceptedObligationEntryMatches(
         "rule.24.Size-Ptr",
-        91569usize,
+        91827usize,
         "HelloUltraviolet::Reference::Lowering",
         "runLoweringLayoutAndABIReference",
         "Source/Reference/Lowering/LayoutAndABI.uv"
@@ -234,7 +234,7 @@ public procedure validatedCommonLoweringProgramLifecycleAndBackendLayoutAndAbiFr
     }
     if acceptedObligationEntryMatches(
         "rule.24.Align-Ptr",
-        91585usize,
+        91843usize,
         "HelloUltraviolet::Reference::Lowering",
         "runLoweringLayoutAndABIReference",
         "Source/Reference/Lowering/LayoutAndABI.uv"
@@ -243,7 +243,7 @@ public procedure validatedCommonLoweringProgramLifecycleAndBackendLayoutAndAbiFr
     }
     if acceptedObligationEntryMatches(
         "rule.24.Layout-Ptr",
-        91601usize,
+        91859usize,
         "HelloUltraviolet::Reference::Lowering",
         "runLoweringLayoutAndABIReference",
         "Source/Reference/Lowering/LayoutAndABI.uv"
@@ -252,7 +252,7 @@ public procedure validatedCommonLoweringProgramLifecycleAndBackendLayoutAndAbiFr
     }
     if acceptedObligationEntryMatches(
         "rule.24.Size-RawPtr",
-        91617usize,
+        91875usize,
         "HelloUltraviolet::Reference::Lowering",
         "runLoweringLayoutAndABIReference",
         "Source/Reference/Lowering/LayoutAndABI.uv"
@@ -261,7 +261,7 @@ public procedure validatedCommonLoweringProgramLifecycleAndBackendLayoutAndAbiFr
     }
     if acceptedObligationEntryMatches(
         "rule.24.Align-RawPtr",
-        91633usize,
+        91891usize,
         "HelloUltraviolet::Reference::Lowering",
         "runLoweringLayoutAndABIReference",
         "Source/Reference/Lowering/LayoutAndABI.uv"
@@ -270,7 +270,7 @@ public procedure validatedCommonLoweringProgramLifecycleAndBackendLayoutAndAbiFr
     }
     if acceptedObligationEntryMatches(
         "rule.24.Layout-RawPtr",
-        91649usize,
+        91907usize,
         "HelloUltraviolet::Reference::Lowering",
         "runLoweringLayoutAndABIReference",
         "Source/Reference/Lowering/LayoutAndABI.uv"
@@ -279,7 +279,7 @@ public procedure validatedCommonLoweringProgramLifecycleAndBackendLayoutAndAbiFr
     }
     if acceptedObligationEntryMatches(
         "rule.24.Size-Func",
-        91665usize,
+        91923usize,
         "HelloUltraviolet::Reference::Lowering",
         "runLoweringLayoutAndABIReference",
         "Source/Reference/Lowering/LayoutAndABI.uv"
@@ -288,7 +288,7 @@ public procedure validatedCommonLoweringProgramLifecycleAndBackendLayoutAndAbiFr
     }
     if acceptedObligationEntryMatches(
         "rule.24.Align-Func",
-        91681usize,
+        91939usize,
         "HelloUltraviolet::Reference::Lowering",
         "runLoweringLayoutAndABIReference",
         "Source/Reference/Lowering/LayoutAndABI.uv"
@@ -297,7 +297,7 @@ public procedure validatedCommonLoweringProgramLifecycleAndBackendLayoutAndAbiFr
     }
     if acceptedObligationEntryMatches(
         "rule.24.Layout-Func",
-        91697usize,
+        91955usize,
         "HelloUltraviolet::Reference::Lowering",
         "runLoweringLayoutAndABIReference",
         "Source/Reference/Lowering/LayoutAndABI.uv"
@@ -306,7 +306,7 @@ public procedure validatedCommonLoweringProgramLifecycleAndBackendLayoutAndAbiFr
     }
     if acceptedObligationEntryMatches(
         "def.24.DefaultCallingConventionAndTargetArtifacts",
-        91715usize,
+        91973usize,
         "HelloUltraviolet::Reference::Lowering",
         "runLoweringLayoutAndABIReference",
         "Source/Reference/Lowering/LayoutAndABI.uv"
@@ -315,7 +315,7 @@ public procedure validatedCommonLoweringProgramLifecycleAndBackendLayoutAndAbiFr
     }
     if acceptedObligationEntryMatches(
         "def.24.ExternAbiSetAndConventionMapping",
-        91795usize,
+        92053usize,
         "HelloUltraviolet::Reference::Lowering",
         "runLoweringLayoutAndABIReference",
         "Source/Reference/Lowering/LayoutAndABI.uv"
@@ -324,7 +324,7 @@ public procedure validatedCommonLoweringProgramLifecycleAndBackendLayoutAndAbiFr
     }
     if acceptedObligationEntryMatches(
         "def.24.ConventionLayout",
-        91817usize,
+        92075usize,
         "HelloUltraviolet::Reference::Lowering",
         "runLoweringLayoutAndABIReference",
         "Source/Reference/Lowering/LayoutAndABI.uv"
@@ -333,7 +333,7 @@ public procedure validatedCommonLoweringProgramLifecycleAndBackendLayoutAndAbiFr
     }
     if acceptedObligationEntryMatches(
         "def.24.AssignParamRegs",
-        91867usize,
+        92125usize,
         "HelloUltraviolet::Reference::Lowering",
         "runLoweringLayoutAndABIReference",
         "Source/Reference/Lowering/LayoutAndABI.uv"
@@ -342,7 +342,7 @@ public procedure validatedCommonLoweringProgramLifecycleAndBackendLayoutAndAbiFr
     }
     if acceptedObligationEntryMatches(
         "def.24.StackFrameForm",
-        91893usize,
+        92151usize,
         "HelloUltraviolet::Reference::Lowering",
         "runLoweringLayoutAndABIReference",
         "Source/Reference/Lowering/LayoutAndABI.uv"
@@ -351,7 +351,7 @@ public procedure validatedCommonLoweringProgramLifecycleAndBackendLayoutAndAbiFr
     }
     if acceptedObligationEntryMatches(
         "rule.24.StackFrame-Layout",
-        91913usize,
+        92171usize,
         "HelloUltraviolet::Reference::Lowering",
         "runLoweringLayoutAndABIReference",
         "Source/Reference/Lowering/LayoutAndABI.uv"
@@ -360,7 +360,7 @@ public procedure validatedCommonLoweringProgramLifecycleAndBackendLayoutAndAbiFr
     }
     if acceptedObligationEntryMatches(
         "rule.24.Conv-Compatible",
-        91930usize,
+        92188usize,
         "HelloUltraviolet::Reference::Lowering",
         "runLoweringLayoutAndABIReference",
         "Source/Reference/Lowering/LayoutAndABI.uv"
@@ -369,7 +369,7 @@ public procedure validatedCommonLoweringProgramLifecycleAndBackendLayoutAndAbiFr
     }
     if acceptedObligationEntryMatches(
         "rule.24.Conv-FFI-Required",
-        91946usize,
+        92204usize,
         "HelloUltraviolet::Reference::Lowering",
         "runLoweringLayoutAndABIReference",
         "Source/Reference/Lowering/LayoutAndABI.uv"
@@ -378,7 +378,7 @@ public procedure validatedCommonLoweringProgramLifecycleAndBackendLayoutAndAbiFr
     }
     if acceptedObligationEntryMatches(
         "def.24.ABITypeAndABITyJudgement",
-        91964usize,
+        92222usize,
         "HelloUltraviolet::Reference::Lowering",
         "runLoweringLayoutAndABIReference",
         "Source/Reference/Lowering/LayoutAndABI.uv"
@@ -387,7 +387,7 @@ public procedure validatedCommonLoweringProgramLifecycleAndBackendLayoutAndAbiFr
     }
     if acceptedObligationEntryMatches(
         "rule.24.ABI-Prim",
-        91978usize,
+        92236usize,
         "HelloUltraviolet::Reference::Lowering",
         "runLoweringLayoutAndABIReference",
         "Source/Reference/Lowering/LayoutAndABI.uv"
@@ -396,7 +396,7 @@ public procedure validatedCommonLoweringProgramLifecycleAndBackendLayoutAndAbiFr
     }
     if acceptedObligationEntryMatches(
         "rule.24.ABI-Perm",
-        91994usize,
+        92252usize,
         "HelloUltraviolet::Reference::Lowering",
         "runLoweringLayoutAndABIReference",
         "Source/Reference/Lowering/LayoutAndABI.uv"
@@ -405,7 +405,7 @@ public procedure validatedCommonLoweringProgramLifecycleAndBackendLayoutAndAbiFr
     }
     if acceptedObligationEntryMatches(
         "rule.24.ABI-Ptr",
-        92010usize,
+        92268usize,
         "HelloUltraviolet::Reference::Lowering",
         "runLoweringLayoutAndABIReference",
         "Source/Reference/Lowering/LayoutAndABI.uv"
@@ -414,7 +414,7 @@ public procedure validatedCommonLoweringProgramLifecycleAndBackendLayoutAndAbiFr
     }
     if acceptedObligationEntryMatches(
         "rule.24.ABI-RawPtr",
-        92026usize,
+        92284usize,
         "HelloUltraviolet::Reference::Lowering",
         "runLoweringLayoutAndABIReference",
         "Source/Reference/Lowering/LayoutAndABI.uv"
@@ -423,7 +423,7 @@ public procedure validatedCommonLoweringProgramLifecycleAndBackendLayoutAndAbiFr
     }
     if acceptedObligationEntryMatches(
         "rule.24.ABI-Func",
-        92042usize,
+        92300usize,
         "HelloUltraviolet::Reference::Lowering",
         "runLoweringLayoutAndABIReference",
         "Source/Reference/Lowering/LayoutAndABI.uv"
@@ -432,150 +432,6 @@ public procedure validatedCommonLoweringProgramLifecycleAndBackendLayoutAndAbiFr
     }
     if acceptedObligationEntryMatches(
         "rule.24.ABI-Alias",
-        92058usize,
-        "HelloUltraviolet::Reference::Lowering",
-        "runLoweringLayoutAndABIReference",
-        "Source/Reference/Lowering/LayoutAndABI.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
-        "rule.24.ABI-Record",
-        92074usize,
-        "HelloUltraviolet::Reference::Lowering",
-        "runLoweringLayoutAndABIReference",
-        "Source/Reference/Lowering/LayoutAndABI.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
-        "rule.24.ABI-Tuple",
-        92090usize,
-        "HelloUltraviolet::Reference::Lowering",
-        "runLoweringLayoutAndABIReference",
-        "Source/Reference/Lowering/LayoutAndABI.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
-        "rule.24.ABI-Array",
-        92106usize,
-        "HelloUltraviolet::Reference::Lowering",
-        "runLoweringLayoutAndABIReference",
-        "Source/Reference/Lowering/LayoutAndABI.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
-        "rule.24.ABI-Slice",
-        92122usize,
-        "HelloUltraviolet::Reference::Lowering",
-        "runLoweringLayoutAndABIReference",
-        "Source/Reference/Lowering/LayoutAndABI.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
-        "rule.24.ABI-Range",
-        92138usize,
-        "HelloUltraviolet::Reference::Lowering",
-        "runLoweringLayoutAndABIReference",
-        "Source/Reference/Lowering/LayoutAndABI.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
-        "rule.24.ABI-RangeInclusive",
-        92154usize,
-        "HelloUltraviolet::Reference::Lowering",
-        "runLoweringLayoutAndABIReference",
-        "Source/Reference/Lowering/LayoutAndABI.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
-        "rule.24.ABI-RangeFrom",
-        92170usize,
-        "HelloUltraviolet::Reference::Lowering",
-        "runLoweringLayoutAndABIReference",
-        "Source/Reference/Lowering/LayoutAndABI.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
-        "rule.24.ABI-RangeTo",
-        92186usize,
-        "HelloUltraviolet::Reference::Lowering",
-        "runLoweringLayoutAndABIReference",
-        "Source/Reference/Lowering/LayoutAndABI.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
-        "rule.24.ABI-RangeToInclusive",
-        92202usize,
-        "HelloUltraviolet::Reference::Lowering",
-        "runLoweringLayoutAndABIReference",
-        "Source/Reference/Lowering/LayoutAndABI.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
-        "rule.24.ABI-RangeFull",
-        92218usize,
-        "HelloUltraviolet::Reference::Lowering",
-        "runLoweringLayoutAndABIReference",
-        "Source/Reference/Lowering/LayoutAndABI.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
-        "rule.24.ABI-Enum",
-        92234usize,
-        "HelloUltraviolet::Reference::Lowering",
-        "runLoweringLayoutAndABIReference",
-        "Source/Reference/Lowering/LayoutAndABI.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
-        "rule.24.ABI-Union",
-        92250usize,
-        "HelloUltraviolet::Reference::Lowering",
-        "runLoweringLayoutAndABIReference",
-        "Source/Reference/Lowering/LayoutAndABI.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
-        "rule.24.ABI-Modal",
-        92266usize,
-        "HelloUltraviolet::Reference::Lowering",
-        "runLoweringLayoutAndABIReference",
-        "Source/Reference/Lowering/LayoutAndABI.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
-        "rule.24.ABI-Dynamic",
-        92282usize,
-        "HelloUltraviolet::Reference::Lowering",
-        "runLoweringLayoutAndABIReference",
-        "Source/Reference/Lowering/LayoutAndABI.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
-        "rule.24.ABI-StringBytes",
-        92298usize,
-        "HelloUltraviolet::Reference::Lowering",
-        "runLoweringLayoutAndABIReference",
-        "Source/Reference/Lowering/LayoutAndABI.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
-        "def.24.ABIParameterReturnPassingHelpers",
         92316usize,
         "HelloUltraviolet::Reference::Lowering",
         "runLoweringLayoutAndABIReference",
@@ -584,8 +440,152 @@ public procedure validatedCommonLoweringProgramLifecycleAndBackendLayoutAndAbiFr
         count = count + 1usize
     }
     if acceptedObligationEntryMatches(
+        "rule.24.ABI-Record",
+        92332usize,
+        "HelloUltraviolet::Reference::Lowering",
+        "runLoweringLayoutAndABIReference",
+        "Source/Reference/Lowering/LayoutAndABI.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "rule.24.ABI-Tuple",
+        92348usize,
+        "HelloUltraviolet::Reference::Lowering",
+        "runLoweringLayoutAndABIReference",
+        "Source/Reference/Lowering/LayoutAndABI.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "rule.24.ABI-Array",
+        92364usize,
+        "HelloUltraviolet::Reference::Lowering",
+        "runLoweringLayoutAndABIReference",
+        "Source/Reference/Lowering/LayoutAndABI.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "rule.24.ABI-Slice",
+        92380usize,
+        "HelloUltraviolet::Reference::Lowering",
+        "runLoweringLayoutAndABIReference",
+        "Source/Reference/Lowering/LayoutAndABI.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "rule.24.ABI-Range",
+        92396usize,
+        "HelloUltraviolet::Reference::Lowering",
+        "runLoweringLayoutAndABIReference",
+        "Source/Reference/Lowering/LayoutAndABI.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "rule.24.ABI-RangeInclusive",
+        92412usize,
+        "HelloUltraviolet::Reference::Lowering",
+        "runLoweringLayoutAndABIReference",
+        "Source/Reference/Lowering/LayoutAndABI.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "rule.24.ABI-RangeFrom",
+        92428usize,
+        "HelloUltraviolet::Reference::Lowering",
+        "runLoweringLayoutAndABIReference",
+        "Source/Reference/Lowering/LayoutAndABI.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "rule.24.ABI-RangeTo",
+        92444usize,
+        "HelloUltraviolet::Reference::Lowering",
+        "runLoweringLayoutAndABIReference",
+        "Source/Reference/Lowering/LayoutAndABI.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "rule.24.ABI-RangeToInclusive",
+        92460usize,
+        "HelloUltraviolet::Reference::Lowering",
+        "runLoweringLayoutAndABIReference",
+        "Source/Reference/Lowering/LayoutAndABI.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "rule.24.ABI-RangeFull",
+        92476usize,
+        "HelloUltraviolet::Reference::Lowering",
+        "runLoweringLayoutAndABIReference",
+        "Source/Reference/Lowering/LayoutAndABI.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "rule.24.ABI-Enum",
+        92492usize,
+        "HelloUltraviolet::Reference::Lowering",
+        "runLoweringLayoutAndABIReference",
+        "Source/Reference/Lowering/LayoutAndABI.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "rule.24.ABI-Union",
+        92508usize,
+        "HelloUltraviolet::Reference::Lowering",
+        "runLoweringLayoutAndABIReference",
+        "Source/Reference/Lowering/LayoutAndABI.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "rule.24.ABI-Modal",
+        92524usize,
+        "HelloUltraviolet::Reference::Lowering",
+        "runLoweringLayoutAndABIReference",
+        "Source/Reference/Lowering/LayoutAndABI.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "rule.24.ABI-Dynamic",
+        92540usize,
+        "HelloUltraviolet::Reference::Lowering",
+        "runLoweringLayoutAndABIReference",
+        "Source/Reference/Lowering/LayoutAndABI.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "rule.24.ABI-StringBytes",
+        92556usize,
+        "HelloUltraviolet::Reference::Lowering",
+        "runLoweringLayoutAndABIReference",
+        "Source/Reference/Lowering/LayoutAndABI.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "def.24.ABIParameterReturnPassingHelpers",
+        92574usize,
+        "HelloUltraviolet::Reference::Lowering",
+        "runLoweringLayoutAndABIReference",
+        "Source/Reference/Lowering/LayoutAndABI.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
         "requirement.24.ForeignVisibleABIUsesForeignJudgements",
-        92337usize,
+        92595usize,
         "HelloUltraviolet::Reference::Lowering",
         "runLoweringLayoutAndABIReference",
         "Source/Reference/Lowering/LayoutAndABI.uv"
@@ -594,16 +594,7 @@ public procedure validatedCommonLoweringProgramLifecycleAndBackendLayoutAndAbiFr
     }
     if acceptedObligationEntryMatches(
         "rule.24.ABI-Param-ByRef-Alias",
-        92350usize,
-        "HelloUltraviolet::Reference::Lowering",
-        "runLoweringLayoutAndABIReference",
-        "Source/Reference/Lowering/LayoutAndABI.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
-        "rule.24.ABI-Param-ByValue-Move",
-        92366usize,
+        92608usize,
         "HelloUltraviolet::Reference::Lowering",
         "runLoweringLayoutAndABIReference",
         "Source/Reference/Lowering/LayoutAndABI.uv"
@@ -612,7 +603,7 @@ public procedure validatedCommonLoweringProgramLifecycleAndBackendLayoutAndAbiFr
     }
     if acceptedObligationEntryMatches(
         "rule.24.ABI-Param-ByRef-Move",
-        92382usize,
+        92624usize,
         "HelloUltraviolet::Reference::Lowering",
         "runLoweringLayoutAndABIReference",
         "Source/Reference/Lowering/LayoutAndABI.uv"
@@ -621,7 +612,7 @@ public procedure validatedCommonLoweringProgramLifecycleAndBackendLayoutAndAbiFr
     }
     if acceptedObligationEntryMatches(
         "rule.24.ABI-Ret-ByValue",
-        92398usize,
+        92640usize,
         "HelloUltraviolet::Reference::Lowering",
         "runLoweringLayoutAndABIReference",
         "Source/Reference/Lowering/LayoutAndABI.uv"
@@ -630,7 +621,7 @@ public procedure validatedCommonLoweringProgramLifecycleAndBackendLayoutAndAbiFr
     }
     if acceptedObligationEntryMatches(
         "rule.24.ABI-Ret-ByRef",
-        92414usize,
+        92656usize,
         "HelloUltraviolet::Reference::Lowering",
         "runLoweringLayoutAndABIReference",
         "Source/Reference/Lowering/LayoutAndABI.uv"
@@ -639,7 +630,7 @@ public procedure validatedCommonLoweringProgramLifecycleAndBackendLayoutAndAbiFr
     }
     if acceptedObligationEntryMatches(
         "rule.24.ABI-Call",
-        92430usize,
+        92672usize,
         "HelloUltraviolet::Reference::Lowering",
         "runLoweringLayoutAndABIReference",
         "Source/Reference/Lowering/LayoutAndABI.uv"
@@ -648,7 +639,7 @@ public procedure validatedCommonLoweringProgramLifecycleAndBackendLayoutAndAbiFr
     }
     if acceptedObligationEntryMatches(
         "rule.24.ABI-ForeignParam-ByValue",
-        92446usize,
+        92688usize,
         "HelloUltraviolet::Reference::Lowering",
         "runLoweringLayoutAndABIReference",
         "Source/Reference/Lowering/LayoutAndABI.uv"
@@ -657,7 +648,7 @@ public procedure validatedCommonLoweringProgramLifecycleAndBackendLayoutAndAbiFr
     }
     if acceptedObligationEntryMatches(
         "rule.24.ABI-ForeignParam-ByRef",
-        92462usize,
+        92704usize,
         "HelloUltraviolet::Reference::Lowering",
         "runLoweringLayoutAndABIReference",
         "Source/Reference/Lowering/LayoutAndABI.uv"
@@ -666,7 +657,7 @@ public procedure validatedCommonLoweringProgramLifecycleAndBackendLayoutAndAbiFr
     }
     if acceptedObligationEntryMatches(
         "rule.24.ABI-ForeignCall",
-        92478usize,
+        92720usize,
         "HelloUltraviolet::Reference::Lowering",
         "runLoweringLayoutAndABIReference",
         "Source/Reference/Lowering/LayoutAndABI.uv"
@@ -675,7 +666,7 @@ public procedure validatedCommonLoweringProgramLifecycleAndBackendLayoutAndAbiFr
     }
     if acceptedObligationEntryMatches(
         "def.24.PanicRecordAndPanicOut",
-        92494usize,
+        92736usize,
         "HelloUltraviolet::Reference::Lowering",
         "runLoweringLayoutAndABIReference",
         "Source/Reference/Lowering/LayoutAndABI.uv"

@@ -9,7 +9,7 @@ public procedure validatedAttributesAndMetadataSourceNativeTestAttributesObligat
     var count: usize = 0usize
     if acceptedObligationEntryMatches(
         "grammar.TestAttribute",
-        28635usize,
+        28683usize,
         "HelloUltraviolet::Reference::Attributes",
         "runAttributesSourceNativeTestsReference",
         "Source/Reference/Attributes/SourceNativeTests.uv"
@@ -18,33 +18,6 @@ public procedure validatedAttributesAndMetadataSourceNativeTestAttributesObligat
     }
     if acceptedObligationEntryMatches(
         "parse.TestAttributeByOrdinaryAttributeParser",
-        28655usize,
-        "HelloUltraviolet::Reference::Attributes",
-        "runAttributesSourceNativeTestsReference",
-        "Source/Reference/Attributes/SourceNativeTests.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
-        "ast.TestProcedureClassification",
-        28673usize,
-        "HelloUltraviolet::Reference::Attributes",
-        "runAttributesSourceNativeTestsReference",
-        "Source/Reference/Attributes/SourceNativeTests.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
-        "def.TestName",
-        28688usize,
-        "HelloUltraviolet::Reference::Attributes",
-        "runAttributesSourceNativeTestsReference",
-        "Source/Reference/Attributes/SourceNativeTests.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
-        "def.TestCoverage",
         28703usize,
         "HelloUltraviolet::Reference::Attributes",
         "runAttributesSourceNativeTestsReference",
@@ -53,8 +26,35 @@ public procedure validatedAttributesAndMetadataSourceNativeTestAttributesObligat
         count = count + 1usize
     }
     if acceptedObligationEntryMatches(
+        "ast.TestProcedureClassification",
+        28721usize,
+        "HelloUltraviolet::Reference::Attributes",
+        "runAttributesSourceNativeTestsReference",
+        "Source/Reference/Attributes/SourceNativeTests.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "def.TestName",
+        28736usize,
+        "HelloUltraviolet::Reference::Attributes",
+        "runAttributesSourceNativeTestsReference",
+        "Source/Reference/Attributes/SourceNativeTests.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "def.TestCoverage",
+        28751usize,
+        "HelloUltraviolet::Reference::Attributes",
+        "runAttributesSourceNativeTestsReference",
+        "Source/Reference/Attributes/SourceNativeTests.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
         "req.TestAttributeProcedureTarget",
-        28720usize,
+        28768usize,
         "HelloUltraviolet::Reference::Attributes",
         "runAttributesSourceNativeTestsReference",
         "Source/Reference/Attributes/SourceNativeTests.uv"
@@ -63,7 +63,7 @@ public procedure validatedAttributesAndMetadataSourceNativeTestAttributesObligat
     }
     if acceptedObligationEntryMatches(
         "def.TestAttributeArgsOk",
-        28734usize,
+        28782usize,
         "HelloUltraviolet::Reference::Attributes",
         "runAttributesSourceNativeTestsReference",
         "Source/Reference/Attributes/SourceNativeTests.uv"
@@ -72,7 +72,7 @@ public procedure validatedAttributesAndMetadataSourceNativeTestAttributesObligat
     }
     if acceptedObligationEntryMatches(
         "req.TestProcedureShape",
-        28754usize,
+        28802usize,
         "HelloUltraviolet::Reference::Attributes",
         "runAttributesSourceNativeTestsReference",
         "Source/Reference/Attributes/SourceNativeTests.uv"
@@ -81,7 +81,7 @@ public procedure validatedAttributesAndMetadataSourceNativeTestAttributesObligat
     }
     if acceptedObligationEntryMatches(
         "req.TestAuthority",
-        28776usize,
+        28824usize,
         "HelloUltraviolet::Reference::Attributes",
         "runAttributesSourceNativeTestsReference",
         "Source/Reference/Attributes/SourceNativeTests.uv"
@@ -90,7 +90,7 @@ public procedure validatedAttributesAndMetadataSourceNativeTestAttributesObligat
     }
     if acceptedObligationEntryMatches(
         "conformance.TestAttributeDynamicSemantics",
-        28794usize,
+        28842usize,
         "HelloUltraviolet::Reference::Attributes",
         "runAttributesSourceNativeTestsReference",
         "Source/Reference/Attributes/SourceNativeTests.uv"
@@ -99,7 +99,7 @@ public procedure validatedAttributesAndMetadataSourceNativeTestAttributesObligat
     }
     if acceptedObligationEntryMatches(
         "lowering.TestHarnessGeneration",
-        28815usize,
+        28863usize,
         "HelloUltraviolet::Reference::Attributes",
         "runAttributesSourceNativeTestsReference",
         "Source/Reference/Attributes/SourceNativeTests.uv"
@@ -108,7 +108,7 @@ public procedure validatedAttributesAndMetadataSourceNativeTestAttributesObligat
     }
     if acceptedObligationEntryMatches(
         "def.TestDiscoveryOrder",
-        28874usize,
+        28922usize,
         "HelloUltraviolet::Reference::Attributes",
         "runAttributesSourceNativeTestsReference",
         "Source/Reference/Attributes/SourceNativeTests.uv"
@@ -117,7 +117,7 @@ public procedure validatedAttributesAndMetadataSourceNativeTestAttributesObligat
     }
     if rejectedSourceObligationEntryMatches(
         "diagnostics.TestAttributes",
-        28892usize,
+        28940usize,
         "HelloUltraviolet::Audit::FixtureCatalog::RejectedSource",
         "validatedAttributesRejectedSourceFixtureCount",
         "Fixtures/RejectedSource/Attributes/TestMissingPostcondition/Source/Main.uv"

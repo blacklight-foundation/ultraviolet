@@ -9,24 +9,6 @@ public procedure validatedParsingAndAstInfrastructureParseFileItemSequencingAndT
     var count: usize = 0usize
     if referenceModelObligationEntryMatches(
         "def.ParseFileBigStep",
-        11495usize,
-        "HelloUltraviolet::Audit",
-        "runParsingReferenceModels",
-        "Source/Audit/ParsingReferenceModels.uv"
-    ) {
-        count = count + 1usize
-    }
-    if referenceModelObligationEntryMatches(
-        "ParseFile-Ok",
-        11512usize,
-        "HelloUltraviolet::Audit",
-        "runParsingReferenceModels",
-        "Source/Audit/ParsingReferenceModels.uv"
-    ) {
-        count = count + 1usize
-    }
-    if referenceModelObligationEntryMatches(
-        "ParseItems-Empty",
         11532usize,
         "HelloUltraviolet::Audit",
         "runParsingReferenceModels",
@@ -35,8 +17,26 @@ public procedure validatedParsingAndAstInfrastructureParseFileItemSequencingAndT
         count = count + 1usize
     }
     if referenceModelObligationEntryMatches(
+        "ParseFile-Ok",
+        11549usize,
+        "HelloUltraviolet::Audit",
+        "runParsingReferenceModels",
+        "Source/Audit/ParsingReferenceModels.uv"
+    ) {
+        count = count + 1usize
+    }
+    if referenceModelObligationEntryMatches(
+        "ParseItems-Empty",
+        11569usize,
+        "HelloUltraviolet::Audit",
+        "runParsingReferenceModels",
+        "Source/Audit/ParsingReferenceModels.uv"
+    ) {
+        count = count + 1usize
+    }
+    if referenceModelObligationEntryMatches(
         "ParseItems-Cons",
-        11550usize,
+        11587usize,
         "HelloUltraviolet::Audit",
         "runParsingReferenceModels",
         "Source/Audit/ParsingReferenceModels.uv"
@@ -45,7 +45,7 @@ public procedure validatedParsingAndAstInfrastructureParseFileItemSequencingAndT
     }
     if referenceModelObligationEntryMatches(
         "def.StatementTerminatorTokens",
-        11570usize,
+        11607usize,
         "HelloUltraviolet::Audit",
         "runParsingReferenceModels",
         "Source/Audit/ParsingReferenceModels.uv"
@@ -54,7 +54,7 @@ public procedure validatedParsingAndAstInfrastructureParseFileItemSequencingAndT
     }
     if referenceModelObligationEntryMatches(
         "def.StatementRequiresTerminator",
-        11585usize,
+        11622usize,
         "HelloUltraviolet::Audit",
         "runParsingReferenceModels",
         "Source/Audit/ParsingReferenceModels.uv"
@@ -63,7 +63,7 @@ public procedure validatedParsingAndAstInfrastructureParseFileItemSequencingAndT
     }
     if referenceModelObligationEntryMatches(
         "ConsumeTerminatorOpt-Req-Yes",
-        11599usize,
+        11636usize,
         "HelloUltraviolet::Audit",
         "runParsingReferenceModels",
         "Source/Audit/ParsingReferenceModels.uv"
@@ -72,7 +72,7 @@ public procedure validatedParsingAndAstInfrastructureParseFileItemSequencingAndT
     }
     if referenceModelObligationEntryMatches(
         "ConsumeTerminatorOpt-Req-No",
-        11617usize,
+        11654usize,
         "HelloUltraviolet::Audit",
         "runParsingReferenceModels",
         "Source/Audit/ParsingReferenceModels.uv"
@@ -81,7 +81,7 @@ public procedure validatedParsingAndAstInfrastructureParseFileItemSequencingAndT
     }
     if referenceModelObligationEntryMatches(
         "ConsumeTerminatorOpt-Opt-Yes",
-        11635usize,
+        11672usize,
         "HelloUltraviolet::Audit",
         "runParsingReferenceModels",
         "Source/Audit/ParsingReferenceModels.uv"
@@ -90,7 +90,7 @@ public procedure validatedParsingAndAstInfrastructureParseFileItemSequencingAndT
     }
     if referenceModelObligationEntryMatches(
         "ConsumeTerminatorOpt-Opt-No",
-        11653usize,
+        11690usize,
         "HelloUltraviolet::Audit",
         "runParsingReferenceModels",
         "Source/Audit/ParsingReferenceModels.uv"
@@ -99,7 +99,7 @@ public procedure validatedParsingAndAstInfrastructureParseFileItemSequencingAndT
     }
     if referenceModelObligationEntryMatches(
         "ConsumeTerminatorReq-Yes",
-        11671usize,
+        11708usize,
         "HelloUltraviolet::Audit",
         "runParsingReferenceModels",
         "Source/Audit/ParsingReferenceModels.uv"
@@ -108,7 +108,7 @@ public procedure validatedParsingAndAstInfrastructureParseFileItemSequencingAndT
     }
     if referenceModelObligationEntryMatches(
         "ConsumeTerminatorReq-No",
-        11689usize,
+        11726usize,
         "HelloUltraviolet::Audit",
         "runParsingReferenceModels",
         "Source/Audit/ParsingReferenceModels.uv"

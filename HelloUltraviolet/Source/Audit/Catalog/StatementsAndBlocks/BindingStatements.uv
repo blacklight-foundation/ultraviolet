@@ -9,7 +9,7 @@ public procedure validatedStatementsAndBlocksBindingStatementsObligations() -> u
     var count: usize = 0usize
     if acceptedObligationEntryMatches(
         "grammar.18.BindingStatements",
-        69088usize,
+        69318usize,
         "HelloUltraviolet::Reference::Statements",
         "runStatementsBindingsReference",
         "Source/Reference/Statements/Bindings.uv"
@@ -18,7 +18,7 @@ public procedure validatedStatementsAndBlocksBindingStatementsObligations() -> u
     }
     if acceptedObligationEntryMatches(
         "rule.18.Parse-Binding-Stmt",
-        69106usize,
+        69336usize,
         "HelloUltraviolet::Reference::Statements",
         "runStatementsBindingsReference",
         "Source/Reference/Statements/Bindings.uv"
@@ -27,7 +27,7 @@ public procedure validatedStatementsAndBlocksBindingStatementsObligations() -> u
     }
     if acceptedObligationEntryMatches(
         "rule.18.Parse-BindingAfterLetVar",
-        69122usize,
+        69352usize,
         "HelloUltraviolet::Reference::Statements",
         "runStatementsBindingsReference",
         "Source/Reference/Statements/Bindings.uv"
@@ -36,7 +36,7 @@ public procedure validatedStatementsAndBlocksBindingStatementsObligations() -> u
     }
     if acceptedObligationEntryMatches(
         "rule.18.LetOrVarStmt-Let",
-        69138usize,
+        69368usize,
         "HelloUltraviolet::Reference::Statements",
         "runStatementsBindingsReference",
         "Source/Reference/Statements/Bindings.uv"
@@ -45,7 +45,7 @@ public procedure validatedStatementsAndBlocksBindingStatementsObligations() -> u
     }
     if acceptedObligationEntryMatches(
         "rule.18.LetOrVarStmt-Var",
-        69154usize,
+        69384usize,
         "HelloUltraviolet::Reference::Statements",
         "runStatementsBindingsReference",
         "Source/Reference/Statements/Bindings.uv"
@@ -54,7 +54,7 @@ public procedure validatedStatementsAndBlocksBindingStatementsObligations() -> u
     }
     if acceptedObligationEntryMatches(
         "def.18.LetOrVarStmtAst",
-        69172usize,
+        69402usize,
         "HelloUltraviolet::Reference::Statements",
         "runStatementsBindingsReference",
         "Source/Reference/Statements/Bindings.uv"
@@ -63,7 +63,7 @@ public procedure validatedStatementsAndBlocksBindingStatementsObligations() -> u
     }
     if acceptedObligationEntryMatches(
         "def.18.BindingAstAndAccessors",
-        69185usize,
+        69415usize,
         "HelloUltraviolet::Reference::Statements",
         "runStatementsBindingsReference",
         "Source/Reference/Statements/Bindings.uv"
@@ -72,7 +72,7 @@ public procedure validatedStatementsAndBlocksBindingStatementsObligations() -> u
     }
     if acceptedObligationEntryMatches(
         "def.18.IntroEnt",
-        69208usize,
+        69438usize,
         "HelloUltraviolet::Reference::Statements",
         "runStatementsBindingsReference",
         "Source/Reference/Statements/Bindings.uv"
@@ -81,7 +81,7 @@ public procedure validatedStatementsAndBlocksBindingStatementsObligations() -> u
     }
     if acceptedObligationEntryMatches(
         "rule.18.IntroAll-Empty",
-        69221usize,
+        69451usize,
         "HelloUltraviolet::Reference::Statements",
         "runStatementsBindingsReference",
         "Source/Reference/Statements/Bindings.uv"
@@ -90,7 +90,7 @@ public procedure validatedStatementsAndBlocksBindingStatementsObligations() -> u
     }
     if acceptedObligationEntryMatches(
         "rule.18.IntroAll-Cons",
-        69236usize,
+        69466usize,
         "HelloUltraviolet::Reference::Statements",
         "runStatementsBindingsReference",
         "Source/Reference/Statements/Bindings.uv"
@@ -99,7 +99,7 @@ public procedure validatedStatementsAndBlocksBindingStatementsObligations() -> u
     }
     if acceptedObligationEntryMatches(
         "rule.18.IntroAllVar-Empty",
-        69252usize,
+        69482usize,
         "HelloUltraviolet::Reference::Statements",
         "runStatementsBindingsReference",
         "Source/Reference/Statements/Bindings.uv"
@@ -108,7 +108,7 @@ public procedure validatedStatementsAndBlocksBindingStatementsObligations() -> u
     }
     if acceptedObligationEntryMatches(
         "rule.18.IntroAllVar-Cons",
-        69267usize,
+        69497usize,
         "HelloUltraviolet::Reference::Statements",
         "runStatementsBindingsReference",
         "Source/Reference/Statements/Bindings.uv"
@@ -117,7 +117,7 @@ public procedure validatedStatementsAndBlocksBindingStatementsObligations() -> u
     }
     if acceptedObligationEntryMatches(
         "rule.18.T-LetStmt-Ann",
-        69283usize,
+        69513usize,
         "HelloUltraviolet::Reference::Statements",
         "runStatementsBindingsReference",
         "Source/Reference/Statements/Bindings.uv"
@@ -126,7 +126,7 @@ public procedure validatedStatementsAndBlocksBindingStatementsObligations() -> u
     }
     if rejectedSourceObligationEntryMatches(
         "rule.18.T-LetStmt-Ann-Mismatch",
-        69299usize,
+        69529usize,
         "HelloUltraviolet::Audit::FixtureCatalog::RejectedSource",
         "validatedStatementsRejectedSourceFixtureCount",
         "Fixtures/RejectedSource/Statements/LetAnnotationMismatch/Source/Main.uv"
@@ -135,7 +135,7 @@ public procedure validatedStatementsAndBlocksBindingStatementsObligations() -> u
     }
     if acceptedObligationEntryMatches(
         "rule.18.T-LetStmt-Infer",
-        69315usize,
+        69545usize,
         "HelloUltraviolet::Reference::Statements",
         "runStatementsBindingsReference",
         "Source/Reference/Statements/Bindings.uv"
@@ -144,7 +144,7 @@ public procedure validatedStatementsAndBlocksBindingStatementsObligations() -> u
     }
     if rejectedSourceObligationEntryMatches(
         "rule.18.T-LetStmt-Infer-Err",
-        69331usize,
+        69561usize,
         "HelloUltraviolet::Audit::FixtureCatalog::RejectedSource",
         "validatedStatementsRejectedSourceFixtureCount",
         "Fixtures/RejectedSource/Statements/LetInferenceFailure/Source/Main.uv"
@@ -153,7 +153,7 @@ public procedure validatedStatementsAndBlocksBindingStatementsObligations() -> u
     }
     if rejectedSourceObligationEntryMatches(
         "req.18.VarStmtTypingMirrorsLet",
-        69347usize,
+        69577usize,
         "HelloUltraviolet::Audit::FixtureCatalog::RejectedSource",
         "validatedStatementsRejectedSourceFixtureCount",
         "Fixtures/RejectedSource/Statements/VarAnnotationMismatch/Source/Main.uv"
@@ -162,7 +162,7 @@ public procedure validatedStatementsAndBlocksBindingStatementsObligations() -> u
     }
     if rejectedSourceObligationEntryMatches(
         "rule.18.Let-Refutable-Pattern-Err",
-        69360usize,
+        69590usize,
         "HelloUltraviolet::Audit::FixtureCatalog::RejectedSource",
         "validatedStatementsRejectedSourceFixtureCount",
         "Fixtures/RejectedSource/Statements/LetRefutablePattern/Source/Main.uv"
@@ -171,7 +171,7 @@ public procedure validatedStatementsAndBlocksBindingStatementsObligations() -> u
     }
     if rejectedSourceObligationEntryMatches(
         "rule.18.B-LetVar-UniqueNonMove-Err",
-        69376usize,
+        69606usize,
         "HelloUltraviolet::Audit::FixtureCatalog::RejectedSource",
         "validatedStatementsRejectedSourceFixtureCount",
         "Fixtures/RejectedSource/Statements/UniqueNonMoveBinding/Source/Main.uv"
@@ -180,7 +180,7 @@ public procedure validatedStatementsAndBlocksBindingStatementsObligations() -> u
     }
     if acceptedObligationEntryMatches(
         "def.18.SuspendUniqueBind",
-        69392usize,
+        69622usize,
         "HelloUltraviolet::Reference::Statements",
         "runStatementsBindingsReference",
         "Source/Reference/Statements/Bindings.uv"
@@ -189,7 +189,7 @@ public procedure validatedStatementsAndBlocksBindingStatementsObligations() -> u
     }
     if acceptedObligationEntryMatches(
         "rule.18.B-LetVar",
-        69407usize,
+        69637usize,
         "HelloUltraviolet::Reference::Statements",
         "runStatementsBindingsReference",
         "Source/Reference/Statements/Bindings.uv"
@@ -198,7 +198,7 @@ public procedure validatedStatementsAndBlocksBindingStatementsObligations() -> u
     }
     if acceptedObligationEntryMatches(
         "rule.18.Prov-LetVar-Ordinary",
-        69423usize,
+        69653usize,
         "HelloUltraviolet::Reference::Statements",
         "runStatementsBindingsReference",
         "Source/Reference/Statements/Bindings.uv"
@@ -207,7 +207,7 @@ public procedure validatedStatementsAndBlocksBindingStatementsObligations() -> u
     }
     if acceptedObligationEntryMatches(
         "rule.18.Prov-LetVar-Region-Alias",
-        69439usize,
+        69669usize,
         "HelloUltraviolet::Reference::Statements",
         "runStatementsBindingsReference",
         "Source/Reference/Statements/Bindings.uv"
@@ -216,7 +216,7 @@ public procedure validatedStatementsAndBlocksBindingStatementsObligations() -> u
     }
     if acceptedObligationEntryMatches(
         "rule.18.Prov-LetVar-Region-Fresh",
-        69455usize,
+        69685usize,
         "HelloUltraviolet::Reference::Statements",
         "runStatementsBindingsReference",
         "Source/Reference/Statements/Bindings.uv"
@@ -225,7 +225,7 @@ public procedure validatedStatementsAndBlocksBindingStatementsObligations() -> u
     }
     if acceptedObligationEntryMatches(
         "def.18.BindVal",
-        69473usize,
+        69703usize,
         "HelloUltraviolet::Reference::Statements",
         "runStatementsBindingsReference",
         "Source/Reference/Statements/Bindings.uv"
@@ -234,7 +234,7 @@ public procedure validatedStatementsAndBlocksBindingStatementsObligations() -> u
     }
     if acceptedObligationEntryMatches(
         "def.18.BindPatternRuntimeHelpers",
-        69486usize,
+        69716usize,
         "HelloUltraviolet::Reference::Statements",
         "runStatementsBindingsReference",
         "Source/Reference/Statements/Bindings.uv"
@@ -243,7 +243,7 @@ public procedure validatedStatementsAndBlocksBindingStatementsObligations() -> u
     }
     if acceptedObligationEntryMatches(
         "rule.18.BindList-Empty",
-        69500usize,
+        69730usize,
         "HelloUltraviolet::Reference::Statements",
         "runStatementsBindingsReference",
         "Source/Reference/Statements/Bindings.uv"
@@ -252,7 +252,7 @@ public procedure validatedStatementsAndBlocksBindingStatementsObligations() -> u
     }
     if acceptedObligationEntryMatches(
         "rule.18.BindList-Cons",
-        69515usize,
+        69745usize,
         "HelloUltraviolet::Reference::Statements",
         "runStatementsBindingsReference",
         "Source/Reference/Statements/Bindings.uv"
@@ -261,7 +261,7 @@ public procedure validatedStatementsAndBlocksBindingStatementsObligations() -> u
     }
     if acceptedObligationEntryMatches(
         "def.18.BindPattern",
-        69531usize,
+        69761usize,
         "HelloUltraviolet::Reference::Statements",
         "runStatementsBindingsReference",
         "Source/Reference/Statements/Bindings.uv"
@@ -270,7 +270,7 @@ public procedure validatedStatementsAndBlocksBindingStatementsObligations() -> u
     }
     if acceptedObligationEntryMatches(
         "rule.18.ExecSigma-Let",
-        69544usize,
+        69774usize,
         "HelloUltraviolet::Reference::Statements",
         "runStatementsBindingsReference",
         "Source/Reference/Statements/Bindings.uv"
@@ -279,7 +279,7 @@ public procedure validatedStatementsAndBlocksBindingStatementsObligations() -> u
     }
     if acceptedObligationEntryMatches(
         "rule.18.ExecSigma-Let-Ctrl",
-        69560usize,
+        69790usize,
         "HelloUltraviolet::Reference::Statements",
         "runStatementsBindingsReference",
         "Source/Reference/Statements/Bindings.uv"
@@ -288,7 +288,7 @@ public procedure validatedStatementsAndBlocksBindingStatementsObligations() -> u
     }
     if acceptedObligationEntryMatches(
         "req.18.VarExecutionMirrorsLet",
-        69576usize,
+        69806usize,
         "HelloUltraviolet::Reference::Statements",
         "runStatementsBindingsReference",
         "Source/Reference/Statements/Bindings.uv"
@@ -297,7 +297,7 @@ public procedure validatedStatementsAndBlocksBindingStatementsObligations() -> u
     }
     if acceptedObligationEntryMatches(
         "rule.18.Lower-Stmt-Let",
-        69591usize,
+        69821usize,
         "HelloUltraviolet::Reference::Statements",
         "runStatementsBindingsReference",
         "Source/Reference/Statements/Bindings.uv"
@@ -306,7 +306,7 @@ public procedure validatedStatementsAndBlocksBindingStatementsObligations() -> u
     }
     if acceptedObligationEntryMatches(
         "rule.18.Lower-Stmt-Var",
-        69607usize,
+        69837usize,
         "HelloUltraviolet::Reference::Statements",
         "runStatementsBindingsReference",
         "Source/Reference/Statements/Bindings.uv"
@@ -315,7 +315,7 @@ public procedure validatedStatementsAndBlocksBindingStatementsObligations() -> u
     }
     if rejectedSourceObligationEntryMatches(
         "diag.18.BindingStatements",
-        69625usize,
+        69855usize,
         "HelloUltraviolet::Audit::FixtureCatalog::RejectedSource",
         "validatedStatementsRejectedSourceFixtureCount",
         "Fixtures/RejectedSource/Statements/BindingStatementsDiagnostic/Source/Main.uv"

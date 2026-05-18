@@ -9,7 +9,7 @@ public procedure validatedModuleLevelFormsModuleAndFileAggregationObligations() 
     var count: usize = 0usize
     if acceptedObligationEntryMatches(
         "grammar.ModulePathSyntax",
-        31739usize,
+        31787usize,
         "HelloUltraviolet::Reference::Modules",
         "runModulesAggregationReference",
         "Source/Reference/Modules/Aggregation.uv"
@@ -18,33 +18,6 @@ public procedure validatedModuleLevelFormsModuleAndFileAggregationObligations() 
     }
     if acceptedObligationEntryMatches(
         "req.ModuleToFileMappingNoSurfaceSyntax",
-        31758usize,
-        "HelloUltraviolet::Reference::Modules",
-        "runModulesAggregationReference",
-        "Source/Reference/Modules/Aggregation.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
-        "req.ModulePathParserOwnership",
-        31772usize,
-        "HelloUltraviolet::Reference::Modules",
-        "runModulesAggregationReference",
-        "Source/Reference/Modules/Aggregation.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
-        "Parse-ModulePath",
-        31788usize,
-        "HelloUltraviolet::Reference::Modules",
-        "runModulesAggregationReference",
-        "Source/Reference/Modules/Aggregation.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
-        "Parse-ModulePathTail-End",
         31806usize,
         "HelloUltraviolet::Reference::Modules",
         "runModulesAggregationReference",
@@ -53,8 +26,35 @@ public procedure validatedModuleLevelFormsModuleAndFileAggregationObligations() 
         count = count + 1usize
     }
     if acceptedObligationEntryMatches(
+        "req.ModulePathParserOwnership",
+        31820usize,
+        "HelloUltraviolet::Reference::Modules",
+        "runModulesAggregationReference",
+        "Source/Reference/Modules/Aggregation.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "Parse-ModulePath",
+        31836usize,
+        "HelloUltraviolet::Reference::Modules",
+        "runModulesAggregationReference",
+        "Source/Reference/Modules/Aggregation.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "Parse-ModulePathTail-End",
+        31854usize,
+        "HelloUltraviolet::Reference::Modules",
+        "runModulesAggregationReference",
+        "Source/Reference/Modules/Aggregation.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
         "Parse-ModulePathTail-Cons",
-        31824usize,
+        31872usize,
         "HelloUltraviolet::Reference::Modules",
         "runModulesAggregationReference",
         "Source/Reference/Modules/Aggregation.uv"
@@ -63,7 +63,7 @@ public procedure validatedModuleLevelFormsModuleAndFileAggregationObligations() 
     }
     if acceptedObligationEntryMatches(
         "def.PathAstAliases",
-        31842usize,
+        31890usize,
         "HelloUltraviolet::Reference::Modules",
         "runModulesAggregationReference",
         "Source/Reference/Modules/Aggregation.uv"
@@ -72,7 +72,7 @@ public procedure validatedModuleLevelFormsModuleAndFileAggregationObligations() 
     }
     if acceptedObligationEntryMatches(
         "def.ASTModule",
-        31863usize,
+        31911usize,
         "HelloUltraviolet::Reference::Modules",
         "runModulesAggregationReference",
         "Source/Reference/Modules/Aggregation.uv"
@@ -81,7 +81,7 @@ public procedure validatedModuleLevelFormsModuleAndFileAggregationObligations() 
     }
     if acceptedObligationEntryMatches(
         "def.ASTFile",
-        31880usize,
+        31928usize,
         "HelloUltraviolet::Reference::Modules",
         "runModulesAggregationReference",
         "Source/Reference/Modules/Aggregation.uv"
@@ -90,7 +90,7 @@ public procedure validatedModuleLevelFormsModuleAndFileAggregationObligations() 
     }
     if acceptedObligationEntryMatches(
         "req.ModuleAggregationStaticSemanticsScope",
-        31900usize,
+        31948usize,
         "HelloUltraviolet::Reference::Modules",
         "runModulesAggregationReference",
         "Source/Reference/Modules/Aggregation.uv"
@@ -99,7 +99,7 @@ public procedure validatedModuleLevelFormsModuleAndFileAggregationObligations() 
     }
     if acceptedObligationEntryMatches(
         "Module-Path-Root",
-        31916usize,
+        31964usize,
         "HelloUltraviolet::Reference::Modules",
         "runModulesAggregationReference",
         "Source/Reference/Modules/Aggregation.uv"
@@ -108,7 +108,7 @@ public procedure validatedModuleLevelFormsModuleAndFileAggregationObligations() 
     }
     if acceptedObligationEntryMatches(
         "Module-Path-Rel",
-        31934usize,
+        31982usize,
         "HelloUltraviolet::Reference::Modules",
         "runModulesAggregationReference",
         "Source/Reference/Modules/Aggregation.uv"
@@ -117,7 +117,7 @@ public procedure validatedModuleLevelFormsModuleAndFileAggregationObligations() 
     }
     if acceptedObligationEntryMatches(
         "Module-Path-Rel-Fail",
-        31952usize,
+        32000usize,
         "HelloUltraviolet::Reference::Modules",
         "runModulesAggregationReference",
         "Source/Reference/Modules/Aggregation.uv"
@@ -126,7 +126,7 @@ public procedure validatedModuleLevelFormsModuleAndFileAggregationObligations() 
     }
     if acceptedObligationEntryMatches(
         "def.ModuleDirOf",
-        31970usize,
+        32018usize,
         "HelloUltraviolet::Reference::Modules",
         "runModulesAggregationReference",
         "Source/Reference/Modules/Aggregation.uv"
@@ -135,7 +135,7 @@ public procedure validatedModuleLevelFormsModuleAndFileAggregationObligations() 
     }
     if acceptedObligationEntryMatches(
         "def.ProjectModuleView",
-        31985usize,
+        32033usize,
         "HelloUltraviolet::Reference::Modules",
         "runModulesAggregationReference",
         "Source/Reference/Modules/Aggregation.uv"
@@ -144,7 +144,7 @@ public procedure validatedModuleLevelFormsModuleAndFileAggregationObligations() 
     }
     if acceptedObligationEntryMatches(
         "def.SourceRootOfModule",
-        32003usize,
+        32051usize,
         "HelloUltraviolet::Reference::Modules",
         "runModulesAggregationReference",
         "Source/Reference/Modules/Aggregation.uv"
@@ -153,7 +153,7 @@ public procedure validatedModuleLevelFormsModuleAndFileAggregationObligations() 
     }
     if acceptedObligationEntryMatches(
         "def.WFModulePathJudgementSet",
-        32017usize,
+        32065usize,
         "HelloUltraviolet::Reference::Modules",
         "runModulesAggregationReference",
         "Source/Reference/Modules/Aggregation.uv"
@@ -162,7 +162,7 @@ public procedure validatedModuleLevelFormsModuleAndFileAggregationObligations() 
     }
     if acceptedObligationEntryMatches(
         "WF-Module-Path-Ok",
-        32031usize,
+        32079usize,
         "HelloUltraviolet::Reference::Modules",
         "runModulesAggregationReference",
         "Source/Reference/Modules/Aggregation.uv"
@@ -171,7 +171,7 @@ public procedure validatedModuleLevelFormsModuleAndFileAggregationObligations() 
     }
     if rejectedSourceObligationEntryMatches(
         "WF-Module-Path-Reserved",
-        32049usize,
+        32097usize,
         "HelloUltraviolet::Audit::FixtureCatalog::RejectedSource",
         "validatedModulesRejectedSourceFixtureCount",
         "Fixtures/RejectedSource/Modules/ReservedModuleKeyword/Source/if/Main.uv"
@@ -180,7 +180,7 @@ public procedure validatedModuleLevelFormsModuleAndFileAggregationObligations() 
     }
     if acceptedObligationEntryMatches(
         "WF-Module-Path-Ident-Err",
-        32067usize,
+        32115usize,
         "HelloUltraviolet::Reference::Modules",
         "runModulesAggregationReference",
         "Source/Reference/Modules/Aggregation.uv"
@@ -189,7 +189,7 @@ public procedure validatedModuleLevelFormsModuleAndFileAggregationObligations() 
     }
     if acceptedObligationEntryMatches(
         "WF-Module-Path-Collision",
-        32085usize,
+        32133usize,
         "HelloUltraviolet::Reference::Modules",
         "runModulesAggregationReference",
         "Source/Reference/Modules/Aggregation.uv"
@@ -198,7 +198,7 @@ public procedure validatedModuleLevelFormsModuleAndFileAggregationObligations() 
     }
     if acceptedObligationEntryMatches(
         "def.ModuleAggregationInputsOutputs",
-        32103usize,
+        32151usize,
         "HelloUltraviolet::Reference::Modules",
         "runModulesAggregationReference",
         "Source/Reference/Modules/Aggregation.uv"
@@ -207,7 +207,7 @@ public procedure validatedModuleLevelFormsModuleAndFileAggregationObligations() 
     }
     if acceptedObligationEntryMatches(
         "def.ModuleMap",
-        32120usize,
+        32168usize,
         "HelloUltraviolet::Reference::Modules",
         "runModulesAggregationReference",
         "Source/Reference/Modules/Aggregation.uv"
@@ -216,7 +216,7 @@ public procedure validatedModuleLevelFormsModuleAndFileAggregationObligations() 
     }
     if acceptedObligationEntryMatches(
         "def.ASTModuleOfProjectPath",
-        32134usize,
+        32182usize,
         "HelloUltraviolet::Reference::Modules",
         "runModulesAggregationReference",
         "Source/Reference/Modules/Aggregation.uv"
@@ -225,7 +225,7 @@ public procedure validatedModuleLevelFormsModuleAndFileAggregationObligations() 
     }
     if acceptedObligationEntryMatches(
         "def.PathOfModule",
-        32148usize,
+        32196usize,
         "HelloUltraviolet::Reference::Modules",
         "runModulesAggregationReference",
         "Source/Reference/Modules/Aggregation.uv"
@@ -234,7 +234,7 @@ public procedure validatedModuleLevelFormsModuleAndFileAggregationObligations() 
     }
     if acceptedObligationEntryMatches(
         "def.NameCollectAfterParse",
-        32162usize,
+        32210usize,
         "HelloUltraviolet::Reference::Modules",
         "runModulesAggregationReference",
         "Source/Reference/Modules/Aggregation.uv"
@@ -243,7 +243,7 @@ public procedure validatedModuleLevelFormsModuleAndFileAggregationObligations() 
     }
     if acceptedObligationEntryMatches(
         "def.ParseModuleRuleReference",
-        32178usize,
+        32226usize,
         "HelloUltraviolet::Reference::Modules",
         "runModulesAggregationReference",
         "Source/Reference/Modules/Aggregation.uv"
@@ -252,7 +252,7 @@ public procedure validatedModuleLevelFormsModuleAndFileAggregationObligations() 
     }
     if acceptedObligationEntryMatches(
         "def.ParseModuleBigStepInputs",
-        32192usize,
+        32240usize,
         "HelloUltraviolet::Reference::Modules",
         "runModulesAggregationReference",
         "Source/Reference/Modules/Aggregation.uv"
@@ -261,7 +261,7 @@ public procedure validatedModuleLevelFormsModuleAndFileAggregationObligations() 
     }
     if acceptedObligationEntryMatches(
         "ReadBytes-Ok",
-        32209usize,
+        32257usize,
         "HelloUltraviolet::Reference::Modules",
         "runModulesAggregationReference",
         "Source/Reference/Modules/Aggregation.uv"
@@ -270,7 +270,7 @@ public procedure validatedModuleLevelFormsModuleAndFileAggregationObligations() 
     }
     if acceptedObligationEntryMatches(
         "ReadBytes-Err",
-        32227usize,
+        32275usize,
         "HelloUltraviolet::Reference::Modules",
         "runModulesAggregationReference",
         "Source/Reference/Modules/Aggregation.uv"
@@ -279,7 +279,7 @@ public procedure validatedModuleLevelFormsModuleAndFileAggregationObligations() 
     }
     if acceptedObligationEntryMatches(
         "def.BytesOfFile",
-        32245usize,
+        32293usize,
         "HelloUltraviolet::Reference::Modules",
         "runModulesAggregationReference",
         "Source/Reference/Modules/Aggregation.uv"
@@ -288,7 +288,7 @@ public procedure validatedModuleLevelFormsModuleAndFileAggregationObligations() 
     }
     if acceptedObligationEntryMatches(
         "ParseModule-Ok",
-        32259usize,
+        32307usize,
         "HelloUltraviolet::Reference::Modules",
         "runModulesAggregationReference",
         "Source/Reference/Modules/Aggregation.uv"
@@ -297,7 +297,7 @@ public procedure validatedModuleLevelFormsModuleAndFileAggregationObligations() 
     }
     if acceptedObligationEntryMatches(
         "ParseModule-Err-Read",
-        32277usize,
+        32325usize,
         "HelloUltraviolet::Reference::Modules",
         "runModulesAggregationReference",
         "Source/Reference/Modules/Aggregation.uv"
@@ -306,7 +306,7 @@ public procedure validatedModuleLevelFormsModuleAndFileAggregationObligations() 
     }
     if acceptedObligationEntryMatches(
         "ParseModule-Err-Load",
-        32295usize,
+        32343usize,
         "HelloUltraviolet::Reference::Modules",
         "runModulesAggregationReference",
         "Source/Reference/Modules/Aggregation.uv"
@@ -315,7 +315,7 @@ public procedure validatedModuleLevelFormsModuleAndFileAggregationObligations() 
     }
     if acceptedObligationEntryMatches(
         "req.LoadSourceShortCircuit",
-        32313usize,
+        32361usize,
         "HelloUltraviolet::Reference::Modules",
         "runModulesAggregationReference",
         "Source/Reference/Modules/Aggregation.uv"
@@ -324,7 +324,7 @@ public procedure validatedModuleLevelFormsModuleAndFileAggregationObligations() 
     }
     if acceptedObligationEntryMatches(
         "ParseModule-Err-Unit",
-        32328usize,
+        32376usize,
         "HelloUltraviolet::Reference::Modules",
         "runModulesAggregationReference",
         "Source/Reference/Modules/Aggregation.uv"
@@ -333,7 +333,7 @@ public procedure validatedModuleLevelFormsModuleAndFileAggregationObligations() 
     }
     if acceptedObligationEntryMatches(
         "ParseModule-Err-Parse",
-        32346usize,
+        32394usize,
         "HelloUltraviolet::Reference::Modules",
         "runModulesAggregationReference",
         "Source/Reference/Modules/Aggregation.uv"
@@ -342,7 +342,7 @@ public procedure validatedModuleLevelFormsModuleAndFileAggregationObligations() 
     }
     if acceptedObligationEntryMatches(
         "def.ParseFileBestEffort",
-        32364usize,
+        32412usize,
         "HelloUltraviolet::Reference::Modules",
         "runModulesAggregationReference",
         "Source/Reference/Modules/Aggregation.uv"
@@ -351,7 +351,7 @@ public procedure validatedModuleLevelFormsModuleAndFileAggregationObligations() 
     }
     if acceptedObligationEntryMatches(
         "def.ParseFileOk",
-        32378usize,
+        32426usize,
         "HelloUltraviolet::Reference::Modules",
         "runModulesAggregationReference",
         "Source/Reference/Modules/Aggregation.uv"
@@ -360,7 +360,7 @@ public procedure validatedModuleLevelFormsModuleAndFileAggregationObligations() 
     }
     if acceptedObligationEntryMatches(
         "def.ParseFileDiag",
-        32392usize,
+        32440usize,
         "HelloUltraviolet::Reference::Modules",
         "runModulesAggregationReference",
         "Source/Reference/Modules/Aggregation.uv"
@@ -369,7 +369,7 @@ public procedure validatedModuleLevelFormsModuleAndFileAggregationObligations() 
     }
     if acceptedObligationEntryMatches(
         "def.HasErrorDiagnostics",
-        32406usize,
+        32454usize,
         "HelloUltraviolet::Reference::Modules",
         "runModulesAggregationReference",
         "Source/Reference/Modules/Aggregation.uv"
@@ -378,7 +378,7 @@ public procedure validatedModuleLevelFormsModuleAndFileAggregationObligations() 
     }
     if acceptedObligationEntryMatches(
         "def.ModState",
-        32420usize,
+        32468usize,
         "HelloUltraviolet::Reference::Modules",
         "runModulesAggregationReference",
         "Source/Reference/Modules/Aggregation.uv"
@@ -387,7 +387,7 @@ public procedure validatedModuleLevelFormsModuleAndFileAggregationObligations() 
     }
     if acceptedObligationEntryMatches(
         "Mod-Start",
-        32435usize,
+        32483usize,
         "HelloUltraviolet::Reference::Modules",
         "runModulesAggregationReference",
         "Source/Reference/Modules/Aggregation.uv"
@@ -396,7 +396,7 @@ public procedure validatedModuleLevelFormsModuleAndFileAggregationObligations() 
     }
     if acceptedObligationEntryMatches(
         "Mod-Start-Err-Unit",
-        32453usize,
+        32501usize,
         "HelloUltraviolet::Reference::Modules",
         "runModulesAggregationReference",
         "Source/Reference/Modules/Aggregation.uv"
@@ -405,7 +405,7 @@ public procedure validatedModuleLevelFormsModuleAndFileAggregationObligations() 
     }
     if acceptedObligationEntryMatches(
         "Mod-Scan",
-        32471usize,
+        32519usize,
         "HelloUltraviolet::Reference::Modules",
         "runModulesAggregationReference",
         "Source/Reference/Modules/Aggregation.uv"
@@ -414,7 +414,7 @@ public procedure validatedModuleLevelFormsModuleAndFileAggregationObligations() 
     }
     if acceptedObligationEntryMatches(
         "Mod-Scan-Err-Read",
-        32489usize,
+        32537usize,
         "HelloUltraviolet::Reference::Modules",
         "runModulesAggregationReference",
         "Source/Reference/Modules/Aggregation.uv"
@@ -423,7 +423,7 @@ public procedure validatedModuleLevelFormsModuleAndFileAggregationObligations() 
     }
     if acceptedObligationEntryMatches(
         "Mod-Scan-Err-Load",
-        32507usize,
+        32555usize,
         "HelloUltraviolet::Reference::Modules",
         "runModulesAggregationReference",
         "Source/Reference/Modules/Aggregation.uv"
@@ -432,7 +432,7 @@ public procedure validatedModuleLevelFormsModuleAndFileAggregationObligations() 
     }
     if acceptedObligationEntryMatches(
         "Mod-Scan-Err-Parse",
-        32525usize,
+        32573usize,
         "HelloUltraviolet::Reference::Modules",
         "runModulesAggregationReference",
         "Source/Reference/Modules/Aggregation.uv"
@@ -441,7 +441,7 @@ public procedure validatedModuleLevelFormsModuleAndFileAggregationObligations() 
     }
     if acceptedObligationEntryMatches(
         "Mod-Done",
-        32543usize,
+        32591usize,
         "HelloUltraviolet::Reference::Modules",
         "runModulesAggregationReference",
         "Source/Reference/Modules/Aggregation.uv"
@@ -450,7 +450,7 @@ public procedure validatedModuleLevelFormsModuleAndFileAggregationObligations() 
     }
     if acceptedObligationEntryMatches(
         "def.ParseModulesBigStepInputs",
-        32560usize,
+        32608usize,
         "HelloUltraviolet::Reference::Modules",
         "runModulesAggregationReference",
         "Source/Reference/Modules/Aggregation.uv"
@@ -459,7 +459,7 @@ public procedure validatedModuleLevelFormsModuleAndFileAggregationObligations() 
     }
     if acceptedObligationEntryMatches(
         "ParseModules-Ok",
-        32576usize,
+        32624usize,
         "HelloUltraviolet::Reference::Modules",
         "runModulesAggregationReference",
         "Source/Reference/Modules/Aggregation.uv"
@@ -468,7 +468,7 @@ public procedure validatedModuleLevelFormsModuleAndFileAggregationObligations() 
     }
     if acceptedObligationEntryMatches(
         "ParseModules-Err",
-        32594usize,
+        32642usize,
         "HelloUltraviolet::Reference::Modules",
         "runModulesAggregationReference",
         "Source/Reference/Modules/Aggregation.uv"
@@ -477,7 +477,7 @@ public procedure validatedModuleLevelFormsModuleAndFileAggregationObligations() 
     }
     if acceptedObligationEntryMatches(
         "def.DiscState",
-        32612usize,
+        32660usize,
         "HelloUltraviolet::Reference::Modules",
         "runModulesAggregationReference",
         "Source/Reference/Modules/Aggregation.uv"
@@ -486,7 +486,7 @@ public procedure validatedModuleLevelFormsModuleAndFileAggregationObligations() 
     }
     if acceptedObligationEntryMatches(
         "Disc-Start",
-        32626usize,
+        32674usize,
         "HelloUltraviolet::Reference::Modules",
         "runModulesAggregationReference",
         "Source/Reference/Modules/Aggregation.uv"
@@ -495,7 +495,7 @@ public procedure validatedModuleLevelFormsModuleAndFileAggregationObligations() 
     }
     if acceptedObligationEntryMatches(
         "Disc-Skip",
-        32643usize,
+        32691usize,
         "HelloUltraviolet::Reference::Modules",
         "runModulesAggregationReference",
         "Source/Reference/Modules/Aggregation.uv"
@@ -504,7 +504,7 @@ public procedure validatedModuleLevelFormsModuleAndFileAggregationObligations() 
     }
     if acceptedObligationEntryMatches(
         "Disc-Add",
-        32661usize,
+        32709usize,
         "HelloUltraviolet::Reference::Modules",
         "runModulesAggregationReference",
         "Source/Reference/Modules/Aggregation.uv"
@@ -513,7 +513,7 @@ public procedure validatedModuleLevelFormsModuleAndFileAggregationObligations() 
     }
     if acceptedObligationEntryMatches(
         "Disc-Collision",
-        32679usize,
+        32727usize,
         "HelloUltraviolet::Reference::Modules",
         "runModulesAggregationReference",
         "Source/Reference/Modules/Aggregation.uv"
@@ -522,7 +522,7 @@ public procedure validatedModuleLevelFormsModuleAndFileAggregationObligations() 
     }
     if acceptedObligationEntryMatches(
         "Disc-Invalid-Component",
-        32697usize,
+        32745usize,
         "HelloUltraviolet::Reference::Modules",
         "runModulesAggregationReference",
         "Source/Reference/Modules/Aggregation.uv"
@@ -531,7 +531,7 @@ public procedure validatedModuleLevelFormsModuleAndFileAggregationObligations() 
     }
     if acceptedObligationEntryMatches(
         "Disc-Rel-Fail",
-        32715usize,
+        32763usize,
         "HelloUltraviolet::Reference::Modules",
         "runModulesAggregationReference",
         "Source/Reference/Modules/Aggregation.uv"
@@ -540,7 +540,7 @@ public procedure validatedModuleLevelFormsModuleAndFileAggregationObligations() 
     }
     if acceptedObligationEntryMatches(
         "Disc-Done",
-        32733usize,
+        32781usize,
         "HelloUltraviolet::Reference::Modules",
         "runModulesAggregationReference",
         "Source/Reference/Modules/Aggregation.uv"
@@ -549,33 +549,6 @@ public procedure validatedModuleLevelFormsModuleAndFileAggregationObligations() 
     }
     if acceptedObligationEntryMatches(
         "def.QualifiedLookupContext",
-        32751usize,
-        "HelloUltraviolet::Reference::Modules",
-        "runModulesAggregationReference",
-        "Source/Reference/Modules/Aggregation.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
-        "def.ModuleAssemblyPathHelpers",
-        32768usize,
-        "HelloUltraviolet::Reference::Modules",
-        "runModulesAggregationReference",
-        "Source/Reference/Modules/Aggregation.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
-        "def.ImportDeclarationsOfModule",
-        32784usize,
-        "HelloUltraviolet::Reference::Modules",
-        "runModulesAggregationReference",
-        "Source/Reference/Modules/Aggregation.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
-        "def.VisibleModulesAndNames",
         32799usize,
         "HelloUltraviolet::Reference::Modules",
         "runModulesAggregationReference",
@@ -584,8 +557,35 @@ public procedure validatedModuleLevelFormsModuleAndFileAggregationObligations() 
         count = count + 1usize
     }
     if acceptedObligationEntryMatches(
+        "def.ModuleAssemblyPathHelpers",
+        32816usize,
+        "HelloUltraviolet::Reference::Modules",
+        "runModulesAggregationReference",
+        "Source/Reference/Modules/Aggregation.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "def.ImportDeclarationsOfModule",
+        32832usize,
+        "HelloUltraviolet::Reference::Modules",
+        "runModulesAggregationReference",
+        "Source/Reference/Modules/Aggregation.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "def.VisibleModulesAndNames",
+        32847usize,
+        "HelloUltraviolet::Reference::Modules",
+        "runModulesAggregationReference",
+        "Source/Reference/Modules/Aggregation.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
         "def.ModulePathPrefix",
-        32821usize,
+        32869usize,
         "HelloUltraviolet::Reference::Modules",
         "runModulesAggregationReference",
         "Source/Reference/Modules/Aggregation.uv"
@@ -594,7 +594,7 @@ public procedure validatedModuleLevelFormsModuleAndFileAggregationObligations() 
     }
     if acceptedObligationEntryMatches(
         "AliasExpand-None",
-        32837usize,
+        32885usize,
         "HelloUltraviolet::Reference::Modules",
         "runModulesAggregationReference",
         "Source/Reference/Modules/Aggregation.uv"
@@ -603,7 +603,7 @@ public procedure validatedModuleLevelFormsModuleAndFileAggregationObligations() 
     }
     if acceptedObligationEntryMatches(
         "AliasExpand-Yes",
-        32855usize,
+        32903usize,
         "HelloUltraviolet::Reference::Modules",
         "runModulesAggregationReference",
         "Source/Reference/Modules/Aggregation.uv"
@@ -612,7 +612,7 @@ public procedure validatedModuleLevelFormsModuleAndFileAggregationObligations() 
     }
     if acceptedObligationEntryMatches(
         "def.CurrentAsmPath",
-        32873usize,
+        32921usize,
         "HelloUltraviolet::Reference::Modules",
         "runModulesAggregationReference",
         "Source/Reference/Modules/Aggregation.uv"
@@ -621,7 +621,7 @@ public procedure validatedModuleLevelFormsModuleAndFileAggregationObligations() 
     }
     if acceptedObligationEntryMatches(
         "ModulePrefix-Direct",
-        32887usize,
+        32935usize,
         "HelloUltraviolet::Reference::Modules",
         "runModulesAggregationReference",
         "Source/Reference/Modules/Aggregation.uv"
@@ -630,7 +630,7 @@ public procedure validatedModuleLevelFormsModuleAndFileAggregationObligations() 
     }
     if acceptedObligationEntryMatches(
         "ModulePrefix-Current",
-        32905usize,
+        32953usize,
         "HelloUltraviolet::Reference::Modules",
         "runModulesAggregationReference",
         "Source/Reference/Modules/Aggregation.uv"
@@ -639,7 +639,7 @@ public procedure validatedModuleLevelFormsModuleAndFileAggregationObligations() 
     }
     if acceptedObligationEntryMatches(
         "ModulePrefix-None",
-        32923usize,
+        32971usize,
         "HelloUltraviolet::Reference::Modules",
         "runModulesAggregationReference",
         "Source/Reference/Modules/Aggregation.uv"
@@ -648,7 +648,7 @@ public procedure validatedModuleLevelFormsModuleAndFileAggregationObligations() 
     }
     if acceptedObligationEntryMatches(
         "Resolve-ModulePath-Direct",
-        32941usize,
+        32989usize,
         "HelloUltraviolet::Reference::Modules",
         "runModulesAggregationReference",
         "Source/Reference/Modules/Aggregation.uv"
@@ -657,7 +657,7 @@ public procedure validatedModuleLevelFormsModuleAndFileAggregationObligations() 
     }
     if acceptedObligationEntryMatches(
         "Resolve-ModulePath-Current",
-        32959usize,
+        33007usize,
         "HelloUltraviolet::Reference::Modules",
         "runModulesAggregationReference",
         "Source/Reference/Modules/Aggregation.uv"
@@ -666,7 +666,7 @@ public procedure validatedModuleLevelFormsModuleAndFileAggregationObligations() 
     }
     if acceptedObligationEntryMatches(
         "ResolveModulePath-Err",
-        32977usize,
+        33025usize,
         "HelloUltraviolet::Reference::Modules",
         "runModulesAggregationReference",
         "Source/Reference/Modules/Aggregation.uv"
@@ -675,7 +675,7 @@ public procedure validatedModuleLevelFormsModuleAndFileAggregationObligations() 
     }
     if acceptedObligationEntryMatches(
         "def.ModuleByPath",
-        32995usize,
+        33043usize,
         "HelloUltraviolet::Reference::Modules",
         "runModulesAggregationReference",
         "Source/Reference/Modules/Aggregation.uv"
@@ -684,7 +684,7 @@ public procedure validatedModuleLevelFormsModuleAndFileAggregationObligations() 
     }
     if acceptedObligationEntryMatches(
         "def.ModuleOfPath",
-        33009usize,
+        33057usize,
         "HelloUltraviolet::Reference::Modules",
         "runModulesAggregationReference",
         "Source/Reference/Modules/Aggregation.uv"
@@ -693,7 +693,7 @@ public procedure validatedModuleLevelFormsModuleAndFileAggregationObligations() 
     }
     if acceptedObligationEntryMatches(
         "def.ItemNames",
-        33023usize,
+        33071usize,
         "HelloUltraviolet::Reference::Modules",
         "runModulesAggregationReference",
         "Source/Reference/Modules/Aggregation.uv"
@@ -702,7 +702,7 @@ public procedure validatedModuleLevelFormsModuleAndFileAggregationObligations() 
     }
     if acceptedObligationEntryMatches(
         "ItemOfPath",
-        33037usize,
+        33085usize,
         "HelloUltraviolet::Reference::Modules",
         "runModulesAggregationReference",
         "Source/Reference/Modules/Aggregation.uv"
@@ -711,7 +711,7 @@ public procedure validatedModuleLevelFormsModuleAndFileAggregationObligations() 
     }
     if acceptedObligationEntryMatches(
         "ItemOfPath-None",
-        33055usize,
+        33103usize,
         "HelloUltraviolet::Reference::Modules",
         "runModulesAggregationReference",
         "Source/Reference/Modules/Aggregation.uv"
@@ -720,7 +720,7 @@ public procedure validatedModuleLevelFormsModuleAndFileAggregationObligations() 
     }
     if acceptedObligationEntryMatches(
         "def.ImportCoveragePredicates",
-        33073usize,
+        33121usize,
         "HelloUltraviolet::Reference::Modules",
         "runModulesAggregationReference",
         "Source/Reference/Modules/Aggregation.uv"
@@ -729,7 +729,7 @@ public procedure validatedModuleLevelFormsModuleAndFileAggregationObligations() 
     }
     if acceptedObligationEntryMatches(
         "def.ImportOkJudgementSet",
-        33088usize,
+        33136usize,
         "HelloUltraviolet::Reference::Modules",
         "runModulesAggregationReference",
         "Source/Reference/Modules/Aggregation.uv"
@@ -738,7 +738,7 @@ public procedure validatedModuleLevelFormsModuleAndFileAggregationObligations() 
     }
     if acceptedObligationEntryMatches(
         "Import-Ok-Local",
-        33102usize,
+        33150usize,
         "HelloUltraviolet::Reference::Modules",
         "runModulesAggregationReference",
         "Source/Reference/Modules/Aggregation.uv"
@@ -747,7 +747,7 @@ public procedure validatedModuleLevelFormsModuleAndFileAggregationObligations() 
     }
     if acceptedObligationEntryMatches(
         "Import-Ok-Covered",
-        33120usize,
+        33168usize,
         "HelloUltraviolet::Reference::Modules",
         "runModulesAggregationReference",
         "Source/Reference/Modules/Aggregation.uv"
@@ -756,7 +756,7 @@ public procedure validatedModuleLevelFormsModuleAndFileAggregationObligations() 
     }
     if acceptedObligationEntryMatches(
         "Import-Ok-Err",
-        33138usize,
+        33186usize,
         "HelloUltraviolet::Reference::Modules",
         "runModulesAggregationReference",
         "Source/Reference/Modules/Aggregation.uv"
@@ -765,7 +765,7 @@ public procedure validatedModuleLevelFormsModuleAndFileAggregationObligations() 
     }
     if acceptedObligationEntryMatches(
         "Resolve-Import-Direct",
-        33156usize,
+        33204usize,
         "HelloUltraviolet::Reference::Modules",
         "runModulesAggregationReference",
         "Source/Reference/Modules/Aggregation.uv"
@@ -774,7 +774,7 @@ public procedure validatedModuleLevelFormsModuleAndFileAggregationObligations() 
     }
     if acceptedObligationEntryMatches(
         "Resolve-Import-Current",
-        33174usize,
+        33222usize,
         "HelloUltraviolet::Reference::Modules",
         "runModulesAggregationReference",
         "Source/Reference/Modules/Aggregation.uv"
@@ -783,7 +783,7 @@ public procedure validatedModuleLevelFormsModuleAndFileAggregationObligations() 
     }
     if rejectedSourceObligationEntryMatches(
         "Resolve-Import-Err",
-        33192usize,
+        33240usize,
         "HelloUltraviolet::Audit::FixtureCatalog::RejectedSource",
         "validatedModulesRejectedSourceFixtureCount",
         "Fixtures/RejectedSource/Modules/MissingImport/Source/Main.uv"
@@ -792,7 +792,7 @@ public procedure validatedModuleLevelFormsModuleAndFileAggregationObligations() 
     }
     if acceptedObligationEntryMatches(
         "Resolve-Using-Ok",
-        33210usize,
+        33258usize,
         "HelloUltraviolet::Reference::Modules",
         "runModulesAggregationReference",
         "Source/Reference/Modules/Aggregation.uv"
@@ -801,7 +801,7 @@ public procedure validatedModuleLevelFormsModuleAndFileAggregationObligations() 
     }
     if acceptedObligationEntryMatches(
         "Resolve-Using-Err",
-        33228usize,
+        33276usize,
         "HelloUltraviolet::Reference::Modules",
         "runModulesAggregationReference",
         "Source/Reference/Modules/Aggregation.uv"
@@ -810,7 +810,7 @@ public procedure validatedModuleLevelFormsModuleAndFileAggregationObligations() 
     }
     if acceptedObligationEntryMatches(
         "req.ResolvedItemAccessibilityOwnedByVisibilityChapter",
-        33246usize,
+        33294usize,
         "HelloUltraviolet::Reference::Modules",
         "runModulesAggregationReference",
         "Source/Reference/Modules/Aggregation.uv"
@@ -819,7 +819,7 @@ public procedure validatedModuleLevelFormsModuleAndFileAggregationObligations() 
     }
     if acceptedObligationEntryMatches(
         "def.ModuleInitializationDependencyEnvironment",
-        33261usize,
+        33309usize,
         "HelloUltraviolet::Reference::Modules",
         "runModulesAggregationReference",
         "Source/Reference/Modules/Aggregation.uv"
@@ -828,7 +828,7 @@ public procedure validatedModuleLevelFormsModuleAndFileAggregationObligations() 
     }
     if acceptedObligationEntryMatches(
         "Reachable-Edge",
-        33277usize,
+        33325usize,
         "HelloUltraviolet::Reference::Modules",
         "runModulesAggregationReference",
         "Source/Reference/Modules/Aggregation.uv"
@@ -837,33 +837,6 @@ public procedure validatedModuleLevelFormsModuleAndFileAggregationObligations() 
     }
     if acceptedObligationEntryMatches(
         "Reachable-Step",
-        33295usize,
-        "HelloUltraviolet::Reference::Modules",
-        "runModulesAggregationReference",
-        "Source/Reference/Modules/Aggregation.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
-        "def.ModuleInitializationPathHelpers",
-        33313usize,
-        "HelloUltraviolet::Reference::Modules",
-        "runModulesAggregationReference",
-        "Source/Reference/Modules/Aggregation.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
-        "def.TypeRefsJudgementSet",
-        33329usize,
-        "HelloUltraviolet::Reference::Modules",
-        "runModulesAggregationReference",
-        "Source/Reference/Modules/Aggregation.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
-        "def.TypeReferenceEnvironmentAliases",
         33343usize,
         "HelloUltraviolet::Reference::Modules",
         "runModulesAggregationReference",
@@ -872,8 +845,8 @@ public procedure validatedModuleLevelFormsModuleAndFileAggregationObligations() 
         count = count + 1usize
     }
     if acceptedObligationEntryMatches(
-        "TypeRef-Path",
-        33359usize,
+        "def.ModuleInitializationPathHelpers",
+        33361usize,
         "HelloUltraviolet::Reference::Modules",
         "runModulesAggregationReference",
         "Source/Reference/Modules/Aggregation.uv"
@@ -881,7 +854,7 @@ public procedure validatedModuleLevelFormsModuleAndFileAggregationObligations() 
         count = count + 1usize
     }
     if acceptedObligationEntryMatches(
-        "TypeRef-Using",
+        "def.TypeRefsJudgementSet",
         33377usize,
         "HelloUltraviolet::Reference::Modules",
         "runModulesAggregationReference",
@@ -890,8 +863,35 @@ public procedure validatedModuleLevelFormsModuleAndFileAggregationObligations() 
         count = count + 1usize
     }
     if acceptedObligationEntryMatches(
+        "def.TypeReferenceEnvironmentAliases",
+        33391usize,
+        "HelloUltraviolet::Reference::Modules",
+        "runModulesAggregationReference",
+        "Source/Reference/Modules/Aggregation.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "TypeRef-Path",
+        33407usize,
+        "HelloUltraviolet::Reference::Modules",
+        "runModulesAggregationReference",
+        "Source/Reference/Modules/Aggregation.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "TypeRef-Using",
+        33425usize,
+        "HelloUltraviolet::Reference::Modules",
+        "runModulesAggregationReference",
+        "Source/Reference/Modules/Aggregation.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
         "TypeRef-Path-Local",
-        33395usize,
+        33443usize,
         "HelloUltraviolet::Reference::Modules",
         "runModulesAggregationReference",
         "Source/Reference/Modules/Aggregation.uv"
@@ -900,7 +900,7 @@ public procedure validatedModuleLevelFormsModuleAndFileAggregationObligations() 
     }
     if acceptedObligationEntryMatches(
         "TypeRef-Dynamic",
-        33413usize,
+        33461usize,
         "HelloUltraviolet::Reference::Modules",
         "runModulesAggregationReference",
         "Source/Reference/Modules/Aggregation.uv"
@@ -909,7 +909,7 @@ public procedure validatedModuleLevelFormsModuleAndFileAggregationObligations() 
     }
     if acceptedObligationEntryMatches(
         "TypeRef-ModalState",
-        33431usize,
+        33479usize,
         "HelloUltraviolet::Reference::Modules",
         "runModulesAggregationReference",
         "Source/Reference/Modules/Aggregation.uv"
@@ -918,7 +918,7 @@ public procedure validatedModuleLevelFormsModuleAndFileAggregationObligations() 
     }
     if acceptedObligationEntryMatches(
         "TypeRef-Apply",
-        33449usize,
+        33497usize,
         "HelloUltraviolet::Reference::Modules",
         "runModulesAggregationReference",
         "Source/Reference/Modules/Aggregation.uv"
@@ -927,7 +927,7 @@ public procedure validatedModuleLevelFormsModuleAndFileAggregationObligations() 
     }
     if acceptedObligationEntryMatches(
         "TypeRef-Perm",
-        33467usize,
+        33515usize,
         "HelloUltraviolet::Reference::Modules",
         "runModulesAggregationReference",
         "Source/Reference/Modules/Aggregation.uv"
@@ -936,7 +936,7 @@ public procedure validatedModuleLevelFormsModuleAndFileAggregationObligations() 
     }
     if acceptedObligationEntryMatches(
         "TypeRef-Prim",
-        33485usize,
+        33533usize,
         "HelloUltraviolet::Reference::Modules",
         "runModulesAggregationReference",
         "Source/Reference/Modules/Aggregation.uv"
@@ -945,7 +945,7 @@ public procedure validatedModuleLevelFormsModuleAndFileAggregationObligations() 
     }
     if acceptedObligationEntryMatches(
         "TypeRef-Tuple",
-        33502usize,
+        33550usize,
         "HelloUltraviolet::Reference::Modules",
         "runModulesAggregationReference",
         "Source/Reference/Modules/Aggregation.uv"
@@ -954,7 +954,7 @@ public procedure validatedModuleLevelFormsModuleAndFileAggregationObligations() 
     }
     if acceptedObligationEntryMatches(
         "TypeRef-Array",
-        33520usize,
+        33568usize,
         "HelloUltraviolet::Reference::Modules",
         "runModulesAggregationReference",
         "Source/Reference/Modules/Aggregation.uv"
@@ -963,7 +963,7 @@ public procedure validatedModuleLevelFormsModuleAndFileAggregationObligations() 
     }
     if acceptedObligationEntryMatches(
         "TypeRef-Slice",
-        33538usize,
+        33586usize,
         "HelloUltraviolet::Reference::Modules",
         "runModulesAggregationReference",
         "Source/Reference/Modules/Aggregation.uv"
@@ -972,7 +972,7 @@ public procedure validatedModuleLevelFormsModuleAndFileAggregationObligations() 
     }
     if acceptedObligationEntryMatches(
         "TypeRef-Union",
-        33556usize,
+        33604usize,
         "HelloUltraviolet::Reference::Modules",
         "runModulesAggregationReference",
         "Source/Reference/Modules/Aggregation.uv"
@@ -981,7 +981,7 @@ public procedure validatedModuleLevelFormsModuleAndFileAggregationObligations() 
     }
     if acceptedObligationEntryMatches(
         "TypeRef-Func",
-        33574usize,
+        33622usize,
         "HelloUltraviolet::Reference::Modules",
         "runModulesAggregationReference",
         "Source/Reference/Modules/Aggregation.uv"
@@ -990,7 +990,7 @@ public procedure validatedModuleLevelFormsModuleAndFileAggregationObligations() 
     }
     if acceptedObligationEntryMatches(
         "TypeRef-String",
-        33592usize,
+        33640usize,
         "HelloUltraviolet::Reference::Modules",
         "runModulesAggregationReference",
         "Source/Reference/Modules/Aggregation.uv"
@@ -999,7 +999,7 @@ public procedure validatedModuleLevelFormsModuleAndFileAggregationObligations() 
     }
     if acceptedObligationEntryMatches(
         "TypeRef-Bytes",
-        33609usize,
+        33657usize,
         "HelloUltraviolet::Reference::Modules",
         "runModulesAggregationReference",
         "Source/Reference/Modules/Aggregation.uv"
@@ -1008,7 +1008,7 @@ public procedure validatedModuleLevelFormsModuleAndFileAggregationObligations() 
     }
     if acceptedObligationEntryMatches(
         "TypeRef-Ptr",
-        33626usize,
+        33674usize,
         "HelloUltraviolet::Reference::Modules",
         "runModulesAggregationReference",
         "Source/Reference/Modules/Aggregation.uv"
@@ -1017,7 +1017,7 @@ public procedure validatedModuleLevelFormsModuleAndFileAggregationObligations() 
     }
     if acceptedObligationEntryMatches(
         "TypeRef-RawPtr",
-        33644usize,
+        33692usize,
         "HelloUltraviolet::Reference::Modules",
         "runModulesAggregationReference",
         "Source/Reference/Modules/Aggregation.uv"
@@ -1026,7 +1026,7 @@ public procedure validatedModuleLevelFormsModuleAndFileAggregationObligations() 
     }
     if acceptedObligationEntryMatches(
         "TypeRef-Range",
-        33662usize,
+        33710usize,
         "HelloUltraviolet::Reference::Modules",
         "runModulesAggregationReference",
         "Source/Reference/Modules/Aggregation.uv"
@@ -1035,7 +1035,7 @@ public procedure validatedModuleLevelFormsModuleAndFileAggregationObligations() 
     }
     if acceptedObligationEntryMatches(
         "TypeRef-RangeInclusive",
-        33680usize,
+        33728usize,
         "HelloUltraviolet::Reference::Modules",
         "runModulesAggregationReference",
         "Source/Reference/Modules/Aggregation.uv"
@@ -1044,7 +1044,7 @@ public procedure validatedModuleLevelFormsModuleAndFileAggregationObligations() 
     }
     if acceptedObligationEntryMatches(
         "TypeRef-RangeFrom",
-        33698usize,
+        33746usize,
         "HelloUltraviolet::Reference::Modules",
         "runModulesAggregationReference",
         "Source/Reference/Modules/Aggregation.uv"
@@ -1053,7 +1053,7 @@ public procedure validatedModuleLevelFormsModuleAndFileAggregationObligations() 
     }
     if acceptedObligationEntryMatches(
         "TypeRef-RangeTo",
-        33716usize,
+        33764usize,
         "HelloUltraviolet::Reference::Modules",
         "runModulesAggregationReference",
         "Source/Reference/Modules/Aggregation.uv"
@@ -1062,7 +1062,7 @@ public procedure validatedModuleLevelFormsModuleAndFileAggregationObligations() 
     }
     if acceptedObligationEntryMatches(
         "TypeRef-RangeToInclusive",
-        33734usize,
+        33782usize,
         "HelloUltraviolet::Reference::Modules",
         "runModulesAggregationReference",
         "Source/Reference/Modules/Aggregation.uv"
@@ -1071,7 +1071,7 @@ public procedure validatedModuleLevelFormsModuleAndFileAggregationObligations() 
     }
     if acceptedObligationEntryMatches(
         "TypeRef-RangeFull",
-        33752usize,
+        33800usize,
         "HelloUltraviolet::Reference::Modules",
         "runModulesAggregationReference",
         "Source/Reference/Modules/Aggregation.uv"
@@ -1080,7 +1080,7 @@ public procedure validatedModuleLevelFormsModuleAndFileAggregationObligations() 
     }
     if acceptedObligationEntryMatches(
         "TypeRef-Ref-Path",
-        33769usize,
+        33817usize,
         "HelloUltraviolet::Reference::Modules",
         "runModulesAggregationReference",
         "Source/Reference/Modules/Aggregation.uv"
@@ -1089,7 +1089,7 @@ public procedure validatedModuleLevelFormsModuleAndFileAggregationObligations() 
     }
     if acceptedObligationEntryMatches(
         "TypeRef-Ref-Apply",
-        33787usize,
+        33835usize,
         "HelloUltraviolet::Reference::Modules",
         "runModulesAggregationReference",
         "Source/Reference/Modules/Aggregation.uv"
@@ -1098,7 +1098,7 @@ public procedure validatedModuleLevelFormsModuleAndFileAggregationObligations() 
     }
     if acceptedObligationEntryMatches(
         "TypeRef-Ref-ModalState",
-        33805usize,
+        33853usize,
         "HelloUltraviolet::Reference::Modules",
         "runModulesAggregationReference",
         "Source/Reference/Modules/Aggregation.uv"
@@ -1107,7 +1107,7 @@ public procedure validatedModuleLevelFormsModuleAndFileAggregationObligations() 
     }
     if acceptedObligationEntryMatches(
         "TypeRef-RecordExpr",
-        33823usize,
+        33871usize,
         "HelloUltraviolet::Reference::Modules",
         "runModulesAggregationReference",
         "Source/Reference/Modules/Aggregation.uv"
@@ -1116,7 +1116,7 @@ public procedure validatedModuleLevelFormsModuleAndFileAggregationObligations() 
     }
     if acceptedObligationEntryMatches(
         "TypeRef-EnumLiteral",
-        33841usize,
+        33889usize,
         "HelloUltraviolet::Reference::Modules",
         "runModulesAggregationReference",
         "Source/Reference/Modules/Aggregation.uv"
@@ -1125,7 +1125,7 @@ public procedure validatedModuleLevelFormsModuleAndFileAggregationObligations() 
     }
     if acceptedObligationEntryMatches(
         "TypeRef-QualBrace",
-        33859usize,
+        33907usize,
         "HelloUltraviolet::Reference::Modules",
         "runModulesAggregationReference",
         "Source/Reference/Modules/Aggregation.uv"
@@ -1134,7 +1134,7 @@ public procedure validatedModuleLevelFormsModuleAndFileAggregationObligations() 
     }
     if acceptedObligationEntryMatches(
         "TypeRef-Cast",
-        33877usize,
+        33925usize,
         "HelloUltraviolet::Reference::Modules",
         "runModulesAggregationReference",
         "Source/Reference/Modules/Aggregation.uv"
@@ -1143,7 +1143,7 @@ public procedure validatedModuleLevelFormsModuleAndFileAggregationObligations() 
     }
     if acceptedObligationEntryMatches(
         "TypeRef-Transmute",
-        33895usize,
+        33943usize,
         "HelloUltraviolet::Reference::Modules",
         "runModulesAggregationReference",
         "Source/Reference/Modules/Aggregation.uv"
@@ -1152,7 +1152,7 @@ public procedure validatedModuleLevelFormsModuleAndFileAggregationObligations() 
     }
     if acceptedObligationEntryMatches(
         "TypeRef-CallTypeArgs",
-        33913usize,
+        33961usize,
         "HelloUltraviolet::Reference::Modules",
         "runModulesAggregationReference",
         "Source/Reference/Modules/Aggregation.uv"
@@ -1161,7 +1161,7 @@ public procedure validatedModuleLevelFormsModuleAndFileAggregationObligations() 
     }
     if acceptedObligationEntryMatches(
         "def.TypeRefsExprRules",
-        33931usize,
+        33979usize,
         "HelloUltraviolet::Reference::Modules",
         "runModulesAggregationReference",
         "Source/Reference/Modules/Aggregation.uv"
@@ -1170,7 +1170,7 @@ public procedure validatedModuleLevelFormsModuleAndFileAggregationObligations() 
     }
     if acceptedObligationEntryMatches(
         "def.NoSpecificTypeRefsExpr",
-        33945usize,
+        33993usize,
         "HelloUltraviolet::Reference::Modules",
         "runModulesAggregationReference",
         "Source/Reference/Modules/Aggregation.uv"
@@ -1179,7 +1179,7 @@ public procedure validatedModuleLevelFormsModuleAndFileAggregationObligations() 
     }
     if acceptedObligationEntryMatches(
         "TypeRef-Expr-Sub",
-        33959usize,
+        34007usize,
         "HelloUltraviolet::Reference::Modules",
         "runModulesAggregationReference",
         "Source/Reference/Modules/Aggregation.uv"
@@ -1188,7 +1188,7 @@ public procedure validatedModuleLevelFormsModuleAndFileAggregationObligations() 
     }
     if acceptedObligationEntryMatches(
         "TypeRef-RecordPattern",
-        33977usize,
+        34025usize,
         "HelloUltraviolet::Reference::Modules",
         "runModulesAggregationReference",
         "Source/Reference/Modules/Aggregation.uv"
@@ -1197,7 +1197,7 @@ public procedure validatedModuleLevelFormsModuleAndFileAggregationObligations() 
     }
     if acceptedObligationEntryMatches(
         "TypeRef-EnumPattern",
-        33995usize,
+        34043usize,
         "HelloUltraviolet::Reference::Modules",
         "runModulesAggregationReference",
         "Source/Reference/Modules/Aggregation.uv"
@@ -1206,7 +1206,7 @@ public procedure validatedModuleLevelFormsModuleAndFileAggregationObligations() 
     }
     if acceptedObligationEntryMatches(
         "TypeRef-LiteralPattern",
-        34013usize,
+        34061usize,
         "HelloUltraviolet::Reference::Modules",
         "runModulesAggregationReference",
         "Source/Reference/Modules/Aggregation.uv"
@@ -1215,7 +1215,7 @@ public procedure validatedModuleLevelFormsModuleAndFileAggregationObligations() 
     }
     if acceptedObligationEntryMatches(
         "TypeRef-WildcardPattern",
-        34030usize,
+        34078usize,
         "HelloUltraviolet::Reference::Modules",
         "runModulesAggregationReference",
         "Source/Reference/Modules/Aggregation.uv"
@@ -1224,7 +1224,7 @@ public procedure validatedModuleLevelFormsModuleAndFileAggregationObligations() 
     }
     if acceptedObligationEntryMatches(
         "TypeRef-IdentifierPattern",
-        34047usize,
+        34095usize,
         "HelloUltraviolet::Reference::Modules",
         "runModulesAggregationReference",
         "Source/Reference/Modules/Aggregation.uv"
@@ -1233,7 +1233,7 @@ public procedure validatedModuleLevelFormsModuleAndFileAggregationObligations() 
     }
     if acceptedObligationEntryMatches(
         "TypeRef-TypedPattern",
-        34064usize,
+        34112usize,
         "HelloUltraviolet::Reference::Patterns",
         "runPatternsBasicPatternsReference",
         "Source/Reference/Patterns/BasicPatterns.uv"
@@ -1242,7 +1242,7 @@ public procedure validatedModuleLevelFormsModuleAndFileAggregationObligations() 
     }
     if acceptedObligationEntryMatches(
         "TypeRef-TuplePattern",
-        34082usize,
+        34130usize,
         "HelloUltraviolet::Reference::Modules",
         "runModulesAggregationReference",
         "Source/Reference/Modules/Aggregation.uv"
@@ -1251,7 +1251,7 @@ public procedure validatedModuleLevelFormsModuleAndFileAggregationObligations() 
     }
     if acceptedObligationEntryMatches(
         "TypeRef-ModalPattern-None",
-        34100usize,
+        34148usize,
         "HelloUltraviolet::Reference::Modules",
         "runModulesAggregationReference",
         "Source/Reference/Modules/Aggregation.uv"
@@ -1260,7 +1260,7 @@ public procedure validatedModuleLevelFormsModuleAndFileAggregationObligations() 
     }
     if acceptedObligationEntryMatches(
         "TypeRef-ModalPattern-Record",
-        34117usize,
+        34165usize,
         "HelloUltraviolet::Reference::Modules",
         "runModulesAggregationReference",
         "Source/Reference/Modules/Aggregation.uv"
@@ -1269,7 +1269,7 @@ public procedure validatedModuleLevelFormsModuleAndFileAggregationObligations() 
     }
     if acceptedObligationEntryMatches(
         "TypeRef-RangePattern",
-        34135usize,
+        34183usize,
         "HelloUltraviolet::Reference::Modules",
         "runModulesAggregationReference",
         "Source/Reference/Modules/Aggregation.uv"
@@ -1278,7 +1278,7 @@ public procedure validatedModuleLevelFormsModuleAndFileAggregationObligations() 
     }
     if acceptedObligationEntryMatches(
         "TypeRef-Field-Explicit",
-        34153usize,
+        34201usize,
         "HelloUltraviolet::Reference::Modules",
         "runModulesAggregationReference",
         "Source/Reference/Modules/Aggregation.uv"
@@ -1287,7 +1287,7 @@ public procedure validatedModuleLevelFormsModuleAndFileAggregationObligations() 
     }
     if acceptedObligationEntryMatches(
         "TypeRef-Field-Implicit",
-        34171usize,
+        34219usize,
         "HelloUltraviolet::Reference::Modules",
         "runModulesAggregationReference",
         "Source/Reference/Modules/Aggregation.uv"
@@ -1296,7 +1296,7 @@ public procedure validatedModuleLevelFormsModuleAndFileAggregationObligations() 
     }
     if acceptedObligationEntryMatches(
         "TypeRefsExprs-Empty",
-        34188usize,
+        34236usize,
         "HelloUltraviolet::Reference::Modules",
         "runModulesAggregationReference",
         "Source/Reference/Modules/Aggregation.uv"
@@ -1305,7 +1305,7 @@ public procedure validatedModuleLevelFormsModuleAndFileAggregationObligations() 
     }
     if acceptedObligationEntryMatches(
         "TypeRefsExprs-Cons",
-        34205usize,
+        34253usize,
         "HelloUltraviolet::Reference::Modules",
         "runModulesAggregationReference",
         "Source/Reference/Modules/Aggregation.uv"
@@ -1314,7 +1314,7 @@ public procedure validatedModuleLevelFormsModuleAndFileAggregationObligations() 
     }
     if acceptedObligationEntryMatches(
         "def.TypeRefsArgsJudgementSet",
-        34223usize,
+        34271usize,
         "HelloUltraviolet::Reference::Modules",
         "runModulesAggregationReference",
         "Source/Reference/Modules/Aggregation.uv"
@@ -1323,7 +1323,7 @@ public procedure validatedModuleLevelFormsModuleAndFileAggregationObligations() 
     }
     if acceptedObligationEntryMatches(
         "TypeRefsArgs-Empty",
-        34237usize,
+        34285usize,
         "HelloUltraviolet::Reference::Modules",
         "runModulesAggregationReference",
         "Source/Reference/Modules/Aggregation.uv"
@@ -1332,7 +1332,7 @@ public procedure validatedModuleLevelFormsModuleAndFileAggregationObligations() 
     }
     if acceptedObligationEntryMatches(
         "TypeRefsArgs-Cons",
-        34254usize,
+        34302usize,
         "HelloUltraviolet::Reference::Modules",
         "runModulesAggregationReference",
         "Source/Reference/Modules/Aggregation.uv"
@@ -1341,7 +1341,7 @@ public procedure validatedModuleLevelFormsModuleAndFileAggregationObligations() 
     }
     if acceptedObligationEntryMatches(
         "TypeRefsEnumPayload-None",
-        34272usize,
+        34320usize,
         "HelloUltraviolet::Reference::Modules",
         "runModulesAggregationReference",
         "Source/Reference/Modules/Aggregation.uv"
@@ -1350,7 +1350,7 @@ public procedure validatedModuleLevelFormsModuleAndFileAggregationObligations() 
     }
     if acceptedObligationEntryMatches(
         "TypeRefsEnumPayload-Tuple",
-        34289usize,
+        34337usize,
         "HelloUltraviolet::Reference::Modules",
         "runModulesAggregationReference",
         "Source/Reference/Modules/Aggregation.uv"
@@ -1359,7 +1359,7 @@ public procedure validatedModuleLevelFormsModuleAndFileAggregationObligations() 
     }
     if acceptedObligationEntryMatches(
         "TypeRefsEnumPayload-Record",
-        34307usize,
+        34355usize,
         "HelloUltraviolet::Reference::Modules",
         "runModulesAggregationReference",
         "Source/Reference/Modules/Aggregation.uv"
@@ -1368,7 +1368,7 @@ public procedure validatedModuleLevelFormsModuleAndFileAggregationObligations() 
     }
     if acceptedObligationEntryMatches(
         "TypeRefsFields-Empty",
-        34325usize,
+        34373usize,
         "HelloUltraviolet::Reference::Modules",
         "runModulesAggregationReference",
         "Source/Reference/Modules/Aggregation.uv"
@@ -1377,7 +1377,7 @@ public procedure validatedModuleLevelFormsModuleAndFileAggregationObligations() 
     }
     if acceptedObligationEntryMatches(
         "TypeRefsFields-Cons",
-        34342usize,
+        34390usize,
         "HelloUltraviolet::Reference::Modules",
         "runModulesAggregationReference",
         "Source/Reference/Modules/Aggregation.uv"
@@ -1386,7 +1386,7 @@ public procedure validatedModuleLevelFormsModuleAndFileAggregationObligations() 
     }
     if acceptedObligationEntryMatches(
         "TypeRefsPayload-None",
-        34360usize,
+        34408usize,
         "HelloUltraviolet::Reference::Modules",
         "runModulesAggregationReference",
         "Source/Reference/Modules/Aggregation.uv"
@@ -1395,7 +1395,7 @@ public procedure validatedModuleLevelFormsModuleAndFileAggregationObligations() 
     }
     if acceptedObligationEntryMatches(
         "TypeRefsPayload-Tuple",
-        34377usize,
+        34425usize,
         "HelloUltraviolet::Reference::Modules",
         "runModulesAggregationReference",
         "Source/Reference/Modules/Aggregation.uv"
@@ -1404,7 +1404,7 @@ public procedure validatedModuleLevelFormsModuleAndFileAggregationObligations() 
     }
     if acceptedObligationEntryMatches(
         "TypeRefsPayload-Record",
-        34395usize,
+        34443usize,
         "HelloUltraviolet::Reference::Modules",
         "runModulesAggregationReference",
         "Source/Reference/Modules/Aggregation.uv"
@@ -1413,7 +1413,7 @@ public procedure validatedModuleLevelFormsModuleAndFileAggregationObligations() 
     }
     if acceptedObligationEntryMatches(
         "def.ValueReferenceEnvironmentAliases",
-        34413usize,
+        34461usize,
         "HelloUltraviolet::Reference::Modules",
         "runModulesAggregationReference",
         "Source/Reference/Modules/Aggregation.uv"
@@ -1422,7 +1422,7 @@ public procedure validatedModuleLevelFormsModuleAndFileAggregationObligations() 
     }
     if acceptedObligationEntryMatches(
         "def.ValueRefsJudgementSet",
-        34427usize,
+        34475usize,
         "HelloUltraviolet::Reference::Modules",
         "runModulesAggregationReference",
         "Source/Reference/Modules/Aggregation.uv"
@@ -1431,7 +1431,7 @@ public procedure validatedModuleLevelFormsModuleAndFileAggregationObligations() 
     }
     if acceptedObligationEntryMatches(
         "ValueRef-Ident",
-        34441usize,
+        34489usize,
         "HelloUltraviolet::Reference::Modules",
         "runModulesAggregationReference",
         "Source/Reference/Modules/Aggregation.uv"
@@ -1440,7 +1440,7 @@ public procedure validatedModuleLevelFormsModuleAndFileAggregationObligations() 
     }
     if acceptedObligationEntryMatches(
         "ValueRef-Ident-Local",
-        34459usize,
+        34507usize,
         "HelloUltraviolet::Reference::Modules",
         "runModulesAggregationReference",
         "Source/Reference/Modules/Aggregation.uv"
@@ -1449,7 +1449,7 @@ public procedure validatedModuleLevelFormsModuleAndFileAggregationObligations() 
     }
     if acceptedObligationEntryMatches(
         "ValueRef-Qual",
-        34477usize,
+        34525usize,
         "HelloUltraviolet::Reference::Modules",
         "runModulesAggregationReference",
         "Source/Reference/Modules/Aggregation.uv"
@@ -1458,7 +1458,7 @@ public procedure validatedModuleLevelFormsModuleAndFileAggregationObligations() 
     }
     if acceptedObligationEntryMatches(
         "ValueRef-Qual-Local",
-        34495usize,
+        34543usize,
         "HelloUltraviolet::Reference::Modules",
         "runModulesAggregationReference",
         "Source/Reference/Modules/Aggregation.uv"
@@ -1467,7 +1467,7 @@ public procedure validatedModuleLevelFormsModuleAndFileAggregationObligations() 
     }
     if acceptedObligationEntryMatches(
         "ValueRef-QualApply",
-        34513usize,
+        34561usize,
         "HelloUltraviolet::Reference::Modules",
         "runModulesAggregationReference",
         "Source/Reference/Modules/Aggregation.uv"
@@ -1476,7 +1476,7 @@ public procedure validatedModuleLevelFormsModuleAndFileAggregationObligations() 
     }
     if acceptedObligationEntryMatches(
         "ValueRef-QualApply-Local",
-        34531usize,
+        34579usize,
         "HelloUltraviolet::Reference::Modules",
         "runModulesAggregationReference",
         "Source/Reference/Modules/Aggregation.uv"
@@ -1485,7 +1485,7 @@ public procedure validatedModuleLevelFormsModuleAndFileAggregationObligations() 
     }
     if acceptedObligationEntryMatches(
         "ValueRef-QualApply-Brace",
-        34549usize,
+        34597usize,
         "HelloUltraviolet::Reference::Modules",
         "runModulesAggregationReference",
         "Source/Reference/Modules/Aggregation.uv"
@@ -1494,7 +1494,7 @@ public procedure validatedModuleLevelFormsModuleAndFileAggregationObligations() 
     }
     if acceptedObligationEntryMatches(
         "def.ValueRefsRules",
-        34567usize,
+        34615usize,
         "HelloUltraviolet::Reference::Modules",
         "runModulesAggregationReference",
         "Source/Reference/Modules/Aggregation.uv"
@@ -1503,7 +1503,7 @@ public procedure validatedModuleLevelFormsModuleAndFileAggregationObligations() 
     }
     if acceptedObligationEntryMatches(
         "def.NoSpecificValueRefsExpr",
-        34581usize,
+        34629usize,
         "HelloUltraviolet::Reference::Modules",
         "runModulesAggregationReference",
         "Source/Reference/Modules/Aggregation.uv"
@@ -1512,7 +1512,7 @@ public procedure validatedModuleLevelFormsModuleAndFileAggregationObligations() 
     }
     if acceptedObligationEntryMatches(
         "ValueRef-Expr-Sub",
-        34595usize,
+        34643usize,
         "HelloUltraviolet::Reference::Modules",
         "runModulesAggregationReference",
         "Source/Reference/Modules/Aggregation.uv"
@@ -1521,7 +1521,7 @@ public procedure validatedModuleLevelFormsModuleAndFileAggregationObligations() 
     }
     if acceptedObligationEntryMatches(
         "ValueRefsArgs-Empty",
-        34613usize,
+        34661usize,
         "HelloUltraviolet::Reference::Modules",
         "runModulesAggregationReference",
         "Source/Reference/Modules/Aggregation.uv"
@@ -1530,7 +1530,7 @@ public procedure validatedModuleLevelFormsModuleAndFileAggregationObligations() 
     }
     if acceptedObligationEntryMatches(
         "ValueRefsArgs-Cons",
-        34630usize,
+        34678usize,
         "HelloUltraviolet::Reference::Modules",
         "runModulesAggregationReference",
         "Source/Reference/Modules/Aggregation.uv"
@@ -1539,7 +1539,7 @@ public procedure validatedModuleLevelFormsModuleAndFileAggregationObligations() 
     }
     if acceptedObligationEntryMatches(
         "ValueRefsFields-Empty",
-        34648usize,
+        34696usize,
         "HelloUltraviolet::Reference::Modules",
         "runModulesAggregationReference",
         "Source/Reference/Modules/Aggregation.uv"
@@ -1548,7 +1548,7 @@ public procedure validatedModuleLevelFormsModuleAndFileAggregationObligations() 
     }
     if acceptedObligationEntryMatches(
         "ValueRefsFields-Cons",
-        34665usize,
+        34713usize,
         "HelloUltraviolet::Reference::Modules",
         "runModulesAggregationReference",
         "Source/Reference/Modules/Aggregation.uv"
@@ -1557,7 +1557,7 @@ public procedure validatedModuleLevelFormsModuleAndFileAggregationObligations() 
     }
     if acceptedObligationEntryMatches(
         "def.AstTraversalNodeHelpers",
-        34683usize,
+        34731usize,
         "HelloUltraviolet::Reference::Modules",
         "runModulesAggregationReference",
         "Source/Reference/Modules/Aggregation.uv"
@@ -1566,7 +1566,7 @@ public procedure validatedModuleLevelFormsModuleAndFileAggregationObligations() 
     }
     if acceptedObligationEntryMatches(
         "def.EnumVariantTypeSets",
-        34709usize,
+        34757usize,
         "HelloUltraviolet::Reference::Modules",
         "runModulesAggregationReference",
         "Source/Reference/Modules/Aggregation.uv"
@@ -1575,7 +1575,7 @@ public procedure validatedModuleLevelFormsModuleAndFileAggregationObligations() 
     }
     if acceptedObligationEntryMatches(
         "def.GeneralTypePositionSetHelpers",
-        34726usize,
+        34774usize,
         "HelloUltraviolet::Reference::Modules",
         "runModulesAggregationReference",
         "Source/Reference/Modules/Aggregation.uv"
@@ -1584,7 +1584,7 @@ public procedure validatedModuleLevelFormsModuleAndFileAggregationObligations() 
     }
     if acceptedObligationEntryMatches(
         "def.RecordMemberTypeSets",
-        34745usize,
+        34793usize,
         "HelloUltraviolet::Reference::Modules",
         "runModulesAggregationReference",
         "Source/Reference/Modules/Aggregation.uv"
@@ -1593,7 +1593,7 @@ public procedure validatedModuleLevelFormsModuleAndFileAggregationObligations() 
     }
     if acceptedObligationEntryMatches(
         "def.ClassItemTypeSets",
-        34763usize,
+        34811usize,
         "HelloUltraviolet::Reference::Modules",
         "runModulesAggregationReference",
         "Source/Reference/Modules/Aggregation.uv"
@@ -1602,7 +1602,7 @@ public procedure validatedModuleLevelFormsModuleAndFileAggregationObligations() 
     }
     if acceptedObligationEntryMatches(
         "def.DeclarationTypePositions",
-        34781usize,
+        34829usize,
         "HelloUltraviolet::Reference::Modules",
         "runModulesAggregationReference",
         "Source/Reference/Modules/Aggregation.uv"
@@ -1611,33 +1611,6 @@ public procedure validatedModuleLevelFormsModuleAndFileAggregationObligations() 
     }
     if acceptedObligationEntryMatches(
         "def.TypePositionExpressions",
-        34802usize,
-        "HelloUltraviolet::Reference::Modules",
-        "runModulesAggregationReference",
-        "Source/Reference/Modules/Aggregation.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
-        "def.TypeDeps",
-        34818usize,
-        "HelloUltraviolet::Reference::Modules",
-        "runModulesAggregationReference",
-        "Source/Reference/Modules/Aggregation.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
-        "def.ValueDependencyExpressionSets",
-        34832usize,
-        "HelloUltraviolet::Reference::Modules",
-        "runModulesAggregationReference",
-        "Source/Reference/Modules/Aggregation.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
-        "def.ValueDepsEagerLazy",
         34850usize,
         "HelloUltraviolet::Reference::Modules",
         "runModulesAggregationReference",
@@ -1646,8 +1619,35 @@ public procedure validatedModuleLevelFormsModuleAndFileAggregationObligations() 
         count = count + 1usize
     }
     if acceptedObligationEntryMatches(
+        "def.TypeDeps",
+        34866usize,
+        "HelloUltraviolet::Reference::Modules",
+        "runModulesAggregationReference",
+        "Source/Reference/Modules/Aggregation.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "def.ValueDependencyExpressionSets",
+        34880usize,
+        "HelloUltraviolet::Reference::Modules",
+        "runModulesAggregationReference",
+        "Source/Reference/Modules/Aggregation.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "def.ValueDepsEagerLazy",
+        34898usize,
+        "HelloUltraviolet::Reference::Modules",
+        "runModulesAggregationReference",
+        "Source/Reference/Modules/Aggregation.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
         "def.ModuleDependencyGraphs",
-        34865usize,
+        34913usize,
         "HelloUltraviolet::Reference::Modules",
         "runModulesAggregationReference",
         "Source/Reference/Modules/Aggregation.uv"
@@ -1656,7 +1656,7 @@ public procedure validatedModuleLevelFormsModuleAndFileAggregationObligations() 
     }
     if acceptedObligationEntryMatches(
         "WF-Acyclic-Eager",
-        34885usize,
+        34933usize,
         "HelloUltraviolet::Reference::Modules",
         "runModulesAggregationReference",
         "Source/Reference/Modules/Aggregation.uv"
@@ -1665,7 +1665,7 @@ public procedure validatedModuleLevelFormsModuleAndFileAggregationObligations() 
     }
     if acceptedObligationEntryMatches(
         "conformance.ModuleAggregationDynamicSemantics",
-        34903usize,
+        34951usize,
         "HelloUltraviolet::Reference::Modules",
         "runModulesAggregationReference",
         "Source/Reference/Modules/Aggregation.uv"
@@ -1674,7 +1674,7 @@ public procedure validatedModuleLevelFormsModuleAndFileAggregationObligations() 
     }
     if acceptedObligationEntryMatches(
         "conformance.ModuleAggregationEagerGraphLoweringInput",
-        34919usize,
+        34967usize,
         "HelloUltraviolet::Reference::Modules",
         "runModulesAggregationReference",
         "Source/Reference/Modules/Aggregation.uv"
@@ -1683,7 +1683,7 @@ public procedure validatedModuleLevelFormsModuleAndFileAggregationObligations() 
     }
     if acceptedObligationEntryMatches(
         "conformance.ModuleAggregationLifecycleLoweringOwnership",
-        34935usize,
+        34983usize,
         "HelloUltraviolet::Reference::Modules",
         "runModulesAggregationReference",
         "Source/Reference/Modules/Aggregation.uv"
@@ -1692,7 +1692,7 @@ public procedure validatedModuleLevelFormsModuleAndFileAggregationObligations() 
     }
     if rejectedSourceObligationEntryMatches(
         "diagnostics.ModuleAggregation",
-        34949usize,
+        34997usize,
         "HelloUltraviolet::Audit::FixtureCatalog::RejectedSource",
         "validatedModulesRejectedSourceFixtureCount",
         "Fixtures/RejectedSource/Modules/ReservedModuleKeyword/Source/if/Main.uv"

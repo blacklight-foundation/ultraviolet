@@ -719,6 +719,9 @@ static PatternMatchedTypeResult ConcreteModalPatternType(
 
   if (const auto* modal_state =
           std::get_if<TypeModalState>(&expected_base->node)) {
+    if (!IdEq(modal_state->state, modal_pattern->state)) {
+      return result;
+    }
     result.matched = true;
     result.type = expected;
     SPEC_RULE("PatternNarrow-ModalState");

@@ -9,7 +9,7 @@ public procedure validatedStatementsAndBlocksControlTransferStatementsObligation
     var count: usize = 0usize
     if acceptedObligationEntryMatches(
         "grammar.18.ControlTransferStatements",
-        71455usize,
+        71691usize,
         "HelloUltraviolet::Reference::Statements",
         "runStatementsControlTransferReference",
         "Source/Reference/Statements/ControlTransfer.uv"
@@ -18,7 +18,7 @@ public procedure validatedStatementsAndBlocksControlTransferStatementsObligation
     }
     if acceptedObligationEntryMatches(
         "rule.18.Parse-Return-Stmt",
-        71474usize,
+        71710usize,
         "HelloUltraviolet::Reference::Statements",
         "runStatementsControlTransferReference",
         "Source/Reference/Statements/ControlTransfer.uv"
@@ -27,7 +27,7 @@ public procedure validatedStatementsAndBlocksControlTransferStatementsObligation
     }
     if acceptedObligationEntryMatches(
         "rule.18.Parse-Break-Stmt",
-        71490usize,
+        71726usize,
         "HelloUltraviolet::Reference::Statements",
         "runStatementsControlTransferReference",
         "Source/Reference/Statements/ControlTransfer.uv"
@@ -36,7 +36,7 @@ public procedure validatedStatementsAndBlocksControlTransferStatementsObligation
     }
     if acceptedObligationEntryMatches(
         "rule.18.Parse-Continue-Stmt",
-        71506usize,
+        71742usize,
         "HelloUltraviolet::Reference::Statements",
         "runStatementsControlTransferReference",
         "Source/Reference/Statements/ControlTransfer.uv"
@@ -45,25 +45,25 @@ public procedure validatedStatementsAndBlocksControlTransferStatementsObligation
     }
     if acceptedObligationEntryMatches(
         "def.18.ControlTransferAstForms",
-        71524usize,
+        71760usize,
         "HelloUltraviolet::Reference::Statements",
         "runStatementsControlTransferReference",
         "Source/Reference/Statements/ControlTransfer.uv"
     ) {
         count = count + 1usize
     }
-    if acceptedObligationEntryMatches(
+    if acceptedProjectObligationEntryMatches(
         "rule.18.T-Return-Value",
-        71541usize,
-        "HelloUltraviolet::Reference::Statements",
-        "runStatementsControlTransferReference",
-        "Source/Reference/Statements/ControlTransfer.uv"
+        71784usize,
+        "HelloUltraviolet::Audit::FixtureCatalog::AcceptedProjects",
+        "validatedAcceptedProjectFixtureCount",
+        "Fixtures/AcceptedProjects/ExpressionSemantics/Source/Library.uv"
     ) {
         count = count + 1usize
     }
     if acceptedObligationEntryMatches(
         "rule.18.T-Return-Unit",
-        71557usize,
+        71800usize,
         "HelloUltraviolet::Reference::Statements",
         "runStatementsControlTransferReference",
         "Source/Reference/Statements/ControlTransfer.uv"
@@ -72,7 +72,7 @@ public procedure validatedStatementsAndBlocksControlTransferStatementsObligation
     }
     if rejectedSourceObligationEntryMatches(
         "rule.18.Return-Async-Type-Err",
-        71573usize,
+        71816usize,
         "HelloUltraviolet::Audit::FixtureCatalog::RejectedSource",
         "validatedStatementsRejectedSourceFixtureCount",
         "Fixtures/RejectedSource/Statements/AsyncReturnTypeMismatch/Source/Main.uv"
@@ -81,7 +81,7 @@ public procedure validatedStatementsAndBlocksControlTransferStatementsObligation
     }
     if rejectedSourceObligationEntryMatches(
         "rule.18.Return-Async-Unit-Err",
-        71589usize,
+        71832usize,
         "HelloUltraviolet::Audit::FixtureCatalog::RejectedSource",
         "validatedStatementsRejectedSourceFixtureCount",
         "Fixtures/RejectedSource/Statements/AsyncReturnUnitMismatch/Source/Main.uv"
@@ -90,7 +90,7 @@ public procedure validatedStatementsAndBlocksControlTransferStatementsObligation
     }
     if rejectedSourceObligationEntryMatches(
         "rule.18.Return-Type-Err",
-        71605usize,
+        71848usize,
         "HelloUltraviolet::Audit::FixtureCatalog::RejectedSource",
         "validatedStatementsRejectedSourceFixtureCount",
         "Fixtures/RejectedSource/Statements/ReturnTypeMismatch/Source/Main.uv"
@@ -99,7 +99,7 @@ public procedure validatedStatementsAndBlocksControlTransferStatementsObligation
     }
     if rejectedSourceObligationEntryMatches(
         "rule.18.Return-Unit-Err",
-        71621usize,
+        71864usize,
         "HelloUltraviolet::Audit::FixtureCatalog::RejectedSource",
         "validatedStatementsRejectedSourceFixtureCount",
         "Fixtures/RejectedSource/Statements/ReturnUnitMismatch/Source/Main.uv"
@@ -108,7 +108,7 @@ public procedure validatedStatementsAndBlocksControlTransferStatementsObligation
     }
     if acceptedObligationEntryMatches(
         "rule.18.T-Break-Value",
-        71637usize,
+        71880usize,
         "HelloUltraviolet::Reference::Statements",
         "runStatementsControlTransferReference",
         "Source/Reference/Statements/ControlTransfer.uv"
@@ -117,7 +117,7 @@ public procedure validatedStatementsAndBlocksControlTransferStatementsObligation
     }
     if acceptedObligationEntryMatches(
         "rule.18.T-Break-Unit",
-        71653usize,
+        71896usize,
         "HelloUltraviolet::Reference::Statements",
         "runStatementsControlTransferReference",
         "Source/Reference/Statements/ControlTransfer.uv"
@@ -126,7 +126,7 @@ public procedure validatedStatementsAndBlocksControlTransferStatementsObligation
     }
     if rejectedSourceObligationEntryMatches(
         "rule.18.Break-Outside-Loop",
-        71669usize,
+        71912usize,
         "HelloUltraviolet::Audit::FixtureCatalog::RejectedSource",
         "validatedStatementsRejectedSourceFixtureCount",
         "Fixtures/RejectedSource/Statements/BreakOutsideLoop/Source/Main.uv"
@@ -135,7 +135,7 @@ public procedure validatedStatementsAndBlocksControlTransferStatementsObligation
     }
     if acceptedObligationEntryMatches(
         "rule.18.T-Continue",
-        71685usize,
+        71928usize,
         "HelloUltraviolet::Reference::Statements",
         "runStatementsControlTransferReference",
         "Source/Reference/Statements/ControlTransfer.uv"
@@ -144,7 +144,7 @@ public procedure validatedStatementsAndBlocksControlTransferStatementsObligation
     }
     if rejectedSourceObligationEntryMatches(
         "rule.18.Continue-Outside-Loop",
-        71701usize,
+        71944usize,
         "HelloUltraviolet::Audit::FixtureCatalog::RejectedSource",
         "validatedStatementsRejectedSourceFixtureCount",
         "Fixtures/RejectedSource/Statements/ContinueOutsideLoop/Source/Main.uv"
@@ -153,7 +153,7 @@ public procedure validatedStatementsAndBlocksControlTransferStatementsObligation
     }
     if acceptedObligationEntryMatches(
         "req.18.ControlTransferBindingState",
-        71717usize,
+        71960usize,
         "HelloUltraviolet::Reference::Statements",
         "runStatementsControlTransferReference",
         "Source/Reference/Statements/ControlTransfer.uv"
@@ -162,25 +162,25 @@ public procedure validatedStatementsAndBlocksControlTransferStatementsObligation
     }
     if acceptedObligationEntryMatches(
         "req.18.ControlTransferProvenance",
-        71730usize,
+        71973usize,
         "HelloUltraviolet::Reference::Statements",
         "runStatementsControlTransferReference",
         "Source/Reference/Statements/ControlTransfer.uv"
     ) {
         count = count + 1usize
     }
-    if acceptedObligationEntryMatches(
+    if acceptedProjectObligationEntryMatches(
         "rule.18.ExecSigma-Return",
-        71745usize,
-        "HelloUltraviolet::Reference::Statements",
-        "runStatementsControlTransferReference",
-        "Source/Reference/Statements/ControlTransfer.uv"
+        71988usize,
+        "HelloUltraviolet::Audit::FixtureCatalog::AcceptedProjects",
+        "validatedAcceptedProjectFixtureCount",
+        "Fixtures/AcceptedProjects/ExpressionSemantics/Source/Library.uv"
     ) {
         count = count + 1usize
     }
     if acceptedObligationEntryMatches(
         "rule.18.ExecSigma-Return-Unit",
-        71761usize,
+        72004usize,
         "HelloUltraviolet::Reference::Statements",
         "runStatementsControlTransferReference",
         "Source/Reference/Statements/ControlTransfer.uv"
@@ -189,7 +189,7 @@ public procedure validatedStatementsAndBlocksControlTransferStatementsObligation
     }
     if acceptedObligationEntryMatches(
         "rule.18.ExecSigma-Return-Ctrl",
-        71776usize,
+        72019usize,
         "HelloUltraviolet::Reference::Statements",
         "runStatementsControlTransferReference",
         "Source/Reference/Statements/ControlTransfer.uv"
@@ -198,7 +198,7 @@ public procedure validatedStatementsAndBlocksControlTransferStatementsObligation
     }
     if acceptedObligationEntryMatches(
         "rule.18.ExecSigma-Break",
-        71792usize,
+        72035usize,
         "HelloUltraviolet::Reference::Statements",
         "runStatementsControlTransferReference",
         "Source/Reference/Statements/ControlTransfer.uv"
@@ -207,7 +207,7 @@ public procedure validatedStatementsAndBlocksControlTransferStatementsObligation
     }
     if acceptedObligationEntryMatches(
         "rule.18.ExecSigma-Break-Unit",
-        71808usize,
+        72051usize,
         "HelloUltraviolet::Reference::Statements",
         "runStatementsControlTransferReference",
         "Source/Reference/Statements/ControlTransfer.uv"
@@ -216,7 +216,7 @@ public procedure validatedStatementsAndBlocksControlTransferStatementsObligation
     }
     if acceptedObligationEntryMatches(
         "rule.18.ExecSigma-Break-Ctrl",
-        71823usize,
+        72066usize,
         "HelloUltraviolet::Reference::Statements",
         "runStatementsControlTransferReference",
         "Source/Reference/Statements/ControlTransfer.uv"
@@ -225,25 +225,25 @@ public procedure validatedStatementsAndBlocksControlTransferStatementsObligation
     }
     if acceptedObligationEntryMatches(
         "rule.18.ExecSigma-Continue",
-        71839usize,
+        72082usize,
         "HelloUltraviolet::Reference::Statements",
         "runStatementsControlTransferReference",
         "Source/Reference/Statements/ControlTransfer.uv"
     ) {
         count = count + 1usize
     }
-    if acceptedObligationEntryMatches(
+    if acceptedProjectObligationEntryMatches(
         "rule.18.Lower-Stmt-Return",
-        71856usize,
-        "HelloUltraviolet::Reference::Statements",
-        "runStatementsControlTransferReference",
-        "Source/Reference/Statements/ControlTransfer.uv"
+        72099usize,
+        "HelloUltraviolet::Audit::FixtureCatalog::AcceptedProjects",
+        "validatedAcceptedProjectFixtureCount",
+        "Fixtures/AcceptedProjects/ExpressionSemantics/Source/Library.uv"
     ) {
         count = count + 1usize
     }
     if acceptedObligationEntryMatches(
         "rule.18.Lower-Stmt-Return-Unit",
-        71872usize,
+        72115usize,
         "HelloUltraviolet::Reference::Statements",
         "runStatementsControlTransferReference",
         "Source/Reference/Statements/ControlTransfer.uv"
@@ -252,7 +252,7 @@ public procedure validatedStatementsAndBlocksControlTransferStatementsObligation
     }
     if acceptedObligationEntryMatches(
         "rule.18.Lower-Stmt-Break",
-        71887usize,
+        72130usize,
         "HelloUltraviolet::Reference::Statements",
         "runStatementsControlTransferReference",
         "Source/Reference/Statements/ControlTransfer.uv"
@@ -261,7 +261,7 @@ public procedure validatedStatementsAndBlocksControlTransferStatementsObligation
     }
     if acceptedObligationEntryMatches(
         "rule.18.Lower-Stmt-Break-Unit",
-        71903usize,
+        72146usize,
         "HelloUltraviolet::Reference::Statements",
         "runStatementsControlTransferReference",
         "Source/Reference/Statements/ControlTransfer.uv"
@@ -270,7 +270,7 @@ public procedure validatedStatementsAndBlocksControlTransferStatementsObligation
     }
     if acceptedObligationEntryMatches(
         "rule.18.Lower-Stmt-Continue",
-        71918usize,
+        72161usize,
         "HelloUltraviolet::Reference::Statements",
         "runStatementsControlTransferReference",
         "Source/Reference/Statements/ControlTransfer.uv"
@@ -279,7 +279,7 @@ public procedure validatedStatementsAndBlocksControlTransferStatementsObligation
     }
     if acceptedObligationEntryMatches(
         "req.18.ControlTransferTemporaryCleanupLowering",
-        71933usize,
+        72176usize,
         "HelloUltraviolet::Reference::Statements",
         "runStatementsControlTransferReference",
         "Source/Reference/Statements/ControlTransfer.uv"
@@ -288,7 +288,7 @@ public procedure validatedStatementsAndBlocksControlTransferStatementsObligation
     }
     if rejectedSourceObligationEntryMatches(
         "diag.18.ControlTransferStatements",
-        71953usize,
+        72196usize,
         "HelloUltraviolet::Audit::FixtureCatalog::RejectedSource",
         "validatedStatementsRejectedSourceFixtureCount",
         "Fixtures/RejectedSource/Statements/ReturnAtModuleScope/Source/Main.uv"

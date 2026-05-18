@@ -9,7 +9,7 @@ public procedure validatedModuleLevelFormsUsingDeclarationsObligations() -> usiz
     var count: usize = 0usize
     if acceptedObligationEntryMatches(
         "grammar.UsingDeclarationSyntax",
-        30057usize,
+        30105usize,
         "HelloUltraviolet::Reference::Modules",
         "runModulesUsingsReference",
         "Source/Reference/Modules/Usings.uv"
@@ -18,7 +18,7 @@ public procedure validatedModuleLevelFormsUsingDeclarationsObligations() -> usiz
     }
     if acceptedObligationEntryMatches(
         "Parse-Using-Wildcard",
-        30084usize,
+        30132usize,
         "HelloUltraviolet::Reference::Modules",
         "runModulesUsingsReference",
         "Source/Reference/Modules/Usings.uv"
@@ -27,7 +27,7 @@ public procedure validatedModuleLevelFormsUsingDeclarationsObligations() -> usiz
     }
     if acceptedObligationEntryMatches(
         "Parse-Using-List",
-        30102usize,
+        30150usize,
         "HelloUltraviolet::Reference::Modules",
         "runModulesUsingsReference",
         "Source/Reference/Modules/Usings.uv"
@@ -36,7 +36,7 @@ public procedure validatedModuleLevelFormsUsingDeclarationsObligations() -> usiz
     }
     if acceptedObligationEntryMatches(
         "Parse-Using-Item",
-        30120usize,
+        30168usize,
         "HelloUltraviolet::Reference::Modules",
         "runModulesUsingsReference",
         "Source/Reference/Modules/Usings.uv"
@@ -45,7 +45,7 @@ public procedure validatedModuleLevelFormsUsingDeclarationsObligations() -> usiz
     }
     if acceptedObligationEntryMatches(
         "Parse-UsingSpec",
-        30138usize,
+        30186usize,
         "HelloUltraviolet::Reference::Modules",
         "runModulesUsingsReference",
         "Source/Reference/Modules/Usings.uv"
@@ -54,7 +54,7 @@ public procedure validatedModuleLevelFormsUsingDeclarationsObligations() -> usiz
     }
     if acceptedObligationEntryMatches(
         "Parse-UsingList-Empty",
-        30156usize,
+        30204usize,
         "HelloUltraviolet::Reference::Modules",
         "runModulesUsingsReference",
         "Source/Reference/Modules/Usings.uv"
@@ -63,7 +63,7 @@ public procedure validatedModuleLevelFormsUsingDeclarationsObligations() -> usiz
     }
     if acceptedObligationEntryMatches(
         "Parse-UsingList-Cons",
-        30174usize,
+        30222usize,
         "HelloUltraviolet::Reference::Modules",
         "runModulesUsingsReference",
         "Source/Reference/Modules/Usings.uv"
@@ -72,7 +72,7 @@ public procedure validatedModuleLevelFormsUsingDeclarationsObligations() -> usiz
     }
     if acceptedObligationEntryMatches(
         "Parse-UsingListTail-End",
-        30192usize,
+        30240usize,
         "HelloUltraviolet::Reference::Modules",
         "runModulesUsingsReference",
         "Source/Reference/Modules/Usings.uv"
@@ -81,7 +81,7 @@ public procedure validatedModuleLevelFormsUsingDeclarationsObligations() -> usiz
     }
     if acceptedObligationEntryMatches(
         "Parse-UsingListTail-TrailingComma",
-        30210usize,
+        30258usize,
         "HelloUltraviolet::Reference::Modules",
         "runModulesUsingsReference",
         "Source/Reference/Modules/Usings.uv"
@@ -90,7 +90,7 @@ public procedure validatedModuleLevelFormsUsingDeclarationsObligations() -> usiz
     }
     if acceptedObligationEntryMatches(
         "Parse-UsingListTail-Comma",
-        30228usize,
+        30276usize,
         "HelloUltraviolet::Reference::Modules",
         "runModulesUsingsReference",
         "Source/Reference/Modules/Usings.uv"
@@ -99,7 +99,7 @@ public procedure validatedModuleLevelFormsUsingDeclarationsObligations() -> usiz
     }
     if acceptedObligationEntryMatches(
         "def.UsingDeclAst",
-        30246usize,
+        30294usize,
         "HelloUltraviolet::Reference::Modules",
         "runModulesUsingsReference",
         "Source/Reference/Modules/Usings.uv"
@@ -108,7 +108,7 @@ public procedure validatedModuleLevelFormsUsingDeclarationsObligations() -> usiz
     }
     if acceptedObligationEntryMatches(
         "req.UsingDeclarationBindingSemanticsScope",
-        30272usize,
+        30320usize,
         "HelloUltraviolet::Reference::Modules",
         "runModulesUsingsReference",
         "Source/Reference/Modules/Usings.uv"
@@ -117,33 +117,6 @@ public procedure validatedModuleLevelFormsUsingDeclarationsObligations() -> usiz
     }
     if acceptedObligationEntryMatches(
         "def.UsingSpecName",
-        30288usize,
-        "HelloUltraviolet::Reference::Modules",
-        "runModulesUsingsReference",
-        "Source/Reference/Modules/Usings.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
-        "def.UsingSpecNames",
-        30304usize,
-        "HelloUltraviolet::Reference::Modules",
-        "runModulesUsingsReference",
-        "Source/Reference/Modules/Usings.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
-        "Using-Item",
-        30318usize,
-        "HelloUltraviolet::Reference::Modules",
-        "runModulesUsingsReference",
-        "Source/Reference/Modules/Usings.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
-        "Using-Item-Public-Err",
         30336usize,
         "HelloUltraviolet::Reference::Modules",
         "runModulesUsingsReference",
@@ -152,8 +125,35 @@ public procedure validatedModuleLevelFormsUsingDeclarationsObligations() -> usiz
         count = count + 1usize
     }
     if acceptedObligationEntryMatches(
+        "def.UsingSpecNames",
+        30352usize,
+        "HelloUltraviolet::Reference::Modules",
+        "runModulesUsingsReference",
+        "Source/Reference/Modules/Usings.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "Using-Item",
+        30366usize,
+        "HelloUltraviolet::Reference::Modules",
+        "runModulesUsingsReference",
+        "Source/Reference/Modules/Usings.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "Using-Item-Public-Err",
+        30384usize,
+        "HelloUltraviolet::Reference::Modules",
+        "runModulesUsingsReference",
+        "Source/Reference/Modules/Usings.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
         "Using-List",
-        30354usize,
+        30402usize,
         "HelloUltraviolet::Reference::Modules",
         "runModulesUsingsReference",
         "Source/Reference/Modules/Usings.uv"
@@ -162,7 +162,7 @@ public procedure validatedModuleLevelFormsUsingDeclarationsObligations() -> usiz
     }
     if acceptedObligationEntryMatches(
         "Using-Wildcard-Warn",
-        30372usize,
+        30420usize,
         "HelloUltraviolet::Reference::Modules",
         "runModulesUsingsReference",
         "Source/Reference/Modules/Usings.uv"
@@ -171,7 +171,7 @@ public procedure validatedModuleLevelFormsUsingDeclarationsObligations() -> usiz
     }
     if acceptedObligationEntryMatches(
         "Using-Wildcard",
-        30390usize,
+        30438usize,
         "HelloUltraviolet::Reference::Modules",
         "runModulesUsingsReference",
         "Source/Reference/Modules/Usings.uv"
@@ -180,7 +180,7 @@ public procedure validatedModuleLevelFormsUsingDeclarationsObligations() -> usiz
     }
     if rejectedSourceObligationEntryMatches(
         "Using-List-Dup",
-        30408usize,
+        30456usize,
         "HelloUltraviolet::Audit::FixtureCatalog::RejectedSource",
         "validatedModulesRejectedSourceFixtureCount",
         "Fixtures/RejectedSource/Modules/UsingListDuplicate/Source/Main.uv"
@@ -189,7 +189,7 @@ public procedure validatedModuleLevelFormsUsingDeclarationsObligations() -> usiz
     }
     if acceptedObligationEntryMatches(
         "Using-List-Public-Err",
-        30426usize,
+        30474usize,
         "HelloUltraviolet::Reference::Modules",
         "runModulesUsingsReference",
         "Source/Reference/Modules/Usings.uv"
@@ -198,7 +198,7 @@ public procedure validatedModuleLevelFormsUsingDeclarationsObligations() -> usiz
     }
     if acceptedObligationEntryMatches(
         "Bind-Using",
-        30444usize,
+        30492usize,
         "HelloUltraviolet::Reference::Modules",
         "runModulesUsingsReference",
         "Source/Reference/Modules/Usings.uv"
@@ -207,7 +207,7 @@ public procedure validatedModuleLevelFormsUsingDeclarationsObligations() -> usiz
     }
     if rejectedSourceObligationEntryMatches(
         "Bind-Using-Err",
-        30462usize,
+        30510usize,
         "HelloUltraviolet::Audit::FixtureCatalog::RejectedSource",
         "validatedModulesRejectedSourceFixtureCount",
         "Fixtures/RejectedSource/Modules/UsingListDuplicate/Source/Main.uv"
@@ -216,7 +216,7 @@ public procedure validatedModuleLevelFormsUsingDeclarationsObligations() -> usiz
     }
     if acceptedObligationEntryMatches(
         "ResolveItem-Using",
-        30480usize,
+        30528usize,
         "HelloUltraviolet::Reference::Modules",
         "runModulesUsingsReference",
         "Source/Reference/Modules/Usings.uv"
@@ -225,7 +225,7 @@ public procedure validatedModuleLevelFormsUsingDeclarationsObligations() -> usiz
     }
     if acceptedObligationEntryMatches(
         "conformance.UsingDeclarationDynamicSemantics",
-        30497usize,
+        30545usize,
         "HelloUltraviolet::Reference::Modules",
         "runModulesUsingsReference",
         "Source/Reference/Modules/Usings.uv"
@@ -234,7 +234,7 @@ public procedure validatedModuleLevelFormsUsingDeclarationsObligations() -> usiz
     }
     if acceptedObligationEntryMatches(
         "conformance.UsingDeclarationLowering",
-        30513usize,
+        30561usize,
         "HelloUltraviolet::Reference::Modules",
         "runModulesUsingsReference",
         "Source/Reference/Modules/Usings.uv"
@@ -243,7 +243,7 @@ public procedure validatedModuleLevelFormsUsingDeclarationsObligations() -> usiz
     }
     if rejectedSourceObligationEntryMatches(
         "diagnostics.UsingDeclarations",
-        30529usize,
+        30577usize,
         "HelloUltraviolet::Audit::FixtureCatalog::RejectedSource",
         "validatedModulesRejectedSourceFixtureCount",
         "Fixtures/RejectedSource/Modules/UsingListDuplicate/Source/Main.uv"
@@ -252,7 +252,7 @@ public procedure validatedModuleLevelFormsUsingDeclarationsObligations() -> usiz
     }
     if acceptedObligationEntryMatches(
         "req.UsingDeclarationDiagnosticOwnership",
-        30550usize,
+        30598usize,
         "HelloUltraviolet::Reference::Modules",
         "runModulesUsingsReference",
         "Source/Reference/Modules/Usings.uv"

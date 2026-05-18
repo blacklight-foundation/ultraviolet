@@ -14,9 +14,12 @@
 
 #include "04_analysis/typing/type_stmt.h"
 
+#include <memory>
 #include <optional>
 #include <string_view>
+#include <type_traits>
 #include <unordered_set>
+#include <utility>
 #include <vector>
 #include <variant>
 
@@ -213,6 +216,129 @@ static bool PlaceMutatesInvariantName(const ast::ExprPtr& place,
       place->node);
 }
 
+static ast::ExprPtr MakeLoopProofExpr(const core::Span& span,
+                                      ast::ExprNode node) {
+  auto expr = std::make_shared<ast::Expr>();
+  expr->span = span;
+  expr->node = std::move(node);
+  return expr;
+}
+
+static bool ExprMentionsAnyName(const ast::ExprPtr& expr,
+                                const std::unordered_set<IdKey>& names) {
+  if (!expr || names.empty()) {
+    return false;
+  }
+  std::unordered_set<IdKey> expr_names;
+  CollectInvariantNames(expr, expr_names);
+  for (const IdKey& name : names) {
+    if (expr_names.find(name) != expr_names.end()) {
+      return true;
+    }
+  }
+  return false;
+}
+
+static std::optional<IdKey> AssignmentRootName(const ast::ExprPtr& place) {
+  if (!place) {
+    return std::nullopt;
+  }
+  return std::visit(
+      [&](const auto& node) -> std::optional<IdKey> {
+        using T = std::decay_t<decltype(node)>;
+        if constexpr (std::is_same_v<T, ast::IdentifierExpr>) {
+          return IdKeyOf(node.name);
+        } else if constexpr (std::is_same_v<T, ast::FieldAccessExpr>) {
+          return AssignmentRootName(node.base);
+        } else if constexpr (std::is_same_v<T, ast::TupleAccessExpr>) {
+          return AssignmentRootName(node.base);
+        } else if constexpr (std::is_same_v<T, ast::IndexAccessExpr>) {
+          return AssignmentRootName(node.base);
+        } else if constexpr (std::is_same_v<T, ast::AttributedExpr>) {
+          return AssignmentRootName(node.expr);
+        } else {
+          return std::nullopt;
+        }
+      },
+      place->node);
+}
+
+static bool IsPlainIdentifierPlace(const ast::ExprPtr& place,
+                                   const IdKey& name) {
+  if (!place) {
+    return false;
+  }
+  const auto* ident = std::get_if<ast::IdentifierExpr>(&place->node);
+  return ident && IdKeyOf(ident->name) == name;
+}
+
+static ast::ExprPtr SubstituteIdentifierInProofExpr(
+    const ast::ExprPtr& expr,
+    const IdKey& name,
+    const ast::ExprPtr& replacement,
+    bool& blocked) {
+  if (!expr || blocked) {
+    return expr;
+  }
+  return std::visit(
+      [&](const auto& node) -> ast::ExprPtr {
+        using T = std::decay_t<decltype(node)>;
+        if constexpr (std::is_same_v<T, ast::IdentifierExpr>) {
+          return IdKeyOf(node.name) == name ? replacement : expr;
+        } else if constexpr (std::is_same_v<T, ast::LiteralExpr> ||
+                             std::is_same_v<T, ast::PtrNullExpr>) {
+          return expr;
+        } else if constexpr (std::is_same_v<T, ast::BinaryExpr>) {
+          auto out = node;
+          out.lhs = SubstituteIdentifierInProofExpr(
+              node.lhs, name, replacement, blocked);
+          out.rhs = SubstituteIdentifierInProofExpr(
+              node.rhs, name, replacement, blocked);
+          return MakeLoopProofExpr(expr->span, std::move(out));
+        } else if constexpr (std::is_same_v<T, ast::UnaryExpr>) {
+          auto out = node;
+          out.value = SubstituteIdentifierInProofExpr(
+              node.value, name, replacement, blocked);
+          return MakeLoopProofExpr(expr->span, std::move(out));
+        } else if constexpr (std::is_same_v<T, ast::FieldAccessExpr>) {
+          auto out = node;
+          out.base = SubstituteIdentifierInProofExpr(
+              node.base, name, replacement, blocked);
+          return MakeLoopProofExpr(expr->span, std::move(out));
+        } else if constexpr (std::is_same_v<T, ast::TupleAccessExpr>) {
+          auto out = node;
+          out.base = SubstituteIdentifierInProofExpr(
+              node.base, name, replacement, blocked);
+          return MakeLoopProofExpr(expr->span, std::move(out));
+        } else if constexpr (std::is_same_v<T, ast::IndexAccessExpr>) {
+          auto out = node;
+          out.base = SubstituteIdentifierInProofExpr(
+              node.base, name, replacement, blocked);
+          out.index = SubstituteIdentifierInProofExpr(
+              node.index, name, replacement, blocked);
+          return MakeLoopProofExpr(expr->span, std::move(out));
+        } else if constexpr (std::is_same_v<T, ast::CastExpr>) {
+          auto out = node;
+          out.value = SubstituteIdentifierInProofExpr(
+              node.value, name, replacement, blocked);
+          return MakeLoopProofExpr(expr->span, std::move(out));
+        } else if constexpr (std::is_same_v<T, ast::AttributedExpr>) {
+          auto out = node;
+          out.expr = SubstituteIdentifierInProofExpr(
+              node.expr, name, replacement, blocked);
+          return MakeLoopProofExpr(expr->span, std::move(out));
+        } else {
+          std::unordered_set<IdKey> names;
+          names.insert(name);
+          if (ExprMentionsAnyName(expr, names)) {
+            blocked = true;
+          }
+          return expr;
+        }
+      },
+      expr->node);
+}
+
 static bool BlockMutatesInvariantName(const std::shared_ptr<ast::Block>& block,
                                       const std::unordered_set<IdKey>& names) {
   if (!block || names.empty()) {
@@ -254,6 +380,74 @@ static bool ViolatesLoopInvariantMaintenance(
   std::unordered_set<IdKey> names;
   CollectInvariantNames(invariant.predicate, names);
   return BlockMutatesInvariantName(body, names);
+}
+
+static bool LoopInvariantMaintainedByBody(
+    const StmtTypeContext& type_ctx,
+    const ast::LoopInvariant& invariant,
+    const ast::ExprPtr& condition,
+    const std::shared_ptr<ast::Block>& body) {
+  std::unordered_set<IdKey> invariant_names;
+  CollectInvariantNames(invariant.predicate, invariant_names);
+  if (!BlockMutatesInvariantName(body, invariant_names)) {
+    return true;
+  }
+
+  ast::ExprPtr proof_obligation = invariant.predicate;
+  if (!body) {
+    return true;
+  }
+
+  for (auto stmt_it = body->stmts.rbegin(); stmt_it != body->stmts.rend();
+       ++stmt_it) {
+    bool unsupported = false;
+    std::visit(
+        [&](const auto& node) {
+          using T = std::decay_t<decltype(node)>;
+          if constexpr (std::is_same_v<T, ast::AssignStmt>) {
+            const auto root = AssignmentRootName(node.place);
+            if (!root.has_value() ||
+                invariant_names.find(*root) == invariant_names.end()) {
+              return;
+            }
+            if (!IsPlainIdentifierPlace(node.place, *root)) {
+              unsupported = true;
+              return;
+            }
+            bool blocked = false;
+            proof_obligation = SubstituteIdentifierInProofExpr(
+                proof_obligation, *root, node.value, blocked);
+            unsupported = blocked;
+          } else if constexpr (std::is_same_v<T, ast::CompoundAssignStmt>) {
+            if (PlaceMutatesInvariantName(node.place, invariant_names)) {
+              unsupported = true;
+            }
+          } else if constexpr (std::is_same_v<T, ast::DeferStmt> ||
+                               std::is_same_v<T, ast::RegionStmt> ||
+                               std::is_same_v<T, ast::FrameStmt> ||
+                               std::is_same_v<T, ast::UnsafeBlockStmt> ||
+                               std::is_same_v<T, ast::KeyBlockStmt>) {
+            if (BlockMutatesInvariantName(node.body, invariant_names)) {
+              unsupported = true;
+            }
+          }
+        },
+        *stmt_it);
+    if (unsupported) {
+      return false;
+    }
+  }
+
+  StaticProofContext proof_ctx;
+  if (type_ctx.proof_ctx) {
+    proof_ctx = *type_ctx.proof_ctx;
+  }
+  AddPredicateFactsAt(proof_ctx, invariant.predicate, invariant.span);
+  AddPredicateFactsAt(proof_ctx, condition,
+                      condition ? condition->span : invariant.span);
+  const auto proof =
+      StaticProofAt(proof_ctx, invariant.span, proof_obligation);
+  return proof.provable;
 }
 
 }  // namespace
@@ -324,7 +518,8 @@ ExprTypeResult TypeLoopConditionalExpr(const ScopeContext& ctx,
       return result;
     }
     if (!loop_ctx.contract_dynamic &&
-        ViolatesLoopInvariantMaintenance(*expr.invariant_opt, expr.body)) {
+        !LoopInvariantMaintainedByBody(
+            loop_ctx, *expr.invariant_opt, expr.cond, expr.body)) {
       result.diag_id = "E-SEM-2831";
       return result;
     }

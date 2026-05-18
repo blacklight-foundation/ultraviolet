@@ -9,7 +9,7 @@ public procedure validatedCommonLoweringProgramLifecycleAndBackendCleanupDropAnd
     var count: usize = 0usize
     if acceptedObligationEntryMatches(
         "def.24.CleanupJudg",
-        94930usize,
+        95172usize,
         "HelloUltraviolet::Reference::Lowering",
         "runLoweringCleanupDropUnwindingReference",
         "Source/Reference/Lowering/CleanupDropUnwinding.uv"
@@ -18,7 +18,7 @@ public procedure validatedCommonLoweringProgramLifecycleAndBackendCleanupDropAnd
     }
     if acceptedObligationEntryMatches(
         "rule.24.CleanupPlan",
-        94943usize,
+        95185usize,
         "HelloUltraviolet::Reference::Lowering",
         "runLoweringCleanupDropUnwindingReference",
         "Source/Reference/Lowering/CleanupDropUnwinding.uv"
@@ -27,150 +27,6 @@ public procedure validatedCommonLoweringProgramLifecycleAndBackendCleanupDropAnd
     }
     if acceptedObligationEntryMatches(
         "def.24.EmitDropSpec",
-        94959usize,
-        "HelloUltraviolet::Reference::Lowering",
-        "runLoweringCleanupDropUnwindingReference",
-        "Source/Reference/Lowering/CleanupDropUnwinding.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
-        "def.24.PanicOutAddr",
-        94975usize,
-        "HelloUltraviolet::Reference::Lowering",
-        "runLoweringCleanupDropUnwindingReference",
-        "Source/Reference/Lowering/CleanupDropUnwinding.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
-        "def.24.PanicRecordOf",
-        94988usize,
-        "HelloUltraviolet::Reference::Lowering",
-        "runLoweringCleanupDropUnwindingReference",
-        "Source/Reference/Lowering/CleanupDropUnwinding.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
-        "def.24.WritePanicRecord",
-        95001usize,
-        "HelloUltraviolet::Reference::Lowering",
-        "runLoweringCleanupDropUnwindingReference",
-        "Source/Reference/Lowering/CleanupDropUnwinding.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
-        "def.24.InitPanicHandle",
-        95014usize,
-        "HelloUltraviolet::Reference::Lowering",
-        "runLoweringCleanupDropUnwindingReference",
-        "Source/Reference/Lowering/CleanupDropUnwinding.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
-        "req.24.InitPanicHandleResponsiblePrefix",
-        95027usize,
-        "HelloUltraviolet::Reference::Lowering",
-        "runLoweringCleanupDropUnwindingReference",
-        "Source/Reference/Lowering/CleanupDropUnwinding.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
-        "rule.24.PanicSym",
-        95040usize,
-        "HelloUltraviolet::Reference::Lowering",
-        "runLoweringCleanupDropUnwindingReference",
-        "Source/Reference/Lowering/CleanupDropUnwinding.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
-        "def.24.PanicReasonCodes",
-        95055usize,
-        "HelloUltraviolet::Reference::Lowering",
-        "runLoweringCleanupDropUnwindingReference",
-        "Source/Reference/Lowering/CleanupDropUnwinding.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
-        "def.24.PanicSites",
-        95080usize,
-        "HelloUltraviolet::Reference::Lowering",
-        "runLoweringCleanupDropUnwindingReference",
-        "Source/Reference/Lowering/CleanupDropUnwinding.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
-        "def.24.ClearPanic",
-        95104usize,
-        "HelloUltraviolet::Reference::Lowering",
-        "runLoweringCleanupDropUnwindingReference",
-        "Source/Reference/Lowering/CleanupDropUnwinding.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
-        "def.24.PanicCheck",
-        95117usize,
-        "HelloUltraviolet::Reference::Lowering",
-        "runLoweringCleanupDropUnwindingReference",
-        "Source/Reference/Lowering/CleanupDropUnwinding.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
-        "def.24.LowerPanic",
-        95130usize,
-        "HelloUltraviolet::Reference::Lowering",
-        "runLoweringCleanupDropUnwindingReference",
-        "Source/Reference/Lowering/CleanupDropUnwinding.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
-        "def.24.ResponsibleBinding",
-        95145usize,
-        "HelloUltraviolet::Reference::Lowering",
-        "runLoweringCleanupDropUnwindingReference",
-        "Source/Reference/Lowering/CleanupDropUnwinding.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
-        "grammar.24.CleanupItem",
-        95158usize,
-        "HelloUltraviolet::Reference::Lowering",
-        "runLoweringCleanupDropUnwindingReference",
-        "Source/Reference/Lowering/CleanupDropUnwinding.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
-        "def.24.DropJudgmentDefinitions",
-        95171usize,
-        "HelloUltraviolet::Reference::Lowering",
-        "runLoweringCleanupDropUnwindingReference",
-        "Source/Reference/Lowering/CleanupDropUnwinding.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
-        "def.24.RecordType",
-        95188usize,
-        "HelloUltraviolet::Reference::Lowering",
-        "runLoweringCleanupDropUnwindingReference",
-        "Source/Reference/Lowering/CleanupDropUnwinding.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
-        "def.24.DropCall",
         95201usize,
         "HelloUltraviolet::Reference::Lowering",
         "runLoweringCleanupDropUnwindingReference",
@@ -179,8 +35,8 @@ public procedure validatedCommonLoweringProgramLifecycleAndBackendCleanupDropAnd
         count = count + 1usize
     }
     if acceptedObligationEntryMatches(
-        "def.24.ReleaseValue",
-        95218usize,
+        "def.24.PanicOutAddr",
+        95217usize,
         "HelloUltraviolet::Reference::Lowering",
         "runLoweringCleanupDropUnwindingReference",
         "Source/Reference/Lowering/CleanupDropUnwinding.uv"
@@ -188,8 +44,8 @@ public procedure validatedCommonLoweringProgramLifecycleAndBackendCleanupDropAnd
         count = count + 1usize
     }
     if acceptedObligationEntryMatches(
-        "def.24.DropChildren",
-        95232usize,
+        "def.24.PanicRecordOf",
+        95230usize,
         "HelloUltraviolet::Reference::Lowering",
         "runLoweringCleanupDropUnwindingReference",
         "Source/Reference/Lowering/CleanupDropUnwinding.uv"
@@ -197,8 +53,8 @@ public procedure validatedCommonLoweringProgramLifecycleAndBackendCleanupDropAnd
         count = count + 1usize
     }
     if acceptedObligationEntryMatches(
-        "def.24.DropList",
-        95252usize,
+        "def.24.WritePanicRecord",
+        95243usize,
         "HelloUltraviolet::Reference::Lowering",
         "runLoweringCleanupDropUnwindingReference",
         "Source/Reference/Lowering/CleanupDropUnwinding.uv"
@@ -206,8 +62,8 @@ public procedure validatedCommonLoweringProgramLifecycleAndBackendCleanupDropAnd
         count = count + 1usize
     }
     if acceptedObligationEntryMatches(
-        "rule.24.DropAction-Moved",
-        95266usize,
+        "def.24.InitPanicHandle",
+        95256usize,
         "HelloUltraviolet::Reference::Lowering",
         "runLoweringCleanupDropUnwindingReference",
         "Source/Reference/Lowering/CleanupDropUnwinding.uv"
@@ -215,7 +71,16 @@ public procedure validatedCommonLoweringProgramLifecycleAndBackendCleanupDropAnd
         count = count + 1usize
     }
     if acceptedObligationEntryMatches(
-        "rule.24.DropAction-Partial",
+        "req.24.InitPanicHandleResponsiblePrefix",
+        95269usize,
+        "HelloUltraviolet::Reference::Lowering",
+        "runLoweringCleanupDropUnwindingReference",
+        "Source/Reference/Lowering/CleanupDropUnwinding.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "rule.24.PanicSym",
         95282usize,
         "HelloUltraviolet::Reference::Lowering",
         "runLoweringCleanupDropUnwindingReference",
@@ -224,8 +89,8 @@ public procedure validatedCommonLoweringProgramLifecycleAndBackendCleanupDropAnd
         count = count + 1usize
     }
     if acceptedObligationEntryMatches(
-        "rule.24.DropAction-Valid",
-        95298usize,
+        "def.24.PanicReasonCodes",
+        95297usize,
         "HelloUltraviolet::Reference::Lowering",
         "runLoweringCleanupDropUnwindingReference",
         "Source/Reference/Lowering/CleanupDropUnwinding.uv"
@@ -233,8 +98,8 @@ public procedure validatedCommonLoweringProgramLifecycleAndBackendCleanupDropAnd
         count = count + 1usize
     }
     if acceptedObligationEntryMatches(
-        "rule.24.DropStaticAction",
-        95314usize,
+        "def.24.PanicSites",
+        95322usize,
         "HelloUltraviolet::Reference::Lowering",
         "runLoweringCleanupDropUnwindingReference",
         "Source/Reference/Lowering/CleanupDropUnwinding.uv"
@@ -242,8 +107,8 @@ public procedure validatedCommonLoweringProgramLifecycleAndBackendCleanupDropAnd
         count = count + 1usize
     }
     if acceptedObligationEntryMatches(
-        "def.24.NonRecordFOk",
-        95330usize,
+        "def.24.ClearPanic",
+        95346usize,
         "HelloUltraviolet::Reference::Lowering",
         "runLoweringCleanupDropUnwindingReference",
         "Source/Reference/Lowering/CleanupDropUnwinding.uv"
@@ -251,16 +116,7 @@ public procedure validatedCommonLoweringProgramLifecycleAndBackendCleanupDropAnd
         count = count + 1usize
     }
     if acceptedObligationEntryMatches(
-        "rule.24.DropValueOut-DropPanic",
-        95343usize,
-        "HelloUltraviolet::Reference::Lowering",
-        "runLoweringCleanupDropUnwindingReference",
-        "Source/Reference/Lowering/CleanupDropUnwinding.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
-        "rule.24.DropValueOut-ChildPanic",
+        "def.24.PanicCheck",
         95359usize,
         "HelloUltraviolet::Reference::Lowering",
         "runLoweringCleanupDropUnwindingReference",
@@ -269,8 +125,152 @@ public procedure validatedCommonLoweringProgramLifecycleAndBackendCleanupDropAnd
         count = count + 1usize
     }
     if acceptedObligationEntryMatches(
+        "def.24.LowerPanic",
+        95372usize,
+        "HelloUltraviolet::Reference::Lowering",
+        "runLoweringCleanupDropUnwindingReference",
+        "Source/Reference/Lowering/CleanupDropUnwinding.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "def.24.ResponsibleBinding",
+        95387usize,
+        "HelloUltraviolet::Reference::Lowering",
+        "runLoweringCleanupDropUnwindingReference",
+        "Source/Reference/Lowering/CleanupDropUnwinding.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "grammar.24.CleanupItem",
+        95400usize,
+        "HelloUltraviolet::Reference::Lowering",
+        "runLoweringCleanupDropUnwindingReference",
+        "Source/Reference/Lowering/CleanupDropUnwinding.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "def.24.DropJudgmentDefinitions",
+        95413usize,
+        "HelloUltraviolet::Reference::Lowering",
+        "runLoweringCleanupDropUnwindingReference",
+        "Source/Reference/Lowering/CleanupDropUnwinding.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "def.24.RecordType",
+        95430usize,
+        "HelloUltraviolet::Reference::Lowering",
+        "runLoweringCleanupDropUnwindingReference",
+        "Source/Reference/Lowering/CleanupDropUnwinding.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "def.24.DropCall",
+        95443usize,
+        "HelloUltraviolet::Reference::Lowering",
+        "runLoweringCleanupDropUnwindingReference",
+        "Source/Reference/Lowering/CleanupDropUnwinding.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedProjectObligationEntryMatches(
+        "def.24.ReleaseValue",
+        95460usize,
+        "HelloUltraviolet::Audit::FixtureCatalog::AcceptedProjects",
+        "validatedAcceptedProjectFixtureCount",
+        "Fixtures/AcceptedProjects/ExpressionSemantics/Source/Library.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "def.24.DropChildren",
+        95474usize,
+        "HelloUltraviolet::Reference::Lowering",
+        "runLoweringCleanupDropUnwindingReference",
+        "Source/Reference/Lowering/CleanupDropUnwinding.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "def.24.DropList",
+        95494usize,
+        "HelloUltraviolet::Reference::Lowering",
+        "runLoweringCleanupDropUnwindingReference",
+        "Source/Reference/Lowering/CleanupDropUnwinding.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "rule.24.DropAction-Moved",
+        95508usize,
+        "HelloUltraviolet::Reference::Lowering",
+        "runLoweringCleanupDropUnwindingReference",
+        "Source/Reference/Lowering/CleanupDropUnwinding.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "rule.24.DropAction-Partial",
+        95524usize,
+        "HelloUltraviolet::Reference::Lowering",
+        "runLoweringCleanupDropUnwindingReference",
+        "Source/Reference/Lowering/CleanupDropUnwinding.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "rule.24.DropAction-Valid",
+        95540usize,
+        "HelloUltraviolet::Reference::Lowering",
+        "runLoweringCleanupDropUnwindingReference",
+        "Source/Reference/Lowering/CleanupDropUnwinding.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "rule.24.DropStaticAction",
+        95556usize,
+        "HelloUltraviolet::Reference::Lowering",
+        "runLoweringCleanupDropUnwindingReference",
+        "Source/Reference/Lowering/CleanupDropUnwinding.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "def.24.NonRecordFOk",
+        95572usize,
+        "HelloUltraviolet::Reference::Lowering",
+        "runLoweringCleanupDropUnwindingReference",
+        "Source/Reference/Lowering/CleanupDropUnwinding.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "rule.24.DropValueOut-DropPanic",
+        95585usize,
+        "HelloUltraviolet::Reference::Lowering",
+        "runLoweringCleanupDropUnwindingReference",
+        "Source/Reference/Lowering/CleanupDropUnwinding.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "rule.24.DropValueOut-ChildPanic",
+        95601usize,
+        "HelloUltraviolet::Reference::Lowering",
+        "runLoweringCleanupDropUnwindingReference",
+        "Source/Reference/Lowering/CleanupDropUnwinding.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
         "rule.24.DropValueOut-Ok",
-        95375usize,
+        95617usize,
         "HelloUltraviolet::Reference::Lowering",
         "runLoweringCleanupDropUnwindingReference",
         "Source/Reference/Lowering/CleanupDropUnwinding.uv"
@@ -279,7 +279,7 @@ public procedure validatedCommonLoweringProgramLifecycleAndBackendCleanupDropAnd
     }
     if acceptedObligationEntryMatches(
         "def.24.CleanupStateDefinitions",
-        95393usize,
+        95635usize,
         "HelloUltraviolet::Reference::Lowering",
         "runLoweringCleanupDropUnwindingReference",
         "Source/Reference/Lowering/CleanupDropUnwinding.uv"
@@ -288,7 +288,7 @@ public procedure validatedCommonLoweringProgramLifecycleAndBackendCleanupDropAnd
     }
     if acceptedObligationEntryMatches(
         "rule.24.Cleanup-Start",
-        95407usize,
+        95649usize,
         "HelloUltraviolet::Reference::Lowering",
         "runLoweringCleanupDropUnwindingReference",
         "Source/Reference/Lowering/CleanupDropUnwinding.uv"
@@ -297,7 +297,7 @@ public procedure validatedCommonLoweringProgramLifecycleAndBackendCleanupDropAnd
     }
     if acceptedObligationEntryMatches(
         "rule.24.Cleanup-Step-Drop-Ok",
-        95422usize,
+        95664usize,
         "HelloUltraviolet::Reference::Lowering",
         "runLoweringCleanupDropUnwindingReference",
         "Source/Reference/Lowering/CleanupDropUnwinding.uv"
@@ -306,7 +306,7 @@ public procedure validatedCommonLoweringProgramLifecycleAndBackendCleanupDropAnd
     }
     if acceptedObligationEntryMatches(
         "rule.24.Cleanup-Step-Drop-Panic",
-        95438usize,
+        95680usize,
         "HelloUltraviolet::Reference::Lowering",
         "runLoweringCleanupDropUnwindingReference",
         "Source/Reference/Lowering/CleanupDropUnwinding.uv"
@@ -315,7 +315,7 @@ public procedure validatedCommonLoweringProgramLifecycleAndBackendCleanupDropAnd
     }
     if acceptedObligationEntryMatches(
         "rule.24.Cleanup-Step-Drop-Abort",
-        95454usize,
+        95696usize,
         "HelloUltraviolet::Reference::Lowering",
         "runLoweringCleanupDropUnwindingReference",
         "Source/Reference/Lowering/CleanupDropUnwinding.uv"
@@ -324,7 +324,7 @@ public procedure validatedCommonLoweringProgramLifecycleAndBackendCleanupDropAnd
     }
     if acceptedObligationEntryMatches(
         "rule.24.Cleanup-Step-DropStatic-Ok",
-        95470usize,
+        95712usize,
         "HelloUltraviolet::Reference::Lowering",
         "runLoweringCleanupDropUnwindingReference",
         "Source/Reference/Lowering/CleanupDropUnwinding.uv"
@@ -333,7 +333,7 @@ public procedure validatedCommonLoweringProgramLifecycleAndBackendCleanupDropAnd
     }
     if acceptedObligationEntryMatches(
         "rule.24.Cleanup-Step-DropStatic-Panic",
-        95486usize,
+        95728usize,
         "HelloUltraviolet::Reference::Lowering",
         "runLoweringCleanupDropUnwindingReference",
         "Source/Reference/Lowering/CleanupDropUnwinding.uv"
@@ -342,7 +342,7 @@ public procedure validatedCommonLoweringProgramLifecycleAndBackendCleanupDropAnd
     }
     if acceptedObligationEntryMatches(
         "rule.24.Cleanup-Step-DropStatic-Abort",
-        95502usize,
+        95744usize,
         "HelloUltraviolet::Reference::Lowering",
         "runLoweringCleanupDropUnwindingReference",
         "Source/Reference/Lowering/CleanupDropUnwinding.uv"
@@ -351,7 +351,7 @@ public procedure validatedCommonLoweringProgramLifecycleAndBackendCleanupDropAnd
     }
     if acceptedObligationEntryMatches(
         "rule.24.Cleanup-Step-Defer-Ok",
-        95518usize,
+        95760usize,
         "HelloUltraviolet::Reference::Lowering",
         "runLoweringCleanupDropUnwindingReference",
         "Source/Reference/Lowering/CleanupDropUnwinding.uv"
@@ -360,7 +360,7 @@ public procedure validatedCommonLoweringProgramLifecycleAndBackendCleanupDropAnd
     }
     if acceptedObligationEntryMatches(
         "rule.24.Cleanup-Step-Defer-Panic",
-        95534usize,
+        95776usize,
         "HelloUltraviolet::Reference::Lowering",
         "runLoweringCleanupDropUnwindingReference",
         "Source/Reference/Lowering/CleanupDropUnwinding.uv"
@@ -369,7 +369,7 @@ public procedure validatedCommonLoweringProgramLifecycleAndBackendCleanupDropAnd
     }
     if acceptedObligationEntryMatches(
         "rule.24.Cleanup-Step-Defer-Abort",
-        95550usize,
+        95792usize,
         "HelloUltraviolet::Reference::Lowering",
         "runLoweringCleanupDropUnwindingReference",
         "Source/Reference/Lowering/CleanupDropUnwinding.uv"
@@ -378,7 +378,7 @@ public procedure validatedCommonLoweringProgramLifecycleAndBackendCleanupDropAnd
     }
     if acceptedObligationEntryMatches(
         "rule.24.Cleanup-Done",
-        95566usize,
+        95808usize,
         "HelloUltraviolet::Reference::Lowering",
         "runLoweringCleanupDropUnwindingReference",
         "Source/Reference/Lowering/CleanupDropUnwinding.uv"
@@ -387,7 +387,7 @@ public procedure validatedCommonLoweringProgramLifecycleAndBackendCleanupDropAnd
     }
     if acceptedObligationEntryMatches(
         "rule.24.Destroy-Empty",
-        95582usize,
+        95824usize,
         "HelloUltraviolet::Reference::Lowering",
         "runLoweringCleanupDropUnwindingReference",
         "Source/Reference/Lowering/CleanupDropUnwinding.uv"
@@ -396,7 +396,7 @@ public procedure validatedCommonLoweringProgramLifecycleAndBackendCleanupDropAnd
     }
     if acceptedObligationEntryMatches(
         "rule.24.Destroy-Cons",
-        95597usize,
+        95839usize,
         "HelloUltraviolet::Reference::Lowering",
         "runLoweringCleanupDropUnwindingReference",
         "Source/Reference/Lowering/CleanupDropUnwinding.uv"
@@ -405,7 +405,7 @@ public procedure validatedCommonLoweringProgramLifecycleAndBackendCleanupDropAnd
     }
     if acceptedObligationEntryMatches(
         "def.24.CleanupJudgDyn",
-        95613usize,
+        95855usize,
         "HelloUltraviolet::Reference::Lowering",
         "runLoweringCleanupDropUnwindingReference",
         "Source/Reference/Lowering/CleanupDropUnwinding.uv"
@@ -414,7 +414,7 @@ public procedure validatedCommonLoweringProgramLifecycleAndBackendCleanupDropAnd
     }
     if acceptedObligationEntryMatches(
         "rule.24.Cleanup-Empty",
-        95626usize,
+        95868usize,
         "HelloUltraviolet::Reference::Lowering",
         "runLoweringCleanupDropUnwindingReference",
         "Source/Reference/Lowering/CleanupDropUnwinding.uv"
@@ -423,7 +423,7 @@ public procedure validatedCommonLoweringProgramLifecycleAndBackendCleanupDropAnd
     }
     if acceptedObligationEntryMatches(
         "rule.24.Cleanup-Cons-Drop",
-        95641usize,
+        95883usize,
         "HelloUltraviolet::Reference::Lowering",
         "runLoweringCleanupDropUnwindingReference",
         "Source/Reference/Lowering/CleanupDropUnwinding.uv"
@@ -432,7 +432,7 @@ public procedure validatedCommonLoweringProgramLifecycleAndBackendCleanupDropAnd
     }
     if acceptedObligationEntryMatches(
         "rule.24.Cleanup-Cons-Drop-Panic",
-        95657usize,
+        95899usize,
         "HelloUltraviolet::Reference::Lowering",
         "runLoweringCleanupDropUnwindingReference",
         "Source/Reference/Lowering/CleanupDropUnwinding.uv"
@@ -441,7 +441,7 @@ public procedure validatedCommonLoweringProgramLifecycleAndBackendCleanupDropAnd
     }
     if acceptedObligationEntryMatches(
         "rule.24.Cleanup-Cons-DropStatic",
-        95673usize,
+        95915usize,
         "HelloUltraviolet::Reference::Lowering",
         "runLoweringCleanupDropUnwindingReference",
         "Source/Reference/Lowering/CleanupDropUnwinding.uv"
@@ -450,7 +450,7 @@ public procedure validatedCommonLoweringProgramLifecycleAndBackendCleanupDropAnd
     }
     if acceptedObligationEntryMatches(
         "rule.24.Cleanup-Cons-DropStatic-Panic",
-        95689usize,
+        95931usize,
         "HelloUltraviolet::Reference::Lowering",
         "runLoweringCleanupDropUnwindingReference",
         "Source/Reference/Lowering/CleanupDropUnwinding.uv"
@@ -459,7 +459,7 @@ public procedure validatedCommonLoweringProgramLifecycleAndBackendCleanupDropAnd
     }
     if acceptedObligationEntryMatches(
         "rule.24.Cleanup-Cons-Defer-Ok",
-        95705usize,
+        95947usize,
         "HelloUltraviolet::Reference::Lowering",
         "runLoweringCleanupDropUnwindingReference",
         "Source/Reference/Lowering/CleanupDropUnwinding.uv"
@@ -468,7 +468,7 @@ public procedure validatedCommonLoweringProgramLifecycleAndBackendCleanupDropAnd
     }
     if acceptedObligationEntryMatches(
         "rule.24.Cleanup-Cons-Defer-Panic",
-        95721usize,
+        95963usize,
         "HelloUltraviolet::Reference::Lowering",
         "runLoweringCleanupDropUnwindingReference",
         "Source/Reference/Lowering/CleanupDropUnwinding.uv"
@@ -477,7 +477,7 @@ public procedure validatedCommonLoweringProgramLifecycleAndBackendCleanupDropAnd
     }
     if acceptedObligationEntryMatches(
         "def.24.CleanupScopeJudg",
-        95737usize,
+        95979usize,
         "HelloUltraviolet::Reference::Lowering",
         "runLoweringCleanupDropUnwindingReference",
         "Source/Reference/Lowering/CleanupDropUnwinding.uv"
@@ -486,7 +486,7 @@ public procedure validatedCommonLoweringProgramLifecycleAndBackendCleanupDropAnd
     }
     if acceptedObligationEntryMatches(
         "rule.24.CleanupScope-From-SmallStep",
-        95750usize,
+        95992usize,
         "HelloUltraviolet::Reference::Lowering",
         "runLoweringCleanupDropUnwindingReference",
         "Source/Reference/Lowering/CleanupDropUnwinding.uv"
@@ -495,7 +495,7 @@ public procedure validatedCommonLoweringProgramLifecycleAndBackendCleanupDropAnd
     }
     if acceptedObligationEntryMatches(
         "rule.24.Unwind-Step",
-        95766usize,
+        96008usize,
         "HelloUltraviolet::Reference::Lowering",
         "runLoweringCleanupDropUnwindingReference",
         "Source/Reference/Lowering/CleanupDropUnwinding.uv"
@@ -504,7 +504,7 @@ public procedure validatedCommonLoweringProgramLifecycleAndBackendCleanupDropAnd
     }
     if acceptedObligationEntryMatches(
         "rule.24.Unwind-Abort",
-        95782usize,
+        96024usize,
         "HelloUltraviolet::Reference::Lowering",
         "runLoweringCleanupDropUnwindingReference",
         "Source/Reference/Lowering/CleanupDropUnwinding.uv"

@@ -9,7 +9,7 @@ public procedure validatedExpressionsCallExpressionsObligations() -> usize {
     var count: usize = 0usize
     if acceptedObligationEntryMatches(
         "grammar.16.CallExpressions",
-        58898usize,
+        59026usize,
         "HelloUltraviolet::Reference::Expressions",
         "runExpressionsCallsReference",
         "Source/Reference/Expressions/Calls.uv"
@@ -18,7 +18,7 @@ public procedure validatedExpressionsCallExpressionsObligations() -> usize {
     }
     if acceptedObligationEntryMatches(
         "req.16.QualifiedApplyParenPreResolution",
-        58917usize,
+        59045usize,
         "HelloUltraviolet::Reference::Expressions",
         "runExpressionsCallsReference",
         "Source/Reference/Expressions/Calls.uv"
@@ -27,7 +27,7 @@ public procedure validatedExpressionsCallExpressionsObligations() -> usize {
     }
     if acceptedObligationEntryMatches(
         "rule.16.Postfix-Call",
-        58932usize,
+        59060usize,
         "HelloUltraviolet::Reference::Expressions",
         "runExpressionsCallsReference",
         "Source/Reference/Expressions/Calls.uv"
@@ -36,7 +36,7 @@ public procedure validatedExpressionsCallExpressionsObligations() -> usize {
     }
     if acceptedObligationEntryMatches(
         "rule.16.Postfix-Call-TypeArgs",
-        58948usize,
+        59076usize,
         "HelloUltraviolet::Reference::Expressions",
         "runExpressionsCallsReference",
         "Source/Reference/Expressions/Calls.uv"
@@ -45,7 +45,7 @@ public procedure validatedExpressionsCallExpressionsObligations() -> usize {
     }
     if acceptedObligationEntryMatches(
         "rule.16.Postfix-MethodCall",
-        58964usize,
+        59092usize,
         "HelloUltraviolet::Reference::Expressions",
         "runExpressionsCallsReference",
         "Source/Reference/Expressions/Calls.uv"
@@ -54,7 +54,7 @@ public procedure validatedExpressionsCallExpressionsObligations() -> usize {
     }
     if acceptedObligationEntryMatches(
         "rule.16.Parse-Qualified-Apply-Paren",
-        58980usize,
+        59108usize,
         "HelloUltraviolet::Reference::Expressions",
         "runExpressionsCallsReference",
         "Source/Reference/Expressions/Calls.uv"
@@ -63,7 +63,7 @@ public procedure validatedExpressionsCallExpressionsObligations() -> usize {
     }
     if acceptedObligationEntryMatches(
         "rule.16.ArgumentListParsingFamily",
-        58996usize,
+        59124usize,
         "HelloUltraviolet::Reference::Expressions",
         "runExpressionsCallsReference",
         "Source/Reference/Expressions/Calls.uv"
@@ -72,7 +72,7 @@ public procedure validatedExpressionsCallExpressionsObligations() -> usize {
     }
     if acceptedObligationEntryMatches(
         "def.16.ArgAst",
-        59011usize,
+        59139usize,
         "HelloUltraviolet::Reference::Expressions",
         "runExpressionsCallsReference",
         "Source/Reference/Expressions/Calls.uv"
@@ -81,7 +81,7 @@ public procedure validatedExpressionsCallExpressionsObligations() -> usize {
     }
     if acceptedObligationEntryMatches(
         "def.16.CallExprAst",
-        59024usize,
+        59152usize,
         "HelloUltraviolet::Reference::Expressions",
         "runExpressionsCallsReference",
         "Source/Reference/Expressions/Calls.uv"
@@ -90,7 +90,7 @@ public procedure validatedExpressionsCallExpressionsObligations() -> usize {
     }
     if acceptedObligationEntryMatches(
         "def.16.ArgAccessors",
-        59037usize,
+        59165usize,
         "HelloUltraviolet::Reference::Expressions",
         "runExpressionsCallsReference",
         "Source/Reference/Expressions/Calls.uv"
@@ -98,8 +98,8 @@ public procedure validatedExpressionsCallExpressionsObligations() -> usize {
         count = count + 1usize
     }
     if acceptedObligationEntryMatches(
-        "def.16.MovedArg",
-        59051usize,
+        "def.16.ArgumentPassExpressions",
+        59179usize,
         "HelloUltraviolet::Reference::Expressions",
         "runExpressionsCallsReference",
         "Source/Reference/Expressions/Calls.uv"
@@ -108,7 +108,7 @@ public procedure validatedExpressionsCallExpressionsObligations() -> usize {
     }
     if acceptedObligationEntryMatches(
         "req.16.QualifiedParenthesizedApplicationResolution",
-        59066usize,
+        59196usize,
         "HelloUltraviolet::Reference::Expressions",
         "runExpressionsCallsReference",
         "Source/Reference/Expressions/Calls.uv"
@@ -117,7 +117,7 @@ public procedure validatedExpressionsCallExpressionsObligations() -> usize {
     }
     if rejectedSourceObligationEntryMatches(
         "def.16.CallStaticJudgementsAndArgumentTyping",
-        59085usize,
+        59215usize,
         "HelloUltraviolet::Audit::FixtureCatalog::RejectedSource",
         "validatedExpressionsRejectedSourceFixtureCount",
         "Fixtures/RejectedSource/Expressions/CallStaticJudgementsAndArgumentTyping/Source/Main.uv"
@@ -126,7 +126,7 @@ public procedure validatedExpressionsCallExpressionsObligations() -> usize {
     }
     if acceptedObligationEntryMatches(
         "rule.16.ArgsT-Empty",
-        59113usize,
+        59248usize,
         "HelloUltraviolet::Reference::Expressions",
         "runExpressionsCallsReference",
         "Source/Reference/Expressions/Calls.uv"
@@ -135,7 +135,7 @@ public procedure validatedExpressionsCallExpressionsObligations() -> usize {
     }
     if acceptedObligationEntryMatches(
         "rule.16.ArgsT-Cons",
-        59128usize,
+        59263usize,
         "HelloUltraviolet::Reference::Expressions",
         "runExpressionsCallsReference",
         "Source/Reference/Expressions/Calls.uv"
@@ -144,7 +144,7 @@ public procedure validatedExpressionsCallExpressionsObligations() -> usize {
     }
     if rejectedSourceObligationEntryMatches(
         "rule.16.ArgsT-Cons-Ref",
-        59144usize,
+        59279usize,
         "HelloUltraviolet::Audit::FixtureCatalog::RejectedSource",
         "validatedExpressionsRejectedSourceFixtureCount",
         "Fixtures/RejectedSource/Expressions/ArgsTConsRef/Source/Main.uv"
@@ -153,7 +153,7 @@ public procedure validatedExpressionsCallExpressionsObligations() -> usize {
     }
     if acceptedObligationEntryMatches(
         "rule.16.T-Call-Generic-Infer",
-        59160usize,
+        59295usize,
         "HelloUltraviolet::Reference::Expressions",
         "runExpressionsCallsReference",
         "Source/Reference/Expressions/Calls.uv"
@@ -162,7 +162,7 @@ public procedure validatedExpressionsCallExpressionsObligations() -> usize {
     }
     if acceptedObligationEntryMatches(
         "rule.16.T-Call",
-        59176usize,
+        59311usize,
         "HelloUltraviolet::Reference::Expressions",
         "runExpressionsCallsReference",
         "Source/Reference/Expressions/Calls.uv"
@@ -171,7 +171,7 @@ public procedure validatedExpressionsCallExpressionsObligations() -> usize {
     }
     if rejectedSourceObligationEntryMatches(
         "rule.16.Call-Callee-NotFunc",
-        59192usize,
+        59327usize,
         "HelloUltraviolet::Audit::FixtureCatalog::RejectedSource",
         "validatedExpressionsRejectedSourceFixtureCount",
         "Fixtures/RejectedSource/Expressions/CallNonFunction/Source/Main.uv"
@@ -180,7 +180,7 @@ public procedure validatedExpressionsCallExpressionsObligations() -> usize {
     }
     if rejectedSourceObligationEntryMatches(
         "rule.16.Call-ArgCount-Err",
-        59208usize,
+        59343usize,
         "HelloUltraviolet::Audit::FixtureCatalog::RejectedSource",
         "validatedExpressionsRejectedSourceFixtureCount",
         "Fixtures/RejectedSource/Expressions/CallArgCount/Source/Main.uv"
@@ -189,7 +189,7 @@ public procedure validatedExpressionsCallExpressionsObligations() -> usize {
     }
     if rejectedSourceObligationEntryMatches(
         "rule.16.Call-ArgType-Err",
-        59224usize,
+        59359usize,
         "HelloUltraviolet::Audit::FixtureCatalog::RejectedSource",
         "validatedExpressionsRejectedSourceFixtureCount",
         "Fixtures/RejectedSource/Expressions/CallArgType/Source/Main.uv"
@@ -198,7 +198,7 @@ public procedure validatedExpressionsCallExpressionsObligations() -> usize {
     }
     if rejectedSourceObligationEntryMatches(
         "rule.16.Call-Move-Missing",
-        59240usize,
+        59375usize,
         "HelloUltraviolet::Audit::FixtureCatalog::RejectedSource",
         "validatedExpressionsRejectedSourceFixtureCount",
         "Fixtures/RejectedSource/Expressions/CallMoveMissing/Source/Main.uv"
@@ -207,7 +207,7 @@ public procedure validatedExpressionsCallExpressionsObligations() -> usize {
     }
     if rejectedSourceObligationEntryMatches(
         "rule.16.Call-Move-Unexpected",
-        59256usize,
+        59391usize,
         "HelloUltraviolet::Audit::FixtureCatalog::RejectedSource",
         "validatedExpressionsRejectedSourceFixtureCount",
         "Fixtures/RejectedSource/Expressions/CallMoveUnexpected/Source/Main.uv"
@@ -216,7 +216,7 @@ public procedure validatedExpressionsCallExpressionsObligations() -> usize {
     }
     if rejectedSourceObligationEntryMatches(
         "rule.16.Call-Arg-Packed-Unsafe-Err",
-        59272usize,
+        59407usize,
         "HelloUltraviolet::Audit::FixtureCatalog::RejectedSource",
         "validatedExpressionsRejectedSourceFixtureCount",
         "Fixtures/RejectedSource/Expressions/CallArgPackedUnsafe/Source/Main.uv"
@@ -225,7 +225,7 @@ public procedure validatedExpressionsCallExpressionsObligations() -> usize {
     }
     if rejectedSourceObligationEntryMatches(
         "rule.16.Call-Arg-NotPlace",
-        59288usize,
+        59423usize,
         "HelloUltraviolet::Audit::FixtureCatalog::RejectedSource",
         "validatedExpressionsRejectedSourceFixtureCount",
         "Fixtures/RejectedSource/Expressions/CallArgNotPlace/Source/Main.uv"
@@ -234,7 +234,7 @@ public procedure validatedExpressionsCallExpressionsObligations() -> usize {
     }
     if acceptedObligationEntryMatches(
         "rule.16.Chk-Call-Generic-Infer",
-        59304usize,
+        59439usize,
         "HelloUltraviolet::Reference::Expressions",
         "runExpressionsCallsReference",
         "Source/Reference/Expressions/Calls.uv"
@@ -243,7 +243,7 @@ public procedure validatedExpressionsCallExpressionsObligations() -> usize {
     }
     if acceptedObligationEntryMatches(
         "req.16.CallTypeArgsStaticOwnership",
-        59320usize,
+        59455usize,
         "HelloUltraviolet::Reference::Expressions",
         "runExpressionsCallsReference",
         "Source/Reference/Expressions/Calls.uv"
@@ -252,7 +252,7 @@ public procedure validatedExpressionsCallExpressionsObligations() -> usize {
     }
     if acceptedObligationEntryMatches(
         "req.16.MethodRecordClosureCallStaticOwnership",
-        59333usize,
+        59468usize,
         "HelloUltraviolet::Reference::Expressions",
         "runExpressionsCallsReference",
         "Source/Reference/Expressions/Calls.uv"
@@ -261,7 +261,7 @@ public procedure validatedExpressionsCallExpressionsObligations() -> usize {
     }
     if rejectedSourceObligationEntryMatches(
         "req.16.ExternProcedureCallsRequireUnsafe",
-        59346usize,
+        59481usize,
         "HelloUltraviolet::Audit::FixtureCatalog::RejectedSource",
         "validatedExpressionsRejectedSourceFixtureCount",
         "Fixtures/RejectedSource/Expressions/ExternCallUnsafeRequirement/Source/Main.uv"
@@ -270,7 +270,7 @@ public procedure validatedExpressionsCallExpressionsObligations() -> usize {
     }
     if acceptedObligationEntryMatches(
         "rule.16.EvalSigma-Call-Closure",
-        59361usize,
+        59496usize,
         "HelloUltraviolet::Reference::Expressions",
         "runExpressionsCallsReference",
         "Source/Reference/Expressions/Calls.uv"
@@ -279,7 +279,7 @@ public procedure validatedExpressionsCallExpressionsObligations() -> usize {
     }
     if acceptedObligationEntryMatches(
         "rule.16.EvalSigma-Call-RegionProc",
-        59377usize,
+        59512usize,
         "HelloUltraviolet::Reference::Expressions",
         "runExpressionsCallsReference",
         "Source/Reference/Expressions/Calls.uv"
@@ -288,7 +288,7 @@ public procedure validatedExpressionsCallExpressionsObligations() -> usize {
     }
     if acceptedObligationEntryMatches(
         "rule.16.EvalSigma-Call-RegionProc-Ctrl-Args",
-        59393usize,
+        59528usize,
         "HelloUltraviolet::Reference::Expressions",
         "runExpressionsCallsReference",
         "Source/Reference/Expressions/Calls.uv"
@@ -297,7 +297,7 @@ public procedure validatedExpressionsCallExpressionsObligations() -> usize {
     }
     if acceptedObligationEntryMatches(
         "rule.16.EvalSigma-Call-CancelProc",
-        59409usize,
+        59544usize,
         "HelloUltraviolet::Reference::Expressions",
         "runExpressionsCallsReference",
         "Source/Reference/Expressions/Calls.uv"
@@ -306,7 +306,7 @@ public procedure validatedExpressionsCallExpressionsObligations() -> usize {
     }
     if acceptedObligationEntryMatches(
         "rule.16.EvalSigma-Call-CancelProc-Ctrl-Args",
-        59425usize,
+        59560usize,
         "HelloUltraviolet::Reference::Expressions",
         "runExpressionsCallsReference",
         "Source/Reference/Expressions/Calls.uv"
@@ -315,7 +315,7 @@ public procedure validatedExpressionsCallExpressionsObligations() -> usize {
     }
     if acceptedObligationEntryMatches(
         "rule.16.EvalSigma-Call-Proc",
-        59441usize,
+        59576usize,
         "HelloUltraviolet::Reference::Expressions",
         "runExpressionsCallsReference",
         "Source/Reference/Expressions/Calls.uv"
@@ -324,7 +324,7 @@ public procedure validatedExpressionsCallExpressionsObligations() -> usize {
     }
     if acceptedObligationEntryMatches(
         "rule.16.EvalSigma-Call-Record",
-        59457usize,
+        59592usize,
         "HelloUltraviolet::Reference::Expressions",
         "runExpressionsCallsReference",
         "Source/Reference/Expressions/Calls.uv"
@@ -333,7 +333,7 @@ public procedure validatedExpressionsCallExpressionsObligations() -> usize {
     }
     if acceptedObligationEntryMatches(
         "rule.16.EvalSigma-MethodCall",
-        59473usize,
+        59608usize,
         "HelloUltraviolet::Reference::Expressions",
         "runExpressionsCallsReference",
         "Source/Reference/Expressions/Calls.uv"
@@ -342,7 +342,7 @@ public procedure validatedExpressionsCallExpressionsObligations() -> usize {
     }
     if acceptedObligationEntryMatches(
         "req.16.CallControlPropagation",
-        59489usize,
+        59624usize,
         "HelloUltraviolet::Reference::Expressions",
         "runExpressionsCallsReference",
         "Source/Reference/Expressions/Calls.uv"
@@ -351,7 +351,7 @@ public procedure validatedExpressionsCallExpressionsObligations() -> usize {
     }
     if acceptedObligationEntryMatches(
         "req.16.MethodCallControlPropagation",
-        59502usize,
+        59637usize,
         "HelloUltraviolet::Reference::Expressions",
         "runExpressionsCallsReference",
         "Source/Reference/Expressions/Calls.uv"
@@ -360,7 +360,7 @@ public procedure validatedExpressionsCallExpressionsObligations() -> usize {
     }
     if acceptedObligationEntryMatches(
         "req.16.CallTypeArgsEvaluationElaboration",
-        59515usize,
+        59650usize,
         "HelloUltraviolet::Reference::Expressions",
         "runExpressionsCallsReference",
         "Source/Reference/Expressions/Calls.uv"
@@ -369,25 +369,25 @@ public procedure validatedExpressionsCallExpressionsObligations() -> usize {
     }
     if acceptedObligationEntryMatches(
         "rule.16.Lower-Args-Empty",
-        59530usize,
+        59665usize,
         "HelloUltraviolet::Reference::Expressions",
         "runExpressionsCallsReference",
         "Source/Reference/Expressions/Calls.uv"
     ) {
         count = count + 1usize
     }
-    if acceptedObligationEntryMatches(
+    if acceptedProjectObligationEntryMatches(
         "rule.16.Lower-Args-Cons-Move",
-        59545usize,
-        "HelloUltraviolet::Reference::Expressions",
-        "runExpressionsCallsReference",
-        "Source/Reference/Expressions/Calls.uv"
+        59680usize,
+        "HelloUltraviolet::Audit::FixtureCatalog::AcceptedProjects",
+        "validatedAcceptedProjectFixtureCount",
+        "Fixtures/AcceptedProjects/ExpressionSemantics/Source/Library.uv"
     ) {
         count = count + 1usize
     }
     if acceptedObligationEntryMatches(
         "rule.16.Lower-Args-Cons-Ref",
-        59561usize,
+        59696usize,
         "HelloUltraviolet::Reference::Expressions",
         "runExpressionsCallsReference",
         "Source/Reference/Expressions/Calls.uv"
@@ -396,7 +396,7 @@ public procedure validatedExpressionsCallExpressionsObligations() -> usize {
     }
     if acceptedObligationEntryMatches(
         "rule.16.Lower-Expr-Call-Closure",
-        59577usize,
+        59712usize,
         "HelloUltraviolet::Reference::Expressions",
         "runExpressionsCallsReference",
         "Source/Reference/Expressions/Calls.uv"
@@ -405,7 +405,7 @@ public procedure validatedExpressionsCallExpressionsObligations() -> usize {
     }
     if acceptedObligationEntryMatches(
         "rule.16.Lower-Expr-CallFamily",
-        59593usize,
+        59728usize,
         "HelloUltraviolet::Reference::Expressions",
         "runExpressionsCallsReference",
         "Source/Reference/Expressions/Calls.uv"
@@ -414,7 +414,7 @@ public procedure validatedExpressionsCallExpressionsObligations() -> usize {
     }
     if acceptedObligationEntryMatches(
         "rule.16.Lower-MethodCallFamily",
-        59606usize,
+        59741usize,
         "HelloUltraviolet::Reference::Expressions",
         "runExpressionsCallsReference",
         "Source/Reference/Expressions/Calls.uv"
@@ -423,7 +423,7 @@ public procedure validatedExpressionsCallExpressionsObligations() -> usize {
     }
     if acceptedObligationEntryMatches(
         "req.16.CallTypeArgsLoweringElaboration",
-        59619usize,
+        59754usize,
         "HelloUltraviolet::Reference::Expressions",
         "runExpressionsCallsReference",
         "Source/Reference/Expressions/Calls.uv"
@@ -432,7 +432,7 @@ public procedure validatedExpressionsCallExpressionsObligations() -> usize {
     }
     if rejectedSourceObligationEntryMatches(
         "diag.16.CallExpressions",
-        59634usize,
+        59769usize,
         "HelloUltraviolet::Audit::FixtureCatalog::RejectedSource",
         "validatedExpressionsRejectedSourceFixtureCount",
         "Fixtures/RejectedSource/Expressions/CallExpressionsDiagnostic/Source/Main.uv"

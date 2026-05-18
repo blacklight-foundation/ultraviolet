@@ -9,7 +9,7 @@ public procedure validatedTypeSystemCoreMetatheoreticPropertiesObligations() -> 
     var count: usize = 0usize
     if acceptedObligationEntryMatches(
         "property.TypeSystemMetatheory.Intro",
-        26347usize,
+        26395usize,
         "HelloUltraviolet::Reference::Types",
         "runTypesEquivalenceReference",
         "Source/Reference/Types/Equivalence.uv"
@@ -18,7 +18,7 @@ public procedure validatedTypeSystemCoreMetatheoreticPropertiesObligations() -> 
     }
     if acceptedObligationEntryMatches(
         "Progress",
-        26361usize,
+        26409usize,
         "HelloUltraviolet::Reference::Types",
         "runTypesEquivalenceReference",
         "Source/Reference/Types/Equivalence.uv"
@@ -27,33 +27,6 @@ public procedure validatedTypeSystemCoreMetatheoreticPropertiesObligations() -> 
     }
     if acceptedObligationEntryMatches(
         "Preservation",
-        26380usize,
-        "HelloUltraviolet::Reference::Types",
-        "runTypesEquivalenceReference",
-        "Source/Reference/Types/Equivalence.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
-        "No-Use-After-Free",
-        26396usize,
-        "HelloUltraviolet::Reference::Types",
-        "runTypesEquivalenceReference",
-        "Source/Reference/Types/Equivalence.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
-        "No-Double-Free",
-        26412usize,
-        "HelloUltraviolet::Reference::Types",
-        "runTypesEquivalenceReference",
-        "Source/Reference/Types/Equivalence.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
-        "No-Dangling-Pointers",
         26428usize,
         "HelloUltraviolet::Reference::Types",
         "runTypesEquivalenceReference",
@@ -62,7 +35,7 @@ public procedure validatedTypeSystemCoreMetatheoreticPropertiesObligations() -> 
         count = count + 1usize
     }
     if acceptedObligationEntryMatches(
-        "Exclusivity-Invariant",
+        "No-Use-After-Free",
         26444usize,
         "HelloUltraviolet::Reference::Types",
         "runTypesEquivalenceReference",
@@ -71,7 +44,7 @@ public procedure validatedTypeSystemCoreMetatheoreticPropertiesObligations() -> 
         count = count + 1usize
     }
     if acceptedObligationEntryMatches(
-        "Permission-Preservation",
+        "No-Double-Free",
         26460usize,
         "HelloUltraviolet::Reference::Types",
         "runTypesEquivalenceReference",
@@ -80,7 +53,7 @@ public procedure validatedTypeSystemCoreMetatheoreticPropertiesObligations() -> 
         count = count + 1usize
     }
     if acceptedObligationEntryMatches(
-        "State-Determinism",
+        "No-Dangling-Pointers",
         26476usize,
         "HelloUltraviolet::Reference::Types",
         "runTypesEquivalenceReference",
@@ -89,7 +62,7 @@ public procedure validatedTypeSystemCoreMetatheoreticPropertiesObligations() -> 
         count = count + 1usize
     }
     if acceptedObligationEntryMatches(
-        "No-Resurrection",
+        "Exclusivity-Invariant",
         26492usize,
         "HelloUltraviolet::Reference::Types",
         "runTypesEquivalenceReference",
@@ -98,7 +71,7 @@ public procedure validatedTypeSystemCoreMetatheoreticPropertiesObligations() -> 
         count = count + 1usize
     }
     if acceptedObligationEntryMatches(
-        "Data-Race-Freedom",
+        "Permission-Preservation",
         26508usize,
         "HelloUltraviolet::Reference::Types",
         "runTypesEquivalenceReference",
@@ -107,7 +80,7 @@ public procedure validatedTypeSystemCoreMetatheoreticPropertiesObligations() -> 
         count = count + 1usize
     }
     if acceptedObligationEntryMatches(
-        "Fork-Join-Guarantee",
+        "State-Determinism",
         26524usize,
         "HelloUltraviolet::Reference::Types",
         "runTypesEquivalenceReference",
@@ -116,7 +89,7 @@ public procedure validatedTypeSystemCoreMetatheoreticPropertiesObligations() -> 
         count = count + 1usize
     }
     if acceptedObligationEntryMatches(
-        "Key-Serialization",
+        "No-Resurrection",
         26540usize,
         "HelloUltraviolet::Reference::Types",
         "runTypesEquivalenceReference",
@@ -125,8 +98,35 @@ public procedure validatedTypeSystemCoreMetatheoreticPropertiesObligations() -> 
         count = count + 1usize
     }
     if acceptedObligationEntryMatches(
-        "Async-Key-Safety",
+        "Data-Race-Freedom",
         26556usize,
+        "HelloUltraviolet::Reference::Types",
+        "runTypesEquivalenceReference",
+        "Source/Reference/Types/Equivalence.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "Fork-Join-Guarantee",
+        26572usize,
+        "HelloUltraviolet::Reference::Types",
+        "runTypesEquivalenceReference",
+        "Source/Reference/Types/Equivalence.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "Key-Serialization",
+        26588usize,
+        "HelloUltraviolet::Reference::Types",
+        "runTypesEquivalenceReference",
+        "Source/Reference/Types/Equivalence.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "Async-Key-Safety",
+        26604usize,
         "HelloUltraviolet::Reference::Types",
         "runTypesEquivalenceReference",
         "Source/Reference/Types/Equivalence.uv"

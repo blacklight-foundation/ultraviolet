@@ -1100,6 +1100,16 @@ ExprTypeResult TypeMethodCallExprImpl(const ScopeContext& ctx,
     return result;
   }
 
+  const auto normalized_lookup_base =
+      NormalizeAliasTopLevelForMethodCall(ctx, lookup_base);
+  if (!normalized_lookup_base.ok) {
+    result.diag_id = normalized_lookup_base.diag_id;
+    return result;
+  }
+  if (normalized_lookup_base.expanded && normalized_lookup_base.type) {
+    lookup_base = StripPermDeep(normalized_lookup_base.type);
+  }
+
   if (IdEq(expr.name, "until")) {
     SPEC_RULE("UntilMethod");
 

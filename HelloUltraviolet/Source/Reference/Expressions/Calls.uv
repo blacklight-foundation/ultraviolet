@@ -88,12 +88,16 @@ internal procedure callArgumentSemanticsReference() -> bool {
     let source_value: i32 = 5
     let by_reference_place: i32 = callReferenceIncrement(source_value)
     let by_reference_temporary: i32 = callReferenceIncrement(6 + 1)
+    let copied_source: i32 = 7
+    let copied_consuming_place: i32 = callReferenceMove(copy copied_source)
     let moved_source: i32 = 8
     let consuming_place: i32 = callReferenceMove(move moved_source)
     let consuming_temporary: i32 = callReferenceMove(9 + 1)
 
     return by_reference_place == 6 &&
         by_reference_temporary == 8 &&
+        copied_source == 7 &&
+        copied_consuming_place == 9 &&
         consuming_place == 10 &&
         consuming_temporary == 12
 }
@@ -137,7 +141,7 @@ internal procedure callQualifiedAndBuiltInFormsReference() -> bool {
     }
     let opened: unique Region@Active = Region::new_scoped(options)
     let allocated: i32 = opened~>alloc(31)
-    let freed: Region@Freed = unsafe { opened~>free_unchecked() }
+    let freed: unique Region@Freed = unsafe { opened~>free_unchecked() }
     let default_record: CallDefaultRecord = CallDefaultRecord()
 
     return !child~>is_cancelled() &&
@@ -164,7 +168,7 @@ internal procedure methodArgumentControlReference() -> i32 {
 
 internal procedure regionCallArgumentControlReference() -> i32 {
     let opened: unique Region@Active = Region::new_scoped({ return 43 })
-    let freed: Region@Freed = unsafe { opened~>free_unchecked() }
+    let freed: unique Region@Freed = unsafe { opened~>free_unchecked() }
     return 0
 }
 

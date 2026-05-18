@@ -73,7 +73,7 @@ internal procedure freshRegionBindingValue() -> i32 {
     var score: i32 = 0
     if allocated == 29
         score = score + 1
-    let freed: Region@Freed = unsafe { opened~>free_unchecked() }
+    let freed: unique Region@Freed = unsafe { opened~>free_unchecked() }
     return score
 }
 
@@ -85,7 +85,7 @@ internal procedure reboundRegionBindingValue() -> i32 {
     var score: i32 = 0
     if allocated == 31
         score = score + 1
-    let freed: Region@Freed = unsafe { alias~>free_unchecked() }
+    let freed: unique Region@Freed = unsafe { alias~>free_unchecked() }
     return score
 }
 

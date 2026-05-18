@@ -1907,10 +1907,13 @@ BeginsOperand(t) ⇔ t.kind ∈ {Identifier, IntLiteral, FloatLiteral, StringLit
 UnaryOnly = {"!", "~", "?"}
 Adjacent(t_1, t_2) ⇔ t_1.span.end_offset = t_2.span.start_offset
 AttrCloseBefore(K, i) ⇔ ∃ j. j+1 < i ∧ K[j].kind = Punctuator ∧ K[j].lexeme = "]" ∧ K[j+1].kind = Punctuator ∧ K[j+1].lexeme = "]" ∧ Adjacent(K[j], K[j+1]) ∧ Prev(K, i) = K[j+1]
+ElseCont(K, i) ⇔ K[i].kind = newline ∧ ∃ t, u. Prev(K, i) = t ∧ Next(K, i) = u ∧ t.kind = Punctuator ∧ t.lexeme = "}" ∧ u.kind = Keyword ∧ u.lexeme = "else"
 
-Continue(K, i) ⇔ Depth(K, i) > 0 ∨ (∃ t. Prev(K, i) = t ∧ (t.lexeme = "," ∨ (t.kind = Operator ∧ ((((t.lexeme ∈ Ambig ∨ t.lexeme ∈ RangeCont) ∧ ∃ u. Next(K, i) = u ∧ BeginsOperand(u)) ∨ (t.lexeme ∉ UnaryOnly ∧ t.lexeme ∉ RangeCont)))))) ∨ (∃ u. Next(K, i) = u ∧ u.lexeme ∈ {".", "::", "~>"}) ∨ (∃ u. AttrCloseBefore(K, i) ∧ Next(K, i) = u ∧ BeginsOperand(u))
+Continue(K, i) ⇔ Depth(K, i) > 0 ∨ (∃ t. Prev(K, i) = t ∧ (t.lexeme = "," ∨ (t.kind = Operator ∧ ((((t.lexeme ∈ Ambig ∨ t.lexeme ∈ RangeCont) ∧ ∃ u. Next(K, i) = u ∧ BeginsOperand(u)) ∨ (t.lexeme ∉ UnaryOnly ∧ t.lexeme ∉ RangeCont)))))) ∨ (∃ u. Next(K, i) = u ∧ u.lexeme ∈ {".", "::", "~>"}) ∨ (∃ u. AttrCloseBefore(K, i) ∧ Next(K, i) = u ∧ BeginsOperand(u)) ∨ ElseCont(K, i)
 
 For `t.lexeme ∈ RangeCont`, continuation across newline MUST require `Next(K, i)` to begin an operand. This permits split forms like `a .. \n b` and `.. \n b`, while allowing newline termination after complete `a ..` and `..` forms.
+
+A newline satisfying `ElseCont(K, i)` MUST be filtered and MUST NOT terminate the preceding expression or statement. `else` has no standalone statement or expression form; every `else` token MUST be consumed by an enclosing `if_expr`, `if ... is`, `if ... is { ... }`, or `comptime if` continuation. An `else` token not consumed by such a continuation is ill-formed.
 
 Filter(K) = [ K[i] | K[i].kind ≠ newline ∨ ¬ Continue(K, i) ]
 
