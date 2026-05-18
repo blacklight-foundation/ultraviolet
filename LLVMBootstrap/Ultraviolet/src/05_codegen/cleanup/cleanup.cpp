@@ -918,6 +918,13 @@ static IRPtr SeqWithPanicStop(std::vector<IRPtr> drops, LowerCtx& ctx) {
   return tail;
 }
 
+static IRPtr EmitReleaseValue(const analysis::TypeRef& /*type*/,
+                              const IRValue& /*value*/,
+                              LowerCtx& /*ctx*/) {
+  SPEC_RULE("ReleaseValue");
+  return EmptyIR();
+}
+
 static IRPtr EmitDropMethodCall(const analysis::TypeRef& type,
                                 const IRValue& value,
                                 const std::optional<IRValue>& panic_out,
@@ -971,7 +978,7 @@ static IRPtr EmitDropImpl(const analysis::TypeRef& type,
   }
 
   if (!TypeNeedsDrop(type, ctx)) {
-    return EmptyIR();
+    return EmitReleaseValue(type, value, ctx);
   }
 
   if (value.kind == IRValue::Kind::Opaque) {

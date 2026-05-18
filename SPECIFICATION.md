@@ -2118,7 +2118,7 @@ Sensitive(c) ⇔ c ∈ {U+202A … U+202E, U+2066 … U+2069, U+200C, U+200D}
 #### 4.2.3 Reserved Lexemes
 
 **Reserved.**
-Reserved = {`all`, `as`, `break`, `class`, `comptime`, `continue`, `derive`, `dispatch`, `else`, `enum`, `false`, `defer`, `frame`, `from`, `if`, `imm`, `import`, `internal`, `let`, `loop`, `modal`, `move`, `mut`, `null`, `parallel`, `private`, `procedure`, `public`, `quote`, `race`, `record`, `region`, `return`, `shared`, `spawn`, `sync`, `transition`, `transmute`, `true`, `type`, `unique`, `unsafe`, `var`, `widen`, `using`, `yield`, `const`, `override`}
+Reserved = {`all`, `as`, `break`, `class`, `comptime`, `continue`, `copy`, `derive`, `dispatch`, `else`, `enum`, `false`, `defer`, `frame`, `from`, `if`, `imm`, `import`, `internal`, `let`, `loop`, `modal`, `move`, `mut`, `null`, `parallel`, `private`, `procedure`, `public`, `quote`, `race`, `record`, `region`, `return`, `shared`, `spawn`, `sync`, `transition`, `transmute`, `true`, `type`, `unique`, `unsafe`, `var`, `widen`, `using`, `yield`, `const`, `override`}
 
 FutureReserved = ∅
 
@@ -3932,11 +3932,13 @@ SuspendUnique(Π, mode, e) =
     Π                               otherwise }
 RemoveKeys(σ, D) = { k ↦ σ[k] | k ∈ dom(σ) ∧ k ∉ D }
 Reactivate([σ] ++ Π', D) = [RemoveKeys(σ, D)] ++ Π'
-ArgPassExpr(mode, moved, e) =
-  { MovedArg(moved, e)          if mode = `move` ∧ moved = true
-    MovedArg(true, CallTemp(e)) if mode = `move` ∧ moved = false ∧ ¬ HasSourceProvenance(e)
-    RefArgExpr(e)               if mode = ⊥ ∧ moved = false
-    e                           otherwise }
+ArgPassKind = {`ref`, `move`, `copy`}
+ArgPassExpr(mode, pass, e) =
+  { MoveArgExpr(e)          if mode = `move` ∧ pass = `move`
+    CopyArgExpr(e)          if pass = `copy`
+    MoveArgExpr(CallTemp(e)) if mode = `move` ∧ pass = `ref` ∧ ¬ HasSourceProvenance(e)
+    RefArgExpr(e)           if mode = ⊥ ∧ pass = `ref`
+    e                       otherwise }
 
 AccessStateOk(Valid, p) = true
 AccessStateOk(PartiallyMoved(F), p) = (FieldHead(p) = f ∧ f ∉ F)
@@ -3958,9 +3960,13 @@ MovOf(":=") = immov
 IsMoveExpr(MoveExpr(_)) = true
 IsMoveExpr(_) = false
 
+IsCopyExpr(CopyExpr(_)) = true
+IsCopyExpr(_) = false
+
 RespOfInit(init) =
   { resp    if ¬ IsPlace(init)
     resp    if IsMoveExpr(init)
+    resp    if IsCopyExpr(init)
     alias   otherwise }
 
 **Temporary Lifetime.**
@@ -4077,6 +4083,7 @@ ConsumeOnMove(𝔅, e) =
     𝔅                                         otherwise }
 
 MoveInner(MoveExpr(p)) = p
+CopyInner(CopyExpr(e)) = e
 
 BJudgment = {Γ; 𝔅; Π ⊢ e ⇒ 𝔅' ▷ Π', Γ; 𝔅; Π ⊢ s ⇒ 𝔅' ▷ Π'}
 
@@ -5105,7 +5112,7 @@ ResolvePathJudg = {ResolveRecordPath, ResolveEnumUnit, ResolveEnumTuple, Resolve
 **(ResolveArgs-Cons)**
 Γ ⊢ ResolveExpr(e) ⇓ e'    Γ ⊢ ResolveArgs(rest) ⇓ rest'
 ────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
-Γ ⊢ ResolveArgs([⟨moved, e, span⟩] ++ rest) ⇓ [⟨moved, e', span⟩] ++ rest'
+Γ ⊢ ResolveArgs([⟨pass, e, span⟩] ++ rest) ⇓ [⟨pass, e', span⟩] ++ rest'
 
 **(ResolveFieldInits-Empty)**
 ──────────────────────────────────────────────
@@ -8589,7 +8596,7 @@ TypeRefsArgsJudg = {TypeRefsArgs}
 Γ ⊢ TypeRefsArgs([], env) ⇓ ∅
 
 **(TypeRefsArgs-Cons)**
-a = ⟨moved, e, span⟩    Γ ⊢ TypeRefsExpr(e, env) ⇓ T_e    Γ ⊢ TypeRefsArgs(rest, env) ⇓ T_r
+a = ⟨pass, e, span⟩    Γ ⊢ TypeRefsExpr(e, env) ⇓ T_e    Γ ⊢ TypeRefsArgs(rest, env) ⇓ T_r
 ────────────────────────────────────────────────────────────────────────────────────────────
 Γ ⊢ TypeRefsArgs(a::rest, env) ⇓ T_e ∪ T_r
 
@@ -8681,7 +8688,7 @@ NoSpecificValueRefsExpr(e)    Children_LTR(e) = [e_1, …, e_n]    ∀ i, Γ ⊢
 Γ ⊢ ValueRefsArgs([], env) ⇓ ∅
 
 **(ValueRefsArgs-Cons)**
-a = ⟨moved, e, span⟩    Γ ⊢ ValueRefs(e, env) ⇓ V_e    Γ ⊢ ValueRefsArgs(args, env) ⇓ V_a
+a = ⟨pass, e, span⟩    Γ ⊢ ValueRefs(e, env) ⇓ V_e    Γ ⊢ ValueRefsArgs(args, env) ⇓ V_a
 ────────────────────────────────────────────────────────────────────────────────────────────────────────────
 Γ ⊢ ValueRefsArgs(a::args, env) ⇓ V_e ∪ V_a
 
@@ -14130,7 +14137,11 @@ The built-in class signatures are:
 
 #### 14.10.5 Dynamic Semantics
 
-`drop` is invoked implicitly by scope exit when `DropType(T)` holds. `clone` on a `BitcopyType` value is equivalent to the implicit bitwise duplication already permitted by that predicate.
+Scope exit runs the cleanup actions for bindings that still own their provenance/allocation domain. A moved-out binding has transferred that domain and is skipped at its original scope exit. At the final owning scope exit, `drop` is invoked when `DropType(T)` holds, owned children are cleaned in reverse construction order, and the provenance/allocation domain is released. For types without `drop`, no type-specific destructor is invoked; domain release still occurs, and cleanup is a no-op when the value has no owned children and no domain storage to release.
+
+`copy e` is the explicit object-duplication operation. It requires `BitcopyType(ExprType(e))`, duplicates the object bits, and materializes a fresh provenance/allocation domain for the duplicate. The original value and its cleanup responsibility remain with the original owner.
+
+`clone` on a `BitcopyType` value is equivalent to `copy` for the value-level duplication it performs.
 
 `Hasher` maintains an internal `u64` state. `write` appends bytes to the input stream. `finish` returns the FNV-1a 64-bit hash of the concatenated byte stream using `FNVOffset64` and `FNVPrime64`.
 
@@ -14382,7 +14393,7 @@ FuncVal(sym) defined ⇔ sym ∈ Symbol
 
 BindParams([⟨mode_1, x_1, T_1⟩, …, ⟨mode_n, x_n, T_n⟩], [v_1, …, v_n]) = [⟨x_1, v_1⟩, …, ⟨x_n, v_n⟩]
 ArgPassJudg = {Γ ⊢ EvalArgsSigma(params, args, σ) ⇓ (out, σ'), Γ ⊢ EvalRecvSigma(base, mode, σ) ⇓ (out, σ')}
-ArgVal = {v, Alias(addr)}
+ArgVal = {v, Alias(addr), Owned(addr)}
 
 CallJudg = {Γ ⊢ EvalArgsSigma(params, args, σ) ⇓ (out, σ'), Γ ⊢ EvalRecvSigma(base, mode, σ) ⇓ (out, σ'), Γ ⊢ ApplyRegionProc(name, vec_v, σ) ⇓ (out, σ'), Γ ⊢ ApplyCancelProc(name, vec_v, σ) ⇓ (out, σ'), Γ ⊢ ApplyProcSigma(proc, vec_v, σ) ⇓ (out, σ'), Γ ⊢ ApplyRecordCtorSigma(p, σ) ⇓ (out, σ'), Γ ⊢ ApplyMethodSigma(base, name, v_self, v_arg, vec_v, σ) ⇓ (out, σ')}
 
@@ -14416,25 +14427,44 @@ ReturnOut(out) = ⊥ ⇒ IllFormed(ReturnOut(out))
 ──────────────────────────────────────────────
 Γ ⊢ EvalArgsSigma([], [], σ) ⇓ (Val([]), σ)
 
-**(EvalArgsSigma-Cons-Move)**
-Γ ⊢ EvalSigma(MovedArg(moved, e), σ) ⇓ (Val(v), σ_1)    Γ ⊢ EvalArgsSigma(ps, as, σ_1) ⇓ (Val(vec_v), σ_2)
+CopyValue(e, σ) ⇓ (out, σ') ⇔ Γ ⊢ EvalSigma(CopyExpr(e), σ) ⇓ (out, σ')
+MaterializeCallTemp(v, σ) ⇓ (addr, σ') relation
+TransferArgOwner(addr, σ) ⇓ σ' relation
+
+**(EvalArgsSigma-Cons-Move-Place)**
+pass ∈ {`move`}    Γ ⊢ AddrOfSigma(e, σ) ⇓ (Val(addr), σ_1)    TransferArgOwner(addr, σ_1) ⇓ σ_2    Γ ⊢ EvalArgsSigma(ps, as, σ_2) ⇓ (Val(vec_v), σ_3)
 ───────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
-Γ ⊢ EvalArgsSigma([⟨`move`, x, T_p⟩] ++ ps, [⟨moved, e, _⟩] ++ as, σ) ⇓ (Val([v] ++ vec_v), σ_2)
+Γ ⊢ EvalArgsSigma([⟨`move`, x, T_p⟩] ++ ps, [⟨pass, e, _⟩] ++ as, σ) ⇓ (Val([Owned(addr)] ++ vec_v), σ_3)
+
+**(EvalArgsSigma-Cons-Move-Copy)**
+pass = `copy`    Γ ⊢ CopyValue(e, σ) ⇓ (Val(v), σ_1)    MaterializeCallTemp(v, σ_1) ⇓ (addr, σ_2)    Γ ⊢ EvalArgsSigma(ps, as, σ_2) ⇓ (Val(vec_v), σ_3)
+────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+Γ ⊢ EvalArgsSigma([⟨`move`, x, T_p⟩] ++ ps, [⟨pass, e, _⟩] ++ as, σ) ⇓ (Val([Owned(addr)] ++ vec_v), σ_3)
+
+**(EvalArgsSigma-Cons-Move-Fresh)**
+pass = `ref`    ¬ HasSourceProvenance(e)    Γ ⊢ EvalSigma(e, σ) ⇓ (Val(v), σ_1)    MaterializeCallTemp(v, σ_1) ⇓ (addr, σ_2)    Γ ⊢ EvalArgsSigma(ps, as, σ_2) ⇓ (Val(vec_v), σ_3)
+──────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+Γ ⊢ EvalArgsSigma([⟨`move`, x, T_p⟩] ++ ps, [⟨pass, e, _⟩] ++ as, σ) ⇓ (Val([Owned(addr)] ++ vec_v), σ_3)
 
 **(EvalArgsSigma-Cons-Ref)**
-Γ ⊢ AddrOfSigma(RefArgExpr(e), σ) ⇓ (Val(addr), σ_1)    Γ ⊢ EvalArgsSigma(ps, as, σ_1) ⇓ (Val(vec_v), σ_2)
+pass = `ref`    Γ ⊢ AddrOfSigma(RefArgExpr(e), σ) ⇓ (Val(addr), σ_1)    Γ ⊢ EvalArgsSigma(ps, as, σ_1) ⇓ (Val(vec_v), σ_2)
 ──────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
-Γ ⊢ EvalArgsSigma([⟨⊥, x, T_p⟩] ++ ps, [⟨moved, e, _⟩] ++ as, σ) ⇓ (Val([Alias(addr)] ++ vec_v), σ_2)
+Γ ⊢ EvalArgsSigma([⟨⊥, x, T_p⟩] ++ ps, [⟨pass, e, _⟩] ++ as, σ) ⇓ (Val([Alias(addr)] ++ vec_v), σ_2)
+
+**(EvalArgsSigma-Cons-Ref-Copy)**
+pass = `copy`    Γ ⊢ CopyValue(e, σ) ⇓ (Val(v), σ_1)    MaterializeCallTemp(v, σ_1) ⇓ (addr, σ_2)    Γ ⊢ EvalArgsSigma(ps, as, σ_2) ⇓ (Val(vec_v), σ_3)
+────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+Γ ⊢ EvalArgsSigma([⟨⊥, x, T_p⟩] ++ ps, [⟨pass, e, _⟩] ++ as, σ) ⇓ (Val([Alias(addr)] ++ vec_v), σ_3)
 
 **(EvalArgsSigma-Ctrl-Move)**
-Γ ⊢ EvalSigma(MovedArg(moved, e), σ) ⇓ (Ctrl(κ), σ_1)
+Γ ⊢ EvalSigma(ArgPassExpr(`move`, pass, e), σ) ⇓ (Ctrl(κ), σ_1)
 ───────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
-Γ ⊢ EvalArgsSigma([⟨`move`, x, T_p⟩] ++ ps, [⟨moved, e, _⟩] ++ as, σ) ⇓ (Ctrl(κ), σ_1)
+Γ ⊢ EvalArgsSigma([⟨`move`, x, T_p⟩] ++ ps, [⟨pass, e, _⟩] ++ as, σ) ⇓ (Ctrl(κ), σ_1)
 
 **(EvalArgsSigma-Ctrl-Ref)**
-Γ ⊢ AddrOfSigma(RefArgExpr(e), σ) ⇓ (Ctrl(κ), σ_1)
+Γ ⊢ EvalSigma(ArgPassExpr(⊥, pass, e), σ) ⇓ (Ctrl(κ), σ_1)
 ──────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
-Γ ⊢ EvalArgsSigma([⟨⊥, x, T_p⟩] ++ ps, [⟨moved, e, _⟩] ++ as, σ) ⇓ (Ctrl(κ), σ_1)
+Γ ⊢ EvalArgsSigma([⟨⊥, x, T_p⟩] ++ ps, [⟨pass, e, _⟩] ++ as, σ) ⇓ (Ctrl(κ), σ_1)
 
 **(ApplyRegionProc-NewScoped)**
 name = `new_scoped`    vec_v = [opts]    RegionNewScoped(σ, opts) ⇓ (σ', v)
@@ -14647,14 +14677,14 @@ RecvBaseType(base, mode) = P T ⇔ (mode = ⊥ ∧ Γ; R; L ⊢ RefArgExpr(base)
 Γ; R; L ⊢ ArgsOk([], [])
 
 **(Args-Cons)**
-Γ; R; L ⊢ MovedArg(moved, e) ⇐ T_p ⊣ ∅    moved = true    Γ; R; L ⊢ ArgsOk(ps, as)
+Γ; R; L ⊢ ConsumeArgExpr(`move`, pass, e) ⇐ T_p ⊣ ∅    pass ∈ {`move`, `copy`}    Γ; R; L ⊢ ArgsOk(ps, as)
 ──────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
-Γ; R; L ⊢ ArgsOk([⟨`move`, x, T_p⟩] ++ ps, [⟨moved, e, _⟩] ++ as)
+Γ; R; L ⊢ ArgsOk([⟨`move`, x, T_p⟩] ++ ps, [⟨pass, e, _⟩] ++ as)
 
 **(Args-Cons-Ref)**
-Γ; R; L ⊢ RefArgExpr(e) ⇐_place T_p    AddrOfOk(RefArgExpr(e))    moved = false    Γ; R; L ⊢ ArgsOk(ps, as)
+RefArgOk(pass, e, T_p)    Γ; R; L ⊢ ArgsOk(ps, as)
 ──────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
-Γ; R; L ⊢ ArgsOk([⟨⊥, x, T_p⟩] ++ ps, [⟨moved, e, _⟩] ++ as)
+Γ; R; L ⊢ ArgsOk([⟨⊥, x, T_p⟩] ++ ps, [⟨pass, e, _⟩] ++ as)
 
 RecvArgOk(base, mode) ⇔ (mode = ⊥ ∧ AddrOfOk(RefArgExpr(base))) ∨ (mode = `move` ∧ ∃ p. base = MoveExpr(p))
 
@@ -16018,13 +16048,15 @@ RangeIndexType(T_r) ⇔ T_r = TypeRange(TypePrim(`usize`)) ∨ T_r = TypeRangeIn
 ──────────────────────────────────────────────────────────────
 Γ ⊢ e : TypePerm(p, TypeSlice(T))
 
+ValueCopyContext(e) holds when the enclosing operation must duplicate the value represented by `e`. It includes explicit `copy e`, by-value materialization for Bitcopy-only operations, and array-repeat/value-spread contexts. It does not include `move e`, ownership-return destinations, address formation, or by-reference argument passing.
+
 **(Union-DirectAccess-Err)**
 Γ; R; L ⊢ e : U    StripPerm(U) = TypeUnion(_)    c = Code(Union-DirectAccess-Err)
 ────────────────────────────────────────────────────────────────────────────────────────────────
 Γ; R; L ⊢ FieldAccess(e, f) ⇑ c
 
 **(ValueUse-NonBitcopyPlace)**
-IsPlace(e)    ¬ BitcopyType(ExprType(e))    c = Code(ValueUse-NonBitcopyPlace)
+ValueCopyContext(e)    IsPlace(e)    ¬ BitcopyType(ExprType(e))    c = Code(ValueUse-NonBitcopyPlace)
 ────────────────────────────────────────────────────────────────────────────────────────────────
 Γ; R; L ⊢ e ⇑ c
 
@@ -16094,7 +16126,7 @@ Bounds failures in scalar and range indexing evaluate to `Ctrl(Panic)` as define
 
 #### 16.2.7 Diagnostics
 
-Diagnostics are defined for unknown or inaccessible record fields, tuple indexing on non-tuples, non-constant tuple indices, tuple index out of bounds, non-`usize` array indices, non-constant array indices outside dynamic-checking contexts, out-of-bounds array and slice access, indexing non-indexable values, direct field access on unions, and value use of non-`Bitcopy` places.
+Diagnostics are defined for unknown or inaccessible record fields, tuple indexing on non-tuples, non-constant tuple indices, tuple index out of bounds, non-`usize` array indices, non-constant array indices outside dynamic-checking contexts, out-of-bounds array and slice access, indexing non-indexable values, direct field access on unions, and value-copy use of non-`Bitcopy` places.
 
 Scalar indexing of arrays and slices is governed by the `TypePrim(`usize`)` requirement in §12.4.4. The corresponding non-`usize` diagnostics are `Index-Array-NonUsize` and `Index-Slice-NonUsize`. Scalar out-of-bounds access and range out-of-bounds slicing lower to panic through `EvalSigma-Index-OOB` and `EvalSigma-Index-Range-OOB`.
 
@@ -16107,7 +16139,7 @@ call_expr         ::= postfix_expr "(" argument_list? ")"
 generic_call_expr ::= postfix_expr generic_args "(" argument_list? ")"
 method_call_expr  ::= postfix_expr "~>" identifier "(" argument_list? ")"
 argument_list     ::= argument ("," argument)*
-argument          ::= "move"? expression
+argument          ::= ("move" | "copy")? expression
 ```
 
 Qualified applications with parenthesized arguments parse before name resolution as `QualifiedApply(path, name, Paren(args))`.
@@ -16134,20 +16166,22 @@ IsOp(Tok(P), "~>")    Γ ⊢ ParseIdent(Advance(P)) ⇓ (P_1, name)    IsPunc(To
 ────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
 Γ ⊢ ParsePrimary(P) ⇓ (Advance(P_2), QualifiedApply(path, name, Paren(args)))
 
-**(Parse-ArgList-Empty)**, **(Parse-ArgList-Cons)**, **(Parse-Arg)**, **(Parse-ArgMoveOpt-None)**, **(Parse-ArgMoveOpt-Yes)**, **(Parse-ArgTail-End)**, **(Parse-ArgTail-TrailingComma)**, and **(Parse-ArgTail-Comma)** define argument-list parsing and move-mark parsing.
+**(Parse-ArgList-Empty)**, **(Parse-ArgList-Cons)**, **(Parse-Arg)**, **(Parse-ArgPassOpt-None)**, **(Parse-ArgPassOpt-Move)**, **(Parse-ArgPassOpt-Copy)**, **(Parse-ArgTail-End)**, **(Parse-ArgTail-TrailingComma)**, and **(Parse-ArgTail-Comma)** define argument-list parsing and pass-kind parsing.
 
 #### 16.3.3 AST Representation / Form
 
-Arg = ⟨moved, expr, span⟩    moved ∈ {true, false}
+Arg = ⟨pass, expr, span⟩    pass ∈ ArgPassKind
 
 Expr = Call(callee, args) | CallTypeArgs(callee, type_args, args) | MethodCall(base, name, args) | QualifiedApply(path, name, Paren(args)) | …
 
-ArgMoved(⟨moved, e, span⟩) = moved
-ArgExpr(⟨moved, e, span⟩) = e
+ArgPass(⟨pass, e, span⟩) = pass
+ArgExpr(⟨pass, e, span⟩) = e
 
-MovedArg(moved, e) =
-  { MoveExpr(e)  if moved = true ∧ IsPlace(e)
+MoveArgExpr(e) =
+  { MoveExpr(e)  if IsPlace(e)
     e            otherwise }
+
+CopyArgExpr(e) = CopyExpr(e)
 
 Qualified parenthesized applications are pre-resolution forms. Name resolution rewrites them to:
 
@@ -16166,27 +16200,32 @@ PlaceType(p) = T ⇔ Γ; R; L ⊢ p :place T
 HasSourceProvenance(e) ⇔ (∃ π. Γ; Ω ⊢ e ⇓ π ∧ π ≠ ⊥)
 CallTemp(e) = p_tmp where ¬ HasSourceProvenance(e) ∧ Lifetime(p_tmp) = CallExtent ∧ ValueOf(p_tmp) = e
 RefArgExpr(e) = { e if HasSourceProvenance(e) ; CallTemp(e) otherwise }
-ConsumeArgExpr(mode, moved, e) =
-  { MovedArg(moved, e)          if mode = `move` ∧ moved = true
-    MovedArg(true, CallTemp(e)) if mode = `move` ∧ moved = false ∧ ¬ HasSourceProvenance(e)
-    e                           otherwise }
+ConsumeArgExpr(mode, pass, e) =
+  { MoveArgExpr(e)          if mode = `move` ∧ pass = `move`
+    CopyArgExpr(e)          if pass = `copy`
+    MoveArgExpr(CallTemp(e)) if mode = `move` ∧ pass = `ref` ∧ ¬ HasSourceProvenance(e)
+    e                       otherwise }
+RefArgOk(pass, e, T_p) ⇔
+  (pass = `ref` ∧ Γ; R; L ⊢ RefArgExpr(e) ⇐_place T_p ∧ AddrOfOk(RefArgExpr(e))) ∨
+  (pass = `copy` ∧ Γ; R; L ⊢ CopyArgExpr(e) ⇐ T_p ⊣ ∅)
 ArgType(p, a) =
-  { ExprType(ConsumeArgExpr(ParamMode(p), ArgMoved(a), ArgExpr(a)))    if ParamMode(p) = `move`
-    PlaceType(RefArgExpr(ArgExpr(a)))                                   if ParamMode(p) = ⊥ }
+  { ExprType(ConsumeArgExpr(ParamMode(p), ArgPass(a), ArgExpr(a)))    if ParamMode(p) = `move`
+    ExprType(CopyArgExpr(ArgExpr(a)))                                  if ParamMode(p) = ⊥ ∧ ArgPass(a) = `copy`
+    PlaceType(RefArgExpr(ArgExpr(a)))                                  if ParamMode(p) = ⊥ ∧ ArgPass(a) = `ref` }
 
 **(ArgsT-Empty)**
 ──────────────────────────────────────────────
 Γ; R; L ⊢ ArgsOk_T([], [])
 
 **(ArgsT-Cons)**
-Γ; R; L ⊢ ConsumeArgExpr(`move`, moved, e) ⇐ T_p ⊣ ∅    (moved = true ∨ (moved = false ∧ ¬ HasSourceProvenance(e)))    Γ; R; L ⊢ ArgsOk_T(ps, as)
+Γ; R; L ⊢ ConsumeArgExpr(`move`, pass, e) ⇐ T_p ⊣ ∅    (pass ∈ {`move`, `copy`} ∨ (pass = `ref` ∧ ¬ HasSourceProvenance(e)))    Γ; R; L ⊢ ArgsOk_T(ps, as)
 ──────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
-Γ; R; L ⊢ ArgsOk_T([⟨`move`, T_p⟩] ++ ps, [⟨moved, e, _⟩] ++ as)
+Γ; R; L ⊢ ArgsOk_T([⟨`move`, T_p⟩] ++ ps, [⟨pass, e, _⟩] ++ as)
 
 **(ArgsT-Cons-Ref)**
-Γ; R; L ⊢ RefArgExpr(e) ⇐_place T_p    AddrOfOk(RefArgExpr(e))    moved = false    Γ; R; L ⊢ ArgsOk_T(ps, as)
+RefArgOk(pass, e, T_p)    Γ; R; L ⊢ ArgsOk_T(ps, as)
 ──────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
-Γ; R; L ⊢ ArgsOk_T([⟨⊥, T_p⟩] ++ ps, [⟨moved, e, _⟩] ++ as)
+Γ; R; L ⊢ ArgsOk_T([⟨⊥, T_p⟩] ++ ps, [⟨pass, e, _⟩] ++ as)
 
 **(T-Call-Generic-Infer)**
 Γ; R; L ⊢ GenericCallInference(callee, args, ⊥) ⇓ [A_1, …, A_n]    Γ; R; L ⊢ CallTypeArgs(callee, [A_1, …, A_n], args) : R_c
@@ -16214,12 +16253,12 @@ ArgType(p, a) =
 Γ; R; L ⊢ Call(callee, args) ⇑ c
 
 **(Call-Move-Missing)**
-Γ; R; L ⊢ callee : TypeFunc(params, _)    ∃ i. ParamMode(params[i]) = `move` ∧ ArgMoved(args[i]) = false ∧ HasSourceProvenance(ArgExpr(args[i]))    c = Code(Call-Move-Missing)
+Γ; R; L ⊢ callee : TypeFunc(params, _)    ∃ i. ParamMode(params[i]) = `move` ∧ ArgPass(args[i]) = `ref` ∧ HasSourceProvenance(ArgExpr(args[i]))    c = Code(Call-Move-Missing)
 ──────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
 Γ; R; L ⊢ Call(callee, args) ⇑ c
 
 **(Call-Move-Unexpected)**
-Γ; R; L ⊢ callee : TypeFunc(params, _)    ∃ i. ParamMode(params[i]) = ⊥ ∧ ArgMoved(args[i]) = true    c = Code(Call-Move-Unexpected)
+Γ; R; L ⊢ callee : TypeFunc(params, _)    ∃ i. ParamMode(params[i]) = ⊥ ∧ ArgPass(args[i]) = `move`    c = Code(Call-Move-Unexpected)
 ──────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
 Γ; R; L ⊢ Call(callee, args) ⇑ c
 
@@ -16229,7 +16268,7 @@ ArgType(p, a) =
 Γ; R; L ⊢ Call(callee, args) ⇑ c
 
 **(Call-Arg-NotPlace)**
-Γ; R; L ⊢ callee : TypeFunc(params, _)    ∃ i. ParamMode(params[i]) = ⊥ ∧ HasSourceProvenance(ArgExpr(args[i])) ∧ ¬ IsPlace(ArgExpr(args[i]))    c = Code(Call-Arg-NotPlace)
+Γ; R; L ⊢ callee : TypeFunc(params, _)    ∃ i. ParamMode(params[i]) = ⊥ ∧ ArgPass(args[i]) = `ref` ∧ HasSourceProvenance(ArgExpr(args[i])) ∧ ¬ IsPlace(ArgExpr(args[i]))    c = Code(Call-Arg-NotPlace)
 ──────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
 Γ; R; L ⊢ Call(callee, args) ⇑ c
 
@@ -16299,14 +16338,14 @@ mode = RecvArgMode(base)    Γ ⊢ EvalRecvSigma(base, mode, σ) ⇓ (Val(⟨v_s
 Γ ⊢ LowerArgs([], []) ⇓ ⟨ε, []⟩
 
 **(Lower-Args-Cons-Move)**
-Γ ⊢ LowerExpr(MovedArg(moved, e)) ⇓ ⟨IR_e, v⟩    Γ ⊢ LowerArgs(ps, as) ⇓ ⟨IR_a, vec_v⟩
+Γ ⊢ LowerMoveArg(pass, e, T_p) ⇓ ⟨IR_e, owned_ref⟩    Γ ⊢ LowerArgs(ps, as) ⇓ ⟨IR_a, vec_v⟩
 ────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
-Γ ⊢ LowerArgs([⟨`move`, x, T_p⟩] ++ ps, [⟨moved, e, _⟩] ++ as) ⇓ ⟨SeqIR(IR_e, IR_a), [v] ++ vec_v⟩
+Γ ⊢ LowerArgs([⟨`move`, x, T_p⟩] ++ ps, [⟨pass, e, _⟩] ++ as) ⇓ ⟨SeqIR(IR_e, IR_a), [owned_ref] ++ vec_v⟩
 
 **(Lower-Args-Cons-Ref)**
-Γ ⊢ LowerAddrOf(RefArgExpr(e)) ⇓ ⟨IR_e, addr⟩    Γ ⊢ LowerArgs(ps, as) ⇓ ⟨IR_a, vec_v⟩
+Γ ⊢ LowerRefArg(pass, e, T_p) ⇓ ⟨IR_e, addr⟩    Γ ⊢ LowerArgs(ps, as) ⇓ ⟨IR_a, vec_v⟩
 ────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
-Γ ⊢ LowerArgs([⟨⊥, x, T_p⟩] ++ ps, [⟨moved, e, _⟩] ++ as) ⇓ ⟨SeqIR(IR_e, IR_a), [Ptr@Valid(addr)] ++ vec_v⟩
+Γ ⊢ LowerArgs([⟨⊥, x, T_p⟩] ++ ps, [⟨pass, e, _⟩] ++ as) ⇓ ⟨SeqIR(IR_e, IR_a), [Ptr@Valid(addr)] ++ vec_v⟩
 
 **(Lower-Expr-Call-Closure)**
 ExprType(callee) = TypeClosure(_, _, _)    Γ ⊢ LowerClosureCall(callee, args) ⇓ ⟨IR, v⟩
@@ -16321,7 +16360,7 @@ ExprType(callee) = TypeClosure(_, _, _)    Γ ⊢ LowerClosureCall(callee, args)
 
 #### 16.3.7 Diagnostics
 
-Diagnostics are defined for non-callable callees, wrong argument count, wrong argument type, missing `move` at consuming call sites, unexpected `move` on by-reference parameters, non-place reference arguments, packed-field by-reference arguments outside `unsafe`, calls to `extern` procedures outside `unsafe`, unresolved qualified parenthesized applications, and the closure-specific conditions owned by §16.9.7.
+Diagnostics are defined for non-callable callees, wrong argument count, wrong argument type, missing explicit transfer/copy at consuming call sites, unexpected `move` on by-reference parameters, non-place reference arguments, packed-field by-reference arguments outside `unsafe`, calls to `extern` procedures outside `unsafe`, unresolved qualified parenthesized applications, and the closure-specific conditions owned by §16.9.7.
 
 ### 16.4 Operator Expressions
 
@@ -17306,6 +17345,7 @@ Block-expression parse, terminator, and result-join diagnostics are owned by §1
 unsafe_expr     ::= "unsafe" block_expr
 address_of_expr ::= "&" place_expr
 move_expr       ::= "move" place_expr
+copy_expr       ::= "copy" unary_expr
 deref_expr      ::= "*" unary_expr
 alloc_expr      ::= "^" expression
 propagate_expr  ::= postfix_expr "?"
@@ -17330,6 +17370,11 @@ IsKw(Tok(P), `move`)    Γ ⊢ ParsePlace(Advance(P)) ⇓ (P_1, p)
 ────────────────────────────────────────────────────────────────
 Γ ⊢ ParseUnary(P) ⇓ (P_1, MoveExpr(p))
 
+**(Parse-Unary-Copy)**
+IsKw(Tok(P), `copy`)    Γ ⊢ ParseUnary(Advance(P)) ⇓ (P_1, e)
+────────────────────────────────────────────────────────────────
+Γ ⊢ ParseUnary(P) ⇓ (P_1, CopyExpr(e))
+
 **(Postfix-Propagate)**
 IsOp(Tok(P), "?")
 ──────────────────────────────────────────────────────────────
@@ -17347,7 +17392,7 @@ IsKw(Tok(P), `unsafe`)    Γ ⊢ ParseBlock(Advance(P)) ⇓ (P_1, b)
 
 #### 16.8.3 AST Representation / Form
 
-Expr = UnsafeBlockExpr(body) | MoveExpr(place) | AddressOf(place) | Deref(expr) | AllocExpr(region_opt, expr) | Propagate(expr) | …
+Expr = UnsafeBlockExpr(body) | MoveExpr(place) | CopyExpr(expr) | AddressOf(place) | Deref(expr) | AllocExpr(region_opt, expr) | Propagate(expr) | …
 
 ResolveExpr-Alloc-Explicit-ByAlias rewrites:
 
@@ -17392,6 +17437,11 @@ UnsafeSpan(span(Deref(e)))    Γ; R; L ⊢ e : TypeRawPtr(q, T)    BitcopyType(T
 Γ; R; L ⊢ p :place T
 ──────────────────────────────────────────────
 Γ; R; L ⊢ MoveExpr(p) : T
+
+**(T-Copy)**
+Γ; R; L ⊢ e : T    BitcopyType(T)
+──────────────────────────────────────────────
+Γ; R; L ⊢ CopyExpr(e) : T
 
 **(T-Alloc-Explicit)**
 Γ; R; L ⊢ e : T    Γ; R; L ⊢ Identifier(r) : T_r    RegionActiveType(T_r)
@@ -17453,6 +17503,16 @@ AsyncSig(R) = ⟨Out, In, Result, E⟩    E = TypePrim("!")    Γ; R; L ⊢ e : 
 Γ ⊢ MovePlaceSigma(p, σ) ⇓ (out, σ_1)
 ──────────────────────────────────────────────────────────────
 Γ ⊢ EvalSigma(MoveExpr(p), σ) ⇓ (out, σ_1)
+
+**(EvalSigma-Copy)**
+Γ ⊢ EvalSigma(e, σ) ⇓ (Val(v), σ_1)    CopyObject(ExprType(e), v, σ_1) ⇓ (v_copy, σ_2)
+────────────────────────────────────────────────────────────────────────────────────────────────
+Γ ⊢ EvalSigma(CopyExpr(e), σ) ⇓ (Val(v_copy), σ_2)
+
+**(EvalSigma-Copy-Ctrl)**
+Γ ⊢ EvalSigma(e, σ) ⇓ (Ctrl(κ), σ_1)
+──────────────────────────────────────────────────────
+Γ ⊢ EvalSigma(CopyExpr(e), σ) ⇓ (Ctrl(κ), σ_1)
 
 **(EvalSigma-Alloc-Implicit)**
 Γ ⊢ EvalSigma(e, σ) ⇓ (Val(v), σ_1)    ActiveTarget(σ_1) = r    RegionAlloc(σ_1, r, v) ⇓ (σ_2, v')
@@ -17582,6 +17642,11 @@ TerminalExpr(⟨Ctrl(κ), σ⟩)
 Γ ⊢ LowerMovePlace(p) ⇓ ⟨IR, v⟩
 ──────────────────────────────────────────────────
 Γ ⊢ LowerExpr(MoveExpr(p)) ⇓ ⟨IR, v⟩
+
+**(Lower-Expr-Copy)**
+Γ ⊢ LowerExpr(e) ⇓ ⟨IR_e, v⟩    Γ ⊢ LowerCopyObject(ExprType(e), v) ⇓ ⟨IR_c, v_copy⟩
+────────────────────────────────────────────────────────────────────────────────────────
+Γ ⊢ LowerExpr(CopyExpr(e)) ⇓ ⟨SeqIR(IR_e, IR_c), v_copy⟩
 
 **(Lower-Expr-AddressOf)**
 Γ ⊢ LowerAddrOf(p) ⇓ ⟨IR, addr⟩
@@ -18106,8 +18171,8 @@ This section owns diagnostics for general expression typing, calls, indexing res
 | `E-SEM-2531`  | Error    | Compile-time | Callee expression is not of FUNCTION type                                           |
 | `E-SEM-2532`  | Error    | Compile-time | Argument count mismatch                                                             |
 | `E-SEM-2533`  | Error    | Compile-time | Argument type incompatible with parameter type                                      |
-| `E-SEM-2534`  | Error    | Compile-time | `move` argument required but not provided for provenance-bearing consuming argument |
-| `E-SEM-2535`  | Error    | Compile-time | `move` argument provided but parameter is not `move`                                |
+| `E-SEM-2534`  | Error    | Compile-time | Consuming parameter requires ownership transfer with `move` or an explicit duplicate with `copy` |
+| `E-SEM-2535`  | Error    | Compile-time | `move` argument provided for non-consuming parameter                                |
 | `E-SEM-2536`  | Error    | Compile-time | Method not found for receiver type                                                  |
 | `E-SEM-2538`  | Error    | Compile-time | Pipeline RHS is not callable                                                        |
 | `E-SEM-2539`  | Error    | Compile-time | Pipeline argument type mismatch                                                     |
@@ -18116,7 +18181,7 @@ This section owns diagnostics for general expression typing, calls, indexing res
 | `E-UNS-0102`  | Error    | Compile-time | Fixed-size array index must be a compile-time constant outside `[[dynamic]]` scope  |
 | `E-UNS-0103`  | Error    | Compile-time | Array index out of bounds                                                           |
 | `E-UNS-0104`  | Error    | Compile-time | `transmute` source and target alignments differ                                     |
-| `E-UNS-0107`  | Error    | Compile-time | Non-`Bitcopy` place expression used as value                                        |
+| `E-UNS-0107`  | Error    | Compile-time | Explicit `copy` requires a `Bitcopy` value                                          |
 | `W-SAFE-0100` | Warning  | Compile-time | `transmute` target type is known to admit invalid bit patterns                      |
 
 ## 17. Patterns
@@ -20150,8 +20215,15 @@ ContinueStmt
 
 #### 18.9.4 Static Semantics
 
+ReturnDestExpr(e) =
+  { CopyExpr(CopyInner(e))    if IsCopyExpr(e)
+    MoveExpr(e)               if IsPlace(e)
+    e                         otherwise }
+
+`ReturnDestExpr` is the static ownership-destination view of a return expression. `EvalReturnDest` and `LowerReturnDest` implement the same view dynamically and in IR: a returned owned place transfers its provenance/allocation domain to the return destination, a fresh expression materializes directly in that destination, and `copy` first creates a duplicate domain that becomes the returned owner.
+
 **(T-Return-Value)**
-R_b = BodyReturnType(R)    Γ; R; L ⊢ e ⇐ R_b ⊣ ∅
+R_b = BodyReturnType(R)    Γ; R; L ⊢ ReturnDestExpr(e) ⇐ R_b ⊣ ∅
 ────────────────────────────────────────────────────────────────
 Γ; R; L ⊢ ReturnStmt(e) ⇒ Γ ▷ ⟨[], [], false⟩
 
@@ -20161,7 +20233,7 @@ R_b = BodyReturnType(R)    R_b = TypePrim("()")
 Γ; R; L ⊢ ReturnStmt(⊥) ⇒ Γ ▷ ⟨[], [], false⟩
 
 **(Return-Async-Type-Err)**
-AsyncSig(R) = ⟨Out, In, Result, E⟩    Γ; R; L ⊢ e : T    ¬(Γ ⊢ T <: Result)    c = Code(E-CON-0203)
+AsyncSig(R) = ⟨Out, In, Result, E⟩    Γ; R; L ⊢ ReturnDestExpr(e) : T    ¬(Γ ⊢ T <: Result)    c = Code(E-CON-0203)
 ────────────────────────────────────────────────────────────────────────────────────────────────────────────
 Γ; R; L ⊢ ReturnStmt(e) ⇑ c
 
@@ -20171,7 +20243,7 @@ AsyncSig(R) = ⟨Out, In, Result, E⟩    Result ≠ TypePrim("()")    c = Code(
 Γ; R; L ⊢ ReturnStmt(⊥) ⇑ c
 
 **(Return-Type-Err)**
-AsyncSig(R) = ⊥    Γ; R; L ⊢ e : T    R_b = BodyReturnType(R)    ¬(Γ ⊢ T <: R_b)    c = Code(Return-Type-Err)
+AsyncSig(R) = ⊥    Γ; R; L ⊢ ReturnDestExpr(e) : T    R_b = BodyReturnType(R)    ¬(Γ ⊢ T <: R_b)    c = Code(Return-Type-Err)
 ────────────────────────────────────────────────────────────────────────────────────────────────
 Γ; R; L ⊢ ReturnStmt(e) ⇑ c
 
@@ -20212,7 +20284,7 @@ L ≠ `loop`    c = Code(Continue-Outside-Loop)
 #### 18.9.5 Dynamic Semantics
 
 **(ExecSigma-Return)**
-Γ ⊢ EvalSigma(e, σ) ⇓ (Val(v), σ_1)
+Γ ⊢ EvalReturnDest(e, σ) ⇓ (Val(v), σ_1)
 ──────────────────────────────────────────────────────────
 Γ ⊢ ExecSigma(ReturnStmt(e), σ) ⇓ (Ctrl(Return(v)), σ_1)
 
@@ -20221,7 +20293,7 @@ L ≠ `loop`    c = Code(Continue-Outside-Loop)
 Γ ⊢ ExecSigma(ReturnStmt(⊥), σ) ⇓ (Ctrl(Return(())), σ)
 
 **(ExecSigma-Return-Ctrl)**
-Γ ⊢ EvalSigma(e, σ) ⇓ (Ctrl(κ), σ_1)
+Γ ⊢ EvalReturnDest(e, σ) ⇓ (Ctrl(κ), σ_1)
 ───────────────────────────────────────────────────────
 Γ ⊢ ExecSigma(ReturnStmt(e), σ) ⇓ (Ctrl(κ), σ_1)
 
@@ -20246,7 +20318,7 @@ L ≠ `loop`    c = Code(Continue-Outside-Loop)
 #### 18.9.6 Lowering
 
 **(Lower-Stmt-Return)**
-Γ ⊢ LowerExpr(e) ⇓ ⟨IR_e, v⟩
+Γ ⊢ LowerReturnDest(e) ⇓ ⟨IR_e, v⟩
 ──────────────────────────────────────────────────────────────────────
 Γ ⊢ LowerStmt(ReturnStmt(e)) ⇓ SeqIR(IR_e, ReturnIR(v))
 
@@ -20269,7 +20341,7 @@ L ≠ `loop`    c = Code(Continue-Outside-Loop)
 
 For control-flow statements, the lowering MUST emit temporary cleanup immediately before the control transfer:
 
-Γ ⊢ LowerStmt(ReturnStmt(e)) ⇓ SeqIR(IR_e, TempCleanupIR(s), ReturnIR(v))
+Γ ⊢ LowerStmt(ReturnStmt(e)) ⇓ SeqIR(IR_e, TempCleanupIR(s \ ReturnedOwner(e)), ReturnIR(v))
 Γ ⊢ LowerStmt(BreakStmt(e)) ⇓ SeqIR(IR_e, TempCleanupIR(s), BreakIR(v))
 Γ ⊢ LowerStmt(BreakStmt(⊥)) ⇓ SeqIR(TempCleanupIR(s), BreakIR(⊥))
 Γ ⊢ LowerStmt(ContinueStmt) ⇓ SeqIR(TempCleanupIR(s), ContinueIR)
@@ -26954,7 +27026,7 @@ SeqIR(IR_1, …, IR_n) = SeqIR(IR_1, SeqIR(IR_2, …, IR_n))    (n ≥ 2)
 EvalOrderJudg = {Children_LTR}
 
 ArgsExprs([]) = []
-ArgsExprs([⟨moved, e, span⟩] ++ rest) = [e] ++ ArgsExprs(rest)
+ArgsExprs([⟨pass, e, span⟩] ++ rest) = [e] ++ ArgsExprs(rest)
 
 FieldExprs([]) = []
 FieldExprs([⟨f, e⟩] ++ rest) = [e] ++ FieldExprs(rest)
@@ -27887,14 +27959,9 @@ mode = ⊥    Γ ⊢ sizeof(T) = n
 ──────────────────────────────────────────
 Γ ⊢ ABIParam(mode, T) ⇓ `ByRef`
 
-**(ABI-Param-ByValue-Move)**
-mode = `move`    Γ ⊢ sizeof(T) = 0 ∨ ByValOk(T)
-────────────────────────────────────────────────────────
-Γ ⊢ ABIParam(mode, T) ⇓ `ByValue`
-
 **(ABI-Param-ByRef-Move)**
-mode = `move`    Γ ⊢ sizeof(T) = n    n > 0    ¬ ByValOk(T)
-─────────────────────────────────────────────────────────────
+mode = `move`    Γ ⊢ sizeof(T) = n
+──────────────────────────────────────────
 Γ ⊢ ABIParam(mode, T) ⇓ `ByRef`
 
 **(ABI-Ret-ByValue)**
@@ -28708,7 +28775,7 @@ DropType(T) ∧ BuiltinDropType(T) ∧ T = TypeString(`@Managed`) ∧ Γ ⊢ Str
 DropType(T) ∧ BuiltinDropType(T) ∧ T = TypeBytes(`@Managed`) ∧ Γ ⊢ BytesDropSym ⇓ sym ∧ ExecIRSigma(CallIR(sym, [v]), σ) ⇓ (out, σ') ⇒ DropCall(T, v, σ) ⇓ (out, σ')
 DropType(T) ∧ ¬ BuiltinDropType(T) ∧ LookupMethod(StripPerm(T), "drop") = m ∧ Sig_T(StripPerm(T), m) = ⟨TypePerm(`unique`, StripPerm(T)), [], TypePrim("()")⟩ ∧ BindParams(MethodParamsDecl(StripPerm(T), m), [v]) = binds ∧ BlockEnter(σ, binds) ⇓ (σ_1, scope) ∧ Γ ⊢ EvalBlockBodySigma(m.body, σ_1) ⇓ (out_1, σ_2) ∧ BlockExit(σ_2, scope, out_1) ⇓ (out_2, σ_3) ∧ ReturnOut(out_2) = out ⇒ DropCall(T, v, σ) ⇓ (out, σ_3)
 ReleaseValue(T, v, σ) ⇓ σ' relation
-ReleaseValue(T, v, σ) ⇓ σ' ⇔ σ' = σ
+ReleaseValue(T, v, σ) ⇓ σ' ⇔ EndDomain(DomainOf(v), σ) ⇓ σ'
 DropChildren(T, v, F) =
  [⟨T_i, v_i⟩ | ⟨f_i, T_i⟩ ∈ FieldsRev(R), f_i ∉ F, FieldValue(v, f_i) = v_i]    if T = TypePath(p) ∧ RecordDecl(p) = R
  [⟨T_i, v_i⟩ | T = TypeTuple([T_0, …, T_{n-1}]), i ∈ rev([0, …, n-1]), TupleValue(v, i) = v_i]    if T = TypeTuple(_)
@@ -30572,7 +30639,7 @@ variant_args        ::= "(" expression_list ")" | "{" field_init_list "}"
 
 call_expr     ::= postfix_expr "(" argument_list? ")"
 argument_list ::= argument ("," argument)* ","?
-argument      ::= "move"? expression
+argument      ::= ("move" | "copy")? expression
 method_call   ::= postfix_expr "~>" identifier "(" argument_list? ")"
 static_call   ::= type_path "::" identifier "(" argument_list? ")"
 
@@ -30597,6 +30664,7 @@ loop_invariant ::= "|:" "{" predicate_expr "}"
 block_expr ::= "{" statement* expression? "}"
 
 move_expr        ::= "move" place_expr
+copy_expr        ::= "copy" unary_expr
 widen_expr       ::= "widen" unary_expr
 try_expr         ::= postfix_expr "?"
 address_of_expr  ::= "&" place_expr

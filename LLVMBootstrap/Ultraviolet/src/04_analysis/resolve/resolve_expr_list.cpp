@@ -118,9 +118,10 @@ ResolveResult<std::vector<ast::Arg>> ResolveArgList(
     }
     out_arg.value = resolved.value;
 
-    // Move arguments are validated later (the expression must be a place)
-    if (arg.moved) {
+    if (arg.pass == ast::ArgPassKind::Move) {
       SPEC_RULE("ResolveArgList-Move");
+    } else if (arg.pass == ast::ArgPassKind::Copy) {
+      SPEC_RULE("ResolveArgList-Copy");
     } else {
       SPEC_RULE("ResolveArgList-Value");
     }

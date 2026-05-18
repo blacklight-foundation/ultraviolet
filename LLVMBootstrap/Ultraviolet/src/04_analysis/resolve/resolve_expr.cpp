@@ -1553,6 +1553,18 @@ ResExprResult ResolveExpr(ResolveContext& ctx,
           SPEC_RULE("ResolveExpr-Hom");
           return {true, std::nullopt, std::nullopt,
                   std::make_shared<ast::Expr>(std::move(out))};
+        } else if constexpr (std::is_same_v<T, ast::CopyExpr>) {
+          const auto resolved = ResolveExpr(ctx, node.value);
+          if (!resolved.ok) {
+            return {false, resolved.diag_id, resolved.span, {},
+                    resolved.diag_detail, resolved.diag_children};
+          }
+          auto out = *expr;
+          auto& out_node = std::get<ast::CopyExpr>(out.node);
+          out_node.value = resolved.value;
+          SPEC_RULE("ResolveExpr-Hom");
+          return {true, std::nullopt, std::nullopt,
+                  std::make_shared<ast::Expr>(std::move(out))};
         } else if constexpr (std::is_same_v<T, ast::TupleExpr>) {
           auto out = *expr;
           auto& out_node = std::get<ast::TupleExpr>(out.node);

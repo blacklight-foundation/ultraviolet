@@ -40,6 +40,20 @@ namespace ultraviolet::codegen {
 
 namespace {
 
+ast::ExprPtr ReturnDestExpr(const ast::ExprPtr& value) {
+  if (!value || std::holds_alternative<ast::MoveExpr>(value->node) ||
+      std::holds_alternative<ast::CopyExpr>(value->node)) {
+    return value;
+  }
+  if (!IsPlaceExpr(*value)) {
+    return value;
+  }
+  auto out = std::make_shared<ast::Expr>();
+  out->span = value->span;
+  out->node = ast::MoveExpr{value};
+  return out;
+}
+
 bool IsUnitType(const analysis::TypeRef& type) {
   if (!type) {
     return false;
@@ -164,9 +178,10 @@ IRPtr LowerReturnStmt(const ast::ReturnStmt& stmt,
   analysis::TypeRef value_type;
   if (stmt.value_opt) {
     SPEC_RULE("Lower-Stmt-Return");
+    ast::ExprPtr return_expr = ReturnDestExpr(stmt.value_opt);
     auto prev_suppress = ctx.suppress_temp_at_depth;
     ctx.suppress_temp_at_depth = ctx.temp_depth + 1;
-    auto expr_result = LowerExpr(*stmt.value_opt, ctx);
+    auto expr_result = LowerExpr(*return_expr, ctx);
     ctx.suppress_temp_at_depth = prev_suppress;
     ir_parts.push_back(expr_result.ir);
     return_value = expr_result.value;
@@ -174,7 +189,7 @@ IRPtr LowerReturnStmt(const ast::ReturnStmt& stmt,
     value_type = ctx.LookupValueType(return_value);
     // Fall back to expression type from type checker for immediate values
     if (!value_type && ctx.expr_type) {
-      value_type = ctx.expr_type(*stmt.value_opt);
+      value_type = ctx.expr_type(*return_expr);
     }
   } else {
     SPEC_RULE("Lower-Stmt-Return-Unit");

@@ -23,6 +23,7 @@
 #include "05_codegen/intrinsics/intrinsics_interface.h"
 #include "05_codegen/lower/expr/call.h"
 #include "05_codegen/lower/expr/expr_common.h"
+#include "05_codegen/lower/expr/move_expr.h"
 #include "05_codegen/lower/lower_module.h"
 #include "05_codegen/symbols/mangle.h"
 #include "04_analysis/caps/cap_concurrency.h"
@@ -641,9 +642,12 @@ LowerResult LowerRecvArgExpr(const ast::ExprPtr& base,
     if (!base) {
         return LowerResult{EmptyIR(), IRValue{}};
     }
-    if (std::holds_alternative<ast::MoveExpr>(base->node)) {
+    if (const auto* move = std::get_if<ast::MoveExpr>(&base->node)) {
         SPEC_RULE("Lower-RecvArg-Move");
-        return LowerExpr(*base, ctx);
+        if (move->place && IsPlaceExpr(*move->place)) {
+            return LowerMovePlaceAsRef(*move->place, ctx);
+        }
+        return LowerRefReceiverWithTemp(base, expected_type, ctx);
     }
     SPEC_RULE("Lower-RecvArg-Ref");
     return LowerRefReceiverWithTemp(base, expected_type, ctx);
@@ -1035,7 +1039,7 @@ LowerResult LowerMethodCall(const ast::Expr& expr_wrapper,
         pred_call_expr.callee = expr.args[0].value;
         ast::Arg pred_arg;
         pred_arg.value = recv_ident_ptr;
-        pred_arg.moved = false;
+        pred_arg.pass = ast::ArgPassKind::Ref;
         pred_call_expr.args.push_back(std::move(pred_arg));
         ast::Expr pred_call_wrapper;
         pred_call_wrapper.node = pred_call_expr;
@@ -1045,7 +1049,7 @@ LowerResult LowerMethodCall(const ast::Expr& expr_wrapper,
         action_call_expr.callee = expr.args[1].value;
         ast::Arg action_arg;
         action_arg.value = recv_ident_ptr;
-        action_arg.moved = false;
+        action_arg.pass = ast::ArgPassKind::Ref;
         action_call_expr.args.push_back(std::move(action_arg));
         ast::Expr action_call_wrapper;
         action_call_wrapper.node = action_call_expr;
@@ -1317,9 +1321,9 @@ LowerResult LowerMethodCall(const ast::Expr& expr_wrapper,
                 if (!arg.value) {
                     continue;
                 }
-                auto arg_result =
-                    arg.moved ? LowerExpr(*analysis::MovedArgExpr(arg), ctx)
-                              : LowerExpr(*arg.value, ctx);
+                ast::ExprPtr arg_expr =
+                    arg.pass == ast::ArgPassKind::Ref ? arg.value : analysis::ArgPassExpr(arg);
+                auto arg_result = LowerExpr(*(arg_expr ? arg_expr : arg.value), ctx);
                 arg_ir_parts.push_back(arg_result.ir);
                 arg_values.push_back(arg_result.value);
             }

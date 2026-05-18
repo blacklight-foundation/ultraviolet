@@ -138,6 +138,11 @@ ExprTypeResult TypeMoveExpr(const ScopeContext& ctx,
                             const ast::MoveExpr& expr,
                             const TypeEnv& env);
 
+ExprTypeResult TypeCopyExpr(const ScopeContext& ctx,
+                            const StmtTypeContext& type_ctx,
+                            const ast::CopyExpr& expr,
+                            const TypeEnv& env);
+
 // Alloc Expression
 ExprTypeResult TypeAllocExpr(const ScopeContext& ctx,
                              const StmtTypeContext& type_ctx,

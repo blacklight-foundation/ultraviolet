@@ -9,7 +9,7 @@
 // - Section 5.2.4 "Procedure Calls" (lines 8707-8776)
 //   - ArgsOkTJudg (line 8709)
 //   - ParamMode, ParamType (lines 8710-8711)
-//   - ArgMoved, ArgExpr (lines 8712-8713)
+//   - ArgPass, ArgExpr
 //   - PlaceType, ArgType (lines 8714-8717)
 //   - ArgsT-Empty, ArgsT-Cons, ArgsT-Cons-Ref (lines 8719-8731)
 //   - T-Call (lines 8733-8736)

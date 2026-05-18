@@ -484,12 +484,12 @@ static OverloadCandidateCheck CheckFreeProcedureOverloadCandidate(
     if (MissingRequiredMoveForConsuming(param.mode, arg)) {
       return out;
     }
-    if (!param.mode.has_value() && arg.moved) {
+    if (!param.mode.has_value() && arg.pass == ast::ArgPassKind::Move) {
       return out;
     }
 
     const ast::ExprPtr arg_expr =
-        param.mode == ParamMode::Move ? MovedArgExpr(arg) : arg.value;
+        (param.mode == ParamMode::Move || ast::IsCopyArg(arg)) ? ArgPassExpr(arg) : arg.value;
     const auto checked = check_expr(arg_expr, param.type);
     if (!checked.ok) {
       if (!checked.diag_id.has_value() || *checked.diag_id == "E-SEM-2526") {
@@ -712,7 +712,7 @@ static std::optional<std::string_view> CheckSharedArgWriteRequirement(
       continue;
     }
 
-    const auto arg_expr = args[i].moved ? MovedArgExpr(args[i]) : args[i].value;
+    const auto arg_expr = !ast::IsRefArg(args[i]) ? ArgPassExpr(args[i]) : args[i].value;
     const auto arg_typed = type_expr(arg_expr);
     if (!arg_typed.ok || !arg_typed.type ||
         PermOfType(arg_typed.type) != Permission::Shared) {
@@ -1811,7 +1811,7 @@ static CallArgCollectionResult CollectCallArgTypesForInference(
     if (MissingRequiredMoveForConsuming(lowered_params[i].mode, args[i])) {
       return {"E-SEM-2534", ArgDiagnosticSpan(args[i])};
     }
-    if (!lowered_params[i].mode.has_value() && args[i].moved) {
+    if (!lowered_params[i].mode.has_value() && args[i].pass == ast::ArgPassKind::Move) {
       return {"E-SEM-2535", ArgDiagnosticSpan(args[i])};
     }
   }
@@ -1820,6 +1820,16 @@ static CallArgCollectionResult CollectCallArgTypesForInference(
   out_actual_arg_types.reserve(args.size());
   for (std::size_t i = 0; i < args.size(); ++i) {
     if (!lowered_params[i].mode.has_value()) {
+      if (ast::IsCopyArg(args[i])) {
+        const auto copy_type = type_expr(ArgPassExpr(args[i]));
+        if (!copy_type.ok) {
+          return {copy_type.diag_id,
+                  copy_type.diag_span.has_value() ? copy_type.diag_span
+                                                   : ArgDiagnosticSpan(args[i])};
+        }
+        out_actual_arg_types.push_back(copy_type.type);
+        continue;
+      }
       const bool has_source_prov = HasSourceProvenance(args[i].value);
       const bool expected_function_value =
           IsFunctionValueType(ctx, lowered_params[i].type);
@@ -1845,7 +1855,7 @@ static CallArgCollectionResult CollectCallArgTypesForInference(
       continue;
     }
 
-    const auto arg_expr = MovedArgExpr(args[i]);
+    const auto arg_expr = ArgPassExpr(args[i]);
     const auto arg_type = type_expr(arg_expr);
     if (!arg_type.ok) {
       return {arg_type.diag_id,

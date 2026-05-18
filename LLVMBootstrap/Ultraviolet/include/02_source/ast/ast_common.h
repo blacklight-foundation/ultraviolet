@@ -91,13 +91,31 @@ inline std::string FormatTupleIndex(TupleIndex index) {
 // Argument Types (shared by multiple expression kinds)
 // ===========================================================================
 
-// Arg represents a function/method call argument, possibly moved.
+// Arg represents a function/method call argument and its passing form.
 // Used by: CallExpr, MethodCallExpr, QualifiedApplyExpr
+enum class ArgPassKind {
+  Ref,
+  Move,
+  Copy,
+};
+
 struct Arg {
-  bool moved = false;
+  ArgPassKind pass = ArgPassKind::Ref;
   ExprPtr value;
   ultraviolet::core::Span span;
 };
+
+inline bool IsMoveArg(const Arg& arg) {
+  return arg.pass == ArgPassKind::Move;
+}
+
+inline bool IsCopyArg(const Arg& arg) {
+  return arg.pass == ArgPassKind::Copy;
+}
+
+inline bool IsRefArg(const Arg& arg) {
+  return arg.pass == ArgPassKind::Ref;
+}
 
 // ParenArgs holds positional arguments in parentheses: f(a, b, c)
 struct ParenArgs {

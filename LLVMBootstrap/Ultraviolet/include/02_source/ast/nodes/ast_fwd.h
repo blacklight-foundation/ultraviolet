@@ -109,6 +109,7 @@ struct UnaryExpr;
 struct DerefExpr;
 struct AddressOfExpr;
 struct MoveExpr;
+struct CopyExpr;
 struct AllocExpr;
 struct PtrNullExpr;
 struct TupleExpr;

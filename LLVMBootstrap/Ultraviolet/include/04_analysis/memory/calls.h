@@ -48,7 +48,7 @@ bool MissingRequiredMoveForConsuming(const std::optional<ParamMode>& mode,
                                      const ast::Arg& arg);
 bool UsesCallTempForConsuming(const std::optional<ParamMode>& mode,
                               const ast::Arg& arg);
-ast::ExprPtr MovedArgExpr(const ast::Arg& arg);
+ast::ExprPtr ArgPassExpr(const ast::Arg& arg);
 
 CallTypeResult TypeCall(const ScopeContext& ctx,
                         const ast::ExprPtr& callee,

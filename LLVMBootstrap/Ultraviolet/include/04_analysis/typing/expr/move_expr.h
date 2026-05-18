@@ -19,4 +19,9 @@ ExprTypeResult TypeMoveExprImpl(const ScopeContext& ctx,
                                 const ast::MoveExpr& expr,
                                 const TypeEnv& env);
 
+ExprTypeResult TypeCopyExprImpl(const ScopeContext& ctx,
+                                const StmtTypeContext& type_ctx,
+                                const ast::CopyExpr& expr,
+                                const TypeEnv& env);
+
 }  // namespace ultraviolet::analysis::expr

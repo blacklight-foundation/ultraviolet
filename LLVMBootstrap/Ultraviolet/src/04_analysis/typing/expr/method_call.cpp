@@ -290,11 +290,11 @@ static bool CheckBuiltinMethodArgs(const ScopeContext& ctx,
   };
   for (std::size_t i = 0; i < args.size(); ++i) {
     const auto& expected = params[i];
-    if (args[i].moved && !expected.mode.has_value()) {
+    if (args[i].pass == ast::ArgPassKind::Move && !expected.mode.has_value()) {
       result.diag_id = "E-SEM-2535";
       return false;
     }
-    if (!args[i].moved && expected.mode.has_value() &&
+    if (ast::IsRefArg(args[i]) && expected.mode.has_value() &&
         *expected.mode == ParamMode::Move) {
       result.diag_id = "E-SEM-2534";
       return false;
@@ -815,7 +815,7 @@ static std::optional<std::string_view> CollectArgTypes(
   }
 
   for (std::size_t i = 0; i < args.size(); ++i) {
-    if (!lowered_params[i].mode.has_value() && args[i].moved) {
+    if (!lowered_params[i].mode.has_value() && args[i].pass == ast::ArgPassKind::Move) {
       return "E-SEM-2535";
     }
   }
@@ -824,7 +824,15 @@ static std::optional<std::string_view> CollectArgTypes(
   out_types.reserve(args.size());
   for (std::size_t i = 0; i < args.size(); ++i) {
     const auto& arg = args[i];
-        if (!lowered_params[i].mode.has_value()) {
+    if (!lowered_params[i].mode.has_value()) {
+      if (ast::IsCopyArg(arg)) {
+        const auto copy_type = type_expr(ArgPassExpr(arg));
+        if (!copy_type.ok) {
+          return copy_type.diag_id;
+        }
+        out_types.push_back(copy_type.type);
+        continue;
+      }
       const bool has_source_prov = HasSourceProvenance(arg.value);
       if (has_source_prov && !IsPlaceExprForCall(arg.value)) {
         return "E-TYP-1603";
@@ -844,7 +852,7 @@ static std::optional<std::string_view> CollectArgTypes(
       }
       continue;
     }
-    const auto arg_expr = MovedArgExpr(arg);
+    const auto arg_expr = ArgPassExpr(arg);
     const auto arg_type = type_expr(arg_expr);
     if (!arg_type.ok) {
       return arg_type.diag_id;
@@ -1105,7 +1113,7 @@ ExprTypeResult TypeMethodCallExprImpl(const ScopeContext& ctx,
       result.diag_id = "E-SEM-2532";
       return result;
     }
-    if (expr.args[0].moved || expr.args[1].moved) {
+    if (expr.args[0].pass == ast::ArgPassKind::Move || expr.args[1].pass == ast::ArgPassKind::Move) {
       result.diag_id = "E-SEM-2535";
       return result;
     }
@@ -1205,7 +1213,7 @@ ExprTypeResult TypeMethodCallExprImpl(const ScopeContext& ctx,
           result.diag_id = "E-SEM-2532";
           return result;
         }
-        if (expr.args[0].moved) {
+        if (expr.args[0].pass == ast::ArgPassKind::Move) {
           result.diag_id = "E-SEM-2535";
           return result;
         }
@@ -1247,7 +1255,7 @@ ExprTypeResult TypeMethodCallExprImpl(const ScopeContext& ctx,
           result.diag_id = "E-SEM-2532";
           return result;
         }
-        if (expr.args[0].moved) {
+        if (expr.args[0].pass == ast::ArgPassKind::Move) {
           result.diag_id = "E-SEM-2535";
           return result;
         }
@@ -1312,7 +1320,7 @@ ExprTypeResult TypeMethodCallExprImpl(const ScopeContext& ctx,
           result.diag_id = "E-SEM-2532";
           return result;
         }
-        if (expr.args[0].moved) {
+        if (expr.args[0].pass == ast::ArgPassKind::Move) {
           result.diag_id = "E-SEM-2535";
           return result;
         }
@@ -1358,7 +1366,7 @@ ExprTypeResult TypeMethodCallExprImpl(const ScopeContext& ctx,
           result.diag_id = "E-SEM-2532";
           return result;
         }
-        if (expr.args[0].moved || expr.args[1].moved) {
+        if (expr.args[0].pass == ast::ArgPassKind::Move || expr.args[1].pass == ast::ArgPassKind::Move) {
           result.diag_id = "E-SEM-2535";
           return result;
         }
@@ -1441,7 +1449,7 @@ ExprTypeResult TypeMethodCallExprImpl(const ScopeContext& ctx,
           result.diag_id = "E-SEM-2532";
           return result;
         }
-        if (expr.args[0].moved) {
+        if (expr.args[0].pass == ast::ArgPassKind::Move) {
           result.diag_id = "E-SEM-2535";
           return result;
         }
@@ -1657,7 +1665,7 @@ ExprTypeResult TypeMethodCallExprImpl(const ScopeContext& ctx,
         }
       }
       for (std::size_t i = 0; i < expr.args.size(); ++i) {
-        if (!builtin_sig->params[i].mode.has_value() && expr.args[i].moved) {
+        if (!builtin_sig->params[i].mode.has_value() && expr.args[i].pass == ast::ArgPassKind::Move) {
           SPEC_RULE("Call-Move-Unexpected");
           result.diag_id = "E-SEM-2535";
           return result;
@@ -1675,6 +1683,15 @@ ExprTypeResult TypeMethodCallExprImpl(const ScopeContext& ctx,
 
         const auto& param = builtin_sig->params[i];
         if (!param.mode.has_value()) {
+          if (ast::IsCopyArg(arg)) {
+            const auto copy_type = type_expr(ArgPassExpr(arg));
+            if (!copy_type.ok) {
+              result.diag_id = copy_type.diag_id;
+              return result;
+            }
+            arg_types.push_back(copy_type.type);
+            continue;
+          }
           const bool has_source_prov = HasSourceProvenance(arg.value);
           if (has_source_prov && !IsPlaceExprForCall(arg.value)) {
             SPEC_RULE("Call-Arg-NotPlace");
@@ -1712,7 +1729,7 @@ ExprTypeResult TypeMethodCallExprImpl(const ScopeContext& ctx,
         } else {
           const bool uses_call_temp =
               UsesCallTempForConsuming(param.mode, arg);
-          const auto moved = MovedArgExpr(arg);
+          const auto moved = ArgPassExpr(arg);
           if (param.type && uses_call_temp) {
             const auto checked = check_expr(moved, param.type);
             if (checked.ok) {

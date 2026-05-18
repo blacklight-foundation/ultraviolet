@@ -276,6 +276,18 @@ ParseElemResult<ExprPtr> ParseUnary(Parser parser, bool allow_brace,
             MakeExpr(SpanCover(TokSpan(parser), place.elem->span), move)};
   }
 
+  // Copy keyword
+  if (IsKw(parser, "copy")) {
+    SPEC_RULE("Parse-Unary-Copy");
+    Parser next = parser;
+    Advance(next);
+    ParseElemResult<ExprPtr> rhs = ParseUnary(next, allow_brace, allow_bracket);
+    CopyExpr copy;
+    copy.value = rhs.elem;
+    return {rhs.parser,
+            MakeExpr(SpanCover(TokSpan(parser), rhs.elem->span), copy)};
+  }
+
   // Widen keyword
   if (IsKw(parser, "widen")) {
     SPEC_RULE("Parse-Unary-Widen");

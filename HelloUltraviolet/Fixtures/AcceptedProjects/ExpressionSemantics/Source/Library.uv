@@ -42,3 +42,53 @@ public procedure asyncIteratorLoopReference(stream: Stream<i32, !>) -> Async<(),
     }
     return
 }
+
+public record MoveDomainPayload {
+    public value: unique i32
+}
+
+public record CopyDomainPayload <: Bitcopy {
+    public value: i32
+}
+
+public record NoDropDomainPayload {
+    public value: unique i32
+}
+
+public procedure consumeMoveDomainPayload(move payload: MoveDomainPayload) -> i32 {
+    return move payload.value
+}
+
+public procedure consumeNoDropDomainPayload(move payload: NoDropDomainPayload) -> i32 {
+    return move payload.value
+}
+
+public procedure moveParameterByReferenceReference() -> i32 {
+    let payload: MoveDomainPayload = MoveDomainPayload { value: 17 }
+    return consumeMoveDomainPayload(move payload)
+}
+
+public procedure copyCreatesIndependentProvenanceReference() -> i32 {
+    let source: CopyDomainPayload = CopyDomainPayload { value: 19 }
+    let duplicate: CopyDomainPayload = copy source
+    return source.value + duplicate.value
+}
+
+public procedure returnMoveOwnershipDestinationReference() -> MoveDomainPayload {
+    let payload: MoveDomainPayload = MoveDomainPayload { value: 23 }
+    return payload
+}
+
+public procedure returnConstructedOwnershipDestinationReference() -> MoveDomainPayload {
+    return MoveDomainPayload { value: 29 }
+}
+
+public procedure returnCopiedPayloadReference() -> CopyDomainPayload {
+    let source: CopyDomainPayload = CopyDomainPayload { value: 31 }
+    return copy source
+}
+
+public procedure noDropFinalOwnerDomainReleaseReference() -> i32 {
+    let payload: NoDropDomainPayload = NoDropDomainPayload { value: 41 }
+    return consumeNoDropDomainPayload(move payload)
+}

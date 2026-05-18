@@ -120,6 +120,7 @@ const char* node_kind(const Expr& e) {
         if constexpr (std::is_same_v<T, DerefExpr>) return "DerefExpr";
         if constexpr (std::is_same_v<T, AddressOfExpr>) return "AddressOfExpr";
         if constexpr (std::is_same_v<T, MoveExpr>) return "MoveExpr";
+        if constexpr (std::is_same_v<T, CopyExpr>) return "CopyExpr";
         if constexpr (std::is_same_v<T, AllocExpr>) return "AllocExpr";
         if constexpr (std::is_same_v<T, PtrNullExpr>) return "PtrNullExpr";
         // Aggregate

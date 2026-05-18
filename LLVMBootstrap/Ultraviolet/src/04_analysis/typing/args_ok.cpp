@@ -17,7 +17,7 @@
 //   From spec definitions (lines 8709-8717):
 //   - ParamMode(param) = mode extraction
 //   - ParamType(param) = type extraction
-//   - ArgMoved(arg) = moved flag
+//   - ArgPass(arg) = pass kind
 //   - ArgExpr(arg) = expression
 //   - PlaceType(p) = place typing
 //   - ArgType(a) = computed argument type
@@ -25,10 +25,10 @@
 //   ARGUMENT MATCHING RULES:
 //   - ArgsT-Empty (line 8719-8721): Base case for empty args
 //   - ArgsT-Cons (lines 8723-8726): Move parameter case
-//     * moved = true required
-//     * Type via MovedArg judgment
+//     * ownership transfer required for provenance-bearing source places
+//     * Type via ArgumentPassExpressions
 //   - ArgsT-Cons-Ref (lines 8728-8731): Reference parameter case
-//     * moved = false required
+//     * move arguments are rejected
 //     * AddrOfOk check for place
 //     * Type via place typing
 //
@@ -99,10 +99,10 @@ static inline void SpecDefsArgsOk() {
   SPEC_DEF("ArgsOkTJudg", "5.2.4");
   SPEC_DEF("ParamMode", "5.2.4");
   SPEC_DEF("ParamType", "5.2.4");
-  SPEC_DEF("ArgMoved", "5.2.4");
+  SPEC_DEF("ArgPass", "5.2.4");
   SPEC_DEF("ArgExpr", "5.2.4");
   SPEC_DEF("ArgType", "5.2.4");
-  SPEC_DEF("MovedArg", "3.3.2.4");
+  SPEC_DEF("ArgumentPassExpressions", "3.3.2.4");
   SPEC_DEF("IsPlace", "3.3.3");
 }
 
@@ -137,9 +137,13 @@ static ast::ExprPtr MakeExpr(const core::Span& span, ast::ExprNode node) {
   return expr;
 }
 
-// Helper: Wrap argument in MoveExpr if it was marked with move
-static ast::ExprPtr MovedArgExprLocal(const ast::Arg& arg) {
-  if (!arg.moved || !IsPlaceExprLocal(arg.value)) {
+// Helper: Wrap argument in the explicit pass expression when needed.
+static ast::ExprPtr ArgPassExprLocal(const ast::Arg& arg) {
+  if (ast::IsCopyArg(arg)) {
+    return MakeExpr(arg.span.file.empty() && arg.value ? arg.value->span : arg.span,
+                    ast::CopyExpr{arg.value});
+  }
+  if (!ast::IsMoveArg(arg) || !IsPlaceExprLocal(arg.value)) {
     return arg.value;
   }
   core::Span span = arg.span;
@@ -219,10 +223,10 @@ bool IsArgPlaceExpr(const ast::ExprPtr& expr) {
 }
 
 // Create a moved argument expression wrapper
-ast::ExprPtr CreateMovedArgExpr(const ast::Arg& arg) {
+ast::ExprPtr CreateArgPassExpr(const ast::Arg& arg) {
   SpecDefsArgsOk();
-  SPEC_RULE("MovedArg");
-  return MovedArgExprLocal(arg);
+  SPEC_RULE("ArgumentPassExpressions");
+  return ArgPassExprLocal(arg);
 }
 
 // Check if address-of is valid for an expression

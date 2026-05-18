@@ -18,6 +18,30 @@
 
 namespace ultraviolet::codegen {
 
+namespace {
+
+IRPtr MarkMovedPlace(const ast::Expr& place, LowerCtx& ctx) {
+    if (auto root = PlaceRoot(place)) {
+        if (ctx.GetBindingState(*root)) {
+            if (auto head = FieldHead(place)) {
+                ctx.MarkFieldMoved(*root, *head);
+            } else {
+                ctx.MarkMoved(*root);
+            }
+        } else if (ctx.LookupCapture(*root)) {
+            // Captured bindings were validated when the capture was formed.
+        } else {
+            ctx.MarkMoved(*root);
+        }
+    }
+
+    IRMoveState move_state;
+    move_state.place = LowerPlace(place, ctx);
+    return MakeIR(std::move(move_state));
+}
+
+}  // namespace
+
 // =============================================================================
 // LowerMovePlace - Lower a move expression to IR
 // =============================================================================
@@ -41,36 +65,33 @@ namespace ultraviolet::codegen {
 LowerResult LowerMovePlace(const ast::Expr& place, LowerCtx& ctx) {
     SPEC_RULE("Lower-MovePlace");
 
-    // Read the value from the place
     auto read_result = LowerReadPlace(place, ctx);
-
-    // Update binding state to mark the place as moved
-    if (auto root = PlaceRoot(place)) {
-        if (ctx.GetBindingState(*root)) {
-            // Check for field-level move (partial move)
-            if (auto head = FieldHead(place)) {
-                ctx.MarkFieldMoved(*root, *head);
-            } else {
-                ctx.MarkMoved(*root);
-            }
-        } else if (ctx.LookupCapture(*root)) {
-            // Captured bindings are not tracked in local binding states here.
-            // The capture was already validated at capture time.
-        } else {
-            // Fallback: mark as moved (for globals or untracked bindings)
-            ctx.MarkMoved(*root);
-        }
-    }
-
-    // Emit IRMoveState to record the state change
-    IRPlace ir_place = LowerPlace(place, ctx);
-    IRMoveState move_state;
-    move_state.place = ir_place;
+    IRPtr move_state = MarkMovedPlace(place, ctx);
 
     return LowerResult{
-        SeqIR({read_result.ir, MakeIR(std::move(move_state))}),
+        SeqIR({read_result.ir, move_state}),
         read_result.value
     };
+}
+
+LowerResult LowerMovePlaceAsRef(const ast::Expr& place, LowerCtx& ctx) {
+    SPEC_RULE("Lower-MovePlace");
+
+    auto addr_result = LowerAddrOf(place, ctx, AddressUseKind::TransientNoEscape);
+    IRPtr move_state = MarkMovedPlace(place, ctx);
+
+    return LowerResult{
+        SeqIR({addr_result.ir, move_state}),
+        addr_result.value
+    };
+}
+
+LowerResult LowerCopyExpr(const ast::CopyExpr& expr, LowerCtx& ctx) {
+    SPEC_RULE("Lower-Expr-Copy");
+    if (!expr.value) {
+        return LowerResult{EmptyIR(), IRValue{}};
+    }
+    return LowerExpr(*expr.value, ctx);
 }
 
 }  // namespace ultraviolet::codegen

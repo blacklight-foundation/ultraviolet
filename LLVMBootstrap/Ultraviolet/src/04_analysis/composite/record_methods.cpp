@@ -49,7 +49,7 @@
 // - AddrOfOkResult struct (lines 48-51): Address-of validation result
 // - AddrOfOk (lines 53-85): Check if address-of is valid
 // - MakeExpr (lines 87-92): Construct expression node
-// - MovedArgExpr (lines 94-106): Create moved argument expression
+// - ArgPassExpr (lines 94-106): Create move/copy argument expression
 // - FindRecordMethod (lines 108-120): Find method in record declaration
 //
 // DEPENDENCIES:
@@ -399,7 +399,7 @@ ArgsOkResult ArgsOk(const ScopeContext& ctx,
   }
 
   for (std::size_t i = 0; i < args.size(); ++i) {
-    if (!lowered_params[i].mode.has_value() && args[i].moved) {
+    if (!lowered_params[i].mode.has_value() && args[i].pass == ast::ArgPassKind::Move) {
       SPEC_RULE("Call-Move-Unexpected");
       result.diag_id = "E-SEM-2535";
       return result;
@@ -411,6 +411,15 @@ ArgsOkResult ArgsOk(const ScopeContext& ctx,
   for (std::size_t i = 0; i < args.size(); ++i) {
     const auto& arg = args[i];
     if (!lowered_params[i].mode.has_value()) {
+      if (ast::IsCopyArg(arg)) {
+        const auto copy_type = type_expr(ArgPassExpr(arg));
+        if (!copy_type.ok) {
+          result.diag_id = copy_type.diag_id;
+          return result;
+        }
+        arg_types.push_back(copy_type.type);
+        continue;
+      }
       const bool has_source_prov = HasSourceProvenance(arg.value);
       if (has_source_prov && !IsPlaceExprForCall(arg.value)) {
         SPEC_RULE("Call-Arg-NotPlace");
@@ -445,7 +454,7 @@ ArgsOkResult ArgsOk(const ScopeContext& ctx,
       }
       continue;
     }
-    const auto arg_expr = MovedArgExpr(arg);
+    const auto arg_expr = ArgPassExpr(arg);
     if (!HasSourceProvenance(arg.value) && check_expr) {
       const auto checked = (*check_expr)(arg_expr, lowered_params[i].type);
       if (checked.ok) {
@@ -495,7 +504,7 @@ ArgsOkResult ArgsOk(const ScopeContext& ctx,
   } else {
     for (std::size_t i = 0; i < lowered_params.size(); ++i) {
       if (lowered_params[i].mode == ParamMode::Move) {
-        const auto moved = MovedArgExpr(args[i]);
+        const auto moved = ArgPassExpr(args[i]);
         const auto moved_type = type_expr(moved);
         if (!moved_type.ok) {
           result.diag_id = moved_type.diag_id;
@@ -573,7 +582,7 @@ ArgsOkResult ArgsOkWithSubst(const ScopeContext& ctx,
   }
 
   for (std::size_t i = 0; i < args.size(); ++i) {
-    if (!lowered_params[i].mode.has_value() && args[i].moved) {
+    if (!lowered_params[i].mode.has_value() && args[i].pass == ast::ArgPassKind::Move) {
       SPEC_RULE("Call-Move-Unexpected");
       result.diag_id = "E-SEM-2535";
       return result;
@@ -585,6 +594,15 @@ ArgsOkResult ArgsOkWithSubst(const ScopeContext& ctx,
   for (std::size_t i = 0; i < args.size(); ++i) {
     const auto& arg = args[i];
     if (!lowered_params[i].mode.has_value()) {
+      if (ast::IsCopyArg(arg)) {
+        const auto copy_type = type_expr(ArgPassExpr(arg));
+        if (!copy_type.ok) {
+          result.diag_id = copy_type.diag_id;
+          return result;
+        }
+        arg_types.push_back(copy_type.type);
+        continue;
+      }
       const bool has_source_prov = HasSourceProvenance(arg.value);
       if (has_source_prov && !IsPlaceExprForCall(arg.value)) {
         SPEC_RULE("Call-Arg-NotPlace");
@@ -619,7 +637,7 @@ ArgsOkResult ArgsOkWithSubst(const ScopeContext& ctx,
       }
       continue;
     }
-    const auto arg_expr = MovedArgExpr(arg);
+    const auto arg_expr = ArgPassExpr(arg);
     if (!HasSourceProvenance(arg.value) && check_expr) {
       const auto checked = (*check_expr)(arg_expr, lowered_params[i].type);
       if (checked.ok) {
@@ -669,7 +687,7 @@ ArgsOkResult ArgsOkWithSubst(const ScopeContext& ctx,
   } else {
     for (std::size_t i = 0; i < lowered_params.size(); ++i) {
       if (lowered_params[i].mode == ParamMode::Move) {
-        const auto moved = MovedArgExpr(args[i]);
+        const auto moved = ArgPassExpr(args[i]);
         const auto moved_type = type_expr(moved);
         if (!moved_type.ok) {
           result.diag_id = moved_type.diag_id;

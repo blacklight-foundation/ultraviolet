@@ -205,7 +205,7 @@ static bool ArgListStructEqual(const std::vector<ast::Arg>& a,
     return false;
   }
   for (std::size_t i = 0; i < a.size(); ++i) {
-    if (a[i].moved != b[i].moved ||
+    if (a[i].pass != b[i].pass ||
         !ExprStructEqualInternal(a[i].value, b[i].value)) {
       return false;
     }
@@ -935,7 +935,7 @@ static bool AppendParenArgKeys(std::string& out,
     if (i > 0) {
       out.push_back(',');
     }
-    if (args[i].moved) {
+    if (args[i].pass == ast::ArgPassKind::Move) {
       return false;
     }
     const auto arg_key = ExprArgumentKey(args[i].value);

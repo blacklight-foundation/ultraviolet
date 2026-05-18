@@ -1,11 +1,11 @@
 //! Coverage checks for accepted project fixture metadata.
 
 public procedure expectedAcceptedProjectFixtureCount() -> usize {
-    return 45usize
+    return 51usize
 }
 
 public procedure acceptedProjectFixtureCount() -> usize {
-    return 45usize
+    return 51usize
 }
 
 internal procedure hostedExportLibraryExpectationMatches(
@@ -28,6 +28,32 @@ internal procedure hostedExportLibraryExpectationMatches(
         "Fixtures/AcceptedProjects/HostedExportLibrary/Ultraviolet.toml",
         "Fixtures/AcceptedProjects/HostedExportLibrary/Source/Library.uv",
         "HostedExportLibrary",
+        "library",
+        expectation_name,
+        obligation_id
+    )
+}
+
+internal procedure expressionSemanticsExpectationMatches(
+    expectation: AcceptedProjectExpectation,
+    expectation_name: string@View,
+    obligation_id: string@View
+) -> bool {
+    return acceptedProjectSpecimenMatches(
+        acceptedProjectSpecimen(
+            "ExpressionSemantics",
+            "Fixtures/AcceptedProjects/ExpressionSemantics",
+            "Fixtures/AcceptedProjects/ExpressionSemantics/Ultraviolet.toml",
+            "Fixtures/AcceptedProjects/ExpressionSemantics/Source/Library.uv",
+            "ExpressionSemantics",
+            "library",
+            expectation
+        ),
+        "ExpressionSemantics",
+        "Fixtures/AcceptedProjects/ExpressionSemantics",
+        "Fixtures/AcceptedProjects/ExpressionSemantics/Ultraviolet.toml",
+        "Fixtures/AcceptedProjects/ExpressionSemantics/Source/Library.uv",
+        "ExpressionSemantics",
         "library",
         expectation_name,
         obligation_id
@@ -117,6 +143,57 @@ public procedure validatedAcceptedProjectFixtureCount() -> usize {
         "library",
         "AsyncIteratorLoop",
         "rule.21.T-Loop-Iter-Async"
+    ) {
+        count = count + 1usize
+    }
+    if expressionSemanticsExpectationMatches(
+        acceptedProjectExpectation(
+            "MoveParameterByReferenceOwnership",
+            "rule.16.Lower-Args-Cons-Move"
+        ),
+        "MoveParameterByReferenceOwnership",
+        "rule.16.Lower-Args-Cons-Move"
+    ) {
+        count = count + 1usize
+    }
+    if expressionSemanticsExpectationMatches(
+        acceptedProjectExpectation("CopyIndependentProvenance", "rule.16.T-Copy"),
+        "CopyIndependentProvenance",
+        "rule.16.T-Copy"
+    ) {
+        count = count + 1usize
+    }
+    if expressionSemanticsExpectationMatches(
+        acceptedProjectExpectation(
+            "ReturnMoveOwnershipDestination",
+            "rule.18.T-Return-Value"
+        ),
+        "ReturnMoveOwnershipDestination",
+        "rule.18.T-Return-Value"
+    ) {
+        count = count + 1usize
+    }
+    if expressionSemanticsExpectationMatches(
+        acceptedProjectExpectation(
+            "ReturnConstructedOwnershipDestination",
+            "rule.18.Lower-Stmt-Return"
+        ),
+        "ReturnConstructedOwnershipDestination",
+        "rule.18.Lower-Stmt-Return"
+    ) {
+        count = count + 1usize
+    }
+    if expressionSemanticsExpectationMatches(
+        acceptedProjectExpectation("ReturnCopyDuplicateDomain", "rule.18.ExecSigma-Return"),
+        "ReturnCopyDuplicateDomain",
+        "rule.18.ExecSigma-Return"
+    ) {
+        count = count + 1usize
+    }
+    if expressionSemanticsExpectationMatches(
+        acceptedProjectExpectation("NoDropFinalOwnerDomainRelease", "def.24.ReleaseValue"),
+        "NoDropFinalOwnerDomainRelease",
+        "def.24.ReleaseValue"
     ) {
         count = count + 1usize
     }

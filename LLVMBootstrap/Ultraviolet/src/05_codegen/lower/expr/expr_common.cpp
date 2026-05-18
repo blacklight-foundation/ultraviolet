@@ -244,6 +244,8 @@ LowerResult LowerExprImpl(const ast::Expr& expr, LowerCtx& ctx) {
           return LowerReadPlaceDeref(node, expr, ctx);
         } else if constexpr (std::is_same_v<T, ast::MoveExpr>) {
           return LowerMovePlace(*node.place, ctx);
+        } else if constexpr (std::is_same_v<T, ast::CopyExpr>) {
+          return LowerCopyExpr(node, ctx);
         } else if constexpr (std::is_same_v<T, ast::RangeExpr>) {
           return LowerRange(expr, node, ctx);
         } else if constexpr (std::is_same_v<T, ast::AllocExpr>) {

@@ -1939,14 +1939,14 @@ static ArgPassResult ArgPass(const ScopeContext& ctx,
 
   const auto& param = params[idx];
   const auto& arg = args[idx];
-  if (param.mode.has_value() && !arg.moved && IsMoveMissing(arg.value) &&
+  if (param.mode.has_value() && ast::IsRefArg(arg) && IsMoveMissing(arg.value) &&
       HasSourceProvenance(arg.value)) {
     SPEC_RULE("B-ArgPass-Move-Missing");
     return ArgError("E-MOD-2411", arg.span);
   }
 
   ast::ExprPtr eval_expr = arg.value;
-  if (param.mode.has_value() && arg.moved) {
+  if (param.mode.has_value() && ast::IsMoveArg(arg)) {
     eval_expr = WrapMoveExpr(arg);
   }
 

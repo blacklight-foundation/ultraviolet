@@ -81,10 +81,10 @@ static inline void SpecDefsCalls() {
   SPEC_DEF("ArgsOkTJudg", "5.2.4");
   SPEC_DEF("ParamMode", "5.2.4");
   SPEC_DEF("ParamType", "5.2.4");
-  SPEC_DEF("ArgMoved", "5.2.4");
+  SPEC_DEF("ArgPass", "5.2.4");
   SPEC_DEF("ArgExpr", "5.2.4");
   SPEC_DEF("ArgType", "5.2.4");
-  SPEC_DEF("MovedArg", "3.3.2.4");
+  SPEC_DEF("ArgumentPassExpressions", "3.3.2.4");
   SPEC_DEF("IsPlace", "3.3.3");
   SPEC_DEF("Call-Arg-Packed-Unsafe-Err", "5.2.4");
   SPEC_DEF("RecordCallee", "5.2.8");
@@ -676,17 +676,22 @@ bool HasSourceProvenanceLocal(const ast::ExprPtr& expr) {
 
 bool MissingRequiredMoveForConsumingLocal(const std::optional<ParamMode>& mode,
                                      const ast::Arg& arg) {
-  return mode == ParamMode::Move && !arg.moved && HasSourceProvenanceLocal(arg.value);
+  return mode == ParamMode::Move && ast::IsRefArg(arg) &&
+         HasSourceProvenanceLocal(arg.value);
 }
 
 bool UsesCallTempForConsumingLocal(const std::optional<ParamMode>& mode,
                                    const ast::Arg& arg) {
-  return mode == ParamMode::Move && !arg.moved &&
+  return mode == ParamMode::Move && ast::IsRefArg(arg) &&
          !HasSourceProvenanceLocal(arg.value);
 }
 
-ast::ExprPtr MovedArgExprLocal(const ast::Arg& arg) {
-  if (!arg.moved || !IsPlaceExprForCallLocal(arg.value)) {
+ast::ExprPtr ArgPassExprLocal(const ast::Arg& arg) {
+  if (ast::IsCopyArg(arg)) {
+    return MakeExpr(arg.span.file.empty() && arg.value ? arg.value->span : arg.span,
+                    ast::CopyExpr{arg.value});
+  }
+  if (!ast::IsMoveArg(arg) || !IsPlaceExprForCallLocal(arg.value)) {
     return arg.value;
   }
   core::Span span = arg.span;
@@ -927,8 +932,8 @@ bool UsesCallTempForConsuming(const std::optional<ParamMode>& mode,
   return UsesCallTempForConsumingLocal(mode, arg);
 }
 
-ast::ExprPtr MovedArgExpr(const ast::Arg& arg) {
-  return MovedArgExprLocal(arg);
+ast::ExprPtr ArgPassExpr(const ast::Arg& arg) {
+  return ArgPassExprLocal(arg);
 }
 
 bool IsRecordCallee(const ScopeContext& ctx,
@@ -1019,7 +1024,7 @@ CallTypeResult TypeCall(const ScopeContext& ctx,
   }
 
   for (std::size_t i = 0; i < args.size(); ++i) {
-    if (!params[i].mode.has_value() && args[i].moved) {
+    if (!params[i].mode.has_value() && args[i].pass == ast::ArgPassKind::Move) {
       SPEC_RULE("Call-Move-Unexpected");
       result.diag_id = "E-SEM-2535";
       result.diag_span = ArgDiagnosticSpan(args[i]);
@@ -1032,6 +1037,18 @@ CallTypeResult TypeCall(const ScopeContext& ctx,
   for (std::size_t i = 0; i < args.size(); ++i) {
     const auto& arg = args[i];
     if (!params[i].mode.has_value()) {
+      if (ast::IsCopyArg(arg)) {
+        const auto copy_type = type_expr(ArgPassExprLocal(arg));
+        if (!copy_type.ok) {
+          result.diag_id = copy_type.diag_id;
+          result.diag_span = copy_type.diag_span.has_value()
+                                 ? copy_type.diag_span
+                                 : ArgDiagnosticSpan(arg);
+          return result;
+        }
+        arg_types.push_back(copy_type.type);
+        continue;
+      }
       const bool has_source_prov = HasSourceProvenanceLocal(arg.value);
       const bool expected_function_value =
           IsFunctionValueType(ctx, params[i].type);
@@ -1079,7 +1096,7 @@ CallTypeResult TypeCall(const ScopeContext& ctx,
       }
       continue;
     }
-    const auto arg_expr = MovedArgExprLocal(arg);
+    const auto arg_expr = ArgPassExprLocal(arg);
     if (UsesCallTempForConsumingLocal(params[i].mode, arg) && check_expr) {
       const auto checked = (*check_expr)(arg_expr, params[i].type);
       if (checked.ok) {
@@ -1143,7 +1160,7 @@ CallTypeResult TypeCall(const ScopeContext& ctx,
   } else {
     for (std::size_t i = 0; i < params.size(); ++i) {
       if (params[i].mode == ParamMode::Move) {
-        const auto moved = MovedArgExprLocal(args[i]);
+        const auto moved = ArgPassExprLocal(args[i]);
         const auto moved_type = type_expr(moved);
         if (!moved_type.ok) {
           result.diag_id = moved_type.diag_id;
@@ -1255,7 +1272,7 @@ CallTypeResult TypeCallWithSubst(const ScopeContext& ctx,
   }
 
   for (std::size_t i = 0; i < args.size(); ++i) {
-    if (!params[i].mode.has_value() && args[i].moved) {
+    if (!params[i].mode.has_value() && args[i].pass == ast::ArgPassKind::Move) {
       SPEC_RULE("Call-Move-Unexpected");
       result.diag_id = "E-SEM-2535";
       result.diag_span = ArgDiagnosticSpan(args[i]);
@@ -1270,6 +1287,18 @@ CallTypeResult TypeCallWithSubst(const ScopeContext& ctx,
     const auto& arg = args[i];
     const TypeRef subst_param_type = InstantiateType(params[i].type, subst);
     if (!params[i].mode.has_value()) {
+      if (ast::IsCopyArg(arg)) {
+        const auto copy_type = type_expr(ArgPassExprLocal(arg));
+        if (!copy_type.ok) {
+          result.diag_id = copy_type.diag_id;
+          result.diag_span = copy_type.diag_span.has_value()
+                                 ? copy_type.diag_span
+                                 : ArgDiagnosticSpan(arg);
+          return result;
+        }
+        arg_types.push_back(copy_type.type);
+        continue;
+      }
       const bool has_source_prov = HasSourceProvenanceLocal(arg.value);
       const bool expected_function_value =
           IsFunctionValueType(ctx, subst_param_type);
@@ -1317,7 +1346,7 @@ CallTypeResult TypeCallWithSubst(const ScopeContext& ctx,
       }
       continue;
     }
-    const auto arg_expr = MovedArgExprLocal(arg);
+    const auto arg_expr = ArgPassExprLocal(arg);
     if (UsesCallTempForConsumingLocal(params[i].mode, arg) && check_expr) {
       const auto checked = (*check_expr)(arg_expr, subst_param_type);
       if (checked.ok) {
@@ -1384,7 +1413,7 @@ CallTypeResult TypeCallWithSubst(const ScopeContext& ctx,
   } else {
     for (std::size_t i = 0; i < params.size(); ++i) {
       if (params[i].mode == ParamMode::Move) {
-        const auto moved = MovedArgExprLocal(args[i]);
+        const auto moved = ArgPassExprLocal(args[i]);
         const auto moved_type = type_expr(moved);
         if (!moved_type.ok) {
           result.diag_id = moved_type.diag_id;

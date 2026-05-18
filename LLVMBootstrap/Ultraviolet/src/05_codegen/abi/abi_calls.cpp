@@ -703,7 +703,6 @@ void AnchorABIRules() {
 
   // Section 6.2.3 ABI Parameter and Return Passing Rules
   SPEC_RULE("ABI-Param-ByRef-Alias");
-  SPEC_RULE("ABI-Param-ByValue-Move");
   SPEC_RULE("ABI-Param-ByRef-Move");
   SPEC_RULE("ABI-Ret-ByValue");
   SPEC_RULE("ABI-Ret-ByRef");

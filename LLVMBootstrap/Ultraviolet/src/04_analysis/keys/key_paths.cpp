@@ -154,7 +154,7 @@ std::string CanonicalExprIdentity(const ast::ExprPtr& expr) {
       if (i > 0) {
         oss << ",";
       }
-      if (call->args[i].moved) {
+      if (call->args[i].pass == ast::ArgPassKind::Move) {
         oss << "move ";
       }
       oss << CanonicalExprIdentity(call->args[i].value);
@@ -170,7 +170,7 @@ std::string CanonicalExprIdentity(const ast::ExprPtr& expr) {
       if (i > 0) {
         oss << ",";
       }
-      if (method->args[i].moved) {
+      if (method->args[i].pass == ast::ArgPassKind::Move) {
         oss << "move ";
       }
       oss << CanonicalExprIdentity(method->args[i].value);

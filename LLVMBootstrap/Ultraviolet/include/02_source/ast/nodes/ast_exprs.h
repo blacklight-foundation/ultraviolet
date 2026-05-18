@@ -150,6 +150,11 @@ struct MoveExpr {
     ExprPtr place;
 };
 
+/// Copy expression - copy x
+struct CopyExpr {
+    ExprPtr value;
+};
+
 /// Allocation expression - ^value or region^value
 struct AllocExpr {
     std::optional<Identifier> region_opt;
@@ -587,6 +592,7 @@ using ExprNode = std::variant<
     DerefExpr,
     AddressOfExpr,
     MoveExpr,
+    CopyExpr,
     AllocExpr,
     PtrNullExpr,
     // Aggregate

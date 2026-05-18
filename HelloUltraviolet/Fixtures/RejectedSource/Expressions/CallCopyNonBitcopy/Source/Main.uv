@@ -1,0 +1,14 @@
+//! Rejected call specimen for explicit copy of a non-Bitcopy argument.
+
+public record NonBitcopyCopyArgument {
+    public value: unique i32
+}
+
+public procedure borrowNonBitcopyArgument(payload: NonBitcopyCopyArgument) -> i32 {
+    return payload.value
+}
+
+public procedure callCopyNonBitcopyReference() -> i32 {
+    let payload: NonBitcopyCopyArgument = NonBitcopyCopyArgument { value: 5 }
+    return borrowNonBitcopyArgument(copy payload)
+}

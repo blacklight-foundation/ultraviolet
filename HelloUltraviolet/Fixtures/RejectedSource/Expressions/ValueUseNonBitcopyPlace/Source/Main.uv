@@ -1,6 +1,6 @@
-//! Rejected value-use specimen for a non-Bitcopy place expression.
+//! Rejected explicit-copy specimen for a non-Bitcopy place expression.
 
 public procedure valueUseNonBitcopyPlaceReference() -> unique i32 {
     let payload: unique i32 = 1
-    return payload
+    return copy payload
 }

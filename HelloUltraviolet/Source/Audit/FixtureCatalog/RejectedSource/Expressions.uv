@@ -1,7 +1,7 @@
 //! Rejected expression specimens.
 
 public procedure expressionsRejectedSourceFixtureCount() -> usize {
-    return 115usize
+    return 116usize
 }
 
 public procedure validatedExpressionsRejectedSourceFixtureCount() -> usize {
@@ -496,6 +496,23 @@ public procedure validatedExpressionsRejectedSourceFixtureCount() -> usize {
         "Fixtures/RejectedSource/Expressions/CallMoveMissing/Expected.uv",
         "E-SEM-2534",
         "rule.16.Call-Move-Missing"
+    ) {
+        count = count + 1usize
+    }
+    if rejectedSpecimenMatches(
+        rejectedSpecimen(
+            "CallCopyNonBitcopy",
+            "Fixtures/RejectedSource/Expressions/CallCopyNonBitcopy",
+            "Fixtures/RejectedSource/Expressions/CallCopyNonBitcopy/Source/Main.uv",
+            "Fixtures/RejectedSource/Expressions/CallCopyNonBitcopy/Expected.uv",
+            expectedDiagnostic("E-UNS-0107", "rule.16.T-Copy")
+        ),
+        "CallCopyNonBitcopy",
+        "Fixtures/RejectedSource/Expressions/CallCopyNonBitcopy",
+        "Fixtures/RejectedSource/Expressions/CallCopyNonBitcopy/Source/Main.uv",
+        "Fixtures/RejectedSource/Expressions/CallCopyNonBitcopy/Expected.uv",
+        "E-UNS-0107",
+        "rule.16.T-Copy"
     ) {
         count = count + 1usize
     }

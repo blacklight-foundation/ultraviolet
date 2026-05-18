@@ -69,7 +69,8 @@ enum class PassKind {
 };
 
 // Parameter-classification policy.
-// - ModeAware: source-level parameter mode participates in pass-kind selection.
+// - ModeAware: source-level parameters are represented by reference; mode
+//   controls cleanup responsibility.
 // - ForeignBoundary: pass-kind selection is mode-independent and derived from
 //   type/layout only.
 enum class ABIParamPolicy {

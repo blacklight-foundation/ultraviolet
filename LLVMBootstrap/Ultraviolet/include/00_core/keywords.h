@@ -20,13 +20,14 @@ namespace ultraviolet::core
     }
   } // namespace detail
 
-  inline constexpr std::array<std::string_view, 54> kUltravioletKeywords = {
+  inline constexpr std::array<std::string_view, 55> kUltravioletKeywords = {
       "all",
       "as",
       "break",
       "class",
       "comptime",
       "continue",
+      "copy",
       "derive",
       "dispatch", // UVX Extension: structured concurrency
       "else",

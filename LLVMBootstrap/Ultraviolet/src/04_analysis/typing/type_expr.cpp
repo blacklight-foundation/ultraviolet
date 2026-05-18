@@ -3336,6 +3336,8 @@ static ExprTypeResult TypeExprImpl(const ScopeContext& ctx,
           return expr::TypeDerefExprImpl(ctx, type_ctx, node, env, e->span);
         } else if constexpr (std::is_same_v<T, ast::MoveExpr>) {
           return expr::TypeMoveExprImpl(ctx, type_ctx, node, env);
+        } else if constexpr (std::is_same_v<T, ast::CopyExpr>) {
+          return expr::TypeCopyExprImpl(ctx, type_ctx, node, env);
         } else if constexpr (std::is_same_v<T, ast::PropagateExpr>) {
           return expr::TypePropagateExprImpl(ctx, type_ctx, node, env);
         } else if constexpr (std::is_same_v<T, ast::ResultExpr>) {
@@ -4245,6 +4247,13 @@ ExprTypeResult TypeMoveExpr(const ScopeContext& ctx,
                             const ast::MoveExpr& e,
                             const TypeEnv& env) {
   return expr::TypeMoveExprImpl(ctx, type_ctx, e, env);
+}
+
+ExprTypeResult TypeCopyExpr(const ScopeContext& ctx,
+                            const StmtTypeContext& type_ctx,
+                            const ast::CopyExpr& e,
+                            const TypeEnv& env) {
+  return expr::TypeCopyExprImpl(ctx, type_ctx, e, env);
 }
 
 ExprTypeResult TypeAllocExpr(const ScopeContext& ctx,

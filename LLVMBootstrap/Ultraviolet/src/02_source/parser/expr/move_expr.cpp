@@ -110,7 +110,7 @@
 // =============================================================================
 // Move expressions interact with:
 // - Address-of (&): Also requires place expression (Lines 680-687)
-// - Argument move: Function arguments can use `move` prefix (ParseArgMoveOpt)
+// - Argument pass: Function arguments can use `move` or `copy` prefixes
 //
 // **(Parse-Unary-AddressOf)** Lines 5106-5109 (for comparison)
 // IsOp(Tok(P), "&")    G |- ParsePlace(Advance(P)) => (P_1, p)

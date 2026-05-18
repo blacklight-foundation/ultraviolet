@@ -22,6 +22,7 @@
 #include "02_source/ast/ast.h"
 #include "02_source/attributes/attribute_registry.h"
 #include "04_analysis/contracts/verification.h"
+#include "04_analysis/memory/calls.h"
 #include "04_analysis/memory/regions.h"
 #include "04_analysis/memory/safe_ptr.h"
 #include "04_analysis/resolve/scopes.h"
@@ -1114,12 +1115,27 @@ StmtTypeResult TypeReturnStmt(const ScopeContext& ctx,
   const ast::ExprPtr ret_value =
       node.value_opt ? node.value_opt : ast::ExprPtr{};
 
+  auto return_dest_expr = [](const ast::ExprPtr& value) -> ast::ExprPtr {
+    if (!value || std::holds_alternative<ast::CopyExpr>(value->node) ||
+        std::holds_alternative<ast::MoveExpr>(value->node)) {
+      return value;
+    }
+    if (!IsPlaceExprForCall(value)) {
+      return value;
+    }
+    auto out = std::make_shared<ast::Expr>();
+    out->span = value->span;
+    out->node = ast::MoveExpr{value};
+    return out;
+  };
+
   // Check if return type is async
   const auto async_sig = AsyncSigOf(ctx, type_ctx.return_type);
   if (async_sig.has_value()) {
     if (node.value_opt) {
+      const auto return_expr = return_dest_expr(node.value_opt);
       const auto check =
-          CheckExprAgainst(ctx, type_ctx, node.value_opt, async_sig->result, env);
+          CheckExprAgainst(ctx, type_ctx, return_expr, async_sig->result, env);
       if (!check.ok) {
         if (!check.diag_id.has_value() || *check.diag_id == "E-SEM-2526") {
           SPEC_RULE("Return-Async-Type-Err");
@@ -1165,7 +1181,8 @@ StmtTypeResult TypeReturnStmt(const ScopeContext& ctx,
   if (node.value_opt) {
     // Handle opaque return types
     if (type_ctx.opaque_return) {
-      const auto typed = type_expr_current(node.value_opt);
+      const auto return_expr = return_dest_expr(node.value_opt);
+      const auto typed = type_expr_current(return_expr);
       if (!typed.ok) {
         return {false, typed.diag_id, {}, {}, typed.diag_detail};
       }
@@ -1211,7 +1228,8 @@ StmtTypeResult TypeReturnStmt(const ScopeContext& ctx,
     }
 
     // Normal return with value
-    const auto check = CheckExprAgainst(ctx, type_ctx, node.value_opt,
+    const auto return_expr = return_dest_expr(node.value_opt);
+    const auto check = CheckExprAgainst(ctx, type_ctx, return_expr,
                                         type_ctx.return_type, env);
     if (!check.ok) {
       if (!check.diag_id.has_value() || *check.diag_id == "E-SEM-2526") {

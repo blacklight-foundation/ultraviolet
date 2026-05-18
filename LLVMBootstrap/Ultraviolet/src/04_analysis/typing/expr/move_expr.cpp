@@ -33,6 +33,7 @@ namespace {
 
 static inline void SpecDefsMoveExpr() {
   SPEC_DEF("T-Move", "5.6");
+  SPEC_DEF("T-Copy", "16.8.4");
   SPEC_DEF("Move-Immovable-Err", "5.6");
   SPEC_DEF("Move-AlreadyMoved-Err", "5.6");
   SPEC_DEF("Move-NotPlace-Err", "5.6");
@@ -97,6 +98,31 @@ ExprTypeResult TypeMoveExprImpl(const ScopeContext& ctx,
   SPEC_RULE("T-Move");
   result.ok = true;
   result.type = place.type;
+  return result;
+}
+
+ExprTypeResult TypeCopyExprImpl(const ScopeContext& ctx,
+                                const StmtTypeContext& type_ctx,
+                                const ast::CopyExpr& expr,
+                                const TypeEnv& env) {
+  SpecDefsMoveExpr();
+  ExprTypeResult result;
+  const auto value = ::ultraviolet::analysis::TypeExpr(ctx, type_ctx, expr.value, env);
+  if (!value.ok) {
+    result.diag_id = value.diag_id;
+    result.diag_detail = value.diag_detail;
+    result.diag_span = value.diag_span;
+    return result;
+  }
+  if (!BitcopyType(ctx, value.type)) {
+    SPEC_RULE("ValueUse-NonBitcopyPlace");
+    result.diag_id = "E-UNS-0107";
+    result.diag_span = expr.value ? std::optional<core::Span>(expr.value->span) : std::nullopt;
+    return result;
+  }
+  SPEC_RULE("T-Copy");
+  result.ok = true;
+  result.type = value.type;
   return result;
 }
 

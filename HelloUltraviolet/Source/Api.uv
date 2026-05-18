@@ -222,6 +222,7 @@ using HelloUltraviolet::Audit::FixtureCatalog::RejectedSource::{ closureRefCaptu
 using HelloUltraviolet::Audit::FixtureCatalog::RejectedSource::{ closureMoveCaptureImmovableExpectedDiagnosticFileMatches }
 using HelloUltraviolet::Audit::FixtureCatalog::RejectedSource::{ callMoveUnexpectedExpectedDiagnosticFileMatches }
 using HelloUltraviolet::Audit::FixtureCatalog::RejectedSource::{ callMoveMissingExpectedDiagnosticFileMatches }
+using HelloUltraviolet::Audit::FixtureCatalog::RejectedSource::{ callCopyNonBitcopyExpectedDiagnosticFileMatches }
 using HelloUltraviolet::Audit::FixtureCatalog::RejectedSource::{ methodNotFoundExpectedDiagnosticFileMatches }
 using HelloUltraviolet::Audit::FixtureCatalog::RejectedSource::{ pipelineNotCallableExpectedDiagnosticFileMatches }
 using HelloUltraviolet::Audit::FixtureCatalog::RejectedSource::{ pipelineTypeMismatchExpectedDiagnosticFileMatches }
@@ -1937,6 +1938,11 @@ public procedure runReferenceCorpus(context: Context) -> ReferenceResult {
         context,
         "callMoveMissingExpectedDiagnosticFileMatches",
         callMoveMissingExpectedDiagnosticFileMatches(context)
+    ) && passed
+    passed = recordReferenceResult(
+        context,
+        "callCopyNonBitcopyExpectedDiagnosticFileMatches",
+        callCopyNonBitcopyExpectedDiagnosticFileMatches(context)
     ) && passed
     passed = recordReferenceResult(
         context,

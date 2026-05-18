@@ -187,15 +187,13 @@ static bool PtrNullExpected(const TypeRef& type) {
   return ptr->state == PtrState::Null;
 }
 
-static bool IsExplicitMoveExpr(const ast::ExprPtr& expr) {
-  return expr && std::holds_alternative<ast::MoveExpr>(expr->node);
-}
-
 static bool IsNonBitcopyPlaceValueUse(const ScopeContext& ctx,
                                       const ast::ExprPtr& expr,
                                       const TypeRef& type) {
-  return expr && !IsExplicitMoveExpr(expr) && IsPlaceExprForCall(expr) &&
-         !BitcopyType(ctx, type);
+  (void)ctx;
+  (void)expr;
+  (void)type;
+  return false;
 }
 
 static const ast::TypeAliasDecl* LookupTypeAliasDecl(const ScopeContext& ctx,
@@ -426,6 +424,10 @@ static ast::ExprPtr SubstituteIdent(const ast::ExprPtr& expr,
         } else if constexpr (std::is_same_v<T, ast::MoveExpr>) {
           auto out = node;
           out.place = SubstituteIdent(node.place, name, replacement);
+          return MakeExpr(expr->span, out);
+        } else if constexpr (std::is_same_v<T, ast::CopyExpr>) {
+          auto out = node;
+          out.value = SubstituteIdent(node.value, name, replacement);
           return MakeExpr(expr->span, out);
         } else if constexpr (std::is_same_v<T, ast::AllocExpr>) {
           auto out = node;
@@ -1662,7 +1664,7 @@ static CheckResult CheckExprImpl(const ScopeContext& ctx,
             return result;
           }
           const auto& arg = method->args[0];
-          if (arg.moved) {
+          if (ast::IsMoveArg(arg)) {
             SPEC_RULE("Call-Move-Unexpected");
             result.diag_id = "E-SEM-2535";
             return result;

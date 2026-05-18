@@ -4,9 +4,10 @@
 //
 // SPEC REFERENCE: SPECIFICATION.md
 //   Section 5.2.4: Procedure Calls (lines 8707-8777)
-//   - ArgType(a) definition (lines 8715-8717):
-//     * If ArgMoved(a) = true: ExprType(MovedArg(ArgMoved(a), ArgExpr(a)))
-//     * If ArgMoved(a) = false: PlaceType(ArgExpr(a))
+//   - ArgType(a) definition:
+//     * move arguments type through MoveArgExpr
+//     * copy arguments type through CopyArgExpr
+//     * ref arguments type through PlaceType when source provenance is present
 //
 // SOURCE FILE: ultraviolet-bootstrap/src/03_analysis/memory/calls.cpp
 //   (Argument passing semantics)
@@ -16,10 +17,10 @@
 //   - For move parameters: Type the expression as a moved value
 //   - For reference parameters: Type as a place expression
 //
-//   MOVE ARGUMENT HANDLING:
-//   - MovedArg judgment combines move flag with expression
-//   - Move invalidates the source binding
-//   - Type is the owned type (not a reference)
+//   ARGUMENT PASS HANDLING:
+//   - ArgumentPassExpressions maps explicit pass kind to the checked expression
+//   - move transfers source ownership to a consuming parameter
+//   - copy duplicates into a fresh owned value
 //
 //   REFERENCE ARGUMENT HANDLING:
 //   - PlaceType judgment for the argument expression
@@ -27,9 +28,9 @@
 //   - Type is the place type with permission preserved
 //
 //   PARAMETER MODE MATCHING:
-//   - ParamMode = `move` requires ArgMoved = true for provenance-bearing
+//   - ParamMode = `move` requires ownership transfer for provenance-bearing
 //     source places
-//   - ParamMode = none requires ArgMoved = false
+//   - ParamMode = none accepts ref arguments and explicit copy arguments
 //   - Mismatch errors: Call-Move-Missing, Call-Move-Unexpected
 //
 // DEPENDENCIES:
@@ -43,13 +44,13 @@
 // REFACTORING NOTES:
 //   1. This is closely related to args_ok.cpp but focuses on individual arg
 //   2. Consider combining into a unified argument handling module
-//   3. The distinction between moved and reference args is fundamental
-//   4. Place typing preserves permissions while move typing transfers ownership
+//   3. The distinction between move, copy, and ref args is fundamental
+//   4. Place typing preserves permissions while pass expressions model ownership
 //
 // HELPER FUNCTIONS:
 //   ArgType() - Compute type for a single argument
 //   CheckArgModeMatch() - Verify move flag matches parameter mode
-//   TypeMovedArg() - Type an argument with move semantics
+//   TypeArgPassExpr() - Type an argument with pass semantics
 //   TypeRefArg() - Type an argument as a reference
 //
 // =============================================================================
@@ -79,7 +80,7 @@ namespace {
 
 static inline void SpecDefsArgPass() {
   SPEC_DEF("ArgType", "5.2.4");
-  SPEC_DEF("MovedArg", "3.3.2.4");
+  SPEC_DEF("ArgumentPassExpressions", "3.3.2.4");
   SPEC_DEF("PlaceType", "3.3.3");
   SPEC_DEF("ParamMode", "3.3.2.3");
 }
@@ -116,16 +117,17 @@ struct ArgTypeResult {
   TypeRef type;
 };
 
-// Compute the type of an argument based on whether it's moved or not
+// Compute the type of an argument based on its pass kind
 // Per spec: ArgType(a) =
-//   If ArgMoved(a) = true: ExprType(MovedArg(ArgMoved(a), ArgExpr(a)))
-//   If ArgMoved(a) = false: PlaceType(ArgExpr(a))
+//   copy arguments use ExprType(CopyArgExpr(ArgExpr(a)))
+//   move arguments use ExprType(MoveArgExpr(ArgExpr(a)))
+//   ref arguments with source provenance use PlaceType(ArgExpr(a))
 ArgTypeResult ComputeArgType(const ast::Arg& arg,
                              const ExprTypeFn& type_expr,
                              const PlaceTypeFn& type_place) {
   SpecDefsArgPass();
 
-  if (arg.moved) {
+  if (ast::IsMoveArg(arg)) {
     // Move parameter: type as moved expression
     SPEC_RULE("ArgType-Move");
 
@@ -140,6 +142,14 @@ ArgTypeResult ComputeArgType(const ast::Arg& arg,
     }
 
     const auto result = type_expr(expr_to_type);
+    return {result.ok, result.diag_id, result.type};
+  } else if (ast::IsCopyArg(arg)) {
+    SPEC_RULE("ArgType-Copy");
+    auto copy_expr = std::make_shared<ast::Expr>();
+    copy_expr->span = arg.span.file.empty() ?
+      (arg.value ? arg.value->span : core::Span{}) : arg.span;
+    copy_expr->node = ast::CopyExpr{arg.value};
+    const auto result = type_expr(copy_expr);
     return {result.ok, result.diag_id, result.type};
   } else {
     // Reference parameter: provenance-bearing sources stay by-place;
@@ -169,22 +179,22 @@ ArgModeCheckResult CheckArgModeMatch(const ast::Arg& arg,
 
   // ParamMode::Move requires explicit move for provenance-bearing sources.
   if (param_mode.has_value() && *param_mode == ParamMode::Move) {
-    if (!arg.moved && HasSourceProvenance(arg.value)) {
+    if (ast::IsRefArg(arg) && HasSourceProvenance(arg.value)) {
       SPEC_RULE("Call-Move-Missing");
       return {false, "E-SEM-2534"};
     }
     return {true, std::nullopt};
   }
 
-  // No mode (reference parameter) requires moved=false
   if (!param_mode.has_value()) {
-    if (arg.moved) {
+    if (ast::IsMoveArg(arg)) {
       SPEC_RULE("Call-Move-Unexpected");
       return {false, "E-SEM-2535"};
     }
 
     // Additionally, reference parameters require a place expression
-    if (HasSourceProvenance(arg.value) && !IsPlaceExprInternal(arg.value)) {
+    if (ast::IsRefArg(arg) && HasSourceProvenance(arg.value) &&
+        !IsPlaceExprInternal(arg.value)) {
       SPEC_RULE("Call-Arg-NotPlace");
       return {false, "E-TYP-1603"};
     }
@@ -197,17 +207,20 @@ ArgModeCheckResult CheckArgModeMatch(const ast::Arg& arg,
 
 // Type an argument with move semantics
 // This transfers ownership from the source to the callee
-ExprTypeResult TypeMovedArg(const ast::Arg& arg, const ExprTypeFn& type_expr) {
+ExprTypeResult TypeArgPassExpr(const ast::Arg& arg, const ExprTypeFn& type_expr) {
   SpecDefsArgPass();
-  SPEC_RULE("MovedArg");
+  SPEC_RULE("ArgumentPassExpressions");
 
-  // Create MoveExpr wrapper
-  auto move_expr = std::make_shared<ast::Expr>();
-  move_expr->span = arg.span.file.empty() ?
+  auto pass_expr = std::make_shared<ast::Expr>();
+  pass_expr->span = arg.span.file.empty() ?
     (arg.value ? arg.value->span : core::Span{}) : arg.span;
-  move_expr->node = ast::MoveExpr{arg.value};
+  if (ast::IsCopyArg(arg)) {
+    pass_expr->node = ast::CopyExpr{arg.value};
+  } else {
+    pass_expr->node = ast::MoveExpr{arg.value};
+  }
 
-  return type_expr(move_expr);
+  return type_expr(pass_expr);
 }
 
 // Type an argument as a reference (place)

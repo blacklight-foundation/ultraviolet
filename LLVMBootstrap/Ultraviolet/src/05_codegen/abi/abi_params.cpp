@@ -6,7 +6,6 @@
 //   - Section 6.2.3 ABI Parameter and Return Passing
 //   - ByValOk predicate
 //   - ABI-Param-ByRef-Alias rule
-//   - ABI-Param-ByValue-Move rule
 //   - ABI-Param-ByRef-Move rule
 //
 // =============================================================================
@@ -43,23 +42,20 @@ std::optional<PassKind> ABIParam(const analysis::ScopeContext& ctx,
   }
 
   if (policy == ABIParamPolicy::ModeAware) {
-    // (ABI-Param-ByRef-Alias)
-    // Non-move parameters (aliased/borrowed) are always passed by reference.
     if (!mode.has_value()) {
       SPEC_RULE("ABI-Param-ByRef-Alias");
       return PassKind::ByRef;
     }
+    SPEC_RULE("ABI-Param-ByRef-Move");
+    return PassKind::ByRef;
   }
 
-  // (ABI-Param-ByValue-Move) and foreign-boundary mode-independent by-value
-  // path share the same size/layout threshold.
   if (*size == 0 || ByValOk(ctx, type)) {
-    SPEC_RULE("ABI-Param-ByValue-Move");
+    SPEC_RULE("ABI-ForeignParam-ByValue");
     return PassKind::ByValue;
   }
 
-  // (ABI-Param-ByRef-Move) and foreign-boundary mode-independent by-ref path.
-  SPEC_RULE("ABI-Param-ByRef-Move");
+  SPEC_RULE("ABI-ForeignParam-ByRef");
   return PassKind::ByRef;
 }
 

@@ -809,6 +809,14 @@ public procedure callMoveMissingExpectedDiagnosticFileMatches(context: Context) 
     )
 }
 
+public procedure callCopyNonBitcopyExpectedDiagnosticFileMatches(context: Context) -> bool {
+    return expectedDiagnosticFileMatches(
+        context,
+        "HelloUltraviolet/Fixtures/RejectedSource/Expressions/CallCopyNonBitcopy/Expected.uv",
+        "//! Expected diagnostic metadata for the CallCopyNonBitcopy rejected-source specimen.\n\nexpectedDiagnostic(\"E-UNS-0107\", \"rule.16.T-Copy\")\n"
+    )
+}
+
 public procedure methodNotFoundExpectedDiagnosticFileMatches(context: Context) -> bool {
     return expectedDiagnosticFileMatches(
         context,

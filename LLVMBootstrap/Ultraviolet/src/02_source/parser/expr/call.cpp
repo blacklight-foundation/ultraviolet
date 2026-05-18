@@ -23,19 +23,19 @@
 // Γ ⊢ ParseArgList(P) ⇓ (P_2, args)
 //
 // **(Parse-Arg)** Lines 5460-5463
-// Γ ⊢ ParseArgMoveOpt(P) ⇓ (P_1, moved)    Γ ⊢ ParseExpr(P_1) ⇓ (P_2, e)
+// Γ ⊢ ParseArgPassOpt(P) ⇓ (P_1, pass)    Γ ⊢ ParseExpr(P_1) ⇓ (P_2, e)
 // ──────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
-// Γ ⊢ ParseArg(P) ⇓ (P_2, ⟨moved, e, SpanBetween(P, P_2)⟩)
+// Γ ⊢ ParseArg(P) ⇓ (P_2, ⟨pass, e, SpanBetween(P, P_2)⟩)
 //
-// **(Parse-ArgMoveOpt-None)** Lines 5465-5468
-// ¬ IsKw(Tok(P), `move`)
+// **(Parse-ArgPassOpt-None)** Lines 5465-5468
+// ¬ IsKw(Tok(P), `move`) ∧ ¬ IsKw(Tok(P), `copy`)
 // ──────────────────────────────────────────────────────────────
-// Γ ⊢ ParseArgMoveOpt(P) ⇓ (P, false)
+// Γ ⊢ ParseArgPassOpt(P) ⇓ (P, `ref`)
 //
-// **(Parse-ArgMoveOpt-Yes)** Lines 5470-5473
+// **(Parse-ArgPassOpt-Move)** Lines 5470-5473
 // IsKw(Tok(P), `move`)
 // ──────────────────────────────────────────────────────
-// Γ ⊢ ParseArgMoveOpt(P) ⇓ (Advance(P), true)
+// Γ ⊢ ParseArgPassOpt(P) ⇓ (Advance(P), `move`)
 //
 // ARG TAIL RULES (Lines 5943-5958):
 // **(Parse-ArgTail-End)** Lines 5945-5948
@@ -56,7 +56,7 @@
 // SEMANTICS:
 // - Function calls: expr(arg1, arg2, ...)
 // - Callee expression is evaluated first, then arguments left-to-right
-// - Arguments are comma-separated, optionally prefixed with "move"
+// - Arguments are comma-separated, optionally prefixed with "move" or "copy"
 // - Trailing commas allowed ONLY when closing ")" is on different line
 // - Empty argument lists are valid: expr()
 //
@@ -111,28 +111,28 @@
 //    ParseElemResult<Arg> ParseArg(Parser parser) {
 //      SPEC_RULE("Parse-Arg");
 //      Parser start = parser;
-//      ParseElemResult<bool> moved = ParseArgMoveOpt(parser);
-//      ParseElemResult<ExprPtr> expr = ParseExpr(moved.parser);
+//      ParseElemResult<ArgPassKind> pass = ParseArgPassOpt(parser);
+//      ParseElemResult<ExprPtr> expr = ParseExpr(pass.parser);
 //      Arg arg;
-//      arg.moved = moved.elem;
+//      arg.pass = pass.elem;
 //      arg.value = expr.elem;
 //      arg.span = SpanBetween(start, expr.parser);
 //      return {expr.parser, arg};
 //    }
 //    ```
 //
-// 4. ParseArgMoveOpt function
+// 4. ParseArgPassOpt function
 //    Source: parser_expr.cpp, lines 1951-1960
 //    ```cpp
-//    ParseElemResult<bool> ParseArgMoveOpt(Parser parser) {
-//      if (!IsKw(parser, "move")) {
-//        SPEC_RULE("Parse-ArgMoveOpt-None");
-//        return {parser, false};
+//    ParseElemResult<ArgPassKind> ParseArgPassOpt(Parser parser) {
+//      if (!IsKw(parser, "move") && !IsKw(parser, "copy")) {
+//        SPEC_RULE("Parse-ArgPassOpt-None");
+//        return {parser, ArgPassKind::Ref};
 //      }
-//      SPEC_RULE("Parse-ArgMoveOpt-Yes");
+//      SPEC_RULE("Parse-ArgPassOpt-Move");
 //      Parser next = parser;
 //      Advance(next);
-//      return {next, true};
+//      return {next, ArgPassKind::Move};
 //    }
 //    ```
 //
@@ -170,7 +170,7 @@
 // AST DEFINITIONS (from ast.h):
 // ```cpp
 // struct Arg {           // lines 194-198
-//   bool moved = false;
+//   ArgPassKind pass = ArgPassKind::Ref;
 //   ExprPtr value;
 //   core::Span span;
 // };
@@ -222,21 +222,26 @@ void SkipNewlines(Parser& parser);
 ParseElemResult<ExprPtr> ParseExpr(Parser parser);
 
 // =============================================================================
-// ParseArgMoveOpt - Parse optional "move" keyword before argument
+// ParseArgPassOpt - Parse optional argument pass keyword
 // =============================================================================
 //
-// SPEC: Lines 5465-5473
-// Returns true if "move" was present, false otherwise.
+// Returns the explicit pass kind, or Ref when no pass keyword was present.
 
-ParseElemResult<bool> ParseArgMoveOpt(Parser parser) {
-  if (!IsKw(parser, "move")) {
-    SPEC_RULE("Parse-ArgMoveOpt-None");
-    return {parser, false};
+ParseElemResult<ArgPassKind> ParseArgPassOpt(Parser parser) {
+  if (IsKw(parser, "move")) {
+    SPEC_RULE("Parse-ArgPassOpt-Move");
+    Parser next = parser;
+    Advance(next);
+    return {next, ArgPassKind::Move};
   }
-  SPEC_RULE("Parse-ArgMoveOpt-Yes");
-  Parser next = parser;
-  Advance(next);
-  return {next, true};
+  if (IsKw(parser, "copy")) {
+    SPEC_RULE("Parse-ArgPassOpt-Copy");
+    Parser next = parser;
+    Advance(next);
+    return {next, ArgPassKind::Copy};
+  }
+  SPEC_RULE("Parse-ArgPassOpt-None");
+  return {parser, ArgPassKind::Ref};
 }
 
 // =============================================================================
@@ -248,10 +253,10 @@ ParseElemResult<bool> ParseArgMoveOpt(Parser parser) {
 ParseElemResult<Arg> ParseArg(Parser parser) {
   SPEC_RULE("Parse-Arg");
   Parser start = parser;
-  ParseElemResult<bool> moved = ParseArgMoveOpt(parser);
-  ParseElemResult<ExprPtr> expr = ParseExpr(moved.parser);
+  ParseElemResult<ArgPassKind> pass = ParseArgPassOpt(parser);
+  ParseElemResult<ExprPtr> expr = ParseExpr(pass.parser);
   Arg arg;
-  arg.moved = moved.elem;
+  arg.pass = pass.elem;
   arg.value = expr.elem;
   arg.span = SpanBetween(start, expr.parser);
   return {expr.parser, arg};

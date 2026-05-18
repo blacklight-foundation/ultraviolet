@@ -32,5 +32,7 @@ namespace ultraviolet::codegen {
 // Note: After this operation, the source binding (or field) is in the
 // Moved state and cannot be used again.
 LowerResult LowerMovePlace(const ast::Expr& place, LowerCtx& ctx);
+LowerResult LowerMovePlaceAsRef(const ast::Expr& place, LowerCtx& ctx);
+LowerResult LowerCopyExpr(const ast::CopyExpr& expr, LowerCtx& ctx);
 
 }  // namespace ultraviolet::codegen

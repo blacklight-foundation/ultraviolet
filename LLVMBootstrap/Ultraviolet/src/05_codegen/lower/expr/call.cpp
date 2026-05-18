@@ -60,6 +60,7 @@
 #include "04_analysis/layout/layout.h"
 #include "05_codegen/lower/expr/closure_expr.h"
 #include "05_codegen/lower/expr/expr_common.h"
+#include "05_codegen/lower/expr/move_expr.h"
 #include "05_codegen/lower/lower_proc.h"
 #include "05_codegen/symbols/mangle.h"
 namespace ultraviolet::codegen {
@@ -1246,19 +1247,16 @@ LowerResult LowerMoveArgExprWithTemp(const ast::Arg& arg,
     return LowerResult{EmptyIR(), IRValue{}};
   }
 
-  if (!analysis::UsesCallTempForConsuming(
-          std::optional<analysis::ParamMode>(analysis::ParamMode::Move), arg)) {
-    auto moved_expr = analysis::MovedArgExpr(arg);
-    auto prev_suppress = ctx.suppress_temp_at_depth;
-    ctx.suppress_temp_at_depth = ctx.temp_depth + 1;
-    auto result = LowerExpr(*moved_expr, ctx);
-    ctx.suppress_temp_at_depth = prev_suppress;
-    return result;
+  if (ast::IsMoveArg(arg) &&
+      analysis::HasSourceProvenance(arg.value) &&
+      IsPlaceExpr(*arg.value)) {
+    return LowerMovePlaceAsRef(*arg.value, ctx);
   }
 
+  const ast::ExprPtr arg_expr = analysis::ArgPassExpr(arg);
   auto prev_suppress = ctx.suppress_temp_at_depth;
   ctx.suppress_temp_at_depth = ctx.temp_depth + 1;
-  auto value_result = LowerExpr(*arg.value, ctx);
+  auto value_result = LowerExpr(*(arg_expr ? arg_expr : arg.value), ctx);
   ctx.suppress_temp_at_depth = prev_suppress;
   std::string temp_name = ctx.FreshTempValue(temp_prefix).name;
 
@@ -1267,7 +1265,7 @@ LowerResult LowerMoveArgExprWithTemp(const ast::Arg& arg,
   if (!temp_type) {
     temp_type = ctx.LookupValueType(value_result.value);
     if (!temp_type && ctx.expr_type) {
-      temp_type = ctx.expr_type(*arg.value);
+      temp_type = ctx.expr_type(*(arg_expr ? arg_expr : arg.value));
     }
     temp_type = InstantiateActiveGenericType(temp_type, ctx);
   }
@@ -1288,11 +1286,11 @@ LowerResult LowerMoveArgExprWithTemp(const ast::Arg& arg,
   ast::Expr temp_ident;
   temp_ident.span = arg.value->span;
   temp_ident.node = ast::IdentifierExpr{temp_name};
-  auto move_result = LowerMovePlace(temp_ident, ctx);
+  auto addr_result = LowerAddrOf(temp_ident, ctx, AddressUseKind::TransientNoEscape);
 
   return LowerResult{
-      SeqIR({value_result.ir, MakeIR(std::move(bind)), move_result.ir}),
-      move_result.value};
+      SeqIR({value_result.ir, MakeIR(std::move(bind)), addr_result.ir}),
+      addr_result.value};
 }
 
 // =============================================================================
@@ -1362,8 +1360,11 @@ std::pair<IRPtr, std::vector<IRValue>> LowerArgs(
     }
 
     SPEC_RULE("Lower-Args-Cons-Ref");
+    ast::ExprPtr ref_arg = ast::IsCopyArg(args[i])
+                               ? analysis::ArgPassExpr(args[i])
+                               : args[i].value;
     auto result =
-        LowerRefArgExprWithTemp(args[i].value, "call_ref_tmp", expected_type, ctx);
+        LowerRefArgExprWithTemp(ref_arg, "call_ref_tmp", expected_type, ctx);
     ir_parts.push_back(SeqIR({key_ir, result.ir}));
     values.push_back(result.value);
   }
