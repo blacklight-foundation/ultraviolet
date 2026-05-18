@@ -1,0 +1,96 @@
+// Obligation responsibility: Source/Compiler/Project/ToolchainConfig.uv
+//
+// This file owns toolchain manifest configuration and selected target-profile
+// values:
+//
+// - def.ToolchainKeys@L2980
+// - def.ToolchainTargetProfileOk@L2995
+// - WF-Toolchain@L3009 and WF-Toolchain-Err@L3027
+// - def.ToolchainConfig@L3045
+// - def.SelectedTargetProfile@L3061
+
+internal let TOOLCHAIN_EMPTY_TEXT: string@View = ""
+
+public modal ProjectTargetProfile {
+    @CommandLine {
+        public text: string@View
+    }
+
+    @Manifest {
+        public text: string@View
+    }
+
+    @HostDefault {
+        public text: string@View
+    }
+}
+
+public type ProjectTargetProfileValue =
+    ProjectTargetProfile@CommandLine |
+    ProjectTargetProfile@Manifest |
+    ProjectTargetProfile@HostDefault
+
+public record ToolchainConfig {
+    public target_profile: ProjectTargetProfileValue
+}
+
+public modal ToolchainValidation {
+    @Valid {
+        public config: ToolchainConfig
+    }
+
+    @Invalid {
+        public diagnostics: DiagnosticStreamValue
+    }
+}
+
+public type ToolchainValidationValue =
+    ToolchainValidation@Valid | ToolchainValidation@Invalid
+
+public procedure commandLineProjectTargetProfile(
+    text: string@View
+) -> ProjectTargetProfileValue {
+    return ProjectTargetProfile@CommandLine { text: text }
+}
+
+public procedure manifestProjectTargetProfile(
+    text: string@View
+) -> ProjectTargetProfileValue {
+    return ProjectTargetProfile@Manifest { text: text }
+}
+
+public procedure hostDefaultProjectTargetProfile(
+    text: string@View
+) -> ProjectTargetProfileValue {
+    return ProjectTargetProfile@HostDefault { text: text }
+}
+
+public procedure toolchainConfig(
+    target_profile: ProjectTargetProfileValue
+) -> ToolchainConfig {
+    return ToolchainConfig { target_profile: target_profile }
+}
+
+public procedure selectedProjectTargetProfile(
+    command_line_text: string@View,
+    manifest_text: string@View,
+    host_default_text: string@View
+) -> ProjectTargetProfileValue {
+    if (!projectTextEquals(command_line_text, TOOLCHAIN_EMPTY_TEXT)) {
+        return commandLineProjectTargetProfile(command_line_text)
+    }
+    if (!projectTextEquals(manifest_text, TOOLCHAIN_EMPTY_TEXT)) {
+        return manifestProjectTargetProfile(manifest_text)
+    }
+    return hostDefaultProjectTargetProfile(host_default_text)
+}
+
+public procedure validToolchainConfig(config: ToolchainConfig) -> ToolchainValidationValue {
+    return ToolchainValidation@Valid { config: config }
+}
+
+public procedure invalidToolchainConfig(
+    move diagnostics: DiagnosticStreamValue
+) -> ToolchainValidationValue {
+    return ToolchainValidation@Invalid { diagnostics: move diagnostics }
+}

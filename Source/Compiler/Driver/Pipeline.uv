@@ -1,0 +1,206 @@
+// Obligation responsibility: Source/Compiler/Driver/Pipeline.uv
+//
+// This file owns translation-phase and driver pipeline ordering obligations.
+// It is also the canonical driver-owned boundary used by project commands to
+// submit build, check, clean, init, and run requests into the project pipeline.
+//
+// Relevant command-surface responsibilities:
+//
+// - def.Phase1Order@L196 through def.Phase4Order@L259
+//   Translation phases are ordered by the driver pipeline.
+// - def.TranslationPhases@L527
+//   The driver pipeline owns the phase vocabulary used by command execution.
+// - conformance.phase-ordering obligations at L1053-L1155
+//   The driver pipeline owns cross-phase ordering and compile-time phase
+//   sequencing.
+
+public modal PipelineCommand {
+    @Build {
+    }
+
+    @Check {
+    }
+
+    @Clean {
+    }
+
+    @Init {
+    }
+
+    @Run {
+    }
+}
+
+public type PipelineCommandValue =
+    PipelineCommand@Build |
+    PipelineCommand@Check |
+    PipelineCommand@Clean |
+    PipelineCommand@Init |
+    PipelineCommand@Run
+
+public modal PipelineTargetProfile {
+    @Default {
+    }
+
+    @X8664SysV {
+    }
+
+    @X8664Win64 {
+    }
+
+    @Aarch64Aapcs64 {
+    }
+
+    @Unsupported {
+        public text: string@View
+    }
+}
+
+public type PipelineTargetProfileValue =
+    PipelineTargetProfile@Default |
+    PipelineTargetProfile@X8664SysV |
+    PipelineTargetProfile@X8664Win64 |
+    PipelineTargetProfile@Aarch64Aapcs64 |
+    PipelineTargetProfile@Unsupported
+
+public modal PipelineOutputMode {
+    @Normal {
+    }
+
+    @Quiet {
+    }
+
+    @MachineReadable {
+    }
+}
+
+public type PipelineOutputModeValue =
+    PipelineOutputMode@Normal |
+    PipelineOutputMode@Quiet |
+    PipelineOutputMode@MachineReadable
+
+public record PipelineRequest {
+    public current_directory: string@View
+    public executable_path: string@View
+    public target_profile: PipelineTargetProfileValue
+    public output_mode: PipelineOutputModeValue
+    public command: PipelineCommandValue
+}
+
+public modal PipelineUnavailableReason {
+    @ProjectPipelinePending {
+        public command: PipelineCommandValue
+    }
+}
+
+public type PipelineUnavailableReasonValue =
+    PipelineUnavailableReason@ProjectPipelinePending
+
+public modal PipelineSubmission {
+    @Accepted {
+        public request: PipelineRequest
+    }
+
+    @Unavailable {
+        public reason: PipelineUnavailableReasonValue
+    }
+}
+
+public type PipelineSubmissionValue =
+    PipelineSubmission@Accepted | PipelineSubmission@Unavailable
+
+public procedure pipelineBuildCommand() -> PipelineCommandValue {
+    return PipelineCommand@Build {}
+}
+
+public procedure pipelineCheckCommand() -> PipelineCommandValue {
+    return PipelineCommand@Check {}
+}
+
+public procedure pipelineCleanCommand() -> PipelineCommandValue {
+    return PipelineCommand@Clean {}
+}
+
+public procedure pipelineInitCommand() -> PipelineCommandValue {
+    return PipelineCommand@Init {}
+}
+
+public procedure pipelineRunCommand() -> PipelineCommandValue {
+    return PipelineCommand@Run {}
+}
+
+public procedure pipelineDefaultTargetProfile() -> PipelineTargetProfileValue {
+    return PipelineTargetProfile@Default {}
+}
+
+public procedure pipelineX8664SysVTargetProfile() -> PipelineTargetProfileValue {
+    return PipelineTargetProfile@X8664SysV {}
+}
+
+public procedure pipelineX8664Win64TargetProfile() -> PipelineTargetProfileValue {
+    return PipelineTargetProfile@X8664Win64 {}
+}
+
+public procedure pipelineAarch64Aapcs64TargetProfile() -> PipelineTargetProfileValue {
+    return PipelineTargetProfile@Aarch64Aapcs64 {}
+}
+
+public procedure pipelineUnsupportedTargetProfile(text: string@View) -> PipelineTargetProfileValue {
+    return PipelineTargetProfile@Unsupported { text: text }
+}
+
+public procedure pipelineNormalOutputMode() -> PipelineOutputModeValue {
+    return PipelineOutputMode@Normal {}
+}
+
+public procedure pipelineQuietOutputMode() -> PipelineOutputModeValue {
+    return PipelineOutputMode@Quiet {}
+}
+
+public procedure pipelineMachineReadableOutputMode() -> PipelineOutputModeValue {
+    return PipelineOutputMode@MachineReadable {}
+}
+
+public procedure pipelineRequest(
+    current_directory: string@View,
+    executable_path: string@View,
+    target_profile: PipelineTargetProfileValue,
+    output_mode: PipelineOutputModeValue,
+    command: PipelineCommandValue
+) -> PipelineRequest {
+    return PipelineRequest {
+        current_directory: current_directory,
+        executable_path: executable_path,
+        target_profile: target_profile,
+        output_mode: output_mode,
+        command: command
+    }
+}
+
+public procedure submitPipelineRequest(
+    request: PipelineRequest
+) -> PipelineSubmissionValue {
+    return PipelineSubmission@Unavailable {
+        reason: pipelineProjectPending(request.command)
+    }
+}
+
+public procedure acceptedPipelineSubmission(
+    request: PipelineRequest
+) -> PipelineSubmissionValue {
+    return PipelineSubmission@Accepted { request: request }
+}
+
+public procedure unavailablePipelineSubmission(
+    reason: PipelineUnavailableReasonValue
+) -> PipelineSubmissionValue {
+    return PipelineSubmission@Unavailable { reason: reason }
+}
+
+public procedure pipelineProjectPending(
+    command: PipelineCommandValue
+) -> PipelineUnavailableReasonValue {
+    return PipelineUnavailableReason@ProjectPipelinePending {
+        command: command
+    }
+}

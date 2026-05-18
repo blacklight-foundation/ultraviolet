@@ -1,0 +1,24 @@
+// Test responsibility:
+// Source/Compiler/Tests/Project/ManifestValidation/WFAssemblyLinkKindUseErr/WFAssemblyLinkKindUseErrTests.uv
+//
+// This file owns source-native tests for WF-Assembly-LinkKind-Use-Err@L2962.
+
+using UltravioletCompiler::Project::{
+    manifestAssembly,
+    manifestAssemblyLinkKindIsValid
+}
+
+[[test(
+    name: "manifest validation rejects link_kind outside libraries",
+    covers("WF-Assembly-LinkKind-Use-Err@L2962")
+)]]
+internal procedure manifestValidationRejectsLinkKindOutsideLibraries() -> bool
+|: => @result
+{
+    return !manifestAssemblyLinkKindIsValid(
+        manifestAssembly("App", "executable", "static", "Source/Tools/Uv")
+    ) &&
+        !manifestAssemblyLinkKindIsValid(
+            manifestAssembly("Dep", "dependency", "shared", "Runtime")
+        )
+}

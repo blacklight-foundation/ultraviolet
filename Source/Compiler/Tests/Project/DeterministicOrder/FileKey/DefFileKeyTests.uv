@@ -1,0 +1,17 @@
+// Test responsibility:
+// Source/Compiler/Tests/Project/DeterministicOrder/FileKey/DefFileKeyTests.uv
+//
+// This file owns source-native tests for def.FileKey@L4109.
+
+using UltravioletCompiler::Project::{ projectPathTextPrecedes }
+
+[[test(
+    name: "file keys use original path as folded-key tiebreaker",
+    covers("def.FileKey@L4109")
+)]]
+internal procedure fileKeysUseOriginalPathAsFoldedKeyTiebreaker() -> bool
+|: => @result
+{
+    return projectPathTextPrecedes("Source/Compiler/A.uv", "Source/Compiler/a.uv") &&
+        !projectPathTextPrecedes("Source/Compiler/a.uv", "Source/Compiler/A.uv")
+}

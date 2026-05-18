@@ -1,0 +1,32 @@
+// Test responsibility:
+// Source/Compiler/Tests/Project/ModuleDiscovery/RefsModuleDiscoverySection/RefsModuleDiscoverySectionTests.uv
+//
+// This file owns source-native tests for refs.ModuleDiscoverySection@L4370.
+
+using UltravioletCompiler::Project::{
+    directoryPath,
+    emptySourceFilePaths,
+    directoryScan,
+    modulePath,
+    projectTextEquals
+}
+
+[[test(
+    name: "module discovery consumes module paths formed by the module rules",
+    covers("refs.ModuleDiscoverySection@L4370")
+)]]
+internal procedure moduleDiscoveryConsumesModulePathsFormedByModuleRules() -> bool
+|: => @result
+{
+    let scan = directoryScan(
+        directoryPath("Source/Compiler/Tests/Core/Path"),
+        modulePath("UltravioletCompiler::Tests::Core::Path"),
+        emptySourceFilePaths(),
+        true
+    )
+
+    return projectTextEquals(
+        scan.module_path.text,
+        "UltravioletCompiler::Tests::Core::Path"
+    )
+}

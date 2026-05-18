@@ -1,0 +1,72 @@
+// Test responsibility:
+// Source/Compiler/Tests/Project/RootDiscovery/DefFindProjectRoot/DefFindProjectRootTests.uv
+//
+// This file owns source-native tests for def.FindProjectRoot@L2324:
+//
+// `FindProjectRoot(p)` is the nearest searched directory `R` such that
+// `exists(R/`Ultraviolet.toml`)`; if no searched directory satisfies that
+// predicate, `FindProjectRoot(p)` is the search-start directory.
+
+using UltravioletCompiler::Project::{
+    ProjectRootSearchValue,
+    directoryPath,
+    emptyProjectRootCandidates,
+    findProjectRoot,
+    projectRootCandidate,
+    projectRootCandidateListEntry,
+    projectRootSearchRoot,
+    projectRootSearchUsedManifest,
+    projectTextEquals
+}
+
+[[test(
+    name: "find project root returns nearest searched manifest directory",
+    covers("def.FindProjectRoot@L2324")
+)]]
+internal procedure findProjectRootReturnsNearestManifestDirectory() -> bool
+|: => @result
+{
+    let search: ProjectRootSearchValue =
+        findProjectRoot(
+            directoryPath("C:/Dev/Ultraviolet/Source/Compiler/Core"),
+            projectRootCandidateListEntry(
+                projectRootCandidate(directoryPath("C:/Dev/Ultraviolet/Source/Compiler/Core"), false),
+                projectRootCandidateListEntry(
+                    projectRootCandidate(directoryPath("C:/Dev/Ultraviolet/Compiler"), false),
+                    projectRootCandidateListEntry(
+                        projectRootCandidate(directoryPath("C:/Dev/Ultraviolet"), true),
+                        emptyProjectRootCandidates()
+                    )
+                )
+            )
+        )
+
+    return projectRootSearchUsedManifest(search) &&
+        projectTextEquals(projectRootSearchRoot(search).text, "C:/Dev/Ultraviolet")
+}
+
+[[test(
+    name: "find project root returns search start when no manifest is found",
+    covers("def.FindProjectRoot@L2324")
+)]]
+internal procedure findProjectRootReturnsSearchStartWhenNoManifestIsFound() -> bool
+|: => @result
+{
+    let search: ProjectRootSearchValue =
+        findProjectRoot(
+            directoryPath("C:/Dev/Ultraviolet/Source/Compiler/Core"),
+            projectRootCandidateListEntry(
+                projectRootCandidate(directoryPath("C:/Dev/Ultraviolet/Source/Compiler/Core"), false),
+                projectRootCandidateListEntry(
+                    projectRootCandidate(directoryPath("C:/Dev/Ultraviolet/Compiler"), false),
+                    emptyProjectRootCandidates()
+                )
+            )
+        )
+
+    return !projectRootSearchUsedManifest(search) &&
+        projectTextEquals(
+            projectRootSearchRoot(search).text,
+            "C:/Dev/Ultraviolet/Source/Compiler/Core"
+        )
+}

@@ -1,0 +1,416 @@
+// Obligation responsibility: Source/Compiler/Driver/CLI/Commands.uv
+//
+// This file owns the CLI command model, command result model, command dispatch
+// vocabulary, and command-result conversion. It supports the executable
+// command surface by converting parsed command arguments into command modal
+// states and routing each state to its command-specific owner.
+//
+// - diagnostics.CommandLineDiagnostics@L100109
+//   Command-line diagnostics are E-CLI-0001 for an unknown command,
+//   E-CLI-0002 for pipeline unavailability, and E-CLI-0003 for output
+//   write failure.
+
+import UltravioletCompiler::Driver
+import UltravioletCompiler::Diagnostics
+using UltravioletCompiler::Driver::{
+    PipelineOutputModeValue,
+    PipelineRequest,
+    PipelineSubmissionValue,
+    PipelineTargetProfileValue,
+    PipelineUnavailableReasonValue,
+    pipelineAarch64Aapcs64TargetProfile,
+    pipelineBuildCommand,
+    pipelineCheckCommand,
+    pipelineCleanCommand,
+    pipelineDefaultTargetProfile,
+    pipelineInitCommand,
+    pipelineMachineReadableOutputMode,
+    pipelineNormalOutputMode,
+    pipelineQuietOutputMode,
+    pipelineRequest,
+    pipelineRunCommand,
+    pipelineUnsupportedTargetProfile,
+    pipelineX8664SysVTargetProfile,
+    pipelineX8664Win64TargetProfile,
+    submitPipelineRequest
+}
+using UltravioletCompiler::Diagnostics::{
+    CODE_CLI_OUTPUT_WRITE_FAILED,
+    CODE_CLI_PIPELINE_UNAVAILABLE,
+    CODE_CLI_UNKNOWN_COMMAND,
+    CODE_TEST_UNKNOWN_TARGET,
+    Diagnostic,
+    DiagnosticSpanValue,
+    DiagnosticStreamValue,
+    diagnosticHasMessage,
+    diagnosticMessage,
+    diagnosticSeverityText,
+    singleErrorDiagnosticStream
+}
+
+internal let EXIT_SUCCESS: i32 = 0
+internal let EXIT_FAILURE: i32 = 1
+
+public modal CommandFailureReason {
+    @UnknownCommand {
+        public command_name: string@View
+    }
+
+    @PipelineUnavailable {
+        public reason: PipelineUnavailableReasonValue
+    }
+
+    @OutputWriteFailed {
+    }
+
+    @TestTargetRejected {
+        public code: string@View
+        public message: string@View
+    }
+}
+
+public type CommandFailureReasonValue =
+    CommandFailureReason@UnknownCommand |
+    CommandFailureReason@PipelineUnavailable |
+    CommandFailureReason@OutputWriteFailed |
+    CommandFailureReason@TestTargetRejected
+
+public modal Command {
+    @Build {
+        public arguments: CommandArguments
+
+        public procedure execute(
+            ~,
+            host: DriverHost,
+            diagnostics_region: unique Region@Active
+        ) -> CommandResultValue {
+            return executeBuildCommand(host, diagnostics_region, self.arguments)
+        }
+    }
+
+    @Check {
+        public arguments: CommandArguments
+
+        public procedure execute(
+            ~,
+            host: DriverHost,
+            diagnostics_region: unique Region@Active
+        ) -> CommandResultValue {
+            return executeCheckCommand(host, diagnostics_region, self.arguments)
+        }
+    }
+
+    @Clean {
+        public arguments: CommandArguments
+
+        public procedure execute(
+            ~,
+            host: DriverHost,
+            diagnostics_region: unique Region@Active
+        ) -> CommandResultValue {
+            return executeCleanCommand(host, diagnostics_region, self.arguments)
+        }
+    }
+
+    @Init {
+        public arguments: CommandArguments
+
+        public procedure execute(
+            ~,
+            host: DriverHost,
+            diagnostics_region: unique Region@Active
+        ) -> CommandResultValue {
+            return executeInitCommand(host, diagnostics_region, self.arguments)
+        }
+    }
+
+    @Run {
+        public arguments: CommandArguments
+
+        public procedure execute(
+            ~,
+            host: DriverHost,
+            diagnostics_region: unique Region@Active
+        ) -> CommandResultValue {
+            return executeRunCommand(host, diagnostics_region, self.arguments)
+        }
+    }
+
+    @Test {
+        public input: TestCommandInput
+
+        public procedure execute(
+            ~,
+            host: DriverHost,
+            diagnostics_region: unique Region@Active
+        ) -> CommandResultValue {
+            return executeTestCommand(host, diagnostics_region, self.input)
+        }
+    }
+
+    @Version {
+        public procedure execute(
+            ~,
+            host: DriverHost,
+            diagnostics_region: unique Region@Active
+        ) -> CommandResultValue {
+            return executeVersionCommand(host, diagnostics_region)
+        }
+    }
+}
+
+public type CommandValue =
+    Command@Build |
+    Command@Check |
+    Command@Clean |
+    Command@Init |
+    Command@Run |
+    Command@Test |
+    Command@Version
+
+public modal CommandParseResult {
+    @Parsed {
+        public command: CommandValue
+
+        public procedure commandResult(
+            ~,
+            host: DriverHost,
+            diagnostics_region: unique Region@Active
+        ) -> CommandResultValue {
+            return host~>runCommand(diagnostics_region, self.command)
+        }
+    }
+
+    @Rejected {
+        public reason: CommandFailureReasonValue
+
+        public procedure commandResult(
+            ~,
+            host: DriverHost,
+            diagnostics_region: unique Region@Active
+        ) -> CommandResultValue {
+            return commandFailed(diagnostics_region, self.reason)
+        }
+    }
+}
+
+public type CommandParseResultValue =
+    CommandParseResult@Parsed | CommandParseResult@Rejected
+
+public modal CommandResult {
+    @Succeeded {
+        public exit_code: i32
+
+        public procedure exitCode(~) -> i32 {
+            return self.exit_code
+        }
+    }
+
+    @Failed {
+        public exit_code: i32
+        public diagnostics: DiagnosticStreamValue
+
+        public procedure exitCode(~) -> i32 {
+            return self.exit_code
+        }
+    }
+}
+
+public type CommandResultValue =
+    CommandResult@Succeeded | CommandResult@Failed
+
+public procedure commandSucceeded() -> CommandResultValue {
+    return CommandResult@Succeeded { exit_code: EXIT_SUCCESS }
+}
+
+public procedure commandFailed(
+    diagnostics_region: unique Region@Active,
+    reason: CommandFailureReasonValue
+) -> CommandResultValue {
+    return commandFailedWithDiagnostics(
+        commandFailureDiagnostics(diagnostics_region, reason)
+    )
+}
+
+public procedure commandFailedWithDiagnostics(
+    move diagnostics: DiagnosticStreamValue
+) -> CommandResultValue {
+    return CommandResult@Failed {
+        exit_code: EXIT_FAILURE,
+        diagnostics: move diagnostics
+    }
+}
+
+public procedure commandResultExitCode(result: CommandResultValue) -> i32 {
+    return if result is {
+        @Succeeded {
+            result~>exitCode()
+        }
+        @Failed {
+            result~>exitCode()
+        }
+    }
+}
+
+public procedure commandResultFromPipelineSubmission(
+    diagnostics_region: unique Region@Active,
+    submission: PipelineSubmissionValue
+) -> CommandResultValue {
+    return if submission is {
+        @Accepted {
+            commandSucceeded()
+        }
+        @Unavailable { reason } {
+            commandFailed(diagnostics_region, pipelineUnavailableFailure(reason))
+        }
+    }
+}
+
+public procedure parseCommand(
+    current_directory: string@View,
+    arguments: CommandArguments
+) -> CommandParseResultValue {
+    let command_name: string@View = arguments.command_name
+
+    if (cliTextEquals(command_name, COMMAND_BUILD)) {
+        return parsedCommand(Command@Build { arguments: arguments })
+    }
+    if (cliTextEquals(command_name, COMMAND_CHECK)) {
+        return parsedCommand(Command@Check { arguments: arguments })
+    }
+    if (cliTextEquals(command_name, COMMAND_CLEAN)) {
+        return parsedCommand(Command@Clean { arguments: arguments })
+    }
+    if (cliTextEquals(command_name, COMMAND_INIT)) {
+        return parsedCommand(Command@Init { arguments: arguments })
+    }
+    if (cliTextEquals(command_name, COMMAND_RUN)) {
+        return parsedCommand(Command@Run { arguments: arguments })
+    }
+    if (cliTextEquals(command_name, COMMAND_TEST)) {
+        let test_input: TestCommandInputResultValue =
+            testCommandInputFromArguments(current_directory, arguments)
+        return testCommandParseResult(test_input)
+    }
+    if (cliTextEquals(command_name, COMMAND_VERSION)) {
+        return parsedCommand(Command@Version {})
+    }
+    if (string::is_empty(command_name)) {
+        return parsedCommand(Command@Version {})
+    }
+
+    return rejectedCommand(
+        unknownCommandFailure(command_name)
+    )
+}
+
+public procedure parsedCommand(command: CommandValue) -> CommandParseResultValue {
+    return CommandParseResult@Parsed { command: command }
+}
+
+public procedure rejectedCommand(reason: CommandFailureReasonValue) -> CommandParseResultValue {
+    return CommandParseResult@Rejected { reason: reason }
+}
+
+public procedure commandParseResultCommandResult(
+    host: DriverHost,
+    diagnostics_region: unique Region@Active,
+    parsed: CommandParseResultValue
+) -> CommandResultValue {
+    return if parsed is {
+        @Parsed {
+            parsed~>commandResult(host, diagnostics_region)
+        }
+        @Rejected {
+            parsed~>commandResult(host, diagnostics_region)
+        }
+    }
+}
+
+public procedure executeCommand(
+    host: DriverHost,
+    diagnostics_region: unique Region@Active,
+    command: CommandValue
+) -> CommandResultValue {
+    return if command is {
+        @Build {
+            command~>execute(host, diagnostics_region)
+        }
+        @Check {
+            command~>execute(host, diagnostics_region)
+        }
+        @Clean {
+            command~>execute(host, diagnostics_region)
+        }
+        @Init {
+            command~>execute(host, diagnostics_region)
+        }
+        @Run {
+            command~>execute(host, diagnostics_region)
+        }
+        @Test {
+            command~>execute(host, diagnostics_region)
+        }
+        @Version {
+            command~>execute(host, diagnostics_region)
+        }
+    }
+}
+
+public procedure unknownCommandFailure(
+    command_name: string@View
+) -> CommandFailureReasonValue {
+    return CommandFailureReason@UnknownCommand { command_name: command_name }
+}
+
+public procedure pipelineUnavailableFailure(
+    reason: PipelineUnavailableReasonValue
+) -> CommandFailureReasonValue {
+    return CommandFailureReason@PipelineUnavailable { reason: reason }
+}
+
+public procedure outputWriteFailedFailure() -> CommandFailureReasonValue {
+    return CommandFailureReason@OutputWriteFailed {}
+}
+
+public procedure testTargetRejectedFailure(
+    code: string@View,
+    message: string@View
+) -> CommandFailureReasonValue {
+    return CommandFailureReason@TestTargetRejected {
+        code: code,
+        message: message
+    }
+}
+
+public procedure commandFailureDiagnostics(
+    diagnostics_region: unique Region@Active,
+    reason: CommandFailureReasonValue
+) -> DiagnosticStreamValue {
+    return if reason is {
+        @UnknownCommand {
+            singleErrorDiagnosticStream(
+                diagnostics_region,
+                CODE_CLI_UNKNOWN_COMMAND,
+                "unknown command"
+            )
+        }
+        @PipelineUnavailable {
+            singleErrorDiagnosticStream(
+                diagnostics_region,
+                CODE_CLI_PIPELINE_UNAVAILABLE,
+                "compiler pipeline unavailable"
+            )
+        }
+        @OutputWriteFailed {
+            singleErrorDiagnosticStream(
+                diagnostics_region,
+                CODE_CLI_OUTPUT_WRITE_FAILED,
+                "failed to write command output"
+            )
+        }
+        @TestTargetRejected { code, message } {
+            singleErrorDiagnosticStream(diagnostics_region, code, message)
+        }
+    }
+}

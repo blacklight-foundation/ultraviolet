@@ -1,7 +1,7 @@
 # HelloUltraviolet
 
 HelloUltraviolet is a reference corpus for exercising Ultraviolet language obligations from
-`Audit/UltravioletObligations.csv`.
+the canonical repo obligation ledger at `Docs/Audit/UltravioletObligations.csv`.
 
 ## Layout
 
@@ -17,7 +17,7 @@ HelloUltraviolet is a reference corpus for exercising Ultraviolet language oblig
   responsibility.
 - `Fixtures` contains physical fixture projects, rejected sources, diagnostics, and expected
   artifacts read by the corpus at runtime.
-- `Audit` contains audit inputs, manifests, non-compliance notes, and clarification ledgers.
+- `Audit` contains project-local manifests, non-compliance notes, and clarification ledgers.
 
 The executable entry point is `Source/Main.uv`. A clean run exits `0`; failing checks print the
 named reference or missing artifact path before returning a non-zero exit code.

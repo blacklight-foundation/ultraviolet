@@ -1,0 +1,372 @@
+// Obligation responsibility: Source/Compiler/Core/Path/Components.uv
+//
+// This file owns component discovery for project.path-resolution:
+//
+// - def.PathSegments@L3188
+//   Segs(p) is the ordered list of non-empty maximal substrings whose bytes are
+//   not WinSep and whose boundaries are path boundaries or WinSep bytes.
+//
+// - def.PathComponents@L3202
+//   PathComps(p) = Segs(p) if RootTag(p) = "".
+//   PathComps(p) = [RootTag(p)] ++ Segs(Tail(p)) otherwise.
+
+internal record PathComponentView {
+    private _text: string@View
+    private _start: usize
+    private _end: usize
+
+    internal procedure length(~) -> usize {
+        return self._end - self._start
+    }
+
+    internal procedure equalsText(~, text: string@View) -> bool {
+        let length: usize = pathViewLength(text)
+        if (self~>length() != length) {
+            return false
+        }
+
+        var index: usize = 0
+        loop {
+            if (index >= length) {
+                break
+            }
+
+            if (self~>byteAt(index) != pathViewByte(text, index)) {
+                return false
+            }
+
+            index = index + 1
+        }
+        return true
+    }
+
+    internal procedure matchesTextAt(~, text: string@View, start: usize) -> bool {
+        let component_length: usize = self~>length()
+        let text_length: usize = pathViewLength(text)
+        if (start > text_length) {
+            return false
+        }
+        if (component_length > text_length - start) {
+            return false
+        }
+
+        var index: usize = 0
+        loop {
+            if (index >= component_length) {
+                break
+            }
+
+            if (self~>byteAt(index) != pathViewByte(text, start + index)) {
+                return false
+            }
+
+            index = index + 1
+        }
+        return true
+    }
+
+    internal procedure byteAt(~, offset: usize) -> u8
+    |: offset < self._end - self._start &&
+        self._start + offset < pathViewLength(self._text)
+    {
+        return pathViewByte(self._text, self._start + offset)
+    }
+
+    internal procedure byteEquals(~, offset: usize, expected: u8) -> bool {
+        if (offset >= self~>length()) {
+            return false
+        }
+        return self~>byteAt(offset) == expected
+    }
+
+    internal procedure byteIsAsciiLetter(~, offset: usize) -> bool {
+        if (offset >= self~>length()) {
+            return false
+        }
+        return isAsciiLetter(self~>byteAt(offset))
+    }
+
+    internal procedure suffix(~, start: usize) -> PathComponentView
+    |: self._end <= pathViewLength(self._text)
+    {
+        let length: usize = self._end - self._start
+        if (start >= length) {
+            return emptyPathComponent()
+        }
+        if (start == 0) {
+            return self
+        }
+
+        let slice_start: usize = self._start + start
+        if (slice_start > self._end) {
+            return emptyPathComponent()
+        }
+        return pathComponentFromViewSlice(self._text, slice_start, self._end)
+    }
+
+    internal procedure fileExtension(~) -> PathComponentView {
+        let length: usize = self~>length()
+        var last_dot: usize = length
+        var index: usize = 0
+        loop {
+            if (index >= length) {
+                break
+            }
+
+            if (self~>byteEquals(index, DOT_BYTE)) {
+                last_dot = index
+            }
+
+            index = index + 1
+        }
+
+        if (last_dot == length) {
+            return emptyPathComponent()
+        }
+        if (last_dot == 0) {
+            return emptyPathComponent()
+        }
+        return self~>suffix(last_dot)
+    }
+
+    internal procedure isSingleDot(~) -> bool {
+        return self~>equalsText(".")
+    }
+
+    internal procedure isParentTraversal(~) -> bool {
+        return self~>equalsText("..")
+    }
+
+    internal procedure suppressesJoinSeparator(~) -> bool {
+        return self~>equalsText("/") || self~>equalsText("//")
+    }
+} |: {
+    self._start <= self._end &&
+        self._end <= pathViewLength(self._text)
+}
+
+internal modal PathComponentLookup {
+    @Found {
+        private _component: PathComponentView
+
+        internal procedure component(~) -> PathComponentView {
+            return self._component
+        }
+
+        internal procedure equalsText(~, text: string@View) -> bool {
+            return self._component~>equalsText(text)
+        }
+
+        internal procedure isSingleDot(~) -> bool {
+            return self._component~>isSingleDot()
+        }
+
+        internal procedure isParentTraversal(~) -> bool {
+            return self._component~>isParentTraversal()
+        }
+    }
+
+    @Missing {
+        internal procedure equalsText(~, text: string@View) -> bool {
+            return false
+        }
+
+        internal procedure isSingleDot(~) -> bool {
+            return false
+        }
+
+        internal procedure isParentTraversal(~) -> bool {
+            return false
+        }
+    }
+}
+
+internal type PathComponentLookupValue =
+    PathComponentLookup@Found | PathComponentLookup@Missing
+
+internal procedure foundPathComponent(component: PathComponentView) -> PathComponentLookupValue {
+    return PathComponentLookup@Found { _component: component }
+}
+
+internal procedure missingPathComponent() -> PathComponentLookupValue {
+    return PathComponentLookup@Missing {}
+}
+
+internal procedure pathComponentFromView(text: string@View) -> PathComponentView {
+    let length: usize = pathViewLength(text)
+    return pathComponentFromViewSlice(text, 0, length)
+}
+
+internal procedure pathComponentFromViewSlice(
+    text: string@View,
+    start: usize,
+    end: usize
+) -> PathComponentView
+|: start <= end && end <= pathViewLength(text)
+{
+    return PathComponentView {
+        _text: text,
+        _start: start,
+        _end: end
+    }
+}
+
+internal procedure pathComponentFromCheckedViewSlice(
+    text: string@View,
+    start: usize,
+    end: usize
+) -> PathComponentView {
+    if (start <= end && end <= pathViewLength(text)) {
+        return pathComponentFromViewSlice(text, start, end)
+    }
+    return emptyPathComponent()
+}
+
+internal procedure emptyPathComponent() -> PathComponentView {
+    return pathComponentFromView("")
+}
+
+internal procedure pathComponentLength(component: PathComponentView) -> usize {
+    return component~>length()
+}
+
+internal procedure pathComponentEqualsText(
+    component: PathComponentView,
+    text: string@View
+) -> bool {
+    return component~>equalsText(text)
+}
+
+internal procedure pathComponentMatchesTextAt(
+    component: PathComponentView,
+    text: string@View,
+    start: usize
+) -> bool {
+    return component~>matchesTextAt(text, start)
+}
+
+internal procedure pathComponentByteAt(component: PathComponentView, offset: usize) -> u8
+|: offset < pathComponentLength(component)
+{
+    return component~>byteAt(offset)
+}
+
+internal procedure pathComponentByteEquals(
+    component: PathComponentView,
+    offset: usize,
+    expected: u8
+) -> bool {
+    return component~>byteEquals(offset, expected)
+}
+
+internal procedure pathComponentByteIsAsciiLetter(
+    component: PathComponentView,
+    offset: usize
+) -> bool {
+    return component~>byteIsAsciiLetter(offset)
+}
+
+internal procedure pathComponentsEqual(left: PathComponentView, right: PathComponentView) -> bool {
+    let length: usize = pathComponentLength(left)
+    if (length != pathComponentLength(right)) {
+        return false
+    }
+
+    var index: usize = 0
+    loop {
+        if (index >= length) {
+            break
+        }
+
+        if (pathComponentByteAt(left, index) != pathComponentByteAt(right, index)) {
+            return false
+        }
+
+        index = index + 1
+    }
+    return true
+}
+
+internal procedure pathComponentSuppressesJoinSeparator(component: PathComponentView) -> bool {
+    return component~>suppressesJoinSeparator()
+}
+
+internal procedure pathComponentIsDriveTag(component: PathComponentView) -> bool {
+    return pathComponentLength(component) == 2 &&
+        pathComponentByteIsAsciiLetter(component, 0) &&
+        pathComponentByteEquals(component, 1, COLON_BYTE)
+}
+
+internal procedure pathComponentFileExtension(component: PathComponentView) -> PathComponentView {
+    return component~>fileExtension()
+}
+
+internal procedure pathComponentLookupEqualsText(
+    lookup: PathComponentLookupValue,
+    text: string@View
+) -> bool {
+    return if lookup is {
+        @Found {
+            lookup~>equalsText(text)
+        }
+        @Missing {
+            lookup~>equalsText(text)
+        }
+    }
+}
+
+internal procedure pathComponentLookupIsSingleDot(lookup: PathComponentLookupValue) -> bool {
+    return if lookup is {
+        @Found {
+            lookup~>isSingleDot()
+        }
+        @Missing {
+            lookup~>isSingleDot()
+        }
+    }
+}
+
+internal procedure pathComponentLookupIsParentTraversal(
+    lookup: PathComponentLookupValue
+) -> bool {
+    return if lookup is {
+        @Found {
+            lookup~>isParentTraversal()
+        }
+        @Missing {
+            lookup~>isParentTraversal()
+        }
+    }
+}
+
+internal procedure pathComponentLookupIsDriveTag(lookup: PathComponentLookupValue) -> bool {
+    return if lookup is {
+        @Found {
+            pathComponentIsDriveTag(lookup~>component())
+        }
+        @Missing {
+            false
+        }
+    }
+}
+
+internal procedure pathComponentLookupsEqual(
+    left: PathComponentLookupValue,
+    right: PathComponentLookupValue
+) -> bool {
+    return if left is {
+        @Found {
+            if right is {
+                @Found {
+                    pathComponentsEqual(left~>component(), right~>component())
+                }
+                @Missing {
+                    false
+                }
+            }
+        }
+        @Missing {
+            false
+        }
+    }
+}

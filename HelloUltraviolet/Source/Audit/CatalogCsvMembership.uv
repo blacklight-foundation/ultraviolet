@@ -69,7 +69,7 @@ internal procedure generatedCatalogKeysMatchCsv() -> bool {
 
 public procedure catalogMatchesCsvObligations(context: Context) -> bool {
     let read_result: Outcome<unique string@Managed, IoError> = context.io~>read_file(
-        "HelloUltraviolet/Audit/UltravioletObligations.csv"
+        "Docs/Audit/UltravioletObligations.csv"
     )
     return if move read_result is {
         @Value { value } {

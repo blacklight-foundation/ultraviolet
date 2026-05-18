@@ -1,0 +1,95 @@
+// Support responsibility: Source/Compiler/Core/Path/Text.uv
+//
+// This file owns the path-specific text view used by root classification and
+// component discovery. The modal states encode source ownership; all byte
+// semantics are routed through the canonical string and bytes builtins.
+
+internal modal PathText {
+    @View {
+        private _text: string@View
+
+        internal procedure view(~) -> string@View {
+            return self._text
+        }
+    }
+
+    @Managed {
+        private _text: string@Managed
+
+        internal procedure view(~) -> string@View {
+            return string::as_view(self._text)
+        }
+    }
+}
+
+internal type PathTextValue = PathText@View | PathText@Managed
+
+internal procedure pathTextFromView(text: string@View) -> PathTextValue {
+    return PathText@View { _text: text }
+}
+
+internal procedure pathTextFromManaged(move text: string@Managed) -> PathTextValue {
+    return PathText@Managed { _text: move text }
+}
+
+internal procedure pathTextView(text: PathTextValue) -> string@View {
+    return if text is {
+        @View {
+            text~>view()
+        }
+        @Managed {
+            text~>view()
+        }
+    }
+}
+
+internal procedure pathTextLength(text: PathTextValue) -> usize {
+    return pathViewLength(pathTextView(text))
+}
+
+internal procedure pathViewLength(text: string@View) -> usize {
+    return string::length(text)
+}
+
+internal procedure pathViewByte(text: string@View, index: usize) -> u8
+|: index < pathViewLength(text)
+{
+    let view: bytes@View = bytes::view_string(text)
+    let data: const [u8] = bytes::as_slice(view)
+    return data[index]
+}
+
+internal procedure pathViewByteIsWinSeparator(text: string@View, index: usize) -> bool {
+    if (index >= pathViewLength(text)) {
+        return false
+    }
+    return isWinSeparator(pathViewByte(text, index))
+}
+
+internal procedure pathTextByteEquals(
+    text: PathTextValue,
+    index: usize,
+    expected: u8
+) -> bool {
+    let view: string@View = pathTextView(text)
+    if (index >= pathViewLength(view)) {
+        return false
+    }
+    return pathViewByte(view, index) == expected
+}
+
+internal procedure pathTextByteIsAsciiLetter(text: PathTextValue, index: usize) -> bool {
+    let view: string@View = pathTextView(text)
+    if (index >= pathViewLength(view)) {
+        return false
+    }
+    return isAsciiLetter(pathViewByte(view, index))
+}
+
+internal procedure pathTextByteIsWinSeparator(text: PathTextValue, index: usize) -> bool {
+    let view: string@View = pathTextView(text)
+    if (index >= pathViewLength(view)) {
+        return false
+    }
+    return isWinSeparator(pathViewByte(view, index))
+}

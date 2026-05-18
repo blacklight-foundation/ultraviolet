@@ -1,0 +1,17 @@
+// Test responsibility:
+// Source/Compiler/Tests/Project/ManifestValidation/WFAssemblyKindErr/WFAssemblyKindErrTests.uv
+//
+// This file owns source-native tests for WF-Assembly-Kind-Err@L2412.
+
+using UltravioletCompiler::Project::{ manifestAssemblyKindIsValid }
+
+[[test(
+    name: "manifest validation rejects undeclared assembly kinds",
+    covers("WF-Assembly-Kind-Err@L2412")
+)]]
+internal procedure manifestValidationRejectsUndeclaredAssemblyKinds() -> bool
+|: => @result
+{
+    return !manifestAssemblyKindIsValid("binary") &&
+        !manifestAssemblyKindIsValid("")
+}

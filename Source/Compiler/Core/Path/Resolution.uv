@@ -1,0 +1,246 @@
+// Obligation responsibility: Source/Compiler/Core/Path/Resolution.uv
+//
+// This file owns canonical path resolution and relative-path well-formedness:
+//
+// - Resolve-Canonical@L3405
+// - Resolve-Canonical-Err@L3423
+// - WF-RelPath@L3441
+// - WF-RelPath-Err@L3459
+
+public modal PathResolutionUnavailableReason {
+    @RootRejectedParentTraversal {
+    }
+
+    @PathRejectedParentTraversal {
+    }
+}
+
+public type PathResolutionUnavailableReasonValue =
+    PathResolutionUnavailableReason@RootRejectedParentTraversal |
+    PathResolutionUnavailableReason@PathRejectedParentTraversal
+
+public record ResolvedPath {
+    private _canonical_root: CanonicalPath
+    private _path: CanonicalPath
+    private _canonical_root_components: PathComponentListValue
+
+    public procedure root(~) -> Path {
+        return self._canonical_root~>path()
+    }
+
+    public procedure path(~) -> Path {
+        return self._path~>path()
+    }
+
+    internal procedure canonicalRootComponents(~) -> PathComponentListValue {
+        return self._canonical_root_components
+    }
+
+    public procedure pathHasCanonicalRootPrefix(~) -> bool {
+        return pathComponentListHasPrefix(
+            pathComponents(self._path~>path()),
+            self._canonical_root_components
+        )
+    }
+}
+
+internal procedure resolvedPathFromCanonicalPaths(
+    paths: unique Region@Active,
+    move canonical_root: CanonicalPath,
+    move path: CanonicalPath
+) -> ResolvedPath
+{
+    let canonical_root_components: PathComponentListValue =
+        copyPathComponentList(paths, pathComponents(canonical_root~>path()))
+    return ResolvedPath {
+        _canonical_root: move canonical_root,
+        _path: move path,
+        _canonical_root_components: move canonical_root_components
+    }
+}
+
+public modal PathResolutionResult {
+    @Resolved {
+        public resolved_path: ResolvedPath
+    }
+
+    @Unavailable {
+        public reason: PathResolutionUnavailableReasonValue
+    }
+}
+
+public type PathResolutionResultValue =
+    PathResolutionResult@Resolved | PathResolutionResult@Unavailable
+
+public modal RelativePathRejectionReason {
+    @PathIsAbsolute {
+    }
+
+    @RootRejectedParentTraversal {
+    }
+
+    @PathRejectedParentTraversal {
+    }
+
+    @ResolvedPathOutsideRoot {
+    }
+}
+
+public type RelativePathRejectionReasonValue =
+    RelativePathRejectionReason@PathIsAbsolute |
+    RelativePathRejectionReason@RootRejectedParentTraversal |
+    RelativePathRejectionReason@PathRejectedParentTraversal |
+    RelativePathRejectionReason@ResolvedPathOutsideRoot
+
+public record WellFormedRelativePath {
+    private _input_path: RelativePath
+    private _resolved_path: ResolvedPath
+
+    public procedure inputPath(~) -> Path {
+        return self._input_path~>path()
+    }
+
+    public procedure resolvedPath(~) -> Path {
+        return self._resolved_path~>path()
+    }
+}
+
+internal procedure wellFormedRelativePathFromResolvedPath(
+    move input_path: RelativePath,
+    move resolved_path: ResolvedPath
+) -> WellFormedRelativePath {
+    return WellFormedRelativePath {
+        _input_path: move input_path,
+        _resolved_path: move resolved_path
+    }
+}
+
+public modal RelativePathWellFormednessResult {
+    @Accepted {
+        public relative_path: WellFormedRelativePath
+    }
+
+    @Rejected {
+        public reason: RelativePathRejectionReasonValue
+    }
+}
+
+public type RelativePathWellFormednessResultValue =
+    RelativePathWellFormednessResult@Accepted | RelativePathWellFormednessResult@Rejected
+
+public procedure resolvePath(
+    paths: unique Region@Active,
+    move root: Path,
+    move path: Path
+) -> PathResolutionResultValue {
+    let root_canon: CanonicalPathResultValue = canonPath(paths, move root)
+    return if root_canon is {
+        @RejectedParentTraversal {
+            PathResolutionResult@Unavailable {
+                reason: PathResolutionUnavailableReason@RootRejectedParentTraversal {}
+            }
+        }
+        @Accepted {
+            let canonical_root_path: Path = root_canon.canonical_path~>path()
+            let joined_components: PathComponentListValue = pathResolutionJoinedComponents(
+                paths,
+                canonical_root_path,
+                path
+            )
+            let joined_storage: PathStorageValue = joinedPathStorage(
+                paths,
+                move canonical_root_path,
+                move path
+            )
+            let joined_path: Path = pathFromDerivedComponents(
+                move joined_storage,
+                move joined_components
+            )
+            let path_canon: CanonicalPathResultValue = canonPath(paths, move joined_path)
+            if path_canon is {
+                @RejectedParentTraversal {
+                    PathResolutionResult@Unavailable {
+                        reason: PathResolutionUnavailableReason@PathRejectedParentTraversal {}
+                    }
+                }
+                @Accepted {
+                    PathResolutionResult@Resolved {
+                        resolved_path: resolvedPathFromCanonicalPaths(
+                            paths,
+                            move root_canon.canonical_path,
+                            move path_canon.canonical_path
+                        )
+                    }
+                }
+            }
+        }
+    }
+}
+
+public procedure checkRelativePathWellFormedness(
+    paths: unique Region@Active,
+    move root: Path,
+    move path: Path
+) -> RelativePathWellFormednessResultValue {
+    if (path~>isAbsolute()) {
+        return RelativePathWellFormednessResult@Rejected {
+            reason: RelativePathRejectionReason@PathIsAbsolute {}
+        }
+    }
+
+    let relative_input: RelativePath = relativePathFromPath(move path)
+    let resolution: PathResolutionResultValue =
+        resolvePath(paths, move root, relative_input~>path())
+    return if resolution is {
+        @Unavailable {
+            relativePathRejectedFromResolutionReason(resolution.reason)
+        }
+        @Resolved {
+            if (!resolution.resolved_path~>pathHasCanonicalRootPrefix()) {
+                RelativePathWellFormednessResult@Rejected {
+                    reason: RelativePathRejectionReason@ResolvedPathOutsideRoot {}
+                }
+            } else {
+                RelativePathWellFormednessResult@Accepted {
+                    relative_path: wellFormedRelativePathFromResolvedPath(
+                        move relative_input,
+                        move resolution.resolved_path
+                    )
+                }
+            }
+        }
+    }
+}
+
+internal procedure pathResolutionJoinedComponents(
+    paths: unique Region@Active,
+    root: Path,
+    path: Path
+) -> PathComponentListValue {
+    if (path~>isAbsolute()) {
+        return copyPathComponentList(paths, pathComponents(path))
+    }
+
+    return concatPathComponentLists(
+        paths,
+        pathComponents(root),
+        pathComponents(path)
+    )
+}
+
+internal procedure relativePathRejectedFromResolutionReason(
+    reason: PathResolutionUnavailableReasonValue
+) -> RelativePathWellFormednessResultValue {
+    return if reason is {
+        @RootRejectedParentTraversal {
+            RelativePathWellFormednessResult@Rejected {
+                reason: RelativePathRejectionReason@RootRejectedParentTraversal {}
+            }
+        }
+        @PathRejectedParentTraversal {
+            RelativePathWellFormednessResult@Rejected {
+                reason: RelativePathRejectionReason@PathRejectedParentTraversal {}
+            }
+        }
+    }
+}

@@ -1,12 +1,11 @@
 # HelloUltraviolet Completion Audit
 
-Objective: execute `.agents/plans/HelloUltravioletReferenceCorpus.md`.
+Objective: complete the HelloUltraviolet reference corpus obligation plan.
 
 ## Current Checkpoint
 
-- `Docs/Audit/UltravioletObligations.csv`,
-  `HelloUltraviolet/Audit/UltravioletObligations.csv`, and the generated
-  catalog currently contain 6,045 primary obligation rows.
+- `Docs/Audit/UltravioletObligations.csv` and the generated catalog currently
+  contain 6,051 primary obligation rows.
 - `HelloUltraviolet/Source/Reference` currently contains 154 `.uv` files,
   187 public `run...Reference` procedures, and 0 public `run...Reference`
   bodies whose implementation is only `return true`.
@@ -506,7 +505,7 @@ Objective: execute `.agents/plans/HelloUltravioletReferenceCorpus.md`.
   emitted `W-CON-0021`;
   `Fixtures/DiagnosticSource/Attributes/InlineAlwaysRecursive` exited 0 and
   emitted `W-MOD-2452`;
-  `python3 .agents/scripts/generate_hello_catalog.py` completed after the
+  `python3 Tools/GenerateHelloCatalog.py` completed after the
   generator skipped unchanged generated files and retried transient filesystem
   write failures;
   the generated catalog now contains 6,045 rows with 5,517 accepted-source,
@@ -575,14 +574,14 @@ Objective: execute `.agents/plans/HelloUltravioletReferenceCorpus.md`.
   targeted `git -c filter.lfs.process= -c filter.lfs.clean=cat -c filter.lfs.smudge=cat -c filter.lfs.required=false diff --check`
   over the generator, `HelloUltraviolet`, and the binary-chain bootstrap
   compiler files exited 0. The ignored catalog generator
-  `.agents/scripts/generate_hello_catalog.py` and the touched project/compiler
+  `Tools/GenerateHelloCatalog.py` and the touched project/compiler
   files passed a trailing-whitespace scan after regenerating the catalog.
 
 ## Verified Deliverables
 
 - Project folder exists at `HelloUltraviolet/`.
-- Project-local obligation ledger exists at
-  `HelloUltraviolet/Audit/UltravioletObligations.csv`.
+- Canonical obligation ledger exists at
+  `Docs/Audit/UltravioletObligations.csv`.
 - The generated ledger check passes:
   `python3 Tools/ExtractObligationLedger.py --check`.
 - `HelloUltraviolet/Source/Main.uv` calls the executable reference corpus through
@@ -590,16 +589,16 @@ Objective: execute `.agents/plans/HelloUltravioletReferenceCorpus.md`.
 - All 154 files under `HelloUltraviolet/Source/Reference` contain executable
   reference bodies; the count of public `run...Reference` procedures whose
   body is only `return true` is `0`.
-- The generated catalog contains 6,045 primary obligation rows in
+- The generated catalog contains 6,051 primary obligation rows in
   `HelloUltraviolet/Source/Audit/Catalog/**/*.uv`. Each row records the
   obligation id, internal spec line, module path, symbol, source path, and
   exercise kind in Ultraviolet source.
 - `CoverageCheck.uv` verifies both the generated obligation total and the
   generated primary-reference validation total against `EXPECTED_OBLIGATION_COUNT`.
-- `CatalogCsvMembership.uv` compares the 6,045 project-local CSV obligation
-  keys with the 6,045 generated catalog primary keys in compiled Ultraviolet
+- `CatalogCsvMembership.uv` compares the 6,051 canonical CSV obligation
+  keys with the 6,051 generated catalog primary keys in compiled Ultraviolet
   source.
-- `CatalogPrimaryReferences.uv` checks that the 6,045 generated primary
+- `CatalogPrimaryReferences.uv` checks that the 6,051 generated primary
   obligation references are unique by sorting `(id, internal_spec_line)` keys
   and verifying strict adjacent ordering in compiled Ultraviolet source.
 - `CatalogSourcePaths.uv` checks the 595 unique source targets referenced by
@@ -1214,7 +1213,7 @@ Objective: execute `.agents/plans/HelloUltravioletReferenceCorpus.md`.
   `LLVMEmitObj_21` after a module exists. `rule.24.LowerIR-Err` and
   `rule.24.EmitObj-Err` are cataloged as reference-model rows while their
   deterministic fixture class is pending SPEC clarification. The bootstrap
-  owner path is `LLVMBootstrap/cursive/src/06_driver/pipeline.cpp`: it records
+  owner path is `Bootstrap/cursive/src/06_driver/pipeline.cpp`: it records
   `LowerIR-Err` when module materialization fails before an LLVM module is
   available, and records `EmitObj-Err` only after a module exists for verifier,
   target-machine, or object-emission pass setup failures.
@@ -1278,7 +1277,7 @@ Objective: execute `.agents/plans/HelloUltravioletReferenceCorpus.md`.
   two block-expression statement prefixes with incompatible tail types was
   rejected as `E-SEM-3161` at the enclosing `return`, not as
   `BlockInfo-Res-Err`. The bootstrap owner path is `TypeBlockInfo` in
-  `LLVMBootstrap/cursive/src/04_analysis/typing/stmt/stmt_common.cpp`; it
+  `Bootstrap/cursive/src/04_analysis/typing/stmt/stmt_common.cpp`; it
   checks `ResType(stmts_typed.flow.results)` and can emit `BlockInfo-Res-Err`
   when the vector is heterogeneous, but the inspected source-facing producers
   append only nested statement-block results of type `!` into `flow.results`.
@@ -1551,14 +1550,13 @@ Latest full-corpus verification:
 
 - Visual Studio bootstrap build wrapper, `Config=Release`: exit 0 after
   rebuilding the modified lowering and emission owners.
-- `LLVMBootstrap/cursive/build/Release/Cursive.exe build .agents/tmp/AsyncSuspendedProbe --target-profile x86_64-win64 --build-progress off --incremental off --max-errors 20`:
+- `Bootstrap/cursive/build/Release/Cursive.exe build .agents/tmp/AsyncSuspendedProbe --target-profile x86_64-win64 --build-progress off --incremental off --max-errors 20`:
   exit 0.
 - `.agents/tmp/AsyncSuspendedProbe/build/bin/AsyncSuspendedProbe.exe`: exit 0.
-- `cmp -s Docs/Audit/UltravioletObligations.csv HelloUltraviolet/Audit/UltravioletObligations.csv`:
-  exit 0 after refreshing the project-local CSV copy from the authoritative
-  audit ledger.
-- `python3 .agents/scripts/generate_hello_catalog.py`: exit 0.
-- `LLVMBootstrap/cursive/build/Release/Cursive.exe build HelloUltraviolet --target-profile x86_64-win64 --build-progress on --incremental on --max-errors 30`:
+- `python3 Tools/ExtractObligationLedger.py --check`:
+  exit 0 after refreshing the authoritative audit ledger.
+- `python3 Tools/GenerateHelloCatalog.py`: exit 0.
+- `Bootstrap/cursive/build/Release/Cursive.exe build HelloUltraviolet --target-profile x86_64-win64 --build-progress on --incremental on --max-errors 30`:
   exit 0, 14 warnings, 10 infos, 318.94s, 24 objects rebuilt and 35 reused
   after regenerating the catalog from the refreshed CSV.
 - `HelloUltraviolet/build/bin/HelloUltraviolet.exe`: exit 0.

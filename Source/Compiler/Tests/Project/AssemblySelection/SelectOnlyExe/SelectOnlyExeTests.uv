@@ -1,0 +1,64 @@
+// Test responsibility:
+// Source/Compiler/Tests/Project/AssemblySelection/SelectOnlyExe/SelectOnlyExeTests.uv
+//
+// This file owns source-native tests for Select-Only-Exe@L3869.
+
+using UltravioletCompiler::Project::{
+    AssemblySelectionValue,
+    absentAssemblyTarget,
+    assembly,
+    assemblyListEntry,
+    assemblyName,
+    directoryPath,
+    emptyAssemblies,
+    emptyModules,
+    executableAssemblyKind,
+    libraryAssemblyKind,
+    noLinkKind,
+    projectTextEquals,
+    selectAssembly,
+    staticLinkKind
+}
+
+[[test(
+    name: "assembly selection chooses sole executable for absent target",
+    covers("Select-Only-Exe@L3869")
+)]]
+internal procedure assemblySelectionChoosesSoleExecutableForAbsentTarget() -> bool
+|: => @result
+{
+    let selection: AssemblySelectionValue = selectAssembly(
+        assemblyListEntry(
+            assembly(
+                assemblyName("uv"),
+                executableAssemblyKind(),
+                noLinkKind(),
+                directoryPath("Source/Tools/Uv"),
+                emptyModules()
+            ),
+            assemblyListEntry(
+                assembly(
+                    assemblyName("UltravioletCompiler"),
+                    libraryAssemblyKind(),
+                    staticLinkKind(),
+                    directoryPath("Compiler"),
+                    emptyModules()
+                ),
+                emptyAssemblies()
+            )
+        ),
+        absentAssemblyTarget()
+    )
+
+    return if selection is {
+        @Selected { assembly_name } {
+            projectTextEquals(assembly_name.text, "uv")
+        }
+        @Missing {
+            false
+        }
+        @Ambiguous {
+            false
+        }
+    }
+}

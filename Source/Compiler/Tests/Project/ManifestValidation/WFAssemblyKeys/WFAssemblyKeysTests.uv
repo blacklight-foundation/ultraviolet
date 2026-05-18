@@ -1,0 +1,50 @@
+// Test responsibility:
+// Source/Compiler/Tests/Project/ManifestValidation/WFAssemblyKeys/WFAssemblyKeysTests.uv
+//
+// This file owns source-native tests for WF-Assembly-Keys@L2748.
+
+using UltravioletCompiler::Project::{
+    ManifestValidationValue,
+    emptyManifestAssemblies,
+    manifest,
+    manifestAssembly,
+    manifestAssemblyListEntry,
+    validateManifest
+}
+
+[[test(
+    name: "manifest validation accepts known assembly keys",
+    covers("WF-Assembly-Keys@L2748")
+)]]
+internal procedure manifestValidationAcceptsKnownAssemblyKeys() -> bool
+|: => @result
+{
+    var passed: bool = false
+    region as diagnostics_region {
+        let validation: ManifestValidationValue = validateManifest(
+            diagnostics_region,
+            manifest(
+                manifestAssemblyListEntry(
+                    manifestAssembly("App", "executable", "", "Source/Tools/Uv"),
+                    emptyManifestAssemblies()
+                )
+            )
+        )
+
+        passed = manifestValidationIsValid(validation)
+    }
+    return passed
+}
+
+internal procedure manifestValidationIsValid(
+    validation: ManifestValidationValue
+) -> bool {
+    return if validation is {
+        @Valid {
+            true
+        }
+        @Invalid {
+            false
+        }
+    }
+}

@@ -1,0 +1,39 @@
+// Test responsibility:
+// Source/Compiler/Tests/Project/ModuleDiscovery/DefSourceRootDirectories/DefSourceRootDirectoriesTests.uv
+//
+// This file owns source-native tests for def.SourceRootDirectories@L4254.
+
+using UltravioletCompiler::Project::{
+    directoryPath,
+    emptyDirectoryScans,
+    emptySourceFilePaths,
+    directoryScan,
+    directoryScanListEntry,
+    modulePath,
+    sourceRootScan,
+    sourceRootScanIncludesRoot
+}
+
+[[test(
+    name: "source root directory set includes the source root",
+    covers("def.SourceRootDirectories@L4254")
+)]]
+internal procedure sourceRootDirectorySetIncludesTheSourceRoot() -> bool
+|: => @result
+{
+    let scan = sourceRootScan(
+        directoryPath("Compiler"),
+        true,
+        directoryScanListEntry(
+            directoryScan(
+                directoryPath("Compiler"),
+                modulePath("UltravioletCompiler"),
+                emptySourceFilePaths(),
+                true
+            ),
+            emptyDirectoryScans()
+        )
+    )
+
+    return sourceRootScanIncludesRoot(scan)
+}

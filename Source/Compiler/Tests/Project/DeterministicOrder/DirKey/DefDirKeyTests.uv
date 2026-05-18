@@ -1,0 +1,16 @@
+// Test responsibility:
+// Source/Compiler/Tests/Project/DeterministicOrder/DirKey/DefDirKeyTests.uv
+//
+// This file owns source-native tests for def.DirKey@L4172.
+
+using UltravioletCompiler::Project::{ projectPathTextPrecedes }
+
+[[test(
+    name: "directory keys use folded path and original tiebreaker",
+    covers("def.DirKey@L4172")
+)]]
+internal procedure directoryKeysUseFoldedPathAndOriginalTiebreaker() -> bool
+|: => @result
+{
+    return projectPathTextPrecedes("Source/Compiler/A", "Source/Compiler/a")
+}

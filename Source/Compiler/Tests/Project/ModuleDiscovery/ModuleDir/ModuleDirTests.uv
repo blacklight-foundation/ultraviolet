@@ -1,0 +1,34 @@
+// Test responsibility:
+// Source/Compiler/Tests/Project/ModuleDiscovery/ModuleDir/ModuleDirTests.uv
+//
+// This file owns source-native tests for Module-Dir@L4306.
+
+using UltravioletCompiler::Project::{
+    directoryPath,
+    emptySourceFilePaths,
+    directoryScan,
+    directoryScanIsModuleDirectory,
+    modulePath,
+    sourceFilePath,
+    sourceFilePathListEntry
+}
+
+[[test(
+    name: "directory containing uv source is a module directory",
+    covers("Module-Dir@L4306")
+)]]
+internal procedure directoryContainingUvSourceIsModuleDirectory() -> bool
+|: => @result
+{
+    let scan = directoryScan(
+        directoryPath("Source/Compiler/Core"),
+        modulePath("UltravioletCompiler::Core"),
+        sourceFilePathListEntry(
+            sourceFilePath("Source/Compiler/Core/Path.uv"),
+            emptySourceFilePaths()
+        ),
+        true
+    )
+
+    return directoryScanIsModuleDirectory(scan)
+}

@@ -1,0 +1,113 @@
+// Test responsibility:
+// Source/Compiler/Tests/Project/AssemblyLoader/BuildAssemblyOk/BuildAssemblyOkTests.uv
+//
+// This file owns source-native tests for BuildAssembly-Ok@L3925.
+
+using UltravioletCompiler::Project::{
+    AssemblyBuildValue,
+    AssemblyKindValue,
+    LinkKindValue,
+    ModuleListValue,
+    assemblyName,
+    buildAssemblyFromModuleDiscovery,
+    completeModuleDiscovery,
+    directoryPath,
+    emptyModules,
+    emptySourceFiles,
+    manifestAssembly,
+    module,
+    moduleListEntry,
+    modulePath,
+    projectTextEquals
+}
+
+[[test(
+    name: "assembly build consumes completed module discovery",
+    covers("BuildAssembly-Ok@L3925")
+)]]
+internal procedure assemblyBuildConsumesCompletedModuleDiscovery() -> bool
+|: => @result
+{
+    var passed: bool = false
+    region as diagnostics_region {
+        let build: AssemblyBuildValue =
+            buildAssemblyFromModuleDiscovery(
+                diagnostics_region,
+                manifestAssembly("UltravioletCompiler", "library", "static", "Compiler"),
+                completeModuleDiscovery(
+                    assemblyName("UltravioletCompiler"),
+                    directoryPath("Compiler"),
+                    moduleListEntry(
+                        module(
+                            modulePath("UltravioletCompiler::Tests"),
+                            directoryPath("Source/Compiler/Tests"),
+                            emptySourceFiles()
+                        ),
+                        moduleListEntry(
+                            module(
+                                modulePath("UltravioletCompiler::Core"),
+                                directoryPath("Source/Compiler/Core"),
+                                emptySourceFiles()
+                            ),
+                            emptyModules()
+                        )
+                    )
+                )
+            )
+
+        passed = if build is {
+            @Built { assembly } {
+                projectTextEquals(assembly.name.text, "UltravioletCompiler") &&
+                    assemblyKindIsLibrary(assembly.kind) &&
+                    linkKindIsStatic(assembly.link_kind) &&
+                    moduleListStartsWith(assembly.modules, "UltravioletCompiler::Core")
+            }
+            @Failed {
+                false
+            }
+        }
+    }
+    return passed
+}
+
+internal procedure assemblyKindIsLibrary(kind: AssemblyKindValue) -> bool {
+    return if kind is {
+        @Executable {
+            false
+        }
+        @Library {
+            true
+        }
+        @Dependency {
+            false
+        }
+    }
+}
+
+internal procedure linkKindIsStatic(kind: LinkKindValue) -> bool {
+    return if kind is {
+        @Static {
+            true
+        }
+        @Shared {
+            false
+        }
+        @None {
+            false
+        }
+    }
+}
+
+internal procedure moduleListStartsWith(
+    modules: ModuleListValue,
+    expected_path: string@View
+) -> bool {
+    return if modules is {
+        @Empty {
+            false
+        }
+        @Entry { module: project_module } {
+            projectTextEquals(project_module.path.text, expected_path)
+        }
+    }
+}

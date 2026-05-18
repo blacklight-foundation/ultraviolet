@@ -1,0 +1,190 @@
+// Test responsibility: Source/Compiler/Tests/Driver/Testing/DefTestDiscoveryOrderTests.uv
+//
+// This file owns source-native tests for def.TestDiscoveryOrder@L28575:
+//
+// Discovery order is module path, file order, declaration span, then
+// fully-qualified procedure symbol. The fully-qualified procedure path is the
+// stable identity and `name: "..."` is a display label.
+
+[[test(
+    name: "test discovery order sorts by module path first",
+    covers("def.TestDiscoveryOrder@L28575")
+)]]
+internal procedure testDiscoveryOrderSortsByModulePathFirst() -> bool
+|: => @result
+{
+    return discoveredTestPrecedes(
+        discoveryOrderTest("UltravioletCompiler::Tests::A", 0, 10, 1, "z"),
+        discoveryOrderTest("UltravioletCompiler::Tests::B", 0, 1, 1, "a")
+    )
+}
+
+[[test(
+    name: "test discovery order sorts by source file order after module",
+    covers("def.TestDiscoveryOrder@L28575")
+)]]
+internal procedure testDiscoveryOrderSortsBySourceFileOrderAfterModule() -> bool
+|: => @result
+{
+    return discoveredTestPrecedes(
+        discoveryOrderTest("UltravioletCompiler::Tests::A", 0, 10, 1, "z"),
+        discoveryOrderTest("UltravioletCompiler::Tests::A", 1, 1, 1, "a")
+    )
+}
+
+[[test(
+    name: "test discovery order sorts by declaration span after file order",
+    covers("def.TestDiscoveryOrder@L28575")
+)]]
+internal procedure testDiscoveryOrderSortsByDeclarationSpanAfterFileOrder() -> bool
+|: => @result
+{
+    return discoveredTestPrecedes(
+        discoveryOrderTest("UltravioletCompiler::Tests::A", 0, 10, 1, "z"),
+        discoveryOrderTest("UltravioletCompiler::Tests::A", 0, 11, 1, "a")
+    )
+}
+
+[[test(
+    name: "test discovery order sorts by procedure symbol last",
+    covers("def.TestDiscoveryOrder@L28575")
+)]]
+internal procedure testDiscoveryOrderSortsByProcedureSymbolLast() -> bool
+|: => @result
+{
+    return discoveredTestPrecedes(
+        discoveryOrderTest("UltravioletCompiler::Tests::A", 0, 10, 1, "a"),
+        discoveryOrderTest("UltravioletCompiler::Tests::A", 0, 10, 1, "b")
+    )
+}
+
+[[test(
+    name: "test discovery order constructs sorted test lists",
+    covers("def.TestDiscoveryOrder@L28575")
+)]]
+internal procedure testDiscoveryOrderConstructsSortedTestLists() -> bool
+|: => @result
+{
+    let tests: DiscoveredTestListValue =
+        insertDiscoveredTestOrdered(
+            discoveryOrderTest("UltravioletCompiler::Tests::B", 0, 1, 1, "b"),
+            insertDiscoveredTestOrdered(
+                discoveryOrderTest("UltravioletCompiler::Tests::A", 0, 1, 1, "a"),
+                emptyDiscoveredTests()
+            )
+        )
+
+    return discoveredTestListStartsWith(tests, "UltravioletCompiler::Tests::A")
+}
+
+[[test(
+    name: "test execution planning sorts selected discovered tests",
+    covers("def.TestDiscoveryOrder@L28575")
+)]]
+internal procedure testExecutionPlanningSortsSelectedDiscoveredTests() -> bool
+|: => @result
+{
+    var passed: bool = false
+    region as diagnostics_region {
+        let execution: TestDriverExecutionValue =
+            sourceNativeTestExecutionFromProject(
+                diagnostics_region,
+                testDriverRequest(
+                    ".",
+                    "uv.exe",
+                    absentTestTargetCandidate(),
+                    "x86_64-win64",
+                    "normal"
+                ),
+                dynamicSemanticsProject(),
+                discoveredTestListEntry(
+                    discoveryOrderTest("UltravioletCompiler::Tests::B", 0, 1, 1, "b"),
+                    discoveredTestListEntry(
+                        discoveryOrderTest(
+                            "UltravioletCompiler::Tests::A",
+                            0,
+                            1,
+                            1,
+                            "a"
+                        ),
+                        emptyDiscoveredTests()
+                    )
+                )
+            )
+
+        passed = if execution is {
+            @Ready { run } {
+                if run is {
+                    @Planned { selection } {
+                        discoveredTestListStartsWith(
+                            selection.tests,
+                            "UltravioletCompiler::Tests::A"
+                        )
+                    }
+                    @HarnessBuilt {
+                        false
+                    }
+                    @ExecutableBuilt {
+                        false
+                    }
+                    @Running {
+                        false
+                    }
+                    @Completed {
+                        false
+                    }
+                }
+            }
+            @ProjectRequired {
+                false
+            }
+            @Rejected {
+                false
+            }
+        }
+    }
+    return passed
+}
+
+internal procedure discoveryOrderTest(
+    module_text: string@View,
+    file_order: usize,
+    line: usize,
+    column: usize,
+    symbol_text: string@View
+) -> DiscoveredTest {
+    return discoveredTest(
+        testProcedureSymbol(symbol_text),
+        testDisplayName(symbol_text),
+        assemblyName("UltravioletCompiler"),
+        modulePath(module_text),
+        sourceFilePath("Source/Compiler/Tests/Driver/Testing/DefTestDiscoveryOrderTests.uv"),
+        file_order,
+        sourceSpan(
+            "Source/Compiler/Tests/Driver/Testing/DefTestDiscoveryOrderTests.uv",
+            0,
+            1,
+            line,
+            column,
+            line,
+            column + 1
+        ),
+        testProcedureSymbol(symbol_text),
+        false,
+        emptyCoverageReferences()
+    )
+}
+
+internal procedure discoveredTestListStartsWith(
+    tests: DiscoveredTestListValue,
+    expected_module_text: string@View
+) -> bool {
+    return if tests is {
+        @Empty {
+            false
+        }
+        @Entry { test } {
+            projectTextEquals(test.module_path.text, expected_module_text)
+        }
+    }
+}

@@ -2,18 +2,18 @@
 name = "UltravioletRT"
 kind = "library"
 link_kind = "static"
-root = "Runtime"
+root = "Source/Runtime"
 
 [[assembly]]
 name = "UltravioletCompiler"
 kind = "library"
 link_kind = "static"
-root = "Compiler"
+root = "Source/Compiler"
 
 [[assembly]]
 name = "uv"
 kind = "executable"
-root = "Tools/Uv"
+root = "Source/Tools/Uv"
 
 [build]
 incremental = true

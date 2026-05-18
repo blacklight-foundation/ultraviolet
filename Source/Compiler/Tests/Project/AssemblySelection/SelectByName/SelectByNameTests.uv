@@ -1,0 +1,53 @@
+// Test responsibility:
+// Source/Compiler/Tests/Project/AssemblySelection/SelectByName/SelectByNameTests.uv
+//
+// This file owns source-native tests for Select-By-Name@L3887.
+
+using UltravioletCompiler::Project::{
+    AssemblySelectionValue,
+    assembly,
+    assemblyListEntry,
+    assemblyName,
+    directoryPath,
+    emptyAssemblies,
+    emptyModules,
+    libraryAssemblyKind,
+    namedAssemblyTarget,
+    projectTextEquals,
+    selectAssembly,
+    staticLinkKind
+}
+
+[[test(
+    name: "assembly selection chooses matching named target",
+    covers("Select-By-Name@L3887")
+)]]
+internal procedure assemblySelectionChoosesMatchingNamedTarget() -> bool
+|: => @result
+{
+    let selection: AssemblySelectionValue = selectAssembly(
+        assemblyListEntry(
+            assembly(
+                assemblyName("UltravioletCompiler"),
+                libraryAssemblyKind(),
+                staticLinkKind(),
+                directoryPath("Compiler"),
+                emptyModules()
+            ),
+            emptyAssemblies()
+        ),
+        namedAssemblyTarget(assemblyName("UltravioletCompiler"))
+    )
+
+    return if selection is {
+        @Selected { assembly_name } {
+            projectTextEquals(assembly_name.text, "UltravioletCompiler")
+        }
+        @Missing {
+            false
+        }
+        @Ambiguous {
+            false
+        }
+    }
+}

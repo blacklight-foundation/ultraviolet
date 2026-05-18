@@ -1,0 +1,547 @@
+// Obligation responsibility: Source/Compiler/Project/AssemblyGraph.uv
+//
+// This file owns assembly ownership, assembly graph, and dependency relations:
+//
+// - def.AsmDeps@L4035
+// - req.AssemblyGraphRejectExecutableImports@L4051
+// - req.AssemblyGraphRejectLibraryCycles@L4065
+// - req.DependencyAssemblyNoFinalArtifact@L4079
+// - def.AssemblySourceRoots@L4420
+//   AssemblySourceRoots(As) = { A.source_root | A ∈ As }
+//   RootDepth(S) = |PathComps(S)|
+// - def.OwnerRoot@L4435
+//   OwnerRoot(d, Rs) = S_k ⇔ S_k ∈ Rs ∧ prefix(d, S_k) ∧
+//   (∀ S_i ∈ Rs. prefix(d, S_i) ⇒ RootDepth(S_i) ≤ RootDepth(S_k)) ∧
+//   (∀ S_j ∈ Rs. prefix(d, S_j) ∧ RootDepth(S_j) = RootDepth(S_k) ⇒ S_j = S_k)
+// - def.OwnedModules@L4449
+//   OwnedModules(A, As) = [ m ∈ A.modules |
+//   OwnerRoot(ModuleDirOf(m, A.source_root), AssemblySourceRoots(As)) =
+//   A.source_root ]
+// - OwnAssemblies-Ok@L4463
+//   ∀ A ∈ As, ∀ m ∈ A.modules. ∃ S.
+//   OwnerRoot(ModuleDirOf(m, A.source_root), AssemblySourceRoots(As)) = S
+//   As = [A_1, …, A_n]
+//   As' = [A_1[modules := OwnedModules(A_1, As)], …,
+//   A_n[modules := OwnedModules(A_n, As)]]
+//   Γ ⊢ OwnAssemblies(As) ⇓ As'
+// - WF-Assembly-Root-Owner-Ambiguous@L4481
+//   ∃ A ∈ As, m ∈ A.modules. ¬ ∃ S.
+//   OwnerRoot(ModuleDirOf(m, A.source_root), AssemblySourceRoots(As)) = S
+//   c = Code(WF-Assembly-Root-Owner-Ambiguous)
+//   Γ ⊢ OwnAssemblies(As) ⇑ c
+// - def.AssemblyProject@L4501
+// - def.ModulePaths@L4515
+// - def.AsmImportGraph@L4529
+// - def.GraphAccessors@L4545
+// - def.GraphPathReach@L4560
+// - def.NoLibraryInterior@L4575
+// - def.LibraryBoundaryCycle@L4589
+// - def.ImportsExecutable@L4603
+// - def.HostedLibraryImportsLinkedLibrary@L4617
+// - Assembly-Graph-Ok@L4631
+// - Assembly-Graph-Err@L4649
+// - Assembly-Graph-HostedImport-Err@L4667
+
+internal let ASSEMBLY_GRAPH_ROOT_OWNER_AMBIGUOUS_CODE: string@View = "E-PRJ-0305"
+internal let ASSEMBLY_GRAPH_ROOT_OWNER_AMBIGUOUS_MESSAGE: string@View =
+    "module directory has no unique owning assembly source root"
+internal let ASSEMBLY_GRAPH_FORWARD_SEPARATOR: u8 = 47
+internal let ASSEMBLY_GRAPH_BACK_SEPARATOR: u8 = 92
+
+public record AssemblyDependency {
+    public importer: AssemblyName
+    public imported: AssemblyName
+}
+
+public modal AssemblySourceRootList {
+    @Empty {
+        public procedure count(~) -> usize {
+            return 0
+        }
+    }
+
+    @Entry {
+        public source_root: DirectoryPath
+        public tail: AssemblySourceRootListValue
+
+        public procedure count(~) -> usize {
+            return 1 + assemblySourceRootListCount(self.tail)
+        }
+    }
+}
+
+public type AssemblySourceRootListValue =
+    AssemblySourceRootList@Empty | AssemblySourceRootList@Entry
+
+public modal AssemblyDependencyList {
+    @Empty {
+        public procedure count(~) -> usize {
+            return 0
+        }
+    }
+
+    @Entry {
+        public dependency: AssemblyDependency
+        public tail: AssemblyDependencyListValue
+
+        public procedure count(~) -> usize {
+            return 1 + assemblyDependencyListCount(self.tail)
+        }
+    }
+}
+
+public type AssemblyDependencyListValue =
+    AssemblyDependencyList@Empty | AssemblyDependencyList@Entry
+
+public record AssemblyGraph {
+    public assemblies: AssemblyListValue
+    public dependencies: AssemblyDependencyListValue
+}
+
+public modal AssemblyGraphValidation {
+    @Valid {
+        public graph: AssemblyGraph
+    }
+
+    @Invalid {
+        public diagnostics: DiagnosticStreamValue
+    }
+}
+
+public type AssemblyGraphValidationValue =
+    AssemblyGraphValidation@Valid | AssemblyGraphValidation@Invalid
+
+public modal OwnerRootResolution {
+    @Owned {
+        public source_root: DirectoryPath
+    }
+
+    @Ambiguous {
+        public directory: DirectoryPath
+    }
+}
+
+public type OwnerRootResolutionValue =
+    OwnerRootResolution@Owned | OwnerRootResolution@Ambiguous
+
+internal modal OwnerRootSearch {
+    @None {
+    }
+
+    @Found {
+        internal source_root: DirectoryPath
+        internal depth: usize
+    }
+
+    @Ambiguous {
+        internal directory: DirectoryPath
+    }
+}
+
+internal type OwnerRootSearchValue =
+    OwnerRootSearch@None | OwnerRootSearch@Found | OwnerRootSearch@Ambiguous
+
+public modal AssemblyOwnership {
+    @Owned {
+        public assemblies: AssemblyListValue
+    }
+
+    @Failed {
+        public diagnostics: DiagnosticStreamValue
+    }
+}
+
+public type AssemblyOwnershipValue =
+    AssemblyOwnership@Owned | AssemblyOwnership@Failed
+
+public procedure emptyAssemblySourceRoots() -> AssemblySourceRootListValue {
+    return AssemblySourceRootList@Empty {}
+}
+
+public procedure assemblySourceRootListEntry(
+    source_root: DirectoryPath,
+    move tail: AssemblySourceRootListValue
+) -> AssemblySourceRootListValue {
+    return AssemblySourceRootList@Entry {
+        source_root: source_root,
+        tail: move tail
+    }
+}
+
+public procedure assemblySourceRootListCount(
+    source_roots: AssemblySourceRootListValue
+) -> usize {
+    return if source_roots is {
+        @Empty {
+            source_roots~>count()
+        }
+        @Entry {
+            source_roots~>count()
+        }
+    }
+}
+
+public procedure assemblySourceRoots(
+    assemblies: AssemblyListValue
+) -> AssemblySourceRootListValue {
+    return if assemblies is {
+        @Empty {
+            emptyAssemblySourceRoots()
+        }
+        @Entry { assembly: project_assembly, tail } {
+            assemblySourceRootListEntry(
+                project_assembly.root_directory,
+                assemblySourceRoots(tail)
+            )
+        }
+    }
+}
+
+public procedure ownerRoot(
+    directory: DirectoryPath,
+    source_roots: AssemblySourceRootListValue
+) -> OwnerRootResolutionValue {
+    let search: OwnerRootSearchValue = ownerRootSearch(directory, source_roots)
+    return if search is {
+        @None {
+            OwnerRootResolution@Ambiguous { directory: directory }
+        }
+        @Ambiguous {
+            OwnerRootResolution@Ambiguous { directory: directory }
+        }
+        @Found { source_root } {
+            OwnerRootResolution@Owned { source_root: source_root }
+        }
+    }
+}
+
+public procedure ownedModules(
+    project_assembly: Assembly,
+    assemblies: AssemblyListValue
+) -> ModuleListValue {
+    let source_roots: AssemblySourceRootListValue = assemblySourceRoots(assemblies)
+    return ownedModulesFromRoots(project_assembly, source_roots)
+}
+
+public procedure ownAssemblies(
+    diagnostics_region: unique Region@Active,
+    assemblies: AssemblyListValue
+) -> AssemblyOwnershipValue {
+    let source_roots: AssemblySourceRootListValue = assemblySourceRoots(assemblies)
+    if (!allModulesHaveOwners(assemblies, source_roots)) {
+        return AssemblyOwnership@Failed {
+            diagnostics: singleErrorDiagnosticStream(
+                diagnostics_region,
+                ASSEMBLY_GRAPH_ROOT_OWNER_AMBIGUOUS_CODE,
+                ASSEMBLY_GRAPH_ROOT_OWNER_AMBIGUOUS_MESSAGE
+            )
+        }
+    }
+
+    return AssemblyOwnership@Owned {
+        assemblies: ownAssembliesFromRoots(assemblies, source_roots)
+    }
+}
+
+public procedure assemblyDependency(
+    importer: AssemblyName,
+    imported: AssemblyName
+) -> AssemblyDependency {
+    return AssemblyDependency {
+        importer: importer,
+        imported: imported
+    }
+}
+
+public procedure emptyAssemblyDependencies() -> AssemblyDependencyListValue {
+    return AssemblyDependencyList@Empty {}
+}
+
+public procedure assemblyDependencyListEntry(
+    dependency: AssemblyDependency,
+    move tail: AssemblyDependencyListValue
+) -> AssemblyDependencyListValue {
+    return AssemblyDependencyList@Entry {
+        dependency: dependency,
+        tail: move tail
+    }
+}
+
+public procedure assemblyDependencyListCount(
+    dependencies: AssemblyDependencyListValue
+) -> usize {
+    return if dependencies is {
+        @Empty {
+            dependencies~>count()
+        }
+        @Entry {
+            dependencies~>count()
+        }
+    }
+}
+
+public procedure assemblyGraph(
+    move assemblies: AssemblyListValue,
+    move dependencies: AssemblyDependencyListValue
+) -> AssemblyGraph {
+    return AssemblyGraph {
+        assemblies: move assemblies,
+        dependencies: move dependencies
+    }
+}
+
+public procedure validAssemblyGraph(move graph: AssemblyGraph) -> AssemblyGraphValidationValue {
+    return AssemblyGraphValidation@Valid { graph: move graph }
+}
+
+public procedure invalidAssemblyGraph(
+    move diagnostics: DiagnosticStreamValue
+) -> AssemblyGraphValidationValue {
+    return AssemblyGraphValidation@Invalid { diagnostics: move diagnostics }
+}
+
+public procedure assemblyProject(
+    root: ProjectRoot,
+    move assembly: Assembly
+) -> Project {
+    return project(root, assemblyListEntry(move assembly, emptyAssemblies()))
+}
+
+internal procedure ownerRootSearch(
+    directory: DirectoryPath,
+    source_roots: AssemblySourceRootListValue
+) -> OwnerRootSearchValue {
+    return ownerRootSearchFromBest(directory, source_roots, OwnerRootSearch@None {})
+}
+
+internal procedure ownerRootSearchFromBest(
+    directory: DirectoryPath,
+    source_roots: AssemblySourceRootListValue,
+    best: OwnerRootSearchValue
+) -> OwnerRootSearchValue {
+    return if source_roots is {
+        @Empty {
+            best
+        }
+        @Entry { source_root, tail } {
+            let next_best: OwnerRootSearchValue =
+                ownerRootSearchWithCandidate(directory, source_root, best)
+            ownerRootSearchFromBest(directory, tail, next_best)
+        }
+    }
+}
+
+internal procedure ownerRootSearchWithCandidate(
+    directory: DirectoryPath,
+    candidate_root: DirectoryPath,
+    best: OwnerRootSearchValue
+) -> OwnerRootSearchValue {
+    if (!assemblyGraphPathPrefix(directory.text, candidate_root.text)) {
+        return best
+    }
+
+    let candidate_depth: usize = assemblyGraphRootDepth(candidate_root.text)
+    return if best is {
+        @None {
+            OwnerRootSearch@Found {
+                source_root: candidate_root,
+                depth: candidate_depth
+            }
+        }
+        @Ambiguous {
+            best
+        }
+        @Found { source_root, depth } {
+            if (candidate_depth > depth) {
+                OwnerRootSearch@Found {
+                    source_root: candidate_root,
+                    depth: candidate_depth
+                }
+            } else if (
+                candidate_depth == depth &&
+                !projectTextEquals(candidate_root.text, source_root.text)
+            ) {
+                OwnerRootSearch@Ambiguous { directory: directory }
+            } else {
+                best
+            }
+        }
+    }
+}
+
+internal procedure ownedModulesFromRoots(
+    project_assembly: Assembly,
+    source_roots: AssemblySourceRootListValue
+) -> ModuleListValue {
+    return ownedModulesFromList(
+        project_assembly.modules,
+        project_assembly.root_directory,
+        source_roots
+    )
+}
+
+internal procedure ownedModulesFromList(
+    modules: ModuleListValue,
+    assembly_source_root: DirectoryPath,
+    source_roots: AssemblySourceRootListValue
+) -> ModuleListValue {
+    return if modules is {
+        @Empty {
+            emptyModules()
+        }
+        @Entry { module: candidate_module, tail } {
+            let owned_tail: ModuleListValue =
+                ownedModulesFromList(tail, assembly_source_root, source_roots)
+            if (moduleIsOwnedBySourceRoot(
+                candidate_module,
+                assembly_source_root,
+                source_roots
+            )) {
+                moduleListEntry(move candidate_module, move owned_tail)
+            } else {
+                move owned_tail
+            }
+        }
+    }
+}
+
+internal procedure moduleIsOwnedBySourceRoot(
+    project_module: Module,
+    assembly_source_root: DirectoryPath,
+    source_roots: AssemblySourceRootListValue
+) -> bool {
+    let ownership: OwnerRootResolutionValue =
+        ownerRoot(project_module.directory, source_roots)
+    return if ownership is {
+        @Ambiguous {
+            false
+        }
+        @Owned { source_root } {
+            projectTextEquals(source_root.text, assembly_source_root.text)
+        }
+    }
+}
+
+internal procedure allModulesHaveOwners(
+    assemblies: AssemblyListValue,
+    source_roots: AssemblySourceRootListValue
+) -> bool {
+    return if assemblies is {
+        @Empty {
+            true
+        }
+        @Entry { assembly: project_assembly, tail } {
+            assemblyModulesHaveOwners(project_assembly.modules, source_roots) &&
+                allModulesHaveOwners(tail, source_roots)
+        }
+    }
+}
+
+internal procedure assemblyModulesHaveOwners(
+    modules: ModuleListValue,
+    source_roots: AssemblySourceRootListValue
+) -> bool {
+    return if modules is {
+        @Empty {
+            true
+        }
+        @Entry { module: project_module, tail } {
+            let ownership: OwnerRootResolutionValue =
+                ownerRoot(project_module.directory, source_roots)
+            return if ownership is {
+                @Ambiguous {
+                    false
+                }
+                @Owned {
+                    assemblyModulesHaveOwners(tail, source_roots)
+                }
+            }
+        }
+    }
+}
+
+internal procedure ownAssembliesFromRoots(
+    assemblies: AssemblyListValue,
+    source_roots: AssemblySourceRootListValue
+) -> AssemblyListValue {
+    return if assemblies is {
+        @Empty {
+            emptyAssemblies()
+        }
+        @Entry { assembly: project_assembly, tail } {
+            let modules: ModuleListValue =
+                ownedModulesFromRoots(project_assembly, source_roots)
+            assemblyListEntry(
+                assembly(
+                    project_assembly.name,
+                    project_assembly.kind,
+                    project_assembly.link_kind,
+                    project_assembly.root_directory,
+                    move modules
+                ),
+                ownAssembliesFromRoots(tail, source_roots)
+            )
+        }
+    }
+}
+
+internal procedure assemblyGraphRootDepth(text: string@View) -> usize {
+    let length: usize = string::length(text)
+    var index: usize = 0
+    var depth: usize = 0
+    var in_component: bool = false
+
+    loop {
+        if (index >= length) {
+            break
+        }
+
+        let value: u8 = assemblyGraphTextByte(text, index)
+        if (assemblyGraphByteIsSeparator(value)) {
+            in_component = false
+        } else if (!in_component) {
+            depth = depth + 1
+            in_component = true
+        }
+
+        index = index + 1
+    }
+
+    return depth
+}
+
+internal procedure assemblyGraphPathPrefix(
+    directory_text: string@View,
+    root_text: string@View
+) -> bool {
+    let directory_length: usize = string::length(directory_text)
+    let root_length: usize = string::length(root_text)
+    if (directory_length < root_length) {
+        return false
+    }
+    if (!projectTextStartsWith(directory_text, root_text)) {
+        return false
+    }
+    if (directory_length == root_length) {
+        return true
+    }
+    if (root_length < directory_length) {
+        return assemblyGraphByteIsSeparator(
+            assemblyGraphTextByte(directory_text, root_length)
+        )
+    }
+    return false
+}
+
+internal procedure assemblyGraphByteIsSeparator(value: u8) -> bool {
+    return value == ASSEMBLY_GRAPH_FORWARD_SEPARATOR ||
+        value == ASSEMBLY_GRAPH_BACK_SEPARATOR
+}
+
+internal procedure assemblyGraphTextByte(text: string@View, index: usize) -> u8
+|: index < string::length(text)
+{
+    let view: bytes@View = bytes::view_string(text)
+    let data: const [u8] = bytes::as_slice(view)
+    return data[index]
+}

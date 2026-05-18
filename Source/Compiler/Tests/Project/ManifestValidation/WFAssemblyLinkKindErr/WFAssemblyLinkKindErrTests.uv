@@ -1,0 +1,21 @@
+// Test responsibility:
+// Source/Compiler/Tests/Project/ManifestValidation/WFAssemblyLinkKindErr/WFAssemblyLinkKindErrTests.uv
+//
+// This file owns source-native tests for WF-Assembly-LinkKind-Err@L2944.
+
+using UltravioletCompiler::Project::{
+    manifestAssembly,
+    manifestAssemblyLinkKindIsValid
+}
+
+[[test(
+    name: "manifest validation rejects invalid library link_kind values",
+    covers("WF-Assembly-LinkKind-Err@L2944")
+)]]
+internal procedure manifestValidationRejectsInvalidLibraryLinkKindValues() -> bool
+|: => @result
+{
+    return !manifestAssemblyLinkKindIsValid(
+        manifestAssembly("Lib", "library", "dynamic", "Runtime")
+    )
+}

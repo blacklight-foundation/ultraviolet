@@ -1,0 +1,52 @@
+// Test responsibility:
+// Source/Compiler/Tests/Project/AssemblyLoader/StepParseErr/StepParseErrTests.uv
+//
+// This file owns source-native tests for Step-Parse-Err@L3576.
+
+using UltravioletCompiler::Diagnostics::{
+    diagnosticStreamHasErrors
+}
+using UltravioletCompiler::Project::{
+    ProjectLoadValue,
+    projectLoadParseManifestText,
+    projectRoot
+}
+
+[[test(
+    name: "project load parse transition enters failed state on parse error",
+    covers("Step-Parse-Err@L3576")
+)]]
+internal procedure projectLoadParseTransitionEntersFailedStateOnParseError() -> bool
+|: => @result
+{
+    var passed: bool = false
+    region as diagnostics_region {
+        let load: ProjectLoadValue = projectLoadParseManifestText(
+            diagnostics_region,
+            projectRoot("C:/Dev/Ultraviolet"),
+            "[[assembly]]\nname \"UltravioletCompiler\"\nkind = \"library\"\nroot = \"Compiler\"\n"
+        )
+
+        passed = if load is {
+            @Failed { diagnostics } {
+                diagnosticStreamHasErrors(diagnostics)
+            }
+            @RootLocated {
+                false
+            }
+            @ManifestParsed {
+                false
+            }
+            @ManifestValidated {
+                false
+            }
+            @AssembliesDiscovered {
+                false
+            }
+            @Complete {
+                false
+            }
+        }
+    }
+    return passed
+}

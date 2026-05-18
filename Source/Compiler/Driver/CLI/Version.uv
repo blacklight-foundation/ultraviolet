@@ -1,0 +1,25 @@
+// Obligation responsibility: Source/Compiler/Driver/CLI/Version.uv
+//
+// This file owns version command display text and its command-result integration
+// for the CLI command surface.
+
+internal let ULTRAVIOLET_VERSION_TEXT: string@View = "ultraviolet 0.0.0\n"
+
+public procedure versionText() -> string@View {
+    return ULTRAVIOLET_VERSION_TEXT
+}
+
+public procedure executeVersionCommand(
+    host: DriverHost,
+    diagnostics_region: unique Region@Active
+) -> CommandResultValue {
+    let output: Outcome<(), IoError> = host~>writeStdout(versionText())
+    return if output is {
+        @Value {
+            commandSucceeded()
+        }
+        @Error {
+            commandFailed(diagnostics_region, outputWriteFailedFailure())
+        }
+    }
+}

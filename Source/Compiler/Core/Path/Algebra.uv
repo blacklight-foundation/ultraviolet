@@ -1,0 +1,133 @@
+// Obligation responsibility: Source/Compiler/Core/Path/Algebra.uv
+//
+// This file owns component-based path algebra for project.path-resolution:
+//
+// - def.JoinComp@L3218
+// - def.Join@L3237
+// - def.PathPrefix@L3284
+// - def.Normalize@L3298
+// - def.Under@L3312
+// - def.Canon@L3326
+// - def.Drop@L3341
+// - def.RelativePathComputation@L3355
+// - def.Basename@L3369
+// - def.FileExt@L3386
+
+public procedure joinPath(paths: unique Region@Active, move base: Path, move path: Path) -> Path {
+    if (path~>isAbsolute()) {
+        return path
+    }
+
+    let components: PathComponentListValue =
+        concatPathComponentLists(paths, pathComponents(base), pathComponents(path))
+    let storage: PathStorageValue = joinedPathStorage(paths, move base, move path)
+    return pathFromDerivedComponents(move storage, move components)
+}
+
+public procedure normalizePath(paths: unique Region@Active, move path: Path) -> Path {
+    let components: PathComponentListValue =
+        dotFilteredPathComponentList(paths, pathComponents(path))
+    let storage: PathStorageValue = derivedPathStorage(paths, move path)
+    return pathFromDerivedComponents(move storage, move components)
+}
+
+public procedure pathPrefix(path: Path, candidate_prefix: Path) -> bool {
+    return path~>hasPrefix(candidate_prefix)
+}
+
+public procedure pathUnder(paths: unique Region@Active, move path: Path, move owner: Path) -> bool {
+    let normalized_path: Path = normalizePath(paths, move path)
+    let normalized_owner: Path = normalizePath(paths, move owner)
+    return pathPrefix(normalized_path, normalized_owner)
+}
+
+public procedure canonPath(
+    paths: unique Region@Active,
+    move path: Path
+) -> CanonicalPathResultValue {
+    let normalized: Path = normalizePath(paths, move path)
+    if (normalized~>containsParentTraversal()) {
+        return CanonicalPathResult@RejectedParentTraversal {
+            normalized_path: normalized
+        }
+    }
+    return CanonicalPathResult@Accepted {
+        canonical_path: canonicalPathFromPath(move normalized)
+    }
+}
+
+internal procedure dropPathComponents(
+    paths: unique Region@Active,
+    move path: Path,
+    count: usize
+) -> Path {
+    if (count == 0) {
+        return path
+    }
+
+    let components: PathComponentListValue = dropPathComponentList(
+        paths,
+        pathComponents(path),
+        count
+    )
+    let storage: PathStorageValue = derivedPathStorage(paths, move path)
+    return pathFromDerivedComponents(move storage, move components)
+}
+
+public procedure relativePath(
+    paths: unique Region@Active,
+    move path: Path,
+    move base: Path
+) -> RelativePathResultValue {
+    let path_canon: CanonicalPathResultValue = canonPath(paths, move path)
+    return if path_canon is {
+        @RejectedParentTraversal {
+            RelativePathResult@Unavailable {
+                reason: RelativePathUnavailableReason@PathRejectedParentTraversal {}
+            }
+        }
+        @Accepted {
+            let base_canon: CanonicalPathResultValue = canonPath(paths, move base)
+            if base_canon is {
+                @RejectedParentTraversal {
+                    RelativePathResult@Unavailable {
+                        reason: RelativePathUnavailableReason@BaseRejectedParentTraversal {}
+                    }
+                }
+                @Accepted {
+                    let canonical_path: Path = path_canon.canonical_path~>path()
+                    let canonical_base: Path = base_canon.canonical_path~>path()
+                    if (!pathPrefix(canonical_path, canonical_base)) {
+                        RelativePathResult@Unavailable {
+                            reason: RelativePathUnavailableReason@BaseNotPrefix {}
+                        }
+                    } else {
+                        let base_count: usize = pathComponentCount(canonical_base)
+                        let computed_path: Path = dropPathComponents(
+                            paths,
+                            move canonical_path,
+                            base_count
+                        )
+                        RelativePathResult@Computed {
+                            relative_path: relativePathFromPath(
+                                move computed_path
+                            )
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
+
+internal procedure pathTextEquals(path: Path, text: string@View) -> bool {
+    return path~>textEquals(text)
+}
+
+internal procedure pathBasenameEquals(path: Path, text: string@View) -> bool {
+    return pathComponentEqualsText(path~>basename(), text)
+}
+
+internal procedure pathFileExtEquals(path: Path, text: string@View) -> bool {
+    return pathComponentEqualsText(path~>fileExtension(), text)
+}

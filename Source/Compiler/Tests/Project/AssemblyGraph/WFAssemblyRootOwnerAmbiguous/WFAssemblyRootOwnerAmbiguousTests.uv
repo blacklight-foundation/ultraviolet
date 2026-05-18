@@ -1,0 +1,69 @@
+// Test responsibility:
+// Source/Compiler/Tests/Project/AssemblyGraph/WFAssemblyRootOwnerAmbiguous/WFAssemblyRootOwnerAmbiguousTests.uv
+//
+// This file owns source-native tests for WF-Assembly-Root-Owner-Ambiguous@L4481:
+//
+// ∃ A ∈ As, m ∈ A.modules. ¬ ∃ S.
+// OwnerRoot(ModuleDirOf(m, A.source_root), AssemblySourceRoots(As)) = S
+// c = Code(WF-Assembly-Root-Owner-Ambiguous)
+// Γ ⊢ OwnAssemblies(As) ⇑ c
+
+using UltravioletCompiler::Project::{
+    AssemblyOwnershipValue,
+    assembly,
+    assemblyListEntry,
+    assemblyName,
+    directoryPath,
+    emptyAssemblies,
+    emptyModules,
+    emptySourceFiles,
+    libraryAssemblyKind,
+    module,
+    moduleListEntry,
+    modulePath,
+    noLinkKind,
+    ownAssemblies
+}
+
+[[test(
+    name: "own assemblies fails when a module has no source-root owner",
+    covers("WF-Assembly-Root-Owner-Ambiguous@L4481")
+)]]
+internal procedure ownAssembliesFailsWhenModuleHasNoSourceRootOwner() -> bool
+|: => @result
+{
+    var passed: bool = false
+    region as diagnostics_region {
+        let ownership: AssemblyOwnershipValue =
+            ownAssemblies(
+                diagnostics_region,
+                assemblyListEntry(
+                    assembly(
+                        assemblyName("UltravioletCompiler"),
+                        libraryAssemblyKind(),
+                        noLinkKind(),
+                        directoryPath("Compiler"),
+                        moduleListEntry(
+                            module(
+                                modulePath("External::Module"),
+                                directoryPath("External/Module"),
+                                emptySourceFiles()
+                            ),
+                            emptyModules()
+                        ),
+                    ),
+                    emptyAssemblies()
+                )
+            )
+
+        passed = if ownership is {
+            @Failed {
+                true
+            }
+            @Owned {
+                false
+            }
+        }
+    }
+    return passed
+}

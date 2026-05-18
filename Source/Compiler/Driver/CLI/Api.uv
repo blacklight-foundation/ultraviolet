@@ -1,0 +1,237 @@
+// Obligation responsibility: Source/Compiler/Driver/CLI/Api.uv
+//
+// This file owns the CLI API surface shared by `Source/Tools/Uv/Main.uv` and command
+// implementations. `DriverHost` is the command-surface authority projection
+// created from the `Context` received by `main`. It carries the io
+// output authority, heap authority, normalized `System` process argument
+// authority, executable path, and current directory into command dispatch.
+
+public record DriverHost {
+    private _io: $IO
+    private _heap: $HeapAllocator
+    private _sys: System
+    private _executable_path: string@View
+    private _current_directory: string@View
+
+    public procedure executablePath(~) -> string@View {
+        return self._executable_path
+    }
+
+    public procedure currentDirectory(~) -> string@View {
+        return self._current_directory
+    }
+
+    public procedure io(~) -> $IO {
+        return self._io
+    }
+
+    public procedure heap(~) -> $HeapAllocator {
+        return self._heap
+    }
+
+    public procedure system(~) -> System {
+        return self._sys
+    }
+
+    public procedure writeStdout(~, text: string@View) -> Outcome<(), IoError> {
+        return self._io~>write_stdout(text)
+    }
+
+    public procedure writeStderr(~, text: string@View) -> Outcome<(), IoError> {
+        return self._io~>write_stderr(text)
+    }
+
+    public procedure run(
+        ~,
+        diagnostics_region: unique Region@Active
+    ) -> CommandResultValue {
+        let arguments: CommandArguments = entrypointCommandArguments(self._sys)
+        let parsed: CommandParseResultValue =
+            parseCommand(self~>currentDirectory(), arguments)
+        return commandParseResultCommandResult(self, diagnostics_region, parsed)
+    }
+
+    public procedure runCommand(
+        ~,
+        diagnostics_region: unique Region@Active,
+        command: CommandValue
+    ) -> CommandResultValue {
+        return executeCommand(self, diagnostics_region, command)
+    }
+
+    public procedure exitCodeFor(~, result: CommandResultValue) -> i32 {
+        return if result is {
+            @Succeeded {
+                result~>exitCode()
+            }
+            @Failed {
+                let write_ok: bool = self~>writeDiagnosticStream(result.diagnostics)
+                if (!write_ok) {
+                    return EXIT_FAILURE
+                }
+                result~>exitCode()
+            }
+        }
+    }
+
+    public procedure writeDiagnosticStream(~, stream: DiagnosticStreamValue) -> bool {
+        return if stream is {
+            @Empty {
+                true
+            }
+            @Entry {
+                if (!self~>writeDiagnostic(stream~>currentDiagnostic())) {
+                    return false
+                }
+                self~>writeDiagnosticStream(stream~>remainingDiagnostics())
+            }
+        }
+    }
+
+    public procedure writeDiagnostic(~, diagnostic: Diagnostic) -> bool {
+        if (!self~>writeDiagnosticHead(diagnostic)) {
+            return false
+        }
+        if (diagnosticHasMessage(diagnostic)) {
+            if (!self~>writeStderrPart(": ")) {
+                return false
+            }
+            if (!self~>writeStderrPart(diagnosticMessage(diagnostic))) {
+                return false
+            }
+        }
+        if (!self~>writeDiagnosticSpan(diagnostic.span)) {
+            return false
+        }
+        return self~>writeStderrPart("\n")
+    }
+
+    public procedure writeDiagnosticHead(~, diagnostic: Diagnostic) -> bool {
+        return if diagnostic.code is {
+            @Absent {
+                self~>writeStderrPart(diagnosticSeverityText(diagnostic.severity))
+            }
+            @Present { code } {
+                if (!self~>writeStderrPart(code.text)) {
+                    return false
+                }
+                if (!self~>writeStderrPart(" (")) {
+                    return false
+                }
+                if (!self~>writeStderrPart(diagnosticSeverityText(diagnostic.severity))) {
+                    return false
+                }
+                if (!self~>writeStderrPart(")")) {
+                    return false
+                }
+                true
+            }
+        }
+    }
+
+    public procedure writeDiagnosticSpan(~, diagnostic_span: DiagnosticSpanValue) -> bool {
+        return if diagnostic_span is {
+            @Absent {
+                true
+            }
+            @Present { span } {
+                if (!self~>writeStderrPart(" @")) {
+                    return false
+                }
+                if (!self~>writeStderrPart(span.file_path)) {
+                    return false
+                }
+                if (!self~>writeStderrPart(":")) {
+                    return false
+                }
+                if (!self~>writeUnsignedDecimal(span.start_line)) {
+                    return false
+                }
+                if (!self~>writeStderrPart(":")) {
+                    return false
+                }
+                if (!self~>writeUnsignedDecimal(span.start_column)) {
+                    return false
+                }
+                true
+            }
+        }
+    }
+
+    public procedure writeUnsignedDecimal(~, value: usize) -> bool {
+        if (value < 10) {
+            return self~>writeStderrPart(decimalDigitText(value))
+        }
+
+        let prefix: usize = value / 10
+        if (!self~>writeUnsignedDecimal(prefix)) {
+            return false
+        }
+        return self~>writeStderrPart(decimalDigitText(value - (prefix * 10)))
+    }
+
+    public procedure writeStderrPart(~, text: string@View) -> bool {
+        let output: Outcome<(), IoError> = self~>writeStderr(text)
+        return if output is {
+            @Value {
+                true
+            }
+            @Error {
+                false
+            }
+        }
+    }
+}
+
+internal procedure decimalDigitText(value: usize) -> string@View
+|: value < 10
+{
+    if (value == 0) {
+        return "0"
+    }
+    if (value == 1) {
+        return "1"
+    }
+    if (value == 2) {
+        return "2"
+    }
+    if (value == 3) {
+        return "3"
+    }
+    if (value == 4) {
+        return "4"
+    }
+    if (value == 5) {
+        return "5"
+    }
+    if (value == 6) {
+        return "6"
+    }
+    if (value == 7) {
+        return "7"
+    }
+    if (value == 8) {
+        return "8"
+    }
+    return "9"
+}
+
+public procedure driverHostFromContext(context: Context) -> DriverHost {
+    return DriverHost {
+        _io: context.io,
+        _heap: context.heap,
+        _sys: context.sys,
+        _executable_path: context.sys~>executable_path(),
+        _current_directory: context.sys~>current_directory()
+    }
+}
+
+public procedure runUv(context: Context) -> i32 {
+    var exit_code: i32 = EXIT_FAILURE
+    region as diagnostics_region {
+        let host: DriverHost = driverHostFromContext(context)
+        let result: CommandResultValue = host~>run(diagnostics_region)
+        exit_code = host~>exitCodeFor(result)
+    }
+    return exit_code
+}

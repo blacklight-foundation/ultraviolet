@@ -1,0 +1,412 @@
+// Obligation support responsibility: Source/Compiler/Core/Path/ComponentLists.uv
+//
+// This file owns the canonical region-backed component-list representation used
+// by path algebra. It supports def.PathComponents, def.JoinComp, def.PathPrefix,
+// def.Normalize, def.Drop, def.Basename, and def.FileExt by making PathComps(p)
+// concrete instead of re-deriving components from text on each query.
+
+internal modal PathComponentList {
+    @Empty {
+        internal procedure componentCount(~) -> usize {
+            return 0
+        }
+    }
+
+    @Node {
+        private _component: PathComponentView
+        private _tail: PathComponentListValue
+        private _count: usize
+
+        internal procedure component(~) -> PathComponentView {
+            return self._component
+        }
+
+        internal procedure tail(~) -> PathComponentListValue {
+            return self._tail
+        }
+
+        internal procedure componentCount(~) -> usize {
+            return self._count
+        }
+    }
+}
+
+internal type PathComponentListValue = PathComponentList@Empty | PathComponentList@Node
+
+internal procedure emptyPathComponentList(paths: unique Region@Active) -> PathComponentListValue {
+    return paths ^ PathComponentList@Empty {}
+}
+
+internal procedure prependPathComponent(
+    paths: unique Region@Active,
+    component: PathComponentView,
+    move tail: PathComponentListValue
+) -> PathComponentListValue
+{
+    let count: usize = pathComponentListCount(tail)
+    return paths ^ PathComponentList@Node {
+        _component: component,
+        _tail: move tail,
+        _count: count + 1
+    }
+}
+
+internal procedure pathComponentListFromRoot(
+    paths: unique Region@Active,
+    root: PathRootValue
+) -> PathComponentListValue {
+    let text: string@View = pathRootTextView(root)
+    let tail: PathComponentListValue = pathSegmentsFromText(paths, text, pathRootTailStart(root))
+    let root_component_count: usize = pathRootComponentCount(root)
+    if (root_component_count == 0) {
+        return move tail
+    }
+
+    let root_component: PathComponentLookupValue = pathRootComponentAt(root, 0)
+    return if root_component is {
+        @Found {
+            prependPathComponent(paths, root_component~>component(), move tail)
+        }
+        @Missing {
+            move tail
+        }
+    }
+}
+
+internal procedure pathSegmentsFromText(
+    paths: unique Region@Active,
+    text: string@View,
+    start: usize
+) -> PathComponentListValue
+{
+    let length: usize = pathViewLength(text)
+    var index: usize = start
+    var reversed: PathComponentListValue = emptyPathComponentList(paths)
+
+    loop {
+        if (index >= length) {
+            break
+        }
+
+        if (pathViewByteIsWinSeparator(text, index)) {
+            index = index + 1
+        } else {
+            let segment_start: usize = index
+            var segment_end: usize = index
+            loop {
+                if (segment_end >= length) {
+                    break
+                }
+                if (pathViewByteIsWinSeparator(text, segment_end)) {
+                    break
+                }
+                segment_end = segment_end + 1
+            }
+
+            let component: PathComponentView = pathComponentFromCheckedViewSlice(
+                text,
+                segment_start,
+                segment_end
+            )
+            reversed = prependPathComponent(paths, component, move reversed)
+            index = segment_end
+        }
+    }
+
+    return reversePathComponentList(paths, reversed)
+}
+
+internal procedure pathComponentListCount(list: PathComponentListValue) -> usize {
+    return if list is {
+        @Empty {
+            list~>componentCount()
+        }
+        @Node {
+            list~>componentCount()
+        }
+    }
+}
+
+internal procedure pathComponentListAt(
+    list: PathComponentListValue,
+    index: usize
+) -> PathComponentLookupValue {
+    var cursor: PathComponentListValue = list
+    var remaining: usize = index
+    var result: PathComponentLookupValue = missingPathComponent()
+    loop {
+        if cursor is {
+            @Empty {
+                break
+            }
+            @Node {
+                if (remaining == 0) {
+                    result = foundPathComponent(cursor~>component())
+                    break
+                }
+                remaining = remaining - 1
+                cursor = cursor~>tail()
+            }
+        };
+    }
+    return result
+}
+
+internal procedure pathComponentListIsAbsolute(list: PathComponentListValue) -> bool {
+    return pathComponentListViewIsAbsolute(
+        pathComponentListCount(list),
+        pathComponentListAt(list, 0)
+    )
+}
+
+internal procedure pathComponentListContainsParentTraversal(
+    list: PathComponentListValue
+) -> bool {
+    var cursor: PathComponentListValue = list
+    var found: bool = false
+    loop {
+        if cursor is {
+            @Empty {
+                break
+            }
+            @Node {
+                if (cursor~>component()~>isParentTraversal()) {
+                    found = true
+                    break
+                }
+                cursor = cursor~>tail()
+            }
+        };
+    }
+    return found
+}
+
+internal procedure pathComponentListBasename(list: PathComponentListValue) -> PathComponentView {
+    var cursor: PathComponentListValue = list
+    var basename: PathComponentView = emptyPathComponent()
+    loop {
+        if cursor is {
+            @Empty {
+                break
+            }
+            @Node {
+                basename = cursor~>component()
+                cursor = cursor~>tail()
+            }
+        };
+    }
+    return basename
+}
+
+internal procedure pathComponentListFileExtension(
+    list: PathComponentListValue
+) -> PathComponentView {
+    return pathComponentListBasename(list)~>fileExtension()
+}
+
+internal procedure concatPathComponentLists(
+    paths: unique Region@Active,
+    left: PathComponentListValue,
+    right: PathComponentListValue
+) -> PathComponentListValue
+{
+    var result: PathComponentListValue = copyPathComponentList(paths, right)
+    let reversed_left: PathComponentListValue = reversePathComponentList(paths, left)
+    var cursor: PathComponentListValue = reversed_left
+
+    loop {
+        if cursor is {
+            @Empty {
+                break
+            }
+            @Node {
+                result = prependPathComponent(paths, cursor~>component(), move result)
+                cursor = cursor~>tail()
+            }
+        };
+    }
+    return result
+}
+
+internal procedure dotFilteredPathComponentList(
+    paths: unique Region@Active,
+    source: PathComponentListValue
+) -> PathComponentListValue
+{
+    var reversed: PathComponentListValue = emptyPathComponentList(paths)
+    var cursor: PathComponentListValue = source
+
+    loop {
+        if cursor is {
+            @Empty {
+                break
+            }
+            @Node {
+                if (!cursor~>component()~>isSingleDot()) {
+                    reversed = prependPathComponent(paths, cursor~>component(), move reversed)
+                }
+                cursor = cursor~>tail()
+            }
+        };
+    }
+    return reversePathComponentList(paths, reversed)
+}
+
+internal procedure dropPathComponentList(
+    paths: unique Region@Active,
+    source: PathComponentListValue,
+    count: usize
+) -> PathComponentListValue
+{
+    var cursor: PathComponentListValue = source
+    var remaining: usize = count
+    var result: PathComponentListValue = emptyPathComponentList(paths)
+
+    loop {
+        if (remaining == 0) {
+            result = copyPathComponentList(paths, cursor)
+            break
+        }
+
+        if cursor is {
+            @Empty {
+                break
+            }
+            @Node {
+                remaining = remaining - 1
+                cursor = cursor~>tail()
+            }
+        };
+    }
+    return result
+}
+
+internal procedure copyPathComponentList(
+    paths: unique Region@Active,
+    source: PathComponentListValue
+) -> PathComponentListValue {
+    let reversed: PathComponentListValue = reversePathComponentList(paths, source)
+    return reversePathComponentList(paths, reversed)
+}
+
+internal procedure reversePathComponentList(
+    paths: unique Region@Active,
+    source: PathComponentListValue
+) -> PathComponentListValue {
+    var result: PathComponentListValue = emptyPathComponentList(paths)
+    var cursor: PathComponentListValue = source
+
+    loop {
+        if cursor is {
+            @Empty {
+                break
+            }
+            @Node {
+                result = prependPathComponent(paths, cursor~>component(), move result)
+                cursor = cursor~>tail()
+            }
+        };
+    }
+    return result
+}
+
+internal procedure pathComponentListHasPrefix(
+    list: PathComponentListValue,
+    candidate_prefix: PathComponentListValue
+) -> bool
+{
+    var cursor: PathComponentListValue = list
+    var prefix_cursor: PathComponentListValue = candidate_prefix
+    var matches: bool = true
+
+    loop {
+        if prefix_cursor is {
+            @Empty {
+                break
+            }
+            @Node {
+                if cursor is {
+                    @Empty {
+                        matches = false
+                        break
+                    }
+                    @Node {
+                        if (!pathComponentsEqual(
+                            cursor~>component(),
+                            prefix_cursor~>component()
+                        )) {
+                            matches = false
+                            break
+                        }
+                        cursor = cursor~>tail()
+                        prefix_cursor = prefix_cursor~>tail()
+                    }
+                }
+            }
+        };
+    }
+    return matches
+}
+
+internal procedure pathComponentListTextEquals(
+    list: PathComponentListValue,
+    text: string@View
+) -> bool
+{
+    let text_length: usize = pathViewLength(text)
+    var cursor: PathComponentListValue = list
+    var text_index: usize = 0
+    var previous_component_suppressed_separator: bool = false
+    var matches: bool = true
+
+    loop {
+        if cursor is {
+            @Empty {
+                break
+            }
+            @Node {
+                let component: PathComponentView = cursor~>component()
+                var next_text_index: usize = text_index
+                if (!previous_component_suppressed_separator && text_index > 0) {
+                    if (next_text_index >= text_length) {
+                        matches = false
+                        break
+                    }
+                    if (pathViewByte(text, next_text_index) != SLASH_BYTE) {
+                        matches = false
+                        break
+                    }
+                    next_text_index = next_text_index + 1
+                }
+
+                if (!component~>matchesTextAt(text, next_text_index)) {
+                    matches = false
+                    break
+                }
+
+                text_index = next_text_index + component~>length()
+                previous_component_suppressed_separator = component~>suppressesJoinSeparator()
+                cursor = cursor~>tail()
+            }
+        };
+    }
+    return matches && text_index == text_length
+}
+
+internal procedure pathComponentListViewIsAbsolute(
+    component_count: usize,
+    first_component: PathComponentLookupValue
+) -> bool {
+    if (component_count == 0) {
+        return false
+    }
+
+    if (
+        pathComponentLookupEqualsText(first_component, "/") ||
+            pathComponentLookupEqualsText(first_component, "//")
+    ) {
+        return true
+    }
+
+    return component_count >= 2 && pathComponentLookupIsDriveTag(first_component)
+}

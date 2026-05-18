@@ -1,0 +1,92 @@
+// Test responsibility: Source/Compiler/Tests/Source/Parser/TestAttributes/ParseTestAttributeByOrdinaryAttributeParserTests.uv
+//
+// This file owns source-native tests for
+// parse.TestAttributeByOrdinaryAttributeParser@L28356:
+//
+// `[[test]]` is parsed by the ordinary attribute parser. The `name` argument is
+// represented as `name, string_literal`; each `covers(...)` argument is
+// represented as `covers, [string_literal]`.
+
+[[test(
+    name: "test attribute name parses as ordinary named string argument",
+    covers("parse.TestAttributeByOrdinaryAttributeParser@L28356")
+)]]
+internal procedure testAttributeNameParsesAsOrdinaryNamedStringArgument() -> bool
+|: => @result
+{
+    let result: AttributeParseResultValue =
+        parseTestAttribute(testAttributeArguments2(
+            testNameAttributeArgument("display"),
+            testCoverageAttributeArgument(
+                "parse.TestAttributeByOrdinaryAttributeParser@L28356"
+            )
+        ))
+    return if result is {
+        @Parsed { attribute } {
+            attributeNameEquals(attribute.name, "test") &&
+                ordinaryArgumentsHaveNameAndCoverage(attribute.arguments)
+        }
+        @Rejected {
+            false
+        }
+    }
+}
+
+internal procedure ordinaryArgumentsHaveNameAndCoverage(
+    arguments: AttributeArgumentListValue
+) -> bool {
+    return if arguments is {
+        @Empty {
+            false
+        }
+        @Entry { argument, tail } {
+            if (!attributeArgumentNameEquals(argument, "name")) {
+                return false
+            }
+            if (!attributeTextEquals(attributeArgumentStringValue(argument), "display")) {
+                return false
+            }
+            return if tail is {
+                @Empty {
+                    false
+                }
+                @Entry { argument: coverage_argument } {
+                    attributeArgumentNameEquals(coverage_argument, "covers") &&
+                        attributeTextEquals(
+                            attributeArgumentStringValue(coverage_argument),
+                            "parse.TestAttributeByOrdinaryAttributeParser@L28356"
+                        )
+                }
+            }
+        }
+    }
+}
+
+internal procedure attributeTextEquals(left: string@View, right: string@View) -> bool {
+    let left_length: usize = string::length(left)
+    let right_length: usize = string::length(right)
+    if (left_length != right_length) {
+        return false
+    }
+
+    var index: usize = 0
+    loop {
+        if (index >= left_length) {
+            break
+        }
+        if (attributeTextByte(left, index) != attributeTextByte(right, index)) {
+            return false
+        }
+        index = index + 1
+    }
+
+    return true
+}
+
+internal procedure attributeTextByte(text: string@View, index: usize) -> u8
+|: index < string::length(text)
+{
+    let view: bytes@View = bytes::view_string(text)
+    let data: const [u8] = bytes::as_slice(view)
+    return data[index]
+}

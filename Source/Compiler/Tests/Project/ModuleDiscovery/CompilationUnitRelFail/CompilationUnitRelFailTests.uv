@@ -1,0 +1,51 @@
+// Test responsibility:
+// Source/Compiler/Tests/Project/ModuleDiscovery/CompilationUnitRelFail/CompilationUnitRelFailTests.uv
+//
+// This file owns source-native tests for CompilationUnit-Rel-Fail@L4352.
+
+using UltravioletCompiler::Diagnostics::{ diagnosticStreamHasErrors }
+using UltravioletCompiler::Project::{
+    CompilationUnitResultValue,
+    compilationUnitForDirectory,
+    directoryPath,
+    emptySourceFilePaths,
+    directoryScan,
+    modulePath,
+    sourceFilePath,
+    sourceFilePathListEntry
+}
+
+[[test(
+    name: "compilation unit reports relative derivation failure",
+    covers("CompilationUnit-Rel-Fail@L4352")
+)]]
+internal procedure compilationUnitReportsRelativeDerivationFailure() -> bool
+|: => @result
+{
+    var passed: bool = false
+    region as diagnostics_region {
+        let unit: CompilationUnitResultValue =
+            compilationUnitForDirectory(
+                diagnostics_region,
+                directoryScan(
+                    directoryPath("Source/Compiler/Tests"),
+                    modulePath("UltravioletCompiler::Tests"),
+                    sourceFilePathListEntry(
+                        sourceFilePath("Outside/Path.uv"),
+                        emptySourceFilePaths()
+                    ),
+                    false
+                ),
+            )
+
+        passed = if unit is {
+            @Computed {
+                false
+            }
+            @Failed { diagnostics } {
+                diagnosticStreamHasErrors(diagnostics)
+            }
+        }
+    }
+    return passed
+}

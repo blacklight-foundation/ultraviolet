@@ -1,0 +1,238 @@
+// Obligation responsibility: Source/Compiler/Project/DeterministicOrder.uv
+//
+// This file owns deterministic project ordering predicates:
+//
+// - def.FoldPath@L4095
+//   FoldPath(r) = JoinComp([CaseFold(NFC(c)) | c ∈ PathComps(r)])
+// - def.FileKey@L4109
+//   FileKey(f, d) = ⟨FoldPath(rel), rel⟩ if relative(f, d) ⇓ rel,
+//   and ⟨⊥, Basename(f)⟩ if relative(f, d) ⇑.
+// - def.FileOrdering@L4125
+//   f_1 ≺_file f_2 ⇔ Utf8LexLess(FileKey(f_1, d), FileKey(f_2, d))
+// - FileOrder-Rel-Fail@L4139
+//   relative(f, d) ⇑    c = Code(FileOrder-Rel-Fail)
+//   Γ ⊢ Emit(c)
+// - def.Fold@L4157
+//   Fold(p) = [CaseFold(NFC(c)) | c ∈ p]
+// - def.DirKey@L4172
+//   DirKey(d, S) = ⟨FoldPath(rel), rel⟩ if relative(d, S) ⇓ rel,
+//   and ⟨⊥, Basename(d)⟩ if relative(d, S) ⇑.
+// - def.DirectoryOrdering@L4188
+//   d_1 ≺_dir d_2 ⇔ Utf8LexLess(DirKey(d_1, S), DirKey(d_2, S))
+// - def.DirSeq@L4202
+//   DirSeq(S) = sort_{≺_dir}(Dirs(S))
+// - DirSeq-Read-Err@L4216
+//   Dirs(S) ⇑    c = Code(DirSeq-Read-Err)
+//   Γ ⊢ Emit(c)
+// - DirSeq-Rel-Fail@L4234
+//   relative(d, S) ⇑    c = Code(DirSeq-Rel-Fail)
+//   Γ ⊢ Emit(c)
+
+public procedure sourceFilePrecedes(left: SourceFile, right: SourceFile) -> bool {
+    return projectPathTextPrecedes(left.path.text, right.path.text)
+}
+
+public procedure modulePrecedes(left: Module, right: Module) -> bool {
+    return projectPathTextPrecedes(left.path.text, right.path.text)
+}
+
+public procedure assemblyPrecedes(left: Assembly, right: Assembly) -> bool {
+    return projectPathTextPrecedes(left.name.text, right.name.text)
+}
+
+public procedure insertSourceFileOrdered(
+    file: SourceFile,
+    move source_files: SourceFileListValue
+) -> SourceFileListValue {
+    return if source_files is {
+        @Empty {
+            sourceFileListEntry(file, emptySourceFiles())
+        }
+        @Entry { file: candidate_file, tail } {
+            if (sourceFilePrecedes(file, candidate_file)) {
+                sourceFileListEntry(
+                    file,
+                    sourceFileListEntry(candidate_file, move tail)
+                )
+            } else {
+                sourceFileListEntry(
+                    candidate_file,
+                    insertSourceFileOrdered(file, move tail)
+                )
+            }
+        }
+    }
+}
+
+public procedure sortSourceFiles(
+    move source_files: SourceFileListValue
+) -> SourceFileListValue {
+    return if source_files is {
+        @Empty {
+            emptySourceFiles()
+        }
+        @Entry { file, tail } {
+            insertSourceFileOrdered(file, sortSourceFiles(move tail))
+        }
+    }
+}
+
+public procedure insertModuleOrdered(
+    move project_module: Module,
+    move modules: ModuleListValue
+) -> ModuleListValue {
+    return if modules is {
+        @Empty {
+            moduleListEntry(move project_module, emptyModules())
+        }
+        @Entry { module: candidate_module, tail } {
+            if (modulePrecedes(project_module, candidate_module)) {
+                moduleListEntry(
+                    move project_module,
+                    moduleListEntry(move candidate_module, move tail)
+                )
+            } else {
+                moduleListEntry(
+                    move candidate_module,
+                    insertModuleOrdered(move project_module, move tail)
+                )
+            }
+        }
+    }
+}
+
+public procedure sortModules(move modules: ModuleListValue) -> ModuleListValue {
+    return if modules is {
+        @Empty {
+            emptyModules()
+        }
+        @Entry { module: project_module, tail } {
+            insertModuleOrdered(move project_module, sortModules(move tail))
+        }
+    }
+}
+
+public procedure insertAssemblyOrdered(
+    move project_assembly: Assembly,
+    move assemblies: AssemblyListValue
+) -> AssemblyListValue {
+    return if assemblies is {
+        @Empty {
+            assemblyListEntry(move project_assembly, emptyAssemblies())
+        }
+        @Entry { assembly: candidate_assembly, tail } {
+            if (assemblyPrecedes(project_assembly, candidate_assembly)) {
+                assemblyListEntry(
+                    move project_assembly,
+                    assemblyListEntry(move candidate_assembly, move tail)
+                )
+            } else {
+                assemblyListEntry(
+                    move candidate_assembly,
+                    insertAssemblyOrdered(move project_assembly, move tail)
+                )
+            }
+        }
+    }
+}
+
+public procedure sortAssemblies(
+    move assemblies: AssemblyListValue
+) -> AssemblyListValue {
+    return if assemblies is {
+        @Empty {
+            emptyAssemblies()
+        }
+        @Entry { assembly: project_assembly, tail } {
+            insertAssemblyOrdered(move project_assembly, sortAssemblies(move tail))
+        }
+    }
+}
+
+public procedure projectTextLexicographicallyPrecedes(
+    left: string@View,
+    right: string@View
+) -> bool {
+    let left_length: usize = string::length(left)
+    let right_length: usize = string::length(right)
+    var index: usize = 0
+
+    loop {
+        if (index >= left_length) {
+            break
+        }
+        if (index >= right_length) {
+            break
+        }
+
+        let left_byte: u8 = projectOrderTextByte(left, index)
+        let right_byte: u8 = projectOrderTextByte(right, index)
+        if (left_byte < right_byte) {
+            return true
+        }
+        if (left_byte > right_byte) {
+            return false
+        }
+        index = index + 1
+    }
+
+    return left_length < right_length
+}
+
+public procedure projectPathTextPrecedes(
+    left: string@View,
+    right: string@View
+) -> bool {
+    if (projectFoldedTextLexicographicallyPrecedes(left, right)) {
+        return true
+    }
+    if (projectFoldedTextLexicographicallyPrecedes(right, left)) {
+        return false
+    }
+    return projectTextLexicographicallyPrecedes(left, right)
+}
+
+public procedure projectFoldedTextLexicographicallyPrecedes(
+    left: string@View,
+    right: string@View
+) -> bool {
+    let left_length: usize = string::length(left)
+    let right_length: usize = string::length(right)
+    var index: usize = 0
+
+    loop {
+        if (index >= left_length) {
+            break
+        }
+        if (index >= right_length) {
+            break
+        }
+
+        let left_byte: u8 = projectFoldByte(projectOrderTextByte(left, index))
+        let right_byte: u8 = projectFoldByte(projectOrderTextByte(right, index))
+        if (left_byte < right_byte) {
+            return true
+        }
+        if (left_byte > right_byte) {
+            return false
+        }
+        index = index + 1
+    }
+
+    return left_length < right_length
+}
+
+internal procedure projectFoldByte(value: u8) -> u8 {
+    if (value >= 65 && value <= 90) {
+        return value + 32
+    }
+    return value
+}
+
+internal procedure projectOrderTextByte(text: string@View, index: usize) -> u8
+|: index < string::length(text)
+{
+    let view: bytes@View = bytes::view_string(text)
+    let data: const [u8] = bytes::as_slice(view)
+    return data[index]
+}

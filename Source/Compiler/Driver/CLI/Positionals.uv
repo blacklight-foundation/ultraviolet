@@ -1,0 +1,100 @@
+// Obligation responsibility: Source/Compiler/Driver/CLI/Positionals.uv
+//
+// This file owns CLI positional argument state for command parsing and the
+// optional target text shape used by `uv test [target]`.
+//
+// Relevant source-native test command rule:
+//
+// - lowering.TestHarnessGeneration@L28516
+//   TestArg is absent or one positional argument.
+
+public modal PositionalArguments {
+    @None {
+        public procedure count(~) -> usize {
+            return 0
+        }
+
+        public procedure append(~, value: string@View) -> PositionalArgumentsValue {
+            return onePositional(value)
+        }
+    }
+
+    @One {
+        public value: string@View
+
+        public procedure count(~) -> usize {
+            return 1
+        }
+
+        public procedure append(~, value: string@View) -> PositionalArgumentsValue {
+            return tooManyPositionals(self.value, value)
+        }
+    }
+
+    @TooMany {
+        public first: string@View
+        public unexpected: string@View
+
+        public procedure count(~) -> usize {
+            return 2
+        }
+
+        public procedure append(~, value: string@View) -> PositionalArgumentsValue {
+            return tooManyPositionals(self.first, self.unexpected)
+        }
+    }
+}
+
+public type PositionalArgumentsValue =
+    PositionalArguments@None |
+    PositionalArguments@One |
+    PositionalArguments@TooMany
+
+public procedure noPositionals() -> PositionalArgumentsValue {
+    return PositionalArguments@None {}
+}
+
+public procedure onePositional(value: string@View) -> PositionalArgumentsValue {
+    return PositionalArguments@One { value: value }
+}
+
+public procedure tooManyPositionals(
+    first: string@View,
+    unexpected: string@View
+) -> PositionalArgumentsValue {
+    return PositionalArguments@TooMany {
+        first: first,
+        unexpected: unexpected
+    }
+}
+
+public procedure positionalArgumentsCount(positionals: PositionalArgumentsValue) -> usize {
+    return if positionals is {
+        @None {
+            positionals~>count()
+        }
+        @One {
+            positionals~>count()
+        }
+        @TooMany {
+            positionals~>count()
+        }
+    }
+}
+
+public procedure appendPositionalArgument(
+    positionals: PositionalArgumentsValue,
+    value: string@View
+) -> PositionalArgumentsValue {
+    return if positionals is {
+        @None {
+            positionals~>append(value)
+        }
+        @One {
+            positionals~>append(value)
+        }
+        @TooMany {
+            positionals~>append(value)
+        }
+    }
+}

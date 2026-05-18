@@ -1,0 +1,81 @@
+// Test responsibility:
+// Source/Compiler/Tests/Project/ModuleDiscovery/ModulesOk/ModulesOkTests.uv
+//
+// This file owns source-native tests for Modules-Ok@L4384.
+
+using UltravioletCompiler::Project::{
+    ModuleDiscoveryValue,
+    ModuleListValue,
+    assemblyName,
+    directoryPath,
+    discoverModulesFromSourceRootScan,
+    emptyDirectoryScans,
+    emptySourceFilePaths,
+    directoryScan,
+    directoryScanListEntry,
+    modulePath,
+    projectTextEquals,
+    sourceFilePath,
+    sourceFilePathListEntry,
+    sourceRootScan
+}
+
+[[test(
+    name: "module discovery returns discovered modules",
+    covers("Modules-Ok@L4384")
+)]]
+internal procedure moduleDiscoveryReturnsDiscoveredModules() -> bool
+|: => @result
+{
+    var passed: bool = false
+    region as diagnostics_region {
+        let discovery: ModuleDiscoveryValue =
+            discoverModulesFromSourceRootScan(
+                diagnostics_region,
+                assemblyName("UltravioletCompiler"),
+                sourceRootScan(
+                    directoryPath("Compiler"),
+                    true,
+                    directoryScanListEntry(
+                        directoryScan(
+                            directoryPath("Source/Compiler/Core"),
+                            modulePath("UltravioletCompiler::Core"),
+                            sourceFilePathListEntry(
+                                sourceFilePath("Source/Compiler/Core/Path.uv"),
+                                emptySourceFilePaths()
+                            ),
+                            true
+                        ),
+                        emptyDirectoryScans()
+                    )
+                )
+            )
+
+        passed = if discovery is {
+            @Scanning {
+                false
+            }
+            @Failed {
+                false
+            }
+            @Complete { modules } {
+                moduleListStartsWith(modules, "UltravioletCompiler::Core")
+            }
+        }
+    }
+    return passed
+}
+
+internal procedure moduleListStartsWith(
+    modules: ModuleListValue,
+    expected_path: string@View
+) -> bool {
+    return if modules is {
+        @Empty {
+            false
+        }
+        @Entry { module: project_module } {
+            projectTextEquals(project_module.path.text, expected_path)
+        }
+    }
+}

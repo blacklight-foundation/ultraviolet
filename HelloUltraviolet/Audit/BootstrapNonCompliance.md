@@ -40,7 +40,7 @@ let identifier_hit: bool = if 7 is bound_value {
 Observed bootstrap result:
 
 ```text
-./LLVMBootstrap/cursive/build/windows/Release/Cursive.exe build HelloUltraviolet --check --target-profile x86_64-win64
+./Bootstrap/cursive/build/windows/Release/Cursive.exe build HelloUltraviolet --check --target-profile x86_64-win64
 
 error[E-SRC-0520]: Generic syntax error (unexpected token)
   --> C:/Dev/Ultraviolet/HelloUltraviolet/Source/Reference/Patterns/BasicPatterns.uv:16:21
@@ -50,8 +50,8 @@ error[E-SRC-0520]: Generic syntax error (unexpected token)
 
 Bootstrap owner:
 
-- `LLVMBootstrap/cursive/src/02_source/parser/expr/if_expr.cpp`
-- `LLVMBootstrap/cursive/src/02_source/parser/pattern/pattern_common.cpp`
+- `Bootstrap/cursive/src/02_source/parser/expr/if_expr.cpp`
+- `Bootstrap/cursive/src/02_source/parser/pattern/pattern_common.cpp`
 
 Failure analysis:
 
@@ -71,7 +71,7 @@ an `IdentifierPattern`, not a `RecordPattern`.
 
 Repair:
 
-- `LLVMBootstrap/cursive/src/02_source/parser/expr/if_expr.cpp` now keeps the
+- `Bootstrap/cursive/src/02_source/parser/expr/if_expr.cpp` now keeps the
   full pattern parse first and then falls back to the spec's identifier-pattern
   form when the full parse does not leave the parser positioned at a block
   brace.
@@ -81,9 +81,9 @@ Repair:
 Status: repaired in the workspace bootstrap and verified by:
 
 ```text
-./LLVMBootstrap/cursive/build/windows/Release/cursive_codegen_abi_sret_test.exe
-./LLVMBootstrap/cursive/build/windows/Release/Cursive.exe build HelloUltraviolet --check --target-profile x86_64-win64 --incremental off
-./LLVMBootstrap/cursive/build/windows/Release/Cursive.exe build HelloUltraviolet --target-profile x86_64-win64 --incremental off
+./Bootstrap/cursive/build/windows/Release/cursive_codegen_abi_sret_test.exe
+./Bootstrap/cursive/build/windows/Release/Cursive.exe build HelloUltraviolet --check --target-profile x86_64-win64 --incremental off
+./Bootstrap/cursive/build/windows/Release/Cursive.exe build HelloUltraviolet --target-profile x86_64-win64 --incremental off
 ./HelloUltraviolet/build/bin/HelloUltraviolet.exe
 ```
 
@@ -129,7 +129,7 @@ exit=1
 
 Bootstrap owner:
 
-- `LLVMBootstrap/cursive/src/05_codegen/llvm/llvm_call.cpp`
+- `Bootstrap/cursive/src/05_codegen/llvm/llvm_call.cpp`
 
 Failure analysis:
 
@@ -147,10 +147,10 @@ panic-out parameters remain excluded from the source-argument cursor.
 
 Repair:
 
-- `LLVMBootstrap/cursive/src/05_codegen/llvm/llvm_call.cpp` now advances the
+- `Bootstrap/cursive/src/05_codegen/llvm/llvm_call.cpp` now advances the
   source-argument cursor when a non-hidden parameter is elided from the lowered
   LLVM call signature.
-- `LLVMBootstrap/cursive/src/tests/codegen_abi_sret_test.cpp` includes a
+- `Bootstrap/cursive/src/tests/codegen_abi_sret_test.cpp` includes a
   regression fixture with a zero-sized modal transition receiver and a real
   transition argument.
 
@@ -159,9 +159,9 @@ Repair:
 Status: repaired in the workspace bootstrap and verified by:
 
 ```text
-./LLVMBootstrap/cursive/build/windows/Release/cursive_codegen_abi_sret_test.exe
-./LLVMBootstrap/cursive/build/windows/Release/Cursive.exe build HelloUltraviolet --check --target-profile x86_64-win64 --incremental off --build-progress off
-./LLVMBootstrap/cursive/build/windows/Release/Cursive.exe build HelloUltraviolet --target-profile x86_64-win64 --incremental off --build-progress off
+./Bootstrap/cursive/build/windows/Release/cursive_codegen_abi_sret_test.exe
+./Bootstrap/cursive/build/windows/Release/Cursive.exe build HelloUltraviolet --check --target-profile x86_64-win64 --incremental off --build-progress off
+./Bootstrap/cursive/build/windows/Release/Cursive.exe build HelloUltraviolet --target-profile x86_64-win64 --incremental off --build-progress off
 ./HelloUltraviolet/build/bin/HelloUltraviolet.exe
 ```
 
@@ -226,9 +226,9 @@ bind %value = %boolean
 
 Bootstrap owner:
 
-- `LLVMBootstrap/cursive/src/05_codegen/lower/expr/if_case_expr.cpp`
-- `LLVMBootstrap/cursive/src/05_codegen/lower/pattern/pattern_common.cpp`
-- `LLVMBootstrap/cursive/src/05_codegen/lower/pattern/typed_pattern.cpp`
+- `Bootstrap/cursive/src/05_codegen/lower/expr/if_case_expr.cpp`
+- `Bootstrap/cursive/src/05_codegen/lower/pattern/pattern_common.cpp`
+- `Bootstrap/cursive/src/05_codegen/lower/pattern/typed_pattern.cpp`
 
 Failure analysis:
 
@@ -252,15 +252,15 @@ union value.
 
 Repair:
 
-- `LLVMBootstrap/cursive/src/05_codegen/lower/expr/if_case_expr.cpp` now runs
+- `Bootstrap/cursive/src/05_codegen/lower/expr/if_case_expr.cpp` now runs
   pattern binding before branch-local scrutinee refinement.
-- `LLVMBootstrap/cursive/src/05_codegen/lower/pattern/pattern_common.cpp` now
+- `Bootstrap/cursive/src/05_codegen/lower/pattern/pattern_common.cpp` now
   resolves single-segment type aliases through the current module scope and
   resolves aliases on both the typed pattern annotation and the scrutinee type
   before selecting a union member payload.
-- `LLVMBootstrap/cursive/src/05_codegen/lower/pattern/typed_pattern.cpp` now
+- `Bootstrap/cursive/src/05_codegen/lower/pattern/typed_pattern.cpp` now
   uses the same current-module alias lookup for typed-pattern lowering.
-- `LLVMBootstrap/cursive/src/tests/codegen_abi_sret_test.cpp` includes a
+- `Bootstrap/cursive/src/tests/codegen_abi_sret_test.cpp` includes a
   regression fixture with `PrimitiveUnion = i32 | bool`; it exits `3` if typed
   union case payload binding fails.
 
@@ -269,7 +269,7 @@ Repair:
 Status: repaired in the workspace bootstrap and verified by:
 
 ```text
-./LLVMBootstrap/cursive/build/windows/Release/cursive_codegen_abi_sret_test.exe
+./Bootstrap/cursive/build/windows/Release/cursive_codegen_abi_sret_test.exe
 ```
 
 Reference source:
@@ -303,7 +303,7 @@ let loop_value: i32 = loop true {
 Observed bootstrap result:
 
 ```text
-./LLVMBootstrap/cursive/build/windows/Release/Cursive.exe build HelloUltraviolet --check --target-profile x86_64-win64 --incremental off --build-progress off
+./Bootstrap/cursive/build/windows/Release/Cursive.exe build HelloUltraviolet --check --target-profile x86_64-win64 --incremental off --build-progress off
 
 error[E-MOD-2402]: Type annotation incompatible with inferred type
   --> C:/Dev/Ultraviolet/HelloUltraviolet/Source/Reference/Expressions/Control.uv:18:5
@@ -313,8 +313,8 @@ error[E-MOD-2402]: Type annotation incompatible with inferred type
 
 Bootstrap owner:
 
-- `LLVMBootstrap/cursive/src/04_analysis/typing/expr/loop_conditional.cpp`
-- `LLVMBootstrap/cursive/src/04_analysis/typing/expr/loop_infinite.cpp`
+- `Bootstrap/cursive/src/04_analysis/typing/expr/loop_conditional.cpp`
+- `Bootstrap/cursive/src/04_analysis/typing/expr/loop_infinite.cpp`
 
 Failure analysis:
 
@@ -332,12 +332,12 @@ break types, fail `LoopTypeFin`.
 
 Repair:
 
-- `LLVMBootstrap/cursive/src/04_analysis/typing/expr/loop_conditional.cpp` now
+- `Bootstrap/cursive/src/04_analysis/typing/expr/loop_conditional.cpp` now
   computes `LoopTypeFin` with type-equivalence checks and returns the common
   break value type for value-only breaks.
-- `LLVMBootstrap/cursive/src/04_analysis/typing/expr/loop_infinite.cpp` now
+- `Bootstrap/cursive/src/04_analysis/typing/expr/loop_infinite.cpp` now
   computes `LoopTypeInf` with the same void/value discipline.
-- `LLVMBootstrap/cursive/src/tests/codegen_abi_sret_test.cpp` includes a
+- `Bootstrap/cursive/src/tests/codegen_abi_sret_test.cpp` includes a
   regression fixture that assigns `loop true { break 5 }` to `i32`; it exits
   `4` if the loop result value is wrong.
 
@@ -346,7 +346,7 @@ Repair:
 Status: repaired in the workspace bootstrap and verified by:
 
 ```text
-./LLVMBootstrap/cursive/build/windows/Release/cursive_codegen_abi_sret_test.exe
+./Bootstrap/cursive/build/windows/Release/cursive_codegen_abi_sret_test.exe
 ```
 
 Reference source:
@@ -386,7 +386,7 @@ return call_ok && empty_ok && pipeline_value == 9
 Observed bootstrap result:
 
 ```text
-./LLVMBootstrap/cursive/build/windows/Release/Cursive.exe build HelloUltraviolet --target-profile x86_64-win64 --incremental off --build-progress off
+./Bootstrap/cursive/build/windows/Release/Cursive.exe build HelloUltraviolet --target-profile x86_64-win64 --incremental off --build-progress off
 
 fatal: Unhandled structured exception. (ACCESS_VIOLATION, 0xC0000005)
 ```
@@ -403,7 +403,7 @@ cursive::codegen::LLVMEmitter::EmitBindVar
 
 Bootstrap owner:
 
-- `LLVMBootstrap/cursive/src/05_codegen/lower/expr/closure_expr.cpp`
+- `Bootstrap/cursive/src/05_codegen/lower/expr/closure_expr.cpp`
 
 Failure analysis:
 
@@ -421,10 +421,10 @@ procedure must not invalidate the type recorded for the expression result.
 
 Repair:
 
-- `LLVMBootstrap/cursive/src/05_codegen/lower/expr/closure_expr.cpp` now stores
+- `Bootstrap/cursive/src/05_codegen/lower/expr/closure_expr.cpp` now stores
   the non-capturing closure result return type before queueing the generated
   procedure and uses that retained type when registering the result symbol.
-- `LLVMBootstrap/cursive/src/tests/codegen_abi_sret_test.cpp` includes a
+- `Bootstrap/cursive/src/tests/codegen_abi_sret_test.cpp` includes a
   regression fixture with non-capturing and empty closures; it exits `5` if
   construction or calls fail.
 
@@ -433,7 +433,7 @@ Repair:
 Status: repaired in the workspace bootstrap and verified by:
 
 ```text
-./LLVMBootstrap/cursive/build/windows/Release/cursive_codegen_abi_sret_test.exe
+./Bootstrap/cursive/build/windows/Release/cursive_codegen_abi_sret_test.exe
 ```
 
 Reference source:
@@ -480,9 +480,9 @@ stacktrace:
 
 Bootstrap owner:
 
-- `LLVMBootstrap/cursive/src/05_codegen/lower/expr/call.cpp`
-- `LLVMBootstrap/cursive/src/05_codegen/lower/expr/closure_expr.cpp`
-- `LLVMBootstrap/cursive/src/05_codegen/llvm/emit/ir/value/evaluate.cpp`
+- `Bootstrap/cursive/src/05_codegen/lower/expr/call.cpp`
+- `Bootstrap/cursive/src/05_codegen/lower/expr/closure_expr.cpp`
+- `Bootstrap/cursive/src/05_codegen/llvm/emit/ir/value/evaluate.cpp`
 
 Failure analysis:
 
@@ -504,16 +504,16 @@ region allocation context.
 
 Repair:
 
-- `LLVMBootstrap/cursive/src/05_codegen/lower/expr/call.cpp` now routes
+- `Bootstrap/cursive/src/05_codegen/lower/expr/call.cpp` now routes
   `TypeClosure` callees through `LowerClosureCall`.
-- `LLVMBootstrap/cursive/src/05_codegen/llvm/emit/ir/value/evaluate.cpp` now
+- `Bootstrap/cursive/src/05_codegen/llvm/emit/ir/value/evaluate.cpp` now
   declares queued procedure symbols from registered proc signatures when a
   closure value materializes its code pointer before the extra procedure body
   is emitted.
-- `LLVMBootstrap/cursive/src/05_codegen/lower/expr/closure_expr.cpp` now uses a
+- `Bootstrap/cursive/src/05_codegen/lower/expr/closure_expr.cpp` now uses a
   stack-backed closure environment when no active region alias is available and
   keeps region allocation for active-region contexts.
-- `LLVMBootstrap/cursive/src/tests/codegen_abi_sret_test.cpp` includes a
+- `Bootstrap/cursive/src/tests/codegen_abi_sret_test.cpp` includes a
   captured-closure regression; it exits `6` if the captured closure call fails.
 
 ## UVBOOT-0007: Rule Diagnostic IDs Escaping Typecheck Output
@@ -574,9 +574,9 @@ error: Internal error: unknown diagnostic id 'Call-Callee-NotFunc'
 
 Bootstrap owner:
 
-- `LLVMBootstrap/cursive/src/04_analysis/typing/stmt/break_stmt.cpp`
-- `LLVMBootstrap/cursive/src/04_analysis/typing/stmt/continue_stmt.cpp`
-- `LLVMBootstrap/cursive/src/04_analysis/memory/calls.cpp`
+- `Bootstrap/cursive/src/04_analysis/typing/stmt/break_stmt.cpp`
+- `Bootstrap/cursive/src/04_analysis/typing/stmt/continue_stmt.cpp`
+- `Bootstrap/cursive/src/04_analysis/memory/calls.cpp`
 
 Failure analysis:
 
@@ -639,7 +639,7 @@ error[E-SEM-2526]: Expression type incompatible with expected type
 
 Bootstrap owner:
 
-- `LLVMBootstrap/cursive/src/04_analysis/memory/calls.cpp`
+- `Bootstrap/cursive/src/04_analysis/memory/calls.cpp`
 
 Failure analysis:
 
@@ -723,9 +723,9 @@ error[E-SEM-2526]: Expression type incompatible with expected type
 
 Bootstrap owner:
 
-- `LLVMBootstrap/cursive/src/04_analysis/typing/stmt/assign_stmt.cpp`
-- `LLVMBootstrap/cursive/src/04_analysis/typing/stmt/return_stmt.cpp`
-- `LLVMBootstrap/cursive/src/04_analysis/typing/stmt/defer_stmt.cpp`
+- `Bootstrap/cursive/src/04_analysis/typing/stmt/assign_stmt.cpp`
+- `Bootstrap/cursive/src/04_analysis/typing/stmt/return_stmt.cpp`
+- `Bootstrap/cursive/src/04_analysis/typing/stmt/defer_stmt.cpp`
 
 Failure analysis:
 
@@ -792,7 +792,7 @@ error: Static rule failed without assigned diagnostic code: WF-ProcedureDecl-Mis
 
 Bootstrap owner:
 
-- `LLVMBootstrap/cursive/src/04_analysis/typing/item/procedure_decl.cpp`
+- `Bootstrap/cursive/src/04_analysis/typing/item/procedure_decl.cpp`
 - diagnostic code selection and mapping for
   `WF-ProcedureDecl-MissingReturnType`
 
@@ -861,8 +861,8 @@ error[E-MOD-2430]: Multiple `main` procedures defined
 
 Bootstrap owner:
 
-- `LLVMBootstrap/cursive/src/04_analysis/resolve/collect_toplevel.cpp`
-- `LLVMBootstrap/cursive/src/04_analysis/resolve/resolve_module.cpp`
+- `Bootstrap/cursive/src/04_analysis/resolve/collect_toplevel.cpp`
+- `Bootstrap/cursive/src/04_analysis/resolve/resolve_module.cpp`
 
 Failure analysis:
 
@@ -929,8 +929,8 @@ error[E-SEM-2536]: Method not found for receiver type
 
 Bootstrap owner:
 
-- `LLVMBootstrap/cursive/src/04_analysis/typing/expr/method_call.cpp`
-- `LLVMBootstrap/cursive/src/04_analysis/typing/typecheck_diag_lookup.h`
+- `Bootstrap/cursive/src/04_analysis/typing/expr/method_call.cpp`
+- `Bootstrap/cursive/src/04_analysis/typing/typecheck_diag_lookup.h`
 
 Failure analysis:
 
@@ -991,9 +991,9 @@ error[E-SEM-2591]: Closure parameter type cannot be inferred
 
 Bootstrap owner:
 
-- `LLVMBootstrap/cursive/src/04_analysis/typing/expr/closure_expr.cpp`
-- `LLVMBootstrap/cursive/src/04_analysis/typing/type_infer.cpp`
-- `LLVMBootstrap/cursive/src/04_analysis/typing/typecheck_diag_lookup.h`
+- `Bootstrap/cursive/src/04_analysis/typing/expr/closure_expr.cpp`
+- `Bootstrap/cursive/src/04_analysis/typing/type_infer.cpp`
+- `Bootstrap/cursive/src/04_analysis/typing/typecheck_diag_lookup.h`
 
 Failure analysis:
 
@@ -1058,8 +1058,8 @@ error[E-MEM-3031]: `transmute` source and target sizes differ
 
 Bootstrap owner:
 
-- `LLVMBootstrap/cursive/src/04_analysis/typing/expr/transmute_expr.cpp`
-- `LLVMBootstrap/cursive/src/04_analysis/typing/typecheck_diag_lookup.h`
+- `Bootstrap/cursive/src/04_analysis/typing/expr/transmute_expr.cpp`
+- `Bootstrap/cursive/src/04_analysis/typing/typecheck_diag_lookup.h`
 
 Failure analysis:
 
@@ -1122,7 +1122,7 @@ error[E-UNS-0107]: Non-`Bitcopy` place expression used as value
 
 Bootstrap owner:
 
-- `LLVMBootstrap/cursive/src/04_analysis/typing/type_infer.cpp`
+- `Bootstrap/cursive/src/04_analysis/typing/type_infer.cpp`
 
 Failure analysis:
 
@@ -1190,8 +1190,8 @@ error[E-TYP-1911]: Default record construction requires default initializer for 
 
 Bootstrap owner:
 
-- `LLVMBootstrap/cursive/src/04_analysis/composite/records.cpp`
-- `LLVMBootstrap/cursive/src/04_analysis/typing/typecheck_diag_lookup.h`
+- `Bootstrap/cursive/src/04_analysis/composite/records.cpp`
+- `Bootstrap/cursive/src/04_analysis/typing/typecheck_diag_lookup.h`
 
 Failure analysis:
 
@@ -1261,8 +1261,8 @@ accepted without diagnostics
 
 Bootstrap owner:
 
-- `LLVMBootstrap/cursive/src/04_analysis/typing/typecheck_diag_lookup.h`
-- `LLVMBootstrap/cursive/src/04_analysis/typing/stmt/return_stmt.cpp`
+- `Bootstrap/cursive/src/04_analysis/typing/typecheck_diag_lookup.h`
+- `Bootstrap/cursive/src/04_analysis/typing/stmt/return_stmt.cpp`
 
 Failure analysis:
 
@@ -1332,8 +1332,8 @@ then the typechecker should reject it through `RangePattern-NonConst`.
 
 Bootstrap owner:
 
-- `LLVMBootstrap/cursive/src/02_source/parser/expr/if_expr.cpp`
-- `LLVMBootstrap/cursive/src/02_source/parser/pattern/pattern_common.cpp`
+- `Bootstrap/cursive/src/02_source/parser/expr/if_expr.cpp`
+- `Bootstrap/cursive/src/02_source/parser/pattern/pattern_common.cpp`
 
 Failure analysis:
 
@@ -1384,7 +1384,7 @@ error: Internal error: unknown diagnostic id 'Record-Method-RecvSelf-Err'
 Repaired bootstrap result:
 
 ```text
-./LLVMBootstrap/cursive/build/windows/Release/Cursive.exe build HelloUltraviolet/Fixtures/RejectedSource/Procedures/RecordMethodReceiverNotSelf --check --target-profile x86_64-win64 --build-progress off
+./Bootstrap/cursive/build/windows/Release/Cursive.exe build HelloUltraviolet/Fixtures/RejectedSource/Procedures/RecordMethodReceiverNotSelf --check --target-profile x86_64-win64 --build-progress off
 
 exit=1
 error[E-TYP-1912]: Explicit receiver type must be `Self` for record methods
@@ -1392,12 +1392,12 @@ error[E-TYP-1912]: Explicit receiver type must be `Self` for record methods
 
 Bootstrap owner:
 
-- `LLVMBootstrap/cursive/src/04_analysis/composite/record_methods.cpp`
-- `LLVMBootstrap/cursive/tools/generate_diagnostic_registry.py`
-- `LLVMBootstrap/cursive/tools/static_rule_mapping.json`
-- `LLVMBootstrap/cursive/src/00_core/generated/diag_registry.inc`
-- `LLVMBootstrap/cursive/src/00_core/generated/static_rule_registry.inc`
-- `LLVMBootstrap/cursive/src/04_analysis/typing/item/typecheck_diag_map.inc`
+- `Bootstrap/cursive/src/04_analysis/composite/record_methods.cpp`
+- `Bootstrap/cursive/tools/generate_diagnostic_registry.py`
+- `Bootstrap/cursive/tools/static_rule_mapping.json`
+- `Bootstrap/cursive/src/00_core/generated/diag_registry.inc`
+- `Bootstrap/cursive/src/00_core/generated/static_rule_registry.inc`
+- `Bootstrap/cursive/src/04_analysis/typing/item/typecheck_diag_map.inc`
 
 Failure analysis:
 
@@ -1459,11 +1459,11 @@ error[E-SEM-2805]: `@entry()` result type not `BitcopyType`
 
 Bootstrap owner:
 
-- `LLVMBootstrap/cursive/src/04_analysis/typing/expr/contract_entry.cpp`
-- `LLVMBootstrap/cursive/src/04_analysis/typing/type_expr.cpp`
-- `LLVMBootstrap/cursive/src/04_analysis/typing/item/contract_clause.cpp`
-- `LLVMBootstrap/cursive/src/04_analysis/contracts/contract_intrinsics.cpp`
-- `LLVMBootstrap/cursive/src/04_analysis/typing/item/procedure_decl.cpp`
+- `Bootstrap/cursive/src/04_analysis/typing/expr/contract_entry.cpp`
+- `Bootstrap/cursive/src/04_analysis/typing/type_expr.cpp`
+- `Bootstrap/cursive/src/04_analysis/typing/item/contract_clause.cpp`
+- `Bootstrap/cursive/src/04_analysis/contracts/contract_intrinsics.cpp`
+- `Bootstrap/cursive/src/04_analysis/typing/item/procedure_decl.cpp`
 
 Failure analysis:
 
@@ -1528,8 +1528,8 @@ error: Static rule failed without assigned diagnostic code: WF-Contract
 
 Bootstrap owner:
 
-- `LLVMBootstrap/cursive/src/04_analysis/typing/item/procedure_decl.cpp`
-- `LLVMBootstrap/cursive/src/04_analysis/contracts/contract_check.cpp`
+- `Bootstrap/cursive/src/04_analysis/typing/item/procedure_decl.cpp`
+- `Bootstrap/cursive/src/04_analysis/contracts/contract_check.cpp`
 
 Failure analysis:
 
@@ -1587,10 +1587,10 @@ error[E-CON-0415]: Capability-requiring operation in `@entry` expression
 
 Bootstrap owner:
 
-- `LLVMBootstrap/cursive/src/04_analysis/typing/item/procedure_decl.cpp`
-- `LLVMBootstrap/cursive/src/04_analysis/contracts/contract_intrinsics.cpp`
-- `LLVMBootstrap/cursive/src/04_analysis/typing/type_expr.cpp`
-- `LLVMBootstrap/cursive/src/04_analysis/typing/expr/contract_entry.cpp`
+- `Bootstrap/cursive/src/04_analysis/typing/item/procedure_decl.cpp`
+- `Bootstrap/cursive/src/04_analysis/contracts/contract_intrinsics.cpp`
+- `Bootstrap/cursive/src/04_analysis/typing/type_expr.cpp`
+- `Bootstrap/cursive/src/04_analysis/typing/expr/contract_entry.cpp`
 
 Failure analysis:
 
@@ -1646,7 +1646,7 @@ error: Internal error: unknown diagnostic id 'Let-Refutable-Pattern-Err'
 Repaired bootstrap result:
 
 ```text
-./LLVMBootstrap/cursive/build/windows/Release/Cursive.exe build HelloUltraviolet/Fixtures/RejectedSource/Statements/LetRefutablePattern --check --target-profile x86_64-win64 --build-progress off
+./Bootstrap/cursive/build/windows/Release/Cursive.exe build HelloUltraviolet/Fixtures/RejectedSource/Statements/LetRefutablePattern --check --target-profile x86_64-win64 --build-progress off
 
 exit=1
 error[E-SEM-2711]: Refutable pattern in irrefutable context (`let`)
@@ -1654,12 +1654,12 @@ error[E-SEM-2711]: Refutable pattern in irrefutable context (`let`)
 
 Bootstrap owner:
 
-- `LLVMBootstrap/cursive/src/04_analysis/typing/stmt/stmt_common.cpp`
-- `LLVMBootstrap/cursive/tools/generate_diagnostic_registry.py`
-- `LLVMBootstrap/cursive/tools/static_rule_mapping.json`
-- `LLVMBootstrap/cursive/src/00_core/generated/diag_registry.inc`
-- `LLVMBootstrap/cursive/src/00_core/generated/static_rule_registry.inc`
-- `LLVMBootstrap/cursive/src/04_analysis/typing/item/typecheck_diag_map.inc`
+- `Bootstrap/cursive/src/04_analysis/typing/stmt/stmt_common.cpp`
+- `Bootstrap/cursive/tools/generate_diagnostic_registry.py`
+- `Bootstrap/cursive/tools/static_rule_mapping.json`
+- `Bootstrap/cursive/src/00_core/generated/diag_registry.inc`
+- `Bootstrap/cursive/src/00_core/generated/static_rule_registry.inc`
+- `Bootstrap/cursive/src/04_analysis/typing/item/typecheck_diag_map.inc`
 
 Failure analysis:
 
@@ -1681,9 +1681,9 @@ Repair:
 Status: repaired in the workspace bootstrap and verified by:
 
 ```text
-powershell.exe ... run_vsdev_cmake_build.ps1 -SourceDir C:\Dev\Ultraviolet\LLVMBootstrap\cursive -BuildDir C:\Dev\Ultraviolet\LLVMBootstrap\cursive\build\windows -Config Release -Target cursive
-./LLVMBootstrap/cursive/build/windows/Release/Cursive.exe build HelloUltraviolet/Fixtures/RejectedSource/Statements/AsyncReturnTypeMismatch --check --target-profile x86_64-win64 --incremental off --build-progress off
-./LLVMBootstrap/cursive/build/windows/Release/Cursive.exe build HelloUltraviolet/Fixtures/RejectedSource/Statements/AsyncReturnUnitMismatch --check --target-profile x86_64-win64 --incremental off --build-progress off
+powershell.exe ... run_vsdev_cmake_build.ps1 -SourceDir C:\Dev\Ultraviolet\Bootstrap\cursive -BuildDir C:\Dev\Ultraviolet\Bootstrap\cursive\build\windows -Config Release -Target cursive
+./Bootstrap/cursive/build/windows/Release/Cursive.exe build HelloUltraviolet/Fixtures/RejectedSource/Statements/AsyncReturnTypeMismatch --check --target-profile x86_64-win64 --incremental off --build-progress off
+./Bootstrap/cursive/build/windows/Release/Cursive.exe build HelloUltraviolet/Fixtures/RejectedSource/Statements/AsyncReturnUnitMismatch --check --target-profile x86_64-win64 --incremental off --build-progress off
 ```
 
 Rejected-source specimens:
@@ -1722,7 +1722,7 @@ error[E-SEM-2526]: Expression type incompatible with expected type
 
 Bootstrap owner:
 
-- `LLVMBootstrap/cursive/src/04_analysis/typing/stmt/return_stmt.cpp`
+- `Bootstrap/cursive/src/04_analysis/typing/stmt/return_stmt.cpp`
 
 Failure analysis:
 
@@ -1740,7 +1740,7 @@ ill-formed return expression may still propagate from the expression checker.
 
 Repair:
 
-- `LLVMBootstrap/cursive/src/04_analysis/typing/stmt/return_stmt.cpp` now maps
+- `Bootstrap/cursive/src/04_analysis/typing/stmt/return_stmt.cpp` now maps
   the generic expected-type mismatch `E-SEM-2526` to `E-CON-0203` inside the
   async return branch while preserving other expression-owned diagnostics.
 
@@ -1749,8 +1749,8 @@ Repair:
 Status: repaired in the workspace bootstrap and verified by:
 
 ```text
-powershell.exe ... run_vsdev_cmake_build.ps1 -SourceDir C:\Dev\Ultraviolet\LLVMBootstrap\cursive -BuildDir C:\Dev\Ultraviolet\LLVMBootstrap\cursive\build\windows -Config Release -Target cursive
-./LLVMBootstrap/cursive/build/windows/Release/Cursive.exe build HelloUltraviolet/Fixtures/AcceptedProjects/ExpressionSemantics --check --target-profile x86_64-win64 --incremental off --build-progress off
+powershell.exe ... run_vsdev_cmake_build.ps1 -SourceDir C:\Dev\Ultraviolet\Bootstrap\cursive -BuildDir C:\Dev\Ultraviolet\Bootstrap\cursive\build\windows -Config Release -Target cursive
+./Bootstrap/cursive/build/windows/Release/Cursive.exe build HelloUltraviolet/Fixtures/AcceptedProjects/ExpressionSemantics --check --target-profile x86_64-win64 --incremental off --build-progress off
 ```
 
 Accepted-source specimen:
@@ -1793,9 +1793,9 @@ error[E-MOD-2401]: Reassignment of immutable `let` binding
 
 Bootstrap owners:
 
-- `LLVMBootstrap/cursive/src/04_analysis/typing/stmt/assign_stmt.cpp`
-- `LLVMBootstrap/cursive/src/04_analysis/typing/stmt/compound_assign_stmt.cpp`
-- `LLVMBootstrap/cursive/src/04_analysis/memory/borrow_bind.cpp`
+- `Bootstrap/cursive/src/04_analysis/typing/stmt/assign_stmt.cpp`
+- `Bootstrap/cursive/src/04_analysis/typing/stmt/compound_assign_stmt.cpp`
+- `Bootstrap/cursive/src/04_analysis/memory/borrow_bind.cpp`
 
 Failure analysis:
 
@@ -1868,7 +1868,7 @@ error[E-TYP-2106]: Call to `extern` procedure outside `unsafe`
 
 Bootstrap owner:
 
-- `LLVMBootstrap/cursive/src/04_analysis/typing/expr/call.cpp`
+- `Bootstrap/cursive/src/04_analysis/typing/expr/call.cpp`
 
 Repair analysis:
 
@@ -1916,7 +1916,7 @@ FfiSafeEnumGenericUnbounded: E-TYP-2628
 
 Bootstrap owner:
 
-- `LLVMBootstrap/cursive/src/04_analysis/typing/type_predicates.cpp`
+- `Bootstrap/cursive/src/04_analysis/typing/type_predicates.cpp`
 
 Failure analysis:
 
@@ -1985,8 +1985,8 @@ ForeignEnsuresNullResult: E-SEM-2853
 
 Bootstrap owners:
 
-- `LLVMBootstrap/cursive/src/04_analysis/contracts/contract_intrinsics.cpp`
-- `LLVMBootstrap/cursive/src/04_analysis/typing/item/extern_block.cpp`
+- `Bootstrap/cursive/src/04_analysis/contracts/contract_intrinsics.cpp`
+- `Bootstrap/cursive/src/04_analysis/typing/item/extern_block.cpp`
 
 Failure analysis:
 
@@ -2045,9 +2045,9 @@ NullLiteralExpected: error: Internal error: unknown diagnostic id 'NullLiteral-I
 
 Bootstrap owner:
 
-- `LLVMBootstrap/cursive/src/04_analysis/typing/literals.cpp`
-- `LLVMBootstrap/cursive/src/04_analysis/typing/type_infer.cpp`
-- `LLVMBootstrap/cursive/src/04_analysis/typing/typecheck_diag_lookup.h`
+- `Bootstrap/cursive/src/04_analysis/typing/literals.cpp`
+- `Bootstrap/cursive/src/04_analysis/typing/type_infer.cpp`
+- `Bootstrap/cursive/src/04_analysis/typing/typecheck_diag_lookup.h`
 
 Failure analysis:
 
@@ -2096,8 +2096,8 @@ FieldVisibility: error: Static rule failed without assigned diagnostic code: Fie
 
 Bootstrap owner:
 
-- `LLVMBootstrap/cursive/src/04_analysis/typing/expr/field_access.cpp`
-- `LLVMBootstrap/cursive/src/04_analysis/typing/typecheck_diag_lookup.h`
+- `Bootstrap/cursive/src/04_analysis/typing/expr/field_access.cpp`
+- `Bootstrap/cursive/src/04_analysis/typing/typecheck_diag_lookup.h`
 
 Failure analysis:
 
@@ -2146,8 +2146,8 @@ WidenTypingDiagnosticsOwnership: error: Static rule failed without assigned diag
 
 Bootstrap owner:
 
-- `LLVMBootstrap/cursive/src/04_analysis/typing/expr/unary.cpp`
-- `LLVMBootstrap/cursive/src/04_analysis/typing/typecheck_diag_lookup.h`
+- `Bootstrap/cursive/src/04_analysis/typing/expr/unary.cpp`
+- `Bootstrap/cursive/src/04_analysis/typing/typecheck_diag_lookup.h`
 
 Failure analysis:
 
@@ -2225,12 +2225,12 @@ error[E-MOD-1302]: Duplicate declaration in module scope
 
 Bootstrap owner:
 
-- `LLVMBootstrap/cursive/src/04_analysis/resolve/collect_toplevel.cpp`
-- `LLVMBootstrap/cursive/src/04_analysis/typing/expr/call.cpp`
-- `LLVMBootstrap/cursive/src/05_codegen/symbols/mangle.cpp`
-- `LLVMBootstrap/cursive/src/05_codegen/lower/lower_module.cpp`
-- `LLVMBootstrap/cursive/src/05_codegen/lower/lower_proc.cpp`
-- `LLVMBootstrap/cursive/src/05_codegen/lower/expr/call.cpp`
+- `Bootstrap/cursive/src/04_analysis/resolve/collect_toplevel.cpp`
+- `Bootstrap/cursive/src/04_analysis/typing/expr/call.cpp`
+- `Bootstrap/cursive/src/05_codegen/symbols/mangle.cpp`
+- `Bootstrap/cursive/src/05_codegen/lower/lower_module.cpp`
+- `Bootstrap/cursive/src/05_codegen/lower/lower_proc.cpp`
+- `Bootstrap/cursive/src/05_codegen/lower/expr/call.cpp`
 
 Failure analysis:
 
@@ -2325,7 +2325,7 @@ public procedure sharedDynamicMutatingReceiverReference(
 Verified bootstrap result:
 
 ```text
-./LLVMBootstrap/cursive/build/windows/Release/Cursive.exe build HelloUltraviolet/Fixtures/RejectedSource/Keys/SharedDynamicMutatingReceiver --check --target-profile x86_64-win64 --build-progress off
+./Bootstrap/cursive/build/windows/Release/Cursive.exe build HelloUltraviolet/Fixtures/RejectedSource/Keys/SharedDynamicMutatingReceiver --check --target-profile x86_64-win64 --build-progress off
 
 exit=1
 error[E-CON-0083]: `shared $Class` where class has `~%`/`~!` methods
@@ -2333,8 +2333,8 @@ error[E-CON-0083]: `shared $Class` where class has `~%`/`~!` methods
 
 Bootstrap repair owner:
 
-- `LLVMBootstrap/cursive/src/04_analysis/typing/type_wf.cpp`
-- `LLVMBootstrap/cursive/src/00_core/generated/static_rule_registry.inc`
+- `Bootstrap/cursive/src/04_analysis/typing/type_wf.cpp`
+- `Bootstrap/cursive/src/00_core/generated/static_rule_registry.inc`
 
 Repair summary:
 
@@ -2385,7 +2385,7 @@ public procedure tuplePatternArityReference() -> i32 {
 Observed bootstrap result:
 
 ```text
-./LLVMBootstrap/cursive/build/windows/Release/Cursive.exe build HelloUltraviolet/Fixtures/RejectedSource/Patterns/TuplePatternArity --check --target-profile x86_64-win64 --build-progress off
+./Bootstrap/cursive/build/windows/Release/Cursive.exe build HelloUltraviolet/Fixtures/RejectedSource/Patterns/TuplePatternArity --check --target-profile x86_64-win64 --build-progress off
 
 exit=1
 error: Static rule failed without assigned diagnostic code: Pat-Tuple-Arity-Err
@@ -2393,10 +2393,10 @@ error: Static rule failed without assigned diagnostic code: Pat-Tuple-Arity-Err
 
 Bootstrap owner:
 
-- `LLVMBootstrap/cursive/src/04_analysis/typing/pattern/pattern_common.cpp`
-- `LLVMBootstrap/cursive/src/04_analysis/typing/typecheck_diag_lookup.h`
-- `LLVMBootstrap/cursive/tools/generate_diagnostic_registry.py`
-- `LLVMBootstrap/cursive/src/00_core/generated/diag_registry.inc`
+- `Bootstrap/cursive/src/04_analysis/typing/pattern/pattern_common.cpp`
+- `Bootstrap/cursive/src/04_analysis/typing/typecheck_diag_lookup.h`
+- `Bootstrap/cursive/tools/generate_diagnostic_registry.py`
+- `Bootstrap/cursive/src/00_core/generated/diag_registry.inc`
 
 Failure analysis:
 
@@ -2433,7 +2433,7 @@ Spec basis:
 Verified bootstrap result:
 
 ```text
-./LLVMBootstrap/cursive/build/windows/Release/Cursive.exe build HelloUltraviolet/Fixtures/RejectedSource/Procedures/RecordMethodDuplicate --check --target-profile x86_64-win64 --build-progress off
+./Bootstrap/cursive/build/windows/Release/Cursive.exe build HelloUltraviolet/Fixtures/RejectedSource/Procedures/RecordMethodDuplicate --check --target-profile x86_64-win64 --build-progress off
 
 exit=1
 error[E-SEM-3012]: Duplicate method name in type
@@ -2441,11 +2441,11 @@ error[E-SEM-3012]: Duplicate method name in type
 
 Bootstrap repair owner:
 
-- `LLVMBootstrap/cursive/tools/generate_diagnostic_registry.py`
-- `LLVMBootstrap/cursive/tools/static_rule_mapping.json`
-- `LLVMBootstrap/cursive/src/00_core/generated/diag_registry.inc`
-- `LLVMBootstrap/cursive/src/00_core/generated/static_rule_registry.inc`
-- `LLVMBootstrap/cursive/src/04_analysis/typing/item/typecheck_diag_map.inc`
+- `Bootstrap/cursive/tools/generate_diagnostic_registry.py`
+- `Bootstrap/cursive/tools/static_rule_mapping.json`
+- `Bootstrap/cursive/src/00_core/generated/diag_registry.inc`
+- `Bootstrap/cursive/src/00_core/generated/static_rule_registry.inc`
+- `Bootstrap/cursive/src/04_analysis/typing/item/typecheck_diag_map.inc`
 
 Repair summary:
 
@@ -2480,7 +2480,7 @@ Spec basis:
 Observed bootstrap result:
 
 ```text
-./LLVMBootstrap/cursive/build/windows/Release/Cursive.exe build HelloUltraviolet --check --target-profile x86_64-win64 --build-progress off
+./Bootstrap/cursive/build/windows/Release/Cursive.exe build HelloUltraviolet --check --target-profile x86_64-win64 --build-progress off
 
 error[E-TYP-1904]: Access to nonexistent field
   --> C:/Dev/Ultraviolet/HelloUltraviolet/Source/Reference/Polymorphism/Classes.uv:15:10
@@ -2488,9 +2488,9 @@ error[E-TYP-1904]: Access to nonexistent field
 
 Bootstrap owner:
 
-- `LLVMBootstrap/cursive/src/04_analysis/typing/item/class_decl.cpp`
-- `LLVMBootstrap/cursive/src/04_analysis/typing/expr/field_access.cpp`
-- `LLVMBootstrap/cursive/src/04_analysis/composite/classes.cpp`
+- `Bootstrap/cursive/src/04_analysis/typing/item/class_decl.cpp`
+- `Bootstrap/cursive/src/04_analysis/typing/expr/field_access.cpp`
+- `Bootstrap/cursive/src/04_analysis/composite/classes.cpp`
 
 Failure analysis:
 
@@ -2530,7 +2530,7 @@ Spec basis:
 Observed bootstrap result:
 
 ```text
-./LLVMBootstrap/cursive/build/windows/Release/Cursive.exe build HelloUltraviolet --check --target-profile x86_64-win64 --build-progress off
+./Bootstrap/cursive/build/windows/Release/Cursive.exe build HelloUltraviolet --check --target-profile x86_64-win64 --build-progress off
 
 error[E-SEM-2536]: Method not found for receiver type
   --> C:/Dev/Ultraviolet/HelloUltraviolet/Source/Reference/Polymorphism/GenericParameters.uv:34:5
@@ -2539,9 +2539,9 @@ error[E-SEM-2536]: Method not found for receiver type
 
 Bootstrap owner:
 
-- `LLVMBootstrap/cursive/src/04_analysis/generics/where_bounds.cpp`
-- `LLVMBootstrap/cursive/src/04_analysis/typing/expr/method_call.cpp`
-- `LLVMBootstrap/cursive/src/04_analysis/composite/record_methods.cpp`
+- `Bootstrap/cursive/src/04_analysis/generics/where_bounds.cpp`
+- `Bootstrap/cursive/src/04_analysis/typing/expr/method_call.cpp`
+- `Bootstrap/cursive/src/04_analysis/composite/record_methods.cpp`
 
 Failure analysis:
 
@@ -2581,7 +2581,7 @@ Spec basis:
 Observed bootstrap result:
 
 ```text
-./LLVMBootstrap/cursive/build/windows/Release/Cursive.exe build HelloUltraviolet --check --target-profile x86_64-win64 --build-progress off
+./Bootstrap/cursive/build/windows/Release/Cursive.exe build HelloUltraviolet --check --target-profile x86_64-win64 --build-progress off
 
 error[E-MOD-2402]: Type annotation incompatible with inferred type
   --> C:/Dev/Ultraviolet/HelloUltraviolet/Source/Reference/Polymorphism/GenericParameters.uv:59:5
@@ -2590,9 +2590,9 @@ error[E-MOD-2402]: Type annotation incompatible with inferred type
 
 Bootstrap owner:
 
-- `LLVMBootstrap/cursive/src/04_analysis/typing/expr/record_literal.cpp`
-- `LLVMBootstrap/cursive/src/04_analysis/typing/stmt/let_stmt.cpp`
-- `LLVMBootstrap/cursive/src/04_analysis/generics/monomorphize.cpp`
+- `Bootstrap/cursive/src/04_analysis/typing/expr/record_literal.cpp`
+- `Bootstrap/cursive/src/04_analysis/typing/stmt/let_stmt.cpp`
+- `Bootstrap/cursive/src/04_analysis/generics/monomorphize.cpp`
 
 Failure analysis:
 
@@ -2629,7 +2629,7 @@ Spec basis:
 Observed bootstrap result before repair:
 
 ```text
-./LLVMBootstrap/cursive/build/windows/Release/Cursive.exe build HelloUltraviolet/Fixtures/RejectedSource/Polymorphism/GenericTypeApplyArgCount --check --target-profile x86_64-win64 --build-progress off
+./Bootstrap/cursive/build/windows/Release/Cursive.exe build HelloUltraviolet/Fixtures/RejectedSource/Polymorphism/GenericTypeApplyArgCount --check --target-profile x86_64-win64 --build-progress off
 
 exit=0
 ```
@@ -2644,7 +2644,7 @@ error[E-TYP-2303]: Wrong number of type arguments
 
 Bootstrap repair owner:
 
-- `LLVMBootstrap/cursive/src/04_analysis/typing/type_wf.cpp`
+- `Bootstrap/cursive/src/04_analysis/typing/type_wf.cpp`
 
 Repair summary:
 
@@ -2676,7 +2676,7 @@ Spec basis:
 Observed bootstrap result before repair:
 
 ```text
-./LLVMBootstrap/cursive/build/windows/Release/Cursive.exe build HelloUltraviolet/Fixtures/RejectedSource/Polymorphism/GenericCallArgCount --check --target-profile x86_64-win64 --build-progress off
+./Bootstrap/cursive/build/windows/Release/Cursive.exe build HelloUltraviolet/Fixtures/RejectedSource/Polymorphism/GenericCallArgCount --check --target-profile x86_64-win64 --build-progress off
 
 exit=0
 ```
@@ -2691,9 +2691,9 @@ error[E-TYP-2303]: Wrong number of type arguments
 
 Bootstrap repair owner:
 
-- `LLVMBootstrap/cursive/src/04_analysis/typing/type_infer.cpp`
-- `LLVMBootstrap/cursive/src/04_analysis/typing/expr/call.cpp`
-- `LLVMBootstrap/cursive/src/04_analysis/typing/expr/call_type_args.cpp`
+- `Bootstrap/cursive/src/04_analysis/typing/type_infer.cpp`
+- `Bootstrap/cursive/src/04_analysis/typing/expr/call.cpp`
+- `Bootstrap/cursive/src/04_analysis/typing/expr/call_type_args.cpp`
 
 Repair summary:
 
@@ -2742,7 +2742,7 @@ error[E-TYP-2502]: Missing `override` on concrete procedure replacement
 
 Bootstrap repair owner:
 
-- `LLVMBootstrap/cursive/src/04_analysis/typing/item/record_decl.cpp`
+- `Bootstrap/cursive/src/04_analysis/typing/item/record_decl.cpp`
 
 Repair summary:
 
@@ -2786,7 +2786,7 @@ error[E-UNS-0105]: `override` used with no concrete procedure to override
 
 Bootstrap repair owner:
 
-- `LLVMBootstrap/cursive/src/04_analysis/typing/item/record_decl.cpp`
+- `Bootstrap/cursive/src/04_analysis/typing/item/record_decl.cpp`
 
 Repair summary:
 
@@ -2832,8 +2832,8 @@ error[E-TYP-2622]: `BitcopyType` has non-`BitcopyType` field
 
 Bootstrap repair owner:
 
-- `LLVMBootstrap/cursive/src/04_analysis/typing/item/record_decl.cpp`
-- `LLVMBootstrap/cursive/src/04_analysis/typing/item/enum_decl.cpp`
+- `Bootstrap/cursive/src/04_analysis/typing/item/record_decl.cpp`
+- `Bootstrap/cursive/src/04_analysis/typing/item/enum_decl.cpp`
 
 Repair summary:
 
@@ -2888,8 +2888,8 @@ error[E-MOD-1304]: Unresolved module: path prefix did not resolve to a module
 
 Bootstrap repair owner:
 
-- `LLVMBootstrap/cursive/src/04_analysis/resolve/scopes.cpp`
-- `LLVMBootstrap/cursive/src/04_analysis/resolve/resolve_module.cpp`
+- `Bootstrap/cursive/src/04_analysis/resolve/scopes.cpp`
+- `Bootstrap/cursive/src/04_analysis/resolve/resolve_module.cpp`
 
 Repair summary:
 
@@ -2943,8 +2943,8 @@ error[E-TYP-1956]: `self` used in inline parameter constraint
 
 Bootstrap repair owner:
 
-- `LLVMBootstrap/cursive/src/04_analysis/typing/item/signature.cpp`
-- `LLVMBootstrap/cursive/src/00_core/generated/static_rule_registry.inc`
+- `Bootstrap/cursive/src/04_analysis/typing/item/signature.cpp`
+- `Bootstrap/cursive/src/00_core/generated/static_rule_registry.inc`
 
 Repair summary:
 
@@ -2988,8 +2988,8 @@ error[E-SEM-3032]: Duplicate signature in overload set
 
 Bootstrap repair owner:
 
-- `LLVMBootstrap/cursive/src/04_analysis/typing/typecheck.cpp`
-- `LLVMBootstrap/cursive/src/00_core/generated/static_rule_registry.inc`
+- `Bootstrap/cursive/src/04_analysis/typing/typecheck.cpp`
+- `Bootstrap/cursive/src/00_core/generated/static_rule_registry.inc`
 
 Repair summary:
 
@@ -3003,10 +3003,10 @@ variable, compares parameter modes and `TypeKeyOf` parameter types, and reports
 Status: repaired in the workspace bootstrap and verified by:
 
 ```text
-LLVMBootstrap/cursive/build/windows/Release/Cursive.exe build HelloUltraviolet/Fixtures/RejectedSource/Polymorphism/GenericInfiniteMonomorphization --target-profile x86_64-win64 --build-progress off
-LLVMBootstrap/cursive/build/windows/Release/Cursive.exe build HelloUltraviolet/Fixtures/RejectedSource/Polymorphism/GenericInstantiationDepthLimit --target-profile x86_64-win64 --build-progress off
-LLVMBootstrap/cursive/build/windows/Release/Cursive.exe build HelloUltraviolet --check --target-profile x86_64-win64 --build-progress off
-LLVMBootstrap/cursive/build/windows/Release/Cursive.exe build HelloUltraviolet --target-profile x86_64-win64 --build-progress off
+Bootstrap/cursive/build/windows/Release/Cursive.exe build HelloUltraviolet/Fixtures/RejectedSource/Polymorphism/GenericInfiniteMonomorphization --target-profile x86_64-win64 --build-progress off
+Bootstrap/cursive/build/windows/Release/Cursive.exe build HelloUltraviolet/Fixtures/RejectedSource/Polymorphism/GenericInstantiationDepthLimit --target-profile x86_64-win64 --build-progress off
+Bootstrap/cursive/build/windows/Release/Cursive.exe build HelloUltraviolet --check --target-profile x86_64-win64 --build-progress off
+Bootstrap/cursive/build/windows/Release/Cursive.exe build HelloUltraviolet --target-profile x86_64-win64 --build-progress off
 HelloUltraviolet/build/bin/HelloUltraviolet.exe
 HelloUltraviolet/build/bin/HelloUltraviolet.exe --audit
 ```
@@ -3042,10 +3042,10 @@ GenericInstantiationDepthLimit: exit=1, E-TYP-2308
 
 Bootstrap repair owner:
 
-- `LLVMBootstrap/cursive/src/05_codegen/lower/expr/call.cpp`
-- `LLVMBootstrap/cursive/include/05_codegen/lower/lower_expr.h`
-- `LLVMBootstrap/cursive/src/06_driver/pipeline.cpp`
-- `LLVMBootstrap/cursive/src/CMakeLists.txt`
+- `Bootstrap/cursive/src/05_codegen/lower/expr/call.cpp`
+- `Bootstrap/cursive/include/05_codegen/lower/lower_expr.h`
+- `Bootstrap/cursive/src/06_driver/pipeline.cpp`
+- `Bootstrap/cursive/src/CMakeLists.txt`
 
 Repair summary:
 
@@ -3061,11 +3061,11 @@ compiler executable reserves enough native stack for the SPEC-defined
 Status: repaired in the workspace bootstrap and verified by:
 
 ```text
-LLVMBootstrap/cursive/build/Release/Cursive.exe build HelloUltraviolet --check --target-profile x86_64-win64 --build-progress off
-LLVMBootstrap/cursive/build/Release/Cursive.exe build HelloUltraviolet --target-profile x86_64-win64 --build-progress off
+Bootstrap/cursive/build/Release/Cursive.exe build HelloUltraviolet --check --target-profile x86_64-win64 --build-progress off
+Bootstrap/cursive/build/Release/Cursive.exe build HelloUltraviolet --target-profile x86_64-win64 --build-progress off
 HelloUltraviolet/build/bin/HelloUltraviolet.exe
 HelloUltraviolet/build/bin/HelloUltraviolet.exe --audit
-LLVMBootstrap/cursive/build/Release/cursive_resolver_binary_chain_conformance_test.exe
+Bootstrap/cursive/build/Release/cursive_resolver_binary_chain_conformance_test.exe
 ```
 
 Reference source:
@@ -3122,7 +3122,7 @@ full corpus' long generated expression chains rather than the GPU construct.
 
 Bootstrap repair owner:
 
-- `LLVMBootstrap/cursive/src/04_analysis/resolve/resolve_expr.cpp`
+- `Bootstrap/cursive/src/04_analysis/resolve/resolve_expr.cpp`
 
 Repair summary:
 
@@ -3139,8 +3139,8 @@ exposed this resolver defect without relying on conformance trace volume.
 Status: repaired in the workspace bootstrap and verified by:
 
 ```text
-LLVMBootstrap/cursive/build/Release/Cursive.exe build HelloUltraviolet --check --target-profile x86_64-win64 --build-progress off
-LLVMBootstrap/cursive/build/Release/Cursive.exe build HelloUltraviolet --target-profile x86_64-win64 --build-progress off
+Bootstrap/cursive/build/Release/Cursive.exe build HelloUltraviolet --check --target-profile x86_64-win64 --build-progress off
+Bootstrap/cursive/build/Release/Cursive.exe build HelloUltraviolet --target-profile x86_64-win64 --build-progress off
 HelloUltraviolet/build/bin/HelloUltraviolet.exe
 HelloUltraviolet/build/bin/HelloUltraviolet.exe --audit
 python3 Tools/ExtractObligationLedger.py --check
@@ -3150,16 +3150,16 @@ git -c filter.lfs.process= -c filter.lfs.clean=cat -c filter.lfs.smudge=cat \
   HelloUltraviolet/Source/Reference/Parallelism/Spawn.uv \
   HelloUltraviolet/Source/Reference/Parallelism/Dispatch.uv \
   HelloUltraviolet/Source/Reference/Parallelism/ExecutionDomains.uv \
-  LLVMBootstrap/cursive/include/05_codegen/intrinsics/builtins.h \
-  LLVMBootstrap/cursive/src/05_codegen/intrinsics/builtins.cpp \
-  LLVMBootstrap/cursive/src/05_codegen/intrinsics/intrinsics_interface.cpp \
-  LLVMBootstrap/cursive/src/05_codegen/lower/expr/method_call.cpp \
-  LLVMBootstrap/cursive/src/05_codegen/llvm/emit/ir/async/spawn.cpp \
-  LLVMBootstrap/cursive/runtime/include/cursive_rt.h \
-  LLVMBootstrap/cursive/runtime/include/cursive_rt_language_symbols.h \
-  LLVMBootstrap/cursive/runtime/src/context/context.c \
-  LLVMBootstrap/cursive/runtime/src/concurrency/parallel.c \
-  LLVMBootstrap/cursive/runtime/src/internal/rt_internal.h
+  Bootstrap/cursive/include/05_codegen/intrinsics/builtins.h \
+  Bootstrap/cursive/src/05_codegen/intrinsics/builtins.cpp \
+  Bootstrap/cursive/src/05_codegen/intrinsics/intrinsics_interface.cpp \
+  Bootstrap/cursive/src/05_codegen/lower/expr/method_call.cpp \
+  Bootstrap/cursive/src/05_codegen/llvm/emit/ir/async/spawn.cpp \
+  Bootstrap/cursive/runtime/include/cursive_rt.h \
+  Bootstrap/cursive/runtime/include/cursive_rt_language_symbols.h \
+  Bootstrap/cursive/runtime/src/context/context.c \
+  Bootstrap/cursive/runtime/src/concurrency/parallel.c \
+  Bootstrap/cursive/runtime/src/internal/rt_internal.h
 ```
 
 Reference source:
@@ -3200,7 +3200,7 @@ internal procedure cpuMaskPriorityDomainReference(context: Context) -> i32 {
 Observed bootstrap result before repair:
 
 `Cursive.exe build HelloUltraviolet --check` accepted the source, but full
-codegen failed at `LLVMBootstrap/cursive/src/05_codegen/lower/expr/call.cpp:1310`
+codegen failed at `Bootstrap/cursive/src/05_codegen/lower/expr/call.cpp:1310`
 because `Context` method-call lowering invoked `LowerArgs` with empty
 parameter mode/type lists for `ctx.cpu(mask)` and `ctx.cpu(mask, priority)`.
 After the lowering arity defect was repaired, the final link step exposed the
@@ -3209,13 +3209,13 @@ from the Ultraviolet runtime archive.
 
 Bootstrap repair owner:
 
-- `LLVMBootstrap/cursive/src/05_codegen/lower/expr/method_call.cpp`
-- `LLVMBootstrap/cursive/src/05_codegen/intrinsics/builtins.cpp`
-- `LLVMBootstrap/cursive/src/05_codegen/intrinsics/intrinsics_interface.cpp`
-- `LLVMBootstrap/cursive/runtime/include/cursive_rt.h`
-- `LLVMBootstrap/cursive/runtime/include/cursive_rt_language_symbols.h`
-- `LLVMBootstrap/cursive/runtime/src/context/context.c`
-- `LLVMBootstrap/cursive/runtime/src/concurrency/parallel.c`
+- `Bootstrap/cursive/src/05_codegen/lower/expr/method_call.cpp`
+- `Bootstrap/cursive/src/05_codegen/intrinsics/builtins.cpp`
+- `Bootstrap/cursive/src/05_codegen/intrinsics/intrinsics_interface.cpp`
+- `Bootstrap/cursive/runtime/include/cursive_rt.h`
+- `Bootstrap/cursive/runtime/include/cursive_rt_language_symbols.h`
+- `Bootstrap/cursive/runtime/src/context/context.c`
+- `Bootstrap/cursive/runtime/src/concurrency/parallel.c`
 
 Repair summary:
 
@@ -3231,10 +3231,10 @@ domain defaults unless an explicit spawn option supplies a different value.
 Status: repaired in the workspace bootstrap and verified by:
 
 ```text
-LLVMBootstrap/cursive/build/Release/Cursive.exe build HelloUltraviolet --target-profile x86_64-win64 --build-progress off
+Bootstrap/cursive/build/Release/Cursive.exe build HelloUltraviolet --target-profile x86_64-win64 --build-progress off
 HelloUltraviolet/build/bin/HelloUltraviolet.exe
 HelloUltraviolet/build/bin/HelloUltraviolet.exe --audit
-LLVMBootstrap/cursive/build/Release/Cursive.exe build HelloUltraviolet --check --target-profile x86_64-win64 --build-progress off
+Bootstrap/cursive/build/Release/Cursive.exe build HelloUltraviolet --check --target-profile x86_64-win64 --build-progress off
 python3 Tools/ExtractObligationLedger.py --check
 ```
 
@@ -3334,14 +3334,14 @@ the semantic checker had already established a more precise async signature:
 
 Bootstrap repair owner:
 
-- `LLVMBootstrap/cursive/src/04_analysis/typing/type_infer.cpp`
-- `LLVMBootstrap/cursive/src/04_analysis/typing/if_case_check.cpp`
-- `LLVMBootstrap/cursive/src/05_codegen/llvm/emit/ir/async/race_yield.cpp`
-- `LLVMBootstrap/cursive/src/05_codegen/llvm/emit/ir/async/yield.cpp`
-- `LLVMBootstrap/cursive/src/05_codegen/llvm/emit/ir/call/direct.cpp`
-- `LLVMBootstrap/cursive/src/05_codegen/lower/expr/yield_expr.cpp`
-- `LLVMBootstrap/cursive/src/05_codegen/lower/expr/yield_from_expr.cpp`
-- `LLVMBootstrap/cursive/src/05_codegen/lower/expr/method_call.cpp`
+- `Bootstrap/cursive/src/04_analysis/typing/type_infer.cpp`
+- `Bootstrap/cursive/src/04_analysis/typing/if_case_check.cpp`
+- `Bootstrap/cursive/src/05_codegen/llvm/emit/ir/async/race_yield.cpp`
+- `Bootstrap/cursive/src/05_codegen/llvm/emit/ir/async/yield.cpp`
+- `Bootstrap/cursive/src/05_codegen/llvm/emit/ir/call/direct.cpp`
+- `Bootstrap/cursive/src/05_codegen/lower/expr/yield_expr.cpp`
+- `Bootstrap/cursive/src/05_codegen/lower/expr/yield_from_expr.cpp`
+- `Bootstrap/cursive/src/05_codegen/lower/expr/method_call.cpp`
 
 Repair summary:
 
@@ -3445,8 +3445,8 @@ splice renderer when it appeared as a statement body contribution.
 
 Bootstrap repair owner:
 
-- `LLVMBootstrap/cursive/src/02_source/parser/stmt/expr_stmt.cpp`
-- `LLVMBootstrap/cursive/src/03_comptime/quote.cpp`
+- `Bootstrap/cursive/src/02_source/parser/stmt/expr_stmt.cpp`
+- `Bootstrap/cursive/src/03_comptime/quote.cpp`
 
 Repair summary:
 
@@ -3519,7 +3519,7 @@ warning[W-CON-0009]: Closure captures shared data
 
 Bootstrap owner:
 
-- `LLVMBootstrap/cursive/src/04_analysis/typing/expr/closure_expr.cpp`
+- `Bootstrap/cursive/src/04_analysis/typing/expr/closure_expr.cpp`
 
 Failure analysis:
 
@@ -3537,7 +3537,7 @@ must emit one `W-CON-0009` diagnostic.
 
 Repair:
 
-- `LLVMBootstrap/cursive/src/04_analysis/typing/expr/closure_expr.cpp` now
+- `Bootstrap/cursive/src/04_analysis/typing/expr/closure_expr.cpp` now
   checks the active diagnostic stream for an existing `W-CON-0009` at the same
   span before appending the shared-capture warning.
 
@@ -3621,10 +3621,10 @@ error[E-OUT-0402]: Failed to emit object file (codegen or write)
 
 Bootstrap owner:
 
-- `LLVMBootstrap/cursive/src/04_analysis/typing/expr/method_call.cpp`
-- `LLVMBootstrap/cursive/src/05_codegen/intrinsics/intrinsics_interface.cpp`
-- `LLVMBootstrap/cursive/runtime/include/cursive_rt.h`
-- `LLVMBootstrap/cursive/runtime/src/concurrency/parallel.c`
+- `Bootstrap/cursive/src/04_analysis/typing/expr/method_call.cpp`
+- `Bootstrap/cursive/src/05_codegen/intrinsics/intrinsics_interface.cpp`
+- `Bootstrap/cursive/runtime/include/cursive_rt.h`
+- `Bootstrap/cursive/runtime/src/concurrency/parallel.c`
 
 Failure analysis:
 
@@ -3649,13 +3649,13 @@ implementation prototype.
 
 Repair:
 
-- `LLVMBootstrap/cursive/src/04_analysis/typing/expr/method_call.cpp` now keeps
+- `Bootstrap/cursive/src/04_analysis/typing/expr/method_call.cpp` now keeps
   builtin capability dynamic receiver calls on the builtin method path instead
   of applying the ordinary vtable eligibility rejection.
 - Method-call generic binding now follows top-level aliases when comparing
   applied type paths, allowing `Future<T, E>` to bind against the canonical
   async representation.
-- `LLVMBootstrap/cursive/src/05_codegen/intrinsics/intrinsics_interface.cpp`
+- `Bootstrap/cursive/src/05_codegen/intrinsics/intrinsics_interface.cpp`
   now declares the type-erased runtime ABI for `Reactor::register`.
 - The runtime header and implementation now expose the matching
   `Reactor::register` C prototype.
@@ -3733,7 +3733,7 @@ reflection metadata fields and `diagnostics.current_span`; they are not part of
 
 Repair:
 
-- `LLVMBootstrap/cursive/src/03_comptime/reflect.cpp` now renders
+- `Bootstrap/cursive/src/03_comptime/reflect.cpp` now renders
   `introspect.type_name` with `ast::DumpOptions.include_spans = false`.
 
 Verified bootstrap result after repair:
@@ -3800,7 +3800,7 @@ through immutable local bindings and pure constant expressions. Literal
 
 Repair:
 
-`LLVMBootstrap/cursive/src/04_analysis/typing/expr/call.cpp` now proves
+`Bootstrap/cursive/src/04_analysis/typing/expr/call.cpp` now proves
 no-argument compile-time boolean predicates with immutable `let` locals,
 constant integer and boolean expressions, arithmetic, comparisons, equality,
 negation, conjunction, and disjunction before using that result in contract
@@ -3850,9 +3850,9 @@ ReceiverPermissionMismatch: emitted E-TYP-1605 as specified
 
 Bootstrap owners:
 
-- `LLVMBootstrap/cursive/src/04_analysis/typing/stmt/assign_stmt.cpp`
-- `LLVMBootstrap/cursive/src/04_analysis/typing/stmt/compound_assign_stmt.cpp`
-- `LLVMBootstrap/cursive/src/04_analysis/memory/borrow_bind.cpp`
+- `Bootstrap/cursive/src/04_analysis/typing/stmt/assign_stmt.cpp`
+- `Bootstrap/cursive/src/04_analysis/typing/stmt/compound_assign_stmt.cpp`
+- `Bootstrap/cursive/src/04_analysis/memory/borrow_bind.cpp`
 
 Failure analysis:
 
@@ -3934,10 +3934,10 @@ EnumRecordMissingField: error[E-SEM-3161] Return type mismatch
 
 Bootstrap owners:
 
-- `LLVMBootstrap/cursive/src/04_analysis/typing/item/enum_decl.cpp`
-- `LLVMBootstrap/cursive/src/04_analysis/resolve/resolve_qual.cpp`
-- `LLVMBootstrap/cursive/src/04_analysis/resolve/resolve_module.cpp`
-- `LLVMBootstrap/cursive/src/04_analysis/typing/expr/enum_literal.cpp`
+- `Bootstrap/cursive/src/04_analysis/typing/item/enum_decl.cpp`
+- `Bootstrap/cursive/src/04_analysis/resolve/resolve_qual.cpp`
+- `Bootstrap/cursive/src/04_analysis/resolve/resolve_module.cpp`
+- `Bootstrap/cursive/src/04_analysis/typing/expr/enum_literal.cpp`
 
 Failure analysis:
 
@@ -3999,8 +3999,8 @@ error: Static rule failed without assigned diagnostic code: WF-Record-DupField
 
 Bootstrap owners:
 
-- `LLVMBootstrap/cursive/src/04_analysis/typing/item/record_decl.cpp`
-- `LLVMBootstrap/cursive/src/04_analysis/composite/records.cpp`
+- `Bootstrap/cursive/src/04_analysis/typing/item/record_decl.cpp`
+- `Bootstrap/cursive/src/04_analysis/composite/records.cpp`
 
 Failure analysis:
 
@@ -4081,7 +4081,7 @@ error[E-CTE-0034]: Compile-time procedure referenced from runtime context
 
 Bootstrap owner:
 
-- `LLVMBootstrap/cursive/src/03_comptime/eval.cpp`
+- `Bootstrap/cursive/src/03_comptime/eval.cpp`
 
 Failure analysis:
 
@@ -4101,7 +4101,7 @@ ordinary return flow through expression statements.
 
 Repair:
 
-- `LLVMBootstrap/cursive/src/03_comptime/eval.cpp` now evaluates ordinary
+- `Bootstrap/cursive/src/03_comptime/eval.cpp` now evaluates ordinary
   `IfExpr` in compile-time execution.
 - `EvalBlock` now returns an expression-statement result when that result
   carries compile-time `return` propagation.
@@ -4192,12 +4192,12 @@ alias.
 
 Bootstrap owner:
 
-- `LLVMBootstrap/cursive/src/05_codegen/lower/expr/alloc_expr.cpp`
-- `LLVMBootstrap/cursive/src/05_codegen/lower/stmt/frame_stmt.cpp`
-- `LLVMBootstrap/cursive/src/05_codegen/lower/stmt/let_stmt.cpp`
-- `LLVMBootstrap/cursive/src/05_codegen/lower/stmt/var_stmt.cpp`
-- `LLVMBootstrap/cursive/src/05_codegen/lower/expr/loop_iter.cpp`
-- `LLVMBootstrap/cursive/src/05_codegen/globals/binding_storage.cpp`
+- `Bootstrap/cursive/src/05_codegen/lower/expr/alloc_expr.cpp`
+- `Bootstrap/cursive/src/05_codegen/lower/stmt/frame_stmt.cpp`
+- `Bootstrap/cursive/src/05_codegen/lower/stmt/let_stmt.cpp`
+- `Bootstrap/cursive/src/05_codegen/lower/stmt/var_stmt.cpp`
+- `Bootstrap/cursive/src/05_codegen/lower/expr/loop_iter.cpp`
+- `Bootstrap/cursive/src/05_codegen/globals/binding_storage.cpp`
 
 Failure analysis:
 
@@ -4333,16 +4333,16 @@ compile-time procedure metadata to apply `Pure-Comptime`.
 
 Bootstrap owner:
 
-- `LLVMBootstrap/cursive/src/02_source/parser/expr/expr_common.cpp`
-- `LLVMBootstrap/cursive/src/04_analysis/typing/stmt/return_stmt.cpp`
-- `LLVMBootstrap/cursive/src/04_analysis/typing/expr/block_expr.cpp`
-- `LLVMBootstrap/cursive/src/04_analysis/contracts/contract_check.cpp`
-- `LLVMBootstrap/cursive/src/04_analysis/typing/expr/call.cpp`
-- `LLVMBootstrap/cursive/include/02_source/ast/nodes/ast_module.h`
-- `LLVMBootstrap/cursive/src/03_comptime/pass.cpp`
-- `LLVMBootstrap/cursive/src/04_analysis/composite/function_types.cpp`
-- `LLVMBootstrap/cursive/src/04_analysis/typing/expr/path.cpp`
-- `LLVMBootstrap/cursive/src/00_core/generated/static_rule_registry.inc`
+- `Bootstrap/cursive/src/02_source/parser/expr/expr_common.cpp`
+- `Bootstrap/cursive/src/04_analysis/typing/stmt/return_stmt.cpp`
+- `Bootstrap/cursive/src/04_analysis/typing/expr/block_expr.cpp`
+- `Bootstrap/cursive/src/04_analysis/contracts/contract_check.cpp`
+- `Bootstrap/cursive/src/04_analysis/typing/expr/call.cpp`
+- `Bootstrap/cursive/include/02_source/ast/nodes/ast_module.h`
+- `Bootstrap/cursive/src/03_comptime/pass.cpp`
+- `Bootstrap/cursive/src/04_analysis/composite/function_types.cpp`
+- `Bootstrap/cursive/src/04_analysis/typing/expr/path.cpp`
+- `Bootstrap/cursive/src/00_core/generated/static_rule_registry.inc`
 
 Failure analysis:
 
@@ -4434,7 +4434,7 @@ error[E-SEM-2801]: Contract predicate not provable outside `[[dynamic]]` scope
 
 Bootstrap owner:
 
-- `LLVMBootstrap/cursive/src/04_analysis/typing/stmt/return_stmt.cpp`
+- `Bootstrap/cursive/src/04_analysis/typing/stmt/return_stmt.cpp`
 
 Failure analysis:
 
@@ -4544,9 +4544,9 @@ error[E-SEM-2801]: Contract predicate not provable outside `[[dynamic]]` scope
 
 Bootstrap owners:
 
-- `LLVMBootstrap/cursive/src/02_source/parser/item/contract_clause.cpp`
-- `LLVMBootstrap/cursive/src/04_analysis/contracts/verification.cpp`
-- `LLVMBootstrap/cursive/src/04_analysis/typing/expr/call.cpp`
+- `Bootstrap/cursive/src/02_source/parser/item/contract_clause.cpp`
+- `Bootstrap/cursive/src/04_analysis/contracts/verification.cpp`
+- `Bootstrap/cursive/src/04_analysis/typing/expr/call.cpp`
 
 Failure analysis:
 
@@ -4617,7 +4617,7 @@ Observed bootstrap result before repair:
 ```text
 Cursive.exe build HelloUltraviolet --check --target-profile x86_64-win64 --build-progress off --max-errors 12: exit=0
 Cursive.exe build HelloUltraviolet --target-profile x86_64-win64 --build-progress off --max-errors 12: exit=1
-[cursive] codegen failure at C:\Dev\Ultraviolet\LLVMBootstrap\cursive\src\05_codegen\lower\expr\expr_common.cpp:254
+[cursive] codegen failure at C:\Dev\Ultraviolet\Bootstrap\cursive\src\05_codegen\lower\expr\expr_common.cpp:254
 [cursive] EnsureCodegenModule: lowering failed for module 'HelloUltraviolet::Reference::Comptime' (resolve_failed=false, codegen_failed=true)
 error: project codegen context preparation failed
 ```
@@ -4627,7 +4627,7 @@ inside the `ComptimeExpr [61:30-67:6]`.
 
 Bootstrap owner:
 
-- `LLVMBootstrap/cursive/src/02_source/parser/expr/comptime_expr.cpp`
+- `Bootstrap/cursive/src/02_source/parser/expr/comptime_expr.cpp`
 
 Failure analysis:
 
@@ -4691,8 +4691,8 @@ error[E-SRC-0520]: Generic syntax error (unexpected token)
 
 Bootstrap owners:
 
-- `LLVMBootstrap/cursive/src/02_source/parser/expr/postfix.cpp`
-- `LLVMBootstrap/cursive/src/02_source/parser/expr/field_access.cpp`
+- `Bootstrap/cursive/src/02_source/parser/expr/postfix.cpp`
+- `Bootstrap/cursive/src/02_source/parser/expr/field_access.cpp`
 
 Failure analysis:
 
@@ -4756,7 +4756,7 @@ error[E-MOD-2402]: Type annotation incompatible with inferred type
 
 Bootstrap owner:
 
-- `LLVMBootstrap/cursive/src/04_analysis/typing/type_infer.cpp`
+- `Bootstrap/cursive/src/04_analysis/typing/type_infer.cpp`
 
 Failure analysis:
 
@@ -4826,8 +4826,8 @@ error[E-UNS-0107]: Non-`Bitcopy` place expression used as value
 
 Bootstrap owners:
 
-- `LLVMBootstrap/cursive/src/04_analysis/typing/stmt/let_stmt.cpp`
-- `LLVMBootstrap/cursive/src/04_analysis/typing/stmt/var_stmt.cpp`
+- `Bootstrap/cursive/src/04_analysis/typing/stmt/let_stmt.cpp`
+- `Bootstrap/cursive/src/04_analysis/typing/stmt/var_stmt.cpp`
 
 Failure analysis:
 
@@ -4891,8 +4891,8 @@ reference failed: catalogCompiledSymbolsExecute
 
 Bootstrap owners:
 
-- `LLVMBootstrap/cursive/runtime/src/compat/rtc_stubs.c`
-- `LLVMBootstrap/cursive/src/05_codegen/llvm/emit/ir/ops/binary.cpp`
+- `Bootstrap/cursive/runtime/src/compat/rtc_stubs.c`
+- `Bootstrap/cursive/src/05_codegen/llvm/emit/ir/ops/binary.cpp`
 
 Failure analysis:
 
@@ -4959,7 +4959,7 @@ lld-link: error: undefined symbol: pow
 
 Bootstrap owner:
 
-- `LLVMBootstrap/cursive/src/01_project/link.cpp`
+- `Bootstrap/cursive/src/01_project/link.cpp`
 
 Failure analysis:
 
@@ -5045,10 +5045,10 @@ direct move-parameter closure call: exit=8
 
 Bootstrap owners:
 
-- `LLVMBootstrap/cursive/src/04_analysis/typing/expr/pipeline_expr.cpp`
-- `LLVMBootstrap/cursive/src/05_codegen/lower/expr/call.cpp`
-- `LLVMBootstrap/cursive/src/05_codegen/lower/expr/closure_expr.cpp`
-- `LLVMBootstrap/cursive/src/05_codegen/lower/expr/pipeline_expr.cpp`
+- `Bootstrap/cursive/src/04_analysis/typing/expr/pipeline_expr.cpp`
+- `Bootstrap/cursive/src/05_codegen/lower/expr/call.cpp`
+- `Bootstrap/cursive/src/05_codegen/lower/expr/closure_expr.cpp`
+- `Bootstrap/cursive/src/05_codegen/lower/expr/pipeline_expr.cpp`
 
 Failure analysis:
 
@@ -5136,11 +5136,11 @@ error[E-UNS-0107]: Non-`Bitcopy` place expression used as value
 
 Bootstrap owners:
 
-- `LLVMBootstrap/cursive/include/04_analysis/typing/context.h`
-- `LLVMBootstrap/cursive/include/04_analysis/generics/generic_params.h`
-- `LLVMBootstrap/cursive/src/04_analysis/generics/generic_params.cpp`
-- `LLVMBootstrap/cursive/src/04_analysis/typing/type_predicates.cpp`
-- `LLVMBootstrap/cursive/src/04_analysis/typing/item/procedure_decl.cpp`
+- `Bootstrap/cursive/include/04_analysis/typing/context.h`
+- `Bootstrap/cursive/include/04_analysis/generics/generic_params.h`
+- `Bootstrap/cursive/src/04_analysis/generics/generic_params.cpp`
+- `Bootstrap/cursive/src/04_analysis/typing/type_predicates.cpp`
+- `Bootstrap/cursive/src/04_analysis/typing/item/procedure_decl.cpp`
 
 Failure analysis:
 
@@ -5195,8 +5195,8 @@ closure/pipeline return failed: closureCaptureReference.applyMoveClosure(move_ad
 
 Bootstrap owners:
 
-- `LLVMBootstrap/cursive/src/05_codegen/llvm/emit/ir/call/direct.cpp`
-- `LLVMBootstrap/cursive/src/05_codegen/llvm/llvm_call.cpp`
+- `Bootstrap/cursive/src/05_codegen/llvm/emit/ir/call/direct.cpp`
+- `Bootstrap/cursive/src/05_codegen/llvm/llvm_call.cpp`
 
 Failure analysis:
 
@@ -5263,8 +5263,8 @@ HelloUltraviolet.exe: exit=6
 
 Bootstrap owners:
 
-- `LLVMBootstrap/cursive/src/05_codegen/checks/checks.cpp`
-- `LLVMBootstrap/cursive/src/05_codegen/llvm/emit/ir/control/return.cpp`
+- `Bootstrap/cursive/src/05_codegen/checks/checks.cpp`
+- `Bootstrap/cursive/src/05_codegen/llvm/emit/ir/control/return.cpp`
 
 Failure analysis:
 
@@ -5320,7 +5320,7 @@ dynamicOrderedSameBaseKeyAccessValue(0usize, 2usize): exit=6
 
 Bootstrap owner:
 
-- `LLVMBootstrap/cursive/src/05_codegen/llvm/emit/ir_instruction_visitor.cpp`
+- `Bootstrap/cursive/src/05_codegen/llvm/emit/ir_instruction_visitor.cpp`
 
 Failure analysis:
 
@@ -5379,7 +5379,7 @@ error[E-CON-0095]: `speculative` without `write` modifier
 
 Bootstrap owner:
 
-- `LLVMBootstrap/cursive/src/02_source/parser/stmt/key_block_stmt.cpp`
+- `Bootstrap/cursive/src/02_source/parser/stmt/key_block_stmt.cpp`
 
 Failure analysis:
 
@@ -5438,7 +5438,7 @@ error[E-MOD-1105]: Module path component is a reserved keyword
 
 Bootstrap owner:
 
-- `LLVMBootstrap/cursive/src/01_project/module_discovery.cpp`
+- `Bootstrap/cursive/src/01_project/module_discovery.cpp`
 
 Failure analysis:
 
@@ -5495,7 +5495,7 @@ error[E-TYP-1506]: Type alias cycle detected
 
 Bootstrap owner:
 
-- `LLVMBootstrap/cursive/src/04_analysis/typing/typecheck_diag_lookup.h`
+- `Bootstrap/cursive/src/04_analysis/typing/typecheck_diag_lookup.h`
 
 Failure analysis:
 
@@ -5570,7 +5570,7 @@ Observed bootstrap results before repair:
 
 ```text
 Cursive.exe build HelloUltraviolet --check --target-profile x86_64-win64 --build-progress off --max-errors 20: exit=1
-[cursive] codegen failure at C:\Dev\Ultraviolet\LLVMBootstrap\cursive\src\05_codegen\lower\expr\expr_common.cpp:254
+[cursive] codegen failure at C:\Dev\Ultraviolet\Bootstrap\cursive\src\05_codegen\lower\expr\expr_common.cpp:254
 [cursive] EnsureCodegenModule: lowering failed for module 'HelloUltraviolet::Reference::Comptime' (resolve_failed=false, codegen_failed=true)
 error[E-OUT-0411]: LLVM IR lowering failed
 
@@ -5615,11 +5615,11 @@ qualified enum constructor syntax.
 
 Repair:
 
-- `LLVMBootstrap/cursive/src/03_comptime/eval.cpp` now evaluates record
+- `Bootstrap/cursive/src/03_comptime/eval.cpp` now evaluates record
   literals into `CtRecord` or `CtModalState`, evaluates parser-level
   `QualifiedApplyExpr` enum constructors into tuple or record `CtEnum`
   payloads, and evaluates already-materialized `EnumLiteralExpr` payloads.
-- `LLVMBootstrap/cursive/src/04_analysis/resolve/resolve_expr.cpp` now
+- `Bootstrap/cursive/src/04_analysis/resolve/resolve_expr.cpp` now
   canonicalizes already-materialized `EnumLiteralExpr` paths through the
   existing `ResolveEnumUnit`, `ResolveEnumTuple`, and `ResolveEnumRecord`
   paths while preserving normal payload resolution.
@@ -5697,18 +5697,18 @@ than directly through the source continuation.
 
 Repair:
 
-- `LLVMBootstrap/cursive/runtime/src/memory/async.c` now defines a take frame
+- `Bootstrap/cursive/runtime/src/memory/async.c` now defines a take frame
   containing the source async value and remaining count, returns completed unit
   for `take(0)`, forwards source completion/failure, and resumes through the
   wrapper frame when a yielded value leaves remaining output budget.
-- `LLVMBootstrap/cursive/runtime/include/cursive_rt.h` and
-  `LLVMBootstrap/cursive/runtime/include/cursive_rt_language_symbols.h`
+- `Bootstrap/cursive/runtime/include/cursive_rt.h` and
+  `Bootstrap/cursive/runtime/include/cursive_rt_language_symbols.h`
   declare and map the runtime `ultraviolet::runtime::async::take` entry point.
-- `LLVMBootstrap/cursive/src/05_codegen/intrinsics/builtins.cpp`,
-  `LLVMBootstrap/cursive/include/05_codegen/intrinsics/builtins.h`, and
-  `LLVMBootstrap/cursive/src/05_codegen/intrinsics/intrinsics_interface.cpp`
+- `Bootstrap/cursive/src/05_codegen/intrinsics/builtins.cpp`,
+  `Bootstrap/cursive/include/05_codegen/intrinsics/builtins.h`, and
+  `Bootstrap/cursive/src/05_codegen/intrinsics/intrinsics_interface.cpp`
   register the async take runtime symbol.
-- `LLVMBootstrap/cursive/src/05_codegen/llvm/emit/ir/call/direct.cpp` now
+- `Bootstrap/cursive/src/05_codegen/llvm/emit/ir/call/direct.cpp` now
   lowers the take combinator through the runtime entry point so the wrapper
   state is preserved in emitted programs.
 
@@ -5780,16 +5780,16 @@ prefix is a module path or module alias rather than an enum type.
 
 Repair:
 
-- `LLVMBootstrap/cursive/src/02_source/parser/expr/primary.cpp` now scans a
+- `Bootstrap/cursive/src/02_source/parser/expr/primary.cpp` now scans a
   full type path before deciding whether an identifier starts a modal-state
   record literal.
-- `LLVMBootstrap/cursive/src/04_analysis/resolve/resolve_pattern.cpp` now
+- `Bootstrap/cursive/src/04_analysis/resolve/resolve_pattern.cpp` now
   resolves enum-shaped record-payload patterns through the joined record type
   path when the prefix does not resolve as an enum type.
-- `LLVMBootstrap/cursive/src/04_analysis/resolve/resolve_expr.cpp`,
-  `LLVMBootstrap/cursive/src/04_analysis/resolve/resolve_items.cpp`,
-  `LLVMBootstrap/cursive/src/04_analysis/resolve/resolve_module.cpp`, and
-  `LLVMBootstrap/cursive/src/04_analysis/resolve/resolve_types.cpp` now
+- `Bootstrap/cursive/src/04_analysis/resolve/resolve_expr.cpp`,
+  `Bootstrap/cursive/src/04_analysis/resolve/resolve_items.cpp`,
+  `Bootstrap/cursive/src/04_analysis/resolve/resolve_module.cpp`, and
+  `Bootstrap/cursive/src/04_analysis/resolve/resolve_types.cpp` now
   preserve resolver diagnostic context for these paths.
 
 Source correction:
@@ -5861,11 +5861,11 @@ values and for values whose runtime representation has no dynamic length field.
 
 Repair:
 
-- `LLVMBootstrap/cursive/src/05_codegen/llvm/emit/ir/checks/check_index.cpp`
+- `Bootstrap/cursive/src/05_codegen/llvm/emit/ir/checks/check_index.cpp`
   now asks `DynamicLengthOf` before falling back to `StaticLengthOf`.
-- `LLVMBootstrap/cursive/src/05_codegen/llvm/emit/ir/checks/check_range.cpp`
+- `Bootstrap/cursive/src/05_codegen/llvm/emit/ir/checks/check_range.cpp`
   applies the same runtime-length preference for range checks.
-- `LLVMBootstrap/cursive/src/05_codegen/llvm/emit/ir/checks/check_slice_len.cpp`
+- `Bootstrap/cursive/src/05_codegen/llvm/emit/ir/checks/check_slice_len.cpp`
   now computes both compared slice lengths from dynamic fat-pointer lengths
   when available, with integer widening to `i64` before comparison.
 
@@ -5944,7 +5944,7 @@ runtime synchronization, surfacing `I-CON-0011`.
 
 Repair:
 
-- `LLVMBootstrap/cursive/src/04_analysis/typing/stmt/key_block_stmt.cpp` now
+- `Bootstrap/cursive/src/04_analysis/typing/stmt/key_block_stmt.cpp` now
   carries dynamic-path classification into static-safety classification.
 - In parallel contexts, local disjointness is no longer accepted as the
   disjoint-path proof for dynamic keyed paths; the checker therefore routes the
@@ -6034,7 +6034,7 @@ error: Static rule failed without assigned diagnostic code: ResolveExpr-Ident-Er
 
 Bootstrap owner:
 
-- `LLVMBootstrap/cursive/src/04_analysis/composite/function_types.cpp`
+- `Bootstrap/cursive/src/04_analysis/composite/function_types.cpp`
 
 Failure analysis:
 
@@ -6056,7 +6056,7 @@ pattern-derived type.
 
 Repair:
 
-- `LLVMBootstrap/cursive/src/04_analysis/composite/function_types.cpp` now
+- `Bootstrap/cursive/src/04_analysis/composite/function_types.cpp` now
   includes the canonical pattern-typing helper.
 - `LookupModuleStaticInModule` now filters static declarations through
   `PatNames`, lowers the static annotation once, invokes
@@ -6132,7 +6132,7 @@ error: Static rule failed without assigned diagnostic code: LookupMethod-Ambig
 
 Bootstrap owner:
 
-- `LLVMBootstrap/cursive/src/04_analysis/typing/typecheck_diag_lookup.h`
+- `Bootstrap/cursive/src/04_analysis/typing/typecheck_diag_lookup.h`
 
 Failure analysis:
 
@@ -6179,7 +6179,7 @@ Cursive.exe build HelloUltraviolet/Fixtures/RejectedSource/Procedures/MethodLook
 Status: repaired in the workspace bootstrap and verified by:
 
 ```text
-LLVMBootstrap/cursive/build/Release/Cursive.exe build HelloUltraviolet --target-profile x86_64-win64 --build-progress on --max-errors 20
+Bootstrap/cursive/build/Release/Cursive.exe build HelloUltraviolet --target-profile x86_64-win64 --build-progress on --max-errors 20
 HelloUltraviolet/build/bin/HelloUltraviolet.exe
 HelloUltraviolet/build/bin/HelloUltraviolet.exe --audit
 ```
@@ -6229,7 +6229,7 @@ was evaluated separately from non-empty tuple aggregate matching.
 
 Bootstrap owner:
 
-- `LLVMBootstrap/cursive/src/05_codegen/llvm/emit/ir/control/if_case.cpp`
+- `Bootstrap/cursive/src/05_codegen/llvm/emit/ir/control/if_case.cpp`
 
 Failure analysis:
 
@@ -6248,7 +6248,7 @@ an internal zero-element `TypeTuple` if such a value reaches pattern lowering.
 
 Repair:
 
-- `LLVMBootstrap/cursive/src/05_codegen/llvm/emit/ir/control/if_case.cpp` now
+- `Bootstrap/cursive/src/05_codegen/llvm/emit/ir/control/if_case.cpp` now
   handles `IRTuplePattern` with no elements before aggregate tuple extraction.
   It returns true for `TypePrim("()")` and for zero-element `TypeTuple`, and
   keeps the existing struct extraction path for non-empty tuple patterns.
@@ -6269,7 +6269,7 @@ Verified bootstrap result after repair:
 ```text
 Visual Studio bootstrap build wrapper, target=cursive: exit=0, rebuilt if_case.cpp and Cursive.exe
 .agents/tmp/UVPatternProbeImports/build/bin/UVPatternProbeImports.exe: exit=0
-LLVMBootstrap/cursive/build/Release/Cursive.exe build HelloUltraviolet --target-profile x86_64-win64 --build-progress on --max-errors 20: exit=0, 14 warnings, 10 infos, 499.07s
+Bootstrap/cursive/build/Release/Cursive.exe build HelloUltraviolet --target-profile x86_64-win64 --build-progress on --max-errors 20: exit=0, 14 warnings, 10 infos, 499.07s
 HelloUltraviolet/build/bin/HelloUltraviolet.exe: exit=0
 HelloUltraviolet/build/bin/HelloUltraviolet.exe --audit: exit=0
 python3 Tools/ExtractObligationLedger.py --check: exit=0, PASS obligations=6045
@@ -6281,9 +6281,9 @@ Status: repaired in the workspace bootstrap and verified by:
 
 ```text
 Visual Studio bootstrap build wrapper, Config=Release: exit=0
-LLVMBootstrap/cursive/build/Release/Cursive.exe build .agents/tmp/AsyncSuspendedProbe --target-profile x86_64-win64 --build-progress off --incremental off --max-errors 20: exit=0
+Bootstrap/cursive/build/Release/Cursive.exe build .agents/tmp/AsyncSuspendedProbe --target-profile x86_64-win64 --build-progress off --incremental off --max-errors 20: exit=0
 .agents/tmp/AsyncSuspendedProbe/build/bin/AsyncSuspendedProbe.exe: exit=0
-LLVMBootstrap/cursive/build/Release/Cursive.exe build HelloUltraviolet --target-profile x86_64-win64 --build-progress on --incremental on --max-errors 30: exit=0
+Bootstrap/cursive/build/Release/Cursive.exe build HelloUltraviolet --target-profile x86_64-win64 --build-progress on --incremental on --max-errors 30: exit=0
 HelloUltraviolet/build/bin/HelloUltraviolet.exe: exit=0
 HelloUltraviolet/build/bin/HelloUltraviolet.exe --audit: exit=0
 ```
@@ -6350,10 +6350,10 @@ parameter value because the async frame did not contain the live parameter slot.
 
 Bootstrap owner:
 
-- `LLVMBootstrap/cursive/include/05_codegen/lower/lower_expr.h`
-- `LLVMBootstrap/cursive/src/05_codegen/lower/lower_proc.cpp`
-- `LLVMBootstrap/cursive/src/05_codegen/llvm/emit/proc_emit.cpp`
-- `LLVMBootstrap/cursive/src/05_codegen/llvm/emit/ir_storage_emit.cpp`
+- `Bootstrap/cursive/include/05_codegen/lower/lower_expr.h`
+- `Bootstrap/cursive/src/05_codegen/lower/lower_proc.cpp`
+- `Bootstrap/cursive/src/05_codegen/llvm/emit/proc_emit.cpp`
+- `Bootstrap/cursive/src/05_codegen/llvm/emit/ir_storage_emit.cpp`
 
 Failure analysis:
 
@@ -6385,9 +6385,9 @@ Status: repaired in the workspace bootstrap and verified by:
 
 ```text
 Visual Studio bootstrap build wrapper, Config=Release: exit=0
-LLVMBootstrap/cursive/build/Release/Cursive.exe build .agents/tmp/AsyncSuspendedProbe --target-profile x86_64-win64 --build-progress off --incremental off --max-errors 20: exit=0
+Bootstrap/cursive/build/Release/Cursive.exe build .agents/tmp/AsyncSuspendedProbe --target-profile x86_64-win64 --build-progress off --incremental off --max-errors 20: exit=0
 .agents/tmp/AsyncSuspendedProbe/build/bin/AsyncSuspendedProbe.exe: exit=0
-LLVMBootstrap/cursive/build/Release/Cursive.exe build HelloUltraviolet --target-profile x86_64-win64 --build-progress on --incremental on --max-errors 30: exit=0
+Bootstrap/cursive/build/Release/Cursive.exe build HelloUltraviolet --target-profile x86_64-win64 --build-progress on --incremental on --max-errors 30: exit=0
 HelloUltraviolet/build/bin/HelloUltraviolet.exe: exit=0
 HelloUltraviolet/build/bin/HelloUltraviolet.exe --audit: exit=0
 ```
@@ -6428,8 +6428,8 @@ therefore lowered as `total + 0` instead of `total + value`.
 
 Bootstrap owner:
 
-- `LLVMBootstrap/cursive/src/05_codegen/lower/expr/loop_iter.cpp`
-- `LLVMBootstrap/cursive/src/05_codegen/lower/pattern/ir_pattern.cpp`
+- `Bootstrap/cursive/src/05_codegen/lower/expr/loop_iter.cpp`
+- `Bootstrap/cursive/src/05_codegen/lower/pattern/ir_pattern.cpp`
 
 Failure analysis:
 

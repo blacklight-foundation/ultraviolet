@@ -1,0 +1,72 @@
+// Test responsibility:
+// Source/Compiler/Tests/Project/AssemblyGraph/OwnAssembliesOk/OwnAssembliesOkTests.uv
+//
+// This file owns source-native tests for OwnAssemblies-Ok@L4463:
+//
+// ∀ A ∈ As, ∀ m ∈ A.modules. ∃ S.
+// OwnerRoot(ModuleDirOf(m, A.source_root), AssemblySourceRoots(As)) = S
+// As = [A_1, …, A_n]
+// As' = [A_1[modules := OwnedModules(A_1, As)], …,
+// A_n[modules := OwnedModules(A_n, As)]]
+// Γ ⊢ OwnAssemblies(As) ⇓ As'
+
+using UltravioletCompiler::Project::{
+    AssemblyOwnershipValue,
+    assembly,
+    assemblyListCount,
+    assemblyListEntry,
+    assemblyName,
+    directoryPath,
+    emptyAssemblies,
+    emptyModules,
+    emptySourceFiles,
+    libraryAssemblyKind,
+    module,
+    moduleListEntry,
+    modulePath,
+    noLinkKind,
+    ownAssemblies
+}
+
+[[test(
+    name: "own assemblies succeeds when every module has a unique source-root owner",
+    covers("OwnAssemblies-Ok@L4463")
+)]]
+internal procedure ownAssembliesSucceedsWhenEveryModuleHasUniqueSourceRootOwner() -> bool
+|: => @result
+{
+    var passed: bool = false
+    region as diagnostics_region {
+        let ownership: AssemblyOwnershipValue =
+            ownAssemblies(
+                diagnostics_region,
+                assemblyListEntry(
+                    assembly(
+                        assemblyName("UltravioletCompiler"),
+                        libraryAssemblyKind(),
+                        noLinkKind(),
+                        directoryPath("Compiler"),
+                        moduleListEntry(
+                            module(
+                                modulePath("UltravioletCompiler::Driver"),
+                                directoryPath("Source/Compiler/Driver"),
+                                emptySourceFiles()
+                            ),
+                            emptyModules()
+                        ),
+                    ),
+                    emptyAssemblies()
+                )
+            )
+
+        passed = if ownership is {
+            @Failed {
+                false
+            }
+            @Owned { assemblies } {
+                assemblyListCount(assemblies) == 1
+            }
+        }
+    }
+    return passed
+}
