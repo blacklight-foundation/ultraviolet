@@ -2,7 +2,7 @@
 // state_specific_type.cpp - State-Specific Modal Type Parsing
 // =============================================================================
 //
-// SPEC REFERENCE: SPECIFICATION.md, Section 3.3.7, Lines 4803-4806
+// SPEC REFERENCE: Docs/SPECIFICATION.md, Section 3.3.7, Lines 4803-4806
 // Lines 4688-4690 (Modal Type References)
 //
 // Parses state-specific modal types: ModalType@State

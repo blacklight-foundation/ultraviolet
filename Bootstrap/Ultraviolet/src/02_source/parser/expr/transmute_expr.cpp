@@ -2,7 +2,7 @@
 // transmute_expr.cpp - Transmute Expression Parsing
 // =============================================================================
 //
-// SPEC REFERENCE: SPECIFICATION.md
+// SPEC REFERENCE: Docs/SPECIFICATION.md
 // - Parse-Transmute-Expr (Lines 5384-5387)
 // - Parse-Transmute-Expr-ShiftSplit (Lines 5379-5382)
 //

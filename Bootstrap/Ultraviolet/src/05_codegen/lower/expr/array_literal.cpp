@@ -2,7 +2,7 @@
 // MIGRATION MAPPING: expr/array_literal.cpp
 // =============================================================================
 //
-// SPEC REFERENCE: SPECIFICATION.md Section 6.4 (Expression Lowering)
+// SPEC REFERENCE: Docs/SPECIFICATION.md Section 6.4 (Expression Lowering)
 //   - Lines 16080-16083: (Lower-Expr-Array)
 //     Gamma |- LowerList(es) => <IR, vec_v>
 //     ------------------------------------------

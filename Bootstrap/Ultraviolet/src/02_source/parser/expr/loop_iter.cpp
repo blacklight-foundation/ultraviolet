@@ -5,7 +5,7 @@
 // (loop pattern in iterable { body } - equivalent to for-each loops).
 //
 // =============================================================================
-// SPEC REFERENCE: SPECIFICATION.md
+// SPEC REFERENCE: Docs/SPECIFICATION.md
 // =============================================================================
 //
 // **(Parse-Loop-Expr)** Lines 5259-5262:

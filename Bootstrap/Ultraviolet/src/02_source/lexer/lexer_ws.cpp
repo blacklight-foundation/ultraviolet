@@ -2,7 +2,7 @@
 // MIGRATION MAPPING: lexer_ws.cpp
 // =============================================================================
 //
-// SPEC REFERENCE: SPECIFICATION.md
+// SPEC REFERENCE: Docs/SPECIFICATION.md
 //   Section 3.2.2 - Character Classes (Whitespace, LineFeed) (lines 2052-2058)
 //   Section 3.2.5 - Comment and Whitespace Scanning (lines 2119-2169)
 //

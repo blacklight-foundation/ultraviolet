@@ -2,7 +2,7 @@
 // MIGRATION MAPPING: const_len.cpp
 // =============================================================================
 //
-// SPEC REFERENCE: SPECIFICATION.md
+// SPEC REFERENCE: Docs/SPECIFICATION.md
 //   Section 5.2.1: Type Equivalence (lines 8490-8593)
 //   - ConstLenJudg = {ConstLen}
 //   - Rules: ConstLen-Lit, ConstLen-Path, ConstLen-Err

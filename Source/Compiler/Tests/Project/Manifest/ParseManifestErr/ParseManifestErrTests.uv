@@ -1,7 +1,7 @@
 // Test responsibility:
 // Source/Compiler/Tests/Project/Manifest/ParseManifestErr/ParseManifestErrTests.uv
 //
-// This file owns source-native tests for Parse-Manifest-Err@L2219.
+// This file owns source-native tests for Parse-Manifest-Err@L2240.
 
 using UltravioletCompiler::Project::{
     ManifestParseValue,
@@ -10,7 +10,7 @@ using UltravioletCompiler::Project::{
 
 [[test(
     name: "manifest parser reports malformed key value syntax",
-    covers("Parse-Manifest-Err@L2219")
+    covers("Parse-Manifest-Err@L2240")
 )]]
 internal procedure manifestParserReportsMalformedKeyValueSyntax() -> bool
 |: => @result
@@ -29,7 +29,7 @@ internal procedure manifestParserReportsMalformedKeyValueSyntax() -> bool
 
 [[test(
     name: "manifest parser reports duplicate table fields",
-    covers("Parse-Manifest-Err@L2219")
+    covers("Parse-Manifest-Err@L2240")
 )]]
 internal procedure manifestParserReportsDuplicateTableFields() -> bool
 |: => @result

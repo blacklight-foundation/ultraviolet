@@ -2,7 +2,7 @@
 // parallel_expr.cpp - Parallel Expression Parsing
 // =============================================================================
 //
-// SPEC REFERENCE: SPECIFICATION.md, Section 3.3.8.6, Lines 5264-5267
+// SPEC REFERENCE: Docs/SPECIFICATION.md, Section 3.3.8.6, Lines 5264-5267
 // HELPER RULES: Section 3.3.8.7, Lines 5594-5639
 //
 // FORMAL RULE - Parse-Parallel-Expr (Lines 5264-5267):

@@ -2,7 +2,7 @@
 // MIGRATION MAPPING: expr/identifier.cpp
 // =============================================================================
 //
-// SPEC REFERENCE: SPECIFICATION.md Section 6.4 (Expression Lowering)
+// SPEC REFERENCE: Docs/SPECIFICATION.md Section 6.4 (Expression Lowering)
 //   - Lines 16057-16065: (Lower-Expr-Ident-Local) and (Lower-Expr-Ident-Path)
 //
 // SOURCE FILE: ultraviolet-bootstrap/src/04_codegen/lower/lower_expr_places.cpp

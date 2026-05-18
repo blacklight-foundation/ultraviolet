@@ -3,8 +3,8 @@
 // =============================================================================
 // This file should contain common helper functions for statement parsing.
 //
-// SPEC REFERENCE: SPECIFICATION.md, Section 3.3.10, Lines 6255-6431
-// SPEC REFERENCE: SPECIFICATION.md, Section 3.3.12, Lines 6452-6499
+// SPEC REFERENCE: Docs/SPECIFICATION.md, Section 3.3.10, Lines 6255-6431
+// SPEC REFERENCE: Docs/SPECIFICATION.md, Section 3.3.12, Lines 6452-6499
 // =============================================================================
 //
 // OVERVIEW:

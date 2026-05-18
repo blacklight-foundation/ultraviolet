@@ -2,7 +2,7 @@
 // null_ptr.cpp - Ptr::null() Expression Parsing
 // =============================================================================
 //
-// SPEC REFERENCE: SPECIFICATION.md
+// SPEC REFERENCE: Docs/SPECIFICATION.md
 // - Parse-Null-Ptr (Lines 5163-5166)
 //
 // =============================================================================

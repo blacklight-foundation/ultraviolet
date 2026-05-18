@@ -4,7 +4,7 @@
 // record_literal.h - Record Literal Expression Lowering
 // =============================================================================
 //
-// SPEC REFERENCE: SPECIFICATION.md Section 6.4 (Expression Lowering)
+// SPEC REFERENCE: Docs/SPECIFICATION.md Section 6.4 (Expression Lowering)
 //   - Lines 16085-16088: (Lower-Expr-Record)
 //
 // Declares the LowerRecord function for lowering record literal expressions.

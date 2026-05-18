@@ -396,11 +396,14 @@ std::optional<std::string> ProcedureSymbolForPath(
           const bool use_c_abi_aggregate_sret =
               sig->ffi_import ||
               active_ctx->LookupExportUnwindMode(symbol).has_value();
+          const bool foreign_boundary_mode_independent =
+              use_c_abi_aggregate_sret || IsRuntimeFunction(symbol);
           ABICallResult abi = ComputeCallABI(
               *this,
               sig->params,
               sig->ret,
-              use_c_abi_aggregate_sret);
+              use_c_abi_aggregate_sret,
+              foreign_boundary_mode_independent);
           if (abi.func_type)
           {
             llvm::Function *declared = llvm::Function::Create(
@@ -730,6 +733,115 @@ std::optional<std::string> ProcedureSymbolForPath(
           return builder->CreateIntToPtr(value, GetOpaquePtr());
         }
         return nullptr;
+      };
+      auto allocate_in_active_region =
+          [&](analysis::TypeRef field_type,
+              llvm::Type *field_ll,
+              llvm::Value *field_value) -> llvm::Value *
+      {
+        const IRValue *active_region = CurrentActiveRegion();
+        if (!active_region || !field_type || !field_ll || !field_value ||
+            field_ll->isVoidTy())
+        {
+          return nullptr;
+        }
+
+        llvm::Value *region_value = EvaluateIRValue(*active_region);
+        if (!region_value)
+        {
+          return nullptr;
+        }
+
+        std::uint64_t alloc_size = 0;
+        std::uint64_t alloc_align = 1;
+        if (const auto size = ::ultraviolet::analysis::layout::SizeOf(scope, field_type))
+        {
+          alloc_size = *size;
+        }
+        if (const auto align = ::ultraviolet::analysis::layout::AlignOf(scope, field_type))
+        {
+          alloc_align = std::max<std::uint64_t>(1, *align);
+        }
+        const llvm::DataLayout &dl = GetModule().getDataLayout();
+        if (alloc_size == 0)
+        {
+          alloc_size = static_cast<std::uint64_t>(dl.getTypeAllocSize(field_ll));
+        }
+        if (alloc_align == 1)
+        {
+          alloc_align = std::max<std::uint64_t>(
+              alloc_align,
+              static_cast<std::uint64_t>(dl.getABITypeAlign(field_ll).value()));
+        }
+
+        llvm::Value *raw_ptr = nullptr;
+        const std::string alloc_sym = BuiltinModalSymRegionAlloc();
+        if (std::optional<RuntimeFuncInfo> alloc_info = GetRuntimeFuncInfo(alloc_sym))
+        {
+          llvm::Function *alloc_fn = GetModule().getFunction(alloc_sym);
+          const bool use_c_abi_aggregate_sret = true;
+          if (!alloc_fn)
+          {
+            ABICallResult alloc_abi = ComputeCallABI(
+                *this,
+                alloc_info->params,
+                alloc_info->ret,
+                use_c_abi_aggregate_sret,
+                /*foreign_boundary_mode_independent=*/true);
+            if (alloc_abi.func_type)
+            {
+              alloc_fn = llvm::Function::Create(
+                  alloc_abi.func_type,
+                  llvm::GlobalValue::ExternalLinkage,
+                  alloc_sym,
+                  &GetModule());
+              alloc_fn->setCallingConv(llvm::CallingConv::C);
+            }
+          }
+          if (alloc_fn)
+          {
+            llvm::Type *usize_ty = llvm::Type::getInt64Ty(GetContext());
+            std::vector<llvm::Value *> alloc_args;
+            alloc_args.reserve(3);
+            alloc_args.push_back(region_value);
+            alloc_args.push_back(llvm::ConstantInt::get(usize_ty, alloc_size));
+            alloc_args.push_back(llvm::ConstantInt::get(usize_ty, alloc_align));
+            raw_ptr = EmitABICall(
+                *this,
+                builder,
+                alloc_fn,
+                alloc_info->params,
+                alloc_info->ret,
+                alloc_args,
+                use_c_abi_aggregate_sret,
+                /*ffi_import_boundary=*/false,
+                /*ffi_import_catch=*/false,
+                std::nullopt,
+                nullptr,
+                nullptr,
+                nullptr,
+                /*foreign_boundary_mode_independent=*/true);
+          }
+        }
+        if (!raw_ptr)
+        {
+          return nullptr;
+        }
+
+        llvm::Value *typed_ptr =
+            builder->CreateBitCast(raw_ptr, llvm::PointerType::get(field_ll, 0));
+        llvm::Value *stored = CoerceToTyped(
+            *this, builder, field_value, field_ll, nullptr, field_type);
+        if (!stored)
+        {
+          stored = CoerceTo(builder, field_value, field_ll);
+        }
+        if (!stored)
+        {
+          stored = llvm::Constant::getNullValue(field_ll);
+        }
+        builder->CreateStore(stored, typed_ptr);
+        return typed_ptr;
       };
       auto pointee_from_type = [&](analysis::TypeRef type) -> analysis::TypeRef
       {
@@ -1954,11 +2066,15 @@ std::optional<std::string> ProcedureSymbolForPath(
                 const bool use_c_abi_aggregate_sret =
                     sig->ffi_import ||
                     ctx->LookupExportUnwindMode(symbol_name).has_value();
+                const bool foreign_boundary_mode_independent =
+                    use_c_abi_aggregate_sret ||
+                    IsRuntimeFunction(symbol_name);
                 ABICallResult abi = ComputeCallABI(
                     *this,
                     sig->params,
                     sig->ret,
-                    use_c_abi_aggregate_sret);
+                    use_c_abi_aggregate_sret,
+                    foreign_boundary_mode_independent);
                 if (abi.func_type)
                 {
                   fn = llvm::Function::Create(
@@ -2172,6 +2288,77 @@ std::optional<std::string> ProcedureSymbolForPath(
           break;
         }
         materialized = local;
+        break;
+      }
+      case DerivedValueInfo::Kind::AddrUnionPayload:
+      {
+        analysis::TypeRef union_type = strip_perm(derived->dyn_impl_type);
+        if (!union_type)
+        {
+          union_type = strip_perm(lookup_value_type(derived->base));
+        }
+        if (analysis::TypeRef resolved =
+                ResolveAliasTypeInScope(scope, union_type))
+        {
+          union_type = strip_perm(resolved);
+          if (!union_type)
+          {
+            union_type = resolved;
+          }
+        }
+
+        const auto *uni =
+            union_type ? std::get_if<analysis::TypeUnion>(&union_type->node)
+                       : nullptr;
+        if (!uni)
+        {
+          break;
+        }
+        const auto layout =
+            ::ultraviolet::analysis::layout::UnionLayoutOf(scope, *uni);
+        if (!layout.has_value() ||
+            derived->union_index >= layout->member_list.size())
+        {
+          break;
+        }
+
+        analysis::TypeRef member_type =
+            layout->member_list[derived->union_index];
+        llvm::Type *member_ty =
+            member_type ? GetLLVMType(member_type) : nullptr;
+        llvm::Value *base_storage = GetAddressableStorage(derived->base);
+        if (!member_ty || member_ty->isVoidTy() || !base_storage)
+        {
+          break;
+        }
+
+        if (layout->niche)
+        {
+          materialized = builder->CreateBitCast(
+              base_storage,
+              llvm::PointerType::get(member_ty, 0));
+          break;
+        }
+
+        llvm::Type *union_ll = GetLLVMType(union_type);
+        auto *union_ty = llvm::dyn_cast_or_null<llvm::StructType>(union_ll);
+        if (!union_ty || union_ty->getNumElements() < 2)
+        {
+          break;
+        }
+        llvm::Value *payload_i8 = CreateTaggedPayloadI8Ptr(
+            *this,
+            builder,
+            union_ty,
+            base_storage,
+            layout->payload_align);
+        if (!payload_i8)
+        {
+          break;
+        }
+        materialized = builder->CreateBitCast(
+            payload_i8,
+            llvm::PointerType::get(member_ty, 0));
         break;
       }
       case DerivedValueInfo::Kind::AddrTuple:
@@ -3743,12 +3930,19 @@ std::optional<std::string> ProcedureSymbolForPath(
             analysis::TypeRef source_type = lookup_value_type(field.value);
             if (field.recursive_indirect)
             {
-              elem = GetAddressableStorage(field.value);
+              llvm::Value *materialized = EvaluateIRValue(field.value);
+              llvm::Type *source_ll = GetLLVMType(field.field_type);
+              if (materialized && source_ll && !source_ll->isVoidTy())
+              {
+                elem = allocate_in_active_region(
+                    field.field_type,
+                    source_ll,
+                    materialized);
+              }
               if (!elem)
               {
-                llvm::Value *materialized = EvaluateIRValue(field.value);
-                llvm::Type *source_ll = GetLLVMType(field.field_type);
-                if (materialized && source_ll && !source_ll->isVoidTy())
+                elem = GetAddressableStorage(field.value);
+                if (!elem && materialized && source_ll && !source_ll->isVoidTy())
                 {
                   llvm::AllocaInst *field_slot =
                       entry_builder.CreateAlloca(source_ll);

@@ -2,7 +2,7 @@
 // MIGRATION MAPPING: expr/unary.cpp
 // =============================================================================
 //
-// SPEC REFERENCE: SPECIFICATION.md Section 6.4 (Expression Lowering)
+// SPEC REFERENCE: Docs/SPECIFICATION.md Section 6.4 (Expression Lowering)
 //   - Lines 16158-16161: (Lower-Expr-Unary)
 //   - Lines 16318-16326: (Lower-UnOp-Ok) and (Lower-UnOp-Panic)
 //

@@ -4,7 +4,7 @@
 // This file contains parsing logic for function call expressions: expr(args).
 // Method calls and calls with type arguments are in separate files.
 //
-// SPEC REFERENCE: SPECIFICATION.md, Lines 5428-5431, 5448-5473, 5943-5958
+// SPEC REFERENCE: Docs/SPECIFICATION.md, Lines 5428-5431, 5448-5473, 5943-5958
 // -----------------------------------------------------------------------------
 // **(Postfix-Call)** Lines 5428-5431
 // IsPunc(Tok(P), "(")    Γ ⊢ ParseArgList(Advance(P)) ⇓ (P_1, args)    IsPunc(Tok(P_1), ")")

@@ -2,7 +2,7 @@
 // MIGRATION: typing/type_predicates.cpp
 // =============================================================================
 //
-// SPEC REFERENCE: SPECIFICATION.md
+// SPEC REFERENCE: Docs/SPECIFICATION.md
 //   Section 9.2: Type Predicates
 //   - Bitcopy, Clone, Drop, FfiSafe predicates
 //   - Structural derivation for composite types

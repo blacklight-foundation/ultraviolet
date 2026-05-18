@@ -2,7 +2,7 @@
 // MIGRATION MAPPING: unions.cpp
 // =============================================================================
 //
-// SPEC REFERENCE: SPECIFICATION.md
+// SPEC REFERENCE: Docs/SPECIFICATION.md
 // - Section 5.2.7 "Union Types" (lines 9056-9070)
 //   - Members (line 9058)
 //   - DistinctMembers (line 9059)

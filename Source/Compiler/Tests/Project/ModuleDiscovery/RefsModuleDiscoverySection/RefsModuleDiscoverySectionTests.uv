@@ -1,7 +1,7 @@
 // Test responsibility:
 // Source/Compiler/Tests/Project/ModuleDiscovery/RefsModuleDiscoverySection/RefsModuleDiscoverySectionTests.uv
 //
-// This file owns source-native tests for refs.ModuleDiscoverySection@L4370.
+// This file owns source-native tests for refs.ModuleDiscoverySection@L4391.
 
 using UltravioletCompiler::Project::{
     directoryPath,
@@ -13,7 +13,7 @@ using UltravioletCompiler::Project::{
 
 [[test(
     name: "module discovery consumes module paths formed by the module rules",
-    covers("refs.ModuleDiscoverySection@L4370")
+    covers("refs.ModuleDiscoverySection@L4391")
 )]]
 internal procedure moduleDiscoveryConsumesModulePathsFormedByModuleRules() -> bool
 |: => @result

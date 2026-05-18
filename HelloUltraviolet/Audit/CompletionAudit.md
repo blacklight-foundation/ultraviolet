@@ -4,7 +4,7 @@ Objective: complete the HelloUltraviolet reference corpus obligation plan.
 
 ## Current Checkpoint
 
-- `Docs/Audit/UltravioletObligations.csv` and the generated catalog currently
+- `Docs/Internal/UltravioletObligations.csv` and the generated catalog currently
   contain 6,051 primary obligation rows.
 - `HelloUltraviolet/Source/Reference` currently contains 154 `.uv` files,
   187 public `run...Reference` procedures, and 0 public `run...Reference`
@@ -245,7 +245,7 @@ Objective: complete the HelloUltraviolet reference corpus obligation plan.
   `Context` method signature for `cpu(mask)` and `cpu(mask, priority)`, the
   runtime has a configured CPU domain constructor, and parallel spawn/dispatch
   work items inherit the domain affinity/default-priority values required by
-  `SPECIFICATION.md` §20.2.4 and §20.4.5.
+  `Docs/SPECIFICATION.md` §20.2.4 and §20.4.5.
 - This pass expanded async runtime source coverage so the accepted corpus now
   exercises manual `Async@Suspended.resume`, yield input propagation,
   `yield release from`, `wait` over `Spawned<T>` handles in inline and CPU
@@ -581,7 +581,7 @@ Objective: complete the HelloUltraviolet reference corpus obligation plan.
 
 - Project folder exists at `HelloUltraviolet/`.
 - Canonical obligation ledger exists at
-  `Docs/Audit/UltravioletObligations.csv`.
+  `Docs/Internal/UltravioletObligations.csv`.
 - The generated ledger check passes:
   `python3 Tools/ExtractObligationLedger.py --check`.
 - `HelloUltraviolet/Source/Main.uv` calls the executable reference corpus through
@@ -1291,7 +1291,7 @@ Objective: complete the HelloUltraviolet reference corpus obligation plan.
   `CrossAssemblyImplementation` fixture now exercises the valid cross-assembly
   implementation surface for the same orphan requirement with a local record,
   enum, and modal declaration implementing imported classes.
-  `SPECIFICATION.md:13116` states that class implementation occurs at the
+  `Docs/SPECIFICATION.md:13116` states that class implementation occurs at the
   defining record, enum, or modal declaration and that standalone extension
   implementation blocks are not part of the language. Under that surface, an
   ordinary source implementation always has the implementing declaration in the
@@ -1306,7 +1306,7 @@ Objective: complete the HelloUltraviolet reference corpus obligation plan.
   required a bootstrap fix in `pattern_common.cpp` and `stmt_common.cpp`
   because both tuple-pattern typing paths previously returned the uncoded
   static-rule label instead of the concrete tuple diagnostic code defined by
-  `SPECIFICATION.md:9127`.
+  `Docs/SPECIFICATION.md:9127`.
 - `Fixtures/RejectedSource/Statements/FrameNoActiveRegion`,
   `Fixtures/RejectedSource/Statements/FrameTargetNotActive`, and
   `Fixtures/RejectedSource/Statements/FrameDiagnostic` reject with
@@ -1351,7 +1351,7 @@ Objective: complete the HelloUltraviolet reference corpus obligation plan.
 - `Fixtures/RejectedSource/Statements/UnsafeRequiredOperationOwnershipDiagnostic`
   rejects with `E-MEM-3030`, exercising
   `diag.18.UnsafeRequiredOperationOwnership` through the construct owner named
-  by `SPECIFICATION.md:20217`. `UVBOOT-0084` records the bootstrap repair that
+  by `Docs/SPECIFICATION.md:20217`. `UVBOOT-0084` records the bootstrap repair that
   maps the sourceable `Transmute-Unsafe-Err` static rule to the Chapter 6
   unsafe-operation diagnostic and records the SPEC clarification request for a
   direct `Code(Transmute-Unsafe-Err)` assignment.
@@ -1506,7 +1506,7 @@ Objective: complete the HelloUltraviolet reference corpus obligation plan.
   and lowering, ordinary closure-call dispatch through callable aliases, and
   indirect closure code-pointer ABI typing. The source also corrects an earlier
   reference mistake by assigning noncapturing closure literals to function
-  aliases, matching `SPECIFICATION.md` §16.9.4.
+  aliases, matching `Docs/SPECIFICATION.md` §16.9.4.
   Expression call source specimens now exercise no-argument calls, positional
   calls, multiline trailing-comma argument lists, argument evaluation and
   control-flow propagation, `move` arguments, generic calls, qualified generic

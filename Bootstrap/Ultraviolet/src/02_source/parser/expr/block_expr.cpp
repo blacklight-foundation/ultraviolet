@@ -2,7 +2,7 @@
 // block_expr.cpp - Block Expression Parsing
 // =============================================================================
 //
-// SPEC REFERENCE: SPECIFICATION.md
+// SPEC REFERENCE: Docs/SPECIFICATION.md
 //   Section 3.3.6 (Lines 5369-5372) - Parse-Block-Expr
 //
 // This file implements:

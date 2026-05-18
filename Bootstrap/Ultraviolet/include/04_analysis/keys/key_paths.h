@@ -5,9 +5,9 @@
 // =============================================================================
 //
 // SPEC REFERENCE:
-//   - SPECIFICATION.md, Section 17.1.7 "Key Roots and Key Path Formation" (lines 23938-23988)
-//   - SPECIFICATION.md, Section 17.2.4 "Key Boundaries" (lines 24100-24150)
-//   - SPECIFICATION.md, Section 17.3 "Path Overlap" (lines 24200-24250)
+//   - Docs/SPECIFICATION.md, Section 17.1.7 "Key Roots and Key Path Formation" (lines 23938-23988)
+//   - Docs/SPECIFICATION.md, Section 17.2.4 "Key Boundaries" (lines 24100-24150)
+//   - Docs/SPECIFICATION.md, Section 17.3 "Path Overlap" (lines 24200-24250)
 //
 // KEY PATH SEMANTICS (from spec):
 //   - Key paths represent memory locations for synchronization

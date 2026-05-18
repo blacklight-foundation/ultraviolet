@@ -2,7 +2,7 @@
 // MIGRATION MAPPING: llvm_attr.cpp
 // =============================================================================
 //
-// SPEC REFERENCE: SPECIFICATION.md
+// SPEC REFERENCE: Docs/SPECIFICATION.md
 //   - Section 6.12 LLVM 21 Backend Requirements
 //   - LLVM-PtrAttrs-* rules (attribute emission)
 //   - Pointer attribute inference from type

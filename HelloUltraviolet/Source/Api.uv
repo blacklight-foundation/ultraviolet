@@ -60,6 +60,13 @@ using HelloUltraviolet::Audit::FixtureCatalog::RejectedSource::{ missingStatemen
 using HelloUltraviolet::Audit::FixtureCatalog::RejectedSource::{ enumCommaSeparatorExpectedDiagnosticFileMatches }
 using HelloUltraviolet::Audit::FixtureCatalog::RejectedSource::{ unknownAttributeExpectedDiagnosticFileMatches }
 using HelloUltraviolet::Audit::FixtureCatalog::RejectedSource::{ testMissingPostconditionExpectedDiagnosticFileMatches }
+using HelloUltraviolet::Audit::FixtureCatalog::RejectedSource::{ testAttributeWrongTargetExpectedDiagnosticFileMatches }
+using HelloUltraviolet::Audit::FixtureCatalog::RejectedSource::{ testMalformedArgumentExpectedDiagnosticFileMatches }
+using HelloUltraviolet::Audit::FixtureCatalog::RejectedSource::{ testDuplicateNameExpectedDiagnosticFileMatches }
+using HelloUltraviolet::Audit::FixtureCatalog::RejectedSource::{ testMalformedCoverageExpectedDiagnosticFileMatches }
+using HelloUltraviolet::Audit::FixtureCatalog::RejectedSource::{ testInvalidProcedureShapeExpectedDiagnosticFileMatches }
+using HelloUltraviolet::Audit::FixtureCatalog::RejectedSource::{ testInvalidAuthorityParameterExpectedDiagnosticFileMatches }
+using HelloUltraviolet::Audit::FixtureCatalog::RejectedSource::{ testUnknownCoverageReferenceExpectedDiagnosticFileMatches }
 using HelloUltraviolet::Audit::FixtureCatalog::RejectedSource::{ packedLayoutOnEnumExpectedDiagnosticFileMatches }
 using HelloUltraviolet::Audit::FixtureCatalog::RejectedSource::{ reservedVendorNamespaceExpectedDiagnosticFileMatches }
 using HelloUltraviolet::Audit::FixtureCatalog::RejectedSource::{ typeAliasCycleExpectedDiagnosticFileMatches }
@@ -1128,6 +1135,41 @@ public procedure runReferenceCorpus(context: Context) -> ReferenceResult {
         context,
         "testMissingPostconditionExpectedDiagnosticFileMatches",
         testMissingPostconditionExpectedDiagnosticFileMatches(context)
+    ) && passed
+    passed = recordReferenceResult(
+        context,
+        "testAttributeWrongTargetExpectedDiagnosticFileMatches",
+        testAttributeWrongTargetExpectedDiagnosticFileMatches(context)
+    ) && passed
+    passed = recordReferenceResult(
+        context,
+        "testMalformedArgumentExpectedDiagnosticFileMatches",
+        testMalformedArgumentExpectedDiagnosticFileMatches(context)
+    ) && passed
+    passed = recordReferenceResult(
+        context,
+        "testDuplicateNameExpectedDiagnosticFileMatches",
+        testDuplicateNameExpectedDiagnosticFileMatches(context)
+    ) && passed
+    passed = recordReferenceResult(
+        context,
+        "testMalformedCoverageExpectedDiagnosticFileMatches",
+        testMalformedCoverageExpectedDiagnosticFileMatches(context)
+    ) && passed
+    passed = recordReferenceResult(
+        context,
+        "testInvalidProcedureShapeExpectedDiagnosticFileMatches",
+        testInvalidProcedureShapeExpectedDiagnosticFileMatches(context)
+    ) && passed
+    passed = recordReferenceResult(
+        context,
+        "testInvalidAuthorityParameterExpectedDiagnosticFileMatches",
+        testInvalidAuthorityParameterExpectedDiagnosticFileMatches(context)
+    ) && passed
+    passed = recordReferenceResult(
+        context,
+        "testUnknownCoverageReferenceExpectedDiagnosticFileMatches",
+        testUnknownCoverageReferenceExpectedDiagnosticFileMatches(context)
     ) && passed
     passed = recordReferenceResult(
         context,

@@ -4,7 +4,7 @@
 // Spec Section: 5.2.9
 // =============================================================================
 //
-// SPEC REFERENCE: SPECIFICATION.md
+// SPEC REFERENCE: Docs/SPECIFICATION.md
 //   Section 5.2.9: Type Inference
 //   - Chk-Null-Ptr: Ptr::null() with expected Ptr<U, s> where s in {Null, none}
 //   - PtrNullExpected: T = TypePtr(U, s) and s in {Null, none}

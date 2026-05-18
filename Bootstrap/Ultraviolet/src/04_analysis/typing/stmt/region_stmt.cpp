@@ -2,7 +2,7 @@
 // region_stmt.cpp - Region statement typing
 // =============================================================================
 //
-// SPEC REFERENCE: SPECIFICATION.md
+// SPEC REFERENCE: Docs/SPECIFICATION.md
 //   Section 5.5: Memory and Pointers - Region statements
 //   - region { body } creates arena scope
 //   - region (options) { body } with configuration

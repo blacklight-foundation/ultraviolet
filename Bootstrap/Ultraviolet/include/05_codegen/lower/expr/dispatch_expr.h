@@ -4,7 +4,7 @@
 // Dispatch Expression Lowering
 // =============================================================================
 //
-// SPEC REFERENCE: SPECIFICATION.md Section 10.5 (Dispatch - Data Parallelism)
+// SPEC REFERENCE: Docs/SPECIFICATION.md Section 10.5 (Dispatch - Data Parallelism)
 //   - dispatch i in range [opts] { body }
 //   - Reduction operators: +, *, min, max, and, or, custom
 //   - Options: reduce, ordered, chunk

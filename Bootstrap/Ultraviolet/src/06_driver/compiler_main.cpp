@@ -3,10 +3,10 @@
 // =============================================================================
 //
 // SPEC REFERENCE:
-//   SPECIFICATION.md section 1.1 - Conformance and phase order
-//   SPECIFICATION.md section 3 - Project and compilation model
-//   SPECIFICATION.md section 15 - Program entry point and contracts
-//   SPECIFICATION.md section 24 - Lowering, lifecycle, and backend
+//   Docs/SPECIFICATION.md section 1.1 - Conformance and phase order
+//   Docs/SPECIFICATION.md section 3 - Project and compilation model
+//   Docs/SPECIFICATION.md section 15 - Program entry point and contracts
+//   Docs/SPECIFICATION.md section 24 - Lowering, lifecycle, and backend
 //
 // Phase Orchestration:
 //   Phase 0: Build/project validation
@@ -41,6 +41,7 @@
 #include <type_traits>
 #include <unordered_map>
 #include <unordered_set>
+#include <utility>
 #include <vector>
 
 #include "06_driver/cli.h"
@@ -51,6 +52,7 @@
 #include "06_driver/output_pipeline.h"
 #include "06_driver/pipeline.h"
 #include "06_driver/shared_library_exports.h"
+#include "06_driver/test_discovery.h"
 #include "06_driver/version.h"
 
 #include "00_core/assert_spec.h"
@@ -323,6 +325,38 @@ void EmitAttributeValidationDiagnostic(
                              : err.message);
 }
 
+void EmitUnknownTestTargetDiagnostic(
+    ultraviolet::core::DiagnosticStream& diags,
+    const std::string& target) {
+  if (auto diag = ultraviolet::core::MakeDiagnosticById("E-TST-0108")) {
+    if (!target.empty()) {
+      ultraviolet::core::SubDiagnostic note;
+      note.kind = ultraviolet::core::SubDiagnosticKind::Note;
+      note.message = "target: " + target;
+      diag->children.push_back(std::move(note));
+    }
+    ultraviolet::core::Emit(diags, *diag);
+    return;
+  }
+  EmitInternalDiagnostic(diags, ultraviolet::core::Severity::Error,
+                         std::nullopt, "unknown uv test target");
+}
+
+void RenderDriverDiagnostics(
+    const ultraviolet::core::DiagnosticStream& diags,
+    const ultraviolet::driver::CliOptions& opts,
+    ultraviolet::core::ColorOverride color_override) {
+  if (opts.diag_json) {
+    std::cout << ultraviolet::driver::DiagnosticStreamToJson(
+        ultraviolet::core::Order(diags)) << "\n";
+    return;
+  }
+  (void)color_override;
+  for (const auto& diag : ultraviolet::core::Order(diags)) {
+    std::cerr << ultraviolet::core::Render(diag) << "\n";
+  }
+}
+
 bool ValidateParsedTypeAttributeLists(
     const std::vector<ultraviolet::ast::ASTModule>& modules,
     ultraviolet::core::DiagnosticStream& diags) {
@@ -417,6 +451,325 @@ std::string ResolveCommandName(const char* argv0) {
     return "uv";
   }
   return name;
+}
+
+bool HasTestHarnessBuildOptions(const ultraviolet::driver::CliOptions& opts) {
+  return opts.test_harness_assembly.has_value() ||
+         opts.test_harness_module.has_value() ||
+         opts.test_harness_dir.has_value();
+}
+
+ultraviolet::project::OutputPaths OutputPathsUnder(
+    const std::filesystem::path& root) {
+  ultraviolet::project::OutputPaths paths;
+  paths.root = root;
+  paths.obj_dir = root / "obj";
+  paths.ir_dir = root / "ir";
+  paths.bin_dir = root / "bin";
+  paths.lib_dir = root / "lib";
+  return paths;
+}
+
+bool ModulePathStartsWithAssembly(std::string_view module_path,
+                                  std::string_view assembly_name) {
+  return module_path == assembly_name ||
+         (module_path.size() > assembly_name.size() + 1 &&
+          module_path.compare(0, assembly_name.size(), assembly_name) == 0 &&
+          module_path[assembly_name.size()] == ':' &&
+          module_path[assembly_name.size() + 1] == ':');
+}
+
+bool ApplyTestHarnessBuildOptions(ultraviolet::project::Project& project,
+                                  const ultraviolet::driver::CliOptions& opts,
+                                  ultraviolet::core::DiagnosticStream& diags) {
+  if (!HasTestHarnessBuildOptions(opts)) {
+    return true;
+  }
+  if (!opts.test_harness_assembly.has_value() ||
+      !opts.test_harness_module.has_value() ||
+      !opts.test_harness_dir.has_value()) {
+    EmitInternalDiagnostic(
+        diags, ultraviolet::core::Severity::Error, std::nullopt,
+        "incomplete source-native test harness build options");
+    return false;
+  }
+  if (!ModulePathStartsWithAssembly(*opts.test_harness_module,
+                                    *opts.test_harness_assembly)) {
+    EmitInternalDiagnostic(
+        diags, ultraviolet::core::Severity::Error, std::nullopt,
+        "source-native test harness module is outside the selected assembly");
+    return false;
+  }
+
+  auto assembly_it = std::find_if(
+      project.assemblies.begin(), project.assemblies.end(),
+      [&](const ultraviolet::project::Assembly& assembly) {
+        return assembly.name == *opts.test_harness_assembly;
+      });
+  if (assembly_it == project.assemblies.end()) {
+    EmitInternalDiagnostic(
+        diags, ultraviolet::core::Severity::Error, std::nullopt,
+        "source-native test harness assembly was not found");
+    return false;
+  }
+
+  ultraviolet::project::ModuleInfo harness_module;
+  harness_module.path = *opts.test_harness_module;
+  harness_module.dir = std::filesystem::path(*opts.test_harness_dir);
+
+  auto existing_module = std::find_if(
+      assembly_it->modules.begin(), assembly_it->modules.end(),
+      [&](const ultraviolet::project::ModuleInfo& module) {
+        return module.path == harness_module.path;
+      });
+  if (existing_module == assembly_it->modules.end()) {
+    assembly_it->modules.push_back(std::move(harness_module));
+  } else {
+    existing_module->dir = harness_module.dir;
+  }
+  assembly_it->kind = "executable";
+  assembly_it->link_kind.reset();
+
+  if (project.assembly.name == assembly_it->name) {
+    project.assembly = *assembly_it;
+    project.source_root = assembly_it->source_root;
+    project.outputs = assembly_it->outputs;
+    project.modules = assembly_it->modules;
+    project.lifecycle_modules = assembly_it->modules;
+  }
+
+  return true;
+}
+
+std::string EscapeUvString(std::string_view value) {
+  std::string out;
+  out.reserve(value.size() + 8);
+  for (char ch : value) {
+    switch (ch) {
+      case '\\':
+        out += "\\\\";
+        break;
+      case '"':
+        out += "\\\"";
+        break;
+      case '\n':
+        out += "\\n";
+        break;
+      case '\r':
+        out += "\\r";
+        break;
+      case '\t':
+        out += "\\t";
+        break;
+      default:
+        out.push_back(ch);
+        break;
+    }
+  }
+  return out;
+}
+
+std::string HarnessModulePath(std::string_view assembly_name) {
+  std::string path(assembly_name);
+  path += "::Tests::GeneratedHarness";
+  return path;
+}
+
+std::filesystem::path HarnessRootForAssembly(
+    const ultraviolet::project::Assembly& assembly) {
+  return assembly.outputs.root / "test-harness" / assembly.name;
+}
+
+std::string GenerateSourceNativeTestHarness(
+    const std::vector<ultraviolet::driver::SourceNativeTestDescriptor>& tests,
+    const std::filesystem::path& temporary_directory,
+    ultraviolet::project::TargetProfile target_profile,
+    const std::filesystem::path& current_directory) {
+  std::ostringstream out;
+  out << "//! Generated source-native test harness.\n\n";
+  out << "public procedure main(context: Context) -> i32 {\n";
+  out << "    var failures: i32 = 0\n";
+
+  const bool needs_authority =
+      std::any_of(tests.begin(), tests.end(), [](const auto& test) {
+        return test.requires_context;
+      });
+  if (needs_authority) {
+    out << "    let authority: TestAuthority = TestAuthority {\n";
+    out << "        io: context.io,\n";
+    out << "        sys: context.sys,\n";
+    out << "        heap: context.heap,\n";
+    out << "        temporary_directory: \""
+        << EscapeUvString(temporary_directory.string()) << "\",\n";
+    out << "        target_profile: \""
+        << EscapeUvString(std::string(
+               ultraviolet::project::TargetProfileName(target_profile)))
+        << "\",\n";
+    out << "        compiler_executable_path: \""
+        << EscapeUvString(g_compiler_executable_path.string()) << "\",\n";
+    out << "        compiler_current_directory: \""
+        << EscapeUvString(current_directory.string()) << "\"\n";
+    out << "    }\n";
+  }
+
+  for (const auto& test : tests) {
+    out << "    if " << test.stable_identity << "(";
+    if (test.requires_context) {
+      out << "authority";
+    }
+    out << ") {\n";
+    out << "    } else {\n";
+    out << "        failures = failures + 1\n";
+    out << "    }\n";
+  }
+
+  out << "    return failures\n";
+  out << "}\n";
+  return out.str();
+}
+
+bool WriteTextFile(const std::filesystem::path& path,
+                   const std::string& contents,
+                   ultraviolet::core::DiagnosticStream& diags) {
+  std::error_code ec;
+  std::filesystem::create_directories(path.parent_path(), ec);
+  if (ec) {
+    EmitInternalDiagnostic(diags, ultraviolet::core::Severity::Error,
+                           std::nullopt,
+                           "failed to create test harness directory: " +
+                               ec.message());
+    return false;
+  }
+
+  std::ofstream file(path, std::ios::binary);
+  if (!file) {
+    EmitInternalDiagnostic(diags, ultraviolet::core::Severity::Error,
+                           std::nullopt,
+                           "failed to write test harness source: " +
+                               path.string());
+    return false;
+  }
+  file << contents;
+  if (!file) {
+    EmitInternalDiagnostic(diags, ultraviolet::core::Severity::Error,
+                           std::nullopt,
+                           "failed to flush test harness source: " +
+                               path.string());
+    return false;
+  }
+  return true;
+}
+
+std::optional<int> BuildAndRunSourceNativeTestHarness(
+    const ultraviolet::project::Project& project,
+    const ultraviolet::project::Assembly& assembly,
+    const std::vector<ultraviolet::driver::SourceNativeTestDescriptor>& tests,
+    ultraviolet::project::TargetProfile target_profile,
+    const ultraviolet::driver::CliOptions& opts,
+    const std::filesystem::path& current_directory,
+    ultraviolet::core::DiagnosticStream& diags) {
+  const std::filesystem::path harness_root = HarnessRootForAssembly(assembly);
+  const std::filesystem::path harness_source_dir = harness_root / "Source";
+  const std::filesystem::path harness_build_dir = harness_root / "build";
+  const std::string harness_module_path = HarnessModulePath(assembly.name);
+  const std::filesystem::path harness_source =
+      harness_source_dir / "Main.uv";
+
+  const std::string source = GenerateSourceNativeTestHarness(
+      tests, harness_root / "tmp", target_profile, current_directory);
+  if (!WriteTextFile(harness_source, source, diags)) {
+    return std::nullopt;
+  }
+
+  std::vector<std::string> build_args;
+  build_args.push_back("build");
+  build_args.push_back(project.root.string());
+  build_args.push_back("--assembly");
+  build_args.push_back(assembly.name);
+  build_args.push_back("--target-profile");
+  build_args.push_back(std::string(
+      ultraviolet::project::TargetProfileName(target_profile)));
+  build_args.push_back("--out-dir");
+  build_args.push_back(harness_build_dir.string());
+  build_args.push_back("--test-harness-assembly");
+  build_args.push_back(assembly.name);
+  build_args.push_back("--test-harness-module");
+  build_args.push_back(harness_module_path);
+  build_args.push_back("--test-harness-dir");
+  build_args.push_back(harness_source_dir.string());
+  build_args.push_back("--incremental");
+  build_args.push_back("off");
+  if (opts.build_progress.has_value()) {
+    build_args.push_back("--build-progress");
+    build_args.push_back(*opts.build_progress ? "on" : "off");
+  }
+  if (opts.runtime_lib_path.has_value()) {
+    build_args.push_back("--runtime-lib");
+    build_args.push_back(*opts.runtime_lib_path);
+  }
+  if (opts.link_debug.has_value()) {
+    build_args.push_back("--link-debug");
+    build_args.push_back(*opts.link_debug ? "on" : "off");
+  }
+  if (opts.max_errors_override.has_value()) {
+    build_args.push_back("--max-errors");
+    if (opts.max_errors_override->max_error_count.has_value()) {
+      build_args.push_back(
+          std::to_string(*opts.max_errors_override->max_error_count));
+    } else {
+      build_args.push_back("inf");
+    }
+  }
+  if (opts.color_mode == ultraviolet::driver::ColorMode::Always) {
+    build_args.push_back("--color=always");
+  } else if (opts.color_mode == ultraviolet::driver::ColorMode::Never) {
+    build_args.push_back("--color=never");
+  }
+
+  ultraviolet::core::HostProcessSpec build_spec;
+  build_spec.program = g_compiler_executable_path;
+  build_spec.arguments = std::move(build_args);
+  build_spec.working_directory = project.root;
+  build_spec.output_mode =
+      ultraviolet::core::HostProcessOutputMode::Inherit;
+  const auto build_result = ultraviolet::core::RunHostProcess(build_spec);
+  if (!build_result.launched) {
+    EmitInternalDiagnostic(diags, ultraviolet::core::Severity::Error,
+                           std::nullopt,
+                           "failed to launch source-native test harness build: " +
+                               build_result.error_message);
+    return std::nullopt;
+  }
+  if (build_result.exit_code != 0) {
+    return build_result.exit_code;
+  }
+
+  ultraviolet::project::Assembly harness_assembly = assembly;
+  harness_assembly.kind = "executable";
+  harness_assembly.link_kind.reset();
+  harness_assembly.outputs = OutputPathsUnder(harness_build_dir);
+  ultraviolet::project::ModuleInfo harness_module;
+  harness_module.path = harness_module_path;
+  harness_module.dir = harness_source_dir;
+  harness_assembly.modules.push_back(std::move(harness_module));
+  const auto harness_project =
+      ultraviolet::project::AssemblyProject(project, harness_assembly);
+  const std::filesystem::path executable =
+      ultraviolet::project::ExePath(harness_project, target_profile);
+
+  ultraviolet::core::HostProcessSpec run_spec;
+  run_spec.program = executable;
+  run_spec.working_directory = project.root;
+  run_spec.output_mode = ultraviolet::core::HostProcessOutputMode::Inherit;
+  const auto run_result = ultraviolet::core::RunHostProcess(run_spec);
+  if (!run_result.launched) {
+    EmitInternalDiagnostic(diags, ultraviolet::core::Severity::Error,
+                           std::nullopt,
+                           "failed to launch source-native test harness: " +
+                               run_result.error_message);
+    return std::nullopt;
+  }
+  return run_result.exit_code;
 }
 
 const char* VisibilitySignature(ultraviolet::ast::Visibility vis) {
@@ -2088,6 +2441,163 @@ int ultraviolet::driver::RunCompiler(int argc, char** argv) {
   }
 
   // ========================================================================
+  // test subcommand
+  // ========================================================================
+  if (opts->do_test) {
+    core::DiagnosticStream test_diags;
+
+    if (opts->test_target_rejected) {
+      EmitUnknownTestTargetDiagnostic(test_diags, opts->test_target.value_or(""));
+      RenderDriverDiagnostics(test_diags, *opts, color_override);
+      return 1;
+    }
+
+    std::error_code current_dir_ec;
+    const auto current_directory =
+        std::filesystem::current_path(current_dir_ec);
+    const std::filesystem::path test_root_input = [&]() {
+      if (!opts->test_target.has_value()) {
+        return current_dir_ec ? std::filesystem::path(".") : current_directory;
+      }
+      std::filesystem::path candidate(*opts->test_target);
+      if (candidate.is_relative() && !current_dir_ec) {
+        candidate = current_directory / candidate;
+      }
+      std::error_code exists_ec;
+      if (std::filesystem::exists(candidate, exists_ec) && !exists_ec) {
+        return candidate;
+      }
+      return current_dir_ec ? std::filesystem::path(".") : current_directory;
+    }();
+
+    const auto project_root = project::FindProjectRoot(test_root_input);
+    const auto assembly_target =
+        project::ParseAssemblyTarget(opts->assembly_target);
+    if (!assembly_target.has_value()) {
+      core::EmitExternalDiagnostic(test_diags, "E-PRJ-0205");
+      RenderDriverDiagnostics(test_diags, *opts, color_override);
+      return 1;
+    }
+
+    const auto project_result =
+        project::LoadProjectAllAssemblies(project_root, *assembly_target);
+    for (const auto& diag : project_result.diags) {
+      core::Emit(test_diags, diag);
+    }
+    if (!project_result.project.has_value() || core::HasError(test_diags)) {
+      RenderDriverDiagnostics(test_diags, *opts, color_override);
+      return 1;
+    }
+
+    const auto target_resolution = ResolveSourceNativeTestTarget(
+        *project_result.project,
+        current_dir_ec ? std::filesystem::path(".") : current_directory,
+        opts->test_target);
+    if (!target_resolution.scope.has_value()) {
+      EmitUnknownTestTargetDiagnostic(test_diags,
+                                      target_resolution.unknown_target);
+      RenderDriverDiagnostics(test_diags, *opts, color_override);
+      return 1;
+    }
+
+    const auto selected_target_profile = ResolveSelectedTargetProfile(
+        *opts, *project_result.project, test_diags);
+    if (!selected_target_profile.has_value()) {
+      RenderDriverDiagnostics(test_diags, *opts, color_override);
+      return 1;
+    }
+
+    frontend::ParseModuleDeps deps;
+    deps.compilation_unit = static_cast<project::CompilationUnitResult (*)(
+        const std::filesystem::path&)>(project::CompilationUnit);
+    deps.read_bytes = frontend::ReadBytesDefault;
+    deps.load_source = core::LoadSource;
+    deps.parse_file = ast::ParseFile;
+    deps.inspect_source = [](const core::SourceFile& source) {
+      return InspectSource(source);
+    };
+
+    std::vector<SourceNativeTestDescriptor> discovered_tests;
+    for (const auto& assembly : project_result.project->assemblies) {
+      auto parsed = frontend::ParseModulesWithDeps(
+          assembly.modules, assembly.source_root, assembly.name, deps);
+      for (const auto& diag : parsed.diags) {
+        core::Emit(test_diags, diag);
+      }
+      if (!parsed.modules.has_value() || core::HasError(parsed.diags)) {
+        continue;
+      }
+      if (!ValidateParsedTypeAttributeLists(*parsed.modules, test_diags)) {
+        continue;
+      }
+      auto discovery =
+          DiscoverSourceNativeTests(assembly.name, *parsed.modules);
+      discovered_tests.insert(discovered_tests.end(),
+                              discovery.tests.begin(),
+                              discovery.tests.end());
+    }
+
+    if (core::HasError(test_diags)) {
+      RenderDriverDiagnostics(test_diags, *opts, color_override);
+      return 1;
+    }
+
+    const auto selected_tests = SelectSourceNativeTests(
+        *project_result.project, *target_resolution.scope, discovered_tests);
+    if (selected_tests.empty()) {
+      return 0;
+    }
+
+    std::vector<std::string> assembly_order;
+    std::unordered_map<std::string, std::vector<SourceNativeTestDescriptor>>
+        tests_by_assembly;
+    for (const auto& test : selected_tests) {
+      auto [it, inserted] =
+          tests_by_assembly.try_emplace(test.assembly_name);
+      if (inserted) {
+        assembly_order.push_back(test.assembly_name);
+      }
+      it->second.push_back(test);
+    }
+
+    int harness_status = 0;
+    for (const auto& assembly_name : assembly_order) {
+      const auto assembly_it = std::find_if(
+          project_result.project->assemblies.begin(),
+          project_result.project->assemblies.end(),
+          [&](const project::Assembly& assembly) {
+            return assembly.name == assembly_name;
+          });
+      if (assembly_it == project_result.project->assemblies.end()) {
+        EmitInternalDiagnostic(
+            test_diags, core::Severity::Error, std::nullopt,
+            "selected source-native test assembly was not loaded");
+        RenderDriverDiagnostics(test_diags, *opts, color_override);
+        return 1;
+      }
+      const auto result = BuildAndRunSourceNativeTestHarness(
+          *project_result.project, *assembly_it, tests_by_assembly[assembly_name],
+          *selected_target_profile,
+          *opts,
+          current_dir_ec ? std::filesystem::path(".") : current_directory,
+          test_diags);
+      if (!result.has_value()) {
+        RenderDriverDiagnostics(test_diags, *opts, color_override);
+        return 1;
+      }
+      if (*result != 0 && harness_status == 0) {
+        harness_status = *result;
+      }
+    }
+
+    if (core::HasError(test_diags)) {
+      RenderDriverDiagnostics(test_diags, *opts, color_override);
+      return 1;
+    }
+    return harness_status == 0 ? 0 : 1;
+  }
+
+  // ========================================================================
   // init subcommand
   // ========================================================================
   if (opts->do_init) {
@@ -2307,7 +2817,7 @@ int ultraviolet::driver::RunCompiler(int argc, char** argv) {
     }
     return 1;
   }
-  const auto project_result =
+  auto project_result =
       project::LoadProject(project_root, *assembly_target);
   if (project_result.project.has_value()) {
     core::UpdateCrashReportRoot(
@@ -2330,6 +2840,10 @@ int ultraviolet::driver::RunCompiler(int argc, char** argv) {
 
   for (const auto& diag : project_result.diags) {
     core::Emit(diags, diag);
+  }
+
+  if (!core::HasError(diags) && project_result.project.has_value()) {
+    ApplyTestHarnessBuildOptions(*project_result.project, *opts, diags);
   }
 
   std::optional<project::TargetProfile> selected_target_profile;

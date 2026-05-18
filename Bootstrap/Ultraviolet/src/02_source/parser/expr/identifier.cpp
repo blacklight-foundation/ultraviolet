@@ -2,7 +2,7 @@
 // identifier.cpp - Identifier Expression Parsing
 // =============================================================================
 //
-// SPEC REFERENCE: SPECIFICATION.md
+// SPEC REFERENCE: Docs/SPECIFICATION.md
 // - Parse-Identifier-Expr (Lines 5184-5187)
 // - Parse-Receiver-Ref (receiver reference ~)
 // - Parse-Wait-Expr (contextual keyword wait)

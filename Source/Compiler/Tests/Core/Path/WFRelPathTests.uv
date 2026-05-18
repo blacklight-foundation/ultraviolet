@@ -1,6 +1,6 @@
 [[test(
     name: "WF-RelPath accepts relative path under canonical root",
-    covers("WF-RelPath@L3441")
+    covers("WF-RelPath@L3462")
 )]]
 internal procedure wfRelPathAcceptsRelativePathUnderCanonicalRoot() -> bool
 |: => @result
@@ -18,7 +18,7 @@ internal procedure wfRelPathAcceptsRelativePathUnderCanonicalRoot() -> bool
 
 [[test(
     name: "WF-RelPath rejects absolute path",
-    covers("WF-RelPath-Err@L3459")
+    covers("WF-RelPath-Err@L3480")
 )]]
 internal procedure wfRelPathRejectsAbsolutePath() -> bool
 |: => @result
@@ -36,7 +36,7 @@ internal procedure wfRelPathRejectsAbsolutePath() -> bool
 
 [[test(
     name: "WF-RelPath rejects root parent traversal",
-    covers("WF-RelPath-Err@L3459")
+    covers("WF-RelPath-Err@L3480")
 )]]
 internal procedure wfRelPathRejectsRootParentTraversal() -> bool
 |: => @result
@@ -54,7 +54,7 @@ internal procedure wfRelPathRejectsRootParentTraversal() -> bool
 
 [[test(
     name: "WF-RelPath rejects path parent traversal",
-    covers("WF-RelPath-Err@L3459")
+    covers("WF-RelPath-Err@L3480")
 )]]
 internal procedure wfRelPathRejectsPathParentTraversal() -> bool
 |: => @result

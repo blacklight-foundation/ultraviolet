@@ -2,7 +2,7 @@
 // foreign_contract_clause.cpp - Foreign Contract Clause Parsing
 // =============================================================================
 //
-// SPEC REFERENCE: SPECIFICATION.md Section 3.3.6.13 (Foreign Contract Rules)
+// SPEC REFERENCE: Docs/SPECIFICATION.md Section 3.3.6.13 (Foreign Contract Rules)
 //
 // This file implements foreign contract clause parsing for extern declarations:
 //   - IsForeignContractStart: Check if position starts foreign contract

@@ -2,7 +2,7 @@
 // ABI Type: Strings and Bytes (ABI-StringBytes)
 // =============================================================================
 //
-// SPEC REFERENCE: SPECIFICATION.md
+// SPEC REFERENCE: Docs/SPECIFICATION.md
 //   - Section 6.2.2 ABI Type Lowering
 //   - ABI-StringBytes rule covers TypeString and TypeBytes in all states
 //   - @View: fat pointer (ptr, len)

@@ -4,7 +4,7 @@
 // This file should contain parsing logic for modal patterns, which match
 // modal type states and optionally destructure state-specific fields.
 //
-// SPEC REFERENCE: SPECIFICATION.md, Section 3.3.9, Lines 6122-6125
+// SPEC REFERENCE: Docs/SPECIFICATION.md, Section 3.3.9, Lines 6122-6125
 // HELPER RULES: Section 3.3.9.1, Lines 6236-6246
 // =============================================================================
 //

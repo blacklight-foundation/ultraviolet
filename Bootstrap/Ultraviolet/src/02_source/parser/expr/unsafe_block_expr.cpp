@@ -2,7 +2,7 @@
 // unsafe_block_expr.cpp - Unsafe Block Expression Parsing
 // =============================================================================
 //
-// SPEC REFERENCE: SPECIFICATION.md
+// SPEC REFERENCE: Docs/SPECIFICATION.md
 // - Parse-Unsafe-Expr (Lines 5374-5377)
 //
 // =============================================================================

@@ -2,43 +2,43 @@
 //
 // This file owns the project loading lifecycle:
 //
-// - conformance.ManifestRequired@L2237
+// - conformance.ManifestRequired@L2258
 //   If Γ ⊢ ParseManifest(R) ⇑ c, then Γ ⊢ LoadProject(R, target) ⇑ c
 //   and the implementation MUST NOT attempt any single-file or heuristic
 //   fallback project construction.
-// - WF-Assembly@L3511
+// - WF-Assembly@L3532
 //   A_0.kind ∈ AssemblyKind
 //   Γ ⊢ A_0 : Assembly
-// - def.AssemblyTarget@L3529
+// - def.AssemblyTarget@L3550
 //   AssemblyTarget = Name ∪ {⊥}
-// - def.ProjLoadState@L3544
+// - def.ProjLoadState@L3565
 //   ProjLoadState = {Start(R, target), Parsed(R, target, T),
 //   Validated(R, target, T), ProjAsmScan(R, target, T, Ts, As),
 //   Discovered(P), Error(code)}
-// - Step-Parse@L3558
+// - Step-Parse@L3579
 //   Γ ⊢ ParseManifest(R) ⇓ T
 //   ⟨Start(R, target)⟩ → ⟨Parsed(R, target, T)⟩
-// - Step-Parse-Err@L3576
+// - Step-Parse-Err@L3597
 //   Γ ⊢ ParseManifest(R) ⇑ c
 //   ⟨Start(R, target)⟩ → ⟨Error(c)⟩
-// - Step-Validate@L3594
+// - Step-Validate@L3615
 //   Γ ⊢ ValidateManifest(T) ⇓ ok
 //   ⟨Parsed(R, target, T)⟩ → ⟨Validated(R, target, T)⟩
-// - Step-Validate-Err@L3612
+// - Step-Validate-Err@L3633
 //   Γ ⊢ ValidateManifest(T) ⇑ c
 //   ⟨Parsed(R, target, T)⟩ → ⟨Error(c)⟩
-// - Step-Asm-Init@L3741
-// - Step-Asm-Cons@L3759
-// - Step-Asm-Err@L3777
-// - Step-Asm-Done@L3795
-// - Step-Asm-Own-Err@L3813
-// - Step-Asm-Done-Err@L3831
-// - BuildAssembly-Ok@L3925
-// - BuildAssembly-Err-Resolve@L3943
-// - BuildAssembly-Err-Root@L3961
-// - BuildAssembly-Err-Modules@L3979
-// - LoadProject-Ok@L3999
-// - LoadProject-Err@L4017
+// - Step-Asm-Init@L3762
+// - Step-Asm-Cons@L3780
+// - Step-Asm-Err@L3798
+// - Step-Asm-Done@L3816
+// - Step-Asm-Own-Err@L3834
+// - Step-Asm-Done-Err@L3852
+// - BuildAssembly-Ok@L3946
+// - BuildAssembly-Err-Resolve@L3964
+// - BuildAssembly-Err-Root@L3982
+// - BuildAssembly-Err-Modules@L4000
+// - LoadProject-Ok@L4020
+// - LoadProject-Err@L4038
 
 internal let ASSEMBLY_KIND_EXECUTABLE_TEXT: string@View = "executable"
 internal let ASSEMBLY_KIND_LIBRARY_TEXT: string@View = "library"

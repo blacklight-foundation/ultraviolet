@@ -2,7 +2,7 @@
 // continue_stmt.cpp - Continue statement typing
 // =============================================================================
 //
-// SPEC REFERENCE: SPECIFICATION.md
+// SPEC REFERENCE: Docs/SPECIFICATION.md
 //   Section 5.2.11: Loop Control Statements
 //   - T-Continue (line 9624): Continue statement typing
 //

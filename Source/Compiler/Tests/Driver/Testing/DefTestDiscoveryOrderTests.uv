@@ -1,6 +1,6 @@
 // Test responsibility: Source/Compiler/Tests/Driver/Testing/DefTestDiscoveryOrderTests.uv
 //
-// This file owns source-native tests for def.TestDiscoveryOrder@L28575:
+// This file owns source-native tests for def.TestDiscoveryOrder@L28922:
 //
 // Discovery order is module path, file order, declaration span, then
 // fully-qualified procedure symbol. The fully-qualified procedure path is the
@@ -8,7 +8,7 @@
 
 [[test(
     name: "test discovery order sorts by module path first",
-    covers("def.TestDiscoveryOrder@L28575")
+    covers("def.TestDiscoveryOrder@L28922")
 )]]
 internal procedure testDiscoveryOrderSortsByModulePathFirst() -> bool
 |: => @result
@@ -21,7 +21,7 @@ internal procedure testDiscoveryOrderSortsByModulePathFirst() -> bool
 
 [[test(
     name: "test discovery order sorts by source file order after module",
-    covers("def.TestDiscoveryOrder@L28575")
+    covers("def.TestDiscoveryOrder@L28922")
 )]]
 internal procedure testDiscoveryOrderSortsBySourceFileOrderAfterModule() -> bool
 |: => @result
@@ -34,7 +34,7 @@ internal procedure testDiscoveryOrderSortsBySourceFileOrderAfterModule() -> bool
 
 [[test(
     name: "test discovery order sorts by declaration span after file order",
-    covers("def.TestDiscoveryOrder@L28575")
+    covers("def.TestDiscoveryOrder@L28922")
 )]]
 internal procedure testDiscoveryOrderSortsByDeclarationSpanAfterFileOrder() -> bool
 |: => @result
@@ -47,7 +47,7 @@ internal procedure testDiscoveryOrderSortsByDeclarationSpanAfterFileOrder() -> b
 
 [[test(
     name: "test discovery order sorts by procedure symbol last",
-    covers("def.TestDiscoveryOrder@L28575")
+    covers("def.TestDiscoveryOrder@L28922")
 )]]
 internal procedure testDiscoveryOrderSortsByProcedureSymbolLast() -> bool
 |: => @result
@@ -60,7 +60,7 @@ internal procedure testDiscoveryOrderSortsByProcedureSymbolLast() -> bool
 
 [[test(
     name: "test discovery order constructs sorted test lists",
-    covers("def.TestDiscoveryOrder@L28575")
+    covers("def.TestDiscoveryOrder@L28922")
 )]]
 internal procedure testDiscoveryOrderConstructsSortedTestLists() -> bool
 |: => @result
@@ -79,7 +79,7 @@ internal procedure testDiscoveryOrderConstructsSortedTestLists() -> bool
 
 [[test(
     name: "test execution planning sorts selected discovered tests",
-    covers("def.TestDiscoveryOrder@L28575")
+    covers("def.TestDiscoveryOrder@L28922")
 )]]
 internal procedure testExecutionPlanningSortsSelectedDiscoveredTests() -> bool
 |: => @result

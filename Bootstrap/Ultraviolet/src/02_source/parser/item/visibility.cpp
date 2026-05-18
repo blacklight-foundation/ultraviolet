@@ -2,7 +2,7 @@
 // visibility.cpp - Visibility Modifier Parsing
 // =============================================================================
 //
-// SPEC REFERENCE: SPECIFICATION.md Section 3.3.6.2 (Lines 3497-3505)
+// SPEC REFERENCE: Docs/SPECIFICATION.md Section 3.3.6.2 (Lines 3497-3505)
 //
 // This file documents visibility parsing. The actual implementation is in
 // parser_paths.cpp (ParseVis function) since visibility is also used for

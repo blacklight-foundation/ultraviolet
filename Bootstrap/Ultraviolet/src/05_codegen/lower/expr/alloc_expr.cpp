@@ -2,7 +2,7 @@
 // Expression Lowering: AllocExpr
 // =============================================================================
 //
-// SPEC REFERENCE: SPECIFICATION.md Section 6.4 (Expression Lowering)
+// SPEC REFERENCE: Docs/SPECIFICATION.md Section 6.4 (Expression Lowering)
 //   - Lines 16253-16256: (Lower-Expr-Alloc)
 //     Gamma |- LowerExpr(e) => <IR_e, v>
 //     Gamma |- LowerExpr(AllocExpr(r_opt, e)) => <SeqIR(IR_e, AllocIR(r_opt, v)), v_alloc>

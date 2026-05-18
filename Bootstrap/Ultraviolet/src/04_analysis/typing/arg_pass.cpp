@@ -2,7 +2,7 @@
 // MIGRATION MAPPING: arg_pass.cpp
 // =============================================================================
 //
-// SPEC REFERENCE: SPECIFICATION.md
+// SPEC REFERENCE: Docs/SPECIFICATION.md
 //   Section 5.2.4: Procedure Calls (lines 8707-8777)
 //   - ArgType(a) definition:
 //     * move arguments type through MoveArgExpr

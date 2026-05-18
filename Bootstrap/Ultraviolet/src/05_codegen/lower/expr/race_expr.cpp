@@ -2,7 +2,7 @@
 // Expression Lowering: RaceExpr
 // =============================================================================
 //
-// SPEC REFERENCE: SPECIFICATION.md Section 11.4 (Race Expression)
+// SPEC REFERENCE: Docs/SPECIFICATION.md Section 11.4 (Race Expression)
 //   - race { arm -> handler, ... } returns first completed
 //   - Two modes: RaceReturn (returns value) and RaceYield (streams)
 //

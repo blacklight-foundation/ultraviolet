@@ -22,10 +22,10 @@ Spec obligations exercised:
 
 Spec basis:
 
-- `SPECIFICATION.md:16780` defines single-case `if ... is pattern block_expr`.
-- `SPECIFICATION.md:17916` defines identifier patterns.
-- `SPECIFICATION.md:17963` binds an identifier pattern to the scrutinee type.
-- `SPECIFICATION.md:17993` binds an identifier pattern to the matched value.
+- `Docs/SPECIFICATION.md:16780` defines single-case `if ... is pattern block_expr`.
+- `Docs/SPECIFICATION.md:17916` defines identifier patterns.
+- `Docs/SPECIFICATION.md:17963` binds an identifier pattern to the scrutinee type.
+- `Docs/SPECIFICATION.md:17993` binds an identifier pattern to the matched value.
 
 Spec-valid specimen:
 
@@ -100,14 +100,14 @@ Spec obligations exercised:
 
 Spec basis:
 
-- `SPECIFICATION.md:11242` types a transition call on a unique source state as
+- `Docs/SPECIFICATION.md:11242` types a transition call on a unique source state as
   the target state.
-- `SPECIFICATION.md:11274` states that modal transitions consume the source
+- `Docs/SPECIFICATION.md:11274` states that modal transitions consume the source
   state value and produce a target state value.
-- `SPECIFICATION.md:11284` extracts the transition body's returned value.
-- `SPECIFICATION.md:11288` validates that the returned value is the target
+- `Docs/SPECIFICATION.md:11284` extracts the transition body's returned value.
+- `Docs/SPECIFICATION.md:11288` validates that the returned value is the target
   modal state.
-- `SPECIFICATION.md:11292` states that transition lowering returns a fresh
+- `Docs/SPECIFICATION.md:11292` states that transition lowering returns a fresh
   target-state value constructed by the transition body.
 
 Spec-valid specimen:
@@ -179,15 +179,15 @@ Spec obligations exercised:
 
 Spec basis:
 
-- `SPECIFICATION.md:18490` narrows union patterns by matching the case pattern
+- `Docs/SPECIFICATION.md:18490` narrows union patterns by matching the case pattern
   against each union member type.
-- `SPECIFICATION.md:18495` refines the scrutinee binding and introduces the
+- `Docs/SPECIFICATION.md:18495` refines the scrutinee binding and introduces the
   pattern bindings for the selected case scope.
-- `SPECIFICATION.md:18515` evaluates a matching case by binding the pattern's
+- `Docs/SPECIFICATION.md:18515` evaluates a matching case by binding the pattern's
   matched values before executing the body.
-- `SPECIFICATION.md:18580` lowers pattern binding from `MatchPattern`,
+- `Docs/SPECIFICATION.md:18580` lowers pattern binding from `MatchPattern`,
   `BindOrder`, and `LowerBindList`.
-- `SPECIFICATION.md:18654` types exhaustive union case analysis over the union
+- `Docs/SPECIFICATION.md:18654` types exhaustive union case analysis over the union
   member set.
 
 Spec-valid specimen:
@@ -284,12 +284,12 @@ Spec obligations exercised:
 
 Spec basis:
 
-- `SPECIFICATION.md:16764` defines `loop` expressions with an optional
+- `Docs/SPECIFICATION.md:16764` defines `loop` expressions with an optional
   condition.
-- `SPECIFICATION.md:16815` defines `LoopTypeFin`: when all breaks carry a
+- `Docs/SPECIFICATION.md:16815` defines `LoopTypeFin`: when all breaks carry a
   value and `ResType(Brk) = T`, the conditional loop expression has type `T`.
-- `SPECIFICATION.md:16870` applies `LoopTypeFin` to conditional-loop typing.
-- `SPECIFICATION.md:16997` evaluates a conditional loop value break as the
+- `Docs/SPECIFICATION.md:16870` applies `LoopTypeFin` to conditional-loop typing.
+- `Docs/SPECIFICATION.md:16997` evaluates a conditional loop value break as the
   loop expression value.
 
 Spec-valid specimen:
@@ -363,13 +363,13 @@ Spec obligations exercised:
 
 Spec basis:
 
-- `SPECIFICATION.md:17538` types a non-capturing closure as a function type.
-- `SPECIFICATION.md:17792` lowers a non-capturing closure to a callable symbol
+- `Docs/SPECIFICATION.md:17538` types a non-capturing closure as a function type.
+- `Docs/SPECIFICATION.md:17792` lowers a non-capturing closure to a callable symbol
   with a null closure environment.
-- `SPECIFICATION.md:17797` defines the non-capturing closure code symbol.
-- `SPECIFICATION.md:17813` applies a closure call using the closure code and
+- `Docs/SPECIFICATION.md:17797` defines the non-capturing closure code symbol.
+- `Docs/SPECIFICATION.md:17813` applies a closure call using the closure code and
   argument values.
-- `SPECIFICATION.md:17652` types a pipeline expression over a function or
+- `Docs/SPECIFICATION.md:17652` types a pipeline expression over a function or
   closure callee.
 
 Spec-valid specimen:
@@ -450,14 +450,14 @@ Spec obligations exercised:
 
 Spec basis:
 
-- `SPECIFICATION.md:17545` types a local captured closure as `TypeClosure`.
-- `SPECIFICATION.md:17715` evaluates a captured closure by building and storing
+- `Docs/SPECIFICATION.md:17545` types a local captured closure as `TypeClosure`.
+- `Docs/SPECIFICATION.md:17715` evaluates a captured closure by building and storing
   a capture environment.
-- `SPECIFICATION.md:17787` defines closure environment layout from the captured
+- `Docs/SPECIFICATION.md:17787` defines closure environment layout from the captured
   fields.
-- `SPECIFICATION.md:17802` lowers captured closures by lowering the capture
+- `Docs/SPECIFICATION.md:17802` lowers captured closures by lowering the capture
   environment and returning `ClosureVal(env_ptr, sym)`.
-- `SPECIFICATION.md:17813` applies closure calls by binding the environment and
+- `Docs/SPECIFICATION.md:17813` applies closure calls by binding the environment and
   then the call arguments.
 
 Spec-valid specimen:
@@ -537,9 +537,9 @@ Spec obligations exercised:
 
 Spec basis:
 
-- `SPECIFICATION.md:19997` assigns `E-SEM-3162` to `break` outside `loop`.
-- `SPECIFICATION.md:19998` assigns `E-SEM-3163` to `continue` outside `loop`.
-- `SPECIFICATION.md:17878` assigns `E-SEM-2531` to non-function callees.
+- `Docs/SPECIFICATION.md:19997` assigns `E-SEM-3162` to `break` outside `loop`.
+- `Docs/SPECIFICATION.md:19998` assigns `E-SEM-3163` to `continue` outside `loop`.
+- `Docs/SPECIFICATION.md:17878` assigns `E-SEM-2531` to non-function callees.
 
 Spec-invalid specimens:
 
@@ -614,9 +614,9 @@ Spec obligations exercised:
 
 Spec basis:
 
-- `SPECIFICATION.md:15998` defines `Call-ArgType-Err` for arguments whose type
+- `Docs/SPECIFICATION.md:15998` defines `Call-ArgType-Err` for arguments whose type
   is not compatible with the parameter type.
-- `SPECIFICATION.md:17880` assigns `E-SEM-2533` to argument type incompatibility
+- `Docs/SPECIFICATION.md:17880` assigns `E-SEM-2533` to argument type incompatibility
   with a parameter type.
 
 Spec-invalid specimen:
@@ -681,14 +681,14 @@ Spec obligations exercised:
 
 Spec basis:
 
-- `SPECIFICATION.md:19346` defines `Assign-Type-Err` for assignment value
+- `Docs/SPECIFICATION.md:19346` defines `Assign-Type-Err` for assignment value
   types incompatible with the target place type.
-- `SPECIFICATION.md:19815` checks returned values against the body return type,
-  and `SPECIFICATION.md:20005` assigns `E-SEM-3161` to return type mismatch.
-- `SPECIFICATION.md:19491` defines `Defer-NonUnit-Err`, and
-  `SPECIFICATION.md:20003` assigns `E-SEM-3151`.
-- `SPECIFICATION.md:19496` defines `Defer-NonLocal-Err`, and
-  `SPECIFICATION.md:20004` assigns `E-SEM-3152`.
+- `Docs/SPECIFICATION.md:19815` checks returned values against the body return type,
+  and `Docs/SPECIFICATION.md:20005` assigns `E-SEM-3161` to return type mismatch.
+- `Docs/SPECIFICATION.md:19491` defines `Defer-NonUnit-Err`, and
+  `Docs/SPECIFICATION.md:20003` assigns `E-SEM-3151`.
+- `Docs/SPECIFICATION.md:19496` defines `Defer-NonLocal-Err`, and
+  `Docs/SPECIFICATION.md:20004` assigns `E-SEM-3152`.
 
 Spec-invalid specimens:
 
@@ -765,9 +765,9 @@ Spec obligations involved:
 
 Spec basis:
 
-- `SPECIFICATION.md:14135` requires a diagnostic when a procedure declaration
+- `Docs/SPECIFICATION.md:14135` requires a diagnostic when a procedure declaration
   omits an explicit return annotation.
-- `SPECIFICATION.md:14305` says procedure diagnostics include missing explicit
+- `Docs/SPECIFICATION.md:14305` says procedure diagnostics include missing explicit
   return annotations.
 
 Spec-invalid specimen:
@@ -831,9 +831,9 @@ Spec obligations involved:
 
 Spec basis:
 
-- `SPECIFICATION.md:14167` requires a diagnostic when an executable project has
+- `Docs/SPECIFICATION.md:14167` requires a diagnostic when an executable project has
   more than one `main` declaration.
-- `SPECIFICATION.md:15372` assigns `E-MOD-2430` to multiple `main` procedures.
+- `Docs/SPECIFICATION.md:15372` assigns `E-MOD-2430` to multiple `main` procedures.
 
 Spec-invalid specimen:
 
@@ -897,9 +897,9 @@ Spec obligations involved:
 
 Spec basis:
 
-- `SPECIFICATION.md:14575` requires a diagnostic when method lookup finds no
+- `Docs/SPECIFICATION.md:14575` requires a diagnostic when method lookup finds no
   direct method and no inherited class default.
-- `SPECIFICATION.md:17883` assigns `E-SEM-2536` to method-not-found
+- `Docs/SPECIFICATION.md:17883` assigns `E-SEM-2536` to method-not-found
   diagnostics.
 
 Spec-invalid specimen:
@@ -963,9 +963,9 @@ Spec obligations involved:
 
 Spec basis:
 
-- `SPECIFICATION.md:17592` requires `E-SEM-2591` when a closure parameter lacks
+- `Docs/SPECIFICATION.md:17592` requires `E-SEM-2591` when a closure parameter lacks
   an annotation and no expected type is available.
-- `SPECIFICATION.md:17886` assigns `E-SEM-2591` to closure parameter inference
+- `Docs/SPECIFICATION.md:17886` assigns `E-SEM-2591` to closure parameter inference
   failure.
 
 Spec-invalid specimen:
@@ -1028,8 +1028,8 @@ Spec obligations involved:
 
 Spec basis:
 
-- `SPECIFICATION.md:16405` defines transmute size compatibility.
-- `SPECIFICATION.md:17887` assigns `E-MEM-3031` to source and target size
+- `Docs/SPECIFICATION.md:16405` defines transmute size compatibility.
+- `Docs/SPECIFICATION.md:17887` assigns `E-MEM-3031` to source and target size
   mismatch.
 
 Spec-invalid specimen:
@@ -1094,9 +1094,9 @@ Spec obligations involved:
 
 Spec basis:
 
-- `SPECIFICATION.md:15813` requires a diagnostic when a place is used as a
+- `Docs/SPECIFICATION.md:15813` requires a diagnostic when a place is used as a
   value and its expression type is not `Bitcopy`.
-- `SPECIFICATION.md:17890` assigns `E-UNS-0107` to non-`Bitcopy` place
+- `Docs/SPECIFICATION.md:17890` assigns `E-UNS-0107` to non-`Bitcopy` place
   expression value use.
 
 Spec-invalid specimen:
@@ -1159,9 +1159,9 @@ Spec obligations involved:
 
 Spec basis:
 
-- `SPECIFICATION.md:16708` defines default record construction rejection for
+- `Docs/SPECIFICATION.md:16708` defines default record construction rejection for
   records that are not default-constructible.
-- `SPECIFICATION.md:9938` assigns `E-TYP-1911` to record default construction
+- `Docs/SPECIFICATION.md:9938` assigns `E-TYP-1911` to record default construction
   without default initializers for every field.
 
 Spec-invalid specimen:
@@ -1233,11 +1233,11 @@ Spec obligations involved:
 
 Spec basis:
 
-- `SPECIFICATION.md:15546` allows `Ptr::null()` when checked against
+- `Docs/SPECIFICATION.md:15546` allows `Ptr::null()` when checked against
   `Ptr<U>@Null` or `Ptr<U>`.
-- `SPECIFICATION.md:15551` and `SPECIFICATION.md:15556` route synthesis and
+- `Docs/SPECIFICATION.md:15551` and `Docs/SPECIFICATION.md:15556` route synthesis and
   incompatible checked pointer-null failures through `PtrNull-Infer-Err`.
-- `SPECIFICATION.md:6396` assigns `E-TYP-1530` to type inference failure.
+- `Docs/SPECIFICATION.md:6396` assigns `E-TYP-1530` to type inference failure.
 
 Spec-valid specimen:
 
@@ -1298,10 +1298,10 @@ Spec obligation involved:
 
 Spec basis:
 
-- `SPECIFICATION.md:18388` defines `RangePattern-NonConst` for range patterns
+- `Docs/SPECIFICATION.md:18388` defines `RangePattern-NonConst` for range patterns
   whose low or high endpoint is not a compile-time integer constant.
-- `SPECIFICATION.md:18372` parses each range endpoint as a pattern atom, which
-  includes identifier patterns from `SPECIFICATION.md:17916`.
+- `Docs/SPECIFICATION.md:18372` parses each range endpoint as a pattern atom, which
+  includes identifier patterns from `Docs/SPECIFICATION.md:17916`.
 
 Spec-valid rejected-source specimen:
 
@@ -1360,7 +1360,7 @@ Spec obligation involved:
 
 Spec basis:
 
-- `SPECIFICATION.md:14414` rejects explicit record-method receivers whose type
+- `Docs/SPECIFICATION.md:14414` rejects explicit record-method receivers whose type
   is not `Self` or permission-qualified `Self`.
 
 Spec-valid rejected-source specimen:
@@ -1431,7 +1431,7 @@ Spec obligations involved:
 
 Spec basis:
 
-- `SPECIFICATION.md:14950-14960` requires `@entry(expr)` to appear only in
+- `Docs/SPECIFICATION.md:14950-14960` requires `@entry(expr)` to appear only in
   postconditions, to capture a pure parameter or receiver expression, and to
   require the captured expression type to satisfy `BitcopyType`.
 
@@ -1498,9 +1498,9 @@ Spec obligation involved:
 
 Spec basis:
 
-- `SPECIFICATION.md:14658-14663` defines `WF-Contract` as requiring
+- `Docs/SPECIFICATION.md:14658-14663` defines `WF-Contract` as requiring
   preconditions and postconditions to type as `bool`.
-- `SPECIFICATION.md:15368-15395` lists the procedure, contract, and entry
+- `Docs/SPECIFICATION.md:15368-15395` lists the procedure, contract, and entry
   diagnostics supplement; `E-CON-0004` is not part of that contract diagnostic
   surface and is reserved by Chapter 19 for key escape diagnostics.
 
@@ -1564,12 +1564,12 @@ Spec obligations involved:
 
 Spec basis:
 
-- `SPECIFICATION.md:14950-14960` defines `@entry(expr)` constraints for
+- `Docs/SPECIFICATION.md:14950-14960` defines `@entry(expr)` constraints for
   postconditions.
-- `SPECIFICATION.md:14995` assigns diagnostics to `@entry` expressions with
+- `Docs/SPECIFICATION.md:14995` assigns diagnostics to `@entry` expressions with
   side effects or capability requirements and to moved-parameter references.
-- `SPECIFICATION.md:15376-15377` assigns `E-CON-0415` and `E-CON-0416`.
-- `SPECIFICATION.md:15385` assigns `E-SEM-2807`.
+- `Docs/SPECIFICATION.md:15376-15377` assigns `E-CON-0415` and `E-CON-0416`.
+- `Docs/SPECIFICATION.md:15385` assigns `E-SEM-2807`.
 
 Observed bootstrap result before repair:
 
@@ -1625,7 +1625,7 @@ Spec obligation involved:
 
 Spec basis:
 
-- `SPECIFICATION.md:19152-19153` requires a diagnostic when a literal, enum,
+- `Docs/SPECIFICATION.md:19152-19153` requires a diagnostic when a literal, enum,
   modal, or range pattern appears in an irrefutable `let` binding context.
 
 Rejected-source specimen:
@@ -1698,9 +1698,9 @@ Spec obligations exercised:
 
 Spec basis:
 
-- `SPECIFICATION.md:19825` assigns `E-CON-0203` to async return values whose
+- `Docs/SPECIFICATION.md:19825` assigns `E-CON-0203` to async return values whose
   expression type is incompatible with the async `Result` parameter.
-- `SPECIFICATION.md:19830` assigns `E-CON-0203` to empty async returns when
+- `Docs/SPECIFICATION.md:19830` assigns `E-CON-0203` to empty async returns when
   the async `Result` parameter is not unit.
 
 Spec-valid rejected specimen:
@@ -1765,10 +1765,10 @@ Spec obligations exercised:
 
 Spec basis:
 
-- `SPECIFICATION.md:17163-17166` types raw pointer dereference inside an
+- `Docs/SPECIFICATION.md:17163-17166` types raw pointer dereference inside an
   `unsafe` span as a valid value expression.
-- `SPECIFICATION.md:17168` defines raw dereference place typing.
-- `SPECIFICATION.md:12017-12021` defines `P-Deref-Raw-Mut` as a mutable raw
+- `Docs/SPECIFICATION.md:17168` defines raw dereference place typing.
+- `Docs/SPECIFICATION.md:12017-12021` defines `P-Deref-Raw-Mut` as a mutable raw
   dereference place.
 
 Spec-valid accepted specimen:
@@ -1829,11 +1829,11 @@ Spec obligation exercised:
 
 Spec basis:
 
-- `SPECIFICATION.md:16032` requires calls to `extern` procedures outside
+- `Docs/SPECIFICATION.md:16032` requires calls to `extern` procedures outside
   `unsafe` to be rejected by the FFI boundary rule.
-- `SPECIFICATION.md:25688` requires calls to extern procedures to appear within
+- `Docs/SPECIFICATION.md:25688` requires calls to extern procedures to appear within
   an `unsafe` block.
-- `SPECIFICATION.md:25703` assigns diagnostic code `E-TYP-2106` to calls to
+- `Docs/SPECIFICATION.md:25703` assigns diagnostic code `E-TYP-2106` to calls to
   extern procedures outside `unsafe`.
 
 Spec-valid rejected specimen:
@@ -1900,9 +1900,9 @@ Spec obligations exercised:
 
 Spec basis:
 
-- `SPECIFICATION.md:25557-25560` assigns `E-TYP-2628` when layout cannot be
+- `Docs/SPECIFICATION.md:25557-25560` assigns `E-TYP-2628` when layout cannot be
   computed for a record or enum type.
-- `SPECIFICATION.md:25562-25570` assigns `E-TYP-2629` for generic record and
+- `Docs/SPECIFICATION.md:25562-25570` assigns `E-TYP-2629` for generic record and
   enum paths whose field or payload type parameters are not bounded by
   `FfiSafe`.
 
@@ -1965,12 +1965,12 @@ Spec obligations exercised:
 
 Spec basis:
 
-- `SPECIFICATION.md:26310-26319` restricts foreign contract predicates to
+- `Docs/SPECIFICATION.md:26310-26319` restricts foreign contract predicates to
   in-scope parameter values, pure forms, and allowed result/error/null
   postcondition bindings.
-- `SPECIFICATION.md:26358-26376` requires `@null_result` predicates to appear
+- `Docs/SPECIFICATION.md:26358-26376` requires `@null_result` predicates to appear
   only when the return type is a nullable pointer type.
-- `SPECIFICATION.md:26416-26422` assigns `E-SEM-2851`, `E-SEM-2852`,
+- `Docs/SPECIFICATION.md:26416-26422` assigns `E-SEM-2851`, `E-SEM-2852`,
   `E-SEM-2853`, `E-SEM-2855`, and `E-SEM-2856` to the corresponding foreign
   contract predicate failures.
 
@@ -2032,9 +2032,9 @@ Spec obligation exercised:
 
 Spec basis:
 
-- `SPECIFICATION.md:15521-15542` defines checked `null` literals as valid only
+- `Docs/SPECIFICATION.md:15521-15542` defines checked `null` literals as valid only
   when the expected type is a raw pointer.
-- `SPECIFICATION.md:6396` assigns `E-TYP-1530` to failed type inference where
+- `Docs/SPECIFICATION.md:6396` assigns `E-TYP-1530` to failed type inference where
   the checker cannot determine a valid type.
 
 Observed bootstrap result before repair:
@@ -2083,9 +2083,9 @@ Spec obligation exercised:
 
 Spec basis:
 
-- `SPECIFICATION.md:9935` assigns `E-TYP-1905` to field access that is not
+- `Docs/SPECIFICATION.md:9935` assigns `E-TYP-1905` to field access that is not
   visible in the current scope.
-- `SPECIFICATION.md:15884` requires diagnostics for unknown or inaccessible
+- `Docs/SPECIFICATION.md:15884` requires diagnostics for unknown or inaccessible
   record fields in access expressions.
 
 Observed bootstrap result before repair:
@@ -2131,11 +2131,11 @@ Spec obligation exercised:
 
 Spec basis:
 
-- `SPECIFICATION.md:11336-11339` defines `Widen-NonModal` for applying
+- `Docs/SPECIFICATION.md:11336-11339` defines `Widen-NonModal` for applying
   `widen` to a non-modal operand.
-- `SPECIFICATION.md:12369` assigns `E-TYP-2071` to `widen` applied to a
+- `Docs/SPECIFICATION.md:12369` assigns `E-TYP-2071` to `widen` applied to a
   non-modal type.
-- `SPECIFICATION.md:12370` assigns `E-TYP-2072` to `widen` applied to an
+- `Docs/SPECIFICATION.md:12370` assigns `E-TYP-2072` to `widen` applied to an
   already-general modal type.
 
 Observed bootstrap result before repair:
@@ -2186,13 +2186,13 @@ Spec obligations exercised:
 
 Spec basis:
 
-- `SPECIFICATION.md:14593` states that overloading introduces no additional
+- `Docs/SPECIFICATION.md:14593` states that overloading introduces no additional
   surface syntax beyond ordinary procedure and method declarations.
-- `SPECIFICATION.md:14613-14624` defines free-procedure overload resolution by
+- `Docs/SPECIFICATION.md:14613-14624` defines free-procedure overload resolution by
   candidate selection, type filtering, preference, and selected unique target.
-- `SPECIFICATION.md:14629` states that execution performs no runtime overload
+- `Docs/SPECIFICATION.md:14629` states that execution performs no runtime overload
   search.
-- `SPECIFICATION.md:14633` states that lowering consumes the selected symbol
+- `Docs/SPECIFICATION.md:14633` states that lowering consumes the selected symbol
   after overload resolution is complete.
 
 Spec-valid source:
@@ -2299,11 +2299,11 @@ Spec obligation exercised:
 
 Spec basis:
 
-- `SPECIFICATION.md:20097` permits `shared $Cl` only when every
+- `Docs/SPECIFICATION.md:20097` permits `shared $Cl` only when every
   vtable-eligible procedure in the class has a `const` receiver.
-- `SPECIFICATION.md:20105-20106` states that `shared $Cl` is ill-formed when
+- `Docs/SPECIFICATION.md:20105-20106` states that `shared $Cl` is ill-formed when
   any method requires `shared` (`~%`) or `unique` (`~!`) receiver permission.
-- `SPECIFICATION.md:20146` assigns `E-CON-0083` to `shared $Class` where the
+- `Docs/SPECIFICATION.md:20146` assigns `E-CON-0083` to `shared $Class` where the
   class has `~%` or `~!` methods.
 
 Spec-invalid source:
@@ -2352,7 +2352,7 @@ the vtable-eligible effective method set, and reject `shared $Class` with
 
 ## UVBOOT-0034: Tuple Pattern Arity Diagnostic Code Assignment
 
-Status: open.
+Status: repaired.
 
 SPEC-invalid specimen:
 
@@ -2364,13 +2364,14 @@ Spec obligation exercised:
 
 Spec basis:
 
-- `SPECIFICATION.md:18118-18121` rejects tuple patterns whose element count
+- `Docs/SPECIFICATION.md:9146` assigns `E-TYP-1803` to tuple arity mismatch in
+  assignment or pattern.
+- `Docs/SPECIFICATION.md:18457-18458` rejects tuple patterns whose element count
   differs from the matched tuple type arity and names
   `Code(Pat-Tuple-Arity-Err)`.
-- `SPECIFICATION.md:18173` says diagnostics are defined for tuple-pattern
-  arity mismatch and unknown record fields.
-- `SPECIFICATION.md:18729-18737` lists Chapter 17 pattern diagnostic codes but
-  assigns no concrete code for tuple-pattern arity mismatch.
+- `Docs/Internal/UltravioletSpecification.obligations.md:66112-66122` records
+  `rule.17.Pat-Tuple-R-Arity-Err` with the `Pat-Tuple-Arity-Err` diagnostic
+  label.
 
 Spec-invalid source:
 
@@ -2382,35 +2383,41 @@ public procedure tuplePatternArityReference() -> i32 {
 }
 ```
 
-Observed bootstrap result:
+Repaired bootstrap result:
 
 ```text
-./Bootstrap/cursive/build/windows/Release/Cursive.exe build HelloUltraviolet/Fixtures/RejectedSource/Patterns/TuplePatternArity --check --target-profile x86_64-win64 --build-progress off
+powershell.exe -NoProfile -Command "& 'C:\Dev\Ultraviolet\Bootstrap\Ultraviolet\build\windows\out\uvc.exe' --target-profile x86_64-win64 --check 'C:\Dev\Ultraviolet\HelloUltraviolet\Fixtures\RejectedSource\Patterns\TuplePatternArity' --build-progress off --incremental off"
 
 exit=1
-error: Static rule failed without assigned diagnostic code: Pat-Tuple-Arity-Err
+error[E-TYP-1803]: Tuple arity mismatch in assignment or pattern
+  --> C:/Dev/Ultraviolet/HelloUltraviolet/Fixtures/RejectedSource/Patterns/TuplePatternArity/Source/Main.uv:5:5
 ```
 
 Bootstrap owner:
 
-- `Bootstrap/cursive/src/04_analysis/typing/pattern/pattern_common.cpp`
-- `Bootstrap/cursive/src/04_analysis/typing/typecheck_diag_lookup.h`
-- `Bootstrap/cursive/tools/generate_diagnostic_registry.py`
-- `Bootstrap/cursive/src/00_core/generated/diag_registry.inc`
+- `Bootstrap/Ultraviolet/src/04_analysis/typing/pattern/pattern_common.cpp`
+- `Bootstrap/Ultraviolet/src/04_analysis/typing/stmt/stmt_common.cpp`
+- `Bootstrap/Ultraviolet/tools/generate_diagnostic_registry.py`
+- `Bootstrap/Ultraviolet/tools/static_rule_mapping.json`
+- `Bootstrap/Ultraviolet/src/00_core/generated/diag_registry.inc`
+- `Bootstrap/Ultraviolet/src/00_core/generated/static_rule_registry.inc`
+- `Bootstrap/Ultraviolet/src/04_analysis/typing/item/typecheck_diag_map.inc`
 
-Failure analysis:
+Repair summary:
 
-The pattern checker correctly rejects the source through the tuple-pattern
-arity rule, but the rule cannot be surfaced as a concrete expected diagnostic
-because the SPEC names `Code(Pat-Tuple-Arity-Err)` without a corresponding
-Chapter 17 diagnostic code. The diagnostic registry can map rule names only
-when the SPEC defines the target code.
+The pattern checker rejects the source through the tuple-pattern arity rule
+and emits the concrete SPEC code `E-TYP-1803`. The diagnostic generator maps
+`Pat-Tuple-Arity-Err` to `E-TYP-1803`, and the static-rule registry maps both
+`Pat-Tuple-Arity-Err` and `Pat-Tuple-R-Arity-Err` to `E-TYP-1803`.
 
-Required bootstrap behavior:
+Verification:
 
-After the SPEC assigns a concrete diagnostic code for `Pat-Tuple-Arity-Err`,
-the bootstrap diagnostic registry must map that rule name to the assigned code
-and the `TuplePatternArity` fixture must use the concrete expected diagnostic.
+- `python3 Bootstrap/Ultraviolet/tools/generate_diagnostic_registry.py`
+  reported `rows=500 map_entries=528`.
+- `python3 Bootstrap/Ultraviolet/tools/generate_static_rule_registry.py --repo-root . --mapping-path Bootstrap/Ultraviolet/tools/static_rule_mapping.json --output-path Bootstrap/Ultraviolet/src/00_core/generated/static_rule_registry.inc --strict`
+  reported `rules=3294 families=78 bottom_rules=0 unmapped=0 conflicts=0`.
+- `HelloUltraviolet/Fixtures/RejectedSource/Patterns/TuplePatternArity/Expected.uv`
+  expects `expectedDiagnostic("E-TYP-1803", "rule.17.Pat-Tuple-R-Arity-Err")`.
 
 ## UVBOOT-0035: Record Method Duplicate Diagnostic Code Mapping
 
@@ -2426,8 +2433,8 @@ Spec obligation exercised:
 
 Spec basis:
 
-- `SPECIFICATION.md:14446-14448` rejects duplicate record method names.
-- `SPECIFICATION.md:19999` assigns `E-SEM-3012` to duplicate method names in a
+- `Docs/SPECIFICATION.md:14446-14448` rejects duplicate record method names.
+- `Docs/SPECIFICATION.md:19999` assigns `E-SEM-3012` to duplicate method names in a
   type.
 
 Verified bootstrap result:
@@ -2455,7 +2462,9 @@ name to the SPEC-defined `E-SEM-3012`.
 
 ## UVBOOT-0036: Class Default Method Access to Required Class Field
 
-Status: open.
+Status: repaired in the workspace bootstrap and verified by
+`uv_class_default_method_field_conformance_test.exe` on the Windows
+`x86_64-win64` target profile.
 
 Spec-valid specimen:
 
@@ -2470,14 +2479,14 @@ Spec obligations exercised:
 
 Spec basis:
 
-- `SPECIFICATION.md:12802-12805` defines class fields as class items.
-- `SPECIFICATION.md:12952-12978` defines effective class fields from class
+- `Docs/SPECIFICATION.md:12802-12805` defines class fields as class items.
+- `Docs/SPECIFICATION.md:12952-12978` defines effective class fields from class
   linearization.
-- `SPECIFICATION.md:12993-12996` type-checks concrete class method bodies with
+- `Docs/SPECIFICATION.md:12993-12996` type-checks concrete class method bodies with
   `self` bound to `Self`.
-- `SPECIFICATION.md:13138-13143` requires implementers to satisfy class fields.
+- `Docs/SPECIFICATION.md:13138-13143` requires implementers to satisfy class fields.
 
-Observed bootstrap result:
+Observed bootstrap result before repair:
 
 ```text
 ./Bootstrap/cursive/build/windows/Release/Cursive.exe build HelloUltraviolet --check --target-profile x86_64-win64 --build-progress off
@@ -2486,11 +2495,31 @@ error[E-TYP-1904]: Access to nonexistent field
   --> C:/Dev/Ultraviolet/HelloUltraviolet/Source/Reference/Polymorphism/Classes.uv:15:10
 ```
 
+Verified bootstrap result after repair:
+
+```text
+powershell.exe -NoProfile -Command "& 'C:\Dev\Ultraviolet\Bootstrap\Ultraviolet\build\windows\Release\uv_class_default_method_field_conformance_test.exe'"
+
+cd /d "C:/Dev/Ultraviolet/Bootstrap/Ultraviolet/build/windows/tests/class_default_method_field_fixture" && "C:/Dev/Ultraviolet/Bootstrap/Ultraviolet/build/windows/out/uvc.exe" --target-profile "x86_64-win64" --check "C:/Dev/Ultraviolet/Bootstrap/Ultraviolet/build/windows/tests/class_default_method_field_fixture" --assembly class_default_method_field --out-dir "C:/Dev/Ultraviolet/Bootstrap/Ultraviolet/build/windows/tests/class_default_method_field_fixture/out" --build-progress off --incremental off > "C:/Dev/Ultraviolet/Bootstrap/Ultraviolet/build/windows/tests/class_default_method_field_fixture/compile.log" 2>&1
+
+exit=0
+```
+
+The existing corpus fixture also checks directly:
+
+```text
+powershell.exe -NoProfile -Command "& 'C:\Dev\Ultraviolet\Bootstrap\Ultraviolet\build\windows\out\uvc.exe' --target-profile x86_64-win64 --check 'C:\Dev\Ultraviolet\HelloUltraviolet\Fixtures\BootstrapNonCompliance\Polymorphism\ClassDefaultMethodFieldAccess' --build-progress off --incremental off"
+
+exit=0
+```
+
 Bootstrap owner:
 
-- `Bootstrap/cursive/src/04_analysis/typing/item/class_decl.cpp`
-- `Bootstrap/cursive/src/04_analysis/typing/expr/field_access.cpp`
-- `Bootstrap/cursive/src/04_analysis/composite/classes.cpp`
+- `Bootstrap/Ultraviolet/include/04_analysis/typing/type_stmt.h`
+- `Bootstrap/Ultraviolet/src/04_analysis/typing/item/class_decl.cpp`
+- `Bootstrap/Ultraviolet/src/04_analysis/typing/expr/field_access.cpp`
+- `Bootstrap/Ultraviolet/src/04_analysis/composite/classes.cpp`
+- `Bootstrap/Ultraviolet/src/tests/class_default_method_field_conformance_test.cpp`
 
 Failure analysis:
 
@@ -2504,9 +2533,18 @@ Required bootstrap behavior:
 When checking a concrete class method body, field lookup on `Self` must include
 the effective class fields of the current class.
 
+Repair summary:
+
+Class method body typing now carries the current class path, and field access on
+`Self` resolves through `ClassFieldTable` before ordinary record and modal field
+handling. Permission propagation follows the same result-shaping path as record
+field access.
+
 ## UVBOOT-0037: Generic Class-Bound Method Lookup
 
-Status: open.
+Status: repaired in the workspace bootstrap and verified by
+`uv_generic_class_bound_method_conformance_test.exe` on the Windows
+`x86_64-win64` target profile.
 
 Spec-valid specimen:
 
@@ -2521,13 +2559,13 @@ Spec obligations exercised:
 
 Spec basis:
 
-- `SPECIFICATION.md:12380-12587` defines inline class bounds on generic
+- `Docs/SPECIFICATION.md:12380-12587` defines inline class bounds on generic
   parameters.
-- `SPECIFICATION.md:12564-12573` requires instantiations to satisfy bounds.
-- `SPECIFICATION.md:12639-12702` includes bounds in generic call inference and
+- `Docs/SPECIFICATION.md:12564-12573` requires instantiations to satisfy bounds.
+- `Docs/SPECIFICATION.md:12639-12702` includes bounds in generic call inference and
   generic-call typing.
 
-Observed bootstrap result:
+Observed bootstrap result before repair:
 
 ```text
 ./Bootstrap/cursive/build/windows/Release/Cursive.exe build HelloUltraviolet --check --target-profile x86_64-win64 --build-progress off
@@ -2537,11 +2575,31 @@ error[E-SEM-2536]: Method not found for receiver type
 34 |     return value~>classValue()
 ```
 
+Verified bootstrap result after repair:
+
+```text
+powershell.exe -NoProfile -Command "& 'C:\Dev\Ultraviolet\Bootstrap\Ultraviolet\build\windows\Release\uv_generic_class_bound_method_conformance_test.exe'"
+
+cd /d "C:/Dev/Ultraviolet/Bootstrap/Ultraviolet/build/windows/tests/generic_class_bound_method_fixture" && "C:/Dev/Ultraviolet/Bootstrap/Ultraviolet/build/windows/out/uvc.exe" --target-profile "x86_64-win64" --check "C:/Dev/Ultraviolet/Bootstrap/Ultraviolet/build/windows/tests/generic_class_bound_method_fixture" --assembly generic_class_bound_method --out-dir "C:/Dev/Ultraviolet/Bootstrap/Ultraviolet/build/windows/tests/generic_class_bound_method_fixture/out" --build-progress off --incremental off > "C:/Dev/Ultraviolet/Bootstrap/Ultraviolet/build/windows/tests/generic_class_bound_method_fixture/compile.log" 2>&1
+
+exit=0
+```
+
+The existing corpus fixture also checks directly:
+
+```text
+powershell.exe -NoProfile -Command "& 'C:\Dev\Ultraviolet\Bootstrap\Ultraviolet\build\windows\out\uvc.exe' --target-profile x86_64-win64 --check 'C:\Dev\Ultraviolet\HelloUltraviolet\Fixtures\BootstrapNonCompliance\Polymorphism\GenericClassBoundMethodLookup' --build-progress off --incremental off"
+
+exit=0
+```
+
 Bootstrap owner:
 
-- `Bootstrap/cursive/src/04_analysis/generics/where_bounds.cpp`
-- `Bootstrap/cursive/src/04_analysis/typing/expr/method_call.cpp`
-- `Bootstrap/cursive/src/04_analysis/composite/record_methods.cpp`
+- `Bootstrap/Ultraviolet/src/04_analysis/generics/generic_params.cpp`
+- `Bootstrap/Ultraviolet/src/04_analysis/generics/where_bounds.cpp`
+- `Bootstrap/Ultraviolet/src/04_analysis/typing/expr/method_call.cpp`
+- `Bootstrap/Ultraviolet/src/04_analysis/composite/record_methods.cpp`
+- `Bootstrap/Ultraviolet/src/tests/generic_class_bound_method_conformance_test.cpp`
 
 Failure analysis:
 
@@ -2555,9 +2613,18 @@ Required bootstrap behavior:
 Method lookup for a type parameter with class bounds must expose the effective
 methods of those bounds when typing the generic declaration body.
 
+Repair summary:
+
+Generic parameter processing stores inline class bounds on the type-parameter
+entity. Static method lookup recognizes type-parameter receiver paths, expands
+their declared class bounds, and resolves the requested method through the
+effective class method tables for those bounds.
+
 ## UVBOOT-0038: Generic Record Literal Expected-Type Construction
 
-Status: open.
+Status: repaired in the workspace bootstrap and verified by
+`uv_generic_record_literal_conformance_test.exe` on the Windows `x86_64-win64`
+target profile.
 
 Spec-valid specimen:
 
@@ -2569,14 +2636,18 @@ Spec obligations exercised:
 - `rule.14.T-Generic-Type`
 - `rule.16.Parse-Record-Literal`
 - `rule.16.T-Record-Literal`
+- `T-Record-Literal-ExpectedApply`
 
 Spec basis:
 
-- `SPECIFICATION.md:12556-12563` defines default generic arguments.
-- `SPECIFICATION.md:12623-12631` defines generic type use as `TypeApply`.
-- `SPECIFICATION.md:16617-16620` parses record literals as record expressions.
-- `SPECIFICATION.md:16677-16679` types record literals by field set and field
+- `Docs/SPECIFICATION.md:7775-7782` defines default generic arguments.
+- `Docs/SPECIFICATION.md:7867-7874` defines generic type use as `TypeApply`.
+- `Docs/SPECIFICATION.md:9880-9883` parses record literals as record expressions.
+- `Docs/SPECIFICATION.md:9925-9930` types record literals by field set and field
   type.
+- `Docs/SPECIFICATION.md:9953-9964` checks a record literal against an expected
+  `TypeApply` by instantiating the record declaration under defaulted generic
+  arguments and returning the expected applied type.
 
 Observed bootstrap result:
 
@@ -2588,11 +2659,22 @@ error[E-MOD-2402]: Type annotation incompatible with inferred type
 59 |     let carrier: GenericCarrier<i32> = GenericCarrier { value: 19, tag: 29 }
 ```
 
+Verified bootstrap result after repair:
+
+```text
+powershell.exe -NoProfile -Command "& 'C:\Dev\Ultraviolet\Bootstrap\Ultraviolet\build\windows\Release\uv_generic_record_literal_conformance_test.exe'"
+
+cd /d "C:/Dev/Ultraviolet/Bootstrap/Ultraviolet/build/windows/tests/generic_record_literal_fixture" && "C:/Dev/Ultraviolet/Bootstrap/Ultraviolet/build/windows/out/uvc.exe" --target-profile "x86_64-win64" --check "C:/Dev/Ultraviolet/Bootstrap/Ultraviolet/build/windows/tests/generic_record_literal_fixture" --assembly generic_record_literal --out-dir "C:/Dev/Ultraviolet/Bootstrap/Ultraviolet/build/windows/tests/generic_record_literal_fixture/out" --build-progress off --incremental off > "C:/Dev/Ultraviolet/Bootstrap/Ultraviolet/build/windows/tests/generic_record_literal_fixture/compile.log" 2>&1
+
+exit=0
+```
+
 Bootstrap owner:
 
-- `Bootstrap/cursive/src/04_analysis/typing/expr/record_literal.cpp`
-- `Bootstrap/cursive/src/04_analysis/typing/stmt/let_stmt.cpp`
-- `Bootstrap/cursive/src/04_analysis/generics/monomorphize.cpp`
+- `Bootstrap/Ultraviolet/src/04_analysis/typing/expr/record_literal.cpp`
+- `Bootstrap/Ultraviolet/src/04_analysis/typing/stmt/let_stmt.cpp`
+- `Bootstrap/Ultraviolet/src/04_analysis/generics/monomorphize.cpp`
+- `Bootstrap/Ultraviolet/src/tests/generic_record_literal_conformance_test.cpp`
 
 Failure analysis:
 
@@ -2622,9 +2704,9 @@ Spec obligation exercised:
 
 Spec basis:
 
-- `SPECIFICATION.md:12697-12708` requires a generic type use to reject when
+- `Docs/SPECIFICATION.md:12697-12708` requires a generic type use to reject when
   `DefaultArgs(params_gen, args) = bottom`.
-- `SPECIFICATION.md:13975` assigns `E-TYP-2303` to wrong type-argument count.
+- `Docs/SPECIFICATION.md:13975` assigns `E-TYP-2303` to wrong type-argument count.
 
 Observed bootstrap result before repair:
 
@@ -2669,9 +2751,9 @@ Spec obligation exercised:
 
 Spec basis:
 
-- `SPECIFICATION.md:12692-12695` requires `CallTypeArgs` to reject when
+- `Docs/SPECIFICATION.md:12692-12695` requires `CallTypeArgs` to reject when
   `DefaultArgs(params_gen, [A_1, ..., A_k]) = bottom`.
-- `SPECIFICATION.md:13975` assigns `E-TYP-2303` to wrong type-argument count.
+- `Docs/SPECIFICATION.md:13975` assigns `E-TYP-2303` to wrong type-argument count.
 
 Observed bootstrap result before repair:
 
@@ -2720,11 +2802,11 @@ Spec obligations exercised:
 
 Spec basis:
 
-- `SPECIFICATION.md:13107-13112` rejects `override` on implementations of
+- `Docs/SPECIFICATION.md:13107-13112` rejects `override` on implementations of
   abstract class methods.
-- `SPECIFICATION.md:13122-13126` rejects replacements of concrete default
+- `Docs/SPECIFICATION.md:13122-13126` rejects replacements of concrete default
   methods that omit `override`.
-- `SPECIFICATION.md:13990-13991` assigns `E-TYP-2501` and `E-TYP-2502`.
+- `Docs/SPECIFICATION.md:13990-13991` assigns `E-TYP-2501` and `E-TYP-2502`.
 
 Observed bootstrap result before repair:
 
@@ -2764,10 +2846,10 @@ Spec obligation exercised:
 
 Spec basis:
 
-- `SPECIFICATION.md:13129-13133` rejects `override` on an implementing method
+- `Docs/SPECIFICATION.md:13129-13133` rejects `override` on an implementing method
   when no implemented class contributes a concrete default method with that
   name.
-- `SPECIFICATION.md:14007` assigns `E-UNS-0105` to override with no concrete
+- `Docs/SPECIFICATION.md:14007` assigns `E-UNS-0105` to override with no concrete
   procedure to override.
 
 Observed bootstrap result before repair:
@@ -2808,12 +2890,12 @@ Spec obligation exercised:
 
 Spec basis:
 
-- `SPECIFICATION.md:13876` states that `Bitcopy`, `Clone`, `Drop`, and
+- `Docs/SPECIFICATION.md:13876` states that `Bitcopy`, `Clone`, `Drop`, and
   `FfiSafe` foundational class bounds are interpreted through intrinsic
   satisfaction judgments.
-- `SPECIFICATION.md:13890-13900` defines `BitcopyTypeCore` for records in
+- `Docs/SPECIFICATION.md:13890-13900` defines `BitcopyTypeCore` for records in
   terms of all fields satisfying `BitcopyType`.
-- `SPECIFICATION.md:14008` assigns `E-TYP-2622` to a `BitcopyType` with a
+- `Docs/SPECIFICATION.md:14008` assigns `E-TYP-2622` to a `BitcopyType` with a
   non-`BitcopyType` field.
 
 Observed bootstrap result before repair:
@@ -2859,11 +2941,11 @@ Spec obligations exercised:
 
 Spec basis:
 
-- `SPECIFICATION.md:13765` reserves the built-in capability class names
+- `Docs/SPECIFICATION.md:13765` reserves the built-in capability class names
   `FileSystem`, `Network`, `HeapAllocator`, `ExecutionDomain`, and `Reactor`.
-- `SPECIFICATION.md:13846` reserves the foundational names `Bitcopy`, `Clone`,
+- `Docs/SPECIFICATION.md:13846` reserves the foundational names `Bitcopy`, `Clone`,
   `Drop`, `FfiSafe`, `Eq`, `Hasher`, `Hash`, `Iterator`, and `Step`.
-- `SPECIFICATION.md:5750` assigns `E-MOD-1304` to identifier reuse from an
+- `Docs/SPECIFICATION.md:5750` assigns `E-MOD-1304` to identifier reuse from an
   enclosing scope, including universe names.
 
 Observed bootstrap results before repair:
@@ -2922,9 +3004,9 @@ Spec obligations exercised:
 
 Spec basis:
 
-- `SPECIFICATION.md:13535` binds `self` only within a standalone refinement
+- `Docs/SPECIFICATION.md:13535` binds `self` only within a standalone refinement
   type.
-- `SPECIFICATION.md:13971` requires `E-TYP-1956` when `self` is used in an
+- `Docs/SPECIFICATION.md:13971` requires `E-TYP-1956` when `self` is used in an
   inline parameter constraint.
 
 Observed bootstrap result before repair:
@@ -2967,9 +3049,9 @@ Spec obligation exercised:
 
 Spec basis:
 
-- `SPECIFICATION.md:14598` states that same-name overloads with identical
+- `Docs/SPECIFICATION.md:14598` states that same-name overloads with identical
   parameter-mode/type signatures after generic-parameter erasure are ill-formed.
-- `SPECIFICATION.md:14614` assigns `E-SEM-3032` to duplicate overload
+- `Docs/SPECIFICATION.md:14614` assigns `E-SEM-3032` to duplicate overload
   signatures after generic erasure.
 
 Observed bootstrap result before repair:
@@ -3023,10 +3105,10 @@ Spec obligations exercised:
 
 Spec basis:
 
-- `SPECIFICATION.md:12818` requires infinite monomorphization recursion to be
+- `Docs/SPECIFICATION.md:12818` requires infinite monomorphization recursion to be
   rejected.
-- `SPECIFICATION.md:12819` sets the maximum instantiation depth to 128.
-- `SPECIFICATION.md:14132-14133` defines `E-TYP-2307` and `E-TYP-2308`.
+- `Docs/SPECIFICATION.md:12819` sets the maximum instantiation depth to 128.
+- `Docs/SPECIFICATION.md:14132-14133` defines `E-TYP-2307` and `E-TYP-2308`.
 
 Observed bootstrap result before repair:
 
@@ -3086,16 +3168,16 @@ Spec obligations exercised:
 
 Spec basis:
 
-- `SPECIFICATION.md:5734-5738` requires expression resolution to traverse
+- `Docs/SPECIFICATION.md:5734-5738` requires expression resolution to traverse
   expression substructure homomorphically.
-- `SPECIFICATION.md:16272-16290` defines logical operator expressions as
+- `Docs/SPECIFICATION.md:16272-16290` defines logical operator expressions as
   unbounded left chains in the grammar.
-- `SPECIFICATION.md:20546` requires subexpressions to preserve left-to-right
+- `Docs/SPECIFICATION.md:20546` requires subexpressions to preserve left-to-right
   evaluation order.
-- `SPECIFICATION.md:21683-21693` defines `ctx.gpu()` as an execution-domain
+- `Docs/SPECIFICATION.md:21683-21693` defines `ctx.gpu()` as an execution-domain
   constructor.
-- `SPECIFICATION.md:21781-21794` defines GPU intrinsic calls in GPU contexts.
-- `SPECIFICATION.md:21840-21866` defines GPU parallel, dispatch, and barrier
+- `Docs/SPECIFICATION.md:21781-21794` defines GPU intrinsic calls in GPU contexts.
+- `Docs/SPECIFICATION.md:21840-21866` defines GPU parallel, dispatch, and barrier
   dynamic semantics.
 
 Spec-valid specimen:
@@ -3176,13 +3258,13 @@ Spec obligations exercised:
 
 Spec basis:
 
-- `SPECIFICATION.md:21489-21490` accepts `ctx.cpu(mask)` and
+- `Docs/SPECIFICATION.md:21489-21490` accepts `ctx.cpu(mask)` and
   `ctx.cpu(mask, priority)` when the arguments typecheck as `CpuSet` and
   `Priority`.
-- `SPECIFICATION.md:21683-21690` defines `ctx.cpu(mask)` as a CPU execution
+- `Docs/SPECIFICATION.md:21683-21690` defines `ctx.cpu(mask)` as a CPU execution
   domain restricted to the mask and `ctx.cpu(mask, priority)` as the same domain
   with a default task priority.
-- `SPECIFICATION.md:22120-22121` requires spawn affinity and priority to govern
+- `Docs/SPECIFICATION.md:22120-22121` requires spawn affinity and priority to govern
   worker selection and task priority.
 
 Spec-valid specimen:
@@ -3257,13 +3339,13 @@ Spec obligations exercised:
 
 Spec basis:
 
-- `SPECIFICATION.md:22695-22734` defines async values as modal state-machine
+- `Docs/SPECIFICATION.md:22695-22734` defines async values as modal state-machine
   values with `@Completed`, `@Suspended`, and `@Failed` states.
-- `SPECIFICATION.md:23718` defines `Async@Suspended.resume(input)` with a
+- `Docs/SPECIFICATION.md:23718` defines `Async@Suspended.resume(input)` with a
   `unique` receiver and an input value.
-- `SPECIFICATION.md:23891-23934` defines streaming race suspension and
+- `Docs/SPECIFICATION.md:23891-23934` defines streaming race suspension and
   resumption behavior: the yielded arm remains the active arm when resumed.
-- `SPECIFICATION.md:24369-24373` defines `async` frame creation as allocating
+- `Docs/SPECIFICATION.md:24369-24373` defines `async` frame creation as allocating
   a fresh frame.
 
 Spec-valid specimens:
@@ -3392,17 +3474,17 @@ Spec obligations exercised:
 
 Spec basis:
 
-- `SPECIFICATION.md:25249-25255` defines `quote pattern`, expression splices,
+- `Docs/SPECIFICATION.md:25249-25255` defines `quote pattern`, expression splices,
   and identifier splices.
-- `SPECIFICATION.md:25314-25319` defines splice compatibility, including
+- `Docs/SPECIFICATION.md:25314-25319` defines splice compatibility, including
   `SpliceCompat(Stmt, Ast::Stmt)` and string-valued identifier splices.
-- `SPECIFICATION.md:25331-25335` permits `$ident` in identifier-expression,
+- `Docs/SPECIFICATION.md:25331-25335` permits `$ident` in identifier-expression,
   identifier-pattern, typed-pattern, and parameter-binding positions and makes
   string-valued identifier splices bind in the emission environment.
-- `SPECIFICATION.md:25341-25348` requires quoted statement parsing to use the
+- `Docs/SPECIFICATION.md:25341-25348` requires quoted statement parsing to use the
   ordinary statement parser extended with splice nodes and requires statement
   splices to render `Ast::Stmt` or `Ast::Expr` payloads.
-- `SPECIFICATION.md:25363-25368` defines quote evaluation as parsing the
+- `Docs/SPECIFICATION.md:25363-25368` defines quote evaluation as parsing the
   quoted body, building splices, and returning the resulting `Ast`.
 
 Spec-valid specimen:
@@ -3482,12 +3564,12 @@ Spec obligations exercised:
 
 Spec basis:
 
-- `SPECIFICATION.md:17681-17684` defines closure capture sets from free
+- `Docs/SPECIFICATION.md:17681-17684` defines closure capture sets from free
   variables in closure bodies.
-- `SPECIFICATION.md:20649-20656` defines local closure invocation with
+- `Docs/SPECIFICATION.md:20649-20656` defines local closure invocation with
   `shared` captures as acquiring required keys using lexical roots, executing
   the closure body, and releasing keys at invocation end.
-- `SPECIFICATION.md:20706` assigns `W-CON-0009` to the compile-time warning
+- `Docs/SPECIFICATION.md:20706` assigns `W-CON-0009` to the compile-time warning
   condition "Closure captures `shared` data".
 
 Spec-valid specimen:
@@ -3570,13 +3652,13 @@ Spec obligations exercised:
 
 Spec basis:
 
-- `SPECIFICATION.md:13872-13875` defines the generic `Reactor::run` and
+- `Docs/SPECIFICATION.md:13872-13875` defines the generic `Reactor::run` and
   `Reactor::register` methods; `register` takes `Future<T, E>` and returns
   `Tracked<T, E>`.
-- `SPECIFICATION.md:13984-13996` requires calls on dynamic receivers of builtin
+- `Docs/SPECIFICATION.md:13984-13996` requires calls on dynamic receivers of builtin
   capability classes, including `Reactor`, to lower to builtin method symbols
   rather than ordinary vtable-call sequences.
-- `SPECIFICATION.md:29042-29051` includes `Reactor::run` and
+- `Docs/SPECIFICATION.md:29042-29051` includes `Reactor::run` and
   `Reactor::register` in the builtin method table.
 
 Spec-valid specimen:
@@ -3715,7 +3797,7 @@ reference failed: runComptimeDeriveTargetsReference
 
 Failure analysis:
 
-`SPECIFICATION.md` §22.3.5 defines `CtBuiltin-Reflect-TypeName` as returning
+`Docs/SPECIFICATION.md` §22.3.5 defines `CtBuiltin-Reflect-TypeName` as returning
 `CtString(TypeRender(T))`. `TypeRender(TypePath(...))` renders the type path
 text and does not include diagnostic or source span decoration. The bootstrap
 reflection builtin used the AST debug renderer with default dump options, whose
@@ -3779,7 +3861,7 @@ error[E-SEM-2801]: Contract predicate not provable outside `[[dynamic]]` scope
 
 Failure analysis:
 
-`SPECIFICATION.md` §15 admits `Pure-Comptime` as a contract predicate purity
+`Docs/SPECIFICATION.md` §15 admits `Pure-Comptime` as a contract predicate purity
 rule, and Chapter 22 defines compile-time procedures as Phase 2-only callable
 bindings in compile-time contexts. The predicate above is a no-argument
 compile-time procedure whose result is deterministically `true`, but the
@@ -3856,7 +3938,7 @@ Bootstrap owners:
 
 Failure analysis:
 
-`SPECIFICATION.md` §10.4.7 defines permission-admissibility diagnostics
+`Docs/SPECIFICATION.md` §10.4.7 defines permission-admissibility diagnostics
 `E-TYP-1601`, `E-TYP-1602`, `E-TYP-1604`, and `E-TYP-1605`. The shared-write
 assignment path checked for read-then-write and covering-key conflicts, but
 when no key was held and no more specific key conflict applied, it marked the
@@ -4004,7 +4086,7 @@ Bootstrap owners:
 
 Failure analysis:
 
-`SPECIFICATION.md` §12.6.7 assigns `E-TYP-1901` to duplicate field names in
+`Docs/SPECIFICATION.md` §12.6.7 assigns `E-TYP-1901` to duplicate field names in
 record declarations, and the formal rule `WF-Record-DupField` carries
 `c = Code(WF-Record-DupField)`. The bootstrap detected the correct static rule
 but returned the rule identifier as the diagnostic id, so the typecheck
@@ -4042,11 +4124,11 @@ Spec obligations exercised:
 
 Spec basis:
 
-- `SPECIFICATION.md:24713-24718` defines `CtProc` as well-formed with optional
+- `Docs/SPECIFICATION.md:24713-24718` defines `CtProc` as well-formed with optional
   generic parameters and a body checked in the compile-time environment.
-- `SPECIFICATION.md:24723-24725` requires compile-time procedures to be
+- `Docs/SPECIFICATION.md:24723-24725` requires compile-time procedures to be
   callable from compile-time contexts and rejected from runtime contexts.
-- `SPECIFICATION.md:24750-24751` requires `CtEval` and `CtExec` for ordinary
+- `Docs/SPECIFICATION.md:24750-24751` requires `CtEval` and `CtExec` for ordinary
   forms inside compile-time execution to preserve ordinary child order, scope,
   pattern binding, control propagation, and operator semantics.
 
@@ -4135,13 +4217,13 @@ Spec obligations exercised:
 
 Spec basis:
 
-- `SPECIFICATION.md:10769-10783` defines region statements with optional
+- `Docs/SPECIFICATION.md:10769-10783` defines region statements with optional
   region options, optional aliases, and scoped execution.
-- `SPECIFICATION.md:10881-10883` defines the `Region::new_scoped` builtin
+- `Docs/SPECIFICATION.md:10881-10883` defines the `Region::new_scoped` builtin
   constructor returning an active region.
-- `SPECIFICATION.md:19933-19949` defines implicit and explicit frame
+- `Docs/SPECIFICATION.md:19933-19949` defines implicit and explicit frame
   statements and requires an explicit frame target to be an active region.
-- `SPECIFICATION.md:20008-20035` defines allocation expressions with implicit
+- `Docs/SPECIFICATION.md:20008-20035` defines allocation expressions with implicit
   allocation in the current region and explicit allocation through
   `region ^ expr`.
 
@@ -4255,18 +4337,18 @@ Spec obligations exercised:
 
 Spec basis:
 
-- `SPECIFICATION.md:14772-14812` defines contract clause syntax for
+- `Docs/SPECIFICATION.md:14772-14812` defines contract clause syntax for
   pre-only, pre/post, and post-only forms.
-- `SPECIFICATION.md:14821-14934` defines contract predicate well-formedness
+- `Docs/SPECIFICATION.md:14821-14934` defines contract predicate well-formedness
   and the pure expression forms allowed in contract predicates, including
   block expressions and compile-time procedure calls.
-- `SPECIFICATION.md:14947-14953` defines precondition and postcondition
+- `Docs/SPECIFICATION.md:14947-14953` defines precondition and postcondition
   evaluation contexts and states that contract clauses affect execution only
   through verification and inserted checks.
-- `SPECIFICATION.md:15020-15125` defines `@result` and `@entry(expr)`,
+- `Docs/SPECIFICATION.md:15020-15125` defines `@result` and `@entry(expr)`,
   including the entry-state capture semantics.
-- `SPECIFICATION.md:24725-24728` requires runtime procedure bodies to avoid
-  naming or calling compile-time procedures, while `SPECIFICATION.md:24749-24794`
+- `Docs/SPECIFICATION.md:24725-24728` requires runtime procedure bodies to avoid
+  naming or calling compile-time procedures, while `Docs/SPECIFICATION.md:24749-24794`
   removes `CtProc` declarations from expanded runtime items.
 
 Spec-valid specimens:
@@ -4631,7 +4713,7 @@ Bootstrap owner:
 
 Failure analysis:
 
-`SPECIFICATION.md` §22.1 defines `comptime_expr ::= attribute_list? "comptime"
+`Docs/SPECIFICATION.md` §22.1 defines `comptime_expr ::= attribute_list? "comptime"
 "{" expression "}"`, and §4.1.7 defines newline filtering around delimiter
 depth and continuation. A compile-time expression block therefore accepts an
 ordinary expression split across lines inside the braces. The bootstrap
@@ -4696,7 +4778,7 @@ Bootstrap owners:
 
 Failure analysis:
 
-`SPECIFICATION.md` §22.2.3 defines `FieldInfoFields` with a field named
+`Docs/SPECIFICATION.md` §22.2.3 defines `FieldInfoFields` with a field named
 `type`, and §22.3.5 requires `introspect.fields(ty)` to return those
 `FieldInfo` values. The accepted source must therefore be able to select the
 metadata field as `field.type`. The bootstrap lexer tokenizes `type` as a
@@ -4760,7 +4842,7 @@ Bootstrap owner:
 
 Failure analysis:
 
-`SPECIFICATION.md` §16.9.4 permits the shared dependency set for an escaping
+`Docs/SPECIFICATION.md` §16.9.4 permits the shared dependency set for an escaping
 closure to be inferred when the closure is checked against an expected closure
 type, and §13.11 defines the dependency-set form on closure types. The source
 above gives the closure expression an expected closure type through a type
@@ -4831,7 +4913,7 @@ Bootstrap owners:
 
 Failure analysis:
 
-`SPECIFICATION.md` §18.2.4 defines `SuspendUniqueBind`: when a binding
+`Docs/SPECIFICATION.md` §18.2.4 defines `SuspendUniqueBind`: when a binding
 initializer is a place, the initializer has `unique` permission, and the binding
 type has `const` permission, the compiler suspends the unique path. This is an
 accepted binding-state path, not a value copy of a non-`Bitcopy` place.
@@ -4896,7 +4978,7 @@ Bootstrap owners:
 
 Failure analysis:
 
-`SPECIFICATION.md` §12.1 defines `f16` as IEEE 754 binary16, and
+`Docs/SPECIFICATION.md` §12.1 defines `f16` as IEEE 754 binary16, and
 §24.2/Appendix D map `f16` to LLVM `half` with size and alignment of two
 bytes. The source above exercises an ordered comparison between representable
 binary16 values, so `1.5f16 > 1.0f16` must evaluate to true.
@@ -4963,7 +5045,7 @@ Bootstrap owner:
 
 Failure analysis:
 
-`SPECIFICATION.md` §16.4.1 includes `**` in the arithmetic operator grammar,
+`Docs/SPECIFICATION.md` §16.4.1 includes `**` in the arithmetic operator grammar,
 §16.4.4 types arithmetic operators over numeric operands, §16.4.5 defines
 floating `**` through IEEE 754 pow semantics, and §16.4.6 requires binary
 operators to lower through `LowerBinOp`.
@@ -5052,7 +5134,7 @@ Bootstrap owners:
 
 Failure analysis:
 
-`SPECIFICATION.md` §16.9 defines closure type syntax and closure invocation
+`Docs/SPECIFICATION.md` §16.9 defines closure type syntax and closure invocation
 through ordinary call syntax. §16.9.4 types capturing closures as
 `TypeClosure`, §16.9.5 evaluates closure calls by applying the closure
 environment and code pointer, and §16.9.3/§16.9.4 allow pipeline right-hand
@@ -5098,7 +5180,7 @@ Source correction made during diagnosis:
 
 Noncapturing closure literals in `closureParameterFormsReference` were changed
 from `TypeClosure` aliases to `TypeFunc` aliases. This was a source correction,
-not a bootstrap repair: `SPECIFICATION.md` §16.9.4 types noncapturing closure
+not a bootstrap repair: `Docs/SPECIFICATION.md` §16.9.4 types noncapturing closure
 expressions as `TypeFunc`, while capturing closures type as `TypeClosure`.
 
 Verified bootstrap result after repair:
@@ -5144,7 +5226,7 @@ Bootstrap owners:
 
 Failure analysis:
 
-`SPECIFICATION.md` defines procedure predicate clauses as part of the generic
+`Docs/SPECIFICATION.md` defines procedure predicate clauses as part of the generic
 procedure contract, and value use of a local requires the type to satisfy
 `BitcopyType(T)`. The bootstrap checked the predicate clause at call sites, but
 the generic procedure body context did not attach direct predicate facts such as
@@ -5200,7 +5282,7 @@ Bootstrap owners:
 
 Failure analysis:
 
-`SPECIFICATION.md` §16.9 types `|move i32| -> i32` as a closure whose ordinary
+`Docs/SPECIFICATION.md` §16.9 types `|move i32| -> i32` as a closure whose ordinary
 call syntax consumes the argument by move. The lowering path had the correct
 callee type for the indirect closure-code call:
 `(move * imm u8, move i32) -> i32`. During LLVM call emission, however, a stale
@@ -5268,8 +5350,8 @@ Bootstrap owners:
 
 Failure analysis:
 
-`SPECIFICATION.md` §16.2.6 and §24.2.1 require a failing dynamic array bounds
-check to raise the `Bounds` panic code. `SPECIFICATION.md` §19.2 requires key
+`Docs/SPECIFICATION.md` §16.2.6 and §24.2.1 require a failing dynamic array bounds
+check to raise the `Bounds` panic code. `Docs/SPECIFICATION.md` §19.2 requires key
 blocks to release their acquired paths on every exit mode, including panic.
 The exported `C-unwind` catch boundary is the source boundary that converts the
 panic into the catch return value after cleanup. The bootstrap emitted a bare
@@ -5324,7 +5406,7 @@ Bootstrap owner:
 
 Failure analysis:
 
-`SPECIFICATION.md` §12.3 defines fixed-size array types by their source
+`Docs/SPECIFICATION.md` §12.3 defines fixed-size array types by their source
 length, and §16.2.6 checks dynamic array indexing against `Len(v_b)`. The
 bootstrap lowered the specimen with a bounds check against the LLVM storage
 shape instead of the source `[i32; 4]` length; disassembly showed the second
@@ -5383,7 +5465,7 @@ Bootstrap owner:
 
 Failure analysis:
 
-`SPECIFICATION.md` §19.5.4 defines `K-Spec-Write-Required` as the static
+`Docs/SPECIFICATION.md` §19.5.4 defines `K-Spec-Write-Required` as the static
 semantic rule for `#P speculative M {B}` when `M` is not `write`, and
 §19.5.7 assigns that condition to `E-CON-0095`. The bootstrap parser consumed
 the `read` mode, emitted a generic parse error, then rewrote the AST mode to
@@ -5442,9 +5524,9 @@ Bootstrap owner:
 
 Failure analysis:
 
-`SPECIFICATION.md` §11.5 defines `WF-Module-Path-Reserved` for directory-derived
+`Docs/SPECIFICATION.md` §11.5 defines `WF-Module-Path-Reserved` for directory-derived
 module path components and §11.5.7 assigns that condition to `E-MOD-1105`.
-`SPECIFICATION.md` §7.2 separately defines `Validate-Module-Keyword-Err` for
+`Docs/SPECIFICATION.md` §7.2 separately defines `Validate-Module-Keyword-Err` for
 module-scope name validation, and the bootstrap maps that source-name path to
 `E-CNF-0401`. The module-discovery path was emitting both codes from
 `ValidateModulePath`, so a source-root child directory named with a reserved
@@ -5499,15 +5581,15 @@ Bootstrap owner:
 
 Failure analysis:
 
-`SPECIFICATION.md` §12.9 defines `AliasCycle(p)` over the alias graph, and the
+`Docs/SPECIFICATION.md` §12.9 defines `AliasCycle(p)` over the alias graph, and the
 internal obligation ledger names the rejecting rule `TypeAlias-Recursive-Err`.
-`SPECIFICATION.md` §8.5 owns alias-cycle diagnostics and assigns type alias
+`Docs/SPECIFICATION.md` §8.5 owns alias-cycle diagnostics and assigns type alias
 cycles to `E-TYP-1506`. The type alias checker returned
 `TypeAlias-Recursive-Err`, but the typecheck diagnostic lookup did not map that
 rule id to the SPEC code, causing the user-facing diagnostic renderer to emit an
 internal unknown-diagnostic failure instead of `E-TYP-1506`.
 
-The public `SPECIFICATION.md` currently spells the rule conclusion as
+The public `Docs/SPECIFICATION.md` currently spells the rule conclusion as
 `TypeAlias-Reultraviolet-Err`; `HelloUltraviolet/Audit/SpecClarificationsNeeded.md`
 records that as a public SPEC typo because the internal obligation ledger and
 CSV use `TypeAlias-Recursive-Err`.
@@ -5582,7 +5664,7 @@ error[E-MOD-2402]: Type annotation incompatible with inferred type
 
 Failure analysis:
 
-`SPECIFICATION.md` §22.1.5 requires every `CtExpr` to be replaced before
+`Docs/SPECIFICATION.md` §22.1.5 requires every `CtExpr` to be replaced before
 Phase 3 by `CtLiteralize` or a compatible `CtAst` payload. The same section
 defines `CtLiteralize` for `CtArray`, `CtRecord`, `CtModalState`, and enum
 values with unit, tuple, and record payloads. It also states that expression
@@ -5675,7 +5757,7 @@ program_exit=1
 
 Failure analysis:
 
-`SPECIFICATION.md` §21.3.5 defines `take` as a stateful async wrapper
+`Docs/SPECIFICATION.md` §21.3.5 defines `take` as a stateful async wrapper
 `TakeAsync = <source, remaining>`. `EvalSigma-Take-Resume-Yield` yields the
 source output while storing the wrapper state with `remaining - 1`.
 `EvalSigma-Take-Resume-Done` then completes when the stored remaining count is
@@ -5759,12 +5841,12 @@ note: unresolved type path `QualifiedDataTypes`
 
 Failure analysis:
 
-`SPECIFICATION.md` defines `modal_state_expr ::= modal_type_ref "@" identifier
+`Docs/SPECIFICATION.md` defines `modal_state_expr ::= modal_type_ref "@" identifier
 "{" field_init_list? "}"`, and `ResolveModalRef` accepts a modal reference
 whose base is a resolved `TypePath` or `TypeApply`. A qualified module alias
 therefore remains a valid modal-state literal base.
 
-`SPECIFICATION.md` also defines `record_pattern ::= type_path "{" ... "}"`.
+`Docs/SPECIFICATION.md` also defines `record_pattern ::= type_path "{" ... "}"`.
 The qualified pattern `QualifiedDataTypes::RecordReference { ... }` is a
 record pattern because the joined type path names a record. The bootstrap
 parser initially treated the first `::` as an enum-pattern separator, and the
@@ -5841,7 +5923,7 @@ runtime slice length `4`.
 
 Failure analysis:
 
-`SPECIFICATION.md` §12.4 defines array-to-slice coercion and slice indexing:
+`Docs/SPECIFICATION.md` §12.4 defines array-to-slice coercion and slice indexing:
 `Coerce-Array-Slice` permits `TypePerm(p, TypeArray(T, n))` to become
 `TypePerm(p, TypeSlice(T))`, while `T-Index-Slice` and `P-Index-Slice` require
 only a `usize` index. Once the fixed array is viewed as a slice, bounds checks
@@ -5920,7 +6002,7 @@ Cursive.exe build .agents/tmp/DynamicKeyStaticRequiredProbe --check --target-pro
 
 Failure analysis:
 
-`SPECIFICATION.md` §19.6.4 defines `K-Static-Required`: if key safety is not
+`Docs/SPECIFICATION.md` §19.6.4 defines `K-Static-Required`: if key safety is not
 statically safe and the access is outside a dynamic context, the program is
 rejected. §19.6.5 and §19.6.6 define the `[[dynamic]]` path: incomparable
 dynamic indices require runtime ordering and may lower to runtime
@@ -5991,13 +6073,13 @@ Spec obligations exercised:
 
 Spec basis:
 
-- `SPECIFICATION.md` §11.3 defines module-scope `let` and `var` static
+- `Docs/SPECIFICATION.md` §11.3 defines module-scope `let` and `var` static
   declarations.
-- `SPECIFICATION.md` §11.3 defines `Bind-Static` as binding every name in
+- `Docs/SPECIFICATION.md` §11.3 defines `Bind-Static` as binding every name in
   `PatNames(pat)`.
-- `SPECIFICATION.md` §11.3 requires `WF-StaticDecl` to type the declaration
+- `Docs/SPECIFICATION.md` §11.3 requires `WF-StaticDecl` to type the declaration
   pattern against the annotated type.
-- `SPECIFICATION.md` §24 defines `StaticBindTypes`, `StaticBindList`,
+- `Docs/SPECIFICATION.md` §24 defines `StaticBindTypes`, `StaticBindList`,
   `StaticBinding`, and `Emit-Static-Multi` for static declarations whose
   binding pattern introduces multiple names.
 
@@ -6113,11 +6195,11 @@ Spec obligations exercised:
 
 Spec basis:
 
-- `SPECIFICATION.md:4640-4650` assigns `E-MEM-1207`, `E-MEM-1208`, and
+- `Docs/SPECIFICATION.md:4640-4650` assigns `E-MEM-1207`, `E-MEM-1208`, and
   `E-MEM-3030`.
-- `SPECIFICATION.md:5834` assigns `E-MOD-1307`.
-- `SPECIFICATION.md:12465` assigns `E-TYP-2103`.
-- `SPECIFICATION.md:18039` assigns `E-SEM-2526`.
+- `Docs/SPECIFICATION.md:5834` assigns `E-MOD-1307`.
+- `Docs/SPECIFICATION.md:12465` assigns `E-TYP-2103`.
+- `Docs/SPECIFICATION.md:18039` assigns `E-SEM-2526`.
 
 Observed bootstrap result before repair:
 
@@ -6197,10 +6279,10 @@ Spec obligations exercised:
 
 Spec basis:
 
-- `SPECIFICATION.md:9020` types the empty tuple expression as `TypePrim("()")`.
-- `SPECIFICATION.md:18216-18242` parses `()` in pattern position as
+- `Docs/SPECIFICATION.md:9020` types the empty tuple expression as `TypePrim("()")`.
+- `Docs/SPECIFICATION.md:18216-18242` parses `()` in pattern position as
   `TuplePattern([])`.
-- `SPECIFICATION.md:18317-18364` defines tuple-pattern typing and runtime
+- `Docs/SPECIFICATION.md:18317-18364` defines tuple-pattern typing and runtime
   matching by element count and elementwise binding.
 
 Spec-valid specimen:

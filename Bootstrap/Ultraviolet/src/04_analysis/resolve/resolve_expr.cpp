@@ -3,8 +3,8 @@
 // =============================================================================
 //
 // SPEC REFERENCE:
-//   SPECIFICATION.md §5.1.3 "Lookup" (Lines 6822-6899)
-//   SPECIFICATION.md §5.1.7 "Resolution Pass" (Lines 7430-7549)
+//   Docs/SPECIFICATION.md §5.1.3 "Lookup" (Lines 6822-6899)
+//   Docs/SPECIFICATION.md §5.1.7 "Resolution Pass" (Lines 7430-7549)
 //
 // SOURCE FILE:
 //   ultraviolet-bootstrap/src/03_analysis/resolve/resolver_expr.cpp (Lines 1-1349)

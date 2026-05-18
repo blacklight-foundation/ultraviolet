@@ -2,7 +2,7 @@
 // contract_result.cpp - Contract Result Expression Parsing
 // =============================================================================
 //
-// SPEC REFERENCE: SPECIFICATION.md
+// SPEC REFERENCE: Docs/SPECIFICATION.md
 // - Parse-Contract-Result (Lines 5168-5171)
 //
 // =============================================================================

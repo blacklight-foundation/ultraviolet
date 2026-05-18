@@ -2,7 +2,7 @@
 // MIGRATION MAPPING: layout_dispatch.cpp
 // =============================================================================
 //
-// SPEC REFERENCE: SPECIFICATION.md
+// SPEC REFERENCE: Docs/SPECIFICATION.md
 //   - Section 6.1 Layout and Representation (lines 14349-15153)
 //   - LayoutJudg = {sizeof, alignof, layout} (line 14397)
 //   - All layout rules from sections 6.1.1 through 6.1.8

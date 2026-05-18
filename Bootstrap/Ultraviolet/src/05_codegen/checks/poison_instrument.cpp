@@ -2,7 +2,7 @@
 // MIGRATION MAPPING: poison_instrument.cpp
 // =============================================================================
 //
-// SPEC REFERENCE: SPECIFICATION.md
+// SPEC REFERENCE: Docs/SPECIFICATION.md
 //   - Section 7.1 Initialization Order and Poisoning
 //   - SetPoison judgment (referenced in InitPanicHandle)
 //   - Module poison propagation

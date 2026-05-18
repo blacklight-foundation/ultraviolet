@@ -2,7 +2,7 @@
 // compound_assign_stmt.cpp - Compound assignment statement typing
 // =============================================================================
 //
-// SPEC REFERENCE: SPECIFICATION.md
+// SPEC REFERENCE: Docs/SPECIFICATION.md
 //   Section 5.2.9: Assignment Statements
 //   - Compound assignment operators: +=, -=, *=, /=, %=, &=, |:, ^=, <<=, >>=
 //   - T-CompoundAssign (lines 9462-9465): Compound assignment

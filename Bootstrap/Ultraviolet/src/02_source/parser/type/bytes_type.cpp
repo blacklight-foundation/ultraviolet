@@ -2,7 +2,7 @@
 // bytes_type.cpp - Bytes Type and State Parsing
 // =============================================================================
 //
-// SPEC REFERENCE: SPECIFICATION.md, Section 3.3.7, Lines 4793-4796
+// SPEC REFERENCE: Docs/SPECIFICATION.md, Section 3.3.7, Lines 4793-4796
 // Section 3.3.7.1 (Bytes State), Lines 4898-4913
 //
 // Parses bytes types: bytes@Managed, bytes@View

@@ -2,7 +2,7 @@
 // closure_expr.cpp - Closure Expression Parsing
 // =============================================================================
 //
-// SPEC REFERENCE: SPECIFICATION.md
+// SPEC REFERENCE: Docs/SPECIFICATION.md
 // - closure_expr ::= "|" closure_param_list? "|" ("->" type)? closure_body
 // - closure_param_list ::= closure_param ("," closure_param)* ","?
 // - closure_param ::= "move"? identifier (":" type)?

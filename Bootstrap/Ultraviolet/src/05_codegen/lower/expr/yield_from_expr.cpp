@@ -2,7 +2,7 @@
 // Expression Lowering: YieldFromExpr
 // =============================================================================
 //
-// SPEC REFERENCE: SPECIFICATION.md Section 11.2 (Yield-From Expression)
+// SPEC REFERENCE: Docs/SPECIFICATION.md Section 11.2 (Yield-From Expression)
 //   - yield from e delegates to another async
 //   - release modifier releases keys before suspend
 //

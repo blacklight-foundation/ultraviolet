@@ -2,7 +2,7 @@
 // Builtin Symbol Resolution Implementation
 // =============================================================================
 //
-// SPEC REFERENCE: SPECIFICATION.md
+// SPEC REFERENCE: Docs/SPECIFICATION.md
 //   - Section 6.9 BuiltinSym and BuiltinModalSym
 //   - Section 6.12.14 String/Bytes builtins
 //   - Section 18.2 ExecutionDomain builtins

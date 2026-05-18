@@ -2,7 +2,7 @@
 // MIGRATION MAPPING: abi_calls.cpp
 // =============================================================================
 //
-// SPEC REFERENCE: SPECIFICATION.md
+// SPEC REFERENCE: Docs/SPECIFICATION.md
 //   - Section 6.2.3 ABI-Call rule (lines 15282-15285)
 //   - Section 6.2.4 Call Lowering for Procedures and Methods (lines 15303-15391)
 //   - LowerCallJudg (line 15305)

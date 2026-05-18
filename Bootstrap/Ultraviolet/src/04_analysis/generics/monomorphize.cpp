@@ -4,9 +4,9 @@
  * =============================================================================
  *
  * SPEC REFERENCE:
- *   - SPECIFICATION.md, Section 13.1.4 "Monomorphization" (lines 22529-22565)
- *   - SPECIFICATION.md, Section 13.1.3 "Generic Instantiation"
- *   - SPECIFICATION.md, Section 13.4 "Class Constraints"
+ *   - Docs/SPECIFICATION.md, Section 13.1.4 "Monomorphization" (lines 22529-22565)
+ *   - Docs/SPECIFICATION.md, Section 13.1.3 "Generic Instantiation"
+ *   - Docs/SPECIFICATION.md, Section 13.4 "Class Constraints"
  *
  * This file implements the monomorphization system for Ultraviolet generics:
  *   - Type instantiation with concrete type arguments
@@ -461,7 +461,7 @@ bool MonomorphizeContext::ProcessToFixedPoint() {
   SpecDefsMonomorphize();
   SPEC_RULE("Mono-FixedPoint");
 
-  // SPEC: SPECIFICATION.md Section 13.1.4 "Recursion Depth"
+  // SPEC: Docs/SPECIFICATION.md Section 13.1.4 "Recursion Depth"
   // "The maximum instantiation depth is 128."
 
   while (!worklist_.empty()) {
@@ -498,7 +498,7 @@ TypeRef InstantiateType(const TypeRef& type, const TypeSubst& subst) {
   SpecDefsMonomorphize();
   SPEC_RULE("Instantiate-Type");
 
-  // SPEC: SPECIFICATION.md Section 13.1.4
+  // SPEC: Docs/SPECIFICATION.md Section 13.1.4
   // "Given a generic declaration D<T_1, ..., T_n> and concrete type arguments
   //  A_1, ..., A_n, monomorphization produces a specialized declaration
   //  D[A_1/T_1, ..., A_n/T_n] where each occurrence of T_i in the body is
@@ -900,7 +900,7 @@ TypeSubst BuildSubstitution(
   }
 
   // Fill in defaults for missing args
-  // SPEC: SPECIFICATION.md Section 14.1.4 "DefaultArgs"
+  // SPEC: Docs/SPECIFICATION.md Section 14.1.4 "DefaultArgs"
   // Each default is substituted through the already-expanded argument prefix:
   // A_i' = TypeSubst([A_1'/P_1.name, ...], T_i).
   for (std::size_t i = args.size(); i < params.size(); ++i) {
@@ -936,7 +936,7 @@ BoundCheckResult CheckBoundsSatisfied(
   SpecDefsMonomorphize();
   SPEC_RULE("Check-Bounds");
 
-  // SPEC: SPECIFICATION.md Section 13.4.1 "Constraint Satisfaction"
+  // SPEC: Docs/SPECIFICATION.md Section 13.4.1 "Constraint Satisfaction"
   // "A generic instantiation is well-formed only if every constrained
   //  parameter T <: Cl is instantiated with a type that implements Cl."
 
@@ -1050,7 +1050,7 @@ InferResult InferTypeArguments(
   SpecDefsMonomorphize();
   SPEC_RULE("Infer-TypeArgs");
 
-  // SPEC: SPECIFICATION.md Section 13.1.3 "Type Inference"
+  // SPEC: Docs/SPECIFICATION.md Section 13.1.3 "Type Inference"
   // Type arguments can be inferred from value arguments at call sites.
 
   InferResult result;

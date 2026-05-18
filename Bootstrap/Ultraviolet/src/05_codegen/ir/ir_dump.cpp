@@ -2,7 +2,7 @@
 // MIGRATION MAPPING: ir_dump.cpp
 // =============================================================================
 //
-// SPEC REFERENCE: SPECIFICATION.md
+// SPEC REFERENCE: Docs/SPECIFICATION.md
 //   - Section 6.0 (lines 14196-14347) for IR structure
 //   - Section 6.4 (lines 15665-15992) for expression lowering
 //   - No explicit dump format specified; this is debugging infrastructure

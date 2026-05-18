@@ -2,7 +2,7 @@
 // Compound Assignment Statement Lowering Implementation
 // =============================================================================
 //
-// SPEC REFERENCE: SPECIFICATION.md Lines 16644-16647 (Lower-Stmt-CompoundAssign)
+// SPEC REFERENCE: Docs/SPECIFICATION.md Lines 16644-16647 (Lower-Stmt-CompoundAssign)
 //   - LowerReadPlace(place) produces IR_p, v_old
 //   - LowerExpr(expr) produces IR_e, v_rhs
 //   - BinOp(op, v_old, v_rhs) then LowerWritePlace

@@ -4,7 +4,7 @@
 // callgraph_caps.h - Call Graph Construction and Capability Flow Analysis
 // =============================================================================
 //
-// SPEC REFERENCE: SPECIFICATION.md
+// SPEC REFERENCE: Docs/SPECIFICATION.md
 //   - Section 19.1 "Capability Flow Analysis"
 //   - Section 19.2 "Call Graph Construction"
 //

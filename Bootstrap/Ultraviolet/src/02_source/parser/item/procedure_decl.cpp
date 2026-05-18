@@ -2,7 +2,7 @@
 // procedure_decl.cpp - Procedure Declaration Parsing
 // =============================================================================
 //
-// SPEC REFERENCE: SPECIFICATION.md Section 3.3.6.5 (Procedure Declaration Rules)
+// SPEC REFERENCE: Docs/SPECIFICATION.md Section 3.3.6.5 (Procedure Declaration Rules)
 //
 // This file implements procedure declaration parsing:
 //   - ParseProcedureDecl: Parse complete procedure declaration

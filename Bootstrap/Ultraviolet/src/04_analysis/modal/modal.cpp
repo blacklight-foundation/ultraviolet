@@ -4,10 +4,10 @@
  * =============================================================================
  *
  * SPEC REFERENCE:
- *   - SPECIFICATION.md, Section 5.4 "Modal Types"
- *   - SPECIFICATION.md, ModalDeclOf(modal_ref) = M (line 10433)
- *   - SPECIFICATION.md, States(M) (line 12464)
- *   - SPECIFICATION.md, Section 8.7 "E-MOD Errors"
+ *   - Docs/SPECIFICATION.md, Section 5.4 "Modal Types"
+ *   - Docs/SPECIFICATION.md, ModalDeclOf(modal_ref) = M (line 10433)
+ *   - Docs/SPECIFICATION.md, States(M) (line 12464)
+ *   - Docs/SPECIFICATION.md, Section 8.7 "E-MOD Errors"
  *
  * MIGRATED FROM:
  *   - ultraviolet-bootstrap/src/03_analysis/modal/modal.cpp (lines 1-60)
@@ -56,7 +56,7 @@ const ast::ModalDecl* LookupModalDecl(const ScopeContext& ctx,
   return LookupModalDecl(ctx, modal_ref);
 }
 
-// SPEC_DEF: ModalDeclOf(modal_ref) = M (SPECIFICATION.md, line 10433)
+// SPEC_DEF: ModalDeclOf(modal_ref) = M (Docs/SPECIFICATION.md, line 10433)
 // ModalDeclOf is intentionally a direct Sigma.Types lookup by
 // ModalRefPath(modal_ref). Name resolution belongs to ResolveModalRef before
 // this definition is applied.
@@ -79,7 +79,7 @@ const ast::ModalDecl* LookupModalDecl(const ScopeContext& ctx,
   return std::get_if<ast::ModalDecl>(&it->second);
 }
 
-// SPEC_DEF: LookupStateMethod(M, S, name) (SPECIFICATION.md, line 12290)
+// SPEC_DEF: LookupStateMethod(M, S, name) (Docs/SPECIFICATION.md, line 12290)
 // Looks up a specific state block within a modal declaration by state name.
 // State names are matched case-sensitively using IdKeyOf for normalization.
 const ast::StateBlock* LookupModalState(const ast::ModalDecl& decl,
@@ -93,13 +93,13 @@ const ast::StateBlock* LookupModalState(const ast::ModalDecl& decl,
   return nullptr;
 }
 
-// SPEC_RULE: S ∈ States(M) (SPECIFICATION.md, line 12464)
+// SPEC_RULE: S ∈ States(M) (Docs/SPECIFICATION.md, line 12464)
 // Returns true if the modal declaration contains a state with the given name.
 bool HasState(const ast::ModalDecl& decl, std::string_view state) {
   return LookupModalState(decl, state) != nullptr;
 }
 
-// SPEC_DEF: States(M) (SPECIFICATION.md, line 12464)
+// SPEC_DEF: States(M) (Docs/SPECIFICATION.md, line 12464)
 // Returns the set of all state names in the modal declaration.
 // Used for exhaustiveness checking in if-case expressions over modal types.
 std::unordered_set<IdKey> StateNameSet(const ast::ModalDecl& decl) {

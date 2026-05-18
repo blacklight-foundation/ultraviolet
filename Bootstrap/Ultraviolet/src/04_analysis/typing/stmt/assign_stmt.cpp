@@ -2,7 +2,7 @@
 // assign_stmt.cpp - Assignment statement typing
 // =============================================================================
 //
-// SPEC REFERENCE: SPECIFICATION.md
+// SPEC REFERENCE: Docs/SPECIFICATION.md
 //   Section 5.2.11: Statement Typing - Assignments (lines 9449-9488)
 //   - PlaceRoot definition (lines 9451-9455)
 //   - T-Assign (lines 9457-9460): Basic assignment

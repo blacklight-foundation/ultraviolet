@@ -8,7 +8,7 @@ namespace ultraviolet::codegen {
 // Section 6.5 Iterator Loop Lowering
 // =============================================================================
 //
-// SPEC REFERENCE: SPECIFICATION.md Section 6.5 (Statement and Block Lowering)
+// SPEC REFERENCE: Docs/SPECIFICATION.md Section 6.5 (Statement and Block Lowering)
 //   - Lines 16751-16754: (Lower-Loop-Iter)
 //
 // (Lower-Loop-Iter):

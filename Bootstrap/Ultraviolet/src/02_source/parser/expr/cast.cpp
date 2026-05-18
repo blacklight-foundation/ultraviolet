@@ -3,7 +3,7 @@
 // =============================================================================
 // This file should contain parsing logic for cast expressions (expr as Type).
 //
-// SPEC REFERENCE: SPECIFICATION.md, Section 3.3.8.4, Lines 5077-5092
+// SPEC REFERENCE: Docs/SPECIFICATION.md, Section 3.3.8.4, Lines 5077-5092
 // =============================================================================
 //
 // FORMAL RULES FROM SPEC:

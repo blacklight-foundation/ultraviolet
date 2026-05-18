@@ -1,7 +1,7 @@
 #pragma once
 
 // =============================================================================
-// SPEC REFERENCE: SPECIFICATION.md Section 6.4 (Expression Lowering)
+// SPEC REFERENCE: Docs/SPECIFICATION.md Section 6.4 (Expression Lowering)
 //   - Lines 16270-16275: (Lower-Expr-QualifiedApply)
 //     Gamma |- ResolveType(T) => tau
 //     Gamma |- LowerCallWith(tau::f, args) => <IR, v>

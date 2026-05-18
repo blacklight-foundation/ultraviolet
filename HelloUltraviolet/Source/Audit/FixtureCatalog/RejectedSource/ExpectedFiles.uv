@@ -103,7 +103,67 @@ public procedure testMissingPostconditionExpectedDiagnosticFileMatches(context: 
     return expectedDiagnosticFileMatches(
         context,
         "HelloUltraviolet/Fixtures/RejectedSource/Attributes/TestMissingPostcondition/Expected.uv",
-        "//! Expected diagnostic metadata for the TestMissingPostcondition rejected-source specimen.\n\nexpectedDiagnostic(\"E-TST-0106\", \"diagnostics.TestAttributes\")\n"
+        "//! Expected diagnostic metadata for the TestMissingPostcondition rejected-source specimen.\n\nexpectedDiagnostic(\"E-TST-0106\", \"diagnostics.TestAttributes\")\nexpectedDiagnostic(\"E-TST-0106\", \"req.TestProcedureShape\")\n"
+    )
+}
+
+public procedure testAttributeWrongTargetExpectedDiagnosticFileMatches(context: Context) -> bool {
+    return expectedDiagnosticFileMatches(
+        context,
+        "HelloUltraviolet/Fixtures/RejectedSource/Attributes/TestAttributeWrongTarget/Expected.uv",
+        "//! Expected diagnostic metadata for the TestAttributeWrongTarget rejected-source specimen.\n\nexpectedDiagnostic(\"E-MOD-2452\", \"diagnostics.TestAttributes\")\nexpectedDiagnostic(\"E-MOD-2452\", \"req.TestAttributeProcedureTarget\")\n"
+    )
+}
+
+public procedure testMalformedArgumentExpectedDiagnosticFileMatches(context: Context) -> bool {
+    return expectedDiagnosticFileMatches(
+        context,
+        "HelloUltraviolet/Fixtures/RejectedSource/Attributes/TestMalformedArgument/Expected.uv",
+        "//! Expected diagnostic metadata for the TestMalformedArgument rejected-source specimen.\n\nexpectedDiagnostic(\"E-TST-0101\", \"diagnostics.TestAttributes\")\nexpectedDiagnostic(\"E-TST-0101\", \"def.TestAttributeArgsOk\")\n"
+    )
+}
+
+public procedure testDuplicateNameExpectedDiagnosticFileMatches(context: Context) -> bool {
+    return expectedDiagnosticFileMatches(
+        context,
+        "HelloUltraviolet/Fixtures/RejectedSource/Attributes/TestDuplicateName/Expected.uv",
+        "//! Expected diagnostic metadata for the TestDuplicateName rejected-source specimen.\n\nexpectedDiagnostic(\"E-TST-0102\", \"diagnostics.TestAttributes\")\nexpectedDiagnostic(\"E-TST-0102\", \"def.TestAttributeArgsOk\")\n"
+    )
+}
+
+public procedure testMalformedCoverageExpectedDiagnosticFileMatches(context: Context) -> bool {
+    return expectedDiagnosticFileMatches(
+        context,
+        "HelloUltraviolet/Fixtures/RejectedSource/Attributes/TestMalformedCoverage/Expected.uv",
+        "//! Expected diagnostic metadata for the TestMalformedCoverage rejected-source specimen.\n\nexpectedDiagnostic(\"E-TST-0103\", \"diagnostics.TestAttributes\")\nexpectedDiagnostic(\"E-TST-0103\", \"def.TestAttributeArgsOk\")\n"
+    )
+}
+
+public procedure testInvalidProcedureShapeExpectedDiagnosticFileMatches(context: Context) -> bool {
+    return expectedDiagnosticFileMatches(
+        context,
+        "HelloUltraviolet/Fixtures/RejectedSource/Attributes/TestInvalidProcedureShape/Expected.uv",
+        "//! Expected diagnostic metadata for the TestInvalidProcedureShape rejected-source specimen.\n\nexpectedDiagnostic(\"E-TST-0104\", \"diagnostics.TestAttributes\")\nexpectedDiagnostic(\"E-TST-0104\", \"req.TestProcedureShape\")\n"
+    )
+}
+
+public procedure testInvalidAuthorityParameterExpectedDiagnosticFileMatches(
+    context: Context
+) -> bool {
+    return expectedDiagnosticFileMatches(
+        context,
+        "HelloUltraviolet/Fixtures/RejectedSource/Attributes/TestInvalidAuthorityParameter/Expected.uv",
+        "//! Expected diagnostic metadata for the TestInvalidAuthorityParameter rejected-source specimen.\n\nexpectedDiagnostic(\"E-TST-0105\", \"diagnostics.TestAttributes\")\nexpectedDiagnostic(\"E-TST-0105\", \"req.TestAuthority\")\n"
+    )
+}
+
+public procedure testUnknownCoverageReferenceExpectedDiagnosticFileMatches(
+    context: Context
+) -> bool {
+    return expectedDiagnosticFileMatches(
+        context,
+        "HelloUltraviolet/Fixtures/RejectedSource/Attributes/TestUnknownCoverageReference/Expected.uv",
+        "//! Expected diagnostic metadata for the TestUnknownCoverageReference rejected-source specimen.\n\nexpectedDiagnostic(\"E-TST-0107\", \"diagnostics.TestAttributes\")\nexpectedDiagnostic(\"E-TST-0107\", \"def.TestAttributeArgsOk\")\n"
     )
 }
 

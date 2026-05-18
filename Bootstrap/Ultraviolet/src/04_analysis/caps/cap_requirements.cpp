@@ -2,7 +2,7 @@
 // cap_requirements.cpp - Capability Requirements Inference and Validation
 // =============================================================================
 //
-// SPEC REFERENCE: SPECIFICATION.md
+// SPEC REFERENCE: Docs/SPECIFICATION.md
 //   - Section 5.9.3 "Capability Requirements" (lines 13210-13300)
 //   - Section 5.9.5 "Capability Classes" (lines 13400-13600)
 //   - Section 8.10 "E-CAP Errors" (lines 21900-22000)

@@ -3,7 +3,7 @@
 // =============================================================================
 // This file should contain parsing logic for frame statements.
 //
-// SPEC REFERENCE: SPECIFICATION.md, Section 3.3.10, Lines 6330-6338
+// SPEC REFERENCE: Docs/SPECIFICATION.md, Section 3.3.10, Lines 6330-6338
 // =============================================================================
 //
 // FORMAL RULES FROM SPEC:

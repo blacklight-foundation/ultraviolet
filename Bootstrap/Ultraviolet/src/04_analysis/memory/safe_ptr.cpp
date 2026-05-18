@@ -4,9 +4,9 @@
  * =============================================================================
  *
  * SPEC REFERENCE:
- *   - SPECIFICATION.md, Section 5.5 "Pointer Types" (lines 13010-13150)
- *   - SPECIFICATION.md, Section 5.5.1 "Safe Pointers" (lines 13020-13100)
- *   - SPECIFICATION.md, Section 5.5.2 "Pointer States" (lines 13110-13150)
+ *   - Docs/SPECIFICATION.md, Section 5.5 "Pointer Types" (lines 13010-13150)
+ *   - Docs/SPECIFICATION.md, Section 5.5.1 "Safe Pointers" (lines 13020-13100)
+ *   - Docs/SPECIFICATION.md, Section 5.5.2 "Pointer States" (lines 13110-13150)
  *
  * SOURCE FILE:
  *   - ultraviolet-bootstrap/src/03_analysis/memory/safe_ptr.cpp (lines 1-56)

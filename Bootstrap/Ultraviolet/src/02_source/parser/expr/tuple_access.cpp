@@ -3,7 +3,7 @@
 // =============================================================================
 // This file contains parsing logic for tuple element access (expr.0, expr.1).
 //
-// SPEC REFERENCE: SPECIFICATION.md, Lines 5418-5421
+// SPEC REFERENCE: Docs/SPECIFICATION.md, Lines 5418-5421
 // -----------------------------------------------------------------------------
 // **(Postfix-TupleIndex)** Lines 5418-5421
 // IsPunc(Tok(P), ".")    t = Tok(Advance(P))    t.kind = IntLiteral    idx = IntValue(t)

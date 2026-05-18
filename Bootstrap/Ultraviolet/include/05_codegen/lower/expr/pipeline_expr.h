@@ -4,7 +4,7 @@
 // Pipeline Expression Lowering
 // =============================================================================
 //
-// SPEC REFERENCE: SPECIFICATION.md Lines 16288-16302 (Pipeline Lowering)
+// SPEC REFERENCE: Docs/SPECIFICATION.md Lines 16288-16302 (Pipeline Lowering)
 //   - Lower-Expr-Pipeline: e1 => e2 desugars to function/closure application
 //   - IsFunc case: CallIR(v_2, [v_1])
 //   - IsClosure case: IndirectCall(code, [env, v_1])

@@ -2,7 +2,7 @@
 // Source/Compiler/Tests/Project/RootDiscovery/ReqProjectRootDirectoryInputStartsAtResolvedPath/ReqProjectRootDirectoryInputStartsAtResolvedPathTests.uv
 //
 // This file owns source-native tests for
-// req.ProjectRootDirectoryInputStartsAtResolvedPath@L2310:
+// req.ProjectRootDirectoryInputStartsAtResolvedPath@L2331:
 //
 // otherwise the upward search MUST begin from the resolved path itself.
 
@@ -15,7 +15,7 @@ using UltravioletCompiler::Project::{
 
 [[test(
     name: "directory input begins project-root search at resolved path",
-    covers("req.ProjectRootDirectoryInputStartsAtResolvedPath@L2310")
+    covers("req.ProjectRootDirectoryInputStartsAtResolvedPath@L2331")
 )]]
 internal procedure directoryInputBeginsSearchAtResolvedPath() -> bool
 |: => @result

@@ -4,7 +4,7 @@
 // Range Pattern Lowering
 // =============================================================================
 //
-// SPEC REFERENCE: SPECIFICATION.md Section 6.6 (Pattern Matching Lowering)
+// SPEC REFERENCE: Docs/SPECIFICATION.md Section 6.6 (Pattern Matching Lowering)
 //   - Range patterns match values within a range
 //   - lo..hi (exclusive) or lo..=hi (inclusive)
 //

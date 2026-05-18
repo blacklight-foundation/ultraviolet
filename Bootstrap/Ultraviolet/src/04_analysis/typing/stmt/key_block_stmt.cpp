@@ -2,7 +2,7 @@
 // key_block_stmt.cpp - Key block statement typing
 // =============================================================================
 //
-// SPEC REFERENCE: SPECIFICATION.md
+// SPEC REFERENCE: Docs/SPECIFICATION.md
 //   Section 17.1: Keys and Synchronization (lines 24089+)
 //   - Key block grammar (line 24094)
 //   - Key acquisition semantics (line 24123)

@@ -2,7 +2,7 @@
 // Identifier Pattern Lowering Implementation
 // =============================================================================
 //
-// SPEC REFERENCE: SPECIFICATION.md Section 6.6 (Pattern Matching Lowering)
+// SPEC REFERENCE: Docs/SPECIFICATION.md Section 6.6 (Pattern Matching Lowering)
 //   - Identifier pattern binds the matched value to a name
 //   - Lower-BindList-Cons: SeqIR(BindVarIR(x, v), IR_r)
 //

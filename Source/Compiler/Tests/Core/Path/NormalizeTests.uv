@@ -1,6 +1,6 @@
 [[test(
     name: "Normalize removes single-dot components",
-    covers("def.Normalize@L3298")
+    covers("def.Normalize@L3319")
 )]]
 internal procedure normalizeRemovesSingleDotComponents() -> bool
 |: => @result
@@ -19,7 +19,7 @@ internal procedure normalizeRemovesSingleDotComponents() -> bool
 
 [[test(
     name: "Normalize preserves parent-traversal components",
-    covers("def.Normalize@L3298")
+    covers("def.Normalize@L3319")
 )]]
 internal procedure normalizePreservesParentTraversalComponents() -> bool
 |: => @result
@@ -38,7 +38,7 @@ internal procedure normalizePreservesParentTraversalComponents() -> bool
 
 [[test(
     name: "Normalize preserves drive-rooted child absoluteness",
-    covers("def.Normalize@L3298")
+    covers("def.Normalize@L3319")
 )]]
 internal procedure normalizePreservesDriveRootedChildAbsoluteness() -> bool
 |: => @result
@@ -54,7 +54,7 @@ internal procedure normalizePreservesDriveRootedChildAbsoluteness() -> bool
 
 [[test(
     name: "Normalize root-only path keeps root tag",
-    covers("def.Normalize@L3298")
+    covers("def.Normalize@L3319")
 )]]
 internal procedure normalizeRootOnlyPathKeepsRootTag() -> bool
 |: => @result
@@ -70,7 +70,7 @@ internal procedure normalizeRootOnlyPathKeepsRootTag() -> bool
 
 [[test(
     name: "Normalize UNC path keeps UNC tag",
-    covers("def.Normalize@L3298")
+    covers("def.Normalize@L3319")
 )]]
 internal procedure normalizeUNCPathKeepsUNCTag() -> bool
 |: => @result

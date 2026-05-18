@@ -2,7 +2,7 @@
 // ABI Type: Primitives (ABI-Prim)
 // =============================================================================
 //
-// SPEC REFERENCE: SPECIFICATION.md
+// SPEC REFERENCE: Docs/SPECIFICATION.md
 //   - Section 6.2.2 ABI Type Lowering
 //   - ABI-Prim rule: ABITy(TypePrim(name)) => <::ultraviolet::analysis::layout::PrimSize(ctx, name), ::ultraviolet::analysis::layout::PrimAlign(ctx, name)>
 //

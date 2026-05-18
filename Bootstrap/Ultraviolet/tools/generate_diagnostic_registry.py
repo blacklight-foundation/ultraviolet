@@ -155,6 +155,8 @@ def main() -> int:
         "IfIs-BareTypePattern-Err": "E-SEM-2761",
         "IfIs-TypedPattern-Incompatible": "E-SEM-2762",
         "Let-Refutable-Pattern-Err": "E-SEM-2711",
+        "Pat-Tuple-Arity-Err": "E-TYP-1803",
+        "Pat-Tuple-R-Arity-Err": "E-TYP-1803",
         "RangePattern-Empty": "E-SEM-2722",
         "RangePattern-NonConst": "E-SEM-2721",
         "RecordPattern-UnknownField": "E-SEM-2731",

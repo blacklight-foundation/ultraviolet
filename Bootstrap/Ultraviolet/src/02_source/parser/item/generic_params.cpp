@@ -2,7 +2,7 @@
 // generic_params.cpp - Generic Parameter Parsing
 // =============================================================================
 //
-// SPEC REFERENCE: SPECIFICATION.md Section 3.3.6.13 (Generic Parameter Rules)
+// SPEC REFERENCE: Docs/SPECIFICATION.md Section 3.3.6.13 (Generic Parameter Rules)
 //
 // This file implements generic type parameter parsing:
 //   - ParseTypeBounds: Parse type bounds <: Class1, Class2

@@ -2,7 +2,7 @@
 // Expression Lowering: PtrNullExpr
 // =============================================================================
 //
-// SPEC REFERENCE: SPECIFICATION.md Section 6.4 (Expression Lowering)
+// SPEC REFERENCE: Docs/SPECIFICATION.md Section 6.4 (Expression Lowering)
 //   - Line 16053-16055: (Lower-Expr-PtrNull)
 //     Gamma |- LowerExpr(PtrNullExpr) => <epsilon, Ptr@Null(0x0)>
 //

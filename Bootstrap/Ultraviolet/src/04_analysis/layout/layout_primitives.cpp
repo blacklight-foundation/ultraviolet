@@ -2,7 +2,7 @@
 // MIGRATION MAPPING: layout_primitives.cpp
 // =============================================================================
 //
-// SPEC REFERENCE: SPECIFICATION.md
+// SPEC REFERENCE: Docs/SPECIFICATION.md
 //   - Section 6.1.1 Primitive Layout and Encoding (lines 14351-14476)
 //   - PtrSize = 8, PtrAlign = 8 (lines 14353-14355)
 //   - PrimSize definitions (lines 14357-14375)

@@ -2,7 +2,7 @@
 // tuple_type.cpp - Tuple Type Parsing
 // =============================================================================
 //
-// SPEC REFERENCE: SPECIFICATION.md, Section 3.3.7, Lines 4758-4761
+// SPEC REFERENCE: Docs/SPECIFICATION.md, Section 3.3.7, Lines 4758-4761
 // Section 3.3.7.1 (Tuple Type Elements), Lines 4825-4845
 //
 // Parses tuple types: (T1, T2, ...) and single-element tuples (T;).

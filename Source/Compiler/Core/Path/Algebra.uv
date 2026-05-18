@@ -2,16 +2,16 @@
 //
 // This file owns component-based path algebra for project.path-resolution:
 //
-// - def.JoinComp@L3218
-// - def.Join@L3237
-// - def.PathPrefix@L3284
-// - def.Normalize@L3298
-// - def.Under@L3312
-// - def.Canon@L3326
-// - def.Drop@L3341
-// - def.RelativePathComputation@L3355
-// - def.Basename@L3369
-// - def.FileExt@L3386
+// - def.JoinComp@L3239
+// - def.Join@L3258
+// - def.PathPrefix@L3305
+// - def.Normalize@L3319
+// - def.Under@L3333
+// - def.Canon@L3347
+// - def.Drop@L3362
+// - def.RelativePathComputation@L3376
+// - def.Basename@L3390
+// - def.FileExt@L3407
 
 public procedure joinPath(paths: unique Region@Active, move base: Path, move path: Path) -> Path {
     if (path~>isAbsolute()) {

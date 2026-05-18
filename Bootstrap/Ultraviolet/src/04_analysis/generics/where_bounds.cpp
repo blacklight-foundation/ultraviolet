@@ -4,10 +4,10 @@
  * =============================================================================
  *
  * SPEC REFERENCE:
- *   - SPECIFICATION.md, Section 13.3 "Type Bounds" (lines 22460-22520)
- *   - SPECIFICATION.md, Section 13.3.1 "Where Clauses" (lines 22470-22500)
- *   - SPECIFICATION.md, Section 13.3.2 "Predicate Syntax" (lines 22510-22520)
- *   - SPECIFICATION.md, Section 11 "Classes" (lines 22700-22900)
+ *   - Docs/SPECIFICATION.md, Section 13.3 "Type Bounds" (lines 22460-22520)
+ *   - Docs/SPECIFICATION.md, Section 13.3.1 "Where Clauses" (lines 22470-22500)
+ *   - Docs/SPECIFICATION.md, Section 13.3.2 "Predicate Syntax" (lines 22510-22520)
+ *   - Docs/SPECIFICATION.md, Section 11 "Classes" (lines 22700-22900)
  *
  * This file implements the where clause parsing and bound validation system:
  *   - ParseWhereClause: Parse where clause into list of bounds
@@ -251,7 +251,7 @@ core::Span PredicateClauseSpan(const ast::PredicateClause& predicates) {
 }
 
 // Check if a type is FfiSafe (C ABI compatible)
-// SPEC: SPECIFICATION.md FfiSafe rules
+// SPEC: Docs/SPECIFICATION.md FfiSafe rules
 bool CheckFfiSafe(const TypeRef& type) {
   if (!type) {
     return false;
@@ -358,7 +358,7 @@ WhereParseResult ParseWhereClause(
     return result;
   }
 
-  // SPEC: SPECIFICATION.md (Parse-PredicateClauseOpt-Yes) rule
+  // SPEC: Docs/SPECIFICATION.md (Parse-PredicateClauseOpt-Yes) rule
   // predicate_clause = [PredicateReq]
 
   result.clause.span = PredicateClauseSpan(*where_opt);
@@ -455,7 +455,7 @@ bool CheckPredicateBound(
   SpecDefsWhereBounds();
   SPEC_RULE("Check-PredicateBound");
 
-  // SPEC: SPECIFICATION.md PredOk definitions
+  // SPEC: Docs/SPECIFICATION.md PredOk definitions
   // PredOk(`Bitcopy`, T) iff BitcopyType(T)
   // PredOk(`Clone`, T) iff CloneType(T)
   // PredOk(`Drop`, T) iff DropType(T)
@@ -655,7 +655,7 @@ InferredBounds InferBoundsFromUsage(
   SpecDefsWhereBounds();
   SPEC_RULE("Infer-BoundsFromUsage");
 
-  // SPEC: SPECIFICATION.md Section 13.3.3 "Bound Inference"
+  // SPEC: Docs/SPECIFICATION.md Section 13.3.3 "Bound Inference"
   // Examine how type parameters are used and infer required bounds
 
   InferredBounds result;

@@ -2,7 +2,7 @@
 // MIGRATION MAPPING: lower_module.cpp
 // =============================================================================
 //
-// SPEC REFERENCE: SPECIFICATION.md Section 6 (Code Generation)
+// SPEC REFERENCE: Docs/SPECIFICATION.md Section 6 (Code Generation)
 //   - Lines 14196-14349: Codegen Model and Judgments
 //   - Lines 15394-15665: Symbols, Mangling, and Linkage (for symbol generation)
 //   - Lines 17161-17202: Dynamic Dispatch (for vtable emission)

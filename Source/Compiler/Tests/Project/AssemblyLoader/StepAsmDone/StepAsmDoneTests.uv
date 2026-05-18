@@ -1,7 +1,7 @@
 // Test responsibility:
 // Source/Compiler/Tests/Project/AssemblyLoader/StepAsmDone/StepAsmDoneTests.uv
 //
-// This file owns source-native tests for Step-Asm-Done@L3795.
+// This file owns source-native tests for Step-Asm-Done@L3816.
 
 using UltravioletCompiler::Project::{
     AssemblyListValue,
@@ -24,7 +24,7 @@ using UltravioletCompiler::Project::{
 
 [[test(
     name: "project load completes from discovered assemblies in deterministic order",
-    covers("Step-Asm-Done@L3795")
+    covers("Step-Asm-Done@L3816")
 )]]
 internal procedure projectLoadCompletesFromDiscoveredAssembliesInDeterministicOrder() -> bool
 |: => @result

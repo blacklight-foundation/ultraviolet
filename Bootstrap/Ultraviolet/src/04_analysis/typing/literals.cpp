@@ -2,7 +2,7 @@
 // MIGRATION MAPPING: literals.cpp
 // =============================================================================
 //
-// SPEC REFERENCE: SPECIFICATION.md
+// SPEC REFERENCE: Docs/SPECIFICATION.md
 //   Section 5.2.10: Literal Expressions (lines 9174-9285)
 //   - IntTypes, FloatTypes sets (lines 9176-9177)
 //   - FloatFormat, FloatBitWidth definitions (lines 9178-9179)

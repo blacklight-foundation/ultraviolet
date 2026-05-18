@@ -2,7 +2,7 @@
 // Region Statement Lowering Implementation
 // =============================================================================
 //
-// SPEC REFERENCE: SPECIFICATION.md Lines 16659-16662 (Lower-Stmt-Region)
+// SPEC REFERENCE: Docs/SPECIFICATION.md Lines 16659-16662 (Lower-Stmt-Region)
 //   - LowerExpr(opts_opt) or default RegionOptions
 //   - RegionIR(v_o, alias_opt, IR_b, v_b)
 //

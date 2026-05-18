@@ -1,10 +1,10 @@
 // =============================================================================
 // File: 04_analysis/typing/expr/pipeline_expr.cpp
 // Pipeline Expression Typing
-// Spec Section: SPECIFICATION.md Section 5.2 (Expressions)
+// Spec Section: Docs/SPECIFICATION.md Section 5.2 (Expressions)
 // =============================================================================
 //
-// SPEC REFERENCE: SPECIFICATION.md Lines 8848-8872
+// SPEC REFERENCE: Docs/SPECIFICATION.md Lines 8848-8872
 //
 // Type checking rules:
 //   - T-Pipeline: e1 => e2 where e2 is callable taking e1's type
@@ -35,10 +35,10 @@ namespace ultraviolet::analysis {
 namespace {
 
 static inline void SpecDefsPipeline() {
-  SPEC_DEF("T-Pipeline", "SPECIFICATION.md Lines 8848-8852");
-  SPEC_DEF("T-Pipeline-NotCallable-Err", "SPECIFICATION.md Lines 8855-8859");
-  SPEC_DEF("T-Pipeline-TypeMismatch-Err", "SPECIFICATION.md Lines 8861-8866");
-  SPEC_DEF("T-Pipeline-ArgCount-Err", "SPECIFICATION.md Lines 8868-8872");
+  SPEC_DEF("T-Pipeline", "Docs/SPECIFICATION.md Lines 8848-8852");
+  SPEC_DEF("T-Pipeline-NotCallable-Err", "Docs/SPECIFICATION.md Lines 8855-8859");
+  SPEC_DEF("T-Pipeline-TypeMismatch-Err", "Docs/SPECIFICATION.md Lines 8861-8866");
+  SPEC_DEF("T-Pipeline-ArgCount-Err", "Docs/SPECIFICATION.md Lines 8868-8872");
 }
 
 struct AliasExpandResult {

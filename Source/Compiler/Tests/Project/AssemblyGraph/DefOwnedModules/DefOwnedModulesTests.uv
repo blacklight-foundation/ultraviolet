@@ -1,7 +1,7 @@
 // Test responsibility:
 // Source/Compiler/Tests/Project/AssemblyGraph/DefOwnedModules/DefOwnedModulesTests.uv
 //
-// This file owns source-native tests for def.OwnedModules@L4449:
+// This file owns source-native tests for def.OwnedModules@L4470:
 //
 // OwnedModules(A, As) = [ m ∈ A.modules |
 // OwnerRoot(ModuleDirOf(m, A.source_root), AssemblySourceRoots(As)) =
@@ -27,7 +27,7 @@ using UltravioletCompiler::Project::{
 
 [[test(
     name: "owned modules keep only modules whose owner is the assembly source root",
-    covers("def.OwnedModules@L4449")
+    covers("def.OwnedModules@L4470")
 )]]
 internal procedure ownedModulesKeepOnlyModulesOwnedByAssemblySourceRoot() -> bool
 |: => @result

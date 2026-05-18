@@ -1,7 +1,7 @@
 // Test responsibility:
 // Source/Compiler/Tests/Project/DeterministicOrder/DefFileOrderingTests.uv
 //
-// This file owns source-native tests for def.FileOrdering@L4125.
+// This file owns source-native tests for def.FileOrdering@L4146.
 
 using UltravioletCompiler::Project::{
     SourceFileListValue,
@@ -15,7 +15,7 @@ using UltravioletCompiler::Project::{
 
 [[test(
     name: "source file insertion orders by folded path text",
-    covers("def.FileOrdering@L4125")
+    covers("def.FileOrdering@L4146")
 )]]
 internal procedure sourceFileInsertionOrdersByFoldedPathText() -> bool
 |: => @result
@@ -42,7 +42,7 @@ internal procedure sourceFileInsertionOrdersByFoldedPathText() -> bool
 
 [[test(
     name: "source file insertion uses original path as folded-key tiebreaker",
-    covers("def.FileOrdering@L4125")
+    covers("def.FileOrdering@L4146")
 )]]
 internal procedure sourceFileInsertionUsesOriginalPathAsFoldedKeyTiebreaker() -> bool
 |: => @result

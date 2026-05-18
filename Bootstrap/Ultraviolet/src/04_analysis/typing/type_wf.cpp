@@ -2,7 +2,7 @@
 // MIGRATION MAPPING: type_wf.cpp
 // =============================================================================
 //
-// SPEC REFERENCE: SPECIFICATION.md
+// SPEC REFERENCE: Docs/SPECIFICATION.md
 //   Section 5.2: Static Semantics
 //   - Type well-formedness checks
 //   - E-CON-0201 (line 21635): Async type parameter not well-formed

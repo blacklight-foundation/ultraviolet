@@ -2,7 +2,7 @@
 // MIGRATION MAPPING: expr/dispatch_expr.cpp
 // =============================================================================
 //
-// SPEC REFERENCE: SPECIFICATION.md Section 10.5 (Dispatch - Data Parallelism)
+// SPEC REFERENCE: Docs/SPECIFICATION.md Section 10.5 (Dispatch - Data Parallelism)
 //   - dispatch i in range { body } with optional reduce/ordered/chunk
 //
 // SOURCE FILE: ultraviolet-bootstrap/src/04_codegen/lower/lower_expr_core.cpp

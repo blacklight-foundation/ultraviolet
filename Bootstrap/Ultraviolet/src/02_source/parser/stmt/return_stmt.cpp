@@ -3,7 +3,7 @@
 // =============================================================================
 // This file should contain parsing logic for return statements.
 //
-// SPEC REFERENCE: SPECIFICATION.md, Section 3.3.10, Lines 6280-6283
+// SPEC REFERENCE: Docs/SPECIFICATION.md, Section 3.3.10, Lines 6280-6283
 // =============================================================================
 //
 // FORMAL RULES FROM SPEC:

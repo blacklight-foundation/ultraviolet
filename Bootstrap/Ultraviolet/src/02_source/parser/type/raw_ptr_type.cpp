@@ -2,7 +2,7 @@
 // raw_ptr_type.cpp - Raw Pointer Type Parsing
 // =============================================================================
 //
-// SPEC REFERENCE: SPECIFICATION.md, Section 3.3.7, Lines 4783-4786
+// SPEC REFERENCE: Docs/SPECIFICATION.md, Section 3.3.7, Lines 4783-4786
 //
 // Parses raw pointer types: *imm T and *mut T
 // - *imm T: immutable raw pointer (cannot write through it)

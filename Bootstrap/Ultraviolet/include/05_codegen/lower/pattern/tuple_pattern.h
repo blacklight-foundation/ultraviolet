@@ -4,7 +4,7 @@
 // Tuple Pattern Lowering Declarations
 // =============================================================================
 //
-// SPEC REFERENCE: SPECIFICATION.md Section 6.6 (Pattern Matching Lowering)
+// SPEC REFERENCE: Docs/SPECIFICATION.md Section 6.6 (Pattern Matching Lowering)
 //   - Tuple patterns destructure tuple values
 //   - Each element pattern is recursively processed
 //

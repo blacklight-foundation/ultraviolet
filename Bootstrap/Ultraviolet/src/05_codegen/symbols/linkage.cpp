@@ -2,7 +2,7 @@
 // MIGRATION MAPPING: linkage.cpp
 // =============================================================================
 //
-// SPEC REFERENCE: SPECIFICATION.md
+// SPEC REFERENCE: Docs/SPECIFICATION.md
 //   - Section 6.3.4 Linkage for Generated Symbols (lines 15550-15663)
 //   - LinkageKind = {internal, external} (line 15552)
 //   - Linkage-UserItem rules (lines 15555-15568)

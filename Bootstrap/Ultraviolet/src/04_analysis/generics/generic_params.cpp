@@ -4,10 +4,10 @@
  * =============================================================================
  *
  * SPEC REFERENCE:
- *   - SPECIFICATION.md, Section 13 "Generics" (lines 22300-22600)
- *   - SPECIFICATION.md, Section 13.1 "Generic Parameters" (line 22328)
- *   - SPECIFICATION.md, Section 13.2 "Generic Arguments" (lines 22380-22450)
- *   - SPECIFICATION.md, Section 13.3 "Type Bounds" (lines 22460-22520)
+ *   - Docs/SPECIFICATION.md, Section 13 "Generics" (lines 22300-22600)
+ *   - Docs/SPECIFICATION.md, Section 13.1 "Generic Parameters" (line 22328)
+ *   - Docs/SPECIFICATION.md, Section 13.2 "Generic Arguments" (lines 22380-22450)
+ *   - Docs/SPECIFICATION.md, Section 13.3 "Type Bounds" (lines 22460-22520)
  *
  * This file implements the generic parameter validation system:
  *   - ValidateGenericParams: Main validation entry point
@@ -351,7 +351,7 @@ GenericParamValidationResult ValidateGenericParams(
     return result;
   }
 
-  // SPEC: SPECIFICATION.md Section 13.1
+  // SPEC: Docs/SPECIFICATION.md Section 13.1
   // "Generic parameters MUST have unique names within the parameter list."
 
   // Check uniqueness first
@@ -424,7 +424,7 @@ TypeParamInfo ParseTypeParam(
   SpecDefsGenericParams();
   SPEC_RULE("Parse-TypeParam");
 
-  // SPEC: SPECIFICATION.md (Parse-TypeParam) rule
+  // SPEC: Docs/SPECIFICATION.md (Parse-TypeParam) rule
   // TypeParam = <name, bounds, default_opt, variance>
 
   TypeParamInfo info;
@@ -452,7 +452,7 @@ ConstParamInfo ParseConstParam(
   SPEC_RULE("Parse-ConstParam");
   (void)ctx;
 
-  // SPEC: SPECIFICATION.md Section 13.1.2 "Const Generic Parameters"
+  // SPEC: Docs/SPECIFICATION.md Section 13.1.2 "Const Generic Parameters"
   // Const parameters must have integral type
 
   ConstParamInfo info;
@@ -480,7 +480,7 @@ DefaultValueResult ValidateDefaultValues(
     return result;
   }
 
-  // SPEC: SPECIFICATION.md Section 13.1.3 "Default Type Arguments"
+  // SPEC: Docs/SPECIFICATION.md Section 13.1.3 "Default Type Arguments"
   // "Parameters with defaults MUST appear after all parameters without defaults."
   // E-TYP-2303: Default after non-default parameter
 
@@ -649,7 +649,7 @@ bool IsValidConstParamType(const TypeRef& type) {
     return false;
   }
 
-  // SPEC: SPECIFICATION.md Section 13.1.2
+  // SPEC: Docs/SPECIFICATION.md Section 13.1.2
   // "Const generic parameters MUST have integral type."
 
   if (const auto* prim = std::get_if<TypePrim>(&type->node)) {

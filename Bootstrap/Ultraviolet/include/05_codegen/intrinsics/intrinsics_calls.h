@@ -7,7 +7,7 @@
 // This file provides functions to lower intrinsic calls to IR.
 // Intrinsics are compiler-known operations with special lowering behavior.
 //
-// SPEC REFERENCE: SPECIFICATION.md
+// SPEC REFERENCE: Docs/SPECIFICATION.md
 //   - Section 6.4 Expression Lowering (lines 15665-15992)
 //   - Lower-Transmute rule (lines 17255-17258)
 //   - widen operator lowering (lines 12814-12845)

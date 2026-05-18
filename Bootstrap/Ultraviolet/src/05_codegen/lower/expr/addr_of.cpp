@@ -2,7 +2,7 @@
 // MIGRATION MAPPING: expr/addr_of.cpp
 // =============================================================================
 //
-// SPEC REFERENCE: SPECIFICATION.md Section 6.4 (Expression Lowering)
+// SPEC REFERENCE: Docs/SPECIFICATION.md Section 6.4 (Expression Lowering)
 //   - Lines 16243-16246: (Lower-Expr-AddressOf)
 //   - Lines 16428-16477: LowerAddrOf rules for all place forms
 //
@@ -26,6 +26,11 @@
 #include "05_codegen/intrinsics/builtins.h"
 #include "05_codegen/lower/expr/expr_common.h"
 #include "05_codegen/lower/pattern/ir_pattern.h"
+#include "04_analysis/layout/layout.h"
+#include "04_analysis/resolve/scopes.h"
+#include "04_analysis/resolve/scopes_lookup.h"
+#include "04_analysis/typing/type_lower.h"
+#include "04_analysis/typing/type_equiv.h"
 #include "04_analysis/typing/type_predicates.h"
 #include "00_core/assert_spec.h"
 
@@ -159,6 +164,122 @@ void SeedAddrRefSyms(IRAddrOf& addr, std::vector<IRPtr> prereq_ir) {
       addr.ref_syms.end());
 }
 
+analysis::TypeRef StripPermOrSelf(const analysis::TypeRef& type) {
+  if (!type) {
+    return nullptr;
+  }
+  if (analysis::TypeRef stripped = analysis::StripPerm(type)) {
+    return stripped;
+  }
+  return type;
+}
+
+const ast::TypeAliasDecl* LookupTypeAliasDeclForAddr(
+    const analysis::ScopeContext& scope,
+    const analysis::TypePath& path) {
+  if (path.empty()) {
+    return nullptr;
+  }
+  if (path.size() > 1) {
+    ast::Path full;
+    full.reserve(path.size());
+    for (const auto& segment : path) {
+      full.push_back(segment);
+    }
+    const auto it = scope.sigma.types.find(analysis::PathKeyOf(full));
+    if (it == scope.sigma.types.end()) {
+      return nullptr;
+    }
+    return std::get_if<ast::TypeAliasDecl>(&it->second);
+  }
+
+  const auto resolved = analysis::ResolveTypeName(scope, path.front());
+  if (!resolved.has_value() || !resolved->origin_opt.has_value()) {
+    return nullptr;
+  }
+
+  ast::Path full = *resolved->origin_opt;
+  full.push_back(resolved->target_opt.value_or(path.front()));
+  const auto it = scope.sigma.types.find(analysis::PathKeyOf(full));
+  if (it == scope.sigma.types.end()) {
+    return nullptr;
+  }
+  return std::get_if<ast::TypeAliasDecl>(&it->second);
+}
+
+analysis::TypeRef NormalizeAliasTypeForAddr(
+    const analysis::ScopeContext& scope,
+    const analysis::TypeRef& type) {
+  analysis::TypeRef current = StripPermOrSelf(type);
+  for (int depth = 0; current && depth < 16; ++depth) {
+    const auto* path = analysis::AppliedTypePath(*current);
+    const auto* args = analysis::AppliedTypeArgs(*current);
+    if (!path) {
+      return current;
+    }
+    const ast::TypeAliasDecl* alias = LookupTypeAliasDeclForAddr(scope, *path);
+    if (!alias) {
+      return current;
+    }
+    const auto lowered = analysis::LowerType(scope, alias->type);
+    if (!lowered.ok || !lowered.type) {
+      return current;
+    }
+    if (alias->generic_params.has_value()) {
+      const auto& params = alias->generic_params->params;
+      const std::vector<analysis::TypeRef> empty_args;
+      const std::vector<analysis::TypeRef>& supplied_args =
+          args ? *args : empty_args;
+      if (supplied_args.size() > params.size()) {
+        return current;
+      }
+      const auto subst = analysis::BuildSubstitution(params, supplied_args);
+      current = analysis::InstantiateType(lowered.type, subst);
+    } else {
+      if (args && !args->empty()) {
+        return current;
+      }
+      current = lowered.type;
+    }
+    current = StripPermOrSelf(current);
+  }
+  return current;
+}
+
+std::optional<std::size_t> RefinedUnionPayloadIndex(const BindingState& state,
+                                                    LowerCtx& ctx) {
+  const analysis::ScopeContext& scope = ScopeForLowering(ctx);
+  analysis::TypeRef storage_type =
+      StripPermOrSelf(state.storage_type ? state.storage_type : state.type);
+  analysis::TypeRef refined_type = StripPermOrSelf(state.type);
+  storage_type = NormalizeAliasTypeForAddr(scope, storage_type);
+  refined_type = NormalizeAliasTypeForAddr(scope, refined_type);
+  if (!storage_type || !refined_type) {
+    return std::nullopt;
+  }
+
+  const auto* union_type =
+      std::get_if<analysis::TypeUnion>(&storage_type->node);
+  if (!union_type) {
+    return std::nullopt;
+  }
+
+  std::vector<analysis::TypeRef> members = union_type->members;
+  if (const auto layout = analysis::layout::UnionLayoutOf(scope, *union_type)) {
+    members = layout->member_list;
+  }
+
+  for (std::size_t index = 0; index < members.size(); ++index) {
+    const auto equiv = analysis::TypeEquiv(
+        NormalizeAliasTypeForAddr(scope, members[index]),
+        refined_type);
+    if (equiv.ok && equiv.equiv) {
+      return index;
+    }
+  }
+  return std::nullopt;
+}
+
 }  // namespace
 
 // ============================================================================
@@ -236,8 +357,17 @@ LowerResult LowerAddrOf(const ast::Expr& place,
               -> LowerResult {
             SPEC_RULE("Lower-AddrOf-Ident-Local");
             DerivedValueInfo info;
-            info.kind = DerivedValueInfo::Kind::AddrLocal;
             info.name = std::string(local_name);
+            if (const auto payload_index = RefinedUnionPayloadIndex(state, ctx)) {
+              info.kind = DerivedValueInfo::Kind::AddrUnionPayload;
+              info.base.kind = IRValue::Kind::Local;
+              info.base.name = std::string(local_name);
+              info.union_index = *payload_index;
+              info.dyn_impl_type =
+                  state.storage_type ? state.storage_type : state.type;
+            } else {
+              info.kind = DerivedValueInfo::Kind::AddrLocal;
+            }
             ctx.RegisterDerivedValue(ptr_value, info);
 
             std::vector<IRPtr> seq;

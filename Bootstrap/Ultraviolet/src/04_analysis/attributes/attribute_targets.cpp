@@ -3,8 +3,8 @@
 // ===========================================================================
 //
 // SPEC REFERENCE:
-//   - SPECIFICATION.md, Section 5.13 "Attributes" (line 13859)
-//   - SPECIFICATION.md, AttrTargets definitions (lines 13870-13894)
+//   - Docs/SPECIFICATION.md, Section 5.13 "Attributes" (line 13859)
+//   - Docs/SPECIFICATION.md, AttrTargets definitions (lines 13870-13894)
 //
 // SOURCE FILE:
 //   - ultraviolet-bootstrap/src/03_analysis/attributes/attribute_registry.cpp

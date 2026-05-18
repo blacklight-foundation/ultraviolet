@@ -4,7 +4,7 @@
 // Expression Lowering: Call with Type Arguments
 // =============================================================================
 //
-// SPEC REFERENCE: SPECIFICATION.md Section 6.4 (Expression Lowering)
+// SPEC REFERENCE: Docs/SPECIFICATION.md Section 6.4 (Expression Lowering)
 //   - Generic call instantiation with type arguments
 //   - Monomorphization of generic procedures
 //

@@ -2,7 +2,7 @@
 // static_decl.cpp - Static Declaration Parsing
 // =============================================================================
 //
-// SPEC REFERENCE: SPECIFICATION.md Section 3.3.6.4 (Static Declaration Rules)
+// SPEC REFERENCE: Docs/SPECIFICATION.md Section 3.3.6.4 (Static Declaration Rules)
 //
 // This file implements static declaration parsing:
 //   - ParseBindingAfterLetVar: Parse binding after let/var keyword

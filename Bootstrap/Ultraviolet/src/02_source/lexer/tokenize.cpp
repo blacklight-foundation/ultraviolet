@@ -2,7 +2,7 @@
 // MIGRATION MAPPING: tokenize.cpp
 // =============================================================================
 //
-// SPEC REFERENCE: SPECIFICATION.md
+// SPEC REFERENCE: Docs/SPECIFICATION.md
 //   Section 3.2.11 - Tokenization (Small-Step) (lines 2499-2567)
 //   Section 3.2.12 - Tokenize (Big-Step) (lines 2568-2586)
 //

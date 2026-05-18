@@ -3,7 +3,7 @@
 // =============================================================================
 // This file should contain parsing logic for region statements.
 //
-// SPEC REFERENCE: SPECIFICATION.md, Section 3.3.10, Lines 6305-6328
+// SPEC REFERENCE: Docs/SPECIFICATION.md, Section 3.3.10, Lines 6305-6328
 // =============================================================================
 //
 // FORMAL RULES FROM SPEC:

@@ -2,7 +2,7 @@
 // Expression Lowering: QualifiedApplyExpr
 // =============================================================================
 //
-// SPEC REFERENCE: SPECIFICATION.md Section 6.4 (Expression Lowering)
+// SPEC REFERENCE: Docs/SPECIFICATION.md Section 6.4 (Expression Lowering)
 //   - Lines 16085-16102: Record and Enum literal construction
 //
 // MIGRATED FROM:

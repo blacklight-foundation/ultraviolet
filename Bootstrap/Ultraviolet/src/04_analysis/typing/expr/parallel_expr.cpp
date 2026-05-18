@@ -4,7 +4,7 @@
 // Spec Section: 17.2
 // =============================================================================
 //
-// SPEC REFERENCE: SPECIFICATION.md
+// SPEC REFERENCE: Docs/SPECIFICATION.md
 //   Section 17.2: Structured Parallelism
 //   - T-Parallel: Parallel block typing
 //   - T-Parallel-Empty: Empty parallel block

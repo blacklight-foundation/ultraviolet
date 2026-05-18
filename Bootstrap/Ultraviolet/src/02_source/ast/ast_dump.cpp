@@ -8,7 +8,7 @@
 //   diagnostic output.
 //
 // ===========================================================================
-// SPEC REFERENCE: SPECIFICATION.md Section 3.3.2 (AST Node Catalog)
+// SPEC REFERENCE: Docs/SPECIFICATION.md Section 3.3.2 (AST Node Catalog)
 // ===========================================================================
 //   No direct spec reference for AST dumping (implementation detail).
 //   The AST structure defined in Section 3.3.2 dictates what information

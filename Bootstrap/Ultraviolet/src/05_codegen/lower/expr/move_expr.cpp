@@ -2,7 +2,7 @@
 // Expression Lowering: MoveExpr
 // =============================================================================
 //
-// SPEC REFERENCE: SPECIFICATION.md Section 6.4 (Expression Lowering)
+// SPEC REFERENCE: Docs/SPECIFICATION.md Section 6.4 (Expression Lowering)
 //   - Lines 16238-16241: (Lower-Expr-Move)
 //   - Lines 16581-16584: (Lower-MovePlace)
 //

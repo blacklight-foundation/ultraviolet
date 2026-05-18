@@ -7,7 +7,7 @@
 //   statement nodes in the Ultraviolet grammar, plus the Stmt variant and
 //   Block structure.
 //
-// SPEC REFERENCE: SPECIFICATION.md Section 3.3.2.6
+// SPEC REFERENCE: Docs/SPECIFICATION.md Section 3.3.2.6
 //
 // ===========================================================================
 

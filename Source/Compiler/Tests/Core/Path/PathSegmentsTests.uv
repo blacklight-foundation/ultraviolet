@@ -1,6 +1,6 @@
 [[test(
     name: "Segs returns maximal separator-bounded substrings",
-    covers("def.PathSegments@L3188")
+    covers("def.PathSegments@L3209")
 )]]
 internal procedure pathSegmentsReturnMaximalSeparatorBoundedSubstrings() -> bool
 |: => @result
@@ -18,7 +18,7 @@ internal procedure pathSegmentsReturnMaximalSeparatorBoundedSubstrings() -> bool
 
 [[test(
     name: "Segs skips empty substrings between separators",
-    covers("def.PathSegments@L3188")
+    covers("def.PathSegments@L3209")
 )]]
 internal procedure pathSegmentsSkipEmptySubstringsBetweenSeparators() -> bool
 |: => @result
@@ -32,7 +32,7 @@ internal procedure pathSegmentsSkipEmptySubstringsBetweenSeparators() -> bool
 
 [[test(
     name: "Segs after UNC root has no tail segments for separator-only UNC root",
-    covers("def.PathSegments@L3188")
+    covers("def.PathSegments@L3209")
 )]]
 internal procedure pathSegmentsAfterUNCRootHasNoTailForSeparatorOnlyRoot() -> bool
 |: => @result

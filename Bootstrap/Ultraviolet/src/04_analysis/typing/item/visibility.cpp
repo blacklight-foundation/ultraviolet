@@ -2,7 +2,7 @@
 // MIGRATION: item/visibility.cpp
 // =============================================================================
 //
-// SPEC REFERENCE: SPECIFICATION.md
+// SPEC REFERENCE: Docs/SPECIFICATION.md
 //   Section 4: Module System - Visibility
 //   - Visibility modifiers: public, internal, private, protected
 //   - Visibility inheritance

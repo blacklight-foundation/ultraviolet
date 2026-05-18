@@ -3,7 +3,7 @@
 // =============================================================================
 //
 // SPEC REFERENCE:
-//   SPECIFICATION.md §18.3.4 Static Semantics
+//   Docs/SPECIFICATION.md §18.3.4 Static Semantics
 //     (T-UsingLocalStmt), (T-UsingLocalStmt-Err) delegate to the
 //     §7.2 UsingAlias judgment. The alias binding is added to the current
 //     scope; the alias's Entity is the same Entity that `source` resolves to.

@@ -2,7 +2,7 @@
 // range.cpp - Range Expression Parsing
 // =============================================================================
 //
-// SPEC REFERENCE: SPECIFICATION.md
+// SPEC REFERENCE: Docs/SPECIFICATION.md
 // - Parse-Range-To (Lines 4992-4995)
 // - Parse-Range-ToInc (Lines 4997-5000)
 // - Parse-Range-Full (Lines 5002-5005)

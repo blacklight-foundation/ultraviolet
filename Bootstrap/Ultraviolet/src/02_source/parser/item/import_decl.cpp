@@ -2,7 +2,7 @@
 // import_decl.cpp - Import Declaration Parsing
 // =============================================================================
 //
-// SPEC REFERENCE: SPECIFICATION.md Section 3.3.6.3 (Import Declaration Rules)
+// SPEC REFERENCE: Docs/SPECIFICATION.md Section 3.3.6.3 (Import Declaration Rules)
 //
 // This file implements import declaration parsing:
 //   - ParseImportDecl: Parse complete import declaration

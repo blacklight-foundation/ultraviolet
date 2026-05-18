@@ -2,7 +2,7 @@
 // MIGRATION MAPPING: function_types.cpp
 // =============================================================================
 //
-// SPEC REFERENCE: SPECIFICATION.md
+// SPEC REFERENCE: Docs/SPECIFICATION.md
 // - Section 5.2.3 "Function Types" (lines 8698-8705)
 //   - T-Proc-As-Value (lines 8700-8703)
 //   - FuncTypeRules (line 8705)

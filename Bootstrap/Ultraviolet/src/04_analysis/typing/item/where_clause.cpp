@@ -2,7 +2,7 @@
 // MIGRATION: item/where_clause.cpp
 // =============================================================================
 //
-// SPEC REFERENCE: SPECIFICATION.md
+// SPEC REFERENCE: Docs/SPECIFICATION.md
 //   Section 9: Generics - Where Clauses
 //   - Predicate constraints: where Bitcopy(T)
 //

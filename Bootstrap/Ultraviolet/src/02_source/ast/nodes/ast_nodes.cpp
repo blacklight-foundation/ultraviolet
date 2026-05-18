@@ -8,7 +8,7 @@
 //   and AST traversal operations.
 //
 // ===========================================================================
-// SPEC REFERENCE: SPECIFICATION.md Section 3.3.2 (Lines 2620-2639)
+// SPEC REFERENCE: Docs/SPECIFICATION.md Section 3.3.2 (Lines 2620-2639)
 // ===========================================================================
 //
 //   SpanOfNode : ASTNode -> Span                           (line 2623)

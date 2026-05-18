@@ -2,7 +2,7 @@
 // ABI Type: Slices (ABI-Slice)
 // =============================================================================
 //
-// SPEC REFERENCE: SPECIFICATION.md
+// SPEC REFERENCE: Docs/SPECIFICATION.md
 //   - Section 6.2.2 ABI Type Lowering
 //   - ABI-Slice rule: ABITy(TypeSlice(U)) => <2 * PtrSize, PtrAlign>
 //   - Slices are fat pointers: (pointer, length).

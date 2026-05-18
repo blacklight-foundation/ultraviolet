@@ -2,7 +2,7 @@
 // Defer Statement Lowering Implementation
 // =============================================================================
 //
-// SPEC REFERENCE: SPECIFICATION.md Lines 16655-16657 (Lower-Stmt-Defer)
+// SPEC REFERENCE: Docs/SPECIFICATION.md Lines 16655-16657 (Lower-Stmt-Defer)
 //   - DeferIR - deferred block marker stored for cleanup
 //
 // MIGRATED FROM:

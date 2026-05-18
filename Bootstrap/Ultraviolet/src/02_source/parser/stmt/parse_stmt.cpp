@@ -2,7 +2,7 @@
 // parse_stmt.cpp - Main Statement Parsing Dispatcher
 // =============================================================================
 //
-// SPEC REFERENCE: SPECIFICATION.md, Section 3.3.10, Lines 6255-6431
+// SPEC REFERENCE: Docs/SPECIFICATION.md, Section 3.3.10, Lines 6255-6431
 // - Parse-Statement (Lines 6257-6260)
 // - ParseStmtCore dispatcher (Lines 6262-6348)
 //

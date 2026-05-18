@@ -2,7 +2,7 @@
 // MIGRATION MAPPING: expr/loop_infinite.cpp
 // =============================================================================
 //
-// SPEC REFERENCE: SPECIFICATION.md Section 6.5 (Statement and Block Lowering)
+// SPEC REFERENCE: Docs/SPECIFICATION.md Section 6.5 (Statement and Block Lowering)
 //   - Lines 16741-16744: (Lower-Loop-Infinite)
 //     Gamma |- LowerBlock(body) => <IR_b, v_b>
 //     ---

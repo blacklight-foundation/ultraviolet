@@ -126,6 +126,7 @@ using namespace emit_detail;
       case DerivedValueInfo::Kind::AddrTuple:
       case DerivedValueInfo::Kind::AddrIndex:
       case DerivedValueInfo::Kind::AddrDeref:
+      case DerivedValueInfo::Kind::AddrUnionPayload:
       {
         llvm::Value *addr = EvaluateIRValue(value);
         return (addr && addr->getType()->isPointerTy()) ? addr : nullptr;
@@ -563,7 +564,8 @@ using namespace emit_detail;
               *this,
               alloc_info->params,
               alloc_info->ret,
-              use_c_abi_aggregate_sret);
+              use_c_abi_aggregate_sret,
+              /*foreign_boundary_mode_independent=*/true);
           if (alloc_abi.func_type)
           {
             alloc_fn = llvm::Function::Create(
@@ -627,6 +629,11 @@ using namespace emit_detail;
       llvm::Value *source_storage = GetAddressableStorage(bind.value);
       if (source_storage)
       {
+        const BindingState *target_state =
+            current_ctx_ ? current_ctx_->GetBindingState(bind.name) : nullptr;
+        const bool source_is_temp_storage =
+            bind.value.kind == IRValue::Kind::Opaque &&
+            GetTempStorage(bind.value) == source_storage;
         copied_from_storage = TryEmitBitcopyAggregateStorageCopy(
             *this,
             builder,
@@ -634,6 +641,18 @@ using namespace emit_detail;
             source_storage,
             bind.type ? bind.type : source_type,
             source_type);
+        if (!copied_from_storage &&
+            ((target_state && !target_state->has_responsibility) ||
+             source_is_temp_storage))
+        {
+          copied_from_storage = TryEmitAggregateStorageTransfer(
+              *this,
+              builder,
+              bind_slot,
+              source_storage,
+              bind.type ? bind.type : source_type,
+              source_type);
+        }
       }
       else
       {

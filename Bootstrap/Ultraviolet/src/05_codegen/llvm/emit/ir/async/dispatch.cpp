@@ -235,7 +235,8 @@ void IRInstructionVisitor::operator()(const IRDispatch &dispatch) const
           emitter,
           dispatch_info->params,
           dispatch_info->ret,
-          use_c_abi_aggregate_sret);
+          use_c_abi_aggregate_sret,
+          /*foreign_boundary_mode_independent=*/true);
       if (dispatch_abi.func_type)
       {
         dispatch_fn = llvm::Function::Create(

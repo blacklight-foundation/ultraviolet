@@ -2,7 +2,7 @@
 // ABI Lowering Coordination (§6.2)
 // =============================================================================
 //
-// SPEC REFERENCE: SPECIFICATION.md
+// SPEC REFERENCE: Docs/SPECIFICATION.md
 //   - Section 6.2 ABI Lowering (Ultraviolet)
 //   - CallConvDefault = UltravioletABI
 //

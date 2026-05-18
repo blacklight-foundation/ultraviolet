@@ -1,9 +1,9 @@
 // Test responsibility: Source/Compiler/Tests/Diagnostics/TestAttributes/DiagnosticsTestAttributesTests.uv
 //
-// This file owns source-native tests for diagnostics.TestAttributes@L28593:
+// This file owns source-native tests for diagnostics.TestAttributes@L28940:
 //
 // Source-native test attributes emit E-MOD-2452 and E-TST-0101 through
-// E-TST-0108 for the diagnostic conditions listed in SPECIFICATION.md §9.6.7.
+// E-TST-0108 for the diagnostic conditions listed in Docs/SPECIFICATION.md §9.6.7.
 
 using UltravioletCompiler::Diagnostics::{
     CODE_TEST_ATTRIBUTE_WRONG_TARGET,
@@ -24,7 +24,7 @@ using UltravioletCompiler::Project::{ projectTextEquals }
 
 [[test(
     name: "test attribute diagnostic codes are canonical",
-    covers("diagnostics.TestAttributes@L28593")
+    covers("diagnostics.TestAttributes@L28940")
 )]]
 internal procedure testAttributeDiagnosticCodesAreCanonical() -> bool
 |: => @result
@@ -42,7 +42,7 @@ internal procedure testAttributeDiagnosticCodesAreCanonical() -> bool
 
 [[test(
     name: "test attribute diagnostic helpers emit canonical codes",
-    covers("diagnostics.TestAttributes@L28593")
+    covers("diagnostics.TestAttributes@L28940")
 )]]
 internal procedure testAttributeDiagnosticHelpersEmitCanonicalCodes() -> bool
 |: => @result

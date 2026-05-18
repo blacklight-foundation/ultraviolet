@@ -3,9 +3,9 @@
 // =============================================================================
 //
 // SPEC REFERENCE:
-//   - SPECIFICATION.md, Section 17.1 "Key Context" (lines 23870-23890)
-//   - SPECIFICATION.md, Section 17.2 "Key Acquisition" (lines 24010-24050)
-//   - SPECIFICATION.md, Section 17.5 "Key Block Semantics" (lines 24100-24130)
+//   - Docs/SPECIFICATION.md, Section 17.1 "Key Context" (lines 23870-23890)
+//   - Docs/SPECIFICATION.md, Section 17.2 "Key Acquisition" (lines 24010-24050)
+//   - Docs/SPECIFICATION.md, Section 17.5 "Key Block Semantics" (lines 24100-24130)
 //
 // KEY CONTEXT SEMANTICS:
 //   - Γ_keys is a collection of (P, M, S) triples: path, mode, scope

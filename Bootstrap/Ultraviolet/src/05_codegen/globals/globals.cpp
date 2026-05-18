@@ -2,7 +2,7 @@
 // MIGRATION MAPPING: globals.cpp
 // =============================================================================
 //
-// SPEC REFERENCE: SPECIFICATION.md
+// SPEC REFERENCE: Docs/SPECIFICATION.md
 //   - Section 6.0 CG-Item-Static rule (lines 14272-14275)
 //   - EmitGlobal judgment (line 14273)
 //   - GlobalConst, GlobalZero IR declarations (referenced in ir_model)

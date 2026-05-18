@@ -2,7 +2,7 @@
 // MIGRATION MAPPING: unicode.cpp
 // =============================================================================
 //
-// SPEC REFERENCE: SPECIFICATION.md
+// SPEC REFERENCE: Docs/SPECIFICATION.md
 //   - Section 3.1.6 "NFC Normalization for Identifiers and Module Paths" (lines 1838-1851)
 //     - NFC(s) = UnicodeNFC_{15.0.0}(s)
 //     - CaseFold(s) = UnicodeCaseFold_{15.0.0}(s)

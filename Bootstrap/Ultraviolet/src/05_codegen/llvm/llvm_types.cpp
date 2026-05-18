@@ -2,7 +2,7 @@
 // MIGRATION MAPPING: llvm_types.cpp
 // =============================================================================
 //
-// SPEC REFERENCE: SPECIFICATION.md
+// SPEC REFERENCE: Docs/SPECIFICATION.md
 //   - Section 6.12.3 LLVMTy Judgment (lines 17416-17560)
 //   - LLVMTy-Prim rule (lines 17456-17459)
 //   - LLVMTy-Perm rule (lines 17461-17464)

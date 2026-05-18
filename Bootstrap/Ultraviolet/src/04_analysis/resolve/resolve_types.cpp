@@ -3,9 +3,9 @@
 // =============================================================================
 //
 // SPEC REFERENCE:
-//   SPECIFICATION.md §5.1.3 "Lookup" (Lines 6822-6899)
-//   SPECIFICATION.md §5.1.6 "Qualified Disambiguation" (Lines 7310-7429)
-//   SPECIFICATION.md §5.1.7 "Resolution Pass" (Lines 7430-7549)
+//   Docs/SPECIFICATION.md §5.1.3 "Lookup" (Lines 6822-6899)
+//   Docs/SPECIFICATION.md §5.1.6 "Qualified Disambiguation" (Lines 7310-7429)
+//   Docs/SPECIFICATION.md §5.1.7 "Resolution Pass" (Lines 7430-7549)
 //
 // SOURCE FILE:
 //   ultraviolet-bootstrap/src/03_analysis/resolve/resolver_types.cpp (Lines 1-311)
@@ -469,7 +469,7 @@ ResTypeResult ResolveType(ResolveContext& ctx,
           out_node.base = resolved_base.value;
           if (out_node.predicate) {
             // Refinement predicates resolve in a scope where `self` denotes
-            // the constrained value (SPECIFICATION.md §13.7.1, §13.7.2).
+            // the constrained value (Docs/SPECIFICATION.md §13.7.1, §13.7.2).
             ScopedLeadingScope pred_scope(*ctx.ctx);
             const auto intro = Intro(
                 *ctx.ctx, "self",

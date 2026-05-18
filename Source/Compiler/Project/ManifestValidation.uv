@@ -8,128 +8,128 @@
 //   "12", "13", "14", "15", "16", "17", "18", "19", "20", "21",
 //   "22", "23"})
 //   Phase0Checks ∩ SourceChecks = ∅
-// - def.ManifestSchema@L2338
+// - def.ManifestSchema@L2359
 //   n = t.name
 //   k = t.kind
 //   r = t.root
 //   o = t.out_dir
 //   e = t.emit_ir
 //   l = t.link_kind
-// - WF-Assembly-Name@L2358
+// - WF-Assembly-Name@L2379
 //   Γ ⊢ n : Identifier    Γ ⊢ n : NotKeyword
 //   Γ ⊢ n : Name
-// - WF-Assembly-Name-Err@L2376
+// - WF-Assembly-Name-Err@L2397
 //   ¬(Γ ⊢ n : Identifier ∧ Γ ⊢ n : NotKeyword)
 //   c = Code(WF-Assembly-Name-Err)
 //   Γ ⊢ n : Name ⇑ c
-// - WF-Assembly-Kind@L2394
+// - WF-Assembly-Kind@L2415
 //   k ∈ AssemblyKind
 //   Γ ⊢ k : Kind
-// - WF-Assembly-Kind-Err@L2412
+// - WF-Assembly-Kind-Err@L2433
 //   k ∉ AssemblyKind    c = Code(WF-Assembly-Kind-Err)
 //   Γ ⊢ k : Kind ⇑ c
-// - WF-Assembly-Root-Path@L2430
+// - WF-Assembly-Root-Path@L2451
 //   Γ ⊢ r : RelPath
 //   Γ ⊢ r : RootPath
-// - WF-Assembly-Root-Path-Err@L2448
+// - WF-Assembly-Root-Path-Err@L2469
 //   ¬(Γ ⊢ r : RelPath)    c = Code(WF-Assembly-Root-Path-Err)
 //   Γ ⊢ r : RootPath ⇑ c
-// - WF-Assembly-OutDir-Path@L2466
+// - WF-Assembly-OutDir-Path@L2487
 //   o = ⊥ ∨ Γ ⊢ o : RelPath
 //   Γ ⊢ o : OutDirPath
-// - WF-Assembly-OutDir-Path-Err@L2484
+// - WF-Assembly-OutDir-Path-Err@L2505
 //   o ≠ ⊥    ¬(Γ ⊢ o : RelPath)
 //   c = Code(WF-Assembly-OutDir-Path-Err)
 //   Γ ⊢ o : OutDirPath ⇑ c
-// - WF-Assembly-EmitIR@L2502
+// - WF-Assembly-EmitIR@L2523
 //   e ∈ {⊥, `none`, `ll`, `bc`}
 //   Γ ⊢ e : EmitIR
-// - WF-Assembly-EmitIR-Err@L2520
+// - WF-Assembly-EmitIR-Err@L2541
 //   e ∉ {⊥, `none`, `ll`, `bc`}    c = Code(WF-Assembly-EmitIR-Err)
 //   Γ ⊢ e : EmitIR ⇑ c
-// - def.AsmLinkKind@L2538
+// - def.AsmLinkKind@L2559
 //   AsmLinkKind(k, l) = `shared` if k = `library` ∧ l = ⊥,
 //   l if k = `library` ∧ l ∈ LinkKind, and ⊥ otherwise.
-// - def.ManifestTableProjections@L2555
+// - def.ManifestTableProjections@L2576
 //   AsmField(T) = T[`assembly`]
 //   AsmTables(T) = [AsmField(T)] if IsTable(AsmField(T)),
 //   AsmField(T) if IsArrayTable(AsmField(T)), and ⊥ otherwise.
-// - def.ManifestTopKeys@L2575
+// - def.ManifestTopKeys@L2596
 //   TopKeys = {"assembly", "toolchain", "build"}
-// - WF-TopKeys@L2589
+// - WF-TopKeys@L2610
 //   Keys(T) ⊆ TopKeys
-// - WF-TopKeys-Err@L2607
+// - WF-TopKeys-Err@L2628
 //   ¬(Keys(T) ⊆ TopKeys)    c = Code(WF-TopKeys-Err)
-// - WF-Assembly-Table@L2625
+// - WF-Assembly-Table@L2646
 //   AsmTables(T) ≠ ⊥
-// - WF-Assembly-Table-Err@L2643
+// - WF-Assembly-Table-Err@L2664
 //   AsmTables(T) = ⊥    c = Code(WF-Assembly-Table-Err)
-// - WF-Assembly-Count@L2661
+// - WF-Assembly-Count@L2682
 //   AsmTables(T) = Ts    |Ts| ≥ 1
-// - WF-Assembly-Count-Err@L2679
+// - WF-Assembly-Count-Err@L2700
 //   AsmTables(T) = Ts    |Ts| = 0    c = Code(WF-Assembly-Count-Err)
-// - WF-Assembly-Name-Dup@L2697
+// - WF-Assembly-Name-Dup@L2718
 //   AsmTables(T) = Ts    Distinct([t.name | t ∈ Ts])
-// - WF-Assembly-Name-Dup-Err@L2715
+// - WF-Assembly-Name-Dup-Err@L2736
 //   AsmTables(T) = Ts    ¬ Distinct([t.name | t ∈ Ts])
 //   c = Code(WF-Assembly-Name-Dup)
-// - def.ManifestAssemblyKeys@L2733
+// - def.ManifestAssemblyKeys@L2754
 //   Req = {`name`, `kind`, `root`}
 //   Opt = {`out_dir`, `emit_ir`, `link_kind`}
-// - WF-Assembly-Keys@L2748
+// - WF-Assembly-Keys@L2769
 //   Keys(t) ⊆ (Req ∪ Opt)
-// - WF-Assembly-Keys-Err@L2766
+// - WF-Assembly-Keys-Err@L2787
 //   ¬(Keys(t) ⊆ (Req ∪ Opt))    c = Code(WF-Assembly-Keys-Err)
-// - WF-Assembly-Required-Types@L2784
+// - WF-Assembly-Required-Types@L2805
 //   ∀ k ∈ Req. IsString(t[k])
-// - WF-Assembly-Required-Types-Err@L2802
+// - WF-Assembly-Required-Types-Err@L2823
 //   ∃ k ∈ Req. t[k] = ⊥ ∨ ¬ IsString(t[k])
 //   c = Code(WF-Assembly-Required-Types-Err)
-// - WF-Assembly-Optional-Types@L2820
+// - WF-Assembly-Optional-Types@L2841
 //   t[`out_dir`] ∈ {string, ⊥}
-// - WF-Assembly-OutDirType-Err@L2838
+// - WF-Assembly-OutDirType-Err@L2859
 //   t[`out_dir`] ∉ {string, ⊥}    c = Code(WF-Assembly-OutDirType-Err)
-// - WF-Assembly-EmitIRType@L2856
+// - WF-Assembly-EmitIRType@L2877
 //   t[`emit_ir`] ∈ {string, ⊥}
-// - WF-Assembly-EmitIRType-Err@L2873
+// - WF-Assembly-EmitIRType-Err@L2894
 //   t[`emit_ir`] ∉ {string, ⊥}    c = Code(WF-Assembly-EmitIRType-Err)
-// - WF-Assembly-LinkKindType@L2891
+// - WF-Assembly-LinkKindType@L2912
 //   t[`link_kind`] ∈ {string, ⊥}
-// - WF-Assembly-LinkKindType-Err@L2908
+// - WF-Assembly-LinkKindType-Err@L2929
 //   t[`link_kind`] ∉ {string, ⊥}    c = Code(WF-Assembly-LinkKindType-Err)
-// - WF-Assembly-LinkKind@L2926
+// - WF-Assembly-LinkKind@L2947
 //   (t.kind = `library` ∧ t.link_kind ∈ {⊥, `shared`, `static`}) ∨
 //   (t.kind ∈ {`executable`, `dependency`} ∧ t.link_kind = ⊥)
-// - WF-Assembly-LinkKind-Err@L2944
+// - WF-Assembly-LinkKind-Err@L2965
 //   t.kind = `library`    t.link_kind ∉ {⊥, `shared`, `static`}
 //   c = Code(WF-Assembly-LinkKind-Err)
-// - WF-Assembly-LinkKind-Use-Err@L2962
+// - WF-Assembly-LinkKind-Use-Err@L2983
 //   t.kind ∈ {`executable`, `dependency`}    t.link_kind ≠ ⊥
 //   c = Code(WF-Assembly-LinkKind-Use-Err)
-// - def.ChecksAsm@L3630
+// - def.ChecksAsm@L3651
 //   ChecksAsm(t) = [Γ ⊢ t : KnownKeys, Γ ⊢ t : ReqTypes,
 //   Γ ⊢ t : OutDirType, Γ ⊢ t : EmitIRType, Γ ⊢ t : LinkKindType,
 //   Γ ⊢ t.name : Name, Γ ⊢ t.kind : Kind, Γ ⊢ t : LinkKindField,
 //   Γ ⊢ t.emit_ir : EmitIR, Γ ⊢ t.root : RootPath,
 //   Γ ⊢ t.out_dir : OutDirPath]
-// - def.BaseChecks@L3645
+// - def.BaseChecks@L3666
 //   BaseChecks(T) = [Γ ⊢ T : TopKeys, Γ ⊢ T : AssemblyTable,
 //   Γ ⊢ T : AssemblyCount, Γ ⊢ T : AssemblyNames]
-// - def.AsmChecks@L3659
+// - def.AsmChecks@L3680
 //   AsmChecks(T) = [] if AsmTables(T) = ⊥,
 //   ++_{t ∈ AsmTables(T)} ChecksAsm(t) otherwise
-// - def.ManifestChecks@L3675
+// - def.ManifestChecks@L3696
 //   Checks(T) = BaseChecks(T) ++ AsmChecks(T)
-// - def.FirstFail@L3689
+// - def.FirstFail@L3710
 //   FirstFail([]) = ⊥; FirstFail(J::Js) = c when Γ ⊢ J ⇑ c;
 //   FirstFail(J::Js) = FirstFail(Js) when Γ ⊢ J ⇓ ok
-// - ValidateManifest-Ok@L3705
+// - ValidateManifest-Ok@L3726
 //   FirstFail(Checks(T)) = ⊥
 //   Γ ⊢ ValidateManifest(T) ⇓ ok
-// - ValidateManifest-Err@L3723
+// - ValidateManifest-Err@L3744
 //   FirstFail(Checks(T)) = c
 //   Γ ⊢ ValidateManifest(T) ⇑ c
-// - diagnostics.ProjectDiagnostics@L6767
+// - diagnostics.ProjectDiagnostics@L6788
 
 using UltravioletCompiler::Diagnostics::{
     DiagnosticStreamValue,

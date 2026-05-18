@@ -2,7 +2,7 @@
 // ABI Type: Raw Pointers (ABI-RawPtr)
 // =============================================================================
 //
-// SPEC REFERENCE: SPECIFICATION.md
+// SPEC REFERENCE: Docs/SPECIFICATION.md
 //   - Section 6.2.2 ABI Type Lowering
 //   - ABI-RawPtr rule: ABITy(TypeRawPtr(q, U)) => <PtrSize, PtrAlign>
 //

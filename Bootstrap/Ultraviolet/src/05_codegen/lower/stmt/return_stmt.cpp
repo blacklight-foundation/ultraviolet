@@ -2,7 +2,7 @@
 // MIGRATION MAPPING: stmt/return_stmt.cpp
 // =============================================================================
 //
-// SPEC REFERENCE: SPECIFICATION.md Lines 16674-16681
+// SPEC REFERENCE: Docs/SPECIFICATION.md Lines 16674-16681
 //   - Lower-Stmt-Return: SeqIR(IR_e, ReturnIR(v))
 //   - Lower-Stmt-Return-Unit: ReturnIR(())
 //   - TempCleanupIR must be emitted before ReturnIR
@@ -30,6 +30,7 @@
 #include "05_codegen/lower/expr/expr_common.h"
 #include "05_codegen/lower/lower_expr.h"
 #include "05_codegen/lower/lower_stmt.h"
+#include "04_analysis/typing/type_predicates.h"
 #include "00_core/process_config.h"
 #include "00_core/spec_trace.h"
 
@@ -40,13 +41,20 @@ namespace ultraviolet::codegen {
 
 namespace {
 
-ast::ExprPtr ReturnDestExpr(const ast::ExprPtr& value) {
+ast::ExprPtr ReturnDestExpr(const ast::ExprPtr& value, const LowerCtx& ctx) {
   if (!value || std::holds_alternative<ast::MoveExpr>(value->node) ||
       std::holds_alternative<ast::CopyExpr>(value->node)) {
     return value;
   }
   if (!IsPlaceExpr(*value)) {
     return value;
+  }
+  if (const auto root = PlaceRoot(*value)) {
+    if (const BindingState* state = ctx.GetBindingState(*root)) {
+      if (!state->has_responsibility) {
+        return value;
+      }
+    }
   }
   auto out = std::make_shared<ast::Expr>();
   out->span = value->span;
@@ -178,7 +186,7 @@ IRPtr LowerReturnStmt(const ast::ReturnStmt& stmt,
   analysis::TypeRef value_type;
   if (stmt.value_opt) {
     SPEC_RULE("Lower-Stmt-Return");
-    ast::ExprPtr return_expr = ReturnDestExpr(stmt.value_opt);
+    ast::ExprPtr return_expr = ReturnDestExpr(stmt.value_opt, ctx);
     auto prev_suppress = ctx.suppress_temp_at_depth;
     ctx.suppress_temp_at_depth = ctx.temp_depth + 1;
     auto expr_result = LowerExpr(*return_expr, ctx);
@@ -226,10 +234,14 @@ IRPtr LowerReturnStmt(const ast::ReturnStmt& stmt,
 
   const bool needs_refine_snapshot =
       stmt.value_opt && ExprNeedsDynamicRefinementCheck(stmt.value_opt, ctx);
+  const bool needs_return_snapshot =
+      value_type && !IsUnitType(value_type) &&
+      !analysis::BitcopyType(scope, value_type);
   if (IRPtr snapshot_ir =
           SnapshotReturnValueForPostcondition(return_value,
                                               value_type ? value_type : ctx.proc_ret_type,
-                                              needs_refine_snapshot,
+                                              needs_refine_snapshot ||
+                                                  needs_return_snapshot,
                                               ctx)) {
     ir_parts.push_back(snapshot_ir);
   }

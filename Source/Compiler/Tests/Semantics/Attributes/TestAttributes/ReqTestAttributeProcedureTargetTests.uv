@@ -1,12 +1,12 @@
 // Test responsibility: Source/Compiler/Tests/Semantics/Attributes/TestAttributes/ReqTestAttributeProcedureTargetTests.uv
 //
-// This file owns source-native tests for req.TestAttributeProcedureTarget@L28421:
+// This file owns source-native tests for req.TestAttributeProcedureTarget@L28768:
 //
 // `[[test]]` is valid only on ordinary source procedures.
 
 [[test(
     name: "test attribute accepts ordinary procedure target",
-    covers("req.TestAttributeProcedureTarget@L28421")
+    covers("req.TestAttributeProcedureTarget@L28768")
 )]]
 internal procedure testAttributeAcceptsOrdinaryProcedureTarget() -> bool
 |: => @result
@@ -43,7 +43,7 @@ internal procedure testAttributeAcceptsOrdinaryProcedureTarget() -> bool
 
 [[test(
     name: "test attribute rejects non-procedure target",
-    covers("req.TestAttributeProcedureTarget@L28421")
+    covers("req.TestAttributeProcedureTarget@L28768")
 )]]
 internal procedure testAttributeRejectsNonProcedureTarget() -> bool
 |: => @result

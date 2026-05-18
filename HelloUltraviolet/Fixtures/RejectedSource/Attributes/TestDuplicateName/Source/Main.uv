@@ -1,0 +1,8 @@
+//! Rejected source-native test attribute specimen for duplicate display names.
+
+[[test(name: "first", name: "second")]]
+public procedure testDuplicateNameReference() -> bool
+|: => @result
+{
+    return true
+}

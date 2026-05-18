@@ -562,7 +562,11 @@ using namespace emit_detail;
                 GetRuntimeFuncInfo(context_init_sym))
         {
           ABICallResult init_abi =
-              ComputeCallABI(*this, init_info->params, init_info->ret, true);
+              ComputeCallABI(*this,
+                             init_info->params,
+                             init_info->ret,
+                             true,
+                             /*foreign_boundary_mode_independent=*/true);
           if (!init_abi.valid || !init_abi.func_type)
           {
             current_ctx_->ReportCodegenFailure();
@@ -1340,7 +1344,11 @@ using namespace emit_detail;
             }
 
             ABICallResult abi =
-                ComputeCallABI(*this, runtime_info->params, runtime_info->ret, true);
+                ComputeCallABI(*this,
+                               runtime_info->params,
+                               runtime_info->ret,
+                               true,
+                               /*foreign_boundary_mode_independent=*/true);
             if (!abi.valid || !abi.func_type || abi.param_kinds.size() != 1u)
             {
               current_ctx_->ReportCodegenFailure();

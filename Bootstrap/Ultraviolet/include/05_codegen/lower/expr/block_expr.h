@@ -4,7 +4,7 @@
 // Block Expression Lowering
 // =============================================================================
 //
-// SPEC REFERENCE: SPECIFICATION.md Section 6.5 (Statement and Block Lowering)
+// SPEC REFERENCE: Docs/SPECIFICATION.md Section 6.5 (Statement and Block Lowering)
 //   - Lines 16228-16231: (Lower-Expr-Block)
 //   - Lines 16731-16739: (Lower-Block-Tail) and (Lower-Block-Unit)
 //

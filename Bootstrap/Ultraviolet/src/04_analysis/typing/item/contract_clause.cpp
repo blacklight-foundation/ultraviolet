@@ -2,7 +2,7 @@
 // MIGRATION: item/contract_clause.cpp
 // =============================================================================
 //
-// SPEC REFERENCE: SPECIFICATION.md
+// SPEC REFERENCE: Docs/SPECIFICATION.md
 //   Section 5.8: Contracts
 //   - Contract syntax: |: P, |: P => Q, |: => Q
 //   - Precondition context

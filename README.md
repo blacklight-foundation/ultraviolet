@@ -108,7 +108,7 @@ The Ultraviolet toolchain is organized around:
 
 ## Documentation
 
-- [Language Specification](SPECIFICATION.md)
+- [Language Specification](Docs/SPECIFICATION.md)
 
 The language specification is the source of truth for syntax, static semantics,
 dynamic semantics, lowering, diagnostics, ABI behavior, and conformance.

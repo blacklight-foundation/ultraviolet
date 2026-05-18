@@ -3,8 +3,8 @@
 // =============================================================================
 //
 // SPEC REFERENCE:
-//   SPECIFICATION.md Section 5.1.3 "Lookup" (Lines 6822-6899)
-//   SPECIFICATION.md Section 5.1.5 "Top-Level Name Collection" (Lines 6956-7309)
+//   Docs/SPECIFICATION.md Section 5.1.3 "Lookup" (Lines 6822-6899)
+//   Docs/SPECIFICATION.md Section 5.1.5 "Top-Level Name Collection" (Lines 6956-7309)
 //
 // SOURCE FILE (migrated from):
 //   ultraviolet-bootstrap/src/03_analysis/resolve/scopes_lookup.cpp

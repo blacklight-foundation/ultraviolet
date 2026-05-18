@@ -4,10 +4,10 @@
  * =============================================================================
  *
  * SPEC REFERENCE:
- *   - SPECIFICATION.md, Section 14 "Contracts" (line 23181)
- *   - SPECIFICATION.md, Section 14.4 "Contract Syntax" (line 23183)
- *   - SPECIFICATION.md, Section 14.5 "Preconditions and Postconditions" (line 23279)
- *   - SPECIFICATION.md, Section 14.6 "Contract Well-Formedness" (lines 23400-23500)
+ *   - Docs/SPECIFICATION.md, Section 14 "Contracts" (line 23181)
+ *   - Docs/SPECIFICATION.md, Section 14.4 "Contract Syntax" (line 23183)
+ *   - Docs/SPECIFICATION.md, Section 14.5 "Preconditions and Postconditions" (line 23279)
+ *   - Docs/SPECIFICATION.md, Section 14.6 "Contract Well-Formedness" (lines 23400-23500)
  *
  * SOURCE FILE:
  *   - ultraviolet-bootstrap/src/03_analysis/contracts/contract_check.cpp (lines 1-263)

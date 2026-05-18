@@ -2,7 +2,7 @@
 // ABI Type: Ranges (ABI-Range)
 // =============================================================================
 //
-// SPEC REFERENCE: SPECIFICATION.md
+// SPEC REFERENCE: Docs/SPECIFICATION.md
 //   - Section 6.2.2 ABI Type Lowering
 //   - ABI-Range rule: ABITy(range-family) => <sizeof(range), alignof(range)>
 //

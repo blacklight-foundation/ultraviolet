@@ -2,7 +2,7 @@
 // break_stmt.cpp - Break statement typing
 // =============================================================================
 //
-// SPEC REFERENCE: SPECIFICATION.md
+// SPEC REFERENCE: Docs/SPECIFICATION.md
 //   Section 5.2.11: Loop Control Statements
 //   - T-Break-Value (line 9609): Break with value
 //   - T-Break-Unit (line 9614): Break without value

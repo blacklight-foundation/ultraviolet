@@ -4,7 +4,7 @@
 // This file should contain parsing logic for typed patterns, which bind a
 // matched value to a name with an explicit type annotation.
 //
-// SPEC REFERENCE: SPECIFICATION.md, Section 3.3.9, Lines 6097-6100
+// SPEC REFERENCE: Docs/SPECIFICATION.md, Section 3.3.9, Lines 6097-6100
 // =============================================================================
 //
 // FORMAL RULE:

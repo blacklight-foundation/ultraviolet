@@ -2,7 +2,7 @@
 // alloc_expr.cpp - Allocation Expression Parsing
 // =============================================================================
 //
-// SPEC REFERENCE: SPECIFICATION.md
+// SPEC REFERENCE: Docs/SPECIFICATION.md
 // - Parse-Alloc-Implicit (Lines 5178-5181)
 //
 // =============================================================================

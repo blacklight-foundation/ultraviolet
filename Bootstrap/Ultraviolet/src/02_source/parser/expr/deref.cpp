@@ -3,7 +3,7 @@
 // =============================================================================
 // This file should contain parsing logic for dereference expressions (*expr).
 //
-// SPEC REFERENCE: SPECIFICATION.md, Section 3.3.8.5, Lines 5101-5104
+// SPEC REFERENCE: Docs/SPECIFICATION.md, Section 3.3.8.5, Lines 5101-5104
 // =============================================================================
 //
 // FORMAL RULES FROM SPEC:

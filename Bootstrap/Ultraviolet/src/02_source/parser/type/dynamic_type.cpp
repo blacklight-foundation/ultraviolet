@@ -2,7 +2,7 @@
 // dynamic_type.cpp - Dynamic/Capability Type Parsing
 // =============================================================================
 //
-// SPEC REFERENCE: SPECIFICATION.md, Section 3.3.7, Lines 4798-4801
+// SPEC REFERENCE: Docs/SPECIFICATION.md, Section 3.3.7, Lines 4798-4801
 //
 // Parses dynamic types: $ClassName
 // - Used for capability types: $IO, $HeapAllocator, $ExecutionDomain

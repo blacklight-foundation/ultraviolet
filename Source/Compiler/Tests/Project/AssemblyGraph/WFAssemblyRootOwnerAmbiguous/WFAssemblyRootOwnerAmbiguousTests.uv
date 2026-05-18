@@ -1,7 +1,7 @@
 // Test responsibility:
 // Source/Compiler/Tests/Project/AssemblyGraph/WFAssemblyRootOwnerAmbiguous/WFAssemblyRootOwnerAmbiguousTests.uv
 //
-// This file owns source-native tests for WF-Assembly-Root-Owner-Ambiguous@L4481:
+// This file owns source-native tests for WF-Assembly-Root-Owner-Ambiguous@L4502:
 //
 // ∃ A ∈ As, m ∈ A.modules. ¬ ∃ S.
 // OwnerRoot(ModuleDirOf(m, A.source_root), AssemblySourceRoots(As)) = S
@@ -27,7 +27,7 @@ using UltravioletCompiler::Project::{
 
 [[test(
     name: "own assemblies fails when a module has no source-root owner",
-    covers("WF-Assembly-Root-Owner-Ambiguous@L4481")
+    covers("WF-Assembly-Root-Owner-Ambiguous@L4502")
 )]]
 internal procedure ownAssembliesFailsWhenModuleHasNoSourceRootOwner() -> bool
 |: => @result

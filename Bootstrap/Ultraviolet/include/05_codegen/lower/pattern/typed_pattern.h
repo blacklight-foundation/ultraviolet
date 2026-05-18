@@ -4,7 +4,7 @@
 // Typed Pattern Lowering
 // =============================================================================
 //
-// SPEC REFERENCE: SPECIFICATION.md Section 6.6 (Pattern Matching Lowering)
+// SPEC REFERENCE: Docs/SPECIFICATION.md Section 6.6 (Pattern Matching Lowering)
 //   - Typed pattern x: T binds with explicit type annotation
 //   - Type is lowered and used for binding registration
 //

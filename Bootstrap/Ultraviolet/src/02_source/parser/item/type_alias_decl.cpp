@@ -2,7 +2,7 @@
 // type_alias_decl.cpp - Type Alias Declaration Parsing
 // =============================================================================
 //
-// SPEC REFERENCE: SPECIFICATION.md Section 3.3.6.11 (Type Alias Rules)
+// SPEC REFERENCE: Docs/SPECIFICATION.md Section 3.3.6.11 (Type Alias Rules)
 //
 // This file implements type alias declaration parsing:
 //   - ParseTypeAliasDecl: Parse complete type alias declaration

@@ -4,7 +4,7 @@
 // loop_conditional.h - Conditional loop expression lowering
 // =============================================================================
 //
-// SPEC REFERENCE: SPECIFICATION.md Section 6.5 (Statement and Block Lowering)
+// SPEC REFERENCE: Docs/SPECIFICATION.md Section 6.5 (Statement and Block Lowering)
 //   - Lines 16746-16754: (Lower-Loop-Cond)
 //
 // This header declares the lowering function for conditional loop expressions

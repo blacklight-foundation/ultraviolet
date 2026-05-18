@@ -4,7 +4,7 @@
 // This file should contain parsing logic for range patterns, which match
 // values within a specified range (exclusive or inclusive).
 //
-// SPEC REFERENCE: SPECIFICATION.md, Section 3.3.9, Lines 6077-6085
+// SPEC REFERENCE: Docs/SPECIFICATION.md, Section 3.3.9, Lines 6077-6085
 // =============================================================================
 //
 // FORMAL RULES:

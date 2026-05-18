@@ -8,7 +8,7 @@
 //   validators.
 //
 // ===========================================================================
-// SPEC REFERENCE: SPECIFICATION.md
+// SPEC REFERENCE: Docs/SPECIFICATION.md
 // ===========================================================================
 //   Section 3.3.2 - AST Node Catalog
 //   Defines the AST structure that validation operates on.

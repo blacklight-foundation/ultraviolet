@@ -2,7 +2,7 @@
 // MIGRATION: typecheck.cpp
 // =============================================================================
 //
-// SPEC REFERENCE: SPECIFICATION.md
+// SPEC REFERENCE: Docs/SPECIFICATION.md
 //   Section 5.2: Static Semantics - Type Checking
 //   Section 5.3: Declarations
 //   - Module-level typechecking entry point

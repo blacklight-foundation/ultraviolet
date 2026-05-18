@@ -4,9 +4,9 @@
  * =============================================================================
  *
  * SPEC REFERENCE:
- *   - SPECIFICATION.md, Section 5.4.5 "Transitions" (lines 12760-12810)
- *   - SPECIFICATION.md, Section 5.4.6 "State Methods" (lines 12820-12900)
- *   - SPECIFICATION.md, Section 8.7 "E-MOD Errors" (lines 21600-21700)
+ *   - Docs/SPECIFICATION.md, Section 5.4.5 "Transitions" (lines 12760-12810)
+ *   - Docs/SPECIFICATION.md, Section 5.4.6 "State Methods" (lines 12820-12900)
+ *   - Docs/SPECIFICATION.md, Section 8.7 "E-MOD Errors" (lines 21600-21700)
  *
  * SOURCE FILE:
  *   - Migrated from ultraviolet-bootstrap/src/03_analysis/modal/modal_transitions.cpp

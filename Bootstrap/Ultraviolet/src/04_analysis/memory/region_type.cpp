@@ -4,8 +4,8 @@
  * =============================================================================
  *
  * SPEC REFERENCE:
- *   - SPECIFICATION.md, Section 5.4.1 "Built-in Modal Type Region" (Ultraviolet)
- *   - SPECIFICATION.md, Section 6.9 "Built-ins Runtime Interface"
+ *   - Docs/SPECIFICATION.md, Section 5.4.1 "Built-in Modal Type Region" (Ultraviolet)
+ *   - Docs/SPECIFICATION.md, Section 6.9 "Built-ins Runtime Interface"
  *
  * This file constructs the built-in Region modal type declaration used for
  * arena-based memory allocation. Region is a built-in modal with three states:

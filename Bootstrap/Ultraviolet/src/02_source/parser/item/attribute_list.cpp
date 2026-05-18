@@ -2,7 +2,7 @@
 // attribute_list.cpp - Attribute List Parsing
 // =============================================================================
 //
-// SPEC REFERENCE: SPECIFICATION.md Section 3.3.6.13 (Item Helper Parsing Rules)
+// SPEC REFERENCE: Docs/SPECIFICATION.md Section 3.3.6.13 (Item Helper Parsing Rules)
 //
 // This file implements attribute list parsing:
 //   - ParseAttributeItem: Parse single attribute item

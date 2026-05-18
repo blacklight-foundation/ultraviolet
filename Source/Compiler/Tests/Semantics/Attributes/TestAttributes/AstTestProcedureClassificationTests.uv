@@ -1,7 +1,7 @@
 using UltravioletCompiler::Project::{ projectTextEquals }
 // Test responsibility: Source/Compiler/Tests/Semantics/Attributes/TestAttributes/AstTestProcedureClassificationTests.uv
 //
-// This file owns source-native tests for ast.TestProcedureClassification@L28374:
+// This file owns source-native tests for ast.TestProcedureClassification@L28721:
 //
 // A source-native test is an ordinary `ProcedureDecl` whose `AttrByName(proc,
 // test)` set is non-empty.
@@ -33,7 +33,7 @@ using UltravioletCompiler::Source::Parser::{
 
 [[test(
     name: "source-native test is classified from ordinary test attribute",
-    covers("ast.TestProcedureClassification@L28374")
+    covers("ast.TestProcedureClassification@L28721")
 )]]
 internal procedure sourceNativeTestIsClassifiedFromOrdinaryTestAttribute() -> bool
 |: => @result
@@ -73,7 +73,7 @@ internal procedure sourceNativeTestIsClassifiedFromOrdinaryTestAttribute() -> bo
 
 [[test(
     name: "non-test attribute is not classified as source-native test",
-    covers("ast.TestProcedureClassification@L28374")
+    covers("ast.TestProcedureClassification@L28721")
 )]]
 internal procedure nonTestAttributeIsNotClassifiedAsSourceNativeTest() -> bool
 |: => @result

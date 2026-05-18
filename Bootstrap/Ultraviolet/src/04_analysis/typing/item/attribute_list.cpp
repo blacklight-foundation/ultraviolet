@@ -2,7 +2,7 @@
 // MIGRATION: item/attribute_list.cpp
 // =============================================================================
 //
-// SPEC REFERENCE: SPECIFICATION.md
+// SPEC REFERENCE: Docs/SPECIFICATION.md
 //   Section: Attributes
 //   - Attribute syntax: [[attr]], [[attr(args)]]
 //   - Complete attribute list in spec

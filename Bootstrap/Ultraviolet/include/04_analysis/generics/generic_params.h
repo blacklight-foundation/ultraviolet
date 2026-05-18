@@ -1,7 +1,7 @@
 // =============================================================================
 // File: 04_analysis/generics/generic_params.h
 // Construct: Generic Parameter Validation and Scope Building
-// Spec Section: SPECIFICATION.md Section 13 "Generics"
+// Spec Section: Docs/SPECIFICATION.md Section 13 "Generics"
 // Spec Rules: GenericParams, TypeParam, TypeBound, Variance
 // =============================================================================
 //
@@ -76,7 +76,7 @@ struct DefaultValueResult {
 // =============================================================================
 
 // Validate a complete generic parameter declaration list.
-// SPEC: SPECIFICATION.md Section 13.1 "Generic Parameters"
+// SPEC: Docs/SPECIFICATION.md Section 13.1 "Generic Parameters"
 // Checks:
 //   - Parameter name uniqueness
 //   - Bound validity (class paths must resolve)
@@ -98,7 +98,7 @@ TypeParamInfo ParseTypeParam(
     const ast::TypeParam& param);
 
 // Parse and validate a const generic parameter.
-// SPEC: SPECIFICATION.md Section 13.1.2 "Const Generic Parameters"
+// SPEC: Docs/SPECIFICATION.md Section 13.1.2 "Const Generic Parameters"
 // Type must be an integral type (i8, i16, i32, i64, u8, u16, u32, u64, usize, isize)
 ConstParamInfo ParseConstParam(
     const ScopeContext& ctx,
@@ -106,7 +106,7 @@ ConstParamInfo ParseConstParam(
     const TypeRef& param_type);
 
 // Validate default type argument values.
-// SPEC: SPECIFICATION.md Section 13.1.3 "Default Type Arguments"
+// SPEC: Docs/SPECIFICATION.md Section 13.1.3 "Default Type Arguments"
 // Rules:
 //   - Parameters with defaults must come after parameters without defaults
 //   - Default types must be well-formed in the scope of preceding parameters

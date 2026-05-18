@@ -2,7 +2,7 @@
 // Symbol Table Implementation
 // =============================================================================
 //
-// SPEC REFERENCE: SPECIFICATION.md
+// SPEC REFERENCE: Docs/SPECIFICATION.md
 //   - Section 6.3 Symbols, Mangling, and Linkage (lines 15392-15663)
 //   - Symbols track: mangled name, linkage, type info
 //   - VTableDecl, LiteralData, DefaultImpl constructors (lines 15397-15400)

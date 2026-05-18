@@ -4,7 +4,7 @@
 // Key Block Statement Lowering
 // =============================================================================
 //
-// SPEC REFERENCE: SPECIFICATION.md Section 7.6 (Key Blocks)
+// SPEC REFERENCE: Docs/SPECIFICATION.md Section 7.6 (Key Blocks)
 //   - #path { body } acquires key for synchronized access
 //   - Modes: read, write (default)
 //   - Modifiers: dynamic, speculative, release

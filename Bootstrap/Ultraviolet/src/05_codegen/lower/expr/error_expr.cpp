@@ -2,7 +2,7 @@
 // Expression Lowering: ErrorExpr
 // =============================================================================
 //
-// SPEC REFERENCE: SPECIFICATION.md Section 6.4 (Expression Lowering)
+// SPEC REFERENCE: Docs/SPECIFICATION.md Section 6.4 (Expression Lowering)
 //   - Line 16071-16073: (Lower-Expr-Error)
 //
 // MIGRATED FROM:

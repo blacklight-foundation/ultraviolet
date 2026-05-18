@@ -2,7 +2,7 @@
 // ABI Type: Path Types (ABI-Record, ABI-Enum, ABI-Alias, ABI-Modal for paths)
 // =============================================================================
 //
-// SPEC REFERENCE: SPECIFICATION.md
+// SPEC REFERENCE: Docs/SPECIFICATION.md
 //   - Section 6.2.2 ABI Type Lowering
 //   - ABI-Alias: resolve alias body and recurse
 //   - ABI-Record: use ::ultraviolet::analysis::layout::RecordLayout

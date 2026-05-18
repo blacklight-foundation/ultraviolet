@@ -5,7 +5,7 @@
 // This file provides non-inline implementations for the IR builder API.
 // Most builder functions are inline in ir_builder.h for performance.
 //
-// SPEC REFERENCE: SPECIFICATION.md
+// SPEC REFERENCE: Docs/SPECIFICATION.md
 //   - Section 6.0 Codegen Model and Judgments (lines 14196-14347)
 //   - ProcIR structure (line 14234)
 //   - CodegenParams (line 14237)

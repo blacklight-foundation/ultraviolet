@@ -2,7 +2,7 @@
 // MIGRATION MAPPING: args_ok.cpp
 // =============================================================================
 //
-// SPEC REFERENCE: SPECIFICATION.md
+// SPEC REFERENCE: Docs/SPECIFICATION.md
 //   Section 5.2.4: Procedure Calls (lines 8707-8777)
 //   - ArgsOkTJudg = {ArgsOk_T}
 //   - Rules: ArgsT-Empty, ArgsT-Cons, ArgsT-Cons-Ref

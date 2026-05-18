@@ -43,6 +43,12 @@ public procedure unknownTestTargetDiagnostic(target_text: string@View) -> Diagno
     return errorDiagnostic(CODE_TEST_UNKNOWN_TARGET, "unknown uv test target")
 }
 
+public procedure malformedCoverageReferenceDiagnostic(
+    reference_text: string@View
+) -> Diagnostic {
+    return errorDiagnostic(CODE_TEST_MALFORMED_COVERAGE, "malformed covers argument")
+}
+
 public procedure unknownTestTargetDiagnosticStream(
     diagnostics_region: unique Region@Active,
     target_text: string@View

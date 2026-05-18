@@ -1,13 +1,13 @@
 // Test responsibility: Source/Compiler/Tests/Semantics/Attributes/TestAttributes/DefTestCoverageTests.uv
 //
-// This file owns source-native tests for def.TestCoverage@L28404:
+// This file owns source-native tests for def.TestCoverage@L28751:
 //
 // TestCoverage(proc) is the source-ordered list of string arguments from
 // `covers(r_i)` entries.
 
 [[test(
     name: "test coverage preserves source-order coverage references",
-    covers("def.TestCoverage@L28404")
+    covers("def.TestCoverage@L28751")
 )]]
 internal procedure testCoveragePreservesSourceOrderCoverageReferences() -> bool
 |: => @result
@@ -18,8 +18,8 @@ internal procedure testCoveragePreservesSourceOrderCoverageReferences() -> bool
             checkTestAttributeArguments(
                 diagnostics_region,
                 testAttributeArguments2(
-                    testCoverageAttributeArgument("def.TestCoverage@L28404"),
-                    testCoverageAttributeArgument("def.TestAttributeArgsOk@L28435")
+                    testCoverageAttributeArgument("def.TestCoverage@L28751"),
+                    testCoverageAttributeArgument("def.TestAttributeArgsOk@L28782")
                 ),
                 "UltravioletCompiler::Tests::Example::coverage"
             )
@@ -44,7 +44,7 @@ internal procedure coverageReferencesMatchSourceOrder(
             false
         }
         @Entry { reference, tail } {
-            if (!projectTextEquals(reference.text, "def.TestCoverage@L28404")) {
+            if (!projectTextEquals(reference.text, "def.TestCoverage@L28751")) {
                 return false
             }
             return if tail is {
@@ -54,7 +54,7 @@ internal procedure coverageReferencesMatchSourceOrder(
                 @Entry { reference: second_reference, tail: final_tail } {
                     if (!projectTextEquals(
                         second_reference.text,
-                        "def.TestAttributeArgsOk@L28435"
+                        "def.TestAttributeArgsOk@L28782"
                     )) {
                         return false
                     }

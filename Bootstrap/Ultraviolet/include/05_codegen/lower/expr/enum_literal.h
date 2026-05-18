@@ -1,7 +1,7 @@
 #pragma once
 
 // =============================================================================
-// SPEC REFERENCE: SPECIFICATION.md Section 6.4 (Expression Lowering)
+// SPEC REFERENCE: Docs/SPECIFICATION.md Section 6.4 (Expression Lowering)
 //   - Lines 16187-16193: (Lower-Expr-EnumLiteral)
 //     Gamma |- ResolveEnumVariant(path) => (enum_ty, variant_idx, payload_ty_opt)
 //     Gamma |- LowerExpr(payload_opt) => <IR_p, v_p>

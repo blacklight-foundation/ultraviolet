@@ -1,6 +1,6 @@
 [[test(
     name: "Resolve canonicalizes root and joined path",
-    covers("Resolve-Canonical@L3405")
+    covers("Resolve-Canonical@L3426")
 )]]
 internal procedure resolveCanonicalizesRootAndJoinedPath() -> bool
 |: => @result
@@ -18,7 +18,7 @@ internal procedure resolveCanonicalizesRootAndJoinedPath() -> bool
 
 [[test(
     name: "Resolve rejects root parent traversal",
-    covers("Resolve-Canonical-Err@L3423")
+    covers("Resolve-Canonical-Err@L3444")
 )]]
 internal procedure resolveRejectsRootParentTraversal() -> bool
 |: => @result
@@ -35,7 +35,7 @@ internal procedure resolveRejectsRootParentTraversal() -> bool
 
 [[test(
     name: "Resolve rejects joined path parent traversal",
-    covers("Resolve-Canonical-Err@L3423")
+    covers("Resolve-Canonical-Err@L3444")
 )]]
 internal procedure resolveRejectsJoinedPathParentTraversal() -> bool
 |: => @result
@@ -52,7 +52,7 @@ internal procedure resolveRejectsJoinedPathParentTraversal() -> bool
 
 [[test(
     name: "Resolve accepts absolute path with separate canonical root",
-    covers("Resolve-Canonical@L3405")
+    covers("Resolve-Canonical@L3426")
 )]]
 internal procedure resolveAcceptsAbsolutePathWithSeparateCanonicalRoot() -> bool
 |: => @result

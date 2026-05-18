@@ -2,7 +2,7 @@
 // type_common.cpp - Common Type Parsing Utilities and Main Entry Points
 // =============================================================================
 //
-// SPEC REFERENCE: SPECIFICATION.md, Section 3.3.7, Lines 4628-4780
+// SPEC REFERENCE: Docs/SPECIFICATION.md, Section 3.3.7, Lines 4628-4780
 // Lines 4630-4631 (TypeStart predicate)
 // Lines 4633-4641 (Parse-Type, Parse-Type-Err)
 // Lines 4695-4780 (NonPermType parsing)

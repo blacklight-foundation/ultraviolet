@@ -2,7 +2,7 @@
 // tuple_literal.cpp - Tuple Literal and Parenthesized Expression Parsing
 // =============================================================================
 //
-// SPEC REFERENCE: SPECIFICATION.md
+// SPEC REFERENCE: Docs/SPECIFICATION.md
 // - Parse-Parenthesized-Expr (Lines 5204-5207)
 // - Parse-Tuple-Literal (Lines 5209-5212)
 // - Parse-TupleExprElems-* (Lines 5838-5856)

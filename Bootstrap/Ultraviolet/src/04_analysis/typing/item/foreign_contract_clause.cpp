@@ -2,7 +2,7 @@
 // MIGRATION: item/foreign_contract_clause.cpp
 // =============================================================================
 //
-// SPEC REFERENCE: SPECIFICATION.md
+// SPEC REFERENCE: Docs/SPECIFICATION.md
 //   Section 18: Foreign Function Interface - Contracts
 //   - @foreign_assumes syntax
 //   - @foreign_ensures syntax

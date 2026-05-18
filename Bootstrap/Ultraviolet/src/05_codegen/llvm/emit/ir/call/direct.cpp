@@ -1922,7 +1922,11 @@ void IRInstructionVisitor::operator()(const IRCall &call) const
       {
         ABICallResult abi = ComputeCallABI(
             emitter,
-            sig->params, sig->ret, use_c_abi_aggregate_sret);
+            sig->params,
+            sig->ret,
+            use_c_abi_aggregate_sret,
+            /*foreign_boundary_mode_independent=*/
+            IsRuntimeFunction(callee_symbol));
         decl_ty = abi.func_type;
       }
       if (!decl_ty && IsRuntimeFunction(callee_symbol))
@@ -2264,8 +2268,10 @@ void IRInstructionVisitor::operator()(const IRCall &call) const
     const bool ffi_import_catch = ffi_import_boundary &&
         sig->ffi_import_unwind_mode ==
             LowerCtx::FfiImportUnwindMode::Catch;
+    const bool runtime_boundary =
+        IsRuntimeFunction(callee_symbol) || IsRuntimeFunction(call.callee.name);
     const bool foreign_boundary_mode_independent =
-        ffi_import_boundary || raw_export_boundary;
+        ffi_import_boundary || raw_export_boundary || runtime_boundary;
     call_result = EmitABICall(
         emitter,
         &builder,

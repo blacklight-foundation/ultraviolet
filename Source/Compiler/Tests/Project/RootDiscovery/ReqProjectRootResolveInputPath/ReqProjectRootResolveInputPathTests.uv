@@ -1,7 +1,7 @@
 // Test responsibility:
 // Source/Compiler/Tests/Project/RootDiscovery/ReqProjectRootResolveInputPath/ReqProjectRootResolveInputPathTests.uv
 //
-// This file owns source-native tests for req.ProjectRootResolveInputPath@L2281:
+// This file owns source-native tests for req.ProjectRootResolveInputPath@L2302:
 //
 // When project loading begins from one command-line input path `p`, the
 // implementation MUST first resolve any relative `p` against the host current
@@ -18,7 +18,7 @@ using UltravioletCompiler::Project::{
 
 [[test(
     name: "relative project-root input requires host resolution before search",
-    covers("req.ProjectRootResolveInputPath@L2281")
+    covers("req.ProjectRootResolveInputPath@L2302")
 )]]
 internal procedure relativeProjectRootInputRequiresResolutionBeforeSearch() -> bool
 |: => @result
@@ -43,7 +43,7 @@ internal procedure relativeProjectRootInputRequiresResolutionBeforeSearch() -> b
 
 [[test(
     name: "absolute project-root input is already resolved for search",
-    covers("req.ProjectRootResolveInputPath@L2281")
+    covers("req.ProjectRootResolveInputPath@L2302")
 )]]
 internal procedure absoluteProjectRootInputIsAlreadyResolvedForSearch() -> bool
 |: => @result

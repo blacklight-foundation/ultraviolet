@@ -2,7 +2,7 @@
 // ABI Return Passing (§6.2.3)
 // =============================================================================
 //
-// SPEC REFERENCE: SPECIFICATION.md
+// SPEC REFERENCE: Docs/SPECIFICATION.md
 //   - Section 6.2.3 ABI Return Passing
 //   - ABI-Ret-ByValue rule
 //   - ABI-Ret-ByRef rule (SRet)

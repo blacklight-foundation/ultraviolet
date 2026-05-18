@@ -3,9 +3,9 @@
 // ===========================================================================
 //
 // SPEC REFERENCE:
-//   - SPECIFICATION.md, Section 5.13 "Attributes" (line 13848)
-//   - SPECIFICATION.md, Section 5.13.1 "Attribute Syntax" (lines 13860-13920)
-//   - SPECIFICATION.md, Section 5.13.2 "Built-in Attributes" (lines 13930-14100)
+//   - Docs/SPECIFICATION.md, Section 5.13 "Attributes" (line 13848)
+//   - Docs/SPECIFICATION.md, Section 5.13.1 "Attribute Syntax" (lines 13860-13920)
+//   - Docs/SPECIFICATION.md, Section 5.13.2 "Built-in Attributes" (lines 13930-14100)
 //
 // SOURCE FILE:
 //   - ultraviolet-bootstrap/src/03_analysis/attributes/attribute_registry.cpp
@@ -16,10 +16,20 @@
 
 #include <algorithm>
 #include <cstdint>
+#include <filesystem>
+#include <fstream>
+#include <optional>
 #include <string>
+#include <unordered_set>
+#include <vector>
 
 #include "00_core/assert_spec.h"
+#include "00_core/compiler_support.h"
 #include "01_project/language_profile.h"
+
+#ifndef UV_DEFAULT_OBLIGATION_LEDGER_PATH
+#define UV_DEFAULT_OBLIGATION_LEDGER_PATH ""
+#endif
 
 namespace ultraviolet::analysis {
 
@@ -120,6 +130,137 @@ static bool LooksLikeCoverageReference(std::string_view value) {
   return true;
 }
 
+static bool FileExists(const std::filesystem::path& path) {
+  std::error_code ec;
+  return std::filesystem::is_regular_file(path, ec) && !ec;
+}
+
+static void AppendCandidate(std::vector<std::filesystem::path>& candidates,
+                            std::filesystem::path path) {
+  if (path.empty()) {
+    return;
+  }
+  path = path.lexically_normal();
+  if (std::find(candidates.begin(), candidates.end(), path) == candidates.end()) {
+    candidates.push_back(std::move(path));
+  }
+}
+
+static void AppendAncestorLedgerCandidates(
+    std::vector<std::filesystem::path>& candidates,
+    std::filesystem::path start) {
+  if (start.empty()) {
+    return;
+  }
+  std::error_code ec;
+  if (!std::filesystem::is_directory(start, ec)) {
+    start = start.parent_path();
+  }
+  for (std::filesystem::path current = start; !current.empty();) {
+    AppendCandidate(candidates,
+                    current / "Docs" / "Internal" /
+                        "UltravioletObligations.csv");
+    const std::filesystem::path parent = current.parent_path();
+    if (parent.empty() || parent == current) {
+      break;
+    }
+    current = parent;
+  }
+}
+
+static std::optional<std::filesystem::path> FindObligationLedgerPath() {
+  std::vector<std::filesystem::path> candidates;
+  AppendCandidate(candidates, UV_DEFAULT_OBLIGATION_LEDGER_PATH);
+
+  if (const auto support_root = core::CompilerSupportRootPath();
+      support_root.has_value()) {
+    AppendCandidate(candidates,
+                    *support_root / "Docs" / "Internal" /
+                        "UltravioletObligations.csv");
+    AppendCandidate(candidates,
+                    *support_root / "Internal" / "UltravioletObligations.csv");
+  }
+
+  std::error_code ec;
+  const auto cwd = std::filesystem::current_path(ec);
+  if (!ec) {
+    AppendAncestorLedgerCandidates(candidates, cwd);
+  }
+
+  for (const auto& candidate : candidates) {
+    if (FileExists(candidate)) {
+      return candidate;
+    }
+  }
+  return std::nullopt;
+}
+
+static bool IsDecimalText(std::string_view text) {
+  if (text.empty()) {
+    return false;
+  }
+  for (const char ch : text) {
+    if (ch < '0' || ch > '9') {
+      return false;
+    }
+  }
+  return true;
+}
+
+static std::optional<std::string> ObligationReferenceFromCsvRow(
+    std::string_view row) {
+  const std::size_t first = row.find(',');
+  if (first == std::string_view::npos ||
+      !IsDecimalText(row.substr(0, first))) {
+    return std::nullopt;
+  }
+
+  const std::size_t second = row.find(',', first + 1);
+  const std::size_t last = row.rfind(',');
+  if (second == std::string_view::npos || last == std::string_view::npos ||
+      second <= first + 1 || last <= second + 1 || last + 1 >= row.size()) {
+    return std::nullopt;
+  }
+
+  const std::string_view id = row.substr(first + 1, second - first - 1);
+  std::string line(row.substr(last + 1));
+  while (!line.empty() && (line.back() == '\r' || line.back() == '\n')) {
+    line.pop_back();
+  }
+  if (id.empty() || !IsDecimalText(line)) {
+    return std::nullopt;
+  }
+
+  std::string reference(id);
+  reference += "@L";
+  reference += line;
+  return reference;
+}
+
+static std::unordered_set<std::string> LoadKnownObligationReferences() {
+  std::unordered_set<std::string> references;
+  const auto ledger_path = FindObligationLedgerPath();
+  if (!ledger_path.has_value()) {
+    return references;
+  }
+
+  std::ifstream input(*ledger_path);
+  std::string line;
+  while (std::getline(input, line)) {
+    if (const auto reference = ObligationReferenceFromCsvRow(line);
+        reference.has_value()) {
+      references.insert(*reference);
+    }
+  }
+  return references;
+}
+
+static bool CoverageReferenceNamesKnownObligationRow(std::string_view value) {
+  static const std::unordered_set<std::string> known_references =
+      LoadKnownObligationReferences();
+  return known_references.find(std::string(value)) != known_references.end();
+}
+
 static bool ValidateTestAttributeArgs(const ast::AttributeItem& attr,
                                       AttributeValidationResult& result) {
   if (attr.name != attrs::kTest) {
@@ -161,12 +302,27 @@ static bool ValidateTestAttributeArgs(const ast::AttributeItem& attr,
       }
 
       const auto* token = GetTokenArg((*nested)[0]);
-      if (!token || !IsNonEmptyStringLiteralToken(*token) ||
-          !LooksLikeCoverageReference(NormalizeAttrLiteral(token->lexeme))) {
+      if (!token || !IsNonEmptyStringLiteralToken(*token)) {
         result.ok = false;
         result.diag_id = "E-TST-0103";
         result.span = attr.span;
         result.message = "Malformed covers(...) argument";
+        return false;
+      }
+
+      const std::string reference = NormalizeAttrLiteral(token->lexeme);
+      if (!LooksLikeCoverageReference(reference)) {
+        result.ok = false;
+        result.diag_id = "E-TST-0103";
+        result.span = attr.span;
+        result.message = "Malformed covers(...) argument";
+        return false;
+      }
+      if (!CoverageReferenceNamesKnownObligationRow(reference)) {
+        result.ok = false;
+        result.diag_id = "E-TST-0107";
+        result.span = attr.span;
+        result.message = "Unknown audit coverage reference";
         return false;
       }
       continue;

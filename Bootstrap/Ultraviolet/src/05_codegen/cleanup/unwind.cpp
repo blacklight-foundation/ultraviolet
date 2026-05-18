@@ -2,7 +2,7 @@
 // MIGRATION MAPPING: unwind.cpp
 // =============================================================================
 //
-// SPEC REFERENCE: SPECIFICATION.md
+// SPEC REFERENCE: Docs/SPECIFICATION.md
 //   - Section 6.4 Expression Lowering - Panic and Unwind (lines 15950-15992)
 //   - Panic out-parameter handling (lines 15950-15965)
 //   - Unwind path generation (lines 15966-15980)

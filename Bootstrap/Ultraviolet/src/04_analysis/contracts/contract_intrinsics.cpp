@@ -4,9 +4,9 @@
  * =============================================================================
  *
  * SPEC REFERENCE:
- *   - SPECIFICATION.md, Section 14.5.1 "@result Intrinsic"
- *   - SPECIFICATION.md, Section 14.5.2 "@entry Intrinsic"
- *   - SPECIFICATION.md, Section 14.9 "Foreign Contracts"
+ *   - Docs/SPECIFICATION.md, Section 14.5.1 "@result Intrinsic"
+ *   - Docs/SPECIFICATION.md, Section 14.5.2 "@entry Intrinsic"
+ *   - Docs/SPECIFICATION.md, Section 14.9 "Foreign Contracts"
  *
  * This file implements handling for contract intrinsic expressions:
  *

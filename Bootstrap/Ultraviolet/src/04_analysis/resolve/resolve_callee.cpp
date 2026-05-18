@@ -3,8 +3,8 @@
 // =============================================================================
 //
 // SPEC REFERENCE:
-//   SPECIFICATION.md §5.1.3 "Lookup" (Lines 6822-6899)
-//   SPECIFICATION.md §5.1.6 "Qualified Disambiguation" (Lines 7310-7429)
+//   Docs/SPECIFICATION.md §5.1.3 "Lookup" (Lines 6822-6899)
+//   Docs/SPECIFICATION.md §5.1.6 "Qualified Disambiguation" (Lines 7310-7429)
 //
 // CONTENT:
 //   1. ResolveCallee - Resolve the callee expression of a function call

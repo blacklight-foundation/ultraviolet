@@ -2,7 +2,7 @@
 // MIGRATION MAPPING: layout_dynobj.cpp
 // =============================================================================
 //
-// SPEC REFERENCE: SPECIFICATION.md
+// SPEC REFERENCE: Docs/SPECIFICATION.md
 //   - Section 6.1.8 Dynamic Class Object Layout (lines 15135-15152)
 //   - DynFields definition (line 15137)
 //   - Layout-DynamicClass rule (lines 15140-15142)

@@ -5,7 +5,7 @@
 // Pattern nodes for case analysis, let bindings, and loop iteration.
 // Also includes IfCaseClause for if-is case analysis support.
 //
-// SPEC: SPECIFICATION.md Section 3.3.2.5
+// SPEC: Docs/SPECIFICATION.md Section 3.3.2.5
 //
 // ===========================================================================
 

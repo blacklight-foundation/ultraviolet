@@ -4,7 +4,7 @@
 // Literal Pattern Lowering
 // =============================================================================
 //
-// SPEC REFERENCE: SPECIFICATION.md Section 6.6 (Pattern Matching Lowering)
+// SPEC REFERENCE: Docs/SPECIFICATION.md Section 6.6 (Pattern Matching Lowering)
 //   - Literal patterns match constant values
 //   - Used in case clauses for equality checking
 //

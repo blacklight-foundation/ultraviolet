@@ -3,9 +3,9 @@
 // =============================================================================
 //
 // SPEC REFERENCE:
-//   SPECIFICATION.md §2 (lines 746-760) - Phase 0: Build/Project Model
-//   SPECIFICATION.md §2.1 (lines 854-862) - (WF-Assembly-EmitIR)
-//   SPECIFICATION.md §6.12 (lines 1412-1414) - LLVM Target Constants
+//   Docs/SPECIFICATION.md §2 (lines 746-760) - Phase 0: Build/Project Model
+//   Docs/SPECIFICATION.md §2.1 (lines 854-862) - (WF-Assembly-EmitIR)
+//   Docs/SPECIFICATION.md §6.12 (lines 1412-1414) - LLVM Target Constants
 //
 // =============================================================================
 

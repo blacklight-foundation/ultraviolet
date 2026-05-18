@@ -2,7 +2,7 @@
 // Statement Lowering Common Utilities Implementation
 // =============================================================================
 //
-// SPEC REFERENCE: SPECIFICATION.md Section 6.5 (Statement Lowering)
+// SPEC REFERENCE: Docs/SPECIFICATION.md Section 6.5 (Statement Lowering)
 //   - Lines 16586-16756: Statement lowering judgments
 //   - LowerStmt dispatch
 //   - LowerStmtList, LowerBlock
@@ -248,7 +248,7 @@ IRPtr TempCleanupIR(const std::vector<TempValue>& temps, LowerCtx& ctx) {
   std::vector<IRPtr> parts;
   auto drop_order = TempDropOrder(temps);
   for (const auto& temp : drop_order) {
-    if (temp.type) {
+    if (temp.has_responsibility && temp.type) {
       parts.push_back(EmitDrop(temp.type, temp.value, ctx));
     }
   }

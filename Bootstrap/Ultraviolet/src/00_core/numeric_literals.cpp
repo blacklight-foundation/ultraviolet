@@ -2,7 +2,7 @@
 // MIGRATION MAPPING: numeric_literals.cpp
 // =============================================================================
 //
-// SPEC REFERENCE: SPECIFICATION.md
+// SPEC REFERENCE: Docs/SPECIFICATION.md
 //   - Section 5.2.10 "Literal Expressions" (IntValueCore, StripIntSuffix)
 //   - Section 5.10 "Enum Discriminant Defaults" (DiscValue via IntValue)
 //

@@ -2,7 +2,7 @@
 // MIGRATION MAPPING: panic.cpp
 // =============================================================================
 //
-// SPEC REFERENCE: SPECIFICATION.md
+// SPEC REFERENCE: Docs/SPECIFICATION.md
 //   - Section 6.8 Cleanup and Panic Handling (lines 16973-17050)
 //   - CleanupJudg definitions (line 16973)
 //   - PanicCode mapping (lines 16997-17010)

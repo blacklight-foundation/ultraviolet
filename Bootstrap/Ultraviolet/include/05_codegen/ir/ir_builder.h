@@ -7,7 +7,7 @@
 // This header provides builder utilities for constructing IR nodes.
 // The builder pattern simplifies IR construction and ensures validation.
 //
-// SPEC REFERENCE: SPECIFICATION.md
+// SPEC REFERENCE: Docs/SPECIFICATION.md
 //   - Section 6.0 Codegen Model and Judgments (lines 14196-14347)
 //   - ProcIR structure (line 14234)
 //   - CodegenParams (line 14237)

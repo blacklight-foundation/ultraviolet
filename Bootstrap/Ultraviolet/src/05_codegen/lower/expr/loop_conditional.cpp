@@ -2,7 +2,7 @@
 // MIGRATION MAPPING: expr/loop_conditional.cpp
 // =============================================================================
 //
-// SPEC REFERENCE: SPECIFICATION.md Section 6.5 (Statement and Block Lowering)
+// SPEC REFERENCE: Docs/SPECIFICATION.md Section 6.5 (Statement and Block Lowering)
 //   - Lines 16746-16754: (Lower-Loop-Cond)
 //     Gamma |- LowerExpr(cond) => <IR_c, v_c>
 //     Gamma |- LowerBlock(body) => <IR_b, v_b>

@@ -2,7 +2,7 @@
 // MIGRATION MAPPING: llvm_call.cpp
 // =============================================================================
 //
-// SPEC REFERENCE: SPECIFICATION.md
+// SPEC REFERENCE: Docs/SPECIFICATION.md
 //   - Section 6.12.4 LLVM Call/Return Lowering (lines 17560-17600)
 //   - LLVMCall-ByValue rule
 //   - LLVMCall-SRet rule
@@ -542,13 +542,22 @@ llvm::Value* EmitABICall(LLVMEmitter& emitter,
 
   auto* builder = static_cast<llvm::IRBuilder<>*>(builder_base);
 
+  const bool runtime_boundary_mode_independent =
+      [&]() -> bool {
+    if (auto* global = llvm::dyn_cast<llvm::GlobalValue>(callee)) {
+      return IsRuntimeFunction(global->getName().str());
+    }
+    return false;
+  }();
+
   ABICallResult abi = ComputeCallABI(
       emitter,
       params,
       ret_type,
       use_c_abi_aggregate_sret,
       /*foreign_boundary_mode_independent=*/
-      (ffi_import_boundary || foreign_boundary_mode_independent));
+      (ffi_import_boundary || foreign_boundary_mode_independent ||
+       runtime_boundary_mode_independent));
   if (!abi.valid || !abi.func_type) {
     if (LowerCtx* ctx = emitter.GetCurrentCtx()) {
       ctx->ReportCodegenFailure();
@@ -732,13 +741,29 @@ llvm::Value* EmitABICall(LLVMEmitter& emitter,
   auto implicit_panic_out_arg = [&]() -> llvm::Value* {
     llvm::Value* slot = emitter.GetLocal(std::string(kPanicOutName));
     if (!slot) {
-      if (llvm::Value* hosted = emitter.GetHostedSessionPanicPtr()) {
-        return hosted;
-      }
       llvm::Function* current_func =
           builder->GetInsertBlock() ? builder->GetInsertBlock()->getParent() : nullptr;
+      llvm::Type* panic_out_ty = emitter.GetLLVMType(PanicOutType());
+      if (llvm::Value* hosted = emitter.GetHostedSessionPanicPtr()) {
+        if (!current_func || !panic_out_ty) {
+          return nullptr;
+        }
+        llvm::IRBuilder<> entry_builder(&current_func->getEntryBlock(),
+                                        current_func->getEntryBlock().begin());
+        llvm::AllocaInst* panic_out_slot =
+            entry_builder.CreateAlloca(panic_out_ty, nullptr, "__uv_hosted_panic_out");
+        llvm::Value* stored = CoerceValue(builder, hosted, panic_out_ty);
+        if (!stored && hosted->getType()->isPointerTy() && panic_out_ty->isPointerTy()) {
+          stored = builder->CreateBitCast(hosted, panic_out_ty);
+        }
+        if (!stored) {
+          return nullptr;
+        }
+        builder->CreateStore(stored, panic_out_slot);
+        return panic_out_slot;
+      }
       llvm::Type* panic_ty = emitter.GetLLVMType(PanicRecordType());
-      if (!current_func || !panic_ty) {
+      if (!current_func || !panic_ty || !panic_out_ty) {
         return nullptr;
       }
       llvm::IRBuilder<> entry_builder(&current_func->getEntryBlock(),
@@ -746,15 +771,22 @@ llvm::Value* EmitABICall(LLVMEmitter& emitter,
       llvm::AllocaInst* panic_record =
           entry_builder.CreateAlloca(panic_ty, nullptr, "__uv_implicit_panic_record");
       builder->CreateStore(llvm::Constant::getNullValue(panic_ty), panic_record);
-      return panic_record;
-    }
-    if (auto* alloca = llvm::dyn_cast<llvm::AllocaInst>(slot)) {
-      return builder->CreateLoad(alloca->getAllocatedType(), alloca);
+      llvm::AllocaInst* panic_out_slot =
+          entry_builder.CreateAlloca(panic_out_ty, nullptr, "__uv_implicit_panic_out");
+      llvm::Value* stored = CoerceValue(builder, panic_record, panic_out_ty);
+      if (!stored && panic_record->getType()->isPointerTy() && panic_out_ty->isPointerTy()) {
+        stored = builder->CreateBitCast(panic_record, panic_out_ty);
+      }
+      if (!stored) {
+        return nullptr;
+      }
+      builder->CreateStore(stored, panic_out_slot);
+      return panic_out_slot;
     }
     if (!slot->getType()->isPointerTy()) {
       return nullptr;
     }
-    return builder->CreateLoad(emitter.GetOpaquePtr(), slot);
+    return slot;
   };
 
   auto recover_pointer_value_arg = [&](std::size_t index,

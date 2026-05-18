@@ -5,7 +5,7 @@
 // (loop condition { body } - equivalent to while loops).
 //
 // =============================================================================
-// SPEC REFERENCE: SPECIFICATION.md
+// SPEC REFERENCE: Docs/SPECIFICATION.md
 // =============================================================================
 //
 // **(Parse-Loop-Expr)** Lines 5259-5262:

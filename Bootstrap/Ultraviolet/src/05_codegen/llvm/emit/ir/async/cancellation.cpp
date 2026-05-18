@@ -28,7 +28,8 @@ void IRInstructionVisitor::operator()(const IRCancelCheck &check) const
           emitter,
           check_info->params,
           check_info->ret,
-          use_c_abi_aggregate_sret);
+          use_c_abi_aggregate_sret,
+          /*foreign_boundary_mode_independent=*/true);
       if (check_abi.func_type)
       {
         check_fn = llvm::Function::Create(

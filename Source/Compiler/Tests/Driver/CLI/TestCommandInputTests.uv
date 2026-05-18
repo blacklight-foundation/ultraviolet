@@ -104,7 +104,7 @@ internal procedure uvTestRejectsExtraTarget() -> bool
 
 [[test(
     name: "empty command resolves to version command",
-    covers("def.15.MainEntryPointDefinitions@L52806")
+    covers("def.15.MainEntryPointDefinitions@L53383")
 )]]
 internal procedure emptyCommandResolvesToVersion() -> bool
 |: => @result
@@ -128,7 +128,7 @@ internal procedure emptyCommandResolvesToVersion() -> bool
 
 [[test(
     name: "unknown command is rejected",
-    covers("def.15.MainEntryPointDefinitions@L52806")
+    covers("def.15.MainEntryPointDefinitions@L53383")
 )]]
 internal procedure unknownCommandIsRejected() -> bool
 |: => @result
@@ -152,7 +152,7 @@ internal procedure unknownCommandIsRejected() -> bool
 
 [[test(
     name: "project commands parse into command states",
-    covers("def.15.MainEntryPointDefinitions@L52806")
+    covers("def.15.MainEntryPointDefinitions@L53383")
 )]]
 internal procedure projectCommandsParseIntoCommandStates() -> bool
 |: => @result

@@ -2,7 +2,7 @@
 // ABI Type: Safe Pointers (ABI-Ptr)
 // =============================================================================
 //
-// SPEC REFERENCE: SPECIFICATION.md
+// SPEC REFERENCE: Docs/SPECIFICATION.md
 //   - Section 6.2.2 ABI Type Lowering
 //   - ABI-Ptr rule: ABITy(TypePtr(U, s)) => <PtrSize, PtrAlign>
 //

@@ -2,7 +2,7 @@
 // MIGRATION MAPPING: lexer_ident.cpp
 // =============================================================================
 //
-// SPEC REFERENCE: SPECIFICATION.md
+// SPEC REFERENCE: Docs/SPECIFICATION.md
 //   Section 3.2.2 - Character Classes (lines 2048-2085)
 //   Section 3.2.3 - Reserved Lexemes (lines 2086-2106)
 //   Section 3.2.7 - Identifier and Keyword Lexing (lines 2365-2393)

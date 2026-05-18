@@ -2,7 +2,7 @@
 // MIGRATION MAPPING: expr/loop_iter.cpp
 // =============================================================================
 //
-// SPEC REFERENCE: SPECIFICATION.md Section 6.5 (Statement and Block Lowering)
+// SPEC REFERENCE: Docs/SPECIFICATION.md Section 6.5 (Statement and Block Lowering)
 //   - Lines 16751-16754: (Lower-Loop-Iter)
 //     Gamma |- LowerExpr(iter) => <IR_i, v_iter>
 //     Gamma |- LowerBlock(body) => <IR_b, v_b>

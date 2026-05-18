@@ -2,7 +2,7 @@
 // Intrinsic Interface Implementation
 // =============================================================================
 //
-// SPEC REFERENCE: SPECIFICATION.md
+// SPEC REFERENCE: Docs/SPECIFICATION.md
 //   - Section 6.9 Runtime Interface
 //   - Section 6.12 Codegen Parameters
 //

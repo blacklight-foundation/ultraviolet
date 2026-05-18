@@ -1,7 +1,7 @@
 #pragma once
 
 // =============================================================================
-// SPEC REFERENCE: SPECIFICATION.md Section 6.4 (Expression Lowering)
+// SPEC REFERENCE: Docs/SPECIFICATION.md Section 6.4 (Expression Lowering)
 //   - Lines 16057-16060: (Lower-Expr-Ident-Local)
 //     Gamma |- ResolveValueName(x) => ent    ent.origin_opt = bottom
 //     Gamma |- LowerReadPlace(Identifier(x)) => <IR, v>

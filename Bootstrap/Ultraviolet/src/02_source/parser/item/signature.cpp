@@ -2,7 +2,7 @@
 // signature.cpp - Procedure Signature Parsing
 // =============================================================================
 //
-// SPEC REFERENCE: SPECIFICATION.md Section 3.3.6.13 (Signature Rules)
+// SPEC REFERENCE: Docs/SPECIFICATION.md Section 3.3.6.13 (Signature Rules)
 //
 // This file implements signature parsing for procedures and methods:
 //   - ParseReturnOpt: Parse optional return type (-> Type)

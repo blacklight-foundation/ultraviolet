@@ -2,7 +2,7 @@
 // callgraph_caps.cpp - Call Graph Construction and Capability Flow Analysis
 // =============================================================================
 //
-// SPEC REFERENCE: SPECIFICATION.md
+// SPEC REFERENCE: Docs/SPECIFICATION.md
 //   - Section 19.1 "Capability Flow Analysis" (lines 24210-24300)
 //   - Section 19.2 "Call Graph Construction" (lines 24310-24400)
 //

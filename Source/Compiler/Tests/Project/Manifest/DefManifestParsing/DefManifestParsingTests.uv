@@ -1,7 +1,7 @@
 // Test responsibility:
 // Source/Compiler/Tests/Project/Manifest/DefManifestParsing/DefManifestParsingTests.uv
 //
-// This file owns source-native tests for def.ManifestParsing@L2168.
+// This file owns source-native tests for def.ManifestParsing@L2189.
 
 using UltravioletCompiler::Project::{
     ManifestParseValue,
@@ -11,7 +11,7 @@ using UltravioletCompiler::Project::{
 
 [[test(
     name: "manifest parser reads assembly tables across comments and ignored tables",
-    covers("def.ManifestParsing@L2168")
+    covers("def.ManifestParsing@L2189")
 )]]
 internal procedure manifestParserReadsAssemblyTablesAcrossCommentsAndIgnoredTables() -> bool
 |: => @result

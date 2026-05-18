@@ -2,7 +2,7 @@
 // primary.cpp - Primary Expression Parsing
 // =============================================================================
 //
-// SPEC REFERENCE: SPECIFICATION.md, Section 3.3.8.3, Lines 5158-5320
+// SPEC REFERENCE: Docs/SPECIFICATION.md, Section 3.3.8.3, Lines 5158-5320
 //
 // This file implements:
 // - ParsePrimary: Main entry point for primary expression parsing

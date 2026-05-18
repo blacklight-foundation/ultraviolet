@@ -1,7 +1,7 @@
 // Test responsibility:
 // Source/Compiler/Tests/Project/AssemblyLoader/StepParseErr/StepParseErrTests.uv
 //
-// This file owns source-native tests for Step-Parse-Err@L3576.
+// This file owns source-native tests for Step-Parse-Err@L3597.
 
 using UltravioletCompiler::Diagnostics::{
     diagnosticStreamHasErrors
@@ -14,7 +14,7 @@ using UltravioletCompiler::Project::{
 
 [[test(
     name: "project load parse transition enters failed state on parse error",
-    covers("Step-Parse-Err@L3576")
+    covers("Step-Parse-Err@L3597")
 )]]
 internal procedure projectLoadParseTransitionEntersFailedStateOnParseError() -> bool
 |: => @result

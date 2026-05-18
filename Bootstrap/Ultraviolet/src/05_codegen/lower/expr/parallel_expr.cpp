@@ -2,7 +2,7 @@
 // MIGRATION MAPPING: expr/parallel_expr.cpp
 // =============================================================================
 //
-// SPEC REFERENCE: SPECIFICATION.md Section 10 (Structured Parallelism)
+// SPEC REFERENCE: Docs/SPECIFICATION.md Section 10 (Structured Parallelism)
 //   - Parallel blocks with domain specification
 //
 // SOURCE FILE: ultraviolet-bootstrap/src/04_codegen/lower/lower_expr_core.cpp

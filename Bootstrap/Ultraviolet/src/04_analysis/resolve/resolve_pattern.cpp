@@ -3,8 +3,8 @@
 // =============================================================================
 //
 // SPEC REFERENCE:
-//   SPECIFICATION.md §5.1.2 "Name Introduction and Shadowing" (Lines 6718-6821)
-//   SPECIFICATION.md §5.1.7 "Resolution Pass" (Lines 7430-7549)
+//   Docs/SPECIFICATION.md §5.1.2 "Name Introduction and Shadowing" (Lines 6718-6821)
+//   Docs/SPECIFICATION.md §5.1.7 "Resolution Pass" (Lines 7430-7549)
 //
 // SOURCE FILE:
 //   ultraviolet-bootstrap/src/03_analysis/resolve/resolver_pat.cpp (Lines 1-283)

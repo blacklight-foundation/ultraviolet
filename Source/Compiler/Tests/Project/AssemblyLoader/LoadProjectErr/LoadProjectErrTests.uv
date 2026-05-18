@@ -1,7 +1,7 @@
 // Test responsibility:
 // Source/Compiler/Tests/Project/AssemblyLoader/LoadProjectErr/LoadProjectErrTests.uv
 //
-// This file owns source-native tests for LoadProject-Err@L4017.
+// This file owns source-native tests for LoadProject-Err@L4038.
 
 using UltravioletCompiler::Diagnostics::{
     DiagnosticStreamValue,
@@ -22,7 +22,7 @@ using UltravioletCompiler::Project::{
 
 [[test(
     name: "project load preserves manifest parse failure diagnostics",
-    covers("LoadProject-Err@L4017")
+    covers("LoadProject-Err@L4038")
 )]]
 internal procedure projectLoadPreservesManifestParseFailureDiagnostics() -> bool
 |: => @result
@@ -49,7 +49,7 @@ internal procedure projectLoadPreservesManifestParseFailureDiagnostics() -> bool
 
 [[test(
     name: "project load preserves manifest validation failure diagnostics",
-    covers("LoadProject-Err@L4017")
+    covers("LoadProject-Err@L4038")
 )]]
 internal procedure projectLoadPreservesManifestValidationFailureDiagnostics() -> bool
 |: => @result

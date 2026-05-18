@@ -2,7 +2,7 @@
 // MIGRATION MAPPING: checks.cpp
 // =============================================================================
 //
-// SPEC REFERENCE: SPECIFICATION.md
+// SPEC REFERENCE: Docs/SPECIFICATION.md
 //   - Section 6.11 Runtime Checks (lines 17200-17265)
 //   - Check-Index-Ok/Check-Index-Err rules (lines 17235-17250)
 //   - Check-Range-Ok/Check-Range-Err rules (lines 17250-17254)

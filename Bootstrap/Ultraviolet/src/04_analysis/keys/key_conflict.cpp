@@ -3,10 +3,10 @@
 // ===========================================================================
 //
 // SPEC REFERENCE:
-//   - SPECIFICATION.md, Section 17 "Key System" (line 23759)
-//   - SPECIFICATION.md, Section 17.3 "Key Conflicts" (lines 23900-24000)
-//   - SPECIFICATION.md, Section 17.4 "Conflict Detection" (lines 24010-24100)
-//   - SPECIFICATION.md, Section 8.13 "E-KEY Errors" (lines 22200-22300)
+//   - Docs/SPECIFICATION.md, Section 17 "Key System" (line 23759)
+//   - Docs/SPECIFICATION.md, Section 17.3 "Key Conflicts" (lines 23900-24000)
+//   - Docs/SPECIFICATION.md, Section 17.4 "Conflict Detection" (lines 24010-24100)
+//   - Docs/SPECIFICATION.md, Section 8.13 "E-KEY Errors" (lines 22200-22300)
 //
 // CONFLICT RULES:
 //   | Held Key | New Key | Conflict? |

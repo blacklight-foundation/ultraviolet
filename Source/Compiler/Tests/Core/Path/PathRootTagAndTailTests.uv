@@ -1,6 +1,6 @@
 [[test(
     name: "RootTag of drive-rooted path is the drive tag",
-    covers("def.PathRootTagAndTail@L3165")
+    covers("def.PathRootTagAndTail@L3186")
 )]]
 internal procedure rootTagOfDriveRootedPathIsDriveTag() -> bool
 |: => @result
@@ -18,7 +18,7 @@ internal procedure rootTagOfDriveRootedPathIsDriveTag() -> bool
 
 [[test(
     name: "Tail of drive-rooted path starts after drive separator",
-    covers("def.PathRootTagAndTail@L3165")
+    covers("def.PathRootTagAndTail@L3186")
 )]]
 internal procedure tailOfDriveRootedPathStartsAfterDriveSeparator() -> bool
 |: => @result
@@ -33,7 +33,7 @@ internal procedure tailOfDriveRootedPathStartsAfterDriveSeparator() -> bool
 
 [[test(
     name: "RootTag of UNC path is canonical UNC tag",
-    covers("def.PathRootTagAndTail@L3165")
+    covers("def.PathRootTagAndTail@L3186")
 )]]
 internal procedure rootTagOfUNCPathIsCanonicalUNCTag() -> bool
 |: => @result
@@ -51,7 +51,7 @@ internal procedure rootTagOfUNCPathIsCanonicalUNCTag() -> bool
 
 [[test(
     name: "RootTag of root-relative path is canonical slash",
-    covers("def.PathRootTagAndTail@L3165")
+    covers("def.PathRootTagAndTail@L3186")
 )]]
 internal procedure rootTagOfRootRelativePathIsCanonicalSlash() -> bool
 |: => @result
@@ -69,7 +69,7 @@ internal procedure rootTagOfRootRelativePathIsCanonicalSlash() -> bool
 
 [[test(
     name: "RootTag of relative path is empty",
-    covers("def.PathRootTagAndTail@L3165")
+    covers("def.PathRootTagAndTail@L3186")
 )]]
 internal procedure rootTagOfRelativePathIsEmpty() -> bool
 |: => @result

@@ -2,7 +2,7 @@
 // postfix.cpp - Postfix Expression Parsing
 // =============================================================================
 //
-// SPEC REFERENCE: SPECIFICATION.md, Section 3.3.8.4, Lines 5126-5156
+// SPEC REFERENCE: Docs/SPECIFICATION.md, Section 3.3.8.4, Lines 5126-5156
 // - Parse-Postfix (Lines 5128-5131)
 // - Parse-PostfixTail (Lines 5133-5142)
 // - PostfixStep (Lines 5144-5156)

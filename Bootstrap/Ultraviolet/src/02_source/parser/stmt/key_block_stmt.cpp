@@ -3,8 +3,8 @@
 // =============================================================================
 // This file should contain parsing logic for key block statements.
 //
-// SPEC REFERENCE: SPECIFICATION.md, Section 3.3.10, Lines 6340-6343
-// SPEC REFERENCE: SPECIFICATION.md, Section 3.3.8.13, Lines 5477-5592
+// SPEC REFERENCE: Docs/SPECIFICATION.md, Section 3.3.10, Lines 6340-6343
+// SPEC REFERENCE: Docs/SPECIFICATION.md, Section 3.3.8.13, Lines 5477-5592
 // =============================================================================
 //
 // FORMAL RULES FROM SPEC:

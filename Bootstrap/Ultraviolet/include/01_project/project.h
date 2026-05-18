@@ -109,4 +109,11 @@ LoadProjectResult LoadProject(const std::filesystem::path& project_root,
 
 LoadProjectResult LoadProject(const std::filesystem::path& project_root);
 
+LoadProjectResult LoadProjectAllAssemblies(
+    const std::filesystem::path& project_root,
+    const AssemblyTarget& target);
+
+LoadProjectResult LoadProjectAllAssemblies(
+    const std::filesystem::path& project_root);
+
 }  // namespace ultraviolet::project

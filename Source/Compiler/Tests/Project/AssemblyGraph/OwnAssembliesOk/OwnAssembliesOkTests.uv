@@ -1,7 +1,7 @@
 // Test responsibility:
 // Source/Compiler/Tests/Project/AssemblyGraph/OwnAssembliesOk/OwnAssembliesOkTests.uv
 //
-// This file owns source-native tests for OwnAssemblies-Ok@L4463:
+// This file owns source-native tests for OwnAssemblies-Ok@L4484:
 //
 // ∀ A ∈ As, ∀ m ∈ A.modules. ∃ S.
 // OwnerRoot(ModuleDirOf(m, A.source_root), AssemblySourceRoots(As)) = S
@@ -30,7 +30,7 @@ using UltravioletCompiler::Project::{
 
 [[test(
     name: "own assemblies succeeds when every module has a unique source-root owner",
-    covers("OwnAssemblies-Ok@L4463")
+    covers("OwnAssemblies-Ok@L4484")
 )]]
 internal procedure ownAssembliesSucceedsWhenEveryModuleHasUniqueSourceRootOwner() -> bool
 |: => @result

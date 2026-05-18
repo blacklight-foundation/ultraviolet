@@ -2,7 +2,7 @@
 // MIGRATION MAPPING: layout_aggregates.cpp
 // =============================================================================
 //
-// SPEC REFERENCE: SPECIFICATION.md
+// SPEC REFERENCE: Docs/SPECIFICATION.md
 //   - Section 6.1.6 Aggregate Layouts (lines 14953-15084)
 //   - Tuples (lines 14955-14982)
 //   - Arrays (lines 14984-14999)

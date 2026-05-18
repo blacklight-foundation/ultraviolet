@@ -2,7 +2,7 @@
 // Panic Out-Parameter Support (§6.2.3)
 // =============================================================================
 //
-// SPEC REFERENCE: SPECIFICATION.md
+// SPEC REFERENCE: Docs/SPECIFICATION.md
 //   - Section 6.2.3 Panic Out-Parameter (lines 15287-15301)
 //   - PanicRecordFields = [<panic, bool>, <code, u32>]
 //   - PanicOutType = rawptr[mut, PanicRecord]

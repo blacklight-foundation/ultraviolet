@@ -1,13 +1,13 @@
 // Test responsibility:
 // Source/Compiler/Tests/Project/ManifestValidation/WFAssemblyRootPath/WFAssemblyRootPathTests.uv
 //
-// This file owns source-native tests for WF-Assembly-Root-Path@L2430.
+// This file owns source-native tests for WF-Assembly-Root-Path@L2451.
 
 using UltravioletCompiler::Project::{ manifestAssemblyRootPathIsValid }
 
 [[test(
     name: "manifest validation accepts relative assembly roots",
-    covers("WF-Assembly-Root-Path@L2430")
+    covers("WF-Assembly-Root-Path@L2451")
 )]]
 internal procedure manifestValidationAcceptsRelativeAssemblyRoots() -> bool
 |: => @result

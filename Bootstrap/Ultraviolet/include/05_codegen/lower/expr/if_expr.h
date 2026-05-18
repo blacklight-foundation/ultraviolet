@@ -8,7 +8,7 @@ namespace ultraviolet::codegen {
 // Section 6.4 If Expression Lowering
 // =============================================================================
 //
-// SPEC REFERENCE: SPECIFICATION.md Section 6.4 (Expression Lowering)
+// SPEC REFERENCE: Docs/SPECIFICATION.md Section 6.4 (Expression Lowering)
 //   - Lines 16203-16206: (Lower-Expr-If)
 //
 // (Lower-Expr-If):

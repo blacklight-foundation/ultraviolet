@@ -3,7 +3,7 @@
 // =============================================================================
 //
 // SPEC REFERENCE:
-//   SPECIFICATION.md Section 5.1.5 "Top-Level Name Collection" (Lines 6956-7309)
+//   Docs/SPECIFICATION.md Section 5.1.5 "Top-Level Name Collection" (Lines 6956-7309)
 //   - BindKind, BindSource, NameInfo, NameMap definitions
 //   - ItemNames, DeclNames, PatNames judgments
 //   - CollectNameMaps fixed-point computation

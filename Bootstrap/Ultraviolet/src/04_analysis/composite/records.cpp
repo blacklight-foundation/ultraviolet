@@ -2,7 +2,7 @@
 // MIGRATION MAPPING: records.cpp
 // =============================================================================
 //
-// SPEC REFERENCE: SPECIFICATION.md
+// SPEC REFERENCE: Docs/SPECIFICATION.md
 // - Section 5.2.8 "Default Record Construction" (lines 9072-9089)
 //   - Fields (line 9074)
 //   - InitOk (line 9076)

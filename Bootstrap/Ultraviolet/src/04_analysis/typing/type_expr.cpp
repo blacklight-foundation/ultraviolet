@@ -2,7 +2,7 @@
 // type_expr.cpp - Main Expression Typing Dispatcher
 // =============================================================================
 //
-// SPEC REFERENCE: SPECIFICATION.md
+// SPEC REFERENCE: Docs/SPECIFICATION.md
 //   Chapter 16: Expressions
 //   Section 8.3: Type Inference
 //   - ExprJudg: Expression judgments

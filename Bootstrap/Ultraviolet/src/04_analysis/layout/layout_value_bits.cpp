@@ -2,7 +2,7 @@
 // MIGRATION MAPPING: layout_value_bits.cpp
 // =============================================================================
 //
-// SPEC REFERENCE: SPECIFICATION.md
+// SPEC REFERENCE: Docs/SPECIFICATION.md
 //   - Section 6.1.4.1 ValueBits specifications (lines 14729-14770)
 //   - LEBytes definition (line 14416)
 //   - FloatBits_t for IEEE754 encoding (line 14417)

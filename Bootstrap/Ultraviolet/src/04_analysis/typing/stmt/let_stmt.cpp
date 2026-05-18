@@ -2,7 +2,7 @@
 // let_stmt.cpp - Let statement typing
 // =============================================================================
 //
-// SPEC REFERENCE: SPECIFICATION.md
+// SPEC REFERENCE: Docs/SPECIFICATION.md
 //   Section 5.2.11: Statement Typing (lines 9365-9387)
 //   - T-LetStmt-Ann (lines 9369-9372): Let with type annotation
 //   - T-LetStmt-Ann-Mismatch (lines 9374-9377): Type mismatch error

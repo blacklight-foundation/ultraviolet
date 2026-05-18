@@ -3,11 +3,11 @@
 // =============================================================================
 //
 // SPEC REFERENCE:
-//   - SPECIFICATION.md, Section 10.1 "Binding Operators" (lines 22110-22200)
-//   - SPECIFICATION.md, Section 10.2 "Binding States" (lines 22210-22300)
-//   - SPECIFICATION.md, Section 10.3 "Move Semantics" (lines 22310-22400)
-//   - SPECIFICATION.md, Section 10.4 "Permission System" (lines 22410-22500)
-//   - SPECIFICATION.md, Section 8.9 "E-OWN Errors" (lines 21800-21900)
+//   - Docs/SPECIFICATION.md, Section 10.1 "Binding Operators" (lines 22110-22200)
+//   - Docs/SPECIFICATION.md, Section 10.2 "Binding States" (lines 22210-22300)
+//   - Docs/SPECIFICATION.md, Section 10.3 "Move Semantics" (lines 22310-22400)
+//   - Docs/SPECIFICATION.md, Section 10.4 "Permission System" (lines 22410-22500)
+//   - Docs/SPECIFICATION.md, Section 8.9 "E-OWN Errors" (lines 21800-21900)
 //
 // SOURCE FILE:
 //   - ultraviolet-bootstrap/src/03_analysis/memory/borrow_bind.cpp
@@ -91,6 +91,7 @@
 #include "04_analysis/typing/types.h"
 #include "04_analysis/typing/type_lower.h"
 #include "04_analysis/memory/calls.h"
+#include "04_analysis/memory/return_responsibility.h"
 
 namespace ultraviolet::analysis {
 
@@ -1408,6 +1409,10 @@ static bool IsMoveExpr(const ast::ExprPtr& expr) {
   return expr && std::holds_alternative<ast::MoveExpr>(expr->node);
 }
 
+static bool IsCopyExpr(const ast::ExprPtr& expr) {
+  return expr && std::holds_alternative<ast::CopyExpr>(expr->node);
+}
+
 static ast::ExprPtr MoveInner(const ast::ExprPtr& expr) {
   if (!expr) {
     return nullptr;
@@ -1418,8 +1423,22 @@ static ast::ExprPtr MoveInner(const ast::ExprPtr& expr) {
   return nullptr;
 }
 
-static Responsibility RespOfInit(const ast::ExprPtr& init) {
+static Responsibility RespOfInit(const ScopeContext& ctx,
+                                 const ast::ExprPtr& init) {
   if (!IsPlaceExpr(init)) {
+    if (init) {
+      if (const auto* call = std::get_if<ast::CallExpr>(&init->node)) {
+        if (const auto has_resp = CallResultHasResponsibility(ctx, *call)) {
+          return *has_resp ? Responsibility::Resp : Responsibility::Alias;
+        }
+      }
+      if (const auto* method = std::get_if<ast::MethodCallExpr>(&init->node)) {
+        if (const auto has_resp =
+                MethodCallResultHasResponsibility(ctx, *method)) {
+          return *has_resp ? Responsibility::Resp : Responsibility::Alias;
+        }
+      }
+    }
     return Responsibility::Resp;
   }
   if (IsMoveExpr(init)) {
@@ -1484,6 +1503,31 @@ static void ConsumeOnMove_inplace(BindEnv& env, const ast::ExprPtr& expr) {
 static BindEnv ConsumeOnMove(const BindEnv& env, const ast::ExprPtr& expr) {
   BindEnv out = env;
   ConsumeOnMove_inplace(out, expr);
+  return out;
+}
+
+static ast::ExprPtr ReturnDestExprForBind(const ScopeContext& ctx,
+                                          const BindEnv& binds,
+                                          const TypeEnv& env,
+                                          const ast::ExprPtr& expr) {
+  if (!expr || IsMoveExpr(expr) || IsCopyExpr(expr) || !IsPlaceExpr(expr)) {
+    return expr;
+  }
+  const auto root = PlaceRoot(expr);
+  if (root.has_value()) {
+    const auto info = Lookup_B(binds, *root);
+    if (info.has_value() && info->resp == Responsibility::Alias) {
+      return expr;
+    }
+  }
+  const auto type = PlaceTypeOf(ctx, env, expr);
+  if (type.has_value() && BitcopyType(ctx, *type)) {
+    return expr;
+  }
+
+  auto out = std::make_shared<ast::Expr>();
+  out->span = expr->span;
+  out->node = ast::MoveExpr{expr};
   return out;
 }
 
@@ -3218,7 +3262,7 @@ static BindResult BindStmt(const ScopeContext& ctx,
             return ErrorResult(pat.diag_id, binding.pat->span);
           }
           const auto type_map = BindTypeMapFromBindings(pat.bindings);
-          const Responsibility resp = RespOfInit(binding.init);
+          const Responsibility resp = RespOfInit(ctx, binding.init);
           const Movability mv = MovOf(binding.op);
           const auto mut = std::is_same_v<T, ast::LetStmt>
                                ? ast::Mutability::Let
@@ -3313,7 +3357,8 @@ static BindResult BindStmt(const ScopeContext& ctx,
             SPEC_RULE("B-Return-Unit");
             return OkResult(in, false);
           }
-          auto res = BindExpr(ctx, node.value_opt, in);
+          auto res = BindExpr(
+              ctx, ReturnDestExprForBind(ctx, in.binds, in.env, node.value_opt), in);
           if (!res.ok) {
             return res;
           }
@@ -3540,7 +3585,7 @@ static BindScope StaticBindInfo(const ScopeContext& ctx,
     env.scopes.front()[IdKeyOf(name)] = TypeBinding{decl.mut, type};
   }
   const auto type_map = BindTypeMapFromBindings(pat.bindings);
-  const auto resp = RespOfInit(decl.binding.init);
+  const auto resp = RespOfInit(ctx, decl.binding.init);
   const auto mv = MovOf(decl.binding.op);
   const auto info = BindInfoMap(type_map, resp, mv, decl.mut);
   out.insert(info.begin(), info.end());

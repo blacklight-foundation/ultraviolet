@@ -4,7 +4,7 @@
 // This file should contain parsing logic for identifier patterns, which bind
 // a matched value to a name without requiring a type annotation.
 //
-// SPEC REFERENCE: SPECIFICATION.md, Section 3.3.9, Lines 6102-6105
+// SPEC REFERENCE: Docs/SPECIFICATION.md, Section 3.3.9, Lines 6102-6105
 // =============================================================================
 //
 // FORMAL RULE:

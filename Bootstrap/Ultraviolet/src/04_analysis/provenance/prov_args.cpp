@@ -4,9 +4,9 @@
  * =============================================================================
  *
  * SPEC REFERENCE:
- *   - SPECIFICATION.md, Section 21.4.4 "Argument Provenance" (lines 25270-25350)
- *   - SPECIFICATION.md, Section 6.8 "Procedure Calls" (lines 16500-16700)
- *   - SPECIFICATION.md, Section 10.3 "Move Semantics" (lines 22310-22400)
+ *   - Docs/SPECIFICATION.md, Section 21.4.4 "Argument Provenance" (lines 25270-25350)
+ *   - Docs/SPECIFICATION.md, Section 6.8 "Procedure Calls" (lines 16500-16700)
+ *   - Docs/SPECIFICATION.md, Section 10.3 "Move Semantics" (lines 22310-22400)
  *
  * DIAGNOSTIC CODES:
  *   - E-MEM-3020: Argument provenance expired

@@ -2,7 +2,7 @@
 // contract_clause.cpp - Contract Clause Parsing
 // =============================================================================
 //
-// SPEC REFERENCE: SPECIFICATION.md Section 3.3.6.13 (Contract Clause Rules)
+// SPEC REFERENCE: Docs/SPECIFICATION.md Section 3.3.6.13 (Contract Clause Rules)
 //
 // This file implements contract clause parsing:
 //   - ParseContractClauseOpt: Parse optional contract clause |: pre => post

@@ -1,6 +1,6 @@
 [[test(
     name: "FileExt is empty when basename has no dot",
-    covers("def.FileExt@L3386")
+    covers("def.FileExt@L3407")
 )]]
 internal procedure fileExtensionEmptyWhenBasenameHasNoDot() -> bool
 |: => @result
@@ -14,7 +14,7 @@ internal procedure fileExtensionEmptyWhenBasenameHasNoDot() -> bool
 
 [[test(
     name: "FileExt is empty when the only dot is leading",
-    covers("def.FileExt@L3386")
+    covers("def.FileExt@L3407")
 )]]
 internal procedure fileExtensionEmptyWhenOnlyDotIsLeading() -> bool
 |: => @result
@@ -28,7 +28,7 @@ internal procedure fileExtensionEmptyWhenOnlyDotIsLeading() -> bool
 
 [[test(
     name: "FileExt begins at the last non-leading dot",
-    covers("def.FileExt@L3386")
+    covers("def.FileExt@L3407")
 )]]
 internal procedure fileExtensionBeginsAtLastNonLeadingDot() -> bool
 |: => @result
@@ -42,7 +42,7 @@ internal procedure fileExtensionBeginsAtLastNonLeadingDot() -> bool
 
 [[test(
     name: "FileExt of trailing dot is the trailing dot",
-    covers("def.FileExt@L3386")
+    covers("def.FileExt@L3407")
 )]]
 internal procedure fileExtensionOfTrailingDotIsTrailingDot() -> bool
 |: => @result
@@ -56,7 +56,7 @@ internal procedure fileExtensionOfTrailingDotIsTrailingDot() -> bool
 
 [[test(
     name: "FileExt of parent traversal basename is dot",
-    covers("def.FileExt@L3386")
+    covers("def.FileExt@L3407")
 )]]
 internal procedure fileExtensionOfParentTraversalBasenameIsDot() -> bool
 |: => @result

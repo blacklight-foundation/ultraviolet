@@ -3,7 +3,7 @@
 // =============================================================================
 //
 // SPEC REFERENCE:
-//   SPECIFICATION.md §18.3.6 Lowering
+//   Docs/SPECIFICATION.md §18.3.6 Lowering
 //     (Lower-Stmt-UsingLocal) - UsingLocalStmt lowers to NoOpIR.
 //
 // `using` is compile-time only: lowering emits no runtime IR, but it still has

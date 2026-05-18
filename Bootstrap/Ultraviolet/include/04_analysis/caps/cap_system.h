@@ -53,6 +53,7 @@ std::optional<ast::Path> LookupBuiltinRecordCtorPath(std::string_view ident);
 
 // Built-in record declarations
 ast::RecordDecl BuildContextRecordDecl();
+ast::RecordDecl BuildTestAuthorityRecordDecl();
 ast::RecordDecl BuildPanicRecordDecl();
 ast::RecordDecl BuildRegionOptionsRecordDecl();
 ast::RecordDecl BuildSystemRecordDecl();

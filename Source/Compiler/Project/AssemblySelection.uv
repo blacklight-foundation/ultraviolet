@@ -2,17 +2,17 @@
 //
 // This file owns selected-assembly command target resolution:
 //
-// - Select-Only@L3851
+// - Select-Only@L3872
 //   |As| = 1    target = ⊥    As = [A_0]
 //   Γ ⊢ SelectAssembly(As, target) ⇓ A_0
-// - Select-Only-Exe@L3869
+// - Select-Only-Exe@L3890
 //   |As| > 1    target = ⊥
 //   |{A ∈ As | A.kind = "executable"}| = 1
 //   Γ ⊢ SelectAssembly(As, target) ⇓ A_e
-// - Select-By-Name@L3887
+// - Select-By-Name@L3908
 //   target ≠ ⊥    A ∈ As    A.name = target
 //   Γ ⊢ SelectAssembly(As, target) ⇓ A
-// - Select-Err@L3905
+// - Select-Err@L3926
 //   Ambiguous absent selection or missing named selection emits
 //   Code(Assembly-Select-Err).
 

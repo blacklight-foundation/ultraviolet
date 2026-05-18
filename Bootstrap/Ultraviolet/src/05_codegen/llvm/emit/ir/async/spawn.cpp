@@ -82,7 +82,8 @@ void IRInstructionVisitor::operator()(const IRSpawn &spawn) const
           emitter,
           spawn_info->params,
           spawn_info->ret,
-          use_c_abi_aggregate_sret);
+          use_c_abi_aggregate_sret,
+          /*foreign_boundary_mode_independent=*/true);
       if (spawn_abi.func_type)
       {
         spawn_fn = llvm::Function::Create(

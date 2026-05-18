@@ -2,7 +2,7 @@
 // MIGRATION MAPPING: lower_proc.cpp
 // =============================================================================
 //
-// SPEC REFERENCE: SPECIFICATION.md Section 6 (Code Generation)
+// SPEC REFERENCE: Docs/SPECIFICATION.md Section 6 (Code Generation)
 //   - Lines 16586-16756: Statement and Block Lowering (for block handling)
 //   - Lines 17028-17160: Cleanup, Drop, and Unwinding
 //   - Procedure lowering handles function body generation and async procedures

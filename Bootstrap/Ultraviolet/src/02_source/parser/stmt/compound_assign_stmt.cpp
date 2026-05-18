@@ -3,7 +3,7 @@
 // =============================================================================
 // This file should contain parsing logic for compound assignment statements.
 //
-// SPEC REFERENCE: SPECIFICATION.md, Section 3.3.10, Lines 6275-6278, 6411-6414
+// SPEC REFERENCE: Docs/SPECIFICATION.md, Section 3.3.10, Lines 6275-6278, 6411-6414
 // =============================================================================
 //
 // FORMAL RULES FROM SPEC:

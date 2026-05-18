@@ -2,7 +2,7 @@
 //
 // This file owns root classification for project.path-resolution:
 //
-// - def.PathRootPredicates@L3146
+// - def.PathRootPredicates@L3167
 //   WinSep = {"\\", "/"}
 //   AsciiLetter(c) iff c is in "A"..."Z" or "a"..."z"
 //   DriveRooted(p) iff |p| >= 3, At(p, 0) is AsciiLetter,
@@ -10,13 +10,13 @@
 //   UNC(p) iff StartsWith(p, "//") or StartsWith(p, "\\\\").
 //   RootRelative(p) iff p starts with "/" or "\\" and is not UNC or DriveRooted.
 //
-// - def.PathRootTagAndTail@L3165
+// - def.PathRootTagAndTail@L3186
 //   RootTag(p) = p[0..2) for DriveRooted paths, "//" for UNC paths,
 //   "/" for RootRelative paths, and "" otherwise.
 //   Tail(p) = p[3..|p|) for DriveRooted paths, p[2..|p|) for UNC paths,
 //   p[1..|p|) for RootRelative paths, and p otherwise.
 //
-// - def.AbsPath@L3253
+// - def.AbsPath@L3274
 //   AbsPath(p) iff DriveRooted(p), UNC(p), or RootRelative(p).
 //   is_relative(p) iff not AbsPath(p).
 

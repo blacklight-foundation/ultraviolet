@@ -46,7 +46,7 @@ endif()
 
 get_filename_component(UV_REPO_ROOT "${CMAKE_SOURCE_DIR}/.." REALPATH)
 get_filename_component(UV_LANGUAGE_REPO_ROOT "${CMAKE_SOURCE_DIR}/../.." REALPATH)
-if(NOT EXISTS "${UV_LANGUAGE_REPO_ROOT}/SPECIFICATION.md")
+if(NOT EXISTS "${UV_LANGUAGE_REPO_ROOT}/Docs/SPECIFICATION.md")
   set(UV_LANGUAGE_REPO_ROOT "${UV_REPO_ROOT}")
 endif()
 set(UV_EXTERN_DIR "${UV_REPO_ROOT}/extern")
@@ -59,7 +59,7 @@ set(UV_TYPECHECK_DIAG_MAP_INC "${CMAKE_SOURCE_DIR}/src/04_analysis/typing/item/t
 
 find_package(Python3 COMPONENTS Interpreter REQUIRED)
 
-set(UV_DEFAULT_DIAG_SPEC_PATH "${UV_LANGUAGE_REPO_ROOT}/SPECIFICATION.md")
+set(UV_DEFAULT_DIAG_SPEC_PATH "${UV_LANGUAGE_REPO_ROOT}/Docs/SPECIFICATION.md")
 set(UV_DIAG_SPEC_PATH "" CACHE FILEPATH "Path to the canonical uvc language specification")
 if(NOT UV_DIAG_SPEC_PATH)
   if(EXISTS "${UV_DEFAULT_DIAG_SPEC_PATH}")
@@ -438,6 +438,10 @@ target_include_directories(uv_source PUBLIC
   ${UV_REPO_ROOT}
 )
 
+target_compile_definitions(uv_source PRIVATE
+  UV_DEFAULT_OBLIGATION_LEDGER_PATH="${UV_LANGUAGE_REPO_ROOT}/Docs/Internal/UltravioletObligations.csv"
+)
+
 target_compile_features(uv_source PUBLIC cxx_std_20)
 
 add_library(uv_comptime STATIC
@@ -502,6 +506,7 @@ add_library(uv_analysis STATIC
   04_analysis/memory/calls.cpp
   04_analysis/memory/init_planner.cpp
   04_analysis/memory/region_type.cpp
+  04_analysis/memory/return_responsibility.cpp
   04_analysis/memory/regions.cpp
   04_analysis/memory/safe_ptr.cpp
   04_analysis/memory/string_bytes.cpp
@@ -1007,6 +1012,21 @@ target_link_libraries(uv_comptime PUBLIC uv_core uv_source)
 target_link_libraries(uv_analysis PUBLIC uv_core uv_source uv_project)
 target_link_libraries(uv_codegen PUBLIC uv_analysis)
 
+add_library(uv_driver_testing STATIC
+  06_driver/test_discovery.cpp
+)
+
+target_include_directories(uv_driver_testing PUBLIC
+  ${CMAKE_SOURCE_DIR}/include
+)
+
+target_compile_features(uv_driver_testing PUBLIC cxx_std_20)
+target_link_libraries(uv_driver_testing PUBLIC
+  uv_core
+  uv_project
+  uv_source
+)
+
 add_library(uv_tooling STATIC
   06_driver/tooling/analysis.cpp
   06_driver/tooling/document_store.cpp
@@ -1082,7 +1102,7 @@ add_executable(uvc
 
 set_target_properties(uvc PROPERTIES OUTPUT_NAME "uvc")
 
-target_link_libraries(uvc PRIVATE uv_core uv_project uv_source uv_comptime uv_analysis uv_codegen)
+target_link_libraries(uvc PRIVATE uv_core uv_project uv_source uv_comptime uv_analysis uv_codegen uv_driver_testing)
 
 target_include_directories(uvc PRIVATE
   ${CMAKE_SOURCE_DIR}/include
@@ -1604,11 +1624,32 @@ target_link_libraries(uv_project_manifest_validation_test PRIVATE
   uv_project
 )
 
+add_executable(uv_load_project_all_assemblies_test
+  tests/load_project_all_assemblies_test.cpp
+)
+
+target_compile_features(uv_load_project_all_assemblies_test PRIVATE
+  cxx_std_20
+)
+
+target_compile_definitions(uv_load_project_all_assemblies_test PRIVATE
+  UV_TEST_WORK_ROOT="${CMAKE_BINARY_DIR}/tests"
+)
+
+target_link_libraries(uv_load_project_all_assemblies_test PRIVATE
+  uv_project
+)
+
 if(WIN32)
   add_custom_command(TARGET uv_project_manifest_validation_test POST_BUILD
     COMMAND ${CMAKE_COMMAND} -E copy_if_different
             ${ICU_DLLS}
             $<TARGET_FILE_DIR:uv_project_manifest_validation_test>
+  )
+  add_custom_command(TARGET uv_load_project_all_assemblies_test POST_BUILD
+    COMMAND ${CMAKE_COMMAND} -E copy_if_different
+            ${ICU_DLLS}
+            $<TARGET_FILE_DIR:uv_load_project_all_assemblies_test>
   )
 endif()
 
@@ -1645,6 +1686,69 @@ target_compile_definitions(uv_parser_generic_conformance_test PRIVATE
 )
 
 add_dependencies(uv_parser_generic_conformance_test uv_out)
+
+add_executable(uv_generic_record_literal_conformance_test
+  tests/generic_record_literal_conformance_test.cpp
+)
+
+target_compile_features(uv_generic_record_literal_conformance_test PRIVATE
+  cxx_std_20
+)
+
+target_compile_definitions(uv_generic_record_literal_conformance_test PRIVATE
+  UV_TEST_COMPILER_PATH="${UV_OUT_DIR}/$<TARGET_FILE_NAME:uvc>"
+  UV_TEST_RUNTIME_LIB_PATH="${UV_CODEGEN_ABI_SRET_RUNTIME_LIB}"
+  UV_TEST_TARGET_PROFILE="${UV_CODEGEN_ABI_SRET_TARGET_PROFILE}"
+  UV_TEST_WORK_ROOT="${CMAKE_BINARY_DIR}/tests"
+)
+
+add_dependencies(uv_generic_record_literal_conformance_test uv_out)
+
+add_executable(uv_class_default_method_field_conformance_test
+  tests/class_default_method_field_conformance_test.cpp
+)
+
+target_compile_features(uv_class_default_method_field_conformance_test PRIVATE
+  cxx_std_20
+)
+
+target_compile_definitions(uv_class_default_method_field_conformance_test PRIVATE
+  UV_TEST_COMPILER_PATH="${UV_OUT_DIR}/$<TARGET_FILE_NAME:uvc>"
+  UV_TEST_RUNTIME_LIB_PATH="${UV_CODEGEN_ABI_SRET_RUNTIME_LIB}"
+  UV_TEST_TARGET_PROFILE="${UV_CODEGEN_ABI_SRET_TARGET_PROFILE}"
+  UV_TEST_WORK_ROOT="${CMAKE_BINARY_DIR}/tests"
+)
+
+add_dependencies(uv_class_default_method_field_conformance_test uv_out)
+
+add_executable(uv_generic_class_bound_method_conformance_test
+  tests/generic_class_bound_method_conformance_test.cpp
+)
+
+target_compile_features(uv_generic_class_bound_method_conformance_test PRIVATE
+  cxx_std_20
+)
+
+target_compile_definitions(uv_generic_class_bound_method_conformance_test PRIVATE
+  UV_TEST_COMPILER_PATH="${UV_OUT_DIR}/$<TARGET_FILE_NAME:uvc>"
+  UV_TEST_RUNTIME_LIB_PATH="${UV_CODEGEN_ABI_SRET_RUNTIME_LIB}"
+  UV_TEST_TARGET_PROFILE="${UV_CODEGEN_ABI_SRET_TARGET_PROFILE}"
+  UV_TEST_WORK_ROOT="${CMAKE_BINARY_DIR}/tests"
+)
+
+add_dependencies(uv_generic_class_bound_method_conformance_test uv_out)
+
+add_executable(uv_test_discovery_conformance_test
+  tests/test_discovery_conformance_test.cpp
+)
+
+target_compile_features(uv_test_discovery_conformance_test PRIVATE
+  cxx_std_20
+)
+
+target_link_libraries(uv_test_discovery_conformance_test PRIVATE
+  uv_driver_testing
+)
 
 add_executable(uv_parser_terminator_diagnostics_test
   tests/parser_terminator_diagnostics_test.cpp

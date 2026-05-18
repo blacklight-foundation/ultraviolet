@@ -2,7 +2,7 @@
 // Expression Lowering: TransmuteExpr
 // =============================================================================
 //
-// SPEC REFERENCE: SPECIFICATION.md Section 6.4 (Expression Lowering)
+// SPEC REFERENCE: Docs/SPECIFICATION.md Section 6.4 (Expression Lowering)
 //   - Lines 16183-16186: (Lower-Expr-Transmute)
 //
 // MIGRATED FROM:

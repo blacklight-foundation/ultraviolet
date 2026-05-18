@@ -170,6 +170,18 @@ void IRInstructionVisitor::operator()(const IRReturn &ret) const
           return;
         }
 
+        if (TryEmitAggregateStorageTransfer(
+                emitter,
+                &builder,
+                out_ptr,
+                source_storage,
+                sig->ret,
+                source_type))
+        {
+          builder.CreateRetVoid();
+          return;
+        }
+
         if (TryEmitBitcopyAggregateStorageCopy(
                 emitter,
                 &builder,

@@ -4,9 +4,9 @@
  * =============================================================================
  *
  * SPEC REFERENCE:
- *   - SPECIFICATION.md, Section 21.4 "Provenance Tracking" (lines 25010-25200)
- *   - SPECIFICATION.md, Section 21.4.1 "Place Expressions" (lines 25020-25100)
- *   - SPECIFICATION.md, Section 10.5 "Memory Provenance" (lines 22510-22600)
+ *   - Docs/SPECIFICATION.md, Section 21.4 "Provenance Tracking" (lines 25010-25200)
+ *   - Docs/SPECIFICATION.md, Section 21.4.1 "Place Expressions" (lines 25020-25100)
+ *   - Docs/SPECIFICATION.md, Section 10.5 "Memory Provenance" (lines 22510-22600)
  *
  * DIAGNOSTIC CODES:
  *   - E-PROV-0001: Invalid place expression

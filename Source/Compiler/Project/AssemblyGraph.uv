@@ -2,45 +2,45 @@
 //
 // This file owns assembly ownership, assembly graph, and dependency relations:
 //
-// - def.AsmDeps@L4035
-// - req.AssemblyGraphRejectExecutableImports@L4051
-// - req.AssemblyGraphRejectLibraryCycles@L4065
-// - req.DependencyAssemblyNoFinalArtifact@L4079
-// - def.AssemblySourceRoots@L4420
+// - def.AsmDeps@L4056
+// - req.AssemblyGraphRejectExecutableImports@L4072
+// - req.AssemblyGraphRejectLibraryCycles@L4086
+// - req.DependencyAssemblyNoFinalArtifact@L4100
+// - def.AssemblySourceRoots@L4441
 //   AssemblySourceRoots(As) = { A.source_root | A ∈ As }
 //   RootDepth(S) = |PathComps(S)|
-// - def.OwnerRoot@L4435
+// - def.OwnerRoot@L4456
 //   OwnerRoot(d, Rs) = S_k ⇔ S_k ∈ Rs ∧ prefix(d, S_k) ∧
 //   (∀ S_i ∈ Rs. prefix(d, S_i) ⇒ RootDepth(S_i) ≤ RootDepth(S_k)) ∧
 //   (∀ S_j ∈ Rs. prefix(d, S_j) ∧ RootDepth(S_j) = RootDepth(S_k) ⇒ S_j = S_k)
-// - def.OwnedModules@L4449
+// - def.OwnedModules@L4470
 //   OwnedModules(A, As) = [ m ∈ A.modules |
 //   OwnerRoot(ModuleDirOf(m, A.source_root), AssemblySourceRoots(As)) =
 //   A.source_root ]
-// - OwnAssemblies-Ok@L4463
+// - OwnAssemblies-Ok@L4484
 //   ∀ A ∈ As, ∀ m ∈ A.modules. ∃ S.
 //   OwnerRoot(ModuleDirOf(m, A.source_root), AssemblySourceRoots(As)) = S
 //   As = [A_1, …, A_n]
 //   As' = [A_1[modules := OwnedModules(A_1, As)], …,
 //   A_n[modules := OwnedModules(A_n, As)]]
 //   Γ ⊢ OwnAssemblies(As) ⇓ As'
-// - WF-Assembly-Root-Owner-Ambiguous@L4481
+// - WF-Assembly-Root-Owner-Ambiguous@L4502
 //   ∃ A ∈ As, m ∈ A.modules. ¬ ∃ S.
 //   OwnerRoot(ModuleDirOf(m, A.source_root), AssemblySourceRoots(As)) = S
 //   c = Code(WF-Assembly-Root-Owner-Ambiguous)
 //   Γ ⊢ OwnAssemblies(As) ⇑ c
-// - def.AssemblyProject@L4501
-// - def.ModulePaths@L4515
-// - def.AsmImportGraph@L4529
-// - def.GraphAccessors@L4545
-// - def.GraphPathReach@L4560
-// - def.NoLibraryInterior@L4575
-// - def.LibraryBoundaryCycle@L4589
-// - def.ImportsExecutable@L4603
-// - def.HostedLibraryImportsLinkedLibrary@L4617
-// - Assembly-Graph-Ok@L4631
-// - Assembly-Graph-Err@L4649
-// - Assembly-Graph-HostedImport-Err@L4667
+// - def.AssemblyProject@L4522
+// - def.ModulePaths@L4536
+// - def.AsmImportGraph@L4550
+// - def.GraphAccessors@L4566
+// - def.GraphPathReach@L4581
+// - def.NoLibraryInterior@L4596
+// - def.LibraryBoundaryCycle@L4610
+// - def.ImportsExecutable@L4624
+// - def.HostedLibraryImportsLinkedLibrary@L4638
+// - Assembly-Graph-Ok@L4652
+// - Assembly-Graph-Err@L4670
+// - Assembly-Graph-HostedImport-Err@L4688
 
 internal let ASSEMBLY_GRAPH_ROOT_OWNER_AMBIGUOUS_CODE: string@View = "E-PRJ-0305"
 internal let ASSEMBLY_GRAPH_ROOT_OWNER_AMBIGUOUS_MESSAGE: string@View =

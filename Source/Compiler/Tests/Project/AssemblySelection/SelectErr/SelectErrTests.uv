@@ -1,7 +1,7 @@
 // Test responsibility:
 // Source/Compiler/Tests/Project/AssemblySelection/SelectErr/SelectErrTests.uv
 //
-// This file owns source-native tests for Select-Err@L3905.
+// This file owns source-native tests for Select-Err@L3926.
 
 using UltravioletCompiler::Project::{
     AssemblySelectionValue,
@@ -19,7 +19,7 @@ using UltravioletCompiler::Project::{
 
 [[test(
     name: "assembly selection reports ambiguous absent target",
-    covers("Select-Err@L3905")
+    covers("Select-Err@L3926")
 )]]
 internal procedure assemblySelectionReportsAmbiguousAbsentTarget() -> bool
 |: => @result

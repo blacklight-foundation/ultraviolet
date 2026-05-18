@@ -3,7 +3,7 @@
 // =============================================================================
 // This file should contain parsing logic for continue statements.
 //
-// SPEC REFERENCE: SPECIFICATION.md, Section 3.3.10, Lines 6290-6293
+// SPEC REFERENCE: Docs/SPECIFICATION.md, Section 3.3.10, Lines 6290-6293
 // =============================================================================
 //
 // FORMAL RULES FROM SPEC:

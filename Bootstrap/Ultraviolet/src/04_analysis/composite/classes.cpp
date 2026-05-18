@@ -2,7 +2,7 @@
 // classes.cpp - Class Type Checking Implementation
 // =============================================================================
 //
-// SPEC REFERENCE: SPECIFICATION.md
+// SPEC REFERENCE: Docs/SPECIFICATION.md
 // - Section 5.3.1 "Classes (Ultraviolet)" (lines 11762-12155)
 //   - Common Method-Signature Definitions (lines 11764-11811)
 //   - Class Declarations (lines 11816-11820)

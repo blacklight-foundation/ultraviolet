@@ -4,7 +4,7 @@
 // loop_infinite.h - Infinite loop expression lowering
 // =============================================================================
 //
-// SPEC REFERENCE: SPECIFICATION.md Section 6.5 (Statement and Block Lowering)
+// SPEC REFERENCE: Docs/SPECIFICATION.md Section 6.5 (Statement and Block Lowering)
 //   - Lines 16741-16744: (Lower-Loop-Infinite)
 //
 // This header declares the lowering function for infinite loop expressions

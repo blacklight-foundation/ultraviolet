@@ -2,7 +2,7 @@
 // Expression Lowering: MethodCallExpr
 // =============================================================================
 //
-// SPEC REFERENCE: SPECIFICATION.md Section 6.4 (Expression Lowering)
+// SPEC REFERENCE: Docs/SPECIFICATION.md Section 6.4 (Expression Lowering)
 //   - Lines 16153-16156: (Lower-Expr-MethodCall)
 //     Gamma |- LowerMethodCall(...) => <IR, v_call>
 //   - Section 6.10: Dynamic Dispatch (Lines 17161-17202)

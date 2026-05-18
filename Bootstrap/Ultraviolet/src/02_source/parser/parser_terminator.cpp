@@ -2,7 +2,7 @@
 // parser_terminator.cpp - Statement Terminator Handling
 // =============================================================================
 //
-// SPEC REFERENCE: SPECIFICATION.md Section 3.2.3 - Statement Termination
+// SPEC REFERENCE: Docs/SPECIFICATION.md Section 3.2.3 - Statement Termination
 //
 // Ultraviolet uses newline OR semicolon as statement terminators.
 // Both are valid; semicolon allows multiple statements per line.

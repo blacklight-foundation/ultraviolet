@@ -5,7 +5,7 @@
 // This file contains all struct definitions for type nodes in the Ultraviolet
 // grammar, plus the TypeNode variant and Type wrapper.
 //
-// SPEC REFERENCE: SPECIFICATION.md Section 3.3.2.3 - Type Nodes
+// SPEC REFERENCE: Docs/SPECIFICATION.md Section 3.3.2.3 - Type Nodes
 //
 // Type = (Span, TypeNode)
 // TypeNode variants:

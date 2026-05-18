@@ -2,7 +2,7 @@
 // ABI Type: Function Types (ABI-Func)
 // =============================================================================
 //
-// SPEC REFERENCE: SPECIFICATION.md
+// SPEC REFERENCE: Docs/SPECIFICATION.md
 //   - Section 6.2.2 ABI Type Lowering
 //   - ABI-Func rule: ABITy(TypeFunc(params, R)) => <PtrSize, PtrAlign>
 //   - Function types are represented as function pointers.

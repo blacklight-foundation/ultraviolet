@@ -2,7 +2,7 @@
 // slice_type.cpp - Slice Type Parsing
 // =============================================================================
 //
-// SPEC REFERENCE: SPECIFICATION.md, Section 3.3.7, Lines 4768-4771
+// SPEC REFERENCE: Docs/SPECIFICATION.md, Section 3.3.7, Lines 4768-4771
 //
 // Parses slice types: [T]
 // - Represents a dynamically-sized view into contiguous memory

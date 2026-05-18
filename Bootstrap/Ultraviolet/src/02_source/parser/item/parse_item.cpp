@@ -2,7 +2,7 @@
 // parse_item.cpp - Top-Level Item Parsing Dispatcher
 // =============================================================================
 //
-// SPEC REFERENCE: SPECIFICATION.md Section 3.3.6.1 (Item Parsing Rules)
+// SPEC REFERENCE: Docs/SPECIFICATION.md Section 3.3.6.1 (Item Parsing Rules)
 //
 // This file implements the main item parsing dispatcher:
 //   - ParseItem: Dispatch to specific item parsers based on leading keywords

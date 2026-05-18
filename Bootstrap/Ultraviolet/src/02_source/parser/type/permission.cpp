@@ -2,7 +2,7 @@
 // permission.cpp - Permission Qualifier Parsing
 // =============================================================================
 //
-// SPEC REFERENCE: SPECIFICATION.md, Section 3.3.7, Lines 4644-4662
+// SPEC REFERENCE: Docs/SPECIFICATION.md, Section 3.3.7, Lines 4644-4662
 //
 // Parses permission qualifiers: const, unique, shared
 //

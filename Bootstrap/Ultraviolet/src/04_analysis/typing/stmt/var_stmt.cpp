@@ -2,7 +2,7 @@
 // var_stmt.cpp - Var statement typing
 // =============================================================================
 //
-// SPEC REFERENCE: SPECIFICATION.md
+// SPEC REFERENCE: Docs/SPECIFICATION.md
 //   Section 5.2.11: Statement Typing (lines 9389-9407)
 //   - T-VarStmt-Ann (lines 9389-9392): Var with type annotation
 //   - T-VarStmt-Ann-Mismatch (lines 9394-9397): Type mismatch error

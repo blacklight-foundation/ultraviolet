@@ -2,7 +2,7 @@
 // MIGRATION: item/static_decl.cpp
 // =============================================================================
 //
-// SPEC REFERENCE: SPECIFICATION.md
+// SPEC REFERENCE: Docs/SPECIFICATION.md
 //   Section 5.3.7: Static Declarations
 //   - WF-StaticDecl-Ann-Mismatch (line 21477): Type mismatch
 //   - Static let/var declarations

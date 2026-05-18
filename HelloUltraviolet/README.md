@@ -1,7 +1,7 @@
 # HelloUltraviolet
 
 HelloUltraviolet is a reference corpus for exercising Ultraviolet language obligations from
-the canonical repo obligation ledger at `Docs/Audit/UltravioletObligations.csv`.
+the canonical repo obligation ledger at `Docs/Internal/UltravioletObligations.csv`.
 
 ## Layout
 

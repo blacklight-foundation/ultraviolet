@@ -2,7 +2,7 @@
 // all_expr.cpp - All Expression Parsing
 // =============================================================================
 //
-// SPEC REFERENCE: SPECIFICATION.md
+// SPEC REFERENCE: Docs/SPECIFICATION.md
 // - Parse-All-Expr (Lines 5304-5307)
 // - Parse-AllExprList-* (Lines 5799-5807)
 // - Parse-AllExprListTail-* (Lines 5809-5822)

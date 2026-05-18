@@ -8,7 +8,7 @@ namespace ultraviolet::codegen {
 // Call Expression Lowering
 // =============================================================================
 //
-// SPEC REFERENCE: SPECIFICATION.md Section 6.4 (Expression Lowering)
+// SPEC REFERENCE: Docs/SPECIFICATION.md Section 6.4 (Expression Lowering)
 //   - Lines 16143-16151: (Lower-Expr-Call-PanicOut) and (Lower-Expr-Call-NoPanicOut)
 //     With panic out: appends PanicOutName to args, adds PanicCheck after
 //     Without panic out: direct call

@@ -2,7 +2,7 @@
 // MIGRATION MAPPING: dyn_dispatch.cpp
 // =============================================================================
 //
-// SPEC REFERENCE: SPECIFICATION.md
+// SPEC REFERENCE: Docs/SPECIFICATION.md
 //   - Section 6.10 Dynamic Dispatch (lines 17163-17200)
 //   - VTableEligible(Cl) definition (line 17165)
 //   - vtable_eligible(m) predicate (line 11941)

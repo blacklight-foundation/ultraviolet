@@ -2,7 +2,7 @@
 // MIGRATION MAPPING: expr/tuple_literal.cpp
 // =============================================================================
 //
-// SPEC REFERENCE: SPECIFICATION.md Section 6.4 (Expression Lowering)
+// SPEC REFERENCE: Docs/SPECIFICATION.md Section 6.4 (Expression Lowering)
 //   - Lines 16075-16078: (Lower-Expr-Tuple)
 //     Gamma |- LowerList(es) => <IR, vec_v>
 //     ------------------------------------------

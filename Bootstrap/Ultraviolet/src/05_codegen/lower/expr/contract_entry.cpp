@@ -2,7 +2,7 @@
 // Expression Lowering: EntryExpr
 // =============================================================================
 //
-// SPEC REFERENCE: SPECIFICATION.md Section 5.4 (Contracts)
+// SPEC REFERENCE: Docs/SPECIFICATION.md Section 5.4 (Contracts)
 //   - @entry(expr) intrinsic captures entry/old value in postconditions
 //
 // MIGRATED FROM:

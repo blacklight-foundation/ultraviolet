@@ -2,7 +2,7 @@
 // MIGRATION MAPPING: expr/if_expr.cpp
 // =============================================================================
 //
-// SPEC REFERENCE: SPECIFICATION.md Section 6.4 (Expression Lowering)
+// SPEC REFERENCE: Docs/SPECIFICATION.md Section 6.4 (Expression Lowering)
 //   - Lines 16203-16206: (Lower-Expr-If)
 //     Gamma |- LowerExpr(cond) => <IR_c, v_c>
 //     Gamma |- LowerBlock(b_1) => <IR_1, v_1>
@@ -72,6 +72,9 @@ IRPtr CleanupTemps(const std::vector<TempValue>& temps, LowerCtx& ctx) {
   CleanupPlan plan;
   plan.reserve(temps.size());
   for (auto it = temps.rbegin(); it != temps.rend(); ++it) {
+    if (!it->has_responsibility) {
+      continue;
+    }
     CleanupAction action;
     action.kind = CleanupAction::Kind::DropTemp;
     action.type = it->type;

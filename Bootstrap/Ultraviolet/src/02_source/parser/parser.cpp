@@ -2,7 +2,7 @@
 // parser.cpp - Top-Level Parsing Entry Points
 // =============================================================================
 //
-// SPEC REFERENCE: SPECIFICATION.md Section 3.3.1, 3.3.3, 3.3.6
+// SPEC REFERENCE: Docs/SPECIFICATION.md Section 3.3.1, 3.3.3, 3.3.6
 //
 // This file implements top-level parsing operations:
 //   - AdvanceOrEOF: Advance if not at EOF

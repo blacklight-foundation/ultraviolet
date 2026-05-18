@@ -1,7 +1,7 @@
 // =============================================================================
 // File: 04_analysis/generics/where_bounds.h
 // Construct: Where Clause Parsing and Bound Validation
-// Spec Section: SPECIFICATION.md Section 13.3 "Type Bounds"
+// Spec Section: Docs/SPECIFICATION.md Section 13.3 "Type Bounds"
 // Spec Rules: WhereClause, PredicateReq, PredOk, T-Constraint-Sat
 // =============================================================================
 //
@@ -104,7 +104,7 @@ struct InferredBounds {
 // =============================================================================
 
 // Parse a where clause into a list of bounds.
-// SPEC: SPECIFICATION.md Section 13.3.1 "Where Clauses"
+// SPEC: Docs/SPECIFICATION.md Section 13.3.1 "Where Clauses"
 // Handles both predicate bounds: where Bitcopy(T)
 // and class bounds: where T <: Comparable
 WhereParseResult ParseWhereClause(
@@ -116,7 +116,7 @@ WhereParseResult ParseWhereClause(
 // =============================================================================
 
 // Validate that a type argument satisfies a single bound.
-// SPEC: SPECIFICATION.md PredOk predicate
+// SPEC: Docs/SPECIFICATION.md PredOk predicate
 BoundCheckResult ValidateBound(
     const ScopeContext& ctx,
     const Bound& bound,
@@ -165,7 +165,7 @@ Bound SubstituteBound(
 // Infer required bounds from usage patterns in a generic body.
 // This examines how type parameters are used and infers what bounds
 // would be needed for the code to type-check.
-// SPEC: SPECIFICATION.md Section 13.3.3 "Bound Inference"
+// SPEC: Docs/SPECIFICATION.md Section 13.3.3 "Bound Inference"
 InferredBounds InferBoundsFromUsage(
     const ScopeContext& ctx,
     const ast::BlockPtr& body,

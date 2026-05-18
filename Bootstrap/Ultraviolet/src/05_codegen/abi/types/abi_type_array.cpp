@@ -2,7 +2,7 @@
 // ABI Type: Arrays (ABI-Array)
 // =============================================================================
 //
-// SPEC REFERENCE: SPECIFICATION.md
+// SPEC REFERENCE: Docs/SPECIFICATION.md
 //   - Section 6.2.2 ABI Type Lowering
 //   - ABI-Array rule: ABITy(TypeArray(T, e)) => <sizeof(T) * e, alignof(T)>
 //

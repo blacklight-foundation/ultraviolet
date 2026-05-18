@@ -2,7 +2,7 @@
 // type_bounds.cpp - Type Bounds Parsing for Generic Parameters
 // =============================================================================
 //
-// SPEC REFERENCE: SPECIFICATION.md, Section 3.3.6.13, Lines 3976-4009
+// SPEC REFERENCE: Docs/SPECIFICATION.md, Section 3.3.6.13, Lines 3976-4009
 //
 // Parses type bounds: <: Bound1, Bound2 used in generic parameter declarations.
 // Note: Type bounds parsing is part of generic parameter parsing, which is

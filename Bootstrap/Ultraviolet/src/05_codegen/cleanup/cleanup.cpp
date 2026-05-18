@@ -2,7 +2,7 @@
 // MIGRATION MAPPING: cleanup.cpp
 // =============================================================================
 //
-// SPEC REFERENCE: SPECIFICATION.md
+// SPEC REFERENCE: Docs/SPECIFICATION.md
 //   - Section 6.4 Expression Lowering - Drop and Cleanup (lines 15831-15992)
 //   - ExecIR-Drop rule (lines 15837-15840)
 //   - ExecIR-DropFields rule (lines 15842-15845)

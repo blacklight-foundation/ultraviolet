@@ -23,7 +23,7 @@ using UltravioletCompiler::Core::Path::{
 
 [[test(
     name: "drive-rooted path is absolute",
-    covers("def.AbsPath@L3253")
+    covers("def.AbsPath@L3274")
 )]]
 internal procedure driveRootedPathIsAbsolute() -> bool
 |: => @result
@@ -37,7 +37,7 @@ internal procedure driveRootedPathIsAbsolute() -> bool
 
 [[test(
     name: "drive-rooted path without tail is absolute",
-    covers("def.AbsPath@L3253")
+    covers("def.AbsPath@L3274")
 )]]
 internal procedure driveRootedPathWithoutTailIsAbsolute() -> bool
 |: => @result
@@ -51,7 +51,7 @@ internal procedure driveRootedPathWithoutTailIsAbsolute() -> bool
 
 [[test(
     name: "UNC path is absolute",
-    covers("def.AbsPath@L3253")
+    covers("def.AbsPath@L3274")
 )]]
 internal procedure uncPathIsAbsolute() -> bool
 |: => @result
@@ -65,7 +65,7 @@ internal procedure uncPathIsAbsolute() -> bool
 
 [[test(
     name: "root-relative path is absolute",
-    covers("def.AbsPath@L3253")
+    covers("def.AbsPath@L3274")
 )]]
 internal procedure rootRelativePathIsAbsolute() -> bool
 |: => @result
@@ -79,7 +79,7 @@ internal procedure rootRelativePathIsAbsolute() -> bool
 
 [[test(
     name: "drive-relative path is relative",
-    covers("def.AbsPath@L3253")
+    covers("def.AbsPath@L3274")
 )]]
 internal procedure driveRelativePathIsRelative() -> bool
 |: => @result
@@ -93,7 +93,7 @@ internal procedure driveRelativePathIsRelative() -> bool
 
 [[test(
     name: "normalized drive root without tail is relative",
-    covers("def.AbsPath@L3253")
+    covers("def.AbsPath@L3274")
 )]]
 internal procedure normalizedDriveRootWithoutTailIsRelative() -> bool
 |: => @result

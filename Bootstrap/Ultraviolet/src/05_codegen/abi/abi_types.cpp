@@ -2,7 +2,7 @@
 // ABI Type Lowering Dispatcher (§6.2.2)
 // =============================================================================
 //
-// SPEC REFERENCE: SPECIFICATION.md
+// SPEC REFERENCE: Docs/SPECIFICATION.md
 //   - Section 6.2.2 ABI Type Lowering
 //   - ABITy judgment: maps semantic types to ABI types
 //

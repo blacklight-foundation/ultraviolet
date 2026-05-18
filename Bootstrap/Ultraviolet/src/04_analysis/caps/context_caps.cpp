@@ -2,7 +2,7 @@
 // context_caps.cpp - Context Record and Main Signature Validation
 // =============================================================================
 //
-// SPEC REFERENCE: SPECIFICATION.md
+// SPEC REFERENCE: Docs/SPECIFICATION.md
 //   - Section 5.9.4 "Context Record" (lines 13202-13247)
 //   - Context fields: io ($IO), net ($Network), heap ($HeapAllocator),
 //                     sys (System), reactor ($Reactor)
@@ -48,10 +48,11 @@ static inline void SpecDefsContextCaps() {
   SPEC_DEF("Priority", "5.9.4");
 }
 
-static constexpr std::array<std::string_view, 7> kBuiltinRecordNames = {
+static constexpr std::array<std::string_view, 8> kBuiltinRecordNames = {
     "RegionOptions",
     "DirEntry",
     "Context",
+    "TestAuthority",
     "System",
     "Duration",
     "MonotonicInstant",

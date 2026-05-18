@@ -2,7 +2,7 @@
 // Intrinsic Declarations Implementation
 // =============================================================================
 //
-// SPEC REFERENCE: SPECIFICATION.md
+// SPEC REFERENCE: Docs/SPECIFICATION.md
 //   - Contract intrinsics @result, @entry (lines 3357, 23204-23266)
 //   - @result: references return value in postcondition
 //   - @entry(expr): captures entry/old value of expression

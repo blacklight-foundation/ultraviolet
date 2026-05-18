@@ -2,7 +2,7 @@
 // qualified_apply.cpp - Qualified Apply Expression Parsing
 // =============================================================================
 //
-// SPEC REFERENCE: SPECIFICATION.md
+// SPEC REFERENCE: Docs/SPECIFICATION.md
 // - Parse-Qualified-Apply-Paren (Lines 5194-5197)
 // - Parse-Qualified-Apply-Brace (Lines 5199-5202)
 //

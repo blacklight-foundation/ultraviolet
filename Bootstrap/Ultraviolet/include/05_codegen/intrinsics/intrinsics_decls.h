@@ -7,7 +7,7 @@
 // This file declares compiler intrinsics - built-in operations that the
 // compiler has special knowledge of and handles specially during lowering.
 //
-// SPEC REFERENCE: SPECIFICATION.md
+// SPEC REFERENCE: Docs/SPECIFICATION.md
 //   - Contract intrinsics @result, @entry (lines 3357, 23204-23266)
 //   - Type intrinsics: sizeof, alignof, transmute, widen
 //   - @result: references return value in postcondition

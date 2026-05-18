@@ -2,7 +2,7 @@
 // MIGRATION MAPPING: expr/call.cpp
 // =============================================================================
 //
-// SPEC REFERENCE: SPECIFICATION.md Section 6.4 (Expression Lowering)
+// SPEC REFERENCE: Docs/SPECIFICATION.md Section 6.4 (Expression Lowering)
 //   - Lines 16143-16151: (Lower-Expr-Call-PanicOut) and (Lower-Expr-Call-NoPanicOut)
 //     With panic out: appends PanicOutName to args, adds PanicCheck after
 //     Without panic out: direct call
@@ -1226,7 +1226,9 @@ LowerResult LowerRefArgExprWithTemp(const ast::ExprPtr& expr,
   temp_value.name = temp_name;
   if (temp_type) {
     ctx.RegisterValueType(temp_value, temp_type);
-    ctx.RegisterTempValue(temp_value, temp_type);
+    ctx.RegisterTempValue(temp_value,
+                          temp_type,
+                          BindingInitializerHasResponsibility(expr, ctx));
   }
 
   ast::Expr temp_ident;

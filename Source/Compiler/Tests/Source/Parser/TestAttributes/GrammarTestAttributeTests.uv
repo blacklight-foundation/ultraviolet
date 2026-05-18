@@ -1,6 +1,6 @@
 // Test responsibility: Source/Compiler/Tests/Source/Parser/TestAttributes/GrammarTestAttributeTests.uv
 //
-// This file owns source-native tests for grammar.TestAttribute@L28336:
+// This file owns source-native tests for grammar.TestAttribute@L28683:
 //
 // test_attribute      ::= "[[" "test" ("(" test_attribute_args ")")? "]]"
 // test_attribute_args ::= test_attribute_arg ("," test_attribute_arg)*
@@ -26,7 +26,7 @@ using UltravioletCompiler::Source::Parser::{
 
 [[test(
     name: "test attribute grammar accepts bare test attribute",
-    covers("grammar.TestAttribute@L28336")
+    covers("grammar.TestAttribute@L28683")
 )]]
 internal procedure testAttributeGrammarAcceptsBareAttribute() -> bool
 |: => @result
@@ -45,13 +45,13 @@ internal procedure testAttributeGrammarAcceptsBareAttribute() -> bool
 
 [[test(
     name: "test attribute grammar accepts coverage argument list",
-    covers("grammar.TestAttribute@L28336")
+    covers("grammar.TestAttribute@L28683")
 )]]
 internal procedure testAttributeGrammarAcceptsCoverageArgumentList() -> bool
 |: => @result
 {
     let result: AttributeParseResultValue =
-        parseTestAttribute(singleTestCoverageArgument("grammar.TestAttribute@L28336"))
+        parseTestAttribute(singleTestCoverageArgument("grammar.TestAttribute@L28683"))
     return if result is {
         @Parsed { attribute } {
             attributeNameEquals(attribute.name, "test") &&

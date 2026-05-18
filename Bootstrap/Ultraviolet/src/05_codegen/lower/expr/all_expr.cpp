@@ -2,7 +2,7 @@
 // Expression Lowering: AllExpr
 // =============================================================================
 //
-// SPEC REFERENCE: SPECIFICATION.md Section 11.5 (All Expression)
+// SPEC REFERENCE: Docs/SPECIFICATION.md Section 11.5 (All Expression)
 //   - all { e1, e2, ... } waits for all to complete
 //   - If any fails, cancels remaining and propagates first error
 //

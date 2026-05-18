@@ -1,19 +1,37 @@
 //! Rejected attribute specimens.
 
 public procedure attributesRejectedSourceFixtureCount() -> usize {
-    return 5usize
+    return 20usize
+}
+
+internal procedure attributeRejectedFixtureMatches(
+    name: string@View,
+    fixture_path: string@View,
+    source_path: string@View,
+    expected_path: string@View,
+    expected_code: string@View,
+    obligation_id: string@View
+) -> bool {
+    return rejectedSpecimenMatches(
+        rejectedSpecimen(
+            name,
+            fixture_path,
+            source_path,
+            expected_path,
+            expectedDiagnostic(expected_code, obligation_id)
+        ),
+        name,
+        fixture_path,
+        source_path,
+        expected_path,
+        expected_code,
+        obligation_id
+    )
 }
 
 public procedure validatedAttributesRejectedSourceFixtureCount() -> usize {
     var count: usize = 0usize
-    if rejectedSpecimenMatches(
-        rejectedSpecimen(
-            "UnknownAttribute",
-            "Fixtures/RejectedSource/Attributes/UnknownAttribute",
-            "Fixtures/RejectedSource/Attributes/UnknownAttribute/Source/Main.uv",
-            "Fixtures/RejectedSource/Attributes/UnknownAttribute/Expected.uv",
-            expectedDiagnostic("E-MOD-2451", "AttrList-Unknown")
-        ),
+    if attributeRejectedFixtureMatches(
         "UnknownAttribute",
         "Fixtures/RejectedSource/Attributes/UnknownAttribute",
         "Fixtures/RejectedSource/Attributes/UnknownAttribute/Source/Main.uv",
@@ -23,14 +41,7 @@ public procedure validatedAttributesRejectedSourceFixtureCount() -> usize {
     ) {
         count = count + 1usize
     }
-    if rejectedSpecimenMatches(
-        rejectedSpecimen(
-            "UnknownAttribute",
-            "Fixtures/RejectedSource/Attributes/UnknownAttribute",
-            "Fixtures/RejectedSource/Attributes/UnknownAttribute/Source/Main.uv",
-            "Fixtures/RejectedSource/Attributes/UnknownAttribute/Expected.uv",
-            expectedDiagnostic("E-MOD-2451", "diagnostics.AttributeDiagnostics")
-        ),
+    if attributeRejectedFixtureMatches(
         "UnknownAttribute",
         "Fixtures/RejectedSource/Attributes/UnknownAttribute",
         "Fixtures/RejectedSource/Attributes/UnknownAttribute/Source/Main.uv",
@@ -40,14 +51,127 @@ public procedure validatedAttributesRejectedSourceFixtureCount() -> usize {
     ) {
         count = count + 1usize
     }
-    if rejectedSpecimenMatches(
-        rejectedSpecimen(
-            "TestMissingPostcondition",
-            "Fixtures/RejectedSource/Attributes/TestMissingPostcondition",
-            "Fixtures/RejectedSource/Attributes/TestMissingPostcondition/Source/Main.uv",
-            "Fixtures/RejectedSource/Attributes/TestMissingPostcondition/Expected.uv",
-            expectedDiagnostic("E-TST-0106", "diagnostics.TestAttributes")
-        ),
+    if attributeRejectedFixtureMatches(
+        "TestAttributeWrongTarget",
+        "Fixtures/RejectedSource/Attributes/TestAttributeWrongTarget",
+        "Fixtures/RejectedSource/Attributes/TestAttributeWrongTarget/Source/Main.uv",
+        "Fixtures/RejectedSource/Attributes/TestAttributeWrongTarget/Expected.uv",
+        "E-MOD-2452",
+        "diagnostics.TestAttributes"
+    ) {
+        count = count + 1usize
+    }
+    if attributeRejectedFixtureMatches(
+        "TestAttributeWrongTarget",
+        "Fixtures/RejectedSource/Attributes/TestAttributeWrongTarget",
+        "Fixtures/RejectedSource/Attributes/TestAttributeWrongTarget/Source/Main.uv",
+        "Fixtures/RejectedSource/Attributes/TestAttributeWrongTarget/Expected.uv",
+        "E-MOD-2452",
+        "req.TestAttributeProcedureTarget"
+    ) {
+        count = count + 1usize
+    }
+    if attributeRejectedFixtureMatches(
+        "TestMalformedArgument",
+        "Fixtures/RejectedSource/Attributes/TestMalformedArgument",
+        "Fixtures/RejectedSource/Attributes/TestMalformedArgument/Source/Main.uv",
+        "Fixtures/RejectedSource/Attributes/TestMalformedArgument/Expected.uv",
+        "E-TST-0101",
+        "diagnostics.TestAttributes"
+    ) {
+        count = count + 1usize
+    }
+    if attributeRejectedFixtureMatches(
+        "TestMalformedArgument",
+        "Fixtures/RejectedSource/Attributes/TestMalformedArgument",
+        "Fixtures/RejectedSource/Attributes/TestMalformedArgument/Source/Main.uv",
+        "Fixtures/RejectedSource/Attributes/TestMalformedArgument/Expected.uv",
+        "E-TST-0101",
+        "def.TestAttributeArgsOk"
+    ) {
+        count = count + 1usize
+    }
+    if attributeRejectedFixtureMatches(
+        "TestDuplicateName",
+        "Fixtures/RejectedSource/Attributes/TestDuplicateName",
+        "Fixtures/RejectedSource/Attributes/TestDuplicateName/Source/Main.uv",
+        "Fixtures/RejectedSource/Attributes/TestDuplicateName/Expected.uv",
+        "E-TST-0102",
+        "diagnostics.TestAttributes"
+    ) {
+        count = count + 1usize
+    }
+    if attributeRejectedFixtureMatches(
+        "TestDuplicateName",
+        "Fixtures/RejectedSource/Attributes/TestDuplicateName",
+        "Fixtures/RejectedSource/Attributes/TestDuplicateName/Source/Main.uv",
+        "Fixtures/RejectedSource/Attributes/TestDuplicateName/Expected.uv",
+        "E-TST-0102",
+        "def.TestAttributeArgsOk"
+    ) {
+        count = count + 1usize
+    }
+    if attributeRejectedFixtureMatches(
+        "TestMalformedCoverage",
+        "Fixtures/RejectedSource/Attributes/TestMalformedCoverage",
+        "Fixtures/RejectedSource/Attributes/TestMalformedCoverage/Source/Main.uv",
+        "Fixtures/RejectedSource/Attributes/TestMalformedCoverage/Expected.uv",
+        "E-TST-0103",
+        "diagnostics.TestAttributes"
+    ) {
+        count = count + 1usize
+    }
+    if attributeRejectedFixtureMatches(
+        "TestMalformedCoverage",
+        "Fixtures/RejectedSource/Attributes/TestMalformedCoverage",
+        "Fixtures/RejectedSource/Attributes/TestMalformedCoverage/Source/Main.uv",
+        "Fixtures/RejectedSource/Attributes/TestMalformedCoverage/Expected.uv",
+        "E-TST-0103",
+        "def.TestAttributeArgsOk"
+    ) {
+        count = count + 1usize
+    }
+    if attributeRejectedFixtureMatches(
+        "TestInvalidProcedureShape",
+        "Fixtures/RejectedSource/Attributes/TestInvalidProcedureShape",
+        "Fixtures/RejectedSource/Attributes/TestInvalidProcedureShape/Source/Main.uv",
+        "Fixtures/RejectedSource/Attributes/TestInvalidProcedureShape/Expected.uv",
+        "E-TST-0104",
+        "diagnostics.TestAttributes"
+    ) {
+        count = count + 1usize
+    }
+    if attributeRejectedFixtureMatches(
+        "TestInvalidProcedureShape",
+        "Fixtures/RejectedSource/Attributes/TestInvalidProcedureShape",
+        "Fixtures/RejectedSource/Attributes/TestInvalidProcedureShape/Source/Main.uv",
+        "Fixtures/RejectedSource/Attributes/TestInvalidProcedureShape/Expected.uv",
+        "E-TST-0104",
+        "req.TestProcedureShape"
+    ) {
+        count = count + 1usize
+    }
+    if attributeRejectedFixtureMatches(
+        "TestInvalidAuthorityParameter",
+        "Fixtures/RejectedSource/Attributes/TestInvalidAuthorityParameter",
+        "Fixtures/RejectedSource/Attributes/TestInvalidAuthorityParameter/Source/Main.uv",
+        "Fixtures/RejectedSource/Attributes/TestInvalidAuthorityParameter/Expected.uv",
+        "E-TST-0105",
+        "diagnostics.TestAttributes"
+    ) {
+        count = count + 1usize
+    }
+    if attributeRejectedFixtureMatches(
+        "TestInvalidAuthorityParameter",
+        "Fixtures/RejectedSource/Attributes/TestInvalidAuthorityParameter",
+        "Fixtures/RejectedSource/Attributes/TestInvalidAuthorityParameter/Source/Main.uv",
+        "Fixtures/RejectedSource/Attributes/TestInvalidAuthorityParameter/Expected.uv",
+        "E-TST-0105",
+        "req.TestAuthority"
+    ) {
+        count = count + 1usize
+    }
+    if attributeRejectedFixtureMatches(
         "TestMissingPostcondition",
         "Fixtures/RejectedSource/Attributes/TestMissingPostcondition",
         "Fixtures/RejectedSource/Attributes/TestMissingPostcondition/Source/Main.uv",
@@ -57,14 +181,37 @@ public procedure validatedAttributesRejectedSourceFixtureCount() -> usize {
     ) {
         count = count + 1usize
     }
-    if rejectedSpecimenMatches(
-        rejectedSpecimen(
-            "PackedLayoutOnEnum",
-            "Fixtures/RejectedSource/Attributes/PackedLayoutOnEnum",
-            "Fixtures/RejectedSource/Attributes/PackedLayoutOnEnum/Source/Main.uv",
-            "Fixtures/RejectedSource/Attributes/PackedLayoutOnEnum/Expected.uv",
-            expectedDiagnostic("E-MOD-2454", "diagnostics.LayoutAttributeDiagnostics")
-        ),
+    if attributeRejectedFixtureMatches(
+        "TestMissingPostcondition",
+        "Fixtures/RejectedSource/Attributes/TestMissingPostcondition",
+        "Fixtures/RejectedSource/Attributes/TestMissingPostcondition/Source/Main.uv",
+        "Fixtures/RejectedSource/Attributes/TestMissingPostcondition/Expected.uv",
+        "E-TST-0106",
+        "req.TestProcedureShape"
+    ) {
+        count = count + 1usize
+    }
+    if attributeRejectedFixtureMatches(
+        "TestUnknownCoverageReference",
+        "Fixtures/RejectedSource/Attributes/TestUnknownCoverageReference",
+        "Fixtures/RejectedSource/Attributes/TestUnknownCoverageReference/Source/Main.uv",
+        "Fixtures/RejectedSource/Attributes/TestUnknownCoverageReference/Expected.uv",
+        "E-TST-0107",
+        "diagnostics.TestAttributes"
+    ) {
+        count = count + 1usize
+    }
+    if attributeRejectedFixtureMatches(
+        "TestUnknownCoverageReference",
+        "Fixtures/RejectedSource/Attributes/TestUnknownCoverageReference",
+        "Fixtures/RejectedSource/Attributes/TestUnknownCoverageReference/Source/Main.uv",
+        "Fixtures/RejectedSource/Attributes/TestUnknownCoverageReference/Expected.uv",
+        "E-TST-0107",
+        "def.TestAttributeArgsOk"
+    ) {
+        count = count + 1usize
+    }
+    if attributeRejectedFixtureMatches(
         "PackedLayoutOnEnum",
         "Fixtures/RejectedSource/Attributes/PackedLayoutOnEnum",
         "Fixtures/RejectedSource/Attributes/PackedLayoutOnEnum/Source/Main.uv",
@@ -74,14 +221,7 @@ public procedure validatedAttributesRejectedSourceFixtureCount() -> usize {
     ) {
         count = count + 1usize
     }
-    if rejectedSpecimenMatches(
-        rejectedSpecimen(
-            "ReservedVendorNamespace",
-            "Fixtures/RejectedSource/Attributes/ReservedVendorNamespace",
-            "Fixtures/RejectedSource/Attributes/ReservedVendorNamespace/Source/Main.uv",
-            "Fixtures/RejectedSource/Attributes/ReservedVendorNamespace/Expected.uv",
-            expectedDiagnostic("E-CNF-0402", "diagnostics.VendorAttributeDiagnostics")
-        ),
+    if attributeRejectedFixtureMatches(
         "ReservedVendorNamespace",
         "Fixtures/RejectedSource/Attributes/ReservedVendorNamespace",
         "Fixtures/RejectedSource/Attributes/ReservedVendorNamespace/Source/Main.uv",

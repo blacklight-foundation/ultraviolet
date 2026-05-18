@@ -3,8 +3,8 @@
 // =============================================================================
 //
 // SPEC REFERENCE:
-//   SPECIFICATION.md §5.1.7 "Resolution Pass" (Lines 7430-7549)
-//   SPECIFICATION.md §8 "Contracts" (Preconditions/Postconditions section)
+//   Docs/SPECIFICATION.md §5.1.7 "Resolution Pass" (Lines 7430-7549)
+//   Docs/SPECIFICATION.md §8 "Contracts" (Preconditions/Postconditions section)
 //
 // SOURCE FILE:
 //   Migrated from ultraviolet-bootstrap/src/03_analysis/resolve/resolver_items.cpp

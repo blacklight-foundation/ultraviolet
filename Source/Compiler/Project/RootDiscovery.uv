@@ -3,20 +3,20 @@
 // This file owns command input path preparation and nearest-manifest project
 // root search for project loading:
 //
-// - req.ProjectRootResolveInputPath@L2281
+// - req.ProjectRootResolveInputPath@L2302
 //   When project loading begins from one command-line input path `p`, the
 //   implementation MUST first resolve any relative `p` against the host current
 //   working directory before searching upward for `Ultraviolet.toml`.
-// - req.ProjectRootFileInputStartsAtParent@L2296
+// - req.ProjectRootFileInputStartsAtParent@L2317
 //   If that resolved path denotes an existing non-directory, the upward search
 //   MUST begin from its parent directory;
-// - req.ProjectRootDirectoryInputStartsAtResolvedPath@L2310
+// - req.ProjectRootDirectoryInputStartsAtResolvedPath@L2331
 //   otherwise the upward search MUST begin from the resolved path itself.
-// - def.FindProjectRoot@L2324
+// - def.FindProjectRoot@L2345
 //   `FindProjectRoot(p)` is the nearest searched directory `R` such that
 //   `exists(R/`Ultraviolet.toml`)`; if no searched directory satisfies that
 //   predicate, `FindProjectRoot(p)` is the search-start directory.
-// - WF-Project-Root@L3491
+// - WF-Project-Root@L3512
 //   exists(`Ultraviolet.toml` at R)
 //   ───────────────────────────
 //   ⊢ R : ProjectRoot

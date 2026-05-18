@@ -5,7 +5,7 @@
 // =============================================================================
 //
 // SPEC REFERENCE:
-//   SPECIFICATION.md §4179-4242 (Runtime Scope Data Model)
+//   Docs/SPECIFICATION.md §4179-4242 (Runtime Scope Data Model)
 //
 // Defines the runtime scope stack data model and the core lookup
 // operations: NearestScope, LookupBind, LookupVal, BindInitScope.

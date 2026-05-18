@@ -1,6 +1,6 @@
 [[test(
     name: "prefix holds for identical empty component lists",
-    covers("def.PathPrefix@L3284")
+    covers("def.PathPrefix@L3305")
 )]]
 internal procedure prefixHoldsForIdenticalEmptyComponentLists() -> bool
 |: => @result
@@ -14,7 +14,7 @@ internal procedure prefixHoldsForIdenticalEmptyComponentLists() -> bool
 
 [[test(
     name: "prefix holds for complete leading components",
-    covers("def.PathPrefix@L3284")
+    covers("def.PathPrefix@L3305")
 )]]
 internal procedure prefixHoldsForCompleteLeadingComponents() -> bool
 |: => @result
@@ -31,7 +31,7 @@ internal procedure prefixHoldsForCompleteLeadingComponents() -> bool
 
 [[test(
     name: "prefix rejects partial component text",
-    covers("def.PathPrefix@L3284")
+    covers("def.PathPrefix@L3305")
 )]]
 internal procedure prefixRejectsPartialComponentText() -> bool
 |: => !@result
@@ -48,7 +48,7 @@ internal procedure prefixRejectsPartialComponentText() -> bool
 
 [[test(
     name: "prefix rejects different root tags",
-    covers("def.PathPrefix@L3284")
+    covers("def.PathPrefix@L3305")
 )]]
 internal procedure prefixRejectsDifferentRootTags() -> bool
 |: => !@result
@@ -62,7 +62,7 @@ internal procedure prefixRejectsDifferentRootTags() -> bool
 
 [[test(
     name: "prefix rejects longer candidate prefix",
-    covers("def.PathPrefix@L3284")
+    covers("def.PathPrefix@L3305")
 )]]
 internal procedure prefixRejectsLongerCandidatePrefix() -> bool
 |: => !@result

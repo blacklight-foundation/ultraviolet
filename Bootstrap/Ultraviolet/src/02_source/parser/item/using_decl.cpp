@@ -2,7 +2,7 @@
 // using_decl.cpp - Using Declaration Parsing
 // =============================================================================
 //
-// SPEC REFERENCE: SPECIFICATION.md Section 3.3.6.3 (Using Declaration Rules)
+// SPEC REFERENCE: Docs/SPECIFICATION.md Section 3.3.6.3 (Using Declaration Rules)
 //
 // This file implements using declaration parsing:
 //   - ParseUsingModulePath: Parse the module path prefix for a using declaration

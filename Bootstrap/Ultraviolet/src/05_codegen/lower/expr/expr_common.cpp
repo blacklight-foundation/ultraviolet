@@ -13,6 +13,7 @@
 #include "02_source/attributes/attribute_registry.h"
 #include "04_analysis/contracts/verification.h"
 #include "04_analysis/keys/key_paths.h"
+#include "04_analysis/memory/return_responsibility.h"
 #include "04_analysis/memory/regions.h"
 #include "04_analysis/typing/type_expr.h"
 #include "05_codegen/intrinsics/builtins.h"
@@ -464,6 +465,38 @@ std::optional<ast::RangeKind> RangeIndexKindOf(const ast::Expr& expr,
 
 bool IsMoveExpr(const ast::ExprPtr& expr) {
   return expr && std::holds_alternative<ast::MoveExpr>(expr->node);
+}
+
+bool BindingInitializerHasResponsibility(const ast::ExprPtr& init,
+                                         LowerCtx& ctx) {
+  if (!init) {
+    return true;
+  }
+  if (const auto* attr = std::get_if<ast::AttributedExpr>(&init->node)) {
+    return BindingInitializerHasResponsibility(attr->expr, ctx);
+  }
+  if (std::holds_alternative<ast::MoveExpr>(init->node) ||
+      std::holds_alternative<ast::CopyExpr>(init->node)) {
+    return true;
+  }
+  if (IsPlaceExpr(*init)) {
+    return false;
+  }
+
+  const analysis::ScopeContext& scope = ScopeForLowering(ctx);
+  if (const auto* call = std::get_if<ast::CallExpr>(&init->node)) {
+    if (const auto has_resp =
+            analysis::CallResultHasResponsibility(scope, *call)) {
+      return *has_resp;
+    }
+  }
+  if (const auto* method = std::get_if<ast::MethodCallExpr>(&init->node)) {
+    if (const auto has_resp =
+            analysis::MethodCallResultHasResponsibility(scope, *method)) {
+      return *has_resp;
+    }
+  }
+  return true;
 }
 
 std::optional<std::string> PlaceRoot(const ast::Expr& expr) {

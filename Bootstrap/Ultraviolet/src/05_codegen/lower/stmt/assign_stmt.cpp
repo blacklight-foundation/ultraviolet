@@ -2,7 +2,7 @@
 // MIGRATION MAPPING: stmt/assign_stmt.cpp
 // =============================================================================
 //
-// SPEC REFERENCE: SPECIFICATION.md Lines 16639-16642 (Lower-Stmt-Assign)
+// SPEC REFERENCE: Docs/SPECIFICATION.md Lines 16639-16642 (Lower-Stmt-Assign)
 //   - LowerExpr(expr) produces IR_e, v
 //   - LowerWritePlace(place, v) produces IR_w
 //   - Result: SeqIR(IR_e, IR_w)

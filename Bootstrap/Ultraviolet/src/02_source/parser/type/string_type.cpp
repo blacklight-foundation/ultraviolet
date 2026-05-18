@@ -2,7 +2,7 @@
 // string_type.cpp - String Type and State Parsing
 // =============================================================================
 //
-// SPEC REFERENCE: SPECIFICATION.md, Section 3.3.7, Lines 4788-4791
+// SPEC REFERENCE: Docs/SPECIFICATION.md, Section 3.3.7, Lines 4788-4791
 // Section 3.3.7.1 (String State), Lines 4881-4896
 //
 // Parses string types: string@Managed, string@View

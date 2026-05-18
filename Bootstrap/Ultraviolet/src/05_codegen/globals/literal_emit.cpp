@@ -2,7 +2,7 @@
 // MIGRATION MAPPING: literal_emit.cpp
 // =============================================================================
 //
-// SPEC REFERENCE: SPECIFICATION.md
+// SPEC REFERENCE: Docs/SPECIFICATION.md
 //   - Section 6.3.1 Literal Identity (lines 15427-15434)
 //   - LiteralData(kind, contents) constructor (line 15398)
 //   - FNV1a64 hash (lines 15429-15432)

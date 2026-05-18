@@ -392,6 +392,14 @@ namespace ultraviolet::codegen::emit_detail {
                                             const analysis::TypeRef &source_type)
     ;
 
+    bool TryEmitAggregateStorageTransfer(LLVMEmitter &emitter,
+                                         llvm::IRBuilder<> *builder,
+                                         llvm::Value *dst_storage,
+                                         llvm::Value *src_storage,
+                                         const analysis::TypeRef &target_type,
+                                         const analysis::TypeRef &source_type)
+    ;
+
     bool TryEmitDerivedAggregateToStorage(LLVMEmitter &emitter,
                                           llvm::IRBuilder<> *builder,
                                           llvm::Value *dst_storage,

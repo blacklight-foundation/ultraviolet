@@ -3,7 +3,7 @@
 // =============================================================================
 // This file contains parsing logic for method call expressions: expr~>name(args).
 //
-// SPEC REFERENCE: SPECIFICATION.md, Lines 5438-5441
+// SPEC REFERENCE: Docs/SPECIFICATION.md, Lines 5438-5441
 // -----------------------------------------------------------------------------
 // **(Postfix-MethodCall)** Lines 5438-5441
 // IsOp(Tok(P), "~>")    Γ ⊢ ParseIdent(Advance(P)) ⇓ (P_1, name)    IsPunc(Tok(P_1), "(")

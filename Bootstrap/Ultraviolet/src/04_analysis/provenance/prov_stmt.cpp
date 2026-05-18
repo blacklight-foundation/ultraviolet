@@ -4,9 +4,9 @@
  * =============================================================================
  *
  * SPEC REFERENCE:
- *   - SPECIFICATION.md, Section 21.4.3 "Statement Provenance" (lines 25190-25260)
- *   - SPECIFICATION.md, Section 10.5 "Memory Provenance" (lines 22510-22600)
- *   - SPECIFICATION.md, Section 6.6 "Statement Execution" (lines 16410-16500)
+ *   - Docs/SPECIFICATION.md, Section 21.4.3 "Statement Provenance" (lines 25190-25260)
+ *   - Docs/SPECIFICATION.md, Section 10.5 "Memory Provenance" (lines 22510-22600)
+ *   - Docs/SPECIFICATION.md, Section 6.6 "Statement Execution" (lines 16410-16500)
  *
  * DIAGNOSTIC CODES:
  *   - E-PROV-0020: Provenance invalidated before use

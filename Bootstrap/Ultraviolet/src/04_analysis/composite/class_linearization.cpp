@@ -2,7 +2,7 @@
 // MIGRATION MAPPING: class_linearization.cpp
 // =============================================================================
 //
-// SPEC REFERENCE: SPECIFICATION.md
+// SPEC REFERENCE: Docs/SPECIFICATION.md
 // - Section 5.3.1 "Classes (Ultraviolet)" - Superclass Linearization (C3) (lines 11834-11882)
 //   - Supers(Cl) (line 11836)
 //   - Lin-Base (lines 11838-11841)

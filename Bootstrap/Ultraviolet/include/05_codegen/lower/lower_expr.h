@@ -51,6 +51,7 @@ struct CleanupItem {
 struct TempValue {
   IRValue value;
   analysis::TypeRef type;
+  bool has_responsibility = true;
 };
 
 struct ParallelCollectItem {
@@ -134,6 +135,7 @@ enum class AddressUseKind {
 // BindingState tracks the state of a binding for cleanup purposes
 struct BindingState {
   analysis::TypeRef type;                     // Type of the binding
+  analysis::TypeRef storage_type;             // Physical storage type for refined bindings
   std::uint64_t binding_id = 0;
   std::string stable_name;
   bool has_responsibility = true;         // Does this binding own cleanupSigma
@@ -188,6 +190,7 @@ struct DerivedValueInfo {
     AddrTuple,
     AddrIndex,
     AddrDeref,
+    AddrUnionPayload,
     LoadFromAddr,
   };
 
@@ -626,7 +629,9 @@ struct LowerCtx {
   void RegisterParallelJoin(const IRValue& parallel_ctx);
 
   // Register a temporary value for cleanup
-  void RegisterTempValue(const IRValue& value, const analysis::TypeRef& type);
+  void RegisterTempValue(const IRValue& value,
+                         const analysis::TypeRef& type,
+                         bool has_responsibility = true);
 
   void RegisterDerivedValue(const IRValue& value, const DerivedValueInfo& info);
   const DerivedValueInfo* LookupDerivedValue(const IRValue& value) const;

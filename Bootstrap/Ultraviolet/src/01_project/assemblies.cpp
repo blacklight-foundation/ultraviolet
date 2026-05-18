@@ -2,7 +2,7 @@
 // MIGRATION MAPPING: assemblies.cpp (NEW FILE)
 // =============================================================================
 //
-// SPEC REFERENCE: SPECIFICATION.md Section 3.2
+// SPEC REFERENCE: Docs/SPECIFICATION.md Section 3.2
 //   - Projects, manifests, and assemblies
 //   - AssemblyKind definition
 //   - Assembly record validation

@@ -4,10 +4,10 @@
  * =============================================================================
  *
  * SPEC REFERENCE:
- *   - SPECIFICATION.md, Section 6.8 "Procedure Calls" (lines 16500-16700)
- *   - SPECIFICATION.md, Section 6.8.1 "Argument Passing" (lines 16510-16600)
- *   - SPECIFICATION.md, Section 6.8.2 "Move Parameters" (lines 16610-16700)
- *   - SPECIFICATION.md, Section 10.3 "Move Semantics" (lines 22310-22400)
+ *   - Docs/SPECIFICATION.md, Section 6.8 "Procedure Calls" (lines 16500-16700)
+ *   - Docs/SPECIFICATION.md, Section 6.8.1 "Argument Passing" (lines 16510-16600)
+ *   - Docs/SPECIFICATION.md, Section 6.8.2 "Move Parameters" (lines 16610-16700)
+ *   - Docs/SPECIFICATION.md, Section 10.3 "Move Semantics" (lines 22310-22400)
  *
  * SOURCE FILE:
  *   - ultraviolet-bootstrap/src/03_analysis/memory/calls.cpp

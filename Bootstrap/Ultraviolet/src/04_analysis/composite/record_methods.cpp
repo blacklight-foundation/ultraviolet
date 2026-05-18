@@ -2,7 +2,7 @@
 // MIGRATION MAPPING: record_methods.cpp
 // =============================================================================
 //
-// SPEC REFERENCE: SPECIFICATION.md
+// SPEC REFERENCE: Docs/SPECIFICATION.md
 // - Section 5.3.2 "Record Methods" (lines 12156-12259)
 //   - Fields(R), Methods(R), Self_R, SelfType (lines 12160-12163)
 //   - Recv-Explicit (lines 12167-12170)

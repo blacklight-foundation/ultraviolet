@@ -1,6 +1,6 @@
 [[test(
     name: "PathComps prepends drive root tag before tail segments",
-    covers("def.PathComponents@L3202")
+    covers("def.PathComponents@L3223")
 )]]
 internal procedure pathComponentsPrependsDriveRootTag() -> bool
 |: => @result
@@ -18,7 +18,7 @@ internal procedure pathComponentsPrependsDriveRootTag() -> bool
 
 [[test(
     name: "PathComps keeps drive root without tail as one component",
-    covers("def.PathComponents@L3202")
+    covers("def.PathComponents@L3223")
 )]]
 internal procedure pathComponentsKeepsDriveRootWithoutTail() -> bool
 |: => @result
@@ -33,7 +33,7 @@ internal procedure pathComponentsKeepsDriveRootWithoutTail() -> bool
 
 [[test(
     name: "PathComps prepends UNC root tag before tail segments",
-    covers("def.PathComponents@L3202")
+    covers("def.PathComponents@L3223")
 )]]
 internal procedure pathComponentsPrependsUNCRootTag() -> bool
 |: => @result
@@ -51,7 +51,7 @@ internal procedure pathComponentsPrependsUNCRootTag() -> bool
 
 [[test(
     name: "PathComps prepends root-relative tag before tail segments",
-    covers("def.PathComponents@L3202")
+    covers("def.PathComponents@L3223")
 )]]
 internal procedure pathComponentsPrependsRootRelativeTag() -> bool
 |: => @result
@@ -69,7 +69,7 @@ internal procedure pathComponentsPrependsRootRelativeTag() -> bool
 
 [[test(
     name: "PathComps of relative path is only its segments",
-    covers("def.PathComponents@L3202")
+    covers("def.PathComponents@L3223")
 )]]
 internal procedure pathComponentsOfRelativePathIsOnlySegments() -> bool
 |: => @result

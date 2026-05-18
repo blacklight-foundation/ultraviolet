@@ -2,7 +2,7 @@
 // MIGRATION MAPPING: lexer.cpp
 // =============================================================================
 //
-// SPEC REFERENCE: SPECIFICATION.md
+// SPEC REFERENCE: Docs/SPECIFICATION.md
 //   Section 3.2.8 - Operator and Punctuator Lexing (lines 2394-2404)
 //   Section 3.2.9 - Maximal-Munch Rule (lines 2405-2445)
 //   Section 3.2.11 - Tokenization Small-Step (Lex-Newline at line 2519-2522)
@@ -87,7 +87,7 @@
 //     Filters newlines in suppressed ranges (inside literals/comments)
 //
 // 17. FilterNewlines() - Newline continuation filtering (lines 320-405)
-//     Implements SPECIFICATION.md §3.1.7 Continue(K, i) / Filter(K)
+//     Implements Docs/SPECIFICATION.md §3.1.7 Continue(K, i) / Filter(K)
 //
 //     Filtering rules:
 //     a. Inside ( ) or [ ]: filter (expression context)
@@ -116,7 +116,7 @@
 // - KindPriority provides stable ordering for tie-breaking
 //
 // - FilterNewlines follows the normative Continue(K, i) / Filter(K) rules in
-//   SPECIFICATION.md §3.1.7.
+//   Docs/SPECIFICATION.md §3.1.7.
 //
 // - Tuple/decimal-dot disambiguation for `t.0.0` is handled in tokenization
 //   (`LexSmallStep`) using previous-token context.

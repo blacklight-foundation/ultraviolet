@@ -2,7 +2,7 @@
 // MIGRATION MAPPING: llvm_ub_safe.cpp
 // =============================================================================
 //
-// SPEC REFERENCE: SPECIFICATION.md
+// SPEC REFERENCE: Docs/SPECIFICATION.md
 //   - Section 6.12 LLVM 21 Backend Requirements
 //   - UB avoidance rules
 //   - Poison value handling

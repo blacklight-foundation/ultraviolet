@@ -2,7 +2,7 @@
 // Calling Conventions (§6.2.1)
 // =============================================================================
 //
-// SPEC REFERENCE: SPECIFICATION.md
+// SPEC REFERENCE: Docs/SPECIFICATION.md
 //   - Section 6.2.1 Default Calling Convention
 //   - CallConvDefault = UltravioletABI (Win64 x86_64-pc-windows-msvc)
 //   - FFI calling conventions: "C", "C-unwind", "system", "stdcall",

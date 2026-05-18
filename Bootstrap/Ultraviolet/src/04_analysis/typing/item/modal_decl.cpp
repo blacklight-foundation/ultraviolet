@@ -2,7 +2,7 @@
 // MIGRATION: item/modal_decl.cpp
 // =============================================================================
 //
-// SPEC REFERENCE: SPECIFICATION.md
+// SPEC REFERENCE: Docs/SPECIFICATION.md
 //   Section 5.4: Modal Types (Definitions)
 //   - Modal-WF: Modal well-formedness
 //   - WF-ModalState: State well-formedness

@@ -15,18 +15,6 @@ void IRInstructionVisitor::operator()(const IRAlloc &alloc) const
     value_type = active_ctx->LookupValueType(alloc.value);
   }
 
-  llvm::Value *value = EvaluateOrDefault(alloc.value);
-  llvm::Type *value_ty = value_type ? emitter.GetLLVMType(value_type) : nullptr;
-  if ((!value_ty || value_ty->isVoidTy()) && value)
-  {
-    value_ty = value->getType();
-  }
-  if (!value_ty || value_ty->isVoidTy())
-  {
-    emitter.SetTempValue(alloc.result, DefaultFor(alloc.result));
-    return;
-  }
-
   std::optional<IRValue> target_region = alloc.region;
   if (!target_region.has_value())
   {
@@ -36,6 +24,21 @@ void IRInstructionVisitor::operator()(const IRAlloc &alloc) const
     }
   }
   if (!target_region.has_value())
+  {
+    emitter.SetTempValue(alloc.result, DefaultFor(alloc.result));
+    return;
+  }
+
+  emitter.PushActiveRegion(*target_region);
+  llvm::Value *value = EvaluateOrDefault(alloc.value);
+  emitter.PopActiveRegion();
+
+  llvm::Type *value_ty = value_type ? emitter.GetLLVMType(value_type) : nullptr;
+  if ((!value_ty || value_ty->isVoidTy()) && value)
+  {
+    value_ty = value->getType();
+  }
+  if (!value_ty || value_ty->isVoidTy())
   {
     emitter.SetTempValue(alloc.result, DefaultFor(alloc.result));
     return;
@@ -92,7 +95,8 @@ void IRInstructionVisitor::operator()(const IRAlloc &alloc) const
           emitter,
           alloc_info->params,
           alloc_info->ret,
-          use_c_abi_aggregate_sret);
+          use_c_abi_aggregate_sret,
+          /*foreign_boundary_mode_independent=*/true);
       if (alloc_abi.func_type)
       {
         alloc_fn = llvm::Function::Create(

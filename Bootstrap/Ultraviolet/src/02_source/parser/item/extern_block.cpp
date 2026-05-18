@@ -2,7 +2,7 @@
 // extern_block.cpp - Extern Block Parsing
 // =============================================================================
 //
-// SPEC REFERENCE: SPECIFICATION.md Section 3.3.6.3 (Extern Block Rules)
+// SPEC REFERENCE: Docs/SPECIFICATION.md Section 3.3.6.3 (Extern Block Rules)
 //
 // This file implements extern block parsing for FFI declarations:
 //   - ParseExternAbiOpt: Parse optional ABI specifier

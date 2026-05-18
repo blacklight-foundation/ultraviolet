@@ -4,7 +4,7 @@
 // Modal Pattern Lowering
 // =============================================================================
 //
-// SPEC REFERENCE: SPECIFICATION.md Lines 16782-16785
+// SPEC REFERENCE: Docs/SPECIFICATION.md Lines 16782-16785
 //   - TagOf-Modal: Get modal state index
 //   - StateIndex(M, S) = i
 //

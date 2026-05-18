@@ -2,7 +2,7 @@
 // Expression Lowering: UnsafeBlockExpr
 // =============================================================================
 //
-// SPEC REFERENCE: SPECIFICATION.md Section 6.4 (Expression Lowering)
+// SPEC REFERENCE: Docs/SPECIFICATION.md Section 6.4 (Expression Lowering)
 //   - Lines 16233-16236: (Lower-Expr-UnsafeBlock)
 //
 // MIGRATED FROM:

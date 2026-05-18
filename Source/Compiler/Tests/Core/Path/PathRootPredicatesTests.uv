@@ -1,6 +1,6 @@
 [[test(
     name: "DriveRooted accepts letter colon separator",
-    covers("def.PathRootPredicates@L3146")
+    covers("def.PathRootPredicates@L3167")
 )]]
 internal procedure driveRootedAcceptsLetterColonSeparator() -> bool
 |: => @result
@@ -14,7 +14,7 @@ internal procedure driveRootedAcceptsLetterColonSeparator() -> bool
 
 [[test(
     name: "UNC accepts two forward separators",
-    covers("def.PathRootPredicates@L3146")
+    covers("def.PathRootPredicates@L3167")
 )]]
 internal procedure uncAcceptsTwoForwardSeparators() -> bool
 |: => @result
@@ -28,7 +28,7 @@ internal procedure uncAcceptsTwoForwardSeparators() -> bool
 
 [[test(
     name: "UNC accepts two backward separators",
-    covers("def.PathRootPredicates@L3146")
+    covers("def.PathRootPredicates@L3167")
 )]]
 internal procedure uncAcceptsTwoBackwardSeparators() -> bool
 |: => @result
@@ -42,7 +42,7 @@ internal procedure uncAcceptsTwoBackwardSeparators() -> bool
 
 [[test(
     name: "RootRelative accepts one leading separator",
-    covers("def.PathRootPredicates@L3146")
+    covers("def.PathRootPredicates@L3167")
 )]]
 internal procedure rootRelativeAcceptsOneLeadingSeparator() -> bool
 |: => @result
@@ -56,7 +56,7 @@ internal procedure rootRelativeAcceptsOneLeadingSeparator() -> bool
 
 [[test(
     name: "DriveRooted rejects non-letter drive tag",
-    covers("def.PathRootPredicates@L3146")
+    covers("def.PathRootPredicates@L3167")
 )]]
 internal procedure driveRootedRejectsNonLetterDriveTag() -> bool
 |: => @result
@@ -70,7 +70,7 @@ internal procedure driveRootedRejectsNonLetterDriveTag() -> bool
 
 [[test(
     name: "Relative path has no root predicate",
-    covers("def.PathRootPredicates@L3146")
+    covers("def.PathRootPredicates@L3167")
 )]]
 internal procedure relativePathHasNoRootPredicate() -> bool
 |: => @result

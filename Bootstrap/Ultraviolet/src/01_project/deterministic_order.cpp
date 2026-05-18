@@ -2,7 +2,7 @@
 // MIGRATION MAPPING: deterministic_order.cpp
 // =============================================================================
 //
-// SPEC REFERENCE: SPECIFICATION.md Section 2.3 (lines 1168-1207)
+// SPEC REFERENCE: Docs/SPECIFICATION.md Section 2.3 (lines 1168-1207)
 //   - 2.3. Deterministic Ordering and Case Folding
 //   - 2.3.1. Module File Processing Order
 //   - 2.3.2. Module Path Case-Folding Algorithm

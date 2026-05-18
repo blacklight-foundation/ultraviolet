@@ -1,6 +1,6 @@
 // Test responsibility: Source/Compiler/Tests/Driver/Testing/LoweringTestHarnessGenerationTests.uv
 //
-// This file owns source-native tests for lowering.TestHarnessGeneration@L28516:
+// This file owns source-native tests for lowering.TestHarnessGeneration@L28863:
 //
 // `uv test [target]` resolves the optional positional target into a test scope,
 // discovers selected tests, generates an ephemeral harness under the selected
@@ -70,7 +70,7 @@ using UltravioletCompiler::Semantics::Attributes::{ emptyCoverageReferences }
 
 [[test(
     name: "uv test absent target resolves to all tests",
-    covers("lowering.TestHarnessGeneration@L28516")
+    covers("lowering.TestHarnessGeneration@L28863")
 )]]
 internal procedure uvTestAbsentTargetResolvesToAllTests() -> bool
 |: => @result
@@ -105,7 +105,7 @@ internal procedure uvTestAbsentTargetResolvesToAllTests() -> bool
 
 [[test(
     name: "uv test assembly target resolves to assembly test scope",
-    covers("lowering.TestHarnessGeneration@L28516")
+    covers("lowering.TestHarnessGeneration@L28863")
 )]]
 internal procedure uvTestAssemblyTargetResolvesToAssemblyTestScope() -> bool
 |: => @result
@@ -143,7 +143,7 @@ internal procedure uvTestAssemblyTargetResolvesToAssemblyTestScope() -> bool
 
 [[test(
     name: "uv test module target resolves to module test scope",
-    covers("lowering.TestHarnessGeneration@L28516")
+    covers("lowering.TestHarnessGeneration@L28863")
 )]]
 internal procedure uvTestModuleTargetResolvesToModuleTestScope() -> bool
 |: => @result
@@ -179,7 +179,7 @@ internal procedure uvTestModuleTargetResolvesToModuleTestScope() -> bool
 
 [[test(
     name: "uv test path targets resolve to path scopes",
-    covers("lowering.TestHarnessGeneration@L28516")
+    covers("lowering.TestHarnessGeneration@L28863")
 )]]
 internal procedure uvTestPathTargetsResolveToPathScopes() -> bool
 |: => @result
@@ -201,7 +201,7 @@ internal procedure uvTestPathTargetsResolveToPathScopes() -> bool
 
 [[test(
     name: "generated harness records selected assembly and entry symbol",
-    covers("lowering.TestHarnessGeneration@L28516")
+    covers("lowering.TestHarnessGeneration@L28863")
 )]]
 internal procedure generatedHarnessRecordsSelectedAssemblyAndEntrySymbol() -> bool
 |: => @result
@@ -232,7 +232,7 @@ internal procedure generatedHarnessRecordsSelectedAssemblyAndEntrySymbol() -> bo
 
 [[test(
     name: "uv test assembly scope selects only tests subtree procedures",
-    covers("lowering.TestHarnessGeneration@L28516")
+    covers("lowering.TestHarnessGeneration@L28863")
 )]]
 internal procedure uvTestAssemblyScopeSelectsOnlyTestsSubtreeProcedures() -> bool
 |: => @result
@@ -264,7 +264,7 @@ internal procedure uvTestAssemblyScopeSelectsOnlyTestsSubtreeProcedures() -> boo
 
 [[test(
     name: "uv test source file scope selects exact tests file",
-    covers("lowering.TestHarnessGeneration@L28516")
+    covers("lowering.TestHarnessGeneration@L28863")
 )]]
 internal procedure uvTestSourceFileScopeSelectsExactTestsFile() -> bool
 |: => @result

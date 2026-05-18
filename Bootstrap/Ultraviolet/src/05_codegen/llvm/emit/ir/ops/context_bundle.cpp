@@ -170,7 +170,11 @@ void IRInstructionVisitor::operator()(const IRContextBundleBuild &build) const
           }
 
           ABICallResult abi =
-              ComputeCallABI(emitter, runtime_info->params, runtime_info->ret, true);
+              ComputeCallABI(emitter,
+                             runtime_info->params,
+                             runtime_info->ret,
+                             true,
+                             /*foreign_boundary_mode_independent=*/true);
           if (!abi.valid || !abi.func_type || abi.param_kinds.size() != 1u)
           {
             const_cast<LowerCtx *>(active_ctx)->ReportCodegenFailure();

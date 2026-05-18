@@ -2,7 +2,7 @@
 // MIGRATION MAPPING: binding_storage.cpp
 // =============================================================================
 //
-// SPEC REFERENCE: SPECIFICATION.md
+// SPEC REFERENCE: Docs/SPECIFICATION.md
 //   - Section 6.4 Expression Lowering (lines 15665-15992)
 //   - IRBindVar, IRStoreVar, IRStoreVarNoDrop (IR nodes for binding)
 //   - ExecIR-BindVar rule (lines 15831-15833)

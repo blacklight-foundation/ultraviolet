@@ -2,7 +2,7 @@
 // MIGRATION MAPPING: path.cpp
 // =============================================================================
 //
-// SPEC REFERENCE: SPECIFICATION.md
+// SPEC REFERENCE: Docs/SPECIFICATION.md
 //   - Section 2.1 "Project Root and Manifest" - Path Resolution (lines 956-999)
 //     - WinSep = {"\\", "/"}
 //     - AsciiLetter(c): c in A-Z or a-z

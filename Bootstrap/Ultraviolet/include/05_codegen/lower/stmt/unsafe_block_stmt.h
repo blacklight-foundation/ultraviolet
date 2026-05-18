@@ -4,7 +4,7 @@
 // Unsafe Block Statement Lowering
 // =============================================================================
 //
-// SPEC REFERENCE: SPECIFICATION.md Lines 16696-16699 (Lower-Stmt-UnsafeBlock)
+// SPEC REFERENCE: Docs/SPECIFICATION.md Lines 16696-16699 (Lower-Stmt-UnsafeBlock)
 //
 // =============================================================================
 

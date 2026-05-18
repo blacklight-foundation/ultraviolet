@@ -2,7 +2,7 @@
 // Expression Statement Lowering Implementation
 // =============================================================================
 //
-// SPEC REFERENCE: SPECIFICATION.md Lines 16650-16653 (Lower-Stmt-Expr)
+// SPEC REFERENCE: Docs/SPECIFICATION.md Lines 16650-16653 (Lower-Stmt-Expr)
 //   - LowerExpr(expr) produces IR_e
 //   - Result value discarded (side effects only)
 //

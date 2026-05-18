@@ -2,7 +2,7 @@
 // MIGRATION MAPPING: drop_hooks.cpp
 // =============================================================================
 //
-// SPEC REFERENCE: SPECIFICATION.md
+// SPEC REFERENCE: Docs/SPECIFICATION.md
 //   - Section 6.4 Expression Lowering - Drop Glue (lines 15847-15870)
 //   - ExecIR-DropGlue rule (lines 15847-15850)
 //   - Drop::drop method invocation (lines 15851-15860)

@@ -4,7 +4,7 @@
 // Statement Lowering Common Utilities
 // =============================================================================
 //
-// SPEC REFERENCE: SPECIFICATION.md Section 6.5 (Statement Lowering)
+// SPEC REFERENCE: Docs/SPECIFICATION.md Section 6.5 (Statement Lowering)
 //   - Lines 16586-16756: Statement lowering judgments
 //   - LowerStmt dispatch
 //   - LowerStmtList, LowerBlock

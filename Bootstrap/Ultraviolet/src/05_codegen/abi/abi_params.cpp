@@ -2,7 +2,7 @@
 // ABI Parameter Passing (§6.2.3)
 // =============================================================================
 //
-// SPEC REFERENCE: SPECIFICATION.md
+// SPEC REFERENCE: Docs/SPECIFICATION.md
 //   - Section 6.2.3 ABI Parameter and Return Passing
 //   - ByValOk predicate
 //   - ABI-Param-ByRef-Alias rule

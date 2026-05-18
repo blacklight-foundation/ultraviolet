@@ -2,7 +2,7 @@
 // parser_consume.cpp - Token Consumption Helpers
 // =============================================================================
 //
-// SPEC REFERENCE: SPECIFICATION.md Section 5.5 (Lines 2836-2921)
+// SPEC REFERENCE: Docs/SPECIFICATION.md Section 5.5 (Lines 2836-2921)
 //
 // This file implements token consumption operations:
 //   - ConsumeState / TryAdvanceConsume: canonical token-consumption state model

@@ -4,7 +4,7 @@
 // Spec Section: 5.2.6
 // =============================================================================
 //
-// SPEC REFERENCE: SPECIFICATION.md
+// SPEC REFERENCE: Docs/SPECIFICATION.md
 //   Section 5.2.6: Arrays and Slices (lines 8922-9055)
 //   - T-Index-Array (lines 8931-8934): Array indexing with const index
 //   - T-Index-Array-Dynamic (lines 8936-8939): Dynamic array indexing

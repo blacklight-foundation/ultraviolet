@@ -2,7 +2,7 @@
 // pattern_common.cpp - Pattern Type Checking Common Utilities
 // =============================================================================
 //
-// SPEC REFERENCE: SPECIFICATION.md
+// SPEC REFERENCE: Docs/SPECIFICATION.md
 //   Section 5.4: If-Is Pattern Case Analysis
 //   - PatJudg (line 9727): Pattern judgment
 //   - Pat-Dup-Err (lines 9729-9732): Duplicate pattern name

@@ -2,7 +2,7 @@
 // MIGRATION MAPPING: module_discovery.cpp
 // =============================================================================
 //
-// SPEC REFERENCE: SPECIFICATION.md Section 2.4 (lines 1209-1327)
+// SPEC REFERENCE: Docs/SPECIFICATION.md Section 2.4 (lines 1209-1327)
 //   - 2.4. Module Discovery
 //   - Module Discovery (Big-Step): Modules-Ok/Err
 //   - Module Discovery (Small-Step): Disc-Start, Disc-Skip, Disc-Add, etc.

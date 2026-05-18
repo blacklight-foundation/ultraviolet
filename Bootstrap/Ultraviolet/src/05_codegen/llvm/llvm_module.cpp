@@ -2,7 +2,7 @@
 // MIGRATION MAPPING: llvm_module.cpp
 // =============================================================================
 //
-// SPEC REFERENCE: SPECIFICATION.md
+// SPEC REFERENCE: Docs/SPECIFICATION.md
 //   - Section 6.12 LLVM 21 Backend Requirements (lines 17287-17650)
 //   - Section 6.12.1 LLVM Module Header (lines 17289-17291)
 //   - LLVMHeader = [TargetDataLayout, TargetTriple]
@@ -336,7 +336,7 @@ bool RuntimeDeclsCover(const llvm::Module& module, const IRDecls& decls) {
           info->params,
           info->ret,
           /*use_c_abi_aggregate_sret=*/true,
-          /*foreign_boundary_mode_independent=*/false);
+          /*foreign_boundary_mode_independent=*/true);
       if (!abi.valid || !abi.func_type) {
         if (current_ctx_) {
           current_ctx_->ReportCodegenFailure();

@@ -4,7 +4,7 @@
 // Spec Section: 5.2.12
 // =============================================================================
 //
-// SPEC REFERENCE: SPECIFICATION.md
+// SPEC REFERENCE: Docs/SPECIFICATION.md
 //   Section 5.2.12: Expression Typing
 //   - ExprJudg (line 9787): Expression judgments
 //   - Lift-Expr (lines 9789-9792): Context lifting

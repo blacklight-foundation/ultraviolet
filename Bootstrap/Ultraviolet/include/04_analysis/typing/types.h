@@ -192,7 +192,7 @@ struct TypeRefine {
   std::shared_ptr<ast::Expr> predicate;
 };
 
-// TypeClosure per SPECIFICATION.md Section 5.2
+// TypeClosure per Docs/SPECIFICATION.md Section 5.2
 // TypeClosure = ⟨params, ret, deps_opt⟩
 // params is vector of (move_mode, type) pairs
 struct SharedDep {

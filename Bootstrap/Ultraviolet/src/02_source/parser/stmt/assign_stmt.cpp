@@ -3,7 +3,7 @@
 // =============================================================================
 // This file should contain parsing logic for simple assignment statements.
 //
-// SPEC REFERENCE: SPECIFICATION.md, Section 3.3.10, Lines 6275-6278, 6406-6409
+// SPEC REFERENCE: Docs/SPECIFICATION.md, Section 3.3.10, Lines 6275-6278, 6406-6409
 // =============================================================================
 //
 // FORMAL RULES FROM SPEC:

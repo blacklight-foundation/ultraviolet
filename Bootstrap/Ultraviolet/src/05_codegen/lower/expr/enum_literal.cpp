@@ -2,7 +2,7 @@
 // Expression Lowering: EnumLiteralExpr
 // =============================================================================
 //
-// SPEC REFERENCE: SPECIFICATION.md Section 6.4 (Expression Lowering)
+// SPEC REFERENCE: Docs/SPECIFICATION.md Section 6.4 (Expression Lowering)
 //   - Lines 16090-16102: (Lower-Expr-Enum-Unit/Tuple/Record)
 //
 // MIGRATED FROM:

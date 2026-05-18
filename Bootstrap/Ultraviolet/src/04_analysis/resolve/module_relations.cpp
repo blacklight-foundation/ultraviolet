@@ -3,7 +3,7 @@
 // =============================================================================
 //
 // SPEC REFERENCE:
-//   SPECIFICATION.md §12735-12736
+//   Docs/SPECIFICATION.md §12735-12736
 //     ImplModule(T) = p ⇔ T is declared in ASTModule(P, p)
 //     ClassModule(Cl) = p ⇔ Cl is declared in ASTModule(P, p)
 //

@@ -4,7 +4,7 @@
 // Region Statement Lowering
 // =============================================================================
 //
-// SPEC REFERENCE: SPECIFICATION.md Lines 16659-16662 (Lower-Stmt-Region)
+// SPEC REFERENCE: Docs/SPECIFICATION.md Lines 16659-16662 (Lower-Stmt-Region)
 //
 // =============================================================================
 

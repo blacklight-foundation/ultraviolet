@@ -2,7 +2,7 @@
 // MIGRATION MAPPING: tuples.cpp
 // =============================================================================
 //
-// SPEC REFERENCE: SPECIFICATION.md
+// SPEC REFERENCE: Docs/SPECIFICATION.md
 // - Section 5.2.5 "Tuples" (lines 8874-8920)
 //   - T-Unit-Literal (lines 8876-8878)
 //   - T-Tuple-Literal (lines 8880-8883)

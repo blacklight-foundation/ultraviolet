@@ -4,9 +4,9 @@
  * =============================================================================
  *
  * SPEC REFERENCE:
- *   - SPECIFICATION.md, Section 5.2.2 "Subtyping" (lines 8594-8696)
- *   - SPECIFICATION.md, Section 10.4 "Permission Admissibility"
- *   - SPECIFICATION.md, Section 5.3 "CastValid" predicate
+ *   - Docs/SPECIFICATION.md, Section 5.2.2 "Subtyping" (lines 8594-8696)
+ *   - Docs/SPECIFICATION.md, Section 10.4 "Permission Admissibility"
+ *   - Docs/SPECIFICATION.md, Section 5.3 "CastValid" predicate
  *
  * MIGRATED FROM:
  *   - ultraviolet-bootstrap/src/03_analysis/types/conformance.cpp

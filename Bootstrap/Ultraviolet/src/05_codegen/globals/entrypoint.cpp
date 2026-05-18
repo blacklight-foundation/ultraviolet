@@ -2,7 +2,7 @@
 // MIGRATION MAPPING: entrypoint.cpp
 // =============================================================================
 //
-// SPEC REFERENCE: SPECIFICATION.md
+// SPEC REFERENCE: Docs/SPECIFICATION.md
 //   - Section 6.0 CG-Item-Procedure-Main rule (lines 14262-14265)
 //   - MainSigOk predicate (line 14263)
 //   - EmitInitPlan(P) for program initialization (line 14263)

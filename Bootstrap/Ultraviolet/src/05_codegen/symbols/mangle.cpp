@@ -2,7 +2,7 @@
 // MIGRATION MAPPING: mangle.cpp
 // =============================================================================
 //
-// SPEC REFERENCE: SPECIFICATION.md
+// SPEC REFERENCE: Docs/SPECIFICATION.md
 //   - Section 6.3.1 Symbol Names and Mangling (lines 15392-15548)
 //   - MangleJudg = {Mangle} (line 15396)
 //   - Join, PathSig helpers (lines 15401-15404)

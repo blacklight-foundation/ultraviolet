@@ -2,7 +2,7 @@
 // cap_heap.cpp - Heap Allocator Capability Checking Implementation
 // =============================================================================
 //
-// SPEC REFERENCE: SPECIFICATION.md
+// SPEC REFERENCE: Docs/SPECIFICATION.md
 //   - Section 5.9.1 "Capability Classes" (CapClass, CapType, CapMethodSig, CapRecv)
 //   - Section 5.9.3 "HeapAllocator Interface" (HeapAllocatorInterface, AllocationError)
 //

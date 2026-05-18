@@ -2,7 +2,7 @@
 // MIGRATION: item/extern_block.cpp
 // =============================================================================
 //
-// SPEC REFERENCE: SPECIFICATION.md
+// SPEC REFERENCE: Docs/SPECIFICATION.md
 //   Section 18: Foreign Function Interface
 //   - extern block grammar
 //   - FfiSafe types

@@ -4,7 +4,7 @@
 // Spec Section: 5.2.12
 // =============================================================================
 //
-// SPEC REFERENCE: SPECIFICATION.md
+// SPEC REFERENCE: Docs/SPECIFICATION.md
 //   Section 5.2.12: Expression Typing
 //   - T-If-Else: if cond { then_branch } else { else_branch }
 //   - T-If-Unit: if cond { then_branch } (no else, result is unit)

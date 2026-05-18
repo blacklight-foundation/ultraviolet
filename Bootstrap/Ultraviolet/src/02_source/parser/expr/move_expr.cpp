@@ -3,7 +3,7 @@
 // =============================================================================
 // This file should contain parsing logic for move expressions.
 //
-// SPEC REFERENCE: SPECIFICATION.md, Section 3.3.8.5, Lines 5111-5114
+// SPEC REFERENCE: Docs/SPECIFICATION.md, Section 3.3.8.5, Lines 5111-5114
 // =============================================================================
 //
 // FORMAL RULES FROM SPEC:

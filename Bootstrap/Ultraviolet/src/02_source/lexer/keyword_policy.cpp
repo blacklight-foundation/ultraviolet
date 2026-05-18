@@ -2,7 +2,7 @@
 // MIGRATION MAPPING: keyword_policy.cpp
 // =============================================================================
 //
-// SPEC REFERENCE: SPECIFICATION.md
+// SPEC REFERENCE: Docs/SPECIFICATION.md
 //   Section 3.2.3 - Reserved Lexemes (lines 2086-2106)
 //   Section 3.2.7 - Identifier and Keyword Lexing (ClassifyIdent at lines 2388-2392)
 //

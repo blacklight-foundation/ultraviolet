@@ -2,7 +2,7 @@
 // Tuple Pattern Lowering Implementation
 // =============================================================================
 //
-// SPEC REFERENCE: SPECIFICATION.md Section 6.6 (Pattern Matching Lowering)
+// SPEC REFERENCE: Docs/SPECIFICATION.md Section 6.6 (Pattern Matching Lowering)
 //   - Tuple patterns destructure tuple values
 //   - Each element pattern is recursively processed
 //
@@ -22,7 +22,7 @@ namespace ultraviolet::codegen {
 // RegisterTuplePatternBindings
 // =============================================================================
 //
-// SPEC: SPECIFICATION.md Section 6.6 (Pattern Matching Lowering)
+// SPEC: Docs/SPECIFICATION.md Section 6.6 (Pattern Matching Lowering)
 //
 // Registers bindings for tuple patterns by extracting element types from
 // the TypeTuple hint and recursively processing each element pattern.
@@ -62,7 +62,7 @@ void RegisterTuplePatternBindings(const ast::TuplePattern& pattern,
 // LowerTuplePatternBindings
 // =============================================================================
 //
-// SPEC: SPECIFICATION.md Section 6.6 (Pattern Matching Lowering)
+// SPEC: Docs/SPECIFICATION.md Section 6.6 (Pattern Matching Lowering)
 //
 // Lowers tuple pattern bindings by creating derived values for each element
 // and recursively processing each element pattern.
@@ -103,7 +103,7 @@ IRPtr LowerTuplePatternBindings(const ast::TuplePattern& pattern,
 // PatternCheckTuple
 // =============================================================================
 //
-// SPEC: SPECIFICATION.md Section 6.6 (Pattern Matching Lowering)
+// SPEC: Docs/SPECIFICATION.md Section 6.6 (Pattern Matching Lowering)
 //
 // Checks if a value matches a tuple pattern. Tuple patterns are irrefutable
 // (always match) when all element patterns are irrefutable. This function

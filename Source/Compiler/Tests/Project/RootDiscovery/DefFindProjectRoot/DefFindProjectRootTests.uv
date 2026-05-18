@@ -1,7 +1,7 @@
 // Test responsibility:
 // Source/Compiler/Tests/Project/RootDiscovery/DefFindProjectRoot/DefFindProjectRootTests.uv
 //
-// This file owns source-native tests for def.FindProjectRoot@L2324:
+// This file owns source-native tests for def.FindProjectRoot@L2345:
 //
 // `FindProjectRoot(p)` is the nearest searched directory `R` such that
 // `exists(R/`Ultraviolet.toml`)`; if no searched directory satisfies that
@@ -21,7 +21,7 @@ using UltravioletCompiler::Project::{
 
 [[test(
     name: "find project root returns nearest searched manifest directory",
-    covers("def.FindProjectRoot@L2324")
+    covers("def.FindProjectRoot@L2345")
 )]]
 internal procedure findProjectRootReturnsNearestManifestDirectory() -> bool
 |: => @result
@@ -47,7 +47,7 @@ internal procedure findProjectRootReturnsNearestManifestDirectory() -> bool
 
 [[test(
     name: "find project root returns search start when no manifest is found",
-    covers("def.FindProjectRoot@L2324")
+    covers("def.FindProjectRoot@L2345")
 )]]
 internal procedure findProjectRootReturnsSearchStartWhenNoManifestIsFound() -> bool
 |: => @result

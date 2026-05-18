@@ -4,7 +4,7 @@
 // Spec Section: 5.3.1 + 5.3.2
 // =============================================================================
 //
-// SPEC REFERENCE: SPECIFICATION.md
+// SPEC REFERENCE: Docs/SPECIFICATION.md
 //   Section 5.3.1: Class method resolution and typing
 //   Section 5.3.2: Record method call typing
 //   - receiver~>method(args) syntax

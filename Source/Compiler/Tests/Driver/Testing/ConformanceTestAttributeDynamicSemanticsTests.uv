@@ -1,7 +1,7 @@
 // Test responsibility: Source/Compiler/Tests/Driver/Testing/ConformanceTestAttributeDynamicSemanticsTests.uv
 //
 // This file owns source-native tests for
-// conformance.TestAttributeDynamicSemantics@L28495:
+// conformance.TestAttributeDynamicSemantics@L28842:
 //
 // During test execution, ordinary return plus a satisfied postcondition passes;
 // ordinary return plus a violated postcondition fails; panic, unavailable
@@ -16,7 +16,7 @@ using UltravioletCompiler::Driver::Testing::{
 
 [[test(
     name: "test result summary classifies passed failed and error outcomes",
-    covers("conformance.TestAttributeDynamicSemantics@L28495")
+    covers("conformance.TestAttributeDynamicSemantics@L28842")
 )]]
 internal procedure testResultSummaryClassifiesPassedFailedAndErrorOutcomes() -> bool
 |: => @result
@@ -60,7 +60,7 @@ internal procedure testResultSummaryClassifiesPassedFailedAndErrorOutcomes() -> 
 
 [[test(
     name: "source-native execution plans selected tests from loaded project",
-    covers("conformance.TestAttributeDynamicSemantics@L28495")
+    covers("conformance.TestAttributeDynamicSemantics@L28842")
 )]]
 internal procedure sourceNativeExecutionPlansSelectedTestsFromLoadedProject() -> bool
 |: => @result
@@ -116,7 +116,7 @@ internal procedure sourceNativeExecutionPlansSelectedTestsFromLoadedProject() ->
 
 [[test(
     name: "source-native execution rejects unknown loaded-project target",
-    covers("conformance.TestAttributeDynamicSemantics@L28495")
+    covers("conformance.TestAttributeDynamicSemantics@L28842")
 )]]
 internal procedure sourceNativeExecutionRejectsUnknownLoadedProjectTarget() -> bool
 |: => @result

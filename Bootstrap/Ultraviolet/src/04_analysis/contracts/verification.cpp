@@ -4,10 +4,10 @@
  * =============================================================================
  *
  * SPEC REFERENCE:
- *   - SPECIFICATION.md, Section 14.8 "Static Verification" (lines 23610-23750)
- *   - SPECIFICATION.md, Section 14.8.1 "Proof Obligations" (lines 23620-23680)
- *   - SPECIFICATION.md, Section 14.8.2 "Verification Modes" (lines 23690-23750)
- *   - SPECIFICATION.md, Section 8.11 "E-VER Errors" (lines 22000-22100)
+ *   - Docs/SPECIFICATION.md, Section 14.8 "Static Verification" (lines 23610-23750)
+ *   - Docs/SPECIFICATION.md, Section 14.8.1 "Proof Obligations" (lines 23620-23680)
+ *   - Docs/SPECIFICATION.md, Section 14.8.2 "Verification Modes" (lines 23690-23750)
+ *   - Docs/SPECIFICATION.md, Section 8.11 "E-VER Errors" (lines 22000-22100)
  *
  * SOURCE FILE:
  *   - ultraviolet-bootstrap/src/03_analysis/contracts/verification.cpp (lines 1-1109)

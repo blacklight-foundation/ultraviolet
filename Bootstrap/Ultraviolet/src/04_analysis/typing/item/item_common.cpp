@@ -2,7 +2,7 @@
 // MIGRATION: item/item_common.cpp
 // =============================================================================
 //
-// SPEC REFERENCE: SPECIFICATION.md
+// SPEC REFERENCE: Docs/SPECIFICATION.md
 //   Section 5.3: Declarations
 //   - Common item processing utilities
 //   - Declaration environment management

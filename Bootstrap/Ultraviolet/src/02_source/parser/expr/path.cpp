@@ -2,7 +2,7 @@
 // path.cpp - Qualified Path Expression Parsing
 // =============================================================================
 //
-// SPEC REFERENCE: SPECIFICATION.md
+// SPEC REFERENCE: Docs/SPECIFICATION.md
 // - Parse-Qualified-Name (Lines 5189-5192)
 // - Parse-Qualified-Apply-Paren (Lines 5194-5197)
 // - Parse-Qualified-Apply-Brace (Lines 5199-5202)

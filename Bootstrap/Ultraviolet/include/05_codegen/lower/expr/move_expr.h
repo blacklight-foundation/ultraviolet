@@ -1,7 +1,7 @@
 #pragma once
 
 // =============================================================================
-// SPEC REFERENCE: SPECIFICATION.md Section 6.4 (Expression Lowering)
+// SPEC REFERENCE: Docs/SPECIFICATION.md Section 6.4 (Expression Lowering)
 //   - Lines 16240-16242: (Lower-Expr-Move)
 //     Gamma |- LowerMovePlace(place) => <IR, v>
 //     ------------------------------------------------------------------

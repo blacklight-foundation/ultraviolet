@@ -2,7 +2,7 @@
 // unsafe_block_stmt.cpp - Unsafe block statement typing
 // =============================================================================
 //
-// SPEC REFERENCE: SPECIFICATION.md
+// SPEC REFERENCE: Docs/SPECIFICATION.md
 //   Section 5.5: Memory and Pointers - Unsafe blocks
 //   - unsafe block as statement
 //   - See also expr/unsafe_block_expr.cpp for expression form

@@ -1,6 +1,6 @@
 [[test(
     name: "Drop zero preserves every component",
-    covers("def.Drop@L3341")
+    covers("def.Drop@L3362")
 )]]
 internal procedure dropZeroPreservesEveryComponent() -> bool
 |: => @result
@@ -16,7 +16,7 @@ internal procedure dropZeroPreservesEveryComponent() -> bool
 
 [[test(
     name: "Drop removes the requested leading components",
-    covers("def.Drop@L3341")
+    covers("def.Drop@L3362")
 )]]
 internal procedure dropRemovesRequestedLeadingComponents() -> bool
 |: => @result
@@ -32,7 +32,7 @@ internal procedure dropRemovesRequestedLeadingComponents() -> bool
 
 [[test(
     name: "Drop past the end returns empty relative path",
-    covers("def.Drop@L3341")
+    covers("def.Drop@L3362")
 )]]
 internal procedure dropPastEndReturnsEmptyRelativePath() -> bool
 |: => @result
@@ -48,7 +48,7 @@ internal procedure dropPastEndReturnsEmptyRelativePath() -> bool
 
 [[test(
     name: "Drop removes a drive tag and yields relative tail components",
-    covers("def.Drop@L3341")
+    covers("def.Drop@L3362")
 )]]
 internal procedure dropRemovesDriveTagAndYieldsRelativeTail() -> bool
 |: => @result

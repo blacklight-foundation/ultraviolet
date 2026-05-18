@@ -4,7 +4,7 @@
 // Wildcard Pattern Lowering
 // =============================================================================
 //
-// SPEC REFERENCE: SPECIFICATION.md Section 6.6 (Pattern Matching Lowering)
+// SPEC REFERENCE: Docs/SPECIFICATION.md Section 6.6 (Pattern Matching Lowering)
 //   - Wildcard pattern (_) matches anything
 //   - Creates no bindings
 //

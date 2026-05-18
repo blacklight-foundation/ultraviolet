@@ -1,13 +1,13 @@
 // Test responsibility:
 // Source/Compiler/Tests/Project/DeterministicOrder/FoldPath/DefFoldPathTests.uv
 //
-// This file owns source-native tests for def.FoldPath@L4095.
+// This file owns source-native tests for def.FoldPath@L4116.
 
 using UltravioletCompiler::Project::{ projectPathTextPrecedes }
 
 [[test(
     name: "folded path ordering compares case-folded bytes first",
-    covers("def.FoldPath@L4095")
+    covers("def.FoldPath@L4116")
 )]]
 internal procedure foldedPathOrderingComparesCaseFoldedBytesFirst() -> bool
 |: => @result

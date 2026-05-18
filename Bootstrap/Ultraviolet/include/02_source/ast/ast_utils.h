@@ -8,7 +8,7 @@
 //   Declares utility functions for AST node inspection, span extraction,
 //   and category checks. These are implemented in ast_nodes.cpp.
 //
-// SPEC REFERENCE: SPECIFICATION.md Section 5.2 and Appendix C
+// SPEC REFERENCE: Docs/SPECIFICATION.md Section 5.2 and Appendix C
 //
 // ===========================================================================
 

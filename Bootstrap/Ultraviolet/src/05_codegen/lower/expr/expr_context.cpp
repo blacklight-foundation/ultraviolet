@@ -235,6 +235,7 @@ void LowerCtx::RegisterVar(const std::string& name,
 
   BindingState state;
   state.type = type;
+  state.storage_type = type;
   state.binding_id = next_binding_id++;
   state.stable_name =
       "__bind_" + std::to_string(state.binding_id) + "_" + name;
@@ -543,13 +544,16 @@ void LowerCtx::RegisterParallelJoin(const IRValue& parallel_ctx) {
   scope_stack.back().cleanup_items.push_back(std::move(item));
 }
 
-void LowerCtx::RegisterTempValue(const IRValue& value, const analysis::TypeRef& type) {
+void LowerCtx::RegisterTempValue(const IRValue& value,
+                                 const analysis::TypeRef& type,
+                                 bool has_responsibility) {
   if (!temp_sink) {
     return;
   }
   TempValue temp;
   temp.value = value;
   temp.type = type;
+  temp.has_responsibility = has_responsibility;
   temp_sink->push_back(std::move(temp));
 }
 

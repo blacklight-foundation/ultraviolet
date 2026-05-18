@@ -2,7 +2,7 @@
 // Expression Lowering: PropagateExpr
 // =============================================================================
 //
-// SPEC REFERENCE: SPECIFICATION.md Section 6.4 (Expression Lowering)
+// SPEC REFERENCE: Docs/SPECIFICATION.md Section 6.4 (Expression Lowering)
 //   - Lines 16188-16196: (Lower-Expr-Propagate-Success) and (Lower-Expr-Propagate-Return)
 //
 // MIGRATED FROM:

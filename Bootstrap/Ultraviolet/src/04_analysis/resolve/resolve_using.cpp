@@ -3,8 +3,8 @@
 // =============================================================================
 //
 // SPEC REFERENCE:
-//   SPECIFICATION.md §5.1.5 "Top-Level Name Collection" (Lines 6956-7309)
-//   SPECIFICATION.md §5.1.4 "Visibility and Accessibility" (Lines 6900-6955)
+//   Docs/SPECIFICATION.md §5.1.5 "Top-Level Name Collection" (Lines 6956-7309)
+//   Docs/SPECIFICATION.md §5.1.4 "Visibility and Accessibility" (Lines 6900-6955)
 //
 // SOURCE FILE:
 //   Migrated from ultraviolet-bootstrap/src/03_analysis/resolve/collect_toplevel.cpp

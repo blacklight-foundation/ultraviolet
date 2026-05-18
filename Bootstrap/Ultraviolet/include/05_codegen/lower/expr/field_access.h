@@ -4,7 +4,7 @@
 // MIGRATION MAPPING: expr/field_access.h
 // =============================================================================
 //
-// SPEC REFERENCE: SPECIFICATION.md Section 6.4 (Expression Lowering)
+// SPEC REFERENCE: Docs/SPECIFICATION.md Section 6.4 (Expression Lowering)
 //   - Lines 16104-16107: (Lower-Expr-FieldAccess)
 //     Gamma |- LowerExpr(base) => <IR_b, v_b>    FieldValue(v_b, f) = v_f
 //     Gamma |- LowerExpr(FieldAccess(base, f)) => <IR_b, v_f>

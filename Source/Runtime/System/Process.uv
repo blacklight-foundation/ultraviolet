@@ -2,19 +2,19 @@
 //
 // This file owns process and process-invocation runtime primitives:
 //
-// - Prim-System-Exit@L14425
+// - Prim-System-Exit@L14567
 //   Maps `System.exit(code)` primitive method calls to `SystemExit`.
-// - Prim-System-Run@L14443
+// - Prim-System-Run@L14585
 //   Maps `System.run(command)` primitive method calls to `SystemRun`.
-// - Prim-System-ExecutablePath@L14353
+// - Prim-System-ExecutablePath@L14495
 //   Maps `System.executable_path()` primitive method calls to the normalized
 //   process executable path.
-// - Prim-System-ArgumentCount@L14371
+// - Prim-System-ArgumentCount@L14513
 //   Maps `System.argument_count()` primitive method calls to the normalized
 //   command argument count.
-// - Prim-System-Argument@L14389
+// - Prim-System-Argument@L14531
 //   Maps `System.argument(index)` primitive method calls to normalized command
 //   arguments.
-// - Prim-System-CurrentDirectory@L14407
+// - Prim-System-CurrentDirectory@L14549
 //   Maps `System.current_directory()` primitive method calls to the normalized
 //   process current directory.

@@ -2,7 +2,7 @@
 // parser_paths.cpp - Path Parsing (Identifiers, Module Paths, Visibility)
 // =============================================================================
 //
-// SPEC REFERENCE: SPECIFICATION.md Section 3.3.6.1-3.3.6.2 (Lines 3468-3515)
+// SPEC REFERENCE: Docs/SPECIFICATION.md Section 3.3.6.1-3.3.6.2 (Lines 3468-3515)
 //
 // This file implements path and identifier parsing:
 //   - ParseIdent: Parse single identifier

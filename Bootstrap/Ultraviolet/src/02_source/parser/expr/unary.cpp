@@ -3,7 +3,7 @@
 // =============================================================================
 // This file should contain parsing logic for unary prefix expressions.
 //
-// SPEC REFERENCE: SPECIFICATION.md, Section 3.3.8.5, Lines 5094-5124
+// SPEC REFERENCE: Docs/SPECIFICATION.md, Section 3.3.8.5, Lines 5094-5124
 // =============================================================================
 //
 // FORMAL RULES FROM SPEC:

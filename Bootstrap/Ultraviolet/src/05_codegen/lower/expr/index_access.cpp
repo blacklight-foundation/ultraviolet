@@ -2,7 +2,7 @@
 // Expression Lowering: IndexAccessExpr
 // =============================================================================
 //
-// SPEC REFERENCE: SPECIFICATION.md Section 6.4 (Expression Lowering)
+// SPEC REFERENCE: Docs/SPECIFICATION.md Section 6.4 (Expression Lowering)
 //   - Lines 16114-16141: Index access rules
 //     - (Lower-Expr-Index-Scalar-Static): No bounds check for array with static index
 //     - (Lower-Expr-Index-Scalar): Bounds check for slice or dynamic index

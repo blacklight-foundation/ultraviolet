@@ -2,7 +2,7 @@
 // MIGRATION MAPPING: type_equiv.cpp
 // =============================================================================
 //
-// SPEC REFERENCE: SPECIFICATION.md
+// SPEC REFERENCE: Docs/SPECIFICATION.md
 //   Section 8.1: Type Equivalence
 //   - T-Equiv-Prim: Primitive type equivalence
 //   - T-Equiv-Perm: Permission type equivalence

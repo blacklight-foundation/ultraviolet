@@ -1,7 +1,7 @@
 // Test responsibility:
 // Source/Compiler/Tests/Project/AssemblyGraph/DefAssemblySourceRoots/DefAssemblySourceRootsTests.uv
 //
-// This file owns source-native tests for def.AssemblySourceRoots@L4420:
+// This file owns source-native tests for def.AssemblySourceRoots@L4441:
 //
 // AssemblySourceRoots(As) = { A.source_root | A ∈ As }
 // RootDepth(S) = |PathComps(S)|
@@ -22,7 +22,7 @@ using UltravioletCompiler::Project::{
 
 [[test(
     name: "assembly source roots are projected from loaded assemblies",
-    covers("def.AssemblySourceRoots@L4420")
+    covers("def.AssemblySourceRoots@L4441")
 )]]
 internal procedure assemblySourceRootsAreProjectedFromLoadedAssemblies() -> bool
 |: => @result

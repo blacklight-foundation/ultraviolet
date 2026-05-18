@@ -1,13 +1,13 @@
 // Obligation responsibility: Source/Compiler/Driver/CLI/TestCommand.uv
 //
 // This file owns `uv test` command coordination for the positional target model
-// in lowering.TestHarnessGeneration@L28516. Target resolution, deterministic
+// in lowering.TestHarnessGeneration@L28863. Target resolution, deterministic
 // discovery, coverage validation, harness generation, execution, and result
 // reporting are routed through their owning driver files.
 //
 // Relevant source-native test command rule:
 //
-// - lowering.TestHarnessGeneration@L28516
+// - lowering.TestHarnessGeneration@L28863
 //   `uv test` uses an optional positional argument, resolves it to a test scope,
 //   generates an ephemeral harness under the selected assembly build output, and
 //   invokes selected tests in deterministic order.

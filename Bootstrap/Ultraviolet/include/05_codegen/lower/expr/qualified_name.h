@@ -1,7 +1,7 @@
 #pragma once
 
 // =============================================================================
-// SPEC REFERENCE: SPECIFICATION.md Section 6.4 (Expression Lowering)
+// SPEC REFERENCE: Docs/SPECIFICATION.md Section 6.4 (Expression Lowering)
 //   - Lines 16067-16070: (Lower-Expr-Path)
 //     Gamma |- ResolveValuePath(path) => ent
 //     name = (ent.target_opt if present, else final(path))

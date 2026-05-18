@@ -2,7 +2,7 @@
 // MIGRATION MAPPING: layout_unions.cpp
 // =============================================================================
 //
-// SPEC REFERENCE: SPECIFICATION.md
+// SPEC REFERENCE: Docs/SPECIFICATION.md
 //   - Section 6.1.4 Union Layout and Discriminants (lines 14632-14835)
 //   - Section 6.1.4.1 Niche Optimization (Ultraviolet) (lines 14634-14827)
 //   - NicheSet definitions (lines 14638-14641)

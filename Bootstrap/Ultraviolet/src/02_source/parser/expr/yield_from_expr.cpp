@@ -2,7 +2,7 @@
 // yield_from_expr.cpp - Yield From Expression Parsing
 // =============================================================================
 //
-// SPEC REFERENCE: SPECIFICATION.md
+// SPEC REFERENCE: Docs/SPECIFICATION.md
 // - Parse-Yield-From-Expr (Lines 5284-5287)
 //
 // =============================================================================

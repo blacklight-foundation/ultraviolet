@@ -494,6 +494,7 @@ static const DiagMapEntry kTypecheckDiagMap[] = {
   {"P-SEM-2861", "P-SEM-2861"},
   {"P-SEM-2862", "P-SEM-2862"},
   {"P-TYP-1953", "P-TYP-1953"},
+  {"Pat-Tuple-Arity-Err", "E-TYP-1803"},
   {"RangePattern-Empty", "E-SEM-2722"},
   {"RangePattern-NonConst", "E-SEM-2721"},
   {"Record-Method-Dup", "E-SEM-3012"},

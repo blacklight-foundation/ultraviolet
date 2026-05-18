@@ -4,7 +4,7 @@
 // Spec Section: 5.6
 // =============================================================================
 //
-// SPEC REFERENCE: SPECIFICATION.md
+// SPEC REFERENCE: Docs/SPECIFICATION.md
 //   Section 5.6: Ownership and Move Semantics
 //   - move place transfers ownership
 //   - Source becomes invalid after move

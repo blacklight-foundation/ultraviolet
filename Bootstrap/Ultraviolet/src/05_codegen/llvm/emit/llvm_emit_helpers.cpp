@@ -862,7 +862,8 @@ namespace ultraviolet::codegen::emit_detail {
             emitter,
             info->params,
             info->ret,
-            kUseCAbiAggregateSRet);
+            kUseCAbiAggregateSRet,
+            /*foreign_boundary_mode_independent=*/true);
         if (abi.func_type)
         {
           fn = llvm::Function::Create(
@@ -1102,6 +1103,85 @@ namespace ultraviolet::codegen::emit_detail {
                                  static_cast<std::uint64_t>(*size));
       const std::uint64_t copy_align = std::max<std::uint64_t>(1, *align);
       EmitAggMemcpy(emitter, dst_storage, src_storage, size_value, copy_align);
+      return true;
+    }
+
+    bool TryEmitAggregateStorageTransfer(LLVMEmitter &emitter,
+                                         llvm::IRBuilder<> *builder,
+                                         llvm::Value *dst_storage,
+                                         llvm::Value *src_storage,
+                                         const analysis::TypeRef &target_type,
+                                         const analysis::TypeRef &source_type)
+    {
+      if (!builder || !dst_storage || !src_storage || !target_type || !source_type)
+      {
+        return false;
+      }
+      if (!dst_storage->getType()->isPointerTy() ||
+          !src_storage->getType()->isPointerTy())
+      {
+        return false;
+      }
+
+      const LowerCtx *ctx = emitter.GetCurrentCtx();
+      if (!ctx)
+      {
+        return false;
+      }
+
+      analysis::TypeRef resolved_target = ResolveAliasType(ctx, target_type);
+      analysis::TypeRef resolved_source = ResolveAliasType(ctx, source_type);
+      if (!resolved_target || !resolved_source)
+      {
+        return false;
+      }
+
+      const auto equiv = analysis::TypeEquiv(resolved_source, resolved_target);
+      if (!equiv.ok || !equiv.equiv)
+      {
+        return false;
+      }
+
+      llvm::Type *llvm_ty = emitter.GetLLVMType(resolved_target);
+      if (!llvm_ty || llvm_ty->isVoidTy() ||
+          !(llvm_ty->isStructTy() || llvm_ty->isArrayTy()))
+      {
+        return false;
+      }
+
+      const analysis::ScopeContext &scope = BuildScope(ctx);
+      const auto size =
+          ::ultraviolet::analysis::layout::SizeOf(scope, resolved_target);
+      const auto align =
+          ::ultraviolet::analysis::layout::AlignOf(scope, resolved_target);
+      if (!size.has_value() || !align.has_value())
+      {
+        return false;
+      }
+      if (*size == 0)
+      {
+        return true;
+      }
+
+      llvm::Type *ptr_ty = llvm::PointerType::get(llvm_ty, 0);
+      if (dst_storage->getType() != ptr_ty)
+      {
+        dst_storage = builder->CreateBitCast(dst_storage, ptr_ty);
+      }
+      if (src_storage->getType() != ptr_ty)
+      {
+        src_storage = builder->CreateBitCast(src_storage, ptr_ty);
+      }
+      if (dst_storage->stripPointerCasts() == src_storage->stripPointerCasts())
+      {
+        return true;
+      }
+
+      llvm::Value *size_value =
+          llvm::ConstantInt::get(llvm::Type::getInt64Ty(emitter.GetContext()),
+                                 static_cast<std::uint64_t>(*size));
+      const std::uint64_t transfer_align = std::max<std::uint64_t>(1, *align);
+      EmitAggMemcpy(emitter, dst_storage, src_storage, size_value, transfer_align);
       return true;
     }
 

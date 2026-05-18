@@ -2,7 +2,7 @@
 // type_args.cpp - Type List and Generic Argument Parsing
 // =============================================================================
 //
-// SPEC REFERENCE: SPECIFICATION.md, Section 3.3.6.13, Lines 3936-3949
+// SPEC REFERENCE: Docs/SPECIFICATION.md, Section 3.3.6.13, Lines 3936-3949
 // Section 3.3.7.1 (Type Lists), Lines 4937-4962
 //
 // Parses type lists used in generic arguments and tuple types.

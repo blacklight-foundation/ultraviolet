@@ -2,7 +2,7 @@
 // record_decl.cpp - Record Declaration Parsing
 // =============================================================================
 //
-// SPEC REFERENCE: SPECIFICATION.md Section 3.3.6.6 (Record Declaration Rules)
+// SPEC REFERENCE: Docs/SPECIFICATION.md Section 3.3.6.6 (Record Declaration Rules)
 //
 // This file implements record declaration parsing:
 //   - ParseRecordFieldInitOpt: Parse optional field default value

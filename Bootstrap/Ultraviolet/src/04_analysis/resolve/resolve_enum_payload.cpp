@@ -3,8 +3,8 @@
 // =============================================================================
 //
 // SPEC REFERENCE:
-//   SPECIFICATION.md §5.1.6 "Qualified Disambiguation" (Lines 7310-7429)
-//   SPECIFICATION.md §5.1.7 "Resolution Pass" (Lines 7430-7549)
+//   Docs/SPECIFICATION.md §5.1.6 "Qualified Disambiguation" (Lines 7310-7429)
+//   Docs/SPECIFICATION.md §5.1.7 "Resolution Pass" (Lines 7430-7549)
 //
 // CONTENT:
 //   1. ResolveEnumVariant - Lookup and validate enum variant

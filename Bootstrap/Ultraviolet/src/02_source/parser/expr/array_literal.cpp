@@ -2,7 +2,7 @@
 // array_literal.cpp - Array Literal Expression Parsing
 // =============================================================================
 //
-// SPEC REFERENCE: SPECIFICATION.md
+// SPEC REFERENCE: Docs/SPECIFICATION.md
 // - Parse-Array-Literal
 // - Parse-Array-Segment-*
 //

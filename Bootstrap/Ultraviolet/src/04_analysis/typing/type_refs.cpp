@@ -2,7 +2,7 @@
 // MIGRATION MAPPING: type_refs.cpp
 // =============================================================================
 //
-// SPEC REFERENCE: SPECIFICATION.md
+// SPEC REFERENCE: Docs/SPECIFICATION.md
 //   Section 3.3.2.3: Type Representation (referenced in types.cpp SPEC_DEFs)
 //   Section 6.1.4.1: Type Key definitions for ordering
 //

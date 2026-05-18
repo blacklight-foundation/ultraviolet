@@ -3,21 +3,21 @@
 // This file owns manifest parsing and parsed manifest records consumed by
 // project loading:
 //
-// - def.ManifestParsing@L2168
+// - def.ManifestParsing@L2189
 //   ParseTOML : Path ⇀ TOMLTable
-// - Parse-Manifest-Ok@L2183
+// - Parse-Manifest-Ok@L2204
 //   ParseTOML(R/`Ultraviolet.toml`) ⇓ T
 //   Γ ⊢ ParseManifest(R) ⇓ T
-// - Parse-Manifest-Missing@L2201
+// - Parse-Manifest-Missing@L2222
 //   ¬ exists(R/`Ultraviolet.toml`)    c = Code(Parse-Manifest-Missing)
 //   Γ ⊢ ParseManifest(R) ⇑ c
-// - Parse-Manifest-Err@L2219
+// - Parse-Manifest-Err@L2240
 //   ParseTOML(R/`Ultraviolet.toml`) ⇑    c = Code(Parse-Manifest-Err)
 //   Γ ⊢ ParseManifest(R) ⇑ c
-// - req.ManifestHostPathResolution@L2252
+// - req.ManifestHostPathResolution@L2273
 //   Manifest lookup MUST use host io path resolution semantics for
 //   R/`Ultraviolet.toml`.
-// - req.ManifestNoAdditionalCaseVerification@L2267
+// - req.ManifestNoAdditionalCaseVerification@L2288
 //   Manifest lookup MUST NOT perform additional case verification.
 
 internal let MANIFEST_EMPTY_TEXT: string@View = ""

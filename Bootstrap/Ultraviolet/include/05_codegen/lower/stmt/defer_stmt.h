@@ -4,7 +4,7 @@
 // Defer Statement Lowering
 // =============================================================================
 //
-// SPEC REFERENCE: SPECIFICATION.md Lines 16655-16657 (Lower-Stmt-Defer)
+// SPEC REFERENCE: Docs/SPECIFICATION.md Lines 16655-16657 (Lower-Stmt-Defer)
 //
 // =============================================================================
 

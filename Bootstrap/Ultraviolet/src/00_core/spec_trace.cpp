@@ -2,7 +2,7 @@
 // MIGRATION MAPPING: spec_trace.cpp
 // =============================================================================
 //
-// SPEC REFERENCE: SPECIFICATION.md
+// SPEC REFERENCE: Docs/SPECIFICATION.md
 //   - Section 0.3.2 "Observable Behavior Equivalence for Bootstrap" (lines 181-207)
 //     - DiagObs(d) = <d.code, d.severity, d.message, d.span>
 //     - DiagStream(C, P) = [DiagObs(d_1), ..., DiagObs(d_k)]

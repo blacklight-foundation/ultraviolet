@@ -1,7 +1,7 @@
 #pragma once
 
 // =============================================================================
-// SPEC REFERENCE: SPECIFICATION.md Section 6.4 (Expression Lowering)
+// SPEC REFERENCE: Docs/SPECIFICATION.md Section 6.4 (Expression Lowering)
 //   - Lines 16062-16065: (Lower-Expr-Ident-Path)
 //   - Lines 16067-16070: (Lower-Expr-Path)
 // =============================================================================

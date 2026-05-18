@@ -2,7 +2,7 @@
 // record_literal.cpp - Record Literal Expression Parsing
 // =============================================================================
 //
-// SPEC REFERENCE: SPECIFICATION.md
+// SPEC REFERENCE: Docs/SPECIFICATION.md
 // - Parse-Record-Literal (Lines 5224-5227)
 // - Parse-Record-Literal-ModalState (Lines 5219-5222)
 // - Parse-FieldInitList-* (Lines 5878-5888)

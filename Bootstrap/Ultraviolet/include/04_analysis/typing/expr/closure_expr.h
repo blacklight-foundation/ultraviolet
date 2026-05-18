@@ -1,10 +1,10 @@
 // =================================================================
 // File: 04_analysis/typing/expr/closure_expr.h
 // Construct: Closure Expression Type Checking
-// Spec Section: SPECIFICATION.md Section 5.2 (Closures)
+// Spec Section: Docs/SPECIFICATION.md Section 5.2 (Closures)
 // =================================================================
 //
-// SPEC REFERENCE: SPECIFICATION.md Lines 8789-8846
+// SPEC REFERENCE: Docs/SPECIFICATION.md Lines 8789-8846
 //
 // Type checking rules:
 //   - T-Closure-Local: Non-escaping closure with local captures

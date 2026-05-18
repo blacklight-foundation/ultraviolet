@@ -2,7 +2,7 @@
 // MIGRATION: item/import_decl.cpp
 // =============================================================================
 //
-// SPEC REFERENCE: SPECIFICATION.md
+// SPEC REFERENCE: Docs/SPECIFICATION.md
 //   Section 4: Module System
 //   - import declaration grammar
 //   - Module path resolution

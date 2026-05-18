@@ -1,6 +1,6 @@
 [[test(
     name: "relative path drops canonical base prefix",
-    covers("def.RelativePathComputation@L3355")
+    covers("def.RelativePathComputation@L3376")
 )]]
 internal procedure relativePathDropsCanonicalBasePrefix() -> bool
 |: => @result
@@ -21,7 +21,7 @@ internal procedure relativePathDropsCanonicalBasePrefix() -> bool
 
 [[test(
     name: "relative path of equal canonical paths is empty",
-    covers("def.RelativePathComputation@L3355")
+    covers("def.RelativePathComputation@L3376")
 )]]
 internal procedure relativePathOfEqualCanonicalPathsIsEmpty() -> bool
 |: => @result
@@ -42,7 +42,7 @@ internal procedure relativePathOfEqualCanonicalPathsIsEmpty() -> bool
 
 [[test(
     name: "relative path is unavailable when base is not a prefix",
-    covers("def.RelativePathComputation@L3355")
+    covers("def.RelativePathComputation@L3376")
 )]]
 internal procedure relativePathUnavailableWhenBaseIsNotPrefix() -> bool
 |: => @result
@@ -63,7 +63,7 @@ internal procedure relativePathUnavailableWhenBaseIsNotPrefix() -> bool
 
 [[test(
     name: "relative path is unavailable when path canonicalization fails",
-    covers("def.RelativePathComputation@L3355")
+    covers("def.RelativePathComputation@L3376")
 )]]
 internal procedure relativePathUnavailableWhenPathCanonicalizationFails() -> bool
 |: => @result

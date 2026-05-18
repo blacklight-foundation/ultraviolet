@@ -2,7 +2,7 @@
 // MIGRATION: item/class_decl.cpp
 // =============================================================================
 //
-// SPEC REFERENCE: SPECIFICATION.md
+// SPEC REFERENCE: Docs/SPECIFICATION.md
 //   Section 5.3.1: Classes (Ultraviolet)
 //   - WF-ClassDecl (line 10564): Class well-formedness
 //   - WF-Class (line 11964, 22625): Class requirements
@@ -408,6 +408,7 @@ ClassDeclResult TypeClassDecl(
       type_ctx.return_type = sig.return_type;
       type_ctx.diags = &diags;
       type_ctx.env_ref = &env;
+      type_ctx.current_class_path = result.class_path;
       const std::array<DynamicScopeAncestor, 2> ancestors{
           MakeDynamicScopeAncestor(decl.attrs, decl.span),
           MakeDynamicScopeAncestor(method.attrs, method.span)};

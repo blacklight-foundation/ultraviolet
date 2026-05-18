@@ -2,7 +2,7 @@
 // contract_entry.cpp - Contract Entry Expression Parsing
 // =============================================================================
 //
-// SPEC REFERENCE: SPECIFICATION.md
+// SPEC REFERENCE: Docs/SPECIFICATION.md
 // - Parse-Contract-Entry (Lines 5173-5176)
 //
 // =============================================================================

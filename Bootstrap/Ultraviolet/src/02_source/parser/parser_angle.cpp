@@ -2,7 +2,7 @@
 // parser_angle.cpp - Angle Bracket Handling for Generics
 // =============================================================================
 //
-// SPEC REFERENCE: SPECIFICATION.md Section 3.3.3 (Lines 3004-3016)
+// SPEC REFERENCE: Docs/SPECIFICATION.md Section 3.3.3 (Lines 3004-3016)
 //
 // This file implements angle bracket handling for generic parameters/arguments:
 //   - SplitSpan2: Split a 2-character span into two 1-character spans

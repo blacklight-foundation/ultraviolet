@@ -4,9 +4,9 @@
  * =============================================================================
  *
  * SPEC REFERENCE:
- *   - SPECIFICATION.md, Section 5.4.3 "State-Specific Fields" (lines 12560-12650)
- *   - SPECIFICATION.md, Section 5.4.4 "Field Visibility" (lines 12660-12750)
- *   - SPECIFICATION.md, Section 8.7 "E-MOD Errors" (lines 21600-21700)
+ *   - Docs/SPECIFICATION.md, Section 5.4.3 "State-Specific Fields" (lines 12560-12650)
+ *   - Docs/SPECIFICATION.md, Section 5.4.4 "Field Visibility" (lines 12660-12750)
+ *   - Docs/SPECIFICATION.md, Section 8.7 "E-MOD Errors" (lines 21600-21700)
  *
  * SOURCE FILE:
  *   - ultraviolet-bootstrap/src/03_analysis/modal/modal_fields.cpp (lines 1-43)

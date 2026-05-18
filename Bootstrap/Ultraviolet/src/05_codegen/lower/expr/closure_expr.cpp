@@ -1,6 +1,6 @@
 // =============================================================================
 // File: 05_codegen/lower/expr/closure_expr.cpp
-// SPEC REFERENCE: SPECIFICATION.md Lines 16260-16286 (Closure Lowering)
+// SPEC REFERENCE: Docs/SPECIFICATION.md Lines 16260-16286 (Closure Lowering)
 // =============================================================================
 //
 // Implements closure expression lowering per Section 6.4:

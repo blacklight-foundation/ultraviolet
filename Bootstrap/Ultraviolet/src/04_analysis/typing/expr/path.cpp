@@ -4,7 +4,7 @@
 // Spec Section: 5.2
 // =============================================================================
 //
-// SPEC REFERENCE: SPECIFICATION.md
+// SPEC REFERENCE: Docs/SPECIFICATION.md
 //   Section 5.2: Static Semantics - Path Resolution
 //   - Qualified name resolution
 //   - Module path lookup

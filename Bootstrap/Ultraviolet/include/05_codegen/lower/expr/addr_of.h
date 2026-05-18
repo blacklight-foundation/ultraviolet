@@ -4,7 +4,7 @@
 // MIGRATION MAPPING: expr/addr_of.h
 // =============================================================================
 //
-// SPEC REFERENCE: SPECIFICATION.md Section 6.4 (Expression Lowering)
+// SPEC REFERENCE: Docs/SPECIFICATION.md Section 6.4 (Expression Lowering)
 //   - Lines 16243-16246: (Lower-Expr-AddressOf)
 //   - Lines 16428-16477: LowerAddrOf rules for all place forms
 //

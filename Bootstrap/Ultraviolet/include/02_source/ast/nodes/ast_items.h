@@ -5,7 +5,7 @@
 // This file contains all struct definitions for top-level declarations (items)
 // in the Ultraviolet grammar, plus the ASTItem variant and supporting types.
 //
-// SPEC REFERENCE: SPECIFICATION.md Section 3.3.2.5 - Declaration Nodes
+// SPEC REFERENCE: Docs/SPECIFICATION.md Section 3.3.2.5 - Declaration Nodes
 //
 // ASTItem variants:
 //   UsingDecl     - using declarations (using path::{items})

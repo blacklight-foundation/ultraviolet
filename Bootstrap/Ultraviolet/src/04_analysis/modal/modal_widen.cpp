@@ -4,11 +4,11 @@
  * =============================================================================
  *
  * SPEC REFERENCE:
- *   - SPECIFICATION.md, Section 5.7 "Modal Widening" (line 12814)
- *   - SPECIFICATION.md, Section 5.7.1 "widen Expression" (lines 12820-12900)
- *   - SPECIFICATION.md, Section 7.2 "Modal Layout" (line 18619)
- *   - SPECIFICATION.md, Section 7.3 "Niche Optimization" (line 18635)
- *   - SPECIFICATION.md, Section 8.7 "E-MOD Errors" (lines 21600-21700)
+ *   - Docs/SPECIFICATION.md, Section 5.7 "Modal Widening" (line 12814)
+ *   - Docs/SPECIFICATION.md, Section 5.7.1 "widen Expression" (lines 12820-12900)
+ *   - Docs/SPECIFICATION.md, Section 7.2 "Modal Layout" (line 18619)
+ *   - Docs/SPECIFICATION.md, Section 7.3 "Niche Optimization" (line 18635)
+ *   - Docs/SPECIFICATION.md, Section 8.7 "E-MOD Errors" (lines 21600-21700)
  *
  * MIGRATED FROM:
  *   - ultraviolet-bootstrap/src/03_analysis/modal/modal_widen.cpp (lines 1-413)

@@ -2,29 +2,29 @@
 //
 // This file owns deterministic project ordering predicates:
 //
-// - def.FoldPath@L4095
+// - def.FoldPath@L4116
 //   FoldPath(r) = JoinComp([CaseFold(NFC(c)) | c ∈ PathComps(r)])
-// - def.FileKey@L4109
+// - def.FileKey@L4130
 //   FileKey(f, d) = ⟨FoldPath(rel), rel⟩ if relative(f, d) ⇓ rel,
 //   and ⟨⊥, Basename(f)⟩ if relative(f, d) ⇑.
-// - def.FileOrdering@L4125
+// - def.FileOrdering@L4146
 //   f_1 ≺_file f_2 ⇔ Utf8LexLess(FileKey(f_1, d), FileKey(f_2, d))
-// - FileOrder-Rel-Fail@L4139
+// - FileOrder-Rel-Fail@L4160
 //   relative(f, d) ⇑    c = Code(FileOrder-Rel-Fail)
 //   Γ ⊢ Emit(c)
-// - def.Fold@L4157
+// - def.Fold@L4178
 //   Fold(p) = [CaseFold(NFC(c)) | c ∈ p]
-// - def.DirKey@L4172
+// - def.DirKey@L4193
 //   DirKey(d, S) = ⟨FoldPath(rel), rel⟩ if relative(d, S) ⇓ rel,
 //   and ⟨⊥, Basename(d)⟩ if relative(d, S) ⇑.
-// - def.DirectoryOrdering@L4188
+// - def.DirectoryOrdering@L4209
 //   d_1 ≺_dir d_2 ⇔ Utf8LexLess(DirKey(d_1, S), DirKey(d_2, S))
-// - def.DirSeq@L4202
+// - def.DirSeq@L4223
 //   DirSeq(S) = sort_{≺_dir}(Dirs(S))
-// - DirSeq-Read-Err@L4216
+// - DirSeq-Read-Err@L4237
 //   Dirs(S) ⇑    c = Code(DirSeq-Read-Err)
 //   Γ ⊢ Emit(c)
-// - DirSeq-Rel-Fail@L4234
+// - DirSeq-Rel-Fail@L4255
 //   relative(d, S) ⇑    c = Code(DirSeq-Rel-Fail)
 //   Γ ⊢ Emit(c)
 

@@ -3,7 +3,7 @@
 // =============================================================================
 // This file should contain parsing logic for var binding statements.
 //
-// SPEC REFERENCE: SPECIFICATION.md, Section 3.3.10, Lines 6265-6268, 6399-6402
+// SPEC REFERENCE: Docs/SPECIFICATION.md, Section 3.3.10, Lines 6265-6268, 6399-6402
 // =============================================================================
 //
 // FORMAL RULES FROM SPEC:

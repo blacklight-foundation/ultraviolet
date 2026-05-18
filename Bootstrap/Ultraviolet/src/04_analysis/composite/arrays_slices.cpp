@@ -2,7 +2,7 @@
 // MIGRATION MAPPING: arrays_slices.cpp
 // =============================================================================
 //
-// SPEC REFERENCE: SPECIFICATION.md
+// SPEC REFERENCE: Docs/SPECIFICATION.md
 // - Section 5.2.6 "Arrays and Slices" (lines 8922-9054)
 //   - Coerce-Array-Slice (lines 9041-9044)
 //

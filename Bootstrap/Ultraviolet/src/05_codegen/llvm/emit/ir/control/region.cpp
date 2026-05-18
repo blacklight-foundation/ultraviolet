@@ -57,7 +57,8 @@ void IRInstructionVisitor::operator()(const IRRegion &region) const
             emitter,
             new_scoped_info->params,
             new_scoped_info->ret,
-            use_c_abi_aggregate_sret);
+            use_c_abi_aggregate_sret,
+            /*foreign_boundary_mode_independent=*/true);
         if (new_scoped_abi.func_type)
         {
           new_scoped_fn = llvm::Function::Create(

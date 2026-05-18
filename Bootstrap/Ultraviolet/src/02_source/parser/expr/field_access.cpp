@@ -3,7 +3,7 @@
 // =============================================================================
 // This file contains parsing logic for field access expressions (expr.field).
 //
-// SPEC REFERENCE: SPECIFICATION.md, Lines 5413-5416
+// SPEC REFERENCE: Docs/SPECIFICATION.md, Lines 5413-5416
 // -----------------------------------------------------------------------------
 // **(Postfix-Field)** Lines 5413-5416
 // IsPunc(Tok(P), ".")    IsIdent(Tok(Advance(P)))    name = Lexeme(Tok(Advance(P)))

@@ -1,6 +1,6 @@
 [[test(
     name: "JoinComp renders empty component list as empty text",
-    covers("def.JoinComp@L3218")
+    covers("def.JoinComp@L3239")
 )]]
 internal procedure joinComponentRendersEmptyComponentList() -> bool
 |: => @result
@@ -14,7 +14,7 @@ internal procedure joinComponentRendersEmptyComponentList() -> bool
 
 [[test(
     name: "JoinComp renders root-relative tag without an added separator",
-    covers("def.JoinComp@L3218")
+    covers("def.JoinComp@L3239")
 )]]
 internal procedure joinComponentRendersRootRelativeTag() -> bool
 |: => @result
@@ -28,7 +28,7 @@ internal procedure joinComponentRendersRootRelativeTag() -> bool
 
 [[test(
     name: "JoinComp renders UNC tag without an added separator",
-    covers("def.JoinComp@L3218")
+    covers("def.JoinComp@L3239")
 )]]
 internal procedure joinComponentRendersUNCTag() -> bool
 |: => @result
@@ -42,7 +42,7 @@ internal procedure joinComponentRendersUNCTag() -> bool
 
 [[test(
     name: "JoinComp renders drive tag with one separator before the tail",
-    covers("def.JoinComp@L3218")
+    covers("def.JoinComp@L3239")
 )]]
 internal procedure joinComponentRendersDriveTag() -> bool
 |: => @result
@@ -63,7 +63,7 @@ internal procedure joinComponentRendersDriveTag() -> bool
 
 [[test(
     name: "JoinComp renders repeated separators through maximal components",
-    covers("def.JoinComp@L3218")
+    covers("def.JoinComp@L3239")
 )]]
 internal procedure joinComponentRendersRepeatedSeparators() -> bool
 |: => @result

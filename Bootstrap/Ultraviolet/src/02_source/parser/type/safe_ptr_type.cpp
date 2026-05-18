@@ -2,7 +2,7 @@
 // safe_ptr_type.cpp - Safe Pointer Type Parsing
 // =============================================================================
 //
-// SPEC REFERENCE: SPECIFICATION.md, Section 3.3.7, Lines 4773-4781
+// SPEC REFERENCE: Docs/SPECIFICATION.md, Section 3.3.7, Lines 4773-4781
 // Section 3.3.7.1 (Pointer State), Lines 4915-4935
 //
 // Parses safe pointer types: Ptr<T>@State

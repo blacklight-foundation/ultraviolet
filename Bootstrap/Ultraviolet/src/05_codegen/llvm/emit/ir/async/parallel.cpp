@@ -44,7 +44,8 @@ void IRInstructionVisitor::operator()(const IRParallel &parallel) const
           emitter,
           begin_info->params,
           begin_info->ret,
-          use_c_abi_aggregate_sret);
+          use_c_abi_aggregate_sret,
+          /*foreign_boundary_mode_independent=*/true);
       if (begin_abi.func_type)
       {
         begin_fn = llvm::Function::Create(

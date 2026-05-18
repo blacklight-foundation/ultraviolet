@@ -2,7 +2,7 @@
 // MIGRATION MAPPING: expr/spawn_expr.cpp
 // =============================================================================
 //
-// SPEC REFERENCE: SPECIFICATION.md Section 10 (Structured Parallelism)
+// SPEC REFERENCE: Docs/SPECIFICATION.md Section 10 (Structured Parallelism)
 //   - Spawn expressions within parallel blocks
 //   - Capture semantics for spawn closures
 //

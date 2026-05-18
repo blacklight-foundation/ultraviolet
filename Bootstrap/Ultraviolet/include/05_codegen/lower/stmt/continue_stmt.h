@@ -4,7 +4,7 @@
 // Continue Statement Lowering
 // =============================================================================
 //
-// SPEC REFERENCE: SPECIFICATION.md Lines 16692-16694 (Lower-Stmt-Continue)
+// SPEC REFERENCE: Docs/SPECIFICATION.md Lines 16692-16694 (Lower-Stmt-Continue)
 //   - ContinueIR
 //   - TempCleanupIR must be emitted before ContinueIR
 //

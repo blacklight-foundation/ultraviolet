@@ -4,9 +4,9 @@
  * =============================================================================
  *
  * SPEC REFERENCE:
- *   - SPECIFICATION.md, Section 21.4.2 "Expression Provenance" (lines 25110-25180)
- *   - SPECIFICATION.md, Section 10.5 "Memory Provenance" (lines 22510-22600)
- *   - SPECIFICATION.md, Section 6.5 "Expression Evaluation" (lines 16200-16400)
+ *   - Docs/SPECIFICATION.md, Section 21.4.2 "Expression Provenance" (lines 25110-25180)
+ *   - Docs/SPECIFICATION.md, Section 10.5 "Memory Provenance" (lines 22510-22600)
+ *   - Docs/SPECIFICATION.md, Section 6.5 "Expression Evaluation" (lines 16200-16400)
  *
  * DIAGNOSTIC CODES:
  *   - E-PROV-0010: Provenance tracking lost

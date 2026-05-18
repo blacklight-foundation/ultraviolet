@@ -4,7 +4,7 @@
 // Spec Section: 5.2.11
 // =============================================================================
 //
-// SPEC REFERENCE: SPECIFICATION.md
+// SPEC REFERENCE: Docs/SPECIFICATION.md
 //   Section 5.2.11: Loop Expressions
 //   - T-Loop-Iter (lines 9710-9713): Iterator loop typing
 //   - T-Loop-Iter-Async (lines 9715-9718): Async iterator loop

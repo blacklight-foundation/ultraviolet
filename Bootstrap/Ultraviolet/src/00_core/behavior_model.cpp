@@ -2,7 +2,7 @@
 // BEHAVIOR MODEL IMPLEMENTATION
 // =============================================================================
 //
-// SPEC REFERENCE: SPECIFICATION.md
+// SPEC REFERENCE: Docs/SPECIFICATION.md
 //   - Section 1.2 "Behavior Types" (lines 392-445)
 //     - StaticJudgSet: union of all static judgment types
 //     - StaticRuleSet: rules whose conclusions are static judgments

@@ -2,7 +2,7 @@
 // MIGRATION MAPPING: layout_records.cpp
 // =============================================================================
 //
-// SPEC REFERENCE: SPECIFICATION.md
+// SPEC REFERENCE: Docs/SPECIFICATION.md
 //   - Section 6.1.3 Record Layout Without [[layout(C)]] (lines 14577-14631)
 //   - AlignUp formula (line 14579)
 //   - Offsets computation (lines 14580-14581)

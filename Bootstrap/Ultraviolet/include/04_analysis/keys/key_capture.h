@@ -5,9 +5,9 @@
 // =============================================================================
 //
 // SPEC REFERENCE:
-//   - SPECIFICATION.md, Section 18.3 "Capture Semantics" (lines 24943-25022)
-//   - SPECIFICATION.md, Section 18.5.3 "Key-Based Parallelism" (lines 25209-25240)
-//   - SPECIFICATION.md, Section 19.4.2 "Key Prohibition in Yield" (lines 25839-25870)
+//   - Docs/SPECIFICATION.md, Section 18.3 "Capture Semantics" (lines 24943-25022)
+//   - Docs/SPECIFICATION.md, Section 18.5.3 "Key-Based Parallelism" (lines 25209-25240)
+//   - Docs/SPECIFICATION.md, Section 19.4.2 "Key Prohibition in Yield" (lines 25839-25870)
 //
 // KEY CAPTURE SEMANTICS:
 //   - const data: Captured by reference, no key needed

@@ -5,7 +5,7 @@
 // types: integers, floats, strings, characters, booleans, and null).
 //
 // =============================================================================
-// SPEC REFERENCE: SPECIFICATION.md
+// SPEC REFERENCE: Docs/SPECIFICATION.md
 // =============================================================================
 // Lines 5158-5161:
 //

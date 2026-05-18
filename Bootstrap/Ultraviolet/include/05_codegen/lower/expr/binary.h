@@ -8,7 +8,7 @@ namespace ultraviolet::codegen {
 // Binary Expression Lowering
 // =============================================================================
 //
-// SPEC REFERENCE: SPECIFICATION.md Section 6.4 (Expression Lowering)
+// SPEC REFERENCE: Docs/SPECIFICATION.md Section 6.4 (Expression Lowering)
 //   - Lines 16163-16176: Short-circuit and non-short-circuit binary ops
 //     - (Lower-Expr-Bin-And): && with short-circuit
 //     - (Lower-Expr-Bin-Or): || with short-circuit

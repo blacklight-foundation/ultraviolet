@@ -4,7 +4,7 @@
 // Error Statement Lowering
 // =============================================================================
 //
-// SPEC REFERENCE: SPECIFICATION.md Lines 16701-16703 (Lower-Stmt-Error)
+// SPEC REFERENCE: Docs/SPECIFICATION.md Lines 16701-16703 (Lower-Stmt-Error)
 //
 // =============================================================================
 

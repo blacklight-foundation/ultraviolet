@@ -2,7 +2,7 @@
 // Expression Lowering: TupleAccessExpr
 // =============================================================================
 //
-// SPEC REFERENCE: SPECIFICATION.md Section 6.4 (Expression Lowering)
+// SPEC REFERENCE: Docs/SPECIFICATION.md Section 6.4 (Expression Lowering)
 //   - Lines 16109-16112: (Lower-Expr-TupleAccess)
 //     Gamma |- LowerExpr(base) => <IR_b, v_b>    TupleValue(v_b, i) = v_i
 //     Gamma |- LowerExpr(TupleAccess(base, i)) => <IR_b, v_i>

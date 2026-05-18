@@ -2,7 +2,7 @@
 // MIGRATION MAPPING: lower_bind.cpp
 // =============================================================================
 //
-// SPEC REFERENCE: SPECIFICATION.md Section 6.5 (Statement Lowering)
+// SPEC REFERENCE: Docs/SPECIFICATION.md Section 6.5 (Statement Lowering)
 //   - Binding initialization and pattern destructuring
 //   - Lines 16619-16637 (Lower-Stmt-Let, Lower-Stmt-Var, Shadow variants)
 //

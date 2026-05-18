@@ -2,7 +2,7 @@
 // MIGRATION MAPPING: init.cpp
 // =============================================================================
 //
-// SPEC REFERENCE: SPECIFICATION.md
+// SPEC REFERENCE: Docs/SPECIFICATION.md
 //   - Section 6.0 CG-Module rule (lines 14228-14231)
 //   - InitFn(m), DeinitFn(m) (line 14229)
 //   - Lower-StaticInit, Lower-StaticDeinit (line 14229)

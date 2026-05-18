@@ -4,7 +4,7 @@
 // Spec Section: 5.2.9
 // =============================================================================
 //
-// SPEC REFERENCE: SPECIFICATION.md
+// SPEC REFERENCE: Docs/SPECIFICATION.md
 //   Section 5.2.9: Type Inference (lines 9107-9173)
 //   - Syn-Ident (lines 9123-9126): (x : T) in Gamma => Identifier(x) => T
 //

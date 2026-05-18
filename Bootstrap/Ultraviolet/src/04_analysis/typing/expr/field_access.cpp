@@ -4,7 +4,7 @@
 // Spec Sections: 5.2.12 + 5.5
 // =============================================================================
 //
-// SPEC REFERENCE: SPECIFICATION.md
+// SPEC REFERENCE: Docs/SPECIFICATION.md
 //   Section 5.2.12: Record Field Access
 //   Section 5.5: Modal State-Specific Fields
 //   - T-Field-Record: Basic field access
@@ -22,6 +22,7 @@
 #include <vector>
 
 #include "00_core/assert_spec.h"
+#include "04_analysis/composite/classes.h"
 #include "04_analysis/composite/records.h"
 #include "04_analysis/generics/monomorphize.h"
 #include "04_analysis/modal/modal_fields.h"
@@ -213,6 +214,48 @@ struct ModalFieldLookupResult {
   const ast::StateFieldDecl* decl = nullptr;
 };
 
+struct ClassFieldLookupResult {
+  bool ok = false;
+  std::optional<std::string_view> diag_id;
+  TypeRef type;
+  const ast::ClassFieldDecl* decl = nullptr;
+};
+
+static ClassFieldLookupResult LookupClassSelfField(
+    const ScopeContext& ctx,
+    const ast::ClassPath& class_path,
+    std::string_view field_name) {
+  ClassFieldLookupResult result;
+  const auto table = ClassFieldTable(ctx, class_path);
+  if (!table.ok) {
+    result.diag_id = table.diag_id;
+    return result;
+  }
+
+  const ast::ClassFieldDecl* field = nullptr;
+  for (const auto* candidate : table.fields) {
+    if (candidate && IdEq(candidate->name, std::string(field_name))) {
+      field = candidate;
+      break;
+    }
+  }
+  if (!field) {
+    result.diag_id = "E-TYP-1904";
+    return result;
+  }
+
+  const auto lowered = LowerType(ctx, field->type);
+  if (!lowered.ok || !lowered.type) {
+    result.diag_id = lowered.diag_id;
+    return result;
+  }
+
+  result.ok = true;
+  result.type = SubstSelfType(SelfVarType(), lowered.type);
+  result.decl = field;
+  return result;
+}
+
 static std::optional<ModalFieldLookupResult> LookupModalField(
     const ScopeContext& ctx,
     const TypePath& path,
@@ -324,8 +367,31 @@ ExprTypeResult TypeFieldAccessExprImpl(const ScopeContext& ctx,
     return result;
   }
 
-    // Handle record path and type-application forms.
-    if (const auto* path = AppliedTypePath(*stripped_base)) {
+  // Handle record path and type-application forms.
+  if (const auto* path = AppliedTypePath(*stripped_base)) {
+      if (IsSelfVarPath(*path) && type_ctx.current_class_path.has_value()) {
+        const auto field_lookup =
+            LookupClassSelfField(ctx, *type_ctx.current_class_path, expr.name);
+        if (!field_lookup.ok) {
+          result.diag_id = field_lookup.diag_id;
+          return result;
+        }
+        if (field_lookup.decl) {
+          EmitDeprecatedReferenceWarningFromAttrs(
+              field_lookup.decl->attrs, type_ctx,
+              expr.base ? std::optional<core::Span>(expr.base->span)
+                        : std::nullopt);
+        }
+        if (perm.has_value()) {
+          result.ok = true;
+          result.type = MakeTypePerm(*perm, field_lookup.type);
+        } else {
+          result.ok = true;
+          result.type = field_lookup.type;
+        }
+        return result;
+      }
+
       const auto* path_args = AppliedTypeArgs(*stripped_base);
       if (LookupEnumDeclByPath(ctx, *path) != nullptr) {
         SPEC_RULE("FieldAccess-Enum");

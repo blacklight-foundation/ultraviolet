@@ -3,13 +3,13 @@
 // =============================================================================
 //
 // SPEC REFERENCE:
-//   SPECIFICATION.md §0.3 (lines 186-204) - Observable Compiler Behavior
+//   Docs/SPECIFICATION.md §0.3 (lines 186-204) - Observable Compiler Behavior
 //   Status(C, P) = ok ⇔ ∀ d ∈ DiagStream(C, P). d.severity ≠ Error
 //   Status(C, P) = fail ⇔ ∃ d ∈ DiagStream(C, P). d.severity = Error
 //   ExitCode(C, P) = 0 ⇔ Status(C, P) = ok
 //   ExitCode(C, P) = 1 ⇔ Status(C, P) = fail
 //
-//   SPECIFICATION.md §2 (lines 766-777) - Command-Line Output
+//   Docs/SPECIFICATION.md §2 (lines 766-777) - Command-Line Output
 //
 // =============================================================================
 
@@ -719,12 +719,52 @@ CliParseResult ParseArgs(int argc, char** argv) {
           std::string(arg.substr(std::string_view("--assembly=").size()));
       continue;
     }
+    if (arg == "--test-harness-assembly") {
+      if (i + 1 >= argc) {
+        return Fail("--test-harness-assembly requires a name argument");
+      }
+      opts.test_harness_assembly = std::string(argv[++i]);
+      continue;
+    }
+    if (StartsWith(arg, "--test-harness-assembly=")) {
+      opts.test_harness_assembly = std::string(
+          arg.substr(std::string_view("--test-harness-assembly=").size()));
+      continue;
+    }
+    if (arg == "--test-harness-module") {
+      if (i + 1 >= argc) {
+        return Fail("--test-harness-module requires a module path argument");
+      }
+      opts.test_harness_module = std::string(argv[++i]);
+      continue;
+    }
+    if (StartsWith(arg, "--test-harness-module=")) {
+      opts.test_harness_module = std::string(
+          arg.substr(std::string_view("--test-harness-module=").size()));
+      continue;
+    }
+    if (arg == "--test-harness-dir") {
+      if (i + 1 >= argc) {
+        return Fail("--test-harness-dir requires a path argument");
+      }
+      opts.test_harness_dir = std::string(argv[++i]);
+      continue;
+    }
+    if (StartsWith(arg, "--test-harness-dir=")) {
+      opts.test_harness_dir = std::string(
+          arg.substr(std::string_view("--test-harness-dir=").size()));
+      continue;
+    }
     if (arg == "--emit-ir") {
       opts.emit_ir = true;
       continue;
     }
     if (arg == "build") {
       // Subcommand - currently ignored
+      continue;
+    }
+    if (arg == "test") {
+      opts.do_test = true;
       continue;
     }
     if (arg == "init") {
@@ -744,6 +784,14 @@ CliParseResult ParseArgs(int argc, char** argv) {
         msg += "'?";
       }
       return Fail(std::move(msg));
+    }
+    if (opts.do_test) {
+      if (opts.test_target.has_value()) {
+        opts.test_target_rejected = true;
+        continue;
+      }
+      opts.test_target = std::string(arg);
+      continue;
     }
     if (!opts.input_path.empty()) {
       return Fail("multiple input paths not supported; got '" +
@@ -766,6 +814,10 @@ CliParseResult ParseArgs(int argc, char** argv) {
     if (opts.input_path.empty()) {
       opts.input_path = ".";
     }
+    return CliParseResult{opts, {}};
+  }
+  if (opts.do_test) {
+    opts.input_path = ".";
     return CliParseResult{opts, {}};
   }
   if (opts.input_path.empty()) {
@@ -996,6 +1048,7 @@ std::string DiagnosticStreamToJson(const core::DiagnosticStream& stream,
 void PrintUsage(std::string_view command_name) {
   std::cerr << "usage: " << command_name << " <command> [options]\n"
             << "       " << command_name << " build <file> [options]\n"
+            << "       " << command_name << " test [target] [options]\n"
             << "       " << command_name << " init [directory]\n"
             << "       " << command_name << " clean [file]\n"
             << "Try '" << command_name << " --help' for more information.\n";
@@ -1007,6 +1060,7 @@ R"(
 
 USAGE
   )" << command_name << R"( build <file> [options]
+  )" << command_name << R"( test [target] [options]
   )" << command_name << R"( init [directory]
   )" << command_name << R"( clean [file]
 

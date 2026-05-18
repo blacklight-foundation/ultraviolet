@@ -4,11 +4,11 @@
  * =============================================================================
  *
  * SPEC REFERENCE:
- *   - SPECIFICATION.md, Section 21.1 "Region Model" (line 24725)
- *   - SPECIFICATION.md, Section 21.2 "Region Statements" (lines 24800-24900)
- *   - SPECIFICATION.md, Section 21.3 "Frame Statements" (lines 24910-25000)
- *   - SPECIFICATION.md, Section 21.4 "Provenance Tracking" (lines 25010-25200)
- *   - SPECIFICATION.md, Section 8.8 "E-REG Errors" (lines 21700-21800)
+ *   - Docs/SPECIFICATION.md, Section 21.1 "Region Model" (line 24725)
+ *   - Docs/SPECIFICATION.md, Section 21.2 "Region Statements" (lines 24800-24900)
+ *   - Docs/SPECIFICATION.md, Section 21.3 "Frame Statements" (lines 24910-25000)
+ *   - Docs/SPECIFICATION.md, Section 21.4 "Provenance Tracking" (lines 25010-25200)
+ *   - Docs/SPECIFICATION.md, Section 8.8 "E-REG Errors" (lines 21700-21800)
  *
  * SOURCE FILE:
  *   - ultraviolet-bootstrap/src/03_analysis/memory/regions.cpp (lines 1-2036)
@@ -52,6 +52,7 @@
 #include "04_analysis/composite/function_types.h"
 #include "04_analysis/composite/record_methods.h"
 #include "04_analysis/modal/builtin_modal_intrinsics.h"
+#include "04_analysis/memory/calls.h"
 #include "04_analysis/memory/string_bytes.h"
 #include "04_analysis/resolve/resolve_items.h"
 #include "04_analysis/resolve/scopes.h"
@@ -1919,6 +1920,13 @@ static ProvExprResult ProvExpr(const ScopeContext& ctx,
                                const TypeEnv& gamma,
                                ExprProvTagMap* expr_map);
 
+static std::optional<ProvExprResult> ResolvedCallReturnProv(
+    const ScopeContext& ctx,
+    const ast::CallExpr& call,
+    const ProvEnv& env,
+    const TypeEnv& gamma,
+    ExprProvTagMap* expr_map);
+
 static ProvExprResult ProvPlace(const ScopeContext& ctx,
                                 const ast::ExprPtr& place,
                                 const ProvEnv& env,
@@ -2160,6 +2168,16 @@ static ProvExprResult ProvExpr(const ScopeContext& ctx,
     SPEC_RULE("P-Move");
     inner.prov = inner.prov;
     return finish(inner);
+  }
+
+  if (const auto* copy_expr = std::get_if<ast::CopyExpr>(&expr->node)) {
+    auto inner = ProvExpr(ctx, copy_expr->value, env, gamma, expr_map);
+    if (!inner.ok) {
+      return finish(inner);
+    }
+    result.ok = true;
+    result.prov = BottomTag();
+    return finish(result);
   }
 
   if (const auto* addr = std::get_if<ast::AddressOfExpr>(&expr->node)) {
@@ -2529,6 +2547,12 @@ static ProvExprResult ProvExpr(const ScopeContext& ctx,
     result.ok = true;
     result.prov = frame_prov;
     return finish(result);
+  }
+
+  if (const auto* call = std::get_if<ast::CallExpr>(&expr->node)) {
+    if (auto resolved = ResolvedCallReturnProv(ctx, *call, env, gamma, expr_map)) {
+      return finish(std::move(*resolved));
+    }
   }
 
   if (const auto* call = std::get_if<ast::CallExpr>(&expr->node)) {
@@ -2978,6 +3002,144 @@ static ProvStmtResult ProvStmt(const ScopeContext& ctx,
         }
       },
       stmt);
+}
+
+struct CallReturnProvFrame {
+  ast::ModulePath module_path;
+  const ast::ProcedureDecl* proc = nullptr;
+};
+
+static thread_local std::vector<CallReturnProvFrame> g_call_return_prov_stack;
+
+static bool ActiveCallReturnProv(const ast::ModulePath& module_path,
+                                 const ast::ProcedureDecl* proc) {
+  for (const auto& frame : g_call_return_prov_stack) {
+    if (frame.proc == proc && PathKeyOf(frame.module_path) == PathKeyOf(module_path)) {
+      return true;
+    }
+  }
+  return false;
+}
+
+class ScopedCallReturnProvFrame {
+ public:
+  ScopedCallReturnProvFrame(ast::ModulePath module_path,
+                            const ast::ProcedureDecl* proc) {
+    g_call_return_prov_stack.push_back(
+        CallReturnProvFrame{std::move(module_path), proc});
+  }
+
+  ScopedCallReturnProvFrame(const ScopedCallReturnProvFrame&) = delete;
+  ScopedCallReturnProvFrame& operator=(const ScopedCallReturnProvFrame&) =
+      delete;
+
+  ~ScopedCallReturnProvFrame() {
+    if (!g_call_return_prov_stack.empty()) {
+      g_call_return_prov_stack.pop_back();
+    }
+  }
+};
+
+static std::optional<ProvExprResult> ResolvedCallReturnProv(
+    const ScopeContext& ctx,
+    const ast::CallExpr& call,
+    const ProvEnv& env,
+    const TypeEnv& gamma,
+    ExprProvTagMap* expr_map) {
+  if (!ctx.selected_call_targets) {
+    return std::nullopt;
+  }
+  const auto selected = ctx.selected_call_targets->find(&call);
+  if (selected == ctx.selected_call_targets->end() || !selected->second.proc ||
+      !selected->second.proc->body) {
+    return std::nullopt;
+  }
+  const ast::ProcedureDecl* proc = selected->second.proc;
+  if (proc->params.size() != call.args.size()) {
+    return std::nullopt;
+  }
+
+  if (ActiveCallReturnProv(selected->second.module_path, proc)) {
+    return std::nullopt;
+  }
+
+  if (call.callee) {
+    const auto callee = ProvExpr(ctx, call.callee, env, gamma, expr_map);
+    if (!callee.ok) {
+      return callee;
+    }
+  }
+
+  std::vector<ProvTag> arg_provs;
+  arg_provs.reserve(call.args.size());
+  for (const auto& arg : call.args) {
+    const ast::ExprPtr arg_expr = ArgPassExpr(arg);
+    const auto arg_res = ProvExpr(ctx, arg_expr, env, gamma, expr_map);
+    if (!arg_res.ok) {
+      return arg_res;
+    }
+    arg_provs.push_back(arg_res.prov);
+  }
+
+  ScopedCallReturnProvFrame frame(selected->second.module_path, proc);
+  ScopeContext proc_ctx = ctx;
+  proc_ctx.current_module = selected->second.module_path;
+  proc_ctx.scopes.clear();
+
+  std::vector<std::string> param_names;
+  std::vector<ProvTag> param_tags;
+  std::vector<RegionEntry> region_entries;
+  param_names.reserve(proc->params.size());
+  param_tags.reserve(proc->params.size());
+
+  for (std::size_t i = 0; i < proc->params.size(); ++i) {
+    const auto& param = proc->params[i];
+    ProvTag tag = i < arg_provs.size() ? arg_provs[i] : BottomTag();
+    const auto lowered = LocalLowerType(proc_ctx, param.type);
+    const bool is_region_param =
+        lowered.ok && lowered.type && RegionActiveType(lowered.type);
+    if (is_region_param) {
+      if (tag.kind != ProvKind::Region) {
+        tag = RegionTag(IdKeyOf(param.name));
+      }
+      region_entries.push_back(
+          RegionEntry{tag.region, IdKeyOf(param.name), false});
+    }
+    param_names.push_back(param.name);
+    param_tags.push_back(tag);
+  }
+
+  ProvEnv proc_env = InitProvEnv(param_names, param_tags, region_entries);
+  const auto static_bindings = StaticBindings(proc_ctx, selected->second.module_path);
+  if (!static_bindings.empty()) {
+    ProvScope static_scope;
+    static_scope.id = proc_env.next_scope_id++;
+    for (const auto& binding : static_bindings) {
+      static_scope.map.emplace(IdKeyOf(binding.name), GlobalTag());
+    }
+    proc_env.scopes.insert(proc_env.scopes.begin(), std::move(static_scope));
+  }
+
+  TypeEnv proc_gamma;
+  proc_gamma.scopes.emplace_back();
+  if (!static_bindings.empty()) {
+    for (const auto& binding : static_bindings) {
+      proc_gamma.scopes.front()[IdKeyOf(binding.name)] =
+          TypeBinding{binding.mut, binding.type};
+    }
+  }
+  proc_gamma.scopes.emplace_back();
+  ParamTypeMap(proc_ctx, proc->params, std::nullopt, proc_gamma);
+
+  auto body = BlockProv(proc_ctx, *proc->body, proc_env, proc_gamma, expr_map);
+  if (!body.ok) {
+    return body;
+  }
+
+  ProvExprResult result;
+  result.ok = true;
+  result.prov = body.prov;
+  return result;
 }
 
 }  // namespace

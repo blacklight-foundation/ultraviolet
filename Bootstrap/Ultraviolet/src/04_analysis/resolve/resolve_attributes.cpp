@@ -3,8 +3,8 @@
 // =============================================================================
 //
 // SPEC REFERENCE:
-//   SPECIFICATION.md §5.1.7 "Resolution Pass" (Lines 7430-7549)
-//   SPECIFICATION.md §3.3.2.8 "Attributes"
+//   Docs/SPECIFICATION.md §5.1.7 "Resolution Pass" (Lines 7430-7549)
+//   Docs/SPECIFICATION.md §3.3.2.8 "Attributes"
 //
 // CONTENT:
 //   1. ResolveAttributes - Validate and resolve attribute list

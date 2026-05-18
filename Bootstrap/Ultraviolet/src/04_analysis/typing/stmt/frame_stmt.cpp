@@ -2,7 +2,7 @@
 // frame_stmt.cpp - Frame statement typing
 // =============================================================================
 //
-// SPEC REFERENCE: SPECIFICATION.md
+// SPEC REFERENCE: Docs/SPECIFICATION.md
 //   Section 5.5: Memory and Pointers - Frame statements
 //   - T-FrameStmt-Implicit (line 9557): Implicit frame
 //   - T-FrameStmt-Explicit (line 9562): Explicit named frame

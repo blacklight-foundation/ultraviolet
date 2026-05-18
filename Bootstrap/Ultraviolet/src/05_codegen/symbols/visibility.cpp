@@ -2,7 +2,7 @@
 // MIGRATION MAPPING: visibility.cpp
 // =============================================================================
 //
-// SPEC REFERENCE: SPECIFICATION.md
+// SPEC REFERENCE: Docs/SPECIFICATION.md
 //   - Section 5.1.4 Visibility (not in codegen section, but used by linkage)
 //   - Visibility = {public, internal, private, protected}
 //   - Linkage rules reference Vis(item) (lines 15556, 15566, etc.)

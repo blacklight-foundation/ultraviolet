@@ -2,7 +2,7 @@
 // MIGRATION MAPPING: cap_system.cpp
 // =============================================================================
 //
-// SPEC REFERENCE: SPECIFICATION.md
+// SPEC REFERENCE: Docs/SPECIFICATION.md
 // - Section 5.9.4 "SystemInterface"
 // - Section 5.9.4 "SystemMethodSig"
 // - Section 5.9.4 "BuiltinRecord"
@@ -264,6 +264,30 @@ ast::RecordDecl BuildContextRecordDecl() {
       MakeField("sys", MakeTypePathAst({"System"})),
       MakeField("reactor", MakeTypeDynamicAst({"Reactor"})),
       MakeField("time", MakeTypeDynamicAst({"Time"})),
+  };
+  record.span = core::Span{};
+  record.doc = {};
+  return record;
+}
+
+ast::RecordDecl BuildTestAuthorityRecordDecl() {
+  SpecDefsCapSystem();
+  ast::RecordDecl record;
+  record.attrs = {};
+  record.vis = ast::Visibility::Public;
+  record.name = ast::Identifier{"TestAuthority"};
+  record.generic_params = std::nullopt;
+  record.implements = {};
+  record.predicate_clause_opt = std::nullopt;
+  record.invariant_opt = std::nullopt;
+  record.members = {
+      MakeField("io", MakeTypeDynamicAst({"IO"})),
+      MakeField("sys", MakeTypePathAst({"System"})),
+      MakeField("heap", MakeTypeDynamicAst({"HeapAllocator"})),
+      MakeField("temporary_directory", MakeTypeStringAst(StringState::View)),
+      MakeField("target_profile", MakeTypeStringAst(StringState::View)),
+      MakeField("compiler_executable_path", MakeTypeStringAst(StringState::View)),
+      MakeField("compiler_current_directory", MakeTypeStringAst(StringState::View)),
   };
   record.span = core::Span{};
   record.doc = {};

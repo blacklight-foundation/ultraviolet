@@ -3,7 +3,7 @@
 // =============================================================================
 // This file should contain parsing logic for defer statements.
 //
-// SPEC REFERENCE: SPECIFICATION.md, Section 3.3.10, Lines 6300-6303
+// SPEC REFERENCE: Docs/SPECIFICATION.md, Section 3.3.10, Lines 6300-6303
 // =============================================================================
 //
 // FORMAL RULES FROM SPEC:

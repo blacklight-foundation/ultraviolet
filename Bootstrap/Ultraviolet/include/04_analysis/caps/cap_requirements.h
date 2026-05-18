@@ -4,7 +4,7 @@
 // cap_requirements.h - Capability Requirements Inference and Validation
 // =============================================================================
 //
-// SPEC REFERENCE: SPECIFICATION.md
+// SPEC REFERENCE: Docs/SPECIFICATION.md
 //   - Section 5.9.3 "Capability Requirements"
 //   - Section 5.9.5 "Capability Classes"
 //   - Section 8.10 "E-CAP Errors"

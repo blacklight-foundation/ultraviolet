@@ -2,7 +2,7 @@
 // function_type.cpp - Function Type Parsing
 // =============================================================================
 //
-// SPEC REFERENCE: SPECIFICATION.md, Section 3.3.7, Lines 4713-4716
+// SPEC REFERENCE: Docs/SPECIFICATION.md, Section 3.3.7, Lines 4713-4716
 // Section 3.3.7.1 (Param Type Lists), Lines 4847-4879
 //
 // Parses function types: (T1, T2) -> R representing procedure pointer types.

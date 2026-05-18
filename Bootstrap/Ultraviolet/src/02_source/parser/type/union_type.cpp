@@ -2,7 +2,7 @@
 // union_type.cpp - Union Type Parsing
 // =============================================================================
 //
-// SPEC REFERENCE: SPECIFICATION.md, Section 3.3.7, Lines 4664-4672
+// SPEC REFERENCE: Docs/SPECIFICATION.md, Section 3.3.7, Lines 4664-4672
 //
 // Parses union types: T1 | T2 | T3 representing tagged unions (sum types).
 // Union types are unordered: A | B is equivalent to B | A.

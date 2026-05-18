@@ -2,7 +2,7 @@
 // race_expr.cpp - Race Expression Parsing
 // =============================================================================
 //
-// SPEC REFERENCE: SPECIFICATION.md
+// SPEC REFERENCE: Docs/SPECIFICATION.md
 // - Parse-Race-Expr (Lines 5299-5302)
 // - Parse-RaceArms-* (Lines 5757-5765)
 // - Parse-RaceArm (Lines 5767-5770)

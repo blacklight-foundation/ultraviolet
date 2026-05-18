@@ -2,7 +2,7 @@
 // Expression Lowering: PathExpr
 // =============================================================================
 //
-// SPEC REFERENCE: SPECIFICATION.md Section 6.4 (Expression Lowering)
+// SPEC REFERENCE: Docs/SPECIFICATION.md Section 6.4 (Expression Lowering)
 //   - Line 16067-16069: (Lower-Expr-Path)
 //
 // MIGRATED FROM:

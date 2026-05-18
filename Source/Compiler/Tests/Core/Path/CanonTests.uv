@@ -1,6 +1,6 @@
 [[test(
     name: "Canon accepts normalized path",
-    covers("def.Canon@L3326")
+    covers("def.Canon@L3347")
 )]]
 internal procedure canonAcceptsNormalizedPath() -> bool
 |: => @result
@@ -19,7 +19,7 @@ internal procedure canonAcceptsNormalizedPath() -> bool
 
 [[test(
     name: "Canon accepts normalized drive-rooted path",
-    covers("def.Canon@L3326")
+    covers("def.Canon@L3347")
 )]]
 internal procedure canonAcceptsNormalizedDriveRootedPath() -> bool
 |: => @result
@@ -38,7 +38,7 @@ internal procedure canonAcceptsNormalizedDriveRootedPath() -> bool
 
 [[test(
     name: "Canon rejects parent traversal after normalization",
-    covers("def.Canon@L3326")
+    covers("def.Canon@L3347")
 )]]
 internal procedure canonRejectsParentTraversalAfterNormalization() -> bool
 |: => @result
@@ -56,7 +56,7 @@ internal procedure canonRejectsParentTraversalAfterNormalization() -> bool
 
 [[test(
     name: "Canon rejects drive-rooted parent traversal",
-    covers("def.Canon@L3326")
+    covers("def.Canon@L3347")
 )]]
 internal procedure canonRejectsDriveRootedParentTraversal() -> bool
 |: => @result

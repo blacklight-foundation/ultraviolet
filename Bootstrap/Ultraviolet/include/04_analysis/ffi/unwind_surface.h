@@ -4,7 +4,7 @@
 // Unwind and FFI Surface Analysis
 // =============================================================================
 //
-// SPEC REFERENCE: SPECIFICATION.md Section 2.7 (Unwind and FFI Surface)
+// SPEC REFERENCE: Docs/SPECIFICATION.md Section 2.7 (Unwind and FFI Surface)
 //
 // This module provides utilities for analyzing FFI boundaries and unwind
 // behavior in Ultraviolet programs. It is used at project level for:

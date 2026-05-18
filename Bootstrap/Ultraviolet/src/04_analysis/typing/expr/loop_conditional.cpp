@@ -4,7 +4,7 @@
 // Spec Section: 5.2.11
 // =============================================================================
 //
-// SPEC REFERENCE: SPECIFICATION.md
+// SPEC REFERENCE: Docs/SPECIFICATION.md
 //   Section 5.2.11: Loop Expressions
 //   - T-Loop-Conditional (lines 9705-9708): Conditional loop typing
 //   - loop_expression grammar (line 23432)

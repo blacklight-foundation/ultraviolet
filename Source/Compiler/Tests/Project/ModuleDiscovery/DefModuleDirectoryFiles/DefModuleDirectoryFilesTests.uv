@@ -1,7 +1,7 @@
 // Test responsibility:
 // Source/Compiler/Tests/Project/ModuleDiscovery/DefModuleDirectoryFiles/DefModuleDirectoryFilesTests.uv
 //
-// This file owns source-native tests for def.ModuleDirectoryFiles@L4324.
+// This file owns source-native tests for def.ModuleDirectoryFiles@L4345.
 
 using UltravioletCompiler::Project::{
     SourceFilePathListValue,
@@ -17,7 +17,7 @@ using UltravioletCompiler::Project::{
 
 [[test(
     name: "module directory files include only uv sources",
-    covers("def.ModuleDirectoryFiles@L4324")
+    covers("def.ModuleDirectoryFiles@L4345")
 )]]
 internal procedure directoryScanFilesIncludeOnlyUvSources() -> bool
 |: => @result

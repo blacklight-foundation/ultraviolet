@@ -2,7 +2,7 @@
 // MIGRATION: item/enum_decl.cpp
 // =============================================================================
 //
-// SPEC REFERENCE: SPECIFICATION.md
+// SPEC REFERENCE: Docs/SPECIFICATION.md
 //   Section 5.3.3: Enum Declarations
 //   - WF-EnumDecl (line 10540): Enum well-formedness
 //   - enum_decl grammar (line 3102)

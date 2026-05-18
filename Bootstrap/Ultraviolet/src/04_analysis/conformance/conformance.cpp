@@ -4,11 +4,11 @@
  * =============================================================================
  *
  * SPEC REFERENCE:
- *   - SPECIFICATION.md, Section 1.1 "Conformance" (line 230)
- *   - SPECIFICATION.md, Section 8.5 "E-CNF Errors" (line 21534)
- *   - SPECIFICATION.md, Section 8.6 "W-CNF Warnings" (line 21545)
- *   - SPECIFICATION.md, Section 6.2 "Type Equivalence" (lines 15800-15900)
- *   - SPECIFICATION.md, Section 6.3 "Subtyping" (lines 15950-16100)
+ *   - Docs/SPECIFICATION.md, Section 1.1 "Conformance" (line 230)
+ *   - Docs/SPECIFICATION.md, Section 8.5 "E-CNF Errors" (line 21534)
+ *   - Docs/SPECIFICATION.md, Section 8.6 "W-CNF Warnings" (line 21545)
+ *   - Docs/SPECIFICATION.md, Section 6.2 "Type Equivalence" (lines 15800-15900)
+ *   - Docs/SPECIFICATION.md, Section 6.3 "Subtyping" (lines 15950-16100)
  *
  * MIGRATED FROM:
  *   - ultraviolet-bootstrap/src/03_analysis/types/conformance.cpp

@@ -3,13 +3,13 @@
 // This file owns source-native test procedure shape and runner-injected
 // authority validation:
 //
-// - req.TestProcedureShape@L28455
+// - req.TestProcedureShape@L28802
 //   A `[[test]]` procedure MUST have a body, be non-generic, have explicit
 //   visibility, have an explicit return type, have a contract clause containing
 //   a postcondition, and have either no parameters or exactly one parameter
-//   whose type is the toolchain-provided `TestContext` type.
-// - req.TestContextAuthority@L28477
-//   The `TestContext` parameter is the only runner-injected value. It carries
+//   whose type is the toolchain-provided `TestAuthority` type.
+// - req.TestAuthority@L28824
+//   The `TestAuthority` parameter is the only runner-injected value. It carries
 //   io, process, temporary-directory, target-profile, and
 //   compiler-invocation authority needed by effectful compiler tests.
 
@@ -30,7 +30,7 @@ public modal TestProcedureParameterShape {
         }
     }
 
-    @TestContext {
+    @TestAuthority {
         public procedure isValidForTest(~) -> bool {
             return true
         }
@@ -53,7 +53,7 @@ public modal TestProcedureParameterShape {
 
 public type TestProcedureParameterShapeValue =
     TestProcedureParameterShape@None |
-    TestProcedureParameterShape@TestContext |
+    TestProcedureParameterShape@TestAuthority |
     TestProcedureParameterShape@Other
 
 public record TestProcedureDeclaration {
@@ -82,8 +82,8 @@ public procedure noTestProcedureParameters() -> TestProcedureParameterShapeValue
     return TestProcedureParameterShape@None {}
 }
 
-public procedure testContextProcedureParameter() -> TestProcedureParameterShapeValue {
-    return TestProcedureParameterShape@TestContext {}
+public procedure testAuthorityProcedureParameter() -> TestProcedureParameterShapeValue {
+    return TestProcedureParameterShape@TestAuthority {}
 }
 
 public procedure invalidTestProcedureParameter() -> TestProcedureParameterShapeValue {
@@ -141,7 +141,7 @@ public procedure checkTestProcedureShape(
         return missingTestPostcondition(diagnostics_region)
     }
     if (!testProcedureParameterIsValid(declaration.parameters)) {
-        return invalidTestContextParameter(diagnostics_region)
+        return invalidTestAuthorityParameter(diagnostics_region)
     }
 
     return TestProcedureShapeCheck@Valid {
@@ -156,7 +156,7 @@ public procedure testProcedureParameterIsValid(
         @None {
             parameters~>isValidForTest()
         }
-        @TestContext {
+        @TestAuthority {
             parameters~>isValidForTest()
         }
         @Other {
@@ -172,7 +172,7 @@ public procedure testProcedureParameterRequiresContext(
         @None {
             parameters~>requiresContext()
         }
-        @TestContext {
+        @TestAuthority {
             parameters~>requiresContext()
         }
         @Other {
@@ -193,14 +193,14 @@ internal procedure invalidTestProcedureShape(
     }
 }
 
-internal procedure invalidTestContextParameter(
+internal procedure invalidTestAuthorityParameter(
     diagnostics_region: unique Region@Active
 ) -> TestProcedureShapeCheckValue {
     return TestProcedureShapeCheck@Invalid {
         diagnostics: singleErrorDiagnosticStream(
             diagnostics_region,
             "E-TST-0105",
-            "invalid TestContext parameter"
+            "invalid TestAuthority parameter"
         )
     }
 }

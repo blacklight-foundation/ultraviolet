@@ -2,7 +2,7 @@
 // MIGRATION MAPPING: project_validate.cpp
 // =============================================================================
 //
-// SPEC REFERENCE: SPECIFICATION.md Section 2.1 (lines 806-1027)
+// SPEC REFERENCE: Docs/SPECIFICATION.md Section 2.1 (lines 806-1027)
 //   - 2.1. Project Root and Manifest
 //   - Manifest Schema (Ultraviolet)
 //   - Manifest Validation rules (WF-*)

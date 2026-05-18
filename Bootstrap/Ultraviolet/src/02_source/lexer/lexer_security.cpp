@@ -2,7 +2,7 @@
 // MIGRATION MAPPING: lexer_security.cpp
 // =============================================================================
 //
-// SPEC REFERENCE: SPECIFICATION.md
+// SPEC REFERENCE: Docs/SPECIFICATION.md
 //   Section 3.2.10 - Lexical Security (lines 2446-2498)
 //
 // SOURCE FILE: ultraviolet-bootstrap/src/02_syntax/lexer_security.cpp

@@ -4,13 +4,14 @@
 // obligation ledger. Primary extraction and static argument ownership lives in
 // Source/Compiler/Semantics/Attributes/TestAttributes.uv:
 //
-// - def.TestCoverage@L28404
+// - def.TestCoverage@L28751
 //   `covers(...)` entries are represented in source order.
-// - def.TestAttributeArgsOk@L28435
+// - def.TestAttributeArgsOk@L28782
 //   Coverage references use the `obligation-id@Linternal_spec_line` shape.
-// - diagnostics.TestAttributes@L28593
-//   Unknown or malformed coverage references produce source-native test
-//   diagnostics through Source/Compiler/Diagnostics/Codes.uv and Emission.uv.
+// - diagnostics.TestAttributes@L28940
+//   Malformed coverage references and unknown audit coverage references produce
+//   distinct source-native test diagnostics through Diagnostics/Codes.uv and
+//   Diagnostics/Emission.uv.
 
 using UltravioletCompiler::Semantics::Attributes::{
     CoverageReference,
@@ -20,6 +21,7 @@ using UltravioletCompiler::Semantics::Attributes::{
     emptyCoverageReferences,
     validateCoverageReferenceShape
 }
+using UltravioletCompiler::Diagnostics::{ malformedCoverageReferenceDiagnostic }
 
 public modal CoverageCheck {
     @Satisfied {
@@ -70,14 +72,14 @@ internal procedure coverageReferencesHaveValidShapeWithDiagnostics(
                         move diagnostics
                     )
                 }
-                @Malformed {
-                    let updated_diagnostics: DiagnosticStreamValue =
-                        diagnosticStreamAppend(
-                            diagnostics_region,
-                            move diagnostics,
-                            unknownCoverageReferenceDiagnostic(reference.text)
-                        )
-                    coverageReferencesHaveValidShapeWithDiagnostics(
+	        @Malformed {
+	            let updated_diagnostics: DiagnosticStreamValue =
+	                diagnosticStreamAppend(
+	                    diagnostics_region,
+	                    move diagnostics,
+	                    malformedCoverageReferenceDiagnostic(reference.text)
+	                )
+	            coverageReferencesHaveValidShapeWithDiagnostics(
                         diagnostics_region,
                         move tail,
                         move updated_diagnostics

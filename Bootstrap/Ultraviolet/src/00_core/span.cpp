@@ -2,7 +2,7 @@
 // MIGRATION MAPPING: span.cpp
 // =============================================================================
 //
-// SPEC REFERENCE: SPECIFICATION.md
+// SPEC REFERENCE: Docs/SPECIFICATION.md
 //   - Section 1.6.1 "Source Locations and Spans" (lines 548-579)
 //     - SourceLocation = <file, offset, line, column>
 //     - Span = <file, start_offset, end_offset, start_line, start_col, end_line, end_col>

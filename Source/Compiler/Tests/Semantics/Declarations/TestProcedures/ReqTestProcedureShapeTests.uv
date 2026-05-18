@@ -6,22 +6,22 @@ using UltravioletCompiler::Semantics::Declarations::{
     invalidTestProcedureParameter,
     noTestProcedureParameters,
     procedureContractWithResultPostcondition,
-    testContextProcedureParameter,
+    testAuthorityProcedureParameter,
     testProcedureDeclaration,
     validTestProcedureDeclaration
 }
 
 // Test responsibility: Source/Compiler/Tests/Semantics/Declarations/TestProcedures/ReqTestProcedureShapeTests.uv
 //
-// This file owns source-native tests for req.TestProcedureShape@L28455:
+// This file owns source-native tests for req.TestProcedureShape@L28802:
 //
 // A `[[test]]` procedure has a body, is non-generic, has explicit visibility,
 // has an explicit return type, contains a postcondition, and has either no
-// parameters or exactly one `TestContext` parameter.
+// parameters or exactly one `TestAuthority` parameter.
 
 [[test(
     name: "valid test procedure shape is accepted",
-    covers("req.TestProcedureShape@L28455")
+    covers("req.TestProcedureShape@L28802")
 )]]
 internal procedure validTestProcedureShapeIsAccepted() -> bool
 |: => @result
@@ -33,7 +33,7 @@ internal procedure validTestProcedureShapeIsAccepted() -> bool
 
 [[test(
     name: "test procedure shape requires body",
-    covers("req.TestProcedureShape@L28455")
+    covers("req.TestProcedureShape@L28802")
 )]]
 internal procedure testProcedureShapeRequiresBody() -> bool
 |: => @result
@@ -52,7 +52,7 @@ internal procedure testProcedureShapeRequiresBody() -> bool
 
 [[test(
     name: "test procedure shape requires non-generic procedure",
-    covers("req.TestProcedureShape@L28455")
+    covers("req.TestProcedureShape@L28802")
 )]]
 internal procedure testProcedureShapeRequiresNonGenericProcedure() -> bool
 |: => @result
@@ -71,7 +71,7 @@ internal procedure testProcedureShapeRequiresNonGenericProcedure() -> bool
 
 [[test(
     name: "test procedure shape requires explicit visibility",
-    covers("req.TestProcedureShape@L28455")
+    covers("req.TestProcedureShape@L28802")
 )]]
 internal procedure testProcedureShapeRequiresExplicitVisibility() -> bool
 |: => @result
@@ -90,7 +90,7 @@ internal procedure testProcedureShapeRequiresExplicitVisibility() -> bool
 
 [[test(
     name: "test procedure shape requires explicit return type",
-    covers("req.TestProcedureShape@L28455")
+    covers("req.TestProcedureShape@L28802")
 )]]
 internal procedure testProcedureShapeRequiresExplicitReturnType() -> bool
 |: => @result
@@ -109,7 +109,7 @@ internal procedure testProcedureShapeRequiresExplicitReturnType() -> bool
 
 [[test(
     name: "test procedure shape requires postcondition",
-    covers("req.TestProcedureShape@L28455")
+    covers("req.TestProcedureShape@L28802")
 )]]
 internal procedure testProcedureShapeRequiresPostcondition() -> bool
 |: => @result

@@ -8,7 +8,7 @@
 //   related values together.
 //
 // ---------------------------------------------------------------------------
-// SPEC REFERENCE: SPECIFICATION.md
+// SPEC REFERENCE: Docs/SPECIFICATION.md
 // ---------------------------------------------------------------------------
 //   Section 3.3.2.3 - Type Nodes (Lines 2875-2898)
 //     - Perm = const | unique | shared (2886)

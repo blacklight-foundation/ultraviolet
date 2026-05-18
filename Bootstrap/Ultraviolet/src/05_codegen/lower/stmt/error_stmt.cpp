@@ -2,7 +2,7 @@
 // Error Statement Lowering Implementation
 // =============================================================================
 //
-// SPEC REFERENCE: SPECIFICATION.md Lines 16701-16703 (Lower-Stmt-Error)
+// SPEC REFERENCE: Docs/SPECIFICATION.md Lines 16701-16703 (Lower-Stmt-Error)
 //   - LowerPanic(ErrorStmt(span))
 //   - Error statements trigger panic IR
 //

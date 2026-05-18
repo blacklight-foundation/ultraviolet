@@ -2,7 +2,7 @@
 // expr_stmt.cpp - Expression statement typing
 // =============================================================================
 //
-// SPEC REFERENCE: SPECIFICATION.md
+// SPEC REFERENCE: Docs/SPECIFICATION.md
 //   Section 5.2: Static Semantics
 //   - Expression statements (expr;)
 //   - S_ExprStmt set (line 377)

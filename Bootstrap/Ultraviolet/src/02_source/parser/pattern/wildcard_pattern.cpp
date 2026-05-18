@@ -4,7 +4,7 @@
 // This file should contain parsing logic for wildcard patterns (`_`), which
 // match any value without binding it to a name.
 //
-// SPEC REFERENCE: SPECIFICATION.md, Section 3.3.9, Lines 6092-6095
+// SPEC REFERENCE: Docs/SPECIFICATION.md, Section 3.3.9, Lines 6092-6095
 // =============================================================================
 //
 // FORMAL RULE:

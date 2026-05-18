@@ -2,7 +2,7 @@
 // MIGRATION MAPPING: enums.cpp
 // =============================================================================
 //
-// SPEC REFERENCE: SPECIFICATION.md
+// SPEC REFERENCE: Docs/SPECIFICATION.md
 // - Section 5.10 "Enum Discriminant Defaults" (not shown in excerpts, referenced in source)
 //   - DiscOf function
 //   - DiscSeq function

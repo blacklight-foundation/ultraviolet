@@ -2,7 +2,7 @@
 // parser_recovery.cpp - Error Recovery and Synchronization
 // =============================================================================
 //
-// SPEC REFERENCE: SPECIFICATION.md Section 3.3.12 (Lines 6452-6508)
+// SPEC REFERENCE: Docs/SPECIFICATION.md Section 3.3.12 (Lines 6452-6508)
 //
 // This file implements error recovery operations:
 //   - SyncStmt: Synchronize to next statement boundary

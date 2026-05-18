@@ -52,39 +52,39 @@ public procedure validatedAttributesAndMetadataSourceNativeTestAttributesObligat
     ) {
         count = count + 1usize
     }
-    if acceptedObligationEntryMatches(
+    if rejectedSourceObligationEntryMatches(
         "req.TestAttributeProcedureTarget",
         28768usize,
-        "HelloUltraviolet::Reference::Attributes",
-        "runAttributesSourceNativeTestsReference",
-        "Source/Reference/Attributes/SourceNativeTests.uv"
+        "HelloUltraviolet::Audit::FixtureCatalog::RejectedSource",
+        "validatedAttributesRejectedSourceFixtureCount",
+        "Fixtures/RejectedSource/Attributes/TestAttributeWrongTarget/Source/Main.uv"
     ) {
         count = count + 1usize
     }
-    if acceptedObligationEntryMatches(
+    if rejectedSourceObligationEntryMatches(
         "def.TestAttributeArgsOk",
         28782usize,
-        "HelloUltraviolet::Reference::Attributes",
-        "runAttributesSourceNativeTestsReference",
-        "Source/Reference/Attributes/SourceNativeTests.uv"
+        "HelloUltraviolet::Audit::FixtureCatalog::RejectedSource",
+        "validatedAttributesRejectedSourceFixtureCount",
+        "Fixtures/RejectedSource/Attributes/TestDuplicateName/Source/Main.uv"
     ) {
         count = count + 1usize
     }
-    if acceptedObligationEntryMatches(
+    if rejectedSourceObligationEntryMatches(
         "req.TestProcedureShape",
         28802usize,
-        "HelloUltraviolet::Reference::Attributes",
-        "runAttributesSourceNativeTestsReference",
-        "Source/Reference/Attributes/SourceNativeTests.uv"
+        "HelloUltraviolet::Audit::FixtureCatalog::RejectedSource",
+        "validatedAttributesRejectedSourceFixtureCount",
+        "Fixtures/RejectedSource/Attributes/TestInvalidProcedureShape/Source/Main.uv"
     ) {
         count = count + 1usize
     }
-    if acceptedObligationEntryMatches(
+    if rejectedSourceObligationEntryMatches(
         "req.TestAuthority",
         28824usize,
-        "HelloUltraviolet::Reference::Attributes",
-        "runAttributesSourceNativeTestsReference",
-        "Source/Reference/Attributes/SourceNativeTests.uv"
+        "HelloUltraviolet::Audit::FixtureCatalog::RejectedSource",
+        "validatedAttributesRejectedSourceFixtureCount",
+        "Fixtures/RejectedSource/Attributes/TestInvalidAuthorityParameter/Source/Main.uv"
     ) {
         count = count + 1usize
     }
@@ -120,7 +120,7 @@ public procedure validatedAttributesAndMetadataSourceNativeTestAttributesObligat
         28940usize,
         "HelloUltraviolet::Audit::FixtureCatalog::RejectedSource",
         "validatedAttributesRejectedSourceFixtureCount",
-        "Fixtures/RejectedSource/Attributes/TestMissingPostcondition/Source/Main.uv"
+        "Fixtures/RejectedSource/Attributes/TestAttributeWrongTarget/Source/Main.uv"
     ) {
         count = count + 1usize
     }

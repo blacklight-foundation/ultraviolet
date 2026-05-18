@@ -2,7 +2,7 @@
 // Pattern Lowering Common Utilities Implementation
 // =============================================================================
 //
-// SPEC REFERENCE: SPECIFICATION.md Section 6.6 (Pattern Lowering)
+// SPEC REFERENCE: Docs/SPECIFICATION.md Section 6.6 (Pattern Lowering)
 //   - Lines 16757-16813: Pattern lowering judgments
 //   - PatternLowerJudg = {LowerBindPattern, LowerBindList, LowerIfCases, TagOf}
 //   - Lower-Pat-General: MatchPattern + BindOrder + LowerBindList

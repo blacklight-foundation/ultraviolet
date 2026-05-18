@@ -1,7 +1,7 @@
 // Test responsibility:
 // Source/Compiler/Tests/Project/AssemblyLoader/StepValidate/StepValidateTests.uv
 //
-// This file owns source-native tests for Step-Validate@L3594.
+// This file owns source-native tests for Step-Validate@L3615.
 
 using UltravioletCompiler::Project::{
     ManifestAssemblyListValue,
@@ -18,7 +18,7 @@ using UltravioletCompiler::Project::{
 
 [[test(
     name: "project load advances parsed manifest into validated state",
-    covers("Step-Validate@L3594")
+    covers("Step-Validate@L3615")
 )]]
 internal procedure projectLoadAdvancesParsedManifestIntoValidatedState() -> bool
 |: => @result

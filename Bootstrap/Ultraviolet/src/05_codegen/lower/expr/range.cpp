@@ -2,7 +2,7 @@
 // MIGRATION MAPPING: expr/range.cpp
 // =============================================================================
 //
-// SPEC REFERENCE: SPECIFICATION.md Section 6.4 (Expression Lowering)
+// SPEC REFERENCE: Docs/SPECIFICATION.md Section 6.4 (Expression Lowering)
 //   - Lines 16198-16201: (Lower-Expr-Range)
 //     Gamma |- LowerRangeExpr(Range(kind, lo_opt, hi_opt)) => <IR, v>
 //     ----------------------------------------------------------------

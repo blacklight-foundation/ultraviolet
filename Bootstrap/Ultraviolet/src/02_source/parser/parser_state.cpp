@@ -2,7 +2,7 @@
 // parser_state.cpp - Core Parser State Primitives
 // =============================================================================
 //
-// SPEC REFERENCE: SPECIFICATION.md Section 3.3.3 (Lines 2966-3018)
+// SPEC REFERENCE: Docs/SPECIFICATION.md Section 3.3.3 (Lines 2966-3018)
 //
 // This file implements the fundamental parser state operations:
 //   - MakeParser: Initialize parser state (PState = <K, 0, D, 0, 0, []>)

@@ -3,7 +3,7 @@
 // =============================================================================
 // This file should contain parsing logic for let binding statements.
 //
-// SPEC REFERENCE: SPECIFICATION.md, Section 3.3.10, Lines 6265-6268, 6392-6397
+// SPEC REFERENCE: Docs/SPECIFICATION.md, Section 3.3.10, Lines 6265-6268, 6392-6397
 // =============================================================================
 //
 // FORMAL RULES FROM SPEC:

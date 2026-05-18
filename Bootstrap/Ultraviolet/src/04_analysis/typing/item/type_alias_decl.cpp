@@ -2,7 +2,7 @@
 // MIGRATION: item/type_alias_decl.cpp
 // =============================================================================
 //
-// SPEC REFERENCE: SPECIFICATION.md
+// SPEC REFERENCE: Docs/SPECIFICATION.md
 //   Section 5.3.6: Type Alias Declarations
 //   - Type alias grammar
 //   - Generic type aliases

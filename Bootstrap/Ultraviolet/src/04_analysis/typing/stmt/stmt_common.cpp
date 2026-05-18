@@ -2,7 +2,7 @@
 // stmt_common.cpp - Common statement typing utilities
 // =============================================================================
 //
-// SPEC REFERENCE: SPECIFICATION.md
+// SPEC REFERENCE: Docs/SPECIFICATION.md
 //   Section 5.2: Static Semantics - Statements
 //   - Statement typing judgments
 //   - StmtResult type
@@ -3438,7 +3438,7 @@ CheckResult CheckBlock(const ScopeContext& ctx,
 // TypePattern - Irrefutable pattern typing for let/var bindings
 // =============================================================================
 //
-// SPEC REFERENCE: SPECIFICATION.md Section 5.4 Pattern Matching
+// SPEC REFERENCE: Docs/SPECIFICATION.md Section 5.4 Pattern Matching
 //   - Irrefutable patterns are used in let/var bindings
 //   - They must cover all possible values of the expected type
 //
@@ -3699,7 +3699,7 @@ StmtTypeResult TypeErrorStmt(const ScopeContext& ctx,
 // TypeStmt - Statement typing dispatcher
 // =============================================================================
 //
-// SPEC REFERENCE: SPECIFICATION.md Section 5.2.11 Statement Typing
+// SPEC REFERENCE: Docs/SPECIFICATION.md Section 5.2.11 Statement Typing
 //   - Dispatches to appropriate statement-specific typing function
 //
 // =============================================================================

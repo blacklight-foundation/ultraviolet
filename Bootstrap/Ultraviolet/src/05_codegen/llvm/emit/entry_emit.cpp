@@ -241,6 +241,30 @@ using namespace emit_detail;
     }
     if (!uv_main)
     {
+      const auto *main_sig =
+          current_ctx_ ? current_ctx_->LookupProcSig(*current_ctx_->main_symbol) : nullptr;
+      if (main_sig)
+      {
+        ABICallResult main_abi = ComputeProcABI(*this,
+                                                *current_ctx_->main_symbol,
+                                                main_sig->params,
+                                                main_sig->ret);
+        if (main_abi.valid && main_abi.func_type)
+        {
+          uv_main = module_->getFunction(*current_ctx_->main_symbol);
+          if (!uv_main)
+          {
+            uv_main = llvm::Function::Create(main_abi.func_type,
+                                             llvm::GlobalValue::ExternalLinkage,
+                                             *current_ctx_->main_symbol,
+                                             module_.get());
+          }
+          uv_main->setCallingConv(CallingConvForAbi(main_sig->abi));
+        }
+      }
+    }
+    if (!uv_main)
+    {
       if (returns_exit_code)
       {
         builder->CreateRet(
@@ -289,6 +313,33 @@ using namespace emit_detail;
     if (!panic_ptr)
     {
       panic_ptr = builder->CreatePointerCast(panic_storage, GetOpaquePtr());
+    }
+
+    llvm::Value *panic_out_slot = nullptr;
+    if (llvm::Type *panic_out_ty = GetLLVMType(PanicOutType()))
+    {
+      panic_out_slot =
+          builder->CreateAlloca(panic_out_ty, nullptr, "entry_panic_out");
+      llvm::Value *panic_out_value = CoerceTo(builder, panic_ptr, panic_out_ty);
+      if (!panic_out_value && panic_ptr->getType() == panic_out_ty)
+      {
+        panic_out_value = panic_ptr;
+      }
+      if (!panic_out_value && panic_ptr->getType()->isPointerTy())
+      {
+        panic_out_value = builder->CreatePointerCast(panic_ptr, panic_out_ty);
+      }
+      if (!panic_out_value)
+      {
+        current_ctx_->ReportCodegenFailure();
+        return;
+      }
+      builder->CreateStore(panic_out_value, panic_out_slot);
+    }
+    if (!panic_out_slot)
+    {
+      current_ctx_->ReportCodegenFailure();
+      return;
     }
 
     std::uint64_t panic_flag_offset = 0;
@@ -411,7 +462,7 @@ using namespace emit_detail;
         llvm::Value *arg = nullptr;
         if (i == 0)
         {
-          arg = CoerceTo(builder, panic_ptr, param_ty);
+          arg = CoerceTo(builder, panic_out_slot, param_ty);
         }
         if (!arg)
         {
@@ -450,7 +501,11 @@ using namespace emit_detail;
     {
       const bool use_c_abi_aggregate_sret = true;
       ABICallResult init_abi =
-          ComputeCallABI(*this, init_info->params, init_info->ret, use_c_abi_aggregate_sret);
+          ComputeCallABI(*this,
+                         init_info->params,
+                         init_info->ret,
+                         use_c_abi_aggregate_sret,
+                         /*foreign_boundary_mode_independent=*/true);
       if (!init_abi.valid || !init_abi.func_type)
       {
         current_ctx_->ReportCodegenFailure();
@@ -717,7 +772,11 @@ using namespace emit_detail;
             }
 
             ABICallResult abi =
-                ComputeCallABI(*this, runtime_info->params, runtime_info->ret, true);
+                ComputeCallABI(*this,
+                               runtime_info->params,
+                               runtime_info->ret,
+                               true,
+                               /*foreign_boundary_mode_independent=*/true);
             if (!abi.valid || !abi.func_type || abi.param_kinds.size() != 1u)
             {
               current_ctx_->ReportCodegenFailure();
@@ -891,7 +950,7 @@ using namespace emit_detail;
       llvm::Type *param_ty = callee_ty->getParamType(1);
       if (param_ty->isPointerTy())
       {
-        llvm::Value *arg = CoerceTo(builder, panic_ptr, param_ty);
+        llvm::Value *arg = CoerceTo(builder, panic_out_slot, param_ty);
         if (!arg)
         {
           current_ctx_->ReportCodegenFailure();
@@ -1071,7 +1130,7 @@ using namespace emit_detail;
           llvm::Value *arg = nullptr;
           if (i == 0)
           {
-            arg = CoerceTo(builder, panic_ptr, param_ty);
+            arg = CoerceTo(builder, panic_out_slot, param_ty);
           }
           if (!arg)
           {

@@ -7,7 +7,7 @@
 //   Provides foundational functions used by all category-specific builders.
 //
 // ===========================================================================
-// SPEC REFERENCE: SPECIFICATION.md Section 3.3.2 (Lines 2626-2638)
+// SPEC REFERENCE: Docs/SPECIFICATION.md Section 3.3.2 (Lines 2626-2638)
 // ===========================================================================
 //
 //   SpanDefault(P, P') = SpanBetween(P, P')                              (2626)

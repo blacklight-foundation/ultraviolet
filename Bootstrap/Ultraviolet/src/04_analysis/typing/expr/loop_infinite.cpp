@@ -4,7 +4,7 @@
 // Spec Section: 5.2.11
 // =============================================================================
 //
-// SPEC REFERENCE: SPECIFICATION.md
+// SPEC REFERENCE: Docs/SPECIFICATION.md
 //   Section 5.2.11: Loop Expressions
 //   - T-Loop-Infinite (lines 9700-9703): Infinite loop typing
 //   - loop_expression grammar (line 23432)

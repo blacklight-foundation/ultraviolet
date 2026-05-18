@@ -2,7 +2,7 @@
 // MIGRATION MAPPING: token.cpp
 // =============================================================================
 //
-// SPEC REFERENCE: SPECIFICATION.md
+// SPEC REFERENCE: Docs/SPECIFICATION.md
 //   Section 1.6.2 - Token Spans (lines 581-612)
 //   Section 3.2.1 - Inputs, Outputs, and Records (lines 1997-2046)
 //   Section 3.2.4 - Token Kinds (lines 2107-2118)

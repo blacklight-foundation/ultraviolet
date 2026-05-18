@@ -4,7 +4,7 @@
 // Spawn Expression Lowering
 // =============================================================================
 //
-// SPEC REFERENCE: SPECIFICATION.md Section 10 (Structured Parallelism)
+// SPEC REFERENCE: Docs/SPECIFICATION.md Section 10 (Structured Parallelism)
 //   - spawn { body } returns Spawned<T>
 //   - Capture semantics for spawn closures
 //

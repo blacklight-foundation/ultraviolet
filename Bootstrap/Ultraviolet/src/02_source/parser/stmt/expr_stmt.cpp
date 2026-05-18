@@ -3,7 +3,7 @@
 // =============================================================================
 // This file should contain parsing logic for expression statements.
 //
-// SPEC REFERENCE: SPECIFICATION.md, Section 3.3.10, Lines 6345-6348
+// SPEC REFERENCE: Docs/SPECIFICATION.md, Section 3.3.10, Lines 6345-6348
 // =============================================================================
 //
 // FORMAL RULES FROM SPEC:

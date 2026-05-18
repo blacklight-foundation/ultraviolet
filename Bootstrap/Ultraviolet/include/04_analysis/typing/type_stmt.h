@@ -240,6 +240,7 @@ struct StmtTypeContext {
   bool contract_dynamic = false;
   bool test_postcondition_runtime = false;
   std::shared_ptr<StaticProofContext> proof_ctx;
+  std::optional<TypePath> current_class_path;
 };
 
 inline StmtTypeContext WithSharedAccessMode(StmtTypeContext ctx,

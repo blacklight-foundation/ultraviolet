@@ -26,7 +26,8 @@ void IRInstructionVisitor::operator()(const IRWait &wait) const
           emitter,
           wait_info->params,
           wait_info->ret,
-          use_c_abi_aggregate_sret);
+          use_c_abi_aggregate_sret,
+          /*foreign_boundary_mode_independent=*/true);
       if (wait_abi.func_type)
       {
         wait_fn = llvm::Function::Create(

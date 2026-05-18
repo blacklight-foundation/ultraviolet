@@ -3,7 +3,7 @@
 // =============================================================================
 // This file should contain parsing logic for address-of expressions (&expr).
 //
-// SPEC REFERENCE: SPECIFICATION.md, Section 3.3.8.5, Lines 5106-5109
+// SPEC REFERENCE: Docs/SPECIFICATION.md, Section 3.3.8.5, Lines 5106-5109
 // =============================================================================
 //
 // FORMAL RULES FROM SPEC:

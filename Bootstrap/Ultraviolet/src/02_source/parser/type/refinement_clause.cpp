@@ -2,7 +2,7 @@
 // refinement_clause.cpp - Type Refinement Clause Parsing
 // =============================================================================
 //
-// SPEC REFERENCE: SPECIFICATION.md, Section 3.3.7, Lines 4674-4686
+// SPEC REFERENCE: Docs/SPECIFICATION.md, Section 3.3.7, Lines 4674-4686
 //
 // Parses type refinement clauses: T |: { predicate }
 // - Adds compile-time predicates to base types

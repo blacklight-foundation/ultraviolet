@@ -1,7 +1,7 @@
 // Test responsibility:
 // Source/Compiler/Tests/Project/AssemblySelection/SelectOnlyExe/SelectOnlyExeTests.uv
 //
-// This file owns source-native tests for Select-Only-Exe@L3869.
+// This file owns source-native tests for Select-Only-Exe@L3890.
 
 using UltravioletCompiler::Project::{
     AssemblySelectionValue,
@@ -22,7 +22,7 @@ using UltravioletCompiler::Project::{
 
 [[test(
     name: "assembly selection chooses sole executable for absent target",
-    covers("Select-Only-Exe@L3869")
+    covers("Select-Only-Exe@L3890")
 )]]
 internal procedure assemblySelectionChoosesSoleExecutableForAbsentTarget() -> bool
 |: => @result

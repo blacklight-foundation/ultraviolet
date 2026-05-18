@@ -1,7 +1,7 @@
 // Test responsibility:
 // Source/Compiler/Tests/Project/ModuleDiscovery/ModuleDir/ModuleDirTests.uv
 //
-// This file owns source-native tests for Module-Dir@L4306.
+// This file owns source-native tests for Module-Dir@L4327.
 
 using UltravioletCompiler::Project::{
     directoryPath,
@@ -15,7 +15,7 @@ using UltravioletCompiler::Project::{
 
 [[test(
     name: "directory containing uv source is a module directory",
-    covers("Module-Dir@L4306")
+    covers("Module-Dir@L4327")
 )]]
 internal procedure directoryContainingUvSourceIsModuleDirectory() -> bool
 |: => @result

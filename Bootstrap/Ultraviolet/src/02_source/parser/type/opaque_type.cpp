@@ -2,7 +2,7 @@
 // opaque_type.cpp - Opaque Type Parsing
 // =============================================================================
 //
-// SPEC REFERENCE: SPECIFICATION.md, Section 3.3.7, Lines 4808-4811
+// SPEC REFERENCE: Docs/SPECIFICATION.md, Section 3.3.7, Lines 4808-4811
 //
 // Parses opaque types: opaque TypePath
 // - Used for abstract data types and module encapsulation

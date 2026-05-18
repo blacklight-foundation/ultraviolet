@@ -1,7 +1,7 @@
 // Test responsibility:
 // Source/Compiler/Tests/Project/DeterministicOrder/DefDirectoryOrderingTests.uv
 //
-// This file owns source-native tests for def.DirectoryOrdering@L4188.
+// This file owns source-native tests for def.DirectoryOrdering@L4209.
 
 using UltravioletCompiler::Project::{
     AssemblyListValue,
@@ -23,7 +23,7 @@ using UltravioletCompiler::Project::{
 
 [[test(
     name: "module insertion orders by module path text",
-    covers("def.DirectoryOrdering@L4188")
+    covers("def.DirectoryOrdering@L4209")
 )]]
 internal procedure moduleInsertionOrdersByModulePathText() -> bool
 |: => @result
@@ -50,7 +50,7 @@ internal procedure moduleInsertionOrdersByModulePathText() -> bool
 
 [[test(
     name: "assembly insertion orders by assembly name text",
-    covers("def.DirectoryOrdering@L4188")
+    covers("def.DirectoryOrdering@L4209")
 )]]
 internal procedure assemblyInsertionOrdersByAssemblyNameText() -> bool
 |: => @result

@@ -3,10 +3,10 @@
 // This file owns source-native test target resolution, test identity data, and
 // deterministic discovery ordering:
 //
-// - lowering.TestHarnessGeneration@L28516
+// - lowering.TestHarnessGeneration@L28863
 //   `uv test [target]` resolves an absent target, host path target, assembly
 //   name, or module path into a test scope.
-// - def.TestDiscoveryOrder@L28575
+// - def.TestDiscoveryOrder@L28922
 //   Selected tests are ordered by module path, source file order, declaration
 //   span, then fully-qualified procedure symbol.
 

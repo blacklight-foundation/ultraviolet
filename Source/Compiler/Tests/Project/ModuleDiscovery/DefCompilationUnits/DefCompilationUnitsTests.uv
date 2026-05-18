@@ -1,7 +1,7 @@
 // Test responsibility:
 // Source/Compiler/Tests/Project/ModuleDiscovery/DefCompilationUnits/DefCompilationUnitsTests.uv
 //
-// This file owns source-native tests for def.CompilationUnits@L4338.
+// This file owns source-native tests for def.CompilationUnits@L4359.
 
 using UltravioletCompiler::Project::{
     CompilationUnitResultValue,
@@ -18,7 +18,7 @@ using UltravioletCompiler::Project::{
 
 [[test(
     name: "compilation unit sorts uv source files deterministically",
-    covers("def.CompilationUnits@L4338")
+    covers("def.CompilationUnits@L4359")
 )]]
 internal procedure compilationUnitSortsUvSourceFilesDeterministically() -> bool
 |: => @result

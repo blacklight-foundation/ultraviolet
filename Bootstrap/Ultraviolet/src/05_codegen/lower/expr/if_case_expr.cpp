@@ -2,7 +2,7 @@
 // MIGRATION MAPPING: expr/if_case_expr.cpp
 // =============================================================================
 //
-// SPEC REFERENCE: SPECIFICATION.md Section 6.4 and 6.6 (If-Is Case Analysis Lowering)
+// SPEC REFERENCE: Docs/SPECIFICATION.md Section 6.4 and 6.6 (If-Is Case Analysis Lowering)
 //   - Lines 16208-16211: (Lower-Expr-IfCase)
 //   - Lines 16757-16813: Pattern matching lowering section
 //
@@ -73,6 +73,9 @@ IRPtr CleanupTemps(const std::vector<TempValue>& temps, LowerCtx& ctx) {
   CleanupPlan plan;
   plan.reserve(temps.size());
   for (auto it = temps.rbegin(); it != temps.rend(); ++it) {
+    if (!it->has_responsibility) {
+      continue;
+    }
     CleanupAction action;
     action.kind = CleanupAction::Kind::DropTemp;
     action.type = it->type;
@@ -831,7 +834,7 @@ void MergeFailures(LowerCtx& base, const LowerCtx& branch) {
 // Lower-IfCases - Lower if-case expression
 // ============================================================================
 //
-// Per SPECIFICATION.md (Lower-IfCases) lines 16808-16811:
+// Per Docs/SPECIFICATION.md (Lower-IfCases) lines 16808-16811:
 // Gamma |- LowerExpr(scrut) => <IR_s, v_s>
 // ----------------------------------------------------------------------------
 // Gamma |- LowerIfCases(scrut, arms) => <SeqIR(IR_s, IfCaseIR(v_s, arms)), v_case>

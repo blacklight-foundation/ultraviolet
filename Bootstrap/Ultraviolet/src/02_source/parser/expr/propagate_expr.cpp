@@ -3,7 +3,7 @@
 // =============================================================================
 // This file should contain parsing logic for propagate (?) expressions.
 //
-// SPEC REFERENCE: SPECIFICATION.md, Section 3.3.8.7, Lines 5443-5446
+// SPEC REFERENCE: Docs/SPECIFICATION.md, Section 3.3.8.7, Lines 5443-5446
 // =============================================================================
 //
 // FORMAL RULES FROM SPEC:

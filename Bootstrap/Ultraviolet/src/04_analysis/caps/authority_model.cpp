@@ -2,7 +2,7 @@
 // authority_model.cpp - Authority Model and Capability Flow Tracking
 // =============================================================================
 //
-// SPEC REFERENCE: SPECIFICATION.md
+// SPEC REFERENCE: Docs/SPECIFICATION.md
 //   - Section 5.9 "Capabilities" (line 13048)
 //   - Section 5.9.1 "Authority Model" (lines 13060-13150)
 //   - Section 5.9.2 "No Ambient Authority" (lines 13160-13200)

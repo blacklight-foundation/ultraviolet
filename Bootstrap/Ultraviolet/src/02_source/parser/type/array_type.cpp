@@ -2,7 +2,7 @@
 // array_type.cpp - Array Type Parsing
 // =============================================================================
 //
-// SPEC REFERENCE: SPECIFICATION.md, Section 3.3.7, Lines 4763-4766
+// SPEC REFERENCE: Docs/SPECIFICATION.md, Section 3.3.7, Lines 4763-4766
 //
 // Parses array types: [T; n]
 // - T is the element type

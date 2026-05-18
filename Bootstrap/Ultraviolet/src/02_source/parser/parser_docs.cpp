@@ -2,7 +2,7 @@
 // parser_docs.cpp - Documentation Comment Association
 // =============================================================================
 //
-// SPEC REFERENCE: SPECIFICATION.md Section 3.3.11 (Lines 6433-6450)
+// SPEC REFERENCE: Docs/SPECIFICATION.md Section 3.3.11 (Lines 6433-6450)
 //
 // This file implements documentation comment handling:
 //   - ModuleDocs: Extract module documentation (//!) comments

@@ -2,7 +2,7 @@
 // Expression Lowering: YieldExpr
 // =============================================================================
 //
-// SPEC REFERENCE: SPECIFICATION.md Section 11.2 (Yield Expression)
+// SPEC REFERENCE: Docs/SPECIFICATION.md Section 11.2 (Yield Expression)
 //   - yield value suspends async and produces output
 //   - yield release value releases keys before suspending
 //

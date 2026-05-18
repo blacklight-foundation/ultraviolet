@@ -2,7 +2,7 @@
 // MIGRATION MAPPING: hash.cpp
 // =============================================================================
 //
-// SPEC REFERENCE: SPECIFICATION.md
+// SPEC REFERENCE: Docs/SPECIFICATION.md
 //   - Section 6.3.1 (referenced in source, covers symbol generation)
 //     - FNV1a64: FNV-1a hash algorithm for 64-bit hashes
 //     - FNVOffset64 = 14695981039346656037 (0xcbf29ce484222325)

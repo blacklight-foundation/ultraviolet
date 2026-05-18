@@ -2,7 +2,7 @@
 // MIGRATION MAPPING: layout_tuples.cpp
 // =============================================================================
 //
-// SPEC REFERENCE: SPECIFICATION.md
+// SPEC REFERENCE: Docs/SPECIFICATION.md
 //   - Section 6.1.6 Aggregate Layouts - Tuples (lines 14953-14982)
 //   - TupleFields definition (line 14957)
 //   - Layout-Tuple-Empty rule (lines 14960-14962)

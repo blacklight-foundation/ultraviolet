@@ -1,6 +1,6 @@
 [[test(
     name: "Basename of empty path is empty",
-    covers("def.Basename@L3369")
+    covers("def.Basename@L3390")
 )]]
 internal procedure basenameOfEmptyPathIsEmpty() -> bool
 |: => @result
@@ -14,7 +14,7 @@ internal procedure basenameOfEmptyPathIsEmpty() -> bool
 
 [[test(
     name: "Basename of root-relative root is the root tag",
-    covers("def.Basename@L3369")
+    covers("def.Basename@L3390")
 )]]
 internal procedure basenameOfRootRelativeRootIsRootTag() -> bool
 |: => @result
@@ -28,7 +28,7 @@ internal procedure basenameOfRootRelativeRootIsRootTag() -> bool
 
 [[test(
     name: "Basename of UNC root is the UNC tag",
-    covers("def.Basename@L3369")
+    covers("def.Basename@L3390")
 )]]
 internal procedure basenameOfUNCRootIsUNCTag() -> bool
 |: => @result
@@ -42,7 +42,7 @@ internal procedure basenameOfUNCRootIsUNCTag() -> bool
 
 [[test(
     name: "Basename returns the final component",
-    covers("def.Basename@L3369")
+    covers("def.Basename@L3390")
 )]]
 internal procedure basenameReturnsFinalComponent() -> bool
 |: => @result
@@ -56,7 +56,7 @@ internal procedure basenameReturnsFinalComponent() -> bool
 
 [[test(
     name: "Basename ignores trailing separators",
-    covers("def.Basename@L3369")
+    covers("def.Basename@L3390")
 )]]
 internal procedure basenameIgnoresTrailingSeparators() -> bool
 |: => @result

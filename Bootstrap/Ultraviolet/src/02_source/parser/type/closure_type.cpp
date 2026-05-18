@@ -2,7 +2,7 @@
 // closure_type.cpp - Closure Type Parsing
 // =============================================================================
 //
-// SPEC REFERENCE: SPECIFICATION.md, Section 3.3.7, Lines 4718-4756
+// SPEC REFERENCE: Docs/SPECIFICATION.md, Section 3.3.7, Lines 4718-4756
 //
 // Closure types: |T1, T2| -> R [shared: {deps}]
 //

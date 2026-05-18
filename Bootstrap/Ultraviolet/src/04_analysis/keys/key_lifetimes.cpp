@@ -3,9 +3,9 @@
 // =============================================================================
 //
 // SPEC REFERENCE:
-//   - SPECIFICATION.md, Section 17.2.2 "Key Release" (lines 24034-24050)
-//   - SPECIFICATION.md, Section 17.1.6 "Wait Restrictions" (lines 23930-23936)
-//   - SPECIFICATION.md, Section 19.4.2 "Key Prohibition in Yield" (lines 25839-25870)
+//   - Docs/SPECIFICATION.md, Section 17.2.2 "Key Release" (lines 24034-24050)
+//   - Docs/SPECIFICATION.md, Section 17.1.6 "Wait Restrictions" (lines 23930-23936)
+//   - Docs/SPECIFICATION.md, Section 19.4.2 "Key Prohibition in Yield" (lines 25839-25870)
 //
 // KEY RELEASE RULES (from spec):
 //   (K-Release-Scope) ScopeExit(S) => Γ'_keys = Γ_keys \ {(P, M, S') : S' = S}

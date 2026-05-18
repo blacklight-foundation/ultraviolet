@@ -4,7 +4,7 @@
 // This file should contain parsing logic for error recovery expressions and
 // the ErrorExpr sentinel node used when parsing fails.
 //
-// SPEC REFERENCE: SPECIFICATION.md
+// SPEC REFERENCE: Docs/SPECIFICATION.md
 // -----------------------------------------------------------------------------
 // **(Parse-Primary-Err)** Lines 5390-5393
 //   c = Code(Parse-Syntax-Err)    Γ ⊢ Emit(c, Tok(P).span)

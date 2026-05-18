@@ -2,7 +2,7 @@
 // return_stmt.cpp - Return statement typing
 // =============================================================================
 //
-// SPEC REFERENCE: SPECIFICATION.md
+// SPEC REFERENCE: Docs/SPECIFICATION.md
 //   Section 5.2.11: Statement Typing
 //   - return expr: Return with value
 //   - return: Return unit (procedure with () return)

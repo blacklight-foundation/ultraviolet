@@ -4,7 +4,7 @@
 // This file should contain parsing logic for enum patterns, which match enum
 // variants and optionally destructure their payloads.
 //
-// SPEC REFERENCE: SPECIFICATION.md, Section 3.3.9, Lines 6117-6120
+// SPEC REFERENCE: Docs/SPECIFICATION.md, Section 3.3.9, Lines 6117-6120
 // HELPER RULES: Section 3.3.9.1, Lines 6219-6234
 // =============================================================================
 //

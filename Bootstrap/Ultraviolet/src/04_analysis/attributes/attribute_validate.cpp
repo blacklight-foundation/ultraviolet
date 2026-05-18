@@ -3,9 +3,9 @@
 // ===========================================================================
 //
 // SPEC REFERENCE:
-//   - SPECIFICATION.md, Section 5.13 "Attributes" (line 13859)
-//   - SPECIFICATION.md, Section 5.13.3 "Built-in Attributes" (lines 13941-13980)
-//   - SPECIFICATION.md, Section 5.13.6 "Export and FFI" (line 13922)
+//   - Docs/SPECIFICATION.md, Section 5.13 "Attributes" (line 13859)
+//   - Docs/SPECIFICATION.md, Section 5.13.3 "Built-in Attributes" (lines 13941-13980)
+//   - Docs/SPECIFICATION.md, Section 5.13.6 "Export and FFI" (line 13922)
 //
 // SOURCE FILE:
 //   - ultraviolet-bootstrap/src/03_analysis/attributes/attribute_registry.cpp

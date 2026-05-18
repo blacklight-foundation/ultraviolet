@@ -3,8 +3,8 @@
 // =============================================================================
 //
 // SPEC REFERENCE:
-//   SPECIFICATION.md §5.1.7 "Resolution Pass" (Lines 7430-7549)
-//   SPECIFICATION.md §5.1.2 "Name Introduction and Shadowing" (Lines 6718-6821)
+//   Docs/SPECIFICATION.md §5.1.7 "Resolution Pass" (Lines 7430-7549)
+//   Docs/SPECIFICATION.md §5.1.2 "Name Introduction and Shadowing" (Lines 6718-6821)
 //
 // SOURCE FILE:
 //   ultraviolet-bootstrap/src/03_analysis/resolve/resolver_items.cpp (Lines 1-868)
@@ -34,6 +34,10 @@ ResolveResult<std::optional<ast::GenericParams>> ResolveGenericParamsOpt(
 ResolveResult<std::optional<ast::ContractClause>> ResolveContractOpt(
     ResolveContext& ctx,
     const std::optional<ast::ContractClause>& contract_opt);
+ResolveResult<std::optional<std::vector<ast::ForeignContractClause>>>
+ResolveForeignContractsOpt(
+    ResolveContext& ctx,
+    const std::optional<std::vector<ast::ForeignContractClause>>& contracts_opt);
 ResolveResult<std::optional<ast::PredicateClause>> ResolveWhereClauseOpt(
     ResolveContext& ctx,
     const std::optional<ast::PredicateClause>& where_opt);
@@ -367,6 +371,15 @@ ResolveResult<std::vector<ast::RecordMember>> ResolveRecordMemberList(
               return {false, resolved_ret.diag_id, resolved_ret.span, {}};
             }
             out.return_type_opt = resolved_ret.value;
+            const auto resolved_contract =
+                ResolveContractOpt(method_ctx, node.contract);
+            if (!resolved_contract.ok) {
+              return {false, resolved_contract.diag_id,
+                      resolved_contract.span, {},
+                      resolved_contract.diag_detail,
+                      resolved_contract.diag_children};
+            }
+            out.contract = resolved_contract.value;
             if (node.body) {
               const auto resolved_body = ResolveBlock(method_ctx, *node.body);
               if (!resolved_body.ok) {
@@ -498,6 +511,15 @@ ResolveResult<std::vector<ast::ClassItem>> ResolveClassItemList(
               return {false, resolved_ret.diag_id, resolved_ret.span, {}};
             }
             out.return_type_opt = resolved_ret.value;
+            const auto resolved_contract =
+                ResolveContractOpt(method_ctx, node.contract);
+            if (!resolved_contract.ok) {
+              return {false, resolved_contract.diag_id,
+                      resolved_contract.span, {},
+                      resolved_contract.diag_detail,
+                      resolved_contract.diag_children};
+            }
+            out.contract = resolved_contract.value;
             if (node.body_opt) {
               const auto resolved_body = ResolveBlock(method_ctx, *node.body_opt);
               if (!resolved_body.ok) {
@@ -569,6 +591,15 @@ ResolveResult<std::vector<ast::StateMember>> ResolveStateMemberList(
               return {false, resolved_ret.diag_id, resolved_ret.span, {}};
             }
             out.return_type_opt = resolved_ret.value;
+            const auto resolved_contract =
+                ResolveContractOpt(method_ctx, node.contract);
+            if (!resolved_contract.ok) {
+              return {false, resolved_contract.diag_id,
+                      resolved_contract.span, {},
+                      resolved_contract.diag_detail,
+                      resolved_contract.diag_children};
+            }
+            out.contract = resolved_contract.value;
             if (node.body) {
               const auto resolved_body = ResolveBlock(method_ctx, *node.body);
               if (!resolved_body.ok) {
@@ -710,6 +741,14 @@ ResolveResult<ast::ASTItem> ResolveItem(ResolveContext& ctx,
                     resolved_ret.diag_detail, resolved_ret.diag_children};
           }
           out.return_type_opt = resolved_ret.value;
+          const auto resolved_contract =
+              ResolveContractOpt(proc_res, node.contract);
+          if (!resolved_contract.ok) {
+            return {false, resolved_contract.diag_id, resolved_contract.span, {},
+                    resolved_contract.diag_detail,
+                    resolved_contract.diag_children};
+          }
+          out.contract = resolved_contract.value;
           if (node.body) {
             const auto resolved_body = ResolveBlock(proc_res, *node.body);
             if (!resolved_body.ok) {
@@ -1007,6 +1046,28 @@ ResolveResult<ast::ASTItem> ResolveItem(ResolveContext& ctx,
                     if (resolved_ret.value) {
                       proc_out.return_type_opt = resolved_ret.value;
                     }
+
+                    const auto resolved_contract =
+                        ResolveContractOpt(proc_ctx, ext.contract);
+                    if (!resolved_contract.ok) {
+                      ext_ok = false;
+                      ext_diag_id = resolved_contract.diag_id;
+                      ext_span = resolved_contract.span;
+                      return;
+                    }
+                    proc_out.contract = resolved_contract.value;
+
+                    const auto resolved_foreign_contracts =
+                        ResolveForeignContractsOpt(
+                            proc_ctx, ext.foreign_contracts_opt);
+                    if (!resolved_foreign_contracts.ok) {
+                      ext_ok = false;
+                      ext_diag_id = resolved_foreign_contracts.diag_id;
+                      ext_span = resolved_foreign_contracts.span;
+                      return;
+                    }
+                    proc_out.foreign_contracts_opt =
+                        resolved_foreign_contracts.value;
                     resolved_items.push_back(proc_out);
                   }
                 },

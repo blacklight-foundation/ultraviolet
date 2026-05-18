@@ -2,7 +2,7 @@
 // Expression Lowering: WaitExpr
 // =============================================================================
 //
-// SPEC REFERENCE: SPECIFICATION.md Section 10.4 (Wait Expression)
+// SPEC REFERENCE: Docs/SPECIFICATION.md Section 10.4 (Wait Expression)
 //   - wait handle blocks until spawned task completes
 //
 // MIGRATED FROM:

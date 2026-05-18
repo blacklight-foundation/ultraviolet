@@ -1,7 +1,7 @@
 // Test responsibility:
 // Source/Compiler/Tests/Project/AssemblyLoader/StepAsmDoneErr/StepAsmDoneErrTests.uv
 //
-// This file owns source-native tests for Step-Asm-Done-Err@L3831.
+// This file owns source-native tests for Step-Asm-Done-Err@L3852.
 
 using UltravioletCompiler::Diagnostics::{ diagnosticStreamHasErrors }
 using UltravioletCompiler::Project::{
@@ -22,7 +22,7 @@ using UltravioletCompiler::Project::{
 
 [[test(
     name: "project load reports ambiguous assembly selection",
-    covers("Step-Asm-Done-Err@L3831")
+    covers("Step-Asm-Done-Err@L3852")
 )]]
 internal procedure projectLoadReportsAmbiguousAssemblySelection() -> bool
 |: => @result

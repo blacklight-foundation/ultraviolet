@@ -4,7 +4,7 @@
 // This file should contain parsing logic for record patterns, which destructure
 // record values by matching named fields.
 //
-// SPEC REFERENCE: SPECIFICATION.md, Section 3.3.9, Lines 6112-6115
+// SPEC REFERENCE: Docs/SPECIFICATION.md, Section 3.3.9, Lines 6112-6115
 // HELPER RULES: Section 3.3.9.1, Lines 6178-6218
 // =============================================================================
 //

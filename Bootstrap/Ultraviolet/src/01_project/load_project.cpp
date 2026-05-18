@@ -2,7 +2,7 @@
 // MIGRATION MAPPING: load_project.cpp
 // =============================================================================
 //
-// SPEC REFERENCE: SPECIFICATION.md Section 2.1 (lines 1030-1159)
+// SPEC REFERENCE: Docs/SPECIFICATION.md Section 2.1 (lines 1030-1159)
 //   - Project Load (Small-Step): Step-Parse, Step-Validate, Step-Asm-*
 //   - Assembly Selection: Select-Only, Select-By-Name, Select-Err
 //   - Assembly Build (Big-Step): BuildAssembly-Ok/Err-*
@@ -357,7 +357,8 @@ std::optional<Assembly> SelectAssembly(
 
 LoadProjectResult LoadProjectImpl(const std::filesystem::path& project_root,
                                   const AssemblyTarget& target,
-                                  const LoadProjectDeps& deps) {
+                                  const LoadProjectDeps& deps,
+                                  bool require_selected_assembly) {
   LoadProjectResult result;
 
   const ManifestParseResult parsed = deps.parse(project_root);
@@ -403,7 +404,12 @@ LoadProjectResult LoadProjectImpl(const std::filesystem::path& project_root,
     return result;
   }
 
-  const auto selected = SelectAssembly(assemblies, target, result.diags);
+  std::optional<Assembly> selected;
+  if (require_selected_assembly || target.name.has_value()) {
+    selected = SelectAssembly(assemblies, target, result.diags);
+  } else if (!assemblies.empty()) {
+    selected = assemblies.front();
+  }
   if (!selected.has_value()) {
     SPEC_RULE("Step-Asm-Done-Err");
     SPEC_RULE("LoadProject-Err");
@@ -454,7 +460,7 @@ std::optional<AssemblyTarget> ParseAssemblyTarget(
 LoadProjectResult LoadProjectWithDeps(const std::filesystem::path& project_root,
                                       const AssemblyTarget& target,
                                       const LoadProjectDeps& deps) {
-  return LoadProjectImpl(project_root, target, deps);
+  return LoadProjectImpl(project_root, target, deps, true);
 }
 
 LoadProjectResult LoadProject(const std::filesystem::path& project_root,
@@ -469,11 +475,32 @@ LoadProjectResult LoadProject(const std::filesystem::path& project_root,
           const std::filesystem::path&, std::string_view)>(Modules),
       ComputeOutputPaths,
   };
-  return LoadProjectImpl(project_root, target, deps);
+  return LoadProjectImpl(project_root, target, deps, true);
 }
 
 LoadProjectResult LoadProject(const std::filesystem::path& project_root) {
   return LoadProject(project_root, NoAssemblyTarget());
+}
+
+LoadProjectResult LoadProjectAllAssemblies(
+    const std::filesystem::path& project_root,
+    const AssemblyTarget& target) {
+  const LoadProjectDeps deps = {
+      static_cast<ManifestParseResult (*)(const std::filesystem::path&)>(
+          ParseManifest),
+      ValidateManifest,
+      core::Resolve,
+      IsDirDefault,
+      static_cast<ModulesResult (*)(
+          const std::filesystem::path&, std::string_view)>(Modules),
+      ComputeOutputPaths,
+  };
+  return LoadProjectImpl(project_root, target, deps, false);
+}
+
+LoadProjectResult LoadProjectAllAssemblies(
+    const std::filesystem::path& project_root) {
+  return LoadProjectAllAssemblies(project_root, NoAssemblyTarget());
 }
 
 }  // namespace ultraviolet::project

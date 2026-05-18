@@ -2,7 +2,7 @@
 // MIGRATION: item/record_decl.cpp
 // =============================================================================
 //
-// SPEC REFERENCE: SPECIFICATION.md
+// SPEC REFERENCE: Docs/SPECIFICATION.md
 //   Section 5.3.2: Record Declarations
 //   Section 5.2.8: Default Record Construction
 //   - WF-Record (lines 9078-9081): Record well-formedness

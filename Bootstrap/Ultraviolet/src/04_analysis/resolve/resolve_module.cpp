@@ -3,8 +3,8 @@
 // =============================================================================
 //
 // SPEC REFERENCE:
-//   SPECIFICATION.md §5.1.7 "Resolution Pass" (Lines 7430-7549)
-//   SPECIFICATION.md §5.1.5 "Top-Level Name Collection" (Lines 6956-7309)
+//   Docs/SPECIFICATION.md §5.1.7 "Resolution Pass" (Lines 7430-7549)
+//   Docs/SPECIFICATION.md §5.1.5 "Top-Level Name Collection" (Lines 6956-7309)
 //
 // SOURCE FILE:
 //   ultraviolet-bootstrap/src/03_analysis/resolve/resolver_modules.cpp (Lines 1-498)
@@ -499,6 +499,11 @@ void PopulateSigma(ScopeContext& ctx) {
     ast::Path path;
     path.emplace_back("Context");
     ctx.sigma.types[PathKeyOf(path)] = BuildContextRecordDecl();
+  }
+  {
+    ast::Path path;
+    path.emplace_back("TestAuthority");
+    ctx.sigma.types[PathKeyOf(path)] = BuildTestAuthorityRecordDecl();
   }
   {
     ast::Path path;

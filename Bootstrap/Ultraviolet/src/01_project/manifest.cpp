@@ -2,7 +2,7 @@
 // MIGRATION MAPPING: manifest.cpp
 // =============================================================================
 //
-// SPEC REFERENCE: SPECIFICATION.md Section 2.1 (lines 779-1027)
+// SPEC REFERENCE: Docs/SPECIFICATION.md Section 2.1 (lines 779-1027)
 //   - 2.1. Project Root and Manifest
 //   - Manifest Parsing (Big-Step): ParseTOML, Parse-Manifest-Ok/Missing/Err
 //   - Manifest Required (No Single-File Fallback)

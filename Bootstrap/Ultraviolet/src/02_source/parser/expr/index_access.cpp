@@ -3,7 +3,7 @@
 // =============================================================================
 // This file contains parsing logic for index/subscript access (expr[index]).
 //
-// SPEC REFERENCE: SPECIFICATION.md, Lines 5423-5426
+// SPEC REFERENCE: Docs/SPECIFICATION.md, Lines 5423-5426
 // -----------------------------------------------------------------------------
 // **(Postfix-Index)** Lines 5423-5426
 // IsPunc(Tok(P), "[")    Γ ⊢ ParseExpr(Advance(P)) ⇓ (P_1, idx)    IsPunc(Tok(P_1), "]")

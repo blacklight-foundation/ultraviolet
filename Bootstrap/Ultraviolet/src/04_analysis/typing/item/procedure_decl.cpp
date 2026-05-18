@@ -2,7 +2,7 @@
 // MIGRATION: item/procedure_decl.cpp
 // =============================================================================
 //
-// SPEC REFERENCE: SPECIFICATION.md
+// SPEC REFERENCE: Docs/SPECIFICATION.md
 //   Section 5.3.1: Procedure Declarations
 //   Section 5.2.3: Function Types (T-Proc-As-Value)
 //   Section 5.8: Contracts

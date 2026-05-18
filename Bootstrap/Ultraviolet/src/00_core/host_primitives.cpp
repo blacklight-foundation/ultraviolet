@@ -2,7 +2,7 @@
 // MIGRATION MAPPING: host_primitives.cpp
 // =============================================================================
 //
-// SPEC REFERENCE: SPECIFICATION.md
+// SPEC REFERENCE: Docs/SPECIFICATION.md
 //   - Section 1.7 "Host Primitives" (lines 727-744)
 //     - IOPrim: IO operations set
 //       {IOOpenRead, IOOpenWrite, IOOpenAppend, IOCreateWrite, IOReadFile,

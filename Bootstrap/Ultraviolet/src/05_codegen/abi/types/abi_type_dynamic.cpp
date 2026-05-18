@@ -2,7 +2,7 @@
 // ABI Type: Dynamic Objects (ABI-Dynamic)
 // =============================================================================
 //
-// SPEC REFERENCE: SPECIFICATION.md
+// SPEC REFERENCE: Docs/SPECIFICATION.md
 //   - Section 6.2.2 ABI Type Lowering
 //   - ABI-Dynamic rule: ABITy(TypeDynamic(Cl)) => DynLayout(Cl)
 //   - Dynamic objects are fat pointers: (data, vtable).

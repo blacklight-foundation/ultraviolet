@@ -2,7 +2,7 @@
 // sync_expr.cpp - Sync Expression Parsing
 // =============================================================================
 //
-// SPEC REFERENCE: SPECIFICATION.md
+// SPEC REFERENCE: Docs/SPECIFICATION.md
 // - Parse-Sync-Expr (Lines 5294-5297)
 //
 // =============================================================================

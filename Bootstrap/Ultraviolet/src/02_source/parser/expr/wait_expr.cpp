@@ -2,7 +2,7 @@
 // wait_expr.cpp - Wait Expression Parsing
 // =============================================================================
 //
-// SPEC REFERENCE: SPECIFICATION.md, Section 3.3.8.6, Lines 5274-5277
+// SPEC REFERENCE: Docs/SPECIFICATION.md, Section 3.3.8.6, Lines 5274-5277
 //
 // FORMAL RULE - Parse-Wait-Expr (Lines 5274-5277):
 // -----------------------------------------------------------------------------

@@ -2,7 +2,7 @@
 // ABI Type: Tuples (ABI-Tuple)
 // =============================================================================
 //
-// SPEC REFERENCE: SPECIFICATION.md
+// SPEC REFERENCE: Docs/SPECIFICATION.md
 //   - Section 6.2.2 ABI Type Lowering
 //   - ABI-Tuple rule: ABITy(TypeTuple([T1,...,Tn])) => TupleLayout.layout
 //

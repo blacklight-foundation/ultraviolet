@@ -4,7 +4,7 @@
 // This file implements parsing for infinite loop expressions (loop { body }).
 //
 // =============================================================================
-// SPEC REFERENCE: SPECIFICATION.md
+// SPEC REFERENCE: Docs/SPECIFICATION.md
 // =============================================================================
 //
 // **(Parse-Loop-Expr)** Lines 5259-5262:

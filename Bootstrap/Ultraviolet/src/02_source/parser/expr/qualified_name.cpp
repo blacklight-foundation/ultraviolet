@@ -6,7 +6,7 @@
 // These are references to items in other modules/namespaces.
 //
 // =============================================================================
-// SPEC REFERENCE: SPECIFICATION.md
+// SPEC REFERENCE: Docs/SPECIFICATION.md
 // =============================================================================
 // Lines 5189-5192:
 //

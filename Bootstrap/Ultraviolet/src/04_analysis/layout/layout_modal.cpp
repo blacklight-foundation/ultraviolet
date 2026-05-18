@@ -2,7 +2,7 @@
 // MIGRATION MAPPING: layout_modal.cpp
 // =============================================================================
 //
-// SPEC REFERENCE: SPECIFICATION.md
+// SPEC REFERENCE: Docs/SPECIFICATION.md
 //   - Section 6.1.7 Modal Layout (Codegen) (lines 15086-15133)
 //   - ModalDiscType definition (line 15088)
 //   - StateSize, StateAlign (lines 15089-15090)

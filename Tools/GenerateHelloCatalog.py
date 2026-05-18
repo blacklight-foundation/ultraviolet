@@ -3,16 +3,18 @@
 
 from __future__ import annotations
 
+import argparse
 import csv
 import pathlib
 import re
+import sys
 import time
 from collections import defaultdict
 from dataclasses import dataclass
 
 
 ROOT = pathlib.Path(__file__).resolve().parents[1]
-CSV_PATH = ROOT / "Docs" / "Audit" / "UltravioletObligations.csv"
+CSV_PATH = ROOT / "Docs" / "Internal" / "UltravioletObligations.csv"
 CATALOG_ROOT = ROOT / "HelloUltraviolet" / "Source" / "Audit" / "Catalog"
 AUDIT_ROOT = ROOT / "HelloUltraviolet" / "Source" / "Audit"
 SYMBOL_EXECUTION_ROOT = AUDIT_ROOT / "SymbolExecutions"
@@ -20,9 +22,25 @@ FIXTURE_CATALOG_ROOT = AUDIT_ROOT / "FixtureCatalog"
 FIXTURE_CATALOG_MODULE = "HelloUltraviolet::Audit::FixtureCatalog"
 AUDIT_DIGEST_MODULUS = 1_000_000_007
 AUDIT_DIGEST_FACTOR = 257
+CHECK_MODE = False
+CHECK_FAILURES: list[str] = []
+EXPECTED_GENERATED_PATHS: set[pathlib.Path] = set()
+
+
+def display_path(path: pathlib.Path) -> str:
+    return path.relative_to(ROOT).as_posix()
 
 
 def write_generated(path: pathlib.Path, text: str) -> None:
+    EXPECTED_GENERATED_PATHS.add(path)
+    if CHECK_MODE:
+        if not path.exists():
+            CHECK_FAILURES.append(f"missing generated file: {display_path(path)}")
+            return
+        if path.read_text(encoding="utf-8") != text:
+            CHECK_FAILURES.append(f"out-of-date generated file: {display_path(path)}")
+        return
+
     if path.exists() and path.read_text(encoding="utf-8") == text:
         return
 
@@ -34,6 +52,21 @@ def write_generated(path: pathlib.Path, text: str) -> None:
             if attempt == 4:
                 raise
             time.sleep(0.25 * (attempt + 1))
+
+
+def remove_generated(path: pathlib.Path) -> None:
+    if CHECK_MODE:
+        return
+    path.unlink()
+
+
+def check_stale_generated(patterns: list[tuple[pathlib.Path, str]]) -> None:
+    if not CHECK_MODE:
+        return
+    for root, pattern in patterns:
+        for path in root.glob(pattern):
+            if path not in EXPECTED_GENERATED_PATHS:
+                CHECK_FAILURES.append(f"stale generated file: {display_path(path)}")
 
 
 def audit_digest(data: bytes) -> int:
@@ -1255,7 +1288,7 @@ def write_membership(rows: list[CsvRow], entries: list[CatalogEntry]) -> None:
     csv_keys = sorted((row.obligation_id, row.internal_spec_line) for row in rows)
     catalog_keys = sorted((entry.row.obligation_id, entry.row.internal_spec_line) for entry in entries)
     for old_group in AUDIT_ROOT.glob("CatalogCsvMembershipGroup*.uv"):
-        old_group.unlink()
+        remove_generated(old_group)
 
     lines: list[str] = [
         "//! CSV-to-catalog membership checks for generated obligation references.",
@@ -1329,7 +1362,7 @@ def write_membership(rows: list[CsvRow], entries: list[CatalogEntry]) -> None:
         "",
         "public procedure catalogMatchesCsvObligations(context: Context) -> bool {",
         '    let read_result: Outcome<unique string@Managed, IoError> = context.io~>read_file(',
-        '        "Docs/Audit/UltravioletObligations.csv"',
+        '        "Docs/Internal/UltravioletObligations.csv"',
         "    )",
         "    return if move read_result is {",
         "        @Value { value } {",
@@ -1350,7 +1383,7 @@ def write_primary_references(entries: list[CatalogEntry]) -> None:
     keys = sorted((entry.row.obligation_id, entry.row.internal_spec_line) for entry in entries)
     unique_keys = sorted(set(keys))
     for old_group in AUDIT_ROOT.glob("CatalogPrimaryReferenceOrderGroup*.uv"):
-        old_group.unlink()
+        remove_generated(old_group)
 
     lines: list[str] = [
         "//! Uniqueness checks for generated catalog primary obligation references.",
@@ -1596,9 +1629,10 @@ def write_symbols(entries: list[CatalogEntry]) -> None:
         if symbol.startswith("validated") and symbol.endswith("FixtureCount")
     }
 
-    SYMBOL_EXECUTION_ROOT.mkdir(parents=True, exist_ok=True)
+    if not CHECK_MODE:
+        SYMBOL_EXECUTION_ROOT.mkdir(parents=True, exist_ok=True)
     for old_file in SYMBOL_EXECUTION_ROOT.glob("*.uv"):
-        old_file.unlink()
+        remove_generated(old_file)
 
     support_lines = [
         "//! Shared support for generated compiled-symbol execution checks.",
@@ -1720,7 +1754,23 @@ def write_symbols(entries: list[CatalogEntry]) -> None:
     write_generated(AUDIT_ROOT / "CatalogSymbols.uv", "\n".join(lines))
 
 
-def main() -> int:
+def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
+    parser = argparse.ArgumentParser(
+        description="Regenerate or check HelloUltraviolet's generated obligation catalog source."
+    )
+    parser.add_argument(
+        "--check",
+        action="store_true",
+        help="verify generated catalog files are current without rewriting them",
+    )
+    return parser.parse_args(argv)
+
+
+def main(argv: list[str] | None = None) -> int:
+    global CHECK_MODE
+    args = parse_args(argv)
+    CHECK_MODE = args.check
+
     rows = load_csv_rows()
     entries = build_catalog_entries(rows)
     write_catalog_root(len(entries))
@@ -1730,6 +1780,19 @@ def main() -> int:
     write_primary_references(entries)
     write_source_paths(entries)
     write_symbols(entries)
+    check_stale_generated(
+        [
+            (AUDIT_ROOT, "CatalogCsvMembershipGroup*.uv"),
+            (AUDIT_ROOT, "CatalogPrimaryReferenceOrderGroup*.uv"),
+            (SYMBOL_EXECUTION_ROOT, "*.uv"),
+        ]
+    )
+    if CHECK_MODE and CHECK_FAILURES:
+        for failure in CHECK_FAILURES:
+            print(f"[hello-catalog] {failure}", file=sys.stderr)
+        return 1
+    if CHECK_MODE:
+        print("[hello-catalog] PASS generated catalog is current")
     return 0
 
 

@@ -2,7 +2,7 @@
 // MIGRATION MAPPING: expr/call_type_args.cpp
 // =============================================================================
 //
-// SPEC REFERENCE: SPECIFICATION.md Section 6.4 (Expression Lowering)
+// SPEC REFERENCE: Docs/SPECIFICATION.md Section 6.4 (Expression Lowering)
 //   - Generic call instantiation with type arguments
 //   - Lines 16143-16151: Call lowering with monomorphization
 //

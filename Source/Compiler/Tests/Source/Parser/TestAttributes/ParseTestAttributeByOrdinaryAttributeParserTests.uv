@@ -1,7 +1,7 @@
 // Test responsibility: Source/Compiler/Tests/Source/Parser/TestAttributes/ParseTestAttributeByOrdinaryAttributeParserTests.uv
 //
 // This file owns source-native tests for
-// parse.TestAttributeByOrdinaryAttributeParser@L28356:
+// parse.TestAttributeByOrdinaryAttributeParser@L28703:
 //
 // `[[test]]` is parsed by the ordinary attribute parser. The `name` argument is
 // represented as `name, string_literal`; each `covers(...)` argument is
@@ -9,7 +9,7 @@
 
 [[test(
     name: "test attribute name parses as ordinary named string argument",
-    covers("parse.TestAttributeByOrdinaryAttributeParser@L28356")
+    covers("parse.TestAttributeByOrdinaryAttributeParser@L28703")
 )]]
 internal procedure testAttributeNameParsesAsOrdinaryNamedStringArgument() -> bool
 |: => @result
@@ -18,7 +18,7 @@ internal procedure testAttributeNameParsesAsOrdinaryNamedStringArgument() -> boo
         parseTestAttribute(testAttributeArguments2(
             testNameAttributeArgument("display"),
             testCoverageAttributeArgument(
-                "parse.TestAttributeByOrdinaryAttributeParser@L28356"
+                "parse.TestAttributeByOrdinaryAttributeParser@L28703"
             )
         ))
     return if result is {
@@ -54,7 +54,7 @@ internal procedure ordinaryArgumentsHaveNameAndCoverage(
                     attributeArgumentNameEquals(coverage_argument, "covers") &&
                         attributeTextEquals(
                             attributeArgumentStringValue(coverage_argument),
-                            "parse.TestAttributeByOrdinaryAttributeParser@L28356"
+                            "parse.TestAttributeByOrdinaryAttributeParser@L28703"
                         )
                 }
             }

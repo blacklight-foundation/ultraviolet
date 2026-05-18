@@ -4,32 +4,32 @@
 // module-directory classification, compilation-unit construction, and the
 // module-discovery lifecycle:
 //
-// - def.SourceRootDirectories@L4254
+// - def.SourceRootDirectories@L4275
 //   Dirs(S) = { d | is_dir(d) ∧ relative(d, S) ⇓ r }
 //   S ∈ Dirs(S)
-// - WF-Source-Root@L4270
+// - WF-Source-Root@L4291
 //   is_dir(S)
 //   Γ ⊢ S : SourceRoot
-// - WF-Source-Root-Err@L4288
+// - WF-Source-Root-Err@L4309
 //   ¬ is_dir(S)    c = Code(WF-Source-Root-Err)
 //   Γ ⊢ S : SourceRoot ⇑ c
-// - Module-Dir@L4306
+// - Module-Dir@L4327
 //   ∃ f ∈ Files(d) : FileExt(f) = ".uv"
 //   Γ ⊢ d : ModuleDir
-// - def.ModuleDirectoryFiles@L4324
+// - def.ModuleDirectoryFiles@L4345
 //   Files(d) = { f | f ∈ d ∧ FileExt(f) = ".uv" }
-// - def.CompilationUnits@L4338
+// - def.CompilationUnits@L4359
 //   CompilationUnit(d) = sort_{≺_file}(Files(d))
-// - CompilationUnit-Rel-Fail@L4352
+// - CompilationUnit-Rel-Fail@L4373
 //   ∃ f ∈ Files(d). relative(f, d) ⇑    c = Code(FileOrder-Rel-Fail)
 //   Γ ⊢ CompilationUnit(d) ⇑ c
-// - refs.ModuleDiscoverySection@L4370
+// - refs.ModuleDiscoverySection@L4391
 //   Module discovery state transitions and module-path formation are defined
 //   by §11.5.4.
-// - Modules-Ok@L4384
+// - Modules-Ok@L4405
 //   ⟨DiscStart(S, A)⟩ →* ⟨DiscDone(M)⟩
 //   Γ ⊢ Modules(S, A) ⇓ M
-// - Modules-Err@L4402
+// - Modules-Err@L4423
 //   ⟨DiscStart(S, A)⟩ →* ⟨Error(c)⟩
 //   Γ ⊢ Modules(S, A) ⇑ c
 

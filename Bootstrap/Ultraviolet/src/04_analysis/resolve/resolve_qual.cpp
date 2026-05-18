@@ -3,8 +3,8 @@
 // =============================================================================
 //
 // SPEC REFERENCE:
-//   SPECIFICATION.md §5.1.6 "Qualified Disambiguation" (Lines 7310-7429)
-//   SPECIFICATION.md §5.1.3 "Lookup" (Lines 6822-6899)
+//   Docs/SPECIFICATION.md §5.1.6 "Qualified Disambiguation" (Lines 7310-7429)
+//   Docs/SPECIFICATION.md §5.1.3 "Lookup" (Lines 6822-6899)
 //
 // SOURCE FILE:
 //   Migrated from ultraviolet-bootstrap/src/03_analysis/resolve/resolve_qual.cpp

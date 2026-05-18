@@ -2,7 +2,7 @@
 // yield_expr.cpp - Yield Expression Parsing
 // =============================================================================
 //
-// SPEC REFERENCE: SPECIFICATION.md
+// SPEC REFERENCE: Docs/SPECIFICATION.md
 // - Parse-Yield-Expr (Lines 5289-5292)
 //
 // =============================================================================

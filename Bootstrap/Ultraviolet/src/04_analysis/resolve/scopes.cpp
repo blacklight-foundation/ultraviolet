@@ -3,8 +3,8 @@
 // =============================================================================
 //
 // SPEC REFERENCE:
-//   SPECIFICATION.md §5.1.1 "Scope Context and Identifiers" (Lines 6659-6717)
-//   SPECIFICATION.md §3.1.6 "IdKey, IdEq, PathKey, PathEq"
+//   Docs/SPECIFICATION.md §5.1.1 "Scope Context and Identifiers" (Lines 6659-6717)
+//   Docs/SPECIFICATION.md §3.1.6 "IdKey, IdEq, PathKey, PathEq"
 //
 // SOURCE FILE:
 //   ultraviolet-bootstrap/src/03_analysis/resolve/scopes.cpp (Lines 1-213)

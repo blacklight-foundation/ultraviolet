@@ -2,7 +2,7 @@
 // MIGRATION MAPPING: source_load.cpp
 // =============================================================================
 //
-// SPEC REFERENCE: SPECIFICATION.md
+// SPEC REFERENCE: Docs/SPECIFICATION.md
 //   - Section 3.1 "Source Loading and Normalization" (lines 1703-1999)
 //   - Section 3.1.1 UTF-8 encoding/decoding (lines 1715-1736)
 //     - UnicodeScalar: 0 <= u <= 0x10FFFF, excluding surrogates [0xD800, 0xDFFF]

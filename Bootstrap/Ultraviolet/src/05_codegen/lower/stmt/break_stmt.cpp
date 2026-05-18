@@ -2,7 +2,7 @@
 // Break Statement Lowering Implementation
 // =============================================================================
 //
-// SPEC REFERENCE: SPECIFICATION.md Lines 16683-16690
+// SPEC REFERENCE: Docs/SPECIFICATION.md Lines 16683-16690
 //   - Lower-Stmt-Break: SeqIR(IR_e, BreakIR(v))
 //   - Lower-Stmt-Break-Unit: BreakIR(none)
 //   - TempCleanupIR must be emitted before BreakIR

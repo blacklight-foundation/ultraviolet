@@ -2,7 +2,7 @@
 // MIGRATION MAPPING: llvm_backend.cpp
 // =============================================================================
 //
-// SPEC REFERENCE: SPECIFICATION.md
+// SPEC REFERENCE: Docs/SPECIFICATION.md
 //   - Section 6.12 LLVM 21 Backend Requirements (lines 17287-17650)
 //   - Full compilation pipeline
 //   - Object file generation

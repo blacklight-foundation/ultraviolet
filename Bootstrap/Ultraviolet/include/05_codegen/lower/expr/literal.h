@@ -1,7 +1,7 @@
 #pragma once
 
 // =============================================================================
-// SPEC REFERENCE: SPECIFICATION.md Section 6.4 (Expression Lowering)
+// SPEC REFERENCE: Docs/SPECIFICATION.md Section 6.4 (Expression Lowering)
 //   - Line 16048-16051: (Lower-Expr-Literal)
 //     T = ExprType(Literal(l))    LiteralValue(l, T) = v
 //     Gamma |- LowerExpr(Literal(l)) => <epsilon, v>

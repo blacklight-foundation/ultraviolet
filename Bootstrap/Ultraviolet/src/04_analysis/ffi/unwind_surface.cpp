@@ -2,7 +2,7 @@
 // File: 04_analysis/ffi/unwind_surface.cpp
 // =============================================================================
 //
-// SPEC REFERENCE: SPECIFICATION.md Section 2.7 (lines 1683-1701)
+// SPEC REFERENCE: Docs/SPECIFICATION.md Section 2.7 (lines 1683-1701)
 //   - 2.7. Unwind and FFI Surface
 //   - FFI Boundary definition
 //   - Unwind Modes

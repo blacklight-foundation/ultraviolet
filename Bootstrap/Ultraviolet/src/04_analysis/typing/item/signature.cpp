@@ -2,7 +2,7 @@
 // MIGRATION: item/signature.cpp
 // =============================================================================
 //
-// SPEC REFERENCE: SPECIFICATION.md
+// SPEC REFERENCE: Docs/SPECIFICATION.md
 //   Section 5.3.1: Procedure Declarations - Signatures
 //   - Parameter list processing
 //   - Receiver shorthands (~, ~!, ~%)

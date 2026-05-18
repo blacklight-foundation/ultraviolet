@@ -1,13 +1,13 @@
 // Test responsibility:
 // Source/Compiler/Tests/Project/ManifestValidation/WFAssemblyEmitIRErr/WFAssemblyEmitIRErrTests.uv
 //
-// This file owns source-native tests for WF-Assembly-EmitIR-Err@L2520.
+// This file owns source-native tests for WF-Assembly-EmitIR-Err@L2541.
 
 using UltravioletCompiler::Project::{ manifestAssemblyEmitIRIsValid }
 
 [[test(
     name: "manifest validation rejects undeclared emit_ir values",
-    covers("WF-Assembly-EmitIR-Err@L2520")
+    covers("WF-Assembly-EmitIR-Err@L2541")
 )]]
 internal procedure manifestValidationRejectsUndeclaredEmitIRValues() -> bool
 |: => @result

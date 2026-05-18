@@ -2,7 +2,7 @@
 // enum_decl.cpp - Enum Declaration Parsing
 // =============================================================================
 //
-// SPEC REFERENCE: SPECIFICATION.md Section 3.3.6.7 (Enum Declaration Rules)
+// SPEC REFERENCE: Docs/SPECIFICATION.md Section 3.3.6.7 (Enum Declaration Rules)
 //
 // This file implements enum declaration parsing:
 //   - ParseVariantPayloadOpt: Parse optional variant payload

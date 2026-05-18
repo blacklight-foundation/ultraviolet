@@ -4,7 +4,7 @@
 // This file should contain shared helper functions and predicates used across
 // expression parsing modules.
 //
-// SPEC REFERENCE: SPECIFICATION.md, various sections
+// SPEC REFERENCE: Docs/SPECIFICATION.md, various sections
 // =============================================================================
 //
 // OVERVIEW:
@@ -216,7 +216,7 @@
 //    Purpose: Validates if expression is a valid place expression
 //    Used for: ParsePlace validation, address-of and move operand checking
 //
-//    SPEC REFERENCE: SPECIFICATION.md, Lines 6045-6047
+//    SPEC REFERENCE: Docs/SPECIFICATION.md, Lines 6045-6047
 //    IsPlace(e) <=> e in {Identifier(_), FieldAccess(_, _), TupleAccess(_, _),
 //                         IndexAccess(_, _)}
 //                   OR (exists p. e = Deref(p) AND IsPlace(p))
@@ -556,7 +556,7 @@ ExprPtr MakeExpr(const core::Span& span, ExprNode node) {
 // IsPlace - Check if expression is a valid place expression
 // =============================================================================
 //
-// SPEC REFERENCE: SPECIFICATION.md, Lines 6045-6047
+// SPEC REFERENCE: Docs/SPECIFICATION.md, Lines 6045-6047
 // IsPlace(e) <=> e in {Identifier(_), FieldAccess(_, _), TupleAccess(_, _),
 //                      IndexAccess(_, _)}
 //                OR (exists p. e = Deref(p) AND IsPlace(p))
@@ -592,7 +592,7 @@ bool IsPlace(const ExprPtr& expr) {
 // ParseExpr - Main expression parsing entry point
 // =============================================================================
 //
-// SPEC REFERENCE: SPECIFICATION.md
+// SPEC REFERENCE: Docs/SPECIFICATION.md
 // Parse-Expr (Lines 5600-5604)
 //
 // Parses a complete expression. This is the main entry point for expression
@@ -660,7 +660,7 @@ ParseElemResult<ExprPtr> ParsePredicateExpr(Parser parser) {
 // ParseExprOpt - Optional expression parsing
 // =============================================================================
 //
-// SPEC REFERENCE: SPECIFICATION.md
+// SPEC REFERENCE: Docs/SPECIFICATION.md
 // Parse-ExprOpt-* (Lines 5606-5612)
 //
 // Parses an expression if one is present, otherwise returns nullptr.

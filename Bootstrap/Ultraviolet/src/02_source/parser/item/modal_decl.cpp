@@ -2,7 +2,7 @@
 // modal_decl.cpp - Modal Declaration Parsing
 // =============================================================================
 //
-// SPEC REFERENCE: SPECIFICATION.md Section 3.3.6.8 (Modal Declaration Rules)
+// SPEC REFERENCE: Docs/SPECIFICATION.md Section 3.3.6.8 (Modal Declaration Rules)
 //
 // This file implements modal type declaration parsing:
 //   - ParseStateMember: Parse field, method, or transition in state block

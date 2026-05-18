@@ -4,7 +4,7 @@
 // pattern/record_pattern.h - Record Pattern Lowering
 // =============================================================================
 //
-// SPEC REFERENCE: SPECIFICATION.md Section 6.6 (Pattern Matching Lowering)
+// SPEC REFERENCE: Docs/SPECIFICATION.md Section 6.6 (Pattern Matching Lowering)
 //   - Record patterns destructure record values
 //   - Field patterns bind to record field values
 //
@@ -106,7 +106,7 @@ IRPtr LowerBindRecordPattern(
 // Returns:
 //   IRValue representing a constant true (records are irrefutable)
 //
-// SPEC: SPECIFICATION.md Section 6.6 (Pattern Matching Lowering)
+// SPEC: Docs/SPECIFICATION.md Section 6.6 (Pattern Matching Lowering)
 //   - Record patterns are irrefutable (no discriminant to check)
 //
 IRValue PatternCheckRecord(const ast::RecordPattern& pat,

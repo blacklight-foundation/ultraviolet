@@ -2,7 +2,7 @@
 // parse_modules.cpp - Module-Level Parsing Orchestration
 // =============================================================================
 //
-// SPEC REFERENCE: SPECIFICATION.md Section 3.4.1-3.4.2 (Lines 6522-6582)
+// SPEC REFERENCE: Docs/SPECIFICATION.md Section 3.4.1-3.4.2 (Lines 6522-6582)
 //
 // This file implements module-level parsing:
 //   - ReadBytesDefault: Read file bytes from filesystem
@@ -747,10 +747,10 @@ ParseModuleDeps DefaultDeps() {
 //   ----------------------------------------
 //   ParseModule(p, S) error c
 
-ParseModuleResult ParseModuleWithDeps(std::string_view module_path,
-                                      const std::filesystem::path& source_root,
-                                      std::string_view assembly_name,
-                                      const ParseModuleDeps& deps) {
+ParseModuleResult ParseModuleFromDirWithDeps(
+    std::string_view module_path,
+    const std::filesystem::path& module_dir,
+    const ParseModuleDeps& deps) {
   ParseModuleResult result;
   const bool debug_phases = core::IsDebugEnabled("phases");
   const auto log_phase = [&](const char* label,
@@ -762,8 +762,6 @@ ParseModuleResult ParseModuleWithDeps(std::string_view module_path,
   };
 
   SPEC_RULE("Mod-Start");
-  const std::filesystem::path module_dir =
-      DirOf(module_path, source_root, assembly_name);
 
   const project::CompilationUnitResult unit = deps.compilation_unit(module_dir);
   AppendDiags(result.diags, unit.diags);
@@ -836,6 +834,15 @@ ParseModuleResult ParseModuleWithDeps(std::string_view module_path,
   return result;
 }
 
+ParseModuleResult ParseModuleWithDeps(std::string_view module_path,
+                                      const std::filesystem::path& source_root,
+                                      std::string_view assembly_name,
+                                      const ParseModuleDeps& deps) {
+  const std::filesystem::path module_dir =
+      DirOf(module_path, source_root, assembly_name);
+  return ParseModuleFromDirWithDeps(module_path, module_dir, deps);
+}
+
 // =============================================================================
 // ParseModulesWithDeps - Parse multiple modules in sequence
 // =============================================================================
@@ -852,8 +859,11 @@ ParseModulesResult ParseModulesWithDeps(
   std::vector<ast::ASTModule> parsed_modules;
   parsed_modules.reserve(modules.size());
   for (const auto& module : modules) {
+    const std::filesystem::path module_dir =
+        module.dir.empty() ? DirOf(module.path, source_root, assembly_name)
+                           : module.dir;
     ParseModuleResult parsed =
-        ParseModuleWithDeps(module.path, source_root, assembly_name, deps);
+        ParseModuleFromDirWithDeps(module.path, module_dir, deps);
     AppendDiags(result.diags, parsed.diags);
     for (auto& [path, spans] : parsed.unsafe_spans_by_file) {
       result.unsafe_spans_by_file.insert_or_assign(std::move(path),

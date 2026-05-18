@@ -11,7 +11,7 @@
 //   - External reference tracking
 //   - Debug info generation
 //
-// SPEC REFERENCE: SPECIFICATION.md
+// SPEC REFERENCE: Docs/SPECIFICATION.md
 //   - Section 6.3 Symbols, Mangling, and Linkage (lines 15392-15663)
 //   - VTableDecl, LiteralData, DefaultImpl constructors (lines 15397-15400)
 //   - ScopedSym, RawSym (lines 15438-15439)

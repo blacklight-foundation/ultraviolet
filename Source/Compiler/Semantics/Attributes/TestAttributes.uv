@@ -2,19 +2,19 @@
 //
 // This file owns the source-native test attribute semantic model:
 //
-// - ast.TestProcedureClassification@L28374
+// - ast.TestProcedureClassification@L28721
 //   A source-native test is an ordinary `ProcedureDecl` whose `AttrByName(proc,
 //   test)` set is non-empty.
-// - def.TestName@L28389
+// - def.TestName@L28736
 //   TestName(proc) = s when the unique `name: s` argument is present.
 //   TestName(proc) = FullyQualifiedProcPath(proc) when no `name` argument is
 //   present.
-// - def.TestCoverage@L28404
+// - def.TestCoverage@L28751
 //   TestCoverage(proc) = [r_1, ..., r_n] where each r_i is the string argument
 //   of one `covers(r_i)` entry in source order.
-// - req.TestAttributeProcedureTarget@L28421
+// - req.TestAttributeProcedureTarget@L28768
 //   `[[test]]` is valid only on ordinary source procedures.
-// - def.TestAttributeArgsOk@L28435
+// - def.TestAttributeArgsOk@L28782
 //   `AttrArgsOk(test, args)` holds exactly when every argument is either
 //   `name: string_literal` or `covers(string_literal)`, at most one `name`
 //   argument is present, every `covers` argument has exactly one non-empty

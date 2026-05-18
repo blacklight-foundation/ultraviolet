@@ -8,7 +8,7 @@ namespace ultraviolet::codegen {
 // Cast Expression Lowering
 // =============================================================================
 //
-// SPEC REFERENCE: SPECIFICATION.md Section 6.4 (Expression Lowering)
+// SPEC REFERENCE: Docs/SPECIFICATION.md Section 6.4 (Expression Lowering)
 //   - Lines 16178-16181: (Lower-Expr-Cast)
 //   - Lines 16338-16346: (Lower-Cast) and (Lower-Cast-Panic)
 //

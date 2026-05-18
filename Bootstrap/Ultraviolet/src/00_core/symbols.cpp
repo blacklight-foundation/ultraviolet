@@ -2,7 +2,7 @@
 // MIGRATION MAPPING: symbols.cpp
 // =============================================================================
 //
-// SPEC REFERENCE: SPECIFICATION.md
+// SPEC REFERENCE: Docs/SPECIFICATION.md
 //   - Section 2.5 "Output Artifacts and Linking" - Object File Naming (lines 1349-1357)
 //     - PathToPrefix(s) = Concat([BMap(b) | b in Utf8(NFC(s))])
 //     - BMap(b): b in [0-9A-Za-z] -> chr(b), otherwise -> "_x" ++ Hex2(b)

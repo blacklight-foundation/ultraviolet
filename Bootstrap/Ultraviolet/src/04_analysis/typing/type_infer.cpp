@@ -2,7 +2,7 @@
 // MIGRATION MAPPING: type_infer.cpp
 // =============================================================================
 //
-// SPEC REFERENCE: SPECIFICATION.md
+// SPEC REFERENCE: Docs/SPECIFICATION.md
 //   Section 5.2.12: Expression Typing (lines 9778-9798)
 //   Section 9.4: Type Inference (referenced at line 22083, 22440)
 //   - ExprJudg = {Gamma; R; L |- e : T, Gamma; R; L |- e <= T, ...}

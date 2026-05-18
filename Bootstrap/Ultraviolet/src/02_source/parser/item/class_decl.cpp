@@ -2,7 +2,7 @@
 // class_decl.cpp - Class Declaration Parsing
 // =============================================================================
 //
-// SPEC REFERENCE: SPECIFICATION.md Section 3.3.6.8 (Class Declaration Rules)
+// SPEC REFERENCE: Docs/SPECIFICATION.md Section 3.3.6.8 (Class Declaration Rules)
 //
 // This file implements class (interface/trait) declaration parsing:
 //   - ParseClassItem: Parse method, associated type, or field in class body

@@ -4,7 +4,7 @@
 // Expression Lowering Common Utilities
 // =============================================================================
 //
-// SPEC REFERENCE: SPECIFICATION.md Section 6.4 (Expression Lowering)
+// SPEC REFERENCE: Docs/SPECIFICATION.md Section 6.4 (Expression Lowering)
 //   - LowerExpr judgment (Lines 16048+)
 //   - Place representation (Lines 16098+)
 //   - Evaluation order (Lines 16024+)
@@ -68,6 +68,11 @@ std::optional<ast::RangeKind> RangeIndexKindOf(const ast::Expr& expr,
 
 // Check if an expression is a move expression
 bool IsMoveExpr(const ast::ExprPtr& expr);
+
+// True when a binding initialized from this expression owns cleanup
+// responsibility for the initialized value.
+bool BindingInitializerHasResponsibility(const ast::ExprPtr& init,
+                                         LowerCtx& ctx);
 
 // =============================================================================
 // §6.4 Place Analysis

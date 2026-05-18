@@ -2,7 +2,7 @@
 // error_stmt.cpp - Error statement typing
 // =============================================================================
 //
-// SPEC REFERENCE: SPECIFICATION.md
+// SPEC REFERENCE: Docs/SPECIFICATION.md
 //   Error recovery in statement parsing
 //   - Error statements from parse failures
 //   - Propagation of syntax errors

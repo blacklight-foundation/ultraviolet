@@ -2,7 +2,7 @@
 // Intrinsic Call Lowering Implementation
 // =============================================================================
 //
-// SPEC REFERENCE: SPECIFICATION.md
+// SPEC REFERENCE: Docs/SPECIFICATION.md
 //   - Section 6.4 Expression Lowering (lines 15665-15992)
 //   - Lower-Transmute rule (lines 17255-17258)
 //   - widen operator lowering (lines 12814-12845)

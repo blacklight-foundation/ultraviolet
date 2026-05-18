@@ -2,7 +2,7 @@
 // MIGRATION MAPPING: ir_model.cpp
 // =============================================================================
 //
-// SPEC REFERENCE: SPECIFICATION.md
+// SPEC REFERENCE: Docs/SPECIFICATION.md
 //   - Section 6.0 Codegen Model and Judgments (lines 14196-14347)
 //   - CodegenJudg definitions (line 14204)
 //   - IRDecls, ModuleIR (lines 14218-14219)

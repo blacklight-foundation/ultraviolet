@@ -3,8 +3,8 @@
 // =============================================================================
 // This file should contain the error statement type for parse error recovery.
 //
-// SPEC REFERENCE: SPECIFICATION.md, Section 3.3.10, Lines 6259-6262
-// SPEC REFERENCE: SPECIFICATION.md, Section 3.3.12, Lines 6452-6479
+// SPEC REFERENCE: Docs/SPECIFICATION.md, Section 3.3.10, Lines 6259-6262
+// SPEC REFERENCE: Docs/SPECIFICATION.md, Section 3.3.12, Lines 6452-6479
 // =============================================================================
 //
 // FORMAL RULES FROM SPEC:

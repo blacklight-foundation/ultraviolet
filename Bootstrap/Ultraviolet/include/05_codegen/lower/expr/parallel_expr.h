@@ -8,7 +8,7 @@ namespace ultraviolet::codegen {
 // LowerParallelExpr - Lower a parallel expression
 // =============================================================================
 //
-// SPEC REFERENCE: SPECIFICATION.md Section 10 (Structured Parallelism)
+// SPEC REFERENCE: Docs/SPECIFICATION.md Section 10 (Structured Parallelism)
 //   - Rule: Lower-Expr-Parallel
 //
 // Lowers a parallel expression which consists of:

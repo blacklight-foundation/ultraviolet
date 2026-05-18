@@ -2,7 +2,7 @@
 // MIGRATION: item/generic_params.cpp
 // =============================================================================
 //
-// SPEC REFERENCE: SPECIFICATION.md
+// SPEC REFERENCE: Docs/SPECIFICATION.md
 //   Section 9: Generics
 //   - Generic parameter syntax: <T; U>
 //   - Type bounds: T <: ClassName

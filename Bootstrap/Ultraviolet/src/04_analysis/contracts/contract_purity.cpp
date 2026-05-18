@@ -4,9 +4,9 @@
  * =============================================================================
  *
  * SPEC REFERENCE:
- *   - SPECIFICATION.md, Section 14.7 "Purity Constraints"
- *   - SPECIFICATION.md, Section 14.7.1 "Pure Expressions"
- *   - SPECIFICATION.md, Section 14.7.2 "Prohibited Operations"
+ *   - Docs/SPECIFICATION.md, Section 14.7 "Purity Constraints"
+ *   - Docs/SPECIFICATION.md, Section 14.7.1 "Pure Expressions"
+ *   - Docs/SPECIFICATION.md, Section 14.7.2 "Prohibited Operations"
  *
  * This file implements purity checking for contract predicates. Contract
  * predicates MUST be pure according to the spec:

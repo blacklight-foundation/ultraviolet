@@ -4,7 +4,7 @@
 // MIGRATION MAPPING: expr/deref.h
 // =============================================================================
 //
-// SPEC REFERENCE: SPECIFICATION.md Section 6.4 (Expression Lowering)
+// SPEC REFERENCE: Docs/SPECIFICATION.md Section 6.4 (Expression Lowering)
 //   - Lines 16248-16251: (Lower-Expr-Deref)
 //     Gamma |- LowerExpr(e) => <IR_e, v_ptr>    Gamma |- LowerRawDeref(v_ptr) => <IR_d, v>
 //     ------------------------------------------------------------------------------------

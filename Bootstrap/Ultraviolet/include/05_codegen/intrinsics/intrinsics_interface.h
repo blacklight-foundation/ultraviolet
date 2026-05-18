@@ -8,7 +8,7 @@
 // function declarations. These declarations are emitted at the start of
 // LLVM IR generation to ensure all runtime functions are available.
 //
-// SPEC REFERENCE: SPECIFICATION.md
+// SPEC REFERENCE: Docs/SPECIFICATION.md
 //   - Section 6.9 Runtime Interface
 //   - Section 6.12 Codegen Parameters
 //

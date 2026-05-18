@@ -2,7 +2,7 @@
 // type_path.cpp - Type Path Parsing with Generic Arguments
 // =============================================================================
 //
-// SPEC REFERENCE: SPECIFICATION.md, Section 3.3.6.13, Lines 3786-3805
+// SPEC REFERENCE: Docs/SPECIFICATION.md, Section 3.3.6.13, Lines 3786-3805
 // Section 3.3.7, Lines 4818-4821 (Parse-Type-Path rule)
 //
 // Parses type paths with optional generic arguments: MyType<T, U>

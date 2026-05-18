@@ -4,10 +4,10 @@
  * =============================================================================
  *
  * SPEC REFERENCE:
- *   - SPECIFICATION.md, Section 5.6 "String and Bytes Types" (lines 13160-13300)
- *   - SPECIFICATION.md, Section 5.6.1 "String States" (lines 13170-13220)
- *   - SPECIFICATION.md, Section 5.6.2 "Bytes States" (lines 13230-13280)
- *   - SPECIFICATION.md, Section 5.6.3 "String/Bytes Methods" (lines 13290-13400)
+ *   - Docs/SPECIFICATION.md, Section 5.6 "String and Bytes Types" (lines 13160-13300)
+ *   - Docs/SPECIFICATION.md, Section 5.6.1 "String States" (lines 13170-13220)
+ *   - Docs/SPECIFICATION.md, Section 5.6.2 "Bytes States" (lines 13230-13280)
+ *   - Docs/SPECIFICATION.md, Section 5.6.3 "String/Bytes Methods" (lines 13290-13400)
  *
  * SOURCE FILE:
  *   - ultraviolet-bootstrap/src/03_analysis/memory/string_bytes.cpp (lines 1-285)

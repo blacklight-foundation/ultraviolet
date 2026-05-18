@@ -2,7 +2,7 @@
 // item_common.cpp - Common Helper Functions for Item Parsing
 // =============================================================================
 //
-// SPEC REFERENCE: SPECIFICATION.md Section 3.3.6.13 (Item Helper Parsing Rules)
+// SPEC REFERENCE: Docs/SPECIFICATION.md Section 3.3.6.13 (Item Helper Parsing Rules)
 //
 // This file implements common helper functions used across all item parsers:
 //   - SkipNewlines: Skip consecutive newline tokens

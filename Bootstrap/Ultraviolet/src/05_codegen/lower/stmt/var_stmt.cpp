@@ -2,7 +2,7 @@
 // MIGRATION MAPPING: stmt/var_stmt.cpp
 // =============================================================================
 //
-// SPEC REFERENCE: SPECIFICATION.md Lines 16624-16627 (Lower-Stmt-Var)
+// SPEC REFERENCE: Docs/SPECIFICATION.md Lines 16624-16627 (Lower-Stmt-Var)
 //   - Same structure as Lower-Stmt-Let but registers mutable binding
 //   - LowerExpr(init) produces IR_i, v
 //   - LowerBindPattern(pattern, v) produces IR_b
@@ -260,12 +260,14 @@ IRPtr LowerVarStmt(const ast::VarStmt& stmt, LowerCtx& ctx) {
 
   // Check if this is an immovable binding (:= operator)
   const bool immovable = binding.op.lexeme == ":=";
+  const bool has_responsibility =
+      BindingInitializerHasResponsibility(binding.init, ctx);
 
   if (binding.pat) {
     // Pattern binding: register variables from pattern, then lower the binding
     RegisterPatternBindings(*binding.pat, var_type, ctx, immovable,
                             bind_prov.kind, bind_prov.region,
-                            bind_prov.region_tag);
+                            bind_prov.region_tag, has_responsibility);
     bind_ir = LowerBindPattern(*binding.pat, init_result.value, ctx);
     if (const auto simple_name = SimplePatternBindingName(binding.pat)) {
       RegisterSimpleClosureBindingDerived(*simple_name, var_type, init_result.value, ctx);
@@ -280,7 +282,7 @@ IRPtr LowerVarStmt(const ast::VarStmt& stmt, LowerCtx& ctx) {
     bind.prov_region = bind_prov.region;
     bind.prov_region_tag = bind_prov.region_tag;
     bind_ir = MakeIR(std::move(bind));
-    ctx.RegisterVar(bind.name, var_type, true, immovable, bind_prov.kind,
+    ctx.RegisterVar(bind.name, var_type, has_responsibility, immovable, bind_prov.kind,
                     bind_prov.region, false, bind_prov.region_tag);
   }
 

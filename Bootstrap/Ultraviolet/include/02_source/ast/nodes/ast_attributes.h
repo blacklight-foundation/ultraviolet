@@ -6,7 +6,7 @@
 //   Attribute AST node definitions for the [[attr]] annotation system used
 //   on declarations and expressions. This is a UVX extension.
 //
-// SPEC REFERENCE: SPECIFICATION.md Section 3.3.2.2 - Attributes (Lines 2671-2678)
+// SPEC REFERENCE: Docs/SPECIFICATION.md Section 3.3.2.2 - Attributes (Lines 2671-2678)
 //
 //   Attribute syntax: [[name]] or [[name(arg, key: value, key: ident)]]
 //

@@ -2,7 +2,7 @@
 // ABI Type: Modal Types (ABI-Modal)
 // =============================================================================
 //
-// SPEC REFERENCE: SPECIFICATION.md
+// SPEC REFERENCE: Docs/SPECIFICATION.md
 //   - Section 6.2.2 ABI Type Lowering
 //   - ABI-Modal rule: ABITy(TypeModalState) => ModalLayout
 //   - Modal types have a discriminant and state-specific payload.

@@ -6,7 +6,7 @@
 //   Module and file-level AST structures. Contains ASTModule and ASTFile
 //   definitions that represent complete parsed compilation units.
 //
-// SPEC REFERENCE: SPECIFICATION.md Section 3.3.2.2
+// SPEC REFERENCE: Docs/SPECIFICATION.md Section 3.3.2.2
 //   ASTModule = (path: ModulePath, items: [ASTItem], module_doc: DocList)
 //   ASTFile = (path: Path, items: [ASTItem], module_doc: DocList)
 //

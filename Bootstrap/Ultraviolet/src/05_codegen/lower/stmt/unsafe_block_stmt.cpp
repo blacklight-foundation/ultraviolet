@@ -2,7 +2,7 @@
 // Unsafe Block Statement Lowering Implementation
 // =============================================================================
 //
-// SPEC REFERENCE: SPECIFICATION.md Lines 16696-16699 (Lower-Stmt-UnsafeBlock)
+// SPEC REFERENCE: Docs/SPECIFICATION.md Lines 16696-16699 (Lower-Stmt-UnsafeBlock)
 //   - LowerBlock(block) produces IR_b, v
 //   - Result: IR_b (block IR directly, value tracked as temp)
 //

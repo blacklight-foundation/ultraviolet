@@ -2,7 +2,7 @@
 // primitive_type.cpp - Primitive Type Parsing and Predicates
 // =============================================================================
 //
-// SPEC REFERENCE: SPECIFICATION.md, Section 3.3.7, Lines 4695-4711
+// SPEC REFERENCE: Docs/SPECIFICATION.md, Section 3.3.7, Lines 4695-4711
 //
 // Parses primitive types (i32, u64, bool, char), unit type "()", and never
 // type "!". Also defines predicates for identifying primitive type lexemes.

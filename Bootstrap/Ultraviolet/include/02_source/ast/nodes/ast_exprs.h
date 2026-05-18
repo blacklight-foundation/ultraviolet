@@ -6,7 +6,7 @@
 // contains all struct definitions for expression nodes in the Ultraviolet grammar,
 // plus the ExprNode variant and Expr wrapper.
 //
-// SPEC REFERENCE: SPECIFICATION.md Section 5.2 and Appendix C.3
+// SPEC REFERENCE: Docs/SPECIFICATION.md Section 5.2 and Appendix C.3
 //
 // Expr = (Span, ExprNode)
 // ExprNode variants by category:

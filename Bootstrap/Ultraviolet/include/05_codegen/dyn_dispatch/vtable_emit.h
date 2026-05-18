@@ -8,7 +8,7 @@
 // VTables are the runtime data structures that enable dynamic dispatch for
 // class method calls.
 //
-// SPEC REFERENCE: SPECIFICATION.md
+// SPEC REFERENCE: Docs/SPECIFICATION.md
 //   - Section 6.10 VTable Emission (lines 17597-17645)
 //   - Mangle-VTable rule (lines 15517-15520)
 //   - Linkage-VTable rule (lines 15620-15623)

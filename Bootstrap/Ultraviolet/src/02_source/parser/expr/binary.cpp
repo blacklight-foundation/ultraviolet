@@ -4,7 +4,7 @@
 // This file should contain parsing logic for binary expressions using Pratt
 // parsing (iterative precedence-climbing).
 //
-// SPEC REFERENCE: SPECIFICATION.md, Section 3.3.8.2, Lines 5032-5057
+// SPEC REFERENCE: Docs/SPECIFICATION.md, Section 3.3.8.2, Lines 5032-5057
 // =============================================================================
 //
 // OPERATOR DEFINITIONS (Lines 4967-4974):

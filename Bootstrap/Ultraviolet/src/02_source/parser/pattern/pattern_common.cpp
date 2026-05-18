@@ -2,7 +2,7 @@
 // pattern_common.cpp - Pattern Parsing Core
 // =============================================================================
 //
-// SPEC REFERENCE: SPECIFICATION.md Section 3.3.9 (Pattern Rules)
+// SPEC REFERENCE: Docs/SPECIFICATION.md Section 3.3.9 (Pattern Rules)
 //
 // This file implements the core pattern parsing infrastructure:
 //   - MakePattern: Create pattern node with span

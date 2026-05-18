@@ -2,7 +2,7 @@
 // ABI Type: Unions (ABI-Union)
 // =============================================================================
 //
-// SPEC REFERENCE: SPECIFICATION.md
+// SPEC REFERENCE: Docs/SPECIFICATION.md
 //   - Section 6.2.2 ABI Type Lowering
 //   - ABI-Union rule: ABITy(TypeUnion([T1,...,Tn])) => ::ultraviolet::analysis::layout::UnionLayout.layout
 //

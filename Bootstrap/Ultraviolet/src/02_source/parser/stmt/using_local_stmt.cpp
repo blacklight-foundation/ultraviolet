@@ -3,7 +3,7 @@
 // =============================================================================
 //
 // SPEC REFERENCE:
-//   SPECIFICATION.md §18.3.2 Parsing
+//   Docs/SPECIFICATION.md §18.3.2 Parsing
 //     (Parse-UsingLocal-Stmt) — parses `using <ident> as <ident>` at statement
 //     position into a UsingLocalStmt AST node.
 //

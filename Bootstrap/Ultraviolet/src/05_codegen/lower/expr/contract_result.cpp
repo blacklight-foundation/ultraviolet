@@ -2,7 +2,7 @@
 // Expression Lowering: ResultExpr
 // =============================================================================
 //
-// SPEC REFERENCE: SPECIFICATION.md Section 5.4 (Contracts)
+// SPEC REFERENCE: Docs/SPECIFICATION.md Section 5.4 (Contracts)
 //   - @result intrinsic for postcondition reference to return value
 //
 // MIGRATED FROM:

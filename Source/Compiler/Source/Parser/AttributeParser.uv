@@ -3,12 +3,12 @@
 // This file owns the source-native test attribute grammar and the ordinary
 // attribute-parser representation used by semantic analysis:
 //
-// - grammar.TestAttribute@L28336
+// - grammar.TestAttribute@L28683
 //   test_attribute      ::= "[[" "test" ("(" test_attribute_args ")")? "]]"
 //   test_attribute_args ::= test_attribute_arg ("," test_attribute_arg)*
 //   test_attribute_arg  ::= "name" ":" string_literal
 //                         | "covers" "(" string_literal ")"
-// - parse.TestAttributeByOrdinaryAttributeParser@L28356
+// - parse.TestAttributeByOrdinaryAttributeParser@L28703
 //   `[[test]]` is parsed by the ordinary attribute parser from §9.1.2. The
 //   `name` argument is represented as `⟨name, string_literal⟩`. Each
 //   `covers(...)` argument is represented as `⟨covers, [string_literal]⟩`.

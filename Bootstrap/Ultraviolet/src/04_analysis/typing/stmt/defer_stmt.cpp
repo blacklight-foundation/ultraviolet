@@ -2,7 +2,7 @@
 // defer_stmt.cpp - Defer statement typing
 // =============================================================================
 //
-// SPEC REFERENCE: SPECIFICATION.md
+// SPEC REFERENCE: Docs/SPECIFICATION.md
 //   Section 5.2.11: Statement Typing
 //   - defer { block } executes block at scope exit
 //   - T-DeferStmt: Defer statement typing

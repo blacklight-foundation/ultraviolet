@@ -1,7 +1,7 @@
 // Test responsibility:
 // Source/Compiler/Tests/Project/ModuleDiscovery/ModulesErr/ModulesErrTests.uv
 //
-// This file owns source-native tests for Modules-Err@L4402.
+// This file owns source-native tests for Modules-Err@L4423.
 
 using UltravioletCompiler::Diagnostics::{ diagnosticStreamHasErrors }
 using UltravioletCompiler::Project::{
@@ -21,7 +21,7 @@ using UltravioletCompiler::Project::{
 
 [[test(
     name: "module discovery returns failure when compilation unit fails",
-    covers("Modules-Err@L4402")
+    covers("Modules-Err@L4423")
 )]]
 internal procedure moduleDiscoveryReturnsFailureWhenCompilationUnitFails() -> bool
 |: => @result

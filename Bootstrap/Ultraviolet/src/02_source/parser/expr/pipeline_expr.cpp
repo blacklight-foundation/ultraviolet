@@ -2,7 +2,7 @@
 // pipeline_expr.cpp - Pipeline Expression Parsing
 // =============================================================================
 //
-// SPEC REFERENCE: SPECIFICATION.md
+// SPEC REFERENCE: Docs/SPECIFICATION.md
 // - Parse-Pipeline (Lines 5080-5083)
 // - Parse-PipelineTail-Stop (Lines 5085-5087)
 // - Parse-PipelineTail-Cons (Lines 5089-5093)

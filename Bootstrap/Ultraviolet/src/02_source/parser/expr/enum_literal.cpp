@@ -6,7 +6,7 @@
 // Ultraviolet. Instead, they are created during name resolution from
 // QualifiedName and QualifiedApply AST nodes.
 //
-// SPEC REFERENCE: SPECIFICATION.md
+// SPEC REFERENCE: Docs/SPECIFICATION.md
 // -----------------------------------------------------------------------------
 // **Resolution Rules (NOT Parsing Rules)** (Lines 7379-7426)
 //

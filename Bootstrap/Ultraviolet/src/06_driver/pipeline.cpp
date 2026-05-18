@@ -3,9 +3,9 @@
 // =============================================================================
 //
 // SPEC REFERENCE:
-//   SPECIFICATION.md Section 1.1 - Conformance
-//   SPECIFICATION.md Section 3.6 - Output Artifacts and Linking
-//   SPECIFICATION.md Chapter 24 - Common Lowering, Program Lifecycle, and Backend
+//   Docs/SPECIFICATION.md Section 1.1 - Conformance
+//   Docs/SPECIFICATION.md Section 3.6 - Output Artifacts and Linking
+//   Docs/SPECIFICATION.md Chapter 24 - Common Lowering, Program Lifecycle, and Backend
 //
 // =============================================================================
 
@@ -442,10 +442,38 @@ bool IsRootModule(const project::Project& project,
   return IsRootModule(project, core::StringOfPath(module.path));
 }
 
+bool HasRootModule(const project::Project& project) {
+  for (const auto& module : project.modules) {
+    if (IsRootModule(project, module.path)) {
+      return true;
+    }
+  }
+  return false;
+}
+
 bool WithEntry(const project::Project& project, const ModuleCodegen& module) {
-  return project::IsExecutable(project) &&
-         IsRootModule(project, module) &&
-         module.main_symbol.has_value();
+  if (!project::IsExecutable(project)) {
+    return false;
+  }
+  if (IsRootModule(project, module)) {
+    return true;
+  }
+  return !HasRootModule(project) && module.main_symbol.has_value();
+}
+
+std::optional<std::string> ProjectMainSymbol(const CodegenCache& cache,
+                                             const project::Project& project) {
+  std::lock_guard<std::mutex> lock(cache.module_mu);
+  for (const auto& module : project.modules) {
+    const auto entry_it = cache.module_entries.find(module.path);
+    if (entry_it == cache.module_entries.end() || !entry_it->second) {
+      continue;
+    }
+    if (entry_it->second->main_symbol.has_value()) {
+      return entry_it->second->main_symbol;
+    }
+  }
+  return std::nullopt;
 }
 
 std::optional<std::string> SelectProjectEntryModule(
@@ -788,7 +816,10 @@ std::optional<LLVMModuleBundle> EmitLLVMModule(
       cache.ctx.shared_library_export_symbols;
   emit_ctx.main_symbol.reset();
   if (WithEntry(project, module)) {
-    emit_ctx.main_symbol = module.main_symbol;
+    emit_ctx.main_symbol = ProjectMainSymbol(cache, project);
+    if (!emit_ctx.main_symbol.has_value()) {
+      emit_ctx.main_symbol = module.main_symbol;
+    }
   }
   emit_ctx.resolve_failed = false;
   emit_ctx.codegen_failed = false;

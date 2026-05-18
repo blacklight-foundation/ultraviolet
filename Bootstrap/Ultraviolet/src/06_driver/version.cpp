@@ -3,9 +3,9 @@
 // =============================================================================
 //
 // SPEC REFERENCE:
-//   SPECIFICATION.md §0.1 - Document header and version information
-//   SPECIFICATION.md §0.3 - Observable Compiler Behavior
-//   SPECIFICATION.md §0.4 - Document Scope
+//   Docs/SPECIFICATION.md §0.1 - Document header and version information
+//   Docs/SPECIFICATION.md §0.3 - Observable Compiler Behavior
+//   Docs/SPECIFICATION.md §0.4 - Document Scope
 //
 // =============================================================================
 

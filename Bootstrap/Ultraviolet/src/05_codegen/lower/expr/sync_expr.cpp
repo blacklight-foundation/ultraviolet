@@ -2,7 +2,7 @@
 // Expression Lowering: SyncExpr
 // =============================================================================
 //
-// SPEC REFERENCE: SPECIFICATION.md Section 11.3 (Sync Expression)
+// SPEC REFERENCE: Docs/SPECIFICATION.md Section 11.3 (Sync Expression)
 //   - sync e runs async to completion synchronously
 //   - Constraints: Out = (), In = ()
 //

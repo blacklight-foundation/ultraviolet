@@ -3,7 +3,7 @@
 // =============================================================================
 // This file should contain parsing logic for break statements.
 //
-// SPEC REFERENCE: SPECIFICATION.md, Section 3.3.10, Lines 6285-6288
+// SPEC REFERENCE: Docs/SPECIFICATION.md, Section 3.3.10, Lines 6285-6288
 // =============================================================================
 //
 // FORMAL RULES FROM SPEC:

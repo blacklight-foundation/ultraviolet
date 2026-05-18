@@ -3,11 +3,11 @@
 // =============================================================================
 //
 // SPEC REFERENCE:
-//   SPECIFICATION.md §11.5.4 "Module Path Resolution"
+//   Docs/SPECIFICATION.md §11.5.4 "Module Path Resolution"
 //     - ResolveImportPath (Resolve-Import-Direct, Resolve-Import-Current,
 //       Resolve-Import-Err)
 //     - ImportRequired, ImportCovers, ImportOk
-//   SPECIFICATION.md §7.4 "Visibility and Accessibility"
+//   Docs/SPECIFICATION.md §7.4 "Visibility and Accessibility"
 //     - CanAccess (Access-Public, Access-Internal, Access-Private, Access-Err)
 //
 // Import path resolution is implemented by:

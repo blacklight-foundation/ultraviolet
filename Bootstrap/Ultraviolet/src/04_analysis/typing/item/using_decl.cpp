@@ -2,7 +2,7 @@
 // MIGRATION: item/using_decl.cpp
 // =============================================================================
 //
-// SPEC REFERENCE: SPECIFICATION.md
+// SPEC REFERENCE: Docs/SPECIFICATION.md
 //   Section 4: Module System
 //   - using declaration grammar
 //   - Direct scope injection

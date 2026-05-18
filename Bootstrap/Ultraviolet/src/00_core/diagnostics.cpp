@@ -2,7 +2,7 @@
 // MIGRATION MAPPING: diagnostics.cpp
 // =============================================================================
 //
-// SPEC REFERENCE: SPECIFICATION.md
+// SPEC REFERENCE: Docs/SPECIFICATION.md
 //   - Section 1.6.3 "Diagnostics: Records and Emission" (lines 612-634)
 //     - Severity = {Error, Warning} (line 616)
 //     - Diagnostic stream: Delta = [d_1, ..., d_n] (lines 618-619)

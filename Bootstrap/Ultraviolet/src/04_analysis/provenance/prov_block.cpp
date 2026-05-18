@@ -4,9 +4,9 @@
  * =============================================================================
  *
  * SPEC REFERENCE:
- *   - SPECIFICATION.md, Section 21.4.5 "Block Provenance" (lines 25360-25450)
- *   - SPECIFICATION.md, Section 21.2 "Region Statements" (lines 24800-24900)
- *   - SPECIFICATION.md, Section 21.3 "Frame Statements" (lines 24910-25000)
+ *   - Docs/SPECIFICATION.md, Section 21.4.5 "Block Provenance" (lines 25360-25450)
+ *   - Docs/SPECIFICATION.md, Section 21.2 "Region Statements" (lines 24800-24900)
+ *   - Docs/SPECIFICATION.md, Section 21.3 "Frame Statements" (lines 24910-25000)
  *
  * DIAGNOSTIC CODES:
  *   - E-PROV-0040: Provenance escapes region

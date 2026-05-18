@@ -5,7 +5,7 @@
 // NOTE: This file is being RELOCATED from 01_project to 00_core as part of the
 // refactor. The functionality is fundamental to lexing and should be in core.
 //
-// SPEC REFERENCE: SPECIFICATION.md
+// SPEC REFERENCE: Docs/SPECIFICATION.md
 //   - Section 3.2.2 "Identifier Lexing" (referenced in unicode.cpp)
 //     - Identifier = IdentStart IdentContinue*
 //     - IdentStart: '_' or XID_Start

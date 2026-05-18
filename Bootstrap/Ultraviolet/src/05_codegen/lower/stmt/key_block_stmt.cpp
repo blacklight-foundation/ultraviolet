@@ -2,7 +2,7 @@
 // Key Block Statement Lowering Implementation
 // =============================================================================
 //
-// SPEC REFERENCE: SPECIFICATION.md Section 17 (Key Blocks and Key Semantics)
+// SPEC REFERENCE: Docs/SPECIFICATION.md Section 17 (Key Blocks and Key Semantics)
 //
 // This lowering emits explicit runtime key operations so dynamic behavior
 // matches key block scope rules and integrates with cleanup for all control

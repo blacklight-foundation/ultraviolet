@@ -2,7 +2,7 @@
 // MIGRATION MAPPING: lexer_literals.cpp
 // =============================================================================
 //
-// SPEC REFERENCE: SPECIFICATION.md
+// SPEC REFERENCE: Docs/SPECIFICATION.md
 //   Section 3.2.6 - Literal Lexing (lines 2170-2364)
 //
 // SOURCE FILE: ultraviolet-bootstrap/src/02_syntax/lexer_literals.cpp

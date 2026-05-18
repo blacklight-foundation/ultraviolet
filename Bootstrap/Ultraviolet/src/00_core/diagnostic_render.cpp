@@ -2,7 +2,7 @@
 // diagnostic_render.cpp - Diagnostic formatting and rendering
 // =============================================================================
 //
-// SPEC REFERENCE: SPECIFICATION.md
+// SPEC REFERENCE: Docs/SPECIFICATION.md
 //   - Section 1.6.6 "Diagnostic Rendering" (lines 668-718)
 //     - Render rules for diagnostics (message + location)
 //     - RenderRich rules for source-context diagnostics

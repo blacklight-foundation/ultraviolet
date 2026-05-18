@@ -1,7 +1,7 @@
 // Test responsibility:
 // Source/Compiler/Tests/Project/AssemblyGraph/DefOwnerRoot/DefOwnerRootTests.uv
 //
-// This file owns source-native tests for def.OwnerRoot@L4435:
+// This file owns source-native tests for def.OwnerRoot@L4456:
 //
 // OwnerRoot(d, Rs) = S_k ⇔ S_k ∈ Rs ∧ prefix(d, S_k) ∧
 // (∀ S_i ∈ Rs. prefix(d, S_i) ⇒ RootDepth(S_i) ≤ RootDepth(S_k)) ∧
@@ -18,7 +18,7 @@ using UltravioletCompiler::Project::{
 
 [[test(
     name: "owner root chooses deepest unique source-root prefix",
-    covers("def.OwnerRoot@L4435")
+    covers("def.OwnerRoot@L4456")
 )]]
 internal procedure ownerRootChoosesDeepestUniqueSourceRootPrefix() -> bool
 |: => @result

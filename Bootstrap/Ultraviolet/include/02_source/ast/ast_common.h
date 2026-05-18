@@ -7,7 +7,7 @@
 //   helper types that don't fit in a single category and are used by
 //   multiple AST node headers.
 //
-// SPEC REFERENCE: SPECIFICATION.md Section 3.3.2 - AST Node Catalog
+// SPEC REFERENCE: Docs/SPECIFICATION.md Section 3.3.2 - AST Node Catalog
 //
 // ===========================================================================
 

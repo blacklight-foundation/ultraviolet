@@ -12,8 +12,7 @@ SPEC_HEADER_PATTERN = re.compile(r"(?m)^# Ultraviolet Language Specification\s*$
 SPEC_MARKER = "This file is the canonical normative language specification."
 EXCLUDED_DIRS = {".archive", ".git", ".vs", "build", "extern", "node_modules"}
 PREFERRED_SPEC_CANDIDATES = (
-    Path("SPECIFICATION.md"),
-    Path("docs") / "SPECIFICATION.md",
+    Path("Docs/SPECIFICATION.md"),
 )
 
 

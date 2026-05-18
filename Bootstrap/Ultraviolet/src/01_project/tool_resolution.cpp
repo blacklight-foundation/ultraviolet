@@ -2,7 +2,7 @@
 // MIGRATION MAPPING: tool_resolution.cpp
 // =============================================================================
 //
-// SPEC REFERENCE: SPECIFICATION.md Section 2.6 (lines 1651-1671)
+// SPEC REFERENCE: Docs/SPECIFICATION.md Section 2.6 (lines 1651-1671)
 //   - 2.6. Tool Resolution and IR Assembly Inputs
 //   - SearchDirs(P) definition
 //   - ResolveTool-Ok / ResolveTool-Err-Linker / ResolveTool-Err-IR rules

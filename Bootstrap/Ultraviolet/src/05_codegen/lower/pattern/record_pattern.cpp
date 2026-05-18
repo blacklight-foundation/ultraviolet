@@ -2,7 +2,7 @@
 // MIGRATION MAPPING: pattern/record_pattern.cpp
 // =============================================================================
 //
-// SPEC REFERENCE: SPECIFICATION.md Section 6.6 (Pattern Matching Lowering)
+// SPEC REFERENCE: Docs/SPECIFICATION.md Section 6.6 (Pattern Matching Lowering)
 //   - Record patterns destructure record values
 //   - Field patterns bind to record field values
 //
@@ -89,7 +89,7 @@ static analysis::TypeRef RecordFieldType(const ast::RecordDecl& decl,
 // each field. Supports both shorthand (Point{x}) and explicit (Point{x: a})
 // field patterns.
 //
-// SPEC: SPECIFICATION.md Section 6.6 (Pattern Matching Lowering)
+// SPEC: Docs/SPECIFICATION.md Section 6.6 (Pattern Matching Lowering)
 //   - Record patterns destructure record values to their fields
 //   - Each field pattern can be a shorthand binding or nested pattern
 // ============================================================================
@@ -135,7 +135,7 @@ void RegisterRecordPatternBindings(
 // Creates derived values for field extraction and recursively binds
 // each field to its corresponding pattern.
 //
-// SPEC: SPECIFICATION.md Section 6.6 (Pattern Matching Lowering)
+// SPEC: Docs/SPECIFICATION.md Section 6.6 (Pattern Matching Lowering)
 //   - Extracts field values from the record scrutinee
 //   - Lower-BindList-Cons: SeqIR(BindVarIR(x, v), IR_r)
 // ============================================================================
@@ -193,7 +193,7 @@ IRPtr LowerBindRecordPattern(
 // Record patterns are always irrefutable (they always match if types are
 // correct), so this simply returns a constant true value.
 //
-// SPEC: SPECIFICATION.md Section 6.6 (Pattern Matching Lowering)
+// SPEC: Docs/SPECIFICATION.md Section 6.6 (Pattern Matching Lowering)
 //   - Record patterns are irrefutable (no discriminant to check)
 // ============================================================================
 
