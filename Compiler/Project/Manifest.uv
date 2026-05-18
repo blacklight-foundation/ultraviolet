@@ -15,7 +15,7 @@
 //   ParseTOML(R/`Ultraviolet.toml`) ⇑    c = Code(Parse-Manifest-Err)
 //   Γ ⊢ ParseManifest(R) ⇑ c
 // - req.ManifestHostPathResolution@L2252
-//   Manifest lookup MUST use host filesystem path resolution semantics for
+//   Manifest lookup MUST use host io path resolution semantics for
 //   R/`Ultraviolet.toml`.
 // - req.ManifestNoAdditionalCaseVerification@L2267
 //   Manifest lookup MUST NOT perform additional case verification.
@@ -339,17 +339,17 @@ public procedure parseManifestManagedText(
 }
 
 public procedure parseManifestFromRoot(
-    filesystem: $FileSystem,
+    io: $IO,
     diagnostics_region: unique Region@Active,
     root: ProjectRoot
 ) -> ManifestParseValue {
-    let project_filesystem: $FileSystem = filesystem~>restrict(root.text)
-    if (!project_filesystem~>exists(MANIFEST_FILE_NAME_TEXT)) {
+    let project_io: $IO = io~>restrict(root.text)
+    if (!project_io~>exists(MANIFEST_FILE_NAME_TEXT)) {
         return failedManifestParse(manifestMissingDiagnostics(diagnostics_region))
     }
 
     let read_result: Outcome<unique string@Managed, IoError> =
-        project_filesystem~>read_file(MANIFEST_FILE_NAME_TEXT)
+        project_io~>read_file(MANIFEST_FILE_NAME_TEXT)
     return if move read_result is {
         @Value { value } {
             parseManifestManagedText(diagnostics_region, move value)

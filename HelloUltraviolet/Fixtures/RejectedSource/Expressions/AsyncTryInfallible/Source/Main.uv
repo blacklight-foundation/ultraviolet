@@ -1,6 +1,6 @@
 //! Rejected propagation specimen for an infallible async return type.
 
 public procedure asyncTryInfallibleReference(context: Context) -> Async<(), (), i32, !> {
-    let text: unique string@Managed = context.fs~>read_file("missing.txt")?
+    let text: unique string@Managed = context.io~>read_file("missing.txt")?
     return 0
 }

@@ -1,7 +1,7 @@
 //! Rejected contract specimen for capability-requiring operations inside @entry.
 
 public procedure contractEntryCapabilityReference(context: Context) -> bool
-|: => @entry(context.fs~>exists("HelloUltraviolet"))
+|: => @entry(context.io~>exists("HelloUltraviolet"))
 {
     return true
 }

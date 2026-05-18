@@ -2,12 +2,12 @@
 //
 // This file owns the CLI API surface shared by `Tools/Uv/Main.uv` and command
 // implementations. `DriverHost` is the command-surface authority projection
-// created from the `Context` received by `main`. It carries the filesystem
+// created from the `Context` received by `main`. It carries the io
 // output authority, heap authority, normalized `System` process argument
 // authority, executable path, and current directory into command dispatch.
 
 public record DriverHost {
-    private _fs: $FileSystem
+    private _io: $IO
     private _heap: $HeapAllocator
     private _sys: System
     private _executable_path: string@View
@@ -21,8 +21,8 @@ public record DriverHost {
         return self._current_directory
     }
 
-    public procedure fileSystem(~) -> $FileSystem {
-        return self._fs
+    public procedure io(~) -> $IO {
+        return self._io
     }
 
     public procedure heap(~) -> $HeapAllocator {
@@ -34,11 +34,11 @@ public record DriverHost {
     }
 
     public procedure writeStdout(~, text: string@View) -> Outcome<(), IoError> {
-        return self._fs~>write_stdout(text)
+        return self._io~>write_stdout(text)
     }
 
     public procedure writeStderr(~, text: string@View) -> Outcome<(), IoError> {
-        return self._fs~>write_stderr(text)
+        return self._io~>write_stderr(text)
     }
 
     public procedure run(
@@ -218,7 +218,7 @@ internal procedure decimalDigitText(value: usize) -> string@View
 
 public procedure driverHostFromContext(context: Context) -> DriverHost {
     return DriverHost {
-        _fs: context.fs,
+        _io: context.io,
         _heap: context.heap,
         _sys: context.sys,
         _executable_path: context.sys~>executable_path(),

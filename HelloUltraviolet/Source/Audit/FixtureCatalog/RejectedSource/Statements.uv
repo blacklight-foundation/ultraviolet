@@ -318,14 +318,14 @@ public procedure validatedStatementsRejectedSourceFixtureCount() -> usize {
             "Fixtures/RejectedSource/Statements/AssignConst",
             "Fixtures/RejectedSource/Statements/AssignConst/Source/Main.uv",
             "Fixtures/RejectedSource/Statements/AssignConst/Expected.uv",
-            expectedDiagnostic("E-SEM-3132", "rule.18.Assign-Const-Err")
+            expectedDiagnostic("E-TYP-1601", "diagnostics.PermissionAdmissibility")
         ),
         "AssignConst",
         "Fixtures/RejectedSource/Statements/AssignConst",
         "Fixtures/RejectedSource/Statements/AssignConst/Source/Main.uv",
         "Fixtures/RejectedSource/Statements/AssignConst/Expected.uv",
-        "E-SEM-3132",
-        "rule.18.Assign-Const-Err"
+        "E-TYP-1601",
+        "diagnostics.PermissionAdmissibility"
     ) {
         count = count + 1usize
     }

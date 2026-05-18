@@ -7,48 +7,48 @@ public procedure countParsingAndAstInfrastructureDocCommentAssociationObligation
 
 public procedure validatedParsingAndAstInfrastructureDocCommentAssociationObligations() -> usize {
     var count: usize = 0usize
-    if acceptedObligationEntryMatches(
+    if referenceModelObligationEntryMatches(
         "def.DocCommentAssociation",
         11709usize,
-        "HelloUltraviolet::Reference::Parsing",
-        "runParsingItemSequencingReference",
-        "Source/Reference/Parsing/ItemSequencing.uv"
+        "HelloUltraviolet::Audit",
+        "runParsingReferenceModels",
+        "Source/Audit/ParsingReferenceModels.uv"
     ) {
         count = count + 1usize
     }
-    if acceptedObligationEntryMatches(
+    if referenceModelObligationEntryMatches(
         "Attach-Doc-Line",
         11724usize,
-        "HelloUltraviolet::Reference::Parsing",
-        "runParsingItemSequencingReference",
-        "Source/Reference/Parsing/ItemSequencing.uv"
+        "HelloUltraviolet::Audit",
+        "runParsingReferenceModels",
+        "Source/Audit/ParsingReferenceModels.uv"
     ) {
         count = count + 1usize
     }
-    if acceptedObligationEntryMatches(
+    if referenceModelObligationEntryMatches(
         "def.LineDocTargets",
         11742usize,
-        "HelloUltraviolet::Reference::Parsing",
-        "runParsingItemSequencingReference",
-        "Source/Reference/Parsing/ItemSequencing.uv"
+        "HelloUltraviolet::Audit",
+        "runParsingReferenceModels",
+        "Source/Audit/ParsingReferenceModels.uv"
     ) {
         count = count + 1usize
     }
-    if acceptedObligationEntryMatches(
+    if referenceModelObligationEntryMatches(
         "Attach-Doc-Module",
         11757usize,
-        "HelloUltraviolet::Reference::Parsing",
-        "runParsingItemSequencingReference",
-        "Source/Reference/Parsing/ItemSequencing.uv"
+        "HelloUltraviolet::Audit",
+        "runParsingReferenceModels",
+        "Source/Audit/ParsingReferenceModels.uv"
     ) {
         count = count + 1usize
     }
-    if acceptedObligationEntryMatches(
+    if referenceModelObligationEntryMatches(
         "def.ModuleDocs",
         11775usize,
-        "HelloUltraviolet::Reference::Parsing",
-        "runParsingItemSequencingReference",
-        "Source/Reference/Parsing/ItemSequencing.uv"
+        "HelloUltraviolet::Audit",
+        "runParsingReferenceModels",
+        "Source/Audit/ParsingReferenceModels.uv"
     ) {
         count = count + 1usize
     }

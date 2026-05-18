@@ -9,9 +9,9 @@ internal procedure outputDiagnosticFixtureArtifactsExistAtPaths(
     source_path: string@View,
     expected_path: string@View
 ) -> bool {
-    return context.fs~>exists(manifest_path) &&
-        context.fs~>exists(source_path) &&
-        context.fs~>exists(expected_path)
+    return context.io~>exists(manifest_path) &&
+        context.io~>exists(source_path) &&
+        context.io~>exists(expected_path)
 }
 
 public procedure outputDiagnosticFixtureArtifactsExist(context: Context) -> bool {
@@ -39,7 +39,7 @@ public procedure outputDiagnosticFixtureArtifactsExist(context: Context) -> bool
             "HelloUltraviolet/Fixtures/OutputDiagnostics/CommandLine/UnknownCommand/Output.txt",
             "HelloUltraviolet/Fixtures/OutputDiagnostics/CommandLine/UnknownCommand/Expected.uv"
         ) &&
-        context.fs~>exists(
+        context.io~>exists(
             "HelloUltraviolet/Fixtures/OutputDiagnostics/Lowering/EmitLLVMRenderFailure/Tools/llvm-as.exe"
         )
 }
@@ -49,7 +49,7 @@ internal procedure outputDiagnosticExpectedFileMatches(
     expected_path: string@View,
     expected_text: string@View
 ) -> bool {
-    let read_result: Outcome<unique string@Managed, IoError> = context.fs~>read_file(expected_path)
+    let read_result: Outcome<unique string@Managed, IoError> = context.io~>read_file(expected_path)
     return if move read_result is {
         @Value { value } {
             let text: string@View = string::as_view(value)
@@ -110,7 +110,7 @@ internal procedure artifactTextContains(
     artifact_path: string@View,
     required_text: string@View
 ) -> bool {
-    let read_result: Outcome<unique string@Managed, IoError> = context.fs~>read_file(artifact_path)
+    let read_result: Outcome<unique string@Managed, IoError> = context.io~>read_file(artifact_path)
     return if move read_result is {
         @Value { value } {
             let text: string@View = string::as_view(value)
@@ -127,7 +127,7 @@ internal procedure artifactTextExcludes(
     artifact_path: string@View,
     forbidden_text: string@View
 ) -> bool {
-    let read_result: Outcome<unique string@Managed, IoError> = context.fs~>read_file(artifact_path)
+    let read_result: Outcome<unique string@Managed, IoError> = context.io~>read_file(artifact_path)
     return if move read_result is {
         @Value { value } {
             let text: string@View = string::as_view(value)

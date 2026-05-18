@@ -5,7 +5,7 @@ internal procedure expectedDiagnosticFileMatches(
     expected_path: string@View,
     expected_text: string@View
 ) -> bool {
-    let read_result: Outcome<unique string@Managed, IoError> = context.fs~>read_file(expected_path)
+    let read_result: Outcome<unique string@Managed, IoError> = context.io~>read_file(expected_path)
     return if move read_result is {
         @Value { value } {
             let text: string@View = string::as_view(value)
@@ -1895,7 +1895,7 @@ public procedure assignConstExpectedDiagnosticFileMatches(context: Context) -> b
     return expectedDiagnosticFileMatches(
         context,
         "HelloUltraviolet/Fixtures/RejectedSource/Statements/AssignConst/Expected.uv",
-        "//! Expected diagnostic metadata for the AssignConst rejected-source specimen.\n\nexpectedDiagnostic(\"E-SEM-3132\", \"rule.18.Assign-Const-Err\")\n"
+        "//! Expected diagnostic metadata for the AssignConst rejected-source specimen.\n\nexpectedDiagnostic(\"E-TYP-1601\", \"diagnostics.PermissionAdmissibility\")\n"
     )
 }
 

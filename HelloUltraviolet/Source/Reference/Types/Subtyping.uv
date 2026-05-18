@@ -261,7 +261,7 @@ internal procedure subtypingGenericReference() -> bool {
 }
 
 internal procedure writeSubtypingMessage(context: Context, text: string@View) -> bool {
-    let output: Outcome<(), IoError> = context.fs~>write_stderr(text)
+    let output: Outcome<(), IoError> = context.io~>write_stderr(text)
     return if output is {
         @Value {
             true

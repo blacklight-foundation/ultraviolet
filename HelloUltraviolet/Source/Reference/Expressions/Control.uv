@@ -1,27 +1,228 @@
 //! Reference specimens for Expressions / Control.
 
-/// Exercises the Expressions Control reference surface.
-public procedure runExpressionsControlReference() -> bool {
-    let if_value: i32 = if true {
+internal type ControlUnion = i32 | bool
+
+internal procedure controlNoElseIfReference() -> i32 {
+    var score: i32 = 0
+    if true {
+        score = score + 3
+    }
+    if false {
+        score = score + 100
+    }
+    return score
+}
+
+internal procedure controlElseIfReference(value: i32) -> i32 {
+    return if value < 0 {
+        1
+    } else if value == 0 {
+        2
+    } else {
+        3
+    }
+}
+
+/// Exercises broad control-expression source grammar coverage.
+public procedure runExpressionsControlSurfaceReference() -> bool {
+    return runExpressionsIfControlReference() &&
+        runExpressionsIfIsControlReference() &&
+        runExpressionsIfCaseControlReference() &&
+        runExpressionsBlockControlReference() &&
+        runExpressionsLoopControlReference() &&
+        runExpressionsIteratorLoopControlReference()
+}
+
+/// Exercises ordinary if-expression control coverage.
+public procedure runExpressionsIfControlReference() -> bool {
+    let true_value: i32 = if true {
         10
     } else {
         20
     }
-    let case_value: i32 = if if_value is {
-        10 {
-            1
+    let false_value: i32 = if false {
+        30
+    } else {
+        40
+    }
+    let tailless_score: i32 = controlNoElseIfReference()
+    let chained_value: i32 = controlElseIfReference(0)
+    return true_value == 10 &&
+        false_value == 40 &&
+        tailless_score == 3 &&
+        chained_value == 2
+}
+
+/// Exercises single-case if-is control coverage.
+public procedure runExpressionsIfIsControlReference() -> bool {
+    let numeric_value: ControlUnion = 17
+    let typed_value: i32 = if numeric_value is value: i32 {
+        value
+    } else {
+        0
+    }
+    let type_test_value: i32 = if numeric_value is _: i32 {
+        3
+    } else {
+        0
+    }
+
+    var tailless_score: i32 = 0
+    if numeric_value is value: i32 {
+        tailless_score = value
+    }
+
+    let boolean_value: ControlUnion = true
+    let complement_value: i32 = if boolean_value is value: i32 {
+        value
+    } else {
+        5
+    }
+
+    return typed_value == 17 &&
+        type_test_value == 3 &&
+        tailless_score == 17 &&
+        complement_value == 5
+}
+
+/// Exercises braced if-case control coverage.
+public procedure runExpressionsIfCaseControlReference() -> bool {
+    let integer_result: i32 = if 2 is {
+        1 {
+            10
+        }
+        2 {
+            20
+        }
+        else {
+            30
+        }
+    }
+
+    let union_value: ControlUnion = true
+    let tailless_result: i32 = if union_value is {
+        value: i32 {
+            value
+        }
+        flag: bool {
+            if flag { 1 } else { 0 }
+        }
+    }
+
+    let left_to_right_result: i32 = if 1 is {
+        _ {
+            11
+        }
+        1 {
+            99
         }
         else {
             0
         }
     }
-    let type_test_value: i32 = if if_value is _: i32 {
-        2
-    } else {
-        0
+
+    let tail_end_value: ControlUnion = 8
+    let tail_end_result: i32 = if tail_end_value is {
+        value: i32 {
+            value
+        }
+        value: bool {
+            1
+        }
     }
-    let loop_value: i32 = loop true {
-        break case_value + 4
+
+    return integer_result == 20 &&
+        tailless_result == 1 &&
+        left_to_right_result == 11 &&
+        tail_end_result == 8
+}
+
+/// Exercises block-expression control coverage.
+public procedure runExpressionsBlockControlReference() -> bool {
+    let value_result: i32 = {
+        let local_value: i32 = 6
+        local_value + 1
     }
-    return if_value == 10 && case_value == 1 && type_test_value == 2 && loop_value == 5
+    let unit_result: () = {
+        let ignored_value: i32 = value_result
+    }
+    return value_result == 7
+}
+
+internal procedure controlLoopInvariantReference() -> bool {
+    var index: usize = 0usize
+    loop index < 1usize |: { index <= 1usize } {
+        index = index + 1usize
+    }
+    return index == 1usize
+}
+
+/// Exercises ordinary loop-expression control coverage.
+public procedure runExpressionsLoopControlReference() -> bool {
+    let break_value: i32 = loop {
+        break 9
+    }
+
+    var unit_break_score: i32 = 0
+    loop {
+        unit_break_score = 4
+        break
+    }
+
+    var continue_index: usize = 0usize
+    var continue_total: usize = 0usize
+    loop continue_index < 4usize {
+        continue_index = continue_index + 1usize
+        if continue_index == 2usize {
+            continue
+        }
+        continue_total = continue_total + continue_index
+    }
+
+    var false_loop_seen: bool = false
+    loop false {
+        false_loop_seen = true
+    }
+
+    let conditional_break_value: i32 = loop true {
+        break 13
+    }
+
+    return break_value == 9 &&
+        unit_break_score == 4 &&
+        continue_total == 8usize &&
+        !false_loop_seen &&
+        conditional_break_value == 13 &&
+        controlLoopInvariantReference()
+}
+
+/// Exercises iterator loop-expression control coverage.
+public procedure runExpressionsIteratorLoopControlReference() -> bool {
+    var total: usize = 0usize
+    loop value: usize in [1usize, 2usize, 3usize] {
+        if value == 2usize {
+            continue
+        }
+        total = total + value
+    }
+
+    var empty_count: usize = 0usize
+    loop value: usize in [0usize; 0] {
+        empty_count = empty_count + value
+    }
+
+    let first_even: usize = loop value: usize in [1usize, 2usize, 3usize] {
+        if value == 2usize {
+            break value
+        }
+    }
+
+    return total == 4usize &&
+        empty_count == 0usize &&
+        first_even == 2usize
+}
+
+/// Exercises the Expressions Control reference surface.
+public procedure runExpressionsControlReference() -> bool {
+    return runExpressionsControlSurfaceReference()
 }

@@ -36,7 +36,6 @@ using HelloUltraviolet::Audit::SymbolExecutions::{ catalogCompiledSymbolsExecute
 using HelloUltraviolet::Audit::SymbolExecutions::{ catalogCompiledSymbolsExecuteReferenceModules }
 using HelloUltraviolet::Audit::SymbolExecutions::{ catalogCompiledSymbolsExecuteReferenceNames }
 using HelloUltraviolet::Audit::SymbolExecutions::{ catalogCompiledSymbolsExecuteReferenceParallelism }
-using HelloUltraviolet::Audit::SymbolExecutions::{ catalogCompiledSymbolsExecuteReferenceParsing }
 using HelloUltraviolet::Audit::SymbolExecutions::{ catalogCompiledSymbolsExecuteReferencePatterns }
 using HelloUltraviolet::Audit::SymbolExecutions::{ catalogCompiledSymbolsExecuteReferencePermissions }
 using HelloUltraviolet::Audit::SymbolExecutions::{ catalogCompiledSymbolsExecuteReferencePolymorphism }
@@ -47,19 +46,19 @@ using HelloUltraviolet::Audit::SymbolExecutions::{ catalogCompiledSymbolsExecute
 using HelloUltraviolet::Audit::SymbolExecutions::{ catalogCompiledSymbolsExecuteReferenceTypes }
 
 public procedure expectedCatalogCompiledSymbolCount() -> usize {
-    return 602usize
+    return 608usize
 }
 
 public procedure catalogCompiledSymbolCount() -> usize {
-    return 602usize
+    return 608usize
 }
 
 public procedure expectedCatalogCompiledSymbolTargetDigest() -> usize {
-    return 521360377usize
+    return 795253015usize
 }
 
 public procedure catalogCompiledSymbolTargetDigest() -> usize {
-    return 521360377usize
+    return 795253015usize
 }
 
 public procedure catalogCompiledSymbolTargetsAreIndexed() -> bool {
@@ -106,7 +105,6 @@ public procedure catalogCompiledSymbolsExecute(context: Context) -> bool {
     passed = catalogCompiledSymbolsExecuteReferenceModules(context) && passed
     passed = catalogCompiledSymbolsExecuteReferenceNames(context) && passed
     passed = catalogCompiledSymbolsExecuteReferenceParallelism(context) && passed
-    passed = catalogCompiledSymbolsExecuteReferenceParsing(context) && passed
     passed = catalogCompiledSymbolsExecuteReferencePatterns(context) && passed
     passed = catalogCompiledSymbolsExecuteReferencePermissions(context) && passed
     passed = catalogCompiledSymbolsExecuteReferencePolymorphism(context) && passed

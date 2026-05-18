@@ -5,8 +5,8 @@ internal procedure acceptedProjectArtifactsExist(
     manifest_path: string@View,
     source_path: string@View
 ) -> bool {
-    return context.fs~>exists(manifest_path) &&
-        context.fs~>exists(source_path)
+    return context.io~>exists(manifest_path) &&
+        context.io~>exists(source_path)
 }
 
 public procedure acceptedProjectFixtureArtifactsExist(context: Context) -> bool {
@@ -45,7 +45,7 @@ public procedure acceptedProjectFixtureArtifactsExist(context: Context) -> bool 
             "HelloUltraviolet/Fixtures/AcceptedProjects/HostedExportLibrary/Ultraviolet.toml",
             "HelloUltraviolet/Fixtures/AcceptedProjects/HostedExportLibrary/Source/Library.uv"
         ) &&
-        context.fs~>exists(
+        context.io~>exists(
             "HelloUltraviolet/Fixtures/AcceptedProjects/CrossAssemblyImplementation/Source/ExternalContracts/Contracts.uv"
         )
 }

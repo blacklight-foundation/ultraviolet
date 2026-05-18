@@ -5,7 +5,7 @@
 //
 // - req.TestContextAuthority@L28477
 //   `TestContext` is the only runner-injected parameter and carries the
-//   filesystem, process, temporary-directory, target-profile, heap, and
+//   io, process, temporary-directory, target-profile, heap, and
 //   compiler-invocation authority needed by effectful compiler tests.
 
 public record CompilerInvocation {
@@ -14,7 +14,7 @@ public record CompilerInvocation {
 }
 
 public record TestContext {
-    public fs: $FileSystem
+    public io: $IO
     public sys: System
     public heap: $HeapAllocator
     public temporary_directory: string@View
@@ -33,7 +33,7 @@ public procedure compilerInvocation(
 }
 
 public procedure testContext(
-    fs: $FileSystem,
+    io: $IO,
     sys: System,
     heap: $HeapAllocator,
     temporary_directory: string@View,
@@ -41,7 +41,7 @@ public procedure testContext(
     compiler: CompilerInvocation
 ) -> TestContext {
     return TestContext {
-        fs: fs,
+        io: io,
         sys: sys,
         heap: heap,
         temporary_directory: temporary_directory,

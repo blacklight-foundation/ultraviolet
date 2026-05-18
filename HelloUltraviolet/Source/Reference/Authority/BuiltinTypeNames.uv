@@ -1,0 +1,170 @@
+//! Reference specimens for Authority / BuiltinTypeNames.
+
+internal type BuiltinIOCapabilityName = $IO
+
+internal type BuiltinOpenReadResultName = Outcome<File@Read, IoError>
+
+internal type BuiltinOpenWriteResultName = Outcome<File@Write, IoError>
+
+internal type BuiltinOpenAppendResultName = Outcome<File@Append, IoError>
+
+internal type BuiltinOpenDirResultName = Outcome<DirIter@Open, IoError>
+
+internal type BuiltinDirEntryName = DirEntry
+
+internal procedure ioErrorVariantIsKnown(error: IoError) -> bool {
+    return if error is {
+        IoError::NotFound {
+            true
+        }
+        IoError::PermissionDenied {
+            true
+        }
+        IoError::AlreadyExists {
+            true
+        }
+        IoError::InvalidPath {
+            true
+        }
+        IoError::Busy {
+            true
+        }
+        IoError::IoFailure {
+            true
+        }
+    }
+}
+
+internal procedure fileKindVariantIsKnown(kind: FileKind) -> bool {
+    return if kind is {
+        FileKind::File {
+            true
+        }
+        FileKind::Dir {
+            true
+        }
+        FileKind::Other {
+            true
+        }
+    }
+}
+
+internal procedure timeErrorVariantIsKnown(error: TimeError) -> bool {
+    return if error is {
+        TimeError::Unsupported {
+            true
+        }
+        TimeError::ClockUnavailable {
+            true
+        }
+        TimeError::OutOfRange {
+            true
+        }
+        TimeError::InvalidResolution {
+            true
+        }
+        TimeError::ClockMismatch {
+            true
+        }
+    }
+}
+
+internal procedure ioCapabilityCanSeePath(
+    io: BuiltinIOCapabilityName,
+    path: string@View
+) -> bool {
+    return io~>exists(path)
+}
+
+internal procedure readableTextObserved(
+    result: Outcome<unique string@Managed, IoError>
+) -> bool {
+    return if move result is {
+        @Value { value } {
+            let text: string@View = string::as_view(value)
+            string::length(text) > 0usize
+        }
+        @Error { error } {
+            ioErrorVariantIsKnown(error)
+        }
+    }
+}
+
+internal procedure missingTextObserved(
+    result: Outcome<unique string@Managed, IoError>
+) -> bool {
+    return if move result is {
+        @Value {
+            false
+        }
+        @Error { error } {
+            ioErrorVariantIsKnown(error)
+        }
+    }
+}
+
+internal procedure durationIsResolved(duration: Duration) -> bool {
+    return duration.nanoseconds >= 0u128
+}
+
+internal procedure elapsedOutcomeObserved(result: Outcome<Duration, TimeError>) -> bool {
+    return if result is {
+        @Value { value } {
+            durationIsResolved(value)
+        }
+        @Error { error } {
+            timeErrorVariantIsKnown(error)
+        }
+    }
+}
+
+internal procedure wallInstantOutcomeObserved(result: Outcome<UtcInstant, TimeError>) -> bool {
+    return if result is {
+        @Value {
+            true
+        }
+        @Error { error } {
+            timeErrorVariantIsKnown(error)
+        }
+    }
+}
+
+internal procedure wallCoarsenOutcomeObserved(result: Outcome<$WallTime, TimeError>) -> bool {
+    return if result is {
+        @Value {
+            true
+        }
+        @Error { error } {
+            timeErrorVariantIsKnown(error)
+        }
+    }
+}
+
+/// Exercises the Authority built-in IO and time type-name surface.
+public procedure runAuthorityBuiltinTypeNamesReference(context: Context) -> bool {
+    let io: BuiltinIOCapabilityName = context.io
+    let readable: Outcome<unique string@Managed, IoError> = io~>read_file(
+        "HelloUltraviolet/Source/Reference/Authority/Time.uv"
+    )
+    let missing: Outcome<unique string@Managed, IoError> = io~>read_file(
+        "HelloUltraviolet/Source/Reference/Authority/__MissingBuiltinTypeNames.uv"
+    )
+
+    let monotonic: $MonotonicTime = context.time~>monotonic()
+    let wall: $WallTime = context.time~>wall()
+    let start: MonotonicInstant = monotonic~>now()
+    let end: MonotonicInstant = monotonic~>now()
+    let resolution: Duration = monotonic~>resolution()
+    let elapsed: Outcome<Duration, TimeError> = monotonic~>elapsed(start, end)
+    let wall_now: Outcome<UtcInstant, TimeError> = wall~>now_utc()
+    let coarsened_wall: Outcome<$WallTime, TimeError> = wall~>coarsen(resolution)
+
+    return ioCapabilityCanSeePath(io, "HelloUltraviolet") &&
+        readableTextObserved(readable) &&
+        missingTextObserved(missing) &&
+        fileKindVariantIsKnown(FileKind::Dir) &&
+        durationIsResolved(resolution) &&
+        elapsedOutcomeObserved(elapsed) &&
+        wallInstantOutcomeObserved(wall_now) &&
+        wallCoarsenOutcomeObserved(coarsened_wall)
+}

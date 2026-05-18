@@ -8,7 +8,7 @@ public procedure countAbstractMachineObjectsResponsibilityAndAuthorityHostPrimit
 public procedure validatedAbstractMachineObjectsResponsibilityAndAuthorityHostPrimitivesObligations() -> usize {
     var count: usize = 0usize
     if acceptedObligationEntryMatches(
-        "def.FilesystemHostPrimitiveSets",
+        "def.IOHostPrimitiveSets",
         12555usize,
         "HelloUltraviolet::Reference::Authority",
         "runAuthorityCapabilitiesReference",
@@ -17,7 +17,7 @@ public procedure validatedAbstractMachineObjectsResponsibilityAndAuthorityHostPr
         count = count + 1usize
     }
     if acceptedObligationEntryMatches(
-        "def.NonFilesystemHostPrimitiveSets",
+        "def.OtherHostPrimitiveSets",
         12571usize,
         "HelloUltraviolet::Reference::Authority",
         "runAuthorityCapabilitiesReference",
@@ -71,56 +71,56 @@ public procedure validatedAbstractMachineObjectsResponsibilityAndAuthorityHostPr
         count = count + 1usize
     }
     if acceptedObligationEntryMatches(
-        "conformance.FilesystemPrimitiveOwnership",
+        "conformance.IOPrimitiveOwnership",
         12663usize,
         "HelloUltraviolet::Reference::Authority",
-        "runAuthorityFileSystemReference",
-        "Source/Reference/Authority/FileSystem.uv"
+        "runAuthorityIOReference",
+        "Source/Reference/Authority/IO.uv"
     ) {
         count = count + 1usize
     }
     if acceptedObligationEntryMatches(
-        "def.FilesystemPrimitiveJudgments",
+        "def.IOPrimitiveJudgments",
         12677usize,
         "HelloUltraviolet::Reference::Authority",
-        "runAuthorityFileSystemReference",
-        "Source/Reference/Authority/FileSystem.uv"
+        "runAuthorityIOReference",
+        "Source/Reference/Authority/IO.uv"
     ) {
         count = count + 1usize
     }
     if acceptedObligationEntryMatches(
-        "def.FilesystemPrimitiveResultTypes",
+        "def.IOPrimitiveResultTypes",
         12691usize,
         "HelloUltraviolet::Reference::Authority",
-        "runAuthorityFileSystemReference",
-        "Source/Reference/Authority/FileSystem.uv"
+        "runAuthorityIOReference",
+        "Source/Reference/Authority/IO.uv"
     ) {
         count = count + 1usize
     }
     if acceptedObligationEntryMatches(
-        "def.FilesystemStateTypes",
+        "def.IOStateTypes",
         12727usize,
         "HelloUltraviolet::Reference::Authority",
-        "runAuthorityFileSystemReference",
-        "Source/Reference/Authority/FileSystem.uv"
+        "runAuthorityIOReference",
+        "Source/Reference/Authority/IO.uv"
     ) {
         count = count + 1usize
     }
     if acceptedObligationEntryMatches(
-        "def.FilesystemStateProjections",
+        "def.IOStateProjections",
         12743usize,
         "HelloUltraviolet::Reference::Authority",
-        "runAuthorityFileSystemReference",
-        "Source/Reference/Authority/FileSystem.uv"
+        "runAuthorityIOReference",
+        "Source/Reference/Authority/IO.uv"
     ) {
         count = count + 1usize
     }
     if acceptedObligationEntryMatches(
-        "def.FilesystemEntryQueries",
+        "def.IOEntryQueries",
         12761usize,
         "HelloUltraviolet::Reference::Authority",
-        "runAuthorityFileSystemReference",
-        "Source/Reference/Authority/FileSystem.uv"
+        "runAuthorityIOReference",
+        "Source/Reference/Authority/IO.uv"
     ) {
         count = count + 1usize
     }
@@ -128,8 +128,8 @@ public procedure validatedAbstractMachineObjectsResponsibilityAndAuthorityHostPr
         "def.FileHandleQueries",
         12781usize,
         "HelloUltraviolet::Reference::Authority",
-        "runAuthorityFileSystemReference",
-        "Source/Reference/Authority/FileSystem.uv"
+        "runAuthorityIOReference",
+        "Source/Reference/Authority/IO.uv"
     ) {
         count = count + 1usize
     }
@@ -137,8 +137,8 @@ public procedure validatedAbstractMachineObjectsResponsibilityAndAuthorityHostPr
         "def.DirectoryIteratorQueries",
         12806usize,
         "HelloUltraviolet::Reference::Authority",
-        "runAuthorityFileSystemReference",
-        "Source/Reference/Authority/FileSystem.uv"
+        "runAuthorityIOReference",
+        "Source/Reference/Authority/IO.uv"
     ) {
         count = count + 1usize
     }
@@ -146,26 +146,26 @@ public procedure validatedAbstractMachineObjectsResponsibilityAndAuthorityHostPr
         "def.FileFlushedQuery",
         12832usize,
         "HelloUltraviolet::Reference::Authority",
-        "runAuthorityFileSystemReference",
-        "Source/Reference/Authority/FileSystem.uv"
+        "runAuthorityIOReference",
+        "Source/Reference/Authority/IO.uv"
     ) {
         count = count + 1usize
     }
     if acceptedObligationEntryMatches(
-        "def.FilesystemExplicitStateJudgments",
+        "def.IOExplicitStateJudgments",
         12846usize,
         "HelloUltraviolet::Reference::Authority",
-        "runAuthorityFileSystemReference",
-        "Source/Reference/Authority/FileSystem.uv"
+        "runAuthorityIOReference",
+        "Source/Reference/Authority/IO.uv"
     ) {
         count = count + 1usize
     }
     if acceptedObligationEntryMatches(
-        "def.FilesystemStateElidedEquivalences",
+        "def.IOStateElidedEquivalences",
         12862usize,
         "HelloUltraviolet::Reference::Authority",
-        "runAuthorityFileSystemReference",
-        "Source/Reference/Authority/FileSystem.uv"
+        "runAuthorityIOReference",
+        "Source/Reference/Authority/IO.uv"
     ) {
         count = count + 1usize
     }
@@ -173,8 +173,8 @@ public procedure validatedAbstractMachineObjectsResponsibilityAndAuthorityHostPr
         "def.RestrictPathSuccess",
         12897usize,
         "HelloUltraviolet::Reference::Authority",
-        "runAuthorityFileSystemReference",
-        "Source/Reference/Authority/FileSystem.uv"
+        "runAuthorityIOReference",
+        "Source/Reference/Authority/IO.uv"
     ) {
         count = count + 1usize
     }
@@ -182,152 +182,152 @@ public procedure validatedAbstractMachineObjectsResponsibilityAndAuthorityHostPr
         "def.RestrictPathFailure",
         12911usize,
         "HelloUltraviolet::Reference::Authority",
-        "runAuthorityFileSystemReference",
-        "Source/Reference/Authority/FileSystem.uv"
+        "runAuthorityIOReference",
+        "Source/Reference/Authority/IO.uv"
     ) {
         count = count + 1usize
     }
     if acceptedObligationEntryMatches(
-        "def.FilesystemPathOperationSet",
+        "def.IOPathOperationSet",
         12925usize,
         "HelloUltraviolet::Reference::Authority",
-        "runAuthorityFileSystemReference",
-        "Source/Reference/Authority/FileSystem.uv"
+        "runAuthorityIOReference",
+        "Source/Reference/Authority/IO.uv"
     ) {
         count = count + 1usize
     }
     if acceptedObligationEntryMatches(
-        "FSRestrict-Delegate",
+        "IORestrict-Delegate",
         12939usize,
         "HelloUltraviolet::Reference::Authority",
-        "runAuthorityFileSystemReference",
-        "Source/Reference/Authority/FileSystem.uv"
+        "runAuthorityIOReference",
+        "Source/Reference/Authority/IO.uv"
     ) {
         count = count + 1usize
     }
     if acceptedObligationEntryMatches(
-        "FSRestrict-InvalidPath",
+        "IORestrict-InvalidPath",
         12954usize,
         "HelloUltraviolet::Reference::Authority",
-        "runAuthorityFileSystemReference",
-        "Source/Reference/Authority/FileSystem.uv"
+        "runAuthorityIOReference",
+        "Source/Reference/Authority/IO.uv"
     ) {
         count = count + 1usize
     }
     if acceptedObligationEntryMatches(
-        "FSRestrict-ExistsInvalidFalse",
+        "IORestrict-ExistsInvalidFalse",
         12969usize,
         "HelloUltraviolet::Reference::Authority",
-        "runAuthorityFileSystemReference",
-        "Source/Reference/Authority/FileSystem.uv"
+        "runAuthorityIOReference",
+        "Source/Reference/Authority/IO.uv"
     ) {
         count = count + 1usize
     }
     if acceptedObligationEntryMatches(
-        "def.FilesystemPathErrorOperationSets",
+        "def.IOPathErrorOperationSets",
         12984usize,
         "HelloUltraviolet::Reference::Authority",
-        "runAuthorityFileSystemReference",
-        "Source/Reference/Authority/FileSystem.uv"
+        "runAuthorityIOReference",
+        "Source/Reference/Authority/IO.uv"
     ) {
         count = count + 1usize
     }
     if acceptedObligationEntryMatches(
-        "def.FilesystemPathErrorPredicates",
+        "def.IOPathErrorPredicates",
         13000usize,
         "HelloUltraviolet::Reference::Authority",
-        "runAuthorityFileSystemReference",
-        "Source/Reference/Authority/FileSystem.uv"
+        "runAuthorityIOReference",
+        "Source/Reference/Authority/IO.uv"
     ) {
         count = count + 1usize
     }
     if acceptedObligationEntryMatches(
-        "FSPath-InvalidPath-NoData",
+        "IOPath-InvalidPath-NoData",
         13018usize,
         "HelloUltraviolet::Reference::Authority",
-        "runAuthorityFileSystemReference",
-        "Source/Reference/Authority/FileSystem.uv"
+        "runAuthorityIOReference",
+        "Source/Reference/Authority/IO.uv"
     ) {
         count = count + 1usize
     }
     if acceptedObligationEntryMatches(
-        "FSPath-InvalidPath-Data",
+        "IOPath-InvalidPath-Data",
         13033usize,
         "HelloUltraviolet::Reference::Authority",
-        "runAuthorityFileSystemReference",
-        "Source/Reference/Authority/FileSystem.uv"
+        "runAuthorityIOReference",
+        "Source/Reference/Authority/IO.uv"
     ) {
         count = count + 1usize
     }
     if acceptedObligationEntryMatches(
-        "FSPath-NotFound",
+        "IOPath-NotFound",
         13048usize,
         "HelloUltraviolet::Reference::Authority",
-        "runAuthorityFileSystemReference",
-        "Source/Reference/Authority/FileSystem.uv"
+        "runAuthorityIOReference",
+        "Source/Reference/Authority/IO.uv"
     ) {
         count = count + 1usize
     }
     if acceptedObligationEntryMatches(
-        "FSPath-PermissionDenied",
+        "IOPath-PermissionDenied",
         13063usize,
         "HelloUltraviolet::Reference::Authority",
-        "runAuthorityFileSystemReference",
-        "Source/Reference/Authority/FileSystem.uv"
+        "runAuthorityIOReference",
+        "Source/Reference/Authority/IO.uv"
     ) {
         count = count + 1usize
     }
     if acceptedObligationEntryMatches(
-        "FSPath-CreateWriteAlreadyExists",
+        "IOPath-CreateWriteAlreadyExists",
         13078usize,
         "HelloUltraviolet::Reference::Authority",
-        "runAuthorityFileSystemReference",
-        "Source/Reference/Authority/FileSystem.uv"
+        "runAuthorityIOReference",
+        "Source/Reference/Authority/IO.uv"
     ) {
         count = count + 1usize
     }
     if acceptedObligationEntryMatches(
-        "FSPath-CreateDirAlreadyExistsNonDir",
+        "IOPath-CreateDirAlreadyExistsNonDir",
         13093usize,
         "HelloUltraviolet::Reference::Authority",
-        "runAuthorityFileSystemReference",
-        "Source/Reference/Authority/FileSystem.uv"
+        "runAuthorityIOReference",
+        "Source/Reference/Authority/IO.uv"
     ) {
         count = count + 1usize
     }
     if acceptedObligationEntryMatches(
-        "FSPath-OpenDirInvalidNonDir",
+        "IOPath-OpenDirInvalidNonDir",
         13108usize,
         "HelloUltraviolet::Reference::Authority",
-        "runAuthorityFileSystemReference",
-        "Source/Reference/Authority/FileSystem.uv"
+        "runAuthorityIOReference",
+        "Source/Reference/Authority/IO.uv"
     ) {
         count = count + 1usize
     }
     if acceptedObligationEntryMatches(
-        "FSPath-Busy",
+        "IOPath-Busy",
         13123usize,
         "HelloUltraviolet::Reference::Authority",
-        "runAuthorityFileSystemReference",
-        "Source/Reference/Authority/FileSystem.uv"
+        "runAuthorityIOReference",
+        "Source/Reference/Authority/IO.uv"
     ) {
         count = count + 1usize
     }
     if acceptedObligationEntryMatches(
-        "FSPath-OtherFailure",
+        "IOPath-OtherFailure",
         13138usize,
         "HelloUltraviolet::Reference::Authority",
-        "runAuthorityFileSystemReference",
-        "Source/Reference/Authority/FileSystem.uv"
+        "runAuthorityIOReference",
+        "Source/Reference/Authority/IO.uv"
     ) {
         count = count + 1usize
     }
     if acceptedObligationEntryMatches(
-        "FSReadFile-InvalidUtf8",
+        "IOReadFile-InvalidUtf8",
         13153usize,
         "HelloUltraviolet::Reference::Authority",
-        "runAuthorityFileSystemReference",
-        "Source/Reference/Authority/FileSystem.uv"
+        "runAuthorityIOReference",
+        "Source/Reference/Authority/IO.uv"
     ) {
         count = count + 1usize
     }
@@ -335,26 +335,26 @@ public procedure validatedAbstractMachineObjectsResponsibilityAndAuthorityHostPr
         "FileReadAll-InvalidUtf8",
         13168usize,
         "HelloUltraviolet::Reference::Authority",
-        "runAuthorityFileSystemReference",
-        "Source/Reference/Authority/FileSystem.uv"
+        "runAuthorityIOReference",
+        "Source/Reference/Authority/IO.uv"
     ) {
         count = count + 1usize
     }
     if acceptedObligationEntryMatches(
-        "FSExists-True",
+        "IOExists-True",
         13183usize,
         "HelloUltraviolet::Reference::Authority",
-        "runAuthorityFileSystemReference",
-        "Source/Reference/Authority/FileSystem.uv"
+        "runAuthorityIOReference",
+        "Source/Reference/Authority/IO.uv"
     ) {
         count = count + 1usize
     }
     if acceptedObligationEntryMatches(
-        "FSExists-False",
+        "IOExists-False",
         13198usize,
         "HelloUltraviolet::Reference::Authority",
-        "runAuthorityFileSystemReference",
-        "Source/Reference/Authority/FileSystem.uv"
+        "runAuthorityIOReference",
+        "Source/Reference/Authority/IO.uv"
     ) {
         count = count + 1usize
     }
@@ -362,8 +362,8 @@ public procedure validatedAbstractMachineObjectsResponsibilityAndAuthorityHostPr
         "def.FileHandleStateAndMode",
         13213usize,
         "HelloUltraviolet::Reference::Authority",
-        "runAuthorityFileSystemReference",
-        "Source/Reference/Authority/FileSystem.uv"
+        "runAuthorityIOReference",
+        "Source/Reference/Authority/IO.uv"
     ) {
         count = count + 1usize
     }
@@ -371,8 +371,8 @@ public procedure validatedAbstractMachineObjectsResponsibilityAndAuthorityHostPr
         "def.FileLengthAndByteLength",
         13232usize,
         "HelloUltraviolet::Reference::Authority",
-        "runAuthorityFileSystemReference",
-        "Source/Reference/Authority/FileSystem.uv"
+        "runAuthorityIOReference",
+        "Source/Reference/Authority/IO.uv"
     ) {
         count = count + 1usize
     }
@@ -380,62 +380,62 @@ public procedure validatedAbstractMachineObjectsResponsibilityAndAuthorityHostPr
         "def.DirectoryEntryOrdering",
         13252usize,
         "HelloUltraviolet::Reference::Authority",
-        "runAuthorityFileSystemReference",
-        "Source/Reference/Authority/FileSystem.uv"
+        "runAuthorityIOReference",
+        "Source/Reference/Authority/IO.uv"
     ) {
         count = count + 1usize
     }
     if acceptedObligationEntryMatches(
-        "FSOpenRead-HandleState",
+        "IOOpenRead-HandleState",
         13272usize,
         "HelloUltraviolet::Reference::Authority",
-        "runAuthorityFileSystemReference",
-        "Source/Reference/Authority/FileSystem.uv"
+        "runAuthorityIOReference",
+        "Source/Reference/Authority/IO.uv"
     ) {
         count = count + 1usize
     }
     if acceptedObligationEntryMatches(
-        "FSOpenWrite-HandleState",
+        "IOOpenWrite-HandleState",
         13287usize,
         "HelloUltraviolet::Reference::Authority",
-        "runAuthorityFileSystemReference",
-        "Source/Reference/Authority/FileSystem.uv"
+        "runAuthorityIOReference",
+        "Source/Reference/Authority/IO.uv"
     ) {
         count = count + 1usize
     }
     if acceptedObligationEntryMatches(
-        "FSOpenAppend-HandleState",
+        "IOOpenAppend-HandleState",
         13302usize,
         "HelloUltraviolet::Reference::Authority",
-        "runAuthorityFileSystemReference",
-        "Source/Reference/Authority/FileSystem.uv"
+        "runAuthorityIOReference",
+        "Source/Reference/Authority/IO.uv"
     ) {
         count = count + 1usize
     }
     if acceptedObligationEntryMatches(
-        "FSCreateWrite-HandleState",
+        "IOCreateWrite-HandleState",
         13317usize,
         "HelloUltraviolet::Reference::Authority",
-        "runAuthorityFileSystemReference",
-        "Source/Reference/Authority/FileSystem.uv"
+        "runAuthorityIOReference",
+        "Source/Reference/Authority/IO.uv"
     ) {
         count = count + 1usize
     }
     if acceptedObligationEntryMatches(
-        "FSReadFile-DelegatesThroughHandle",
+        "IOReadFile-DelegatesThroughHandle",
         13332usize,
         "HelloUltraviolet::Reference::Authority",
-        "runAuthorityFileSystemReference",
-        "Source/Reference/Authority/FileSystem.uv"
+        "runAuthorityIOReference",
+        "Source/Reference/Authority/IO.uv"
     ) {
         count = count + 1usize
     }
     if acceptedObligationEntryMatches(
-        "FSReadBytes-DelegatesThroughHandle",
+        "IOReadBytes-DelegatesThroughHandle",
         13347usize,
         "HelloUltraviolet::Reference::Authority",
-        "runAuthorityFileSystemReference",
-        "Source/Reference/Authority/FileSystem.uv"
+        "runAuthorityIOReference",
+        "Source/Reference/Authority/IO.uv"
     ) {
         count = count + 1usize
     }
@@ -443,8 +443,8 @@ public procedure validatedAbstractMachineObjectsResponsibilityAndAuthorityHostPr
         "FileReadAll-ClosedFailure",
         13362usize,
         "HelloUltraviolet::Reference::Authority",
-        "runAuthorityFileSystemReference",
-        "Source/Reference/Authority/FileSystem.uv"
+        "runAuthorityIOReference",
+        "Source/Reference/Authority/IO.uv"
     ) {
         count = count + 1usize
     }
@@ -452,8 +452,8 @@ public procedure validatedAbstractMachineObjectsResponsibilityAndAuthorityHostPr
         "FileReadAllBytes-ClosedFailure",
         13377usize,
         "HelloUltraviolet::Reference::Authority",
-        "runAuthorityFileSystemReference",
-        "Source/Reference/Authority/FileSystem.uv"
+        "runAuthorityIOReference",
+        "Source/Reference/Authority/IO.uv"
     ) {
         count = count + 1usize
     }
@@ -461,8 +461,8 @@ public procedure validatedAbstractMachineObjectsResponsibilityAndAuthorityHostPr
         "FileWrite-ClosedFailure",
         13392usize,
         "HelloUltraviolet::Reference::Authority",
-        "runAuthorityFileSystemReference",
-        "Source/Reference/Authority/FileSystem.uv"
+        "runAuthorityIOReference",
+        "Source/Reference/Authority/IO.uv"
     ) {
         count = count + 1usize
     }
@@ -470,8 +470,8 @@ public procedure validatedAbstractMachineObjectsResponsibilityAndAuthorityHostPr
         "FileFlush-ClosedFailure",
         13407usize,
         "HelloUltraviolet::Reference::Authority",
-        "runAuthorityFileSystemReference",
-        "Source/Reference/Authority/FileSystem.uv"
+        "runAuthorityIOReference",
+        "Source/Reference/Authority/IO.uv"
     ) {
         count = count + 1usize
     }
@@ -479,8 +479,8 @@ public procedure validatedAbstractMachineObjectsResponsibilityAndAuthorityHostPr
         "FileReadAll-AdvancesToEnd",
         13422usize,
         "HelloUltraviolet::Reference::Authority",
-        "runAuthorityFileSystemReference",
-        "Source/Reference/Authority/FileSystem.uv"
+        "runAuthorityIOReference",
+        "Source/Reference/Authority/IO.uv"
     ) {
         count = count + 1usize
     }
@@ -488,8 +488,8 @@ public procedure validatedAbstractMachineObjectsResponsibilityAndAuthorityHostPr
         "FileReadAllBytes-AdvancesToEnd",
         13437usize,
         "HelloUltraviolet::Reference::Authority",
-        "runAuthorityFileSystemReference",
-        "Source/Reference/Authority/FileSystem.uv"
+        "runAuthorityIOReference",
+        "Source/Reference/Authority/IO.uv"
     ) {
         count = count + 1usize
     }
@@ -497,8 +497,8 @@ public procedure validatedAbstractMachineObjectsResponsibilityAndAuthorityHostPr
         "FileWrite-PositionUpdate",
         13452usize,
         "HelloUltraviolet::Reference::Authority",
-        "runAuthorityFileSystemReference",
-        "Source/Reference/Authority/FileSystem.uv"
+        "runAuthorityIOReference",
+        "Source/Reference/Authority/IO.uv"
     ) {
         count = count + 1usize
     }
@@ -506,8 +506,8 @@ public procedure validatedAbstractMachineObjectsResponsibilityAndAuthorityHostPr
         "FileWrite-LengthUpdate",
         13467usize,
         "HelloUltraviolet::Reference::Authority",
-        "runAuthorityFileSystemReference",
-        "Source/Reference/Authority/FileSystem.uv"
+        "runAuthorityIOReference",
+        "Source/Reference/Authority/IO.uv"
     ) {
         count = count + 1usize
     }
@@ -515,8 +515,8 @@ public procedure validatedAbstractMachineObjectsResponsibilityAndAuthorityHostPr
         "FileFlush-RecordsFlushed",
         13482usize,
         "HelloUltraviolet::Reference::Authority",
-        "runAuthorityFileSystemReference",
-        "Source/Reference/Authority/FileSystem.uv"
+        "runAuthorityIOReference",
+        "Source/Reference/Authority/IO.uv"
     ) {
         count = count + 1usize
     }
@@ -524,17 +524,17 @@ public procedure validatedAbstractMachineObjectsResponsibilityAndAuthorityHostPr
         "FileClose-ClosesHandle",
         13497usize,
         "HelloUltraviolet::Reference::Authority",
-        "runAuthorityFileSystemReference",
-        "Source/Reference/Authority/FileSystem.uv"
+        "runAuthorityIOReference",
+        "Source/Reference/Authority/IO.uv"
     ) {
         count = count + 1usize
     }
     if acceptedObligationEntryMatches(
-        "FSOpenDir-IteratorState",
+        "IOOpenDir-IteratorState",
         13512usize,
         "HelloUltraviolet::Reference::Authority",
-        "runAuthorityFileSystemReference",
-        "Source/Reference/Authority/FileSystem.uv"
+        "runAuthorityIOReference",
+        "Source/Reference/Authority/IO.uv"
     ) {
         count = count + 1usize
     }
@@ -542,8 +542,8 @@ public procedure validatedAbstractMachineObjectsResponsibilityAndAuthorityHostPr
         "DirNext-ClosedFailure",
         13527usize,
         "HelloUltraviolet::Reference::Authority",
-        "runAuthorityFileSystemReference",
-        "Source/Reference/Authority/FileSystem.uv"
+        "runAuthorityIOReference",
+        "Source/Reference/Authority/IO.uv"
     ) {
         count = count + 1usize
     }
@@ -551,8 +551,8 @@ public procedure validatedAbstractMachineObjectsResponsibilityAndAuthorityHostPr
         "DirNext-Exhausted",
         13542usize,
         "HelloUltraviolet::Reference::Authority",
-        "runAuthorityFileSystemReference",
-        "Source/Reference/Authority/FileSystem.uv"
+        "runAuthorityIOReference",
+        "Source/Reference/Authority/IO.uv"
     ) {
         count = count + 1usize
     }
@@ -560,8 +560,8 @@ public procedure validatedAbstractMachineObjectsResponsibilityAndAuthorityHostPr
         "DirNext-YieldsEntry",
         13557usize,
         "HelloUltraviolet::Reference::Authority",
-        "runAuthorityFileSystemReference",
-        "Source/Reference/Authority/FileSystem.uv"
+        "runAuthorityIOReference",
+        "Source/Reference/Authority/IO.uv"
     ) {
         count = count + 1usize
     }
@@ -569,8 +569,8 @@ public procedure validatedAbstractMachineObjectsResponsibilityAndAuthorityHostPr
         "DirClose-ClosesIterator",
         13572usize,
         "HelloUltraviolet::Reference::Authority",
-        "runAuthorityFileSystemReference",
-        "Source/Reference/Authority/FileSystem.uv"
+        "runAuthorityIOReference",
+        "Source/Reference/Authority/IO.uv"
     ) {
         count = count + 1usize
     }
@@ -773,7 +773,7 @@ public procedure validatedAbstractMachineObjectsResponsibilityAndAuthorityHostPr
         count = count + 1usize
     }
     if acceptedObligationEntryMatches(
-        "Prim-FS-OpenRead",
+        "Prim-IO-OpenRead",
         13954usize,
         "HelloUltraviolet::Reference::Authority",
         "runAuthorityCapabilitiesReference",
@@ -782,7 +782,7 @@ public procedure validatedAbstractMachineObjectsResponsibilityAndAuthorityHostPr
         count = count + 1usize
     }
     if acceptedObligationEntryMatches(
-        "Prim-FS-OpenWrite",
+        "Prim-IO-OpenWrite",
         13972usize,
         "HelloUltraviolet::Reference::Authority",
         "runAuthorityCapabilitiesReference",
@@ -791,7 +791,7 @@ public procedure validatedAbstractMachineObjectsResponsibilityAndAuthorityHostPr
         count = count + 1usize
     }
     if acceptedObligationEntryMatches(
-        "Prim-FS-OpenAppend",
+        "Prim-IO-OpenAppend",
         13990usize,
         "HelloUltraviolet::Reference::Authority",
         "runAuthorityCapabilitiesReference",
@@ -800,7 +800,7 @@ public procedure validatedAbstractMachineObjectsResponsibilityAndAuthorityHostPr
         count = count + 1usize
     }
     if acceptedObligationEntryMatches(
-        "Prim-FS-CreateWrite",
+        "Prim-IO-CreateWrite",
         14008usize,
         "HelloUltraviolet::Reference::Authority",
         "runAuthorityCapabilitiesReference",
@@ -809,7 +809,7 @@ public procedure validatedAbstractMachineObjectsResponsibilityAndAuthorityHostPr
         count = count + 1usize
     }
     if acceptedObligationEntryMatches(
-        "Prim-FS-ReadFile",
+        "Prim-IO-ReadFile",
         14026usize,
         "HelloUltraviolet::Reference::Authority",
         "runAuthorityCapabilitiesReference",
@@ -818,7 +818,7 @@ public procedure validatedAbstractMachineObjectsResponsibilityAndAuthorityHostPr
         count = count + 1usize
     }
     if acceptedObligationEntryMatches(
-        "Prim-FS-ReadBytes",
+        "Prim-IO-ReadBytes",
         14044usize,
         "HelloUltraviolet::Reference::Authority",
         "runAuthorityCapabilitiesReference",
@@ -827,7 +827,7 @@ public procedure validatedAbstractMachineObjectsResponsibilityAndAuthorityHostPr
         count = count + 1usize
     }
     if acceptedObligationEntryMatches(
-        "Prim-FS-WriteFile",
+        "Prim-IO-WriteFile",
         14062usize,
         "HelloUltraviolet::Reference::Authority",
         "runAuthorityCapabilitiesReference",
@@ -836,7 +836,7 @@ public procedure validatedAbstractMachineObjectsResponsibilityAndAuthorityHostPr
         count = count + 1usize
     }
     if acceptedObligationEntryMatches(
-        "Prim-FS-WriteStdout",
+        "Prim-IO-WriteStdout",
         14080usize,
         "HelloUltraviolet::Reference::Authority",
         "runAuthorityCapabilitiesReference",
@@ -845,7 +845,7 @@ public procedure validatedAbstractMachineObjectsResponsibilityAndAuthorityHostPr
         count = count + 1usize
     }
     if acceptedObligationEntryMatches(
-        "Prim-FS-WriteStderr",
+        "Prim-IO-WriteStderr",
         14098usize,
         "HelloUltraviolet::Reference::Authority",
         "runAuthorityCapabilitiesReference",
@@ -854,7 +854,7 @@ public procedure validatedAbstractMachineObjectsResponsibilityAndAuthorityHostPr
         count = count + 1usize
     }
     if acceptedObligationEntryMatches(
-        "Prim-FS-Exists",
+        "Prim-IO-Exists",
         14116usize,
         "HelloUltraviolet::Reference::Authority",
         "runAuthorityCapabilitiesReference",
@@ -863,7 +863,7 @@ public procedure validatedAbstractMachineObjectsResponsibilityAndAuthorityHostPr
         count = count + 1usize
     }
     if acceptedObligationEntryMatches(
-        "Prim-FS-Remove",
+        "Prim-IO-Remove",
         14134usize,
         "HelloUltraviolet::Reference::Authority",
         "runAuthorityCapabilitiesReference",
@@ -872,7 +872,7 @@ public procedure validatedAbstractMachineObjectsResponsibilityAndAuthorityHostPr
         count = count + 1usize
     }
     if acceptedObligationEntryMatches(
-        "Prim-FS-OpenDir",
+        "Prim-IO-OpenDir",
         14152usize,
         "HelloUltraviolet::Reference::Authority",
         "runAuthorityCapabilitiesReference",
@@ -881,7 +881,7 @@ public procedure validatedAbstractMachineObjectsResponsibilityAndAuthorityHostPr
         count = count + 1usize
     }
     if acceptedObligationEntryMatches(
-        "Prim-FS-CreateDir",
+        "Prim-IO-CreateDir",
         14170usize,
         "HelloUltraviolet::Reference::Authority",
         "runAuthorityCapabilitiesReference",
@@ -890,7 +890,7 @@ public procedure validatedAbstractMachineObjectsResponsibilityAndAuthorityHostPr
         count = count + 1usize
     }
     if acceptedObligationEntryMatches(
-        "Prim-FS-EnsureDir",
+        "Prim-IO-EnsureDir",
         14188usize,
         "HelloUltraviolet::Reference::Authority",
         "runAuthorityCapabilitiesReference",
@@ -899,7 +899,7 @@ public procedure validatedAbstractMachineObjectsResponsibilityAndAuthorityHostPr
         count = count + 1usize
     }
     if acceptedObligationEntryMatches(
-        "Prim-FS-Kind",
+        "Prim-IO-Kind",
         14206usize,
         "HelloUltraviolet::Reference::Authority",
         "runAuthorityCapabilitiesReference",
@@ -908,7 +908,7 @@ public procedure validatedAbstractMachineObjectsResponsibilityAndAuthorityHostPr
         count = count + 1usize
     }
     if acceptedObligationEntryMatches(
-        "Prim-FS-Restrict",
+        "Prim-IO-Restrict",
         14224usize,
         "HelloUltraviolet::Reference::Authority",
         "runAuthorityCapabilitiesReference",

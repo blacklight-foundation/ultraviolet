@@ -29,23 +29,23 @@ internal procedure sourcePathManifestLineBreakCount(text: string@View) -> usize 
 }
 
 public procedure expectedCatalogSourcePathCount() -> usize {
-    return 595usize
+    return 594usize
 }
 
 public procedure catalogSourcePathCount() -> usize {
-    return 595usize
+    return 594usize
 }
 
 public procedure expectedCatalogSourcePathManifestByteCount() -> usize {
-    return 49271usize
+    return 49221usize
 }
 
 public procedure expectedCatalogSourcePathManifestLineBreakCount() -> usize {
-    return 595usize
+    return 594usize
 }
 
 public procedure expectedCatalogSourcePathManifestDigest() -> usize {
-    return 254563538usize
+    return 8721973usize
 }
 
 internal procedure sourcePathManifestShapeMatches(text: string@View) -> bool {
@@ -56,11 +56,11 @@ internal procedure sourcePathManifestShapeMatches(text: string@View) -> bool {
 }
 
 internal procedure catalogSourcePathExists(context: Context, source_path: string@View) -> bool {
-    return context.fs~>exists(source_path)
+    return context.io~>exists(source_path)
 }
 
 internal procedure writeCatalogSourcePathMessage(context: Context, text: string@View) -> bool {
-    let output: Outcome<(), IoError> = context.fs~>write_stderr(text)
+    let output: Outcome<(), IoError> = context.io~>write_stderr(text)
     return if output is {
         @Value {
             true
@@ -159,7 +159,7 @@ public procedure catalogSourcePathsExist(context: Context) -> bool {
         return false
     }
 
-    let read_result: Outcome<unique string@Managed, IoError> = context.fs~>read_file(
+    let read_result: Outcome<unique string@Managed, IoError> = context.io~>read_file(
         "HelloUltraviolet/Audit/CatalogSourcePaths.txt"
     )
     return if move read_result is {

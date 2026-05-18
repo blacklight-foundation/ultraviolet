@@ -7,8 +7,8 @@ internal procedure artifactProjectSourceArtifactsExist(
     manifest_path: string@View,
     source_path: string@View
 ) -> bool {
-    return context.fs~>exists(manifest_path) &&
-        context.fs~>exists(source_path)
+    return context.io~>exists(manifest_path) &&
+        context.io~>exists(source_path)
 }
 
 public procedure artifactProjectFixtureSourceArtifactsExist(context: Context) -> bool {
@@ -54,7 +54,7 @@ internal procedure artifactProjectExpectedFileMatches(
     expected_path: string@View,
     expected_text: string@View
 ) -> bool {
-    let read_result: Outcome<unique string@Managed, IoError> = context.fs~>read_file(expected_path)
+    let read_result: Outcome<unique string@Managed, IoError> = context.io~>read_file(expected_path)
     return if move read_result is {
         @Value { value } {
             let text: string@View = string::as_view(value)
@@ -79,7 +79,7 @@ internal procedure artifactTextExcludes(
     artifact_path: string@View,
     forbidden_text: string@View
 ) -> bool {
-    let read_result: Outcome<unique string@Managed, IoError> = context.fs~>read_file(artifact_path)
+    let read_result: Outcome<unique string@Managed, IoError> = context.io~>read_file(artifact_path)
     return if move read_result is {
         @Value { value } {
             let text: string@View = string::as_view(value)
@@ -94,8 +94,8 @@ internal procedure artifactTextExcludes(
 public procedure artifactProjectRuntimeErasureArtifactsMatch(context: Context) -> bool {
     let ir_path: string@View =
         "HelloUltraviolet/Fixtures/ArtifactProjects/FlowProofRuntimeErasure/build/ir/FlowProofRuntimeErasure.ll"
-    return context.fs~>exists(ir_path) &&
-        context.fs~>exists(
+    return context.io~>exists(ir_path) &&
+        context.io~>exists(
             "HelloUltraviolet/Fixtures/ArtifactProjects/FlowProofRuntimeErasure/build/obj/FlowProofRuntimeErasure.obj"
         ) &&
         artifactTextExcludes(context, ir_path, "VerificationFact") &&
@@ -108,22 +108,22 @@ public procedure artifactProjectRuntimeErasureArtifactsMatch(context: Context) -
 }
 
 public procedure artifactProjectAArch64DependencyObjectArtifactsExist(context: Context) -> bool {
-    return context.fs~>exists(
+    return context.io~>exists(
         "HelloUltraviolet/Fixtures/ArtifactProjects/AArch64DependencyObject/build/obj/AArch64DependencyObject.o"
     ) &&
-        context.fs~>exists(
+        context.io~>exists(
             "HelloUltraviolet/Fixtures/ArtifactProjects/AArch64DependencyObject/build/.ultraviolet-incremental/AArch64DependencyObject.manifest"
         )
 }
 
 public procedure artifactProjectEmitBcLibraryArtifactsExist(context: Context) -> bool {
-    return context.fs~>exists(
+    return context.io~>exists(
         "HelloUltraviolet/Fixtures/ArtifactProjects/EmitBcLibrary/build/ir/EmitBcLibrary.bc"
     ) &&
-        context.fs~>exists(
+        context.io~>exists(
             "HelloUltraviolet/Fixtures/ArtifactProjects/EmitBcLibrary/build/obj/EmitBcLibrary.obj"
         ) &&
-        context.fs~>exists(
+        context.io~>exists(
             "HelloUltraviolet/Fixtures/ArtifactProjects/EmitBcLibrary/build/lib/EmitBcLibrary.lib"
         )
 }

@@ -349,9 +349,9 @@ Objective: execute `.agents/plans/HelloUltravioletReferenceCorpus.md`.
   `ConstMutation`, `UniqueInactiveUse`, `SharedMutationWithoutKey`, and
   `ReceiverPermissionMismatch` rejected-source fixtures exercise
   `E-TYP-1601`, `E-TYP-1602`, `E-TYP-1604`, and `E-TYP-1605`; `E-TYP-1603`
-  remains covered by `Expressions/CallArgNotPlace`. The const root-assignment
-  versus aggregate-path mutation diagnostic ownership question and the direct
-  shared-mutation versus implicit-key-acquisition question are recorded in
+  remains covered by `Expressions/CallArgNotPlace`. Assignment through an
+  effective `const` permission is routed to `E-TYP-1601`; the direct
+  shared-mutation versus implicit-key-acquisition question is recorded in
   `SpecClarificationsNeeded.md`, and the bootstrap repair is recorded as
   `UVBOOT-0066`.
 - This pass expanded qualified name-resolution accepted source.

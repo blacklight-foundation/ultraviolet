@@ -5,7 +5,7 @@ internal procedure diagnosticExpectedFileMatches(
     expected_path: string@View,
     expected_text: string@View
 ) -> bool {
-    let read_result: Outcome<unique string@Managed, IoError> = context.fs~>read_file(expected_path)
+    let read_result: Outcome<unique string@Managed, IoError> = context.io~>read_file(expected_path)
     return if move read_result is {
         @Value { value } {
             let text: string@View = string::as_view(value)

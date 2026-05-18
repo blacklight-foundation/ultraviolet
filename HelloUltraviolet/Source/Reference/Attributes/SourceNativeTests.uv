@@ -1,0 +1,65 @@
+//! Reference specimens for Attributes / SourceNativeTests.
+
+internal procedure sourceNativeOrdinaryProcedure() -> bool {
+    return true
+}
+
+[[test]]
+internal procedure sourceNativeBareTest() -> bool
+|: => @result
+{
+    return sourceNativeOrdinaryProcedure()
+}
+
+[[test(name: "named source-native reference")]]
+internal procedure sourceNativeNamedTest() -> bool
+|: => @result
+{
+    return true
+}
+
+[[test(covers("grammar.TestAttribute@L28635"))]]
+internal procedure sourceNativeCoveredTest() -> bool
+|: => @result
+{
+    return true
+}
+
+[[test(name: "coverage order", covers("def.TestName@L28688"), covers("def.TestCoverage@L28703"))]]
+internal procedure sourceNativeNamedCoveredTest() -> bool
+|: => @result
+{
+    return true
+}
+
+[[test(covers("req.TestAuthority@L28776"))]]
+internal procedure sourceNativeAuthorityTest(authority: TestAuthority) -> bool
+|: => @result
+{
+    return true
+}
+
+[[test(covers("req.TestProcedureShape@L28754"))]]
+internal procedure sourceNativeShapeTest() -> bool
+|: => @result
+{
+    return true
+}
+
+[[test(covers("conformance.TestAttributeDynamicSemantics@L28794"))]]
+internal procedure sourceNativeDynamicSemanticsTest() -> bool
+|: => @result
+{
+    return true
+}
+
+/// Exercises the Attributes SourceNativeTests reference surface.
+public procedure runAttributesSourceNativeTestsReference() -> bool {
+    return sourceNativeOrdinaryProcedure() &&
+        sourceNativeBareTest() &&
+        sourceNativeNamedTest() &&
+        sourceNativeCoveredTest() &&
+        sourceNativeNamedCoveredTest() &&
+        sourceNativeShapeTest() &&
+        sourceNativeDynamicSemanticsTest()
+}

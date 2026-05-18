@@ -7,48 +7,48 @@ public procedure countParsingAndAstInfrastructureParsingInputsOutputsAndInvarian
 
 public procedure validatedParsingAndAstInfrastructureParsingInputsOutputsAndInvariantsObligations() -> usize {
     var count: usize = 0usize
-    if acceptedObligationEntryMatches(
+    if referenceModelObligationEntryMatches(
         "def.ParseInputs",
         10360usize,
-        "HelloUltraviolet::Reference::Parsing",
-        "runParsingItemSequencingReference",
-        "Source/Reference/Parsing/ItemSequencing.uv"
+        "HelloUltraviolet::Audit",
+        "runParsingReferenceModels",
+        "Source/Audit/ParsingReferenceModels.uv"
     ) {
         count = count + 1usize
     }
-    if acceptedObligationEntryMatches(
+    if referenceModelObligationEntryMatches(
         "def.ParseOutputs",
         10374usize,
-        "HelloUltraviolet::Reference::Parsing",
-        "runParsingItemSequencingReference",
-        "Source/Reference/Parsing/ItemSequencing.uv"
+        "HelloUltraviolet::Audit",
+        "runParsingReferenceModels",
+        "Source/Audit/ParsingReferenceModels.uv"
     ) {
         count = count + 1usize
     }
-    if acceptedObligationEntryMatches(
+    if referenceModelObligationEntryMatches(
         "Phase1-File",
         10390usize,
-        "HelloUltraviolet::Reference::Parsing",
-        "runParsingItemSequencingReference",
-        "Source/Reference/Parsing/ItemSequencing.uv"
+        "HelloUltraviolet::Audit",
+        "runParsingReferenceModels",
+        "Source/Audit/ParsingReferenceModels.uv"
     ) {
         count = count + 1usize
     }
-    if acceptedObligationEntryMatches(
+    if referenceModelObligationEntryMatches(
         "Phase1-Forward-Refs",
         10408usize,
-        "HelloUltraviolet::Reference::Parsing",
-        "runParsingItemSequencingReference",
-        "Source/Reference/Parsing/ItemSequencing.uv"
+        "HelloUltraviolet::Audit",
+        "runParsingReferenceModels",
+        "Source/Audit/ParsingReferenceModels.uv"
     ) {
         count = count + 1usize
     }
-    if acceptedObligationEntryMatches(
+    if referenceModelObligationEntryMatches(
         "refs.FeatureParseRules",
         10425usize,
-        "HelloUltraviolet::Reference::Parsing",
-        "runParsingItemSequencingReference",
-        "Source/Reference/Parsing/ItemSequencing.uv"
+        "HelloUltraviolet::Audit",
+        "runParsingReferenceModels",
+        "Source/Audit/ParsingReferenceModels.uv"
     ) {
         count = count + 1usize
     }

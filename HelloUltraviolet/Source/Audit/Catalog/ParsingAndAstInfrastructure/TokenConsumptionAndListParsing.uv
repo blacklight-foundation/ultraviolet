@@ -7,156 +7,156 @@ public procedure countParsingAndAstInfrastructureTokenConsumptionAndListParsingO
 
 public procedure validatedParsingAndAstInfrastructureTokenConsumptionAndListParsingObligations() -> usize {
     var count: usize = 0usize
-    if acceptedObligationEntryMatches(
+    if referenceModelObligationEntryMatches(
         "def.TokenConsumptionState",
         11223usize,
-        "HelloUltraviolet::Reference::Parsing",
-        "runParsingItemSequencingReference",
-        "Source/Reference/Parsing/ItemSequencing.uv"
+        "HelloUltraviolet::Audit",
+        "runParsingReferenceModels",
+        "Source/Audit/ParsingReferenceModels.uv"
     ) {
         count = count + 1usize
     }
-    if acceptedObligationEntryMatches(
+    if referenceModelObligationEntryMatches(
         "def.ParseRejectRules",
         11237usize,
-        "HelloUltraviolet::Reference::Parsing",
-        "runParsingItemSequencingReference",
-        "Source/Reference/Parsing/ItemSequencing.uv"
+        "HelloUltraviolet::Audit",
+        "runParsingReferenceModels",
+        "Source/Audit/ParsingReferenceModels.uv"
     ) {
         count = count + 1usize
     }
-    if acceptedObligationEntryMatches(
+    if referenceModelObligationEntryMatches(
         "Tok-Consume-Kind",
         11251usize,
-        "HelloUltraviolet::Reference::Parsing",
-        "runParsingItemSequencingReference",
-        "Source/Reference/Parsing/ItemSequencing.uv"
+        "HelloUltraviolet::Audit",
+        "runParsingReferenceModels",
+        "Source/Audit/ParsingReferenceModels.uv"
     ) {
         count = count + 1usize
     }
-    if acceptedObligationEntryMatches(
+    if referenceModelObligationEntryMatches(
         "Tok-Consume-Keyword",
         11269usize,
-        "HelloUltraviolet::Reference::Parsing",
-        "runParsingItemSequencingReference",
-        "Source/Reference/Parsing/ItemSequencing.uv"
+        "HelloUltraviolet::Audit",
+        "runParsingReferenceModels",
+        "Source/Audit/ParsingReferenceModels.uv"
     ) {
         count = count + 1usize
     }
-    if acceptedObligationEntryMatches(
+    if referenceModelObligationEntryMatches(
         "Tok-Consume-Operator",
         11287usize,
-        "HelloUltraviolet::Reference::Parsing",
-        "runParsingItemSequencingReference",
-        "Source/Reference/Parsing/ItemSequencing.uv"
+        "HelloUltraviolet::Audit",
+        "runParsingReferenceModels",
+        "Source/Audit/ParsingReferenceModels.uv"
     ) {
         count = count + 1usize
     }
-    if acceptedObligationEntryMatches(
+    if referenceModelObligationEntryMatches(
         "Tok-Consume-Punct",
         11305usize,
-        "HelloUltraviolet::Reference::Parsing",
-        "runParsingItemSequencingReference",
-        "Source/Reference/Parsing/ItemSequencing.uv"
+        "HelloUltraviolet::Audit",
+        "runParsingReferenceModels",
+        "Source/Audit/ParsingReferenceModels.uv"
     ) {
         count = count + 1usize
     }
-    if acceptedObligationEntryMatches(
+    if referenceModelObligationEntryMatches(
         "def.ListParsingState",
         11323usize,
-        "HelloUltraviolet::Reference::Parsing",
-        "runParsingItemSequencingReference",
-        "Source/Reference/Parsing/ItemSequencing.uv"
+        "HelloUltraviolet::Audit",
+        "runParsingReferenceModels",
+        "Source/Audit/ParsingReferenceModels.uv"
     ) {
         count = count + 1usize
     }
-    if acceptedObligationEntryMatches(
+    if referenceModelObligationEntryMatches(
         "List-Start",
         11338usize,
-        "HelloUltraviolet::Reference::Parsing",
-        "runParsingItemSequencingReference",
-        "Source/Reference/Parsing/ItemSequencing.uv"
+        "HelloUltraviolet::Audit",
+        "runParsingReferenceModels",
+        "Source/Audit/ParsingReferenceModels.uv"
     ) {
         count = count + 1usize
     }
-    if acceptedObligationEntryMatches(
+    if referenceModelObligationEntryMatches(
         "List-Cons",
         11355usize,
-        "HelloUltraviolet::Reference::Parsing",
-        "runParsingItemSequencingReference",
-        "Source/Reference/Parsing/ItemSequencing.uv"
+        "HelloUltraviolet::Audit",
+        "runParsingReferenceModels",
+        "Source/Audit/ParsingReferenceModels.uv"
     ) {
         count = count + 1usize
     }
-    if acceptedObligationEntryMatches(
+    if referenceModelObligationEntryMatches(
         "List-Done",
         11373usize,
-        "HelloUltraviolet::Reference::Parsing",
-        "runParsingItemSequencingReference",
-        "Source/Reference/Parsing/ItemSequencing.uv"
+        "HelloUltraviolet::Audit",
+        "runParsingReferenceModels",
+        "Source/Audit/ParsingReferenceModels.uv"
     ) {
         count = count + 1usize
     }
-    if acceptedObligationEntryMatches(
+    if referenceModelObligationEntryMatches(
         "def.ListEndSet",
         11391usize,
-        "HelloUltraviolet::Reference::Parsing",
-        "runParsingItemSequencingReference",
-        "Source/Reference/Parsing/ItemSequencing.uv"
+        "HelloUltraviolet::Audit",
+        "runParsingReferenceModels",
+        "Source/Audit/ParsingReferenceModels.uv"
     ) {
         count = count + 1usize
     }
-    if acceptedObligationEntryMatches(
+    if referenceModelObligationEntryMatches(
         "req.ListOpeningParserStateConvention",
         11405usize,
-        "HelloUltraviolet::Reference::Parsing",
-        "runParsingItemSequencingReference",
-        "Source/Reference/Parsing/ItemSequencing.uv"
+        "HelloUltraviolet::Audit",
+        "runParsingReferenceModels",
+        "Source/Audit/ParsingReferenceModels.uv"
     ) {
         count = count + 1usize
     }
-    if acceptedObligationEntryMatches(
+    if referenceModelObligationEntryMatches(
         "def.TrailingComma",
         11419usize,
-        "HelloUltraviolet::Reference::Parsing",
-        "runParsingItemSequencingReference",
-        "Source/Reference/Parsing/ItemSequencing.uv"
+        "HelloUltraviolet::Audit",
+        "runParsingReferenceModels",
+        "Source/Audit/ParsingReferenceModels.uv"
     ) {
         count = count + 1usize
     }
-    if acceptedObligationEntryMatches(
+    if referenceModelObligationEntryMatches(
         "def.TokensBetween",
         11433usize,
-        "HelloUltraviolet::Reference::Parsing",
-        "runParsingItemSequencingReference",
-        "Source/Reference/Parsing/ItemSequencing.uv"
+        "HelloUltraviolet::Audit",
+        "runParsingReferenceModels",
+        "Source/Audit/ParsingReferenceModels.uv"
     ) {
         count = count + 1usize
     }
-    if acceptedObligationEntryMatches(
+    if referenceModelObligationEntryMatches(
         "def.TokLine",
         11447usize,
-        "HelloUltraviolet::Reference::Parsing",
-        "runParsingItemSequencingReference",
-        "Source/Reference/Parsing/ItemSequencing.uv"
+        "HelloUltraviolet::Audit",
+        "runParsingReferenceModels",
+        "Source/Audit/ParsingReferenceModels.uv"
     ) {
         count = count + 1usize
     }
-    if acceptedObligationEntryMatches(
+    if referenceModelObligationEntryMatches(
         "def.TrailingCommaAllowed",
         11461usize,
-        "HelloUltraviolet::Reference::Parsing",
-        "runParsingItemSequencingReference",
-        "Source/Reference/Parsing/ItemSequencing.uv"
+        "HelloUltraviolet::Audit",
+        "runParsingReferenceModels",
+        "Source/Audit/ParsingReferenceModels.uv"
     ) {
         count = count + 1usize
     }
-    if acceptedObligationEntryMatches(
+    if referenceModelObligationEntryMatches(
         "Trailing-Comma-Err",
         11475usize,
-        "HelloUltraviolet::Reference::Parsing",
-        "runParsingItemSequencingReference",
-        "Source/Reference/Parsing/ItemSequencing.uv"
+        "HelloUltraviolet::Audit",
+        "runParsingReferenceModels",
+        "Source/Audit/ParsingReferenceModels.uv"
     ) {
         count = count + 1usize
     }

@@ -194,7 +194,7 @@ public procedure executeTestCommand(
     input: TestCommandInput
 ) -> CommandResultValue {
     let search: ProjectRootSearchValue = findProjectRootFromHost(
-        host~>fileSystem(),
+        host~>io(),
         directoryPath(input.current_directory),
         commandInputPath(TEST_CURRENT_DIRECTORY_TEXT)
     )
@@ -205,7 +205,7 @@ public procedure executeTestCommand(
     let root: ProjectRoot = projectRootSearchRoot(search)
     let load: ProjectLoadValue =
         projectLoadFromHost(
-            host~>fileSystem(),
+            host~>io(),
             host~>heap(),
             diagnostics_region,
             root
@@ -288,7 +288,7 @@ internal procedure executeLoadedTestProject(
     let request: TestDriverRequest = testDriverRequest(
         input.current_directory,
         host~>executablePath(),
-        testTargetCandidateFromArgument(host~>fileSystem(), root, input.target),
+        testTargetCandidateFromArgument(host~>io(), root, input.target),
         targetProfileInputText(input.target_profile),
         outputModeText(input.output_mode)
     )
@@ -317,7 +317,7 @@ internal procedure testCommandRootInputText(target: TestTargetArgumentValue) -> 
 }
 
 internal procedure testTargetCandidateFromArgument(
-    filesystem: $FileSystem,
+    io: $IO,
     root: ProjectRoot,
     target: TestTargetArgumentValue
 ) -> TestTargetCandidateValue {
@@ -326,13 +326,13 @@ internal procedure testTargetCandidateFromArgument(
             absentTestTargetCandidate()
         }
         @Present { text } {
-            testTargetCandidateFromPresentArgument(filesystem, root, text)
+            testTargetCandidateFromPresentArgument(io, root, text)
         }
     }
 }
 
 internal procedure testTargetCandidateFromPresentArgument(
-    filesystem: $FileSystem,
+    io: $IO,
     root: ProjectRoot,
     text: string@View
 ) -> TestTargetCandidateValue {
@@ -343,8 +343,8 @@ internal procedure testTargetCandidateFromPresentArgument(
         return projectRootTestTargetCandidate(text)
     }
 
-    let project_filesystem: $FileSystem = filesystem~>restrict(root.text)
-    let kind: Outcome<FileKind, IoError> = project_filesystem~>kind(text)
+    let project_io: $IO = io~>restrict(root.text)
+    let kind: Outcome<FileKind, IoError> = project_io~>kind(text)
     return if kind is {
         @Value { value } {
             if value is {

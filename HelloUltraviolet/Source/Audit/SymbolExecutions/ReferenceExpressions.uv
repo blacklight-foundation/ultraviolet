@@ -1,13 +1,20 @@
 //! Compiled symbol execution checks for ReferenceExpressions.
 
 using HelloUltraviolet::Reference::Expressions::{ runExpressionsAccessAndPlacesReference }
+using HelloUltraviolet::Reference::Expressions::{ runExpressionsBlockControlReference }
 using HelloUltraviolet::Reference::Expressions::{ runExpressionsCallsReference }
 using HelloUltraviolet::Reference::Expressions::{ runExpressionsCastsAndTransmutesReference }
 using HelloUltraviolet::Reference::Expressions::{ runExpressionsClosuresAndPipelinesReference }
 using HelloUltraviolet::Reference::Expressions::{ runExpressionsConstructionReference }
 using HelloUltraviolet::Reference::Expressions::{ runExpressionsControlReference }
+using HelloUltraviolet::Reference::Expressions::{ runExpressionsControlSurfaceReference }
 using HelloUltraviolet::Reference::Expressions::{ runExpressionsEffectfulCoreReference }
+using HelloUltraviolet::Reference::Expressions::{ runExpressionsIfCaseControlReference }
+using HelloUltraviolet::Reference::Expressions::{ runExpressionsIfControlReference }
+using HelloUltraviolet::Reference::Expressions::{ runExpressionsIfIsControlReference }
+using HelloUltraviolet::Reference::Expressions::{ runExpressionsIteratorLoopControlReference }
 using HelloUltraviolet::Reference::Expressions::{ runExpressionsLiteralsAndNamesReference }
+using HelloUltraviolet::Reference::Expressions::{ runExpressionsLoopControlReference }
 using HelloUltraviolet::Reference::Expressions::{ runExpressionsOperatorsReference }
 
 public procedure catalogCompiledSymbolsExecuteReferenceExpressions(context: Context) -> bool {
@@ -16,6 +23,11 @@ public procedure catalogCompiledSymbolsExecuteReferenceExpressions(context: Cont
         context,
         "runExpressionsAccessAndPlacesReference",
         runExpressionsAccessAndPlacesReference()
+    ) && passed
+    passed = recordCatalogSymbolExecution(
+        context,
+        "runExpressionsBlockControlReference",
+        runExpressionsBlockControlReference()
     ) && passed
     passed = recordCatalogSymbolExecution(
         context,
@@ -44,13 +56,43 @@ public procedure catalogCompiledSymbolsExecuteReferenceExpressions(context: Cont
     ) && passed
     passed = recordCatalogSymbolExecution(
         context,
+        "runExpressionsControlSurfaceReference",
+        runExpressionsControlSurfaceReference()
+    ) && passed
+    passed = recordCatalogSymbolExecution(
+        context,
         "runExpressionsEffectfulCoreReference",
         runExpressionsEffectfulCoreReference()
     ) && passed
     passed = recordCatalogSymbolExecution(
         context,
+        "runExpressionsIfCaseControlReference",
+        runExpressionsIfCaseControlReference()
+    ) && passed
+    passed = recordCatalogSymbolExecution(
+        context,
+        "runExpressionsIfControlReference",
+        runExpressionsIfControlReference()
+    ) && passed
+    passed = recordCatalogSymbolExecution(
+        context,
+        "runExpressionsIfIsControlReference",
+        runExpressionsIfIsControlReference()
+    ) && passed
+    passed = recordCatalogSymbolExecution(
+        context,
+        "runExpressionsIteratorLoopControlReference",
+        runExpressionsIteratorLoopControlReference()
+    ) && passed
+    passed = recordCatalogSymbolExecution(
+        context,
         "runExpressionsLiteralsAndNamesReference",
         runExpressionsLiteralsAndNamesReference()
+    ) && passed
+    passed = recordCatalogSymbolExecution(
+        context,
+        "runExpressionsLoopControlReference",
+        runExpressionsLoopControlReference()
     ) && passed
     passed = recordCatalogSymbolExecution(
         context,

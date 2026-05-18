@@ -1,6 +1,6 @@
 //! Reference specimens for Comptime / CompileTimeCapabilities.
 
-internal procedure compileTimeFileSystemReferenceValue() -> usize {
+internal procedure compileTimeIOReferenceValue() -> usize {
     let project_root_ok: bool =
         [[files]] comptime { files~>project_root() != "" }
     let manifest_exists_ok: bool =
@@ -32,6 +32,6 @@ internal procedure compileTimeDiagnosticsReferenceValue() -> bool {
 
 /// Exercises the Comptime CompileTimeCapabilities reference surface.
 public procedure runComptimeCompileTimeCapabilitiesReference() -> bool {
-    return compileTimeFileSystemReferenceValue() == 1usize &&
+    return compileTimeIOReferenceValue() == 1usize &&
         compileTimeDiagnosticsReferenceValue()
 }

@@ -4,6 +4,7 @@ using HelloUltraviolet::Reference::Attributes::{ runAttributesDiagnosticAttribut
 using HelloUltraviolet::Reference::Attributes::{ runAttributesGeneralAttributesReference }
 using HelloUltraviolet::Reference::Attributes::{ runAttributesLayoutAttributesReference }
 using HelloUltraviolet::Reference::Attributes::{ runAttributesOptimizationAttributesReference }
+using HelloUltraviolet::Reference::Attributes::{ runAttributesSourceNativeTestsReference }
 using HelloUltraviolet::Reference::Attributes::{ runAttributesVendorAttributesReference }
 
 public procedure catalogCompiledSymbolsExecuteReferenceAttributes(context: Context) -> bool {
@@ -27,6 +28,11 @@ public procedure catalogCompiledSymbolsExecuteReferenceAttributes(context: Conte
         context,
         "runAttributesOptimizationAttributesReference",
         runAttributesOptimizationAttributesReference()
+    ) && passed
+    passed = recordCatalogSymbolExecution(
+        context,
+        "runAttributesSourceNativeTestsReference",
+        runAttributesSourceNativeTestsReference()
     ) && passed
     passed = recordCatalogSymbolExecution(
         context,

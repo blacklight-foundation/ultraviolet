@@ -1,6 +1,6 @@
 // Obligation responsibility: Compiler/Project/ModuleDiscovery.uv
 //
-// This file owns source-root validation, filesystem scan interpretation,
+// This file owns source-root validation, io scan interpretation,
 // module-directory classification, compilation-unit construction, and the
 // module-discovery lifecycle:
 //
@@ -437,13 +437,13 @@ public procedure discoverModulesFromSourceRootScan(
 }
 
 public procedure discoverModulesFromHost(
-    filesystem: $FileSystem,
+    io: $IO,
     heap: $HeapAllocator,
     diagnostics_region: unique Region@Active,
     assembly_name: AssemblyName,
     root_directory: DirectoryPath
 ) -> ModuleDiscoveryValue {
-    let root_kind: Outcome<FileKind, IoError> = filesystem~>kind(root_directory.text)
+    let root_kind: Outcome<FileKind, IoError> = io~>kind(root_directory.text)
     let is_directory: bool = if root_kind is {
         @Value { value } {
             moduleDiscoveryFileKindIsDirectory(value)
@@ -466,7 +466,7 @@ public procedure discoverModulesFromHost(
 
     let host_scan: HostModuleScanValue =
         hostModuleScanDirectory(
-            filesystem,
+            io,
             heap,
             diagnostics_region,
             assembly_name,
@@ -512,7 +512,7 @@ public procedure discoverModulesFromHost(
 }
 
 internal procedure hostModuleScanDirectory(
-    filesystem: $FileSystem,
+    io: $IO,
     heap: $HeapAllocator,
     diagnostics_region: unique Region@Active,
     assembly_name: AssemblyName,
@@ -520,11 +520,11 @@ internal procedure hostModuleScanDirectory(
     directory: DirectoryPath
 ) -> HostModuleScanValue {
     let opened: Outcome<unique DirIter@Open, IoError> =
-        filesystem~>open_dir(directory.text)
+        io~>open_dir(directory.text)
     return if move opened is {
         @Value { value } {
             hostModuleScanOpenDirectory(
-                filesystem,
+                io,
                 heap,
                 diagnostics_region,
                 assembly_name,
@@ -549,7 +549,7 @@ internal procedure hostModuleScanDirectory(
 }
 
 internal procedure hostModuleScanOpenDirectory(
-    filesystem: $FileSystem,
+    io: $IO,
     heap: $HeapAllocator,
     diagnostics_region: unique Region@Active,
     assembly_name: AssemblyName,
@@ -576,7 +576,7 @@ internal procedure hostModuleScanOpenDirectory(
                         @Built { text } {
                             let path_view: string@View = string::as_view(text)
                             hostModuleScanEntry(
-                                filesystem,
+                                io,
                                 heap,
                                 diagnostics_region,
                                 assembly_name,
@@ -628,7 +628,7 @@ internal procedure hostModuleScanOpenDirectory(
 }
 
 internal procedure hostModuleScanEntry(
-    filesystem: $FileSystem,
+    io: $IO,
     heap: $HeapAllocator,
     diagnostics_region: unique Region@Active,
     assembly_name: AssemblyName,
@@ -644,7 +644,7 @@ internal procedure hostModuleScanEntry(
     return if entry_kind is {
         FileKind::File {
             hostModuleScanOpenDirectory(
-                filesystem,
+                io,
                 heap,
                 diagnostics_region,
                 assembly_name,
@@ -662,7 +662,7 @@ internal procedure hostModuleScanEntry(
         FileKind::Dir {
             let child_scan: HostModuleScanValue =
                 hostModuleScanDirectory(
-                    filesystem,
+                    io,
                     heap,
                     diagnostics_region,
                     assembly_name,
@@ -672,7 +672,7 @@ internal procedure hostModuleScanEntry(
             return if child_scan is {
                 @Scanned { scans: child_scans, text_storage: child_storage } {
                     hostModuleScanOpenDirectory(
-                        filesystem,
+                        io,
                         heap,
                         diagnostics_region,
                         assembly_name,
@@ -694,7 +694,7 @@ internal procedure hostModuleScanEntry(
         }
         FileKind::Other {
             hostModuleScanOpenDirectory(
-                filesystem,
+                io,
                 heap,
                 diagnostics_region,
                 assembly_name,

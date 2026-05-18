@@ -30,7 +30,7 @@ public procedure runPatternsCaseClausesReference() -> bool {
         }
     }
 
-    let else_result: i32 = if 9 is {
+    let fallback_result: i32 = if 9 is {
         1 {
             10
         }
@@ -62,15 +62,26 @@ public procedure runPatternsCaseClausesReference() -> bool {
         }
     }
 
-    var no_else_score: i32 = 0
+    var tailless_score: i32 = 0
     if 1 is 1 {
-        no_else_score = 1
+        tailless_score = 1
+    }
+
+    let tail_end_value: BasicPatternUnionReference = 5
+    let tail_end_result: i32 = if tail_end_value is {
+        value: i32 {
+            value
+        }
+        value: bool {
+            0
+        }
     }
 
     return head_result == 20 &&
         tail_result == 30 &&
-        else_result == 90 &&
+        fallback_result == 90 &&
         narrowed_result == 1 &&
         complement_result == 12 &&
-        no_else_score == 1
+        tailless_score == 1 &&
+        tail_end_result == 5
 }

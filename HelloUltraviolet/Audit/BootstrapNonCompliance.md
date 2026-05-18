@@ -3842,7 +3842,7 @@ public procedure sharedMutationWithoutKeyReference() -> i32 {
 Observed bootstrap results before repair:
 
 ```text
-ConstMutation: emitted E-SEM-3132 for aggregate const-path mutation
+ConstMutation: emitted the stale assignment diagnostic for aggregate const-path mutation
 UniqueInactiveUse: the initial non-overlapping source shape compiled; the ArgPass source shape correctly exposed E-TYP-1602
 SharedMutationWithoutKey: exited 0 instead of emitting E-TYP-1604
 ReceiverPermissionMismatch: emitted E-TYP-1605 as specified
@@ -3862,12 +3862,10 @@ assignment path checked for read-then-write and covering-key conflicts, but
 when no key was held and no more specific key conflict applied, it marked the
 write as if a key existed and allowed the assignment to compile.
 
-Const mutation also has overlapping SPEC ownership: §10.4.7 names
-`E-TYP-1601` for mutation through a `const` path, while §18.11 names
-`E-SEM-3132` for assignment through `const` permission. The implemented
-reading, recorded in `Audit/SpecClarificationsNeeded.md`, is that aggregate
-const-path mutation exercises `E-TYP-1601`, while direct assignment to a root
-`const` binding keeps the Chapter 18 assignment diagnostic.
+Const mutation is owned by §10.4.7 permission admissibility. Assignment or
+compound assignment through an effective `const` permission exercises
+`E-TYP-1601`; Chapter 18 owns assignment shape, immutable binding, type, and
+provenance diagnostics.
 
 Required bootstrap behavior:
 
@@ -3881,10 +3879,10 @@ Required bootstrap behavior:
 
 Repair:
 
-- Assignment typing now distinguishes root-identifier const assignment from
-  aggregate const-path mutation when routing the diagnostic code.
-- Binding-state assignment diagnostics use the same distinction, preventing a
-  second Chapter 18 diagnostic on the aggregate const-path fixture.
+- Assignment typing now routes effective `const` permission targets to
+  `E-TYP-1601`.
+- Binding-state assignment diagnostics use the same route, preventing a second
+  Chapter 18 diagnostic on const-path fixtures.
 - Shared assignment typing now emits `E-TYP-1604` when no covering write key is
   held and no more specific key-system diagnostic owns the failure.
 - The rejected-source permission fixtures now exercise `E-TYP-1601`,

@@ -487,9 +487,10 @@ using HelloUltraviolet::Reference::Parsing::{ runParsingAttributeParsingReferenc
 using HelloUltraviolet::Reference::Parsing::{ runParsingTerminatorsReference }
 using HelloUltraviolet::Reference::Parsing::{ runParsingRecoverySpecimensReference }
 using HelloUltraviolet::Reference::Authority::{ runAuthorityCapabilitiesReference }
-using HelloUltraviolet::Reference::Authority::{ runAuthorityFileSystemReference }
+using HelloUltraviolet::Reference::Authority::{ runAuthorityIOReference }
 using HelloUltraviolet::Reference::Authority::{ runAuthoritySystemReference }
 using HelloUltraviolet::Reference::Authority::{ runAuthorityTimeReference }
+using HelloUltraviolet::Reference::Authority::{ runAuthorityBuiltinTypeNamesReference }
 using HelloUltraviolet::Reference::Authority::{ runAuthorityNetworkReference }
 using HelloUltraviolet::Reference::Authority::{ runAuthorityRegionsAndFramesReference }
 using HelloUltraviolet::Reference::Authority::{ runAuthorityBindingRuntimeStateReference }
@@ -504,6 +505,7 @@ using HelloUltraviolet::Reference::Types::{ runTypesSubtypingReferenceWithReport
 using HelloUltraviolet::Reference::Types::{ runTypesInferenceReference }
 using HelloUltraviolet::Reference::Types::{ runTypesRefinementsReference }
 using HelloUltraviolet::Reference::Attributes::{ runAttributesGeneralAttributesReference }
+using HelloUltraviolet::Reference::Attributes::{ runAttributesSourceNativeTestsReference }
 using HelloUltraviolet::Reference::Attributes::{ runAttributesVendorAttributesReference }
 using HelloUltraviolet::Reference::Attributes::{ runAttributesLayoutAttributesReference }
 using HelloUltraviolet::Reference::Attributes::{ runAttributesOptimizationAttributesReference }
@@ -672,7 +674,7 @@ public procedure referenceResult(
 }
 
 internal procedure writeReferenceMessage(context: Context, text: string@View) -> bool {
-    let output: Outcome<(), IoError> = context.fs~>write_stderr(text)
+    let output: Outcome<(), IoError> = context.io~>write_stderr(text)
     return if output is {
         @Value {
             true
@@ -3143,8 +3145,8 @@ public procedure runReferenceCorpus(context: Context) -> ReferenceResult {
     ) && passed
     passed = recordReferenceResult(
         context,
-        "runAuthorityFileSystemReference",
-        runAuthorityFileSystemReference()
+        "runAuthorityIOReference",
+        runAuthorityIOReference()
     ) && passed
     passed = recordReferenceResult(
         context,
@@ -3155,6 +3157,11 @@ public procedure runReferenceCorpus(context: Context) -> ReferenceResult {
         context,
         "runAuthorityTimeReference",
         runAuthorityTimeReference(context)
+    ) && passed
+    passed = recordReferenceResult(
+        context,
+        "runAuthorityBuiltinTypeNamesReference",
+        runAuthorityBuiltinTypeNamesReference(context)
     ) && passed
     passed = recordReferenceResult(
         context,
@@ -3220,6 +3227,11 @@ public procedure runReferenceCorpus(context: Context) -> ReferenceResult {
         context,
         "runAttributesGeneralAttributesReference",
         runAttributesGeneralAttributesReference()
+    ) && passed
+    passed = recordReferenceResult(
+        context,
+        "runAttributesSourceNativeTestsReference",
+        runAttributesSourceNativeTestsReference()
     ) && passed
     passed = recordReferenceResult(
         context,

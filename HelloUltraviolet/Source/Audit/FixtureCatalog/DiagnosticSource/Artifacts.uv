@@ -6,9 +6,9 @@ internal procedure diagnosticFixtureArtifactsExist(
     source_path: string@View,
     expected_path: string@View
 ) -> bool {
-    return context.fs~>exists(manifest_path) &&
-        context.fs~>exists(source_path) &&
-        context.fs~>exists(expected_path)
+    return context.io~>exists(manifest_path) &&
+        context.io~>exists(source_path) &&
+        context.io~>exists(expected_path)
 }
 
 public procedure diagnosticSourceFixtureArtifactsExist(context: Context) -> bool {

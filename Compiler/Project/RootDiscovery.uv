@@ -266,13 +266,13 @@ public procedure findProjectRoot(
 }
 
 public procedure findProjectRootFromHost(
-    filesystem: $FileSystem,
+    io: $IO,
     current_directory: DirectoryPath,
     input: CommandInputPath
 ) -> ProjectRootSearchValue {
     let start: DirectoryPath =
-        projectRootHostSearchStart(filesystem, current_directory, input)
-    return findProjectRootHostSearch(filesystem, current_directory, start)
+        projectRootHostSearchStart(io, current_directory, input)
+    return findProjectRootHostSearch(io, current_directory, start)
 }
 
 public procedure projectRootSearchRoot(search: ProjectRootSearchValue) -> ProjectRoot {
@@ -354,7 +354,7 @@ internal procedure parentDirectoryOfResolvedInput(
 }
 
 internal procedure projectRootHostSearchStart(
-    filesystem: $FileSystem,
+    io: $IO,
     current_directory: DirectoryPath,
     input: CommandInputPath
 ) -> DirectoryPath {
@@ -364,7 +364,7 @@ internal procedure projectRootHostSearchStart(
 
     let resolved_path: ResolvedInputPath = resolvedInputPath(input.text)
     let path_kind: ResolvedInputPathKindValue =
-        resolvedInputPathKindFromHost(filesystem, input)
+        resolvedInputPathKindFromHost(io, input)
     let start: DirectoryPath = projectRootSearchStart(resolved_path, path_kind)
     if (projectTextEquals(start.text, ROOT_DISCOVERY_CURRENT_DIRECTORY_TEXT)) {
         return current_directory
@@ -373,10 +373,10 @@ internal procedure projectRootHostSearchStart(
 }
 
 internal procedure resolvedInputPathKindFromHost(
-    filesystem: $FileSystem,
+    io: $IO,
     input: CommandInputPath
 ) -> ResolvedInputPathKindValue {
-    let kind_result: Outcome<FileKind, IoError> = filesystem~>kind(input.text)
+    let kind_result: Outcome<FileKind, IoError> = io~>kind(input.text)
     return if kind_result is {
         @Value { value } {
             resolvedInputPathKindFromFileKind(value)
@@ -404,14 +404,14 @@ internal procedure resolvedInputPathKindFromFileKind(
 }
 
 internal procedure findProjectRootHostSearch(
-    filesystem: $FileSystem,
+    io: $IO,
     current_directory: DirectoryPath,
     start: DirectoryPath
 ) -> ProjectRootSearchValue {
     var current: DirectoryPath = start
 
     loop {
-        if (projectRootManifestExistsAtHostDirectory(filesystem, current)) {
+        if (projectRootManifestExistsAtHostDirectory(io, current)) {
             return foundProjectRoot(
                 projectRootFromHostSearchDirectory(current_directory, current)
             )
@@ -436,11 +436,11 @@ internal procedure findProjectRootHostSearch(
 }
 
 internal procedure projectRootManifestExistsAtHostDirectory(
-    filesystem: $FileSystem,
+    io: $IO,
     directory: DirectoryPath
 ) -> bool {
-    let directory_filesystem: $FileSystem = filesystem~>restrict(directory.text)
-    return directory_filesystem~>exists(ROOT_DISCOVERY_MANIFEST_NAME_TEXT)
+    let directory_io: $IO = io~>restrict(directory.text)
+    return directory_io~>exists(ROOT_DISCOVERY_MANIFEST_NAME_TEXT)
 }
 
 internal procedure projectRootFromHostSearchDirectory(

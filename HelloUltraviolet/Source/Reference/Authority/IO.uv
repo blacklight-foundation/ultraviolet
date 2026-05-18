@@ -1,0 +1,35 @@
+//! Reference specimens for Authority / IO.
+
+internal record IOAuthorityReference {
+    internal can_read: bool
+    internal can_write: bool
+    internal requires_capability: bool
+}
+
+internal procedure ioAuthorityReference(
+    can_read: bool,
+    can_write: bool,
+    requires_capability: bool
+) -> IOAuthorityReference {
+    return IOAuthorityReference {
+        can_read: can_read,
+        can_write: can_write,
+        requires_capability: requires_capability
+    }
+}
+
+internal procedure ioAuthorityCanObserveHost(
+    reference: IOAuthorityReference
+) -> bool {
+    return reference.requires_capability && (reference.can_read || reference.can_write)
+}
+
+/// Exercises the Authority IO reference surface.
+public procedure runAuthorityIOReference() -> bool {
+    let read_only: IOAuthorityReference =
+        ioAuthorityReference(true, false, true)
+    let write_only: IOAuthorityReference =
+        ioAuthorityReference(false, true, true)
+    return ioAuthorityCanObserveHost(read_only) &&
+        ioAuthorityCanObserveHost(write_only)
+}

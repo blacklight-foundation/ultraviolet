@@ -1,7 +1,7 @@
 //! Reference specimens for Authority / Capabilities.
 
 internal enum CapabilityReferenceKind {
-    FileSystem
+    IO
     Network
     HeapAllocator
     Reactor
@@ -30,9 +30,9 @@ internal procedure capabilityHasAuthority(reference: CapabilityReference) -> boo
 
 /// Exercises the Authority Capabilities reference surface.
 public procedure runAuthorityCapabilitiesReference() -> bool {
-    let file_system: CapabilityReference =
-        capabilityReference(CapabilityReferenceKind::FileSystem, true)
+    let io: CapabilityReference =
+        capabilityReference(CapabilityReferenceKind::IO, true)
     let system: CapabilityReference =
         capabilityReference(CapabilityReferenceKind::System, true)
-    return capabilityHasAuthority(file_system) && capabilityHasAuthority(system)
+    return capabilityHasAuthority(io) && capabilityHasAuthority(system)
 }

@@ -7,21 +7,21 @@ public procedure countParsingAndAstInfrastructureParsingDiagnosticsObligations()
 
 public procedure validatedParsingAndAstInfrastructureParsingDiagnosticsObligations() -> usize {
     var count: usize = 0usize
-    if acceptedObligationEntryMatches(
+    if referenceModelObligationEntryMatches(
         "def.ParsingDiagnosticRules",
         12000usize,
-        "HelloUltraviolet::Reference::Parsing",
-        "runParsingItemSequencingReference",
-        "Source/Reference/Parsing/ItemSequencing.uv"
+        "HelloUltraviolet::Audit",
+        "runParsingReferenceModels",
+        "Source/Audit/ParsingReferenceModels.uv"
     ) {
         count = count + 1usize
     }
-    if acceptedObligationEntryMatches(
+    if referenceModelObligationEntryMatches(
         "def.GenericParseRules",
         12014usize,
-        "HelloUltraviolet::Reference::Parsing",
-        "runParsingItemSequencingReference",
-        "Source/Reference/Parsing/ItemSequencing.uv"
+        "HelloUltraviolet::Audit",
+        "runParsingReferenceModels",
+        "Source/Audit/ParsingReferenceModels.uv"
     ) {
         count = count + 1usize
     }

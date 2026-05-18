@@ -84,7 +84,7 @@ Every accepted migration entry must use this format:
   `ast.TestProcedureClassification@L28374`, `def.TestName@L28389`,
   `def.TestCoverage@L28404`, `req.TestAttributeProcedureTarget@L28421`,
   `def.TestAttributeArgsOk@L28435`, `req.TestProcedureShape@L28455`,
-  `req.TestContextAuthority@L28477`,
+  `req.TestAuthority@L28477`,
   `conformance.TestAttributeDynamicSemantics@L28495`,
   `lowering.TestHarnessGeneration@L28516`,
   `def.TestDiscoveryOrder@L28575`, and

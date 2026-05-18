@@ -1,8 +1,9 @@
 //! Compiled symbol execution checks for ReferenceAuthority.
 
 using HelloUltraviolet::Reference::Authority::{ runAuthorityBindingRuntimeStateReference }
+using HelloUltraviolet::Reference::Authority::{ runAuthorityBuiltinTypeNamesReference }
 using HelloUltraviolet::Reference::Authority::{ runAuthorityCapabilitiesReference }
-using HelloUltraviolet::Reference::Authority::{ runAuthorityFileSystemReference }
+using HelloUltraviolet::Reference::Authority::{ runAuthorityIOReference }
 using HelloUltraviolet::Reference::Authority::{ runAuthorityNetworkReference }
 using HelloUltraviolet::Reference::Authority::{ runAuthorityRegionsAndFramesReference }
 using HelloUltraviolet::Reference::Authority::{ runAuthoritySystemReference }
@@ -17,13 +18,18 @@ public procedure catalogCompiledSymbolsExecuteReferenceAuthority(context: Contex
     ) && passed
     passed = recordCatalogSymbolExecution(
         context,
+        "runAuthorityBuiltinTypeNamesReference",
+        runAuthorityBuiltinTypeNamesReference(context)
+    ) && passed
+    passed = recordCatalogSymbolExecution(
+        context,
         "runAuthorityCapabilitiesReference",
         runAuthorityCapabilitiesReference()
     ) && passed
     passed = recordCatalogSymbolExecution(
         context,
-        "runAuthorityFileSystemReference",
-        runAuthorityFileSystemReference()
+        "runAuthorityIOReference",
+        runAuthorityIOReference()
     ) && passed
     passed = recordCatalogSymbolExecution(
         context,

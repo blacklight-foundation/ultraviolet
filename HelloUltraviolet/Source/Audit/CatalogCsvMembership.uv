@@ -37,15 +37,15 @@ public procedure catalogGeneratedObligationKeyCount() -> usize {
 }
 
 public procedure expectedCsvObligationKeyDigest() -> usize {
-    return 683155083usize
+    return 942938030usize
 }
 
 public procedure catalogGeneratedObligationKeyDigest() -> usize {
-    return 683155083usize
+    return 942938030usize
 }
 
 public procedure expectedCsvFileByteCount() -> usize {
-    return 1525375usize
+    return 1524266usize
 }
 
 public procedure expectedCsvFileLineBreakCount() -> usize {
@@ -53,7 +53,7 @@ public procedure expectedCsvFileLineBreakCount() -> usize {
 }
 
 public procedure expectedCsvFileDigest() -> usize {
-    return 831528612usize
+    return 321196447usize
 }
 
 internal procedure csvFileShapeMatches(csv_text: string@View) -> bool {
@@ -68,7 +68,7 @@ internal procedure generatedCatalogKeysMatchCsv() -> bool {
 }
 
 public procedure catalogMatchesCsvObligations(context: Context) -> bool {
-    let read_result: Outcome<unique string@Managed, IoError> = context.fs~>read_file(
+    let read_result: Outcome<unique string@Managed, IoError> = context.io~>read_file(
         "HelloUltraviolet/Audit/UltravioletObligations.csv"
     )
     return if move read_result is {

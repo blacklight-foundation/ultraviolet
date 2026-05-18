@@ -4,8 +4,8 @@ public record HostedSystemContext {
     public sys: System
 }
 
-public record HostedFileSystemContext {
-    public fs: $FileSystem
+public record HostedIOContext {
+    public io: $IO
 }
 
 [[layout(C)]]
@@ -50,12 +50,12 @@ public procedure hostedReferenceLargeEcho(
 }
 
 [[host_export("C")]]
-[[mangle("uv_hosted_reference_fs_probe")]]
-public procedure hostedReferenceFileSystemProbe(
-    context: HostedFileSystemContext,
+[[mangle("uv_hosted_reference_io_probe")]]
+public procedure hostedReferenceIOProbe(
+    context: HostedIOContext,
     fallback: i32
 ) -> i32 {
-    if context.fs~>exists("HelloUltraviolet") {
+    if context.io~>exists("HelloUltraviolet") {
         return fallback + 1
     }
     return fallback

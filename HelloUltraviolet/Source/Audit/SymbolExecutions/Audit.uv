@@ -1,13 +1,19 @@
 //! Compiled symbol execution checks for Audit.
 
-using HelloUltraviolet::Audit::{ specClarificationLedgerIsIndexed }
+using HelloUltraviolet::Audit::{ runParsingReferenceModels }
+using HelloUltraviolet::Audit::{ runSpecClarificationReferenceModels }
 
 public procedure catalogCompiledSymbolsExecuteAudit(context: Context) -> bool {
     var passed: bool = true
     passed = recordCatalogSymbolExecution(
         context,
-        "specClarificationLedgerIsIndexed",
-        specClarificationLedgerIsIndexed()
+        "runParsingReferenceModels",
+        runParsingReferenceModels()
+    ) && passed
+    passed = recordCatalogSymbolExecution(
+        context,
+        "runSpecClarificationReferenceModels",
+        runSpecClarificationReferenceModels()
     ) && passed
     return passed
 }
