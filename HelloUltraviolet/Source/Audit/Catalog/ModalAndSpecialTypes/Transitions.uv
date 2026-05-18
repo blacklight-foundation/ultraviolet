@@ -9,7 +9,7 @@ public procedure validatedModalAndSpecialTypesTransitionsObligations() -> usize 
     var count: usize = 0usize
     if acceptedObligationEntryMatches(
         "grammar.Transitions.Syntax",
-        43769usize,
+        43801usize,
         "HelloUltraviolet::Reference::ModalTypes",
         "runModalTypesTransitionsReference",
         "Source/Reference/ModalTypes/Transitions.uv"
@@ -18,7 +18,7 @@ public procedure validatedModalAndSpecialTypesTransitionsObligations() -> usize 
     }
     if acceptedObligationEntryMatches(
         "rule.13.Parse-StateMember-Transition",
-        43785usize,
+        43817usize,
         "HelloUltraviolet::Reference::ModalTypes",
         "runModalTypesTransitionsReference",
         "Source/Reference/ModalTypes/Transitions.uv"
@@ -27,7 +27,7 @@ public procedure validatedModalAndSpecialTypesTransitionsObligations() -> usize 
     }
     if acceptedObligationEntryMatches(
         "def.TransitionDeclAst",
-        43803usize,
+        43835usize,
         "HelloUltraviolet::Reference::ModalTypes",
         "runModalTypesTransitionsReference",
         "Source/Reference/ModalTypes/Transitions.uv"
@@ -36,7 +36,7 @@ public procedure validatedModalAndSpecialTypesTransitionsObligations() -> usize 
     }
     if acceptedObligationEntryMatches(
         "def.TransitionCollections",
-        43815usize,
+        43847usize,
         "HelloUltraviolet::Reference::ModalTypes",
         "runModalTypesTransitionsReference",
         "Source/Reference/ModalTypes/Transitions.uv"
@@ -45,24 +45,6 @@ public procedure validatedModalAndSpecialTypesTransitionsObligations() -> usize 
     }
     if acceptedObligationEntryMatches(
         "def.LookupTransition",
-        43829usize,
-        "HelloUltraviolet::Reference::ModalTypes",
-        "runModalTypesTransitionsReference",
-        "Source/Reference/ModalTypes/Transitions.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
-        "def.TransitionSig",
-        43842usize,
-        "HelloUltraviolet::Reference::ModalTypes",
-        "runModalTypesTransitionsReference",
-        "Source/Reference/ModalTypes/Transitions.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
-        "rule.13.Transition-Dup",
         43861usize,
         "HelloUltraviolet::Reference::ModalTypes",
         "runModalTypesTransitionsReference",
@@ -71,8 +53,8 @@ public procedure validatedModalAndSpecialTypesTransitionsObligations() -> usize 
         count = count + 1usize
     }
     if acceptedObligationEntryMatches(
-        "rule.13.StateMember-Name-Conflict",
-        43877usize,
+        "def.TransitionSig",
+        43874usize,
         "HelloUltraviolet::Reference::ModalTypes",
         "runModalTypesTransitionsReference",
         "Source/Reference/ModalTypes/Transitions.uv"
@@ -80,7 +62,7 @@ public procedure validatedModalAndSpecialTypesTransitionsObligations() -> usize 
         count = count + 1usize
     }
     if acceptedObligationEntryMatches(
-        "rule.13.WF-Transition",
+        "rule.13.Transition-Dup",
         43893usize,
         "HelloUltraviolet::Reference::ModalTypes",
         "runModalTypesTransitionsReference",
@@ -89,7 +71,7 @@ public procedure validatedModalAndSpecialTypesTransitionsObligations() -> usize 
         count = count + 1usize
     }
     if acceptedObligationEntryMatches(
-        "rule.13.Transition-Target-Err",
+        "rule.13.StateMember-Name-Conflict",
         43909usize,
         "HelloUltraviolet::Reference::ModalTypes",
         "runModalTypesTransitionsReference",
@@ -98,7 +80,7 @@ public procedure validatedModalAndSpecialTypesTransitionsObligations() -> usize 
         count = count + 1usize
     }
     if acceptedObligationEntryMatches(
-        "rule.13.T-Modal-Transition",
+        "rule.13.WF-Transition",
         43925usize,
         "HelloUltraviolet::Reference::ModalTypes",
         "runModalTypesTransitionsReference",
@@ -107,7 +89,7 @@ public procedure validatedModalAndSpecialTypesTransitionsObligations() -> usize 
         count = count + 1usize
     }
     if acceptedObligationEntryMatches(
-        "rule.13.Transition-Source-Err",
+        "rule.13.Transition-Target-Err",
         43941usize,
         "HelloUltraviolet::Reference::ModalTypes",
         "runModalTypesTransitionsReference",
@@ -116,7 +98,7 @@ public procedure validatedModalAndSpecialTypesTransitionsObligations() -> usize 
         count = count + 1usize
     }
     if acceptedObligationEntryMatches(
-        "rule.13.Transition-NotVisible",
+        "rule.13.T-Modal-Transition",
         43957usize,
         "HelloUltraviolet::Reference::ModalTypes",
         "runModalTypesTransitionsReference",
@@ -125,7 +107,7 @@ public procedure validatedModalAndSpecialTypesTransitionsObligations() -> usize 
         count = count + 1usize
     }
     if acceptedObligationEntryMatches(
-        "rule.13.T-Modal-Transition-Body",
+        "rule.13.Transition-Source-Err",
         43973usize,
         "HelloUltraviolet::Reference::ModalTypes",
         "runModalTypesTransitionsReference",
@@ -134,7 +116,7 @@ public procedure validatedModalAndSpecialTypesTransitionsObligations() -> usize 
         count = count + 1usize
     }
     if acceptedObligationEntryMatches(
-        "rule.13.Transition-Body-Err",
+        "rule.13.Transition-NotVisible",
         43989usize,
         "HelloUltraviolet::Reference::ModalTypes",
         "runModalTypesTransitionsReference",
@@ -143,8 +125,26 @@ public procedure validatedModalAndSpecialTypesTransitionsObligations() -> usize 
         count = count + 1usize
     }
     if acceptedObligationEntryMatches(
+        "rule.13.T-Modal-Transition-Body",
+        44005usize,
+        "HelloUltraviolet::Reference::ModalTypes",
+        "runModalTypesTransitionsReference",
+        "Source/Reference/ModalTypes/Transitions.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "rule.13.Transition-Body-Err",
+        44021usize,
+        "HelloUltraviolet::Reference::ModalTypes",
+        "runModalTypesTransitionsReference",
+        "Source/Reference/ModalTypes/Transitions.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
         "def.TransitionMethodTarget",
-        44007usize,
+        44039usize,
         "HelloUltraviolet::Reference::ModalTypes",
         "runModalTypesTransitionsReference",
         "Source/Reference/ModalTypes/Transitions.uv"
@@ -153,7 +153,7 @@ public procedure validatedModalAndSpecialTypesTransitionsObligations() -> usize 
     }
     if acceptedObligationEntryMatches(
         "req.TransitionRuntimeSemantics",
-        44019usize,
+        44051usize,
         "HelloUltraviolet::Reference::ModalTypes",
         "runModalTypesTransitionsReference",
         "Source/Reference/ModalTypes/Transitions.uv"
@@ -162,7 +162,7 @@ public procedure validatedModalAndSpecialTypesTransitionsObligations() -> usize 
     }
     if acceptedObligationEntryMatches(
         "def.IsTransition",
-        44031usize,
+        44063usize,
         "HelloUltraviolet::Reference::ModalTypes",
         "runModalTypesTransitionsReference",
         "Source/Reference/ModalTypes/Transitions.uv"
@@ -171,7 +171,7 @@ public procedure validatedModalAndSpecialTypesTransitionsObligations() -> usize 
     }
     if acceptedObligationEntryMatches(
         "def.TransitionTarget",
-        44043usize,
+        44075usize,
         "HelloUltraviolet::Reference::ModalTypes",
         "runModalTypesTransitionsReference",
         "Source/Reference/ModalTypes/Transitions.uv"
@@ -180,7 +180,7 @@ public procedure validatedModalAndSpecialTypesTransitionsObligations() -> usize 
     }
     if acceptedObligationEntryMatches(
         "rule.13.ApplyTransitionSigma",
-        44055usize,
+        44087usize,
         "HelloUltraviolet::Reference::ModalTypes",
         "runModalTypesTransitionsReference",
         "Source/Reference/ModalTypes/Transitions.uv"
@@ -189,7 +189,7 @@ public procedure validatedModalAndSpecialTypesTransitionsObligations() -> usize 
     }
     if acceptedObligationEntryMatches(
         "def.ExtractReturnValue",
-        44073usize,
+        44105usize,
         "HelloUltraviolet::Reference::ModalTypes",
         "runModalTypesTransitionsReference",
         "Source/Reference/ModalTypes/Transitions.uv"
@@ -198,7 +198,7 @@ public procedure validatedModalAndSpecialTypesTransitionsObligations() -> usize 
     }
     if acceptedObligationEntryMatches(
         "def.ValidateModalState",
-        44086usize,
+        44118usize,
         "HelloUltraviolet::Reference::ModalTypes",
         "runModalTypesTransitionsReference",
         "Source/Reference/ModalTypes/Transitions.uv"
@@ -207,7 +207,7 @@ public procedure validatedModalAndSpecialTypesTransitionsObligations() -> usize 
     }
     if acceptedObligationEntryMatches(
         "req.TransitionLowering",
-        44100usize,
+        44132usize,
         "HelloUltraviolet::Reference::ModalTypes",
         "runModalTypesTransitionsReference",
         "Source/Reference/ModalTypes/Transitions.uv"
@@ -216,7 +216,7 @@ public procedure validatedModalAndSpecialTypesTransitionsObligations() -> usize 
     }
     if acceptedObligationEntryMatches(
         "diag.Transitions",
-        44114usize,
+        44146usize,
         "HelloUltraviolet::Reference::ModalTypes",
         "runModalTypesTransitionsReference",
         "Source/Reference/ModalTypes/Transitions.uv"

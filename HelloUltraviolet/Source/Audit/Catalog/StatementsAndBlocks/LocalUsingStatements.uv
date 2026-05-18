@@ -9,7 +9,7 @@ public procedure validatedStatementsAndBlocksLocalUsingStatementsObligations() -
     var count: usize = 0usize
     if acceptedObligationEntryMatches(
         "grammar.18.LocalUsingStatements",
-        69872usize,
+        69906usize,
         "HelloUltraviolet::Reference::Statements",
         "runStatementsLocalUsingReference",
         "Source/Reference/Statements/LocalUsing.uv"
@@ -18,7 +18,7 @@ public procedure validatedStatementsAndBlocksLocalUsingStatementsObligations() -
     }
     if acceptedObligationEntryMatches(
         "rule.18.Parse-UsingLocal-Stmt",
-        69889usize,
+        69923usize,
         "HelloUltraviolet::Reference::Statements",
         "runStatementsLocalUsingReference",
         "Source/Reference/Statements/LocalUsing.uv"
@@ -27,7 +27,7 @@ public procedure validatedStatementsAndBlocksLocalUsingStatementsObligations() -
     }
     if acceptedObligationEntryMatches(
         "def.18.UsingLocalStmtAst",
-        69907usize,
+        69941usize,
         "HelloUltraviolet::Reference::Statements",
         "runStatementsLocalUsingReference",
         "Source/Reference/Statements/LocalUsing.uv"
@@ -36,7 +36,7 @@ public procedure validatedStatementsAndBlocksLocalUsingStatementsObligations() -
     }
     if acceptedObligationEntryMatches(
         "req.18.UsingLocalUsesUsingAlias",
-        69922usize,
+        69956usize,
         "HelloUltraviolet::Reference::Statements",
         "runStatementsLocalUsingReference",
         "Source/Reference/Statements/LocalUsing.uv"
@@ -45,7 +45,7 @@ public procedure validatedStatementsAndBlocksLocalUsingStatementsObligations() -
     }
     if acceptedObligationEntryMatches(
         "rule.18.T-UsingLocalStmt",
-        69935usize,
+        69969usize,
         "HelloUltraviolet::Reference::Statements",
         "runStatementsLocalUsingReference",
         "Source/Reference/Statements/LocalUsing.uv"
@@ -54,7 +54,7 @@ public procedure validatedStatementsAndBlocksLocalUsingStatementsObligations() -
     }
     if rejectedSourceObligationEntryMatches(
         "rule.18.T-UsingLocalStmt-Err",
-        69951usize,
+        69985usize,
         "HelloUltraviolet::Audit::FixtureCatalog::RejectedSource",
         "validatedStatementsRejectedSourceFixtureCount",
         "Fixtures/RejectedSource/Statements/UsingLocalUnresolved/Source/Main.uv"
@@ -63,7 +63,7 @@ public procedure validatedStatementsAndBlocksLocalUsingStatementsObligations() -
     }
     if acceptedObligationEntryMatches(
         "req.18.UsingLocalAliasIdentity",
-        69967usize,
+        70001usize,
         "HelloUltraviolet::Reference::Statements",
         "runStatementsLocalUsingReference",
         "Source/Reference/Statements/LocalUsing.uv"
@@ -72,7 +72,7 @@ public procedure validatedStatementsAndBlocksLocalUsingStatementsObligations() -
     }
     if acceptedObligationEntryMatches(
         "rule.18.ExecSigma-UsingLocal",
-        69982usize,
+        70016usize,
         "HelloUltraviolet::Reference::Statements",
         "runStatementsLocalUsingReference",
         "Source/Reference/Statements/LocalUsing.uv"
@@ -81,7 +81,7 @@ public procedure validatedStatementsAndBlocksLocalUsingStatementsObligations() -
     }
     if acceptedObligationEntryMatches(
         "req.18.UsingLocalNoRuntimeEffect",
-        69997usize,
+        70031usize,
         "HelloUltraviolet::Reference::Statements",
         "runStatementsLocalUsingReference",
         "Source/Reference/Statements/LocalUsing.uv"
@@ -90,7 +90,7 @@ public procedure validatedStatementsAndBlocksLocalUsingStatementsObligations() -
     }
     if acceptedObligationEntryMatches(
         "rule.18.Lower-Stmt-UsingLocal",
-        70012usize,
+        70046usize,
         "HelloUltraviolet::Reference::Statements",
         "runStatementsLocalUsingReference",
         "Source/Reference/Statements/LocalUsing.uv"
@@ -99,7 +99,7 @@ public procedure validatedStatementsAndBlocksLocalUsingStatementsObligations() -
     }
     if acceptedObligationEntryMatches(
         "req.18.UsingLocalNoRuntimeIR",
-        70027usize,
+        70061usize,
         "HelloUltraviolet::Reference::Statements",
         "runStatementsLocalUsingReference",
         "Source/Reference/Statements/LocalUsing.uv"
@@ -108,7 +108,7 @@ public procedure validatedStatementsAndBlocksLocalUsingStatementsObligations() -
     }
     if rejectedSourceObligationEntryMatches(
         "diag.18.LocalUsingStatements",
-        70042usize,
+        70076usize,
         "HelloUltraviolet::Audit::FixtureCatalog::RejectedSource",
         "validatedStatementsRejectedSourceFixtureCount",
         "Fixtures/RejectedSource/Statements/LocalUsingStatementsDiagnostic/Source/Main.uv"

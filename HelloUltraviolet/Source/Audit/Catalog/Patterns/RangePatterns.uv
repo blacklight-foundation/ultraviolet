@@ -9,7 +9,7 @@ public procedure validatedPatternsRangePatternsObligations() -> usize {
     var count: usize = 0usize
     if acceptedObligationEntryMatches(
         "grammar.17.RangePatterns",
-        66826usize,
+        66860usize,
         "HelloUltraviolet::Reference::Patterns",
         "runPatternsRangePatternsReference",
         "Source/Reference/Patterns/RangePatterns.uv"
@@ -18,7 +18,7 @@ public procedure validatedPatternsRangePatternsObligations() -> usize {
     }
     if acceptedObligationEntryMatches(
         "rule.17.Parse-Pattern",
-        66843usize,
+        66877usize,
         "HelloUltraviolet::Reference::Patterns",
         "runPatternsRangePatternsReference",
         "Source/Reference/Patterns/RangePatterns.uv"
@@ -27,7 +27,7 @@ public procedure validatedPatternsRangePatternsObligations() -> usize {
     }
     if rejectedSourceObligationEntryMatches(
         "rule.17.Parse-Pattern-Err",
-        66859usize,
+        66893usize,
         "HelloUltraviolet::Audit::FixtureCatalog::RejectedSource",
         "validatedPatternsRejectedSourceFixtureCount",
         "Fixtures/RejectedSource/Patterns/ParsePatternError/Source/Main.uv"
@@ -36,24 +36,6 @@ public procedure validatedPatternsRangePatternsObligations() -> usize {
     }
     if acceptedObligationEntryMatches(
         "rule.17.Parse-Pattern-Range-None",
-        66875usize,
-        "HelloUltraviolet::Reference::Patterns",
-        "runPatternsRangePatternsReference",
-        "Source/Reference/Patterns/RangePatterns.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
-        "rule.17.Parse-Pattern-Range",
-        66891usize,
-        "HelloUltraviolet::Reference::Patterns",
-        "runPatternsRangePatternsReference",
-        "Source/Reference/Patterns/RangePatterns.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
-        "def.17.RangePatternAst",
         66909usize,
         "HelloUltraviolet::Reference::Patterns",
         "runPatternsRangePatternsReference",
@@ -62,8 +44,26 @@ public procedure validatedPatternsRangePatternsObligations() -> usize {
         count = count + 1usize
     }
     if acceptedObligationEntryMatches(
-        "rule.17.Pat-Range-R",
+        "rule.17.Parse-Pattern-Range",
         66925usize,
+        "HelloUltraviolet::Reference::Patterns",
+        "runPatternsRangePatternsReference",
+        "Source/Reference/Patterns/RangePatterns.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "def.17.RangePatternAst",
+        66943usize,
+        "HelloUltraviolet::Reference::Patterns",
+        "runPatternsRangePatternsReference",
+        "Source/Reference/Patterns/RangePatterns.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "rule.17.Pat-Range-R",
+        66959usize,
         "HelloUltraviolet::Reference::Patterns",
         "runPatternsRangePatternsReference",
         "Source/Reference/Patterns/RangePatterns.uv"
@@ -72,7 +72,7 @@ public procedure validatedPatternsRangePatternsObligations() -> usize {
     }
     if rejectedSourceObligationEntryMatches(
         "rule.17.RangePattern-NonConst",
-        66941usize,
+        66975usize,
         "HelloUltraviolet::Audit::FixtureCatalog::RejectedSource",
         "validatedPatternsRejectedSourceFixtureCount",
         "Fixtures/RejectedSource/Patterns/RangePatternNonConst/Source/Main.uv"
@@ -81,7 +81,7 @@ public procedure validatedPatternsRangePatternsObligations() -> usize {
     }
     if rejectedSourceObligationEntryMatches(
         "rule.17.RangePattern-Empty",
-        66957usize,
+        66991usize,
         "HelloUltraviolet::Audit::FixtureCatalog::RejectedSource",
         "validatedPatternsRejectedSourceFixtureCount",
         "Fixtures/RejectedSource/Patterns/RangePatternEmpty/Source/Main.uv"
@@ -90,7 +90,7 @@ public procedure validatedPatternsRangePatternsObligations() -> usize {
     }
     if acceptedObligationEntryMatches(
         "def.17.ConstPat",
-        66975usize,
+        67009usize,
         "HelloUltraviolet::Reference::Patterns",
         "runPatternsRangePatternsReference",
         "Source/Reference/Patterns/RangePatterns.uv"
@@ -99,7 +99,7 @@ public procedure validatedPatternsRangePatternsObligations() -> usize {
     }
     if acceptedObligationEntryMatches(
         "rule.17.Match-Range-Inclusive",
-        66988usize,
+        67022usize,
         "HelloUltraviolet::Reference::Patterns",
         "runPatternsRangePatternsReference",
         "Source/Reference/Patterns/RangePatterns.uv"
@@ -108,7 +108,7 @@ public procedure validatedPatternsRangePatternsObligations() -> usize {
     }
     if acceptedObligationEntryMatches(
         "rule.17.Match-Range-Exclusive",
-        67004usize,
+        67038usize,
         "HelloUltraviolet::Reference::Patterns",
         "runPatternsRangePatternsReference",
         "Source/Reference/Patterns/RangePatterns.uv"
@@ -117,7 +117,7 @@ public procedure validatedPatternsRangePatternsObligations() -> usize {
     }
     if acceptedObligationEntryMatches(
         "req.17.RangePatternLoweringShared",
-        67021usize,
+        67055usize,
         "HelloUltraviolet::Reference::Patterns",
         "runPatternsRangePatternsReference",
         "Source/Reference/Patterns/RangePatterns.uv"
@@ -126,7 +126,7 @@ public procedure validatedPatternsRangePatternsObligations() -> usize {
     }
     if rejectedSourceObligationEntryMatches(
         "diag.17.RangePatterns",
-        67036usize,
+        67070usize,
         "HelloUltraviolet::Audit::FixtureCatalog::RejectedSource",
         "validatedPatternsRejectedSourceFixtureCount",
         "Fixtures/RejectedSource/Patterns/RangePatternsDiagnostic/Source/Main.uv"

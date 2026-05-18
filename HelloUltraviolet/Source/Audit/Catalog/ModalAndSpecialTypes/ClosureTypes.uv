@@ -9,7 +9,7 @@ public procedure validatedModalAndSpecialTypesClosureTypesObligations() -> usize
     var count: usize = 0usize
     if acceptedObligationEntryMatches(
         "grammar.ClosureTypes.Syntax",
-        47035usize,
+        47067usize,
         "HelloUltraviolet::Reference::ModalTypes",
         "runModalTypesClosuresReference",
         "Source/Reference/ModalTypes/Closures.uv"
@@ -18,7 +18,7 @@ public procedure validatedModalAndSpecialTypesClosureTypesObligations() -> usize
     }
     if acceptedObligationEntryMatches(
         "req.ClosureParamUnionParentheses",
-        47052usize,
+        47084usize,
         "HelloUltraviolet::Reference::ModalTypes",
         "runModalTypesClosuresReference",
         "Source/Reference/ModalTypes/Closures.uv"
@@ -27,24 +27,6 @@ public procedure validatedModalAndSpecialTypesClosureTypesObligations() -> usize
     }
     if acceptedObligationEntryMatches(
         "rule.13.Parse-Closure-Type",
-        47066usize,
-        "HelloUltraviolet::Reference::ModalTypes",
-        "runModalTypesClosuresReference",
-        "Source/Reference/ModalTypes/Closures.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
-        "rule.13.Parse-Closure-Type-Empty",
-        47082usize,
-        "HelloUltraviolet::Reference::ModalTypes",
-        "runModalTypesClosuresReference",
-        "Source/Reference/ModalTypes/Closures.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
-        "rule.13.Parse-ClosureParamType-Grouped",
         47098usize,
         "HelloUltraviolet::Reference::ModalTypes",
         "runModalTypesClosuresReference",
@@ -53,7 +35,7 @@ public procedure validatedModalAndSpecialTypesClosureTypesObligations() -> usize
         count = count + 1usize
     }
     if acceptedObligationEntryMatches(
-        "rule.13.Parse-ClosureParamType-Plain",
+        "rule.13.Parse-Closure-Type-Empty",
         47114usize,
         "HelloUltraviolet::Reference::ModalTypes",
         "runModalTypesClosuresReference",
@@ -62,7 +44,7 @@ public procedure validatedModalAndSpecialTypesClosureTypesObligations() -> usize
         count = count + 1usize
     }
     if acceptedObligationEntryMatches(
-        "rule.13.Parse-ClosureParamTypeList-Empty",
+        "rule.13.Parse-ClosureParamType-Grouped",
         47130usize,
         "HelloUltraviolet::Reference::ModalTypes",
         "runModalTypesClosuresReference",
@@ -71,7 +53,7 @@ public procedure validatedModalAndSpecialTypesClosureTypesObligations() -> usize
         count = count + 1usize
     }
     if acceptedObligationEntryMatches(
-        "rule.13.Parse-ClosureParamTypeList-Cons",
+        "rule.13.Parse-ClosureParamType-Plain",
         47146usize,
         "HelloUltraviolet::Reference::ModalTypes",
         "runModalTypesClosuresReference",
@@ -80,7 +62,7 @@ public procedure validatedModalAndSpecialTypesClosureTypesObligations() -> usize
         count = count + 1usize
     }
     if acceptedObligationEntryMatches(
-        "rule.13.Parse-ClosureParamTypeListTail-End",
+        "rule.13.Parse-ClosureParamTypeList-Empty",
         47162usize,
         "HelloUltraviolet::Reference::ModalTypes",
         "runModalTypesClosuresReference",
@@ -89,7 +71,7 @@ public procedure validatedModalAndSpecialTypesClosureTypesObligations() -> usize
         count = count + 1usize
     }
     if acceptedObligationEntryMatches(
-        "rule.13.Parse-ClosureParamTypeListTail-TrailingComma",
+        "rule.13.Parse-ClosureParamTypeList-Cons",
         47178usize,
         "HelloUltraviolet::Reference::ModalTypes",
         "runModalTypesClosuresReference",
@@ -98,7 +80,7 @@ public procedure validatedModalAndSpecialTypesClosureTypesObligations() -> usize
         count = count + 1usize
     }
     if acceptedObligationEntryMatches(
-        "rule.13.Parse-ClosureParamTypeListTail-Comma",
+        "rule.13.Parse-ClosureParamTypeListTail-End",
         47194usize,
         "HelloUltraviolet::Reference::ModalTypes",
         "runModalTypesClosuresReference",
@@ -107,7 +89,7 @@ public procedure validatedModalAndSpecialTypesClosureTypesObligations() -> usize
         count = count + 1usize
     }
     if acceptedObligationEntryMatches(
-        "rule.13.Parse-ClosureDepsOpt-None",
+        "rule.13.Parse-ClosureParamTypeListTail-TrailingComma",
         47210usize,
         "HelloUltraviolet::Reference::ModalTypes",
         "runModalTypesClosuresReference",
@@ -116,7 +98,7 @@ public procedure validatedModalAndSpecialTypesClosureTypesObligations() -> usize
         count = count + 1usize
     }
     if acceptedObligationEntryMatches(
-        "rule.13.Parse-ClosureDepsOpt-Some",
+        "rule.13.Parse-ClosureParamTypeListTail-Comma",
         47226usize,
         "HelloUltraviolet::Reference::ModalTypes",
         "runModalTypesClosuresReference",
@@ -125,7 +107,7 @@ public procedure validatedModalAndSpecialTypesClosureTypesObligations() -> usize
         count = count + 1usize
     }
     if acceptedObligationEntryMatches(
-        "rule.13.Parse-SharedDepList-Empty",
+        "rule.13.Parse-ClosureDepsOpt-None",
         47242usize,
         "HelloUltraviolet::Reference::ModalTypes",
         "runModalTypesClosuresReference",
@@ -134,7 +116,7 @@ public procedure validatedModalAndSpecialTypesClosureTypesObligations() -> usize
         count = count + 1usize
     }
     if acceptedObligationEntryMatches(
-        "rule.13.Parse-SharedDepList-Single",
+        "rule.13.Parse-ClosureDepsOpt-Some",
         47258usize,
         "HelloUltraviolet::Reference::ModalTypes",
         "runModalTypesClosuresReference",
@@ -143,7 +125,7 @@ public procedure validatedModalAndSpecialTypesClosureTypesObligations() -> usize
         count = count + 1usize
     }
     if acceptedObligationEntryMatches(
-        "rule.13.Parse-SharedDepList-Cons",
+        "rule.13.Parse-SharedDepList-Empty",
         47274usize,
         "HelloUltraviolet::Reference::ModalTypes",
         "runModalTypesClosuresReference",
@@ -152,7 +134,7 @@ public procedure validatedModalAndSpecialTypesClosureTypesObligations() -> usize
         count = count + 1usize
     }
     if acceptedObligationEntryMatches(
-        "rule.13.Parse-SharedDep",
+        "rule.13.Parse-SharedDepList-Single",
         47290usize,
         "HelloUltraviolet::Reference::ModalTypes",
         "runModalTypesClosuresReference",
@@ -161,8 +143,26 @@ public procedure validatedModalAndSpecialTypesClosureTypesObligations() -> usize
         count = count + 1usize
     }
     if acceptedObligationEntryMatches(
+        "rule.13.Parse-SharedDepList-Cons",
+        47306usize,
+        "HelloUltraviolet::Reference::ModalTypes",
+        "runModalTypesClosuresReference",
+        "Source/Reference/ModalTypes/Closures.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "rule.13.Parse-SharedDep",
+        47322usize,
+        "HelloUltraviolet::Reference::ModalTypes",
+        "runModalTypesClosuresReference",
+        "Source/Reference/ModalTypes/Closures.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
         "def.TypeClosureAst",
-        47308usize,
+        47340usize,
         "HelloUltraviolet::Reference::ModalTypes",
         "runModalTypesClosuresReference",
         "Source/Reference/ModalTypes/Closures.uv"
@@ -171,7 +171,7 @@ public procedure validatedModalAndSpecialTypesClosureTypesObligations() -> usize
     }
     if acceptedObligationEntryMatches(
         "def.ClosureDepsOpt",
-        47320usize,
+        47352usize,
         "HelloUltraviolet::Reference::ModalTypes",
         "runModalTypesClosuresReference",
         "Source/Reference/ModalTypes/Closures.uv"
@@ -180,7 +180,7 @@ public procedure validatedModalAndSpecialTypesClosureTypesObligations() -> usize
     }
     if acceptedObligationEntryMatches(
         "req.ClosureTypeOwnershipBoundaries",
-        47332usize,
+        47364usize,
         "HelloUltraviolet::Reference::ModalTypes",
         "runModalTypesClosuresReference",
         "Source/Reference/ModalTypes/Closures.uv"
@@ -189,24 +189,6 @@ public procedure validatedModalAndSpecialTypesClosureTypesObligations() -> usize
     }
     if acceptedObligationEntryMatches(
         "rule.13.WF-Closure",
-        47346usize,
-        "HelloUltraviolet::Reference::ModalTypes",
-        "runModalTypesClosuresReference",
-        "Source/Reference/ModalTypes/Closures.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
-        "rule.13.T-Equiv-Closure",
-        47362usize,
-        "HelloUltraviolet::Reference::ModalTypes",
-        "runModalTypesClosuresReference",
-        "Source/Reference/ModalTypes/Closures.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
-        "rule.13.Sub-Closure",
         47378usize,
         "HelloUltraviolet::Reference::ModalTypes",
         "runModalTypesClosuresReference",
@@ -215,7 +197,7 @@ public procedure validatedModalAndSpecialTypesClosureTypesObligations() -> usize
         count = count + 1usize
     }
     if acceptedObligationEntryMatches(
-        "req.ClosureExpressionOwnership",
+        "rule.13.T-Equiv-Closure",
         47394usize,
         "HelloUltraviolet::Reference::ModalTypes",
         "runModalTypesClosuresReference",
@@ -224,8 +206,26 @@ public procedure validatedModalAndSpecialTypesClosureTypesObligations() -> usize
         count = count + 1usize
     }
     if acceptedObligationEntryMatches(
+        "rule.13.Sub-Closure",
+        47410usize,
+        "HelloUltraviolet::Reference::ModalTypes",
+        "runModalTypesClosuresReference",
+        "Source/Reference/ModalTypes/Closures.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "req.ClosureExpressionOwnership",
+        47426usize,
+        "HelloUltraviolet::Reference::ModalTypes",
+        "runModalTypesClosuresReference",
+        "Source/Reference/ModalTypes/Closures.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
         "def.ClosureRuntimeValue",
-        47408usize,
+        47440usize,
         "HelloUltraviolet::Reference::ModalTypes",
         "runModalTypesClosuresReference",
         "Source/Reference/ModalTypes/Closures.uv"
@@ -234,7 +234,7 @@ public procedure validatedModalAndSpecialTypesClosureTypesObligations() -> usize
     }
     if acceptedObligationEntryMatches(
         "req.ClosureOperationOwnership",
-        47420usize,
+        47452usize,
         "HelloUltraviolet::Reference::ModalTypes",
         "runModalTypesClosuresReference",
         "Source/Reference/ModalTypes/Closures.uv"
@@ -243,7 +243,7 @@ public procedure validatedModalAndSpecialTypesClosureTypesObligations() -> usize
     }
     if acceptedObligationEntryMatches(
         "def.ClosureLoweringRep",
-        47434usize,
+        47466usize,
         "HelloUltraviolet::Reference::ModalTypes",
         "runModalTypesClosuresReference",
         "Source/Reference/ModalTypes/Closures.uv"
@@ -252,24 +252,6 @@ public procedure validatedModalAndSpecialTypesClosureTypesObligations() -> usize
     }
     if acceptedObligationEntryMatches(
         "rule.13.Size-Closure",
-        47446usize,
-        "HelloUltraviolet::Reference::ModalTypes",
-        "runModalTypesClosuresReference",
-        "Source/Reference/ModalTypes/Closures.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
-        "rule.13.Align-Closure",
-        47462usize,
-        "HelloUltraviolet::Reference::ModalTypes",
-        "runModalTypesClosuresReference",
-        "Source/Reference/ModalTypes/Closures.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
-        "rule.13.Layout-Closure",
         47478usize,
         "HelloUltraviolet::Reference::ModalTypes",
         "runModalTypesClosuresReference",
@@ -278,7 +260,7 @@ public procedure validatedModalAndSpecialTypesClosureTypesObligations() -> usize
         count = count + 1usize
     }
     if acceptedObligationEntryMatches(
-        "req.ClosureLoweringOwnership",
+        "rule.13.Align-Closure",
         47494usize,
         "HelloUltraviolet::Reference::ModalTypes",
         "runModalTypesClosuresReference",
@@ -287,8 +269,26 @@ public procedure validatedModalAndSpecialTypesClosureTypesObligations() -> usize
         count = count + 1usize
     }
     if acceptedObligationEntryMatches(
+        "rule.13.Layout-Closure",
+        47510usize,
+        "HelloUltraviolet::Reference::ModalTypes",
+        "runModalTypesClosuresReference",
+        "Source/Reference/ModalTypes/Closures.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "req.ClosureLoweringOwnership",
+        47526usize,
+        "HelloUltraviolet::Reference::ModalTypes",
+        "runModalTypesClosuresReference",
+        "Source/Reference/ModalTypes/Closures.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
         "diag.ClosureTypes",
-        47508usize,
+        47540usize,
         "HelloUltraviolet::Reference::ModalTypes",
         "runModalTypesClosuresReference",
         "Source/Reference/ModalTypes/Closures.uv"
@@ -297,7 +297,7 @@ public procedure validatedModalAndSpecialTypesClosureTypesObligations() -> usize
     }
     if rejectedSourceObligationEntryMatches(
         "diagnostics.ModalPointerSupplement",
-        47520usize,
+        47552usize,
         "HelloUltraviolet::Audit::FixtureCatalog::RejectedSource",
         "validatedPatternsRejectedSourceFixtureCount",
         "Fixtures/RejectedSource/Patterns/IfCaseModalNonExhaustive/Source/Main.uv"

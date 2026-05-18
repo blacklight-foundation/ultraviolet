@@ -9,7 +9,7 @@ public procedure validatedAbstractionAndPolymorphismAssociatedTypesObligations()
     var count: usize = 0usize
     if acceptedObligationEntryMatches(
         "grammar.14.AssociatedType",
-        50143usize,
+        50175usize,
         "HelloUltraviolet::Reference::Polymorphism",
         "runPolymorphismAssociatedTypesReference",
         "Source/Reference/Polymorphism/AssociatedTypes.uv"
@@ -18,7 +18,7 @@ public procedure validatedAbstractionAndPolymorphismAssociatedTypesObligations()
     }
     if acceptedObligationEntryMatches(
         "req.14.AssociatedTypeEqualsMeaning",
-        50158usize,
+        50190usize,
         "HelloUltraviolet::Reference::Polymorphism",
         "runPolymorphismAssociatedTypesReference",
         "Source/Reference/Polymorphism/AssociatedTypes.uv"
@@ -27,24 +27,6 @@ public procedure validatedAbstractionAndPolymorphismAssociatedTypesObligations()
     }
     if acceptedObligationEntryMatches(
         "rule.14.Parse-ClassItem-AssociatedType",
-        50173usize,
-        "HelloUltraviolet::Reference::Polymorphism",
-        "runPolymorphismAssociatedTypesReference",
-        "Source/Reference/Polymorphism/AssociatedTypes.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
-        "rule.14.Parse-AssocTypeOpt-None",
-        50189usize,
-        "HelloUltraviolet::Reference::Polymorphism",
-        "runPolymorphismAssociatedTypesReference",
-        "Source/Reference/Polymorphism/AssociatedTypes.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
-        "rule.14.Parse-AssocTypeOpt-Yes",
         50205usize,
         "HelloUltraviolet::Reference::Polymorphism",
         "runPolymorphismAssociatedTypesReference",
@@ -53,7 +35,7 @@ public procedure validatedAbstractionAndPolymorphismAssociatedTypesObligations()
         count = count + 1usize
     }
     if acceptedObligationEntryMatches(
-        "rule.14.Parse-AssocTypeDefaultOpt",
+        "rule.14.Parse-AssocTypeOpt-None",
         50221usize,
         "HelloUltraviolet::Reference::Polymorphism",
         "runPolymorphismAssociatedTypesReference",
@@ -62,7 +44,7 @@ public procedure validatedAbstractionAndPolymorphismAssociatedTypesObligations()
         count = count + 1usize
     }
     if acceptedObligationEntryMatches(
-        "rule.14.Parse-RecordMember-AssociatedType",
+        "rule.14.Parse-AssocTypeOpt-Yes",
         50237usize,
         "HelloUltraviolet::Reference::Polymorphism",
         "runPolymorphismAssociatedTypesReference",
@@ -71,8 +53,26 @@ public procedure validatedAbstractionAndPolymorphismAssociatedTypesObligations()
         count = count + 1usize
     }
     if acceptedObligationEntryMatches(
+        "rule.14.Parse-AssocTypeDefaultOpt",
+        50253usize,
+        "HelloUltraviolet::Reference::Polymorphism",
+        "runPolymorphismAssociatedTypesReference",
+        "Source/Reference/Polymorphism/AssociatedTypes.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "rule.14.Parse-RecordMember-AssociatedType",
+        50269usize,
+        "HelloUltraviolet::Reference::Polymorphism",
+        "runPolymorphismAssociatedTypesReference",
+        "Source/Reference/Polymorphism/AssociatedTypes.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
         "def.14.AssociatedTypeDeclAst",
-        50255usize,
+        50287usize,
         "HelloUltraviolet::Reference::Polymorphism",
         "runPolymorphismAssociatedTypesReference",
         "Source/Reference/Polymorphism/AssociatedTypes.uv"
@@ -81,7 +81,7 @@ public procedure validatedAbstractionAndPolymorphismAssociatedTypesObligations()
     }
     if acceptedObligationEntryMatches(
         "def.14.AssociatedTypeAstMembership",
-        50268usize,
+        50300usize,
         "HelloUltraviolet::Reference::Polymorphism",
         "runPolymorphismAssociatedTypesReference",
         "Source/Reference/Polymorphism/AssociatedTypes.uv"
@@ -90,7 +90,7 @@ public procedure validatedAbstractionAndPolymorphismAssociatedTypesObligations()
     }
     if acceptedObligationEntryMatches(
         "def.14.AssociatedTypeClassAbstractDefaulted",
-        50282usize,
+        50314usize,
         "HelloUltraviolet::Reference::Polymorphism",
         "runPolymorphismAssociatedTypesReference",
         "Source/Reference/Polymorphism/AssociatedTypes.uv"
@@ -99,7 +99,7 @@ public procedure validatedAbstractionAndPolymorphismAssociatedTypesObligations()
     }
     if acceptedObligationEntryMatches(
         "def.14.AssocTypeItemsAndNames",
-        50295usize,
+        50327usize,
         "HelloUltraviolet::Reference::Polymorphism",
         "runPolymorphismAssociatedTypesReference",
         "Source/Reference/Polymorphism/AssociatedTypes.uv"
@@ -108,7 +108,7 @@ public procedure validatedAbstractionAndPolymorphismAssociatedTypesObligations()
     }
     if acceptedObligationEntryMatches(
         "def.14.AssocTypeDefault",
-        50309usize,
+        50341usize,
         "HelloUltraviolet::Reference::Polymorphism",
         "runPolymorphismAssociatedTypesReference",
         "Source/Reference/Polymorphism/AssociatedTypes.uv"
@@ -117,7 +117,7 @@ public procedure validatedAbstractionAndPolymorphismAssociatedTypesObligations()
     }
     if acceptedObligationEntryMatches(
         "def.14.ImplAssocType",
-        50323usize,
+        50355usize,
         "HelloUltraviolet::Reference::Polymorphism",
         "runPolymorphismAssociatedTypesReference",
         "Source/Reference/Polymorphism/AssociatedTypes.uv"
@@ -126,7 +126,7 @@ public procedure validatedAbstractionAndPolymorphismAssociatedTypesObligations()
     }
     if acceptedObligationEntryMatches(
         "def.14.AbstractAssociatedTypeNames",
-        50337usize,
+        50369usize,
         "HelloUltraviolet::Reference::Polymorphism",
         "runPolymorphismAssociatedTypesReference",
         "Source/Reference/Polymorphism/AssociatedTypes.uv"
@@ -135,7 +135,7 @@ public procedure validatedAbstractionAndPolymorphismAssociatedTypesObligations()
     }
     if acceptedObligationEntryMatches(
         "def.14.AssocTypeBinding",
-        50350usize,
+        50382usize,
         "HelloUltraviolet::Reference::Polymorphism",
         "runPolymorphismAssociatedTypesReference",
         "Source/Reference/Polymorphism/AssociatedTypes.uv"
@@ -144,7 +144,7 @@ public procedure validatedAbstractionAndPolymorphismAssociatedTypesObligations()
     }
     if acceptedObligationEntryMatches(
         "def.14.AssocTypeBindsPredicate",
-        50365usize,
+        50397usize,
         "HelloUltraviolet::Reference::Polymorphism",
         "runPolymorphismAssociatedTypesReference",
         "Source/Reference/Polymorphism/AssociatedTypes.uv"
@@ -153,7 +153,7 @@ public procedure validatedAbstractionAndPolymorphismAssociatedTypesObligations()
     }
     if acceptedObligationEntryMatches(
         "req.14.GenericParametersAssociatedTypesSupplySites",
-        50380usize,
+        50412usize,
         "HelloUltraviolet::Reference::Polymorphism",
         "runPolymorphismAssociatedTypesReference",
         "Source/Reference/Polymorphism/AssociatedTypes.uv"
@@ -162,7 +162,7 @@ public procedure validatedAbstractionAndPolymorphismAssociatedTypesObligations()
     }
     if rejectedSourceObligationEntryMatches(
         "req.14.AssociatedTypeAbstractAndDefaultBinding",
-        50393usize,
+        50425usize,
         "HelloUltraviolet::Audit::FixtureCatalog::RejectedSource",
         "validatedPolymorphismRejectedSourceFixtureCount",
         "Fixtures/RejectedSource/Polymorphism/AssociatedTypeMissingBinding/Source/Main.uv"
@@ -171,7 +171,7 @@ public procedure validatedAbstractionAndPolymorphismAssociatedTypesObligations()
     }
     if rejectedSourceObligationEntryMatches(
         "req.14.ImplementationAssociatedTypeBoundForm",
-        50406usize,
+        50438usize,
         "HelloUltraviolet::Audit::FixtureCatalog::RejectedSource",
         "validatedPolymorphismRejectedSourceFixtureCount",
         "Fixtures/RejectedSource/Polymorphism/AssociatedTypeUnboundMember/Source/Main.uv"
@@ -180,7 +180,7 @@ public procedure validatedAbstractionAndPolymorphismAssociatedTypesObligations()
     }
     if acceptedObligationEntryMatches(
         "def.14.AssociatedTypeLookupOrder",
-        50419usize,
+        50451usize,
         "HelloUltraviolet::Reference::Polymorphism",
         "runPolymorphismAssociatedTypesReference",
         "Source/Reference/Polymorphism/AssociatedTypes.uv"
@@ -189,7 +189,7 @@ public procedure validatedAbstractionAndPolymorphismAssociatedTypesObligations()
     }
     if acceptedObligationEntryMatches(
         "rule.14.T-Alias-Equiv",
-        50436usize,
+        50468usize,
         "HelloUltraviolet::Reference::Polymorphism",
         "runPolymorphismAssociatedTypesReference",
         "Source/Reference/Polymorphism/AssociatedTypes.uv"
@@ -198,7 +198,7 @@ public procedure validatedAbstractionAndPolymorphismAssociatedTypesObligations()
     }
     if acceptedObligationEntryMatches(
         "req.14.AssociatedTypesNoRuntimeSemantics",
-        50454usize,
+        50486usize,
         "HelloUltraviolet::Reference::Polymorphism",
         "runPolymorphismAssociatedTypesReference",
         "Source/Reference/Polymorphism/AssociatedTypes.uv"
@@ -207,7 +207,7 @@ public procedure validatedAbstractionAndPolymorphismAssociatedTypesObligations()
     }
     if acceptedObligationEntryMatches(
         "req.14.AssociatedTypeErasureLowering",
-        50469usize,
+        50501usize,
         "HelloUltraviolet::Reference::Polymorphism",
         "runPolymorphismAssociatedTypesReference",
         "Source/Reference/Polymorphism/AssociatedTypes.uv"
@@ -216,7 +216,7 @@ public procedure validatedAbstractionAndPolymorphismAssociatedTypesObligations()
     }
     if rejectedSourceObligationEntryMatches(
         "diag.14.AssociatedTypes",
-        50484usize,
+        50516usize,
         "HelloUltraviolet::Audit::FixtureCatalog::RejectedSource",
         "validatedPolymorphismRejectedSourceFixtureCount",
         "Fixtures/RejectedSource/Polymorphism/DuplicateAssociatedTypeName/Source/Main.uv"

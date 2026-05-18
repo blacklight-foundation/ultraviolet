@@ -9,7 +9,7 @@ public procedure validatedKeySystemKeyAcquisitionBlocksObligations() -> usize {
     var count: usize = 0usize
     if acceptedObligationEntryMatches(
         "grammar.19.KeyAcquisitionBlocks",
-        72749usize,
+        72783usize,
         "HelloUltraviolet::Reference::Keys",
         "runKeysAcquisitionBlocksReference",
         "Source/Reference/Keys/AcquisitionBlocks.uv"
@@ -18,7 +18,7 @@ public procedure validatedKeySystemKeyAcquisitionBlocksObligations() -> usize {
     }
     if acceptedObligationEntryMatches(
         "requirement.19.OrderedKeyBlockModifier",
-        72769usize,
+        72803usize,
         "HelloUltraviolet::Reference::Keys",
         "runKeysAcquisitionBlocksReference",
         "Source/Reference/Keys/AcquisitionBlocks.uv"
@@ -27,7 +27,7 @@ public procedure validatedKeySystemKeyAcquisitionBlocksObligations() -> usize {
     }
     if acceptedObligationEntryMatches(
         "parse.19.KeyBlockRules",
-        72784usize,
+        72818usize,
         "HelloUltraviolet::Reference::Keys",
         "runKeysAcquisitionBlocksReference",
         "Source/Reference/Keys/AcquisitionBlocks.uv"
@@ -36,7 +36,7 @@ public procedure validatedKeySystemKeyAcquisitionBlocksObligations() -> usize {
     }
     if acceptedObligationEntryMatches(
         "ast.19.KeyBlockForms",
-        72817usize,
+        72851usize,
         "HelloUltraviolet::Reference::Keys",
         "runKeysAcquisitionBlocksReference",
         "Source/Reference/Keys/AcquisitionBlocks.uv"
@@ -45,7 +45,7 @@ public procedure validatedKeySystemKeyAcquisitionBlocksObligations() -> usize {
     }
     if acceptedObligationEntryMatches(
         "def.19.KeyTriple",
-        72850usize,
+        72884usize,
         "HelloUltraviolet::Reference::Keys",
         "runKeysAcquisitionBlocksReference",
         "Source/Reference/Keys/AcquisitionBlocks.uv"
@@ -54,7 +54,7 @@ public procedure validatedKeySystemKeyAcquisitionBlocksObligations() -> usize {
     }
     if acceptedObligationEntryMatches(
         "rule.19.K-Mode-Read",
-        72876usize,
+        72910usize,
         "HelloUltraviolet::Reference::Keys",
         "runKeysAcquisitionBlocksReference",
         "Source/Reference/Keys/AcquisitionBlocks.uv"
@@ -63,7 +63,7 @@ public procedure validatedKeySystemKeyAcquisitionBlocksObligations() -> usize {
     }
     if acceptedObligationEntryMatches(
         "rule.19.K-Mode-Write",
-        72892usize,
+        72926usize,
         "HelloUltraviolet::Reference::Keys",
         "runKeysAcquisitionBlocksReference",
         "Source/Reference/Keys/AcquisitionBlocks.uv"
@@ -72,7 +72,7 @@ public procedure validatedKeySystemKeyAcquisitionBlocksObligations() -> usize {
     }
     if acceptedObligationEntryMatches(
         "requirement.19.RestrictiveContextApplies",
-        72908usize,
+        72942usize,
         "HelloUltraviolet::Reference::Keys",
         "runKeysAcquisitionBlocksReference",
         "Source/Reference/Keys/AcquisitionBlocks.uv"
@@ -81,7 +81,7 @@ public procedure validatedKeySystemKeyAcquisitionBlocksObligations() -> usize {
     }
     if acceptedObligationEntryMatches(
         "def.19.ReadContexts",
-        72921usize,
+        72955usize,
         "HelloUltraviolet::Reference::Keys",
         "runKeysAcquisitionBlocksReference",
         "Source/Reference/Keys/AcquisitionBlocks.uv"
@@ -90,7 +90,7 @@ public procedure validatedKeySystemKeyAcquisitionBlocksObligations() -> usize {
     }
     if acceptedObligationEntryMatches(
         "def.19.WriteContexts",
-        72943usize,
+        72977usize,
         "HelloUltraviolet::Reference::Keys",
         "runKeysAcquisitionBlocksReference",
         "Source/Reference/Keys/AcquisitionBlocks.uv"
@@ -99,7 +99,7 @@ public procedure validatedKeySystemKeyAcquisitionBlocksObligations() -> usize {
     }
     if acceptedObligationEntryMatches(
         "def.19.KeyStateContext",
-        72966usize,
+        73000usize,
         "HelloUltraviolet::Reference::Keys",
         "runKeysAcquisitionBlocksReference",
         "Source/Reference/Keys/AcquisitionBlocks.uv"
@@ -108,24 +108,6 @@ public procedure validatedKeySystemKeyAcquisitionBlocksObligations() -> usize {
     }
     if acceptedObligationEntryMatches(
         "def.19.Covered",
-        72989usize,
-        "HelloUltraviolet::Reference::Keys",
-        "runKeysAcquisitionBlocksReference",
-        "Source/Reference/Keys/AcquisitionBlocks.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
-        "requirement.19.ValidKeyContext",
-        73004usize,
-        "HelloUltraviolet::Reference::Keys",
-        "runKeysAcquisitionBlocksReference",
-        "Source/Reference/Keys/AcquisitionBlocks.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
-        "rule.19.K-Acquire-New",
         73023usize,
         "HelloUltraviolet::Reference::Keys",
         "runKeysAcquisitionBlocksReference",
@@ -134,8 +116,26 @@ public procedure validatedKeySystemKeyAcquisitionBlocksObligations() -> usize {
         count = count + 1usize
     }
     if acceptedObligationEntryMatches(
+        "requirement.19.ValidKeyContext",
+        73038usize,
+        "HelloUltraviolet::Reference::Keys",
+        "runKeysAcquisitionBlocksReference",
+        "Source/Reference/Keys/AcquisitionBlocks.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "rule.19.K-Acquire-New",
+        73057usize,
+        "HelloUltraviolet::Reference::Keys",
+        "runKeysAcquisitionBlocksReference",
+        "Source/Reference/Keys/AcquisitionBlocks.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
         "rule.19.K-Acquire-Covered",
-        73039usize,
+        73073usize,
         "HelloUltraviolet::Reference::Keys",
         "runKeysAcquisitionBlocksReference",
         "Source/Reference/Keys/AcquisitionBlocks.uv"
@@ -144,7 +144,7 @@ public procedure validatedKeySystemKeyAcquisitionBlocksObligations() -> usize {
     }
     if acceptedObligationEntryMatches(
         "requirement.19.KeyAcquisitionEvaluationOrder",
-        73055usize,
+        73089usize,
         "HelloUltraviolet::Reference::Keys",
         "runKeysAcquisitionBlocksReference",
         "Source/Reference/Keys/AcquisitionBlocks.uv"
@@ -153,24 +153,6 @@ public procedure validatedKeySystemKeyAcquisitionBlocksObligations() -> usize {
     }
     if acceptedObligationEntryMatches(
         "rule.19.K-Block-Acquire",
-        73070usize,
-        "HelloUltraviolet::Reference::Keys",
-        "runKeysAcquisitionBlocksReference",
-        "Source/Reference/Keys/AcquisitionBlocks.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
-        "rule.19.K-Read-Block-No-Write",
-        73086usize,
-        "HelloUltraviolet::Reference::Keys",
-        "runKeysAcquisitionBlocksReference",
-        "Source/Reference/Keys/AcquisitionBlocks.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
-        "requirement.19.KeyCoarseningInlineMarker",
         73104usize,
         "HelloUltraviolet::Reference::Keys",
         "runKeysAcquisitionBlocksReference",
@@ -179,8 +161,26 @@ public procedure validatedKeySystemKeyAcquisitionBlocksObligations() -> usize {
         count = count + 1usize
     }
     if acceptedObligationEntryMatches(
+        "rule.19.K-Read-Block-No-Write",
+        73120usize,
+        "HelloUltraviolet::Reference::Keys",
+        "runKeysAcquisitionBlocksReference",
+        "Source/Reference/Keys/AcquisitionBlocks.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "requirement.19.KeyCoarseningInlineMarker",
+        73138usize,
+        "HelloUltraviolet::Reference::Keys",
+        "runKeysAcquisitionBlocksReference",
+        "Source/Reference/Keys/AcquisitionBlocks.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
         "rule.19.K-Coarsen-Inline",
-        73117usize,
+        73151usize,
         "HelloUltraviolet::Reference::Keys",
         "runKeysAcquisitionBlocksReference",
         "Source/Reference/Keys/AcquisitionBlocks.uv"
@@ -189,7 +189,7 @@ public procedure validatedKeySystemKeyAcquisitionBlocksObligations() -> usize {
     }
     if acceptedObligationEntryMatches(
         "requirement.19.FieldKeyBoundary",
-        73133usize,
+        73167usize,
         "HelloUltraviolet::Reference::Keys",
         "runKeysKeyPathsReference",
         "Source/Reference/Keys/KeyPaths.uv"
@@ -198,7 +198,7 @@ public procedure validatedKeySystemKeyAcquisitionBlocksObligations() -> usize {
     }
     if acceptedObligationEntryMatches(
         "requirement.19.ClosureDependencySetConsumption",
-        73148usize,
+        73182usize,
         "HelloUltraviolet::Reference::Keys",
         "runKeysAcquisitionBlocksReference",
         "Source/Reference/Keys/AcquisitionBlocks.uv"
@@ -207,7 +207,7 @@ public procedure validatedKeySystemKeyAcquisitionBlocksObligations() -> usize {
     }
     if acceptedObligationEntryMatches(
         "def.19.SharedCaptures",
-        73161usize,
+        73195usize,
         "HelloUltraviolet::Reference::Keys",
         "runKeysAcquisitionBlocksReference",
         "Source/Reference/Keys/AcquisitionBlocks.uv"
@@ -216,7 +216,7 @@ public procedure validatedKeySystemKeyAcquisitionBlocksObligations() -> usize {
     }
     if acceptedObligationEntryMatches(
         "def.19.LocalClosureKeyPath",
-        73174usize,
+        73208usize,
         "HelloUltraviolet::Reference::Keys",
         "runKeysAcquisitionBlocksReference",
         "Source/Reference/Keys/AcquisitionBlocks.uv"
@@ -225,7 +225,7 @@ public procedure validatedKeySystemKeyAcquisitionBlocksObligations() -> usize {
     }
     if acceptedObligationEntryMatches(
         "rule.19.K-Closure-Escape-Keys",
-        73191usize,
+        73225usize,
         "HelloUltraviolet::Reference::Keys",
         "runKeysAcquisitionBlocksReference",
         "Source/Reference/Keys/AcquisitionBlocks.uv"
@@ -234,7 +234,7 @@ public procedure validatedKeySystemKeyAcquisitionBlocksObligations() -> usize {
     }
     if rejectedSourceObligationEntryMatches(
         "requirement.19.EscapingClosureSharedLifetime",
-        73207usize,
+        73241usize,
         "HelloUltraviolet::Audit::FixtureCatalog::RejectedSource",
         "validatedKeysRejectedSourceFixtureCount",
         "Fixtures/RejectedSource/Keys/EscapingClosureSharedLifetime/Source/Main.uv"
@@ -243,7 +243,7 @@ public procedure validatedKeySystemKeyAcquisitionBlocksObligations() -> usize {
     }
     if acceptedObligationEntryMatches(
         "requirement.19.EscapingClosureRuntimeIdentityCoverage",
-        73220usize,
+        73254usize,
         "HelloUltraviolet::Reference::Keys",
         "runKeysAcquisitionBlocksReference",
         "Source/Reference/Keys/AcquisitionBlocks.uv"
@@ -252,7 +252,7 @@ public procedure validatedKeySystemKeyAcquisitionBlocksObligations() -> usize {
     }
     if acceptedObligationEntryMatches(
         "requirement.19.KeyBlockCanonicalOrderReferences",
-        73239usize,
+        73273usize,
         "HelloUltraviolet::Reference::Keys",
         "runKeysAcquisitionBlocksReference",
         "Source/Reference/Keys/AcquisitionBlocks.uv"
@@ -261,7 +261,7 @@ public procedure validatedKeySystemKeyAcquisitionBlocksObligations() -> usize {
     }
     if acceptedObligationEntryMatches(
         "def.19.KeyBlockRuntimeJudgments",
-        73252usize,
+        73286usize,
         "HelloUltraviolet::Reference::Keys",
         "runKeysAcquisitionBlocksReference",
         "Source/Reference/Keys/AcquisitionBlocks.uv"
@@ -270,7 +270,7 @@ public procedure validatedKeySystemKeyAcquisitionBlocksObligations() -> usize {
     }
     if acceptedObligationEntryMatches(
         "def.19.AcquireKeysSigma",
-        73265usize,
+        73299usize,
         "HelloUltraviolet::Reference::Keys",
         "runKeysAcquisitionBlocksReference",
         "Source/Reference/Keys/AcquisitionBlocks.uv"
@@ -279,7 +279,7 @@ public procedure validatedKeySystemKeyAcquisitionBlocksObligations() -> usize {
     }
     if acceptedObligationEntryMatches(
         "def.19.ReleaseKeysSigma",
-        73282usize,
+        73316usize,
         "HelloUltraviolet::Reference::Keys",
         "runKeysAcquisitionBlocksReference",
         "Source/Reference/Keys/AcquisitionBlocks.uv"
@@ -288,7 +288,7 @@ public procedure validatedKeySystemKeyAcquisitionBlocksObligations() -> usize {
     }
     if acceptedObligationEntryMatches(
         "def.19.ModeOf",
-        73298usize,
+        73332usize,
         "HelloUltraviolet::Reference::Keys",
         "runKeysAcquisitionBlocksReference",
         "Source/Reference/Keys/AcquisitionBlocks.uv"
@@ -297,7 +297,7 @@ public procedure validatedKeySystemKeyAcquisitionBlocksObligations() -> usize {
     }
     if acceptedObligationEntryMatches(
         "rule.19.ExecSigma-KeyBlock",
-        73315usize,
+        73349usize,
         "HelloUltraviolet::Reference::Keys",
         "runKeysAcquisitionBlocksReference",
         "Source/Reference/Keys/AcquisitionBlocks.uv"
@@ -306,7 +306,7 @@ public procedure validatedKeySystemKeyAcquisitionBlocksObligations() -> usize {
     }
     if acceptedObligationEntryMatches(
         "rule.19.ExecSigma-KeyBlock-Ctrl",
-        73331usize,
+        73365usize,
         "HelloUltraviolet::Reference::Keys",
         "runKeysAcquisitionBlocksReference",
         "Source/Reference/Keys/AcquisitionBlocks.uv"
@@ -315,7 +315,7 @@ public procedure validatedKeySystemKeyAcquisitionBlocksObligations() -> usize {
     }
     if acceptedObligationEntryMatches(
         "rule.19.Step-Exec-KeyBlock-Enter",
-        73347usize,
+        73381usize,
         "HelloUltraviolet::Reference::Keys",
         "runKeysAcquisitionBlocksReference",
         "Source/Reference/Keys/AcquisitionBlocks.uv"
@@ -324,7 +324,7 @@ public procedure validatedKeySystemKeyAcquisitionBlocksObligations() -> usize {
     }
     if acceptedObligationEntryMatches(
         "rule.19.Step-Exec-KeyBlock-Body",
-        73363usize,
+        73397usize,
         "HelloUltraviolet::Reference::Keys",
         "runKeysAcquisitionBlocksReference",
         "Source/Reference/Keys/AcquisitionBlocks.uv"
@@ -333,7 +333,7 @@ public procedure validatedKeySystemKeyAcquisitionBlocksObligations() -> usize {
     }
     if acceptedObligationEntryMatches(
         "rule.19.Step-Exec-KeyBlock-Exit-Ok",
-        73379usize,
+        73413usize,
         "HelloUltraviolet::Reference::Keys",
         "runKeysAcquisitionBlocksReference",
         "Source/Reference/Keys/AcquisitionBlocks.uv"
@@ -342,7 +342,7 @@ public procedure validatedKeySystemKeyAcquisitionBlocksObligations() -> usize {
     }
     if acceptedObligationEntryMatches(
         "rule.19.Step-Exec-KeyBlock-Exit-Ctrl",
-        73395usize,
+        73429usize,
         "HelloUltraviolet::Reference::Keys",
         "runKeysAcquisitionBlocksReference",
         "Source/Reference/Keys/AcquisitionBlocks.uv"
@@ -351,7 +351,7 @@ public procedure validatedKeySystemKeyAcquisitionBlocksObligations() -> usize {
     }
     if acceptedObligationEntryMatches(
         "requirement.19.ScopeExitKeyRelease",
-        73411usize,
+        73445usize,
         "HelloUltraviolet::Reference::Keys",
         "runKeysAcquisitionBlocksReference",
         "Source/Reference/Keys/AcquisitionBlocks.uv"
@@ -360,7 +360,7 @@ public procedure validatedKeySystemKeyAcquisitionBlocksObligations() -> usize {
     }
     if acceptedObligationEntryMatches(
         "requirement.19.LocalClosureInvocationSharedCaptures",
-        73426usize,
+        73460usize,
         "HelloUltraviolet::Reference::Keys",
         "runKeysAcquisitionBlocksReference",
         "Source/Reference/Keys/AcquisitionBlocks.uv"
@@ -369,7 +369,7 @@ public procedure validatedKeySystemKeyAcquisitionBlocksObligations() -> usize {
     }
     if acceptedObligationEntryMatches(
         "requirement.19.EscapingClosureInvocationSharedCaptures",
-        73444usize,
+        73478usize,
         "HelloUltraviolet::Reference::Keys",
         "runKeysAcquisitionBlocksReference",
         "Source/Reference/Keys/AcquisitionBlocks.uv"
@@ -378,7 +378,7 @@ public procedure validatedKeySystemKeyAcquisitionBlocksObligations() -> usize {
     }
     if acceptedObligationEntryMatches(
         "def.19.LowerKeyPathsEmpty",
-        73464usize,
+        73498usize,
         "HelloUltraviolet::Reference::Keys",
         "runKeysAcquisitionBlocksReference",
         "Source/Reference/Keys/AcquisitionBlocks.uv"
@@ -387,7 +387,7 @@ public procedure validatedKeySystemKeyAcquisitionBlocksObligations() -> usize {
     }
     if acceptedObligationEntryMatches(
         "def.19.LowerKeyPathsCons",
-        73477usize,
+        73511usize,
         "HelloUltraviolet::Reference::Keys",
         "runKeysAcquisitionBlocksReference",
         "Source/Reference/Keys/AcquisitionBlocks.uv"
@@ -396,7 +396,7 @@ public procedure validatedKeySystemKeyAcquisitionBlocksObligations() -> usize {
     }
     if acceptedObligationEntryMatches(
         "rule.19.Lower-Stmt-KeyBlock",
-        73490usize,
+        73524usize,
         "HelloUltraviolet::Reference::Keys",
         "runKeysAcquisitionBlocksReference",
         "Source/Reference/Keys/AcquisitionBlocks.uv"
@@ -405,7 +405,7 @@ public procedure validatedKeySystemKeyAcquisitionBlocksObligations() -> usize {
     }
     if acceptedObligationEntryMatches(
         "requirement.19.KeyScopeBound",
-        73511usize,
+        73545usize,
         "HelloUltraviolet::Reference::Keys",
         "runKeysAcquisitionBlocksReference",
         "Source/Reference/Keys/AcquisitionBlocks.uv"
@@ -414,7 +414,7 @@ public procedure validatedKeySystemKeyAcquisitionBlocksObligations() -> usize {
     }
     if rejectedSourceObligationEntryMatches(
         "requirement.19.KeyEscapeRestrictions",
-        73526usize,
+        73560usize,
         "HelloUltraviolet::Audit::FixtureCatalog::RejectedSource",
         "validatedKeysRejectedSourceFixtureCount",
         "Fixtures/RejectedSource/Keys/KeyEscapeDeferredAccess/Source/Main.uv"
@@ -423,7 +423,7 @@ public procedure validatedKeySystemKeyAcquisitionBlocksObligations() -> usize {
     }
     if diagnosticSourceObligationEntryMatches(
         "requirement.19.FineGrainedKeyLoopWarning",
-        73541usize,
+        73575usize,
         "HelloUltraviolet::Audit::FixtureCatalog::DiagnosticSource",
         "validatedKeysDiagnosticSourceFixtureCount",
         "Fixtures/DiagnosticSource/Keys/FineGrainedLoopKeyWarning/Source/Main.uv"
@@ -432,7 +432,7 @@ public procedure validatedKeySystemKeyAcquisitionBlocksObligations() -> usize {
     }
     if rejectedSourceObligationEntryMatches(
         "requirement.19.KeyEscapeDiagnosticPrecedence",
-        73554usize,
+        73588usize,
         "HelloUltraviolet::Audit::FixtureCatalog::RejectedSource",
         "validatedKeysRejectedSourceFixtureCount",
         "Fixtures/RejectedSource/Keys/KeyEscapePrecedence/Source/Main.uv"
@@ -441,7 +441,7 @@ public procedure validatedKeySystemKeyAcquisitionBlocksObligations() -> usize {
     }
     if diagnosticSourceObligationEntryMatches(
         "diagnostics.19.KeyAcquisitionBlocks",
-        73567usize,
+        73601usize,
         "HelloUltraviolet::Audit::FixtureCatalog::DiagnosticSource",
         "validatedKeysDiagnosticSourceFixtureCount",
         "Fixtures/DiagnosticSource/Keys/SharedClosureCaptureWarning/Source/Main.uv"

@@ -9,7 +9,7 @@ public procedure validatedExpressionsLiteralAndNameExpressionsObligations() -> u
     var count: usize = 0usize
     if acceptedObligationEntryMatches(
         "grammar.16.LiteralAndNameExpressions",
-        57444usize,
+        57476usize,
         "HelloUltraviolet::Reference::Expressions",
         "runExpressionsLiteralsAndNamesReference",
         "Source/Reference/Expressions/LiteralsAndNames.uv"
@@ -18,7 +18,7 @@ public procedure validatedExpressionsLiteralAndNameExpressionsObligations() -> u
     }
     if acceptedObligationEntryMatches(
         "req.16.QualifiedApplicationOwnership",
-        57462usize,
+        57494usize,
         "HelloUltraviolet::Reference::Expressions",
         "runExpressionsLiteralsAndNamesReference",
         "Source/Reference/Expressions/LiteralsAndNames.uv"
@@ -27,24 +27,6 @@ public procedure validatedExpressionsLiteralAndNameExpressionsObligations() -> u
     }
     if acceptedObligationEntryMatches(
         "rule.16.Parse-Literal-Expr",
-        57477usize,
-        "HelloUltraviolet::Reference::Expressions",
-        "runExpressionsLiteralsAndNamesReference",
-        "Source/Reference/Expressions/LiteralsAndNames.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
-        "rule.16.Parse-Null-Ptr",
-        57493usize,
-        "HelloUltraviolet::Reference::Expressions",
-        "runExpressionsLiteralsAndNamesReference",
-        "Source/Reference/Expressions/LiteralsAndNames.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
-        "rule.16.Parse-Identifier-Expr",
         57509usize,
         "HelloUltraviolet::Reference::Expressions",
         "runExpressionsLiteralsAndNamesReference",
@@ -53,7 +35,7 @@ public procedure validatedExpressionsLiteralAndNameExpressionsObligations() -> u
         count = count + 1usize
     }
     if acceptedObligationEntryMatches(
-        "rule.16.Parse-Qualified-Name",
+        "rule.16.Parse-Null-Ptr",
         57525usize,
         "HelloUltraviolet::Reference::Expressions",
         "runExpressionsLiteralsAndNamesReference",
@@ -62,8 +44,26 @@ public procedure validatedExpressionsLiteralAndNameExpressionsObligations() -> u
         count = count + 1usize
     }
     if acceptedObligationEntryMatches(
+        "rule.16.Parse-Identifier-Expr",
+        57541usize,
+        "HelloUltraviolet::Reference::Expressions",
+        "runExpressionsLiteralsAndNamesReference",
+        "Source/Reference/Expressions/LiteralsAndNames.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "rule.16.Parse-Qualified-Name",
+        57557usize,
+        "HelloUltraviolet::Reference::Expressions",
+        "runExpressionsLiteralsAndNamesReference",
+        "Source/Reference/Expressions/LiteralsAndNames.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
         "def.16.LiteralKindAndToken",
-        57543usize,
+        57575usize,
         "HelloUltraviolet::Reference::Expressions",
         "runExpressionsLiteralsAndNamesReference",
         "Source/Reference/Expressions/LiteralsAndNames.uv"
@@ -72,7 +72,7 @@ public procedure validatedExpressionsLiteralAndNameExpressionsObligations() -> u
     }
     if acceptedObligationEntryMatches(
         "def.16.LiteralNameExprAst",
-        57557usize,
+        57589usize,
         "HelloUltraviolet::Reference::Expressions",
         "runExpressionsLiteralsAndNamesReference",
         "Source/Reference/Expressions/LiteralsAndNames.uv"
@@ -81,7 +81,7 @@ public procedure validatedExpressionsLiteralAndNameExpressionsObligations() -> u
     }
     if rejectedSourceObligationEntryMatches(
         "def.16.QualifiedNameResolution",
-        57571usize,
+        57603usize,
         "HelloUltraviolet::Audit::FixtureCatalog::RejectedSource",
         "validatedExpressionsRejectedSourceFixtureCount",
         "Fixtures/RejectedSource/Expressions/QualifiedNameResolution/Source/Main.uv"
@@ -90,7 +90,7 @@ public procedure validatedExpressionsLiteralAndNameExpressionsObligations() -> u
     }
     if acceptedObligationEntryMatches(
         "def.16.ValuePathType",
-        57589usize,
+        57621usize,
         "HelloUltraviolet::Reference::Expressions",
         "runExpressionsLiteralsAndNamesReference",
         "Source/Reference/Expressions/LiteralsAndNames.uv"
@@ -99,7 +99,7 @@ public procedure validatedExpressionsLiteralAndNameExpressionsObligations() -> u
     }
     if acceptedObligationEntryMatches(
         "def.16.NumericLiteralTypeSets",
-        57612usize,
+        57644usize,
         "HelloUltraviolet::Reference::Expressions",
         "runExpressionsLiteralsAndNamesReference",
         "Source/Reference/Expressions/LiteralsAndNames.uv"
@@ -108,7 +108,7 @@ public procedure validatedExpressionsLiteralAndNameExpressionsObligations() -> u
     }
     if acceptedObligationEntryMatches(
         "def.16.NumericLiteralParsingHelpers",
-        57629usize,
+        57661usize,
         "HelloUltraviolet::Reference::Expressions",
         "runExpressionsLiteralsAndNamesReference",
         "Source/Reference/Expressions/LiteralsAndNames.uv"
@@ -117,24 +117,6 @@ public procedure validatedExpressionsLiteralAndNameExpressionsObligations() -> u
     }
     if acceptedObligationEntryMatches(
         "rule.16.T-Int-Literal-Suffix",
-        57656usize,
-        "HelloUltraviolet::Reference::Expressions",
-        "runExpressionsLiteralsAndNamesReference",
-        "Source/Reference/Expressions/LiteralsAndNames.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
-        "rule.16.T-Int-Literal-Default",
-        57672usize,
-        "HelloUltraviolet::Reference::Expressions",
-        "runExpressionsLiteralsAndNamesReference",
-        "Source/Reference/Expressions/LiteralsAndNames.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
-        "rule.16.T-Float-Literal-Explicit",
         57688usize,
         "HelloUltraviolet::Reference::Expressions",
         "runExpressionsLiteralsAndNamesReference",
@@ -143,7 +125,7 @@ public procedure validatedExpressionsLiteralAndNameExpressionsObligations() -> u
         count = count + 1usize
     }
     if acceptedObligationEntryMatches(
-        "rule.16.T-Float-Literal-Infer",
+        "rule.16.T-Int-Literal-Default",
         57704usize,
         "HelloUltraviolet::Reference::Expressions",
         "runExpressionsLiteralsAndNamesReference",
@@ -152,7 +134,7 @@ public procedure validatedExpressionsLiteralAndNameExpressionsObligations() -> u
         count = count + 1usize
     }
     if acceptedObligationEntryMatches(
-        "rule.16.T-Bool-Literal",
+        "rule.16.T-Float-Literal-Explicit",
         57720usize,
         "HelloUltraviolet::Reference::Expressions",
         "runExpressionsLiteralsAndNamesReference",
@@ -161,7 +143,7 @@ public procedure validatedExpressionsLiteralAndNameExpressionsObligations() -> u
         count = count + 1usize
     }
     if acceptedObligationEntryMatches(
-        "rule.16.T-Char-Literal",
+        "rule.16.T-Float-Literal-Infer",
         57736usize,
         "HelloUltraviolet::Reference::Expressions",
         "runExpressionsLiteralsAndNamesReference",
@@ -170,7 +152,7 @@ public procedure validatedExpressionsLiteralAndNameExpressionsObligations() -> u
         count = count + 1usize
     }
     if acceptedObligationEntryMatches(
-        "rule.16.T-String-Literal",
+        "rule.16.T-Bool-Literal",
         57752usize,
         "HelloUltraviolet::Reference::Expressions",
         "runExpressionsLiteralsAndNamesReference",
@@ -179,8 +161,26 @@ public procedure validatedExpressionsLiteralAndNameExpressionsObligations() -> u
         count = count + 1usize
     }
     if acceptedObligationEntryMatches(
-        "rule.16.Syn-Literal",
+        "rule.16.T-Char-Literal",
         57768usize,
+        "HelloUltraviolet::Reference::Expressions",
+        "runExpressionsLiteralsAndNamesReference",
+        "Source/Reference/Expressions/LiteralsAndNames.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "rule.16.T-String-Literal",
+        57784usize,
+        "HelloUltraviolet::Reference::Expressions",
+        "runExpressionsLiteralsAndNamesReference",
+        "Source/Reference/Expressions/LiteralsAndNames.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "rule.16.Syn-Literal",
+        57800usize,
         "HelloUltraviolet::Reference::Expressions",
         "runExpressionsLiteralsAndNamesReference",
         "Source/Reference/Expressions/LiteralsAndNames.uv"
@@ -189,7 +189,7 @@ public procedure validatedExpressionsLiteralAndNameExpressionsObligations() -> u
     }
     if rejectedSourceObligationEntryMatches(
         "def.16.NullLiteralExpected",
-        57784usize,
+        57816usize,
         "HelloUltraviolet::Audit::FixtureCatalog::RejectedSource",
         "validatedExpressionsRejectedSourceFixtureCount",
         "Fixtures/RejectedSource/Expressions/NullLiteralExpected/Source/Main.uv"
@@ -198,7 +198,7 @@ public procedure validatedExpressionsLiteralAndNameExpressionsObligations() -> u
     }
     if rejectedSourceObligationEntryMatches(
         "rule.16.Chk-Int-Literal",
-        57797usize,
+        57829usize,
         "HelloUltraviolet::Audit::FixtureCatalog::RejectedSource",
         "validatedExpressionsRejectedSourceFixtureCount",
         "Fixtures/RejectedSource/Expressions/IntLiteralCheckRange/Source/Main.uv"
@@ -207,7 +207,7 @@ public procedure validatedExpressionsLiteralAndNameExpressionsObligations() -> u
     }
     if rejectedSourceObligationEntryMatches(
         "rule.16.Chk-Float-Literal-Explicit",
-        57813usize,
+        57845usize,
         "HelloUltraviolet::Audit::FixtureCatalog::RejectedSource",
         "validatedExpressionsRejectedSourceFixtureCount",
         "Fixtures/RejectedSource/Expressions/FloatLiteralExplicitRequirement/Source/Main.uv"
@@ -216,7 +216,7 @@ public procedure validatedExpressionsLiteralAndNameExpressionsObligations() -> u
     }
     if acceptedObligationEntryMatches(
         "rule.16.Chk-Float-Literal-Infer",
-        57829usize,
+        57861usize,
         "HelloUltraviolet::Reference::Expressions",
         "runExpressionsLiteralsAndNamesReference",
         "Source/Reference/Expressions/LiteralsAndNames.uv"
@@ -225,7 +225,7 @@ public procedure validatedExpressionsLiteralAndNameExpressionsObligations() -> u
     }
     if acceptedObligationEntryMatches(
         "rule.16.Chk-Null-Literal",
-        57845usize,
+        57877usize,
         "HelloUltraviolet::Reference::Expressions",
         "runExpressionsLiteralsAndNamesReference",
         "Source/Reference/Expressions/LiteralsAndNames.uv"
@@ -234,7 +234,7 @@ public procedure validatedExpressionsLiteralAndNameExpressionsObligations() -> u
     }
     if rejectedSourceObligationEntryMatches(
         "def.16.PtrNullExpected",
-        57861usize,
+        57893usize,
         "HelloUltraviolet::Audit::FixtureCatalog::RejectedSource",
         "validatedExpressionsRejectedSourceFixtureCount",
         "Fixtures/RejectedSource/Expressions/PtrNullExpectedRequirement/Source/Main.uv"
@@ -243,7 +243,7 @@ public procedure validatedExpressionsLiteralAndNameExpressionsObligations() -> u
     }
     if acceptedProjectObligationEntryMatches(
         "rule.16.Chk-Null-Ptr",
-        57874usize,
+        57906usize,
         "HelloUltraviolet::Audit::FixtureCatalog::AcceptedProjects",
         "validatedAcceptedProjectFixtureCount",
         "Fixtures/AcceptedProjects/PtrNullReturn/Source/Library.uv"
@@ -252,7 +252,7 @@ public procedure validatedExpressionsLiteralAndNameExpressionsObligations() -> u
     }
     if rejectedSourceObligationEntryMatches(
         "rule.16.Syn-PtrNull-Err",
-        57890usize,
+        57922usize,
         "HelloUltraviolet::Audit::FixtureCatalog::RejectedSource",
         "validatedExpressionsRejectedSourceFixtureCount",
         "Fixtures/RejectedSource/Expressions/PtrNullSynthesis/Source/Main.uv"
@@ -261,7 +261,7 @@ public procedure validatedExpressionsLiteralAndNameExpressionsObligations() -> u
     }
     if rejectedSourceObligationEntryMatches(
         "rule.16.Chk-PtrNull-Err",
-        57906usize,
+        57938usize,
         "HelloUltraviolet::Audit::FixtureCatalog::RejectedSource",
         "validatedExpressionsRejectedSourceFixtureCount",
         "Fixtures/RejectedSource/Expressions/PtrNullCheck/Source/Main.uv"
@@ -270,7 +270,7 @@ public procedure validatedExpressionsLiteralAndNameExpressionsObligations() -> u
     }
     if acceptedObligationEntryMatches(
         "rule.16.T-Ident",
-        57922usize,
+        57954usize,
         "HelloUltraviolet::Reference::Expressions",
         "runExpressionsLiteralsAndNamesReference",
         "Source/Reference/Expressions/LiteralsAndNames.uv"
@@ -279,7 +279,7 @@ public procedure validatedExpressionsLiteralAndNameExpressionsObligations() -> u
     }
     if acceptedObligationEntryMatches(
         "rule.16.T-Path-Value",
-        57938usize,
+        57970usize,
         "HelloUltraviolet::Reference::Expressions",
         "runExpressionsLiteralsAndNamesReference",
         "Source/Reference/Expressions/LiteralsAndNames.uv"
@@ -288,7 +288,7 @@ public procedure validatedExpressionsLiteralAndNameExpressionsObligations() -> u
     }
     if rejectedSourceObligationEntryMatches(
         "rule.16.Expr-Unresolved-Err",
-        57954usize,
+        57986usize,
         "HelloUltraviolet::Audit::FixtureCatalog::RejectedSource",
         "validatedExpressionsRejectedSourceFixtureCount",
         "Fixtures/RejectedSource/Expressions/ExprUnresolved/Source/Main.uv"
@@ -297,7 +297,7 @@ public procedure validatedExpressionsLiteralAndNameExpressionsObligations() -> u
     }
     if rejectedSourceObligationEntryMatches(
         "req.16.QualifiedNameEliminatedBeforeTyping",
-        57970usize,
+        58002usize,
         "HelloUltraviolet::Audit::FixtureCatalog::RejectedSource",
         "validatedExpressionsRejectedSourceFixtureCount",
         "Fixtures/RejectedSource/Expressions/QualifiedNameEliminatedBeforeTyping/Source/Main.uv"
@@ -306,7 +306,7 @@ public procedure validatedExpressionsLiteralAndNameExpressionsObligations() -> u
     }
     if acceptedObligationEntryMatches(
         "def.16.EvaluationJudgements",
-        57985usize,
+        58017usize,
         "HelloUltraviolet::Reference::Expressions",
         "runExpressionsLiteralsAndNamesReference",
         "Source/Reference/Expressions/LiteralsAndNames.uv"
@@ -315,7 +315,7 @@ public procedure validatedExpressionsLiteralAndNameExpressionsObligations() -> u
     }
     if acceptedObligationEntryMatches(
         "def.16.LiteralRuntimeValues",
-        58000usize,
+        58032usize,
         "HelloUltraviolet::Reference::Expressions",
         "runExpressionsLiteralsAndNamesReference",
         "Source/Reference/Expressions/LiteralsAndNames.uv"
@@ -324,7 +324,7 @@ public procedure validatedExpressionsLiteralAndNameExpressionsObligations() -> u
     }
     if acceptedObligationEntryMatches(
         "rule.16.EvalSigma-Literal",
-        58021usize,
+        58053usize,
         "HelloUltraviolet::Reference::Expressions",
         "runExpressionsLiteralsAndNamesReference",
         "Source/Reference/Expressions/LiteralsAndNames.uv"
@@ -333,7 +333,7 @@ public procedure validatedExpressionsLiteralAndNameExpressionsObligations() -> u
     }
     if acceptedObligationEntryMatches(
         "rule.16.EvalSigma-PtrNull",
-        58037usize,
+        58069usize,
         "HelloUltraviolet::Reference::Expressions",
         "runExpressionsLiteralsAndNamesReference",
         "Source/Reference/Expressions/LiteralsAndNames.uv"
@@ -342,24 +342,6 @@ public procedure validatedExpressionsLiteralAndNameExpressionsObligations() -> u
     }
     if acceptedObligationEntryMatches(
         "rule.16.EvalSigma-Ident",
-        58052usize,
-        "HelloUltraviolet::Reference::Expressions",
-        "runExpressionsLiteralsAndNamesReference",
-        "Source/Reference/Expressions/LiteralsAndNames.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
-        "rule.16.EvalSigma-Path",
-        58068usize,
-        "HelloUltraviolet::Reference::Expressions",
-        "runExpressionsLiteralsAndNamesReference",
-        "Source/Reference/Expressions/LiteralsAndNames.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
-        "rule.16.EvalSigma-ErrorExpr",
         58084usize,
         "HelloUltraviolet::Reference::Expressions",
         "runExpressionsLiteralsAndNamesReference",
@@ -368,8 +350,26 @@ public procedure validatedExpressionsLiteralAndNameExpressionsObligations() -> u
         count = count + 1usize
     }
     if acceptedObligationEntryMatches(
+        "rule.16.EvalSigma-Path",
+        58100usize,
+        "HelloUltraviolet::Reference::Expressions",
+        "runExpressionsLiteralsAndNamesReference",
+        "Source/Reference/Expressions/LiteralsAndNames.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "rule.16.EvalSigma-ErrorExpr",
+        58116usize,
+        "HelloUltraviolet::Reference::Expressions",
+        "runExpressionsLiteralsAndNamesReference",
+        "Source/Reference/Expressions/LiteralsAndNames.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
         "req.16.NamePathEvaluationMayPanicForPoisonedModules",
-        58099usize,
+        58131usize,
         "HelloUltraviolet::Reference::Expressions",
         "runExpressionsLiteralsAndNamesReference",
         "Source/Reference/Expressions/LiteralsAndNames.uv"
@@ -378,7 +378,7 @@ public procedure validatedExpressionsLiteralAndNameExpressionsObligations() -> u
     }
     if acceptedObligationEntryMatches(
         "rule.16.Lower-Expr-Literal",
-        58114usize,
+        58146usize,
         "HelloUltraviolet::Reference::Expressions",
         "runExpressionsLiteralsAndNamesReference",
         "Source/Reference/Expressions/LiteralsAndNames.uv"
@@ -387,7 +387,7 @@ public procedure validatedExpressionsLiteralAndNameExpressionsObligations() -> u
     }
     if acceptedObligationEntryMatches(
         "rule.16.Lower-Expr-PtrNull",
-        58130usize,
+        58162usize,
         "HelloUltraviolet::Reference::Expressions",
         "runExpressionsLiteralsAndNamesReference",
         "Source/Reference/Expressions/LiteralsAndNames.uv"
@@ -396,24 +396,6 @@ public procedure validatedExpressionsLiteralAndNameExpressionsObligations() -> u
     }
     if acceptedObligationEntryMatches(
         "rule.16.Lower-Expr-Ident-Local",
-        58145usize,
-        "HelloUltraviolet::Reference::Expressions",
-        "runExpressionsLiteralsAndNamesReference",
-        "Source/Reference/Expressions/LiteralsAndNames.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
-        "rule.16.Lower-Expr-Ident-Path",
-        58161usize,
-        "HelloUltraviolet::Reference::Expressions",
-        "runExpressionsLiteralsAndNamesReference",
-        "Source/Reference/Expressions/LiteralsAndNames.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
-        "rule.16.Lower-Expr-Path",
         58177usize,
         "HelloUltraviolet::Reference::Expressions",
         "runExpressionsLiteralsAndNamesReference",
@@ -422,8 +404,26 @@ public procedure validatedExpressionsLiteralAndNameExpressionsObligations() -> u
         count = count + 1usize
     }
     if acceptedObligationEntryMatches(
+        "rule.16.Lower-Expr-Ident-Path",
+        58193usize,
+        "HelloUltraviolet::Reference::Expressions",
+        "runExpressionsLiteralsAndNamesReference",
+        "Source/Reference/Expressions/LiteralsAndNames.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "rule.16.Lower-Expr-Path",
+        58209usize,
+        "HelloUltraviolet::Reference::Expressions",
+        "runExpressionsLiteralsAndNamesReference",
+        "Source/Reference/Expressions/LiteralsAndNames.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
         "rule.16.Lower-Expr-Error",
-        58192usize,
+        58224usize,
         "HelloUltraviolet::Reference::Expressions",
         "runExpressionsLiteralsAndNamesReference",
         "Source/Reference/Expressions/LiteralsAndNames.uv"
@@ -432,7 +432,7 @@ public procedure validatedExpressionsLiteralAndNameExpressionsObligations() -> u
     }
     if rejectedSourceObligationEntryMatches(
         "diag.16.LiteralAndNameExpressions",
-        58209usize,
+        58241usize,
         "HelloUltraviolet::Audit::FixtureCatalog::RejectedSource",
         "validatedExpressionsRejectedSourceFixtureCount",
         "Fixtures/RejectedSource/Expressions/FloatSuffixMismatch/Source/Main.uv"

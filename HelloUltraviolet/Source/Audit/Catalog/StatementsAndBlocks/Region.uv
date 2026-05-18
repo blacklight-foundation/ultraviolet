@@ -9,7 +9,7 @@ public procedure validatedStatementsAndBlocksRegionObligations() -> usize {
     var count: usize = 0usize
     if acceptedObligationEntryMatches(
         "grammar.18.Region",
-        70892usize,
+        70926usize,
         "HelloUltraviolet::Reference::Statements",
         "runStatementsRegionReference",
         "Source/Reference/Statements/Region.uv"
@@ -18,7 +18,7 @@ public procedure validatedStatementsAndBlocksRegionObligations() -> usize {
     }
     if acceptedObligationEntryMatches(
         "rule.18.Parse-Region-Opts-None",
-        70911usize,
+        70945usize,
         "HelloUltraviolet::Reference::Statements",
         "runStatementsRegionReference",
         "Source/Reference/Statements/Region.uv"
@@ -27,7 +27,7 @@ public procedure validatedStatementsAndBlocksRegionObligations() -> usize {
     }
     if acceptedObligationEntryMatches(
         "rule.18.Parse-Region-Opts-Some",
-        70927usize,
+        70961usize,
         "HelloUltraviolet::Reference::Statements",
         "runStatementsRegionReference",
         "Source/Reference/Statements/Region.uv"
@@ -36,7 +36,7 @@ public procedure validatedStatementsAndBlocksRegionObligations() -> usize {
     }
     if acceptedObligationEntryMatches(
         "rule.18.Parse-Region-Alias-None",
-        70943usize,
+        70977usize,
         "HelloUltraviolet::Reference::Statements",
         "runStatementsRegionReference",
         "Source/Reference/Statements/Region.uv"
@@ -45,24 +45,6 @@ public procedure validatedStatementsAndBlocksRegionObligations() -> usize {
     }
     if acceptedObligationEntryMatches(
         "rule.18.Parse-Region-Alias-Some",
-        70959usize,
-        "HelloUltraviolet::Reference::Statements",
-        "runStatementsRegionReference",
-        "Source/Reference/Statements/Region.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
-        "rule.18.Parse-Region-Stmt",
-        70975usize,
-        "HelloUltraviolet::Reference::Statements",
-        "runStatementsRegionReference",
-        "Source/Reference/Statements/Region.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
-        "def.18.RegionStmtAst",
         70993usize,
         "HelloUltraviolet::Reference::Statements",
         "runStatementsRegionReference",
@@ -71,8 +53,26 @@ public procedure validatedStatementsAndBlocksRegionObligations() -> usize {
         count = count + 1usize
     }
     if acceptedObligationEntryMatches(
+        "rule.18.Parse-Region-Stmt",
+        71009usize,
+        "HelloUltraviolet::Reference::Statements",
+        "runStatementsRegionReference",
+        "Source/Reference/Statements/Region.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "def.18.RegionStmtAst",
+        71027usize,
+        "HelloUltraviolet::Reference::Statements",
+        "runStatementsRegionReference",
+        "Source/Reference/Statements/Region.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
         "def.18.RegionTypeAndFreshNameHelpers",
-        71006usize,
+        71040usize,
         "HelloUltraviolet::Reference::Statements",
         "runStatementsRegionReference",
         "Source/Reference/Statements/Region.uv"
@@ -81,7 +81,7 @@ public procedure validatedStatementsAndBlocksRegionObligations() -> usize {
     }
     if acceptedObligationEntryMatches(
         "def.18.RegionOptsExpr",
-        71020usize,
+        71054usize,
         "HelloUltraviolet::Reference::Statements",
         "runStatementsRegionReference",
         "Source/Reference/Statements/Region.uv"
@@ -90,7 +90,7 @@ public procedure validatedStatementsAndBlocksRegionObligations() -> usize {
     }
     if acceptedObligationEntryMatches(
         "def.18.RegionBind",
-        71036usize,
+        71070usize,
         "HelloUltraviolet::Reference::Statements",
         "runStatementsRegionReference",
         "Source/Reference/Statements/Region.uv"
@@ -99,7 +99,7 @@ public procedure validatedStatementsAndBlocksRegionObligations() -> usize {
     }
     if acceptedObligationEntryMatches(
         "rule.18.T-RegionStmt",
-        71051usize,
+        71085usize,
         "HelloUltraviolet::Reference::Statements",
         "runStatementsRegionReference",
         "Source/Reference/Statements/Region.uv"
@@ -108,7 +108,7 @@ public procedure validatedStatementsAndBlocksRegionObligations() -> usize {
     }
     if acceptedObligationEntryMatches(
         "req.18.AnonymousRegionSyntheticBinding",
-        71067usize,
+        71101usize,
         "HelloUltraviolet::Reference::Statements",
         "runStatementsRegionReference",
         "Source/Reference/Statements/Region.uv"
@@ -117,7 +117,7 @@ public procedure validatedStatementsAndBlocksRegionObligations() -> usize {
     }
     if acceptedObligationEntryMatches(
         "req.18.RegionBindingState",
-        71080usize,
+        71114usize,
         "HelloUltraviolet::Reference::Statements",
         "runStatementsRegionReference",
         "Source/Reference/Statements/Region.uv"
@@ -126,7 +126,7 @@ public procedure validatedStatementsAndBlocksRegionObligations() -> usize {
     }
     if acceptedObligationEntryMatches(
         "req.18.RegionProvenance",
-        71093usize,
+        71127usize,
         "HelloUltraviolet::Reference::Statements",
         "runStatementsRegionReference",
         "Source/Reference/Statements/Region.uv"
@@ -135,7 +135,7 @@ public procedure validatedStatementsAndBlocksRegionObligations() -> usize {
     }
     if acceptedObligationEntryMatches(
         "def.18.BindRegionAlias",
-        71108usize,
+        71142usize,
         "HelloUltraviolet::Reference::Statements",
         "runStatementsRegionReference",
         "Source/Reference/Statements/Region.uv"
@@ -144,7 +144,7 @@ public procedure validatedStatementsAndBlocksRegionObligations() -> usize {
     }
     if acceptedObligationEntryMatches(
         "rule.18.ExecSigma-Region",
-        71122usize,
+        71156usize,
         "HelloUltraviolet::Reference::Statements",
         "runStatementsRegionReference",
         "Source/Reference/Statements/Region.uv"
@@ -153,7 +153,7 @@ public procedure validatedStatementsAndBlocksRegionObligations() -> usize {
     }
     if acceptedObligationEntryMatches(
         "rule.18.ExecSigma-Region-Ctrl",
-        71138usize,
+        71172usize,
         "HelloUltraviolet::Reference::Statements",
         "runStatementsRegionReference",
         "Source/Reference/Statements/Region.uv"
@@ -162,7 +162,7 @@ public procedure validatedStatementsAndBlocksRegionObligations() -> usize {
     }
     if acceptedObligationEntryMatches(
         "def.18.RegionRelease",
-        71154usize,
+        71188usize,
         "HelloUltraviolet::Reference::Statements",
         "runStatementsRegionReference",
         "Source/Reference/Statements/Region.uv"
@@ -171,7 +171,7 @@ public procedure validatedStatementsAndBlocksRegionObligations() -> usize {
     }
     if acceptedObligationEntryMatches(
         "rule.18.Step-Exec-Region-Enter",
-        71167usize,
+        71201usize,
         "HelloUltraviolet::Reference::Statements",
         "runStatementsRegionReference",
         "Source/Reference/Statements/Region.uv"
@@ -180,7 +180,7 @@ public procedure validatedStatementsAndBlocksRegionObligations() -> usize {
     }
     if acceptedObligationEntryMatches(
         "rule.18.Step-Exec-Region-Enter-Ctrl",
-        71183usize,
+        71217usize,
         "HelloUltraviolet::Reference::Statements",
         "runStatementsRegionReference",
         "Source/Reference/Statements/Region.uv"
@@ -189,7 +189,7 @@ public procedure validatedStatementsAndBlocksRegionObligations() -> usize {
     }
     if acceptedObligationEntryMatches(
         "rule.18.Step-Exec-Region-Body",
-        71199usize,
+        71233usize,
         "HelloUltraviolet::Reference::Statements",
         "runStatementsRegionReference",
         "Source/Reference/Statements/Region.uv"
@@ -198,7 +198,7 @@ public procedure validatedStatementsAndBlocksRegionObligations() -> usize {
     }
     if acceptedObligationEntryMatches(
         "rule.18.Step-Exec-Region-Exit-Ok",
-        71215usize,
+        71249usize,
         "HelloUltraviolet::Reference::Statements",
         "runStatementsRegionReference",
         "Source/Reference/Statements/Region.uv"
@@ -207,7 +207,7 @@ public procedure validatedStatementsAndBlocksRegionObligations() -> usize {
     }
     if acceptedObligationEntryMatches(
         "rule.18.Step-Exec-Region-Exit-Ctrl",
-        71231usize,
+        71265usize,
         "HelloUltraviolet::Reference::Statements",
         "runStatementsRegionReference",
         "Source/Reference/Statements/Region.uv"
@@ -216,7 +216,7 @@ public procedure validatedStatementsAndBlocksRegionObligations() -> usize {
     }
     if acceptedObligationEntryMatches(
         "rule.18.Lower-Stmt-Region",
-        71249usize,
+        71283usize,
         "HelloUltraviolet::Reference::Statements",
         "runStatementsRegionReference",
         "Source/Reference/Statements/Region.uv"
@@ -225,7 +225,7 @@ public procedure validatedStatementsAndBlocksRegionObligations() -> usize {
     }
     if rejectedSourceObligationEntryMatches(
         "diag.18.Region",
-        71267usize,
+        71301usize,
         "HelloUltraviolet::Audit::FixtureCatalog::RejectedSource",
         "validatedStatementsRejectedSourceFixtureCount",
         "Fixtures/RejectedSource/Statements/RegionDiagnostic/Source/Main.uv"

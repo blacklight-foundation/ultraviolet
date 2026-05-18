@@ -9,7 +9,7 @@ public procedure validatedModalAndSpecialTypesStringTypesObligations() -> usize 
     var count: usize = 0usize
     if acceptedObligationEntryMatches(
         "grammar.StringTypes.Syntax",
-        44384usize,
+        44416usize,
         "HelloUltraviolet::Reference::ModalTypes",
         "runModalTypesStringsReference",
         "Source/Reference/ModalTypes/Strings.uv"
@@ -18,7 +18,7 @@ public procedure validatedModalAndSpecialTypesStringTypesObligations() -> usize 
     }
     if acceptedObligationEntryMatches(
         "rule.13.Parse-String-Type",
-        44401usize,
+        44433usize,
         "HelloUltraviolet::Reference::ModalTypes",
         "runModalTypesStringsReference",
         "Source/Reference/ModalTypes/Strings.uv"
@@ -27,24 +27,6 @@ public procedure validatedModalAndSpecialTypesStringTypesObligations() -> usize 
     }
     if acceptedObligationEntryMatches(
         "rule.13.Parse-StringState-None",
-        44419usize,
-        "HelloUltraviolet::Reference::ModalTypes",
-        "runModalTypesStringsReference",
-        "Source/Reference/ModalTypes/Strings.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
-        "rule.13.Parse-StringState-Managed",
-        44435usize,
-        "HelloUltraviolet::Reference::ModalTypes",
-        "runModalTypesStringsReference",
-        "Source/Reference/ModalTypes/Strings.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
-        "rule.13.Parse-StringState-View",
         44451usize,
         "HelloUltraviolet::Reference::ModalTypes",
         "runModalTypesStringsReference",
@@ -53,8 +35,26 @@ public procedure validatedModalAndSpecialTypesStringTypesObligations() -> usize 
         count = count + 1usize
     }
     if acceptedObligationEntryMatches(
+        "rule.13.Parse-StringState-Managed",
+        44467usize,
+        "HelloUltraviolet::Reference::ModalTypes",
+        "runModalTypesStringsReference",
+        "Source/Reference/ModalTypes/Strings.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "rule.13.Parse-StringState-View",
+        44483usize,
+        "HelloUltraviolet::Reference::ModalTypes",
+        "runModalTypesStringsReference",
+        "Source/Reference/ModalTypes/Strings.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
         "def.TypeStringAst",
-        44469usize,
+        44501usize,
         "HelloUltraviolet::Reference::ModalTypes",
         "runModalTypesStringsReference",
         "Source/Reference/ModalTypes/Strings.uv"
@@ -63,7 +63,7 @@ public procedure validatedModalAndSpecialTypesStringTypesObligations() -> usize 
     }
     if acceptedObligationEntryMatches(
         "def.StringStateSet",
-        44481usize,
+        44513usize,
         "HelloUltraviolet::Reference::ModalTypes",
         "runModalTypesStringsReference",
         "Source/Reference/ModalTypes/Strings.uv"
@@ -72,7 +72,7 @@ public procedure validatedModalAndSpecialTypesStringTypesObligations() -> usize 
     }
     if acceptedObligationEntryMatches(
         "def.StringBuiltinTable",
-        44493usize,
+        44525usize,
         "HelloUltraviolet::Reference::ModalTypes",
         "runModalTypesStringsReference",
         "Source/Reference/ModalTypes/Strings.uv"
@@ -81,7 +81,7 @@ public procedure validatedModalAndSpecialTypesStringTypesObligations() -> usize 
     }
     if acceptedObligationEntryMatches(
         "def.StringBuiltinSig",
-        44515usize,
+        44547usize,
         "HelloUltraviolet::Reference::ModalTypes",
         "runModalTypesStringsReference",
         "Source/Reference/ModalTypes/Strings.uv"
@@ -90,7 +90,7 @@ public procedure validatedModalAndSpecialTypesStringTypesObligations() -> usize 
     }
     if acceptedObligationEntryMatches(
         "rule.13.WF-String",
-        44529usize,
+        44561usize,
         "HelloUltraviolet::Reference::ModalTypes",
         "runModalTypesStringsReference",
         "Source/Reference/ModalTypes/Strings.uv"
@@ -99,7 +99,7 @@ public procedure validatedModalAndSpecialTypesStringTypesObligations() -> usize 
     }
     if acceptedObligationEntryMatches(
         "rule.13.Sub-String-State",
-        44545usize,
+        44577usize,
         "HelloUltraviolet::Reference::ModalTypes",
         "runModalTypesStringsReference",
         "Source/Reference/ModalTypes/Strings.uv"
@@ -108,7 +108,7 @@ public procedure validatedModalAndSpecialTypesStringTypesObligations() -> usize 
     }
     if acceptedObligationEntryMatches(
         "req.StringBuiltinsTyping",
-        44559usize,
+        44591usize,
         "HelloUltraviolet::Reference::ModalTypes",
         "runModalTypesStringsReference",
         "Source/Reference/ModalTypes/Strings.uv"
@@ -117,7 +117,7 @@ public procedure validatedModalAndSpecialTypesStringTypesObligations() -> usize 
     }
     if acceptedObligationEntryMatches(
         "def.StringLiteralVal",
-        44573usize,
+        44605usize,
         "HelloUltraviolet::Reference::ModalTypes",
         "runModalTypesStringsReference",
         "Source/Reference/ModalTypes/Strings.uv"
@@ -126,7 +126,7 @@ public procedure validatedModalAndSpecialTypesStringTypesObligations() -> usize 
     }
     if acceptedObligationEntryMatches(
         "def.StringBytesStoreDomains",
-        44585usize,
+        44617usize,
         "HelloUltraviolet::Reference::ModalTypes",
         "runModalTypesStringsReference",
         "Source/Reference/ModalTypes/Strings.uv"
@@ -135,7 +135,7 @@ public procedure validatedModalAndSpecialTypesStringTypesObligations() -> usize 
     }
     if acceptedObligationEntryMatches(
         "def.ViewBytes",
-        44601usize,
+        44633usize,
         "HelloUltraviolet::Reference::ModalTypes",
         "runModalTypesStringsReference",
         "Source/Reference/ModalTypes/Strings.uv"
@@ -144,7 +144,7 @@ public procedure validatedModalAndSpecialTypesStringTypesObligations() -> usize 
     }
     if acceptedObligationEntryMatches(
         "def.ByteSeqOf",
-        44613usize,
+        44645usize,
         "HelloUltraviolet::Reference::ModalTypes",
         "runModalTypesStringsReference",
         "Source/Reference/ModalTypes/Strings.uv"
@@ -153,7 +153,7 @@ public procedure validatedModalAndSpecialTypesStringTypesObligations() -> usize 
     }
     if acceptedObligationEntryMatches(
         "def.ByteLen",
-        44628usize,
+        44660usize,
         "HelloUltraviolet::Reference::ModalTypes",
         "runModalTypesStringsReference",
         "Source/Reference/ModalTypes/Strings.uv"
@@ -162,7 +162,7 @@ public procedure validatedModalAndSpecialTypesStringTypesObligations() -> usize 
     }
     if acceptedObligationEntryMatches(
         "def.StringValueTypes",
-        44640usize,
+        44672usize,
         "HelloUltraviolet::Reference::ModalTypes",
         "runModalTypesStringsReference",
         "Source/Reference/ModalTypes/Strings.uv"
@@ -171,7 +171,7 @@ public procedure validatedModalAndSpecialTypesStringTypesObligations() -> usize 
     }
     if acceptedObligationEntryMatches(
         "def.StringBytesJudgementSet",
-        44654usize,
+        44686usize,
         "HelloUltraviolet::Reference::ModalTypes",
         "runModalTypesStringsReference",
         "Source/Reference/ModalTypes/Strings.uv"
@@ -180,7 +180,7 @@ public procedure validatedModalAndSpecialTypesStringTypesObligations() -> usize 
     }
     if acceptedObligationEntryMatches(
         "req.StringLiteralStorage",
-        44675usize,
+        44707usize,
         "HelloUltraviolet::Reference::ModalTypes",
         "runModalTypesStringsReference",
         "Source/Reference/ModalTypes/Strings.uv"
@@ -189,24 +189,6 @@ public procedure validatedModalAndSpecialTypesStringTypesObligations() -> usize 
     }
     if acceptedObligationEntryMatches(
         "rule.13.StringFrom-Ok",
-        44689usize,
-        "HelloUltraviolet::Reference::ModalTypes",
-        "runModalTypesStringsReference",
-        "Source/Reference/ModalTypes/Strings.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
-        "rule.13.StringFrom-Err",
-        44705usize,
-        "HelloUltraviolet::Reference::ModalTypes",
-        "runModalTypesStringsReference",
-        "Source/Reference/ModalTypes/Strings.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
-        "rule.13.StringAsView-Ok",
         44721usize,
         "HelloUltraviolet::Reference::ModalTypes",
         "runModalTypesStringsReference",
@@ -215,7 +197,7 @@ public procedure validatedModalAndSpecialTypesStringTypesObligations() -> usize 
         count = count + 1usize
     }
     if acceptedObligationEntryMatches(
-        "rule.13.StringSlice-Ok",
+        "rule.13.StringFrom-Err",
         44737usize,
         "HelloUltraviolet::Reference::ModalTypes",
         "runModalTypesStringsReference",
@@ -224,7 +206,7 @@ public procedure validatedModalAndSpecialTypesStringTypesObligations() -> usize 
         count = count + 1usize
     }
     if acceptedObligationEntryMatches(
-        "rule.13.StringToManaged-Ok",
+        "rule.13.StringAsView-Ok",
         44753usize,
         "HelloUltraviolet::Reference::ModalTypes",
         "runModalTypesStringsReference",
@@ -233,7 +215,7 @@ public procedure validatedModalAndSpecialTypesStringTypesObligations() -> usize 
         count = count + 1usize
     }
     if acceptedObligationEntryMatches(
-        "rule.13.StringToManaged-Err",
+        "rule.13.StringSlice-Ok",
         44769usize,
         "HelloUltraviolet::Reference::ModalTypes",
         "runModalTypesStringsReference",
@@ -242,7 +224,7 @@ public procedure validatedModalAndSpecialTypesStringTypesObligations() -> usize 
         count = count + 1usize
     }
     if acceptedObligationEntryMatches(
-        "rule.13.StringCloneWith-Ok",
+        "rule.13.StringToManaged-Ok",
         44785usize,
         "HelloUltraviolet::Reference::ModalTypes",
         "runModalTypesStringsReference",
@@ -251,7 +233,7 @@ public procedure validatedModalAndSpecialTypesStringTypesObligations() -> usize 
         count = count + 1usize
     }
     if acceptedObligationEntryMatches(
-        "rule.13.StringCloneWith-Err",
+        "rule.13.StringToManaged-Err",
         44801usize,
         "HelloUltraviolet::Reference::ModalTypes",
         "runModalTypesStringsReference",
@@ -260,7 +242,7 @@ public procedure validatedModalAndSpecialTypesStringTypesObligations() -> usize 
         count = count + 1usize
     }
     if acceptedObligationEntryMatches(
-        "rule.13.StringAppend-Ok",
+        "rule.13.StringCloneWith-Ok",
         44817usize,
         "HelloUltraviolet::Reference::ModalTypes",
         "runModalTypesStringsReference",
@@ -269,7 +251,7 @@ public procedure validatedModalAndSpecialTypesStringTypesObligations() -> usize 
         count = count + 1usize
     }
     if acceptedObligationEntryMatches(
-        "rule.13.StringAppend-Err",
+        "rule.13.StringCloneWith-Err",
         44833usize,
         "HelloUltraviolet::Reference::ModalTypes",
         "runModalTypesStringsReference",
@@ -278,7 +260,7 @@ public procedure validatedModalAndSpecialTypesStringTypesObligations() -> usize 
         count = count + 1usize
     }
     if acceptedObligationEntryMatches(
-        "rule.13.StringLength",
+        "rule.13.StringAppend-Ok",
         44849usize,
         "HelloUltraviolet::Reference::ModalTypes",
         "runModalTypesStringsReference",
@@ -287,7 +269,7 @@ public procedure validatedModalAndSpecialTypesStringTypesObligations() -> usize 
         count = count + 1usize
     }
     if acceptedObligationEntryMatches(
-        "rule.13.StringIsEmpty",
+        "rule.13.StringAppend-Err",
         44865usize,
         "HelloUltraviolet::Reference::ModalTypes",
         "runModalTypesStringsReference",
@@ -296,7 +278,7 @@ public procedure validatedModalAndSpecialTypesStringTypesObligations() -> usize 
         count = count + 1usize
     }
     if acceptedObligationEntryMatches(
-        "def.StringViewOf",
+        "rule.13.StringLength",
         44881usize,
         "HelloUltraviolet::Reference::ModalTypes",
         "runModalTypesStringsReference",
@@ -305,8 +287,26 @@ public procedure validatedModalAndSpecialTypesStringTypesObligations() -> usize 
         count = count + 1usize
     }
     if acceptedObligationEntryMatches(
+        "rule.13.StringIsEmpty",
+        44897usize,
+        "HelloUltraviolet::Reference::ModalTypes",
+        "runModalTypesStringsReference",
+        "Source/Reference/ModalTypes/Strings.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "def.StringViewOf",
+        44913usize,
+        "HelloUltraviolet::Reference::ModalTypes",
+        "runModalTypesStringsReference",
+        "Source/Reference/ModalTypes/Strings.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
         "def.StringRuntimeLength",
-        44895usize,
+        44927usize,
         "HelloUltraviolet::Reference::ModalTypes",
         "runModalTypesStringsReference",
         "Source/Reference/ModalTypes/Strings.uv"
@@ -315,7 +315,7 @@ public procedure validatedModalAndSpecialTypesStringTypesObligations() -> usize 
     }
     if acceptedObligationEntryMatches(
         "def.StringManagedLoweringLayout",
-        44910usize,
+        44942usize,
         "HelloUltraviolet::Reference::ModalTypes",
         "runModalTypesStringsReference",
         "Source/Reference/ModalTypes/Strings.uv"
@@ -324,7 +324,7 @@ public procedure validatedModalAndSpecialTypesStringTypesObligations() -> usize 
     }
     if acceptedObligationEntryMatches(
         "def.StringViewLoweringLayout",
-        44924usize,
+        44956usize,
         "HelloUltraviolet::Reference::ModalTypes",
         "runModalTypesStringsReference",
         "Source/Reference/ModalTypes/Strings.uv"
@@ -333,24 +333,6 @@ public procedure validatedModalAndSpecialTypesStringTypesObligations() -> usize 
     }
     if acceptedObligationEntryMatches(
         "rule.13.Size-String-Managed",
-        44938usize,
-        "HelloUltraviolet::Reference::ModalTypes",
-        "runModalTypesStringsReference",
-        "Source/Reference/ModalTypes/Strings.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
-        "rule.13.Align-String-Managed",
-        44954usize,
-        "HelloUltraviolet::Reference::ModalTypes",
-        "runModalTypesStringsReference",
-        "Source/Reference/ModalTypes/Strings.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
-        "rule.13.Layout-String-Managed",
         44970usize,
         "HelloUltraviolet::Reference::ModalTypes",
         "runModalTypesStringsReference",
@@ -359,7 +341,7 @@ public procedure validatedModalAndSpecialTypesStringTypesObligations() -> usize 
         count = count + 1usize
     }
     if acceptedObligationEntryMatches(
-        "rule.13.Size-String-View",
+        "rule.13.Align-String-Managed",
         44986usize,
         "HelloUltraviolet::Reference::ModalTypes",
         "runModalTypesStringsReference",
@@ -368,7 +350,7 @@ public procedure validatedModalAndSpecialTypesStringTypesObligations() -> usize 
         count = count + 1usize
     }
     if acceptedObligationEntryMatches(
-        "rule.13.Align-String-View",
+        "rule.13.Layout-String-Managed",
         45002usize,
         "HelloUltraviolet::Reference::ModalTypes",
         "runModalTypesStringsReference",
@@ -377,7 +359,7 @@ public procedure validatedModalAndSpecialTypesStringTypesObligations() -> usize 
         count = count + 1usize
     }
     if acceptedObligationEntryMatches(
-        "rule.13.Layout-String-View",
+        "rule.13.Size-String-View",
         45018usize,
         "HelloUltraviolet::Reference::ModalTypes",
         "runModalTypesStringsReference",
@@ -386,7 +368,7 @@ public procedure validatedModalAndSpecialTypesStringTypesObligations() -> usize 
         count = count + 1usize
     }
     if acceptedObligationEntryMatches(
-        "rule.13.Size-String-Modal",
+        "rule.13.Align-String-View",
         45034usize,
         "HelloUltraviolet::Reference::ModalTypes",
         "runModalTypesStringsReference",
@@ -395,7 +377,7 @@ public procedure validatedModalAndSpecialTypesStringTypesObligations() -> usize 
         count = count + 1usize
     }
     if acceptedObligationEntryMatches(
-        "rule.13.Align-String-Modal",
+        "rule.13.Layout-String-View",
         45050usize,
         "HelloUltraviolet::Reference::ModalTypes",
         "runModalTypesStringsReference",
@@ -404,7 +386,7 @@ public procedure validatedModalAndSpecialTypesStringTypesObligations() -> usize 
         count = count + 1usize
     }
     if acceptedObligationEntryMatches(
-        "def.StringValueBits",
+        "rule.13.Size-String-Modal",
         45066usize,
         "HelloUltraviolet::Reference::ModalTypes",
         "runModalTypesStringsReference",
@@ -413,8 +395,26 @@ public procedure validatedModalAndSpecialTypesStringTypesObligations() -> usize 
         count = count + 1usize
     }
     if acceptedObligationEntryMatches(
+        "rule.13.Align-String-Modal",
+        45082usize,
+        "HelloUltraviolet::Reference::ModalTypes",
+        "runModalTypesStringsReference",
+        "Source/Reference/ModalTypes/Strings.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "def.StringValueBits",
+        45098usize,
+        "HelloUltraviolet::Reference::ModalTypes",
+        "runModalTypesStringsReference",
+        "Source/Reference/ModalTypes/Strings.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
         "def.DropManagedString",
-        45078usize,
+        45110usize,
         "HelloUltraviolet::Reference::ModalTypes",
         "runModalTypesStringsReference",
         "Source/Reference/ModalTypes/Strings.uv"
@@ -423,7 +423,7 @@ public procedure validatedModalAndSpecialTypesStringTypesObligations() -> usize 
     }
     if acceptedObligationEntryMatches(
         "diag.StringTypes",
-        45092usize,
+        45124usize,
         "HelloUltraviolet::Reference::ModalTypes",
         "runModalTypesStringsReference",
         "Source/Reference/ModalTypes/Strings.uv"

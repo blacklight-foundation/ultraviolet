@@ -9,7 +9,7 @@ public procedure validatedProceduresAndContractsPreconditionsObligations() -> us
     var count: usize = 0usize
     if acceptedObligationEntryMatches(
         "req.15.PreconditionSyntaxDefinition",
-        55634usize,
+        55666usize,
         "HelloUltraviolet::Reference::Procedures",
         "runProceduresPreconditionsReference",
         "Source/Reference/Procedures/Preconditions.uv"
@@ -18,24 +18,6 @@ public procedure validatedProceduresAndContractsPreconditionsObligations() -> us
     }
     if acceptedObligationEntryMatches(
         "req.15.PreconditionsParsedByContractBody",
-        55649usize,
-        "HelloUltraviolet::Reference::Procedures",
-        "runProceduresPreconditionsReference",
-        "Source/Reference/Procedures/Preconditions.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
-        "def.15.PreconditionOf",
-        55664usize,
-        "HelloUltraviolet::Reference::Procedures",
-        "runProceduresPreconditionsReference",
-        "Source/Reference/Procedures/Preconditions.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
-        "def.15.PreconditionProofContext",
         55681usize,
         "HelloUltraviolet::Reference::Procedures",
         "runProceduresPreconditionsReference",
@@ -44,8 +26,26 @@ public procedure validatedProceduresAndContractsPreconditionsObligations() -> us
         count = count + 1usize
     }
     if acceptedObligationEntryMatches(
+        "def.15.PreconditionOf",
+        55696usize,
+        "HelloUltraviolet::Reference::Procedures",
+        "runProceduresPreconditionsReference",
+        "Source/Reference/Procedures/Preconditions.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "def.15.PreconditionProofContext",
+        55713usize,
+        "HelloUltraviolet::Reference::Procedures",
+        "runProceduresPreconditionsReference",
+        "Source/Reference/Procedures/Preconditions.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
         "rule.15.Pre-Satisfied",
-        55697usize,
+        55729usize,
         "HelloUltraviolet::Reference::Procedures",
         "runProceduresPreconditionsReference",
         "Source/Reference/Procedures/Preconditions.uv"
@@ -54,7 +54,7 @@ public procedure validatedProceduresAndContractsPreconditionsObligations() -> us
     }
     if acceptedObligationEntryMatches(
         "def.15.PreconditionElisionRules",
-        55713usize,
+        55745usize,
         "HelloUltraviolet::Reference::Procedures",
         "runProceduresPreconditionsReference",
         "Source/Reference/Procedures/Preconditions.uv"
@@ -63,7 +63,7 @@ public procedure validatedProceduresAndContractsPreconditionsObligations() -> us
     }
     if rejectedSourceObligationEntryMatches(
         "req.15.CallerResponsibleForPrecondition",
-        55733usize,
+        55765usize,
         "HelloUltraviolet::Audit::FixtureCatalog::RejectedSource",
         "validatedProceduresRejectedSourceFixtureCount",
         "Fixtures/RejectedSource/Procedures/PreconditionCallerObligation/Source/Main.uv"
@@ -72,7 +72,7 @@ public procedure validatedProceduresAndContractsPreconditionsObligations() -> us
     }
     if acceptedObligationEntryMatches(
         "req.15.PreconditionRuntimeEvaluationOrder",
-        55748usize,
+        55780usize,
         "HelloUltraviolet::Reference::Procedures",
         "runProceduresPreconditionsReference",
         "Source/Reference/Procedures/Preconditions.uv"
@@ -81,7 +81,7 @@ public procedure validatedProceduresAndContractsPreconditionsObligations() -> us
     }
     if acceptedObligationEntryMatches(
         "req.15.PreconditionCheckInsertionOwnedByVerificationLogic",
-        55763usize,
+        55795usize,
         "HelloUltraviolet::Reference::Procedures",
         "runProceduresPreconditionsReference",
         "Source/Reference/Procedures/Preconditions.uv"
@@ -90,7 +90,7 @@ public procedure validatedProceduresAndContractsPreconditionsObligations() -> us
     }
     if rejectedSourceObligationEntryMatches(
         "diag.15.Preconditions",
-        55778usize,
+        55810usize,
         "HelloUltraviolet::Audit::FixtureCatalog::RejectedSource",
         "validatedProceduresRejectedSourceFixtureCount",
         "Fixtures/RejectedSource/Procedures/PreconditionsDiagnostic/Source/Main.uv"

@@ -9,24 +9,6 @@ public procedure validatedPatternsTupleAndRecordPatternsObligations() -> usize {
     var count: usize = 0usize
     if acceptedObligationEntryMatches(
         "grammar.17.TupleRecordPatterns",
-        65753usize,
-        "HelloUltraviolet::Reference::Patterns",
-        "runPatternsTupleRecordPatternsReference",
-        "Source/Reference/Patterns/TupleRecordPatterns.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
-        "req.17.TuplePatternSingleElementSemicolon",
-        65772usize,
-        "HelloUltraviolet::Reference::Patterns",
-        "runPatternsTupleRecordPatternsReference",
-        "Source/Reference/Patterns/TupleRecordPatterns.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
-        "rule.17.Parse-Pattern-Tuple",
         65787usize,
         "HelloUltraviolet::Reference::Patterns",
         "runPatternsTupleRecordPatternsReference",
@@ -35,8 +17,26 @@ public procedure validatedPatternsTupleAndRecordPatternsObligations() -> usize {
         count = count + 1usize
     }
     if acceptedObligationEntryMatches(
+        "req.17.TuplePatternSingleElementSemicolon",
+        65806usize,
+        "HelloUltraviolet::Reference::Patterns",
+        "runPatternsTupleRecordPatternsReference",
+        "Source/Reference/Patterns/TupleRecordPatterns.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "rule.17.Parse-Pattern-Tuple",
+        65821usize,
+        "HelloUltraviolet::Reference::Patterns",
+        "runPatternsTupleRecordPatternsReference",
+        "Source/Reference/Patterns/TupleRecordPatterns.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
         "rule.17.Parse-Pattern-Record",
-        65803usize,
+        65837usize,
         "HelloUltraviolet::Reference::Patterns",
         "runPatternsTupleRecordPatternsReference",
         "Source/Reference/Patterns/TupleRecordPatterns.uv"
@@ -45,7 +45,7 @@ public procedure validatedPatternsTupleAndRecordPatternsObligations() -> usize {
     }
     if acceptedObligationEntryMatches(
         "rule.17.Parse-TuplePatternElems-Empty",
-        65819usize,
+        65853usize,
         "HelloUltraviolet::Reference::Patterns",
         "runPatternsTupleRecordPatternsReference",
         "Source/Reference/Patterns/TupleRecordPatterns.uv"
@@ -54,7 +54,7 @@ public procedure validatedPatternsTupleAndRecordPatternsObligations() -> usize {
     }
     if acceptedObligationEntryMatches(
         "rule.17.Parse-TuplePatternElems-Single",
-        65835usize,
+        65869usize,
         "HelloUltraviolet::Reference::Patterns",
         "runPatternsTupleRecordPatternsReference",
         "Source/Reference/Patterns/TupleRecordPatterns.uv"
@@ -63,7 +63,7 @@ public procedure validatedPatternsTupleAndRecordPatternsObligations() -> usize {
     }
     if acceptedObligationEntryMatches(
         "rule.17.Parse-TuplePatternElems-Many",
-        65851usize,
+        65885usize,
         "HelloUltraviolet::Reference::Patterns",
         "runPatternsTupleRecordPatternsReference",
         "Source/Reference/Patterns/TupleRecordPatterns.uv"
@@ -72,7 +72,7 @@ public procedure validatedPatternsTupleAndRecordPatternsObligations() -> usize {
     }
     if acceptedObligationEntryMatches(
         "rule.17.Parse-FieldPatternList-Empty",
-        65867usize,
+        65901usize,
         "HelloUltraviolet::Reference::Patterns",
         "runPatternsTupleRecordPatternsReference",
         "Source/Reference/Patterns/TupleRecordPatterns.uv"
@@ -81,7 +81,7 @@ public procedure validatedPatternsTupleAndRecordPatternsObligations() -> usize {
     }
     if acceptedObligationEntryMatches(
         "rule.17.Parse-FieldPatternList-Cons",
-        65883usize,
+        65917usize,
         "HelloUltraviolet::Reference::Patterns",
         "runPatternsTupleRecordPatternsReference",
         "Source/Reference/Patterns/TupleRecordPatterns.uv"
@@ -90,7 +90,7 @@ public procedure validatedPatternsTupleAndRecordPatternsObligations() -> usize {
     }
     if acceptedObligationEntryMatches(
         "rule.17.Parse-FieldPattern",
-        65899usize,
+        65933usize,
         "HelloUltraviolet::Reference::Patterns",
         "runPatternsTupleRecordPatternsReference",
         "Source/Reference/Patterns/TupleRecordPatterns.uv"
@@ -99,7 +99,7 @@ public procedure validatedPatternsTupleAndRecordPatternsObligations() -> usize {
     }
     if acceptedObligationEntryMatches(
         "rule.17.Parse-FieldPatternTailOpt-None",
-        65915usize,
+        65949usize,
         "HelloUltraviolet::Reference::Patterns",
         "runPatternsTupleRecordPatternsReference",
         "Source/Reference/Patterns/TupleRecordPatterns.uv"
@@ -108,7 +108,7 @@ public procedure validatedPatternsTupleAndRecordPatternsObligations() -> usize {
     }
     if acceptedObligationEntryMatches(
         "rule.17.Parse-FieldPatternTailOpt-Yes",
-        65931usize,
+        65965usize,
         "HelloUltraviolet::Reference::Patterns",
         "runPatternsTupleRecordPatternsReference",
         "Source/Reference/Patterns/TupleRecordPatterns.uv"
@@ -117,7 +117,7 @@ public procedure validatedPatternsTupleAndRecordPatternsObligations() -> usize {
     }
     if acceptedObligationEntryMatches(
         "rule.17.Parse-FieldPatternTail-End",
-        65947usize,
+        65981usize,
         "HelloUltraviolet::Reference::Patterns",
         "runPatternsTupleRecordPatternsReference",
         "Source/Reference/Patterns/TupleRecordPatterns.uv"
@@ -126,24 +126,6 @@ public procedure validatedPatternsTupleAndRecordPatternsObligations() -> usize {
     }
     if acceptedObligationEntryMatches(
         "rule.17.Parse-FieldPatternTail-TrailingComma",
-        65963usize,
-        "HelloUltraviolet::Reference::Patterns",
-        "runPatternsTupleRecordPatternsReference",
-        "Source/Reference/Patterns/TupleRecordPatterns.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
-        "rule.17.Parse-FieldPatternTail-Comma",
-        65979usize,
-        "HelloUltraviolet::Reference::Patterns",
-        "runPatternsTupleRecordPatternsReference",
-        "Source/Reference/Patterns/TupleRecordPatterns.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
-        "def.17.FieldPatternAstAndAccessors",
         65997usize,
         "HelloUltraviolet::Reference::Patterns",
         "runPatternsTupleRecordPatternsReference",
@@ -152,8 +134,26 @@ public procedure validatedPatternsTupleAndRecordPatternsObligations() -> usize {
         count = count + 1usize
     }
     if acceptedObligationEntryMatches(
+        "rule.17.Parse-FieldPatternTail-Comma",
+        66013usize,
+        "HelloUltraviolet::Reference::Patterns",
+        "runPatternsTupleRecordPatternsReference",
+        "Source/Reference/Patterns/TupleRecordPatterns.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "def.17.FieldPatternAstAndAccessors",
+        66031usize,
+        "HelloUltraviolet::Reference::Patterns",
+        "runPatternsTupleRecordPatternsReference",
+        "Source/Reference/Patterns/TupleRecordPatterns.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
         "rule.17.PatNames-TuplePattern",
-        66014usize,
+        66048usize,
         "HelloUltraviolet::Reference::Patterns",
         "runPatternsTupleRecordPatternsReference",
         "Source/Reference/Patterns/TupleRecordPatterns.uv"
@@ -162,7 +162,7 @@ public procedure validatedPatternsTupleAndRecordPatternsObligations() -> usize {
     }
     if acceptedObligationEntryMatches(
         "rule.17.Pat-Record-Field-Explicit",
-        66029usize,
+        66063usize,
         "HelloUltraviolet::Reference::Patterns",
         "runPatternsTupleRecordPatternsReference",
         "Source/Reference/Patterns/TupleRecordPatterns.uv"
@@ -171,7 +171,7 @@ public procedure validatedPatternsTupleAndRecordPatternsObligations() -> usize {
     }
     if acceptedObligationEntryMatches(
         "rule.17.Pat-Record-Field-Implicit",
-        66045usize,
+        66079usize,
         "HelloUltraviolet::Reference::Patterns",
         "runPatternsTupleRecordPatternsReference",
         "Source/Reference/Patterns/TupleRecordPatterns.uv"
@@ -180,7 +180,7 @@ public procedure validatedPatternsTupleAndRecordPatternsObligations() -> usize {
     }
     if acceptedObligationEntryMatches(
         "rule.17.PatNames-RecordPattern",
-        66060usize,
+        66094usize,
         "HelloUltraviolet::Reference::Patterns",
         "runPatternsTupleRecordPatternsReference",
         "Source/Reference/Patterns/TupleRecordPatterns.uv"
@@ -189,7 +189,7 @@ public procedure validatedPatternsTupleAndRecordPatternsObligations() -> usize {
     }
     if rejectedSourceObligationEntryMatches(
         "rule.17.Pat-Tuple-R-Arity-Err",
-        66077usize,
+        66111usize,
         "HelloUltraviolet::Audit::FixtureCatalog::RejectedSource",
         "validatedPatternsRejectedSourceFixtureCount",
         "Fixtures/RejectedSource/Patterns/TuplePatternArity/Source/Main.uv"
@@ -198,7 +198,7 @@ public procedure validatedPatternsTupleAndRecordPatternsObligations() -> usize {
     }
     if acceptedObligationEntryMatches(
         "rule.17.Pat-Tuple-R",
-        66093usize,
+        66127usize,
         "HelloUltraviolet::Reference::Patterns",
         "runPatternsTupleRecordPatternsReference",
         "Source/Reference/Patterns/TupleRecordPatterns.uv"
@@ -207,7 +207,7 @@ public procedure validatedPatternsTupleAndRecordPatternsObligations() -> usize {
     }
     if acceptedObligationEntryMatches(
         "rule.17.Pat-Record-R",
-        66114usize,
+        66148usize,
         "HelloUltraviolet::Reference::Patterns",
         "runPatternsTupleRecordPatternsReference",
         "Source/Reference/Patterns/TupleRecordPatterns.uv"
@@ -216,7 +216,7 @@ public procedure validatedPatternsTupleAndRecordPatternsObligations() -> usize {
     }
     if rejectedSourceObligationEntryMatches(
         "rule.17.RecordPattern-UnknownField",
-        66130usize,
+        66164usize,
         "HelloUltraviolet::Audit::FixtureCatalog::RejectedSource",
         "validatedPatternsRejectedSourceFixtureCount",
         "Fixtures/RejectedSource/Patterns/RecordPatternUnknownField/Source/Main.uv"
@@ -225,7 +225,7 @@ public procedure validatedPatternsTupleAndRecordPatternsObligations() -> usize {
     }
     if acceptedObligationEntryMatches(
         "def.17.MatchRecordJudgement",
-        66148usize,
+        66182usize,
         "HelloUltraviolet::Reference::Patterns",
         "runPatternsTupleRecordPatternsReference",
         "Source/Reference/Patterns/TupleRecordPatterns.uv"
@@ -234,7 +234,7 @@ public procedure validatedPatternsTupleAndRecordPatternsObligations() -> usize {
     }
     if acceptedObligationEntryMatches(
         "rule.17.MatchRecord-Empty",
-        66162usize,
+        66196usize,
         "HelloUltraviolet::Reference::Patterns",
         "runPatternsTupleRecordPatternsReference",
         "Source/Reference/Patterns/TupleRecordPatterns.uv"
@@ -243,7 +243,7 @@ public procedure validatedPatternsTupleAndRecordPatternsObligations() -> usize {
     }
     if acceptedObligationEntryMatches(
         "rule.17.MatchRecord-Cons-Implicit",
-        66177usize,
+        66211usize,
         "HelloUltraviolet::Reference::Patterns",
         "runPatternsTupleRecordPatternsReference",
         "Source/Reference/Patterns/TupleRecordPatterns.uv"
@@ -252,7 +252,7 @@ public procedure validatedPatternsTupleAndRecordPatternsObligations() -> usize {
     }
     if acceptedObligationEntryMatches(
         "rule.17.MatchRecord-Cons-Explicit",
-        66193usize,
+        66227usize,
         "HelloUltraviolet::Reference::Patterns",
         "runPatternsTupleRecordPatternsReference",
         "Source/Reference/Patterns/TupleRecordPatterns.uv"
@@ -261,7 +261,7 @@ public procedure validatedPatternsTupleAndRecordPatternsObligations() -> usize {
     }
     if acceptedObligationEntryMatches(
         "rule.17.Match-Tuple",
-        66209usize,
+        66243usize,
         "HelloUltraviolet::Reference::Patterns",
         "runPatternsTupleRecordPatternsReference",
         "Source/Reference/Patterns/TupleRecordPatterns.uv"
@@ -270,7 +270,7 @@ public procedure validatedPatternsTupleAndRecordPatternsObligations() -> usize {
     }
     if acceptedObligationEntryMatches(
         "rule.17.Match-Record",
-        66225usize,
+        66259usize,
         "HelloUltraviolet::Reference::Patterns",
         "runPatternsTupleRecordPatternsReference",
         "Source/Reference/Patterns/TupleRecordPatterns.uv"
@@ -279,7 +279,7 @@ public procedure validatedPatternsTupleAndRecordPatternsObligations() -> usize {
     }
     if acceptedObligationEntryMatches(
         "req.17.TupleRecordPatternLoweringShared",
-        66243usize,
+        66277usize,
         "HelloUltraviolet::Reference::Patterns",
         "runPatternsTupleRecordPatternsReference",
         "Source/Reference/Patterns/TupleRecordPatterns.uv"
@@ -288,7 +288,7 @@ public procedure validatedPatternsTupleAndRecordPatternsObligations() -> usize {
     }
     if rejectedSourceObligationEntryMatches(
         "diag.17.TupleRecordPatterns",
-        66258usize,
+        66292usize,
         "HelloUltraviolet::Audit::FixtureCatalog::RejectedSource",
         "validatedPatternsRejectedSourceFixtureCount",
         "Fixtures/RejectedSource/Patterns/TupleRecordPatternsDiagnostic/Source/Main.uv"

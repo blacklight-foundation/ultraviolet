@@ -9,7 +9,7 @@ public procedure validatedKeySystemKeyPathsObligations() -> usize {
     var count: usize = 0usize
     if acceptedObligationEntryMatches(
         "grammar.19.KeyPaths",
-        72393usize,
+        72427usize,
         "HelloUltraviolet::Reference::Keys",
         "runKeysKeyPathsReference",
         "Source/Reference/Keys/KeyPaths.uv"
@@ -18,7 +18,7 @@ public procedure validatedKeySystemKeyPathsObligations() -> usize {
     }
     if acceptedObligationEntryMatches(
         "parse.19.KeyPathRules",
-        72415usize,
+        72449usize,
         "HelloUltraviolet::Reference::Keys",
         "runKeysKeyPathsReference",
         "Source/Reference/Keys/KeyPaths.uv"
@@ -27,7 +27,7 @@ public procedure validatedKeySystemKeyPathsObligations() -> usize {
     }
     if acceptedObligationEntryMatches(
         "ast.19.KeyPathForms",
-        72441usize,
+        72475usize,
         "HelloUltraviolet::Reference::Keys",
         "runKeysKeyPathsReference",
         "Source/Reference/Keys/KeyPaths.uv"
@@ -36,7 +36,7 @@ public procedure validatedKeySystemKeyPathsObligations() -> usize {
     }
     if acceptedObligationEntryMatches(
         "requirement.19.KeyPathWellFormedness",
-        72466usize,
+        72500usize,
         "HelloUltraviolet::Reference::Keys",
         "runKeysKeyPathsReference",
         "Source/Reference/Keys/KeyPaths.uv"
@@ -45,7 +45,7 @@ public procedure validatedKeySystemKeyPathsObligations() -> usize {
     }
     if acceptedObligationEntryMatches(
         "requirement.19.KeyAnalysisSharedOnly",
-        72479usize,
+        72513usize,
         "HelloUltraviolet::Reference::Keys",
         "runKeysKeyPathsReference",
         "Source/Reference/Keys/KeyPaths.uv"
@@ -54,7 +54,7 @@ public procedure validatedKeySystemKeyPathsObligations() -> usize {
     }
     if acceptedObligationEntryMatches(
         "def.19.RootExtraction",
-        72494usize,
+        72528usize,
         "HelloUltraviolet::Reference::Keys",
         "runKeysKeyPathsReference",
         "Source/Reference/Keys/KeyPaths.uv"
@@ -63,7 +63,7 @@ public procedure validatedKeySystemKeyPathsObligations() -> usize {
     }
     if acceptedObligationEntryMatches(
         "def.19.ObjectIdentity",
-        72518usize,
+        72552usize,
         "HelloUltraviolet::Reference::Keys",
         "runKeysKeyPathsReference",
         "Source/Reference/Keys/KeyPaths.uv"
@@ -72,24 +72,6 @@ public procedure validatedKeySystemKeyPathsObligations() -> usize {
     }
     if acceptedObligationEntryMatches(
         "def.19.KeyPathFormation",
-        72539usize,
-        "HelloUltraviolet::Reference::Keys",
-        "runKeysKeyPathsReference",
-        "Source/Reference/Keys/KeyPaths.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
-        "requirement.19.PointerDereferenceKeyAccess",
-        72555usize,
-        "HelloUltraviolet::Reference::Keys",
-        "runKeysKeyPathsReference",
-        "Source/Reference/Keys/KeyPaths.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
-        "requirement.19.SharedDynamicClassObjects",
         72573usize,
         "HelloUltraviolet::Reference::Keys",
         "runKeysKeyPathsReference",
@@ -98,8 +80,26 @@ public procedure validatedKeySystemKeyPathsObligations() -> usize {
         count = count + 1usize
     }
     if acceptedObligationEntryMatches(
+        "requirement.19.PointerDereferenceKeyAccess",
+        72589usize,
+        "HelloUltraviolet::Reference::Keys",
+        "runKeysKeyPathsReference",
+        "Source/Reference/Keys/KeyPaths.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "requirement.19.SharedDynamicClassObjects",
+        72607usize,
+        "HelloUltraviolet::Reference::Keys",
+        "runKeysKeyPathsReference",
+        "Source/Reference/Keys/KeyPaths.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
         "def.19.DynMethods",
-        72586usize,
+        72620usize,
         "HelloUltraviolet::Reference::Keys",
         "runKeysKeyPathsReference",
         "Source/Reference/Keys/KeyPaths.uv"
@@ -108,7 +108,7 @@ public procedure validatedKeySystemKeyPathsObligations() -> usize {
     }
     if acceptedObligationEntryMatches(
         "rule.19.K-Witness-Shared-WF",
-        72599usize,
+        72633usize,
         "HelloUltraviolet::Reference::Keys",
         "runKeysKeyPathsReference",
         "Source/Reference/Keys/KeyPaths.uv"
@@ -117,7 +117,7 @@ public procedure validatedKeySystemKeyPathsObligations() -> usize {
     }
     if rejectedSourceObligationEntryMatches(
         "requirement.19.SharedDynamicClassRejectsMutatingReceivers",
-        72615usize,
+        72649usize,
         "HelloUltraviolet::Audit::FixtureCatalog::RejectedSource",
         "validatedKeysRejectedSourceFixtureCount",
         "Fixtures/RejectedSource/Keys/SharedDynamicMutatingReceiver/Source/Main.uv"
@@ -126,7 +126,7 @@ public procedure validatedKeySystemKeyPathsObligations() -> usize {
     }
     if acceptedObligationEntryMatches(
         "requirement.19.RuntimeKeyRootIdentityConstraints",
-        72630usize,
+        72664usize,
         "HelloUltraviolet::Reference::Keys",
         "runKeysKeyPathsReference",
         "Source/Reference/Keys/KeyPaths.uv"
@@ -135,7 +135,7 @@ public procedure validatedKeySystemKeyPathsObligations() -> usize {
     }
     if acceptedObligationEntryMatches(
         "def.19.SharedDynamicMethodCallKeyPath",
-        72643usize,
+        72677usize,
         "HelloUltraviolet::Reference::Keys",
         "runKeysKeyPathsReference",
         "Source/Reference/Keys/KeyPaths.uv"
@@ -144,7 +144,7 @@ public procedure validatedKeySystemKeyPathsObligations() -> usize {
     }
     if acceptedObligationEntryMatches(
         "def.19.KeyLoweringForms",
-        72660usize,
+        72694usize,
         "HelloUltraviolet::Reference::Keys",
         "runKeysKeyPathsReference",
         "Source/Reference/Keys/KeyPaths.uv"
@@ -153,7 +153,7 @@ public procedure validatedKeySystemKeyPathsObligations() -> usize {
     }
     if acceptedObligationEntryMatches(
         "rule.19.Lower-KeyPath",
-        72675usize,
+        72709usize,
         "HelloUltraviolet::Reference::Keys",
         "runKeysKeyPathsReference",
         "Source/Reference/Keys/KeyPaths.uv"
@@ -162,7 +162,7 @@ public procedure validatedKeySystemKeyPathsObligations() -> usize {
     }
     if acceptedObligationEntryMatches(
         "rule.19.Lower-KeyAccess-Uncovered",
-        72691usize,
+        72725usize,
         "HelloUltraviolet::Reference::Keys",
         "runKeysKeyPathsReference",
         "Source/Reference/Keys/KeyPaths.uv"
@@ -171,7 +171,7 @@ public procedure validatedKeySystemKeyPathsObligations() -> usize {
     }
     if acceptedObligationEntryMatches(
         "rule.19.Lower-KeyAccess-Covered",
-        72707usize,
+        72741usize,
         "HelloUltraviolet::Reference::Keys",
         "runKeysKeyPathsReference",
         "Source/Reference/Keys/KeyPaths.uv"
@@ -180,7 +180,7 @@ public procedure validatedKeySystemKeyPathsObligations() -> usize {
     }
     if rejectedSourceObligationEntryMatches(
         "diagnostics.19.KeyPaths",
-        72725usize,
+        72759usize,
         "HelloUltraviolet::Audit::FixtureCatalog::RejectedSource",
         "validatedKeysRejectedSourceFixtureCount",
         "Fixtures/RejectedSource/Keys/KeyPathsDiagnostic/Source/Main.uv"

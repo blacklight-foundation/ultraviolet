@@ -9,7 +9,7 @@ public procedure validatedConcreteDataTypesRecordsObligations() -> usize {
     var count: usize = 0usize
     if acceptedObligationEntryMatches(
         "grammar.RecordSyntax",
-        38577usize,
+        38609usize,
         "HelloUltraviolet::Reference::DataTypes",
         "runDataTypesRecordsReference",
         "Source/Reference/DataTypes/Records.uv"
@@ -18,7 +18,7 @@ public procedure validatedConcreteDataTypesRecordsObligations() -> usize {
     }
     if acceptedObligationEntryMatches(
         "Parse-Record",
-        38603usize,
+        38635usize,
         "HelloUltraviolet::Reference::DataTypes",
         "runDataTypesRecordsReference",
         "Source/Reference/DataTypes/Records.uv"
@@ -27,7 +27,7 @@ public procedure validatedConcreteDataTypesRecordsObligations() -> usize {
     }
     if acceptedObligationEntryMatches(
         "Parse-RecordBody",
-        38621usize,
+        38653usize,
         "HelloUltraviolet::Reference::DataTypes",
         "runDataTypesRecordsReference",
         "Source/Reference/DataTypes/Records.uv"
@@ -36,7 +36,7 @@ public procedure validatedConcreteDataTypesRecordsObligations() -> usize {
     }
     if acceptedObligationEntryMatches(
         "Parse-RecordMemberList-End",
-        38639usize,
+        38671usize,
         "HelloUltraviolet::Reference::DataTypes",
         "runDataTypesRecordsReference",
         "Source/Reference/DataTypes/Records.uv"
@@ -45,7 +45,7 @@ public procedure validatedConcreteDataTypesRecordsObligations() -> usize {
     }
     if acceptedObligationEntryMatches(
         "Parse-RecordMemberList-Cons",
-        38657usize,
+        38689usize,
         "HelloUltraviolet::Reference::DataTypes",
         "runDataTypesRecordsReference",
         "Source/Reference/DataTypes/Records.uv"
@@ -54,7 +54,7 @@ public procedure validatedConcreteDataTypesRecordsObligations() -> usize {
     }
     if acceptedObligationEntryMatches(
         "Parse-RecordMember-Method",
-        38675usize,
+        38707usize,
         "HelloUltraviolet::Reference::DataTypes",
         "runDataTypesRecordsReference",
         "Source/Reference/DataTypes/Records.uv"
@@ -63,7 +63,7 @@ public procedure validatedConcreteDataTypesRecordsObligations() -> usize {
     }
     if acceptedObligationEntryMatches(
         "Parse-RecordMember-AssociatedType",
-        38693usize,
+        38725usize,
         "HelloUltraviolet::Reference::DataTypes",
         "runDataTypesRecordsReference",
         "Source/Reference/DataTypes/Records.uv"
@@ -72,7 +72,7 @@ public procedure validatedConcreteDataTypesRecordsObligations() -> usize {
     }
     if acceptedObligationEntryMatches(
         "Parse-RecordMember-Field",
-        38711usize,
+        38743usize,
         "HelloUltraviolet::Reference::DataTypes",
         "runDataTypesRecordsReference",
         "Source/Reference/DataTypes/Records.uv"
@@ -81,7 +81,7 @@ public procedure validatedConcreteDataTypesRecordsObligations() -> usize {
     }
     if acceptedObligationEntryMatches(
         "Parse-RecordFieldDeclAfterVis",
-        38729usize,
+        38761usize,
         "HelloUltraviolet::Reference::DataTypes",
         "runDataTypesRecordsReference",
         "Source/Reference/DataTypes/Records.uv"
@@ -90,7 +90,7 @@ public procedure validatedConcreteDataTypesRecordsObligations() -> usize {
     }
     if acceptedObligationEntryMatches(
         "Parse-RecordFieldInitOpt-None",
-        38747usize,
+        38779usize,
         "HelloUltraviolet::Reference::DataTypes",
         "runDataTypesRecordsReference",
         "Source/Reference/DataTypes/Records.uv"
@@ -99,7 +99,7 @@ public procedure validatedConcreteDataTypesRecordsObligations() -> usize {
     }
     if acceptedObligationEntryMatches(
         "Parse-RecordFieldInitOpt-Yes",
-        38765usize,
+        38797usize,
         "HelloUltraviolet::Reference::DataTypes",
         "runDataTypesRecordsReference",
         "Source/Reference/DataTypes/Records.uv"
@@ -108,7 +108,7 @@ public procedure validatedConcreteDataTypesRecordsObligations() -> usize {
     }
     if acceptedObligationEntryMatches(
         "Parse-Record-Literal",
-        38783usize,
+        38815usize,
         "HelloUltraviolet::Reference::DataTypes",
         "runDataTypesRecordsReference",
         "Source/Reference/DataTypes/Records.uv"
@@ -117,7 +117,7 @@ public procedure validatedConcreteDataTypesRecordsObligations() -> usize {
     }
     if acceptedObligationEntryMatches(
         "def.RecordDeclAst",
-        38801usize,
+        38833usize,
         "HelloUltraviolet::Reference::DataTypes",
         "runDataTypesRecordsReference",
         "Source/Reference/DataTypes/Records.uv"
@@ -126,24 +126,6 @@ public procedure validatedConcreteDataTypesRecordsObligations() -> usize {
     }
     if acceptedObligationEntryMatches(
         "def.RecordMemberAst",
-        38818usize,
-        "HelloUltraviolet::Reference::DataTypes",
-        "runDataTypesRecordsReference",
-        "Source/Reference/DataTypes/Records.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
-        "def.RecordExprAst",
-        38836usize,
-        "HelloUltraviolet::Reference::DataTypes",
-        "runDataTypesRecordsReference",
-        "Source/Reference/DataTypes/Records.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
-        "def.RecordMembersSelectors",
         38850usize,
         "HelloUltraviolet::Reference::DataTypes",
         "runDataTypesRecordsReference",
@@ -152,8 +134,26 @@ public procedure validatedConcreteDataTypesRecordsObligations() -> usize {
         count = count + 1usize
     }
     if acceptedObligationEntryMatches(
+        "def.RecordExprAst",
+        38868usize,
+        "HelloUltraviolet::Reference::DataTypes",
+        "runDataTypesRecordsReference",
+        "Source/Reference/DataTypes/Records.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "def.RecordMembersSelectors",
+        38882usize,
+        "HelloUltraviolet::Reference::DataTypes",
+        "runDataTypesRecordsReference",
+        "Source/Reference/DataTypes/Records.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
         "def.RecordPath",
-        38865usize,
+        38897usize,
         "HelloUltraviolet::Reference::DataTypes",
         "runDataTypesRecordsReference",
         "Source/Reference/DataTypes/Records.uv"
@@ -162,7 +162,7 @@ public procedure validatedConcreteDataTypesRecordsObligations() -> usize {
     }
     if acceptedObligationEntryMatches(
         "Bind-Record",
-        38883usize,
+        38915usize,
         "HelloUltraviolet::Reference::DataTypes",
         "runDataTypesRecordsReference",
         "Source/Reference/DataTypes/Records.uv"
@@ -171,7 +171,7 @@ public procedure validatedConcreteDataTypesRecordsObligations() -> usize {
     }
     if acceptedObligationEntryMatches(
         "Resolve-RecordPath",
-        38900usize,
+        38932usize,
         "HelloUltraviolet::Reference::DataTypes",
         "runDataTypesRecordsReference",
         "Source/Reference/DataTypes/Records.uv"
@@ -180,7 +180,7 @@ public procedure validatedConcreteDataTypesRecordsObligations() -> usize {
     }
     if acceptedObligationEntryMatches(
         "ResolveQual-Name-Record",
-        38918usize,
+        38950usize,
         "HelloUltraviolet::Reference::DataTypes",
         "runDataTypesRecordsReference",
         "Source/Reference/DataTypes/Records.uv"
@@ -189,7 +189,7 @@ public procedure validatedConcreteDataTypesRecordsObligations() -> usize {
     }
     if acceptedObligationEntryMatches(
         "ResolveQual-Apply-RecordLit",
-        38936usize,
+        38968usize,
         "HelloUltraviolet::Reference::DataTypes",
         "runDataTypesRecordsReference",
         "Source/Reference/DataTypes/Records.uv"
@@ -198,24 +198,6 @@ public procedure validatedConcreteDataTypesRecordsObligations() -> usize {
     }
     if acceptedObligationEntryMatches(
         "ResolveItem-Record",
-        38954usize,
-        "HelloUltraviolet::Reference::DataTypes",
-        "runDataTypesRecordsReference",
-        "Source/Reference/DataTypes/Records.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
-        "def.RecordFieldInitOk",
-        38972usize,
-        "HelloUltraviolet::Reference::DataTypes",
-        "runDataTypesRecordsReference",
-        "Source/Reference/DataTypes/Records.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
-        "def.RecordFieldVisibility",
         38986usize,
         "HelloUltraviolet::Reference::DataTypes",
         "runDataTypesRecordsReference",
@@ -224,8 +206,26 @@ public procedure validatedConcreteDataTypesRecordsObligations() -> usize {
         count = count + 1usize
     }
     if acceptedObligationEntryMatches(
+        "def.RecordFieldInitOk",
+        39004usize,
+        "HelloUltraviolet::Reference::DataTypes",
+        "runDataTypesRecordsReference",
+        "Source/Reference/DataTypes/Records.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "def.RecordFieldVisibility",
+        39018usize,
+        "HelloUltraviolet::Reference::DataTypes",
+        "runDataTypesRecordsReference",
+        "Source/Reference/DataTypes/Records.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
         "WF-Record",
-        39001usize,
+        39033usize,
         "HelloUltraviolet::Reference::DataTypes",
         "runDataTypesRecordsReference",
         "Source/Reference/DataTypes/Records.uv"
@@ -234,7 +234,7 @@ public procedure validatedConcreteDataTypesRecordsObligations() -> usize {
     }
     if rejectedSourceObligationEntryMatches(
         "WF-Record-DupField",
-        39019usize,
+        39051usize,
         "HelloUltraviolet::Audit::FixtureCatalog::RejectedSource",
         "validatedExpressionsRejectedSourceFixtureCount",
         "Fixtures/RejectedSource/Expressions/RecordDuplicateField/Source/Main.uv"
@@ -243,7 +243,7 @@ public procedure validatedConcreteDataTypesRecordsObligations() -> usize {
     }
     if acceptedObligationEntryMatches(
         "WF-RecordDecl",
-        39037usize,
+        39069usize,
         "HelloUltraviolet::Reference::DataTypes",
         "runDataTypesRecordsReference",
         "Source/Reference/DataTypes/Records.uv"
@@ -252,7 +252,7 @@ public procedure validatedConcreteDataTypesRecordsObligations() -> usize {
     }
     if rejectedSourceObligationEntryMatches(
         "FieldVisOk-Err",
-        39055usize,
+        39087usize,
         "HelloUltraviolet::Audit::FixtureCatalog::RejectedSource",
         "validatedExpressionsRejectedSourceFixtureCount",
         "Fixtures/RejectedSource/Expressions/RecordFieldVisibilityViolation/Source/Main.uv"
@@ -261,7 +261,7 @@ public procedure validatedConcreteDataTypesRecordsObligations() -> usize {
     }
     if acceptedObligationEntryMatches(
         "def.RecordDefaultConstructible",
-        39073usize,
+        39105usize,
         "HelloUltraviolet::Reference::DataTypes",
         "runDataTypesRecordsReference",
         "Source/Reference/DataTypes/Records.uv"
@@ -270,24 +270,6 @@ public procedure validatedConcreteDataTypesRecordsObligations() -> usize {
     }
     if acceptedObligationEntryMatches(
         "def.RecordCallee",
-        39087usize,
-        "HelloUltraviolet::Reference::DataTypes",
-        "runDataTypesRecordsReference",
-        "Source/Reference/DataTypes/Records.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
-        "T-Record-Default",
-        39101usize,
-        "HelloUltraviolet::Reference::DataTypes",
-        "runDataTypesRecordsReference",
-        "Source/Reference/DataTypes/Records.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
-        "def.RecordFieldNameSets",
         39119usize,
         "HelloUltraviolet::Reference::DataTypes",
         "runDataTypesRecordsReference",
@@ -296,8 +278,26 @@ public procedure validatedConcreteDataTypesRecordsObligations() -> usize {
         count = count + 1usize
     }
     if acceptedObligationEntryMatches(
+        "T-Record-Default",
+        39133usize,
+        "HelloUltraviolet::Reference::DataTypes",
+        "runDataTypesRecordsReference",
+        "Source/Reference/DataTypes/Records.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "def.RecordFieldNameSets",
+        39151usize,
+        "HelloUltraviolet::Reference::DataTypes",
+        "runDataTypesRecordsReference",
+        "Source/Reference/DataTypes/Records.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
         "def.RecordFieldLookup",
-        39137usize,
+        39169usize,
         "HelloUltraviolet::Reference::DataTypes",
         "runDataTypesRecordsReference",
         "Source/Reference/DataTypes/Records.uv"
@@ -306,7 +306,7 @@ public procedure validatedConcreteDataTypesRecordsObligations() -> usize {
     }
     if acceptedObligationEntryMatches(
         "T-Record-Literal",
-        39153usize,
+        39185usize,
         "HelloUltraviolet::Reference::DataTypes",
         "runDataTypesRecordsReference",
         "Source/Reference/DataTypes/Records.uv"
@@ -315,7 +315,7 @@ public procedure validatedConcreteDataTypesRecordsObligations() -> usize {
     }
     if acceptedObligationEntryMatches(
         "def.RecordValueType",
-        39176usize,
+        39208usize,
         "HelloUltraviolet::Reference::DataTypes",
         "runDataTypesRecordsReference",
         "Source/Reference/DataTypes/Records.uv"
@@ -324,7 +324,7 @@ public procedure validatedConcreteDataTypesRecordsObligations() -> usize {
     }
     if acceptedObligationEntryMatches(
         "EvalSigma-Record",
-        39192usize,
+        39224usize,
         "HelloUltraviolet::Reference::DataTypes",
         "runDataTypesRecordsReference",
         "Source/Reference/DataTypes/Records.uv"
@@ -333,24 +333,6 @@ public procedure validatedConcreteDataTypesRecordsObligations() -> usize {
     }
     if acceptedObligationEntryMatches(
         "EvalSigma-Record-Ctrl",
-        39210usize,
-        "HelloUltraviolet::Reference::DataTypes",
-        "runDataTypesRecordsReference",
-        "Source/Reference/DataTypes/Records.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
-        "def.RecordDefaultInits",
-        39228usize,
-        "HelloUltraviolet::Reference::DataTypes",
-        "runDataTypesRecordsReference",
-        "Source/Reference/DataTypes/Records.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
-        "ApplyRecordCtorSigma",
         39242usize,
         "HelloUltraviolet::Reference::DataTypes",
         "runDataTypesRecordsReference",
@@ -359,7 +341,7 @@ public procedure validatedConcreteDataTypesRecordsObligations() -> usize {
         count = count + 1usize
     }
     if acceptedObligationEntryMatches(
-        "ApplyRecordCtorSigma-Ctrl",
+        "def.RecordDefaultInits",
         39260usize,
         "HelloUltraviolet::Reference::DataTypes",
         "runDataTypesRecordsReference",
@@ -368,8 +350,26 @@ public procedure validatedConcreteDataTypesRecordsObligations() -> usize {
         count = count + 1usize
     }
     if acceptedObligationEntryMatches(
+        "ApplyRecordCtorSigma",
+        39274usize,
+        "HelloUltraviolet::Reference::DataTypes",
+        "runDataTypesRecordsReference",
+        "Source/Reference/DataTypes/Records.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "ApplyRecordCtorSigma-Ctrl",
+        39292usize,
+        "HelloUltraviolet::Reference::DataTypes",
+        "runDataTypesRecordsReference",
+        "Source/Reference/DataTypes/Records.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
         "def.RecordLayoutHelpers",
-        39278usize,
+        39310usize,
         "HelloUltraviolet::Reference::DataTypes",
         "runDataTypesRecordsReference",
         "Source/Reference/DataTypes/Records.uv"
@@ -378,7 +378,7 @@ public procedure validatedConcreteDataTypesRecordsObligations() -> usize {
     }
     if acceptedObligationEntryMatches(
         "Layout-Record-Empty",
-        39301usize,
+        39333usize,
         "HelloUltraviolet::Reference::DataTypes",
         "runDataTypesRecordsReference",
         "Source/Reference/DataTypes/Records.uv"
@@ -387,7 +387,7 @@ public procedure validatedConcreteDataTypesRecordsObligations() -> usize {
     }
     if acceptedObligationEntryMatches(
         "Layout-Record-Cons",
-        39318usize,
+        39350usize,
         "HelloUltraviolet::Reference::DataTypes",
         "runDataTypesRecordsReference",
         "Source/Reference/DataTypes/Records.uv"
@@ -396,7 +396,7 @@ public procedure validatedConcreteDataTypesRecordsObligations() -> usize {
     }
     if acceptedObligationEntryMatches(
         "Size-Record",
-        39336usize,
+        39368usize,
         "HelloUltraviolet::Reference::DataTypes",
         "runDataTypesRecordsReference",
         "Source/Reference/DataTypes/Records.uv"
@@ -405,7 +405,7 @@ public procedure validatedConcreteDataTypesRecordsObligations() -> usize {
     }
     if acceptedObligationEntryMatches(
         "Align-Record",
-        39354usize,
+        39386usize,
         "HelloUltraviolet::Reference::DataTypes",
         "runDataTypesRecordsReference",
         "Source/Reference/DataTypes/Records.uv"
@@ -414,24 +414,6 @@ public procedure validatedConcreteDataTypesRecordsObligations() -> usize {
     }
     if acceptedObligationEntryMatches(
         "Layout-Record",
-        39372usize,
-        "HelloUltraviolet::Reference::DataTypes",
-        "runDataTypesRecordsReference",
-        "Source/Reference/DataTypes/Records.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
-        "def.FieldOffset",
-        39390usize,
-        "HelloUltraviolet::Reference::DataTypes",
-        "runDataTypesRecordsReference",
-        "Source/Reference/DataTypes/Records.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
-        "def.FieldValueList",
         39404usize,
         "HelloUltraviolet::Reference::DataTypes",
         "runDataTypesRecordsReference",
@@ -440,8 +422,26 @@ public procedure validatedConcreteDataTypesRecordsObligations() -> usize {
         count = count + 1usize
     }
     if acceptedObligationEntryMatches(
+        "def.FieldOffset",
+        39422usize,
+        "HelloUltraviolet::Reference::DataTypes",
+        "runDataTypesRecordsReference",
+        "Source/Reference/DataTypes/Records.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "def.FieldValueList",
+        39436usize,
+        "HelloUltraviolet::Reference::DataTypes",
+        "runDataTypesRecordsReference",
+        "Source/Reference/DataTypes/Records.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
         "def.StructBits",
-        39418usize,
+        39450usize,
         "HelloUltraviolet::Reference::DataTypes",
         "runDataTypesRecordsReference",
         "Source/Reference/DataTypes/Records.uv"
@@ -450,7 +450,7 @@ public procedure validatedConcreteDataTypesRecordsObligations() -> usize {
     }
     if acceptedObligationEntryMatches(
         "def.PadBytes",
-        39432usize,
+        39464usize,
         "HelloUltraviolet::Reference::DataTypes",
         "runDataTypesRecordsReference",
         "Source/Reference/DataTypes/Records.uv"
@@ -459,7 +459,7 @@ public procedure validatedConcreteDataTypesRecordsObligations() -> usize {
     }
     if acceptedObligationEntryMatches(
         "def.RecordValueBits",
-        39446usize,
+        39478usize,
         "HelloUltraviolet::Reference::DataTypes",
         "runDataTypesRecordsReference",
         "Source/Reference/DataTypes/Records.uv"
@@ -468,7 +468,7 @@ public procedure validatedConcreteDataTypesRecordsObligations() -> usize {
     }
     if acceptedObligationEntryMatches(
         "LowerFieldInits-Empty",
-        39460usize,
+        39492usize,
         "HelloUltraviolet::Reference::DataTypes",
         "runDataTypesRecordsReference",
         "Source/Reference/DataTypes/Records.uv"
@@ -477,7 +477,7 @@ public procedure validatedConcreteDataTypesRecordsObligations() -> usize {
     }
     if acceptedObligationEntryMatches(
         "LowerFieldInits-Cons",
-        39477usize,
+        39509usize,
         "HelloUltraviolet::Reference::DataTypes",
         "runDataTypesRecordsReference",
         "Source/Reference/DataTypes/Records.uv"
@@ -486,7 +486,7 @@ public procedure validatedConcreteDataTypesRecordsObligations() -> usize {
     }
     if acceptedObligationEntryMatches(
         "Lower-Expr-Record",
-        39495usize,
+        39527usize,
         "HelloUltraviolet::Reference::DataTypes",
         "runDataTypesRecordsReference",
         "Source/Reference/DataTypes/Records.uv"
@@ -495,7 +495,7 @@ public procedure validatedConcreteDataTypesRecordsObligations() -> usize {
     }
     if acceptedObligationEntryMatches(
         "Lower-CallIR-RecordCtor",
-        39513usize,
+        39545usize,
         "HelloUltraviolet::Reference::DataTypes",
         "runDataTypesRecordsReference",
         "Source/Reference/DataTypes/Records.uv"
@@ -504,7 +504,7 @@ public procedure validatedConcreteDataTypesRecordsObligations() -> usize {
     }
     if rejectedSourceObligationEntryMatches(
         "diagnostics.Records",
-        39531usize,
+        39563usize,
         "HelloUltraviolet::Audit::FixtureCatalog::RejectedSource",
         "validatedExpressionsRejectedSourceFixtureCount",
         "Fixtures/RejectedSource/Expressions/RecordDuplicateField/Source/Main.uv"

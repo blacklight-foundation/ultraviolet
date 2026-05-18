@@ -232,9 +232,6 @@ IRPtr LowerTypedPatternBindings(const ast::TypedPattern& pattern,
             info.base = value;
             info.union_index = *member_index;
             ctx.RegisterDerivedValue(payload, info);
-            if (value.kind == IRValue::Kind::Local) {
-              ctx.MarkMoved(value.name);
-            }
             bind_value = payload;
           }
         }

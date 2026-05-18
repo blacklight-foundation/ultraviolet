@@ -9,7 +9,7 @@ public procedure validatedProceduresAndContractsInvariantsObligations() -> usize
     var count: usize = 0usize
     if acceptedObligationEntryMatches(
         "grammar.15.Invariants",
-        56207usize,
+        56239usize,
         "HelloUltraviolet::Reference::Procedures",
         "runProceduresInvariantsReference",
         "Source/Reference/Procedures/Invariants.uv"
@@ -18,24 +18,6 @@ public procedure validatedProceduresAndContractsInvariantsObligations() -> usize
     }
     if acceptedObligationEntryMatches(
         "rule.15.Parse-InvariantOpt-None",
-        56225usize,
-        "HelloUltraviolet::Reference::Procedures",
-        "runProceduresInvariantsReference",
-        "Source/Reference/Procedures/Invariants.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
-        "rule.15.Parse-InvariantOpt-Yes",
-        56241usize,
-        "HelloUltraviolet::Reference::Procedures",
-        "runProceduresInvariantsReference",
-        "Source/Reference/Procedures/Invariants.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
-        "rule.15.ParseLoopInvariantOpt",
         56257usize,
         "HelloUltraviolet::Reference::Procedures",
         "runProceduresInvariantsReference",
@@ -44,8 +26,26 @@ public procedure validatedProceduresAndContractsInvariantsObligations() -> usize
         count = count + 1usize
     }
     if acceptedObligationEntryMatches(
+        "rule.15.Parse-InvariantOpt-Yes",
+        56273usize,
+        "HelloUltraviolet::Reference::Procedures",
+        "runProceduresInvariantsReference",
+        "Source/Reference/Procedures/Invariants.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "rule.15.ParseLoopInvariantOpt",
+        56289usize,
+        "HelloUltraviolet::Reference::Procedures",
+        "runProceduresInvariantsReference",
+        "Source/Reference/Procedures/Invariants.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
         "def.15.InvariantAst",
-        56272usize,
+        56304usize,
         "HelloUltraviolet::Reference::Procedures",
         "runProceduresInvariantsReference",
         "Source/Reference/Procedures/Invariants.uv"
@@ -54,7 +54,7 @@ public procedure validatedProceduresAndContractsInvariantsObligations() -> usize
     }
     if acceptedObligationEntryMatches(
         "def.15.TypeInvariantAstExtensions",
-        56286usize,
+        56318usize,
         "HelloUltraviolet::Reference::Procedures",
         "runProceduresInvariantsReference",
         "Source/Reference/Procedures/Invariants.uv"
@@ -63,7 +63,7 @@ public procedure validatedProceduresAndContractsInvariantsObligations() -> usize
     }
     if acceptedObligationEntryMatches(
         "def.15.LoopInvariantAstPreservation",
-        56301usize,
+        56333usize,
         "HelloUltraviolet::Reference::Procedures",
         "runProceduresInvariantsReference",
         "Source/Reference/Procedures/Invariants.uv"
@@ -72,7 +72,7 @@ public procedure validatedProceduresAndContractsInvariantsObligations() -> usize
     }
     if acceptedObligationEntryMatches(
         "def.15.TypeInvariantContext",
-        56316usize,
+        56348usize,
         "HelloUltraviolet::Reference::Procedures",
         "runProceduresInvariantsReference",
         "Source/Reference/Procedures/Invariants.uv"
@@ -81,7 +81,7 @@ public procedure validatedProceduresAndContractsInvariantsObligations() -> usize
     }
     if acceptedObligationEntryMatches(
         "def.15.TypeInvariantEnforcementPoints",
-        56333usize,
+        56365usize,
         "HelloUltraviolet::Reference::Procedures",
         "runProceduresInvariantsReference",
         "Source/Reference/Procedures/Invariants.uv"
@@ -90,7 +90,7 @@ public procedure validatedProceduresAndContractsInvariantsObligations() -> usize
     }
     if rejectedSourceObligationEntryMatches(
         "req.15.TypeInvariantsForbidPublicMutableFields",
-        56350usize,
+        56382usize,
         "HelloUltraviolet::Audit::FixtureCatalog::RejectedSource",
         "validatedProceduresRejectedSourceFixtureCount",
         "Fixtures/RejectedSource/Procedures/InvariantPublicMutableField/Source/Main.uv"
@@ -99,7 +99,7 @@ public procedure validatedProceduresAndContractsInvariantsObligations() -> usize
     }
     if acceptedObligationEntryMatches(
         "req.15.PrivateProceduresExemptFromTypeInvariantPreCall",
-        56363usize,
+        56395usize,
         "HelloUltraviolet::Reference::Procedures",
         "runProceduresInvariantsReference",
         "Source/Reference/Procedures/Invariants.uv"
@@ -108,7 +108,7 @@ public procedure validatedProceduresAndContractsInvariantsObligations() -> usize
     }
     if acceptedObligationEntryMatches(
         "def.15.LoopInvariantEnforcementPoints",
-        56376usize,
+        56408usize,
         "HelloUltraviolet::Reference::Procedures",
         "runProceduresInvariantsReference",
         "Source/Reference/Procedures/Invariants.uv"
@@ -117,7 +117,7 @@ public procedure validatedProceduresAndContractsInvariantsObligations() -> usize
     }
     if acceptedObligationEntryMatches(
         "req.15.LoopInvariantExitFact",
-        56393usize,
+        56425usize,
         "HelloUltraviolet::Reference::Procedures",
         "runProceduresInvariantsReference",
         "Source/Reference/Procedures/Invariants.uv"
@@ -126,7 +126,7 @@ public procedure validatedProceduresAndContractsInvariantsObligations() -> usize
     }
     if acceptedObligationEntryMatches(
         "req.15.InvariantVerificationModeRules",
-        56406usize,
+        56438usize,
         "HelloUltraviolet::Reference::Procedures",
         "runProceduresInvariantsReference",
         "Source/Reference/Procedures/Invariants.uv"
@@ -135,7 +135,7 @@ public procedure validatedProceduresAndContractsInvariantsObligations() -> usize
     }
     if acceptedObligationEntryMatches(
         "req.15.InvariantRuntimeChecks",
-        56421usize,
+        56453usize,
         "HelloUltraviolet::Reference::Procedures",
         "runProceduresInvariantsReference",
         "Source/Reference/Procedures/Invariants.uv"
@@ -144,7 +144,7 @@ public procedure validatedProceduresAndContractsInvariantsObligations() -> usize
     }
     if acceptedObligationEntryMatches(
         "req.15.InvariantLoweringViaVerificationLogic",
-        56436usize,
+        56468usize,
         "HelloUltraviolet::Reference::Procedures",
         "runProceduresInvariantsReference",
         "Source/Reference/Procedures/Invariants.uv"
@@ -153,7 +153,7 @@ public procedure validatedProceduresAndContractsInvariantsObligations() -> usize
     }
     if rejectedSourceObligationEntryMatches(
         "diag.15.Invariants",
-        56451usize,
+        56483usize,
         "HelloUltraviolet::Audit::FixtureCatalog::RejectedSource",
         "validatedProceduresRejectedSourceFixtureCount",
         "Fixtures/RejectedSource/Procedures/InvariantDiagnostics/Source/Main.uv"

@@ -20,9 +20,60 @@ namespace ultraviolet::codegen {
 
 namespace {
 
+bool IsStaticRoot(const std::string& root, const LowerCtx& ctx) {
+    if (const auto alias = ctx.LookupLocalAddrAlias(root)) {
+        return alias->kind == LocalAddrAlias::Kind::Static;
+    }
+    if (!ctx.resolve_name) {
+        return false;
+    }
+    const auto resolved = ctx.resolve_name(root);
+    return resolved.has_value() && !resolved->empty();
+}
+
+bool MarkMovedAliasBinding(const LocalAddrAlias& alias,
+                           const ast::Expr& place,
+                           LowerCtx& ctx) {
+    auto it = ctx.binding_states.find(alias.binding_name);
+    if (it == ctx.binding_states.end()) {
+        SPEC_RULE("UpdateValid-Err");
+        ctx.ReportCodegenFailure();
+        return true;
+    }
+
+    for (BindingState& state : it->second) {
+        if (state.binding_id != alias.binding_id) {
+            continue;
+        }
+        if (auto head = FieldHead(place)) {
+            SPEC_RULE("UpdateValid-PartialMove-Init");
+            SPEC_RULE("UpdateValid-PartialMove-Step");
+            state.moved_fields.push_back(*head);
+        } else {
+            SPEC_RULE("UpdateValid-MoveRoot");
+            state.is_moved = true;
+        }
+        return true;
+    }
+
+    SPEC_RULE("UpdateValid-Err");
+    ctx.ReportCodegenFailure();
+    return true;
+}
+
 IRPtr MarkMovedPlace(const ast::Expr& place, LowerCtx& ctx) {
     if (auto root = PlaceRoot(place)) {
-        if (ctx.GetBindingState(*root)) {
+        if (auto alias = ctx.LookupLocalAddrAlias(*root)) {
+            switch (alias->kind) {
+                case LocalAddrAlias::Kind::Binding:
+                    MarkMovedAliasBinding(*alias, place, ctx);
+                    break;
+                case LocalAddrAlias::Kind::Capture:
+                    break;
+                case LocalAddrAlias::Kind::Static:
+                    break;
+            }
+        } else if (ctx.GetBindingState(*root)) {
             if (auto head = FieldHead(place)) {
                 ctx.MarkFieldMoved(*root, *head);
             } else {
@@ -30,6 +81,8 @@ IRPtr MarkMovedPlace(const ast::Expr& place, LowerCtx& ctx) {
             }
         } else if (ctx.LookupCapture(*root)) {
             // Captured bindings were validated when the capture was formed.
+        } else if (IsStaticRoot(*root, ctx)) {
+            // Static storage is represented by the emitted MoveStateIR below.
         } else {
             ctx.MarkMoved(*root);
         }

@@ -9,7 +9,7 @@ public procedure validatedModalAndSpecialTypesStateSpecificMethodsObligations() 
     var count: usize = 0usize
     if acceptedObligationEntryMatches(
         "grammar.StateMethods.Syntax",
-        43470usize,
+        43502usize,
         "HelloUltraviolet::Reference::ModalTypes",
         "runModalTypesStateMethodsReference",
         "Source/Reference/ModalTypes/StateMethods.uv"
@@ -18,7 +18,7 @@ public procedure validatedModalAndSpecialTypesStateSpecificMethodsObligations() 
     }
     if acceptedObligationEntryMatches(
         "rule.13.Parse-StateMember-Method",
-        43487usize,
+        43519usize,
         "HelloUltraviolet::Reference::ModalTypes",
         "runModalTypesStateMethodsReference",
         "Source/Reference/ModalTypes/StateMethods.uv"
@@ -27,7 +27,7 @@ public procedure validatedModalAndSpecialTypesStateSpecificMethodsObligations() 
     }
     if acceptedObligationEntryMatches(
         "req.StateMethodSignatureParser",
-        43503usize,
+        43535usize,
         "HelloUltraviolet::Reference::ModalTypes",
         "runModalTypesStateMethodsReference",
         "Source/Reference/ModalTypes/StateMethods.uv"
@@ -36,7 +36,7 @@ public procedure validatedModalAndSpecialTypesStateSpecificMethodsObligations() 
     }
     if acceptedObligationEntryMatches(
         "def.StateMethodDeclAst",
-        43517usize,
+        43549usize,
         "HelloUltraviolet::Reference::ModalTypes",
         "runModalTypesStateMethodsReference",
         "Source/Reference/ModalTypes/StateMethods.uv"
@@ -45,7 +45,7 @@ public procedure validatedModalAndSpecialTypesStateSpecificMethodsObligations() 
     }
     if acceptedObligationEntryMatches(
         "def.StateMethodCollections",
-        43529usize,
+        43561usize,
         "HelloUltraviolet::Reference::ModalTypes",
         "runModalTypesStateMethodsReference",
         "Source/Reference/ModalTypes/StateMethods.uv"
@@ -54,7 +54,7 @@ public procedure validatedModalAndSpecialTypesStateSpecificMethodsObligations() 
     }
     if acceptedObligationEntryMatches(
         "def.StateMethodSig",
-        43542usize,
+        43574usize,
         "HelloUltraviolet::Reference::ModalTypes",
         "runModalTypesStateMethodsReference",
         "Source/Reference/ModalTypes/StateMethods.uv"
@@ -63,7 +63,7 @@ public procedure validatedModalAndSpecialTypesStateSpecificMethodsObligations() 
     }
     if acceptedObligationEntryMatches(
         "def.LookupStateMethod",
-        43556usize,
+        43588usize,
         "HelloUltraviolet::Reference::ModalTypes",
         "runModalTypesStateMethodsReference",
         "Source/Reference/ModalTypes/StateMethods.uv"
@@ -72,7 +72,7 @@ public procedure validatedModalAndSpecialTypesStateSpecificMethodsObligations() 
     }
     if acceptedObligationEntryMatches(
         "def.StateMemberVisible",
-        43571usize,
+        43603usize,
         "HelloUltraviolet::Reference::ModalTypes",
         "runModalTypesStateMethodsReference",
         "Source/Reference/ModalTypes/StateMethods.uv"
@@ -81,24 +81,6 @@ public procedure validatedModalAndSpecialTypesStateSpecificMethodsObligations() 
     }
     if acceptedObligationEntryMatches(
         "rule.13.StateMethod-Dup",
-        43583usize,
-        "HelloUltraviolet::Reference::ModalTypes",
-        "runModalTypesStateMethodsReference",
-        "Source/Reference/ModalTypes/StateMethods.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
-        "rule.13.WF-State-Method",
-        43599usize,
-        "HelloUltraviolet::Reference::ModalTypes",
-        "runModalTypesStateMethodsReference",
-        "Source/Reference/ModalTypes/StateMethods.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
-        "rule.13.T-Modal-Method",
         43615usize,
         "HelloUltraviolet::Reference::ModalTypes",
         "runModalTypesStateMethodsReference",
@@ -107,7 +89,7 @@ public procedure validatedModalAndSpecialTypesStateSpecificMethodsObligations() 
         count = count + 1usize
     }
     if acceptedObligationEntryMatches(
-        "rule.13.Modal-Method-RecvPerm-Err",
+        "rule.13.WF-State-Method",
         43631usize,
         "HelloUltraviolet::Reference::ModalTypes",
         "runModalTypesStateMethodsReference",
@@ -116,7 +98,7 @@ public procedure validatedModalAndSpecialTypesStateSpecificMethodsObligations() 
         count = count + 1usize
     }
     if acceptedObligationEntryMatches(
-        "rule.13.Modal-Method-NotFound",
+        "rule.13.T-Modal-Method",
         43647usize,
         "HelloUltraviolet::Reference::ModalTypes",
         "runModalTypesStateMethodsReference",
@@ -125,7 +107,7 @@ public procedure validatedModalAndSpecialTypesStateSpecificMethodsObligations() 
         count = count + 1usize
     }
     if acceptedObligationEntryMatches(
-        "rule.13.Modal-Method-NotVisible",
+        "rule.13.Modal-Method-RecvPerm-Err",
         43663usize,
         "HelloUltraviolet::Reference::ModalTypes",
         "runModalTypesStateMethodsReference",
@@ -134,7 +116,7 @@ public procedure validatedModalAndSpecialTypesStateSpecificMethodsObligations() 
         count = count + 1usize
     }
     if acceptedObligationEntryMatches(
-        "rule.13.T-Modal-Method-Body",
+        "rule.13.Modal-Method-NotFound",
         43679usize,
         "HelloUltraviolet::Reference::ModalTypes",
         "runModalTypesStateMethodsReference",
@@ -143,8 +125,26 @@ public procedure validatedModalAndSpecialTypesStateSpecificMethodsObligations() 
         count = count + 1usize
     }
     if acceptedObligationEntryMatches(
+        "rule.13.Modal-Method-NotVisible",
+        43695usize,
+        "HelloUltraviolet::Reference::ModalTypes",
+        "runModalTypesStateMethodsReference",
+        "Source/Reference/ModalTypes/StateMethods.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "rule.13.T-Modal-Method-Body",
+        43711usize,
+        "HelloUltraviolet::Reference::ModalTypes",
+        "runModalTypesStateMethodsReference",
+        "Source/Reference/ModalTypes/StateMethods.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
         "def.StateMethodTarget",
-        43697usize,
+        43729usize,
         "HelloUltraviolet::Reference::ModalTypes",
         "runModalTypesStateMethodsReference",
         "Source/Reference/ModalTypes/StateMethods.uv"
@@ -153,7 +153,7 @@ public procedure validatedModalAndSpecialTypesStateSpecificMethodsObligations() 
     }
     if acceptedObligationEntryMatches(
         "rule.13.ApplyMethodSigma",
-        43709usize,
+        43741usize,
         "HelloUltraviolet::Reference::ModalTypes",
         "runModalTypesStateMethodsReference",
         "Source/Reference/ModalTypes/StateMethods.uv"
@@ -162,7 +162,7 @@ public procedure validatedModalAndSpecialTypesStateSpecificMethodsObligations() 
     }
     if acceptedObligationEntryMatches(
         "req.BuiltinStateMethodCalling",
-        43725usize,
+        43757usize,
         "HelloUltraviolet::Reference::ModalTypes",
         "runModalTypesStateMethodsReference",
         "Source/Reference/ModalTypes/StateMethods.uv"
@@ -171,7 +171,7 @@ public procedure validatedModalAndSpecialTypesStateSpecificMethodsObligations() 
     }
     if acceptedObligationEntryMatches(
         "req.StateMethodLowering",
-        43739usize,
+        43771usize,
         "HelloUltraviolet::Reference::ModalTypes",
         "runModalTypesStateMethodsReference",
         "Source/Reference/ModalTypes/StateMethods.uv"
@@ -180,7 +180,7 @@ public procedure validatedModalAndSpecialTypesStateSpecificMethodsObligations() 
     }
     if acceptedObligationEntryMatches(
         "diag.StateMethods",
-        43753usize,
+        43785usize,
         "HelloUltraviolet::Reference::ModalTypes",
         "runModalTypesStateMethodsReference",
         "Source/Reference/ModalTypes/StateMethods.uv"

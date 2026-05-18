@@ -9,7 +9,7 @@ public procedure validatedAbstractionAndPolymorphismFoundationalClassesAndPredic
     var count: usize = 0usize
     if rejectedSourceObligationEntryMatches(
         "req.14.FoundationalClassesSyntaxAndReservedNames",
-        52418usize,
+        52450usize,
         "HelloUltraviolet::Audit::FixtureCatalog::RejectedSource",
         "validatedPolymorphismRejectedSourceFixtureCount",
         "Fixtures/RejectedSource/Polymorphism/FoundationalClassNameReserved/Source/Main.uv"
@@ -18,7 +18,7 @@ public procedure validatedAbstractionAndPolymorphismFoundationalClassesAndPredic
     }
     if acceptedObligationEntryMatches(
         "req.14.FoundationalClassesNoFeatureSpecificParser",
-        52433usize,
+        52465usize,
         "HelloUltraviolet::Reference::Polymorphism",
         "runPolymorphismClassesReference",
         "Source/Reference/Polymorphism/Classes.uv"
@@ -27,7 +27,7 @@ public procedure validatedAbstractionAndPolymorphismFoundationalClassesAndPredic
     }
     if acceptedObligationEntryMatches(
         "def.14.FoundationalClassName",
-        52448usize,
+        52480usize,
         "HelloUltraviolet::Reference::Polymorphism",
         "runPolymorphismClassesReference",
         "Source/Reference/Polymorphism/Classes.uv"
@@ -36,7 +36,7 @@ public procedure validatedAbstractionAndPolymorphismFoundationalClassesAndPredic
     }
     if acceptedObligationEntryMatches(
         "def.14.FoundationalJudgements",
-        52461usize,
+        52493usize,
         "HelloUltraviolet::Reference::Polymorphism",
         "runPolymorphismClassesReference",
         "Source/Reference/Polymorphism/Classes.uv"
@@ -45,7 +45,7 @@ public procedure validatedAbstractionAndPolymorphismFoundationalClassesAndPredic
     }
     if acceptedObligationEntryMatches(
         "def.14.HasCloneDropMethod",
-        52477usize,
+        52509usize,
         "HelloUltraviolet::Reference::Polymorphism",
         "runPolymorphismClassesReference",
         "Source/Reference/Polymorphism/Classes.uv"
@@ -54,7 +54,7 @@ public procedure validatedAbstractionAndPolymorphismFoundationalClassesAndPredic
     }
     if acceptedObligationEntryMatches(
         "def.14.CloneDropTypePredicates",
-        52491usize,
+        52523usize,
         "HelloUltraviolet::Reference::Polymorphism",
         "runPolymorphismClassesReference",
         "Source/Reference/Polymorphism/Classes.uv"
@@ -63,7 +63,7 @@ public procedure validatedAbstractionAndPolymorphismFoundationalClassesAndPredic
     }
     if acceptedObligationEntryMatches(
         "def.14.FoundationalImplementationPredicates",
-        52505usize,
+        52537usize,
         "HelloUltraviolet::Reference::Polymorphism",
         "runPolymorphismClassesReference",
         "Source/Reference/Polymorphism/Classes.uv"
@@ -72,7 +72,7 @@ public procedure validatedAbstractionAndPolymorphismFoundationalClassesAndPredic
     }
     if acceptedObligationEntryMatches(
         "req.14.FoundationalBoundsIntrinsicSatisfaction",
-        52525usize,
+        52557usize,
         "HelloUltraviolet::Reference::Polymorphism",
         "runPolymorphismClassesReference",
         "Source/Reference/Polymorphism/Classes.uv"
@@ -81,7 +81,7 @@ public procedure validatedAbstractionAndPolymorphismFoundationalClassesAndPredic
     }
     if acceptedObligationEntryMatches(
         "rule.14.BitcopyDrop-Ok",
-        52538usize,
+        52570usize,
         "HelloUltraviolet::Reference::Polymorphism",
         "runPolymorphismClassesReference",
         "Source/Reference/Polymorphism/Classes.uv"
@@ -90,7 +90,7 @@ public procedure validatedAbstractionAndPolymorphismFoundationalClassesAndPredic
     }
     if rejectedSourceObligationEntryMatches(
         "rule.14.BitcopyDrop-Conflict",
-        52554usize,
+        52586usize,
         "HelloUltraviolet::Audit::FixtureCatalog::RejectedSource",
         "validatedPolymorphismRejectedSourceFixtureCount",
         "Fixtures/RejectedSource/Polymorphism/BitcopyDropConflict/Source/Main.uv"
@@ -99,7 +99,7 @@ public procedure validatedAbstractionAndPolymorphismFoundationalClassesAndPredic
     }
     if acceptedObligationEntryMatches(
         "def.14.BitcopyType",
-        52570usize,
+        52602usize,
         "HelloUltraviolet::Reference::Polymorphism",
         "runPolymorphismClassesReference",
         "Source/Reference/Polymorphism/Classes.uv"
@@ -108,7 +108,7 @@ public procedure validatedAbstractionAndPolymorphismFoundationalClassesAndPredic
     }
     if acceptedObligationEntryMatches(
         "def.14.BitcopyTypeCore",
-        52583usize,
+        52615usize,
         "HelloUltraviolet::Reference::Polymorphism",
         "runPolymorphismClassesReference",
         "Source/Reference/Polymorphism/Classes.uv"
@@ -117,7 +117,7 @@ public procedure validatedAbstractionAndPolymorphismFoundationalClassesAndPredic
     }
     if acceptedObligationEntryMatches(
         "def.14.BuiltinBitcopyType",
-        52606usize,
+        52638usize,
         "HelloUltraviolet::Reference::Polymorphism",
         "runPolymorphismClassesReference",
         "Source/Reference/Polymorphism/Classes.uv"
@@ -126,7 +126,7 @@ public procedure validatedAbstractionAndPolymorphismFoundationalClassesAndPredic
     }
     if acceptedObligationEntryMatches(
         "def.14.BuiltinDropCloneType",
-        52637usize,
+        52669usize,
         "HelloUltraviolet::Reference::Polymorphism",
         "runPolymorphismClassesReference",
         "Source/Reference/Polymorphism/Classes.uv"
@@ -135,24 +135,6 @@ public procedure validatedAbstractionAndPolymorphismFoundationalClassesAndPredic
     }
     if acceptedObligationEntryMatches(
         "def.14.BuiltinFoundationalClassSignatures",
-        52651usize,
-        "HelloUltraviolet::Reference::Polymorphism",
-        "runPolymorphismClassesReference",
-        "Source/Reference/Polymorphism/Classes.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
-        "req.14.EqLaws",
-        52670usize,
-        "HelloUltraviolet::Reference::Polymorphism",
-        "runPolymorphismClassesReference",
-        "Source/Reference/Polymorphism/Classes.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
-        "req.14.HashRequiresEqAndEqualValuesHashEqual",
         52683usize,
         "HelloUltraviolet::Reference::Polymorphism",
         "runPolymorphismClassesReference",
@@ -161,8 +143,26 @@ public procedure validatedAbstractionAndPolymorphismFoundationalClassesAndPredic
         count = count + 1usize
     }
     if acceptedObligationEntryMatches(
+        "req.14.EqLaws",
+        52702usize,
+        "HelloUltraviolet::Reference::Polymorphism",
+        "runPolymorphismClassesReference",
+        "Source/Reference/Polymorphism/Classes.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "req.14.HashRequiresEqAndEqualValuesHashEqual",
+        52715usize,
+        "HelloUltraviolet::Reference::Polymorphism",
+        "runPolymorphismClassesReference",
+        "Source/Reference/Polymorphism/Classes.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
         "req.14.IteratorNextContract",
-        52696usize,
+        52728usize,
         "HelloUltraviolet::Reference::Polymorphism",
         "runPolymorphismClassesReference",
         "Source/Reference/Polymorphism/Classes.uv"
@@ -171,24 +171,6 @@ public procedure validatedAbstractionAndPolymorphismFoundationalClassesAndPredic
     }
     if acceptedObligationEntryMatches(
         "req.14.StepPartialInverseContract",
-        52709usize,
-        "HelloUltraviolet::Reference::Polymorphism",
-        "runPolymorphismClassesReference",
-        "Source/Reference/Polymorphism/Classes.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
-        "req.14.DropCloneDynamicSemantics",
-        52724usize,
-        "HelloUltraviolet::Reference::Polymorphism",
-        "runPolymorphismClassesReference",
-        "Source/Reference/Polymorphism/Classes.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
-        "req.14.HasherDynamicSemantics",
         52741usize,
         "HelloUltraviolet::Reference::Polymorphism",
         "runPolymorphismClassesReference",
@@ -197,8 +179,26 @@ public procedure validatedAbstractionAndPolymorphismFoundationalClassesAndPredic
         count = count + 1usize
     }
     if acceptedObligationEntryMatches(
+        "req.14.DropCloneDynamicSemantics",
+        52756usize,
+        "HelloUltraviolet::Reference::Polymorphism",
+        "runPolymorphismClassesReference",
+        "Source/Reference/Polymorphism/Classes.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "req.14.HasherDynamicSemantics",
+        52773usize,
+        "HelloUltraviolet::Reference::Polymorphism",
+        "runPolymorphismClassesReference",
+        "Source/Reference/Polymorphism/Classes.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
         "req.14.IntegerStepDynamicSemantics",
-        52754usize,
+        52786usize,
         "HelloUltraviolet::Reference::Polymorphism",
         "runPolymorphismClassesReference",
         "Source/Reference/Polymorphism/Classes.uv"
@@ -207,7 +207,7 @@ public procedure validatedAbstractionAndPolymorphismFoundationalClassesAndPredic
     }
     if acceptedObligationEntryMatches(
         "req.14.CharStepDynamicSemantics",
-        52767usize,
+        52799usize,
         "HelloUltraviolet::Reference::Polymorphism",
         "runPolymorphismClassesReference",
         "Source/Reference/Polymorphism/Classes.uv"
@@ -216,7 +216,7 @@ public procedure validatedAbstractionAndPolymorphismFoundationalClassesAndPredic
     }
     if acceptedObligationEntryMatches(
         "req.14.FoundationalIntrinsicCallLowering",
-        52782usize,
+        52814usize,
         "HelloUltraviolet::Reference::Polymorphism",
         "runPolymorphismClassesReference",
         "Source/Reference/Polymorphism/Classes.uv"
@@ -225,7 +225,7 @@ public procedure validatedAbstractionAndPolymorphismFoundationalClassesAndPredic
     }
     if acceptedObligationEntryMatches(
         "req.14.FoundationalPredicatesNoSeparateRepresentation",
-        52795usize,
+        52827usize,
         "HelloUltraviolet::Reference::Polymorphism",
         "runPolymorphismClassesReference",
         "Source/Reference/Polymorphism/Classes.uv"
@@ -234,7 +234,7 @@ public procedure validatedAbstractionAndPolymorphismFoundationalClassesAndPredic
     }
     if rejectedSourceObligationEntryMatches(
         "diag.14.FoundationalClasses",
-        52810usize,
+        52842usize,
         "HelloUltraviolet::Audit::FixtureCatalog::RejectedSource",
         "validatedPolymorphismRejectedSourceFixtureCount",
         "Fixtures/RejectedSource/Polymorphism/BitcopyFieldNonBitcopy/Source/Main.uv"

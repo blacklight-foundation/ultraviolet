@@ -9,7 +9,7 @@ public procedure validatedAbstractionAndPolymorphismImplementationsObligations()
     var count: usize = 0usize
     if acceptedObligationEntryMatches(
         "grammar.ImplementationsSyntax",
-        49550usize,
+        49582usize,
         "HelloUltraviolet::Reference::Polymorphism",
         "runPolymorphismImplementationsReference",
         "Source/Reference/Polymorphism/Implementations.uv"
@@ -18,7 +18,7 @@ public procedure validatedAbstractionAndPolymorphismImplementationsObligations()
     }
     if acceptedObligationEntryMatches(
         "req.NoStandaloneImplementationBlocks",
-        49565usize,
+        49597usize,
         "HelloUltraviolet::Reference::Polymorphism",
         "runPolymorphismImplementationsReference",
         "Source/Reference/Polymorphism/Implementations.uv"
@@ -27,24 +27,6 @@ public procedure validatedAbstractionAndPolymorphismImplementationsObligations()
     }
     if acceptedObligationEntryMatches(
         "rule.14.Parse-Implements-None",
-        49579usize,
-        "HelloUltraviolet::Reference::Polymorphism",
-        "runPolymorphismImplementationsReference",
-        "Source/Reference/Polymorphism/Implementations.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
-        "rule.14.Parse-Implements-Yes",
-        49595usize,
-        "HelloUltraviolet::Reference::Polymorphism",
-        "runPolymorphismImplementationsReference",
-        "Source/Reference/Polymorphism/Implementations.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
-        "rule.14.Parse-ClassList-Cons",
         49611usize,
         "HelloUltraviolet::Reference::Polymorphism",
         "runPolymorphismImplementationsReference",
@@ -53,7 +35,7 @@ public procedure validatedAbstractionAndPolymorphismImplementationsObligations()
         count = count + 1usize
     }
     if acceptedObligationEntryMatches(
-        "rule.14.Parse-ClassListTail-End",
+        "rule.14.Parse-Implements-Yes",
         49627usize,
         "HelloUltraviolet::Reference::Polymorphism",
         "runPolymorphismImplementationsReference",
@@ -62,7 +44,7 @@ public procedure validatedAbstractionAndPolymorphismImplementationsObligations()
         count = count + 1usize
     }
     if acceptedObligationEntryMatches(
-        "rule.14.Parse-ClassListTail-Comma",
+        "rule.14.Parse-ClassList-Cons",
         49643usize,
         "HelloUltraviolet::Reference::Polymorphism",
         "runPolymorphismImplementationsReference",
@@ -71,8 +53,26 @@ public procedure validatedAbstractionAndPolymorphismImplementationsObligations()
         count = count + 1usize
     }
     if acceptedObligationEntryMatches(
+        "rule.14.Parse-ClassListTail-End",
+        49659usize,
+        "HelloUltraviolet::Reference::Polymorphism",
+        "runPolymorphismImplementationsReference",
+        "Source/Reference/Polymorphism/Implementations.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "rule.14.Parse-ClassListTail-Comma",
+        49675usize,
+        "HelloUltraviolet::Reference::Polymorphism",
+        "runPolymorphismImplementationsReference",
+        "Source/Reference/Polymorphism/Implementations.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
         "def.ImplementsAccessor",
-        49661usize,
+        49693usize,
         "HelloUltraviolet::Reference::Polymorphism",
         "runPolymorphismImplementationsReference",
         "Source/Reference/Polymorphism/Implementations.uv"
@@ -81,7 +81,7 @@ public procedure validatedAbstractionAndPolymorphismImplementationsObligations()
     }
     if acceptedObligationEntryMatches(
         "req.SubtypeOperatorImplementationMeaning",
-        49673usize,
+        49705usize,
         "HelloUltraviolet::Reference::Polymorphism",
         "runPolymorphismImplementationsReference",
         "Source/Reference/Polymorphism/Implementations.uv"
@@ -90,7 +90,7 @@ public procedure validatedAbstractionAndPolymorphismImplementationsObligations()
     }
     if acceptedObligationEntryMatches(
         "req.ImplementationsConcreteOwnerOnly",
-        49688usize,
+        49720usize,
         "HelloUltraviolet::Reference::Polymorphism",
         "runPolymorphismImplementationsReference",
         "Source/Reference/Polymorphism/Implementations.uv"
@@ -99,7 +99,7 @@ public procedure validatedAbstractionAndPolymorphismImplementationsObligations()
     }
     if acceptedObligationEntryMatches(
         "def.ImplementerFields",
-        49700usize,
+        49732usize,
         "HelloUltraviolet::Reference::Polymorphism",
         "runPolymorphismImplementationsReference",
         "Source/Reference/Polymorphism/Implementations.uv"
@@ -108,7 +108,7 @@ public procedure validatedAbstractionAndPolymorphismImplementationsObligations()
     }
     if acceptedObligationEntryMatches(
         "def.ImplementerMethods",
-        49713usize,
+        49745usize,
         "HelloUltraviolet::Reference::Polymorphism",
         "runPolymorphismImplementationsReference",
         "Source/Reference/Polymorphism/Implementations.uv"
@@ -117,7 +117,7 @@ public procedure validatedAbstractionAndPolymorphismImplementationsObligations()
     }
     if acceptedObligationEntryMatches(
         "def.MethodByName",
-        49726usize,
+        49758usize,
         "HelloUltraviolet::Reference::Polymorphism",
         "runPolymorphismImplementationsReference",
         "Source/Reference/Polymorphism/Implementations.uv"
@@ -126,7 +126,7 @@ public procedure validatedAbstractionAndPolymorphismImplementationsObligations()
     }
     if acceptedObligationEntryMatches(
         "def.ClassEffectiveTables",
-        49739usize,
+        49771usize,
         "HelloUltraviolet::Reference::Polymorphism",
         "runPolymorphismImplementationsReference",
         "Source/Reference/Polymorphism/Implementations.uv"
@@ -135,7 +135,7 @@ public procedure validatedAbstractionAndPolymorphismImplementationsObligations()
     }
     if acceptedObligationEntryMatches(
         "def.ImplementationOrphanRule",
-        49752usize,
+        49784usize,
         "HelloUltraviolet::Reference::Polymorphism",
         "runPolymorphismImplementationsReference",
         "Source/Reference/Polymorphism/Implementations.uv"
@@ -144,7 +144,7 @@ public procedure validatedAbstractionAndPolymorphismImplementationsObligations()
     }
     if acceptedObligationEntryMatches(
         "def.DefaultMethodPredicates",
-        49768usize,
+        49800usize,
         "HelloUltraviolet::Reference::Polymorphism",
         "runPolymorphismImplementationsReference",
         "Source/Reference/Polymorphism/Implementations.uv"
@@ -153,7 +153,7 @@ public procedure validatedAbstractionAndPolymorphismImplementationsObligations()
     }
     if acceptedObligationEntryMatches(
         "rule.14.Impl-Abstract-Method",
-        49781usize,
+        49813usize,
         "HelloUltraviolet::Reference::Polymorphism",
         "runPolymorphismImplementationsReference",
         "Source/Reference/Polymorphism/Implementations.uv"
@@ -162,7 +162,7 @@ public procedure validatedAbstractionAndPolymorphismImplementationsObligations()
     }
     if acceptedObligationEntryMatches(
         "rule.14.Impl-Missing-Method",
-        49797usize,
+        49829usize,
         "HelloUltraviolet::Reference::Polymorphism",
         "runPolymorphismImplementationsReference",
         "Source/Reference/Polymorphism/Implementations.uv"
@@ -171,7 +171,7 @@ public procedure validatedAbstractionAndPolymorphismImplementationsObligations()
     }
     if acceptedObligationEntryMatches(
         "rule.14.Impl-AssocType-Missing",
-        49813usize,
+        49845usize,
         "HelloUltraviolet::Reference::Polymorphism",
         "runPolymorphismImplementationsReference",
         "Source/Reference/Polymorphism/Implementations.uv"
@@ -180,7 +180,7 @@ public procedure validatedAbstractionAndPolymorphismImplementationsObligations()
     }
     if rejectedSourceObligationEntryMatches(
         "rule.14.Impl-Sig-Err",
-        49829usize,
+        49861usize,
         "HelloUltraviolet::Audit::FixtureCatalog::RejectedSource",
         "validatedPolymorphismRejectedSourceFixtureCount",
         "Fixtures/RejectedSource/Polymorphism/ImplementationAbstractMethodSignatureMismatch/Source/Main.uv"
@@ -189,7 +189,7 @@ public procedure validatedAbstractionAndPolymorphismImplementationsObligations()
     }
     if rejectedSourceObligationEntryMatches(
         "rule.14.Override-Abstract-Err",
-        49845usize,
+        49877usize,
         "HelloUltraviolet::Audit::FixtureCatalog::RejectedSource",
         "validatedPolymorphismRejectedSourceFixtureCount",
         "Fixtures/RejectedSource/Polymorphism/OverrideAbstractMethod/Source/Main.uv"
@@ -198,7 +198,7 @@ public procedure validatedAbstractionAndPolymorphismImplementationsObligations()
     }
     if acceptedObligationEntryMatches(
         "rule.14.Impl-Concrete-Default",
-        49861usize,
+        49893usize,
         "HelloUltraviolet::Reference::Polymorphism",
         "runPolymorphismImplementationsReference",
         "Source/Reference/Polymorphism/Implementations.uv"
@@ -207,7 +207,7 @@ public procedure validatedAbstractionAndPolymorphismImplementationsObligations()
     }
     if acceptedObligationEntryMatches(
         "rule.14.Impl-Concrete-Override",
-        49877usize,
+        49909usize,
         "HelloUltraviolet::Reference::Polymorphism",
         "runPolymorphismImplementationsReference",
         "Source/Reference/Polymorphism/Implementations.uv"
@@ -216,7 +216,7 @@ public procedure validatedAbstractionAndPolymorphismImplementationsObligations()
     }
     if rejectedSourceObligationEntryMatches(
         "rule.14.Override-Missing-Err",
-        49893usize,
+        49925usize,
         "HelloUltraviolet::Audit::FixtureCatalog::RejectedSource",
         "validatedPolymorphismRejectedSourceFixtureCount",
         "Fixtures/RejectedSource/Polymorphism/OverrideMissingOnDefault/Source/Main.uv"
@@ -225,7 +225,7 @@ public procedure validatedAbstractionAndPolymorphismImplementationsObligations()
     }
     if rejectedSourceObligationEntryMatches(
         "rule.14.Impl-Sig-Err-Concrete",
-        49909usize,
+        49941usize,
         "HelloUltraviolet::Audit::FixtureCatalog::RejectedSource",
         "validatedPolymorphismRejectedSourceFixtureCount",
         "Fixtures/RejectedSource/Polymorphism/ImplementationDefaultMethodSignatureMismatch/Source/Main.uv"
@@ -234,7 +234,7 @@ public procedure validatedAbstractionAndPolymorphismImplementationsObligations()
     }
     if rejectedSourceObligationEntryMatches(
         "rule.14.Override-NoConcrete",
-        49925usize,
+        49957usize,
         "HelloUltraviolet::Audit::FixtureCatalog::RejectedSource",
         "validatedPolymorphismRejectedSourceFixtureCount",
         "Fixtures/RejectedSource/Polymorphism/OverrideNoConcrete/Source/Main.uv"
@@ -243,7 +243,7 @@ public procedure validatedAbstractionAndPolymorphismImplementationsObligations()
     }
     if acceptedObligationEntryMatches(
         "rule.14.Impl-Field",
-        49941usize,
+        49973usize,
         "HelloUltraviolet::Reference::Polymorphism",
         "runPolymorphismImplementationsReference",
         "Source/Reference/Polymorphism/Implementations.uv"
@@ -252,7 +252,7 @@ public procedure validatedAbstractionAndPolymorphismImplementationsObligations()
     }
     if rejectedSourceObligationEntryMatches(
         "rule.14.Impl-Field-Missing",
-        49957usize,
+        49989usize,
         "HelloUltraviolet::Audit::FixtureCatalog::RejectedSource",
         "validatedPolymorphismRejectedSourceFixtureCount",
         "Fixtures/RejectedSource/Polymorphism/ImplementationMissingRequiredField/Source/Main.uv"
@@ -261,7 +261,7 @@ public procedure validatedAbstractionAndPolymorphismImplementationsObligations()
     }
     if rejectedSourceObligationEntryMatches(
         "rule.14.Impl-Field-Type-Err",
-        49973usize,
+        50005usize,
         "HelloUltraviolet::Audit::FixtureCatalog::RejectedSource",
         "validatedPolymorphismRejectedSourceFixtureCount",
         "Fixtures/RejectedSource/Polymorphism/ImplementationFieldTypeMismatch/Source/Main.uv"
@@ -270,7 +270,7 @@ public procedure validatedAbstractionAndPolymorphismImplementationsObligations()
     }
     if rejectedSourceObligationEntryMatches(
         "rule.14.Impl-Coherence-Err",
-        49989usize,
+        50021usize,
         "HelloUltraviolet::Audit::FixtureCatalog::RejectedSource",
         "validatedPolymorphismRejectedSourceFixtureCount",
         "Fixtures/RejectedSource/Polymorphism/DuplicateClassImplementationRule/Source/Main.uv"
@@ -279,7 +279,7 @@ public procedure validatedAbstractionAndPolymorphismImplementationsObligations()
     }
     if referenceModelObligationEntryMatches(
         "rule.14.Impl-Orphan-Err",
-        50005usize,
+        50037usize,
         "HelloUltraviolet::Audit",
         "runSpecClarificationReferenceModels",
         "Source/Audit/SpecClarificationReferenceModels.uv"
@@ -288,7 +288,7 @@ public procedure validatedAbstractionAndPolymorphismImplementationsObligations()
     }
     if acceptedObligationEntryMatches(
         "rule.14.WF-Impl",
-        50021usize,
+        50053usize,
         "HelloUltraviolet::Reference::Polymorphism",
         "runPolymorphismImplementationsReference",
         "Source/Reference/Polymorphism/Implementations.uv"
@@ -297,7 +297,7 @@ public procedure validatedAbstractionAndPolymorphismImplementationsObligations()
     }
     if acceptedObligationEntryMatches(
         "rule.14.ImplementationSubtypeRelation",
-        50037usize,
+        50069usize,
         "HelloUltraviolet::Reference::Polymorphism",
         "runPolymorphismImplementationsReference",
         "Source/Reference/Polymorphism/Implementations.uv"
@@ -306,7 +306,7 @@ public procedure validatedAbstractionAndPolymorphismImplementationsObligations()
     }
     if rejectedSourceObligationEntryMatches(
         "req.14.ModalClassImplementationRequiresModalType",
-        50050usize,
+        50082usize,
         "HelloUltraviolet::Audit::FixtureCatalog::RejectedSource",
         "validatedPolymorphismRejectedSourceFixtureCount",
         "Fixtures/RejectedSource/Polymorphism/NonModalImplementsModalClass/Source/Main.uv"
@@ -315,7 +315,7 @@ public procedure validatedAbstractionAndPolymorphismImplementationsObligations()
     }
     if rejectedSourceObligationEntryMatches(
         "req.14.DuplicateClassImplementationForbidden",
-        50063usize,
+        50095usize,
         "HelloUltraviolet::Audit::FixtureCatalog::RejectedSource",
         "validatedPolymorphismRejectedSourceFixtureCount",
         "Fixtures/RejectedSource/Polymorphism/DuplicateClassImplementationRequirement/Source/Main.uv"
@@ -324,7 +324,7 @@ public procedure validatedAbstractionAndPolymorphismImplementationsObligations()
     }
     if acceptedProjectObligationEntryMatches(
         "req.14.ImplementationOrphanRequirement",
-        50076usize,
+        50108usize,
         "HelloUltraviolet::Audit::FixtureCatalog::AcceptedProjects",
         "validatedAcceptedProjectFixtureCount",
         "Fixtures/AcceptedProjects/CrossAssemblyImplementation/Source/CrossAssemblyImplementation/Library.uv"
@@ -333,7 +333,7 @@ public procedure validatedAbstractionAndPolymorphismImplementationsObligations()
     }
     if acceptedObligationEntryMatches(
         "req.14.ImplementationsNoAdditionalRuntimeState",
-        50096usize,
+        50128usize,
         "HelloUltraviolet::Reference::Polymorphism",
         "runPolymorphismImplementationsReference",
         "Source/Reference/Polymorphism/Implementations.uv"
@@ -342,7 +342,7 @@ public procedure validatedAbstractionAndPolymorphismImplementationsObligations()
     }
     if acceptedObligationEntryMatches(
         "req.14.ImplementationBodyLowering",
-        50111usize,
+        50143usize,
         "HelloUltraviolet::Reference::Polymorphism",
         "runPolymorphismImplementationsReference",
         "Source/Reference/Polymorphism/Implementations.uv"
@@ -351,7 +351,7 @@ public procedure validatedAbstractionAndPolymorphismImplementationsObligations()
     }
     if rejectedSourceObligationEntryMatches(
         "diag.14.Implementations",
-        50126usize,
+        50158usize,
         "HelloUltraviolet::Audit::FixtureCatalog::RejectedSource",
         "validatedPolymorphismRejectedSourceFixtureCount",
         "Fixtures/RejectedSource/Polymorphism/ImplementationMissingAbstractMethod/Source/Main.uv"

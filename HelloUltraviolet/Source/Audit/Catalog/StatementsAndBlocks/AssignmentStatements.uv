@@ -9,24 +9,6 @@ public procedure validatedStatementsAndBlocksAssignmentStatementsObligations() -
     var count: usize = 0usize
     if acceptedObligationEntryMatches(
         "grammar.18.AssignmentStatements",
-        70059usize,
-        "HelloUltraviolet::Reference::Statements",
-        "runStatementsAssignmentReference",
-        "Source/Reference/Statements/Assignment.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
-        "rule.18.Parse-Assign-Stmt",
-        70077usize,
-        "HelloUltraviolet::Reference::Statements",
-        "runStatementsAssignmentReference",
-        "Source/Reference/Statements/Assignment.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
-        "rule.18.AssignOrCompound-Assign",
         70093usize,
         "HelloUltraviolet::Reference::Statements",
         "runStatementsAssignmentReference",
@@ -35,8 +17,8 @@ public procedure validatedStatementsAndBlocksAssignmentStatementsObligations() -
         count = count + 1usize
     }
     if acceptedObligationEntryMatches(
-        "rule.18.AssignOrCompound-Compound",
-        70109usize,
+        "rule.18.Parse-Assign-Stmt",
+        70111usize,
         "HelloUltraviolet::Reference::Statements",
         "runStatementsAssignmentReference",
         "Source/Reference/Statements/Assignment.uv"
@@ -44,7 +26,7 @@ public procedure validatedStatementsAndBlocksAssignmentStatementsObligations() -
         count = count + 1usize
     }
     if acceptedObligationEntryMatches(
-        "def.18.AssignmentAstForms",
+        "rule.18.AssignOrCompound-Assign",
         70127usize,
         "HelloUltraviolet::Reference::Statements",
         "runStatementsAssignmentReference",
@@ -53,8 +35,26 @@ public procedure validatedStatementsAndBlocksAssignmentStatementsObligations() -
         count = count + 1usize
     }
     if acceptedObligationEntryMatches(
+        "rule.18.AssignOrCompound-Compound",
+        70143usize,
+        "HelloUltraviolet::Reference::Statements",
+        "runStatementsAssignmentReference",
+        "Source/Reference/Statements/Assignment.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "def.18.AssignmentAstForms",
+        70161usize,
+        "HelloUltraviolet::Reference::Statements",
+        "runStatementsAssignmentReference",
+        "Source/Reference/Statements/Assignment.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
         "def.18.PlaceRoot",
-        70141usize,
+        70175usize,
         "HelloUltraviolet::Reference::Statements",
         "runStatementsAssignmentReference",
         "Source/Reference/Statements/Assignment.uv"
@@ -63,7 +63,7 @@ public procedure validatedStatementsAndBlocksAssignmentStatementsObligations() -
     }
     if acceptedObligationEntryMatches(
         "rule.18.T-Assign",
-        70160usize,
+        70194usize,
         "HelloUltraviolet::Reference::Statements",
         "runStatementsAssignmentReference",
         "Source/Reference/Statements/Assignment.uv"
@@ -72,7 +72,7 @@ public procedure validatedStatementsAndBlocksAssignmentStatementsObligations() -
     }
     if acceptedObligationEntryMatches(
         "rule.18.T-CompoundAssign",
-        70182usize,
+        70216usize,
         "HelloUltraviolet::Reference::Statements",
         "runStatementsAssignmentReference",
         "Source/Reference/Statements/Assignment.uv"
@@ -81,7 +81,7 @@ public procedure validatedStatementsAndBlocksAssignmentStatementsObligations() -
     }
     if rejectedSourceObligationEntryMatches(
         "rule.18.Assign-NotPlace",
-        70198usize,
+        70232usize,
         "HelloUltraviolet::Audit::FixtureCatalog::RejectedSource",
         "validatedStatementsRejectedSourceFixtureCount",
         "Fixtures/RejectedSource/Statements/AssignNotPlace/Source/Main.uv"
@@ -90,7 +90,7 @@ public procedure validatedStatementsAndBlocksAssignmentStatementsObligations() -
     }
     if rejectedSourceObligationEntryMatches(
         "rule.18.Assign-Immutable-Err",
-        70214usize,
+        70248usize,
         "HelloUltraviolet::Audit::FixtureCatalog::RejectedSource",
         "validatedStatementsRejectedSourceFixtureCount",
         "Fixtures/RejectedSource/Statements/AssignImmutableLet/Source/Main.uv"
@@ -99,7 +99,7 @@ public procedure validatedStatementsAndBlocksAssignmentStatementsObligations() -
     }
     if rejectedSourceObligationEntryMatches(
         "rule.18.Assign-Type-Err",
-        70230usize,
+        70264usize,
         "HelloUltraviolet::Audit::FixtureCatalog::RejectedSource",
         "validatedStatementsRejectedSourceFixtureCount",
         "Fixtures/RejectedSource/Statements/AssignTypeMismatch/Source/Main.uv"
@@ -108,7 +108,7 @@ public procedure validatedStatementsAndBlocksAssignmentStatementsObligations() -
     }
     if acceptedObligationEntryMatches(
         "req.18.AssignmentConstPermissionDiagnostic",
-        70246usize,
+        70280usize,
         "HelloUltraviolet::Audit::FixtureCatalog::RejectedSource",
         "validatedStatementsRejectedSourceFixtureCount",
         "Fixtures/RejectedSource/Statements/AssignConst/Source/Main.uv"
@@ -117,7 +117,7 @@ public procedure validatedStatementsAndBlocksAssignmentStatementsObligations() -
     }
     if acceptedObligationEntryMatches(
         "req.18.AssignmentBindingStateRules",
-        70262usize,
+        70296usize,
         "HelloUltraviolet::Reference::Statements",
         "runStatementsAssignmentReference",
         "Source/Reference/Statements/Assignment.uv"
@@ -126,7 +126,7 @@ public procedure validatedStatementsAndBlocksAssignmentStatementsObligations() -
     }
     if acceptedObligationEntryMatches(
         "req.18.AssignmentProvenanceRules",
-        70275usize,
+        70309usize,
         "HelloUltraviolet::Reference::Statements",
         "runStatementsAssignmentReference",
         "Source/Reference/Statements/Assignment.uv"
@@ -135,7 +135,7 @@ public procedure validatedStatementsAndBlocksAssignmentStatementsObligations() -
     }
     if rejectedSourceObligationEntryMatches(
         "req.18.AssignmentProvenanceEscapeFailures",
-        70288usize,
+        70322usize,
         "HelloUltraviolet::Audit::FixtureCatalog::RejectedSource",
         "validatedStatementsRejectedSourceFixtureCount",
         "Fixtures/RejectedSource/Statements/AssignmentProvenanceEscape/Source/Main.uv"
@@ -144,7 +144,7 @@ public procedure validatedStatementsAndBlocksAssignmentStatementsObligations() -
     }
     if acceptedObligationEntryMatches(
         "def.18.AssignmentRootBinding",
-        70303usize,
+        70337usize,
         "HelloUltraviolet::Reference::Statements",
         "runStatementsAssignmentReference",
         "Source/Reference/Statements/Assignment.uv"
@@ -153,7 +153,7 @@ public procedure validatedStatementsAndBlocksAssignmentStatementsObligations() -
     }
     if acceptedObligationEntryMatches(
         "def.18.DropOnAssign",
-        70318usize,
+        70352usize,
         "HelloUltraviolet::Reference::Statements",
         "runStatementsAssignmentReference",
         "Source/Reference/Statements/Assignment.uv"
@@ -162,7 +162,7 @@ public procedure validatedStatementsAndBlocksAssignmentStatementsObligations() -
     }
     if acceptedObligationEntryMatches(
         "def.18.DropSubvalueJudgement",
-        70335usize,
+        70369usize,
         "HelloUltraviolet::Reference::Statements",
         "runStatementsAssignmentReference",
         "Source/Reference/Statements/Assignment.uv"
@@ -171,7 +171,7 @@ public procedure validatedStatementsAndBlocksAssignmentStatementsObligations() -
     }
     if acceptedObligationEntryMatches(
         "rule.18.DropSubvalue-Do",
-        70348usize,
+        70382usize,
         "HelloUltraviolet::Reference::Statements",
         "runStatementsAssignmentReference",
         "Source/Reference/Statements/Assignment.uv"
@@ -180,7 +180,7 @@ public procedure validatedStatementsAndBlocksAssignmentStatementsObligations() -
     }
     if acceptedObligationEntryMatches(
         "rule.18.DropSubvalue-Skip",
-        70364usize,
+        70398usize,
         "HelloUltraviolet::Reference::Statements",
         "runStatementsAssignmentReference",
         "Source/Reference/Statements/Assignment.uv"
@@ -189,7 +189,7 @@ public procedure validatedStatementsAndBlocksAssignmentStatementsObligations() -
     }
     if acceptedObligationEntryMatches(
         "rule.18.ExecSigma-Assign",
-        70380usize,
+        70414usize,
         "HelloUltraviolet::Reference::Statements",
         "runStatementsAssignmentReference",
         "Source/Reference/Statements/Assignment.uv"
@@ -198,7 +198,7 @@ public procedure validatedStatementsAndBlocksAssignmentStatementsObligations() -
     }
     if acceptedObligationEntryMatches(
         "rule.18.ExecSigma-Assign-Ctrl",
-        70396usize,
+        70430usize,
         "HelloUltraviolet::Reference::Statements",
         "runStatementsAssignmentReference",
         "Source/Reference/Statements/Assignment.uv"
@@ -207,7 +207,7 @@ public procedure validatedStatementsAndBlocksAssignmentStatementsObligations() -
     }
     if acceptedObligationEntryMatches(
         "rule.18.ExecSigma-CompoundAssign",
-        70412usize,
+        70446usize,
         "HelloUltraviolet::Reference::Statements",
         "runStatementsAssignmentReference",
         "Source/Reference/Statements/Assignment.uv"
@@ -216,7 +216,7 @@ public procedure validatedStatementsAndBlocksAssignmentStatementsObligations() -
     }
     if acceptedObligationEntryMatches(
         "req.18.CompoundAssignControlPropagation",
-        70428usize,
+        70462usize,
         "HelloUltraviolet::Reference::Statements",
         "runStatementsAssignmentReference",
         "Source/Reference/Statements/Assignment.uv"
@@ -225,7 +225,7 @@ public procedure validatedStatementsAndBlocksAssignmentStatementsObligations() -
     }
     if acceptedObligationEntryMatches(
         "rule.18.Lower-Stmt-Assign",
-        70443usize,
+        70477usize,
         "HelloUltraviolet::Reference::Statements",
         "runStatementsAssignmentReference",
         "Source/Reference/Statements/Assignment.uv"
@@ -234,7 +234,7 @@ public procedure validatedStatementsAndBlocksAssignmentStatementsObligations() -
     }
     if acceptedObligationEntryMatches(
         "rule.18.Lower-Stmt-CompoundAssign",
-        70459usize,
+        70493usize,
         "HelloUltraviolet::Reference::Statements",
         "runStatementsAssignmentReference",
         "Source/Reference/Statements/Assignment.uv"
@@ -243,7 +243,7 @@ public procedure validatedStatementsAndBlocksAssignmentStatementsObligations() -
     }
     if rejectedSourceObligationEntryMatches(
         "diag.18.AssignmentStatements",
-        70477usize,
+        70511usize,
         "HelloUltraviolet::Audit::FixtureCatalog::RejectedSource",
         "validatedStatementsRejectedSourceFixtureCount",
         "Fixtures/RejectedSource/Statements/AssignmentStatementsDiagnostic/Source/Main.uv"

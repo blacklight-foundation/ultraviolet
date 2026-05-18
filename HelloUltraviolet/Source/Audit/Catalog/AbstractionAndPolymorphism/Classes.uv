@@ -9,7 +9,7 @@ public procedure validatedAbstractionAndPolymorphismClassesObligations() -> usiz
     var count: usize = 0usize
     if acceptedObligationEntryMatches(
         "grammar.ClassesSyntax",
-        48710usize,
+        48742usize,
         "HelloUltraviolet::Reference::Polymorphism",
         "runPolymorphismClassesReference",
         "Source/Reference/Polymorphism/Classes.uv"
@@ -18,7 +18,7 @@ public procedure validatedAbstractionAndPolymorphismClassesObligations() -> usiz
     }
     if acceptedObligationEntryMatches(
         "req.AssociatedTypeSyntaxCanonicalOwner",
-        48727usize,
+        48759usize,
         "HelloUltraviolet::Reference::Polymorphism",
         "runPolymorphismClassesReference",
         "Source/Reference/Polymorphism/Classes.uv"
@@ -27,24 +27,6 @@ public procedure validatedAbstractionAndPolymorphismClassesObligations() -> usiz
     }
     if acceptedObligationEntryMatches(
         "rule.14.Parse-Class",
-        48741usize,
-        "HelloUltraviolet::Reference::Polymorphism",
-        "runPolymorphismClassesReference",
-        "Source/Reference/Polymorphism/Classes.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
-        "rule.14.Parse-Superclass-None",
-        48757usize,
-        "HelloUltraviolet::Reference::Polymorphism",
-        "runPolymorphismClassesReference",
-        "Source/Reference/Polymorphism/Classes.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
-        "rule.14.Parse-Superclass-Yes",
         48773usize,
         "HelloUltraviolet::Reference::Polymorphism",
         "runPolymorphismClassesReference",
@@ -53,7 +35,7 @@ public procedure validatedAbstractionAndPolymorphismClassesObligations() -> usiz
         count = count + 1usize
     }
     if acceptedObligationEntryMatches(
-        "rule.14.Parse-SuperclassBounds-Cons",
+        "rule.14.Parse-Superclass-None",
         48789usize,
         "HelloUltraviolet::Reference::Polymorphism",
         "runPolymorphismClassesReference",
@@ -62,7 +44,7 @@ public procedure validatedAbstractionAndPolymorphismClassesObligations() -> usiz
         count = count + 1usize
     }
     if acceptedObligationEntryMatches(
-        "rule.14.Parse-SuperclassBoundsTail-End",
+        "rule.14.Parse-Superclass-Yes",
         48805usize,
         "HelloUltraviolet::Reference::Polymorphism",
         "runPolymorphismClassesReference",
@@ -71,7 +53,7 @@ public procedure validatedAbstractionAndPolymorphismClassesObligations() -> usiz
         count = count + 1usize
     }
     if acceptedObligationEntryMatches(
-        "rule.14.Parse-SuperclassBoundsTail-Plus",
+        "rule.14.Parse-SuperclassBounds-Cons",
         48821usize,
         "HelloUltraviolet::Reference::Polymorphism",
         "runPolymorphismClassesReference",
@@ -80,7 +62,7 @@ public procedure validatedAbstractionAndPolymorphismClassesObligations() -> usiz
         count = count + 1usize
     }
     if acceptedObligationEntryMatches(
-        "rule.14.Parse-ClassBody",
+        "rule.14.Parse-SuperclassBoundsTail-End",
         48837usize,
         "HelloUltraviolet::Reference::Polymorphism",
         "runPolymorphismClassesReference",
@@ -89,7 +71,7 @@ public procedure validatedAbstractionAndPolymorphismClassesObligations() -> usiz
         count = count + 1usize
     }
     if acceptedObligationEntryMatches(
-        "rule.14.Parse-ClassItemList-End",
+        "rule.14.Parse-SuperclassBoundsTail-Plus",
         48853usize,
         "HelloUltraviolet::Reference::Polymorphism",
         "runPolymorphismClassesReference",
@@ -98,7 +80,7 @@ public procedure validatedAbstractionAndPolymorphismClassesObligations() -> usiz
         count = count + 1usize
     }
     if acceptedObligationEntryMatches(
-        "rule.14.Parse-ClassItemList-Cons",
+        "rule.14.Parse-ClassBody",
         48869usize,
         "HelloUltraviolet::Reference::Polymorphism",
         "runPolymorphismClassesReference",
@@ -107,7 +89,7 @@ public procedure validatedAbstractionAndPolymorphismClassesObligations() -> usiz
         count = count + 1usize
     }
     if acceptedObligationEntryMatches(
-        "rule.14.Parse-ClassItem-Method",
+        "rule.14.Parse-ClassItemList-End",
         48885usize,
         "HelloUltraviolet::Reference::Polymorphism",
         "runPolymorphismClassesReference",
@@ -116,7 +98,7 @@ public procedure validatedAbstractionAndPolymorphismClassesObligations() -> usiz
         count = count + 1usize
     }
     if acceptedObligationEntryMatches(
-        "rule.14.Parse-ClassItem-Field",
+        "rule.14.Parse-ClassItemList-Cons",
         48901usize,
         "HelloUltraviolet::Reference::Polymorphism",
         "runPolymorphismClassesReference",
@@ -125,7 +107,7 @@ public procedure validatedAbstractionAndPolymorphismClassesObligations() -> usiz
         count = count + 1usize
     }
     if acceptedObligationEntryMatches(
-        "rule.14.Parse-ClassItem-AbstractState",
+        "rule.14.Parse-ClassItem-Method",
         48917usize,
         "HelloUltraviolet::Reference::Polymorphism",
         "runPolymorphismClassesReference",
@@ -134,7 +116,7 @@ public procedure validatedAbstractionAndPolymorphismClassesObligations() -> usiz
         count = count + 1usize
     }
     if acceptedObligationEntryMatches(
-        "rule.14.Parse-ClassMethodBody-Concrete",
+        "rule.14.Parse-ClassItem-Field",
         48933usize,
         "HelloUltraviolet::Reference::Polymorphism",
         "runPolymorphismClassesReference",
@@ -143,7 +125,7 @@ public procedure validatedAbstractionAndPolymorphismClassesObligations() -> usiz
         count = count + 1usize
     }
     if acceptedObligationEntryMatches(
-        "rule.14.Parse-ClassMethodBody-Abstract",
+        "rule.14.Parse-ClassItem-AbstractState",
         48949usize,
         "HelloUltraviolet::Reference::Polymorphism",
         "runPolymorphismClassesReference",
@@ -152,8 +134,26 @@ public procedure validatedAbstractionAndPolymorphismClassesObligations() -> usiz
         count = count + 1usize
     }
     if acceptedObligationEntryMatches(
+        "rule.14.Parse-ClassMethodBody-Concrete",
+        48965usize,
+        "HelloUltraviolet::Reference::Polymorphism",
+        "runPolymorphismClassesReference",
+        "Source/Reference/Polymorphism/Classes.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "rule.14.Parse-ClassMethodBody-Abstract",
+        48981usize,
+        "HelloUltraviolet::Reference::Polymorphism",
+        "runPolymorphismClassesReference",
+        "Source/Reference/Polymorphism/Classes.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
         "def.ClassDeclAst",
-        48967usize,
+        48999usize,
         "HelloUltraviolet::Reference::Polymorphism",
         "runPolymorphismClassesReference",
         "Source/Reference/Polymorphism/Classes.uv"
@@ -162,7 +162,7 @@ public procedure validatedAbstractionAndPolymorphismClassesObligations() -> usiz
     }
     if acceptedObligationEntryMatches(
         "def.ClassItemAst",
-        48980usize,
+        49012usize,
         "HelloUltraviolet::Reference::Polymorphism",
         "runPolymorphismClassesReference",
         "Source/Reference/Polymorphism/Classes.uv"
@@ -171,7 +171,7 @@ public procedure validatedAbstractionAndPolymorphismClassesObligations() -> usiz
     }
     if acceptedObligationEntryMatches(
         "def.ClassMethodAbstractConcretePredicates",
-        48997usize,
+        49029usize,
         "HelloUltraviolet::Reference::Polymorphism",
         "runPolymorphismClassesReference",
         "Source/Reference/Polymorphism/Classes.uv"
@@ -180,7 +180,7 @@ public procedure validatedAbstractionAndPolymorphismClassesObligations() -> usiz
     }
     if acceptedObligationEntryMatches(
         "def.ClassMemberCollections",
-        49010usize,
+        49042usize,
         "HelloUltraviolet::Reference::Polymorphism",
         "runPolymorphismClassesReference",
         "Source/Reference/Polymorphism/Classes.uv"
@@ -189,7 +189,7 @@ public procedure validatedAbstractionAndPolymorphismClassesObligations() -> usiz
     }
     if acceptedObligationEntryMatches(
         "def.ClassMethodReturnType",
-        49026usize,
+        49058usize,
         "HelloUltraviolet::Reference::Polymorphism",
         "runPolymorphismClassesReference",
         "Source/Reference/Polymorphism/Classes.uv"
@@ -198,7 +198,7 @@ public procedure validatedAbstractionAndPolymorphismClassesObligations() -> usiz
     }
     if acceptedObligationEntryMatches(
         "def.SelfVar",
-        49039usize,
+        49071usize,
         "HelloUltraviolet::Reference::Polymorphism",
         "runPolymorphismClassesReference",
         "Source/Reference/Polymorphism/Classes.uv"
@@ -207,7 +207,7 @@ public procedure validatedAbstractionAndPolymorphismClassesObligations() -> usiz
     }
     if acceptedObligationEntryMatches(
         "def.DistinctDisjoint",
-        49053usize,
+        49085usize,
         "HelloUltraviolet::Reference::Polymorphism",
         "runPolymorphismClassesReference",
         "Source/Reference/Polymorphism/Classes.uv"
@@ -216,7 +216,7 @@ public procedure validatedAbstractionAndPolymorphismClassesObligations() -> usiz
     }
     if acceptedObligationEntryMatches(
         "rule.14.WF-ClassPath",
-        49066usize,
+        49098usize,
         "HelloUltraviolet::Reference::Polymorphism",
         "runPolymorphismClassesReference",
         "Source/Reference/Polymorphism/Classes.uv"
@@ -225,7 +225,7 @@ public procedure validatedAbstractionAndPolymorphismClassesObligations() -> usiz
     }
     if rejectedSourceObligationEntryMatches(
         "rule.14.WF-ClassPath-Err",
-        49082usize,
+        49114usize,
         "HelloUltraviolet::Audit::FixtureCatalog::RejectedSource",
         "validatedPolymorphismRejectedSourceFixtureCount",
         "Fixtures/RejectedSource/Polymorphism/GenericClassBoundNonClass/Source/Main.uv"
@@ -234,7 +234,7 @@ public procedure validatedAbstractionAndPolymorphismClassesObligations() -> usiz
     }
     if acceptedObligationEntryMatches(
         "def.SubstSelf",
-        49098usize,
+        49130usize,
         "HelloUltraviolet::Reference::Polymorphism",
         "runPolymorphismClassesReference",
         "Source/Reference/Polymorphism/Classes.uv"
@@ -243,7 +243,7 @@ public procedure validatedAbstractionAndPolymorphismClassesObligations() -> usiz
     }
     if acceptedObligationEntryMatches(
         "def.ReceiverTypeHelpers",
-        49124usize,
+        49156usize,
         "HelloUltraviolet::Reference::Polymorphism",
         "runPolymorphismClassesReference",
         "Source/Reference/Polymorphism/Classes.uv"
@@ -252,7 +252,7 @@ public procedure validatedAbstractionAndPolymorphismClassesObligations() -> usiz
     }
     if acceptedObligationEntryMatches(
         "def.Supers",
-        49153usize,
+        49185usize,
         "HelloUltraviolet::Reference::Polymorphism",
         "runPolymorphismClassesReference",
         "Source/Reference/Polymorphism/Classes.uv"
@@ -261,7 +261,7 @@ public procedure validatedAbstractionAndPolymorphismClassesObligations() -> usiz
     }
     if acceptedObligationEntryMatches(
         "rule.14.T-Superclass",
-        49165usize,
+        49197usize,
         "HelloUltraviolet::Reference::Polymorphism",
         "runPolymorphismClassesReference",
         "Source/Reference/Polymorphism/Classes.uv"
@@ -270,7 +270,7 @@ public procedure validatedAbstractionAndPolymorphismClassesObligations() -> usiz
     }
     if acceptedObligationEntryMatches(
         "def.ClassLinearizationMergeHelpers",
-        49181usize,
+        49213usize,
         "HelloUltraviolet::Reference::Polymorphism",
         "runPolymorphismClassesReference",
         "Source/Reference/Polymorphism/Classes.uv"
@@ -279,24 +279,6 @@ public procedure validatedAbstractionAndPolymorphismClassesObligations() -> usiz
     }
     if acceptedObligationEntryMatches(
         "rule.14.Lin-Base",
-        49201usize,
-        "HelloUltraviolet::Reference::Polymorphism",
-        "runPolymorphismClassesReference",
-        "Source/Reference/Polymorphism/Classes.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
-        "rule.14.Merge-Empty",
-        49217usize,
-        "HelloUltraviolet::Reference::Polymorphism",
-        "runPolymorphismClassesReference",
-        "Source/Reference/Polymorphism/Classes.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
-        "rule.14.Merge-Step",
         49233usize,
         "HelloUltraviolet::Reference::Polymorphism",
         "runPolymorphismClassesReference",
@@ -305,7 +287,7 @@ public procedure validatedAbstractionAndPolymorphismClassesObligations() -> usiz
         count = count + 1usize
     }
     if acceptedObligationEntryMatches(
-        "rule.14.Merge-Fail",
+        "rule.14.Merge-Empty",
         49249usize,
         "HelloUltraviolet::Reference::Polymorphism",
         "runPolymorphismClassesReference",
@@ -314,7 +296,7 @@ public procedure validatedAbstractionAndPolymorphismClassesObligations() -> usiz
         count = count + 1usize
     }
     if acceptedObligationEntryMatches(
-        "rule.14.Lin-Ok",
+        "rule.14.Merge-Step",
         49265usize,
         "HelloUltraviolet::Reference::Polymorphism",
         "runPolymorphismClassesReference",
@@ -323,8 +305,26 @@ public procedure validatedAbstractionAndPolymorphismClassesObligations() -> usiz
         count = count + 1usize
     }
     if acceptedObligationEntryMatches(
-        "rule.14.Lin-Fail",
+        "rule.14.Merge-Fail",
         49281usize,
+        "HelloUltraviolet::Reference::Polymorphism",
+        "runPolymorphismClassesReference",
+        "Source/Reference/Polymorphism/Classes.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "rule.14.Lin-Ok",
+        49297usize,
+        "HelloUltraviolet::Reference::Polymorphism",
+        "runPolymorphismClassesReference",
+        "Source/Reference/Polymorphism/Classes.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "rule.14.Lin-Fail",
+        49313usize,
         "HelloUltraviolet::Reference::Polymorphism",
         "runPolymorphismClassesReference",
         "Source/Reference/Polymorphism/Classes.uv"
@@ -333,7 +333,7 @@ public procedure validatedAbstractionAndPolymorphismClassesObligations() -> usiz
     }
     if rejectedSourceObligationEntryMatches(
         "rule.14.Superclass-Cycle",
-        49297usize,
+        49329usize,
         "HelloUltraviolet::Audit::FixtureCatalog::RejectedSource",
         "validatedPolymorphismRejectedSourceFixtureCount",
         "Fixtures/RejectedSource/Polymorphism/SuperclassCycle/Source/Main.uv"
@@ -342,7 +342,7 @@ public procedure validatedAbstractionAndPolymorphismClassesObligations() -> usiz
     }
     if acceptedObligationEntryMatches(
         "def.LinearizeHeadInvariant",
-        49313usize,
+        49345usize,
         "HelloUltraviolet::Reference::Polymorphism",
         "runPolymorphismClassesReference",
         "Source/Reference/Polymorphism/Classes.uv"
@@ -351,7 +351,7 @@ public procedure validatedAbstractionAndPolymorphismClassesObligations() -> usiz
     }
     if acceptedObligationEntryMatches(
         "def.EffectiveClassMembers",
-        49325usize,
+        49357usize,
         "HelloUltraviolet::Reference::Polymorphism",
         "runPolymorphismClassesReference",
         "Source/Reference/Polymorphism/Classes.uv"
@@ -360,7 +360,7 @@ public procedure validatedAbstractionAndPolymorphismClassesObligations() -> usiz
     }
     if acceptedObligationEntryMatches(
         "def.FirstByName",
-        49338usize,
+        49370usize,
         "HelloUltraviolet::Reference::Polymorphism",
         "runPolymorphismClassesReference",
         "Source/Reference/Polymorphism/Classes.uv"
@@ -369,7 +369,7 @@ public procedure validatedAbstractionAndPolymorphismClassesObligations() -> usiz
     }
     if acceptedObligationEntryMatches(
         "rule.14.EffMethods-Conflict",
-        49355usize,
+        49387usize,
         "HelloUltraviolet::Reference::Polymorphism",
         "runPolymorphismClassesReference",
         "Source/Reference/Polymorphism/Classes.uv"
@@ -378,7 +378,7 @@ public procedure validatedAbstractionAndPolymorphismClassesObligations() -> usiz
     }
     if acceptedObligationEntryMatches(
         "def.FieldSig",
-        49371usize,
+        49403usize,
         "HelloUltraviolet::Reference::Polymorphism",
         "runPolymorphismClassesReference",
         "Source/Reference/Polymorphism/Classes.uv"
@@ -387,7 +387,7 @@ public procedure validatedAbstractionAndPolymorphismClassesObligations() -> usiz
     }
     if acceptedObligationEntryMatches(
         "def.FirstFieldByName",
-        49383usize,
+        49415usize,
         "HelloUltraviolet::Reference::Polymorphism",
         "runPolymorphismClassesReference",
         "Source/Reference/Polymorphism/Classes.uv"
@@ -396,7 +396,7 @@ public procedure validatedAbstractionAndPolymorphismClassesObligations() -> usiz
     }
     if acceptedObligationEntryMatches(
         "rule.14.EffFields-Conflict",
-        49400usize,
+        49432usize,
         "HelloUltraviolet::Reference::Polymorphism",
         "runPolymorphismClassesReference",
         "Source/Reference/Polymorphism/Classes.uv"
@@ -405,7 +405,7 @@ public procedure validatedAbstractionAndPolymorphismClassesObligations() -> usiz
     }
     if acceptedObligationEntryMatches(
         "def.SelfTypeClass",
-        49416usize,
+        49448usize,
         "HelloUltraviolet::Reference::Polymorphism",
         "runPolymorphismClassesReference",
         "Source/Reference/Polymorphism/Classes.uv"
@@ -414,7 +414,7 @@ public procedure validatedAbstractionAndPolymorphismClassesObligations() -> usiz
     }
     if acceptedObligationEntryMatches(
         "rule.14.WF-Class-Method",
-        49428usize,
+        49460usize,
         "HelloUltraviolet::Reference::Polymorphism",
         "runPolymorphismClassesReference",
         "Source/Reference/Polymorphism/Classes.uv"
@@ -423,7 +423,7 @@ public procedure validatedAbstractionAndPolymorphismClassesObligations() -> usiz
     }
     if acceptedObligationEntryMatches(
         "rule.14.T-Class-Method-Body-Abstract",
-        49444usize,
+        49476usize,
         "HelloUltraviolet::Reference::Polymorphism",
         "runPolymorphismClassesReference",
         "Source/Reference/Polymorphism/Classes.uv"
@@ -432,7 +432,7 @@ public procedure validatedAbstractionAndPolymorphismClassesObligations() -> usiz
     }
     if acceptedObligationEntryMatches(
         "rule.14.T-Class-Method-Body",
-        49460usize,
+        49492usize,
         "HelloUltraviolet::Reference::Polymorphism",
         "runPolymorphismClassesReference",
         "Source/Reference/Polymorphism/Classes.uv"
@@ -441,7 +441,7 @@ public procedure validatedAbstractionAndPolymorphismClassesObligations() -> usiz
     }
     if rejectedSourceObligationEntryMatches(
         "rule.14.WF-Class",
-        49476usize,
+        49508usize,
         "HelloUltraviolet::Audit::FixtureCatalog::RejectedSource",
         "validatedPolymorphismRejectedSourceFixtureCount",
         "Fixtures/RejectedSource/Polymorphism/DuplicateClassProcedureName/Source/Main.uv"
@@ -450,7 +450,7 @@ public procedure validatedAbstractionAndPolymorphismClassesObligations() -> usiz
     }
     if acceptedObligationEntryMatches(
         "conformance.ClassDeclarationsNoRuntimeActions",
-        49494usize,
+        49526usize,
         "HelloUltraviolet::Reference::Polymorphism",
         "runPolymorphismClassesReference",
         "Source/Reference/Polymorphism/Classes.uv"
@@ -459,7 +459,7 @@ public procedure validatedAbstractionAndPolymorphismClassesObligations() -> usiz
     }
     if acceptedObligationEntryMatches(
         "req.ClassMethodLowering",
-        49508usize,
+        49540usize,
         "HelloUltraviolet::Reference::Polymorphism",
         "runPolymorphismClassesReference",
         "Source/Reference/Polymorphism/Classes.uv"
@@ -468,7 +468,7 @@ public procedure validatedAbstractionAndPolymorphismClassesObligations() -> usiz
     }
     if acceptedObligationEntryMatches(
         "req.ClassDefaultMethodAndVtableOwnership",
-        49520usize,
+        49552usize,
         "HelloUltraviolet::Reference::Polymorphism",
         "runPolymorphismClassesReference",
         "Source/Reference/Polymorphism/Classes.uv"
@@ -477,7 +477,7 @@ public procedure validatedAbstractionAndPolymorphismClassesObligations() -> usiz
     }
     if rejectedSourceObligationEntryMatches(
         "diag.Classes",
-        49534usize,
+        49566usize,
         "HelloUltraviolet::Audit::FixtureCatalog::RejectedSource",
         "validatedPolymorphismRejectedSourceFixtureCount",
         "Fixtures/RejectedSource/Polymorphism/ClassMemberNameConflict/Source/Main.uv"

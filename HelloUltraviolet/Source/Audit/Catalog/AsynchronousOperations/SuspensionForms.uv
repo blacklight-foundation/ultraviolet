@@ -9,24 +9,6 @@ public procedure validatedAsynchronousOperationsSuspensionFormsObligations() -> 
     var count: usize = 0usize
     if acceptedObligationEntryMatches(
         "grammar.21.SuspensionForms",
-        79296usize,
-        "HelloUltraviolet::Reference::Async",
-        "runAsyncSuspensionFormsReference",
-        "Source/Reference/Async/SuspensionForms.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
-        "parse.21.SuspensionFormsPrimaryExpressions",
-        79315usize,
-        "HelloUltraviolet::Reference::Async",
-        "runAsyncSuspensionFormsReference",
-        "Source/Reference/Async/SuspensionForms.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
-        "rule.21.Parse-Wait-Expr",
         79330usize,
         "HelloUltraviolet::Reference::Async",
         "runAsyncSuspensionFormsReference",
@@ -35,8 +17,26 @@ public procedure validatedAsynchronousOperationsSuspensionFormsObligations() -> 
         count = count + 1usize
     }
     if acceptedObligationEntryMatches(
+        "parse.21.SuspensionFormsPrimaryExpressions",
+        79349usize,
+        "HelloUltraviolet::Reference::Async",
+        "runAsyncSuspensionFormsReference",
+        "Source/Reference/Async/SuspensionForms.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "rule.21.Parse-Wait-Expr",
+        79364usize,
+        "HelloUltraviolet::Reference::Async",
+        "runAsyncSuspensionFormsReference",
+        "Source/Reference/Async/SuspensionForms.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
         "rule.21.Parse-Yield-From-Expr",
-        79350usize,
+        79384usize,
         "HelloUltraviolet::Reference::Async",
         "runAsyncSuspensionFormsReference",
         "Source/Reference/Async/SuspensionForms.uv"
@@ -45,7 +45,7 @@ public procedure validatedAsynchronousOperationsSuspensionFormsObligations() -> 
     }
     if acceptedObligationEntryMatches(
         "rule.21.Parse-Yield-Expr",
-        79373usize,
+        79407usize,
         "HelloUltraviolet::Reference::Async",
         "runAsyncSuspensionFormsReference",
         "Source/Reference/Async/SuspensionForms.uv"
@@ -54,7 +54,7 @@ public procedure validatedAsynchronousOperationsSuspensionFormsObligations() -> 
     }
     if acceptedObligationEntryMatches(
         "ast.21.SuspensionForms",
-        79396usize,
+        79430usize,
         "HelloUltraviolet::Reference::Async",
         "runAsyncSuspensionFormsReference",
         "Source/Reference/Async/SuspensionForms.uv"
@@ -63,7 +63,7 @@ public procedure validatedAsynchronousOperationsSuspensionFormsObligations() -> 
     }
     if acceptedObligationEntryMatches(
         "ast.21.SuspensionFormResolution",
-        79416usize,
+        79450usize,
         "HelloUltraviolet::Reference::Async",
         "runAsyncSuspensionFormsReference",
         "Source/Reference/Async/SuspensionForms.uv"
@@ -72,7 +72,7 @@ public procedure validatedAsynchronousOperationsSuspensionFormsObligations() -> 
     }
     if acceptedObligationEntryMatches(
         "ast.21.SuspensionFormEvaluationOrder",
-        79435usize,
+        79469usize,
         "HelloUltraviolet::Reference::Async",
         "runAsyncSuspensionFormsReference",
         "Source/Reference/Async/SuspensionForms.uv"
@@ -81,7 +81,7 @@ public procedure validatedAsynchronousOperationsSuspensionFormsObligations() -> 
     }
     if acceptedObligationEntryMatches(
         "rule.21.T-Wait",
-        79458usize,
+        79492usize,
         "HelloUltraviolet::Reference::Async",
         "runAsyncSuspensionFormsReference",
         "Source/Reference/Async/SuspensionForms.uv"
@@ -90,7 +90,7 @@ public procedure validatedAsynchronousOperationsSuspensionFormsObligations() -> 
     }
     if acceptedObligationEntryMatches(
         "rule.21.T-Wait-Future",
-        79476usize,
+        79510usize,
         "HelloUltraviolet::Reference::Async",
         "runAsyncSuspensionFormsReference",
         "Source/Reference/Async/SuspensionForms.uv"
@@ -99,7 +99,7 @@ public procedure validatedAsynchronousOperationsSuspensionFormsObligations() -> 
     }
     if rejectedSourceObligationEntryMatches(
         "rule.21.Wait-Handle-Err",
-        79494usize,
+        79528usize,
         "HelloUltraviolet::Audit::FixtureCatalog::RejectedSource",
         "validatedExpressionsRejectedSourceFixtureCount",
         "Fixtures/RejectedSource/Expressions/WaitNonHandle/Source/Main.uv"
@@ -108,7 +108,7 @@ public procedure validatedAsynchronousOperationsSuspensionFormsObligations() -> 
     }
     if acceptedObligationEntryMatches(
         "rule.21.T-Yield",
-        79514usize,
+        79548usize,
         "HelloUltraviolet::Reference::Async",
         "runAsyncSuspensionFormsReference",
         "Source/Reference/Async/SuspensionForms.uv"
@@ -117,7 +117,7 @@ public procedure validatedAsynchronousOperationsSuspensionFormsObligations() -> 
     }
     if rejectedSourceObligationEntryMatches(
         "rule.21.Yield-NotAsync-Err",
-        79532usize,
+        79566usize,
         "HelloUltraviolet::Audit::FixtureCatalog::RejectedSource",
         "validatedExpressionsRejectedSourceFixtureCount",
         "Fixtures/RejectedSource/Expressions/YieldOutsideAsync/Source/Main.uv"
@@ -126,7 +126,7 @@ public procedure validatedAsynchronousOperationsSuspensionFormsObligations() -> 
     }
     if rejectedSourceObligationEntryMatches(
         "rule.21.Yield-Out-Err",
-        79550usize,
+        79584usize,
         "HelloUltraviolet::Audit::FixtureCatalog::RejectedSource",
         "validatedExpressionsRejectedSourceFixtureCount",
         "Fixtures/RejectedSource/Expressions/YieldTypeMismatch/Source/Main.uv"
@@ -135,7 +135,7 @@ public procedure validatedAsynchronousOperationsSuspensionFormsObligations() -> 
     }
     if acceptedObligationEntryMatches(
         "rule.21.T-Yield-From",
-        79570usize,
+        79604usize,
         "HelloUltraviolet::Reference::Async",
         "runAsyncSuspensionFormsReference",
         "Source/Reference/Async/SuspensionForms.uv"
@@ -144,7 +144,7 @@ public procedure validatedAsynchronousOperationsSuspensionFormsObligations() -> 
     }
     if rejectedSourceObligationEntryMatches(
         "rule.21.YieldFrom-NotAsync-Err",
-        79588usize,
+        79622usize,
         "HelloUltraviolet::Audit::FixtureCatalog::RejectedSource",
         "validatedExpressionsRejectedSourceFixtureCount",
         "Fixtures/RejectedSource/Expressions/YieldFromOutsideAsync/Source/Main.uv"
@@ -153,7 +153,7 @@ public procedure validatedAsynchronousOperationsSuspensionFormsObligations() -> 
     }
     if rejectedSourceObligationEntryMatches(
         "rule.21.YieldFrom-Out-Err",
-        79606usize,
+        79640usize,
         "HelloUltraviolet::Audit::FixtureCatalog::RejectedSource",
         "validatedExpressionsRejectedSourceFixtureCount",
         "Fixtures/RejectedSource/Expressions/YieldFromOutMismatch/Source/Main.uv"
@@ -162,7 +162,7 @@ public procedure validatedAsynchronousOperationsSuspensionFormsObligations() -> 
     }
     if rejectedSourceObligationEntryMatches(
         "rule.21.YieldFrom-In-Err",
-        79625usize,
+        79659usize,
         "HelloUltraviolet::Audit::FixtureCatalog::RejectedSource",
         "validatedExpressionsRejectedSourceFixtureCount",
         "Fixtures/RejectedSource/Expressions/YieldFromInMismatch/Source/Main.uv"
@@ -171,7 +171,7 @@ public procedure validatedAsynchronousOperationsSuspensionFormsObligations() -> 
     }
     if rejectedSourceObligationEntryMatches(
         "rule.21.YieldFrom-ErrType-Err",
-        79643usize,
+        79677usize,
         "HelloUltraviolet::Audit::FixtureCatalog::RejectedSource",
         "validatedExpressionsRejectedSourceFixtureCount",
         "Fixtures/RejectedSource/Expressions/YieldFromErrorMismatch/Source/Main.uv"
@@ -180,7 +180,7 @@ public procedure validatedAsynchronousOperationsSuspensionFormsObligations() -> 
     }
     if acceptedObligationEntryMatches(
         "requirement.21.SuspensionKeyRestrictionsReference",
-        79661usize,
+        79695usize,
         "HelloUltraviolet::Reference::Async",
         "runAsyncSuspensionFormsReference",
         "Source/Reference/Async/SuspensionForms.uv"
@@ -189,7 +189,7 @@ public procedure validatedAsynchronousOperationsSuspensionFormsObligations() -> 
     }
     if acceptedObligationEntryMatches(
         "requirement.21.WaitRuntimeSemantics",
-        79676usize,
+        79710usize,
         "HelloUltraviolet::Reference::Async",
         "runAsyncSuspensionFormsReference",
         "Source/Reference/Async/SuspensionForms.uv"
@@ -198,7 +198,7 @@ public procedure validatedAsynchronousOperationsSuspensionFormsObligations() -> 
     }
     if acceptedObligationEntryMatches(
         "def.21.WaitRuntimeHelpers",
-        79698usize,
+        79732usize,
         "HelloUltraviolet::Reference::Async",
         "runAsyncSuspensionFormsReference",
         "Source/Reference/Async/SuspensionForms.uv"
@@ -207,7 +207,7 @@ public procedure validatedAsynchronousOperationsSuspensionFormsObligations() -> 
     }
     if acceptedObligationEntryMatches(
         "rule.21.EvalSigma-Wait-Spawned-Ready",
-        79722usize,
+        79756usize,
         "HelloUltraviolet::Reference::Async",
         "runAsyncSuspensionFormsReference",
         "Source/Reference/Async/SuspensionForms.uv"
@@ -216,7 +216,7 @@ public procedure validatedAsynchronousOperationsSuspensionFormsObligations() -> 
     }
     if acceptedObligationEntryMatches(
         "rule.21.EvalSigma-Wait-Spawned-Pending",
-        79740usize,
+        79774usize,
         "HelloUltraviolet::Reference::Async",
         "runAsyncSuspensionFormsReference",
         "Source/Reference/Async/SuspensionForms.uv"
@@ -225,7 +225,7 @@ public procedure validatedAsynchronousOperationsSuspensionFormsObligations() -> 
     }
     if acceptedObligationEntryMatches(
         "requirement.21.FailedSpawnedWaitHandledByParallelPanic",
-        79759usize,
+        79793usize,
         "HelloUltraviolet::Reference::Async",
         "runAsyncSuspensionFormsReference",
         "Source/Reference/Async/SuspensionForms.uv"
@@ -234,7 +234,7 @@ public procedure validatedAsynchronousOperationsSuspensionFormsObligations() -> 
     }
     if acceptedObligationEntryMatches(
         "rule.21.EvalSigma-Wait-Tracked-Ready",
-        79772usize,
+        79806usize,
         "HelloUltraviolet::Reference::Async",
         "runAsyncSuspensionFormsReference",
         "Source/Reference/Async/SuspensionForms.uv"
@@ -243,7 +243,7 @@ public procedure validatedAsynchronousOperationsSuspensionFormsObligations() -> 
     }
     if acceptedObligationEntryMatches(
         "rule.21.EvalSigma-Wait-Tracked-Pending",
-        79790usize,
+        79824usize,
         "HelloUltraviolet::Reference::Async",
         "runAsyncSuspensionFormsReference",
         "Source/Reference/Async/SuspensionForms.uv"
@@ -252,7 +252,7 @@ public procedure validatedAsynchronousOperationsSuspensionFormsObligations() -> 
     }
     if acceptedObligationEntryMatches(
         "rule.21.EvalSigma-Wait-Ctrl",
-        79809usize,
+        79843usize,
         "HelloUltraviolet::Reference::Async",
         "runAsyncSuspensionFormsReference",
         "Source/Reference/Async/SuspensionForms.uv"
@@ -261,7 +261,7 @@ public procedure validatedAsynchronousOperationsSuspensionFormsObligations() -> 
     }
     if acceptedObligationEntryMatches(
         "requirement.21.YieldRuntimeSemantics",
-        79827usize,
+        79861usize,
         "HelloUltraviolet::Reference::Async",
         "runAsyncSuspensionFormsReference",
         "Source/Reference/Async/SuspensionForms.uv"
@@ -270,7 +270,7 @@ public procedure validatedAsynchronousOperationsSuspensionFormsObligations() -> 
     }
     if acceptedObligationEntryMatches(
         "def.21.ResumptionHelpers",
-        79847usize,
+        79881usize,
         "HelloUltraviolet::Reference::Async",
         "runAsyncSuspensionFormsReference",
         "Source/Reference/Async/SuspensionForms.uv"
@@ -279,7 +279,7 @@ public procedure validatedAsynchronousOperationsSuspensionFormsObligations() -> 
     }
     if acceptedObligationEntryMatches(
         "rule.21.EvalSigma-Yield",
-        79882usize,
+        79916usize,
         "HelloUltraviolet::Reference::Async",
         "runAsyncSuspensionFormsReference",
         "Source/Reference/Async/SuspensionForms.uv"
@@ -288,7 +288,7 @@ public procedure validatedAsynchronousOperationsSuspensionFormsObligations() -> 
     }
     if acceptedObligationEntryMatches(
         "rule.21.EvalSigma-Yield-Release",
-        79901usize,
+        79935usize,
         "HelloUltraviolet::Reference::Async",
         "runAsyncSuspensionFormsReference",
         "Source/Reference/Async/SuspensionForms.uv"
@@ -297,7 +297,7 @@ public procedure validatedAsynchronousOperationsSuspensionFormsObligations() -> 
     }
     if acceptedObligationEntryMatches(
         "rule.21.EvalSigma-Yield-Resume",
-        79920usize,
+        79954usize,
         "HelloUltraviolet::Reference::Async",
         "runAsyncSuspensionFormsReference",
         "Source/Reference/Async/SuspensionForms.uv"
@@ -306,7 +306,7 @@ public procedure validatedAsynchronousOperationsSuspensionFormsObligations() -> 
     }
     if acceptedObligationEntryMatches(
         "requirement.21.YieldFromRuntimeSemantics",
-        79939usize,
+        79973usize,
         "HelloUltraviolet::Reference::Async",
         "runAsyncSuspensionFormsReference",
         "Source/Reference/Async/SuspensionForms.uv"
@@ -315,7 +315,7 @@ public procedure validatedAsynchronousOperationsSuspensionFormsObligations() -> 
     }
     if acceptedObligationEntryMatches(
         "rule.21.EvalSigma-YieldFrom-Suspended",
-        79959usize,
+        79993usize,
         "HelloUltraviolet::Reference::Async",
         "runAsyncSuspensionFormsReference",
         "Source/Reference/Async/SuspensionForms.uv"
@@ -324,7 +324,7 @@ public procedure validatedAsynchronousOperationsSuspensionFormsObligations() -> 
     }
     if acceptedObligationEntryMatches(
         "rule.21.EvalSigma-YieldFrom-Completed",
-        79979usize,
+        80013usize,
         "HelloUltraviolet::Reference::Async",
         "runAsyncSuspensionFormsReference",
         "Source/Reference/Async/SuspensionForms.uv"
@@ -333,7 +333,7 @@ public procedure validatedAsynchronousOperationsSuspensionFormsObligations() -> 
     }
     if acceptedObligationEntryMatches(
         "rule.21.EvalSigma-YieldFrom-Failed",
-        79997usize,
+        80031usize,
         "HelloUltraviolet::Reference::Async",
         "runAsyncSuspensionFormsReference",
         "Source/Reference/Async/SuspensionForms.uv"
@@ -342,24 +342,6 @@ public procedure validatedAsynchronousOperationsSuspensionFormsObligations() -> 
     }
     if acceptedObligationEntryMatches(
         "rule.21.EvalSigma-YieldFrom-Resume",
-        80015usize,
-        "HelloUltraviolet::Reference::Async",
-        "runAsyncSuspensionFormsReference",
-        "Source/Reference/Async/SuspensionForms.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
-        "def.21.EvalYieldFromContinueSignature",
-        80034usize,
-        "HelloUltraviolet::Reference::Async",
-        "runAsyncSuspensionFormsReference",
-        "Source/Reference/Async/SuspensionForms.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
-        "rule.21.EvalYieldFromContinue-Suspended",
         80049usize,
         "HelloUltraviolet::Reference::Async",
         "runAsyncSuspensionFormsReference",
@@ -368,8 +350,26 @@ public procedure validatedAsynchronousOperationsSuspensionFormsObligations() -> 
         count = count + 1usize
     }
     if acceptedObligationEntryMatches(
+        "def.21.EvalYieldFromContinueSignature",
+        80068usize,
+        "HelloUltraviolet::Reference::Async",
+        "runAsyncSuspensionFormsReference",
+        "Source/Reference/Async/SuspensionForms.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "rule.21.EvalYieldFromContinue-Suspended",
+        80083usize,
+        "HelloUltraviolet::Reference::Async",
+        "runAsyncSuspensionFormsReference",
+        "Source/Reference/Async/SuspensionForms.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
         "rule.21.EvalYieldFromContinue-Completed",
-        80069usize,
+        80103usize,
         "HelloUltraviolet::Reference::Async",
         "runAsyncSuspensionFormsReference",
         "Source/Reference/Async/SuspensionForms.uv"
@@ -378,7 +378,7 @@ public procedure validatedAsynchronousOperationsSuspensionFormsObligations() -> 
     }
     if acceptedObligationEntryMatches(
         "rule.21.EvalYieldFromContinue-Failed",
-        80087usize,
+        80121usize,
         "HelloUltraviolet::Reference::Async",
         "runAsyncSuspensionFormsReference",
         "Source/Reference/Async/SuspensionForms.uv"
@@ -387,7 +387,7 @@ public procedure validatedAsynchronousOperationsSuspensionFormsObligations() -> 
     }
     if acceptedObligationEntryMatches(
         "def.21.SuspensionLoweringForms",
-        80107usize,
+        80141usize,
         "HelloUltraviolet::Reference::Async",
         "runAsyncSuspensionFormsReference",
         "Source/Reference/Async/SuspensionForms.uv"
@@ -396,7 +396,7 @@ public procedure validatedAsynchronousOperationsSuspensionFormsObligations() -> 
     }
     if acceptedObligationEntryMatches(
         "rule.21.Lower-Wait-Spawned",
-        80128usize,
+        80162usize,
         "HelloUltraviolet::Reference::Async",
         "runAsyncSuspensionFormsReference",
         "Source/Reference/Async/SuspensionForms.uv"
@@ -405,7 +405,7 @@ public procedure validatedAsynchronousOperationsSuspensionFormsObligations() -> 
     }
     if acceptedObligationEntryMatches(
         "rule.21.Lower-Wait-Tracked",
-        80146usize,
+        80180usize,
         "HelloUltraviolet::Reference::Async",
         "runAsyncSuspensionFormsReference",
         "Source/Reference/Async/SuspensionForms.uv"
@@ -414,7 +414,7 @@ public procedure validatedAsynchronousOperationsSuspensionFormsObligations() -> 
     }
     if acceptedObligationEntryMatches(
         "rule.21.Lower-Yield",
-        80164usize,
+        80198usize,
         "HelloUltraviolet::Reference::Async",
         "runAsyncSuspensionFormsReference",
         "Source/Reference/Async/SuspensionForms.uv"
@@ -423,7 +423,7 @@ public procedure validatedAsynchronousOperationsSuspensionFormsObligations() -> 
     }
     if acceptedObligationEntryMatches(
         "rule.21.Lower-Yield-Release",
-        80182usize,
+        80216usize,
         "HelloUltraviolet::Reference::Async",
         "runAsyncSuspensionFormsReference",
         "Source/Reference/Async/SuspensionForms.uv"
@@ -432,7 +432,7 @@ public procedure validatedAsynchronousOperationsSuspensionFormsObligations() -> 
     }
     if acceptedObligationEntryMatches(
         "requirement.21.YieldReleaseReacquireLowering",
-        80200usize,
+        80234usize,
         "HelloUltraviolet::Reference::Async",
         "runAsyncSuspensionFormsReference",
         "Source/Reference/Async/SuspensionForms.uv"
@@ -441,7 +441,7 @@ public procedure validatedAsynchronousOperationsSuspensionFormsObligations() -> 
     }
     if acceptedObligationEntryMatches(
         "rule.21.Lower-YieldFrom",
-        80213usize,
+        80247usize,
         "HelloUltraviolet::Reference::Async",
         "runAsyncSuspensionFormsReference",
         "Source/Reference/Async/SuspensionForms.uv"
@@ -450,7 +450,7 @@ public procedure validatedAsynchronousOperationsSuspensionFormsObligations() -> 
     }
     if acceptedObligationEntryMatches(
         "requirement.21.YieldFromEnterLoweringLoop",
-        80231usize,
+        80265usize,
         "HelloUltraviolet::Reference::Async",
         "runAsyncSuspensionFormsReference",
         "Source/Reference/Async/SuspensionForms.uv"
@@ -459,7 +459,7 @@ public procedure validatedAsynchronousOperationsSuspensionFormsObligations() -> 
     }
     if rejectedSourceObligationEntryMatches(
         "diagnostics.21.SuspensionForms",
-        80249usize,
+        80283usize,
         "HelloUltraviolet::Audit::FixtureCatalog::RejectedSource",
         "validatedExpressionsRejectedSourceFixtureCount",
         "Fixtures/RejectedSource/Expressions/SuspensionFormsDiagnosticsTable/Source/Main.uv"

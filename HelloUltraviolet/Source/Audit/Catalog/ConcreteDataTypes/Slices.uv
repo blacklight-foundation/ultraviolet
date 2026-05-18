@@ -2,14 +2,14 @@
 
 
 public procedure countConcreteDataTypesSlicesObligations() -> usize {
-    return 33usize
+    return 34usize
 }
 
 public procedure validatedConcreteDataTypesSlicesObligations() -> usize {
     var count: usize = 0usize
     if acceptedObligationEntryMatches(
         "grammar.SliceSyntax",
-        36931usize,
+        36947usize,
         "HelloUltraviolet::Reference::DataTypes",
         "runDataTypesSlicesReference",
         "Source/Reference/DataTypes/Slices.uv"
@@ -18,15 +18,6 @@ public procedure validatedConcreteDataTypesSlicesObligations() -> usize {
     }
     if acceptedObligationEntryMatches(
         "req.ArrayToSliceCoercionSemantic",
-        36951usize,
-        "HelloUltraviolet::Reference::DataTypes",
-        "runDataTypesSlicesReference",
-        "Source/Reference/DataTypes/Slices.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
-        "Parse-Slice-Type",
         36967usize,
         "HelloUltraviolet::Reference::DataTypes",
         "runDataTypesSlicesReference",
@@ -35,8 +26,17 @@ public procedure validatedConcreteDataTypesSlicesObligations() -> usize {
         count = count + 1usize
     }
     if acceptedObligationEntryMatches(
+        "Parse-Slice-Type",
+        36983usize,
+        "HelloUltraviolet::Reference::DataTypes",
+        "runDataTypesSlicesReference",
+        "Source/Reference/DataTypes/Slices.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
         "req.IndexAccessSliceOwnership",
-        36985usize,
+        37001usize,
         "HelloUltraviolet::Reference::DataTypes",
         "runDataTypesSlicesReference",
         "Source/Reference/DataTypes/Slices.uv"
@@ -45,15 +45,6 @@ public procedure validatedConcreteDataTypesSlicesObligations() -> usize {
     }
     if acceptedObligationEntryMatches(
         "def.TypeSliceAst",
-        36999usize,
-        "HelloUltraviolet::Reference::DataTypes",
-        "runDataTypesSlicesReference",
-        "Source/Reference/DataTypes/Slices.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
-        "req.IndexAccessSliceExpressionSemantics",
         37015usize,
         "HelloUltraviolet::Reference::DataTypes",
         "runDataTypesSlicesReference",
@@ -62,8 +53,8 @@ public procedure validatedConcreteDataTypesSlicesObligations() -> usize {
         count = count + 1usize
     }
     if acceptedObligationEntryMatches(
-        "def.RangeIndexType",
-        37029usize,
+        "req.IndexAccessSliceExpressionSemantics",
+        37031usize,
         "HelloUltraviolet::Reference::DataTypes",
         "runDataTypesSlicesReference",
         "Source/Reference/DataTypes/Slices.uv"
@@ -71,7 +62,7 @@ public procedure validatedConcreteDataTypesSlicesObligations() -> usize {
         count = count + 1usize
     }
     if acceptedObligationEntryMatches(
-        "WF-Slice",
+        "def.RangeIndexType",
         37045usize,
         "HelloUltraviolet::Reference::DataTypes",
         "runDataTypesSlicesReference",
@@ -80,8 +71,26 @@ public procedure validatedConcreteDataTypesSlicesObligations() -> usize {
         count = count + 1usize
     }
     if acceptedObligationEntryMatches(
+        "def.RangeIndexExpr",
+        37061usize,
+        "HelloUltraviolet::Reference::DataTypes",
+        "runDataTypesSlicesReference",
+        "Source/Reference/DataTypes/Slices.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "WF-Slice",
+        37077usize,
+        "HelloUltraviolet::Reference::DataTypes",
+        "runDataTypesSlicesReference",
+        "Source/Reference/DataTypes/Slices.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
         "T-Index-Slice",
-        37063usize,
+        37095usize,
         "HelloUltraviolet::Reference::DataTypes",
         "runDataTypesSlicesReference",
         "Source/Reference/DataTypes/Slices.uv"
@@ -90,7 +99,7 @@ public procedure validatedConcreteDataTypesSlicesObligations() -> usize {
     }
     if acceptedObligationEntryMatches(
         "T-Index-Slice-Perm",
-        37081usize,
+        37113usize,
         "HelloUltraviolet::Reference::DataTypes",
         "runDataTypesSlicesReference",
         "Source/Reference/DataTypes/Slices.uv"
@@ -99,7 +108,7 @@ public procedure validatedConcreteDataTypesSlicesObligations() -> usize {
     }
     if acceptedObligationEntryMatches(
         "T-Slice-From-Array",
-        37099usize,
+        37131usize,
         "HelloUltraviolet::Reference::DataTypes",
         "runDataTypesSlicesReference",
         "Source/Reference/DataTypes/Slices.uv"
@@ -108,7 +117,7 @@ public procedure validatedConcreteDataTypesSlicesObligations() -> usize {
     }
     if acceptedObligationEntryMatches(
         "T-Slice-From-Array-Perm",
-        37117usize,
+        37149usize,
         "HelloUltraviolet::Reference::DataTypes",
         "runDataTypesSlicesReference",
         "Source/Reference/DataTypes/Slices.uv"
@@ -117,7 +126,7 @@ public procedure validatedConcreteDataTypesSlicesObligations() -> usize {
     }
     if acceptedObligationEntryMatches(
         "T-Slice-From-Slice",
-        37135usize,
+        37167usize,
         "HelloUltraviolet::Reference::DataTypes",
         "runDataTypesSlicesReference",
         "Source/Reference/DataTypes/Slices.uv"
@@ -126,7 +135,7 @@ public procedure validatedConcreteDataTypesSlicesObligations() -> usize {
     }
     if acceptedObligationEntryMatches(
         "T-Slice-From-Slice-Perm",
-        37153usize,
+        37185usize,
         "HelloUltraviolet::Reference::DataTypes",
         "runDataTypesSlicesReference",
         "Source/Reference/DataTypes/Slices.uv"
@@ -135,7 +144,7 @@ public procedure validatedConcreteDataTypesSlicesObligations() -> usize {
     }
     if acceptedObligationEntryMatches(
         "P-Index-Slice",
-        37171usize,
+        37203usize,
         "HelloUltraviolet::Reference::DataTypes",
         "runDataTypesSlicesReference",
         "Source/Reference/DataTypes/Slices.uv"
@@ -144,7 +153,7 @@ public procedure validatedConcreteDataTypesSlicesObligations() -> usize {
     }
     if acceptedObligationEntryMatches(
         "P-Index-Slice-Perm",
-        37189usize,
+        37221usize,
         "HelloUltraviolet::Reference::DataTypes",
         "runDataTypesSlicesReference",
         "Source/Reference/DataTypes/Slices.uv"
@@ -153,7 +162,7 @@ public procedure validatedConcreteDataTypesSlicesObligations() -> usize {
     }
     if acceptedObligationEntryMatches(
         "P-Slice-From-Array",
-        37207usize,
+        37239usize,
         "HelloUltraviolet::Reference::DataTypes",
         "runDataTypesSlicesReference",
         "Source/Reference/DataTypes/Slices.uv"
@@ -162,7 +171,7 @@ public procedure validatedConcreteDataTypesSlicesObligations() -> usize {
     }
     if acceptedObligationEntryMatches(
         "P-Slice-From-Array-Perm",
-        37225usize,
+        37257usize,
         "HelloUltraviolet::Reference::DataTypes",
         "runDataTypesSlicesReference",
         "Source/Reference/DataTypes/Slices.uv"
@@ -171,7 +180,7 @@ public procedure validatedConcreteDataTypesSlicesObligations() -> usize {
     }
     if acceptedObligationEntryMatches(
         "P-Slice-From-Slice",
-        37243usize,
+        37275usize,
         "HelloUltraviolet::Reference::DataTypes",
         "runDataTypesSlicesReference",
         "Source/Reference/DataTypes/Slices.uv"
@@ -180,7 +189,7 @@ public procedure validatedConcreteDataTypesSlicesObligations() -> usize {
     }
     if acceptedObligationEntryMatches(
         "P-Slice-From-Slice-Perm",
-        37261usize,
+        37293usize,
         "HelloUltraviolet::Reference::DataTypes",
         "runDataTypesSlicesReference",
         "Source/Reference/DataTypes/Slices.uv"
@@ -189,7 +198,7 @@ public procedure validatedConcreteDataTypesSlicesObligations() -> usize {
     }
     if acceptedObligationEntryMatches(
         "Coerce-Array-Slice",
-        37279usize,
+        37311usize,
         "HelloUltraviolet::Reference::DataTypes",
         "runDataTypesSlicesReference",
         "Source/Reference/DataTypes/Slices.uv"
@@ -198,7 +207,7 @@ public procedure validatedConcreteDataTypesSlicesObligations() -> usize {
     }
     if rejectedSourceObligationEntryMatches(
         "Index-NonIndexable",
-        37297usize,
+        37329usize,
         "HelloUltraviolet::Audit::FixtureCatalog::RejectedSource",
         "validatedExpressionsRejectedSourceFixtureCount",
         "Fixtures/RejectedSource/Expressions/IndexNonIndexable/Source/Main.uv"
@@ -207,7 +216,7 @@ public procedure validatedConcreteDataTypesSlicesObligations() -> usize {
     }
     if acceptedObligationEntryMatches(
         "def.SliceValueType",
-        37315usize,
+        37347usize,
         "HelloUltraviolet::Reference::DataTypes",
         "runDataTypesSlicesReference",
         "Source/Reference/DataTypes/Slices.uv"
@@ -216,7 +225,7 @@ public procedure validatedConcreteDataTypesSlicesObligations() -> usize {
     }
     if acceptedObligationEntryMatches(
         "def.SliceRuntimeIndexHelpers",
-        37331usize,
+        37363usize,
         "HelloUltraviolet::Reference::DataTypes",
         "runDataTypesSlicesReference",
         "Source/Reference/DataTypes/Slices.uv"
@@ -225,7 +234,7 @@ public procedure validatedConcreteDataTypesSlicesObligations() -> usize {
     }
     if acceptedObligationEntryMatches(
         "EvalSigma-Index-Range",
-        37346usize,
+        37378usize,
         "HelloUltraviolet::Reference::DataTypes",
         "runDataTypesSlicesReference",
         "Source/Reference/DataTypes/Slices.uv"
@@ -234,7 +243,7 @@ public procedure validatedConcreteDataTypesSlicesObligations() -> usize {
     }
     if acceptedObligationEntryMatches(
         "EvalSigma-Index-Range-OOB",
-        37364usize,
+        37396usize,
         "HelloUltraviolet::Reference::DataTypes",
         "runDataTypesSlicesReference",
         "Source/Reference/DataTypes/Slices.uv"
@@ -243,7 +252,7 @@ public procedure validatedConcreteDataTypesSlicesObligations() -> usize {
     }
     if acceptedObligationEntryMatches(
         "Size-Slice",
-        37384usize,
+        37416usize,
         "HelloUltraviolet::Reference::DataTypes",
         "runDataTypesSlicesReference",
         "Source/Reference/DataTypes/Slices.uv"
@@ -252,7 +261,7 @@ public procedure validatedConcreteDataTypesSlicesObligations() -> usize {
     }
     if acceptedObligationEntryMatches(
         "Align-Slice",
-        37401usize,
+        37433usize,
         "HelloUltraviolet::Reference::DataTypes",
         "runDataTypesSlicesReference",
         "Source/Reference/DataTypes/Slices.uv"
@@ -261,7 +270,7 @@ public procedure validatedConcreteDataTypesSlicesObligations() -> usize {
     }
     if acceptedObligationEntryMatches(
         "Layout-Slice",
-        37418usize,
+        37450usize,
         "HelloUltraviolet::Reference::DataTypes",
         "runDataTypesSlicesReference",
         "Source/Reference/DataTypes/Slices.uv"
@@ -270,7 +279,7 @@ public procedure validatedConcreteDataTypesSlicesObligations() -> usize {
     }
     if acceptedObligationEntryMatches(
         "def.SliceValueBits",
-        37435usize,
+        37467usize,
         "HelloUltraviolet::Reference::DataTypes",
         "runDataTypesSlicesReference",
         "Source/Reference/DataTypes/Slices.uv"
@@ -279,7 +288,7 @@ public procedure validatedConcreteDataTypesSlicesObligations() -> usize {
     }
     if acceptedObligationEntryMatches(
         "def.SliceIndexUpdate",
-        37449usize,
+        37481usize,
         "HelloUltraviolet::Reference::DataTypes",
         "runDataTypesSlicesReference",
         "Source/Reference/DataTypes/Slices.uv"
@@ -288,7 +297,7 @@ public procedure validatedConcreteDataTypesSlicesObligations() -> usize {
     }
     if acceptedObligationEntryMatches(
         "Index-Slice-NonUsize",
-        37465usize,
+        37497usize,
         "HelloUltraviolet::Reference::DataTypes",
         "runDataTypesSlicesReference",
         "Source/Reference/DataTypes/Slices.uv"
@@ -297,7 +306,7 @@ public procedure validatedConcreteDataTypesSlicesObligations() -> usize {
     }
     if acceptedObligationEntryMatches(
         "req.SliceDiagnosticOwnership",
-        37483usize,
+        37515usize,
         "HelloUltraviolet::Reference::DataTypes",
         "runDataTypesSlicesReference",
         "Source/Reference/DataTypes/Slices.uv"

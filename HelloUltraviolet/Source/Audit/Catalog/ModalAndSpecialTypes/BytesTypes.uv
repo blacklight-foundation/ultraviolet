@@ -9,7 +9,7 @@ public procedure validatedModalAndSpecialTypesBytesTypesObligations() -> usize {
     var count: usize = 0usize
     if acceptedObligationEntryMatches(
         "grammar.BytesTypes.Syntax",
-        45108usize,
+        45140usize,
         "HelloUltraviolet::Reference::ModalTypes",
         "runModalTypesBytesReference",
         "Source/Reference/ModalTypes/Bytes.uv"
@@ -18,7 +18,7 @@ public procedure validatedModalAndSpecialTypesBytesTypesObligations() -> usize {
     }
     if acceptedObligationEntryMatches(
         "rule.13.Parse-Bytes-Type",
-        45125usize,
+        45157usize,
         "HelloUltraviolet::Reference::ModalTypes",
         "runModalTypesBytesReference",
         "Source/Reference/ModalTypes/Bytes.uv"
@@ -27,24 +27,6 @@ public procedure validatedModalAndSpecialTypesBytesTypesObligations() -> usize {
     }
     if acceptedObligationEntryMatches(
         "rule.13.Parse-BytesState-None",
-        45143usize,
-        "HelloUltraviolet::Reference::ModalTypes",
-        "runModalTypesBytesReference",
-        "Source/Reference/ModalTypes/Bytes.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
-        "rule.13.Parse-BytesState-Managed",
-        45159usize,
-        "HelloUltraviolet::Reference::ModalTypes",
-        "runModalTypesBytesReference",
-        "Source/Reference/ModalTypes/Bytes.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
-        "rule.13.Parse-BytesState-View",
         45175usize,
         "HelloUltraviolet::Reference::ModalTypes",
         "runModalTypesBytesReference",
@@ -53,8 +35,26 @@ public procedure validatedModalAndSpecialTypesBytesTypesObligations() -> usize {
         count = count + 1usize
     }
     if acceptedObligationEntryMatches(
+        "rule.13.Parse-BytesState-Managed",
+        45191usize,
+        "HelloUltraviolet::Reference::ModalTypes",
+        "runModalTypesBytesReference",
+        "Source/Reference/ModalTypes/Bytes.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "rule.13.Parse-BytesState-View",
+        45207usize,
+        "HelloUltraviolet::Reference::ModalTypes",
+        "runModalTypesBytesReference",
+        "Source/Reference/ModalTypes/Bytes.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
         "def.TypeBytesAst",
-        45193usize,
+        45225usize,
         "HelloUltraviolet::Reference::ModalTypes",
         "runModalTypesBytesReference",
         "Source/Reference/ModalTypes/Bytes.uv"
@@ -63,7 +63,7 @@ public procedure validatedModalAndSpecialTypesBytesTypesObligations() -> usize {
     }
     if acceptedObligationEntryMatches(
         "def.BytesStateSet",
-        45205usize,
+        45237usize,
         "HelloUltraviolet::Reference::ModalTypes",
         "runModalTypesBytesReference",
         "Source/Reference/ModalTypes/Bytes.uv"
@@ -72,7 +72,7 @@ public procedure validatedModalAndSpecialTypesBytesTypesObligations() -> usize {
     }
     if acceptedObligationEntryMatches(
         "def.BytesBuiltinTable",
-        45217usize,
+        45249usize,
         "HelloUltraviolet::Reference::ModalTypes",
         "runModalTypesBytesReference",
         "Source/Reference/ModalTypes/Bytes.uv"
@@ -81,7 +81,7 @@ public procedure validatedModalAndSpecialTypesBytesTypesObligations() -> usize {
     }
     if acceptedObligationEntryMatches(
         "def.StringBytesBuiltinTable",
-        45241usize,
+        45273usize,
         "HelloUltraviolet::Reference::ModalTypes",
         "runModalTypesBytesReference",
         "Source/Reference/ModalTypes/Bytes.uv"
@@ -90,7 +90,7 @@ public procedure validatedModalAndSpecialTypesBytesTypesObligations() -> usize {
     }
     if acceptedObligationEntryMatches(
         "def.BytesBuiltinSig",
-        45253usize,
+        45285usize,
         "HelloUltraviolet::Reference::ModalTypes",
         "runModalTypesBytesReference",
         "Source/Reference/ModalTypes/Bytes.uv"
@@ -99,7 +99,7 @@ public procedure validatedModalAndSpecialTypesBytesTypesObligations() -> usize {
     }
     if acceptedObligationEntryMatches(
         "def.StringBytesBuiltinSig",
-        45265usize,
+        45297usize,
         "HelloUltraviolet::Reference::ModalTypes",
         "runModalTypesBytesReference",
         "Source/Reference/ModalTypes/Bytes.uv"
@@ -108,7 +108,7 @@ public procedure validatedModalAndSpecialTypesBytesTypesObligations() -> usize {
     }
     if acceptedObligationEntryMatches(
         "rule.13.WF-Bytes",
-        45280usize,
+        45312usize,
         "HelloUltraviolet::Reference::ModalTypes",
         "runModalTypesBytesReference",
         "Source/Reference/ModalTypes/Bytes.uv"
@@ -117,7 +117,7 @@ public procedure validatedModalAndSpecialTypesBytesTypesObligations() -> usize {
     }
     if acceptedObligationEntryMatches(
         "rule.13.Sub-Bytes-State",
-        45296usize,
+        45328usize,
         "HelloUltraviolet::Reference::ModalTypes",
         "runModalTypesBytesReference",
         "Source/Reference/ModalTypes/Bytes.uv"
@@ -126,7 +126,7 @@ public procedure validatedModalAndSpecialTypesBytesTypesObligations() -> usize {
     }
     if acceptedObligationEntryMatches(
         "req.BytesBuiltinsTyping",
-        45310usize,
+        45342usize,
         "HelloUltraviolet::Reference::ModalTypes",
         "runModalTypesBytesReference",
         "Source/Reference/ModalTypes/Bytes.uv"
@@ -135,7 +135,7 @@ public procedure validatedModalAndSpecialTypesBytesTypesObligations() -> usize {
     }
     if acceptedObligationEntryMatches(
         "def.SliceBytes",
-        45324usize,
+        45356usize,
         "HelloUltraviolet::Reference::ModalTypes",
         "runModalTypesBytesReference",
         "Source/Reference/ModalTypes/Bytes.uv"
@@ -144,7 +144,7 @@ public procedure validatedModalAndSpecialTypesBytesTypesObligations() -> usize {
     }
     if acceptedObligationEntryMatches(
         "def.BytesValueTypes",
-        45336usize,
+        45368usize,
         "HelloUltraviolet::Reference::ModalTypes",
         "runModalTypesBytesReference",
         "Source/Reference/ModalTypes/Bytes.uv"
@@ -153,7 +153,7 @@ public procedure validatedModalAndSpecialTypesBytesTypesObligations() -> usize {
     }
     if acceptedObligationEntryMatches(
         "def.BytesJudgementSet",
-        45350usize,
+        45382usize,
         "HelloUltraviolet::Reference::ModalTypes",
         "runModalTypesBytesReference",
         "Source/Reference/ModalTypes/Bytes.uv"
@@ -162,7 +162,7 @@ public procedure validatedModalAndSpecialTypesBytesTypesObligations() -> usize {
     }
     if acceptedObligationEntryMatches(
         "def.StringBytesJudgementSet",
-        45373usize,
+        45405usize,
         "HelloUltraviolet::Reference::ModalTypes",
         "runModalTypesBytesReference",
         "Source/Reference/ModalTypes/Bytes.uv"
@@ -171,24 +171,6 @@ public procedure validatedModalAndSpecialTypesBytesTypesObligations() -> usize {
     }
     if acceptedObligationEntryMatches(
         "rule.13.BytesWithCapacity-Ok",
-        45385usize,
-        "HelloUltraviolet::Reference::ModalTypes",
-        "runModalTypesBytesReference",
-        "Source/Reference/ModalTypes/Bytes.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
-        "rule.13.BytesWithCapacity-Err",
-        45401usize,
-        "HelloUltraviolet::Reference::ModalTypes",
-        "runModalTypesBytesReference",
-        "Source/Reference/ModalTypes/Bytes.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
-        "rule.13.BytesFromSlice-Ok",
         45417usize,
         "HelloUltraviolet::Reference::ModalTypes",
         "runModalTypesBytesReference",
@@ -197,7 +179,7 @@ public procedure validatedModalAndSpecialTypesBytesTypesObligations() -> usize {
         count = count + 1usize
     }
     if acceptedObligationEntryMatches(
-        "rule.13.BytesFromSlice-Err",
+        "rule.13.BytesWithCapacity-Err",
         45433usize,
         "HelloUltraviolet::Reference::ModalTypes",
         "runModalTypesBytesReference",
@@ -206,7 +188,7 @@ public procedure validatedModalAndSpecialTypesBytesTypesObligations() -> usize {
         count = count + 1usize
     }
     if acceptedObligationEntryMatches(
-        "rule.13.BytesAsView-Ok",
+        "rule.13.BytesFromSlice-Ok",
         45449usize,
         "HelloUltraviolet::Reference::ModalTypes",
         "runModalTypesBytesReference",
@@ -215,7 +197,7 @@ public procedure validatedModalAndSpecialTypesBytesTypesObligations() -> usize {
         count = count + 1usize
     }
     if acceptedObligationEntryMatches(
-        "rule.13.BytesToManaged-Ok",
+        "rule.13.BytesFromSlice-Err",
         45465usize,
         "HelloUltraviolet::Reference::ModalTypes",
         "runModalTypesBytesReference",
@@ -224,7 +206,7 @@ public procedure validatedModalAndSpecialTypesBytesTypesObligations() -> usize {
         count = count + 1usize
     }
     if acceptedObligationEntryMatches(
-        "rule.13.BytesToManaged-Err",
+        "rule.13.BytesAsView-Ok",
         45481usize,
         "HelloUltraviolet::Reference::ModalTypes",
         "runModalTypesBytesReference",
@@ -233,7 +215,7 @@ public procedure validatedModalAndSpecialTypesBytesTypesObligations() -> usize {
         count = count + 1usize
     }
     if acceptedObligationEntryMatches(
-        "rule.13.BytesView-Ok",
+        "rule.13.BytesToManaged-Ok",
         45497usize,
         "HelloUltraviolet::Reference::ModalTypes",
         "runModalTypesBytesReference",
@@ -242,7 +224,7 @@ public procedure validatedModalAndSpecialTypesBytesTypesObligations() -> usize {
         count = count + 1usize
     }
     if acceptedObligationEntryMatches(
-        "rule.13.BytesViewString-Ok",
+        "rule.13.BytesToManaged-Err",
         45513usize,
         "HelloUltraviolet::Reference::ModalTypes",
         "runModalTypesBytesReference",
@@ -251,7 +233,7 @@ public procedure validatedModalAndSpecialTypesBytesTypesObligations() -> usize {
         count = count + 1usize
     }
     if acceptedObligationEntryMatches(
-        "rule.13.BytesAsSlice-Ok",
+        "rule.13.BytesView-Ok",
         45529usize,
         "HelloUltraviolet::Reference::ModalTypes",
         "runModalTypesBytesReference",
@@ -260,7 +242,7 @@ public procedure validatedModalAndSpecialTypesBytesTypesObligations() -> usize {
         count = count + 1usize
     }
     if acceptedObligationEntryMatches(
-        "rule.13.BytesAppend-Ok",
+        "rule.13.BytesViewString-Ok",
         45545usize,
         "HelloUltraviolet::Reference::ModalTypes",
         "runModalTypesBytesReference",
@@ -269,7 +251,7 @@ public procedure validatedModalAndSpecialTypesBytesTypesObligations() -> usize {
         count = count + 1usize
     }
     if acceptedObligationEntryMatches(
-        "rule.13.BytesAppend-Err",
+        "rule.13.BytesAsSlice-Ok",
         45561usize,
         "HelloUltraviolet::Reference::ModalTypes",
         "runModalTypesBytesReference",
@@ -278,7 +260,7 @@ public procedure validatedModalAndSpecialTypesBytesTypesObligations() -> usize {
         count = count + 1usize
     }
     if acceptedObligationEntryMatches(
-        "rule.13.BytesLength",
+        "rule.13.BytesAppend-Ok",
         45577usize,
         "HelloUltraviolet::Reference::ModalTypes",
         "runModalTypesBytesReference",
@@ -287,7 +269,7 @@ public procedure validatedModalAndSpecialTypesBytesTypesObligations() -> usize {
         count = count + 1usize
     }
     if acceptedObligationEntryMatches(
-        "rule.13.BytesIsEmpty",
+        "rule.13.BytesAppend-Err",
         45593usize,
         "HelloUltraviolet::Reference::ModalTypes",
         "runModalTypesBytesReference",
@@ -296,7 +278,7 @@ public procedure validatedModalAndSpecialTypesBytesTypesObligations() -> usize {
         count = count + 1usize
     }
     if acceptedObligationEntryMatches(
-        "def.BytesViewOf",
+        "rule.13.BytesLength",
         45609usize,
         "HelloUltraviolet::Reference::ModalTypes",
         "runModalTypesBytesReference",
@@ -305,8 +287,26 @@ public procedure validatedModalAndSpecialTypesBytesTypesObligations() -> usize {
         count = count + 1usize
     }
     if acceptedObligationEntryMatches(
+        "rule.13.BytesIsEmpty",
+        45625usize,
+        "HelloUltraviolet::Reference::ModalTypes",
+        "runModalTypesBytesReference",
+        "Source/Reference/ModalTypes/Bytes.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "def.BytesViewOf",
+        45641usize,
+        "HelloUltraviolet::Reference::ModalTypes",
+        "runModalTypesBytesReference",
+        "Source/Reference/ModalTypes/Bytes.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
         "def.BytesRuntimeLength",
-        45623usize,
+        45655usize,
         "HelloUltraviolet::Reference::ModalTypes",
         "runModalTypesBytesReference",
         "Source/Reference/ModalTypes/Bytes.uv"
@@ -315,7 +315,7 @@ public procedure validatedModalAndSpecialTypesBytesTypesObligations() -> usize {
     }
     if acceptedObligationEntryMatches(
         "def.BytesViewConversions",
-        45636usize,
+        45668usize,
         "HelloUltraviolet::Reference::ModalTypes",
         "runModalTypesBytesReference",
         "Source/Reference/ModalTypes/Bytes.uv"
@@ -324,7 +324,7 @@ public procedure validatedModalAndSpecialTypesBytesTypesObligations() -> usize {
     }
     if acceptedObligationEntryMatches(
         "def.BytesManagedLoweringLayout",
-        45651usize,
+        45683usize,
         "HelloUltraviolet::Reference::ModalTypes",
         "runModalTypesBytesReference",
         "Source/Reference/ModalTypes/Bytes.uv"
@@ -333,7 +333,7 @@ public procedure validatedModalAndSpecialTypesBytesTypesObligations() -> usize {
     }
     if acceptedObligationEntryMatches(
         "def.BytesViewLoweringLayout",
-        45665usize,
+        45697usize,
         "HelloUltraviolet::Reference::ModalTypes",
         "runModalTypesBytesReference",
         "Source/Reference/ModalTypes/Bytes.uv"
@@ -342,24 +342,6 @@ public procedure validatedModalAndSpecialTypesBytesTypesObligations() -> usize {
     }
     if acceptedObligationEntryMatches(
         "rule.13.Size-Bytes-Managed",
-        45679usize,
-        "HelloUltraviolet::Reference::ModalTypes",
-        "runModalTypesBytesReference",
-        "Source/Reference/ModalTypes/Bytes.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
-        "rule.13.Align-Bytes-Managed",
-        45695usize,
-        "HelloUltraviolet::Reference::ModalTypes",
-        "runModalTypesBytesReference",
-        "Source/Reference/ModalTypes/Bytes.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
-        "rule.13.Layout-Bytes-Managed",
         45711usize,
         "HelloUltraviolet::Reference::ModalTypes",
         "runModalTypesBytesReference",
@@ -368,7 +350,7 @@ public procedure validatedModalAndSpecialTypesBytesTypesObligations() -> usize {
         count = count + 1usize
     }
     if acceptedObligationEntryMatches(
-        "rule.13.Size-Bytes-View",
+        "rule.13.Align-Bytes-Managed",
         45727usize,
         "HelloUltraviolet::Reference::ModalTypes",
         "runModalTypesBytesReference",
@@ -377,7 +359,7 @@ public procedure validatedModalAndSpecialTypesBytesTypesObligations() -> usize {
         count = count + 1usize
     }
     if acceptedObligationEntryMatches(
-        "rule.13.Align-Bytes-View",
+        "rule.13.Layout-Bytes-Managed",
         45743usize,
         "HelloUltraviolet::Reference::ModalTypes",
         "runModalTypesBytesReference",
@@ -386,7 +368,7 @@ public procedure validatedModalAndSpecialTypesBytesTypesObligations() -> usize {
         count = count + 1usize
     }
     if acceptedObligationEntryMatches(
-        "rule.13.Layout-Bytes-View",
+        "rule.13.Size-Bytes-View",
         45759usize,
         "HelloUltraviolet::Reference::ModalTypes",
         "runModalTypesBytesReference",
@@ -395,7 +377,7 @@ public procedure validatedModalAndSpecialTypesBytesTypesObligations() -> usize {
         count = count + 1usize
     }
     if acceptedObligationEntryMatches(
-        "rule.13.Size-Bytes-Modal",
+        "rule.13.Align-Bytes-View",
         45775usize,
         "HelloUltraviolet::Reference::ModalTypes",
         "runModalTypesBytesReference",
@@ -404,7 +386,7 @@ public procedure validatedModalAndSpecialTypesBytesTypesObligations() -> usize {
         count = count + 1usize
     }
     if acceptedObligationEntryMatches(
-        "rule.13.Align-Bytes-Modal",
+        "rule.13.Layout-Bytes-View",
         45791usize,
         "HelloUltraviolet::Reference::ModalTypes",
         "runModalTypesBytesReference",
@@ -413,7 +395,7 @@ public procedure validatedModalAndSpecialTypesBytesTypesObligations() -> usize {
         count = count + 1usize
     }
     if acceptedObligationEntryMatches(
-        "def.BytesValueBits",
+        "rule.13.Size-Bytes-Modal",
         45807usize,
         "HelloUltraviolet::Reference::ModalTypes",
         "runModalTypesBytesReference",
@@ -422,8 +404,26 @@ public procedure validatedModalAndSpecialTypesBytesTypesObligations() -> usize {
         count = count + 1usize
     }
     if acceptedObligationEntryMatches(
+        "rule.13.Align-Bytes-Modal",
+        45823usize,
+        "HelloUltraviolet::Reference::ModalTypes",
+        "runModalTypesBytesReference",
+        "Source/Reference/ModalTypes/Bytes.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "def.BytesValueBits",
+        45839usize,
+        "HelloUltraviolet::Reference::ModalTypes",
+        "runModalTypesBytesReference",
+        "Source/Reference/ModalTypes/Bytes.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
         "def.DropManagedBytes",
-        45819usize,
+        45851usize,
         "HelloUltraviolet::Reference::ModalTypes",
         "runModalTypesBytesReference",
         "Source/Reference/ModalTypes/Bytes.uv"
@@ -432,7 +432,7 @@ public procedure validatedModalAndSpecialTypesBytesTypesObligations() -> usize {
     }
     if acceptedObligationEntryMatches(
         "diag.BytesTypes",
-        45833usize,
+        45865usize,
         "HelloUltraviolet::Reference::ModalTypes",
         "runModalTypesBytesReference",
         "Source/Reference/ModalTypes/Bytes.uv"

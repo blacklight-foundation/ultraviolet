@@ -14,6 +14,7 @@
 //
 // =============================================================================
 
+#include <array>
 #include <cstdint>
 #include <optional>
 #include <string>
@@ -21,6 +22,7 @@
 #include <variant>
 
 #include "00_core/assert_spec.h"
+#include "00_core/numeric_literals.h"
 #include "04_analysis/generics/monomorphize.h"
 #include "04_analysis/memory/calls.h"
 #include "04_analysis/resolve/scopes_lookup.h"
@@ -50,6 +52,8 @@ namespace ultraviolet::analysis::expr {
 namespace {
 
 static inline void SpecDefsIndexAccess() {
+  SPEC_DEF("IndexUsizeExpr", "12.3.4");
+  SPEC_DEF("RangeIndexExpr", "12.4.4");
   SPEC_DEF("T-Index-Array", "5.2.6");
   SPEC_DEF("T-Index-Array-Dynamic", "5.2.6");
   SPEC_DEF("T-Index-Array-Perm", "5.2.6");
@@ -109,6 +113,172 @@ static std::string NonConstArrayIndexDetail() {
   return "fixed-size array index expression is not compile-time constant; "
          "runtime fixed-array indexing requires [[dynamic]], or use a slice "
          "for runtime indexing";
+}
+
+struct IndexExprCheck {
+  bool ok = false;
+  std::optional<std::string_view> diag_id;
+  std::string diag_detail;
+  std::optional<core::Span> diag_span;
+};
+
+static std::optional<std::string_view> IntLiteralSuffix(
+    std::string_view lexeme) {
+  static constexpr std::array<std::string_view, 12> kIntSuffixes = {
+      "i128", "u128", "isize", "usize", "i64", "u64",
+      "i32",  "u32",  "i16",  "u16",  "i8",  "u8"};
+  for (const auto suffix : kIntSuffixes) {
+    if (suffix.size() >= lexeme.size()) {
+      continue;
+    }
+    if (lexeme.substr(lexeme.size() - suffix.size()) == suffix) {
+      return suffix;
+    }
+  }
+  return std::nullopt;
+}
+
+static bool IntLiteralFitsUsize(const ast::Token& lit) {
+  if (lit.kind != lexer::TokenKind::IntLiteral) {
+    return false;
+  }
+  const std::string_view core_text = core::StripIntSuffix(lit.lexeme);
+  const auto value = core::ParseIntCore(core_text);
+  return value.has_value() && core::UInt128FitsU64(*value);
+}
+
+static bool IsUsizeType(const TypeRef& type) {
+  const auto stripped = StripPermLocal(type);
+  const auto* prim = stripped ? std::get_if<TypePrim>(&stripped->node) : nullptr;
+  return prim && prim->name == "usize";
+}
+
+static IndexExprCheck CheckIndexUsizeExpr(const ScopeContext& ctx,
+                                          const ast::ExprPtr& expr,
+                                          const ExprTypeFn& type_expr) {
+  (void)ctx;
+  IndexExprCheck result;
+  if (!expr) {
+    return result;
+  }
+
+  if (std::holds_alternative<ast::RangeExpr>(expr->node)) {
+    return result;
+  }
+
+  if (const auto* literal = std::get_if<ast::LiteralExpr>(&expr->node)) {
+    const auto& lit = literal->literal;
+    if (lit.kind == lexer::TokenKind::IntLiteral) {
+      const auto suffix = IntLiteralSuffix(lit.lexeme);
+      if (suffix.has_value() && *suffix != "usize") {
+        return result;
+      }
+      if (!IntLiteralFitsUsize(lit)) {
+        return result;
+      }
+      SPEC_RULE("IndexUsizeExpr");
+      result.ok = true;
+      return result;
+    }
+  }
+
+  const auto typed = type_expr(expr);
+  if (!typed.ok) {
+    result.diag_id = typed.diag_id;
+    result.diag_detail = typed.diag_detail;
+    result.diag_span =
+        typed.diag_span.has_value() ? typed.diag_span : ExprSpan(expr);
+    return result;
+  }
+  if (!IsUsizeType(typed.type)) {
+    return result;
+  }
+
+  SPEC_RULE("IndexUsizeExpr");
+  result.ok = true;
+  return result;
+}
+
+static IndexExprCheck CheckDirectRangeIndexExpr(const ScopeContext& ctx,
+                                                const ast::RangeExpr& range,
+                                                const ExprTypeFn& type_expr) {
+  auto check_bound = [&](const ast::ExprPtr& bound) -> IndexExprCheck {
+    if (!bound) {
+      return {};
+    }
+    return CheckIndexUsizeExpr(ctx, bound, type_expr);
+  };
+
+  auto accept = [] {
+    IndexExprCheck result;
+    SPEC_RULE("RangeIndexExpr");
+    result.ok = true;
+    return result;
+  };
+
+  switch (range.kind) {
+    case ast::RangeKind::Full:
+      return accept();
+    case ast::RangeKind::To:
+    case ast::RangeKind::ToInclusive: {
+      const auto rhs = check_bound(range.rhs);
+      if (!rhs.ok) {
+        return rhs;
+      }
+      return accept();
+    }
+    case ast::RangeKind::From: {
+      const auto lhs = check_bound(range.lhs);
+      if (!lhs.ok) {
+        return lhs;
+      }
+      return accept();
+    }
+    case ast::RangeKind::Exclusive:
+    case ast::RangeKind::Inclusive: {
+      const auto lhs = check_bound(range.lhs);
+      if (!lhs.ok) {
+        return lhs;
+      }
+      const auto rhs = check_bound(range.rhs);
+      if (!rhs.ok) {
+        return rhs;
+      }
+      return accept();
+    }
+  }
+
+  return {};
+}
+
+static IndexExprCheck CheckRangeIndexExpr(const ScopeContext& ctx,
+                                          const ast::ExprPtr& expr,
+                                          const ExprTypeFn& type_expr) {
+  IndexExprCheck result;
+  if (!expr) {
+    return result;
+  }
+
+  if (const auto* range = std::get_if<ast::RangeExpr>(&expr->node)) {
+    return CheckDirectRangeIndexExpr(ctx, *range, type_expr);
+  }
+
+  const auto typed = type_expr(expr);
+  if (!typed.ok) {
+    result.diag_id = typed.diag_id;
+    result.diag_detail = typed.diag_detail;
+    result.diag_span =
+        typed.diag_span.has_value() ? typed.diag_span : ExprSpan(expr);
+    return result;
+  }
+  if (!::ultraviolet::analysis::IsRangeType(typed.type) ||
+      !::ultraviolet::analysis::IsRangeIndexType(typed.type)) {
+    return result;
+  }
+
+  SPEC_RULE("RangeIndexExpr");
+  result.ok = true;
+  return result;
 }
 
 // Extract permission if present
@@ -236,6 +406,8 @@ ExprTypeResult TypeIndexAccessExpr(const ScopeContext& ctx,
                                     const PlaceTypeFn& type_place,
                                     const IdentTypeFn& type_ident) {
   SpecDefsIndexAccess();
+  (void)type_place;
+  (void)type_ident;
   ExprTypeResult result;
 
   if (!expr.base || !expr.index) {
@@ -271,20 +443,15 @@ ExprTypeResult TypeIndexAccessExpr(const ScopeContext& ctx,
     return result;
   }
 
-  // 2. Check index against expected usize first (typed-context checking).
-  // This enables context-driven integer literal typing (e.g. arr[0]).
-  const auto index_check = CheckExpr(
-      ctx, expr.index, MakeTypePrim("usize"), type_expr, type_place, type_ident);
+  // 2. Check scalar index against the contextual IndexUsizeExpr relation.
+  const auto index_check = CheckIndexUsizeExpr(ctx, expr.index, type_expr);
 
-  // 3. If usize check failed, this may still be range indexing.
+  // 3. If scalar index checking failed, this may still be range indexing.
   if (!index_check.ok) {
-    const auto index_type = type_expr(expr.index);
-    if (!index_type.ok) {
-      result.diag_id = index_type.diag_id;
-      result.diag_detail = index_type.diag_detail;
-      result.diag_span = index_type.diag_span.has_value()
-                             ? index_type.diag_span
-                             : ExprSpan(expr.index);
+    if (index_check.diag_id.has_value()) {
+      result.diag_id = index_check.diag_id;
+      result.diag_detail = index_check.diag_detail;
+      result.diag_span = index_check.diag_span;
       return result;
     }
     const bool base_is_slice =
@@ -292,8 +459,14 @@ ExprTypeResult TypeIndexAccessExpr(const ScopeContext& ctx,
     const std::string_view non_usize_diag =
         base_is_slice ? "Index-Slice-NonUsize" : "Index-Array-NonUsize";
 
-    if (!::ultraviolet::analysis::IsRangeType(index_type.type) ||
-        !::ultraviolet::analysis::IsRangeIndexType(index_type.type)) {
+    const auto range_check = CheckRangeIndexExpr(ctx, expr.index, type_expr);
+    if (!range_check.ok) {
+      if (range_check.diag_id.has_value()) {
+        result.diag_id = range_check.diag_id;
+        result.diag_detail = range_check.diag_detail;
+        result.diag_span = range_check.diag_span;
+        return result;
+      }
       if (base_is_slice) {
         SPEC_RULE("Index-Slice-NonUsize");
       } else {
@@ -442,6 +615,7 @@ PlaceTypeResult TypeIndexAccessPlace(const ScopeContext& ctx,
                                       const IdentTypeFn& type_ident) {
   SpecDefsIndexAccess();
   (void)env;
+  (void)type_place;
   (void)type_ident;
   PlaceTypeResult result;
 
@@ -475,16 +649,12 @@ PlaceTypeResult TypeIndexAccessPlace(const ScopeContext& ctx,
     return result;
   }
 
-  const auto index_check = CheckExpr(
-      ctx, expr.index, MakeTypePrim("usize"), type_expr, type_place, type_ident);
+  const auto index_check = CheckIndexUsizeExpr(ctx, expr.index, type_expr);
   if (!index_check.ok) {
-    const auto index_type = type_expr(expr.index);
-    if (!index_type.ok) {
-      result.diag_id = index_type.diag_id;
-      result.diag_detail = index_type.diag_detail;
-      result.diag_span = index_type.diag_span.has_value()
-                             ? index_type.diag_span
-                             : ExprSpan(expr.index);
+    if (index_check.diag_id.has_value()) {
+      result.diag_id = index_check.diag_id;
+      result.diag_detail = index_check.diag_detail;
+      result.diag_span = index_check.diag_span;
       return result;
     }
     const bool base_is_slice =
@@ -492,8 +662,14 @@ PlaceTypeResult TypeIndexAccessPlace(const ScopeContext& ctx,
     const std::string_view non_usize_diag =
         base_is_slice ? "Index-Slice-NonUsize" : "Index-Array-NonUsize";
 
-    if (!::ultraviolet::analysis::IsRangeType(index_type.type) ||
-        !::ultraviolet::analysis::IsRangeIndexType(index_type.type)) {
+    const auto range_check = CheckRangeIndexExpr(ctx, expr.index, type_expr);
+    if (!range_check.ok) {
+      if (range_check.diag_id.has_value()) {
+        result.diag_id = range_check.diag_id;
+        result.diag_detail = range_check.diag_detail;
+        result.diag_span = range_check.diag_span;
+        return result;
+      }
       if (base_is_slice) {
         SPEC_RULE("Index-Slice-NonUsize");
       } else {

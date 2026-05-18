@@ -9,7 +9,7 @@ public procedure validatedModalAndSpecialTypesStateFieldsObligations() -> usize 
     var count: usize = 0usize
     if acceptedObligationEntryMatches(
         "grammar.StateFields.Syntax",
-        43271usize,
+        43303usize,
         "HelloUltraviolet::Reference::ModalTypes",
         "runModalTypesStateFieldsReference",
         "Source/Reference/ModalTypes/StateFields.uv"
@@ -18,7 +18,7 @@ public procedure validatedModalAndSpecialTypesStateFieldsObligations() -> usize 
     }
     if acceptedObligationEntryMatches(
         "rule.13.Parse-StateMember-Field",
-        43287usize,
+        43319usize,
         "HelloUltraviolet::Reference::ModalTypes",
         "runModalTypesStateFieldsReference",
         "Source/Reference/ModalTypes/StateFields.uv"
@@ -27,7 +27,7 @@ public procedure validatedModalAndSpecialTypesStateFieldsObligations() -> usize 
     }
     if acceptedObligationEntryMatches(
         "def.StateFieldDeclAst",
-        43305usize,
+        43337usize,
         "HelloUltraviolet::Reference::ModalTypes",
         "runModalTypesStateFieldsReference",
         "Source/Reference/ModalTypes/StateFields.uv"
@@ -36,7 +36,7 @@ public procedure validatedModalAndSpecialTypesStateFieldsObligations() -> usize 
     }
     if acceptedObligationEntryMatches(
         "def.PayloadNameHelpers",
-        43317usize,
+        43349usize,
         "HelloUltraviolet::Reference::ModalTypes",
         "runModalTypesStateFieldsReference",
         "Source/Reference/ModalTypes/StateFields.uv"
@@ -45,7 +45,7 @@ public procedure validatedModalAndSpecialTypesStateFieldsObligations() -> usize 
     }
     if acceptedObligationEntryMatches(
         "def.ModalFieldVisible",
-        43332usize,
+        43364usize,
         "HelloUltraviolet::Reference::ModalTypes",
         "runModalTypesStateFieldsReference",
         "Source/Reference/ModalTypes/StateFields.uv"
@@ -54,24 +54,6 @@ public procedure validatedModalAndSpecialTypesStateFieldsObligations() -> usize 
     }
     if acceptedObligationEntryMatches(
         "rule.13.T-Modal-Field",
-        43344usize,
-        "HelloUltraviolet::Reference::ModalTypes",
-        "runModalTypesStateFieldsReference",
-        "Source/Reference/ModalTypes/StateFields.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
-        "rule.13.T-Modal-Field-Perm",
-        43360usize,
-        "HelloUltraviolet::Reference::ModalTypes",
-        "runModalTypesStateFieldsReference",
-        "Source/Reference/ModalTypes/StateFields.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
-        "rule.13.Modal-Field-Missing",
         43376usize,
         "HelloUltraviolet::Reference::ModalTypes",
         "runModalTypesStateFieldsReference",
@@ -80,7 +62,7 @@ public procedure validatedModalAndSpecialTypesStateFieldsObligations() -> usize 
         count = count + 1usize
     }
     if acceptedObligationEntryMatches(
-        "rule.13.Modal-Field-General-Err",
+        "rule.13.T-Modal-Field-Perm",
         43392usize,
         "HelloUltraviolet::Reference::ModalTypes",
         "runModalTypesStateFieldsReference",
@@ -89,7 +71,7 @@ public procedure validatedModalAndSpecialTypesStateFieldsObligations() -> usize 
         count = count + 1usize
     }
     if acceptedObligationEntryMatches(
-        "rule.13.Modal-Field-NotVisible",
+        "rule.13.Modal-Field-Missing",
         43408usize,
         "HelloUltraviolet::Reference::ModalTypes",
         "runModalTypesStateFieldsReference",
@@ -98,8 +80,8 @@ public procedure validatedModalAndSpecialTypesStateFieldsObligations() -> usize 
         count = count + 1usize
     }
     if acceptedObligationEntryMatches(
-        "req.StateFieldDynamic",
-        43426usize,
+        "rule.13.Modal-Field-General-Err",
+        43424usize,
         "HelloUltraviolet::Reference::ModalTypes",
         "runModalTypesStateFieldsReference",
         "Source/Reference/ModalTypes/StateFields.uv"
@@ -107,7 +89,7 @@ public procedure validatedModalAndSpecialTypesStateFieldsObligations() -> usize 
         count = count + 1usize
     }
     if acceptedObligationEntryMatches(
-        "req.StateFieldLowering",
+        "rule.13.Modal-Field-NotVisible",
         43440usize,
         "HelloUltraviolet::Reference::ModalTypes",
         "runModalTypesStateFieldsReference",
@@ -116,8 +98,26 @@ public procedure validatedModalAndSpecialTypesStateFieldsObligations() -> usize 
         count = count + 1usize
     }
     if acceptedObligationEntryMatches(
+        "req.StateFieldDynamic",
+        43458usize,
+        "HelloUltraviolet::Reference::ModalTypes",
+        "runModalTypesStateFieldsReference",
+        "Source/Reference/ModalTypes/StateFields.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "req.StateFieldLowering",
+        43472usize,
+        "HelloUltraviolet::Reference::ModalTypes",
+        "runModalTypesStateFieldsReference",
+        "Source/Reference/ModalTypes/StateFields.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
         "diag.StateFields",
-        43454usize,
+        43486usize,
         "HelloUltraviolet::Reference::ModalTypes",
         "runModalTypesStateFieldsReference",
         "Source/Reference/ModalTypes/StateFields.uv"

@@ -9211,6 +9211,10 @@ IndexAccess is shared by arrays and slices. This section owns the cases where th
 
 ConstIndex(e) ⇔ ∃ n. Γ ⊢ ConstLen(e) ⇓ n
 
+IndexUsizeExpr(e) ⇔ (Γ ⊢ e : TypePrim("usize")) ∨ (e = Literal(lit) ∧ lit.kind = IntLiteral ∧ IntSuffix(lit) = ⊥ ∧ InRange(IntValue(lit), "usize"))
+
+`IndexUsizeExpr` is a contextual integer-literal checking relation for array and slice index positions. It accepts an unsuffixed integer literal that fits `usize` without changing the standalone synthesized type of that literal. It MUST NOT admit explicitly suffixed non-`usize` literals, and it MUST NOT convert non-literal expressions; non-literal index expressions must already type as `TypePrim("usize")`.
+
 **(WF-Array)**
 T = TypeArray(T_0, e)    Γ ⊢ ConstLen(e) ⇓ n    Γ ⊢ T_0 wf
 ────────────────────────────────────────────────────────
@@ -9233,47 +9237,47 @@ N = Σ_i SegLen(s_i)
 Γ ⊢ ArrayExpr([s_1, …, s_k]) : TypeArray(T, Literal(IntLiteral(N)))
 
 **(T-Index-Array)**
-Γ ⊢ e_1 : TypeArray(T, len)    Γ ⊢ e_2 : TypePrim("usize")    ConstIndex(e_2)    Γ ⊢ ConstLen(e_2) ⇓ i    Γ ⊢ ConstLen(len) ⇓ n    i < n    BitcopyType(T)
+Γ ⊢ e_1 : TypeArray(T, len)    IndexUsizeExpr(e_2)    ConstIndex(e_2)    Γ ⊢ ConstLen(e_2) ⇓ i    Γ ⊢ ConstLen(len) ⇓ n    i < n    BitcopyType(T)
 ──────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
 Γ ⊢ IndexAccess(e_1, e_2) : T
 
 **(T-Index-Array-Dynamic)**
-Γ ⊢ e_1 : TypeArray(T, len)    Γ ⊢ e_2 : TypePrim("usize")    ¬ ConstIndex(e_2)    InDynamicContext    BitcopyType(T)
+Γ ⊢ e_1 : TypeArray(T, len)    IndexUsizeExpr(e_2)    ¬ ConstIndex(e_2)    InDynamicContext    BitcopyType(T)
 ──────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
 Γ ⊢ IndexAccess(e_1, e_2) : T
 
 **(T-Index-Array-Perm)**
-Γ ⊢ e_1 : TypePerm(p, TypeArray(T, len))    Γ ⊢ e_2 : TypePrim("usize")    ConstIndex(e_2)    Γ ⊢ ConstLen(e_2) ⇓ i    Γ ⊢ ConstLen(len) ⇓ n    i < n    BitcopyType(TypePerm(p, T))
+Γ ⊢ e_1 : TypePerm(p, TypeArray(T, len))    IndexUsizeExpr(e_2)    ConstIndex(e_2)    Γ ⊢ ConstLen(e_2) ⇓ i    Γ ⊢ ConstLen(len) ⇓ n    i < n    BitcopyType(TypePerm(p, T))
 ──────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
 Γ ⊢ IndexAccess(e_1, e_2) : TypePerm(p, T)
 
 **(T-Index-Array-Perm-Dynamic)**
-Γ ⊢ e_1 : TypePerm(p, TypeArray(T, len))    Γ ⊢ e_2 : TypePrim("usize")    ¬ ConstIndex(e_2)    InDynamicContext    BitcopyType(TypePerm(p, T))
+Γ ⊢ e_1 : TypePerm(p, TypeArray(T, len))    IndexUsizeExpr(e_2)    ¬ ConstIndex(e_2)    InDynamicContext    BitcopyType(TypePerm(p, T))
 ──────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
 Γ ⊢ IndexAccess(e_1, e_2) : TypePerm(p, T)
 
 **(P-Index-Array)**
-Γ ⊢ e_1 :place TypeArray(T, len)    Γ ⊢ e_2 : TypePrim("usize")    ConstIndex(e_2)    Γ ⊢ ConstLen(e_2) ⇓ i    Γ ⊢ ConstLen(len) ⇓ n    i < n
+Γ ⊢ e_1 :place TypeArray(T, len)    IndexUsizeExpr(e_2)    ConstIndex(e_2)    Γ ⊢ ConstLen(e_2) ⇓ i    Γ ⊢ ConstLen(len) ⇓ n    i < n
 ──────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
 Γ ⊢ IndexAccess(e_1, e_2) :place T
 
 **(P-Index-Array-Perm)**
-Γ ⊢ e_1 :place TypePerm(p, TypeArray(T, len))    Γ ⊢ e_2 : TypePrim("usize")    ConstIndex(e_2)    Γ ⊢ ConstLen(e_2) ⇓ i    Γ ⊢ ConstLen(len) ⇓ n    i < n
+Γ ⊢ e_1 :place TypePerm(p, TypeArray(T, len))    IndexUsizeExpr(e_2)    ConstIndex(e_2)    Γ ⊢ ConstLen(e_2) ⇓ i    Γ ⊢ ConstLen(len) ⇓ n    i < n
 ──────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
 Γ ⊢ IndexAccess(e_1, e_2) :place TypePerm(p, T)
 
 **(P-Index-Array-Dynamic)**
-Γ ⊢ e_1 :place TypeArray(T, len)    Γ ⊢ e_2 : TypePrim("usize")    ¬ ConstIndex(e_2)    InDynamicContext
+Γ ⊢ e_1 :place TypeArray(T, len)    IndexUsizeExpr(e_2)    ¬ ConstIndex(e_2)    InDynamicContext
 ──────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
 Γ ⊢ IndexAccess(e_1, e_2) :place T
 
 **(P-Index-Array-Perm-Dynamic)**
-Γ ⊢ e_1 :place TypePerm(p, TypeArray(T, len))    Γ ⊢ e_2 : TypePrim("usize")    ¬ ConstIndex(e_2)    InDynamicContext
+Γ ⊢ e_1 :place TypePerm(p, TypeArray(T, len))    IndexUsizeExpr(e_2)    ¬ ConstIndex(e_2)    InDynamicContext
 ──────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
 Γ ⊢ IndexAccess(e_1, e_2) :place TypePerm(p, T)
 
 **(Index-Array-NonConst-Err)**
-Γ ⊢ e_1 : TypeArray(T, _)    Γ ⊢ e_2 : TypePrim("usize")    ¬ ConstIndex(e_2)    ¬ InDynamicContext    c = Code(Index-Array-NonConst-Err)
+Γ ⊢ e_1 : TypeArray(T, _)    IndexUsizeExpr(e_2)    ¬ ConstIndex(e_2)    ¬ InDynamicContext    c = Code(Index-Array-NonConst-Err)
 ──────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
 Γ ⊢ IndexAccess(e_1, e_2) ⇑ c
 
@@ -9283,7 +9287,7 @@ N = Σ_i SegLen(s_i)
 Γ ⊢ IndexAccess(e_1, e_2) ⇑ c
 
 **(Index-Array-NonUsize)**
-Γ ⊢ e_1 : TypeArray(T, _)    Γ ⊢ e_2 : T_i    T_i ≠ TypePrim("usize")    c = Code(Index-Array-NonUsize)
+Γ ⊢ e_1 : TypeArray(T, _)    ¬ IndexUsizeExpr(e_2)    c = Code(Index-Array-NonUsize)
 ────────────────────────────────────────────────────────────────────────────────────────────────
 Γ ⊢ IndexAccess(e_1, e_2) ⇑ c
 
@@ -9377,68 +9381,72 @@ TypeSlice = ⟨elem⟩ where elem ∈ Type
 
 RangeIndexType(T_r) ⇔ T_r = TypeRange(TypePrim("usize")) ∨ T_r = TypeRangeInclusive(TypePrim("usize")) ∨ T_r = TypeRangeFrom(TypePrim("usize")) ∨ T_r = TypeRangeTo(TypePrim("usize")) ∨ T_r = TypeRangeToInclusive(TypePrim("usize")) ∨ T_r = TypeRangeFull
 
+RangeIndexExpr(r) ⇔ (Γ; R; L ⊢ r : Range ∧ RangeIndexType(ExprType(r))) ∨ r = Range(`Full`, ⊥, ⊥) ∨ (r = Range(`To`, ⊥, e) ∧ IndexUsizeExpr(e)) ∨ (r = Range(`ToInclusive`, ⊥, e) ∧ IndexUsizeExpr(e)) ∨ (r = Range(`From`, e, ⊥) ∧ IndexUsizeExpr(e)) ∨ (r = Range(`Exclusive`, e_1, e_2) ∧ IndexUsizeExpr(e_1) ∧ IndexUsizeExpr(e_2)) ∨ (r = Range(`Inclusive`, e_1, e_2) ∧ IndexUsizeExpr(e_1) ∧ IndexUsizeExpr(e_2))
+
+`RangeIndexExpr` is a contextual array/slice slicing relation. It preserves already-typed `usize` range carriers and additionally accepts direct range expressions whose explicit bounds satisfy `IndexUsizeExpr`. Standalone range expressions still synthesize their ordinary range types under §12.5.4.
+
 **(WF-Slice)**
 T = TypeSlice(T_0)    Γ ⊢ T_0 wf
 ────────────────────────────────────────
 Γ ⊢ T wf
 
 **(T-Index-Slice)**
-Γ ⊢ e_1 : TypeSlice(T)    Γ ⊢ e_2 : TypePrim("usize")    BitcopyType(T)
+Γ ⊢ e_1 : TypeSlice(T)    IndexUsizeExpr(e_2)    BitcopyType(T)
 ──────────────────────────────────────────────────────────────────────────────
 Γ ⊢ IndexAccess(e_1, e_2) : T
 
 **(T-Index-Slice-Perm)**
-Γ ⊢ e_1 : TypePerm(p, TypeSlice(T))    Γ ⊢ e_2 : TypePrim("usize")    BitcopyType(TypePerm(p, T))
+Γ ⊢ e_1 : TypePerm(p, TypeSlice(T))    IndexUsizeExpr(e_2)    BitcopyType(TypePerm(p, T))
 ──────────────────────────────────────────────────────────────────────────────
 Γ ⊢ IndexAccess(e_1, e_2) : TypePerm(p, T)
 
 **(T-Slice-From-Array)**
-Γ ⊢ e_1 : TypeArray(T, n)    Γ; R; L ⊢ e_2 : Range    RangeIndexType(ExprType(e_2))    BitcopyType(TypeSlice(T))
+Γ ⊢ e_1 : TypeArray(T, n)    RangeIndexExpr(e_2)    BitcopyType(TypeSlice(T))
 ──────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
 Γ ⊢ IndexAccess(e_1, e_2) : TypeSlice(T)
 
 **(T-Slice-From-Array-Perm)**
-Γ ⊢ e_1 : TypePerm(p, TypeArray(T, n))    Γ; R; L ⊢ e_2 : Range    RangeIndexType(ExprType(e_2))    BitcopyType(TypePerm(p, TypeSlice(T)))
+Γ ⊢ e_1 : TypePerm(p, TypeArray(T, n))    RangeIndexExpr(e_2)    BitcopyType(TypePerm(p, TypeSlice(T)))
 ────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
 Γ ⊢ IndexAccess(e_1, e_2) : TypePerm(p, TypeSlice(T))
 
 **(T-Slice-From-Slice)**
-Γ ⊢ e_1 : TypeSlice(T)    Γ; R; L ⊢ e_2 : Range    RangeIndexType(ExprType(e_2))    BitcopyType(TypeSlice(T))
+Γ ⊢ e_1 : TypeSlice(T)    RangeIndexExpr(e_2)    BitcopyType(TypeSlice(T))
 ──────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
 Γ ⊢ IndexAccess(e_1, e_2) : TypeSlice(T)
 
 **(T-Slice-From-Slice-Perm)**
-Γ ⊢ e_1 : TypePerm(p, TypeSlice(T))    Γ; R; L ⊢ e_2 : Range    RangeIndexType(ExprType(e_2))    BitcopyType(TypePerm(p, TypeSlice(T)))
+Γ ⊢ e_1 : TypePerm(p, TypeSlice(T))    RangeIndexExpr(e_2)    BitcopyType(TypePerm(p, TypeSlice(T)))
 ────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
 Γ ⊢ IndexAccess(e_1, e_2) : TypePerm(p, TypeSlice(T))
 
 **(P-Index-Slice)**
-Γ ⊢ e_1 :place TypeSlice(T)    Γ ⊢ e_2 : TypePrim("usize")
+Γ ⊢ e_1 :place TypeSlice(T)    IndexUsizeExpr(e_2)
 ──────────────────────────────────────────────────────────────────────────────
 Γ ⊢ IndexAccess(e_1, e_2) :place T
 
 **(P-Index-Slice-Perm)**
-Γ ⊢ e_1 :place TypePerm(p, TypeSlice(T))    Γ ⊢ e_2 : TypePrim("usize")
+Γ ⊢ e_1 :place TypePerm(p, TypeSlice(T))    IndexUsizeExpr(e_2)
 ──────────────────────────────────────────────────────────────────────────────
 Γ ⊢ IndexAccess(e_1, e_2) :place TypePerm(p, T)
 
 **(P-Slice-From-Array)**
-Γ ⊢ e_1 :place TypeArray(T, n)    Γ; R; L ⊢ e_2 : Range    RangeIndexType(ExprType(e_2))
+Γ ⊢ e_1 :place TypeArray(T, n)    RangeIndexExpr(e_2)
 ──────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
 Γ ⊢ IndexAccess(e_1, e_2) :place TypeSlice(T)
 
 **(P-Slice-From-Array-Perm)**
-Γ ⊢ e_1 :place TypePerm(p, TypeArray(T, n))    Γ; R; L ⊢ e_2 : Range    RangeIndexType(ExprType(e_2))
+Γ ⊢ e_1 :place TypePerm(p, TypeArray(T, n))    RangeIndexExpr(e_2)
 ────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
 Γ ⊢ IndexAccess(e_1, e_2) :place TypePerm(p, TypeSlice(T))
 
 **(P-Slice-From-Slice)**
-Γ ⊢ e_1 :place TypeSlice(T)    Γ; R; L ⊢ e_2 : Range    RangeIndexType(ExprType(e_2))
+Γ ⊢ e_1 :place TypeSlice(T)    RangeIndexExpr(e_2)
 ──────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
 Γ ⊢ IndexAccess(e_1, e_2) :place TypeSlice(T)
 
 **(P-Slice-From-Slice-Perm)**
-Γ ⊢ e_1 :place TypePerm(p, TypeSlice(T))    Γ; R; L ⊢ e_2 : Range    RangeIndexType(ExprType(e_2))
+Γ ⊢ e_1 :place TypePerm(p, TypeSlice(T))    RangeIndexExpr(e_2)
 ──────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
 Γ ⊢ IndexAccess(e_1, e_2) :place TypePerm(p, TypeSlice(T))
 
@@ -9490,7 +9498,7 @@ IndexUpdate(SliceValue(v_b, r), i, v_e) = SliceValue(v_b', r)    (SliceBounds(r,
 #### 12.4.7 Diagnostics
 
 **(Index-Slice-NonUsize)**
-Γ ⊢ e_1 : T_b    StripPerm(T_b) = TypeSlice(T)    Γ ⊢ e_2 : T_i    T_i ≠ TypePrim("usize")    c = Code(Index-Slice-NonUsize)
+Γ ⊢ e_1 : T_b    StripPerm(T_b) = TypeSlice(T)    ¬ IndexUsizeExpr(e_2)    c = Code(Index-Slice-NonUsize)
 ────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
 Γ ⊢ IndexAccess(e_1, e_2) ⇑ c
 
@@ -15995,52 +16003,52 @@ RangeIndexType(T_r) ⇔ T_r = TypeRange(TypePrim(`usize`)) ∨ T_r = TypeRangeIn
 Γ ⊢ TupleAccess(e, i) :place TypePerm(p, T_i)
 
 **(T-Index-Array)**
-Γ ⊢ e_1 : TypeArray(T, len)    Γ ⊢ e_2 : TypePrim(`usize`)    ConstIndex(e_2)    Γ ⊢ ConstLen(e_2) ⇓ i    Γ ⊢ ConstLen(len) ⇓ n    i < n    BitcopyType(T)
+Γ ⊢ e_1 : TypeArray(T, len)    IndexUsizeExpr(e_2)    ConstIndex(e_2)    Γ ⊢ ConstLen(e_2) ⇓ i    Γ ⊢ ConstLen(len) ⇓ n    i < n    BitcopyType(T)
 ──────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
 Γ ⊢ IndexAccess(e_1, e_2) : T
 
 **(T-Index-Array-Dynamic)**
-Γ ⊢ e_1 : TypeArray(T, len)    Γ ⊢ e_2 : TypePrim(`usize`)    ¬ ConstIndex(e_2)    InDynamicContext    BitcopyType(T)
+Γ ⊢ e_1 : TypeArray(T, len)    IndexUsizeExpr(e_2)    ¬ ConstIndex(e_2)    InDynamicContext    BitcopyType(T)
 ──────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
 Γ ⊢ IndexAccess(e_1, e_2) : T
 
 **(T-Index-Array-Perm)**
-Γ ⊢ e_1 : TypePerm(p, TypeArray(T, len))    Γ ⊢ e_2 : TypePrim(`usize`)    ConstIndex(e_2)    Γ ⊢ ConstLen(e_2) ⇓ i    Γ ⊢ ConstLen(len) ⇓ n    i < n    BitcopyType(TypePerm(p, T))
+Γ ⊢ e_1 : TypePerm(p, TypeArray(T, len))    IndexUsizeExpr(e_2)    ConstIndex(e_2)    Γ ⊢ ConstLen(e_2) ⇓ i    Γ ⊢ ConstLen(len) ⇓ n    i < n    BitcopyType(TypePerm(p, T))
 ──────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
 Γ ⊢ IndexAccess(e_1, e_2) : TypePerm(p, T)
 
 **(T-Index-Array-Perm-Dynamic)**
-Γ ⊢ e_1 : TypePerm(p, TypeArray(T, len))    Γ ⊢ e_2 : TypePrim(`usize`)    ¬ ConstIndex(e_2)    InDynamicContext    BitcopyType(TypePerm(p, T))
+Γ ⊢ e_1 : TypePerm(p, TypeArray(T, len))    IndexUsizeExpr(e_2)    ¬ ConstIndex(e_2)    InDynamicContext    BitcopyType(TypePerm(p, T))
 ──────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
 Γ ⊢ IndexAccess(e_1, e_2) : TypePerm(p, T)
 
 **(T-Index-Slice)**
-Γ ⊢ e_1 : TypeSlice(T)    Γ ⊢ e_2 : TypePrim(`usize`)    BitcopyType(T)
+Γ ⊢ e_1 : TypeSlice(T)    IndexUsizeExpr(e_2)    BitcopyType(T)
 ──────────────────────────────────────────────────────────────────────────────
 Γ ⊢ IndexAccess(e_1, e_2) : T
 
 **(T-Index-Slice-Perm)**
-Γ ⊢ e_1 : TypePerm(p, TypeSlice(T))    Γ ⊢ e_2 : TypePrim(`usize`)    BitcopyType(TypePerm(p, T))
+Γ ⊢ e_1 : TypePerm(p, TypeSlice(T))    IndexUsizeExpr(e_2)    BitcopyType(TypePerm(p, T))
 ──────────────────────────────────────────────────────────────────────────────
 Γ ⊢ IndexAccess(e_1, e_2) : TypePerm(p, T)
 
 **(T-Slice-From-Array)**
-Γ ⊢ e_1 : TypeArray(T, n)    Γ; R; L ⊢ e_2 : Range    RangeIndexType(ExprType(e_2))    BitcopyType(TypeSlice(T))
+Γ ⊢ e_1 : TypeArray(T, n)    RangeIndexExpr(e_2)    BitcopyType(TypeSlice(T))
 ──────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
 Γ ⊢ IndexAccess(e_1, e_2) : TypeSlice(T)
 
 **(T-Slice-From-Array-Perm)**
-Γ ⊢ e_1 : TypePerm(p, TypeArray(T, n))    Γ; R; L ⊢ e_2 : Range    RangeIndexType(ExprType(e_2))    BitcopyType(TypePerm(p, TypeSlice(T)))
+Γ ⊢ e_1 : TypePerm(p, TypeArray(T, n))    RangeIndexExpr(e_2)    BitcopyType(TypePerm(p, TypeSlice(T)))
 ────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
 Γ ⊢ IndexAccess(e_1, e_2) : TypePerm(p, TypeSlice(T))
 
 **(T-Slice-From-Slice)**
-Γ ⊢ e_1 : TypeSlice(T)    Γ; R; L ⊢ e_2 : Range    RangeIndexType(ExprType(e_2))    BitcopyType(TypeSlice(T))
+Γ ⊢ e_1 : TypeSlice(T)    RangeIndexExpr(e_2)    BitcopyType(TypeSlice(T))
 ──────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
 Γ ⊢ IndexAccess(e_1, e_2) : TypeSlice(T)
 
 **(T-Slice-From-Slice-Perm)**
-Γ ⊢ e_1 : TypePerm(p, TypeSlice(T))    Γ; R; L ⊢ e_2 : Range    RangeIndexType(ExprType(e_2))    BitcopyType(TypePerm(p, TypeSlice(T)))
+Γ ⊢ e_1 : TypePerm(p, TypeSlice(T))    RangeIndexExpr(e_2)    BitcopyType(TypePerm(p, TypeSlice(T)))
 ────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
 Γ ⊢ IndexAccess(e_1, e_2) : TypePerm(p, TypeSlice(T))
 
@@ -16131,7 +16139,7 @@ Bounds failures in scalar and range indexing evaluate to `Ctrl(Panic)` as define
 
 Diagnostics are defined for unknown or inaccessible record fields, tuple indexing on non-tuples, non-constant tuple indices, tuple index out of bounds, non-`usize` array indices, non-constant array indices outside dynamic-checking contexts, out-of-bounds array and slice access, indexing non-indexable values, direct field access on unions, and value-copy use of non-`Bitcopy` places.
 
-Scalar indexing of arrays and slices is governed by the `TypePrim(`usize`)` requirement in §12.4.4. The corresponding non-`usize` diagnostics are `Index-Array-NonUsize` and `Index-Slice-NonUsize`. Scalar out-of-bounds access and range out-of-bounds slicing lower to panic through `EvalSigma-Index-OOB` and `EvalSigma-Index-Range-OOB`.
+Scalar indexing of arrays and slices is governed by `IndexUsizeExpr` from §12.3.4, which contextually checks direct unsuffixed integer literals as `usize` while requiring non-literal expressions to already type as `usize`. Array/slice range indexing is governed by `RangeIndexExpr` from §12.4.4. The corresponding non-`usize` diagnostics are `Index-Array-NonUsize` and `Index-Slice-NonUsize`. Scalar out-of-bounds access and range out-of-bounds slicing lower to panic through `EvalSigma-Index-OOB` and `EvalSigma-Index-Range-OOB`.
 
 ### 16.3 Call Expressions
 

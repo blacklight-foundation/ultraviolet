@@ -9,24 +9,6 @@ public procedure validatedCompileTimeExecutionAndMetaprogrammingDeriveTargetsAnd
     var count: usize = 0usize
     if acceptedObligationEntryMatches(
         "grammar.22.DeriveTargetsAndContracts",
-        85958usize,
-        "HelloUltraviolet::Reference::Comptime",
-        "runComptimeDeriveTargetsReference",
-        "Source/Reference/Comptime/DeriveTargets.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
-        "def.22.DeriveParseJudg",
-        85979usize,
-        "HelloUltraviolet::Reference::Comptime",
-        "runComptimeDeriveTargetsReference",
-        "Source/Reference/Comptime/DeriveTargets.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
-        "requirement.22.DeriveAttributeParsingReference",
         85992usize,
         "HelloUltraviolet::Reference::Comptime",
         "runComptimeDeriveTargetsReference",
@@ -35,8 +17,26 @@ public procedure validatedCompileTimeExecutionAndMetaprogrammingDeriveTargetsAnd
         count = count + 1usize
     }
     if acceptedObligationEntryMatches(
+        "def.22.DeriveParseJudg",
+        86013usize,
+        "HelloUltraviolet::Reference::Comptime",
+        "runComptimeDeriveTargetsReference",
+        "Source/Reference/Comptime/DeriveTargets.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "requirement.22.DeriveAttributeParsingReference",
+        86026usize,
+        "HelloUltraviolet::Reference::Comptime",
+        "runComptimeDeriveTargetsReference",
+        "Source/Reference/Comptime/DeriveTargets.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
         "rule.22.Parse-DeriveTargetDecl",
-        86005usize,
+        86039usize,
         "HelloUltraviolet::Reference::Comptime",
         "runComptimeDeriveTargetsReference",
         "Source/Reference/Comptime/DeriveTargets.uv"
@@ -45,7 +45,7 @@ public procedure validatedCompileTimeExecutionAndMetaprogrammingDeriveTargetsAnd
     }
     if acceptedObligationEntryMatches(
         "rule.22.Parse-DeriveContractOpt-None",
-        86021usize,
+        86055usize,
         "HelloUltraviolet::Reference::Comptime",
         "runComptimeDeriveTargetsReference",
         "Source/Reference/Comptime/DeriveTargets.uv"
@@ -54,7 +54,7 @@ public procedure validatedCompileTimeExecutionAndMetaprogrammingDeriveTargetsAnd
     }
     if acceptedObligationEntryMatches(
         "rule.22.Parse-DeriveContractOpt-Yes",
-        86037usize,
+        86071usize,
         "HelloUltraviolet::Reference::Comptime",
         "runComptimeDeriveTargetsReference",
         "Source/Reference/Comptime/DeriveTargets.uv"
@@ -63,7 +63,7 @@ public procedure validatedCompileTimeExecutionAndMetaprogrammingDeriveTargetsAnd
     }
     if acceptedObligationEntryMatches(
         "rule.22.Parse-DeriveClauseList-Cons",
-        86053usize,
+        86087usize,
         "HelloUltraviolet::Reference::Comptime",
         "runComptimeDeriveTargetsReference",
         "Source/Reference/Comptime/DeriveTargets.uv"
@@ -72,7 +72,7 @@ public procedure validatedCompileTimeExecutionAndMetaprogrammingDeriveTargetsAnd
     }
     if acceptedObligationEntryMatches(
         "rule.22.Parse-DeriveClause-Requires",
-        86069usize,
+        86103usize,
         "HelloUltraviolet::Reference::Comptime",
         "runComptimeDeriveTargetsReference",
         "Source/Reference/Comptime/DeriveTargets.uv"
@@ -81,7 +81,7 @@ public procedure validatedCompileTimeExecutionAndMetaprogrammingDeriveTargetsAnd
     }
     if acceptedObligationEntryMatches(
         "rule.22.Parse-DeriveClause-Emits",
-        86085usize,
+        86119usize,
         "HelloUltraviolet::Reference::Comptime",
         "runComptimeDeriveTargetsReference",
         "Source/Reference/Comptime/DeriveTargets.uv"
@@ -90,24 +90,6 @@ public procedure validatedCompileTimeExecutionAndMetaprogrammingDeriveTargetsAnd
     }
     if acceptedObligationEntryMatches(
         "rule.22.Parse-DeriveClauseTail-End",
-        86101usize,
-        "HelloUltraviolet::Reference::Comptime",
-        "runComptimeDeriveTargetsReference",
-        "Source/Reference/Comptime/DeriveTargets.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
-        "rule.22.Parse-DeriveClauseTail-Comma",
-        86117usize,
-        "HelloUltraviolet::Reference::Comptime",
-        "runComptimeDeriveTargetsReference",
-        "Source/Reference/Comptime/DeriveTargets.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
-        "def.22.DeriveTargetDecl",
         86135usize,
         "HelloUltraviolet::Reference::Comptime",
         "runComptimeDeriveTargetsReference",
@@ -116,8 +98,26 @@ public procedure validatedCompileTimeExecutionAndMetaprogrammingDeriveTargetsAnd
         count = count + 1usize
     }
     if acceptedObligationEntryMatches(
+        "rule.22.Parse-DeriveClauseTail-Comma",
+        86151usize,
+        "HelloUltraviolet::Reference::Comptime",
+        "runComptimeDeriveTargetsReference",
+        "Source/Reference/Comptime/DeriveTargets.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "def.22.DeriveTargetDecl",
+        86169usize,
+        "HelloUltraviolet::Reference::Comptime",
+        "runComptimeDeriveTargetsReference",
+        "Source/Reference/Comptime/DeriveTargets.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
         "def.22.DeriveGraphAndOrder",
-        86150usize,
+        86184usize,
         "HelloUltraviolet::Reference::Comptime",
         "runComptimeDeriveTargetsReference",
         "Source/Reference/Comptime/DeriveTargets.uv"
@@ -126,7 +126,7 @@ public procedure validatedCompileTimeExecutionAndMetaprogrammingDeriveTargetsAnd
     }
     if rejectedSourceObligationEntryMatches(
         "requirement.22.DeriveAttributeTargetKinds",
-        86174usize,
+        86208usize,
         "HelloUltraviolet::Audit::FixtureCatalog::RejectedSource",
         "validatedComptimeRejectedSourceFixtureCount",
         "Fixtures/RejectedSource/Comptime/DeriveOnProcedure/Source/Main.uv"
@@ -135,7 +135,7 @@ public procedure validatedCompileTimeExecutionAndMetaprogrammingDeriveTargetsAnd
     }
     if rejectedSourceObligationEntryMatches(
         "requirement.22.DeriveTargetNameResolution",
-        86187usize,
+        86221usize,
         "HelloUltraviolet::Audit::FixtureCatalog::RejectedSource",
         "validatedComptimeRejectedSourceFixtureCount",
         "Fixtures/RejectedSource/Comptime/UnknownDeriveTarget/Source/Main.uv"
@@ -144,7 +144,7 @@ public procedure validatedCompileTimeExecutionAndMetaprogrammingDeriveTargetsAnd
     }
     if acceptedObligationEntryMatches(
         "requirement.22.DeriveTargetBodyBindings",
-        86200usize,
+        86234usize,
         "HelloUltraviolet::Reference::Comptime",
         "runComptimeDeriveTargetsReference",
         "Source/Reference/Comptime/DeriveTargets.uv"
@@ -153,7 +153,7 @@ public procedure validatedCompileTimeExecutionAndMetaprogrammingDeriveTargetsAnd
     }
     if rejectedSourceObligationEntryMatches(
         "requirement.22.DeriveTargetBodyRestrictions",
-        86217usize,
+        86251usize,
         "HelloUltraviolet::Audit::FixtureCatalog::RejectedSource",
         "validatedComptimeRejectedSourceFixtureCount",
         "Fixtures/RejectedSource/Comptime/DeriveTargetProhibitedWait/Source/Main.uv"
@@ -162,7 +162,7 @@ public procedure validatedCompileTimeExecutionAndMetaprogrammingDeriveTargetsAnd
     }
     if acceptedObligationEntryMatches(
         "requirement.22.DeriveExecutionOrder",
-        86230usize,
+        86264usize,
         "HelloUltraviolet::Reference::Comptime",
         "runComptimeDeriveTargetsReference",
         "Source/Reference/Comptime/DeriveTargets.uv"
@@ -171,7 +171,7 @@ public procedure validatedCompileTimeExecutionAndMetaprogrammingDeriveTargetsAnd
     }
     if acceptedObligationEntryMatches(
         "requirement.22.DeriveOrderTieBreaker",
-        86245usize,
+        86279usize,
         "HelloUltraviolet::Reference::Comptime",
         "runComptimeDeriveTargetsReference",
         "Source/Reference/Comptime/DeriveTargets.uv"
@@ -180,7 +180,7 @@ public procedure validatedCompileTimeExecutionAndMetaprogrammingDeriveTargetsAnd
     }
     if rejectedSourceObligationEntryMatches(
         "requirement.22.DeriveRequiresValidation",
-        86258usize,
+        86292usize,
         "HelloUltraviolet::Audit::FixtureCatalog::RejectedSource",
         "validatedComptimeRejectedSourceFixtureCount",
         "Fixtures/RejectedSource/Comptime/DeriveMissingRequiredClass/Source/Main.uv"
@@ -189,7 +189,7 @@ public procedure validatedCompileTimeExecutionAndMetaprogrammingDeriveTargetsAnd
     }
     if rejectedSourceObligationEntryMatches(
         "requirement.22.DeriveEmitsValidation",
-        86271usize,
+        86305usize,
         "HelloUltraviolet::Audit::FixtureCatalog::RejectedSource",
         "validatedComptimeRejectedSourceFixtureCount",
         "Fixtures/RejectedSource/Comptime/DeriveMissingEmittedClass/Source/Main.uv"
@@ -198,7 +198,7 @@ public procedure validatedCompileTimeExecutionAndMetaprogrammingDeriveTargetsAnd
     }
     if acceptedObligationEntryMatches(
         "requirement.22.DeriveRequiresEmitsScope",
-        86284usize,
+        86318usize,
         "HelloUltraviolet::Reference::Comptime",
         "runComptimeDeriveTargetsReference",
         "Source/Reference/Comptime/DeriveTargets.uv"
@@ -207,7 +207,7 @@ public procedure validatedCompileTimeExecutionAndMetaprogrammingDeriveTargetsAnd
     }
     if acceptedObligationEntryMatches(
         "requirement.22.DeriveTargetDeclPhase2Lifetime",
-        86299usize,
+        86333usize,
         "HelloUltraviolet::Reference::Comptime",
         "runComptimeDeriveTargetsReference",
         "Source/Reference/Comptime/DeriveTargets.uv"
@@ -216,7 +216,7 @@ public procedure validatedCompileTimeExecutionAndMetaprogrammingDeriveTargetsAnd
     }
     if acceptedObligationEntryMatches(
         "rule.22.CtExpandItem-DeriveTargetDecl",
-        86312usize,
+        86346usize,
         "HelloUltraviolet::Reference::Comptime",
         "runComptimeDeriveTargetsReference",
         "Source/Reference/Comptime/DeriveTargets.uv"
@@ -225,7 +225,7 @@ public procedure validatedCompileTimeExecutionAndMetaprogrammingDeriveTargetsAnd
     }
     if acceptedObligationEntryMatches(
         "rule.22.RunDeriveSet-Empty",
-        86328usize,
+        86362usize,
         "HelloUltraviolet::Reference::Comptime",
         "runComptimeDeriveTargetsReference",
         "Source/Reference/Comptime/DeriveTargets.uv"
@@ -234,7 +234,7 @@ public procedure validatedCompileTimeExecutionAndMetaprogrammingDeriveTargetsAnd
     }
     if acceptedObligationEntryMatches(
         "rule.22.RunDeriveSet-Cons",
-        86343usize,
+        86377usize,
         "HelloUltraviolet::Reference::Comptime",
         "runComptimeDeriveTargetsReference",
         "Source/Reference/Comptime/DeriveTargets.uv"
@@ -243,7 +243,7 @@ public procedure validatedCompileTimeExecutionAndMetaprogrammingDeriveTargetsAnd
     }
     if acceptedObligationEntryMatches(
         "rule.22.RunDeriveTarget",
-        86359usize,
+        86393usize,
         "HelloUltraviolet::Reference::Comptime",
         "runComptimeDeriveTargetsReference",
         "Source/Reference/Comptime/DeriveTargets.uv"
@@ -252,7 +252,7 @@ public procedure validatedCompileTimeExecutionAndMetaprogrammingDeriveTargetsAnd
     }
     if acceptedObligationEntryMatches(
         "def.22.BindDeriveTargetInputs",
-        86375usize,
+        86409usize,
         "HelloUltraviolet::Reference::Comptime",
         "runComptimeDeriveTargetsReference",
         "Source/Reference/Comptime/DeriveTargets.uv"
@@ -261,7 +261,7 @@ public procedure validatedCompileTimeExecutionAndMetaprogrammingDeriveTargetsAnd
     }
     if acceptedObligationEntryMatches(
         "rule.22.CtExpandItem-DeriveAnnotatedDecl",
-        86388usize,
+        86422usize,
         "HelloUltraviolet::Reference::Comptime",
         "runComptimeDeriveTargetsReference",
         "Source/Reference/Comptime/DeriveTargets.uv"
@@ -270,7 +270,7 @@ public procedure validatedCompileTimeExecutionAndMetaprogrammingDeriveTargetsAnd
     }
     if acceptedObligationEntryMatches(
         "requirement.22.DeriveTargetExecutionTiming",
-        86404usize,
+        86438usize,
         "HelloUltraviolet::Reference::Comptime",
         "runComptimeDeriveTargetsReference",
         "Source/Reference/Comptime/DeriveTargets.uv"
@@ -279,7 +279,7 @@ public procedure validatedCompileTimeExecutionAndMetaprogrammingDeriveTargetsAnd
     }
     if rejectedSourceObligationEntryMatches(
         "requirement.22.DeriveTargetFailureSemantics",
-        86417usize,
+        86451usize,
         "HelloUltraviolet::Audit::FixtureCatalog::RejectedSource",
         "validatedComptimeRejectedSourceFixtureCount",
         "Fixtures/RejectedSource/Comptime/DeriveTargetUserError/Source/Main.uv"
@@ -288,7 +288,7 @@ public procedure validatedCompileTimeExecutionAndMetaprogrammingDeriveTargetsAnd
     }
     if acceptedObligationEntryMatches(
         "requirement.22.DeriveTargetsLowering",
-        86432usize,
+        86466usize,
         "HelloUltraviolet::Reference::Comptime",
         "runComptimeDeriveTargetsReference",
         "Source/Reference/Comptime/DeriveTargets.uv"
@@ -297,7 +297,7 @@ public procedure validatedCompileTimeExecutionAndMetaprogrammingDeriveTargetsAnd
     }
     if rejectedSourceObligationEntryMatches(
         "diagnostics.22.DeriveTargetsDiagnosticsReference",
-        86447usize,
+        86481usize,
         "HelloUltraviolet::Audit::FixtureCatalog::RejectedSource",
         "validatedComptimeRejectedSourceFixtureCount",
         "Fixtures/RejectedSource/Comptime/DeriveOnProcedure/Source/Main.uv"

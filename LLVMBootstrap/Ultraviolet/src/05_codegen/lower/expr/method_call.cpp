@@ -22,6 +22,7 @@
 #include "05_codegen/intrinsics/builtins.h"
 #include "05_codegen/intrinsics/intrinsics_interface.h"
 #include "05_codegen/lower/expr/call.h"
+#include "05_codegen/lower/expr/closure_expr.h"
 #include "05_codegen/lower/expr/expr_common.h"
 #include "05_codegen/lower/expr/move_expr.h"
 #include "05_codegen/lower/lower_module.h"
@@ -571,8 +572,10 @@ analysis::TypeRef ReceiverSemanticType(const ast::ExprPtr& receiver,
 
 analysis::TypeRef ReceiverDispatchType(const ast::ExprPtr& receiver,
                                        const LowerCtx& ctx) {
-    analysis::TypeRef binding_type = ReceiverBindingType(receiver, ctx);
-    analysis::TypeRef semantic_type = ReceiverSemanticType(receiver, ctx);
+    analysis::TypeRef binding_type =
+        NormalizeCallableAliasForLowering(ReceiverBindingType(receiver, ctx), ctx);
+    analysis::TypeRef semantic_type =
+        NormalizeCallableAliasForLowering(ReceiverSemanticType(receiver, ctx), ctx);
 
     if (ModalStateInfo(semantic_type)) {
         return semantic_type;

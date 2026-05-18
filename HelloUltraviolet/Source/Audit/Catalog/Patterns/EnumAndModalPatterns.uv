@@ -9,7 +9,7 @@ public procedure validatedPatternsEnumAndModalPatternsObligations() -> usize {
     var count: usize = 0usize
     if acceptedObligationEntryMatches(
         "grammar.17.EnumModalPatterns",
-        66275usize,
+        66309usize,
         "HelloUltraviolet::Reference::Patterns",
         "runPatternsEnumModalPatternsReference",
         "Source/Reference/Patterns/EnumModalPatterns.uv"
@@ -18,7 +18,7 @@ public procedure validatedPatternsEnumAndModalPatternsObligations() -> usize {
     }
     if acceptedObligationEntryMatches(
         "req.17.EnumPayloadSingleElementTuple",
-        66293usize,
+        66327usize,
         "HelloUltraviolet::Reference::Patterns",
         "runPatternsEnumModalPatternsReference",
         "Source/Reference/Patterns/EnumModalPatterns.uv"
@@ -27,7 +27,7 @@ public procedure validatedPatternsEnumAndModalPatternsObligations() -> usize {
     }
     if acceptedObligationEntryMatches(
         "rule.17.Parse-Pattern-Enum",
-        66308usize,
+        66342usize,
         "HelloUltraviolet::Reference::Patterns",
         "runPatternsEnumModalPatternsReference",
         "Source/Reference/Patterns/EnumModalPatterns.uv"
@@ -36,7 +36,7 @@ public procedure validatedPatternsEnumAndModalPatternsObligations() -> usize {
     }
     if acceptedObligationEntryMatches(
         "rule.17.Parse-Pattern-Modal",
-        66330usize,
+        66364usize,
         "HelloUltraviolet::Reference::Patterns",
         "runPatternsEnumModalPatternsReference",
         "Source/Reference/Patterns/EnumModalPatterns.uv"
@@ -45,7 +45,7 @@ public procedure validatedPatternsEnumAndModalPatternsObligations() -> usize {
     }
     if acceptedObligationEntryMatches(
         "rule.17.Parse-EnumPatternPayloadOpt-None",
-        66346usize,
+        66380usize,
         "HelloUltraviolet::Reference::Patterns",
         "runPatternsEnumModalPatternsReference",
         "Source/Reference/Patterns/EnumModalPatterns.uv"
@@ -54,7 +54,7 @@ public procedure validatedPatternsEnumAndModalPatternsObligations() -> usize {
     }
     if acceptedObligationEntryMatches(
         "rule.17.Parse-EnumPayloadPatternElems-Empty",
-        66362usize,
+        66396usize,
         "HelloUltraviolet::Reference::Patterns",
         "runPatternsEnumModalPatternsReference",
         "Source/Reference/Patterns/EnumModalPatterns.uv"
@@ -63,7 +63,7 @@ public procedure validatedPatternsEnumAndModalPatternsObligations() -> usize {
     }
     if acceptedObligationEntryMatches(
         "rule.17.Parse-EnumPayloadPatternElems-One",
-        66378usize,
+        66412usize,
         "HelloUltraviolet::Reference::Patterns",
         "runPatternsEnumModalPatternsReference",
         "Source/Reference/Patterns/EnumModalPatterns.uv"
@@ -72,7 +72,7 @@ public procedure validatedPatternsEnumAndModalPatternsObligations() -> usize {
     }
     if acceptedObligationEntryMatches(
         "rule.17.Parse-EnumPayloadPatternElems-TrailingComma",
-        66394usize,
+        66428usize,
         "HelloUltraviolet::Reference::Patterns",
         "runPatternsEnumModalPatternsReference",
         "Source/Reference/Patterns/EnumModalPatterns.uv"
@@ -81,7 +81,7 @@ public procedure validatedPatternsEnumAndModalPatternsObligations() -> usize {
     }
     if acceptedObligationEntryMatches(
         "rule.17.Parse-EnumPayloadPatternElems-Many",
-        66410usize,
+        66444usize,
         "HelloUltraviolet::Reference::Patterns",
         "runPatternsEnumModalPatternsReference",
         "Source/Reference/Patterns/EnumModalPatterns.uv"
@@ -90,7 +90,7 @@ public procedure validatedPatternsEnumAndModalPatternsObligations() -> usize {
     }
     if acceptedObligationEntryMatches(
         "rule.17.Parse-EnumPatternPayloadOpt-Tuple",
-        66426usize,
+        66460usize,
         "HelloUltraviolet::Reference::Patterns",
         "runPatternsEnumModalPatternsReference",
         "Source/Reference/Patterns/EnumModalPatterns.uv"
@@ -99,7 +99,7 @@ public procedure validatedPatternsEnumAndModalPatternsObligations() -> usize {
     }
     if acceptedObligationEntryMatches(
         "rule.17.Parse-EnumPatternPayloadOpt-Record",
-        66442usize,
+        66476usize,
         "HelloUltraviolet::Reference::Patterns",
         "runPatternsEnumModalPatternsReference",
         "Source/Reference/Patterns/EnumModalPatterns.uv"
@@ -108,24 +108,6 @@ public procedure validatedPatternsEnumAndModalPatternsObligations() -> usize {
     }
     if acceptedObligationEntryMatches(
         "rule.17.Parse-ModalPatternPayloadOpt-None",
-        66458usize,
-        "HelloUltraviolet::Reference::Patterns",
-        "runPatternsEnumModalPatternsReference",
-        "Source/Reference/Patterns/EnumModalPatterns.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
-        "rule.17.Parse-ModalPatternPayloadOpt-Record",
-        66474usize,
-        "HelloUltraviolet::Reference::Patterns",
-        "runPatternsEnumModalPatternsReference",
-        "Source/Reference/Patterns/EnumModalPatterns.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
-        "def.17.EnumModalPayloadPatterns",
         66492usize,
         "HelloUltraviolet::Reference::Patterns",
         "runPatternsEnumModalPatternsReference",
@@ -134,8 +116,26 @@ public procedure validatedPatternsEnumAndModalPatternsObligations() -> usize {
         count = count + 1usize
     }
     if acceptedObligationEntryMatches(
+        "rule.17.Parse-ModalPatternPayloadOpt-Record",
+        66508usize,
+        "HelloUltraviolet::Reference::Patterns",
+        "runPatternsEnumModalPatternsReference",
+        "Source/Reference/Patterns/EnumModalPatterns.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "def.17.EnumModalPayloadPatterns",
+        66526usize,
+        "HelloUltraviolet::Reference::Patterns",
+        "runPatternsEnumModalPatternsReference",
+        "Source/Reference/Patterns/EnumModalPatterns.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
         "rule.17.Pat-Enum-None",
-        66506usize,
+        66540usize,
         "HelloUltraviolet::Reference::Patterns",
         "runPatternsEnumModalPatternsReference",
         "Source/Reference/Patterns/EnumModalPatterns.uv"
@@ -144,7 +144,7 @@ public procedure validatedPatternsEnumAndModalPatternsObligations() -> usize {
     }
     if acceptedObligationEntryMatches(
         "rule.17.Pat-Enum-Tuple",
-        66521usize,
+        66555usize,
         "HelloUltraviolet::Reference::Patterns",
         "runPatternsEnumModalPatternsReference",
         "Source/Reference/Patterns/EnumModalPatterns.uv"
@@ -153,7 +153,7 @@ public procedure validatedPatternsEnumAndModalPatternsObligations() -> usize {
     }
     if acceptedObligationEntryMatches(
         "rule.17.Pat-Enum-Record",
-        66537usize,
+        66571usize,
         "HelloUltraviolet::Reference::Patterns",
         "runPatternsEnumModalPatternsReference",
         "Source/Reference/Patterns/EnumModalPatterns.uv"
@@ -162,7 +162,7 @@ public procedure validatedPatternsEnumAndModalPatternsObligations() -> usize {
     }
     if acceptedObligationEntryMatches(
         "rule.17.Pat-Modal-None",
-        66553usize,
+        66587usize,
         "HelloUltraviolet::Reference::Patterns",
         "runPatternsEnumModalPatternsReference",
         "Source/Reference/Patterns/EnumModalPatterns.uv"
@@ -171,24 +171,6 @@ public procedure validatedPatternsEnumAndModalPatternsObligations() -> usize {
     }
     if acceptedObligationEntryMatches(
         "rule.17.Pat-Modal-Record",
-        66568usize,
-        "HelloUltraviolet::Reference::Patterns",
-        "runPatternsEnumModalPatternsReference",
-        "Source/Reference/Patterns/EnumModalPatterns.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
-        "rule.17.Pat-Enum-Unit-R",
-        66586usize,
-        "HelloUltraviolet::Reference::Patterns",
-        "runPatternsEnumModalPatternsReference",
-        "Source/Reference/Patterns/EnumModalPatterns.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
-        "rule.17.Pat-Enum-Tuple-R",
         66602usize,
         "HelloUltraviolet::Reference::Patterns",
         "runPatternsEnumModalPatternsReference",
@@ -197,8 +179,26 @@ public procedure validatedPatternsEnumAndModalPatternsObligations() -> usize {
         count = count + 1usize
     }
     if acceptedObligationEntryMatches(
+        "rule.17.Pat-Enum-Unit-R",
+        66620usize,
+        "HelloUltraviolet::Reference::Patterns",
+        "runPatternsEnumModalPatternsReference",
+        "Source/Reference/Patterns/EnumModalPatterns.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "rule.17.Pat-Enum-Tuple-R",
+        66636usize,
+        "HelloUltraviolet::Reference::Patterns",
+        "runPatternsEnumModalPatternsReference",
+        "Source/Reference/Patterns/EnumModalPatterns.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
         "rule.17.Pat-Enum-Record-R",
-        66618usize,
+        66652usize,
         "HelloUltraviolet::Reference::Patterns",
         "runPatternsEnumModalPatternsReference",
         "Source/Reference/Patterns/EnumModalPatterns.uv"
@@ -207,24 +207,6 @@ public procedure validatedPatternsEnumAndModalPatternsObligations() -> usize {
     }
     if acceptedObligationEntryMatches(
         "rule.17.Pat-Modal-R",
-        66634usize,
-        "HelloUltraviolet::Reference::Patterns",
-        "runPatternsEnumModalPatternsReference",
-        "Source/Reference/Patterns/EnumModalPatterns.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
-        "rule.17.Pat-Modal-State-R",
-        66650usize,
-        "HelloUltraviolet::Reference::Patterns",
-        "runPatternsEnumModalPatternsReference",
-        "Source/Reference/Patterns/EnumModalPatterns.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
-        "def.17.MatchModalJudgement",
         66668usize,
         "HelloUltraviolet::Reference::Patterns",
         "runPatternsEnumModalPatternsReference",
@@ -233,8 +215,26 @@ public procedure validatedPatternsEnumAndModalPatternsObligations() -> usize {
         count = count + 1usize
     }
     if acceptedObligationEntryMatches(
+        "rule.17.Pat-Modal-State-R",
+        66684usize,
+        "HelloUltraviolet::Reference::Patterns",
+        "runPatternsEnumModalPatternsReference",
+        "Source/Reference/Patterns/EnumModalPatterns.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "def.17.MatchModalJudgement",
+        66702usize,
+        "HelloUltraviolet::Reference::Patterns",
+        "runPatternsEnumModalPatternsReference",
+        "Source/Reference/Patterns/EnumModalPatterns.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
         "rule.17.Match-Modal-Empty",
-        66681usize,
+        66715usize,
         "HelloUltraviolet::Reference::Patterns",
         "runPatternsEnumModalPatternsReference",
         "Source/Reference/Patterns/EnumModalPatterns.uv"
@@ -243,7 +243,7 @@ public procedure validatedPatternsEnumAndModalPatternsObligations() -> usize {
     }
     if acceptedObligationEntryMatches(
         "rule.17.Match-Modal-Record",
-        66696usize,
+        66730usize,
         "HelloUltraviolet::Reference::Patterns",
         "runPatternsEnumModalPatternsReference",
         "Source/Reference/Patterns/EnumModalPatterns.uv"
@@ -252,7 +252,7 @@ public procedure validatedPatternsEnumAndModalPatternsObligations() -> usize {
     }
     if acceptedObligationEntryMatches(
         "rule.17.Match-Enum-Unit",
-        66712usize,
+        66746usize,
         "HelloUltraviolet::Reference::Patterns",
         "runPatternsEnumModalPatternsReference",
         "Source/Reference/Patterns/EnumModalPatterns.uv"
@@ -261,7 +261,7 @@ public procedure validatedPatternsEnumAndModalPatternsObligations() -> usize {
     }
     if acceptedObligationEntryMatches(
         "rule.17.Match-Enum-Tuple",
-        66728usize,
+        66762usize,
         "HelloUltraviolet::Reference::Patterns",
         "runPatternsEnumModalPatternsReference",
         "Source/Reference/Patterns/EnumModalPatterns.uv"
@@ -270,7 +270,7 @@ public procedure validatedPatternsEnumAndModalPatternsObligations() -> usize {
     }
     if acceptedObligationEntryMatches(
         "rule.17.Match-Enum-Record",
-        66744usize,
+        66778usize,
         "HelloUltraviolet::Reference::Patterns",
         "runPatternsEnumModalPatternsReference",
         "Source/Reference/Patterns/EnumModalPatterns.uv"
@@ -279,7 +279,7 @@ public procedure validatedPatternsEnumAndModalPatternsObligations() -> usize {
     }
     if acceptedObligationEntryMatches(
         "rule.17.Match-Modal-General",
-        66760usize,
+        66794usize,
         "HelloUltraviolet::Reference::Patterns",
         "runPatternsEnumModalPatternsReference",
         "Source/Reference/Patterns/EnumModalPatterns.uv"
@@ -288,7 +288,7 @@ public procedure validatedPatternsEnumAndModalPatternsObligations() -> usize {
     }
     if acceptedObligationEntryMatches(
         "rule.17.Match-Modal-State",
-        66776usize,
+        66810usize,
         "HelloUltraviolet::Reference::Patterns",
         "runPatternsEnumModalPatternsReference",
         "Source/Reference/Patterns/EnumModalPatterns.uv"
@@ -297,7 +297,7 @@ public procedure validatedPatternsEnumAndModalPatternsObligations() -> usize {
     }
     if acceptedObligationEntryMatches(
         "req.17.EnumModalPatternLoweringShared",
-        66794usize,
+        66828usize,
         "HelloUltraviolet::Reference::Patterns",
         "runPatternsEnumModalPatternsReference",
         "Source/Reference/Patterns/EnumModalPatterns.uv"
@@ -306,7 +306,7 @@ public procedure validatedPatternsEnumAndModalPatternsObligations() -> usize {
     }
     if rejectedSourceObligationEntryMatches(
         "diag.17.EnumModalPatterns",
-        66809usize,
+        66843usize,
         "HelloUltraviolet::Audit::FixtureCatalog::RejectedSource",
         "validatedPatternsRejectedSourceFixtureCount",
         "Fixtures/RejectedSource/Patterns/EnumModalPatternsDiagnostic/Source/Main.uv"

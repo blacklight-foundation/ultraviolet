@@ -9,7 +9,7 @@ public procedure validatedModalAndSpecialTypesModalWideningObligations() -> usiz
     var count: usize = 0usize
     if acceptedObligationEntryMatches(
         "grammar.ModalWidening.Syntax",
-        44130usize,
+        44162usize,
         "HelloUltraviolet::Reference::ModalTypes",
         "runModalTypesWideningReference",
         "Source/Reference/ModalTypes/Widening.uv"
@@ -18,24 +18,6 @@ public procedure validatedModalAndSpecialTypesModalWideningObligations() -> usiz
     }
     if acceptedObligationEntryMatches(
         "rule.13.Parse-Unary-Widen",
-        44146usize,
-        "HelloUltraviolet::Reference::ModalTypes",
-        "runModalTypesWideningReference",
-        "Source/Reference/ModalTypes/Widening.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
-        "def.ModalWidening.AST",
-        44164usize,
-        "HelloUltraviolet::Reference::ModalTypes",
-        "runModalTypesWideningReference",
-        "Source/Reference/ModalTypes/Widening.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
-        "def.ModalWideningThreshold",
         44178usize,
         "HelloUltraviolet::Reference::ModalTypes",
         "runModalTypesWideningReference",
@@ -44,25 +26,25 @@ public procedure validatedModalAndSpecialTypesModalWideningObligations() -> usiz
         count = count + 1usize
     }
     if acceptedObligationEntryMatches(
+        "def.ModalWidening.AST",
+        44196usize,
+        "HelloUltraviolet::Reference::ModalTypes",
+        "runModalTypesWideningReference",
+        "Source/Reference/ModalTypes/Widening.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "def.ModalWideningThreshold",
+        44210usize,
+        "HelloUltraviolet::Reference::ModalTypes",
+        "runModalTypesWideningReference",
+        "Source/Reference/ModalTypes/Widening.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
         "rule.13.T-Modal-Widen",
-        44190usize,
-        "HelloUltraviolet::Reference::ModalTypes",
-        "runModalTypesWideningReference",
-        "Source/Reference/ModalTypes/Widening.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
-        "rule.13.T-Modal-Widen-Perm",
-        44206usize,
-        "HelloUltraviolet::Reference::ModalTypes",
-        "runModalTypesWideningReference",
-        "Source/Reference/ModalTypes/Widening.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
-        "rule.13.Widen-AlreadyGeneral",
         44222usize,
         "HelloUltraviolet::Reference::ModalTypes",
         "runModalTypesWideningReference",
@@ -71,7 +53,7 @@ public procedure validatedModalAndSpecialTypesModalWideningObligations() -> usiz
         count = count + 1usize
     }
     if acceptedObligationEntryMatches(
-        "rule.13.Widen-NonModal",
+        "rule.13.T-Modal-Widen-Perm",
         44238usize,
         "HelloUltraviolet::Reference::ModalTypes",
         "runModalTypesWideningReference",
@@ -80,7 +62,7 @@ public procedure validatedModalAndSpecialTypesModalWideningObligations() -> usiz
         count = count + 1usize
     }
     if acceptedObligationEntryMatches(
-        "def.NicheCompatible",
+        "rule.13.Widen-AlreadyGeneral",
         44254usize,
         "HelloUltraviolet::Reference::ModalTypes",
         "runModalTypesWideningReference",
@@ -89,8 +71,26 @@ public procedure validatedModalAndSpecialTypesModalWideningObligations() -> usiz
         count = count + 1usize
     }
     if acceptedObligationEntryMatches(
+        "rule.13.Widen-NonModal",
+        44270usize,
+        "HelloUltraviolet::Reference::ModalTypes",
+        "runModalTypesWideningReference",
+        "Source/Reference/ModalTypes/Widening.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "def.NicheCompatible",
+        44286usize,
+        "HelloUltraviolet::Reference::ModalTypes",
+        "runModalTypesWideningReference",
+        "Source/Reference/ModalTypes/Widening.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
         "rule.13.Chk-Subsumption-Modal-NonNiche",
-        44266usize,
+        44298usize,
         "HelloUltraviolet::Reference::ModalTypes",
         "runModalTypesWideningReference",
         "Source/Reference/ModalTypes/Widening.uv"
@@ -99,7 +99,7 @@ public procedure validatedModalAndSpecialTypesModalWideningObligations() -> usiz
     }
     if acceptedObligationEntryMatches(
         "def.WidenWarnCond",
-        44282usize,
+        44314usize,
         "HelloUltraviolet::Reference::ModalTypes",
         "runModalTypesWideningReference",
         "Source/Reference/ModalTypes/Widening.uv"
@@ -108,7 +108,7 @@ public procedure validatedModalAndSpecialTypesModalWideningObligations() -> usiz
     }
     if acceptedObligationEntryMatches(
         "rule.13.Warn-Widen-LargePayload",
-        44294usize,
+        44326usize,
         "HelloUltraviolet::Reference::ModalTypes",
         "runModalTypesWideningReference",
         "Source/Reference/ModalTypes/Widening.uv"
@@ -117,24 +117,6 @@ public procedure validatedModalAndSpecialTypesModalWideningObligations() -> usiz
     }
     if acceptedObligationEntryMatches(
         "rule.13.Warn-Widen-Ok",
-        44310usize,
-        "HelloUltraviolet::Reference::ModalTypes",
-        "runModalTypesWideningReference",
-        "Source/Reference/ModalTypes/Widening.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
-        "def.ModalWideningDynamic",
-        44328usize,
-        "HelloUltraviolet::Reference::ModalTypes",
-        "runModalTypesWideningReference",
-        "Source/Reference/ModalTypes/Widening.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
-        "req.ModalWideningLowering",
         44342usize,
         "HelloUltraviolet::Reference::ModalTypes",
         "runModalTypesWideningReference",
@@ -143,8 +125,26 @@ public procedure validatedModalAndSpecialTypesModalWideningObligations() -> usiz
         count = count + 1usize
     }
     if acceptedObligationEntryMatches(
+        "def.ModalWideningDynamic",
+        44360usize,
+        "HelloUltraviolet::Reference::ModalTypes",
+        "runModalTypesWideningReference",
+        "Source/Reference/ModalTypes/Widening.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "req.ModalWideningLowering",
+        44374usize,
+        "HelloUltraviolet::Reference::ModalTypes",
+        "runModalTypesWideningReference",
+        "Source/Reference/ModalTypes/Widening.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
         "def.ModalStateSizeBound",
-        44354usize,
+        44386usize,
         "HelloUltraviolet::Reference::ModalTypes",
         "runModalTypesWideningReference",
         "Source/Reference/ModalTypes/Widening.uv"
@@ -153,7 +153,7 @@ public procedure validatedModalAndSpecialTypesModalWideningObligations() -> usiz
     }
     if acceptedObligationEntryMatches(
         "diag.ModalWidening",
-        44368usize,
+        44400usize,
         "HelloUltraviolet::Reference::ModalTypes",
         "runModalTypesWideningReference",
         "Source/Reference/ModalTypes/Widening.uv"

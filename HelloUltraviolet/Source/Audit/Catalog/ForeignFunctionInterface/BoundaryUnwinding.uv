@@ -9,7 +9,7 @@ public procedure validatedForeignFunctionInterfaceBoundaryUnwindingObligations()
     var count: usize = 0usize
     if acceptedObligationEntryMatches(
         "requirement.23.BoundaryUnwindingSyntax",
-        89673usize,
+        89707usize,
         "HelloUltraviolet::Reference::FFI",
         "runFFIBoundaryUnwindingReference",
         "Source/Reference/FFI/BoundaryUnwinding.uv"
@@ -18,7 +18,7 @@ public procedure validatedForeignFunctionInterfaceBoundaryUnwindingObligations()
     }
     if acceptedObligationEntryMatches(
         "requirement.23.BoundaryUnwindingParsingNoAdditionalRules",
-        89688usize,
+        89722usize,
         "HelloUltraviolet::Reference::FFI",
         "runFFIBoundaryUnwindingReference",
         "Source/Reference/FFI/BoundaryUnwinding.uv"
@@ -27,7 +27,7 @@ public procedure validatedForeignFunctionInterfaceBoundaryUnwindingObligations()
     }
     if acceptedObligationEntryMatches(
         "ast.23.BoundaryUnwindPolicySource",
-        89703usize,
+        89737usize,
         "HelloUltraviolet::Reference::FFI",
         "runFFIBoundaryUnwindingReference",
         "Source/Reference/FFI/BoundaryUnwinding.uv"
@@ -36,7 +36,7 @@ public procedure validatedForeignFunctionInterfaceBoundaryUnwindingObligations()
     }
     if acceptedObligationEntryMatches(
         "def.23.UnwindModeAstHelpers",
-        89716usize,
+        89750usize,
         "HelloUltraviolet::Reference::FFI",
         "runFFIBoundaryUnwindingReference",
         "Source/Reference/FFI/BoundaryUnwinding.uv"
@@ -45,7 +45,7 @@ public procedure validatedForeignFunctionInterfaceBoundaryUnwindingObligations()
     }
     if acceptedObligationEntryMatches(
         "def.23.DetermineUnwindMode",
-        89738usize,
+        89772usize,
         "HelloUltraviolet::Reference::FFI",
         "runFFIBoundaryUnwindingReference",
         "Source/Reference/FFI/BoundaryUnwinding.uv"
@@ -54,7 +54,7 @@ public procedure validatedForeignFunctionInterfaceBoundaryUnwindingObligations()
     }
     if acceptedObligationEntryMatches(
         "def.23.ParseUnwindArg",
-        89763usize,
+        89797usize,
         "HelloUltraviolet::Reference::FFI",
         "runFFIBoundaryUnwindingReference",
         "Source/Reference/FFI/BoundaryUnwinding.uv"
@@ -63,7 +63,7 @@ public procedure validatedForeignFunctionInterfaceBoundaryUnwindingObligations()
     }
     if acceptedObligationEntryMatches(
         "rule.23.UnwindMode-Valid",
-        89785usize,
+        89819usize,
         "HelloUltraviolet::Reference::FFI",
         "runFFIBoundaryUnwindingReference",
         "Source/Reference/FFI/BoundaryUnwinding.uv"
@@ -72,7 +72,7 @@ public procedure validatedForeignFunctionInterfaceBoundaryUnwindingObligations()
     }
     if rejectedSourceObligationEntryMatches(
         "rule.23.UnwindMode-Invalid-Err",
-        89803usize,
+        89837usize,
         "HelloUltraviolet::Audit::FixtureCatalog::RejectedSource",
         "validatedFFIRejectedSourceFixtureCount",
         "Fixtures/RejectedSource/FFI/InvalidUnwindMode/Source/Main.uv"
@@ -81,24 +81,6 @@ public procedure validatedForeignFunctionInterfaceBoundaryUnwindingObligations()
     }
     if acceptedObligationEntryMatches(
         "requirement.23.BoundaryUnwindDynamicEffects",
-        89823usize,
-        "HelloUltraviolet::Reference::FFI",
-        "runFFIBoundaryUnwindingReference",
-        "Source/Reference/FFI/BoundaryUnwinding.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
-        "requirement.23.GeneralDestructionAndUnwindCleanupReference",
-        89842usize,
-        "HelloUltraviolet::Reference::FFI",
-        "runFFIBoundaryUnwindingReference",
-        "Source/Reference/FFI/BoundaryUnwinding.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
-        "def.23.BoundaryUnwindCodeGenerationEffects",
         89857usize,
         "HelloUltraviolet::Reference::FFI",
         "runFFIBoundaryUnwindingReference",
@@ -107,8 +89,26 @@ public procedure validatedForeignFunctionInterfaceBoundaryUnwindingObligations()
         count = count + 1usize
     }
     if acceptedObligationEntryMatches(
+        "requirement.23.GeneralDestructionAndUnwindCleanupReference",
+        89876usize,
+        "HelloUltraviolet::Reference::FFI",
+        "runFFIBoundaryUnwindingReference",
+        "Source/Reference/FFI/BoundaryUnwinding.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "def.23.BoundaryUnwindCodeGenerationEffects",
+        89891usize,
+        "HelloUltraviolet::Reference::FFI",
+        "runFFIBoundaryUnwindingReference",
+        "Source/Reference/FFI/BoundaryUnwinding.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
         "rule.23.CodeGen-UnwindAbort-Import",
-        89877usize,
+        89911usize,
         "HelloUltraviolet::Reference::FFI",
         "runFFIBoundaryUnwindingReference",
         "Source/Reference/FFI/BoundaryUnwinding.uv"
@@ -117,7 +117,7 @@ public procedure validatedForeignFunctionInterfaceBoundaryUnwindingObligations()
     }
     if acceptedObligationEntryMatches(
         "rule.23.CodeGen-UnwindCatch-Import",
-        89895usize,
+        89929usize,
         "HelloUltraviolet::Reference::FFI",
         "runFFIBoundaryUnwindingReference",
         "Source/Reference/FFI/BoundaryUnwinding.uv"
@@ -126,7 +126,7 @@ public procedure validatedForeignFunctionInterfaceBoundaryUnwindingObligations()
     }
     if acceptedObligationEntryMatches(
         "rule.23.CodeGen-UnwindAbort-Export",
-        89913usize,
+        89947usize,
         "HelloUltraviolet::Reference::FFI",
         "runFFIBoundaryUnwindingReference",
         "Source/Reference/FFI/BoundaryUnwinding.uv"
@@ -135,7 +135,7 @@ public procedure validatedForeignFunctionInterfaceBoundaryUnwindingObligations()
     }
     if acceptedObligationEntryMatches(
         "rule.23.CodeGen-UnwindCatch-Export",
-        89931usize,
+        89965usize,
         "HelloUltraviolet::Reference::FFI",
         "runFFIBoundaryUnwindingReference",
         "Source/Reference/FFI/BoundaryUnwinding.uv"
@@ -144,7 +144,7 @@ public procedure validatedForeignFunctionInterfaceBoundaryUnwindingObligations()
     }
     if rejectedSourceObligationEntryMatches(
         "diagnostics.23.BoundaryUnwindingNoAdditionalDiagnostics",
-        89951usize,
+        89985usize,
         "HelloUltraviolet::Audit::FixtureCatalog::RejectedSource",
         "validatedFFIRejectedSourceFixtureCount",
         "Fixtures/RejectedSource/FFI/BoundaryUnwindingNoAdditionalDiagnostics/Source/Main.uv"
@@ -153,7 +153,7 @@ public procedure validatedForeignFunctionInterfaceBoundaryUnwindingObligations()
     }
     if rejectedSourceObligationEntryMatches(
         "diagnostics.23.BoundaryUnwindingDiagnosticOwnership",
-        89964usize,
+        89998usize,
         "HelloUltraviolet::Audit::FixtureCatalog::RejectedSource",
         "validatedFFIRejectedSourceFixtureCount",
         "Fixtures/RejectedSource/FFI/BoundaryUnwindingDiagnosticOwnership/Source/Main.uv"

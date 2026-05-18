@@ -9,7 +9,7 @@ public procedure validatedConcreteDataTypesUnionTypesObligations() -> usize {
     var count: usize = 0usize
     if acceptedObligationEntryMatches(
         "grammar.UnionTypeSyntax",
-        40678usize,
+        40710usize,
         "HelloUltraviolet::Reference::DataTypes",
         "runDataTypesUnionsReference",
         "Source/Reference/DataTypes/Unions.uv"
@@ -18,7 +18,7 @@ public procedure validatedConcreteDataTypesUnionTypesObligations() -> usize {
     }
     if acceptedObligationEntryMatches(
         "req.UnionIntroductionSemantic",
-        40698usize,
+        40730usize,
         "HelloUltraviolet::Reference::DataTypes",
         "runDataTypesUnionsReference",
         "Source/Reference/DataTypes/Unions.uv"
@@ -27,7 +27,7 @@ public procedure validatedConcreteDataTypesUnionTypesObligations() -> usize {
     }
     if acceptedObligationEntryMatches(
         "Parse-UnionTail-None",
-        40714usize,
+        40746usize,
         "HelloUltraviolet::Reference::DataTypes",
         "runDataTypesUnionsReference",
         "Source/Reference/DataTypes/Unions.uv"
@@ -36,7 +36,7 @@ public procedure validatedConcreteDataTypesUnionTypesObligations() -> usize {
     }
     if acceptedObligationEntryMatches(
         "Parse-UnionTail-Cons",
-        40732usize,
+        40764usize,
         "HelloUltraviolet::Reference::DataTypes",
         "runDataTypesUnionsReference",
         "Source/Reference/DataTypes/Unions.uv"
@@ -45,7 +45,7 @@ public procedure validatedConcreteDataTypesUnionTypesObligations() -> usize {
     }
     if acceptedObligationEntryMatches(
         "def.TypeUnionAst",
-        40750usize,
+        40782usize,
         "HelloUltraviolet::Reference::DataTypes",
         "runDataTypesUnionsReference",
         "Source/Reference/DataTypes/Unions.uv"
@@ -54,7 +54,7 @@ public procedure validatedConcreteDataTypesUnionTypesObligations() -> usize {
     }
     if acceptedObligationEntryMatches(
         "def.UnionMemberSets",
-        40766usize,
+        40798usize,
         "HelloUltraviolet::Reference::DataTypes",
         "runDataTypesUnionsReference",
         "Source/Reference/DataTypes/Unions.uv"
@@ -63,7 +63,7 @@ public procedure validatedConcreteDataTypesUnionTypesObligations() -> usize {
     }
     if acceptedObligationEntryMatches(
         "WF-Union",
-        40784usize,
+        40816usize,
         "HelloUltraviolet::Reference::DataTypes",
         "runDataTypesUnionsReference",
         "Source/Reference/DataTypes/Unions.uv"
@@ -72,7 +72,7 @@ public procedure validatedConcreteDataTypesUnionTypesObligations() -> usize {
     }
     if referenceModelObligationEntryMatches(
         "WF-Union-TooFew",
-        40802usize,
+        40834usize,
         "HelloUltraviolet::Audit",
         "runSpecClarificationReferenceModels",
         "Source/Audit/SpecClarificationReferenceModels.uv"
@@ -81,24 +81,6 @@ public procedure validatedConcreteDataTypesUnionTypesObligations() -> usize {
     }
     if acceptedObligationEntryMatches(
         "def.UnionMember",
-        40823usize,
-        "HelloUltraviolet::Reference::DataTypes",
-        "runDataTypesUnionsReference",
-        "Source/Reference/DataTypes/Unions.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
-        "Sub-Member-Union",
-        40837usize,
-        "HelloUltraviolet::Reference::DataTypes",
-        "runDataTypesUnionsReference",
-        "Source/Reference/DataTypes/Unions.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
-        "Sub-Union-Width",
         40855usize,
         "HelloUltraviolet::Reference::DataTypes",
         "runDataTypesUnionsReference",
@@ -107,8 +89,26 @@ public procedure validatedConcreteDataTypesUnionTypesObligations() -> usize {
         count = count + 1usize
     }
     if acceptedObligationEntryMatches(
+        "Sub-Member-Union",
+        40869usize,
+        "HelloUltraviolet::Reference::DataTypes",
+        "runDataTypesUnionsReference",
+        "Source/Reference/DataTypes/Unions.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "Sub-Union-Width",
+        40887usize,
+        "HelloUltraviolet::Reference::DataTypes",
+        "runDataTypesUnionsReference",
+        "Source/Reference/DataTypes/Unions.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
         "T-Union-Intro",
-        40873usize,
+        40905usize,
         "HelloUltraviolet::Reference::DataTypes",
         "runDataTypesUnionsReference",
         "Source/Reference/DataTypes/Unions.uv"
@@ -117,7 +117,7 @@ public procedure validatedConcreteDataTypesUnionTypesObligations() -> usize {
     }
     if rejectedSourceObligationEntryMatches(
         "Union-DirectAccess-Err",
-        40891usize,
+        40923usize,
         "HelloUltraviolet::Audit::FixtureCatalog::RejectedSource",
         "validatedExpressionsRejectedSourceFixtureCount",
         "Fixtures/RejectedSource/Expressions/UnionDirectAccess/Source/Main.uv"
@@ -126,7 +126,7 @@ public procedure validatedConcreteDataTypesUnionTypesObligations() -> usize {
     }
     if acceptedObligationEntryMatches(
         "req.UnionMatchingPropagationOwnership",
-        40909usize,
+        40941usize,
         "HelloUltraviolet::Reference::DataTypes",
         "runDataTypesUnionsReference",
         "Source/Reference/DataTypes/Unions.uv"
@@ -135,7 +135,7 @@ public procedure validatedConcreteDataTypesUnionTypesObligations() -> usize {
     }
     if acceptedObligationEntryMatches(
         "def.UnionCase",
-        40923usize,
+        40955usize,
         "HelloUltraviolet::Reference::DataTypes",
         "runDataTypesUnionsReference",
         "Source/Reference/DataTypes/Unions.uv"
@@ -144,7 +144,7 @@ public procedure validatedConcreteDataTypesUnionTypesObligations() -> usize {
     }
     if acceptedObligationEntryMatches(
         "def.UnionNicheOrderingHelpers",
-        40940usize,
+        40972usize,
         "HelloUltraviolet::Reference::DataTypes",
         "runDataTypesUnionsReference",
         "Source/Reference/DataTypes/Unions.uv"
@@ -153,7 +153,7 @@ public procedure validatedConcreteDataTypesUnionTypesObligations() -> usize {
     }
     if acceptedObligationEntryMatches(
         "def.UnionTypeOrderingKeys",
-        40960usize,
+        40992usize,
         "HelloUltraviolet::Reference::DataTypes",
         "runDataTypesUnionsReference",
         "Source/Reference/DataTypes/Unions.uv"
@@ -162,7 +162,7 @@ public procedure validatedConcreteDataTypesUnionTypesObligations() -> usize {
     }
     if acceptedObligationEntryMatches(
         "def.TypeKey",
-        41002usize,
+        41034usize,
         "HelloUltraviolet::Reference::DataTypes",
         "runDataTypesUnionsReference",
         "Source/Reference/DataTypes/Unions.uv"
@@ -171,7 +171,7 @@ public procedure validatedConcreteDataTypesUnionTypesObligations() -> usize {
     }
     if acceptedObligationEntryMatches(
         "def.TypeKeyOrdering",
-        41035usize,
+        41067usize,
         "HelloUltraviolet::Reference::DataTypes",
         "runDataTypesUnionsReference",
         "Source/Reference/DataTypes/Unions.uv"
@@ -180,7 +180,7 @@ public procedure validatedConcreteDataTypesUnionTypesObligations() -> usize {
     }
     if acceptedObligationEntryMatches(
         "def.UnionMemberLayoutSelection",
-        41057usize,
+        41089usize,
         "HelloUltraviolet::Reference::DataTypes",
         "runDataTypesUnionsReference",
         "Source/Reference/DataTypes/Unions.uv"
@@ -189,7 +189,7 @@ public procedure validatedConcreteDataTypesUnionTypesObligations() -> usize {
     }
     if acceptedObligationEntryMatches(
         "def.UnionLayoutHelpers",
-        41077usize,
+        41109usize,
         "HelloUltraviolet::Reference::DataTypes",
         "runDataTypesUnionsReference",
         "Source/Reference/DataTypes/Unions.uv"
@@ -198,7 +198,7 @@ public procedure validatedConcreteDataTypesUnionTypesObligations() -> usize {
     }
     if acceptedObligationEntryMatches(
         "Layout-Union-Niche",
-        41096usize,
+        41128usize,
         "HelloUltraviolet::Reference::DataTypes",
         "runDataTypesUnionsReference",
         "Source/Reference/DataTypes/Unions.uv"
@@ -207,7 +207,7 @@ public procedure validatedConcreteDataTypesUnionTypesObligations() -> usize {
     }
     if acceptedObligationEntryMatches(
         "Layout-Union-Tagged",
-        41114usize,
+        41146usize,
         "HelloUltraviolet::Reference::DataTypes",
         "runDataTypesUnionsReference",
         "Source/Reference/DataTypes/Unions.uv"
@@ -216,7 +216,7 @@ public procedure validatedConcreteDataTypesUnionTypesObligations() -> usize {
     }
     if acceptedObligationEntryMatches(
         "Size-Union",
-        41132usize,
+        41164usize,
         "HelloUltraviolet::Reference::DataTypes",
         "runDataTypesUnionsReference",
         "Source/Reference/DataTypes/Unions.uv"
@@ -225,7 +225,7 @@ public procedure validatedConcreteDataTypesUnionTypesObligations() -> usize {
     }
     if acceptedObligationEntryMatches(
         "Align-Union",
-        41150usize,
+        41182usize,
         "HelloUltraviolet::Reference::DataTypes",
         "runDataTypesUnionsReference",
         "Source/Reference/DataTypes/Unions.uv"
@@ -234,24 +234,6 @@ public procedure validatedConcreteDataTypesUnionTypesObligations() -> usize {
     }
     if acceptedObligationEntryMatches(
         "Layout-Union",
-        41168usize,
-        "HelloUltraviolet::Reference::DataTypes",
-        "runDataTypesUnionsReference",
-        "Source/Reference/DataTypes/Unions.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
-        "def.UnionNicheBits",
-        41186usize,
-        "HelloUltraviolet::Reference::DataTypes",
-        "runDataTypesUnionsReference",
-        "Source/Reference/DataTypes/Unions.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
-        "def.UnionPayloadBits",
         41200usize,
         "HelloUltraviolet::Reference::DataTypes",
         "runDataTypesUnionsReference",
@@ -260,8 +242,26 @@ public procedure validatedConcreteDataTypesUnionTypesObligations() -> usize {
         count = count + 1usize
     }
     if acceptedObligationEntryMatches(
+        "def.UnionNicheBits",
+        41218usize,
+        "HelloUltraviolet::Reference::DataTypes",
+        "runDataTypesUnionsReference",
+        "Source/Reference/DataTypes/Unions.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "def.UnionPayloadBits",
+        41232usize,
+        "HelloUltraviolet::Reference::DataTypes",
+        "runDataTypesUnionsReference",
+        "Source/Reference/DataTypes/Unions.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
         "def.TaggedBits",
-        41214usize,
+        41246usize,
         "HelloUltraviolet::Reference::DataTypes",
         "runDataTypesUnionsReference",
         "Source/Reference/DataTypes/Unions.uv"
@@ -270,7 +270,7 @@ public procedure validatedConcreteDataTypesUnionTypesObligations() -> usize {
     }
     if acceptedObligationEntryMatches(
         "def.UnionTaggedBits",
-        41230usize,
+        41262usize,
         "HelloUltraviolet::Reference::DataTypes",
         "runDataTypesUnionsReference",
         "Source/Reference/DataTypes/Unions.uv"
@@ -279,7 +279,7 @@ public procedure validatedConcreteDataTypesUnionTypesObligations() -> usize {
     }
     if acceptedObligationEntryMatches(
         "def.UnionBits",
-        41244usize,
+        41276usize,
         "HelloUltraviolet::Reference::DataTypes",
         "runDataTypesUnionsReference",
         "Source/Reference/DataTypes/Unions.uv"
@@ -288,7 +288,7 @@ public procedure validatedConcreteDataTypesUnionTypesObligations() -> usize {
     }
     if acceptedObligationEntryMatches(
         "def.UnionValueBits",
-        41258usize,
+        41290usize,
         "HelloUltraviolet::Reference::DataTypes",
         "runDataTypesUnionsReference",
         "Source/Reference/DataTypes/Unions.uv"
@@ -297,7 +297,7 @@ public procedure validatedConcreteDataTypesUnionTypesObligations() -> usize {
     }
     if acceptedObligationEntryMatches(
         "def.UnionValueType",
-        41272usize,
+        41304usize,
         "HelloUltraviolet::Reference::DataTypes",
         "runDataTypesUnionsReference",
         "Source/Reference/DataTypes/Unions.uv"
@@ -306,7 +306,7 @@ public procedure validatedConcreteDataTypesUnionTypesObligations() -> usize {
     }
     if acceptedObligationEntryMatches(
         "req.UnionDiagnosticOwnership",
-        41286usize,
+        41318usize,
         "HelloUltraviolet::Reference::DataTypes",
         "runDataTypesUnionsReference",
         "Source/Reference/DataTypes/Unions.uv"
