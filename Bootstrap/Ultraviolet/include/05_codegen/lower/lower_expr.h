@@ -307,7 +307,7 @@ struct LowerCtx {
   std::shared_ptr<const std::unordered_map<const ast::Expr*, std::string>>
       expr_region_tags;
 
-  // [[dynamic]] verification scope for runtime checks (arrays, contracts, etc.)
+  // #dynamic verification scope for runtime checks (arrays, contracts, etc.)
   bool dynamic_checks = false;
   std::optional<AccessOrdering> current_access_order;
 

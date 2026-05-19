@@ -432,7 +432,7 @@ procedure makeMutatedPair(seed: usize) -> MutablePair {
 
 procedure appendSelfAssignValue(bag: SelfAssignBag, value: usize) -> SelfAssignBag {
     var out: SelfAssignBag = bag
-    [[dynamic]] {
+    #dynamic {
         out.values[out.count] = value
     }
     out.count = out.count + 1usize

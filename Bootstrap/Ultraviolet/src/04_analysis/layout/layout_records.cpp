@@ -3,7 +3,7 @@
 // =============================================================================
 //
 // SPEC REFERENCE: Docs/SPECIFICATION.md
-//   - Section 6.1.3 Record Layout Without [[layout(C)]] (lines 14577-14631)
+//   - Section 6.1.3 Record Layout Without #layout(C) (lines 14577-14631)
 //   - AlignUp formula (line 14579)
 //   - Offsets computation (lines 14580-14581)
 //   - RecordAlign computation (lines 14582-14583)
@@ -32,7 +32,7 @@
 //   5. RecordAlign = max alignment of all fields
 //   6. RecordSize = AlignUp(last_offset + last_size, record_align)
 //   7. Type alias layout delegates to underlying type
-//   8. Consider [[layout(C)]] attribute handling in separate file
+//   8. Consider #layout(C) attribute handling in separate file
 //
 // LAYOUT ALGORITHM:
 //   1. For each field in declaration order:

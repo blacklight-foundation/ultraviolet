@@ -22,7 +22,7 @@
 //
 // STALENESS WARNING (from spec):
 //   Bindings derived from shared data before yield release are potentially
-//   stale after resumption. Warning W-CON-0011 applies unless [[stale_ok]].
+//   stale after resumption. Warning W-CON-0011 applies unless #stale_ok.
 //
 // =============================================================================
 
@@ -209,7 +209,7 @@ ScopeKeyState TrackKeyLifetime(const ast::KeyBlockStmt& block,
   for (const auto& path_expr : block.paths) {
     KeyPath path = ParseKeyPathSpec(path_expr);
     KeyAccessMode mode = KeyAccessMode::Read;
-    if (block.mode.has_value() && *block.mode == ast::KeyMode::Write) {
+    if (block.mode == ast::KeyMode::Write) {
       mode = KeyAccessMode::Write;
     }
 
@@ -259,7 +259,7 @@ ScopeKeyState TrackStatementKeys(const ast::Stmt& stmt,
     for (const auto& path_expr : key_block->paths) {
       KeyPath path = ParseKeyPathSpec(path_expr);
       KeyAccessMode mode = KeyAccessMode::Read;
-      if (key_block->mode.has_value() && *key_block->mode == ast::KeyMode::Write) {
+      if (key_block->mode == ast::KeyMode::Write) {
         mode = KeyAccessMode::Write;
       }
       ctx.Acquire(path, mode);
@@ -643,12 +643,7 @@ std::vector<core::Span> GetSuspensionPointSpans(const ast::Block& block) {
 }
 
 bool HasReleaseModifier(const ast::KeyBlockStmt& block) {
-  for (const auto& mod : block.mods) {
-    if (mod == ast::KeyBlockMod::Release) {
-      return true;
-    }
-  }
-  return false;
+  return block.kind == ast::KeyBlockKind::Release;
 }
 
 }  // namespace ultraviolet::analysis

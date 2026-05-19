@@ -9,7 +9,7 @@ public procedure validatedCompileTimeExecutionAndMetaprogrammingCompileTimeDiagn
     var count: usize = 0usize
     if diagnosticSourceObligationEntryMatches(
         "diagnostics.22.CompileTimeDiagnosticsSupplement",
-        86496usize,
+        86420usize,
         "HelloUltraviolet::Audit::FixtureCatalog::DiagnosticSource",
         "validatedComptimeDiagnosticSourceFixtureCount",
         "Fixtures/DiagnosticSource/Comptime/UserDiagnosticWarning/Source/Main.uv"
@@ -18,7 +18,7 @@ public procedure validatedCompileTimeExecutionAndMetaprogrammingCompileTimeDiagn
     }
     if rejectedSourceObligationEntryMatches(
         "requirement.22.UserDiagnosticBuiltinEmission",
-        86572usize,
+        86496usize,
         "HelloUltraviolet::Audit::FixtureCatalog::RejectedSource",
         "validatedComptimeRejectedSourceFixtureCount",
         "Fixtures/RejectedSource/Comptime/UserDiagnosticError/Source/Main.uv"

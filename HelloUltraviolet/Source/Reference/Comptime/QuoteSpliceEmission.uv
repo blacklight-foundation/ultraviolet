@@ -2,7 +2,7 @@
 
 /// Exercises the Comptime QuoteSpliceEmission reference surface.
 public procedure runComptimeQuoteSpliceEmissionReference() -> bool {
-    [[emit]]
+    #emit
     comptime {
         let first_ast: Ast::Item =
             quote { internal procedure emittedQuoteReferenceValue() -> i32 { return 47 } }

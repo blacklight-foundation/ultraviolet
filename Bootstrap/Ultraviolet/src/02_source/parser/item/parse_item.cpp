@@ -8,7 +8,7 @@
 //   - ParseItem: Dispatch to specific item parsers based on leading keywords
 //
 // The dispatcher handles:
-//   1. Optional attributes ([[...]])
+//   1. Optional attributes (#...)
 //   2. Special cases before visibility (import, modal class, extern, use, return)
 //   3. Visibility modifier (public, internal, private)
 //   4. Keyword dispatch (using, let/var, procedure, record, enum, modal, class, type)

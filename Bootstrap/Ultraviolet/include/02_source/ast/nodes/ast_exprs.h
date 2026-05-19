@@ -356,7 +356,7 @@ struct CtLoopIterExpr {
     BlockPtr body;
 };
 
-/// Attributed expression - [[attr]] expr (e.g., [[dynamic]] contract)
+/// Attributed expression - #attr expr (e.g., #dynamic contract)
 struct AttributedExpr {
     AttributeList attrs;
     ExprPtr expr;

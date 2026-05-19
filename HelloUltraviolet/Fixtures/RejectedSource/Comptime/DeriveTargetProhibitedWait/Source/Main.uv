@@ -5,7 +5,7 @@ derive target WaitInDeriveTarget(target: Type) {
     let value: i32 = wait 1
 }
 
-[[derive(WaitInDeriveTarget)]]
+#derive(WaitInDeriveTarget)
 public record DeriveTargetProhibitedWaitReference {
     public value: i32
 }

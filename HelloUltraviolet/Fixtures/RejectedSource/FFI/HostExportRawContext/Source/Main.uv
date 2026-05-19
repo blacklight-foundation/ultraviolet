@@ -1,6 +1,6 @@
 //! Rejected FFI specimen for hosted exports using raw Context.
 
-[[host_export("C")]]
+#host_export("C")
 public procedure hostedRawContext(context: Context) -> i32 {
     return 0
 }

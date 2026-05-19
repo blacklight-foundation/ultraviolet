@@ -2,7 +2,7 @@
 
 public procedure keyPathsDiagnosticReference() -> i32 {
     var shared_value: shared i32 = 1
-    #shared_value.#field read {
+    %read shared_value.#field {
     }
     return 0
 }

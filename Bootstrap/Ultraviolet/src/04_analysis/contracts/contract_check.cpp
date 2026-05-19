@@ -30,7 +30,7 @@
  *   - Name resolution
  *
  * REFACTORING NOTES:
- *   1. Contract syntax: |: P (precond), |: P => Q (pre+post), |: => Q (postcond only)
+ *   1. Contract syntax: |: P (precond), |: P |= Q (pre+post), |: |= Q (postcond only)
  *   2. @result references return value (postcondition only)
  *   3. @entry(expr) captures entry/old value of expression
  *   4. @entry requires BitcopyType
@@ -39,8 +39,8 @@
  *
  * CONTRACT FORMS:
  *   |: precondition
- *   |: precondition => postcondition
- *   |: => postcondition
+ *   |: precondition |= postcondition
+ *   |: |= postcondition
  *
  * INTRINSICS:
  *   - @result: Return value (postcondition context only)

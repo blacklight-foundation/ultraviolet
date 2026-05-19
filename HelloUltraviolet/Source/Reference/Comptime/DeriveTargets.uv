@@ -46,7 +46,7 @@ derive target RequireComptimeDeriveReference(target: Type) |: requires ComptimeD
     emitter~>emit(ast)
 }
 
-[[derive(EmitComptimeDeriveReference, RequireComptimeDeriveReference)]]
+#derive(EmitComptimeDeriveReference, RequireComptimeDeriveReference)
 internal record ComptimeDerivedReference <: ComptimeDeriveClass {
     internal value: i32
 }

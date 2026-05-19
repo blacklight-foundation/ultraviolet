@@ -203,8 +203,8 @@ extern "C" {
     public procedure importedCallback(value: FFIReferenceCallback) -> i32
 }
 
-[[export("C")]]
-[[mangle("importedBorrowedRawPointer")]]
+#export("C")
+#mangle("importedBorrowedRawPointer")
 public procedure importedBorrowedRawPointerProvider(value: *mut i32) -> i32 {
     if value == null {
         return 0
@@ -212,8 +212,8 @@ public procedure importedBorrowedRawPointerProvider(value: *mut i32) -> i32 {
     return 1
 }
 
-[[export("C")]]
-[[mangle("importedCallback")]]
+#export("C")
+#mangle("importedCallback")
 public procedure importedCallbackProvider(value: FFIReferenceCallback) -> i32 {
     return value(7)
 }

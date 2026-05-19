@@ -7,24 +7,24 @@ internal enum LayoutAttributeReferenceKind {
     IntegerDiscriminant
 }
 
-[[layout(C)]]
+#layout(C)
 internal record LayoutAttributeCRecord {
     internal flag: bool
     internal value: i32
 }
 
-[[layout(packed)]]
+#layout(packed)
 internal record LayoutAttributePackedRecord {
     internal byte: u8
     internal value: i32
 }
 
-[[layout(C, align(16))]]
+#layout(C, align(16))
 internal record LayoutAttributeAlignedRecord {
     internal value: i64
 }
 
-[[layout(u8)]]
+#layout(u8)
 internal enum LayoutAttributeSmallEnum {
     First
     Second

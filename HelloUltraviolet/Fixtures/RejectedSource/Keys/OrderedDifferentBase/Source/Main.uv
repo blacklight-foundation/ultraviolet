@@ -3,7 +3,7 @@
 public procedure orderedDifferentBaseReference() -> i32 {
     var left_values: shared [i32; 2] = [1, 2]
     var right_values: shared [i32; 2] = [3, 4]
-    #left_values[0usize], right_values[0usize] ordered read {
+    %read left_values[0usize], right_values[0usize] [ordered] {
         let total: i32 = left_values[0usize] + right_values[0usize]
     }
     return 0

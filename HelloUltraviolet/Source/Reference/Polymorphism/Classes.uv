@@ -65,7 +65,7 @@ public procedure runPolymorphismClassesReference() -> bool {
     let unique_permission_owner: unique ClassPermissionOwner =
         ClassPermissionOwner { value: 37 }
     var permission_score: i32 = const_permission_owner~>readConst()
-    #shared_permission_owner write {
+    %write shared_permission_owner {
         permission_score = permission_score + shared_permission_owner~>readShared()
     }
     permission_score = permission_score + unique_permission_owner~>readUnique()

@@ -1,7 +1,7 @@
 //! Reference specimens for Keys / SpeculativeExecution.
 
 extern "C-unwind" {
-    [[unwind("catch")]]
+    #unwind("catch")
     public procedure importedSpeculativePanicBoundary() -> i32
 }
 
@@ -15,7 +15,7 @@ internal record SpeculativeKeyCounter {
 
 internal procedure speculativeWriteValue() -> i32 {
     var shared_value: shared i32 = 1
-    #shared_value speculative write {
+    %speculative write shared_value {
         shared_value = 2
     }
     return shared_value + 0
@@ -23,7 +23,7 @@ internal procedure speculativeWriteValue() -> i32 {
 
 internal procedure speculativeConstReceiverCallValue() -> i32 {
     var counter: shared SpeculativeKeyCounter = SpeculativeKeyCounter { value: 5 }
-    #counter speculative write {
+    %speculative write counter {
         let next_value: i32 = counter~>nextValue()
         counter.value = next_value
     }
@@ -32,7 +32,7 @@ internal procedure speculativeConstReceiverCallValue() -> i32 {
 
 internal procedure speculativeMultiPathWriteValue() -> i32 {
     var values: shared [i32; 2] = [3, 5]
-    #values[0usize], values[1usize] speculative write {
+    %speculative write values[0usize], values[1usize] {
         let left: i32 = values[0usize] + 0
         let right: i32 = values[1usize] + 0
         values[0usize] = right + 7
@@ -43,7 +43,7 @@ internal procedure speculativeMultiPathWriteValue() -> i32 {
 
 internal procedure speculativeRecordFieldWriteValue() -> i32 {
     var counter: shared SpeculativeKeyCounter = SpeculativeKeyCounter { value: 7 }
-    #counter.value speculative write {
+    %speculative write counter.value {
         let next_value: i32 = counter.value + 4
         counter.value = next_value
     }
@@ -56,7 +56,7 @@ internal procedure speculativeIndexedFieldWriteValue() -> i32 {
             KeyLeaf { value: 2 },
             KeyLeaf { value: 4 }
         ]
-    #leaves[0usize].value, leaves[1usize].value speculative write {
+    %speculative write leaves[0usize].value, leaves[1usize].value {
         let left: i32 = leaves[0usize].value + 0
         let right: i32 = leaves[1usize].value + 0
         leaves[0usize].value = right + 3
@@ -66,13 +66,13 @@ internal procedure speculativeIndexedFieldWriteValue() -> i32 {
 }
 
 /// Foreign-visible C-unwind boundary used to execute the speculative panic path.
-[[dynamic]]
-[[export("C-unwind")]]
-[[unwind("catch")]]
-[[mangle("importedSpeculativePanicBoundary")]]
+#dynamic
+#export("C-unwind")
+#unwind("catch")
+#mangle("importedSpeculativePanicBoundary")
 public procedure ffiImportedSpeculativePanicBoundaryProvider() -> i32 {
     var shared_value: shared i32 = 1
-    #shared_value speculative write {
+    %speculative write shared_value {
         let values: [i32; 1] = [9]
         var index: usize = 1usize
         shared_value = values[index]

@@ -1,14 +1,14 @@
 //! Reference specimens for FFI / BoundaryUnwinding.
 
 extern "C-unwind" {
-    [[unwind("catch")]]
+    #unwind("catch")
     public procedure importedReferenceCatchBoundary(value: i32) -> i32
 }
 
 /// Foreign-visible C-unwind provider used by the imported catch boundary.
-[[export("C-unwind")]]
-[[unwind("catch")]]
-[[mangle("importedReferenceCatchBoundary")]]
+#export("C-unwind")
+#unwind("catch")
+#mangle("importedReferenceCatchBoundary")
 public procedure ffiImportedReferenceCatchBoundaryProvider(value: i32) -> i32 {
     return value
 }
@@ -18,9 +18,9 @@ internal procedure callImportedReferenceCatchBoundary(value: i32) -> i32 {
 }
 
 /// Raw exported C-unwind boundary that catches panics and returns zero on failure.
-[[export("C-unwind")]]
-[[unwind("catch")]]
-[[mangle("uv_reference_exported_catch_boundary")]]
+#export("C-unwind")
+#unwind("catch")
+#mangle("uv_reference_exported_catch_boundary")
 public procedure ffiExportedCatchBoundary(value: i32) -> i32 {
     return value
 }

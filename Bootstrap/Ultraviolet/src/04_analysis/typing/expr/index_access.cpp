@@ -111,7 +111,7 @@ static std::optional<core::Span> ExprSpan(const ast::ExprPtr& expr) {
 
 static std::string NonConstArrayIndexDetail() {
   return "fixed-size array index expression is not compile-time constant; "
-         "runtime fixed-array indexing requires [[dynamic]], or use a slice "
+         "runtime fixed-array indexing requires #dynamic, or use a slice "
          "for runtime indexing";
 }
 

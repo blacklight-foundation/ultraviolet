@@ -94,7 +94,7 @@ std::string BuildPlaceRepr(const ast::Expr& expr);
 // §6.4 Attribute Handling
 // =============================================================================
 
-// Check if attributes contain [[dynamic]]
+// Check if attributes contain #dynamic
 bool HasDynamicAttr(const ast::AttributeList& attrs);
 
 // Check if attributes contain a memory-order annotation and recover its value.

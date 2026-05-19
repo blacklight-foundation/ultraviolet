@@ -2,14 +2,14 @@
 
 public class PostconditionClass {
     public procedure readValue(~, value: i32) -> i32
-    |: value > 0 => @result > 0
+    |: value > 0 |= @result > 0
 }
 
 public record WeakerPostconditionOwner <: PostconditionClass {
     public value: i32
 
     public procedure readValue(~, value: i32) -> i32
-    |: value > 0 => @result >= 0
+    |: value > 0 |= @result >= 0
     {
         return self.value + value
     }

@@ -3,7 +3,7 @@
 public procedure speculativeReadModeReference() -> i32 {
     var shared_value: shared i32 = 1
     var observed: i32 = 0
-    #shared_value speculative read {
+    %speculative read shared_value {
         observed = shared_value
     }
     return observed

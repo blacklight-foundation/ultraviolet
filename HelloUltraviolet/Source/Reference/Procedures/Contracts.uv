@@ -27,13 +27,13 @@ internal procedure contractNoClauseReference(value: i32) -> i32 {
 }
 
 internal procedure contractReference(value: i32) -> bool
-|: value > 0 => @result
+|: value > 0 |= @result
 {
     return value > 0
 }
 
 internal procedure contractPostOnlyReference(value: i32) -> i32
-|: => @result == value + 1
+|: |= @result == value + 1
 {
     return value + 1
 }
@@ -45,7 +45,7 @@ internal procedure contractPreOnlyReference(value: i32) -> i32
 }
 
 internal procedure contractEntryReference(value: i32) -> i32
-|: value > 0 => @entry(value) == value && @result == value + 2
+|: value > 0 |= @entry(value) == value && @result == value + 2
 {
     return value + 2
 }

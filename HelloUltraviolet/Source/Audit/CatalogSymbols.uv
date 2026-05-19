@@ -67,187 +67,51 @@ public procedure catalogCompiledSymbolTargetsAreIndexed() -> bool {
             expectedCatalogCompiledSymbolTargetDigest()
 }
 
-internal procedure traceCatalogSymbolGroup(context: Context, text: string@View) -> bool {
-    let output: Outcome<(), IoError> = context.io~>write_stderr(text)
-    return if output is {
-        @Value {
-            true
-        }
-        @Error {
-            false
-        }
-    }
-}
-
 public procedure catalogCompiledSymbolsExecute(context: Context) -> bool {
     var passed: bool = true
     passed = catalogCompiledSymbolsExecuteAudit(context) && passed
-    passed = traceCatalogSymbolGroup(context, "catalog start: FixturesAcceptedProjects\n") &&
-        passed
     passed = catalogCompiledSymbolsExecuteFixturesAcceptedProjects(context) && passed
-    passed = traceCatalogSymbolGroup(context, "catalog done: FixturesAcceptedProjects\n") &&
-        passed
-    passed = traceCatalogSymbolGroup(context, "catalog start: FixturesArtifactProjects\n") &&
-        passed
     passed = catalogCompiledSymbolsExecuteFixturesArtifactProjects(context) && passed
-    passed = traceCatalogSymbolGroup(context, "catalog done: FixturesArtifactProjects\n") &&
-        passed
-    passed = traceCatalogSymbolGroup(context, "catalog start: FixturesDiagnosticSource\n") &&
-        passed
     passed = catalogCompiledSymbolsExecuteFixturesDiagnosticSource(context) && passed
-    passed = traceCatalogSymbolGroup(context, "catalog done: FixturesDiagnosticSource\n") &&
-        passed
     passed = catalogCompiledSymbolsExecuteFixturesOutputDiagnostics(context) && passed
-    passed = traceCatalogSymbolGroup(context, "catalog done: FixturesOutputDiagnostics\n") &&
-        passed
-    passed = traceCatalogSymbolGroup(context, "catalog start: FixturesRejectedSourceAttributes\n") &&
-        passed
     passed = catalogCompiledSymbolsExecuteFixturesRejectedSourceAttributes(context) && passed
-    passed = traceCatalogSymbolGroup(context, "catalog done: FixturesRejectedSourceAttributes\n") &&
-        passed
-    passed = traceCatalogSymbolGroup(context, "catalog start: FixturesRejectedSourceComptime\n") &&
-        passed
     passed = catalogCompiledSymbolsExecuteFixturesRejectedSourceComptime(context) && passed
-    passed = traceCatalogSymbolGroup(context, "catalog done: FixturesRejectedSourceComptime\n") &&
-        passed
-    passed = traceCatalogSymbolGroup(context, "catalog start: FixturesRejectedSourceDataTypes\n") &&
-        passed
     passed = catalogCompiledSymbolsExecuteFixturesRejectedSourceDataTypes(context) && passed
-    passed = traceCatalogSymbolGroup(context, "catalog done: FixturesRejectedSourceDataTypes\n") &&
-        passed
-    passed = traceCatalogSymbolGroup(context, "catalog start: FixturesRejectedSourceExpressions\n") &&
-        passed
     passed = catalogCompiledSymbolsExecuteFixturesRejectedSourceExpressions(context) && passed
-    passed = traceCatalogSymbolGroup(context, "catalog done: FixturesRejectedSourceExpressions\n") &&
-        passed
-    passed = traceCatalogSymbolGroup(context, "catalog start: FixturesRejectedSourceFFI\n") &&
-        passed
     passed = catalogCompiledSymbolsExecuteFixturesRejectedSourceFFI(context) && passed
-    passed = traceCatalogSymbolGroup(context, "catalog done: FixturesRejectedSourceFFI\n") &&
-        passed
-    passed = traceCatalogSymbolGroup(context, "catalog start: FixturesRejectedSourceKeys\n") &&
-        passed
     passed = catalogCompiledSymbolsExecuteFixturesRejectedSourceKeys(context) && passed
-    passed = traceCatalogSymbolGroup(context, "catalog done: FixturesRejectedSourceKeys\n") &&
-        passed
-    passed = traceCatalogSymbolGroup(context, "catalog start: FixturesRejectedSourceModules\n") &&
-        passed
     passed = catalogCompiledSymbolsExecuteFixturesRejectedSourceModules(context) && passed
-    passed = traceCatalogSymbolGroup(context, "catalog done: FixturesRejectedSourceModules\n") &&
-        passed
-    passed = traceCatalogSymbolGroup(context, "catalog start: FixturesRejectedSourceNames\n") &&
-        passed
     passed = catalogCompiledSymbolsExecuteFixturesRejectedSourceNames(context) && passed
-    passed = traceCatalogSymbolGroup(context, "catalog done: FixturesRejectedSourceNames\n") &&
-        passed
-    passed = traceCatalogSymbolGroup(context, "catalog start: FixturesRejectedSourceParallelism\n") &&
-        passed
     passed = catalogCompiledSymbolsExecuteFixturesRejectedSourceParallelism(context) && passed
-    passed = traceCatalogSymbolGroup(context, "catalog done: FixturesRejectedSourceParallelism\n") &&
-        passed
-    passed = traceCatalogSymbolGroup(context, "catalog start: FixturesRejectedSourceParsing\n") &&
-        passed
     passed = catalogCompiledSymbolsExecuteFixturesRejectedSourceParsing(context) && passed
-    passed = traceCatalogSymbolGroup(context, "catalog done: FixturesRejectedSourceParsing\n") &&
-        passed
-    passed = traceCatalogSymbolGroup(context, "catalog start: FixturesRejectedSourcePatterns\n") &&
-        passed
     passed = catalogCompiledSymbolsExecuteFixturesRejectedSourcePatterns(context) && passed
-    passed = traceCatalogSymbolGroup(context, "catalog done: FixturesRejectedSourcePatterns\n") &&
-        passed
-    passed = traceCatalogSymbolGroup(context, "catalog start: FixturesRejectedSourcePermissions\n") &&
-        passed
     passed = catalogCompiledSymbolsExecuteFixturesRejectedSourcePermissions(context) && passed
-    passed = traceCatalogSymbolGroup(context, "catalog done: FixturesRejectedSourcePermissions\n") &&
-        passed
-    passed = traceCatalogSymbolGroup(context, "catalog start: FixturesRejectedSourcePolymorphism\n") &&
-        passed
     passed = catalogCompiledSymbolsExecuteFixturesRejectedSourcePolymorphism(context) && passed
-    passed = traceCatalogSymbolGroup(context, "catalog done: FixturesRejectedSourcePolymorphism\n") &&
-        passed
-    passed = traceCatalogSymbolGroup(context, "catalog start: FixturesRejectedSourceProcedures\n") &&
-        passed
     passed = catalogCompiledSymbolsExecuteFixturesRejectedSourceProcedures(context) && passed
-    passed = traceCatalogSymbolGroup(context, "catalog done: FixturesRejectedSourceProcedures\n") &&
-        passed
-    passed = traceCatalogSymbolGroup(context, "catalog start: FixturesRejectedSourceSourceText\n") &&
-        passed
     passed = catalogCompiledSymbolsExecuteFixturesRejectedSourceSourceText(context) && passed
-    passed = traceCatalogSymbolGroup(context, "catalog done: FixturesRejectedSourceSourceText\n") &&
-        passed
-    passed = traceCatalogSymbolGroup(context, "catalog start: FixturesRejectedSourceStatements\n") &&
-        passed
     passed = catalogCompiledSymbolsExecuteFixturesRejectedSourceStatements(context) && passed
-    passed = traceCatalogSymbolGroup(context, "catalog done: FixturesRejectedSourceStatements\n") &&
-        passed
-    passed = traceCatalogSymbolGroup(context, "catalog start: ReferenceAsync\n") && passed
     passed = catalogCompiledSymbolsExecuteReferenceAsync(context) && passed
-    passed = traceCatalogSymbolGroup(context, "catalog done: ReferenceAsync\n") && passed
-    passed = traceCatalogSymbolGroup(context, "catalog start: ReferenceAttributes\n") && passed
     passed = catalogCompiledSymbolsExecuteReferenceAttributes(context) && passed
-    passed = traceCatalogSymbolGroup(context, "catalog done: ReferenceAttributes\n") && passed
-    passed = traceCatalogSymbolGroup(context, "catalog start: ReferenceAuthority\n") && passed
     passed = catalogCompiledSymbolsExecuteReferenceAuthority(context) && passed
-    passed = traceCatalogSymbolGroup(context, "catalog done: ReferenceAuthority\n") && passed
-    passed = traceCatalogSymbolGroup(context, "catalog start: ReferenceComptime\n") && passed
     passed = catalogCompiledSymbolsExecuteReferenceComptime(context) && passed
-    passed = traceCatalogSymbolGroup(context, "catalog done: ReferenceComptime\n") && passed
-    passed = traceCatalogSymbolGroup(context, "catalog start: ReferenceConformance\n") && passed
     passed = catalogCompiledSymbolsExecuteReferenceConformance(context) && passed
-    passed = traceCatalogSymbolGroup(context, "catalog done: ReferenceConformance\n") && passed
-    passed = traceCatalogSymbolGroup(context, "catalog start: ReferenceDataTypes\n") && passed
     passed = catalogCompiledSymbolsExecuteReferenceDataTypes(context) && passed
-    passed = traceCatalogSymbolGroup(context, "catalog done: ReferenceDataTypes\n") && passed
-    passed = traceCatalogSymbolGroup(context, "catalog start: ReferenceDiagnostics\n") && passed
     passed = catalogCompiledSymbolsExecuteReferenceDiagnostics(context) && passed
-    passed = traceCatalogSymbolGroup(context, "catalog done: ReferenceDiagnostics\n") && passed
-    passed = traceCatalogSymbolGroup(context, "catalog start: ReferenceExpressions\n") && passed
     passed = catalogCompiledSymbolsExecuteReferenceExpressions(context) && passed
-    passed = traceCatalogSymbolGroup(context, "catalog done: ReferenceExpressions\n") && passed
-    passed = traceCatalogSymbolGroup(context, "catalog start: ReferenceFFI\n") && passed
     passed = catalogCompiledSymbolsExecuteReferenceFFI(context) && passed
-    passed = traceCatalogSymbolGroup(context, "catalog done: ReferenceFFI\n") && passed
-    passed = traceCatalogSymbolGroup(context, "catalog start: ReferenceKeys\n") && passed
     passed = catalogCompiledSymbolsExecuteReferenceKeys(context) && passed
-    passed = traceCatalogSymbolGroup(context, "catalog done: ReferenceKeys\n") && passed
-    passed = traceCatalogSymbolGroup(context, "catalog start: ReferenceLowering\n") && passed
     passed = catalogCompiledSymbolsExecuteReferenceLowering(context) && passed
-    passed = traceCatalogSymbolGroup(context, "catalog done: ReferenceLowering\n") && passed
-    passed = traceCatalogSymbolGroup(context, "catalog start: ReferenceModalTypes\n") && passed
     passed = catalogCompiledSymbolsExecuteReferenceModalTypes(context) && passed
-    passed = traceCatalogSymbolGroup(context, "catalog done: ReferenceModalTypes\n") && passed
-    passed = traceCatalogSymbolGroup(context, "catalog start: ReferenceModules\n") && passed
     passed = catalogCompiledSymbolsExecuteReferenceModules(context) && passed
-    passed = traceCatalogSymbolGroup(context, "catalog done: ReferenceModules\n") && passed
-    passed = traceCatalogSymbolGroup(context, "catalog start: ReferenceNames\n") && passed
     passed = catalogCompiledSymbolsExecuteReferenceNames(context) && passed
-    passed = traceCatalogSymbolGroup(context, "catalog done: ReferenceNames\n") && passed
-    passed = traceCatalogSymbolGroup(context, "catalog start: ReferenceParallelism\n") && passed
     passed = catalogCompiledSymbolsExecuteReferenceParallelism(context) && passed
-    passed = traceCatalogSymbolGroup(context, "catalog done: ReferenceParallelism\n") && passed
-    passed = traceCatalogSymbolGroup(context, "catalog start: ReferencePatterns\n") && passed
     passed = catalogCompiledSymbolsExecuteReferencePatterns(context) && passed
-    passed = traceCatalogSymbolGroup(context, "catalog done: ReferencePatterns\n") && passed
-    passed = traceCatalogSymbolGroup(context, "catalog start: ReferencePermissions\n") && passed
     passed = catalogCompiledSymbolsExecuteReferencePermissions(context) && passed
-    passed = traceCatalogSymbolGroup(context, "catalog done: ReferencePermissions\n") && passed
-    passed = traceCatalogSymbolGroup(context, "catalog start: ReferencePolymorphism\n") && passed
     passed = catalogCompiledSymbolsExecuteReferencePolymorphism(context) && passed
-    passed = traceCatalogSymbolGroup(context, "catalog done: ReferencePolymorphism\n") && passed
-    passed = traceCatalogSymbolGroup(context, "catalog start: ReferenceProcedures\n") && passed
     passed = catalogCompiledSymbolsExecuteReferenceProcedures(context) && passed
-    passed = traceCatalogSymbolGroup(context, "catalog done: ReferenceProcedures\n") && passed
-    passed = traceCatalogSymbolGroup(context, "catalog start: ReferenceProjects\n") && passed
     passed = catalogCompiledSymbolsExecuteReferenceProjects(context) && passed
-    passed = traceCatalogSymbolGroup(context, "catalog done: ReferenceProjects\n") && passed
-    passed = traceCatalogSymbolGroup(context, "catalog start: ReferenceSourceText\n") && passed
     passed = catalogCompiledSymbolsExecuteReferenceSourceText(context) && passed
-    passed = traceCatalogSymbolGroup(context, "catalog done: ReferenceSourceText\n") && passed
-    passed = traceCatalogSymbolGroup(context, "catalog start: ReferenceStatements\n") && passed
     passed = catalogCompiledSymbolsExecuteReferenceStatements(context) && passed
-    passed = traceCatalogSymbolGroup(context, "catalog done: ReferenceStatements\n") && passed
-    passed = traceCatalogSymbolGroup(context, "catalog start: ReferenceTypes\n") && passed
     passed = catalogCompiledSymbolsExecuteReferenceTypes(context) && passed
-    passed = traceCatalogSymbolGroup(context, "catalog done: ReferenceTypes\n") && passed
     return passed
 }

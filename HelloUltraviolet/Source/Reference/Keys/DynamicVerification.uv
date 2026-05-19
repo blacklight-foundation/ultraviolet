@@ -1,26 +1,28 @@
 //! Reference specimens for Keys / DynamicVerification.
 
-[[dynamic]]
+#dynamic
 internal procedure dynamicKeyBlockValue(index: usize) -> i32 {
     var values: shared [i32; 4] = [1, 2, 3, 4]
     var observed: i32 = 0
-    #values[index] dynamic read {
+    #dynamic
+    %read values[index] {
         observed = values[index] + 0
     }
     return observed
 }
 
-[[dynamic]]
+#dynamic
 internal procedure dynamicRuntimeSynchronizedWriteValue(first: usize, second: usize) -> i32 {
     var values: shared [i32; 4] = [1, 2, 3, 4]
-    #values[first], values[second] dynamic write {
+    #dynamic
+    %write values[first], values[second] {
         values[first] = 10
         values[second] = 20
     }
     return values[first] + values[second]
 }
 
-[[dynamic]]
+#dynamic
 internal procedure dynamicParallelRuntimeSynchronizedWriteValue(
     context: Context,
     index: usize
@@ -30,7 +32,7 @@ internal procedure dynamicParallelRuntimeSynchronizedWriteValue(
     return parallel context~>inline() {
         let first: Spawned<i32> = spawn {
             var observed: i32 = 0
-            #values[index] write {
+            %write values[index] {
                 values[index] = 11
                 observed = 11
             }
@@ -38,7 +40,7 @@ internal procedure dynamicParallelRuntimeSynchronizedWriteValue(
         }
         let second: Spawned<i32> = spawn {
             var observed: i32 = 0
-            #values[index] write {
+            %write values[index] {
                 values[index] = 13
                 observed = 13
             }
@@ -48,39 +50,40 @@ internal procedure dynamicParallelRuntimeSynchronizedWriteValue(
     }
 }
 
-[[dynamic]]
+#dynamic
 internal procedure dynamicPrefixCoarsenedReadValue(index: usize) -> i32 {
     var backing: shared [i32; 4] = [5, 6, 7, 8]
     let values: shared [i32] = backing[..]
     var observed: i32 = 0
-    #values dynamic read {
+    #dynamic
+    %read values {
         observed = values[index] + values[0usize]
     }
     return observed
 }
 
-[[dynamic]]
+#dynamic
 internal procedure dynamicSpeculativeOnlyWriteValue(index: usize) -> i32 {
     var backing: shared [i32; 4] = [1, 2, 3, 4]
     let values: shared [i32] = backing[..]
-    #values[index] speculative write {
+    %speculative write values[index] {
         values[index] = values[index] + 10
     }
     var observed: i32 = 0
-    #values[index] read {
+    %read values[index] {
         observed = values[index] + 0
     }
     return observed
 }
 
 internal procedure readSharedLeafForDynamic(value: shared KeyLeaf) -> i32 {
-    #value read {
+    %read value {
         return value.value + 0
     }
     return 0
 }
 
-[[dynamic]]
+#dynamic
 internal procedure dynamicUniqueOriginSharedViewValue() -> i32 {
     var leaf: unique KeyLeaf = KeyLeaf { value: 33 }
     return readSharedLeafForDynamic(leaf)

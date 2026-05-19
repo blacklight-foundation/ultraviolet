@@ -1439,7 +1439,7 @@ Spec-valid rejected-source specimen:
 
 ```ultraviolet
 public procedure contractEntryNonBitcopyReference(value: unique string@Managed) -> bool
-|: => @entry(value) == @entry(value)
+|: |= @entry(value) == @entry(value)
 {
     return true
 }
@@ -3578,7 +3578,7 @@ Spec-valid specimen:
 internal procedure localClosureSharedCaptureValue() -> i32 {
     var shared_value: shared i32 = 13
     let reader = || -> i32 {
-        #shared_value read {
+        %read shared_value {
             return shared_value + 0
         }
         return 0
@@ -3854,7 +3854,7 @@ Observed bootstrap result before repair:
 
 ```text
 Cursive.exe build HelloUltraviolet --check --target-profile x86_64-win64 --build-progress off --max-errors 20: exit=1
-error[E-SEM-2801]: Contract predicate not provable outside `[[dynamic]]` scope
+error[E-SEM-2801]: Contract predicate not provable outside `#dynamic` scope
   --> C:/dev/ultraviolet/HelloUltraviolet/Source/Reference/Procedures/Contracts.uv:368:5
 368 |     return contractPureComptimeReference(value) == value
 ```
@@ -4355,7 +4355,7 @@ Spec-valid specimens:
 
 ```ultraviolet
 internal procedure contractEntryReference(value: i32) -> i32
-|: value > 0 => @entry(value) == value && @result == value + 2
+|: value > 0 |= @entry(value) == value && @result == value + 2
 {
     return value + 2
 }
@@ -4487,13 +4487,13 @@ Spec-valid source:
 internal type PostconditionUnion = i32 | bool
 
 internal procedure postconditionUnionNumericReference() -> PostconditionUnion
-|: => if @result is numeric_value: i32 { numeric_value > 0 } else { false }
+|: |= if @result is numeric_value: i32 { numeric_value > 0 } else { false }
 {
     return 7
 }
 
 internal procedure postconditionUnionBooleanReference() -> PostconditionUnion
-|: => if @result is {
+|: |= if @result is {
     numeric_value: i32 {
         numeric_value > 0
     }
@@ -4509,7 +4509,7 @@ internal procedure postconditionUnionBooleanReference() -> PostconditionUnion
 Observed bootstrap result before repair:
 
 ```text
-error[E-SEM-2801]: Contract predicate not provable outside `[[dynamic]]` scope
+error[E-SEM-2801]: Contract predicate not provable outside `#dynamic` scope
   --> C:/dev/ultraviolet/HelloUltraviolet/Source/Reference/Procedures/Postconditions.uv:42:5
 42 |     return 7
 ```
@@ -4611,15 +4611,15 @@ Observed bootstrap results before repair:
 error[E-SRC-0520]: expected expression at `}`
   --> C:/dev/ultraviolet/HelloUltraviolet/Source/Reference/Procedures/Contracts.uv:115:5
 
-error[E-SEM-2801]: Contract predicate not provable outside `[[dynamic]]` scope
+error[E-SEM-2801]: Contract predicate not provable outside `#dynamic` scope
   --> C:/dev/ultraviolet/HelloUltraviolet/Source/Reference/Procedures/Contracts.uv:236:5
 236 |     if value as i64 > 0 {
 
-error[E-SEM-2801]: Contract predicate not provable outside `[[dynamic]]` scope
+error[E-SEM-2801]: Contract predicate not provable outside `#dynamic` scope
   --> C:/dev/ultraviolet/HelloUltraviolet/Source/Reference/Procedures/Contracts.uv:330:5
 330 |     if (ContractPureBox {
 
-error[E-SEM-2801]: Contract predicate not provable outside `[[dynamic]]` scope
+error[E-SEM-2801]: Contract predicate not provable outside `#dynamic` scope
   --> C:/dev/ultraviolet/HelloUltraviolet/Source/Reference/Procedures/Contracts.uv:366:5
 366 |     return contractPureComptimeReference(value) == value
 ```
@@ -4818,7 +4818,7 @@ internal type EscapingSharedKeyReader = || -> i32 [shared: { shared_value: share
 internal procedure escapingClosureSharedCaptureValue() -> i32 {
     var shared_value: shared i32 = 31
     let reader: EscapingSharedKeyReader = || -> i32 {
-        #shared_value read {
+        %read shared_value {
             return shared_value + 0
         }
         return 0
@@ -5316,18 +5316,18 @@ Spec-valid source:
 
 ```ultraviolet
 extern "C-unwind" {
-    [[unwind("catch")]]
+    #unwind("catch")
     public procedure importedSpeculativePanicBoundary() -> i32
 }
 
-[[dynamic]]
-[[export("C-unwind")]]
-[[unwind("catch")]]
-[[mangle("importedSpeculativePanicBoundary")]]
+#dynamic
+#export("C-unwind")
+#unwind("catch")
+#mangle("importedSpeculativePanicBoundary")
 public procedure ffiImportedSpeculativePanicBoundaryProvider() -> i32 {
     var values: shared [i32; 2] = [1, 2]
 
-    #values[1usize] speculative write {
+    %speculative write values[1usize] {
         values[4usize] = 99
     } commit {
         values[1usize] = 3
@@ -5378,7 +5378,7 @@ HelloUltraviolet.exe: exit=0, 0-byte stdout/stderr
 Spec-valid source:
 
 ```ultraviolet
-[[dynamic]]
+#dynamic
 internal procedure dynamicOrderedSameBaseKeyAccessValue(
     first: usize,
     second: usize
@@ -5386,7 +5386,8 @@ internal procedure dynamicOrderedSameBaseKeyAccessValue(
     var values: shared [i32; 4] = [1, 2, 3, 4]
     var observed: i32 = 0
 
-    #values[first], values[second] dynamic ordered read {
+    #dynamic
+    %read values[first], values[second] [ordered] {
         observed = values[first] + values[second]
     }
 
@@ -5438,7 +5439,7 @@ public procedure speculativeReadModeReference() -> i32 {
     var shared_value: shared i32 = 1
     var observed: i32 = 0
 
-    #shared_value speculative read {
+    %speculative read shared_value {
         observed = shared_value
     }
 
@@ -5456,7 +5457,7 @@ error[E-CON-0091]: Write to path outside keyed set in speculative block
 Expected SPEC result:
 
 ```text
-error[E-CON-0095]: `speculative` without `write` modifier
+error[E-CON-0095]: `%speculative` not followed by `write`
 ```
 
 Bootstrap owner:
@@ -5466,11 +5467,11 @@ Bootstrap owner:
 Failure analysis:
 
 `Docs/SPECIFICATION.md` §19.5.4 defines `K-Spec-Write-Required` as the static
-semantic rule for `#P speculative M {B}` when `M` is not `write`, and
-§19.5.7 assigns that condition to `E-CON-0095`. The bootstrap parser consumed
-the `read` mode, emitted a generic parse error, then rewrote the AST mode to
-`write`. That bypassed the semantic checker's `E-CON-0095` branch and allowed
-later speculative-body purity checking to report `E-CON-0091`.
+semantic rule for `%speculative write` key blocks and §19.5.7 assigns malformed
+speculative heads to `E-CON-0095`. The bootstrap parser consumed the `read`
+mode, emitted a generic parse error, then rewrote the AST mode to `write`. That
+bypassed the semantic checker's `E-CON-0095` branch and allowed later
+speculative-body purity checking to report `E-CON-0091`.
 
 Repair:
 
@@ -5483,7 +5484,7 @@ Verified bootstrap result after repair:
 ```text
 Visual Studio bootstrap build wrapper, target=cursive: exit=0, rebuilt Cursive.exe
 Cursive.exe build HelloUltraviolet/Fixtures/RejectedSource/Keys/SpeculativeReadMode --check --target-profile x86_64-win64 --build-progress off --max-errors 8: exit=1
-error[E-CON-0095]: `speculative` without `write` modifier
+error[E-CON-0095]: `%speculative` not followed by `write`
 ```
 
 ## UVBOOT-0073: Directory Module Keyword Paths Emit Module Aggregation Diagnostics
@@ -5903,7 +5904,7 @@ var backing: shared [i32; 4] = [1, 2, 3, 4]
 let values: shared [i32] = backing[..]
 let index: usize = 2usize
 var observed: i32 = 0
-#values[index], values[index] read {
+%read values[index], values[index] {
     observed = values[index] + values[index]
 }
 return observed
@@ -5975,7 +5976,7 @@ public procedure dynamicKeyStaticRequiredReference(context: Context, index: usiz
     return parallel context~>inline() {
         let first: Spawned<i32> = spawn {
             var observed: i32 = 0
-            #values[index] write {
+            %write values[index] {
                 values[index] = 11
                 observed = 11
             }
@@ -5983,7 +5984,7 @@ public procedure dynamicKeyStaticRequiredReference(context: Context, index: usiz
         }
         let second: Spawned<i32> = spawn {
             var observed: i32 = 0
-            #values[index] write {
+            %write values[index] {
                 values[index] = 13
                 observed = 13
             }
@@ -6004,24 +6005,24 @@ Failure analysis:
 
 `Docs/SPECIFICATION.md` §19.6.4 defines `K-Static-Required`: if key safety is not
 statically safe and the access is outside a dynamic context, the program is
-rejected. §19.6.5 and §19.6.6 define the `[[dynamic]]` path: incomparable
+rejected. §19.6.5 and §19.6.6 define the `#dynamic` path: incomparable
 dynamic indices require runtime ordering and may lower to runtime
 synchronization. §19.6.7 assigns `E-CON-0020` to non-statically-provable key
-safety outside `[[dynamic]]`, and `I-CON-0011` to runtime synchronization
-emitted under `[[dynamic]]`.
+safety outside `#dynamic`, and `I-CON-0011` to runtime synchronization
+emitted under `#dynamic`.
 
 The bootstrap treated local absence of same-body key conflicts as a sufficient
 static proof for dynamic indexed paths even inside a parallel context. That
 accepted two spawned tasks that each wrote `values[index]` through a runtime
-index outside `[[dynamic]]`. The local body of each spawned task contains one
+index outside `#dynamic`. The local body of each spawned task contains one
 keyed path, but the cross-task relationship is not statically disjoint.
 
 Required bootstrap behavior:
 
 Dynamic indexed key paths in a parallel context require a sound static proof
 that covers cross-task access. When the compiler has only local body
-disjointness, the access is not statically safe outside `[[dynamic]]` and must
-emit `E-CON-0020`. The same source under `[[dynamic]]` is valid and must lower
+disjointness, the access is not statically safe outside `#dynamic` and must
+emit `E-CON-0020`. The same source under `#dynamic` is valid and must lower
 runtime synchronization, surfacing `I-CON-0011`.
 
 Repair:
@@ -6030,7 +6031,7 @@ Repair:
   carries dynamic-path classification into static-safety classification.
 - In parallel contexts, local disjointness is no longer accepted as the
   disjoint-path proof for dynamic keyed paths; the checker therefore routes the
-  non-`[[dynamic]]` source to `E-CON-0020` and allows the `[[dynamic]]` source
+  non-`#dynamic` source to `E-CON-0020` and allows the `#dynamic` source
   to emit runtime synchronization.
 
 Permanent corpus coverage:

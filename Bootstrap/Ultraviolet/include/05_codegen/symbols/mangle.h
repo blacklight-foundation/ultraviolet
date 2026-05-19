@@ -79,8 +79,8 @@ std::vector<std::string> PathOfType(const analysis::TypeRef& type);
 // =============================================================================
 
 // LinkName resolves the link symbol name for a declaration based on attributes:
-//   - If [[mangle("name")]] present, return specified name
-//   - If [[mangle(none)]] present, return raw identifier
+//   - If #mangle("name") present, return specified name
+//   - If #mangle(none) present, return raw identifier
 //   - Otherwise, return std::nullopt (caller should use mangled name)
 std::optional<std::string> LinkName(const ast::AttributeList& attrs,
                                     const std::string& raw_name);

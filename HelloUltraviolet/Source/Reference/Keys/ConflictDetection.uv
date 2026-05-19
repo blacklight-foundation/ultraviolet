@@ -3,7 +3,7 @@
 internal procedure disjointKeyAccessValue() -> i32 {
     var values: shared [i32; 4] = [1, 2, 3, 4]
     var observed: i32 = 0
-    #values[0usize], values[1usize] read {
+    %read values[0usize], values[1usize] {
         observed = values[0usize] + values[1usize]
     }
     return observed
@@ -14,7 +14,7 @@ internal procedure sameConstIndexEquivalenceValue() -> i32 {
     let values: shared [i32] = backing[..]
     let index: usize = 2usize
     var observed: i32 = 0
-    #values[index], values[index] read {
+    %read values[index], values[index] {
         observed = values[index] + values[index]
     }
     return observed
@@ -25,7 +25,7 @@ internal procedure sameVariableIndexEquivalenceValue() -> i32 {
     let values: shared [i32] = backing[..]
     var index: usize = 3usize
     var observed: i32 = 0
-    #values[index], values[index] read {
+    %read values[index], values[index] {
         observed = values[index] + values[index]
     }
     return observed
@@ -35,7 +35,7 @@ internal procedure foldedIndexEquivalenceValue() -> i32 {
     var backing: shared [i32; 4] = [1, 2, 3, 4]
     let values: shared [i32] = backing[..]
     var observed: i32 = 0
-    #values[1usize + 1usize], values[3usize - 1usize] ordered read {
+    %read values[1usize + 1usize], values[3usize - 1usize] [ordered] {
         observed = values[2usize] + values[1usize + 1usize]
     }
     return observed
@@ -45,17 +45,18 @@ internal procedure constantOffsetDisjointIndexValue(index: usize) -> i32 {
     var backing: shared [i32; 4] = [1, 2, 3, 4]
     let values: shared [i32] = backing[..]
     var observed: i32 = 0
-    #values[index], values[index + 1usize] ordered read {
+    %read values[index], values[index + 1usize] [ordered] {
         observed = values[index] + values[index + 1usize]
     }
     return observed
 }
 
-[[dynamic]]
+#dynamic
 internal procedure dynamicOrderedSameBaseKeyAccessValue(first: usize, second: usize) -> i32 {
     var values: shared [i32; 4] = [1, 2, 3, 4]
     var observed: i32 = 0
-    #values[first], values[second] dynamic ordered read {
+    #dynamic
+    %read values[first], values[second] [ordered] {
         observed = values[first] + values[second]
     }
     return observed
@@ -68,7 +69,7 @@ internal procedure coveredKeyAccessValue() -> i32 {
             values: [1, 2, 3, 4]
         }
     var observed: i32 = 0
-    #container read {
+    %read container {
         observed = container.leaf.value + container.values[0usize]
     }
     return observed
@@ -76,7 +77,7 @@ internal procedure coveredKeyAccessValue() -> i32 {
 
 internal procedure coveringWriteReadThenWriteValue() -> i32 {
     var shared_value: shared i32 = 5
-    #shared_value write {
+    %write shared_value {
         shared_value = shared_value + 4
     }
     return shared_value + 0
@@ -84,7 +85,7 @@ internal procedure coveringWriteReadThenWriteValue() -> i32 {
 
 internal procedure coveringWriteCompoundRewriteValue() -> i32 {
     var shared_value: shared i32 = 5
-    #shared_value write {
+    %write shared_value {
         shared_value += 4
     }
     return shared_value + 0
@@ -96,7 +97,7 @@ internal procedure coveringRootWriteValue() -> i32 {
             leaf: KeyLeaf { value: 10 },
             values: [1, 2, 3, 4]
         }
-    #container write {
+    %write container {
         container.leaf.value = 21
         container.values[2usize] = container.leaf.value + 0
     }

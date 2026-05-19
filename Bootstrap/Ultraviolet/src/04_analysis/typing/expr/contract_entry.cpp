@@ -6,7 +6,7 @@
 // =================================================================
 //
 // @ENTRY INTRINSIC (@entry(expr)):
-//   1. Valid only in postcondition context (right of =>)
+//   1. Valid only in postcondition context (right of |=)
 //   2. Type the inner expression at entry state
 //   3. Result type must satisfy BitcopyType
 //   4. Value captured at procedure entry

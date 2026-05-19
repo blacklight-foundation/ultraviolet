@@ -3493,7 +3493,7 @@ static BindResult BindStmt(const ScopeContext& ctx,
           scoped.perms.emplace_back();
           scoped.env.scopes.emplace_back();
           scoped.keys_held = true;
-          scoped.key_mode = node.mode.value_or(ast::KeyMode::Read);
+          scoped.key_mode = node.mode;
 
           // Process the body with the key scope
           auto body = BindBlock(ctx, *node.body, scoped);

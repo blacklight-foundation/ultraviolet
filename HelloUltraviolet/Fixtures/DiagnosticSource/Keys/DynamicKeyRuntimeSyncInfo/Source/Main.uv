@@ -1,13 +1,13 @@
 //! Diagnostic key-system specimen for dynamic runtime synchronization.
 
-[[dynamic]]
+#dynamic
 public procedure dynamicKeyRuntimeSyncInfoReference(context: Context, index: usize) -> i32 {
     var backing: shared [i32; 4] = [1, 2, 3, 4]
     let values: shared [i32] = backing[..]
     return parallel context~>inline() {
         let first: Spawned<i32> = spawn {
             var observed: i32 = 0
-            #values[index] write {
+            %write values[index] {
                 values[index] = 11
                 observed = 11
             }
@@ -15,7 +15,7 @@ public procedure dynamicKeyRuntimeSyncInfoReference(context: Context, index: usi
         }
         let second: Spawned<i32> = spawn {
             var observed: i32 = 0
-            #values[index] write {
+            %write values[index] {
                 values[index] = 13
                 observed = 13
             }

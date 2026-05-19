@@ -4,7 +4,7 @@
 //
 // SPEC REFERENCE: Docs/SPECIFICATION.md
 //   Section: Attributes
-//   - Attribute syntax: [[attr]], [[attr(args)]]
+//   - Attribute syntax: #attr, #attr(args)
 //   - Complete attribute list in spec
 //   - Attribute validation
 //
@@ -154,7 +154,7 @@ static bool AttrAppliesTo(std::string_view name, AttrTarget target) {
 
 static bool ValidateInlineArg(const std::optional<std::string>& arg) {
   if (!arg.has_value()) {
-    return true;  // No arg is valid - just [[inline]]
+    return true;  // No arg is valid - just #inline
   }
   const auto& value = *arg;
   return value == "always" || value == "never" || value == "default";

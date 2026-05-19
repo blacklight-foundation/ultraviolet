@@ -87,7 +87,7 @@ void ProcessItem(const ast::ASTItem& item,
         using T = std::decay_t<decltype(decl)>;
 
         if constexpr (std::is_same_v<T, ast::ProcedureDecl>) {
-          // Check for [[export]] attribute
+          // Check for #export attribute
           if (ast::has_attribute(decl.attrs, analysis::attrs::kExport)) {
             SPEC_RULE("FFIBoundary");
             ExportProcInfo info;

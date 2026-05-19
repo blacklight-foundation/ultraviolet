@@ -2,7 +2,7 @@
 
 
 public procedure countAttributesAndMetadataAttributeSyntaxAndPlacementObligations() -> usize {
-    return 52usize
+    return 49usize
 }
 
 public procedure validatedAttributesAndMetadataAttributeSyntaxAndPlacementObligations() -> usize {
@@ -18,7 +18,7 @@ public procedure validatedAttributesAndMetadataAttributeSyntaxAndPlacementObliga
     }
     if acceptedObligationEntryMatches(
         "req.AttributeReservedLeafNames",
-        26684usize,
+        26682usize,
         "HelloUltraviolet::Reference::Attributes",
         "runAttributesGeneralAttributesReference",
         "Source/Reference/Attributes/GeneralAttributes.uv"
@@ -27,7 +27,7 @@ public procedure validatedAttributesAndMetadataAttributeSyntaxAndPlacementObliga
     }
     if acceptedObligationEntryMatches(
         "req.AttributeImmediateTargetPlacement",
-        26698usize,
+        26696usize,
         "HelloUltraviolet::Reference::Attributes",
         "runAttributesGeneralAttributesReference",
         "Source/Reference/Attributes/GeneralAttributes.uv"
@@ -36,7 +36,7 @@ public procedure validatedAttributesAndMetadataAttributeSyntaxAndPlacementObliga
     }
     if acceptedObligationEntryMatches(
         "Parse-AttrListOpt-None",
-        26714usize,
+        26712usize,
         "HelloUltraviolet::Reference::Attributes",
         "runAttributesGeneralAttributesReference",
         "Source/Reference/Attributes/GeneralAttributes.uv"
@@ -45,7 +45,7 @@ public procedure validatedAttributesAndMetadataAttributeSyntaxAndPlacementObliga
     }
     if acceptedObligationEntryMatches(
         "Parse-AttrListOpt-Yes",
-        26732usize,
+        26730usize,
         "HelloUltraviolet::Reference::Attributes",
         "runAttributesGeneralAttributesReference",
         "Source/Reference/Attributes/GeneralAttributes.uv"
@@ -54,7 +54,7 @@ public procedure validatedAttributesAndMetadataAttributeSyntaxAndPlacementObliga
     }
     if acceptedObligationEntryMatches(
         "Parse-AttrList-Cons",
-        26750usize,
+        26748usize,
         "HelloUltraviolet::Reference::Attributes",
         "runAttributesGeneralAttributesReference",
         "Source/Reference/Attributes/GeneralAttributes.uv"
@@ -63,7 +63,7 @@ public procedure validatedAttributesAndMetadataAttributeSyntaxAndPlacementObliga
     }
     if acceptedObligationEntryMatches(
         "Parse-AttrListTail-End",
-        26768usize,
+        26766usize,
         "HelloUltraviolet::Reference::Attributes",
         "runAttributesGeneralAttributesReference",
         "Source/Reference/Attributes/GeneralAttributes.uv"
@@ -72,7 +72,7 @@ public procedure validatedAttributesAndMetadataAttributeSyntaxAndPlacementObliga
     }
     if acceptedObligationEntryMatches(
         "Parse-AttrListTail-Cons",
-        26786usize,
+        26784usize,
         "HelloUltraviolet::Reference::Attributes",
         "runAttributesGeneralAttributesReference",
         "Source/Reference/Attributes/GeneralAttributes.uv"
@@ -80,44 +80,8 @@ public procedure validatedAttributesAndMetadataAttributeSyntaxAndPlacementObliga
         count = count + 1usize
     }
     if acceptedObligationEntryMatches(
-        "Parse-AttrBlock",
-        26804usize,
-        "HelloUltraviolet::Reference::Attributes",
-        "runAttributesGeneralAttributesReference",
-        "Source/Reference/Attributes/GeneralAttributes.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
-        "Parse-AttrSpecList-Cons",
-        26822usize,
-        "HelloUltraviolet::Reference::Attributes",
-        "runAttributesGeneralAttributesReference",
-        "Source/Reference/Attributes/GeneralAttributes.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
-        "Parse-AttrSpecListTail-End",
-        26840usize,
-        "HelloUltraviolet::Reference::Attributes",
-        "runAttributesGeneralAttributesReference",
-        "Source/Reference/Attributes/GeneralAttributes.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
-        "Parse-AttrSpecListTail-TrailingComma",
-        26858usize,
-        "HelloUltraviolet::Reference::Attributes",
-        "runAttributesGeneralAttributesReference",
-        "Source/Reference/Attributes/GeneralAttributes.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
-        "Parse-AttrSpecListTail-Comma",
-        26876usize,
+        "Parse-Attribute",
+        26802usize,
         "HelloUltraviolet::Reference::Attributes",
         "runAttributesGeneralAttributesReference",
         "Source/Reference/Attributes/GeneralAttributes.uv"
@@ -126,7 +90,7 @@ public procedure validatedAttributesAndMetadataAttributeSyntaxAndPlacementObliga
     }
     if acceptedObligationEntryMatches(
         "Parse-AttrSpec",
-        26894usize,
+        26820usize,
         "HelloUltraviolet::Reference::Attributes",
         "runAttributesGeneralAttributesReference",
         "Source/Reference/Attributes/GeneralAttributes.uv"
@@ -135,7 +99,16 @@ public procedure validatedAttributesAndMetadataAttributeSyntaxAndPlacementObliga
     }
     if acceptedObligationEntryMatches(
         "Parse-AttrArgsOpt-None",
-        26912usize,
+        26838usize,
+        "HelloUltraviolet::Reference::Attributes",
+        "runAttributesGeneralAttributesReference",
+        "Source/Reference/Attributes/GeneralAttributes.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "Parse-AttrArgsOpt-Empty",
+        26856usize,
         "HelloUltraviolet::Reference::Attributes",
         "runAttributesGeneralAttributesReference",
         "Source/Reference/Attributes/GeneralAttributes.uv"
@@ -144,7 +117,7 @@ public procedure validatedAttributesAndMetadataAttributeSyntaxAndPlacementObliga
     }
     if acceptedObligationEntryMatches(
         "Parse-AttrArgsOpt-Yes",
-        26930usize,
+        26874usize,
         "HelloUltraviolet::Reference::Attributes",
         "runAttributesGeneralAttributesReference",
         "Source/Reference/Attributes/GeneralAttributes.uv"
@@ -153,7 +126,7 @@ public procedure validatedAttributesAndMetadataAttributeSyntaxAndPlacementObliga
     }
     if acceptedObligationEntryMatches(
         "Parse-AttrArgList-Cons",
-        26948usize,
+        26892usize,
         "HelloUltraviolet::Reference::Attributes",
         "runAttributesGeneralAttributesReference",
         "Source/Reference/Attributes/GeneralAttributes.uv"
@@ -162,7 +135,7 @@ public procedure validatedAttributesAndMetadataAttributeSyntaxAndPlacementObliga
     }
     if acceptedObligationEntryMatches(
         "Parse-AttrArgListTail-End",
-        26966usize,
+        26910usize,
         "HelloUltraviolet::Reference::Attributes",
         "runAttributesGeneralAttributesReference",
         "Source/Reference/Attributes/GeneralAttributes.uv"
@@ -171,7 +144,7 @@ public procedure validatedAttributesAndMetadataAttributeSyntaxAndPlacementObliga
     }
     if acceptedObligationEntryMatches(
         "Parse-AttrArgListTail-TrailingComma",
-        26984usize,
+        26928usize,
         "HelloUltraviolet::Reference::Attributes",
         "runAttributesGeneralAttributesReference",
         "Source/Reference/Attributes/GeneralAttributes.uv"
@@ -180,7 +153,7 @@ public procedure validatedAttributesAndMetadataAttributeSyntaxAndPlacementObliga
     }
     if acceptedObligationEntryMatches(
         "Parse-AttrArgListTail-Comma",
-        27002usize,
+        26946usize,
         "HelloUltraviolet::Reference::Attributes",
         "runAttributesGeneralAttributesReference",
         "Source/Reference/Attributes/GeneralAttributes.uv"
@@ -189,7 +162,7 @@ public procedure validatedAttributesAndMetadataAttributeSyntaxAndPlacementObliga
     }
     if acceptedObligationEntryMatches(
         "Parse-AttrArg-Named-Literal",
-        27020usize,
+        26964usize,
         "HelloUltraviolet::Reference::Attributes",
         "runAttributesGeneralAttributesReference",
         "Source/Reference/Attributes/GeneralAttributes.uv"
@@ -198,7 +171,7 @@ public procedure validatedAttributesAndMetadataAttributeSyntaxAndPlacementObliga
     }
     if acceptedObligationEntryMatches(
         "Parse-AttrArg-Named-Ident",
-        27038usize,
+        26982usize,
         "HelloUltraviolet::Reference::Attributes",
         "runAttributesGeneralAttributesReference",
         "Source/Reference/Attributes/GeneralAttributes.uv"
@@ -207,7 +180,7 @@ public procedure validatedAttributesAndMetadataAttributeSyntaxAndPlacementObliga
     }
     if acceptedObligationEntryMatches(
         "Parse-AttrArg-Named-Call",
-        27056usize,
+        27000usize,
         "HelloUltraviolet::Reference::Attributes",
         "runAttributesGeneralAttributesReference",
         "Source/Reference/Attributes/GeneralAttributes.uv"
@@ -216,7 +189,7 @@ public procedure validatedAttributesAndMetadataAttributeSyntaxAndPlacementObliga
     }
     if acceptedObligationEntryMatches(
         "Parse-AttrArg-Literal",
-        27074usize,
+        27018usize,
         "HelloUltraviolet::Reference::Attributes",
         "runAttributesGeneralAttributesReference",
         "Source/Reference/Attributes/GeneralAttributes.uv"
@@ -225,7 +198,7 @@ public procedure validatedAttributesAndMetadataAttributeSyntaxAndPlacementObliga
     }
     if acceptedObligationEntryMatches(
         "Parse-AttrArg-Ident",
-        27092usize,
+        27036usize,
         "HelloUltraviolet::Reference::Attributes",
         "runAttributesGeneralAttributesReference",
         "Source/Reference/Attributes/GeneralAttributes.uv"
@@ -234,7 +207,7 @@ public procedure validatedAttributesAndMetadataAttributeSyntaxAndPlacementObliga
     }
     if acceptedObligationEntryMatches(
         "def.AttributeAstRepresentation",
-        27113usize,
+        27057usize,
         "HelloUltraviolet::Reference::Attributes",
         "runAttributesGeneralAttributesReference",
         "Source/Reference/Attributes/GeneralAttributes.uv"
@@ -243,7 +216,7 @@ public procedure validatedAttributesAndMetadataAttributeSyntaxAndPlacementObliga
     }
     if acceptedObligationEntryMatches(
         "def.AttributeVendorPrefixAst",
-        27132usize,
+        27076usize,
         "HelloUltraviolet::Reference::Attributes",
         "runAttributesGeneralAttributesReference",
         "Source/Reference/Attributes/GeneralAttributes.uv"
@@ -252,7 +225,7 @@ public procedure validatedAttributesAndMetadataAttributeSyntaxAndPlacementObliga
     }
     if acceptedObligationEntryMatches(
         "def.AttributeArgumentAst",
-        27146usize,
+        27090usize,
         "HelloUltraviolet::Reference::Attributes",
         "runAttributesGeneralAttributesReference",
         "Source/Reference/Attributes/GeneralAttributes.uv"
@@ -261,7 +234,7 @@ public procedure validatedAttributesAndMetadataAttributeSyntaxAndPlacementObliga
     }
     if acceptedObligationEntryMatches(
         "def.AttributeSpecAst",
-        27160usize,
+        27104usize,
         "HelloUltraviolet::Reference::Attributes",
         "runAttributesGeneralAttributesReference",
         "Source/Reference/Attributes/GeneralAttributes.uv"
@@ -270,7 +243,7 @@ public procedure validatedAttributesAndMetadataAttributeSyntaxAndPlacementObliga
     }
     if acceptedObligationEntryMatches(
         "def.AttributeListAst",
-        27174usize,
+        27118usize,
         "HelloUltraviolet::Reference::Attributes",
         "runAttributesGeneralAttributesReference",
         "Source/Reference/Attributes/GeneralAttributes.uv"
@@ -279,7 +252,7 @@ public procedure validatedAttributesAndMetadataAttributeSyntaxAndPlacementObliga
     }
     if acceptedObligationEntryMatches(
         "def.ExpressionAttributes",
-        27189usize,
+        27133usize,
         "HelloUltraviolet::Reference::Attributes",
         "runAttributesGeneralAttributesReference",
         "Source/Reference/Attributes/GeneralAttributes.uv"
@@ -288,7 +261,7 @@ public procedure validatedAttributesAndMetadataAttributeSyntaxAndPlacementObliga
     }
     if acceptedObligationEntryMatches(
         "def.AttachExpressionAttributes",
-        27203usize,
+        27147usize,
         "HelloUltraviolet::Reference::Attributes",
         "runAttributesGeneralAttributesReference",
         "Source/Reference/Attributes/GeneralAttributes.uv"
@@ -297,7 +270,7 @@ public procedure validatedAttributesAndMetadataAttributeSyntaxAndPlacementObliga
     }
     if acceptedObligationEntryMatches(
         "def.ItemAttributeList",
-        27217usize,
+        27161usize,
         "HelloUltraviolet::Reference::Attributes",
         "runAttributesGeneralAttributesReference",
         "Source/Reference/Attributes/GeneralAttributes.uv"
@@ -306,7 +279,7 @@ public procedure validatedAttributesAndMetadataAttributeSyntaxAndPlacementObliga
     }
     if acceptedObligationEntryMatches(
         "def.AttributeByName",
-        27232usize,
+        27176usize,
         "HelloUltraviolet::Reference::Attributes",
         "runAttributesGeneralAttributesReference",
         "Source/Reference/Attributes/GeneralAttributes.uv"
@@ -315,7 +288,7 @@ public procedure validatedAttributesAndMetadataAttributeSyntaxAndPlacementObliga
     }
     if acceptedObligationEntryMatches(
         "req.MalformedAttributeSyntaxIllFormed",
-        27248usize,
+        27192usize,
         "HelloUltraviolet::Reference::Attributes",
         "runAttributesGeneralAttributesReference",
         "Source/Reference/Attributes/GeneralAttributes.uv"
@@ -324,7 +297,7 @@ public procedure validatedAttributesAndMetadataAttributeSyntaxAndPlacementObliga
     }
     if acceptedObligationEntryMatches(
         "def.AttributeTargetDomain",
-        27262usize,
+        27206usize,
         "HelloUltraviolet::Reference::Attributes",
         "runAttributesGeneralAttributesReference",
         "Source/Reference/Attributes/GeneralAttributes.uv"
@@ -333,7 +306,7 @@ public procedure validatedAttributesAndMetadataAttributeSyntaxAndPlacementObliga
     }
     if acceptedObligationEntryMatches(
         "def.AttributeRegistry",
-        27276usize,
+        27220usize,
         "HelloUltraviolet::Reference::Attributes",
         "runAttributesGeneralAttributesReference",
         "Source/Reference/Attributes/GeneralAttributes.uv"
@@ -342,7 +315,7 @@ public procedure validatedAttributesAndMetadataAttributeSyntaxAndPlacementObliga
     }
     if acceptedObligationEntryMatches(
         "def.VendorAttributeRegistryInitial",
-        27290usize,
+        27234usize,
         "HelloUltraviolet::Reference::Attributes",
         "runAttributesGeneralAttributesReference",
         "Source/Reference/Attributes/GeneralAttributes.uv"
@@ -351,7 +324,7 @@ public procedure validatedAttributesAndMetadataAttributeSyntaxAndPlacementObliga
     }
     if acceptedObligationEntryMatches(
         "def.SpecAttributeRegistry",
-        27304usize,
+        27248usize,
         "HelloUltraviolet::Reference::Attributes",
         "runAttributesGeneralAttributesReference",
         "Source/Reference/Attributes/GeneralAttributes.uv"
@@ -360,7 +333,7 @@ public procedure validatedAttributesAndMetadataAttributeSyntaxAndPlacementObliga
     }
     if acceptedObligationEntryMatches(
         "def.SpecAttributeTargets",
-        27327usize,
+        27271usize,
         "HelloUltraviolet::Reference::Attributes",
         "runAttributesGeneralAttributesReference",
         "Source/Reference/Attributes/GeneralAttributes.uv"
@@ -369,7 +342,7 @@ public procedure validatedAttributesAndMetadataAttributeSyntaxAndPlacementObliga
     }
     if acceptedObligationEntryMatches(
         "def.AttributeListWellFormedJudgementSet",
-        27363usize,
+        27307usize,
         "HelloUltraviolet::Reference::Attributes",
         "runAttributesGeneralAttributesReference",
         "Source/Reference/Attributes/GeneralAttributes.uv"
@@ -378,7 +351,7 @@ public procedure validatedAttributesAndMetadataAttributeSyntaxAndPlacementObliga
     }
     if acceptedObligationEntryMatches(
         "AttrList-Ok",
-        27377usize,
+        27321usize,
         "HelloUltraviolet::Reference::Attributes",
         "runAttributesGeneralAttributesReference",
         "Source/Reference/Attributes/GeneralAttributes.uv"
@@ -387,7 +360,7 @@ public procedure validatedAttributesAndMetadataAttributeSyntaxAndPlacementObliga
     }
     if rejectedSourceObligationEntryMatches(
         "AttrList-Unknown",
-        27395usize,
+        27339usize,
         "HelloUltraviolet::Audit::FixtureCatalog::RejectedSource",
         "validatedAttributesRejectedSourceFixtureCount",
         "Fixtures/RejectedSource/Attributes/UnknownAttribute/Source/Main.uv"
@@ -396,7 +369,7 @@ public procedure validatedAttributesAndMetadataAttributeSyntaxAndPlacementObliga
     }
     if acceptedObligationEntryMatches(
         "AttrList-Target-Err",
-        27413usize,
+        27357usize,
         "HelloUltraviolet::Reference::Attributes",
         "runAttributesGeneralAttributesReference",
         "Source/Reference/Attributes/GeneralAttributes.uv"
@@ -405,7 +378,7 @@ public procedure validatedAttributesAndMetadataAttributeSyntaxAndPlacementObliga
     }
     if acceptedObligationEntryMatches(
         "def.AttributeStaticSemantics.Helpers2",
-        27431usize,
+        27375usize,
         "HelloUltraviolet::Reference::Attributes",
         "runAttributesGeneralAttributesReference",
         "Source/Reference/Attributes/GeneralAttributes.uv"
@@ -414,7 +387,7 @@ public procedure validatedAttributesAndMetadataAttributeSyntaxAndPlacementObliga
     }
     if acceptedObligationEntryMatches(
         "req.MemoryOrderAttributeTargets",
-        27445usize,
+        27389usize,
         "HelloUltraviolet::Reference::Attributes",
         "runAttributesGeneralAttributesReference",
         "Source/Reference/Attributes/GeneralAttributes.uv"
@@ -423,7 +396,7 @@ public procedure validatedAttributesAndMetadataAttributeSyntaxAndPlacementObliga
     }
     if acceptedObligationEntryMatches(
         "req.AttributeListWellFormednessCheck",
-        27459usize,
+        27403usize,
         "HelloUltraviolet::Reference::Attributes",
         "runAttributesGeneralAttributesReference",
         "Source/Reference/Attributes/GeneralAttributes.uv"
@@ -432,7 +405,7 @@ public procedure validatedAttributesAndMetadataAttributeSyntaxAndPlacementObliga
     }
     if acceptedObligationEntryMatches(
         "req.MultipleAttributeListConcatenation",
-        27473usize,
+        27417usize,
         "HelloUltraviolet::Reference::Attributes",
         "runAttributesGeneralAttributesReference",
         "Source/Reference/Attributes/GeneralAttributes.uv"
@@ -441,7 +414,7 @@ public procedure validatedAttributesAndMetadataAttributeSyntaxAndPlacementObliga
     }
     if acceptedObligationEntryMatches(
         "req.FfiAttributeOwnership",
-        27487usize,
+        27431usize,
         "HelloUltraviolet::Reference::Attributes",
         "runAttributesGeneralAttributesReference",
         "Source/Reference/Attributes/GeneralAttributes.uv"
@@ -450,7 +423,7 @@ public procedure validatedAttributesAndMetadataAttributeSyntaxAndPlacementObliga
     }
     if acceptedObligationEntryMatches(
         "conformance.AttributeDynamicSemantics",
-        27504usize,
+        27448usize,
         "HelloUltraviolet::Reference::Attributes",
         "runAttributesGeneralAttributesReference",
         "Source/Reference/Attributes/GeneralAttributes.uv"
@@ -459,7 +432,7 @@ public procedure validatedAttributesAndMetadataAttributeSyntaxAndPlacementObliga
     }
     if acceptedObligationEntryMatches(
         "conformance.AttributeLoweringOwnership",
-        27520usize,
+        27464usize,
         "HelloUltraviolet::Reference::Attributes",
         "runAttributesGeneralAttributesReference",
         "Source/Reference/Attributes/GeneralAttributes.uv"
@@ -468,7 +441,7 @@ public procedure validatedAttributesAndMetadataAttributeSyntaxAndPlacementObliga
     }
     if rejectedSourceObligationEntryMatches(
         "diagnostics.AttributeDiagnostics",
-        27536usize,
+        27480usize,
         "HelloUltraviolet::Audit::FixtureCatalog::RejectedSource",
         "validatedAttributesRejectedSourceFixtureCount",
         "Fixtures/RejectedSource/Attributes/UnknownAttribute/Source/Main.uv"

@@ -3,23 +3,23 @@
 // ===========================================================================
 //
 // PURPOSE:
-//   Attribute AST node definitions for the [[attr]] annotation system used
+//   Attribute AST node definitions for the #attr annotation system used
 //   on declarations and expressions. This is a UVX extension.
 //
 // SPEC REFERENCE: Docs/SPECIFICATION.md Section 3.3.2.2 - Attributes (Lines 2671-2678)
 //
-//   Attribute syntax: [[name]] or [[name(arg, key: value, key: ident)]]
+//   Attribute syntax: #name or #name(arg, key: value, key: ident)
 //
 //   Standard attributes:
-//   - [[inline]], [[inline(always)]], [[inline(never)]], [[inline(default)]]
-//   - [[cold]]
-//   - [[export]]
-//   - [[mangle(none)]], [[mangle("name")]]
-//   - [[unwind]]
-//   - [[layout(C)]]
-//   - [[ffi_pass_by_value]]
-//   - [[weak]]
-//   - [[dynamic]]
+//   - #inline, #inline(always), #inline(never), #inline(default)
+//   - #cold
+//   - #export
+//   - #mangle(none), #mangle("name")
+//   - #unwind
+//   - #layout(C)
+//   - #ffi_pass_by_value
+//   - #weak
+//   - #dynamic
 //
 // ===========================================================================
 
@@ -43,17 +43,17 @@ namespace ultraviolet::ast {
 // Represents a single argument to an attribute. Arguments can be:
 //
 //   1. Positional token literals:
-//      [[inline(always)]]  -> args[0] = {key: none, value: Token("always")}
-//      [[mangle("name")]]  -> args[0] = {key: none, value: Token("name")}
+//      #inline(always)  -> args[0] = {key: none, value: Token("always")}
+//      #mangle("name")  -> args[0] = {key: none, value: Token("name")}
 //
 //   2. Named token literals:
-//      [[foo(bar: "baz")]] -> args[0] = {key: "bar", value: Token("baz")}
+//      #foo(bar: "baz") -> args[0] = {key: "bar", value: Token("baz")}
 //
 //   3. Named token identifiers:
-//      [[foo(mode: ready)]] -> args[0] = {key: "mode", value: Token("ready")}
+//      #foo(mode: ready) -> args[0] = {key: "mode", value: Token("ready")}
 //
 //   4. Nested named-call arguments:
-//      [[layout(align(16))]] -> args[0] = {key: "align", value: [Token("16")]}
+//      #layout(align(16)) -> args[0] = {key: "align", value: [Token("16")]}
 //
 struct AttributeArg {
   std::optional<Identifier> key;       // Named arg: key:value or key(args) (nullopt if positional)
@@ -68,9 +68,9 @@ struct AttributeArg {
 // canonical flattened text spelling used by existing lookup code.
 //
 // Examples:
-//   [[inline]]            -> vendor_prefix_opt = null,      leaf_name = "inline"
-//   [[vendor::inline]]    -> vendor_prefix_opt = ["vendor"], leaf_name = "inline"
-//   [[v1::v2::attr]]      -> vendor_prefix_opt = ["v1", "v2"], leaf_name = "attr"
+//   #inline            -> vendor_prefix_opt = null,      leaf_name = "inline"
+//   #vendor::inline    -> vendor_prefix_opt = ["vendor"], leaf_name = "inline"
+//   #v1::v2::attr      -> vendor_prefix_opt = ["v1", "v2"], leaf_name = "attr"
 //
 using VendorPrefix = std::vector<Identifier>;
 
@@ -120,13 +120,13 @@ struct AttrName {
 // Attribute Item
 // ===========================================================================
 //
-// Represents a single attribute: [[name]] or [[name(args)]]
+// Represents a single attribute: #name or #name(args)
 //
 // Examples:
-//   [[inline]]            -> name: "inline", args: []
-//   [[inline(always)]]    -> name: "inline", args: [{key: none, value: "always"}]
-//   [[mangle("my_func")]] -> name: "mangle", args: [{key: none, value: "my_func"}]
-//   [[layout(C)]]         -> name: "layout", args: [{key: none, value: "C"}]
+//   #inline            -> name: "inline", args: []
+//   #inline(always)    -> name: "inline", args: [{key: none, value: "always"}]
+//   #mangle("my_func") -> name: "mangle", args: [{key: none, value: "my_func"}]
+//   #layout(C)         -> name: "layout", args: [{key: none, value: "C"}]
 //
 struct AttributeItem {
   AttrName name;
@@ -139,11 +139,11 @@ struct AttributeItem {
 // ===========================================================================
 //
 // A list of attributes attached to a declaration or expression.
-// Multiple attributes can appear in a single [[...]] or in separate brackets.
+// Multiple attributes are represented as stacked #attribute entries.
 //
 // Examples:
-//   [[inline, cold]]       -> Two attributes in one bracket
-//   [[inline]] [[cold]]    -> Two separate attribute brackets (same result)
+//   #inline
+//   #cold              -> Two attributes in one list
 //
 using AttributeList = std::vector<AttributeItem>;
 using AttrOpt = std::optional<AttributeList>;

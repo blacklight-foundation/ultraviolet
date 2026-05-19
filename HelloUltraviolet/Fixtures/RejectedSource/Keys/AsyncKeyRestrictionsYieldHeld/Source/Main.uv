@@ -2,7 +2,7 @@
 
 public procedure asyncKeyRestrictionsYieldHeldReference() -> Async<i32, (), (), !> {
     var shared_value: shared i32 = 1
-    #shared_value read {
+    %read shared_value {
         yield 1
     }
     return

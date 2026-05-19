@@ -118,12 +118,12 @@ const char* to_string(KeyMode mode) {
   return "unknown";
 }
 
-const char* to_string(KeyBlockMod mod) {
-  switch (mod) {
-    case KeyBlockMod::Dynamic: return "dynamic";
-    case KeyBlockMod::Speculative: return "speculative";
-    case KeyBlockMod::Release: return "release";
-    case KeyBlockMod::Ordered: return "ordered";
+const char* to_string(KeyBlockKind kind) {
+  switch (kind) {
+    case KeyBlockKind::Read: return "%read";
+    case KeyBlockKind::Write: return "%write";
+    case KeyBlockKind::Release: return "%release";
+    case KeyBlockKind::SpeculativeWrite: return "%speculative write";
   }
   return "unknown";
 }

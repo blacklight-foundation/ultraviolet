@@ -1206,7 +1206,7 @@ class ProcedureKeyAccessSummaryBuilder {
               VisitBlock(*node.body, shared_params, inner_aliases, summary);
             }
           } else if constexpr (std::is_same_v<T, ast::KeyBlockStmt>) {
-            const auto mode = node.mode.value_or(ast::KeyMode::Read);
+            const auto mode = node.mode;
             for (const auto& path_expr : node.paths) {
               const auto lowered = ParseKeyPathSpec(path_expr);
               if (const auto ref =

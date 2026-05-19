@@ -1,6 +1,6 @@
 //! Rejected FFI specimen for unwind attributes on ordinary procedures.
 
-[[unwind("catch")]]
+#unwind("catch")
 public procedure unwindOnNonFFIProcedureReference() -> i32 {
     return 0
 }

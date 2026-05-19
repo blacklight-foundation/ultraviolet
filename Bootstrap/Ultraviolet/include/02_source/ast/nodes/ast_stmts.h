@@ -223,23 +223,26 @@ namespace ultraviolet::ast
   // Key Block Statement
   // ===========================================================================
   // Key blocks provide synchronized access to shared data using the key system.
-  // Syntax: #path mode { } or #path1, path2 mod1 mod2 mode { }
+  // Syntax: %read path { }, %write path [ordered] { },
+  // %release read path { }, or %speculative write path { }.
 
-  /// KeyBlockStmt: key block (#path mode { })
+  /// KeyBlockStmt: key block (%read path { })
   /// Acquires keys for synchronized access to shared data.
+  /// - kind: Source head form.
   /// - paths: Key paths identifying the data to access
-  /// - mods: Modifiers (Dynamic, Speculative, Release)
-  /// - mode: Access mode (Read or Write, defaults to Read)
+  /// - mode: Effective access mode (Read or Write)
+  /// - options: Options that apply to the whole path set
   /// - body: Block executed while holding the keys
   ///
-  /// Note: KeyMode and KeyBlockMod are defined in ast_common.h
+  /// Note: KeyMode, KeyBlockKind, and KeyBlockOptions are defined in ast_common.h
   ///       KeyPathExpr is defined in ast_common.h
   struct KeyBlockStmt
   {
     AttributeList attrs;
+    KeyBlockKind kind = KeyBlockKind::Read;
     std::vector<KeyPathExpr> paths;
-    std::vector<KeyBlockMod> mods;
-    std::optional<KeyMode> mode;
+    KeyMode mode = KeyMode::Read;
+    KeyBlockOptions options;
     BlockPtr body;
     ultraviolet::core::Span span;
   };

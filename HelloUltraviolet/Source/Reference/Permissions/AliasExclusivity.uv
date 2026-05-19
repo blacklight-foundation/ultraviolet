@@ -10,7 +10,7 @@ internal procedure inspectConstPermissionCell(cell: const PermissionCell) -> i32
 }
 
 internal procedure inspectSharedPermissionCell(cell: shared PermissionCell) -> i32 {
-    #cell read {
+    %read cell {
         return cell.value + 0
     }
     return 0
@@ -30,7 +30,7 @@ internal procedure aliasExclusivityValue() -> i32 {
     var shared_sum: i32 = 0
     let shared_const_view: i32 = inspectConstPermissionCell(shared_cell)
     let shared_shared_view: i32 = inspectSharedPermissionCell(shared_cell)
-    #shared_cell write {
+    %write shared_cell {
         let first: i32 = shared_cell~>readShared()
         let second: i32 = shared_cell~>readConst()
         shared_sum = first + second

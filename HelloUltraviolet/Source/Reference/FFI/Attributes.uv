@@ -1,20 +1,20 @@
 //! Reference specimens for FFI / Attributes.
 
-[[library(name: "Kernel32", kind: "raw-dylib")]]
+#library(name: "Kernel32", kind: "raw-dylib")
 extern "C" {
-    [[mangle("GetLastError")]]
+    #mangle("GetLastError")
     public procedure ffiImportedGetLastErrorReference() -> u32
 }
 
-[[library(name: "Kernel32")]]
+#library(name: "Kernel32")
 extern "C" {
-    [[mangle(none)]]
+    #mangle(none)
     public procedure GetCurrentProcessId() -> u32
 }
 
 /// Exported procedure with an explicit link name selected by mangle.
-[[export("C")]]
-[[mangle("uv_reference_attribute_export")]]
+#export("C")
+#mangle("uv_reference_attribute_export")
 public procedure ffiAttributeExportReference(value: i32) -> i32 {
     return value + 2
 }

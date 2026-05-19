@@ -13,38 +13,38 @@ internal enum AttributeTargetReference {
     TypeAlias
 }
 
-[[deprecated("record attribute target")]]
+#deprecated("record attribute target")
 internal record GeneralDeprecatedRecord {
     internal value: i32
 }
 
 internal record GeneralDeprecatedFieldRecord {
-    [[deprecated("field attribute target")]]
+    #deprecated("field attribute target")
     internal value: i32
 }
 
 internal record GeneralMethodAttributeRecord {
     internal value: i32
 
-    [[inline(never)]]
+    #inline(never)
     internal procedure readValue(~) -> i32 {
         return self.value
     }
 }
 
-[[deprecated("enum attribute target")]]
+#deprecated("enum attribute target")
 internal enum GeneralDeprecatedEnum {
     Value
 }
 
-[[dynamic]]
+#dynamic
 internal modal GeneralDynamicModal {
     @Ready {
         internal value: i32
     }
 }
 
-[[deprecated("type alias attribute target")]]
+#deprecated("type alias attribute target")
 internal type GeneralDeprecatedAlias = i32
 
 internal record GeneralAttributeReference {
@@ -71,36 +71,37 @@ internal procedure generalAttributeHasValidName(
     return reference.name_segments > 0usize
 }
 
-[[inline]]
+#inline
 internal procedure generalBareInlineAttributeValue() -> i32 {
     return 5
 }
 
-[[inline(default), cold]]
+#inline(default)
+#cold
 internal procedure generalSpecListAttributeValue() -> i32 {
     return 7
 }
 
-[[inline(never)]]
-[[cold]]
+#inline(never)
+#cold
 internal procedure generalMultipleAttributeListValue() -> i32 {
     return 11
 }
 
 internal procedure generalBindingAttributeValue() -> i32 {
-    [[deprecated("binding attribute target")]]
+    #deprecated("binding attribute target")
     let binding_value: i32 = 13
     return 13
 }
 
 internal procedure generalStatementAndExpressionAttributeValue() -> i32 {
-    [[files]]
+    #files
     comptime {
         let exists = files~>exists("Ultraviolet.toml")
     }
 
     let file_attribute_ok: bool =
-        [[files]] comptime { files~>exists("Ultraviolet.toml").value == true }
+        #files comptime { files~>exists("Ultraviolet.toml").value == true }
     return if file_attribute_ok { 17 } else { 0 }
 }
 

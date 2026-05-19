@@ -20,7 +20,7 @@ internal modal ComptimeLiteralModal {
 }
 
 comptime internal procedure addComptimeReferenceValue(value: usize) -> usize
-|: value > 0usize => @result > value
+|: value > 0usize |= @result > value
 {
     return value + 2usize
 }

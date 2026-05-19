@@ -3,39 +3,17 @@
 using HelloUltraviolet::Audit::{ runParsingReferenceModels }
 using HelloUltraviolet::Audit::{ runSpecClarificationReferenceModels }
 
-internal procedure traceAuditSymbolExecution(context: Context, text: string@View) -> bool {
-    let output: Outcome<(), IoError> = context.io~>write_stderr(text)
-    return if output is {
-        @Value {
-            true
-        }
-        @Error {
-            false
-        }
-    }
-}
-
 public procedure catalogCompiledSymbolsExecuteAudit(context: Context) -> bool {
     var passed: bool = true
-    passed = traceAuditSymbolExecution(context, "symbol start: runParsingReferenceModels\n") &&
-        passed
     passed = recordCatalogSymbolExecution(
         context,
         "runParsingReferenceModels",
         runParsingReferenceModels()
     ) && passed
-    passed = traceAuditSymbolExecution(context, "symbol done: runParsingReferenceModels\n") &&
-        passed
-    passed = traceAuditSymbolExecution(context, "symbol start: runSpecClarificationReferenceModels\n") &&
-        passed
     passed = recordCatalogSymbolExecution(
         context,
         "runSpecClarificationReferenceModels",
         runSpecClarificationReferenceModels()
-    ) && passed
-    passed = traceAuditSymbolExecution(
-        context,
-        "symbol done: runSpecClarificationReferenceModels\n"
     ) && passed
     return passed
 }

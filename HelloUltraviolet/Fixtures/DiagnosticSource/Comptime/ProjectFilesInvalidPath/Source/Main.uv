@@ -1,7 +1,7 @@
 //! Diagnostic-absence specimen for ProjectFiles invalid path restrictions.
 
 public procedure projectFilesInvalidPathReference() -> i32 {
-    [[files]]
+    #files
     comptime {
         let result = files~>exists("../outside-project")
         let invalid_path: bool = if result is {

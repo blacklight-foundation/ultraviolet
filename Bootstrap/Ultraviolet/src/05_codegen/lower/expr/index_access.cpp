@@ -100,7 +100,7 @@ analysis::TypeRef IndexedElementType(const ast::Expr& access,
 // Bounds checking is required for:
 // - Slices (always)
 // - Arrays with dynamic indices
-// - Arrays with [[dynamic]] attribute
+// - Arrays with #dynamic attribute
 // =============================================================================
 
 LowerResult LowerIndexAccess(const ast::IndexAccessExpr& expr, LowerCtx& ctx) {

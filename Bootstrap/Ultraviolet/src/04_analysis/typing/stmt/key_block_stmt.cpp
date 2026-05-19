@@ -1700,6 +1700,7 @@ StmtTypeResult TypeKeyBlockStmt(const ScopeContext& ctx,
   }
 
   bool has_memory_order_attr = false;
+  bool has_dynamic_attr = false;
   std::size_t memory_order_attr_count = 0;
   if (!node.attrs.empty()) {
     ast::AttributeList statement_attrs;
@@ -1709,6 +1710,9 @@ StmtTypeResult TypeKeyBlockStmt(const ScopeContext& ctx,
         key_block_attrs.push_back(attr);
         has_memory_order_attr = true;
         ++memory_order_attr_count;
+      } else if (attr.name == attrs::kDynamic) {
+        key_block_attrs.push_back(attr);
+        has_dynamic_attr = true;
       } else {
         statement_attrs.push_back(attr);
       }
@@ -1754,15 +1758,11 @@ StmtTypeResult TypeKeyBlockStmt(const ScopeContext& ctx,
   }
 
   const bool has_speculative_mod =
-      std::find(node.mods.begin(), node.mods.end(),
-                ast::KeyBlockMod::Speculative) != node.mods.end();
-  const bool has_ordered_mod = std::find(node.mods.begin(), node.mods.end(),
-                                         ast::KeyBlockMod::Ordered) !=
-                               node.mods.end();
-  const bool has_release_mod = std::find(node.mods.begin(), node.mods.end(),
-                                         ast::KeyBlockMod::Release) !=
-                               node.mods.end();
-  const ast::KeyMode inner_mode = node.mode.value_or(ast::KeyMode::Read);
+      node.kind == ast::KeyBlockKind::SpeculativeWrite;
+  const bool has_ordered_mod = node.options.ordered;
+  const bool has_release_mod = node.kind == ast::KeyBlockKind::Release;
+  const ast::KeyMode inner_mode = node.mode;
+  const bool dynamic_key_context = type_ctx.contract_dynamic || has_dynamic_attr;
   const auto current_key_infos = CanonicalHeldKeyInfos(node.paths, inner_mode);
 
   if (has_memory_order_attr && (type_ctx.in_speculative || has_speculative_mod)) {
@@ -1772,8 +1772,7 @@ StmtTypeResult TypeKeyBlockStmt(const ScopeContext& ctx,
   if (has_speculative_mod && has_release_mod) {
     return {false, "E-CON-0094", {}, {}};
   }
-  if (has_speculative_mod &&
-      (!node.mode.has_value() || *node.mode != ast::KeyMode::Write)) {
+  if (has_speculative_mod && node.mode != ast::KeyMode::Write) {
     return {false, "E-CON-0095", {}, {}};
   }
   if (has_ordered_mod && !OrderedComparablePaths(node.paths)) {
@@ -1918,11 +1917,11 @@ StmtTypeResult TypeKeyBlockStmt(const ScopeContext& ctx,
       SPEC_RULE("K-Dynamic-Index-Conflict");
       return {false, "E-CON-0010", {}, {}};
     }
-    if (!safety.IsStaticallySafe() && !type_ctx.contract_dynamic) {
+    if (!safety.IsStaticallySafe() && !dynamic_key_context) {
       SPEC_RULE("K-Static-Required");
       return {false, "E-CON-0020", {}, {}};
     }
-    if (type_ctx.contract_dynamic && type_ctx.diags) {
+    if (dynamic_key_context && type_ctx.diags) {
       const char* diag_id = safety.IsStaticallySafe() ? "I-CON-0013"
                                                       : "I-CON-0011";
       if (auto diag = core::MakeDiagnosticById(diag_id, node.span)) {
@@ -1936,8 +1935,7 @@ StmtTypeResult TypeKeyBlockStmt(const ScopeContext& ctx,
                   [&](const KeyPath& path) {
                     return PathCoveredByExplicitKeys(path, explicit_key_paths);
                   });
-  if (writes_explicit_key_path &&
-      (!node.mode.has_value() || *node.mode != ast::KeyMode::Write)) {
+  if (writes_explicit_key_path && node.mode != ast::KeyMode::Write) {
       SPEC_RULE("K-Read-Block-No-Write");
       return {false, "E-CON-0070", {}, {}};
   }
@@ -1957,6 +1955,7 @@ StmtTypeResult TypeKeyBlockStmt(const ScopeContext& ctx,
   TypeEnv key_env = env;
   StmtTypeContext key_ctx = type_ctx;
   key_ctx.keys_held = true;
+  key_ctx.contract_dynamic = dynamic_key_context;
   key_ctx.key_mode = inner_mode;
   key_ctx.held_key_paths = type_ctx.held_key_paths;
   key_ctx.held_key_paths.insert(key_ctx.held_key_paths.end(),

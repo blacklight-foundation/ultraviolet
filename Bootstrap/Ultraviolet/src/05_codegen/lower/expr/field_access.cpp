@@ -35,7 +35,7 @@ namespace ultraviolet::codegen {
 
 namespace {
 
-// Check if attribute list contains [[dynamic]]
+// Check if attribute list contains #dynamic
 bool HasDynamicAttr(const ast::AttributeList& attrs) {
   return analysis::HasAttribute(attrs, analysis::attrs::kDynamic);
 }

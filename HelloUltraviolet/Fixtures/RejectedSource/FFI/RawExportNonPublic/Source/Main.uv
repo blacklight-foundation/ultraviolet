@@ -1,6 +1,6 @@
 //! Rejected FFI specimen for non-public raw exports.
 
-[[export("C")]]
+#export("C")
 procedure rawExportNonPublicReference() -> i32 {
     return 0
 }

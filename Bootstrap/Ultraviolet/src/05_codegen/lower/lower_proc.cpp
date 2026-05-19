@@ -34,7 +34,7 @@
 //      - CollectAsyncIR gathers yield points and local variable slots
 //      - Generates wrapper function that allocates frame and initial state
 //      - Generates resume function that handles state machine dispatch
-//   3. Contract checking (preconditions/postconditions) is inserted based on [[dynamic]] attr
+//   3. Contract checking (preconditions/postconditions) is inserted based on #dynamic attr
 //   4. Cleanup plan computed for parameters to handle fallthrough returns
 //   5. Special handling for 'main' procedure to emit initialization plan
 //   6. Consider extracting async procedure lowering into separate file
@@ -106,7 +106,7 @@ bool IsAsyncProc(const analysis::ScopeContext& scope,
   return analysis::AsyncSigOf(scope, ret_type).has_value();
 }
 
-// Check if [[dynamic]] attribute is present for runtime contract checks
+// Check if #dynamic attribute is present for runtime contract checks
 bool HasDynamicContractAttr(const AttributeList& attrs) {
   return analysis::HasAttribute(attrs, analysis::attrs::kDynamic);
 }
@@ -1230,7 +1230,7 @@ ProcIR LowerProc(const ProcedureDecl& decl,
   }
   ctx.active_contract_postcondition = contract_post ? contract_post.get() : nullptr;
 
-  // Emit precondition check if [[dynamic]] contract present
+  // Emit precondition check if #dynamic contract present
   IRPtr precond_ir = nullptr;
   if (has_dynamic_contract && contract_pre) {
     SPEC_RULE("Lower-Proc-ContractPre");

@@ -7,7 +7,7 @@ derive target NeedsRequiredClass(target: Type) |: requires RequiredDeriveClass {
     let reflected = target
 }
 
-[[derive(NeedsRequiredClass)]]
+#derive(NeedsRequiredClass)
 public record DeriveMissingRequiredClassReference {
     public value: i32
 }

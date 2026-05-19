@@ -460,10 +460,10 @@ namespace ultraviolet::ast
     // Contract System (UVX Extension)
     // ===========================================================================
 
-    // Contract clause: |: pre => post
+    // Contract clause: |: pre |= post
     struct ContractClause
     {
-        ExprPtr precondition;  // pre (may be null for => post form)
+        ExprPtr precondition;  // pre (true for |= post form)
         ExprPtr postcondition; // post (may be null for |: pre form)
         core::Span span;
     };

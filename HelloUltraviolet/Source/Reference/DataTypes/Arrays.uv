@@ -16,13 +16,13 @@ internal procedure arrayPlaceIndexReference() -> bool {
     return values[1usize] == 4
 }
 
-[[dynamic]]
+#dynamic
 internal procedure dynamicArrayIndexReference(index: usize) -> i32 {
     let values: [i32; 3] = [5, 6, 7]
     return values[index]
 }
 
-[[dynamic]]
+#dynamic
 internal procedure dynamicArrayPlaceReference(index: usize) -> i32 {
     var values: [i32; 3] = [8, 9, 10]
     values[index] = 12

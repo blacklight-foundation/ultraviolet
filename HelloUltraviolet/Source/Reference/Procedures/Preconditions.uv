@@ -11,18 +11,18 @@ internal procedure preconditionPositiveReference(value: i32) -> i32
 }
 
 internal procedure preconditionPrePostReference(value: i32) -> i32
-|: value > 0 => @result >= value
+|: value > 0 |= @result >= value
 {
     return value + 1
 }
 
 internal procedure preconditionPostOnlyReference(value: i32) -> i32
-|: => @result == value
+|: |= @result == value
 {
     return value
 }
 
-[[dynamic]]
+#dynamic
 internal procedure preconditionDynamicReference(value: i32) -> i32
 |: value > 0
 {

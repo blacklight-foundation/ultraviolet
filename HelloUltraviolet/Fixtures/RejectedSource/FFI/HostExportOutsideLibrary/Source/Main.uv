@@ -1,6 +1,6 @@
 //! Rejected FFI specimen for hosted exports outside library assemblies.
 
-[[host_export("C")]]
+#host_export("C")
 public procedure hostedValue() -> i32 {
     return 0
 }

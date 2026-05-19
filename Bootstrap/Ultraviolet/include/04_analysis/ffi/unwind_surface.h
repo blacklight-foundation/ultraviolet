@@ -58,17 +58,17 @@ std::optional<UnwindMode> ParseUnwindMode(std::string_view str);
 //
 // A procedure crosses the FFI boundary if it is:
 // 1. An extern procedure declaration (imported from foreign code)
-// 2. A procedure with [[export]] attribute (exported to foreign code)
+// 2. A procedure with #export attribute (exported to foreign code)
 
-// Check if a procedure declaration has the [[export]] attribute
+// Check if a procedure declaration has the #export attribute
 bool HasExportAttribute(const ast::ProcedureDecl& proc);
 
-// Check if a procedure declaration has the [[unwind]] attribute
+// Check if a procedure declaration has the #unwind attribute
 // If present, extracts the mode into mode_out
 bool HasUnwindAttribute(const ast::ProcedureDecl& proc,
                         std::optional<UnwindMode>* mode_out);
 
-// Check if an extern procedure has the [[unwind]] attribute
+// Check if an extern procedure has the #unwind attribute
 // If present, extracts the mode into mode_out
 bool HasUnwindAttribute(const ast::ExternProcDecl& proc,
                         std::optional<UnwindMode>* mode_out);
@@ -104,7 +104,7 @@ struct ExportProcInfo {
 // Collected FFI surface for a module
 struct FfiSurfaceInfo {
   std::vector<FfiImportInfo> imports;    // Extern procedure declarations
-  std::vector<ExportProcInfo> exports;   // Procedures with [[export]] attribute
+  std::vector<ExportProcInfo> exports;   // Procedures with #export attribute
 };
 
 // Collect FFI surface information from a module

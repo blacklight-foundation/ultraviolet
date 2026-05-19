@@ -2,7 +2,7 @@
 
 public procedure speculativeReleaseModeReference() -> i32 {
     var shared_value: shared i32 = 1
-    #shared_value speculative release write {
+    %release write shared_value speculative {
         shared_value = 2
     }
     return 0

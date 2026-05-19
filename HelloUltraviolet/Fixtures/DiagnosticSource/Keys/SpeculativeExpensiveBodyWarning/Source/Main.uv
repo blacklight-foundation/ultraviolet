@@ -12,7 +12,7 @@ public procedure speculativeExpensiveBodyWarningReference() -> i32 {
     var counter: shared SpeculativeDiagnosticCounter = SpeculativeDiagnosticCounter {
         value: 5
     }
-    #counter speculative write {
+    %speculative write counter {
         let next_value: i32 = counter~>nextValue()
         counter.value = next_value
     }

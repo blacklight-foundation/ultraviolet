@@ -108,7 +108,7 @@ namespace ultraviolet::core
     return set.find(s) != set.end();
   }
 
-  inline constexpr std::array<std::string_view, 46> kUltravioletOperators = {
+  inline constexpr std::array<std::string_view, 47> kUltravioletOperators = {
       "+",
       "-",
       "*",
@@ -137,6 +137,7 @@ namespace ultraviolet::core
       "%=",
       "&=",
       "|:",
+      "|=",
       "^=",
       "<<=",
       ">>=",

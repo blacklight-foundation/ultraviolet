@@ -5,7 +5,7 @@ derive target EmitsUserError(target: Type) {
     diagnostics~>error("derive target user diagnostic")
 }
 
-[[derive(EmitsUserError)]]
+#derive(EmitsUserError)
 public record DeriveTargetUserErrorReference {
     public value: i32
 }

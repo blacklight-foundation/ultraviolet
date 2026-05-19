@@ -1,7 +1,7 @@
 //! Rejected FFI specimen for catch unwind mode without a C-unwind boundary ABI.
 
 extern "C" {
-    [[unwind("catch")]]
+    #unwind("catch")
     public procedure importedValue() -> i32
 }
 

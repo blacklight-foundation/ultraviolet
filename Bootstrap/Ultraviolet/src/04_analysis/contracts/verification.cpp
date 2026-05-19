@@ -41,7 +41,7 @@
  * REFACTORING NOTES:
  *   1. STATIC VERIFICATION IS DEFAULT - contracts must be provable
  *   2. If contract cannot be statically proven, program is ILL-FORMED
- *   3. [[dynamic]] attribute enables runtime verification instead
+ *   3. #dynamic attribute enables runtime verification instead
  *   4. Verification context accumulates known facts
  *   5. Control flow (if/if-case) creates branching contexts
  *   6. Linear arithmetic (comparisons, bounds) has decision procedure
@@ -53,14 +53,14 @@
  *      - proof.cpp: Proof search and generation
  *
  * VERIFICATION MODES:
- *   - [[static]] (default): Must prove at compile time
- *   - [[dynamic]]: Generate runtime checks
+ *   - #static (default): Must prove at compile time
+ *   - #dynamic: Generate runtime checks
  *
  * DIAGNOSTIC CODES:
  *   - E-VER-0001: Contract cannot be statically verified
  *   - E-VER-0002: Postcondition not established
  *   - E-VER-0003: Precondition may not hold at call site
- *   - W-VER-0001: Using [[dynamic]] verification
+ *   - W-VER-0001: Using #dynamic verification
  *
  * =============================================================================
  */

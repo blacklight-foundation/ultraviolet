@@ -6,7 +6,7 @@
 // =================================================================
 //
 // @RESULT INTRINSIC (@result):
-//   1. Valid only in postcondition context (right of =>)
+//   1. Valid only in postcondition context (right of |=)
 //   2. Type is the procedure's return type
 //   3. References the value about to be returned
 //
@@ -17,13 +17,13 @@
 //   Gamma |- @result : T
 //
 // CONTEXT REQUIREMENTS:
-//   - ONLY valid in postcondition context (right of =>)
-//   - Cannot be used in preconditions (left of => or alone)
+//   - ONLY valid in postcondition context (right of |=)
+//   - Cannot be used in preconditions (left of |= or alone)
 //   - References the actual return value
 //
 // USE CASE:
 //   procedure abs(x: i32) -> i32
-//       |: => @result >= 0
+//       |: |= @result >= 0
 //   {
 //       return if x < 0 { -x } else { x }
 //   }

@@ -31,11 +31,11 @@ internal procedure permissionQualifiedBindingValue() -> i32 {
     var shared_cell: shared PermissionCell = PermissionCell { value: 3 }
     var unique_cell: unique PermissionCell = PermissionCell { value: 4 }
     var observed: i32 = default_const_cell~>readConst() + explicit_const_cell~>readConst()
-    #shared_cell read {
+    %read shared_cell {
         observed = observed + shared_cell.value
         observed = observed + shared_cell~>readConst()
     }
-    #shared_cell write {
+    %write shared_cell {
         shared_cell.value = shared_cell.value + 1
         observed = observed + shared_cell~>readShared()
     }

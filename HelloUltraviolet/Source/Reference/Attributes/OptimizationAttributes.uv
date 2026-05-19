@@ -10,38 +10,38 @@ internal enum OptimizationAttributeReferenceKind {
 internal record OptimizationMethodAttributeRecord {
     internal value: i32
 
-    [[inline(never)]]
+    #inline(never)
     internal procedure readNeverInlinedValue(~) -> i32 {
         return self.value
     }
 
-    [[cold]]
+    #cold
     internal procedure readColdValue(~) -> i32 {
         return self.value + 1
     }
 }
 
-[[inline]]
+#inline
 internal procedure optimizationBareInlineValue() -> i32 {
     return 2
 }
 
-[[inline(default)]]
+#inline(default)
 internal procedure optimizationDefaultInlineValue() -> i32 {
     return 3
 }
 
-[[inline(always)]]
+#inline(always)
 internal procedure optimizationAlwaysInlineValue() -> i32 {
     return 5
 }
 
-[[inline(never)]]
+#inline(never)
 internal procedure optimizationNeverInlineValue() -> i32 {
     return 7
 }
 
-[[cold]]
+#cold
 internal procedure optimizationColdValue() -> i32 {
     return 11
 }

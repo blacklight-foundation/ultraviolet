@@ -39,9 +39,9 @@
 //      - Methods: record_path ++ [method_name]
 //      - State methods: modal_path ++ [state] ++ [method_name]
 //      - VTables: ["vtable"] ++ PathOfType(T) ++ ["cl"] ++ ClassPath
-//   4. LinkName checks [[mangle(mode)]] first:
-//      - [[mangle(none)]] -> raw identifier
-//      - [[mangle("name")]] -> specified symbol
+//   4. LinkName checks #mangle(mode) first:
+//      - #mangle(none) -> raw identifier
+//      - #mangle("name") -> specified symbol
 //   5. LiteralID uses FNV1a64 hash of contents
 //   6. Closures mangled with enclosing scope + index
 //
@@ -93,7 +93,7 @@ std::optional<std::string> LinkName(const ast::AttributeList& attrs,
       continue;
     }
 
-    // [[mangle(mode)]] with `mode = none | "..."`.
+    // #mangle(mode) with `mode = none | "..."`.
     const ast::AttributeArg* mode_arg = nullptr;
     for (const auto& arg : attr.args) {
       if (!arg.key.has_value() || *arg.key == "mode") {

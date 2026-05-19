@@ -388,7 +388,7 @@ LinkPlan BuildOutputLinkPlan(const Project& project,
   if (hosted_library && !IsSharedLibrary(project)) {
     EmitUnsupportedArtifactDiagnostic(
         diags, project, target_profile, "hosted library",
-        "`[[host_export]]` requires a shared-library final artifact");
+        "`#host_export` requires a shared-library final artifact");
     return plan;
   }
 

@@ -41,7 +41,7 @@ internal procedure fieldBoundaryKeyPathValue() -> i32 {
             value: 6
         }
     var observed: i32 = 0
-    #container read {
+    %read container {
         observed = container.leaf.value + container.value
     }
     return observed
@@ -52,7 +52,7 @@ internal procedure pointerDereferenceKeyPathValue() -> i32 {
     var pointer_box: shared KeyPointerBox =
         KeyPointerBox { pointer: &leaf }
     var observed: i32 = 0
-    #pointer_box.pointer read {
+    %read pointer_box.pointer {
         observed = (*pointer_box.pointer).value
     }
     return observed
@@ -63,7 +63,7 @@ internal procedure sharedDynamicMethodKeyPathValue() -> i32 {
     var dynamic_box: shared SharedDynamicKeyBox =
         SharedDynamicKeyBox { owner: owner as $SharedDynamicKeyReadable }
     var observed: i32 = 0
-    #dynamic_box.owner read {
+    %read dynamic_box.owner {
         observed = dynamic_box.owner~>readKeyValue()
     }
     return observed
@@ -76,10 +76,10 @@ internal procedure nestedKeyPathValue() -> i32 {
             values: [1, 2, 3, 4]
         }
     var observed: i32 = 0
-    #container.leaf.value read {
+    %read container.leaf.value {
         observed = observed + container.leaf.value
     }
-    #container.values[1usize] read {
+    %read container.values[1usize] {
         observed = observed + container.values[1usize]
     }
     return observed
@@ -88,7 +88,7 @@ internal procedure nestedKeyPathValue() -> i32 {
 internal procedure rootKeyPathValue() -> i32 {
     var shared_value: shared i32 = 5
     var observed: i32 = 0
-    #shared_value read {
+    %read shared_value {
         observed = shared_value + 0
     }
     return observed

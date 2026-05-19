@@ -2,7 +2,7 @@
 
 public procedure orderedRedundantWarningReference() -> i32 {
     var values: shared [i32; 4] = [1, 2, 3, 4]
-    #values[0usize], values[1usize] ordered read {
+    %read values[0usize], values[1usize] [ordered] {
         let total: i32 = values[0usize] + values[1usize]
     }
     return 0

@@ -14,7 +14,7 @@ public procedure summarizeAsUnknown(target: shared UnknownAccessTarget) -> i32 {
 
 public procedure unknownCalleeAccessWarningReference() -> i32 {
     var target: shared UnknownAccessTarget = UnknownAccessTarget { value: 1 }
-    #target read {
+    %read target {
         let observed: i32 = summarizeAsUnknown(target)
     }
     return 0

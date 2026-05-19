@@ -270,8 +270,8 @@ static ParseStmtCoreResult ParseStmtCore(Parser parser) {
     }
   }
 
-  // key block: #path { ... }
-  if (IsOp(parser, "#")) {
+  // key block: %read path { ... }
+  if (IsOp(parser, "%")) {
     auto key_stmt = TryParseKeyBlockStmt(parser);
     if (key_stmt.has_value()) {
       return {key_stmt->parser, std::move(key_stmt->elem), true};

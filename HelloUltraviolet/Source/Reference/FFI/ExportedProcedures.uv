@@ -1,22 +1,22 @@
 //! Reference specimens for FFI / ExportedProcedures.
 
 /// Raw exported primitive procedure using the C ABI.
-[[export("C")]]
-[[mangle("uv_reference_exported_increment")]]
+#export("C")
+#mangle("uv_reference_exported_increment")
 public procedure ffiExportedIncrement(value: i32) -> i32 {
     return value + 1
 }
 
 /// Raw exported aggregate procedure whose signature satisfies FfiSafe.
-[[export("C")]]
-[[mangle("uv_reference_exported_record_value")]]
+#export("C")
+#mangle("uv_reference_exported_record_value")
 public procedure ffiExportedRecordValue(value: FFIPrimitiveRecord) -> i32 {
     return value.signed_value
 }
 
 /// Raw exported procedure using a drop-bearing by-value FfiSafe record.
-[[export("C")]]
-[[mangle("uv_reference_exported_dropping_value")]]
+#export("C")
+#mangle("uv_reference_exported_dropping_value")
 public procedure ffiExportedDroppingValue(move value: FFIDroppingRecord) -> i32 {
     return move value.value
 }

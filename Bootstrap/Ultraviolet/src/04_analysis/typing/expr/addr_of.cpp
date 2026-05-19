@@ -140,7 +140,7 @@ ExprTypeResult TypeAddressOfExprImpl(const ScopeContext& ctx,
               result.diag_id = "Index-Array-NonConst-Err";
               result.diag_detail =
                   "fixed-size array index expression is not compile-time constant; "
-                  "runtime fixed-array indexing requires [[dynamic]], or use a slice "
+                  "runtime fixed-array indexing requires #dynamic, or use a slice "
                   "for runtime indexing";
               result.diag_span = index->index
                                      ? std::optional<core::Span>(index->index->span)

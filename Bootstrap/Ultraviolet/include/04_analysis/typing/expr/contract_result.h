@@ -23,13 +23,13 @@ namespace ultraviolet::analysis::expr
     //   Gamma |- @result : T
     //
     // REQUIREMENTS:
-    //   - ONLY valid in postcondition context (right of =>)
-    //   - Cannot be used in preconditions (left of => or alone)
+    //   - ONLY valid in postcondition context (right of |=)
+    //   - Cannot be used in preconditions (left of |= or alone)
     //   - References the actual return value
     //
     // USE CASE:
     //   procedure abs(x: i32) -> i32
-    //       |: => @result >= 0
+    //       |: |= @result >= 0
     //   {
     //       return if x < 0 { -x } else { x }
     //   }

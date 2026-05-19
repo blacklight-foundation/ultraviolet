@@ -5,12 +5,12 @@
 // SPEC REFERENCE: Docs/SPECIFICATION.md Section 3.3.6.13 (Contract Clause Rules)
 //
 // This file implements contract clause parsing:
-//   - ParseContractClauseOpt: Parse optional contract clause |: pre => post
+  //   - ParseContractClauseOpt: Parse optional contract clause |: pre |= post
 //
 // SYNTAX FORMS:
 //   |: precondition               -- precondition only
-//   |: precondition => postcondition  -- both
-//   |: => postcondition           -- postcondition only (pre is true)
+  //   |: precondition |= postcondition  -- both
+  //   |: |= postcondition               -- postcondition only (pre is true)
 //
 // CONTRACT INTRINSICS:
 //   @result      -- references return value (postcondition only)
@@ -92,18 +92,18 @@ namespace ultraviolet::ast
   //   Γ ⊢ ParseContractClauseOpt(P) ⇓ (P, ⊥)
   //
   // SPEC: Parse-ContractBody-PostOnly
-  //   IsOp(Tok(P), "=>")    Γ ⊢ ParsePredicateExpr(Advance(P)) ⇓ (P_1, post)
+  //   IsOp(Tok(P), "|=")    Γ ⊢ ParsePredicateExpr(Advance(P)) ⇓ (P_1, post)
   //   ────────────────────────────────────────────────────────────────
   //   Γ ⊢ ParseContractBody(P) ⇓ (P_1, ⟨⊥, post⟩)
   //
   // SPEC: Parse-ContractBody-PrePost
-  //   Γ ⊢ ParsePredicateExpr(P) ⇓ (P_1, pre)    IsOp(Tok(P_1), "=>")
+  //   Γ ⊢ ParsePredicateExpr(P) ⇓ (P_1, pre)    IsOp(Tok(P_1), "|=")
   //   Γ ⊢ ParsePredicateExpr(Advance(P_1)) ⇓ (P_2, post)
   //   ────────────────────────────────────────────────────────────────
   //   Γ ⊢ ParseContractBody(P) ⇓ (P_2, ⟨pre, post⟩)
   //
   // SPEC: Parse-ContractBody-PreOnly
-  //   Γ ⊢ ParsePredicateExpr(P) ⇓ (P_1, pre)    ¬ IsOp(Tok(P_1), "=>")
+  //   Γ ⊢ ParsePredicateExpr(P) ⇓ (P_1, pre)    ¬ IsOp(Tok(P_1), "|=")
   //   ────────────────────────────────────────────────────────────────
   //   Γ ⊢ ParseContractBody(P) ⇓ (P_1, ⟨pre, ⊥⟩)
 
@@ -139,8 +139,8 @@ namespace ultraviolet::ast
 
     ContractClause clause;
 
-    // Check for => (postcondition only case)
-    if (IsOp(next, "=>"))
+    // Check for |= (postcondition only case)
+    if (IsOp(next, "|="))
     {
       SPEC_RULE("Parse-ContractBody-PostOnly");
       Advance(next);
@@ -153,15 +153,15 @@ namespace ultraviolet::ast
     // Parse precondition
     Parser pre_parser = next;
     if (!IsPunc(pre_parser, "{")) {
-      pre_parser.stop_before_contract_arrow = true;
+      pre_parser.stop_before_contract_post_separator = true;
     }
     ParseElemResult<ExprPtr> pre = ParsePredicateExpr(pre_parser);
     clause.precondition = pre.elem;
     next = pre.parser;
-    next.stop_before_contract_arrow = false;
+    next.stop_before_contract_post_separator = false;
 
-    // Check for => postcondition
-    if (IsOp(next, "=>"))
+    // Check for |= postcondition
+    if (IsOp(next, "|="))
     {
       SPEC_RULE("Parse-ContractBody-PrePost");
       Advance(next);

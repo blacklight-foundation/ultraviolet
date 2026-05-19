@@ -23,7 +23,7 @@
 //
 //   Section 3.3.2.6 - Statement Nodes
 //     - KeyMode (read, write)
-//     - KeyBlockMod (dynamic, speculative, release)
+//     - KeyBlockKind (%read, %write, %release, %speculative write)
 //
 //   Section 3.3.2.5 - Declaration Nodes (Lines 2680-2873)
 //     - Visibility (public, internal, private, protected)
@@ -206,15 +206,20 @@ enum class DispatchOptionKind {
 };
 
 // ===========================================================================
-// Key System Modifier Enums
+// Key System Enums
 // ===========================================================================
 
-/// Key block modifiers for synchronized access.
-enum class KeyBlockMod {
-  Dynamic,      // Runtime key acquisition
-  Speculative,  // Speculative execution (may roll back)
-  Release,      // Release held keys after block completes
-  Ordered,      // Canonical ordered acquisition/commit behavior
+/// Key block head kind for synchronized access.
+enum class KeyBlockKind {
+  Read,              // %read
+  Write,             // %write
+  Release,           // %release read|write
+  SpeculativeWrite,  // %speculative write
+};
+
+/// Key block options that apply to the whole path set.
+struct KeyBlockOptions {
+  bool ordered = false;
 };
 
 // ===========================================================================

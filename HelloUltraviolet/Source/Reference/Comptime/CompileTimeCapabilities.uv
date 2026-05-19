@@ -2,18 +2,18 @@
 
 internal procedure compileTimeIOReferenceValue() -> usize {
     let project_root_ok: bool =
-        [[files]] comptime { files~>project_root() != "" }
+        #files comptime { files~>project_root() != "" }
     let manifest_exists_ok: bool =
-        [[files]] comptime { files~>exists("Ultraviolet.toml").value == true }
+        #files comptime { files~>exists("Ultraviolet.toml").value == true }
     let manifest_text_ok: bool =
-        [[files]] comptime { files~>read("Ultraviolet.toml").value != "" }
-    [[files]]
+        #files comptime { files~>read("Ultraviolet.toml").value != "" }
+    #files
     comptime {
         let manifest_bytes = files~>read_bytes("Ultraviolet.toml")
     }
 
     var source_root_hits: usize = 0usize
-    [[files]]
+    #files
     comptime loop entry in files~>list_dir("Source").value {
         source_root_hits = source_root_hits +
             comptime if entry == "Main.uv" { 1usize } else { 0usize }

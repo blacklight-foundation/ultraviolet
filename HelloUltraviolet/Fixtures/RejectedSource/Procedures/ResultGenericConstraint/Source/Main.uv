@@ -1,7 +1,7 @@
 //! Rejected postcondition specimen for class-requiring operations on generic results.
 
 public procedure genericResultConstraint<TValue>(value: TValue) -> TValue
-|: => @result == value
+|: |= @result == value
 {
     return value
 }

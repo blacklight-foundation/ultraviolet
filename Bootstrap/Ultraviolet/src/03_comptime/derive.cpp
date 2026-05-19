@@ -235,7 +235,7 @@ std::optional<std::vector<std::string>> DeriveTargetsOf(const AttributeList& att
   out.reserve(derive->args.size());
   for (const auto& arg : derive->args) {
     const auto* tok = std::get_if<ast::Token>(&arg.value);
-    // Malformed [[derive(... )]] arguments are rejected earlier by the shared
+    // Malformed #derive(... ) arguments are rejected earlier by the shared
     // attribute validator before Phase 2 derive expansion begins.
     if (arg.key.has_value() || !tok || tok->kind != ast::TokenKind::Identifier) {
       return std::nullopt;

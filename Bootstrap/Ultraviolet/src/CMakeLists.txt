@@ -1895,6 +1895,24 @@ target_compile_definitions(uv_parser_generic_conformance_test PRIVATE
 
 add_dependencies(uv_parser_generic_conformance_test uv_out)
 
+add_executable(uv_parser_grammar_corrections_conformance_test
+  tests/parser_grammar_corrections_conformance_test.cpp
+)
+
+target_compile_features(uv_parser_grammar_corrections_conformance_test PRIVATE
+  cxx_std_20
+)
+
+target_compile_definitions(uv_parser_grammar_corrections_conformance_test
+  PRIVATE
+  UV_TEST_COMPILER_PATH="${UV_OUT_DIR}/$<TARGET_FILE_NAME:uvc>"
+  UV_TEST_RUNTIME_LIB_PATH="${UV_CODEGEN_ABI_SRET_RUNTIME_LIB}"
+  UV_TEST_TARGET_PROFILE="${UV_CODEGEN_ABI_SRET_TARGET_PROFILE}"
+  UV_TEST_WORK_ROOT="${CMAKE_BINARY_DIR}/tests"
+)
+
+add_dependencies(uv_parser_grammar_corrections_conformance_test uv_out)
+
 add_executable(uv_generic_record_literal_conformance_test
   tests/generic_record_literal_conformance_test.cpp
 )

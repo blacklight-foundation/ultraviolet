@@ -14,7 +14,7 @@ public procedure fineGrainedLoopKeyWarningReference() -> i32 {
     var index: usize = 0usize
     var total: i32 = 0
     loop index < 4usize {
-        #container.leaf.value read {
+        %read container.leaf.value {
             total = total + container.leaf.value
         }
         index = index + 1usize

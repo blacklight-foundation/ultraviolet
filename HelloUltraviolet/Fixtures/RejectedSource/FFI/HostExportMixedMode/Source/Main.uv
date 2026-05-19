@@ -4,12 +4,12 @@ public record HostedMixedContext {
     public sys: System
 }
 
-[[host_export("C")]]
+#host_export("C")
 public procedure hostedValue(context: HostedMixedContext) -> i32 {
     return 0
 }
 
-[[export("C")]]
+#export("C")
 public procedure rawValue() -> i32 {
     return 0
 }

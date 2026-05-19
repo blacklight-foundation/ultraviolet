@@ -2,12 +2,12 @@
 
 internal class BehavioralReadableClass {
     internal procedure readBehavioralValue(~, value: i32) -> i32
-    |: value > 0 => @result >= value
+    |: value > 0 |= @result >= value
 }
 
 internal record BehavioralReadableOwner <: BehavioralReadableClass {
     internal procedure readBehavioralValue(~, value: i32) -> i32
-    |: value >= 0 => @result > value
+    |: value >= 0 |= @result > value
     {
         return value + 1
     }

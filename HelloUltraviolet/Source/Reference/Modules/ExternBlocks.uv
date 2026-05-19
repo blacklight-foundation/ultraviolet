@@ -9,13 +9,13 @@ extern C {
 }
 
 extern "C-unwind" {
-    [[unwind("catch")]]
+    #unwind("catch")
     internal procedure moduleExternStringAbiValue(value: i32) -> i32
 }
 
-[[library(name: "Kernel32")]]
+#library(name: "Kernel32")
 extern "C" {
-    [[mangle("GetTickCount")]]
+    #mangle("GetTickCount")
     internal procedure moduleExternBlockLibraryTickCount() -> u32
 }
 
@@ -48,23 +48,23 @@ internal procedure externBlockShellIsValid(reference: ExternBlockReference) -> b
 }
 
 /// Foreign-visible provider for the default-ABI extern declaration.
-[[export("C")]]
-[[mangle("moduleExternDefaultAbiValue")]]
+#export("C")
+#mangle("moduleExternDefaultAbiValue")
 public procedure moduleExternDefaultAbiValueProvider(value: i32) -> i32 {
     return value + 1
 }
 
 /// Foreign-visible provider for the identifier-ABI extern declaration.
-[[export("C")]]
-[[mangle("moduleExternIdentifierAbiValue")]]
+#export("C")
+#mangle("moduleExternIdentifierAbiValue")
 public procedure moduleExternIdentifierAbiValueProvider(value: i32) -> i32 {
     return value + 2
 }
 
 /// Foreign-visible provider for the string-ABI extern declaration.
-[[export("C-unwind")]]
-[[unwind("catch")]]
-[[mangle("moduleExternStringAbiValue")]]
+#export("C-unwind")
+#unwind("catch")
+#mangle("moduleExternStringAbiValue")
 public procedure moduleExternStringAbiValueProvider(value: i32) -> i32 {
     return value + 3
 }

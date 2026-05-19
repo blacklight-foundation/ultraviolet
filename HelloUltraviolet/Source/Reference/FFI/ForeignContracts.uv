@@ -1,38 +1,38 @@
 //! Reference specimens for FFI / ForeignContracts.
 
 extern "C" {
-    [[static]]
+    #static
     public procedure importedStaticForeignContract(value: i32) -> i32
         |: @foreign_assumes(value > 0)
         |: @foreign_ensures(@result >= value)
 
-    [[dynamic]]
+    #dynamic
     public procedure importedDynamicForeignContract(value: i32) -> i32
         |: @foreign_assumes(value >= 0)
         |: @foreign_ensures(@result >= 0)
 
-    [[dynamic]]
+    #dynamic
     public procedure importedNullableForeignContract(value: i32) -> *mut i32
         |: @foreign_ensures(@null_result: @result == null)
 }
 
 /// Foreign-visible provider satisfying the static foreign contract.
-[[export("C")]]
-[[mangle("importedStaticForeignContract")]]
+#export("C")
+#mangle("importedStaticForeignContract")
 public procedure ffiImportedStaticForeignContractProvider(value: i32) -> i32 {
     return value
 }
 
 /// Foreign-visible provider satisfying the dynamic foreign contract.
-[[export("C")]]
-[[mangle("importedDynamicForeignContract")]]
+#export("C")
+#mangle("importedDynamicForeignContract")
 public procedure ffiImportedDynamicForeignContractProvider(value: i32) -> i32 {
     return value + 1
 }
 
 /// Foreign-visible provider satisfying the nullable foreign postcondition.
-[[export("C")]]
-[[mangle("importedNullableForeignContract")]]
+#export("C")
+#mangle("importedNullableForeignContract")
 public procedure ffiImportedNullableForeignContractProvider(value: i32) -> *mut i32 {
     return null
 }

@@ -2,7 +2,7 @@
 
 public procedure speculativeDeferReference() -> i32 {
     var shared_value: shared i32 = 1
-    #shared_value speculative write {
+    %speculative write shared_value {
         defer {
             let observed: i32 = shared_value
         }

@@ -4,7 +4,7 @@ public record HostedDiagnosticContext {
     public sys: System
 }
 
-[[host_export("C")]]
+#host_export("C")
 public procedure hostedVisibleBool(context: HostedDiagnosticContext, value: bool) -> i32 {
     return 0
 }

@@ -8,7 +8,7 @@ public procedure speculativeLargeStructWarningReference() -> i64 {
     var payload: shared LargeSpeculativePayload = LargeSpeculativePayload {
         words: [1i64; 17]
     }
-    #payload speculative write {
+    %speculative write payload {
         payload.words[0usize] = 2i64
     }
     return payload.words[0usize] + 0i64

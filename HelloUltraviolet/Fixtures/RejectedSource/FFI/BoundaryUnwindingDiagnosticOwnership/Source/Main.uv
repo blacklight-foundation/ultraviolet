@@ -1,6 +1,6 @@
 //! Rejected FFI specimen for boundary-unwinding diagnostic ownership.
 
-[[unwind("catch")]]
+#unwind("catch")
 public procedure unwindOnOrdinaryProcedure() -> i32 {
     return 0
 }

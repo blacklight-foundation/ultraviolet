@@ -9,7 +9,7 @@ internal modal PostconditionModal {
 }
 
 internal procedure postconditionResultReference(value: i32) -> bool
-|: => @result
+|: |= @result
 {
     return value == value
 }
@@ -25,25 +25,25 @@ internal procedure postconditionPreOnlyReference(value: i32) -> i32
 }
 
 internal procedure postconditionPrePostReference(value: i32) -> i32
-|: value > 0 => @result == value + 1
+|: value > 0 |= @result == value + 1
 {
     return value + 1
 }
 
 internal procedure postconditionEntryCaptureReference(value: i32) -> i32
-|: value > 0 => @entry(value) == value && @result == value + 2
+|: value > 0 |= @entry(value) == value && @result == value + 2
 {
     return value + 2
 }
 
 internal procedure postconditionUnionNumericReference() -> PostconditionUnion
-|: => if @result is numeric_value: i32 { numeric_value > 0 } else { false }
+|: |= if @result is numeric_value: i32 { numeric_value > 0 } else { false }
 {
     return 7
 }
 
 internal procedure postconditionUnionBooleanReference() -> PostconditionUnion
-|: => if @result is {
+|: |= if @result is {
     numeric_value: i32 {
         numeric_value > 0
     }
@@ -62,24 +62,24 @@ internal procedure postconditionPropagationSource(should_fail: bool) -> Postcond
     return 9
 }
 
-[[dynamic]]
+#dynamic
 internal procedure postconditionPropagationReference(
     should_fail: bool
 ) -> bool
-|: => @result != should_fail
+|: |= @result != should_fail
 {
     let value: i32 = postconditionPropagationSource(should_fail)?
     return value == 9
 }
 
 internal procedure postconditionModalReference(value: i32) -> PostconditionModal@Ready
-|: value > 0 => @result.value == value
+|: value > 0 |= @result.value == value
 {
     return PostconditionModal@Ready { value: value }
 }
 
 internal procedure postconditionGenericReference<TValue>(move value: TValue) -> TValue
-|: => true
+|: |= true
 {
     return move value
 }

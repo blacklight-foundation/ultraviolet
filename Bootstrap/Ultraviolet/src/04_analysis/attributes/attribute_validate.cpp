@@ -43,7 +43,7 @@ namespace ultraviolet::analysis
 
   } // namespace
 
-  // Validate [[inline]] attribute variants
+  // Validate #inline attribute variants
   // Per spec: Argument must be: (none), always, never, default
   AttributeValidationResult ValidateInlineAttribute(const ast::AttributeItem &attr)
   {
@@ -57,7 +57,7 @@ namespace ultraviolet::analysis
       return result; // Not an inline attribute
     }
 
-    // If no arguments, that's valid (bare [[inline]])
+    // If no arguments, that's valid (bare #inline)
     if (attr.args.empty())
     {
       return result;
@@ -76,7 +76,7 @@ namespace ultraviolet::analysis
             result.ok = false;
             result.diag_id = "E-MOD-2450";
             result.span = attr.span;
-            result.message = "Invalid [[inline]] argument '" + value +
+            result.message = "Invalid #inline argument '" + value +
                              "'; expected 'always', 'never', or 'default'";
             return result;
           }
@@ -87,11 +87,11 @@ namespace ultraviolet::analysis
     return result;
   }
 
-  // Validate [[layout(...)]] attribute
+  // Validate #layout(...) attribute
   // Per spec §5.13.3:
-  //   - [[layout(C)]]: C-compatible layout for records/enums
-  //   - [[layout(packed)]]: No inter-field padding
-  //   - [[layout(IntType)]]: Explicit discriminant type for enums
+  //   - #layout(C): C-compatible layout for records/enums
+  //   - #layout(packed): No inter-field padding
+  //   - #layout(IntType): Explicit discriminant type for enums
   AttributeValidationResult ValidateLayoutAttribute(
       const ast::AttributeItem &attr,
       AttributeTarget target)
@@ -112,7 +112,7 @@ namespace ultraviolet::analysis
       result.ok = false;
       result.diag_id = "E-MOD-2450";
       result.span = attr.span;
-      result.message = "[[layout]] requires an argument (C, packed, or int type)";
+      result.message = "#layout requires an argument (C, packed, or int type)";
       return result;
     }
 
@@ -131,7 +131,7 @@ namespace ultraviolet::analysis
             result.ok = false;
             result.diag_id = "E-MOD-2455"; // Attr-Layout-Conflict
             result.span = attr.span;
-            result.message = "Invalid [[layout]] argument '" + value + "'";
+            result.message = "Invalid #layout argument '" + value + "'";
             return result;
           }
 
@@ -145,17 +145,17 @@ namespace ultraviolet::analysis
             result.diag_id = "E-MOD-2452";
             result.span = attr.span;
             result.message =
-                "[[layout(" + value + ")]] is only valid on enum declarations";
+                "#layout(" + value + ") is only valid on enum declarations";
             return result;
           }
 
-          // [[packed]] only valid on records
+          // #packed only valid on records
           if (value == "packed" && target != AttributeTarget::Record)
           {
             result.ok = false;
             result.diag_id = "E-MOD-2454"; // Attr-Packed-NonRecord
             result.span = attr.span;
-            result.message = "[[layout(packed)]] is only valid on record types";
+            result.message = "#layout(packed) is only valid on record types";
             return result;
           }
         }
@@ -165,7 +165,7 @@ namespace ultraviolet::analysis
     return result;
   }
 
-  // Validate [[export]] / [[host_export]] attribute on procedure
+  // Validate #export / #host_export attribute on procedure
   // Per spec §5.13.6:
   //   - Procedure must have FfiSafe signature
   //   - Cannot take capability parameters
@@ -189,8 +189,8 @@ namespace ultraviolet::analysis
     return result;
   }
 
-  // Validate [[dynamic]] attribute
-  // Per spec: Procedure must have |: contract to use [[dynamic]]
+  // Validate #dynamic attribute
+  // Per spec: Procedure must have |: contract to use #dynamic
   AttributeValidationResult ValidateDynamicAttribute(
       const ast::AttributeItem &attr,
       bool has_contract)
@@ -210,14 +210,14 @@ namespace ultraviolet::analysis
       result.ok = false;
       result.diag_id = "E-CON-0410";
       result.span = attr.span;
-      result.message = "[[dynamic]] requires procedure to have a contract (|:)";
+      result.message = "#dynamic requires procedure to have a contract (|:)";
       return result;
     }
 
     return result;
   }
 
-  // Validate [[ffi_pass_by_value]] attribute
+  // Validate #ffi_pass_by_value attribute
   // Per spec: Required for types with Drop that are passed by value in FFI
   AttributeValidationResult ValidateFfiPassByValueAttribute(
       const ast::AttributeItem &attr,
@@ -240,14 +240,14 @@ namespace ultraviolet::analysis
       result.diag_id = "E-MOD-2452";
       result.span = attr.span;
       result.message =
-          "[[ffi_pass_by_value]] is only valid on record or enum declarations";
+          "#ffi_pass_by_value is only valid on record or enum declarations";
       return result;
     }
 
     return result;
   }
 
-  // Validate [[align(N)]] attribute
+  // Validate #align(N) attribute
   // Per spec: N must be a power of two
   AttributeValidationResult ValidateAlignAttribute(const ast::AttributeItem &attr)
   {
@@ -267,7 +267,7 @@ namespace ultraviolet::analysis
       result.ok = false;
       result.diag_id = "E-MOD-2450";
       result.span = attr.span;
-      result.message = "[[align]] requires an alignment value";
+      result.message = "#align requires an alignment value";
       return result;
     }
 
@@ -323,27 +323,27 @@ namespace ultraviolet::analysis
       }
     }
 
-    // [[inline(always)]] and [[inline(never)]] conflict
+    // #inline(always) and #inline(never) conflict
     if (has_inline_always && has_inline_never)
     {
       result.ok = false;
       result.diag_id = "E-MOD-2450";
       result.message =
-          "Conflicting attributes: [[inline(always)]] and [[inline(never)]]";
+          "Conflicting attributes: #inline(always) and #inline(never)";
       return result;
     }
 
-    // [[cold]] and [[hot]] conflict
+    // #cold and #hot conflict
     if (has_cold && has_hot)
     {
       result.ok = false;
       result.diag_id = "E-MOD-2450";
-      result.message = "Conflicting attributes: [[cold]] and [[hot]]";
+      result.message = "Conflicting attributes: #cold and #hot";
       return result;
     }
 
-    // [[inline(always)]] and [[cold]] are suspicious but allowed
-    // [[inline(never)]] and [[hot]] are suspicious but allowed
+    // #inline(always) and #cold are suspicious but allowed
+    // #inline(never) and #hot are suspicious but allowed
 
     return result;
   }

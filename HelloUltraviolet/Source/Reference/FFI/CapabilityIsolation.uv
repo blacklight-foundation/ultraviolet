@@ -5,8 +5,8 @@ extern "C" {
 }
 
 /// Foreign-visible raw-pointer boundary that accepts no capability values.
-[[export("C")]]
-[[mangle("importedReferenceBorrowedRawPointer")]]
+#export("C")
+#mangle("importedReferenceBorrowedRawPointer")
 public procedure ffiImportedReferenceBorrowedRawPointerProvider(value: *mut i32) -> i32 {
     if value == null {
         return 0
@@ -19,8 +19,8 @@ internal procedure callBorrowedRawPointer(pointer: *mut i32) -> i32 {
 }
 
 /// Exported raw-pointer identity keeps the boundary free of capability values.
-[[export("C")]]
-[[mangle("uv_reference_pointer_identity")]]
+#export("C")
+#mangle("uv_reference_pointer_identity")
 public procedure ffiPointerIdentity(pointer: *mut i32) -> *mut i32 {
     return pointer
 }

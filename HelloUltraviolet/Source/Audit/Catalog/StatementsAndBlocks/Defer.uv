@@ -9,7 +9,7 @@ public procedure validatedStatementsAndBlocksDeferObligations() -> usize {
     var count: usize = 0usize
     if acceptedObligationEntryMatches(
         "grammar.18.Defer",
-        70662usize,
+        70606usize,
         "HelloUltraviolet::Reference::Statements",
         "runStatementsDeferReference",
         "Source/Reference/Statements/Defer.uv"
@@ -18,7 +18,7 @@ public procedure validatedStatementsAndBlocksDeferObligations() -> usize {
     }
     if acceptedObligationEntryMatches(
         "rule.18.Parse-Defer-Stmt",
-        70679usize,
+        70623usize,
         "HelloUltraviolet::Reference::Statements",
         "runStatementsDeferReference",
         "Source/Reference/Statements/Defer.uv"
@@ -27,7 +27,7 @@ public procedure validatedStatementsAndBlocksDeferObligations() -> usize {
     }
     if acceptedObligationEntryMatches(
         "def.18.DeferStmtAst",
-        70697usize,
+        70641usize,
         "HelloUltraviolet::Reference::Statements",
         "runStatementsDeferReference",
         "Source/Reference/Statements/Defer.uv"
@@ -36,7 +36,7 @@ public procedure validatedStatementsAndBlocksDeferObligations() -> usize {
     }
     if acceptedObligationEntryMatches(
         "rule.18.T-DeferStmt",
-        70712usize,
+        70656usize,
         "HelloUltraviolet::Reference::Statements",
         "runStatementsDeferReference",
         "Source/Reference/Statements/Defer.uv"
@@ -45,7 +45,7 @@ public procedure validatedStatementsAndBlocksDeferObligations() -> usize {
     }
     if rejectedSourceObligationEntryMatches(
         "rule.18.Defer-NonUnit-Err",
-        70728usize,
+        70672usize,
         "HelloUltraviolet::Audit::FixtureCatalog::RejectedSource",
         "validatedStatementsRejectedSourceFixtureCount",
         "Fixtures/RejectedSource/Statements/DeferNonUnit/Source/Main.uv"
@@ -54,7 +54,7 @@ public procedure validatedStatementsAndBlocksDeferObligations() -> usize {
     }
     if rejectedSourceObligationEntryMatches(
         "rule.18.Defer-NonLocal-Err",
-        70744usize,
+        70688usize,
         "HelloUltraviolet::Audit::FixtureCatalog::RejectedSource",
         "validatedStatementsRejectedSourceFixtureCount",
         "Fixtures/RejectedSource/Statements/DeferNonLocal/Source/Main.uv"
@@ -63,7 +63,7 @@ public procedure validatedStatementsAndBlocksDeferObligations() -> usize {
     }
     if acceptedObligationEntryMatches(
         "rule.18.HasNonLocalCtrl-Return",
-        70760usize,
+        70704usize,
         "HelloUltraviolet::Reference::Statements",
         "runStatementsDeferReference",
         "Source/Reference/Statements/Defer.uv"
@@ -72,7 +72,7 @@ public procedure validatedStatementsAndBlocksDeferObligations() -> usize {
     }
     if acceptedObligationEntryMatches(
         "rule.18.HasNonLocalCtrl-Break",
-        70775usize,
+        70719usize,
         "HelloUltraviolet::Reference::Statements",
         "runStatementsDeferReference",
         "Source/Reference/Statements/Defer.uv"
@@ -81,7 +81,7 @@ public procedure validatedStatementsAndBlocksDeferObligations() -> usize {
     }
     if acceptedObligationEntryMatches(
         "rule.18.HasNonLocalCtrl-Continue",
-        70791usize,
+        70735usize,
         "HelloUltraviolet::Reference::Statements",
         "runStatementsDeferReference",
         "Source/Reference/Statements/Defer.uv"
@@ -90,7 +90,7 @@ public procedure validatedStatementsAndBlocksDeferObligations() -> usize {
     }
     if acceptedObligationEntryMatches(
         "req.18.HasNonLocalCtrlPropagation",
-        70807usize,
+        70751usize,
         "HelloUltraviolet::Reference::Statements",
         "runStatementsDeferReference",
         "Source/Reference/Statements/Defer.uv"
@@ -99,7 +99,7 @@ public procedure validatedStatementsAndBlocksDeferObligations() -> usize {
     }
     if acceptedObligationEntryMatches(
         "def.18.DeferSafe",
-        70820usize,
+        70764usize,
         "HelloUltraviolet::Reference::Statements",
         "runStatementsDeferReference",
         "Source/Reference/Statements/Defer.uv"
@@ -108,7 +108,7 @@ public procedure validatedStatementsAndBlocksDeferObligations() -> usize {
     }
     if acceptedObligationEntryMatches(
         "req.18.DeferStateAndProvenancePreservation",
-        70833usize,
+        70777usize,
         "HelloUltraviolet::Reference::Statements",
         "runStatementsDeferReference",
         "Source/Reference/Statements/Defer.uv"
@@ -117,7 +117,7 @@ public procedure validatedStatementsAndBlocksDeferObligations() -> usize {
     }
     if acceptedObligationEntryMatches(
         "rule.18.ExecSigma-Defer",
-        70848usize,
+        70792usize,
         "HelloUltraviolet::Reference::Statements",
         "runStatementsDeferReference",
         "Source/Reference/Statements/Defer.uv"
@@ -126,7 +126,7 @@ public procedure validatedStatementsAndBlocksDeferObligations() -> usize {
     }
     if acceptedObligationEntryMatches(
         "req.18.DeferCleanupSmallStep",
-        70864usize,
+        70808usize,
         "HelloUltraviolet::Reference::Statements",
         "runStatementsDeferReference",
         "Source/Reference/Statements/Defer.uv"
@@ -135,7 +135,7 @@ public procedure validatedStatementsAndBlocksDeferObligations() -> usize {
     }
     if acceptedObligationEntryMatches(
         "req.18.DeferCleanupBigStep",
-        70877usize,
+        70821usize,
         "HelloUltraviolet::Reference::Statements",
         "runStatementsDeferReference",
         "Source/Reference/Statements/Defer.uv"
@@ -144,7 +144,7 @@ public procedure validatedStatementsAndBlocksDeferObligations() -> usize {
     }
     if acceptedObligationEntryMatches(
         "rule.18.Lower-Stmt-Defer",
-        70892usize,
+        70836usize,
         "HelloUltraviolet::Reference::Statements",
         "runStatementsDeferReference",
         "Source/Reference/Statements/Defer.uv"
@@ -153,7 +153,7 @@ public procedure validatedStatementsAndBlocksDeferObligations() -> usize {
     }
     if rejectedSourceObligationEntryMatches(
         "diag.18.Defer",
-        70909usize,
+        70853usize,
         "HelloUltraviolet::Audit::FixtureCatalog::RejectedSource",
         "validatedStatementsRejectedSourceFixtureCount",
         "Fixtures/RejectedSource/Statements/DeferDiagnostic/Source/Main.uv"

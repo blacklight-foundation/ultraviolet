@@ -3,8 +3,8 @@
 internal procedure acquireOrderedKeyReadValue() -> i32 {
     var shared_value: shared i32 = 1
     var observed: i32 = 0
-    #shared_value read {
-        observed = ([[acquire]] shared_value) + 0
+    %read shared_value {
+        observed = (#acquire shared_value) + 0
     }
     return observed
 }
@@ -12,12 +12,12 @@ internal procedure acquireOrderedKeyReadValue() -> i32 {
 internal procedure expressionMemoryOrderingValue() -> i32 {
     var shared_value: shared i32 = 3
     var observed: i32 = 0
-    #shared_value read {
-        observed = observed + ([[relaxed]] shared_value)
-        observed = observed + ([[acquire]] shared_value)
-        observed = observed + ([[release]] shared_value)
-        observed = observed + ([[acqrel]] shared_value)
-        observed = observed + ([[seqcst]] shared_value)
+    %read shared_value {
+        observed = observed + (#relaxed shared_value)
+        observed = observed + (#acquire shared_value)
+        observed = observed + (#release shared_value)
+        observed = observed + (#acqrel shared_value)
+        observed = observed + (#seqcst shared_value)
     }
     return observed
 }
@@ -25,27 +25,27 @@ internal procedure expressionMemoryOrderingValue() -> i32 {
 internal procedure keyBlockDefaultMemoryOrderingValue() -> i32 {
     var shared_value: shared i32 = 1
     var observed: i32 = 0
-    [[relaxed]]
-    #shared_value read {
+    #relaxed
+    %read shared_value {
         observed = observed + shared_value
     }
-    [[acquire]]
-    #shared_value read {
+    #acquire
+    %read shared_value {
         observed = observed + shared_value
     }
-    [[release]]
-    #shared_value write {
+    #release
+    %write shared_value {
         shared_value = 2
     }
-    [[acqrel]]
-    #shared_value read {
+    #acqrel
+    %read shared_value {
         observed = observed + shared_value
     }
-    [[seqcst]]
-    #shared_value write {
+    #seqcst
+    %write shared_value {
         shared_value = 3
     }
-    #shared_value read {
+    %read shared_value {
         observed = observed + shared_value
     }
     return observed
@@ -54,13 +54,13 @@ internal procedure keyBlockDefaultMemoryOrderingValue() -> i32 {
 internal procedure expressionOrderingOverridesKeyBlockDefaultValue() -> i32 {
     var shared_value: shared i32 = 4
     var observed: i32 = 0
-    [[relaxed]]
-    #shared_value read {
-        observed = ([[seqcst]] shared_value) + 0
+    #relaxed
+    %read shared_value {
+        observed = (#seqcst shared_value) + 0
     }
-    [[seqcst]]
-    #shared_value read {
-        observed = observed + ([[relaxed]] shared_value)
+    #seqcst
+    %read shared_value {
+        observed = observed + (#relaxed shared_value)
     }
     return observed
 }
@@ -69,11 +69,11 @@ internal procedure fenceOrderingValue() -> i32 {
     var shared_value: shared i32 = 1
     var observed: i32 = 0
     fence(acquire)
-    #shared_value write {
+    %write shared_value {
         shared_value = 2
     }
     fence(release)
-    #shared_value read {
+    %read shared_value {
         observed = shared_value + 0
     }
     fence(seqcst)

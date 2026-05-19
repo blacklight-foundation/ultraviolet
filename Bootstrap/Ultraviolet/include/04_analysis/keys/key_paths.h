@@ -117,7 +117,7 @@ KeyPathResult BuildKeyPathFromDeref(const ast::DerefExpr& deref);
 // Path Parsing Functions
 // =============================================================================
 
-/// Parse a key path from a KeyPathExpr (from # block syntax)
+/// Parse a key path from a KeyPathExpr (from key-block syntax)
 KeyPath ParseKeyPathSpec(const ast::KeyPathExpr& spec);
 
 /// Parse a key path from a string representation

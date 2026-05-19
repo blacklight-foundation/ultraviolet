@@ -10,9 +10,9 @@
 //   - Docs/SPECIFICATION.md, Section 19.4.2 "Key Prohibition in Yield" (lines 25839-25870)
 //
 // KEY LIFETIME SEMANTICS:
-//   - Acquired: At # block entry
-//   - Held: Within # block body
-//   - Released: At # block exit (including break/return)
+//   - Acquired: At key-block entry
+//   - Held: Within key-block body
+//   - Released: At key-block exit (including break/return)
 //
 // KEY RELEASE RULES (from spec):
 //   (K-Release-Scope) ScopeExit(S) => Γ'_keys = Γ_keys \ {(P, M, S') : S' = S}
@@ -25,7 +25,7 @@
 //
 // STALENESS:
 //   - After yield release, bindings from shared data may be stale
-//   - W-CON-0011 warning unless [[stale_ok]] present
+//   - W-CON-0011 warning unless #stale_ok present
 //
 // =============================================================================
 
@@ -164,7 +164,7 @@ struct StalenessWarning {
   std::string binding_name;    // Name of the potentially stale binding
   core::Span binding_span;     // Where the binding was created
   core::Span yield_span;       // Where the yield release occurred
-  bool suppressed = false;     // True if [[stale_ok]] present
+  bool suppressed = false;     // True if #stale_ok present
 };
 
 // =============================================================================
@@ -195,7 +195,7 @@ ScopeKeyState TrackStatementKeys(const ast::Stmt& stmt,
 KeyReleaseValidation ValidateKeyRelease(const ast::KeyBlockStmt& block,
                                         const KeyContext& ctx);
 
-/// Validate explicit key release (for release modifier in key blocks)
+/// Validate explicit key release (for %release key blocks)
 KeyReleaseValidation ValidateExplicitRelease(const std::vector<KeyPath>& paths,
                                              const KeyContext& ctx,
                                              const core::Span& release_span);
@@ -255,7 +255,7 @@ void ReacquireAfterYieldRelease(const std::vector<KeyPath>& paths,
 std::vector<StalenessWarning> CheckStaleness(const ast::Block& block,
                                              const std::vector<core::Span>& yield_release_points);
 
-/// Check if a binding has [[stale_ok]] attribute
+/// Check if a binding has #stale_ok attribute
 bool HasStaleOkAttribute(const ast::LetStmt& stmt);
 bool HasStaleOkAttribute(const ast::VarStmt& stmt);
 
@@ -272,7 +272,7 @@ bool IsSuspensionPoint(const ast::ExprPtr& expr);
 /// Get all suspension point spans in a block
 std::vector<core::Span> GetSuspensionPointSpans(const ast::Block& block);
 
-/// Check if key release modifier is present in key block
+/// Check if the key block uses the %release head
 bool HasReleaseModifier(const ast::KeyBlockStmt& block);
 
 }  // namespace ultraviolet::analysis

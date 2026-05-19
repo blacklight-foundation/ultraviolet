@@ -4,7 +4,7 @@ derive target ProcedureOnly(target: Type) {
     let reflected = target
 }
 
-[[derive(ProcedureOnly)]]
+#derive(ProcedureOnly)
 public procedure deriveOnProcedureReference() -> i32 {
     return 0
 }

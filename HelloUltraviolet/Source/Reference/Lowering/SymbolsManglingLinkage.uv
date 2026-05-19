@@ -1,7 +1,7 @@
 //! Reference specimens for Lowering / SymbolsManglingLinkage.
 
-[[export("C")]]
-[[mangle("uv_reference_lowering_symbol_increment")]]
+#export("C")
+#mangle("uv_reference_lowering_symbol_increment")
 public procedure loweringMangledIncrement(value: i32) -> i32 {
     return value + 1
 }

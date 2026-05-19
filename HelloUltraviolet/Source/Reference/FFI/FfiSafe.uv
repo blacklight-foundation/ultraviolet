@@ -1,36 +1,36 @@
 //! Reference specimens for FFI / FfiSafe.
 
 /// Layout-compatible aggregate used by raw FFI signatures.
-[[layout(C)]]
+#layout(C)
 public record FFIPrimitiveRecord {
     public signed_value: i32
     public status: u32
 }
 
 /// Generic layout-compatible aggregate whose field parameter is FfiSafe-bounded.
-[[layout(C)]]
+#layout(C)
 public record FFIGenericRecord<TValue> |: FfiSafe(TValue)
 {
     public value: TValue
 }
 
 /// Layout-compatible tagged value used by raw FFI signatures.
-[[layout(C)]]
+#layout(C)
 public enum FFIPrimitiveEnum {
     Empty
     Value(i32)
 }
 
 /// Generic layout-compatible tagged value whose payload parameter is FfiSafe-bounded.
-[[layout(C)]]
+#layout(C)
 public enum FFIGenericEnum<TValue> |: FfiSafe(TValue)
 {
     Value(TValue)
 }
 
 /// Drop-bearing FfiSafe record explicitly authorized for by-value FFI passing.
-[[ffi_pass_by_value]]
-[[layout(C)]]
+#ffi_pass_by_value
+#layout(C)
 public record FFIDroppingRecord {
     public value: unique i32
 

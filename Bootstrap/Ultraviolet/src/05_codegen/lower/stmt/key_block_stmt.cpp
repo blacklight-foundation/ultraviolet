@@ -98,10 +98,6 @@ std::vector<std::string> CanonicalizeKeyPaths(const ast::KeyBlockStmt& stmt) {
   return paths;
 }
 
-static ast::KeyMode ModeOf(const std::optional<ast::KeyMode>& mode_opt) {
-  return mode_opt.value_or(ast::KeyMode::Read);
-}
-
 static std::vector<std::string> LowerKeyPaths(
     const std::vector<ast::KeyPathExpr>& paths) {
   std::vector<std::string> lowered;
@@ -167,11 +163,8 @@ static IRPtr LowerConflictChecks(const std::vector<std::string>& lowered_paths,
 
 IRPtr LowerKeyBlockStmt(const ast::KeyBlockStmt& stmt, LowerCtx& ctx) {
   const bool has_speculative_mod =
-      std::find(stmt.mods.begin(), stmt.mods.end(),
-                ast::KeyBlockMod::Speculative) != stmt.mods.end();
-  const bool has_release_mod =
-      std::find(stmt.mods.begin(), stmt.mods.end(), ast::KeyBlockMod::Release) !=
-      stmt.mods.end();
+      stmt.kind == ast::KeyBlockKind::SpeculativeWrite;
+  const bool has_release_mod = stmt.kind == ast::KeyBlockKind::Release;
   SPEC_RULE(has_speculative_mod
                 ? "Lower-Stmt-KeyBlock-Speculative"
                 : (has_release_mod ? "Lower-Stmt-KeyBlock-Release"
@@ -239,10 +232,7 @@ IRPtr LowerKeyBlockStmt(const ast::KeyBlockStmt& stmt, LowerCtx& ctx) {
     ctx.RegisterValueType(retry.result, analysis::MakeTypePrim("()"));
 
     ast::KeyBlockStmt fallback_stmt = stmt;
-    fallback_stmt.mods.erase(
-        std::remove(fallback_stmt.mods.begin(), fallback_stmt.mods.end(),
-                    ast::KeyBlockMod::Speculative),
-        fallback_stmt.mods.end());
+    fallback_stmt.kind = ast::KeyBlockKind::Write;
     fallback_stmt.mode = ast::KeyMode::Write;
     IRPtr fallback_ir = LowerKeyBlockStmt(fallback_stmt, ctx);
     IRValue fallback_value = body_result.value;
@@ -348,7 +338,7 @@ IRPtr LowerKeyBlockStmt(const ast::KeyBlockStmt& stmt, LowerCtx& ctx) {
   active_scope.scope_runtime_id = ctx.CurrentRuntimeScopeId().value_or(0);
   active_scope.scope_name = scope_local_name;
 
-  const ast::KeyMode mode = ModeOf(stmt.mode);
+  const ast::KeyMode mode = stmt.mode;
   const std::uint8_t key_mode = mode == ast::KeyMode::Write ? 1u : 0u;
   setup_parts.push_back(LowerConflictChecks(encoded_paths, mode, ctx));
   std::vector<std::pair<analysis::KeyPath, std::string>> sorted_paths;

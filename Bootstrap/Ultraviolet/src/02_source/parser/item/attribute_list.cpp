@@ -6,10 +6,11 @@
 //
 // This file implements attribute list parsing:
 //   - ParseAttributeItem: Parse single attribute item
-//   - ParseAttributeListOpt: Parse optional attribute list [[...]]
+//   - ParseAttributeListOpt: Parse optional attribute list #attribute+
 //
 // GRAMMAR:
-//   AttributeList ::= ('[' '[' AttributeItem (',' AttributeItem)* ']' ']')*
+//   AttributeList ::= Attribute+
+//   Attribute ::= '#' AttributeItem
 //   AttributeItem ::= AttrName AttrArgsOpt
 //   AttrArgsOpt ::= '(' AttrArgList ')' | ε
 //   AttrArgList ::= AttrArg (',' AttrArg)* (','?)?
@@ -83,9 +84,7 @@ ParseElemResult<std::vector<AttributeArg>> ParseLayoutArgListTail(
 ParseElemResult<AttributeItem> ParseAttributeItem(Parser parser);
 ParseElemResult<AttributeList> ParseAttrList(Parser parser);
 ParseElemResult<AttributeList> ParseAttrListTail(Parser parser, AttributeList xs);
-ParseElemResult<std::vector<AttributeItem>> ParseAttrSpecListTail(
-    Parser parser, std::vector<AttributeItem> xs);
-ParseElemResult<std::vector<AttributeItem>> ParseAttrSpecList(Parser parser);
+ParseElemResult<AttributeItem> ParseAttribute(Parser parser);
 
 struct ParsedAttrName {
   AttrName name;
@@ -97,7 +96,7 @@ ParseElemResult<ParsedAttrName> ParseAttrName(Parser parser);
 
 static bool RequiresAttrArgList(const AttrName& name) {
   // §9.3.1 gives the built-in layout attribute a concrete form:
-  // [[layout(layout_args)]]. Vendor-qualified names remain schema-defined.
+  // #layout(layout_args). Vendor-qualified names remain schema-defined.
   return !name.vendor_prefix_opt.has_value() && name.leaf_name == "layout";
 }
 
@@ -105,43 +104,8 @@ static bool UsesInlineArgGrammar(const AttrName& name) {
   return !name.vendor_prefix_opt.has_value() && name.leaf_name == "inline";
 }
 
-static bool UsesBareMarkerAttrGrammar(const AttrName& name) {
-  return !name.vendor_prefix_opt.has_value() && name.leaf_name == "cold";
-}
-
-static bool Adjacent(const Token& left, const Token& right) {
-  return left.span.file == right.span.file &&
-         left.span.end_offset == right.span.start_offset;
-}
-
-static bool IsAdjacentPuncPair(const Parser& parser,
-                               std::string_view left_lexeme,
-                               std::string_view right_lexeme) {
-  const Token* left = Tok(parser);
-  if (!left || left->kind != TokenKind::Punctuator ||
-      left->lexeme != left_lexeme) {
-    return false;
-  }
-
-  Parser next = parser;
-  Advance(next);
-  const Token* right = Tok(next);
-  return right && right->kind == TokenKind::Punctuator &&
-         right->lexeme == right_lexeme && Adjacent(*left, *right);
-}
-
-static Parser AdvanceTwo(Parser parser) {
-  Advance(parser);
-  Advance(parser);
-  return parser;
-}
-
 bool IsAttrStart(const Parser& parser) {
-  return IsAdjacentPuncPair(parser, "[", "[");
-}
-
-static bool IsAttrClose(const Parser& parser) {
-  return IsAdjacentPuncPair(parser, "]", "]");
+  return IsOp(parser, "#");
 }
 
 static bool IsLayoutIntTypeLexeme(std::string_view lexeme) {
@@ -268,7 +232,7 @@ ParseElemResult<AttributeArg> ParseAttrArg(Parser parser) {
 ParseElemResult<std::vector<AttributeArg>> ParseAttrArgList(Parser parser) {
   SkipNewlines(parser);
   if (IsPunc(parser, ")")) {
-    EmitAttrSyntaxErr(parser, TokSpan(parser));
+    SPEC_RULE("Parse-AttrArgsOpt-Empty");
     return {parser, {}};
   }
   ParseElemResult<AttributeArg> first = ParseAttrArg(parser);
@@ -281,7 +245,6 @@ ParseElemResult<std::vector<AttributeArg>> ParseAttrArgList(Parser parser) {
 ParseElemResult<std::vector<AttributeArg>> ParseInlineArgList(Parser parser) {
   SkipNewlines(parser);
   if (IsPunc(parser, ")")) {
-    EmitAttrSyntaxErr(parser, TokSpan(parser));
     return {parser, {}};
   }
 
@@ -433,50 +396,6 @@ ParseElemResult<std::vector<AttributeArg>> ParseAttrArgListTail(
   return ParseAttrArgListTail(arg.parser, std::move(xs));
 }
 
-// =============================================================================
-// ParseAttrSpecList - Parse list of attribute specs in a [[...]] block
-// =============================================================================
-
-ParseElemResult<std::vector<AttributeItem>> ParseAttrSpecList(Parser parser) {
-  SkipNewlines(parser);
-  ParseElemResult<AttributeItem> first = ParseAttributeItem(parser);
-  SPEC_RULE("Parse-AttrSpecList-Cons");
-  std::vector<AttributeItem> xs;
-  xs.push_back(first.elem);
-  return ParseAttrSpecListTail(first.parser, std::move(xs));
-}
-
-// =============================================================================
-// ParseAttrSpecListTail - Parse remaining attribute specs after first
-// =============================================================================
-
-ParseElemResult<std::vector<AttributeItem>> ParseAttrSpecListTail(
-    Parser parser, std::vector<AttributeItem> xs) {
-  SkipNewlines(parser);
-  if (!IsPunc(parser, ",")) {
-    SPEC_RULE("Parse-AttrSpecListTail-End");
-    return {parser, xs};
-  }
-
-  const EndSetToken end_set[] = {EndPunct("]")};
-  Parser after = parser;
-  Advance(after);
-  SkipNewlines(after);
-  if (IsAttrClose(after)) {
-    if (TrailingCommaAllowed(parser, end_set)) {
-      SPEC_RULE("Parse-AttrSpecListTail-TrailingComma");
-    }
-    EmitTrailingCommaErr(parser, end_set);
-    after.diags = parser.diags;
-    return {after, xs};
-  }
-
-  SPEC_RULE("Parse-AttrSpecListTail-Comma");
-  ParseElemResult<AttributeItem> item = ParseAttributeItem(after);
-  xs.push_back(item.elem);
-  return ParseAttrSpecListTail(item.parser, std::move(xs));
-}
-
 ParseElemResult<std::vector<Identifier>> ParseVendorPrefixTail(
     Parser parser, std::vector<Identifier> xs) {
   if (!IsOp(parser, "::")) {
@@ -593,15 +512,6 @@ ParseElemResult<AttributeItem> ParseAttributeItem(Parser parser) {
     return {next, item};
   }
 
-  if (UsesBareMarkerAttrGrammar(item.name)) {
-    Parser after_open = next;
-    Advance(after_open);
-    SkipNewlines(after_open);
-    item.span = SpanBetween(parser, after_open);
-    EmitAttrSyntaxErr(after_open, item.span);
-    return {after_open, item};
-  }
-
   SPEC_RULE("Parse-AttrArgsOpt-Yes");
   Parser after_open = next;
   Advance(after_open);
@@ -610,10 +520,6 @@ ParseElemResult<AttributeItem> ParseAttributeItem(Parser parser) {
     args = ParseLayoutArgList(after_open);
   } else if (UsesInlineArgGrammar(item.name)) {
     args = ParseInlineArgList(after_open);
-    if (args.elem.empty()) {
-      item.span = SpanBetween(parser, args.parser);
-      return {args.parser, item};
-    }
   } else {
     args = ParseAttrArgList(after_open);
   }
@@ -632,16 +538,13 @@ ParseElemResult<AttributeItem> ParseAttributeItem(Parser parser) {
   return {next, item};
 }
 
-ParseElemResult<std::vector<AttributeItem>> ParseAttrBlock(Parser parser) {
-  SPEC_RULE("Parse-AttrBlock");
-  Parser next = AdvanceTwo(parser);  // consume adjacent `[` `[`
-  ParseElemResult<std::vector<AttributeItem>> specs = ParseAttrSpecList(next);
-  if (!IsAttrClose(specs.parser)) {
-    EmitAttrSyntaxErr(specs.parser, TokSpan(specs.parser));
-    return specs;
-  }
-  Parser after = AdvanceTwo(specs.parser);  // consume adjacent `]` `]`
-  return {after, std::move(specs.elem)};
+ParseElemResult<AttributeItem> ParseAttribute(Parser parser) {
+  SPEC_RULE("Parse-Attribute");
+  Parser next = parser;
+  Advance(next);  // consume `#`
+  ParseElemResult<AttributeItem> attr = ParseAttributeItem(next);
+  attr.elem.span = SpanBetween(parser, attr.parser);
+  return attr;
 }
 
 ParseElemResult<AttributeList> ParseAttrListTail(Parser parser, AttributeList xs) {
@@ -650,16 +553,17 @@ ParseElemResult<AttributeList> ParseAttrListTail(Parser parser, AttributeList xs
     return {parser, xs};
   }
   SPEC_RULE("Parse-AttrListTail-Cons");
-  ParseElemResult<std::vector<AttributeItem>> block = ParseAttrBlock(parser);
-  xs.insert(xs.end(), block.elem.begin(), block.elem.end());
-  return ParseAttrListTail(block.parser, std::move(xs));
+  ParseElemResult<AttributeItem> attr = ParseAttribute(parser);
+  xs.push_back(std::move(attr.elem));
+  return ParseAttrListTail(attr.parser, std::move(xs));
 }
 
 ParseElemResult<AttributeList> ParseAttrList(Parser parser) {
   SPEC_RULE("Parse-AttrList-Cons");
-  ParseElemResult<std::vector<AttributeItem>> block = ParseAttrBlock(parser);
-  AttributeList attrs = std::move(block.elem);
-  return ParseAttrListTail(block.parser, std::move(attrs));
+  ParseElemResult<AttributeItem> attr = ParseAttribute(parser);
+  AttributeList attrs;
+  attrs.push_back(std::move(attr.elem));
+  return ParseAttrListTail(attr.parser, std::move(attrs));
 }
 
 }  // namespace
@@ -668,12 +572,11 @@ ParseElemResult<AttributeList> ParseAttrList(Parser parser) {
 // ParseAttributeListOpt - Parse optional attribute list
 // =============================================================================
 //
-// SPEC: Parse-Attribute (lines 6437-6440)
-//   IsAttrStart(P)    Γ ⊢ ParseAttrItem(Advance(Advance(P))) ⇓ (P_1, item)
-//   Γ ⊢ ParseAttrItemTail(P_1, [item]) ⇓ (P_2, items)
-//   IsAttrClose(P_2)
+// SPEC: Parse-Attribute
+//   IsAttrStart(P)    Γ ⊢ ParseAttrItem(Advance(P)) ⇓ (P_1, item)
+//   Γ ⊢ ParseAttrListTail(P_1, [item]) ⇓ (P_2, items)
 //   ────────────────────────────────────────────────────────────────────
-//   Γ ⊢ ParseAttrListOpt(P) ⇓ (Advance(Advance(P_2)), items)
+//   Γ ⊢ ParseAttrListOpt(P) ⇓ (P_2, items)
 //
 // SPEC: Parse-AttrListOpt-None
 //   ¬ IsAttrStart(P)

@@ -2,8 +2,8 @@
 
 public procedure staleOkSuppressesReleaseWarningReference() -> Async<i32, (), (), !> {
     var shared_value: shared i32 = 1
-    #shared_value read {
-        [[stale_ok]]
+    %read shared_value {
+        #stale_ok
         let observed_value = shared_value
         yield release 1
         let resumed_value = observed_value

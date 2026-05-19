@@ -2,7 +2,7 @@
 
 public procedure speculativeImpureCallReference(context: Context) -> i32 {
     var shared_value: shared i32 = 1
-    #shared_value speculative write {
+    %speculative write shared_value {
         context.io~>exists("HelloUltraviolet")
         shared_value = 2
     }

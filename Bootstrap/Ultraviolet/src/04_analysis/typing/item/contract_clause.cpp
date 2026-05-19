@@ -4,12 +4,12 @@
 //
 // SPEC REFERENCE: Docs/SPECIFICATION.md
 //   Section 5.8: Contracts
-//   - Contract syntax: |: P, |: P => Q, |: => Q
+//   - Contract syntax: |: P, |: P |= Q, |: |= Q
 //   - Precondition context
 //   - Postcondition context
 //   - @result, @entry intrinsics
 //   - Purity constraints
-//   - Verification modes (static, [[dynamic]])
+//   - Verification modes (static, #dynamic)
 //
 // SOURCE: ultraviolet-bootstrap/src/03_analysis/contracts/contract_check.cpp
 //

@@ -6,7 +6,7 @@ public procedure dynamicKeyStaticRequiredReference(context: Context, index: usiz
     return parallel context~>inline() {
         let first: Spawned<i32> = spawn {
             var observed: i32 = 0
-            #values[index] write {
+            %write values[index] {
                 values[index] = 11
                 observed = 11
             }
@@ -14,7 +14,7 @@ public procedure dynamicKeyStaticRequiredReference(context: Context, index: usiz
         }
         let second: Spawned<i32> = spawn {
             var observed: i32 = 0
-            #values[index] write {
+            %write values[index] {
                 values[index] = 13
                 observed = 13
             }

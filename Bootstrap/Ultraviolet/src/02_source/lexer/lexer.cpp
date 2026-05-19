@@ -159,19 +159,6 @@ bool IsKw(const Token& tok, std::string_view lexeme) {
   return tok.kind == TokenKind::Keyword && tok.lexeme == lexeme;
 }
 
-bool Adjacent(const Token& left, const Token& right) {
-  return left.span.file == right.span.file &&
-         left.span.end_offset == right.span.start_offset;
-}
-
-bool IsAdjacentPuncPair(const Token& left,
-                        const Token& right,
-                        std::string_view left_lexeme,
-                        std::string_view right_lexeme) {
-  return IsPunc(left, left_lexeme) && IsPunc(right, right_lexeme) &&
-         Adjacent(left, right);
-}
-
 bool BeginsOperand(const Token& tok) {
   switch (tok.kind) {
     case TokenKind::Identifier:
@@ -301,6 +288,65 @@ NewlineContext BuildNewlineContext(const std::vector<Token>& tokens) {
   return ctx;
 }
 
+bool IsAttributeNameToken(const Token& token) {
+  return token.kind == TokenKind::Identifier || token.kind == TokenKind::Keyword;
+}
+
+std::size_t ParseAttributeSpecLineEnd(const std::vector<Token>& tokens,
+                                      std::size_t pos,
+                                      std::size_t end) {
+  if (pos >= end || tokens[pos].kind != TokenKind::Operator ||
+      tokens[pos].lexeme != "#") {
+    return static_cast<std::size_t>(-1);
+  }
+  ++pos;
+
+  if (pos >= end || !IsAttributeNameToken(tokens[pos])) {
+    return static_cast<std::size_t>(-1);
+  }
+  ++pos;
+
+  while (pos + 1 < end && tokens[pos].kind == TokenKind::Operator &&
+         tokens[pos].lexeme == "::" && IsAttributeNameToken(tokens[pos + 1])) {
+    pos += 2;
+  }
+
+  if (pos < end && tokens[pos].kind == TokenKind::Punctuator &&
+      tokens[pos].lexeme == "(") {
+    int depth = 0;
+    do {
+      if (tokens[pos].kind == TokenKind::Punctuator) {
+        if (tokens[pos].lexeme == "(") {
+          ++depth;
+        } else if (tokens[pos].lexeme == ")") {
+          --depth;
+        }
+      }
+      ++pos;
+    } while (pos < end && depth > 0);
+
+    if (depth != 0) {
+      return static_cast<std::size_t>(-1);
+    }
+  }
+
+  return pos;
+}
+
+bool LineIsOnlyAttributeList(const std::vector<Token>& tokens,
+                             std::size_t line_start,
+                             std::size_t line_end) {
+  std::size_t pos = line_start;
+  while (pos < line_end) {
+    std::size_t next = ParseAttributeSpecLineEnd(tokens, pos, line_end);
+    if (next == static_cast<std::size_t>(-1) || next == pos) {
+      return false;
+    }
+    pos = next;
+  }
+  return pos == line_end;
+}
+
 bool ContinuesLineImpl(const std::vector<Token>& tokens,
                        std::size_t i,
                        const NewlineContext& ctx) {
@@ -333,22 +379,13 @@ bool ContinuesLineImpl(const std::vector<Token>& tokens,
     }
   }
 
-  if (!cont && ctx.prev_index[i] != static_cast<std::size_t>(-1) &&
-      ctx.next_index[i] != static_cast<std::size_t>(-1)) {
-    const std::size_t close_right_index = ctx.prev_index[i];
-    const std::size_t close_left_index =
-        close_right_index < ctx.prev_index.size()
-            ? ctx.prev_index[close_right_index]
-            : static_cast<std::size_t>(-1);
-    if (close_left_index != static_cast<std::size_t>(-1) &&
-        IsAdjacentPuncPair(tokens[close_left_index],
-                           tokens[close_right_index],
-                           "]",
-                           "]")) {
-      const Token& next = tokens[ctx.next_index[i]];
-      if (BeginsOperand(next)) {
-        cont = true;
-      }
+  if (!cont && ctx.prev_index[i] != static_cast<std::size_t>(-1)) {
+    std::size_t line_start = ctx.prev_index[i];
+    while (line_start > 0 && tokens[line_start - 1].kind != TokenKind::Newline) {
+      --line_start;
+    }
+    if (LineIsOnlyAttributeList(tokens, line_start, ctx.prev_index[i] + 1)) {
+      cont = true;
     }
   }
 

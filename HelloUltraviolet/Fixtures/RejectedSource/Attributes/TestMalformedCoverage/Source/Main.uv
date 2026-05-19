@@ -1,8 +1,8 @@
 //! Rejected source-native test attribute specimen for malformed coverage syntax.
 
-[[test(covers("def.TestAttributeArgsOk"))]]
+#test(covers("def.TestAttributeArgsOk"))
 public procedure testMalformedCoverageReference() -> bool
-|: => @result
+|: |= @result
 {
     return true
 }

@@ -1,12 +1,12 @@
 //! Reference specimens for Comptime / Reflection.
 
-[[reflect]]
+#reflect
 internal record ComptimeReflectedRecord {
     internal first: i32
     internal second: bool
 }
 
-[[reflect]]
+#reflect
 internal enum ComptimeReflectedEnum {
     Empty
     Value(i32)
@@ -15,7 +15,7 @@ internal enum ComptimeReflectedEnum {
     }
 }
 
-[[reflect]]
+#reflect
 internal modal ComptimeReflectedModal {
     @Ready {
         internal value: i32

@@ -21,10 +21,10 @@ internal procedure readConstModeContext(value: const KeyModeContextCell) -> i32 
 internal procedure readAndWriteKeyBlockValue() -> i32 {
     var shared_value: shared i32 = 1
     var observed: i32 = 0
-    #shared_value read {
+    %read shared_value {
         observed = shared_value + 0
     }
-    #shared_value write {
+    %write shared_value {
         shared_value = observed + 1
     }
     return shared_value + 0
@@ -33,7 +33,7 @@ internal procedure readAndWriteKeyBlockValue() -> i32 {
 internal procedure orderedKeyBlockValue() -> i32 {
     var values: shared [i32; 4] = [1, 2, 3, 4]
     var observed: i32 = 0
-    #values[0usize], values[1usize] ordered read {
+    %read values[0usize], values[1usize] [ordered] {
         observed = values[0usize] + values[1usize]
     }
     return observed
@@ -42,7 +42,7 @@ internal procedure orderedKeyBlockValue() -> i32 {
 internal procedure defaultReadKeyBlockValue() -> i32 {
     var shared_value: shared i32 = 5
     var observed: i32 = 0
-    #shared_value {
+    %read shared_value {
         observed = shared_value + 0
     }
     return observed
@@ -55,7 +55,7 @@ internal procedure canonicalOrderFromUnsortedPathsValue() -> i32 {
             values: [1, 2, 3, 4]
         }
     var observed: i32 = 0
-    #container.values[1usize], container.leaf.value read {
+    %read container.values[1usize], container.leaf.value {
         observed = container.leaf.value + container.values[1usize]
     }
     return observed
@@ -64,14 +64,14 @@ internal procedure canonicalOrderFromUnsortedPathsValue() -> i32 {
 internal procedure keyModeContextValue() -> i32 {
     var cell: shared KeyModeContextCell = KeyModeContextCell { value: 6 }
     var observed: i32 = 0
-    #cell read {
+    %read cell {
         let initializer_read: shared i32 = cell.value
         observed = initializer_read + cell~>readConst()
         if cell.value > 0 {
             observed = observed + readConstModeContext(cell)
         }
     }
-    #cell write {
+    %write cell {
         cell.value = observed + 7
         observed = cell~>readShared()
     }
@@ -79,7 +79,7 @@ internal procedure keyModeContextValue() -> i32 {
 }
 
 internal procedure sharedArgumentReadReference(value: shared i32) -> i32 {
-    #value read {
+    %read value {
         return value + 0
     }
     return 0
@@ -93,7 +93,7 @@ internal procedure sharedArgumentNoCallSiteAcquisitionValue() -> i32 {
 internal procedure localClosureSharedCaptureValue() -> i32 {
     var shared_value: shared i32 = 13
     let reader = || -> i32 {
-        #shared_value read {
+        %read shared_value {
             return shared_value + 0
         }
         return 0
@@ -108,7 +108,7 @@ internal procedure invokeEscapingSharedKeyReader(reader: EscapingSharedKeyReader
 internal procedure escapingClosureSharedCaptureValue() -> i32 {
     var shared_value: shared i32 = 31
     let reader: EscapingSharedKeyReader = || -> i32 {
-        #shared_value read {
+        %read shared_value {
             return shared_value + 0
         }
         return 0
@@ -123,7 +123,7 @@ internal procedure inlineCoarsenedFieldKeyValue() -> i32 {
             values: [1, 2, 3, 4]
         }
     var observed: i32 = 0
-    #container.#leaf.value read {
+    %read container.#leaf.value {
         observed = container.leaf.value + 0
     }
     return observed
@@ -136,7 +136,7 @@ internal procedure inlineCoarsenedIndexKeyValue() -> i32 {
             KeyLeaf { value: 23 }
         ]
     var observed: i32 = 0
-    #leaves[#1usize].value read {
+    %read leaves[#1usize].value {
         observed = leaves[1usize].value + 0
     }
     return observed
@@ -146,12 +146,12 @@ internal procedure keyBlockBreakReleaseValue() -> i32 {
     var shared_value: shared i32 = 1
     var observed: i32 = 0
     loop {
-        #shared_value write {
+        %write shared_value {
             shared_value = 29
             break
         }
     }
-    #shared_value read {
+    %read shared_value {
         observed = shared_value + 0
     }
     return observed
@@ -163,7 +163,7 @@ internal procedure keyBlockContinueReleaseValue() -> i32 {
     var observed: i32 = 0
     loop {
         index = index + 1
-        #shared_value write {
+        %write shared_value {
             if index == 1 {
                 shared_value = 2
                 continue
@@ -172,7 +172,7 @@ internal procedure keyBlockContinueReleaseValue() -> i32 {
         }
         break
     }
-    #shared_value read {
+    %read shared_value {
         observed = shared_value + 0
     }
     return observed
@@ -180,7 +180,7 @@ internal procedure keyBlockContinueReleaseValue() -> i32 {
 
 internal procedure keyBlockReturnReleaseValue() -> i32 {
     var shared_value: shared i32 = 37
-    #shared_value read {
+    %read shared_value {
         return shared_value + 0
     }
 }

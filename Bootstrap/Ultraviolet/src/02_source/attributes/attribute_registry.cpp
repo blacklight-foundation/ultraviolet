@@ -84,7 +84,7 @@ static bool ValidateDeriveAttributeArgs(const ast::AttributeItem& attr,
     result.diag_id = "E-MOD-2450";
     result.span = attr.span;
     result.message =
-        "[[derive(... )]] requires one or more identifier arguments";
+        "#derive(... ) requires one or more identifier arguments";
     return false;
   }
 
@@ -98,7 +98,7 @@ static bool ValidateDeriveAttributeArgs(const ast::AttributeItem& attr,
       result.diag_id = "E-MOD-2450";
       result.span = attr.span;
       result.message =
-          "[[derive(... )]] requires one or more identifier arguments";
+          "#derive(... ) requires one or more identifier arguments";
       return false;
     }
 
@@ -274,7 +274,7 @@ static bool ValidateTestAttributeArgs(const ast::AttributeItem& attr,
         result.ok = false;
         result.diag_id = "E-TST-0102";
         result.span = attr.span;
-        result.message = "Duplicate [[test]] name argument";
+        result.message = "Duplicate #test name argument";
         return false;
       }
 
@@ -283,7 +283,7 @@ static bool ValidateTestAttributeArgs(const ast::AttributeItem& attr,
         result.ok = false;
         result.diag_id = "E-TST-0101";
         result.span = attr.span;
-        result.message = "Malformed [[test]] argument";
+        result.message = "Malformed #test argument";
         return false;
       }
       saw_name = true;
@@ -331,7 +331,7 @@ static bool ValidateTestAttributeArgs(const ast::AttributeItem& attr,
     result.ok = false;
     result.diag_id = "E-TST-0101";
     result.span = attr.span;
-    result.message = "Malformed [[test]] argument";
+    result.message = "Malformed #test argument";
     return false;
   }
 
@@ -346,7 +346,7 @@ static bool RejectArgumentBearingAttribute(const ast::AttributeItem& attr,
   result.ok = false;
   result.diag_id = "E-MOD-2450";
   result.span = attr.span;
-  result.message = "Malformed [[" + attr.name + "]] syntax";
+  result.message = "Malformed #" + attr.name + " syntax";
   return false;
 }
 
@@ -415,17 +415,18 @@ AttributeRegistry InitializeRegistry() {
 
   AttributeRegistry registry;
 
-  // [[dynamic]] - Dynamic verification scope
+  // #dynamic - Dynamic verification scope
   {
     AttributeSpec spec;
     spec.name = attrs::kDynamic;
     spec.valid_targets = {AttributeTarget::Procedure, AttributeTarget::Record,
                           AttributeTarget::Enum, AttributeTarget::Modal,
-                          AttributeTarget::Expression};
+                          AttributeTarget::Expression,
+                          AttributeTarget::KeyBlock};
     registry.Register(spec);
   }
 
-  // [[layout(...)]] - Memory representation
+  // #layout(...) - Memory representation
   {
     AttributeSpec spec;
     spec.name = attrs::kLayout;
@@ -500,7 +501,7 @@ AttributeRegistry InitializeRegistry() {
     registry.Register(spec);
   }
 
-  // [[deprecated]] - Deprecated declaration
+  // #deprecated - Deprecated declaration
   {
     AttributeSpec spec;
     spec.name = attrs::kDeprecated;
@@ -511,7 +512,7 @@ AttributeRegistry InitializeRegistry() {
     registry.Register(spec);
   }
 
-  // [[stale_ok]] - Suppress shared staleness warnings
+  // #stale_ok - Suppress shared staleness warnings
   {
     AttributeSpec spec;
     spec.name = attrs::kStaleOk;
@@ -519,7 +520,7 @@ AttributeRegistry InitializeRegistry() {
     registry.Register(spec);
   }
 
-  // [[inline]] / [[inline(mode)]] - Inline request
+  // #inline / #inline(mode) - Inline request
   {
     AttributeSpec spec;
     spec.name = attrs::kInline;
@@ -527,7 +528,7 @@ AttributeRegistry InitializeRegistry() {
     registry.Register(spec);
   }
 
-  // [[cold]] - Cold function (unlikely to be called)
+  // #cold - Cold function (unlikely to be called)
   {
     AttributeSpec spec;
     spec.name = attrs::kCold;
@@ -535,7 +536,7 @@ AttributeRegistry InitializeRegistry() {
     registry.Register(spec);
   }
 
-  // [[mangle(mode)]] - FFI link-name control
+  // #mangle(mode) - FFI link-name control
   {
     AttributeSpec spec;
     spec.name = attrs::kMangle;
@@ -544,7 +545,7 @@ AttributeRegistry InitializeRegistry() {
     registry.Register(spec);
   }
 
-  // [[export]] - Export symbol
+  // #export - Export symbol
   {
     AttributeSpec spec;
     spec.name = attrs::kExport;
@@ -552,7 +553,7 @@ AttributeRegistry InitializeRegistry() {
     registry.Register(spec);
   }
 
-  // [[host_export]] - Hosted library export
+  // #host_export - Hosted library export
   {
     AttributeSpec spec;
     spec.name = attrs::kHostExport;
@@ -560,7 +561,7 @@ AttributeRegistry InitializeRegistry() {
     registry.Register(spec);
   }
 
-  // [[library(name: "...", kind: "...")]] - Link library (extern block)
+  // #library(name: "...", kind: "...") - Link library (extern block)
   {
     AttributeSpec spec;
     spec.name = attrs::kLibrary;
@@ -570,7 +571,7 @@ AttributeRegistry InitializeRegistry() {
     registry.Register(spec);
   }
 
-  // [[unwind("mode")]] - FFI unwind mode
+  // #unwind("mode") - FFI unwind mode
   {
     AttributeSpec spec;
     spec.name = attrs::kUnwind;
@@ -578,7 +579,7 @@ AttributeRegistry InitializeRegistry() {
     registry.Register(spec);
   }
 
-  // [[ffi_pass_by_value]] - Force by-value FFI passing
+  // #ffi_pass_by_value - Force by-value FFI passing
   {
     AttributeSpec spec;
     spec.name = attrs::kFfiPassByValue;
@@ -813,7 +814,7 @@ AttributeValidationResult ValidateAttributes(
         result.diag_id = "E-MOD-2450";
         result.span = attr.span;
         result.message =
-            "Malformed [[layout]] syntax: missing required layout kind";
+            "Malformed #layout syntax: missing required layout kind";
         return result;
       }
       if (saw_packed && target != AttributeTarget::Record) {
@@ -851,7 +852,7 @@ AttributeValidationResult ValidateAttributes(
         result.ok = false;
         result.diag_id = "E-SYS-3341";
         result.span = attr.span;
-        result.message = "Invalid [[mangle(mode)]] argument";
+        result.message = "Invalid #mangle(mode) argument";
         return result;
       }
       const auto& arg = attr.args.front();
@@ -859,7 +860,7 @@ AttributeValidationResult ValidateAttributes(
         result.ok = false;
         result.diag_id = "E-SYS-3341";
         result.span = attr.span;
-        result.message = "Invalid [[mangle(mode)]] argument";
+        result.message = "Invalid #mangle(mode) argument";
         return result;
       }
       const auto* token = std::get_if<ast::Token>(&arg.value);
@@ -867,7 +868,7 @@ AttributeValidationResult ValidateAttributes(
         result.ok = false;
         result.diag_id = "E-SYS-3341";
         result.span = attr.span;
-        result.message = "Invalid [[mangle(mode)]] argument";
+        result.message = "Invalid #mangle(mode) argument";
         return result;
       }
       const auto mode = NormalizeAttrLiteral(token->lexeme);
@@ -875,7 +876,7 @@ AttributeValidationResult ValidateAttributes(
         result.ok = false;
         result.diag_id = "E-SYS-3341";
         result.span = attr.span;
-        result.message = "Invalid [[mangle(mode)]] argument";
+        result.message = "Invalid #mangle(mode) argument";
         return result;
       }
       if (!(mode == "none" && IsIdentifierToken(*token)) &&
@@ -883,7 +884,7 @@ AttributeValidationResult ValidateAttributes(
         result.ok = false;
         result.diag_id = "E-SYS-3341";
         result.span = attr.span;
-        result.message = "Invalid [[mangle(mode)]] argument";
+        result.message = "Invalid #mangle(mode) argument";
         return result;
       }
     }
@@ -893,7 +894,7 @@ AttributeValidationResult ValidateAttributes(
         result.ok = false;
         result.diag_id = "E-MOD-2450";
         result.span = attr.span;
-        result.message = "Malformed [[inline]] syntax";
+        result.message = "Malformed #inline syntax";
         return result;
       }
 
@@ -903,7 +904,7 @@ AttributeValidationResult ValidateAttributes(
           result.ok = false;
           result.diag_id = "E-MOD-2450";
           result.span = attr.span;
-          result.message = "Malformed [[inline]] syntax";
+          result.message = "Malformed #inline syntax";
           return result;
         }
 
@@ -912,7 +913,7 @@ AttributeValidationResult ValidateAttributes(
           result.ok = false;
           result.diag_id = "E-MOD-2450";
           result.span = attr.span;
-          result.message = "Malformed [[inline]] syntax";
+          result.message = "Malformed #inline syntax";
           return result;
         }
 
@@ -921,7 +922,7 @@ AttributeValidationResult ValidateAttributes(
           result.ok = false;
           result.diag_id = "E-MOD-2450";
           result.span = attr.span;
-          result.message = "Malformed [[inline]] syntax";
+          result.message = "Malformed #inline syntax";
           return result;
         }
       }
@@ -932,7 +933,7 @@ AttributeValidationResult ValidateAttributes(
         result.ok = false;
         result.diag_id = "E-MOD-2450";
         result.span = attr.span;
-        result.message = "Malformed [[deprecated]] syntax";
+        result.message = "Malformed #deprecated syntax";
         return result;
       }
       if (!attr.args.empty()) {
@@ -942,7 +943,7 @@ AttributeValidationResult ValidateAttributes(
           result.ok = false;
           result.diag_id = "E-MOD-2450";
           result.span = attr.span;
-          result.message = "Malformed [[deprecated]] syntax";
+          result.message = "Malformed #deprecated syntax";
           return result;
         }
       }
@@ -955,8 +956,8 @@ AttributeValidationResult ValidateAttributes(
         result.diag_id = "E-MOD-2450";
         result.span = attr.span;
         result.message = attr.name == ::ultraviolet::analysis::attrs::kExport
-                             ? "Malformed [[export]] syntax"
-                             : "Malformed [[host_export]] syntax";
+                             ? "Malformed #export syntax"
+                             : "Malformed #host_export syntax";
         return result;
       }
       const auto* token = std::get_if<ast::Token>(&attr.args.front().value);
@@ -966,8 +967,8 @@ AttributeValidationResult ValidateAttributes(
         result.diag_id = "E-MOD-2450";
         result.span = attr.span;
         result.message = attr.name == ::ultraviolet::analysis::attrs::kExport
-                             ? "Malformed [[export]] syntax"
-                             : "Malformed [[host_export]] syntax";
+                             ? "Malformed #export syntax"
+                             : "Malformed #host_export syntax";
         return result;
       }
     }
@@ -982,7 +983,7 @@ AttributeValidationResult ValidateAttributes(
           result.ok = false;
           result.diag_id = "E-MOD-2450";
           result.span = attr.span;
-          result.message = "Malformed [[library]] syntax";
+          result.message = "Malformed #library syntax";
           return result;
         }
         const auto* token = std::get_if<ast::Token>(&arg.value);
@@ -990,7 +991,7 @@ AttributeValidationResult ValidateAttributes(
           result.ok = false;
           result.diag_id = "E-MOD-2450";
           result.span = attr.span;
-          result.message = "Malformed [[library]] syntax";
+          result.message = "Malformed #library syntax";
           return result;
         }
         const auto normalized = NormalizeAttrLiteral(token->lexeme);
@@ -999,7 +1000,7 @@ AttributeValidationResult ValidateAttributes(
             result.ok = false;
             result.diag_id = "E-MOD-2450";
             result.span = attr.span;
-            result.message = "Malformed [[library]] syntax";
+            result.message = "Malformed #library syntax";
             return result;
           }
           saw_name = true;
@@ -1008,7 +1009,7 @@ AttributeValidationResult ValidateAttributes(
             result.ok = false;
             result.diag_id = "E-MOD-2450";
             result.span = attr.span;
-            result.message = "Malformed [[library]] syntax";
+            result.message = "Malformed #library syntax";
             return result;
           }
           saw_kind = true;
@@ -1027,7 +1028,7 @@ AttributeValidationResult ValidateAttributes(
         result.diag_id = "E-MOD-2450";
         result.span = attr.span;
         result.message =
-            "Malformed [[library]] syntax: missing required `name` argument";
+            "Malformed #library syntax: missing required `name` argument";
         return result;
       }
     }
@@ -1037,7 +1038,7 @@ AttributeValidationResult ValidateAttributes(
         result.ok = false;
         result.diag_id = "E-MOD-2450";
         result.span = attr.span;
-        result.message = "Malformed [[unwind]] syntax";
+        result.message = "Malformed #unwind syntax";
         return result;
       }
     }
@@ -1067,8 +1068,8 @@ AttributeValidationResult ValidateAttributes(
           result.ok = false;
           result.diag_id = "E-MOD-2450";  // Malformed attribute syntax
           result.span = attr.span;
-          result.message = "Malformed [[" + attr.name +
-                           "]] syntax: missing required argument `" +
+          result.message = "Malformed #" + attr.name +
+                           " syntax: missing required argument `" +
                            arg_spec.name + "`";
           return result;
         }

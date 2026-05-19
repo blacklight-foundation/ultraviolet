@@ -256,6 +256,15 @@ def key_paths_target(existing_path: pathlib.Path) -> ReferenceTarget:
     )
 
 
+def key_acquisition_blocks_target() -> ReferenceTarget:
+    return ReferenceTarget(
+        path=CATALOG_ROOT / "KeySystem" / "KeyAcquisitionBlocks.uv",
+        module_path="HelloUltraviolet::Reference::Keys",
+        symbol="runKeysAcquisitionBlocksReference",
+        source_path="Source/Reference/Keys/AcquisitionBlocks.uv",
+    )
+
+
 def generic_parameters_target(existing_path: pathlib.Path) -> ReferenceTarget:
     return ReferenceTarget(
         path=existing_path,
@@ -403,6 +412,15 @@ def source_native_tests_target() -> ReferenceTarget:
         module_path="HelloUltraviolet::Reference::Attributes",
         symbol="runAttributesSourceNativeTestsReference",
         source_path="Source/Reference/Attributes/SourceNativeTests.uv",
+    )
+
+
+def general_attributes_target() -> ReferenceTarget:
+    return ReferenceTarget(
+        path=CATALOG_ROOT / "AttributesAndMetadata" / "AttributeSyntaxAndPlacement.uv",
+        module_path="HelloUltraviolet::Reference::Attributes",
+        symbol="runAttributesGeneralAttributesReference",
+        source_path="Source/Reference/Attributes/GeneralAttributes.uv",
     )
 
 
@@ -1037,6 +1055,15 @@ def missing_target(row: CsvRow) -> ReferenceTarget:
         symbol="runPatternsBasicPatternsReference",
         source_path="Source/Reference/Patterns/BasicPatterns.uv",
     )
+
+    if row.obligation_id in {
+        "Parse-Attribute",
+        "Parse-AttrArgsOpt-Empty",
+    }:
+        return general_attributes_target()
+
+    if row.obligation_id == "requirement.19.OrderedKeyBlockOption":
+        return key_acquisition_blocks_target()
 
     if row.obligation_id in {
         "def.TimePrimitiveJudgments",

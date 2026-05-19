@@ -8,27 +8,27 @@ public record HostedIOContext {
     public io: $IO
 }
 
-[[layout(C)]]
+#layout(C)
 public record HostedPair {
     public left: i32
     public right: i32
 }
 
-[[layout(C)]]
+#layout(C)
 public record HostedLarge {
     public first: i64
     public second: i64
     public third: i64
 }
 
-[[host_export("C")]]
-[[mangle("uv_hosted_reference_increment")]]
+#host_export("C")
+#mangle("uv_hosted_reference_increment")
 public procedure hostedReferenceIncrement(context: HostedSystemContext, value: i32) -> i32 {
     return value + 1
 }
 
-[[host_export("C")]]
-[[mangle("uv_hosted_reference_pair_sum")]]
+#host_export("C")
+#mangle("uv_hosted_reference_pair_sum")
 public procedure hostedReferencePairSum(
     context: HostedSystemContext,
     pair: HostedPair
@@ -36,8 +36,8 @@ public procedure hostedReferencePairSum(
     return pair.left + pair.right
 }
 
-[[host_export("C")]]
-[[mangle("uv_hosted_reference_large_echo")]]
+#host_export("C")
+#mangle("uv_hosted_reference_large_echo")
 public procedure hostedReferenceLargeEcho(
     context: HostedSystemContext,
     large: HostedLarge
@@ -49,8 +49,8 @@ public procedure hostedReferenceLargeEcho(
     }
 }
 
-[[host_export("C")]]
-[[mangle("uv_hosted_reference_io_probe")]]
+#host_export("C")
+#mangle("uv_hosted_reference_io_probe")
 public procedure hostedReferenceIOProbe(
     context: HostedIOContext,
     fallback: i32
@@ -61,9 +61,9 @@ public procedure hostedReferenceIOProbe(
     return fallback
 }
 
-[[host_export("C-unwind")]]
-[[unwind("catch")]]
-[[mangle("uv_hosted_reference_catch_value")]]
+#host_export("C-unwind")
+#unwind("catch")
+#mangle("uv_hosted_reference_catch_value")
 public procedure hostedReferenceCatchValue(context: HostedSystemContext) -> i32 {
     return 7
 }

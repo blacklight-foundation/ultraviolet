@@ -1,7 +1,7 @@
 //! Rejected contract specimen for @entry referencing a move-bound parameter.
 
 public procedure contractEntryMovedParameterReference(move value: unique i32) -> bool
-|: => @entry(value) == @entry(value)
+|: |= @entry(value) == @entry(value)
 {
     return true
 }

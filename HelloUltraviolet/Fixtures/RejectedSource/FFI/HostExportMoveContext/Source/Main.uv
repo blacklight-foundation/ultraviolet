@@ -4,7 +4,7 @@ public record HostedMoveContext {
     public sys: System
 }
 
-[[host_export("C")]]
+#host_export("C")
 public procedure hostedMoveContext(move context: HostedMoveContext) -> i32 {
     return 0
 }

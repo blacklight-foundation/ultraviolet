@@ -24,13 +24,13 @@ namespace ultraviolet::analysis::expr
     //   Gamma |- @entry(expr) : T
     //
     // REQUIREMENTS:
-    //   - Only valid in postcondition context (right of =>)
+    //   - Only valid in postcondition context (right of |=)
     //   - Result type must satisfy BitcopyType
     //   - Expression evaluated in entry environment (parameters at call time)
     //
     // USE CASE:
     //   procedure increment(~!) -> i32
-    //       |: self.value >= 0 => @result > @entry(self.value)
+    //       |: self.value >= 0 |= @result > @entry(self.value)
     //   {
     //       self.value = self.value + 1
     //       return self.value

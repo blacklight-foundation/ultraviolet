@@ -4,7 +4,7 @@ public record HostedCapabilityContext {
     public sys: System
 }
 
-[[host_export("C")]]
+#host_export("C")
 public procedure hostedCapability(
     context: HostedCapabilityContext,
     value: Context

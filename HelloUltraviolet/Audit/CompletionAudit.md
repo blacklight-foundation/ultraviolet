@@ -42,14 +42,14 @@ Objective: complete the HelloUltraviolet reference corpus obligation plan.
 - The key-system reference source now also exercises default read-mode key
   blocks, canonical sorting from an intentionally unsorted key-path list,
   key-block cleanup through direct `return`, dynamic and ordered same-base
-  multi-index reads under `[[dynamic]]`, compound read-modify-write under a
+  multi-index reads under `#dynamic`, compound read-modify-write under a
   covering write key, release-write nested inside an outer read key,
   reentrant shared-parameter callee summary coverage, and a dedicated
   `keyModeContextValue` specimen for read/write context classification over a
   shared record path.
 - Key memory-ordering source now exercises both expression-level memory-order
-  overrides and key-block default memory-order attributes for `[[relaxed]]`,
-  `[[acquire]]`, `[[release]]`, `[[acqrel]]`, and `[[seqcst]]`, plus
+  overrides and key-block default memory-order attributes for `#relaxed`,
+  `#acquire`, `#release`, `#acqrel`, and `#seqcst`, plus
   `fence(acquire)`, `fence(release)`, and `fence(seqcst)`.
 - The catalog generator now derives fixture-backed obligation targets from
   `Source/Audit/FixtureCatalog/AcceptedProjects`, `Source/Audit/FixtureCatalog/RejectedSource`,
@@ -106,7 +106,7 @@ Objective: complete the HelloUltraviolet reference corpus obligation plan.
   `Transmute-Unsafe-Err` uses the Chapter 6 unsafe-operation diagnostic
   `E-MEM-3030` unless the SPEC assigns a narrower expression diagnostic.
 - `Fixtures/AcceptedProjects/HostedExportLibrary` is a spec-valid shared
-  library fixture with public `[[host_export]]` procedures, projected context
+  library fixture with public `#host_export` procedures, projected context
   bundle records, visible primitive and C-layout aggregate parameters, a
   `C-unwind` catch export, a file-system capability projection, and Win64
   direct/indirect aggregate carrier coverage. The generated catalog maps 39
@@ -157,7 +157,7 @@ Objective: complete the HelloUltraviolet reference corpus obligation plan.
   `PatNames` plus pattern typing for destructuring static declarations.
 - Module-level extern-block source now exercises the §11.4 extern block shell
   directly: default ABI blocks, identifier ABI blocks, string ABI blocks,
-  block-level `[[library]]` metadata, extern procedure item binding, C-unwind
+  block-level `#library` metadata, extern procedure item binding, C-unwind
   catch metadata, compile-time-only block behavior, unsafe imported calls, and
   linked execution through matching exported providers or a Windows system
   library import.
@@ -169,11 +169,11 @@ Objective: complete the HelloUltraviolet reference corpus obligation plan.
 - Attribute reference source now exercises concrete attribute syntax and
   behavior directly: declaration attributes on records, fields, enums, type
   aliases, procedures, methods, and modal declarations; binding attributes;
-  statement and expression attributes on `comptime`; `[[files]]`, `[[emit]]`,
-  `[[deprecated]]`, `[[dynamic]]`, `[[stale_ok]]`, `[[inline]]`,
-  `[[inline(default)]]`, `[[inline(always)]]`, `[[inline(never)]]`,
-  `[[cold]]`, `[[layout(C)]]`, `[[layout(packed)]]`, `[[layout(C,
-  align(16))]]`, and `[[layout(u8)]]`. The runtime runners verify the
+  statement and expression attributes on `comptime`; `#files`, `#emit`,
+  `#deprecated`, `#dynamic`, `#stale_ok`, `#inline`,
+  `#inline(default)`, `#inline(always)`, `#inline(never)`,
+  `#cold`, `#layout(C)`, `#layout(packed)`, `#layout(C,
+  align(16))`, and `#layout(u8)`. The runtime runners verify the
   attributed procedures and methods execute, deprecated references emit their
   warning, dynamic key reads emit their info diagnostic, stale observations are
   explicitly marked, packed/aligned record layout is observable through
@@ -224,7 +224,7 @@ Objective: complete the HelloUltraviolet reference corpus obligation plan.
   and reduction behavior; `runParallelismCaptureSemanticsReference` now executes
   a `GpuSafe` captured payload through a GPU dispatch body.
 - This pass promoted drop-bearing by-value FFI into the accepted runtime flow.
-  `runFFIFfiSafeReference` now constructs a `[[ffi_pass_by_value]]`
+  `runFFIFfiSafeReference` now constructs a `#ffi_pass_by_value`
   `FFIDroppingRecord` and moves its unique field payload, `runFFIExternProceduresReference`
   now calls an `extern "C"` imported procedure with a moved drop-bearing record
   and a same-image exported provider, and `runFFIExportedProceduresReference`
@@ -295,14 +295,14 @@ Objective: complete the HelloUltraviolet reference corpus obligation plan.
   `runKeysDynamicVerificationReference` now exercises a dynamic indexed read,
   a dynamic indexed write block over two runtime-indexed paths, prefix
   coarsening for a dynamic slice read, runtime synchronization for conflicting
-  dynamic indexed writes in spawned parallel tasks under `[[dynamic]]`,
+  dynamic indexed writes in spawned parallel tasks under `#dynamic`,
   speculative dynamic-index write behavior with a follow-up explicit read, and
-  temporary shared viewing from a unique-origin value under `[[dynamic]]`. It
+  temporary shared viewing from a unique-origin value under `#dynamic`. It
   also added rejected and diagnostic-source specimens for the dynamic-key
   static-required rule:
-  `DynamicKeyStaticRequired` rejects a non-`[[dynamic]]` parallel dynamic-key
+  `DynamicKeyStaticRequired` rejects a non-`#dynamic` parallel dynamic-key
   write with `E-CON-0020`, while `DynamicKeyRuntimeSyncInfo` compiles the
-  matching `[[dynamic]]` form and emits `I-CON-0011`.
+  matching `#dynamic` form and emits `I-CON-0011`.
 - This pass also expanded key-acquisition accepted source.
   `runKeysAcquisitionBlocksReference` now exercises passing a `shared` value
   as a procedure argument without acquiring a key at the call site; the callee
@@ -329,7 +329,7 @@ Objective: complete the HelloUltraviolet reference corpus obligation plan.
   as `UVBOOT-0059`.
 - This pass expanded key conflict-detection accepted source.
   `runKeysConflictDetectionReference` now exercises disjoint multi-path reads,
-  dynamic and ordered same-base multi-index reads under `[[dynamic]]`, prefix
+  dynamic and ordered same-base multi-index reads under `#dynamic`, prefix
   coverage under a root read key, expanded and compound read-then-write forms
   permitted by a covering write key, and nested field/index writes covered by
   a root write key. The read-then-write specimens intentionally emit the SPEC
@@ -390,7 +390,7 @@ Objective: complete the HelloUltraviolet reference corpus obligation plan.
   non-`Bitcopy` module-scope value, caught defer cleanup panic, and caught
   direct and child binding-drop panics. The caught panic specimens cross
   `C-unwind` catch boundaries, trigger runtime index panics under
-  `[[dynamic]]`, and verify that later cleanup still runs after the first
+  `#dynamic`, and verify that later cleanup still runs after the first
   cleanup panic.
 - This pass expanded compile-time quote/splice accepted source.
   `runComptimeQuoteSpliceEmissionReference` now exercises `quote pattern`,
@@ -649,7 +649,7 @@ Objective: complete the HelloUltraviolet reference corpus obligation plan.
   segments, plus concrete read/write context classification through
   `keyModeContextValue`.
 - `Source/Reference/Keys/ConflictDetection.uv` exercises disjoint key paths,
-  dynamic and ordered same-base multi-index reads under `[[dynamic]]`, prefix
+  dynamic and ordered same-base multi-index reads under `#dynamic`, prefix
   coverage, covering write permission for expanded and compound
   read-then-write assignment forms, and nested field/index writes covered by a
   root write key.
@@ -658,7 +658,7 @@ Objective: complete the HelloUltraviolet reference corpus obligation plan.
   direct plus forwarded shared-parameter callee access summaries covered by an
   outer key.
 - `Source/Reference/Keys/MemoryOrdering.uv` exercises expression-level
-  `[[relaxed]]`, `[[acquire]]`, `[[release]]`, `[[acqrel]]`, and `[[seqcst]]`
+  `#relaxed`, `#acquire`, `#release`, `#acqrel`, and `#seqcst`
   memory-order attributes on shared reads, plus `fence(acquire)`,
   `fence(release)`, and `fence(seqcst)` in runtime expression contexts.
 - `Source/Reference/Keys/SpeculativeExecution.uv` exercises speculative write
@@ -718,7 +718,7 @@ Objective: complete the HelloUltraviolet reference corpus obligation plan.
   list names the same item twice.
 - `Fixtures/RejectedSource/Attributes/PackedLayoutOnEnum` rejects with
   `E-MOD-2454`, exercising `diagnostics.LayoutAttributeDiagnostics` through
-  `[[layout(packed)]]` applied to an enum declaration.
+  `#layout(packed)` applied to an enum declaration.
 - `Fixtures/RejectedSource/Attributes/ReservedVendorNamespace` rejects with
   `E-CNF-0402`, exercising `diagnostics.VendorAttributeDiagnostics` through
   the reserved `ultraviolet::...` vendor-attribute namespace.
@@ -741,10 +741,10 @@ Objective: complete the HelloUltraviolet reference corpus obligation plan.
   field access on a union value without prior pattern matching.
 - `Fixtures/RejectedSource/Procedures/ContractDynamicAttribute` rejects with
   `E-CON-0410`, exercising `diagnostics.DiagnosticsMetadataAttributes` through
-  `[[dynamic]]` applied directly to a contract predicate expression.
+  `#dynamic` applied directly to a contract predicate expression.
 - `Fixtures/RejectedSource/Attributes/TestMissingPostcondition` rejects with
   `E-TST-0106`, exercising `diagnostics.TestAttributes` through a
-  source-native `[[test]]` procedure that has explicit visibility, explicit
+  source-native `#test` procedure that has explicit visibility, explicit
   return type, and a body but lacks the required postcondition.
 - `Fixtures/RejectedSource/Patterns/IfCaseModalNonExhaustive` rejects with
   `E-TYP-2060`, exercising `diagnostics.ModalPointerSupplement` through
@@ -755,7 +755,7 @@ Objective: complete the HelloUltraviolet reference corpus obligation plan.
 - `Fixtures/DiagnosticSource/Attributes/InlineAlwaysRecursive` builds with
   exit code 0 and emits `W-MOD-2452`, exercising
   `diagnostics.OptimizationAttributeDiagnostics` through a recursive
-  `[[inline(always)]]` procedure whose inlining cannot be honored.
+  `#inline(always)` procedure whose inlining cannot be honored.
 - `Fixtures/OutputDiagnostics/Projects/ManifestParseError` rejects with
   `E-PRJ-0102`, exercising `Parse-Manifest-Err`, `Step-Parse-Err`,
   `LoadProject-Err`, and `diagnostics.ProjectDiagnostics` through a malformed
@@ -855,9 +855,9 @@ Objective: complete the HelloUltraviolet reference corpus obligation plan.
   block, and `DynamicKeyRuntimeInfo` performs a dynamic indexed read through
   the keyed path while still emitting the expected warning/info diagnostics.
   `DynamicKeyStaticRequired` covers the required `E-CON-0020` rejection for
-  non-statically-safe key access outside `[[dynamic]]`, and
+  non-statically-safe key access outside `#dynamic`, and
   `DynamicKeyRuntimeSyncInfo` covers the required `I-CON-0011` runtime-sync
-  diagnostic under `[[dynamic]]`.
+  diagnostic under `#dynamic`.
 - `Fixtures/DiagnosticSource/Parallelism/DispatchDynamicKeyWarning` compiles
   with exit code 0 and emits `W-CON-0140` for dispatch partition specs with
   non-static index expressions.
@@ -886,7 +886,7 @@ Objective: complete the HelloUltraviolet reference corpus obligation plan.
 - `Fixtures/DiagnosticSource/Keys/StaleAfterYieldReleaseWarning` emits
   `W-CON-0011` for stale binding use after `yield release`, while
   `Fixtures/DiagnosticSource/Keys/StaleOkSuppressesReleaseWarning` uses the
-  same source shape with `[[stale_ok]]` and verifies `W-CON-0011` is absent.
+  same source shape with `#stale_ok` and verifies `W-CON-0011` is absent.
 - `Fixtures/DiagnosticSource/Keys/SpeculativeLargeStructWarning` compiles with
   exit code 0 and emits `W-CON-0020` for a speculative block over a large
   aggregate. `Fixtures/DiagnosticSource/Keys/SpeculativeExpensiveBodyWarning`
@@ -1095,13 +1095,13 @@ Objective: complete the HelloUltraviolet reference corpus obligation plan.
   emission well-formedness, and compile-time capability diagnostics with a
   `quote type` AST passed to `emitter~>emit`.
 - `Fixtures/RejectedSource/Comptime/DeriveOnProcedure` rejects with
-  `E-CTE-0311`, exercising the requirement that `[[derive(... )]]` is valid
+  `E-CTE-0311`, exercising the requirement that `#derive(... )` is valid
   only on record, enum, and modal declarations. This required a bootstrap fix
   in `rewrite.cpp` so Phase 2 reports the derive target-kind diagnostic before
   non-type derive attributes are stripped from runtime items.
 - `Fixtures/RejectedSource/Comptime/UnknownDeriveTarget` rejects with
   `E-CTE-0310`, exercising derive target name resolution for a
-  `[[derive(... )]]` attribute whose target name has no visible derive target
+  `#derive(... )` attribute whose target name has no visible derive target
   declaration.
 - `Fixtures/RejectedSource/Comptime/DeriveMissingRequiredClass` rejects with
   `E-CTE-0330`, exercising derive `requires` validation against the annotated
@@ -1123,7 +1123,7 @@ Objective: complete the HelloUltraviolet reference corpus obligation plan.
   code 0 while emitting the uncoded user note diagnostic. These exercise the
   `diagnostics.warning` and `diagnostics.note` Phase 2 builtin forms.
 - `Fixtures/DiagnosticSource/Comptime/ProjectFilesInvalidPath` compiles with
-  exit code 0 and exercises `[[files]]` ProjectFiles path restrictions by
+  exit code 0 and exercises `#files` ProjectFiles path restrictions by
   requiring an escaping path to return `IoError::InvalidPath`; the specimen
   emits `E-CTE-0070` only if the invalid-path outcome is not observed.
 - `Fixtures/RejectedSource/Comptime/SpliceTypeMismatch` rejects with
@@ -1171,7 +1171,7 @@ Objective: complete the HelloUltraviolet reference corpus obligation plan.
   capability root, catch-unwind zeroable return behavior, and Win64
   direct/indirect aggregate carrier lowering. The emitted DLL export table
   contains the three hosted lifecycle exports and five hosted thunk
-  entrypoints selected by `[[mangle(... )]]`.
+  entrypoints selected by `#mangle(... )`.
 - `Fixtures/AcceptedProjects/CrossAssemblyImplementation` builds as a valid
   multi-assembly library project. The selected library assembly imports a
   dependency assembly, implements the dependency's public classes with a local
@@ -1493,7 +1493,7 @@ Objective: complete the HelloUltraviolet reference corpus obligation plan.
   slice bounds checks to prefer the runtime fat-pointer length over stale
   static length metadata. `UVBOOT-0081` records the bootstrap repair that
   prevents local same-body disjointness from proving dynamic indexed key
-  safety in parallel contexts outside `[[dynamic]]`.
+  safety in parallel contexts outside `#dynamic`.
   Expression closure and pipeline source specimens now exercise noncapturing
   function-typed closure literals, capturing closure-typed literals, typed and
   inferred closure parameters, typed and inferred returns, trailing-comma

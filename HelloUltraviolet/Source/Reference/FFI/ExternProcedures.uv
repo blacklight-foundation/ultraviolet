@@ -13,29 +13,29 @@ extern "C" {
 }
 
 /// Foreign-visible primitive provider used by the imported primitive procedure.
-[[export("C")]]
-[[mangle("importedReferencePrimitive")]]
+#export("C")
+#mangle("importedReferencePrimitive")
 public procedure ffiImportedReferencePrimitiveProvider(value: i32) -> i32 {
     return value + 1
 }
 
 /// Foreign-visible record provider used by the imported record procedure.
-[[export("C")]]
-[[mangle("importedReferenceRecord")]]
+#export("C")
+#mangle("importedReferenceRecord")
 public procedure ffiImportedReferenceRecordProvider(value: FFIPrimitiveRecord) -> i32 {
     return value.signed_value + value.status as i32
 }
 
 /// Foreign-visible generic-record provider used by the imported generic procedure.
-[[export("C")]]
-[[mangle("importedReferenceGenericRecord")]]
+#export("C")
+#mangle("importedReferenceGenericRecord")
 public procedure ffiImportedReferenceGenericRecordProvider(value: FFIGenericRecord<i32>) -> i32 {
     return value.value
 }
 
 /// Foreign-visible enum provider used by the imported enum procedure.
-[[export("C")]]
-[[mangle("importedReferenceEnum")]]
+#export("C")
+#mangle("importedReferenceEnum")
 public procedure ffiImportedReferenceEnumProvider(value: FFIPrimitiveEnum) -> i32 {
     let selected: i32 = if value is {
         FFIPrimitiveEnum::Empty {
@@ -49,8 +49,8 @@ public procedure ffiImportedReferenceEnumProvider(value: FFIPrimitiveEnum) -> i3
 }
 
 /// Foreign-visible generic-enum provider used by the imported generic enum procedure.
-[[export("C")]]
-[[mangle("importedReferenceGenericEnum")]]
+#export("C")
+#mangle("importedReferenceGenericEnum")
 public procedure ffiImportedReferenceGenericEnumProvider(value: FFIGenericEnum<i32>) -> i32 {
     let selected: i32 = if value is {
         FFIGenericEnum::Value(payload) {
@@ -61,15 +61,15 @@ public procedure ffiImportedReferenceGenericEnumProvider(value: FFIGenericEnum<i
 }
 
 /// Foreign-visible array provider used by the imported fixed-array procedure.
-[[export("C")]]
-[[mangle("importedReferenceArray")]]
+#export("C")
+#mangle("importedReferenceArray")
 public procedure ffiImportedReferenceArrayProvider(value: [i32; 2]) -> i32 {
     return value[0usize] + value[1usize]
 }
 
 /// Foreign-visible raw-pointer provider used by the imported pointer procedure.
-[[export("C")]]
-[[mangle("importedReferencePointer")]]
+#export("C")
+#mangle("importedReferencePointer")
 public procedure ffiImportedReferencePointerProvider(value: *mut i32) -> i32 {
     if value == null {
         return 0
@@ -78,15 +78,15 @@ public procedure ffiImportedReferencePointerProvider(value: *mut i32) -> i32 {
 }
 
 /// Foreign-visible function-pointer provider used by the imported callback procedure.
-[[export("C")]]
-[[mangle("importedReferenceFunction")]]
+#export("C")
+#mangle("importedReferenceFunction")
 public procedure ffiImportedReferenceFunctionProvider(value: FFIFunctionPointer) -> i32 {
     return value(7)
 }
 
 /// Foreign-visible drop-bearing record provider used by the imported by-value procedure.
-[[export("C")]]
-[[mangle("importedReferenceDroppingRecord")]]
+#export("C")
+#mangle("importedReferenceDroppingRecord")
 public procedure ffiImportedReferenceDroppingRecordProvider(move value: FFIDroppingRecord) -> i32 {
     return move value.value
 }

@@ -17,227 +17,87 @@ using HelloUltraviolet::Reference::Expressions::{ runExpressionsLiteralsAndNames
 using HelloUltraviolet::Reference::Expressions::{ runExpressionsLoopControlReference }
 using HelloUltraviolet::Reference::Expressions::{ runExpressionsOperatorsReference }
 
-internal procedure traceExpressionSymbolExecution(context: Context, text: string@View) -> bool {
-    let output: Outcome<(), IoError> = context.io~>write_stderr(text)
-    return if output is {
-        @Value {
-            true
-        }
-        @Error {
-            false
-        }
-    }
-}
-
 public procedure catalogCompiledSymbolsExecuteReferenceExpressions(context: Context) -> bool {
     var passed: bool = true
-    passed = traceExpressionSymbolExecution(
-        context,
-        "expression start: runExpressionsAccessAndPlacesReference\n"
-    ) && passed
     passed = recordCatalogSymbolExecution(
         context,
         "runExpressionsAccessAndPlacesReference",
         runExpressionsAccessAndPlacesReference()
-    ) && passed
-    passed = traceExpressionSymbolExecution(
-        context,
-        "expression done: runExpressionsAccessAndPlacesReference\n"
-    ) && passed
-    passed = traceExpressionSymbolExecution(
-        context,
-        "expression start: runExpressionsBlockControlReference\n"
     ) && passed
     passed = recordCatalogSymbolExecution(
         context,
         "runExpressionsBlockControlReference",
         runExpressionsBlockControlReference()
     ) && passed
-    passed = traceExpressionSymbolExecution(
-        context,
-        "expression done: runExpressionsBlockControlReference\n"
-    ) && passed
-    passed = traceExpressionSymbolExecution(
-        context,
-        "expression start: runExpressionsCallsReference\n"
-    ) && passed
     passed = recordCatalogSymbolExecution(
         context,
         "runExpressionsCallsReference",
         runExpressionsCallsReference()
-    ) && passed
-    passed = traceExpressionSymbolExecution(
-        context,
-        "expression done: runExpressionsCallsReference\n"
-    ) && passed
-    passed = traceExpressionSymbolExecution(
-        context,
-        "expression start: runExpressionsCastsAndTransmutesReference\n"
     ) && passed
     passed = recordCatalogSymbolExecution(
         context,
         "runExpressionsCastsAndTransmutesReference",
         runExpressionsCastsAndTransmutesReference()
     ) && passed
-    passed = traceExpressionSymbolExecution(
-        context,
-        "expression done: runExpressionsCastsAndTransmutesReference\n"
-    ) && passed
-    passed = traceExpressionSymbolExecution(
-        context,
-        "expression start: runExpressionsClosuresAndPipelinesReference\n"
-    ) && passed
     passed = recordCatalogSymbolExecution(
         context,
         "runExpressionsClosuresAndPipelinesReference",
         runExpressionsClosuresAndPipelinesReference()
-    ) && passed
-    passed = traceExpressionSymbolExecution(
-        context,
-        "expression done: runExpressionsClosuresAndPipelinesReference\n"
-    ) && passed
-    passed = traceExpressionSymbolExecution(
-        context,
-        "expression start: runExpressionsConstructionReference\n"
     ) && passed
     passed = recordCatalogSymbolExecution(
         context,
         "runExpressionsConstructionReference",
         runExpressionsConstructionReference()
     ) && passed
-    passed = traceExpressionSymbolExecution(
-        context,
-        "expression done: runExpressionsConstructionReference\n"
-    ) && passed
-    passed = traceExpressionSymbolExecution(
-        context,
-        "expression start: runExpressionsControlReference\n"
-    ) && passed
     passed = recordCatalogSymbolExecution(
         context,
         "runExpressionsControlReference",
         runExpressionsControlReference()
-    ) && passed
-    passed = traceExpressionSymbolExecution(
-        context,
-        "expression done: runExpressionsControlReference\n"
-    ) && passed
-    passed = traceExpressionSymbolExecution(
-        context,
-        "expression start: runExpressionsControlSurfaceReference\n"
     ) && passed
     passed = recordCatalogSymbolExecution(
         context,
         "runExpressionsControlSurfaceReference",
         runExpressionsControlSurfaceReference()
     ) && passed
-    passed = traceExpressionSymbolExecution(
-        context,
-        "expression done: runExpressionsControlSurfaceReference\n"
-    ) && passed
-    passed = traceExpressionSymbolExecution(
-        context,
-        "expression start: runExpressionsEffectfulCoreReference\n"
-    ) && passed
     passed = recordCatalogSymbolExecution(
         context,
         "runExpressionsEffectfulCoreReference",
         runExpressionsEffectfulCoreReference()
-    ) && passed
-    passed = traceExpressionSymbolExecution(
-        context,
-        "expression done: runExpressionsEffectfulCoreReference\n"
-    ) && passed
-    passed = traceExpressionSymbolExecution(
-        context,
-        "expression start: runExpressionsIfCaseControlReference\n"
     ) && passed
     passed = recordCatalogSymbolExecution(
         context,
         "runExpressionsIfCaseControlReference",
         runExpressionsIfCaseControlReference()
     ) && passed
-    passed = traceExpressionSymbolExecution(
-        context,
-        "expression done: runExpressionsIfCaseControlReference\n"
-    ) && passed
-    passed = traceExpressionSymbolExecution(
-        context,
-        "expression start: runExpressionsIfControlReference\n"
-    ) && passed
     passed = recordCatalogSymbolExecution(
         context,
         "runExpressionsIfControlReference",
         runExpressionsIfControlReference()
-    ) && passed
-    passed = traceExpressionSymbolExecution(
-        context,
-        "expression done: runExpressionsIfControlReference\n"
-    ) && passed
-    passed = traceExpressionSymbolExecution(
-        context,
-        "expression start: runExpressionsIfIsControlReference\n"
     ) && passed
     passed = recordCatalogSymbolExecution(
         context,
         "runExpressionsIfIsControlReference",
         runExpressionsIfIsControlReference()
     ) && passed
-    passed = traceExpressionSymbolExecution(
-        context,
-        "expression done: runExpressionsIfIsControlReference\n"
-    ) && passed
-    passed = traceExpressionSymbolExecution(
-        context,
-        "expression start: runExpressionsIteratorLoopControlReference\n"
-    ) && passed
     passed = recordCatalogSymbolExecution(
         context,
         "runExpressionsIteratorLoopControlReference",
         runExpressionsIteratorLoopControlReference()
-    ) && passed
-    passed = traceExpressionSymbolExecution(
-        context,
-        "expression done: runExpressionsIteratorLoopControlReference\n"
-    ) && passed
-    passed = traceExpressionSymbolExecution(
-        context,
-        "expression start: runExpressionsLiteralsAndNamesReference\n"
     ) && passed
     passed = recordCatalogSymbolExecution(
         context,
         "runExpressionsLiteralsAndNamesReference",
         runExpressionsLiteralsAndNamesReference()
     ) && passed
-    passed = traceExpressionSymbolExecution(
-        context,
-        "expression done: runExpressionsLiteralsAndNamesReference\n"
-    ) && passed
-    passed = traceExpressionSymbolExecution(
-        context,
-        "expression start: runExpressionsLoopControlReference\n"
-    ) && passed
     passed = recordCatalogSymbolExecution(
         context,
         "runExpressionsLoopControlReference",
         runExpressionsLoopControlReference()
     ) && passed
-    passed = traceExpressionSymbolExecution(
-        context,
-        "expression done: runExpressionsLoopControlReference\n"
-    ) && passed
-    passed = traceExpressionSymbolExecution(
-        context,
-        "expression start: runExpressionsOperatorsReference\n"
-    ) && passed
     passed = recordCatalogSymbolExecution(
         context,
         "runExpressionsOperatorsReference",
         runExpressionsOperatorsReference()
-    ) && passed
-    passed = traceExpressionSymbolExecution(
-        context,
-        "expression done: runExpressionsOperatorsReference\n"
     ) && passed
     return passed
 }

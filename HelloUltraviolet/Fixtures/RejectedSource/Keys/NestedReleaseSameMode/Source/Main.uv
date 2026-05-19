@@ -2,8 +2,8 @@
 
 public procedure nestedReleaseSameModeReference() -> i32 {
     var shared_value: shared i32 = 1
-    #shared_value write {
-        #shared_value release write {
+    %write shared_value {
+        %release write shared_value {
             shared_value = 2
         }
     }

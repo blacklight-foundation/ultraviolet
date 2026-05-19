@@ -4,58 +4,22 @@ using HelloUltraviolet::Audit::FixtureCatalog::OutputDiagnostics::{ validatedOut
 using HelloUltraviolet::Audit::FixtureCatalog::OutputDiagnostics::{ validatedOutputLoweringDiagnosticFixtureCount }
 using HelloUltraviolet::Audit::FixtureCatalog::OutputDiagnostics::{ validatedOutputProjectDiagnosticFixtureCount }
 
-internal procedure traceOutputDiagnosticSymbol(context: Context, text: string@View) -> bool {
-    let output: Outcome<(), IoError> = context.io~>write_stderr(text)
-    return if output is {
-        @Value {
-            true
-        }
-        @Error {
-            false
-        }
-    }
-}
-
 public procedure catalogCompiledSymbolsExecuteFixturesOutputDiagnostics(context: Context) -> bool {
     var passed: bool = true
-    passed = traceOutputDiagnosticSymbol(
-        context,
-        "output diagnostics start: command-line count\n"
-    ) && passed
     passed = recordCatalogSymbolExecution(
         context,
         "validatedOutputCommandLineDiagnosticFixtureCount",
         validatedOutputCommandLineDiagnosticFixtureCount() > 0usize
-    ) && passed
-    passed = traceOutputDiagnosticSymbol(
-        context,
-        "output diagnostics done: command-line count\n"
-    ) && passed
-    passed = traceOutputDiagnosticSymbol(
-        context,
-        "output diagnostics start: lowering count\n"
     ) && passed
     passed = recordCatalogSymbolExecution(
         context,
         "validatedOutputLoweringDiagnosticFixtureCount",
         validatedOutputLoweringDiagnosticFixtureCount() > 0usize
     ) && passed
-    passed = traceOutputDiagnosticSymbol(
-        context,
-        "output diagnostics done: lowering count\n"
-    ) && passed
-    passed = traceOutputDiagnosticSymbol(
-        context,
-        "output diagnostics start: project count\n"
-    ) && passed
     passed = recordCatalogSymbolExecution(
         context,
         "validatedOutputProjectDiagnosticFixtureCount",
         validatedOutputProjectDiagnosticFixtureCount() > 0usize
-    ) && passed
-    passed = traceOutputDiagnosticSymbol(
-        context,
-        "output diagnostics done: project count\n"
     ) && passed
     return passed
 }

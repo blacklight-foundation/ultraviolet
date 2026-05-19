@@ -196,11 +196,11 @@ public procedure requirePre(value: i32) -> i32 |: true {
     return value
 }
 
-public procedure requirePost(value: i32) -> i32 |: => true {
+public procedure requirePost(value: i32) -> i32 |: |= true {
     return value
 }
 
-public procedure requireBoth(value: i32) -> i32 |: true => true {
+public procedure requireBoth(value: i32) -> i32 |: true |= true {
     return value
 }
 )uv";
