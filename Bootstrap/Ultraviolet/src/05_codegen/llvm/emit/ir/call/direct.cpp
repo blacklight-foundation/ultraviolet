@@ -1998,6 +1998,30 @@ void IRInstructionVisitor::operator()(const IRCall &call) const
     {
       return function_from_value(cast->getOperand(0), depth + 1);
     }
+    if (auto *alloca = llvm::dyn_cast<llvm::AllocaInst>(value))
+    {
+      llvm::Function *found = nullptr;
+      for (llvm::User *user : alloca->users())
+      {
+        auto *store = llvm::dyn_cast<llvm::StoreInst>(user);
+        if (!store || store->getPointerOperand() != alloca)
+        {
+          continue;
+        }
+        llvm::Function *stored =
+            function_from_value(store->getValueOperand(), depth + 1);
+        if (!stored)
+        {
+          continue;
+        }
+        if (found && found != stored)
+        {
+          return nullptr;
+        }
+        found = stored;
+      }
+      return found;
+    }
     return nullptr;
   };
 
@@ -2073,6 +2097,22 @@ void IRInstructionVisitor::operator()(const IRCall &call) const
         sig_is_concrete_local_callable = true;
         callee_is_closure_code_component = true;
         callee = closure_fn;
+      }
+    }
+  }
+
+  if (ctx)
+  {
+    if (llvm::Function *concrete_fn = function_from_value(callee, 0))
+    {
+      const std::string concrete_name = std::string(concrete_fn->getName());
+      if (const LowerCtx::ProcSigInfo *concrete =
+              ctx->LookupProcSig(concrete_name))
+      {
+        sig = concrete;
+        callee_symbol = concrete_name;
+        sig_is_concrete_local_callable = true;
+        callee = concrete_fn;
       }
     }
   }

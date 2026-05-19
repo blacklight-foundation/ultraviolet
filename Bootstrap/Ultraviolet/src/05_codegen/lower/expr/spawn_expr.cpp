@@ -774,6 +774,7 @@ LowerResult LowerSpawnExpr(const ast::Expr& expr,
   std::string wrapper_sym = NextSpawnSynthSymbol(ctx, "body");
   ProcIR proc;
   proc.symbol = wrapper_sym;
+  proc.abi = std::string("C");
   proc.ret = analysis::MakeTypePrim("()");
 
   proc.params.push_back(HostedEnvParam());

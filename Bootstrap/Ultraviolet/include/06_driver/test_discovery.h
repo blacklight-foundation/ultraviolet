@@ -49,6 +49,11 @@ struct SourceNativeTestDiscoveryResult {
   std::vector<SourceNativeTestDescriptor> tests;
 };
 
+struct SourceNativeTestFilter {
+  std::optional<std::string> test_name;
+  std::optional<std::string> coverage_reference;
+};
+
 SourceNativeTestDiscoveryResult DiscoverSourceNativeTests(
     std::string_view assembly_name,
     const std::vector<ast::ASTModule>& modules);
@@ -62,5 +67,9 @@ std::vector<SourceNativeTestDescriptor> SelectSourceNativeTests(
     const project::Project& project,
     const SourceNativeTestScope& scope,
     const std::vector<SourceNativeTestDescriptor>& tests);
+
+std::vector<SourceNativeTestDescriptor> FilterSourceNativeTests(
+    const std::vector<SourceNativeTestDescriptor>& tests,
+    const SourceNativeTestFilter& filter);
 
 }  // namespace ultraviolet::driver

@@ -726,6 +726,7 @@ LowerResult LowerDispatchExpr(const ast::DispatchExpr& node, LowerCtx& ctx) {
     std::string wrapper_sym = NextDispatchSynthSymbol(ctx, "reduce");
     ProcIR proc;
     proc.symbol = wrapper_sym;
+    proc.abi = std::string("C");
     proc.ret = analysis::MakeTypePrim("()");
 
     proc.params.push_back(HostedEnvParam());
@@ -871,6 +872,7 @@ LowerResult LowerDispatchExpr(const ast::DispatchExpr& node, LowerCtx& ctx) {
   std::string wrapper_sym = NextDispatchSynthSymbol(ctx, "body");
   ProcIR proc;
   proc.symbol = wrapper_sym;
+  proc.abi = std::string("C");
   proc.ret = analysis::MakeTypePrim("()");
 
   proc.params.push_back(HostedEnvParam());

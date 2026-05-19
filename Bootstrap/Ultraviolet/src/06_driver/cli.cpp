@@ -274,6 +274,7 @@ std::string SuggestFlag(std::string_view unknown) {
       "--assembly", "--out-dir",
       "--target-profile",
       "--opt-level",
+      "--test", "--coverage",
       "--build-progress", "--incremental",
       "--max-errors", "--no-crash-report",
       "--runtime-lib",
@@ -755,6 +756,30 @@ CliParseResult ParseArgs(int argc, char** argv) {
           arg.substr(std::string_view("--test-harness-dir=").size()));
       continue;
     }
+    if (arg == "--test") {
+      if (i + 1 >= argc) {
+        return Fail("--test requires a name argument");
+      }
+      opts.test_name_filter = std::string(argv[++i]);
+      continue;
+    }
+    if (StartsWith(arg, "--test=")) {
+      opts.test_name_filter =
+          std::string(arg.substr(std::string_view("--test=").size()));
+      continue;
+    }
+    if (arg == "--coverage") {
+      if (i + 1 >= argc) {
+        return Fail("--coverage requires an obligation anchor argument");
+      }
+      opts.test_coverage_filter = std::string(argv[++i]);
+      continue;
+    }
+    if (StartsWith(arg, "--coverage=")) {
+      opts.test_coverage_filter =
+          std::string(arg.substr(std::string_view("--coverage=").size()));
+      continue;
+    }
     if (arg == "--emit-ir") {
       opts.emit_ir = true;
       continue;
@@ -1074,6 +1099,10 @@ OPTIONS
                              executable exists)
   --target-profile <profile> Select target profile: x86_64-sysv,
                              x86_64-win64, aarch64-aapcs64
+  --test <name>              With `test`, run tests matching a procedure,
+                             display, or fully-qualified test name
+  --coverage <anchor>        With `test`, run tests covering the obligation
+                             anchor
   --opt-level <level>        Select codegen optimization: O0, O1, O2, O3, Os, Oz
   --out-dir <path>           Override output directory (default: build/)
   --diag-json                Output diagnostics as JSON

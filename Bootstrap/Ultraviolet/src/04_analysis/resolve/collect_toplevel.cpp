@@ -167,6 +167,20 @@ void InsertBindings(NameMap& out, const BindingList& bindings) {
   }
 }
 
+BindingList ComptimeProcedureBindings(const ast::ASTModule& module) {
+  BindingList bindings;
+  bindings.reserve(module.comptime_procedures.size());
+  for (const auto& proc : module.comptime_procedures) {
+    bindings.push_back(BoundName{
+        IdKeyOf(proc.name),
+        Entity{EntityKind::Value, module.path, std::nullopt,
+               EntitySource::Decl},
+        proc.span,
+    });
+  }
+  return bindings;
+}
+
 bool EntityEquals(const Entity& lhs, const Entity& rhs) {
   if (lhs.kind != rhs.kind) {
     return false;
@@ -329,6 +343,12 @@ NameMap BuildDeclNameMap(const ast::ModulePath& module_path,
   return names;
 }
 
+NameMap BuildDeclNameMap(const ast::ASTModule& module) {
+  NameMap names = BuildDeclNameMap(module.path, module.items);
+  InsertBindings(names, ComptimeProcedureBindings(module));
+  return names;
+}
+
 source::ModuleNames ModuleNamesFromContext(const ScopeContext& ctx) {
   source::ModuleNames names;
   names.reserve(ctx.sigma.mods.size());
@@ -347,7 +367,7 @@ source::ModuleNames ModuleNamesFromContext(const ScopeContext& ctx) {
 NameMapTable DeclNameMaps(const ScopeContext& ctx) {
   NameMapTable maps;
   for (const auto& mod : ctx.sigma.mods) {
-    maps.emplace(PathKeyOf(mod.path), BuildDeclNameMap(mod.path, mod.items));
+    maps.emplace(PathKeyOf(mod.path), BuildDeclNameMap(mod));
   }
   return maps;
 }
@@ -567,7 +587,14 @@ std::vector<IdKey> DeclNames(const std::vector<ast::ASTItem>& items,
 
 std::vector<IdKey> DeclNames(const ast::ASTModule& module) {
   SpecDefsCollect();
-  return DeclNames(module.items, module.path);
+  std::set<IdKey> names;
+  for (const auto& name : DeclNames(module.items, module.path)) {
+    names.insert(name);
+  }
+  for (const auto& binding : ComptimeProcedureBindings(module)) {
+    names.insert(binding.name);
+  }
+  return std::vector<IdKey>(names.begin(), names.end());
 }
 
 // =============================================================================
@@ -735,6 +762,15 @@ CollectNamesResult CollectNames(const ScopeContext& ctx,
   SpecDefsCollect();
   NameMap names;
   std::unordered_map<IdKey, std::optional<core::Span>> name_spans;
+  const BindingList comptime_bindings = ComptimeProcedureBindings(module);
+  if (!NoDup(comptime_bindings)) {
+    SPEC_RULE("Collect-Dup");
+    return {false, "Collect-Dup", std::nullopt, {}};
+  }
+  InsertBindings(names, comptime_bindings);
+  for (const auto& binding : comptime_bindings) {
+    name_spans.emplace(binding.name, binding.span);
+  }
   auto is_main_procedure = [](const ast::ASTItem& ast_item) -> bool {
     if (const auto* proc = std::get_if<ast::ProcedureDecl>(&ast_item)) {
       return IdEq(proc->name, "main");
@@ -794,6 +830,7 @@ NamesState NamesStart(const ast::ASTModule& module) {
   state.module = &module;
   state.index = 0;
   state.names = NameMap{};
+  InsertBindings(state.names, ComptimeProcedureBindings(module));
   return state;
 }
 

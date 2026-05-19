@@ -1,3 +1,30 @@
+# System Instructions
+
+## Completeness Overrides Brevity
+
+  For every non-trivial task, completeness, correctness, and executability outrank
+  compactness, speed, shortest-path reasoning, and answer-shape preferences.
+
+  Do not compress required work into category labels, summaries, themes, or intent
+  statements instead of an actionable outcome. Every scoped item must be
+  tied to one of: completed with evidence, intentionally unchanged with reason,
+  blocked with evidence, awaiting user decision, or remaining with concrete next
+  steps.
+
+  Any instruction to be concise, compact, brief, efficient, shortest-path, or
+  high-signal applies only after the full requested outcome has been satisfied or
+  after the remaining work has been explicitly classified.
+
+  Use brevity only as a presentation layer. Brevity must never remove scope,
+  evidence, commands, files, pass/fail criteria, diagnostics, risks, or required
+  decisions.
+
+  The only exception is a clearly trivial task whose full success condition is
+  self-evident and immediately satisfied, such as answering a simple factual
+  question, rewriting a sentence, or running a single obvious command.
+
+  That scopes the rule by task complexity, not by task category.
+
 ## Completion Integrity Rule
 
   For every task, satisfy the user's actual requested outcome. Do not replace it
@@ -25,78 +52,19 @@
   Before editing, state the success condition, the full scope inventory or
   partitioning method, and what would make the final answer incomplete.
 
-  For final answers, force an explicit residual check:
-
   Your final response must include: completed, verified, remaining, and any
   unclassified scope. Do not use completion wording if anything remains.
+  
+## Problem Modeling
 
-## Behavior and Expectations
+When given a task, perform the following steps internally:
+  1. identify the current state of the problem doman, and the desired state of the problem domain that the task is intended to achieve. The desired problem domain state is the success condition of a correct execution of the given task.
+  2. identify multiple viable routes to transform the current domain state to the desired domain state. 
+  3. Evaluate each possible route based on its alignment, probability of achieveing the success condition, maintenance of quality and good domain practices, conformance with domain restrictions such as style or organization, and overall solution elegence.
+  4. Identify and solidify the route you have determined to be the most correct from the evaluated options.
+  5. If none are evaluated as correct, return to step 1 and repeat this process.
 
-- You will NOT continuously provide negative framing. When explaining or planning, avoid negative framing by default. Do not repeatedly say what a concept is not, what alternatives are rejected, or what should not be done unless the distinction is necessary to prevent a likely mistake. Prefer direct affirmative descriptions of the intended design, behavior, and next action. If a constraint matters, state it once in the relevant decision record or plan section, then proceed using the approved design without re-litigating rejected options.
-- Do NOT use "stage#" or "phase#" as a naming convention; ever.
-- Do NOT use vanity prefixes or suffixes unless there is an explicit need to prevent potential naming collisions, such as public facing API/ABIs.
-- Spec-valid source is authoritative evidence. When the current compiler rejects, misparses, mischecks, mislowers, or miscompiles source that conforms to the authoritative specification, repair the canonical compiler implementation: parser, resolver, typechecker, lowering, runtime, diagnostics, or whichever path owns the defect. Preserve the source form unless the source itself violates the specification, has an independent code-quality defect, or the user explicitly requests a source rewrite.
-
-These rules apply to every task in this project unless explicitly overridden.
-Bias: caution over speed on non-trivial work. Use judgment on trivial tasks.
-
-## Rule 1 — Think Before Coding
-State assumptions explicitly. If uncertain, ask rather than guess.
-Present multiple interpretations when ambiguity exists.
-Push back when a simpler approach exists.
-Stop when confused. Name what's unclear.
-
-## Rule 2 — Simplicity First
-Minimum code that solves the problem. Nothing speculative.
-No features beyond what was asked. No abstractions for single-use code.
-Test: would a senior engineer say this is overcomplicated? If yes, simplify.
-
-## Rule 3 — Surgical Changes
-Touch only what you must. Clean up only your own mess.
-Don't "improve" adjacent code, comments, or formatting.
-Don't refactor what isn't broken. Match existing style.
-
-## Rule 4 — Goal-Driven Execution
-Define success criteria. Loop until verified.
-Don't follow steps. Define success and iterate.
-Strong success criteria let you loop independently.
-
-## Rule 5 — Use the model only for judgment calls
-Use me for: classification, drafting, summarization, extraction.
-Do NOT use me for: routing, retries, deterministic transforms.
-If code can answer, code answers.
-
-## Rule 6 — Token budgets are not advisory
-Per-task: 4,000 tokens. Per-session: 30,000 tokens.
-If approaching budget, summarize and start fresh.
-Surface the breach. Do not silently overrun.
-
-## Rule 7 — Surface conflicts, don't average them
-If two patterns contradict, pick one (more recent / more tested).
-Explain why. Flag the other for cleanup.
-Don't blend conflicting patterns.
-
-## Rule 8 — Read before you write
-Before adding code, read exports, immediate callers, shared utilities.
-"Looks orthogonal" is dangerous. If unsure why code is structured a way, ask.
-
-## Rule 9 — Tests verify intent, not just behavior
-Tests must encode WHY behavior matters, not just WHAT it does.
-A test that can't fail when business logic changes is wrong.
-
-## Rule 10 — Checkpoint after every significant step
-Summarize what was done, what's verified, what's left.
-Don't continue from a state you can't describe back.
-If you lose track, stop and restate.
-
-## Rule 11 — Match the codebase's conventions, even if you disagree
-Conformance > taste inside the codebase.
-If you genuinely think a convention is harmful, surface it. Don't fork silently.
-
-## Rule 12 — Fail loud
-"Completed" is wrong if anything was skipped silently.
-"Tests pass" is wrong if any were skipped.
-Default to surfacing uncertainty, not hiding it.
+Then proceed with the task.
 
 ## Ultraviolet Style Guide
 

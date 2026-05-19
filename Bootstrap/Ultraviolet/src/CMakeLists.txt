@@ -1593,6 +1593,43 @@ target_compile_definitions(uv_codegen_diagnostic_path_test PRIVATE
 
 add_dependencies(uv_codegen_diagnostic_path_test uv_out)
 
+add_executable(uv_codegen_async_chain_conformance_test
+  tests/codegen_async_chain_conformance_test.cpp
+)
+
+target_compile_features(uv_codegen_async_chain_conformance_test PRIVATE cxx_std_20)
+
+target_compile_definitions(uv_codegen_async_chain_conformance_test PRIVATE
+  UV_TEST_COMPILER_PATH="${UV_OUT_DIR}/$<TARGET_FILE_NAME:uvc>"
+  UV_TEST_RUNTIME_LIB_PATH="${UV_CODEGEN_ABI_SRET_RUNTIME_LIB}"
+  UV_TEST_TARGET_PROFILE="${UV_CODEGEN_ABI_SRET_TARGET_PROFILE}"
+  UV_TEST_WORK_ROOT="${CMAKE_BINARY_DIR}/tests"
+  UV_TEST_LLD_LINK_PATH="${UV_CODEGEN_ABI_SRET_LLD_LINK}"
+  UV_TEST_LLVM_LIB_PATH="${UV_CODEGEN_ABI_SRET_LLVM_LIB}"
+  UV_TEST_LLVM_AS_PATH="${UV_LLVM_AS_PATH}"
+)
+
+add_dependencies(uv_codegen_async_chain_conformance_test uv_out)
+
+add_executable(uv_codegen_spawn_wait_conformance_test
+  tests/codegen_spawn_wait_conformance_test.cpp
+)
+
+target_compile_features(uv_codegen_spawn_wait_conformance_test PRIVATE cxx_std_20)
+
+target_compile_definitions(uv_codegen_spawn_wait_conformance_test PRIVATE
+  UV_TEST_COMPILER_PATH="${UV_OUT_DIR}/$<TARGET_FILE_NAME:uvc>"
+  UV_TEST_RUNTIME_LIB_PATH="${UV_CODEGEN_ABI_SRET_RUNTIME_LIB}"
+  UV_TEST_TARGET_PROFILE="${UV_CODEGEN_ABI_SRET_TARGET_PROFILE}"
+  UV_TEST_EXECUTABLE_SUFFIX="${UV_CODEGEN_ABI_SRET_EXECUTABLE_SUFFIX}"
+  UV_TEST_WORK_ROOT="${CMAKE_BINARY_DIR}/tests"
+  UV_TEST_LLD_LINK_PATH="${UV_CODEGEN_ABI_SRET_LLD_LINK}"
+  UV_TEST_LLVM_LIB_PATH="${UV_CODEGEN_ABI_SRET_LLVM_LIB}"
+  UV_TEST_LLVM_AS_PATH="${UV_LLVM_AS_PATH}"
+)
+
+add_dependencies(uv_codegen_spawn_wait_conformance_test uv_out)
+
 add_executable(uv_lexer_diagnostics_test
   tests/lexer_diagnostics_test.cpp
 )

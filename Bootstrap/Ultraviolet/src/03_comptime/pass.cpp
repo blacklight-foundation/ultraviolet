@@ -970,7 +970,13 @@ ComptimeResult ComptimePass(const std::vector<ast::ASTModule>& modules,
 
     ast::ASTModule out = module;
     SPEC_RULE("CtExecModule");
+    LogComptimeProgress("module-start index=" + std::to_string(module_index) +
+                        " path=" + core::StringOfPath(module.path) +
+                        " items=" + std::to_string(module.items.size()));
     auto expanded_items = comptime_internal::ExpandModuleItems(module.items, env);
+    LogComptimeProgress("module-finish index=" + std::to_string(module_index) +
+                        " path=" + core::StringOfPath(module.path) +
+                        " diags=" + std::to_string(result.diags.size()));
     if (!expanded_items.has_value() || core::HasError(result.diags)) {
       return result;
     }

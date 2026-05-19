@@ -337,7 +337,27 @@ llvm::Value *ResolveAddrTuplePointer(LLVMEmitter &emitter,
     return nullptr;
   }
 
-  llvm::Value *base = emitter.EvaluateIRValue(derived.base);
+  auto generated_env_tuple_base = [&]() -> llvm::Value *
+  {
+    if (derived.base.kind != IRValue::Kind::Local ||
+        (derived.base.name != "__env" && derived.base.name != "env"))
+    {
+      return nullptr;
+    }
+    llvm::Value *local = emitter.GetLocalBindStorage(derived.base.name);
+    if (!local || !local->getType()->isPointerTy() ||
+        llvm::isa<llvm::AllocaInst>(local))
+    {
+      return nullptr;
+    }
+    return local;
+  };
+
+  llvm::Value *base = generated_env_tuple_base();
+  if (!base)
+  {
+    base = emitter.EvaluateIRValue(derived.base);
+  }
   if (!base || !base->getType()->isPointerTy())
   {
     base = emitter.GetAddressableStorage(derived.base);

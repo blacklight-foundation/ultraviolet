@@ -311,4 +311,27 @@ std::vector<SourceNativeTestDescriptor> SelectSourceNativeTests(
   return selected;
 }
 
+std::vector<SourceNativeTestDescriptor> FilterSourceNativeTests(
+    const std::vector<SourceNativeTestDescriptor>& tests,
+    const SourceNativeTestFilter& filter) {
+  std::vector<SourceNativeTestDescriptor> selected;
+  for (const auto& test : tests) {
+    if (filter.test_name.has_value() &&
+        test.procedure_name != *filter.test_name &&
+        test.display_name != *filter.test_name &&
+        test.stable_identity != *filter.test_name) {
+      continue;
+    }
+    if (filter.coverage_reference.has_value() &&
+        std::find(test.coverage_references.begin(),
+                  test.coverage_references.end(),
+                  *filter.coverage_reference) ==
+            test.coverage_references.end()) {
+      continue;
+    }
+    selected.push_back(test);
+  }
+  return selected;
+}
+
 }  // namespace ultraviolet::driver

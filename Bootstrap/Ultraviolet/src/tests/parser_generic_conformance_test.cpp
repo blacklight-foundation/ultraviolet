@@ -317,7 +317,7 @@ int main() {
            "ArgumentListParsingFamily",
            "Parse-ArgList-Empty",
            "Parse-ArgList-Cons",
-           "Parse-ArgMoveOpt-Yes",
+           "Parse-ArgPassOpt-Move",
            "ParseRangeFamily",
            "Parse-Range-Full",
            "Parse-Range-To",

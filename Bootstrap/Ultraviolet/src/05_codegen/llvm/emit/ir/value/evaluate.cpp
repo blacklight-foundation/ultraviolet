@@ -876,6 +876,21 @@ std::optional<std::string> ProcedureSymbolForPath(
         }
         return ResolveAliasTypeInScope(scope, current);
       };
+      auto generated_env_tuple_base = [&](const IRValue &base) -> llvm::Value *
+      {
+        if (base.kind != IRValue::Kind::Local ||
+            (base.name != "__env" && base.name != "env"))
+        {
+          return nullptr;
+        }
+        llvm::Value *local = GetLocalBindStorage(base.name);
+        if (!local || !local->getType()->isPointerTy() ||
+            llvm::isa<llvm::AllocaInst>(local))
+        {
+          return nullptr;
+        }
+        return local;
+      };
       auto storage_matches_semantic_type = [&](analysis::TypeRef storage_type,
                                                analysis::TypeRef semantic_type) -> bool
       {
@@ -2366,7 +2381,11 @@ std::optional<std::string> ProcedureSymbolForPath(
         analysis::TypeRef base_value_type = lookup_value_type(derived->base);
         analysis::TypeRef base_type = pointee_from_type(base_value_type);
         llvm::Value *base = nullptr;
-        base = pointer_from_value(EvaluateIRValue(derived->base));
+        base = generated_env_tuple_base(derived->base);
+        if (!base)
+        {
+          base = pointer_from_value(EvaluateIRValue(derived->base));
+        }
         if (!base)
         {
           base = GetAddressableStorage(derived->base);

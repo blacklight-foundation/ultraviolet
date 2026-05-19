@@ -51,11 +51,8 @@ public procedure main(move ctx: Context) -> i32 {
 }
 ```
 
-Ultraviolet source files use the `.uv` extension. Project metadata lives in
-`Ultraviolet.toml`.
-
-The `uv` command surface is part of the compiler rebuild tracked in
-[CompilerRebuildPlan.md](CompilerRebuildPlan.md).
+Ultraviolet source files use the `.uv` extension. Project metadata for user
+projects lives in `Ultraviolet.toml`.
 
 ## Language Highlights
 
@@ -82,19 +79,23 @@ The `uv` command surface is part of the compiler rebuild tracked in
 
 ## Building From Source
 
-The Ultraviolet compiler is rebuilt in Ultraviolet and bootstrapped with the
-existing Cursive compiler. The active build contract, Windows `x86_64-win64`
-target profile, assembly layout, and fixed-point self-host criteria are defined in
-[CompilerRebuildPlan.md](CompilerRebuildPlan.md).
+The alpha compiler is the Bootstrap implementation under
+`Bootstrap/Ultraviolet`. It builds the `uv` command-line tool, compiler support
+tools, runtime support library, and conformance checks with the CMake presets in
+`Bootstrap/Ultraviolet/CMakePresets.json`.
 
-The initial source assemblies are declared in [Ultraviolet.toml](Ultraviolet.toml):
+From `Bootstrap/Ultraviolet`, build the release package with:
 
-- `UltravioletRT`
-- `UltravioletCompiler`
-- `uv`
+```bash
+cmake --preset windows-release
+cmake --build --preset windows-release-package
+```
 
-The backend direction is self-owned target-instruction lowering, object writing,
-archive writing, and final artifact production.
+On Linux hosts, use the matching `linux-release` and `linux-release-package`
+presets.
+
+The package build stages the public compiler entry point as `uv.exe` on Windows
+or `uv` on Linux under the preset build output directory.
 
 ## Tools
 

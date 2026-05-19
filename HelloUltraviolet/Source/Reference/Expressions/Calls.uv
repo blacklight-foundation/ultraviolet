@@ -141,11 +141,14 @@ internal procedure callQualifiedAndBuiltInFormsReference() -> bool {
     }
     let opened: unique Region@Active = Region::new_scoped(options)
     let allocated: i32 = opened~>alloc(31)
+    var score: i32 = 0
+    if allocated == 31
+        score = score + 1
     let freed: unique Region@Freed = unsafe { opened~>free_unchecked() }
     let default_record: CallDefaultRecord = CallDefaultRecord()
 
     return !child~>is_cancelled() &&
-        allocated == 31 &&
+        score == 1 &&
         default_record.value == 29 &&
         default_record.is_ready
 }

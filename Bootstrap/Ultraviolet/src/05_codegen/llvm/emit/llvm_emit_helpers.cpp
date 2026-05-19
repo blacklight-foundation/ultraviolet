@@ -1730,6 +1730,12 @@ namespace {
         return false;
       }
       const analysis::ScopeContext &scope = BuildScope(ctx);
+      if (std::holds_alternative<analysis::TypeUnion>(resolved_target->node))
+      {
+        // Union storage must be materialized through the union packer so the
+        // discriminant follows canonical member order.
+        return false;
+      }
       switch (derived->kind)
       {
       case DerivedValueInfo::Kind::RecordLit:

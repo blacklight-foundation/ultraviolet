@@ -206,6 +206,34 @@ int main() {
                    project, *dir_resolution.scope, discovery.tests).size() == 3,
                "expected directory target to select tests under that directory");
 
+  ultraviolet::driver::SourceNativeTestFilter procedure_filter;
+  procedure_filter.test_name = "thirdInFile";
+  const auto procedure_selected =
+      ultraviolet::driver::FilterSourceNativeTests(
+          discovery.tests, procedure_filter);
+  ok &= Expect(procedure_selected.size() == 1 &&
+                   procedure_selected[0].procedure_name == "thirdInFile",
+               "expected procedure-name test filter to select one test");
+
+  ultraviolet::driver::SourceNativeTestFilter display_filter;
+  display_filter.test_name = "display label";
+  const auto display_selected =
+      ultraviolet::driver::FilterSourceNativeTests(
+          discovery.tests, display_filter);
+  ok &= Expect(display_selected.size() == 1 &&
+                   display_selected[0].display_name == "display label",
+               "expected display-name test filter to select one test");
+
+  ultraviolet::driver::SourceNativeTestFilter coverage_filter;
+  coverage_filter.coverage_reference =
+      "req.9.SourceNativeTestAttributes@L100604";
+  const auto coverage_selected =
+      ultraviolet::driver::FilterSourceNativeTests(
+          discovery.tests, coverage_filter);
+  ok &= Expect(coverage_selected.size() == 1 &&
+                   coverage_selected[0].procedure_name == "secondInFile",
+               "expected coverage filter to select one covered test");
+
   const auto unknown_resolution =
       ultraviolet::driver::ResolveSourceNativeTestTarget(
           project, root, std::string("DoesNotExist"));

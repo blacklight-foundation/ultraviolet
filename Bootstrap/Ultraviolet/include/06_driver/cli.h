@@ -58,6 +58,8 @@ struct CliOptions {
   Verbosity verbosity = Verbosity::Normal; // -v/--verbose
   std::string input_path;
   std::optional<std::string> test_target;  // optional positional uv test target
+  std::optional<std::string> test_name_filter;      // uv test --test
+  std::optional<std::string> test_coverage_filter;  // uv test --coverage
   std::optional<std::string> test_harness_assembly;  // internal harness build
   std::optional<std::string> test_harness_module;    // internal harness build
   std::optional<std::string> test_harness_dir;       // internal harness build

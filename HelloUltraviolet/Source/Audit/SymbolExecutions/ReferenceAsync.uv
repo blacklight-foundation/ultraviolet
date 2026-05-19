@@ -15,65 +15,117 @@ using HelloUltraviolet::Reference::Async::{ runAsyncSuspensionFormsReference }
 
 public procedure catalogCompiledSymbolsExecuteReferenceAsync(context: Context) -> bool {
     var passed: bool = true
+    passed = writeCatalogSymbolMessage(context, "async start: runAsyncAsyncKeyIntegrationReference\n") &&
+        passed
     passed = recordCatalogSymbolExecution(
         context,
         "runAsyncAsyncKeyIntegrationReference",
         runAsyncAsyncKeyIntegrationReference()
     ) && passed
+    passed = writeCatalogSymbolMessage(context, "async done: runAsyncAsyncKeyIntegrationReference\n") &&
+        passed
+    passed = writeCatalogSymbolMessage(context, "async start: runAsyncAsyncTypeReference\n") &&
+        passed
     passed = recordCatalogSymbolExecution(
         context,
         "runAsyncAsyncTypeReference",
         runAsyncAsyncTypeReference()
     ) && passed
+    passed = writeCatalogSymbolMessage(context, "async done: runAsyncAsyncTypeReference\n") &&
+        passed
+    passed = writeCatalogSymbolMessage(context, "async start: runAsyncCompositionChainReference\n") &&
+        passed
     passed = recordCatalogSymbolExecution(
         context,
         "runAsyncCompositionChainReference",
         runAsyncCompositionChainReference()
+    ) && passed
+    passed = writeCatalogSymbolMessage(context, "async done: runAsyncCompositionChainReference\n") &&
+        passed
+    passed = writeCatalogSymbolMessage(
+        context,
+        "async start: runAsyncCompositionCombinatorsReference\n"
     ) && passed
     passed = recordCatalogSymbolExecution(
         context,
         "runAsyncCompositionCombinatorsReference",
         runAsyncCompositionCombinatorsReference()
     ) && passed
+    passed = writeCatalogSymbolMessage(
+        context,
+        "async done: runAsyncCompositionCombinatorsReference\n"
+    ) && passed
+    passed = writeCatalogSymbolMessage(context, "async start: runAsyncCompositionFilterReference\n") &&
+        passed
     passed = recordCatalogSymbolExecution(
         context,
         "runAsyncCompositionFilterReference",
         runAsyncCompositionFilterReference()
     ) && passed
+    passed = writeCatalogSymbolMessage(context, "async done: runAsyncCompositionFilterReference\n") &&
+        passed
+    passed = writeCatalogSymbolMessage(context, "async start: runAsyncCompositionFoldReference\n") &&
+        passed
     passed = recordCatalogSymbolExecution(
         context,
         "runAsyncCompositionFoldReference",
         runAsyncCompositionFoldReference()
     ) && passed
+    passed = writeCatalogSymbolMessage(context, "async done: runAsyncCompositionFoldReference\n") &&
+        passed
+    passed = writeCatalogSymbolMessage(context, "async start: runAsyncCompositionFormsReference\n") &&
+        passed
     passed = recordCatalogSymbolExecution(
         context,
         "runAsyncCompositionFormsReference",
         runAsyncCompositionFormsReference()
     ) && passed
+    passed = writeCatalogSymbolMessage(context, "async done: runAsyncCompositionFormsReference\n") &&
+        passed
+    passed = writeCatalogSymbolMessage(context, "async start: runAsyncCompositionMapReference\n") &&
+        passed
     passed = recordCatalogSymbolExecution(
         context,
         "runAsyncCompositionMapReference",
         runAsyncCompositionMapReference()
     ) && passed
+    passed = writeCatalogSymbolMessage(context, "async done: runAsyncCompositionMapReference\n") &&
+        passed
+    passed = writeCatalogSymbolMessage(context, "async start: runAsyncCompositionTakeReference\n") &&
+        passed
     passed = recordCatalogSymbolExecution(
         context,
         "runAsyncCompositionTakeReference",
         runAsyncCompositionTakeReference()
     ) && passed
+    passed = writeCatalogSymbolMessage(context, "async done: runAsyncCompositionTakeReference\n") &&
+        passed
+    passed = writeCatalogSymbolMessage(context, "async start: runAsyncCompositionUntilReference\n") &&
+        passed
     passed = recordCatalogSymbolExecution(
         context,
         "runAsyncCompositionUntilReference",
         runAsyncCompositionUntilReference()
     ) && passed
+    passed = writeCatalogSymbolMessage(context, "async done: runAsyncCompositionUntilReference\n") &&
+        passed
+    passed = writeCatalogSymbolMessage(context, "async start: runAsyncStateMachineReference\n") &&
+        passed
     passed = recordCatalogSymbolExecution(
         context,
         "runAsyncStateMachineReference",
         runAsyncStateMachineReference()
     ) && passed
+    passed = writeCatalogSymbolMessage(context, "async done: runAsyncStateMachineReference\n") &&
+        passed
+    passed = writeCatalogSymbolMessage(context, "async start: runAsyncSuspensionFormsReference\n") &&
+        passed
     passed = recordCatalogSymbolExecution(
         context,
         "runAsyncSuspensionFormsReference",
         runAsyncSuspensionFormsReference(context)
     ) && passed
+    passed = writeCatalogSymbolMessage(context, "async done: runAsyncSuspensionFormsReference\n") &&
+        passed
     return passed
 }

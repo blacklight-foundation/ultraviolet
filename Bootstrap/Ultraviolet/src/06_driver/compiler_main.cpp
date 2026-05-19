@@ -613,14 +613,11 @@ std::string GenerateSourceNativeTestHarness(
   }
 
   for (const auto& test : tests) {
-    out << "    if " << test.stable_identity << "(";
+    out << "    " << test.stable_identity << "(";
     if (test.requires_context) {
       out << "authority";
     }
-    out << ") {\n";
-    out << "    } else {\n";
-    out << "        failures = failures + 1\n";
-    out << "    }\n";
+    out << ")\n";
   }
 
   out << "    return failures\n";
@@ -2542,8 +2539,13 @@ int ultraviolet::driver::RunCompiler(int argc, char** argv) {
       return 1;
     }
 
-    const auto selected_tests = SelectSourceNativeTests(
-        *project_result.project, *target_resolution.scope, discovered_tests);
+    SourceNativeTestFilter test_filter;
+    test_filter.test_name = opts->test_name_filter;
+    test_filter.coverage_reference = opts->test_coverage_filter;
+    const auto selected_tests = FilterSourceNativeTests(
+        SelectSourceNativeTests(
+            *project_result.project, *target_resolution.scope, discovered_tests),
+        test_filter);
     if (selected_tests.empty()) {
       return 0;
     }
@@ -3089,9 +3091,12 @@ int ultraviolet::driver::RunCompiler(int argc, char** argv) {
             parsed_unsafe_spans_by_file;
         comptime_signature_ctx.scopes =
             {analysis::Scope{}, analysis::Scope{}, analysis::Scope{}};
+        log_machine("phase=comptime signatures-start");
         const auto comptime_signature_diags =
             analysis::ValidateComptimeProcedureSignatures(
                 comptime_signature_ctx, project_modules);
+        log_machine("phase=comptime signatures-finish emitted_diags=" +
+                    std::to_string(comptime_signature_diags.size()));
         for (const auto& diag : comptime_signature_diags) {
           core::Emit(comptime_phase_diags, diag);
         }
@@ -3099,8 +3104,11 @@ int ultraviolet::driver::RunCompiler(int argc, char** argv) {
             core::HasError(comptime_signature_diags);
         std::optional<frontend::ComptimeResult> expanded_project;
         if (!comptime_signature_has_errors) {
+          log_machine("phase=comptime execute-start");
           expanded_project = frontend::ExecuteComptime(
               project_modules, BuildComptimeOptions(proj));
+          log_machine("phase=comptime execute-finish emitted_diags=" +
+                      std::to_string(expanded_project->diags.size()));
           for (const auto& diag : expanded_project->diags) {
             core::Emit(comptime_phase_diags, diag);
           }

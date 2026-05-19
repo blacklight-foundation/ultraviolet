@@ -1195,7 +1195,10 @@ ProcIR LowerProc(const ProcedureDecl& decl,
   const auto prev_contract_param_entry_values = ctx.contract_param_entry_values;
   const bool prev_lowering_contract_postcondition =
       ctx.lowering_contract_postcondition;
-  ctx.dynamic_checks = HasDynamicContractAttr(decl.attrs);
+  const bool has_dynamic_contract_attr = HasDynamicContractAttr(decl.attrs);
+  const bool has_test_attr =
+      analysis::HasAttribute(decl.attrs, analysis::attrs::kTest);
+  ctx.dynamic_checks = has_dynamic_contract_attr || has_test_attr;
   ctx.active_contract_postcondition = nullptr;
   ctx.contract_result_value.reset();
   ctx.contract_entry_values.clear();
@@ -1203,14 +1206,21 @@ ProcIR LowerProc(const ProcedureDecl& decl,
   ctx.lowering_contract_postcondition = false;
 
   // Check for dynamic contract checks
-  const bool has_dynamic_contract = HasDynamicContractAttr(decl.attrs) &&
-                                    decl.contract.has_value();
+  const bool has_dynamic_contract =
+      has_dynamic_contract_attr && decl.contract.has_value();
+  const bool has_test_postcondition =
+      has_test_attr && decl.contract.has_value() &&
+      decl.contract->postcondition != nullptr;
+  const bool has_runtime_postcondition =
+      (has_dynamic_contract || has_test_postcondition) &&
+      decl.contract.has_value();
   ast::ExprPtr contract_pre =
       (has_dynamic_contract && decl.contract) ? decl.contract->precondition
                                               : nullptr;
   ast::ExprPtr contract_post =
-      (has_dynamic_contract && decl.contract) ? decl.contract->postcondition
-                                              : nullptr;
+      (has_runtime_postcondition && decl.contract)
+          ? decl.contract->postcondition
+          : nullptr;
 
   if (has_dynamic_contract && contract_pre && !contract_post) {
     if (const auto split = SplitContractImplicationExpr(contract_pre)) {
@@ -1229,11 +1239,11 @@ ProcIR LowerProc(const ProcedureDecl& decl,
 
   // Capture all @entry(...) values once per invocation before body execution.
   IRPtr entry_capture_ir = nullptr;
-  if (has_dynamic_contract && contract_post) {
+  if (has_runtime_postcondition && contract_post) {
     entry_capture_ir = EmitEntryCapturesForPostcondition(contract_post, ctx);
   }
   IRPtr param_entry_snapshot_ir = nullptr;
-  if (has_dynamic_contract && contract_post) {
+  if (has_runtime_postcondition && contract_post) {
     param_entry_snapshot_ir = EmitContractParamEntrySnapshots(decl, ctx);
   }
 
@@ -1280,7 +1290,7 @@ ProcIR LowerProc(const ProcedureDecl& decl,
   const bool has_tail = decl.body && decl.body->tail_opt;
   const bool ret_is_unit = IsUnitType(ir.ret);
   if (has_tail || (body_may_fallthrough && ret_is_unit)) {
-    if (has_dynamic_contract && contract_post) {
+    if (has_runtime_postcondition && contract_post) {
       SPEC_RULE("Lower-Proc-ContractPost");
       if (IRPtr postcheck_ir =
               EmitDynamicPostconditionCheckForReturn(body_res.value, ctx)) {

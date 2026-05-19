@@ -1151,19 +1151,20 @@ int main() {
   }
   constexpr std::string_view diagnostic_poison =
       "poison_x3a_x3adiagnostic_x5fpath";
-  constexpr std::string_view scope_enter =
-      "@ultraviolet_x3a_x3aruntime_x3a_x3aregion_x3a_x3ascope_x5fenter";
+  constexpr std::string_view error_diagnostic_call =
+      "@diagnostic_x5fpath_x3a_x3aerrorDiagnostic(";
   constexpr std::string_view region_new_scoped =
       "@ultraviolet_x3a_x3aruntime_x3a_x3aregion_x3a_x3anew_x5fscoped";
-  if (!ContainsBefore(*single_error_body, diagnostic_poison, scope_enter)) {
+  if (!ContainsBefore(
+          *single_error_body, diagnostic_poison, error_diagnostic_call)) {
     std::cerr << "singleErrorDiagnosticStream does not check module poison "
-                 "before entering the body\n";
+                 "before executing the body\n";
     return 1;
   }
-  if (!ContainsBefore(*single_error_body, "store i8 0", scope_enter) ||
-      !ContainsBefore(*single_error_body, "store i32 0", scope_enter)) {
+  if (!ContainsBefore(*single_error_body, "store i8 0", error_diagnostic_call) ||
+      !ContainsBefore(*single_error_body, "store i32 0", error_diagnostic_call)) {
     std::cerr << "singleErrorDiagnosticStream does not clear the panic record "
-                 "before entering the body\n";
+                 "before executing the body\n";
     return 1;
   }
   if (single_error_body->find(region_new_scoped) != std::string_view::npos) {
@@ -1306,7 +1307,7 @@ int main() {
 
   constexpr std::string_view init_signature =
       "define void @ultraviolet_x3a_x3aruntime_x3a_x3ainit_x3a_x3a"
-      "diagnostic_x5fpath(ptr %__panic)";
+      "diagnostic_x5fpath";
   const auto init_body = FunctionBody(*ir_text, init_signature);
   if (!init_body.has_value()) {
     std::cerr << "diagnostic_path module init was not emitted\n";
