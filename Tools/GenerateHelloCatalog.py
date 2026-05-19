@@ -359,9 +359,9 @@ def appendix_grammar_target(obligation_id: str, path: pathlib.Path) -> Reference
             "Source/Reference/Expressions/Control.uv",
         ),
         "grammar.B.8.AttributeGrammar": (
-            "HelloUltraviolet::Reference::Attributes",
+            "HelloUltraviolet::Tests",
             "runAttributesSourceNativeTestsReference",
-            "Source/Reference/Attributes/SourceNativeTests.uv",
+            "Source/Tests/SourceNativeTests.uv",
         ),
         "grammar.B.9.KeySystemGrammar": (
             "HelloUltraviolet::Reference::Keys",
@@ -409,9 +409,9 @@ def appendix_grammar_target(obligation_id: str, path: pathlib.Path) -> Reference
 def source_native_tests_target() -> ReferenceTarget:
     return ReferenceTarget(
         path=CATALOG_ROOT / "AttributesAndMetadata" / "SourceNativeTestAttributes.uv",
-        module_path="HelloUltraviolet::Reference::Attributes",
+        module_path="HelloUltraviolet::Tests",
         symbol="runAttributesSourceNativeTestsReference",
-        source_path="Source/Reference/Attributes/SourceNativeTests.uv",
+        source_path="Source/Tests/SourceNativeTests.uv",
     )
 
 

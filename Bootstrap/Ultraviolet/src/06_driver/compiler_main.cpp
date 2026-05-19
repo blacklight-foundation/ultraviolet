@@ -536,6 +536,7 @@ bool ApplyTestHarnessBuildOptions(ultraviolet::project::Project& project,
     project.outputs = assembly_it->outputs;
     project.modules = assembly_it->modules;
     project.lifecycle_modules = assembly_it->modules;
+    project.test_harness_entry_module = *opts.test_harness_module;
   }
 
   return true;

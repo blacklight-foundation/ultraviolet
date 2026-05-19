@@ -99,9 +99,11 @@ int main() {
   std::filesystem::create_directories(source_dir);
   const std::filesystem::path alpha_file = source_dir / "Alpha.uv";
   const std::filesystem::path beta_file = source_dir / "Beta.uv";
+  const std::filesystem::path support_file = source_dir / "Support.uv";
   {
     std::ofstream(alpha_file) << "// alpha\n";
     std::ofstream(beta_file) << "// beta\n";
+    std::ofstream(support_file) << "// support\n";
   }
 
   ultraviolet::ast::ASTModule alpha;
@@ -118,8 +120,13 @@ int main() {
   beta.items.push_back(Procedure(
       "betaTest", Span(beta_file.string(), 10), {}, true));
 
+  ultraviolet::ast::ASTModule support;
+  support.path = {"Example", "ZSupport"};
+  support.items.push_back(
+      Procedure("supportTest", Span(support_file.string(), 10)));
+
   const auto discovery = ultraviolet::driver::DiscoverSourceNativeTests(
-      "Example", {beta, alpha});
+      "Example", {beta, alpha, support});
 
   ultraviolet::project::Assembly assembly;
   assembly.name = "Example";
@@ -127,13 +134,14 @@ int main() {
   assembly.modules = {
       ultraviolet::project::ModuleInfo{"Example::Tests::Alpha", source_dir},
       ultraviolet::project::ModuleInfo{"Example::Tests::Beta", source_dir},
+      ultraviolet::project::ModuleInfo{"Example::ZSupport", source_dir},
   };
   ultraviolet::project::Project project;
   project.root = root;
   project.assemblies = {assembly};
 
   bool ok = true;
-  ok &= Expect(discovery.tests.size() == 3,
+  ok &= Expect(discovery.tests.size() == 4,
                "expected all source-native tests to be discovered");
   ok &= Expect(discovery.tests[0].stable_identity ==
                    "Example::Tests::Alpha::secondInFile",
@@ -144,6 +152,9 @@ int main() {
   ok &= Expect(discovery.tests[2].stable_identity ==
                    "Example::Tests::Beta::betaTest",
                "expected later module path after Alpha");
+  ok &= Expect(discovery.tests[3].stable_identity ==
+                   "Example::ZSupport::supportTest",
+               "expected non-tests module discovery after tests subtree");
   ok &= Expect(discovery.tests[0].display_name == "display label",
                "expected name argument to be a display label");
   ok &= Expect(discovery.tests[0].coverage_references.size() == 1,
@@ -168,7 +179,7 @@ int main() {
                "expected absent target to select all tests");
   ok &= Expect(ultraviolet::driver::SelectSourceNativeTests(
                    project, *absent_resolution.scope, discovery.tests).size() == 3,
-               "expected all target to select every tests-subtree procedure");
+               "expected all target to select only tests-subtree procedures");
 
   const auto assembly_resolution =
       ultraviolet::driver::ResolveSourceNativeTestTarget(
@@ -187,6 +198,16 @@ int main() {
   ok &= Expect(ultraviolet::driver::SelectSourceNativeTests(
                    project, *module_resolution.scope, discovery.tests).size() == 2,
                "expected module target to select matching module tests");
+
+  const auto support_module_resolution =
+      ultraviolet::driver::ResolveSourceNativeTestTarget(
+          project, root, std::string("Example::ZSupport"));
+  ok &= Expect(support_module_resolution.scope.has_value(),
+               "expected non-tests module uv test target to resolve");
+  ok &= Expect(ultraviolet::driver::SelectSourceNativeTests(
+                   project, *support_module_resolution.scope,
+                   discovery.tests).size() == 1,
+               "expected module target to follow the selected module exactly");
 
   const auto file_resolution =
       ultraviolet::driver::ResolveSourceNativeTestTarget(

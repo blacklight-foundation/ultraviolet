@@ -513,7 +513,7 @@ using HelloUltraviolet::Reference::Types::{ runTypesSubtypingReferenceWithReport
 using HelloUltraviolet::Reference::Types::{ runTypesInferenceReference }
 using HelloUltraviolet::Reference::Types::{ runTypesRefinementsReference }
 using HelloUltraviolet::Reference::Attributes::{ runAttributesGeneralAttributesReference }
-using HelloUltraviolet::Reference::Attributes::{ runAttributesSourceNativeTestsReference }
+using HelloUltraviolet::Tests::{ runAttributesSourceNativeTestsReference }
 using HelloUltraviolet::Reference::Attributes::{ runAttributesVendorAttributesReference }
 using HelloUltraviolet::Reference::Attributes::{ runAttributesLayoutAttributesReference }
 using HelloUltraviolet::Reference::Attributes::{ runAttributesOptimizationAttributesReference }
@@ -714,8 +714,12 @@ internal procedure recordReferenceResult(
     return false
 }
 
-public procedure runReferenceCorpus(context: Context) -> ReferenceResult {
-    var passed: bool = true
+
+internal procedure runReferenceCorpusPart01(
+    context: Context,
+    initial_passed: bool
+) -> bool {
+    var passed: bool = initial_passed
     passed = recordReferenceResult(
         context,
         "catalogCoverageIsComplete",
@@ -966,6 +970,14 @@ public procedure runReferenceCorpus(context: Context) -> ReferenceResult {
         "emitLLVMRenderFailureConformanceLogMatches",
         emitLLVMRenderFailureConformanceLogMatches(context)
     ) && passed
+    return passed
+}
+
+internal procedure runReferenceCorpusPart02(
+    context: Context,
+    initial_passed: bool
+) -> bool {
+    var passed: bool = initial_passed
     passed = recordReferenceResult(
         context,
         "manifestParseErrorExpectedDiagnosticFileMatches",
@@ -1216,6 +1228,14 @@ public procedure runReferenceCorpus(context: Context) -> ReferenceResult {
         "duplicateModuleDeclarationExpectedDiagnosticFileMatches",
         duplicateModuleDeclarationExpectedDiagnosticFileMatches(context)
     ) && passed
+    return passed
+}
+
+internal procedure runReferenceCorpusPart03(
+    context: Context,
+    initial_passed: bool
+) -> bool {
+    var passed: bool = initial_passed
     passed = recordReferenceResult(
         context,
         "staticMissingTypeAnnotationExpectedDiagnosticFileMatches",
@@ -1466,6 +1486,14 @@ public procedure runReferenceCorpus(context: Context) -> ReferenceResult {
         "asyncReturnUnitMismatchExpectedDiagnosticFileMatches",
         asyncReturnUnitMismatchExpectedDiagnosticFileMatches(context)
     ) && passed
+    return passed
+}
+
+internal procedure runReferenceCorpusPart04(
+    context: Context,
+    initial_passed: bool
+) -> bool {
+    var passed: bool = initial_passed
     passed = recordReferenceResult(
         context,
         "missingExplicitReturnExpectedDiagnosticFileMatches",
@@ -1716,6 +1744,14 @@ public procedure runReferenceCorpus(context: Context) -> ReferenceResult {
         "dynamicSelfParameterNonDispatchableExpectedDiagnosticFileMatches",
         dynamicSelfParameterNonDispatchableExpectedDiagnosticFileMatches(context)
     ) && passed
+    return passed
+}
+
+internal procedure runReferenceCorpusPart05(
+    context: Context,
+    initial_passed: bool
+) -> bool {
+    var passed: bool = initial_passed
     passed = recordReferenceResult(
         context,
         "dynamicNonDispatchableRequirementExpectedDiagnosticFileMatches",
@@ -1966,6 +2002,14 @@ public procedure runReferenceCorpus(context: Context) -> ReferenceResult {
         "closureRefCaptureMovedExpectedDiagnosticFileMatches",
         closureRefCaptureMovedExpectedDiagnosticFileMatches(context)
     ) && passed
+    return passed
+}
+
+internal procedure runReferenceCorpusPart06(
+    context: Context,
+    initial_passed: bool
+) -> bool {
+    var passed: bool = initial_passed
     passed = recordReferenceResult(
         context,
         "closureMoveCaptureImmovableExpectedDiagnosticFileMatches",
@@ -2216,6 +2260,14 @@ public procedure runReferenceCorpus(context: Context) -> ReferenceResult {
         "ffiReturnRegionLocalRawPtrExpectedDiagnosticFileMatches",
         ffiReturnRegionLocalRawPtrExpectedDiagnosticFileMatches(context)
     ) && passed
+    return passed
+}
+
+internal procedure runReferenceCorpusPart07(
+    context: Context,
+    initial_passed: bool
+) -> bool {
+    var passed: bool = initial_passed
     passed = recordReferenceResult(
         context,
         "foreignPredicateContextExpectedDiagnosticFileMatches",
@@ -2466,6 +2518,14 @@ public procedure runReferenceCorpus(context: Context) -> ReferenceResult {
         "asyncCompositionDiagnosticsTableExpectedDiagnosticFileMatches",
         asyncCompositionDiagnosticsTableExpectedDiagnosticFileMatches(context)
     ) && passed
+    return passed
+}
+
+internal procedure runReferenceCorpusPart08(
+    context: Context,
+    initial_passed: bool
+) -> bool {
+    var passed: bool = initial_passed
     passed = recordReferenceResult(
         context,
         "loopAsyncEnclosingReturnExpectedDiagnosticFileMatches",
@@ -2716,6 +2776,14 @@ public procedure runReferenceCorpus(context: Context) -> ReferenceResult {
         "qualifiedNameResolutionExpectedDiagnosticFileMatches",
         qualifiedNameResolutionExpectedDiagnosticFileMatches(context)
     ) && passed
+    return passed
+}
+
+internal procedure runReferenceCorpusPart09(
+    context: Context,
+    initial_passed: bool
+) -> bool {
+    var passed: bool = initial_passed
     passed = recordReferenceResult(
         context,
         "qualifiedNameEliminatedBeforeTypingExpectedDiagnosticFileMatches",
@@ -2966,6 +3034,14 @@ public procedure runReferenceCorpus(context: Context) -> ReferenceResult {
         "speculativeReadModeExpectedDiagnosticFileMatches",
         speculativeReadModeExpectedDiagnosticFileMatches(context)
     ) && passed
+    return passed
+}
+
+internal procedure runReferenceCorpusPart10(
+    context: Context,
+    initial_passed: bool
+) -> bool {
+    var passed: bool = initial_passed
     passed = recordReferenceResult(
         context,
         "orderedDifferentBaseExpectedDiagnosticFileMatches",
@@ -3216,6 +3292,14 @@ public procedure runReferenceCorpus(context: Context) -> ReferenceResult {
         "runAuthorityNetworkReference",
         runAuthorityNetworkReference()
     ) && passed
+    return passed
+}
+
+internal procedure runReferenceCorpusPart11(
+    context: Context,
+    initial_passed: bool
+) -> bool {
+    var passed: bool = initial_passed
     passed = recordReferenceResult(
         context,
         "runAuthorityRegionsAndFramesReference",
@@ -3466,6 +3550,14 @@ public procedure runReferenceCorpus(context: Context) -> ReferenceResult {
         "runPolymorphismAssociatedTypesReference",
         runPolymorphismAssociatedTypesReference()
     ) && passed
+    return passed
+}
+
+internal procedure runReferenceCorpusPart12(
+    context: Context,
+    initial_passed: bool
+) -> bool {
+    var passed: bool = initial_passed
     passed = recordReferenceResult(
         context,
         "runPolymorphismDynamicClassObjectsReference",
@@ -3716,6 +3808,14 @@ public procedure runReferenceCorpus(context: Context) -> ReferenceResult {
         "runParallelismDispatchReference",
         runParallelismDispatchReference(context)
     ) && passed
+    return passed
+}
+
+internal procedure runReferenceCorpusPart13(
+    context: Context,
+    initial_passed: bool
+) -> bool {
+    var passed: bool = initial_passed
     passed = recordReferenceResult(
         context,
         "runParallelismCancellationReference",
@@ -3966,6 +4066,14 @@ public procedure runReferenceCorpus(context: Context) -> ReferenceResult {
         "runComptimeDeriveTargetsReference",
         runComptimeDeriveTargetsReference()
     ) && passed
+    return passed
+}
+
+internal procedure runReferenceCorpusPart14(
+    context: Context,
+    initial_passed: bool
+) -> bool {
+    var passed: bool = initial_passed
     passed = recordReferenceResult(
         context,
         "runFFIFfiSafeReference",
@@ -4036,6 +4144,25 @@ public procedure runReferenceCorpus(context: Context) -> ReferenceResult {
         "runLoweringBackendRequirementsReference",
         runLoweringBackendRequirementsReference()
     ) && passed
+    return passed
+}
+
+public procedure runReferenceCorpus(context: Context) -> ReferenceResult {
+    var passed: bool = true
+    passed = runReferenceCorpusPart01(context, passed)
+    passed = runReferenceCorpusPart02(context, passed)
+    passed = runReferenceCorpusPart03(context, passed)
+    passed = runReferenceCorpusPart04(context, passed)
+    passed = runReferenceCorpusPart05(context, passed)
+    passed = runReferenceCorpusPart06(context, passed)
+    passed = runReferenceCorpusPart07(context, passed)
+    passed = runReferenceCorpusPart08(context, passed)
+    passed = runReferenceCorpusPart09(context, passed)
+    passed = runReferenceCorpusPart10(context, passed)
+    passed = runReferenceCorpusPart11(context, passed)
+    passed = runReferenceCorpusPart12(context, passed)
+    passed = runReferenceCorpusPart13(context, passed)
+    passed = runReferenceCorpusPart14(context, passed)
     return referenceResult(
         passed,
         498

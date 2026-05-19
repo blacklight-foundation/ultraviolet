@@ -70,6 +70,7 @@ struct Project {
   OutputPaths outputs;
   std::vector<ModuleInfo> modules;
   std::vector<ModuleInfo> lifecycle_modules;
+  std::optional<std::string> test_harness_entry_module;
   ToolchainConfig toolchain;
   BuildConfig build;
 };

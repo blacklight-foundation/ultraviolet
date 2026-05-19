@@ -44,6 +44,7 @@ using HelloUltraviolet::Audit::SymbolExecutions::{ catalogCompiledSymbolsExecute
 using HelloUltraviolet::Audit::SymbolExecutions::{ catalogCompiledSymbolsExecuteReferenceSourceText }
 using HelloUltraviolet::Audit::SymbolExecutions::{ catalogCompiledSymbolsExecuteReferenceStatements }
 using HelloUltraviolet::Audit::SymbolExecutions::{ catalogCompiledSymbolsExecuteReferenceTypes }
+using HelloUltraviolet::Audit::SymbolExecutions::{ catalogCompiledSymbolsExecuteSourceTestsSourceNativeTestsUv }
 
 public procedure expectedCatalogCompiledSymbolCount() -> usize {
     return 612usize
@@ -54,11 +55,11 @@ public procedure catalogCompiledSymbolCount() -> usize {
 }
 
 public procedure expectedCatalogCompiledSymbolTargetDigest() -> usize {
-    return 201373545usize
+    return 165689363usize
 }
 
 public procedure catalogCompiledSymbolTargetDigest() -> usize {
-    return 201373545usize
+    return 165689363usize
 }
 
 public procedure catalogCompiledSymbolTargetsAreIndexed() -> bool {
@@ -113,5 +114,6 @@ public procedure catalogCompiledSymbolsExecute(context: Context) -> bool {
     passed = catalogCompiledSymbolsExecuteReferenceSourceText(context) && passed
     passed = catalogCompiledSymbolsExecuteReferenceStatements(context) && passed
     passed = catalogCompiledSymbolsExecuteReferenceTypes(context) && passed
+    passed = catalogCompiledSymbolsExecuteSourceTestsSourceNativeTestsUv(context) && passed
     return passed
 }

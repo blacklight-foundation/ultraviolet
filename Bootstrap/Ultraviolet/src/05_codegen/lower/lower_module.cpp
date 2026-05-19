@@ -107,6 +107,11 @@ bool IsUnitType(const analysis::TypeRef& type) {
   return false;
 }
 
+bool IsProjectEntryModule(const ast::ASTModule& module, const LowerCtx& ctx) {
+  return ctx.project_entry_module.has_value() &&
+         core::StringOfPath(module.path) == *ctx.project_entry_module;
+}
+
 const analysis::ScopeContext& BuildScope(const ast::ModulePath& module_path,
                                          LowerCtx& ctx) {
   static const analysis::ScopeContext kEmptyScope{};
@@ -1556,7 +1561,10 @@ IRDecls LowerModule(const ast::ASTModule& module, LowerCtx& ctx) {
               SPEC_RULE("CG-Item-Procedure");
               return;
             }
-            if (ctx.executable_project && node.name == "main") {
+            const bool is_entry_main =
+                ctx.executable_project && node.name == "main" &&
+                IsProjectEntryModule(module, ctx);
+            if (is_entry_main) {
               SPEC_RULE("CG-Item-Procedure-Main");
             } else {
               SPEC_RULE("CG-Item-Procedure");
@@ -1573,7 +1581,7 @@ IRDecls LowerModule(const ast::ASTModule& module, LowerCtx& ctx) {
                 contract.has_value()) {
               ctx.RegisterLocalContractInfo(proc.symbol, *contract);
             }
-            if (ctx.executable_project && node.name == "main") {
+            if (is_entry_main) {
               ctx.main_symbol = proc.symbol;
             }
             decls.push_back(std::move(proc));

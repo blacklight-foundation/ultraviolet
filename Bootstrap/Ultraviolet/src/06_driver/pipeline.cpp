@@ -455,6 +455,12 @@ bool WithEntry(const project::Project& project, const ModuleCodegen& module) {
   if (!project::IsExecutable(project)) {
     return false;
   }
+  if (project.test_harness_entry_module.has_value()) {
+    const std::string module_path_key =
+        module.path_key.empty() ? core::StringOfPath(module.path)
+                                : module.path_key;
+    return module_path_key == *project.test_harness_entry_module;
+  }
   if (IsRootModule(project, module)) {
     return true;
   }
@@ -480,6 +486,9 @@ std::optional<std::string> SelectProjectEntryModule(
     const project::Project& project) {
   if (project.modules.empty()) {
     return std::nullopt;
+  }
+  if (project.test_harness_entry_module.has_value()) {
+    return project.test_harness_entry_module;
   }
 
   for (const auto& module : project.modules) {

@@ -273,17 +273,14 @@ std::vector<SourceNativeTestDescriptor> SelectSourceNativeTests(
     const std::vector<SourceNativeTestDescriptor>& tests) {
   std::vector<SourceNativeTestDescriptor> selected;
   for (const auto& test : tests) {
-    if (!ModulePathIsTestsSubtree(test.assembly_name, test.module_path)) {
-      continue;
-    }
-
     bool include = false;
     switch (scope.kind) {
       case SourceNativeTestScopeKind::AllTests:
-        include = true;
+        include = ModulePathIsTestsSubtree(test.assembly_name, test.module_path);
         break;
       case SourceNativeTestScopeKind::AssemblyTests:
-        include = test.assembly_name == scope.assembly_name;
+        include = test.assembly_name == scope.assembly_name &&
+                  ModulePathIsTestsSubtree(test.assembly_name, test.module_path);
         break;
       case SourceNativeTestScopeKind::ModuleTests:
         include = ModulePathStartsWith(test.module_path, scope.module_path);
@@ -293,11 +290,14 @@ std::vector<SourceNativeTestDescriptor> SelectSourceNativeTests(
           std::error_code ec;
           const auto source_file =
               std::filesystem::weakly_canonical(test.source_file, ec);
-          include = !ec && source_file == scope.path;
+          include = !ec && source_file == scope.path &&
+                    ModulePathIsTestsSubtree(test.assembly_name,
+                                             test.module_path);
         }
         break;
       case SourceNativeTestScopeKind::DirectoryTests:
-        include = PathIsUnderDirectory(test.source_file, scope.path);
+        include = PathIsUnderDirectory(test.source_file, scope.path) &&
+                  ModulePathIsTestsSubtree(test.assembly_name, test.module_path);
         break;
     }
 

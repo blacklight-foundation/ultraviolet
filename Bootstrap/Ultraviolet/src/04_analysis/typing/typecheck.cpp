@@ -974,13 +974,18 @@ DeclTypingResult DeclTypingModules(ScopeContext& ctx,
 
 DeclTypingResult MainCheckProject(ScopeContext& ctx,
                                   const std::vector<ast::ASTModule>& modules) {
-  (void)ctx;
   SpecDefsDeclTyping();
   DeclTypingResult result;
+  const std::optional<std::string> harness_entry_module =
+      ctx.project ? ctx.project->test_harness_entry_module : std::nullopt;
 
   // Find all main procedures
   std::vector<const ast::ProcedureDecl*> mains;
   for (const auto& module : modules) {
+    if (harness_entry_module.has_value() &&
+        core::StringOfPath(module.path) != *harness_entry_module) {
+      continue;
+    }
     for (const auto& item : module.items) {
       if (const auto* proc = std::get_if<ast::ProcedureDecl>(&item)) {
         if (IdEq(proc->name, "main")) {
