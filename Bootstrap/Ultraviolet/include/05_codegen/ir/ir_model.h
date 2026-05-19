@@ -479,7 +479,7 @@ struct IRWait {
 struct IRCancelSuppress {};
 
 struct IRCancelCheck {
-  IRValue token;                        // CancelToken@Active
+  IRValue token;                        // Address of CancelToken@Active receiver
   IRValue result;                       // bool
 };
 

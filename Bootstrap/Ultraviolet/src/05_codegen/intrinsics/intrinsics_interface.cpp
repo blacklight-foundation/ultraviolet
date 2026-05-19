@@ -1305,22 +1305,22 @@ std::optional<RuntimeFuncInfo> GetRuntimeFuncInfo(const std::string& symbol) {
     return info;
   }
   if (symbol == BuiltinSymCancelTokenActiveCancel()) {
-    info.params.push_back(make_param("self", t_cancel_token_active));
+    info.params.push_back(make_param("self", t_raw_mut_u8, analysis::ParamMode::Move));
     info.ret = t_unit;
     return info;
   }
   if (symbol == BuiltinSymCancelTokenActiveIsCancelled()) {
-    info.params.push_back(make_param("self", t_cancel_token_active));
+    info.params.push_back(make_param("self", t_raw_imm_u8, analysis::ParamMode::Move));
     info.ret = t_bool;
     return info;
   }
   if (symbol == BuiltinSymCancelTokenActiveChild()) {
-    info.params.push_back(make_param("self", t_cancel_token_active));
+    info.params.push_back(make_param("self", t_raw_imm_u8, analysis::ParamMode::Move));
     info.ret = t_cancel_token_active;
     return info;
   }
   if (symbol == BuiltinSymCancelTokenActiveWaitCancelled()) {
-    info.params.push_back(make_param("self", t_cancel_token_active));
+    info.params.push_back(make_param("self", t_raw_imm_u8, analysis::ParamMode::Move));
     info.ret = t_async_unit;
     return info;
   }
@@ -1331,6 +1331,16 @@ std::optional<RuntimeFuncInfo> GetRuntimeFuncInfo(const std::string& symbol) {
         make_param("suspended", t_raw_imm_u8, analysis::ParamMode::Move));
     info.params.push_back(
         make_param("input", t_raw_imm_u8, analysis::ParamMode::Move));
+    info.params.push_back(
+        make_param("panic_out", t_raw_mut_u8, analysis::ParamMode::Move));
+    info.ret = t_async_resume;
+    return info;
+  }
+  if (symbol == BuiltinSymAsyncTake()) {
+    info.params.push_back(
+        make_param("source", t_raw_imm_u8, analysis::ParamMode::Move));
+    info.params.push_back(
+        make_param("count", t_usize, analysis::ParamMode::Move));
     info.params.push_back(
         make_param("panic_out", t_raw_mut_u8, analysis::ParamMode::Move));
     info.ret = t_async_resume;

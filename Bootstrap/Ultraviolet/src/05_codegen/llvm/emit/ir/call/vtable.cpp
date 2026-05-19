@@ -84,6 +84,15 @@ void IRInstructionVisitor::operator()(const IRCallVTable &call) const
   call_args.push_back(data_ptr);
   for (const auto &arg : call.args)
   {
+    if (arg.kind == IRValue::Kind::Local &&
+        arg.name == std::string(kPanicOutName))
+    {
+      if (llvm::Value *panic_slot = emitter.GetLocal(std::string(kPanicOutName)))
+      {
+        call_args.push_back(panic_slot);
+        continue;
+      }
+    }
     call_args.push_back(EvaluateOrDefault(arg));
   }
 

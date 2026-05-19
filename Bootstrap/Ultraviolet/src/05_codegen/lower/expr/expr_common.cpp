@@ -373,13 +373,13 @@ bool IsPlaceExpr(const ast::Expr& expr) {
         if constexpr (std::is_same_v<T, ast::IdentifierExpr>) {
           return true;
         } else if constexpr (std::is_same_v<T, ast::FieldAccessExpr>) {
-          return true;
+          return node.base ? IsPlaceExpr(*node.base) : false;
         } else if constexpr (std::is_same_v<T, ast::TupleAccessExpr>) {
-          return true;
+          return node.base ? IsPlaceExpr(*node.base) : false;
         } else if constexpr (std::is_same_v<T, ast::AttributedExpr>) {
           return node.expr ? IsPlaceExpr(*node.expr) : false;
         } else if constexpr (std::is_same_v<T, ast::IndexAccessExpr>) {
-          return true;
+          return node.base ? IsPlaceExpr(*node.base) : false;
         } else if constexpr (std::is_same_v<T, ast::DerefExpr>) {
           return true;
         }

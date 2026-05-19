@@ -93,6 +93,15 @@ bool IsValidPtrType(const analysis::TypeRef& type) {
   return false;
 }
 
+bool IsRawPtrType(const analysis::TypeRef& type) {
+  const auto stripped = StripPermLocal(type);
+  return stripped && std::holds_alternative<analysis::TypeRawPtr>(stripped->node);
+}
+
+bool IsClosureEnvParam(const IRParam& param) {
+  return param.name == "__env" && IsRawPtrType(param.type);
+}
+
 ByRefAccessKind ByRefAccess(const analysis::TypeRef& type) {
   return PermOf(type) == analysis::Permission::Unique
              ? ByRefAccessKind::ReadWrite
@@ -1067,6 +1076,48 @@ llvm::Value* EmitABICall(LLVMEmitter& emitter,
           continue;
         }
       }
+      if (is_panic_out_param) {
+        llvm::Type* target_ty = abi.param_types[idx];
+        if (target_ty && arg->getType() != target_ty) {
+          arg = CoerceValue(builder, arg, target_ty);
+        }
+        call_args[idx] = arg;
+        continue;
+      }
+      if (!materialized_slice_storage && IsRawPtrType(params[i].type) &&
+          elem_ty && elem_ty->isPointerTy()) {
+        llvm::Value* raw_ptr_value = nullptr;
+        const analysis::TypeRef source_type =
+            source_arg_value_type(arg_lookup_index);
+        if (IsRawPtrType(source_type)) {
+          if (llvm::Value* storage = existing_arg_storage(arg_lookup_index, elem_ty)) {
+            call_args[idx] = storage;
+            continue;
+          }
+          raw_ptr_value = arg;
+        } else if (arg->getType()->isPointerTy() && !is_null_pointer_arg(arg)) {
+          raw_ptr_value = arg;
+        }
+        if (raw_ptr_value) {
+          if (raw_ptr_value->getType() != elem_ty) {
+            raw_ptr_value = CoerceValue(builder, raw_ptr_value, elem_ty);
+          }
+          if (!raw_ptr_value) {
+            report_codegen_failure("rawptr-byref-address-coercion", i, arg);
+            continue;
+          }
+          const unsigned ordinal = next_scratch_ordinal(elem_ty, "rawptr_arg");
+          llvm::AllocaInst* slot =
+              AcquireReusableEntryAlloca(func, elem_ty, "rawptr_arg", ordinal);
+          if (!slot) {
+            report_codegen_failure("rawptr-byref-scratch-allocation", i, arg);
+            continue;
+          }
+          builder->CreateStore(raw_ptr_value, slot);
+          call_args[idx] = slot;
+          continue;
+        }
+      }
       if (!arg->getType()->isPointerTy() || is_null_pointer_arg(arg)) {
         llvm::Value* storage = existing_arg_storage(arg_lookup_index, elem_ty);
         if (storage) {
@@ -1190,6 +1241,18 @@ llvm::Value* EmitABICall(LLVMEmitter& emitter,
         storage = CoerceValue(builder, storage, target_ptr_ty);
       }
       if (storage) {
+        arg = builder->CreateLoad(target_ty, storage);
+      }
+    }
+    const analysis::TypeRef source_value_type =
+        source_arg_value_type(arg_lookup_index);
+    const bool is_pointer_value_arg =
+        (IsRawPtrType(params[i].type) && IsRawPtrType(source_value_type)) ||
+        (is_function_value_type(params[i].type) &&
+         is_function_value_type(source_value_type));
+    if (target_ty && target_ty->isPointerTy() && is_pointer_value_arg &&
+        arg->getType()->isPointerTy()) {
+      if (llvm::Value* storage = existing_arg_storage(arg_lookup_index, target_ty)) {
         arg = builder->CreateLoad(target_ty, storage);
       }
     }
@@ -1563,7 +1626,11 @@ ABICallResult ComputeCallABI(LLVMEmitter& emitter,
       break;
     }
 
-    const auto kind = result.param_kinds[i];
+    auto kind = result.param_kinds[i];
+    if (IsClosureEnvParam(params[i])) {
+      kind = PassKind::ByValue;
+      result.param_kinds[i] = kind;
+    }
     if (kind == PassKind::ByRef) {
       SPEC_RULE("LLVMArgLower-ByRef");
       result.param_types.push_back(emitter.GetOpaquePtr());

@@ -10,7 +10,20 @@ void IRInstructionVisitor::operator()(const IRCancelCheck &check) const
 {
   llvm::Type *ptr_ty = emitter.GetOpaquePtr();
   llvm::Type *i1_ty = llvm::Type::getInt1Ty(emitter.GetContext());
-  llvm::Value *token = CoerceTo(&builder, EvaluateOrDefault(check.token), ptr_ty);
+  llvm::Value *token = emitter.GetAddressableStorage(check.token);
+  if (!token)
+  {
+    token = EvaluateOrDefault(check.token);
+  }
+  if (token && !token->getType()->isPointerTy())
+  {
+    if (LowerCtx *ctx = emitter.GetCurrentCtx())
+    {
+      ctx->ReportCodegenFailure();
+    }
+    token = nullptr;
+  }
+  token = token ? CoerceTo(&builder, token, ptr_ty) : nullptr;
   if (!token)
   {
     token = llvm::ConstantPointerNull::get(llvm::cast<llvm::PointerType>(ptr_ty));

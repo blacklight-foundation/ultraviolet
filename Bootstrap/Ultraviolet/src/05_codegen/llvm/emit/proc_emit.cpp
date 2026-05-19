@@ -254,6 +254,27 @@ using namespace emit_detail;
       }
 
       SPEC_RULE("BindSlot-Param-ByValue");
+      if (param.name == "__env")
+      {
+        RegisterLocalBindStorage(param.name, arg);
+        if (param.type)
+        {
+          local_types_[param.name] = param.type;
+        }
+        const std::string stable_name =
+            param.stable_name.empty()
+                ? param.name
+                : param.stable_name;
+        if (stable_name != param.name) {
+          RegisterLocalBindStorage(stable_name, arg);
+          if (param.type) {
+            local_types_[stable_name] = param.type;
+          }
+        }
+        ++bound_params;
+        ++bound_params_by_value;
+        continue;
+      }
       llvm::Type *llvm_ty = GetLLVMType(param.type);
       llvm::IRBuilder<> entry_builder(&func->getEntryBlock(), func->getEntryBlock().begin());
       llvm::AllocaInst *alloca = entry_builder.CreateAlloca(llvm_ty, nullptr, param.name);

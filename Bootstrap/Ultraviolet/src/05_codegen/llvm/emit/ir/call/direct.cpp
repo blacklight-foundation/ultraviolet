@@ -986,8 +986,41 @@ void IRInstructionVisitor::operator()(const IRCall &call) const
           finish_from(source_async);
           return;
         }
-        llvm::Value *count = args[1];
         llvm::Type *i64_ty = llvm::Type::getInt64Ty(emitter.GetContext());
+        auto load_count_value = [&](llvm::Value *storage) -> llvm::Value *
+        {
+          if (!storage || !storage->getType()->isPointerTy())
+          {
+            return nullptr;
+          }
+          llvm::Type *count_ptr_ty = llvm::PointerType::get(i64_ty, 0);
+          if (storage->getType() != count_ptr_ty)
+          {
+            storage = builder.CreateBitCast(storage, count_ptr_ty);
+          }
+          return builder.CreateLoad(i64_ty, storage, "take.count");
+        };
+
+        llvm::Value *count = nullptr;
+        if (llvm::Value *storage = emitter.GetAddressableStorage(call.args[1]))
+        {
+          count = load_count_value(storage);
+        }
+        if (!count)
+        {
+          count = args[1];
+          if (count && count->getType()->isPointerTy())
+          {
+            if (llvm::Value *loaded = load_count_value(count))
+            {
+              count = loaded;
+            }
+          }
+        }
+        if (!count)
+        {
+          count = llvm::ConstantInt::get(i64_ty, 1);
+        }
         if (count->getType() != i64_ty)
         {
           if (llvm::Value *coerced = CoerceTo(&builder, count, i64_ty))
@@ -1000,24 +1033,16 @@ void IRInstructionVisitor::operator()(const IRCall &call) const
           }
         }
 
-        const std::string take_sym = BuiltinSymAsyncTake();
-        llvm::Function *take_fn = emitter.GetModule().getFunction(take_sym);
-        if (!take_fn)
-        {
-          llvm::FunctionType *take_ty = llvm::FunctionType::get(
-              expected_result_ty,
-              {opaque_ptr_ty, i64_ty, opaque_ptr_ty},
-              false);
-          take_fn = llvm::Function::Create(
-              take_ty,
-              llvm::GlobalValue::ExternalLinkage,
-              take_sym,
-              &emitter.GetModule());
-          take_fn->setCallingConv(llvm::CallingConv::C);
-        }
-
         llvm::Value *source_ptr = builder.CreateBitCast(async_slot, opaque_ptr_ty);
-        llvm::Value *taken = builder.CreateCall(take_fn, {source_ptr, count, panic_ptr});
+        llvm::Value *taken = EmitRuntimeCallBySymbol(
+            emitter,
+            &builder,
+            BuiltinSymAsyncTake(),
+            {
+                CoerceOrNullOpaquePtr(emitter, &builder, source_ptr),
+                count,
+                CoerceOrNullOpaquePtr(emitter, &builder, panic_ptr),
+            });
         store_result(taken);
         finish_from(nullptr);
         return;
@@ -1038,7 +1063,40 @@ void IRInstructionVisitor::operator()(const IRCall &call) const
           acc_ll = args[1]->getType();
         }
         llvm::AllocaInst *acc_slot = entry_builder.CreateAlloca(acc_ll);
-        llvm::Value *init_acc = args[1];
+        auto load_acc_value = [&](llvm::Value *storage) -> llvm::Value *
+        {
+          if (!storage || !storage->getType()->isPointerTy())
+          {
+            return nullptr;
+          }
+          llvm::Type *acc_ptr_ty = llvm::PointerType::get(acc_ll, 0);
+          if (storage->getType() != acc_ptr_ty)
+          {
+            storage = builder.CreateBitCast(storage, acc_ptr_ty);
+          }
+          return builder.CreateLoad(acc_ll, storage, "fold.acc.init");
+        };
+
+        llvm::Value *init_acc = nullptr;
+        if (llvm::Value *storage = emitter.GetAddressableStorage(call.args[1]))
+        {
+          init_acc = load_acc_value(storage);
+        }
+        if (!init_acc)
+        {
+          init_acc = args[1];
+          if (init_acc && init_acc->getType()->isPointerTy() && !acc_ll->isPointerTy())
+          {
+            if (llvm::Value *loaded = load_acc_value(init_acc))
+            {
+              init_acc = loaded;
+            }
+          }
+        }
+        if (!init_acc)
+        {
+          init_acc = llvm::Constant::getNullValue(acc_ll);
+        }
         if (init_acc->getType() != acc_ll)
         {
           if (llvm::Value *coerced = CoerceTo(&builder, init_acc, acc_ll))
@@ -1049,10 +1107,6 @@ void IRInstructionVisitor::operator()(const IRCall &call) const
           {
             init_acc = materialize_as_type(init_acc, acc_ll);
           }
-        }
-        if (!init_acc)
-        {
-          init_acc = llvm::Constant::getNullValue(acc_ll);
         }
         builder.CreateStore(init_acc, acc_slot);
 
@@ -1216,6 +1270,7 @@ void IRInstructionVisitor::operator()(const IRCall &call) const
   LowerCtx::ProcSigInfo inferred_sig;
   LowerCtx::ProcSigInfo callable_type_adjusted_sig;
   LowerCtx::ProcSigInfo closure_adjusted_sig;
+  LowerCtx::ProcSigInfo closure_code_adjusted_sig;
   LowerCtx::ProcSigInfo hosted_adjusted_sig;
   std::string callee_symbol = call.callee.name;
   bool sig_is_concrete_local_callable = false;
@@ -1878,6 +1933,27 @@ void IRInstructionVisitor::operator()(const IRCall &call) const
         }
       }
     }
+
+    if (sig && is_closure_code_component(call.callee, 0) &&
+        !sig->params.empty())
+    {
+      analysis::TypeRef first_param_type =
+          analysis::StripPerm(sig->params.front().type);
+      if (!first_param_type)
+      {
+        first_param_type = sig->params.front().type;
+      }
+      if (first_param_type &&
+          std::holds_alternative<analysis::TypeRawPtr>(first_param_type->node))
+      {
+        closure_code_adjusted_sig = *sig;
+        closure_code_adjusted_sig.params.front().name = "__env";
+        closure_code_adjusted_sig.params.front().mode =
+            analysis::ParamMode::Move;
+        sig = &closure_code_adjusted_sig;
+        callee_is_closure_code_component = true;
+      }
+    }
   }
 
   if (sig && emitter.RequiresHostedEnvParam(callee_symbol))
@@ -2424,8 +2500,7 @@ void IRInstructionVisitor::operator()(const IRCall &call) const
         }
         for (std::size_t i = 0; i < lhs.size(); ++i)
         {
-          const auto eq = analysis::TypeEquiv(lhs[i], rhs[i]);
-          if (!eq.ok || !eq.equiv)
+          if (analysis::TypeToString(lhs[i]) != analysis::TypeToString(rhs[i]))
           {
             return false;
           }
@@ -2436,6 +2511,7 @@ void IRInstructionVisitor::operator()(const IRCall &call) const
       struct AsyncMember
       {
         analysis::TypeRef type;
+        std::size_t index = 0;
       };
       std::optional<analysis::TypePath> async_path;
       std::vector<analysis::TypeRef> async_args;
@@ -2443,8 +2519,11 @@ void IRInstructionVisitor::operator()(const IRCall &call) const
       std::optional<AsyncMember> completed_member;
       std::optional<AsyncMember> failed_member;
 
-      for (const auto &member : union_layout->member_list)
+      for (std::size_t member_index = 0;
+           member_index < union_layout->member_list.size();
+           ++member_index)
       {
+        const auto &member = union_layout->member_list[member_index];
         analysis::TypeRef stripped_member = analysis::StripPerm(member);
         const auto *modal_state =
             stripped_member
@@ -2469,15 +2548,15 @@ void IRInstructionVisitor::operator()(const IRCall &call) const
 
         if (analysis::IdEq(modal_state->state, "Suspended"))
         {
-          suspended_member = AsyncMember{stripped_member};
+          suspended_member = AsyncMember{stripped_member, member_index};
         }
         else if (analysis::IdEq(modal_state->state, "Completed"))
         {
-          completed_member = AsyncMember{stripped_member};
+          completed_member = AsyncMember{stripped_member, member_index};
         }
         else if (analysis::IdEq(modal_state->state, "Failed"))
         {
-          failed_member = AsyncMember{stripped_member};
+          failed_member = AsyncMember{stripped_member, member_index};
         }
       }
 
@@ -2497,25 +2576,6 @@ void IRInstructionVisitor::operator()(const IRCall &call) const
       {
         return raw_result;
       }
-
-      auto pack_member = [&](const std::optional<AsyncMember> &member_opt) -> llvm::Value *
-      {
-        if (!member_opt.has_value() || !member_opt->type)
-        {
-          return nullptr;
-        }
-        return PackUnionFromMember(
-            emitter,
-            &builder,
-            raw_result,
-            target_ll,
-            member_opt->type,
-            stripped_target);
-      };
-
-      llvm::Value *packed_suspended = pack_member(suspended_member);
-      llvm::Value *packed_completed = pack_member(completed_member);
-      llvm::Value *packed_failed = pack_member(failed_member);
 
       llvm::Value *raw_disc = nullptr;
       if (raw_result->getType()->isIntegerTy())
@@ -2546,31 +2606,58 @@ void IRInstructionVisitor::operator()(const IRCall &call) const
       const std::uint64_t completed_disc = async_discs.completed;
       const std::optional<std::uint64_t> failed_disc = async_discs.failed;
 
-      llvm::Value *mapped = nullptr;
-      if (packed_failed)
+      auto *union_struct_ty = llvm::dyn_cast<llvm::StructType>(target_ll);
+      if (!union_struct_ty || union_struct_ty->getNumElements() < 2)
       {
-        mapped = packed_failed;
-      }
-      else if (packed_completed)
-      {
-        mapped = packed_completed;
-      }
-      else if (packed_suspended)
-      {
-        mapped = packed_suspended;
-      }
-      else
-      {
-        mapped = CoerceTo(&builder, raw_result, target_ll);
-        if (!mapped)
-        {
-          mapped = llvm::Constant::getNullValue(target_ll);
-        }
+        return raw_result;
       }
 
-      auto select_state = [&](llvm::Value *packed_state, std::uint64_t disc_value)
+      llvm::Function *current_fn =
+          builder.GetInsertBlock() ? builder.GetInsertBlock()->getParent() : nullptr;
+      if (!current_fn)
       {
-        if (!packed_state)
+        return raw_result;
+      }
+
+      const AsyncMember *default_member = nullptr;
+      if (failed_member.has_value())
+      {
+        default_member = &*failed_member;
+      }
+      else if (completed_member.has_value())
+      {
+        default_member = &*completed_member;
+      }
+      else if (suspended_member.has_value())
+      {
+        default_member = &*suspended_member;
+      }
+
+      if (!default_member)
+      {
+        return raw_result;
+      }
+
+      llvm::Type *disc_ty = union_struct_ty->getElementType(0);
+      llvm::Type *i64_ty = llvm::Type::getInt64Ty(emitter.GetContext());
+      auto member_index_value = [&](std::size_t index) -> llvm::Value *
+      {
+        llvm::Value *value = CoerceTo(
+            &builder,
+            llvm::ConstantInt::get(i64_ty, static_cast<std::uint64_t>(index)),
+            disc_ty);
+        if (!value)
+        {
+          value = llvm::Constant::getNullValue(disc_ty);
+        }
+        return value;
+      };
+
+      llvm::Value *mapped_index = member_index_value(default_member->index);
+      auto select_state = [&](const std::optional<AsyncMember> &member_opt,
+                              std::uint64_t disc_value)
+      {
+        if (!member_opt.has_value())
         {
           return;
         }
@@ -2578,16 +2665,63 @@ void IRInstructionVisitor::operator()(const IRCall &call) const
             &builder,
             raw_disc,
             llvm::ConstantInt::get(raw_disc->getType(), disc_value));
-        mapped = builder.CreateSelect(AsBool(&builder, is_state), packed_state, mapped);
+        mapped_index = builder.CreateSelect(
+            AsBool(&builder, is_state),
+            member_index_value(member_opt->index),
+            mapped_index);
       };
 
-      select_state(packed_suspended, suspended_disc);
-      select_state(packed_completed, completed_disc);
+      select_state(suspended_member, suspended_disc);
+      select_state(completed_member, completed_disc);
       if (failed_disc.has_value())
       {
-        select_state(packed_failed, *failed_disc);
+        select_state(failed_member, *failed_disc);
       }
-      return mapped;
+
+      llvm::Value *union_value = llvm::Constant::getNullValue(union_struct_ty);
+      union_value = builder.CreateInsertValue(union_value, mapped_index, {0u});
+
+      if (union_layout->payload_size == 0)
+      {
+        return union_value;
+      }
+
+      llvm::IRBuilder<> entry_builder(
+          &current_fn->getEntryBlock(),
+          current_fn->getEntryBlock().begin());
+      llvm::AllocaInst *union_slot =
+          entry_builder.CreateAlloca(union_struct_ty, nullptr, "async.resume.union");
+      llvm::AllocaInst *raw_slot =
+          entry_builder.CreateAlloca(raw_result->getType(), nullptr, "async.resume.raw");
+      builder.CreateStore(union_value, union_slot);
+      builder.CreateStore(raw_result, raw_slot);
+
+      llvm::Value *payload_i8 = CreateTaggedPayloadI8Ptr(
+          emitter,
+          &builder,
+          union_struct_ty,
+          union_slot,
+          union_layout->payload_align);
+      if (!payload_i8)
+      {
+        return union_value;
+      }
+
+      llvm::Type *i8_ty = llvm::Type::getInt8Ty(emitter.GetContext());
+      const llvm::DataLayout &dl = emitter.GetModule().getDataLayout();
+      const std::uint64_t raw_size =
+          static_cast<std::uint64_t>(dl.getTypeAllocSize(raw_result->getType()));
+      const std::uint64_t copy_size = std::min(raw_size, union_layout->payload_size);
+      if (copy_size > 0)
+      {
+        builder.CreateMemCpy(
+            payload_i8,
+            llvm::Align(1),
+            builder.CreateBitCast(raw_slot, llvm::PointerType::get(i8_ty, 0)),
+            llvm::Align(1),
+            llvm::ConstantInt::get(i64_ty, copy_size));
+      }
+      return builder.CreateLoad(union_struct_ty, union_slot);
     };
 
     llvm::Value *raw_async_result = call_result;
