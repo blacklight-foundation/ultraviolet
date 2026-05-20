@@ -70,12 +70,12 @@ public procedure validatedForeignFunctionInterfaceFfiAttributesObligations() -> 
     ) {
         count = count + 1usize
     }
-    if acceptedObligationEntryMatches(
+    if artifactBehaviorObligationEntryMatches(
         "def.23.ResolveLibraryName",
         88694usize,
-        "HelloUltraviolet::Reference::FFI",
-        "runFFIAttributesReference",
-        "Source/Reference/FFI/Attributes.uv"
+        "HelloUltraviolet::Audit::FixtureCatalog::ArtifactProjects",
+        "validatedArtifactProjectFixtureCount",
+        "Fixtures/ArtifactProjects/RawDylibLibrary/Source/Main.uv"
     ) {
         count = count + 1usize
     }
@@ -88,12 +88,12 @@ public procedure validatedForeignFunctionInterfaceFfiAttributesObligations() -> 
     ) {
         count = count + 1usize
     }
-    if acceptedObligationEntryMatches(
+    if artifactBehaviorObligationEntryMatches(
         "requirement.23.RawDylibResolution",
         88734usize,
-        "HelloUltraviolet::Reference::FFI",
-        "runFFIAttributesReference",
-        "Source/Reference/FFI/Attributes.uv"
+        "HelloUltraviolet::Audit::FixtureCatalog::ArtifactProjects",
+        "validatedArtifactProjectFixtureCount",
+        "Fixtures/ArtifactProjects/RawDylibLibrary/Source/Main.uv"
     ) {
         count = count + 1usize
     }

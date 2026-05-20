@@ -13,12 +13,6 @@ extern "C-unwind" {
     internal procedure moduleExternStringAbiValue(value: i32) -> i32
 }
 
-#library(name: "Kernel32")
-extern "C" {
-    #mangle("GetTickCount")
-    internal procedure moduleExternBlockLibraryTickCount() -> u32
-}
-
 internal record ExternBlockReference {
     internal has_abi: bool
     internal item_count: usize
@@ -79,8 +73,6 @@ internal procedure moduleExternBlockCallValue() -> i32 {
 /// Exercises the Modules ExternBlocks reference surface.
 public procedure runModulesExternBlocksReference() -> bool {
     let block: ExternBlockReference =
-        externBlockReference(true, 4usize, false, moduleExternBlockCallValue())
-    let tick_count: u32 = unsafe { moduleExternBlockLibraryTickCount() }
-    return externBlockShellIsValid(block) &&
-        tick_count >= 0u32
+        externBlockReference(true, 3usize, false, moduleExternBlockCallValue())
+    return externBlockShellIsValid(block)
 }

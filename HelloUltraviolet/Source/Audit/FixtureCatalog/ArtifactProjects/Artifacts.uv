@@ -18,6 +18,11 @@ public procedure artifactProjectFixtureSourceArtifactsExist(context: Context) ->
         "HelloUltraviolet/Fixtures/ArtifactProjects/StaticLibraryArchive/Source/Library.uv"
     ) &&
         artifactProjectSourceArtifactsExist(
+            context,
+            "HelloUltraviolet/Fixtures/ArtifactProjects/RawDylibLibrary/Ultraviolet.toml",
+            "HelloUltraviolet/Fixtures/ArtifactProjects/RawDylibLibrary/Source/Main.uv"
+        ) &&
+        artifactProjectSourceArtifactsExist(
         context,
         "HelloUltraviolet/Fixtures/ArtifactProjects/EmitLlLibrary/Ultraviolet.toml",
         "HelloUltraviolet/Fixtures/ArtifactProjects/EmitLlLibrary/Source/Library.uv"

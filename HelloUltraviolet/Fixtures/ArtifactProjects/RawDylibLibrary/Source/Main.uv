@@ -1,0 +1,15 @@
+//! Artifact project fixture for Win64 raw-dylib import resolution.
+
+#library(name: "Kernel32", kind: "raw-dylib")
+extern "C" {
+    #mangle("GetLastError")
+    public procedure rawDylibGetLastErrorReference() -> u32
+}
+
+public procedure main(context: Context) -> i32 {
+    let last_error: u32 = unsafe { rawDylibGetLastErrorReference() }
+    if last_error == last_error {
+        return 0
+    }
+    return 1
+}

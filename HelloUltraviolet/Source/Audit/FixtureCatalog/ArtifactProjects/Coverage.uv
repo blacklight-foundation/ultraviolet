@@ -1,15 +1,57 @@
 //! Coverage checks for artifact project fixture metadata.
 
 public procedure expectedArtifactProjectFixtureCount() -> usize {
-    return 7usize
+    return 9usize
 }
 
 public procedure artifactProjectFixtureCount() -> usize {
-    return 7usize
+    return 9usize
 }
 
 public procedure validatedArtifactProjectFixtureCount() -> usize {
     var count: usize = 0usize
+    if artifactProjectSpecimenMatches(
+        artifactProjectSpecimen(
+            "RawDylibLibrary",
+            "Fixtures/ArtifactProjects/RawDylibLibrary",
+            "Fixtures/ArtifactProjects/RawDylibLibrary/Ultraviolet.toml",
+            "Fixtures/ArtifactProjects/RawDylibLibrary/Source/Main.uv",
+            "Fixtures/ArtifactProjects/RawDylibLibrary/Build/Binary/RawDylibLibrary.exe",
+            "Fixtures/ArtifactProjects/RawDylibLibrary/Build/Binary/RawDylibLibrary.map",
+            artifactExpectation("Win64RawDylibResolveLibraryName", "def.23.ResolveLibraryName")
+        ),
+        "RawDylibLibrary",
+        "Fixtures/ArtifactProjects/RawDylibLibrary",
+        "Fixtures/ArtifactProjects/RawDylibLibrary/Ultraviolet.toml",
+        "Fixtures/ArtifactProjects/RawDylibLibrary/Source/Main.uv",
+        "Fixtures/ArtifactProjects/RawDylibLibrary/Build/Binary/RawDylibLibrary.exe",
+        "Fixtures/ArtifactProjects/RawDylibLibrary/Build/Binary/RawDylibLibrary.map",
+        "Win64RawDylibResolveLibraryName",
+        "def.23.ResolveLibraryName"
+    ) {
+        count = count + 1usize
+    }
+    if artifactProjectSpecimenMatches(
+        artifactProjectSpecimen(
+            "RawDylibLibrary",
+            "Fixtures/ArtifactProjects/RawDylibLibrary",
+            "Fixtures/ArtifactProjects/RawDylibLibrary/Ultraviolet.toml",
+            "Fixtures/ArtifactProjects/RawDylibLibrary/Source/Main.uv",
+            "Fixtures/ArtifactProjects/RawDylibLibrary/Build/Binary/RawDylibLibrary.exe",
+            "Fixtures/ArtifactProjects/RawDylibLibrary/Build/Binary/RawDylibLibrary.map",
+            artifactExpectation("Win64RawDylibResolution", "requirement.23.RawDylibResolution")
+        ),
+        "RawDylibLibrary",
+        "Fixtures/ArtifactProjects/RawDylibLibrary",
+        "Fixtures/ArtifactProjects/RawDylibLibrary/Ultraviolet.toml",
+        "Fixtures/ArtifactProjects/RawDylibLibrary/Source/Main.uv",
+        "Fixtures/ArtifactProjects/RawDylibLibrary/Build/Binary/RawDylibLibrary.exe",
+        "Fixtures/ArtifactProjects/RawDylibLibrary/Build/Binary/RawDylibLibrary.map",
+        "Win64RawDylibResolution",
+        "requirement.23.RawDylibResolution"
+    ) {
+        count = count + 1usize
+    }
     if artifactProjectSpecimenMatches(
         artifactProjectSpecimen(
             "StaticLibraryArchive",
