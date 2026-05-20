@@ -64,5 +64,5 @@ uv test HelloUltraviolet/Source/Tests/SourceNativeTests.uv --target-profile x86_
 
 Standalone Bootstrap compiler or runtime test programs should not be added for behavioral coverage. New behavioral coverage belongs in this corpus as reference source files, fixtures, diagnostics, artifact checks, or source-native `#test` procedures.
 
-* The removed standalone test reconciliation is recorded in `Audit/StandaloneTestReconciliation.md`.
+* Modifications, additions, and removals from this testing suite should be recorded in `CHANGELOG.md`
 * The obligation exercise audit is recorded in `Audit/ObligationExerciseAudit.md`.

@@ -26,7 +26,7 @@ Ultraviolet is structured around a small set of foundational rules that eliminat
 External side effects (I/O, network, system commands) require an explicit capability handle, typically introduced via the program's `Context` parameter.
 
 ```ultraviolet
-public procedure main(move ctx: Context) -> i32 {
+public procedure main(ctx: Context) -> i32 {
     let io: $IO = ctx.io
 
     // Explicit dynamic effect invocation using the capability call operator (~>)
@@ -89,7 +89,7 @@ public procedure processData() -> i32 {
 }
 ```
 
-### 4. Concurrency & The Static Key System
+### 4. Concurrency
 Shared memory across execution domains is governed by a **Static Key System** built directly into Ultraviolet's type system. Rather than relying on runtime mutexes or unsafe manual synchronization, shared variables (`shared T`) require static key acquisition.
 
 * **Key Propagation**: Passing a `shared` parameter propagates key authority up the call stack, avoiding inline block overhead.
@@ -179,7 +179,7 @@ cd my_project
 This generates the standard layout:
 ```text
 Ultraviolet.toml
-src/
+Source/
   Main.uv
 ```
 
