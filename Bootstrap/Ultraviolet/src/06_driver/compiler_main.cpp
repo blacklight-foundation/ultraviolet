@@ -3822,6 +3822,7 @@ int ultraviolet::driver::RunCompiler(int argc, char** argv) {
 
                   driver::OutputPipelineDeps out_deps;
                   out_deps.ensure_dir = EnsureDir;
+                  out_deps.codegen_obj_thread_safe = true;
                   out_deps.codegen_obj =
                       [ensure_cache, target_profile, opt_level](const project::ModuleInfo& module,
                                              const project::Project& p)

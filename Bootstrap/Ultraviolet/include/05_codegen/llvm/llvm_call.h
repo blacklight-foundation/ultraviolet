@@ -148,7 +148,8 @@ ABICallResult ComputeCallABI(LLVMEmitter& emitter,
                              const std::vector<IRParam>& params,
                              analysis::TypeRef ret_type,
                              bool use_c_abi_aggregate_sret = false,
-                             bool foreign_boundary_mode_independent = false);
+                             bool foreign_boundary_mode_independent = false,
+                             bool force_sret_return = false);
 
 std::vector<IRParam> BuildProcABIParams(LLVMEmitter& emitter,
                                         const std::string& symbol,
@@ -182,7 +183,8 @@ llvm::Value* EmitABICall(LLVMEmitter& emitter,
                          const std::vector<IRValue>* source_args = nullptr,
                          llvm::Value** result_storage_out = nullptr,
                          llvm::Value* preferred_result_storage = nullptr,
-                         bool foreign_boundary_mode_independent = false);
+                         bool foreign_boundary_mode_independent = false,
+                         bool force_sret_return = false);
 
 // -----------------------------------------------------------------------------
 // Calling Convention

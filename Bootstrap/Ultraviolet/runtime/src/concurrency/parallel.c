@@ -1418,10 +1418,11 @@ void* uv_spawn_wait(void* handle_ptr) {
 }
 
 // Reactor::register runtime hook.
-// ABI is type-erased at this boundary: both reactor and future are passed by
-// pointer, and the returned tracked handle is the same opaque spawn handle used
-// by wait. For Ultraviolet exercises, Future<T,E> values here are immediate and we
-// materialize a ready handle carrying T|E in a compact tagged payload.
+// ABI is type-erased at this boundary: the reactor capability object is passed
+// by value, the future is passed by pointer, and the returned tracked handle is
+// the same opaque spawn handle used by wait. For Ultraviolet exercises,
+// Future<T,E> values here are immediate and we materialize a ready handle
+// carrying T|E in a compact tagged payload.
 void* ultraviolet_x3a_x3aruntime_x3a_x3areactor_x3a_x3aregister(
     UVDynObject reactor,
     const void* future) {

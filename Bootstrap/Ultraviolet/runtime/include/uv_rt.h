@@ -786,39 +786,49 @@ void CancelToken_x3a_x3aActive_x3a_x3await_x5fcancelled(void* out, void* self);
 
 // File/DirIter methods (modal state methods / transitions)
 UVUnion_StringManaged_IoError File_x3a_x3aRead_x3a_x3aread_x5fall(
-  UVFileHandle self);
+  const UVFileHandle* self);
 
 UVUnion_BytesManaged_IoError File_x3a_x3aRead_x3a_x3aread_x5fall_x5fbytes(
-  UVFileHandle self);
+  const UVFileHandle* self);
 
 void File_x3a_x3aRead_x3a_x3aclose(
-  UVFileHandle self);
+  const UVFileHandle* self);
 
 UVUnion_Unit_IoError File_x3a_x3aWrite_x3a_x3awrite(
+<<<<<<< HEAD
   UVFileHandle self,
   UVBytesView data);
+=======
+  const UVFileHandle* self,
+  const UVBytesView* data);
+>>>>>>> 03720eb2a2ae6396b689d7c979d95bf2ec372357
 
 UVUnion_Unit_IoError File_x3a_x3aWrite_x3a_x3aflush(
-  UVFileHandle self);
+  const UVFileHandle* self);
 
 void File_x3a_x3aWrite_x3a_x3aclose(
-  UVFileHandle self);
+  const UVFileHandle* self);
 
 UVUnion_Unit_IoError File_x3a_x3aAppend_x3a_x3awrite(
+<<<<<<< HEAD
   UVFileHandle self,
   UVBytesView data);
+=======
+  const UVFileHandle* self,
+  const UVBytesView* data);
+>>>>>>> 03720eb2a2ae6396b689d7c979d95bf2ec372357
 
 UVUnion_Unit_IoError File_x3a_x3aAppend_x3a_x3aflush(
-  UVFileHandle self);
+  const UVFileHandle* self);
 
 void File_x3a_x3aAppend_x3a_x3aclose(
-  UVFileHandle self);
+  const UVFileHandle* self);
 
 UVUnion_DirEntry_Unit_IoError DirIter_x3a_x3aOpen_x3a_x3anext(
-  UVDirIterHandle self);
+  const UVDirIterHandle* self);
 
 void DirIter_x3a_x3aOpen_x3a_x3aclose(
-  UVDirIterHandle self);
+  const UVDirIterHandle* self);
 
 #ifdef __cplusplus
 }  // extern "C"

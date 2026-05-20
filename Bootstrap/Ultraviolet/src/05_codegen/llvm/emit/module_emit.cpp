@@ -270,17 +270,6 @@ using namespace emit_detail;
           }
         }
 
-        if (IsDropGlueSymbol(proc->symbol))
-        {
-          f->setLinkage(llvm::GlobalValue::LinkOnceODRLinkage);
-          f->setUnnamedAddr(llvm::GlobalValue::UnnamedAddr::Global);
-          if (auto *comdat = module_->getOrInsertComdat(proc->symbol))
-          {
-            comdat->setSelectionKind(llvm::Comdat::Any);
-            f->setComdat(comdat);
-          }
-        }
-
         functions_[proc->symbol] = f;
       }
       else if (auto *ext = std::get_if<ExternProcIR>(&decl))

@@ -272,7 +272,15 @@ else()
   set(FINAL_RT_DIR "${CMAKE_BINARY_DIR}/runtime")
   set(RUNTIME_MATERIALIZE_ARCHIVE_SCRIPT
       "${CMAKE_SOURCE_DIR}/cmake/MaterializeArchive.cmake")
+  set(RUNTIME_MATERIALIZE_ARCHIVE_SCRIPT
+      "${CMAKE_SOURCE_DIR}/cmake/MaterializeArchive.cmake")
   add_custom_command(TARGET uv_rt POST_BUILD
+    COMMAND "${CMAKE_COMMAND}"
+            "-DAR_TOOL=${CMAKE_AR}"
+            "-DINPUT_ARCHIVE=$<TARGET_FILE:uv_rt>"
+            "-DOUTPUT_ARCHIVE=${FINAL_RT_DIR}/UltravioletRT.a"
+            "-DWORKING_DIRECTORY=${CMAKE_BINARY_DIR}"
+            -P "${RUNTIME_MATERIALIZE_ARCHIVE_SCRIPT}"
     COMMAND "${CMAKE_COMMAND}"
             "-DAR_TOOL=${CMAKE_AR}"
             "-DINPUT_ARCHIVE=$<TARGET_FILE:uv_rt>"
