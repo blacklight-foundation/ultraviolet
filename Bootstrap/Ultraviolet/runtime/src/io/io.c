@@ -737,7 +737,7 @@ void ultraviolet_x3a_x3aruntime_x3a_x3aio_x3a_x3aread_x5ffile(
   UVFileHandle handle;
   handle.handle = file.payload.handle;
   UVUnion_StringManaged_IoError result =
-      File_x3a_x3aRead_x3a_x3aread_x5fall(&handle);
+      File_x3a_x3aRead_x3a_x3aread_x5fall(handle);
   File_x3a_x3aRead_x3a_x3aclose(handle);
   *out = result;
 }
@@ -759,7 +759,7 @@ void ultraviolet_x3a_x3aruntime_x3a_x3aio_x3a_x3aread_x5fbytes(
   UVFileHandle handle;
   handle.handle = file.payload.handle;
   UVUnion_BytesManaged_IoError result =
-      File_x3a_x3aRead_x3a_x3aread_x5fall_x5fbytes(&handle);
+      File_x3a_x3aRead_x3a_x3aread_x5fall_x5fbytes(handle);
   File_x3a_x3aRead_x3a_x3aclose(handle);
   *out = result;
 }
@@ -1591,14 +1591,14 @@ UVDynObject ultraviolet_x3a_x3aruntime_x3a_x3aio_x3a_x3arestrict(
   return out;
 }
 UVUnion_StringManaged_IoError File_x3a_x3aRead_x3a_x3aread_x5fall(
-    const UVFileHandle* self) {
+    UVFileHandle self) {
   SPEC_RULE("Prim-File-ReadAll");
   uv_trace_emit_rule("Prim-File-ReadAll");
-  if (!self) {
+  if (!self.handle) {
     return uv_string_io_err(UV_IO_FAILURE);
   }
   uv_rt_rwlock_lock_exclusive(&g_uv_io_registry_lock);
-  UVTrackedFile* tracked = uv_require_open_file_locked(self->handle);
+  UVTrackedFile* tracked = uv_require_open_file_locked(self.handle);
   if (!tracked) {
     uv_rt_rwlock_unlock_exclusive(&g_uv_io_registry_lock);
     return uv_string_io_err(UV_IO_FAILURE);
@@ -1612,14 +1612,14 @@ UVUnion_StringManaged_IoError File_x3a_x3aRead_x3a_x3aread_x5fall(
 }
 
 UVUnion_BytesManaged_IoError File_x3a_x3aRead_x3a_x3aread_x5fall_x5fbytes(
-    const UVFileHandle* self) {
+    UVFileHandle self) {
   SPEC_RULE("Prim-File-ReadAllBytes");
   uv_trace_emit_rule("Prim-File-ReadAllBytes");
-  if (!self) {
+  if (!self.handle) {
     return uv_bytes_io_err(UV_IO_FAILURE);
   }
   uv_rt_rwlock_lock_exclusive(&g_uv_io_registry_lock);
-  UVTrackedFile* tracked = uv_require_open_file_locked(self->handle);
+  UVTrackedFile* tracked = uv_require_open_file_locked(self.handle);
   if (!tracked) {
     uv_rt_rwlock_unlock_exclusive(&g_uv_io_registry_lock);
     return uv_bytes_io_err(UV_IO_FAILURE);
@@ -1669,15 +1669,15 @@ static UVUnion_Unit_IoError uv_file_write_handle(uv_rt_handle_t h,
 }
 
 UVUnion_Unit_IoError File_x3a_x3aWrite_x3a_x3awrite(
-    UVFileHandle* self,
+    UVFileHandle self,
     const UVBytesView* data) {
   SPEC_RULE("Prim-File-Write");
   uv_trace_emit_rule("Prim-File-Write");
-  if (!self) {
+  if (!self.handle) {
     return uv_unit_err(UV_IO_FAILURE);
   }
   uv_rt_rwlock_lock_exclusive(&g_uv_io_registry_lock);
-  UVTrackedFile* tracked = uv_require_open_file_locked(self->handle);
+  UVTrackedFile* tracked = uv_require_open_file_locked(self.handle);
   if (!tracked) {
     uv_rt_rwlock_unlock_exclusive(&g_uv_io_registry_lock);
     return uv_unit_err(UV_IO_FAILURE);
@@ -1697,14 +1697,14 @@ UVUnion_Unit_IoError File_x3a_x3aWrite_x3a_x3awrite(
 }
 
 UVUnion_Unit_IoError File_x3a_x3aWrite_x3a_x3aflush(
-    UVFileHandle* self) {
+    UVFileHandle self) {
   SPEC_RULE("Prim-File-Flush");
   uv_trace_emit_rule("Prim-File-Flush");
-  if (!self) {
+  if (!self.handle) {
     return uv_unit_err(UV_IO_FAILURE);
   }
   uv_rt_rwlock_lock_exclusive(&g_uv_io_registry_lock);
-  UVTrackedFile* tracked = uv_require_open_file_locked(self->handle);
+  UVTrackedFile* tracked = uv_require_open_file_locked(self.handle);
   if (!tracked) {
     uv_rt_rwlock_unlock_exclusive(&g_uv_io_registry_lock);
     return uv_unit_err(UV_IO_FAILURE);
@@ -1728,15 +1728,15 @@ void File_x3a_x3aWrite_x3a_x3aclose(UVFileHandle self) {
 }
 
 UVUnion_Unit_IoError File_x3a_x3aAppend_x3a_x3awrite(
-    UVFileHandle* self,
+    UVFileHandle self,
     const UVBytesView* data) {
   SPEC_RULE("Prim-File-Write-Append");
   uv_trace_emit_rule("Prim-File-Write-Append");
-  if (!self) {
+  if (!self.handle) {
     return uv_unit_err(UV_IO_FAILURE);
   }
   uv_rt_rwlock_lock_exclusive(&g_uv_io_registry_lock);
-  UVTrackedFile* tracked = uv_require_open_file_locked(self->handle);
+  UVTrackedFile* tracked = uv_require_open_file_locked(self.handle);
   if (!tracked) {
     uv_rt_rwlock_unlock_exclusive(&g_uv_io_registry_lock);
     return uv_unit_err(UV_IO_FAILURE);
@@ -1754,14 +1754,14 @@ UVUnion_Unit_IoError File_x3a_x3aAppend_x3a_x3awrite(
 }
 
 UVUnion_Unit_IoError File_x3a_x3aAppend_x3a_x3aflush(
-    UVFileHandle* self) {
+    UVFileHandle self) {
   SPEC_RULE("Prim-File-Flush-Append");
   uv_trace_emit_rule("Prim-File-Flush-Append");
-  if (!self) {
+  if (!self.handle) {
     return uv_unit_err(UV_IO_FAILURE);
   }
   uv_rt_rwlock_lock_exclusive(&g_uv_io_registry_lock);
-  UVTrackedFile* tracked = uv_require_open_file_locked(self->handle);
+  UVTrackedFile* tracked = uv_require_open_file_locked(self.handle);
   if (!tracked) {
     uv_rt_rwlock_unlock_exclusive(&g_uv_io_registry_lock);
     return uv_unit_err(UV_IO_FAILURE);
@@ -1784,17 +1784,17 @@ void File_x3a_x3aAppend_x3a_x3aclose(UVFileHandle self) {
   uv_rt_rwlock_unlock_exclusive(&g_uv_io_registry_lock);
 }
 UVUnion_DirEntry_Unit_IoError DirIter_x3a_x3aOpen_x3a_x3anext(
-    UVDirIterHandle* self) {
+    UVDirIterHandle self) {
   SPEC_RULE("Prim-Dir-Next");
   uv_trace_emit_rule("Prim-Dir-Next");
   UVUnion_DirEntry_Unit_IoError out;
-  if (!self) {
+  if (!self.handle) {
     out.disc = 1;
     out.payload.io_error = UV_IO_FAILURE;
     return out;
   }
   uv_rt_rwlock_lock_exclusive(&g_uv_io_registry_lock);
-  UVTrackedDirIter* tracked = uv_require_open_dir_iter_locked(self->handle);
+  UVTrackedDirIter* tracked = uv_require_open_dir_iter_locked(self.handle);
   if (!tracked) {
     out.disc = 1;
     out.payload.io_error = UV_IO_FAILURE;

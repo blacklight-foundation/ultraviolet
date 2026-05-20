@@ -141,7 +141,7 @@ internal procedure artifactTextExcludes(
 
 public procedure llvmToolResolveOwnershipConformanceLogMatches(context: Context) -> bool {
     let conformance_log_path: string@View =
-        "HelloUltraviolet/Fixtures/OutputDiagnostics/Lowering/LlvmToolResolveOwnership/build/logs/conformance/LlvmToolResolveOwnership.conformance.log"
+        "HelloUltraviolet/Fixtures/OutputDiagnostics/Lowering/LlvmToolResolveOwnership/Build/Logs/Conformance/LlvmToolResolveOwnership.conformance.log"
     return artifactTextContains(context, conformance_log_path, "\tResolveTool-Err-IR\t") &&
         artifactTextContains(context, conformance_log_path, "\tOut-IR-Err\t") &&
         artifactTextContains(context, conformance_log_path, "\tOutput-Pipeline-Err\t") &&
@@ -151,7 +151,7 @@ public procedure llvmToolResolveOwnershipConformanceLogMatches(context: Context)
 
 public procedure emitLLVMRenderFailureConformanceLogMatches(context: Context) -> bool {
     let conformance_log_path: string@View =
-        "HelloUltraviolet/Fixtures/OutputDiagnostics/Lowering/EmitLLVMRenderFailure/build/logs/conformance/EmitLLVMRenderFailure.conformance.log"
+        "HelloUltraviolet/Fixtures/OutputDiagnostics/Lowering/EmitLLVMRenderFailure/Build/Logs/Conformance/EmitLLVMRenderFailure.conformance.log"
     return artifactTextContains(context, conformance_log_path, "\tResolveTool-Ok\t") &&
         artifactTextContains(context, conformance_log_path, "\tAssembleIR-Err\t") &&
         artifactTextContains(context, conformance_log_path, "\tEmitLLVM-Err\t") &&
@@ -163,7 +163,7 @@ public procedure emitLLVMRenderFailureConformanceLogMatches(context: Context) ->
 
 public procedure manifestParseErrorConformanceLogMatches(context: Context) -> bool {
     let conformance_log_path: string@View =
-        "HelloUltraviolet/Fixtures/OutputDiagnostics/Projects/ManifestParseError/build/main/logs/conformance/ManifestParseError.conformance.log"
+        "HelloUltraviolet/Fixtures/OutputDiagnostics/Projects/ManifestParseError/Build/Logs/Conformance/ManifestParseError.conformance.log"
     return artifactTextContains(context, conformance_log_path, "\tDiag-Emit\t") &&
         artifactTextContains(context, conformance_log_path, "code%3DE-PRJ-0102") &&
         artifactTextContains(context, conformance_log_path, "\tReject-IllFormed\t")

@@ -104,23 +104,60 @@ void EnsureLLVMInit() {
 // File System Helpers
 // ============================================================================
 
-bool EnsureDir(const std::filesystem::path& path) {
+namespace {
+
+std::filesystem::path HostFilesystemPath(const std::filesystem::path& path) {
+#ifdef _WIN32
   std::error_code ec;
-  if (std::filesystem::exists(path, ec)) {
+  std::filesystem::path absolute =
+      path.is_absolute() ? path : std::filesystem::absolute(path, ec);
+  if (ec) {
+    absolute = path;
+  }
+  absolute.make_preferred();
+
+  std::wstring value = absolute.native();
+  if (value.size() < 240) {
+    return absolute;
+  }
+
+  constexpr std::wstring_view extended_prefix = LR"(\\?\)";
+  constexpr std::wstring_view unc_prefix = LR"(\\)";
+  if (value.rfind(extended_prefix, 0) == 0) {
+    return absolute;
+  }
+  if (value.rfind(unc_prefix, 0) == 0) {
+    value = LR"(\\?\UNC\)" + value.substr(2);
+  } else {
+    value = LR"(\\?\)" + value;
+  }
+  return std::filesystem::path(value);
+#else
+  return path;
+#endif
+}
+
+}  // namespace
+
+bool EnsureDir(const std::filesystem::path& path) {
+  const std::filesystem::path host_path = HostFilesystemPath(path);
+  std::error_code ec;
+  if (std::filesystem::exists(host_path, ec)) {
     if (ec) {
       return false;
     }
-    return std::filesystem::is_directory(path, ec) && !ec;
+    return std::filesystem::is_directory(host_path, ec) && !ec;
   }
-  std::filesystem::create_directories(path, ec);
+  std::filesystem::create_directories(host_path, ec);
   if (ec) {
     return false;
   }
-  return std::filesystem::is_directory(path, ec) && !ec;
+  return std::filesystem::is_directory(host_path, ec) && !ec;
 }
 
 bool WriteFile(const std::filesystem::path& path, std::string_view bytes) {
-  std::ofstream out(path, std::ios::binary | std::ios::trunc);
+  std::ofstream out(HostFilesystemPath(path),
+                    std::ios::binary | std::ios::trunc);
   if (!out) {
     core::HostPrimFail(core::HostPrim::WriteFile, true);
     return false;

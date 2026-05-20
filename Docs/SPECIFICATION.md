@@ -1273,18 +1273,21 @@ ImportLibSet(P) =
 **Output Root.**
 O = OutputRoot(P) =
  P.root/P.assembly.out_dir  if provided
- P.root/`build`             otherwise
+ P.root/`Build`             otherwise
 
 **Output Hygiene.**
 OutputHygiene(P) ⇔ ∀ p ∈ RequiredOutputs(P). Under(p, OutputRoot(P))
 
 OutputPaths(R, A).root =
  R/A.out_dir  if provided
- R/`build`    otherwise
-OutputPaths(R, A).obj_dir = OutputPaths(R, A).root/`obj`
-OutputPaths(R, A).ir_dir = OutputPaths(R, A).root/`ir`
-OutputPaths(R, A).bin_dir = OutputPaths(R, A).root/`bin`
-OutputPaths(R, A).lib_dir = OutputPaths(R, A).root/`lib`
+ R/`Build`    otherwise
+OutputPaths(R, A).intermediate_dir = OutputPaths(R, A).root/`Intermediate`
+OutputPaths(R, A).obj_dir = OutputPaths(R, A).intermediate_dir/`Obj`
+OutputPaths(R, A).ir_dir = OutputPaths(R, A).intermediate_dir/`IR`
+OutputPaths(R, A).bin_dir = OutputPaths(R, A).root/`Binary`
+OutputPaths(R, A).lib_dir = OutputPaths(R, A).root/`Library`
+OutputPaths(R, A).logs_dir = OutputPaths(R, A).root/`Logs`
+OutputPaths(R, A).incremental_dir = OutputPaths(R, A).intermediate_dir/`Incremental`
 
 P.outputs = P.assembly.outputs
 
@@ -1296,15 +1299,16 @@ BMap(b) =
 
 mangle(s) = PathToPrefix(s)
 MangleModulePath(p) = mangle(PathString(PathKey(p)))
+ModuleOutputRel(P, m) = Rel(ModuleDirOf(m, P.source_root), P.root)
 
-obj(m) = O / `obj` / (MangleModulePath(p) ++ ObjExt(SelectedTargetProfile))
+obj(m) = O / `Intermediate` / `Obj` / ModuleOutputRel(P, m) / (MangleModulePath(p) ++ ObjExt(SelectedTargetProfile))
 
 **Final Artifact Naming**
 libname = LibraryPrefix(SelectedTargetProfile) ++ assembly_name
-exe = O / `bin` / (assembly_name ++ ExeSuffix(SelectedTargetProfile))
-shared = O / `bin` / (libname ++ SharedLibSuffix(SelectedTargetProfile))
-static = O / `lib` / (libname ++ StaticLibSuffix(SelectedTargetProfile))
-import = O / `lib` / (libname ++ ImportLibSuffix(SelectedTargetProfile))
+exe = O / `Binary` / (assembly_name ++ ExeSuffix(SelectedTargetProfile))
+shared = O / `Binary` / (libname ++ SharedLibSuffix(SelectedTargetProfile))
+static = O / `Library` / (libname ++ StaticLibSuffix(SelectedTargetProfile))
+import = O / `Library` / (libname ++ ImportLibSuffix(SelectedTargetProfile))
 
 **Output and Linking Semantics (Formal Rules)**
 path(m) = m.path
@@ -1327,19 +1331,19 @@ ext(e) =
  ".ll"  if e = `ll`
  ".bc"  if e = `bc`
 
-ObjPath(P, m) = O / `obj` / (MangleModulePath(path(m)) ++ ObjExt(SelectedTargetProfile))
-IRPath(P, m, e) = O / `ir` / (MangleModulePath(path(m)) ++ ext(e))
+ObjPath(P, m) = O / `Intermediate` / `Obj` / ModuleOutputRel(P, m) / (MangleModulePath(path(m)) ++ ObjExt(SelectedTargetProfile))
+IRPath(P, m, e) = O / `Intermediate` / `IR` / ModuleOutputRel(P, m) / (MangleModulePath(path(m)) ++ ext(e))
 ExePath(P) =
- O / `bin` / (assembly_name ++ ExeSuffix(SelectedTargetProfile))  if Executable(P)
+ O / `Binary` / (assembly_name ++ ExeSuffix(SelectedTargetProfile))  if Executable(P)
  ⊥                                                                otherwise
 SharedLibPath(P) =
- O / `bin` / ((LibraryPrefix(SelectedTargetProfile) ++ assembly_name) ++ SharedLibSuffix(SelectedTargetProfile))  if SharedLibrary(P)
+ O / `Binary` / ((LibraryPrefix(SelectedTargetProfile) ++ assembly_name) ++ SharedLibSuffix(SelectedTargetProfile))  if SharedLibrary(P)
  ⊥                                                                                                                  otherwise
 StaticLibPath(P) =
- O / `lib` / ((LibraryPrefix(SelectedTargetProfile) ++ assembly_name) ++ StaticLibSuffix(SelectedTargetProfile))  if StaticLibrary(P)
+ O / `Library` / ((LibraryPrefix(SelectedTargetProfile) ++ assembly_name) ++ StaticLibSuffix(SelectedTargetProfile))  if StaticLibrary(P)
  ⊥                                                                                                                  otherwise
 ImportLibPath(P) =
- O / `lib` / ((LibraryPrefix(SelectedTargetProfile) ++ assembly_name) ++ ImportLibSuffix(SelectedTargetProfile))  if SharedLibrary(P) ∧ EmitsImportLib(SelectedTargetProfile)
+ O / `Library` / ((LibraryPrefix(SelectedTargetProfile) ++ assembly_name) ++ ImportLibSuffix(SelectedTargetProfile))  if SharedLibrary(P) ∧ EmitsImportLib(SelectedTargetProfile)
  ⊥                                                                                                                  otherwise
 PrimaryArtifact(P) =
  ExePath(P)        if Executable(P)
@@ -1550,12 +1554,12 @@ ms = EmitModuleList(P)
 e = P.assembly.emit_ir
 
 **(Output-Pipeline-Linkable)**
-Linkable(P)    Γ ⊢ EnsureDir(O) ⇓ ok    Γ ⊢ EnsureDir(O / `obj`) ⇓ ok    (¬ UsesBinDir(P) ∨ Γ ⊢ EnsureDir(O / `bin`) ⇓ ok)    (¬ UsesLibDir(P) ∨ Γ ⊢ EnsureDir(O / `lib`) ⇓ ok)    (e = `none` ∨ Γ ⊢ EnsureDir(O / `ir`) ⇓ ok)    Γ ⊢ EmitObjects(ms, P) ⇓ Objs    Γ ⊢ EmitIR(ms, P, e) ⇓ IRs    Γ ⊢ Finalize(Objs, P) ⇓ ok
+Linkable(P)    Γ ⊢ EnsureDir(O) ⇓ ok    Γ ⊢ EnsureDir(O / `Intermediate`) ⇓ ok    Γ ⊢ EnsureDir(O / `Logs`) ⇓ ok    Γ ⊢ EnsureDir(O / `Intermediate` / `Obj`) ⇓ ok    (¬ UsesBinDir(P) ∨ Γ ⊢ EnsureDir(O / `Binary`) ⇓ ok)    (¬ UsesLibDir(P) ∨ Γ ⊢ EnsureDir(O / `Library`) ⇓ ok)    (e = `none` ∨ Γ ⊢ EnsureDir(O / `Intermediate` / `IR`) ⇓ ok)    Γ ⊢ EmitObjects(ms, P) ⇓ Objs    Γ ⊢ EmitIR(ms, P, e) ⇓ IRs    Γ ⊢ Finalize(Objs, P) ⇓ ok
 ───────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
 Γ ⊢ OutputPipeline(P) ⇓ (Objs, IRs, PrimaryArtifact(P))
 
 **(Output-Pipeline-Dependency)**
-Dependency(P)    Γ ⊢ EnsureDir(O) ⇓ ok    Γ ⊢ EnsureDir(O / `obj`) ⇓ ok    (e = `none` ∨ Γ ⊢ EnsureDir(O / `ir`) ⇓ ok)    Γ ⊢ EmitObjects(ms, P) ⇓ Objs    Γ ⊢ EmitIR(ms, P, e) ⇓ IRs
+Dependency(P)    Γ ⊢ EnsureDir(O) ⇓ ok    Γ ⊢ EnsureDir(O / `Intermediate`) ⇓ ok    Γ ⊢ EnsureDir(O / `Logs`) ⇓ ok    Γ ⊢ EnsureDir(O / `Intermediate` / `Obj`) ⇓ ok    (e = `none` ∨ Γ ⊢ EnsureDir(O / `Intermediate` / `IR`) ⇓ ok)    Γ ⊢ EmitObjects(ms, P) ⇓ Objs    Γ ⊢ EmitIR(ms, P, e) ⇓ IRs
 ───────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
 Γ ⊢ OutputPipeline(P) ⇓ (Objs, IRs, ⊥)
 
@@ -1575,12 +1579,12 @@ e = P.assembly.emit_ir
 ⟨OutStart(P)⟩ → ⟨OutDirs(P)⟩
 
 **(Out-Dirs-Ok)**
-Γ ⊢ EnsureDir(O) ⇓ ok    Γ ⊢ EnsureDir(O / `obj`) ⇓ ok    (¬ UsesBinDir(P) ∨ Γ ⊢ EnsureDir(O / `bin`) ⇓ ok)    (¬ UsesLibDir(P) ∨ Γ ⊢ EnsureDir(O / `lib`) ⇓ ok)    (e = `none` ∨ Γ ⊢ EnsureDir(O / `ir`) ⇓ ok)
+Γ ⊢ EnsureDir(O) ⇓ ok    Γ ⊢ EnsureDir(O / `Intermediate`) ⇓ ok    Γ ⊢ EnsureDir(O / `Logs`) ⇓ ok    Γ ⊢ EnsureDir(O / `Intermediate` / `Obj`) ⇓ ok    (¬ UsesBinDir(P) ∨ Γ ⊢ EnsureDir(O / `Binary`) ⇓ ok)    (¬ UsesLibDir(P) ∨ Γ ⊢ EnsureDir(O / `Library`) ⇓ ok)    (e = `none` ∨ Γ ⊢ EnsureDir(O / `Intermediate` / `IR`) ⇓ ok)
 ──────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
 ⟨OutDirs(P)⟩ → ⟨OutObjs(P, ms, [])⟩
 
 **(Out-Dirs-Err)**
-Γ ⊢ EnsureDir(O) ⇑ ∨ Γ ⊢ EnsureDir(O / `obj`) ⇑ ∨ (UsesBinDir(P) ∧ Γ ⊢ EnsureDir(O / `bin`) ⇑) ∨ (UsesLibDir(P) ∧ Γ ⊢ EnsureDir(O / `lib`) ⇑) ∨ (e ∈ {`ll`, `bc`} ∧ Γ ⊢ EnsureDir(O / `ir`) ⇑)
+Γ ⊢ EnsureDir(O) ⇑ ∨ Γ ⊢ EnsureDir(O / `Intermediate`) ⇑ ∨ Γ ⊢ EnsureDir(O / `Logs`) ⇑ ∨ Γ ⊢ EnsureDir(O / `Intermediate` / `Obj`) ⇑ ∨ (UsesBinDir(P) ∧ Γ ⊢ EnsureDir(O / `Binary`) ⇑) ∨ (UsesLibDir(P) ∧ Γ ⊢ EnsureDir(O / `Library`) ⇑) ∨ (e ∈ {`ll`, `bc`} ∧ Γ ⊢ EnsureDir(O / `Intermediate` / `IR`) ⇑)
 ────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
 ⟨OutDirs(P)⟩ → ⟨Error(Code(Out-Dirs-Err))⟩
 

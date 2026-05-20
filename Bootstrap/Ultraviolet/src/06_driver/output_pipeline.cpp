@@ -152,6 +152,12 @@ void EmitInternalDiagnostic(core::DiagnosticStream& diags,
   core::Emit(diags, diag);
 }
 
+bool EnsureParentDir(const OutputPipelineDeps& deps,
+                     const std::filesystem::path& path) {
+  const std::filesystem::path parent = path.parent_path();
+  return parent.empty() || deps.ensure_dir(parent);
+}
+
 std::optional<std::vector<ast::ASTModule>> FilterAstModulesForProject(
     const Project& project,
     const std::vector<ast::ASTModule>& all_modules,
@@ -744,6 +750,8 @@ OutputPipelineResult OutputPipelineSingleAssembly(
   }
 
   if (!deps.ensure_dir(project.outputs.root) ||
+      !deps.ensure_dir(project.outputs.intermediate_dir) ||
+      !deps.ensure_dir(project.outputs.logs_dir) ||
       !deps.ensure_dir(project.outputs.obj_dir) ||
       (UsesBinDir(project, target_profile) &&
        !deps.ensure_dir(project.outputs.bin_dir)) ||
@@ -764,7 +772,10 @@ OutputPipelineResult OutputPipelineSingleAssembly(
   if (show_build_progress) {
     std::ostringstream oss;
     oss << "dirs-ok root=" << project.outputs.root.generic_string()
-        << " obj=" << project.outputs.obj_dir.generic_string();
+        << " intermediate="
+        << project.outputs.intermediate_dir.generic_string()
+        << " obj=" << project.outputs.obj_dir.generic_string()
+        << " logs=" << project.outputs.logs_dir.generic_string();
     if (UsesBinDir(project, target_profile)) {
       oss << " bin=" << project.outputs.bin_dir.generic_string();
     }
@@ -1106,7 +1117,8 @@ OutputPipelineResult OutputPipelineSingleAssembly(
 
     const std::string& bytes = *state.bytes;
     SPEC_RULE("CodegenObj-LLVM");
-    if (!deps.write_file(obj_path, bytes)) {
+    if (!EnsureParentDir(deps, obj_path) ||
+        !deps.write_file(obj_path, bytes)) {
       if (show_build_progress) {
         std::ostringstream oss;
         oss << "obj-write-error module=" << module.path
@@ -1278,7 +1290,8 @@ OutputPipelineResult OutputPipelineSingleAssembly(
         }
         const std::string& ir_bytes = *obj_state.ir_bytes;
         SPEC_RULE("CodegenIR-LLVM");
-        if (!deps.write_file(ir_path, ir_bytes)) {
+        if (!EnsureParentDir(deps, ir_path) ||
+            !deps.write_file(ir_path, ir_bytes)) {
           if (show_build_progress) {
             std::ostringstream oss;
             oss << "ir-write-error mode=" << emit_ir
@@ -1361,7 +1374,8 @@ OutputPipelineResult OutputPipelineSingleAssembly(
           return result;
         }
         SPEC_RULE("CodegenIR-LLVM");
-        if (!deps.write_file(ir_path, *ll_bytes)) {
+        if (!EnsureParentDir(deps, ir_path) ||
+            !deps.write_file(ir_path, *ll_bytes)) {
           if (show_build_progress) {
             std::ostringstream oss;
             oss << "ir-write-error mode=ll module=" << module.path
@@ -1433,7 +1447,8 @@ OutputPipelineResult OutputPipelineSingleAssembly(
           return result;
         }
         SPEC_RULE("CodegenIR-LLVM");
-        if (!deps.write_file(ir_path, *bc_bytes)) {
+        if (!EnsureParentDir(deps, ir_path) ||
+            !deps.write_file(ir_path, *bc_bytes)) {
           if (show_build_progress) {
             std::ostringstream oss;
             oss << "ir-write-error mode=bc module=" << module.path

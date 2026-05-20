@@ -50,6 +50,37 @@ std::string PathArgString(const std::filesystem::path& path) {
   return out;
 }
 
+std::filesystem::path HostFilesystemPath(const std::filesystem::path& path) {
+#ifdef _WIN32
+  std::error_code ec;
+  std::filesystem::path absolute =
+      path.is_absolute() ? path : std::filesystem::absolute(path, ec);
+  if (ec) {
+    absolute = path;
+  }
+  absolute.make_preferred();
+
+  std::wstring value = absolute.native();
+  if (value.size() < 240) {
+    return absolute;
+  }
+
+  constexpr std::wstring_view extended_prefix = LR"(\\?\)";
+  constexpr std::wstring_view unc_prefix = LR"(\\)";
+  if (value.rfind(extended_prefix, 0) == 0) {
+    return absolute;
+  }
+  if (value.rfind(unc_prefix, 0) == 0) {
+    value = LR"(\\?\UNC\)" + value.substr(2);
+  } else {
+    value = LR"(\\?\)" + value;
+  }
+  return std::filesystem::path(value);
+#else
+  return path;
+#endif
+}
+
 std::string LowerAscii(std::string_view text);
 
 std::optional<std::string> WslDrivePathArgString(
@@ -309,7 +340,7 @@ std::optional<std::filesystem::path> WritePosixVersionScript(
 }
 
 std::optional<std::string> ReadFileBytes(const std::filesystem::path& path) {
-  std::ifstream in(path, std::ios::binary);
+  std::ifstream in(HostFilesystemPath(path), std::ios::binary);
   if (!in) {
     return std::nullopt;
   }
@@ -319,7 +350,7 @@ std::optional<std::string> ReadFileBytes(const std::filesystem::path& path) {
 }
 
 bool CanReadFile(const std::filesystem::path& path) {
-  std::ifstream in(path, std::ios::binary);
+  std::ifstream in(HostFilesystemPath(path), std::ios::binary);
   return static_cast<bool>(in);
 }
 
@@ -912,6 +943,16 @@ std::filesystem::path MaterializeLinkInputForTool(
   candidate.replace_extension(ImportLibSuffix(target_profile));
   if (CanReadFile(candidate)) {
     return candidate;
+  }
+
+  if (input.has_parent_path() &&
+      input.parent_path().filename() == "Binary") {
+    candidate =
+        input.parent_path().parent_path() / "Library" / input.filename();
+    candidate.replace_extension(ImportLibSuffix(target_profile));
+    if (CanReadFile(candidate)) {
+      return candidate;
+    }
   }
 
   if (input.has_parent_path() && input.parent_path().filename() == "bin") {
@@ -1561,7 +1602,7 @@ std::optional<std::filesystem::path> RuntimeStartupObjectPath(
 
   std::filesystem::path build_root = project.outputs.root;
   if (build_root.empty()) {
-    build_root = project.root / "build";
+    build_root = project.root / "Build";
   }
   candidates.push_back(build_root / "runtime" / startup_name);
 

@@ -216,11 +216,17 @@ std::wstring BuildCommandLine(const std::filesystem::path& program,
 std::string BuildSymbolSearchPath(const std::filesystem::path& executable_path) {
   std::vector<std::string> parts;
   if (!executable_path.empty()) {
-    parts.push_back(executable_path.parent_path().string());
-    if (executable_path.parent_path().filename() == "bin") {
-      parts.push_back(executable_path.parent_path().parent_path().string());
+    const std::filesystem::path parent = executable_path.parent_path();
+    parts.push_back(parent.string());
+    if (parent.filename() == "Binary") {
+      const std::filesystem::path output_root = parent.parent_path();
+      parts.push_back(output_root.string());
       parts.push_back(
-          (executable_path.parent_path().parent_path() / "obj").string());
+          (output_root / "Intermediate" / "Obj").string());
+    } else if (parent.filename() == "bin") {
+      const std::filesystem::path output_root = parent.parent_path();
+      parts.push_back(output_root.string());
+      parts.push_back((output_root / "obj").string());
     }
   }
   wchar_t buffer[32767];

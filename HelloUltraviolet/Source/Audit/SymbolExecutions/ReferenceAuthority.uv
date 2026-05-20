@@ -29,7 +29,7 @@ public procedure catalogCompiledSymbolsExecuteReferenceAuthority(context: Contex
     passed = recordCatalogSymbolExecution(
         context,
         "runAuthorityIOReference",
-        runAuthorityIOReference()
+        runAuthorityIOReference(context)
     ) && passed
     passed = recordCatalogSymbolExecution(
         context,

@@ -461,13 +461,7 @@ bool HasTestHarnessBuildOptions(const ultraviolet::driver::CliOptions& opts) {
 
 ultraviolet::project::OutputPaths OutputPathsUnder(
     const std::filesystem::path& root) {
-  ultraviolet::project::OutputPaths paths;
-  paths.root = root;
-  paths.obj_dir = root / "obj";
-  paths.ir_dir = root / "ir";
-  paths.bin_dir = root / "bin";
-  paths.lib_dir = root / "lib";
-  return paths;
+  return ultraviolet::project::OutputPathsForRoot(root);
 }
 
 bool ModulePathStartsWithAssembly(std::string_view module_path,
@@ -614,11 +608,13 @@ std::string GenerateSourceNativeTestHarness(
   }
 
   for (const auto& test : tests) {
-    out << "    " << test.stable_identity << "(";
+    out << "    if !" << test.stable_identity << "(";
     if (test.requires_context) {
       out << "authority";
     }
-    out << ")\n";
+    out << ") {\n";
+    out << "        failures += 1\n";
+    out << "    }\n";
   }
 
   out << "    return failures\n";
@@ -668,7 +664,7 @@ std::optional<int> BuildAndRunSourceNativeTestHarness(
     ultraviolet::core::DiagnosticStream& diags) {
   const std::filesystem::path harness_root = HarnessRootForAssembly(assembly);
   const std::filesystem::path harness_source_dir = harness_root / "Source";
-  const std::filesystem::path harness_build_dir = harness_root / "build";
+  const std::filesystem::path harness_build_dir = harness_root / "Build";
   const std::string harness_module_path = HarnessModulePath(assembly.name);
   const std::filesystem::path harness_source =
       harness_source_dir / "Main.uv";
@@ -1904,17 +1900,18 @@ std::optional<std::string> ResolveUsingAssemblyName(
 
 std::filesystem::path RuntimeLogsDir(const ultraviolet::project::Project& project) {
   // Keep runtime logs inside the active output root to avoid stray build dirs.
-  return project.outputs.root / "logs" / "runtime";
+  return project.outputs.logs_dir / "Runtime";
 }
 
 std::filesystem::path ConformanceLogsDir(
     const std::filesystem::path& output_root) {
-  return output_root / "logs" / "conformance";
+  return ultraviolet::project::OutputPathsForRoot(output_root).logs_dir /
+         "Conformance";
 }
 
 std::filesystem::path FallbackConformanceLogsDir(
     const std::filesystem::path& project_root) {
-  return project_root / "build" / "main" / "logs" / "conformance";
+  return project_root / "Build" / "Logs" / "Conformance";
 }
 
 std::filesystem::path ResolveLogFileName(

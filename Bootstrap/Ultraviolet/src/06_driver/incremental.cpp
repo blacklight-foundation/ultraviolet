@@ -60,8 +60,7 @@ bool IncrementalEnabled() {
 }
 
 std::filesystem::path IncrementalDirPath(const project::Project& project) {
-  return project.outputs.root /
-         std::string(project::LanguageProfileFor(project.language).incremental_dir_name);
+  return project.outputs.incremental_dir;
 }
 
 std::filesystem::path IncrementalManifestPath(

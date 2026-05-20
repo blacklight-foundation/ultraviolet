@@ -1,7 +1,76 @@
 //! Reference specimens for source-native test execution.
 
+using HelloUltraviolet::Audit::{ auditTextEquals }
+
+internal let SOURCE_NATIVE_ORDER_FILE: string@View =
+    "Build/SourceNativeOrder.txt"
+
 internal procedure sourceNativeOrdinaryProcedure() -> bool {
     return true
+}
+
+internal procedure sourceNativeIoUnitSucceeded(result: Outcome<(), IoError>) -> bool {
+    return if result is {
+        @Value {
+            true
+        }
+        @Error {
+            false
+        }
+    }
+}
+
+internal procedure sourceNativeReadTextEquals(
+    move result: Outcome<unique string@Managed, IoError>,
+    expected: string@View
+) -> bool {
+    return if move result is {
+        @Value { value } {
+            let text: string@View = string::as_view(value)
+            auditTextEquals(text, expected)
+        }
+        @Error {
+            false
+        }
+    }
+}
+
+internal procedure sourceNativeWriteOrderFile(
+    authority: TestAuthority,
+    text: string@View
+) -> bool {
+    let data: bytes@View = bytes::view_string(text)
+    return sourceNativeIoUnitSucceeded(authority.io~>write_file(SOURCE_NATIVE_ORDER_FILE, data))
+}
+
+#test(name: "source native order 01", covers("def.TestDiscoveryOrder@L28871"))
+internal procedure sourceNativeOrderFirst(authority: TestAuthority) -> bool
+|: |= @result
+{
+    let build_dir_ready: Outcome<(), IoError> = authority.io~>ensure_dir("Build")
+    return sourceNativeIoUnitSucceeded(build_dir_ready) &&
+        sourceNativeWriteOrderFile(authority, "1")
+}
+
+#test(name: "source native order 02", covers("def.TestDiscoveryOrder@L28871"))
+internal procedure sourceNativeOrderSecond(authority: TestAuthority) -> bool
+|: |= @result
+{
+    let observed: Outcome<unique string@Managed, IoError> =
+        authority.io~>read_file(SOURCE_NATIVE_ORDER_FILE)
+    return sourceNativeReadTextEquals(move observed, "1") &&
+        sourceNativeWriteOrderFile(authority, "12")
+}
+
+#test(name: "source native order 03", covers("def.TestDiscoveryOrder@L28871"))
+internal procedure sourceNativeOrderThird(authority: TestAuthority) -> bool
+|: |= @result
+{
+    let observed: Outcome<unique string@Managed, IoError> =
+        authority.io~>read_file(SOURCE_NATIVE_ORDER_FILE)
+    let remove_result: Outcome<(), IoError> = authority.io~>remove(SOURCE_NATIVE_ORDER_FILE)
+    return sourceNativeReadTextEquals(move observed, "12") &&
+        sourceNativeIoUnitSucceeded(remove_result)
 }
 
 #test
@@ -18,35 +87,35 @@ internal procedure sourceNativeNamedTest() -> bool
     return true
 }
 
-#test(covers("grammar.TestAttribute@L28627"))
+#test(covers("grammar.TestAttribute@L28632"))
 internal procedure sourceNativeCoveredTest() -> bool
 |: |= @result
 {
     return true
 }
 
-#test(name: "coverage order", covers("def.TestName@L28680"), covers("def.TestCoverage@L28695"))
+#test(name: "coverage order", covers("def.TestName@L28685"), covers("def.TestCoverage@L28700"))
 internal procedure sourceNativeNamedCoveredTest() -> bool
 |: |= @result
 {
     return true
 }
 
-#test(covers("req.TestAuthority@L28768"))
+#test(covers("req.TestAuthority@L28773"))
 internal procedure sourceNativeAuthorityTest(authority: TestAuthority) -> bool
 |: |= @result
 {
     return true
 }
 
-#test(covers("req.TestProcedureShape@L28746"))
+#test(covers("req.TestProcedureShape@L28751"))
 internal procedure sourceNativeShapeTest() -> bool
 |: |= @result
 {
     return true
 }
 
-#test(covers("conformance.TestAttributeDynamicSemantics@L28786"))
+#test(covers("conformance.TestAttributeDynamicSemantics@L28791"))
 internal procedure sourceNativeDynamicSemanticsTest() -> bool
 |: |= @result
 {

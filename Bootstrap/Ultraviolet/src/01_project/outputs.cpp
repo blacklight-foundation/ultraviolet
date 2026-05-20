@@ -20,6 +20,15 @@ namespace ultraviolet::project {
 
 namespace {
 
+constexpr const char* DEFAULT_OUTPUT_ROOT = "Build";
+constexpr const char* INTERMEDIATE_DIR = "Intermediate";
+constexpr const char* OBJ_DIR = "Obj";
+constexpr const char* IR_DIR = "IR";
+constexpr const char* BINARY_DIR = "Binary";
+constexpr const char* LIBRARY_DIR = "Library";
+constexpr const char* LOGS_DIR = "Logs";
+constexpr const char* INCREMENTAL_DIR = "Incremental";
+
 std::string_view EmitIrMode(const Project& project) {
   if (project.assembly.emit_ir.has_value()) {
     return *project.assembly.emit_ir;
@@ -56,7 +65,30 @@ std::string RenderList(const std::vector<std::string>& items) {
   return oss.str();
 }
 
+std::filesystem::path ModuleOutputRelativeDir(const Project& project,
+                                              const ModuleInfo& module) {
+  const std::optional<std::string> rel =
+      core::Relative(module.dir.generic_string(), project.root.generic_string());
+  if (!rel.has_value() || rel->empty()) {
+    return {};
+  }
+  return std::filesystem::path(*rel);
+}
+
 }  // namespace
+
+OutputPaths OutputPathsForRoot(const std::filesystem::path& root) {
+  OutputPaths paths;
+  paths.root = root;
+  paths.intermediate_dir = root / INTERMEDIATE_DIR;
+  paths.obj_dir = paths.intermediate_dir / OBJ_DIR;
+  paths.ir_dir = paths.intermediate_dir / IR_DIR;
+  paths.bin_dir = root / BINARY_DIR;
+  paths.lib_dir = root / LIBRARY_DIR;
+  paths.logs_dir = root / LOGS_DIR;
+  paths.incremental_dir = paths.intermediate_dir / INCREMENTAL_DIR;
+  return paths;
+}
 
 OutputPaths ComputeOutputPaths(const std::filesystem::path& project_root,
                                const ValidatedAssembly& assembly) {
@@ -64,14 +96,8 @@ OutputPaths ComputeOutputPaths(const std::filesystem::path& project_root,
   const std::filesystem::path root =
       cli_out_dir.has_value()        ? (project_root / *cli_out_dir)
       : assembly.out_dir.has_value() ? (project_root / *assembly.out_dir)
-                                     : (project_root / "build");
-  OutputPaths paths;
-  paths.root = root;
-  paths.obj_dir = root / "obj";
-  paths.ir_dir = root / "ir";
-  paths.bin_dir = root / "bin";
-  paths.lib_dir = root / "lib";
-  return paths;
+                                     : (project_root / DEFAULT_OUTPUT_ROOT);
+  return OutputPathsForRoot(root);
 }
 
 Project AssemblyProject(const Project& base_project, const Assembly& assembly) {
@@ -88,7 +114,7 @@ std::filesystem::path ObjPath(const Project& project,
                               TargetProfile target_profile,
                               const ModuleInfo& module) {
   const std::string mangled = core::MangleModulePath(module.path);
-  return project.outputs.obj_dir /
+  return project.outputs.obj_dir / ModuleOutputRelativeDir(project, module) /
          (mangled + std::string(ObjExt(target_profile)));
 }
 
@@ -101,7 +127,8 @@ std::filesystem::path IRPath(const Project& project,
     ext = ".bc";
   }
   const std::string mangled = core::MangleModulePath(module.path);
-  return project.outputs.ir_dir / (mangled + ext);
+  return project.outputs.ir_dir / ModuleOutputRelativeDir(project, module) /
+         (mangled + ext);
 }
 
 std::filesystem::path ExePath(const Project& project,

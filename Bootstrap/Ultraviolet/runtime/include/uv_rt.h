@@ -785,36 +785,36 @@ void CancelToken_x3a_x3aActive_x3a_x3await_x5fcancelled(void* out, void* self);
 
 // File/DirIter methods (modal state methods / transitions)
 UVUnion_StringManaged_IoError File_x3a_x3aRead_x3a_x3aread_x5fall(
-  const UVFileHandle* self);
+  UVFileHandle self);
 
 UVUnion_BytesManaged_IoError File_x3a_x3aRead_x3a_x3aread_x5fall_x5fbytes(
-  const UVFileHandle* self);
+  UVFileHandle self);
 
 void File_x3a_x3aRead_x3a_x3aclose(
   UVFileHandle self);
 
 UVUnion_Unit_IoError File_x3a_x3aWrite_x3a_x3awrite(
-  UVFileHandle* self,
+  UVFileHandle self,
   const UVBytesView* data);
 
 UVUnion_Unit_IoError File_x3a_x3aWrite_x3a_x3aflush(
-  UVFileHandle* self);
+  UVFileHandle self);
 
 void File_x3a_x3aWrite_x3a_x3aclose(
   UVFileHandle self);
 
 UVUnion_Unit_IoError File_x3a_x3aAppend_x3a_x3awrite(
-  UVFileHandle* self,
+  UVFileHandle self,
   const UVBytesView* data);
 
 UVUnion_Unit_IoError File_x3a_x3aAppend_x3a_x3aflush(
-  UVFileHandle* self);
+  UVFileHandle self);
 
 void File_x3a_x3aAppend_x3a_x3aclose(
   UVFileHandle self);
 
 UVUnion_DirEntry_Unit_IoError DirIter_x3a_x3aOpen_x3a_x3anext(
-  UVDirIterHandle* self);
+  UVDirIterHandle self);
 
 void DirIter_x3a_x3aOpen_x3a_x3aclose(
   UVDirIterHandle self);

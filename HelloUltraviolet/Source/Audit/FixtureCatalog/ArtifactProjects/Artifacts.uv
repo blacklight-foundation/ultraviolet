@@ -93,10 +93,10 @@ internal procedure artifactTextExcludes(
 
 public procedure artifactProjectRuntimeErasureArtifactsMatch(context: Context) -> bool {
     let ir_path: string@View =
-        "HelloUltraviolet/Fixtures/ArtifactProjects/FlowProofRuntimeErasure/build/ir/FlowProofRuntimeErasure.ll"
+        "HelloUltraviolet/Fixtures/ArtifactProjects/FlowProofRuntimeErasure/Build/Intermediate/IR/Source/FlowProofRuntimeErasure.ll"
     return context.io~>exists(ir_path) &&
         context.io~>exists(
-            "HelloUltraviolet/Fixtures/ArtifactProjects/FlowProofRuntimeErasure/build/obj/FlowProofRuntimeErasure.obj"
+            "HelloUltraviolet/Fixtures/ArtifactProjects/FlowProofRuntimeErasure/Build/Intermediate/Obj/Source/FlowProofRuntimeErasure.obj"
         ) &&
         artifactTextExcludes(context, ir_path, "VerificationFact") &&
         artifactTextExcludes(context, ir_path, "FlowFactsAt") &&
@@ -109,21 +109,21 @@ public procedure artifactProjectRuntimeErasureArtifactsMatch(context: Context) -
 
 public procedure artifactProjectAArch64DependencyObjectArtifactsExist(context: Context) -> bool {
     return context.io~>exists(
-        "HelloUltraviolet/Fixtures/ArtifactProjects/AArch64DependencyObject/build/obj/AArch64DependencyObject.o"
+        "HelloUltraviolet/Fixtures/ArtifactProjects/AArch64DependencyObject/Build/Intermediate/Obj/Source/AArch64DependencyObject.o"
     ) &&
         context.io~>exists(
-            "HelloUltraviolet/Fixtures/ArtifactProjects/AArch64DependencyObject/build/.uv-incremental/AArch64DependencyObject.manifest"
+            "HelloUltraviolet/Fixtures/ArtifactProjects/AArch64DependencyObject/Build/Intermediate/Incremental/AArch64DependencyObject.manifest"
         )
 }
 
 public procedure artifactProjectEmitBcLibraryArtifactsExist(context: Context) -> bool {
     return context.io~>exists(
-        "HelloUltraviolet/Fixtures/ArtifactProjects/EmitBcLibrary/build/ir/EmitBcLibrary.bc"
+        "HelloUltraviolet/Fixtures/ArtifactProjects/EmitBcLibrary/Build/Intermediate/IR/Source/EmitBcLibrary.bc"
     ) &&
         context.io~>exists(
-            "HelloUltraviolet/Fixtures/ArtifactProjects/EmitBcLibrary/build/obj/EmitBcLibrary.obj"
+            "HelloUltraviolet/Fixtures/ArtifactProjects/EmitBcLibrary/Build/Intermediate/Obj/Source/EmitBcLibrary.obj"
         ) &&
         context.io~>exists(
-            "HelloUltraviolet/Fixtures/ArtifactProjects/EmitBcLibrary/build/lib/EmitBcLibrary.lib"
+            "HelloUltraviolet/Fixtures/ArtifactProjects/EmitBcLibrary/Build/Library/EmitBcLibrary.lib"
         )
 }

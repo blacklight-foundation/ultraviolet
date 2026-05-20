@@ -55,7 +55,6 @@ struct LanguageProfile {
 
   std::string_view region_active_alias;
   std::string_view hosted_session_param_name;
-  std::string_view incremental_dir_name;
 };
 
 const LanguageProfile& UltravioletLanguageProfile();

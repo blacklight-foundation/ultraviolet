@@ -305,7 +305,7 @@ std::filesystem::path DefaultCrashReportRoot(
   if (output_root.empty()) {
     return crash_debug_detail::TempCrashRoot();
   }
-  return output_root / "logs" / "crash";
+  return output_root / "Logs" / "Crash";
 }
 
 std::filesystem::path DefaultTargetCrashReportRoot(
@@ -314,10 +314,10 @@ std::filesystem::path DefaultTargetCrashReportRoot(
     return crash_debug_detail::TempCrashRoot();
   }
   const std::filesystem::path parent = program_path.parent_path();
-  if (parent.filename() == "bin") {
-    return parent.parent_path() / "logs" / "crash";
+  if (parent.filename() == "Binary" || parent.filename() == "bin") {
+    return parent.parent_path() / "Logs" / "Crash";
   }
-  return parent / "logs" / "crash";
+  return parent / "Logs" / "Crash";
 }
 
 void ConfigureCrashRuntime(const CrashRuntimeOptions& options) {

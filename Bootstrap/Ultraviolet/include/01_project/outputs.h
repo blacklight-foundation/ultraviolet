@@ -17,12 +17,16 @@ struct Project;
 
 struct OutputPaths {
   std::filesystem::path root;
+  std::filesystem::path intermediate_dir;
   std::filesystem::path obj_dir;
   std::filesystem::path ir_dir;
   std::filesystem::path bin_dir;
   std::filesystem::path lib_dir;
+  std::filesystem::path logs_dir;
+  std::filesystem::path incremental_dir;
 };
 
+OutputPaths OutputPathsForRoot(const std::filesystem::path& root);
 OutputPaths ComputeOutputPaths(const std::filesystem::path& project_root,
                                const ValidatedAssembly& assembly);
 Project AssemblyProject(const Project& base_project, const Assembly& assembly);

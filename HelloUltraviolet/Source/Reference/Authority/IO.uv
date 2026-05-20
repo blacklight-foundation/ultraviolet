@@ -1,5 +1,7 @@
 //! Reference specimens for Authority / IO.
 
+using HelloUltraviolet::Audit::{ auditTextEquals }
+
 internal record IOAuthorityReference {
     internal can_read: bool
     internal can_write: bool
@@ -24,12 +26,416 @@ internal procedure ioAuthorityCanObserveHost(
     return reference.requires_capability && (reference.can_read || reference.can_write)
 }
 
+internal procedure ioUnitSucceeded(result: Outcome<(), IoError>) -> bool {
+    return if result is {
+        @Value {
+            true
+        }
+        @Error {
+            false
+        }
+    }
+}
+
+internal procedure ioErrorIsInvalidPath(error: IoError) -> bool {
+    return if error is {
+        IoError::NotFound {
+            false
+        }
+        IoError::PermissionDenied {
+            false
+        }
+        IoError::AlreadyExists {
+            false
+        }
+        IoError::InvalidPath {
+            true
+        }
+        IoError::Busy {
+            false
+        }
+        IoError::IoFailure {
+            false
+        }
+    }
+}
+
+internal procedure ioErrorIsNotFound(error: IoError) -> bool {
+    return if error is {
+        IoError::NotFound {
+            true
+        }
+        IoError::PermissionDenied {
+            false
+        }
+        IoError::AlreadyExists {
+            false
+        }
+        IoError::InvalidPath {
+            false
+        }
+        IoError::Busy {
+            false
+        }
+        IoError::IoFailure {
+            false
+        }
+    }
+}
+
+internal procedure ioOutcomeErrorIsInvalidPath<TValue>(
+    move outcome: Outcome<TValue, IoError>
+) -> bool {
+    return if move outcome is {
+        @Value {
+            false
+        }
+        @Error { error } {
+            ioErrorIsInvalidPath(error)
+        }
+    }
+}
+
+internal procedure ioOutcomeErrorIsNotFound<TValue>(
+    move outcome: Outcome<TValue, IoError>
+) -> bool {
+    return if move outcome is {
+        @Value {
+            false
+        }
+        @Error { error } {
+            ioErrorIsNotFound(error)
+        }
+    }
+}
+
+internal procedure ioTextEquals(
+    move result: Outcome<unique string@Managed, IoError>,
+    expected: string@View
+) -> bool {
+    return if move result is {
+        @Value { value } {
+            let text: string@View = string::as_view(value)
+            auditTextEquals(text, expected)
+        }
+        @Error {
+            false
+        }
+    }
+}
+
+internal procedure ioBytesLengthEquals(
+    move result: Outcome<unique bytes@Managed, IoError>,
+    expected: usize
+) -> bool {
+    return if move result is {
+        @Value { value } {
+            let view: bytes@View = bytes::as_view(value)
+            bytes::length(view) == expected
+        }
+        @Error {
+            false
+        }
+    }
+}
+
+internal procedure ioFileKindIsFile(result: Outcome<FileKind, IoError>) -> bool {
+    return if result is {
+        @Value { value } {
+            return if value is {
+                FileKind::File {
+                    true
+                }
+                FileKind::Dir {
+                    false
+                }
+                FileKind::Other {
+                    false
+                }
+            }
+        }
+        @Error {
+            false
+        }
+    }
+}
+
+internal procedure ioFileKindIsDir(result: Outcome<FileKind, IoError>) -> bool {
+    return if result is {
+        @Value { value } {
+            return if value is {
+                FileKind::File {
+                    false
+                }
+                FileKind::Dir {
+                    true
+                }
+                FileKind::Other {
+                    false
+                }
+            }
+        }
+        @Error {
+            false
+        }
+    }
+}
+
+internal procedure ioReadHandleTextEquals(
+    move result: Outcome<unique File@Read, IoError>,
+    expected: string@View
+) -> bool {
+    return if move result is {
+        @Value { value } {
+            let read_result: Outcome<unique string@Managed, IoError> = value~>read_all()
+            let closed: File@Closed = value~>close()
+            let _ = closed
+            ioTextEquals(move read_result, expected)
+        }
+        @Error {
+            false
+        }
+    }
+}
+
+internal procedure ioWriteHandleAcceptsPayload(
+    move result: Outcome<unique File@Write, IoError>,
+    payload: string@View
+) -> bool {
+    return if move result is {
+        @Value { value } {
+            let payload_view: bytes@View = bytes::view_string(payload)
+            let write_result: Outcome<(), IoError> = value~>write(payload_view)
+            let flush_result: Outcome<(), IoError> = value~>flush()
+            let closed: File@Closed = value~>close()
+            let _ = closed
+            ioUnitSucceeded(write_result) && ioUnitSucceeded(flush_result)
+        }
+        @Error {
+            false
+        }
+    }
+}
+
+internal procedure ioAppendHandleAcceptsPayload(
+    move result: Outcome<unique File@Append, IoError>,
+    payload: string@View
+) -> bool {
+    return if move result is {
+        @Value { value } {
+            let payload_view: bytes@View = bytes::view_string(payload)
+            let write_result: Outcome<(), IoError> = value~>write(payload_view)
+            let flush_result: Outcome<(), IoError> = value~>flush()
+            let closed: File@Closed = value~>close()
+            let _ = closed
+            ioUnitSucceeded(write_result) && ioUnitSucceeded(flush_result)
+        }
+        @Error {
+            false
+        }
+    }
+}
+
+internal procedure ioDirEntryNameEquals(
+    result: Outcome<DirEntry | (), IoError>,
+    expected: string@View
+) -> bool {
+    return if result is {
+        @Value { value } {
+            return if value is {
+                entry: DirEntry {
+                    let name: string@View = string::as_view(entry.name)
+                    auditTextEquals(name, expected)
+                }
+                empty_value: () {
+                    false
+                }
+            }
+        }
+        @Error {
+            false
+        }
+    }
+}
+
+internal procedure ioDirEntryIsEnd(result: Outcome<DirEntry | (), IoError>) -> bool {
+    return if result is {
+        @Value { value } {
+            return if value is {
+                entry: DirEntry {
+                    false
+                }
+                empty_value: () {
+                    true
+                }
+            }
+        }
+        @Error {
+            false
+        }
+    }
+}
+
+internal procedure ioDirectoryIterationReference(
+    move result: Outcome<unique DirIter@Open, IoError>
+) -> bool {
+    return if move result is {
+        @Value { value } {
+            let first: Outcome<DirEntry | (), IoError> = value~>next()
+            let second: Outcome<DirEntry | (), IoError> = value~>next()
+            let third: Outcome<DirEntry | (), IoError> = value~>next()
+            let end: Outcome<DirEntry | (), IoError> = value~>next()
+            let closed: DirIter@Closed = value~>close()
+            let _ = closed
+            ioDirEntryNameEquals(first, "IOA.txt") &&
+                ioDirEntryNameEquals(second, "IOB.txt") &&
+                ioDirEntryNameEquals(third, "IOC.txt") &&
+                ioDirEntryIsEnd(end)
+        }
+        @Error {
+            false
+        }
+    }
+}
+
+internal procedure ioDirectorySnapshotAfterRemovalReference(
+    io: $IO,
+    root: string@View,
+    snapshot_path: string@View
+) -> bool {
+    let opened: Outcome<unique DirIter@Open, IoError> = io~>open_dir(root)
+    let removed: Outcome<(), IoError> = io~>remove(snapshot_path)
+
+    return if move opened is {
+        @Value { value } {
+            let first: Outcome<DirEntry | (), IoError> = value~>next()
+            let end: Outcome<DirEntry | (), IoError> = value~>next()
+            let closed: DirIter@Closed = value~>close()
+            let _ = closed
+            ioUnitSucceeded(removed) &&
+                ioDirEntryNameEquals(first, "Snapshot.txt") &&
+                ioDirEntryIsEnd(end)
+        }
+        @Error {
+            false
+        }
+    }
+}
+
 /// Exercises the Authority IO reference surface.
-public procedure runAuthorityIOReference() -> bool {
+public procedure runAuthorityIOReference(context: Context) -> bool {
     let read_only: IOAuthorityReference =
         ioAuthorityReference(true, false, true)
     let write_only: IOAuthorityReference =
         ioAuthorityReference(false, true, true)
+
+    let io: $IO = context.io
+    let root: string@View = "HelloUltraviolet/Build/IOAuthorityReference"
+    let file_path: string@View =
+        "HelloUltraviolet/Build/IOAuthorityReference/IOFile.txt"
+    let handle_path: string@View =
+        "HelloUltraviolet/Build/IOAuthorityReference/IOHandle.txt"
+    let dir_root: string@View = "HelloUltraviolet/Build/IOAuthorityReferenceDir"
+    let first_path: string@View =
+        "HelloUltraviolet/Build/IOAuthorityReferenceDir/IOA.txt"
+    let second_path: string@View =
+        "HelloUltraviolet/Build/IOAuthorityReferenceDir/IOB.txt"
+    let third_path: string@View =
+        "HelloUltraviolet/Build/IOAuthorityReferenceDir/IOC.txt"
+    let snapshot_root: string@View =
+        "HelloUltraviolet/Build/IOAuthorityReferenceSnapshot"
+    let snapshot_path: string@View =
+        "HelloUltraviolet/Build/IOAuthorityReferenceSnapshot/Snapshot.txt"
+
+    let _ = io~>remove(file_path)
+    let _ = io~>remove(handle_path)
+    let _ = io~>remove(first_path)
+    let _ = io~>remove(second_path)
+    let _ = io~>remove(third_path)
+    let _ = io~>remove(snapshot_path)
+    let _ = io~>remove(root)
+    let _ = io~>remove(dir_root)
+    let _ = io~>remove(snapshot_root)
+
+    let create_root: Outcome<(), IoError> = io~>ensure_dir(root)
+    let create_dir_root: Outcome<(), IoError> = io~>ensure_dir(dir_root)
+    let create_snapshot_root: Outcome<(), IoError> = io~>ensure_dir(snapshot_root)
+    let write_payload: bytes@View = bytes::view_string("hello-io")
+    let create_file: Outcome<(), IoError> = io~>write_file(file_path, write_payload)
+    let read_file: Outcome<unique string@Managed, IoError> = io~>read_file(file_path)
+    let read_bytes: Outcome<unique bytes@Managed, IoError> = io~>read_bytes(file_path)
+    let kind_file: Outcome<FileKind, IoError> = io~>kind(file_path)
+    let kind_dir: Outcome<FileKind, IoError> = io~>kind(root)
+
+    let write_handle: bool = ioWriteHandleAcceptsPayload(
+        io~>create_write(handle_path),
+        "handle-write"
+    )
+    let append_handle: bool = ioAppendHandleAcceptsPayload(
+        io~>open_append(handle_path),
+        "-append"
+    )
+    let read_handle: bool = ioReadHandleTextEquals(
+        io~>open_read(handle_path),
+        "handle-write-append"
+    )
+    let open_write_handle: bool = ioWriteHandleAcceptsPayload(
+        io~>open_write(handle_path),
+        "open-write"
+    )
+
+    let _ = io~>write_file(first_path, bytes::view_string("1"))
+    let _ = io~>write_file(second_path, bytes::view_string("2"))
+    let _ = io~>write_file(third_path, bytes::view_string("3"))
+    let dir_entries: bool = ioDirectoryIterationReference(io~>open_dir(dir_root))
+    let _ = io~>write_file(snapshot_path, bytes::view_string("snapshot"))
+    let snapshot_entries: bool =
+        ioDirectorySnapshotAfterRemovalReference(io, snapshot_root, snapshot_path)
+
+    let restricted: $IO = io~>restrict(root)
+    let restricted_exists: bool = restricted~>exists("IOFile.txt") &&
+        !restricted~>exists("../README.md")
+    let restricted_invalid: bool =
+        ioOutcomeErrorIsInvalidPath(restricted~>open_read("../README.md"))
+    let restricted_missing: bool =
+        ioOutcomeErrorIsNotFound(restricted~>open_read("missing.txt")) &&
+        ioOutcomeErrorIsNotFound(restricted~>open_dir("missing")) &&
+        ioOutcomeErrorIsNotFound(restricted~>kind("missing.txt"))
+
+    let remove_file: Outcome<(), IoError> = io~>remove(file_path)
+    let remove_handle: Outcome<(), IoError> = io~>remove(handle_path)
+    let remove_first: Outcome<(), IoError> = io~>remove(first_path)
+    let remove_second: Outcome<(), IoError> = io~>remove(second_path)
+    let remove_third: Outcome<(), IoError> = io~>remove(third_path)
+    let remove_root: Outcome<(), IoError> = io~>remove(root)
+    let remove_dir_root: Outcome<(), IoError> = io~>remove(dir_root)
+    let remove_snapshot_root: Outcome<(), IoError> = io~>remove(snapshot_root)
+
     return ioAuthorityCanObserveHost(read_only) &&
-        ioAuthorityCanObserveHost(write_only)
+        ioAuthorityCanObserveHost(write_only) &&
+        ioUnitSucceeded(create_root) &&
+        ioUnitSucceeded(create_dir_root) &&
+        ioUnitSucceeded(create_snapshot_root) &&
+        ioUnitSucceeded(create_file) &&
+        ioTextEquals(move read_file, "hello-io") &&
+        ioBytesLengthEquals(move read_bytes, 8usize) &&
+        ioFileKindIsFile(kind_file) &&
+        ioFileKindIsDir(kind_dir) &&
+        write_handle &&
+        append_handle &&
+        read_handle &&
+        open_write_handle &&
+        dir_entries &&
+        snapshot_entries &&
+        restricted_exists &&
+        restricted_invalid &&
+        restricted_missing &&
+        ioUnitSucceeded(remove_file) &&
+        ioUnitSucceeded(remove_handle) &&
+        ioUnitSucceeded(remove_first) &&
+        ioUnitSucceeded(remove_second) &&
+        ioUnitSucceeded(remove_third) &&
+        ioUnitSucceeded(remove_root) &&
+        ioUnitSucceeded(remove_dir_root) &&
+        ioUnitSucceeded(remove_snapshot_root)
 }

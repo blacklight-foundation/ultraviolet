@@ -1104,7 +1104,7 @@ OPTIONS
   --coverage <anchor>        With `test`, run tests covering the obligation
                              anchor
   --opt-level <level>        Select codegen optimization: O0, O1, O2, O3, Os, Oz
-  --out-dir <path>           Override output directory (default: build/)
+  --out-dir <path>           Override output directory (default: Build/)
   --diag-json                Output diagnostics as JSON
   --dump                     Dump project structure
   --dump-ast                 Dump parsed AST for project modules
@@ -1123,7 +1123,7 @@ OPTIONS
   --trace                    Show all runtime trace records (not just log category)
   --trace-filter <classes>   Filter trace categories: log,diagnostic,runtime,all (comma-separated)
   --trace-level <level>      Filter minimum trace level: trace, info, warning, error
-  --conformance <path>       Write compiler conformance trace to <out-dir>/logs/conformance/<basename(path)>
+  --conformance <path>       Write compiler conformance trace to <out-dir>/Logs/Conformance/<basename(path)>
 
   --debug <subsystems|help>  Enable debug output or print subsystem help
 

@@ -105,7 +105,6 @@ const LanguageProfile& UltravioletLanguageProfile() {
       "uv_",
       "__uv_region_active",
       "__uv_session",
-      ".uv-incremental",
   };
   return profile;
 }

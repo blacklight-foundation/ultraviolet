@@ -35,10 +35,13 @@ internal record OutputArtifactReference {
 
 internal record OutputPathsReference {
     internal root: string@View
+    internal intermediate_dir: string@View
     internal obj_dir: string@View
     internal ir_dir: string@View
     internal bin_dir: string@View
     internal lib_dir: string@View
+    internal logs_dir: string@View
+    internal incremental_dir: string@View
 }
 
 internal record OutputProjectReference {
@@ -97,17 +100,23 @@ internal procedure outputArtifactPrecedes(
 
 internal procedure outputPathsReference(
     root: string@View,
+    intermediate_dir: string@View,
     obj_dir: string@View,
     ir_dir: string@View,
     bin_dir: string@View,
-    lib_dir: string@View
+    lib_dir: string@View,
+    logs_dir: string@View,
+    incremental_dir: string@View
 ) -> OutputPathsReference {
     return OutputPathsReference {
         root: root,
+        intermediate_dir: intermediate_dir,
         obj_dir: obj_dir,
         ir_dir: ir_dir,
         bin_dir: bin_dir,
-        lib_dir: lib_dir
+        lib_dir: lib_dir,
+        logs_dir: logs_dir,
+        incremental_dir: incremental_dir
     }
 }
 
@@ -331,25 +340,35 @@ internal procedure targetConstantsMatch(
 internal procedure outputPathsMatch(
     paths: OutputPathsReference,
     root: string@View,
+    intermediate_dir: string@View,
     obj_dir: string@View,
     ir_dir: string@View,
     bin_dir: string@View,
-    lib_dir: string@View
+    lib_dir: string@View,
+    logs_dir: string@View,
+    incremental_dir: string@View
 ) -> bool {
     return auditTextEquals(paths.root, root) &&
+        auditTextEquals(paths.intermediate_dir, intermediate_dir) &&
         auditTextEquals(paths.obj_dir, obj_dir) &&
         auditTextEquals(paths.ir_dir, ir_dir) &&
         auditTextEquals(paths.bin_dir, bin_dir) &&
-        auditTextEquals(paths.lib_dir, lib_dir)
+        auditTextEquals(paths.lib_dir, lib_dir) &&
+        auditTextEquals(paths.logs_dir, logs_dir) &&
+        auditTextEquals(paths.incremental_dir, incremental_dir)
 }
 
 internal procedure outputPathMangleReference() -> bool {
     let alphanumeric_prefix: string@View = "Module123"
     let escaped_prefix: string@View = "Reference_x3A_x3AGPU_x20Kernel"
-    let object_path: string@View = "Project/build/obj/Reference_x3A_x3AGPU_x20Kernel.obj"
+    let object_path: string@View =
+        "Project/Build/Intermediate/Obj/Source/Reference/Reference_x3A_x3AGPU_x20Kernel.obj"
     return auditTextEquals(alphanumeric_prefix, "Module123") &&
         auditTextEquals(escaped_prefix, "Reference_x3A_x3AGPU_x20Kernel") &&
-        auditTextEquals(object_path, "Project/build/obj/Reference_x3A_x3AGPU_x20Kernel.obj")
+        auditTextEquals(
+            object_path,
+            "Project/Build/Intermediate/Obj/Source/Reference/Reference_x3A_x3AGPU_x20Kernel.obj"
+        )
 }
 
 /// Exercises the Projects OutputArtifacts reference surface.
@@ -361,18 +380,24 @@ public procedure runProjectsOutputArtifactsReference() -> bool {
     let runtime: OutputArtifactReference =
         outputArtifactReference(OutputArtifactKindReference::DependencyRuntime, true, 3usize)
     let default_paths: OutputPathsReference = outputPathsReference(
-        "Project/build",
-        "Project/build/obj",
-        "Project/build/ir",
-        "Project/build/bin",
-        "Project/build/lib"
+        "Project/Build",
+        "Project/Build/Intermediate",
+        "Project/Build/Intermediate/Obj",
+        "Project/Build/Intermediate/IR",
+        "Project/Build/Binary",
+        "Project/Build/Library",
+        "Project/Build/Logs",
+        "Project/Build/Intermediate/Incremental"
     )
     let configured_paths: OutputPathsReference = outputPathsReference(
-        "Project/out",
-        "Project/out/obj",
-        "Project/out/ir",
-        "Project/out/bin",
-        "Project/out/lib"
+        "Project/Out",
+        "Project/Out/Intermediate",
+        "Project/Out/Intermediate/Obj",
+        "Project/Out/Intermediate/IR",
+        "Project/Out/Binary",
+        "Project/Out/Library",
+        "Project/Out/Logs",
+        "Project/Out/Intermediate/Incremental"
     )
     let executable_project: OutputProjectReference = executableProjectReference()
     let shared_project: OutputProjectReference = sharedLibraryProjectReference()
@@ -382,23 +407,23 @@ public procedure runProjectsOutputArtifactsReference() -> bool {
     let child_module: OutputModuleReference =
         outputModuleReference("ArtifactRoot::Child", "artifactroot::child", 2usize)
     let executable_paths: OutputArtifactPathsReference = artifactPathsReference(
-        "Project/build/obj/ArtifactRoot.obj",
-        "Project/build/ir/ArtifactRoot.ll",
-        "Project/build/bin/ArtifactRoot.exe",
+        "Project/Build/Intermediate/Obj/Source/ArtifactRoot.obj",
+        "Project/Build/Intermediate/IR/Source/ArtifactRoot.ll",
+        "Project/Build/Binary/ArtifactRoot.exe",
         "",
         rootModuleSymbolName(root_module)
     )
     let shared_paths: OutputArtifactPathsReference = artifactPathsReference(
-        "Project/out/obj/ArtifactLibrary.obj",
-        "Project/out/ir/ArtifactLibrary.bc",
-        "Project/out/bin/ArtifactLibrary.dll",
-        "Project/out/lib/ArtifactLibrary.lib",
+        "Project/Out/Intermediate/Obj/Source/ArtifactLibrary.obj",
+        "Project/Out/Intermediate/IR/Source/ArtifactLibrary.bc",
+        "Project/Out/Binary/ArtifactLibrary.dll",
+        "Project/Out/Library/ArtifactLibrary.lib",
         "mod0002"
     )
     let static_paths: OutputArtifactPathsReference = artifactPathsReference(
-        "Project/out/obj/ArtifactArchive.o",
+        "Project/Out/Intermediate/Obj/Source/ArtifactArchive.o",
         "",
-        "Project/out/lib/libArtifactArchive.a",
+        "Project/Out/Library/libArtifactArchive.a",
         "",
         "mod0002"
     )
@@ -410,19 +435,25 @@ public procedure runProjectsOutputArtifactsReference() -> bool {
         runtime.is_required_for_run &&
         outputPathsMatch(
             default_paths,
-            "Project/build",
-            "Project/build/obj",
-            "Project/build/ir",
-            "Project/build/bin",
-            "Project/build/lib"
+            "Project/Build",
+            "Project/Build/Intermediate",
+            "Project/Build/Intermediate/Obj",
+            "Project/Build/Intermediate/IR",
+            "Project/Build/Binary",
+            "Project/Build/Library",
+            "Project/Build/Logs",
+            "Project/Build/Intermediate/Incremental"
         ) &&
         outputPathsMatch(
             configured_paths,
-            "Project/out",
-            "Project/out/obj",
-            "Project/out/ir",
-            "Project/out/bin",
-            "Project/out/lib"
+            "Project/Out",
+            "Project/Out/Intermediate",
+            "Project/Out/Intermediate/Obj",
+            "Project/Out/Intermediate/IR",
+            "Project/Out/Binary",
+            "Project/Out/Library",
+            "Project/Out/Logs",
+            "Project/Out/Intermediate/Incremental"
         ) &&
         requiredOutputCount(executable_project) == 7usize &&
         requiredOutputCount(shared_project) == 6usize &&
@@ -431,25 +462,25 @@ public procedure runProjectsOutputArtifactsReference() -> bool {
         moduleEmissionPrecedes(root_module, child_module) &&
         artifactPathsMatch(
             executable_paths,
-            "Project/build/obj/ArtifactRoot.obj",
-            "Project/build/ir/ArtifactRoot.ll",
-            "Project/build/bin/ArtifactRoot.exe",
+            "Project/Build/Intermediate/Obj/Source/ArtifactRoot.obj",
+            "Project/Build/Intermediate/IR/Source/ArtifactRoot.ll",
+            "Project/Build/Binary/ArtifactRoot.exe",
             "",
             "main"
         ) &&
         artifactPathsMatch(
             shared_paths,
-            "Project/out/obj/ArtifactLibrary.obj",
-            "Project/out/ir/ArtifactLibrary.bc",
-            "Project/out/bin/ArtifactLibrary.dll",
-            "Project/out/lib/ArtifactLibrary.lib",
+            "Project/Out/Intermediate/Obj/Source/ArtifactLibrary.obj",
+            "Project/Out/Intermediate/IR/Source/ArtifactLibrary.bc",
+            "Project/Out/Binary/ArtifactLibrary.dll",
+            "Project/Out/Library/ArtifactLibrary.lib",
             "mod0002"
         ) &&
         artifactPathsMatch(
             static_paths,
-            "Project/out/obj/ArtifactArchive.o",
+            "Project/Out/Intermediate/Obj/Source/ArtifactArchive.o",
             "",
-            "Project/out/lib/libArtifactArchive.a",
+            "Project/Out/Library/libArtifactArchive.a",
             "",
             "mod0002"
         ) &&

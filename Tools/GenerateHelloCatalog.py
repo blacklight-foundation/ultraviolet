@@ -1636,6 +1636,7 @@ def write_symbols(entries: list[CatalogEntry]) -> None:
         }
     )
     context_symbols = {
+        "runAuthorityIOReference",
         "runAuthorityTimeReference",
         "runAuthorityBuiltinTypeNamesReference",
         "runAsyncSuspensionFormsReference",
