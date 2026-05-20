@@ -557,7 +557,10 @@ using namespace emit_detail;
       if (std::optional<RuntimeFuncInfo> alloc_info = GetRuntimeFuncInfo(alloc_sym))
       {
         llvm::Function *alloc_fn = GetModule().getFunction(alloc_sym);
-        const bool use_c_abi_aggregate_sret = true;
+        const bool runtime_c_aggregate_boundary =
+            RuntimeUsesCAggregateABI(alloc_sym);
+        const bool runtime_foreign_boundary = RuntimeUsesForeignABI(alloc_sym);
+        const bool use_c_abi_aggregate_sret = runtime_c_aggregate_boundary;
         if (!alloc_fn)
         {
           ABICallResult alloc_abi = ComputeCallABI(
@@ -565,7 +568,8 @@ using namespace emit_detail;
               alloc_info->params,
               alloc_info->ret,
               use_c_abi_aggregate_sret,
-              /*foreign_boundary_mode_independent=*/true);
+              /*foreign_boundary_mode_independent=*/runtime_foreign_boundary,
+              RuntimeUsesExplicitOutResultABI(alloc_sym));
           if (alloc_abi.func_type)
           {
             alloc_fn = llvm::Function::Create(
@@ -591,7 +595,14 @@ using namespace emit_detail;
               alloc_info->params,
               alloc_info->ret,
               alloc_args,
-              use_c_abi_aggregate_sret);
+              use_c_abi_aggregate_sret,
+              /*ffi_import_boundary=*/false,
+              /*ffi_import_catch=*/false,
+              std::nullopt,
+              nullptr,
+              nullptr,
+              nullptr,
+              runtime_foreign_boundary);
         }
       }
 

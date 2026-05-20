@@ -118,6 +118,9 @@ struct RuntimeFuncInfo {
   /// Whether the function may unwind.
   bool may_unwind = false;
 
+  /// Whether the C runtime entry writes its UV result through a leading out pointer.
+  bool returns_via_out_param = false;
+
   /// ABI string (e.g., "C", "C-unwind").
   std::string abi = "C";
 };
@@ -128,6 +131,15 @@ struct RuntimeFuncInfo {
 
 /// Check if a symbol is a known runtime function.
 bool IsRuntimeFunction(const std::string& symbol);
+
+/// Check if a runtime symbol must use C aggregate return lowering.
+bool RuntimeUsesCAggregateABI(const std::string& symbol);
+
+/// Check if a runtime symbol returns through an explicit leading out parameter.
+bool RuntimeUsesExplicitOutResultABI(const std::string& symbol);
+
+/// Check if a runtime symbol is an implementation helper with a C ABI boundary.
+bool RuntimeUsesForeignABI(const std::string& symbol);
 
 /// Get information about a runtime function.
 /// Returns nullopt if the symbol is not a known runtime function.

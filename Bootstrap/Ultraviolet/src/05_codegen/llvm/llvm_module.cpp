@@ -53,6 +53,7 @@
 #include "llvm/IR/Verifier.h"
 #include "llvm/TargetParser/Triple.h"
 
+#include <mutex>
 #include <string>
 
 namespace ultraviolet::codegen {
@@ -179,6 +180,8 @@ std::string_view GetDropGluePrefix() {
   };
 
   static Cache cache;
+  static std::mutex cache_mu;
+  std::lock_guard<std::mutex> lock(cache_mu);
   const auto active_language = project::ActiveLanguageProfile().language;
   if (!cache.initialized || cache.language != active_language) {
     cache.language = active_language;
@@ -331,12 +334,15 @@ bool RuntimeDeclsCover(const llvm::Module& module, const IRDecls& decls) {
         continue;
       }
 
+      const bool runtime_c_aggregate_boundary = RuntimeUsesCAggregateABI(symbol);
+      const bool runtime_foreign_boundary = RuntimeUsesForeignABI(symbol);
       ABICallResult abi = ComputeCallABI(
           *this,
           info->params,
           info->ret,
-          /*use_c_abi_aggregate_sret=*/true,
-          /*foreign_boundary_mode_independent=*/true);
+          /*use_c_abi_aggregate_sret=*/runtime_c_aggregate_boundary,
+          /*foreign_boundary_mode_independent=*/runtime_foreign_boundary,
+          RuntimeUsesExplicitOutResultABI(symbol));
       if (!abi.valid || !abi.func_type) {
         if (current_ctx_) {
           current_ctx_->ReportCodegenFailure();

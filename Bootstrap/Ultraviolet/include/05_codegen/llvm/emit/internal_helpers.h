@@ -225,6 +225,9 @@ inline llvm::GlobalValue::LinkageTypes ProcLLVMLinkageFor(const LowerCtx* ctx,
   if (IsRuntimeLifecycleSymbol(symbol) || IsHostedInternalBodySymbol(ctx, symbol)) {
     return llvm::GlobalValue::ExternalLinkage;
   }
+  if (IsDropGlueSymbol(symbol)) {
+    return LLVMLinkageFor(LinkageOfDropGlue());
+  }
   if (ctx != nullptr) {
     if (const auto proc_linkage = ctx->LookupProcLinkage(std::string(symbol));
         proc_linkage.has_value()) {

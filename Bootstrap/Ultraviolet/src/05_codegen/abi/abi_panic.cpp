@@ -19,6 +19,7 @@
 #include "05_codegen/intrinsics/intrinsics_interface.h"
 
 #include <string>
+#include <mutex>
 #include <unordered_set>
 
 namespace ultraviolet::codegen {
@@ -34,6 +35,8 @@ const std::unordered_set<std::string>& RuntimeSymbols() {
   };
 
   static Cache cache;
+  static std::mutex cache_mu;
+  std::lock_guard<std::mutex> lock(cache_mu);
   const auto active_language = project::ActiveLanguageProfile().language;
   if (!cache.initialized || cache.language != active_language) {
     cache.language = active_language;

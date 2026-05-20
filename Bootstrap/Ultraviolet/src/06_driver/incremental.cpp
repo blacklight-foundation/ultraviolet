@@ -1,8 +1,10 @@
 #include "06_driver/incremental.h"
 
 #include <algorithm>
+#include <chrono>
 #include <fstream>
 #include <sstream>
+#include <thread>
 #include <unordered_set>
 
 #include "00_core/path.h"
@@ -157,7 +159,37 @@ bool SaveIncrementalManifest(
         << JoinByChar(mod.info.dependencies, ',') << "\n";
   }
 
-  return write_file(IncrementalManifestPath(project), out.str());
+  const std::filesystem::path manifest_path = IncrementalManifestPath(project);
+  std::filesystem::path temp_path = manifest_path;
+  temp_path += ".tmp." +
+               std::to_string(std::hash<std::thread::id>{}(
+                   std::this_thread::get_id())) +
+               "." +
+               std::to_string(std::chrono::steady_clock::now()
+                                  .time_since_epoch()
+                                  .count());
+
+  if (!write_file(temp_path, out.str())) {
+    return false;
+  }
+
+  std::error_code ec;
+  std::filesystem::rename(temp_path, manifest_path, ec);
+  if (!ec) {
+    return true;
+  }
+
+  ec.clear();
+  std::filesystem::remove(manifest_path, ec);
+  ec.clear();
+  std::filesystem::rename(temp_path, manifest_path, ec);
+  if (!ec) {
+    return true;
+  }
+
+  std::error_code remove_ec;
+  std::filesystem::remove(temp_path, remove_ec);
+  return false;
 }
 
 namespace {
