@@ -9,7 +9,7 @@ public procedure validatedNameResolutionAndVisibilitySharedResolutionHelpersAndR
     var count: usize = 0usize
     if acceptedObligationEntryMatches(
         "def.SharedResolutionProjectInput",
-        21319usize,
+        21407usize,
         "HelloUltraviolet::Reference::Names",
         "runNamesQualifiedResolutionReference",
         "Source/Reference/Names/QualifiedResolution.uv"
@@ -18,7 +18,7 @@ public procedure validatedNameResolutionAndVisibilitySharedResolutionHelpersAndR
     }
     if acceptedObligationEntryMatches(
         "def.SharedResolutionCurrentModule",
-        21333usize,
+        21421usize,
         "HelloUltraviolet::Reference::Names",
         "runNamesQualifiedResolutionReference",
         "Source/Reference/Names/QualifiedResolution.uv"
@@ -27,7 +27,7 @@ public procedure validatedNameResolutionAndVisibilitySharedResolutionHelpersAndR
     }
     if acceptedObligationEntryMatches(
         "def.SharedResolutionAstModule",
-        21347usize,
+        21435usize,
         "HelloUltraviolet::Reference::Names",
         "runNamesQualifiedResolutionReference",
         "Source/Reference/Names/QualifiedResolution.uv"
@@ -36,7 +36,7 @@ public procedure validatedNameResolutionAndVisibilitySharedResolutionHelpersAndR
     }
     if acceptedObligationEntryMatches(
         "def.SharedResolutionInputs",
-        21361usize,
+        21449usize,
         "HelloUltraviolet::Reference::Names",
         "runNamesQualifiedResolutionReference",
         "Source/Reference/Names/QualifiedResolution.uv"
@@ -45,60 +45,6 @@ public procedure validatedNameResolutionAndVisibilitySharedResolutionHelpersAndR
     }
     if acceptedObligationEntryMatches(
         "def.SharedResolutionOutputs",
-        21375usize,
-        "HelloUltraviolet::Reference::Names",
-        "runNamesQualifiedResolutionReference",
-        "Source/Reference/Names/QualifiedResolution.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
-        "def.PathOfModuleReference",
-        21389usize,
-        "HelloUltraviolet::Reference::Names",
-        "runNamesQualifiedResolutionReference",
-        "Source/Reference/Names/QualifiedResolution.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
-        "def.TypeParamBindings",
-        21403usize,
-        "HelloUltraviolet::Reference::Names",
-        "runNamesQualifiedResolutionReference",
-        "Source/Reference/Names/QualifiedResolution.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
-        "ResolveGenericParamsOpt-None",
-        21418usize,
-        "HelloUltraviolet::Reference::Names",
-        "runNamesQualifiedResolutionReference",
-        "Source/Reference/Names/QualifiedResolution.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
-        "ResolvePredicateClauseOpt-None",
-        21433usize,
-        "HelloUltraviolet::Reference::Names",
-        "runNamesQualifiedResolutionReference",
-        "Source/Reference/Names/QualifiedResolution.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
-        "ResolveContractClauseOpt-None",
-        21448usize,
-        "HelloUltraviolet::Reference::Names",
-        "runNamesQualifiedResolutionReference",
-        "Source/Reference/Names/QualifiedResolution.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
-        "ResolveInvariantOpt-None",
         21463usize,
         "HelloUltraviolet::Reference::Names",
         "runNamesQualifiedResolutionReference",
@@ -107,8 +53,8 @@ public procedure validatedNameResolutionAndVisibilitySharedResolutionHelpersAndR
         count = count + 1usize
     }
     if acceptedObligationEntryMatches(
-        "ResolveTypeOpt-None",
-        21478usize,
+        "def.PathOfModuleReference",
+        21477usize,
         "HelloUltraviolet::Reference::Names",
         "runNamesQualifiedResolutionReference",
         "Source/Reference/Names/QualifiedResolution.uv"
@@ -116,8 +62,8 @@ public procedure validatedNameResolutionAndVisibilitySharedResolutionHelpersAndR
         count = count + 1usize
     }
     if acceptedObligationEntryMatches(
-        "ResolveExprOpt-None-Judgement",
-        21493usize,
+        "def.TypeParamBindings",
+        21491usize,
         "HelloUltraviolet::Reference::Names",
         "runNamesQualifiedResolutionReference",
         "Source/Reference/Names/QualifiedResolution.uv"
@@ -125,8 +71,8 @@ public procedure validatedNameResolutionAndVisibilitySharedResolutionHelpersAndR
         count = count + 1usize
     }
     if acceptedObligationEntryMatches(
-        "def.ResolveExprOptNone",
-        21508usize,
+        "ResolveGenericParamsOpt-None",
+        21506usize,
         "HelloUltraviolet::Reference::Names",
         "runNamesQualifiedResolutionReference",
         "Source/Reference/Names/QualifiedResolution.uv"
@@ -134,8 +80,8 @@ public procedure validatedNameResolutionAndVisibilitySharedResolutionHelpersAndR
         count = count + 1usize
     }
     if acceptedObligationEntryMatches(
-        "def.ResolveExprOptSome",
-        21522usize,
+        "ResolvePredicateClauseOpt-None",
+        21521usize,
         "HelloUltraviolet::Reference::Names",
         "runNamesQualifiedResolutionReference",
         "Source/Reference/Names/QualifiedResolution.uv"
@@ -143,7 +89,7 @@ public procedure validatedNameResolutionAndVisibilitySharedResolutionHelpersAndR
         count = count + 1usize
     }
     if acceptedObligationEntryMatches(
-        "ResolveGenericParamsOpt-Yes",
+        "ResolveContractClauseOpt-None",
         21536usize,
         "HelloUltraviolet::Reference::Names",
         "runNamesQualifiedResolutionReference",
@@ -152,8 +98,62 @@ public procedure validatedNameResolutionAndVisibilitySharedResolutionHelpersAndR
         count = count + 1usize
     }
     if acceptedObligationEntryMatches(
+        "ResolveInvariantOpt-None",
+        21551usize,
+        "HelloUltraviolet::Reference::Names",
+        "runNamesQualifiedResolutionReference",
+        "Source/Reference/Names/QualifiedResolution.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "ResolveTypeOpt-None",
+        21566usize,
+        "HelloUltraviolet::Reference::Names",
+        "runNamesQualifiedResolutionReference",
+        "Source/Reference/Names/QualifiedResolution.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "ResolveExprOpt-None-Judgement",
+        21581usize,
+        "HelloUltraviolet::Reference::Names",
+        "runNamesQualifiedResolutionReference",
+        "Source/Reference/Names/QualifiedResolution.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "def.ResolveExprOptNone",
+        21596usize,
+        "HelloUltraviolet::Reference::Names",
+        "runNamesQualifiedResolutionReference",
+        "Source/Reference/Names/QualifiedResolution.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "def.ResolveExprOptSome",
+        21610usize,
+        "HelloUltraviolet::Reference::Names",
+        "runNamesQualifiedResolutionReference",
+        "Source/Reference/Names/QualifiedResolution.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "ResolveGenericParamsOpt-Yes",
+        21624usize,
+        "HelloUltraviolet::Reference::Names",
+        "runNamesQualifiedResolutionReference",
+        "Source/Reference/Names/QualifiedResolution.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
         "ResolveTypeParam",
-        21554usize,
+        21642usize,
         "HelloUltraviolet::Reference::Names",
         "runNamesQualifiedResolutionReference",
         "Source/Reference/Names/QualifiedResolution.uv"
@@ -162,7 +162,7 @@ public procedure validatedNameResolutionAndVisibilitySharedResolutionHelpersAndR
     }
     if acceptedObligationEntryMatches(
         "ResolveTypeParamList-Empty",
-        21572usize,
+        21660usize,
         "HelloUltraviolet::Reference::Names",
         "runNamesQualifiedResolutionReference",
         "Source/Reference/Names/QualifiedResolution.uv"
@@ -171,7 +171,7 @@ public procedure validatedNameResolutionAndVisibilitySharedResolutionHelpersAndR
     }
     if acceptedObligationEntryMatches(
         "ResolveTypeParamList-Cons",
-        21587usize,
+        21675usize,
         "HelloUltraviolet::Reference::Names",
         "runNamesQualifiedResolutionReference",
         "Source/Reference/Names/QualifiedResolution.uv"
@@ -180,7 +180,7 @@ public procedure validatedNameResolutionAndVisibilitySharedResolutionHelpersAndR
     }
     if acceptedObligationEntryMatches(
         "ResolvePredicateClauseOpt-Yes",
-        21605usize,
+        21693usize,
         "HelloUltraviolet::Reference::Names",
         "runNamesQualifiedResolutionReference",
         "Source/Reference/Names/QualifiedResolution.uv"
@@ -189,7 +189,7 @@ public procedure validatedNameResolutionAndVisibilitySharedResolutionHelpersAndR
     }
     if acceptedObligationEntryMatches(
         "ResolvePredicateReqList-Empty",
-        21623usize,
+        21711usize,
         "HelloUltraviolet::Reference::Names",
         "runNamesQualifiedResolutionReference",
         "Source/Reference/Names/QualifiedResolution.uv"
@@ -198,7 +198,7 @@ public procedure validatedNameResolutionAndVisibilitySharedResolutionHelpersAndR
     }
     if acceptedObligationEntryMatches(
         "ResolvePredicateReq-Predicate",
-        21638usize,
+        21726usize,
         "HelloUltraviolet::Reference::Names",
         "runNamesQualifiedResolutionReference",
         "Source/Reference/Names/QualifiedResolution.uv"
@@ -207,7 +207,7 @@ public procedure validatedNameResolutionAndVisibilitySharedResolutionHelpersAndR
     }
     if acceptedObligationEntryMatches(
         "ResolvePredicateReqList-Cons",
-        21656usize,
+        21744usize,
         "HelloUltraviolet::Reference::Names",
         "runNamesQualifiedResolutionReference",
         "Source/Reference/Names/QualifiedResolution.uv"
@@ -216,7 +216,7 @@ public procedure validatedNameResolutionAndVisibilitySharedResolutionHelpersAndR
     }
     if acceptedObligationEntryMatches(
         "ResolveContractClauseOpt-Yes",
-        21674usize,
+        21762usize,
         "HelloUltraviolet::Reference::Names",
         "runNamesQualifiedResolutionReference",
         "Source/Reference/Names/QualifiedResolution.uv"
@@ -225,7 +225,7 @@ public procedure validatedNameResolutionAndVisibilitySharedResolutionHelpersAndR
     }
     if acceptedObligationEntryMatches(
         "ResolveInvariantOpt-Yes",
-        21692usize,
+        21780usize,
         "HelloUltraviolet::Reference::Names",
         "runNamesQualifiedResolutionReference",
         "Source/Reference/Names/QualifiedResolution.uv"
@@ -234,7 +234,7 @@ public procedure validatedNameResolutionAndVisibilitySharedResolutionHelpersAndR
     }
     if acceptedObligationEntryMatches(
         "ResolveTypePath-Ident",
-        21710usize,
+        21798usize,
         "HelloUltraviolet::Reference::Names",
         "runNamesQualifiedResolutionReference",
         "Source/Reference/Names/QualifiedResolution.uv"
@@ -243,7 +243,7 @@ public procedure validatedNameResolutionAndVisibilitySharedResolutionHelpersAndR
     }
     if acceptedObligationEntryMatches(
         "ResolveTypePath-Ident-Local",
-        21728usize,
+        21816usize,
         "HelloUltraviolet::Reference::Names",
         "runNamesQualifiedResolutionReference",
         "Source/Reference/Names/QualifiedResolution.uv"
@@ -252,7 +252,7 @@ public procedure validatedNameResolutionAndVisibilitySharedResolutionHelpersAndR
     }
     if acceptedObligationEntryMatches(
         "ResolveTypePath-Qual",
-        21746usize,
+        21834usize,
         "HelloUltraviolet::Reference::Names",
         "runNamesQualifiedResolutionReference",
         "Source/Reference/Names/QualifiedResolution.uv"
@@ -261,7 +261,7 @@ public procedure validatedNameResolutionAndVisibilitySharedResolutionHelpersAndR
     }
     if acceptedObligationEntryMatches(
         "def.LocalTypePath",
-        21764usize,
+        21852usize,
         "HelloUltraviolet::Reference::Names",
         "runNamesQualifiedResolutionReference",
         "Source/Reference/Names/QualifiedResolution.uv"
@@ -270,7 +270,7 @@ public procedure validatedNameResolutionAndVisibilitySharedResolutionHelpersAndR
     }
     if acceptedObligationEntryMatches(
         "ResolveClassPath-Ident",
-        21778usize,
+        21866usize,
         "HelloUltraviolet::Reference::Names",
         "runNamesQualifiedResolutionReference",
         "Source/Reference/Names/QualifiedResolution.uv"
@@ -279,7 +279,7 @@ public procedure validatedNameResolutionAndVisibilitySharedResolutionHelpersAndR
     }
     if acceptedObligationEntryMatches(
         "ResolveClassPath-Qual",
-        21796usize,
+        21884usize,
         "HelloUltraviolet::Reference::Names",
         "runNamesQualifiedResolutionReference",
         "Source/Reference/Names/QualifiedResolution.uv"
@@ -288,51 +288,6 @@ public procedure validatedNameResolutionAndVisibilitySharedResolutionHelpersAndR
     }
     if acceptedObligationEntryMatches(
         "ResolveType-Path",
-        21814usize,
-        "HelloUltraviolet::Reference::Names",
-        "runNamesQualifiedResolutionReference",
-        "Source/Reference/Names/QualifiedResolution.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
-        "ResolveType-Dynamic",
-        21832usize,
-        "HelloUltraviolet::Reference::Names",
-        "runNamesQualifiedResolutionReference",
-        "Source/Reference/Names/QualifiedResolution.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
-        "ResolveType-Apply",
-        21850usize,
-        "HelloUltraviolet::Reference::Names",
-        "runNamesQualifiedResolutionReference",
-        "Source/Reference/Names/QualifiedResolution.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
-        "ResolveType-ModalState",
-        21868usize,
-        "HelloUltraviolet::Reference::Names",
-        "runNamesQualifiedResolutionReference",
-        "Source/Reference/Names/QualifiedResolution.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
-        "def.ResolveModalRef",
-        21886usize,
-        "HelloUltraviolet::Reference::Names",
-        "runNamesQualifiedResolutionReference",
-        "Source/Reference/Names/QualifiedResolution.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
-        "ResolveType-Hom",
         21902usize,
         "HelloUltraviolet::Reference::Names",
         "runNamesQualifiedResolutionReference",
@@ -341,7 +296,7 @@ public procedure validatedNameResolutionAndVisibilitySharedResolutionHelpersAndR
         count = count + 1usize
     }
     if acceptedObligationEntryMatches(
-        "ResolveTypeList-Empty",
+        "ResolveType-Dynamic",
         21920usize,
         "HelloUltraviolet::Reference::Names",
         "runNamesQualifiedResolutionReference",
@@ -350,8 +305,53 @@ public procedure validatedNameResolutionAndVisibilitySharedResolutionHelpersAndR
         count = count + 1usize
     }
     if acceptedObligationEntryMatches(
+        "ResolveType-Apply",
+        21938usize,
+        "HelloUltraviolet::Reference::Names",
+        "runNamesQualifiedResolutionReference",
+        "Source/Reference/Names/QualifiedResolution.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "ResolveType-ModalState",
+        21956usize,
+        "HelloUltraviolet::Reference::Names",
+        "runNamesQualifiedResolutionReference",
+        "Source/Reference/Names/QualifiedResolution.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "def.ResolveModalRef",
+        21974usize,
+        "HelloUltraviolet::Reference::Names",
+        "runNamesQualifiedResolutionReference",
+        "Source/Reference/Names/QualifiedResolution.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "ResolveType-Hom",
+        21990usize,
+        "HelloUltraviolet::Reference::Names",
+        "runNamesQualifiedResolutionReference",
+        "Source/Reference/Names/QualifiedResolution.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "ResolveTypeList-Empty",
+        22008usize,
+        "HelloUltraviolet::Reference::Names",
+        "runNamesQualifiedResolutionReference",
+        "Source/Reference/Names/QualifiedResolution.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
         "ResolveTypeList-Cons",
-        21935usize,
+        22023usize,
         "HelloUltraviolet::Reference::Names",
         "runNamesQualifiedResolutionReference",
         "Source/Reference/Names/QualifiedResolution.uv"
@@ -360,7 +360,7 @@ public procedure validatedNameResolutionAndVisibilitySharedResolutionHelpersAndR
     }
     if acceptedObligationEntryMatches(
         "ResolveParam",
-        21953usize,
+        22041usize,
         "HelloUltraviolet::Reference::Names",
         "runNamesQualifiedResolutionReference",
         "Source/Reference/Names/QualifiedResolution.uv"
@@ -369,7 +369,7 @@ public procedure validatedNameResolutionAndVisibilitySharedResolutionHelpersAndR
     }
     if acceptedObligationEntryMatches(
         "ResolveParams-Empty",
-        21971usize,
+        22059usize,
         "HelloUltraviolet::Reference::Names",
         "runNamesQualifiedResolutionReference",
         "Source/Reference/Names/QualifiedResolution.uv"
@@ -378,7 +378,7 @@ public procedure validatedNameResolutionAndVisibilitySharedResolutionHelpersAndR
     }
     if acceptedObligationEntryMatches(
         "ResolveParams-Cons",
-        21986usize,
+        22074usize,
         "HelloUltraviolet::Reference::Names",
         "runNamesQualifiedResolutionReference",
         "Source/Reference/Names/QualifiedResolution.uv"
@@ -387,7 +387,7 @@ public procedure validatedNameResolutionAndVisibilitySharedResolutionHelpersAndR
     }
     if acceptedObligationEntryMatches(
         "def.ResolvePatternSignature",
-        22005usize,
+        22093usize,
         "HelloUltraviolet::Reference::Names",
         "runNamesQualifiedResolutionReference",
         "Source/Reference/Names/QualifiedResolution.uv"
@@ -396,7 +396,7 @@ public procedure validatedNameResolutionAndVisibilitySharedResolutionHelpersAndR
     }
     if acceptedObligationEntryMatches(
         "ResolvePat-Wildcard",
-        22019usize,
+        22107usize,
         "HelloUltraviolet::Reference::Names",
         "runNamesQualifiedResolutionReference",
         "Source/Reference/Names/QualifiedResolution.uv"
@@ -405,7 +405,7 @@ public procedure validatedNameResolutionAndVisibilitySharedResolutionHelpersAndR
     }
     if acceptedObligationEntryMatches(
         "ResolvePat-Identifier",
-        22034usize,
+        22122usize,
         "HelloUltraviolet::Reference::Names",
         "runNamesQualifiedResolutionReference",
         "Source/Reference/Names/QualifiedResolution.uv"
@@ -414,7 +414,7 @@ public procedure validatedNameResolutionAndVisibilitySharedResolutionHelpersAndR
     }
     if acceptedObligationEntryMatches(
         "ResolvePat-Literal",
-        22049usize,
+        22137usize,
         "HelloUltraviolet::Reference::Names",
         "runNamesQualifiedResolutionReference",
         "Source/Reference/Names/QualifiedResolution.uv"
@@ -423,7 +423,7 @@ public procedure validatedNameResolutionAndVisibilitySharedResolutionHelpersAndR
     }
     if acceptedObligationEntryMatches(
         "ResolvePat-Tuple",
-        22064usize,
+        22152usize,
         "HelloUltraviolet::Reference::Names",
         "runNamesQualifiedResolutionReference",
         "Source/Reference/Names/QualifiedResolution.uv"
@@ -432,7 +432,7 @@ public procedure validatedNameResolutionAndVisibilitySharedResolutionHelpersAndR
     }
     if acceptedObligationEntryMatches(
         "ResolvePat-Record",
-        22082usize,
+        22170usize,
         "HelloUltraviolet::Reference::Names",
         "runNamesQualifiedResolutionReference",
         "Source/Reference/Names/QualifiedResolution.uv"
@@ -441,7 +441,7 @@ public procedure validatedNameResolutionAndVisibilitySharedResolutionHelpersAndR
     }
     if acceptedObligationEntryMatches(
         "ResolvePat-Enum",
-        22100usize,
+        22188usize,
         "HelloUltraviolet::Reference::Names",
         "runNamesQualifiedResolutionReference",
         "Source/Reference/Names/QualifiedResolution.uv"
@@ -450,7 +450,7 @@ public procedure validatedNameResolutionAndVisibilitySharedResolutionHelpersAndR
     }
     if acceptedObligationEntryMatches(
         "ResolvePat-Modal",
-        22118usize,
+        22206usize,
         "HelloUltraviolet::Reference::Names",
         "runNamesQualifiedResolutionReference",
         "Source/Reference/Names/QualifiedResolution.uv"
@@ -459,7 +459,7 @@ public procedure validatedNameResolutionAndVisibilitySharedResolutionHelpersAndR
     }
     if acceptedObligationEntryMatches(
         "ResolvePat-Range",
-        22136usize,
+        22224usize,
         "HelloUltraviolet::Reference::Names",
         "runNamesQualifiedResolutionReference",
         "Source/Reference/Names/QualifiedResolution.uv"
@@ -468,7 +468,7 @@ public procedure validatedNameResolutionAndVisibilitySharedResolutionHelpersAndR
     }
     if acceptedObligationEntryMatches(
         "ResolvePatternList-Empty",
-        22154usize,
+        22242usize,
         "HelloUltraviolet::Reference::Names",
         "runNamesQualifiedResolutionReference",
         "Source/Reference/Names/QualifiedResolution.uv"
@@ -477,7 +477,7 @@ public procedure validatedNameResolutionAndVisibilitySharedResolutionHelpersAndR
     }
     if acceptedObligationEntryMatches(
         "ResolveFieldPatternList-Empty",
-        22169usize,
+        22257usize,
         "HelloUltraviolet::Reference::Names",
         "runNamesQualifiedResolutionReference",
         "Source/Reference/Names/QualifiedResolution.uv"
@@ -486,7 +486,7 @@ public procedure validatedNameResolutionAndVisibilitySharedResolutionHelpersAndR
     }
     if acceptedObligationEntryMatches(
         "ResolvePatternList-Cons",
-        22184usize,
+        22272usize,
         "HelloUltraviolet::Reference::Names",
         "runNamesQualifiedResolutionReference",
         "Source/Reference/Names/QualifiedResolution.uv"
@@ -495,7 +495,7 @@ public procedure validatedNameResolutionAndVisibilitySharedResolutionHelpersAndR
     }
     if acceptedObligationEntryMatches(
         "ResolveFieldPattern-Implicit",
-        22202usize,
+        22290usize,
         "HelloUltraviolet::Reference::Names",
         "runNamesQualifiedResolutionReference",
         "Source/Reference/Names/QualifiedResolution.uv"
@@ -504,7 +504,7 @@ public procedure validatedNameResolutionAndVisibilitySharedResolutionHelpersAndR
     }
     if acceptedObligationEntryMatches(
         "ResolveFieldPattern-Explicit",
-        22219usize,
+        22307usize,
         "HelloUltraviolet::Reference::Names",
         "runNamesQualifiedResolutionReference",
         "Source/Reference/Names/QualifiedResolution.uv"
@@ -513,7 +513,7 @@ public procedure validatedNameResolutionAndVisibilitySharedResolutionHelpersAndR
     }
     if acceptedObligationEntryMatches(
         "ResolveFieldPatternList-Cons",
-        22237usize,
+        22325usize,
         "HelloUltraviolet::Reference::Names",
         "runNamesQualifiedResolutionReference",
         "Source/Reference/Names/QualifiedResolution.uv"
@@ -522,7 +522,7 @@ public procedure validatedNameResolutionAndVisibilitySharedResolutionHelpersAndR
     }
     if acceptedObligationEntryMatches(
         "ResolveEnumPayloadPattern-None",
-        22255usize,
+        22343usize,
         "HelloUltraviolet::Reference::Names",
         "runNamesQualifiedResolutionReference",
         "Source/Reference/Names/QualifiedResolution.uv"
@@ -531,51 +531,6 @@ public procedure validatedNameResolutionAndVisibilitySharedResolutionHelpersAndR
     }
     if acceptedObligationEntryMatches(
         "ResolveEnumPayloadPattern-Tuple",
-        22270usize,
-        "HelloUltraviolet::Reference::Names",
-        "runNamesQualifiedResolutionReference",
-        "Source/Reference/Names/QualifiedResolution.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
-        "ResolveEnumPayloadPattern-Record",
-        22288usize,
-        "HelloUltraviolet::Reference::Names",
-        "runNamesQualifiedResolutionReference",
-        "Source/Reference/Names/QualifiedResolution.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
-        "ResolveFieldPatternListOpt-None",
-        22306usize,
-        "HelloUltraviolet::Reference::Names",
-        "runNamesQualifiedResolutionReference",
-        "Source/Reference/Names/QualifiedResolution.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
-        "ResolveFieldPatternListOpt-Some",
-        22321usize,
-        "HelloUltraviolet::Reference::Names",
-        "runNamesQualifiedResolutionReference",
-        "Source/Reference/Names/QualifiedResolution.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
-        "ResolveExpr-Ident",
-        22340usize,
-        "HelloUltraviolet::Reference::Names",
-        "runNamesQualifiedResolutionReference",
-        "Source/Reference/Names/QualifiedResolution.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
-        "ResolveExpr-Ident-Err",
         22358usize,
         "HelloUltraviolet::Reference::Names",
         "runNamesQualifiedResolutionReference",
@@ -584,7 +539,7 @@ public procedure validatedNameResolutionAndVisibilitySharedResolutionHelpersAndR
         count = count + 1usize
     }
     if acceptedObligationEntryMatches(
-        "ResolveExpr-Qualified",
+        "ResolveEnumPayloadPattern-Record",
         22376usize,
         "HelloUltraviolet::Reference::Names",
         "runNamesQualifiedResolutionReference",
@@ -593,7 +548,7 @@ public procedure validatedNameResolutionAndVisibilitySharedResolutionHelpersAndR
         count = count + 1usize
     }
     if acceptedObligationEntryMatches(
-        "def.ResolveArgsReference",
+        "ResolveFieldPatternListOpt-None",
         22394usize,
         "HelloUltraviolet::Reference::Names",
         "runNamesQualifiedResolutionReference",
@@ -602,8 +557,53 @@ public procedure validatedNameResolutionAndVisibilitySharedResolutionHelpersAndR
         count = count + 1usize
     }
     if acceptedObligationEntryMatches(
+        "ResolveFieldPatternListOpt-Some",
+        22409usize,
+        "HelloUltraviolet::Reference::Names",
+        "runNamesQualifiedResolutionReference",
+        "Source/Reference/Names/QualifiedResolution.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "ResolveExpr-Ident",
+        22428usize,
+        "HelloUltraviolet::Reference::Names",
+        "runNamesQualifiedResolutionReference",
+        "Source/Reference/Names/QualifiedResolution.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "ResolveExpr-Ident-Err",
+        22446usize,
+        "HelloUltraviolet::Reference::Names",
+        "runNamesQualifiedResolutionReference",
+        "Source/Reference/Names/QualifiedResolution.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "ResolveExpr-Qualified",
+        22464usize,
+        "HelloUltraviolet::Reference::Names",
+        "runNamesQualifiedResolutionReference",
+        "Source/Reference/Names/QualifiedResolution.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "def.ResolveArgsReference",
+        22482usize,
+        "HelloUltraviolet::Reference::Names",
+        "runNamesQualifiedResolutionReference",
+        "Source/Reference/Names/QualifiedResolution.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
         "def.ResolveFieldInitsReference",
-        22408usize,
+        22496usize,
         "HelloUltraviolet::Reference::Names",
         "runNamesQualifiedResolutionReference",
         "Source/Reference/Names/QualifiedResolution.uv"
@@ -612,7 +612,7 @@ public procedure validatedNameResolutionAndVisibilitySharedResolutionHelpersAndR
     }
     if acceptedObligationEntryMatches(
         "ResolveExprList-Empty",
-        22422usize,
+        22510usize,
         "HelloUltraviolet::Reference::Names",
         "runNamesQualifiedResolutionReference",
         "Source/Reference/Names/QualifiedResolution.uv"
@@ -621,7 +621,7 @@ public procedure validatedNameResolutionAndVisibilitySharedResolutionHelpersAndR
     }
     if acceptedObligationEntryMatches(
         "ResolveExprList-Cons",
-        22437usize,
+        22525usize,
         "HelloUltraviolet::Reference::Names",
         "runNamesQualifiedResolutionReference",
         "Source/Reference/Names/QualifiedResolution.uv"
@@ -630,7 +630,7 @@ public procedure validatedNameResolutionAndVisibilitySharedResolutionHelpersAndR
     }
     if acceptedObligationEntryMatches(
         "def.ResolveExprListJudgementSet",
-        22455usize,
+        22543usize,
         "HelloUltraviolet::Reference::Names",
         "runNamesQualifiedResolutionReference",
         "Source/Reference/Names/QualifiedResolution.uv"
@@ -639,7 +639,7 @@ public procedure validatedNameResolutionAndVisibilitySharedResolutionHelpersAndR
     }
     if acceptedObligationEntryMatches(
         "def.ResolveEnumPayloadJudgementSet",
-        22469usize,
+        22557usize,
         "HelloUltraviolet::Reference::Names",
         "runNamesQualifiedResolutionReference",
         "Source/Reference/Names/QualifiedResolution.uv"
@@ -648,7 +648,7 @@ public procedure validatedNameResolutionAndVisibilitySharedResolutionHelpersAndR
     }
     if acceptedObligationEntryMatches(
         "ResolveEnumPayload-None",
-        22483usize,
+        22571usize,
         "HelloUltraviolet::Reference::Names",
         "runNamesQualifiedResolutionReference",
         "Source/Reference/Names/QualifiedResolution.uv"
@@ -657,7 +657,7 @@ public procedure validatedNameResolutionAndVisibilitySharedResolutionHelpersAndR
     }
     if acceptedObligationEntryMatches(
         "ResolveEnumPayload-Tuple",
-        22500usize,
+        22588usize,
         "HelloUltraviolet::Reference::Names",
         "runNamesQualifiedResolutionReference",
         "Source/Reference/Names/QualifiedResolution.uv"
@@ -666,7 +666,7 @@ public procedure validatedNameResolutionAndVisibilitySharedResolutionHelpersAndR
     }
     if acceptedObligationEntryMatches(
         "ResolveEnumPayload-Record",
-        22518usize,
+        22606usize,
         "HelloUltraviolet::Reference::Names",
         "runNamesQualifiedResolutionReference",
         "Source/Reference/Names/QualifiedResolution.uv"
@@ -675,7 +675,7 @@ public procedure validatedNameResolutionAndVisibilitySharedResolutionHelpersAndR
     }
     if acceptedObligationEntryMatches(
         "def.ResolveKeyPathJudgementSet",
-        22536usize,
+        22624usize,
         "HelloUltraviolet::Reference::Names",
         "runNamesQualifiedResolutionReference",
         "Source/Reference/Names/QualifiedResolution.uv"
@@ -684,7 +684,7 @@ public procedure validatedNameResolutionAndVisibilitySharedResolutionHelpersAndR
     }
     if acceptedObligationEntryMatches(
         "ResolveKeySeg-Field",
-        22550usize,
+        22638usize,
         "HelloUltraviolet::Reference::Names",
         "runNamesQualifiedResolutionReference",
         "Source/Reference/Names/QualifiedResolution.uv"
@@ -693,7 +693,7 @@ public procedure validatedNameResolutionAndVisibilitySharedResolutionHelpersAndR
     }
     if acceptedObligationEntryMatches(
         "ResolveKeySeg-Index",
-        22568usize,
+        22656usize,
         "HelloUltraviolet::Reference::Names",
         "runNamesQualifiedResolutionReference",
         "Source/Reference/Names/QualifiedResolution.uv"
@@ -702,51 +702,6 @@ public procedure validatedNameResolutionAndVisibilitySharedResolutionHelpersAndR
     }
     if acceptedObligationEntryMatches(
         "ResolveKeySegs-Empty",
-        22586usize,
-        "HelloUltraviolet::Reference::Names",
-        "runNamesQualifiedResolutionReference",
-        "Source/Reference/Names/QualifiedResolution.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
-        "ResolveKeySegs-Cons",
-        22603usize,
-        "HelloUltraviolet::Reference::Names",
-        "runNamesQualifiedResolutionReference",
-        "Source/Reference/Names/QualifiedResolution.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
-        "ResolveKeyPathExpr",
-        22621usize,
-        "HelloUltraviolet::Reference::Names",
-        "runNamesQualifiedResolutionReference",
-        "Source/Reference/Names/QualifiedResolution.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
-        "ResolveKeyPathExpr-Err",
-        22639usize,
-        "HelloUltraviolet::Reference::Names",
-        "runNamesQualifiedResolutionReference",
-        "Source/Reference/Names/QualifiedResolution.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
-        "ResolveKeyPathList-Empty",
-        22657usize,
-        "HelloUltraviolet::Reference::Names",
-        "runNamesQualifiedResolutionReference",
-        "Source/Reference/Names/QualifiedResolution.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
-        "ResolveKeyPathList-Cons",
         22674usize,
         "HelloUltraviolet::Reference::Names",
         "runNamesQualifiedResolutionReference",
@@ -755,8 +710,53 @@ public procedure validatedNameResolutionAndVisibilitySharedResolutionHelpersAndR
         count = count + 1usize
     }
     if acceptedObligationEntryMatches(
+        "ResolveKeySegs-Cons",
+        22691usize,
+        "HelloUltraviolet::Reference::Names",
+        "runNamesQualifiedResolutionReference",
+        "Source/Reference/Names/QualifiedResolution.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "ResolveKeyPathExpr",
+        22709usize,
+        "HelloUltraviolet::Reference::Names",
+        "runNamesQualifiedResolutionReference",
+        "Source/Reference/Names/QualifiedResolution.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "ResolveKeyPathExpr-Err",
+        22727usize,
+        "HelloUltraviolet::Reference::Names",
+        "runNamesQualifiedResolutionReference",
+        "Source/Reference/Names/QualifiedResolution.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "ResolveKeyPathList-Empty",
+        22745usize,
+        "HelloUltraviolet::Reference::Names",
+        "runNamesQualifiedResolutionReference",
+        "Source/Reference/Names/QualifiedResolution.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "ResolveKeyPathList-Cons",
+        22762usize,
+        "HelloUltraviolet::Reference::Names",
+        "runNamesQualifiedResolutionReference",
+        "Source/Reference/Names/QualifiedResolution.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
         "def.ResolveParallelOptJudgementSet",
-        22692usize,
+        22780usize,
         "HelloUltraviolet::Reference::Names",
         "runNamesQualifiedResolutionReference",
         "Source/Reference/Names/QualifiedResolution.uv"
@@ -765,7 +765,7 @@ public procedure validatedNameResolutionAndVisibilitySharedResolutionHelpersAndR
     }
     if acceptedObligationEntryMatches(
         "ResolveParallelOpt-Cancel",
-        22706usize,
+        22794usize,
         "HelloUltraviolet::Reference::Names",
         "runNamesQualifiedResolutionReference",
         "Source/Reference/Names/QualifiedResolution.uv"
@@ -774,7 +774,7 @@ public procedure validatedNameResolutionAndVisibilitySharedResolutionHelpersAndR
     }
     if acceptedObligationEntryMatches(
         "ResolveParallelOpt-Name",
-        22724usize,
+        22812usize,
         "HelloUltraviolet::Reference::Names",
         "runNamesQualifiedResolutionReference",
         "Source/Reference/Names/QualifiedResolution.uv"
@@ -783,7 +783,7 @@ public procedure validatedNameResolutionAndVisibilitySharedResolutionHelpersAndR
     }
     if acceptedObligationEntryMatches(
         "ResolveParallelOpts-Empty",
-        22741usize,
+        22829usize,
         "HelloUltraviolet::Reference::Names",
         "runNamesQualifiedResolutionReference",
         "Source/Reference/Names/QualifiedResolution.uv"
@@ -792,7 +792,7 @@ public procedure validatedNameResolutionAndVisibilitySharedResolutionHelpersAndR
     }
     if acceptedObligationEntryMatches(
         "ResolveParallelOpts-Cons",
-        22758usize,
+        22846usize,
         "HelloUltraviolet::Reference::Names",
         "runNamesQualifiedResolutionReference",
         "Source/Reference/Names/QualifiedResolution.uv"
@@ -801,7 +801,7 @@ public procedure validatedNameResolutionAndVisibilitySharedResolutionHelpersAndR
     }
     if acceptedObligationEntryMatches(
         "def.ResolveSpawnOptJudgementSet",
-        22776usize,
+        22864usize,
         "HelloUltraviolet::Reference::Names",
         "runNamesQualifiedResolutionReference",
         "Source/Reference/Names/QualifiedResolution.uv"
@@ -810,51 +810,6 @@ public procedure validatedNameResolutionAndVisibilitySharedResolutionHelpersAndR
     }
     if acceptedObligationEntryMatches(
         "ResolveSpawnOpt-Name",
-        22790usize,
-        "HelloUltraviolet::Reference::Names",
-        "runNamesQualifiedResolutionReference",
-        "Source/Reference/Names/QualifiedResolution.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
-        "ResolveSpawnOpt-Affinity",
-        22807usize,
-        "HelloUltraviolet::Reference::Names",
-        "runNamesQualifiedResolutionReference",
-        "Source/Reference/Names/QualifiedResolution.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
-        "ResolveSpawnOpt-Priority",
-        22825usize,
-        "HelloUltraviolet::Reference::Names",
-        "runNamesQualifiedResolutionReference",
-        "Source/Reference/Names/QualifiedResolution.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
-        "ResolveSpawnOpts-Empty",
-        22843usize,
-        "HelloUltraviolet::Reference::Names",
-        "runNamesQualifiedResolutionReference",
-        "Source/Reference/Names/QualifiedResolution.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
-        "ResolveSpawnOpts-Cons",
-        22860usize,
-        "HelloUltraviolet::Reference::Names",
-        "runNamesQualifiedResolutionReference",
-        "Source/Reference/Names/QualifiedResolution.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
-        "def.ResolveDispatchOptJudgementSet",
         22878usize,
         "HelloUltraviolet::Reference::Names",
         "runNamesQualifiedResolutionReference",
@@ -863,8 +818,53 @@ public procedure validatedNameResolutionAndVisibilitySharedResolutionHelpersAndR
         count = count + 1usize
     }
     if acceptedObligationEntryMatches(
+        "ResolveSpawnOpt-Affinity",
+        22895usize,
+        "HelloUltraviolet::Reference::Names",
+        "runNamesQualifiedResolutionReference",
+        "Source/Reference/Names/QualifiedResolution.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "ResolveSpawnOpt-Priority",
+        22913usize,
+        "HelloUltraviolet::Reference::Names",
+        "runNamesQualifiedResolutionReference",
+        "Source/Reference/Names/QualifiedResolution.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "ResolveSpawnOpts-Empty",
+        22931usize,
+        "HelloUltraviolet::Reference::Names",
+        "runNamesQualifiedResolutionReference",
+        "Source/Reference/Names/QualifiedResolution.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "ResolveSpawnOpts-Cons",
+        22948usize,
+        "HelloUltraviolet::Reference::Names",
+        "runNamesQualifiedResolutionReference",
+        "Source/Reference/Names/QualifiedResolution.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "def.ResolveDispatchOptJudgementSet",
+        22966usize,
+        "HelloUltraviolet::Reference::Names",
+        "runNamesQualifiedResolutionReference",
+        "Source/Reference/Names/QualifiedResolution.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
         "ResolveDispatchOpt-Reduce",
-        22892usize,
+        22980usize,
         "HelloUltraviolet::Reference::Names",
         "runNamesQualifiedResolutionReference",
         "Source/Reference/Names/QualifiedResolution.uv"
@@ -873,7 +873,7 @@ public procedure validatedNameResolutionAndVisibilitySharedResolutionHelpersAndR
     }
     if acceptedObligationEntryMatches(
         "ResolveDispatchOpt-Ordered",
-        22909usize,
+        22997usize,
         "HelloUltraviolet::Reference::Names",
         "runNamesQualifiedResolutionReference",
         "Source/Reference/Names/QualifiedResolution.uv"
@@ -882,7 +882,7 @@ public procedure validatedNameResolutionAndVisibilitySharedResolutionHelpersAndR
     }
     if acceptedObligationEntryMatches(
         "ResolveDispatchOpt-Chunk",
-        22926usize,
+        23014usize,
         "HelloUltraviolet::Reference::Names",
         "runNamesQualifiedResolutionReference",
         "Source/Reference/Names/QualifiedResolution.uv"
@@ -891,7 +891,7 @@ public procedure validatedNameResolutionAndVisibilitySharedResolutionHelpersAndR
     }
     if acceptedObligationEntryMatches(
         "ResolveDispatchOpts-Empty",
-        22944usize,
+        23032usize,
         "HelloUltraviolet::Reference::Names",
         "runNamesQualifiedResolutionReference",
         "Source/Reference/Names/QualifiedResolution.uv"
@@ -900,7 +900,7 @@ public procedure validatedNameResolutionAndVisibilitySharedResolutionHelpersAndR
     }
     if acceptedObligationEntryMatches(
         "ResolveDispatchOpts-Cons",
-        22961usize,
+        23049usize,
         "HelloUltraviolet::Reference::Names",
         "runNamesQualifiedResolutionReference",
         "Source/Reference/Names/QualifiedResolution.uv"
@@ -909,7 +909,7 @@ public procedure validatedNameResolutionAndVisibilitySharedResolutionHelpersAndR
     }
     if acceptedObligationEntryMatches(
         "def.ResolveRaceJudgementSet",
-        22979usize,
+        23067usize,
         "HelloUltraviolet::Reference::Names",
         "runNamesQualifiedResolutionReference",
         "Source/Reference/Names/QualifiedResolution.uv"
@@ -918,7 +918,7 @@ public procedure validatedNameResolutionAndVisibilitySharedResolutionHelpersAndR
     }
     if acceptedObligationEntryMatches(
         "ResolveRaceHandler-Return",
-        22993usize,
+        23081usize,
         "HelloUltraviolet::Reference::Names",
         "runNamesQualifiedResolutionReference",
         "Source/Reference/Names/QualifiedResolution.uv"
@@ -927,7 +927,7 @@ public procedure validatedNameResolutionAndVisibilitySharedResolutionHelpersAndR
     }
     if acceptedObligationEntryMatches(
         "ResolveRaceHandler-Yield",
-        23011usize,
+        23099usize,
         "HelloUltraviolet::Reference::Names",
         "runNamesQualifiedResolutionReference",
         "Source/Reference/Names/QualifiedResolution.uv"
@@ -936,7 +936,7 @@ public procedure validatedNameResolutionAndVisibilitySharedResolutionHelpersAndR
     }
     if acceptedObligationEntryMatches(
         "ResolveRaceArm",
-        23029usize,
+        23117usize,
         "HelloUltraviolet::Reference::Names",
         "runNamesQualifiedResolutionReference",
         "Source/Reference/Names/QualifiedResolution.uv"
@@ -945,7 +945,7 @@ public procedure validatedNameResolutionAndVisibilitySharedResolutionHelpersAndR
     }
     if acceptedObligationEntryMatches(
         "ResolveRaceArms-Empty",
-        23047usize,
+        23135usize,
         "HelloUltraviolet::Reference::Names",
         "runNamesQualifiedResolutionReference",
         "Source/Reference/Names/QualifiedResolution.uv"
@@ -954,7 +954,7 @@ public procedure validatedNameResolutionAndVisibilitySharedResolutionHelpersAndR
     }
     if acceptedObligationEntryMatches(
         "ResolveRaceArms-Cons",
-        23064usize,
+        23152usize,
         "HelloUltraviolet::Reference::Names",
         "runNamesQualifiedResolutionReference",
         "Source/Reference/Names/QualifiedResolution.uv"
@@ -963,7 +963,7 @@ public procedure validatedNameResolutionAndVisibilitySharedResolutionHelpersAndR
     }
     if acceptedObligationEntryMatches(
         "def.ResolveAllExprListJudgementSet",
-        23082usize,
+        23170usize,
         "HelloUltraviolet::Reference::Names",
         "runNamesQualifiedResolutionReference",
         "Source/Reference/Names/QualifiedResolution.uv"
@@ -972,7 +972,7 @@ public procedure validatedNameResolutionAndVisibilitySharedResolutionHelpersAndR
     }
     if acceptedObligationEntryMatches(
         "ResolveAllExprList-Empty",
-        23096usize,
+        23184usize,
         "HelloUltraviolet::Reference::Names",
         "runNamesQualifiedResolutionReference",
         "Source/Reference/Names/QualifiedResolution.uv"
@@ -981,7 +981,7 @@ public procedure validatedNameResolutionAndVisibilitySharedResolutionHelpersAndR
     }
     if acceptedObligationEntryMatches(
         "ResolveAllExprList-Cons",
-        23113usize,
+        23201usize,
         "HelloUltraviolet::Reference::Names",
         "runNamesQualifiedResolutionReference",
         "Source/Reference/Names/QualifiedResolution.uv"
@@ -990,7 +990,7 @@ public procedure validatedNameResolutionAndVisibilitySharedResolutionHelpersAndR
     }
     if acceptedObligationEntryMatches(
         "def.ResolveCalleeJudgementSet",
-        23131usize,
+        23219usize,
         "HelloUltraviolet::Reference::Names",
         "runNamesQualifiedResolutionReference",
         "Source/Reference/Names/QualifiedResolution.uv"
@@ -999,7 +999,7 @@ public procedure validatedNameResolutionAndVisibilitySharedResolutionHelpersAndR
     }
     if acceptedObligationEntryMatches(
         "ResolveCallee-Ident-Value",
-        23145usize,
+        23233usize,
         "HelloUltraviolet::Reference::Names",
         "runNamesQualifiedResolutionReference",
         "Source/Reference/Names/QualifiedResolution.uv"
@@ -1008,7 +1008,7 @@ public procedure validatedNameResolutionAndVisibilitySharedResolutionHelpersAndR
     }
     if acceptedObligationEntryMatches(
         "ResolveCallee-Ident-Record",
-        23163usize,
+        23251usize,
         "HelloUltraviolet::Reference::Names",
         "runNamesQualifiedResolutionReference",
         "Source/Reference/Names/QualifiedResolution.uv"
@@ -1017,7 +1017,7 @@ public procedure validatedNameResolutionAndVisibilitySharedResolutionHelpersAndR
     }
     if acceptedObligationEntryMatches(
         "ResolveCallee-Path-Value",
-        23181usize,
+        23269usize,
         "HelloUltraviolet::Reference::Names",
         "runNamesQualifiedResolutionReference",
         "Source/Reference/Names/QualifiedResolution.uv"
@@ -1026,7 +1026,7 @@ public procedure validatedNameResolutionAndVisibilitySharedResolutionHelpersAndR
     }
     if acceptedObligationEntryMatches(
         "ResolveCallee-Path-Builtin",
-        23199usize,
+        23287usize,
         "HelloUltraviolet::Reference::Names",
         "runNamesQualifiedResolutionReference",
         "Source/Reference/Names/QualifiedResolution.uv"
@@ -1035,7 +1035,7 @@ public procedure validatedNameResolutionAndVisibilitySharedResolutionHelpersAndR
     }
     if acceptedObligationEntryMatches(
         "ResolveCallee-Path-Record",
-        23217usize,
+        23305usize,
         "HelloUltraviolet::Reference::Names",
         "runNamesQualifiedResolutionReference",
         "Source/Reference/Names/QualifiedResolution.uv"
@@ -1044,7 +1044,7 @@ public procedure validatedNameResolutionAndVisibilitySharedResolutionHelpersAndR
     }
     if acceptedObligationEntryMatches(
         "ResolveCallee-Other",
-        23235usize,
+        23323usize,
         "HelloUltraviolet::Reference::Names",
         "runNamesQualifiedResolutionReference",
         "Source/Reference/Names/QualifiedResolution.uv"
@@ -1053,7 +1053,7 @@ public procedure validatedNameResolutionAndVisibilitySharedResolutionHelpersAndR
     }
     if acceptedObligationEntryMatches(
         "ResolveExpr-Call",
-        23253usize,
+        23341usize,
         "HelloUltraviolet::Reference::Names",
         "runNamesQualifiedResolutionReference",
         "Source/Reference/Names/QualifiedResolution.uv"
@@ -1062,7 +1062,7 @@ public procedure validatedNameResolutionAndVisibilitySharedResolutionHelpersAndR
     }
     if acceptedObligationEntryMatches(
         "ResolveExpr-Call-TypeArgs",
-        23271usize,
+        23359usize,
         "HelloUltraviolet::Reference::Names",
         "runNamesQualifiedResolutionReference",
         "Source/Reference/Names/QualifiedResolution.uv"
@@ -1071,7 +1071,7 @@ public procedure validatedNameResolutionAndVisibilitySharedResolutionHelpersAndR
     }
     if acceptedObligationEntryMatches(
         "ResolveExpr-RecordExpr",
-        23290usize,
+        23378usize,
         "HelloUltraviolet::Reference::Names",
         "runNamesQualifiedResolutionReference",
         "Source/Reference/Names/QualifiedResolution.uv"
@@ -1080,7 +1080,7 @@ public procedure validatedNameResolutionAndVisibilitySharedResolutionHelpersAndR
     }
     if acceptedObligationEntryMatches(
         "ResolveExpr-EnumLiteral",
-        23308usize,
+        23396usize,
         "HelloUltraviolet::Reference::Names",
         "runNamesQualifiedResolutionReference",
         "Source/Reference/Names/QualifiedResolution.uv"
@@ -1089,7 +1089,7 @@ public procedure validatedNameResolutionAndVisibilitySharedResolutionHelpersAndR
     }
     if acceptedObligationEntryMatches(
         "def.ResolveIfCaseJudgementSet",
-        23326usize,
+        23414usize,
         "HelloUltraviolet::Reference::Names",
         "runNamesQualifiedResolutionReference",
         "Source/Reference/Names/QualifiedResolution.uv"
@@ -1098,51 +1098,6 @@ public procedure validatedNameResolutionAndVisibilitySharedResolutionHelpersAndR
     }
     if acceptedObligationEntryMatches(
         "ResolveIfCase",
-        23340usize,
-        "HelloUltraviolet::Reference::Names",
-        "runNamesQualifiedResolutionReference",
-        "Source/Reference/Names/QualifiedResolution.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
-        "ResolveIfCases-Empty",
-        23358usize,
-        "HelloUltraviolet::Reference::Names",
-        "runNamesQualifiedResolutionReference",
-        "Source/Reference/Names/QualifiedResolution.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
-        "ResolveIfCases-Cons",
-        23375usize,
-        "HelloUltraviolet::Reference::Names",
-        "runNamesQualifiedResolutionReference",
-        "Source/Reference/Names/QualifiedResolution.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
-        "ResolveElseBlockOpt-None",
-        23393usize,
-        "HelloUltraviolet::Reference::Names",
-        "runNamesQualifiedResolutionReference",
-        "Source/Reference/Names/QualifiedResolution.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
-        "ResolveElseBlockOpt-Some",
-        23410usize,
-        "HelloUltraviolet::Reference::Names",
-        "runNamesQualifiedResolutionReference",
-        "Source/Reference/Names/QualifiedResolution.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
-        "ResolveExpr-IfIs",
         23428usize,
         "HelloUltraviolet::Reference::Names",
         "runNamesQualifiedResolutionReference",
@@ -1151,7 +1106,7 @@ public procedure validatedNameResolutionAndVisibilitySharedResolutionHelpersAndR
         count = count + 1usize
     }
     if acceptedObligationEntryMatches(
-        "ResolveExpr-IfCase",
+        "ResolveIfCases-Empty",
         23446usize,
         "HelloUltraviolet::Reference::Names",
         "runNamesQualifiedResolutionReference",
@@ -1160,8 +1115,53 @@ public procedure validatedNameResolutionAndVisibilitySharedResolutionHelpersAndR
         count = count + 1usize
     }
     if acceptedObligationEntryMatches(
+        "ResolveIfCases-Cons",
+        23463usize,
+        "HelloUltraviolet::Reference::Names",
+        "runNamesQualifiedResolutionReference",
+        "Source/Reference/Names/QualifiedResolution.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "ResolveElseBlockOpt-None",
+        23481usize,
+        "HelloUltraviolet::Reference::Names",
+        "runNamesQualifiedResolutionReference",
+        "Source/Reference/Names/QualifiedResolution.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "ResolveElseBlockOpt-Some",
+        23498usize,
+        "HelloUltraviolet::Reference::Names",
+        "runNamesQualifiedResolutionReference",
+        "Source/Reference/Names/QualifiedResolution.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "ResolveExpr-IfIs",
+        23516usize,
+        "HelloUltraviolet::Reference::Names",
+        "runNamesQualifiedResolutionReference",
+        "Source/Reference/Names/QualifiedResolution.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "ResolveExpr-IfCase",
+        23534usize,
+        "HelloUltraviolet::Reference::Names",
+        "runNamesQualifiedResolutionReference",
+        "Source/Reference/Names/QualifiedResolution.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
         "ResolveExpr-LoopInfinite",
-        23464usize,
+        23552usize,
         "HelloUltraviolet::Reference::Names",
         "runNamesQualifiedResolutionReference",
         "Source/Reference/Names/QualifiedResolution.uv"
@@ -1170,7 +1170,7 @@ public procedure validatedNameResolutionAndVisibilitySharedResolutionHelpersAndR
     }
     if acceptedObligationEntryMatches(
         "ResolveExpr-LoopConditional",
-        23482usize,
+        23570usize,
         "HelloUltraviolet::Reference::Names",
         "runNamesQualifiedResolutionReference",
         "Source/Reference/Names/QualifiedResolution.uv"
@@ -1179,7 +1179,7 @@ public procedure validatedNameResolutionAndVisibilitySharedResolutionHelpersAndR
     }
     if acceptedObligationEntryMatches(
         "ResolveExpr-LoopIter",
-        23500usize,
+        23588usize,
         "HelloUltraviolet::Reference::Names",
         "runNamesQualifiedResolutionReference",
         "Source/Reference/Names/QualifiedResolution.uv"
@@ -1188,7 +1188,7 @@ public procedure validatedNameResolutionAndVisibilitySharedResolutionHelpersAndR
     }
     if acceptedObligationEntryMatches(
         "ResolveExpr-Parallel",
-        23518usize,
+        23606usize,
         "HelloUltraviolet::Reference::Names",
         "runNamesQualifiedResolutionReference",
         "Source/Reference/Names/QualifiedResolution.uv"
@@ -1197,7 +1197,7 @@ public procedure validatedNameResolutionAndVisibilitySharedResolutionHelpersAndR
     }
     if acceptedObligationEntryMatches(
         "ResolveExpr-Spawn",
-        23536usize,
+        23624usize,
         "HelloUltraviolet::Reference::Names",
         "runNamesQualifiedResolutionReference",
         "Source/Reference/Names/QualifiedResolution.uv"
@@ -1206,7 +1206,7 @@ public procedure validatedNameResolutionAndVisibilitySharedResolutionHelpersAndR
     }
     if acceptedObligationEntryMatches(
         "ResolveExpr-Wait",
-        23554usize,
+        23642usize,
         "HelloUltraviolet::Reference::Names",
         "runNamesQualifiedResolutionReference",
         "Source/Reference/Names/QualifiedResolution.uv"
@@ -1215,7 +1215,7 @@ public procedure validatedNameResolutionAndVisibilitySharedResolutionHelpersAndR
     }
     if acceptedObligationEntryMatches(
         "def.ResolveKeyClauseJudgementSet",
-        23572usize,
+        23660usize,
         "HelloUltraviolet::Reference::Names",
         "runNamesQualifiedResolutionReference",
         "Source/Reference/Names/QualifiedResolution.uv"
@@ -1224,7 +1224,7 @@ public procedure validatedNameResolutionAndVisibilitySharedResolutionHelpersAndR
     }
     if acceptedObligationEntryMatches(
         "ResolveKeyClauseOpt-None",
-        23586usize,
+        23674usize,
         "HelloUltraviolet::Reference::Names",
         "runNamesQualifiedResolutionReference",
         "Source/Reference/Names/QualifiedResolution.uv"
@@ -1233,7 +1233,7 @@ public procedure validatedNameResolutionAndVisibilitySharedResolutionHelpersAndR
     }
     if acceptedObligationEntryMatches(
         "ResolveKeyClauseOpt-Yes",
-        23604usize,
+        23692usize,
         "HelloUltraviolet::Reference::Names",
         "runNamesQualifiedResolutionReference",
         "Source/Reference/Names/QualifiedResolution.uv"
@@ -1242,7 +1242,7 @@ public procedure validatedNameResolutionAndVisibilitySharedResolutionHelpersAndR
     }
     if acceptedObligationEntryMatches(
         "ResolveExpr-Dispatch",
-        23622usize,
+        23710usize,
         "HelloUltraviolet::Reference::Names",
         "runNamesQualifiedResolutionReference",
         "Source/Reference/Names/QualifiedResolution.uv"
@@ -1251,7 +1251,7 @@ public procedure validatedNameResolutionAndVisibilitySharedResolutionHelpersAndR
     }
     if acceptedObligationEntryMatches(
         "ResolveExpr-Yield",
-        23640usize,
+        23728usize,
         "HelloUltraviolet::Reference::Names",
         "runNamesQualifiedResolutionReference",
         "Source/Reference/Names/QualifiedResolution.uv"
@@ -1260,7 +1260,7 @@ public procedure validatedNameResolutionAndVisibilitySharedResolutionHelpersAndR
     }
     if acceptedObligationEntryMatches(
         "ResolveExpr-YieldFrom",
-        23658usize,
+        23746usize,
         "HelloUltraviolet::Reference::Names",
         "runNamesQualifiedResolutionReference",
         "Source/Reference/Names/QualifiedResolution.uv"
@@ -1269,7 +1269,7 @@ public procedure validatedNameResolutionAndVisibilitySharedResolutionHelpersAndR
     }
     if acceptedObligationEntryMatches(
         "ResolveExpr-Sync",
-        23676usize,
+        23764usize,
         "HelloUltraviolet::Reference::Names",
         "runNamesQualifiedResolutionReference",
         "Source/Reference/Names/QualifiedResolution.uv"
@@ -1278,7 +1278,7 @@ public procedure validatedNameResolutionAndVisibilitySharedResolutionHelpersAndR
     }
     if acceptedObligationEntryMatches(
         "ResolveExpr-Race",
-        23694usize,
+        23782usize,
         "HelloUltraviolet::Reference::Names",
         "runNamesQualifiedResolutionReference",
         "Source/Reference/Names/QualifiedResolution.uv"
@@ -1287,7 +1287,7 @@ public procedure validatedNameResolutionAndVisibilitySharedResolutionHelpersAndR
     }
     if acceptedObligationEntryMatches(
         "ResolveExpr-All",
-        23712usize,
+        23800usize,
         "HelloUltraviolet::Reference::Names",
         "runNamesQualifiedResolutionReference",
         "Source/Reference/Names/QualifiedResolution.uv"
@@ -1296,7 +1296,7 @@ public procedure validatedNameResolutionAndVisibilitySharedResolutionHelpersAndR
     }
     if acceptedObligationEntryMatches(
         "ResolveExpr-Alloc-Explicit-ByAlias",
-        23730usize,
+        23818usize,
         "HelloUltraviolet::Reference::Names",
         "runNamesQualifiedResolutionReference",
         "Source/Reference/Names/QualifiedResolution.uv"
@@ -1305,7 +1305,7 @@ public procedure validatedNameResolutionAndVisibilitySharedResolutionHelpersAndR
     }
     if acceptedObligationEntryMatches(
         "def.ResolveExprRuleSet",
-        23748usize,
+        23836usize,
         "HelloUltraviolet::Reference::Names",
         "runNamesQualifiedResolutionReference",
         "Source/Reference/Names/QualifiedResolution.uv"
@@ -1314,7 +1314,7 @@ public procedure validatedNameResolutionAndVisibilitySharedResolutionHelpersAndR
     }
     if acceptedObligationEntryMatches(
         "def.NoSpecificResolveExpr",
-        23762usize,
+        23850usize,
         "HelloUltraviolet::Reference::Names",
         "runNamesQualifiedResolutionReference",
         "Source/Reference/Names/QualifiedResolution.uv"
@@ -1323,7 +1323,7 @@ public procedure validatedNameResolutionAndVisibilitySharedResolutionHelpersAndR
     }
     if acceptedObligationEntryMatches(
         "ResolveExpr-Hom",
-        23776usize,
+        23864usize,
         "HelloUltraviolet::Reference::Names",
         "runNamesQualifiedResolutionReference",
         "Source/Reference/Names/QualifiedResolution.uv"
@@ -1332,7 +1332,7 @@ public procedure validatedNameResolutionAndVisibilitySharedResolutionHelpersAndR
     }
     if acceptedObligationEntryMatches(
         "ResolveExpr-Alloc-Implicit",
-        23794usize,
+        23882usize,
         "HelloUltraviolet::Reference::Names",
         "runNamesQualifiedResolutionReference",
         "Source/Reference/Names/QualifiedResolution.uv"
@@ -1341,7 +1341,7 @@ public procedure validatedNameResolutionAndVisibilitySharedResolutionHelpersAndR
     }
     if acceptedObligationEntryMatches(
         "ResolveExpr-Alloc-Explicit",
-        23812usize,
+        23900usize,
         "HelloUltraviolet::Reference::Names",
         "runNamesQualifiedResolutionReference",
         "Source/Reference/Names/QualifiedResolution.uv"
@@ -1350,7 +1350,7 @@ public procedure validatedNameResolutionAndVisibilitySharedResolutionHelpersAndR
     }
     if acceptedObligationEntryMatches(
         "def.ResolveStmtSeqJudgementSet",
-        23830usize,
+        23918usize,
         "HelloUltraviolet::Reference::Names",
         "runNamesQualifiedResolutionReference",
         "Source/Reference/Names/QualifiedResolution.uv"
@@ -1359,7 +1359,7 @@ public procedure validatedNameResolutionAndVisibilitySharedResolutionHelpersAndR
     }
     if acceptedObligationEntryMatches(
         "ResolveStmtSeq-Empty",
-        23844usize,
+        23932usize,
         "HelloUltraviolet::Reference::Names",
         "runNamesQualifiedResolutionReference",
         "Source/Reference/Names/QualifiedResolution.uv"
@@ -1368,7 +1368,7 @@ public procedure validatedNameResolutionAndVisibilitySharedResolutionHelpersAndR
     }
     if acceptedObligationEntryMatches(
         "ResolveStmtSeq-Cons",
-        23861usize,
+        23949usize,
         "HelloUltraviolet::Reference::Names",
         "runNamesQualifiedResolutionReference",
         "Source/Reference/Names/QualifiedResolution.uv"
@@ -1377,7 +1377,7 @@ public procedure validatedNameResolutionAndVisibilitySharedResolutionHelpersAndR
     }
     if acceptedObligationEntryMatches(
         "ResolveExpr-Block",
-        23879usize,
+        23967usize,
         "HelloUltraviolet::Reference::Names",
         "runNamesQualifiedResolutionReference",
         "Source/Reference/Names/QualifiedResolution.uv"
@@ -1386,7 +1386,7 @@ public procedure validatedNameResolutionAndVisibilitySharedResolutionHelpersAndR
     }
     if acceptedObligationEntryMatches(
         "Validate-ModulePath-Ok",
-        23898usize,
+        23986usize,
         "HelloUltraviolet::Reference::Names",
         "runNamesQualifiedResolutionReference",
         "Source/Reference/Names/QualifiedResolution.uv"
@@ -1395,7 +1395,7 @@ public procedure validatedNameResolutionAndVisibilitySharedResolutionHelpersAndR
     }
     if acceptedObligationEntryMatches(
         "Validate-ModulePath-Reserved-Err",
-        23916usize,
+        24004usize,
         "HelloUltraviolet::Reference::Names",
         "runNamesQualifiedResolutionReference",
         "Source/Reference/Names/QualifiedResolution.uv"
@@ -1404,7 +1404,7 @@ public procedure validatedNameResolutionAndVisibilitySharedResolutionHelpersAndR
     }
     if acceptedObligationEntryMatches(
         "req.ResolveItemFeatureOwnership",
-        23934usize,
+        24022usize,
         "HelloUltraviolet::Reference::Names",
         "runNamesQualifiedResolutionReference",
         "Source/Reference/Names/QualifiedResolution.uv"
@@ -1413,7 +1413,7 @@ public procedure validatedNameResolutionAndVisibilitySharedResolutionHelpersAndR
     }
     if acceptedObligationEntryMatches(
         "ResolveModule-Ok",
-        23948usize,
+        24036usize,
         "HelloUltraviolet::Reference::Names",
         "runNamesQualifiedResolutionReference",
         "Source/Reference/Names/QualifiedResolution.uv"
@@ -1422,7 +1422,7 @@ public procedure validatedNameResolutionAndVisibilitySharedResolutionHelpersAndR
     }
     if acceptedObligationEntryMatches(
         "ResolveItems-Empty",
-        23966usize,
+        24054usize,
         "HelloUltraviolet::Reference::Names",
         "runNamesQualifiedResolutionReference",
         "Source/Reference/Names/QualifiedResolution.uv"
@@ -1431,7 +1431,7 @@ public procedure validatedNameResolutionAndVisibilitySharedResolutionHelpersAndR
     }
     if acceptedObligationEntryMatches(
         "ResolveItems-Cons",
-        23981usize,
+        24069usize,
         "HelloUltraviolet::Reference::Names",
         "runNamesQualifiedResolutionReference",
         "Source/Reference/Names/QualifiedResolution.uv"
@@ -1440,7 +1440,7 @@ public procedure validatedNameResolutionAndVisibilitySharedResolutionHelpersAndR
     }
     if acceptedObligationEntryMatches(
         "def.ResolutionStateDomain",
-        23999usize,
+        24087usize,
         "HelloUltraviolet::Reference::Names",
         "runNamesQualifiedResolutionReference",
         "Source/Reference/Names/QualifiedResolution.uv"
@@ -1449,7 +1449,7 @@ public procedure validatedNameResolutionAndVisibilitySharedResolutionHelpersAndR
     }
     if acceptedObligationEntryMatches(
         "Res-Start",
-        24013usize,
+        24101usize,
         "HelloUltraviolet::Reference::Names",
         "runNamesQualifiedResolutionReference",
         "Source/Reference/Names/QualifiedResolution.uv"
@@ -1458,7 +1458,7 @@ public procedure validatedNameResolutionAndVisibilitySharedResolutionHelpersAndR
     }
     if acceptedObligationEntryMatches(
         "Res-Names",
-        24030usize,
+        24118usize,
         "HelloUltraviolet::Reference::Names",
         "runNamesQualifiedResolutionReference",
         "Source/Reference/Names/QualifiedResolution.uv"
@@ -1467,7 +1467,7 @@ public procedure validatedNameResolutionAndVisibilitySharedResolutionHelpersAndR
     }
     if acceptedObligationEntryMatches(
         "Res-Items",
-        24048usize,
+        24136usize,
         "HelloUltraviolet::Reference::Names",
         "runNamesQualifiedResolutionReference",
         "Source/Reference/Names/QualifiedResolution.uv"
@@ -1476,7 +1476,7 @@ public procedure validatedNameResolutionAndVisibilitySharedResolutionHelpersAndR
     }
     if acceptedObligationEntryMatches(
         "ResolveModules-Ok",
-        24068usize,
+        24156usize,
         "HelloUltraviolet::Reference::Names",
         "runNamesQualifiedResolutionReference",
         "Source/Reference/Names/QualifiedResolution.uv"
@@ -1485,7 +1485,7 @@ public procedure validatedNameResolutionAndVisibilitySharedResolutionHelpersAndR
     }
     if acceptedObligationEntryMatches(
         "ResolveModules-Err-Parse",
-        24086usize,
+        24174usize,
         "HelloUltraviolet::Reference::Names",
         "runNamesQualifiedResolutionReference",
         "Source/Reference/Names/QualifiedResolution.uv"
@@ -1494,7 +1494,7 @@ public procedure validatedNameResolutionAndVisibilitySharedResolutionHelpersAndR
     }
     if acceptedObligationEntryMatches(
         "ResolveModules-Err-Resolve",
-        24104usize,
+        24192usize,
         "HelloUltraviolet::Reference::Names",
         "runNamesQualifiedResolutionReference",
         "Source/Reference/Names/QualifiedResolution.uv"

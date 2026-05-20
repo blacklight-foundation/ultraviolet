@@ -9,7 +9,7 @@ public procedure validatedConcreteDataTypesTypeAliasesObligations() -> usize {
     var count: usize = 0usize
     if acceptedObligationEntryMatches(
         "grammar.TypeAliasSyntax",
-        41284usize,
+        41372usize,
         "HelloUltraviolet::Reference::DataTypes",
         "runDataTypesTypeAliasesReference",
         "Source/Reference/DataTypes/TypeAliases.uv"
@@ -18,7 +18,7 @@ public procedure validatedConcreteDataTypesTypeAliasesObligations() -> usize {
     }
     if acceptedObligationEntryMatches(
         "Parse-Type-Alias",
-        41306usize,
+        41394usize,
         "HelloUltraviolet::Reference::DataTypes",
         "runDataTypesTypeAliasesReference",
         "Source/Reference/DataTypes/TypeAliases.uv"
@@ -27,7 +27,7 @@ public procedure validatedConcreteDataTypesTypeAliasesObligations() -> usize {
     }
     if acceptedObligationEntryMatches(
         "def.TypeAliasDeclAst",
-        41324usize,
+        41412usize,
         "HelloUltraviolet::Reference::DataTypes",
         "runDataTypesTypeAliasesReference",
         "Source/Reference/DataTypes/TypeAliases.uv"
@@ -36,7 +36,7 @@ public procedure validatedConcreteDataTypesTypeAliasesObligations() -> usize {
     }
     if acceptedObligationEntryMatches(
         "def.TypeAliasAccessors",
-        41340usize,
+        41428usize,
         "HelloUltraviolet::Reference::DataTypes",
         "runDataTypesTypeAliasesReference",
         "Source/Reference/DataTypes/TypeAliases.uv"
@@ -45,42 +45,6 @@ public procedure validatedConcreteDataTypesTypeAliasesObligations() -> usize {
     }
     if acceptedObligationEntryMatches(
         "Bind-TypeAlias",
-        41358usize,
-        "HelloUltraviolet::Reference::DataTypes",
-        "runDataTypesTypeAliasesReference",
-        "Source/Reference/DataTypes/TypeAliases.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
-        "ResolveItem-TypeAlias",
-        41375usize,
-        "HelloUltraviolet::Reference::DataTypes",
-        "runDataTypesTypeAliasesReference",
-        "Source/Reference/DataTypes/TypeAliases.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
-        "def.AliasNormalization",
-        41393usize,
-        "HelloUltraviolet::Reference::DataTypes",
-        "runDataTypesTypeAliasesReference",
-        "Source/Reference/DataTypes/TypeAliases.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
-        "def.AliasPathNormalization",
-        41429usize,
-        "HelloUltraviolet::Reference::DataTypes",
-        "runDataTypesTypeAliasesReference",
-        "Source/Reference/DataTypes/TypeAliases.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
-        "def.AliasTransparent",
         41446usize,
         "HelloUltraviolet::Reference::DataTypes",
         "runDataTypesTypeAliasesReference",
@@ -89,8 +53,44 @@ public procedure validatedConcreteDataTypesTypeAliasesObligations() -> usize {
         count = count + 1usize
     }
     if acceptedObligationEntryMatches(
+        "ResolveItem-TypeAlias",
+        41463usize,
+        "HelloUltraviolet::Reference::DataTypes",
+        "runDataTypesTypeAliasesReference",
+        "Source/Reference/DataTypes/TypeAliases.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "def.AliasNormalization",
+        41481usize,
+        "HelloUltraviolet::Reference::DataTypes",
+        "runDataTypesTypeAliasesReference",
+        "Source/Reference/DataTypes/TypeAliases.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "def.AliasPathNormalization",
+        41517usize,
+        "HelloUltraviolet::Reference::DataTypes",
+        "runDataTypesTypeAliasesReference",
+        "Source/Reference/DataTypes/TypeAliases.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "def.AliasTransparent",
+        41534usize,
+        "HelloUltraviolet::Reference::DataTypes",
+        "runDataTypesTypeAliasesReference",
+        "Source/Reference/DataTypes/TypeAliases.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
         "def.AliasGraph",
-        41460usize,
+        41548usize,
         "HelloUltraviolet::Reference::DataTypes",
         "runDataTypesTypeAliasesReference",
         "Source/Reference/DataTypes/TypeAliases.uv"
@@ -99,7 +99,7 @@ public procedure validatedConcreteDataTypesTypeAliasesObligations() -> usize {
     }
     if acceptedObligationEntryMatches(
         "def.TypePaths",
-        41474usize,
+        41562usize,
         "HelloUltraviolet::Reference::DataTypes",
         "runDataTypesTypeAliasesReference",
         "Source/Reference/DataTypes/TypeAliases.uv"
@@ -108,7 +108,7 @@ public procedure validatedConcreteDataTypesTypeAliasesObligations() -> usize {
     }
     if acceptedObligationEntryMatches(
         "def.TypePathsOfModalRef",
-        41510usize,
+        41598usize,
         "HelloUltraviolet::Reference::DataTypes",
         "runDataTypesTypeAliasesReference",
         "Source/Reference/DataTypes/TypeAliases.uv"
@@ -117,7 +117,7 @@ public procedure validatedConcreteDataTypesTypeAliasesObligations() -> usize {
     }
     if rejectedSourceObligationEntryMatches(
         "def.AliasCycle",
-        41525usize,
+        41613usize,
         "HelloUltraviolet::Audit::FixtureCatalog::RejectedSource",
         "validatedDataTypesRejectedSourceFixtureCount",
         "Fixtures/RejectedSource/DataTypes/TypeAliasCycle/Source/Main.uv"
@@ -126,7 +126,7 @@ public procedure validatedConcreteDataTypesTypeAliasesObligations() -> usize {
     }
     if acceptedObligationEntryMatches(
         "TypeAlias-Ok",
-        41539usize,
+        41627usize,
         "HelloUltraviolet::Reference::DataTypes",
         "runDataTypesTypeAliasesReference",
         "Source/Reference/DataTypes/TypeAliases.uv"
@@ -135,7 +135,7 @@ public procedure validatedConcreteDataTypesTypeAliasesObligations() -> usize {
     }
     if rejectedSourceObligationEntryMatches(
         "TypeAlias-Recursive-Err",
-        41556usize,
+        41644usize,
         "HelloUltraviolet::Audit::FixtureCatalog::RejectedSource",
         "validatedDataTypesRejectedSourceFixtureCount",
         "Fixtures/RejectedSource/DataTypes/TypeAliasCycle/Source/Main.uv"
@@ -144,7 +144,7 @@ public procedure validatedConcreteDataTypesTypeAliasesObligations() -> usize {
     }
     if acceptedObligationEntryMatches(
         "req.TypeAliasDynamicSemantics",
-        41573usize,
+        41661usize,
         "HelloUltraviolet::Reference::DataTypes",
         "runDataTypesTypeAliasesReference",
         "Source/Reference/DataTypes/TypeAliases.uv"
@@ -153,7 +153,7 @@ public procedure validatedConcreteDataTypesTypeAliasesObligations() -> usize {
     }
     if acceptedObligationEntryMatches(
         "Size-Alias",
-        41591usize,
+        41679usize,
         "HelloUltraviolet::Reference::DataTypes",
         "runDataTypesTypeAliasesReference",
         "Source/Reference/DataTypes/TypeAliases.uv"
@@ -162,7 +162,7 @@ public procedure validatedConcreteDataTypesTypeAliasesObligations() -> usize {
     }
     if acceptedObligationEntryMatches(
         "Align-Alias",
-        41609usize,
+        41697usize,
         "HelloUltraviolet::Reference::DataTypes",
         "runDataTypesTypeAliasesReference",
         "Source/Reference/DataTypes/TypeAliases.uv"
@@ -171,7 +171,7 @@ public procedure validatedConcreteDataTypesTypeAliasesObligations() -> usize {
     }
     if acceptedObligationEntryMatches(
         "Layout-Alias",
-        41627usize,
+        41715usize,
         "HelloUltraviolet::Reference::DataTypes",
         "runDataTypesTypeAliasesReference",
         "Source/Reference/DataTypes/TypeAliases.uv"
@@ -180,7 +180,7 @@ public procedure validatedConcreteDataTypesTypeAliasesObligations() -> usize {
     }
     if acceptedObligationEntryMatches(
         "def.TypeAliasValueBits",
-        41645usize,
+        41733usize,
         "HelloUltraviolet::Reference::DataTypes",
         "runDataTypesTypeAliasesReference",
         "Source/Reference/DataTypes/TypeAliases.uv"
@@ -189,7 +189,7 @@ public procedure validatedConcreteDataTypesTypeAliasesObligations() -> usize {
     }
     if rejectedSourceObligationEntryMatches(
         "req.TypeAliasDiagnosticOwnership",
-        41659usize,
+        41747usize,
         "HelloUltraviolet::Audit::FixtureCatalog::RejectedSource",
         "validatedDataTypesRejectedSourceFixtureCount",
         "Fixtures/RejectedSource/DataTypes/TypeAliasCycle/Source/Main.uv"
@@ -198,7 +198,7 @@ public procedure validatedConcreteDataTypesTypeAliasesObligations() -> usize {
     }
     if rejectedSourceObligationEntryMatches(
         "diagnostics.DataTypesSupplement",
-        41676usize,
+        41764usize,
         "HelloUltraviolet::Audit::FixtureCatalog::RejectedSource",
         "validatedExpressionsRejectedSourceFixtureCount",
         "Fixtures/RejectedSource/Expressions/UnionDirectAccess/Source/Main.uv"

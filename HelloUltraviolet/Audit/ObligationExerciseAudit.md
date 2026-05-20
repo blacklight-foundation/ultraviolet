@@ -5,12 +5,12 @@ test surface after removing standalone Bootstrap compiler/runtime tests.
 
 ## Scope
 
-The generated HelloUltraviolet catalog contains 6047 obligation entries across 598
+The generated HelloUltraviolet catalog contains 6052 obligation entries across 598
 source paths.
 
 | Catalog kind | Entries | Source paths | Exercise surface |
 | --- | ---: | ---: | --- |
-| `accepted` | 5414 | 147 under `Source/Reference` plus shared fixtures | Compiled source references and executable symbol checks |
+| `accepted` | 5419 | 147 under `Source/Reference` plus shared fixtures | Compiled source references and executable symbol checks |
 | `referenceModel` | 104 | 2 under `Source/Audit` | Audit reference-model procedures |
 | `acceptedProject` | 50 | 7 under `Fixtures/AcceptedProjects` | Project fixtures and catalog metadata |
 | `rejectedSource` | 442 | 409 under `Fixtures/RejectedSource` | Rejected source plus expected diagnostic artifacts |
@@ -50,6 +50,9 @@ listed in `StandaloneTestReconciliation.md`.
   diagnostics, missing-path diagnostics, file writes, append, flush, read handles,
   byte reads, kind checks, directory iteration, EOF, snapshot-after-removal, and
   cleanup through `Context.io`.
+- `Source/Reference/Authority/IO.uv` now exercises nonrecursive `IO::remove`
+  semantics for file removal, empty-directory removal, and
+  `IoError::DirectoryNotEmpty` on nonempty directories.
 - The IO source exercise exposed and fixed a runtime ABI mismatch: the compiler
   emits value receivers for `File@Read`, `File@Write`, `File@Append`, and
   `DirIter@Open` const receiver methods, while the runtime implementations still
@@ -83,7 +86,7 @@ Completed:
 
 Verified gates:
 
-- `python3 Tools/ExtractObligationLedger.py --check`: pass, 6047 obligations.
+- `python3 Tools/ExtractObligationLedger.py --check`: pass, 6052 obligations.
 - `python3 Tools/GenerateHelloCatalog.py --check`: pass.
 - Windows `uv_out` target: pass; staged fixed
   `Bootstrap/Ultraviolet/build/windows/out/UltravioletRT.lib`.

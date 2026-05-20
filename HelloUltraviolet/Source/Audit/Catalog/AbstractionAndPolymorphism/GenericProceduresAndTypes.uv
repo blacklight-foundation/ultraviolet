@@ -9,7 +9,7 @@ public procedure validatedAbstractionAndPolymorphismGenericProceduresAndTypesObl
     var count: usize = 0usize
     if acceptedObligationEntryMatches(
         "grammar.GenericProceduresAndTypesSyntax",
-        48262usize,
+        48350usize,
         "HelloUltraviolet::Reference::Polymorphism",
         "runPolymorphismGenericProceduresReference",
         "Source/Reference/Polymorphism/GenericProcedures.uv"
@@ -18,7 +18,7 @@ public procedure validatedAbstractionAndPolymorphismGenericProceduresAndTypesObl
     }
     if acceptedObligationEntryMatches(
         "req.GenericParamsNominalOwnerChapters",
-        48278usize,
+        48366usize,
         "HelloUltraviolet::Reference::Polymorphism",
         "runPolymorphismGenericParametersReference",
         "Source/Reference/Polymorphism/GenericParameters.uv"
@@ -27,60 +27,6 @@ public procedure validatedAbstractionAndPolymorphismGenericProceduresAndTypesObl
     }
     if acceptedObligationEntryMatches(
         "req.GenericDeclarationParsingDelegated",
-        48292usize,
-        "HelloUltraviolet::Reference::Polymorphism",
-        "runPolymorphismGenericProceduresReference",
-        "Source/Reference/Polymorphism/GenericProcedures.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
-        "def.CallTypeArgsStart",
-        48304usize,
-        "HelloUltraviolet::Reference::Polymorphism",
-        "runPolymorphismGenericProceduresReference",
-        "Source/Reference/Polymorphism/GenericProcedures.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
-        "rule.14.Postfix-Call-TypeArgs",
-        48316usize,
-        "HelloUltraviolet::Reference::Polymorphism",
-        "runPolymorphismGenericProceduresReference",
-        "Source/Reference/Polymorphism/GenericProcedures.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
-        "def.GenericDeclarationAstExtensions",
-        48334usize,
-        "HelloUltraviolet::Reference::Polymorphism",
-        "runPolymorphismGenericProceduresReference",
-        "Source/Reference/Polymorphism/GenericProcedures.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
-        "def.GenericApplyAst",
-        48351usize,
-        "HelloUltraviolet::Reference::Polymorphism",
-        "runPolymorphismGenericProceduresReference",
-        "Source/Reference/Polymorphism/GenericProcedures.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
-        "def.GenericDeclarationAccessors",
-        48365usize,
-        "HelloUltraviolet::Reference::Polymorphism",
-        "runPolymorphismGenericProceduresReference",
-        "Source/Reference/Polymorphism/GenericProcedures.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
-        "rule.14.WF-Generic-Proc",
         48380usize,
         "HelloUltraviolet::Reference::Polymorphism",
         "runPolymorphismGenericProceduresReference",
@@ -89,8 +35,62 @@ public procedure validatedAbstractionAndPolymorphismGenericProceduresAndTypesObl
         count = count + 1usize
     }
     if acceptedObligationEntryMatches(
+        "def.CallTypeArgsStart",
+        48392usize,
+        "HelloUltraviolet::Reference::Polymorphism",
+        "runPolymorphismGenericProceduresReference",
+        "Source/Reference/Polymorphism/GenericProcedures.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "rule.14.Postfix-Call-TypeArgs",
+        48404usize,
+        "HelloUltraviolet::Reference::Polymorphism",
+        "runPolymorphismGenericProceduresReference",
+        "Source/Reference/Polymorphism/GenericProcedures.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "def.GenericDeclarationAstExtensions",
+        48422usize,
+        "HelloUltraviolet::Reference::Polymorphism",
+        "runPolymorphismGenericProceduresReference",
+        "Source/Reference/Polymorphism/GenericProcedures.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "def.GenericApplyAst",
+        48439usize,
+        "HelloUltraviolet::Reference::Polymorphism",
+        "runPolymorphismGenericProceduresReference",
+        "Source/Reference/Polymorphism/GenericProcedures.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "def.GenericDeclarationAccessors",
+        48453usize,
+        "HelloUltraviolet::Reference::Polymorphism",
+        "runPolymorphismGenericProceduresReference",
+        "Source/Reference/Polymorphism/GenericProcedures.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "rule.14.WF-Generic-Proc",
+        48468usize,
+        "HelloUltraviolet::Reference::Polymorphism",
+        "runPolymorphismGenericProceduresReference",
+        "Source/Reference/Polymorphism/GenericProcedures.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
         "def.GenericCalleeProc",
-        48396usize,
+        48484usize,
         "HelloUltraviolet::Reference::Polymorphism",
         "runPolymorphismGenericProceduresReference",
         "Source/Reference/Polymorphism/GenericProcedures.uv"
@@ -99,7 +99,7 @@ public procedure validatedAbstractionAndPolymorphismGenericProceduresAndTypesObl
     }
     if acceptedObligationEntryMatches(
         "def.GenericInferenceFreshArgs",
-        48410usize,
+        48498usize,
         "HelloUltraviolet::Reference::Polymorphism",
         "runPolymorphismGenericProceduresReference",
         "Source/Reference/Polymorphism/GenericProcedures.uv"
@@ -108,7 +108,7 @@ public procedure validatedAbstractionAndPolymorphismGenericProceduresAndTypesObl
     }
     if acceptedObligationEntryMatches(
         "def.InferTypeArgs",
-        48423usize,
+        48511usize,
         "HelloUltraviolet::Reference::Polymorphism",
         "runPolymorphismGenericProceduresReference",
         "Source/Reference/Polymorphism/GenericProcedures.uv"
@@ -117,7 +117,7 @@ public procedure validatedAbstractionAndPolymorphismGenericProceduresAndTypesObl
     }
     if acceptedObligationEntryMatches(
         "rule.14.GenericCallInference",
-        48441usize,
+        48529usize,
         "HelloUltraviolet::Reference::Polymorphism",
         "runPolymorphismGenericProceduresReference",
         "Source/Reference/Polymorphism/GenericProcedures.uv"
@@ -126,7 +126,7 @@ public procedure validatedAbstractionAndPolymorphismGenericProceduresAndTypesObl
     }
     if acceptedObligationEntryMatches(
         "rule.14.T-Generic-Call",
-        48472usize,
+        48560usize,
         "HelloUltraviolet::Reference::Polymorphism",
         "runPolymorphismGenericProceduresReference",
         "Source/Reference/Polymorphism/GenericProcedures.uv"
@@ -135,7 +135,7 @@ public procedure validatedAbstractionAndPolymorphismGenericProceduresAndTypesObl
     }
     if rejectedSourceObligationEntryMatches(
         "rule.14.Generic-Call-ArgCount-Err",
-        48495usize,
+        48583usize,
         "HelloUltraviolet::Audit::FixtureCatalog::RejectedSource",
         "validatedPolymorphismRejectedSourceFixtureCount",
         "Fixtures/RejectedSource/Polymorphism/GenericCallArgCount/Source/Main.uv"
@@ -144,7 +144,7 @@ public procedure validatedAbstractionAndPolymorphismGenericProceduresAndTypesObl
     }
     if rejectedSourceObligationEntryMatches(
         "rule.14.WF-Path-Generic-Err",
-        48511usize,
+        48599usize,
         "HelloUltraviolet::Audit::FixtureCatalog::RejectedSource",
         "validatedPolymorphismRejectedSourceFixtureCount",
         "Fixtures/RejectedSource/Polymorphism/GenericPathMissingArguments/Source/Main.uv"
@@ -153,7 +153,7 @@ public procedure validatedAbstractionAndPolymorphismGenericProceduresAndTypesObl
     }
     if acceptedObligationEntryMatches(
         "rule.14.WF-Apply",
-        48527usize,
+        48615usize,
         "HelloUltraviolet::Reference::Polymorphism",
         "runPolymorphismGenericParametersReference",
         "Source/Reference/Polymorphism/GenericParameters.uv"
@@ -162,7 +162,7 @@ public procedure validatedAbstractionAndPolymorphismGenericProceduresAndTypesObl
     }
     if rejectedSourceObligationEntryMatches(
         "rule.14.WF-Apply-ArgCount-Err",
-        48543usize,
+        48631usize,
         "HelloUltraviolet::Audit::FixtureCatalog::RejectedSource",
         "validatedPolymorphismRejectedSourceFixtureCount",
         "Fixtures/RejectedSource/Polymorphism/GenericTypeApplyArgCount/Source/Main.uv"
@@ -171,7 +171,7 @@ public procedure validatedAbstractionAndPolymorphismGenericProceduresAndTypesObl
     }
     if acceptedObligationEntryMatches(
         "req.GenericCallInferenceElaboration",
-        48559usize,
+        48647usize,
         "HelloUltraviolet::Reference::Polymorphism",
         "runPolymorphismGenericProceduresReference",
         "Source/Reference/Polymorphism/GenericProcedures.uv"
@@ -180,7 +180,7 @@ public procedure validatedAbstractionAndPolymorphismGenericProceduresAndTypesObl
     }
     if acceptedObligationEntryMatches(
         "conformance.GenericInstantiationDynamicElaboration",
-        48573usize,
+        48661usize,
         "HelloUltraviolet::Reference::Polymorphism",
         "runPolymorphismGenericProceduresReference",
         "Source/Reference/Polymorphism/GenericProcedures.uv"
@@ -189,7 +189,7 @@ public procedure validatedAbstractionAndPolymorphismGenericProceduresAndTypesObl
     }
     if acceptedObligationEntryMatches(
         "conformance.GenericMonomorphicInstantiationsDistinct",
-        48585usize,
+        48673usize,
         "HelloUltraviolet::Reference::Polymorphism",
         "runPolymorphismGenericProceduresReference",
         "Source/Reference/Polymorphism/GenericProcedures.uv"
@@ -198,7 +198,7 @@ public procedure validatedAbstractionAndPolymorphismGenericProceduresAndTypesObl
     }
     if acceptedObligationEntryMatches(
         "def.MonomorphizationSpecialization",
-        48599usize,
+        48687usize,
         "HelloUltraviolet::Reference::Polymorphism",
         "runPolymorphismGenericProceduresReference",
         "Source/Reference/Polymorphism/GenericProcedures.uv"
@@ -207,7 +207,7 @@ public procedure validatedAbstractionAndPolymorphismGenericProceduresAndTypesObl
     }
     if acceptedObligationEntryMatches(
         "req.GenericProcedureCallLowering",
-        48613usize,
+        48701usize,
         "HelloUltraviolet::Reference::Polymorphism",
         "runPolymorphismGenericProceduresReference",
         "Source/Reference/Polymorphism/GenericProcedures.uv"
@@ -216,7 +216,7 @@ public procedure validatedAbstractionAndPolymorphismGenericProceduresAndTypesObl
     }
     if acceptedObligationEntryMatches(
         "req.GenericInstantiationIndependentLowering",
-        48625usize,
+        48713usize,
         "HelloUltraviolet::Reference::Polymorphism",
         "runPolymorphismGenericProceduresReference",
         "Source/Reference/Polymorphism/GenericProcedures.uv"
@@ -225,7 +225,7 @@ public procedure validatedAbstractionAndPolymorphismGenericProceduresAndTypesObl
     }
     if rejectedSourceObligationEntryMatches(
         "req.GenericInfiniteMonomorphizationRejected",
-        48637usize,
+        48725usize,
         "HelloUltraviolet::Audit::FixtureCatalog::RejectedSource",
         "validatedPolymorphismRejectedSourceFixtureCount",
         "Fixtures/RejectedSource/Polymorphism/GenericInfiniteMonomorphization/Source/Main.uv"
@@ -234,7 +234,7 @@ public procedure validatedAbstractionAndPolymorphismGenericProceduresAndTypesObl
     }
     if rejectedSourceObligationEntryMatches(
         "req.GenericInstantiationDepthLimit",
-        48649usize,
+        48737usize,
         "HelloUltraviolet::Audit::FixtureCatalog::RejectedSource",
         "validatedPolymorphismRejectedSourceFixtureCount",
         "Fixtures/RejectedSource/Polymorphism/GenericInstantiationDepthLimit/Source/Main.uv"
@@ -243,7 +243,7 @@ public procedure validatedAbstractionAndPolymorphismGenericProceduresAndTypesObl
     }
     if acceptedObligationEntryMatches(
         "req.GenericNominalSizeAlignSubstitutedBody",
-        48661usize,
+        48749usize,
         "HelloUltraviolet::Reference::Polymorphism",
         "runPolymorphismGenericParametersReference",
         "Source/Reference/Polymorphism/GenericParameters.uv"
@@ -252,7 +252,7 @@ public procedure validatedAbstractionAndPolymorphismGenericProceduresAndTypesObl
     }
     if acceptedObligationEntryMatches(
         "diag.GenericProceduresAndTypes",
-        48675usize,
+        48763usize,
         "HelloUltraviolet::Reference::Polymorphism",
         "runPolymorphismGenericProceduresReference",
         "Source/Reference/Polymorphism/GenericProcedures.uv"

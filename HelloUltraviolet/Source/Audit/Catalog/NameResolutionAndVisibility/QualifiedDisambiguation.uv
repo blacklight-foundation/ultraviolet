@@ -9,7 +9,7 @@ public procedure validatedNameResolutionAndVisibilityQualifiedDisambiguationObli
     var count: usize = 0usize
     if acceptedObligationEntryMatches(
         "def.ResolveQualifiedFormSignature",
-        20954usize,
+        21042usize,
         "HelloUltraviolet::Reference::Names",
         "runNamesDisambiguationReference",
         "Source/Reference/Names/Disambiguation.uv"
@@ -18,7 +18,7 @@ public procedure validatedNameResolutionAndVisibilityQualifiedDisambiguationObli
     }
     if acceptedObligationEntryMatches(
         "def.ResolveArgsSignature",
-        20968usize,
+        21056usize,
         "HelloUltraviolet::Reference::Names",
         "runNamesDisambiguationReference",
         "Source/Reference/Names/Disambiguation.uv"
@@ -27,7 +27,7 @@ public procedure validatedNameResolutionAndVisibilityQualifiedDisambiguationObli
     }
     if acceptedObligationEntryMatches(
         "def.ResolveFieldInitsSignature",
-        20982usize,
+        21070usize,
         "HelloUltraviolet::Reference::Names",
         "runNamesDisambiguationReference",
         "Source/Reference/Names/Disambiguation.uv"
@@ -36,7 +36,7 @@ public procedure validatedNameResolutionAndVisibilityQualifiedDisambiguationObli
     }
     if acceptedObligationEntryMatches(
         "def.ResolveRecordPathSignature",
-        20996usize,
+        21084usize,
         "HelloUltraviolet::Reference::Names",
         "runNamesDisambiguationReference",
         "Source/Reference/Names/Disambiguation.uv"
@@ -45,7 +45,7 @@ public procedure validatedNameResolutionAndVisibilityQualifiedDisambiguationObli
     }
     if acceptedObligationEntryMatches(
         "def.ResolveEnumUnitSignature",
-        21010usize,
+        21098usize,
         "HelloUltraviolet::Reference::Names",
         "runNamesDisambiguationReference",
         "Source/Reference/Names/Disambiguation.uv"
@@ -54,7 +54,7 @@ public procedure validatedNameResolutionAndVisibilityQualifiedDisambiguationObli
     }
     if acceptedObligationEntryMatches(
         "def.ResolveEnumTupleSignature",
-        21024usize,
+        21112usize,
         "HelloUltraviolet::Reference::Names",
         "runNamesDisambiguationReference",
         "Source/Reference/Names/Disambiguation.uv"
@@ -63,7 +63,7 @@ public procedure validatedNameResolutionAndVisibilityQualifiedDisambiguationObli
     }
     if acceptedObligationEntryMatches(
         "def.ResolveEnumRecordSignature",
-        21038usize,
+        21126usize,
         "HelloUltraviolet::Reference::Names",
         "runNamesDisambiguationReference",
         "Source/Reference/Names/Disambiguation.uv"
@@ -72,7 +72,7 @@ public procedure validatedNameResolutionAndVisibilityQualifiedDisambiguationObli
     }
     if acceptedObligationEntryMatches(
         "def.ResolvePathJudgementSet",
-        21052usize,
+        21140usize,
         "HelloUltraviolet::Reference::Names",
         "runNamesDisambiguationReference",
         "Source/Reference/Names/Disambiguation.uv"
@@ -81,51 +81,6 @@ public procedure validatedNameResolutionAndVisibilityQualifiedDisambiguationObli
     }
     if acceptedObligationEntryMatches(
         "ResolveArgs-Empty",
-        21066usize,
-        "HelloUltraviolet::Reference::Names",
-        "runNamesDisambiguationReference",
-        "Source/Reference/Names/Disambiguation.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
-        "ResolveArgs-Cons",
-        21083usize,
-        "HelloUltraviolet::Reference::Names",
-        "runNamesDisambiguationReference",
-        "Source/Reference/Names/Disambiguation.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
-        "ResolveFieldInits-Empty",
-        21101usize,
-        "HelloUltraviolet::Reference::Names",
-        "runNamesDisambiguationReference",
-        "Source/Reference/Names/Disambiguation.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
-        "ResolveFieldInits-Cons",
-        21118usize,
-        "HelloUltraviolet::Reference::Names",
-        "runNamesDisambiguationReference",
-        "Source/Reference/Names/Disambiguation.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
-        "Resolve-RecordPath",
-        21136usize,
-        "HelloUltraviolet::Reference::Names",
-        "runNamesDisambiguationReference",
-        "Source/Reference/Names/Disambiguation.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
-        "Resolve-EnumUnit",
         21154usize,
         "HelloUltraviolet::Reference::Names",
         "runNamesDisambiguationReference",
@@ -134,8 +89,53 @@ public procedure validatedNameResolutionAndVisibilityQualifiedDisambiguationObli
         count = count + 1usize
     }
     if acceptedObligationEntryMatches(
+        "ResolveArgs-Cons",
+        21171usize,
+        "HelloUltraviolet::Reference::Names",
+        "runNamesDisambiguationReference",
+        "Source/Reference/Names/Disambiguation.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "ResolveFieldInits-Empty",
+        21189usize,
+        "HelloUltraviolet::Reference::Names",
+        "runNamesDisambiguationReference",
+        "Source/Reference/Names/Disambiguation.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "ResolveFieldInits-Cons",
+        21206usize,
+        "HelloUltraviolet::Reference::Names",
+        "runNamesDisambiguationReference",
+        "Source/Reference/Names/Disambiguation.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "Resolve-RecordPath",
+        21224usize,
+        "HelloUltraviolet::Reference::Names",
+        "runNamesDisambiguationReference",
+        "Source/Reference/Names/Disambiguation.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "Resolve-EnumUnit",
+        21242usize,
+        "HelloUltraviolet::Reference::Names",
+        "runNamesDisambiguationReference",
+        "Source/Reference/Names/Disambiguation.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
         "Resolve-EnumTuple",
-        21172usize,
+        21260usize,
         "HelloUltraviolet::Reference::Names",
         "runNamesDisambiguationReference",
         "Source/Reference/Names/Disambiguation.uv"
@@ -144,7 +144,7 @@ public procedure validatedNameResolutionAndVisibilityQualifiedDisambiguationObli
     }
     if acceptedObligationEntryMatches(
         "Resolve-EnumRecord",
-        21190usize,
+        21278usize,
         "HelloUltraviolet::Reference::Names",
         "runNamesDisambiguationReference",
         "Source/Reference/Names/Disambiguation.uv"
@@ -153,7 +153,7 @@ public procedure validatedNameResolutionAndVisibilityQualifiedDisambiguationObli
     }
     if acceptedObligationEntryMatches(
         "def.BuiltinValuePath",
-        21212usize,
+        21300usize,
         "HelloUltraviolet::Reference::Names",
         "runNamesDisambiguationReference",
         "Source/Reference/Names/Disambiguation.uv"
@@ -162,7 +162,7 @@ public procedure validatedNameResolutionAndVisibilityQualifiedDisambiguationObli
     }
     if acceptedObligationEntryMatches(
         "ResolveQual-Name-Builtin",
-        21226usize,
+        21314usize,
         "HelloUltraviolet::Reference::Names",
         "runNamesDisambiguationReference",
         "Source/Reference/Names/Disambiguation.uv"
@@ -171,7 +171,7 @@ public procedure validatedNameResolutionAndVisibilityQualifiedDisambiguationObli
     }
     if acceptedObligationEntryMatches(
         "ResolveQual-Name-Value",
-        21244usize,
+        21332usize,
         "HelloUltraviolet::Reference::Names",
         "runNamesDisambiguationReference",
         "Source/Reference/Names/Disambiguation.uv"
@@ -180,7 +180,7 @@ public procedure validatedNameResolutionAndVisibilityQualifiedDisambiguationObli
     }
     if acceptedObligationEntryMatches(
         "ResolveQual-Name-Record",
-        21262usize,
+        21350usize,
         "HelloUltraviolet::Reference::Names",
         "runNamesDisambiguationReference",
         "Source/Reference/Names/Disambiguation.uv"
@@ -189,7 +189,7 @@ public procedure validatedNameResolutionAndVisibilityQualifiedDisambiguationObli
     }
     if acceptedObligationEntryMatches(
         "ResolveQual-Name-Enum",
-        21280usize,
+        21368usize,
         "HelloUltraviolet::Reference::Names",
         "runNamesDisambiguationReference",
         "Source/Reference/Names/Disambiguation.uv"
@@ -198,7 +198,7 @@ public procedure validatedNameResolutionAndVisibilityQualifiedDisambiguationObli
     }
     if acceptedObligationEntryMatches(
         "ResolveQual-Name-Err",
-        21298usize,
+        21386usize,
         "HelloUltraviolet::Reference::Names",
         "runNamesDisambiguationReference",
         "Source/Reference/Names/Disambiguation.uv"

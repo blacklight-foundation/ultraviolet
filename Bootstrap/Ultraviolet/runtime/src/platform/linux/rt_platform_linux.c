@@ -559,7 +559,7 @@ static DWORD uv_rt_linux_error_from_errno(int err) {
     case EROFS:
       return ERROR_WRITE_PROTECT;
     case ENOTEMPTY:
-      return ERROR_BUSY;
+      return ERROR_DIR_NOT_EMPTY;
     default:
       return ERROR_INVALID_PARAMETER;
   }

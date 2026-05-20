@@ -2,7 +2,7 @@
 
 
 public procedure countAbstractMachineObjectsResponsibilityAndAuthorityHostPrimitivesObligations() -> usize {
-    return 149usize
+    return 154usize
 }
 
 public procedure validatedAbstractMachineObjectsResponsibilityAndAuthorityHostPrimitivesObligations() -> usize {
@@ -323,7 +323,7 @@ public procedure validatedAbstractMachineObjectsResponsibilityAndAuthorityHostPr
         count = count + 1usize
     }
     if acceptedObligationEntryMatches(
-        "IOReadFile-InvalidUtf8",
+        "def.IORemoveSemantics",
         13195usize,
         "HelloUltraviolet::Reference::Authority",
         "runAuthorityIOReference",
@@ -332,8 +332,53 @@ public procedure validatedAbstractMachineObjectsResponsibilityAndAuthorityHostPr
         count = count + 1usize
     }
     if acceptedObligationEntryMatches(
+        "IORemove-RemoveFile",
+        13223usize,
+        "HelloUltraviolet::Reference::Authority",
+        "runAuthorityIOReference",
+        "Source/Reference/Authority/IO.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "IORemove-RemoveOtherEntry",
+        13238usize,
+        "HelloUltraviolet::Reference::Authority",
+        "runAuthorityIOReference",
+        "Source/Reference/Authority/IO.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "IORemove-RemoveEmptyDir",
+        13253usize,
+        "HelloUltraviolet::Reference::Authority",
+        "runAuthorityIOReference",
+        "Source/Reference/Authority/IO.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "IORemove-DirectoryNotEmpty",
+        13268usize,
+        "HelloUltraviolet::Reference::Authority",
+        "runAuthorityIOReference",
+        "Source/Reference/Authority/IO.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "IOReadFile-InvalidUtf8",
+        13283usize,
+        "HelloUltraviolet::Reference::Authority",
+        "runAuthorityIOReference",
+        "Source/Reference/Authority/IO.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
         "FileReadAll-InvalidUtf8",
-        13210usize,
+        13298usize,
         "HelloUltraviolet::Reference::Authority",
         "runAuthorityIOReference",
         "Source/Reference/Authority/IO.uv"
@@ -342,7 +387,7 @@ public procedure validatedAbstractMachineObjectsResponsibilityAndAuthorityHostPr
     }
     if acceptedObligationEntryMatches(
         "IOExists-True",
-        13225usize,
+        13313usize,
         "HelloUltraviolet::Reference::Authority",
         "runAuthorityIOReference",
         "Source/Reference/Authority/IO.uv"
@@ -351,7 +396,7 @@ public procedure validatedAbstractMachineObjectsResponsibilityAndAuthorityHostPr
     }
     if acceptedObligationEntryMatches(
         "IOExists-False",
-        13240usize,
+        13328usize,
         "HelloUltraviolet::Reference::Authority",
         "runAuthorityIOReference",
         "Source/Reference/Authority/IO.uv"
@@ -360,7 +405,7 @@ public procedure validatedAbstractMachineObjectsResponsibilityAndAuthorityHostPr
     }
     if acceptedObligationEntryMatches(
         "def.FileHandleStateAndMode",
-        13255usize,
+        13343usize,
         "HelloUltraviolet::Reference::Authority",
         "runAuthorityIOReference",
         "Source/Reference/Authority/IO.uv"
@@ -369,7 +414,7 @@ public procedure validatedAbstractMachineObjectsResponsibilityAndAuthorityHostPr
     }
     if acceptedObligationEntryMatches(
         "def.FileLengthAndByteLength",
-        13274usize,
+        13362usize,
         "HelloUltraviolet::Reference::Authority",
         "runAuthorityIOReference",
         "Source/Reference/Authority/IO.uv"
@@ -378,7 +423,7 @@ public procedure validatedAbstractMachineObjectsResponsibilityAndAuthorityHostPr
     }
     if acceptedObligationEntryMatches(
         "def.DirectoryEntryOrdering",
-        13294usize,
+        13382usize,
         "HelloUltraviolet::Reference::Authority",
         "runAuthorityIOReference",
         "Source/Reference/Authority/IO.uv"
@@ -387,7 +432,7 @@ public procedure validatedAbstractMachineObjectsResponsibilityAndAuthorityHostPr
     }
     if acceptedObligationEntryMatches(
         "IOOpenRead-HandleState",
-        13314usize,
+        13402usize,
         "HelloUltraviolet::Reference::Authority",
         "runAuthorityIOReference",
         "Source/Reference/Authority/IO.uv"
@@ -396,7 +441,7 @@ public procedure validatedAbstractMachineObjectsResponsibilityAndAuthorityHostPr
     }
     if acceptedObligationEntryMatches(
         "IOOpenWrite-HandleState",
-        13329usize,
+        13417usize,
         "HelloUltraviolet::Reference::Authority",
         "runAuthorityIOReference",
         "Source/Reference/Authority/IO.uv"
@@ -405,7 +450,7 @@ public procedure validatedAbstractMachineObjectsResponsibilityAndAuthorityHostPr
     }
     if acceptedObligationEntryMatches(
         "IOOpenAppend-HandleState",
-        13344usize,
+        13432usize,
         "HelloUltraviolet::Reference::Authority",
         "runAuthorityIOReference",
         "Source/Reference/Authority/IO.uv"
@@ -414,7 +459,7 @@ public procedure validatedAbstractMachineObjectsResponsibilityAndAuthorityHostPr
     }
     if acceptedObligationEntryMatches(
         "IOCreateWrite-HandleState",
-        13359usize,
+        13447usize,
         "HelloUltraviolet::Reference::Authority",
         "runAuthorityIOReference",
         "Source/Reference/Authority/IO.uv"
@@ -423,7 +468,7 @@ public procedure validatedAbstractMachineObjectsResponsibilityAndAuthorityHostPr
     }
     if acceptedObligationEntryMatches(
         "IOReadFile-DelegatesThroughHandle",
-        13374usize,
+        13462usize,
         "HelloUltraviolet::Reference::Authority",
         "runAuthorityIOReference",
         "Source/Reference/Authority/IO.uv"
@@ -432,7 +477,7 @@ public procedure validatedAbstractMachineObjectsResponsibilityAndAuthorityHostPr
     }
     if acceptedObligationEntryMatches(
         "IOReadBytes-DelegatesThroughHandle",
-        13389usize,
+        13477usize,
         "HelloUltraviolet::Reference::Authority",
         "runAuthorityIOReference",
         "Source/Reference/Authority/IO.uv"
@@ -441,7 +486,7 @@ public procedure validatedAbstractMachineObjectsResponsibilityAndAuthorityHostPr
     }
     if acceptedObligationEntryMatches(
         "FileReadAll-ClosedFailure",
-        13404usize,
+        13492usize,
         "HelloUltraviolet::Reference::Authority",
         "runAuthorityIOReference",
         "Source/Reference/Authority/IO.uv"
@@ -450,7 +495,7 @@ public procedure validatedAbstractMachineObjectsResponsibilityAndAuthorityHostPr
     }
     if acceptedObligationEntryMatches(
         "FileReadAllBytes-ClosedFailure",
-        13419usize,
+        13507usize,
         "HelloUltraviolet::Reference::Authority",
         "runAuthorityIOReference",
         "Source/Reference/Authority/IO.uv"
@@ -459,7 +504,7 @@ public procedure validatedAbstractMachineObjectsResponsibilityAndAuthorityHostPr
     }
     if acceptedObligationEntryMatches(
         "FileWrite-ClosedFailure",
-        13434usize,
+        13522usize,
         "HelloUltraviolet::Reference::Authority",
         "runAuthorityIOReference",
         "Source/Reference/Authority/IO.uv"
@@ -468,7 +513,7 @@ public procedure validatedAbstractMachineObjectsResponsibilityAndAuthorityHostPr
     }
     if acceptedObligationEntryMatches(
         "FileFlush-ClosedFailure",
-        13449usize,
+        13537usize,
         "HelloUltraviolet::Reference::Authority",
         "runAuthorityIOReference",
         "Source/Reference/Authority/IO.uv"
@@ -477,7 +522,7 @@ public procedure validatedAbstractMachineObjectsResponsibilityAndAuthorityHostPr
     }
     if acceptedObligationEntryMatches(
         "FileReadAll-AdvancesToEnd",
-        13464usize,
+        13552usize,
         "HelloUltraviolet::Reference::Authority",
         "runAuthorityIOReference",
         "Source/Reference/Authority/IO.uv"
@@ -486,7 +531,7 @@ public procedure validatedAbstractMachineObjectsResponsibilityAndAuthorityHostPr
     }
     if acceptedObligationEntryMatches(
         "FileReadAllBytes-AdvancesToEnd",
-        13479usize,
+        13567usize,
         "HelloUltraviolet::Reference::Authority",
         "runAuthorityIOReference",
         "Source/Reference/Authority/IO.uv"
@@ -495,7 +540,7 @@ public procedure validatedAbstractMachineObjectsResponsibilityAndAuthorityHostPr
     }
     if acceptedObligationEntryMatches(
         "FileWrite-PositionUpdate",
-        13494usize,
+        13582usize,
         "HelloUltraviolet::Reference::Authority",
         "runAuthorityIOReference",
         "Source/Reference/Authority/IO.uv"
@@ -504,7 +549,7 @@ public procedure validatedAbstractMachineObjectsResponsibilityAndAuthorityHostPr
     }
     if acceptedObligationEntryMatches(
         "FileWrite-LengthUpdate",
-        13509usize,
+        13597usize,
         "HelloUltraviolet::Reference::Authority",
         "runAuthorityIOReference",
         "Source/Reference/Authority/IO.uv"
@@ -513,7 +558,7 @@ public procedure validatedAbstractMachineObjectsResponsibilityAndAuthorityHostPr
     }
     if acceptedObligationEntryMatches(
         "FileFlush-RecordsFlushed",
-        13524usize,
+        13612usize,
         "HelloUltraviolet::Reference::Authority",
         "runAuthorityIOReference",
         "Source/Reference/Authority/IO.uv"
@@ -522,7 +567,7 @@ public procedure validatedAbstractMachineObjectsResponsibilityAndAuthorityHostPr
     }
     if acceptedObligationEntryMatches(
         "FileClose-ClosesHandle",
-        13539usize,
+        13627usize,
         "HelloUltraviolet::Reference::Authority",
         "runAuthorityIOReference",
         "Source/Reference/Authority/IO.uv"
@@ -531,7 +576,7 @@ public procedure validatedAbstractMachineObjectsResponsibilityAndAuthorityHostPr
     }
     if acceptedObligationEntryMatches(
         "IOOpenDir-IteratorState",
-        13554usize,
+        13642usize,
         "HelloUltraviolet::Reference::Authority",
         "runAuthorityIOReference",
         "Source/Reference/Authority/IO.uv"
@@ -540,7 +585,7 @@ public procedure validatedAbstractMachineObjectsResponsibilityAndAuthorityHostPr
     }
     if acceptedObligationEntryMatches(
         "DirNext-ClosedFailure",
-        13569usize,
+        13657usize,
         "HelloUltraviolet::Reference::Authority",
         "runAuthorityIOReference",
         "Source/Reference/Authority/IO.uv"
@@ -549,7 +594,7 @@ public procedure validatedAbstractMachineObjectsResponsibilityAndAuthorityHostPr
     }
     if acceptedObligationEntryMatches(
         "DirNext-Exhausted",
-        13584usize,
+        13672usize,
         "HelloUltraviolet::Reference::Authority",
         "runAuthorityIOReference",
         "Source/Reference/Authority/IO.uv"
@@ -558,7 +603,7 @@ public procedure validatedAbstractMachineObjectsResponsibilityAndAuthorityHostPr
     }
     if acceptedObligationEntryMatches(
         "DirNext-YieldsEntry",
-        13599usize,
+        13687usize,
         "HelloUltraviolet::Reference::Authority",
         "runAuthorityIOReference",
         "Source/Reference/Authority/IO.uv"
@@ -567,7 +612,7 @@ public procedure validatedAbstractMachineObjectsResponsibilityAndAuthorityHostPr
     }
     if acceptedObligationEntryMatches(
         "DirClose-ClosesIterator",
-        13614usize,
+        13702usize,
         "HelloUltraviolet::Reference::Authority",
         "runAuthorityIOReference",
         "Source/Reference/Authority/IO.uv"
@@ -576,7 +621,7 @@ public procedure validatedAbstractMachineObjectsResponsibilityAndAuthorityHostPr
     }
     if acceptedObligationEntryMatches(
         "def.SystemState",
-        13631usize,
+        13719usize,
         "HelloUltraviolet::Reference::Authority",
         "runAuthoritySystemReference",
         "Source/Reference/Authority/System.uv"
@@ -585,7 +630,7 @@ public procedure validatedAbstractMachineObjectsResponsibilityAndAuthorityHostPr
     }
     if acceptedObligationEntryMatches(
         "def.SystemPrimitiveJudgments",
-        13648usize,
+        13736usize,
         "HelloUltraviolet::Reference::Authority",
         "runAuthoritySystemReference",
         "Source/Reference/Authority/System.uv"
@@ -594,7 +639,7 @@ public procedure validatedAbstractMachineObjectsResponsibilityAndAuthorityHostPr
     }
     if acceptedObligationEntryMatches(
         "def.SystemPrimitiveStateElidedEquivalences",
-        13663usize,
+        13751usize,
         "HelloUltraviolet::Reference::Authority",
         "runAuthoritySystemReference",
         "Source/Reference/Authority/System.uv"
@@ -603,7 +648,7 @@ public procedure validatedAbstractMachineObjectsResponsibilityAndAuthorityHostPr
     }
     if acceptedObligationEntryMatches(
         "def.EmptyStringVal",
-        13679usize,
+        13767usize,
         "HelloUltraviolet::Reference::Authority",
         "runAuthoritySystemReference",
         "Source/Reference/Authority/System.uv"
@@ -612,7 +657,7 @@ public procedure validatedAbstractMachineObjectsResponsibilityAndAuthorityHostPr
     }
     if acceptedObligationEntryMatches(
         "System-GetEnv-Ok",
-        13693usize,
+        13781usize,
         "HelloUltraviolet::Reference::Authority",
         "runAuthoritySystemReference",
         "Source/Reference/Authority/System.uv"
@@ -621,7 +666,7 @@ public procedure validatedAbstractMachineObjectsResponsibilityAndAuthorityHostPr
     }
     if acceptedObligationEntryMatches(
         "System-GetEnv-None",
-        13711usize,
+        13799usize,
         "HelloUltraviolet::Reference::Authority",
         "runAuthoritySystemReference",
         "Source/Reference/Authority/System.uv"
@@ -630,7 +675,7 @@ public procedure validatedAbstractMachineObjectsResponsibilityAndAuthorityHostPr
     }
     if acceptedObligationEntryMatches(
         "System-Exit",
-        13729usize,
+        13817usize,
         "HelloUltraviolet::Reference::Authority",
         "runAuthoritySystemReference",
         "Source/Reference/Authority/System.uv"
@@ -639,7 +684,7 @@ public procedure validatedAbstractMachineObjectsResponsibilityAndAuthorityHostPr
     }
     if acceptedObligationEntryMatches(
         "System-Run",
-        13747usize,
+        13835usize,
         "HelloUltraviolet::Reference::Authority",
         "runAuthoritySystemReference",
         "Source/Reference/Authority/System.uv"
@@ -648,7 +693,7 @@ public procedure validatedAbstractMachineObjectsResponsibilityAndAuthorityHostPr
     }
     if acceptedObligationEntryMatches(
         "def.TimePrimitiveJudgments",
-        13767usize,
+        13855usize,
         "HelloUltraviolet::Reference::Authority",
         "runAuthorityTimeReference",
         "Source/Reference/Authority/Time.uv"
@@ -657,7 +702,7 @@ public procedure validatedAbstractMachineObjectsResponsibilityAndAuthorityHostPr
     }
     if acceptedObligationEntryMatches(
         "def.TimePrimitiveValueConstructors",
-        13782usize,
+        13870usize,
         "HelloUltraviolet::Reference::Authority",
         "runAuthorityTimeReference",
         "Source/Reference/Authority/Time.uv"
@@ -666,7 +711,7 @@ public procedure validatedAbstractMachineObjectsResponsibilityAndAuthorityHostPr
     }
     if acceptedObligationEntryMatches(
         "req.TimePrimitiveAttenuationSemantics",
-        13802usize,
+        13890usize,
         "HelloUltraviolet::Reference::Authority",
         "runAuthorityTimeReference",
         "Source/Reference/Authority/Time.uv"
@@ -675,7 +720,7 @@ public procedure validatedAbstractMachineObjectsResponsibilityAndAuthorityHostPr
     }
     if acceptedObligationEntryMatches(
         "req.MonotonicTimePrimitiveSemantics",
-        13822usize,
+        13910usize,
         "HelloUltraviolet::Reference::Authority",
         "runAuthorityTimeReference",
         "Source/Reference/Authority/Time.uv"
@@ -684,7 +729,7 @@ public procedure validatedAbstractMachineObjectsResponsibilityAndAuthorityHostPr
     }
     if acceptedObligationEntryMatches(
         "req.WallTimePrimitiveSemantics",
-        13841usize,
+        13929usize,
         "HelloUltraviolet::Reference::Authority",
         "runAuthorityTimeReference",
         "Source/Reference/Authority/Time.uv"
@@ -693,7 +738,7 @@ public procedure validatedAbstractMachineObjectsResponsibilityAndAuthorityHostPr
     }
     if acceptedObligationEntryMatches(
         "def.NetworkPrimitiveJudgments",
-        13861usize,
+        13949usize,
         "HelloUltraviolet::Reference::Authority",
         "runAuthorityNetworkReference",
         "Source/Reference/Authority/Network.uv"
@@ -702,7 +747,7 @@ public procedure validatedAbstractMachineObjectsResponsibilityAndAuthorityHostPr
     }
     if acceptedObligationEntryMatches(
         "req.NetRestrictHostRequiredSemantics",
-        13875usize,
+        13963usize,
         "HelloUltraviolet::Reference::Authority",
         "runAuthorityNetworkReference",
         "Source/Reference/Authority/Network.uv"
@@ -711,7 +756,7 @@ public procedure validatedAbstractMachineObjectsResponsibilityAndAuthorityHostPr
     }
     if acceptedObligationEntryMatches(
         "req.NetRestrictHostSubsetAuthority",
-        13889usize,
+        13977usize,
         "HelloUltraviolet::Reference::Authority",
         "runAuthorityNetworkReference",
         "Source/Reference/Authority/Network.uv"
@@ -720,7 +765,7 @@ public procedure validatedAbstractMachineObjectsResponsibilityAndAuthorityHostPr
     }
     if acceptedObligationEntryMatches(
         "req.NetRestrictHostEqualityEnforcement",
-        13904usize,
+        13992usize,
         "HelloUltraviolet::Reference::Authority",
         "runAuthorityNetworkReference",
         "Source/Reference/Authority/Network.uv"
@@ -729,7 +774,7 @@ public procedure validatedAbstractMachineObjectsResponsibilityAndAuthorityHostPr
     }
     if acceptedObligationEntryMatches(
         "req.NetRestrictRejectBeforeObservableEffect",
-        13918usize,
+        14006usize,
         "HelloUltraviolet::Reference::Authority",
         "runAuthorityNetworkReference",
         "Source/Reference/Authority/Network.uv"
@@ -738,7 +783,7 @@ public procedure validatedAbstractMachineObjectsResponsibilityAndAuthorityHostPr
     }
     if acceptedObligationEntryMatches(
         "req.NetRestrictNoUnrelatedMutation",
-        13932usize,
+        14020usize,
         "HelloUltraviolet::Reference::Authority",
         "runAuthorityNetworkReference",
         "Source/Reference/Authority/Network.uv"
@@ -747,7 +792,7 @@ public procedure validatedAbstractMachineObjectsResponsibilityAndAuthorityHostPr
     }
     if acceptedObligationEntryMatches(
         "def.PrimitiveReceiverHandleHelpers",
-        13948usize,
+        14036usize,
         "HelloUltraviolet::Reference::Authority",
         "runAuthorityCapabilitiesReference",
         "Source/Reference/Authority/Capabilities.uv"
@@ -756,7 +801,7 @@ public procedure validatedAbstractMachineObjectsResponsibilityAndAuthorityHostPr
     }
     if acceptedObligationEntryMatches(
         "def.PrimitiveMethodNameAndOwner",
-        13963usize,
+        14051usize,
         "HelloUltraviolet::Reference::Authority",
         "runAuthorityCapabilitiesReference",
         "Source/Reference/Authority/Capabilities.uv"
@@ -765,7 +810,7 @@ public procedure validatedAbstractMachineObjectsResponsibilityAndAuthorityHostPr
     }
     if acceptedObligationEntryMatches(
         "def.PrimCallJudgment",
-        13982usize,
+        14070usize,
         "HelloUltraviolet::Reference::Authority",
         "runAuthorityCapabilitiesReference",
         "Source/Reference/Authority/Capabilities.uv"
@@ -774,7 +819,7 @@ public procedure validatedAbstractMachineObjectsResponsibilityAndAuthorityHostPr
     }
     if acceptedObligationEntryMatches(
         "Prim-IO-OpenRead",
-        13996usize,
+        14084usize,
         "HelloUltraviolet::Reference::Authority",
         "runAuthorityCapabilitiesReference",
         "Source/Reference/Authority/Capabilities.uv"
@@ -783,7 +828,7 @@ public procedure validatedAbstractMachineObjectsResponsibilityAndAuthorityHostPr
     }
     if acceptedObligationEntryMatches(
         "Prim-IO-OpenWrite",
-        14014usize,
+        14102usize,
         "HelloUltraviolet::Reference::Authority",
         "runAuthorityCapabilitiesReference",
         "Source/Reference/Authority/Capabilities.uv"
@@ -792,7 +837,7 @@ public procedure validatedAbstractMachineObjectsResponsibilityAndAuthorityHostPr
     }
     if acceptedObligationEntryMatches(
         "Prim-IO-OpenAppend",
-        14032usize,
+        14120usize,
         "HelloUltraviolet::Reference::Authority",
         "runAuthorityCapabilitiesReference",
         "Source/Reference/Authority/Capabilities.uv"
@@ -801,7 +846,7 @@ public procedure validatedAbstractMachineObjectsResponsibilityAndAuthorityHostPr
     }
     if acceptedObligationEntryMatches(
         "Prim-IO-CreateWrite",
-        14050usize,
+        14138usize,
         "HelloUltraviolet::Reference::Authority",
         "runAuthorityCapabilitiesReference",
         "Source/Reference/Authority/Capabilities.uv"
@@ -810,7 +855,7 @@ public procedure validatedAbstractMachineObjectsResponsibilityAndAuthorityHostPr
     }
     if acceptedObligationEntryMatches(
         "Prim-IO-ReadFile",
-        14068usize,
+        14156usize,
         "HelloUltraviolet::Reference::Authority",
         "runAuthorityCapabilitiesReference",
         "Source/Reference/Authority/Capabilities.uv"
@@ -819,7 +864,7 @@ public procedure validatedAbstractMachineObjectsResponsibilityAndAuthorityHostPr
     }
     if acceptedObligationEntryMatches(
         "Prim-IO-ReadBytes",
-        14086usize,
+        14174usize,
         "HelloUltraviolet::Reference::Authority",
         "runAuthorityCapabilitiesReference",
         "Source/Reference/Authority/Capabilities.uv"
@@ -828,7 +873,7 @@ public procedure validatedAbstractMachineObjectsResponsibilityAndAuthorityHostPr
     }
     if acceptedObligationEntryMatches(
         "Prim-IO-WriteFile",
-        14104usize,
+        14192usize,
         "HelloUltraviolet::Reference::Authority",
         "runAuthorityCapabilitiesReference",
         "Source/Reference/Authority/Capabilities.uv"
@@ -837,7 +882,7 @@ public procedure validatedAbstractMachineObjectsResponsibilityAndAuthorityHostPr
     }
     if acceptedObligationEntryMatches(
         "Prim-IO-WriteStdout",
-        14122usize,
+        14210usize,
         "HelloUltraviolet::Reference::Authority",
         "runAuthorityCapabilitiesReference",
         "Source/Reference/Authority/Capabilities.uv"
@@ -846,7 +891,7 @@ public procedure validatedAbstractMachineObjectsResponsibilityAndAuthorityHostPr
     }
     if acceptedObligationEntryMatches(
         "Prim-IO-WriteStderr",
-        14140usize,
+        14228usize,
         "HelloUltraviolet::Reference::Authority",
         "runAuthorityCapabilitiesReference",
         "Source/Reference/Authority/Capabilities.uv"
@@ -855,7 +900,7 @@ public procedure validatedAbstractMachineObjectsResponsibilityAndAuthorityHostPr
     }
     if acceptedObligationEntryMatches(
         "Prim-IO-Exists",
-        14158usize,
+        14246usize,
         "HelloUltraviolet::Reference::Authority",
         "runAuthorityCapabilitiesReference",
         "Source/Reference/Authority/Capabilities.uv"
@@ -864,7 +909,7 @@ public procedure validatedAbstractMachineObjectsResponsibilityAndAuthorityHostPr
     }
     if acceptedObligationEntryMatches(
         "Prim-IO-Remove",
-        14176usize,
+        14264usize,
         "HelloUltraviolet::Reference::Authority",
         "runAuthorityCapabilitiesReference",
         "Source/Reference/Authority/Capabilities.uv"
@@ -873,7 +918,7 @@ public procedure validatedAbstractMachineObjectsResponsibilityAndAuthorityHostPr
     }
     if acceptedObligationEntryMatches(
         "Prim-IO-OpenDir",
-        14194usize,
+        14282usize,
         "HelloUltraviolet::Reference::Authority",
         "runAuthorityCapabilitiesReference",
         "Source/Reference/Authority/Capabilities.uv"
@@ -882,7 +927,7 @@ public procedure validatedAbstractMachineObjectsResponsibilityAndAuthorityHostPr
     }
     if acceptedObligationEntryMatches(
         "Prim-IO-CreateDir",
-        14212usize,
+        14300usize,
         "HelloUltraviolet::Reference::Authority",
         "runAuthorityCapabilitiesReference",
         "Source/Reference/Authority/Capabilities.uv"
@@ -891,7 +936,7 @@ public procedure validatedAbstractMachineObjectsResponsibilityAndAuthorityHostPr
     }
     if acceptedObligationEntryMatches(
         "Prim-IO-EnsureDir",
-        14230usize,
+        14318usize,
         "HelloUltraviolet::Reference::Authority",
         "runAuthorityCapabilitiesReference",
         "Source/Reference/Authority/Capabilities.uv"
@@ -900,7 +945,7 @@ public procedure validatedAbstractMachineObjectsResponsibilityAndAuthorityHostPr
     }
     if acceptedObligationEntryMatches(
         "Prim-IO-Kind",
-        14248usize,
+        14336usize,
         "HelloUltraviolet::Reference::Authority",
         "runAuthorityCapabilitiesReference",
         "Source/Reference/Authority/Capabilities.uv"
@@ -909,7 +954,7 @@ public procedure validatedAbstractMachineObjectsResponsibilityAndAuthorityHostPr
     }
     if acceptedObligationEntryMatches(
         "Prim-IO-Restrict",
-        14266usize,
+        14354usize,
         "HelloUltraviolet::Reference::Authority",
         "runAuthorityCapabilitiesReference",
         "Source/Reference/Authority/Capabilities.uv"
@@ -918,7 +963,7 @@ public procedure validatedAbstractMachineObjectsResponsibilityAndAuthorityHostPr
     }
     if acceptedObligationEntryMatches(
         "Prim-File-ReadAll",
-        14284usize,
+        14372usize,
         "HelloUltraviolet::Reference::Authority",
         "runAuthorityCapabilitiesReference",
         "Source/Reference/Authority/Capabilities.uv"
@@ -927,7 +972,7 @@ public procedure validatedAbstractMachineObjectsResponsibilityAndAuthorityHostPr
     }
     if acceptedObligationEntryMatches(
         "Prim-File-ReadAllBytes",
-        14302usize,
+        14390usize,
         "HelloUltraviolet::Reference::Authority",
         "runAuthorityCapabilitiesReference",
         "Source/Reference/Authority/Capabilities.uv"
@@ -936,7 +981,7 @@ public procedure validatedAbstractMachineObjectsResponsibilityAndAuthorityHostPr
     }
     if acceptedObligationEntryMatches(
         "Prim-File-Write",
-        14320usize,
+        14408usize,
         "HelloUltraviolet::Reference::Authority",
         "runAuthorityCapabilitiesReference",
         "Source/Reference/Authority/Capabilities.uv"
@@ -945,7 +990,7 @@ public procedure validatedAbstractMachineObjectsResponsibilityAndAuthorityHostPr
     }
     if acceptedObligationEntryMatches(
         "Prim-File-Flush",
-        14338usize,
+        14426usize,
         "HelloUltraviolet::Reference::Authority",
         "runAuthorityCapabilitiesReference",
         "Source/Reference/Authority/Capabilities.uv"
@@ -954,7 +999,7 @@ public procedure validatedAbstractMachineObjectsResponsibilityAndAuthorityHostPr
     }
     if acceptedObligationEntryMatches(
         "Prim-File-Write-Append",
-        14356usize,
+        14444usize,
         "HelloUltraviolet::Reference::Authority",
         "runAuthorityCapabilitiesReference",
         "Source/Reference/Authority/Capabilities.uv"
@@ -963,7 +1008,7 @@ public procedure validatedAbstractMachineObjectsResponsibilityAndAuthorityHostPr
     }
     if acceptedObligationEntryMatches(
         "Prim-File-Flush-Append",
-        14374usize,
+        14462usize,
         "HelloUltraviolet::Reference::Authority",
         "runAuthorityCapabilitiesReference",
         "Source/Reference/Authority/Capabilities.uv"
@@ -972,7 +1017,7 @@ public procedure validatedAbstractMachineObjectsResponsibilityAndAuthorityHostPr
     }
     if acceptedObligationEntryMatches(
         "Prim-File-Close-Read",
-        14392usize,
+        14480usize,
         "HelloUltraviolet::Reference::Authority",
         "runAuthorityCapabilitiesReference",
         "Source/Reference/Authority/Capabilities.uv"
@@ -981,7 +1026,7 @@ public procedure validatedAbstractMachineObjectsResponsibilityAndAuthorityHostPr
     }
     if acceptedObligationEntryMatches(
         "Prim-File-Close-Write",
-        14410usize,
+        14498usize,
         "HelloUltraviolet::Reference::Authority",
         "runAuthorityCapabilitiesReference",
         "Source/Reference/Authority/Capabilities.uv"
@@ -990,7 +1035,7 @@ public procedure validatedAbstractMachineObjectsResponsibilityAndAuthorityHostPr
     }
     if acceptedObligationEntryMatches(
         "Prim-File-Close-Append",
-        14428usize,
+        14516usize,
         "HelloUltraviolet::Reference::Authority",
         "runAuthorityCapabilitiesReference",
         "Source/Reference/Authority/Capabilities.uv"
@@ -999,7 +1044,7 @@ public procedure validatedAbstractMachineObjectsResponsibilityAndAuthorityHostPr
     }
     if acceptedObligationEntryMatches(
         "Prim-Dir-Next",
-        14446usize,
+        14534usize,
         "HelloUltraviolet::Reference::Authority",
         "runAuthorityCapabilitiesReference",
         "Source/Reference/Authority/Capabilities.uv"
@@ -1008,7 +1053,7 @@ public procedure validatedAbstractMachineObjectsResponsibilityAndAuthorityHostPr
     }
     if acceptedObligationEntryMatches(
         "Prim-Dir-Close",
-        14464usize,
+        14552usize,
         "HelloUltraviolet::Reference::Authority",
         "runAuthorityCapabilitiesReference",
         "Source/Reference/Authority/Capabilities.uv"
@@ -1017,7 +1062,7 @@ public procedure validatedAbstractMachineObjectsResponsibilityAndAuthorityHostPr
     }
     if acceptedObligationEntryMatches(
         "Prim-System-GetEnv",
-        14482usize,
+        14570usize,
         "HelloUltraviolet::Reference::Authority",
         "runAuthorityCapabilitiesReference",
         "Source/Reference/Authority/Capabilities.uv"
@@ -1026,7 +1071,7 @@ public procedure validatedAbstractMachineObjectsResponsibilityAndAuthorityHostPr
     }
     if acceptedObligationEntryMatches(
         "Prim-System-ExecutablePath",
-        14500usize,
+        14588usize,
         "HelloUltraviolet::Reference::Authority",
         "runAuthorityCapabilitiesReference",
         "Source/Reference/Authority/Capabilities.uv"
@@ -1035,7 +1080,7 @@ public procedure validatedAbstractMachineObjectsResponsibilityAndAuthorityHostPr
     }
     if acceptedObligationEntryMatches(
         "Prim-System-ArgumentCount",
-        14518usize,
+        14606usize,
         "HelloUltraviolet::Reference::Authority",
         "runAuthorityCapabilitiesReference",
         "Source/Reference/Authority/Capabilities.uv"
@@ -1044,7 +1089,7 @@ public procedure validatedAbstractMachineObjectsResponsibilityAndAuthorityHostPr
     }
     if acceptedObligationEntryMatches(
         "Prim-System-Argument",
-        14536usize,
+        14624usize,
         "HelloUltraviolet::Reference::Authority",
         "runAuthorityCapabilitiesReference",
         "Source/Reference/Authority/Capabilities.uv"
@@ -1053,7 +1098,7 @@ public procedure validatedAbstractMachineObjectsResponsibilityAndAuthorityHostPr
     }
     if acceptedObligationEntryMatches(
         "Prim-System-CurrentDirectory",
-        14554usize,
+        14642usize,
         "HelloUltraviolet::Reference::Authority",
         "runAuthorityCapabilitiesReference",
         "Source/Reference/Authority/Capabilities.uv"
@@ -1062,7 +1107,7 @@ public procedure validatedAbstractMachineObjectsResponsibilityAndAuthorityHostPr
     }
     if acceptedObligationEntryMatches(
         "Prim-System-Exit",
-        14572usize,
+        14660usize,
         "HelloUltraviolet::Reference::Authority",
         "runAuthorityCapabilitiesReference",
         "Source/Reference/Authority/Capabilities.uv"
@@ -1071,7 +1116,7 @@ public procedure validatedAbstractMachineObjectsResponsibilityAndAuthorityHostPr
     }
     if acceptedObligationEntryMatches(
         "Prim-System-Run",
-        14590usize,
+        14678usize,
         "HelloUltraviolet::Reference::Authority",
         "runAuthorityCapabilitiesReference",
         "Source/Reference/Authority/Capabilities.uv"
@@ -1080,7 +1125,7 @@ public procedure validatedAbstractMachineObjectsResponsibilityAndAuthorityHostPr
     }
     if acceptedObligationEntryMatches(
         "Prim-Time-Monotonic",
-        14608usize,
+        14696usize,
         "HelloUltraviolet::Reference::Authority",
         "runAuthorityTimeReference",
         "Source/Reference/Authority/Time.uv"
@@ -1089,7 +1134,7 @@ public procedure validatedAbstractMachineObjectsResponsibilityAndAuthorityHostPr
     }
     if acceptedObligationEntryMatches(
         "Prim-Time-Wall",
-        14626usize,
+        14714usize,
         "HelloUltraviolet::Reference::Authority",
         "runAuthorityTimeReference",
         "Source/Reference/Authority/Time.uv"
@@ -1098,7 +1143,7 @@ public procedure validatedAbstractMachineObjectsResponsibilityAndAuthorityHostPr
     }
     if acceptedObligationEntryMatches(
         "Prim-MonotonicTime-Now",
-        14644usize,
+        14732usize,
         "HelloUltraviolet::Reference::Authority",
         "runAuthorityTimeReference",
         "Source/Reference/Authority/Time.uv"
@@ -1107,7 +1152,7 @@ public procedure validatedAbstractMachineObjectsResponsibilityAndAuthorityHostPr
     }
     if acceptedObligationEntryMatches(
         "Prim-MonotonicTime-Resolution",
-        14662usize,
+        14750usize,
         "HelloUltraviolet::Reference::Authority",
         "runAuthorityTimeReference",
         "Source/Reference/Authority/Time.uv"
@@ -1116,7 +1161,7 @@ public procedure validatedAbstractMachineObjectsResponsibilityAndAuthorityHostPr
     }
     if acceptedObligationEntryMatches(
         "Prim-MonotonicTime-Elapsed",
-        14680usize,
+        14768usize,
         "HelloUltraviolet::Reference::Authority",
         "runAuthorityTimeReference",
         "Source/Reference/Authority/Time.uv"
@@ -1125,7 +1170,7 @@ public procedure validatedAbstractMachineObjectsResponsibilityAndAuthorityHostPr
     }
     if acceptedObligationEntryMatches(
         "Prim-MonotonicTime-Coarsen",
-        14698usize,
+        14786usize,
         "HelloUltraviolet::Reference::Authority",
         "runAuthorityTimeReference",
         "Source/Reference/Authority/Time.uv"
@@ -1134,7 +1179,7 @@ public procedure validatedAbstractMachineObjectsResponsibilityAndAuthorityHostPr
     }
     if acceptedObligationEntryMatches(
         "Prim-WallTime-NowUtc",
-        14716usize,
+        14804usize,
         "HelloUltraviolet::Reference::Authority",
         "runAuthorityTimeReference",
         "Source/Reference/Authority/Time.uv"
@@ -1143,7 +1188,7 @@ public procedure validatedAbstractMachineObjectsResponsibilityAndAuthorityHostPr
     }
     if acceptedObligationEntryMatches(
         "Prim-WallTime-Resolution",
-        14734usize,
+        14822usize,
         "HelloUltraviolet::Reference::Authority",
         "runAuthorityTimeReference",
         "Source/Reference/Authority/Time.uv"
@@ -1152,7 +1197,7 @@ public procedure validatedAbstractMachineObjectsResponsibilityAndAuthorityHostPr
     }
     if acceptedObligationEntryMatches(
         "Prim-WallTime-Coarsen",
-        14752usize,
+        14840usize,
         "HelloUltraviolet::Reference::Authority",
         "runAuthorityTimeReference",
         "Source/Reference/Authority/Time.uv"
@@ -1161,7 +1206,7 @@ public procedure validatedAbstractMachineObjectsResponsibilityAndAuthorityHostPr
     }
     if acceptedObligationEntryMatches(
         "Prim-Network-RestrictHost",
-        14770usize,
+        14858usize,
         "HelloUltraviolet::Reference::Authority",
         "runAuthorityCapabilitiesReference",
         "Source/Reference/Authority/Capabilities.uv"
@@ -1170,7 +1215,7 @@ public procedure validatedAbstractMachineObjectsResponsibilityAndAuthorityHostPr
     }
     if acceptedObligationEntryMatches(
         "req.PrimSystemExitAbortOutcome",
-        14788usize,
+        14876usize,
         "HelloUltraviolet::Reference::Authority",
         "runAuthorityCapabilitiesReference",
         "Source/Reference/Authority/Capabilities.uv"
@@ -1179,60 +1224,6 @@ public procedure validatedAbstractMachineObjectsResponsibilityAndAuthorityHostPr
     }
     if acceptedObligationEntryMatches(
         "rule.24.BuiltinSym-Time-Monotonic",
-        96454usize,
-        "HelloUltraviolet::Reference::Authority",
-        "runAuthorityTimeReference",
-        "Source/Reference/Authority/Time.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
-        "rule.24.BuiltinSym-Time-Wall",
-        96469usize,
-        "HelloUltraviolet::Reference::Authority",
-        "runAuthorityTimeReference",
-        "Source/Reference/Authority/Time.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
-        "rule.24.BuiltinSym-MonotonicTime-Now",
-        96484usize,
-        "HelloUltraviolet::Reference::Authority",
-        "runAuthorityTimeReference",
-        "Source/Reference/Authority/Time.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
-        "rule.24.BuiltinSym-MonotonicTime-Resolution",
-        96499usize,
-        "HelloUltraviolet::Reference::Authority",
-        "runAuthorityTimeReference",
-        "Source/Reference/Authority/Time.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
-        "rule.24.BuiltinSym-MonotonicTime-Elapsed",
-        96514usize,
-        "HelloUltraviolet::Reference::Authority",
-        "runAuthorityTimeReference",
-        "Source/Reference/Authority/Time.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
-        "rule.24.BuiltinSym-MonotonicTime-Coarsen",
-        96529usize,
-        "HelloUltraviolet::Reference::Authority",
-        "runAuthorityTimeReference",
-        "Source/Reference/Authority/Time.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
-        "rule.24.BuiltinSym-WallTime-NowUtc",
         96544usize,
         "HelloUltraviolet::Reference::Authority",
         "runAuthorityTimeReference",
@@ -1241,7 +1232,7 @@ public procedure validatedAbstractMachineObjectsResponsibilityAndAuthorityHostPr
         count = count + 1usize
     }
     if acceptedObligationEntryMatches(
-        "rule.24.BuiltinSym-WallTime-Resolution",
+        "rule.24.BuiltinSym-Time-Wall",
         96559usize,
         "HelloUltraviolet::Reference::Authority",
         "runAuthorityTimeReference",
@@ -1250,7 +1241,7 @@ public procedure validatedAbstractMachineObjectsResponsibilityAndAuthorityHostPr
         count = count + 1usize
     }
     if acceptedObligationEntryMatches(
-        "rule.24.BuiltinSym-WallTime-Coarsen",
+        "rule.24.BuiltinSym-MonotonicTime-Now",
         96574usize,
         "HelloUltraviolet::Reference::Authority",
         "runAuthorityTimeReference",
@@ -1259,8 +1250,62 @@ public procedure validatedAbstractMachineObjectsResponsibilityAndAuthorityHostPr
         count = count + 1usize
     }
     if acceptedObligationEntryMatches(
+        "rule.24.BuiltinSym-MonotonicTime-Resolution",
+        96589usize,
+        "HelloUltraviolet::Reference::Authority",
+        "runAuthorityTimeReference",
+        "Source/Reference/Authority/Time.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "rule.24.BuiltinSym-MonotonicTime-Elapsed",
+        96604usize,
+        "HelloUltraviolet::Reference::Authority",
+        "runAuthorityTimeReference",
+        "Source/Reference/Authority/Time.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "rule.24.BuiltinSym-MonotonicTime-Coarsen",
+        96619usize,
+        "HelloUltraviolet::Reference::Authority",
+        "runAuthorityTimeReference",
+        "Source/Reference/Authority/Time.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "rule.24.BuiltinSym-WallTime-NowUtc",
+        96634usize,
+        "HelloUltraviolet::Reference::Authority",
+        "runAuthorityTimeReference",
+        "Source/Reference/Authority/Time.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "rule.24.BuiltinSym-WallTime-Resolution",
+        96649usize,
+        "HelloUltraviolet::Reference::Authority",
+        "runAuthorityTimeReference",
+        "Source/Reference/Authority/Time.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "rule.24.BuiltinSym-WallTime-Coarsen",
+        96664usize,
+        "HelloUltraviolet::Reference::Authority",
+        "runAuthorityTimeReference",
+        "Source/Reference/Authority/Time.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
         "req.24.TimeHostPrimitivesDefinedInAuthorityModel",
-        97220usize,
+        97310usize,
         "HelloUltraviolet::Reference::Authority",
         "runAuthorityTimeReference",
         "Source/Reference/Authority/Time.uv"
@@ -1269,7 +1314,7 @@ public procedure validatedAbstractMachineObjectsResponsibilityAndAuthorityHostPr
     }
     if acceptedObligationEntryMatches(
         "rule.24.Prim-Time-Monotonic-Runtime",
-        97233usize,
+        97323usize,
         "HelloUltraviolet::Reference::Authority",
         "runAuthorityTimeReference",
         "Source/Reference/Authority/Time.uv"
@@ -1278,7 +1323,7 @@ public procedure validatedAbstractMachineObjectsResponsibilityAndAuthorityHostPr
     }
     if acceptedObligationEntryMatches(
         "rule.24.Prim-Time-Wall-Runtime",
-        97249usize,
+        97339usize,
         "HelloUltraviolet::Reference::Authority",
         "runAuthorityTimeReference",
         "Source/Reference/Authority/Time.uv"
@@ -1287,7 +1332,7 @@ public procedure validatedAbstractMachineObjectsResponsibilityAndAuthorityHostPr
     }
     if acceptedObligationEntryMatches(
         "rule.24.Prim-MonotonicTime-Now-Runtime",
-        97265usize,
+        97355usize,
         "HelloUltraviolet::Reference::Authority",
         "runAuthorityTimeReference",
         "Source/Reference/Authority/Time.uv"
@@ -1296,7 +1341,7 @@ public procedure validatedAbstractMachineObjectsResponsibilityAndAuthorityHostPr
     }
     if acceptedObligationEntryMatches(
         "rule.24.Prim-MonotonicTime-Resolution-Runtime",
-        97281usize,
+        97371usize,
         "HelloUltraviolet::Reference::Authority",
         "runAuthorityTimeReference",
         "Source/Reference/Authority/Time.uv"
@@ -1305,7 +1350,7 @@ public procedure validatedAbstractMachineObjectsResponsibilityAndAuthorityHostPr
     }
     if acceptedObligationEntryMatches(
         "rule.24.Prim-MonotonicTime-Elapsed-Runtime",
-        97297usize,
+        97387usize,
         "HelloUltraviolet::Reference::Authority",
         "runAuthorityTimeReference",
         "Source/Reference/Authority/Time.uv"
@@ -1314,7 +1359,7 @@ public procedure validatedAbstractMachineObjectsResponsibilityAndAuthorityHostPr
     }
     if acceptedObligationEntryMatches(
         "rule.24.Prim-MonotonicTime-Coarsen-Runtime",
-        97313usize,
+        97403usize,
         "HelloUltraviolet::Reference::Authority",
         "runAuthorityTimeReference",
         "Source/Reference/Authority/Time.uv"
@@ -1323,7 +1368,7 @@ public procedure validatedAbstractMachineObjectsResponsibilityAndAuthorityHostPr
     }
     if acceptedObligationEntryMatches(
         "rule.24.Prim-WallTime-NowUtc-Runtime",
-        97329usize,
+        97419usize,
         "HelloUltraviolet::Reference::Authority",
         "runAuthorityTimeReference",
         "Source/Reference/Authority/Time.uv"
@@ -1332,7 +1377,7 @@ public procedure validatedAbstractMachineObjectsResponsibilityAndAuthorityHostPr
     }
     if acceptedObligationEntryMatches(
         "rule.24.Prim-WallTime-Resolution-Runtime",
-        97345usize,
+        97435usize,
         "HelloUltraviolet::Reference::Authority",
         "runAuthorityTimeReference",
         "Source/Reference/Authority/Time.uv"
@@ -1341,7 +1386,7 @@ public procedure validatedAbstractMachineObjectsResponsibilityAndAuthorityHostPr
     }
     if acceptedObligationEntryMatches(
         "rule.24.Prim-WallTime-Coarsen-Runtime",
-        97361usize,
+        97451usize,
         "HelloUltraviolet::Reference::Authority",
         "runAuthorityTimeReference",
         "Source/Reference/Authority/Time.uv"

@@ -9,7 +9,7 @@ public procedure validatedAbstractMachineObjectsResponsibilityAndAuthorityDynami
     var count: usize = 0usize
     if acceptedObligationEntryMatches(
         "def.ScopeEntry",
-        17246usize,
+        17334usize,
         "HelloUltraviolet::Reference::Authority",
         "runAuthorityRegionsAndFramesReference",
         "Source/Reference/Authority/RegionsAndFrames.uv"
@@ -18,7 +18,7 @@ public procedure validatedAbstractMachineObjectsResponsibilityAndAuthorityDynami
     }
     if acceptedObligationEntryMatches(
         "def.DynamicScopeStack",
-        17265usize,
+        17353usize,
         "HelloUltraviolet::Reference::Authority",
         "runAuthorityRegionsAndFramesReference",
         "Source/Reference/Authority/RegionsAndFrames.uv"
@@ -27,7 +27,7 @@ public procedure validatedAbstractMachineObjectsResponsibilityAndAuthorityDynami
     }
     if acceptedObligationEntryMatches(
         "def.UpdateScopeStack",
-        17283usize,
+        17371usize,
         "HelloUltraviolet::Reference::Authority",
         "runAuthorityRegionsAndFramesReference",
         "Source/Reference/Authority/RegionsAndFrames.uv"
@@ -36,7 +36,7 @@ public procedure validatedAbstractMachineObjectsResponsibilityAndAuthorityDynami
     }
     if acceptedObligationEntryMatches(
         "def.RuntimeScopePushPop",
-        17297usize,
+        17385usize,
         "HelloUltraviolet::Reference::Authority",
         "runAuthorityRegionsAndFramesReference",
         "Source/Reference/Authority/RegionsAndFrames.uv"
@@ -45,7 +45,7 @@ public procedure validatedAbstractMachineObjectsResponsibilityAndAuthorityDynami
     }
     if acceptedObligationEntryMatches(
         "def.AppendCleanup",
-        17312usize,
+        17400usize,
         "HelloUltraviolet::Reference::Authority",
         "runAuthorityRegionsAndFramesReference",
         "Source/Reference/Authority/RegionsAndFrames.uv"
@@ -54,7 +54,7 @@ public procedure validatedAbstractMachineObjectsResponsibilityAndAuthorityDynami
     }
     if acceptedObligationEntryMatches(
         "def.CleanupList",
-        17326usize,
+        17414usize,
         "HelloUltraviolet::Reference::Authority",
         "runAuthorityRegionsAndFramesReference",
         "Source/Reference/Authority/RegionsAndFrames.uv"
@@ -63,7 +63,7 @@ public procedure validatedAbstractMachineObjectsResponsibilityAndAuthorityDynami
     }
     if acceptedObligationEntryMatches(
         "def.ScopeById",
-        17340usize,
+        17428usize,
         "HelloUltraviolet::Reference::Authority",
         "runAuthorityRegionsAndFramesReference",
         "Source/Reference/Authority/RegionsAndFrames.uv"
@@ -72,60 +72,6 @@ public procedure validatedAbstractMachineObjectsResponsibilityAndAuthorityDynami
     }
     if acceptedObligationEntryMatches(
         "def.ReplaceScopeById",
-        17357usize,
-        "HelloUltraviolet::Reference::Authority",
-        "runAuthorityRegionsAndFramesReference",
-        "Source/Reference/Authority/RegionsAndFrames.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
-        "def.SetCleanupList",
-        17374usize,
-        "HelloUltraviolet::Reference::Authority",
-        "runAuthorityRegionsAndFramesReference",
-        "Source/Reference/Authority/RegionsAndFrames.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
-        "def.PoisonedModule",
-        17388usize,
-        "HelloUltraviolet::Reference::Authority",
-        "runAuthorityRegionsAndFramesReference",
-        "Source/Reference/Authority/RegionsAndFrames.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
-        "req.HostedSessionPoisonFlagLocalization",
-        17402usize,
-        "HelloUltraviolet::Reference::Authority",
-        "runAuthorityRegionsAndFramesReference",
-        "Source/Reference/Authority/RegionsAndFrames.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
-        "def.PoisonedModules",
-        17416usize,
-        "HelloUltraviolet::Reference::Authority",
-        "runAuthorityRegionsAndFramesReference",
-        "Source/Reference/Authority/RegionsAndFrames.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
-        "def.RuntimeBindingIdentityAndValue",
-        17430usize,
-        "HelloUltraviolet::Reference::Authority",
-        "runAuthorityRegionsAndFramesReference",
-        "Source/Reference/Authority/RegionsAndFrames.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
-        "def.FreshBindId",
         17445usize,
         "HelloUltraviolet::Reference::Authority",
         "runAuthorityRegionsAndFramesReference",
@@ -134,8 +80,8 @@ public procedure validatedAbstractMachineObjectsResponsibilityAndAuthorityDynami
         count = count + 1usize
     }
     if acceptedObligationEntryMatches(
-        "def.Last",
-        17459usize,
+        "def.SetCleanupList",
+        17462usize,
         "HelloUltraviolet::Reference::Authority",
         "runAuthorityRegionsAndFramesReference",
         "Source/Reference/Authority/RegionsAndFrames.uv"
@@ -143,8 +89,8 @@ public procedure validatedAbstractMachineObjectsResponsibilityAndAuthorityDynami
         count = count + 1usize
     }
     if acceptedObligationEntryMatches(
-        "def.NearestScope",
-        17474usize,
+        "def.PoisonedModule",
+        17476usize,
         "HelloUltraviolet::Reference::Authority",
         "runAuthorityRegionsAndFramesReference",
         "Source/Reference/Authority/RegionsAndFrames.uv"
@@ -152,8 +98,8 @@ public procedure validatedAbstractMachineObjectsResponsibilityAndAuthorityDynami
         count = count + 1usize
     }
     if acceptedObligationEntryMatches(
-        "def.LookupBind",
-        17491usize,
+        "req.HostedSessionPoisonFlagLocalization",
+        17490usize,
         "HelloUltraviolet::Reference::Authority",
         "runAuthorityRegionsAndFramesReference",
         "Source/Reference/Authority/RegionsAndFrames.uv"
@@ -161,8 +107,8 @@ public procedure validatedAbstractMachineObjectsResponsibilityAndAuthorityDynami
         count = count + 1usize
     }
     if acceptedObligationEntryMatches(
-        "def.RuntimeBindingValueLookup",
-        17505usize,
+        "def.PoisonedModules",
+        17504usize,
         "HelloUltraviolet::Reference::Authority",
         "runAuthorityRegionsAndFramesReference",
         "Source/Reference/Authority/RegionsAndFrames.uv"
@@ -170,8 +116,8 @@ public procedure validatedAbstractMachineObjectsResponsibilityAndAuthorityDynami
         count = count + 1usize
     }
     if acceptedObligationEntryMatches(
-        "def.RuntimeBindingStateLookup",
-        17519usize,
+        "def.RuntimeBindingIdentityAndValue",
+        17518usize,
         "HelloUltraviolet::Reference::Authority",
         "runAuthorityRegionsAndFramesReference",
         "Source/Reference/Authority/RegionsAndFrames.uv"
@@ -179,7 +125,7 @@ public procedure validatedAbstractMachineObjectsResponsibilityAndAuthorityDynami
         count = count + 1usize
     }
     if acceptedObligationEntryMatches(
-        "LookupVal-Bind-Value",
+        "def.FreshBindId",
         17533usize,
         "HelloUltraviolet::Reference::Authority",
         "runAuthorityRegionsAndFramesReference",
@@ -188,8 +134,62 @@ public procedure validatedAbstractMachineObjectsResponsibilityAndAuthorityDynami
         count = count + 1usize
     }
     if acceptedObligationEntryMatches(
+        "def.Last",
+        17547usize,
+        "HelloUltraviolet::Reference::Authority",
+        "runAuthorityRegionsAndFramesReference",
+        "Source/Reference/Authority/RegionsAndFrames.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "def.NearestScope",
+        17562usize,
+        "HelloUltraviolet::Reference::Authority",
+        "runAuthorityRegionsAndFramesReference",
+        "Source/Reference/Authority/RegionsAndFrames.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "def.LookupBind",
+        17579usize,
+        "HelloUltraviolet::Reference::Authority",
+        "runAuthorityRegionsAndFramesReference",
+        "Source/Reference/Authority/RegionsAndFrames.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "def.RuntimeBindingValueLookup",
+        17593usize,
+        "HelloUltraviolet::Reference::Authority",
+        "runAuthorityRegionsAndFramesReference",
+        "Source/Reference/Authority/RegionsAndFrames.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "def.RuntimeBindingStateLookup",
+        17607usize,
+        "HelloUltraviolet::Reference::Authority",
+        "runAuthorityRegionsAndFramesReference",
+        "Source/Reference/Authority/RegionsAndFrames.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "LookupVal-Bind-Value",
+        17621usize,
+        "HelloUltraviolet::Reference::Authority",
+        "runAuthorityRegionsAndFramesReference",
+        "Source/Reference/Authority/RegionsAndFrames.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
         "LookupVal-Bind-Alias",
-        17551usize,
+        17639usize,
         "HelloUltraviolet::Reference::Authority",
         "runAuthorityRegionsAndFramesReference",
         "Source/Reference/Authority/RegionsAndFrames.uv"
@@ -198,7 +198,7 @@ public procedure validatedAbstractMachineObjectsResponsibilityAndAuthorityDynami
     }
     if acceptedObligationEntryMatches(
         "LookupVal-Path",
-        17569usize,
+        17657usize,
         "HelloUltraviolet::Reference::Authority",
         "runAuthorityRegionsAndFramesReference",
         "Source/Reference/Authority/RegionsAndFrames.uv"
@@ -207,7 +207,7 @@ public procedure validatedAbstractMachineObjectsResponsibilityAndAuthorityDynami
     }
     if acceptedObligationEntryMatches(
         "LookupValPath-Builtin",
-        17587usize,
+        17675usize,
         "HelloUltraviolet::Reference::Authority",
         "runAuthorityRegionsAndFramesReference",
         "Source/Reference/Authority/RegionsAndFrames.uv"
@@ -216,7 +216,7 @@ public procedure validatedAbstractMachineObjectsResponsibilityAndAuthorityDynami
     }
     if acceptedObligationEntryMatches(
         "LookupValPath-Static",
-        17605usize,
+        17693usize,
         "HelloUltraviolet::Reference::Authority",
         "runAuthorityRegionsAndFramesReference",
         "Source/Reference/Authority/RegionsAndFrames.uv"
@@ -225,7 +225,7 @@ public procedure validatedAbstractMachineObjectsResponsibilityAndAuthorityDynami
     }
     if acceptedObligationEntryMatches(
         "LookupValPath-Proc",
-        17623usize,
+        17711usize,
         "HelloUltraviolet::Reference::Authority",
         "runAuthorityRegionsAndFramesReference",
         "Source/Reference/Authority/RegionsAndFrames.uv"
@@ -234,7 +234,7 @@ public procedure validatedAbstractMachineObjectsResponsibilityAndAuthorityDynami
     }
     if acceptedObligationEntryMatches(
         "LookupValPath-RecordCtor",
-        17641usize,
+        17729usize,
         "HelloUltraviolet::Reference::Authority",
         "runAuthorityRegionsAndFramesReference",
         "Source/Reference/Authority/RegionsAndFrames.uv"
@@ -243,7 +243,7 @@ public procedure validatedAbstractMachineObjectsResponsibilityAndAuthorityDynami
     }
     if acceptedObligationEntryMatches(
         "def.ScopeValueAndStateUpdate",
-        17659usize,
+        17747usize,
         "HelloUltraviolet::Reference::Authority",
         "runAuthorityRegionsAndFramesReference",
         "Source/Reference/Authority/RegionsAndFrames.uv"
@@ -252,7 +252,7 @@ public procedure validatedAbstractMachineObjectsResponsibilityAndAuthorityDynami
     }
     if acceptedObligationEntryMatches(
         "def.UpdateRuntimeBindingValue",
-        17674usize,
+        17762usize,
         "HelloUltraviolet::Reference::Authority",
         "runAuthorityRegionsAndFramesReference",
         "Source/Reference/Authority/RegionsAndFrames.uv"
@@ -261,7 +261,7 @@ public procedure validatedAbstractMachineObjectsResponsibilityAndAuthorityDynami
     }
     if acceptedObligationEntryMatches(
         "def.SetRuntimeBindingState",
-        17688usize,
+        17776usize,
         "HelloUltraviolet::Reference::Authority",
         "runAuthorityRegionsAndFramesReference",
         "Source/Reference/Authority/RegionsAndFrames.uv"
@@ -270,60 +270,6 @@ public procedure validatedAbstractMachineObjectsResponsibilityAndAuthorityDynami
     }
     if acceptedObligationEntryMatches(
         "def.RuntimeBindingTypeAndInfo",
-        17702usize,
-        "HelloUltraviolet::Reference::Authority",
-        "runAuthorityRegionsAndFramesReference",
-        "Source/Reference/Authority/RegionsAndFrames.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
-        "def.BindRuntimeValue",
-        17717usize,
-        "HelloUltraviolet::Reference::Authority",
-        "runAuthorityRegionsAndFramesReference",
-        "Source/Reference/Authority/RegionsAndFrames.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
-        "def.BindPatternValue",
-        17731usize,
-        "HelloUltraviolet::Reference::Authority",
-        "runAuthorityRegionsAndFramesReference",
-        "Source/Reference/Authority/RegionsAndFrames.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
-        "def.PatternBindingOrder",
-        17745usize,
-        "HelloUltraviolet::Reference::Authority",
-        "runAuthorityRegionsAndFramesReference",
-        "Source/Reference/Authority/RegionsAndFrames.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
-        "def.BindRuntimeList",
-        17759usize,
-        "HelloUltraviolet::Reference::Authority",
-        "runAuthorityRegionsAndFramesReference",
-        "Source/Reference/Authority/RegionsAndFrames.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
-        "def.BindPattern",
-        17774usize,
-        "HelloUltraviolet::Reference::Authority",
-        "runAuthorityRegionsAndFramesReference",
-        "Source/Reference/Authority/RegionsAndFrames.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
-        "def.RuntimeRegionEntry",
         17790usize,
         "HelloUltraviolet::Reference::Authority",
         "runAuthorityRegionsAndFramesReference",
@@ -332,8 +278,62 @@ public procedure validatedAbstractMachineObjectsResponsibilityAndAuthorityDynami
         count = count + 1usize
     }
     if acceptedObligationEntryMatches(
+        "def.BindRuntimeValue",
+        17805usize,
+        "HelloUltraviolet::Reference::Authority",
+        "runAuthorityRegionsAndFramesReference",
+        "Source/Reference/Authority/RegionsAndFrames.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "def.BindPatternValue",
+        17819usize,
+        "HelloUltraviolet::Reference::Authority",
+        "runAuthorityRegionsAndFramesReference",
+        "Source/Reference/Authority/RegionsAndFrames.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "def.PatternBindingOrder",
+        17833usize,
+        "HelloUltraviolet::Reference::Authority",
+        "runAuthorityRegionsAndFramesReference",
+        "Source/Reference/Authority/RegionsAndFrames.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "def.BindRuntimeList",
+        17847usize,
+        "HelloUltraviolet::Reference::Authority",
+        "runAuthorityRegionsAndFramesReference",
+        "Source/Reference/Authority/RegionsAndFrames.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "def.BindPattern",
+        17862usize,
+        "HelloUltraviolet::Reference::Authority",
+        "runAuthorityRegionsAndFramesReference",
+        "Source/Reference/Authority/RegionsAndFrames.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "def.RuntimeRegionEntry",
+        17878usize,
+        "HelloUltraviolet::Reference::Authority",
+        "runAuthorityRegionsAndFramesReference",
+        "Source/Reference/Authority/RegionsAndFrames.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
         "def.RuntimeAddressTags",
-        17808usize,
+        17896usize,
         "HelloUltraviolet::Reference::Authority",
         "runAuthorityRegionsAndFramesReference",
         "Source/Reference/Authority/RegionsAndFrames.uv"
@@ -342,7 +342,7 @@ public procedure validatedAbstractMachineObjectsResponsibilityAndAuthorityDynami
     }
     if acceptedObligationEntryMatches(
         "def.RuntimeRegionStack",
-        17823usize,
+        17911usize,
         "HelloUltraviolet::Reference::Authority",
         "runAuthorityRegionsAndFramesReference",
         "Source/Reference/Authority/RegionsAndFrames.uv"
@@ -351,7 +351,7 @@ public procedure validatedAbstractMachineObjectsResponsibilityAndAuthorityDynami
     }
     if acceptedObligationEntryMatches(
         "def.RegionArena",
-        17837usize,
+        17925usize,
         "HelloUltraviolet::Reference::Authority",
         "runAuthorityRegionsAndFramesReference",
         "Source/Reference/Authority/RegionsAndFrames.uv"
@@ -360,7 +360,7 @@ public procedure validatedAbstractMachineObjectsResponsibilityAndAuthorityDynami
     }
     if acceptedObligationEntryMatches(
         "def.UpdateRegionArena",
-        17852usize,
+        17940usize,
         "HelloUltraviolet::Reference::Authority",
         "runAuthorityRegionsAndFramesReference",
         "Source/Reference/Authority/RegionsAndFrames.uv"
@@ -369,7 +369,7 @@ public procedure validatedAbstractMachineObjectsResponsibilityAndAuthorityDynami
     }
     if acceptedObligationEntryMatches(
         "def.ArenaNew",
-        17866usize,
+        17954usize,
         "HelloUltraviolet::Reference::Authority",
         "runAuthorityRegionsAndFramesReference",
         "Source/Reference/Authority/RegionsAndFrames.uv"
@@ -378,7 +378,7 @@ public procedure validatedAbstractMachineObjectsResponsibilityAndAuthorityDynami
     }
     if acceptedObligationEntryMatches(
         "def.FreshRuntimeAddress",
-        17880usize,
+        17968usize,
         "HelloUltraviolet::Reference::Authority",
         "runAuthorityRegionsAndFramesReference",
         "Source/Reference/Authority/RegionsAndFrames.uv"
@@ -387,7 +387,7 @@ public procedure validatedAbstractMachineObjectsResponsibilityAndAuthorityDynami
     }
     if acceptedObligationEntryMatches(
         "def.Prefix",
-        17894usize,
+        17982usize,
         "HelloUltraviolet::Reference::Authority",
         "runAuthorityRegionsAndFramesReference",
         "Source/Reference/Authority/RegionsAndFrames.uv"
@@ -396,7 +396,7 @@ public procedure validatedAbstractMachineObjectsResponsibilityAndAuthorityDynami
     }
     if acceptedObligationEntryMatches(
         "def.ArenaAppend",
-        17908usize,
+        17996usize,
         "HelloUltraviolet::Reference::Authority",
         "runAuthorityRegionsAndFramesReference",
         "Source/Reference/Authority/RegionsAndFrames.uv"
@@ -405,60 +405,6 @@ public procedure validatedAbstractMachineObjectsResponsibilityAndAuthorityDynami
     }
     if acceptedObligationEntryMatches(
         "def.ArenaMark",
-        17922usize,
-        "HelloUltraviolet::Reference::Authority",
-        "runAuthorityRegionsAndFramesReference",
-        "Source/Reference/Authority/RegionsAndFrames.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
-        "def.ArenaResetTo",
-        17936usize,
-        "HelloUltraviolet::Reference::Authority",
-        "runAuthorityRegionsAndFramesReference",
-        "Source/Reference/Authority/RegionsAndFrames.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
-        "def.ArenaClear",
-        17950usize,
-        "HelloUltraviolet::Reference::Authority",
-        "runAuthorityRegionsAndFramesReference",
-        "Source/Reference/Authority/RegionsAndFrames.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
-        "def.ArenaRemove",
-        17964usize,
-        "HelloUltraviolet::Reference::Authority",
-        "runAuthorityRegionsAndFramesReference",
-        "Source/Reference/Authority/RegionsAndFrames.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
-        "def.RegionValue",
-        17978usize,
-        "HelloUltraviolet::Reference::Authority",
-        "runAuthorityRegionsAndFramesReference",
-        "Source/Reference/Authority/RegionsAndFrames.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
-        "def.ResolveRuntimeRegionEntry",
-        17993usize,
-        "HelloUltraviolet::Reference::Authority",
-        "runAuthorityRegionsAndFramesReference",
-        "Source/Reference/Authority/RegionsAndFrames.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
-        "def.ActiveRuntimeRegion",
         18010usize,
         "HelloUltraviolet::Reference::Authority",
         "runAuthorityRegionsAndFramesReference",
@@ -467,8 +413,62 @@ public procedure validatedAbstractMachineObjectsResponsibilityAndAuthorityDynami
         count = count + 1usize
     }
     if acceptedObligationEntryMatches(
+        "def.ArenaResetTo",
+        18024usize,
+        "HelloUltraviolet::Reference::Authority",
+        "runAuthorityRegionsAndFramesReference",
+        "Source/Reference/Authority/RegionsAndFrames.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "def.ArenaClear",
+        18038usize,
+        "HelloUltraviolet::Reference::Authority",
+        "runAuthorityRegionsAndFramesReference",
+        "Source/Reference/Authority/RegionsAndFrames.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "def.ArenaRemove",
+        18052usize,
+        "HelloUltraviolet::Reference::Authority",
+        "runAuthorityRegionsAndFramesReference",
+        "Source/Reference/Authority/RegionsAndFrames.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "def.RegionValue",
+        18066usize,
+        "HelloUltraviolet::Reference::Authority",
+        "runAuthorityRegionsAndFramesReference",
+        "Source/Reference/Authority/RegionsAndFrames.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "def.ResolveRuntimeRegionEntry",
+        18081usize,
+        "HelloUltraviolet::Reference::Authority",
+        "runAuthorityRegionsAndFramesReference",
+        "Source/Reference/Authority/RegionsAndFrames.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "def.ActiveRuntimeRegion",
+        18098usize,
+        "HelloUltraviolet::Reference::Authority",
+        "runAuthorityRegionsAndFramesReference",
+        "Source/Reference/Authority/RegionsAndFrames.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
         "def.ResolveRuntimeRegionTargetAndTag",
-        18025usize,
+        18113usize,
         "HelloUltraviolet::Reference::Authority",
         "runAuthorityRegionsAndFramesReference",
         "Source/Reference/Authority/RegionsAndFrames.uv"
@@ -477,7 +477,7 @@ public procedure validatedAbstractMachineObjectsResponsibilityAndAuthorityDynami
     }
     if acceptedObligationEntryMatches(
         "def.FreshRuntimeRegionTagAndArena",
-        18040usize,
+        18128usize,
         "HelloUltraviolet::Reference::Authority",
         "runAuthorityRegionsAndFramesReference",
         "Source/Reference/Authority/RegionsAndFrames.uv"
@@ -486,7 +486,7 @@ public procedure validatedAbstractMachineObjectsResponsibilityAndAuthorityDynami
     }
     if acceptedObligationEntryMatches(
         "def.UpdateRegionStack",
-        18055usize,
+        18143usize,
         "HelloUltraviolet::Reference::Authority",
         "runAuthorityRegionsAndFramesReference",
         "Source/Reference/Authority/RegionsAndFrames.uv"
@@ -495,7 +495,7 @@ public procedure validatedAbstractMachineObjectsResponsibilityAndAuthorityDynami
     }
     if acceptedObligationEntryMatches(
         "def.RegionNew",
-        18069usize,
+        18157usize,
         "HelloUltraviolet::Reference::Authority",
         "runAuthorityRegionsAndFramesReference",
         "Source/Reference/Authority/RegionsAndFrames.uv"
@@ -504,7 +504,7 @@ public procedure validatedAbstractMachineObjectsResponsibilityAndAuthorityDynami
     }
     if acceptedObligationEntryMatches(
         "def.RegionOpen",
-        18083usize,
+        18171usize,
         "HelloUltraviolet::Reference::Authority",
         "runAuthorityRegionsAndFramesReference",
         "Source/Reference/Authority/RegionsAndFrames.uv"
@@ -513,7 +513,7 @@ public procedure validatedAbstractMachineObjectsResponsibilityAndAuthorityDynami
     }
     if acceptedObligationEntryMatches(
         "def.FrameEnter",
-        18097usize,
+        18185usize,
         "HelloUltraviolet::Reference::Authority",
         "runAuthorityRegionsAndFramesReference",
         "Source/Reference/Authority/RegionsAndFrames.uv"
@@ -522,60 +522,6 @@ public procedure validatedAbstractMachineObjectsResponsibilityAndAuthorityDynami
     }
     if acceptedObligationEntryMatches(
         "def.BindRegionAlias",
-        18111usize,
-        "HelloUltraviolet::Reference::Authority",
-        "runAuthorityRegionsAndFramesReference",
-        "Source/Reference/Authority/RegionsAndFrames.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
-        "def.TagAddr",
-        18126usize,
-        "HelloUltraviolet::Reference::Authority",
-        "runAuthorityRegionsAndFramesReference",
-        "Source/Reference/Authority/RegionsAndFrames.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
-        "def.TagAddrFrom",
-        18140usize,
-        "HelloUltraviolet::Reference::Authority",
-        "runAuthorityRegionsAndFramesReference",
-        "Source/Reference/Authority/RegionsAndFrames.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
-        "def.RegionAlloc",
-        18154usize,
-        "HelloUltraviolet::Reference::Authority",
-        "runAuthorityRegionsAndFramesReference",
-        "Source/Reference/Authority/RegionsAndFrames.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
-        "def.FreshRuntimeRegionTags",
-        18168usize,
-        "HelloUltraviolet::Reference::Authority",
-        "runAuthorityRegionsAndFramesReference",
-        "Source/Reference/Authority/RegionsAndFrames.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
-        "def.RetagRegions",
-        18182usize,
-        "HelloUltraviolet::Reference::Authority",
-        "runAuthorityRegionsAndFramesReference",
-        "Source/Reference/Authority/RegionsAndFrames.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
-        "def.RegionReset",
         18199usize,
         "HelloUltraviolet::Reference::Authority",
         "runAuthorityRegionsAndFramesReference",
@@ -584,8 +530,62 @@ public procedure validatedAbstractMachineObjectsResponsibilityAndAuthorityDynami
         count = count + 1usize
     }
     if acceptedObligationEntryMatches(
+        "def.TagAddr",
+        18214usize,
+        "HelloUltraviolet::Reference::Authority",
+        "runAuthorityRegionsAndFramesReference",
+        "Source/Reference/Authority/RegionsAndFrames.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "def.TagAddrFrom",
+        18228usize,
+        "HelloUltraviolet::Reference::Authority",
+        "runAuthorityRegionsAndFramesReference",
+        "Source/Reference/Authority/RegionsAndFrames.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "def.RegionAlloc",
+        18242usize,
+        "HelloUltraviolet::Reference::Authority",
+        "runAuthorityRegionsAndFramesReference",
+        "Source/Reference/Authority/RegionsAndFrames.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "def.FreshRuntimeRegionTags",
+        18256usize,
+        "HelloUltraviolet::Reference::Authority",
+        "runAuthorityRegionsAndFramesReference",
+        "Source/Reference/Authority/RegionsAndFrames.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "def.RetagRegions",
+        18270usize,
+        "HelloUltraviolet::Reference::Authority",
+        "runAuthorityRegionsAndFramesReference",
+        "Source/Reference/Authority/RegionsAndFrames.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "def.RegionReset",
+        18287usize,
+        "HelloUltraviolet::Reference::Authority",
+        "runAuthorityRegionsAndFramesReference",
+        "Source/Reference/Authority/RegionsAndFrames.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
         "def.PopRegions",
-        18213usize,
+        18301usize,
         "HelloUltraviolet::Reference::Authority",
         "runAuthorityRegionsAndFramesReference",
         "Source/Reference/Authority/RegionsAndFrames.uv"
@@ -594,7 +594,7 @@ public procedure validatedAbstractMachineObjectsResponsibilityAndAuthorityDynami
     }
     if acceptedObligationEntryMatches(
         "def.RegionFree",
-        18230usize,
+        18318usize,
         "HelloUltraviolet::Reference::Authority",
         "runAuthorityRegionsAndFramesReference",
         "Source/Reference/Authority/RegionsAndFrames.uv"
@@ -603,7 +603,7 @@ public procedure validatedAbstractMachineObjectsResponsibilityAndAuthorityDynami
     }
     if acceptedObligationEntryMatches(
         "def.FrameMark",
-        18244usize,
+        18332usize,
         "HelloUltraviolet::Reference::Authority",
         "runAuthorityRegionsAndFramesReference",
         "Source/Reference/Authority/RegionsAndFrames.uv"
@@ -612,7 +612,7 @@ public procedure validatedAbstractMachineObjectsResponsibilityAndAuthorityDynami
     }
     if acceptedObligationEntryMatches(
         "def.PopRegionScope",
-        18258usize,
+        18346usize,
         "HelloUltraviolet::Reference::Authority",
         "runAuthorityRegionsAndFramesReference",
         "Source/Reference/Authority/RegionsAndFrames.uv"
@@ -621,7 +621,7 @@ public procedure validatedAbstractMachineObjectsResponsibilityAndAuthorityDynami
     }
     if acceptedObligationEntryMatches(
         "def.ReleaseArena",
-        18275usize,
+        18363usize,
         "HelloUltraviolet::Reference::Authority",
         "runAuthorityRegionsAndFramesReference",
         "Source/Reference/Authority/RegionsAndFrames.uv"
@@ -630,7 +630,7 @@ public procedure validatedAbstractMachineObjectsResponsibilityAndAuthorityDynami
     }
     if acceptedObligationEntryMatches(
         "def.ResetArena",
-        18289usize,
+        18377usize,
         "HelloUltraviolet::Reference::Authority",
         "runAuthorityRegionsAndFramesReference",
         "Source/Reference/Authority/RegionsAndFrames.uv"
@@ -639,7 +639,7 @@ public procedure validatedAbstractMachineObjectsResponsibilityAndAuthorityDynami
     }
     if acceptedObligationEntryMatches(
         "req.RegionRuntimeOwnershipBoundary",
-        18303usize,
+        18391usize,
         "HelloUltraviolet::Reference::Authority",
         "runAuthorityRegionsAndFramesReference",
         "Source/Reference/Authority/RegionsAndFrames.uv"
@@ -648,7 +648,7 @@ public procedure validatedAbstractMachineObjectsResponsibilityAndAuthorityDynami
     }
     if acceptedObligationEntryMatches(
         "req.RegionReleaseCleanupBeforeArenaReclaim",
-        18319usize,
+        18407usize,
         "HelloUltraviolet::Reference::Authority",
         "runAuthorityRegionsAndFramesReference",
         "Source/Reference/Authority/RegionsAndFrames.uv"
@@ -657,7 +657,7 @@ public procedure validatedAbstractMachineObjectsResponsibilityAndAuthorityDynami
     }
     if acceptedObligationEntryMatches(
         "req.ArenaReclaimNoDrop",
-        18334usize,
+        18422usize,
         "HelloUltraviolet::Reference::Authority",
         "runAuthorityRegionsAndFramesReference",
         "Source/Reference/Authority/RegionsAndFrames.uv"
@@ -666,7 +666,7 @@ public procedure validatedAbstractMachineObjectsResponsibilityAndAuthorityDynami
     }
     if acceptedObligationEntryMatches(
         "def.RegionProcedureJudgements",
-        18348usize,
+        18436usize,
         "HelloUltraviolet::Reference::Authority",
         "runAuthorityRegionsAndFramesReference",
         "Source/Reference/Authority/RegionsAndFrames.uv"
@@ -675,7 +675,7 @@ public procedure validatedAbstractMachineObjectsResponsibilityAndAuthorityDynami
     }
     if acceptedObligationEntryMatches(
         "Region-New-Scoped",
-        18362usize,
+        18450usize,
         "HelloUltraviolet::Reference::Authority",
         "runAuthorityRegionsAndFramesReference",
         "Source/Reference/Authority/RegionsAndFrames.uv"
@@ -684,7 +684,7 @@ public procedure validatedAbstractMachineObjectsResponsibilityAndAuthorityDynami
     }
     if acceptedObligationEntryMatches(
         "Region-Alloc-Proc",
-        18380usize,
+        18468usize,
         "HelloUltraviolet::Reference::Authority",
         "runAuthorityRegionsAndFramesReference",
         "Source/Reference/Authority/RegionsAndFrames.uv"
@@ -693,7 +693,7 @@ public procedure validatedAbstractMachineObjectsResponsibilityAndAuthorityDynami
     }
     if acceptedObligationEntryMatches(
         "Region-Reset-Proc",
-        18398usize,
+        18486usize,
         "HelloUltraviolet::Reference::Authority",
         "runAuthorityRegionsAndFramesReference",
         "Source/Reference/Authority/RegionsAndFrames.uv"
@@ -702,7 +702,7 @@ public procedure validatedAbstractMachineObjectsResponsibilityAndAuthorityDynami
     }
     if acceptedObligationEntryMatches(
         "Region-Freeze-Proc",
-        18416usize,
+        18504usize,
         "HelloUltraviolet::Reference::Authority",
         "runAuthorityRegionsAndFramesReference",
         "Source/Reference/Authority/RegionsAndFrames.uv"
@@ -711,7 +711,7 @@ public procedure validatedAbstractMachineObjectsResponsibilityAndAuthorityDynami
     }
     if acceptedObligationEntryMatches(
         "Region-Thaw-Proc",
-        18434usize,
+        18522usize,
         "HelloUltraviolet::Reference::Authority",
         "runAuthorityRegionsAndFramesReference",
         "Source/Reference/Authority/RegionsAndFrames.uv"
@@ -720,7 +720,7 @@ public procedure validatedAbstractMachineObjectsResponsibilityAndAuthorityDynami
     }
     if acceptedObligationEntryMatches(
         "Region-Free-Proc",
-        18452usize,
+        18540usize,
         "HelloUltraviolet::Reference::Authority",
         "runAuthorityRegionsAndFramesReference",
         "Source/Reference/Authority/RegionsAndFrames.uv"
@@ -729,7 +729,7 @@ public procedure validatedAbstractMachineObjectsResponsibilityAndAuthorityDynami
     }
     if acceptedObligationEntryMatches(
         "def.BlockEnter",
-        18470usize,
+        18558usize,
         "HelloUltraviolet::Reference::Authority",
         "runAuthorityRegionsAndFramesReference",
         "Source/Reference/Authority/RegionsAndFrames.uv"
@@ -738,51 +738,6 @@ public procedure validatedAbstractMachineObjectsResponsibilityAndAuthorityDynami
     }
     if acceptedObligationEntryMatches(
         "def.ScalarRuntimeValues",
-        18484usize,
-        "HelloUltraviolet::Reference::Authority",
-        "runAuthorityRegionsAndFramesReference",
-        "Source/Reference/Authority/RegionsAndFrames.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
-        "def.PointerRuntimeValues",
-        18506usize,
-        "HelloUltraviolet::Reference::Authority",
-        "runAuthorityRegionsAndFramesReference",
-        "Source/Reference/Authority/RegionsAndFrames.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
-        "def.AggregateRuntimeValues",
-        18520usize,
-        "HelloUltraviolet::Reference::Authority",
-        "runAuthorityRegionsAndFramesReference",
-        "Source/Reference/Authority/RegionsAndFrames.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
-        "def.RuntimeValueDomain",
-        18543usize,
-        "HelloUltraviolet::Reference::Authority",
-        "runAuthorityRegionsAndFramesReference",
-        "Source/Reference/Authority/RegionsAndFrames.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
-        "def.TupleValueOperations",
-        18557usize,
-        "HelloUltraviolet::Reference::Authority",
-        "runAuthorityRegionsAndFramesReference",
-        "Source/Reference/Authority/RegionsAndFrames.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
-        "def.RecordFieldValueOperations",
         18572usize,
         "HelloUltraviolet::Reference::Authority",
         "runAuthorityRegionsAndFramesReference",
@@ -791,8 +746,53 @@ public procedure validatedAbstractMachineObjectsResponsibilityAndAuthorityDynami
         count = count + 1usize
     }
     if acceptedObligationEntryMatches(
+        "def.PointerRuntimeValues",
+        18594usize,
+        "HelloUltraviolet::Reference::Authority",
+        "runAuthorityRegionsAndFramesReference",
+        "Source/Reference/Authority/RegionsAndFrames.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "def.AggregateRuntimeValues",
+        18608usize,
+        "HelloUltraviolet::Reference::Authority",
+        "runAuthorityRegionsAndFramesReference",
+        "Source/Reference/Authority/RegionsAndFrames.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "def.RuntimeValueDomain",
+        18631usize,
+        "HelloUltraviolet::Reference::Authority",
+        "runAuthorityRegionsAndFramesReference",
+        "Source/Reference/Authority/RegionsAndFrames.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "def.TupleValueOperations",
+        18645usize,
+        "HelloUltraviolet::Reference::Authority",
+        "runAuthorityRegionsAndFramesReference",
+        "Source/Reference/Authority/RegionsAndFrames.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "def.RecordFieldValueOperations",
+        18660usize,
+        "HelloUltraviolet::Reference::Authority",
+        "runAuthorityRegionsAndFramesReference",
+        "Source/Reference/Authority/RegionsAndFrames.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
         "def.IndexAndSliceValueOperations",
-        18587usize,
+        18675usize,
         "HelloUltraviolet::Reference::Authority",
         "runAuthorityRegionsAndFramesReference",
         "Source/Reference/Authority/RegionsAndFrames.uv"
@@ -801,7 +801,7 @@ public procedure validatedAbstractMachineObjectsResponsibilityAndAuthorityDynami
     }
     if acceptedObligationEntryMatches(
         "def.AddressPrimitiveJudgments",
-        18605usize,
+        18693usize,
         "HelloUltraviolet::Reference::Authority",
         "runAuthorityRegionsAndFramesReference",
         "Source/Reference/Authority/RegionsAndFrames.uv"
@@ -810,7 +810,7 @@ public procedure validatedAbstractMachineObjectsResponsibilityAndAuthorityDynami
     }
     if acceptedObligationEntryMatches(
         "def.AddressArithmetic",
-        18619usize,
+        18707usize,
         "HelloUltraviolet::Reference::Authority",
         "runAuthorityRegionsAndFramesReference",
         "Source/Reference/Authority/RegionsAndFrames.uv"
@@ -819,7 +819,7 @@ public procedure validatedAbstractMachineObjectsResponsibilityAndAuthorityDynami
     }
     if acceptedObligationEntryMatches(
         "def.ElementType",
-        18633usize,
+        18721usize,
         "HelloUltraviolet::Reference::Authority",
         "runAuthorityRegionsAndFramesReference",
         "Source/Reference/Authority/RegionsAndFrames.uv"
@@ -828,7 +828,7 @@ public procedure validatedAbstractMachineObjectsResponsibilityAndAuthorityDynami
     }
     if acceptedObligationEntryMatches(
         "def.AggregateAddressCalculation",
-        18647usize,
+        18735usize,
         "HelloUltraviolet::Reference::Authority",
         "runAuthorityRegionsAndFramesReference",
         "Source/Reference/Authority/RegionsAndFrames.uv"
@@ -837,7 +837,7 @@ public procedure validatedAbstractMachineObjectsResponsibilityAndAuthorityDynami
     }
     if acceptedObligationEntryMatches(
         "def.PointerStateAndAddress",
-        18666usize,
+        18754usize,
         "HelloUltraviolet::Reference::Authority",
         "runAuthorityRegionsAndFramesReference",
         "Source/Reference/Authority/RegionsAndFrames.uv"
@@ -846,7 +846,7 @@ public procedure validatedAbstractMachineObjectsResponsibilityAndAuthorityDynami
     }
     if acceptedObligationEntryMatches(
         "def.BindingAddresses",
-        18685usize,
+        18773usize,
         "HelloUltraviolet::Reference::Authority",
         "runAuthorityRegionsAndFramesReference",
         "Source/Reference/Authority/RegionsAndFrames.uv"
@@ -855,7 +855,7 @@ public procedure validatedAbstractMachineObjectsResponsibilityAndAuthorityDynami
     }
     if acceptedObligationEntryMatches(
         "def.RuntimeAddressTagLookup",
-        18703usize,
+        18791usize,
         "HelloUltraviolet::Reference::Authority",
         "runAuthorityRegionsAndFramesReference",
         "Source/Reference/Authority/RegionsAndFrames.uv"
@@ -864,7 +864,7 @@ public procedure validatedAbstractMachineObjectsResponsibilityAndAuthorityDynami
     }
     if acceptedObligationEntryMatches(
         "def.RuntimeTagActive",
-        18720usize,
+        18808usize,
         "HelloUltraviolet::Reference::Authority",
         "runAuthorityRegionsAndFramesReference",
         "Source/Reference/Authority/RegionsAndFrames.uv"
@@ -873,7 +873,7 @@ public procedure validatedAbstractMachineObjectsResponsibilityAndAuthorityDynami
     }
     if acceptedObligationEntryMatches(
         "def.DynamicAddressState",
-        18735usize,
+        18823usize,
         "HelloUltraviolet::Reference::Authority",
         "runAuthorityRegionsAndFramesReference",
         "Source/Reference/Authority/RegionsAndFrames.uv"

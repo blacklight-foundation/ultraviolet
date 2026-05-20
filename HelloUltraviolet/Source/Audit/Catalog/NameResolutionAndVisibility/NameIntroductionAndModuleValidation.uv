@@ -9,7 +9,7 @@ public procedure validatedNameResolutionAndVisibilityNameIntroductionAndModuleVa
     var count: usize = 0usize
     if acceptedObligationEntryMatches(
         "def.ScopeDomain",
-        18999usize,
+        19087usize,
         "HelloUltraviolet::Reference::Names",
         "runNamesQualifiedResolutionReference",
         "Source/Reference/Names/QualifiedResolution.uv"
@@ -18,7 +18,7 @@ public procedure validatedNameResolutionAndVisibilityNameIntroductionAndModuleVa
     }
     if acceptedObligationEntryMatches(
         "def.NameIntroductionScopeSequence",
-        19013usize,
+        19101usize,
         "HelloUltraviolet::Reference::Names",
         "runNamesQualifiedResolutionReference",
         "Source/Reference/Names/QualifiedResolution.uv"
@@ -27,7 +27,7 @@ public procedure validatedNameResolutionAndVisibilityNameIntroductionAndModuleVa
     }
     if acceptedObligationEntryMatches(
         "def.InScope",
-        19027usize,
+        19115usize,
         "HelloUltraviolet::Reference::Names",
         "runNamesQualifiedResolutionReference",
         "Source/Reference/Names/QualifiedResolution.uv"
@@ -36,7 +36,7 @@ public procedure validatedNameResolutionAndVisibilityNameIntroductionAndModuleVa
     }
     if acceptedObligationEntryMatches(
         "def.InOuter",
-        19041usize,
+        19129usize,
         "HelloUltraviolet::Reference::Names",
         "runNamesQualifiedResolutionReference",
         "Source/Reference/Names/QualifiedResolution.uv"
@@ -45,7 +45,7 @@ public procedure validatedNameResolutionAndVisibilityNameIntroductionAndModuleVa
     }
     if acceptedObligationEntryMatches(
         "Intro-Ok",
-        19055usize,
+        19143usize,
         "HelloUltraviolet::Reference::Names",
         "runNamesQualifiedResolutionReference",
         "Source/Reference/Names/QualifiedResolution.uv"
@@ -54,7 +54,7 @@ public procedure validatedNameResolutionAndVisibilityNameIntroductionAndModuleVa
     }
     if acceptedObligationEntryMatches(
         "Intro-Dup",
-        19073usize,
+        19161usize,
         "HelloUltraviolet::Reference::Names",
         "runNamesQualifiedResolutionReference",
         "Source/Reference/Names/QualifiedResolution.uv"
@@ -63,7 +63,7 @@ public procedure validatedNameResolutionAndVisibilityNameIntroductionAndModuleVa
     }
     if acceptedObligationEntryMatches(
         "Intro-Outer-Err",
-        19091usize,
+        19179usize,
         "HelloUltraviolet::Reference::Names",
         "runNamesQualifiedResolutionReference",
         "Source/Reference/Names/QualifiedResolution.uv"
@@ -72,7 +72,7 @@ public procedure validatedNameResolutionAndVisibilityNameIntroductionAndModuleVa
     }
     if acceptedObligationEntryMatches(
         "Intro-Reserved-Gen-Err",
-        19109usize,
+        19197usize,
         "HelloUltraviolet::Reference::Names",
         "runNamesQualifiedResolutionReference",
         "Source/Reference/Names/QualifiedResolution.uv"
@@ -81,7 +81,7 @@ public procedure validatedNameResolutionAndVisibilityNameIntroductionAndModuleVa
     }
     if acceptedObligationEntryMatches(
         "Intro-Reserved-Ultraviolet-Err",
-        19127usize,
+        19215usize,
         "HelloUltraviolet::Reference::Names",
         "runNamesQualifiedResolutionReference",
         "Source/Reference/Names/QualifiedResolution.uv"
@@ -90,7 +90,7 @@ public procedure validatedNameResolutionAndVisibilityNameIntroductionAndModuleVa
     }
     if acceptedObligationEntryMatches(
         "req.IntroRulePriority",
-        19145usize,
+        19233usize,
         "HelloUltraviolet::Reference::Names",
         "runNamesQualifiedResolutionReference",
         "Source/Reference/Names/QualifiedResolution.uv"
@@ -99,51 +99,6 @@ public procedure validatedNameResolutionAndVisibilityNameIntroductionAndModuleVa
     }
     if acceptedObligationEntryMatches(
         "def.UsingAlias",
-        19161usize,
-        "HelloUltraviolet::Reference::Names",
-        "runNamesUsingDeclarationsReference",
-        "Source/Reference/Names/UsingDeclarations.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
-        "Using-Alias-Ok",
-        19177usize,
-        "HelloUltraviolet::Reference::Names",
-        "runNamesUsingDeclarationsReference",
-        "Source/Reference/Names/UsingDeclarations.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
-        "Using-Alias-Unresolved",
-        19195usize,
-        "HelloUltraviolet::Reference::Names",
-        "runNamesUsingDeclarationsReference",
-        "Source/Reference/Names/UsingDeclarations.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
-        "Using-Alias-Dup",
-        19213usize,
-        "HelloUltraviolet::Reference::Names",
-        "runNamesUsingDeclarationsReference",
-        "Source/Reference/Names/UsingDeclarations.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
-        "Using-Alias-Reserved",
-        19231usize,
-        "HelloUltraviolet::Reference::Names",
-        "runNamesUsingDeclarationsReference",
-        "Source/Reference/Names/UsingDeclarations.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
-        "req.UsingAliasRulePriority",
         19249usize,
         "HelloUltraviolet::Reference::Names",
         "runNamesUsingDeclarationsReference",
@@ -152,8 +107,53 @@ public procedure validatedNameResolutionAndVisibilityNameIntroductionAndModuleVa
         count = count + 1usize
     }
     if acceptedObligationEntryMatches(
+        "Using-Alias-Ok",
+        19265usize,
+        "HelloUltraviolet::Reference::Names",
+        "runNamesUsingDeclarationsReference",
+        "Source/Reference/Names/UsingDeclarations.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "Using-Alias-Unresolved",
+        19283usize,
+        "HelloUltraviolet::Reference::Names",
+        "runNamesUsingDeclarationsReference",
+        "Source/Reference/Names/UsingDeclarations.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "Using-Alias-Dup",
+        19301usize,
+        "HelloUltraviolet::Reference::Names",
+        "runNamesUsingDeclarationsReference",
+        "Source/Reference/Names/UsingDeclarations.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "Using-Alias-Reserved",
+        19319usize,
+        "HelloUltraviolet::Reference::Names",
+        "runNamesUsingDeclarationsReference",
+        "Source/Reference/Names/UsingDeclarations.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "req.UsingAliasRulePriority",
+        19337usize,
+        "HelloUltraviolet::Reference::Names",
+        "runNamesUsingDeclarationsReference",
+        "Source/Reference/Names/UsingDeclarations.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
         "def.ModuleNameValidationHelpers",
-        19263usize,
+        19351usize,
         "HelloUltraviolet::Reference::Names",
         "runNamesQualifiedResolutionReference",
         "Source/Reference/Names/QualifiedResolution.uv"
@@ -162,7 +162,7 @@ public procedure validatedNameResolutionAndVisibilityNameIntroductionAndModuleVa
     }
     if acceptedObligationEntryMatches(
         "Validate-Module-Ok",
-        19277usize,
+        19365usize,
         "HelloUltraviolet::Reference::Names",
         "runNamesQualifiedResolutionReference",
         "Source/Reference/Names/QualifiedResolution.uv"
@@ -171,7 +171,7 @@ public procedure validatedNameResolutionAndVisibilityNameIntroductionAndModuleVa
     }
     if acceptedObligationEntryMatches(
         "Validate-Module-Keyword-Err",
-        19295usize,
+        19383usize,
         "HelloUltraviolet::Reference::Names",
         "runNamesQualifiedResolutionReference",
         "Source/Reference/Names/QualifiedResolution.uv"
@@ -180,7 +180,7 @@ public procedure validatedNameResolutionAndVisibilityNameIntroductionAndModuleVa
     }
     if acceptedObligationEntryMatches(
         "req.UniverseScopeReuseHandledByIntro",
-        19313usize,
+        19401usize,
         "HelloUltraviolet::Reference::Names",
         "runNamesQualifiedResolutionReference",
         "Source/Reference/Names/QualifiedResolution.uv"

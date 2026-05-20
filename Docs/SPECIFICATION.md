@@ -3410,6 +3410,27 @@ Op = IOOpenDir ∧ EntryExists(ω, path) ∧ EntryKind(ω, path) ≠ `Dir` ⇒ O
 Busy(io, path, Op, ω) ⇒ Op(io, path, ω) ⇓ (IoError::Busy, ω)
 OtherFailure(io, path, Op, ω) ⇒ Op(io, path, ω) ⇓ (IoError::IoFailure, ω)
 
+NonEmptyDir(ω, path) ⇔ Entries(ω)[path] = DirEntry(names) ∧ ∃ name ∈ names. name ≠ "." ∧ name ≠ ".."
+ParentPath(path) =
+ "\""  if |PathComps(path)| ≤ 1
+ JoinComp([ PathComps(path)[i] | 0 ≤ i < |PathComps(path)| - 1 ])  otherwise
+RemoveName(names, name) = [ n | n ∈ names ∧ n ≠ name ]
+RemoveEntryAt(ω, path, q) =
+ DirEntry(RemoveName(names, Basename(path)))  if q = ParentPath(path) ∧ Entries(ω)[q] = DirEntry(names)
+ Entries(ω)[q]                                otherwise
+IORemoveEntries(ω, path) = { q ↦ RemoveEntryAt(ω, path, q) | q ∈ dom(Entries(ω)) ∧ q ≠ path }
+IORemoveClear(io, path, ω) ⇔ ¬ PathInvalid(io, path, ω) ∧ EntryExists(ω, path) ∧ ¬ PermissionDenied(io, path, IORemove, ω) ∧ ¬ Busy(io, path, IORemove, ω) ∧ ¬ OtherFailure(io, path, IORemove, ω)
+
+IORemoveClear(io, path, ω) ∧ Entries(ω)[path] = FileEntry(_) ∧ IORemove(io, path, ω) ⇓ ((), ω') ⇒ Entries(ω') = IORemoveEntries(ω, path) ∧ Handles(ω') = Handles(ω) ∧ DirIters(ω') = DirIters(ω) ∧ FlushedSet(ω') = FlushedSet(ω) ∧ FailMap(ω') = FailMap(ω)
+IORemoveClear(io, path, ω) ∧ Entries(ω)[path] = OtherEntry ∧ IORemove(io, path, ω) ⇓ ((), ω') ⇒ Entries(ω') = IORemoveEntries(ω, path) ∧ Handles(ω') = Handles(ω) ∧ DirIters(ω') = DirIters(ω) ∧ FlushedSet(ω') = FlushedSet(ω) ∧ FailMap(ω') = FailMap(ω)
+IORemoveClear(io, path, ω) ∧ Entries(ω)[path] = DirEntry(_) ∧ ¬ NonEmptyDir(ω, path) ∧ IORemove(io, path, ω) ⇓ ((), ω') ⇒ Entries(ω') = IORemoveEntries(ω, path) ∧ Handles(ω') = Handles(ω) ∧ DirIters(ω') = DirIters(ω) ∧ FlushedSet(ω') = FlushedSet(ω) ∧ FailMap(ω') = FailMap(ω)
+IORemoveClear(io, path, ω) ∧ NonEmptyDir(ω, path) ⇒ IORemove(io, path, ω) ⇓ (IoError::DirectoryNotEmpty, ω)
+
+`IORemove` is not recursive. A successful `IORemove` removes exactly the named
+entry and the corresponding name from its parent directory entry. It does not
+remove descendant entries, and it does not follow `OtherEntry` entries such as
+symbolic links.
+
 IOReadFile(io, path, ω) ⇓ (r, ω') ∧ IOReadBytes(io, path, ω) ⇓ (bytes, ω'') ∧ ¬ Utf8Valid(bytes) ⇒ r = IoError::IoFailure
 FileReadAll(h, ω) ⇓ (r, ω') ∧ FileReadAllBytes(h, ω) ⇓ (bytes, ω'') ∧ ¬ Utf8Valid(bytes) ⇒ r = IoError::IoFailure
 
@@ -13823,7 +13844,8 @@ IoErrorVariants = [
   VariantDecl(`AlreadyExists`, ⊥, ⊥, ⊥, ⊥),
   VariantDecl(`InvalidPath`, ⊥, ⊥, ⊥, ⊥),
   VariantDecl(`Busy`, ⊥, ⊥, ⊥, ⊥),
-  VariantDecl(`IoFailure`, ⊥, ⊥, ⊥, ⊥)
+  VariantDecl(`IoFailure`, ⊥, ⊥, ⊥, ⊥),
+  VariantDecl(`DirectoryNotEmpty`, ⊥, ⊥, ⊥, ⊥)
 ]
 IoErrorDecl = EnumDecl(⊥, `public`, `IoError`, ⊥, ⊥, [], IoErrorVariants, ⊥, ⊥, ⊥)
 
@@ -25071,6 +25093,7 @@ IoErrorVariant(IoError::AlreadyExists) = `AlreadyExists`
 IoErrorVariant(IoError::InvalidPath) = `InvalidPath`
 IoErrorVariant(IoError::Busy) = `Busy`
 IoErrorVariant(IoError::IoFailure) = `IoFailure`
+IoErrorVariant(IoError::DirectoryNotEmpty) = `DirectoryNotEmpty`
 SpanValue(sp) = CtRecord([`SourceSpan`], [⟨`file`, CtString(sp.file)⟩, ⟨`start_line`, CtPrim(sp.start_line)⟩, ⟨`start_col`, CtPrim(sp.start_col)⟩, ⟨`end_line`, CtPrim(sp.end_line)⟩, ⟨`end_col`, CtPrim(sp.end_col)⟩])
 FieldInfoValue(name, T, vis, index, sp) = CtRecord([`FieldInfo`], [⟨`name`, CtString(name)⟩, ⟨`type`, CtType(T)⟩, ⟨`visibility`, CtString(vis)⟩, ⟨`index`, CtPrim(index)⟩, ⟨`span`, SpanValue(sp)⟩])
 VariantInfoValue(name, payload_kind, payload_types, field_names, sp) = CtRecord([`VariantInfo`], [⟨`name`, CtString(name)⟩, ⟨`payload_kind`, CtString(payload_kind)⟩, ⟨`payload_types`, CtSlice([CtType(T) | T ∈ payload_types])⟩, ⟨`field_names`, CtSlice([CtString(f) | f ∈ field_names])⟩, ⟨`span`, SpanValue(sp)⟩])

@@ -43,7 +43,7 @@ internal procedure sourceNativeWriteOrderFile(
     return sourceNativeIoUnitSucceeded(authority.io~>write_file(SOURCE_NATIVE_ORDER_FILE, data))
 }
 
-#test(name: "source native order 01", covers("def.TestDiscoveryOrder@L28871"))
+#test(name: "source native order 01", covers("def.TestDiscoveryOrder@L28959"))
 internal procedure sourceNativeOrderFirst(authority: TestAuthority) -> bool
 |: |= @result
 {
@@ -52,7 +52,7 @@ internal procedure sourceNativeOrderFirst(authority: TestAuthority) -> bool
         sourceNativeWriteOrderFile(authority, "1")
 }
 
-#test(name: "source native order 02", covers("def.TestDiscoveryOrder@L28871"))
+#test(name: "source native order 02", covers("def.TestDiscoveryOrder@L28959"))
 internal procedure sourceNativeOrderSecond(authority: TestAuthority) -> bool
 |: |= @result
 {
@@ -62,7 +62,7 @@ internal procedure sourceNativeOrderSecond(authority: TestAuthority) -> bool
         sourceNativeWriteOrderFile(authority, "12")
 }
 
-#test(name: "source native order 03", covers("def.TestDiscoveryOrder@L28871"))
+#test(name: "source native order 03", covers("def.TestDiscoveryOrder@L28959"))
 internal procedure sourceNativeOrderThird(authority: TestAuthority) -> bool
 |: |= @result
 {
@@ -87,35 +87,35 @@ internal procedure sourceNativeNamedTest() -> bool
     return true
 }
 
-#test(covers("grammar.TestAttribute@L28632"))
+#test(covers("grammar.TestAttribute@L28720"))
 internal procedure sourceNativeCoveredTest() -> bool
 |: |= @result
 {
     return true
 }
 
-#test(name: "coverage order", covers("def.TestName@L28685"), covers("def.TestCoverage@L28700"))
+#test(name: "coverage order", covers("def.TestName@L28773"), covers("def.TestCoverage@L28788"))
 internal procedure sourceNativeNamedCoveredTest() -> bool
 |: |= @result
 {
     return true
 }
 
-#test(covers("req.TestAuthority@L28773"))
+#test(covers("req.TestAuthority@L28861"))
 internal procedure sourceNativeAuthorityTest(authority: TestAuthority) -> bool
 |: |= @result
 {
     return true
 }
 
-#test(covers("req.TestProcedureShape@L28751"))
+#test(covers("req.TestProcedureShape@L28839"))
 internal procedure sourceNativeShapeTest() -> bool
 |: |= @result
 {
     return true
 }
 
-#test(covers("conformance.TestAttributeDynamicSemantics@L28791"))
+#test(covers("conformance.TestAttributeDynamicSemantics@L28879"))
 internal procedure sourceNativeDynamicSemanticsTest() -> bool
 |: |= @result
 {

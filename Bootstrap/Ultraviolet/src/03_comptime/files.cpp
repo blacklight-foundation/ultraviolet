@@ -102,6 +102,9 @@ std::string MapIoErrorVariant(const std::error_code& ec) {
   if (ec == std::errc::permission_denied) {
     return "PermissionDenied";
   }
+  if (ec == std::errc::directory_not_empty) {
+    return "DirectoryNotEmpty";
+  }
   return "IoFailure";
 }
 

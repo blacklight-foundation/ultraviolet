@@ -57,6 +57,9 @@ internal procedure ioErrorIsInvalidPath(error: IoError) -> bool {
         IoError::IoFailure {
             false
         }
+        IoError::DirectoryNotEmpty {
+            false
+        }
     }
 }
 
@@ -79,6 +82,35 @@ internal procedure ioErrorIsNotFound(error: IoError) -> bool {
         }
         IoError::IoFailure {
             false
+        }
+        IoError::DirectoryNotEmpty {
+            false
+        }
+    }
+}
+
+internal procedure ioErrorIsDirectoryNotEmpty(error: IoError) -> bool {
+    return if error is {
+        IoError::NotFound {
+            false
+        }
+        IoError::PermissionDenied {
+            false
+        }
+        IoError::AlreadyExists {
+            false
+        }
+        IoError::InvalidPath {
+            false
+        }
+        IoError::Busy {
+            false
+        }
+        IoError::IoFailure {
+            false
+        }
+        IoError::DirectoryNotEmpty {
+            true
         }
     }
 }
@@ -105,6 +137,19 @@ internal procedure ioOutcomeErrorIsNotFound<TValue>(
         }
         @Error { error } {
             ioErrorIsNotFound(error)
+        }
+    }
+}
+
+internal procedure ioOutcomeErrorIsDirectoryNotEmpty<TValue>(
+    move outcome: Outcome<TValue, IoError>
+) -> bool {
+    return if move outcome is {
+        @Value {
+            false
+        }
+        @Error { error } {
+            ioErrorIsDirectoryNotEmpty(error)
         }
     }
 }
@@ -346,6 +391,10 @@ public procedure runAuthorityIOReference(context: Context) -> bool {
         "HelloUltraviolet/Build/IOAuthorityReferenceSnapshot"
     let snapshot_path: string@View =
         "HelloUltraviolet/Build/IOAuthorityReferenceSnapshot/Snapshot.txt"
+    let nonempty_root: string@View =
+        "HelloUltraviolet/Build/IOAuthorityReferenceNonEmpty"
+    let nonempty_child_path: string@View =
+        "HelloUltraviolet/Build/IOAuthorityReferenceNonEmpty/Child.txt"
 
     let _ = io~>remove(file_path)
     let _ = io~>remove(handle_path)
@@ -353,13 +402,16 @@ public procedure runAuthorityIOReference(context: Context) -> bool {
     let _ = io~>remove(second_path)
     let _ = io~>remove(third_path)
     let _ = io~>remove(snapshot_path)
+    let _ = io~>remove(nonempty_child_path)
     let _ = io~>remove(root)
     let _ = io~>remove(dir_root)
     let _ = io~>remove(snapshot_root)
+    let _ = io~>remove(nonempty_root)
 
     let create_root: Outcome<(), IoError> = io~>ensure_dir(root)
     let create_dir_root: Outcome<(), IoError> = io~>ensure_dir(dir_root)
     let create_snapshot_root: Outcome<(), IoError> = io~>ensure_dir(snapshot_root)
+    let create_nonempty_root: Outcome<(), IoError> = io~>ensure_dir(nonempty_root)
     let write_payload: bytes@View = bytes::view_string("hello-io")
     let create_file: Outcome<(), IoError> = io~>write_file(file_path, write_payload)
     let read_file: Outcome<unique string@Managed, IoError> = io~>read_file(file_path)
@@ -391,6 +443,9 @@ public procedure runAuthorityIOReference(context: Context) -> bool {
     let _ = io~>write_file(snapshot_path, bytes::view_string("snapshot"))
     let snapshot_entries: bool =
         ioDirectorySnapshotAfterRemovalReference(io, snapshot_root, snapshot_path)
+    let write_nonempty_child: Outcome<(), IoError> =
+        io~>write_file(nonempty_child_path, bytes::view_string("child"))
+    let remove_nonempty_root: Outcome<(), IoError> = io~>remove(nonempty_root)
 
     let restricted: $IO = io~>restrict(root)
     let restricted_exists: bool = restricted~>exists("IOFile.txt") &&
@@ -407,6 +462,8 @@ public procedure runAuthorityIOReference(context: Context) -> bool {
     let remove_first: Outcome<(), IoError> = io~>remove(first_path)
     let remove_second: Outcome<(), IoError> = io~>remove(second_path)
     let remove_third: Outcome<(), IoError> = io~>remove(third_path)
+    let remove_nonempty_child: Outcome<(), IoError> = io~>remove(nonempty_child_path)
+    let remove_empty_nonempty_root: Outcome<(), IoError> = io~>remove(nonempty_root)
     let remove_root: Outcome<(), IoError> = io~>remove(root)
     let remove_dir_root: Outcome<(), IoError> = io~>remove(dir_root)
     let remove_snapshot_root: Outcome<(), IoError> = io~>remove(snapshot_root)
@@ -416,6 +473,7 @@ public procedure runAuthorityIOReference(context: Context) -> bool {
         ioUnitSucceeded(create_root) &&
         ioUnitSucceeded(create_dir_root) &&
         ioUnitSucceeded(create_snapshot_root) &&
+        ioUnitSucceeded(create_nonempty_root) &&
         ioUnitSucceeded(create_file) &&
         ioTextEquals(move read_file, "hello-io") &&
         ioBytesLengthEquals(move read_bytes, 8usize) &&
@@ -427,6 +485,8 @@ public procedure runAuthorityIOReference(context: Context) -> bool {
         open_write_handle &&
         dir_entries &&
         snapshot_entries &&
+        ioUnitSucceeded(write_nonempty_child) &&
+        ioOutcomeErrorIsDirectoryNotEmpty(move remove_nonempty_root) &&
         restricted_exists &&
         restricted_invalid &&
         restricted_missing &&
@@ -435,6 +495,8 @@ public procedure runAuthorityIOReference(context: Context) -> bool {
         ioUnitSucceeded(remove_first) &&
         ioUnitSucceeded(remove_second) &&
         ioUnitSucceeded(remove_third) &&
+        ioUnitSucceeded(remove_nonempty_child) &&
+        ioUnitSucceeded(remove_empty_nonempty_root) &&
         ioUnitSucceeded(remove_root) &&
         ioUnitSucceeded(remove_dir_root) &&
         ioUnitSucceeded(remove_snapshot_root)

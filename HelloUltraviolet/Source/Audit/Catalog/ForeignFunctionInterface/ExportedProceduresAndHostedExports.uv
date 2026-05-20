@@ -9,60 +9,6 @@ public procedure validatedForeignFunctionInterfaceExportedProceduresAndHostedExp
     var count: usize = 0usize
     if acceptedObligationEntryMatches(
         "requirement.23.RawExportedProcedureClassification",
-        87530usize,
-        "HelloUltraviolet::Reference::FFI",
-        "runFFIExportedProceduresReference",
-        "Source/Reference/FFI/ExportedProcedures.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
-        "requirement.23.RawExportParsingUsesOrdinaryProcedureParser",
-        87545usize,
-        "HelloUltraviolet::Reference::FFI",
-        "runFFIExportedProceduresReference",
-        "Source/Reference/FFI/ExportedProcedures.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
-        "requirement.23.RawExportParsingClassification",
-        87558usize,
-        "HelloUltraviolet::Reference::FFI",
-        "runFFIExportedProceduresReference",
-        "Source/Reference/FFI/ExportedProcedures.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
-        "ast.23.RawExportProcedureForm",
-        87573usize,
-        "HelloUltraviolet::Reference::FFI",
-        "runFFIExportedProceduresReference",
-        "Source/Reference/FFI/ExportedProcedures.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
-        "def.23.RawExportedProcedureMeaning",
-        87590usize,
-        "HelloUltraviolet::Reference::FFI",
-        "runFFIExportedProceduresReference",
-        "Source/Reference/FFI/ExportedProcedures.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
-        "def.23.ZeroValueHelpers",
-        87603usize,
-        "HelloUltraviolet::Reference::FFI",
-        "runFFIExportedProceduresReference",
-        "Source/Reference/FFI/ExportedProcedures.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
-        "def.23.ExportSignatureHelpers",
         87620usize,
         "HelloUltraviolet::Reference::FFI",
         "runFFIExportedProceduresReference",
@@ -71,8 +17,62 @@ public procedure validatedForeignFunctionInterfaceExportedProceduresAndHostedExp
         count = count + 1usize
     }
     if acceptedObligationEntryMatches(
+        "requirement.23.RawExportParsingUsesOrdinaryProcedureParser",
+        87635usize,
+        "HelloUltraviolet::Reference::FFI",
+        "runFFIExportedProceduresReference",
+        "Source/Reference/FFI/ExportedProcedures.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "requirement.23.RawExportParsingClassification",
+        87648usize,
+        "HelloUltraviolet::Reference::FFI",
+        "runFFIExportedProceduresReference",
+        "Source/Reference/FFI/ExportedProcedures.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "ast.23.RawExportProcedureForm",
+        87663usize,
+        "HelloUltraviolet::Reference::FFI",
+        "runFFIExportedProceduresReference",
+        "Source/Reference/FFI/ExportedProcedures.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "def.23.RawExportedProcedureMeaning",
+        87680usize,
+        "HelloUltraviolet::Reference::FFI",
+        "runFFIExportedProceduresReference",
+        "Source/Reference/FFI/ExportedProcedures.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "def.23.ZeroValueHelpers",
+        87693usize,
+        "HelloUltraviolet::Reference::FFI",
+        "runFFIExportedProceduresReference",
+        "Source/Reference/FFI/ExportedProcedures.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "def.23.ExportSignatureHelpers",
+        87710usize,
+        "HelloUltraviolet::Reference::FFI",
+        "runFFIExportedProceduresReference",
+        "Source/Reference/FFI/ExportedProcedures.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
         "rule.23.ExportSig-Ok",
-        87634usize,
+        87724usize,
         "HelloUltraviolet::Reference::FFI",
         "runFFIExportedProceduresReference",
         "Source/Reference/FFI/ExportedProcedures.uv"
@@ -81,7 +81,7 @@ public procedure validatedForeignFunctionInterfaceExportedProceduresAndHostedExp
     }
     if acceptedObligationEntryMatches(
         "requirement.23.RawExportOrdinaryBodyAndCatchReturn",
-        87652usize,
+        87742usize,
         "HelloUltraviolet::Reference::FFI",
         "runFFIExportedProceduresReference",
         "Source/Reference/FFI/ExportedProcedures.uv"
@@ -90,7 +90,7 @@ public procedure validatedForeignFunctionInterfaceExportedProceduresAndHostedExp
     }
     if acceptedObligationEntryMatches(
         "requirement.23.RawExportLibraryImageLifecycle",
-        87665usize,
+        87755usize,
         "HelloUltraviolet::Reference::FFI",
         "runFFIExportedProceduresReference",
         "Source/Reference/FFI/ExportedProcedures.uv"
@@ -99,7 +99,7 @@ public procedure validatedForeignFunctionInterfaceExportedProceduresAndHostedExp
     }
     if acceptedObligationEntryMatches(
         "requirement.23.SharedLibraryLinkedCallLifecycle",
-        87678usize,
+        87768usize,
         "HelloUltraviolet::Reference::FFI",
         "runFFIExportedProceduresReference",
         "Source/Reference/FFI/ExportedProcedures.uv"
@@ -108,7 +108,7 @@ public procedure validatedForeignFunctionInterfaceExportedProceduresAndHostedExp
     }
     if acceptedObligationEntryMatches(
         "requirement.23.RawExportLowering",
-        87693usize,
+        87783usize,
         "HelloUltraviolet::Reference::FFI",
         "runFFIExportedProceduresReference",
         "Source/Reference/FFI/ExportedProcedures.uv"
@@ -117,7 +117,7 @@ public procedure validatedForeignFunctionInterfaceExportedProceduresAndHostedExp
     }
     if rejectedSourceObligationEntryMatches(
         "diagnostics.23.RawExportDiagnostics",
-        87708usize,
+        87798usize,
         "HelloUltraviolet::Audit::FixtureCatalog::RejectedSource",
         "validatedFFIRejectedSourceFixtureCount",
         "Fixtures/RejectedSource/FFI/RawExportNonPublic/Source/Main.uv"
@@ -126,7 +126,7 @@ public procedure validatedForeignFunctionInterfaceExportedProceduresAndHostedExp
     }
     if rejectedSourceObligationEntryMatches(
         "diagnostics.23.RawExportDiagnosticOwnership",
-        87724usize,
+        87814usize,
         "HelloUltraviolet::Audit::FixtureCatalog::RejectedSource",
         "validatedFFIRejectedSourceFixtureCount",
         "Fixtures/RejectedSource/FFI/RawExportUnsupportedABI/Source/Main.uv"
@@ -135,7 +135,7 @@ public procedure validatedForeignFunctionInterfaceExportedProceduresAndHostedExp
     }
     if acceptedProjectObligationEntryMatches(
         "requirement.23.HostedExportClassification",
-        87739usize,
+        87829usize,
         "HelloUltraviolet::Audit::FixtureCatalog::AcceptedProjects",
         "validatedAcceptedProjectFixtureCount",
         "Fixtures/AcceptedProjects/HostedExportLibrary/Source/Library.uv"
@@ -144,7 +144,7 @@ public procedure validatedForeignFunctionInterfaceExportedProceduresAndHostedExp
     }
     if acceptedProjectObligationEntryMatches(
         "requirement.23.HostedExportParsingUsesOrdinaryProcedureParser",
-        87754usize,
+        87844usize,
         "HelloUltraviolet::Audit::FixtureCatalog::AcceptedProjects",
         "validatedAcceptedProjectFixtureCount",
         "Fixtures/AcceptedProjects/HostedExportLibrary/Source/Library.uv"
@@ -153,7 +153,7 @@ public procedure validatedForeignFunctionInterfaceExportedProceduresAndHostedExp
     }
     if acceptedProjectObligationEntryMatches(
         "requirement.23.HostedExportParsingClassification",
-        87767usize,
+        87857usize,
         "HelloUltraviolet::Audit::FixtureCatalog::AcceptedProjects",
         "validatedAcceptedProjectFixtureCount",
         "Fixtures/AcceptedProjects/HostedExportLibrary/Source/Library.uv"
@@ -162,7 +162,7 @@ public procedure validatedForeignFunctionInterfaceExportedProceduresAndHostedExp
     }
     if acceptedProjectObligationEntryMatches(
         "ast.23.HostedExportProcedureForm",
-        87782usize,
+        87872usize,
         "HelloUltraviolet::Audit::FixtureCatalog::AcceptedProjects",
         "validatedAcceptedProjectFixtureCount",
         "Fixtures/AcceptedProjects/HostedExportLibrary/Source/Library.uv"
@@ -171,7 +171,7 @@ public procedure validatedForeignFunctionInterfaceExportedProceduresAndHostedExp
     }
     if acceptedProjectObligationEntryMatches(
         "def.23.HostedExportProcedureHelpers",
-        87795usize,
+        87885usize,
         "HelloUltraviolet::Audit::FixtureCatalog::AcceptedProjects",
         "validatedAcceptedProjectFixtureCount",
         "Fixtures/AcceptedProjects/HostedExportLibrary/Source/Library.uv"
@@ -180,7 +180,7 @@ public procedure validatedForeignFunctionInterfaceExportedProceduresAndHostedExp
     }
     if acceptedProjectObligationEntryMatches(
         "requirement.23.HostedRootCapsMeaning",
-        87822usize,
+        87912usize,
         "HelloUltraviolet::Audit::FixtureCatalog::AcceptedProjects",
         "validatedAcceptedProjectFixtureCount",
         "Fixtures/AcceptedProjects/HostedExportLibrary/Source/Library.uv"
@@ -189,7 +189,7 @@ public procedure validatedForeignFunctionInterfaceExportedProceduresAndHostedExp
     }
     if acceptedProjectObligationEntryMatches(
         "def.23.HostedExportMeaning",
-        87837usize,
+        87927usize,
         "HelloUltraviolet::Audit::FixtureCatalog::AcceptedProjects",
         "validatedAcceptedProjectFixtureCount",
         "Fixtures/AcceptedProjects/HostedExportLibrary/Source/Library.uv"
@@ -198,7 +198,7 @@ public procedure validatedForeignFunctionInterfaceExportedProceduresAndHostedExp
     }
     if acceptedProjectObligationEntryMatches(
         "requirement.23.HostedExportForeignVisibleSignature",
-        87850usize,
+        87940usize,
         "HelloUltraviolet::Audit::FixtureCatalog::AcceptedProjects",
         "validatedAcceptedProjectFixtureCount",
         "Fixtures/AcceptedProjects/HostedExportLibrary/Source/Library.uv"
@@ -207,7 +207,7 @@ public procedure validatedForeignFunctionInterfaceExportedProceduresAndHostedExp
     }
     if acceptedProjectObligationEntryMatches(
         "requirement.23.HostedExportForeignVisiblePassKind",
-        87863usize,
+        87953usize,
         "HelloUltraviolet::Audit::FixtureCatalog::AcceptedProjects",
         "validatedAcceptedProjectFixtureCount",
         "Fixtures/AcceptedProjects/HostedExportLibrary/Source/Library.uv"
@@ -216,7 +216,7 @@ public procedure validatedForeignFunctionInterfaceExportedProceduresAndHostedExp
     }
     if acceptedProjectObligationEntryMatches(
         "def.23.HostExportSignatureJudgements",
-        87876usize,
+        87966usize,
         "HelloUltraviolet::Audit::FixtureCatalog::AcceptedProjects",
         "validatedAcceptedProjectFixtureCount",
         "Fixtures/AcceptedProjects/HostedExportLibrary/Source/Library.uv"
@@ -225,7 +225,7 @@ public procedure validatedForeignFunctionInterfaceExportedProceduresAndHostedExp
     }
     if acceptedProjectObligationEntryMatches(
         "rule.23.HostExportSig-Ok",
-        87889usize,
+        87979usize,
         "HelloUltraviolet::Audit::FixtureCatalog::AcceptedProjects",
         "validatedAcceptedProjectFixtureCount",
         "Fixtures/AcceptedProjects/HostedExportLibrary/Source/Library.uv"
@@ -234,7 +234,7 @@ public procedure validatedForeignFunctionInterfaceExportedProceduresAndHostedExp
     }
     if rejectedSourceObligationEntryMatches(
         "rule.23.HostExport-Library-Err",
-        87905usize,
+        87995usize,
         "HelloUltraviolet::Audit::FixtureCatalog::RejectedSource",
         "validatedFFIRejectedSourceFixtureCount",
         "Fixtures/RejectedSource/FFI/HostExportOutsideLibrary/Source/Main.uv"
@@ -243,7 +243,7 @@ public procedure validatedForeignFunctionInterfaceExportedProceduresAndHostedExp
     }
     if rejectedSourceObligationEntryMatches(
         "rule.23.HostExport-MixedMode-Err",
-        87921usize,
+        88011usize,
         "HelloUltraviolet::Audit::FixtureCatalog::RejectedSource",
         "validatedFFIRejectedSourceFixtureCount",
         "Fixtures/RejectedSource/FFI/HostExportMixedMode/Source/Main.uv"
@@ -252,7 +252,7 @@ public procedure validatedForeignFunctionInterfaceExportedProceduresAndHostedExp
     }
     if rejectedSourceObligationEntryMatches(
         "rule.23.HostExport-Generic-Err",
-        87937usize,
+        88027usize,
         "HelloUltraviolet::Audit::FixtureCatalog::RejectedSource",
         "validatedFFIRejectedSourceFixtureCount",
         "Fixtures/RejectedSource/FFI/HostExportGeneric/Source/Main.uv"
@@ -261,7 +261,7 @@ public procedure validatedForeignFunctionInterfaceExportedProceduresAndHostedExp
     }
     if rejectedSourceObligationEntryMatches(
         "rule.23.HostExport-Context-Err",
-        87953usize,
+        88043usize,
         "HelloUltraviolet::Audit::FixtureCatalog::RejectedSource",
         "validatedFFIRejectedSourceFixtureCount",
         "Fixtures/RejectedSource/FFI/HostExportMissingContext/Source/Main.uv"
@@ -270,7 +270,7 @@ public procedure validatedForeignFunctionInterfaceExportedProceduresAndHostedExp
     }
     if rejectedSourceObligationEntryMatches(
         "rule.23.HostExport-Context-Raw-Err",
-        87969usize,
+        88059usize,
         "HelloUltraviolet::Audit::FixtureCatalog::RejectedSource",
         "validatedFFIRejectedSourceFixtureCount",
         "Fixtures/RejectedSource/FFI/HostExportRawContext/Source/Main.uv"
@@ -279,7 +279,7 @@ public procedure validatedForeignFunctionInterfaceExportedProceduresAndHostedExp
     }
     if rejectedSourceObligationEntryMatches(
         "rule.23.HostExport-Context-Move-Err",
-        87985usize,
+        88075usize,
         "HelloUltraviolet::Audit::FixtureCatalog::RejectedSource",
         "validatedFFIRejectedSourceFixtureCount",
         "Fixtures/RejectedSource/FFI/HostExportMoveContext/Source/Main.uv"
@@ -288,7 +288,7 @@ public procedure validatedForeignFunctionInterfaceExportedProceduresAndHostedExp
     }
     if acceptedProjectObligationEntryMatches(
         "requirement.23.HostedExportSessionHandleValidity",
-        88003usize,
+        88093usize,
         "HelloUltraviolet::Audit::FixtureCatalog::AcceptedProjects",
         "validatedAcceptedProjectFixtureCount",
         "Fixtures/AcceptedProjects/HostedExportLibrary/Source/Library.uv"
@@ -297,7 +297,7 @@ public procedure validatedForeignFunctionInterfaceExportedProceduresAndHostedExp
     }
     if acceptedProjectObligationEntryMatches(
         "requirement.23.HostedExportCapabilityIsolation",
-        88016usize,
+        88106usize,
         "HelloUltraviolet::Audit::FixtureCatalog::AcceptedProjects",
         "validatedAcceptedProjectFixtureCount",
         "Fixtures/AcceptedProjects/HostedExportLibrary/Source/Library.uv"
@@ -306,7 +306,7 @@ public procedure validatedForeignFunctionInterfaceExportedProceduresAndHostedExp
     }
     if acceptedProjectObligationEntryMatches(
         "requirement.23.HostedSessionRootCapsGrant",
-        88029usize,
+        88119usize,
         "HelloUltraviolet::Audit::FixtureCatalog::AcceptedProjects",
         "validatedAcceptedProjectFixtureCount",
         "Fixtures/AcceptedProjects/HostedExportLibrary/Source/Library.uv"
@@ -315,7 +315,7 @@ public procedure validatedForeignFunctionInterfaceExportedProceduresAndHostedExp
     }
     if acceptedProjectObligationEntryMatches(
         "requirement.23.HostedExportBoundaryEntrySequence",
-        88042usize,
+        88132usize,
         "HelloUltraviolet::Audit::FixtureCatalog::AcceptedProjects",
         "validatedAcceptedProjectFixtureCount",
         "Fixtures/AcceptedProjects/HostedExportLibrary/Source/Library.uv"
@@ -324,51 +324,6 @@ public procedure validatedForeignFunctionInterfaceExportedProceduresAndHostedExp
     }
     if acceptedProjectObligationEntryMatches(
         "requirement.23.HostedExportInvalidHandleBehavior",
-        88061usize,
-        "HelloUltraviolet::Audit::FixtureCatalog::AcceptedProjects",
-        "validatedAcceptedProjectFixtureCount",
-        "Fixtures/AcceptedProjects/HostedExportLibrary/Source/Library.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedProjectObligationEntryMatches(
-        "requirement.23.HostedExportCatchFailureReturn",
-        88077usize,
-        "HelloUltraviolet::Audit::FixtureCatalog::AcceptedProjects",
-        "validatedAcceptedProjectFixtureCount",
-        "Fixtures/AcceptedProjects/HostedExportLibrary/Source/Library.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedProjectObligationEntryMatches(
-        "requirement.23.HostedExportLoweringPreservesRawFfiRules",
-        88092usize,
-        "HelloUltraviolet::Audit::FixtureCatalog::AcceptedProjects",
-        "validatedAcceptedProjectFixtureCount",
-        "Fixtures/AcceptedProjects/HostedExportLibrary/Source/Library.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedProjectObligationEntryMatches(
-        "requirement.23.HostedExportThunkAbiDetermination",
-        88105usize,
-        "HelloUltraviolet::Audit::FixtureCatalog::AcceptedProjects",
-        "validatedAcceptedProjectFixtureCount",
-        "Fixtures/AcceptedProjects/HostedExportLibrary/Source/Library.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedProjectObligationEntryMatches(
-        "def.23.HostThunkCarrierHelpers",
-        88123usize,
-        "HelloUltraviolet::Audit::FixtureCatalog::AcceptedProjects",
-        "validatedAcceptedProjectFixtureCount",
-        "Fixtures/AcceptedProjects/HostedExportLibrary/Source/Library.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedProjectObligationEntryMatches(
-        "rule.23.HostThunkParamCarrier-ByRef",
         88151usize,
         "HelloUltraviolet::Audit::FixtureCatalog::AcceptedProjects",
         "validatedAcceptedProjectFixtureCount",
@@ -377,7 +332,7 @@ public procedure validatedForeignFunctionInterfaceExportedProceduresAndHostedExp
         count = count + 1usize
     }
     if acceptedProjectObligationEntryMatches(
-        "rule.23.HostThunkParamCarrier-ByValue-Default",
+        "requirement.23.HostedExportCatchFailureReturn",
         88167usize,
         "HelloUltraviolet::Audit::FixtureCatalog::AcceptedProjects",
         "validatedAcceptedProjectFixtureCount",
@@ -386,8 +341,53 @@ public procedure validatedForeignFunctionInterfaceExportedProceduresAndHostedExp
         count = count + 1usize
     }
     if acceptedProjectObligationEntryMatches(
+        "requirement.23.HostedExportLoweringPreservesRawFfiRules",
+        88182usize,
+        "HelloUltraviolet::Audit::FixtureCatalog::AcceptedProjects",
+        "validatedAcceptedProjectFixtureCount",
+        "Fixtures/AcceptedProjects/HostedExportLibrary/Source/Library.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedProjectObligationEntryMatches(
+        "requirement.23.HostedExportThunkAbiDetermination",
+        88195usize,
+        "HelloUltraviolet::Audit::FixtureCatalog::AcceptedProjects",
+        "validatedAcceptedProjectFixtureCount",
+        "Fixtures/AcceptedProjects/HostedExportLibrary/Source/Library.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedProjectObligationEntryMatches(
+        "def.23.HostThunkCarrierHelpers",
+        88213usize,
+        "HelloUltraviolet::Audit::FixtureCatalog::AcceptedProjects",
+        "validatedAcceptedProjectFixtureCount",
+        "Fixtures/AcceptedProjects/HostedExportLibrary/Source/Library.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedProjectObligationEntryMatches(
+        "rule.23.HostThunkParamCarrier-ByRef",
+        88241usize,
+        "HelloUltraviolet::Audit::FixtureCatalog::AcceptedProjects",
+        "validatedAcceptedProjectFixtureCount",
+        "Fixtures/AcceptedProjects/HostedExportLibrary/Source/Library.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedProjectObligationEntryMatches(
+        "rule.23.HostThunkParamCarrier-ByValue-Default",
+        88257usize,
+        "HelloUltraviolet::Audit::FixtureCatalog::AcceptedProjects",
+        "validatedAcceptedProjectFixtureCount",
+        "Fixtures/AcceptedProjects/HostedExportLibrary/Source/Library.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedProjectObligationEntryMatches(
         "rule.23.HostThunkParamCarrier-Win64-DirectAgg",
-        88183usize,
+        88273usize,
         "HelloUltraviolet::Audit::FixtureCatalog::AcceptedProjects",
         "validatedAcceptedProjectFixtureCount",
         "Fixtures/AcceptedProjects/HostedExportLibrary/Source/Library.uv"
@@ -396,60 +396,6 @@ public procedure validatedForeignFunctionInterfaceExportedProceduresAndHostedExp
     }
     if acceptedProjectObligationEntryMatches(
         "rule.23.HostThunkParamCarrier-Win64-IndirectAgg",
-        88199usize,
-        "HelloUltraviolet::Audit::FixtureCatalog::AcceptedProjects",
-        "validatedAcceptedProjectFixtureCount",
-        "Fixtures/AcceptedProjects/HostedExportLibrary/Source/Library.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedProjectObligationEntryMatches(
-        "rule.23.HostThunkRetCarrier-Default",
-        88215usize,
-        "HelloUltraviolet::Audit::FixtureCatalog::AcceptedProjects",
-        "validatedAcceptedProjectFixtureCount",
-        "Fixtures/AcceptedProjects/HostedExportLibrary/Source/Library.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedProjectObligationEntryMatches(
-        "rule.23.HostThunkRetCarrier-Win64-DirectAgg",
-        88231usize,
-        "HelloUltraviolet::Audit::FixtureCatalog::AcceptedProjects",
-        "validatedAcceptedProjectFixtureCount",
-        "Fixtures/AcceptedProjects/HostedExportLibrary/Source/Library.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedProjectObligationEntryMatches(
-        "rule.23.HostThunkRetCarrier-Win64-SRetAgg",
-        88247usize,
-        "HelloUltraviolet::Audit::FixtureCatalog::AcceptedProjects",
-        "validatedAcceptedProjectFixtureCount",
-        "Fixtures/AcceptedProjects/HostedExportLibrary/Source/Library.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedProjectObligationEntryMatches(
-        "requirement.23.HostedExportThunkShapeUse",
-        88263usize,
-        "HelloUltraviolet::Audit::FixtureCatalog::AcceptedProjects",
-        "validatedAcceptedProjectFixtureCount",
-        "Fixtures/AcceptedProjects/HostedExportLibrary/Source/Library.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedProjectObligationEntryMatches(
-        "requirement.23.HostedExportNoWin64AggregateSplitting",
-        88276usize,
-        "HelloUltraviolet::Audit::FixtureCatalog::AcceptedProjects",
-        "validatedAcceptedProjectFixtureCount",
-        "Fixtures/AcceptedProjects/HostedExportLibrary/Source/Library.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedProjectObligationEntryMatches(
-        "requirement.23.HostedExportNoExtraAbiRewriting",
         88289usize,
         "HelloUltraviolet::Audit::FixtureCatalog::AcceptedProjects",
         "validatedAcceptedProjectFixtureCount",
@@ -458,8 +404,62 @@ public procedure validatedForeignFunctionInterfaceExportedProceduresAndHostedExp
         count = count + 1usize
     }
     if acceptedProjectObligationEntryMatches(
+        "rule.23.HostThunkRetCarrier-Default",
+        88305usize,
+        "HelloUltraviolet::Audit::FixtureCatalog::AcceptedProjects",
+        "validatedAcceptedProjectFixtureCount",
+        "Fixtures/AcceptedProjects/HostedExportLibrary/Source/Library.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedProjectObligationEntryMatches(
+        "rule.23.HostThunkRetCarrier-Win64-DirectAgg",
+        88321usize,
+        "HelloUltraviolet::Audit::FixtureCatalog::AcceptedProjects",
+        "validatedAcceptedProjectFixtureCount",
+        "Fixtures/AcceptedProjects/HostedExportLibrary/Source/Library.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedProjectObligationEntryMatches(
+        "rule.23.HostThunkRetCarrier-Win64-SRetAgg",
+        88337usize,
+        "HelloUltraviolet::Audit::FixtureCatalog::AcceptedProjects",
+        "validatedAcceptedProjectFixtureCount",
+        "Fixtures/AcceptedProjects/HostedExportLibrary/Source/Library.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedProjectObligationEntryMatches(
+        "requirement.23.HostedExportThunkShapeUse",
+        88353usize,
+        "HelloUltraviolet::Audit::FixtureCatalog::AcceptedProjects",
+        "validatedAcceptedProjectFixtureCount",
+        "Fixtures/AcceptedProjects/HostedExportLibrary/Source/Library.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedProjectObligationEntryMatches(
+        "requirement.23.HostedExportNoWin64AggregateSplitting",
+        88366usize,
+        "HelloUltraviolet::Audit::FixtureCatalog::AcceptedProjects",
+        "validatedAcceptedProjectFixtureCount",
+        "Fixtures/AcceptedProjects/HostedExportLibrary/Source/Library.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedProjectObligationEntryMatches(
+        "requirement.23.HostedExportNoExtraAbiRewriting",
+        88379usize,
+        "HelloUltraviolet::Audit::FixtureCatalog::AcceptedProjects",
+        "validatedAcceptedProjectFixtureCount",
+        "Fixtures/AcceptedProjects/HostedExportLibrary/Source/Library.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedProjectObligationEntryMatches(
         "requirement.23.HostedThunkModeIndependentForeignClassification",
-        88302usize,
+        88392usize,
         "HelloUltraviolet::Audit::FixtureCatalog::AcceptedProjects",
         "validatedAcceptedProjectFixtureCount",
         "Fixtures/AcceptedProjects/HostedExportLibrary/Source/Library.uv"
@@ -468,7 +468,7 @@ public procedure validatedForeignFunctionInterfaceExportedProceduresAndHostedExp
     }
     if acceptedProjectObligationEntryMatches(
         "requirement.23.HostedThunkToSourceCallReconstruction",
-        88315usize,
+        88405usize,
         "HelloUltraviolet::Audit::FixtureCatalog::AcceptedProjects",
         "validatedAcceptedProjectFixtureCount",
         "Fixtures/AcceptedProjects/HostedExportLibrary/Source/Library.uv"
@@ -477,7 +477,7 @@ public procedure validatedForeignFunctionInterfaceExportedProceduresAndHostedExp
     }
     if acceptedProjectObligationEntryMatches(
         "requirement.23.HostedStateSymbolResolution",
-        88328usize,
+        88418usize,
         "HelloUltraviolet::Audit::FixtureCatalog::AcceptedProjects",
         "validatedAcceptedProjectFixtureCount",
         "Fixtures/AcceptedProjects/HostedExportLibrary/Source/Library.uv"
@@ -486,7 +486,7 @@ public procedure validatedForeignFunctionInterfaceExportedProceduresAndHostedExp
     }
     if acceptedProjectObligationEntryMatches(
         "requirement.23.HostedLibraryLifecycleExports",
-        88341usize,
+        88431usize,
         "HelloUltraviolet::Audit::FixtureCatalog::AcceptedProjects",
         "validatedAcceptedProjectFixtureCount",
         "Fixtures/AcceptedProjects/HostedExportLibrary/Source/Library.uv"
@@ -495,7 +495,7 @@ public procedure validatedForeignFunctionInterfaceExportedProceduresAndHostedExp
     }
     if acceptedProjectObligationEntryMatches(
         "requirement.23.HostedLifecycleExportsBackendGenerated",
-        88358usize,
+        88448usize,
         "HelloUltraviolet::Audit::FixtureCatalog::AcceptedProjects",
         "validatedAcceptedProjectFixtureCount",
         "Fixtures/AcceptedProjects/HostedExportLibrary/Source/Library.uv"
@@ -504,7 +504,7 @@ public procedure validatedForeignFunctionInterfaceExportedProceduresAndHostedExp
     }
     if acceptedProjectObligationEntryMatches(
         "requirement.23.HostedLifecycleExportsPanicAndDestroyFailure",
-        88371usize,
+        88461usize,
         "HelloUltraviolet::Audit::FixtureCatalog::AcceptedProjects",
         "validatedAcceptedProjectFixtureCount",
         "Fixtures/AcceptedProjects/HostedExportLibrary/Source/Library.uv"
@@ -513,7 +513,7 @@ public procedure validatedForeignFunctionInterfaceExportedProceduresAndHostedExp
     }
     if acceptedProjectObligationEntryMatches(
         "requirement.23.HostedSessionHandleNoReissue",
-        88384usize,
+        88474usize,
         "HelloUltraviolet::Audit::FixtureCatalog::AcceptedProjects",
         "validatedAcceptedProjectFixtureCount",
         "Fixtures/AcceptedProjects/HostedExportLibrary/Source/Library.uv"
@@ -522,7 +522,7 @@ public procedure validatedForeignFunctionInterfaceExportedProceduresAndHostedExp
     }
     if acceptedProjectObligationEntryMatches(
         "requirement.23.HostedExportThunkForeignVisibleAbi",
-        88397usize,
+        88487usize,
         "HelloUltraviolet::Audit::FixtureCatalog::AcceptedProjects",
         "validatedAcceptedProjectFixtureCount",
         "Fixtures/AcceptedProjects/HostedExportLibrary/Source/Library.uv"
@@ -531,7 +531,7 @@ public procedure validatedForeignFunctionInterfaceExportedProceduresAndHostedExp
     }
     if acceptedProjectObligationEntryMatches(
         "requirement.23.HostedExportThunkEmissionAndEntrypoint",
-        88416usize,
+        88506usize,
         "HelloUltraviolet::Audit::FixtureCatalog::AcceptedProjects",
         "validatedAcceptedProjectFixtureCount",
         "Fixtures/AcceptedProjects/HostedExportLibrary/Source/Library.uv"
@@ -540,7 +540,7 @@ public procedure validatedForeignFunctionInterfaceExportedProceduresAndHostedExp
     }
     if rejectedSourceObligationEntryMatches(
         "diagnostics.23.HostedExportDiagnostics",
-        88431usize,
+        88521usize,
         "HelloUltraviolet::Audit::FixtureCatalog::RejectedSource",
         "validatedFFIRejectedSourceFixtureCount",
         "Fixtures/RejectedSource/FFI/HostedExportDiagnostics/Source/Main.uv"
@@ -549,7 +549,7 @@ public procedure validatedForeignFunctionInterfaceExportedProceduresAndHostedExp
     }
     if rejectedSourceObligationEntryMatches(
         "diagnostics.23.HostedExportDiagnosticOwnership",
-        88450usize,
+        88540usize,
         "HelloUltraviolet::Audit::FixtureCatalog::RejectedSource",
         "validatedFFIRejectedSourceFixtureCount",
         "Fixtures/RejectedSource/FFI/HostedExportDiagnosticOwnership/Source/Main.uv"

@@ -1043,6 +1043,12 @@ def missing_target(row: CsvRow) -> ReferenceTarget:
         symbol="runAuthorityTimeReference",
         source_path="Source/Reference/Authority/Time.uv",
     )
+    io_target = ReferenceTarget(
+        path=host_primitives,
+        module_path="HelloUltraviolet::Reference::Authority",
+        symbol="runAuthorityIOReference",
+        source_path="Source/Reference/Authority/IO.uv",
+    )
     builtin_type_names_target = ReferenceTarget(
         path=capability_classes,
         module_path="HelloUltraviolet::Reference::Authority",
@@ -1101,6 +1107,15 @@ def missing_target(row: CsvRow) -> ReferenceTarget:
         "rule.24.Prim-WallTime-Coarsen-Runtime",
     }:
         return time_target
+
+    if row.obligation_id in {
+        "def.IORemoveSemantics",
+        "IORemove-RemoveFile",
+        "IORemove-RemoveOtherEntry",
+        "IORemove-RemoveEmptyDir",
+        "IORemove-DirectoryNotEmpty",
+    }:
+        return io_target
 
     if row.obligation_id in {
         "def.14.TimeInterface",

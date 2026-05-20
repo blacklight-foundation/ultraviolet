@@ -9,7 +9,7 @@ public procedure validatedCommonLoweringProgramLifecycleAndBackendInitialization
     var count: usize = 0usize
     if acceptedObligationEntryMatches(
         "def.24.GlobalsJudg",
-        93563usize,
+        93653usize,
         "HelloUltraviolet::Reference::Lowering",
         "runLoweringInitializationLifecycleReference",
         "Source/Reference/Lowering/InitializationLifecycle.uv"
@@ -18,7 +18,7 @@ public procedure validatedCommonLoweringProgramLifecycleAndBackendInitialization
     }
     if acceptedObligationEntryMatches(
         "def.24.ConstInitJudg",
-        93576usize,
+        93666usize,
         "HelloUltraviolet::Reference::Lowering",
         "runLoweringInitializationLifecycleReference",
         "Source/Reference/Lowering/InitializationLifecycle.uv"
@@ -27,7 +27,7 @@ public procedure validatedCommonLoweringProgramLifecycleAndBackendInitialization
     }
     if acceptedObligationEntryMatches(
         "def.24.ConstInitLiteral",
-        93589usize,
+        93679usize,
         "HelloUltraviolet::Reference::Lowering",
         "runLoweringInitializationLifecycleReference",
         "Source/Reference/Lowering/InitializationLifecycle.uv"
@@ -36,7 +36,7 @@ public procedure validatedCommonLoweringProgramLifecycleAndBackendInitialization
     }
     if acceptedObligationEntryMatches(
         "def.24.StaticName",
-        93602usize,
+        93692usize,
         "HelloUltraviolet::Reference::Lowering",
         "runLoweringInitializationLifecycleReference",
         "Source/Reference/Lowering/InitializationLifecycle.uv"
@@ -45,7 +45,7 @@ public procedure validatedCommonLoweringProgramLifecycleAndBackendInitialization
     }
     if acceptedObligationEntryMatches(
         "def.24.StaticBindTypes",
-        93617usize,
+        93707usize,
         "HelloUltraviolet::Reference::Lowering",
         "runLoweringInitializationLifecycleReference",
         "Source/Reference/Lowering/InitializationLifecycle.uv"
@@ -54,7 +54,7 @@ public procedure validatedCommonLoweringProgramLifecycleAndBackendInitialization
     }
     if acceptedObligationEntryMatches(
         "def.24.StaticBindList",
-        93630usize,
+        93720usize,
         "HelloUltraviolet::Reference::Lowering",
         "runLoweringInitializationLifecycleReference",
         "Source/Reference/Lowering/InitializationLifecycle.uv"
@@ -63,7 +63,7 @@ public procedure validatedCommonLoweringProgramLifecycleAndBackendInitialization
     }
     if acceptedObligationEntryMatches(
         "def.24.StaticBinding",
-        93643usize,
+        93733usize,
         "HelloUltraviolet::Reference::Lowering",
         "runLoweringInitializationLifecycleReference",
         "Source/Reference/Lowering/InitializationLifecycle.uv"
@@ -72,7 +72,7 @@ public procedure validatedCommonLoweringProgramLifecycleAndBackendInitialization
     }
     if acceptedObligationEntryMatches(
         "def.24.StaticSym",
-        93656usize,
+        93746usize,
         "HelloUltraviolet::Reference::Lowering",
         "runLoweringInitializationLifecycleReference",
         "Source/Reference/Lowering/InitializationLifecycle.uv"
@@ -81,60 +81,6 @@ public procedure validatedCommonLoweringProgramLifecycleAndBackendInitialization
     }
     if acceptedObligationEntryMatches(
         "rule.24.Emit-Static-Const",
-        93671usize,
-        "HelloUltraviolet::Reference::Lowering",
-        "runLoweringInitializationLifecycleReference",
-        "Source/Reference/Lowering/InitializationLifecycle.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
-        "rule.24.Emit-Static-Init",
-        93687usize,
-        "HelloUltraviolet::Reference::Lowering",
-        "runLoweringInitializationLifecycleReference",
-        "Source/Reference/Lowering/InitializationLifecycle.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
-        "rule.24.Emit-Static-Multi",
-        93703usize,
-        "HelloUltraviolet::Reference::Lowering",
-        "runLoweringInitializationLifecycleReference",
-        "Source/Reference/Lowering/InitializationLifecycle.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
-        "def.24.InitSym",
-        93719usize,
-        "HelloUltraviolet::Reference::Lowering",
-        "runLoweringInitializationLifecycleReference",
-        "Source/Reference/Lowering/InitializationLifecycle.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
-        "rule.24.InitFn",
-        93732usize,
-        "HelloUltraviolet::Reference::Lowering",
-        "runLoweringInitializationLifecycleReference",
-        "Source/Reference/Lowering/InitializationLifecycle.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
-        "def.24.DeinitSym",
-        93748usize,
-        "HelloUltraviolet::Reference::Lowering",
-        "runLoweringInitializationLifecycleReference",
-        "Source/Reference/Lowering/InitializationLifecycle.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
-        "rule.24.DeinitFn",
         93761usize,
         "HelloUltraviolet::Reference::Lowering",
         "runLoweringInitializationLifecycleReference",
@@ -143,7 +89,7 @@ public procedure validatedCommonLoweringProgramLifecycleAndBackendInitialization
         count = count + 1usize
     }
     if acceptedObligationEntryMatches(
-        "def.24.StaticItems",
+        "rule.24.Emit-Static-Init",
         93777usize,
         "HelloUltraviolet::Reference::Lowering",
         "runLoweringInitializationLifecycleReference",
@@ -152,8 +98,62 @@ public procedure validatedCommonLoweringProgramLifecycleAndBackendInitialization
         count = count + 1usize
     }
     if acceptedObligationEntryMatches(
+        "rule.24.Emit-Static-Multi",
+        93793usize,
+        "HelloUltraviolet::Reference::Lowering",
+        "runLoweringInitializationLifecycleReference",
+        "Source/Reference/Lowering/InitializationLifecycle.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "def.24.InitSym",
+        93809usize,
+        "HelloUltraviolet::Reference::Lowering",
+        "runLoweringInitializationLifecycleReference",
+        "Source/Reference/Lowering/InitializationLifecycle.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "rule.24.InitFn",
+        93822usize,
+        "HelloUltraviolet::Reference::Lowering",
+        "runLoweringInitializationLifecycleReference",
+        "Source/Reference/Lowering/InitializationLifecycle.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "def.24.DeinitSym",
+        93838usize,
+        "HelloUltraviolet::Reference::Lowering",
+        "runLoweringInitializationLifecycleReference",
+        "Source/Reference/Lowering/InitializationLifecycle.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "rule.24.DeinitFn",
+        93851usize,
+        "HelloUltraviolet::Reference::Lowering",
+        "runLoweringInitializationLifecycleReference",
+        "Source/Reference/Lowering/InitializationLifecycle.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "def.24.StaticItems",
+        93867usize,
+        "HelloUltraviolet::Reference::Lowering",
+        "runLoweringInitializationLifecycleReference",
+        "Source/Reference/Lowering/InitializationLifecycle.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
         "def.24.StaticItemOf",
-        93790usize,
+        93880usize,
         "HelloUltraviolet::Reference::Lowering",
         "runLoweringInitializationLifecycleReference",
         "Source/Reference/Lowering/InitializationLifecycle.uv"
@@ -162,7 +162,7 @@ public procedure validatedCommonLoweringProgramLifecycleAndBackendInitialization
     }
     if acceptedObligationEntryMatches(
         "def.24.StaticSymPath",
-        93803usize,
+        93893usize,
         "HelloUltraviolet::Reference::Lowering",
         "runLoweringInitializationLifecycleReference",
         "Source/Reference/Lowering/InitializationLifecycle.uv"
@@ -171,7 +171,7 @@ public procedure validatedCommonLoweringProgramLifecycleAndBackendInitialization
     }
     if acceptedObligationEntryMatches(
         "def.24.StaticAddr",
-        93816usize,
+        93906usize,
         "HelloUltraviolet::Reference::Lowering",
         "runLoweringInitializationLifecycleReference",
         "Source/Reference/Lowering/InitializationLifecycle.uv"
@@ -180,7 +180,7 @@ public procedure validatedCommonLoweringProgramLifecycleAndBackendInitialization
     }
     if acceptedObligationEntryMatches(
         "req.24.HostedStaticAddrSessionInterpretation",
-        93829usize,
+        93919usize,
         "HelloUltraviolet::Reference::Lowering",
         "runLoweringInitializationLifecycleReference",
         "Source/Reference/Lowering/InitializationLifecycle.uv"
@@ -189,7 +189,7 @@ public procedure validatedCommonLoweringProgramLifecycleAndBackendInitialization
     }
     if acceptedObligationEntryMatches(
         "def.24.AddrOfSym",
-        93842usize,
+        93932usize,
         "HelloUltraviolet::Reference::Lowering",
         "runLoweringInitializationLifecycleReference",
         "Source/Reference/Lowering/InitializationLifecycle.uv"
@@ -198,7 +198,7 @@ public procedure validatedCommonLoweringProgramLifecycleAndBackendInitialization
     }
     if acceptedObligationEntryMatches(
         "def.24.StaticType",
-        93855usize,
+        93945usize,
         "HelloUltraviolet::Reference::Lowering",
         "runLoweringInitializationLifecycleReference",
         "Source/Reference/Lowering/InitializationLifecycle.uv"
@@ -207,7 +207,7 @@ public procedure validatedCommonLoweringProgramLifecycleAndBackendInitialization
     }
     if acceptedObligationEntryMatches(
         "def.24.StaticBindInfo",
-        93868usize,
+        93958usize,
         "HelloUltraviolet::Reference::Lowering",
         "runLoweringInitializationLifecycleReference",
         "Source/Reference/Lowering/InitializationLifecycle.uv"
@@ -216,7 +216,7 @@ public procedure validatedCommonLoweringProgramLifecycleAndBackendInitialization
     }
     if acceptedObligationEntryMatches(
         "def.24.SeqIRList",
-        93881usize,
+        93971usize,
         "HelloUltraviolet::Reference::Lowering",
         "runLoweringInitializationLifecycleReference",
         "Source/Reference/Lowering/InitializationLifecycle.uv"
@@ -225,7 +225,7 @@ public procedure validatedCommonLoweringProgramLifecycleAndBackendInitialization
     }
     if acceptedObligationEntryMatches(
         "def.24.StaticStoreIR",
-        93895usize,
+        93985usize,
         "HelloUltraviolet::Reference::Lowering",
         "runLoweringInitializationLifecycleReference",
         "Source/Reference/Lowering/InitializationLifecycle.uv"
@@ -234,7 +234,7 @@ public procedure validatedCommonLoweringProgramLifecycleAndBackendInitialization
     }
     if acceptedObligationEntryMatches(
         "rule.24.Lower-StaticInit-Item",
-        93909usize,
+        93999usize,
         "HelloUltraviolet::Reference::Lowering",
         "runLoweringInitializationLifecycleReference",
         "Source/Reference/Lowering/InitializationLifecycle.uv"
@@ -243,7 +243,7 @@ public procedure validatedCommonLoweringProgramLifecycleAndBackendInitialization
     }
     if acceptedObligationEntryMatches(
         "rule.24.Lower-StaticInitItems-Empty",
-        93925usize,
+        94015usize,
         "HelloUltraviolet::Reference::Lowering",
         "runLoweringInitializationLifecycleReference",
         "Source/Reference/Lowering/InitializationLifecycle.uv"
@@ -252,7 +252,7 @@ public procedure validatedCommonLoweringProgramLifecycleAndBackendInitialization
     }
     if acceptedObligationEntryMatches(
         "rule.24.Lower-StaticInitItems-Cons",
-        93940usize,
+        94030usize,
         "HelloUltraviolet::Reference::Lowering",
         "runLoweringInitializationLifecycleReference",
         "Source/Reference/Lowering/InitializationLifecycle.uv"
@@ -261,7 +261,7 @@ public procedure validatedCommonLoweringProgramLifecycleAndBackendInitialization
     }
     if acceptedObligationEntryMatches(
         "rule.24.Lower-StaticInit",
-        93956usize,
+        94046usize,
         "HelloUltraviolet::Reference::Lowering",
         "runLoweringInitializationLifecycleReference",
         "Source/Reference/Lowering/InitializationLifecycle.uv"
@@ -270,7 +270,7 @@ public procedure validatedCommonLoweringProgramLifecycleAndBackendInitialization
     }
     if acceptedObligationEntryMatches(
         "rule.24.InitCallIR",
-        93972usize,
+        94062usize,
         "HelloUltraviolet::Reference::Lowering",
         "runLoweringInitializationLifecycleReference",
         "Source/Reference/Lowering/InitializationLifecycle.uv"
@@ -279,7 +279,7 @@ public procedure validatedCommonLoweringProgramLifecycleAndBackendInitialization
     }
     if acceptedObligationEntryMatches(
         "def.24.Rev",
-        93988usize,
+        94078usize,
         "HelloUltraviolet::Reference::Lowering",
         "runLoweringInitializationLifecycleReference",
         "Source/Reference/Lowering/InitializationLifecycle.uv"
@@ -288,7 +288,7 @@ public procedure validatedCommonLoweringProgramLifecycleAndBackendInitialization
     }
     if acceptedObligationEntryMatches(
         "rule.24.Lower-StaticDeinitNames-Empty",
-        94002usize,
+        94092usize,
         "HelloUltraviolet::Reference::Lowering",
         "runLoweringInitializationLifecycleReference",
         "Source/Reference/Lowering/InitializationLifecycle.uv"
@@ -297,7 +297,7 @@ public procedure validatedCommonLoweringProgramLifecycleAndBackendInitialization
     }
     if acceptedObligationEntryMatches(
         "rule.24.Lower-StaticDeinitNames-Cons-Resp",
-        94017usize,
+        94107usize,
         "HelloUltraviolet::Reference::Lowering",
         "runLoweringInitializationLifecycleReference",
         "Source/Reference/Lowering/InitializationLifecycle.uv"
@@ -306,7 +306,7 @@ public procedure validatedCommonLoweringProgramLifecycleAndBackendInitialization
     }
     if acceptedObligationEntryMatches(
         "rule.24.Lower-StaticDeinitNames-Cons-NoResp",
-        94033usize,
+        94123usize,
         "HelloUltraviolet::Reference::Lowering",
         "runLoweringInitializationLifecycleReference",
         "Source/Reference/Lowering/InitializationLifecycle.uv"
@@ -315,7 +315,7 @@ public procedure validatedCommonLoweringProgramLifecycleAndBackendInitialization
     }
     if acceptedObligationEntryMatches(
         "rule.24.Lower-StaticDeinit-Item",
-        94049usize,
+        94139usize,
         "HelloUltraviolet::Reference::Lowering",
         "runLoweringInitializationLifecycleReference",
         "Source/Reference/Lowering/InitializationLifecycle.uv"
@@ -324,7 +324,7 @@ public procedure validatedCommonLoweringProgramLifecycleAndBackendInitialization
     }
     if acceptedObligationEntryMatches(
         "rule.24.Lower-StaticDeinitItems-Empty",
-        94065usize,
+        94155usize,
         "HelloUltraviolet::Reference::Lowering",
         "runLoweringInitializationLifecycleReference",
         "Source/Reference/Lowering/InitializationLifecycle.uv"
@@ -333,7 +333,7 @@ public procedure validatedCommonLoweringProgramLifecycleAndBackendInitialization
     }
     if acceptedObligationEntryMatches(
         "rule.24.Lower-StaticDeinitItems-Cons",
-        94080usize,
+        94170usize,
         "HelloUltraviolet::Reference::Lowering",
         "runLoweringInitializationLifecycleReference",
         "Source/Reference/Lowering/InitializationLifecycle.uv"
@@ -342,7 +342,7 @@ public procedure validatedCommonLoweringProgramLifecycleAndBackendInitialization
     }
     if acceptedObligationEntryMatches(
         "rule.24.Lower-StaticDeinit",
-        94096usize,
+        94186usize,
         "HelloUltraviolet::Reference::Lowering",
         "runLoweringInitializationLifecycleReference",
         "Source/Reference/Lowering/InitializationLifecycle.uv"
@@ -351,7 +351,7 @@ public procedure validatedCommonLoweringProgramLifecycleAndBackendInitialization
     }
     if acceptedObligationEntryMatches(
         "rule.24.DeinitCallIR",
-        94112usize,
+        94202usize,
         "HelloUltraviolet::Reference::Lowering",
         "runLoweringInitializationLifecycleReference",
         "Source/Reference/Lowering/InitializationLifecycle.uv"
@@ -360,7 +360,7 @@ public procedure validatedCommonLoweringProgramLifecycleAndBackendInitialization
     }
     if acceptedObligationEntryMatches(
         "def.24.HostedStateAddressDefinitions",
-        94128usize,
+        94218usize,
         "HelloUltraviolet::Reference::Lowering",
         "runLoweringInitializationLifecycleReference",
         "Source/Reference/Lowering/InitializationLifecycle.uv"
@@ -369,7 +369,7 @@ public procedure validatedCommonLoweringProgramLifecycleAndBackendInitialization
     }
     if acceptedObligationEntryMatches(
         "def.24.LibraryStateSymbolDefinitions",
-        94143usize,
+        94233usize,
         "HelloUltraviolet::Reference::Lowering",
         "runLoweringInitializationLifecycleReference",
         "Source/Reference/Lowering/InitializationLifecycle.uv"
@@ -378,7 +378,7 @@ public procedure validatedCommonLoweringProgramLifecycleAndBackendInitialization
     }
     if acceptedObligationEntryMatches(
         "def.24.HostedStateJudg",
-        94159usize,
+        94249usize,
         "HelloUltraviolet::Reference::Lowering",
         "runLoweringInitializationLifecycleReference",
         "Source/Reference/Lowering/InitializationLifecycle.uv"
@@ -387,7 +387,7 @@ public procedure validatedCommonLoweringProgramLifecycleAndBackendInitialization
     }
     if acceptedObligationEntryMatches(
         "req.24.SessionStateInitDefinesHostedCells",
-        94172usize,
+        94262usize,
         "HelloUltraviolet::Reference::Lowering",
         "runLoweringInitializationLifecycleReference",
         "Source/Reference/Lowering/InitializationLifecycle.uv"
@@ -396,7 +396,7 @@ public procedure validatedCommonLoweringProgramLifecycleAndBackendInitialization
     }
     if acceptedObligationEntryMatches(
         "req.24.SessionStateDestroyRemovesHostedCells",
-        94185usize,
+        94275usize,
         "HelloUltraviolet::Reference::Lowering",
         "runLoweringInitializationLifecycleReference",
         "Source/Reference/Lowering/InitializationLifecycle.uv"
@@ -405,7 +405,7 @@ public procedure validatedCommonLoweringProgramLifecycleAndBackendInitialization
     }
     if acceptedObligationEntryMatches(
         "req.24.HostedLibraryStateAddressInterpretation",
-        94198usize,
+        94288usize,
         "HelloUltraviolet::Reference::Lowering",
         "runLoweringInitializationLifecycleReference",
         "Source/Reference/Lowering/InitializationLifecycle.uv"
@@ -414,7 +414,7 @@ public procedure validatedCommonLoweringProgramLifecycleAndBackendInitialization
     }
     if acceptedObligationEntryMatches(
         "def.24.InitializationGraphOrdering",
-        94215usize,
+        94305usize,
         "HelloUltraviolet::Reference::Lowering",
         "runLoweringInitializationLifecycleReference",
         "Source/Reference/Lowering/InitializationLifecycle.uv"
@@ -423,7 +423,7 @@ public procedure validatedCommonLoweringProgramLifecycleAndBackendInitialization
     }
     if acceptedObligationEntryMatches(
         "rule.24.Topo-Ok",
-        94234usize,
+        94324usize,
         "HelloUltraviolet::Reference::Lowering",
         "runLoweringInitializationLifecycleReference",
         "Source/Reference/Lowering/InitializationLifecycle.uv"
@@ -432,7 +432,7 @@ public procedure validatedCommonLoweringProgramLifecycleAndBackendInitialization
     }
     if acceptedObligationEntryMatches(
         "rule.24.Topo-Cycle",
-        94250usize,
+        94340usize,
         "HelloUltraviolet::Reference::Lowering",
         "runLoweringInitializationLifecycleReference",
         "Source/Reference/Lowering/InitializationLifecycle.uv"
@@ -441,7 +441,7 @@ public procedure validatedCommonLoweringProgramLifecycleAndBackendInitialization
     }
     if acceptedObligationEntryMatches(
         "def.24.ProjectInitializationItems",
-        94266usize,
+        94356usize,
         "HelloUltraviolet::Reference::Lowering",
         "runLoweringInitializationLifecycleReference",
         "Source/Reference/Lowering/InitializationLifecycle.uv"
@@ -450,7 +450,7 @@ public procedure validatedCommonLoweringProgramLifecycleAndBackendInitialization
     }
     if acceptedObligationEntryMatches(
         "def.24.InitializationPlanDefinitions",
-        94282usize,
+        94372usize,
         "HelloUltraviolet::Reference::Lowering",
         "runLoweringInitializationLifecycleReference",
         "Source/Reference/Lowering/InitializationLifecycle.uv"
@@ -459,7 +459,7 @@ public procedure validatedCommonLoweringProgramLifecycleAndBackendInitialization
     }
     if acceptedObligationEntryMatches(
         "def.24.EvalFromEvalSigma",
-        94304usize,
+        94394usize,
         "HelloUltraviolet::Reference::Lowering",
         "runLoweringInitializationLifecycleReference",
         "Source/Reference/Lowering/InitializationLifecycle.uv"
@@ -468,7 +468,7 @@ public procedure validatedCommonLoweringProgramLifecycleAndBackendInitialization
     }
     if acceptedObligationEntryMatches(
         "rule.24.EmitInitPlan",
-        94318usize,
+        94408usize,
         "HelloUltraviolet::Reference::Lowering",
         "runLoweringInitializationLifecycleReference",
         "Source/Reference/Lowering/InitializationLifecycle.uv"
@@ -477,7 +477,7 @@ public procedure validatedCommonLoweringProgramLifecycleAndBackendInitialization
     }
     if acceptedObligationEntryMatches(
         "rule.24.EmitInitPlan-Err",
-        94334usize,
+        94424usize,
         "HelloUltraviolet::Reference::Lowering",
         "runLoweringInitializationLifecycleReference",
         "Source/Reference/Lowering/InitializationLifecycle.uv"
@@ -486,7 +486,7 @@ public procedure validatedCommonLoweringProgramLifecycleAndBackendInitialization
     }
     if acceptedObligationEntryMatches(
         "rule.24.EmitDeinitPlan",
-        94350usize,
+        94440usize,
         "HelloUltraviolet::Reference::Lowering",
         "runLoweringInitializationLifecycleReference",
         "Source/Reference/Lowering/InitializationLifecycle.uv"
@@ -495,7 +495,7 @@ public procedure validatedCommonLoweringProgramLifecycleAndBackendInitialization
     }
     if acceptedObligationEntryMatches(
         "rule.24.EmitDeinitPlan-Err",
-        94366usize,
+        94456usize,
         "HelloUltraviolet::Reference::Lowering",
         "runLoweringInitializationLifecycleReference",
         "Source/Reference/Lowering/InitializationLifecycle.uv"
@@ -504,7 +504,7 @@ public procedure validatedCommonLoweringProgramLifecycleAndBackendInitialization
     }
     if acceptedObligationEntryMatches(
         "def.24.InitStateMachineDefinitions",
-        94382usize,
+        94472usize,
         "HelloUltraviolet::Reference::Lowering",
         "runLoweringInitializationLifecycleReference",
         "Source/Reference/Lowering/InitializationLifecycle.uv"
@@ -513,7 +513,7 @@ public procedure validatedCommonLoweringProgramLifecycleAndBackendInitialization
     }
     if acceptedObligationEntryMatches(
         "rule.24.Init-Start",
-        94397usize,
+        94487usize,
         "HelloUltraviolet::Reference::Lowering",
         "runLoweringInitializationLifecycleReference",
         "Source/Reference/Lowering/InitializationLifecycle.uv"
@@ -522,7 +522,7 @@ public procedure validatedCommonLoweringProgramLifecycleAndBackendInitialization
     }
     if acceptedObligationEntryMatches(
         "rule.24.Init-Step",
-        94412usize,
+        94502usize,
         "HelloUltraviolet::Reference::Lowering",
         "runLoweringInitializationLifecycleReference",
         "Source/Reference/Lowering/InitializationLifecycle.uv"
@@ -531,7 +531,7 @@ public procedure validatedCommonLoweringProgramLifecycleAndBackendInitialization
     }
     if acceptedObligationEntryMatches(
         "rule.24.Init-Next-Module",
-        94428usize,
+        94518usize,
         "HelloUltraviolet::Reference::Lowering",
         "runLoweringInitializationLifecycleReference",
         "Source/Reference/Lowering/InitializationLifecycle.uv"
@@ -540,7 +540,7 @@ public procedure validatedCommonLoweringProgramLifecycleAndBackendInitialization
     }
     if acceptedObligationEntryMatches(
         "rule.24.Init-Panic",
-        94444usize,
+        94534usize,
         "HelloUltraviolet::Reference::Lowering",
         "runLoweringInitializationLifecycleReference",
         "Source/Reference/Lowering/InitializationLifecycle.uv"
@@ -549,7 +549,7 @@ public procedure validatedCommonLoweringProgramLifecycleAndBackendInitialization
     }
     if acceptedObligationEntryMatches(
         "rule.24.Init-Done",
-        94460usize,
+        94550usize,
         "HelloUltraviolet::Reference::Lowering",
         "runLoweringInitializationLifecycleReference",
         "Source/Reference/Lowering/InitializationLifecycle.uv"
@@ -558,7 +558,7 @@ public procedure validatedCommonLoweringProgramLifecycleAndBackendInitialization
     }
     if acceptedObligationEntryMatches(
         "rule.24.Init-Ok",
-        94476usize,
+        94566usize,
         "HelloUltraviolet::Reference::Lowering",
         "runLoweringInitializationLifecycleReference",
         "Source/Reference/Lowering/InitializationLifecycle.uv"
@@ -567,7 +567,7 @@ public procedure validatedCommonLoweringProgramLifecycleAndBackendInitialization
     }
     if acceptedObligationEntryMatches(
         "rule.24.Init-Fail",
-        94492usize,
+        94582usize,
         "HelloUltraviolet::Reference::Lowering",
         "runLoweringInitializationLifecycleReference",
         "Source/Reference/Lowering/InitializationLifecycle.uv"
@@ -576,7 +576,7 @@ public procedure validatedCommonLoweringProgramLifecycleAndBackendInitialization
     }
     if acceptedObligationEntryMatches(
         "rule.24.Deinit-Ok",
-        94508usize,
+        94598usize,
         "HelloUltraviolet::Reference::Lowering",
         "runLoweringInitializationLifecycleReference",
         "Source/Reference/Lowering/InitializationLifecycle.uv"
@@ -585,7 +585,7 @@ public procedure validatedCommonLoweringProgramLifecycleAndBackendInitialization
     }
     if acceptedObligationEntryMatches(
         "rule.24.Deinit-Panic",
-        94524usize,
+        94614usize,
         "HelloUltraviolet::Reference::Lowering",
         "runLoweringInitializationLifecycleReference",
         "Source/Reference/Lowering/InitializationLifecycle.uv"
@@ -594,7 +594,7 @@ public procedure validatedCommonLoweringProgramLifecycleAndBackendInitialization
     }
     if acceptedObligationEntryMatches(
         "def.24.EntryJudg",
-        94542usize,
+        94632usize,
         "HelloUltraviolet::Reference::Lowering",
         "runLoweringInitializationLifecycleReference",
         "Source/Reference/Lowering/InitializationLifecycle.uv"
@@ -603,7 +603,7 @@ public procedure validatedCommonLoweringProgramLifecycleAndBackendInitialization
     }
     if acceptedObligationEntryMatches(
         "rule.24.EntrySym-Decl",
-        94555usize,
+        94645usize,
         "HelloUltraviolet::Reference::Lowering",
         "runLoweringInitializationLifecycleReference",
         "Source/Reference/Lowering/InitializationLifecycle.uv"
@@ -612,7 +612,7 @@ public procedure validatedCommonLoweringProgramLifecycleAndBackendInitialization
     }
     if acceptedObligationEntryMatches(
         "rule.24.ContextInitSym-Decl",
-        94570usize,
+        94660usize,
         "HelloUltraviolet::Reference::Lowering",
         "runLoweringInitializationLifecycleReference",
         "Source/Reference/Lowering/InitializationLifecycle.uv"
@@ -621,7 +621,7 @@ public procedure validatedCommonLoweringProgramLifecycleAndBackendInitialization
     }
     if acceptedObligationEntryMatches(
         "def.24.ProcessInvocationNormalization",
-        94585usize,
+        94675usize,
         "HelloUltraviolet::Reference::Lowering",
         "runLoweringInitializationLifecycleReference",
         "Source/Reference/Lowering/InitializationLifecycle.uv"
@@ -630,7 +630,7 @@ public procedure validatedCommonLoweringProgramLifecycleAndBackendInitialization
     }
     if acceptedObligationEntryMatches(
         "req.24.ProcessInvocationPlatformIsolation",
-        94604usize,
+        94694usize,
         "HelloUltraviolet::Reference::Lowering",
         "runLoweringInitializationLifecycleReference",
         "Source/Reference/Lowering/InitializationLifecycle.uv"
@@ -639,7 +639,7 @@ public procedure validatedCommonLoweringProgramLifecycleAndBackendInitialization
     }
     if acceptedObligationEntryMatches(
         "def.24.PanicRecordInit",
-        94620usize,
+        94710usize,
         "HelloUltraviolet::Reference::Lowering",
         "runLoweringInitializationLifecycleReference",
         "Source/Reference/Lowering/InitializationLifecycle.uv"
@@ -648,7 +648,7 @@ public procedure validatedCommonLoweringProgramLifecycleAndBackendInitialization
     }
     if acceptedObligationEntryMatches(
         "def.24.EntryStubSpec",
-        94633usize,
+        94723usize,
         "HelloUltraviolet::Reference::Lowering",
         "runLoweringInitializationLifecycleReference",
         "Source/Reference/Lowering/InitializationLifecycle.uv"
@@ -657,7 +657,7 @@ public procedure validatedCommonLoweringProgramLifecycleAndBackendInitialization
     }
     if acceptedObligationEntryMatches(
         "rule.24.EntryStub-Decl",
-        94651usize,
+        94741usize,
         "HelloUltraviolet::Reference::Lowering",
         "runLoweringInitializationLifecycleReference",
         "Source/Reference/Lowering/InitializationLifecycle.uv"
@@ -666,7 +666,7 @@ public procedure validatedCommonLoweringProgramLifecycleAndBackendInitialization
     }
     if acceptedObligationEntryMatches(
         "rule.24.EntrySym-Err",
-        94667usize,
+        94757usize,
         "HelloUltraviolet::Reference::Lowering",
         "runLoweringInitializationLifecycleReference",
         "Source/Reference/Lowering/InitializationLifecycle.uv"
@@ -675,60 +675,6 @@ public procedure validatedCommonLoweringProgramLifecycleAndBackendInitialization
     }
     if acceptedObligationEntryMatches(
         "rule.24.EntryStub-Err",
-        94683usize,
-        "HelloUltraviolet::Reference::Lowering",
-        "runLoweringInitializationLifecycleReference",
-        "Source/Reference/Lowering/InitializationLifecycle.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
-        "def.24.LibraryImageJudg",
-        94701usize,
-        "HelloUltraviolet::Reference::Lowering",
-        "runLoweringInitializationLifecycleReference",
-        "Source/Reference/Lowering/InitializationLifecycle.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
-        "def.24.LibraryImageStateDefinitions",
-        94714usize,
-        "HelloUltraviolet::Reference::Lowering",
-        "runLoweringInitializationLifecycleReference",
-        "Source/Reference/Lowering/InitializationLifecycle.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
-        "req.24.DistinctLibraryImageState",
-        94734usize,
-        "HelloUltraviolet::Reference::Lowering",
-        "runLoweringInitializationLifecycleReference",
-        "Source/Reference/Lowering/InitializationLifecycle.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
-        "req.24.LibraryImageLivenessTransitions",
-        94747usize,
-        "HelloUltraviolet::Reference::Lowering",
-        "runLoweringInitializationLifecycleReference",
-        "Source/Reference/Lowering/InitializationLifecycle.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
-        "req.24.LibraryImageInitDefinesSharedCells",
-        94760usize,
-        "HelloUltraviolet::Reference::Lowering",
-        "runLoweringInitializationLifecycleReference",
-        "Source/Reference/Lowering/InitializationLifecycle.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
-        "req.24.LibraryImageDestroyRemovesSharedCells",
         94773usize,
         "HelloUltraviolet::Reference::Lowering",
         "runLoweringInitializationLifecycleReference",
@@ -737,8 +683,62 @@ public procedure validatedCommonLoweringProgramLifecycleAndBackendInitialization
         count = count + 1usize
     }
     if acceptedObligationEntryMatches(
+        "def.24.LibraryImageJudg",
+        94791usize,
+        "HelloUltraviolet::Reference::Lowering",
+        "runLoweringInitializationLifecycleReference",
+        "Source/Reference/Lowering/InitializationLifecycle.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "def.24.LibraryImageStateDefinitions",
+        94804usize,
+        "HelloUltraviolet::Reference::Lowering",
+        "runLoweringInitializationLifecycleReference",
+        "Source/Reference/Lowering/InitializationLifecycle.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "req.24.DistinctLibraryImageState",
+        94824usize,
+        "HelloUltraviolet::Reference::Lowering",
+        "runLoweringInitializationLifecycleReference",
+        "Source/Reference/Lowering/InitializationLifecycle.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "req.24.LibraryImageLivenessTransitions",
+        94837usize,
+        "HelloUltraviolet::Reference::Lowering",
+        "runLoweringInitializationLifecycleReference",
+        "Source/Reference/Lowering/InitializationLifecycle.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "req.24.LibraryImageInitDefinesSharedCells",
+        94850usize,
+        "HelloUltraviolet::Reference::Lowering",
+        "runLoweringInitializationLifecycleReference",
+        "Source/Reference/Lowering/InitializationLifecycle.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "req.24.LibraryImageDestroyRemovesSharedCells",
+        94863usize,
+        "HelloUltraviolet::Reference::Lowering",
+        "runLoweringInitializationLifecycleReference",
+        "Source/Reference/Lowering/InitializationLifecycle.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
         "req.24.SharedLibraryImageStateInterpretation",
-        94786usize,
+        94876usize,
         "HelloUltraviolet::Reference::Lowering",
         "runLoweringInitializationLifecycleReference",
         "Source/Reference/Lowering/InitializationLifecycle.uv"
@@ -747,7 +747,7 @@ public procedure validatedCommonLoweringProgramLifecycleAndBackendInitialization
     }
     if acceptedObligationEntryMatches(
         "req.24.PartialInitPanicCleanupPrefix",
-        94799usize,
+        94889usize,
         "HelloUltraviolet::Reference::Lowering",
         "runLoweringInitializationLifecycleReference",
         "Source/Reference/Lowering/InitializationLifecycle.uv"
@@ -756,7 +756,7 @@ public procedure validatedCommonLoweringProgramLifecycleAndBackendInitialization
     }
     if acceptedObligationEntryMatches(
         "req.24.RawExportImageLifecycle",
-        94812usize,
+        94902usize,
         "HelloUltraviolet::Reference::Lowering",
         "runLoweringInitializationLifecycleReference",
         "Source/Reference/Lowering/InitializationLifecycle.uv"
@@ -765,7 +765,7 @@ public procedure validatedCommonLoweringProgramLifecycleAndBackendInitialization
     }
     if acceptedObligationEntryMatches(
         "req.24.SharedLibraryLinkedCallImageLifecycle",
-        94825usize,
+        94915usize,
         "HelloUltraviolet::Reference::Lowering",
         "runLoweringInitializationLifecycleReference",
         "Source/Reference/Lowering/InitializationLifecycle.uv"
@@ -774,7 +774,7 @@ public procedure validatedCommonLoweringProgramLifecycleAndBackendInitialization
     }
     if acceptedObligationEntryMatches(
         "req.24.SharedLibraryLoaderEntrypoint",
-        94838usize,
+        94928usize,
         "HelloUltraviolet::Reference::Lowering",
         "runLoweringInitializationLifecycleReference",
         "Source/Reference/Lowering/InitializationLifecycle.uv"
@@ -783,7 +783,7 @@ public procedure validatedCommonLoweringProgramLifecycleAndBackendInitialization
     }
     if acceptedObligationEntryMatches(
         "rule.24.LibraryImageInitSigma",
-        94851usize,
+        94941usize,
         "HelloUltraviolet::Reference::Lowering",
         "runLoweringInitializationLifecycleReference",
         "Source/Reference/Lowering/InitializationLifecycle.uv"
@@ -792,7 +792,7 @@ public procedure validatedCommonLoweringProgramLifecycleAndBackendInitialization
     }
     if acceptedObligationEntryMatches(
         "rule.24.RawLibraryCallSigma-Ok",
-        94867usize,
+        94957usize,
         "HelloUltraviolet::Reference::Lowering",
         "runLoweringInitializationLifecycleReference",
         "Source/Reference/Lowering/InitializationLifecycle.uv"
@@ -801,60 +801,6 @@ public procedure validatedCommonLoweringProgramLifecycleAndBackendInitialization
     }
     if acceptedObligationEntryMatches(
         "rule.24.LibraryImageDestroySigma",
-        94883usize,
-        "HelloUltraviolet::Reference::Lowering",
-        "runLoweringInitializationLifecycleReference",
-        "Source/Reference/Lowering/InitializationLifecycle.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
-        "def.24.HostedSessionJudg",
-        94899usize,
-        "HelloUltraviolet::Reference::Lowering",
-        "runLoweringInitializationLifecycleReference",
-        "Source/Reference/Lowering/InitializationLifecycle.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
-        "def.24.HostedSessionStateDefinitions",
-        94912usize,
-        "HelloUltraviolet::Reference::Lowering",
-        "runLoweringInitializationLifecycleReference",
-        "Source/Reference/Lowering/InitializationLifecycle.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
-        "req.24.DistinctHostedState",
-        94934usize,
-        "HelloUltraviolet::Reference::Lowering",
-        "runLoweringInitializationLifecycleReference",
-        "Source/Reference/Lowering/InitializationLifecycle.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
-        "req.24.HostedSessionLifecycleState",
-        94947usize,
-        "HelloUltraviolet::Reference::Lowering",
-        "runLoweringInitializationLifecycleReference",
-        "Source/Reference/Lowering/InitializationLifecycle.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
-        "req.24.HostedSessionNoConcurrentReentry",
-        94960usize,
-        "HelloUltraviolet::Reference::Lowering",
-        "runLoweringInitializationLifecycleReference",
-        "Source/Reference/Lowering/InitializationLifecycle.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
-        "rule.24.HostSessionInitSigma",
         94973usize,
         "HelloUltraviolet::Reference::Lowering",
         "runLoweringInitializationLifecycleReference",
@@ -863,7 +809,7 @@ public procedure validatedCommonLoweringProgramLifecycleAndBackendInitialization
         count = count + 1usize
     }
     if acceptedObligationEntryMatches(
-        "rule.24.HostedCallSigma-Ok",
+        "def.24.HostedSessionJudg",
         94989usize,
         "HelloUltraviolet::Reference::Lowering",
         "runLoweringInitializationLifecycleReference",
@@ -872,8 +818,62 @@ public procedure validatedCommonLoweringProgramLifecycleAndBackendInitialization
         count = count + 1usize
     }
     if acceptedObligationEntryMatches(
+        "def.24.HostedSessionStateDefinitions",
+        95002usize,
+        "HelloUltraviolet::Reference::Lowering",
+        "runLoweringInitializationLifecycleReference",
+        "Source/Reference/Lowering/InitializationLifecycle.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "req.24.DistinctHostedState",
+        95024usize,
+        "HelloUltraviolet::Reference::Lowering",
+        "runLoweringInitializationLifecycleReference",
+        "Source/Reference/Lowering/InitializationLifecycle.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "req.24.HostedSessionLifecycleState",
+        95037usize,
+        "HelloUltraviolet::Reference::Lowering",
+        "runLoweringInitializationLifecycleReference",
+        "Source/Reference/Lowering/InitializationLifecycle.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "req.24.HostedSessionNoConcurrentReentry",
+        95050usize,
+        "HelloUltraviolet::Reference::Lowering",
+        "runLoweringInitializationLifecycleReference",
+        "Source/Reference/Lowering/InitializationLifecycle.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "rule.24.HostSessionInitSigma",
+        95063usize,
+        "HelloUltraviolet::Reference::Lowering",
+        "runLoweringInitializationLifecycleReference",
+        "Source/Reference/Lowering/InitializationLifecycle.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "rule.24.HostedCallSigma-Ok",
+        95079usize,
+        "HelloUltraviolet::Reference::Lowering",
+        "runLoweringInitializationLifecycleReference",
+        "Source/Reference/Lowering/InitializationLifecycle.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
         "rule.24.HostSessionDestroySigma",
-        95005usize,
+        95095usize,
         "HelloUltraviolet::Reference::Lowering",
         "runLoweringInitializationLifecycleReference",
         "Source/Reference/Lowering/InitializationLifecycle.uv"
@@ -882,7 +882,7 @@ public procedure validatedCommonLoweringProgramLifecycleAndBackendInitialization
     }
     if acceptedObligationEntryMatches(
         "def.24.InterpJudg",
-        95023usize,
+        95113usize,
         "HelloUltraviolet::Reference::Lowering",
         "runLoweringInitializationLifecycleReference",
         "Source/Reference/Lowering/InitializationLifecycle.uv"
@@ -891,7 +891,7 @@ public procedure validatedCommonLoweringProgramLifecycleAndBackendInitialization
     }
     if acceptedObligationEntryMatches(
         "def.24.ContextValue",
-        95036usize,
+        95126usize,
         "HelloUltraviolet::Reference::Lowering",
         "runLoweringInitializationLifecycleReference",
         "Source/Reference/Lowering/InitializationLifecycle.uv"
@@ -900,7 +900,7 @@ public procedure validatedCommonLoweringProgramLifecycleAndBackendInitialization
     }
     if acceptedObligationEntryMatches(
         "rule.24.ContextInitSigma",
-        95049usize,
+        95139usize,
         "HelloUltraviolet::Reference::Lowering",
         "runLoweringInitializationLifecycleReference",
         "Source/Reference/Lowering/InitializationLifecycle.uv"
@@ -909,7 +909,7 @@ public procedure validatedCommonLoweringProgramLifecycleAndBackendInitialization
     }
     if acceptedObligationEntryMatches(
         "rule.24.Interpret-Project-Ok",
-        95065usize,
+        95155usize,
         "HelloUltraviolet::Reference::Lowering",
         "runLoweringInitializationLifecycleReference",
         "Source/Reference/Lowering/InitializationLifecycle.uv"
@@ -918,7 +918,7 @@ public procedure validatedCommonLoweringProgramLifecycleAndBackendInitialization
     }
     if acceptedObligationEntryMatches(
         "rule.24.Interpret-Project-Init-Panic",
-        95081usize,
+        95171usize,
         "HelloUltraviolet::Reference::Lowering",
         "runLoweringInitializationLifecycleReference",
         "Source/Reference/Lowering/InitializationLifecycle.uv"
@@ -927,7 +927,7 @@ public procedure validatedCommonLoweringProgramLifecycleAndBackendInitialization
     }
     if acceptedObligationEntryMatches(
         "rule.24.Interpret-Project-Main-Ctrl",
-        95097usize,
+        95187usize,
         "HelloUltraviolet::Reference::Lowering",
         "runLoweringInitializationLifecycleReference",
         "Source/Reference/Lowering/InitializationLifecycle.uv"
@@ -936,7 +936,7 @@ public procedure validatedCommonLoweringProgramLifecycleAndBackendInitialization
     }
     if acceptedObligationEntryMatches(
         "rule.24.Interpret-Project-Deinit-Panic",
-        95113usize,
+        95203usize,
         "HelloUltraviolet::Reference::Lowering",
         "runLoweringInitializationLifecycleReference",
         "Source/Reference/Lowering/InitializationLifecycle.uv"

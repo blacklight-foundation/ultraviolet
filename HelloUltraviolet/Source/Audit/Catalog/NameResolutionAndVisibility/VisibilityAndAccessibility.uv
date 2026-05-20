@@ -9,7 +9,7 @@ public procedure validatedNameResolutionAndVisibilityVisibilityAndAccessibilityO
     var count: usize = 0usize
     if acceptedObligationEntryMatches(
         "def.DeclOfModuleItem",
-        19616usize,
+        19704usize,
         "HelloUltraviolet::Reference::Names",
         "runNamesVisibilityReference",
         "Source/Reference/Names/Visibility.uv"
@@ -18,7 +18,7 @@ public procedure validatedNameResolutionAndVisibilityVisibilityAndAccessibilityO
     }
     if acceptedObligationEntryMatches(
         "def.DeclOfExternProc",
-        19630usize,
+        19718usize,
         "HelloUltraviolet::Reference::Names",
         "runNamesVisibilityReference",
         "Source/Reference/Names/Visibility.uv"
@@ -27,7 +27,7 @@ public procedure validatedNameResolutionAndVisibilityVisibilityAndAccessibilityO
     }
     if acceptedObligationEntryMatches(
         "def.ModuleOfItem",
-        19644usize,
+        19732usize,
         "HelloUltraviolet::Reference::Names",
         "runNamesVisibilityReference",
         "Source/Reference/Names/Visibility.uv"
@@ -36,60 +36,6 @@ public procedure validatedNameResolutionAndVisibilityVisibilityAndAccessibilityO
     }
     if acceptedObligationEntryMatches(
         "def.ModuleOfExternProc",
-        19658usize,
-        "HelloUltraviolet::Reference::Names",
-        "runNamesVisibilityReference",
-        "Source/Reference/Names/Visibility.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
-        "def.ExternBlockOfProc",
-        19672usize,
-        "HelloUltraviolet::Reference::Names",
-        "runNamesVisibilityReference",
-        "Source/Reference/Names/Visibility.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
-        "def.ExternProcName",
-        19686usize,
-        "HelloUltraviolet::Reference::Names",
-        "runNamesVisibilityReference",
-        "Source/Reference/Names/Visibility.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
-        "def.VisibilityOfDeclaration",
-        19700usize,
-        "HelloUltraviolet::Reference::Names",
-        "runNamesVisibilityReference",
-        "Source/Reference/Names/Visibility.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
-        "def.SameAssembly",
-        19714usize,
-        "HelloUltraviolet::Reference::Names",
-        "runNamesVisibilityReference",
-        "Source/Reference/Names/Visibility.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
-        "Access-Public",
-        19728usize,
-        "HelloUltraviolet::Reference::Names",
-        "runNamesVisibilityReference",
-        "Source/Reference/Names/Visibility.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
-        "Access-Internal",
         19746usize,
         "HelloUltraviolet::Reference::Names",
         "runNamesVisibilityReference",
@@ -98,8 +44,62 @@ public procedure validatedNameResolutionAndVisibilityVisibilityAndAccessibilityO
         count = count + 1usize
     }
     if acceptedObligationEntryMatches(
+        "def.ExternBlockOfProc",
+        19760usize,
+        "HelloUltraviolet::Reference::Names",
+        "runNamesVisibilityReference",
+        "Source/Reference/Names/Visibility.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "def.ExternProcName",
+        19774usize,
+        "HelloUltraviolet::Reference::Names",
+        "runNamesVisibilityReference",
+        "Source/Reference/Names/Visibility.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "def.VisibilityOfDeclaration",
+        19788usize,
+        "HelloUltraviolet::Reference::Names",
+        "runNamesVisibilityReference",
+        "Source/Reference/Names/Visibility.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "def.SameAssembly",
+        19802usize,
+        "HelloUltraviolet::Reference::Names",
+        "runNamesVisibilityReference",
+        "Source/Reference/Names/Visibility.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "Access-Public",
+        19816usize,
+        "HelloUltraviolet::Reference::Names",
+        "runNamesVisibilityReference",
+        "Source/Reference/Names/Visibility.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "Access-Internal",
+        19834usize,
+        "HelloUltraviolet::Reference::Names",
+        "runNamesVisibilityReference",
+        "Source/Reference/Names/Visibility.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
         "Access-Private",
-        19764usize,
+        19852usize,
         "HelloUltraviolet::Reference::Names",
         "runNamesVisibilityReference",
         "Source/Reference/Names/Visibility.uv"
@@ -108,7 +108,7 @@ public procedure validatedNameResolutionAndVisibilityVisibilityAndAccessibilityO
     }
     if rejectedSourceObligationEntryMatches(
         "Access-Internal-Err",
-        19782usize,
+        19870usize,
         "HelloUltraviolet::Audit::FixtureCatalog::RejectedSource",
         "validatedNamesRejectedSourceFixtureCount",
         "Fixtures/RejectedSource/Names/InternalAccess/Source/InternalAccess/Library.uv"
@@ -117,7 +117,7 @@ public procedure validatedNameResolutionAndVisibilityVisibilityAndAccessibilityO
     }
     if rejectedSourceObligationEntryMatches(
         "Access-Err",
-        19800usize,
+        19888usize,
         "HelloUltraviolet::Audit::FixtureCatalog::RejectedSource",
         "validatedNamesRejectedSourceFixtureCount",
         "Fixtures/RejectedSource/Names/PrivateAccess/Source/Main.uv"
@@ -126,7 +126,7 @@ public procedure validatedNameResolutionAndVisibilityVisibilityAndAccessibilityO
     }
     if acceptedObligationEntryMatches(
         "def.TopLevelDeclarationPredicate",
-        19818usize,
+        19906usize,
         "HelloUltraviolet::Reference::Names",
         "runNamesVisibilityReference",
         "Source/Reference/Names/Visibility.uv"
@@ -135,7 +135,7 @@ public procedure validatedNameResolutionAndVisibilityVisibilityAndAccessibilityO
     }
     if acceptedObligationEntryMatches(
         "TopLevelVis-Ok",
-        19832usize,
+        19920usize,
         "HelloUltraviolet::Reference::Names",
         "runNamesVisibilityReference",
         "Source/Reference/Names/Visibility.uv"

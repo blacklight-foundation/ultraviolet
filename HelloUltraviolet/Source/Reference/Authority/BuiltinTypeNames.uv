@@ -32,6 +32,9 @@ internal procedure ioErrorVariantIsKnown(error: IoError) -> bool {
         IoError::IoFailure {
             true
         }
+        IoError::DirectoryNotEmpty {
+            true
+        }
     }
 }
 
@@ -163,6 +166,7 @@ public procedure runAuthorityBuiltinTypeNamesReference(context: Context) -> bool
         readableTextObserved(move readable) &&
         missingTextObserved(move missing) &&
         fileKindVariantIsKnown(FileKind::Dir) &&
+        ioErrorVariantIsKnown(IoError::DirectoryNotEmpty) &&
         durationIsResolved(resolution) &&
         elapsedOutcomeObserved(elapsed) &&
         wallInstantOutcomeObserved(wall_now) &&

@@ -147,6 +147,7 @@ enum {
   UV_IO_INVALID_PATH = 3,
   UV_IO_BUSY = 4,
   UV_IO_FAILURE = 5,
+  UV_IO_DIRECTORY_NOT_EMPTY = 6,
 };
 
 // FileKind enum (u8)

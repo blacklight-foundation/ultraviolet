@@ -508,7 +508,8 @@ ast::EnumDecl BuildIoErrorEnumDecl() {
 
   decl.variants = {make_variant("NotFound"), make_variant("PermissionDenied"),
                    make_variant("AlreadyExists"), make_variant("InvalidPath"),
-                   make_variant("Busy"), make_variant("IoFailure")};
+                   make_variant("Busy"), make_variant("IoFailure"),
+                   make_variant("DirectoryNotEmpty")};
   return decl;
 }
 

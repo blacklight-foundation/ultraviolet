@@ -9,7 +9,7 @@ public procedure validatedConcreteDataTypesEnumsObligations() -> usize {
     var count: usize = 0usize
     if acceptedObligationEntryMatches(
         "grammar.EnumSyntax",
-        39538usize,
+        39626usize,
         "HelloUltraviolet::Reference::DataTypes",
         "runDataTypesEnumsReference",
         "Source/Reference/DataTypes/Enums.uv"
@@ -18,51 +18,6 @@ public procedure validatedConcreteDataTypesEnumsObligations() -> usize {
     }
     if acceptedObligationEntryMatches(
         "req.EnumVariantSeparatorSyntax",
-        39563usize,
-        "HelloUltraviolet::Reference::DataTypes",
-        "runDataTypesEnumsReference",
-        "Source/Reference/DataTypes/Enums.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
-        "Parse-Enum",
-        39579usize,
-        "HelloUltraviolet::Reference::DataTypes",
-        "runDataTypesEnumsReference",
-        "Source/Reference/DataTypes/Enums.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
-        "Parse-EnumBody",
-        39597usize,
-        "HelloUltraviolet::Reference::DataTypes",
-        "runDataTypesEnumsReference",
-        "Source/Reference/DataTypes/Enums.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
-        "Parse-VariantMembers-Empty",
-        39615usize,
-        "HelloUltraviolet::Reference::DataTypes",
-        "runDataTypesEnumsReference",
-        "Source/Reference/DataTypes/Enums.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
-        "Parse-VariantMembers-Cons",
-        39633usize,
-        "HelloUltraviolet::Reference::DataTypes",
-        "runDataTypesEnumsReference",
-        "Source/Reference/DataTypes/Enums.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
-        "Parse-VariantSep-End",
         39651usize,
         "HelloUltraviolet::Reference::DataTypes",
         "runDataTypesEnumsReference",
@@ -71,8 +26,53 @@ public procedure validatedConcreteDataTypesEnumsObligations() -> usize {
         count = count + 1usize
     }
     if acceptedObligationEntryMatches(
+        "Parse-Enum",
+        39667usize,
+        "HelloUltraviolet::Reference::DataTypes",
+        "runDataTypesEnumsReference",
+        "Source/Reference/DataTypes/Enums.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "Parse-EnumBody",
+        39685usize,
+        "HelloUltraviolet::Reference::DataTypes",
+        "runDataTypesEnumsReference",
+        "Source/Reference/DataTypes/Enums.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "Parse-VariantMembers-Empty",
+        39703usize,
+        "HelloUltraviolet::Reference::DataTypes",
+        "runDataTypesEnumsReference",
+        "Source/Reference/DataTypes/Enums.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "Parse-VariantMembers-Cons",
+        39721usize,
+        "HelloUltraviolet::Reference::DataTypes",
+        "runDataTypesEnumsReference",
+        "Source/Reference/DataTypes/Enums.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "Parse-VariantSep-End",
+        39739usize,
+        "HelloUltraviolet::Reference::DataTypes",
+        "runDataTypesEnumsReference",
+        "Source/Reference/DataTypes/Enums.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
         "Parse-VariantSep-Terminator",
-        39669usize,
+        39757usize,
         "HelloUltraviolet::Reference::DataTypes",
         "runDataTypesEnumsReference",
         "Source/Reference/DataTypes/Enums.uv"
@@ -81,7 +81,7 @@ public procedure validatedConcreteDataTypesEnumsObligations() -> usize {
     }
     if acceptedObligationEntryMatches(
         "Parse-Variant",
-        39687usize,
+        39775usize,
         "HelloUltraviolet::Reference::DataTypes",
         "runDataTypesEnumsReference",
         "Source/Reference/DataTypes/Enums.uv"
@@ -90,7 +90,7 @@ public procedure validatedConcreteDataTypesEnumsObligations() -> usize {
     }
     if acceptedObligationEntryMatches(
         "Parse-VariantPayloadOpt-None",
-        39705usize,
+        39793usize,
         "HelloUltraviolet::Reference::DataTypes",
         "runDataTypesEnumsReference",
         "Source/Reference/DataTypes/Enums.uv"
@@ -99,7 +99,7 @@ public procedure validatedConcreteDataTypesEnumsObligations() -> usize {
     }
     if acceptedObligationEntryMatches(
         "Parse-VariantPayloadOpt-Tuple",
-        39723usize,
+        39811usize,
         "HelloUltraviolet::Reference::DataTypes",
         "runDataTypesEnumsReference",
         "Source/Reference/DataTypes/Enums.uv"
@@ -108,7 +108,7 @@ public procedure validatedConcreteDataTypesEnumsObligations() -> usize {
     }
     if acceptedObligationEntryMatches(
         "Parse-VariantPayloadOpt-Record",
-        39741usize,
+        39829usize,
         "HelloUltraviolet::Reference::DataTypes",
         "runDataTypesEnumsReference",
         "Source/Reference/DataTypes/Enums.uv"
@@ -117,7 +117,7 @@ public procedure validatedConcreteDataTypesEnumsObligations() -> usize {
     }
     if acceptedObligationEntryMatches(
         "Parse-VariantDiscriminantOpt-None",
-        39759usize,
+        39847usize,
         "HelloUltraviolet::Reference::DataTypes",
         "runDataTypesEnumsReference",
         "Source/Reference/DataTypes/Enums.uv"
@@ -126,7 +126,7 @@ public procedure validatedConcreteDataTypesEnumsObligations() -> usize {
     }
     if acceptedObligationEntryMatches(
         "Parse-VariantDiscriminantOpt-Yes",
-        39777usize,
+        39865usize,
         "HelloUltraviolet::Reference::DataTypes",
         "runDataTypesEnumsReference",
         "Source/Reference/DataTypes/Enums.uv"
@@ -135,7 +135,7 @@ public procedure validatedConcreteDataTypesEnumsObligations() -> usize {
     }
     if rejectedSourceObligationEntryMatches(
         "req.EnumTopLevelCommaSeparatorRejected",
-        39795usize,
+        39883usize,
         "HelloUltraviolet::Audit::FixtureCatalog::RejectedSource",
         "validatedParsingRejectedSourceFixtureCount",
         "Fixtures/RejectedSource/Parsing/EnumCommaSeparator/Source/Main.uv"
@@ -144,7 +144,7 @@ public procedure validatedConcreteDataTypesEnumsObligations() -> usize {
     }
     if acceptedObligationEntryMatches(
         "req.EnumLiteralResolutionOwnership",
-        39809usize,
+        39897usize,
         "HelloUltraviolet::Reference::DataTypes",
         "runDataTypesEnumsReference",
         "Source/Reference/DataTypes/Enums.uv"
@@ -153,7 +153,7 @@ public procedure validatedConcreteDataTypesEnumsObligations() -> usize {
     }
     if acceptedObligationEntryMatches(
         "def.EnumDeclAst",
-        39823usize,
+        39911usize,
         "HelloUltraviolet::Reference::DataTypes",
         "runDataTypesEnumsReference",
         "Source/Reference/DataTypes/Enums.uv"
@@ -162,7 +162,7 @@ public procedure validatedConcreteDataTypesEnumsObligations() -> usize {
     }
     if acceptedObligationEntryMatches(
         "def.VariantDeclAst",
-        39840usize,
+        39928usize,
         "HelloUltraviolet::Reference::DataTypes",
         "runDataTypesEnumsReference",
         "Source/Reference/DataTypes/Enums.uv"
@@ -171,7 +171,7 @@ public procedure validatedConcreteDataTypesEnumsObligations() -> usize {
     }
     if acceptedObligationEntryMatches(
         "def.EnumVariantHelpers",
-        39856usize,
+        39944usize,
         "HelloUltraviolet::Reference::DataTypes",
         "runDataTypesEnumsReference",
         "Source/Reference/DataTypes/Enums.uv"
@@ -180,7 +180,7 @@ public procedure validatedConcreteDataTypesEnumsObligations() -> usize {
     }
     if acceptedObligationEntryMatches(
         "Bind-Enum",
-        39878usize,
+        39966usize,
         "HelloUltraviolet::Reference::DataTypes",
         "runDataTypesEnumsReference",
         "Source/Reference/DataTypes/Enums.uv"
@@ -189,7 +189,7 @@ public procedure validatedConcreteDataTypesEnumsObligations() -> usize {
     }
     if acceptedObligationEntryMatches(
         "def.EnumPayloadWellFormedness",
-        39895usize,
+        39983usize,
         "HelloUltraviolet::Reference::DataTypes",
         "runDataTypesEnumsReference",
         "Source/Reference/DataTypes/Enums.uv"
@@ -198,7 +198,7 @@ public procedure validatedConcreteDataTypesEnumsObligations() -> usize {
     }
     if acceptedObligationEntryMatches(
         "Resolve-EnumUnit",
-        39913usize,
+        40001usize,
         "HelloUltraviolet::Reference::DataTypes",
         "runDataTypesEnumsReference",
         "Source/Reference/DataTypes/Enums.uv"
@@ -207,7 +207,7 @@ public procedure validatedConcreteDataTypesEnumsObligations() -> usize {
     }
     if acceptedObligationEntryMatches(
         "Resolve-EnumTuple",
-        39931usize,
+        40019usize,
         "HelloUltraviolet::Reference::DataTypes",
         "runDataTypesEnumsReference",
         "Source/Reference/DataTypes/Enums.uv"
@@ -216,7 +216,7 @@ public procedure validatedConcreteDataTypesEnumsObligations() -> usize {
     }
     if acceptedObligationEntryMatches(
         "Resolve-EnumRecord",
-        39949usize,
+        40037usize,
         "HelloUltraviolet::Reference::DataTypes",
         "runDataTypesEnumsReference",
         "Source/Reference/DataTypes/Enums.uv"
@@ -225,7 +225,7 @@ public procedure validatedConcreteDataTypesEnumsObligations() -> usize {
     }
     if acceptedObligationEntryMatches(
         "ResolveQual-Name-Enum",
-        39971usize,
+        40059usize,
         "HelloUltraviolet::Reference::DataTypes",
         "runDataTypesEnumsReference",
         "Source/Reference/DataTypes/Enums.uv"
@@ -234,7 +234,7 @@ public procedure validatedConcreteDataTypesEnumsObligations() -> usize {
     }
     if acceptedObligationEntryMatches(
         "ResolveQual-Apply-Enum-Tuple",
-        39989usize,
+        40077usize,
         "HelloUltraviolet::Reference::DataTypes",
         "runDataTypesEnumsReference",
         "Source/Reference/DataTypes/Enums.uv"
@@ -243,7 +243,7 @@ public procedure validatedConcreteDataTypesEnumsObligations() -> usize {
     }
     if acceptedObligationEntryMatches(
         "ResolveQual-Apply-Enum-Record",
-        40007usize,
+        40095usize,
         "HelloUltraviolet::Reference::DataTypes",
         "runDataTypesEnumsReference",
         "Source/Reference/DataTypes/Enums.uv"
@@ -252,7 +252,7 @@ public procedure validatedConcreteDataTypesEnumsObligations() -> usize {
     }
     if acceptedObligationEntryMatches(
         "ResolveItem-Enum",
-        40025usize,
+        40113usize,
         "HelloUltraviolet::Reference::DataTypes",
         "runDataTypesEnumsReference",
         "Source/Reference/DataTypes/Enums.uv"
@@ -261,7 +261,7 @@ public procedure validatedConcreteDataTypesEnumsObligations() -> usize {
     }
     if acceptedObligationEntryMatches(
         "def.EnumDiscriminantSequence",
-        40043usize,
+        40131usize,
         "HelloUltraviolet::Reference::DataTypes",
         "runDataTypesEnumsReference",
         "Source/Reference/DataTypes/Enums.uv"
@@ -270,7 +270,7 @@ public procedure validatedConcreteDataTypesEnumsObligations() -> usize {
     }
     if referenceModelObligationEntryMatches(
         "Enum-Disc-NotInt",
-        40065usize,
+        40153usize,
         "HelloUltraviolet::Audit",
         "runSpecClarificationReferenceModels",
         "Source/Audit/SpecClarificationReferenceModels.uv"
@@ -279,7 +279,7 @@ public procedure validatedConcreteDataTypesEnumsObligations() -> usize {
     }
     if rejectedSourceObligationEntryMatches(
         "Enum-Disc-Invalid",
-        40087usize,
+        40175usize,
         "HelloUltraviolet::Audit::FixtureCatalog::RejectedSource",
         "validatedExpressionsRejectedSourceFixtureCount",
         "Fixtures/RejectedSource/Expressions/EnumInvalidDiscriminant/Source/Main.uv"
@@ -288,7 +288,7 @@ public procedure validatedConcreteDataTypesEnumsObligations() -> usize {
     }
     if referenceModelObligationEntryMatches(
         "Enum-Disc-Negative",
-        40105usize,
+        40193usize,
         "HelloUltraviolet::Audit",
         "runSpecClarificationReferenceModels",
         "Source/Audit/SpecClarificationReferenceModels.uv"
@@ -297,7 +297,7 @@ public procedure validatedConcreteDataTypesEnumsObligations() -> usize {
     }
     if rejectedSourceObligationEntryMatches(
         "Enum-Disc-Dup",
-        40126usize,
+        40214usize,
         "HelloUltraviolet::Audit::FixtureCatalog::RejectedSource",
         "validatedExpressionsRejectedSourceFixtureCount",
         "Fixtures/RejectedSource/Expressions/EnumDuplicateDiscriminant/Source/Main.uv"
@@ -306,7 +306,7 @@ public procedure validatedConcreteDataTypesEnumsObligations() -> usize {
     }
     if rejectedSourceObligationEntryMatches(
         "Enum-Empty-Err",
-        40144usize,
+        40232usize,
         "HelloUltraviolet::Audit::FixtureCatalog::RejectedSource",
         "validatedExpressionsRejectedSourceFixtureCount",
         "Fixtures/RejectedSource/Expressions/EnumEmpty/Source/Main.uv"
@@ -315,7 +315,7 @@ public procedure validatedConcreteDataTypesEnumsObligations() -> usize {
     }
     if rejectedSourceObligationEntryMatches(
         "Enum-Variant-Dup",
-        40162usize,
+        40250usize,
         "HelloUltraviolet::Audit::FixtureCatalog::RejectedSource",
         "validatedExpressionsRejectedSourceFixtureCount",
         "Fixtures/RejectedSource/Expressions/EnumDuplicateVariant/Source/Main.uv"
@@ -324,7 +324,7 @@ public procedure validatedConcreteDataTypesEnumsObligations() -> usize {
     }
     if acceptedObligationEntryMatches(
         "def.EnumDiscriminantType",
-        40180usize,
+        40268usize,
         "HelloUltraviolet::Reference::DataTypes",
         "runDataTypesEnumsReference",
         "Source/Reference/DataTypes/Enums.uv"
@@ -333,7 +333,7 @@ public procedure validatedConcreteDataTypesEnumsObligations() -> usize {
     }
     if acceptedObligationEntryMatches(
         "WF-EnumDecl",
-        40199usize,
+        40287usize,
         "HelloUltraviolet::Reference::DataTypes",
         "runDataTypesEnumsReference",
         "Source/Reference/DataTypes/Enums.uv"
@@ -342,7 +342,7 @@ public procedure validatedConcreteDataTypesEnumsObligations() -> usize {
     }
     if acceptedObligationEntryMatches(
         "def.EnumLiteralPayloadHelpers",
-        40217usize,
+        40305usize,
         "HelloUltraviolet::Reference::DataTypes",
         "runDataTypesEnumsReference",
         "Source/Reference/DataTypes/Enums.uv"
@@ -351,7 +351,7 @@ public procedure validatedConcreteDataTypesEnumsObligations() -> usize {
     }
     if acceptedObligationEntryMatches(
         "T-Enum-Lit-Unit",
-        40235usize,
+        40323usize,
         "HelloUltraviolet::Reference::DataTypes",
         "runDataTypesEnumsReference",
         "Source/Reference/DataTypes/Enums.uv"
@@ -360,7 +360,7 @@ public procedure validatedConcreteDataTypesEnumsObligations() -> usize {
     }
     if rejectedSourceObligationEntryMatches(
         "Enum-Lit-Unknown",
-        40253usize,
+        40341usize,
         "HelloUltraviolet::Audit::FixtureCatalog::RejectedSource",
         "validatedExpressionsRejectedSourceFixtureCount",
         "Fixtures/RejectedSource/Expressions/EnumUnknownVariant/Source/Main.uv"
@@ -369,7 +369,7 @@ public procedure validatedConcreteDataTypesEnumsObligations() -> usize {
     }
     if acceptedObligationEntryMatches(
         "T-Enum-Lit-Tuple",
-        40271usize,
+        40359usize,
         "HelloUltraviolet::Reference::DataTypes",
         "runDataTypesEnumsReference",
         "Source/Reference/DataTypes/Enums.uv"
@@ -378,7 +378,7 @@ public procedure validatedConcreteDataTypesEnumsObligations() -> usize {
     }
     if rejectedSourceObligationEntryMatches(
         "Enum-Lit-Tuple-Arity-Err",
-        40289usize,
+        40377usize,
         "HelloUltraviolet::Audit::FixtureCatalog::RejectedSource",
         "validatedExpressionsRejectedSourceFixtureCount",
         "Fixtures/RejectedSource/Expressions/EnumTupleArity/Source/Main.uv"
@@ -387,7 +387,7 @@ public procedure validatedConcreteDataTypesEnumsObligations() -> usize {
     }
     if acceptedObligationEntryMatches(
         "T-Enum-Lit-Record",
-        40307usize,
+        40395usize,
         "HelloUltraviolet::Reference::DataTypes",
         "runDataTypesEnumsReference",
         "Source/Reference/DataTypes/Enums.uv"
@@ -396,7 +396,7 @@ public procedure validatedConcreteDataTypesEnumsObligations() -> usize {
     }
     if rejectedSourceObligationEntryMatches(
         "Enum-Lit-Record-MissingField",
-        40325usize,
+        40413usize,
         "HelloUltraviolet::Audit::FixtureCatalog::RejectedSource",
         "validatedExpressionsRejectedSourceFixtureCount",
         "Fixtures/RejectedSource/Expressions/EnumRecordMissingField/Source/Main.uv"
@@ -405,7 +405,7 @@ public procedure validatedConcreteDataTypesEnumsObligations() -> usize {
     }
     if acceptedObligationEntryMatches(
         "def.EnumValueType",
-        40343usize,
+        40431usize,
         "HelloUltraviolet::Reference::DataTypes",
         "runDataTypesEnumsReference",
         "Source/Reference/DataTypes/Enums.uv"
@@ -414,7 +414,7 @@ public procedure validatedConcreteDataTypesEnumsObligations() -> usize {
     }
     if acceptedObligationEntryMatches(
         "EvalSigma-Enum-Unit",
-        40359usize,
+        40447usize,
         "HelloUltraviolet::Reference::DataTypes",
         "runDataTypesEnumsReference",
         "Source/Reference/DataTypes/Enums.uv"
@@ -423,7 +423,7 @@ public procedure validatedConcreteDataTypesEnumsObligations() -> usize {
     }
     if acceptedObligationEntryMatches(
         "EvalSigma-Enum-Tuple",
-        40376usize,
+        40464usize,
         "HelloUltraviolet::Reference::DataTypes",
         "runDataTypesEnumsReference",
         "Source/Reference/DataTypes/Enums.uv"
@@ -432,7 +432,7 @@ public procedure validatedConcreteDataTypesEnumsObligations() -> usize {
     }
     if acceptedObligationEntryMatches(
         "EvalSigma-Enum-Tuple-Ctrl",
-        40394usize,
+        40482usize,
         "HelloUltraviolet::Reference::DataTypes",
         "runDataTypesEnumsReference",
         "Source/Reference/DataTypes/Enums.uv"
@@ -441,7 +441,7 @@ public procedure validatedConcreteDataTypesEnumsObligations() -> usize {
     }
     if acceptedObligationEntryMatches(
         "EvalSigma-Enum-Record",
-        40412usize,
+        40500usize,
         "HelloUltraviolet::Reference::DataTypes",
         "runDataTypesEnumsReference",
         "Source/Reference/DataTypes/Enums.uv"
@@ -450,7 +450,7 @@ public procedure validatedConcreteDataTypesEnumsObligations() -> usize {
     }
     if acceptedObligationEntryMatches(
         "EvalSigma-Enum-Record-Ctrl",
-        40430usize,
+        40518usize,
         "HelloUltraviolet::Reference::DataTypes",
         "runDataTypesEnumsReference",
         "Source/Reference/DataTypes/Enums.uv"
@@ -459,7 +459,7 @@ public procedure validatedConcreteDataTypesEnumsObligations() -> usize {
     }
     if acceptedObligationEntryMatches(
         "def.EnumLayoutHelpers",
-        40448usize,
+        40536usize,
         "HelloUltraviolet::Reference::DataTypes",
         "runDataTypesEnumsReference",
         "Source/Reference/DataTypes/Enums.uv"
@@ -468,51 +468,6 @@ public procedure validatedConcreteDataTypesEnumsObligations() -> usize {
     }
     if acceptedObligationEntryMatches(
         "Layout-Enum-Tagged",
-        40477usize,
-        "HelloUltraviolet::Reference::DataTypes",
-        "runDataTypesEnumsReference",
-        "Source/Reference/DataTypes/Enums.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
-        "Size-Enum",
-        40495usize,
-        "HelloUltraviolet::Reference::DataTypes",
-        "runDataTypesEnumsReference",
-        "Source/Reference/DataTypes/Enums.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
-        "Align-Enum",
-        40513usize,
-        "HelloUltraviolet::Reference::DataTypes",
-        "runDataTypesEnumsReference",
-        "Source/Reference/DataTypes/Enums.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
-        "Layout-Enum",
-        40531usize,
-        "HelloUltraviolet::Reference::DataTypes",
-        "runDataTypesEnumsReference",
-        "Source/Reference/DataTypes/Enums.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
-        "def.EnumPayloadBits",
-        40549usize,
-        "HelloUltraviolet::Reference::DataTypes",
-        "runDataTypesEnumsReference",
-        "Source/Reference/DataTypes/Enums.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
-        "def.EnumValueBits",
         40565usize,
         "HelloUltraviolet::Reference::DataTypes",
         "runDataTypesEnumsReference",
@@ -521,8 +476,53 @@ public procedure validatedConcreteDataTypesEnumsObligations() -> usize {
         count = count + 1usize
     }
     if acceptedObligationEntryMatches(
+        "Size-Enum",
+        40583usize,
+        "HelloUltraviolet::Reference::DataTypes",
+        "runDataTypesEnumsReference",
+        "Source/Reference/DataTypes/Enums.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "Align-Enum",
+        40601usize,
+        "HelloUltraviolet::Reference::DataTypes",
+        "runDataTypesEnumsReference",
+        "Source/Reference/DataTypes/Enums.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "Layout-Enum",
+        40619usize,
+        "HelloUltraviolet::Reference::DataTypes",
+        "runDataTypesEnumsReference",
+        "Source/Reference/DataTypes/Enums.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "def.EnumPayloadBits",
+        40637usize,
+        "HelloUltraviolet::Reference::DataTypes",
+        "runDataTypesEnumsReference",
+        "Source/Reference/DataTypes/Enums.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "def.EnumValueBits",
+        40653usize,
+        "HelloUltraviolet::Reference::DataTypes",
+        "runDataTypesEnumsReference",
+        "Source/Reference/DataTypes/Enums.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
         "Lower-Expr-Enum-Unit",
-        40579usize,
+        40667usize,
         "HelloUltraviolet::Reference::DataTypes",
         "runDataTypesEnumsReference",
         "Source/Reference/DataTypes/Enums.uv"
@@ -531,7 +531,7 @@ public procedure validatedConcreteDataTypesEnumsObligations() -> usize {
     }
     if acceptedObligationEntryMatches(
         "Lower-Expr-Enum-Tuple",
-        40596usize,
+        40684usize,
         "HelloUltraviolet::Reference::DataTypes",
         "runDataTypesEnumsReference",
         "Source/Reference/DataTypes/Enums.uv"
@@ -540,7 +540,7 @@ public procedure validatedConcreteDataTypesEnumsObligations() -> usize {
     }
     if acceptedObligationEntryMatches(
         "Lower-Expr-Enum-Record",
-        40614usize,
+        40702usize,
         "HelloUltraviolet::Reference::DataTypes",
         "runDataTypesEnumsReference",
         "Source/Reference/DataTypes/Enums.uv"
@@ -549,7 +549,7 @@ public procedure validatedConcreteDataTypesEnumsObligations() -> usize {
     }
     if rejectedSourceObligationEntryMatches(
         "diagnostics.Enums",
-        40632usize,
+        40720usize,
         "HelloUltraviolet::Audit::FixtureCatalog::RejectedSource",
         "validatedExpressionsRejectedSourceFixtureCount",
         "Fixtures/RejectedSource/Expressions/EnumEmpty/Source/Main.uv"

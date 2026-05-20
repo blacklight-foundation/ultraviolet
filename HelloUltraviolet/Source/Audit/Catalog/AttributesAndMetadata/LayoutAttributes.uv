@@ -9,7 +9,7 @@ public procedure validatedAttributesAndMetadataLayoutAttributesObligations() -> 
     var count: usize = 0usize
     if acceptedObligationEntryMatches(
         "grammar.LayoutAttributeSyntax",
-        27714usize,
+        27802usize,
         "HelloUltraviolet::Reference::Attributes",
         "runAttributesLayoutAttributesReference",
         "Source/Reference/Attributes/LayoutAttributes.uv"
@@ -18,7 +18,7 @@ public procedure validatedAttributesAndMetadataLayoutAttributesObligations() -> 
     }
     if acceptedObligationEntryMatches(
         "req.LayoutAttributeParserReuse",
-        27737usize,
+        27825usize,
         "HelloUltraviolet::Reference::Attributes",
         "runAttributesLayoutAttributesReference",
         "Source/Reference/Attributes/LayoutAttributes.uv"
@@ -27,51 +27,6 @@ public procedure validatedAttributesAndMetadataLayoutAttributesObligations() -> 
     }
     if acceptedObligationEntryMatches(
         "def.LayoutAttributeAstAttachment",
-        27753usize,
-        "HelloUltraviolet::Reference::Attributes",
-        "runAttributesLayoutAttributesReference",
-        "Source/Reference/Attributes/LayoutAttributes.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
-        "req.LayoutCRecordSemantics",
-        27771usize,
-        "HelloUltraviolet::Reference::Attributes",
-        "runAttributesLayoutAttributesReference",
-        "Source/Reference/Attributes/LayoutAttributes.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
-        "req.LayoutCEnumSemantics",
-        27788usize,
-        "HelloUltraviolet::Reference::Attributes",
-        "runAttributesLayoutAttributesReference",
-        "Source/Reference/Attributes/LayoutAttributes.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
-        "req.LayoutExplicitEnumDiscriminant",
-        27805usize,
-        "HelloUltraviolet::Reference::Attributes",
-        "runAttributesLayoutAttributesReference",
-        "Source/Reference/Attributes/LayoutAttributes.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
-        "req.LayoutPackedRecordSemantics",
-        27824usize,
-        "HelloUltraviolet::Reference::Attributes",
-        "runAttributesLayoutAttributesReference",
-        "Source/Reference/Attributes/LayoutAttributes.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
-        "req.PackedFieldReferenceRequiresUnsafe",
         27841usize,
         "HelloUltraviolet::Reference::Attributes",
         "runAttributesLayoutAttributesReference",
@@ -80,8 +35,8 @@ public procedure validatedAttributesAndMetadataLayoutAttributesObligations() -> 
         count = count + 1usize
     }
     if acceptedObligationEntryMatches(
-        "req.LayoutAlignSemantics",
-        27857usize,
+        "req.LayoutCRecordSemantics",
+        27859usize,
         "HelloUltraviolet::Reference::Attributes",
         "runAttributesLayoutAttributesReference",
         "Source/Reference/Attributes/LayoutAttributes.uv"
@@ -89,7 +44,7 @@ public procedure validatedAttributesAndMetadataLayoutAttributesObligations() -> 
         count = count + 1usize
     }
     if acceptedObligationEntryMatches(
-        "def.ValidLayoutAttributeCombinations",
+        "req.LayoutCEnumSemantics",
         27876usize,
         "HelloUltraviolet::Reference::Attributes",
         "runAttributesLayoutAttributesReference",
@@ -98,8 +53,8 @@ public procedure validatedAttributesAndMetadataLayoutAttributesObligations() -> 
         count = count + 1usize
     }
     if acceptedObligationEntryMatches(
-        "def.InvalidLayoutAttributeCombinations",
-        27896usize,
+        "req.LayoutExplicitEnumDiscriminant",
+        27893usize,
         "HelloUltraviolet::Reference::Attributes",
         "runAttributesLayoutAttributesReference",
         "Source/Reference/Attributes/LayoutAttributes.uv"
@@ -107,8 +62,8 @@ public procedure validatedAttributesAndMetadataLayoutAttributesObligations() -> 
         count = count + 1usize
     }
     if acceptedObligationEntryMatches(
-        "def.LayoutAttributeApplicability",
-        27911usize,
+        "req.LayoutPackedRecordSemantics",
+        27912usize,
         "HelloUltraviolet::Reference::Attributes",
         "runAttributesLayoutAttributesReference",
         "Source/Reference/Attributes/LayoutAttributes.uv"
@@ -116,7 +71,7 @@ public procedure validatedAttributesAndMetadataLayoutAttributesObligations() -> 
         count = count + 1usize
     }
     if acceptedObligationEntryMatches(
-        "req.LayoutAttributeConstraints",
+        "req.PackedFieldReferenceRequiresUnsafe",
         27929usize,
         "HelloUltraviolet::Reference::Attributes",
         "runAttributesLayoutAttributesReference",
@@ -125,8 +80,53 @@ public procedure validatedAttributesAndMetadataLayoutAttributesObligations() -> 
         count = count + 1usize
     }
     if acceptedObligationEntryMatches(
+        "req.LayoutAlignSemantics",
+        27945usize,
+        "HelloUltraviolet::Reference::Attributes",
+        "runAttributesLayoutAttributesReference",
+        "Source/Reference/Attributes/LayoutAttributes.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "def.ValidLayoutAttributeCombinations",
+        27964usize,
+        "HelloUltraviolet::Reference::Attributes",
+        "runAttributesLayoutAttributesReference",
+        "Source/Reference/Attributes/LayoutAttributes.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "def.InvalidLayoutAttributeCombinations",
+        27984usize,
+        "HelloUltraviolet::Reference::Attributes",
+        "runAttributesLayoutAttributesReference",
+        "Source/Reference/Attributes/LayoutAttributes.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "def.LayoutAttributeApplicability",
+        27999usize,
+        "HelloUltraviolet::Reference::Attributes",
+        "runAttributesLayoutAttributesReference",
+        "Source/Reference/Attributes/LayoutAttributes.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "req.LayoutAttributeConstraints",
+        28017usize,
+        "HelloUltraviolet::Reference::Attributes",
+        "runAttributesLayoutAttributesReference",
+        "Source/Reference/Attributes/LayoutAttributes.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
         "conformance.LayoutAttributeDynamicSemantics",
-        27949usize,
+        28037usize,
         "HelloUltraviolet::Reference::Attributes",
         "runAttributesLayoutAttributesReference",
         "Source/Reference/Attributes/LayoutAttributes.uv"
@@ -135,7 +135,7 @@ public procedure validatedAttributesAndMetadataLayoutAttributesObligations() -> 
     }
     if acceptedObligationEntryMatches(
         "conformance.LayoutAttributeLowering",
-        27965usize,
+        28053usize,
         "HelloUltraviolet::Reference::Attributes",
         "runAttributesLayoutAttributesReference",
         "Source/Reference/Attributes/LayoutAttributes.uv"
@@ -144,7 +144,7 @@ public procedure validatedAttributesAndMetadataLayoutAttributesObligations() -> 
     }
     if rejectedSourceObligationEntryMatches(
         "diagnostics.LayoutAttributeDiagnostics",
-        27981usize,
+        28069usize,
         "HelloUltraviolet::Audit::FixtureCatalog::RejectedSource",
         "validatedAttributesRejectedSourceFixtureCount",
         "Fixtures/RejectedSource/Attributes/PackedLayoutOnEnum/Source/Main.uv"

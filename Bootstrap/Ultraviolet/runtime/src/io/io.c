@@ -27,6 +27,8 @@ static UVIoError uv_map_platform_error(uv_rt_u32_t err) {
     case UV_RT_ERROR_DIRECTORY:
     case UV_RT_ERROR_INVALID_PARAMETER:
       return UV_IO_INVALID_PATH;
+    case UV_RT_ERROR_DIR_NOT_EMPTY:
+      return UV_IO_DIRECTORY_NOT_EMPTY;
     case UV_RT_ERROR_BUSY:
     case UV_RT_ERROR_SHARING_VIOLATION:
     case UV_RT_ERROR_LOCK_VIOLATION:

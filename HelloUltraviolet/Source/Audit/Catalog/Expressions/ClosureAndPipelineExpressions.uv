@@ -9,7 +9,7 @@ public procedure validatedExpressionsClosureAndPipelineExpressionsObligations() 
     var count: usize = 0usize
     if acceptedObligationEntryMatches(
         "grammar.16.ClosureAndPipelineExpressions",
-        63858usize,
+        63947usize,
         "HelloUltraviolet::Reference::Expressions",
         "runExpressionsClosuresAndPipelinesReference",
         "Source/Reference/Expressions/ClosuresAndPipelines.uv"
@@ -18,60 +18,6 @@ public procedure validatedExpressionsClosureAndPipelineExpressionsObligations() 
     }
     if acceptedObligationEntryMatches(
         "req.16.ClosureParamTrailingComma",
-        63877usize,
-        "HelloUltraviolet::Reference::Expressions",
-        "runExpressionsClosuresAndPipelinesReference",
-        "Source/Reference/Expressions/ClosuresAndPipelines.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
-        "req.16.ClosureUnionParamParentheses",
-        63890usize,
-        "HelloUltraviolet::Reference::Expressions",
-        "runExpressionsClosuresAndPipelinesReference",
-        "Source/Reference/Expressions/ClosuresAndPipelines.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
-        "req.16.ClosureInvocationOrdinaryCallSyntax",
-        63903usize,
-        "HelloUltraviolet::Reference::Expressions",
-        "runExpressionsClosuresAndPipelinesReference",
-        "Source/Reference/Expressions/ClosuresAndPipelines.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
-        "rule.16.Parse-Pipeline",
-        63918usize,
-        "HelloUltraviolet::Reference::Expressions",
-        "runExpressionsClosuresAndPipelinesReference",
-        "Source/Reference/Expressions/ClosuresAndPipelines.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
-        "rule.16.Parse-PipelineTail-Stop",
-        63934usize,
-        "HelloUltraviolet::Reference::Expressions",
-        "runExpressionsClosuresAndPipelinesReference",
-        "Source/Reference/Expressions/ClosuresAndPipelines.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
-        "rule.16.Parse-PipelineTail-Cons",
-        63950usize,
-        "HelloUltraviolet::Reference::Expressions",
-        "runExpressionsClosuresAndPipelinesReference",
-        "Source/Reference/Expressions/ClosuresAndPipelines.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
-        "rule.16.Parse-Closure-Expr",
         63966usize,
         "HelloUltraviolet::Reference::Expressions",
         "runExpressionsClosuresAndPipelinesReference",
@@ -80,8 +26,62 @@ public procedure validatedExpressionsClosureAndPipelineExpressionsObligations() 
         count = count + 1usize
     }
     if acceptedObligationEntryMatches(
+        "req.16.ClosureUnionParamParentheses",
+        63979usize,
+        "HelloUltraviolet::Reference::Expressions",
+        "runExpressionsClosuresAndPipelinesReference",
+        "Source/Reference/Expressions/ClosuresAndPipelines.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "req.16.ClosureInvocationOrdinaryCallSyntax",
+        63992usize,
+        "HelloUltraviolet::Reference::Expressions",
+        "runExpressionsClosuresAndPipelinesReference",
+        "Source/Reference/Expressions/ClosuresAndPipelines.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "rule.16.Parse-Pipeline",
+        64007usize,
+        "HelloUltraviolet::Reference::Expressions",
+        "runExpressionsClosuresAndPipelinesReference",
+        "Source/Reference/Expressions/ClosuresAndPipelines.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "rule.16.Parse-PipelineTail-Stop",
+        64023usize,
+        "HelloUltraviolet::Reference::Expressions",
+        "runExpressionsClosuresAndPipelinesReference",
+        "Source/Reference/Expressions/ClosuresAndPipelines.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "rule.16.Parse-PipelineTail-Cons",
+        64039usize,
+        "HelloUltraviolet::Reference::Expressions",
+        "runExpressionsClosuresAndPipelinesReference",
+        "Source/Reference/Expressions/ClosuresAndPipelines.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "rule.16.Parse-Closure-Expr",
+        64055usize,
+        "HelloUltraviolet::Reference::Expressions",
+        "runExpressionsClosuresAndPipelinesReference",
+        "Source/Reference/Expressions/ClosuresAndPipelines.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
         "rule.16.Parse-Closure-Expr-Empty",
-        63982usize,
+        64071usize,
         "HelloUltraviolet::Reference::Expressions",
         "runExpressionsClosuresAndPipelinesReference",
         "Source/Reference/Expressions/ClosuresAndPipelines.uv"
@@ -90,7 +90,7 @@ public procedure validatedExpressionsClosureAndPipelineExpressionsObligations() 
     }
     if acceptedObligationEntryMatches(
         "rule.16.Parse-ClosureParams-Single",
-        63998usize,
+        64087usize,
         "HelloUltraviolet::Reference::Expressions",
         "runExpressionsClosuresAndPipelinesReference",
         "Source/Reference/Expressions/ClosuresAndPipelines.uv"
@@ -99,7 +99,7 @@ public procedure validatedExpressionsClosureAndPipelineExpressionsObligations() 
     }
     if acceptedObligationEntryMatches(
         "rule.16.Parse-ClosureParams-Cons",
-        64014usize,
+        64103usize,
         "HelloUltraviolet::Reference::Expressions",
         "runExpressionsClosuresAndPipelinesReference",
         "Source/Reference/Expressions/ClosuresAndPipelines.uv"
@@ -108,7 +108,7 @@ public procedure validatedExpressionsClosureAndPipelineExpressionsObligations() 
     }
     if acceptedObligationEntryMatches(
         "rule.16.Parse-ClosureParamType-Grouped",
-        64030usize,
+        64119usize,
         "HelloUltraviolet::Reference::Expressions",
         "runExpressionsClosuresAndPipelinesReference",
         "Source/Reference/Expressions/ClosuresAndPipelines.uv"
@@ -117,7 +117,7 @@ public procedure validatedExpressionsClosureAndPipelineExpressionsObligations() 
     }
     if acceptedObligationEntryMatches(
         "rule.16.Parse-ClosureParamType-Plain",
-        64046usize,
+        64135usize,
         "HelloUltraviolet::Reference::Expressions",
         "runExpressionsClosuresAndPipelinesReference",
         "Source/Reference/Expressions/ClosuresAndPipelines.uv"
@@ -126,7 +126,7 @@ public procedure validatedExpressionsClosureAndPipelineExpressionsObligations() 
     }
     if acceptedObligationEntryMatches(
         "rule.16.Parse-ClosureParam-MoveTyped",
-        64062usize,
+        64151usize,
         "HelloUltraviolet::Reference::Expressions",
         "runExpressionsClosuresAndPipelinesReference",
         "Source/Reference/Expressions/ClosuresAndPipelines.uv"
@@ -135,7 +135,7 @@ public procedure validatedExpressionsClosureAndPipelineExpressionsObligations() 
     }
     if acceptedObligationEntryMatches(
         "rule.16.Parse-ClosureParam-MoveUntyped",
-        64078usize,
+        64167usize,
         "HelloUltraviolet::Reference::Expressions",
         "runExpressionsClosuresAndPipelinesReference",
         "Source/Reference/Expressions/ClosuresAndPipelines.uv"
@@ -144,7 +144,7 @@ public procedure validatedExpressionsClosureAndPipelineExpressionsObligations() 
     }
     if acceptedObligationEntryMatches(
         "rule.16.Parse-ClosureParam-Typed",
-        64094usize,
+        64183usize,
         "HelloUltraviolet::Reference::Expressions",
         "runExpressionsClosuresAndPipelinesReference",
         "Source/Reference/Expressions/ClosuresAndPipelines.uv"
@@ -153,7 +153,7 @@ public procedure validatedExpressionsClosureAndPipelineExpressionsObligations() 
     }
     if acceptedObligationEntryMatches(
         "rule.16.Parse-ClosureParam-Untyped",
-        64110usize,
+        64199usize,
         "HelloUltraviolet::Reference::Expressions",
         "runExpressionsClosuresAndPipelinesReference",
         "Source/Reference/Expressions/ClosuresAndPipelines.uv"
@@ -162,7 +162,7 @@ public procedure validatedExpressionsClosureAndPipelineExpressionsObligations() 
     }
     if acceptedObligationEntryMatches(
         "rule.16.Parse-ClosureRetOpt-Some",
-        64126usize,
+        64215usize,
         "HelloUltraviolet::Reference::Expressions",
         "runExpressionsClosuresAndPipelinesReference",
         "Source/Reference/Expressions/ClosuresAndPipelines.uv"
@@ -171,51 +171,6 @@ public procedure validatedExpressionsClosureAndPipelineExpressionsObligations() 
     }
     if acceptedObligationEntryMatches(
         "rule.16.Parse-ClosureRetOpt-None",
-        64142usize,
-        "HelloUltraviolet::Reference::Expressions",
-        "runExpressionsClosuresAndPipelinesReference",
-        "Source/Reference/Expressions/ClosuresAndPipelines.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
-        "rule.16.Parse-ClosureBody-Block",
-        64158usize,
-        "HelloUltraviolet::Reference::Expressions",
-        "runExpressionsClosuresAndPipelinesReference",
-        "Source/Reference/Expressions/ClosuresAndPipelines.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
-        "rule.16.Parse-ClosureBody-Expr",
-        64174usize,
-        "HelloUltraviolet::Reference::Expressions",
-        "runExpressionsClosuresAndPipelinesReference",
-        "Source/Reference/Expressions/ClosuresAndPipelines.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
-        "def.16.ClosurePipelineAstForms",
-        64192usize,
-        "HelloUltraviolet::Reference::Expressions",
-        "runExpressionsClosuresAndPipelinesReference",
-        "Source/Reference/Expressions/ClosuresAndPipelines.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
-        "def.16.ClosureCaptureSets",
-        64211usize,
-        "HelloUltraviolet::Reference::Expressions",
-        "runExpressionsClosuresAndPipelinesReference",
-        "Source/Reference/Expressions/ClosuresAndPipelines.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
-        "def.16.ClosureEscapeClassification",
         64231usize,
         "HelloUltraviolet::Reference::Expressions",
         "runExpressionsClosuresAndPipelinesReference",
@@ -224,8 +179,53 @@ public procedure validatedExpressionsClosureAndPipelineExpressionsObligations() 
         count = count + 1usize
     }
     if acceptedObligationEntryMatches(
+        "rule.16.Parse-ClosureBody-Block",
+        64247usize,
+        "HelloUltraviolet::Reference::Expressions",
+        "runExpressionsClosuresAndPipelinesReference",
+        "Source/Reference/Expressions/ClosuresAndPipelines.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "rule.16.Parse-ClosureBody-Expr",
+        64263usize,
+        "HelloUltraviolet::Reference::Expressions",
+        "runExpressionsClosuresAndPipelinesReference",
+        "Source/Reference/Expressions/ClosuresAndPipelines.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "def.16.ClosurePipelineAstForms",
+        64281usize,
+        "HelloUltraviolet::Reference::Expressions",
+        "runExpressionsClosuresAndPipelinesReference",
+        "Source/Reference/Expressions/ClosuresAndPipelines.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "def.16.ClosureCaptureSets",
+        64300usize,
+        "HelloUltraviolet::Reference::Expressions",
+        "runExpressionsClosuresAndPipelinesReference",
+        "Source/Reference/Expressions/ClosuresAndPipelines.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "def.16.ClosureEscapeClassification",
+        64320usize,
+        "HelloUltraviolet::Reference::Expressions",
+        "runExpressionsClosuresAndPipelinesReference",
+        "Source/Reference/Expressions/ClosuresAndPipelines.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
         "def.16.ClosureParameterAccessors",
-        64246usize,
+        64335usize,
         "HelloUltraviolet::Reference::Expressions",
         "runExpressionsClosuresAndPipelinesReference",
         "Source/Reference/Expressions/ClosuresAndPipelines.uv"
@@ -234,7 +234,7 @@ public procedure validatedExpressionsClosureAndPipelineExpressionsObligations() 
     }
     if acceptedObligationEntryMatches(
         "rule.16.T-Closure-NonCapturing",
-        64260usize,
+        64349usize,
         "HelloUltraviolet::Reference::Expressions",
         "runExpressionsClosuresAndPipelinesReference",
         "Source/Reference/Expressions/ClosuresAndPipelines.uv"
@@ -243,7 +243,7 @@ public procedure validatedExpressionsClosureAndPipelineExpressionsObligations() 
     }
     if acceptedObligationEntryMatches(
         "rule.16.T-Closure-Capturing",
-        64283usize,
+        64372usize,
         "HelloUltraviolet::Reference::Expressions",
         "runExpressionsClosuresAndPipelinesReference",
         "Source/Reference/Expressions/ClosuresAndPipelines.uv"
@@ -252,7 +252,7 @@ public procedure validatedExpressionsClosureAndPipelineExpressionsObligations() 
     }
     if acceptedObligationEntryMatches(
         "rule.16.T-Closure-Escaping",
-        64302usize,
+        64391usize,
         "HelloUltraviolet::Reference::Expressions",
         "runExpressionsClosuresAndPipelinesReference",
         "Source/Reference/Expressions/ClosuresAndPipelines.uv"
@@ -261,7 +261,7 @@ public procedure validatedExpressionsClosureAndPipelineExpressionsObligations() 
     }
     if acceptedObligationEntryMatches(
         "rule.16.K-Closure-Escape-Type",
-        64322usize,
+        64411usize,
         "HelloUltraviolet::Reference::Expressions",
         "runExpressionsClosuresAndPipelinesReference",
         "Source/Reference/Expressions/ClosuresAndPipelines.uv"
@@ -270,7 +270,7 @@ public procedure validatedExpressionsClosureAndPipelineExpressionsObligations() 
     }
     if acceptedObligationEntryMatches(
         "rule.16.Capture-Const",
-        64338usize,
+        64427usize,
         "HelloUltraviolet::Reference::Expressions",
         "runExpressionsClosuresAndPipelinesReference",
         "Source/Reference/Expressions/ClosuresAndPipelines.uv"
@@ -279,7 +279,7 @@ public procedure validatedExpressionsClosureAndPipelineExpressionsObligations() 
     }
     if acceptedObligationEntryMatches(
         "rule.16.Capture-Shared",
-        64354usize,
+        64443usize,
         "HelloUltraviolet::Reference::Expressions",
         "runExpressionsClosuresAndPipelinesReference",
         "Source/Reference/Expressions/ClosuresAndPipelines.uv"
@@ -288,7 +288,7 @@ public procedure validatedExpressionsClosureAndPipelineExpressionsObligations() 
     }
     if rejectedSourceObligationEntryMatches(
         "rule.16.Capture-Unique-Err",
-        64370usize,
+        64459usize,
         "HelloUltraviolet::Audit::FixtureCatalog::RejectedSource",
         "validatedExpressionsRejectedSourceFixtureCount",
         "Fixtures/RejectedSource/Expressions/ClosureCaptureUnique/Source/Main.uv"
@@ -297,7 +297,7 @@ public procedure validatedExpressionsClosureAndPipelineExpressionsObligations() 
     }
     if acceptedObligationEntryMatches(
         "rule.16.T-ClosureCall",
-        64386usize,
+        64475usize,
         "HelloUltraviolet::Reference::Expressions",
         "runExpressionsClosuresAndPipelinesReference",
         "Source/Reference/Expressions/ClosuresAndPipelines.uv"
@@ -306,7 +306,7 @@ public procedure validatedExpressionsClosureAndPipelineExpressionsObligations() 
     }
     if acceptedObligationEntryMatches(
         "rule.16.Infer-Closure-Params",
-        64402usize,
+        64491usize,
         "HelloUltraviolet::Reference::Expressions",
         "runExpressionsClosuresAndPipelinesReference",
         "Source/Reference/Expressions/ClosuresAndPipelines.uv"
@@ -315,7 +315,7 @@ public procedure validatedExpressionsClosureAndPipelineExpressionsObligations() 
     }
     if rejectedSourceObligationEntryMatches(
         "rule.16.Infer-Closure-Params-Err",
-        64418usize,
+        64507usize,
         "HelloUltraviolet::Audit::FixtureCatalog::RejectedSource",
         "validatedExpressionsRejectedSourceFixtureCount",
         "Fixtures/RejectedSource/Expressions/ClosureParamInference/Source/Main.uv"
@@ -324,7 +324,7 @@ public procedure validatedExpressionsClosureAndPipelineExpressionsObligations() 
     }
     if acceptedObligationEntryMatches(
         "rule.16.Infer-Closure-Return",
-        64434usize,
+        64523usize,
         "HelloUltraviolet::Reference::Expressions",
         "runExpressionsClosuresAndPipelinesReference",
         "Source/Reference/Expressions/ClosuresAndPipelines.uv"
@@ -333,7 +333,7 @@ public procedure validatedExpressionsClosureAndPipelineExpressionsObligations() 
     }
     if acceptedObligationEntryMatches(
         "req.16.ClosureSharedDependencyInference",
-        64450usize,
+        64539usize,
         "HelloUltraviolet::Reference::Expressions",
         "runExpressionsClosuresAndPipelinesReference",
         "Source/Reference/Expressions/ClosuresAndPipelines.uv"
@@ -342,7 +342,7 @@ public procedure validatedExpressionsClosureAndPipelineExpressionsObligations() 
     }
     if acceptedObligationEntryMatches(
         "def.16.ClosureCaptureBindingAccessors",
-        64463usize,
+        64552usize,
         "HelloUltraviolet::Reference::Expressions",
         "runExpressionsClosuresAndPipelinesReference",
         "Source/Reference/Expressions/ClosuresAndPipelines.uv"
@@ -351,7 +351,7 @@ public procedure validatedExpressionsClosureAndPipelineExpressionsObligations() 
     }
     if acceptedObligationEntryMatches(
         "rule.16.B-Closure-NonCapturing",
-        64487usize,
+        64576usize,
         "HelloUltraviolet::Reference::Expressions",
         "runExpressionsClosuresAndPipelinesReference",
         "Source/Reference/Expressions/ClosuresAndPipelines.uv"
@@ -360,7 +360,7 @@ public procedure validatedExpressionsClosureAndPipelineExpressionsObligations() 
     }
     if acceptedObligationEntryMatches(
         "rule.16.B-Closure-Capturing",
-        64503usize,
+        64592usize,
         "HelloUltraviolet::Reference::Expressions",
         "runExpressionsClosuresAndPipelinesReference",
         "Source/Reference/Expressions/ClosuresAndPipelines.uv"
@@ -369,7 +369,7 @@ public procedure validatedExpressionsClosureAndPipelineExpressionsObligations() 
     }
     if rejectedSourceObligationEntryMatches(
         "rule.16.B-Closure-MoveCapture-Moved-Err",
-        64522usize,
+        64611usize,
         "HelloUltraviolet::Audit::FixtureCatalog::RejectedSource",
         "validatedExpressionsRejectedSourceFixtureCount",
         "Fixtures/RejectedSource/Expressions/ClosureMoveCaptureMoved/Source/Main.uv"
@@ -378,7 +378,7 @@ public procedure validatedExpressionsClosureAndPipelineExpressionsObligations() 
     }
     if rejectedSourceObligationEntryMatches(
         "rule.16.B-Closure-MoveCapture-Immovable-Err",
-        64539usize,
+        64628usize,
         "HelloUltraviolet::Audit::FixtureCatalog::RejectedSource",
         "validatedExpressionsRejectedSourceFixtureCount",
         "Fixtures/RejectedSource/Expressions/ClosureMoveCaptureImmovable/Source/Main.uv"
@@ -387,7 +387,7 @@ public procedure validatedExpressionsClosureAndPipelineExpressionsObligations() 
     }
     if rejectedSourceObligationEntryMatches(
         "rule.16.B-Closure-RefCapture-Moved-Err",
-        64556usize,
+        64645usize,
         "HelloUltraviolet::Audit::FixtureCatalog::RejectedSource",
         "validatedExpressionsRejectedSourceFixtureCount",
         "Fixtures/RejectedSource/Expressions/ClosureRefCaptureMoved/Source/Main.uv"
@@ -396,7 +396,7 @@ public procedure validatedExpressionsClosureAndPipelineExpressionsObligations() 
     }
     if acceptedObligationEntryMatches(
         "rule.16.T-Pipeline",
-        64573usize,
+        64662usize,
         "HelloUltraviolet::Reference::Expressions",
         "runExpressionsClosuresAndPipelinesReference",
         "Source/Reference/Expressions/ClosuresAndPipelines.uv"
@@ -405,7 +405,7 @@ public procedure validatedExpressionsClosureAndPipelineExpressionsObligations() 
     }
     if rejectedSourceObligationEntryMatches(
         "rule.16.T-Pipeline-NotCallable-Err",
-        64591usize,
+        64680usize,
         "HelloUltraviolet::Audit::FixtureCatalog::RejectedSource",
         "validatedExpressionsRejectedSourceFixtureCount",
         "Fixtures/RejectedSource/Expressions/PipelineNotCallable/Source/Main.uv"
@@ -414,7 +414,7 @@ public procedure validatedExpressionsClosureAndPipelineExpressionsObligations() 
     }
     if rejectedSourceObligationEntryMatches(
         "rule.16.T-Pipeline-TypeMismatch-Err",
-        64608usize,
+        64697usize,
         "HelloUltraviolet::Audit::FixtureCatalog::RejectedSource",
         "validatedExpressionsRejectedSourceFixtureCount",
         "Fixtures/RejectedSource/Expressions/PipelineTypeMismatch/Source/Main.uv"
@@ -423,7 +423,7 @@ public procedure validatedExpressionsClosureAndPipelineExpressionsObligations() 
     }
     if rejectedSourceObligationEntryMatches(
         "rule.16.T-Pipeline-ArgCount-Err",
-        64626usize,
+        64715usize,
         "HelloUltraviolet::Audit::FixtureCatalog::RejectedSource",
         "validatedExpressionsRejectedSourceFixtureCount",
         "Fixtures/RejectedSource/Expressions/PipelineArgCount/Source/Main.uv"
@@ -432,7 +432,7 @@ public procedure validatedExpressionsClosureAndPipelineExpressionsObligations() 
     }
     if acceptedObligationEntryMatches(
         "rule.16.B-Pipeline",
-        64643usize,
+        64732usize,
         "HelloUltraviolet::Reference::Expressions",
         "runExpressionsClosuresAndPipelinesReference",
         "Source/Reference/Expressions/ClosuresAndPipelines.uv"
@@ -441,7 +441,7 @@ public procedure validatedExpressionsClosureAndPipelineExpressionsObligations() 
     }
     if rejectedSourceObligationEntryMatches(
         "req.16.ClosureParamInferenceFailure",
-        64659usize,
+        64748usize,
         "HelloUltraviolet::Audit::FixtureCatalog::RejectedSource",
         "validatedExpressionsRejectedSourceFixtureCount",
         "Fixtures/RejectedSource/Expressions/ClosureParamInferenceRequirement/Source/Main.uv"
@@ -450,7 +450,7 @@ public procedure validatedExpressionsClosureAndPipelineExpressionsObligations() 
     }
     if acceptedObligationEntryMatches(
         "req.16.ClosureSharedDependencyInferenceRestated",
-        64672usize,
+        64761usize,
         "HelloUltraviolet::Reference::Expressions",
         "runExpressionsClosuresAndPipelinesReference",
         "Source/Reference/Expressions/ClosuresAndPipelines.uv"
@@ -459,7 +459,7 @@ public procedure validatedExpressionsClosureAndPipelineExpressionsObligations() 
     }
     if acceptedObligationEntryMatches(
         "def.16.ClosureEnvironmentRuntimeModel",
-        64687usize,
+        64776usize,
         "HelloUltraviolet::Reference::Expressions",
         "runExpressionsClosuresAndPipelinesReference",
         "Source/Reference/Expressions/ClosuresAndPipelines.uv"
@@ -468,7 +468,7 @@ public procedure validatedExpressionsClosureAndPipelineExpressionsObligations() 
     }
     if acceptedObligationEntryMatches(
         "rule.16.EvalSigma-Closure-NonCapturing",
-        64723usize,
+        64812usize,
         "HelloUltraviolet::Reference::Expressions",
         "runExpressionsClosuresAndPipelinesReference",
         "Source/Reference/Expressions/ClosuresAndPipelines.uv"
@@ -477,7 +477,7 @@ public procedure validatedExpressionsClosureAndPipelineExpressionsObligations() 
     }
     if acceptedObligationEntryMatches(
         "rule.16.EvalSigma-Closure-Capturing",
-        64739usize,
+        64828usize,
         "HelloUltraviolet::Reference::Expressions",
         "runExpressionsClosuresAndPipelinesReference",
         "Source/Reference/Expressions/ClosuresAndPipelines.uv"
@@ -486,7 +486,7 @@ public procedure validatedExpressionsClosureAndPipelineExpressionsObligations() 
     }
     if acceptedObligationEntryMatches(
         "def.16.MarkMoved",
-        64757usize,
+        64846usize,
         "HelloUltraviolet::Reference::Expressions",
         "runExpressionsClosuresAndPipelinesReference",
         "Source/Reference/Expressions/ClosuresAndPipelines.uv"
@@ -495,7 +495,7 @@ public procedure validatedExpressionsClosureAndPipelineExpressionsObligations() 
     }
     if acceptedObligationEntryMatches(
         "rule.16.EvalSigma-ClosureCall",
-        64771usize,
+        64860usize,
         "HelloUltraviolet::Reference::Expressions",
         "runExpressionsClosuresAndPipelinesReference",
         "Source/Reference/Expressions/ClosuresAndPipelines.uv"
@@ -504,7 +504,7 @@ public procedure validatedExpressionsClosureAndPipelineExpressionsObligations() 
     }
     if acceptedObligationEntryMatches(
         "def.16.ClosureCallRuntimeHelpers",
-        64789usize,
+        64878usize,
         "HelloUltraviolet::Reference::Expressions",
         "runExpressionsClosuresAndPipelinesReference",
         "Source/Reference/Expressions/ClosuresAndPipelines.uv"
@@ -513,7 +513,7 @@ public procedure validatedExpressionsClosureAndPipelineExpressionsObligations() 
     }
     if acceptedObligationEntryMatches(
         "rule.16.EvalSigma-ClosureCall-Ctrl",
-        64811usize,
+        64900usize,
         "HelloUltraviolet::Reference::Expressions",
         "runExpressionsClosuresAndPipelinesReference",
         "Source/Reference/Expressions/ClosuresAndPipelines.uv"
@@ -522,7 +522,7 @@ public procedure validatedExpressionsClosureAndPipelineExpressionsObligations() 
     }
     if acceptedObligationEntryMatches(
         "rule.16.EvalSigma-ClosureCall-Ctrl-Args",
-        64827usize,
+        64916usize,
         "HelloUltraviolet::Reference::Expressions",
         "runExpressionsClosuresAndPipelinesReference",
         "Source/Reference/Expressions/ClosuresAndPipelines.uv"
@@ -531,7 +531,7 @@ public procedure validatedExpressionsClosureAndPipelineExpressionsObligations() 
     }
     if acceptedObligationEntryMatches(
         "req.16.ClosureCallResolvedInternalFormRuntime",
-        64844usize,
+        64933usize,
         "HelloUltraviolet::Reference::Expressions",
         "runExpressionsClosuresAndPipelinesReference",
         "Source/Reference/Expressions/ClosuresAndPipelines.uv"
@@ -540,7 +540,7 @@ public procedure validatedExpressionsClosureAndPipelineExpressionsObligations() 
     }
     if acceptedObligationEntryMatches(
         "req.16.PipelineDesugaring",
-        64857usize,
+        64946usize,
         "HelloUltraviolet::Reference::Expressions",
         "runExpressionsClosuresAndPipelinesReference",
         "Source/Reference/Expressions/ClosuresAndPipelines.uv"
@@ -549,7 +549,7 @@ public procedure validatedExpressionsClosureAndPipelineExpressionsObligations() 
     }
     if acceptedObligationEntryMatches(
         "rule.16.EvalSigma-Pipeline-Func",
-        64870usize,
+        64959usize,
         "HelloUltraviolet::Reference::Expressions",
         "runExpressionsClosuresAndPipelinesReference",
         "Source/Reference/Expressions/ClosuresAndPipelines.uv"
@@ -558,7 +558,7 @@ public procedure validatedExpressionsClosureAndPipelineExpressionsObligations() 
     }
     if acceptedObligationEntryMatches(
         "rule.16.EvalSigma-Pipeline-Closure",
-        64887usize,
+        64976usize,
         "HelloUltraviolet::Reference::Expressions",
         "runExpressionsClosuresAndPipelinesReference",
         "Source/Reference/Expressions/ClosuresAndPipelines.uv"
@@ -567,7 +567,7 @@ public procedure validatedExpressionsClosureAndPipelineExpressionsObligations() 
     }
     if acceptedObligationEntryMatches(
         "rule.16.EvalSigma-Pipeline-Ctrl-Left",
-        64904usize,
+        64993usize,
         "HelloUltraviolet::Reference::Expressions",
         "runExpressionsClosuresAndPipelinesReference",
         "Source/Reference/Expressions/ClosuresAndPipelines.uv"
@@ -576,7 +576,7 @@ public procedure validatedExpressionsClosureAndPipelineExpressionsObligations() 
     }
     if acceptedObligationEntryMatches(
         "rule.16.EvalSigma-Pipeline-Ctrl-Right",
-        64920usize,
+        65009usize,
         "HelloUltraviolet::Reference::Expressions",
         "runExpressionsClosuresAndPipelinesReference",
         "Source/Reference/Expressions/ClosuresAndPipelines.uv"
@@ -585,7 +585,7 @@ public procedure validatedExpressionsClosureAndPipelineExpressionsObligations() 
     }
     if acceptedObligationEntryMatches(
         "def.16.ClosureLoweringCaptureTypes",
-        64938usize,
+        65027usize,
         "HelloUltraviolet::Reference::Expressions",
         "runExpressionsClosuresAndPipelinesReference",
         "Source/Reference/Expressions/ClosuresAndPipelines.uv"
@@ -594,7 +594,7 @@ public procedure validatedExpressionsClosureAndPipelineExpressionsObligations() 
     }
     if acceptedObligationEntryMatches(
         "rule.16.Layout-ClosureEnv",
-        64956usize,
+        65045usize,
         "HelloUltraviolet::Reference::Expressions",
         "runExpressionsClosuresAndPipelinesReference",
         "Source/Reference/Expressions/ClosuresAndPipelines.uv"
@@ -603,7 +603,7 @@ public procedure validatedExpressionsClosureAndPipelineExpressionsObligations() 
     }
     if acceptedObligationEntryMatches(
         "rule.16.Layout-ClosureEnv-Empty",
-        64972usize,
+        65061usize,
         "HelloUltraviolet::Reference::Expressions",
         "runExpressionsClosuresAndPipelinesReference",
         "Source/Reference/Expressions/ClosuresAndPipelines.uv"
@@ -612,7 +612,7 @@ public procedure validatedExpressionsClosureAndPipelineExpressionsObligations() 
     }
     if acceptedObligationEntryMatches(
         "rule.16.Lower-Expr-Closure-NonCapturing",
-        64988usize,
+        65077usize,
         "HelloUltraviolet::Reference::Expressions",
         "runExpressionsClosuresAndPipelinesReference",
         "Source/Reference/Expressions/ClosuresAndPipelines.uv"
@@ -621,7 +621,7 @@ public procedure validatedExpressionsClosureAndPipelineExpressionsObligations() 
     }
     if acceptedObligationEntryMatches(
         "rule.16.Lower-Expr-Closure-Capturing",
-        65004usize,
+        65093usize,
         "HelloUltraviolet::Reference::Expressions",
         "runExpressionsClosuresAndPipelinesReference",
         "Source/Reference/Expressions/ClosuresAndPipelines.uv"
@@ -630,7 +630,7 @@ public procedure validatedExpressionsClosureAndPipelineExpressionsObligations() 
     }
     if acceptedObligationEntryMatches(
         "def.16.LowerCaptureEnv",
-        65022usize,
+        65111usize,
         "HelloUltraviolet::Reference::Expressions",
         "runExpressionsClosuresAndPipelinesReference",
         "Source/Reference/Expressions/ClosuresAndPipelines.uv"
@@ -639,7 +639,7 @@ public procedure validatedExpressionsClosureAndPipelineExpressionsObligations() 
     }
     if acceptedObligationEntryMatches(
         "def.16.CapturedIdentifierLoweringHelpers",
-        65042usize,
+        65131usize,
         "HelloUltraviolet::Reference::Expressions",
         "runExpressionsClosuresAndPipelinesReference",
         "Source/Reference/Expressions/ClosuresAndPipelines.uv"
@@ -648,7 +648,7 @@ public procedure validatedExpressionsClosureAndPipelineExpressionsObligations() 
     }
     if acceptedObligationEntryMatches(
         "rule.16.Lower-CapturedIdent-Ref",
-        65057usize,
+        65146usize,
         "HelloUltraviolet::Reference::Expressions",
         "runExpressionsClosuresAndPipelinesReference",
         "Source/Reference/Expressions/ClosuresAndPipelines.uv"
@@ -657,7 +657,7 @@ public procedure validatedExpressionsClosureAndPipelineExpressionsObligations() 
     }
     if acceptedObligationEntryMatches(
         "req.16.LowerCapturedIdentRefTemporaries",
-        65074usize,
+        65163usize,
         "HelloUltraviolet::Reference::Expressions",
         "runExpressionsClosuresAndPipelinesReference",
         "Source/Reference/Expressions/ClosuresAndPipelines.uv"
@@ -666,7 +666,7 @@ public procedure validatedExpressionsClosureAndPipelineExpressionsObligations() 
     }
     if acceptedObligationEntryMatches(
         "rule.16.Lower-CapturedIdent-Move",
-        65087usize,
+        65176usize,
         "HelloUltraviolet::Reference::Expressions",
         "runExpressionsClosuresAndPipelinesReference",
         "Source/Reference/Expressions/ClosuresAndPipelines.uv"
@@ -675,7 +675,7 @@ public procedure validatedExpressionsClosureAndPipelineExpressionsObligations() 
     }
     if acceptedObligationEntryMatches(
         "def.16.ClosureEnvParam",
-        65104usize,
+        65193usize,
         "HelloUltraviolet::Reference::Expressions",
         "runExpressionsClosuresAndPipelinesReference",
         "Source/Reference/Expressions/ClosuresAndPipelines.uv"
@@ -684,7 +684,7 @@ public procedure validatedExpressionsClosureAndPipelineExpressionsObligations() 
     }
     if acceptedObligationEntryMatches(
         "def.16.ClosureCodeSig",
-        65117usize,
+        65206usize,
         "HelloUltraviolet::Reference::Expressions",
         "runExpressionsClosuresAndPipelinesReference",
         "Source/Reference/Expressions/ClosuresAndPipelines.uv"
@@ -693,7 +693,7 @@ public procedure validatedExpressionsClosureAndPipelineExpressionsObligations() 
     }
     if acceptedObligationEntryMatches(
         "rule.16.Lower-Closure-Call",
-        65134usize,
+        65223usize,
         "HelloUltraviolet::Reference::Expressions",
         "runExpressionsClosuresAndPipelinesReference",
         "Source/Reference/Expressions/ClosuresAndPipelines.uv"
@@ -702,7 +702,7 @@ public procedure validatedExpressionsClosureAndPipelineExpressionsObligations() 
     }
     if acceptedObligationEntryMatches(
         "req.16.LowerClosureCallResolvedInternalForm",
-        65152usize,
+        65241usize,
         "HelloUltraviolet::Reference::Expressions",
         "runExpressionsClosuresAndPipelinesReference",
         "Source/Reference/Expressions/ClosuresAndPipelines.uv"
@@ -711,7 +711,7 @@ public procedure validatedExpressionsClosureAndPipelineExpressionsObligations() 
     }
     if acceptedObligationEntryMatches(
         "rule.16.Lower-Expr-Pipeline",
-        65165usize,
+        65254usize,
         "HelloUltraviolet::Reference::Expressions",
         "runExpressionsClosuresAndPipelinesReference",
         "Source/Reference/Expressions/ClosuresAndPipelines.uv"
@@ -720,7 +720,7 @@ public procedure validatedExpressionsClosureAndPipelineExpressionsObligations() 
     }
     if acceptedObligationEntryMatches(
         "def.16.LowerPipelineCallablePredicates",
-        65183usize,
+        65272usize,
         "HelloUltraviolet::Reference::Expressions",
         "runExpressionsClosuresAndPipelinesReference",
         "Source/Reference/Expressions/ClosuresAndPipelines.uv"
@@ -729,7 +729,7 @@ public procedure validatedExpressionsClosureAndPipelineExpressionsObligations() 
     }
     if rejectedSourceObligationEntryMatches(
         "diag.16.ClosureAndPipelineExpressions",
-        65201usize,
+        65290usize,
         "HelloUltraviolet::Audit::FixtureCatalog::RejectedSource",
         "validatedExpressionsRejectedSourceFixtureCount",
         "Fixtures/RejectedSource/Expressions/ClosureAndPipelineExpressionsDiagnostic/Source/Main.uv"

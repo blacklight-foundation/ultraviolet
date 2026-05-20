@@ -9,7 +9,7 @@ public procedure validatedAsynchronousOperationsCompositionFormsObligations() ->
     var count: usize = 0usize
     if acceptedObligationEntryMatches(
         "requirement.21.AsyncIterationSyntax",
-        80237usize,
+        80326usize,
         "HelloUltraviolet::Reference::Async",
         "runAsyncCompositionFormsReference",
         "Source/Reference/Async/CompositionForms.uv"
@@ -18,51 +18,6 @@ public procedure validatedAsynchronousOperationsCompositionFormsObligations() ->
     }
     if acceptedObligationEntryMatches(
         "grammar.21.CompositionForms",
-        80252usize,
-        "HelloUltraviolet::Reference::Async",
-        "runAsyncCompositionFormsReference",
-        "Source/Reference/Async/CompositionForms.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
-        "requirement.21.AsyncMethodCallSurfaces",
-        80271usize,
-        "HelloUltraviolet::Reference::Async",
-        "runAsyncCompositionFormsReference",
-        "Source/Reference/Async/CompositionForms.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
-        "requirement.21.UntilMethodCallSurface",
-        80291usize,
-        "HelloUltraviolet::Reference::Async",
-        "runAsyncCompositionUntilReference",
-        "Source/Reference/Async/CompositionForms.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
-        "parse.21.CompositionPrimaryExpressions",
-        80306usize,
-        "HelloUltraviolet::Reference::Async",
-        "runAsyncCompositionFormsReference",
-        "Source/Reference/Async/CompositionForms.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
-        "rule.21.Parse-Sync-Expr",
-        80321usize,
-        "HelloUltraviolet::Reference::Async",
-        "runAsyncCompositionFormsReference",
-        "Source/Reference/Async/CompositionForms.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
-        "rule.21.Parse-Race-Expr",
         80341usize,
         "HelloUltraviolet::Reference::Async",
         "runAsyncCompositionFormsReference",
@@ -71,8 +26,53 @@ public procedure validatedAsynchronousOperationsCompositionFormsObligations() ->
         count = count + 1usize
     }
     if acceptedObligationEntryMatches(
+        "requirement.21.AsyncMethodCallSurfaces",
+        80360usize,
+        "HelloUltraviolet::Reference::Async",
+        "runAsyncCompositionFormsReference",
+        "Source/Reference/Async/CompositionForms.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "requirement.21.UntilMethodCallSurface",
+        80380usize,
+        "HelloUltraviolet::Reference::Async",
+        "runAsyncCompositionUntilReference",
+        "Source/Reference/Async/CompositionForms.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "parse.21.CompositionPrimaryExpressions",
+        80395usize,
+        "HelloUltraviolet::Reference::Async",
+        "runAsyncCompositionFormsReference",
+        "Source/Reference/Async/CompositionForms.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "rule.21.Parse-Sync-Expr",
+        80410usize,
+        "HelloUltraviolet::Reference::Async",
+        "runAsyncCompositionFormsReference",
+        "Source/Reference/Async/CompositionForms.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "rule.21.Parse-Race-Expr",
+        80430usize,
+        "HelloUltraviolet::Reference::Async",
+        "runAsyncCompositionFormsReference",
+        "Source/Reference/Async/CompositionForms.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
         "rule.21.Parse-RaceArms-Cons",
-        80361usize,
+        80450usize,
         "HelloUltraviolet::Reference::Async",
         "runAsyncCompositionFormsReference",
         "Source/Reference/Async/CompositionForms.uv"
@@ -81,7 +81,7 @@ public procedure validatedAsynchronousOperationsCompositionFormsObligations() ->
     }
     if acceptedObligationEntryMatches(
         "rule.21.Parse-RaceArm",
-        80379usize,
+        80468usize,
         "HelloUltraviolet::Reference::Async",
         "runAsyncCompositionFormsReference",
         "Source/Reference/Async/CompositionForms.uv"
@@ -90,7 +90,7 @@ public procedure validatedAsynchronousOperationsCompositionFormsObligations() ->
     }
     if acceptedObligationEntryMatches(
         "rule.21.Parse-RaceArmsTail-End",
-        80399usize,
+        80488usize,
         "HelloUltraviolet::Reference::Async",
         "runAsyncCompositionFormsReference",
         "Source/Reference/Async/CompositionForms.uv"
@@ -99,7 +99,7 @@ public procedure validatedAsynchronousOperationsCompositionFormsObligations() ->
     }
     if acceptedObligationEntryMatches(
         "rule.21.Parse-RaceArmsTail-TrailingComma",
-        80417usize,
+        80506usize,
         "HelloUltraviolet::Reference::Async",
         "runAsyncCompositionFormsReference",
         "Source/Reference/Async/CompositionForms.uv"
@@ -108,51 +108,6 @@ public procedure validatedAsynchronousOperationsCompositionFormsObligations() ->
     }
     if acceptedObligationEntryMatches(
         "rule.21.Parse-RaceArmsTail-Comma",
-        80435usize,
-        "HelloUltraviolet::Reference::Async",
-        "runAsyncCompositionFormsReference",
-        "Source/Reference/Async/CompositionForms.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
-        "rule.21.Parse-RaceHandler-Yield",
-        80453usize,
-        "HelloUltraviolet::Reference::Async",
-        "runAsyncCompositionFormsReference",
-        "Source/Reference/Async/CompositionForms.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
-        "rule.21.Parse-RaceHandler-Return",
-        80471usize,
-        "HelloUltraviolet::Reference::Async",
-        "runAsyncCompositionFormsReference",
-        "Source/Reference/Async/CompositionForms.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
-        "rule.21.Parse-All-Expr",
-        80491usize,
-        "HelloUltraviolet::Reference::Async",
-        "runAsyncCompositionFormsReference",
-        "Source/Reference/Async/CompositionForms.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
-        "parse.21.CompositionOrdinarySurfaces",
-        80509usize,
-        "HelloUltraviolet::Reference::Async",
-        "runAsyncCompositionFormsReference",
-        "Source/Reference/Async/CompositionForms.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
-        "ast.21.CompositionForms",
         80524usize,
         "HelloUltraviolet::Reference::Async",
         "runAsyncCompositionFormsReference",
@@ -161,8 +116,53 @@ public procedure validatedAsynchronousOperationsCompositionFormsObligations() ->
         count = count + 1usize
     }
     if acceptedObligationEntryMatches(
+        "rule.21.Parse-RaceHandler-Yield",
+        80542usize,
+        "HelloUltraviolet::Reference::Async",
+        "runAsyncCompositionFormsReference",
+        "Source/Reference/Async/CompositionForms.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "rule.21.Parse-RaceHandler-Return",
+        80560usize,
+        "HelloUltraviolet::Reference::Async",
+        "runAsyncCompositionFormsReference",
+        "Source/Reference/Async/CompositionForms.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "rule.21.Parse-All-Expr",
+        80580usize,
+        "HelloUltraviolet::Reference::Async",
+        "runAsyncCompositionFormsReference",
+        "Source/Reference/Async/CompositionForms.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "parse.21.CompositionOrdinarySurfaces",
+        80598usize,
+        "HelloUltraviolet::Reference::Async",
+        "runAsyncCompositionFormsReference",
+        "Source/Reference/Async/CompositionForms.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "ast.21.CompositionForms",
+        80613usize,
+        "HelloUltraviolet::Reference::Async",
+        "runAsyncCompositionFormsReference",
+        "Source/Reference/Async/CompositionForms.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
         "ast.21.AsyncIterationLoopForm",
-        80546usize,
+        80635usize,
         "HelloUltraviolet::Reference::Async",
         "runAsyncCompositionFormsReference",
         "Source/Reference/Async/CompositionForms.uv"
@@ -171,7 +171,7 @@ public procedure validatedAsynchronousOperationsCompositionFormsObligations() ->
     }
     if acceptedObligationEntryMatches(
         "ast.21.CompositionMethodCallForms",
-        80563usize,
+        80652usize,
         "HelloUltraviolet::Reference::Async",
         "runAsyncCompositionFormsReference",
         "Source/Reference/Async/CompositionForms.uv"
@@ -180,7 +180,7 @@ public procedure validatedAsynchronousOperationsCompositionFormsObligations() ->
     }
     if acceptedObligationEntryMatches(
         "ast.21.CompositionResolution",
-        80578usize,
+        80667usize,
         "HelloUltraviolet::Reference::Async",
         "runAsyncCompositionFormsReference",
         "Source/Reference/Async/CompositionForms.uv"
@@ -189,7 +189,7 @@ public procedure validatedAsynchronousOperationsCompositionFormsObligations() ->
     }
     if acceptedObligationEntryMatches(
         "ast.21.CompositionEvaluationOrder",
-        80607usize,
+        80696usize,
         "HelloUltraviolet::Reference::Async",
         "runAsyncCompositionFormsReference",
         "Source/Reference/Async/CompositionForms.uv"
@@ -198,7 +198,7 @@ public procedure validatedAsynchronousOperationsCompositionFormsObligations() ->
     }
     if acceptedProjectObligationEntryMatches(
         "rule.21.T-Loop-Iter-Async",
-        80633usize,
+        80722usize,
         "HelloUltraviolet::Audit::FixtureCatalog::AcceptedProjects",
         "validatedAcceptedProjectFixtureCount",
         "Fixtures/AcceptedProjects/ExpressionSemantics/Source/Library.uv"
@@ -207,7 +207,7 @@ public procedure validatedAsynchronousOperationsCompositionFormsObligations() ->
     }
     if rejectedSourceObligationEntryMatches(
         "rule.21.Loop-Async-Err",
-        80655usize,
+        80744usize,
         "HelloUltraviolet::Audit::FixtureCatalog::RejectedSource",
         "validatedExpressionsRejectedSourceFixtureCount",
         "Fixtures/RejectedSource/Expressions/LoopAsyncEnclosingReturn/Source/Main.uv"
@@ -216,7 +216,7 @@ public procedure validatedAsynchronousOperationsCompositionFormsObligations() ->
     }
     if acceptedObligationEntryMatches(
         "requirement.21.ManualSteppingRequirement",
-        80673usize,
+        80762usize,
         "HelloUltraviolet::Reference::Async",
         "runAsyncCompositionFormsReference",
         "Source/Reference/Async/CompositionForms.uv"
@@ -225,7 +225,7 @@ public procedure validatedAsynchronousOperationsCompositionFormsObligations() ->
     }
     if acceptedObligationEntryMatches(
         "def.21.SyncYieldContainment",
-        80688usize,
+        80777usize,
         "HelloUltraviolet::Reference::Async",
         "runAsyncCompositionFormsReference",
         "Source/Reference/Async/CompositionForms.uv"
@@ -234,7 +234,7 @@ public procedure validatedAsynchronousOperationsCompositionFormsObligations() ->
     }
     if rejectedSourceObligationEntryMatches(
         "rule.21.Sync-Yield-Err",
-        80704usize,
+        80793usize,
         "HelloUltraviolet::Audit::FixtureCatalog::RejectedSource",
         "validatedExpressionsRejectedSourceFixtureCount",
         "Fixtures/RejectedSource/Expressions/SyncContainsYield/Source/Main.uv"
@@ -243,7 +243,7 @@ public procedure validatedAsynchronousOperationsCompositionFormsObligations() ->
     }
     if rejectedSourceObligationEntryMatches(
         "rule.21.Sync-YieldFrom-Err",
-        80722usize,
+        80811usize,
         "HelloUltraviolet::Audit::FixtureCatalog::RejectedSource",
         "validatedExpressionsRejectedSourceFixtureCount",
         "Fixtures/RejectedSource/Expressions/SyncContainsYieldFrom/Source/Main.uv"
@@ -252,7 +252,7 @@ public procedure validatedAsynchronousOperationsCompositionFormsObligations() ->
     }
     if acceptedObligationEntryMatches(
         "rule.21.T-Sync",
-        80740usize,
+        80829usize,
         "HelloUltraviolet::Reference::Async",
         "runAsyncCompositionFormsReference",
         "Source/Reference/Async/CompositionForms.uv"
@@ -261,7 +261,7 @@ public procedure validatedAsynchronousOperationsCompositionFormsObligations() ->
     }
     if rejectedSourceObligationEntryMatches(
         "rule.21.Sync-Async-Context-Err",
-        80758usize,
+        80847usize,
         "HelloUltraviolet::Audit::FixtureCatalog::RejectedSource",
         "validatedExpressionsRejectedSourceFixtureCount",
         "Fixtures/RejectedSource/Expressions/SyncInsideAsync/Source/Main.uv"
@@ -270,7 +270,7 @@ public procedure validatedAsynchronousOperationsCompositionFormsObligations() ->
     }
     if rejectedSourceObligationEntryMatches(
         "rule.21.Sync-Out-Err",
-        80776usize,
+        80865usize,
         "HelloUltraviolet::Audit::FixtureCatalog::RejectedSource",
         "validatedExpressionsRejectedSourceFixtureCount",
         "Fixtures/RejectedSource/Expressions/SyncOperandYields/Source/Main.uv"
@@ -279,7 +279,7 @@ public procedure validatedAsynchronousOperationsCompositionFormsObligations() ->
     }
     if rejectedSourceObligationEntryMatches(
         "rule.21.Sync-In-Err",
-        80795usize,
+        80884usize,
         "HelloUltraviolet::Audit::FixtureCatalog::RejectedSource",
         "validatedExpressionsRejectedSourceFixtureCount",
         "Fixtures/RejectedSource/Expressions/SyncOperandRequiresInput/Source/Main.uv"
@@ -288,7 +288,7 @@ public procedure validatedAsynchronousOperationsCompositionFormsObligations() ->
     }
     if acceptedObligationEntryMatches(
         "def.21.RaceMode",
-        80815usize,
+        80904usize,
         "HelloUltraviolet::Reference::Async",
         "runAsyncCompositionFormsReference",
         "Source/Reference/Async/CompositionForms.uv"
@@ -297,7 +297,7 @@ public procedure validatedAsynchronousOperationsCompositionFormsObligations() ->
     }
     if acceptedObligationEntryMatches(
         "rule.21.T-Race",
-        80833usize,
+        80922usize,
         "HelloUltraviolet::Reference::Async",
         "runAsyncCompositionFormsReference",
         "Source/Reference/Async/CompositionForms.uv"
@@ -306,7 +306,7 @@ public procedure validatedAsynchronousOperationsCompositionFormsObligations() ->
     }
     if acceptedObligationEntryMatches(
         "rule.21.T-Race-Stream",
-        80854usize,
+        80943usize,
         "HelloUltraviolet::Reference::Async",
         "runAsyncCompositionFormsReference",
         "Source/Reference/Async/CompositionForms.uv"
@@ -315,7 +315,7 @@ public procedure validatedAsynchronousOperationsCompositionFormsObligations() ->
     }
     if rejectedSourceObligationEntryMatches(
         "rule.21.Race-Arity-Err",
-        80875usize,
+        80964usize,
         "HelloUltraviolet::Audit::FixtureCatalog::RejectedSource",
         "validatedExpressionsRejectedSourceFixtureCount",
         "Fixtures/RejectedSource/Expressions/RaceTooFewArms/Source/Main.uv"
@@ -324,7 +324,7 @@ public procedure validatedAsynchronousOperationsCompositionFormsObligations() ->
     }
     if rejectedSourceObligationEntryMatches(
         "rule.21.Race-Handler-Mix-Err",
-        80893usize,
+        80982usize,
         "HelloUltraviolet::Audit::FixtureCatalog::RejectedSource",
         "validatedExpressionsRejectedSourceFixtureCount",
         "Fixtures/RejectedSource/Expressions/RaceHandlerMix/Source/Main.uv"
@@ -333,7 +333,7 @@ public procedure validatedAsynchronousOperationsCompositionFormsObligations() ->
     }
     if rejectedSourceObligationEntryMatches(
         "rule.21.Race-Operand-Out-Err",
-        80911usize,
+        81000usize,
         "HelloUltraviolet::Audit::FixtureCatalog::RejectedSource",
         "validatedExpressionsRejectedSourceFixtureCount",
         "Fixtures/RejectedSource/Expressions/RaceOperandYields/Source/Main.uv"
@@ -342,7 +342,7 @@ public procedure validatedAsynchronousOperationsCompositionFormsObligations() ->
     }
     if rejectedSourceObligationEntryMatches(
         "rule.21.Race-Operand-Err",
-        80930usize,
+        81019usize,
         "HelloUltraviolet::Audit::FixtureCatalog::RejectedSource",
         "validatedExpressionsRejectedSourceFixtureCount",
         "Fixtures/RejectedSource/Expressions/RaceOperandNonAsync/Source/Main.uv"
@@ -351,7 +351,7 @@ public procedure validatedAsynchronousOperationsCompositionFormsObligations() ->
     }
     if rejectedSourceObligationEntryMatches(
         "rule.21.Race-Stream-Operand-Err",
-        80949usize,
+        81038usize,
         "HelloUltraviolet::Audit::FixtureCatalog::RejectedSource",
         "validatedExpressionsRejectedSourceFixtureCount",
         "Fixtures/RejectedSource/Expressions/RaceStreamOperandNeedsInput/Source/Main.uv"
@@ -360,7 +360,7 @@ public procedure validatedAsynchronousOperationsCompositionFormsObligations() ->
     }
     if rejectedSourceObligationEntryMatches(
         "rule.21.Race-Handler-Type-Err",
-        80968usize,
+        81057usize,
         "HelloUltraviolet::Audit::FixtureCatalog::RejectedSource",
         "validatedExpressionsRejectedSourceFixtureCount",
         "Fixtures/RejectedSource/Expressions/RaceHandlerTypeMismatch/Source/Main.uv"
@@ -369,7 +369,7 @@ public procedure validatedAsynchronousOperationsCompositionFormsObligations() ->
     }
     if rejectedSourceObligationEntryMatches(
         "rule.21.Race-Stream-Handler-Type-Err",
-        80989usize,
+        81078usize,
         "HelloUltraviolet::Audit::FixtureCatalog::RejectedSource",
         "validatedExpressionsRejectedSourceFixtureCount",
         "Fixtures/RejectedSource/Expressions/RaceStreamHandlerTypeMismatch/Source/Main.uv"
@@ -378,7 +378,7 @@ public procedure validatedAsynchronousOperationsCompositionFormsObligations() ->
     }
     if acceptedObligationEntryMatches(
         "rule.21.T-All",
-        81012usize,
+        81101usize,
         "HelloUltraviolet::Reference::Async",
         "runAsyncCompositionFormsReference",
         "Source/Reference/Async/CompositionForms.uv"
@@ -387,7 +387,7 @@ public procedure validatedAsynchronousOperationsCompositionFormsObligations() ->
     }
     if rejectedSourceObligationEntryMatches(
         "rule.21.All-Out-Err",
-        81031usize,
+        81120usize,
         "HelloUltraviolet::Audit::FixtureCatalog::RejectedSource",
         "validatedExpressionsRejectedSourceFixtureCount",
         "Fixtures/RejectedSource/Expressions/AllOperandYields/Source/Main.uv"
@@ -396,7 +396,7 @@ public procedure validatedAsynchronousOperationsCompositionFormsObligations() ->
     }
     if rejectedSourceObligationEntryMatches(
         "rule.21.All-In-Err",
-        81049usize,
+        81138usize,
         "HelloUltraviolet::Audit::FixtureCatalog::RejectedSource",
         "validatedExpressionsRejectedSourceFixtureCount",
         "Fixtures/RejectedSource/Expressions/AllOperandRequiresInput/Source/Main.uv"
@@ -405,7 +405,7 @@ public procedure validatedAsynchronousOperationsCompositionFormsObligations() ->
     }
     if acceptedObligationEntryMatches(
         "def.21.UntilType",
-        81067usize,
+        81156usize,
         "HelloUltraviolet::Reference::Async",
         "runAsyncCompositionUntilReference",
         "Source/Reference/Async/CompositionForms.uv"
@@ -414,7 +414,7 @@ public procedure validatedAsynchronousOperationsCompositionFormsObligations() ->
     }
     if acceptedObligationEntryMatches(
         "def.21.AsyncCombinatorTypes",
-        81084usize,
+        81173usize,
         "HelloUltraviolet::Reference::Async",
         "runAsyncCompositionCombinatorsReference",
         "Source/Reference/Async/CompositionForms.uv"
@@ -423,7 +423,7 @@ public procedure validatedAsynchronousOperationsCompositionFormsObligations() ->
     }
     if acceptedObligationEntryMatches(
         "requirement.21.AsyncCombinatorMemberLookup",
-        81105usize,
+        81194usize,
         "HelloUltraviolet::Reference::Async",
         "runAsyncCompositionCombinatorsReference",
         "Source/Reference/Async/CompositionForms.uv"
@@ -432,7 +432,7 @@ public procedure validatedAsynchronousOperationsCompositionFormsObligations() ->
     }
     if acceptedObligationEntryMatches(
         "rule.21.T-Async-Map",
-        81120usize,
+        81209usize,
         "HelloUltraviolet::Reference::Async",
         "runAsyncCompositionMapReference",
         "Source/Reference/Async/CompositionForms.uv"
@@ -441,7 +441,7 @@ public procedure validatedAsynchronousOperationsCompositionFormsObligations() ->
     }
     if acceptedObligationEntryMatches(
         "rule.21.T-Async-Filter",
-        81138usize,
+        81227usize,
         "HelloUltraviolet::Reference::Async",
         "runAsyncCompositionFilterReference",
         "Source/Reference/Async/CompositionForms.uv"
@@ -450,7 +450,7 @@ public procedure validatedAsynchronousOperationsCompositionFormsObligations() ->
     }
     if acceptedObligationEntryMatches(
         "rule.21.T-Async-Take",
-        81156usize,
+        81245usize,
         "HelloUltraviolet::Reference::Async",
         "runAsyncCompositionTakeReference",
         "Source/Reference/Async/CompositionForms.uv"
@@ -459,7 +459,7 @@ public procedure validatedAsynchronousOperationsCompositionFormsObligations() ->
     }
     if acceptedObligationEntryMatches(
         "rule.21.T-Async-Fold",
-        81174usize,
+        81263usize,
         "HelloUltraviolet::Reference::Async",
         "runAsyncCompositionFoldReference",
         "Source/Reference/Async/CompositionForms.uv"
@@ -468,7 +468,7 @@ public procedure validatedAsynchronousOperationsCompositionFormsObligations() ->
     }
     if acceptedObligationEntryMatches(
         "rule.21.T-Async-Chain",
-        81192usize,
+        81281usize,
         "HelloUltraviolet::Reference::Async",
         "runAsyncCompositionChainReference",
         "Source/Reference/Async/CompositionForms.uv"
@@ -477,7 +477,7 @@ public procedure validatedAsynchronousOperationsCompositionFormsObligations() ->
     }
     if acceptedObligationEntryMatches(
         "requirement.21.AsyncIterationRuntimeSemantics",
-        81212usize,
+        81301usize,
         "HelloUltraviolet::Reference::Async",
         "runAsyncCompositionFormsReference",
         "Source/Reference/Async/CompositionForms.uv"
@@ -486,7 +486,7 @@ public procedure validatedAsynchronousOperationsCompositionFormsObligations() ->
     }
     if acceptedObligationEntryMatches(
         "requirement.21.ManualSteppingRuntimeSemantics",
-        81230usize,
+        81319usize,
         "HelloUltraviolet::Reference::Async",
         "runAsyncCompositionFormsReference",
         "Source/Reference/Async/CompositionForms.uv"
@@ -495,7 +495,7 @@ public procedure validatedAsynchronousOperationsCompositionFormsObligations() ->
     }
     if acceptedObligationEntryMatches(
         "requirement.21.SyncRuntimeSemantics",
-        81243usize,
+        81332usize,
         "HelloUltraviolet::Reference::Async",
         "runAsyncCompositionFormsReference",
         "Source/Reference/Async/CompositionForms.uv"
@@ -504,7 +504,7 @@ public procedure validatedAsynchronousOperationsCompositionFormsObligations() ->
     }
     if acceptedObligationEntryMatches(
         "def.21.SyncStepSignature",
-        81263usize,
+        81352usize,
         "HelloUltraviolet::Reference::Async",
         "runAsyncCompositionFormsReference",
         "Source/Reference/Async/CompositionForms.uv"
@@ -513,7 +513,7 @@ public procedure validatedAsynchronousOperationsCompositionFormsObligations() ->
     }
     if acceptedObligationEntryMatches(
         "rule.21.SyncStep-Suspended",
-        81278usize,
+        81367usize,
         "HelloUltraviolet::Reference::Async",
         "runAsyncCompositionFormsReference",
         "Source/Reference/Async/CompositionForms.uv"
@@ -522,7 +522,7 @@ public procedure validatedAsynchronousOperationsCompositionFormsObligations() ->
     }
     if acceptedObligationEntryMatches(
         "rule.21.EvalSigma-Sync-Suspended",
-        81296usize,
+        81385usize,
         "HelloUltraviolet::Reference::Async",
         "runAsyncCompositionFormsReference",
         "Source/Reference/Async/CompositionForms.uv"
@@ -531,7 +531,7 @@ public procedure validatedAsynchronousOperationsCompositionFormsObligations() ->
     }
     if acceptedObligationEntryMatches(
         "rule.21.EvalSigma-Sync-Completed",
-        81315usize,
+        81404usize,
         "HelloUltraviolet::Reference::Async",
         "runAsyncCompositionFormsReference",
         "Source/Reference/Async/CompositionForms.uv"
@@ -540,7 +540,7 @@ public procedure validatedAsynchronousOperationsCompositionFormsObligations() ->
     }
     if acceptedObligationEntryMatches(
         "rule.21.EvalSigma-Sync-Failed",
-        81333usize,
+        81422usize,
         "HelloUltraviolet::Reference::Async",
         "runAsyncCompositionFormsReference",
         "Source/Reference/Async/CompositionForms.uv"
@@ -549,7 +549,7 @@ public procedure validatedAsynchronousOperationsCompositionFormsObligations() ->
     }
     if acceptedObligationEntryMatches(
         "requirement.21.RaceReturnRuntimeSemantics",
-        81351usize,
+        81440usize,
         "HelloUltraviolet::Reference::Async",
         "runAsyncCompositionFormsReference",
         "Source/Reference/Async/CompositionForms.uv"
@@ -558,7 +558,7 @@ public procedure validatedAsynchronousOperationsCompositionFormsObligations() ->
     }
     if acceptedObligationEntryMatches(
         "requirement.21.RaceStreamingRuntimeSemantics",
-        81369usize,
+        81458usize,
         "HelloUltraviolet::Reference::Async",
         "runAsyncCompositionFormsReference",
         "Source/Reference/Async/CompositionForms.uv"
@@ -567,7 +567,7 @@ public procedure validatedAsynchronousOperationsCompositionFormsObligations() ->
     }
     if acceptedObligationEntryMatches(
         "def.21.RaceSelectionAndState",
-        81390usize,
+        81479usize,
         "HelloUltraviolet::Reference::Async",
         "runAsyncCompositionFormsReference",
         "Source/Reference/Async/CompositionForms.uv"
@@ -576,7 +576,7 @@ public procedure validatedAsynchronousOperationsCompositionFormsObligations() ->
     }
     if acceptedObligationEntryMatches(
         "rule.21.InitRace",
-        81420usize,
+        81509usize,
         "HelloUltraviolet::Reference::Async",
         "runAsyncCompositionFormsReference",
         "Source/Reference/Async/CompositionForms.uv"
@@ -585,7 +585,7 @@ public procedure validatedAsynchronousOperationsCompositionFormsObligations() ->
     }
     if acceptedObligationEntryMatches(
         "def.21.RaceStepReturnSignature",
-        81439usize,
+        81528usize,
         "HelloUltraviolet::Reference::Async",
         "runAsyncCompositionFormsReference",
         "Source/Reference/Async/CompositionForms.uv"
@@ -594,7 +594,7 @@ public procedure validatedAsynchronousOperationsCompositionFormsObligations() ->
     }
     if acceptedObligationEntryMatches(
         "rule.21.RaceStepReturn-Completed",
-        81454usize,
+        81543usize,
         "HelloUltraviolet::Reference::Async",
         "runAsyncCompositionFormsReference",
         "Source/Reference/Async/CompositionForms.uv"
@@ -603,7 +603,7 @@ public procedure validatedAsynchronousOperationsCompositionFormsObligations() ->
     }
     if acceptedObligationEntryMatches(
         "rule.21.RaceStepReturn-Failed",
-        81474usize,
+        81563usize,
         "HelloUltraviolet::Reference::Async",
         "runAsyncCompositionFormsReference",
         "Source/Reference/Async/CompositionForms.uv"
@@ -612,7 +612,7 @@ public procedure validatedAsynchronousOperationsCompositionFormsObligations() ->
     }
     if acceptedObligationEntryMatches(
         "rule.21.RaceStepReturn-Continue",
-        81493usize,
+        81582usize,
         "HelloUltraviolet::Reference::Async",
         "runAsyncCompositionFormsReference",
         "Source/Reference/Async/CompositionForms.uv"
@@ -621,7 +621,7 @@ public procedure validatedAsynchronousOperationsCompositionFormsObligations() ->
     }
     if acceptedObligationEntryMatches(
         "rule.21.EvalSigma-Race-Return",
-        81513usize,
+        81602usize,
         "HelloUltraviolet::Reference::Async",
         "runAsyncCompositionFormsReference",
         "Source/Reference/Async/CompositionForms.uv"
@@ -630,7 +630,7 @@ public procedure validatedAsynchronousOperationsCompositionFormsObligations() ->
     }
     if acceptedObligationEntryMatches(
         "def.21.RaceStepStreamSignature",
-        81532usize,
+        81621usize,
         "HelloUltraviolet::Reference::Async",
         "runAsyncCompositionFormsReference",
         "Source/Reference/Async/CompositionForms.uv"
@@ -639,7 +639,7 @@ public procedure validatedAsynchronousOperationsCompositionFormsObligations() ->
     }
     if acceptedObligationEntryMatches(
         "rule.21.RaceStepStream-Yield-Initial",
-        81547usize,
+        81636usize,
         "HelloUltraviolet::Reference::Async",
         "runAsyncCompositionFormsReference",
         "Source/Reference/Async/CompositionForms.uv"
@@ -648,7 +648,7 @@ public procedure validatedAsynchronousOperationsCompositionFormsObligations() ->
     }
     if acceptedObligationEntryMatches(
         "rule.21.RaceStepStream-AllComplete",
-        81567usize,
+        81656usize,
         "HelloUltraviolet::Reference::Async",
         "runAsyncCompositionFormsReference",
         "Source/Reference/Async/CompositionForms.uv"
@@ -657,7 +657,7 @@ public procedure validatedAsynchronousOperationsCompositionFormsObligations() ->
     }
     if acceptedObligationEntryMatches(
         "rule.21.RaceStepStream-Failed",
-        81585usize,
+        81674usize,
         "HelloUltraviolet::Reference::Async",
         "runAsyncCompositionFormsReference",
         "Source/Reference/Async/CompositionForms.uv"
@@ -666,7 +666,7 @@ public procedure validatedAsynchronousOperationsCompositionFormsObligations() ->
     }
     if acceptedObligationEntryMatches(
         "rule.21.EvalSigma-Race-Stream",
-        81604usize,
+        81693usize,
         "HelloUltraviolet::Reference::Async",
         "runAsyncCompositionFormsReference",
         "Source/Reference/Async/CompositionForms.uv"
@@ -675,7 +675,7 @@ public procedure validatedAsynchronousOperationsCompositionFormsObligations() ->
     }
     if acceptedObligationEntryMatches(
         "def.21.CancelAllSignature",
-        81623usize,
+        81712usize,
         "HelloUltraviolet::Reference::Async",
         "runAsyncCompositionFormsReference",
         "Source/Reference/Async/CompositionForms.uv"
@@ -684,7 +684,7 @@ public procedure validatedAsynchronousOperationsCompositionFormsObligations() ->
     }
     if acceptedObligationEntryMatches(
         "rule.21.CancelAll",
-        81638usize,
+        81727usize,
         "HelloUltraviolet::Reference::Async",
         "runAsyncCompositionFormsReference",
         "Source/Reference/Async/CompositionForms.uv"
@@ -693,7 +693,7 @@ public procedure validatedAsynchronousOperationsCompositionFormsObligations() ->
     }
     if acceptedObligationEntryMatches(
         "def.21.RaceStreamSuspensionState",
-        81658usize,
+        81747usize,
         "HelloUltraviolet::Reference::Async",
         "runAsyncCompositionFormsReference",
         "Source/Reference/Async/CompositionForms.uv"
@@ -702,51 +702,6 @@ public procedure validatedAsynchronousOperationsCompositionFormsObligations() ->
     }
     if acceptedObligationEntryMatches(
         "rule.21.RaceStepStream-Yield-Resumable",
-        81678usize,
-        "HelloUltraviolet::Reference::Async",
-        "runAsyncCompositionFormsReference",
-        "Source/Reference/Async/CompositionForms.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
-        "rule.21.ResumeRaceState-Step",
-        81698usize,
-        "HelloUltraviolet::Reference::Async",
-        "runAsyncCompositionFormsReference",
-        "Source/Reference/Async/CompositionForms.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
-        "rule.21.ResumeRaceState-Done",
-        81717usize,
-        "HelloUltraviolet::Reference::Async",
-        "runAsyncCompositionFormsReference",
-        "Source/Reference/Async/CompositionForms.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
-        "rule.21.EvalSigma-Race-Stream-Resume",
-        81734usize,
-        "HelloUltraviolet::Reference::Async",
-        "runAsyncCompositionFormsReference",
-        "Source/Reference/Async/CompositionForms.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
-        "requirement.21.StreamingRaceResumptionOrder",
-        81754usize,
-        "HelloUltraviolet::Reference::Async",
-        "runAsyncCompositionFormsReference",
-        "Source/Reference/Async/CompositionForms.uv"
-    ) {
-        count = count + 1usize
-    }
-    if acceptedObligationEntryMatches(
-        "requirement.21.AllRuntimeSemantics",
         81767usize,
         "HelloUltraviolet::Reference::Async",
         "runAsyncCompositionFormsReference",
@@ -755,7 +710,7 @@ public procedure validatedAsynchronousOperationsCompositionFormsObligations() ->
         count = count + 1usize
     }
     if acceptedObligationEntryMatches(
-        "def.21.AllStateAndInitSignature",
+        "rule.21.ResumeRaceState-Step",
         81787usize,
         "HelloUltraviolet::Reference::Async",
         "runAsyncCompositionFormsReference",
@@ -764,8 +719,8 @@ public procedure validatedAsynchronousOperationsCompositionFormsObligations() ->
         count = count + 1usize
     }
     if acceptedObligationEntryMatches(
-        "rule.21.InitAll",
-        81803usize,
+        "rule.21.ResumeRaceState-Done",
+        81806usize,
         "HelloUltraviolet::Reference::Async",
         "runAsyncCompositionFormsReference",
         "Source/Reference/Async/CompositionForms.uv"
@@ -773,8 +728,8 @@ public procedure validatedAsynchronousOperationsCompositionFormsObligations() ->
         count = count + 1usize
     }
     if acceptedObligationEntryMatches(
-        "def.21.AllStepSignature",
-        81822usize,
+        "rule.21.EvalSigma-Race-Stream-Resume",
+        81823usize,
         "HelloUltraviolet::Reference::Async",
         "runAsyncCompositionFormsReference",
         "Source/Reference/Async/CompositionForms.uv"
@@ -782,8 +737,8 @@ public procedure validatedAsynchronousOperationsCompositionFormsObligations() ->
         count = count + 1usize
     }
     if acceptedObligationEntryMatches(
-        "rule.21.AllStep-Complete",
-        81837usize,
+        "requirement.21.StreamingRaceResumptionOrder",
+        81843usize,
         "HelloUltraviolet::Reference::Async",
         "runAsyncCompositionFormsReference",
         "Source/Reference/Async/CompositionForms.uv"
@@ -791,7 +746,7 @@ public procedure validatedAsynchronousOperationsCompositionFormsObligations() ->
         count = count + 1usize
     }
     if acceptedObligationEntryMatches(
-        "rule.21.AllStep-Failed",
+        "requirement.21.AllRuntimeSemantics",
         81856usize,
         "HelloUltraviolet::Reference::Async",
         "runAsyncCompositionFormsReference",
@@ -800,7 +755,7 @@ public procedure validatedAsynchronousOperationsCompositionFormsObligations() ->
         count = count + 1usize
     }
     if acceptedObligationEntryMatches(
-        "rule.21.AllStep-Resume",
+        "def.21.AllStateAndInitSignature",
         81876usize,
         "HelloUltraviolet::Reference::Async",
         "runAsyncCompositionFormsReference",
@@ -809,8 +764,8 @@ public procedure validatedAsynchronousOperationsCompositionFormsObligations() ->
         count = count + 1usize
     }
     if acceptedObligationEntryMatches(
-        "def.21.AllLoopSignature",
-        81896usize,
+        "rule.21.InitAll",
+        81892usize,
         "HelloUltraviolet::Reference::Async",
         "runAsyncCompositionFormsReference",
         "Source/Reference/Async/CompositionForms.uv"
@@ -818,7 +773,7 @@ public procedure validatedAsynchronousOperationsCompositionFormsObligations() ->
         count = count + 1usize
     }
     if acceptedObligationEntryMatches(
-        "rule.21.AllLoop-AllCompleted",
+        "def.21.AllStepSignature",
         81911usize,
         "HelloUltraviolet::Reference::Async",
         "runAsyncCompositionFormsReference",
@@ -827,8 +782,53 @@ public procedure validatedAsynchronousOperationsCompositionFormsObligations() ->
         count = count + 1usize
     }
     if acceptedObligationEntryMatches(
+        "rule.21.AllStep-Complete",
+        81926usize,
+        "HelloUltraviolet::Reference::Async",
+        "runAsyncCompositionFormsReference",
+        "Source/Reference/Async/CompositionForms.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "rule.21.AllStep-Failed",
+        81945usize,
+        "HelloUltraviolet::Reference::Async",
+        "runAsyncCompositionFormsReference",
+        "Source/Reference/Async/CompositionForms.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "rule.21.AllStep-Resume",
+        81965usize,
+        "HelloUltraviolet::Reference::Async",
+        "runAsyncCompositionFormsReference",
+        "Source/Reference/Async/CompositionForms.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "def.21.AllLoopSignature",
+        81985usize,
+        "HelloUltraviolet::Reference::Async",
+        "runAsyncCompositionFormsReference",
+        "Source/Reference/Async/CompositionForms.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "rule.21.AllLoop-AllCompleted",
+        82000usize,
+        "HelloUltraviolet::Reference::Async",
+        "runAsyncCompositionFormsReference",
+        "Source/Reference/Async/CompositionForms.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
         "rule.21.AllLoop-Failed",
-        81929usize,
+        82018usize,
         "HelloUltraviolet::Reference::Async",
         "runAsyncCompositionFormsReference",
         "Source/Reference/Async/CompositionForms.uv"
@@ -837,7 +837,7 @@ public procedure validatedAsynchronousOperationsCompositionFormsObligations() ->
     }
     if acceptedObligationEntryMatches(
         "rule.21.AllLoop-Continue",
-        81947usize,
+        82036usize,
         "HelloUltraviolet::Reference::Async",
         "runAsyncCompositionFormsReference",
         "Source/Reference/Async/CompositionForms.uv"
@@ -846,7 +846,7 @@ public procedure validatedAsynchronousOperationsCompositionFormsObligations() ->
     }
     if acceptedObligationEntryMatches(
         "rule.21.EvalSigma-All",
-        81966usize,
+        82055usize,
         "HelloUltraviolet::Reference::Async",
         "runAsyncCompositionFormsReference",
         "Source/Reference/Async/CompositionForms.uv"
@@ -855,7 +855,7 @@ public procedure validatedAsynchronousOperationsCompositionFormsObligations() ->
     }
     if acceptedObligationEntryMatches(
         "requirement.21.UntilRuntimeSemantics",
-        81984usize,
+        82073usize,
         "HelloUltraviolet::Reference::Async",
         "runAsyncCompositionUntilReference",
         "Source/Reference/Async/CompositionForms.uv"
@@ -864,7 +864,7 @@ public procedure validatedAsynchronousOperationsCompositionFormsObligations() ->
     }
     if acceptedObligationEntryMatches(
         "def.21.AsyncCombinatorRuntimeWrappers",
-        82001usize,
+        82090usize,
         "HelloUltraviolet::Reference::Async",
         "runAsyncCompositionCombinatorsReference",
         "Source/Reference/Async/CompositionForms.uv"
@@ -873,7 +873,7 @@ public procedure validatedAsynchronousOperationsCompositionFormsObligations() ->
     }
     if acceptedObligationEntryMatches(
         "rule.21.EvalSigma-Map-Create",
-        82024usize,
+        82113usize,
         "HelloUltraviolet::Reference::Async",
         "runAsyncCompositionMapReference",
         "Source/Reference/Async/CompositionForms.uv"
@@ -882,7 +882,7 @@ public procedure validatedAsynchronousOperationsCompositionFormsObligations() ->
     }
     if acceptedObligationEntryMatches(
         "rule.21.EvalSigma-Map-Resume-Yield",
-        82042usize,
+        82131usize,
         "HelloUltraviolet::Reference::Async",
         "runAsyncCompositionMapReference",
         "Source/Reference/Async/CompositionForms.uv"
@@ -891,7 +891,7 @@ public procedure validatedAsynchronousOperationsCompositionFormsObligations() ->
     }
     if acceptedObligationEntryMatches(
         "rule.21.EvalSigma-Map-Resume-Complete",
-        82060usize,
+        82149usize,
         "HelloUltraviolet::Reference::Async",
         "runAsyncCompositionMapReference",
         "Source/Reference/Async/CompositionForms.uv"
@@ -900,7 +900,7 @@ public procedure validatedAsynchronousOperationsCompositionFormsObligations() ->
     }
     if acceptedObligationEntryMatches(
         "rule.21.EvalSigma-Map-Resume-Failed",
-        82078usize,
+        82167usize,
         "HelloUltraviolet::Reference::Async",
         "runAsyncCompositionMapReference",
         "Source/Reference/Async/CompositionForms.uv"
@@ -909,7 +909,7 @@ public procedure validatedAsynchronousOperationsCompositionFormsObligations() ->
     }
     if acceptedObligationEntryMatches(
         "rule.21.EvalSigma-Filter-Create",
-        82096usize,
+        82185usize,
         "HelloUltraviolet::Reference::Async",
         "runAsyncCompositionFilterReference",
         "Source/Reference/Async/CompositionForms.uv"
@@ -918,7 +918,7 @@ public procedure validatedAsynchronousOperationsCompositionFormsObligations() ->
     }
     if acceptedObligationEntryMatches(
         "rule.21.EvalSigma-Filter-Resume-Pass",
-        82114usize,
+        82203usize,
         "HelloUltraviolet::Reference::Async",
         "runAsyncCompositionFilterReference",
         "Source/Reference/Async/CompositionForms.uv"
@@ -927,7 +927,7 @@ public procedure validatedAsynchronousOperationsCompositionFormsObligations() ->
     }
     if acceptedObligationEntryMatches(
         "rule.21.EvalSigma-Filter-Resume-Skip",
-        82132usize,
+        82221usize,
         "HelloUltraviolet::Reference::Async",
         "runAsyncCompositionFilterReference",
         "Source/Reference/Async/CompositionForms.uv"
@@ -936,7 +936,7 @@ public procedure validatedAsynchronousOperationsCompositionFormsObligations() ->
     }
     if acceptedObligationEntryMatches(
         "rule.21.EvalSigma-Filter-Resume-Complete",
-        82151usize,
+        82240usize,
         "HelloUltraviolet::Reference::Async",
         "runAsyncCompositionFilterReference",
         "Source/Reference/Async/CompositionForms.uv"
@@ -945,7 +945,7 @@ public procedure validatedAsynchronousOperationsCompositionFormsObligations() ->
     }
     if acceptedObligationEntryMatches(
         "rule.21.EvalSigma-Take-Create",
-        82169usize,
+        82258usize,
         "HelloUltraviolet::Reference::Async",
         "runAsyncCompositionTakeReference",
         "Source/Reference/Async/CompositionForms.uv"
@@ -954,7 +954,7 @@ public procedure validatedAsynchronousOperationsCompositionFormsObligations() ->
     }
     if acceptedObligationEntryMatches(
         "rule.21.EvalSigma-Take-Resume-Yield",
-        82187usize,
+        82276usize,
         "HelloUltraviolet::Reference::Async",
         "runAsyncCompositionTakeReference",
         "Source/Reference/Async/CompositionForms.uv"
@@ -963,7 +963,7 @@ public procedure validatedAsynchronousOperationsCompositionFormsObligations() ->
     }
     if acceptedObligationEntryMatches(
         "rule.21.EvalSigma-Take-Resume-Done",
-        82205usize,
+        82294usize,
         "HelloUltraviolet::Reference::Async",
         "runAsyncCompositionTakeReference",
         "Source/Reference/Async/CompositionForms.uv"
@@ -972,7 +972,7 @@ public procedure validatedAsynchronousOperationsCompositionFormsObligations() ->
     }
     if acceptedObligationEntryMatches(
         "rule.21.EvalSigma-Take-Resume-Source-Complete",
-        82223usize,
+        82312usize,
         "HelloUltraviolet::Reference::Async",
         "runAsyncCompositionTakeReference",
         "Source/Reference/Async/CompositionForms.uv"
@@ -981,7 +981,7 @@ public procedure validatedAsynchronousOperationsCompositionFormsObligations() ->
     }
     if acceptedObligationEntryMatches(
         "rule.21.EvalSigma-Fold-Create",
-        82241usize,
+        82330usize,
         "HelloUltraviolet::Reference::Async",
         "runAsyncCompositionFoldReference",
         "Source/Reference/Async/CompositionForms.uv"
@@ -990,7 +990,7 @@ public procedure validatedAsynchronousOperationsCompositionFormsObligations() ->
     }
     if acceptedObligationEntryMatches(
         "rule.21.EvalSigma-Fold-Resume-Accumulate",
-        82259usize,
+        82348usize,
         "HelloUltraviolet::Reference::Async",
         "runAsyncCompositionFoldReference",
         "Source/Reference/Async/CompositionForms.uv"
@@ -999,7 +999,7 @@ public procedure validatedAsynchronousOperationsCompositionFormsObligations() ->
     }
     if acceptedObligationEntryMatches(
         "rule.21.EvalSigma-Fold-Resume-Complete",
-        82277usize,
+        82366usize,
         "HelloUltraviolet::Reference::Async",
         "runAsyncCompositionFoldReference",
         "Source/Reference/Async/CompositionForms.uv"
@@ -1008,7 +1008,7 @@ public procedure validatedAsynchronousOperationsCompositionFormsObligations() ->
     }
     if acceptedObligationEntryMatches(
         "rule.21.EvalSigma-Fold-Resume-Failed",
-        82295usize,
+        82384usize,
         "HelloUltraviolet::Reference::Async",
         "runAsyncCompositionFoldReference",
         "Source/Reference/Async/CompositionForms.uv"
@@ -1017,7 +1017,7 @@ public procedure validatedAsynchronousOperationsCompositionFormsObligations() ->
     }
     if acceptedObligationEntryMatches(
         "rule.21.EvalSigma-Chain-Create",
-        82313usize,
+        82402usize,
         "HelloUltraviolet::Reference::Async",
         "runAsyncCompositionChainReference",
         "Source/Reference/Async/CompositionForms.uv"
@@ -1026,7 +1026,7 @@ public procedure validatedAsynchronousOperationsCompositionFormsObligations() ->
     }
     if acceptedObligationEntryMatches(
         "rule.21.EvalSigma-Chain-Resume-Source-Complete",
-        82331usize,
+        82420usize,
         "HelloUltraviolet::Reference::Async",
         "runAsyncCompositionChainReference",
         "Source/Reference/Async/CompositionForms.uv"
@@ -1035,7 +1035,7 @@ public procedure validatedAsynchronousOperationsCompositionFormsObligations() ->
     }
     if acceptedObligationEntryMatches(
         "rule.21.EvalSigma-Chain-Resume-Chained",
-        82349usize,
+        82438usize,
         "HelloUltraviolet::Reference::Async",
         "runAsyncCompositionChainReference",
         "Source/Reference/Async/CompositionForms.uv"
@@ -1044,7 +1044,7 @@ public procedure validatedAsynchronousOperationsCompositionFormsObligations() ->
     }
     if acceptedObligationEntryMatches(
         "rule.21.EvalSigma-Chain-Resume-Source-Failed",
-        82367usize,
+        82456usize,
         "HelloUltraviolet::Reference::Async",
         "runAsyncCompositionChainReference",
         "Source/Reference/Async/CompositionForms.uv"
@@ -1053,7 +1053,7 @@ public procedure validatedAsynchronousOperationsCompositionFormsObligations() ->
     }
     if acceptedObligationEntryMatches(
         "def.21.AsyncComposeIR",
-        82387usize,
+        82476usize,
         "HelloUltraviolet::Reference::Async",
         "runAsyncCompositionFormsReference",
         "Source/Reference/Async/CompositionForms.uv"
@@ -1062,7 +1062,7 @@ public procedure validatedAsynchronousOperationsCompositionFormsObligations() ->
     }
     if acceptedObligationEntryMatches(
         "rule.21.Lower-Expr-Sync",
-        82400usize,
+        82489usize,
         "HelloUltraviolet::Reference::Async",
         "runAsyncCompositionFormsReference",
         "Source/Reference/Async/CompositionForms.uv"
@@ -1071,7 +1071,7 @@ public procedure validatedAsynchronousOperationsCompositionFormsObligations() ->
     }
     if acceptedObligationEntryMatches(
         "requirement.21.SyncLoopIRSemantics",
-        82418usize,
+        82507usize,
         "HelloUltraviolet::Reference::Async",
         "runAsyncCompositionFormsReference",
         "Source/Reference/Async/CompositionForms.uv"
@@ -1080,7 +1080,7 @@ public procedure validatedAsynchronousOperationsCompositionFormsObligations() ->
     }
     if acceptedObligationEntryMatches(
         "rule.21.Lower-Expr-Race-Return",
-        82431usize,
+        82520usize,
         "HelloUltraviolet::Reference::Async",
         "runAsyncCompositionFormsReference",
         "Source/Reference/Async/CompositionForms.uv"
@@ -1089,7 +1089,7 @@ public procedure validatedAsynchronousOperationsCompositionFormsObligations() ->
     }
     if acceptedObligationEntryMatches(
         "rule.21.Lower-Expr-Race-Stream",
-        82449usize,
+        82538usize,
         "HelloUltraviolet::Reference::Async",
         "runAsyncCompositionFormsReference",
         "Source/Reference/Async/CompositionForms.uv"
@@ -1098,7 +1098,7 @@ public procedure validatedAsynchronousOperationsCompositionFormsObligations() ->
     }
     if acceptedObligationEntryMatches(
         "requirement.21.RaceInitIRSemantics",
-        82467usize,
+        82556usize,
         "HelloUltraviolet::Reference::Async",
         "runAsyncCompositionFormsReference",
         "Source/Reference/Async/CompositionForms.uv"
@@ -1107,7 +1107,7 @@ public procedure validatedAsynchronousOperationsCompositionFormsObligations() ->
     }
     if acceptedObligationEntryMatches(
         "requirement.21.RaceResumeIRSemantics",
-        82483usize,
+        82572usize,
         "HelloUltraviolet::Reference::Async",
         "runAsyncCompositionFormsReference",
         "Source/Reference/Async/CompositionForms.uv"
@@ -1116,7 +1116,7 @@ public procedure validatedAsynchronousOperationsCompositionFormsObligations() ->
     }
     if acceptedObligationEntryMatches(
         "rule.21.Lower-Expr-All",
-        82496usize,
+        82585usize,
         "HelloUltraviolet::Reference::Async",
         "runAsyncCompositionFormsReference",
         "Source/Reference/Async/CompositionForms.uv"
@@ -1125,7 +1125,7 @@ public procedure validatedAsynchronousOperationsCompositionFormsObligations() ->
     }
     if acceptedObligationEntryMatches(
         "requirement.21.AllJoinIRSemantics",
-        82512usize,
+        82601usize,
         "HelloUltraviolet::Reference::Async",
         "runAsyncCompositionFormsReference",
         "Source/Reference/Async/CompositionForms.uv"
@@ -1134,7 +1134,7 @@ public procedure validatedAsynchronousOperationsCompositionFormsObligations() ->
     }
     if acceptedObligationEntryMatches(
         "requirement.21.AsyncCombinatorWrapperLowering",
-        82525usize,
+        82614usize,
         "HelloUltraviolet::Reference::Async",
         "runAsyncCompositionCombinatorsReference",
         "Source/Reference/Async/CompositionForms.uv"
@@ -1143,7 +1143,7 @@ public procedure validatedAsynchronousOperationsCompositionFormsObligations() ->
     }
     if acceptedObligationEntryMatches(
         "rule.21.Lower-Async-Map",
-        82538usize,
+        82627usize,
         "HelloUltraviolet::Reference::Async",
         "runAsyncCompositionMapReference",
         "Source/Reference/Async/CompositionForms.uv"
@@ -1152,7 +1152,7 @@ public procedure validatedAsynchronousOperationsCompositionFormsObligations() ->
     }
     if acceptedObligationEntryMatches(
         "rule.21.Lower-Async-Filter",
-        82554usize,
+        82643usize,
         "HelloUltraviolet::Reference::Async",
         "runAsyncCompositionFilterReference",
         "Source/Reference/Async/CompositionForms.uv"
@@ -1161,7 +1161,7 @@ public procedure validatedAsynchronousOperationsCompositionFormsObligations() ->
     }
     if acceptedObligationEntryMatches(
         "rule.21.Lower-Async-Take",
-        82570usize,
+        82659usize,
         "HelloUltraviolet::Reference::Async",
         "runAsyncCompositionTakeReference",
         "Source/Reference/Async/CompositionForms.uv"
@@ -1170,7 +1170,7 @@ public procedure validatedAsynchronousOperationsCompositionFormsObligations() ->
     }
     if acceptedObligationEntryMatches(
         "rule.21.Lower-Async-Fold",
-        82586usize,
+        82675usize,
         "HelloUltraviolet::Reference::Async",
         "runAsyncCompositionFoldReference",
         "Source/Reference/Async/CompositionForms.uv"
@@ -1179,7 +1179,7 @@ public procedure validatedAsynchronousOperationsCompositionFormsObligations() ->
     }
     if acceptedObligationEntryMatches(
         "rule.21.Lower-Async-Chain",
-        82602usize,
+        82691usize,
         "HelloUltraviolet::Reference::Async",
         "runAsyncCompositionChainReference",
         "Source/Reference/Async/CompositionForms.uv"
@@ -1188,7 +1188,7 @@ public procedure validatedAsynchronousOperationsCompositionFormsObligations() ->
     }
     if acceptedObligationEntryMatches(
         "requirement.21.AsyncWrapperLoweringSemantics",
-        82618usize,
+        82707usize,
         "HelloUltraviolet::Reference::Async",
         "runAsyncCompositionCombinatorsReference",
         "Source/Reference/Async/CompositionForms.uv"
@@ -1197,7 +1197,7 @@ public procedure validatedAsynchronousOperationsCompositionFormsObligations() ->
     }
     if rejectedSourceObligationEntryMatches(
         "diagnostics.21.AsyncCompositionDiagnostics",
-        82633usize,
+        82722usize,
         "HelloUltraviolet::Audit::FixtureCatalog::RejectedSource",
         "validatedExpressionsRejectedSourceFixtureCount",
         "Fixtures/RejectedSource/Expressions/AsyncCompositionDiagnosticsTable/Source/Main.uv"
