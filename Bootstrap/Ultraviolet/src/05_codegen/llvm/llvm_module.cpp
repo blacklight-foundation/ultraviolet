@@ -334,13 +334,15 @@ bool RuntimeDeclsCover(const llvm::Module& module, const IRDecls& decls) {
         continue;
       }
 
+      const bool runtime_c_aggregate_boundary = RuntimeUsesCAggregateABI(symbol);
       const bool runtime_foreign_boundary = RuntimeUsesForeignABI(symbol);
       ABICallResult abi = ComputeCallABI(
           *this,
           info->params,
           info->ret,
-          /*use_c_abi_aggregate_sret=*/runtime_foreign_boundary,
-          /*foreign_boundary_mode_independent=*/false);
+          /*use_c_abi_aggregate_sret=*/runtime_c_aggregate_boundary,
+          /*foreign_boundary_mode_independent=*/runtime_foreign_boundary,
+          RuntimeUsesExplicitOutResultABI(symbol));
       if (!abi.valid || !abi.func_type) {
         if (current_ctx_) {
           current_ctx_->ReportCodegenFailure();

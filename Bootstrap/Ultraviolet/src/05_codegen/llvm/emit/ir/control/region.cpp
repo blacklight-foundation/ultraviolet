@@ -52,7 +52,8 @@ void IRInstructionVisitor::operator()(const IRRegion &region) const
           emitter.GetModule().getFunction(*new_scoped_sym);
       const bool runtime_foreign_boundary =
           RuntimeUsesForeignABI(*new_scoped_sym);
-      const bool use_c_abi_aggregate_sret = runtime_foreign_boundary;
+      const bool use_c_abi_aggregate_sret =
+          RuntimeUsesCAggregateABI(*new_scoped_sym);
       if (!new_scoped_fn)
       {
         ABICallResult new_scoped_abi = ComputeCallABI(
@@ -60,7 +61,7 @@ void IRInstructionVisitor::operator()(const IRRegion &region) const
             new_scoped_info->params,
             new_scoped_info->ret,
             use_c_abi_aggregate_sret,
-            /*foreign_boundary_mode_independent=*/false);
+            /*foreign_boundary_mode_independent=*/runtime_foreign_boundary);
         if (new_scoped_abi.func_type)
         {
           new_scoped_fn = llvm::Function::Create(
@@ -90,7 +91,7 @@ void IRInstructionVisitor::operator()(const IRRegion &region) const
             nullptr,
             nullptr,
             nullptr,
-            /*foreign_boundary_mode_independent=*/false);
+            runtime_foreign_boundary);
       }
     }
   }

@@ -393,20 +393,24 @@ std::optional<std::string> ProcedureSymbolForPath(
       {
         if (const auto *sig = active_ctx->LookupProcSig(symbol))
         {
+          const bool runtime_c_aggregate_boundary =
+              RuntimeUsesCAggregateABI(symbol);
           const bool runtime_foreign_boundary = RuntimeUsesForeignABI(symbol);
           const bool use_c_abi_aggregate_sret =
               sig->ffi_import ||
               active_ctx->LookupExportUnwindMode(symbol).has_value() ||
-              runtime_foreign_boundary;
+              runtime_c_aggregate_boundary;
           const bool foreign_boundary_mode_independent =
               sig->ffi_import ||
-              active_ctx->LookupExportUnwindMode(symbol).has_value();
+              active_ctx->LookupExportUnwindMode(symbol).has_value() ||
+              runtime_foreign_boundary;
           ABICallResult abi = ComputeCallABI(
               *this,
               sig->params,
               sig->ret,
               use_c_abi_aggregate_sret,
-              foreign_boundary_mode_independent);
+              foreign_boundary_mode_independent,
+              RuntimeUsesExplicitOutResultABI(symbol));
           if (abi.func_type)
           {
             llvm::Function *declared = llvm::Function::Create(
@@ -782,8 +786,10 @@ std::optional<std::string> ProcedureSymbolForPath(
         if (std::optional<RuntimeFuncInfo> alloc_info = GetRuntimeFuncInfo(alloc_sym))
         {
           llvm::Function *alloc_fn = GetModule().getFunction(alloc_sym);
+          const bool runtime_c_aggregate_boundary =
+              RuntimeUsesCAggregateABI(alloc_sym);
           const bool runtime_foreign_boundary = RuntimeUsesForeignABI(alloc_sym);
-          const bool use_c_abi_aggregate_sret = runtime_foreign_boundary;
+          const bool use_c_abi_aggregate_sret = runtime_c_aggregate_boundary;
           if (!alloc_fn)
           {
             ABICallResult alloc_abi = ComputeCallABI(
@@ -791,7 +797,7 @@ std::optional<std::string> ProcedureSymbolForPath(
                 alloc_info->params,
                 alloc_info->ret,
                 use_c_abi_aggregate_sret,
-                /*foreign_boundary_mode_independent=*/false);
+                /*foreign_boundary_mode_independent=*/runtime_foreign_boundary);
             if (alloc_abi.func_type)
             {
               alloc_fn = llvm::Function::Create(
@@ -824,7 +830,7 @@ std::optional<std::string> ProcedureSymbolForPath(
                 nullptr,
                 nullptr,
                 nullptr,
-                /*foreign_boundary_mode_independent=*/false);
+                /*foreign_boundary_mode_independent=*/runtime_foreign_boundary);
           }
         }
         if (!raw_ptr)
@@ -2084,19 +2090,23 @@ std::optional<std::string> ProcedureSymbolForPath(
               {
                 const bool runtime_foreign_boundary =
                     RuntimeUsesForeignABI(symbol_name);
+                const bool runtime_c_aggregate_boundary =
+                    RuntimeUsesCAggregateABI(symbol_name);
                 const bool use_c_abi_aggregate_sret =
                     sig->ffi_import ||
                     ctx->LookupExportUnwindMode(symbol_name).has_value() ||
-                    runtime_foreign_boundary;
+                    runtime_c_aggregate_boundary;
                 const bool foreign_boundary_mode_independent =
                     sig->ffi_import ||
-                    ctx->LookupExportUnwindMode(symbol_name).has_value();
+                    ctx->LookupExportUnwindMode(symbol_name).has_value() ||
+                    runtime_foreign_boundary;
                 ABICallResult abi = ComputeCallABI(
                     *this,
                     sig->params,
                     sig->ret,
                     use_c_abi_aggregate_sret,
-                    foreign_boundary_mode_independent);
+                    foreign_boundary_mode_independent,
+                    RuntimeUsesExplicitOutResultABI(symbol_name));
                 if (abi.func_type)
                 {
                   fn = llvm::Function::Create(

@@ -855,8 +855,9 @@ namespace ultraviolet::codegen::emit_detail {
       }
 
       llvm::Function *fn = emitter.GetModule().getFunction(symbol);
+      const bool runtime_c_aggregate_boundary = RuntimeUsesCAggregateABI(symbol);
       const bool runtime_foreign_boundary = RuntimeUsesForeignABI(symbol);
-      const bool use_c_abi_aggregate_sret = runtime_foreign_boundary;
+      const bool use_c_abi_aggregate_sret = runtime_c_aggregate_boundary;
       if (!fn)
       {
         ABICallResult abi = ComputeCallABI(
@@ -864,7 +865,8 @@ namespace ultraviolet::codegen::emit_detail {
             info->params,
             info->ret,
             use_c_abi_aggregate_sret,
-            /*foreign_boundary_mode_independent=*/false);
+            /*foreign_boundary_mode_independent=*/runtime_foreign_boundary,
+            RuntimeUsesExplicitOutResultABI(symbol));
         if (abi.func_type)
         {
           fn = llvm::Function::Create(
@@ -894,7 +896,7 @@ namespace ultraviolet::codegen::emit_detail {
           nullptr,
           nullptr,
           nullptr,
-          /*foreign_boundary_mode_independent=*/false);
+          runtime_foreign_boundary);
     }
 
     llvm::Value *EmitAsyncResumeRuntimeCall(LLVMEmitter &emitter,

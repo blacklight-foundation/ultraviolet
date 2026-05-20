@@ -1510,6 +1510,7 @@ void IRInstructionVisitor::operator()(const IRCall &call) const
     return;
   }
   bool use_c_abi_aggregate_sret = false;
+  bool runtime_c_aggregate_boundary = false;
   bool runtime_foreign_boundary = false;
   if (call.callee.kind == IRValue::Kind::Symbol)
   {
@@ -1522,6 +1523,7 @@ void IRInstructionVisitor::operator()(const IRCall &call) const
       inferred_sig.params = runtime->params;
       inferred_sig.ret = runtime->ret;
       sig = &inferred_sig;
+      runtime_c_aggregate_boundary = RuntimeUsesCAggregateABI(callee_symbol);
       runtime_foreign_boundary = RuntimeUsesForeignABI(callee_symbol);
     }
     else if (auto runtime = GetRuntimeFuncInfo(call.callee.name))
@@ -1530,6 +1532,7 @@ void IRInstructionVisitor::operator()(const IRCall &call) const
       inferred_sig.ret = runtime->ret;
       sig = &inferred_sig;
       callee_symbol = call.callee.name;
+      runtime_c_aggregate_boundary = RuntimeUsesCAggregateABI(call.callee.name);
       runtime_foreign_boundary = RuntimeUsesForeignABI(call.callee.name);
     }
     if (!sig && ctx)
@@ -1547,6 +1550,7 @@ void IRInstructionVisitor::operator()(const IRCall &call) const
         inferred_sig.params = runtime->params;
         inferred_sig.ret = runtime->ret;
         sig = &inferred_sig;
+        runtime_c_aggregate_boundary = RuntimeUsesCAggregateABI(callee_symbol);
         runtime_foreign_boundary = RuntimeUsesForeignABI(callee_symbol);
       }
       else if (auto runtime = GetRuntimeFuncInfo(call.callee.name))
@@ -1555,9 +1559,14 @@ void IRInstructionVisitor::operator()(const IRCall &call) const
         inferred_sig.ret = runtime->ret;
         sig = &inferred_sig;
         callee_symbol = call.callee.name;
+        runtime_c_aggregate_boundary = RuntimeUsesCAggregateABI(call.callee.name);
         runtime_foreign_boundary = RuntimeUsesForeignABI(call.callee.name);
       }
     }
+    runtime_c_aggregate_boundary =
+        runtime_c_aggregate_boundary ||
+        RuntimeUsesCAggregateABI(callee_symbol) ||
+        RuntimeUsesCAggregateABI(call.callee.name);
     runtime_foreign_boundary =
         runtime_foreign_boundary ||
         RuntimeUsesForeignABI(callee_symbol) ||
@@ -1970,7 +1979,7 @@ void IRInstructionVisitor::operator()(const IRCall &call) const
 
   const bool raw_export_boundary =
       ctx && ctx->LookupExportUnwindMode(callee_symbol).has_value();
-  if (runtime_foreign_boundary ||
+  if (runtime_c_aggregate_boundary ||
       (sig && (sig->ffi_import || raw_export_boundary)))
   {
     // Foreign-boundary-visible signatures must honor platform C ABI
@@ -1995,7 +2004,8 @@ void IRInstructionVisitor::operator()(const IRCall &call) const
             sig->params,
             sig->ret,
             use_c_abi_aggregate_sret,
-            /*foreign_boundary_mode_independent=*/false);
+            /*foreign_boundary_mode_independent=*/runtime_foreign_boundary,
+            RuntimeUsesExplicitOutResultABI(callee_symbol));
         decl_ty = abi.func_type;
       }
       if (!decl_ty && IsRuntimeFunction(callee_symbol))
@@ -2378,7 +2388,7 @@ void IRInstructionVisitor::operator()(const IRCall &call) const
         sig->ffi_import_unwind_mode ==
             LowerCtx::FfiImportUnwindMode::Catch;
     const bool foreign_boundary_mode_independent =
-        ffi_import_boundary || raw_export_boundary;
+        ffi_import_boundary || raw_export_boundary || runtime_foreign_boundary;
     call_result = EmitABICall(
         emitter,
         &builder,
@@ -2393,7 +2403,8 @@ void IRInstructionVisitor::operator()(const IRCall &call) const
         &call.args,
         &call_result_storage,
         preferred_result_storage,
-        foreign_boundary_mode_independent);
+        foreign_boundary_mode_independent,
+        RuntimeUsesExplicitOutResultABI(callee_symbol));
   }
   else
   {

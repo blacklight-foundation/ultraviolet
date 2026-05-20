@@ -501,14 +501,16 @@ using namespace emit_detail;
     {
       const bool runtime_foreign_boundary =
           RuntimeUsesForeignABI(context_init_sym);
-      const bool use_c_abi_aggregate_sret = runtime_foreign_boundary;
+      const bool use_c_abi_aggregate_sret =
+          RuntimeUsesCAggregateABI(context_init_sym);
       ABICallResult init_abi =
           ComputeCallABI(*this,
                          init_info->params,
                          init_info->ret,
                          use_c_abi_aggregate_sret,
                          /*foreign_boundary_mode_independent=*/
-                         false);
+                         runtime_foreign_boundary,
+                         RuntimeUsesExplicitOutResultABI(context_init_sym));
       if (!init_abi.valid || !init_abi.func_type)
       {
         current_ctx_->ReportCodegenFailure();
@@ -776,13 +778,16 @@ using namespace emit_detail;
 
             const bool runtime_foreign_boundary =
                 RuntimeUsesForeignABI(runtime_sym);
+            const bool runtime_c_aggregate_boundary =
+                RuntimeUsesCAggregateABI(runtime_sym);
             ABICallResult abi =
                 ComputeCallABI(*this,
                                runtime_info->params,
                                runtime_info->ret,
-                               runtime_foreign_boundary,
+                               runtime_c_aggregate_boundary,
                                /*foreign_boundary_mode_independent=*/
-                               false);
+                               runtime_foreign_boundary,
+                               RuntimeUsesExplicitOutResultABI(runtime_sym));
             if (!abi.valid || !abi.func_type || abi.param_kinds.size() != 1u)
             {
               current_ctx_->ReportCodegenFailure();
@@ -814,14 +819,14 @@ using namespace emit_detail;
                 runtime_info->params,
                 runtime_info->ret,
                 {context_arg},
-                runtime_foreign_boundary,
+                runtime_c_aggregate_boundary,
                 /*ffi_import_boundary=*/false,
                 /*ffi_import_catch=*/false,
                 std::nullopt,
                 nullptr,
                 nullptr,
                 nullptr,
-                /*foreign_boundary_mode_independent=*/false);
+                runtime_foreign_boundary);
           }
           current_ctx_->ReportCodegenFailure();
           return nullptr;

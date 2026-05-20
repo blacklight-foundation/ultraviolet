@@ -635,14 +635,68 @@ const std::unordered_set<std::string>& GetRuntimeSymbolSet() {
   return cache.symbols;
 }
 
+const std::unordered_set<std::string>& GetRuntimeExplicitOutResultSet() {
+  struct Cache {
+    project::SourceLanguage language = project::SourceLanguage::Ultraviolet;
+    std::unordered_set<std::string> symbols;
+    bool initialized = false;
+  };
+
+  static Cache cache;
+  static std::mutex cache_mu;
+  std::lock_guard<std::mutex> lock(cache_mu);
+  const auto active_language = project::ActiveLanguageProfile().language;
+  if (!cache.initialized || cache.language != active_language) {
+    std::unordered_set<std::string> symbols;
+    for (const std::string& symbol : RuntimeDeclSyms()) {
+      const std::optional<RuntimeFuncInfo> info = GetRuntimeFuncInfo(symbol);
+      if (info.has_value() && info->returns_via_out_param) {
+        symbols.insert(symbol);
+      }
+    }
+    cache.language = active_language;
+    cache.symbols = std::move(symbols);
+    cache.initialized = true;
+  }
+  return cache.symbols;
+}
+
 }  // namespace
 
 bool IsRuntimeFunction(const std::string& symbol) {
   return GetRuntimeSymbolSet().count(symbol) > 0;
 }
 
-bool RuntimeUsesForeignABI(const std::string& symbol) {
+bool RuntimeUsesCAggregateABI(const std::string& symbol) {
   return IsRuntimeFunction(symbol);
+}
+
+bool RuntimeUsesExplicitOutResultABI(const std::string& symbol) {
+  return GetRuntimeExplicitOutResultSet().count(symbol) > 0;
+}
+
+bool RuntimeUsesForeignABI(const std::string& symbol) {
+  if (!IsRuntimeFunction(symbol)) {
+    return false;
+  }
+
+  switch (CategorizeRuntimeSymbol(symbol)) {
+    case RuntimeSymbolCategory::Concurrency:
+    case RuntimeSymbolCategory::Async:
+    case RuntimeSymbolCategory::CancelToken:
+      return true;
+    case RuntimeSymbolCategory::Region:
+      return symbol == BuiltinModalSymRegionScopeEnter() ||
+             symbol == BuiltinModalSymRegionScopeExit() ||
+             symbol == BuiltinModalSymRegionAddrTagScope() ||
+             symbol == BuiltinModalSymRegionAddrIsActive() ||
+             symbol == BuiltinModalSymRegionAddrTagFrom();
+    case RuntimeSymbolCategory::Unknown:
+      return symbol == BuiltinSymReactorRun() ||
+             symbol == BuiltinSymReactorRegister();
+    default:
+      return false;
+  }
 }
 
 std::optional<RuntimeFuncInfo> GetRuntimeFuncInfo(const std::string& symbol) {
@@ -764,6 +818,9 @@ std::optional<RuntimeFuncInfo> GetRuntimeFuncInfo(const std::string& symbol) {
   RuntimeFuncInfo info;
   info.symbol = symbol;
   info.abi = "C";
+  auto mark_explicit_out_result = [&]() {
+    info.returns_via_out_param = true;
+  };
   auto add_trace_span_params = [&](RuntimeFuncInfo& target) {
     target.params.push_back(make_param("file", t_const_string_view));
     target.params.push_back(
@@ -784,6 +841,7 @@ std::optional<RuntimeFuncInfo> GetRuntimeFuncInfo(const std::string& symbol) {
     return info;
   }
   if (symbol == ContextInitSym()) {
+    mark_explicit_out_result();
     info.ret = t_context;
     return info;
   }
@@ -911,12 +969,14 @@ std::optional<RuntimeFuncInfo> GetRuntimeFuncInfo(const std::string& symbol) {
     return info;
   }
   if (symbol == BuiltinSymIOReadFile()) {
+    mark_explicit_out_result();
     info.params.push_back(make_param("self", t_file_system));
     info.params.push_back(make_param("path", t_string_view));
     info.ret = make_outcome(t_string_managed, t_io_error);
     return info;
   }
   if (symbol == BuiltinSymIOReadBytes()) {
+    mark_explicit_out_result();
     info.params.push_back(make_param("self", t_file_system));
     info.params.push_back(make_param("path", t_string_view));
     info.ret = make_outcome(t_bytes_managed, t_io_error);
@@ -1094,16 +1154,19 @@ std::optional<RuntimeFuncInfo> GetRuntimeFuncInfo(const std::string& symbol) {
     return info;
   }
   if (symbol == BuiltinSymMonotonicTimeNow()) {
+    mark_explicit_out_result();
     info.params.push_back(make_param("self", t_monotonic_time));
     info.ret = t_monotonic_instant;
     return info;
   }
   if (symbol == BuiltinSymMonotonicTimeResolution()) {
+    mark_explicit_out_result();
     info.params.push_back(make_param("self", t_monotonic_time));
     info.ret = t_duration;
     return info;
   }
   if (symbol == BuiltinSymMonotonicTimeElapsed()) {
+    mark_explicit_out_result();
     info.params.push_back(make_param("self", t_monotonic_time));
     info.params.push_back(make_param("start", t_monotonic_instant));
     info.params.push_back(make_param("end", t_monotonic_instant));
@@ -1111,22 +1174,26 @@ std::optional<RuntimeFuncInfo> GetRuntimeFuncInfo(const std::string& symbol) {
     return info;
   }
   if (symbol == BuiltinSymMonotonicTimeCoarsen()) {
+    mark_explicit_out_result();
     info.params.push_back(make_param("self", t_monotonic_time));
     info.params.push_back(make_param("resolution", t_duration));
     info.ret = make_outcome(t_monotonic_time, t_time_error);
     return info;
   }
   if (symbol == BuiltinSymWallTimeNowUtc()) {
+    mark_explicit_out_result();
     info.params.push_back(make_param("self", t_wall_time));
     info.ret = make_outcome(t_utc_instant, t_time_error);
     return info;
   }
   if (symbol == BuiltinSymWallTimeResolution()) {
+    mark_explicit_out_result();
     info.params.push_back(make_param("self", t_wall_time));
     info.ret = make_outcome(t_duration, t_time_error);
     return info;
   }
   if (symbol == BuiltinSymWallTimeCoarsen()) {
+    mark_explicit_out_result();
     info.params.push_back(make_param("self", t_wall_time));
     info.params.push_back(make_param("resolution", t_duration));
     info.ret = make_outcome(t_wall_time, t_time_error);
@@ -1326,6 +1393,7 @@ std::optional<RuntimeFuncInfo> GetRuntimeFuncInfo(const std::string& symbol) {
     return info;
   }
   if (symbol == BuiltinSymCancelTokenActiveWaitCancelled()) {
+    mark_explicit_out_result();
     info.params.push_back(make_param("self", t_raw_imm_u8, analysis::ParamMode::Move));
     info.ret = t_async_unit;
     return info;
@@ -1383,6 +1451,7 @@ std::optional<RuntimeFuncInfo> GetRuntimeFuncInfo(const std::string& symbol) {
 
   // string builtins
   if (symbol == BuiltinSymStringFrom()) {
+    mark_explicit_out_result();
     info.params.push_back(make_param("source", t_string_view));
     info.params.push_back(make_param("heap", t_heap_alloc));
     info.ret = make_outcome(t_string_managed, t_alloc_err);
@@ -1401,18 +1470,21 @@ std::optional<RuntimeFuncInfo> GetRuntimeFuncInfo(const std::string& symbol) {
     return info;
   }
   if (symbol == BuiltinSymStringToManaged()) {
+    mark_explicit_out_result();
     info.params.push_back(make_param("self", t_const_string_view));
     info.params.push_back(make_param("heap", t_heap_alloc));
     info.ret = make_outcome(t_string_managed, t_alloc_err);
     return info;
   }
   if (symbol == BuiltinSymStringCloneWith()) {
+    mark_explicit_out_result();
     info.params.push_back(make_param("self", t_const_string_managed));
     info.params.push_back(make_param("heap", t_heap_alloc));
     info.ret = make_outcome(t_string_managed, t_alloc_err);
     return info;
   }
   if (symbol == BuiltinSymStringAppend()) {
+    mark_explicit_out_result();
     info.params.push_back(make_param("self", t_unique_string_managed));
     info.params.push_back(make_param("data", t_string_view));
     info.params.push_back(make_param("heap", t_heap_alloc));
@@ -1432,12 +1504,14 @@ std::optional<RuntimeFuncInfo> GetRuntimeFuncInfo(const std::string& symbol) {
 
   // bytes builtins
   if (symbol == BuiltinSymBytesWithCapacity()) {
+    mark_explicit_out_result();
     info.params.push_back(make_param("cap", t_usize));
     info.params.push_back(make_param("heap", t_heap_alloc));
     info.ret = make_outcome(t_bytes_managed, t_alloc_err);
     return info;
   }
   if (symbol == BuiltinSymBytesFromSlice()) {
+    mark_explicit_out_result();
     info.params.push_back(make_param("data", t_const_slice_u8));
     info.params.push_back(make_param("heap", t_heap_alloc));
     info.ret = make_outcome(t_bytes_managed, t_alloc_err);
@@ -1454,6 +1528,7 @@ std::optional<RuntimeFuncInfo> GetRuntimeFuncInfo(const std::string& symbol) {
     return info;
   }
   if (symbol == BuiltinSymBytesToManaged()) {
+    mark_explicit_out_result();
     info.params.push_back(make_param("self", t_const_bytes_view));
     info.params.push_back(make_param("heap", t_heap_alloc));
     info.ret = make_outcome(t_bytes_managed, t_alloc_err);
@@ -1470,6 +1545,7 @@ std::optional<RuntimeFuncInfo> GetRuntimeFuncInfo(const std::string& symbol) {
     return info;
   }
   if (symbol == BuiltinSymBytesAppend()) {
+    mark_explicit_out_result();
     info.params.push_back(make_param("self", t_unique_bytes_managed));
     info.params.push_back(make_param("data", t_bytes_view));
     info.params.push_back(make_param("heap", t_heap_alloc));

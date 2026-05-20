@@ -30,6 +30,7 @@
 #include "05_codegen/abi/abi.h"
 #include "05_codegen/checks/checks.h"
 #include "04_analysis/layout/layout.h"
+#include "05_codegen/intrinsics/intrinsics_interface.h"
 #include "05_codegen/llvm/llvm_emit.h"
 #include "05_codegen/llvm/emit/internal_helpers.h"
 #include "05_codegen/llvm/emit/llvm_emit_helpers.h"
@@ -146,6 +147,27 @@ bool IsForeignAbiAggregateLLVMType(llvm::Type* ty) {
 
 bool IsWin64CAbiAggregateDirectSize(std::uint64_t size) {
   return size == 1 || size == 2 || size == 4 || size == 8;
+}
+
+bool IsRegisterPairCAbiAggregateDirectSize(std::uint64_t size) {
+  return size <= 16;
+}
+
+bool CAbiAggregateReturnUsesSRet(project::TargetProfile profile,
+                                 std::uint64_t size) {
+  if (size == 0) {
+    return false;
+  }
+
+  switch (profile) {
+    case project::TargetProfile::X86_64Win64:
+      return !IsWin64CAbiAggregateDirectSize(size);
+    case project::TargetProfile::X86_64SysV:
+    case project::TargetProfile::AArch64AAPCS64:
+      return !IsRegisterPairCAbiAggregateDirectSize(size);
+  }
+
+  return true;
 }
 
 llvm::Type* Win64CAbiDirectAggregateCarrier(llvm::LLVMContext& ctx,
@@ -544,12 +566,21 @@ llvm::Value* EmitABICall(LLVMEmitter& emitter,
                          const std::vector<IRValue>* source_args,
                          llvm::Value** result_storage_out,
                          llvm::Value* preferred_result_storage,
-                         bool foreign_boundary_mode_independent) {
+                         bool foreign_boundary_mode_independent,
+                         bool force_sret_return) {
   if (!builder_base || !callee) {
     return nullptr;
   }
 
   auto* builder = static_cast<llvm::IRBuilder<>*>(builder_base);
+
+  bool call_force_sret_return = force_sret_return;
+  if (!call_force_sret_return) {
+    if (auto* fn = llvm::dyn_cast<llvm::Function>(callee->stripPointerCasts())) {
+      call_force_sret_return =
+          RuntimeUsesExplicitOutResultABI(fn->getName().str());
+    }
+  }
 
   ABICallResult abi = ComputeCallABI(
       emitter,
@@ -557,7 +588,8 @@ llvm::Value* EmitABICall(LLVMEmitter& emitter,
       ret_type,
       use_c_abi_aggregate_sret,
       /*foreign_boundary_mode_independent=*/
-      (ffi_import_boundary || foreign_boundary_mode_independent));
+      (ffi_import_boundary || foreign_boundary_mode_independent),
+      call_force_sret_return);
   if (!abi.valid || !abi.func_type) {
     if (LowerCtx* ctx = emitter.GetCurrentCtx()) {
       ctx->ReportCodegenFailure();
@@ -1482,7 +1514,8 @@ ABICallResult ComputeCallABI(LLVMEmitter& emitter,
                              const std::vector<IRParam>& params,
                              analysis::TypeRef ret_type,
                              bool use_c_abi_aggregate_sret,
-                             bool foreign_boundary_mode_independent) {
+                             bool foreign_boundary_mode_independent,
+                             bool force_sret_return) {
   SPEC_RULE("LLVMCall-ByValue");
   SPEC_RULE("LLVMCall-SRet");
 
@@ -1544,22 +1577,27 @@ ABICallResult ComputeCallABI(LLVMEmitter& emitter,
   result.param_kinds = call_info->param_kinds;
   result.param_carriers.assign(params.size(), ABIArgCarrierKind::Direct);
 
-  const bool win64_foreign_abi =
-      use_c_abi_aggregate_sret &&
+  const bool c_abi_return_boundary = use_c_abi_aggregate_sret;
+  const bool win64_foreign_param_abi =
+      foreign_boundary_mode_independent &&
       emitter.GetTargetProfile() == project::TargetProfile::X86_64Win64;
+  const auto ret_size =
+      ret_type ? ::ultraviolet::analysis::layout::SizeOf(scope, ret_type)
+               : std::optional<std::uint64_t>{};
+  llvm::Type* ret_ll = ret_type ? emitter.GetLLVMType(ret_type) : nullptr;
+  const bool c_abi_aggregate_return =
+      c_abi_return_boundary && ret_size.has_value() && *ret_size > 0 &&
+      IsForeignAbiAggregateLLVMType(ret_ll);
 
   bool c_abi_sret = false;
-  if (win64_foreign_abi && ret_type) {
-    const auto ret_size = ::ultraviolet::analysis::layout::SizeOf(scope, ret_type);
-    llvm::Type* ret_ll = emitter.GetLLVMType(ret_type);
-    if (ret_size.has_value() && *ret_size > 0 &&
-        IsForeignAbiAggregateLLVMType(ret_ll) &&
-        !IsWin64CAbiAggregateDirectSize(*ret_size)) {
-      c_abi_sret = true;
-    }
+  if (c_abi_aggregate_return) {
+    c_abi_sret =
+        CAbiAggregateReturnUsesSRet(emitter.GetTargetProfile(), *ret_size);
   }
 
-  result.has_sret = call_info->has_sret || c_abi_sret;
+  result.has_sret =
+      force_sret_return ||
+      (c_abi_return_boundary ? c_abi_sret : call_info->has_sret);
   llvm::Type* sret_storage_ty =
       ret_type ? emitter.GetLLVMType(ret_type) : nullptr;
 
@@ -1571,20 +1609,18 @@ ABICallResult ComputeCallABI(LLVMEmitter& emitter,
     }
     result.ret_type = llvm::Type::getVoidTy(emitter.GetContext());
   } else {
-    const auto size = ::ultraviolet::analysis::layout::SizeOf(scope, ret_type);
-    if (!size.has_value()) {
+    if (!ret_size.has_value()) {
       SPEC_RULE("LLVMRetLower-Err");
       return invalidate();
     }
-    if (*size == 0) {
+    if (*ret_size == 0) {
       SPEC_RULE("LLVMRetLower-ByValue-ZST");
       result.ret_type = llvm::Type::getVoidTy(emitter.GetContext());
     } else {
       SPEC_RULE("LLVMRetLower-ByValue");
       result.ret_type = emitter.GetLLVMType(ret_type);
-      if (win64_foreign_abi && ret_type) {
-        const auto ret_size =
-            ::ultraviolet::analysis::layout::SizeOf(scope, ret_type);
+      if (c_abi_aggregate_return &&
+          emitter.GetTargetProfile() == project::TargetProfile::X86_64Win64) {
         if (ret_size.has_value() && *ret_size > 0 &&
             IsForeignAbiAggregateLLVMType(result.ret_type)) {
           if (llvm::Type* carrier =
@@ -1646,7 +1682,7 @@ ABICallResult ComputeCallABI(LLVMEmitter& emitter,
     }
 
     llvm::Type* llvm_ty = emitter.GetLLVMType(params[i].type);
-    if (win64_foreign_abi && llvm_ty &&
+    if (win64_foreign_param_abi && llvm_ty &&
         IsForeignAbiAggregateLLVMType(llvm_ty)) {
       if (llvm::Type* carrier =
               Win64CAbiDirectAggregateCarrier(emitter.GetContext(), *size)) {
@@ -1727,6 +1763,7 @@ ABICallResult ComputeProcABI(
                           augmented,
                           abi_ret,
                           use_c_abi_aggregate_sret,
-                          foreign_boundary_mode_independent);
+                          foreign_boundary_mode_independent,
+                          RuntimeUsesExplicitOutResultABI(symbol));
   }
 }  // namespace ultraviolet::codegen

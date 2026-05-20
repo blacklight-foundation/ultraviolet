@@ -75,8 +75,9 @@ void IRInstructionVisitor::operator()(const IRSpawn &spawn) const
   if (std::optional<RuntimeFuncInfo> spawn_info = GetRuntimeFuncInfo(spawn_sym))
   {
     llvm::Function *spawn_fn = emitter.GetModule().getFunction(spawn_sym);
+    const bool runtime_c_aggregate_boundary = RuntimeUsesCAggregateABI(spawn_sym);
     const bool runtime_foreign_boundary = RuntimeUsesForeignABI(spawn_sym);
-    const bool use_c_abi_aggregate_sret = runtime_foreign_boundary;
+    const bool use_c_abi_aggregate_sret = runtime_c_aggregate_boundary;
     if (!spawn_fn)
     {
       ABICallResult spawn_abi = ComputeCallABI(
@@ -84,7 +85,7 @@ void IRInstructionVisitor::operator()(const IRSpawn &spawn) const
           spawn_info->params,
           spawn_info->ret,
           use_c_abi_aggregate_sret,
-          /*foreign_boundary_mode_independent=*/false);
+          /*foreign_boundary_mode_independent=*/runtime_foreign_boundary);
       if (spawn_abi.func_type)
       {
         spawn_fn = llvm::Function::Create(
@@ -120,7 +121,7 @@ void IRInstructionVisitor::operator()(const IRSpawn &spawn) const
           nullptr,
           nullptr,
           nullptr,
-          /*foreign_boundary_mode_independent=*/false);
+          runtime_foreign_boundary);
     }
   }
   if (!handle)
