@@ -589,19 +589,19 @@ static void* uv_region_alloc_arena(UVRegionArena* arena, size_t size, size_t ali
 }
 
 void* ultraviolet_x3a_x3aruntime_x3a_x3aregion_x3a_x3aalloc(
-    const UVRegion* self,
+    UVRegion self,
     uint64_t size,
     uint64_t align) {
   uv_trace_emit_rule("RegionSym-Alloc");
-  if (!self) {
+  if (self.handle == 0) {
     return NULL;
   }
 
   UVRegionState* state = uv_region_state();
   uv_platform_rwlock_lock_exclusive(&state->lock);
 
-  UVRegionArena* arena = uv_region_find(state, self->handle);
-  const UVRegionEntry* entry = uv_region_resolve_entry(state, self->handle);
+  UVRegionArena* arena = uv_region_find(state, self.handle);
+  const UVRegionEntry* entry = uv_region_resolve_entry(state, self.handle);
   if (!arena || !entry) {
     uv_platform_rwlock_unlock_exclusive(&state->lock);
     return NULL;
@@ -622,16 +622,16 @@ void* ultraviolet_x3a_x3aruntime_x3a_x3aregion_x3a_x3aalloc(
   return ptr;
 }
 
-uint64_t ultraviolet_x3a_x3aruntime_x3a_x3aregion_x3a_x3amark(const UVRegion* self) {
+uint64_t ultraviolet_x3a_x3aruntime_x3a_x3aregion_x3a_x3amark(UVRegion self) {
   uv_trace_emit_rule("RegionSym-Mark");
-  if (!self) {
+  if (self.handle == 0) {
     return 0;
   }
 
   UVRegionState* state = uv_region_state();
   uv_platform_rwlock_lock_exclusive(&state->lock);
 
-  UVRegionArena* arena = uv_region_find(state, self->handle);
+  UVRegionArena* arena = uv_region_find(state, self.handle);
   if (!arena) {
     uv_platform_rwlock_unlock_exclusive(&state->lock);
     return 0;
@@ -640,7 +640,7 @@ uint64_t ultraviolet_x3a_x3aruntime_x3a_x3aregion_x3a_x3amark(const UVRegion* se
   const uint64_t scope = uv_scope_current(state);
   const uint64_t mark = (uint64_t)arena->alloc_count;
   const uint64_t tag = uv_region_fresh_token(state);
-  if (!uv_region_stack_push(state, tag, self->handle, scope, mark, 1)) {
+  if (!uv_region_stack_push(state, tag, self.handle, scope, mark, 1)) {
     uv_platform_rwlock_unlock_exclusive(&state->lock);
     return 0;
   }
@@ -650,18 +650,18 @@ uint64_t ultraviolet_x3a_x3aruntime_x3a_x3aregion_x3a_x3amark(const UVRegion* se
 }
 
 void ultraviolet_x3a_x3aruntime_x3a_x3aregion_x3a_x3areset_x5fto(
-    const UVRegion* self,
+    UVRegion self,
     uint64_t mark_value) {
   uv_trace_emit_rule("RegionSym-ResetTo");
-  if (!self) {
+  if (self.handle == 0) {
     return;
   }
 
   UVRegionState* state = uv_region_state();
   uv_platform_rwlock_lock_exclusive(&state->lock);
 
-  UVRegionArena* arena = uv_region_find(state, self->handle);
-  size_t entry_index = uv_region_find_mark_entry_index(state, self->handle, mark_value);
+  UVRegionArena* arena = uv_region_find(state, self.handle);
+  size_t entry_index = uv_region_find_mark_entry_index(state, self.handle, mark_value);
   if (!arena || entry_index == SIZE_MAX) {
     uv_platform_rwlock_unlock_exclusive(&state->lock);
     return;
@@ -676,19 +676,19 @@ void ultraviolet_x3a_x3aruntime_x3a_x3aregion_x3a_x3areset_x5fto(
 }
 
 UVRegion ultraviolet_x3a_x3aruntime_x3a_x3aregion_x3a_x3areset_x5funchecked(
-    const UVRegion* self) {
+    UVRegion self) {
   uv_trace_emit_rule("Region-Reset-Proc");
   uv_trace_emit_rule("RegionSym-ResetUnchecked");
-  if (!self) {
+  if (self.handle == 0) {
     return uv_region_make(UV_REGION_FREED, 0);
   }
 
   UVRegionState* state = uv_region_state();
   uv_platform_rwlock_lock_exclusive(&state->lock);
 
-  UVRegionArena* arena = uv_region_find(state, self->handle);
+  UVRegionArena* arena = uv_region_find(state, self.handle);
   if (arena) {
-    const size_t tag_count = uv_region_count_target_entries(state, self->handle);
+    const size_t tag_count = uv_region_count_target_entries(state, self.handle);
     uint64_t* fresh_tags = NULL;
     if (tag_count > 0) {
       fresh_tags = (uint64_t*)uv_heap_alloc_raw(tag_count * sizeof(uint64_t));
@@ -700,7 +700,7 @@ UVRegion ultraviolet_x3a_x3aruntime_x3a_x3aregion_x3a_x3areset_x5funchecked(
         fresh_tags[i] = uv_region_fresh_token(state);
       }
       for (size_t i = 0; i < state->region_count; ++i) {
-        if (state->region_stack[i].target != self->handle) {
+        if (state->region_stack[i].target != self.handle) {
           continue;
         }
         state->region_stack[i].tag = fresh_tags[next++];
@@ -710,37 +710,37 @@ UVRegion ultraviolet_x3a_x3aruntime_x3a_x3aregion_x3a_x3areset_x5funchecked(
   }
 
   uv_platform_rwlock_unlock_exclusive(&state->lock);
-  return uv_region_make(UV_REGION_ACTIVE, self->handle);
+  return uv_region_make(UV_REGION_ACTIVE, self.handle);
 }
 
-UVRegion ultraviolet_x3a_x3aruntime_x3a_x3aregion_x3a_x3afreeze(const UVRegion* self) {
+UVRegion ultraviolet_x3a_x3aruntime_x3a_x3aregion_x3a_x3afreeze(UVRegion self) {
   uv_trace_emit_rule("Region-Freeze-Proc");
   uv_trace_emit_rule("RegionSym-Freeze");
-  return uv_region_make(UV_REGION_FROZEN, self ? self->handle : 0);
+  return uv_region_make(UV_REGION_FROZEN, self.handle);
 }
 
-UVRegion ultraviolet_x3a_x3aruntime_x3a_x3aregion_x3a_x3athaw(const UVRegion* self) {
+UVRegion ultraviolet_x3a_x3aruntime_x3a_x3aregion_x3a_x3athaw(UVRegion self) {
   uv_trace_emit_rule("Region-Thaw-Proc");
   uv_trace_emit_rule("RegionSym-Thaw");
-  return uv_region_make(UV_REGION_ACTIVE, self ? self->handle : 0);
+  return uv_region_make(UV_REGION_ACTIVE, self.handle);
 }
 
 UVRegion ultraviolet_x3a_x3aruntime_x3a_x3aregion_x3a_x3afree_x5funchecked(
-    const UVRegion* self) {
+    UVRegion self) {
   uv_trace_emit_rule("Region-Free-Proc");
   uv_trace_emit_rule("RegionSym-FreeUnchecked");
-  if (!self) {
+  if (self.handle == 0) {
     return uv_region_make(UV_REGION_FREED, 0);
   }
 
   UVRegionState* state = uv_region_state();
   uv_platform_rwlock_lock_exclusive(&state->lock);
 
-  UVRegionArena* arena = uv_region_find(state, self->handle);
+  UVRegionArena* arena = uv_region_find(state, self.handle);
   if (arena) {
     arena->alloc_count = 0;
-    uv_region_stack_pop_target(state, self->handle);
-    uv_region_remove(state, self->handle);
+    uv_region_stack_pop_target(state, self.handle);
+    uv_region_remove(state, self.handle);
     // Keep published region blocks quarantined after free. The spec preserves
     // AddrTags across reset/free, so reusing a raw address would violate the
     // FreshAddr witness for later allocations.
@@ -748,7 +748,7 @@ UVRegion ultraviolet_x3a_x3aruntime_x3a_x3aregion_x3a_x3afree_x5funchecked(
   }
 
   uv_platform_rwlock_unlock_exclusive(&state->lock);
-  return uv_region_make(UV_REGION_FREED, self->handle);
+  return uv_region_make(UV_REGION_FREED, self.handle);
 }
 
 uint8_t ultraviolet_x3a_x3aruntime_x3a_x3aregion_x3a_x3aaddr_x5fis_x5factive(

@@ -1,5 +1,15 @@
 # System Instructions
 
+Before ever making any changes to the compiler. You must be able to state these items in exact terms, including line numbers and file path, and exact symbol names and values in operational semantics.
+
+1. What is the exact current behavior that is being changed. 
+2. Which inferences, judgements or normative content in the specification *necessitates* this change.
+3. What, exactly, will be changing.
+4. How, this change will address the identified specification non-conformance.
+
+If any of these questions are unanswered, vague, or unknown in explicit terms; you
+not proceed to make any changes until they are. 
+
 ## Completeness Overrides Brevity
 
   For every non-trivial task, completeness, correctness, and executability outrank

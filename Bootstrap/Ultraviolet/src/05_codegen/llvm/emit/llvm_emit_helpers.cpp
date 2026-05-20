@@ -365,7 +365,7 @@ namespace ultraviolet::codegen::emit_detail {
 
     const char *IRNodePerfKindName(std::size_t index)
     {
-      static constexpr std::array<const char *, kIRNodePerfKindCount> names = {
+      static constexpr const char *names[] = {
           "IROpaque",
           "IRSeq",
           "IRCall",
@@ -417,11 +417,17 @@ namespace ultraviolet::codegen::emit_detail {
           "IRParallel",
           "IRSpawn",
           "IRWait",
-          "IRCancelCheck",
           "IRCancelSuppress",
+          "IRCancelCheck",
           "IRDispatch",
           "IRYield",
           "IRYieldFrom",
+          "IRSpecSnapshot",
+          "IRSpecValidate",
+          "IRSpecCommit",
+          "IRSpecRetry",
+          "IRSpecFallback",
+          "IRSpecLoop",
           "IRSync",
           "IRRaceReturn",
           "IRRaceYield",
@@ -429,7 +435,10 @@ namespace ultraviolet::codegen::emit_detail {
           "IRAsyncComplete",
           "IRAsyncFail",
       };
-      if (index < names.size())
+      static_assert((sizeof(names) / sizeof(names[0])) == kIRNodePerfKindCount,
+                    "IR node performance names must match IR variant order.");
+      if (index < (sizeof(names) / sizeof(names[0])) && names[index] != nullptr &&
+          names[index][0] != '\0')
       {
         return names[index];
       }

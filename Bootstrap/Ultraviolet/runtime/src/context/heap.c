@@ -8,20 +8,20 @@ static UVHeapState* uv_heap_state(const UVDynObject* heap) {
 }
 
 UVDynObject ultraviolet_x3a_x3aruntime_x3a_x3aheap_x3a_x3awith_x5fquota(
-    const UVDynObject* self,
-    const uint64_t* size) {
+    UVDynObject self,
+    uint64_t size) {
   uv_trace_emit_rule("BuiltinSym-HeapAllocator-WithQuota");
   UVDynObject out;
   out.data = NULL;
-  out.vtable = self ? self->vtable : NULL;
+  out.vtable = self.vtable;
 
-  UVHeapState* parent = uv_heap_state(self);
+  UVHeapState* parent = uv_heap_state(&self);
   UVHeapState* heap = (UVHeapState*)uv_heap_alloc_raw(sizeof(UVHeapState));
   if (!heap) {
     return out;
   }
   heap->parent = parent;
-  heap->quota = size ? *size : 0;
+  heap->quota = size;
   heap->used = 0;
 
   out.data = heap;
@@ -29,10 +29,10 @@ UVDynObject ultraviolet_x3a_x3aruntime_x3a_x3aheap_x3a_x3awith_x5fquota(
 }
 
 void* ultraviolet_x3a_x3aruntime_x3a_x3aheap_x3a_x3aalloc_x5fraw(
-    const UVDynObject* self,
-    const uint64_t* count) {
+    UVDynObject self,
+    uint64_t count) {
   uv_trace_emit_rule("BuiltinSym-HeapAllocator-AllocRaw");
-  const uint64_t size = count ? *count : 0;
+  const uint64_t size = count;
   if (size == 0) {
     return NULL;
   }
@@ -40,7 +40,7 @@ void* ultraviolet_x3a_x3aruntime_x3a_x3aheap_x3a_x3aalloc_x5fraw(
     return NULL;
   }
 
-  UVHeapState* heap = uv_heap_state(self);
+  UVHeapState* heap = uv_heap_state(&self);
   int quota_exceeded = 0;
   if (!uv_heap_can_alloc(heap, size, &quota_exceeded)) {
     return NULL;
@@ -62,9 +62,10 @@ void* ultraviolet_x3a_x3aruntime_x3a_x3aheap_x3a_x3aalloc_x5fraw(
 }
 
 void ultraviolet_x3a_x3aruntime_x3a_x3aheap_x3a_x3adealloc_x5fraw(
-    const UVDynObject* self,
-    void** ptr,
-    const uint64_t* count) {
+    UVDynObject self,
+    void* ptr,
+    uint64_t count) {
   uv_trace_emit_rule("BuiltinSym-HeapAllocator-DeallocRaw");
-  uv_heap_dealloc_recorded(uv_heap_state(self), ptr, count ? *count : 0);
+  void* raw = ptr;
+  uv_heap_dealloc_recorded(uv_heap_state(&self), &raw, count);
 }

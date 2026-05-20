@@ -69,6 +69,7 @@
 #include <set>
 #include <string>
 #include <string_view>
+#include <variant>
 #include <vector>
 
 namespace ultraviolet::codegen::emit_detail {
@@ -201,7 +202,8 @@ namespace ultraviolet::codegen::emit_detail {
       long long child_ms = 0;
     };
 
-    inline constexpr std::size_t kIRNodePerfKindCount = 63;
+    inline constexpr std::size_t kIRNodePerfKindCount =
+        std::variant_size_v<decltype(IR::node)>;
 
     struct IRProcPerfContext
     {

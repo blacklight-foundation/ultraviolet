@@ -142,9 +142,9 @@ UVDynObject ultraviolet_x3a_x3aruntime_x3a_x3acontext_x3a_x3ainline(
 }
 
 UVStringView ultraviolet_x3a_x3aruntime_x3a_x3aexecution_x5fdomain_x3a_x3aname(
-    const UVDynObject* self) {
+    UVDynObject self) {
   const UVExecutionDomain* domain =
-      self ? (const UVExecutionDomain*)self->data : NULL;
+      (const UVExecutionDomain*)self.data;
   const char* name = "cpu";
   if (domain) {
     switch (domain->kind) {
@@ -169,9 +169,9 @@ UVStringView ultraviolet_x3a_x3aruntime_x3a_x3aexecution_x5fdomain_x3a_x3aname(
 }
 
 uint64_t ultraviolet_x3a_x3aruntime_x3a_x3aexecution_x5fdomain_x3a_x3amax_x5fconcurrency(
-    const UVDynObject* self) {
+    UVDynObject self) {
   const UVExecutionDomain* domain =
-      self ? (const UVExecutionDomain*)self->data : NULL;
+      (const UVExecutionDomain*)self.data;
   if (!domain) {
     return 1;
   }

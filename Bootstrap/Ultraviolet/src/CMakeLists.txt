@@ -1424,6 +1424,7 @@ else()
   set(UV_COMPILER_SIDECAR_BIN_DIR "${CMAKE_BINARY_DIR}/bin")
   set(UV_COMPILER_SIDECAR_LIB_DIR "${CMAKE_BINARY_DIR}/lib")
   set(UV_COMPILER_SIDECAR_TOOLS_DIR "${CMAKE_BINARY_DIR}/tools")
+  set(UV_CHMOD_EXECUTABLE_SCRIPT "${CMAKE_SOURCE_DIR}/cmake/chmod_executable.cmake")
 
   foreach(sidecar_input IN ITEMS
       "${UV_LD_LLD_PATH}"
@@ -1442,12 +1443,18 @@ else()
       COMMAND "${CMAKE_COMMAND}" -E copy_if_different
               "${UV_LD_LLD_PATH}"
               "${UV_COMPILER_SIDECAR_TOOLS_DIR}/ld.lld"
+      COMMAND "${CMAKE_COMMAND}" -DUV_CHMOD_PATH="${UV_COMPILER_SIDECAR_TOOLS_DIR}/ld.lld"
+              -P "${UV_CHMOD_EXECUTABLE_SCRIPT}"
       COMMAND "${CMAKE_COMMAND}" -E copy_if_different
               "${UV_LLVM_AR_PATH}"
               "${UV_COMPILER_SIDECAR_TOOLS_DIR}/llvm-ar"
+      COMMAND "${CMAKE_COMMAND}" -DUV_CHMOD_PATH="${UV_COMPILER_SIDECAR_TOOLS_DIR}/llvm-ar"
+              -P "${UV_CHMOD_EXECUTABLE_SCRIPT}"
       COMMAND "${CMAKE_COMMAND}" -E copy_if_different
               "${UV_LLVM_AS_PATH}"
               "${UV_COMPILER_SIDECAR_TOOLS_DIR}/llvm-as"
+      COMMAND "${CMAKE_COMMAND}" -DUV_CHMOD_PATH="${UV_COMPILER_SIDECAR_TOOLS_DIR}/llvm-as"
+              -P "${UV_CHMOD_EXECUTABLE_SCRIPT}"
       COMMAND "${CMAKE_COMMAND}" -E make_directory "${UV_OUT_DIR}"
       COMMAND "${CMAKE_COMMAND}" -E make_directory "${UV_OUT_DIR}/linux/bin"
       COMMAND "${CMAKE_COMMAND}" -E make_directory "${UV_OUT_DIR}/linux/lib"
@@ -1468,12 +1475,18 @@ else()
       COMMAND "${CMAKE_COMMAND}" -E copy_if_different
               "${UV_COMPILER_SIDECAR_TOOLS_DIR}/ld.lld"
               "${UV_OUT_DIR}/linux/tools/ld.lld"
+      COMMAND "${CMAKE_COMMAND}" -DUV_CHMOD_PATH="${UV_OUT_DIR}/linux/tools/ld.lld"
+              -P "${UV_CHMOD_EXECUTABLE_SCRIPT}"
       COMMAND "${CMAKE_COMMAND}" -E copy_if_different
               "${UV_COMPILER_SIDECAR_TOOLS_DIR}/llvm-ar"
               "${UV_OUT_DIR}/linux/tools/llvm-ar"
+      COMMAND "${CMAKE_COMMAND}" -DUV_CHMOD_PATH="${UV_OUT_DIR}/linux/tools/llvm-ar"
+              -P "${UV_CHMOD_EXECUTABLE_SCRIPT}"
       COMMAND "${CMAKE_COMMAND}" -E copy_if_different
               "${UV_COMPILER_SIDECAR_TOOLS_DIR}/llvm-as"
               "${UV_OUT_DIR}/linux/tools/llvm-as"
+      COMMAND "${CMAKE_COMMAND}" -DUV_CHMOD_PATH="${UV_OUT_DIR}/linux/tools/llvm-as"
+              -P "${UV_CHMOD_EXECUTABLE_SCRIPT}"
       COMMAND "${CMAKE_COMMAND}" -E copy_if_different
               "${UV_RUNTIME_SUPPORT_SO_STAGE}"
               "${UV_OUT_DIR}/linux/lib/${UV_RUNTIME_SUPPORT_SO_NAME}"
@@ -1521,12 +1534,18 @@ else()
     COMMAND "${CMAKE_COMMAND}" -E copy_if_different
             "${UV_LD_LLD_PATH}"
             "${UV_OUT_DIR}/linux/tools/ld.lld"
+    COMMAND "${CMAKE_COMMAND}" -DUV_CHMOD_PATH="${UV_OUT_DIR}/linux/tools/ld.lld"
+            -P "${UV_CHMOD_EXECUTABLE_SCRIPT}"
     COMMAND "${CMAKE_COMMAND}" -E copy_if_different
             "${UV_LLVM_AR_PATH}"
             "${UV_OUT_DIR}/linux/tools/llvm-ar"
+    COMMAND "${CMAKE_COMMAND}" -DUV_CHMOD_PATH="${UV_OUT_DIR}/linux/tools/llvm-ar"
+            -P "${UV_CHMOD_EXECUTABLE_SCRIPT}"
     COMMAND "${CMAKE_COMMAND}" -E copy_if_different
             "${UV_LLVM_AS_PATH}"
             "${UV_OUT_DIR}/linux/tools/llvm-as"
+    COMMAND "${CMAKE_COMMAND}" -DUV_CHMOD_PATH="${UV_OUT_DIR}/linux/tools/llvm-as"
+            -P "${UV_CHMOD_EXECUTABLE_SCRIPT}"
     COMMAND "${CMAKE_COMMAND}" -E copy_if_different
             "${UV_RUNTIME_SUPPORT_SO_STAGE}"
             "${UV_OUT_DIR}/linux/lib/${UV_RUNTIME_SUPPORT_SO_NAME}"

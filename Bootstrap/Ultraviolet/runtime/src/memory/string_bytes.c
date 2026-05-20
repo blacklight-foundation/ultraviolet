@@ -117,14 +117,14 @@ void ultraviolet_x3a_x3aruntime_x3a_x3abytes_x3a_x3adrop_x5fmanaged(
 
 void ultraviolet_x3a_x3aruntime_x3a_x3astring_x3a_x3afrom(
     UVUnion_StringManaged_AllocError* out,
-    const UVStringView* source,
-    const UVDynObject* heap) {
+    UVStringView source,
+    UVDynObject heap) {
   uv_trace_emit_rule("Log-StringFrom-Enter");
   if (!out) {
     uv_trace_emit_rule("Log-StringFrom-NoOut");
     return;
   }
-  uint64_t len = source ? source->len : 0;
+  uint64_t len = source.len;
   if (len == 0) {
     uv_trace_emit_rule("Log-StringFrom-ZeroLen");
     out->disc = 0;
@@ -134,7 +134,7 @@ void ultraviolet_x3a_x3aruntime_x3a_x3astring_x3a_x3afrom(
     return;
   }
 
-  UVHeapState* heap_state = uv_heap_from_dyn(heap);
+  UVHeapState* heap_state = uv_heap_from_dyn(&heap);
   uv_trace_emit_rule("Log-StringFrom-BeforeAlloc");
   int quota_exceeded = 0;
   uint8_t* data = uv_alloc_managed_bytes(heap_state, len, &quota_exceeded);
@@ -144,16 +144,7 @@ void ultraviolet_x3a_x3aruntime_x3a_x3astring_x3a_x3afrom(
     return;
   }
   uv_trace_emit_rule("Log-StringFrom-BeforeMemcpy");
-  if (source == NULL) {
-    uv_trace_emit_rule("Log-StringFrom-SourcePtr-Null");
-  } else {
-    uv_trace_emit_rule("Log-StringFrom-SourcePtr-NonNull");
-    if (((uintptr_t)source) < 0x10000u) {
-      uv_trace_emit_rule("Log-StringFrom-SourcePtr-LowAddr");
-    } else {
-      uv_trace_emit_rule("Log-StringFrom-SourcePtr-NotLowAddr");
-    }
-  }
+  uv_trace_emit_rule("Log-StringFrom-SourceValue");
   if (len == 2) {
     uv_trace_emit_rule("Log-StringFrom-Len-2");
   } else {
@@ -164,13 +155,13 @@ void ultraviolet_x3a_x3aruntime_x3a_x3astring_x3a_x3afrom(
   } else {
     uv_trace_emit_rule("Log-StringFrom-Len-Gt1024");
   }
-  if (source && source->data == NULL) {
+  if (source.data == NULL) {
     uv_trace_emit_rule("Log-StringFrom-SourceData-Null");
   } else {
     uv_trace_emit_rule("Log-StringFrom-SourceData-NonNull");
   }
-  if (source && source->data) {
-    const uintptr_t src_addr = (uintptr_t)source->data;
+  if (source.data) {
+    const uintptr_t src_addr = (uintptr_t)source.data;
     if (src_addr < 0x10000u) {
       uv_trace_emit_rule("Log-StringFrom-SourceData-LowAddr");
     } else {
@@ -178,13 +169,13 @@ void ultraviolet_x3a_x3aruntime_x3a_x3astring_x3a_x3afrom(
     }
   }
   uv_trace_emit_rule("Log-StringFrom-BeforeReadSrc");
-  volatile uint8_t src_probe = source->data[0];
+  volatile uint8_t src_probe = source.data[0];
   (void)src_probe;
   uv_trace_emit_rule("Log-StringFrom-AfterReadSrc");
   uv_trace_emit_rule("Log-StringFrom-BeforeWriteDst");
   data[0] = data[0];
   uv_trace_emit_rule("Log-StringFrom-AfterWriteDst");
-  uv_memcpy(data, source->data, (size_t)len);
+  uv_memcpy(data, source.data, (size_t)len);
   uv_trace_emit_rule("Log-StringFrom-AfterMemcpy");
   out->disc = 0;
   out->payload.value.data = data;
@@ -202,29 +193,26 @@ UVStringView ultraviolet_x3a_x3aruntime_x3a_x3astring_x3a_x3aas_x5fview(
 }
 
 UVStringView ultraviolet_x3a_x3aruntime_x3a_x3astring_x3a_x3aslice(
-    const UVStringView* self,
-    const uint64_t* start,
-    const uint64_t* end) {
+    UVStringView self,
+    uint64_t start,
+    uint64_t end) {
   UVStringView view;
   view.data = NULL;
   view.len = 0;
 
-  if (!self || !start || !end) {
-    return view;
-  }
-  if (*start > *end || *end > self->len) {
+  if (start > end || end > self.len) {
     return view;
   }
 
-  view.data = self->data ? self->data + *start : NULL;
-  view.len = *end - *start;
+  view.data = self.data ? self.data + start : NULL;
+  view.len = end - start;
   return view;
 }
 
 void ultraviolet_x3a_x3aruntime_x3a_x3astring_x3a_x3ato_x5fmanaged(
     UVUnion_StringManaged_AllocError* out,
-    const UVStringView* self,
-    const UVDynObject* heap) {
+    UVStringView self,
+    UVDynObject heap) {
   ultraviolet_x3a_x3aruntime_x3a_x3astring_x3a_x3afrom(out, self, heap);
 }
 
@@ -261,8 +249,8 @@ void ultraviolet_x3a_x3aruntime_x3a_x3astring_x3a_x3aclone_x5fwith(
 void ultraviolet_x3a_x3aruntime_x3a_x3astring_x3a_x3aappend(
     UVUnion_Unit_AllocError* out,
     UVStringManaged* self,
-    const UVStringView* data,
-    const UVDynObject* heap) {
+    UVStringView data,
+    UVDynObject heap) {
   uv_trace_emit_rule("Debug-String-Append-Enter");
   if (!out) {
     uv_trace_emit_rule("Debug-String-Append-Return-NoOut");
@@ -273,7 +261,7 @@ void ultraviolet_x3a_x3aruntime_x3a_x3astring_x3a_x3aappend(
     uv_trace_emit_rule("Debug-String-Append-Return-NullSelf");
     return;
   }
-  const uint64_t add_len = data ? data->len : 0;
+  const uint64_t add_len = data.len;
   if (add_len == 0) {
     out->disc = 0;
     out->error.disc = 0;
@@ -299,7 +287,7 @@ void ultraviolet_x3a_x3aruntime_x3a_x3astring_x3a_x3aappend(
   }
 
   if (self->data == NULL || self->cap < new_len) {
-    UVHeapState* heap_state = uv_heap_from_dyn(heap);
+    UVHeapState* heap_state = uv_heap_from_dyn(&heap);
     int quota_exceeded = 0;
     uint8_t* new_data = uv_realloc_managed_bytes(heap_state,
                                                  self->data,
@@ -316,7 +304,7 @@ void ultraviolet_x3a_x3aruntime_x3a_x3astring_x3a_x3aappend(
     self->cap = new_cap;
   }
 
-  uv_memcpy(self->data + self->len, data->data, (size_t)add_len);
+  uv_memcpy(self->data + self->len, data.data, (size_t)add_len);
   self->len = new_len;
 
   out->disc = 0;
@@ -326,23 +314,23 @@ void ultraviolet_x3a_x3aruntime_x3a_x3astring_x3a_x3aappend(
 }
 
 uint64_t ultraviolet_x3a_x3aruntime_x3a_x3astring_x3a_x3alength(
-    const UVStringView* self) {
-  return self ? self->len : 0;
+    UVStringView self) {
+  return self.len;
 }
 
 uint8_t ultraviolet_x3a_x3aruntime_x3a_x3astring_x3a_x3ais_x5fempty(
-    const UVStringView* self) {
-  return (self && self->len == 0) ? 1 : 0;
+    UVStringView self) {
+  return self.len == 0 ? 1 : 0;
 }
 
 void ultraviolet_x3a_x3aruntime_x3a_x3abytes_x3a_x3awith_x5fcapacity(
     UVUnion_BytesManaged_AllocError* out,
-    const uint64_t* cap,
-    const UVDynObject* heap) {
+    uint64_t cap,
+    UVDynObject heap) {
   if (!out) {
     return;
   }
-  uint64_t capacity = cap ? *cap : 0;
+  uint64_t capacity = cap;
   if (capacity == 0) {
     out->disc = 0;
     out->payload.value.data = NULL;
@@ -351,7 +339,7 @@ void ultraviolet_x3a_x3aruntime_x3a_x3abytes_x3a_x3awith_x5fcapacity(
     return;
   }
 
-  UVHeapState* heap_state = uv_heap_from_dyn(heap);
+  UVHeapState* heap_state = uv_heap_from_dyn(&heap);
   int quota_exceeded = 0;
   uint8_t* data = uv_alloc_managed_bytes(heap_state, capacity, &quota_exceeded);
   if (!data) {
@@ -366,12 +354,12 @@ void ultraviolet_x3a_x3aruntime_x3a_x3abytes_x3a_x3awith_x5fcapacity(
 
 void ultraviolet_x3a_x3aruntime_x3a_x3abytes_x3a_x3afrom_x5fslice(
     UVUnion_BytesManaged_AllocError* out,
-    const UVSliceU8* data,
-    const UVDynObject* heap) {
+    UVSliceU8 data,
+    UVDynObject heap) {
   if (!out) {
     return;
   }
-  uint64_t len = data ? data->len : 0;
+  uint64_t len = data.len;
   if (len == 0) {
     out->disc = 0;
     out->payload.value.data = NULL;
@@ -380,14 +368,14 @@ void ultraviolet_x3a_x3aruntime_x3a_x3abytes_x3a_x3afrom_x5fslice(
     return;
   }
 
-  UVHeapState* heap_state = uv_heap_from_dyn(heap);
+  UVHeapState* heap_state = uv_heap_from_dyn(&heap);
   int quota_exceeded = 0;
   uint8_t* buf = uv_alloc_managed_bytes(heap_state, len, &quota_exceeded);
   if (!buf) {
     uv_bytes_alloc_err(out, len, quota_exceeded);
     return;
   }
-  uv_memcpy(buf, data->data, (size_t)len);
+  uv_memcpy(buf, data.data, (size_t)len);
   out->disc = 0;
   out->payload.value.data = buf;
   out->payload.value.len = len;
@@ -403,21 +391,21 @@ UVBytesView ultraviolet_x3a_x3aruntime_x3a_x3abytes_x3a_x3aas_x5fview(
 }
 
 UVSliceU8 ultraviolet_x3a_x3aruntime_x3a_x3abytes_x3a_x3aas_x5fslice(
-    const UVBytesView* self) {
+    UVBytesView self) {
   UVSliceU8 slice;
-  slice.data = self ? self->data : NULL;
-  slice.len = self ? self->len : 0;
+  slice.data = self.data;
+  slice.len = self.len;
   return slice;
 }
 
 void ultraviolet_x3a_x3aruntime_x3a_x3abytes_x3a_x3ato_x5fmanaged(
     UVUnion_BytesManaged_AllocError* out,
-    const UVBytesView* self,
-    const UVDynObject* heap) {
+    UVBytesView self,
+    UVDynObject heap) {
   if (!out) {
     return;
   }
-  uint64_t len = self ? self->len : 0;
+  uint64_t len = self.len;
   if (len == 0) {
     out->disc = 0;
     out->payload.value.data = NULL;
@@ -426,14 +414,14 @@ void ultraviolet_x3a_x3aruntime_x3a_x3abytes_x3a_x3ato_x5fmanaged(
     return;
   }
 
-  UVHeapState* heap_state = uv_heap_from_dyn(heap);
+  UVHeapState* heap_state = uv_heap_from_dyn(&heap);
   int quota_exceeded = 0;
   uint8_t* buf = uv_alloc_managed_bytes(heap_state, len, &quota_exceeded);
   if (!buf) {
     uv_bytes_alloc_err(out, len, quota_exceeded);
     return;
   }
-  uv_memcpy(buf, self->data, (size_t)len);
+  uv_memcpy(buf, self.data, (size_t)len);
   out->disc = 0;
   out->payload.value.data = buf;
   out->payload.value.len = len;
@@ -441,26 +429,26 @@ void ultraviolet_x3a_x3aruntime_x3a_x3abytes_x3a_x3ato_x5fmanaged(
 }
 
 UVBytesView ultraviolet_x3a_x3aruntime_x3a_x3abytes_x3a_x3aview(
-    const UVSliceU8* data) {
+    UVSliceU8 data) {
   UVBytesView view;
-  view.data = data ? data->data : NULL;
-  view.len = data ? data->len : 0;
+  view.data = data.data;
+  view.len = data.len;
   return view;
 }
 
 UVBytesView ultraviolet_x3a_x3aruntime_x3a_x3abytes_x3a_x3aview_x5fstring(
-    const UVStringView* data) {
+    UVStringView data) {
   UVBytesView view;
-  view.data = data ? data->data : NULL;
-  view.len = data ? data->len : 0;
+  view.data = data.data;
+  view.len = data.len;
   return view;
 }
 
 void ultraviolet_x3a_x3aruntime_x3a_x3abytes_x3a_x3aappend(
     UVUnion_Unit_AllocError* out,
     UVBytesManaged* self,
-    const UVBytesView* data,
-    const UVDynObject* heap) {
+    UVBytesView data,
+    UVDynObject heap) {
   if (!out) {
     return;
   }
@@ -468,7 +456,7 @@ void ultraviolet_x3a_x3aruntime_x3a_x3abytes_x3a_x3aappend(
     uv_unit_alloc_err(out, 0, 0);
     return;
   }
-  const uint64_t add_len = data ? data->len : 0;
+  const uint64_t add_len = data.len;
   if (add_len == 0) {
     out->disc = 0;
     out->error.disc = 0;
@@ -492,7 +480,7 @@ void ultraviolet_x3a_x3aruntime_x3a_x3abytes_x3a_x3aappend(
   }
 
   if (self->data == NULL || self->cap < new_len) {
-    UVHeapState* heap_state = uv_heap_from_dyn(heap);
+    UVHeapState* heap_state = uv_heap_from_dyn(&heap);
     int quota_exceeded = 0;
     uint8_t* new_data = uv_realloc_managed_bytes(heap_state,
                                                  self->data,
@@ -508,7 +496,7 @@ void ultraviolet_x3a_x3aruntime_x3a_x3abytes_x3a_x3aappend(
     self->cap = new_cap;
   }
 
-  uv_memcpy(self->data + self->len, data->data, (size_t)add_len);
+  uv_memcpy(self->data + self->len, data.data, (size_t)add_len);
   self->len = new_len;
 
   out->disc = 0;
@@ -517,11 +505,11 @@ void ultraviolet_x3a_x3aruntime_x3a_x3abytes_x3a_x3aappend(
 }
 
 uint64_t ultraviolet_x3a_x3aruntime_x3a_x3abytes_x3a_x3alength(
-    const UVBytesView* self) {
-  return self ? self->len : 0;
+    UVBytesView self) {
+  return self.len;
 }
 
 uint8_t ultraviolet_x3a_x3aruntime_x3a_x3abytes_x3a_x3ais_x5fempty(
-    const UVBytesView* self) {
-  return (self && self->len == 0) ? 1 : 0;
+    UVBytesView self) {
+  return self.len == 0 ? 1 : 0;
 }

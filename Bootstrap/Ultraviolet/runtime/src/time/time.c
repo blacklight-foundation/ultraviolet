@@ -264,8 +264,8 @@ static void uv_utc_err(UVUnion_UtcInstant_TimeError* out, UVTimeError err) {
 }
 
 UVDynObject ultraviolet_x3a_x3aruntime_x3a_x3atime_x3a_x3amonotonic(
-    const UVDynObject* self) {
-  UVTimeState* root = uv_time_from_dyn(self);
+    UVDynObject self) {
+  UVTimeState* root = uv_time_from_dyn(&self);
   uint64_t resolution_ns = 1;
   UVTimeState* state;
   if (!root) {
@@ -280,8 +280,8 @@ UVDynObject ultraviolet_x3a_x3aruntime_x3a_x3atime_x3a_x3amonotonic(
 }
 
 UVDynObject ultraviolet_x3a_x3aruntime_x3a_x3atime_x3a_x3awall(
-    const UVDynObject* self) {
-  UVTimeState* root = uv_time_from_dyn(self);
+    UVDynObject self) {
+  UVTimeState* root = uv_time_from_dyn(&self);
   UVU128 resolution = uv_u128_from_u64(1);
   UVTimeState* state;
   if (!root) {
@@ -294,8 +294,8 @@ UVDynObject ultraviolet_x3a_x3aruntime_x3a_x3atime_x3a_x3awall(
 
 void ultraviolet_x3a_x3aruntime_x3a_x3atime_x3a_x3amonotonic_x5fnow(
     UVMonotonicInstant* out,
-    const UVDynObject* self) {
-  UVTimeState* state = uv_time_from_dyn(self);
+    UVDynObject self) {
+  UVTimeState* state = uv_time_from_dyn(&self);
   uint64_t ticks = 0;
   UVU128 value;
   if (!out) {
@@ -315,8 +315,8 @@ void ultraviolet_x3a_x3aruntime_x3a_x3atime_x3a_x3amonotonic_x5fnow(
 
 void ultraviolet_x3a_x3aruntime_x3a_x3atime_x3a_x3amonotonic_x5fresolution(
     UVDuration* out,
-    const UVDynObject* self) {
-  UVTimeState* state = uv_time_from_dyn(self);
+    UVDynObject self) {
+  UVTimeState* state = uv_time_from_dyn(&self);
   if (!state || state->kind != UV_TIME_STATE_MONOTONIC) {
     uv_duration_write(out, uv_u128_zero());
     return;
@@ -326,10 +326,10 @@ void ultraviolet_x3a_x3aruntime_x3a_x3atime_x3a_x3amonotonic_x5fresolution(
 
 void ultraviolet_x3a_x3aruntime_x3a_x3atime_x3a_x3amonotonic_x5felapsed(
     UVUnion_Duration_TimeError* out,
-    const UVDynObject* self,
+    UVDynObject self,
     const UVMonotonicInstant* start,
     const UVMonotonicInstant* end) {
-  UVTimeState* state = uv_time_from_dyn(self);
+  UVTimeState* state = uv_time_from_dyn(&self);
   if (!state || state->kind != UV_TIME_STATE_MONOTONIC || !start || !end ||
       start->domain != state->domain || end->domain != state->domain) {
     uv_duration_err(out, UV_TIME_CLOCK_MISMATCH);
@@ -344,9 +344,9 @@ void ultraviolet_x3a_x3aruntime_x3a_x3atime_x3a_x3amonotonic_x5felapsed(
 
 void ultraviolet_x3a_x3aruntime_x3a_x3atime_x3a_x3amonotonic_x5fcoarsen(
     UVUnion_DynObject_TimeError* out,
-    const UVDynObject* self,
+    UVDynObject self,
     const UVDuration* resolution) {
-  UVTimeState* state = uv_time_from_dyn(self);
+  UVTimeState* state = uv_time_from_dyn(&self);
   UVU128 requested;
   UVTimeState* child;
   if (!state || state->kind != UV_TIME_STATE_MONOTONIC || !resolution) {
@@ -370,8 +370,8 @@ void ultraviolet_x3a_x3aruntime_x3a_x3atime_x3a_x3amonotonic_x5fcoarsen(
 
 void ultraviolet_x3a_x3aruntime_x3a_x3atime_x3a_x3awall_x5fnow_x5futc(
     UVUnion_UtcInstant_TimeError* out,
-    const UVDynObject* self) {
-  UVTimeState* state = uv_time_from_dyn(self);
+    UVDynObject self) {
+  UVTimeState* state = uv_time_from_dyn(&self);
   UVI128 value;
   if (!state || state->kind != UV_TIME_STATE_WALL) {
     uv_utc_err(out, UV_TIME_CLOCK_UNAVAILABLE);
@@ -387,8 +387,8 @@ void ultraviolet_x3a_x3aruntime_x3a_x3atime_x3a_x3awall_x5fnow_x5futc(
 
 void ultraviolet_x3a_x3aruntime_x3a_x3atime_x3a_x3awall_x5fresolution(
     UVUnion_Duration_TimeError* out,
-    const UVDynObject* self) {
-  UVTimeState* state = uv_time_from_dyn(self);
+    UVDynObject self) {
+  UVTimeState* state = uv_time_from_dyn(&self);
   if (!state || state->kind != UV_TIME_STATE_WALL) {
     uv_duration_err(out, UV_TIME_CLOCK_UNAVAILABLE);
     return;
@@ -398,9 +398,9 @@ void ultraviolet_x3a_x3aruntime_x3a_x3atime_x3a_x3awall_x5fresolution(
 
 void ultraviolet_x3a_x3aruntime_x3a_x3atime_x3a_x3awall_x5fcoarsen(
     UVUnion_DynObject_TimeError* out,
-    const UVDynObject* self,
+    UVDynObject self,
     const UVDuration* resolution) {
-  UVTimeState* state = uv_time_from_dyn(self);
+  UVTimeState* state = uv_time_from_dyn(&self);
   UVU128 requested;
   UVTimeState* child;
   if (!state || state->kind != UV_TIME_STATE_WALL || !resolution) {

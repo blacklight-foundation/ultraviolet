@@ -445,13 +445,13 @@ void ultraviolet_x3a_x3aruntime_x3a_x3abytes_x3a_x3adrop_x5fmanaged(UVBytesManag
 
 // Region procs
 UVRegion ultraviolet_x3a_x3aruntime_x3a_x3aregion_x3a_x3anew_x5fscoped(const UVRegionOptions* options);
-void* ultraviolet_x3a_x3aruntime_x3a_x3aregion_x3a_x3aalloc(const UVRegion* self, uint64_t size, uint64_t align);
-uint64_t ultraviolet_x3a_x3aruntime_x3a_x3aregion_x3a_x3amark(const UVRegion* self);
-void ultraviolet_x3a_x3aruntime_x3a_x3aregion_x3a_x3areset_x5fto(const UVRegion* self, uint64_t mark);
-UVRegion ultraviolet_x3a_x3aruntime_x3a_x3aregion_x3a_x3areset_x5funchecked(const UVRegion* self);
-UVRegion ultraviolet_x3a_x3aruntime_x3a_x3aregion_x3a_x3afreeze(const UVRegion* self);
-UVRegion ultraviolet_x3a_x3aruntime_x3a_x3aregion_x3a_x3athaw(const UVRegion* self);
-UVRegion ultraviolet_x3a_x3aruntime_x3a_x3aregion_x3a_x3afree_x5funchecked(const UVRegion* self);
+void* ultraviolet_x3a_x3aruntime_x3a_x3aregion_x3a_x3aalloc(UVRegion self, uint64_t size, uint64_t align);
+uint64_t ultraviolet_x3a_x3aruntime_x3a_x3aregion_x3a_x3amark(UVRegion self);
+void ultraviolet_x3a_x3aruntime_x3a_x3aregion_x3a_x3areset_x5fto(UVRegion self, uint64_t mark);
+UVRegion ultraviolet_x3a_x3aruntime_x3a_x3aregion_x3a_x3areset_x5funchecked(UVRegion self);
+UVRegion ultraviolet_x3a_x3aruntime_x3a_x3aregion_x3a_x3afreeze(UVRegion self);
+UVRegion ultraviolet_x3a_x3aruntime_x3a_x3aregion_x3a_x3athaw(UVRegion self);
+UVRegion ultraviolet_x3a_x3aruntime_x3a_x3aregion_x3a_x3afree_x5funchecked(UVRegion self);
 uint8_t ultraviolet_x3a_x3aruntime_x3a_x3aregion_x3a_x3aaddr_x5fis_x5factive(const void* addr);
 void ultraviolet_x3a_x3aruntime_x3a_x3aregion_x3a_x3aaddr_x5ftag_x5ffrom(const void* addr, const void* base);
 void ultraviolet_x3a_x3aruntime_x3a_x3aregion_x3a_x3ascope_x5fenter(uint64_t scope_id);
@@ -473,21 +473,21 @@ UVAsyncResumeValue ultraviolet_x3a_x3aruntime_x3a_x3aasync_x3a_x3atake(
 // String builtins
 void ultraviolet_x3a_x3aruntime_x3a_x3astring_x3a_x3afrom(
   UVUnion_StringManaged_AllocError* out,
-  const UVStringView* source,
-  const UVDynObject* heap);
+  UVStringView source,
+  UVDynObject heap);
 
 UVStringView ultraviolet_x3a_x3aruntime_x3a_x3astring_x3a_x3aas_x5fview(
   const UVStringManaged* self);
 
 UVStringView ultraviolet_x3a_x3aruntime_x3a_x3astring_x3a_x3aslice(
-  const UVStringView* self,
-  const uint64_t* start,
-  const uint64_t* end);
+  UVStringView self,
+  uint64_t start,
+  uint64_t end);
 
 void ultraviolet_x3a_x3aruntime_x3a_x3astring_x3a_x3ato_x5fmanaged(
   UVUnion_StringManaged_AllocError* out,
-  const UVStringView* self,
-  const UVDynObject* heap);
+  UVStringView self,
+  UVDynObject heap);
 
 void ultraviolet_x3a_x3aruntime_x3a_x3astring_x3a_x3aclone_x5fwith(
   UVUnion_StringManaged_AllocError* out,
@@ -497,179 +497,179 @@ void ultraviolet_x3a_x3aruntime_x3a_x3astring_x3a_x3aclone_x5fwith(
 void ultraviolet_x3a_x3aruntime_x3a_x3astring_x3a_x3aappend(
   UVUnion_Unit_AllocError* out,
   UVStringManaged* self,
-  const UVStringView* data,
-  const UVDynObject* heap);
+  UVStringView data,
+  UVDynObject heap);
 
 uint64_t ultraviolet_x3a_x3aruntime_x3a_x3astring_x3a_x3alength(
-  const UVStringView* self);
+  UVStringView self);
 
 uint8_t ultraviolet_x3a_x3aruntime_x3a_x3astring_x3a_x3ais_x5fempty(
-  const UVStringView* self);
+  UVStringView self);
 
 // Bytes builtins
 void ultraviolet_x3a_x3aruntime_x3a_x3abytes_x3a_x3awith_x5fcapacity(
   UVUnion_BytesManaged_AllocError* out,
-  const uint64_t* cap,
-  const UVDynObject* heap);
+  uint64_t cap,
+  UVDynObject heap);
 
 void ultraviolet_x3a_x3aruntime_x3a_x3abytes_x3a_x3afrom_x5fslice(
   UVUnion_BytesManaged_AllocError* out,
-  const UVSliceU8* data,
-  const UVDynObject* heap);
+  UVSliceU8 data,
+  UVDynObject heap);
 
 UVBytesView ultraviolet_x3a_x3aruntime_x3a_x3abytes_x3a_x3aas_x5fview(
   const UVBytesManaged* self);
 
 void ultraviolet_x3a_x3aruntime_x3a_x3abytes_x3a_x3ato_x5fmanaged(
   UVUnion_BytesManaged_AllocError* out,
-  const UVBytesView* self,
-  const UVDynObject* heap);
+  UVBytesView self,
+  UVDynObject heap);
 
 UVBytesView ultraviolet_x3a_x3aruntime_x3a_x3abytes_x3a_x3aview(
-  const UVSliceU8* data);
+  UVSliceU8 data);
 
 UVSliceU8 ultraviolet_x3a_x3aruntime_x3a_x3abytes_x3a_x3aas_x5fslice(
-  const UVBytesView* self);
+  UVBytesView self);
 
 UVBytesView ultraviolet_x3a_x3aruntime_x3a_x3abytes_x3a_x3aview_x5fstring(
-  const UVStringView* data);
+  UVStringView data);
 
 void ultraviolet_x3a_x3aruntime_x3a_x3abytes_x3a_x3aappend(
   UVUnion_Unit_AllocError* out,
   UVBytesManaged* self,
-  const UVBytesView* data,
-  const UVDynObject* heap);
+  UVBytesView data,
+  UVDynObject heap);
 
 uint64_t ultraviolet_x3a_x3aruntime_x3a_x3abytes_x3a_x3alength(
-  const UVBytesView* self);
+  UVBytesView self);
 
 uint8_t ultraviolet_x3a_x3aruntime_x3a_x3abytes_x3a_x3ais_x5fempty(
-  const UVBytesView* self);
+  UVBytesView self);
 
 // IO builtins
 UVUnion_File_IoError ultraviolet_x3a_x3aruntime_x3a_x3aio_x3a_x3aopen_x5fread(
-  const UVDynObject* self,
-  const UVStringView* path);
+  UVDynObject self,
+  UVStringView path);
 
 UVUnion_File_IoError ultraviolet_x3a_x3aruntime_x3a_x3aio_x3a_x3aopen_x5fwrite(
-  const UVDynObject* self,
-  const UVStringView* path);
+  UVDynObject self,
+  UVStringView path);
 
 UVUnion_File_IoError ultraviolet_x3a_x3aruntime_x3a_x3aio_x3a_x3aopen_x5fappend(
-  const UVDynObject* self,
-  const UVStringView* path);
+  UVDynObject self,
+  UVStringView path);
 
 UVUnion_File_IoError ultraviolet_x3a_x3aruntime_x3a_x3aio_x3a_x3acreate_x5fwrite(
-  const UVDynObject* self,
-  const UVStringView* path);
+  UVDynObject self,
+  UVStringView path);
 
 void ultraviolet_x3a_x3aruntime_x3a_x3aio_x3a_x3aread_x5ffile(
   UVUnion_StringManaged_IoError* out,
-  const UVDynObject* self,
-  const UVStringView* path);
+  UVDynObject self,
+  UVStringView path);
 
 void ultraviolet_x3a_x3aruntime_x3a_x3aio_x3a_x3aread_x5fbytes(
   UVUnion_BytesManaged_IoError* out,
-  const UVDynObject* self,
-  const UVStringView* path);
+  UVDynObject self,
+  UVStringView path);
 
 UVUnion_Unit_IoError ultraviolet_x3a_x3aruntime_x3a_x3aio_x3a_x3awrite_x5ffile(
-  const UVDynObject* self,
-  const UVStringView* path,
-  const UVBytesView* data);
+  UVDynObject self,
+  UVStringView path,
+  UVBytesView data);
 
 UVUnion_Unit_IoError ultraviolet_x3a_x3aruntime_x3a_x3aio_x3a_x3awrite_x5fstdout(
-  const UVDynObject* self,
-  const UVStringView* data);
+  UVDynObject self,
+  UVStringView data);
 
 UVUnion_Unit_IoError ultraviolet_x3a_x3aruntime_x3a_x3aio_x3a_x3awrite_x5fstderr(
-  const UVDynObject* self,
-  const UVStringView* data);
+  UVDynObject self,
+  UVStringView data);
 
 uint8_t ultraviolet_x3a_x3aruntime_x3a_x3aio_x3a_x3aexists(
-  const UVDynObject* self,
-  const UVStringView* path);
+  UVDynObject self,
+  UVStringView path);
 
 UVUnion_Unit_IoError ultraviolet_x3a_x3aruntime_x3a_x3aio_x3a_x3aremove(
-  const UVDynObject* self,
-  const UVStringView* path);
+  UVDynObject self,
+  UVStringView path);
 
 UVUnion_DirIter_IoError ultraviolet_x3a_x3aruntime_x3a_x3aio_x3a_x3aopen_x5fdir(
-  const UVDynObject* self,
-  const UVStringView* path);
+  UVDynObject self,
+  UVStringView path);
 
 UVUnion_Unit_IoError ultraviolet_x3a_x3aruntime_x3a_x3aio_x3a_x3acreate_x5fdir(
-  const UVDynObject* self,
-  const UVStringView* path);
+  UVDynObject self,
+  UVStringView path);
 
 UVUnion_Unit_IoError ultraviolet_x3a_x3aruntime_x3a_x3aio_x3a_x3aensure_x5fdir(
-  const UVDynObject* self,
-  const UVStringView* path);
+  UVDynObject self,
+  UVStringView path);
 
 UVUnion_FileKind_IoError ultraviolet_x3a_x3aruntime_x3a_x3aio_x3a_x3akind(
-  const UVDynObject* self,
-  const UVStringView* path);
+  UVDynObject self,
+  UVStringView path);
 
 UVDynObject ultraviolet_x3a_x3aruntime_x3a_x3aio_x3a_x3arestrict(
-  const UVDynObject* self,
-  const UVStringView* path);
+  UVDynObject self,
+  UVStringView path);
 
 // Network builtins
 UVDynObject ultraviolet_x3a_x3aruntime_x3a_x3anet_x3a_x3arestrict_x5fto_x5fhost(
-  const UVDynObject* self,
-  const UVStringView* host);
+  UVDynObject self,
+  UVStringView host);
 
 // HeapAllocator builtins
 UVDynObject ultraviolet_x3a_x3aruntime_x3a_x3aheap_x3a_x3awith_x5fquota(
-  const UVDynObject* self,
-  const uint64_t* size);
+  UVDynObject self,
+  uint64_t size);
 
 void* ultraviolet_x3a_x3aruntime_x3a_x3aheap_x3a_x3aalloc_x5fraw(
-  const UVDynObject* self,
-  const uint64_t* count);
+  UVDynObject self,
+  uint64_t count);
 
 void ultraviolet_x3a_x3aruntime_x3a_x3aheap_x3a_x3adealloc_x5fraw(
-  const UVDynObject* self,
-  void** ptr,
-  const uint64_t* count);
+  UVDynObject self,
+  void* ptr,
+  uint64_t count);
 
 // Time builtins
 UVDynObject ultraviolet_x3a_x3aruntime_x3a_x3atime_x3a_x3amonotonic(
-  const UVDynObject* self);
+  UVDynObject self);
 
 UVDynObject ultraviolet_x3a_x3aruntime_x3a_x3atime_x3a_x3awall(
-  const UVDynObject* self);
+  UVDynObject self);
 
 void ultraviolet_x3a_x3aruntime_x3a_x3atime_x3a_x3amonotonic_x5fnow(
   UVMonotonicInstant* out,
-  const UVDynObject* self);
+  UVDynObject self);
 
 void ultraviolet_x3a_x3aruntime_x3a_x3atime_x3a_x3amonotonic_x5fresolution(
   UVDuration* out,
-  const UVDynObject* self);
+  UVDynObject self);
 
 void ultraviolet_x3a_x3aruntime_x3a_x3atime_x3a_x3amonotonic_x5felapsed(
   UVUnion_Duration_TimeError* out,
-  const UVDynObject* self,
+  UVDynObject self,
   const UVMonotonicInstant* start,
   const UVMonotonicInstant* end);
 
 void ultraviolet_x3a_x3aruntime_x3a_x3atime_x3a_x3amonotonic_x5fcoarsen(
   UVUnion_DynObject_TimeError* out,
-  const UVDynObject* self,
+  UVDynObject self,
   const UVDuration* resolution);
 
 void ultraviolet_x3a_x3aruntime_x3a_x3atime_x3a_x3awall_x5fnow_x5futc(
   UVUnion_UtcInstant_TimeError* out,
-  const UVDynObject* self);
+  UVDynObject self);
 
 void ultraviolet_x3a_x3aruntime_x3a_x3atime_x3a_x3awall_x5fresolution(
   UVUnion_Duration_TimeError* out,
-  const UVDynObject* self);
+  UVDynObject self);
 
 void ultraviolet_x3a_x3aruntime_x3a_x3atime_x3a_x3awall_x5fcoarsen(
   UVUnion_DynObject_TimeError* out,
-  const UVDynObject* self,
+  UVDynObject self,
   const UVDuration* resolution);
 
 // System builtins
@@ -677,19 +677,19 @@ void ultraviolet_x3a_x3aruntime_x3a_x3asystem_x3a_x3aexit(
   int32_t code);
 
 UVStringView ultraviolet_x3a_x3aruntime_x3a_x3asystem_x3a_x3aget_x5fenv(
-  const UVStringView* key);
+  UVStringView key);
 
 UVStringView ultraviolet_x3a_x3aruntime_x3a_x3asystem_x3a_x3aexecutable_x5fpath(void);
 
 uint64_t ultraviolet_x3a_x3aruntime_x3a_x3asystem_x3a_x3aargument_x5fcount(void);
 
 UVStringView ultraviolet_x3a_x3aruntime_x3a_x3asystem_x3a_x3aargument(
-  const uint64_t* index);
+  uint64_t index);
 
 UVStringView ultraviolet_x3a_x3aruntime_x3a_x3asystem_x3a_x3acurrent_x5fdirectory(void);
 
 int32_t ultraviolet_x3a_x3aruntime_x3a_x3asystem_x3a_x3arun(
-  const UVStringView* command);
+  UVStringView command);
 
 // -----------------------------------------------------------------------------
 // UVX Extension: Structured Concurrency Runtime Support (Â§18)
@@ -709,14 +709,14 @@ UVDynObject ultraviolet_x3a_x3aruntime_x3a_x3acontext_x3a_x3ainline(
 
 // Section 19.4 Reactor methods
 void* ultraviolet_x3a_x3aruntime_x3a_x3areactor_x3a_x3aregister(
-  const UVDynObject* self,
+  UVDynObject self,
   const void* future);
 
 // Â§18.2 ExecutionDomain methods
 UVStringView ultraviolet_x3a_x3aruntime_x3a_x3aexecution_x5fdomain_x3a_x3aname(
-  const UVDynObject* self);
+  UVDynObject self);
 uint64_t ultraviolet_x3a_x3aruntime_x3a_x3aexecution_x5fdomain_x3a_x3amax_x5fconcurrency(
-  const UVDynObject* self);
+  UVDynObject self);
 
 // Â§18.2.2.4 GPU intrinsic functions
 UVUsize3 ultraviolet_x3a_x3aruntime_x3a_x3agpu_x3a_x3aglobal_x5fid(void);
@@ -748,7 +748,7 @@ void* uv_spawn_create(void* env, size_t env_size,
 void* uv_spawn_wait(void* handle_ptr);
 
 // Â§18.5.2 Dispatch iteration - parallel data iteration
-void uv_dispatch_run(UVRange range, size_t elem_size, size_t result_size,
+void uv_dispatch_run(const UVRange* range, size_t elem_size, size_t result_size,
                            void (*body)(void* hosted_env, void* elem, void* captured, void* result, void* panic_out),
                            void* hosted_env,
                            void* captured_env,
@@ -796,7 +796,7 @@ void File_x3a_x3aRead_x3a_x3aclose(
 
 UVUnion_Unit_IoError File_x3a_x3aWrite_x3a_x3awrite(
   UVFileHandle self,
-  const UVBytesView* data);
+  UVBytesView data);
 
 UVUnion_Unit_IoError File_x3a_x3aWrite_x3a_x3aflush(
   UVFileHandle self);
@@ -806,7 +806,7 @@ void File_x3a_x3aWrite_x3a_x3aclose(
 
 UVUnion_Unit_IoError File_x3a_x3aAppend_x3a_x3awrite(
   UVFileHandle self,
-  const UVBytesView* data);
+  UVBytesView data);
 
 UVUnion_Unit_IoError File_x3a_x3aAppend_x3a_x3aflush(
   UVFileHandle self);

@@ -1423,7 +1423,7 @@ void* uv_spawn_wait(void* handle_ptr) {
 // by wait. For Ultraviolet exercises, Future<T,E> values here are immediate and we
 // materialize a ready handle carrying T|E in a compact tagged payload.
 void* ultraviolet_x3a_x3aruntime_x3a_x3areactor_x3a_x3aregister(
-    const UVDynObject* reactor,
+    UVDynObject reactor,
     const void* future) {
     (void)reactor;
 
@@ -1654,7 +1654,7 @@ static void uv_dispatch_chunk(void* hosted_env, void* env_ptr, void* result_ptr,
 
 // §18.5.2 Dispatch iteration
 // Executes body for each element in range with optional reduction
-void uv_dispatch_run(UVRange range, size_t elem_size, size_t result_size,
+void uv_dispatch_run(const UVRange* range, size_t elem_size, size_t result_size,
                            void (*body)(void* hosted_env, void* elem, void* captured, void* result, void* panic_out),
                            void* hosted_env,
                            void* captured_env,
@@ -1664,36 +1664,38 @@ void uv_dispatch_run(UVRange range, size_t elem_size, size_t result_size,
                            int ordered,
                            size_t chunk_size) {
     if (!body) return;
+    if (!range) return;
 
     uint64_t start = 0;
     uint64_t end = 0;
-    switch (range.tag) {
+    const UVRange range_value = *range;
+    switch (range_value.tag) {
         case 0:  // To
             start = 0;
-            end = range.hi;
+            end = range_value.hi;
             break;
         case 1:  // ToInclusive
             start = 0;
-            end = range.hi + 1;
+            end = range_value.hi + 1;
             break;
         case 2:  // Full
-            start = range.lo;
-            end = range.hi;
+            start = range_value.lo;
+            end = range_value.hi;
             break;
         case 3:  // From
-            start = range.lo;
-            end = range.hi;
+            start = range_value.lo;
+            end = range_value.hi;
             break;
         case 4:  // Exclusive
-            start = range.lo;
-            end = range.hi;
+            start = range_value.lo;
+            end = range_value.hi;
             break;
         case 5:  // Inclusive
-            start = range.lo;
-            end = range.hi + 1;
+            start = range_value.lo;
+            end = range_value.hi + 1;
             break;
         default:
-            uv_debug_write_dispatch_range(range,
+            uv_debug_write_dispatch_range(range_value,
                                           0,
                                           0,
                                           elem_size,
@@ -1702,7 +1704,7 @@ void uv_dispatch_run(UVRange range, size_t elem_size, size_t result_size,
                                           chunk_size);
             return;
     }
-    uv_debug_write_dispatch_range(range,
+    uv_debug_write_dispatch_range(range_value,
                                   start,
                                   end,
                                   elem_size,

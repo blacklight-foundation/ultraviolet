@@ -1,0 +1,60 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="520" viewBox="0 0 1200 520" role="img" aria-labelledby="title desc">
+  <title id="title">Figure 5. Design criteria grouped by pressure on token generation and repair</title>
+  <desc id="desc">A vector diagram grouping the paper's twelve positive criteria into surface regularity, static rejection, authority and effects, and repair evidence, all contributing to a smaller accepted-error surface.</desc>
+  <defs>
+    <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse">
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="#334155"/>
+    </marker>
+    <style>
+      .title { font: 700 22px Arial, sans-serif; fill: #111827; }
+      .label { font: 700 16px Arial, sans-serif; fill: #111827; }
+      .small { font: 13px Arial, sans-serif; fill: #334155; }
+      .box { fill: #f8fafc; stroke: #475569; stroke-width: 1.5; rx: 12; }
+      .blue { fill: #e0f2fe; stroke: #0369a1; }
+      .green { fill: #dcfce7; stroke: #15803d; }
+      .amber { fill: #fef3c7; stroke: #b45309; }
+      .violet { fill: #ede9fe; stroke: #6d28d9; }
+      .result { fill: #f1f5f9; stroke: #111827; stroke-width: 2; }
+      .arrow { fill: none; stroke: #334155; stroke-width: 2; marker-end: url(#arrow); }
+    </style>
+  </defs>
+  <rect width="1200" height="520" fill="#ffffff"/>
+  <text class="title" x="40" y="38">Language criteria act at different points in the generation and repair process</text>
+
+  <rect class="box" x="405" y="80" width="390" height="66"/>
+  <text class="label" x="600" y="107" text-anchor="middle">LLM token-generation pressure</text>
+  <text class="small" x="600" y="130" text-anchor="middle">make the next useful token easier to infer and validate</text>
+
+  <rect class="blue" x="70" y="220" width="230" height="100" rx="12"/>
+  <text class="label" x="185" y="248" text-anchor="middle">Surface regularity</text>
+  <text class="small" x="185" y="273" text-anchor="middle">C1 canonical forms</text>
+  <text class="small" x="185" y="294" text-anchor="middle">C2 local semantic visibility</text>
+
+  <rect class="green" x="355" y="220" width="230" height="100" rx="12"/>
+  <text class="label" x="470" y="248" text-anchor="middle">Static rejection</text>
+  <text class="small" x="470" y="273" text-anchor="middle">C3, C5, C6, C7</text>
+  <text class="small" x="470" y="294" text-anchor="middle">types, resources, protocols</text>
+
+  <rect class="amber" x="640" y="220" width="230" height="100" rx="12"/>
+  <text class="label" x="755" y="248" text-anchor="middle">Authority and effects</text>
+  <text class="small" x="755" y="273" text-anchor="middle">C4, C9, C10</text>
+  <text class="small" x="755" y="294" text-anchor="middle">capabilities, keys, unsafe</text>
+
+  <rect class="violet" x="925" y="220" width="230" height="100" rx="12"/>
+  <text class="label" x="1040" y="248" text-anchor="middle">Repair evidence</text>
+  <text class="small" x="1040" y="273" text-anchor="middle">C8, C11, C12</text>
+  <text class="small" x="1040" y="294" text-anchor="middle">dynamic checks, diagnostics, APIs</text>
+
+  <rect class="result" x="405" y="400" width="390" height="66" rx="12"/>
+  <text class="label" x="600" y="428" text-anchor="middle">Smaller accepted-error surface</text>
+  <text class="small" x="600" y="451" text-anchor="middle">fewer plausible wrong programs survive unchecked</text>
+
+  <path class="arrow" d="M 505 146 L 205 220"/>
+  <path class="arrow" d="M 560 146 L 480 220"/>
+  <path class="arrow" d="M 640 146 L 750 220"/>
+  <path class="arrow" d="M 695 146 L 1020 220"/>
+  <path class="arrow" d="M 185 320 C 250 370 360 395 405 420"/>
+  <path class="arrow" d="M 470 320 L 520 400"/>
+  <path class="arrow" d="M 755 320 L 680 400"/>
+  <path class="arrow" d="M 1040 320 C 960 372 835 397 795 420"/>
+</svg>

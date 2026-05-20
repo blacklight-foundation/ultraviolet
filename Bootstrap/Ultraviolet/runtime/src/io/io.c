@@ -531,14 +531,14 @@ static UVUnion_StringManaged_IoError uv_read_all_string_handle(uv_rt_handle_t ha
   return out;
 }
 UVUnion_File_IoError ultraviolet_x3a_x3aruntime_x3a_x3aio_x3a_x3aopen_x5fread(
-    const UVDynObject* self,
-    const UVStringView* path) {
+    UVDynObject self,
+    UVStringView path) {
   SPEC_RULE("Prim-IO-OpenRead");
   uv_trace_emit_rule("Prim-IO-OpenRead");
-  UVFsState* io = uv_fs_state(self);
+  UVFsState* io = uv_fs_state(&self);
   uint8_t* canon = NULL;
   uint32_t canon_len = 0;
-  if (!uv_fs_resolve_path(io, path, &canon, &canon_len)) {
+  if (!uv_fs_resolve_path(io, &path, &canon, &canon_len)) {
     return uv_file_err(UV_IO_INVALID_PATH);
   }
   wchar_t* wide = uv_rt_path_utf8_to_native_wide(canon, canon_len, NULL);
@@ -578,14 +578,14 @@ UVUnion_File_IoError ultraviolet_x3a_x3aruntime_x3a_x3aio_x3a_x3aopen_x5fread(
 }
 
 UVUnion_File_IoError ultraviolet_x3a_x3aruntime_x3a_x3aio_x3a_x3aopen_x5fwrite(
-    const UVDynObject* self,
-    const UVStringView* path) {
+    UVDynObject self,
+    UVStringView path) {
   SPEC_RULE("Prim-IO-OpenWrite");
   uv_trace_emit_rule("Prim-IO-OpenWrite");
-  UVFsState* io = uv_fs_state(self);
+  UVFsState* io = uv_fs_state(&self);
   uint8_t* canon = NULL;
   uint32_t canon_len = 0;
-  if (!uv_fs_resolve_path(io, path, &canon, &canon_len)) {
+  if (!uv_fs_resolve_path(io, &path, &canon, &canon_len)) {
     return uv_file_err(UV_IO_INVALID_PATH);
   }
   wchar_t* wide = uv_rt_path_utf8_to_native_wide(canon, canon_len, NULL);
@@ -624,14 +624,14 @@ UVUnion_File_IoError ultraviolet_x3a_x3aruntime_x3a_x3aio_x3a_x3aopen_x5fwrite(
 }
 
 UVUnion_File_IoError ultraviolet_x3a_x3aruntime_x3a_x3aio_x3a_x3aopen_x5fappend(
-    const UVDynObject* self,
-    const UVStringView* path) {
+    UVDynObject self,
+    UVStringView path) {
   SPEC_RULE("Prim-IO-OpenAppend");
   uv_trace_emit_rule("Prim-IO-OpenAppend");
-  UVFsState* io = uv_fs_state(self);
+  UVFsState* io = uv_fs_state(&self);
   uint8_t* canon = NULL;
   uint32_t canon_len = 0;
-  if (!uv_fs_resolve_path(io, path, &canon, &canon_len)) {
+  if (!uv_fs_resolve_path(io, &path, &canon, &canon_len)) {
     return uv_file_err(UV_IO_INVALID_PATH);
   }
   wchar_t* wide = uv_rt_path_utf8_to_native_wide(canon, canon_len, NULL);
@@ -678,14 +678,14 @@ UVUnion_File_IoError ultraviolet_x3a_x3aruntime_x3a_x3aio_x3a_x3aopen_x5fappend(
 }
 
 UVUnion_File_IoError ultraviolet_x3a_x3aruntime_x3a_x3aio_x3a_x3acreate_x5fwrite(
-    const UVDynObject* self,
-    const UVStringView* path) {
+    UVDynObject self,
+    UVStringView path) {
   SPEC_RULE("Prim-IO-CreateWrite");
   uv_trace_emit_rule("Prim-IO-CreateWrite");
-  UVFsState* io = uv_fs_state(self);
+  UVFsState* io = uv_fs_state(&self);
   uint8_t* canon = NULL;
   uint32_t canon_len = 0;
-  if (!uv_fs_resolve_path(io, path, &canon, &canon_len)) {
+  if (!uv_fs_resolve_path(io, &path, &canon, &canon_len)) {
     return uv_file_err(UV_IO_INVALID_PATH);
   }
   wchar_t* wide = uv_rt_path_utf8_to_native_wide(canon, canon_len, NULL);
@@ -724,14 +724,15 @@ UVUnion_File_IoError ultraviolet_x3a_x3aruntime_x3a_x3aio_x3a_x3acreate_x5fwrite
 }
 void ultraviolet_x3a_x3aruntime_x3a_x3aio_x3a_x3aread_x5ffile(
     UVUnion_StringManaged_IoError* out,
-    const UVDynObject* self,
-    const UVStringView* path) {
+    UVDynObject self,
+    UVStringView path) {
   SPEC_RULE("Prim-IO-ReadFile");
   uv_trace_emit_rule("Prim-IO-ReadFile");
   if (!out) {
     return;
   }
-  UVUnion_File_IoError file = ultraviolet_x3a_x3aruntime_x3a_x3aio_x3a_x3aopen_x5fread(self, path);
+  UVUnion_File_IoError file =
+      ultraviolet_x3a_x3aruntime_x3a_x3aio_x3a_x3aopen_x5fread(self, path);
   if (file.disc == 1) {
     *out = uv_string_io_err(file.payload.io_error);
     return;
@@ -746,14 +747,15 @@ void ultraviolet_x3a_x3aruntime_x3a_x3aio_x3a_x3aread_x5ffile(
 
 void ultraviolet_x3a_x3aruntime_x3a_x3aio_x3a_x3aread_x5fbytes(
     UVUnion_BytesManaged_IoError* out,
-    const UVDynObject* self,
-    const UVStringView* path) {
+    UVDynObject self,
+    UVStringView path) {
   SPEC_RULE("Prim-IO-ReadBytes");
   uv_trace_emit_rule("Prim-IO-ReadBytes");
   if (!out) {
     return;
   }
-  UVUnion_File_IoError file = ultraviolet_x3a_x3aruntime_x3a_x3aio_x3a_x3aopen_x5fread(self, path);
+  UVUnion_File_IoError file =
+      ultraviolet_x3a_x3aruntime_x3a_x3aio_x3a_x3aopen_x5fread(self, path);
   if (file.disc == 1) {
     *out = uv_bytes_io_err(file.payload.io_error);
     return;
@@ -767,15 +769,15 @@ void ultraviolet_x3a_x3aruntime_x3a_x3aio_x3a_x3aread_x5fbytes(
 }
 
 UVUnion_Unit_IoError ultraviolet_x3a_x3aruntime_x3a_x3aio_x3a_x3awrite_x5ffile(
-    const UVDynObject* self,
-    const UVStringView* path,
-    const UVBytesView* data) {
+    UVDynObject self,
+    UVStringView path,
+    UVBytesView data) {
   SPEC_RULE("Prim-IO-WriteFile");
   uv_trace_emit_rule("Prim-IO-WriteFile");
-  UVFsState* io = uv_fs_state(self);
+  UVFsState* io = uv_fs_state(&self);
   uint8_t* canon = NULL;
   uint32_t canon_len = 0;
-  if (!uv_fs_resolve_path(io, path, &canon, &canon_len)) {
+  if (!uv_fs_resolve_path(io, &path, &canon, &canon_len)) {
     UVUnion_Unit_IoError out = uv_unit_err(UV_IO_INVALID_PATH);
     return out;
   }
@@ -800,12 +802,12 @@ UVUnion_Unit_IoError ultraviolet_x3a_x3aruntime_x3a_x3aio_x3a_x3awrite_x5ffile(
     return out;
   }
 
-  uint64_t len = data ? data->len : 0;
+  uint64_t len = data.len;
   uint64_t written = 0;
   while (written < len) {
     uv_rt_u32_t chunk = 0;
     uv_rt_u32_t to_write = (uv_rt_u32_t)uv_min_u64(len - written, 0x7FFFFFFF);
-    if (!uv_rt_handle_write(h, data->data + written, to_write, &chunk)) {
+    if (!uv_rt_handle_write(h, data.data + written, to_write, &chunk)) {
       if (chunk > 0) {
         written += (uint64_t)chunk;
         continue;
@@ -908,33 +910,33 @@ static UVUnion_Unit_IoError uv_write_stream_utf8(uv_rt_u32_t std_handle_id,
 }
 
 UVUnion_Unit_IoError ultraviolet_x3a_x3aruntime_x3a_x3aio_x3a_x3awrite_x5fstdout(
-    const UVDynObject* self,
-    const UVStringView* data) {
+    UVDynObject self,
+    UVStringView data) {
   SPEC_RULE("Prim-IO-WriteStdout");
   uv_trace_emit_rule("Prim-IO-WriteStdout");
   (void)self;
-  return uv_write_stream_utf8(UV_RT_STD_STREAM_OUTPUT, data);
+  return uv_write_stream_utf8(UV_RT_STD_STREAM_OUTPUT, &data);
 }
 
 UVUnion_Unit_IoError ultraviolet_x3a_x3aruntime_x3a_x3aio_x3a_x3awrite_x5fstderr(
-    const UVDynObject* self,
-    const UVStringView* data) {
+    UVDynObject self,
+    UVStringView data) {
   SPEC_RULE("Prim-IO-WriteStderr");
   uv_trace_emit_rule("Prim-IO-WriteStderr");
   (void)self;
-  return uv_write_stream_utf8(UV_RT_STD_STREAM_ERROR, data);
+  return uv_write_stream_utf8(UV_RT_STD_STREAM_ERROR, &data);
 }
 
 
 uint8_t ultraviolet_x3a_x3aruntime_x3a_x3aio_x3a_x3aexists(
-    const UVDynObject* self,
-    const UVStringView* path) {
+    UVDynObject self,
+    UVStringView path) {
   SPEC_RULE("Prim-IO-Exists");
   uv_trace_emit_rule("Prim-IO-Exists");
-  UVFsState* io = uv_fs_state(self);
+  UVFsState* io = uv_fs_state(&self);
   uint8_t* canon = NULL;
   uint32_t canon_len = 0;
-  if (!uv_fs_resolve_path(io, path, &canon, &canon_len)) {
+  if (!uv_fs_resolve_path(io, &path, &canon, &canon_len)) {
     return 0;
   }
   wchar_t* wide = uv_rt_path_utf8_to_native_wide(canon, canon_len, NULL);
@@ -951,14 +953,14 @@ uint8_t ultraviolet_x3a_x3aruntime_x3a_x3aio_x3a_x3aexists(
 }
 
 UVUnion_Unit_IoError ultraviolet_x3a_x3aruntime_x3a_x3aio_x3a_x3aremove(
-    const UVDynObject* self,
-    const UVStringView* path) {
+    UVDynObject self,
+    UVStringView path) {
   SPEC_RULE("Prim-IO-Remove");
   uv_trace_emit_rule("Prim-IO-Remove");
-  UVFsState* io = uv_fs_state(self);
+  UVFsState* io = uv_fs_state(&self);
   uint8_t* canon = NULL;
   uint32_t canon_len = 0;
-  if (!uv_fs_resolve_path(io, path, &canon, &canon_len)) {
+  if (!uv_fs_resolve_path(io, &path, &canon, &canon_len)) {
     return uv_unit_err(UV_IO_INVALID_PATH);
   }
   wchar_t* wide = uv_rt_path_utf8_to_native_wide(canon, canon_len, NULL);
@@ -1162,14 +1164,14 @@ static void uv_sort_entries(DirEntryTmp* entries, uint32_t count) {
   }
 }
 UVUnion_DirIter_IoError ultraviolet_x3a_x3aruntime_x3a_x3aio_x3a_x3aopen_x5fdir(
-    const UVDynObject* self,
-    const UVStringView* path) {
+    UVDynObject self,
+    UVStringView path) {
   SPEC_RULE("Prim-IO-OpenDir");
   uv_trace_emit_rule("Prim-IO-OpenDir");
-  UVFsState* io = uv_fs_state(self);
+  UVFsState* io = uv_fs_state(&self);
   uint8_t* canon = NULL;
   uint32_t canon_len = 0;
-  if (!uv_fs_resolve_path(io, path, &canon, &canon_len)) {
+  if (!uv_fs_resolve_path(io, &path, &canon, &canon_len)) {
     return uv_dir_err(UV_IO_INVALID_PATH);
   }
   uint32_t wide_len = 0;
@@ -1403,14 +1405,14 @@ UVUnion_DirIter_IoError ultraviolet_x3a_x3aruntime_x3a_x3aio_x3a_x3aopen_x5fdir(
   return out;
 }
 UVUnion_Unit_IoError ultraviolet_x3a_x3aruntime_x3a_x3aio_x3a_x3acreate_x5fdir(
-    const UVDynObject* self,
-    const UVStringView* path) {
+    UVDynObject self,
+    UVStringView path) {
   SPEC_RULE("Prim-IO-CreateDir");
   uv_trace_emit_rule("Prim-IO-CreateDir");
-  UVFsState* io = uv_fs_state(self);
+  UVFsState* io = uv_fs_state(&self);
   uint8_t* canon = NULL;
   uint32_t canon_len = 0;
-  if (!uv_fs_resolve_path(io, path, &canon, &canon_len)) {
+  if (!uv_fs_resolve_path(io, &path, &canon, &canon_len)) {
     return uv_unit_err(UV_IO_INVALID_PATH);
   }
   wchar_t* wide = uv_rt_path_utf8_to_native_wide(canon, canon_len, NULL);
@@ -1429,14 +1431,14 @@ UVUnion_Unit_IoError ultraviolet_x3a_x3aruntime_x3a_x3aio_x3a_x3acreate_x5fdir(
 }
 
 UVUnion_Unit_IoError ultraviolet_x3a_x3aruntime_x3a_x3aio_x3a_x3aensure_x5fdir(
-    const UVDynObject* self,
-    const UVStringView* path) {
+    UVDynObject self,
+    UVStringView path) {
   SPEC_RULE("Prim-IO-EnsureDir");
   uv_trace_emit_rule("Prim-IO-EnsureDir");
-  UVFsState* io = uv_fs_state(self);
+  UVFsState* io = uv_fs_state(&self);
   uint8_t* canon = NULL;
   uint32_t canon_len = 0;
-  if (!uv_fs_resolve_path(io, path, &canon, &canon_len)) {
+  if (!uv_fs_resolve_path(io, &path, &canon, &canon_len)) {
     return uv_unit_err(UV_IO_INVALID_PATH);
   }
   uint32_t wide_len = 0;
@@ -1526,14 +1528,14 @@ UVUnion_Unit_IoError ultraviolet_x3a_x3aruntime_x3a_x3aio_x3a_x3aensure_x5fdir(
 }
 
 UVUnion_FileKind_IoError ultraviolet_x3a_x3aruntime_x3a_x3aio_x3a_x3akind(
-    const UVDynObject* self,
-    const UVStringView* path) {
+    UVDynObject self,
+    UVStringView path) {
   SPEC_RULE("Prim-IO-Kind");
   uv_trace_emit_rule("Prim-IO-Kind");
-  UVFsState* io = uv_fs_state(self);
+  UVFsState* io = uv_fs_state(&self);
   uint8_t* canon = NULL;
   uint32_t canon_len = 0;
-  if (!uv_fs_resolve_path(io, path, &canon, &canon_len)) {
+  if (!uv_fs_resolve_path(io, &path, &canon, &canon_len)) {
     UVUnion_FileKind_IoError out = uv_kind_err(UV_IO_INVALID_PATH);
     return out;
   }
@@ -1561,14 +1563,14 @@ UVUnion_FileKind_IoError ultraviolet_x3a_x3aruntime_x3a_x3aio_x3a_x3akind(
 }
 
 UVDynObject ultraviolet_x3a_x3aruntime_x3a_x3aio_x3a_x3arestrict(
-    const UVDynObject* self,
-    const UVStringView* path) {
+    UVDynObject self,
+    UVStringView path) {
   SPEC_RULE("Prim-IO-Restrict");
   uv_trace_emit_rule("Prim-IO-Restrict");
   UVDynObject out;
   out.data = NULL;
-  out.vtable = self ? self->vtable : NULL;
-  const UVFsState* parent = uv_fs_state(self);
+  out.vtable = self.vtable;
+  const UVFsState* parent = uv_fs_state(&self);
 
   UVFsState* state = (UVFsState*)uv_heap_alloc_raw(sizeof(UVFsState));
   if (!state) {
@@ -1579,10 +1581,10 @@ UVDynObject ultraviolet_x3a_x3aruntime_x3a_x3aio_x3a_x3arestrict(
   state->base_utf8 = NULL;
   state->base_len = 0;
 
-  if (path && path->data) {
+  if (path.data) {
     uint32_t base_len = 0;
     uint8_t* base = NULL;
-    if (uv_fs_resolve_path(parent, path, &base, &base_len)) {
+    if (uv_fs_resolve_path(parent, &path, &base, &base_len)) {
       state->base_utf8 = base;
       state->base_len = base_len;
       state->valid = 1;
@@ -1672,7 +1674,7 @@ static UVUnion_Unit_IoError uv_file_write_handle(uv_rt_handle_t h,
 
 UVUnion_Unit_IoError File_x3a_x3aWrite_x3a_x3awrite(
     UVFileHandle self,
-    const UVBytesView* data) {
+    UVBytesView data) {
   SPEC_RULE("Prim-File-Write");
   uv_trace_emit_rule("Prim-File-Write");
   if (!self.handle) {
@@ -1684,9 +1686,9 @@ UVUnion_Unit_IoError File_x3a_x3aWrite_x3a_x3awrite(
     uv_rt_rwlock_unlock_exclusive(&g_uv_io_registry_lock);
     return uv_unit_err(UV_IO_FAILURE);
   }
-  UVUnion_Unit_IoError out = uv_file_write_handle(tracked->handle, data);
+  UVUnion_Unit_IoError out = uv_file_write_handle(tracked->handle, &data);
   if (out.disc == 0) {
-    uint64_t bytes = data ? data->len : 0;
+    uint64_t bytes = data.len;
     uint64_t new_pos = tracked->position + bytes;
     tracked->position = new_pos;
     if (new_pos > tracked->length) {
@@ -1731,7 +1733,7 @@ void File_x3a_x3aWrite_x3a_x3aclose(UVFileHandle self) {
 
 UVUnion_Unit_IoError File_x3a_x3aAppend_x3a_x3awrite(
     UVFileHandle self,
-    const UVBytesView* data) {
+    UVBytesView data) {
   SPEC_RULE("Prim-File-Write-Append");
   uv_trace_emit_rule("Prim-File-Write-Append");
   if (!self.handle) {
@@ -1743,9 +1745,9 @@ UVUnion_Unit_IoError File_x3a_x3aAppend_x3a_x3awrite(
     uv_rt_rwlock_unlock_exclusive(&g_uv_io_registry_lock);
     return uv_unit_err(UV_IO_FAILURE);
   }
-  UVUnion_Unit_IoError out = uv_file_write_handle(tracked->handle, data);
+  UVUnion_Unit_IoError out = uv_file_write_handle(tracked->handle, &data);
   if (out.disc == 0) {
-    uint64_t bytes = data ? data->len : 0;
+    uint64_t bytes = data.len;
     uint64_t new_pos = tracked->length + bytes;
     tracked->position = new_pos;
     tracked->length = new_pos;

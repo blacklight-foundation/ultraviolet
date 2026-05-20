@@ -45,18 +45,18 @@ void ultraviolet_x3a_x3aruntime_x3a_x3asystem_x3a_x3aexit(int32_t code) {
 }
 
 UVStringView ultraviolet_x3a_x3aruntime_x3a_x3asystem_x3a_x3aget_x5fenv(
-    const UVStringView* key) {
-  if (!key || !key->data || key->len == 0) {
+    UVStringView key) {
+  if (!key.data || key.len == 0) {
     return uv_system_get_env_none();
   }
 
-  char* key_utf8 = (char*)uv_heap_alloc_raw((size_t)key->len + 1u);
+  char* key_utf8 = (char*)uv_heap_alloc_raw((size_t)key.len + 1u);
   if (!key_utf8) {
     uv_trace_emit_rule("Prim-System-GetEnv");
     return uv_system_empty_string_view();
   }
-  uv_memcpy(key_utf8, key->data, key->len);
-  key_utf8[key->len] = '\0';
+  uv_memcpy(key_utf8, key.data, key.len);
+  key_utf8[key.len] = '\0';
 
   uv_rt_last_error_set(UV_RT_ERROR_SUCCESS);
   uv_rt_u32_t required = uv_rt_env_query_utf8(key_utf8, NULL, 0);
@@ -114,12 +114,12 @@ uint64_t ultraviolet_x3a_x3aruntime_x3a_x3asystem_x3a_x3aargument_x5fcount(void)
 }
 
 UVStringView ultraviolet_x3a_x3aruntime_x3a_x3asystem_x3a_x3aargument(
-    const uint64_t* index) {
-  if (!index || *index > (uint64_t)((uv_rt_uptr_t)-1)) {
+    uint64_t index) {
+  if (index > (uint64_t)((uv_rt_uptr_t)-1)) {
     return uv_system_empty_string_view();
   }
 
-  uv_rt_uptr_t argument_index = (uv_rt_uptr_t)*index;
+  uv_rt_uptr_t argument_index = (uv_rt_uptr_t)index;
   uv_rt_dword_t required =
       uv_rt_argument_query_utf8(argument_index, NULL, 0u);
   if (required == 0u) {
@@ -156,14 +156,14 @@ ultraviolet_x3a_x3aruntime_x3a_x3asystem_x3a_x3acurrent_x5fdirectory(void) {
 }
 
 int32_t ultraviolet_x3a_x3aruntime_x3a_x3asystem_x3a_x3arun(
-    const UVStringView* command) {
-  if (!command || !command->data || command->len == 0) {
+    UVStringView command) {
+  if (!command.data || command.len == 0) {
     return -1;
   }
 
   uint32_t command_wide_len = 0;
   wchar_t* command_wide =
-      uv_utf8_to_wide(command->data, command->len, &command_wide_len);
+      uv_utf8_to_wide(command.data, command.len, &command_wide_len);
   if (!command_wide) {
     return -1;
   }

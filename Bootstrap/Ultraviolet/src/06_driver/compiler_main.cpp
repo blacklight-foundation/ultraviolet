@@ -3931,6 +3931,7 @@ int ultraviolet::driver::RunCompiler(int argc, char** argv) {
                     }
                     return incremental->build_key;
                   };
+                  out_deps.codegen_obj_thread_safe = true;
                   const auto codegen_cache = ensure_cache(output_project);
                   if (!codegen_cache || !codegen_cache->ok.load()) {
                     EmitInternalDiagnostic(

@@ -161,6 +161,8 @@ ABICallResult ComputeProcABI(LLVMEmitter& emitter,
                              bool use_c_abi_aggregate_sret = false,
                              bool foreign_boundary_mode_independent = false);
 
+void ClearCallABICacheForEmitter(const LLVMEmitter& emitter);
+
 // -----------------------------------------------------------------------------
 // Call Emission
 // -----------------------------------------------------------------------------

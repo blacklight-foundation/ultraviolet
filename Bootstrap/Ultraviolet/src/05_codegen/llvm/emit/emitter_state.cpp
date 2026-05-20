@@ -1,5 +1,7 @@
 #include "05_codegen/llvm/llvm_emit.h"
 
+#include "05_codegen/llvm/llvm_call.h"
+
 #include "llvm/IR/BasicBlock.h"
 #include "llvm/IR/IRBuilder.h"
 #include "llvm/IR/LLVMContext.h"
@@ -15,7 +17,9 @@ LLVMEmitter::LLVMEmitter(llvm::LLVMContext& ctx,
       builder_(std::make_unique<llvm::IRBuilder<>>(ctx)),
       target_profile_(profile) {}
 
-LLVMEmitter::~LLVMEmitter() = default;
+LLVMEmitter::~LLVMEmitter() {
+  ClearCallABICacheForEmitter(*this);
+}
 
 std::unique_ptr<llvm::Module> LLVMEmitter::ReleaseModule() {
   return std::move(module_);

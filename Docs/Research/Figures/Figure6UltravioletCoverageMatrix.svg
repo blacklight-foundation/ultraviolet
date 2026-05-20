@@ -1,0 +1,175 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1320" height="760" viewBox="0 0 1320 760" role="img" aria-labelledby="title desc">
+  <title id="title">Figure 6. Ultraviolet coverage matrix for language-level failure modes</title>
+  <desc id="desc">A vector heatmap showing how Ultraviolet mechanisms address twelve language-level failure modes through static rejection, source exposure, dynamic or test evidence, and residual responsibility.</desc>
+  <defs>
+    <style>
+      .title { font: 700 22px Arial, sans-serif; fill: #111827; }
+      .head { font: 700 14px Arial, sans-serif; fill: #111827; }
+      .label { font: 13px Arial, sans-serif; fill: #111827; }
+      .cell { font: 700 12px Arial, sans-serif; fill: #111827; }
+      .note { font: 12px Arial, sans-serif; fill: #334155; }
+      .grid { stroke: #cbd5e1; stroke-width: 1; }
+      .yes { fill: #bbf7d0; }
+      .partial { fill: #fde68a; }
+      .no { fill: #e5e7eb; }
+      .residual { fill: #f8fafc; }
+    </style>
+  </defs>
+  <rect width="1320" height="760" fill="#ffffff"/>
+  <text class="title" x="40" y="38">Ultraviolet response modes for the identified failure surface</text>
+
+  <rect class="grid residual" x="40" y="70" width="1240" height="640"/>
+  <rect class="grid residual" x="40" y="70" width="310" height="40"/>
+  <rect class="grid residual" x="350" y="70" width="120" height="40"/>
+  <rect class="grid residual" x="470" y="70" width="130" height="40"/>
+  <rect class="grid residual" x="600" y="70" width="150" height="40"/>
+  <rect class="grid residual" x="750" y="70" width="530" height="40"/>
+
+  <text class="head" x="55" y="96">Failure mode</text>
+  <text class="head" x="410" y="96" text-anchor="middle">Static</text>
+  <text class="head" x="535" y="96" text-anchor="middle">Source</text>
+  <text class="head" x="675" y="96" text-anchor="middle">Runtime/test</text>
+  <text class="head" x="765" y="96">Residual responsibility</text>
+
+  <g transform="translate(0,110)">
+    <rect class="grid residual" x="40" y="0" width="310" height="46"/>
+    <text class="label" x="55" y="29">F1 semantic aliasing</text>
+    <rect class="grid yes" x="350" y="0" width="120" height="46"/>
+    <text class="cell" x="410" y="29" text-anchor="middle">yes</text>
+    <rect class="grid yes" x="470" y="0" width="130" height="46"/>
+    <text class="cell" x="535" y="29" text-anchor="middle">yes</text>
+    <rect class="grid no" x="600" y="0" width="150" height="46"/>
+    <text class="cell" x="675" y="29" text-anchor="middle">no</text>
+    <rect class="grid residual" x="750" y="0" width="530" height="46"/>
+    <text class="label" x="765" y="29">training examples</text>
+
+    <rect class="grid residual" x="40" y="46" width="310" height="46"/>
+    <text class="label" x="55" y="75">F2 lexical hazards</text>
+    <rect class="grid yes" x="350" y="46" width="120" height="46"/>
+    <text class="cell" x="410" y="75" text-anchor="middle">yes</text>
+    <rect class="grid yes" x="470" y="46" width="130" height="46"/>
+    <text class="cell" x="535" y="75" text-anchor="middle">yes</text>
+    <rect class="grid no" x="600" y="46" width="150" height="46"/>
+    <text class="cell" x="675" y="75" text-anchor="middle">no</text>
+    <rect class="grid residual" x="750" y="46" width="530" height="46"/>
+    <text class="label" x="765" y="75">naming judgment</text>
+
+    <rect class="grid residual" x="40" y="92" width="310" height="46"/>
+    <text class="label" x="55" y="121">F3 hidden authority</text>
+    <rect class="grid yes" x="350" y="92" width="120" height="46"/>
+    <text class="cell" x="410" y="121" text-anchor="middle">yes</text>
+    <rect class="grid yes" x="470" y="92" width="130" height="46"/>
+    <text class="cell" x="535" y="121" text-anchor="middle">yes</text>
+    <rect class="grid no" x="600" y="92" width="150" height="46"/>
+    <text class="cell" x="675" y="121" text-anchor="middle">no</text>
+    <rect class="grid residual" x="750" y="92" width="530" height="46"/>
+    <text class="label" x="765" y="121">API capability design</text>
+
+    <rect class="grid residual" x="40" y="138" width="310" height="46"/>
+    <text class="label" x="55" y="167">F4 ownership/resource transfer</text>
+    <rect class="grid yes" x="350" y="138" width="120" height="46"/>
+    <text class="cell" x="410" y="167" text-anchor="middle">yes</text>
+    <rect class="grid yes" x="470" y="138" width="130" height="46"/>
+    <text class="cell" x="535" y="167" text-anchor="middle">yes</text>
+    <rect class="grid no" x="600" y="138" width="150" height="46"/>
+    <text class="cell" x="675" y="167" text-anchor="middle">no</text>
+    <rect class="grid residual" x="750" y="138" width="530" height="46"/>
+    <text class="label" x="765" y="167">unsafe/foreign boundaries</text>
+
+    <rect class="grid residual" x="40" y="184" width="310" height="46"/>
+    <text class="label" x="55" y="213">F5 protocol states</text>
+    <rect class="grid yes" x="350" y="184" width="120" height="46"/>
+    <text class="cell" x="410" y="213" text-anchor="middle">yes</text>
+    <rect class="grid yes" x="470" y="184" width="130" height="46"/>
+    <text class="cell" x="535" y="213" text-anchor="middle">yes</text>
+    <rect class="grid no" x="600" y="184" width="150" height="46"/>
+    <text class="cell" x="675" y="213" text-anchor="middle">no</text>
+    <rect class="grid residual" x="750" y="184" width="530" height="46"/>
+    <text class="label" x="765" y="213">protocols must be modeled</text>
+
+    <rect class="grid residual" x="40" y="230" width="310" height="46"/>
+    <text class="label" x="55" y="259">F6 weak specifications</text>
+    <rect class="grid partial" x="350" y="230" width="120" height="46"/>
+    <text class="cell" x="410" y="259" text-anchor="middle">partial</text>
+    <rect class="grid yes" x="470" y="230" width="130" height="46"/>
+    <text class="cell" x="535" y="259" text-anchor="middle">yes</text>
+    <rect class="grid yes" x="600" y="230" width="150" height="46"/>
+    <text class="cell" x="675" y="259" text-anchor="middle">yes</text>
+    <rect class="grid residual" x="750" y="230" width="530" height="46"/>
+    <text class="label" x="765" y="259">spec strength</text>
+
+    <rect class="grid residual" x="40" y="276" width="310" height="46"/>
+    <text class="label" x="55" y="305">F7 dynamic escape hatches</text>
+    <rect class="grid partial" x="350" y="276" width="120" height="46"/>
+    <text class="cell" x="410" y="305" text-anchor="middle">partial</text>
+    <rect class="grid yes" x="470" y="276" width="130" height="46"/>
+    <text class="cell" x="535" y="305" text-anchor="middle">yes</text>
+    <rect class="grid yes" x="600" y="276" width="150" height="46"/>
+    <text class="cell" x="675" y="305" text-anchor="middle">yes</text>
+    <rect class="grid residual" x="750" y="276" width="530" height="46"/>
+    <text class="label" x="765" y="305">runtime evidence</text>
+
+    <rect class="grid residual" x="40" y="322" width="310" height="46"/>
+    <text class="label" x="55" y="351">F8 shared mutation/concurrency</text>
+    <rect class="grid partial" x="350" y="322" width="120" height="46"/>
+    <text class="cell" x="410" y="351" text-anchor="middle">partial</text>
+    <rect class="grid yes" x="470" y="322" width="130" height="46"/>
+    <text class="cell" x="535" y="351" text-anchor="middle">yes</text>
+    <rect class="grid yes" x="600" y="322" width="150" height="46"/>
+    <text class="cell" x="675" y="351" text-anchor="middle">yes</text>
+    <rect class="grid residual" x="750" y="322" width="530" height="46"/>
+    <text class="label" x="765" y="351">scheduler/runtime correctness</text>
+
+    <rect class="grid residual" x="40" y="368" width="310" height="46"/>
+    <text class="label" x="55" y="397">F9 unsafe/FFI blur</text>
+    <rect class="grid yes" x="350" y="368" width="120" height="46"/>
+    <text class="cell" x="410" y="397" text-anchor="middle">yes</text>
+    <rect class="grid yes" x="470" y="368" width="130" height="46"/>
+    <text class="cell" x="535" y="397" text-anchor="middle">yes</text>
+    <rect class="grid partial" x="600" y="368" width="150" height="46"/>
+    <text class="cell" x="675" y="397" text-anchor="middle">partial</text>
+    <rect class="grid residual" x="750" y="368" width="530" height="46"/>
+    <text class="label" x="765" y="397">wrapper and foreign-code audit</text>
+
+    <rect class="grid residual" x="40" y="414" width="310" height="46"/>
+    <text class="label" x="55" y="443">F10 poor diagnostics</text>
+    <rect class="grid partial" x="350" y="414" width="120" height="46"/>
+    <text class="cell" x="410" y="443" text-anchor="middle">partial</text>
+    <rect class="grid yes" x="470" y="414" width="130" height="46"/>
+    <text class="cell" x="535" y="443" text-anchor="middle">yes</text>
+    <rect class="grid no" x="600" y="414" width="150" height="46"/>
+    <text class="cell" x="675" y="443" text-anchor="middle">no</text>
+    <rect class="grid residual" x="750" y="414" width="530" height="46"/>
+    <text class="label" x="765" y="443">implementation fidelity</text>
+
+    <rect class="grid residual" x="40" y="460" width="310" height="46"/>
+    <text class="label" x="55" y="489">F11 repository-context dependence</text>
+    <rect class="grid partial" x="350" y="460" width="120" height="46"/>
+    <text class="cell" x="410" y="489" text-anchor="middle">partial</text>
+    <rect class="grid yes" x="470" y="460" width="130" height="46"/>
+    <text class="cell" x="535" y="489" text-anchor="middle">yes</text>
+    <rect class="grid no" x="600" y="460" width="150" height="46"/>
+    <text class="cell" x="675" y="489" text-anchor="middle">no</text>
+    <rect class="grid residual" x="750" y="460" width="530" height="46"/>
+    <text class="label" x="765" y="489">architecture context</text>
+
+    <rect class="grid residual" x="40" y="506" width="310" height="46"/>
+    <text class="label" x="55" y="535">F12 sparse examples</text>
+    <rect class="grid no" x="350" y="506" width="120" height="46"/>
+    <text class="cell" x="410" y="535" text-anchor="middle">no</text>
+    <rect class="grid yes" x="470" y="506" width="130" height="46"/>
+    <text class="cell" x="535" y="535" text-anchor="middle">yes</text>
+    <rect class="grid yes" x="600" y="506" width="150" height="46"/>
+    <text class="cell" x="675" y="535" text-anchor="middle">yes</text>
+    <rect class="grid residual" x="750" y="506" width="530" height="46"/>
+    <text class="label" x="765" y="535">model training corpus</text>
+  </g>
+
+  <rect class="yes grid" x="40" y="724" width="24" height="18"/>
+  <text class="note" x="72" y="738">yes</text>
+  <rect class="partial grid" x="118" y="724" width="24" height="18"/>
+  <text class="note" x="150" y="738">partial</text>
+  <rect class="no grid" x="220" y="724" width="24" height="18"/>
+  <text class="note" x="252" y="738">no</text>
+  <text class="note" x="340" y="738">Residual responsibility is the remaining obligation after the language mechanism has acted.</text>
+</svg>

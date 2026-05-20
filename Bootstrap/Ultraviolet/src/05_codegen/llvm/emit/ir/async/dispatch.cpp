@@ -15,8 +15,18 @@ void IRInstructionVisitor::operator()(const IRDispatch &dispatch) const
   llvm::Type *ptr_ty = emitter.GetOpaquePtr();
   llvm::Type *i32_ty = llvm::Type::getInt32Ty(emitter.GetContext());
   llvm::Type *usize_ty = llvm::Type::getInt64Ty(emitter.GetContext());
-  llvm::Type *range_ty = GetRangeType(emitter.GetContext());
   llvm::Type *string_view_ty = GetStringViewType(emitter.GetContext());
+  const std::string dispatch_sym = ConcurrencySymDispatchRun();
+  std::optional<RuntimeFuncInfo> dispatch_info = GetRuntimeFuncInfo(dispatch_sym);
+  llvm::Type *range_ty = GetRangeType(emitter.GetContext());
+  if (dispatch_info.has_value() && !dispatch_info->params.empty())
+  {
+    if (llvm::Type *runtime_range_ty =
+            emitter.GetLLVMType(dispatch_info->params.front().type))
+    {
+      range_ty = runtime_range_ty;
+    }
+  }
 
   auto as_usize = [&](llvm::Value *value, llvm::Value *fallback) -> llvm::Value *
   {
@@ -35,113 +45,93 @@ void IRInstructionVisitor::operator()(const IRDispatch &dispatch) const
     return value ? value : fallback;
   };
 
-  auto evaluate_range_bound = [&](const std::optional<IRValue> &bound_opt,
-                                  llvm::Type *target_ty) -> llvm::Value *
+  auto runtime_range_tag = [&](IRRangeKind kind) -> std::uint64_t
   {
-    if (!target_ty)
+    switch (kind)
+    {
+    case IRRangeKind::To:
+      return 0u;
+    case IRRangeKind::ToInclusive:
+      return 1u;
+    case IRRangeKind::Full:
+      return 2u;
+    case IRRangeKind::From:
+      return 3u;
+    case IRRangeKind::Exclusive:
+      return 4u;
+    case IRRangeKind::Inclusive:
+      return 5u;
+    }
+    return 0u;
+  };
+
+  auto build_runtime_range = [&](IRRangeKind kind,
+                                 llvm::Value *lo,
+                                 llvm::Value *hi) -> llvm::Value *
+  {
+    auto *range_struct_ty = llvm::dyn_cast<llvm::StructType>(range_ty);
+    if (!range_struct_ty)
     {
       return nullptr;
     }
-    llvm::Value *fallback = llvm::ConstantInt::get(target_ty, 0);
-    if (!bound_opt.has_value())
+
+    const bool has_explicit_padding =
+        range_struct_ty->getNumElements() >= 4 &&
+        range_struct_ty->getElementType(1)->isArrayTy();
+    const unsigned kind_index = 0u;
+    const unsigned lo_index = has_explicit_padding ? 2u : 1u;
+    const unsigned hi_index = has_explicit_padding ? 3u : 2u;
+    if (hi_index >= range_struct_ty->getNumElements())
     {
-      return fallback;
+      return nullptr;
     }
 
-    llvm::Value *value = emitter.EvaluateIRValue(*bound_opt);
-    if (!value)
+    llvm::Type *kind_ty = range_struct_ty->getElementType(kind_index);
+    llvm::Type *lo_ty = range_struct_ty->getElementType(lo_index);
+    llvm::Type *hi_ty = range_struct_ty->getElementType(hi_index);
+    llvm::Value *tag =
+        llvm::ConstantInt::get(kind_ty, runtime_range_tag(kind));
+    llvm::Value *lo_value = lo ? as_usize(lo, llvm::ConstantInt::get(lo_ty, 0))
+                               : llvm::ConstantInt::get(lo_ty, 0);
+    llvm::Value *hi_value = hi ? as_usize(hi, llvm::ConstantInt::get(hi_ty, 0))
+                               : llvm::ConstantInt::get(hi_ty, 0);
+
+    if (lo_value && lo_value->getType() != lo_ty)
     {
-      return fallback;
+      lo_value = CoerceTo(&builder, lo_value, lo_ty);
+    }
+    if (hi_value && hi_value->getType() != hi_ty)
+    {
+      hi_value = CoerceTo(&builder, hi_value, hi_ty);
+    }
+    if (!lo_value || !hi_value)
+    {
+      return nullptr;
     }
 
-    if (value->getType()->isPointerTy() && target_ty->isIntegerTy())
-    {
-      llvm::Type *load_ty = target_ty;
-      if (active_ctx)
-      {
-        if (analysis::TypeRef bound_type = active_ctx->LookupValueType(*bound_opt))
-        {
-          if (llvm::Type *bound_ll = emitter.GetLLVMType(bound_type))
-          {
-            if (bound_ll->isIntegerTy())
-            {
-              load_ty = bound_ll;
-            }
-          }
-        }
-      }
-      llvm::Value *typed_ptr = value;
-      llvm::Type *ptr_to_load_ty = llvm::PointerType::get(load_ty, 0);
-      if (typed_ptr->getType() != ptr_to_load_ty)
-      {
-        typed_ptr = builder.CreateBitCast(typed_ptr, ptr_to_load_ty);
-      }
-      value = builder.CreateLoad(load_ty, typed_ptr);
-    }
-
-    value = as_usize(value, fallback);
-    if (value && value->getType() != target_ty)
-    {
-      value = CoerceTo(&builder, value, target_ty);
-    }
-    if (!value)
-    {
-      return fallback;
-    }
-    return value;
+    llvm::Value *out = llvm::Constant::getNullValue(range_struct_ty);
+    out = builder.CreateInsertValue(out, tag, {kind_index});
+    out = builder.CreateInsertValue(out, lo_value, {lo_index});
+    out = builder.CreateInsertValue(out, hi_value, {hi_index});
+    return out;
   };
 
   auto materialize_range = [&]() -> llvm::Value *
   {
-    if (active_ctx)
+    if (auto resolved = ResolveRangeValue(dispatch.range, usize_ty);
+        resolved.has_value())
     {
-      if (const DerivedValueInfo *derived = active_ctx->LookupDerivedValue(dispatch.range))
+      if (llvm::Value *range =
+              build_runtime_range(resolved->kind, resolved->lo, resolved->hi))
       {
-        if (derived->kind == DerivedValueInfo::Kind::RangeLit)
-        {
-          auto *range_struct_ty = llvm::dyn_cast<llvm::StructType>(range_ty);
-          if (range_struct_ty && range_struct_ty->getNumElements() >= 3)
-          {
-            llvm::Value *out = llvm::Constant::getNullValue(range_struct_ty);
-            llvm::Type *kind_ty = range_struct_ty->getElementType(0);
-            llvm::Type *lo_ty = range_struct_ty->getElementType(1);
-            llvm::Type *hi_ty = range_struct_ty->getElementType(2);
-
-            llvm::Value *kind = llvm::ConstantInt::get(
-                kind_ty,
-                static_cast<std::uint64_t>(derived->range.kind));
-
-            llvm::Value *lo = llvm::ConstantInt::get(lo_ty, 0);
-            if (derived->range.lo.has_value())
-            {
-              lo = evaluate_range_bound(derived->range.lo, lo_ty);
-            }
-
-            llvm::Value *hi = llvm::ConstantInt::get(hi_ty, 0);
-            if (derived->range.hi.has_value())
-            {
-              hi = evaluate_range_bound(derived->range.hi, hi_ty);
-            }
-
-            out = builder.CreateInsertValue(out, kind, {0u});
-            out = builder.CreateInsertValue(out, lo, {1u});
-            out = builder.CreateInsertValue(out, hi, {2u});
-            return out;
-          }
-        }
+        return range;
       }
     }
-
-    llvm::Value *range = EvaluateOrDefault(dispatch.range);
-    if (range && range->getType() != range_ty)
+    if (active_ctx)
     {
-      range = CoerceTo(&builder, range, range_ty);
+      const_cast<LowerCtx *>(active_ctx)->ReportCodegenFailure();
     }
-    if (!range)
-    {
-      range = llvm::Constant::getNullValue(range_ty);
-    }
-    return range;
+    return llvm::Constant::getNullValue(range_ty);
   };
 
   llvm::Value *range = materialize_range();
@@ -223,9 +213,7 @@ void IRInstructionVisitor::operator()(const IRDispatch &dispatch) const
         llvm::ConstantInt::get(usize_ty, 0));
   }
 
-  const std::string dispatch_sym = ConcurrencySymDispatchRun();
-  if (std::optional<RuntimeFuncInfo> dispatch_info =
-          GetRuntimeFuncInfo(dispatch_sym))
+  if (dispatch_info.has_value())
   {
     llvm::Function *dispatch_fn = emitter.GetModule().getFunction(dispatch_sym);
     const bool use_c_abi_aggregate_sret = true;

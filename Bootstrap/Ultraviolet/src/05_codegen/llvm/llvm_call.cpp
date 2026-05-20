@@ -47,8 +47,10 @@
 
 #include <algorithm>
 #include <cstdlib>
+#include <functional>
 #include <string>
 #include <string_view>
+#include <unordered_map>
 #include <vector>
 
 namespace ultraviolet::codegen {
@@ -76,7 +78,104 @@ const char* UnwindPersonalitySymbolForModule(const llvm::Module& module) {
   return "__gxx_personality_v0";
 }
 
+struct CallABIParamCacheKey {
+  std::optional<analysis::ParamMode> mode;
+  const analysis::Type* type = nullptr;
+  std::string name;
+
+  bool operator==(const CallABIParamCacheKey& other) const {
+    return mode == other.mode &&
+           type == other.type &&
+           name == other.name;
+  }
+};
+
+struct CallABICacheKey {
+  const LLVMEmitter* emitter = nullptr;
+  const analysis::Sigma* sigma = nullptr;
+  std::vector<std::string> module_path;
+  project::TargetProfile target_profile = project::TargetProfile::X86_64SysV;
+  const analysis::Type* ret_type = nullptr;
+  bool use_c_abi_aggregate_sret = false;
+  bool foreign_boundary_mode_independent = false;
+  std::vector<CallABIParamCacheKey> params;
+
+  bool operator==(const CallABICacheKey& other) const {
+    return emitter == other.emitter &&
+           sigma == other.sigma &&
+           module_path == other.module_path &&
+           target_profile == other.target_profile &&
+           ret_type == other.ret_type &&
+           use_c_abi_aggregate_sret == other.use_c_abi_aggregate_sret &&
+           foreign_boundary_mode_independent ==
+               other.foreign_boundary_mode_independent &&
+           params == other.params;
+  }
+};
+
+void HashCombine(std::size_t& seed, std::size_t value) {
+  seed ^= value + 0x9e3779b97f4a7c15ull + (seed << 6) + (seed >> 2);
+}
+
+struct CallABICacheKeyHash {
+  std::size_t operator()(const CallABICacheKey& key) const {
+    std::size_t seed = 0;
+    HashCombine(seed, std::hash<const void*>{}(key.emitter));
+    HashCombine(seed, std::hash<const void*>{}(key.sigma));
+    HashCombine(seed, std::hash<int>{}(static_cast<int>(key.target_profile)));
+    HashCombine(seed, std::hash<const void*>{}(key.ret_type));
+    HashCombine(seed, std::hash<bool>{}(key.use_c_abi_aggregate_sret));
+    HashCombine(seed, std::hash<bool>{}(key.foreign_boundary_mode_independent));
+    for (const std::string& segment : key.module_path) {
+      HashCombine(seed, std::hash<std::string>{}(segment));
+    }
+    for (const CallABIParamCacheKey& param : key.params) {
+      HashCombine(seed, std::hash<const void*>{}(param.type));
+      HashCombine(seed, std::hash<std::string>{}(param.name));
+      HashCombine(seed,
+                  param.mode.has_value()
+                      ? std::hash<int>{}(static_cast<int>(*param.mode) + 1)
+                      : 0u);
+    }
+    return seed;
+  }
+};
+
+using CallABICache =
+    std::unordered_map<CallABICacheKey, ABICallResult, CallABICacheKeyHash>;
+
+thread_local std::unordered_map<const LLVMEmitter*, CallABICache> call_abi_caches;
+
+CallABICacheKey MakeCallABICacheKey(
+    LLVMEmitter& emitter,
+    const std::vector<IRParam>& params,
+    const analysis::TypeRef& ret_type,
+    bool use_c_abi_aggregate_sret,
+    bool foreign_boundary_mode_independent) {
+  LowerCtx* current_ctx = emitter.GetCurrentCtx();
+  CallABICacheKey key;
+  key.emitter = &emitter;
+  key.sigma = current_ctx ? current_ctx->sigma : nullptr;
+  if (current_ctx) {
+    key.module_path = current_ctx->module_path;
+  }
+  key.target_profile = emitter.GetTargetProfile();
+  key.ret_type = ret_type.get();
+  key.use_c_abi_aggregate_sret = use_c_abi_aggregate_sret;
+  key.foreign_boundary_mode_independent = foreign_boundary_mode_independent;
+  key.params.reserve(params.size());
+  for (const IRParam& param : params) {
+    key.params.push_back(
+        CallABIParamCacheKey{param.mode, param.type.get(), param.name});
+  }
+  return key;
+}
+
 }  // namespace
+
+void ClearCallABICacheForEmitter(const LLVMEmitter& emitter) {
+  call_abi_caches.erase(&emitter);
+}
 
 // =============================================================================
 // §6.12.9 LLVM Call Signature Lowering
@@ -148,6 +247,27 @@ bool IsWin64CAbiAggregateDirectSize(std::uint64_t size) {
   return size == 1 || size == 2 || size == 4 || size == 8;
 }
 
+bool ContainsFloatingLLVMType(llvm::Type* ty) {
+  if (!ty) {
+    return false;
+  }
+  if (ty->isFloatingPointTy() || ty->isVectorTy()) {
+    return true;
+  }
+  if (auto* struct_ty = llvm::dyn_cast<llvm::StructType>(ty)) {
+    for (llvm::Type* elem_ty : struct_ty->elements()) {
+      if (ContainsFloatingLLVMType(elem_ty)) {
+        return true;
+      }
+    }
+    return false;
+  }
+  if (auto* array_ty = llvm::dyn_cast<llvm::ArrayType>(ty)) {
+    return ContainsFloatingLLVMType(array_ty->getElementType());
+  }
+  return false;
+}
+
 llvm::Type* Win64CAbiDirectAggregateCarrier(llvm::LLVMContext& ctx,
                                             std::uint64_t size) {
   switch (size) {
@@ -162,6 +282,39 @@ llvm::Type* Win64CAbiDirectAggregateCarrier(llvm::LLVMContext& ctx,
     default:
       return nullptr;
   }
+}
+
+llvm::Type* SysVCAbiDirectAggregateCarrier(llvm::LLVMContext& ctx,
+                                           llvm::Type* source_ty,
+                                           std::uint64_t size) {
+  if (size == 0 || size > 16 || ContainsFloatingLLVMType(source_ty)) {
+    return nullptr;
+  }
+  if (size <= 8) {
+    return llvm::IntegerType::get(ctx, static_cast<unsigned>(size * 8));
+  }
+
+  llvm::Type* low = llvm::Type::getInt64Ty(ctx);
+  llvm::Type* high =
+      llvm::IntegerType::get(ctx, static_cast<unsigned>((size - 8) * 8));
+  return llvm::StructType::get(ctx, {low, high}, /*isPacked=*/size != 16);
+}
+
+llvm::Type* ForeignAbiDirectAggregateCarrier(
+    project::TargetProfile profile,
+    llvm::LLVMContext& ctx,
+    llvm::Type* source_ty,
+    std::uint64_t size) {
+  if (!IsForeignAbiAggregateLLVMType(source_ty)) {
+    return nullptr;
+  }
+  switch (profile) {
+    case project::TargetProfile::X86_64Win64:
+      return Win64CAbiDirectAggregateCarrier(ctx, size);
+    case project::TargetProfile::X86_64SysV:
+      return SysVCAbiDirectAggregateCarrier(ctx, source_ty, size);
+  }
+  return nullptr;
 }
 
 }  // namespace
@@ -1497,6 +1650,24 @@ ABICallResult ComputeCallABI(LLVMEmitter& emitter,
 
   ABICallResult result;
   LowerCtx* current_ctx = emitter.GetCurrentCtx();
+  const bool use_cache = !core::Conformance::Enabled();
+  const CallABICacheKey cache_key =
+      use_cache
+          ? MakeCallABICacheKey(emitter,
+                                params,
+                                ret_type,
+                                use_c_abi_aggregate_sret,
+                                foreign_boundary_mode_independent)
+          : CallABICacheKey{};
+  if (use_cache)
+  {
+    CallABICache& cache = call_abi_caches[&emitter];
+    const auto cached = cache.find(cache_key);
+    if (cached != cache.end())
+    {
+      return cached->second;
+    }
+  }
   const analysis::ScopeContext& scope = BuildScope(current_ctx);
   auto invalidate = [&]() -> ABICallResult {
     if (current_ctx) {
@@ -1556,6 +1727,7 @@ ABICallResult ComputeCallABI(LLVMEmitter& emitter,
   const bool win64_foreign_abi =
       use_c_abi_aggregate_sret &&
       emitter.GetTargetProfile() == project::TargetProfile::X86_64Win64;
+  const bool foreign_c_abi = use_c_abi_aggregate_sret;
 
   bool c_abi_sret = false;
   if (win64_foreign_abi && ret_type) {
@@ -1602,6 +1774,21 @@ ABICallResult ComputeCallABI(LLVMEmitter& emitter,
             result.ret_type = carrier;
           } else {
             result.ret_type = llvm::Type::getVoidTy(emitter.GetContext());
+          }
+        }
+      }
+      if (foreign_c_abi && ret_type &&
+          emitter.GetTargetProfile() == project::TargetProfile::X86_64SysV &&
+          IsForeignAbiAggregateLLVMType(result.ret_type)) {
+        const auto ret_size =
+            ::ultraviolet::analysis::layout::SizeOf(scope, ret_type);
+        if (ret_size.has_value() && *ret_size > 0) {
+          if (llvm::Type* carrier = ForeignAbiDirectAggregateCarrier(
+                  emitter.GetTargetProfile(),
+                  emitter.GetContext(),
+                  result.ret_type,
+                  *ret_size)) {
+            result.ret_type = carrier;
           }
         }
       }
@@ -1665,6 +1852,17 @@ ABICallResult ComputeCallABI(LLVMEmitter& emitter,
         result.param_carriers[i] = ABIArgCarrierKind::Indirect;
       }
     }
+    if (foreign_c_abi &&
+        emitter.GetTargetProfile() == project::TargetProfile::X86_64SysV &&
+        llvm_ty && IsForeignAbiAggregateLLVMType(llvm_ty)) {
+      if (llvm::Type* carrier = ForeignAbiDirectAggregateCarrier(
+              emitter.GetTargetProfile(),
+              emitter.GetContext(),
+              llvm_ty,
+              *size)) {
+        llvm_ty = carrier;
+      }
+    }
     if (!llvm_ty) {
       SPEC_RULE("LLVMArgLower-Err");
       return invalidate();
@@ -1678,6 +1876,9 @@ ABICallResult ComputeCallABI(LLVMEmitter& emitter,
   result.func_type =
       llvm::FunctionType::get(result.ret_type, result.param_types, false);
   result.valid = true;
+  if (use_cache) {
+    call_abi_caches[&emitter].emplace(cache_key, result);
+  }
   return result;
 }
 
