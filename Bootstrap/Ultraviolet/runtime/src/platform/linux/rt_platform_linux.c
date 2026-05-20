@@ -55,6 +55,7 @@ typedef struct UVHeapBlockHeader {
   uint64_t magic;
   size_t size;
   size_t mapping_size;
+  size_t alignment_padding;
 } UVHeapBlockHeader;
 
 typedef struct UVMapViewNode {

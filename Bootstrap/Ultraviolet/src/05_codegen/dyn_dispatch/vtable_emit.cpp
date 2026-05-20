@@ -316,12 +316,7 @@ std::string GetDropGlueSymbol(const analysis::TypeRef& type) {
     return "";
   }
 
-  // Build drop glue symbol: __drop_<type_path>
-  auto type_path = PathOfType(type);
-  std::vector<std::string> path = {"__drop"};
-  path.insert(path.end(), type_path.begin(), type_path.end());
-
-  return ScopedSym(path);
+  return DropGluePathSig(type);
 }
 
 // =============================================================================

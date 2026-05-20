@@ -365,6 +365,68 @@ std::vector<std::string> PathOfType(const analysis::TypeRef& type) {
   return {};
 }
 
+namespace {
+
+analysis::TypeRef StripDropGlueTopLevelPermission(const analysis::TypeRef& type) {
+  if (!type) {
+    return nullptr;
+  }
+  if (const auto* perm = std::get_if<analysis::TypePerm>(&type->node)) {
+    return perm->base;
+  }
+  return type;
+}
+
+bool NeedsRenderedDropGluePath(const analysis::TypeRef& type) {
+  if (!type) {
+    return true;
+  }
+  if (const auto* path_type = std::get_if<analysis::TypePathType>(&type->node)) {
+    return !path_type->generic_args.empty();
+  }
+  if (const auto* modal_state =
+          std::get_if<analysis::TypeModalState>(&type->node)) {
+    return !analysis::ModalRefArgs(modal_state->modal_ref).empty();
+  }
+  return PathOfType(type).empty();
+}
+
+}  // namespace
+
+std::vector<std::string> DropGlueTypePath(const analysis::TypeRef& type) {
+  SPEC_RULE("DropGlueSym");
+
+  analysis::TypeRef drop_type = StripDropGlueTopLevelPermission(type);
+  if (!drop_type) {
+    return {"unknown"};
+  }
+
+  if (!NeedsRenderedDropGluePath(drop_type)) {
+    const auto type_path = PathOfType(drop_type);
+    if (!type_path.empty()) {
+      return type_path;
+    }
+  }
+
+  std::string rendered = analysis::TypeToString(drop_type);
+  if (rendered.empty()) {
+    return {"unknown"};
+  }
+  return {std::move(rendered)};
+}
+
+std::string DropGluePathSig(const analysis::TypeRef& type) {
+  SPEC_RULE("DropGlueSym");
+
+  std::vector<std::string> path = {
+      std::string(project::ActiveLanguageProfile().runtime_root),
+      "runtime",
+      "drop"};
+  const auto type_path = DropGlueTypePath(type);
+  path.insert(path.end(), type_path.begin(), type_path.end());
+  return core::Mangle(core::StringOfPath(path));
+}
+
 // =============================================================================
 // ScopedSym
 // =============================================================================

@@ -1556,24 +1556,12 @@ IRPtr EmitDropFields(const analysis::TypeRef& type,
 std::string DropGlueSym(const analysis::TypeRef& type, LowerCtx& ctx) {
   SPEC_RULE("DropGlueSym");
 
-  std::vector<std::string> path = {
-      std::string(project::ActiveLanguageProfile().runtime_root),
-      "runtime",
-      "drop"};
-
   analysis::TypeRef drop_type = type;
   if (HoldsType<analysis::TypePerm>(drop_type)) {
     drop_type = GetType<analysis::TypePerm>(drop_type).base;
   }
 
-  const auto type_path = PathOfType(drop_type);
-  if (type_path.empty()) {
-    path.push_back("unknown");
-  } else {
-    path.insert(path.end(), type_path.begin(), type_path.end());
-  }
-
-  const std::string sym = core::Mangle(core::StringOfPath(path));
+  const std::string sym = DropGluePathSig(drop_type);
   ctx.RegisterDropGlueType(sym, drop_type);
   return sym;
 }

@@ -111,9 +111,6 @@ else()
       -fno-stack-protector
     )
     set(RUNTIME_STARTUP_OBJECT_NAME "uv_start_x86_64_sysv.o")
-    list(APPEND RUNTIME_PLATFORM_SOURCES
-      $<TARGET_OBJECTS:uv_rt_startup_x86_64_sysv>
-    )
   endif()
 endif()
 
@@ -151,6 +148,23 @@ set(UV_RUNTIME_SOURCES
   ${RUNTIME_COMPAT_SOURCES}
   ${RUNTIME_PLATFORM_SOURCES}
 )
+
+if(NOT MSVC)
+  set(UV_RT_MEMORY_PRIMITIVE_OPTIONS
+    -fno-builtin-memcpy
+    -fno-builtin-memmove
+    -fno-builtin-memset
+    -fno-builtin-memcmp
+  )
+  if(CMAKE_C_COMPILER_ID STREQUAL "GNU")
+    list(APPEND UV_RT_MEMORY_PRIMITIVE_OPTIONS
+      -fno-tree-loop-distribute-patterns
+    )
+  endif()
+  set_source_files_properties(src/core/mem.c PROPERTIES
+    COMPILE_OPTIONS "${UV_RT_MEMORY_PRIMITIVE_OPTIONS}"
+  )
+endif()
 
 add_library(uv_rt STATIC
   ${UV_RUNTIME_SOURCES}
@@ -253,10 +267,15 @@ if(MSVC)
 else()
   # On non-Windows, stage the archive in the build runtime directory.
   set(FINAL_RT_DIR "${CMAKE_BINARY_DIR}/runtime")
+  set(RUNTIME_MATERIALIZE_ARCHIVE_SCRIPT
+      "${CMAKE_SOURCE_DIR}/cmake/MaterializeArchive.cmake")
   add_custom_command(TARGET uv_rt POST_BUILD
-    COMMAND "${CMAKE_COMMAND}" -E make_directory "${FINAL_RT_DIR}"
-    COMMAND "${CMAKE_COMMAND}" -E copy_if_different
-            "$<TARGET_FILE:uv_rt>" "${FINAL_RT_DIR}/UltravioletRT.a"
+    COMMAND "${CMAKE_COMMAND}"
+            "-DAR_TOOL=${CMAKE_AR}"
+            "-DINPUT_ARCHIVE=$<TARGET_FILE:uv_rt>"
+            "-DOUTPUT_ARCHIVE=${FINAL_RT_DIR}/UltravioletRT.a"
+            "-DWORKING_DIRECTORY=${CMAKE_BINARY_DIR}"
+            -P "${RUNTIME_MATERIALIZE_ARCHIVE_SCRIPT}"
     COMMENT "Staging Linux Ultraviolet runtime archive"
   )
   add_custom_command(TARGET uv_rt POST_BUILD

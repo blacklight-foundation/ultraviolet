@@ -74,6 +74,11 @@ std::vector<std::string> ItemPathDefaultImpl(const analysis::TypeRef& type,
 //   PathOfType(T) = undefined otherwise
 std::vector<std::string> PathOfType(const analysis::TypeRef& type);
 
+// Drop glue needs a total type identity path because generated glue is
+// specialized to the concrete value layout of T.
+std::vector<std::string> DropGlueTypePath(const analysis::TypeRef& type);
+std::string DropGluePathSig(const analysis::TypeRef& type);
+
 // =============================================================================
 // Section 6.3.1 LinkName - FFI attribute-aware symbol resolution
 // =============================================================================
