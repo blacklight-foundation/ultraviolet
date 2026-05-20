@@ -55,6 +55,7 @@ typedef struct UVHeapBlockHeader {
   uint64_t magic;
   size_t size;
   size_t mapping_size;
+  uint64_t reserved;
 } UVHeapBlockHeader;
 
 typedef struct UVMapViewNode {
@@ -372,6 +373,7 @@ static void* uv_rt_linux_heap_alloc_unchecked(size_t bytes) {
   header->magic = UV_HEAP_MAGIC;
   header->size = bytes;
   header->mapping_size = mapping_size;
+  header->reserved = 0u;
   return (void*)(header + 1);
 }
 

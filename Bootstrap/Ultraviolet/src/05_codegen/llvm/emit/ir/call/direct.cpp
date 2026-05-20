@@ -1510,6 +1510,7 @@ void IRInstructionVisitor::operator()(const IRCall &call) const
     return;
   }
   bool use_c_abi_aggregate_sret = false;
+  bool runtime_foreign_boundary = false;
   if (call.callee.kind == IRValue::Kind::Symbol)
   {
     if (auto alias = emitter.LookupSymbolAlias(call.callee.name))
@@ -1521,7 +1522,7 @@ void IRInstructionVisitor::operator()(const IRCall &call) const
       inferred_sig.params = runtime->params;
       inferred_sig.ret = runtime->ret;
       sig = &inferred_sig;
-      use_c_abi_aggregate_sret = true;
+      runtime_foreign_boundary = RuntimeUsesForeignABI(callee_symbol);
     }
     else if (auto runtime = GetRuntimeFuncInfo(call.callee.name))
     {
@@ -1529,15 +1530,7 @@ void IRInstructionVisitor::operator()(const IRCall &call) const
       inferred_sig.ret = runtime->ret;
       sig = &inferred_sig;
       callee_symbol = call.callee.name;
-      use_c_abi_aggregate_sret = true;
-    }
-    if (IsRuntimeFunction(callee_symbol) ||
-        IsRuntimeFunction(call.callee.name))
-    {
-      // Runtime symbols cross a foreign C ABI boundary. Aggregate return
-      // lowering must always honor platform C ABI (including hidden sret
-      // where required, e.g. Win64 UVDynObject returns).
-      use_c_abi_aggregate_sret = true;
+      runtime_foreign_boundary = RuntimeUsesForeignABI(call.callee.name);
     }
     if (!sig && ctx)
     {
@@ -1554,9 +1547,7 @@ void IRInstructionVisitor::operator()(const IRCall &call) const
         inferred_sig.params = runtime->params;
         inferred_sig.ret = runtime->ret;
         sig = &inferred_sig;
-        // Runtime symbols are foreign C-ABI boundaries. Aggregate return
-        // lowering must follow platform C ABI (including sret where needed).
-        use_c_abi_aggregate_sret = true;
+        runtime_foreign_boundary = RuntimeUsesForeignABI(callee_symbol);
       }
       else if (auto runtime = GetRuntimeFuncInfo(call.callee.name))
       {
@@ -1564,11 +1555,13 @@ void IRInstructionVisitor::operator()(const IRCall &call) const
         inferred_sig.ret = runtime->ret;
         sig = &inferred_sig;
         callee_symbol = call.callee.name;
-        // Runtime symbols are foreign C-ABI boundaries. Aggregate return
-        // lowering must follow platform C ABI (including sret where needed).
-        use_c_abi_aggregate_sret = true;
+        runtime_foreign_boundary = RuntimeUsesForeignABI(call.callee.name);
       }
     }
+    runtime_foreign_boundary =
+        runtime_foreign_boundary ||
+        RuntimeUsesForeignABI(callee_symbol) ||
+        RuntimeUsesForeignABI(call.callee.name);
   }
   if (!sig && ctx)
   {
@@ -1975,16 +1968,17 @@ void IRInstructionVisitor::operator()(const IRCall &call) const
     args.insert(args.begin(), env_arg);
   }
 
-    const bool raw_export_boundary =
-        ctx && ctx->LookupExportUnwindMode(callee_symbol).has_value();
-    if (sig && (sig->ffi_import || raw_export_boundary))
-    {
-      // Foreign-boundary-visible signatures must honor platform C ABI
-      // aggregate-return lowering, including hidden sret where required.
-      use_c_abi_aggregate_sret = true;
-    }
+  const bool raw_export_boundary =
+      ctx && ctx->LookupExportUnwindMode(callee_symbol).has_value();
+  if (runtime_foreign_boundary ||
+      (sig && (sig->ffi_import || raw_export_boundary)))
+  {
+    // Foreign-boundary-visible signatures must honor platform C ABI
+    // aggregate-return lowering, including hidden sret where required.
+    use_c_abi_aggregate_sret = true;
+  }
 
-    llvm::Value *callee = emitter.EvaluateIRValue(call.callee);
+  llvm::Value *callee = emitter.EvaluateIRValue(call.callee);
   if (!callee && call.callee.kind == IRValue::Kind::Symbol)
   {
     if (llvm::Function *existing = emitter.GetModule().getFunction(callee_symbol))
@@ -2001,8 +1995,7 @@ void IRInstructionVisitor::operator()(const IRCall &call) const
             sig->params,
             sig->ret,
             use_c_abi_aggregate_sret,
-            /*foreign_boundary_mode_independent=*/
-            IsRuntimeFunction(callee_symbol));
+            /*foreign_boundary_mode_independent=*/false);
         decl_ty = abi.func_type;
       }
       if (!decl_ty && IsRuntimeFunction(callee_symbol))
@@ -2384,10 +2377,8 @@ void IRInstructionVisitor::operator()(const IRCall &call) const
     const bool ffi_import_catch = ffi_import_boundary &&
         sig->ffi_import_unwind_mode ==
             LowerCtx::FfiImportUnwindMode::Catch;
-    const bool runtime_boundary =
-        IsRuntimeFunction(callee_symbol) || IsRuntimeFunction(call.callee.name);
     const bool foreign_boundary_mode_independent =
-        ffi_import_boundary || raw_export_boundary || runtime_boundary;
+        ffi_import_boundary || raw_export_boundary;
     call_result = EmitABICall(
         emitter,
         &builder,

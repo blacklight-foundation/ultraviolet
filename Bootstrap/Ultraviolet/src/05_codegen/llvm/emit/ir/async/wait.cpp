@@ -19,7 +19,8 @@ void IRInstructionVisitor::operator()(const IRWait &wait) const
   if (std::optional<RuntimeFuncInfo> wait_info = GetRuntimeFuncInfo(wait_sym))
   {
     llvm::Function *wait_fn = emitter.GetModule().getFunction(wait_sym);
-    const bool use_c_abi_aggregate_sret = true;
+    const bool runtime_foreign_boundary = RuntimeUsesForeignABI(wait_sym);
+    const bool use_c_abi_aggregate_sret = runtime_foreign_boundary;
     if (!wait_fn)
     {
       ABICallResult wait_abi = ComputeCallABI(
@@ -27,7 +28,7 @@ void IRInstructionVisitor::operator()(const IRWait &wait) const
           wait_info->params,
           wait_info->ret,
           use_c_abi_aggregate_sret,
-          /*foreign_boundary_mode_independent=*/true);
+          /*foreign_boundary_mode_independent=*/false);
       if (wait_abi.func_type)
       {
         wait_fn = llvm::Function::Create(
@@ -50,7 +51,14 @@ void IRInstructionVisitor::operator()(const IRWait &wait) const
           wait_info->params,
           wait_info->ret,
           wait_args,
-          use_c_abi_aggregate_sret);
+          use_c_abi_aggregate_sret,
+          /*ffi_import_boundary=*/false,
+          /*ffi_import_catch=*/false,
+          std::nullopt,
+          nullptr,
+          nullptr,
+          nullptr,
+          /*foreign_boundary_mode_independent=*/false);
     }
   }
   if (!result_ptr)

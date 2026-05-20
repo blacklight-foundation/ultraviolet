@@ -129,6 +129,9 @@ struct RuntimeFuncInfo {
 /// Check if a symbol is a known runtime function.
 bool IsRuntimeFunction(const std::string& symbol);
 
+/// Check if a runtime symbol is an implementation helper with a C ABI boundary.
+bool RuntimeUsesForeignABI(const std::string& symbol);
+
 /// Get information about a runtime function.
 /// Returns nullopt if the symbol is not a known runtime function.
 std::optional<RuntimeFuncInfo> GetRuntimeFuncInfo(const std::string& symbol);

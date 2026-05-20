@@ -15,6 +15,7 @@
 
 #include <unordered_map>
 #include <unordered_set>
+#include <mutex>
 #include <set>
 
 #include "00_core/assert_spec.h"
@@ -308,6 +309,8 @@ const RuntimeCategoryMap& GetRuntimeCategoryMap() {
   };
 
   static Cache cache;
+  static std::mutex cache_mu;
+  std::lock_guard<std::mutex> lock(cache_mu);
   const auto active_language = project::ActiveLanguageProfile().language;
   if (!cache.initialized || cache.language != active_language) {
     cache.language = active_language;
@@ -621,6 +624,8 @@ const std::unordered_set<std::string>& GetRuntimeSymbolSet() {
   };
 
   static Cache cache;
+  static std::mutex cache_mu;
+  std::lock_guard<std::mutex> lock(cache_mu);
   const auto active_language = project::ActiveLanguageProfile().language;
   if (!cache.initialized || cache.language != active_language) {
     cache.language = active_language;
@@ -634,6 +639,10 @@ const std::unordered_set<std::string>& GetRuntimeSymbolSet() {
 
 bool IsRuntimeFunction(const std::string& symbol) {
   return GetRuntimeSymbolSet().count(symbol) > 0;
+}
+
+bool RuntimeUsesForeignABI(const std::string& symbol) {
+  return IsRuntimeFunction(symbol);
 }
 
 std::optional<RuntimeFuncInfo> GetRuntimeFuncInfo(const std::string& symbol) {
@@ -877,9 +886,6 @@ std::optional<RuntimeFuncInfo> GetRuntimeFuncInfo(const std::string& symbol) {
   }
 
   // IO methods.
-  // These are C ABI hooks and must carry concrete runtime signatures so
-  // aggregate return lowering (including hidden sret when required by the
-  // platform ABI) is applied correctly.
   if (symbol == BuiltinSymIOOpenRead()) {
     info.params.push_back(make_param("self", t_file_system));
     info.params.push_back(make_param("path", t_string_view));

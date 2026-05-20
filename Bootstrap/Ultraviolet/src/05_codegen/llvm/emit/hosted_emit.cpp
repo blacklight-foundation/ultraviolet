@@ -561,12 +561,15 @@ using namespace emit_detail;
         if (std::optional<RuntimeFuncInfo> init_info =
                 GetRuntimeFuncInfo(context_init_sym))
         {
+          const bool runtime_foreign_boundary =
+              RuntimeUsesForeignABI(context_init_sym);
           ABICallResult init_abi =
               ComputeCallABI(*this,
                              init_info->params,
                              init_info->ret,
-                             true,
-                             /*foreign_boundary_mode_independent=*/true);
+                             runtime_foreign_boundary,
+                             /*foreign_boundary_mode_independent=*/
+                             false);
           if (!init_abi.valid || !init_abi.func_type)
           {
             current_ctx_->ReportCodegenFailure();
@@ -1343,12 +1346,15 @@ using namespace emit_detail;
               return nullptr;
             }
 
+            const bool runtime_foreign_boundary =
+                RuntimeUsesForeignABI(runtime_sym);
             ABICallResult abi =
                 ComputeCallABI(*this,
                                runtime_info->params,
                                runtime_info->ret,
-                               true,
-                               /*foreign_boundary_mode_independent=*/true);
+                               runtime_foreign_boundary,
+                               /*foreign_boundary_mode_independent=*/
+                               false);
             if (!abi.valid || !abi.func_type || abi.param_kinds.size() != 1u)
             {
               current_ctx_->ReportCodegenFailure();
@@ -1387,7 +1393,14 @@ using namespace emit_detail;
                 runtime_info->params,
                 runtime_info->ret,
                 {context_arg},
-                true);
+                runtime_foreign_boundary,
+                /*ffi_import_boundary=*/false,
+                /*ffi_import_catch=*/false,
+                std::nullopt,
+                nullptr,
+                nullptr,
+                nullptr,
+                /*foreign_boundary_mode_independent=*/false);
           }
           current_ctx_->ReportCodegenFailure();
           return nullptr;

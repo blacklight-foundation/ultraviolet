@@ -681,6 +681,100 @@ bool ParseElfSymbols(std::string_view bytes,
   return true;
 }
 
+bool ParseElfUndefinedExternalSymbols(std::string_view bytes,
+                                      std::vector<std::string>& symbols) {
+  if (!IsElfBytes(bytes) || bytes.size() < 64) {
+    return false;
+  }
+  const unsigned char* data =
+      reinterpret_cast<const unsigned char*>(bytes.data());
+  constexpr std::size_t kEIClass = 4;
+  constexpr std::size_t kEIData = 5;
+  constexpr unsigned char kElfClass64 = 2;
+  constexpr unsigned char kElfDataLittle = 1;
+  constexpr uint16_t kETRel = 1;
+  constexpr uint32_t kSHTSymTab = 2;
+  constexpr uint32_t kSHTDynSym = 11;
+  constexpr uint16_t kSHNUndef = 0;
+  constexpr uint8_t kSTBGlobal = 1;
+  constexpr uint8_t kSTBWeak = 2;
+
+  if (data[kEIClass] != kElfClass64 || data[kEIData] != kElfDataLittle) {
+    return false;
+  }
+  if (ReadU16(data + 16) != kETRel) {
+    return true;
+  }
+
+  const std::size_t shoff = static_cast<std::size_t>(ReadU64(data + 40));
+  const std::size_t shentsize = ReadU16(data + 58);
+  const std::size_t shnum = ReadU16(data + 60);
+  if (shoff > bytes.size() ||
+      shentsize == 0 ||
+      shoff + shentsize * shnum > bytes.size()) {
+    return false;
+  }
+
+  for (std::size_t i = 0; i < shnum; ++i) {
+    const std::size_t sh_offset = shoff + i * shentsize;
+    const unsigned char* sh = data + sh_offset;
+    const uint32_t type = ReadU32(sh + 4);
+    if (type != kSHTSymTab && type != kSHTDynSym) {
+      continue;
+    }
+
+    const std::size_t section_offset = static_cast<std::size_t>(ReadU64(sh + 24));
+    const std::size_t section_size = static_cast<std::size_t>(ReadU64(sh + 32));
+    const uint32_t link = ReadU32(sh + 40);
+    const std::size_t entsize = static_cast<std::size_t>(ReadU64(sh + 56));
+    if (section_offset > bytes.size() ||
+        section_size > bytes.size() - section_offset ||
+        entsize == 0 ||
+        section_size % entsize != 0 ||
+        link >= shnum) {
+      return false;
+    }
+
+    const unsigned char* linked_section =
+        data + shoff + static_cast<std::size_t>(link) * shentsize;
+    const std::size_t str_offset =
+        static_cast<std::size_t>(ReadU64(linked_section + 24));
+    const std::size_t str_size =
+        static_cast<std::size_t>(ReadU64(linked_section + 32));
+    if (str_offset > bytes.size() || str_size > bytes.size() - str_offset) {
+      return false;
+    }
+    const char* strtab = bytes.data() + str_offset;
+
+    const std::size_t count = section_size / entsize;
+    for (std::size_t sym_index = 0; sym_index < count; ++sym_index) {
+      const unsigned char* sym =
+          data + section_offset + sym_index * entsize;
+      const uint32_t name_offset = ReadU32(sym);
+      const uint8_t info = sym[4];
+      const uint16_t shndx = ReadU16(sym + 6);
+      const uint8_t binding = static_cast<uint8_t>(info >> 4);
+      if (name_offset >= str_size || shndx != kSHNUndef ||
+          (binding != kSTBGlobal && binding != kSTBWeak)) {
+        continue;
+      }
+
+      std::string name;
+      for (std::size_t pos = name_offset; pos < str_size; ++pos) {
+        const char c = strtab[pos];
+        if (c == '\0') {
+          break;
+        }
+        name.push_back(c);
+      }
+      if (!name.empty()) {
+        symbols.push_back(std::move(name));
+      }
+    }
+  }
+  return true;
+}
+
 bool ParseObjectSymbols(std::string_view bytes,
                         std::vector<std::string>& symbols,
                         bool defined_external_only,
@@ -724,6 +818,67 @@ bool ParseArchiveSymbols(std::string_view bytes,
     }
   }
   return true;
+}
+
+bool ParseArchiveUndefinedExternalSymbols(std::string_view bytes,
+                                          std::vector<std::string>& symbols) {
+  if (!IsArchiveBytes(bytes)) {
+    return false;
+  }
+  std::size_t offset = 8;
+  while (offset + 60 <= bytes.size()) {
+    const std::string_view header(bytes.data() + offset, 60);
+    const std::string name = TrimArchiveName(header.substr(0, 16));
+    std::size_t size = 0;
+    if (!ParseDecimal(header.substr(48, 10), &size)) {
+      return false;
+    }
+    const std::size_t data_offset = offset + 60;
+    if (data_offset + size > bytes.size()) {
+      return false;
+    }
+    if (!IsSpecialArchiveMember(name)) {
+      const std::string_view member(bytes.data() + data_offset, size);
+      if (IsElfBytes(member) &&
+          !ParseElfUndefinedExternalSymbols(member, symbols)) {
+        return false;
+      }
+    }
+    offset = data_offset + size;
+    if (offset % 2 == 1) {
+      ++offset;
+    }
+  }
+  return true;
+}
+
+bool RelocatableInputsReferenceUndefinedSymbol(
+    const std::vector<std::filesystem::path>& inputs,
+    std::string_view symbol) {
+  for (const auto& input : inputs) {
+    const auto bytes = ReadFileBytes(input);
+    if (!bytes.has_value()) {
+      continue;
+    }
+
+    std::vector<std::string> undefined;
+    if (IsArchiveBytes(*bytes)) {
+      if (!ParseArchiveUndefinedExternalSymbols(*bytes, undefined)) {
+        continue;
+      }
+    } else if (IsElfBytes(*bytes)) {
+      if (!ParseElfUndefinedExternalSymbols(*bytes, undefined)) {
+        continue;
+      }
+    } else {
+      continue;
+    }
+
+    if (std::find(undefined.begin(), undefined.end(), symbol) != undefined.end()) {
+      return true;
+    }
+  }
+  return false;
 }
 
 std::optional<ObjectFormat> DetectObjectFormatForBytes(std::string_view bytes) {
@@ -1530,6 +1685,14 @@ std::vector<std::string> BuildPosixLinkArgs(
     args.push_back(PathArgString(input));
   }
   if (ObjectFormatOf(plan.target_profile) == ObjectFormat::Elf) {
+    if (RelocatableInputsReferenceUndefinedSymbol(inputs,
+                                                  "__gxx_personality_v0")) {
+      args.push_back("-lstdc++");
+    }
+    if (RelocatableInputsReferenceUndefinedSymbol(inputs,
+                                                  "__gcc_personality_v0")) {
+      args.push_back("-lgcc_s");
+    }
     args.push_back("-lm");
     args.push_back("-lc");
   }

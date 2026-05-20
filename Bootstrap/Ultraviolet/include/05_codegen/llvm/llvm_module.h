@@ -85,7 +85,7 @@ std::unique_ptr<llvm::Module> CreateModule(llvm::LLVMContext& context,
 // Global Variable and COMDAT Management
 // =============================================================================
 
-// Create a COMDAT group for linkonce_odr functions (e.g., drop glue)
+// Create a COMDAT group for generated declarations that require one.
 llvm::Comdat* GetOrCreateComdat(llvm::Module& module, const std::string& name);
 
 // Create a global variable with zero initialization
@@ -101,7 +101,7 @@ llvm::GlobalVariable* CreateZeroInitGlobal(llvm::Module& module,
 // Symbol Management
 // =============================================================================
 
-// Check if a symbol uses drop glue linkage (linkonce_odr)
+// Check if a symbol is generated drop glue.
 bool IsDropGlueSymbol(std::string_view symbol);
 
 // Get the mangled symbol prefix for drop glue

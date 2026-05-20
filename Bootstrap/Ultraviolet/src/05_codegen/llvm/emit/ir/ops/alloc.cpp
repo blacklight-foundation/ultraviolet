@@ -88,7 +88,8 @@ void IRInstructionVisitor::operator()(const IRAlloc &alloc) const
   if (std::optional<RuntimeFuncInfo> alloc_info = GetRuntimeFuncInfo(alloc_sym))
   {
     llvm::Function *alloc_fn = emitter.GetModule().getFunction(alloc_sym);
-    const bool use_c_abi_aggregate_sret = true;
+    const bool runtime_foreign_boundary = RuntimeUsesForeignABI(alloc_sym);
+    const bool use_c_abi_aggregate_sret = runtime_foreign_boundary;
     if (!alloc_fn)
     {
       ABICallResult alloc_abi = ComputeCallABI(
@@ -96,7 +97,7 @@ void IRInstructionVisitor::operator()(const IRAlloc &alloc) const
           alloc_info->params,
           alloc_info->ret,
           use_c_abi_aggregate_sret,
-          /*foreign_boundary_mode_independent=*/true);
+          /*foreign_boundary_mode_independent=*/false);
       if (alloc_abi.func_type)
       {
         alloc_fn = llvm::Function::Create(
@@ -121,7 +122,14 @@ void IRInstructionVisitor::operator()(const IRAlloc &alloc) const
           alloc_info->params,
           alloc_info->ret,
           alloc_args,
-          use_c_abi_aggregate_sret);
+          use_c_abi_aggregate_sret,
+          /*ffi_import_boundary=*/false,
+          /*ffi_import_catch=*/false,
+          std::nullopt,
+          nullptr,
+          nullptr,
+          nullptr,
+          /*foreign_boundary_mode_independent=*/false);
     }
   }
   if (!raw_ptr)

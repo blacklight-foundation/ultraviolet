@@ -34,7 +34,8 @@ void IRInstructionVisitor::operator()(const IRCancelCheck &check) const
   if (std::optional<RuntimeFuncInfo> check_info = GetRuntimeFuncInfo(check_sym))
   {
     llvm::Function *check_fn = emitter.GetModule().getFunction(check_sym);
-    const bool use_c_abi_aggregate_sret = true;
+    const bool runtime_foreign_boundary = RuntimeUsesForeignABI(check_sym);
+    const bool use_c_abi_aggregate_sret = runtime_foreign_boundary;
     if (!check_fn)
     {
       ABICallResult check_abi = ComputeCallABI(
@@ -42,7 +43,7 @@ void IRInstructionVisitor::operator()(const IRCancelCheck &check) const
           check_info->params,
           check_info->ret,
           use_c_abi_aggregate_sret,
-          /*foreign_boundary_mode_independent=*/true);
+          /*foreign_boundary_mode_independent=*/false);
       if (check_abi.func_type)
       {
         check_fn = llvm::Function::Create(
@@ -64,7 +65,14 @@ void IRInstructionVisitor::operator()(const IRCancelCheck &check) const
           check_info->params,
           check_info->ret,
           check_args,
-          use_c_abi_aggregate_sret);
+          use_c_abi_aggregate_sret,
+          /*ffi_import_boundary=*/false,
+          /*ffi_import_catch=*/false,
+          std::nullopt,
+          nullptr,
+          nullptr,
+          nullptr,
+          /*foreign_boundary_mode_independent=*/false);
       out = CoerceTo(&builder, raw, i1_ty);
     }
   }

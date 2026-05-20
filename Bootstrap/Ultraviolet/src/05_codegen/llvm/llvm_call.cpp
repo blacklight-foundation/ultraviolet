@@ -551,22 +551,13 @@ llvm::Value* EmitABICall(LLVMEmitter& emitter,
 
   auto* builder = static_cast<llvm::IRBuilder<>*>(builder_base);
 
-  const bool runtime_boundary_mode_independent =
-      [&]() -> bool {
-    if (auto* global = llvm::dyn_cast<llvm::GlobalValue>(callee)) {
-      return IsRuntimeFunction(global->getName().str());
-    }
-    return false;
-  }();
-
   ABICallResult abi = ComputeCallABI(
       emitter,
       params,
       ret_type,
       use_c_abi_aggregate_sret,
       /*foreign_boundary_mode_independent=*/
-      (ffi_import_boundary || foreign_boundary_mode_independent ||
-       runtime_boundary_mode_independent));
+      (ffi_import_boundary || foreign_boundary_mode_independent));
   if (!abi.valid || !abi.func_type) {
     if (LowerCtx* ctx = emitter.GetCurrentCtx()) {
       ctx->ReportCodegenFailure();

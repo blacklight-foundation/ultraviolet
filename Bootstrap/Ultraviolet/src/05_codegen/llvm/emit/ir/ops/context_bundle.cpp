@@ -169,12 +169,14 @@ void IRInstructionVisitor::operator()(const IRContextBundleBuild &build) const
             return nullptr;
           }
 
+          const bool runtime_foreign_boundary = RuntimeUsesForeignABI(runtime_sym);
           ABICallResult abi =
               ComputeCallABI(emitter,
                              runtime_info->params,
                              runtime_info->ret,
-                             true,
-                             /*foreign_boundary_mode_independent=*/true);
+                             runtime_foreign_boundary,
+                             /*foreign_boundary_mode_independent=*/
+                             false);
           if (!abi.valid || !abi.func_type || abi.param_kinds.size() != 1u)
           {
             const_cast<LowerCtx *>(active_ctx)->ReportCodegenFailure();
@@ -206,7 +208,14 @@ void IRInstructionVisitor::operator()(const IRContextBundleBuild &build) const
               runtime_info->params,
               runtime_info->ret,
               {context_arg},
-              true);
+              runtime_foreign_boundary,
+              /*ffi_import_boundary=*/false,
+              /*ffi_import_catch=*/false,
+              std::nullopt,
+              nullptr,
+              nullptr,
+              nullptr,
+              /*foreign_boundary_mode_independent=*/false);
         }
         const_cast<LowerCtx *>(active_ctx)->ReportCodegenFailure();
         return nullptr;
