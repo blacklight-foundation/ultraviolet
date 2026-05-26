@@ -1,0 +1,455 @@
+//! Rejected key-system specimens.
+
+public procedure keysRejectedSourceFixtureCount() -> usize {
+    return 26usize
+}
+
+public procedure validatedKeysRejectedSourceFixtureCount() -> usize {
+    var count: usize = 0usize
+    if rejectedSpecimenMatches(
+        rejectedSpecimen(
+            "SpeculativeReleaseMode",
+            "Fixtures/RejectedSource/Keys/SpeculativeReleaseMode",
+            "Fixtures/RejectedSource/Keys/SpeculativeReleaseMode/Source/Main.uv",
+            "Fixtures/RejectedSource/Keys/SpeculativeReleaseMode/Expected.uv",
+            expectedDiagnostic("E-CON-0094", "rule.19.K-Spec-No-Release")
+        ),
+        "SpeculativeReleaseMode",
+        "Fixtures/RejectedSource/Keys/SpeculativeReleaseMode",
+        "Fixtures/RejectedSource/Keys/SpeculativeReleaseMode/Source/Main.uv",
+        "Fixtures/RejectedSource/Keys/SpeculativeReleaseMode/Expected.uv",
+        "E-CON-0094",
+        "rule.19.K-Spec-No-Release"
+    ) {
+        count = count + 1usize
+    }
+    if rejectedSpecimenMatches(
+        rejectedSpecimen(
+            "SpeculativeReadMode",
+            "Fixtures/RejectedSource/Keys/SpeculativeReadMode",
+            "Fixtures/RejectedSource/Keys/SpeculativeReadMode/Source/Main.uv",
+            "Fixtures/RejectedSource/Keys/SpeculativeReadMode/Expected.uv",
+            expectedDiagnostic("E-CON-0095", "rule.19.K-Spec-Write-Required")
+        ),
+        "SpeculativeReadMode",
+        "Fixtures/RejectedSource/Keys/SpeculativeReadMode",
+        "Fixtures/RejectedSource/Keys/SpeculativeReadMode/Source/Main.uv",
+        "Fixtures/RejectedSource/Keys/SpeculativeReadMode/Expected.uv",
+        "E-CON-0095",
+        "rule.19.K-Spec-Write-Required"
+    ) {
+        count = count + 1usize
+    }
+    if rejectedSpecimenMatches(
+        rejectedSpecimen(
+            "OrderedDifferentBase",
+            "Fixtures/RejectedSource/Keys/OrderedDifferentBase",
+            "Fixtures/RejectedSource/Keys/OrderedDifferentBase/Source/Main.uv",
+            "Fixtures/RejectedSource/Keys/OrderedDifferentBase/Expected.uv",
+            expectedDiagnostic("E-CON-0014", "rule.19.K-Ordered-Base-Err")
+        ),
+        "OrderedDifferentBase",
+        "Fixtures/RejectedSource/Keys/OrderedDifferentBase",
+        "Fixtures/RejectedSource/Keys/OrderedDifferentBase/Source/Main.uv",
+        "Fixtures/RejectedSource/Keys/OrderedDifferentBase/Expected.uv",
+        "E-CON-0014",
+        "rule.19.K-Ordered-Base-Err"
+    ) {
+        count = count + 1usize
+    }
+    if rejectedSpecimenMatches(
+        rejectedSpecimen(
+            "NestedReleaseSameMode",
+            "Fixtures/RejectedSource/Keys/NestedReleaseSameMode",
+            "Fixtures/RejectedSource/Keys/NestedReleaseSameMode/Source/Main.uv",
+            "Fixtures/RejectedSource/Keys/NestedReleaseSameMode/Expected.uv",
+            expectedDiagnostic("E-CON-0018", "rule.19.K-Release-SameMode-Err")
+        ),
+        "NestedReleaseSameMode",
+        "Fixtures/RejectedSource/Keys/NestedReleaseSameMode",
+        "Fixtures/RejectedSource/Keys/NestedReleaseSameMode/Source/Main.uv",
+        "Fixtures/RejectedSource/Keys/NestedReleaseSameMode/Expected.uv",
+        "E-CON-0018",
+        "rule.19.K-Release-SameMode-Err"
+    ) {
+        count = count + 1usize
+    }
+    if rejectedSpecimenMatches(
+        rejectedSpecimen(
+            "SpeculativeNestedKeyBlock",
+            "Fixtures/RejectedSource/Keys/SpeculativeNestedKeyBlock",
+            "Fixtures/RejectedSource/Keys/SpeculativeNestedKeyBlock/Source/Main.uv",
+            "Fixtures/RejectedSource/Keys/SpeculativeNestedKeyBlock/Expected.uv",
+            expectedDiagnostic("E-CON-0090", "diagnostics.19.SpeculativeExecution")
+        ),
+        "SpeculativeNestedKeyBlock",
+        "Fixtures/RejectedSource/Keys/SpeculativeNestedKeyBlock",
+        "Fixtures/RejectedSource/Keys/SpeculativeNestedKeyBlock/Source/Main.uv",
+        "Fixtures/RejectedSource/Keys/SpeculativeNestedKeyBlock/Expected.uv",
+        "E-CON-0090",
+        "diagnostics.19.SpeculativeExecution"
+    ) {
+        count = count + 1usize
+    }
+    if rejectedSpecimenMatches(
+        rejectedSpecimen(
+            "SpeculativeNestedKeyRule",
+            "Fixtures/RejectedSource/Keys/SpeculativeNestedKeyRule",
+            "Fixtures/RejectedSource/Keys/SpeculativeNestedKeyRule/Source/Main.uv",
+            "Fixtures/RejectedSource/Keys/SpeculativeNestedKeyRule/Expected.uv",
+            expectedDiagnostic("E-CON-0090", "rule.19.K-Spec-No-Nested-Key")
+        ),
+        "SpeculativeNestedKeyRule",
+        "Fixtures/RejectedSource/Keys/SpeculativeNestedKeyRule",
+        "Fixtures/RejectedSource/Keys/SpeculativeNestedKeyRule/Source/Main.uv",
+        "Fixtures/RejectedSource/Keys/SpeculativeNestedKeyRule/Expected.uv",
+        "E-CON-0090",
+        "rule.19.K-Spec-No-Nested-Key"
+    ) {
+        count = count + 1usize
+    }
+    if rejectedSpecimenMatches(
+        rejectedSpecimen(
+            "SpeculativeDefer",
+            "Fixtures/RejectedSource/Keys/SpeculativeDefer",
+            "Fixtures/RejectedSource/Keys/SpeculativeDefer/Source/Main.uv",
+            "Fixtures/RejectedSource/Keys/SpeculativeDefer/Expected.uv",
+            expectedDiagnostic("E-CON-0093", "rule.19.K-Spec-No-Defer")
+        ),
+        "SpeculativeDefer",
+        "Fixtures/RejectedSource/Keys/SpeculativeDefer",
+        "Fixtures/RejectedSource/Keys/SpeculativeDefer/Source/Main.uv",
+        "Fixtures/RejectedSource/Keys/SpeculativeDefer/Expected.uv",
+        "E-CON-0093",
+        "rule.19.K-Spec-No-Defer"
+    ) {
+        count = count + 1usize
+    }
+    if rejectedSpecimenMatches(
+        rejectedSpecimen(
+            "SpeculativeWait",
+            "Fixtures/RejectedSource/Keys/SpeculativeWait",
+            "Fixtures/RejectedSource/Keys/SpeculativeWait/Source/Main.uv",
+            "Fixtures/RejectedSource/Keys/SpeculativeWait/Expected.uv",
+            expectedDiagnostic("E-CON-0092", "rule.19.K-Spec-No-Wait")
+        ),
+        "SpeculativeWait",
+        "Fixtures/RejectedSource/Keys/SpeculativeWait",
+        "Fixtures/RejectedSource/Keys/SpeculativeWait/Source/Main.uv",
+        "Fixtures/RejectedSource/Keys/SpeculativeWait/Expected.uv",
+        "E-CON-0092",
+        "rule.19.K-Spec-No-Wait"
+    ) {
+        count = count + 1usize
+    }
+    if rejectedSpecimenMatches(
+        rejectedSpecimen(
+            "SpeculativeMemoryOrder",
+            "Fixtures/RejectedSource/Keys/SpeculativeMemoryOrder",
+            "Fixtures/RejectedSource/Keys/SpeculativeMemoryOrder/Source/Main.uv",
+            "Fixtures/RejectedSource/Keys/SpeculativeMemoryOrder/Expected.uv",
+            expectedDiagnostic("E-CON-0096", "requirement.19.MemoryOrderNotInsideSpeculativeBlocks")
+        ),
+        "SpeculativeMemoryOrder",
+        "Fixtures/RejectedSource/Keys/SpeculativeMemoryOrder",
+        "Fixtures/RejectedSource/Keys/SpeculativeMemoryOrder/Source/Main.uv",
+        "Fixtures/RejectedSource/Keys/SpeculativeMemoryOrder/Expected.uv",
+        "E-CON-0096",
+        "requirement.19.MemoryOrderNotInsideSpeculativeBlocks"
+    ) {
+        count = count + 1usize
+    }
+    if rejectedSpecimenMatches(
+        rejectedSpecimen(
+            "SpeculativeFence",
+            "Fixtures/RejectedSource/Keys/SpeculativeFence",
+            "Fixtures/RejectedSource/Keys/SpeculativeFence/Source/Main.uv",
+            "Fixtures/RejectedSource/Keys/SpeculativeFence/Expected.uv",
+            expectedDiagnostic("E-CON-0096", "rule.19.K-Spec-No-Memory-Ordering")
+        ),
+        "SpeculativeFence",
+        "Fixtures/RejectedSource/Keys/SpeculativeFence",
+        "Fixtures/RejectedSource/Keys/SpeculativeFence/Source/Main.uv",
+        "Fixtures/RejectedSource/Keys/SpeculativeFence/Expected.uv",
+        "E-CON-0096",
+        "rule.19.K-Spec-No-Memory-Ordering"
+    ) {
+        count = count + 1usize
+    }
+    if rejectedSpecimenMatches(
+        rejectedSpecimen(
+            "SpeculativeOutsideWrite",
+            "Fixtures/RejectedSource/Keys/SpeculativeOutsideWrite",
+            "Fixtures/RejectedSource/Keys/SpeculativeOutsideWrite/Source/Main.uv",
+            "Fixtures/RejectedSource/Keys/SpeculativeOutsideWrite/Expected.uv",
+            expectedDiagnostic("E-CON-0091", "rule.19.K-Spec-Pure-Body")
+        ),
+        "SpeculativeOutsideWrite",
+        "Fixtures/RejectedSource/Keys/SpeculativeOutsideWrite",
+        "Fixtures/RejectedSource/Keys/SpeculativeOutsideWrite/Source/Main.uv",
+        "Fixtures/RejectedSource/Keys/SpeculativeOutsideWrite/Expected.uv",
+        "E-CON-0091",
+        "rule.19.K-Spec-Pure-Body"
+    ) {
+        count = count + 1usize
+    }
+    if rejectedSpecimenMatches(
+        rejectedSpecimen(
+            "SpeculativeImpureCall",
+            "Fixtures/RejectedSource/Keys/SpeculativeImpureCall",
+            "Fixtures/RejectedSource/Keys/SpeculativeImpureCall/Source/Main.uv",
+            "Fixtures/RejectedSource/Keys/SpeculativeImpureCall/Expected.uv",
+            expectedDiagnostic("E-CON-0097", "rule.19.K-Spec-No-Impure-Call")
+        ),
+        "SpeculativeImpureCall",
+        "Fixtures/RejectedSource/Keys/SpeculativeImpureCall",
+        "Fixtures/RejectedSource/Keys/SpeculativeImpureCall/Source/Main.uv",
+        "Fixtures/RejectedSource/Keys/SpeculativeImpureCall/Expected.uv",
+        "E-CON-0097",
+        "rule.19.K-Spec-No-Impure-Call"
+    ) {
+        count = count + 1usize
+    }
+    if rejectedSpecimenMatches(
+        rejectedSpecimen(
+            "SharedReadThenWrite",
+            "Fixtures/RejectedSource/Keys/SharedReadThenWrite",
+            "Fixtures/RejectedSource/Keys/SharedReadThenWrite/Source/Main.uv",
+            "Fixtures/RejectedSource/Keys/SharedReadThenWrite/Expected.uv",
+            expectedDiagnostic("E-CON-0060", "requirement.19.ReadThenWriteDiagnosticSurface")
+        ),
+        "SharedReadThenWrite",
+        "Fixtures/RejectedSource/Keys/SharedReadThenWrite",
+        "Fixtures/RejectedSource/Keys/SharedReadThenWrite/Source/Main.uv",
+        "Fixtures/RejectedSource/Keys/SharedReadThenWrite/Expected.uv",
+        "E-CON-0060",
+        "requirement.19.ReadThenWriteDiagnosticSurface"
+    ) {
+        count = count + 1usize
+    }
+    if rejectedSpecimenMatches(
+        rejectedSpecimen(
+            "KeyPathsDiagnostic",
+            "Fixtures/RejectedSource/Keys/KeyPathsDiagnostic",
+            "Fixtures/RejectedSource/Keys/KeyPathsDiagnostic/Source/Main.uv",
+            "Fixtures/RejectedSource/Keys/KeyPathsDiagnostic/Expected.uv",
+            expectedDiagnostic("E-CON-0033", "diagnostics.19.KeyPaths")
+        ),
+        "KeyPathsDiagnostic",
+        "Fixtures/RejectedSource/Keys/KeyPathsDiagnostic",
+        "Fixtures/RejectedSource/Keys/KeyPathsDiagnostic/Source/Main.uv",
+        "Fixtures/RejectedSource/Keys/KeyPathsDiagnostic/Expected.uv",
+        "E-CON-0033",
+        "diagnostics.19.KeyPaths"
+    ) {
+        count = count + 1usize
+    }
+    if rejectedSpecimenMatches(
+        rejectedSpecimen(
+            "DynamicKeyStaticRequired",
+            "Fixtures/RejectedSource/Keys/DynamicKeyStaticRequired",
+            "Fixtures/RejectedSource/Keys/DynamicKeyStaticRequired/Source/Main.uv",
+            "Fixtures/RejectedSource/Keys/DynamicKeyStaticRequired/Expected.uv",
+            expectedDiagnostic("E-CON-0020", "rule.19.K-Static-Required")
+        ),
+        "DynamicKeyStaticRequired",
+        "Fixtures/RejectedSource/Keys/DynamicKeyStaticRequired",
+        "Fixtures/RejectedSource/Keys/DynamicKeyStaticRequired/Source/Main.uv",
+        "Fixtures/RejectedSource/Keys/DynamicKeyStaticRequired/Expected.uv",
+        "E-CON-0020",
+        "rule.19.K-Static-Required"
+    ) {
+        count = count + 1usize
+    }
+    if rejectedSpecimenMatches(
+        rejectedSpecimen(
+            "KeyEscapeDeferredAccess",
+            "Fixtures/RejectedSource/Keys/KeyEscapeDeferredAccess",
+            "Fixtures/RejectedSource/Keys/KeyEscapeDeferredAccess/Source/Main.uv",
+            "Fixtures/RejectedSource/Keys/KeyEscapeDeferredAccess/Expected.uv",
+            expectedDiagnostic("E-CON-0006", "requirement.19.KeyEscapeRestrictions")
+        ),
+        "KeyEscapeDeferredAccess",
+        "Fixtures/RejectedSource/Keys/KeyEscapeDeferredAccess",
+        "Fixtures/RejectedSource/Keys/KeyEscapeDeferredAccess/Source/Main.uv",
+        "Fixtures/RejectedSource/Keys/KeyEscapeDeferredAccess/Expected.uv",
+        "E-CON-0006",
+        "requirement.19.KeyEscapeRestrictions"
+    ) {
+        count = count + 1usize
+    }
+    if rejectedSpecimenMatches(
+        rejectedSpecimen(
+            "KeyEscapePrecedence",
+            "Fixtures/RejectedSource/Keys/KeyEscapePrecedence",
+            "Fixtures/RejectedSource/Keys/KeyEscapePrecedence/Source/Main.uv",
+            "Fixtures/RejectedSource/Keys/KeyEscapePrecedence/Expected.uv",
+            expectedDiagnostic("E-CON-0006", "requirement.19.KeyEscapeDiagnosticPrecedence")
+        ),
+        "KeyEscapePrecedence",
+        "Fixtures/RejectedSource/Keys/KeyEscapePrecedence",
+        "Fixtures/RejectedSource/Keys/KeyEscapePrecedence/Source/Main.uv",
+        "Fixtures/RejectedSource/Keys/KeyEscapePrecedence/Expected.uv",
+        "E-CON-0006",
+        "requirement.19.KeyEscapeDiagnosticPrecedence"
+    ) {
+        count = count + 1usize
+    }
+    if rejectedSpecimenMatches(
+        rejectedSpecimen(
+            "ConflictDetectionDiagnostic",
+            "Fixtures/RejectedSource/Keys/ConflictDetectionDiagnostic",
+            "Fixtures/RejectedSource/Keys/ConflictDetectionDiagnostic/Source/Main.uv",
+            "Fixtures/RejectedSource/Keys/ConflictDetectionDiagnostic/Expected.uv",
+            expectedDiagnostic("E-CON-0060", "diagnostics.19.ConflictDetection")
+        ),
+        "ConflictDetectionDiagnostic",
+        "Fixtures/RejectedSource/Keys/ConflictDetectionDiagnostic",
+        "Fixtures/RejectedSource/Keys/ConflictDetectionDiagnostic/Source/Main.uv",
+        "Fixtures/RejectedSource/Keys/ConflictDetectionDiagnostic/Expected.uv",
+        "E-CON-0060",
+        "diagnostics.19.ConflictDetection"
+    ) {
+        count = count + 1usize
+    }
+    if rejectedSpecimenMatches(
+        rejectedSpecimen(
+            "MemoryOrderingDiagnostic",
+            "Fixtures/RejectedSource/Keys/MemoryOrderingDiagnostic",
+            "Fixtures/RejectedSource/Keys/MemoryOrderingDiagnostic/Source/Main.uv",
+            "Fixtures/RejectedSource/Keys/MemoryOrderingDiagnostic/Expected.uv",
+            expectedDiagnostic("E-CON-0096", "diagnostics.19.MemoryOrdering")
+        ),
+        "MemoryOrderingDiagnostic",
+        "Fixtures/RejectedSource/Keys/MemoryOrderingDiagnostic",
+        "Fixtures/RejectedSource/Keys/MemoryOrderingDiagnostic/Source/Main.uv",
+        "Fixtures/RejectedSource/Keys/MemoryOrderingDiagnostic/Expected.uv",
+        "E-CON-0096",
+        "diagnostics.19.MemoryOrdering"
+    ) {
+        count = count + 1usize
+    }
+    if rejectedSpecimenMatches(
+        rejectedSpecimen(
+            "EscapingClosureSharedLifetime",
+            "Fixtures/RejectedSource/Keys/EscapingClosureSharedLifetime",
+            "Fixtures/RejectedSource/Keys/EscapingClosureSharedLifetime/Source/Main.uv",
+            "Fixtures/RejectedSource/Keys/EscapingClosureSharedLifetime/Expected.uv",
+            expectedDiagnostic("E-CON-0086", "requirement.19.EscapingClosureSharedLifetime")
+        ),
+        "EscapingClosureSharedLifetime",
+        "Fixtures/RejectedSource/Keys/EscapingClosureSharedLifetime",
+        "Fixtures/RejectedSource/Keys/EscapingClosureSharedLifetime/Source/Main.uv",
+        "Fixtures/RejectedSource/Keys/EscapingClosureSharedLifetime/Expected.uv",
+        "E-CON-0086",
+        "requirement.19.EscapingClosureSharedLifetime"
+    ) {
+        count = count + 1usize
+    }
+    if rejectedSpecimenMatches(
+        rejectedSpecimen(
+            "SharedDynamicMutatingReceiver",
+            "Fixtures/RejectedSource/Keys/SharedDynamicMutatingReceiver",
+            "Fixtures/RejectedSource/Keys/SharedDynamicMutatingReceiver/Source/Main.uv",
+            "Fixtures/RejectedSource/Keys/SharedDynamicMutatingReceiver/Expected.uv",
+            expectedDiagnostic(
+                "E-CON-0083",
+                "requirement.19.SharedDynamicClassRejectsMutatingReceivers"
+            )
+        ),
+        "SharedDynamicMutatingReceiver",
+        "Fixtures/RejectedSource/Keys/SharedDynamicMutatingReceiver",
+        "Fixtures/RejectedSource/Keys/SharedDynamicMutatingReceiver/Source/Main.uv",
+        "Fixtures/RejectedSource/Keys/SharedDynamicMutatingReceiver/Expected.uv",
+        "E-CON-0083",
+        "requirement.19.SharedDynamicClassRejectsMutatingReceivers"
+    ) {
+        count = count + 1usize
+    }
+    if rejectedSpecimenMatches(
+        rejectedSpecimen(
+            "AsyncKeyRestrictionsYieldHeld",
+            "Fixtures/RejectedSource/Keys/AsyncKeyRestrictionsYieldHeld",
+            "Fixtures/RejectedSource/Keys/AsyncKeyRestrictionsYieldHeld/Source/Main.uv",
+            "Fixtures/RejectedSource/Keys/AsyncKeyRestrictionsYieldHeld/Expected.uv",
+            expectedDiagnostic("E-CON-0213", "requirement.21.AsyncKeyRestrictions")
+        ),
+        "AsyncKeyRestrictionsYieldHeld",
+        "Fixtures/RejectedSource/Keys/AsyncKeyRestrictionsYieldHeld",
+        "Fixtures/RejectedSource/Keys/AsyncKeyRestrictionsYieldHeld/Source/Main.uv",
+        "Fixtures/RejectedSource/Keys/AsyncKeyRestrictionsYieldHeld/Expected.uv",
+        "E-CON-0213",
+        "requirement.21.AsyncKeyRestrictions"
+    ) {
+        count = count + 1usize
+    }
+    if rejectedSpecimenMatches(
+        rejectedSpecimen(
+            "YieldFromWhileKeyHeld",
+            "Fixtures/RejectedSource/Keys/YieldFromWhileKeyHeld",
+            "Fixtures/RejectedSource/Keys/YieldFromWhileKeyHeld/Source/Main.uv",
+            "Fixtures/RejectedSource/Keys/YieldFromWhileKeyHeld/Expected.uv",
+            expectedDiagnostic("E-CON-0224", "diagnostics.21.AsyncKeyDiagnostics")
+        ),
+        "YieldFromWhileKeyHeld",
+        "Fixtures/RejectedSource/Keys/YieldFromWhileKeyHeld",
+        "Fixtures/RejectedSource/Keys/YieldFromWhileKeyHeld/Source/Main.uv",
+        "Fixtures/RejectedSource/Keys/YieldFromWhileKeyHeld/Expected.uv",
+        "E-CON-0224",
+        "diagnostics.21.AsyncKeyDiagnostics"
+    ) {
+        count = count + 1usize
+    }
+    if rejectedSpecimenMatches(
+        rejectedSpecimen(
+            "WaitWhileKeyHeldLowering",
+            "Fixtures/RejectedSource/Keys/WaitWhileKeyHeldLowering",
+            "Fixtures/RejectedSource/Keys/WaitWhileKeyHeldLowering/Source/Main.uv",
+            "Fixtures/RejectedSource/Keys/WaitWhileKeyHeldLowering/Expected.uv",
+            expectedDiagnostic("E-CON-0133", "rule.21.Lower-Wait-Key-Illegal")
+        ),
+        "WaitWhileKeyHeldLowering",
+        "Fixtures/RejectedSource/Keys/WaitWhileKeyHeldLowering",
+        "Fixtures/RejectedSource/Keys/WaitWhileKeyHeldLowering/Source/Main.uv",
+        "Fixtures/RejectedSource/Keys/WaitWhileKeyHeldLowering/Expected.uv",
+        "E-CON-0133",
+        "rule.21.Lower-Wait-Key-Illegal"
+    ) {
+        count = count + 1usize
+    }
+    if rejectedSpecimenMatches(
+        rejectedSpecimen(
+            "SharedClosureYieldKeys",
+            "Fixtures/RejectedSource/Keys/SharedClosureYieldKeys",
+            "Fixtures/RejectedSource/Keys/SharedClosureYieldKeys/Source/Main.uv",
+            "Fixtures/RejectedSource/Keys/SharedClosureYieldKeys/Expected.uv",
+            expectedDiagnostic("E-CON-0213", "rule.21.A-Closure-Yield-Keys-Err")
+        ),
+        "SharedClosureYieldKeys",
+        "Fixtures/RejectedSource/Keys/SharedClosureYieldKeys",
+        "Fixtures/RejectedSource/Keys/SharedClosureYieldKeys/Source/Main.uv",
+        "Fixtures/RejectedSource/Keys/SharedClosureYieldKeys/Expected.uv",
+        "E-CON-0213",
+        "rule.21.A-Closure-Yield-Keys-Err"
+    ) {
+        count = count + 1usize
+    }
+    if rejectedSpecimenMatches(
+        rejectedSpecimen(
+            "SharedCapturingClosureYieldKeys",
+            "Fixtures/RejectedSource/Keys/SharedCapturingClosureYieldKeys",
+            "Fixtures/RejectedSource/Keys/SharedCapturingClosureYieldKeys/Source/Main.uv",
+            "Fixtures/RejectedSource/Keys/SharedCapturingClosureYieldKeys/Expected.uv",
+            expectedDiagnostic("E-CON-0213", "requirement.21.SharedCapturingClosureYieldKeys")
+        ),
+        "SharedCapturingClosureYieldKeys",
+        "Fixtures/RejectedSource/Keys/SharedCapturingClosureYieldKeys",
+        "Fixtures/RejectedSource/Keys/SharedCapturingClosureYieldKeys/Source/Main.uv",
+        "Fixtures/RejectedSource/Keys/SharedCapturingClosureYieldKeys/Expected.uv",
+        "E-CON-0213",
+        "requirement.21.SharedCapturingClosureYieldKeys"
+    ) {
+        count = count + 1usize
+    }
+    return count
+}

@@ -1,0 +1,13 @@
+//! Rejected polymorphism specimen for a generic call with too many explicit type arguments.
+
+public procedure chooseLeft<TValue; TOther>(move value: TValue, ignored: TOther) -> TValue {
+    return move value
+}
+
+public procedure genericCallArgCountReference() -> i32 {
+    return chooseLeft<
+        i32,
+        bool,
+        i32,
+    >(1, true)
+}

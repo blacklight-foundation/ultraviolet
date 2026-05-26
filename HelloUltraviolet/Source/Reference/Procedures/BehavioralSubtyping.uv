@@ -1,0 +1,36 @@
+//! Reference specimens for Procedures / BehavioralSubtyping.
+
+internal class BehavioralReadableClass {
+    internal procedure readBehavioralValue(~, value: i32) -> i32
+    |: value > 0 |= @result >= value
+}
+
+internal record BehavioralReadableOwner <: BehavioralReadableClass {
+    internal procedure readBehavioralValue(~, value: i32) -> i32
+    |: value >= 0 |= @result > value
+    {
+        return value + 1
+    }
+}
+
+internal procedure makeBehavioralReadable() -> opaque BehavioralReadableClass {
+    return BehavioralReadableOwner()
+}
+
+internal procedure readOpaqueBehavioralValue(
+    value: opaque BehavioralReadableClass,
+    argument: i32
+) -> i32
+|: argument > 0
+{
+    return value~>readBehavioralValue(argument)
+}
+
+/// Exercises the Procedures BehavioralSubtyping reference surface.
+public procedure runProceduresBehavioralSubtypingReference() -> bool {
+    let owner: BehavioralReadableOwner = BehavioralReadableOwner()
+    let opaque_owner: opaque BehavioralReadableClass = makeBehavioralReadable()
+    return owner~>readBehavioralValue(0) == 1 &&
+        owner~>readBehavioralValue(8) == 9 &&
+        readOpaqueBehavioralValue(opaque_owner, 11) == 12
+}

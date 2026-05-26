@@ -1,0 +1,17 @@
+//! Rejected async composition specimen for all over an async value with output.
+
+public procedure yieldingAsyncValue() -> Async<i32, (), i32, !> {
+    return 1
+}
+
+public procedure unitAsyncValue() -> Async<(), (), i32, !> {
+    return 2
+}
+
+public procedure allOperandYieldsReference() -> i32 {
+    let value: (i32, i32) = all {
+        yieldingAsyncValue(),
+        unitAsyncValue(),
+    }
+    return 0
+}

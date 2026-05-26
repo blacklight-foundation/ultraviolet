@@ -1,0 +1,57 @@
+title: "[question]: "
+labels:
+  - question
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Use this for questions about Ultraviolet usage, builds, public alpha status,
+        language behavior, or repository process.
+
+        Do not disclose security vulnerabilities here. Use private vulnerability
+        reporting: https://github.com/blacklight-foundation/ultraviolet/security
+  - type: textarea
+    id: question
+    attributes:
+      label: Question
+      description: Ask the question directly.
+    validations:
+      required: true
+  - type: textarea
+    id: goal
+    attributes:
+      label: What are you trying to do?
+      description: Include the project, command, language feature, or workflow involved.
+    validations:
+      required: false
+  - type: dropdown
+    id: host-os
+    attributes:
+      label: Host operating system, if relevant
+      options:
+        - Not relevant
+        - Linux
+        - Windows
+        - macOS
+        - Other
+    validations:
+      required: false
+  - type: dropdown
+    id: target-profile
+    attributes:
+      label: Target profile, if relevant
+      options:
+        - Not relevant
+        - x86_64-sysv
+        - x86_64-win64
+        - Other
+    validations:
+      required: false
+  - type: textarea
+    id: tried
+    attributes:
+      label: What have you tried?
+      description: Paste commands, source snippets, or links to docs/issues if relevant.
+      render: text
+    validations:
+      required: false

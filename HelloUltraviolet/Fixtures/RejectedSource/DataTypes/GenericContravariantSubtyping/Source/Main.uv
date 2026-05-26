@@ -1,0 +1,21 @@
+//! Rejected subtyping specimen for contravariant generic parameters.
+
+internal type NarrowValue = i32
+
+internal type WideValue = i32 | bool
+
+internal record ContravariantSink<TValue> {
+    internal callback: (TValue) -> i32
+}
+
+internal procedure acceptsNarrowValue(value: NarrowValue) -> i32 {
+    return value
+}
+
+internal procedure genericContravariantSubtypingViolation() -> bool {
+    let source: ContravariantSink<NarrowValue> = ContravariantSink {
+        callback: acceptsNarrowValue
+    }
+    let target: ContravariantSink<WideValue> = source
+    return target.callback(9) == 9
+}

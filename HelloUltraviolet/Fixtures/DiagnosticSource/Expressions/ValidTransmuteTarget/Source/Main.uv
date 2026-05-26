@@ -1,0 +1,5 @@
+//! Diagnostic expression specimen for invalid-bit-pattern transmute targets.
+
+public procedure validTransmuteTargetReference() -> bool {
+    return unsafe { transmute<u8, bool>(2u8) }
+}

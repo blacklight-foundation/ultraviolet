@@ -1,0 +1,29 @@
+//! Generated catalog markers for 22. Compile-Time Execution and Metaprogramming / 22.6 Compile-Time Diagnostics Supplement.
+
+
+public procedure countCompileTimeExecutionAndMetaprogrammingCompileTimeDiagnosticsSupplementObligations() -> usize {
+    return 2usize
+}
+
+public procedure validatedCompileTimeExecutionAndMetaprogrammingCompileTimeDiagnosticsSupplementObligations() -> usize {
+    var count: usize = 0usize
+    if diagnosticSourceObligationEntryMatches(
+        "diagnostics.22.CompileTimeDiagnosticsSupplement",
+        86522usize,
+        "HelloUltraviolet::Audit::FixtureCatalog::DiagnosticSource",
+        "validatedComptimeDiagnosticSourceFixtureCount",
+        "Fixtures/DiagnosticSource/Comptime/UserDiagnosticWarning/Source/Main.uv"
+    ) {
+        count = count + 1usize
+    }
+    if rejectedSourceObligationEntryMatches(
+        "requirement.22.UserDiagnosticBuiltinEmission",
+        86598usize,
+        "HelloUltraviolet::Audit::FixtureCatalog::RejectedSource",
+        "validatedComptimeRejectedSourceFixtureCount",
+        "Fixtures/RejectedSource/Comptime/UserDiagnosticError/Source/Main.uv"
+    ) {
+        count = count + 1usize
+    }
+    return count
+}

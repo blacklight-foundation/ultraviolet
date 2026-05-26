@@ -1,0 +1,9 @@
+//! Rejected polymorphism specimen for using a generic type path without type arguments.
+
+internal record ValueBox<TValue> {
+    internal value: TValue
+}
+
+public procedure genericPathMissingArgumentsReference(box: ValueBox) -> i32 {
+    return 0
+}

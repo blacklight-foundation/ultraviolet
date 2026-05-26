@@ -1,0 +1,20 @@
+//! Generated catalog markers for 6. Abstract Machine, Objects, Responsibility, and Authority / 6.6 Runtime State and Memory Diagnostics.
+
+
+public procedure countAbstractMachineObjectsResponsibilityAndAuthorityRuntimeStateAndMemoryDiagnosticsObligations() -> usize {
+    return 1usize
+}
+
+public procedure validatedAbstractMachineObjectsResponsibilityAndAuthorityRuntimeStateAndMemoryDiagnosticsObligations() -> usize {
+    var count: usize = 0usize
+    if rejectedSourceObligationEntryMatches(
+        "diagnostics.RuntimeStateAndMemoryDiagnostics",
+        18845usize,
+        "HelloUltraviolet::Audit::FixtureCatalog::RejectedSource",
+        "validatedExpressionsRejectedSourceFixtureCount",
+        "Fixtures/RejectedSource/Expressions/AllocImplicitNoRegion/Source/Main.uv"
+    ) {
+        count = count + 1usize
+    }
+    return count
+}

@@ -1,0 +1,20 @@
+//! Generated catalog markers for 0. Front Matter / 0.1 Document Organization.
+
+
+public procedure countFrontMatterDocumentOrganizationObligations() -> usize {
+    return 1usize
+}
+
+public procedure validatedFrontMatterDocumentOrganizationObligations() -> usize {
+    var count: usize = 0usize
+    if acceptedObligationEntryMatches(
+        "front-matter.document-organization",
+        19usize,
+        "HelloUltraviolet::Reference::Conformance",
+        "runConformanceConstructVocabularyReference",
+        "Source/Reference/Conformance/ConstructVocabulary.uv"
+    ) {
+        count = count + 1usize
+    }
+    return count
+}

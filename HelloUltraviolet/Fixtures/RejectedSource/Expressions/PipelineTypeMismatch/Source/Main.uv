@@ -1,0 +1,12 @@
+//! Rejected pipeline specimen for an incompatible pipeline argument type.
+
+public procedure acceptBool(value: bool) -> i32 {
+    if value {
+        return 1
+    }
+    return 0
+}
+
+public procedure pipelineTypeMismatchReference() -> i32 {
+    return 1 => acceptBool
+}

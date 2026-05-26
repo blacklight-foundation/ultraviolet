@@ -1,0 +1,48 @@
+//! Reference specimens for Parsing / AttributeParsing.
+
+internal enum AttributeArgumentReference {
+    Literal
+    Identifier
+    NamedLiteral
+    NestedArguments
+}
+
+internal record AttributeReference {
+    internal name_segments: usize
+    internal argument_count: usize
+    internal argument_kind: AttributeArgumentReference
+}
+
+internal procedure attributeReference(
+    name_segments: usize,
+    argument_count: usize,
+    argument_kind: AttributeArgumentReference
+) -> AttributeReference {
+    return AttributeReference {
+        name_segments: name_segments,
+        argument_count: argument_count,
+        argument_kind: argument_kind
+    }
+}
+
+internal procedure attributeUsesScopedName(attribute: AttributeReference) -> bool {
+    return attribute.name_segments > 1usize
+}
+
+internal procedure attributeHasArguments(attribute: AttributeReference) -> bool {
+    return attribute.argument_count > 0usize
+}
+
+/// Exercises the Parsing AttributeParsing reference surface.
+public procedure runParsingAttributeParsingReference() -> bool {
+    let simple: AttributeReference =
+        attributeReference(1usize, 0usize, AttributeArgumentReference::Identifier)
+    let scoped: AttributeReference =
+        attributeReference(2usize, 1usize, AttributeArgumentReference::NamedLiteral)
+    let nested: AttributeReference =
+        attributeReference(1usize, 2usize, AttributeArgumentReference::NestedArguments)
+    return !attributeUsesScopedName(simple) &&
+        attributeUsesScopedName(scoped) &&
+        attributeHasArguments(scoped) &&
+        attributeHasArguments(nested)
+}

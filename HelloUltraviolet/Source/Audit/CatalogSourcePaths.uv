@@ -1,0 +1,174 @@
+//! Runtime path checks for source files referenced by generated catalog rows.
+
+internal let SOURCE_PATH_DIGEST_MODULUS: usize = 1000000007usize
+
+internal procedure sourcePathManifestDigest(text: string@View) -> usize {
+    let text_length: usize = string::length(text)
+    var value: usize = 0usize
+    var index: usize = 0usize
+    loop index < text_length {
+        let byte_value: usize = auditTextByte(text, index) as usize
+        value = ((value * 257usize) + byte_value + 1usize) %
+            SOURCE_PATH_DIGEST_MODULUS
+        index = index + 1usize
+    }
+    return value
+}
+
+internal procedure sourcePathManifestLineBreakCount(text: string@View) -> usize {
+    let text_length: usize = string::length(text)
+    var count: usize = 0usize
+    var index: usize = 0usize
+    loop index < text_length {
+        if auditTextByte(text, index) == 10u8 {
+            count = count + 1usize
+        }
+        index = index + 1usize
+    }
+    return count
+}
+
+public procedure expectedCatalogSourcePathCount() -> usize {
+    return 604usize
+}
+
+public procedure catalogSourcePathCount() -> usize {
+    return 604usize
+}
+
+public procedure expectedCatalogSourcePathManifestByteCount() -> usize {
+    return 50141usize
+}
+
+public procedure expectedCatalogSourcePathManifestLineBreakCount() -> usize {
+    return 604usize
+}
+
+public procedure expectedCatalogSourcePathManifestDigest() -> usize {
+    return 421840731usize
+}
+
+internal procedure sourcePathManifestShapeMatches(text: string@View) -> bool {
+    return string::length(text) == expectedCatalogSourcePathManifestByteCount() &&
+        sourcePathManifestLineBreakCount(text) ==
+            expectedCatalogSourcePathManifestLineBreakCount() &&
+        sourcePathManifestDigest(text) == expectedCatalogSourcePathManifestDigest()
+}
+
+internal procedure catalogSourcePathExists(context: Context, source_path: string@View) -> bool {
+    return context.io~>exists(source_path)
+}
+
+internal procedure writeCatalogSourcePathMessage(context: Context, text: string@View) -> bool {
+    let output: Outcome<(), IoError> = context.io~>write_stderr(text)
+    return if output is {
+        @Value {
+            true
+        }
+        @Error {
+            false
+        }
+    }
+}
+
+internal procedure recordCatalogSourcePath(
+    context: Context,
+    source_path: string@View
+) -> bool {
+    if catalogSourcePathExists(context, source_path) {
+        return true
+    }
+
+    if (!writeCatalogSourcePathMessage(context, "catalog source path missing: ")) {
+        return false
+    }
+    if (!writeCatalogSourcePathMessage(context, source_path)) {
+        return false
+    }
+    if (!writeCatalogSourcePathMessage(context, "\n")) {
+        return false
+    }
+    return false
+}
+
+internal procedure recordCatalogSourcePathManifestLine(
+    context: Context,
+    manifest_text: string@View,
+    start: usize,
+    length: usize
+) -> bool {
+    if length == 0usize {
+        return true
+    }
+
+    let end: usize = start + length
+    let source_path: string@View = string::slice(manifest_text, start, end)
+    return recordCatalogSourcePath(context, source_path)
+}
+
+internal procedure sourcePathsInManifestExist(
+    context: Context,
+    manifest_text: string@View
+) -> bool {
+    let text_length: usize = string::length(manifest_text)
+    var passed: bool = true
+    var path_count: usize = 0usize
+    var start: usize = 0usize
+    var index: usize = 0usize
+    loop index < text_length {
+        if auditTextByte(manifest_text, index) == 10u8 {
+            let length: usize = index - start
+            if length > 0usize {
+                path_count = path_count + 1usize
+            }
+            passed = recordCatalogSourcePathManifestLine(
+                context,
+                manifest_text,
+                start,
+                length
+            ) && passed
+            start = index + 1usize
+        }
+        index = index + 1usize
+    }
+
+    if start < text_length {
+        let length: usize = text_length - start
+        path_count = path_count + 1usize
+        passed = recordCatalogSourcePathManifestLine(
+            context,
+            manifest_text,
+            start,
+            length
+        ) && passed
+    }
+
+    return path_count == expectedCatalogSourcePathCount() && passed
+}
+
+internal procedure sourcePathManifestAuditPasses(
+    context: Context,
+    manifest_text: string@View
+) -> bool {
+    return sourcePathManifestShapeMatches(manifest_text) &&
+        sourcePathsInManifestExist(context, manifest_text)
+}
+
+public procedure catalogSourcePathsExist(context: Context) -> bool {
+    if catalogSourcePathCount() != expectedCatalogSourcePathCount() {
+        return false
+    }
+
+    let read_result: Outcome<unique string@Managed, IoError> = context.io~>read_file(
+        "HelloUltraviolet/Audit/CatalogSourcePaths.txt"
+    )
+    return if move read_result is {
+        @Value { value } {
+            let manifest_text: string@View = string::as_view(value)
+            sourcePathManifestAuditPasses(context, manifest_text)
+        }
+        @Error {
+            false
+        }
+    }
+}

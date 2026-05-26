@@ -1,0 +1,6 @@
+//! Rejected FFI specimen for the foreign-contract diagnostics table.
+
+extern "C" {
+    public procedure importedEnsures(value: i32) -> i32
+        |: @foreign_ensures(importedEnsures(value) == 0)
+}

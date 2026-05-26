@@ -1,0 +1,7 @@
+//! Rejected name-resolution specimen for private declaration access.
+
+import PrivateAccess::Hidden
+
+public procedure privateAccessReference() -> i32 {
+    return Hidden::hiddenPrivateValue()
+}

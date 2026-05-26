@@ -1,0 +1,37 @@
+//! Compiled symbol execution checks for ReferenceAttributes.
+
+using HelloUltraviolet::Reference::Attributes::{ runAttributesDiagnosticAttributesReference }
+using HelloUltraviolet::Reference::Attributes::{ runAttributesGeneralAttributesReference }
+using HelloUltraviolet::Reference::Attributes::{ runAttributesLayoutAttributesReference }
+using HelloUltraviolet::Reference::Attributes::{ runAttributesOptimizationAttributesReference }
+using HelloUltraviolet::Reference::Attributes::{ runAttributesVendorAttributesReference }
+
+public procedure catalogCompiledSymbolsExecuteReferenceAttributes(context: Context) -> bool {
+    var passed: bool = true
+    passed = recordCatalogSymbolExecution(
+        context,
+        "runAttributesDiagnosticAttributesReference",
+        runAttributesDiagnosticAttributesReference()
+    ) && passed
+    passed = recordCatalogSymbolExecution(
+        context,
+        "runAttributesGeneralAttributesReference",
+        runAttributesGeneralAttributesReference()
+    ) && passed
+    passed = recordCatalogSymbolExecution(
+        context,
+        "runAttributesLayoutAttributesReference",
+        runAttributesLayoutAttributesReference()
+    ) && passed
+    passed = recordCatalogSymbolExecution(
+        context,
+        "runAttributesOptimizationAttributesReference",
+        runAttributesOptimizationAttributesReference()
+    ) && passed
+    passed = recordCatalogSymbolExecution(
+        context,
+        "runAttributesVendorAttributesReference",
+        runAttributesVendorAttributesReference()
+    ) && passed
+    return passed
+}

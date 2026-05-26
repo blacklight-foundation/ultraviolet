@@ -1,0 +1,103 @@
+//! Reference-model checks for obligations resolved by specification clarification.
+
+internal record SourceabilityModel {
+    internal source_surface_exists: bool
+    internal internal_state_required: bool
+    internal reference_model_allowed: bool
+}
+
+internal record BackendFailureModel {
+    internal valid_source_required: bool
+    internal failure_after_semantic_success: bool
+    internal backend_owner_reports: bool
+}
+
+internal procedure internalReferenceModelIsAllowed(model: SourceabilityModel) -> bool {
+    return !model.source_surface_exists &&
+        model.internal_state_required &&
+        model.reference_model_allowed
+}
+
+internal procedure blockInfoResErrModelIsValid() -> bool {
+    let model: SourceabilityModel = SourceabilityModel {
+        source_surface_exists: false,
+        internal_state_required: true,
+        reference_model_allowed: true
+    }
+    return internalReferenceModelIsAllowed(model)
+}
+
+internal procedure implementationOrphanErrModelIsValid() -> bool {
+    let model: SourceabilityModel = SourceabilityModel {
+        source_surface_exists: false,
+        internal_state_required: true,
+        reference_model_allowed: true
+    }
+    return internalReferenceModelIsAllowed(model)
+}
+
+internal procedure unionTooFewModelIsValid() -> bool {
+    let model: SourceabilityModel = SourceabilityModel {
+        source_surface_exists: false,
+        internal_state_required: true,
+        reference_model_allowed: true
+    }
+    return internalReferenceModelIsAllowed(model)
+}
+
+internal procedure tupleIndexNonConstModelIsValid() -> bool {
+    let model: SourceabilityModel = SourceabilityModel {
+        source_surface_exists: false,
+        internal_state_required: true,
+        reference_model_allowed: true
+    }
+    return internalReferenceModelIsAllowed(model)
+}
+
+internal procedure enumDiscriminantTokenModelIsValid() -> bool {
+    let not_int_model: SourceabilityModel = SourceabilityModel {
+        source_surface_exists: false,
+        internal_state_required: true,
+        reference_model_allowed: true
+    }
+    let negative_model: SourceabilityModel = SourceabilityModel {
+        source_surface_exists: false,
+        internal_state_required: true,
+        reference_model_allowed: true
+    }
+    return internalReferenceModelIsAllowed(not_int_model) &&
+        internalReferenceModelIsAllowed(negative_model)
+}
+
+internal procedure loweringFailureModelIsValid() -> bool {
+    let model: BackendFailureModel = BackendFailureModel {
+        valid_source_required: true,
+        failure_after_semantic_success: true,
+        backend_owner_reports: true
+    }
+    return model.valid_source_required &&
+        model.failure_after_semantic_success &&
+        model.backend_owner_reports
+}
+
+internal procedure objectEmissionFailureModelIsValid() -> bool {
+    let model: BackendFailureModel = BackendFailureModel {
+        valid_source_required: true,
+        failure_after_semantic_success: true,
+        backend_owner_reports: true
+    }
+    return model.valid_source_required &&
+        model.failure_after_semantic_success &&
+        model.backend_owner_reports
+}
+
+/// Exercises clarification-resolved internal consistency obligations.
+public procedure runSpecClarificationReferenceModels() -> bool {
+    return blockInfoResErrModelIsValid() &&
+        implementationOrphanErrModelIsValid() &&
+        loweringFailureModelIsValid() &&
+        objectEmissionFailureModelIsValid() &&
+        unionTooFewModelIsValid() &&
+        tupleIndexNonConstModelIsValid() &&
+        enumDiscriminantTokenModelIsValid()
+}

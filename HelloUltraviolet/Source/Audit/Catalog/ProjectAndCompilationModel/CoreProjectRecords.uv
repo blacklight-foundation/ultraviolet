@@ -1,0 +1,101 @@
+//! Generated catalog markers for 3. Project and Compilation Model / 3.1 Core Project Records.
+
+
+public procedure countProjectAndCompilationModelCoreProjectRecordsObligations() -> usize {
+    return 10usize
+}
+
+public procedure validatedProjectAndCompilationModelCoreProjectRecordsObligations() -> usize {
+    var count: usize = 0usize
+    if acceptedObligationEntryMatches(
+        "def.AssemblyAndLinkKinds",
+        2006usize,
+        "HelloUltraviolet::Reference::Projects",
+        "runProjectsManifestModelReference",
+        "Source/Reference/Projects/ManifestModel.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "def.ProjectRecord",
+        2021usize,
+        "HelloUltraviolet::Reference::Projects",
+        "runProjectsManifestModelReference",
+        "Source/Reference/Projects/ManifestModel.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "def.AssemblyClassification",
+        2039usize,
+        "HelloUltraviolet::Reference::Projects",
+        "runProjectsManifestModelReference",
+        "Source/Reference/Projects/ManifestModel.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "def.ProjectValidationScope",
+        2058usize,
+        "HelloUltraviolet::Reference::Projects",
+        "runProjectsManifestModelReference",
+        "Source/Reference/Projects/ManifestModel.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "def.DumpProjectOutput",
+        2075usize,
+        "HelloUltraviolet::Reference::Projects",
+        "runProjectsOutputArtifactsReference",
+        "Source/Reference/Projects/OutputArtifacts.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "def.ProjectSummaryOutput",
+        2092usize,
+        "HelloUltraviolet::Reference::Projects",
+        "runProjectsOutputArtifactsReference",
+        "Source/Reference/Projects/OutputArtifacts.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "def.OutputSummary",
+        2106usize,
+        "HelloUltraviolet::Reference::Projects",
+        "runProjectsOutputArtifactsReference",
+        "Source/Reference/Projects/OutputArtifacts.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "def.LinkOutputSummary",
+        2120usize,
+        "HelloUltraviolet::Reference::Projects",
+        "runProjectsOutputArtifactsReference",
+        "Source/Reference/Projects/OutputArtifacts.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "def.IROpt",
+        2136usize,
+        "HelloUltraviolet::Reference::Projects",
+        "runProjectsOutputArtifactsReference",
+        "Source/Reference/Projects/OutputArtifacts.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "def.ImportLibOpt",
+        2152usize,
+        "HelloUltraviolet::Reference::Projects",
+        "runProjectsOutputArtifactsReference",
+        "Source/Reference/Projects/OutputArtifacts.uv"
+    ) {
+        count = count + 1usize
+    }
+    return count
+}

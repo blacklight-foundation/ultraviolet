@@ -1,0 +1,20 @@
+//! Generated catalog markers for 8. Type System Core / 8.5 Core Type Diagnostics.
+
+
+public procedure countTypeSystemCoreCoreTypeDiagnosticsObligations() -> usize {
+    return 1usize
+}
+
+public procedure validatedTypeSystemCoreCoreTypeDiagnosticsObligations() -> usize {
+    var count: usize = 0usize
+    if rejectedSourceObligationEntryMatches(
+        "diagnostics.CoreTypeDiagnostics",
+        26719usize,
+        "HelloUltraviolet::Audit::FixtureCatalog::RejectedSource",
+        "validatedDataTypesRejectedSourceFixtureCount",
+        "Fixtures/RejectedSource/DataTypes/TypeAliasCycle/Source/Main.uv"
+    ) {
+        count = count + 1usize
+    }
+    return count
+}

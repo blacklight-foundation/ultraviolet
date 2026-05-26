@@ -1,0 +1,6 @@
+//! Rejected async suspension specimen for yielding the wrong output type.
+
+public procedure yieldTypeMismatchReference() -> Async<i32, (), (), !> {
+    yield false
+    return
+}

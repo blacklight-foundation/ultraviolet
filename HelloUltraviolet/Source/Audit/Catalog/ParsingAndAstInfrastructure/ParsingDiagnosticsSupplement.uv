@@ -1,0 +1,20 @@
+//! Generated catalog markers for 5. Parsing and AST Infrastructure / 5.10 Parsing Diagnostics Supplement.
+
+
+public procedure countParsingAndAstInfrastructureParsingDiagnosticsSupplementObligations() -> usize {
+    return 1usize
+}
+
+public procedure validatedParsingAndAstInfrastructureParsingDiagnosticsSupplementObligations() -> usize {
+    var count: usize = 0usize
+    if rejectedSourceObligationEntryMatches(
+        "diagnostics.ParsingDiagnostics",
+        12093usize,
+        "HelloUltraviolet::Audit::FixtureCatalog::RejectedSource",
+        "validatedParsingRejectedSourceFixtureCount",
+        "Fixtures/RejectedSource/Parsing/EnumCommaSeparator/Source/Main.uv"
+    ) {
+        count = count + 1usize
+    }
+    return count
+}

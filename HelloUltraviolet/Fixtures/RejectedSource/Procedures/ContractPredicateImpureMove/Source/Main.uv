@@ -1,0 +1,7 @@
+//! Rejected contract specimen for never-pure move expressions in predicates.
+
+public procedure contractPredicateImpureMoveReference(value: unique i32) -> unique i32
+|: move value == move value
+{
+    return move value
+}

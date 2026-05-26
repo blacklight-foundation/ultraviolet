@@ -1,0 +1,8 @@
+//! Rejected structured-parallelism specimen for prohibited GPU-safe types.
+
+public procedure gpuSafeTypeDiagnosticReference(context: Context) -> i32 {
+    return parallel context~>gpu() {
+        context
+        0
+    }
+}

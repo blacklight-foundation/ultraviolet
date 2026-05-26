@@ -1,0 +1,16 @@
+//! Rejected procedure specimen for free overload resolution before ordinary call typing.
+
+public procedure selectedBeforeCallTyping(value: i32) -> i32 {
+    return value
+}
+
+public procedure selectedBeforeCallTyping(value: bool) -> i32 {
+    if value {
+        return 1
+    }
+    return 0
+}
+
+public procedure overloadResolutionBeforeCallTypingReference() -> i32 {
+    return selectedBeforeCallTyping((1, false))
+}

@@ -1,0 +1,29 @@
+//! Reference specimens for FFI / Attributes.
+
+extern "C" {
+    public procedure ffiImportedAttributeReference(value: i32) -> i32
+
+    #mangle(none)
+    public procedure ffiAttributeMangleNoneReference(value: i32) -> i32
+}
+
+/// Exported procedure with an explicit link name selected by mangle.
+#export("C")
+#mangle("uv_reference_attribute_export")
+public procedure ffiAttributeExportReference(value: i32) -> i32 {
+    return value + 2
+}
+
+/// Foreign-visible provider used by the imported attribute specimen.
+#export("C")
+#mangle("ffiImportedAttributeReference")
+public procedure ffiImportedAttributeReferenceProvider(value: i32) -> i32 {
+    return value + 3
+}
+
+/// Exercises the FFI Attributes reference surface.
+public procedure runFFIAttributesReference() -> bool {
+    let imported_value: i32 = unsafe { ffiImportedAttributeReference(11) }
+    return imported_value == 14 &&
+        ffiAttributeExportReference(5) == 7
+}

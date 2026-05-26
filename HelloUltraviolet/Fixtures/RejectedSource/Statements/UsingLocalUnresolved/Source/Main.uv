@@ -1,0 +1,6 @@
+//! Rejected statement specimen for local using alias resolution failure.
+
+public procedure usingLocalUnresolvedReference() -> i32 {
+    using missing_value as alias_value
+    return alias_value
+}

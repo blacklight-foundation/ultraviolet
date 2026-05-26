@@ -1,0 +1,10 @@
+//! Rejected async composition specimen for sync inside an async procedure.
+
+public procedure unitAsyncValue() -> Async<(), (), i32, !> {
+    return 1
+}
+
+public procedure syncInsideAsyncReference() -> Async<(), (), i32, !> {
+    let value: i32 = sync unitAsyncValue()
+    return value
+}

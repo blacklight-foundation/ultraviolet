@@ -1,0 +1,13 @@
+//! Compiled symbol execution checks for SourceTestsSourceNativeTestsUv.
+
+using HelloUltraviolet::Tests::{ runAttributesSourceNativeTestsReference }
+
+public procedure catalogCompiledSymbolsExecuteSourceTestsSourceNativeTestsUv(context: Context) -> bool {
+    var passed: bool = true
+    passed = recordCatalogSymbolExecution(
+        context,
+        "runAttributesSourceNativeTestsReference",
+        runAttributesSourceNativeTestsReference()
+    ) && passed
+    return passed
+}

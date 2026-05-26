@@ -1,0 +1,308 @@
+//! Generated catalog markers for 8. Type System Core / 8.2 Subtyping.
+
+
+public procedure countTypeSystemCoreSubtypingObligations() -> usize {
+    return 33usize
+}
+
+public procedure validatedTypeSystemCoreSubtypingObligations() -> usize {
+    var count: usize = 0usize
+    if acceptedObligationEntryMatches(
+        "def.SubtypingJudgementSet",
+        24864usize,
+        "HelloUltraviolet::Reference::Types",
+        "runTypesSubtypingReference",
+        "Source/Reference/Types/Subtyping.uv"
+    ) {
+        count = count + 1usize
+    }
+    if rejectedSourceObligationEntryMatches(
+        "req.NoIntegerNumericSubtyping",
+        24878usize,
+        "HelloUltraviolet::Audit::FixtureCatalog::RejectedSource",
+        "validatedDataTypesRejectedSourceFixtureCount",
+        "Fixtures/RejectedSource/DataTypes/NoIntegerNumericSubtyping/Source/Main.uv"
+    ) {
+        count = count + 1usize
+    }
+    if rejectedSourceObligationEntryMatches(
+        "req.NoFloatNumericSubtyping",
+        24892usize,
+        "HelloUltraviolet::Audit::FixtureCatalog::RejectedSource",
+        "validatedDataTypesRejectedSourceFixtureCount",
+        "Fixtures/RejectedSource/DataTypes/NoFloatNumericSubtyping/Source/Main.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "req.PermissionAdmissibilityOwnedByChapter10",
+        24906usize,
+        "HelloUltraviolet::Reference::Types",
+        "runTypesSubtypingReference",
+        "Source/Reference/Types/Subtyping.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "Sub-Perm",
+        24920usize,
+        "HelloUltraviolet::Reference::Types",
+        "runTypesSubtypingReference",
+        "Source/Reference/Types/Subtyping.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "Sub-Never",
+        24938usize,
+        "HelloUltraviolet::Reference::Types",
+        "runTypesSubtypingReference",
+        "Source/Reference/Types/Subtyping.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "Sub-Tuple",
+        24956usize,
+        "HelloUltraviolet::Reference::Types",
+        "runTypesSubtypingReference",
+        "Source/Reference/Types/Subtyping.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "Sub-Array",
+        24974usize,
+        "HelloUltraviolet::Reference::Types",
+        "runTypesSubtypingReference",
+        "Source/Reference/Types/Subtyping.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "Sub-Slice",
+        24992usize,
+        "HelloUltraviolet::Reference::Types",
+        "runTypesSubtypingReference",
+        "Source/Reference/Types/Subtyping.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "Sub-Range",
+        25010usize,
+        "HelloUltraviolet::Reference::Types",
+        "runTypesSubtypingReference",
+        "Source/Reference/Types/Subtyping.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "Sub-RangeInclusive",
+        25028usize,
+        "HelloUltraviolet::Reference::Types",
+        "runTypesSubtypingReference",
+        "Source/Reference/Types/Subtyping.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "Sub-RangeFrom",
+        25046usize,
+        "HelloUltraviolet::Reference::Types",
+        "runTypesSubtypingReference",
+        "Source/Reference/Types/Subtyping.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "Sub-RangeTo",
+        25064usize,
+        "HelloUltraviolet::Reference::Types",
+        "runTypesSubtypingReference",
+        "Source/Reference/Types/Subtyping.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "Sub-RangeToInclusive",
+        25082usize,
+        "HelloUltraviolet::Reference::Types",
+        "runTypesSubtypingReference",
+        "Source/Reference/Types/Subtyping.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "Sub-RangeFull",
+        25100usize,
+        "HelloUltraviolet::Reference::Types",
+        "runTypesSubtypingReference",
+        "Source/Reference/Types/Subtyping.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "Sub-Ptr-State",
+        25118usize,
+        "HelloUltraviolet::Reference::Types",
+        "runTypesSubtypingReference",
+        "Source/Reference/Types/Subtyping.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "Sub-Modal-Niche",
+        25136usize,
+        "HelloUltraviolet::Reference::Types",
+        "runTypesSubtypingReference",
+        "Source/Reference/Types/Subtyping.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "Sub-Func",
+        25154usize,
+        "HelloUltraviolet::Reference::Types",
+        "runTypesSubtypingReference",
+        "Source/Reference/Types/Subtyping.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "Sub-Closure",
+        25172usize,
+        "HelloUltraviolet::Reference::Types",
+        "runTypesSubtypingReference",
+        "Source/Reference/Types/Subtyping.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "Sub-Async",
+        25190usize,
+        "HelloUltraviolet::Reference::Types",
+        "runTypesSubtypingReference",
+        "Source/Reference/Types/Subtyping.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "def.UnionMember",
+        25209usize,
+        "HelloUltraviolet::Reference::Types",
+        "runTypesSubtypingReference",
+        "Source/Reference/Types/Subtyping.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "Sub-Member-Union",
+        25223usize,
+        "HelloUltraviolet::Reference::Types",
+        "runTypesSubtypingReference",
+        "Source/Reference/Types/Subtyping.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "Sub-Union-Width",
+        25241usize,
+        "HelloUltraviolet::Reference::Types",
+        "runTypesSubtypingReference",
+        "Source/Reference/Types/Subtyping.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "def.VarianceDomain",
+        25259usize,
+        "HelloUltraviolet::Reference::Types",
+        "runTypesSubtypingReference",
+        "Source/Reference/Types/Subtyping.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "def.VarianceOfSignature",
+        25273usize,
+        "HelloUltraviolet::Reference::Types",
+        "runTypesSubtypingReference",
+        "Source/Reference/Types/Subtyping.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "def.VarianceOf",
+        25287usize,
+        "HelloUltraviolet::Reference::Types",
+        "runTypesSubtypingReference",
+        "Source/Reference/Types/Subtyping.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "def.VarianceSatisfied",
+        25301usize,
+        "HelloUltraviolet::Reference::Types",
+        "runTypesSubtypingReference",
+        "Source/Reference/Types/Subtyping.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "Sub-Generic",
+        25319usize,
+        "HelloUltraviolet::Reference::Types",
+        "runTypesSubtypingReference",
+        "Source/Reference/Types/Subtyping.uv"
+    ) {
+        count = count + 1usize
+    }
+    if rejectedSourceObligationEntryMatches(
+        "Sub-Generic-Invariant-Err",
+        25337usize,
+        "HelloUltraviolet::Audit::FixtureCatalog::RejectedSource",
+        "validatedDataTypesRejectedSourceFixtureCount",
+        "Fixtures/RejectedSource/DataTypes/GenericInvariantSubtyping/Source/Main.uv"
+    ) {
+        count = count + 1usize
+    }
+    if rejectedSourceObligationEntryMatches(
+        "Sub-Generic-Covariant-Err",
+        25355usize,
+        "HelloUltraviolet::Audit::FixtureCatalog::RejectedSource",
+        "validatedDataTypesRejectedSourceFixtureCount",
+        "Fixtures/RejectedSource/DataTypes/GenericCovariantSubtyping/Source/Main.uv"
+    ) {
+        count = count + 1usize
+    }
+    if rejectedSourceObligationEntryMatches(
+        "Sub-Generic-Contravariant-Err",
+        25373usize,
+        "HelloUltraviolet::Audit::FixtureCatalog::RejectedSource",
+        "validatedDataTypesRejectedSourceFixtureCount",
+        "Fixtures/RejectedSource/DataTypes/GenericContravariantSubtyping/Source/Main.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "Sub-Refl",
+        25391usize,
+        "HelloUltraviolet::Reference::Types",
+        "runTypesSubtypingReference",
+        "Source/Reference/Types/Subtyping.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "Sub-Trans",
+        25409usize,
+        "HelloUltraviolet::Reference::Types",
+        "runTypesSubtypingReference",
+        "Source/Reference/Types/Subtyping.uv"
+    ) {
+        count = count + 1usize
+    }
+    return count
+}

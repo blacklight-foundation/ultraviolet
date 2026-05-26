@@ -1,0 +1,16 @@
+//! Rejected polymorphism specimen for the dynamic dispatchability requirement.
+
+internal class RequiredDispatchClass {
+    internal procedure matchRequiredSelf(~, other: Self) -> i32 {
+        return 2
+    }
+}
+
+internal record RequiredDispatchOwner <: RequiredDispatchClass {
+    internal value: i32
+}
+
+internal procedure makeRequiredDynamic() -> $RequiredDispatchClass {
+    let owner: RequiredDispatchOwner = RequiredDispatchOwner { value: 2 }
+    return owner as $RequiredDispatchClass
+}

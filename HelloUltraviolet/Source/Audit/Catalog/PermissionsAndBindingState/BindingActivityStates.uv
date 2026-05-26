@@ -1,0 +1,110 @@
+//! Generated catalog markers for 10. Permissions and Binding State / 10.3 Binding Activity States.
+
+
+public procedure countPermissionsAndBindingStateBindingActivityStatesObligations() -> usize {
+    return 11usize
+}
+
+public procedure validatedPermissionsAndBindingStateBindingActivityStatesObligations() -> usize {
+    var count: usize = 0usize
+    if acceptedObligationEntryMatches(
+        "req.BindingActivityNoConcreteSyntax",
+        29464usize,
+        "HelloUltraviolet::Reference::Permissions",
+        "runPermissionsActivityStatesReference",
+        "Source/Reference/Permissions/ActivityStates.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "req.BindingActivityNoParsingRules",
+        29482usize,
+        "HelloUltraviolet::Reference::Permissions",
+        "runPermissionsActivityStatesReference",
+        "Source/Reference/Permissions/ActivityStates.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "req.BindingActivityNoAstNode",
+        29498usize,
+        "HelloUltraviolet::Reference::Permissions",
+        "runPermissionsActivityStatesReference",
+        "Source/Reference/Permissions/ActivityStates.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "def.UniqueBindingActivityStates",
+        29514usize,
+        "HelloUltraviolet::Reference::Permissions",
+        "runPermissionsActivityStatesReference",
+        "Source/Reference/Permissions/ActivityStates.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "Inactive-Enter",
+        29533usize,
+        "HelloUltraviolet::Reference::Permissions",
+        "runPermissionsActivityStatesReference",
+        "Source/Reference/Permissions/ActivityStates.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "Inactive-Exit",
+        29551usize,
+        "HelloUltraviolet::Reference::Permissions",
+        "runPermissionsActivityStatesReference",
+        "Source/Reference/Permissions/ActivityStates.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "req.InactiveUniqueBindingNoDirectUse",
+        29569usize,
+        "HelloUltraviolet::Reference::Permissions",
+        "runPermissionsActivityStatesReference",
+        "Source/Reference/Permissions/ActivityStates.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "req.BindingActivityNoAliasCreation",
+        29585usize,
+        "HelloUltraviolet::Reference::Permissions",
+        "runPermissionsActivityStatesReference",
+        "Source/Reference/Permissions/ActivityStates.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "req.BindingActivityDeterministicReactivation",
+        29599usize,
+        "HelloUltraviolet::Reference::Permissions",
+        "runPermissionsActivityStatesReference",
+        "Source/Reference/Permissions/ActivityStates.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "conformance.BindingActivityLowering",
+        29613usize,
+        "HelloUltraviolet::Reference::Permissions",
+        "runPermissionsActivityStatesReference",
+        "Source/Reference/Permissions/ActivityStates.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "req.BindingActivityDiagnosticOwnership",
+        29629usize,
+        "HelloUltraviolet::Reference::Permissions",
+        "runPermissionsActivityStatesReference",
+        "Source/Reference/Permissions/ActivityStates.uv"
+    ) {
+        count = count + 1usize
+    }
+    return count
+}

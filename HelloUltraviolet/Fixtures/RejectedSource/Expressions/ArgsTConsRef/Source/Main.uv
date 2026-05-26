@@ -1,0 +1,10 @@
+//! Rejected call specimen for by-reference argument checking.
+
+public procedure borrowedArgument(value: i32) -> i32 {
+    return value
+}
+
+public procedure argsTConsRefReference() -> i32 {
+    let value: i32 = 1
+    return borrowedArgument(move value)
+}

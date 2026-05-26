@@ -1,0 +1,10 @@
+//! Rejected record-method specimen for non-unit method bodies without explicit return.
+
+public record MethodBodyOwner {
+    public value: i32
+
+    public procedure readValue(~) -> i32 {
+        let current_value: i32 = self.value
+        current_value
+    }
+}

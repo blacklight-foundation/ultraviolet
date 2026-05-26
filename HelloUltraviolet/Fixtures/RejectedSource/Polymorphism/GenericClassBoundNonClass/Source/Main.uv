@@ -1,0 +1,11 @@
+//! Rejected polymorphism specimen for a generic class bound that names a non-class type.
+
+internal record NotAClass {
+    internal value: i32
+}
+
+public procedure genericClassBoundNonClassReference<TValue <: NotAClass>(
+    value: TValue
+) -> i32 {
+    return 0
+}

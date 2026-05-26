@@ -1,0 +1,15 @@
+//! Rejected structured-parallelism specimen for unbounded generic GpuSafe types.
+
+public record GpuGenericPayload<TValue> {
+    public value: TValue
+}
+
+public procedure gpuSafeGenericUnboundedReference<TValue>(
+    context: Context,
+    payload: GpuGenericPayload<TValue>
+) -> i32 {
+    return parallel context~>gpu() {
+        payload
+        0
+    }
+}

@@ -1,0 +1,13 @@
+//! Rejected polymorphism specimen for a concrete default method replacement with mismatched signature.
+
+internal class DefaultSignatureClass {
+    internal procedure value(~) -> i32 {
+        return 1
+    }
+}
+
+internal record DefaultSignatureOwner <: DefaultSignatureClass {
+    internal override procedure value(~) -> bool {
+        return true
+    }
+}

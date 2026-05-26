@@ -1,0 +1,42 @@
+//! Reference specimens for Names / Disambiguation.
+
+internal enum DisambiguatedNameKind {
+    Value
+    Type
+    Module
+    Class
+}
+
+internal record DisambiguatedNameReference {
+    internal text: string@View
+    internal kind: DisambiguatedNameKind
+    internal selected_by_context: bool
+}
+
+internal procedure disambiguatedNameReference(
+    text: string@View,
+    kind: DisambiguatedNameKind,
+    selected_by_context: bool
+) -> DisambiguatedNameReference {
+    return DisambiguatedNameReference {
+        text: text,
+        kind: kind,
+        selected_by_context: selected_by_context
+    }
+}
+
+internal procedure disambiguatedNameIsResolved(
+    reference: DisambiguatedNameReference
+) -> bool {
+    return reference.selected_by_context
+}
+
+/// Exercises the Names Disambiguation reference surface.
+public procedure runNamesDisambiguationReference() -> bool {
+    let value_name: DisambiguatedNameReference =
+        disambiguatedNameReference("RecordReference", DisambiguatedNameKind::Value, true)
+    let type_name: DisambiguatedNameReference =
+        disambiguatedNameReference("RecordReference", DisambiguatedNameKind::Type, true)
+    return disambiguatedNameIsResolved(value_name) &&
+        disambiguatedNameIsResolved(type_name)
+}

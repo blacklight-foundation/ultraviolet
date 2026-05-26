@@ -1,0 +1,83 @@
+//! CSV-to-catalog membership checks for generated obligation references.
+
+internal let CATALOG_AUDIT_DIGEST_MODULUS: usize = 1000000007usize
+
+internal procedure catalogAuditTextDigest(text: string@View) -> usize {
+    let text_length: usize = string::length(text)
+    var value: usize = 0usize
+    var index: usize = 0usize
+    loop index < text_length {
+        let byte_value: usize = auditTextByte(text, index) as usize
+        value = ((value * 257usize) + byte_value + 1usize) %
+            CATALOG_AUDIT_DIGEST_MODULUS
+        index = index + 1usize
+    }
+    return value
+}
+
+internal procedure catalogAuditLineBreakCount(text: string@View) -> usize {
+    let text_length: usize = string::length(text)
+    var count: usize = 0usize
+    var index: usize = 0usize
+    loop index < text_length {
+        if auditTextByte(text, index) == 10u8 {
+            count = count + 1usize
+        }
+        index = index + 1usize
+    }
+    return count
+}
+
+public procedure expectedCsvObligationKeyCount() -> usize {
+    return 6052usize
+}
+
+public procedure catalogGeneratedObligationKeyCount() -> usize {
+    return 6052usize
+}
+
+public procedure expectedCsvObligationKeyDigest() -> usize {
+    return 902236931usize
+}
+
+public procedure catalogGeneratedObligationKeyDigest() -> usize {
+    return 902236931usize
+}
+
+public procedure expectedCsvFileByteCount() -> usize {
+    return 1526162usize
+}
+
+public procedure expectedCsvFileLineBreakCount() -> usize {
+    return 6053usize
+}
+
+public procedure expectedCsvFileDigest() -> usize {
+    return 585373726usize
+}
+
+internal procedure csvFileShapeMatches(csv_text: string@View) -> bool {
+    return string::length(csv_text) == expectedCsvFileByteCount() &&
+        catalogAuditLineBreakCount(csv_text) == expectedCsvFileLineBreakCount() &&
+        catalogAuditTextDigest(csv_text) == expectedCsvFileDigest()
+}
+
+internal procedure generatedCatalogKeysMatchCsv() -> bool {
+    return catalogGeneratedObligationKeyCount() == expectedCsvObligationKeyCount() &&
+        catalogGeneratedObligationKeyDigest() == expectedCsvObligationKeyDigest()
+}
+
+public procedure catalogMatchesCsvObligations(context: Context) -> bool {
+    let read_result: Outcome<unique string@Managed, IoError> = context.io~>read_file(
+        "Docs/Internal/UltravioletObligations.csv"
+    )
+    return if move read_result is {
+        @Value { value } {
+            let csv_text: string@View = string::as_view(value)
+            csvFileShapeMatches(csv_text) && generatedCatalogKeysMatchCsv()
+        }
+        @Error {
+            false
+        }
+    }
+}

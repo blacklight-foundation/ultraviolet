@@ -1,0 +1,17 @@
+//! Rejected async composition specimen for all over an async value that needs input.
+
+public procedure inputRequiredAsyncValue() -> Async<(), i32, i32, !> {
+    return 1
+}
+
+public procedure unitAsyncValue() -> Async<(), (), i32, !> {
+    return 2
+}
+
+public procedure allOperandRequiresInputReference() -> i32 {
+    let value: (i32, i32) = all {
+        inputRequiredAsyncValue(),
+        unitAsyncValue(),
+    }
+    return 0
+}

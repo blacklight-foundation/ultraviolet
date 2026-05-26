@@ -1,0 +1,8 @@
+//! Rejected structured-parallelism specimen for non-GpuSafe captures.
+
+public procedure gpuCaptureNonGpuSafeReference(context: Context) -> i32 {
+    return parallel context~>gpu() {
+        context
+        0
+    }
+}

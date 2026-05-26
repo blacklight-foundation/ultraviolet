@@ -1,0 +1,10 @@
+//! Artifact fixture for reduced dispatch over an empty iteration space.
+
+public procedure main(context: Context) -> i32 {
+    let value: i32 = parallel context~>cpu() {
+        dispatch index in 0usize..0usize [reduce: +] {
+            index as i32
+        }
+    }
+    return value
+}

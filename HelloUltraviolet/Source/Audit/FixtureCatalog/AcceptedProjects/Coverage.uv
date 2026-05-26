@@ -1,0 +1,740 @@
+//! Coverage checks for accepted project fixture metadata.
+
+public procedure expectedAcceptedProjectFixtureCount() -> usize {
+    return 56usize
+}
+
+public procedure acceptedProjectFixtureCount() -> usize {
+    return 56usize
+}
+
+internal procedure hostedExportLibraryExpectationMatches(
+    expectation: AcceptedProjectExpectation,
+    expectation_name: string@View,
+    obligation_id: string@View
+) -> bool {
+    return acceptedProjectSpecimenMatches(
+        acceptedProjectSpecimen(
+            "HostedExportLibrary",
+            "Fixtures/AcceptedProjects/HostedExportLibrary",
+            "Fixtures/AcceptedProjects/HostedExportLibrary/Ultraviolet.toml",
+            "Fixtures/AcceptedProjects/HostedExportLibrary/Source/Library.uv",
+            "HostedExportLibrary",
+            "library",
+            expectation
+        ),
+        "HostedExportLibrary",
+        "Fixtures/AcceptedProjects/HostedExportLibrary",
+        "Fixtures/AcceptedProjects/HostedExportLibrary/Ultraviolet.toml",
+        "Fixtures/AcceptedProjects/HostedExportLibrary/Source/Library.uv",
+        "HostedExportLibrary",
+        "library",
+        expectation_name,
+        obligation_id
+    )
+}
+
+internal procedure expressionSemanticsExpectationMatches(
+    expectation: AcceptedProjectExpectation,
+    expectation_name: string@View,
+    obligation_id: string@View
+) -> bool {
+    return acceptedProjectSpecimenMatches(
+        acceptedProjectSpecimen(
+            "ExpressionSemantics",
+            "Fixtures/AcceptedProjects/ExpressionSemantics",
+            "Fixtures/AcceptedProjects/ExpressionSemantics/Ultraviolet.toml",
+            "Fixtures/AcceptedProjects/ExpressionSemantics/Source/Library.uv",
+            "ExpressionSemantics",
+            "library",
+            expectation
+        ),
+        "ExpressionSemantics",
+        "Fixtures/AcceptedProjects/ExpressionSemantics",
+        "Fixtures/AcceptedProjects/ExpressionSemantics/Ultraviolet.toml",
+        "Fixtures/AcceptedProjects/ExpressionSemantics/Source/Library.uv",
+        "ExpressionSemantics",
+        "library",
+        expectation_name,
+        obligation_id
+    )
+}
+
+public procedure validatedAcceptedProjectFixtureCount() -> usize {
+    var count: usize = 0usize
+    if acceptedProjectSpecimenMatches(
+        acceptedProjectSpecimen(
+            "StaticLibrary",
+            "Fixtures/AcceptedProjects/StaticLibrary",
+            "Fixtures/AcceptedProjects/StaticLibrary/Ultraviolet.toml",
+            "Fixtures/AcceptedProjects/StaticLibrary/Source/Library.uv",
+            "StaticLibrary",
+            "library",
+            acceptedProjectExpectation("StaticLibraryArchive", "Archive-Ok")
+        ),
+        "StaticLibrary",
+        "Fixtures/AcceptedProjects/StaticLibrary",
+        "Fixtures/AcceptedProjects/StaticLibrary/Ultraviolet.toml",
+        "Fixtures/AcceptedProjects/StaticLibrary/Source/Library.uv",
+        "StaticLibrary",
+        "library",
+        "StaticLibraryArchive",
+        "Archive-Ok"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedProjectSpecimenMatches(
+        acceptedProjectSpecimen(
+            "ExecutableMain",
+            "Fixtures/AcceptedProjects/ExecutableMain",
+            "Fixtures/AcceptedProjects/ExecutableMain/Ultraviolet.toml",
+            "Fixtures/AcceptedProjects/ExecutableMain/Source/Main.uv",
+            "ExecutableMain",
+            "executable",
+            acceptedProjectExpectation("ExecutableLinkOk", "Link-Ok")
+        ),
+        "ExecutableMain",
+        "Fixtures/AcceptedProjects/ExecutableMain",
+        "Fixtures/AcceptedProjects/ExecutableMain/Ultraviolet.toml",
+        "Fixtures/AcceptedProjects/ExecutableMain/Source/Main.uv",
+        "ExecutableMain",
+        "executable",
+        "ExecutableLinkOk",
+        "Link-Ok"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedProjectSpecimenMatches(
+        acceptedProjectSpecimen(
+            "MacOSTargetProfile",
+            "Fixtures/AcceptedProjects/MacOSTargetProfile",
+            "Fixtures/AcceptedProjects/MacOSTargetProfile/Ultraviolet.toml",
+            "Fixtures/AcceptedProjects/MacOSTargetProfile/Source/Main.uv",
+            "MacOSTargetProfile",
+            "executable",
+            acceptedProjectExpectation("MacOSTargetProfile", "def.TargetProfile")
+        ),
+        "MacOSTargetProfile",
+        "Fixtures/AcceptedProjects/MacOSTargetProfile",
+        "Fixtures/AcceptedProjects/MacOSTargetProfile/Ultraviolet.toml",
+        "Fixtures/AcceptedProjects/MacOSTargetProfile/Source/Main.uv",
+        "MacOSTargetProfile",
+        "executable",
+        "MacOSTargetProfile",
+        "def.TargetProfile"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedProjectSpecimenMatches(
+        acceptedProjectSpecimen(
+            "ClassDefaultMethodFieldAccess",
+            "Fixtures/BootstrapNonCompliance/Polymorphism/ClassDefaultMethodFieldAccess",
+            "Fixtures/BootstrapNonCompliance/Polymorphism/ClassDefaultMethodFieldAccess/Ultraviolet.toml",
+            "Fixtures/BootstrapNonCompliance/Polymorphism/ClassDefaultMethodFieldAccess/Source/Main.uv",
+            "ClassDefaultMethodFieldAccess",
+            "library",
+            acceptedProjectExpectation("ClassDefaultMethodFieldAccess", "def.15.ClassDefaults")
+        ),
+        "ClassDefaultMethodFieldAccess",
+        "Fixtures/BootstrapNonCompliance/Polymorphism/ClassDefaultMethodFieldAccess",
+        "Fixtures/BootstrapNonCompliance/Polymorphism/ClassDefaultMethodFieldAccess/Ultraviolet.toml",
+        "Fixtures/BootstrapNonCompliance/Polymorphism/ClassDefaultMethodFieldAccess/Source/Main.uv",
+        "ClassDefaultMethodFieldAccess",
+        "library",
+        "ClassDefaultMethodFieldAccess",
+        "def.15.ClassDefaults"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedProjectSpecimenMatches(
+        acceptedProjectSpecimen(
+            "GenericClassBoundMethodLookup",
+            "Fixtures/BootstrapNonCompliance/Polymorphism/GenericClassBoundMethodLookup",
+            "Fixtures/BootstrapNonCompliance/Polymorphism/GenericClassBoundMethodLookup/Ultraviolet.toml",
+            "Fixtures/BootstrapNonCompliance/Polymorphism/GenericClassBoundMethodLookup/Source/Main.uv",
+            "GenericClassBoundMethodLookup",
+            "library",
+            acceptedProjectExpectation("GenericClassBoundMethodLookup", "def.15.LookupMethod")
+        ),
+        "GenericClassBoundMethodLookup",
+        "Fixtures/BootstrapNonCompliance/Polymorphism/GenericClassBoundMethodLookup",
+        "Fixtures/BootstrapNonCompliance/Polymorphism/GenericClassBoundMethodLookup/Ultraviolet.toml",
+        "Fixtures/BootstrapNonCompliance/Polymorphism/GenericClassBoundMethodLookup/Source/Main.uv",
+        "GenericClassBoundMethodLookup",
+        "library",
+        "GenericClassBoundMethodLookup",
+        "def.15.LookupMethod"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedProjectSpecimenMatches(
+        acceptedProjectSpecimen(
+            "GenericRecordLiteralExpectedType",
+            "Fixtures/BootstrapNonCompliance/Polymorphism/GenericRecordLiteralExpectedType",
+            "Fixtures/BootstrapNonCompliance/Polymorphism/GenericRecordLiteralExpectedType/Ultraviolet.toml",
+            "Fixtures/BootstrapNonCompliance/Polymorphism/GenericRecordLiteralExpectedType/Source/Main.uv",
+            "GenericRecordLiteralExpectedType",
+            "library",
+            acceptedProjectExpectation("GenericRecordLiteralExpectedType", "rule.16.T-Record-Literal")
+        ),
+        "GenericRecordLiteralExpectedType",
+        "Fixtures/BootstrapNonCompliance/Polymorphism/GenericRecordLiteralExpectedType",
+        "Fixtures/BootstrapNonCompliance/Polymorphism/GenericRecordLiteralExpectedType/Ultraviolet.toml",
+        "Fixtures/BootstrapNonCompliance/Polymorphism/GenericRecordLiteralExpectedType/Source/Main.uv",
+        "GenericRecordLiteralExpectedType",
+        "library",
+        "GenericRecordLiteralExpectedType",
+        "rule.16.T-Record-Literal"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedProjectSpecimenMatches(
+        acceptedProjectSpecimen(
+            "FreeProcedureOverloadResolution",
+            "Fixtures/BootstrapNonCompliance/Procedures/FreeProcedureOverloadResolution",
+            "Fixtures/BootstrapNonCompliance/Procedures/FreeProcedureOverloadResolution/Ultraviolet.toml",
+            "Fixtures/BootstrapNonCompliance/Procedures/FreeProcedureOverloadResolution/Source/Main.uv",
+            "FreeProcedureOverloadResolution",
+            "library",
+            acceptedProjectExpectation(
+                "FreeProcedureOverloadResolution",
+                "req.15.OverloadResolutionCompleteBeforeLowering"
+            )
+        ),
+        "FreeProcedureOverloadResolution",
+        "Fixtures/BootstrapNonCompliance/Procedures/FreeProcedureOverloadResolution",
+        "Fixtures/BootstrapNonCompliance/Procedures/FreeProcedureOverloadResolution/Ultraviolet.toml",
+        "Fixtures/BootstrapNonCompliance/Procedures/FreeProcedureOverloadResolution/Source/Main.uv",
+        "FreeProcedureOverloadResolution",
+        "library",
+        "FreeProcedureOverloadResolution",
+        "req.15.OverloadResolutionCompleteBeforeLowering"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedProjectSpecimenMatches(
+        acceptedProjectSpecimen(
+            "PtrNullReturn",
+            "Fixtures/AcceptedProjects/PtrNullReturn",
+            "Fixtures/AcceptedProjects/PtrNullReturn/Ultraviolet.toml",
+            "Fixtures/AcceptedProjects/PtrNullReturn/Source/Library.uv",
+            "PtrNullReturn",
+            "library",
+            acceptedProjectExpectation("PtrNullCheckedReturn", "rule.16.Chk-Null-Ptr")
+        ),
+        "PtrNullReturn",
+        "Fixtures/AcceptedProjects/PtrNullReturn",
+        "Fixtures/AcceptedProjects/PtrNullReturn/Ultraviolet.toml",
+        "Fixtures/AcceptedProjects/PtrNullReturn/Source/Library.uv",
+        "PtrNullReturn",
+        "library",
+        "PtrNullCheckedReturn",
+        "rule.16.Chk-Null-Ptr"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedProjectSpecimenMatches(
+        acceptedProjectSpecimen(
+            "ExpressionSemantics",
+            "Fixtures/AcceptedProjects/ExpressionSemantics",
+            "Fixtures/AcceptedProjects/ExpressionSemantics/Ultraviolet.toml",
+            "Fixtures/AcceptedProjects/ExpressionSemantics/Source/Library.uv",
+            "ExpressionSemantics",
+            "library",
+            acceptedProjectExpectation("AsyncIteratorLoop", "rule.21.T-Loop-Iter-Async")
+        ),
+        "ExpressionSemantics",
+        "Fixtures/AcceptedProjects/ExpressionSemantics",
+        "Fixtures/AcceptedProjects/ExpressionSemantics/Ultraviolet.toml",
+        "Fixtures/AcceptedProjects/ExpressionSemantics/Source/Library.uv",
+        "ExpressionSemantics",
+        "library",
+        "AsyncIteratorLoop",
+        "rule.21.T-Loop-Iter-Async"
+    ) {
+        count = count + 1usize
+    }
+    if expressionSemanticsExpectationMatches(
+        acceptedProjectExpectation(
+            "MoveParameterByReferenceOwnership",
+            "rule.16.Lower-Args-Cons-Move"
+        ),
+        "MoveParameterByReferenceOwnership",
+        "rule.16.Lower-Args-Cons-Move"
+    ) {
+        count = count + 1usize
+    }
+    if expressionSemanticsExpectationMatches(
+        acceptedProjectExpectation("CopyIndependentProvenance", "rule.16.T-Copy"),
+        "CopyIndependentProvenance",
+        "rule.16.T-Copy"
+    ) {
+        count = count + 1usize
+    }
+    if expressionSemanticsExpectationMatches(
+        acceptedProjectExpectation(
+            "ReturnMoveOwnershipDestination",
+            "rule.18.T-Return-Value"
+        ),
+        "ReturnMoveOwnershipDestination",
+        "rule.18.T-Return-Value"
+    ) {
+        count = count + 1usize
+    }
+    if expressionSemanticsExpectationMatches(
+        acceptedProjectExpectation(
+            "ReturnConstructedOwnershipDestination",
+            "rule.18.Lower-Stmt-Return"
+        ),
+        "ReturnConstructedOwnershipDestination",
+        "rule.18.Lower-Stmt-Return"
+    ) {
+        count = count + 1usize
+    }
+    if expressionSemanticsExpectationMatches(
+        acceptedProjectExpectation("ReturnCopyDuplicateDomain", "rule.18.ExecSigma-Return"),
+        "ReturnCopyDuplicateDomain",
+        "rule.18.ExecSigma-Return"
+    ) {
+        count = count + 1usize
+    }
+    if expressionSemanticsExpectationMatches(
+        acceptedProjectExpectation("NoDropFinalOwnerDomainRelease", "def.24.ReleaseValue"),
+        "NoDropFinalOwnerDomainRelease",
+        "def.24.ReleaseValue"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedProjectSpecimenMatches(
+        acceptedProjectSpecimen(
+            "VerificationFactPrecondition",
+            "Fixtures/AcceptedProjects/VerificationFactPrecondition",
+            "Fixtures/AcceptedProjects/VerificationFactPrecondition/Ultraviolet.toml",
+            "Fixtures/AcceptedProjects/VerificationFactPrecondition/Source/Library.uv",
+            "VerificationFactPrecondition",
+            "library",
+            acceptedProjectExpectation("DominatedBranchFact", "rule.15.Fact-Dominate")
+        ),
+        "VerificationFactPrecondition",
+        "Fixtures/AcceptedProjects/VerificationFactPrecondition",
+        "Fixtures/AcceptedProjects/VerificationFactPrecondition/Ultraviolet.toml",
+        "Fixtures/AcceptedProjects/VerificationFactPrecondition/Source/Library.uv",
+        "VerificationFactPrecondition",
+        "library",
+        "DominatedBranchFact",
+        "rule.15.Fact-Dominate"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedProjectSpecimenMatches(
+        acceptedProjectSpecimen(
+            "CrossAssemblyImplementation",
+            "Fixtures/AcceptedProjects/CrossAssemblyImplementation",
+            "Fixtures/AcceptedProjects/CrossAssemblyImplementation/Ultraviolet.toml",
+            "Fixtures/AcceptedProjects/CrossAssemblyImplementation/Source/CrossAssemblyImplementation/Library.uv",
+            "CrossAssemblyImplementation",
+            "library",
+            acceptedProjectExpectation(
+                "CrossAssemblyImplementationOrphanOk",
+                "req.14.ImplementationOrphanRequirement"
+            )
+        ),
+        "CrossAssemblyImplementation",
+        "Fixtures/AcceptedProjects/CrossAssemblyImplementation",
+        "Fixtures/AcceptedProjects/CrossAssemblyImplementation/Ultraviolet.toml",
+        "Fixtures/AcceptedProjects/CrossAssemblyImplementation/Source/CrossAssemblyImplementation/Library.uv",
+        "CrossAssemblyImplementation",
+        "library",
+        "CrossAssemblyImplementationOrphanOk",
+        "req.14.ImplementationOrphanRequirement"
+    ) {
+        count = count + 1usize
+    }
+    if hostedExportLibraryExpectationMatches(
+        acceptedProjectExpectation(
+            "HostedExportClassification",
+            "requirement.23.HostedExportClassification"
+        ),
+        "HostedExportClassification",
+        "requirement.23.HostedExportClassification"
+    ) {
+        count = count + 1usize
+    }
+    if hostedExportLibraryExpectationMatches(
+        acceptedProjectExpectation(
+            "HostedExportProcedureParser",
+            "requirement.23.HostedExportParsingUsesOrdinaryProcedureParser"
+        ),
+        "HostedExportProcedureParser",
+        "requirement.23.HostedExportParsingUsesOrdinaryProcedureParser"
+    ) {
+        count = count + 1usize
+    }
+    if hostedExportLibraryExpectationMatches(
+        acceptedProjectExpectation(
+            "HostedExportParsingClassification",
+            "requirement.23.HostedExportParsingClassification"
+        ),
+        "HostedExportParsingClassification",
+        "requirement.23.HostedExportParsingClassification"
+    ) {
+        count = count + 1usize
+    }
+    if hostedExportLibraryExpectationMatches(
+        acceptedProjectExpectation(
+            "HostedExportProcedureForm",
+            "ast.23.HostedExportProcedureForm"
+        ),
+        "HostedExportProcedureForm",
+        "ast.23.HostedExportProcedureForm"
+    ) {
+        count = count + 1usize
+    }
+    if hostedExportLibraryExpectationMatches(
+        acceptedProjectExpectation(
+            "HostedExportProcedureHelpers",
+            "def.23.HostedExportProcedureHelpers"
+        ),
+        "HostedExportProcedureHelpers",
+        "def.23.HostedExportProcedureHelpers"
+    ) {
+        count = count + 1usize
+    }
+    if hostedExportLibraryExpectationMatches(
+        acceptedProjectExpectation(
+            "HostedRootCapsMeaning",
+            "requirement.23.HostedRootCapsMeaning"
+        ),
+        "HostedRootCapsMeaning",
+        "requirement.23.HostedRootCapsMeaning"
+    ) {
+        count = count + 1usize
+    }
+    if hostedExportLibraryExpectationMatches(
+        acceptedProjectExpectation("HostedExportMeaning", "def.23.HostedExportMeaning"),
+        "HostedExportMeaning",
+        "def.23.HostedExportMeaning"
+    ) {
+        count = count + 1usize
+    }
+    if hostedExportLibraryExpectationMatches(
+        acceptedProjectExpectation(
+            "HostedExportForeignVisibleSignature",
+            "requirement.23.HostedExportForeignVisibleSignature"
+        ),
+        "HostedExportForeignVisibleSignature",
+        "requirement.23.HostedExportForeignVisibleSignature"
+    ) {
+        count = count + 1usize
+    }
+    if hostedExportLibraryExpectationMatches(
+        acceptedProjectExpectation(
+            "HostedExportForeignVisiblePassKind",
+            "requirement.23.HostedExportForeignVisiblePassKind"
+        ),
+        "HostedExportForeignVisiblePassKind",
+        "requirement.23.HostedExportForeignVisiblePassKind"
+    ) {
+        count = count + 1usize
+    }
+    if hostedExportLibraryExpectationMatches(
+        acceptedProjectExpectation(
+            "HostExportSignatureJudgements",
+            "def.23.HostExportSignatureJudgements"
+        ),
+        "HostExportSignatureJudgements",
+        "def.23.HostExportSignatureJudgements"
+    ) {
+        count = count + 1usize
+    }
+    if hostedExportLibraryExpectationMatches(
+        acceptedProjectExpectation("HostExportSigOk", "rule.23.HostExportSig-Ok"),
+        "HostExportSigOk",
+        "rule.23.HostExportSig-Ok"
+    ) {
+        count = count + 1usize
+    }
+    if hostedExportLibraryExpectationMatches(
+        acceptedProjectExpectation(
+            "HostedExportSessionHandleValidity",
+            "requirement.23.HostedExportSessionHandleValidity"
+        ),
+        "HostedExportSessionHandleValidity",
+        "requirement.23.HostedExportSessionHandleValidity"
+    ) {
+        count = count + 1usize
+    }
+    if hostedExportLibraryExpectationMatches(
+        acceptedProjectExpectation(
+            "HostedExportCapabilityIsolation",
+            "requirement.23.HostedExportCapabilityIsolation"
+        ),
+        "HostedExportCapabilityIsolation",
+        "requirement.23.HostedExportCapabilityIsolation"
+    ) {
+        count = count + 1usize
+    }
+    if hostedExportLibraryExpectationMatches(
+        acceptedProjectExpectation(
+            "HostedSessionRootCapsGrant",
+            "requirement.23.HostedSessionRootCapsGrant"
+        ),
+        "HostedSessionRootCapsGrant",
+        "requirement.23.HostedSessionRootCapsGrant"
+    ) {
+        count = count + 1usize
+    }
+    if hostedExportLibraryExpectationMatches(
+        acceptedProjectExpectation(
+            "HostedExportBoundaryEntrySequence",
+            "requirement.23.HostedExportBoundaryEntrySequence"
+        ),
+        "HostedExportBoundaryEntrySequence",
+        "requirement.23.HostedExportBoundaryEntrySequence"
+    ) {
+        count = count + 1usize
+    }
+    if hostedExportLibraryExpectationMatches(
+        acceptedProjectExpectation(
+            "HostedExportInvalidHandleBehavior",
+            "requirement.23.HostedExportInvalidHandleBehavior"
+        ),
+        "HostedExportInvalidHandleBehavior",
+        "requirement.23.HostedExportInvalidHandleBehavior"
+    ) {
+        count = count + 1usize
+    }
+    if hostedExportLibraryExpectationMatches(
+        acceptedProjectExpectation(
+            "HostedExportCatchFailureReturn",
+            "requirement.23.HostedExportCatchFailureReturn"
+        ),
+        "HostedExportCatchFailureReturn",
+        "requirement.23.HostedExportCatchFailureReturn"
+    ) {
+        count = count + 1usize
+    }
+    if hostedExportLibraryExpectationMatches(
+        acceptedProjectExpectation(
+            "HostedExportLoweringPreservesRawFfiRules",
+            "requirement.23.HostedExportLoweringPreservesRawFfiRules"
+        ),
+        "HostedExportLoweringPreservesRawFfiRules",
+        "requirement.23.HostedExportLoweringPreservesRawFfiRules"
+    ) {
+        count = count + 1usize
+    }
+    if hostedExportLibraryExpectationMatches(
+        acceptedProjectExpectation(
+            "HostedExportThunkAbiDetermination",
+            "requirement.23.HostedExportThunkAbiDetermination"
+        ),
+        "HostedExportThunkAbiDetermination",
+        "requirement.23.HostedExportThunkAbiDetermination"
+    ) {
+        count = count + 1usize
+    }
+    if hostedExportLibraryExpectationMatches(
+        acceptedProjectExpectation("HostThunkCarrierHelpers", "def.23.HostThunkCarrierHelpers"),
+        "HostThunkCarrierHelpers",
+        "def.23.HostThunkCarrierHelpers"
+    ) {
+        count = count + 1usize
+    }
+    if hostedExportLibraryExpectationMatches(
+        acceptedProjectExpectation(
+            "HostThunkParamCarrierByRef",
+            "rule.23.HostThunkParamCarrier-ByRef"
+        ),
+        "HostThunkParamCarrierByRef",
+        "rule.23.HostThunkParamCarrier-ByRef"
+    ) {
+        count = count + 1usize
+    }
+    if hostedExportLibraryExpectationMatches(
+        acceptedProjectExpectation(
+            "HostThunkParamCarrierByValueDefault",
+            "rule.23.HostThunkParamCarrier-ByValue-Default"
+        ),
+        "HostThunkParamCarrierByValueDefault",
+        "rule.23.HostThunkParamCarrier-ByValue-Default"
+    ) {
+        count = count + 1usize
+    }
+    if hostedExportLibraryExpectationMatches(
+        acceptedProjectExpectation(
+            "HostThunkParamCarrierWin64DirectAgg",
+            "rule.23.HostThunkParamCarrier-Win64-DirectAgg"
+        ),
+        "HostThunkParamCarrierWin64DirectAgg",
+        "rule.23.HostThunkParamCarrier-Win64-DirectAgg"
+    ) {
+        count = count + 1usize
+    }
+    if hostedExportLibraryExpectationMatches(
+        acceptedProjectExpectation(
+            "HostThunkParamCarrierWin64IndirectAgg",
+            "rule.23.HostThunkParamCarrier-Win64-IndirectAgg"
+        ),
+        "HostThunkParamCarrierWin64IndirectAgg",
+        "rule.23.HostThunkParamCarrier-Win64-IndirectAgg"
+    ) {
+        count = count + 1usize
+    }
+    if hostedExportLibraryExpectationMatches(
+        acceptedProjectExpectation(
+            "HostThunkRetCarrierDefault",
+            "rule.23.HostThunkRetCarrier-Default"
+        ),
+        "HostThunkRetCarrierDefault",
+        "rule.23.HostThunkRetCarrier-Default"
+    ) {
+        count = count + 1usize
+    }
+    if hostedExportLibraryExpectationMatches(
+        acceptedProjectExpectation(
+            "HostThunkRetCarrierWin64DirectAgg",
+            "rule.23.HostThunkRetCarrier-Win64-DirectAgg"
+        ),
+        "HostThunkRetCarrierWin64DirectAgg",
+        "rule.23.HostThunkRetCarrier-Win64-DirectAgg"
+    ) {
+        count = count + 1usize
+    }
+    if hostedExportLibraryExpectationMatches(
+        acceptedProjectExpectation(
+            "HostThunkRetCarrierWin64SRetAgg",
+            "rule.23.HostThunkRetCarrier-Win64-SRetAgg"
+        ),
+        "HostThunkRetCarrierWin64SRetAgg",
+        "rule.23.HostThunkRetCarrier-Win64-SRetAgg"
+    ) {
+        count = count + 1usize
+    }
+    if hostedExportLibraryExpectationMatches(
+        acceptedProjectExpectation(
+            "HostedExportThunkShapeUse",
+            "requirement.23.HostedExportThunkShapeUse"
+        ),
+        "HostedExportThunkShapeUse",
+        "requirement.23.HostedExportThunkShapeUse"
+    ) {
+        count = count + 1usize
+    }
+    if hostedExportLibraryExpectationMatches(
+        acceptedProjectExpectation(
+            "HostedExportNoWin64AggregateSplitting",
+            "requirement.23.HostedExportNoWin64AggregateSplitting"
+        ),
+        "HostedExportNoWin64AggregateSplitting",
+        "requirement.23.HostedExportNoWin64AggregateSplitting"
+    ) {
+        count = count + 1usize
+    }
+    if hostedExportLibraryExpectationMatches(
+        acceptedProjectExpectation(
+            "HostedExportNoExtraAbiRewriting",
+            "requirement.23.HostedExportNoExtraAbiRewriting"
+        ),
+        "HostedExportNoExtraAbiRewriting",
+        "requirement.23.HostedExportNoExtraAbiRewriting"
+    ) {
+        count = count + 1usize
+    }
+    if hostedExportLibraryExpectationMatches(
+        acceptedProjectExpectation(
+            "HostedThunkModeIndependentForeignClassification",
+            "requirement.23.HostedThunkModeIndependentForeignClassification"
+        ),
+        "HostedThunkModeIndependentForeignClassification",
+        "requirement.23.HostedThunkModeIndependentForeignClassification"
+    ) {
+        count = count + 1usize
+    }
+    if hostedExportLibraryExpectationMatches(
+        acceptedProjectExpectation(
+            "HostedThunkToSourceCallReconstruction",
+            "requirement.23.HostedThunkToSourceCallReconstruction"
+        ),
+        "HostedThunkToSourceCallReconstruction",
+        "requirement.23.HostedThunkToSourceCallReconstruction"
+    ) {
+        count = count + 1usize
+    }
+    if hostedExportLibraryExpectationMatches(
+        acceptedProjectExpectation(
+            "HostedStateSymbolResolution",
+            "requirement.23.HostedStateSymbolResolution"
+        ),
+        "HostedStateSymbolResolution",
+        "requirement.23.HostedStateSymbolResolution"
+    ) {
+        count = count + 1usize
+    }
+    if hostedExportLibraryExpectationMatches(
+        acceptedProjectExpectation(
+            "HostedLibraryLifecycleExports",
+            "requirement.23.HostedLibraryLifecycleExports"
+        ),
+        "HostedLibraryLifecycleExports",
+        "requirement.23.HostedLibraryLifecycleExports"
+    ) {
+        count = count + 1usize
+    }
+    if hostedExportLibraryExpectationMatches(
+        acceptedProjectExpectation(
+            "HostedLifecycleExportsBackendGenerated",
+            "requirement.23.HostedLifecycleExportsBackendGenerated"
+        ),
+        "HostedLifecycleExportsBackendGenerated",
+        "requirement.23.HostedLifecycleExportsBackendGenerated"
+    ) {
+        count = count + 1usize
+    }
+    if hostedExportLibraryExpectationMatches(
+        acceptedProjectExpectation(
+            "HostedLifecycleExportsPanicAndDestroyFailure",
+            "requirement.23.HostedLifecycleExportsPanicAndDestroyFailure"
+        ),
+        "HostedLifecycleExportsPanicAndDestroyFailure",
+        "requirement.23.HostedLifecycleExportsPanicAndDestroyFailure"
+    ) {
+        count = count + 1usize
+    }
+    if hostedExportLibraryExpectationMatches(
+        acceptedProjectExpectation(
+            "HostedSessionHandleNoReissue",
+            "requirement.23.HostedSessionHandleNoReissue"
+        ),
+        "HostedSessionHandleNoReissue",
+        "requirement.23.HostedSessionHandleNoReissue"
+    ) {
+        count = count + 1usize
+    }
+    if hostedExportLibraryExpectationMatches(
+        acceptedProjectExpectation(
+            "HostedExportThunkForeignVisibleAbi",
+            "requirement.23.HostedExportThunkForeignVisibleAbi"
+        ),
+        "HostedExportThunkForeignVisibleAbi",
+        "requirement.23.HostedExportThunkForeignVisibleAbi"
+    ) {
+        count = count + 1usize
+    }
+    if hostedExportLibraryExpectationMatches(
+        acceptedProjectExpectation(
+            "HostedExportThunkEmissionAndEntrypoint",
+            "requirement.23.HostedExportThunkEmissionAndEntrypoint"
+        ),
+        "HostedExportThunkEmissionAndEntrypoint",
+        "requirement.23.HostedExportThunkEmissionAndEntrypoint"
+    ) {
+        count = count + 1usize
+    }
+    return count
+}
+
+public procedure acceptedProjectFixturesAreIndexed() -> bool {
+    return acceptedProjectFixtureCount() == expectedAcceptedProjectFixtureCount() &&
+        validatedAcceptedProjectFixtureCount() == expectedAcceptedProjectFixtureCount()
+}

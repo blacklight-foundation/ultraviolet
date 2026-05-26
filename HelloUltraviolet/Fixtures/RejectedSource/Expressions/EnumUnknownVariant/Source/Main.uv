@@ -1,0 +1,9 @@
+//! Rejected enum specimen for construction of an unknown variant.
+
+public enum KnownVariantPayload {
+    Known
+}
+
+public procedure enumUnknownVariantReference() -> KnownVariantPayload {
+    return KnownVariantPayload::Missing
+}

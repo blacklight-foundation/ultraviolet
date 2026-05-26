@@ -1,0 +1,125 @@
+//! Rejected source-text and lexical specimens.
+
+public procedure sourceTextRejectedSourceFixtureCount() -> usize {
+    return 9usize
+}
+
+internal procedure sourceTextRejectedFixtureMatches(
+    name: string@View,
+    fixture_path: string@View,
+    source_path: string@View,
+    expected_path: string@View,
+    expected_code: string@View,
+    obligation_id: string@View
+) -> bool {
+    return rejectedSpecimenMatches(
+        rejectedSpecimen(
+            name,
+            fixture_path,
+            source_path,
+            expected_path,
+            expectedDiagnostic(expected_code, obligation_id)
+        ),
+        name,
+        fixture_path,
+        source_path,
+        expected_path,
+        expected_code,
+        obligation_id
+    )
+}
+
+public procedure validatedSourceTextRejectedSourceFixtureCount() -> usize {
+    var count: usize = 0usize
+    if sourceTextRejectedFixtureMatches(
+        "UnterminatedString",
+        "Fixtures/RejectedSource/SourceText/UnterminatedString",
+        "Fixtures/RejectedSource/SourceText/UnterminatedString/Source/Main.uv",
+        "Fixtures/RejectedSource/SourceText/UnterminatedString/Expected.uv",
+        "E-SRC-0301",
+        "Lex-String-Unterminated"
+    ) {
+        count = count + 1usize
+    }
+    if sourceTextRejectedFixtureMatches(
+        "InvalidStringEscape",
+        "Fixtures/RejectedSource/SourceText/InvalidStringEscape",
+        "Fixtures/RejectedSource/SourceText/InvalidStringEscape/Source/Main.uv",
+        "Fixtures/RejectedSource/SourceText/InvalidStringEscape/Expected.uv",
+        "E-SRC-0302",
+        "Lex-String-BadEscape"
+    ) {
+        count = count + 1usize
+    }
+    if sourceTextRejectedFixtureMatches(
+        "MalformedNumericLiteral",
+        "Fixtures/RejectedSource/SourceText/MalformedNumericLiteral",
+        "Fixtures/RejectedSource/SourceText/MalformedNumericLiteral/Source/Main.uv",
+        "Fixtures/RejectedSource/SourceText/MalformedNumericLiteral/Expected.uv",
+        "E-SRC-0304",
+        "Lex-Numeric-Err"
+    ) {
+        count = count + 1usize
+    }
+    if sourceTextRejectedFixtureMatches(
+        "UnterminatedBlockComment",
+        "Fixtures/RejectedSource/SourceText/UnterminatedBlockComment",
+        "Fixtures/RejectedSource/SourceText/UnterminatedBlockComment/Source/Main.uv",
+        "Fixtures/RejectedSource/SourceText/UnterminatedBlockComment/Expected.uv",
+        "E-SRC-0306",
+        "Block-Comment-Unterminated"
+    ) {
+        count = count + 1usize
+    }
+    if sourceTextRejectedFixtureMatches(
+        "LeadingBOMEmbeddedBOM",
+        "Fixtures/RejectedSource/SourceText/LeadingBOMEmbeddedBOM",
+        "Fixtures/RejectedSource/SourceText/LeadingBOMEmbeddedBOM/Source/Main.uv",
+        "Fixtures/RejectedSource/SourceText/LeadingBOMEmbeddedBOM/Expected.uv",
+        "W-SRC-0101",
+        "req.LeadingBOMWarningPersistence"
+    ) {
+        count = count + 1usize
+    }
+    if sourceTextRejectedFixtureMatches(
+        "LeadingBOMEmbeddedBOM",
+        "Fixtures/RejectedSource/SourceText/LeadingBOMEmbeddedBOM",
+        "Fixtures/RejectedSource/SourceText/LeadingBOMEmbeddedBOM/Source/Main.uv",
+        "Fixtures/RejectedSource/SourceText/LeadingBOMEmbeddedBOM/Expected.uv",
+        "E-SRC-0103",
+        "Span-BOM-Embedded"
+    ) {
+        count = count + 1usize
+    }
+    if sourceTextRejectedFixtureMatches(
+        "ProhibitedControlCharacter",
+        "Fixtures/RejectedSource/SourceText/ProhibitedControlCharacter",
+        "Fixtures/RejectedSource/SourceText/ProhibitedControlCharacter/Source/Main.uv",
+        "Fixtures/RejectedSource/SourceText/ProhibitedControlCharacter/Expected.uv",
+        "E-SRC-0104",
+        "Span-Prohibited"
+    ) {
+        count = count + 1usize
+    }
+    if sourceTextRejectedFixtureMatches(
+        "InvalidUTF8",
+        "Fixtures/RejectedSource/SourceText/InvalidUTF8",
+        "Fixtures/RejectedSource/SourceText/InvalidUTF8/Source/Main.uv",
+        "Fixtures/RejectedSource/SourceText/InvalidUTF8/Expected.uv",
+        "E-SRC-0101",
+        "NoSpan-Decode"
+    ) {
+        count = count + 1usize
+    }
+    if sourceTextRejectedFixtureMatches(
+        "InvalidUTF8",
+        "Fixtures/RejectedSource/SourceText/InvalidUTF8",
+        "Fixtures/RejectedSource/SourceText/InvalidUTF8/Source/Main.uv",
+        "Fixtures/RejectedSource/SourceText/InvalidUTF8/Expected.uv",
+        "E-SRC-0101",
+        "diagnostics.SourceLexicalDiagnostics"
+    ) {
+        count = count + 1usize
+    }
+    return count
+}

@@ -1,0 +1,9 @@
+//! Rejected procedure specimen for duplicate erased free-procedure overload signatures.
+
+public procedure duplicateOverload(value: i32) -> i32 {
+    return value
+}
+
+public procedure duplicateOverload(value: i32) -> i32 {
+    return value + 1
+}

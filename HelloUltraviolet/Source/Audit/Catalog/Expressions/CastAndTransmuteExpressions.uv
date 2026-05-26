@@ -1,0 +1,380 @@
+//! Generated catalog markers for 16. Expressions / 16.5 Cast and Transmute Expressions.
+
+
+public procedure countExpressionsCastAndTransmuteExpressionsObligations() -> usize {
+    return 41usize
+}
+
+public procedure validatedExpressionsCastAndTransmuteExpressionsObligations() -> usize {
+    var count: usize = 0usize
+    if acceptedObligationEntryMatches(
+        "grammar.16.CastAndTransmuteExpressions",
+        60602usize,
+        "HelloUltraviolet::Reference::Expressions",
+        "runExpressionsCastsAndTransmutesReference",
+        "Source/Reference/Expressions/CastsAndTransmutes.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "req.16.WidenPrefixOwnershipForCastTransmute",
+        60618usize,
+        "HelloUltraviolet::Reference::Expressions",
+        "runExpressionsCastsAndTransmutesReference",
+        "Source/Reference/Expressions/CastsAndTransmutes.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "rule.16.Parse-Cast",
+        60633usize,
+        "HelloUltraviolet::Reference::Expressions",
+        "runExpressionsCastsAndTransmutesReference",
+        "Source/Reference/Expressions/CastsAndTransmutes.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "rule.16.Parse-CastTail-None",
+        60649usize,
+        "HelloUltraviolet::Reference::Expressions",
+        "runExpressionsCastsAndTransmutesReference",
+        "Source/Reference/Expressions/CastsAndTransmutes.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "rule.16.Parse-CastTail-As",
+        60665usize,
+        "HelloUltraviolet::Reference::Expressions",
+        "runExpressionsCastsAndTransmutesReference",
+        "Source/Reference/Expressions/CastsAndTransmutes.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "rule.16.ParseTransmuteExprFamily",
+        60681usize,
+        "HelloUltraviolet::Reference::Expressions",
+        "runExpressionsCastsAndTransmutesReference",
+        "Source/Reference/Expressions/CastsAndTransmutes.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "req.16.WidenParsingOwnershipForCastTransmute",
+        60694usize,
+        "HelloUltraviolet::Reference::Expressions",
+        "runExpressionsCastsAndTransmutesReference",
+        "Source/Reference/Expressions/CastsAndTransmutes.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "def.16.CastTransmuteExprAst",
+        60709usize,
+        "HelloUltraviolet::Reference::Expressions",
+        "runExpressionsCastsAndTransmutesReference",
+        "Source/Reference/Expressions/CastsAndTransmutes.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "req.16.WidenAstOwnershipForCastTransmute",
+        60722usize,
+        "HelloUltraviolet::Reference::Expressions",
+        "runExpressionsCastsAndTransmutesReference",
+        "Source/Reference/Expressions/CastsAndTransmutes.uv"
+    ) {
+        count = count + 1usize
+    }
+    if rejectedSourceObligationEntryMatches(
+        "def.16.CastValidity",
+        60737usize,
+        "HelloUltraviolet::Audit::FixtureCatalog::RejectedSource",
+        "validatedExpressionsRejectedSourceFixtureCount",
+        "Fixtures/RejectedSource/Expressions/CastValidity/Source/Main.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "rule.16.T-Cast",
+        60752usize,
+        "HelloUltraviolet::Reference::Expressions",
+        "runExpressionsCastsAndTransmutesReference",
+        "Source/Reference/Expressions/CastsAndTransmutes.uv"
+    ) {
+        count = count + 1usize
+    }
+    if rejectedSourceObligationEntryMatches(
+        "rule.16.T-Cast-Invalid",
+        60768usize,
+        "HelloUltraviolet::Audit::FixtureCatalog::RejectedSource",
+        "validatedExpressionsRejectedSourceFixtureCount",
+        "Fixtures/RejectedSource/Expressions/InvalidCast/Source/Main.uv"
+    ) {
+        count = count + 1usize
+    }
+    if rejectedSourceObligationEntryMatches(
+        "rule.16.T-Transmute-SizeEq",
+        60784usize,
+        "HelloUltraviolet::Audit::FixtureCatalog::RejectedSource",
+        "validatedExpressionsRejectedSourceFixtureCount",
+        "Fixtures/RejectedSource/Expressions/TransmuteSizeMismatch/Source/Main.uv"
+    ) {
+        count = count + 1usize
+    }
+    if rejectedSourceObligationEntryMatches(
+        "rule.16.T-Transmute-AlignEq",
+        60800usize,
+        "HelloUltraviolet::Audit::FixtureCatalog::RejectedSource",
+        "validatedExpressionsRejectedSourceFixtureCount",
+        "Fixtures/RejectedSource/Expressions/TransmuteAlignMismatch/Source/Main.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "rule.16.T-Transmute",
+        60816usize,
+        "HelloUltraviolet::Reference::Expressions",
+        "runExpressionsCastsAndTransmutesReference",
+        "Source/Reference/Expressions/CastsAndTransmutes.uv"
+    ) {
+        count = count + 1usize
+    }
+    if rejectedSourceObligationEntryMatches(
+        "rule.16.Transmute-Unsafe-Err",
+        60832usize,
+        "HelloUltraviolet::Audit::FixtureCatalog::RejectedSource",
+        "validatedExpressionsRejectedSourceFixtureCount",
+        "Fixtures/RejectedSource/Expressions/TransmuteUnsafe/Source/Main.uv"
+    ) {
+        count = count + 1usize
+    }
+    if diagnosticSourceObligationEntryMatches(
+        "def.16.ValidTransmuteTarget",
+        60848usize,
+        "HelloUltraviolet::Audit::FixtureCatalog::DiagnosticSource",
+        "validatedExpressionsDiagnosticSourceFixtureCount",
+        "Fixtures/DiagnosticSource/Expressions/ValidTransmuteTarget/Source/Main.uv"
+    ) {
+        count = count + 1usize
+    }
+    if rejectedSourceObligationEntryMatches(
+        "req.16.WidenTypingDiagnosticsOwnershipForCastTransmute",
+        60865usize,
+        "HelloUltraviolet::Audit::FixtureCatalog::RejectedSource",
+        "validatedExpressionsRejectedSourceFixtureCount",
+        "Fixtures/RejectedSource/Expressions/WidenTypingDiagnosticsOwnership/Source/Main.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "def.16.CastDynamicContext",
+        60880usize,
+        "HelloUltraviolet::Reference::Expressions",
+        "runExpressionsCastsAndTransmutesReference",
+        "Source/Reference/Expressions/CastsAndTransmutes.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "def.16.CastRuntimeConversionHelpers",
+        60894usize,
+        "HelloUltraviolet::Reference::Expressions",
+        "runExpressionsCastsAndTransmutesReference",
+        "Source/Reference/Expressions/CastsAndTransmutes.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "rule.16.CastVal-Id",
+        60928usize,
+        "HelloUltraviolet::Reference::Expressions",
+        "runExpressionsCastsAndTransmutesReference",
+        "Source/Reference/Expressions/CastsAndTransmutes.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "rule.16.CastVal-Int-Int-Signed",
+        60944usize,
+        "HelloUltraviolet::Reference::Expressions",
+        "runExpressionsCastsAndTransmutesReference",
+        "Source/Reference/Expressions/CastsAndTransmutes.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "rule.16.CastVal-Int-Int-Unsigned",
+        60960usize,
+        "HelloUltraviolet::Reference::Expressions",
+        "runExpressionsCastsAndTransmutesReference",
+        "Source/Reference/Expressions/CastsAndTransmutes.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "rule.16.CastVal-Int-Float",
+        60976usize,
+        "HelloUltraviolet::Reference::Expressions",
+        "runExpressionsCastsAndTransmutesReference",
+        "Source/Reference/Expressions/CastsAndTransmutes.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "req.16.IntToFloatLoweringPreservesSignedness",
+        60992usize,
+        "HelloUltraviolet::Reference::Expressions",
+        "runExpressionsCastsAndTransmutesReference",
+        "Source/Reference/Expressions/CastsAndTransmutes.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "rule.16.CastVal-Float-Float",
+        61005usize,
+        "HelloUltraviolet::Reference::Expressions",
+        "runExpressionsCastsAndTransmutesReference",
+        "Source/Reference/Expressions/CastsAndTransmutes.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "rule.16.CastVal-Float-Int",
+        61021usize,
+        "HelloUltraviolet::Reference::Expressions",
+        "runExpressionsCastsAndTransmutesReference",
+        "Source/Reference/Expressions/CastsAndTransmutes.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "rule.16.CastVal-Bool-Int",
+        61037usize,
+        "HelloUltraviolet::Reference::Expressions",
+        "runExpressionsCastsAndTransmutesReference",
+        "Source/Reference/Expressions/CastsAndTransmutes.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "rule.16.CastVal-Int-Bool",
+        61055usize,
+        "HelloUltraviolet::Reference::Expressions",
+        "runExpressionsCastsAndTransmutesReference",
+        "Source/Reference/Expressions/CastsAndTransmutes.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "rule.16.CastVal-Char-U32",
+        61073usize,
+        "HelloUltraviolet::Reference::Expressions",
+        "runExpressionsCastsAndTransmutesReference",
+        "Source/Reference/Expressions/CastsAndTransmutes.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "rule.16.CastVal-U32-Char",
+        61089usize,
+        "HelloUltraviolet::Reference::Expressions",
+        "runExpressionsCastsAndTransmutesReference",
+        "Source/Reference/Expressions/CastsAndTransmutes.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "rule.16.EvalSigma-Cast",
+        61105usize,
+        "HelloUltraviolet::Reference::Expressions",
+        "runExpressionsCastsAndTransmutesReference",
+        "Source/Reference/Expressions/CastsAndTransmutes.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "rule.16.EvalSigma-Cast-Panic",
+        61121usize,
+        "HelloUltraviolet::Reference::Expressions",
+        "runExpressionsCastsAndTransmutesReference",
+        "Source/Reference/Expressions/CastsAndTransmutes.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "def.16.TransmuteVal",
+        61137usize,
+        "HelloUltraviolet::Reference::Expressions",
+        "runExpressionsCastsAndTransmutesReference",
+        "Source/Reference/Expressions/CastsAndTransmutes.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "rule.16.EvalSigma-Transmute",
+        61150usize,
+        "HelloUltraviolet::Reference::Expressions",
+        "runExpressionsCastsAndTransmutesReference",
+        "Source/Reference/Expressions/CastsAndTransmutes.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "rule.16.EvalSigma-Transmute-Ctrl",
+        61166usize,
+        "HelloUltraviolet::Reference::Expressions",
+        "runExpressionsCastsAndTransmutesReference",
+        "Source/Reference/Expressions/CastsAndTransmutes.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "req.16.WidenDynamicOwnershipForCastTransmute",
+        61182usize,
+        "HelloUltraviolet::Reference::Expressions",
+        "runExpressionsCastsAndTransmutesReference",
+        "Source/Reference/Expressions/CastsAndTransmutes.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "rule.16.Lower-Expr-Cast",
+        61197usize,
+        "HelloUltraviolet::Reference::Expressions",
+        "runExpressionsCastsAndTransmutesReference",
+        "Source/Reference/Expressions/CastsAndTransmutes.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "rule.16.Lower-Expr-Transmute",
+        61213usize,
+        "HelloUltraviolet::Reference::Expressions",
+        "runExpressionsCastsAndTransmutesReference",
+        "Source/Reference/Expressions/CastsAndTransmutes.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "rule.16.LowerCastTransmuteFamily",
+        61229usize,
+        "HelloUltraviolet::Reference::Expressions",
+        "runExpressionsCastsAndTransmutesReference",
+        "Source/Reference/Expressions/CastsAndTransmutes.uv"
+    ) {
+        count = count + 1usize
+    }
+    if rejectedSourceObligationEntryMatches(
+        "diag.16.CastAndTransmuteExpressions",
+        61244usize,
+        "HelloUltraviolet::Audit::FixtureCatalog::RejectedSource",
+        "validatedExpressionsRejectedSourceFixtureCount",
+        "Fixtures/RejectedSource/Expressions/CastAndTransmuteExpressionsDiagnostic/Source/Main.uv"
+    ) {
+        count = count + 1usize
+    }
+    return count
+}

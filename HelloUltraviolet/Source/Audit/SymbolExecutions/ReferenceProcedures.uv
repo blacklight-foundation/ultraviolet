@@ -1,0 +1,61 @@
+//! Compiled symbol execution checks for ReferenceProcedures.
+
+using HelloUltraviolet::Reference::Procedures::{ runProceduresBehavioralSubtypingReference }
+using HelloUltraviolet::Reference::Procedures::{ runProceduresContractsReference }
+using HelloUltraviolet::Reference::Procedures::{ runProceduresDeclarationsReference }
+using HelloUltraviolet::Reference::Procedures::{ runProceduresInvariantsReference }
+using HelloUltraviolet::Reference::Procedures::{ runProceduresOverloadingReference }
+using HelloUltraviolet::Reference::Procedures::{ runProceduresPostconditionsReference }
+using HelloUltraviolet::Reference::Procedures::{ runProceduresPreconditionsReference }
+using HelloUltraviolet::Reference::Procedures::{ runProceduresReceiversReference }
+using HelloUltraviolet::Reference::Procedures::{ runProceduresVerificationReference }
+
+public procedure catalogCompiledSymbolsExecuteReferenceProcedures(context: Context) -> bool {
+    var passed: bool = true
+    passed = recordCatalogSymbolExecution(
+        context,
+        "runProceduresBehavioralSubtypingReference",
+        runProceduresBehavioralSubtypingReference()
+    ) && passed
+    passed = recordCatalogSymbolExecution(
+        context,
+        "runProceduresContractsReference",
+        runProceduresContractsReference()
+    ) && passed
+    passed = recordCatalogSymbolExecution(
+        context,
+        "runProceduresDeclarationsReference",
+        runProceduresDeclarationsReference()
+    ) && passed
+    passed = recordCatalogSymbolExecution(
+        context,
+        "runProceduresInvariantsReference",
+        runProceduresInvariantsReference()
+    ) && passed
+    passed = recordCatalogSymbolExecution(
+        context,
+        "runProceduresOverloadingReference",
+        runProceduresOverloadingReference()
+    ) && passed
+    passed = recordCatalogSymbolExecution(
+        context,
+        "runProceduresPostconditionsReference",
+        runProceduresPostconditionsReference()
+    ) && passed
+    passed = recordCatalogSymbolExecution(
+        context,
+        "runProceduresPreconditionsReference",
+        runProceduresPreconditionsReference()
+    ) && passed
+    passed = recordCatalogSymbolExecution(
+        context,
+        "runProceduresReceiversReference",
+        runProceduresReceiversReference()
+    ) && passed
+    passed = recordCatalogSymbolExecution(
+        context,
+        "runProceduresVerificationReference",
+        runProceduresVerificationReference()
+    ) && passed
+    return passed
+}

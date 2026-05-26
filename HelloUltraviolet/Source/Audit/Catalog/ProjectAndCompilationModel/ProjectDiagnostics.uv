@@ -1,0 +1,20 @@
+//! Generated catalog markers for 3. Project and Compilation Model / 3.8 Project Diagnostics.
+
+
+public procedure countProjectAndCompilationModelProjectDiagnosticsObligations() -> usize {
+    return 1usize
+}
+
+public procedure validatedProjectAndCompilationModelProjectDiagnosticsObligations() -> usize {
+    var count: usize = 0usize
+    if artifactBehaviorObligationEntryMatches(
+        "diagnostics.ProjectDiagnostics",
+        6796usize,
+        "HelloUltraviolet::Audit::FixtureCatalog::OutputDiagnostics",
+        "validatedOutputProjectDiagnosticFixtureCount",
+        "Fixtures/OutputDiagnostics/Projects/ManifestParseError/Ultraviolet.toml"
+    ) {
+        count = count + 1usize
+    }
+    return count
+}

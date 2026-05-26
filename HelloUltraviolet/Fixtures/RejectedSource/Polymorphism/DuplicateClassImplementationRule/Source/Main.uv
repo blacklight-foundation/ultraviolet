@@ -1,0 +1,10 @@
+//! Rejected polymorphism specimen for duplicate class implementation coherence.
+
+internal class DuplicateImplementationClass {
+    internal procedure marker(~) -> i32 {
+        return 1
+    }
+}
+
+internal record DuplicateImplementationRuleOwner <: DuplicateImplementationClass, DuplicateImplementationClass {
+}

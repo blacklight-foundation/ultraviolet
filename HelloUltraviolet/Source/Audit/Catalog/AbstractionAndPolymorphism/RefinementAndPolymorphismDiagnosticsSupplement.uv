@@ -1,0 +1,29 @@
+//! Generated catalog markers for 14. Abstraction and Polymorphism / 14.11 Refinement and Polymorphism Diagnostics Supplement.
+
+
+public procedure countAbstractionAndPolymorphismRefinementAndPolymorphismDiagnosticsSupplementObligations() -> usize {
+    return 2usize
+}
+
+public procedure validatedAbstractionAndPolymorphismRefinementAndPolymorphismDiagnosticsSupplementObligations() -> usize {
+    var count: usize = 0usize
+    if rejectedSourceObligationEntryMatches(
+        "diag.14.RefinementPolymorphismDiagnosticsOwnership",
+        52898usize,
+        "HelloUltraviolet::Audit::FixtureCatalog::RejectedSource",
+        "validatedPolymorphismRejectedSourceFixtureCount",
+        "Fixtures/RejectedSource/Polymorphism/RefinementDiagnosticsOwnership/Source/Main.uv"
+    ) {
+        count = count + 1usize
+    }
+    if rejectedSourceObligationEntryMatches(
+        "diag-table.14.RefinementPolymorphismDiagnostics",
+        52911usize,
+        "HelloUltraviolet::Audit::FixtureCatalog::RejectedSource",
+        "validatedPolymorphismRejectedSourceFixtureCount",
+        "Fixtures/RejectedSource/Polymorphism/RefinementDiagnosticsTable/Source/Main.uv"
+    ) {
+        count = count + 1usize
+    }
+    return count
+}

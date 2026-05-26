@@ -1,0 +1,137 @@
+//! Reference specimens for Comptime / CompileTimeForms.
+
+internal record ComptimeLiteralRecord {
+    internal value: usize
+    internal flag: bool
+}
+
+internal enum ComptimeLiteralEnum {
+    Empty
+    Count(usize)
+    Named {
+        value: usize
+    }
+}
+
+internal modal ComptimeLiteralModal {
+    @Ready {
+        internal value: usize
+    }
+}
+
+comptime internal procedure addComptimeReferenceValue(value: usize) -> usize
+|: value > 0usize |= @result > value
+{
+    return value + 2usize
+}
+
+comptime internal procedure chooseComptimeReferenceValue<TValue>(
+    first: TValue,
+    second: TValue,
+    choose_first: bool
+) -> TValue
+{
+    if choose_first {
+        return first
+    }
+    return second
+}
+
+internal procedure compileTimeFormsValue() -> usize {
+    var total: usize = comptime { addComptimeReferenceValue(5usize) }
+    comptime {
+        let current_module = diagnostics~>current_module()
+    }
+
+    let selected: usize = comptime if true { 7usize } else { missingRejectedBranch() }
+    let else_if_selected: usize =
+        comptime if false { missingFirstBranch() } else comptime if true {
+            11usize
+        } else {
+            13usize
+        }
+    let false_else_selected: usize =
+        comptime if false { missingFalseElseBranch() } else { 17usize }
+
+    comptime if false {
+        total = total + missingFalseNoElseBranch()
+    }
+
+    comptime loop value: usize in [1usize, 2usize, 3usize] {
+        total = total + comptime { value }
+    }
+
+    comptime loop value in [4usize, 5usize] {
+        total = total + comptime { value }
+    }
+
+    comptime loop value: usize in [0usize; 0] {
+        total = total + comptime { value }
+    }
+
+    let chosen: usize = comptime { addComptimeReferenceValue(17usize) }
+    let generic_chosen: usize =
+        comptime { chooseComptimeReferenceValue(31usize, 37usize, true) }
+    let literal_number: usize = comptime { 3usize }
+    let literal_bool: bool = comptime { true }
+    let literal_tuple: (usize, bool) = comptime { (29usize, true) }
+    let literal_array: [usize; 3] = comptime { [2usize, 4usize, 6usize] }
+    let literal_record: ComptimeLiteralRecord =
+        comptime { ComptimeLiteralRecord { value: 43usize, flag: true } }
+    let literal_enum_unit: ComptimeLiteralEnum =
+        comptime { ComptimeLiteralEnum::Empty }
+    let literal_enum_tuple: ComptimeLiteralEnum =
+        comptime { ComptimeLiteralEnum::Count(5usize) }
+    let literal_enum_record: ComptimeLiteralEnum =
+        comptime { ComptimeLiteralEnum::Named { value: 7usize } }
+    let literal_modal_state: ComptimeLiteralModal@Ready =
+        comptime { ComptimeLiteralModal@Ready { value: 11usize } }
+    let literal_enum_unit_value: usize = if literal_enum_unit is {
+        ComptimeLiteralEnum::Empty {
+            13usize
+        }
+        ComptimeLiteralEnum::Count(value) {
+            value
+        }
+        ComptimeLiteralEnum::Named { value } {
+            value
+        }
+    }
+    let literal_enum_tuple_value: usize = if literal_enum_tuple is {
+        ComptimeLiteralEnum::Empty {
+            0usize
+        }
+        ComptimeLiteralEnum::Count(value) {
+            value
+        }
+        ComptimeLiteralEnum::Named { value } {
+            value
+        }
+    }
+    let literal_enum_record_value: usize = if literal_enum_record is {
+        ComptimeLiteralEnum::Empty {
+            0usize
+        }
+        ComptimeLiteralEnum::Count(value) {
+            value
+        }
+        ComptimeLiteralEnum::Named { value } {
+            value
+        }
+    }
+
+    if literal_bool && literal_tuple.1 && literal_record.flag {
+        return total + selected + else_if_selected + false_else_selected +
+            chosen + generic_chosen + literal_number + literal_tuple.0 +
+            literal_array[0usize] + literal_array[1usize] + literal_array[2usize] +
+            literal_record.value + literal_enum_unit_value +
+            literal_enum_tuple_value + literal_enum_record_value +
+            literal_modal_state.value
+    }
+    return 0usize
+}
+
+/// Exercises the Comptime CompileTimeForms reference surface.
+public procedure runComptimeCompileTimeFormsReference() -> bool {
+    return compileTimeFormsValue() == 230usize
+}

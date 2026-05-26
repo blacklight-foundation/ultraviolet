@@ -1,0 +1,5 @@
+//! Rejected capability-class specimen for raw heap calls requiring unsafe context.
+
+public procedure heapAllocatorRawCallRequiresUnsafeReference(context: Context) -> *mut u8 {
+    return context.heap~>alloc_raw(8usize)
+}

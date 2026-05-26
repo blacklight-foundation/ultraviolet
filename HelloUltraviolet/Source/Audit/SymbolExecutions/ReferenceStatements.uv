@@ -1,0 +1,67 @@
+//! Compiled symbol execution checks for ReferenceStatements.
+
+using HelloUltraviolet::Reference::Statements::{ runStatementsAssignmentReference }
+using HelloUltraviolet::Reference::Statements::{ runStatementsBindingsReference }
+using HelloUltraviolet::Reference::Statements::{ runStatementsBlocksReference }
+using HelloUltraviolet::Reference::Statements::{ runStatementsControlTransferReference }
+using HelloUltraviolet::Reference::Statements::{ runStatementsDeferReference }
+using HelloUltraviolet::Reference::Statements::{ runStatementsExpressionStatementsReference }
+using HelloUltraviolet::Reference::Statements::{ runStatementsFrameReference }
+using HelloUltraviolet::Reference::Statements::{ runStatementsLocalUsingReference }
+using HelloUltraviolet::Reference::Statements::{ runStatementsRegionReference }
+using HelloUltraviolet::Reference::Statements::{ runStatementsUnsafeReference }
+
+public procedure catalogCompiledSymbolsExecuteReferenceStatements(context: Context) -> bool {
+    var passed: bool = true
+    passed = recordCatalogSymbolExecution(
+        context,
+        "runStatementsAssignmentReference",
+        runStatementsAssignmentReference()
+    ) && passed
+    passed = recordCatalogSymbolExecution(
+        context,
+        "runStatementsBindingsReference",
+        runStatementsBindingsReference()
+    ) && passed
+    passed = recordCatalogSymbolExecution(
+        context,
+        "runStatementsBlocksReference",
+        runStatementsBlocksReference()
+    ) && passed
+    passed = recordCatalogSymbolExecution(
+        context,
+        "runStatementsControlTransferReference",
+        runStatementsControlTransferReference()
+    ) && passed
+    passed = recordCatalogSymbolExecution(
+        context,
+        "runStatementsDeferReference",
+        runStatementsDeferReference()
+    ) && passed
+    passed = recordCatalogSymbolExecution(
+        context,
+        "runStatementsExpressionStatementsReference",
+        runStatementsExpressionStatementsReference()
+    ) && passed
+    passed = recordCatalogSymbolExecution(
+        context,
+        "runStatementsFrameReference",
+        runStatementsFrameReference()
+    ) && passed
+    passed = recordCatalogSymbolExecution(
+        context,
+        "runStatementsLocalUsingReference",
+        runStatementsLocalUsingReference()
+    ) && passed
+    passed = recordCatalogSymbolExecution(
+        context,
+        "runStatementsRegionReference",
+        runStatementsRegionReference()
+    ) && passed
+    passed = recordCatalogSymbolExecution(
+        context,
+        "runStatementsUnsafeReference",
+        runStatementsUnsafeReference()
+    ) && passed
+    return passed
+}

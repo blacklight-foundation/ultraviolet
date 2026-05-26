@@ -1,0 +1,16 @@
+//! Rejected polymorphism specimen for generic methods in dynamic class dispatch.
+
+internal class GenericDispatchClass {
+    internal procedure genericDynamicValue<TValue>(~, value: TValue) -> i32 {
+        return 3
+    }
+}
+
+internal record GenericDispatchOwner <: GenericDispatchClass {
+    internal value: i32
+}
+
+internal procedure makeGenericDynamic() -> $GenericDispatchClass {
+    let owner: GenericDispatchOwner = GenericDispatchOwner { value: 3 }
+    return owner as $GenericDispatchClass
+}

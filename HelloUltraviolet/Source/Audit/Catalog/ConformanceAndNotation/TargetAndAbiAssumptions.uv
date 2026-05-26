@@ -1,0 +1,74 @@
+//! Generated catalog markers for 1. Conformance and Notation / 1.6 Target and ABI Assumptions.
+
+
+public procedure countConformanceAndNotationTargetAndAbiAssumptionsObligations() -> usize {
+    return 7usize
+}
+
+public procedure validatedConformanceAndNotationTargetAndAbiAssumptionsObligations() -> usize {
+    var count: usize = 0usize
+    if acceptedProjectObligationEntryMatches(
+        "def.TargetProfile",
+        1171usize,
+        "HelloUltraviolet::Audit::FixtureCatalog::AcceptedProjects",
+        "validatedAcceptedProjectFixtureCount",
+        "Fixtures/AcceptedProjects/MacOSTargetProfile/Source/Main.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "req.TargetProfileResolution",
+        1186usize,
+        "HelloUltraviolet::Reference::Lowering",
+        "runLoweringLayoutAndABIReference",
+        "Source/Reference/Lowering/LayoutAndABI.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "req.TargetProfileNoHostInference",
+        1204usize,
+        "HelloUltraviolet::Reference::Lowering",
+        "runLoweringLayoutAndABIReference",
+        "Source/Reference/Lowering/LayoutAndABI.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "def.TargetArch",
+        1218usize,
+        "HelloUltraviolet::Reference::Lowering",
+        "runLoweringLayoutAndABIReference",
+        "Source/Reference/Lowering/LayoutAndABI.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "def.TargetMachineModel",
+        1235usize,
+        "HelloUltraviolet::Reference::Lowering",
+        "runLoweringLayoutAndABIReference",
+        "Source/Reference/Lowering/LayoutAndABI.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "def.TargetTriple",
+        1250usize,
+        "HelloUltraviolet::Reference::Lowering",
+        "runLoweringLayoutAndABIReference",
+        "Source/Reference/Lowering/LayoutAndABI.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "conformance.LayoutAndABIOwnerSections",
+        1267usize,
+        "HelloUltraviolet::Reference::Lowering",
+        "runLoweringLayoutAndABIReference",
+        "Source/Reference/Lowering/LayoutAndABI.uv"
+    ) {
+        count = count + 1usize
+    }
+    return count
+}

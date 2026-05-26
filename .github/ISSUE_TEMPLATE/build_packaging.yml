@@ -1,0 +1,97 @@
+name: Build or Packaging Failure
+description: Report CMake, packaging, vendored toolchain, or platform build failures.
+title: "[build]: "
+labels:
+  - needs-triage
+  - build
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Use this for repository build, CMake, package staging, vendored LLVM, or
+        platform setup failures. For language behavior or compiler conformance bugs,
+        use the compiler bug template.
+
+        Questions and setup help belong in GitHub Discussions:
+        https://github.com/blacklight-foundation/ultraviolet/discussions
+  - type: dropdown
+    id: host-os
+    attributes:
+      label: Host operating system
+      options:
+        - Linux
+        - Windows
+        - macOS
+        - Other
+    validations:
+      required: true
+  - type: input
+    id: shell
+    attributes:
+      label: Shell or terminal
+      placeholder: "bash, PowerShell, Visual Studio Developer PowerShell, cmd.exe, ..."
+    validations:
+      required: true
+  - type: input
+    id: cmake-version
+    attributes:
+      label: CMake version
+      placeholder: "cmake --version"
+    validations:
+      required: true
+  - type: textarea
+    id: compiler-toolchain
+    attributes:
+      label: Compiler or Visual Studio version
+      description: Include GCC/Clang version on Linux or Visual Studio version on Windows.
+      placeholder: |
+        Linux:
+        clang++ --version
+
+        Windows:
+        Visual Studio version and Developer PowerShell version
+    validations:
+      required: true
+  - type: dropdown
+    id: target-profile
+    attributes:
+      label: Target profile
+      options:
+        - x86_64-sysv
+        - x86_64-win64
+        - Not target-specific
+        - Other
+    validations:
+      required: true
+  - type: checkboxes
+    id: externs
+    attributes:
+      label: Repository payloads
+      options:
+        - label: Target extern payloads were restored with Tools/FetchTargetExterns.py.
+          required: true
+  - type: textarea
+    id: commands
+    attributes:
+      label: Exact configure/build/package command
+      render: shell
+      placeholder: |
+        cmake --preset ...
+        cmake --build --preset ...
+    validations:
+      required: true
+  - type: textarea
+    id: output
+    attributes:
+      label: Failing output
+      description: Paste the first clear error and enough surrounding output to diagnose it.
+      render: text
+    validations:
+      required: true
+  - type: textarea
+    id: notes
+    attributes:
+      label: Additional context
+      description: Include path, antivirus, filesystem, WSL, or permission details if relevant.
+    validations:
+      required: false

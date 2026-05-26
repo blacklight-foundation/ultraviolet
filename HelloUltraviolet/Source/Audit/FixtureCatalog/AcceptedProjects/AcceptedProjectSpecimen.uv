@@ -1,0 +1,77 @@
+//! Metadata for accepted project reference specimens.
+
+using HelloUltraviolet::Audit::{ auditTextEquals }
+
+public record AcceptedProjectSpecimen {
+    public name: string@View
+    public fixture_path: string@View
+    public manifest_path: string@View
+    public source_path: string@View
+    public assembly_name: string@View
+    public assembly_kind: string@View
+    public expectation: AcceptedProjectExpectation
+}
+
+public record AcceptedProjectExpectation {
+    public name: string@View
+    public obligation_id: string@View
+}
+
+public procedure acceptedProjectExpectation(
+    name: string@View,
+    obligation_id: string@View
+) -> AcceptedProjectExpectation {
+    return AcceptedProjectExpectation {
+        name: name,
+        obligation_id: obligation_id
+    }
+}
+
+public procedure acceptedProjectSpecimen(
+    name: string@View,
+    fixture_path: string@View,
+    manifest_path: string@View,
+    source_path: string@View,
+    assembly_name: string@View,
+    assembly_kind: string@View,
+    expectation: AcceptedProjectExpectation
+) -> AcceptedProjectSpecimen {
+    return AcceptedProjectSpecimen {
+        name: name,
+        fixture_path: fixture_path,
+        manifest_path: manifest_path,
+        source_path: source_path,
+        assembly_name: assembly_name,
+        assembly_kind: assembly_kind,
+        expectation: expectation
+    }
+}
+
+public procedure acceptedProjectExpectationMatches(
+    expectation: AcceptedProjectExpectation,
+    name: string@View,
+    obligation_id: string@View
+) -> bool {
+    return auditTextEquals(expectation.name, name) &&
+        auditTextEquals(expectation.obligation_id, obligation_id)
+}
+
+public procedure acceptedProjectSpecimenMatches(
+    specimen: AcceptedProjectSpecimen,
+    name: string@View,
+    fixture_path: string@View,
+    manifest_path: string@View,
+    source_path: string@View,
+    assembly_name: string@View,
+    assembly_kind: string@View,
+    expectation_name: string@View,
+    obligation_id: string@View
+) -> bool {
+    return auditTextEquals(specimen.name, name) &&
+        auditTextEquals(specimen.fixture_path, fixture_path) &&
+        auditTextEquals(specimen.manifest_path, manifest_path) &&
+        auditTextEquals(specimen.source_path, source_path) &&
+        auditTextEquals(specimen.assembly_name, assembly_name) &&
+        auditTextEquals(specimen.assembly_kind, assembly_kind) &&
+        acceptedProjectExpectationMatches(specimen.expectation, expectation_name, obligation_id)
+}

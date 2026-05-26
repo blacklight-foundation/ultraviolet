@@ -1,0 +1,10 @@
+//! Rejected structured-parallelism specimen for non-invariant dispatch key inference.
+
+public procedure dispatchInferFailureReference(context: Context, values: shared [i32]) -> () {
+    parallel context~>cpu() {
+        dispatch index in 0usize..4usize {
+            let offset: usize = index + 1usize
+            values[offset]
+        }
+    }
+}

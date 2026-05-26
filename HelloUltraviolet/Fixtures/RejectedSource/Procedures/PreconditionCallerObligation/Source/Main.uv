@@ -1,0 +1,11 @@
+//! Rejected contract specimen for an unconstrained caller failing a callee precondition.
+
+public procedure requiresPositiveCallerValue(value: i32) -> i32
+|: value > 0
+{
+    return value
+}
+
+public procedure preconditionCallerObligationReference(value: i32) -> i32 {
+    return requiresPositiveCallerValue(value)
+}

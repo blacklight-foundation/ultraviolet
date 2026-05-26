@@ -1,0 +1,200 @@
+//! Generated catalog markers for 14. Abstraction and Polymorphism / 14.8 Refinement Types.
+
+
+public procedure countAbstractionAndPolymorphismRefinementTypesObligations() -> usize {
+    return 21usize
+}
+
+public procedure validatedAbstractionAndPolymorphismRefinementTypesObligations() -> usize {
+    var count: usize = 0usize
+    if acceptedObligationEntryMatches(
+        "grammar.14.RefinementTypes",
+        51392usize,
+        "HelloUltraviolet::Reference::Types",
+        "runTypesRefinementsReference",
+        "Source/Reference/Types/Refinements.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "req.14.RefinementSelfBinding",
+        51409usize,
+        "HelloUltraviolet::Reference::Types",
+        "runTypesRefinementsReference",
+        "Source/Reference/Types/Refinements.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "rule.14.Parse-RefinementOpt-None",
+        51424usize,
+        "HelloUltraviolet::Reference::Types",
+        "runTypesRefinementsReference",
+        "Source/Reference/Types/Refinements.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "rule.14.Parse-RefinementOpt-Yes",
+        51440usize,
+        "HelloUltraviolet::Reference::Types",
+        "runTypesRefinementsReference",
+        "Source/Reference/Types/Refinements.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "rule.14.ParsePredicateExpr",
+        51456usize,
+        "HelloUltraviolet::Reference::Types",
+        "runTypesRefinementsReference",
+        "Source/Reference/Types/Refinements.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "def.14.TypeRefineAst",
+        51471usize,
+        "HelloUltraviolet::Reference::Types",
+        "runTypesRefinementsReference",
+        "Source/Reference/Types/Refinements.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "def.14.TypeRefineForm",
+        51484usize,
+        "HelloUltraviolet::Reference::Types",
+        "runTypesRefinementsReference",
+        "Source/Reference/Types/Refinements.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "def.14.PredicateEquiv",
+        51497usize,
+        "HelloUltraviolet::Reference::Types",
+        "runTypesRefinementsReference",
+        "Source/Reference/Types/Refinements.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "rule.14.T-Equiv-Refine",
+        51512usize,
+        "HelloUltraviolet::Reference::Types",
+        "runTypesRefinementsReference",
+        "Source/Reference/Types/Refinements.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "rule.14.T-Equiv-Refine-Norm",
+        51528usize,
+        "HelloUltraviolet::Reference::Types",
+        "runTypesRefinementsReference",
+        "Source/Reference/Types/Refinements.uv"
+    ) {
+        count = count + 1usize
+    }
+    if rejectedSourceObligationEntryMatches(
+        "rule.14.WF-Refine-Type",
+        51544usize,
+        "HelloUltraviolet::Audit::FixtureCatalog::RejectedSource",
+        "validatedPolymorphismRejectedSourceFixtureCount",
+        "Fixtures/RejectedSource/Polymorphism/RefinementPredicateNonBool/Source/Main.uv"
+    ) {
+        count = count + 1usize
+    }
+    if rejectedSourceObligationEntryMatches(
+        "rule.14.T-Refine-Intro",
+        51560usize,
+        "HelloUltraviolet::Audit::FixtureCatalog::RejectedSource",
+        "validatedPolymorphismRejectedSourceFixtureCount",
+        "Fixtures/RejectedSource/Polymorphism/RefinementStaticProofFailure/Source/Main.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "rule.14.T-Refine-Elim",
+        51576usize,
+        "HelloUltraviolet::Reference::Types",
+        "runTypesRefinementsReference",
+        "Source/Reference/Types/Refinements.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "rule.14.RefinementSubtypeBase",
+        51592usize,
+        "HelloUltraviolet::Reference::Types",
+        "runTypesRefinementsReference",
+        "Source/Reference/Types/Refinements.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "rule.14.RefinementSubtypeImplication",
+        51607usize,
+        "HelloUltraviolet::Reference::Types",
+        "runTypesRefinementsReference",
+        "Source/Reference/Types/Refinements.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "req.14.RefinementDecidablePredicateFragment",
+        51622usize,
+        "HelloUltraviolet::Reference::Types",
+        "runTypesRefinementsReference",
+        "Source/Reference/Types/Refinements.uv"
+    ) {
+        count = count + 1usize
+    }
+    if rejectedSourceObligationEntryMatches(
+        "req.14.RefinementStaticDefaultDynamicFallback",
+        51635usize,
+        "HelloUltraviolet::Audit::FixtureCatalog::RejectedSource",
+        "validatedPolymorphismRejectedSourceFixtureCount",
+        "Fixtures/RejectedSource/Polymorphism/RefinementStaticDefaultRequirement/Source/Main.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "req.14.RefinementRuntimeRepresentationAndPanic",
+        51650usize,
+        "HelloUltraviolet::Reference::Types",
+        "runTypesRefinementsReference",
+        "Source/Reference/Types/Refinements.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "rule.14.LLVMTy-Refine",
+        51665usize,
+        "HelloUltraviolet::Reference::Types",
+        "runTypesRefinementsReference",
+        "Source/Reference/Types/Refinements.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "req.14.RefinementRuntimeCheckLowering",
+        51681usize,
+        "HelloUltraviolet::Reference::Types",
+        "runTypesRefinementsReference",
+        "Source/Reference/Types/Refinements.uv"
+    ) {
+        count = count + 1usize
+    }
+    if rejectedSourceObligationEntryMatches(
+        "diag.14.RefinementTypes",
+        51696usize,
+        "HelloUltraviolet::Audit::FixtureCatalog::RejectedSource",
+        "validatedPolymorphismRejectedSourceFixtureCount",
+        "Fixtures/RejectedSource/Polymorphism/RefinementInlineSelfConstraint/Source/Main.uv"
+    ) {
+        count = count + 1usize
+    }
+    return count
+}

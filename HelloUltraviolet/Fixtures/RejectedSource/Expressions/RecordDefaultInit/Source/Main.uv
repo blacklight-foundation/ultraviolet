@@ -1,0 +1,9 @@
+//! Rejected record construction specimen for missing default field initializers.
+
+public record NonDefaultPayload {
+    public value: i32
+}
+
+public procedure recordDefaultInitReference() -> NonDefaultPayload {
+    return NonDefaultPayload()
+}

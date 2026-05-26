@@ -1,0 +1,7 @@
+//! Rejected subtyping specimen for distinct floating-point primitive types.
+
+internal procedure floatNumericSubtypingViolation() -> f64 {
+    let source: f32 = 1.5f32
+    let target: f64 = source
+    return target
+}

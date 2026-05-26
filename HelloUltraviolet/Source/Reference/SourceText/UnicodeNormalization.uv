@@ -1,0 +1,26 @@
+//! Reference specimens for SourceText / UnicodeNormalization.
+
+internal procedure unicodeReferenceLength(text: string@View) -> usize {
+    return string::length(text)
+}
+
+internal procedure unicodeReferenceByte(text: string@View, index: usize) -> u8 {
+    if index >= unicodeReferenceLength(text) {
+        return 0u8
+    }
+    let view: bytes@View = bytes::view_string(text)
+    let data: const [u8] = bytes::as_slice(view)
+    return data[index]
+}
+
+/// Exercises the SourceText UnicodeNormalization reference surface.
+public procedure runSourceTextUnicodeNormalizationReference() -> bool {
+    let ascii: string@View = "identifier"
+    let omega: string@View = "\u{03A9}"
+    let composed: string@View = "\u{00E9}"
+    return unicodeReferenceLength(ascii) == 10usize &&
+        unicodeReferenceLength(omega) == 2usize &&
+        unicodeReferenceByte(omega, 0usize) == 0xCEu8 &&
+        unicodeReferenceByte(omega, 1usize) == 0xA9u8 &&
+        unicodeReferenceLength(composed) == 2usize
+}

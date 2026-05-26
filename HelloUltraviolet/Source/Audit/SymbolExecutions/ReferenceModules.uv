@@ -1,0 +1,37 @@
+//! Compiled symbol execution checks for ReferenceModules.
+
+using HelloUltraviolet::Reference::Modules::{ runModulesAggregationReference }
+using HelloUltraviolet::Reference::Modules::{ runModulesExternBlocksReference }
+using HelloUltraviolet::Reference::Modules::{ runModulesImportsReference }
+using HelloUltraviolet::Reference::Modules::{ runModulesStaticsReference }
+using HelloUltraviolet::Reference::Modules::{ runModulesUsingsReference }
+
+public procedure catalogCompiledSymbolsExecuteReferenceModules(context: Context) -> bool {
+    var passed: bool = true
+    passed = recordCatalogSymbolExecution(
+        context,
+        "runModulesAggregationReference",
+        runModulesAggregationReference()
+    ) && passed
+    passed = recordCatalogSymbolExecution(
+        context,
+        "runModulesExternBlocksReference",
+        runModulesExternBlocksReference()
+    ) && passed
+    passed = recordCatalogSymbolExecution(
+        context,
+        "runModulesImportsReference",
+        runModulesImportsReference()
+    ) && passed
+    passed = recordCatalogSymbolExecution(
+        context,
+        "runModulesStaticsReference",
+        runModulesStaticsReference()
+    ) && passed
+    passed = recordCatalogSymbolExecution(
+        context,
+        "runModulesUsingsReference",
+        runModulesUsingsReference()
+    ) && passed
+    return passed
+}

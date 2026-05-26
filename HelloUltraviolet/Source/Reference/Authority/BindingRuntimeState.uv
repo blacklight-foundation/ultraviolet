@@ -1,0 +1,35 @@
+//! Reference specimens for Authority / BindingRuntimeState.
+
+internal enum BindingRuntimeStateReference {
+    Uninitialized
+    Initialized
+    Moved
+    Borrowed
+}
+
+internal procedure bindingRuntimeStateIsReadable(
+    state: BindingRuntimeStateReference
+) -> bool {
+    return if state is {
+        BindingRuntimeStateReference::Uninitialized {
+            false
+        }
+        BindingRuntimeStateReference::Initialized {
+            true
+        }
+        BindingRuntimeStateReference::Moved {
+            false
+        }
+        BindingRuntimeStateReference::Borrowed {
+            true
+        }
+    }
+}
+
+/// Exercises the Authority BindingRuntimeState reference surface.
+public procedure runAuthorityBindingRuntimeStateReference() -> bool {
+    return !bindingRuntimeStateIsReadable(BindingRuntimeStateReference::Uninitialized) &&
+        bindingRuntimeStateIsReadable(BindingRuntimeStateReference::Initialized) &&
+        !bindingRuntimeStateIsReadable(BindingRuntimeStateReference::Moved) &&
+        bindingRuntimeStateIsReadable(BindingRuntimeStateReference::Borrowed)
+}

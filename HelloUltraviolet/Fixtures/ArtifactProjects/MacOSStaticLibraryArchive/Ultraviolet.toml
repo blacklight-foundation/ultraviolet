@@ -1,0 +1,12 @@
+[[assembly]]
+name = "MacOSStaticLibraryArchive"
+kind = "library"
+link_kind = "static"
+root = "Source"
+
+[toolchain]
+target_profile = "aarch64-darwin"
+
+[build]
+incremental = true
+progress = false

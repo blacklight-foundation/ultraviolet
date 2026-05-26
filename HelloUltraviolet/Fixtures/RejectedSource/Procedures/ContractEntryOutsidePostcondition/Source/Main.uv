@@ -1,0 +1,5 @@
+//! Rejected contract specimen for @entry used outside a postcondition.
+
+public procedure contractEntryOutsidePostconditionReference(value: i32) -> i32 {
+    return @entry(value)
+}

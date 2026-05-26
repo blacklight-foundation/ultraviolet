@@ -1,0 +1,264 @@
+//! Runtime content checks for diagnostic-source expected diagnostic metadata.
+
+internal procedure diagnosticExpectedFileMatches(
+    context: Context,
+    expected_path: string@View,
+    expected_text: string@View
+) -> bool {
+    let read_result: Outcome<unique string@Managed, IoError> = context.io~>read_file(expected_path)
+    return if move read_result is {
+        @Value { value } {
+            let text: string@View = string::as_view(value)
+            auditTextEquals(text, expected_text)
+        }
+        @Error {
+            false
+        }
+    }
+}
+
+public procedure validTransmuteTargetExpectedDiagnosticFileMatches(context: Context) -> bool {
+    return diagnosticExpectedFileMatches(
+        context,
+        "HelloUltraviolet/Fixtures/DiagnosticSource/Expressions/ValidTransmuteTarget/Expected.uv",
+        "//! Expected diagnostic metadata for the ValidTransmuteTarget diagnostic-source specimen.\n\nexpectedDiagnostic(\"W-SAFE-0100\", \"def.16.ValidTransmuteTarget\")\n"
+    )
+}
+
+public procedure inlineAlwaysRecursiveExpectedDiagnosticFileMatches(context: Context) -> bool {
+    return diagnosticExpectedFileMatches(
+        context,
+        "HelloUltraviolet/Fixtures/DiagnosticSource/Attributes/InlineAlwaysRecursive/Expected.uv",
+        "//! Expected diagnostic metadata for the InlineAlwaysRecursive diagnostic-source specimen.\n\nexpectedDiagnostic(\"W-MOD-2452\", \"diagnostics.OptimizationAttributeDiagnostics\")\n"
+    )
+}
+
+public procedure leadingBOMWarningExpectedDiagnosticFileMatches(context: Context) -> bool {
+    return diagnosticExpectedFileMatches(
+        context,
+        "HelloUltraviolet/Fixtures/DiagnosticSource/SourceText/LeadingBOMWarning/Expected.uv",
+        "//! Expected diagnostic metadata for the LeadingBOMWarning diagnostic-source specimen.\n\nexpectedDiagnostic(\"W-SRC-0101\", \"Span-BOM-Warn\")\n"
+    )
+}
+
+public procedure decimalLeadingZeroWarningExpectedDiagnosticFileMatches(
+    context: Context
+) -> bool {
+    return diagnosticExpectedFileMatches(
+        context,
+        "HelloUltraviolet/Fixtures/DiagnosticSource/SourceText/DecimalLeadingZeroWarning/Expected.uv",
+        "//! Expected diagnostic metadata for the DecimalLeadingZeroWarning diagnostic-source specimen.\n\nexpectedDiagnostic(\"W-SRC-0301\", \"Warn-DecimalLeadingZero\")\n"
+    )
+}
+
+public procedure fineGrainedLoopKeyWarningExpectedDiagnosticFileMatches(context: Context) -> bool {
+    return diagnosticExpectedFileMatches(
+        context,
+        "HelloUltraviolet/Fixtures/DiagnosticSource/Keys/FineGrainedLoopKeyWarning/Expected.uv",
+        "//! Expected diagnostic metadata for the FineGrainedLoopKeyWarning diagnostic-source specimen.\n\nexpectedDiagnostic(\"W-CON-0001\", \"requirement.19.FineGrainedKeyLoopWarning\")\n"
+    )
+}
+
+public procedure readThenWriteExplicitWarningExpectedDiagnosticFileMatches(context: Context) -> bool {
+    return diagnosticExpectedFileMatches(
+        context,
+        "HelloUltraviolet/Fixtures/DiagnosticSource/Keys/ReadThenWriteExplicitWarning/Expected.uv",
+        "//! Expected diagnostic metadata for the ReadThenWriteExplicitWarning diagnostic-source specimen.\n\nexpectedDiagnostic(\"W-CON-0006\", \"rule.19.K-RMW-Explicit-Warn\")\n"
+    )
+}
+
+public procedure readThenWriteContentionWarningExpectedDiagnosticFileMatches(context: Context) -> bool {
+    return diagnosticExpectedFileMatches(
+        context,
+        "HelloUltraviolet/Fixtures/DiagnosticSource/Keys/ReadThenWriteContentionWarning/Expected.uv",
+        "//! Expected diagnostic metadata for the ReadThenWriteContentionWarning diagnostic-source specimen.\n\nexpectedDiagnostic(\"W-CON-0004\", \"rule.19.K-RMW-Contention-Warn\")\n"
+    )
+}
+
+public procedure orderedRedundantWarningExpectedDiagnosticFileMatches(context: Context) -> bool {
+    return diagnosticExpectedFileMatches(
+        context,
+        "HelloUltraviolet/Fixtures/DiagnosticSource/Keys/OrderedRedundantWarning/Expected.uv",
+        "//! Expected diagnostic metadata for the OrderedRedundantWarning diagnostic-source specimen.\n\nexpectedDiagnostic(\"W-CON-0013\", \"rule.19.K-Ordered-Redundant-Warn\")\n"
+    )
+}
+
+public procedure unknownCalleeAccessWarningExpectedDiagnosticFileMatches(context: Context) -> bool {
+    return diagnosticExpectedFileMatches(
+        context,
+        "HelloUltraviolet/Fixtures/DiagnosticSource/Keys/UnknownCalleeAccessWarning/Expected.uv",
+        "//! Expected diagnostic metadata for the UnknownCalleeAccessWarning diagnostic-source specimen.\n\nexpectedDiagnostic(\"W-CON-0005\", \"requirement.19.UnknownCalleeAccessWarning\")\n"
+    )
+}
+
+public procedure sharedClosureCaptureWarningExpectedDiagnosticFileMatches(context: Context) -> bool {
+    return diagnosticExpectedFileMatches(
+        context,
+        "HelloUltraviolet/Fixtures/DiagnosticSource/Keys/SharedClosureCaptureWarning/Expected.uv",
+        "//! Expected diagnostic metadata for the SharedClosureCaptureWarning diagnostic-source specimen.\n\nexpectedDiagnostic(\"W-CON-0009\", \"diagnostics.19.KeyAcquisitionBlocks\")\n"
+    )
+}
+
+public procedure nestedReleaseInterleavingWarningExpectedDiagnosticFileMatches(context: Context) -> bool {
+    return diagnosticExpectedFileMatches(
+        context,
+        "HelloUltraviolet/Fixtures/DiagnosticSource/Keys/NestedReleaseInterleavingWarning/Expected.uv",
+        "//! Expected diagnostic metadata for the NestedReleaseInterleavingWarning diagnostic-source specimen.\n\nexpectedDiagnostic(\"W-CON-0010\", \"diagnostics.19.NestedRelease\")\n"
+    )
+}
+
+public procedure dynamicKeyRuntimeInfoExpectedDiagnosticFileMatches(context: Context) -> bool {
+    return diagnosticExpectedFileMatches(
+        context,
+        "HelloUltraviolet/Fixtures/DiagnosticSource/Keys/DynamicKeyRuntimeInfo/Expected.uv",
+        "//! Expected diagnostic metadata for the DynamicKeyRuntimeInfo diagnostic-source specimen.\n\nexpectedDiagnostic(\"I-CON-0013\", \"diagnostics.19.DynamicKeyVerification\")\n"
+    )
+}
+
+public procedure dynamicKeyRuntimeSyncInfoExpectedDiagnosticFileMatches(context: Context) -> bool {
+    return diagnosticExpectedFileMatches(
+        context,
+        "HelloUltraviolet/Fixtures/DiagnosticSource/Keys/DynamicKeyRuntimeSyncInfo/Expected.uv",
+        "//! Expected diagnostic metadata for the DynamicKeyRuntimeSyncInfo diagnostic-source specimen.\n\nexpectedDiagnostic(\"I-CON-0011\", \"diagnostics.19.DynamicKeyVerification\")\n"
+    )
+}
+
+public procedure staleAfterYieldReleaseWarningExpectedDiagnosticFileMatches(context: Context) -> bool {
+    return diagnosticExpectedFileMatches(
+        context,
+        "HelloUltraviolet/Fixtures/DiagnosticSource/Keys/StaleAfterYieldReleaseWarning/Expected.uv",
+        "//! Expected diagnostic metadata for the StaleAfterYieldReleaseWarning diagnostic-source specimen.\n\nexpectedDiagnostic(\"W-CON-0011\", \"requirement.21.YieldReleaseStalenessWarning\")\n"
+    )
+}
+
+public procedure staleOkSuppressesReleaseWarningExpectedDiagnosticFileMatches(context: Context) -> bool {
+    return diagnosticExpectedFileMatches(
+        context,
+        "HelloUltraviolet/Fixtures/DiagnosticSource/Keys/StaleOkSuppressesReleaseWarning/Expected.uv",
+        "//! Expected diagnostic-absence metadata for the StaleOkSuppressesReleaseWarning diagnostic-source specimen.\n\nexpectedDiagnosticAbsent(\"W-CON-0011\", \"requirement.19.StaleOkSuppressesReleaseWarning\")\n"
+    )
+}
+
+public procedure speculativeLargeStructWarningExpectedDiagnosticFileMatches(
+    context: Context
+) -> bool {
+    return diagnosticExpectedFileMatches(
+        context,
+        "HelloUltraviolet/Fixtures/DiagnosticSource/Keys/SpeculativeLargeStructWarning/Expected.uv",
+        "//! Expected diagnostic metadata for the SpeculativeLargeStructWarning diagnostic-source specimen.\n\nexpectedDiagnostic(\"W-CON-0020\", \"diagnostics.19.SpeculativeExecution\")\n"
+    )
+}
+
+public procedure speculativeExpensiveBodyWarningExpectedDiagnosticFileMatches(
+    context: Context
+) -> bool {
+    return diagnosticExpectedFileMatches(
+        context,
+        "HelloUltraviolet/Fixtures/DiagnosticSource/Keys/SpeculativeExpensiveBodyWarning/Expected.uv",
+        "//! Expected diagnostic metadata for the SpeculativeExpensiveBodyWarning diagnostic-source specimen.\n\nexpectedDiagnostic(\"W-CON-0021\", \"diagnostics.19.SpeculativeExecution\")\n"
+    )
+}
+
+public procedure asyncLargeCaptureWarningExpectedDiagnosticFileMatches(context: Context) -> bool {
+    return diagnosticExpectedFileMatches(
+        context,
+        "HelloUltraviolet/Fixtures/DiagnosticSource/Async/AsyncLargeCaptureWarning/Expected.uv",
+        "//! Expected diagnostic metadata for the AsyncLargeCaptureWarning diagnostic-source specimen.\n\nexpectedDiagnostic(\"W-CON-0201\", \"rule.21.Warn-Async-LargeCapture\")\n"
+    )
+}
+
+public procedure asyncLargeCaptureWarningEmissionExpectedDiagnosticFileMatches(
+    context: Context
+) -> bool {
+    return diagnosticExpectedFileMatches(
+        context,
+        "HelloUltraviolet/Fixtures/DiagnosticSource/Async/AsyncLargeCaptureWarningEmission/Expected.uv",
+        "//! Expected diagnostic metadata for the AsyncLargeCaptureWarningEmission diagnostic-source specimen.\n\nexpectedDiagnostic(\"W-CON-0201\", \"requirement.21.AsyncLargeCaptureWarningEmission\")\n"
+    )
+}
+
+public procedure asyncLargeCaptureNoWarningExpectedDiagnosticFileMatches(
+    context: Context
+) -> bool {
+    return diagnosticExpectedFileMatches(
+        context,
+        "HelloUltraviolet/Fixtures/DiagnosticSource/Async/AsyncLargeCaptureNoWarning/Expected.uv",
+        "//! Expected diagnostic-absence metadata for the AsyncLargeCaptureNoWarning diagnostic-source specimen.\n\nexpectedDiagnosticAbsent(\"W-CON-0201\", \"rule.21.Warn-Async-LargeCapture-Ok\")\n"
+    )
+}
+
+public procedure asyncStateMachineDiagnosticsTableExpectedDiagnosticFileMatches(
+    context: Context
+) -> bool {
+    return diagnosticExpectedFileMatches(
+        context,
+        "HelloUltraviolet/Fixtures/DiagnosticSource/Async/AsyncStateMachineDiagnosticsTable/Expected.uv",
+        "//! Expected diagnostic metadata for the AsyncStateMachineDiagnosticsTable diagnostic-source specimen.\n\nexpectedDiagnostic(\"W-CON-0201\", \"diagnostics.21.AsyncStateMachineDiagnostics\")\n"
+    )
+}
+
+public procedure staleValueMarkIRDiagnosticsExpectedDiagnosticFileMatches(
+    context: Context
+) -> bool {
+    return diagnosticExpectedFileMatches(
+        context,
+        "HelloUltraviolet/Fixtures/DiagnosticSource/Async/StaleValueMarkIRDiagnostics/Expected.uv",
+        "//! Expected diagnostic metadata for the StaleValueMarkIRDiagnostics diagnostic-source specimen.\n\nexpectedDiagnostic(\"W-CON-0011\", \"requirement.21.StaleValueMarkIRDiagnostics\")\n"
+    )
+}
+
+public procedure dispatchDynamicKeyWarningExpectedDiagnosticFileMatches(
+    context: Context
+) -> bool {
+    return diagnosticExpectedFileMatches(
+        context,
+        "HelloUltraviolet/Fixtures/DiagnosticSource/Parallelism/DispatchDynamicKeyWarning/Expected.uv",
+        "//! Expected diagnostic metadata for the DispatchDynamicKeyWarning diagnostic-source specimen.\n\nexpectedDiagnostic(\"W-CON-0140\", \"rule.20.Dispatch-DynamicKey-Warn\")\n"
+    )
+}
+
+public procedure cancellationNoAdditionalDiagnosticsExpectedDiagnosticFileMatches(
+    context: Context
+) -> bool {
+    return diagnosticExpectedFileMatches(
+        context,
+        "HelloUltraviolet/Fixtures/DiagnosticSource/Parallelism/CancellationNoAdditionalDiagnostics/Expected.uv",
+        "//! Expected diagnostic-absence metadata for the CancellationNoAdditionalDiagnostics diagnostic-source specimen.\n\nexpectedDiagnosticAbsent(\"E-CON-0103\", \"diagnostics.20.Cancellation\")\n"
+    )
+}
+
+public procedure panicHandlingNoAdditionalDiagnosticsExpectedDiagnosticFileMatches(
+    context: Context
+) -> bool {
+    return diagnosticExpectedFileMatches(
+        context,
+        "HelloUltraviolet/Fixtures/DiagnosticSource/Parallelism/PanicHandlingNoAdditionalDiagnostics/Expected.uv",
+        "//! Expected diagnostic-absence metadata for the PanicHandlingNoAdditionalDiagnostics diagnostic-source specimen.\n\nexpectedDiagnosticAbsent(\"E-CON-0103\", \"diagnostics.20.PanicHandling\")\n"
+    )
+}
+
+public procedure userDiagnosticWarningExpectedDiagnosticFileMatches(context: Context) -> bool {
+    return diagnosticExpectedFileMatches(
+        context,
+        "HelloUltraviolet/Fixtures/DiagnosticSource/Comptime/UserDiagnosticWarning/Expected.uv",
+        "//! Expected diagnostic metadata for the UserDiagnosticWarning diagnostic-source specimen.\n\nexpectedDiagnostic(\"W-CTE-0071\", \"rule.22.CtBuiltin-Diagnostics-Warning\")\nexpectedDiagnostic(\"W-CTE-0071\", \"diagnostics.22.CompileTimeDiagnosticsSupplement\")\n"
+    )
+}
+
+public procedure userDiagnosticNoteExpectedDiagnosticFileMatches(context: Context) -> bool {
+    return diagnosticExpectedFileMatches(
+        context,
+        "HelloUltraviolet/Fixtures/DiagnosticSource/Comptime/UserDiagnosticNote/Expected.uv",
+        "//! Expected diagnostic metadata for the UserDiagnosticNote diagnostic-source specimen.\n\nexpectedDiagnostic(\"\", \"rule.22.CtBuiltin-Diagnostics-Note\")\n"
+    )
+}
+
+public procedure projectFilesInvalidPathExpectedDiagnosticFileMatches(
+    context: Context
+) -> bool {
+    return diagnosticExpectedFileMatches(
+        context,
+        "HelloUltraviolet/Fixtures/DiagnosticSource/Comptime/ProjectFilesInvalidPath/Expected.uv",
+        "//! Expected diagnostic-absence metadata for the ProjectFilesInvalidPath diagnostic-source specimen.\n\nexpectedDiagnosticAbsent(\"E-CTE-0070\", \"requirement.22.ProjectFilesPathRestrictions\")\n"
+    )
+}

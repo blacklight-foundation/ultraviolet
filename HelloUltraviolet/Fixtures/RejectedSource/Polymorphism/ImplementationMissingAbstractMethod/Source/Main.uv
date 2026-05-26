@@ -1,0 +1,9 @@
+//! Rejected polymorphism specimen for an implementation missing an abstract method.
+
+internal class RequiredMethodClass {
+    internal procedure requiredValue(~) -> i32
+}
+
+internal record MissingRequiredMethod <: RequiredMethodClass {
+    internal value: i32
+}

@@ -1,0 +1,17 @@
+//! Rejected async composition specimen for a streaming race operand that needs input.
+
+public procedure inputRequiredStream() -> Async<i32, i32, i32, !> {
+    return 1
+}
+
+public procedure secondInputRequiredStream() -> Async<i32, i32, i32, !> {
+    return 2
+}
+
+public procedure raceStreamOperandNeedsInputReference() -> Async<i32, (), (), !> {
+    let value: Stream<i32, !> = race {
+        inputRequiredStream() -> |result| yield result,
+        secondInputRequiredStream() -> |result| yield result,
+    }
+    return
+}

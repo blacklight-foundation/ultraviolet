@@ -1,0 +1,17 @@
+//! Rejected async composition specimen for a return-mode race over a yielding async.
+
+public procedure yieldingAsyncValue() -> Async<i32, (), i32, !> {
+    return 1
+}
+
+public procedure secondYieldingAsyncValue() -> Async<i32, (), i32, !> {
+    return 2
+}
+
+public procedure raceOperandYieldsReference() -> i32 {
+    let value: i32 = race {
+        yieldingAsyncValue() -> |result| result,
+        secondYieldingAsyncValue() -> |result| result,
+    }
+    return value
+}

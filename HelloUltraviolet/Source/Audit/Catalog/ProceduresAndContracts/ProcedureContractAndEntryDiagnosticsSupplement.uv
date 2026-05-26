@@ -1,0 +1,29 @@
+//! Generated catalog markers for 15. Procedures and Contracts / 15.10 Procedure, Contract, and Entry Diagnostics Supplement.
+
+
+public procedure countProceduresAndContractsProcedureContractAndEntryDiagnosticsSupplementObligations() -> usize {
+    return 2usize
+}
+
+public procedure validatedProceduresAndContractsProcedureContractAndEntryDiagnosticsSupplementObligations() -> usize {
+    var count: usize = 0usize
+    if rejectedSourceObligationEntryMatches(
+        "diag.15.ProcedureContractEntryDiagnosticsOwnership",
+        57457usize,
+        "HelloUltraviolet::Audit::FixtureCatalog::RejectedSource",
+        "validatedProceduresRejectedSourceFixtureCount",
+        "Fixtures/RejectedSource/Procedures/ContractEntryMovedParameter/Source/Main.uv"
+    ) {
+        count = count + 1usize
+    }
+    if rejectedSourceObligationEntryMatches(
+        "diag-table.15.ProcedureContractEntryDiagnostics",
+        57470usize,
+        "HelloUltraviolet::Audit::FixtureCatalog::RejectedSource",
+        "validatedProceduresRejectedSourceFixtureCount",
+        "Fixtures/RejectedSource/Procedures/ContractEntryCapability/Source/Main.uv"
+    ) {
+        count = count + 1usize
+    }
+    return count
+}

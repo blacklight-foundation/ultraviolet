@@ -1,0 +1,13 @@
+//! Rejected structured-parallelism specimen for spawn inside escaping closures.
+
+public procedure parallelEscapingClosureSpawnReference(
+    context: Context
+) -> || -> i32 [shared: { context: Context }] {
+    return || -> i32 {
+        parallel context~>cpu() {
+            spawn {
+                1
+            }
+        }
+    }
+}

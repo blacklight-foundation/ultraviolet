@@ -1,0 +1,14 @@
+//! Rejected permission specimen for an incompatible method receiver permission.
+
+public record PermissionDiagnosticCell {
+    public value: i32
+
+    public procedure uniqueRead(~!) -> i32 {
+        return self.value + 0
+    }
+}
+
+public procedure receiverPermissionMismatchReference() -> i32 {
+    let cell: const PermissionDiagnosticCell = PermissionDiagnosticCell { value: 1 }
+    return cell~>uniqueRead()
+}

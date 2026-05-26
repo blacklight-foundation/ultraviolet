@@ -1,0 +1,10 @@
+//! Rejected async suspension specimen for yield from input incompatibility.
+
+public procedure inputRequiredAsync() -> Async<i32, i32, i32, !> {
+    return 1
+}
+
+public procedure yieldFromInMismatchReference() -> Async<i32, (), i32, !> {
+    let value: i32 = yield from inputRequiredAsync()
+    return value
+}

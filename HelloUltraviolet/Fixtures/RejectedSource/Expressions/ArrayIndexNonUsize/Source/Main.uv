@@ -1,0 +1,7 @@
+//! Rejected array specimen for scalar indices whose type is not usize.
+
+public procedure arrayIndexNonUsizeReference() -> i32 {
+    let values: [i32; 2] = [1, 2]
+    let index: i32 = 1
+    return values[index]
+}

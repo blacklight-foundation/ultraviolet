@@ -1,0 +1,11 @@
+//! Rejected structured-parallelism specimen for unique captures in spawn bodies.
+
+public procedure parallelClosureCaptureUniqueReference(context: Context) -> () {
+    let value: unique i32 = 1
+    parallel context~>cpu() {
+        spawn {
+            let reader = || -> bool value == 1
+            let observed: bool = reader()
+        }
+    }
+}

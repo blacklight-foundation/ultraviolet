@@ -1,0 +1,470 @@
+//! Generated catalog markers for 21. Asynchronous Operations / 21.2 Suspension Forms.
+
+
+public procedure countAsynchronousOperationsSuspensionFormsObligations() -> usize {
+    return 51usize
+}
+
+public procedure validatedAsynchronousOperationsSuspensionFormsObligations() -> usize {
+    var count: usize = 0usize
+    if acceptedObligationEntryMatches(
+        "grammar.21.SuspensionForms",
+        79355usize,
+        "HelloUltraviolet::Reference::Async",
+        "runAsyncSuspensionFormsReference",
+        "Source/Reference/Async/SuspensionForms.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "parse.21.SuspensionFormsPrimaryExpressions",
+        79374usize,
+        "HelloUltraviolet::Reference::Async",
+        "runAsyncSuspensionFormsReference",
+        "Source/Reference/Async/SuspensionForms.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "rule.21.Parse-Wait-Expr",
+        79389usize,
+        "HelloUltraviolet::Reference::Async",
+        "runAsyncSuspensionFormsReference",
+        "Source/Reference/Async/SuspensionForms.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "rule.21.Parse-Yield-From-Expr",
+        79409usize,
+        "HelloUltraviolet::Reference::Async",
+        "runAsyncSuspensionFormsReference",
+        "Source/Reference/Async/SuspensionForms.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "rule.21.Parse-Yield-Expr",
+        79432usize,
+        "HelloUltraviolet::Reference::Async",
+        "runAsyncSuspensionFormsReference",
+        "Source/Reference/Async/SuspensionForms.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "ast.21.SuspensionForms",
+        79455usize,
+        "HelloUltraviolet::Reference::Async",
+        "runAsyncSuspensionFormsReference",
+        "Source/Reference/Async/SuspensionForms.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "ast.21.SuspensionFormResolution",
+        79475usize,
+        "HelloUltraviolet::Reference::Async",
+        "runAsyncSuspensionFormsReference",
+        "Source/Reference/Async/SuspensionForms.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "ast.21.SuspensionFormEvaluationOrder",
+        79494usize,
+        "HelloUltraviolet::Reference::Async",
+        "runAsyncSuspensionFormsReference",
+        "Source/Reference/Async/SuspensionForms.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "rule.21.T-Wait",
+        79517usize,
+        "HelloUltraviolet::Reference::Async",
+        "runAsyncSuspensionFormsReference",
+        "Source/Reference/Async/SuspensionForms.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "rule.21.T-Wait-Future",
+        79535usize,
+        "HelloUltraviolet::Reference::Async",
+        "runAsyncSuspensionFormsReference",
+        "Source/Reference/Async/SuspensionForms.uv"
+    ) {
+        count = count + 1usize
+    }
+    if rejectedSourceObligationEntryMatches(
+        "rule.21.Wait-Handle-Err",
+        79553usize,
+        "HelloUltraviolet::Audit::FixtureCatalog::RejectedSource",
+        "validatedExpressionsRejectedSourceFixtureCount",
+        "Fixtures/RejectedSource/Expressions/WaitNonHandle/Source/Main.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "rule.21.T-Yield",
+        79573usize,
+        "HelloUltraviolet::Reference::Async",
+        "runAsyncSuspensionFormsReference",
+        "Source/Reference/Async/SuspensionForms.uv"
+    ) {
+        count = count + 1usize
+    }
+    if rejectedSourceObligationEntryMatches(
+        "rule.21.Yield-NotAsync-Err",
+        79591usize,
+        "HelloUltraviolet::Audit::FixtureCatalog::RejectedSource",
+        "validatedExpressionsRejectedSourceFixtureCount",
+        "Fixtures/RejectedSource/Expressions/YieldOutsideAsync/Source/Main.uv"
+    ) {
+        count = count + 1usize
+    }
+    if rejectedSourceObligationEntryMatches(
+        "rule.21.Yield-Out-Err",
+        79609usize,
+        "HelloUltraviolet::Audit::FixtureCatalog::RejectedSource",
+        "validatedExpressionsRejectedSourceFixtureCount",
+        "Fixtures/RejectedSource/Expressions/YieldTypeMismatch/Source/Main.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "rule.21.T-Yield-From",
+        79629usize,
+        "HelloUltraviolet::Reference::Async",
+        "runAsyncSuspensionFormsReference",
+        "Source/Reference/Async/SuspensionForms.uv"
+    ) {
+        count = count + 1usize
+    }
+    if rejectedSourceObligationEntryMatches(
+        "rule.21.YieldFrom-NotAsync-Err",
+        79647usize,
+        "HelloUltraviolet::Audit::FixtureCatalog::RejectedSource",
+        "validatedExpressionsRejectedSourceFixtureCount",
+        "Fixtures/RejectedSource/Expressions/YieldFromOutsideAsync/Source/Main.uv"
+    ) {
+        count = count + 1usize
+    }
+    if rejectedSourceObligationEntryMatches(
+        "rule.21.YieldFrom-Out-Err",
+        79665usize,
+        "HelloUltraviolet::Audit::FixtureCatalog::RejectedSource",
+        "validatedExpressionsRejectedSourceFixtureCount",
+        "Fixtures/RejectedSource/Expressions/YieldFromOutMismatch/Source/Main.uv"
+    ) {
+        count = count + 1usize
+    }
+    if rejectedSourceObligationEntryMatches(
+        "rule.21.YieldFrom-In-Err",
+        79684usize,
+        "HelloUltraviolet::Audit::FixtureCatalog::RejectedSource",
+        "validatedExpressionsRejectedSourceFixtureCount",
+        "Fixtures/RejectedSource/Expressions/YieldFromInMismatch/Source/Main.uv"
+    ) {
+        count = count + 1usize
+    }
+    if rejectedSourceObligationEntryMatches(
+        "rule.21.YieldFrom-ErrType-Err",
+        79702usize,
+        "HelloUltraviolet::Audit::FixtureCatalog::RejectedSource",
+        "validatedExpressionsRejectedSourceFixtureCount",
+        "Fixtures/RejectedSource/Expressions/YieldFromErrorMismatch/Source/Main.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "requirement.21.SuspensionKeyRestrictionsReference",
+        79720usize,
+        "HelloUltraviolet::Reference::Async",
+        "runAsyncSuspensionFormsReference",
+        "Source/Reference/Async/SuspensionForms.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "requirement.21.WaitRuntimeSemantics",
+        79735usize,
+        "HelloUltraviolet::Reference::Async",
+        "runAsyncSuspensionFormsReference",
+        "Source/Reference/Async/SuspensionForms.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "def.21.WaitRuntimeHelpers",
+        79757usize,
+        "HelloUltraviolet::Reference::Async",
+        "runAsyncSuspensionFormsReference",
+        "Source/Reference/Async/SuspensionForms.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "rule.21.EvalSigma-Wait-Spawned-Ready",
+        79781usize,
+        "HelloUltraviolet::Reference::Async",
+        "runAsyncSuspensionFormsReference",
+        "Source/Reference/Async/SuspensionForms.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "rule.21.EvalSigma-Wait-Spawned-Pending",
+        79799usize,
+        "HelloUltraviolet::Reference::Async",
+        "runAsyncSuspensionFormsReference",
+        "Source/Reference/Async/SuspensionForms.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "requirement.21.FailedSpawnedWaitHandledByParallelPanic",
+        79818usize,
+        "HelloUltraviolet::Reference::Async",
+        "runAsyncSuspensionFormsReference",
+        "Source/Reference/Async/SuspensionForms.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "rule.21.EvalSigma-Wait-Tracked-Ready",
+        79831usize,
+        "HelloUltraviolet::Reference::Async",
+        "runAsyncSuspensionFormsReference",
+        "Source/Reference/Async/SuspensionForms.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "rule.21.EvalSigma-Wait-Tracked-Pending",
+        79849usize,
+        "HelloUltraviolet::Reference::Async",
+        "runAsyncSuspensionFormsReference",
+        "Source/Reference/Async/SuspensionForms.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "rule.21.EvalSigma-Wait-Ctrl",
+        79868usize,
+        "HelloUltraviolet::Reference::Async",
+        "runAsyncSuspensionFormsReference",
+        "Source/Reference/Async/SuspensionForms.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "requirement.21.YieldRuntimeSemantics",
+        79886usize,
+        "HelloUltraviolet::Reference::Async",
+        "runAsyncSuspensionFormsReference",
+        "Source/Reference/Async/SuspensionForms.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "def.21.ResumptionHelpers",
+        79906usize,
+        "HelloUltraviolet::Reference::Async",
+        "runAsyncSuspensionFormsReference",
+        "Source/Reference/Async/SuspensionForms.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "rule.21.EvalSigma-Yield",
+        79941usize,
+        "HelloUltraviolet::Reference::Async",
+        "runAsyncSuspensionFormsReference",
+        "Source/Reference/Async/SuspensionForms.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "rule.21.EvalSigma-Yield-Release",
+        79960usize,
+        "HelloUltraviolet::Reference::Async",
+        "runAsyncSuspensionFormsReference",
+        "Source/Reference/Async/SuspensionForms.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "rule.21.EvalSigma-Yield-Resume",
+        79979usize,
+        "HelloUltraviolet::Reference::Async",
+        "runAsyncSuspensionFormsReference",
+        "Source/Reference/Async/SuspensionForms.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "requirement.21.YieldFromRuntimeSemantics",
+        79998usize,
+        "HelloUltraviolet::Reference::Async",
+        "runAsyncSuspensionFormsReference",
+        "Source/Reference/Async/SuspensionForms.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "rule.21.EvalSigma-YieldFrom-Suspended",
+        80018usize,
+        "HelloUltraviolet::Reference::Async",
+        "runAsyncSuspensionFormsReference",
+        "Source/Reference/Async/SuspensionForms.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "rule.21.EvalSigma-YieldFrom-Completed",
+        80038usize,
+        "HelloUltraviolet::Reference::Async",
+        "runAsyncSuspensionFormsReference",
+        "Source/Reference/Async/SuspensionForms.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "rule.21.EvalSigma-YieldFrom-Failed",
+        80056usize,
+        "HelloUltraviolet::Reference::Async",
+        "runAsyncSuspensionFormsReference",
+        "Source/Reference/Async/SuspensionForms.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "rule.21.EvalSigma-YieldFrom-Resume",
+        80074usize,
+        "HelloUltraviolet::Reference::Async",
+        "runAsyncSuspensionFormsReference",
+        "Source/Reference/Async/SuspensionForms.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "def.21.EvalYieldFromContinueSignature",
+        80093usize,
+        "HelloUltraviolet::Reference::Async",
+        "runAsyncSuspensionFormsReference",
+        "Source/Reference/Async/SuspensionForms.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "rule.21.EvalYieldFromContinue-Suspended",
+        80108usize,
+        "HelloUltraviolet::Reference::Async",
+        "runAsyncSuspensionFormsReference",
+        "Source/Reference/Async/SuspensionForms.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "rule.21.EvalYieldFromContinue-Completed",
+        80128usize,
+        "HelloUltraviolet::Reference::Async",
+        "runAsyncSuspensionFormsReference",
+        "Source/Reference/Async/SuspensionForms.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "rule.21.EvalYieldFromContinue-Failed",
+        80146usize,
+        "HelloUltraviolet::Reference::Async",
+        "runAsyncSuspensionFormsReference",
+        "Source/Reference/Async/SuspensionForms.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "def.21.SuspensionLoweringForms",
+        80166usize,
+        "HelloUltraviolet::Reference::Async",
+        "runAsyncSuspensionFormsReference",
+        "Source/Reference/Async/SuspensionForms.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "rule.21.Lower-Wait-Spawned",
+        80187usize,
+        "HelloUltraviolet::Reference::Async",
+        "runAsyncSuspensionFormsReference",
+        "Source/Reference/Async/SuspensionForms.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "rule.21.Lower-Wait-Tracked",
+        80205usize,
+        "HelloUltraviolet::Reference::Async",
+        "runAsyncSuspensionFormsReference",
+        "Source/Reference/Async/SuspensionForms.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "rule.21.Lower-Yield",
+        80223usize,
+        "HelloUltraviolet::Reference::Async",
+        "runAsyncSuspensionFormsReference",
+        "Source/Reference/Async/SuspensionForms.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "rule.21.Lower-Yield-Release",
+        80241usize,
+        "HelloUltraviolet::Reference::Async",
+        "runAsyncSuspensionFormsReference",
+        "Source/Reference/Async/SuspensionForms.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "requirement.21.YieldReleaseReacquireLowering",
+        80259usize,
+        "HelloUltraviolet::Reference::Async",
+        "runAsyncSuspensionFormsReference",
+        "Source/Reference/Async/SuspensionForms.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "rule.21.Lower-YieldFrom",
+        80272usize,
+        "HelloUltraviolet::Reference::Async",
+        "runAsyncSuspensionFormsReference",
+        "Source/Reference/Async/SuspensionForms.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "requirement.21.YieldFromEnterLoweringLoop",
+        80290usize,
+        "HelloUltraviolet::Reference::Async",
+        "runAsyncSuspensionFormsReference",
+        "Source/Reference/Async/SuspensionForms.uv"
+    ) {
+        count = count + 1usize
+    }
+    if rejectedSourceObligationEntryMatches(
+        "diagnostics.21.SuspensionForms",
+        80308usize,
+        "HelloUltraviolet::Audit::FixtureCatalog::RejectedSource",
+        "validatedExpressionsRejectedSourceFixtureCount",
+        "Fixtures/RejectedSource/Expressions/SuspensionFormsDiagnosticsTable/Source/Main.uv"
+    ) {
+        count = count + 1usize
+    }
+    return count
+}

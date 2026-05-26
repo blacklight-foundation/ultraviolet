@@ -1,0 +1,416 @@
+//! Generated catalog markers for 15. Procedures and Contracts / 15.8 Verification Logic.
+
+
+public procedure countProceduresAndContractsVerificationLogicObligations() -> usize {
+    return 45usize
+}
+
+public procedure validatedProceduresAndContractsVerificationLogicObligations() -> usize {
+    var count: usize = 0usize
+    if acceptedObligationEntryMatches(
+        "req.15.VerificationLogicNoSurfaceSyntax",
+        56541usize,
+        "HelloUltraviolet::Reference::Procedures",
+        "runProceduresVerificationReference",
+        "Source/Reference/Procedures/Verification.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "req.15.VerificationLogicNotParserOwned",
+        56556usize,
+        "HelloUltraviolet::Reference::Procedures",
+        "runProceduresVerificationReference",
+        "Source/Reference/Procedures/Verification.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "def.15.ContractKind",
+        56571usize,
+        "HelloUltraviolet::Reference::Procedures",
+        "runProceduresVerificationReference",
+        "Source/Reference/Procedures/Verification.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "def.15.VerificationFact",
+        56584usize,
+        "HelloUltraviolet::Reference::Procedures",
+        "runProceduresVerificationReference",
+        "Source/Reference/Procedures/Verification.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "def.15.CheckState",
+        56597usize,
+        "HelloUltraviolet::Reference::Procedures",
+        "runProceduresVerificationReference",
+        "Source/Reference/Procedures/Verification.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "def.15.ContractCheck",
+        56610usize,
+        "HelloUltraviolet::Reference::Procedures",
+        "runProceduresVerificationReference",
+        "Source/Reference/Procedures/Verification.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "def.15.DynamicScopeAndContext",
+        56625usize,
+        "HelloUltraviolet::Reference::Procedures",
+        "runProceduresVerificationReference",
+        "Source/Reference/Procedures/Verification.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "rule.15.Contract-Static-OK",
+        56646usize,
+        "HelloUltraviolet::Reference::Procedures",
+        "runProceduresVerificationReference",
+        "Source/Reference/Procedures/Verification.uv"
+    ) {
+        count = count + 1usize
+    }
+    if rejectedSourceObligationEntryMatches(
+        "rule.15.Contract-Static-Fail",
+        56662usize,
+        "HelloUltraviolet::Audit::FixtureCatalog::RejectedSource",
+        "validatedProceduresRejectedSourceFixtureCount",
+        "Fixtures/RejectedSource/Procedures/UnsatisfiedPrecondition/Source/Main.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "rule.15.Contract-Dynamic-Elide",
+        56678usize,
+        "HelloUltraviolet::Reference::Procedures",
+        "runProceduresVerificationReference",
+        "Source/Reference/Procedures/Verification.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "rule.15.Contract-Dynamic-Check",
+        56694usize,
+        "HelloUltraviolet::Reference::Procedures",
+        "runProceduresVerificationReference",
+        "Source/Reference/Procedures/Verification.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "req.15.MandatoryProofTechniques",
+        56710usize,
+        "HelloUltraviolet::Reference::Procedures",
+        "runProceduresVerificationReference",
+        "Source/Reference/Procedures/Verification.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "def.15.ProofContextAt",
+        56730usize,
+        "HelloUltraviolet::Reference::Procedures",
+        "runProceduresVerificationReference",
+        "Source/Reference/Procedures/Verification.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "def.15.DecidablePredicates",
+        56761usize,
+        "HelloUltraviolet::Reference::Procedures",
+        "runProceduresVerificationReference",
+        "Source/Reference/Procedures/Verification.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "rule.15.Ent-True",
+        56781usize,
+        "HelloUltraviolet::Reference::Procedures",
+        "runProceduresVerificationReference",
+        "Source/Reference/Procedures/Verification.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "rule.15.Ent-Fact",
+        56797usize,
+        "HelloUltraviolet::Reference::Procedures",
+        "runProceduresVerificationReference",
+        "Source/Reference/Procedures/Verification.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "rule.15.Ent-And",
+        56813usize,
+        "HelloUltraviolet::Reference::Procedures",
+        "runProceduresVerificationReference",
+        "Source/Reference/Procedures/Verification.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "rule.15.Ent-Or-L",
+        56829usize,
+        "HelloUltraviolet::Reference::Procedures",
+        "runProceduresVerificationReference",
+        "Source/Reference/Procedures/Verification.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "rule.15.Ent-Or-R",
+        56845usize,
+        "HelloUltraviolet::Reference::Procedures",
+        "runProceduresVerificationReference",
+        "Source/Reference/Procedures/Verification.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "rule.15.Ent-Linear",
+        56861usize,
+        "HelloUltraviolet::Reference::Procedures",
+        "runProceduresVerificationReference",
+        "Source/Reference/Procedures/Verification.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "def.15.LinearIntegerEntailment",
+        56877usize,
+        "HelloUltraviolet::Reference::Procedures",
+        "runProceduresVerificationReference",
+        "Source/Reference/Procedures/Verification.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "req.15.LinearEntailmentSoundAndComplete",
+        56900usize,
+        "HelloUltraviolet::Reference::Procedures",
+        "runProceduresVerificationReference",
+        "Source/Reference/Procedures/Verification.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "def.15.StaticProofAt",
+        56913usize,
+        "HelloUltraviolet::Reference::Procedures",
+        "runProceduresVerificationReference",
+        "Source/Reference/Procedures/Verification.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "def.15.NegFact",
+        56926usize,
+        "HelloUltraviolet::Reference::Procedures",
+        "runProceduresVerificationReference",
+        "Source/Reference/Procedures/Verification.uv"
+    ) {
+        count = count + 1usize
+    }
+    if rejectedSourceObligationEntryMatches(
+        "req.15.VerificationFactsNoRuntimeRepresentation",
+        56948usize,
+        "HelloUltraviolet::Audit::FixtureCatalog::RejectedSource",
+        "validatedProceduresRejectedSourceFixtureCount",
+        "Fixtures/RejectedSource/Procedures/VerificationFactNoRuntimeRepresentation/Source/Main.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedProjectObligationEntryMatches(
+        "rule.15.Fact-Dominate",
+        56965usize,
+        "HelloUltraviolet::Audit::FixtureCatalog::AcceptedProjects",
+        "validatedAcceptedProjectFixtureCount",
+        "Fixtures/AcceptedProjects/VerificationFactPrecondition/Source/Library.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "req.15.FactGeneration",
+        56981usize,
+        "HelloUltraviolet::Reference::Procedures",
+        "runProceduresVerificationReference",
+        "Source/Reference/Procedures/Verification.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "req.15.TypeNarrowingFromFacts",
+        57004usize,
+        "HelloUltraviolet::Reference::Procedures",
+        "runProceduresVerificationReference",
+        "Source/Reference/Procedures/Verification.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "def.15.ContractEnvironments",
+        57019usize,
+        "HelloUltraviolet::Reference::Procedures",
+        "runProceduresVerificationReference",
+        "Source/Reference/Procedures/Verification.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "rule.15.Check-True",
+        57036usize,
+        "HelloUltraviolet::Reference::Procedures",
+        "runProceduresVerificationReference",
+        "Source/Reference/Procedures/Verification.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "rule.15.Check-False",
+        57052usize,
+        "HelloUltraviolet::Reference::Procedures",
+        "runProceduresVerificationReference",
+        "Source/Reference/Procedures/Verification.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "rule.15.Check-Panic",
+        57068usize,
+        "HelloUltraviolet::Reference::Procedures",
+        "runProceduresVerificationReference",
+        "Source/Reference/Procedures/Verification.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "rule.15.Check-Ok",
+        57084usize,
+        "HelloUltraviolet::Reference::Procedures",
+        "runProceduresVerificationReference",
+        "Source/Reference/Procedures/Verification.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "rule.15.Check-Fail",
+        57100usize,
+        "HelloUltraviolet::Reference::Procedures",
+        "runProceduresVerificationReference",
+        "Source/Reference/Procedures/Verification.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "req.15.DynamicChecksInjectFacts",
+        57116usize,
+        "HelloUltraviolet::Reference::Procedures",
+        "runProceduresVerificationReference",
+        "Source/Reference/Procedures/Verification.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "def.15.RuntimeCheckInsertionPointsIntro",
+        57131usize,
+        "HelloUltraviolet::Reference::Procedures",
+        "runProceduresVerificationReference",
+        "Source/Reference/Procedures/Verification.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "rule.15.Insert-Precondition-Check",
+        57144usize,
+        "HelloUltraviolet::Reference::Procedures",
+        "runProceduresVerificationReference",
+        "Source/Reference/Procedures/Verification.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "rule.15.Insert-Postcondition-Check",
+        57160usize,
+        "HelloUltraviolet::Reference::Procedures",
+        "runProceduresVerificationReference",
+        "Source/Reference/Procedures/Verification.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "rule.15.Insert-TypeInv-Construction-Check",
+        57176usize,
+        "HelloUltraviolet::Reference::Procedures",
+        "runProceduresVerificationReference",
+        "Source/Reference/Procedures/Verification.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "rule.15.Insert-TypeInv-PreCall-Check",
+        57192usize,
+        "HelloUltraviolet::Reference::Procedures",
+        "runProceduresVerificationReference",
+        "Source/Reference/Procedures/Verification.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "rule.15.Insert-TypeInv-PostCall-Check",
+        57208usize,
+        "HelloUltraviolet::Reference::Procedures",
+        "runProceduresVerificationReference",
+        "Source/Reference/Procedures/Verification.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "rule.15.Insert-LoopInv-Init-Check",
+        57224usize,
+        "HelloUltraviolet::Reference::Procedures",
+        "runProceduresVerificationReference",
+        "Source/Reference/Procedures/Verification.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "rule.15.Insert-LoopInv-Maintenance-Check",
+        57240usize,
+        "HelloUltraviolet::Reference::Procedures",
+        "runProceduresVerificationReference",
+        "Source/Reference/Procedures/Verification.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "rule.15.Insert-Refinement-Check",
+        57256usize,
+        "HelloUltraviolet::Reference::Procedures",
+        "runProceduresVerificationReference",
+        "Source/Reference/Procedures/Verification.uv"
+    ) {
+        count = count + 1usize
+    }
+    if rejectedSourceObligationEntryMatches(
+        "diag.15.VerificationLogic",
+        57274usize,
+        "HelloUltraviolet::Audit::FixtureCatalog::RejectedSource",
+        "validatedProceduresRejectedSourceFixtureCount",
+        "Fixtures/RejectedSource/Procedures/VerificationLogicDiagnostic/Source/Main.uv"
+    ) {
+        count = count + 1usize
+    }
+    return count
+}

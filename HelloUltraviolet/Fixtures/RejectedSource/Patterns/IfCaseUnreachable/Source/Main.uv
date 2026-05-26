@@ -1,0 +1,13 @@
+//! Rejected pattern specimen for an unreachable case after an irrefutable pattern.
+
+public procedure ifCaseUnreachableReference() -> i32 {
+    let value: i32 = 1
+    return if value is {
+        _ {
+            1
+        }
+        1 {
+            2
+        }
+    }
+}

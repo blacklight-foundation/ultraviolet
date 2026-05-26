@@ -1,0 +1,7 @@
+//! Rejected subtyping specimen for distinct integer primitive types.
+
+internal procedure integerNumericSubtypingViolation() -> i64 {
+    let source: i32 = 7
+    let target: i64 = source
+    return target
+}

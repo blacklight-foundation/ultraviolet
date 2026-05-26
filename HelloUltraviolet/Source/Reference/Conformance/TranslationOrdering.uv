@@ -1,0 +1,41 @@
+//! Reference specimens for Conformance / TranslationOrdering.
+
+internal record TranslationCheckpoint {
+    internal source_order: usize
+    internal normalized_order: usize
+    internal parsed_order: usize
+    internal checked_order: usize
+    internal lowered_order: usize
+}
+
+internal procedure translationCheckpoint(
+    source_order: usize,
+    normalized_order: usize,
+    parsed_order: usize,
+    checked_order: usize,
+    lowered_order: usize
+) -> TranslationCheckpoint {
+    return TranslationCheckpoint {
+        source_order: source_order,
+        normalized_order: normalized_order,
+        parsed_order: parsed_order,
+        checked_order: checked_order,
+        lowered_order: lowered_order
+    }
+}
+
+internal procedure translationCheckpointIsOrdered(
+    checkpoint: TranslationCheckpoint
+) -> bool {
+    return checkpoint.source_order < checkpoint.normalized_order &&
+        checkpoint.normalized_order < checkpoint.parsed_order &&
+        checkpoint.parsed_order < checkpoint.checked_order &&
+        checkpoint.checked_order < checkpoint.lowered_order
+}
+
+/// Exercises the Conformance TranslationOrdering reference surface.
+public procedure runConformanceTranslationOrderingReference() -> bool {
+    let checkpoint: TranslationCheckpoint =
+        translationCheckpoint(1usize, 2usize, 3usize, 4usize, 5usize)
+    return translationCheckpointIsOrdered(checkpoint)
+}

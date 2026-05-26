@@ -1,0 +1,76 @@
+//! Runtime path checks for accepted project fixture artifacts.
+
+internal procedure acceptedProjectArtifactsExist(
+    context: Context,
+    manifest_path: string@View,
+    source_path: string@View
+) -> bool {
+    return context.io~>exists(manifest_path) &&
+        context.io~>exists(source_path)
+}
+
+public procedure acceptedProjectFixtureArtifactsExist(context: Context) -> bool {
+    return acceptedProjectArtifactsExist(
+        context,
+        "HelloUltraviolet/Fixtures/AcceptedProjects/StaticLibrary/Ultraviolet.toml",
+        "HelloUltraviolet/Fixtures/AcceptedProjects/StaticLibrary/Source/Library.uv"
+    ) &&
+        acceptedProjectArtifactsExist(
+            context,
+            "HelloUltraviolet/Fixtures/AcceptedProjects/ExecutableMain/Ultraviolet.toml",
+            "HelloUltraviolet/Fixtures/AcceptedProjects/ExecutableMain/Source/Main.uv"
+        ) &&
+        acceptedProjectArtifactsExist(
+            context,
+            "HelloUltraviolet/Fixtures/AcceptedProjects/MacOSTargetProfile/Ultraviolet.toml",
+            "HelloUltraviolet/Fixtures/AcceptedProjects/MacOSTargetProfile/Source/Main.uv"
+        ) &&
+        acceptedProjectArtifactsExist(
+            context,
+            "HelloUltraviolet/Fixtures/BootstrapNonCompliance/Polymorphism/ClassDefaultMethodFieldAccess/Ultraviolet.toml",
+            "HelloUltraviolet/Fixtures/BootstrapNonCompliance/Polymorphism/ClassDefaultMethodFieldAccess/Source/Main.uv"
+        ) &&
+        acceptedProjectArtifactsExist(
+            context,
+            "HelloUltraviolet/Fixtures/BootstrapNonCompliance/Polymorphism/GenericClassBoundMethodLookup/Ultraviolet.toml",
+            "HelloUltraviolet/Fixtures/BootstrapNonCompliance/Polymorphism/GenericClassBoundMethodLookup/Source/Main.uv"
+        ) &&
+        acceptedProjectArtifactsExist(
+            context,
+            "HelloUltraviolet/Fixtures/BootstrapNonCompliance/Polymorphism/GenericRecordLiteralExpectedType/Ultraviolet.toml",
+            "HelloUltraviolet/Fixtures/BootstrapNonCompliance/Polymorphism/GenericRecordLiteralExpectedType/Source/Main.uv"
+        ) &&
+        acceptedProjectArtifactsExist(
+            context,
+            "HelloUltraviolet/Fixtures/BootstrapNonCompliance/Procedures/FreeProcedureOverloadResolution/Ultraviolet.toml",
+            "HelloUltraviolet/Fixtures/BootstrapNonCompliance/Procedures/FreeProcedureOverloadResolution/Source/Main.uv"
+        ) &&
+        acceptedProjectArtifactsExist(
+            context,
+            "HelloUltraviolet/Fixtures/AcceptedProjects/PtrNullReturn/Ultraviolet.toml",
+            "HelloUltraviolet/Fixtures/AcceptedProjects/PtrNullReturn/Source/Library.uv"
+        ) &&
+        acceptedProjectArtifactsExist(
+            context,
+            "HelloUltraviolet/Fixtures/AcceptedProjects/ExpressionSemantics/Ultraviolet.toml",
+            "HelloUltraviolet/Fixtures/AcceptedProjects/ExpressionSemantics/Source/Library.uv"
+        ) &&
+        acceptedProjectArtifactsExist(
+            context,
+            "HelloUltraviolet/Fixtures/AcceptedProjects/VerificationFactPrecondition/Ultraviolet.toml",
+            "HelloUltraviolet/Fixtures/AcceptedProjects/VerificationFactPrecondition/Source/Library.uv"
+        ) &&
+        acceptedProjectArtifactsExist(
+            context,
+            "HelloUltraviolet/Fixtures/AcceptedProjects/CrossAssemblyImplementation/Ultraviolet.toml",
+            "HelloUltraviolet/Fixtures/AcceptedProjects/CrossAssemblyImplementation/Source/CrossAssemblyImplementation/Library.uv"
+        ) &&
+        acceptedProjectArtifactsExist(
+            context,
+            "HelloUltraviolet/Fixtures/AcceptedProjects/HostedExportLibrary/Ultraviolet.toml",
+            "HelloUltraviolet/Fixtures/AcceptedProjects/HostedExportLibrary/Source/Library.uv"
+        ) &&
+        context.io~>exists(
+            "HelloUltraviolet/Fixtures/AcceptedProjects/CrossAssemblyImplementation/Source/ExternalContracts/Contracts.uv"
+        )
+}

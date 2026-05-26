@@ -1,0 +1,10 @@
+//! Rejected FFI specimen for enums without layout(C).
+
+public enum FfiPlainEnum {
+    Value(i32)
+}
+
+extern "C" {
+    public procedure importedEnum(value: FfiPlainEnum) -> i32
+}
+

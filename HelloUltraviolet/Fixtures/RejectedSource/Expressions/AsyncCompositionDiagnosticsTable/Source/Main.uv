@@ -1,0 +1,12 @@
+//! Rejected async composition specimen for the composition diagnostics table.
+
+public procedure asyncCompositionDiagnosticsTableValue() -> Async<(), (), i32, !> {
+    return 1
+}
+
+public procedure asyncCompositionDiagnosticsTableReference() -> i32 {
+    let value: i32 = race {
+        asyncCompositionDiagnosticsTableValue() -> |result| result,
+    }
+    return value
+}

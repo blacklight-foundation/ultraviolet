@@ -1,0 +1,83 @@
+//! Reference specimens for Polymorphism / Classes.
+
+internal class ClassReadable {
+    internal procedure classValue(~) -> i32 {
+        return 11
+    }
+}
+
+internal class ClassDerived <: ClassReadable {
+    internal procedure derivedValue(~) -> i32 {
+        return 13
+    }
+}
+
+internal class ClassInspectable {
+    internal inspected_value: i32
+
+    internal procedure inspectedValue(~) -> i32 {
+        return 23
+    }
+}
+
+internal class ClassCombined <: ClassDerived + ClassInspectable {
+    internal procedure combinedValue(~) -> i32 {
+        return 17
+    }
+}
+
+internal class ClassReceiverPermissions {
+    internal procedure readConst(~) -> i32
+
+    internal procedure readShared(~%) -> i32
+
+    internal procedure readUnique(~!) -> i32
+}
+
+internal record ClassOwner <: ClassCombined {
+    internal value: i32
+    internal inspected_value: i32
+}
+
+internal record ClassPermissionOwner <: ClassReceiverPermissions {
+    internal value: i32
+
+    internal procedure readConst(~) -> i32 {
+        return self.value
+    }
+
+    internal procedure readShared(~%) -> i32 {
+        return self.value + 1
+    }
+
+    internal procedure readUnique(~!) -> i32 {
+        return self.value + 2
+    }
+}
+
+/// Exercises the Polymorphism Classes reference surface.
+public procedure runPolymorphismClassesReference() -> bool {
+    let owner: ClassOwner = ClassOwner { value: 19, inspected_value: 23 }
+    let const_permission_owner: const ClassPermissionOwner =
+        ClassPermissionOwner { value: 29 }
+    var shared_permission_owner: shared ClassPermissionOwner =
+        ClassPermissionOwner { value: 31 }
+    let unique_permission_owner: unique ClassPermissionOwner =
+        ClassPermissionOwner { value: 37 }
+    var permission_score: i32 = const_permission_owner~>readConst()
+    %write shared_permission_owner {
+        permission_score = permission_score + shared_permission_owner~>readShared()
+    }
+    permission_score = permission_score + unique_permission_owner~>readUnique()
+    let reference: PolymorphismReference = polymorphismReference(
+        12usize,
+        owner~>classValue() == 11 &&
+            owner~>derivedValue() == 13 &&
+            owner~>combinedValue() == 17 &&
+            owner~>inspectedValue() == 23 &&
+            permission_score == 100 &&
+            owner.value == 19,
+        true
+    )
+    return polymorphismReferenceIsCovered(reference) && reference.dynamically_dispatchable
+}

@@ -1,0 +1,19 @@
+//! Reference specimens for Types / Refinements.
+
+internal procedure positiveRefinementReference(value: i32) -> i32
+|: value > 0
+{
+    return value
+}
+
+internal procedure boundedRefinementReference(value: i32) -> bool
+|: value >= 0 && value < 10
+{
+    return value < 10
+}
+
+/// Exercises the Types Refinements reference surface.
+public procedure runTypesRefinementsReference() -> bool {
+    let positive_value: i32 = positiveRefinementReference(5)
+    return positive_value == 5 && boundedRefinementReference(7)
+}

@@ -1,0 +1,191 @@
+//! Generated catalog markers for 20. Structured Parallelism / 20.6 Cancellation.
+
+
+public procedure countStructuredParallelismCancellationObligations() -> usize {
+    return 20usize
+}
+
+public procedure validatedStructuredParallelismCancellationObligations() -> usize {
+    var count: usize = 0usize
+    if acceptedObligationEntryMatches(
+        "requirement.20.CancellationSyntax",
+        78173usize,
+        "HelloUltraviolet::Reference::Parallelism",
+        "runParallelismCancellationReference",
+        "Source/Reference/Parallelism/Cancellation.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "requirement.20.CancellationNoAdditionalParsingRules",
+        78188usize,
+        "HelloUltraviolet::Reference::Parallelism",
+        "runParallelismCancellationReference",
+        "Source/Reference/Parallelism/Cancellation.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "ast.20.CancelTokenForms",
+        78203usize,
+        "HelloUltraviolet::Reference::Parallelism",
+        "runParallelismCancellationReference",
+        "Source/Reference/Parallelism/Cancellation.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "requirement.20.CancelTokenStaticSemantics",
+        78230usize,
+        "HelloUltraviolet::Reference::Parallelism",
+        "runParallelismCancellationReference",
+        "Source/Reference/Parallelism/Cancellation.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "requirement.20.CancelTokenParallelAvailability",
+        78255usize,
+        "HelloUltraviolet::Reference::Parallelism",
+        "runParallelismCancellationReference",
+        "Source/Reference/Parallelism/Cancellation.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "def.20.CancelRuntimeHelpers",
+        78268usize,
+        "HelloUltraviolet::Reference::Parallelism",
+        "runParallelismCancellationReference",
+        "Source/Reference/Parallelism/Cancellation.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "rule.20.Cancel-New",
+        78291usize,
+        "HelloUltraviolet::Reference::Parallelism",
+        "runParallelismCancellationReference",
+        "Source/Reference/Parallelism/Cancellation.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "rule.20.Cancel-Child",
+        78307usize,
+        "HelloUltraviolet::Reference::Parallelism",
+        "runParallelismCancellationReference",
+        "Source/Reference/Parallelism/Cancellation.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "rule.20.Cancel-IsCancelled",
+        78323usize,
+        "HelloUltraviolet::Reference::Parallelism",
+        "runParallelismCancellationReference",
+        "Source/Reference/Parallelism/Cancellation.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "rule.20.Cancel-DoCancel",
+        78339usize,
+        "HelloUltraviolet::Reference::Parallelism",
+        "runParallelismCancellationReference",
+        "Source/Reference/Parallelism/Cancellation.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "rule.20.Cancel-WaitCancelled-Completed",
+        78355usize,
+        "HelloUltraviolet::Reference::Parallelism",
+        "runParallelismCancellationReference",
+        "Source/Reference/Parallelism/Cancellation.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "rule.20.Cancel-WaitCancelled-Suspended",
+        78371usize,
+        "HelloUltraviolet::Reference::Parallelism",
+        "runParallelismCancellationReference",
+        "Source/Reference/Parallelism/Cancellation.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "requirement.20.CooperativeCancellationBehavior",
+        78387usize,
+        "HelloUltraviolet::Reference::Parallelism",
+        "runParallelismCancellationReference",
+        "Source/Reference/Parallelism/Cancellation.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "def.20.CancelIR",
+        78409usize,
+        "HelloUltraviolet::Reference::Parallelism",
+        "runParallelismCancellationReference",
+        "Source/Reference/Parallelism/Cancellation.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "rule.20.Lower-Cancel-New",
+        78422usize,
+        "HelloUltraviolet::Reference::Parallelism",
+        "runParallelismCancellationReference",
+        "Source/Reference/Parallelism/Cancellation.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "rule.20.Lower-Cancel-Request",
+        78437usize,
+        "HelloUltraviolet::Reference::Parallelism",
+        "runParallelismCancellationReference",
+        "Source/Reference/Parallelism/Cancellation.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "rule.20.Lower-Cancel-Wait",
+        78452usize,
+        "HelloUltraviolet::Reference::Parallelism",
+        "runParallelismCancellationReference",
+        "Source/Reference/Parallelism/Cancellation.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "requirement.20.CancellationCheckpointLowering",
+        78467usize,
+        "HelloUltraviolet::Reference::Parallelism",
+        "runParallelismCancellationReference",
+        "Source/Reference/Parallelism/Cancellation.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "requirement.20.SpawnDispatchCancellationLowering",
+        78480usize,
+        "HelloUltraviolet::Reference::Parallelism",
+        "runParallelismCancellationReference",
+        "Source/Reference/Parallelism/Cancellation.uv"
+    ) {
+        count = count + 1usize
+    }
+    if diagnosticSourceObligationEntryMatches(
+        "diagnostics.20.Cancellation",
+        78495usize,
+        "HelloUltraviolet::Audit::FixtureCatalog::DiagnosticSource",
+        "validatedParallelismDiagnosticSourceFixtureCount",
+        "Fixtures/DiagnosticSource/Parallelism/CancellationNoAdditionalDiagnostics/Source/Main.uv"
+    ) {
+        count = count + 1usize
+    }
+    return count
+}

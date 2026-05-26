@@ -1,0 +1,121 @@
+//! Compiled symbol checks for source references named by catalog rows.
+
+using HelloUltraviolet::Audit::SymbolExecutions::{ catalogCompiledSymbolsExecuteAudit }
+using HelloUltraviolet::Audit::SymbolExecutions::{ catalogCompiledSymbolsExecuteFixturesAcceptedProjects }
+using HelloUltraviolet::Audit::SymbolExecutions::{ catalogCompiledSymbolsExecuteFixturesArtifactProjects }
+using HelloUltraviolet::Audit::SymbolExecutions::{ catalogCompiledSymbolsExecuteFixturesBootstrapNonCompliance }
+using HelloUltraviolet::Audit::SymbolExecutions::{ catalogCompiledSymbolsExecuteFixturesDiagnosticSource }
+using HelloUltraviolet::Audit::SymbolExecutions::{ catalogCompiledSymbolsExecuteFixturesOutputDiagnostics }
+using HelloUltraviolet::Audit::SymbolExecutions::{ catalogCompiledSymbolsExecuteFixturesRejectedSourceAttributes }
+using HelloUltraviolet::Audit::SymbolExecutions::{ catalogCompiledSymbolsExecuteFixturesRejectedSourceComptime }
+using HelloUltraviolet::Audit::SymbolExecutions::{ catalogCompiledSymbolsExecuteFixturesRejectedSourceDataTypes }
+using HelloUltraviolet::Audit::SymbolExecutions::{ catalogCompiledSymbolsExecuteFixturesRejectedSourceExpressions }
+using HelloUltraviolet::Audit::SymbolExecutions::{ catalogCompiledSymbolsExecuteFixturesRejectedSourceFFI }
+using HelloUltraviolet::Audit::SymbolExecutions::{ catalogCompiledSymbolsExecuteFixturesRejectedSourceKeys }
+using HelloUltraviolet::Audit::SymbolExecutions::{ catalogCompiledSymbolsExecuteFixturesRejectedSourceModules }
+using HelloUltraviolet::Audit::SymbolExecutions::{ catalogCompiledSymbolsExecuteFixturesRejectedSourceNames }
+using HelloUltraviolet::Audit::SymbolExecutions::{ catalogCompiledSymbolsExecuteFixturesRejectedSourceParallelism }
+using HelloUltraviolet::Audit::SymbolExecutions::{ catalogCompiledSymbolsExecuteFixturesRejectedSourceParsing }
+using HelloUltraviolet::Audit::SymbolExecutions::{ catalogCompiledSymbolsExecuteFixturesRejectedSourcePatterns }
+using HelloUltraviolet::Audit::SymbolExecutions::{ catalogCompiledSymbolsExecuteFixturesRejectedSourcePermissions }
+using HelloUltraviolet::Audit::SymbolExecutions::{ catalogCompiledSymbolsExecuteFixturesRejectedSourcePolymorphism }
+using HelloUltraviolet::Audit::SymbolExecutions::{ catalogCompiledSymbolsExecuteFixturesRejectedSourceProcedures }
+using HelloUltraviolet::Audit::SymbolExecutions::{ catalogCompiledSymbolsExecuteFixturesRejectedSourceSourceText }
+using HelloUltraviolet::Audit::SymbolExecutions::{ catalogCompiledSymbolsExecuteFixturesRejectedSourceStatements }
+using HelloUltraviolet::Audit::SymbolExecutions::{ catalogCompiledSymbolsExecuteReferenceAsync }
+using HelloUltraviolet::Audit::SymbolExecutions::{ catalogCompiledSymbolsExecuteReferenceAttributes }
+using HelloUltraviolet::Audit::SymbolExecutions::{ catalogCompiledSymbolsExecuteReferenceAuthority }
+using HelloUltraviolet::Audit::SymbolExecutions::{ catalogCompiledSymbolsExecuteReferenceComptime }
+using HelloUltraviolet::Audit::SymbolExecutions::{ catalogCompiledSymbolsExecuteReferenceConformance }
+using HelloUltraviolet::Audit::SymbolExecutions::{ catalogCompiledSymbolsExecuteReferenceDataTypes }
+using HelloUltraviolet::Audit::SymbolExecutions::{ catalogCompiledSymbolsExecuteReferenceDiagnostics }
+using HelloUltraviolet::Audit::SymbolExecutions::{ catalogCompiledSymbolsExecuteReferenceExpressions }
+using HelloUltraviolet::Audit::SymbolExecutions::{ catalogCompiledSymbolsExecuteReferenceFFI }
+using HelloUltraviolet::Audit::SymbolExecutions::{ catalogCompiledSymbolsExecuteReferenceKeys }
+using HelloUltraviolet::Audit::SymbolExecutions::{ catalogCompiledSymbolsExecuteReferenceLowering }
+using HelloUltraviolet::Audit::SymbolExecutions::{ catalogCompiledSymbolsExecuteReferenceModalTypes }
+using HelloUltraviolet::Audit::SymbolExecutions::{ catalogCompiledSymbolsExecuteReferenceModules }
+using HelloUltraviolet::Audit::SymbolExecutions::{ catalogCompiledSymbolsExecuteReferenceNames }
+using HelloUltraviolet::Audit::SymbolExecutions::{ catalogCompiledSymbolsExecuteReferenceParallelism }
+using HelloUltraviolet::Audit::SymbolExecutions::{ catalogCompiledSymbolsExecuteReferencePatterns }
+using HelloUltraviolet::Audit::SymbolExecutions::{ catalogCompiledSymbolsExecuteReferencePermissions }
+using HelloUltraviolet::Audit::SymbolExecutions::{ catalogCompiledSymbolsExecuteReferencePolymorphism }
+using HelloUltraviolet::Audit::SymbolExecutions::{ catalogCompiledSymbolsExecuteReferenceProcedures }
+using HelloUltraviolet::Audit::SymbolExecutions::{ catalogCompiledSymbolsExecuteReferenceProjects }
+using HelloUltraviolet::Audit::SymbolExecutions::{ catalogCompiledSymbolsExecuteReferenceSourceText }
+using HelloUltraviolet::Audit::SymbolExecutions::{ catalogCompiledSymbolsExecuteReferenceStatements }
+using HelloUltraviolet::Audit::SymbolExecutions::{ catalogCompiledSymbolsExecuteReferenceTypes }
+using HelloUltraviolet::Audit::SymbolExecutions::{ catalogCompiledSymbolsExecuteSourceTestsSourceNativeTestsUv }
+
+public procedure expectedCatalogCompiledSymbolCount() -> usize {
+    return 618usize
+}
+
+public procedure catalogCompiledSymbolCount() -> usize {
+    return 618usize
+}
+
+public procedure expectedCatalogCompiledSymbolTargetDigest() -> usize {
+    return 748129267usize
+}
+
+public procedure catalogCompiledSymbolTargetDigest() -> usize {
+    return 748129267usize
+}
+
+public procedure catalogCompiledSymbolTargetsAreIndexed() -> bool {
+    return catalogCompiledSymbolCount() == expectedCatalogCompiledSymbolCount() &&
+        catalogCompiledSymbolTargetDigest() ==
+            expectedCatalogCompiledSymbolTargetDigest()
+}
+
+public procedure catalogCompiledSymbolsExecute(context: Context) -> bool {
+    var passed: bool = true
+    passed = catalogCompiledSymbolsExecuteAudit(context) && passed
+    passed = catalogCompiledSymbolsExecuteFixturesAcceptedProjects(context) && passed
+    passed = catalogCompiledSymbolsExecuteFixturesArtifactProjects(context) && passed
+    passed = catalogCompiledSymbolsExecuteFixturesBootstrapNonCompliance(context) && passed
+    passed = catalogCompiledSymbolsExecuteFixturesDiagnosticSource(context) && passed
+    passed = catalogCompiledSymbolsExecuteFixturesOutputDiagnostics(context) && passed
+    passed = catalogCompiledSymbolsExecuteFixturesRejectedSourceAttributes(context) && passed
+    passed = catalogCompiledSymbolsExecuteFixturesRejectedSourceComptime(context) && passed
+    passed = catalogCompiledSymbolsExecuteFixturesRejectedSourceDataTypes(context) && passed
+    passed = catalogCompiledSymbolsExecuteFixturesRejectedSourceExpressions(context) && passed
+    passed = catalogCompiledSymbolsExecuteFixturesRejectedSourceFFI(context) && passed
+    passed = catalogCompiledSymbolsExecuteFixturesRejectedSourceKeys(context) && passed
+    passed = catalogCompiledSymbolsExecuteFixturesRejectedSourceModules(context) && passed
+    passed = catalogCompiledSymbolsExecuteFixturesRejectedSourceNames(context) && passed
+    passed = catalogCompiledSymbolsExecuteFixturesRejectedSourceParallelism(context) && passed
+    passed = catalogCompiledSymbolsExecuteFixturesRejectedSourceParsing(context) && passed
+    passed = catalogCompiledSymbolsExecuteFixturesRejectedSourcePatterns(context) && passed
+    passed = catalogCompiledSymbolsExecuteFixturesRejectedSourcePermissions(context) && passed
+    passed = catalogCompiledSymbolsExecuteFixturesRejectedSourcePolymorphism(context) && passed
+    passed = catalogCompiledSymbolsExecuteFixturesRejectedSourceProcedures(context) && passed
+    passed = catalogCompiledSymbolsExecuteFixturesRejectedSourceSourceText(context) && passed
+    passed = catalogCompiledSymbolsExecuteFixturesRejectedSourceStatements(context) && passed
+    passed = catalogCompiledSymbolsExecuteReferenceAsync(context) && passed
+    passed = catalogCompiledSymbolsExecuteReferenceAttributes(context) && passed
+    passed = catalogCompiledSymbolsExecuteReferenceAuthority(context) && passed
+    passed = catalogCompiledSymbolsExecuteReferenceComptime(context) && passed
+    passed = catalogCompiledSymbolsExecuteReferenceConformance(context) && passed
+    passed = catalogCompiledSymbolsExecuteReferenceDataTypes(context) && passed
+    passed = catalogCompiledSymbolsExecuteReferenceDiagnostics(context) && passed
+    passed = catalogCompiledSymbolsExecuteReferenceExpressions(context) && passed
+    passed = catalogCompiledSymbolsExecuteReferenceFFI(context) && passed
+    passed = catalogCompiledSymbolsExecuteReferenceKeys(context) && passed
+    passed = catalogCompiledSymbolsExecuteReferenceLowering(context) && passed
+    passed = catalogCompiledSymbolsExecuteReferenceModalTypes(context) && passed
+    passed = catalogCompiledSymbolsExecuteReferenceModules(context) && passed
+    passed = catalogCompiledSymbolsExecuteReferenceNames(context) && passed
+    passed = catalogCompiledSymbolsExecuteReferenceParallelism(context) && passed
+    passed = catalogCompiledSymbolsExecuteReferencePatterns(context) && passed
+    passed = catalogCompiledSymbolsExecuteReferencePermissions(context) && passed
+    passed = catalogCompiledSymbolsExecuteReferencePolymorphism(context) && passed
+    passed = catalogCompiledSymbolsExecuteReferenceProcedures(context) && passed
+    passed = catalogCompiledSymbolsExecuteReferenceProjects(context) && passed
+    passed = catalogCompiledSymbolsExecuteReferenceSourceText(context) && passed
+    passed = catalogCompiledSymbolsExecuteReferenceStatements(context) && passed
+    passed = catalogCompiledSymbolsExecuteReferenceTypes(context) && passed
+    passed = catalogCompiledSymbolsExecuteSourceTestsSourceNativeTestsUv(context) && passed
+    return passed
+}

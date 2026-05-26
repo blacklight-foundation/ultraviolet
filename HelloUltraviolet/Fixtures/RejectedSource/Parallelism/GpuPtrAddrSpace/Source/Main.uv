@@ -1,0 +1,5 @@
+//! Rejected structured-parallelism specimen for GPU pointer address-space mismatch.
+
+public procedure gpuPtrAddrSpaceReference(pointer: GpuPtr<i32, Global>) -> GpuPtr<i32, Shared> {
+    return move pointer
+}

@@ -1,0 +1,12 @@
+//! Compiled symbol execution checks for FixturesBootstrapNonCompliance.
+
+
+public procedure catalogCompiledSymbolsExecuteFixturesBootstrapNonCompliance(context: Context) -> bool {
+    var passed: bool = true
+    passed = recordCatalogSymbolExecution(
+        context,
+        "validatedAcceptedProjectFixtureCount",
+        validatedAcceptedProjectFixtureCount() > 0usize
+    ) && passed
+    return passed
+}

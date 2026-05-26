@@ -1,0 +1,13 @@
+//! Rejected pattern specimen for a record pattern field absent from the record declaration.
+
+public record PatternPayload {
+    public value: i32
+}
+
+public procedure recordPatternUnknownFieldReference() -> i32 {
+    let payload: PatternPayload = PatternPayload {
+        value: 1
+    }
+    let PatternPayload { missing } = payload
+    return missing
+}

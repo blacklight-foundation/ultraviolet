@@ -1,0 +1,182 @@
+//! Generated catalog markers for 21. Asynchronous Operations / 21.5 Async-Key Integration.
+
+
+public procedure countAsynchronousOperationsAsyncKeyIntegrationObligations() -> usize {
+    return 19usize
+}
+
+public procedure validatedAsynchronousOperationsAsyncKeyIntegrationObligations() -> usize {
+    var count: usize = 0usize
+    if acceptedObligationEntryMatches(
+        "requirement.21.AsyncKeySyntaxSurface",
+        83254usize,
+        "HelloUltraviolet::Reference::Async",
+        "runAsyncAsyncKeyIntegrationReference",
+        "Source/Reference/Async/AsyncKeyIntegration.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "requirement.21.AsyncKeyParsingSurface",
+        83269usize,
+        "HelloUltraviolet::Reference::Async",
+        "runAsyncAsyncKeyIntegrationReference",
+        "Source/Reference/Async/AsyncKeyIntegration.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "def.21.AsyncKeyExistingAstForms",
+        83286usize,
+        "HelloUltraviolet::Reference::Async",
+        "runAsyncAsyncKeyIntegrationReference",
+        "Source/Reference/Async/AsyncKeyIntegration.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "requirement.21.AsyncKeyNoAdditionalAstVariants",
+        83302usize,
+        "HelloUltraviolet::Reference::Async",
+        "runAsyncAsyncKeyIntegrationReference",
+        "Source/Reference/Async/AsyncKeyIntegration.uv"
+    ) {
+        count = count + 1usize
+    }
+    if rejectedSourceObligationEntryMatches(
+        "requirement.21.AsyncKeyRestrictions",
+        83319usize,
+        "HelloUltraviolet::Audit::FixtureCatalog::RejectedSource",
+        "validatedKeysRejectedSourceFixtureCount",
+        "Fixtures/RejectedSource/Keys/AsyncKeyRestrictionsYieldHeld/Source/Main.uv"
+    ) {
+        count = count + 1usize
+    }
+    if rejectedSourceObligationEntryMatches(
+        "rule.21.A-Closure-Yield-Keys-Err",
+        83336usize,
+        "HelloUltraviolet::Audit::FixtureCatalog::RejectedSource",
+        "validatedKeysRejectedSourceFixtureCount",
+        "Fixtures/RejectedSource/Keys/SharedClosureYieldKeys/Source/Main.uv"
+    ) {
+        count = count + 1usize
+    }
+    if rejectedSourceObligationEntryMatches(
+        "requirement.21.SharedCapturingClosureYieldKeys",
+        83355usize,
+        "HelloUltraviolet::Audit::FixtureCatalog::RejectedSource",
+        "validatedKeysRejectedSourceFixtureCount",
+        "Fixtures/RejectedSource/Keys/SharedCapturingClosureYieldKeys/Source/Main.uv"
+    ) {
+        count = count + 1usize
+    }
+    if diagnosticSourceObligationEntryMatches(
+        "requirement.21.YieldReleaseStalenessWarning",
+        83368usize,
+        "HelloUltraviolet::Audit::FixtureCatalog::DiagnosticSource",
+        "validatedKeysDiagnosticSourceFixtureCount",
+        "Fixtures/DiagnosticSource/Keys/StaleAfterYieldReleaseWarning/Source/Main.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "requirements.21.AsyncCapabilityRequirements",
+        83383usize,
+        "HelloUltraviolet::Reference::Async",
+        "runAsyncAsyncKeyIntegrationReference",
+        "Source/Reference/Async/AsyncKeyIntegration.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "requirement.21.AsyncSuspensionAccessRights",
+        83403usize,
+        "HelloUltraviolet::Reference::Async",
+        "runAsyncAsyncKeyIntegrationReference",
+        "Source/Reference/Async/AsyncKeyIntegration.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "requirement.21.YieldReleaseRuntimeReference",
+        83416usize,
+        "HelloUltraviolet::Reference::Async",
+        "runAsyncAsyncKeyIntegrationReference",
+        "Source/Reference/Async/AsyncKeyIntegration.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "requirement.21.AsyncKeyFailureHandlingReference",
+        83429usize,
+        "HelloUltraviolet::Reference::Async",
+        "runAsyncAsyncKeyIntegrationReference",
+        "Source/Reference/Async/AsyncKeyIntegration.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "def.21.AsyncKeyIR",
+        83444usize,
+        "HelloUltraviolet::Reference::Async",
+        "runAsyncAsyncKeyIntegrationReference",
+        "Source/Reference/Async/AsyncKeyIntegration.uv"
+    ) {
+        count = count + 1usize
+    }
+    if rejectedSourceObligationEntryMatches(
+        "rule.21.Lower-Wait-Key-Illegal",
+        83457usize,
+        "HelloUltraviolet::Audit::FixtureCatalog::RejectedSource",
+        "validatedKeysRejectedSourceFixtureCount",
+        "Fixtures/RejectedSource/Keys/WaitWhileKeyHeldLowering/Source/Main.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "rule.21.Lower-Yield-Release-Keys",
+        83475usize,
+        "HelloUltraviolet::Reference::Async",
+        "runAsyncAsyncKeyIntegrationReference",
+        "Source/Reference/Async/AsyncKeyIntegration.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "rule.21.Lower-YieldFrom-Release-Keys",
+        83493usize,
+        "HelloUltraviolet::Reference::Async",
+        "runAsyncAsyncKeyIntegrationReference",
+        "Source/Reference/Async/AsyncKeyIntegration.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "rule.21.Lower-Closure-Yield-Shared",
+        83511usize,
+        "HelloUltraviolet::Reference::Async",
+        "runAsyncAsyncKeyIntegrationReference",
+        "Source/Reference/Async/AsyncKeyIntegration.uv"
+    ) {
+        count = count + 1usize
+    }
+    if diagnosticSourceObligationEntryMatches(
+        "requirement.21.StaleValueMarkIRDiagnostics",
+        83529usize,
+        "HelloUltraviolet::Audit::FixtureCatalog::DiagnosticSource",
+        "validatedAsyncDiagnosticSourceFixtureCount",
+        "Fixtures/DiagnosticSource/Async/StaleValueMarkIRDiagnostics/Source/Main.uv"
+    ) {
+        count = count + 1usize
+    }
+    if rejectedSourceObligationEntryMatches(
+        "diagnostics.21.AsyncKeyDiagnostics",
+        83544usize,
+        "HelloUltraviolet::Audit::FixtureCatalog::RejectedSource",
+        "validatedKeysRejectedSourceFixtureCount",
+        "Fixtures/RejectedSource/Keys/YieldFromWhileKeyHeld/Source/Main.uv"
+    ) {
+        count = count + 1usize
+    }
+    return count
+}

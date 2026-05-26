@@ -1,0 +1,254 @@
+//! Generated catalog markers for 17. Patterns / 17.6 Exhaustiveness and Reachability.
+
+
+public procedure countPatternsExhaustivenessAndReachabilityObligations() -> usize {
+    return 27usize
+}
+
+public procedure validatedPatternsExhaustivenessAndReachabilityObligations() -> usize {
+    var count: usize = 0usize
+    if acceptedObligationEntryMatches(
+        "req.17.ExhaustivenessNoSyntax",
+        67860usize,
+        "HelloUltraviolet::Reference::Patterns",
+        "runPatternsExhaustivenessReference",
+        "Source/Reference/Patterns/Exhaustiveness.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "req.17.ExhaustivenessNotParserOwned",
+        67875usize,
+        "HelloUltraviolet::Reference::Patterns",
+        "runPatternsExhaustivenessReference",
+        "Source/Reference/Patterns/Exhaustiveness.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "def.17.ExhaustivenessIrrefutabilityHelpers",
+        67890usize,
+        "HelloUltraviolet::Reference::Patterns",
+        "runPatternsExhaustivenessReference",
+        "Source/Reference/Patterns/Exhaustiveness.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "def.17.EnumCaseCoverageHelpers",
+        67912usize,
+        "HelloUltraviolet::Reference::Patterns",
+        "runPatternsExhaustivenessReference",
+        "Source/Reference/Patterns/Exhaustiveness.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "def.17.ModalCaseCoverageHelpers",
+        67926usize,
+        "HelloUltraviolet::Reference::Patterns",
+        "runPatternsExhaustivenessReference",
+        "Source/Reference/Patterns/Exhaustiveness.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "def.17.UnionCaseCoverageHelpers",
+        67939usize,
+        "HelloUltraviolet::Reference::Patterns",
+        "runPatternsExhaustivenessReference",
+        "Source/Reference/Patterns/Exhaustiveness.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "def.17.EnumCaseAnalysisGroup",
+        67957usize,
+        "HelloUltraviolet::Reference::Patterns",
+        "runPatternsExhaustivenessReference",
+        "Source/Reference/Patterns/Exhaustiveness.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "rule.17.T-IfCase-Enum",
+        67970usize,
+        "HelloUltraviolet::Reference::Patterns",
+        "runPatternsExhaustivenessReference",
+        "Source/Reference/Patterns/Exhaustiveness.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "def.17.ModalCaseAnalysisGroup",
+        67986usize,
+        "HelloUltraviolet::Reference::Patterns",
+        "runPatternsExhaustivenessReference",
+        "Source/Reference/Patterns/Exhaustiveness.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "rule.17.T-IfCase-Modal",
+        67999usize,
+        "HelloUltraviolet::Reference::Patterns",
+        "runPatternsExhaustivenessReference",
+        "Source/Reference/Patterns/Exhaustiveness.uv"
+    ) {
+        count = count + 1usize
+    }
+    if rejectedSourceObligationEntryMatches(
+        "rule.17.IfCase-Modal-NonExhaustive",
+        68015usize,
+        "HelloUltraviolet::Audit::FixtureCatalog::RejectedSource",
+        "validatedPatternsRejectedSourceFixtureCount",
+        "Fixtures/RejectedSource/Patterns/IfCaseModalNonExhaustive/Source/Main.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "def.17.UnionCaseAnalysisGroup",
+        68031usize,
+        "HelloUltraviolet::Reference::Patterns",
+        "runPatternsExhaustivenessReference",
+        "Source/Reference/Patterns/Exhaustiveness.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "rule.17.T-IfCase-Union",
+        68044usize,
+        "HelloUltraviolet::Reference::Patterns",
+        "runPatternsExhaustivenessReference",
+        "Source/Reference/Patterns/Exhaustiveness.uv"
+    ) {
+        count = count + 1usize
+    }
+    if rejectedSourceObligationEntryMatches(
+        "rule.17.IfCase-Union-NonExhaustive",
+        68060usize,
+        "HelloUltraviolet::Audit::FixtureCatalog::RejectedSource",
+        "validatedPatternsRejectedSourceFixtureCount",
+        "Fixtures/RejectedSource/Patterns/IfCaseUnionNonExhaustive/Source/Main.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "rule.17.Chk-IfCase-Union",
+        68076usize,
+        "HelloUltraviolet::Reference::Patterns",
+        "runPatternsExhaustivenessReference",
+        "Source/Reference/Patterns/Exhaustiveness.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "def.17.OtherCaseAnalysisGroup",
+        68092usize,
+        "HelloUltraviolet::Reference::Patterns",
+        "runPatternsExhaustivenessReference",
+        "Source/Reference/Patterns/Exhaustiveness.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "rule.17.T-IfCase-Other",
+        68105usize,
+        "HelloUltraviolet::Reference::Patterns",
+        "runPatternsExhaustivenessReference",
+        "Source/Reference/Patterns/Exhaustiveness.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "rule.17.Chk-IfCase-Enum",
+        68121usize,
+        "HelloUltraviolet::Reference::Patterns",
+        "runPatternsExhaustivenessReference",
+        "Source/Reference/Patterns/Exhaustiveness.uv"
+    ) {
+        count = count + 1usize
+    }
+    if rejectedSourceObligationEntryMatches(
+        "rule.17.IfCase-Enum-NonExhaustive",
+        68137usize,
+        "HelloUltraviolet::Audit::FixtureCatalog::RejectedSource",
+        "validatedPatternsRejectedSourceFixtureCount",
+        "Fixtures/RejectedSource/Patterns/IfCaseEnumNonExhaustive/Source/Main.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "rule.17.Chk-IfCase-Modal",
+        68153usize,
+        "HelloUltraviolet::Reference::Patterns",
+        "runPatternsExhaustivenessReference",
+        "Source/Reference/Patterns/Exhaustiveness.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "rule.17.Chk-IfCase-Other",
+        68169usize,
+        "HelloUltraviolet::Reference::Patterns",
+        "runPatternsExhaustivenessReference",
+        "Source/Reference/Patterns/Exhaustiveness.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "rule.17.Chk-IfIs",
+        68185usize,
+        "HelloUltraviolet::Reference::Patterns",
+        "runPatternsExhaustivenessReference",
+        "Source/Reference/Patterns/Exhaustiveness.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "rule.17.Chk-IfIs-No-Else",
+        68201usize,
+        "HelloUltraviolet::Reference::Patterns",
+        "runPatternsExhaustivenessReference",
+        "Source/Reference/Patterns/Exhaustiveness.uv"
+    ) {
+        count = count + 1usize
+    }
+    if rejectedSourceObligationEntryMatches(
+        "rule.17.IfCase-Unreachable",
+        68217usize,
+        "HelloUltraviolet::Audit::FixtureCatalog::RejectedSource",
+        "validatedPatternsRejectedSourceFixtureCount",
+        "Fixtures/RejectedSource/Patterns/IfCaseUnreachable/Source/Main.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "req.17.ExhaustivenessNoAdditionalDynamicSemantics",
+        68235usize,
+        "HelloUltraviolet::Reference::Patterns",
+        "runPatternsExhaustivenessReference",
+        "Source/Reference/Patterns/Exhaustiveness.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "req.17.ExhaustivenessNoAdditionalLowering",
+        68250usize,
+        "HelloUltraviolet::Reference::Patterns",
+        "runPatternsExhaustivenessReference",
+        "Source/Reference/Patterns/Exhaustiveness.uv"
+    ) {
+        count = count + 1usize
+    }
+    if rejectedSourceObligationEntryMatches(
+        "diag.17.ExhaustivenessAndReachability",
+        68265usize,
+        "HelloUltraviolet::Audit::FixtureCatalog::RejectedSource",
+        "validatedPatternsRejectedSourceFixtureCount",
+        "Fixtures/RejectedSource/Patterns/ExhaustivenessAndReachabilityDiagnostic/Source/Main.uv"
+    ) {
+        count = count + 1usize
+    }
+    return count
+}

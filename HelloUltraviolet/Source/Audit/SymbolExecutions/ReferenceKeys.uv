@@ -1,0 +1,49 @@
+//! Compiled symbol execution checks for ReferenceKeys.
+
+using HelloUltraviolet::Reference::Keys::{ runKeysAcquisitionBlocksReference }
+using HelloUltraviolet::Reference::Keys::{ runKeysConflictDetectionReference }
+using HelloUltraviolet::Reference::Keys::{ runKeysDynamicVerificationReference }
+using HelloUltraviolet::Reference::Keys::{ runKeysKeyPathsReference }
+using HelloUltraviolet::Reference::Keys::{ runKeysMemoryOrderingReference }
+using HelloUltraviolet::Reference::Keys::{ runKeysNestedReleaseReference }
+using HelloUltraviolet::Reference::Keys::{ runKeysSpeculativeExecutionReference }
+
+public procedure catalogCompiledSymbolsExecuteReferenceKeys(context: Context) -> bool {
+    var passed: bool = true
+    passed = recordCatalogSymbolExecution(
+        context,
+        "runKeysAcquisitionBlocksReference",
+        runKeysAcquisitionBlocksReference()
+    ) && passed
+    passed = recordCatalogSymbolExecution(
+        context,
+        "runKeysConflictDetectionReference",
+        runKeysConflictDetectionReference()
+    ) && passed
+    passed = recordCatalogSymbolExecution(
+        context,
+        "runKeysDynamicVerificationReference",
+        runKeysDynamicVerificationReference(context)
+    ) && passed
+    passed = recordCatalogSymbolExecution(
+        context,
+        "runKeysKeyPathsReference",
+        runKeysKeyPathsReference()
+    ) && passed
+    passed = recordCatalogSymbolExecution(
+        context,
+        "runKeysMemoryOrderingReference",
+        runKeysMemoryOrderingReference()
+    ) && passed
+    passed = recordCatalogSymbolExecution(
+        context,
+        "runKeysNestedReleaseReference",
+        runKeysNestedReleaseReference()
+    ) && passed
+    passed = recordCatalogSymbolExecution(
+        context,
+        "runKeysSpeculativeExecutionReference",
+        runKeysSpeculativeExecutionReference()
+    ) && passed
+    return passed
+}

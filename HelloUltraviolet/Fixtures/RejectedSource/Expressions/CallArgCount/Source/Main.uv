@@ -1,0 +1,9 @@
+//! Rejected expression specimen for a call argument count mismatch.
+
+public procedure oneArg(value: i32) -> i32 {
+    return value
+}
+
+public procedure callArgCountReference() -> i32 {
+    return oneArg()
+}

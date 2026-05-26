@@ -1,0 +1,49 @@
+//! Compiled symbol execution checks for ReferenceFFI.
+
+using HelloUltraviolet::Reference::FFI::{ runFFIAttributesReference }
+using HelloUltraviolet::Reference::FFI::{ runFFIBoundaryUnwindingReference }
+using HelloUltraviolet::Reference::FFI::{ runFFICapabilityIsolationReference }
+using HelloUltraviolet::Reference::FFI::{ runFFIExportedProceduresReference }
+using HelloUltraviolet::Reference::FFI::{ runFFIExternProceduresReference }
+using HelloUltraviolet::Reference::FFI::{ runFFIFfiSafeReference }
+using HelloUltraviolet::Reference::FFI::{ runFFIForeignContractsReference }
+
+public procedure catalogCompiledSymbolsExecuteReferenceFFI(context: Context) -> bool {
+    var passed: bool = true
+    passed = recordCatalogSymbolExecution(
+        context,
+        "runFFIAttributesReference",
+        runFFIAttributesReference()
+    ) && passed
+    passed = recordCatalogSymbolExecution(
+        context,
+        "runFFIBoundaryUnwindingReference",
+        runFFIBoundaryUnwindingReference()
+    ) && passed
+    passed = recordCatalogSymbolExecution(
+        context,
+        "runFFICapabilityIsolationReference",
+        runFFICapabilityIsolationReference()
+    ) && passed
+    passed = recordCatalogSymbolExecution(
+        context,
+        "runFFIExportedProceduresReference",
+        runFFIExportedProceduresReference()
+    ) && passed
+    passed = recordCatalogSymbolExecution(
+        context,
+        "runFFIExternProceduresReference",
+        runFFIExternProceduresReference()
+    ) && passed
+    passed = recordCatalogSymbolExecution(
+        context,
+        "runFFIFfiSafeReference",
+        runFFIFfiSafeReference()
+    ) && passed
+    passed = recordCatalogSymbolExecution(
+        context,
+        "runFFIForeignContractsReference",
+        runFFIForeignContractsReference()
+    ) && passed
+    return passed
+}

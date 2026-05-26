@@ -1,0 +1,16 @@
+//! Rejected behavioral-subtyping specimen for the Liskov contract requirement.
+
+public class LiskovContractClass {
+    public procedure readValue(~, value: i32) -> i32
+    |: value > 0
+}
+
+public record LiskovViolationOwner <: LiskovContractClass {
+    public value: i32
+
+    public procedure readValue(~, value: i32) -> i32
+    |: value > 10
+    {
+        return self.value + value
+    }
+}

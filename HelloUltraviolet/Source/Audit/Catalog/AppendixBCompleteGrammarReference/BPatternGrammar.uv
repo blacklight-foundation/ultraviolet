@@ -1,0 +1,20 @@
+//! Generated catalog markers for Appendix B. Complete Grammar Reference / B.4 Pattern Grammar.
+
+
+public procedure countAppendixBCompleteGrammarReferenceBPatternGrammarObligations() -> usize {
+    return 1usize
+}
+
+public procedure validatedAppendixBCompleteGrammarReferenceBPatternGrammarObligations() -> usize {
+    var count: usize = 0usize
+    if acceptedObligationEntryMatches(
+        "grammar.B.4.PatternGrammar",
+        100995usize,
+        "HelloUltraviolet::Reference::Patterns",
+        "runPatternsBasicPatternsReference",
+        "Source/Reference/Patterns/BasicPatterns.uv"
+    ) {
+        count = count + 1usize
+    }
+    return count
+}

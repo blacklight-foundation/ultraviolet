@@ -1,0 +1,722 @@
+//! Generated catalog markers for 3. Project and Compilation Model / 3.2 Project Root and Manifest.
+
+
+public procedure countProjectAndCompilationModelProjectRootAndManifestObligations() -> usize {
+    return 79usize
+}
+
+public procedure validatedProjectAndCompilationModelProjectRootAndManifestObligations() -> usize {
+    var count: usize = 0usize
+    if acceptedObligationEntryMatches(
+        "def.ManifestParsing",
+        2191usize,
+        "HelloUltraviolet::Reference::Projects",
+        "runProjectsManifestModelReference",
+        "Source/Reference/Projects/ManifestModel.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "Parse-Manifest-Ok",
+        2206usize,
+        "HelloUltraviolet::Reference::Projects",
+        "runProjectsManifestModelReference",
+        "Source/Reference/Projects/ManifestModel.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "Parse-Manifest-Missing",
+        2224usize,
+        "HelloUltraviolet::Reference::Projects",
+        "runProjectsManifestModelReference",
+        "Source/Reference/Projects/ManifestModel.uv"
+    ) {
+        count = count + 1usize
+    }
+    if artifactBehaviorObligationEntryMatches(
+        "Parse-Manifest-Err",
+        2242usize,
+        "HelloUltraviolet::Audit::FixtureCatalog::OutputDiagnostics",
+        "validatedOutputProjectDiagnosticFixtureCount",
+        "Fixtures/OutputDiagnostics/Projects/ManifestParseError/Ultraviolet.toml"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "conformance.ManifestRequired",
+        2260usize,
+        "HelloUltraviolet::Reference::Projects",
+        "runProjectsManifestModelReference",
+        "Source/Reference/Projects/ManifestModel.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "req.ManifestHostPathResolution",
+        2275usize,
+        "HelloUltraviolet::Reference::Projects",
+        "runProjectsManifestModelReference",
+        "Source/Reference/Projects/ManifestModel.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "req.ManifestNoAdditionalCaseVerification",
+        2290usize,
+        "HelloUltraviolet::Reference::Projects",
+        "runProjectsManifestModelReference",
+        "Source/Reference/Projects/ManifestModel.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "req.ProjectRootResolveInputPath",
+        2304usize,
+        "HelloUltraviolet::Reference::Projects",
+        "runProjectsManifestModelReference",
+        "Source/Reference/Projects/ManifestModel.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "req.ProjectRootFileInputStartsAtParent",
+        2319usize,
+        "HelloUltraviolet::Reference::Projects",
+        "runProjectsManifestModelReference",
+        "Source/Reference/Projects/ManifestModel.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "req.ProjectRootDirectoryInputStartsAtResolvedPath",
+        2333usize,
+        "HelloUltraviolet::Reference::Projects",
+        "runProjectsManifestModelReference",
+        "Source/Reference/Projects/ManifestModel.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "def.FindProjectRoot",
+        2347usize,
+        "HelloUltraviolet::Reference::Projects",
+        "runProjectsManifestModelReference",
+        "Source/Reference/Projects/ManifestModel.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "def.ManifestSchema",
+        2361usize,
+        "HelloUltraviolet::Reference::Projects",
+        "runProjectsManifestModelReference",
+        "Source/Reference/Projects/ManifestModel.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "WF-Assembly-Name",
+        2381usize,
+        "HelloUltraviolet::Reference::Projects",
+        "runProjectsManifestModelReference",
+        "Source/Reference/Projects/ManifestModel.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "WF-Assembly-Name-Err",
+        2399usize,
+        "HelloUltraviolet::Reference::Projects",
+        "runProjectsManifestModelReference",
+        "Source/Reference/Projects/ManifestModel.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "WF-Assembly-Kind",
+        2417usize,
+        "HelloUltraviolet::Reference::Projects",
+        "runProjectsManifestModelReference",
+        "Source/Reference/Projects/ManifestModel.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "WF-Assembly-Kind-Err",
+        2435usize,
+        "HelloUltraviolet::Reference::Projects",
+        "runProjectsManifestModelReference",
+        "Source/Reference/Projects/ManifestModel.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "WF-Assembly-Root-Path",
+        2453usize,
+        "HelloUltraviolet::Reference::Projects",
+        "runProjectsManifestModelReference",
+        "Source/Reference/Projects/ManifestModel.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "WF-Assembly-Root-Path-Err",
+        2471usize,
+        "HelloUltraviolet::Reference::Projects",
+        "runProjectsManifestModelReference",
+        "Source/Reference/Projects/ManifestModel.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "WF-Assembly-OutDir-Path",
+        2489usize,
+        "HelloUltraviolet::Reference::Projects",
+        "runProjectsManifestModelReference",
+        "Source/Reference/Projects/ManifestModel.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "WF-Assembly-OutDir-Path-Err",
+        2507usize,
+        "HelloUltraviolet::Reference::Projects",
+        "runProjectsManifestModelReference",
+        "Source/Reference/Projects/ManifestModel.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "WF-Assembly-EmitIR",
+        2525usize,
+        "HelloUltraviolet::Reference::Projects",
+        "runProjectsManifestModelReference",
+        "Source/Reference/Projects/ManifestModel.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "WF-Assembly-EmitIR-Err",
+        2543usize,
+        "HelloUltraviolet::Reference::Projects",
+        "runProjectsManifestModelReference",
+        "Source/Reference/Projects/ManifestModel.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "def.AsmLinkKind",
+        2561usize,
+        "HelloUltraviolet::Reference::Projects",
+        "runProjectsManifestModelReference",
+        "Source/Reference/Projects/ManifestModel.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "def.ManifestTableProjections",
+        2578usize,
+        "HelloUltraviolet::Reference::Projects",
+        "runProjectsManifestModelReference",
+        "Source/Reference/Projects/ManifestModel.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "def.ManifestTopKeys",
+        2598usize,
+        "HelloUltraviolet::Reference::Projects",
+        "runProjectsManifestModelReference",
+        "Source/Reference/Projects/ManifestModel.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "WF-TopKeys",
+        2612usize,
+        "HelloUltraviolet::Reference::Projects",
+        "runProjectsManifestModelReference",
+        "Source/Reference/Projects/ManifestModel.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "WF-TopKeys-Err",
+        2630usize,
+        "HelloUltraviolet::Reference::Projects",
+        "runProjectsManifestModelReference",
+        "Source/Reference/Projects/ManifestModel.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "WF-Assembly-Table",
+        2648usize,
+        "HelloUltraviolet::Reference::Projects",
+        "runProjectsManifestModelReference",
+        "Source/Reference/Projects/ManifestModel.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "WF-Assembly-Table-Err",
+        2666usize,
+        "HelloUltraviolet::Reference::Projects",
+        "runProjectsManifestModelReference",
+        "Source/Reference/Projects/ManifestModel.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "WF-Assembly-Count",
+        2684usize,
+        "HelloUltraviolet::Reference::Projects",
+        "runProjectsManifestModelReference",
+        "Source/Reference/Projects/ManifestModel.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "WF-Assembly-Count-Err",
+        2702usize,
+        "HelloUltraviolet::Reference::Projects",
+        "runProjectsManifestModelReference",
+        "Source/Reference/Projects/ManifestModel.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "WF-Assembly-Name-Dup",
+        2720usize,
+        "HelloUltraviolet::Reference::Projects",
+        "runProjectsManifestModelReference",
+        "Source/Reference/Projects/ManifestModel.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "WF-Assembly-Name-Dup-Err",
+        2738usize,
+        "HelloUltraviolet::Reference::Projects",
+        "runProjectsManifestModelReference",
+        "Source/Reference/Projects/ManifestModel.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "def.ManifestAssemblyKeys",
+        2756usize,
+        "HelloUltraviolet::Reference::Projects",
+        "runProjectsManifestModelReference",
+        "Source/Reference/Projects/ManifestModel.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "WF-Assembly-Keys",
+        2771usize,
+        "HelloUltraviolet::Reference::Projects",
+        "runProjectsManifestModelReference",
+        "Source/Reference/Projects/ManifestModel.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "WF-Assembly-Keys-Err",
+        2789usize,
+        "HelloUltraviolet::Reference::Projects",
+        "runProjectsManifestModelReference",
+        "Source/Reference/Projects/ManifestModel.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "WF-Assembly-Required-Types",
+        2807usize,
+        "HelloUltraviolet::Reference::Projects",
+        "runProjectsManifestModelReference",
+        "Source/Reference/Projects/ManifestModel.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "WF-Assembly-Required-Types-Err",
+        2825usize,
+        "HelloUltraviolet::Reference::Projects",
+        "runProjectsManifestModelReference",
+        "Source/Reference/Projects/ManifestModel.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "WF-Assembly-Optional-Types",
+        2843usize,
+        "HelloUltraviolet::Reference::Projects",
+        "runProjectsManifestModelReference",
+        "Source/Reference/Projects/ManifestModel.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "WF-Assembly-OutDirType-Err",
+        2861usize,
+        "HelloUltraviolet::Reference::Projects",
+        "runProjectsManifestModelReference",
+        "Source/Reference/Projects/ManifestModel.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "WF-Assembly-EmitIRType",
+        2879usize,
+        "HelloUltraviolet::Reference::Projects",
+        "runProjectsManifestModelReference",
+        "Source/Reference/Projects/ManifestModel.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "WF-Assembly-EmitIRType-Err",
+        2896usize,
+        "HelloUltraviolet::Reference::Projects",
+        "runProjectsManifestModelReference",
+        "Source/Reference/Projects/ManifestModel.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "WF-Assembly-LinkKindType",
+        2914usize,
+        "HelloUltraviolet::Reference::Projects",
+        "runProjectsManifestModelReference",
+        "Source/Reference/Projects/ManifestModel.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "WF-Assembly-LinkKindType-Err",
+        2931usize,
+        "HelloUltraviolet::Reference::Projects",
+        "runProjectsManifestModelReference",
+        "Source/Reference/Projects/ManifestModel.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "WF-Assembly-LinkKind",
+        2949usize,
+        "HelloUltraviolet::Reference::Projects",
+        "runProjectsManifestModelReference",
+        "Source/Reference/Projects/ManifestModel.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "WF-Assembly-LinkKind-Err",
+        2967usize,
+        "HelloUltraviolet::Reference::Projects",
+        "runProjectsManifestModelReference",
+        "Source/Reference/Projects/ManifestModel.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "WF-Assembly-LinkKind-Use-Err",
+        2985usize,
+        "HelloUltraviolet::Reference::Projects",
+        "runProjectsManifestModelReference",
+        "Source/Reference/Projects/ManifestModel.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "def.ToolchainKeys",
+        3003usize,
+        "HelloUltraviolet::Reference::Projects",
+        "runProjectsOutputArtifactsReference",
+        "Source/Reference/Projects/OutputArtifacts.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "def.ToolchainTargetProfileOk",
+        3018usize,
+        "HelloUltraviolet::Reference::Projects",
+        "runProjectsOutputArtifactsReference",
+        "Source/Reference/Projects/OutputArtifacts.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "WF-Toolchain",
+        3032usize,
+        "HelloUltraviolet::Reference::Projects",
+        "runProjectsOutputArtifactsReference",
+        "Source/Reference/Projects/OutputArtifacts.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "WF-Toolchain-Err",
+        3050usize,
+        "HelloUltraviolet::Reference::Projects",
+        "runProjectsOutputArtifactsReference",
+        "Source/Reference/Projects/OutputArtifacts.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "def.ToolchainConfig",
+        3068usize,
+        "HelloUltraviolet::Reference::Projects",
+        "runProjectsOutputArtifactsReference",
+        "Source/Reference/Projects/OutputArtifacts.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "def.SelectedTargetProfile",
+        3084usize,
+        "HelloUltraviolet::Reference::Projects",
+        "runProjectsOutputArtifactsReference",
+        "Source/Reference/Projects/OutputArtifacts.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "def.BuildConfiguration",
+        3101usize,
+        "HelloUltraviolet::Reference::Projects",
+        "runProjectsManifestModelReference",
+        "Source/Reference/Projects/ManifestModel.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "WF-Build",
+        3116usize,
+        "HelloUltraviolet::Reference::Projects",
+        "runProjectsManifestModelReference",
+        "Source/Reference/Projects/ManifestModel.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "WF-Build-Err",
+        3134usize,
+        "HelloUltraviolet::Reference::Projects",
+        "runProjectsManifestModelReference",
+        "Source/Reference/Projects/ManifestModel.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "def.BuildConfigDefaults",
+        3152usize,
+        "HelloUltraviolet::Reference::Projects",
+        "runProjectsManifestModelReference",
+        "Source/Reference/Projects/ManifestModel.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "def.PathRootPredicates",
+        3169usize,
+        "HelloUltraviolet::Reference::Projects",
+        "runProjectsManifestModelReference",
+        "Source/Reference/Projects/ManifestModel.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "def.PathRootTagAndTail",
+        3188usize,
+        "HelloUltraviolet::Reference::Projects",
+        "runProjectsManifestModelReference",
+        "Source/Reference/Projects/ManifestModel.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "def.PathSegments",
+        3211usize,
+        "HelloUltraviolet::Reference::Projects",
+        "runProjectsManifestModelReference",
+        "Source/Reference/Projects/ManifestModel.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "def.PathComponents",
+        3225usize,
+        "HelloUltraviolet::Reference::Projects",
+        "runProjectsManifestModelReference",
+        "Source/Reference/Projects/ManifestModel.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "def.JoinComp",
+        3241usize,
+        "HelloUltraviolet::Reference::Projects",
+        "runProjectsManifestModelReference",
+        "Source/Reference/Projects/ManifestModel.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "def.Join",
+        3260usize,
+        "HelloUltraviolet::Reference::Projects",
+        "runProjectsManifestModelReference",
+        "Source/Reference/Projects/ManifestModel.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "def.AbsPath",
+        3276usize,
+        "HelloUltraviolet::Reference::Projects",
+        "runProjectsManifestModelReference",
+        "Source/Reference/Projects/ManifestModel.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "def.PathFunctionTypes",
+        3291usize,
+        "HelloUltraviolet::Reference::Projects",
+        "runProjectsManifestModelReference",
+        "Source/Reference/Projects/ManifestModel.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "def.PathPrefix",
+        3307usize,
+        "HelloUltraviolet::Reference::Projects",
+        "runProjectsManifestModelReference",
+        "Source/Reference/Projects/ManifestModel.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "def.Normalize",
+        3321usize,
+        "HelloUltraviolet::Reference::Projects",
+        "runProjectsManifestModelReference",
+        "Source/Reference/Projects/ManifestModel.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "def.Under",
+        3335usize,
+        "HelloUltraviolet::Reference::Projects",
+        "runProjectsManifestModelReference",
+        "Source/Reference/Projects/ManifestModel.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "def.Canon",
+        3349usize,
+        "HelloUltraviolet::Reference::Projects",
+        "runProjectsManifestModelReference",
+        "Source/Reference/Projects/ManifestModel.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "def.Drop",
+        3364usize,
+        "HelloUltraviolet::Reference::Projects",
+        "runProjectsManifestModelReference",
+        "Source/Reference/Projects/ManifestModel.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "def.RelativePathComputation",
+        3378usize,
+        "HelloUltraviolet::Reference::Projects",
+        "runProjectsManifestModelReference",
+        "Source/Reference/Projects/ManifestModel.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "def.Basename",
+        3392usize,
+        "HelloUltraviolet::Reference::Projects",
+        "runProjectsManifestModelReference",
+        "Source/Reference/Projects/ManifestModel.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "def.FileExt",
+        3409usize,
+        "HelloUltraviolet::Reference::Projects",
+        "runProjectsManifestModelReference",
+        "Source/Reference/Projects/ManifestModel.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "Resolve-Canonical",
+        3428usize,
+        "HelloUltraviolet::Reference::Projects",
+        "runProjectsManifestModelReference",
+        "Source/Reference/Projects/ManifestModel.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "Resolve-Canonical-Err",
+        3446usize,
+        "HelloUltraviolet::Reference::Projects",
+        "runProjectsManifestModelReference",
+        "Source/Reference/Projects/ManifestModel.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "WF-RelPath",
+        3464usize,
+        "HelloUltraviolet::Reference::Projects",
+        "runProjectsManifestModelReference",
+        "Source/Reference/Projects/ManifestModel.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "WF-RelPath-Err",
+        3482usize,
+        "HelloUltraviolet::Reference::Projects",
+        "runProjectsManifestModelReference",
+        "Source/Reference/Projects/ManifestModel.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "def.ProjectContext",
+        3500usize,
+        "HelloUltraviolet::Reference::Projects",
+        "runProjectsManifestModelReference",
+        "Source/Reference/Projects/ManifestModel.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "WF-Project-Root",
+        3514usize,
+        "HelloUltraviolet::Reference::Projects",
+        "runProjectsManifestModelReference",
+        "Source/Reference/Projects/ManifestModel.uv"
+    ) {
+        count = count + 1usize
+    }
+    return count
+}

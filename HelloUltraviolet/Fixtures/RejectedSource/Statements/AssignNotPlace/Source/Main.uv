@@ -1,0 +1,14 @@
+//! Rejected statement specimen for assignment to a non-place field access.
+
+public record AssignTargetRecord {
+    public value: i32
+}
+
+public procedure makeAssignTargetRecord() -> AssignTargetRecord {
+    return AssignTargetRecord { value: 1 }
+}
+
+public procedure assignNotPlaceReference() -> i32 {
+    makeAssignTargetRecord().value = 2
+    return 0
+}

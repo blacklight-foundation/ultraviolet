@@ -1,0 +1,56 @@
+//! Generated catalog markers for 5. Parsing and AST Infrastructure / 5.1 Parsing Inputs, Outputs, and Invariants.
+
+
+public procedure countParsingAndAstInfrastructureParsingInputsOutputsAndInvariantsObligations() -> usize {
+    return 5usize
+}
+
+public procedure validatedParsingAndAstInfrastructureParsingInputsOutputsAndInvariantsObligations() -> usize {
+    var count: usize = 0usize
+    if referenceModelObligationEntryMatches(
+        "def.ParseInputs",
+        10405usize,
+        "HelloUltraviolet::Audit",
+        "runParsingReferenceModels",
+        "Source/Audit/ParsingReferenceModels.uv"
+    ) {
+        count = count + 1usize
+    }
+    if referenceModelObligationEntryMatches(
+        "def.ParseOutputs",
+        10419usize,
+        "HelloUltraviolet::Audit",
+        "runParsingReferenceModels",
+        "Source/Audit/ParsingReferenceModels.uv"
+    ) {
+        count = count + 1usize
+    }
+    if referenceModelObligationEntryMatches(
+        "Phase1-File",
+        10435usize,
+        "HelloUltraviolet::Audit",
+        "runParsingReferenceModels",
+        "Source/Audit/ParsingReferenceModels.uv"
+    ) {
+        count = count + 1usize
+    }
+    if referenceModelObligationEntryMatches(
+        "Phase1-Forward-Refs",
+        10453usize,
+        "HelloUltraviolet::Audit",
+        "runParsingReferenceModels",
+        "Source/Audit/ParsingReferenceModels.uv"
+    ) {
+        count = count + 1usize
+    }
+    if referenceModelObligationEntryMatches(
+        "refs.FeatureParseRules",
+        10470usize,
+        "HelloUltraviolet::Audit",
+        "runParsingReferenceModels",
+        "Source/Audit/ParsingReferenceModels.uv"
+    ) {
+        count = count + 1usize
+    }
+    return count
+}

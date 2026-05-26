@@ -1,0 +1,13 @@
+//! Compiled symbol execution checks for FixturesRejectedSourceModules.
+
+using HelloUltraviolet::Audit::FixtureCatalog::RejectedSource::{ validatedModulesRejectedSourceFixtureCount }
+
+public procedure catalogCompiledSymbolsExecuteFixturesRejectedSourceModules(context: Context) -> bool {
+    var passed: bool = true
+    passed = recordCatalogSymbolExecution(
+        context,
+        "validatedModulesRejectedSourceFixtureCount",
+        validatedModulesRejectedSourceFixtureCount() > 0usize
+    ) && passed
+    return passed
+}

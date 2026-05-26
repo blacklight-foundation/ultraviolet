@@ -1,0 +1,87 @@
+//! Reference specimens for Patterns / CaseClauses.
+
+/// Exercises the Patterns CaseClauses reference surface.
+public procedure runPatternsCaseClausesReference() -> bool {
+    let scrutinee: i32 = 2
+    let head_result: i32 = if scrutinee is {
+        1 {
+            10
+        }
+        2 {
+            20
+        }
+        else {
+            30
+        }
+    }
+
+    let tail_result: i32 = if 3 is {
+        1 {
+            10
+        }
+        2 {
+            20
+        }
+        3 {
+            30
+        }
+        else {
+            40
+        }
+    }
+
+    let fallback_result: i32 = if 9 is {
+        1 {
+            10
+        }
+        2 {
+            20
+        }
+        else {
+            90
+        }
+    }
+
+    let union_value: BasicPatternUnionReference = true
+    let narrowed_result: i32 = if union_value is {
+        value: i32 {
+            value
+        }
+        value: bool {
+            if value { 1 } else { 0 }
+        }
+    }
+
+    let complement_value: BasicPatternUnionReference = 12
+    let complement_result: i32 = if complement_value is {
+        value: bool {
+            0
+        }
+        else {
+            complement_value
+        }
+    }
+
+    var tailless_score: i32 = 0
+    if 1 is 1 {
+        tailless_score = 1
+    }
+
+    let tail_end_value: BasicPatternUnionReference = 5
+    let tail_end_result: i32 = if tail_end_value is {
+        value: i32 {
+            value
+        }
+        value: bool {
+            0
+        }
+    }
+
+    return head_result == 20 &&
+        tail_result == 30 &&
+        fallback_result == 90 &&
+        narrowed_result == 1 &&
+        complement_result == 12 &&
+        tailless_score == 1 &&
+        tail_end_result == 5
+}

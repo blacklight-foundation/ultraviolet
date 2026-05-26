@@ -1,0 +1,8 @@
+//! Diagnostic compile-time specimen for user note emission.
+
+public procedure userDiagnosticNoteReference() -> i32 {
+    comptime {
+        diagnostics~>note("compile-time user note")
+    }
+    return 0
+}

@@ -1,0 +1,8 @@
+//! Rejected structured-parallelism specimen for capture diagnostics ownership.
+
+public procedure captureSemanticsDiagnosticsReference(context: Context) -> i32 {
+    var shared_value: shared i32 = 1
+    return parallel context~>gpu() {
+        shared_value
+    }
+}

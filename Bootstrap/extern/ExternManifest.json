@@ -1,0 +1,78 @@
+{
+  "schema": 1,
+  "description": "Versioned extern payload archives used to restore vendored LLVM and ICU roots without Git LFS.",
+  "base_url": "https://github.com/blacklight-foundation/ultraviolet/releases/download/externs-llvm21.1.8-icu72",
+  "archives": {
+    "aarch64-darwin": {
+      "archive": "ultraviolet-extern-aarch64-darwin-llvm21.1.8-icu72.tar.gz",
+      "format": "tar.gz",
+      "sha256": "e40a428c90a83e6f91b2a92107b5f1ede0d57c7537d082d29938c48043f70e70",
+      "install_roots": [
+        "Bootstrap/extern/llvm/llvm-21.1.8-aarch64-darwin",
+        "Bootstrap/extern/icu/macos"
+      ],
+      "required_paths": [
+        "Bootstrap/extern/llvm/llvm-21.1.8-aarch64-darwin/bin/clang++",
+        "Bootstrap/extern/llvm/llvm-21.1.8-aarch64-darwin/bin/llvm-ar",
+        "Bootstrap/extern/llvm/llvm-21.1.8-aarch64-darwin/bin/llvm-as",
+        "Bootstrap/extern/llvm/llvm-21.1.8-aarch64-darwin/lib/cmake/llvm/LLVMConfig.cmake",
+        "Bootstrap/extern/llvm/llvm-21.1.8-aarch64-darwin/lib/cmake/llvm/LLVMExports.cmake",
+        "Bootstrap/extern/llvm/llvm-21.1.8-aarch64-darwin/lib/cmake/llvm/LLVMExports-release.cmake",
+        "Bootstrap/extern/llvm/llvm-21.1.8-aarch64-darwin/include/llvm/IR/Module.h",
+        "Bootstrap/extern/llvm/llvm-21.1.8-aarch64-darwin/include/llvm-c/Core.h",
+        "Bootstrap/extern/llvm/llvm-21.1.8-aarch64-darwin/lib/clang/21/include/stddef.h",
+        "Bootstrap/extern/llvm/llvm-21.1.8-aarch64-darwin/lib/clang/21/lib/darwin/libclang_rt.osx.a",
+        "Bootstrap/extern/llvm/llvm-21.1.8-aarch64-darwin/lib/libLTO.dylib",
+        "Bootstrap/extern/llvm/llvm-21.1.8-aarch64-darwin/lib/libLLVMSupport.a",
+        "Bootstrap/extern/llvm/llvm-21.1.8-aarch64-darwin/lib/libLLVMCore.a",
+        "Bootstrap/extern/llvm/llvm-21.1.8-aarch64-darwin/lib/libLLVMAArch64CodeGen.a",
+        "Bootstrap/extern/llvm/llvm-21.1.8-aarch64-darwin/lib/libLLVMX86CodeGen.a",
+        "Bootstrap/extern/icu/macos/include/unicode/utypes.h",
+        "Bootstrap/extern/icu/macos/lib/libicui18n.72.dylib",
+        "Bootstrap/extern/icu/macos/lib/libicuuc.72.dylib",
+        "Bootstrap/extern/icu/macos/lib/libicudata.72.dylib"
+      ]
+    },
+    "x86_64-sysv": {
+      "archive": "ultraviolet-extern-x86_64-sysv-llvm21.1.8-icu72.tar.gz",
+      "format": "tar.gz",
+      "sha256": "1b5ed4f53ed13343c7f0994d4f32dc1da36004ed89bac67ff7cba9bc0c592faf",
+      "install_roots": [
+        "Bootstrap/extern/llvm/llvm-21.1.8-x86_64-sysv",
+        "Bootstrap/extern/icu/linux"
+      ],
+      "required_paths": [
+        "Bootstrap/extern/llvm/llvm-21.1.8-x86_64-sysv/bin/clang++",
+        "Bootstrap/extern/llvm/llvm-21.1.8-x86_64-sysv/bin/ld.lld",
+        "Bootstrap/extern/llvm/llvm-21.1.8-x86_64-sysv/bin/llvm-ar",
+        "Bootstrap/extern/llvm/llvm-21.1.8-x86_64-sysv/bin/llvm-as",
+        "Bootstrap/extern/icu/linux/include/unicode/utypes.h",
+        "Bootstrap/extern/icu/linux/lib/libicui18n.so.72",
+        "Bootstrap/extern/icu/linux/lib/libicuuc.so.72",
+        "Bootstrap/extern/icu/linux/lib/libicudata.so.72",
+        "Bootstrap/extern/icu/linux/lib/icudt72l.dat"
+      ]
+    },
+    "x86_64-win64": {
+      "archive": "ultraviolet-extern-x86_64-win64-llvm21.1.8-icu72.tar.gz",
+      "format": "tar.gz",
+      "sha256": "cbaea1cd5ff7db65d6fd064949fc969ffe18be892eeac371246c9195dccba195",
+      "install_roots": [
+        "Bootstrap/extern/llvm/llvm-21.1.8-x86_64",
+        "Bootstrap/extern/icu/win64"
+      ],
+      "required_paths": [
+        "Bootstrap/extern/llvm/llvm-21.1.8-x86_64/bin/lld-link.exe",
+        "Bootstrap/extern/llvm/llvm-21.1.8-x86_64/bin/llvm-lib.exe",
+        "Bootstrap/extern/llvm/llvm-21.1.8-x86_64/bin/llvm-as.exe",
+        "Bootstrap/extern/icu/win64/include/unicode/utypes.h",
+        "Bootstrap/extern/icu/win64/bin64/icuin72.dll",
+        "Bootstrap/extern/icu/win64/bin64/icuuc72.dll",
+        "Bootstrap/extern/icu/win64/bin64/icudt72.dll",
+        "Bootstrap/extern/icu/win64/lib64/icuin.lib",
+        "Bootstrap/extern/icu/win64/lib64/icuuc.lib",
+        "Bootstrap/extern/icu/win64/lib64/icudt.lib"
+      ]
+    }
+  }
+}

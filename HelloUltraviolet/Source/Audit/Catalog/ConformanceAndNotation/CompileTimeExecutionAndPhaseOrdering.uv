@@ -1,0 +1,83 @@
+//! Generated catalog markers for 1. Conformance and Notation / 1.5 Compile-Time Execution and Phase Ordering.
+
+
+public procedure countConformanceAndNotationCompileTimeExecutionAndPhaseOrderingObligations() -> usize {
+    return 8usize
+}
+
+public procedure validatedConformanceAndNotationCompileTimeExecutionAndPhaseOrderingObligations() -> usize {
+    var count: usize = 0usize
+    if acceptedObligationEntryMatches(
+        "def.CompileTimeTranslationPhases",
+        1053usize,
+        "HelloUltraviolet::Reference::Conformance",
+        "runConformanceTranslationOrderingReference",
+        "Source/Reference/Conformance/TranslationOrdering.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "def.ExecuteComptime",
+        1071usize,
+        "HelloUltraviolet::Reference::Conformance",
+        "runConformanceTranslationOrderingReference",
+        "Source/Reference/Conformance/TranslationOrdering.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "req.Phase1BeforePhase2",
+        1085usize,
+        "HelloUltraviolet::Reference::Conformance",
+        "runConformanceTranslationOrderingReference",
+        "Source/Reference/Conformance/TranslationOrdering.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "req.Phase2DeterministicDependencyOrder",
+        1099usize,
+        "HelloUltraviolet::Reference::Conformance",
+        "runConformanceTranslationOrderingReference",
+        "Source/Reference/Conformance/TranslationOrdering.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "req.Phase2DeclarationsBeforePhase3",
+        1113usize,
+        "HelloUltraviolet::Reference::Conformance",
+        "runConformanceTranslationOrderingReference",
+        "Source/Reference/Conformance/TranslationOrdering.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "req.Phase3UsesExpandedModuleSet",
+        1127usize,
+        "HelloUltraviolet::Reference::Conformance",
+        "runConformanceTranslationOrderingReference",
+        "Source/Reference/Conformance/TranslationOrdering.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "req.Phase4OnlyAcceptedProgram",
+        1141usize,
+        "HelloUltraviolet::Reference::Conformance",
+        "runConformanceTranslationOrderingReference",
+        "Source/Reference/Conformance/TranslationOrdering.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "conformance.ComptimeFormsChapterOwner",
+        1155usize,
+        "HelloUltraviolet::Reference::Conformance",
+        "runConformanceTranslationOrderingReference",
+        "Source/Reference/Conformance/TranslationOrdering.uv"
+    ) {
+        count = count + 1usize
+    }
+    return count
+}

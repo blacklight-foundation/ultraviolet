@@ -1,0 +1,13 @@
+//! Rejected structured-parallelism specimen for repeated outer unique moves.
+
+public procedure parallelClosureCaptureOuterMoveReference(context: Context) -> () {
+    parallel context~>cpu() {
+        let value: unique i32 = 1
+        spawn {
+            let first_consumed: unique i32 = move value
+        }
+        spawn {
+            let second_consumed: unique i32 = move value
+        }
+    }
+}

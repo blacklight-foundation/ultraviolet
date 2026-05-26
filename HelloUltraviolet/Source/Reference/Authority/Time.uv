@@ -1,0 +1,127 @@
+//! Reference specimens for Authority / Time.
+
+internal procedure durationReferenceIsPositive(duration: Duration) -> bool {
+    return duration.nanoseconds > 0u128
+}
+
+internal procedure elapsedReferenceSucceeded(result: Outcome<Duration, TimeError>) -> bool {
+    return if result is {
+        @Value { value } {
+            value.nanoseconds >= 0u128
+        }
+        @Error {
+            false
+        }
+    }
+}
+
+internal procedure monotonicCoarsenReferenceSucceeded(
+    result: Outcome<$MonotonicTime, TimeError>
+) -> bool {
+    return if result is {
+        @Value {
+            true
+        }
+        @Error {
+            false
+        }
+    }
+}
+
+internal procedure timeErrorIsWallInstantPermitted(error: TimeError) -> bool {
+    return if error is {
+        TimeError::Unsupported {
+            false
+        }
+        TimeError::ClockUnavailable {
+            true
+        }
+        TimeError::OutOfRange {
+            true
+        }
+        TimeError::InvalidResolution {
+            false
+        }
+        TimeError::ClockMismatch {
+            false
+        }
+    }
+}
+
+internal procedure timeErrorIsClockUnavailable(error: TimeError) -> bool {
+    return if error is {
+        TimeError::Unsupported {
+            false
+        }
+        TimeError::ClockUnavailable {
+            true
+        }
+        TimeError::OutOfRange {
+            false
+        }
+        TimeError::InvalidResolution {
+            false
+        }
+        TimeError::ClockMismatch {
+            false
+        }
+    }
+}
+
+internal procedure wallInstantReferenceObserved(result: Outcome<UtcInstant, TimeError>) -> bool {
+    return if result is {
+        @Value {
+            true
+        }
+        @Error { error } {
+            timeErrorIsWallInstantPermitted(error)
+        }
+    }
+}
+
+internal procedure wallResolutionReferenceObserved(result: Outcome<Duration, TimeError>) -> bool {
+    return if result is {
+        @Value { value } {
+            durationReferenceIsPositive(value)
+        }
+        @Error { error } {
+            timeErrorIsClockUnavailable(error)
+        }
+    }
+}
+
+internal procedure wallCoarsenReferenceSucceeded(result: Outcome<$WallTime, TimeError>) -> bool {
+    return if result is {
+        @Value {
+            true
+        }
+        @Error {
+            false
+        }
+    }
+}
+
+/// Exercises the Authority Time reference surface.
+public procedure runAuthorityTimeReference(context: Context) -> bool {
+    let monotonic: $MonotonicTime = context.time~>monotonic()
+    let wall: $WallTime = context.time~>wall()
+
+    let start: MonotonicInstant = monotonic~>now()
+    let end: MonotonicInstant = monotonic~>now()
+    let monotonic_resolution: Duration = monotonic~>resolution()
+    let elapsed: Outcome<Duration, TimeError> = monotonic~>elapsed(start, end)
+    let coarsened_monotonic: Outcome<$MonotonicTime, TimeError> =
+        monotonic~>coarsen(monotonic_resolution)
+
+    let wall_now: Outcome<UtcInstant, TimeError> = wall~>now_utc()
+    let wall_resolution: Outcome<Duration, TimeError> = wall~>resolution()
+    let coarsened_wall: Outcome<$WallTime, TimeError> =
+        wall~>coarsen(monotonic_resolution)
+
+    return durationReferenceIsPositive(monotonic_resolution) &&
+        elapsedReferenceSucceeded(elapsed) &&
+        monotonicCoarsenReferenceSucceeded(coarsened_monotonic) &&
+        wallInstantReferenceObserved(wall_now) &&
+        wallResolutionReferenceObserved(wall_resolution) &&
+        wallCoarsenReferenceSucceeded(coarsened_wall)
+}

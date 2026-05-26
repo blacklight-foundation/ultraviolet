@@ -1,0 +1,6 @@
+//! Rejected array index specimen for array and slice diagnostic ownership.
+
+public procedure arraySliceIndexDiagnosticsReference() -> i32 {
+    let values: [i32; 2] = [1, 2]
+    return values[2usize]
+}

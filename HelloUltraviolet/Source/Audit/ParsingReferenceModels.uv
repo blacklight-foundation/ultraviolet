@@ -1,0 +1,224 @@
+//! Reference-model checks for parser, AST, terminator, and recovery obligations.
+
+internal enum ParserModelTokenKind {
+    Identifier
+    Keyword
+    Operator
+    Punctuator
+    Newline
+    Eof
+}
+
+internal enum ParserModelItemKind {
+    Import
+    Using
+    Static
+    TypeDeclaration
+    Procedure
+    Error
+}
+
+internal enum ParserModelRecoverySet {
+    Statement
+    Item
+    Type
+}
+
+internal record ParserModelToken {
+    internal kind: ParserModelTokenKind
+    internal lexeme: string@View
+    internal line: usize
+}
+
+internal record ParserModelState {
+    internal tokens: usize
+    internal index: usize
+    internal diagnostics: usize
+    internal bracket_depth: usize
+}
+
+internal record ParserModelItem {
+    internal kind: ParserModelItemKind
+    internal ordinal: usize
+    internal span_start: usize
+    internal span_end: usize
+    internal line_docs: usize
+}
+
+internal procedure parserStateIndexIsValid(state: ParserModelState) -> bool {
+    return state.index <= state.tokens
+}
+
+internal procedure parserAdvanceSaturates(state: ParserModelState) -> bool {
+    let advanced_index: usize = if state.index < state.tokens {
+        state.index + 1usize
+    } else {
+        state.tokens
+    }
+    return advanced_index <= state.tokens
+}
+
+internal procedure parserSpanIsOrdered(item: ParserModelItem) -> bool {
+    return item.span_start <= item.span_end
+}
+
+internal procedure parserItemOrderingIsStable(
+    first: ParserModelItem,
+    second: ParserModelItem
+) -> bool {
+    return first.ordinal < second.ordinal &&
+        first.span_start <= second.span_start
+}
+
+internal procedure parserTokenMatchesIdentifier(token: ParserModelToken) -> bool {
+    return if token.kind is {
+        ParserModelTokenKind::Identifier {
+            string::length(token.lexeme) > 0usize
+        }
+        ParserModelTokenKind::Keyword { false }
+        ParserModelTokenKind::Operator { false }
+        ParserModelTokenKind::Punctuator { false }
+        ParserModelTokenKind::Newline { false }
+        ParserModelTokenKind::Eof { false }
+    }
+}
+
+internal procedure parserTokenTerminatesStatement(token: ParserModelToken) -> bool {
+    return if token.kind is {
+        ParserModelTokenKind::Identifier { false }
+        ParserModelTokenKind::Keyword { false }
+        ParserModelTokenKind::Operator { false }
+        ParserModelTokenKind::Punctuator {
+            token.lexeme == ";"
+        }
+        ParserModelTokenKind::Newline { true }
+        ParserModelTokenKind::Eof { true }
+    }
+}
+
+internal procedure parserTrailingCommaAllowed(
+    open_line: usize,
+    comma_line: usize,
+    close_line: usize
+) -> bool {
+    return open_line < close_line && comma_line < close_line
+}
+
+internal procedure parserRecoverySetCanSynchronize(
+    recovery_set: ParserModelRecoverySet,
+    token: ParserModelToken
+) -> bool {
+    return if recovery_set is {
+        ParserModelRecoverySet::Statement {
+            parserTokenTerminatesStatement(token)
+        }
+        ParserModelRecoverySet::Item {
+            if token.kind is {
+                ParserModelTokenKind::Keyword {
+                    token.lexeme == "public" || token.lexeme == "internal"
+                }
+                ParserModelTokenKind::Identifier { false }
+                ParserModelTokenKind::Operator { false }
+                ParserModelTokenKind::Punctuator { false }
+                ParserModelTokenKind::Newline { false }
+                ParserModelTokenKind::Eof { true }
+            }
+        }
+        ParserModelRecoverySet::Type {
+            if token.kind is {
+                ParserModelTokenKind::Punctuator {
+                    token.lexeme == "," || token.lexeme == ")" || token.lexeme == "}"
+                }
+                ParserModelTokenKind::Identifier { false }
+                ParserModelTokenKind::Keyword { false }
+                ParserModelTokenKind::Operator { false }
+                ParserModelTokenKind::Newline { true }
+                ParserModelTokenKind::Eof { true }
+            }
+        }
+    }
+}
+
+internal procedure parserModelTokenChecks() -> bool {
+    let identifier: ParserModelToken = ParserModelToken {
+        kind: ParserModelTokenKind::Identifier,
+        lexeme: "value",
+        line: 1usize
+    }
+    let semicolon: ParserModelToken = ParserModelToken {
+        kind: ParserModelTokenKind::Punctuator,
+        lexeme: ";",
+        line: 1usize
+    }
+    return parserTokenMatchesIdentifier(identifier) &&
+        parserTokenTerminatesStatement(semicolon)
+}
+
+internal procedure parserModelStateChecks() -> bool {
+    let state: ParserModelState = ParserModelState {
+        tokens: 3usize,
+        index: 2usize,
+        diagnostics: 0usize,
+        bracket_depth: 1usize
+    }
+    let eof_state: ParserModelState = ParserModelState {
+        tokens: 3usize,
+        index: 3usize,
+        diagnostics: 1usize,
+        bracket_depth: 0usize
+    }
+    return parserStateIndexIsValid(state) &&
+        parserAdvanceSaturates(state) &&
+        parserStateIndexIsValid(eof_state) &&
+        parserAdvanceSaturates(eof_state)
+}
+
+internal procedure parserModelItemChecks() -> bool {
+    let import_item: ParserModelItem = ParserModelItem {
+        kind: ParserModelItemKind::Import,
+        ordinal: 1usize,
+        span_start: 4usize,
+        span_end: 12usize,
+        line_docs: 0usize
+    }
+    let procedure_item: ParserModelItem = ParserModelItem {
+        kind: ParserModelItemKind::Procedure,
+        ordinal: 2usize,
+        span_start: 20usize,
+        span_end: 42usize,
+        line_docs: 1usize
+    }
+    return parserSpanIsOrdered(import_item) &&
+        parserSpanIsOrdered(procedure_item) &&
+        parserItemOrderingIsStable(import_item, procedure_item)
+}
+
+internal procedure parserModelListAndRecoveryChecks() -> bool {
+    let newline: ParserModelToken = ParserModelToken {
+        kind: ParserModelTokenKind::Newline,
+        lexeme: "\n",
+        line: 2usize
+    }
+    let item_keyword: ParserModelToken = ParserModelToken {
+        kind: ParserModelTokenKind::Keyword,
+        lexeme: "public",
+        line: 3usize
+    }
+    let close_paren: ParserModelToken = ParserModelToken {
+        kind: ParserModelTokenKind::Punctuator,
+        lexeme: ")",
+        line: 4usize
+    }
+    return parserTrailingCommaAllowed(1usize, 2usize, 3usize) &&
+        parserRecoverySetCanSynchronize(ParserModelRecoverySet::Statement, newline) &&
+        parserRecoverySetCanSynchronize(ParserModelRecoverySet::Item, item_keyword) &&
+        parserRecoverySetCanSynchronize(ParserModelRecoverySet::Type, close_paren)
+}
+
+/// Exercises parser reference-model obligations that are not source syntax specimens.
+public procedure runParsingReferenceModels() -> bool {
+    return parserModelTokenChecks() &&
+        parserModelStateChecks() &&
+        parserModelItemChecks() &&
+        parserModelListAndRecoveryChecks()
+}

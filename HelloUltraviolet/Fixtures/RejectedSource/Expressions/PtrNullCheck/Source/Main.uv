@@ -1,0 +1,6 @@
+//! Rejected null pointer expression specimen for checking against a non-pointer type.
+
+public procedure ptrNullCheckReference() -> i32 {
+    let value: i32 = Ptr::null()
+    return value
+}

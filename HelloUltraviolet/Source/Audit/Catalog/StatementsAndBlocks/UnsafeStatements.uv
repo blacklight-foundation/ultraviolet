@@ -1,0 +1,92 @@
+//! Generated catalog markers for 18. Statements and Blocks / 18.10 Unsafe Statements.
+
+
+public procedure countStatementsAndBlocksUnsafeStatementsObligations() -> usize {
+    return 9usize
+}
+
+public procedure validatedStatementsAndBlocksUnsafeStatementsObligations() -> usize {
+    var count: usize = 0usize
+    if acceptedObligationEntryMatches(
+        "grammar.18.UnsafeStatements",
+        72292usize,
+        "HelloUltraviolet::Reference::Statements",
+        "runStatementsUnsafeReference",
+        "Source/Reference/Statements/Unsafe.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "rule.18.Parse-Unsafe-Block",
+        72309usize,
+        "HelloUltraviolet::Reference::Statements",
+        "runStatementsUnsafeReference",
+        "Source/Reference/Statements/Unsafe.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "def.18.UnsafeBlockStmtAst",
+        72327usize,
+        "HelloUltraviolet::Reference::Statements",
+        "runStatementsUnsafeReference",
+        "Source/Reference/Statements/Unsafe.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "rule.18.T-UnsafeStmt",
+        72342usize,
+        "HelloUltraviolet::Reference::Statements",
+        "runStatementsUnsafeReference",
+        "Source/Reference/Statements/Unsafe.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "req.18.UnsafeStatementStateAndProvenance",
+        72358usize,
+        "HelloUltraviolet::Reference::Statements",
+        "runStatementsUnsafeReference",
+        "Source/Reference/Statements/Unsafe.uv"
+    ) {
+        count = count + 1usize
+    }
+    if rejectedSourceObligationEntryMatches(
+        "diag.18.UnsafeRequiredOperationOwnership",
+        72371usize,
+        "HelloUltraviolet::Audit::FixtureCatalog::RejectedSource",
+        "validatedStatementsRejectedSourceFixtureCount",
+        "Fixtures/RejectedSource/Statements/UnsafeRequiredOperationOwnershipDiagnostic/Source/Main.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "rule.18.ExecSigma-UnsafeStmt",
+        72386usize,
+        "HelloUltraviolet::Reference::Statements",
+        "runStatementsUnsafeReference",
+        "Source/Reference/Statements/Unsafe.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "rule.18.Lower-Stmt-UnsafeBlock",
+        72404usize,
+        "HelloUltraviolet::Reference::Statements",
+        "runStatementsUnsafeReference",
+        "Source/Reference/Statements/Unsafe.uv"
+    ) {
+        count = count + 1usize
+    }
+    if rejectedSourceObligationEntryMatches(
+        "diag.18.UnsafeStatements",
+        72422usize,
+        "HelloUltraviolet::Audit::FixtureCatalog::RejectedSource",
+        "validatedStatementsRejectedSourceFixtureCount",
+        "Fixtures/RejectedSource/Statements/UnsafeStatementsDiagnostic/Source/Main.uv"
+    ) {
+        count = count + 1usize
+    }
+    return count
+}

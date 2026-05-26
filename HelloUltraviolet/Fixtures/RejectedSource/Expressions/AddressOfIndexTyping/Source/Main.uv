@@ -1,0 +1,6 @@
+//! Rejected address-of specimen for non-usize array index typing.
+
+public procedure addressOfIndexTypingReference() -> Ptr<i32> {
+    let values: [i32; 2] = [1, 2]
+    return &values[0]
+}

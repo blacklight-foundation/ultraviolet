@@ -1,0 +1,27 @@
+//! Reference specimens for Polymorphism / CapabilityClasses.
+
+internal procedure capabilityPathExists(
+    io: $IO,
+    path: string@View
+) -> bool {
+    return io~>exists(path)
+}
+
+internal procedure restrictedCapabilityPathExists(
+    io: $IO,
+    path: string@View
+) -> bool {
+    let restricted_file_system: $IO = io~>restrict(".")
+    return restricted_file_system~>exists(path)
+}
+
+/// Exercises the Polymorphism CapabilityClasses reference surface.
+public procedure runPolymorphismCapabilityClassesReference(context: Context) -> bool {
+    let reference: PolymorphismReference = polymorphismReference(
+        4usize,
+        capabilityPathExists(context.io, "HelloUltraviolet") &&
+            restrictedCapabilityPathExists(context.io, "HelloUltraviolet"),
+        true
+    )
+    return polymorphismReferenceIsCovered(reference) && reference.dynamically_dispatchable
+}

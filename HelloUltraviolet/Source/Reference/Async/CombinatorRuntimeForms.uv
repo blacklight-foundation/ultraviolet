@@ -1,0 +1,147 @@
+//! Reference specimens for Async / CombinatorRuntimeForms.
+
+internal procedure asyncCompositionNoOutput() -> Async<i32, (), (), bool> {
+    return ()
+}
+
+internal procedure asyncCompositionOutputMayFail(
+    should_fail: bool,
+    value: i32
+) -> Async<i32, (), (), bool> {
+    let result: i32 = asyncCompositionOutcome(should_fail, value)?
+    yield result
+    return ()
+}
+
+internal procedure asyncCompositionKeepUnit(value: ()) -> () {
+    return value
+}
+
+internal procedure streamBoolIsCompleted(state: Stream<i32, bool>) -> bool {
+    return if state is {
+        @Suspended {
+            false
+        }
+        @Completed {
+            true
+        }
+        @Failed {
+            false
+        }
+    }
+}
+
+/// Exercises map completion forwarding when the source is already completed.
+public procedure runAsyncCompositionMapCompletionReference() -> bool {
+    let mapped: Async<(), (), i32, bool> =
+        asyncCompositionCompletes(71)~>map(asyncCompositionKeepUnit)
+    let result: i32 | bool = sync mapped
+    return i32BoolUnionIsValue(result, 71)
+}
+
+/// Exercises map failure forwarding without invoking the mapping function.
+public procedure runAsyncCompositionMapFailureReference() -> bool {
+    let mapped: Async<(), (), i32, bool> =
+        asyncCompositionMayFail(true, 72)~>map(asyncCompositionKeepUnit)
+    let result: i32 | bool = sync mapped
+    return i32BoolUnionIsFailure(result)
+}
+
+/// Exercises filter skip by discarding the first source output and continuing.
+public procedure runAsyncCompositionFilterSkipReference() -> bool {
+    let filtered: Stream<i32, bool> =
+        asyncCompositionTwoOutputs(80, 81)~>filter(|value: const i32| -> bool value == 81)
+    return streamBoolIsSuspendedOutput(filtered, 81)
+}
+
+/// Exercises filter completion after every yielded source value is rejected.
+public procedure runAsyncCompositionFilterCompletionReference() -> bool {
+    let filtered: Stream<i32, bool> =
+        asyncCompositionSingleOutput(82)~>filter(|value: const i32| -> bool false)
+    return streamBoolIsCompleted(filtered)
+}
+
+/// Exercises take with zero remaining outputs.
+public procedure runAsyncCompositionTakeZeroReference() -> bool {
+    let taken: Stream<i32, bool> = asyncCompositionSingleOutput(83)~>take(0usize)
+    return streamBoolIsCompleted(taken)
+}
+
+/// Exercises take completion after the requested output count has been emitted.
+public procedure runAsyncCompositionTakeResumeDoneReference() -> bool {
+    let taken: unique Stream<i32, bool> = asyncCompositionTwoOutputs(84, 85)~>take(1usize)
+    return if taken is {
+        @Suspended { output } {
+            let resumed = taken~>resume(())
+            let resumed_completed: bool = if resumed is {
+                @Suspended {
+                    false
+                }
+                @Completed {
+                    true
+                }
+                @Failed {
+                    false
+                }
+            }
+            output == 84 && resumed_completed
+        }
+        @Completed {
+            false
+        }
+        @Failed {
+            false
+        }
+    }
+}
+
+/// Exercises take completion when the source completes before the requested count.
+public procedure runAsyncCompositionTakeSourceCompleteReference() -> bool {
+    let taken: Stream<i32, bool> = asyncCompositionNoOutput()~>take(2usize)
+    return streamBoolIsCompleted(taken)
+}
+
+/// Exercises fold failure forwarding from the source async value.
+public procedure runAsyncCompositionFoldFailureReference() -> bool {
+    let folded: Async<(), (), i32, bool> =
+        asyncCompositionOutputMayFail(true, 86)~>fold(
+            10,
+            |accumulator: i32, value: i32| -> i32 accumulator + value
+        )
+    let result: i32 | bool = sync folded
+    return i32BoolUnionIsFailure(result)
+}
+
+/// Exercises chain failure forwarding before the continuation is invoked.
+public procedure runAsyncCompositionChainSourceFailureReference() -> bool {
+    let chained: Async<(), (), i32, bool> =
+        asyncCompositionMayFail(true, 87)~>chain(
+            |value: i32| -> Async<(), (), i32, bool> asyncCompositionSharedCompletion(value + 1)
+        )
+    let result: i32 | bool = sync chained
+    return i32BoolUnionIsFailure(result)
+}
+
+/// Exercises chain resumption through a suspended continuation future.
+public procedure runAsyncCompositionChainSuspendedContinuationReference() -> bool {
+    let chained: Async<(), (), i32, bool> =
+        asyncCompositionSharedCompletion(88)~>chain(
+            |value: i32| -> Async<(), (), i32, bool> asyncCompositionUnitSuspends(value + 1)
+        )
+    let result: i32 | bool = sync chained
+    return i32BoolUnionIsValue(result, 89)
+}
+
+/// Exercises the runtime edge paths for Async built-in combinator wrappers.
+public procedure runAsyncCompositionCombinatorRuntimeReference() -> bool {
+    return runAsyncCompositionMapCompletionReference() &&
+        runAsyncCompositionMapFailureReference() &&
+        runAsyncCompositionFilterSkipReference() &&
+        runAsyncCompositionFilterCompletionReference() &&
+        runAsyncCompositionTakeZeroReference() &&
+        runAsyncCompositionTakeResumeDoneReference() &&
+        runAsyncCompositionTakeSourceCompleteReference() &&
+        runAsyncCompositionFoldFailureReference() &&
+        runAsyncCompositionChainSourceFailureReference() &&
+        runAsyncCompositionChainSuspendedContinuationReference()
+}

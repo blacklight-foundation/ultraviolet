@@ -1,0 +1,20 @@
+//! Same-module source file for Modules / Aggregation.
+
+internal record ModuleAggregationContribution {
+    internal left: i32
+    internal right: i32
+}
+
+internal procedure moduleAggregationContribution(
+    left: i32,
+    right: i32
+) -> ModuleAggregationContribution {
+    return ModuleAggregationContribution {
+        left: left,
+        right: right
+    }
+}
+
+internal procedure moduleAggregationHelperValue() -> i32 {
+    return 2
+}

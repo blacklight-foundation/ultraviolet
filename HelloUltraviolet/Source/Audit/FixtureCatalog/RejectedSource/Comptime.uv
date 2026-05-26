@@ -1,0 +1,305 @@
+//! Rejected compile-time execution specimens.
+
+public procedure comptimeRejectedSourceFixtureCount() -> usize {
+    return 17usize
+}
+
+public procedure validatedComptimeRejectedSourceFixtureCount() -> usize {
+    var count: usize = 0usize
+    if rejectedSpecimenMatches(
+        rejectedSpecimen(
+            "UserDiagnosticError",
+            "Fixtures/RejectedSource/Comptime/UserDiagnosticError",
+            "Fixtures/RejectedSource/Comptime/UserDiagnosticError/Source/Main.uv",
+            "Fixtures/RejectedSource/Comptime/UserDiagnosticError/Expected.uv",
+            expectedDiagnostic("E-CTE-0070", "rule.22.CtBuiltin-Diagnostics-Error")
+        ),
+        "UserDiagnosticError",
+        "Fixtures/RejectedSource/Comptime/UserDiagnosticError",
+        "Fixtures/RejectedSource/Comptime/UserDiagnosticError/Source/Main.uv",
+        "Fixtures/RejectedSource/Comptime/UserDiagnosticError/Expected.uv",
+        "E-CTE-0070",
+        "rule.22.CtBuiltin-Diagnostics-Error"
+    ) {
+        count = count + 1usize
+    }
+    if rejectedSpecimenMatches(
+        rejectedSpecimen(
+            "QuoteOutsideComptime",
+            "Fixtures/RejectedSource/Comptime/QuoteOutsideComptime",
+            "Fixtures/RejectedSource/Comptime/QuoteOutsideComptime/Source/Main.uv",
+            "Fixtures/RejectedSource/Comptime/QuoteOutsideComptime/Expected.uv",
+            expectedDiagnostic("E-CTE-0221", "requirement.22.QuoteCompileTimeOnly")
+        ),
+        "QuoteOutsideComptime",
+        "Fixtures/RejectedSource/Comptime/QuoteOutsideComptime",
+        "Fixtures/RejectedSource/Comptime/QuoteOutsideComptime/Source/Main.uv",
+        "Fixtures/RejectedSource/Comptime/QuoteOutsideComptime/Expected.uv",
+        "E-CTE-0221",
+        "requirement.22.QuoteCompileTimeOnly"
+    ) {
+        count = count + 1usize
+    }
+    if rejectedSpecimenMatches(
+        rejectedSpecimen(
+            "InvalidQuotedContent",
+            "Fixtures/RejectedSource/Comptime/InvalidQuotedContent",
+            "Fixtures/RejectedSource/Comptime/InvalidQuotedContent/Source/Main.uv",
+            "Fixtures/RejectedSource/Comptime/InvalidQuotedContent/Expected.uv",
+            expectedDiagnostic("E-CTE-0220", "requirement.22.QuotedContentValidity")
+        ),
+        "InvalidQuotedContent",
+        "Fixtures/RejectedSource/Comptime/InvalidQuotedContent",
+        "Fixtures/RejectedSource/Comptime/InvalidQuotedContent/Source/Main.uv",
+        "Fixtures/RejectedSource/Comptime/InvalidQuotedContent/Expected.uv",
+        "E-CTE-0220",
+        "requirement.22.QuotedContentValidity"
+    ) {
+        count = count + 1usize
+    }
+    if rejectedSpecimenMatches(
+        rejectedSpecimen(
+            "SpliceTypeMismatch",
+            "Fixtures/RejectedSource/Comptime/SpliceTypeMismatch",
+            "Fixtures/RejectedSource/Comptime/SpliceTypeMismatch/Source/Main.uv",
+            "Fixtures/RejectedSource/Comptime/SpliceTypeMismatch/Expected.uv",
+            expectedDiagnostic("E-CTE-0230", "requirement.22.SpliceContextAndTypeCompatibility")
+        ),
+        "SpliceTypeMismatch",
+        "Fixtures/RejectedSource/Comptime/SpliceTypeMismatch",
+        "Fixtures/RejectedSource/Comptime/SpliceTypeMismatch/Source/Main.uv",
+        "Fixtures/RejectedSource/Comptime/SpliceTypeMismatch/Expected.uv",
+        "E-CTE-0230",
+        "requirement.22.SpliceContextAndTypeCompatibility"
+    ) {
+        count = count + 1usize
+    }
+    if rejectedSpecimenMatches(
+        rejectedSpecimen(
+            "SpliceIdentifierStructuralName",
+            "Fixtures/RejectedSource/Comptime/SpliceIdentifierStructuralName",
+            "Fixtures/RejectedSource/Comptime/SpliceIdentifierStructuralName/Source/Main.uv",
+            "Fixtures/RejectedSource/Comptime/SpliceIdentifierStructuralName/Expected.uv",
+            expectedDiagnostic("E-CTE-0220", "requirement.22.SpliceIdentifierPositionRestrictions")
+        ),
+        "SpliceIdentifierStructuralName",
+        "Fixtures/RejectedSource/Comptime/SpliceIdentifierStructuralName",
+        "Fixtures/RejectedSource/Comptime/SpliceIdentifierStructuralName/Source/Main.uv",
+        "Fixtures/RejectedSource/Comptime/SpliceIdentifierStructuralName/Expected.uv",
+        "E-CTE-0220",
+        "requirement.22.SpliceIdentifierPositionRestrictions"
+    ) {
+        count = count + 1usize
+    }
+    if rejectedSpecimenMatches(
+        rejectedSpecimen(
+            "ComptimeIfConditionType",
+            "Fixtures/RejectedSource/Comptime/ComptimeIfConditionType",
+            "Fixtures/RejectedSource/Comptime/ComptimeIfConditionType/Source/Main.uv",
+            "Fixtures/RejectedSource/Comptime/ComptimeIfConditionType/Expected.uv",
+            expectedDiagnostic("E-CTE-0081", "diagnostics.22.CompileTimeFormsDiagnosticsReference")
+        ),
+        "ComptimeIfConditionType",
+        "Fixtures/RejectedSource/Comptime/ComptimeIfConditionType",
+        "Fixtures/RejectedSource/Comptime/ComptimeIfConditionType/Source/Main.uv",
+        "Fixtures/RejectedSource/Comptime/ComptimeIfConditionType/Expected.uv",
+        "E-CTE-0081",
+        "diagnostics.22.CompileTimeFormsDiagnosticsReference"
+    ) {
+        count = count + 1usize
+    }
+    if rejectedSpecimenMatches(
+        rejectedSpecimen(
+            "RuntimeCallsComptimeProcedure",
+            "Fixtures/RejectedSource/Comptime/RuntimeCallsComptimeProcedure",
+            "Fixtures/RejectedSource/Comptime/RuntimeCallsComptimeProcedure/Source/Main.uv",
+            "Fixtures/RejectedSource/Comptime/RuntimeCallsComptimeProcedure/Expected.uv",
+            expectedDiagnostic(
+                "E-CTE-0034",
+                "requirement.22.CompileTimeProcedureContextRestriction"
+            )
+        ),
+        "RuntimeCallsComptimeProcedure",
+        "Fixtures/RejectedSource/Comptime/RuntimeCallsComptimeProcedure",
+        "Fixtures/RejectedSource/Comptime/RuntimeCallsComptimeProcedure/Source/Main.uv",
+        "Fixtures/RejectedSource/Comptime/RuntimeCallsComptimeProcedure/Expected.uv",
+        "E-CTE-0034",
+        "requirement.22.CompileTimeProcedureContextRestriction"
+    ) {
+        count = count + 1usize
+    }
+    if rejectedSpecimenMatches(
+        rejectedSpecimen(
+            "IntrospectFieldsNonRecord",
+            "Fixtures/RejectedSource/Comptime/IntrospectFieldsNonRecord",
+            "Fixtures/RejectedSource/Comptime/IntrospectFieldsNonRecord/Source/Main.uv",
+            "Fixtures/RejectedSource/Comptime/IntrospectFieldsNonRecord/Expected.uv",
+            expectedDiagnostic("E-CTE-0050", "requirement.22.IntrospectMemberValidity")
+        ),
+        "IntrospectFieldsNonRecord",
+        "Fixtures/RejectedSource/Comptime/IntrospectFieldsNonRecord",
+        "Fixtures/RejectedSource/Comptime/IntrospectFieldsNonRecord/Source/Main.uv",
+        "Fixtures/RejectedSource/Comptime/IntrospectFieldsNonRecord/Expected.uv",
+        "E-CTE-0050",
+        "requirement.22.IntrospectMemberValidity"
+    ) {
+        count = count + 1usize
+    }
+    if rejectedSpecimenMatches(
+        rejectedSpecimen(
+            "ComptimePointerParameter",
+            "Fixtures/RejectedSource/Comptime/ComptimePointerParameter",
+            "Fixtures/RejectedSource/Comptime/ComptimePointerParameter/Source/Main.uv",
+            "Fixtures/RejectedSource/Comptime/ComptimePointerParameter/Expected.uv",
+            expectedDiagnostic(
+                "E-CTE-0011",
+                "requirement.22.CompileTimeTypeAvailabilityRejection"
+            )
+        ),
+        "ComptimePointerParameter",
+        "Fixtures/RejectedSource/Comptime/ComptimePointerParameter",
+        "Fixtures/RejectedSource/Comptime/ComptimePointerParameter/Source/Main.uv",
+        "Fixtures/RejectedSource/Comptime/ComptimePointerParameter/Expected.uv",
+        "E-CTE-0011",
+        "requirement.22.CompileTimeTypeAvailabilityRejection"
+    ) {
+        count = count + 1usize
+    }
+    if rejectedSpecimenMatches(
+        rejectedSpecimen(
+            "ComptimeProhibitedWait",
+            "Fixtures/RejectedSource/Comptime/ComptimeProhibitedWait",
+            "Fixtures/RejectedSource/Comptime/ComptimeProhibitedWait/Source/Main.uv",
+            "Fixtures/RejectedSource/Comptime/ComptimeProhibitedWait/Expected.uv",
+            expectedDiagnostic("E-CTE-0020", "requirement.22.CompileTimeProhibitedConstructs")
+        ),
+        "ComptimeProhibitedWait",
+        "Fixtures/RejectedSource/Comptime/ComptimeProhibitedWait",
+        "Fixtures/RejectedSource/Comptime/ComptimeProhibitedWait/Source/Main.uv",
+        "Fixtures/RejectedSource/Comptime/ComptimeProhibitedWait/Expected.uv",
+        "E-CTE-0020",
+        "requirement.22.CompileTimeProhibitedConstructs"
+    ) {
+        count = count + 1usize
+    }
+    if rejectedSpecimenMatches(
+        rejectedSpecimen(
+            "EmitterEmitNonItem",
+            "Fixtures/RejectedSource/Comptime/EmitterEmitNonItem",
+            "Fixtures/RejectedSource/Comptime/EmitterEmitNonItem/Source/Main.uv",
+            "Fixtures/RejectedSource/Comptime/EmitterEmitNonItem/Expected.uv",
+            expectedDiagnostic("E-CTE-0251", "requirement.22.TypeEmitterEmitTypeRequirement")
+        ),
+        "EmitterEmitNonItem",
+        "Fixtures/RejectedSource/Comptime/EmitterEmitNonItem",
+        "Fixtures/RejectedSource/Comptime/EmitterEmitNonItem/Source/Main.uv",
+        "Fixtures/RejectedSource/Comptime/EmitterEmitNonItem/Expected.uv",
+        "E-CTE-0251",
+        "requirement.22.TypeEmitterEmitTypeRequirement"
+    ) {
+        count = count + 1usize
+    }
+    if rejectedSpecimenMatches(
+        rejectedSpecimen(
+            "DeriveOnProcedure",
+            "Fixtures/RejectedSource/Comptime/DeriveOnProcedure",
+            "Fixtures/RejectedSource/Comptime/DeriveOnProcedure/Source/Main.uv",
+            "Fixtures/RejectedSource/Comptime/DeriveOnProcedure/Expected.uv",
+            expectedDiagnostic("E-CTE-0311", "requirement.22.DeriveAttributeTargetKinds")
+        ),
+        "DeriveOnProcedure",
+        "Fixtures/RejectedSource/Comptime/DeriveOnProcedure",
+        "Fixtures/RejectedSource/Comptime/DeriveOnProcedure/Source/Main.uv",
+        "Fixtures/RejectedSource/Comptime/DeriveOnProcedure/Expected.uv",
+        "E-CTE-0311",
+        "requirement.22.DeriveAttributeTargetKinds"
+    ) {
+        count = count + 1usize
+    }
+    if rejectedSpecimenMatches(
+        rejectedSpecimen(
+            "UnknownDeriveTarget",
+            "Fixtures/RejectedSource/Comptime/UnknownDeriveTarget",
+            "Fixtures/RejectedSource/Comptime/UnknownDeriveTarget/Source/Main.uv",
+            "Fixtures/RejectedSource/Comptime/UnknownDeriveTarget/Expected.uv",
+            expectedDiagnostic("E-CTE-0310", "requirement.22.DeriveTargetNameResolution")
+        ),
+        "UnknownDeriveTarget",
+        "Fixtures/RejectedSource/Comptime/UnknownDeriveTarget",
+        "Fixtures/RejectedSource/Comptime/UnknownDeriveTarget/Source/Main.uv",
+        "Fixtures/RejectedSource/Comptime/UnknownDeriveTarget/Expected.uv",
+        "E-CTE-0310",
+        "requirement.22.DeriveTargetNameResolution"
+    ) {
+        count = count + 1usize
+    }
+    if rejectedSpecimenMatches(
+        rejectedSpecimen(
+            "DeriveMissingRequiredClass",
+            "Fixtures/RejectedSource/Comptime/DeriveMissingRequiredClass",
+            "Fixtures/RejectedSource/Comptime/DeriveMissingRequiredClass/Source/Main.uv",
+            "Fixtures/RejectedSource/Comptime/DeriveMissingRequiredClass/Expected.uv",
+            expectedDiagnostic("E-CTE-0330", "requirement.22.DeriveRequiresValidation")
+        ),
+        "DeriveMissingRequiredClass",
+        "Fixtures/RejectedSource/Comptime/DeriveMissingRequiredClass",
+        "Fixtures/RejectedSource/Comptime/DeriveMissingRequiredClass/Source/Main.uv",
+        "Fixtures/RejectedSource/Comptime/DeriveMissingRequiredClass/Expected.uv",
+        "E-CTE-0330",
+        "requirement.22.DeriveRequiresValidation"
+    ) {
+        count = count + 1usize
+    }
+    if rejectedSpecimenMatches(
+        rejectedSpecimen(
+            "DeriveMissingEmittedClass",
+            "Fixtures/RejectedSource/Comptime/DeriveMissingEmittedClass",
+            "Fixtures/RejectedSource/Comptime/DeriveMissingEmittedClass/Source/Main.uv",
+            "Fixtures/RejectedSource/Comptime/DeriveMissingEmittedClass/Expected.uv",
+            expectedDiagnostic("E-CTE-0331", "requirement.22.DeriveEmitsValidation")
+        ),
+        "DeriveMissingEmittedClass",
+        "Fixtures/RejectedSource/Comptime/DeriveMissingEmittedClass",
+        "Fixtures/RejectedSource/Comptime/DeriveMissingEmittedClass/Source/Main.uv",
+        "Fixtures/RejectedSource/Comptime/DeriveMissingEmittedClass/Expected.uv",
+        "E-CTE-0331",
+        "requirement.22.DeriveEmitsValidation"
+    ) {
+        count = count + 1usize
+    }
+    if rejectedSpecimenMatches(
+        rejectedSpecimen(
+            "DeriveTargetUserError",
+            "Fixtures/RejectedSource/Comptime/DeriveTargetUserError",
+            "Fixtures/RejectedSource/Comptime/DeriveTargetUserError/Source/Main.uv",
+            "Fixtures/RejectedSource/Comptime/DeriveTargetUserError/Expected.uv",
+            expectedDiagnostic("E-CTE-0070", "requirement.22.DeriveTargetFailureSemantics")
+        ),
+        "DeriveTargetUserError",
+        "Fixtures/RejectedSource/Comptime/DeriveTargetUserError",
+        "Fixtures/RejectedSource/Comptime/DeriveTargetUserError/Source/Main.uv",
+        "Fixtures/RejectedSource/Comptime/DeriveTargetUserError/Expected.uv",
+        "E-CTE-0070",
+        "requirement.22.DeriveTargetFailureSemantics"
+    ) {
+        count = count + 1usize
+    }
+    if rejectedSpecimenMatches(
+        rejectedSpecimen(
+            "DeriveTargetProhibitedWait",
+            "Fixtures/RejectedSource/Comptime/DeriveTargetProhibitedWait",
+            "Fixtures/RejectedSource/Comptime/DeriveTargetProhibitedWait/Source/Main.uv",
+            "Fixtures/RejectedSource/Comptime/DeriveTargetProhibitedWait/Expected.uv",
+            expectedDiagnostic("E-CTE-0320", "requirement.22.DeriveTargetBodyRestrictions")
+        ),
+        "DeriveTargetProhibitedWait",
+        "Fixtures/RejectedSource/Comptime/DeriveTargetProhibitedWait",
+        "Fixtures/RejectedSource/Comptime/DeriveTargetProhibitedWait/Source/Main.uv",
+        "Fixtures/RejectedSource/Comptime/DeriveTargetProhibitedWait/Expected.uv",
+        "E-CTE-0320",
+        "requirement.22.DeriveTargetBodyRestrictions"
+    ) {
+        count = count + 1usize
+    }
+    return count
+}

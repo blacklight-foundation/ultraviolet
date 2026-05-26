@@ -1,0 +1,104 @@
+name: HelloUltraviolet macOS Diagnostics
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  diagnostics:
+    name: aarch64-darwin-diagnostics
+    runs-on: macos-15
+    timeout-minutes: 120
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          lfs: false
+
+      - name: Install CMake 4.0.2
+        run: |
+          python3 -m venv "$RUNNER_TEMP/cmake-venv"
+          "$RUNNER_TEMP/cmake-venv/bin/python" -m pip install --upgrade pip
+          "$RUNNER_TEMP/cmake-venv/bin/python" -m pip install cmake==4.0.2
+          scripts_dir="$RUNNER_TEMP/cmake-venv/bin"
+          echo "$scripts_dir" >> "$GITHUB_PATH"
+          echo "UV_CMAKE_EXE=$scripts_dir/cmake" >> "$GITHUB_ENV"
+
+      - name: Verify host tools
+        run: |
+          "$UV_CMAKE_EXE" --version
+          python3 --version
+          xcode-select -p
+          xcrun --find clang++
+          xcrun --find lldb
+          xcrun --show-sdk-path
+
+      - name: Fetch target extern payloads
+        run: python3 Tools/FetchTargetExterns.py --target-profile aarch64-darwin
+
+      - name: Build until final executable gate
+        run: |
+          set +e
+          set -o pipefail
+          mkdir -p artifacts
+          python3 Tools/RunHelloVerification.py \
+            --target-profile aarch64-darwin \
+            --cmake "$UV_CMAKE_EXE" \
+            --pr "${GITHUB_REF_NAME}" \
+            --nonce "diagnostic-${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}" \
+            --stop-before-gate "HelloUltraviolet executable" \
+            | tee artifacts/hello-verification-macos-diagnostic.txt
+          status="${PIPESTATUS[0]}"
+          echo "$status" > artifacts/stop-before-final-status.txt
+          echo "UV_DIAGNOSTIC_BUILD_STATUS=$status" >> "$GITHUB_ENV"
+          exit 0
+
+      - name: Run final executable under lldb
+        if: always()
+        run: |
+          set +e
+          mkdir -p artifacts/crash-reports
+          executable="HelloUltraviolet/Build/Binary/HelloUltraviolet"
+          if [ -x "$executable" ]; then
+            cp "$executable" artifacts/HelloUltraviolet || true
+            xcrun lldb --batch \
+              -o "settings set target.process.thread.step-avoid-regexp '^$'" \
+              -o "run" \
+              -o "bt all" \
+              -o "register read" \
+              -o "image list" \
+              -- "$executable" \
+              > artifacts/lldb-hello-ultraviolet.txt \
+              2>&1
+            echo "$?" > artifacts/lldb-exit-code.txt
+          else
+            echo "executable not found or not executable: $executable" \
+              > artifacts/lldb-hello-ultraviolet.txt
+            echo "127" > artifacts/lldb-exit-code.txt
+          fi
+
+          find "$HOME/Library/Logs/DiagnosticReports" \
+            -maxdepth 1 \
+            -name 'HelloUltraviolet*.crash' \
+            -print \
+            -exec cp {} artifacts/crash-reports/ \; \
+            > artifacts/crash-report-files.txt 2>/dev/null || true
+          find HelloUltraviolet/Build/Intermediate/Obj -type f \
+            \( -name '*.o' -o -name '*.bc' -o -name '*.ll' \) \
+            -print > artifacts/object-and-ir-files.txt 2>/dev/null || true
+          exit 0
+
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: hello-verification-macos-diagnostics
+          path: |
+            artifacts/**
+            HelloUltraviolet/Build/Binary/HelloUltraviolet
+            HelloUltraviolet/Build/Intermediate/Obj/**/*.o
+            HelloUltraviolet/Build/Intermediate/Obj/**/*.bc
+            HelloUltraviolet/Build/Intermediate/Obj/**/*.ll
+          if-no-files-found: ignore

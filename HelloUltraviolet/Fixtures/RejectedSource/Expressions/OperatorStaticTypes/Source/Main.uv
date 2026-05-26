@@ -1,0 +1,12 @@
+//! Rejected operator specimen for operator static type predicates.
+
+public enum OperatorStaticTypesPayloadEnum {
+    Idle = 0
+    Count(i32) = 1
+}
+
+public procedure operatorStaticTypesReference() -> bool {
+    let idle: OperatorStaticTypesPayloadEnum = OperatorStaticTypesPayloadEnum::Idle
+    let count: OperatorStaticTypesPayloadEnum = OperatorStaticTypesPayloadEnum::Count(1)
+    return idle == count
+}

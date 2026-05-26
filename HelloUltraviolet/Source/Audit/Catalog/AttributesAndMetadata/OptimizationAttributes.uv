@@ -1,0 +1,83 @@
+//! Generated catalog markers for 9. Attributes and Metadata / 9.4 Optimization Attributes.
+
+
+public procedure countAttributesAndMetadataOptimizationAttributesObligations() -> usize {
+    return 8usize
+}
+
+public procedure validatedAttributesAndMetadataOptimizationAttributesObligations() -> usize {
+    var count: usize = 0usize
+    if acceptedObligationEntryMatches(
+        "grammar.OptimizationAttributeSyntax",
+        28094usize,
+        "HelloUltraviolet::Reference::Attributes",
+        "runAttributesOptimizationAttributesReference",
+        "Source/Reference/Attributes/OptimizationAttributes.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "req.OptimizationAttributeParserReuse",
+        28117usize,
+        "HelloUltraviolet::Reference::Attributes",
+        "runAttributesOptimizationAttributesReference",
+        "Source/Reference/Attributes/OptimizationAttributes.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "def.OptimizationAttributeAstAttachment",
+        28133usize,
+        "HelloUltraviolet::Reference::Attributes",
+        "runAttributesOptimizationAttributesReference",
+        "Source/Reference/Attributes/OptimizationAttributes.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "req.InlineAttributeSemantics",
+        28149usize,
+        "HelloUltraviolet::Reference::Attributes",
+        "runAttributesOptimizationAttributesReference",
+        "Source/Reference/Attributes/OptimizationAttributes.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "req.ColdAttributeSemantics",
+        28169usize,
+        "HelloUltraviolet::Reference::Attributes",
+        "runAttributesOptimizationAttributesReference",
+        "Source/Reference/Attributes/OptimizationAttributes.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "conformance.OptimizationAttributeDynamicSemantics",
+        28185usize,
+        "HelloUltraviolet::Reference::Attributes",
+        "runAttributesOptimizationAttributesReference",
+        "Source/Reference/Attributes/OptimizationAttributes.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "conformance.OptimizationAttributeLowering",
+        28201usize,
+        "HelloUltraviolet::Reference::Attributes",
+        "runAttributesOptimizationAttributesReference",
+        "Source/Reference/Attributes/OptimizationAttributes.uv"
+    ) {
+        count = count + 1usize
+    }
+    if diagnosticSourceObligationEntryMatches(
+        "diagnostics.OptimizationAttributeDiagnostics",
+        28217usize,
+        "HelloUltraviolet::Audit::FixtureCatalog::DiagnosticSource",
+        "validatedAttributesDiagnosticSourceFixtureCount",
+        "Fixtures/DiagnosticSource/Attributes/InlineAlwaysRecursive/Source/Main.uv"
+    ) {
+        count = count + 1usize
+    }
+    return count
+}

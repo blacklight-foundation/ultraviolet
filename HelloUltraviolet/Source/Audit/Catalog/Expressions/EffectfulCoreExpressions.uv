@@ -1,0 +1,560 @@
+//! Generated catalog markers for 16. Expressions / 16.8 Effectful Core Expressions.
+
+
+public procedure countExpressionsEffectfulCoreExpressionsObligations() -> usize {
+    return 61usize
+}
+
+public procedure validatedExpressionsEffectfulCoreExpressionsObligations() -> usize {
+    var count: usize = 0usize
+    if acceptedObligationEntryMatches(
+        "grammar.16.EffectfulCoreExpressions",
+        62973usize,
+        "HelloUltraviolet::Reference::Expressions",
+        "runExpressionsEffectfulCoreReference",
+        "Source/Reference/Expressions/EffectfulCore.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "req.16.RegionAliasAllocRewrite",
+        62994usize,
+        "HelloUltraviolet::Reference::Expressions",
+        "runExpressionsEffectfulCoreReference",
+        "Source/Reference/Expressions/EffectfulCore.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "rule.16.Parse-Unary-Deref",
+        63009usize,
+        "HelloUltraviolet::Reference::Expressions",
+        "runExpressionsEffectfulCoreReference",
+        "Source/Reference/Expressions/EffectfulCore.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "rule.16.Parse-Unary-AddressOf",
+        63025usize,
+        "HelloUltraviolet::Reference::Expressions",
+        "runExpressionsEffectfulCoreReference",
+        "Source/Reference/Expressions/EffectfulCore.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "rule.16.Parse-Unary-Move",
+        63041usize,
+        "HelloUltraviolet::Reference::Expressions",
+        "runExpressionsEffectfulCoreReference",
+        "Source/Reference/Expressions/EffectfulCore.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "rule.16.Parse-Unary-Copy",
+        63057usize,
+        "HelloUltraviolet::Reference::Expressions",
+        "runExpressionsEffectfulCoreReference",
+        "Source/Reference/Expressions/EffectfulCore.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "rule.16.Postfix-Propagate",
+        63073usize,
+        "HelloUltraviolet::Reference::Expressions",
+        "runExpressionsEffectfulCoreReference",
+        "Source/Reference/Expressions/EffectfulCore.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "rule.16.Parse-Alloc-Implicit",
+        63089usize,
+        "HelloUltraviolet::Reference::Expressions",
+        "runExpressionsEffectfulCoreReference",
+        "Source/Reference/Expressions/EffectfulCore.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "rule.16.Parse-Unsafe-Expr",
+        63105usize,
+        "HelloUltraviolet::Reference::Expressions",
+        "runExpressionsEffectfulCoreReference",
+        "Source/Reference/Expressions/EffectfulCore.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "def.16.EffectfulCoreExprAst",
+        63123usize,
+        "HelloUltraviolet::Reference::Expressions",
+        "runExpressionsEffectfulCoreReference",
+        "Source/Reference/Expressions/EffectfulCore.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "rule.16.ResolveExpr-Alloc-Explicit-ByAlias",
+        63136usize,
+        "HelloUltraviolet::Reference::Expressions",
+        "runExpressionsEffectfulCoreReference",
+        "Source/Reference/Expressions/EffectfulCore.uv"
+    ) {
+        count = count + 1usize
+    }
+    if rejectedSourceObligationEntryMatches(
+        "def.16.AddressOfStaticHelpers",
+        63155usize,
+        "HelloUltraviolet::Audit::FixtureCatalog::RejectedSource",
+        "validatedExpressionsRejectedSourceFixtureCount",
+        "Fixtures/RejectedSource/Expressions/AddressOfStaticHelpers/Source/Main.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "rule.16.T-Unsafe-Expr",
+        63170usize,
+        "HelloUltraviolet::Reference::Expressions",
+        "runExpressionsEffectfulCoreReference",
+        "Source/Reference/Expressions/EffectfulCore.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "rule.16.Chk-Unsafe-Expr",
+        63186usize,
+        "HelloUltraviolet::Reference::Expressions",
+        "runExpressionsEffectfulCoreReference",
+        "Source/Reference/Expressions/EffectfulCore.uv"
+    ) {
+        count = count + 1usize
+    }
+    if rejectedSourceObligationEntryMatches(
+        "rule.16.T-AddrOf",
+        63202usize,
+        "HelloUltraviolet::Audit::FixtureCatalog::RejectedSource",
+        "validatedExpressionsRejectedSourceFixtureCount",
+        "Fixtures/RejectedSource/Expressions/AddressOfIndexTyping/Source/Main.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "rule.16.T-Deref-Ptr",
+        63218usize,
+        "HelloUltraviolet::Reference::Expressions",
+        "runExpressionsEffectfulCoreReference",
+        "Source/Reference/Expressions/EffectfulCore.uv"
+    ) {
+        count = count + 1usize
+    }
+    if rejectedSourceObligationEntryMatches(
+        "rule.16.T-Deref-Raw",
+        63234usize,
+        "HelloUltraviolet::Audit::FixtureCatalog::RejectedSource",
+        "validatedExpressionsRejectedSourceFixtureCount",
+        "Fixtures/RejectedSource/Expressions/RawDerefUnsafeRequirement/Source/Main.uv"
+    ) {
+        count = count + 1usize
+    }
+    if rejectedSourceObligationEntryMatches(
+        "rule.16.DerefPlaceTypingFamily",
+        63250usize,
+        "HelloUltraviolet::Audit::FixtureCatalog::RejectedSource",
+        "validatedExpressionsRejectedSourceFixtureCount",
+        "Fixtures/RejectedSource/Expressions/RawDerefPlaceTypingFamily/Source/Main.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "rule.16.T-Move",
+        63263usize,
+        "HelloUltraviolet::Reference::Expressions",
+        "runExpressionsEffectfulCoreReference",
+        "Source/Reference/Expressions/EffectfulCore.uv"
+    ) {
+        count = count + 1usize
+    }
+    if rejectedSourceObligationEntryMatches(
+        "rule.16.T-Copy",
+        63279usize,
+        "HelloUltraviolet::Audit::FixtureCatalog::RejectedSource",
+        "validatedExpressionsRejectedSourceFixtureCount",
+        "Fixtures/RejectedSource/Expressions/CallCopyNonBitcopy/Source/Main.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "rule.16.T-Alloc-Explicit",
+        63295usize,
+        "HelloUltraviolet::Reference::Expressions",
+        "runExpressionsEffectfulCoreReference",
+        "Source/Reference/Expressions/EffectfulCore.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "rule.16.T-Alloc-Implicit",
+        63311usize,
+        "HelloUltraviolet::Reference::Expressions",
+        "runExpressionsEffectfulCoreReference",
+        "Source/Reference/Expressions/EffectfulCore.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "def.16.SuccessMember",
+        63327usize,
+        "HelloUltraviolet::Reference::Expressions",
+        "runExpressionsEffectfulCoreReference",
+        "Source/Reference/Expressions/EffectfulCore.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "rule.16.T-Propagate",
+        63340usize,
+        "HelloUltraviolet::Reference::Expressions",
+        "runExpressionsEffectfulCoreReference",
+        "Source/Reference/Expressions/EffectfulCore.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "def.16.SuccessMemberAsync",
+        63356usize,
+        "HelloUltraviolet::Reference::Expressions",
+        "runExpressionsEffectfulCoreReference",
+        "Source/Reference/Expressions/EffectfulCore.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "rule.16.T-Async-Try",
+        63369usize,
+        "HelloUltraviolet::Reference::Expressions",
+        "runExpressionsEffectfulCoreReference",
+        "Source/Reference/Expressions/EffectfulCore.uv"
+    ) {
+        count = count + 1usize
+    }
+    if rejectedSourceObligationEntryMatches(
+        "rule.16.Async-Try-Infallible-Err",
+        63385usize,
+        "HelloUltraviolet::Audit::FixtureCatalog::RejectedSource",
+        "validatedExpressionsRejectedSourceFixtureCount",
+        "Fixtures/RejectedSource/Expressions/AsyncTryInfallible/Source/Main.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "rule.16.EvalSigma-UnsafeBlock",
+        63403usize,
+        "HelloUltraviolet::Reference::Expressions",
+        "runExpressionsEffectfulCoreReference",
+        "Source/Reference/Expressions/EffectfulCore.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "rule.16.EvalSigma-AddressOf",
+        63419usize,
+        "HelloUltraviolet::Reference::Expressions",
+        "runExpressionsEffectfulCoreReference",
+        "Source/Reference/Expressions/EffectfulCore.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "rule.16.EvalSigma-Deref",
+        63435usize,
+        "HelloUltraviolet::Reference::Expressions",
+        "runExpressionsEffectfulCoreReference",
+        "Source/Reference/Expressions/EffectfulCore.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "rule.16.EvalSigma-Move",
+        63451usize,
+        "HelloUltraviolet::Reference::Expressions",
+        "runExpressionsEffectfulCoreReference",
+        "Source/Reference/Expressions/EffectfulCore.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "rule.16.EvalSigma-Copy",
+        63467usize,
+        "HelloUltraviolet::Reference::Expressions",
+        "runExpressionsEffectfulCoreReference",
+        "Source/Reference/Expressions/EffectfulCore.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "rule.16.EvalSigma-Alloc-Implicit",
+        63488usize,
+        "HelloUltraviolet::Reference::Expressions",
+        "runExpressionsEffectfulCoreReference",
+        "Source/Reference/Expressions/EffectfulCore.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "rule.16.EvalSigma-Alloc-Implicit-Ctrl",
+        63504usize,
+        "HelloUltraviolet::Reference::Expressions",
+        "runExpressionsEffectfulCoreReference",
+        "Source/Reference/Expressions/EffectfulCore.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "rule.16.EvalSigma-Alloc-Explicit",
+        63520usize,
+        "HelloUltraviolet::Reference::Expressions",
+        "runExpressionsEffectfulCoreReference",
+        "Source/Reference/Expressions/EffectfulCore.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "rule.16.EvalSigma-Alloc-Explicit-Ctrl",
+        63536usize,
+        "HelloUltraviolet::Reference::Expressions",
+        "runExpressionsEffectfulCoreReference",
+        "Source/Reference/Expressions/EffectfulCore.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "rule.16.EvalSigma-Propagate-Success",
+        63552usize,
+        "HelloUltraviolet::Reference::Expressions",
+        "runExpressionsEffectfulCoreReference",
+        "Source/Reference/Expressions/EffectfulCore.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "rule.16.EvalSigma-Propagate-Success-Async",
+        63568usize,
+        "HelloUltraviolet::Reference::Expressions",
+        "runExpressionsEffectfulCoreReference",
+        "Source/Reference/Expressions/EffectfulCore.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "rule.16.EvalSigma-Propagate-Error",
+        63584usize,
+        "HelloUltraviolet::Reference::Expressions",
+        "runExpressionsEffectfulCoreReference",
+        "Source/Reference/Expressions/EffectfulCore.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "rule.16.EvalSigma-Propagate-Error-Async",
+        63600usize,
+        "HelloUltraviolet::Reference::Expressions",
+        "runExpressionsEffectfulCoreReference",
+        "Source/Reference/Expressions/EffectfulCore.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "rule.16.EvalSigma-Propagate-Ctrl",
+        63617usize,
+        "HelloUltraviolet::Reference::Expressions",
+        "runExpressionsEffectfulCoreReference",
+        "Source/Reference/Expressions/EffectfulCore.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "def.16.ExprStateAndTerminalExpr",
+        63633usize,
+        "HelloUltraviolet::Reference::Expressions",
+        "runExpressionsEffectfulCoreReference",
+        "Source/Reference/Expressions/EffectfulCore.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "rule.16.StepSigma-Pure",
+        63648usize,
+        "HelloUltraviolet::Reference::Expressions",
+        "runExpressionsEffectfulCoreReference",
+        "Source/Reference/Expressions/EffectfulCore.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "rule.16.StepSigma-Alloc-Implicit",
+        63664usize,
+        "HelloUltraviolet::Reference::Expressions",
+        "runExpressionsEffectfulCoreReference",
+        "Source/Reference/Expressions/EffectfulCore.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "rule.16.StepSigma-Alloc-Implicit-Ctrl",
+        63680usize,
+        "HelloUltraviolet::Reference::Expressions",
+        "runExpressionsEffectfulCoreReference",
+        "Source/Reference/Expressions/EffectfulCore.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "rule.16.StepSigma-Alloc-Explicit",
+        63696usize,
+        "HelloUltraviolet::Reference::Expressions",
+        "runExpressionsEffectfulCoreReference",
+        "Source/Reference/Expressions/EffectfulCore.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "rule.16.StepSigma-Alloc-Explicit-Ctrl",
+        63712usize,
+        "HelloUltraviolet::Reference::Expressions",
+        "runExpressionsEffectfulCoreReference",
+        "Source/Reference/Expressions/EffectfulCore.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "rule.16.StepSigma-Block",
+        63728usize,
+        "HelloUltraviolet::Reference::Expressions",
+        "runExpressionsEffectfulCoreReference",
+        "Source/Reference/Expressions/EffectfulCore.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "rule.16.StepSigma-UnsafeBlock",
+        63744usize,
+        "HelloUltraviolet::Reference::Expressions",
+        "runExpressionsEffectfulCoreReference",
+        "Source/Reference/Expressions/EffectfulCore.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "rule.16.StepSigma-Loop",
+        63760usize,
+        "HelloUltraviolet::Reference::Expressions",
+        "runExpressionsEffectfulCoreReference",
+        "Source/Reference/Expressions/EffectfulCore.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "rule.16.StepSigma-Stateful-Other",
+        63776usize,
+        "HelloUltraviolet::Reference::Expressions",
+        "runExpressionsEffectfulCoreReference",
+        "Source/Reference/Expressions/EffectfulCore.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "rule.16.Lower-Expr-UnsafeBlock",
+        63794usize,
+        "HelloUltraviolet::Reference::Expressions",
+        "runExpressionsEffectfulCoreReference",
+        "Source/Reference/Expressions/EffectfulCore.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "rule.16.Lower-Expr-Move",
+        63810usize,
+        "HelloUltraviolet::Reference::Expressions",
+        "runExpressionsEffectfulCoreReference",
+        "Source/Reference/Expressions/EffectfulCore.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "rule.16.Lower-Expr-Copy",
+        63826usize,
+        "HelloUltraviolet::Reference::Expressions",
+        "runExpressionsEffectfulCoreReference",
+        "Source/Reference/Expressions/EffectfulCore.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "rule.16.Lower-Expr-AddressOf",
+        63842usize,
+        "HelloUltraviolet::Reference::Expressions",
+        "runExpressionsEffectfulCoreReference",
+        "Source/Reference/Expressions/EffectfulCore.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "rule.16.Lower-Expr-Deref",
+        63858usize,
+        "HelloUltraviolet::Reference::Expressions",
+        "runExpressionsEffectfulCoreReference",
+        "Source/Reference/Expressions/EffectfulCore.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "rule.16.Lower-Expr-Alloc",
+        63874usize,
+        "HelloUltraviolet::Reference::Expressions",
+        "runExpressionsEffectfulCoreReference",
+        "Source/Reference/Expressions/EffectfulCore.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "rule.16.Lower-Expr-Propagate-Success",
+        63890usize,
+        "HelloUltraviolet::Reference::Expressions",
+        "runExpressionsEffectfulCoreReference",
+        "Source/Reference/Expressions/EffectfulCore.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "rule.16.Lower-Expr-Propagate-Return",
+        63906usize,
+        "HelloUltraviolet::Reference::Expressions",
+        "runExpressionsEffectfulCoreReference",
+        "Source/Reference/Expressions/EffectfulCore.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "req.16.EffectfulCoreLoweringMechanics",
+        63922usize,
+        "HelloUltraviolet::Reference::Expressions",
+        "runExpressionsEffectfulCoreReference",
+        "Source/Reference/Expressions/EffectfulCore.uv"
+    ) {
+        count = count + 1usize
+    }
+    if rejectedSourceObligationEntryMatches(
+        "diag.16.EffectfulCoreExpressions",
+        63937usize,
+        "HelloUltraviolet::Audit::FixtureCatalog::RejectedSource",
+        "validatedExpressionsRejectedSourceFixtureCount",
+        "Fixtures/RejectedSource/Expressions/AllocImplicitNoRegion/Source/Main.uv"
+    ) {
+        count = count + 1usize
+    }
+    return count
+}

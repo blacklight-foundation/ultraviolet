@@ -1,0 +1,18 @@
+//! Rejected pattern specimen for non-exhaustive modal case analysis.
+
+public modal IfCaseModalReference {
+    @Closed {}
+    @Open {
+        public value: i32
+    }
+}
+
+public procedure ifCaseModalNonExhaustiveReference() -> bool {
+    let closed: IfCaseModalReference@Closed = IfCaseModalReference@Closed {}
+    let value: IfCaseModalReference = widen closed
+    return if value is {
+        @Closed {
+            true
+        }
+    }
+}

@@ -1,0 +1,145 @@
+name: Compiler or Runtime Bug
+description: Report compiler or runtime behavior that appears non-conformant with the specification.
+title: "[compiler bug]: "
+labels:
+  - needs-triage
+  - compiler
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Compiler bugs are specification-conformance reports. The report must identify
+        the area of the specification that the current compiler or runtime behavior
+        does not conform to. That non-conformance is what makes it a bug.
+
+        If this is a desired language behavior without current specification support,
+        open a GitHub Discussion instead:
+        https://github.com/blacklight-foundation/ultraviolet/discussions
+
+        Do not report security vulnerabilities here. Use private vulnerability reporting:
+        https://github.com/blacklight-foundation/ultraviolet/security
+  - type: dropdown
+    id: spec-support-state
+    attributes:
+      label: Specification support
+      description: Is the expected behavior supported by the current specification?
+      options:
+        - Yes, this is a compiler/runtime conformance bug.
+        - Unsure, but I can identify the suspected spec area.
+        - No, this is a desired language or specification change.
+    validations:
+      required: true
+  - type: textarea
+    id: spec-support
+    attributes:
+      label: Specification area or obligation
+      description: >
+        Identify the specification section, obligation ID, inference, judgement,
+        diagnostic rule, or normative text involved. Explain what area of the
+        specification the current behavior appears to violate.
+      placeholder: |
+        Example:
+        Docs/SPECIFICATION.md section ...
+        Obligation ID ...
+        The current compiler behavior ...
+        The specification requires ...
+    validations:
+      required: true
+  - type: input
+    id: compiler-commit
+    attributes:
+      label: Compiler commit
+      description: Commit SHA or tag used for the observed behavior.
+      placeholder: "abcdef123456..."
+    validations:
+      required: true
+  - type: dropdown
+    id: host-os
+    attributes:
+      label: Host operating system
+      options:
+        - Linux
+        - Windows
+        - macOS
+        - Other
+    validations:
+      required: true
+  - type: dropdown
+    id: target-profile
+    attributes:
+      label: Target profile
+      options:
+        - x86_64-sysv
+        - x86_64-win64
+        - Not target-specific
+        - Other
+    validations:
+      required: true
+  - type: textarea
+    id: commands
+    attributes:
+      label: Exact command
+      description: Paste the exact command or commands that reproduce the behavior.
+      render: shell
+    validations:
+      required: true
+  - type: textarea
+    id: reproduction
+    attributes:
+      label: Minimal reproduction or fixture path
+      description: >
+        Provide a minimal .uv source/project, or the exact HelloUltraviolet fixture
+        path that reproduces the issue. If minimized source is not available, provide
+        the smallest known project or source file.
+      render: ultraviolet
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: Expected behavior
+      description: Describe the behavior required by the specification.
+    validations:
+      required: true
+  - type: textarea
+    id: observed
+    attributes:
+      label: Observed behavior
+      description: Describe what the compiler or runtime actually did.
+    validations:
+      required: true
+  - type: textarea
+    id: diagnostics
+    attributes:
+      label: Diagnostics or output
+      description: Paste relevant diagnostics, logs, output, or crash text.
+      render: text
+    validations:
+      required: false
+  - type: textarea
+    id: verification
+    attributes:
+      label: HelloUltraviolet verification
+      description: >
+        If available, paste the Tools/RunHelloVerification.py command, final result, and
+        Verification transcript SHA256.
+      placeholder: |
+        Command:
+        ...
+
+        Verification result:
+        ...
+
+        Verification transcript SHA256:
+        ...
+    validations:
+      required: false
+  - type: checkboxes
+    id: confirmation
+    attributes:
+      label: Confirmation
+      options:
+        - label: This report is not a public disclosure of a security vulnerability.
+          required: true
+        - label: I have checked whether this should be a GitHub Discussion instead of an issue.
+          required: true

@@ -1,0 +1,137 @@
+//! Generated catalog markers for 14. Abstraction and Polymorphism / 14.7 Opaque Types.
+
+
+public procedure countAbstractionAndPolymorphismOpaqueTypesObligations() -> usize {
+    return 14usize
+}
+
+public procedure validatedAbstractionAndPolymorphismOpaqueTypesObligations() -> usize {
+    var count: usize = 0usize
+    if acceptedObligationEntryMatches(
+        "grammar.14.OpaqueTypes",
+        51174usize,
+        "HelloUltraviolet::Reference::Polymorphism",
+        "runPolymorphismOpaqueTypesReference",
+        "Source/Reference/Polymorphism/OpaqueTypes.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "req.14.OpaqueTypesComposeAsTypeForms",
+        51189usize,
+        "HelloUltraviolet::Reference::Polymorphism",
+        "runPolymorphismOpaqueTypesReference",
+        "Source/Reference/Polymorphism/OpaqueTypes.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "rule.14.Parse-Opaque-Type",
+        51204usize,
+        "HelloUltraviolet::Reference::Polymorphism",
+        "runPolymorphismOpaqueTypesReference",
+        "Source/Reference/Polymorphism/OpaqueTypes.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "def.14.TypeOpaqueAst",
+        51222usize,
+        "HelloUltraviolet::Reference::Polymorphism",
+        "runPolymorphismOpaqueTypesReference",
+        "Source/Reference/Polymorphism/OpaqueTypes.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "def.14.TypeOpaqueForm",
+        51235usize,
+        "HelloUltraviolet::Reference::Polymorphism",
+        "runPolymorphismOpaqueTypesReference",
+        "Source/Reference/Polymorphism/OpaqueTypes.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "rule.14.WF-Opaque",
+        51250usize,
+        "HelloUltraviolet::Reference::Polymorphism",
+        "runPolymorphismOpaqueTypesReference",
+        "Source/Reference/Polymorphism/OpaqueTypes.uv"
+    ) {
+        count = count + 1usize
+    }
+    if rejectedSourceObligationEntryMatches(
+        "rule.14.WF-Opaque-Err",
+        51266usize,
+        "HelloUltraviolet::Audit::FixtureCatalog::RejectedSource",
+        "validatedPolymorphismRejectedSourceFixtureCount",
+        "Fixtures/RejectedSource/Polymorphism/OpaqueUndefinedClassType/Source/Main.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "rule.14.T-Equiv-Opaque",
+        51282usize,
+        "HelloUltraviolet::Reference::Polymorphism",
+        "runPolymorphismOpaqueTypesReference",
+        "Source/Reference/Polymorphism/OpaqueTypes.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "rule.14.T-Opaque-Return",
+        51298usize,
+        "HelloUltraviolet::Reference::Polymorphism",
+        "runPolymorphismOpaqueTypesReference",
+        "Source/Reference/Polymorphism/OpaqueTypes.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "rule.14.T-Opaque-Project",
+        51314usize,
+        "HelloUltraviolet::Reference::Polymorphism",
+        "runPolymorphismOpaqueTypesReference",
+        "Source/Reference/Polymorphism/OpaqueTypes.uv"
+    ) {
+        count = count + 1usize
+    }
+    if rejectedSourceObligationEntryMatches(
+        "req.14.OpaqueEquivalenceAndInterfaceExposure",
+        51330usize,
+        "HelloUltraviolet::Audit::FixtureCatalog::RejectedSource",
+        "validatedPolymorphismRejectedSourceFixtureCount",
+        "Fixtures/RejectedSource/Polymorphism/OpaqueMemberNotDefined/Source/Main.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "req.14.OpaqueTypesNoRuntimeWrapper",
+        51345usize,
+        "HelloUltraviolet::Reference::Polymorphism",
+        "runPolymorphismOpaqueTypesReference",
+        "Source/Reference/Polymorphism/OpaqueTypes.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "req.14.OpaqueTypesLowerAsConcrete",
+        51360usize,
+        "HelloUltraviolet::Reference::Polymorphism",
+        "runPolymorphismOpaqueTypesReference",
+        "Source/Reference/Polymorphism/OpaqueTypes.uv"
+    ) {
+        count = count + 1usize
+    }
+    if rejectedSourceObligationEntryMatches(
+        "diag.14.OpaqueTypes",
+        51375usize,
+        "HelloUltraviolet::Audit::FixtureCatalog::RejectedSource",
+        "validatedPolymorphismRejectedSourceFixtureCount",
+        "Fixtures/RejectedSource/Polymorphism/OpaqueReturnMissingImplementation/Source/Main.uv"
+    ) {
+        count = count + 1usize
+    }
+    return count
+}

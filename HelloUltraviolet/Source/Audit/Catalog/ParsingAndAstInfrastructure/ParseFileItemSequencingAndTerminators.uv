@@ -1,0 +1,119 @@
+//! Generated catalog markers for 5. Parsing and AST Infrastructure / 5.6 ParseFile, Item Sequencing, and Terminators.
+
+
+public procedure countParsingAndAstInfrastructureParseFileItemSequencingAndTerminatorsObligations() -> usize {
+    return 12usize
+}
+
+public procedure validatedParsingAndAstInfrastructureParseFileItemSequencingAndTerminatorsObligations() -> usize {
+    var count: usize = 0usize
+    if referenceModelObligationEntryMatches(
+        "def.ParseFileBigStep",
+        11540usize,
+        "HelloUltraviolet::Audit",
+        "runParsingReferenceModels",
+        "Source/Audit/ParsingReferenceModels.uv"
+    ) {
+        count = count + 1usize
+    }
+    if referenceModelObligationEntryMatches(
+        "ParseFile-Ok",
+        11557usize,
+        "HelloUltraviolet::Audit",
+        "runParsingReferenceModels",
+        "Source/Audit/ParsingReferenceModels.uv"
+    ) {
+        count = count + 1usize
+    }
+    if referenceModelObligationEntryMatches(
+        "ParseItems-Empty",
+        11577usize,
+        "HelloUltraviolet::Audit",
+        "runParsingReferenceModels",
+        "Source/Audit/ParsingReferenceModels.uv"
+    ) {
+        count = count + 1usize
+    }
+    if referenceModelObligationEntryMatches(
+        "ParseItems-Cons",
+        11595usize,
+        "HelloUltraviolet::Audit",
+        "runParsingReferenceModels",
+        "Source/Audit/ParsingReferenceModels.uv"
+    ) {
+        count = count + 1usize
+    }
+    if referenceModelObligationEntryMatches(
+        "def.StatementTerminatorTokens",
+        11615usize,
+        "HelloUltraviolet::Audit",
+        "runParsingReferenceModels",
+        "Source/Audit/ParsingReferenceModels.uv"
+    ) {
+        count = count + 1usize
+    }
+    if referenceModelObligationEntryMatches(
+        "def.StatementRequiresTerminator",
+        11630usize,
+        "HelloUltraviolet::Audit",
+        "runParsingReferenceModels",
+        "Source/Audit/ParsingReferenceModels.uv"
+    ) {
+        count = count + 1usize
+    }
+    if referenceModelObligationEntryMatches(
+        "ConsumeTerminatorOpt-Req-Yes",
+        11644usize,
+        "HelloUltraviolet::Audit",
+        "runParsingReferenceModels",
+        "Source/Audit/ParsingReferenceModels.uv"
+    ) {
+        count = count + 1usize
+    }
+    if referenceModelObligationEntryMatches(
+        "ConsumeTerminatorOpt-Req-No",
+        11662usize,
+        "HelloUltraviolet::Audit",
+        "runParsingReferenceModels",
+        "Source/Audit/ParsingReferenceModels.uv"
+    ) {
+        count = count + 1usize
+    }
+    if referenceModelObligationEntryMatches(
+        "ConsumeTerminatorOpt-Opt-Yes",
+        11680usize,
+        "HelloUltraviolet::Audit",
+        "runParsingReferenceModels",
+        "Source/Audit/ParsingReferenceModels.uv"
+    ) {
+        count = count + 1usize
+    }
+    if referenceModelObligationEntryMatches(
+        "ConsumeTerminatorOpt-Opt-No",
+        11698usize,
+        "HelloUltraviolet::Audit",
+        "runParsingReferenceModels",
+        "Source/Audit/ParsingReferenceModels.uv"
+    ) {
+        count = count + 1usize
+    }
+    if referenceModelObligationEntryMatches(
+        "ConsumeTerminatorReq-Yes",
+        11716usize,
+        "HelloUltraviolet::Audit",
+        "runParsingReferenceModels",
+        "Source/Audit/ParsingReferenceModels.uv"
+    ) {
+        count = count + 1usize
+    }
+    if referenceModelObligationEntryMatches(
+        "ConsumeTerminatorReq-No",
+        11734usize,
+        "HelloUltraviolet::Audit",
+        "runParsingReferenceModels",
+        "Source/Audit/ParsingReferenceModels.uv"
+    ) {
+        count = count + 1usize
+    }
+    return count
+}

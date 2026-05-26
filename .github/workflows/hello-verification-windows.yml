@@ -1,0 +1,91 @@
+name: HelloUltraviolet Windows Verification
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  verification:
+    name: x86_64-win64
+    runs-on: windows-2022
+    timeout-minutes: 120
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          lfs: false
+
+      - name: Install CMake 4.0.2
+        shell: pwsh
+        run: |
+          py -3 -m pip install --user cmake==4.0.2
+          $scriptsDir = py -3 -c "import sysconfig; print(sysconfig.get_path('scripts', scheme='nt_user'))"
+          $cmakeExe = Join-Path $scriptsDir "cmake.exe"
+          if (-not (Test-Path -LiteralPath $cmakeExe)) {
+            throw "Installed CMake executable was not found: $cmakeExe"
+          }
+          Add-Content -Path $env:GITHUB_PATH -Value $scriptsDir
+          Add-Content -Path $env:GITHUB_ENV -Value "UV_CMAKE_EXE=$cmakeExe"
+
+      - name: Verify host tools
+        shell: pwsh
+        run: |
+          & "$env:UV_CMAKE_EXE" --version
+          py -3 --version
+
+      - name: Fetch target extern payloads
+        shell: pwsh
+        run: py -3 Tools\FetchTargetExterns.py --target-profile x86_64-win64
+
+      - name: Run HelloUltraviolet verification
+        shell: pwsh
+        run: |
+          $vswhere = "${env:ProgramFiles(x86)}\Microsoft Visual Studio\Installer\vswhere.exe"
+          $vsPath = & $vswhere -latest -products * `
+            -requires Microsoft.Component.MSBuild `
+            -property installationPath
+          if (-not $vsPath) {
+            throw "Unable to locate Visual Studio with MSBuild."
+          }
+
+          & "$vsPath\Common7\Tools\Launch-VsDevShell.ps1" `
+            -Arch amd64 `
+            -HostArch amd64 `
+            -SkipAutomaticLocation
+
+          & "$env:UV_CMAKE_EXE" --version
+          New-Item -ItemType Directory -Force -Path artifacts | Out-Null
+          py -3 Tools\RunHelloVerification.py `
+            --target-profile x86_64-win64 `
+            --cmake "$env:UV_CMAKE_EXE" `
+            --pr "$env:GITHUB_REF_NAME" `
+            --nonce "github-$env:GITHUB_RUN_ID-$env:GITHUB_RUN_ATTEMPT" `
+            2>&1 | Tee-Object -FilePath artifacts\hello-verification-windows.txt
+          $verificationExitCode = $LASTEXITCODE
+          Get-Content -LiteralPath artifacts\hello-verification-windows.txt |
+            Set-Content -LiteralPath artifacts\hello-verification-windows.utf8.txt -Encoding utf8
+          Move-Item -Force `
+            -LiteralPath artifacts\hello-verification-windows.utf8.txt `
+            -Destination artifacts\hello-verification-windows.txt
+          exit $verificationExitCode
+
+      - name: Upload verification transcript
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: hello-verification-windows
+          path: artifacts/hello-verification-windows.txt
+          if-no-files-found: ignore
+
+      - name: Upload Windows release archive
+        uses: actions/upload-artifact@v4
+        with:
+          name: ultraviolet-windows-x86_64
+          path: |
+            Build/Release/ultraviolet-windows-x86_64.zip
+            Build/Release/ultraviolet-windows-x86_64.zip.sha256
+          if-no-files-found: error

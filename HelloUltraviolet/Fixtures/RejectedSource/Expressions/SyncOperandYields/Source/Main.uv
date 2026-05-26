@@ -1,0 +1,10 @@
+//! Rejected async composition specimen for syncing an async value with output.
+
+public procedure yieldingAsyncValue() -> Async<i32, (), i32, !> {
+    return 1
+}
+
+public procedure syncOperandYieldsReference() -> i32 {
+    let value: i32 = sync yieldingAsyncValue()
+    return value
+}

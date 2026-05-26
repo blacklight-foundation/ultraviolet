@@ -1,0 +1,8 @@
+//! Rejected structured-parallelism specimen for shared captures in GPU contexts.
+
+public procedure gpuCaptureSharedReference(context: Context) -> i32 {
+    var shared_value: shared i32 = 1
+    return parallel context~>gpu() {
+        shared_value
+    }
+}

@@ -1,0 +1,128 @@
+//! Generated catalog markers for 15. Procedures and Contracts / 15.3 Overloading.
+
+
+public procedure countProceduresAndContractsOverloadingObligations() -> usize {
+    return 13usize
+}
+
+public procedure validatedProceduresAndContractsOverloadingObligations() -> usize {
+    var count: usize = 0usize
+    if acceptedObligationEntryMatches(
+        "req.15.OverloadingNoAdditionalSyntax",
+        54858usize,
+        "HelloUltraviolet::Reference::Procedures",
+        "runProceduresOverloadingReference",
+        "Source/Reference/Procedures/Overloading.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "req.15.OverloadResolutionNotParserConcern",
+        54873usize,
+        "HelloUltraviolet::Reference::Procedures",
+        "runProceduresOverloadingReference",
+        "Source/Reference/Procedures/Overloading.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedProjectObligationEntryMatches(
+        "def.15.ClassDefaults",
+        54888usize,
+        "HelloUltraviolet::Audit::FixtureCatalog::AcceptedProjects",
+        "validatedAcceptedProjectFixtureCount",
+        "Fixtures/BootstrapNonCompliance/Polymorphism/ClassDefaultMethodFieldAccess/Source/Main.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedProjectObligationEntryMatches(
+        "def.15.LookupMethod",
+        54901usize,
+        "HelloUltraviolet::Audit::FixtureCatalog::AcceptedProjects",
+        "validatedAcceptedProjectFixtureCount",
+        "Fixtures/BootstrapNonCompliance/Polymorphism/GenericClassBoundMethodLookup/Source/Main.uv"
+    ) {
+        count = count + 1usize
+    }
+    if rejectedSourceObligationEntryMatches(
+        "rule.15.LookupMethod-NotFound",
+        54918usize,
+        "HelloUltraviolet::Audit::FixtureCatalog::RejectedSource",
+        "validatedExpressionsRejectedSourceFixtureCount",
+        "Fixtures/RejectedSource/Expressions/MethodNotFound/Source/Main.uv"
+    ) {
+        count = count + 1usize
+    }
+    if rejectedSourceObligationEntryMatches(
+        "rule.15.LookupMethod-Ambig",
+        54934usize,
+        "HelloUltraviolet::Audit::FixtureCatalog::RejectedSource",
+        "validatedProceduresRejectedSourceFixtureCount",
+        "Fixtures/RejectedSource/Procedures/MethodLookupAmbiguousDefault/Source/Main.uv"
+    ) {
+        count = count + 1usize
+    }
+    if rejectedSourceObligationEntryMatches(
+        "req.15.FreeProcedureOverloadResolutionBeforeCallTyping",
+        54950usize,
+        "HelloUltraviolet::Audit::FixtureCatalog::RejectedSource",
+        "validatedProceduresRejectedSourceFixtureCount",
+        "Fixtures/RejectedSource/Procedures/OverloadResolutionBeforeCallTyping/Source/Main.uv"
+    ) {
+        count = count + 1usize
+    }
+    if rejectedSourceObligationEntryMatches(
+        "req.15.FreeCallOverloadResolutionAlgorithm",
+        54963usize,
+        "HelloUltraviolet::Audit::FixtureCatalog::RejectedSource",
+        "validatedProceduresRejectedSourceFixtureCount",
+        "Fixtures/RejectedSource/Procedures/NoMatchingOverload/Source/Main.uv"
+    ) {
+        count = count + 1usize
+    }
+    if rejectedSourceObligationEntryMatches(
+        "req.15.DuplicateErasedOverloadSignaturesForbidden",
+        54985usize,
+        "HelloUltraviolet::Audit::FixtureCatalog::RejectedSource",
+        "validatedProceduresRejectedSourceFixtureCount",
+        "Fixtures/RejectedSource/Procedures/DuplicateErasedOverloadSignature/Source/Main.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "req.15.NoRuntimeOverloadSearch",
+        55006usize,
+        "HelloUltraviolet::Reference::Procedures",
+        "runProceduresOverloadingReference",
+        "Source/Reference/Procedures/Overloading.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedProjectObligationEntryMatches(
+        "req.15.OverloadResolutionCompleteBeforeLowering",
+        55021usize,
+        "HelloUltraviolet::Audit::FixtureCatalog::AcceptedProjects",
+        "validatedAcceptedProjectFixtureCount",
+        "Fixtures/BootstrapNonCompliance/Procedures/FreeProcedureOverloadResolution/Source/Main.uv"
+    ) {
+        count = count + 1usize
+    }
+    if rejectedSourceObligationEntryMatches(
+        "diag-table.15.Overloading",
+        55036usize,
+        "HelloUltraviolet::Audit::FixtureCatalog::RejectedSource",
+        "validatedProceduresRejectedSourceFixtureCount",
+        "Fixtures/RejectedSource/Procedures/OverloadingDiagnosticsTable/Source/Main.uv"
+    ) {
+        count = count + 1usize
+    }
+    if rejectedSourceObligationEntryMatches(
+        "diag.15.MethodLookupDiagnostics",
+        55053usize,
+        "HelloUltraviolet::Audit::FixtureCatalog::RejectedSource",
+        "validatedProceduresRejectedSourceFixtureCount",
+        "Fixtures/RejectedSource/Procedures/MethodLookupDiagnostics/Source/Main.uv"
+    ) {
+        count = count + 1usize
+    }
+    return count
+}

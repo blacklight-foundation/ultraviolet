@@ -1,0 +1,10 @@
+//! Rejected async suspension specimen for yield from outside an async procedure.
+
+public procedure completedAsyncValue() -> Async<i32, (), i32, !> {
+    return 1
+}
+
+public procedure yieldFromOutsideAsyncReference() -> i32 {
+    let value: i32 = yield from completedAsyncValue()
+    return value
+}

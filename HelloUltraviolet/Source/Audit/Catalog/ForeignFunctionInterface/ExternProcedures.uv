@@ -1,0 +1,128 @@
+//! Generated catalog markers for 23. Foreign Function Interface / 23.2 Extern Procedures.
+
+
+public procedure countForeignFunctionInterfaceExternProceduresObligations() -> usize {
+    return 13usize
+}
+
+public procedure validatedForeignFunctionInterfaceExternProceduresObligations() -> usize {
+    var count: usize = 0usize
+    if acceptedObligationEntryMatches(
+        "grammar.23.ExternProcedureDecl",
+        87400usize,
+        "HelloUltraviolet::Reference::FFI",
+        "runFFIExternProceduresReference",
+        "Source/Reference/FFI/ExternProcedures.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "rule.23.Parse-ExternProcDecl",
+        87417usize,
+        "HelloUltraviolet::Reference::FFI",
+        "runFFIExternProceduresReference",
+        "Source/Reference/FFI/ExternProcedures.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "ast.23.ExternProcDeclForm",
+        87435usize,
+        "HelloUltraviolet::Reference::FFI",
+        "runFFIExternProceduresReference",
+        "Source/Reference/FFI/ExternProcedures.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "def.23.ExternProcedureDerivedForms",
+        87452usize,
+        "HelloUltraviolet::Reference::FFI",
+        "runFFIExternProceduresReference",
+        "Source/Reference/FFI/ExternProcedures.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "def.23.ExternProcedureMeaning",
+        87472usize,
+        "HelloUltraviolet::Reference::FFI",
+        "runFFIExternProceduresReference",
+        "Source/Reference/FFI/ExternProcedures.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "def.23.ExternAbiStrings",
+        87485usize,
+        "HelloUltraviolet::Reference::FFI",
+        "runFFIExternProceduresReference",
+        "Source/Reference/FFI/ExternProcedures.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "def.23.ExternSignatureRequirements",
+        87507usize,
+        "HelloUltraviolet::Reference::FFI",
+        "runFFIExternProceduresReference",
+        "Source/Reference/FFI/ExternProcedures.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "requirement.23.ExternFfiConstraints",
+        87530usize,
+        "HelloUltraviolet::Reference::FFI",
+        "runFFIExternProceduresReference",
+        "Source/Reference/FFI/ExternProcedures.uv"
+    ) {
+        count = count + 1usize
+    }
+    if rejectedSourceObligationEntryMatches(
+        "requirement.23.ExternCallSafety",
+        87547usize,
+        "HelloUltraviolet::Audit::FixtureCatalog::RejectedSource",
+        "validatedFFIRejectedSourceFixtureCount",
+        "Fixtures/RejectedSource/FFI/ExternCallSafety/Source/Main.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "requirement.23.ExternDynamicSemantics",
+        87564usize,
+        "HelloUltraviolet::Reference::FFI",
+        "runFFIExternProceduresReference",
+        "Source/Reference/FFI/ExternProcedures.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "requirement.23.ExternLowering",
+        87579usize,
+        "HelloUltraviolet::Reference::FFI",
+        "runFFIExternProceduresReference",
+        "Source/Reference/FFI/ExternProcedures.uv"
+    ) {
+        count = count + 1usize
+    }
+    if rejectedSourceObligationEntryMatches(
+        "diagnostics.23.ExternProcedureDiagnostics",
+        87594usize,
+        "HelloUltraviolet::Audit::FixtureCatalog::RejectedSource",
+        "validatedFFIRejectedSourceFixtureCount",
+        "Fixtures/RejectedSource/FFI/ExternGenericSignature/Source/Main.uv"
+    ) {
+        count = count + 1usize
+    }
+    if rejectedSourceObligationEntryMatches(
+        "diagnostics.23.ExternProcedureDiagnosticOwnership",
+        87610usize,
+        "HelloUltraviolet::Audit::FixtureCatalog::RejectedSource",
+        "validatedFFIRejectedSourceFixtureCount",
+        "Fixtures/RejectedSource/FFI/FfiPassByValueRequired/Source/Main.uv"
+    ) {
+        count = count + 1usize
+    }
+    return count
+}

@@ -1,0 +1,11 @@
+//! Rejected permission specimen for mutation through a const-qualified path.
+
+public record PermissionDiagnosticCell {
+    public value: i32
+}
+
+public procedure constMutationPermissionReference() -> i32 {
+    var cell: const PermissionDiagnosticCell = PermissionDiagnosticCell { value: 1 }
+    cell.value = 2
+    return cell.value + 0
+}

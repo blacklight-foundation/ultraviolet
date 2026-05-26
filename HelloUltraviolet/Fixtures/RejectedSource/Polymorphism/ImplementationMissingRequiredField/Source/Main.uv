@@ -1,0 +1,9 @@
+//! Rejected polymorphism specimen for an implementation missing a required class field.
+
+internal class RequiredFieldClass {
+    internal required_value: i32
+}
+
+internal record MissingRequiredField <: RequiredFieldClass {
+    internal unrelated_value: i32
+}

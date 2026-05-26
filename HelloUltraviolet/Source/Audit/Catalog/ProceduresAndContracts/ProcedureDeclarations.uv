@@ -1,0 +1,587 @@
+//! Generated catalog markers for 15. Procedures and Contracts / 15.1 Procedure Declarations.
+
+
+public procedure countProceduresAndContractsProcedureDeclarationsObligations() -> usize {
+    return 64usize
+}
+
+public procedure validatedProceduresAndContractsProcedureDeclarationsObligations() -> usize {
+    var count: usize = 0usize
+    if acceptedObligationEntryMatches(
+        "grammar.15.ProcedureDeclarations",
+        52975usize,
+        "HelloUltraviolet::Reference::Procedures",
+        "runProceduresDeclarationsReference",
+        "Source/Reference/Procedures/Declarations.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "req.15.ExternProcedureDeclarationsOwnedByFFI",
+        52993usize,
+        "HelloUltraviolet::Reference::Procedures",
+        "runProceduresDeclarationsReference",
+        "Source/Reference/Procedures/Declarations.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "rule.15.Parse-Procedure",
+        53008usize,
+        "HelloUltraviolet::Reference::Procedures",
+        "runProceduresDeclarationsReference",
+        "Source/Reference/Procedures/Declarations.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "rule.15.Parse-Signature",
+        53024usize,
+        "HelloUltraviolet::Reference::Procedures",
+        "runProceduresDeclarationsReference",
+        "Source/Reference/Procedures/Declarations.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "rule.15.Parse-ParamList-Empty",
+        53040usize,
+        "HelloUltraviolet::Reference::Procedures",
+        "runProceduresDeclarationsReference",
+        "Source/Reference/Procedures/Declarations.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "rule.15.Parse-ParamList-Cons",
+        53056usize,
+        "HelloUltraviolet::Reference::Procedures",
+        "runProceduresDeclarationsReference",
+        "Source/Reference/Procedures/Declarations.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "rule.15.Parse-Param",
+        53072usize,
+        "HelloUltraviolet::Reference::Procedures",
+        "runProceduresDeclarationsReference",
+        "Source/Reference/Procedures/Declarations.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "rule.15.Parse-ParamMode-None",
+        53088usize,
+        "HelloUltraviolet::Reference::Procedures",
+        "runProceduresDeclarationsReference",
+        "Source/Reference/Procedures/Declarations.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "rule.15.Parse-ParamMode-Move",
+        53104usize,
+        "HelloUltraviolet::Reference::Procedures",
+        "runProceduresDeclarationsReference",
+        "Source/Reference/Procedures/Declarations.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "rule.15.Parse-ParamTail-End",
+        53120usize,
+        "HelloUltraviolet::Reference::Procedures",
+        "runProceduresDeclarationsReference",
+        "Source/Reference/Procedures/Declarations.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "rule.15.Parse-ParamTail-TrailingComma",
+        53136usize,
+        "HelloUltraviolet::Reference::Procedures",
+        "runProceduresDeclarationsReference",
+        "Source/Reference/Procedures/Declarations.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "rule.15.Parse-ParamTail-Comma",
+        53152usize,
+        "HelloUltraviolet::Reference::Procedures",
+        "runProceduresDeclarationsReference",
+        "Source/Reference/Procedures/Declarations.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "rule.15.Parse-ReturnOpt-None",
+        53168usize,
+        "HelloUltraviolet::Reference::Procedures",
+        "runProceduresDeclarationsReference",
+        "Source/Reference/Procedures/Declarations.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "rule.15.Parse-ReturnOpt-Arrow",
+        53184usize,
+        "HelloUltraviolet::Reference::Procedures",
+        "runProceduresDeclarationsReference",
+        "Source/Reference/Procedures/Declarations.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "def.15.ProcedureDeclAst",
+        53202usize,
+        "HelloUltraviolet::Reference::Procedures",
+        "runProceduresDeclarationsReference",
+        "Source/Reference/Procedures/Declarations.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "def.15.ParamAst",
+        53215usize,
+        "HelloUltraviolet::Reference::Procedures",
+        "runProceduresDeclarationsReference",
+        "Source/Reference/Procedures/Declarations.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "def.15.ParamNamesAndBinds",
+        53228usize,
+        "HelloUltraviolet::Reference::Procedures",
+        "runProceduresDeclarationsReference",
+        "Source/Reference/Procedures/Declarations.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "def.15.ProcReturn",
+        53242usize,
+        "HelloUltraviolet::Reference::Procedures",
+        "runProceduresDeclarationsReference",
+        "Source/Reference/Procedures/Declarations.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "def.15.BodyReturnType",
+        53257usize,
+        "HelloUltraviolet::Reference::Procedures",
+        "runProceduresDeclarationsReference",
+        "Source/Reference/Procedures/Declarations.uv"
+    ) {
+        count = count + 1usize
+    }
+    if rejectedSourceObligationEntryMatches(
+        "def.15.ExplicitReturn",
+        53272usize,
+        "HelloUltraviolet::Audit::FixtureCatalog::RejectedSource",
+        "validatedProceduresRejectedSourceFixtureCount",
+        "Fixtures/RejectedSource/Procedures/ExplicitReturnDefinition/Source/Main.uv"
+    ) {
+        count = count + 1usize
+    }
+    if rejectedSourceObligationEntryMatches(
+        "def.15.ReturnAnnOk",
+        53287usize,
+        "HelloUltraviolet::Audit::FixtureCatalog::RejectedSource",
+        "validatedProceduresRejectedSourceFixtureCount",
+        "Fixtures/RejectedSource/Procedures/ReturnAnnotationPresence/Source/Main.uv"
+    ) {
+        count = count + 1usize
+    }
+    if rejectedSourceObligationEntryMatches(
+        "rule.15.WF-ProcedureDecl",
+        53300usize,
+        "HelloUltraviolet::Audit::FixtureCatalog::RejectedSource",
+        "validatedProceduresRejectedSourceFixtureCount",
+        "Fixtures/RejectedSource/Procedures/ProcedureDeclarationWellFormedness/Source/Main.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "def.15.DeclTyping",
+        53316usize,
+        "HelloUltraviolet::Reference::Procedures",
+        "runProceduresDeclarationsReference",
+        "Source/Reference/Procedures/Declarations.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "def.15.ProvBindCheck",
+        53331usize,
+        "HelloUltraviolet::Reference::Procedures",
+        "runProceduresDeclarationsReference",
+        "Source/Reference/Procedures/Declarations.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "def.15.DeclTypingItem",
+        53344usize,
+        "HelloUltraviolet::Reference::Procedures",
+        "runProceduresDeclarationsReference",
+        "Source/Reference/Procedures/Declarations.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "rule.15.ProcedureDeclOkJudgement",
+        53366usize,
+        "HelloUltraviolet::Reference::Procedures",
+        "runProceduresDeclarationsReference",
+        "Source/Reference/Procedures/Declarations.uv"
+    ) {
+        count = count + 1usize
+    }
+    if rejectedSourceObligationEntryMatches(
+        "rule.15.WF-ProcedureDecl-MissingReturnType",
+        53379usize,
+        "HelloUltraviolet::Audit::FixtureCatalog::RejectedSource",
+        "validatedProceduresRejectedSourceFixtureCount",
+        "Fixtures/RejectedSource/Procedures/MissingReturnType/Source/Main.uv"
+    ) {
+        count = count + 1usize
+    }
+    if rejectedSourceObligationEntryMatches(
+        "rule.15.WF-ProcBody-ExplicitReturn-Err",
+        53395usize,
+        "HelloUltraviolet::Audit::FixtureCatalog::RejectedSource",
+        "validatedProceduresRejectedSourceFixtureCount",
+        "Fixtures/RejectedSource/Procedures/MissingExplicitReturn/Source/Main.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "req.15.ExportedProcedureForeignCallableObligations",
+        53411usize,
+        "HelloUltraviolet::Reference::Procedures",
+        "runProceduresDeclarationsReference",
+        "Source/Reference/Procedures/Declarations.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "def.15.MainEntryPointDefinitions",
+        53424usize,
+        "HelloUltraviolet::Reference::Procedures",
+        "runProceduresDeclarationsReference",
+        "Source/Reference/Procedures/Declarations.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "rule.15.Main-Ok",
+        53445usize,
+        "HelloUltraviolet::Reference::Procedures",
+        "runProceduresDeclarationsReference",
+        "Source/Reference/Procedures/Declarations.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "rule.15.Main-Bypass-NonExecutable",
+        53461usize,
+        "HelloUltraviolet::Reference::Procedures",
+        "runProceduresDeclarationsReference",
+        "Source/Reference/Procedures/Declarations.uv"
+    ) {
+        count = count + 1usize
+    }
+    if rejectedSourceObligationEntryMatches(
+        "rule.15.Main-Multiple",
+        53477usize,
+        "HelloUltraviolet::Audit::FixtureCatalog::RejectedSource",
+        "validatedProceduresRejectedSourceFixtureCount",
+        "Fixtures/RejectedSource/Procedures/MainMultiple/Source/Main.uv"
+    ) {
+        count = count + 1usize
+    }
+    if rejectedSourceObligationEntryMatches(
+        "rule.15.Main-Generic-Err",
+        53493usize,
+        "HelloUltraviolet::Audit::FixtureCatalog::RejectedSource",
+        "validatedProceduresRejectedSourceFixtureCount",
+        "Fixtures/RejectedSource/Procedures/MainGeneric/Source/Main.uv"
+    ) {
+        count = count + 1usize
+    }
+    if rejectedSourceObligationEntryMatches(
+        "rule.15.Main-Signature-Err",
+        53509usize,
+        "HelloUltraviolet::Audit::FixtureCatalog::RejectedSource",
+        "validatedProceduresRejectedSourceFixtureCount",
+        "Fixtures/RejectedSource/Procedures/MainSignature/Source/Main.uv"
+    ) {
+        count = count + 1usize
+    }
+    if rejectedSourceObligationEntryMatches(
+        "rule.15.Main-Missing",
+        53525usize,
+        "HelloUltraviolet::Audit::FixtureCatalog::RejectedSource",
+        "validatedProceduresRejectedSourceFixtureCount",
+        "Fixtures/RejectedSource/Procedures/MainMissing/Source/Main.uv"
+    ) {
+        count = count + 1usize
+    }
+    if rejectedSourceObligationEntryMatches(
+        "def.15.MainDiagRefs",
+        53541usize,
+        "HelloUltraviolet::Audit::FixtureCatalog::RejectedSource",
+        "validatedProceduresRejectedSourceFixtureCount",
+        "Fixtures/RejectedSource/Procedures/MainDiagnosticReferences/Source/Main.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "def.15.FuncValDefined",
+        53556usize,
+        "HelloUltraviolet::Reference::Procedures",
+        "runProceduresDeclarationsReference",
+        "Source/Reference/Procedures/Declarations.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "def.15.BindParams",
+        53569usize,
+        "HelloUltraviolet::Reference::Procedures",
+        "runProceduresDeclarationsReference",
+        "Source/Reference/Procedures/Declarations.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "def.15.ArgumentPassingJudgements",
+        53582usize,
+        "HelloUltraviolet::Reference::Procedures",
+        "runProceduresDeclarationsReference",
+        "Source/Reference/Procedures/Declarations.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "def.15.CallJudgements",
+        53596usize,
+        "HelloUltraviolet::Reference::Procedures",
+        "runProceduresDeclarationsReference",
+        "Source/Reference/Procedures/Declarations.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "def.15.CallTargets",
+        53609usize,
+        "HelloUltraviolet::Reference::Procedures",
+        "runProceduresDeclarationsReference",
+        "Source/Reference/Procedures/Declarations.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "def.15.BuiltinProcedureParams",
+        53625usize,
+        "HelloUltraviolet::Reference::Procedures",
+        "runProceduresDeclarationsReference",
+        "Source/Reference/Procedures/Declarations.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "def.15.SynthParams",
+        53639usize,
+        "HelloUltraviolet::Reference::Procedures",
+        "runProceduresDeclarationsReference",
+        "Source/Reference/Procedures/Declarations.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "def.15.CalleeProc",
+        53652usize,
+        "HelloUltraviolet::Reference::Procedures",
+        "runProceduresDeclarationsReference",
+        "Source/Reference/Procedures/Declarations.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "def.15.CallParams",
+        53666usize,
+        "HelloUltraviolet::Reference::Procedures",
+        "runProceduresDeclarationsReference",
+        "Source/Reference/Procedures/Declarations.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "def.15.ReturnOut",
+        53682usize,
+        "HelloUltraviolet::Reference::Procedures",
+        "runProceduresDeclarationsReference",
+        "Source/Reference/Procedures/Declarations.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "rule.15.EvalArgsSigma-Empty",
+        53701usize,
+        "HelloUltraviolet::Reference::Procedures",
+        "runProceduresDeclarationsReference",
+        "Source/Reference/Procedures/Declarations.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "rule.15.EvalArgsSigma-Cons-Move",
+        53716usize,
+        "HelloUltraviolet::Reference::Procedures",
+        "runProceduresDeclarationsReference",
+        "Source/Reference/Procedures/Declarations.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "rule.15.EvalArgsSigma-Cons-Ref",
+        53744usize,
+        "HelloUltraviolet::Reference::Procedures",
+        "runProceduresDeclarationsReference",
+        "Source/Reference/Procedures/Declarations.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "rule.15.EvalArgsSigma-Ctrl-Move",
+        53764usize,
+        "HelloUltraviolet::Reference::Procedures",
+        "runProceduresDeclarationsReference",
+        "Source/Reference/Procedures/Declarations.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "rule.15.EvalArgsSigma-Ctrl-Ref",
+        53780usize,
+        "HelloUltraviolet::Reference::Procedures",
+        "runProceduresDeclarationsReference",
+        "Source/Reference/Procedures/Declarations.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "rule.15.ApplyRegionProc-NewScoped",
+        53796usize,
+        "HelloUltraviolet::Reference::Procedures",
+        "runProceduresDeclarationsReference",
+        "Source/Reference/Procedures/Declarations.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "rule.15.ApplyRegionProc-Alloc",
+        53812usize,
+        "HelloUltraviolet::Reference::Procedures",
+        "runProceduresDeclarationsReference",
+        "Source/Reference/Procedures/Declarations.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "rule.15.ApplyRegionProc-Reset",
+        53828usize,
+        "HelloUltraviolet::Reference::Procedures",
+        "runProceduresDeclarationsReference",
+        "Source/Reference/Procedures/Declarations.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "rule.15.ApplyRegionProc-Freeze",
+        53844usize,
+        "HelloUltraviolet::Reference::Procedures",
+        "runProceduresDeclarationsReference",
+        "Source/Reference/Procedures/Declarations.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "rule.15.ApplyRegionProc-Thaw",
+        53860usize,
+        "HelloUltraviolet::Reference::Procedures",
+        "runProceduresDeclarationsReference",
+        "Source/Reference/Procedures/Declarations.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "rule.15.ApplyRegionProc-Free",
+        53876usize,
+        "HelloUltraviolet::Reference::Procedures",
+        "runProceduresDeclarationsReference",
+        "Source/Reference/Procedures/Declarations.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "rule.15.ApplyCancelProc-New",
+        53892usize,
+        "HelloUltraviolet::Reference::Procedures",
+        "runProceduresDeclarationsReference",
+        "Source/Reference/Procedures/Declarations.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "rule.15.ApplyProcSigma",
+        53908usize,
+        "HelloUltraviolet::Reference::Procedures",
+        "runProceduresDeclarationsReference",
+        "Source/Reference/Procedures/Declarations.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "rule.15.EvalSigma-Call-Proc",
+        53924usize,
+        "HelloUltraviolet::Reference::Procedures",
+        "runProceduresDeclarationsReference",
+        "Source/Reference/Procedures/Declarations.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "rule.15.CG-Item-Procedure",
+        53942usize,
+        "HelloUltraviolet::Reference::Procedures",
+        "runProceduresDeclarationsReference",
+        "Source/Reference/Procedures/Declarations.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "req.15.MainProgramEntryHandlingOwnedByChapter24",
+        53958usize,
+        "HelloUltraviolet::Reference::Procedures",
+        "runProceduresDeclarationsReference",
+        "Source/Reference/Procedures/Declarations.uv"
+    ) {
+        count = count + 1usize
+    }
+    if rejectedSourceObligationEntryMatches(
+        "diag.15.ProcedureDeclarations",
+        53973usize,
+        "HelloUltraviolet::Audit::FixtureCatalog::RejectedSource",
+        "validatedProceduresRejectedSourceFixtureCount",
+        "Fixtures/RejectedSource/Procedures/ProcedureDeclarationsDiagnostic/Source/Main.uv"
+    ) {
+        count = count + 1usize
+    }
+    return count
+}

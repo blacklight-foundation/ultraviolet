@@ -1,0 +1,16 @@
+//! Rejected polymorphism specimen for a non-dispatchable dynamic class cast.
+
+internal class SelfParameterDispatchClass {
+    internal procedure compareDynamicSelf(~, other: Self) -> i32 {
+        return 1
+    }
+}
+
+internal record SelfParameterDispatchOwner <: SelfParameterDispatchClass {
+    internal value: i32
+}
+
+internal procedure makeSelfParameterDynamic() -> $SelfParameterDispatchClass {
+    let owner: SelfParameterDispatchOwner = SelfParameterDispatchOwner { value: 1 }
+    return owner as $SelfParameterDispatchClass
+}

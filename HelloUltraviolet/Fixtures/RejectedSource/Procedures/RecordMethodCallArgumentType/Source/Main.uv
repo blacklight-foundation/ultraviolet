@@ -1,0 +1,14 @@
+//! Rejected record-method specimen for argument checking in method calls.
+
+public record MethodCallOwner {
+    public value: i32
+
+    public procedure add(~, amount: i32) -> i32 {
+        return self.value + amount
+    }
+}
+
+public procedure recordMethodCallArgumentTypeReference() -> () {
+    let owner: MethodCallOwner = MethodCallOwner { value: 3 }
+    owner~>add(true)
+}

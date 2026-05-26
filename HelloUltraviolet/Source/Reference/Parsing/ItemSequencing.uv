@@ -1,0 +1,51 @@
+//! Reference specimens for Parsing / ItemSequencing.
+
+internal enum ParsedItemReferenceKind {
+    Import
+    Using
+    Static
+    TypeDeclaration
+    Procedure
+}
+
+internal record ParsedItemReference {
+    internal kind: ParsedItemReferenceKind
+    internal ordinal: usize
+    internal has_module_doc: bool
+    internal has_line_doc: bool
+}
+
+internal procedure parsedItemReference(
+    kind: ParsedItemReferenceKind,
+    ordinal: usize,
+    has_module_doc: bool,
+    has_line_doc: bool
+) -> ParsedItemReference {
+    return ParsedItemReference {
+        kind: kind,
+        ordinal: ordinal,
+        has_module_doc: has_module_doc,
+        has_line_doc: has_line_doc
+    }
+}
+
+internal procedure parsedItemPrecedes(
+    left: ParsedItemReference,
+    right: ParsedItemReference
+) -> bool {
+    return left.ordinal < right.ordinal
+}
+
+/// Exercises the Parsing ItemSequencing reference surface.
+public procedure runParsingItemSequencingReference() -> bool {
+    let import_item: ParsedItemReference =
+        parsedItemReference(ParsedItemReferenceKind::Import, 1usize, true, false)
+    let type_item: ParsedItemReference =
+        parsedItemReference(ParsedItemReferenceKind::TypeDeclaration, 2usize, false, true)
+    let procedure_item: ParsedItemReference =
+        parsedItemReference(ParsedItemReferenceKind::Procedure, 3usize, false, true)
+    return import_item.has_module_doc &&
+        type_item.has_line_doc &&
+        parsedItemPrecedes(import_item, type_item) &&
+        parsedItemPrecedes(type_item, procedure_item)
+}

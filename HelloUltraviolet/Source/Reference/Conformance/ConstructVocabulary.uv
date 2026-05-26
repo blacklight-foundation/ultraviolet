@@ -1,0 +1,75 @@
+//! Reference specimens for Conformance / ConstructVocabulary.
+
+internal enum ConstructVocabularyKind {
+    Declaration
+    TypeForm
+    Expression
+    Pattern
+    Statement
+    Attribute
+}
+
+internal procedure constructVocabularyIsSourceConstruct(
+    kind: ConstructVocabularyKind
+) -> bool {
+    return if kind is {
+        ConstructVocabularyKind::Declaration {
+            true
+        }
+        ConstructVocabularyKind::TypeForm {
+            true
+        }
+        ConstructVocabularyKind::Expression {
+            true
+        }
+        ConstructVocabularyKind::Pattern {
+            true
+        }
+        ConstructVocabularyKind::Statement {
+            true
+        }
+        ConstructVocabularyKind::Attribute {
+            true
+        }
+    }
+}
+
+internal procedure constructVocabularyOrder(kind: ConstructVocabularyKind) -> usize {
+    return if kind is {
+        ConstructVocabularyKind::Declaration {
+            1usize
+        }
+        ConstructVocabularyKind::TypeForm {
+            2usize
+        }
+        ConstructVocabularyKind::Expression {
+            3usize
+        }
+        ConstructVocabularyKind::Pattern {
+            4usize
+        }
+        ConstructVocabularyKind::Statement {
+            5usize
+        }
+        ConstructVocabularyKind::Attribute {
+            6usize
+        }
+    }
+}
+
+/// Exercises the Conformance ConstructVocabulary reference surface.
+public procedure runConformanceConstructVocabularyReference() -> bool {
+    let declaration: ConstructVocabularyKind = ConstructVocabularyKind::Declaration
+    let type_form: ConstructVocabularyKind = ConstructVocabularyKind::TypeForm
+    let expression: ConstructVocabularyKind = ConstructVocabularyKind::Expression
+    let pattern: ConstructVocabularyKind = ConstructVocabularyKind::Pattern
+    let statement: ConstructVocabularyKind = ConstructVocabularyKind::Statement
+    let attribute: ConstructVocabularyKind = ConstructVocabularyKind::Attribute
+    return constructVocabularyIsSourceConstruct(declaration) &&
+        constructVocabularyIsSourceConstruct(type_form) &&
+        constructVocabularyIsSourceConstruct(expression) &&
+        constructVocabularyIsSourceConstruct(pattern) &&
+        constructVocabularyIsSourceConstruct(statement) &&
+        constructVocabularyIsSourceConstruct(attribute) &&
+        constructVocabularyOrder(attribute) == 6usize
+}

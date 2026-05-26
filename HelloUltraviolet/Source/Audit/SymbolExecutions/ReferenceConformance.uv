@@ -1,0 +1,25 @@
+//! Compiled symbol execution checks for ReferenceConformance.
+
+using HelloUltraviolet::Reference::Conformance::{ runConformanceBehaviorClassificationReference }
+using HelloUltraviolet::Reference::Conformance::{ runConformanceConstructVocabularyReference }
+using HelloUltraviolet::Reference::Conformance::{ runConformanceTranslationOrderingReference }
+
+public procedure catalogCompiledSymbolsExecuteReferenceConformance(context: Context) -> bool {
+    var passed: bool = true
+    passed = recordCatalogSymbolExecution(
+        context,
+        "runConformanceBehaviorClassificationReference",
+        runConformanceBehaviorClassificationReference()
+    ) && passed
+    passed = recordCatalogSymbolExecution(
+        context,
+        "runConformanceConstructVocabularyReference",
+        runConformanceConstructVocabularyReference()
+    ) && passed
+    passed = recordCatalogSymbolExecution(
+        context,
+        "runConformanceTranslationOrderingReference",
+        runConformanceTranslationOrderingReference()
+    ) && passed
+    return passed
+}

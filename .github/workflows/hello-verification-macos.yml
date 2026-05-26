@@ -1,0 +1,66 @@
+name: HelloUltraviolet macOS Verification
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  verification:
+    name: aarch64-darwin
+    runs-on: macos-15
+    timeout-minutes: 120
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          lfs: false
+
+      - name: Install CMake 4.0.2
+        run: |
+          python3 -m venv "$RUNNER_TEMP/cmake-venv"
+          "$RUNNER_TEMP/cmake-venv/bin/python" -m pip install --upgrade pip
+          "$RUNNER_TEMP/cmake-venv/bin/python" -m pip install cmake==4.0.2
+          scripts_dir="$RUNNER_TEMP/cmake-venv/bin"
+          echo "$scripts_dir" >> "$GITHUB_PATH"
+          echo "UV_CMAKE_EXE=$scripts_dir/cmake" >> "$GITHUB_ENV"
+
+      - name: Verify host tools
+        run: |
+          "$UV_CMAKE_EXE" --version
+          python3 --version
+          xcode-select -p
+          xcrun --find clang++
+          xcrun --show-sdk-path
+
+      - name: Fetch target extern payloads
+        run: python3 Tools/FetchTargetExterns.py --target-profile aarch64-darwin
+
+      - name: Run HelloUltraviolet verification
+        run: |
+          set -o pipefail
+          mkdir -p artifacts
+          python3 Tools/RunHelloVerification.py \
+            --target-profile aarch64-darwin \
+            --cmake "$UV_CMAKE_EXE" \
+            --pr "${GITHUB_REF_NAME}" \
+            --nonce "github-${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}" \
+            | tee artifacts/hello-verification-macos.txt
+
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: hello-verification-macos
+          path: artifacts/hello-verification-macos.txt
+          if-no-files-found: ignore
+
+      - name: Upload macOS release archive
+        uses: actions/upload-artifact@v4
+        with:
+          name: ultraviolet-macos-aarch64
+          path: |
+            Build/Release/ultraviolet-macos-aarch64.tar.gz
+            Build/Release/ultraviolet-macos-aarch64.tar.gz.sha256
+          if-no-files-found: error

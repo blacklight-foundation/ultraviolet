@@ -1,0 +1,44 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1050" height="500" viewBox="0 0 1050 500" role="img" aria-labelledby="title desc">
+  <title id="title">Figure 4. Accepted-error surface for LLM-generated programs</title>
+  <desc id="desc">A vector set diagram showing all generated candidates, candidates rejected before acceptance, accepted language candidates, correct task candidates, and accepted errors targeted by language design.</desc>
+  <defs>
+    <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse">
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="#334155"/>
+    </marker>
+    <style>
+      .title { font: 700 22px Arial, sans-serif; fill: #111827; }
+      .label { font: 700 16px Arial, sans-serif; fill: #111827; }
+      .small { font: 13px Arial, sans-serif; fill: #334155; }
+      .frame { fill: #f8fafc; stroke: #334155; stroke-width: 1.5; rx: 14; }
+      .accepted { fill: #dbeafe; stroke: #1d4ed8; stroke-width: 2; opacity: 0.92; }
+      .correct { fill: #bbf7d0; stroke: #15803d; stroke-width: 2; opacity: 0.92; }
+      .error { fill: #fecdd3; stroke: #be123c; stroke-width: 2; opacity: 0.82; }
+      .reject { fill: #f1f5f9; stroke: #64748b; stroke-dasharray: 7 5; stroke-width: 2; }
+      .arrow { fill: none; stroke: #334155; stroke-width: 2; marker-end: url(#arrow); }
+    </style>
+  </defs>
+  <rect width="1050" height="500" fill="#ffffff"/>
+  <text class="title" x="40" y="38">Good language design shrinks accepted wrong programs, not all possible errors</text>
+
+  <rect class="frame" x="60" y="80" width="900" height="340"/>
+  <text class="label" x="105" y="115">All generated candidates</text>
+
+  <ellipse class="reject" cx="280" cy="260" rx="170" ry="115"/>
+  <text class="label" x="280" y="252" text-anchor="middle">Rejected before</text>
+  <text class="label" x="280" y="274" text-anchor="middle">acceptance</text>
+  <text class="small" x="280" y="300" text-anchor="middle">syntax, typing, capability, proof</text>
+
+  <ellipse class="accepted" cx="650" cy="260" rx="240" ry="130"/>
+  <text class="label" x="650" y="165" text-anchor="middle">Accepted<tspan baseline-shift="sub" font-size="11px">L</tspan></text>
+
+  <ellipse class="error" cx="720" cy="275" rx="120" ry="76"/>
+  <text class="label" x="720" y="270" text-anchor="middle">AcceptedError<tspan baseline-shift="sub" font-size="11px">L</tspan></text>
+  <text class="small" x="720" y="294" text-anchor="middle">accepted but wrong</text>
+
+  <ellipse class="correct" cx="565" cy="255" rx="105" ry="72"/>
+  <text class="label" x="565" y="250" text-anchor="middle">Correct<tspan baseline-shift="sub" font-size="11px">L</tspan></text>
+  <text class="small" x="565" y="274" text-anchor="middle">satisfies task spec</text>
+
+  <path class="arrow" d="M 805 345 C 735 425 495 440 385 340"/>
+  <text class="small" x="600" y="455" text-anchor="middle">design target: move accepted errors into rejection, proof, check, or test evidence</text>
+</svg>

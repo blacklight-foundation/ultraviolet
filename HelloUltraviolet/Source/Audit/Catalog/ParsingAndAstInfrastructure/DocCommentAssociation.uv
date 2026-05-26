@@ -1,0 +1,56 @@
+//! Generated catalog markers for 5. Parsing and AST Infrastructure / 5.7 Doc Comment Association.
+
+
+public procedure countParsingAndAstInfrastructureDocCommentAssociationObligations() -> usize {
+    return 5usize
+}
+
+public procedure validatedParsingAndAstInfrastructureDocCommentAssociationObligations() -> usize {
+    var count: usize = 0usize
+    if referenceModelObligationEntryMatches(
+        "def.DocCommentAssociation",
+        11754usize,
+        "HelloUltraviolet::Audit",
+        "runParsingReferenceModels",
+        "Source/Audit/ParsingReferenceModels.uv"
+    ) {
+        count = count + 1usize
+    }
+    if referenceModelObligationEntryMatches(
+        "Attach-Doc-Line",
+        11769usize,
+        "HelloUltraviolet::Audit",
+        "runParsingReferenceModels",
+        "Source/Audit/ParsingReferenceModels.uv"
+    ) {
+        count = count + 1usize
+    }
+    if referenceModelObligationEntryMatches(
+        "def.LineDocTargets",
+        11787usize,
+        "HelloUltraviolet::Audit",
+        "runParsingReferenceModels",
+        "Source/Audit/ParsingReferenceModels.uv"
+    ) {
+        count = count + 1usize
+    }
+    if referenceModelObligationEntryMatches(
+        "Attach-Doc-Module",
+        11802usize,
+        "HelloUltraviolet::Audit",
+        "runParsingReferenceModels",
+        "Source/Audit/ParsingReferenceModels.uv"
+    ) {
+        count = count + 1usize
+    }
+    if referenceModelObligationEntryMatches(
+        "def.ModuleDocs",
+        11820usize,
+        "HelloUltraviolet::Audit",
+        "runParsingReferenceModels",
+        "Source/Audit/ParsingReferenceModels.uv"
+    ) {
+        count = count + 1usize
+    }
+    return count
+}

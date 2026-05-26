@@ -1,0 +1,82 @@
+//! Reference specimens for Diagnostics / DiagnosticRecords.
+
+internal enum DiagnosticSeverityReference {
+    Error
+    Warning
+    Info
+    Panic
+    Note
+}
+
+internal modal DiagnosticCodeReference {
+    @Absent {}
+
+    @Present {
+        internal code: string@View
+    }
+}
+
+internal type DiagnosticCodeReferenceValue =
+    DiagnosticCodeReference@Absent | DiagnosticCodeReference@Present
+
+internal record DiagnosticRecordReference {
+    internal code: DiagnosticCodeReferenceValue
+    internal severity: DiagnosticSeverityReference
+    internal message: string@View
+    internal has_span: bool
+}
+
+internal procedure diagnosticRecordHasCode(
+    diagnostic: DiagnosticRecordReference
+) -> bool {
+    return if diagnostic.code is {
+        @Absent {
+            false
+        }
+        @Present {
+            true
+        }
+    }
+}
+
+internal procedure diagnosticSeverityIsFailure(
+    severity: DiagnosticSeverityReference
+) -> bool {
+    return if severity is {
+        DiagnosticSeverityReference::Error {
+            true
+        }
+        DiagnosticSeverityReference::Warning {
+            false
+        }
+        DiagnosticSeverityReference::Info {
+            false
+        }
+        DiagnosticSeverityReference::Panic {
+            true
+        }
+        DiagnosticSeverityReference::Note {
+            false
+        }
+    }
+}
+
+/// Exercises the Diagnostics DiagnosticRecords reference surface.
+public procedure runDiagnosticsDiagnosticRecordsReference() -> bool {
+    let coded: DiagnosticRecordReference = DiagnosticRecordReference {
+        code: DiagnosticCodeReference@Present { code: "E-SRC-0520" },
+        severity: DiagnosticSeverityReference::Error,
+        message: "unexpected token",
+        has_span: true
+    }
+    let auxiliary: DiagnosticRecordReference = DiagnosticRecordReference {
+        code: DiagnosticCodeReference@Absent {},
+        severity: DiagnosticSeverityReference::Note,
+        message: "while parsing item",
+        has_span: false
+    }
+    return diagnosticRecordHasCode(coded) &&
+        diagnosticSeverityIsFailure(coded.severity) &&
+        !diagnosticRecordHasCode(auxiliary) &&
+        !diagnosticSeverityIsFailure(auxiliary.severity)
+}

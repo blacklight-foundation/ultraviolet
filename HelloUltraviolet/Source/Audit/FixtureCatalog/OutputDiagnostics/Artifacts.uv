@@ -1,0 +1,170 @@
+//! Runtime checks for output-diagnostic fixture artifacts.
+
+using HelloUltraviolet::Audit::{ auditTextContains }
+using HelloUltraviolet::Audit::{ auditTextEquals }
+
+internal procedure outputDiagnosticFixtureArtifactsExistAtPaths(
+    context: Context,
+    manifest_path: string@View,
+    source_path: string@View,
+    expected_path: string@View
+) -> bool {
+    return context.io~>exists(manifest_path) &&
+        context.io~>exists(source_path) &&
+        context.io~>exists(expected_path)
+}
+
+public procedure outputDiagnosticFixtureArtifactsExist(context: Context) -> bool {
+    return outputDiagnosticFixtureArtifactsExistAtPaths(
+        context,
+        "HelloUltraviolet/Fixtures/OutputDiagnostics/Lowering/LlvmToolResolveOwnership/Ultraviolet.toml",
+        "HelloUltraviolet/Fixtures/OutputDiagnostics/Lowering/LlvmToolResolveOwnership/Source/Library.uv",
+        "HelloUltraviolet/Fixtures/OutputDiagnostics/Lowering/LlvmToolResolveOwnership/Expected.uv"
+    ) &&
+        outputDiagnosticFixtureArtifactsExistAtPaths(
+            context,
+            "HelloUltraviolet/Fixtures/OutputDiagnostics/Lowering/EmitLLVMRenderFailure/Ultraviolet.toml",
+            "HelloUltraviolet/Fixtures/OutputDiagnostics/Lowering/EmitLLVMRenderFailure/Source/Library.uv",
+            "HelloUltraviolet/Fixtures/OutputDiagnostics/Lowering/EmitLLVMRenderFailure/Expected.uv"
+        ) &&
+        outputDiagnosticFixtureArtifactsExistAtPaths(
+            context,
+            "HelloUltraviolet/Fixtures/OutputDiagnostics/Projects/ManifestParseError/Ultraviolet.toml",
+            "HelloUltraviolet/Fixtures/OutputDiagnostics/Projects/ManifestParseError/Source/Main.uv",
+            "HelloUltraviolet/Fixtures/OutputDiagnostics/Projects/ManifestParseError/Expected.uv"
+        ) &&
+        outputDiagnosticFixtureArtifactsExistAtPaths(
+            context,
+            "HelloUltraviolet/Fixtures/OutputDiagnostics/CommandLine/UnknownCommand/Invocation.txt",
+            "HelloUltraviolet/Fixtures/OutputDiagnostics/CommandLine/UnknownCommand/Output.txt",
+            "HelloUltraviolet/Fixtures/OutputDiagnostics/CommandLine/UnknownCommand/Expected.uv"
+        ) &&
+        context.io~>exists(
+            "HelloUltraviolet/Fixtures/OutputDiagnostics/Lowering/EmitLLVMRenderFailure/Tools/llvm-as.exe"
+        )
+}
+
+internal procedure outputDiagnosticExpectedFileMatches(
+    context: Context,
+    expected_path: string@View,
+    expected_text: string@View
+) -> bool {
+    let read_result: Outcome<unique string@Managed, IoError> = context.io~>read_file(expected_path)
+    return if move read_result is {
+        @Value { value } {
+            let text: string@View = string::as_view(value)
+            auditTextEquals(text, expected_text)
+        }
+        @Error {
+            false
+        }
+    }
+}
+
+public procedure llvmToolResolveOwnershipExpectedDiagnosticFileMatches(
+    context: Context
+) -> bool {
+    return outputDiagnosticExpectedFileMatches(
+        context,
+        "HelloUltraviolet/Fixtures/OutputDiagnostics/Lowering/LlvmToolResolveOwnership/Expected.uv",
+        "//! Expected diagnostic metadata for the LlvmToolResolveOwnership output-diagnostic specimen.\n\nexpectedDiagnostic(\"E-OUT-0403\", \"requirement.24.LLVMToolAcceptanceAndResolveOwnership\")\n"
+    )
+}
+
+public procedure emitLLVMRenderFailureExpectedDiagnosticFileMatches(
+    context: Context
+) -> bool {
+    return outputDiagnosticExpectedFileMatches(
+        context,
+        "HelloUltraviolet/Fixtures/OutputDiagnostics/Lowering/EmitLLVMRenderFailure/Expected.uv",
+        "//! Expected diagnostic metadata for the EmitLLVMRenderFailure output-diagnostic specimen.\n\nexpectedDiagnostic(\"E-OUT-0403\", \"rule.24.EmitLLVM-Err\")\n"
+    )
+}
+
+public procedure manifestParseErrorExpectedDiagnosticFileMatches(context: Context) -> bool {
+    return outputDiagnosticExpectedFileMatches(
+        context,
+        "HelloUltraviolet/Fixtures/OutputDiagnostics/Projects/ManifestParseError/Expected.uv",
+        "//! Expected diagnostic metadata for the ManifestParseError output-diagnostic specimen.\n\nexpectedDiagnostic(\"E-PRJ-0102\", \"Parse-Manifest-Err\")\nexpectedDiagnostic(\"E-PRJ-0102\", \"Step-Parse-Err\")\nexpectedDiagnostic(\"E-PRJ-0102\", \"LoadProject-Err\")\nexpectedDiagnostic(\"E-PRJ-0102\", \"diagnostics.ProjectDiagnostics\")\n"
+    )
+}
+
+public procedure unknownCommandExpectedDiagnosticFileMatches(context: Context) -> bool {
+    return outputDiagnosticExpectedFileMatches(
+        context,
+        "HelloUltraviolet/Fixtures/OutputDiagnostics/CommandLine/UnknownCommand/Expected.uv",
+        "//! Expected diagnostic metadata for the UnknownCommand output-diagnostic specimen.\n\nexpectedDiagnostic(\"E-CLI-0001\", \"diagnostics.CommandLineDiagnostics\")\nexpectedDiagnostic(\"E-CLI-0001\", \"command-line.UnknownCommandInvocation\")\n"
+    )
+}
+
+public procedure unknownCommandOutputMatches(context: Context) -> bool {
+    return outputDiagnosticExpectedFileMatches(
+        context,
+        "HelloUltraviolet/Fixtures/OutputDiagnostics/CommandLine/UnknownCommand/Output.txt",
+        "E-CLI-0001 (error): unknown command\n"
+    )
+}
+
+internal procedure artifactTextContains(
+    context: Context,
+    artifact_path: string@View,
+    required_text: string@View
+) -> bool {
+    let read_result: Outcome<unique string@Managed, IoError> = context.io~>read_file(artifact_path)
+    return if move read_result is {
+        @Value { value } {
+            let text: string@View = string::as_view(value)
+            auditTextContains(text, required_text)
+        }
+        @Error {
+            false
+        }
+    }
+}
+
+internal procedure artifactTextExcludes(
+    context: Context,
+    artifact_path: string@View,
+    forbidden_text: string@View
+) -> bool {
+    let read_result: Outcome<unique string@Managed, IoError> = context.io~>read_file(artifact_path)
+    return if move read_result is {
+        @Value { value } {
+            let text: string@View = string::as_view(value)
+            !auditTextContains(text, forbidden_text)
+        }
+        @Error {
+            false
+        }
+    }
+}
+
+public procedure llvmToolResolveOwnershipConformanceLogMatches(context: Context) -> bool {
+    let conformance_log_path: string@View =
+        "HelloUltraviolet/Fixtures/OutputDiagnostics/Lowering/LlvmToolResolveOwnership/Build/Logs/Conformance/LlvmToolResolveOwnership.conformance.log"
+    return artifactTextContains(context, conformance_log_path, "\tResolveTool-Err-IR\t") &&
+        artifactTextContains(context, conformance_log_path, "\tOut-IR-Err\t") &&
+        artifactTextContains(context, conformance_log_path, "\tOutput-Pipeline-Err\t") &&
+        artifactTextExcludes(context, conformance_log_path, "\tEmitObj-Err\t") &&
+        artifactTextExcludes(context, conformance_log_path, "\tEmitLLVM-Err\t")
+}
+
+public procedure emitLLVMRenderFailureConformanceLogMatches(context: Context) -> bool {
+    let conformance_log_path: string@View =
+        "HelloUltraviolet/Fixtures/OutputDiagnostics/Lowering/EmitLLVMRenderFailure/Build/Logs/Conformance/EmitLLVMRenderFailure.conformance.log"
+    return artifactTextContains(context, conformance_log_path, "\tResolveTool-Ok\t") &&
+        artifactTextContains(context, conformance_log_path, "\tAssembleIR-Err\t") &&
+        artifactTextContains(context, conformance_log_path, "\tEmitLLVM-Err\t") &&
+        artifactTextContains(context, conformance_log_path, "\tOut-IR-Err\t") &&
+        artifactTextContains(context, conformance_log_path, "\tOutput-Pipeline-Err\t") &&
+        artifactTextExcludes(context, conformance_log_path, "\tEmitObj-Err\t") &&
+        artifactTextExcludes(context, conformance_log_path, "\tResolveTool-Err-IR\t")
+}
+
+public procedure manifestParseErrorConformanceLogMatches(context: Context) -> bool {
+    let conformance_log_path: string@View =
+        "HelloUltraviolet/Fixtures/OutputDiagnostics/Projects/ManifestParseError/Build/Logs/Conformance/ManifestParseError.conformance.log"
+    return artifactTextContains(context, conformance_log_path, "\tDiag-Emit\t") &&
+        artifactTextContains(context, conformance_log_path, "code%3DE-PRJ-0102") &&
+        artifactTextContains(context, conformance_log_path, "\tReject-IllFormed\t")
+}

@@ -1,0 +1,164 @@
+//! Generated catalog markers for 15. Procedures and Contracts / 15.7 Invariants.
+
+
+public procedure countProceduresAndContractsInvariantsObligations() -> usize {
+    return 17usize
+}
+
+public procedure validatedProceduresAndContractsInvariantsObligations() -> usize {
+    var count: usize = 0usize
+    if acceptedObligationEntryMatches(
+        "grammar.15.Invariants",
+        56280usize,
+        "HelloUltraviolet::Reference::Procedures",
+        "runProceduresInvariantsReference",
+        "Source/Reference/Procedures/Invariants.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "rule.15.Parse-InvariantOpt-None",
+        56298usize,
+        "HelloUltraviolet::Reference::Procedures",
+        "runProceduresInvariantsReference",
+        "Source/Reference/Procedures/Invariants.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "rule.15.Parse-InvariantOpt-Yes",
+        56314usize,
+        "HelloUltraviolet::Reference::Procedures",
+        "runProceduresInvariantsReference",
+        "Source/Reference/Procedures/Invariants.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "rule.15.ParseLoopInvariantOpt",
+        56330usize,
+        "HelloUltraviolet::Reference::Procedures",
+        "runProceduresInvariantsReference",
+        "Source/Reference/Procedures/Invariants.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "def.15.InvariantAst",
+        56345usize,
+        "HelloUltraviolet::Reference::Procedures",
+        "runProceduresInvariantsReference",
+        "Source/Reference/Procedures/Invariants.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "def.15.TypeInvariantAstExtensions",
+        56359usize,
+        "HelloUltraviolet::Reference::Procedures",
+        "runProceduresInvariantsReference",
+        "Source/Reference/Procedures/Invariants.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "def.15.LoopInvariantAstPreservation",
+        56374usize,
+        "HelloUltraviolet::Reference::Procedures",
+        "runProceduresInvariantsReference",
+        "Source/Reference/Procedures/Invariants.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "def.15.TypeInvariantContext",
+        56389usize,
+        "HelloUltraviolet::Reference::Procedures",
+        "runProceduresInvariantsReference",
+        "Source/Reference/Procedures/Invariants.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "def.15.TypeInvariantEnforcementPoints",
+        56406usize,
+        "HelloUltraviolet::Reference::Procedures",
+        "runProceduresInvariantsReference",
+        "Source/Reference/Procedures/Invariants.uv"
+    ) {
+        count = count + 1usize
+    }
+    if rejectedSourceObligationEntryMatches(
+        "req.15.TypeInvariantsForbidPublicMutableFields",
+        56423usize,
+        "HelloUltraviolet::Audit::FixtureCatalog::RejectedSource",
+        "validatedProceduresRejectedSourceFixtureCount",
+        "Fixtures/RejectedSource/Procedures/InvariantPublicMutableField/Source/Main.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "req.15.PrivateProceduresExemptFromTypeInvariantPreCall",
+        56436usize,
+        "HelloUltraviolet::Reference::Procedures",
+        "runProceduresInvariantsReference",
+        "Source/Reference/Procedures/Invariants.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "def.15.LoopInvariantEnforcementPoints",
+        56449usize,
+        "HelloUltraviolet::Reference::Procedures",
+        "runProceduresInvariantsReference",
+        "Source/Reference/Procedures/Invariants.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "req.15.LoopInvariantExitFact",
+        56466usize,
+        "HelloUltraviolet::Reference::Procedures",
+        "runProceduresInvariantsReference",
+        "Source/Reference/Procedures/Invariants.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "req.15.InvariantVerificationModeRules",
+        56479usize,
+        "HelloUltraviolet::Reference::Procedures",
+        "runProceduresInvariantsReference",
+        "Source/Reference/Procedures/Invariants.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "req.15.InvariantRuntimeChecks",
+        56494usize,
+        "HelloUltraviolet::Reference::Procedures",
+        "runProceduresInvariantsReference",
+        "Source/Reference/Procedures/Invariants.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "req.15.InvariantLoweringViaVerificationLogic",
+        56509usize,
+        "HelloUltraviolet::Reference::Procedures",
+        "runProceduresInvariantsReference",
+        "Source/Reference/Procedures/Invariants.uv"
+    ) {
+        count = count + 1usize
+    }
+    if rejectedSourceObligationEntryMatches(
+        "diag.15.Invariants",
+        56524usize,
+        "HelloUltraviolet::Audit::FixtureCatalog::RejectedSource",
+        "validatedProceduresRejectedSourceFixtureCount",
+        "Fixtures/RejectedSource/Procedures/InvariantDiagnostics/Source/Main.uv"
+    ) {
+        count = count + 1usize
+    }
+    return count
+}

@@ -1,0 +1,41 @@
+//! Reference specimens for Parsing / Terminators.
+
+internal enum TerminatorReference {
+    Newline
+    Semicolon
+    OptionalAfterBlock
+    ContinuedLine
+}
+
+internal procedure terminatorSatisfiesRequiredStatement(
+    terminator: TerminatorReference
+) -> bool {
+    return if terminator is {
+        TerminatorReference::Newline {
+            true
+        }
+        TerminatorReference::Semicolon {
+            true
+        }
+        TerminatorReference::OptionalAfterBlock {
+            false
+        }
+        TerminatorReference::ContinuedLine {
+            false
+        }
+    }
+}
+
+/// Exercises the Parsing Terminators reference surface.
+public procedure runParsingTerminatorsReference() -> bool {
+    let newline: TerminatorReference = TerminatorReference::Newline
+    let semicolon: TerminatorReference = TerminatorReference::Semicolon
+    let block_end: TerminatorReference = TerminatorReference::OptionalAfterBlock
+    let split_expression: bool =
+        1 +
+        2 == 3
+    return terminatorSatisfiesRequiredStatement(newline) &&
+        terminatorSatisfiesRequiredStatement(semicolon) &&
+        !terminatorSatisfiesRequiredStatement(block_end) &&
+        split_expression
+}

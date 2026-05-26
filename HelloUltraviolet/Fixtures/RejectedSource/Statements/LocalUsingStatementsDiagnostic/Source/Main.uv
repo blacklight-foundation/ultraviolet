@@ -1,0 +1,6 @@
+//! Rejected statement specimen for local using diagnostic coverage.
+
+public procedure localUsingStatementsDiagnosticReference() -> i32 {
+    using missing_value as alias_value
+    return alias_value
+}

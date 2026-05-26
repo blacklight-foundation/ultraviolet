@@ -1,0 +1,164 @@
+//! Generated catalog markers for 19. Key System / 19.7 Memory Ordering.
+
+
+public procedure countKeySystemMemoryOrderingObligations() -> usize {
+    return 17usize
+}
+
+public procedure validatedKeySystemMemoryOrderingObligations() -> usize {
+    var count: usize = 0usize
+    if acceptedObligationEntryMatches(
+        "grammar.19.MemoryOrdering",
+        75347usize,
+        "HelloUltraviolet::Reference::Keys",
+        "runKeysMemoryOrderingReference",
+        "Source/Reference/Keys/MemoryOrdering.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "parse.19.MemoryOrdering",
+        75367usize,
+        "HelloUltraviolet::Reference::Keys",
+        "runKeysMemoryOrderingReference",
+        "Source/Reference/Keys/MemoryOrdering.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "ast.19.MemoryOrderingForms",
+        75384usize,
+        "HelloUltraviolet::Reference::Keys",
+        "runKeysMemoryOrderingReference",
+        "Source/Reference/Keys/MemoryOrdering.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "requirement.19.MemoryOrderingDefaultsAndKeySemantics",
+        75407usize,
+        "HelloUltraviolet::Reference::Keys",
+        "runKeysMemoryOrderingReference",
+        "Source/Reference/Keys/MemoryOrdering.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "def.19.MemoryOrderingLevels",
+        75422usize,
+        "HelloUltraviolet::Reference::Keys",
+        "runKeysMemoryOrderingReference",
+        "Source/Reference/Keys/MemoryOrdering.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "requirement.19.MemoryOrderAttributeAttachment",
+        75443usize,
+        "HelloUltraviolet::Reference::Keys",
+        "runKeysMemoryOrderingReference",
+        "Source/Reference/Keys/MemoryOrdering.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "requirement.19.ExpressionMemoryOrderWellFormedness",
+        75461usize,
+        "HelloUltraviolet::Reference::Keys",
+        "runKeysMemoryOrderingReference",
+        "Source/Reference/Keys/MemoryOrdering.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "requirement.19.MemoryOrderDoesNotAlterKeySemantics",
+        75474usize,
+        "HelloUltraviolet::Reference::Keys",
+        "runKeysMemoryOrderingReference",
+        "Source/Reference/Keys/MemoryOrdering.uv"
+    ) {
+        count = count + 1usize
+    }
+    if rejectedSourceObligationEntryMatches(
+        "requirement.19.MemoryOrderNotInsideSpeculativeBlocks",
+        75487usize,
+        "HelloUltraviolet::Audit::FixtureCatalog::RejectedSource",
+        "validatedKeysRejectedSourceFixtureCount",
+        "Fixtures/RejectedSource/Keys/SpeculativeMemoryOrder/Source/Main.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "rule.19.T-Fence",
+        75500usize,
+        "HelloUltraviolet::Reference::Keys",
+        "runKeysMemoryOrderingReference",
+        "Source/Reference/Keys/MemoryOrdering.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "requirement.19.FenceContextAndHeldKeys",
+        75516usize,
+        "HelloUltraviolet::Reference::Keys",
+        "runKeysMemoryOrderingReference",
+        "Source/Reference/Keys/MemoryOrdering.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "requirement.19.FenceEvaluation",
+        75531usize,
+        "HelloUltraviolet::Reference::Keys",
+        "runKeysMemoryOrderingReference",
+        "Source/Reference/Keys/MemoryOrdering.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "requirement.19.FenceOrderingConstraints",
+        75548usize,
+        "HelloUltraviolet::Reference::Keys",
+        "runKeysMemoryOrderingReference",
+        "Source/Reference/Keys/MemoryOrdering.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "requirement.19.FenceNoProgramVisibleStorageAccess",
+        75565usize,
+        "HelloUltraviolet::Reference::Keys",
+        "runKeysMemoryOrderingReference",
+        "Source/Reference/Keys/MemoryOrdering.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "rule.19.Lower-Expr-Fence",
+        75580usize,
+        "HelloUltraviolet::Reference::Keys",
+        "runKeysMemoryOrderingReference",
+        "Source/Reference/Keys/MemoryOrdering.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "rule.19.Lower-Ordered-Access",
+        75595usize,
+        "HelloUltraviolet::Reference::Keys",
+        "runKeysMemoryOrderingReference",
+        "Source/Reference/Keys/MemoryOrdering.uv"
+    ) {
+        count = count + 1usize
+    }
+    if rejectedSourceObligationEntryMatches(
+        "diagnostics.19.MemoryOrdering",
+        75613usize,
+        "HelloUltraviolet::Audit::FixtureCatalog::RejectedSource",
+        "validatedKeysRejectedSourceFixtureCount",
+        "Fixtures/RejectedSource/Keys/MemoryOrderingDiagnostic/Source/Main.uv"
+    ) {
+        count = count + 1usize
+    }
+    return count
+}

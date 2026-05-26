@@ -1,0 +1,110 @@
+//! Generated catalog markers for 20. Structured Parallelism / 20.8 Determinism and Nesting.
+
+
+public procedure countStructuredParallelismDeterminismAndNestingObligations() -> usize {
+    return 11usize
+}
+
+public procedure validatedStructuredParallelismDeterminismAndNestingObligations() -> usize {
+    var count: usize = 0usize
+    if acceptedObligationEntryMatches(
+        "requirement.20.DeterminismNestingNoAdditionalSyntax",
+        78667usize,
+        "HelloUltraviolet::Reference::Parallelism",
+        "runParallelismDeterminismReference",
+        "Source/Reference/Parallelism/Determinism.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "requirement.20.DeterminismNestingNoAdditionalParsingRules",
+        78682usize,
+        "HelloUltraviolet::Reference::Parallelism",
+        "runParallelismDeterminismReference",
+        "Source/Reference/Parallelism/Determinism.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "ast.20.DeterminismNestingForms",
+        78697usize,
+        "HelloUltraviolet::Reference::Parallelism",
+        "runParallelismDeterminismReference",
+        "Source/Reference/Parallelism/Determinism.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "requirement.20.DispatchDeterminismConditions",
+        78712usize,
+        "HelloUltraviolet::Reference::Parallelism",
+        "runParallelismDeterminismReference",
+        "Source/Reference/Parallelism/Determinism.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "requirement.20.OrderedDispatchSequentialSideEffects",
+        78729usize,
+        "HelloUltraviolet::Reference::Parallelism",
+        "runParallelismDeterminismReference",
+        "Source/Reference/Parallelism/Determinism.uv"
+    ) {
+        count = count + 1usize
+    }
+    if rejectedSourceObligationEntryMatches(
+        "requirement.20.NoNestedGpuParallel",
+        78742usize,
+        "HelloUltraviolet::Audit::FixtureCatalog::RejectedSource",
+        "validatedParallelismRejectedSourceFixtureCount",
+        "Fixtures/RejectedSource/Parallelism/NestedGpuParallel/Source/Main.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "requirement.20.NestedParallelRuntimeSemantics",
+        78757usize,
+        "HelloUltraviolet::Reference::Parallelism",
+        "runParallelismDeterminismReference",
+        "Source/Reference/Parallelism/Determinism.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "def.20.ParallelDeterministicOrdering",
+        78778usize,
+        "HelloUltraviolet::Reference::Parallelism",
+        "runParallelismDeterminismReference",
+        "Source/Reference/Parallelism/Determinism.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "rule.20.Lower-Deterministic-Dispatch",
+        78804usize,
+        "HelloUltraviolet::Reference::Parallelism",
+        "runParallelismDeterminismReference",
+        "Source/Reference/Parallelism/Determinism.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "rule.20.Lower-Nested-Parallel",
+        78820usize,
+        "HelloUltraviolet::Reference::Parallelism",
+        "runParallelismDeterminismReference",
+        "Source/Reference/Parallelism/Determinism.uv"
+    ) {
+        count = count + 1usize
+    }
+    if rejectedSourceObligationEntryMatches(
+        "diagnostics.20.DeterminismAndNesting",
+        78836usize,
+        "HelloUltraviolet::Audit::FixtureCatalog::RejectedSource",
+        "validatedParallelismRejectedSourceFixtureCount",
+        "Fixtures/RejectedSource/Parallelism/DeterminismAndNestingDiagnostics/Source/Main.uv"
+    ) {
+        count = count + 1usize
+    }
+    return count
+}

@@ -1,0 +1,13 @@
+//! Rejected polymorphism specimen for infinite generic monomorphization recursion.
+
+internal record InstantiationLayer<TValue> {
+    internal value: i32
+}
+
+public procedure expandingInstantiation<TValue>() -> i32 {
+    return expandingInstantiation<InstantiationLayer<TValue>>()
+}
+
+public procedure genericInfiniteMonomorphizationReference() -> i32 {
+    return expandingInstantiation<i32>()
+}

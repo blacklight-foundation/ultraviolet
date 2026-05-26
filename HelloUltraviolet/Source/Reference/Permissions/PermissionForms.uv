@@ -1,0 +1,53 @@
+//! Reference specimens for Permissions / PermissionForms.
+
+internal record PermissionCell {
+    internal value: i32
+
+    internal procedure readConst(~) -> i32 {
+        return self.value + 0
+    }
+
+    internal procedure readShared(~%) -> i32 {
+        return self.value + 0
+    }
+
+    internal procedure readUnique(~!) -> i32 {
+        return self.value + 0
+    }
+}
+
+internal procedure permissionQualifiedLayoutMatches() -> bool {
+    return sizeof(const PermissionCell) == sizeof(PermissionCell) &&
+        alignof(const PermissionCell) == alignof(PermissionCell) &&
+        sizeof(shared PermissionCell) == sizeof(PermissionCell) &&
+        alignof(shared PermissionCell) == alignof(PermissionCell) &&
+        sizeof(unique PermissionCell) == sizeof(PermissionCell) &&
+        alignof(unique PermissionCell) == alignof(PermissionCell)
+}
+
+internal procedure permissionQualifiedBindingValue() -> i32 {
+    let default_const_cell: PermissionCell = PermissionCell { value: 1 }
+    let explicit_const_cell: const PermissionCell = PermissionCell { value: 2 }
+    var shared_cell: shared PermissionCell = PermissionCell { value: 3 }
+    var unique_cell: unique PermissionCell = PermissionCell { value: 4 }
+    var observed: i32 = default_const_cell~>readConst() + explicit_const_cell~>readConst()
+    %read shared_cell {
+        observed = observed + shared_cell.value
+        observed = observed + shared_cell~>readConst()
+    }
+    %write shared_cell {
+        shared_cell.value = shared_cell.value + 1
+        observed = observed + shared_cell~>readShared()
+    }
+    observed = observed + unique_cell~>readConst()
+    observed = observed + unique_cell~>readShared()
+    unique_cell.value = 6
+    observed = observed + unique_cell~>readUnique()
+    return observed
+}
+
+/// Exercises the Permissions PermissionForms reference surface.
+public procedure runPermissionsPermissionFormsReference() -> bool {
+    return permissionQualifiedBindingValue() == 27 &&
+        permissionQualifiedLayoutMatches()
+}

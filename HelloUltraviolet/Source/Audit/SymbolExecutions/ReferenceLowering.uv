@@ -1,0 +1,49 @@
+//! Compiled symbol execution checks for ReferenceLowering.
+
+using HelloUltraviolet::Reference::Lowering::{ runLoweringBackendRequirementsReference }
+using HelloUltraviolet::Reference::Lowering::{ runLoweringCleanupDropUnwindingReference }
+using HelloUltraviolet::Reference::Lowering::{ runLoweringInitializationLifecycleReference }
+using HelloUltraviolet::Reference::Lowering::{ runLoweringLayoutAndABIReference }
+using HelloUltraviolet::Reference::Lowering::{ runLoweringRuntimeInterfaceReference }
+using HelloUltraviolet::Reference::Lowering::{ runLoweringSharedJudgmentsReference }
+using HelloUltraviolet::Reference::Lowering::{ runLoweringSymbolsManglingLinkageReference }
+
+public procedure catalogCompiledSymbolsExecuteReferenceLowering(context: Context) -> bool {
+    var passed: bool = true
+    passed = recordCatalogSymbolExecution(
+        context,
+        "runLoweringBackendRequirementsReference",
+        runLoweringBackendRequirementsReference()
+    ) && passed
+    passed = recordCatalogSymbolExecution(
+        context,
+        "runLoweringCleanupDropUnwindingReference",
+        runLoweringCleanupDropUnwindingReference()
+    ) && passed
+    passed = recordCatalogSymbolExecution(
+        context,
+        "runLoweringInitializationLifecycleReference",
+        runLoweringInitializationLifecycleReference()
+    ) && passed
+    passed = recordCatalogSymbolExecution(
+        context,
+        "runLoweringLayoutAndABIReference",
+        runLoweringLayoutAndABIReference()
+    ) && passed
+    passed = recordCatalogSymbolExecution(
+        context,
+        "runLoweringRuntimeInterfaceReference",
+        runLoweringRuntimeInterfaceReference()
+    ) && passed
+    passed = recordCatalogSymbolExecution(
+        context,
+        "runLoweringSharedJudgmentsReference",
+        runLoweringSharedJudgmentsReference()
+    ) && passed
+    passed = recordCatalogSymbolExecution(
+        context,
+        "runLoweringSymbolsManglingLinkageReference",
+        runLoweringSymbolsManglingLinkageReference()
+    ) && passed
+    return passed
+}

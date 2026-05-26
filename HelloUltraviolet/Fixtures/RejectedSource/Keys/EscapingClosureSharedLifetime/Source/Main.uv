@@ -1,0 +1,6 @@
+//! Rejected key-system specimen for escaping closure capture of local shared data.
+
+public procedure escapingClosureSharedLifetimeReference() -> || -> shared i32 [shared: { shared_value: shared i32 }] {
+    var shared_value: shared i32 = 1
+    return || shared_value
+}

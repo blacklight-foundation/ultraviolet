@@ -1,0 +1,51 @@
+//! Reference specimens for Diagnostics / SourceSpans.
+
+internal record SourceLocationReference {
+    internal offset: usize
+    internal line: usize
+    internal column: usize
+}
+
+internal record SourceSpanReference {
+    internal start: SourceLocationReference
+    internal end: SourceLocationReference
+}
+
+internal procedure sourceLocationReference(
+    offset: usize,
+    line: usize,
+    column: usize
+) -> SourceLocationReference {
+    return SourceLocationReference {
+        offset: offset,
+        line: line,
+        column: column
+    }
+}
+
+internal procedure sourceSpanReference(
+    start: SourceLocationReference,
+    end: SourceLocationReference
+) -> SourceSpanReference {
+    return SourceSpanReference {
+        start: start,
+        end: end
+    }
+}
+
+internal procedure sourceSpanLength(span: SourceSpanReference) -> usize {
+    return span.end.offset - span.start.offset
+}
+
+internal procedure sourceSpanIsOrdered(span: SourceSpanReference) -> bool {
+    return span.start.offset <= span.end.offset &&
+        span.start.line <= span.end.line
+}
+
+/// Exercises the Diagnostics SourceSpans reference surface.
+public procedure runDiagnosticsSourceSpansReference() -> bool {
+    let start: SourceLocationReference = sourceLocationReference(8usize, 2usize, 1usize)
+    let end: SourceLocationReference = sourceLocationReference(13usize, 2usize, 6usize)
+    let span: SourceSpanReference = sourceSpanReference(start, end)
+    return sourceSpanIsOrdered(span) && sourceSpanLength(span) == 5usize
+}

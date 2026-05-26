@@ -1,0 +1,38 @@
+//! Generated catalog markers for Appendix B. Complete Grammar Reference / B.2 Type Grammar.
+
+
+public procedure countAppendixBCompleteGrammarReferenceBTypeGrammarObligations() -> usize {
+    return 3usize
+}
+
+public procedure validatedAppendixBCompleteGrammarReferenceBTypeGrammarObligations() -> usize {
+    var count: usize = 0usize
+    if acceptedObligationEntryMatches(
+        "grammar.B.2.TypeGrammar",
+        100762usize,
+        "HelloUltraviolet::Reference::ModalTypes",
+        "runModalTypesModalDeclarationsReference",
+        "Source/Reference/ModalTypes/ModalDeclarations.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "req.B.2.ClosureTypeUnionParameterParentheses",
+        100822usize,
+        "HelloUltraviolet::Reference::ModalTypes",
+        "runModalTypesClosuresReference",
+        "Source/Reference/ModalTypes/Closures.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "grammar.B.2.GenericRefinementModalTypeGrammar",
+        100835usize,
+        "HelloUltraviolet::Reference::Polymorphism",
+        "runPolymorphismGenericParametersReference",
+        "Source/Reference/Polymorphism/GenericParameters.uv"
+    ) {
+        count = count + 1usize
+    }
+    return count
+}

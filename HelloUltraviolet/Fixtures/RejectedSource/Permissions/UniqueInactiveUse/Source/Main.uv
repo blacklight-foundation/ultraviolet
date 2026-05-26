@@ -1,0 +1,17 @@
+//! Rejected permission specimen for direct use while a unique binding is inactive.
+
+public record PermissionDiagnosticCell {
+    public value: i32
+}
+
+public procedure consumeAfterBorrow(
+    borrowed: const PermissionDiagnosticCell,
+    move consumed: unique PermissionDiagnosticCell
+) -> i32 {
+    return borrowed.value + consumed.value
+}
+
+public procedure uniqueInactiveUseReference() -> i32 {
+    var cell: unique PermissionDiagnosticCell = PermissionDiagnosticCell { value: 1 }
+    return consumeAfterBorrow(cell, move cell)
+}

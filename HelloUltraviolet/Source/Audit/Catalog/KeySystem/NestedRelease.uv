@@ -1,0 +1,200 @@
+//! Generated catalog markers for 19. Key System / 19.4 Nested Release.
+
+
+public procedure countKeySystemNestedReleaseObligations() -> usize {
+    return 21usize
+}
+
+public procedure validatedKeySystemNestedReleaseObligations() -> usize {
+    var count: usize = 0usize
+    if acceptedObligationEntryMatches(
+        "requirement.19.NestedReleaseNoAdditionalSyntax",
+        74154usize,
+        "HelloUltraviolet::Reference::Keys",
+        "runKeysNestedReleaseReference",
+        "Source/Reference/Keys/NestedRelease.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "requirement.19.NestedReleaseNoAdditionalParsingRules",
+        74169usize,
+        "HelloUltraviolet::Reference::Keys",
+        "runKeysNestedReleaseReference",
+        "Source/Reference/Keys/NestedRelease.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "ast.19.NestedReleaseForm",
+        74184usize,
+        "HelloUltraviolet::Reference::Keys",
+        "runKeysNestedReleaseReference",
+        "Source/Reference/Keys/NestedRelease.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "rule.19.K-Nested-Same-Path",
+        74199usize,
+        "HelloUltraviolet::Reference::Keys",
+        "runKeysNestedReleaseReference",
+        "Source/Reference/Keys/NestedRelease.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "def.19.SharedParam",
+        74220usize,
+        "HelloUltraviolet::Reference::Keys",
+        "runKeysNestedReleaseReference",
+        "Source/Reference/Keys/NestedRelease.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "def.19.DirectCalleeAccesses",
+        74234usize,
+        "HelloUltraviolet::Reference::Keys",
+        "runKeysNestedReleaseReference",
+        "Source/Reference/Keys/NestedRelease.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "def.19.CalleeAccessSummary",
+        74247usize,
+        "HelloUltraviolet::Reference::Keys",
+        "runKeysNestedReleaseReference",
+        "Source/Reference/Keys/NestedRelease.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "def.19.CalleeAccessInstantiation",
+        74260usize,
+        "HelloUltraviolet::Reference::Keys",
+        "runKeysNestedReleaseReference",
+        "Source/Reference/Keys/NestedRelease.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "rule.19.K-Reentrant",
+        74275usize,
+        "HelloUltraviolet::Reference::Keys",
+        "runKeysNestedReleaseReference",
+        "Source/Reference/Keys/NestedRelease.uv"
+    ) {
+        count = count + 1usize
+    }
+    if diagnosticSourceObligationEntryMatches(
+        "requirement.19.UnknownCalleeAccessWarning",
+        74290usize,
+        "HelloUltraviolet::Audit::FixtureCatalog::DiagnosticSource",
+        "validatedKeysDiagnosticSourceFixtureCount",
+        "Fixtures/DiagnosticSource/Keys/UnknownCalleeAccessWarning/Source/Main.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "rule.19.CallSharedArgumentNoKeyAcquisition",
+        74305usize,
+        "HelloUltraviolet::Reference::Keys",
+        "runKeysNestedReleaseReference",
+        "Source/Reference/Keys/NestedRelease.uv"
+    ) {
+        count = count + 1usize
+    }
+    if diagnosticSourceObligationEntryMatches(
+        "requirement.19.StaleOkSuppressesReleaseWarning",
+        74320usize,
+        "HelloUltraviolet::Audit::FixtureCatalog::DiagnosticSource",
+        "validatedKeysDiagnosticSourceFixtureCount",
+        "Fixtures/DiagnosticSource/Keys/StaleOkSuppressesReleaseWarning/Source/Main.uv"
+    ) {
+        count = count + 1usize
+    }
+    if rejectedSourceObligationEntryMatches(
+        "rule.19.K-Release-SameMode-Err",
+        74333usize,
+        "HelloUltraviolet::Audit::FixtureCatalog::RejectedSource",
+        "validatedKeysRejectedSourceFixtureCount",
+        "Fixtures/RejectedSource/Keys/NestedReleaseSameMode/Source/Main.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "requirement.19.NestedReleaseExecutionSequence",
+        74351usize,
+        "HelloUltraviolet::Reference::Keys",
+        "runKeysNestedReleaseReference",
+        "Source/Reference/Keys/NestedRelease.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "rule.19.K-Release-Sequence",
+        74370usize,
+        "HelloUltraviolet::Reference::Keys",
+        "runKeysNestedReleaseReference",
+        "Source/Reference/Keys/NestedRelease.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "requirement.19.NestedReleaseInterleavingWindow",
+        74390usize,
+        "HelloUltraviolet::Reference::Keys",
+        "runKeysNestedReleaseReference",
+        "Source/Reference/Keys/NestedRelease.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "def.19.HeldKeyAccessors",
+        74403usize,
+        "HelloUltraviolet::Reference::Keys",
+        "runKeysNestedReleaseReference",
+        "Source/Reference/Keys/NestedRelease.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "def.19.ReleasedKeyState",
+        74419usize,
+        "HelloUltraviolet::Reference::Keys",
+        "runKeysNestedReleaseReference",
+        "Source/Reference/Keys/NestedRelease.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "rule.19.ExecSigma-KeyBlock-Release",
+        74439usize,
+        "HelloUltraviolet::Reference::Keys",
+        "runKeysNestedReleaseReference",
+        "Source/Reference/Keys/NestedRelease.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "rule.19.Lower-Stmt-KeyBlock-Release",
+        74457usize,
+        "HelloUltraviolet::Reference::Keys",
+        "runKeysNestedReleaseReference",
+        "Source/Reference/Keys/NestedRelease.uv"
+    ) {
+        count = count + 1usize
+    }
+    if diagnosticSourceObligationEntryMatches(
+        "diagnostics.19.NestedRelease",
+        74480usize,
+        "HelloUltraviolet::Audit::FixtureCatalog::DiagnosticSource",
+        "validatedKeysDiagnosticSourceFixtureCount",
+        "Fixtures/DiagnosticSource/Keys/NestedReleaseInterleavingWarning/Source/Main.uv"
+    ) {
+        count = count + 1usize
+    }
+    return count
+}

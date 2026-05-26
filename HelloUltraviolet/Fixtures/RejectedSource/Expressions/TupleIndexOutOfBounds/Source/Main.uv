@@ -1,0 +1,6 @@
+//! Rejected tuple specimen for tuple index bounds checking.
+
+public procedure tupleIndexOutOfBoundsReference() -> i32 {
+    let value: (i32, bool) = (1, true)
+    return value.2
+}

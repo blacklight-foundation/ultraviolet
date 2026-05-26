@@ -1,0 +1,10 @@
+//! Rejected FFI specimen for records without layout(C).
+
+public record FfiPlainRecord {
+    public value: i32
+}
+
+extern "C" {
+    public procedure importedRecord(value: FfiPlainRecord) -> i32
+}
+

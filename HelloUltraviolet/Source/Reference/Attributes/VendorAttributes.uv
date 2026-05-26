@@ -1,0 +1,40 @@
+//! Reference specimens for Attributes / VendorAttributes.
+
+internal record VendorAttributeReference {
+    internal prefix_segments: usize
+    internal has_reserved_ultraviolet_prefix: bool
+    internal is_registered: bool
+}
+
+internal procedure vendorAttributeReference(
+    prefix_segments: usize,
+    has_reserved_ultraviolet_prefix: bool,
+    is_registered: bool
+) -> VendorAttributeReference {
+    return VendorAttributeReference {
+        prefix_segments: prefix_segments,
+        has_reserved_ultraviolet_prefix: has_reserved_ultraviolet_prefix,
+        is_registered: is_registered
+    }
+}
+
+internal procedure vendorAttributeIsAdmitted(
+    reference: VendorAttributeReference
+) -> bool {
+    return reference.prefix_segments > 0usize &&
+        !reference.has_reserved_ultraviolet_prefix &&
+        reference.is_registered
+}
+
+/// Exercises the Attributes VendorAttributes reference surface.
+public procedure runAttributesVendorAttributesReference() -> bool {
+    let registered: VendorAttributeReference =
+        vendorAttributeReference(2usize, false, true)
+    let reserved: VendorAttributeReference =
+        vendorAttributeReference(1usize, true, true)
+    let unknown: VendorAttributeReference =
+        vendorAttributeReference(2usize, false, false)
+    return vendorAttributeIsAdmitted(registered) &&
+        !vendorAttributeIsAdmitted(reserved) &&
+        !vendorAttributeIsAdmitted(unknown)
+}

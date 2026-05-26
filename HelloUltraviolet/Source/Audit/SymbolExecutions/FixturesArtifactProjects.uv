@@ -1,0 +1,13 @@
+//! Compiled symbol execution checks for FixturesArtifactProjects.
+
+using HelloUltraviolet::Audit::FixtureCatalog::ArtifactProjects::{ validatedArtifactProjectFixtureCount }
+
+public procedure catalogCompiledSymbolsExecuteFixturesArtifactProjects(context: Context) -> bool {
+    var passed: bool = true
+    passed = recordCatalogSymbolExecution(
+        context,
+        "validatedArtifactProjectFixtureCount",
+        validatedArtifactProjectFixtureCount() > 0usize
+    ) && passed
+    return passed
+}

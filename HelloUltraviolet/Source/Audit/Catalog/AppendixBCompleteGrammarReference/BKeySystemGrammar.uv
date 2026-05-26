@@ -1,0 +1,20 @@
+//! Generated catalog markers for Appendix B. Complete Grammar Reference / B.9 Key System Grammar.
+
+
+public procedure countAppendixBCompleteGrammarReferenceBKeySystemGrammarObligations() -> usize {
+    return 1usize
+}
+
+public procedure validatedAppendixBCompleteGrammarReferenceBKeySystemGrammarObligations() -> usize {
+    var count: usize = 0usize
+    if acceptedObligationEntryMatches(
+        "grammar.B.9.KeySystemGrammar",
+        101230usize,
+        "HelloUltraviolet::Reference::Keys",
+        "runKeysKeyPathsReference",
+        "Source/Reference/Keys/KeyPaths.uv"
+    ) {
+        count = count + 1usize
+    }
+    return count
+}

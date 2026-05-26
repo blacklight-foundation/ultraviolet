@@ -1,0 +1,5 @@
+//! Rejected foundational-class specimen for a BitcopyType with a non-BitcopyType field.
+
+internal record BitcopyFieldNonBitcopyPayload <: Bitcopy {
+    internal value: unique string@Managed
+}

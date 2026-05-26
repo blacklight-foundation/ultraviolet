@@ -1,0 +1,38 @@
+//! Generated catalog markers for 1. Conformance and Notation / 1.4 Normative References.
+
+
+public procedure countConformanceAndNotationNormativeReferencesObligations() -> usize {
+    return 3usize
+}
+
+public procedure validatedConformanceAndNotationNormativeReferencesObligations() -> usize {
+    var count: usize = 0usize
+    if acceptedObligationEntryMatches(
+        "refs.NormativeRefs",
+        993usize,
+        "HelloUltraviolet::Reference::Conformance",
+        "runConformanceBehaviorClassificationReference",
+        "Source/Reference/Conformance/BehaviorClassification.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "refs.ReferenceDetails",
+        1015usize,
+        "HelloUltraviolet::Reference::Conformance",
+        "runConformanceBehaviorClassificationReference",
+        "Source/Reference/Conformance/BehaviorClassification.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "refs.Conformance",
+        1036usize,
+        "HelloUltraviolet::Reference::Conformance",
+        "runConformanceBehaviorClassificationReference",
+        "Source/Reference/Conformance/BehaviorClassification.uv"
+    ) {
+        count = count + 1usize
+    }
+    return count
+}

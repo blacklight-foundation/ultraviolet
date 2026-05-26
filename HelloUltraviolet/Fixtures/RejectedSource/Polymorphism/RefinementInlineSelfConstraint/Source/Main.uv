@@ -1,0 +1,5 @@
+//! Rejected refinement specimen for self inside an inline parameter constraint.
+
+public procedure inlineParameterSelfConstraint(value: i32 |: { self > 0 }) -> i32 {
+    return value
+}

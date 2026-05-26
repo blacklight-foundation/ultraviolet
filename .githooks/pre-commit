@@ -1,0 +1,27 @@
+#!/bin/sh
+set -eu
+
+THRESHOLD_BYTES=52428800
+oversized_files=$(mktemp)
+trap 'rm -f "$oversized_files"' EXIT HUP INT TERM
+
+git diff --cached --name-only --diff-filter=ACMR | while IFS= read -r path; do
+    if [ ! -f "$path" ]; then
+        continue
+    fi
+
+    size=$(wc -c < "$path" | tr -d '[:space:]')
+    if [ "$size" -lt "$THRESHOLD_BYTES" ]; then
+        continue
+    fi
+
+    printf '%s\n' "$path" >> "$oversized_files"
+done
+
+if [ -s "$oversized_files" ]; then
+    printf '%s\n' "Staged files at or above 50 MiB are not allowed in git history:" >&2
+    cat "$oversized_files" >&2
+    printf '%s\n' \
+        "Publish large binary or toolchain payloads as versioned release archives and update Bootstrap/extern/ExternManifest.json instead." >&2
+    exit 1
+fi

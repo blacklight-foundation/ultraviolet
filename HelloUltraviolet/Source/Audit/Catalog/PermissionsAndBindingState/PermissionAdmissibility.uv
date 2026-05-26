@@ -1,0 +1,146 @@
+//! Generated catalog markers for 10. Permissions and Binding State / 10.4 Permission Admissibility.
+
+
+public procedure countPermissionsAndBindingStatePermissionAdmissibilityObligations() -> usize {
+    return 15usize
+}
+
+public procedure validatedPermissionsAndBindingStatePermissionAdmissibilityObligations() -> usize {
+    var count: usize = 0usize
+    if acceptedObligationEntryMatches(
+        "req.PermissionAdmissibilityNoAdditionalSyntax",
+        29648usize,
+        "HelloUltraviolet::Reference::Permissions",
+        "runPermissionsAdmissibilityReference",
+        "Source/Reference/Permissions/Admissibility.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "req.PermissionAdmissibilityNoAdditionalParsing",
+        29664usize,
+        "HelloUltraviolet::Reference::Permissions",
+        "runPermissionsAdmissibilityReference",
+        "Source/Reference/Permissions/Admissibility.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "def.PermissionAdmissibilityAstInputs",
+        29680usize,
+        "HelloUltraviolet::Reference::Permissions",
+        "runPermissionsAdmissibilityReference",
+        "Source/Reference/Permissions/Admissibility.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "req.PermissionAdmissibilityScope",
+        29699usize,
+        "HelloUltraviolet::Reference::Permissions",
+        "runPermissionsAdmissibilityReference",
+        "Source/Reference/Permissions/Admissibility.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "def.PermAdmitsJudgementSet",
+        29715usize,
+        "HelloUltraviolet::Reference::Permissions",
+        "runPermissionsAdmissibilityReference",
+        "Source/Reference/Permissions/Admissibility.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "def.PermissionAdmissibilityPairs",
+        29729usize,
+        "HelloUltraviolet::Reference::Permissions",
+        "runPermissionsAdmissibilityReference",
+        "Source/Reference/Permissions/Admissibility.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "req.PermAdmitsUseSitesNoTypeRewrite",
+        29749usize,
+        "HelloUltraviolet::Reference::Permissions",
+        "runPermissionsAdmissibilityReference",
+        "Source/Reference/Permissions/Admissibility.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "def.MethodReceiverPermissionAdmissibility",
+        29763usize,
+        "HelloUltraviolet::Reference::Permissions",
+        "runPermissionsAdmissibilityReference",
+        "Source/Reference/Permissions/Admissibility.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "def.MethodReceiverPermissionMatrix",
+        29781usize,
+        "HelloUltraviolet::Reference::Permissions",
+        "runPermissionsAdmissibilityReference",
+        "Source/Reference/Permissions/Admissibility.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "req.PermissionAdmissibilityNoImplicitConversion",
+        29799usize,
+        "HelloUltraviolet::Reference::Permissions",
+        "runPermissionsAdmissibilityReference",
+        "Source/Reference/Permissions/Admissibility.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "req.PermissionQualifiedSubtypingPermissionEquality",
+        29815usize,
+        "HelloUltraviolet::Reference::Permissions",
+        "runPermissionsAdmissibilityReference",
+        "Source/Reference/Permissions/Admissibility.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "conformance.PermissionAdmissibilityRuntimeIdentity",
+        29829usize,
+        "HelloUltraviolet::Reference::Permissions",
+        "runPermissionsAdmissibilityReference",
+        "Source/Reference/Permissions/Admissibility.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "conformance.PermissionAdmissibilitySharedKeyGate",
+        29845usize,
+        "HelloUltraviolet::Reference::Permissions",
+        "runPermissionsAdmissibilityReference",
+        "Source/Reference/Permissions/Admissibility.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "conformance.PermissionAdmissibilityLowering",
+        29859usize,
+        "HelloUltraviolet::Reference::Permissions",
+        "runPermissionsAdmissibilityReference",
+        "Source/Reference/Permissions/Admissibility.uv"
+    ) {
+        count = count + 1usize
+    }
+    if rejectedSourceObligationEntryMatches(
+        "diagnostics.PermissionAdmissibility",
+        29875usize,
+        "HelloUltraviolet::Audit::FixtureCatalog::RejectedSource",
+        "validatedPermissionsRejectedSourceFixtureCount",
+        "Fixtures/RejectedSource/Permissions/ReceiverPermissionMismatch/Source/Main.uv"
+    ) {
+        count = count + 1usize
+    }
+    return count
+}

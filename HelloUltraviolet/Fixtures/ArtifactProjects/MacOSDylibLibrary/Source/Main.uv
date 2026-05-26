@@ -1,0 +1,15 @@
+//! Artifact project fixture for Apple Silicon macOS dylib import resolution.
+
+#library(name: "System", kind: "dylib")
+extern "C" {
+    #mangle("getpid")
+    public procedure macOSDylibGetPidReference() -> i32
+}
+
+public procedure main(context: Context) -> i32 {
+    let process_id: i32 = unsafe { macOSDylibGetPidReference() }
+    if process_id >= 0 {
+        return 0
+    }
+    return 1
+}

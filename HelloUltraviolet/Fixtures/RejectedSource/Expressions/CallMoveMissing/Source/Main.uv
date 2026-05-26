@@ -1,0 +1,14 @@
+//! Rejected call specimen for a missing move argument.
+
+public record MovePayload {
+    public value: i32
+}
+
+public procedure consumePayload(move payload: MovePayload) -> i32 {
+    return payload.value
+}
+
+public procedure callMoveMissingReference() -> i32 {
+    let payload: MovePayload = MovePayload { value: 1 }
+    return consumePayload(payload)
+}

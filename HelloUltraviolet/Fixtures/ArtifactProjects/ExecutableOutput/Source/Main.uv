@@ -1,0 +1,14 @@
+//! Artifact fixture for executable and map output.
+
+public record ExecutableTimeContext {
+    public time: $Time
+}
+
+public procedure main(context: ExecutableTimeContext) -> i32 {
+    let monotonic: $MonotonicTime = context.time~>monotonic()
+    let resolution: Duration = monotonic~>resolution()
+    if resolution.nanoseconds > 0u128 {
+        return 0
+    }
+    return 1
+}

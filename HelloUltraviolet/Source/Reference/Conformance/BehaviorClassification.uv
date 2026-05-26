@@ -1,0 +1,55 @@
+//! Reference specimens for Conformance / BehaviorClassification.
+
+internal enum BehaviorReferenceKind {
+    Accepted
+    Rejected
+    Diagnostic
+    Unspecified
+}
+
+internal procedure behaviorRequiresDiagnostic(kind: BehaviorReferenceKind) -> bool {
+    return if kind is {
+        BehaviorReferenceKind::Accepted {
+            false
+        }
+        BehaviorReferenceKind::Rejected {
+            true
+        }
+        BehaviorReferenceKind::Diagnostic {
+            true
+        }
+        BehaviorReferenceKind::Unspecified {
+            false
+        }
+    }
+}
+
+internal procedure behaviorIsExecutableReference(kind: BehaviorReferenceKind) -> bool {
+    return if kind is {
+        BehaviorReferenceKind::Accepted {
+            true
+        }
+        BehaviorReferenceKind::Rejected {
+            false
+        }
+        BehaviorReferenceKind::Diagnostic {
+            false
+        }
+        BehaviorReferenceKind::Unspecified {
+            false
+        }
+    }
+}
+
+/// Exercises the Conformance BehaviorClassification reference surface.
+public procedure runConformanceBehaviorClassificationReference() -> bool {
+    let accepted: BehaviorReferenceKind = BehaviorReferenceKind::Accepted
+    let rejected: BehaviorReferenceKind = BehaviorReferenceKind::Rejected
+    let diagnostic: BehaviorReferenceKind = BehaviorReferenceKind::Diagnostic
+    let unspecified: BehaviorReferenceKind = BehaviorReferenceKind::Unspecified
+    return behaviorIsExecutableReference(accepted) &&
+        !behaviorRequiresDiagnostic(accepted) &&
+        behaviorRequiresDiagnostic(rejected) &&
+        behaviorRequiresDiagnostic(diagnostic) &&
+        !behaviorIsExecutableReference(unspecified)
+}

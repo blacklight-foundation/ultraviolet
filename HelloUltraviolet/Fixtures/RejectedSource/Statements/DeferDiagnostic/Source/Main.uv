@@ -1,0 +1,8 @@
+//! Rejected statement specimen for defer diagnostic coverage.
+
+public procedure deferDiagnosticReference() -> i32 {
+    defer {
+        return 1
+    }
+    return 0
+}

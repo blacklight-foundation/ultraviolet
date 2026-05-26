@@ -1,0 +1,13 @@
+//! Diagnostic structured-parallelism specimen for panic propagation without new diagnostics.
+
+public procedure panicHandlingNoAdditionalDiagnosticsReference(context: Context) -> i32 {
+    return parallel context~>cpu() {
+        spawn {
+            unsafe {
+                let pointer: *mut i32 = null
+                *pointer
+            }
+        }
+        0
+    }
+}

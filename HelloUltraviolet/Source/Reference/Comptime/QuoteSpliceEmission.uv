@@ -1,0 +1,47 @@
+//! Reference specimens for Comptime / QuoteSpliceEmission.
+
+/// Exercises the Comptime QuoteSpliceEmission reference surface.
+public procedure runComptimeQuoteSpliceEmissionReference() -> bool {
+    #emit
+    comptime {
+        let first_ast: Ast::Item =
+            quote { internal procedure emittedQuoteReferenceValue() -> i32 { return 47 } }
+        emitter~>emit(first_ast)
+
+        let return_type: Ast::Type = quote type { i32 }
+        let return_expr: Ast::Expr = quote { 19 + 23 }
+        let second_ast: Ast::Item = quote {
+            internal procedure emittedSplicedReferenceValue() -> $(return_type) {
+                return $(return_expr)
+            }
+        }
+        emitter~>emit(second_ast)
+
+        let binding_name = "spliced_reference_value"
+        let binding_pattern: Ast::Pattern = quote pattern { $binding_name: i32 }
+        let binding_expr: Ast::Expr = quote { $binding_name + 1 }
+        let return_statement: Ast::Stmt = quote { return $(binding_expr) }
+        let third_ast: Ast::Item = quote {
+            internal procedure emittedIdentifierAndPatternSpliceReferenceValue() -> i32 {
+                let $(binding_pattern) = 52
+                $(return_statement);
+            }
+        }
+        emitter~>emit(third_ast)
+
+        let parameter_name = "input_value"
+        let fourth_ast: Ast::Item = quote {
+            internal procedure emittedParameterIdentifierSpliceReferenceValue(
+                $parameter_name: i32
+            ) -> i32 {
+                return $parameter_name + 2
+            }
+        }
+        emitter~>emit(fourth_ast)
+    }
+
+    return emittedQuoteReferenceValue() == 47 &&
+        emittedSplicedReferenceValue() == 42 &&
+        emittedIdentifierAndPatternSpliceReferenceValue() == 53 &&
+        emittedParameterIdentifierSpliceReferenceValue(59) == 61
+}

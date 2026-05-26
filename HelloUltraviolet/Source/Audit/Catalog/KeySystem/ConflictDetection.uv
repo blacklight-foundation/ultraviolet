@@ -1,0 +1,263 @@
+//! Generated catalog markers for 19. Key System / 19.3 Conflict Detection.
+
+
+public procedure countKeySystemConflictDetectionObligations() -> usize {
+    return 28usize
+}
+
+public procedure validatedKeySystemConflictDetectionObligations() -> usize {
+    var count: usize = 0usize
+    if acceptedObligationEntryMatches(
+        "requirement.19.ConflictDetectionNoAdditionalSyntax",
+        73659usize,
+        "HelloUltraviolet::Reference::Keys",
+        "runKeysConflictDetectionReference",
+        "Source/Reference/Keys/ConflictDetection.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "requirement.19.ConflictDetectionNoAdditionalParsingRules",
+        73674usize,
+        "HelloUltraviolet::Reference::Keys",
+        "runKeysConflictDetectionReference",
+        "Source/Reference/Keys/ConflictDetection.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "def.19.PrefixAndDisjoint",
+        73689usize,
+        "HelloUltraviolet::Reference::Keys",
+        "runKeysConflictDetectionReference",
+        "Source/Reference/Keys/ConflictDetection.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "def.19.KeyPathOrdering",
+        73704usize,
+        "HelloUltraviolet::Reference::Keys",
+        "runKeysConflictDetectionReference",
+        "Source/Reference/Keys/ConflictDetection.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "def.19.KeyCompatibility",
+        73739usize,
+        "HelloUltraviolet::Reference::Keys",
+        "runKeysConflictDetectionReference",
+        "Source/Reference/Keys/ConflictDetection.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "def.19.IndexEquivalence",
+        73770usize,
+        "HelloUltraviolet::Reference::Keys",
+        "runKeysConflictDetectionReference",
+        "Source/Reference/Keys/ConflictDetection.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "requirement.19.IndexEquivalenceConservativeSubset",
+        73793usize,
+        "HelloUltraviolet::Reference::Keys",
+        "runKeysConflictDetectionReference",
+        "Source/Reference/Keys/ConflictDetection.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "rule.19.K-Disjoint-Safe",
+        73806usize,
+        "HelloUltraviolet::Reference::Keys",
+        "runKeysConflictDetectionReference",
+        "Source/Reference/Keys/ConflictDetection.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "rule.19.K-Prefix-Coverage",
+        73822usize,
+        "HelloUltraviolet::Reference::Keys",
+        "runKeysConflictDetectionReference",
+        "Source/Reference/Keys/ConflictDetection.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "def.19.DynamicIndexDisjointness",
+        73840usize,
+        "HelloUltraviolet::Reference::Keys",
+        "runKeysConflictDetectionReference",
+        "Source/Reference/Keys/ConflictDetection.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "requirement.19.DynamicIndexDisjointnessConservativeSubset",
+        73863usize,
+        "HelloUltraviolet::Reference::Keys",
+        "runKeysConflictDetectionReference",
+        "Source/Reference/Keys/ConflictDetection.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "rule.19.K-Dynamic-Index-Conflict",
+        73876usize,
+        "HelloUltraviolet::Reference::Keys",
+        "runKeysConflictDetectionReference",
+        "Source/Reference/Keys/ConflictDetection.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "def.19.ReadThenWrite",
+        73894usize,
+        "HelloUltraviolet::Reference::Keys",
+        "runKeysConflictDetectionReference",
+        "Source/Reference/Keys/ConflictDetection.uv"
+    ) {
+        count = count + 1usize
+    }
+    if rejectedSourceObligationEntryMatches(
+        "requirement.19.ReadThenWriteDiagnosticSurface",
+        73911usize,
+        "HelloUltraviolet::Audit::FixtureCatalog::RejectedSource",
+        "validatedKeysRejectedSourceFixtureCount",
+        "Fixtures/RejectedSource/Keys/SharedReadThenWrite/Source/Main.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "requirement.19.ReadThenWriteOtherWriteForms",
+        73924usize,
+        "HelloUltraviolet::Reference::Keys",
+        "runKeysConflictDetectionReference",
+        "Source/Reference/Keys/ConflictDetection.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "rule.19.K-Read-Write-Reject",
+        73937usize,
+        "HelloUltraviolet::Reference::Keys",
+        "runKeysConflictDetectionReference",
+        "Source/Reference/Keys/ConflictDetection.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "rule.19.K-RMW-Permitted",
+        73953usize,
+        "HelloUltraviolet::Reference::Keys",
+        "runKeysConflictDetectionReference",
+        "Source/Reference/Keys/ConflictDetection.uv"
+    ) {
+        count = count + 1usize
+    }
+    if diagnosticSourceObligationEntryMatches(
+        "rule.19.K-RMW-Explicit-Warn",
+        73969usize,
+        "HelloUltraviolet::Audit::FixtureCatalog::DiagnosticSource",
+        "validatedKeysDiagnosticSourceFixtureCount",
+        "Fixtures/DiagnosticSource/Keys/ReadThenWriteExplicitWarning/Source/Main.uv"
+    ) {
+        count = count + 1usize
+    }
+    if diagnosticSourceObligationEntryMatches(
+        "rule.19.K-RMW-Contention-Warn",
+        73985usize,
+        "HelloUltraviolet::Audit::FixtureCatalog::DiagnosticSource",
+        "validatedKeysDiagnosticSourceFixtureCount",
+        "Fixtures/DiagnosticSource/Keys/ReadThenWriteContentionWarning/Source/Main.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "def.19.OrderedComparablePaths",
+        74001usize,
+        "HelloUltraviolet::Reference::Keys",
+        "runKeysConflictDetectionReference",
+        "Source/Reference/Keys/ConflictDetection.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "rule.19.K-Ordered-Ok",
+        74017usize,
+        "HelloUltraviolet::Reference::Keys",
+        "runKeysConflictDetectionReference",
+        "Source/Reference/Keys/ConflictDetection.uv"
+    ) {
+        count = count + 1usize
+    }
+    if rejectedSourceObligationEntryMatches(
+        "rule.19.K-Ordered-Base-Err",
+        74033usize,
+        "HelloUltraviolet::Audit::FixtureCatalog::RejectedSource",
+        "validatedKeysRejectedSourceFixtureCount",
+        "Fixtures/RejectedSource/Keys/OrderedDifferentBase/Source/Main.uv"
+    ) {
+        count = count + 1usize
+    }
+    if diagnosticSourceObligationEntryMatches(
+        "rule.19.K-Ordered-Redundant-Warn",
+        74049usize,
+        "HelloUltraviolet::Audit::FixtureCatalog::DiagnosticSource",
+        "validatedKeysDiagnosticSourceFixtureCount",
+        "Fixtures/DiagnosticSource/Keys/OrderedRedundantWarning/Source/Main.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "requirement.19.CanonicalOrderDynamicUse",
+        74067usize,
+        "HelloUltraviolet::Reference::Keys",
+        "runKeysConflictDetectionReference",
+        "Source/Reference/Keys/ConflictDetection.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "requirement.19.KeyConflictRuntimeCompatibility",
+        74080usize,
+        "HelloUltraviolet::Reference::Keys",
+        "runKeysConflictDetectionReference",
+        "Source/Reference/Keys/ConflictDetection.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "def.19.LowerConflictChecks",
+        74095usize,
+        "HelloUltraviolet::Reference::Keys",
+        "runKeysConflictDetectionReference",
+        "Source/Reference/Keys/ConflictDetection.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "rule.19.Lower-Key-ConflictChecks",
+        74111usize,
+        "HelloUltraviolet::Reference::Keys",
+        "runKeysConflictDetectionReference",
+        "Source/Reference/Keys/ConflictDetection.uv"
+    ) {
+        count = count + 1usize
+    }
+    if rejectedSourceObligationEntryMatches(
+        "diagnostics.19.ConflictDetection",
+        74129usize,
+        "HelloUltraviolet::Audit::FixtureCatalog::RejectedSource",
+        "validatedKeysRejectedSourceFixtureCount",
+        "Fixtures/RejectedSource/Keys/ConflictDetectionDiagnostic/Source/Main.uv"
+    ) {
+        count = count + 1usize
+    }
+    return count
+}

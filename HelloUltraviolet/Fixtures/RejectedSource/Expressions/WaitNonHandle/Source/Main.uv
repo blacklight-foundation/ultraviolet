@@ -1,0 +1,6 @@
+//! Rejected async suspension specimen for waiting on a non-handle value.
+
+public procedure waitNonHandleReference() -> i32 {
+    let value: i32 = wait 1
+    return value
+}

@@ -1,0 +1,101 @@
+//! Generated catalog markers for 15. Procedures and Contracts / 15.5 Preconditions.
+
+
+public procedure countProceduresAndContractsPreconditionsObligations() -> usize {
+    return 10usize
+}
+
+public procedure validatedProceduresAndContractsPreconditionsObligations() -> usize {
+    var count: usize = 0usize
+    if acceptedObligationEntryMatches(
+        "req.15.PreconditionSyntaxDefinition",
+        55707usize,
+        "HelloUltraviolet::Reference::Procedures",
+        "runProceduresPreconditionsReference",
+        "Source/Reference/Procedures/Preconditions.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "req.15.PreconditionsParsedByContractBody",
+        55722usize,
+        "HelloUltraviolet::Reference::Procedures",
+        "runProceduresPreconditionsReference",
+        "Source/Reference/Procedures/Preconditions.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "def.15.PreconditionOf",
+        55737usize,
+        "HelloUltraviolet::Reference::Procedures",
+        "runProceduresPreconditionsReference",
+        "Source/Reference/Procedures/Preconditions.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "def.15.PreconditionProofContext",
+        55754usize,
+        "HelloUltraviolet::Reference::Procedures",
+        "runProceduresPreconditionsReference",
+        "Source/Reference/Procedures/Preconditions.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "rule.15.Pre-Satisfied",
+        55770usize,
+        "HelloUltraviolet::Reference::Procedures",
+        "runProceduresPreconditionsReference",
+        "Source/Reference/Procedures/Preconditions.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "def.15.PreconditionElisionRules",
+        55786usize,
+        "HelloUltraviolet::Reference::Procedures",
+        "runProceduresPreconditionsReference",
+        "Source/Reference/Procedures/Preconditions.uv"
+    ) {
+        count = count + 1usize
+    }
+    if rejectedSourceObligationEntryMatches(
+        "req.15.CallerResponsibleForPrecondition",
+        55806usize,
+        "HelloUltraviolet::Audit::FixtureCatalog::RejectedSource",
+        "validatedProceduresRejectedSourceFixtureCount",
+        "Fixtures/RejectedSource/Procedures/PreconditionCallerObligation/Source/Main.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "req.15.PreconditionRuntimeEvaluationOrder",
+        55821usize,
+        "HelloUltraviolet::Reference::Procedures",
+        "runProceduresPreconditionsReference",
+        "Source/Reference/Procedures/Preconditions.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "req.15.PreconditionCheckInsertionOwnedByVerificationLogic",
+        55836usize,
+        "HelloUltraviolet::Reference::Procedures",
+        "runProceduresPreconditionsReference",
+        "Source/Reference/Procedures/Preconditions.uv"
+    ) {
+        count = count + 1usize
+    }
+    if rejectedSourceObligationEntryMatches(
+        "diag.15.Preconditions",
+        55851usize,
+        "HelloUltraviolet::Audit::FixtureCatalog::RejectedSource",
+        "validatedProceduresRejectedSourceFixtureCount",
+        "Fixtures/RejectedSource/Procedures/PreconditionsDiagnostic/Source/Main.uv"
+    ) {
+        count = count + 1usize
+    }
+    return count
+}

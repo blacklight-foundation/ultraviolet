@@ -1,0 +1,5 @@
+//! Rejected transmute specimen for use outside an unsafe span.
+
+public procedure transmuteUnsafeReference() -> i32 {
+    return transmute<i32, i32>(1)
+}

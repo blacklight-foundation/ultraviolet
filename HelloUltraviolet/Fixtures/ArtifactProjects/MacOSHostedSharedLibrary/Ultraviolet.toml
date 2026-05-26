@@ -1,0 +1,12 @@
+[[assembly]]
+name = "MacOSHostedSharedLibrary"
+kind = "library"
+link_kind = "shared"
+root = "Source"
+
+[toolchain]
+target_profile = "aarch64-darwin"
+
+[build]
+incremental = true
+progress = false

@@ -1,0 +1,8 @@
+//! Diagnostic compile-time specimen for user warning emission.
+
+public procedure userDiagnosticWarningReference() -> i32 {
+    comptime {
+        diagnostics~>warning("compile-time user warning")
+    }
+    return 0
+}

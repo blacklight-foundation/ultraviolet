@@ -1,0 +1,13 @@
+//! Rejected async composition specimen for a race operand that is not async.
+
+public procedure unitAsyncValue() -> Async<(), (), i32, !> {
+    return 1
+}
+
+public procedure raceOperandNonAsyncReference() -> i32 {
+    let value: i32 = race {
+        unitAsyncValue() -> |result| result,
+        2 -> |result| result,
+    }
+    return value
+}

@@ -1,0 +1,68 @@
+//! Reference specimens for Keys / NestedRelease.
+
+internal procedure nestedReleaseValue() -> i32 {
+    var shared_value: shared i32 = 1
+    var observed: i32 = 0
+    %write shared_value {
+        %release read shared_value {
+            observed = shared_value + 0
+        }
+        shared_value = observed + 1
+    }
+    return shared_value + 0
+}
+
+internal procedure nestedReleaseWriteFromReadValue() -> i32 {
+    var shared_value: shared i32 = 2
+    var observed: i32 = 0
+    %read shared_value {
+        %release write shared_value {
+            shared_value = 7
+        }
+        observed = shared_value + 0
+    }
+    return observed
+}
+
+internal procedure staleOkNestedReleaseValue() -> i32 {
+    var shared_value: shared i32 = 5
+    var observed: i32 = 0
+    %read shared_value {
+        #stale_ok
+        let before_release: i32 = shared_value + 0
+        %release write shared_value {
+            shared_value = before_release + 8
+        }
+        observed = before_release + shared_value
+    }
+    return observed
+}
+
+internal procedure nestedReleaseSharedArgumentRead(value: shared KeyLeaf) -> i32 {
+    var observed: i32 = 0
+    %read value {
+        observed = value.value + 0
+    }
+    return observed
+}
+
+internal procedure nestedReleaseForwardSharedArgument(value: shared KeyLeaf) -> i32 {
+    return nestedReleaseSharedArgumentRead(value)
+}
+
+internal procedure reentrantCalleeCoveredValue() -> i32 {
+    var leaf: shared KeyLeaf = KeyLeaf { value: 11 }
+    var observed: i32 = 0
+    %read leaf {
+        observed = nestedReleaseForwardSharedArgument(leaf)
+    }
+    return observed
+}
+
+/// Exercises the Keys NestedRelease reference surface.
+public procedure runKeysNestedReleaseReference() -> bool {
+    return nestedReleaseValue() == 2 &&
+        nestedReleaseWriteFromReadValue() == 7 &&
+        staleOkNestedReleaseValue() == 18 &&
+        reentrantCalleeCoveredValue() == 11
+}

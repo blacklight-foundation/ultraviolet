@@ -1,0 +1,10 @@
+//! Diagnostic-absence async specimen for small async captures.
+
+public procedure acceptsSmallAsyncPayload(payload: i32) -> Async<(), (), i32, !> {
+    return payload
+}
+
+public procedure asyncLargeCaptureNoWarningReference() -> i32 {
+    let operation: Async<(), (), i32, !> = acceptsSmallAsyncPayload(1)
+    return 0
+}

@@ -1,0 +1,37 @@
+//! Compiled symbol execution checks for ReferenceSourceText.
+
+using HelloUltraviolet::Reference::SourceText::{ runSourceTextIdentifiersReference }
+using HelloUltraviolet::Reference::SourceText::{ runSourceTextLiteralsReference }
+using HelloUltraviolet::Reference::SourceText::{ runSourceTextLogicalLinesReference }
+using HelloUltraviolet::Reference::SourceText::{ runSourceTextOperatorsAndPunctuationReference }
+using HelloUltraviolet::Reference::SourceText::{ runSourceTextUnicodeNormalizationReference }
+
+public procedure catalogCompiledSymbolsExecuteReferenceSourceText(context: Context) -> bool {
+    var passed: bool = true
+    passed = recordCatalogSymbolExecution(
+        context,
+        "runSourceTextIdentifiersReference",
+        runSourceTextIdentifiersReference()
+    ) && passed
+    passed = recordCatalogSymbolExecution(
+        context,
+        "runSourceTextLiteralsReference",
+        runSourceTextLiteralsReference()
+    ) && passed
+    passed = recordCatalogSymbolExecution(
+        context,
+        "runSourceTextLogicalLinesReference",
+        runSourceTextLogicalLinesReference()
+    ) && passed
+    passed = recordCatalogSymbolExecution(
+        context,
+        "runSourceTextOperatorsAndPunctuationReference",
+        runSourceTextOperatorsAndPunctuationReference()
+    ) && passed
+    passed = recordCatalogSymbolExecution(
+        context,
+        "runSourceTextUnicodeNormalizationReference",
+        runSourceTextUnicodeNormalizationReference()
+    ) && passed
+    return passed
+}

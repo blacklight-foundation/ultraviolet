@@ -1,0 +1,6 @@
+//! Rejected FFI specimen for generic parameters in extern procedure signatures.
+
+extern "C" {
+    public procedure importedGeneric<TValue>(value: TValue) -> i32
+}
+

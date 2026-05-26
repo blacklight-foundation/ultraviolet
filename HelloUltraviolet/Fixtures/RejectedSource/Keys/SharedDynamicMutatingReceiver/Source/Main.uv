@@ -1,0 +1,13 @@
+//! Rejected key-system specimen for shared dynamic mutating receiver requirements.
+
+public class SharedDynamicReceiverClass {
+    public procedure mutate(~!) -> i32 {
+        return 1
+    }
+}
+
+public procedure sharedDynamicMutatingReceiverReference(
+    value: shared $SharedDynamicReceiverClass
+) -> i32 {
+    return 0
+}

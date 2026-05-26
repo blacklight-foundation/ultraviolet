@@ -1,0 +1,155 @@
+//! Generated catalog markers for 9. Attributes and Metadata / 9.3 Layout Attributes.
+
+
+public procedure countAttributesAndMetadataLayoutAttributesObligations() -> usize {
+    return 16usize
+}
+
+public procedure validatedAttributesAndMetadataLayoutAttributesObligations() -> usize {
+    var count: usize = 0usize
+    if acceptedObligationEntryMatches(
+        "grammar.LayoutAttributeSyntax",
+        27805usize,
+        "HelloUltraviolet::Reference::Attributes",
+        "runAttributesLayoutAttributesReference",
+        "Source/Reference/Attributes/LayoutAttributes.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "req.LayoutAttributeParserReuse",
+        27828usize,
+        "HelloUltraviolet::Reference::Attributes",
+        "runAttributesLayoutAttributesReference",
+        "Source/Reference/Attributes/LayoutAttributes.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "def.LayoutAttributeAstAttachment",
+        27844usize,
+        "HelloUltraviolet::Reference::Attributes",
+        "runAttributesLayoutAttributesReference",
+        "Source/Reference/Attributes/LayoutAttributes.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "req.LayoutCRecordSemantics",
+        27862usize,
+        "HelloUltraviolet::Reference::Attributes",
+        "runAttributesLayoutAttributesReference",
+        "Source/Reference/Attributes/LayoutAttributes.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "req.LayoutCEnumSemantics",
+        27879usize,
+        "HelloUltraviolet::Reference::Attributes",
+        "runAttributesLayoutAttributesReference",
+        "Source/Reference/Attributes/LayoutAttributes.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "req.LayoutExplicitEnumDiscriminant",
+        27896usize,
+        "HelloUltraviolet::Reference::Attributes",
+        "runAttributesLayoutAttributesReference",
+        "Source/Reference/Attributes/LayoutAttributes.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "req.LayoutPackedRecordSemantics",
+        27915usize,
+        "HelloUltraviolet::Reference::Attributes",
+        "runAttributesLayoutAttributesReference",
+        "Source/Reference/Attributes/LayoutAttributes.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "req.PackedFieldReferenceRequiresUnsafe",
+        27932usize,
+        "HelloUltraviolet::Reference::Attributes",
+        "runAttributesLayoutAttributesReference",
+        "Source/Reference/Attributes/LayoutAttributes.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "req.LayoutAlignSemantics",
+        27948usize,
+        "HelloUltraviolet::Reference::Attributes",
+        "runAttributesLayoutAttributesReference",
+        "Source/Reference/Attributes/LayoutAttributes.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "def.ValidLayoutAttributeCombinations",
+        27967usize,
+        "HelloUltraviolet::Reference::Attributes",
+        "runAttributesLayoutAttributesReference",
+        "Source/Reference/Attributes/LayoutAttributes.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "def.InvalidLayoutAttributeCombinations",
+        27987usize,
+        "HelloUltraviolet::Reference::Attributes",
+        "runAttributesLayoutAttributesReference",
+        "Source/Reference/Attributes/LayoutAttributes.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "def.LayoutAttributeApplicability",
+        28002usize,
+        "HelloUltraviolet::Reference::Attributes",
+        "runAttributesLayoutAttributesReference",
+        "Source/Reference/Attributes/LayoutAttributes.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "req.LayoutAttributeConstraints",
+        28020usize,
+        "HelloUltraviolet::Reference::Attributes",
+        "runAttributesLayoutAttributesReference",
+        "Source/Reference/Attributes/LayoutAttributes.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "conformance.LayoutAttributeDynamicSemantics",
+        28040usize,
+        "HelloUltraviolet::Reference::Attributes",
+        "runAttributesLayoutAttributesReference",
+        "Source/Reference/Attributes/LayoutAttributes.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "conformance.LayoutAttributeLowering",
+        28056usize,
+        "HelloUltraviolet::Reference::Attributes",
+        "runAttributesLayoutAttributesReference",
+        "Source/Reference/Attributes/LayoutAttributes.uv"
+    ) {
+        count = count + 1usize
+    }
+    if rejectedSourceObligationEntryMatches(
+        "diagnostics.LayoutAttributeDiagnostics",
+        28072usize,
+        "HelloUltraviolet::Audit::FixtureCatalog::RejectedSource",
+        "validatedAttributesRejectedSourceFixtureCount",
+        "Fixtures/RejectedSource/Attributes/PackedLayoutOnEnum/Source/Main.uv"
+    ) {
+        count = count + 1usize
+    }
+    return count
+}

@@ -1,0 +1,15 @@
+//! Rejected pattern specimen for enum and modal pattern diagnostic ownership.
+
+public enum EnumModalPatternsDiagnosticValue {
+    First
+    Second
+}
+
+public procedure enumModalPatternsDiagnosticReference() -> i32 {
+    let value: EnumModalPatternsDiagnosticValue = EnumModalPatternsDiagnosticValue::First
+    return if value is {
+        EnumModalPatternsDiagnosticValue::First {
+            1
+        }
+    }
+}

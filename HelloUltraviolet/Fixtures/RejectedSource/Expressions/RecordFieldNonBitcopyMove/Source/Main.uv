@@ -1,0 +1,12 @@
+//! Rejected record construction specimen for non-Bitcopy field initialization without move.
+
+public record NonBitcopyFieldPayload {
+    public payload: unique i32
+}
+
+public procedure recordFieldNonBitcopyMoveReference() -> NonBitcopyFieldPayload {
+    let payload: unique i32 = 1
+    return NonBitcopyFieldPayload {
+        payload: payload
+    }
+}

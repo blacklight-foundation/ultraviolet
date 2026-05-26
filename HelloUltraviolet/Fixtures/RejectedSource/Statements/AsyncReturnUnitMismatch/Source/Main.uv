@@ -1,0 +1,5 @@
+//! Rejected statement specimen for empty async return with non-unit result.
+
+public procedure asyncReturnUnitMismatchReference() -> Async<(), (), i32, !> {
+    return
+}

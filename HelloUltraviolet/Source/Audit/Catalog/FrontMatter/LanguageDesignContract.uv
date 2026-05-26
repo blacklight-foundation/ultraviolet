@@ -1,0 +1,20 @@
+//! Generated catalog markers for 0. Front Matter / 0.4 Language Design Contract.
+
+
+public procedure countFrontMatterLanguageDesignContractObligations() -> usize {
+    return 1usize
+}
+
+public procedure validatedFrontMatterLanguageDesignContractObligations() -> usize {
+    var count: usize = 0usize
+    if acceptedObligationEntryMatches(
+        "front-matter.language-design-contract",
+        102usize,
+        "HelloUltraviolet::Reference::Conformance",
+        "runConformanceConstructVocabularyReference",
+        "Source/Reference/Conformance/ConstructVocabulary.uv"
+    ) {
+        count = count + 1usize
+    }
+    return count
+}

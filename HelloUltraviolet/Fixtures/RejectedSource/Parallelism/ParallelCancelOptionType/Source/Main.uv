@@ -1,0 +1,7 @@
+//! Rejected structured-parallelism specimen for non-CancelToken cancel options.
+
+public procedure parallelCancelOptionTypeReference(context: Context) -> i32 {
+    return parallel context~>cpu() [cancel: 1] {
+        2
+    }
+}

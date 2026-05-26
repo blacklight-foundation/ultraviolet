@@ -1,0 +1,18 @@
+//! Reference specimens for Expressions / LiteralsAndNames.
+
+public procedure literalNameIdentity(value: i32) -> i32 {
+    return value
+}
+
+/// Exercises the Expressions LiteralsAndNames reference surface.
+public procedure runExpressionsLiteralsAndNamesReference() -> bool {
+    let unit_value: () = ()
+    let signed_value: i32 = -12
+    let unsigned_value: usize = 12usize
+    let boolean_value: bool = true
+    let text_value: string@View = "literal"
+    let named_value: i32 = literalNameIdentity(12)
+    return boolean_value &&
+        signed_value + 24 == named_value &&
+        unsigned_value == 12usize
+}

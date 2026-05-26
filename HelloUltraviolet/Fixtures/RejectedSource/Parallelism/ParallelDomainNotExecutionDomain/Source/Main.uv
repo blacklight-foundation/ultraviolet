@@ -1,0 +1,7 @@
+//! Rejected structured-parallelism specimen for non-domain parallel expressions.
+
+public procedure parallelDomainNotExecutionDomainReference() -> i32 {
+    return parallel 1 {
+        2
+    }
+}

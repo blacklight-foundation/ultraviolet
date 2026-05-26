@@ -1,0 +1,69 @@
+name: Conformance Gap
+description: Report missing or incomplete HelloUltraviolet coverage for a specification obligation.
+title: "[conformance]: "
+labels:
+  - needs-triage
+  - conformance
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Use this for missing, incomplete, or stale HelloUltraviolet coverage. If the
+        compiler currently violates the specification, use the compiler bug template.
+  - type: textarea
+    id: spec-obligation
+    attributes:
+      label: Specification section or obligation
+      description: >
+        Identify the spec section, obligation ID, or normative behavior that needs
+        coverage.
+      placeholder: |
+        Docs/SPECIFICATION.md section ...
+        Obligation ID ...
+    validations:
+      required: true
+  - type: textarea
+    id: coverage-current
+    attributes:
+      label: Current coverage
+      description: Describe existing HelloUltraviolet coverage, if known.
+      placeholder: |
+        Reference source:
+        Fixture:
+        Catalog entry:
+        Source-native test:
+    validations:
+      required: false
+  - type: textarea
+    id: coverage-gap
+    attributes:
+      label: Coverage gap
+      description: Explain what behavior or obligation is not currently exercised.
+    validations:
+      required: true
+  - type: textarea
+    id: proposed-location
+    attributes:
+      label: Proposed coverage location
+      description: >
+        Suggest reference source, source-native #test, accepted fixture, rejected
+        fixture, diagnostic fixture, artifact check, or generated catalog location.
+      placeholder: |
+        HelloUltraviolet/Source/Reference/...
+        HelloUltraviolet/Fixtures/...
+    validations:
+      required: false
+  - type: textarea
+    id: expected-behavior
+    attributes:
+      label: Expected conformant behavior
+      description: State the behavior that coverage should verify.
+    validations:
+      required: true
+  - type: checkboxes
+    id: generators
+    attributes:
+      label: Generated catalog awareness
+      options:
+        - label: This may require regenerating HelloUltraviolet catalog or symbol execution files.
+          required: false

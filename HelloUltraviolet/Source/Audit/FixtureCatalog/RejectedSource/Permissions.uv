@@ -1,0 +1,78 @@
+//! Rejected permission specimens.
+
+public procedure permissionsRejectedSourceFixtureCount() -> usize {
+    return 4usize
+}
+
+public procedure validatedPermissionsRejectedSourceFixtureCount() -> usize {
+    var count: usize = 0usize
+    if rejectedSpecimenMatches(
+        rejectedSpecimen(
+            "ConstMutation",
+            "Fixtures/RejectedSource/Permissions/ConstMutation",
+            "Fixtures/RejectedSource/Permissions/ConstMutation/Source/Main.uv",
+            "Fixtures/RejectedSource/Permissions/ConstMutation/Expected.uv",
+            expectedDiagnostic("E-TYP-1601", "diagnostics.PermissionAdmissibility")
+        ),
+        "ConstMutation",
+        "Fixtures/RejectedSource/Permissions/ConstMutation",
+        "Fixtures/RejectedSource/Permissions/ConstMutation/Source/Main.uv",
+        "Fixtures/RejectedSource/Permissions/ConstMutation/Expected.uv",
+        "E-TYP-1601",
+        "diagnostics.PermissionAdmissibility"
+    ) {
+        count = count + 1usize
+    }
+    if rejectedSpecimenMatches(
+        rejectedSpecimen(
+            "UniqueInactiveUse",
+            "Fixtures/RejectedSource/Permissions/UniqueInactiveUse",
+            "Fixtures/RejectedSource/Permissions/UniqueInactiveUse/Source/Main.uv",
+            "Fixtures/RejectedSource/Permissions/UniqueInactiveUse/Expected.uv",
+            expectedDiagnostic("E-TYP-1602", "diagnostics.PermissionAdmissibility")
+        ),
+        "UniqueInactiveUse",
+        "Fixtures/RejectedSource/Permissions/UniqueInactiveUse",
+        "Fixtures/RejectedSource/Permissions/UniqueInactiveUse/Source/Main.uv",
+        "Fixtures/RejectedSource/Permissions/UniqueInactiveUse/Expected.uv",
+        "E-TYP-1602",
+        "diagnostics.PermissionAdmissibility"
+    ) {
+        count = count + 1usize
+    }
+    if rejectedSpecimenMatches(
+        rejectedSpecimen(
+            "SharedMutationWithoutKey",
+            "Fixtures/RejectedSource/Permissions/SharedMutationWithoutKey",
+            "Fixtures/RejectedSource/Permissions/SharedMutationWithoutKey/Source/Main.uv",
+            "Fixtures/RejectedSource/Permissions/SharedMutationWithoutKey/Expected.uv",
+            expectedDiagnostic("E-TYP-1604", "diagnostics.PermissionAdmissibility")
+        ),
+        "SharedMutationWithoutKey",
+        "Fixtures/RejectedSource/Permissions/SharedMutationWithoutKey",
+        "Fixtures/RejectedSource/Permissions/SharedMutationWithoutKey/Source/Main.uv",
+        "Fixtures/RejectedSource/Permissions/SharedMutationWithoutKey/Expected.uv",
+        "E-TYP-1604",
+        "diagnostics.PermissionAdmissibility"
+    ) {
+        count = count + 1usize
+    }
+    if rejectedSpecimenMatches(
+        rejectedSpecimen(
+            "ReceiverPermissionMismatch",
+            "Fixtures/RejectedSource/Permissions/ReceiverPermissionMismatch",
+            "Fixtures/RejectedSource/Permissions/ReceiverPermissionMismatch/Source/Main.uv",
+            "Fixtures/RejectedSource/Permissions/ReceiverPermissionMismatch/Expected.uv",
+            expectedDiagnostic("E-TYP-1605", "diagnostics.PermissionAdmissibility")
+        ),
+        "ReceiverPermissionMismatch",
+        "Fixtures/RejectedSource/Permissions/ReceiverPermissionMismatch",
+        "Fixtures/RejectedSource/Permissions/ReceiverPermissionMismatch/Source/Main.uv",
+        "Fixtures/RejectedSource/Permissions/ReceiverPermissionMismatch/Expected.uv",
+        "E-TYP-1605",
+        "diagnostics.PermissionAdmissibility"
+    ) {
+        count = count + 1usize
+    }
+    return count
+}

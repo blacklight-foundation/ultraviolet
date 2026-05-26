@@ -1,0 +1,6 @@
+//! Rejected FFI specimen for invalid foreign predicate context.
+
+extern "C" {
+    public procedure importedPredicate(value: i32) -> i32
+        |: @foreign_assumes(importedPredicate(value) == 0)
+}

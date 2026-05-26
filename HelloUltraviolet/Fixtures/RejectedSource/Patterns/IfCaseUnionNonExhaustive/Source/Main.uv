@@ -1,0 +1,16 @@
+//! Rejected pattern specimen for non-exhaustive union case analysis.
+
+public type IfCaseUnionReference = i32 | bool
+
+public procedure ifCaseUnionValueReference() -> IfCaseUnionReference {
+    return 7
+}
+
+public procedure ifCaseUnionNonExhaustiveReference() -> i32 {
+    let value: IfCaseUnionReference = ifCaseUnionValueReference()
+    return if value is {
+        bound_value: i32 {
+            bound_value
+        }
+    }
+}

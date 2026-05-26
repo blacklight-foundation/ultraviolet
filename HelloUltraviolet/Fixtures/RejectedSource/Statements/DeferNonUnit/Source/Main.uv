@@ -1,0 +1,8 @@
+//! Rejected statement specimen for a non-unit defer block.
+
+public procedure deferNonUnitReference() -> i32 {
+    defer {
+        1
+    }
+    return 0
+}

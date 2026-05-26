@@ -1,0 +1,20 @@
+//! Generated catalog markers for 17. Patterns / 17.7 Pattern Diagnostics Supplement.
+
+
+public procedure countPatternsPatternDiagnosticsSupplementObligations() -> usize {
+    return 1usize
+}
+
+public procedure validatedPatternsPatternDiagnosticsSupplementObligations() -> usize {
+    var count: usize = 0usize
+    if rejectedSourceObligationEntryMatches(
+        "diag.17.PatternDiagnosticsSupplement",
+        68280usize,
+        "HelloUltraviolet::Audit::FixtureCatalog::RejectedSource",
+        "validatedPatternsRejectedSourceFixtureCount",
+        "Fixtures/RejectedSource/Patterns/PatternDiagnosticsSupplement/Source/Main.uv"
+    ) {
+        count = count + 1usize
+    }
+    return count
+}

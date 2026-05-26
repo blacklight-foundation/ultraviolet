@@ -1,0 +1,9 @@
+//! Rejected quote/splice specimen for identifier splice in a structural name.
+
+public procedure spliceIdentifierStructuralNameReference() -> i32 {
+    comptime {
+        let name = "GeneratedName"
+        let ast = quote { public record $name {} }
+    }
+    return 0
+}

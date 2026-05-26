@@ -1,0 +1,5 @@
+//! Rejected invariant specimen for the invariant diagnostic surface.
+
+public record InvariantDiagnosticOwner {
+    public value: i32
+} |: { self.value > 0 }

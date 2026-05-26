@@ -1,0 +1,326 @@
+//! Generated catalog markers for 18. Statements and Blocks / 18.2 Binding Statements.
+
+
+public procedure countStatementsAndBlocksBindingStatementsObligations() -> usize {
+    return 35usize
+}
+
+public procedure validatedStatementsAndBlocksBindingStatementsObligations() -> usize {
+    var count: usize = 0usize
+    if acceptedObligationEntryMatches(
+        "grammar.18.BindingStatements",
+        69397usize,
+        "HelloUltraviolet::Reference::Statements",
+        "runStatementsBindingsReference",
+        "Source/Reference/Statements/Bindings.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "rule.18.Parse-Binding-Stmt",
+        69415usize,
+        "HelloUltraviolet::Reference::Statements",
+        "runStatementsBindingsReference",
+        "Source/Reference/Statements/Bindings.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "rule.18.Parse-BindingAfterLetVar",
+        69431usize,
+        "HelloUltraviolet::Reference::Statements",
+        "runStatementsBindingsReference",
+        "Source/Reference/Statements/Bindings.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "rule.18.LetOrVarStmt-Let",
+        69447usize,
+        "HelloUltraviolet::Reference::Statements",
+        "runStatementsBindingsReference",
+        "Source/Reference/Statements/Bindings.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "rule.18.LetOrVarStmt-Var",
+        69463usize,
+        "HelloUltraviolet::Reference::Statements",
+        "runStatementsBindingsReference",
+        "Source/Reference/Statements/Bindings.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "def.18.LetOrVarStmtAst",
+        69481usize,
+        "HelloUltraviolet::Reference::Statements",
+        "runStatementsBindingsReference",
+        "Source/Reference/Statements/Bindings.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "def.18.BindingAstAndAccessors",
+        69494usize,
+        "HelloUltraviolet::Reference::Statements",
+        "runStatementsBindingsReference",
+        "Source/Reference/Statements/Bindings.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "def.18.IntroEnt",
+        69517usize,
+        "HelloUltraviolet::Reference::Statements",
+        "runStatementsBindingsReference",
+        "Source/Reference/Statements/Bindings.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "rule.18.IntroAll-Empty",
+        69530usize,
+        "HelloUltraviolet::Reference::Statements",
+        "runStatementsBindingsReference",
+        "Source/Reference/Statements/Bindings.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "rule.18.IntroAll-Cons",
+        69545usize,
+        "HelloUltraviolet::Reference::Statements",
+        "runStatementsBindingsReference",
+        "Source/Reference/Statements/Bindings.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "rule.18.IntroAllVar-Empty",
+        69561usize,
+        "HelloUltraviolet::Reference::Statements",
+        "runStatementsBindingsReference",
+        "Source/Reference/Statements/Bindings.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "rule.18.IntroAllVar-Cons",
+        69576usize,
+        "HelloUltraviolet::Reference::Statements",
+        "runStatementsBindingsReference",
+        "Source/Reference/Statements/Bindings.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "rule.18.T-LetStmt-Ann",
+        69592usize,
+        "HelloUltraviolet::Reference::Statements",
+        "runStatementsBindingsReference",
+        "Source/Reference/Statements/Bindings.uv"
+    ) {
+        count = count + 1usize
+    }
+    if rejectedSourceObligationEntryMatches(
+        "rule.18.T-LetStmt-Ann-Mismatch",
+        69608usize,
+        "HelloUltraviolet::Audit::FixtureCatalog::RejectedSource",
+        "validatedStatementsRejectedSourceFixtureCount",
+        "Fixtures/RejectedSource/Statements/LetAnnotationMismatch/Source/Main.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "rule.18.T-LetStmt-Infer",
+        69624usize,
+        "HelloUltraviolet::Reference::Statements",
+        "runStatementsBindingsReference",
+        "Source/Reference/Statements/Bindings.uv"
+    ) {
+        count = count + 1usize
+    }
+    if rejectedSourceObligationEntryMatches(
+        "rule.18.T-LetStmt-Infer-Err",
+        69640usize,
+        "HelloUltraviolet::Audit::FixtureCatalog::RejectedSource",
+        "validatedStatementsRejectedSourceFixtureCount",
+        "Fixtures/RejectedSource/Statements/LetInferenceFailure/Source/Main.uv"
+    ) {
+        count = count + 1usize
+    }
+    if rejectedSourceObligationEntryMatches(
+        "req.18.VarStmtTypingMirrorsLet",
+        69656usize,
+        "HelloUltraviolet::Audit::FixtureCatalog::RejectedSource",
+        "validatedStatementsRejectedSourceFixtureCount",
+        "Fixtures/RejectedSource/Statements/VarAnnotationMismatch/Source/Main.uv"
+    ) {
+        count = count + 1usize
+    }
+    if rejectedSourceObligationEntryMatches(
+        "rule.18.Let-Refutable-Pattern-Err",
+        69669usize,
+        "HelloUltraviolet::Audit::FixtureCatalog::RejectedSource",
+        "validatedStatementsRejectedSourceFixtureCount",
+        "Fixtures/RejectedSource/Statements/LetRefutablePattern/Source/Main.uv"
+    ) {
+        count = count + 1usize
+    }
+    if rejectedSourceObligationEntryMatches(
+        "rule.18.B-LetVar-UniqueNonMove-Err",
+        69685usize,
+        "HelloUltraviolet::Audit::FixtureCatalog::RejectedSource",
+        "validatedStatementsRejectedSourceFixtureCount",
+        "Fixtures/RejectedSource/Statements/UniqueNonMoveBinding/Source/Main.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "def.18.SuspendUniqueBind",
+        69701usize,
+        "HelloUltraviolet::Reference::Statements",
+        "runStatementsBindingsReference",
+        "Source/Reference/Statements/Bindings.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "rule.18.B-LetVar",
+        69716usize,
+        "HelloUltraviolet::Reference::Statements",
+        "runStatementsBindingsReference",
+        "Source/Reference/Statements/Bindings.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "rule.18.Prov-LetVar-Ordinary",
+        69732usize,
+        "HelloUltraviolet::Reference::Statements",
+        "runStatementsBindingsReference",
+        "Source/Reference/Statements/Bindings.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "rule.18.Prov-LetVar-Region-Alias",
+        69748usize,
+        "HelloUltraviolet::Reference::Statements",
+        "runStatementsBindingsReference",
+        "Source/Reference/Statements/Bindings.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "rule.18.Prov-LetVar-Region-Fresh",
+        69764usize,
+        "HelloUltraviolet::Reference::Statements",
+        "runStatementsBindingsReference",
+        "Source/Reference/Statements/Bindings.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "def.18.BindVal",
+        69782usize,
+        "HelloUltraviolet::Reference::Statements",
+        "runStatementsBindingsReference",
+        "Source/Reference/Statements/Bindings.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "def.18.BindPatternRuntimeHelpers",
+        69795usize,
+        "HelloUltraviolet::Reference::Statements",
+        "runStatementsBindingsReference",
+        "Source/Reference/Statements/Bindings.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "rule.18.BindList-Empty",
+        69809usize,
+        "HelloUltraviolet::Reference::Statements",
+        "runStatementsBindingsReference",
+        "Source/Reference/Statements/Bindings.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "rule.18.BindList-Cons",
+        69824usize,
+        "HelloUltraviolet::Reference::Statements",
+        "runStatementsBindingsReference",
+        "Source/Reference/Statements/Bindings.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "def.18.BindPattern",
+        69840usize,
+        "HelloUltraviolet::Reference::Statements",
+        "runStatementsBindingsReference",
+        "Source/Reference/Statements/Bindings.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "rule.18.ExecSigma-Let",
+        69853usize,
+        "HelloUltraviolet::Reference::Statements",
+        "runStatementsBindingsReference",
+        "Source/Reference/Statements/Bindings.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "rule.18.ExecSigma-Let-Ctrl",
+        69869usize,
+        "HelloUltraviolet::Reference::Statements",
+        "runStatementsBindingsReference",
+        "Source/Reference/Statements/Bindings.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "req.18.VarExecutionMirrorsLet",
+        69885usize,
+        "HelloUltraviolet::Reference::Statements",
+        "runStatementsBindingsReference",
+        "Source/Reference/Statements/Bindings.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "rule.18.Lower-Stmt-Let",
+        69900usize,
+        "HelloUltraviolet::Reference::Statements",
+        "runStatementsBindingsReference",
+        "Source/Reference/Statements/Bindings.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "rule.18.Lower-Stmt-Var",
+        69916usize,
+        "HelloUltraviolet::Reference::Statements",
+        "runStatementsBindingsReference",
+        "Source/Reference/Statements/Bindings.uv"
+    ) {
+        count = count + 1usize
+    }
+    if rejectedSourceObligationEntryMatches(
+        "diag.18.BindingStatements",
+        69934usize,
+        "HelloUltraviolet::Audit::FixtureCatalog::RejectedSource",
+        "validatedStatementsRejectedSourceFixtureCount",
+        "Fixtures/RejectedSource/Statements/BindingStatementsDiagnostic/Source/Main.uv"
+    ) {
+        count = count + 1usize
+    }
+    return count
+}

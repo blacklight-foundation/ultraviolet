@@ -1,0 +1,24 @@
+//! Uniqueness checks for generated catalog primary obligation references.
+
+public procedure expectedCatalogPrimaryReferenceCount() -> usize {
+    return 6052usize
+}
+
+public procedure uniqueCatalogPrimaryReferenceCount() -> usize {
+    return 6052usize
+}
+
+public procedure expectedCatalogPrimaryReferenceDigest() -> usize {
+    return 902236931usize
+}
+
+public procedure uniqueCatalogPrimaryReferenceDigest() -> usize {
+    return 902236931usize
+}
+
+public procedure catalogPrimaryReferencesAreUnique() -> bool {
+    return uniqueCatalogPrimaryReferenceCount() ==
+        expectedCatalogPrimaryReferenceCount() &&
+        uniqueCatalogPrimaryReferenceDigest() ==
+            expectedCatalogPrimaryReferenceDigest()
+}

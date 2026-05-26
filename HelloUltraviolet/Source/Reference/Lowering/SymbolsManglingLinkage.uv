@@ -1,0 +1,16 @@
+//! Reference specimens for Lowering / SymbolsManglingLinkage.
+
+#export("C")
+#mangle("uv_reference_lowering_symbol_increment")
+public procedure loweringMangledIncrement(value: i32) -> i32 {
+    return value + 1
+}
+
+internal procedure loweringInternalCallee(value: i32) -> i32 {
+    return loweringMangledIncrement(value) + 2
+}
+
+/// Exercises the Lowering SymbolsManglingLinkage reference surface.
+public procedure runLoweringSymbolsManglingLinkageReference() -> bool {
+    return loweringInternalCallee(6) == 9
+}

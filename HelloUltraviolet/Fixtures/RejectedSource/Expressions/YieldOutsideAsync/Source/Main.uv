@@ -1,0 +1,6 @@
+//! Rejected async suspension specimen for yield outside an async procedure.
+
+public procedure yieldOutsideAsyncReference() -> i32 {
+    yield 1
+    return 0
+}

@@ -1,0 +1,185 @@
+//! Runtime path checks for diagnostic-source fixture artifacts.
+
+internal procedure diagnosticFixtureArtifactsExist(
+    context: Context,
+    manifest_path: string@View,
+    source_path: string@View,
+    expected_path: string@View
+) -> bool {
+    return context.io~>exists(manifest_path) &&
+        context.io~>exists(source_path) &&
+        context.io~>exists(expected_path)
+}
+
+public procedure diagnosticSourceFixtureArtifactsExist(context: Context) -> bool {
+    var artifacts_exist: bool = true
+    artifacts_exist = artifacts_exist && diagnosticFixtureArtifactsExist(
+            context,
+            "HelloUltraviolet/Fixtures/DiagnosticSource/Expressions/ValidTransmuteTarget/Ultraviolet.toml",
+            "HelloUltraviolet/Fixtures/DiagnosticSource/Expressions/ValidTransmuteTarget/Source/Main.uv",
+            "HelloUltraviolet/Fixtures/DiagnosticSource/Expressions/ValidTransmuteTarget/Expected.uv"
+        )
+    artifacts_exist = artifacts_exist && diagnosticFixtureArtifactsExist(
+            context,
+            "HelloUltraviolet/Fixtures/DiagnosticSource/Attributes/InlineAlwaysRecursive/Ultraviolet.toml",
+            "HelloUltraviolet/Fixtures/DiagnosticSource/Attributes/InlineAlwaysRecursive/Source/Main.uv",
+            "HelloUltraviolet/Fixtures/DiagnosticSource/Attributes/InlineAlwaysRecursive/Expected.uv"
+        )
+    artifacts_exist = artifacts_exist && diagnosticFixtureArtifactsExist(
+            context,
+            "HelloUltraviolet/Fixtures/DiagnosticSource/SourceText/LeadingBOMWarning/Ultraviolet.toml",
+            "HelloUltraviolet/Fixtures/DiagnosticSource/SourceText/LeadingBOMWarning/Source/Main.uv",
+            "HelloUltraviolet/Fixtures/DiagnosticSource/SourceText/LeadingBOMWarning/Expected.uv"
+        )
+    artifacts_exist = artifacts_exist && diagnosticFixtureArtifactsExist(
+            context,
+            "HelloUltraviolet/Fixtures/DiagnosticSource/SourceText/DecimalLeadingZeroWarning/Ultraviolet.toml",
+            "HelloUltraviolet/Fixtures/DiagnosticSource/SourceText/DecimalLeadingZeroWarning/Source/Main.uv",
+            "HelloUltraviolet/Fixtures/DiagnosticSource/SourceText/DecimalLeadingZeroWarning/Expected.uv"
+        )
+    artifacts_exist = artifacts_exist && diagnosticFixtureArtifactsExist(
+            context,
+            "HelloUltraviolet/Fixtures/DiagnosticSource/Keys/FineGrainedLoopKeyWarning/Ultraviolet.toml",
+            "HelloUltraviolet/Fixtures/DiagnosticSource/Keys/FineGrainedLoopKeyWarning/Source/Main.uv",
+            "HelloUltraviolet/Fixtures/DiagnosticSource/Keys/FineGrainedLoopKeyWarning/Expected.uv"
+        )
+    artifacts_exist = artifacts_exist && diagnosticFixtureArtifactsExist(
+            context,
+            "HelloUltraviolet/Fixtures/DiagnosticSource/Keys/ReadThenWriteExplicitWarning/Ultraviolet.toml",
+            "HelloUltraviolet/Fixtures/DiagnosticSource/Keys/ReadThenWriteExplicitWarning/Source/Main.uv",
+            "HelloUltraviolet/Fixtures/DiagnosticSource/Keys/ReadThenWriteExplicitWarning/Expected.uv"
+        )
+    artifacts_exist = artifacts_exist && diagnosticFixtureArtifactsExist(
+            context,
+            "HelloUltraviolet/Fixtures/DiagnosticSource/Keys/ReadThenWriteContentionWarning/Ultraviolet.toml",
+            "HelloUltraviolet/Fixtures/DiagnosticSource/Keys/ReadThenWriteContentionWarning/Source/Main.uv",
+            "HelloUltraviolet/Fixtures/DiagnosticSource/Keys/ReadThenWriteContentionWarning/Expected.uv"
+        )
+    artifacts_exist = artifacts_exist && diagnosticFixtureArtifactsExist(
+            context,
+            "HelloUltraviolet/Fixtures/DiagnosticSource/Keys/OrderedRedundantWarning/Ultraviolet.toml",
+            "HelloUltraviolet/Fixtures/DiagnosticSource/Keys/OrderedRedundantWarning/Source/Main.uv",
+            "HelloUltraviolet/Fixtures/DiagnosticSource/Keys/OrderedRedundantWarning/Expected.uv"
+        )
+    artifacts_exist = artifacts_exist && diagnosticFixtureArtifactsExist(
+            context,
+            "HelloUltraviolet/Fixtures/DiagnosticSource/Keys/UnknownCalleeAccessWarning/Ultraviolet.toml",
+            "HelloUltraviolet/Fixtures/DiagnosticSource/Keys/UnknownCalleeAccessWarning/Source/Main.uv",
+            "HelloUltraviolet/Fixtures/DiagnosticSource/Keys/UnknownCalleeAccessWarning/Expected.uv"
+        )
+    artifacts_exist = artifacts_exist && diagnosticFixtureArtifactsExist(
+            context,
+            "HelloUltraviolet/Fixtures/DiagnosticSource/Keys/SharedClosureCaptureWarning/Ultraviolet.toml",
+            "HelloUltraviolet/Fixtures/DiagnosticSource/Keys/SharedClosureCaptureWarning/Source/Main.uv",
+            "HelloUltraviolet/Fixtures/DiagnosticSource/Keys/SharedClosureCaptureWarning/Expected.uv"
+        )
+    artifacts_exist = artifacts_exist && diagnosticFixtureArtifactsExist(
+            context,
+            "HelloUltraviolet/Fixtures/DiagnosticSource/Keys/NestedReleaseInterleavingWarning/Ultraviolet.toml",
+            "HelloUltraviolet/Fixtures/DiagnosticSource/Keys/NestedReleaseInterleavingWarning/Source/Main.uv",
+            "HelloUltraviolet/Fixtures/DiagnosticSource/Keys/NestedReleaseInterleavingWarning/Expected.uv"
+        )
+    artifacts_exist = artifacts_exist && diagnosticFixtureArtifactsExist(
+            context,
+            "HelloUltraviolet/Fixtures/DiagnosticSource/Keys/DynamicKeyRuntimeInfo/Ultraviolet.toml",
+            "HelloUltraviolet/Fixtures/DiagnosticSource/Keys/DynamicKeyRuntimeInfo/Source/Main.uv",
+            "HelloUltraviolet/Fixtures/DiagnosticSource/Keys/DynamicKeyRuntimeInfo/Expected.uv"
+        )
+    artifacts_exist = artifacts_exist && diagnosticFixtureArtifactsExist(
+            context,
+            "HelloUltraviolet/Fixtures/DiagnosticSource/Keys/DynamicKeyRuntimeSyncInfo/Ultraviolet.toml",
+            "HelloUltraviolet/Fixtures/DiagnosticSource/Keys/DynamicKeyRuntimeSyncInfo/Source/Main.uv",
+            "HelloUltraviolet/Fixtures/DiagnosticSource/Keys/DynamicKeyRuntimeSyncInfo/Expected.uv"
+        )
+    artifacts_exist = artifacts_exist && diagnosticFixtureArtifactsExist(
+            context,
+            "HelloUltraviolet/Fixtures/DiagnosticSource/Keys/StaleAfterYieldReleaseWarning/Ultraviolet.toml",
+            "HelloUltraviolet/Fixtures/DiagnosticSource/Keys/StaleAfterYieldReleaseWarning/Source/Main.uv",
+            "HelloUltraviolet/Fixtures/DiagnosticSource/Keys/StaleAfterYieldReleaseWarning/Expected.uv"
+        )
+    artifacts_exist = artifacts_exist && diagnosticFixtureArtifactsExist(
+            context,
+            "HelloUltraviolet/Fixtures/DiagnosticSource/Keys/StaleOkSuppressesReleaseWarning/Ultraviolet.toml",
+            "HelloUltraviolet/Fixtures/DiagnosticSource/Keys/StaleOkSuppressesReleaseWarning/Source/Main.uv",
+            "HelloUltraviolet/Fixtures/DiagnosticSource/Keys/StaleOkSuppressesReleaseWarning/Expected.uv"
+        )
+    artifacts_exist = artifacts_exist && diagnosticFixtureArtifactsExist(
+            context,
+            "HelloUltraviolet/Fixtures/DiagnosticSource/Keys/SpeculativeLargeStructWarning/Ultraviolet.toml",
+            "HelloUltraviolet/Fixtures/DiagnosticSource/Keys/SpeculativeLargeStructWarning/Source/Main.uv",
+            "HelloUltraviolet/Fixtures/DiagnosticSource/Keys/SpeculativeLargeStructWarning/Expected.uv"
+        )
+    artifacts_exist = artifacts_exist && diagnosticFixtureArtifactsExist(
+            context,
+            "HelloUltraviolet/Fixtures/DiagnosticSource/Keys/SpeculativeExpensiveBodyWarning/Ultraviolet.toml",
+            "HelloUltraviolet/Fixtures/DiagnosticSource/Keys/SpeculativeExpensiveBodyWarning/Source/Main.uv",
+            "HelloUltraviolet/Fixtures/DiagnosticSource/Keys/SpeculativeExpensiveBodyWarning/Expected.uv"
+        )
+    artifacts_exist = artifacts_exist && diagnosticFixtureArtifactsExist(
+            context,
+            "HelloUltraviolet/Fixtures/DiagnosticSource/Async/AsyncLargeCaptureWarning/Ultraviolet.toml",
+            "HelloUltraviolet/Fixtures/DiagnosticSource/Async/AsyncLargeCaptureWarning/Source/Main.uv",
+            "HelloUltraviolet/Fixtures/DiagnosticSource/Async/AsyncLargeCaptureWarning/Expected.uv"
+        )
+    artifacts_exist = artifacts_exist && diagnosticFixtureArtifactsExist(
+            context,
+            "HelloUltraviolet/Fixtures/DiagnosticSource/Async/AsyncLargeCaptureWarningEmission/Ultraviolet.toml",
+            "HelloUltraviolet/Fixtures/DiagnosticSource/Async/AsyncLargeCaptureWarningEmission/Source/Main.uv",
+            "HelloUltraviolet/Fixtures/DiagnosticSource/Async/AsyncLargeCaptureWarningEmission/Expected.uv"
+        )
+    artifacts_exist = artifacts_exist && diagnosticFixtureArtifactsExist(
+            context,
+            "HelloUltraviolet/Fixtures/DiagnosticSource/Async/AsyncLargeCaptureNoWarning/Ultraviolet.toml",
+            "HelloUltraviolet/Fixtures/DiagnosticSource/Async/AsyncLargeCaptureNoWarning/Source/Main.uv",
+            "HelloUltraviolet/Fixtures/DiagnosticSource/Async/AsyncLargeCaptureNoWarning/Expected.uv"
+        )
+    artifacts_exist = artifacts_exist && diagnosticFixtureArtifactsExist(
+            context,
+            "HelloUltraviolet/Fixtures/DiagnosticSource/Async/AsyncStateMachineDiagnosticsTable/Ultraviolet.toml",
+            "HelloUltraviolet/Fixtures/DiagnosticSource/Async/AsyncStateMachineDiagnosticsTable/Source/Main.uv",
+            "HelloUltraviolet/Fixtures/DiagnosticSource/Async/AsyncStateMachineDiagnosticsTable/Expected.uv"
+        )
+    artifacts_exist = artifacts_exist && diagnosticFixtureArtifactsExist(
+            context,
+            "HelloUltraviolet/Fixtures/DiagnosticSource/Async/StaleValueMarkIRDiagnostics/Ultraviolet.toml",
+            "HelloUltraviolet/Fixtures/DiagnosticSource/Async/StaleValueMarkIRDiagnostics/Source/Main.uv",
+            "HelloUltraviolet/Fixtures/DiagnosticSource/Async/StaleValueMarkIRDiagnostics/Expected.uv"
+        )
+    artifacts_exist = artifacts_exist && diagnosticFixtureArtifactsExist(
+            context,
+            "HelloUltraviolet/Fixtures/DiagnosticSource/Parallelism/DispatchDynamicKeyWarning/Ultraviolet.toml",
+            "HelloUltraviolet/Fixtures/DiagnosticSource/Parallelism/DispatchDynamicKeyWarning/Source/Main.uv",
+            "HelloUltraviolet/Fixtures/DiagnosticSource/Parallelism/DispatchDynamicKeyWarning/Expected.uv"
+        )
+    artifacts_exist = artifacts_exist && diagnosticFixtureArtifactsExist(
+            context,
+            "HelloUltraviolet/Fixtures/DiagnosticSource/Parallelism/CancellationNoAdditionalDiagnostics/Ultraviolet.toml",
+            "HelloUltraviolet/Fixtures/DiagnosticSource/Parallelism/CancellationNoAdditionalDiagnostics/Source/Main.uv",
+            "HelloUltraviolet/Fixtures/DiagnosticSource/Parallelism/CancellationNoAdditionalDiagnostics/Expected.uv"
+        )
+    artifacts_exist = artifacts_exist && diagnosticFixtureArtifactsExist(
+            context,
+            "HelloUltraviolet/Fixtures/DiagnosticSource/Parallelism/PanicHandlingNoAdditionalDiagnostics/Ultraviolet.toml",
+            "HelloUltraviolet/Fixtures/DiagnosticSource/Parallelism/PanicHandlingNoAdditionalDiagnostics/Source/Main.uv",
+            "HelloUltraviolet/Fixtures/DiagnosticSource/Parallelism/PanicHandlingNoAdditionalDiagnostics/Expected.uv"
+        )
+    artifacts_exist = artifacts_exist && diagnosticFixtureArtifactsExist(
+            context,
+            "HelloUltraviolet/Fixtures/DiagnosticSource/Comptime/UserDiagnosticWarning/Ultraviolet.toml",
+            "HelloUltraviolet/Fixtures/DiagnosticSource/Comptime/UserDiagnosticWarning/Source/Main.uv",
+            "HelloUltraviolet/Fixtures/DiagnosticSource/Comptime/UserDiagnosticWarning/Expected.uv"
+        )
+    artifacts_exist = artifacts_exist && diagnosticFixtureArtifactsExist(
+            context,
+            "HelloUltraviolet/Fixtures/DiagnosticSource/Comptime/UserDiagnosticNote/Ultraviolet.toml",
+            "HelloUltraviolet/Fixtures/DiagnosticSource/Comptime/UserDiagnosticNote/Source/Main.uv",
+            "HelloUltraviolet/Fixtures/DiagnosticSource/Comptime/UserDiagnosticNote/Expected.uv"
+        )
+    artifacts_exist = artifacts_exist && diagnosticFixtureArtifactsExist(
+            context,
+            "HelloUltraviolet/Fixtures/DiagnosticSource/Comptime/ProjectFilesInvalidPath/Ultraviolet.toml",
+            "HelloUltraviolet/Fixtures/DiagnosticSource/Comptime/ProjectFilesInvalidPath/Source/Main.uv",
+            "HelloUltraviolet/Fixtures/DiagnosticSource/Comptime/ProjectFilesInvalidPath/Expected.uv"
+        )
+    return artifacts_exist
+}

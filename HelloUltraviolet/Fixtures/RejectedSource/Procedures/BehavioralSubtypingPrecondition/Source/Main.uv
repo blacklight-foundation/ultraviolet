@@ -1,0 +1,16 @@
+//! Rejected behavioral-subtyping specimen for strengthened implementation preconditions.
+
+public class PreconditionClass {
+    public procedure readValue(~, value: i32) -> i32
+    |: value > 0
+}
+
+public record StrongerPreconditionOwner <: PreconditionClass {
+    public value: i32
+
+    public procedure readValue(~, value: i32) -> i32
+    |: value > 10
+    {
+        return self.value + value
+    }
+}

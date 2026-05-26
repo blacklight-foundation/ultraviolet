@@ -1,0 +1,20 @@
+//! Generated catalog markers for Appendix B. Complete Grammar Reference / B.13 FFI Grammar.
+
+
+public procedure countAppendixBCompleteGrammarReferenceBFfiGrammarObligations() -> usize {
+    return 1usize
+}
+
+public procedure validatedAppendixBCompleteGrammarReferenceBFfiGrammarObligations() -> usize {
+    var count: usize = 0usize
+    if acceptedObligationEntryMatches(
+        "grammar.B.13.FFIGrammar",
+        101356usize,
+        "HelloUltraviolet::Reference::FFI",
+        "runFFIExternProceduresReference",
+        "Source/Reference/FFI/ExternProcedures.uv"
+    ) {
+        count = count + 1usize
+    }
+    return count
+}

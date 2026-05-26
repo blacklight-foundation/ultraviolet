@@ -1,0 +1,200 @@
+//! Generated catalog markers for 23. Foreign Function Interface / 23.4 FFI Attributes.
+
+
+public procedure countForeignFunctionInterfaceFfiAttributesObligations() -> usize {
+    return 21usize
+}
+
+public procedure validatedForeignFunctionInterfaceFfiAttributesObligations() -> usize {
+    var count: usize = 0usize
+    if acceptedObligationEntryMatches(
+        "grammar.23.FfiAttributes",
+        88564usize,
+        "HelloUltraviolet::Reference::FFI",
+        "runFFIAttributesReference",
+        "Source/Reference/FFI/Attributes.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "requirement.23.FfiAttributesParsing",
+        88593usize,
+        "HelloUltraviolet::Reference::FFI",
+        "runFFIAttributesReference",
+        "Source/Reference/FFI/Attributes.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "ast.23.FfiAttributesAttachedEntries",
+        88608usize,
+        "HelloUltraviolet::Reference::FFI",
+        "runFFIAttributesReference",
+        "Source/Reference/FFI/Attributes.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "ast.23.FfiAttributeTargets",
+        88621usize,
+        "HelloUltraviolet::Reference::FFI",
+        "runFFIAttributesReference",
+        "Source/Reference/FFI/Attributes.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "requirement.23.MangleAttributeSemantics",
+        88645usize,
+        "HelloUltraviolet::Reference::FFI",
+        "runFFIAttributesReference",
+        "Source/Reference/FFI/Attributes.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "def.23.LibraryLinkKinds",
+        88664usize,
+        "HelloUltraviolet::Reference::FFI",
+        "runFFIAttributesReference",
+        "Source/Reference/FFI/Attributes.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "requirement.23.LibraryAttributeSemantics",
+        88684usize,
+        "HelloUltraviolet::Reference::FFI",
+        "runFFIAttributesReference",
+        "Source/Reference/FFI/Attributes.uv"
+    ) {
+        count = count + 1usize
+    }
+    if artifactBehaviorObligationEntryMatches(
+        "def.23.ResolveLibraryName",
+        88701usize,
+        "HelloUltraviolet::Audit::FixtureCatalog::ArtifactProjects",
+        "validatedArtifactProjectFixtureCount",
+        "Fixtures/ArtifactProjects/MacOSDylibLibrary/Source/Main.uv"
+    ) {
+        count = count + 1usize
+    }
+    if rejectedSourceObligationEntryMatches(
+        "requirement.23.UnsupportedLibraryKindIllFormed",
+        88730usize,
+        "HelloUltraviolet::Audit::FixtureCatalog::RejectedSource",
+        "validatedFFIRejectedSourceFixtureCount",
+        "Fixtures/RejectedSource/FFI/UnsupportedLibraryKind/Source/Main.uv"
+    ) {
+        count = count + 1usize
+    }
+    if artifactBehaviorObligationEntryMatches(
+        "requirement.23.RawDylibResolution",
+        88743usize,
+        "HelloUltraviolet::Audit::FixtureCatalog::ArtifactProjects",
+        "validatedArtifactProjectFixtureCount",
+        "Fixtures/ArtifactProjects/RawDylibLibrary/Source/Main.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "def.23.UnwindModes",
+        88761usize,
+        "HelloUltraviolet::Reference::FFI",
+        "runFFIAttributesReference",
+        "Source/Reference/FFI/Attributes.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "requirement.23.UnwindDefaultMode",
+        88779usize,
+        "HelloUltraviolet::Reference::FFI",
+        "runFFIAttributesReference",
+        "Source/Reference/FFI/Attributes.uv"
+    ) {
+        count = count + 1usize
+    }
+    if rejectedSourceObligationEntryMatches(
+        "requirement.23.UnwindAttributeTargetValidity",
+        88792usize,
+        "HelloUltraviolet::Audit::FixtureCatalog::RejectedSource",
+        "validatedFFIRejectedSourceFixtureCount",
+        "Fixtures/RejectedSource/FFI/UnwindOnNonFFIProcedure/Source/Main.uv"
+    ) {
+        count = count + 1usize
+    }
+    if rejectedSourceObligationEntryMatches(
+        "requirement.23.UnwindCatchAbiRequirement",
+        88805usize,
+        "HelloUltraviolet::Audit::FixtureCatalog::RejectedSource",
+        "validatedFFIRejectedSourceFixtureCount",
+        "Fixtures/RejectedSource/FFI/UnwindCatchABIMismatch/Source/Main.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "requirement.23.ExportAttributeSemantics",
+        88825usize,
+        "HelloUltraviolet::Reference::FFI",
+        "runFFIAttributesReference",
+        "Source/Reference/FFI/Attributes.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "requirement.23.HostExportAttributeSemantics",
+        88845usize,
+        "HelloUltraviolet::Reference::FFI",
+        "runFFIAttributesReference",
+        "Source/Reference/FFI/Attributes.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "requirement.23.FfiPassByValueAttributeSemantics",
+        88867usize,
+        "HelloUltraviolet::Reference::FFI",
+        "runFFIAttributesReference",
+        "Source/Reference/FFI/Attributes.uv"
+    ) {
+        count = count + 1usize
+    }
+    if rejectedSourceObligationEntryMatches(
+        "requirement.23.FfiAttributeConstraints",
+        88880usize,
+        "HelloUltraviolet::Audit::FixtureCatalog::RejectedSource",
+        "validatedFFIRejectedSourceFixtureCount",
+        "Fixtures/RejectedSource/FFI/MangleOnNonFFIProcedure/Source/Main.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "requirement.23.FfiAttributesDynamicSemantics",
+        88906usize,
+        "HelloUltraviolet::Reference::FFI",
+        "runFFIAttributesReference",
+        "Source/Reference/FFI/Attributes.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "requirement.23.FfiAttributesLowering",
+        88921usize,
+        "HelloUltraviolet::Reference::FFI",
+        "runFFIAttributesReference",
+        "Source/Reference/FFI/Attributes.uv"
+    ) {
+        count = count + 1usize
+    }
+    if rejectedSourceObligationEntryMatches(
+        "diagnostics.23.FfiAttributeDiagnostics",
+        88936usize,
+        "HelloUltraviolet::Audit::FixtureCatalog::RejectedSource",
+        "validatedFFIRejectedSourceFixtureCount",
+        "Fixtures/RejectedSource/FFI/FfiAttributeDiagnostics/Source/Main.uv"
+    ) {
+        count = count + 1usize
+    }
+    return count
+}

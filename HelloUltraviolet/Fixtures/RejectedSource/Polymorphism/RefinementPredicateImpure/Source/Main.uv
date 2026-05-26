@@ -1,0 +1,7 @@
+//! Rejected refinement specimen for an impure refinement predicate.
+
+public procedure impureRefinementPredicateValue() -> bool {
+    return true
+}
+
+public type ImpureRefinement = i32 |: { impureRefinementPredicateValue() }

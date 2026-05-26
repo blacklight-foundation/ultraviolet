@@ -1,0 +1,16 @@
+[[assembly]]
+name = "InternalAccess"
+kind = "executable"
+root = "Source/InternalAccess"
+
+[[assembly]]
+name = "InternalProvider"
+kind = "dependency"
+root = "Source/InternalProvider"
+
+[toolchain]
+target_profile = "x86_64-win64"
+
+[build]
+incremental = true
+progress = false

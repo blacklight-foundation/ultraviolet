@@ -1,0 +1,515 @@
+//! Generated catalog markers for 15. Procedures and Contracts / 15.2 Methods and Receivers.
+
+
+public procedure countProceduresAndContractsMethodsAndReceiversObligations() -> usize {
+    return 56usize
+}
+
+public procedure validatedProceduresAndContractsMethodsAndReceiversObligations() -> usize {
+    var count: usize = 0usize
+    if acceptedObligationEntryMatches(
+        "grammar.15.MethodsAndReceivers",
+        53990usize,
+        "HelloUltraviolet::Reference::Procedures",
+        "runProceduresReceiversReference",
+        "Source/Reference/Procedures/Receivers.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "req.15.ClassAndStateMethodsReuseReceiverForms",
+        54007usize,
+        "HelloUltraviolet::Reference::Procedures",
+        "runProceduresReceiversReference",
+        "Source/Reference/Procedures/Receivers.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "rule.15.Parse-MethodDefAfterVis",
+        54022usize,
+        "HelloUltraviolet::Reference::Procedures",
+        "runProceduresReceiversReference",
+        "Source/Reference/Procedures/Receivers.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "rule.15.Parse-Override-Yes",
+        54038usize,
+        "HelloUltraviolet::Reference::Procedures",
+        "runProceduresReceiversReference",
+        "Source/Reference/Procedures/Receivers.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "rule.15.Parse-Override-No",
+        54054usize,
+        "HelloUltraviolet::Reference::Procedures",
+        "runProceduresReceiversReference",
+        "Source/Reference/Procedures/Receivers.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "rule.15.Parse-MethodSignature",
+        54070usize,
+        "HelloUltraviolet::Reference::Procedures",
+        "runProceduresReceiversReference",
+        "Source/Reference/Procedures/Receivers.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "rule.15.Parse-StateMethodSignature-Receiver",
+        54086usize,
+        "HelloUltraviolet::Reference::Procedures",
+        "runProceduresReceiversReference",
+        "Source/Reference/Procedures/Receivers.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "rule.15.Parse-MethodParams-None",
+        54102usize,
+        "HelloUltraviolet::Reference::Procedures",
+        "runProceduresReceiversReference",
+        "Source/Reference/Procedures/Receivers.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "rule.15.Parse-MethodParams-Comma",
+        54118usize,
+        "HelloUltraviolet::Reference::Procedures",
+        "runProceduresReceiversReference",
+        "Source/Reference/Procedures/Receivers.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "rule.15.Parse-Receiver-Short-Const",
+        54134usize,
+        "HelloUltraviolet::Reference::Procedures",
+        "runProceduresReceiversReference",
+        "Source/Reference/Procedures/Receivers.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "rule.15.Parse-Receiver-Short-Unique",
+        54150usize,
+        "HelloUltraviolet::Reference::Procedures",
+        "runProceduresReceiversReference",
+        "Source/Reference/Procedures/Receivers.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "rule.15.Parse-Receiver-Short-Shared",
+        54166usize,
+        "HelloUltraviolet::Reference::Procedures",
+        "runProceduresReceiversReference",
+        "Source/Reference/Procedures/Receivers.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "rule.15.Parse-Receiver-Explicit",
+        54182usize,
+        "HelloUltraviolet::Reference::Procedures",
+        "runProceduresReceiversReference",
+        "Source/Reference/Procedures/Receivers.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "def.15.MethodDeclAst",
+        54200usize,
+        "HelloUltraviolet::Reference::Procedures",
+        "runProceduresReceiversReference",
+        "Source/Reference/Procedures/Receivers.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "def.15.ReceiverAst",
+        54213usize,
+        "HelloUltraviolet::Reference::Procedures",
+        "runProceduresReceiversReference",
+        "Source/Reference/Procedures/Receivers.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "def.15.RecordFieldsMethodsAndSelf",
+        54228usize,
+        "HelloUltraviolet::Reference::Procedures",
+        "runProceduresReceiversReference",
+        "Source/Reference/Procedures/Receivers.uv"
+    ) {
+        count = count + 1usize
+    }
+    if rejectedSourceObligationEntryMatches(
+        "def.15.SelfType",
+        54243usize,
+        "HelloUltraviolet::Audit::FixtureCatalog::RejectedSource",
+        "validatedProceduresRejectedSourceFixtureCount",
+        "Fixtures/RejectedSource/Procedures/SelfTypeDefinition/Source/Main.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "def.15.RecvType",
+        54256usize,
+        "HelloUltraviolet::Reference::Procedures",
+        "runProceduresReceiversReference",
+        "Source/Reference/Procedures/Receivers.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "def.15.RecvMode",
+        54272usize,
+        "HelloUltraviolet::Reference::Procedures",
+        "runProceduresReceiversReference",
+        "Source/Reference/Procedures/Receivers.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "def.15.RecvPerm",
+        54286usize,
+        "HelloUltraviolet::Reference::Procedures",
+        "runProceduresReceiversReference",
+        "Source/Reference/Procedures/Receivers.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "def.15.MethodSignaturesAndParams",
+        54301usize,
+        "HelloUltraviolet::Reference::Procedures",
+        "runProceduresReceiversReference",
+        "Source/Reference/Procedures/Receivers.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "rule.15.Recv-Explicit",
+        54320usize,
+        "HelloUltraviolet::Reference::Procedures",
+        "runProceduresReceiversReference",
+        "Source/Reference/Procedures/Receivers.uv"
+    ) {
+        count = count + 1usize
+    }
+    if rejectedSourceObligationEntryMatches(
+        "rule.15.Record-Method-RecvSelf-Err",
+        54336usize,
+        "HelloUltraviolet::Audit::FixtureCatalog::RejectedSource",
+        "validatedProceduresRejectedSourceFixtureCount",
+        "Fixtures/RejectedSource/Procedures/RecordMethodReceiverNotSelf/Source/Main.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "rule.15.Recv-Const",
+        54352usize,
+        "HelloUltraviolet::Reference::Procedures",
+        "runProceduresReceiversReference",
+        "Source/Reference/Procedures/Receivers.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "rule.15.Recv-Unique",
+        54367usize,
+        "HelloUltraviolet::Reference::Procedures",
+        "runProceduresReceiversReference",
+        "Source/Reference/Procedures/Receivers.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "rule.15.Recv-Shared",
+        54382usize,
+        "HelloUltraviolet::Reference::Procedures",
+        "runProceduresReceiversReference",
+        "Source/Reference/Procedures/Receivers.uv"
+    ) {
+        count = count + 1usize
+    }
+    if rejectedSourceObligationEntryMatches(
+        "rule.15.WF-Record-Method",
+        54397usize,
+        "HelloUltraviolet::Audit::FixtureCatalog::RejectedSource",
+        "validatedProceduresRejectedSourceFixtureCount",
+        "Fixtures/RejectedSource/Procedures/RecordMethodWellFormedness/Source/Main.uv"
+    ) {
+        count = count + 1usize
+    }
+    if rejectedSourceObligationEntryMatches(
+        "rule.15.T-Record-Method-Body",
+        54413usize,
+        "HelloUltraviolet::Audit::FixtureCatalog::RejectedSource",
+        "validatedProceduresRejectedSourceFixtureCount",
+        "Fixtures/RejectedSource/Procedures/RecordMethodBodyExplicitReturn/Source/Main.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "rule.15.WF-Record-Methods",
+        54429usize,
+        "HelloUltraviolet::Reference::Procedures",
+        "runProceduresReceiversReference",
+        "Source/Reference/Procedures/Receivers.uv"
+    ) {
+        count = count + 1usize
+    }
+    if rejectedSourceObligationEntryMatches(
+        "rule.15.Record-Method-Dup",
+        54445usize,
+        "HelloUltraviolet::Audit::FixtureCatalog::RejectedSource",
+        "validatedProceduresRejectedSourceFixtureCount",
+        "Fixtures/RejectedSource/Procedures/RecordMethodDuplicate/Source/Main.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "def.15.ArgsOkJudg",
+        54461usize,
+        "HelloUltraviolet::Reference::Procedures",
+        "runProceduresReceiversReference",
+        "Source/Reference/Procedures/Receivers.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "def.15.RecvBaseType",
+        54474usize,
+        "HelloUltraviolet::Reference::Procedures",
+        "runProceduresReceiversReference",
+        "Source/Reference/Procedures/Receivers.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "rule.15.Args-Empty",
+        54487usize,
+        "HelloUltraviolet::Reference::Procedures",
+        "runProceduresReceiversReference",
+        "Source/Reference/Procedures/Receivers.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "rule.15.Args-Cons",
+        54502usize,
+        "HelloUltraviolet::Reference::Procedures",
+        "runProceduresReceiversReference",
+        "Source/Reference/Procedures/Receivers.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "rule.15.Args-Cons-Ref",
+        54518usize,
+        "HelloUltraviolet::Reference::Procedures",
+        "runProceduresReceiversReference",
+        "Source/Reference/Procedures/Receivers.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "def.15.RecvArgOk",
+        54534usize,
+        "HelloUltraviolet::Reference::Procedures",
+        "runProceduresReceiversReference",
+        "Source/Reference/Procedures/Receivers.uv"
+    ) {
+        count = count + 1usize
+    }
+    if rejectedSourceObligationEntryMatches(
+        "rule.15.T-Record-MethodCall",
+        54547usize,
+        "HelloUltraviolet::Audit::FixtureCatalog::RejectedSource",
+        "validatedProceduresRejectedSourceFixtureCount",
+        "Fixtures/RejectedSource/Procedures/RecordMethodCallArgumentType/Source/Main.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "req.15.OwnerSpecificReceiverRestrictionsReuseCommonForms",
+        54563usize,
+        "HelloUltraviolet::Reference::Procedures",
+        "runProceduresReceiversReference",
+        "Source/Reference/Procedures/Receivers.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "def.15.RecvArgMode",
+        54578usize,
+        "HelloUltraviolet::Reference::Procedures",
+        "runProceduresReceiversReference",
+        "Source/Reference/Procedures/Receivers.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "def.15.MethodOf",
+        54592usize,
+        "HelloUltraviolet::Reference::Procedures",
+        "runProceduresReceiversReference",
+        "Source/Reference/Procedures/Receivers.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "def.15.RecvBase",
+        54607usize,
+        "HelloUltraviolet::Reference::Procedures",
+        "runProceduresReceiversReference",
+        "Source/Reference/Procedures/Receivers.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "def.15.RecvParams",
+        54620usize,
+        "HelloUltraviolet::Reference::Procedures",
+        "runProceduresReceiversReference",
+        "Source/Reference/Procedures/Receivers.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "rule.15.EvalRecvSigma-Move",
+        54635usize,
+        "HelloUltraviolet::Reference::Procedures",
+        "runProceduresReceiversReference",
+        "Source/Reference/Procedures/Receivers.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "rule.15.EvalRecvSigma-Ref-Dyn",
+        54651usize,
+        "HelloUltraviolet::Reference::Procedures",
+        "runProceduresReceiversReference",
+        "Source/Reference/Procedures/Receivers.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "rule.15.EvalRecvSigma-Ref-Dyn-Expired",
+        54667usize,
+        "HelloUltraviolet::Reference::Procedures",
+        "runProceduresReceiversReference",
+        "Source/Reference/Procedures/Receivers.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "rule.15.EvalRecvSigma-Ref",
+        54683usize,
+        "HelloUltraviolet::Reference::Procedures",
+        "runProceduresReceiversReference",
+        "Source/Reference/Procedures/Receivers.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "rule.15.EvalRecvSigma-Ctrl-Move",
+        54699usize,
+        "HelloUltraviolet::Reference::Procedures",
+        "runProceduresReceiversReference",
+        "Source/Reference/Procedures/Receivers.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "rule.15.EvalRecvSigma-Ctrl-Ref",
+        54715usize,
+        "HelloUltraviolet::Reference::Procedures",
+        "runProceduresReceiversReference",
+        "Source/Reference/Procedures/Receivers.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "def.15.BindMethodParams",
+        54731usize,
+        "HelloUltraviolet::Reference::Procedures",
+        "runProceduresReceiversReference",
+        "Source/Reference/Procedures/Receivers.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "rule.15.ApplyMethodSigma-Prim",
+        54744usize,
+        "HelloUltraviolet::Reference::Procedures",
+        "runProceduresReceiversReference",
+        "Source/Reference/Procedures/Receivers.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "rule.15.ApplyMethodSigma",
+        54760usize,
+        "HelloUltraviolet::Reference::Procedures",
+        "runProceduresReceiversReference",
+        "Source/Reference/Procedures/Receivers.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "req.15.MethodsLowerAsProceduresWithReceiverFirst",
+        54778usize,
+        "HelloUltraviolet::Reference::Procedures",
+        "runProceduresReceiversReference",
+        "Source/Reference/Procedures/Receivers.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "rule.15.Mangle-Record-Method",
+        54791usize,
+        "HelloUltraviolet::Reference::Procedures",
+        "runProceduresReceiversReference",
+        "Source/Reference/Procedures/Receivers.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "rule.15.Mangle-Class-Method",
+        54807usize,
+        "HelloUltraviolet::Reference::Procedures",
+        "runProceduresReceiversReference",
+        "Source/Reference/Procedures/Receivers.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "rule.15.Mangle-State-Method",
+        54823usize,
+        "HelloUltraviolet::Reference::Procedures",
+        "runProceduresReceiversReference",
+        "Source/Reference/Procedures/Receivers.uv"
+    ) {
+        count = count + 1usize
+    }
+    if rejectedSourceObligationEntryMatches(
+        "diag.15.MethodsAndReceivers",
+        54841usize,
+        "HelloUltraviolet::Audit::FixtureCatalog::RejectedSource",
+        "validatedProceduresRejectedSourceFixtureCount",
+        "Fixtures/RejectedSource/Procedures/MethodsAndReceiversDiagnostic/Source/Main.uv"
+    ) {
+        count = count + 1usize
+    }
+    return count
+}

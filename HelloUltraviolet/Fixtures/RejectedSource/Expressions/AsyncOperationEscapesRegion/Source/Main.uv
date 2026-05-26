@@ -1,0 +1,13 @@
+//! Rejected async specimen for async operation provenance escaping its region.
+
+public procedure unitAsyncValue() -> Async<(), (), i32, !> {
+    return 1
+}
+
+public procedure asyncOperationEscapesRegionReference() -> i32 {
+    var escaped: Async<(), (), i32, !> = unitAsyncValue()
+    region {
+        escaped = ^unitAsyncValue()
+    }
+    return 0
+}

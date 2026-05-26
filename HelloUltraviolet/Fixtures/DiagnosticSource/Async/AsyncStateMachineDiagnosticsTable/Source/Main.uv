@@ -1,0 +1,17 @@
+//! Diagnostic async specimen for the async state-machine diagnostic table.
+
+public record LargeAsyncPayload {
+    public values: [i64; 40]
+}
+
+public procedure acceptsLargeAsyncPayload(payload: LargeAsyncPayload) -> Async<(), (), i32, !> {
+    return 1
+}
+
+public procedure asyncStateMachineDiagnosticsTableReference() -> i32 {
+    let payload: LargeAsyncPayload = LargeAsyncPayload {
+        values: [3i64; 40]
+    }
+    let operation: Async<(), (), i32, !> = acceptsLargeAsyncPayload(payload)
+    return 0
+}

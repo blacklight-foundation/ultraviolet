@@ -1,0 +1,261 @@
+//! Runtime path checks for artifact project fixture source artifacts.
+
+using HelloUltraviolet::Audit::{ auditTextContains }
+
+internal procedure artifactProjectSourceArtifactsExist(
+    context: Context,
+    manifest_path: string@View,
+    source_path: string@View
+) -> bool {
+    return context.io~>exists(manifest_path) &&
+        context.io~>exists(source_path)
+}
+
+public procedure artifactProjectFixtureSourceArtifactsExist(context: Context) -> bool {
+    return artifactProjectSourceArtifactsExist(
+        context,
+        "HelloUltraviolet/Fixtures/ArtifactProjects/StaticLibraryArchive/Ultraviolet.toml",
+        "HelloUltraviolet/Fixtures/ArtifactProjects/StaticLibraryArchive/Source/Library.uv"
+    ) &&
+        artifactProjectSourceArtifactsExist(
+            context,
+            "HelloUltraviolet/Fixtures/ArtifactProjects/RawDylibLibrary/Ultraviolet.toml",
+            "HelloUltraviolet/Fixtures/ArtifactProjects/RawDylibLibrary/Source/Main.uv"
+        ) &&
+        artifactProjectSourceArtifactsExist(
+            context,
+            "HelloUltraviolet/Fixtures/ArtifactProjects/MacOSExecutableOutput/Ultraviolet.toml",
+            "HelloUltraviolet/Fixtures/ArtifactProjects/MacOSExecutableOutput/Source/Main.uv"
+        ) &&
+        artifactProjectSourceArtifactsExist(
+            context,
+            "HelloUltraviolet/Fixtures/ArtifactProjects/MacOSStaticLibraryArchive/Ultraviolet.toml",
+            "HelloUltraviolet/Fixtures/ArtifactProjects/MacOSStaticLibraryArchive/Source/Library.uv"
+        ) &&
+        artifactProjectSourceArtifactsExist(
+            context,
+            "HelloUltraviolet/Fixtures/ArtifactProjects/MacOSHostedSharedLibrary/Ultraviolet.toml",
+            "HelloUltraviolet/Fixtures/ArtifactProjects/MacOSHostedSharedLibrary/Source/Library.uv"
+        ) &&
+        artifactProjectSourceArtifactsExist(
+            context,
+            "HelloUltraviolet/Fixtures/ArtifactProjects/MacOSDylibLibrary/Ultraviolet.toml",
+            "HelloUltraviolet/Fixtures/ArtifactProjects/MacOSDylibLibrary/Source/Main.uv"
+        ) &&
+        artifactProjectSourceArtifactsExist(
+        context,
+        "HelloUltraviolet/Fixtures/ArtifactProjects/EmitLlLibrary/Ultraviolet.toml",
+        "HelloUltraviolet/Fixtures/ArtifactProjects/EmitLlLibrary/Source/Library.uv"
+    ) &&
+        artifactProjectSourceArtifactsExist(
+        context,
+        "HelloUltraviolet/Fixtures/ArtifactProjects/EmitBcLibrary/Ultraviolet.toml",
+        "HelloUltraviolet/Fixtures/ArtifactProjects/EmitBcLibrary/Source/Library.uv"
+    ) &&
+        artifactProjectSourceArtifactsExist(
+            context,
+            "HelloUltraviolet/Fixtures/ArtifactProjects/FlowProofRuntimeErasure/Ultraviolet.toml",
+            "HelloUltraviolet/Fixtures/ArtifactProjects/FlowProofRuntimeErasure/Source/Library.uv"
+        ) &&
+        artifactProjectSourceArtifactsExist(
+            context,
+            "HelloUltraviolet/Fixtures/ArtifactProjects/ExecutableOutput/Ultraviolet.toml",
+            "HelloUltraviolet/Fixtures/ArtifactProjects/ExecutableOutput/Source/Main.uv"
+        ) &&
+        artifactProjectSourceArtifactsExist(
+            context,
+            "HelloUltraviolet/Fixtures/ArtifactProjects/ReducedEmptyDispatchPanic/Ultraviolet.toml",
+            "HelloUltraviolet/Fixtures/ArtifactProjects/ReducedEmptyDispatchPanic/Source/Main.uv"
+        ) &&
+        artifactProjectSourceArtifactsExist(
+            context,
+            "HelloUltraviolet/Fixtures/ArtifactProjects/AArch64DependencyObject/Ultraviolet.toml",
+            "HelloUltraviolet/Fixtures/ArtifactProjects/AArch64DependencyObject/Source/Library.uv"
+        )
+}
+
+internal procedure artifactProjectExpectedFileMatches(
+    context: Context,
+    expected_path: string@View,
+    expected_text: string@View
+) -> bool {
+    let read_result: Outcome<unique string@Managed, IoError> = context.io~>read_file(expected_path)
+    return if move read_result is {
+        @Value { value } {
+            let text: string@View = string::as_view(value)
+            auditTextEquals(text, expected_text)
+        }
+        @Error {
+            false
+        }
+    }
+}
+
+public procedure reducedEmptyDispatchPanicExpectedArtifactMatches(context: Context) -> bool {
+    return artifactProjectExpectedFileMatches(
+        context,
+        "HelloUltraviolet/Fixtures/ArtifactProjects/ReducedEmptyDispatchPanic/Expected.uv",
+        "//! Expected runtime panic metadata for the ReducedEmptyDispatchPanic artifact specimen.\n\nexpectedDiagnostic(\"P-SEM-2862\", \"requirement.20.StructuredParallelismRuntimePanicOwnership\")\nexpectedDiagnostic(\"P-SEM-2862\", \"diagnostics.20.StructuredParallelismSupplement\")\n"
+    )
+}
+
+internal procedure artifactTextContains(
+    context: Context,
+    artifact_path: string@View,
+    required_text: string@View
+) -> bool {
+    let read_result: Outcome<unique string@Managed, IoError> = context.io~>read_file(artifact_path)
+    return if move read_result is {
+        @Value { value } {
+            let text: string@View = string::as_view(value)
+            auditTextContains(text, required_text)
+        }
+        @Error {
+            false
+        }
+    }
+}
+
+internal procedure artifactTextExcludes(
+    context: Context,
+    artifact_path: string@View,
+    forbidden_text: string@View
+) -> bool {
+    let read_result: Outcome<unique string@Managed, IoError> = context.io~>read_file(artifact_path)
+    return if move read_result is {
+        @Value { value } {
+            let text: string@View = string::as_view(value)
+            !auditTextContains(text, forbidden_text)
+        }
+        @Error {
+            false
+        }
+    }
+}
+
+public procedure artifactProjectEmitLlLibrarySRetCallSiteAttrsMatch(context: Context) -> bool {
+    let ir_path: string@View =
+        "HelloUltraviolet/Fixtures/ArtifactProjects/EmitLlLibrary/Build/Intermediate/IR/Source/EmitLlLibrary.ll"
+    return context.io~>exists(ir_path) &&
+        artifactTextContains(
+            context,
+            ir_path,
+            "call void @EmitLlLibrary_x3a_x3aemitLlSRetPair(ptr noalias noundef nonnull sret("
+        )
+}
+
+public procedure artifactProjectEmitLlLibraryLLVMAlignmentAuditMatches(
+    context: Context
+) -> bool {
+    let ir_path: string@View =
+        "HelloUltraviolet/Fixtures/ArtifactProjects/EmitLlLibrary/Build/Intermediate/IR/Source/EmitLlLibrary.ll"
+    return context.io~>exists(ir_path) &&
+        artifactTextContains(
+            context,
+            ir_path,
+            "EmitLlLibrary_x3a_x3aemitLlRuntimeCreateWriteCarrierProbe"
+        ) &&
+        artifactTextExcludes(
+            context,
+            ir_path,
+            "ptr noundef nonnull align 16 dereferenceable(16)"
+        )
+}
+
+public procedure artifactProjectEmitLlLibraryRuntimeCreateWriteCarrierMatches(
+    context: Context
+) -> bool {
+    let ir_path: string@View =
+        "HelloUltraviolet/Fixtures/ArtifactProjects/EmitLlLibrary/Build/Intermediate/IR/Source/EmitLlLibrary.ll"
+    return context.io~>exists(ir_path) &&
+        (
+            artifactTextContains(
+                context,
+                ir_path,
+                "call void @ultraviolet_x3a_x3aruntime_x3a_x3aio_x3a_x3acreate_x5fwrite(ptr noalias noundef nonnull sret("
+            ) ||
+            artifactTextContains(
+                context,
+                ir_path,
+                "call [2 x i64] @ultraviolet_x3a_x3aruntime_x3a_x3aio_x3a_x3acreate_x5fwrite("
+            ) ||
+            artifactTextContains(
+                context,
+                ir_path,
+                "call { i64, i64 } @ultraviolet_x3a_x3aruntime_x3a_x3aio_x3a_x3acreate_x5fwrite("
+            )
+        )
+}
+
+public procedure artifactProjectRuntimeErasureArtifactsMatch(context: Context) -> bool {
+    let ir_path: string@View =
+        "HelloUltraviolet/Fixtures/ArtifactProjects/FlowProofRuntimeErasure/Build/Intermediate/IR/Source/FlowProofRuntimeErasure.ll"
+    return context.io~>exists(ir_path) &&
+        context.io~>exists(
+            "HelloUltraviolet/Fixtures/ArtifactProjects/FlowProofRuntimeErasure/Build/Intermediate/Obj/Source/FlowProofRuntimeErasure.obj"
+        ) &&
+        artifactTextExcludes(context, ir_path, "VerificationFact") &&
+        artifactTextExcludes(context, ir_path, "FlowFactsAt") &&
+        artifactTextExcludes(context, ir_path, "ProofContextAt") &&
+        artifactTextExcludes(context, ir_path, "ContractFactsAt") &&
+        artifactTextExcludes(context, ir_path, "ContractCheck") &&
+        artifactTextExcludes(context, ir_path, "ContractViolation") &&
+        artifactTextExcludes(context, ir_path, "Precondition")
+}
+
+public procedure artifactProjectAArch64DependencyObjectArtifactsExist(context: Context) -> bool {
+    return context.io~>exists(
+        "HelloUltraviolet/Fixtures/ArtifactProjects/AArch64DependencyObject/Build/Intermediate/Obj/Source/AArch64DependencyObject.o"
+    ) &&
+        context.io~>exists(
+            "HelloUltraviolet/Fixtures/ArtifactProjects/AArch64DependencyObject/Build/Intermediate/Incremental/AArch64DependencyObject.manifest"
+        )
+}
+
+public procedure artifactProjectEmitBcLibraryArtifactsExist(context: Context) -> bool {
+    return context.io~>exists(
+        "HelloUltraviolet/Fixtures/ArtifactProjects/EmitBcLibrary/Build/Intermediate/IR/Source/EmitBcLibrary.bc"
+    ) &&
+        context.io~>exists(
+            "HelloUltraviolet/Fixtures/ArtifactProjects/EmitBcLibrary/Build/Intermediate/Obj/Source/EmitBcLibrary.obj"
+        ) &&
+        context.io~>exists(
+            "HelloUltraviolet/Fixtures/ArtifactProjects/EmitBcLibrary/Build/Library/EmitBcLibrary.lib"
+        )
+}
+
+public procedure artifactProjectMacOSExecutableOutputArtifactsExist(context: Context) -> bool {
+    return context.io~>exists(
+        "HelloUltraviolet/Fixtures/ArtifactProjects/MacOSExecutableOutput/Build/Binary/MacOSExecutableOutput"
+    ) &&
+        context.io~>exists(
+            "HelloUltraviolet/Fixtures/ArtifactProjects/MacOSExecutableOutput/Build/Intermediate/Obj/Source/MacOSExecutableOutput.o"
+        )
+}
+
+public procedure artifactProjectMacOSStaticLibraryArchiveArtifactsExist(context: Context) -> bool {
+    return context.io~>exists(
+        "HelloUltraviolet/Fixtures/ArtifactProjects/MacOSStaticLibraryArchive/Build/Library/libMacOSStaticLibraryArchive.a"
+    ) &&
+        context.io~>exists(
+            "HelloUltraviolet/Fixtures/ArtifactProjects/MacOSStaticLibraryArchive/Build/Intermediate/Obj/Source/MacOSStaticLibraryArchive.o"
+        )
+}
+
+public procedure artifactProjectMacOSHostedSharedLibraryArtifactsExist(context: Context) -> bool {
+    return context.io~>exists(
+        "HelloUltraviolet/Fixtures/ArtifactProjects/MacOSHostedSharedLibrary/Build/Binary/libMacOSHostedSharedLibrary.dylib"
+    ) &&
+        context.io~>exists(
+            "HelloUltraviolet/Fixtures/ArtifactProjects/MacOSHostedSharedLibrary/Build/Intermediate/Obj/Source/MacOSHostedSharedLibrary.o"
+        )
+}
+
+public procedure artifactProjectMacOSDylibLibraryArtifactsExist(context: Context) -> bool {
+    return context.io~>exists(
+        "HelloUltraviolet/Fixtures/ArtifactProjects/MacOSDylibLibrary/Build/Binary/MacOSDylibLibrary"
+    ) &&
+        context.io~>exists(
+            "HelloUltraviolet/Fixtures/ArtifactProjects/MacOSDylibLibrary/Build/Intermediate/Obj/Source/MacOSDylibLibrary.o"
+        )
+}

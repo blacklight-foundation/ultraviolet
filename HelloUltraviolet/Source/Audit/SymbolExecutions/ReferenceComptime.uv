@@ -1,0 +1,37 @@
+//! Compiled symbol execution checks for ReferenceComptime.
+
+using HelloUltraviolet::Reference::Comptime::{ runComptimeCompileTimeCapabilitiesReference }
+using HelloUltraviolet::Reference::Comptime::{ runComptimeCompileTimeFormsReference }
+using HelloUltraviolet::Reference::Comptime::{ runComptimeDeriveTargetsReference }
+using HelloUltraviolet::Reference::Comptime::{ runComptimeQuoteSpliceEmissionReference }
+using HelloUltraviolet::Reference::Comptime::{ runComptimeReflectionReference }
+
+public procedure catalogCompiledSymbolsExecuteReferenceComptime(context: Context) -> bool {
+    var passed: bool = true
+    passed = recordCatalogSymbolExecution(
+        context,
+        "runComptimeCompileTimeCapabilitiesReference",
+        runComptimeCompileTimeCapabilitiesReference()
+    ) && passed
+    passed = recordCatalogSymbolExecution(
+        context,
+        "runComptimeCompileTimeFormsReference",
+        runComptimeCompileTimeFormsReference()
+    ) && passed
+    passed = recordCatalogSymbolExecution(
+        context,
+        "runComptimeDeriveTargetsReference",
+        runComptimeDeriveTargetsReference()
+    ) && passed
+    passed = recordCatalogSymbolExecution(
+        context,
+        "runComptimeQuoteSpliceEmissionReference",
+        runComptimeQuoteSpliceEmissionReference()
+    ) && passed
+    passed = recordCatalogSymbolExecution(
+        context,
+        "runComptimeReflectionReference",
+        runComptimeReflectionReference()
+    ) && passed
+    return passed
+}

@@ -1,0 +1,11 @@
+//! Artifact fixture for Apple Silicon macOS hosted shared library output.
+
+public record MacOSHostedContext {
+    public sys: System
+}
+
+#host_export("C")
+#mangle("uv_macos_hosted_reference_increment")
+public procedure macOSHostedReferenceIncrement(context: MacOSHostedContext, value: i32) -> i32 {
+    return value + 1
+}

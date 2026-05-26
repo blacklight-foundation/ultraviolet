@@ -1,0 +1,33 @@
+//! Reference specimens for Names / Imports.
+
+internal record ImportNameReference {
+    internal imported_segments: usize
+    internal visible_name_count: usize
+    internal has_alias: bool
+}
+
+internal procedure importNameReference(
+    imported_segments: usize,
+    visible_name_count: usize,
+    has_alias: bool
+) -> ImportNameReference {
+    return ImportNameReference {
+        imported_segments: imported_segments,
+        visible_name_count: visible_name_count,
+        has_alias: has_alias
+    }
+}
+
+internal procedure importIntroducesAccessibleName(reference: ImportNameReference) -> bool {
+    return reference.imported_segments > 0usize &&
+        reference.visible_name_count == 1usize
+}
+
+/// Exercises the Names Imports reference surface.
+public procedure runNamesImportsReference() -> bool {
+    let default_name: ImportNameReference = importNameReference(3usize, 1usize, false)
+    let alias_name: ImportNameReference = importNameReference(3usize, 1usize, true)
+    return importIntroducesAccessibleName(default_name) &&
+        importIntroducesAccessibleName(alias_name) &&
+        alias_name.has_alias
+}

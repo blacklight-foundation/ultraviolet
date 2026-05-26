@@ -1,0 +1,9 @@
+//! Rejected async type specimen for an ill-formed Async type argument.
+
+public record AsyncTypePayload<TValue> {
+    public value: TValue
+}
+
+public procedure asyncTypeArgIllFormedReference() -> Async<AsyncTypePayload, (), (), !> {
+    return
+}

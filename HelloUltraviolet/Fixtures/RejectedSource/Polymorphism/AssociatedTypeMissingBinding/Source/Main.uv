@@ -1,0 +1,9 @@
+//! Rejected polymorphism specimen for a missing abstract associated type binding.
+
+internal class AbstractAssociatedTypeClass {
+    internal type Item
+}
+
+internal record MissingAssociatedTypeBinding <: AbstractAssociatedTypeClass {
+    internal value: i32
+}

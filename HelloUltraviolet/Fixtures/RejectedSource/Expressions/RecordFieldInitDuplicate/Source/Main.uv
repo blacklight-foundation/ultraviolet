@@ -1,0 +1,14 @@
+//! Rejected record construction specimen for duplicate field initializers.
+
+public record DuplicateFieldPayload {
+    public first: i32
+    public second: i32
+}
+
+public procedure recordFieldInitDuplicateReference() -> DuplicateFieldPayload {
+    return DuplicateFieldPayload {
+        first: 1,
+        first: 2,
+        second: 3
+    }
+}

@@ -1,0 +1,7 @@
+//! Rejected expression specimen for implicit capture of a unique binding.
+
+public procedure closureCaptureUniqueReference() -> bool {
+    let value: unique i32 = 1
+    let reader = || -> bool value == 1
+    return reader()
+}

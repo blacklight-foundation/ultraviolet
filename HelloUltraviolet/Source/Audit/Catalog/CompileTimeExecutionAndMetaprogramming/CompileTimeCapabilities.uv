@@ -1,0 +1,335 @@
+//! Generated catalog markers for 22. Compile-Time Execution and Metaprogramming / 22.2 Compile-Time Capabilities.
+
+
+public procedure countCompileTimeExecutionAndMetaprogrammingCompileTimeCapabilitiesObligations() -> usize {
+    return 36usize
+}
+
+public procedure validatedCompileTimeExecutionAndMetaprogrammingCompileTimeCapabilitiesObligations() -> usize {
+    var count: usize = 0usize
+    if acceptedObligationEntryMatches(
+        "requirement.22.CompileTimeCapabilitiesSyntaxSurface",
+        84501usize,
+        "HelloUltraviolet::Reference::Comptime",
+        "runComptimeCompileTimeCapabilitiesReference",
+        "Source/Reference/Comptime/CompileTimeCapabilities.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "def.22.CtCapName",
+        84516usize,
+        "HelloUltraviolet::Reference::Comptime",
+        "runComptimeCompileTimeCapabilitiesReference",
+        "Source/Reference/Comptime/CompileTimeCapabilities.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "rule.22.Parse-CtCapRef",
+        84529usize,
+        "HelloUltraviolet::Reference::Comptime",
+        "runComptimeCompileTimeCapabilitiesReference",
+        "Source/Reference/Comptime/CompileTimeCapabilities.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "requirement.22.CtCapMethodCallParsing",
+        84545usize,
+        "HelloUltraviolet::Reference::Comptime",
+        "runComptimeCompileTimeCapabilitiesReference",
+        "Source/Reference/Comptime/CompileTimeCapabilities.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "def.22.CtCapabilitiesAndBuiltinTypes",
+        84560usize,
+        "HelloUltraviolet::Reference::Comptime",
+        "runComptimeCompileTimeCapabilitiesReference",
+        "Source/Reference/Comptime/CompileTimeCapabilities.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "def.22.CtReflectionInfoFields",
+        84583usize,
+        "HelloUltraviolet::Reference::Comptime",
+        "runComptimeCompileTimeCapabilitiesReference",
+        "Source/Reference/Comptime/CompileTimeCapabilities.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "def.22.CtValueConversionHelpers",
+        84599usize,
+        "HelloUltraviolet::Reference::Comptime",
+        "runComptimeCompileTimeCapabilitiesReference",
+        "Source/Reference/Comptime/CompileTimeCapabilities.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "def.22.TypeEmitterInterface",
+        84630usize,
+        "HelloUltraviolet::Reference::Comptime",
+        "runComptimeCompileTimeCapabilitiesReference",
+        "Source/Reference/Comptime/CompileTimeCapabilities.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "def.22.IntrospectInterface",
+        84646usize,
+        "HelloUltraviolet::Reference::Comptime",
+        "runComptimeCompileTimeCapabilitiesReference",
+        "Source/Reference/Comptime/CompileTimeCapabilities.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "def.22.ProjectFilesInterface",
+        84668usize,
+        "HelloUltraviolet::Reference::Comptime",
+        "runComptimeCompileTimeCapabilitiesReference",
+        "Source/Reference/Comptime/CompileTimeCapabilities.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "def.22.ComptimeDiagnosticsInterface",
+        84688usize,
+        "HelloUltraviolet::Reference::Comptime",
+        "runComptimeCompileTimeCapabilitiesReference",
+        "Source/Reference/Comptime/CompileTimeCapabilities.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "requirement.22.IntrospectAndDiagnosticsAvailability",
+        84710usize,
+        "HelloUltraviolet::Reference::Comptime",
+        "runComptimeCompileTimeCapabilitiesReference",
+        "Source/Reference/Comptime/CompileTimeCapabilities.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "requirement.22.TypeEmitterAvailability",
+        84723usize,
+        "HelloUltraviolet::Reference::Comptime",
+        "runComptimeCompileTimeCapabilitiesReference",
+        "Source/Reference/Comptime/CompileTimeCapabilities.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "requirement.22.ProjectFilesAvailability",
+        84738usize,
+        "HelloUltraviolet::Reference::Comptime",
+        "runComptimeCompileTimeCapabilitiesReference",
+        "Source/Reference/Comptime/CompileTimeCapabilities.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "def.22.CtCapBindings",
+        84751usize,
+        "HelloUltraviolet::Reference::Comptime",
+        "runComptimeCompileTimeCapabilitiesReference",
+        "Source/Reference/Comptime/CompileTimeCapabilities.uv"
+    ) {
+        count = count + 1usize
+    }
+    if diagnosticSourceObligationEntryMatches(
+        "requirement.22.ProjectFilesPathRestrictions",
+        84764usize,
+        "HelloUltraviolet::Audit::FixtureCatalog::DiagnosticSource",
+        "validatedComptimeDiagnosticSourceFixtureCount",
+        "Fixtures/DiagnosticSource/Comptime/ProjectFilesInvalidPath/Source/Main.uv"
+    ) {
+        count = count + 1usize
+    }
+    if rejectedSourceObligationEntryMatches(
+        "requirement.22.TypeEmitterEmitTypeRequirement",
+        84781usize,
+        "HelloUltraviolet::Audit::FixtureCatalog::RejectedSource",
+        "validatedComptimeRejectedSourceFixtureCount",
+        "Fixtures/RejectedSource/Comptime/EmitterEmitNonItem/Source/Main.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "def.22.CtCapabilityDynamicHelpers",
+        84796usize,
+        "HelloUltraviolet::Reference::Comptime",
+        "runComptimeCompileTimeCapabilitiesReference",
+        "Source/Reference/Comptime/CompileTimeCapabilities.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "rule.22.CtBuiltin-Emit",
+        84819usize,
+        "HelloUltraviolet::Reference::Comptime",
+        "runComptimeCompileTimeCapabilitiesReference",
+        "Source/Reference/Comptime/CompileTimeCapabilities.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "rule.22.CtBuiltin-ProjectRoot",
+        84835usize,
+        "HelloUltraviolet::Reference::Comptime",
+        "runComptimeCompileTimeCapabilitiesReference",
+        "Source/Reference/Comptime/CompileTimeCapabilities.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "rule.22.CtBuiltin-Read",
+        84851usize,
+        "HelloUltraviolet::Reference::Comptime",
+        "runComptimeCompileTimeCapabilitiesReference",
+        "Source/Reference/Comptime/CompileTimeCapabilities.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "rule.22.CtBuiltin-Read-InvalidPath",
+        84867usize,
+        "HelloUltraviolet::Reference::Comptime",
+        "runComptimeCompileTimeCapabilitiesReference",
+        "Source/Reference/Comptime/CompileTimeCapabilities.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "rule.22.CtBuiltin-ReadBytes",
+        84883usize,
+        "HelloUltraviolet::Reference::Comptime",
+        "runComptimeCompileTimeCapabilitiesReference",
+        "Source/Reference/Comptime/CompileTimeCapabilities.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "rule.22.CtBuiltin-ReadBytes-InvalidPath",
+        84899usize,
+        "HelloUltraviolet::Reference::Comptime",
+        "runComptimeCompileTimeCapabilitiesReference",
+        "Source/Reference/Comptime/CompileTimeCapabilities.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "rule.22.CtBuiltin-Exists",
+        84915usize,
+        "HelloUltraviolet::Reference::Comptime",
+        "runComptimeCompileTimeCapabilitiesReference",
+        "Source/Reference/Comptime/CompileTimeCapabilities.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "rule.22.CtBuiltin-Exists-InvalidPath",
+        84931usize,
+        "HelloUltraviolet::Reference::Comptime",
+        "runComptimeCompileTimeCapabilitiesReference",
+        "Source/Reference/Comptime/CompileTimeCapabilities.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "rule.22.CtBuiltin-ListDir",
+        84947usize,
+        "HelloUltraviolet::Reference::Comptime",
+        "runComptimeCompileTimeCapabilitiesReference",
+        "Source/Reference/Comptime/CompileTimeCapabilities.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "rule.22.CtBuiltin-ListDir-InvalidPath",
+        84963usize,
+        "HelloUltraviolet::Reference::Comptime",
+        "runComptimeCompileTimeCapabilitiesReference",
+        "Source/Reference/Comptime/CompileTimeCapabilities.uv"
+    ) {
+        count = count + 1usize
+    }
+    if rejectedSourceObligationEntryMatches(
+        "rule.22.CtBuiltin-Diagnostics-Error",
+        84979usize,
+        "HelloUltraviolet::Audit::FixtureCatalog::RejectedSource",
+        "validatedComptimeRejectedSourceFixtureCount",
+        "Fixtures/RejectedSource/Comptime/UserDiagnosticError/Source/Main.uv"
+    ) {
+        count = count + 1usize
+    }
+    if diagnosticSourceObligationEntryMatches(
+        "rule.22.CtBuiltin-Diagnostics-Warning",
+        84995usize,
+        "HelloUltraviolet::Audit::FixtureCatalog::DiagnosticSource",
+        "validatedComptimeDiagnosticSourceFixtureCount",
+        "Fixtures/DiagnosticSource/Comptime/UserDiagnosticWarning/Source/Main.uv"
+    ) {
+        count = count + 1usize
+    }
+    if diagnosticSourceObligationEntryMatches(
+        "rule.22.CtBuiltin-Diagnostics-Note",
+        85011usize,
+        "HelloUltraviolet::Audit::FixtureCatalog::DiagnosticSource",
+        "validatedComptimeDiagnosticSourceFixtureCount",
+        "Fixtures/DiagnosticSource/Comptime/UserDiagnosticNote/Source/Main.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "rule.22.CtBuiltin-Diagnostics-CurrentSpan",
+        85027usize,
+        "HelloUltraviolet::Reference::Comptime",
+        "runComptimeCompileTimeCapabilitiesReference",
+        "Source/Reference/Comptime/CompileTimeCapabilities.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "rule.22.CtBuiltin-Diagnostics-CurrentModule",
+        85043usize,
+        "HelloUltraviolet::Reference::Comptime",
+        "runComptimeCompileTimeCapabilitiesReference",
+        "Source/Reference/Comptime/CompileTimeCapabilities.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "requirement.22.ProjectFileSnapshotStability",
+        85059usize,
+        "HelloUltraviolet::Reference::Comptime",
+        "runComptimeCompileTimeCapabilitiesReference",
+        "Source/Reference/Comptime/CompileTimeCapabilities.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "requirement.22.CompileTimeCapabilitiesLowering",
+        85074usize,
+        "HelloUltraviolet::Reference::Comptime",
+        "runComptimeCompileTimeCapabilitiesReference",
+        "Source/Reference/Comptime/CompileTimeCapabilities.uv"
+    ) {
+        count = count + 1usize
+    }
+    if rejectedSourceObligationEntryMatches(
+        "diagnostics.22.CompileTimeCapabilitiesDiagnosticsReference",
+        85089usize,
+        "HelloUltraviolet::Audit::FixtureCatalog::RejectedSource",
+        "validatedComptimeRejectedSourceFixtureCount",
+        "Fixtures/RejectedSource/Comptime/EmitterEmitNonItem/Source/Main.uv"
+    ) {
+        count = count + 1usize
+    }
+    return count
+}

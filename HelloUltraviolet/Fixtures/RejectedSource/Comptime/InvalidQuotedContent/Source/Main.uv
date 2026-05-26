@@ -1,0 +1,8 @@
+//! Rejected compile-time specimen for syntactically invalid quoted content.
+
+public procedure invalidQuotedContentReference() -> i32 {
+    comptime {
+        let ast = quote type { 1 + }
+    }
+    return 0
+}

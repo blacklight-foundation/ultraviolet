@@ -1,0 +1,5 @@
+//! Rejected statement specimen for async return value mismatch.
+
+public procedure asyncReturnTypeMismatchReference() -> Async<(), (), i32, !> {
+    return true
+}

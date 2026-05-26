@@ -1,0 +1,13 @@
+//! Rejected polymorphism specimen for opaque return implementation checking.
+
+internal class OpaqueRequiredClass {
+    internal procedure readRequiredOpaque(~) -> i32
+}
+
+internal record OpaqueUnrelatedOwner {
+    internal value: i32
+}
+
+internal procedure makeInvalidOpaque() -> opaque OpaqueRequiredClass {
+    return OpaqueUnrelatedOwner { value: 7 }
+}

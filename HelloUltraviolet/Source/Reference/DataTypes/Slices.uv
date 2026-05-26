@@ -1,0 +1,20 @@
+//! Reference specimens for DataTypes / Slices.
+
+public procedure slicedSecondValue(values: [i32]) -> i32 {
+    return values[1usize]
+}
+
+/// Exercises the DataTypes Slices reference surface.
+public procedure runDataTypesSlicesReference() -> bool {
+    let values: [i32; 4] = [10, 20, 30, 40]
+    let all_values: [i32] = values[..]
+    let middle_values: [i32] = values[1usize..3usize]
+    let through_third: [i32] = values[..=2usize]
+    let from_second: [i32] = values[1usize..]
+    return all_values[0usize] == 10 &&
+        slicedSecondValue(all_values) == 20 &&
+        middle_values[0usize] == 20 &&
+        middle_values[1usize] == 30 &&
+        through_third[2usize] == 30 &&
+        from_second[2usize] == 40
+}

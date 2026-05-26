@@ -1,0 +1,12 @@
+//! Rejected expression specimen for reference-capturing a moved binding.
+
+public record ClosureRefMovedPayload {
+    public value: i32
+}
+
+public procedure closureRefCaptureMovedReference() -> i32 {
+    let payload: ClosureRefMovedPayload = ClosureRefMovedPayload { value: 1 }
+    let taken: ClosureRefMovedPayload = move payload
+    let reader = || -> i32 payload.value
+    return taken.value
+}

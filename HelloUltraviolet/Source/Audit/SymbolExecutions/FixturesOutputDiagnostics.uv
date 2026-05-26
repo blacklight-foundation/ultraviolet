@@ -1,0 +1,25 @@
+//! Compiled symbol execution checks for FixturesOutputDiagnostics.
+
+using HelloUltraviolet::Audit::FixtureCatalog::OutputDiagnostics::{ validatedOutputCommandLineDiagnosticFixtureCount }
+using HelloUltraviolet::Audit::FixtureCatalog::OutputDiagnostics::{ validatedOutputLoweringDiagnosticFixtureCount }
+using HelloUltraviolet::Audit::FixtureCatalog::OutputDiagnostics::{ validatedOutputProjectDiagnosticFixtureCount }
+
+public procedure catalogCompiledSymbolsExecuteFixturesOutputDiagnostics(context: Context) -> bool {
+    var passed: bool = true
+    passed = recordCatalogSymbolExecution(
+        context,
+        "validatedOutputCommandLineDiagnosticFixtureCount",
+        validatedOutputCommandLineDiagnosticFixtureCount() > 0usize
+    ) && passed
+    passed = recordCatalogSymbolExecution(
+        context,
+        "validatedOutputLoweringDiagnosticFixtureCount",
+        validatedOutputLoweringDiagnosticFixtureCount() > 0usize
+    ) && passed
+    passed = recordCatalogSymbolExecution(
+        context,
+        "validatedOutputProjectDiagnosticFixtureCount",
+        validatedOutputProjectDiagnosticFixtureCount() > 0usize
+    ) && passed
+    return passed
+}

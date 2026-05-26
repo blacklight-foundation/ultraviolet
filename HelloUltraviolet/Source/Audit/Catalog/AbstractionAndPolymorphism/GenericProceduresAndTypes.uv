@@ -1,0 +1,263 @@
+//! Generated catalog markers for 14. Abstraction and Polymorphism / 14.2 Generic Procedures and Types.
+
+
+public procedure countAbstractionAndPolymorphismGenericProceduresAndTypesObligations() -> usize {
+    return 28usize
+}
+
+public procedure validatedAbstractionAndPolymorphismGenericProceduresAndTypesObligations() -> usize {
+    var count: usize = 0usize
+    if acceptedObligationEntryMatches(
+        "grammar.GenericProceduresAndTypesSyntax",
+        48353usize,
+        "HelloUltraviolet::Reference::Polymorphism",
+        "runPolymorphismGenericProceduresReference",
+        "Source/Reference/Polymorphism/GenericProcedures.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "req.GenericParamsNominalOwnerChapters",
+        48369usize,
+        "HelloUltraviolet::Reference::Polymorphism",
+        "runPolymorphismGenericParametersReference",
+        "Source/Reference/Polymorphism/GenericParameters.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "req.GenericDeclarationParsingDelegated",
+        48383usize,
+        "HelloUltraviolet::Reference::Polymorphism",
+        "runPolymorphismGenericProceduresReference",
+        "Source/Reference/Polymorphism/GenericProcedures.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "def.CallTypeArgsStart",
+        48395usize,
+        "HelloUltraviolet::Reference::Polymorphism",
+        "runPolymorphismGenericProceduresReference",
+        "Source/Reference/Polymorphism/GenericProcedures.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "rule.14.Postfix-Call-TypeArgs",
+        48407usize,
+        "HelloUltraviolet::Reference::Polymorphism",
+        "runPolymorphismGenericProceduresReference",
+        "Source/Reference/Polymorphism/GenericProcedures.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "def.GenericDeclarationAstExtensions",
+        48425usize,
+        "HelloUltraviolet::Reference::Polymorphism",
+        "runPolymorphismGenericProceduresReference",
+        "Source/Reference/Polymorphism/GenericProcedures.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "def.GenericApplyAst",
+        48442usize,
+        "HelloUltraviolet::Reference::Polymorphism",
+        "runPolymorphismGenericProceduresReference",
+        "Source/Reference/Polymorphism/GenericProcedures.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "def.GenericDeclarationAccessors",
+        48456usize,
+        "HelloUltraviolet::Reference::Polymorphism",
+        "runPolymorphismGenericProceduresReference",
+        "Source/Reference/Polymorphism/GenericProcedures.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "rule.14.WF-Generic-Proc",
+        48471usize,
+        "HelloUltraviolet::Reference::Polymorphism",
+        "runPolymorphismGenericProceduresReference",
+        "Source/Reference/Polymorphism/GenericProcedures.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "def.GenericCalleeProc",
+        48487usize,
+        "HelloUltraviolet::Reference::Polymorphism",
+        "runPolymorphismGenericProceduresReference",
+        "Source/Reference/Polymorphism/GenericProcedures.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "def.GenericInferenceFreshArgs",
+        48501usize,
+        "HelloUltraviolet::Reference::Polymorphism",
+        "runPolymorphismGenericProceduresReference",
+        "Source/Reference/Polymorphism/GenericProcedures.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "def.InferTypeArgs",
+        48514usize,
+        "HelloUltraviolet::Reference::Polymorphism",
+        "runPolymorphismGenericProceduresReference",
+        "Source/Reference/Polymorphism/GenericProcedures.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "rule.14.GenericCallInference",
+        48532usize,
+        "HelloUltraviolet::Reference::Polymorphism",
+        "runPolymorphismGenericProceduresReference",
+        "Source/Reference/Polymorphism/GenericProcedures.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "rule.14.T-Generic-Call",
+        48563usize,
+        "HelloUltraviolet::Reference::Polymorphism",
+        "runPolymorphismGenericProceduresReference",
+        "Source/Reference/Polymorphism/GenericProcedures.uv"
+    ) {
+        count = count + 1usize
+    }
+    if rejectedSourceObligationEntryMatches(
+        "rule.14.Generic-Call-ArgCount-Err",
+        48586usize,
+        "HelloUltraviolet::Audit::FixtureCatalog::RejectedSource",
+        "validatedPolymorphismRejectedSourceFixtureCount",
+        "Fixtures/RejectedSource/Polymorphism/GenericCallArgCount/Source/Main.uv"
+    ) {
+        count = count + 1usize
+    }
+    if rejectedSourceObligationEntryMatches(
+        "rule.14.WF-Path-Generic-Err",
+        48602usize,
+        "HelloUltraviolet::Audit::FixtureCatalog::RejectedSource",
+        "validatedPolymorphismRejectedSourceFixtureCount",
+        "Fixtures/RejectedSource/Polymorphism/GenericPathMissingArguments/Source/Main.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "rule.14.WF-Apply",
+        48618usize,
+        "HelloUltraviolet::Reference::Polymorphism",
+        "runPolymorphismGenericParametersReference",
+        "Source/Reference/Polymorphism/GenericParameters.uv"
+    ) {
+        count = count + 1usize
+    }
+    if rejectedSourceObligationEntryMatches(
+        "rule.14.WF-Apply-ArgCount-Err",
+        48634usize,
+        "HelloUltraviolet::Audit::FixtureCatalog::RejectedSource",
+        "validatedPolymorphismRejectedSourceFixtureCount",
+        "Fixtures/RejectedSource/Polymorphism/GenericTypeApplyArgCount/Source/Main.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "req.GenericCallInferenceElaboration",
+        48650usize,
+        "HelloUltraviolet::Reference::Polymorphism",
+        "runPolymorphismGenericProceduresReference",
+        "Source/Reference/Polymorphism/GenericProcedures.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "conformance.GenericInstantiationDynamicElaboration",
+        48664usize,
+        "HelloUltraviolet::Reference::Polymorphism",
+        "runPolymorphismGenericProceduresReference",
+        "Source/Reference/Polymorphism/GenericProcedures.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "conformance.GenericMonomorphicInstantiationsDistinct",
+        48676usize,
+        "HelloUltraviolet::Reference::Polymorphism",
+        "runPolymorphismGenericProceduresReference",
+        "Source/Reference/Polymorphism/GenericProcedures.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "def.MonomorphizationSpecialization",
+        48690usize,
+        "HelloUltraviolet::Reference::Polymorphism",
+        "runPolymorphismGenericProceduresReference",
+        "Source/Reference/Polymorphism/GenericProcedures.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "req.GenericProcedureCallLowering",
+        48704usize,
+        "HelloUltraviolet::Reference::Polymorphism",
+        "runPolymorphismGenericProceduresReference",
+        "Source/Reference/Polymorphism/GenericProcedures.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "req.GenericInstantiationIndependentLowering",
+        48716usize,
+        "HelloUltraviolet::Reference::Polymorphism",
+        "runPolymorphismGenericProceduresReference",
+        "Source/Reference/Polymorphism/GenericProcedures.uv"
+    ) {
+        count = count + 1usize
+    }
+    if rejectedSourceObligationEntryMatches(
+        "req.GenericInfiniteMonomorphizationRejected",
+        48728usize,
+        "HelloUltraviolet::Audit::FixtureCatalog::RejectedSource",
+        "validatedPolymorphismRejectedSourceFixtureCount",
+        "Fixtures/RejectedSource/Polymorphism/GenericInfiniteMonomorphization/Source/Main.uv"
+    ) {
+        count = count + 1usize
+    }
+    if rejectedSourceObligationEntryMatches(
+        "req.GenericInstantiationDepthLimit",
+        48740usize,
+        "HelloUltraviolet::Audit::FixtureCatalog::RejectedSource",
+        "validatedPolymorphismRejectedSourceFixtureCount",
+        "Fixtures/RejectedSource/Polymorphism/GenericInstantiationDepthLimit/Source/Main.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "req.GenericNominalSizeAlignSubstitutedBody",
+        48752usize,
+        "HelloUltraviolet::Reference::Polymorphism",
+        "runPolymorphismGenericParametersReference",
+        "Source/Reference/Polymorphism/GenericParameters.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "diag.GenericProceduresAndTypes",
+        48766usize,
+        "HelloUltraviolet::Reference::Polymorphism",
+        "runPolymorphismGenericProceduresReference",
+        "Source/Reference/Polymorphism/GenericProcedures.uv"
+    ) {
+        count = count + 1usize
+    }
+    return count
+}

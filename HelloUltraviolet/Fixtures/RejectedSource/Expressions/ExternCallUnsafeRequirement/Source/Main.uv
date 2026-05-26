@@ -1,0 +1,10 @@
+//! Rejected expression specimen for extern calls outside unsafe.
+
+extern "C" {
+    public procedure importedValue() -> i32
+}
+
+public procedure externCallUnsafeRequirementReference() -> i32 {
+    return importedValue()
+}
+

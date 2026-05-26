@@ -1,0 +1,78 @@
+//! Output-diagnostic project-loader specimens.
+
+public procedure outputProjectDiagnosticFixtureCount() -> usize {
+    return 4usize
+}
+
+public procedure validatedOutputProjectDiagnosticFixtureCount() -> usize {
+    var count: usize = 0usize
+    if diagnosticSpecimenMatches(
+        diagnosticSpecimen(
+            "ManifestParseError",
+            "Fixtures/OutputDiagnostics/Projects/ManifestParseError",
+            "Fixtures/OutputDiagnostics/Projects/ManifestParseError/Ultraviolet.toml",
+            "Fixtures/OutputDiagnostics/Projects/ManifestParseError/Expected.uv",
+            expectedDiagnostic("E-PRJ-0102", "Parse-Manifest-Err")
+        ),
+        "ManifestParseError",
+        "Fixtures/OutputDiagnostics/Projects/ManifestParseError",
+        "Fixtures/OutputDiagnostics/Projects/ManifestParseError/Ultraviolet.toml",
+        "Fixtures/OutputDiagnostics/Projects/ManifestParseError/Expected.uv",
+        "E-PRJ-0102",
+        "Parse-Manifest-Err"
+    ) {
+        count = count + 1usize
+    }
+    if diagnosticSpecimenMatches(
+        diagnosticSpecimen(
+            "ManifestParseError",
+            "Fixtures/OutputDiagnostics/Projects/ManifestParseError",
+            "Fixtures/OutputDiagnostics/Projects/ManifestParseError/Ultraviolet.toml",
+            "Fixtures/OutputDiagnostics/Projects/ManifestParseError/Expected.uv",
+            expectedDiagnostic("E-PRJ-0102", "Step-Parse-Err")
+        ),
+        "ManifestParseError",
+        "Fixtures/OutputDiagnostics/Projects/ManifestParseError",
+        "Fixtures/OutputDiagnostics/Projects/ManifestParseError/Ultraviolet.toml",
+        "Fixtures/OutputDiagnostics/Projects/ManifestParseError/Expected.uv",
+        "E-PRJ-0102",
+        "Step-Parse-Err"
+    ) {
+        count = count + 1usize
+    }
+    if diagnosticSpecimenMatches(
+        diagnosticSpecimen(
+            "ManifestParseError",
+            "Fixtures/OutputDiagnostics/Projects/ManifestParseError",
+            "Fixtures/OutputDiagnostics/Projects/ManifestParseError/Ultraviolet.toml",
+            "Fixtures/OutputDiagnostics/Projects/ManifestParseError/Expected.uv",
+            expectedDiagnostic("E-PRJ-0102", "LoadProject-Err")
+        ),
+        "ManifestParseError",
+        "Fixtures/OutputDiagnostics/Projects/ManifestParseError",
+        "Fixtures/OutputDiagnostics/Projects/ManifestParseError/Ultraviolet.toml",
+        "Fixtures/OutputDiagnostics/Projects/ManifestParseError/Expected.uv",
+        "E-PRJ-0102",
+        "LoadProject-Err"
+    ) {
+        count = count + 1usize
+    }
+    if diagnosticSpecimenMatches(
+        diagnosticSpecimen(
+            "ManifestParseError",
+            "Fixtures/OutputDiagnostics/Projects/ManifestParseError",
+            "Fixtures/OutputDiagnostics/Projects/ManifestParseError/Ultraviolet.toml",
+            "Fixtures/OutputDiagnostics/Projects/ManifestParseError/Expected.uv",
+            expectedDiagnostic("E-PRJ-0102", "diagnostics.ProjectDiagnostics")
+        ),
+        "ManifestParseError",
+        "Fixtures/OutputDiagnostics/Projects/ManifestParseError",
+        "Fixtures/OutputDiagnostics/Projects/ManifestParseError/Ultraviolet.toml",
+        "Fixtures/OutputDiagnostics/Projects/ManifestParseError/Expected.uv",
+        "E-PRJ-0102",
+        "diagnostics.ProjectDiagnostics"
+    ) {
+        count = count + 1usize
+    }
+    return count
+}

@@ -1,0 +1,10 @@
+//! Rejected polymorphism specimen for the duplicate implementation requirement.
+
+internal class RepeatedImplementationClass {
+    internal procedure marker(~) -> i32 {
+        return 2
+    }
+}
+
+internal record DuplicateImplementationRequirementOwner <: RepeatedImplementationClass, RepeatedImplementationClass {
+}

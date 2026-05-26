@@ -1,0 +1,10 @@
+//! Rejected method-call specimen for missing method lookup.
+
+public record MethodLookupTarget {
+    public value: i32
+}
+
+public procedure methodNotFoundReference() -> i32 {
+    let target: MethodLookupTarget = MethodLookupTarget { value: 1 }
+    return target~>missing()
+}

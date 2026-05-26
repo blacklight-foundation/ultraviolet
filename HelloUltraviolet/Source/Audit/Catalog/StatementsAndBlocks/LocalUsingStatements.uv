@@ -1,0 +1,119 @@
+//! Generated catalog markers for 18. Statements and Blocks / 18.3 Local Using Statements.
+
+
+public procedure countStatementsAndBlocksLocalUsingStatementsObligations() -> usize {
+    return 12usize
+}
+
+public procedure validatedStatementsAndBlocksLocalUsingStatementsObligations() -> usize {
+    var count: usize = 0usize
+    if acceptedObligationEntryMatches(
+        "grammar.18.LocalUsingStatements",
+        69951usize,
+        "HelloUltraviolet::Reference::Statements",
+        "runStatementsLocalUsingReference",
+        "Source/Reference/Statements/LocalUsing.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "rule.18.Parse-UsingLocal-Stmt",
+        69968usize,
+        "HelloUltraviolet::Reference::Statements",
+        "runStatementsLocalUsingReference",
+        "Source/Reference/Statements/LocalUsing.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "def.18.UsingLocalStmtAst",
+        69986usize,
+        "HelloUltraviolet::Reference::Statements",
+        "runStatementsLocalUsingReference",
+        "Source/Reference/Statements/LocalUsing.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "req.18.UsingLocalUsesUsingAlias",
+        70001usize,
+        "HelloUltraviolet::Reference::Statements",
+        "runStatementsLocalUsingReference",
+        "Source/Reference/Statements/LocalUsing.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "rule.18.T-UsingLocalStmt",
+        70014usize,
+        "HelloUltraviolet::Reference::Statements",
+        "runStatementsLocalUsingReference",
+        "Source/Reference/Statements/LocalUsing.uv"
+    ) {
+        count = count + 1usize
+    }
+    if rejectedSourceObligationEntryMatches(
+        "rule.18.T-UsingLocalStmt-Err",
+        70030usize,
+        "HelloUltraviolet::Audit::FixtureCatalog::RejectedSource",
+        "validatedStatementsRejectedSourceFixtureCount",
+        "Fixtures/RejectedSource/Statements/UsingLocalUnresolved/Source/Main.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "req.18.UsingLocalAliasIdentity",
+        70046usize,
+        "HelloUltraviolet::Reference::Statements",
+        "runStatementsLocalUsingReference",
+        "Source/Reference/Statements/LocalUsing.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "rule.18.ExecSigma-UsingLocal",
+        70061usize,
+        "HelloUltraviolet::Reference::Statements",
+        "runStatementsLocalUsingReference",
+        "Source/Reference/Statements/LocalUsing.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "req.18.UsingLocalNoRuntimeEffect",
+        70076usize,
+        "HelloUltraviolet::Reference::Statements",
+        "runStatementsLocalUsingReference",
+        "Source/Reference/Statements/LocalUsing.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "rule.18.Lower-Stmt-UsingLocal",
+        70091usize,
+        "HelloUltraviolet::Reference::Statements",
+        "runStatementsLocalUsingReference",
+        "Source/Reference/Statements/LocalUsing.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "req.18.UsingLocalNoRuntimeIR",
+        70106usize,
+        "HelloUltraviolet::Reference::Statements",
+        "runStatementsLocalUsingReference",
+        "Source/Reference/Statements/LocalUsing.uv"
+    ) {
+        count = count + 1usize
+    }
+    if rejectedSourceObligationEntryMatches(
+        "diag.18.LocalUsingStatements",
+        70121usize,
+        "HelloUltraviolet::Audit::FixtureCatalog::RejectedSource",
+        "validatedStatementsRejectedSourceFixtureCount",
+        "Fixtures/RejectedSource/Statements/LocalUsingStatementsDiagnostic/Source/Main.uv"
+    ) {
+        count = count + 1usize
+    }
+    return count
+}

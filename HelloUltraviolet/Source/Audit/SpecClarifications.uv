@@ -1,0 +1,18 @@
+//! Compiled index of active specification clarification items.
+
+public procedure expectedSpecClarificationCount() -> usize {
+    return 0usize
+}
+
+public procedure specClarificationCount() -> usize {
+    return 0usize
+}
+
+public procedure validatedSpecClarificationCount() -> usize {
+    return 0usize
+}
+
+public procedure specClarificationLedgerIsIndexed() -> bool {
+    return specClarificationCount() == expectedSpecClarificationCount() &&
+        validatedSpecClarificationCount() == expectedSpecClarificationCount()
+}

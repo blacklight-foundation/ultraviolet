@@ -1,0 +1,16 @@
+//! Rejected polymorphism specimen for dynamic class object diagnostics.
+
+internal class DynamicDiagnosticClass {
+    internal procedure compareDiagnosticSelf(~, other: Self) -> i32 {
+        return 5
+    }
+}
+
+internal record DynamicDiagnosticOwner <: DynamicDiagnosticClass {
+    internal value: i32
+}
+
+internal procedure makeDiagnosticDynamic() -> $DynamicDiagnosticClass {
+    let owner: DynamicDiagnosticOwner = DynamicDiagnosticOwner { value: 5 }
+    return owner as $DynamicDiagnosticClass
+}

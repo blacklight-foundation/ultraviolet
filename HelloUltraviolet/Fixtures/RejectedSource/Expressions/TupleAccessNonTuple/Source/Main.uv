@@ -1,0 +1,6 @@
+//! Rejected expression specimen for tuple access on a non-tuple value.
+
+public procedure tupleAccessNonTupleReference() -> i32 {
+    let value: i32 = 1
+    return value.0
+}

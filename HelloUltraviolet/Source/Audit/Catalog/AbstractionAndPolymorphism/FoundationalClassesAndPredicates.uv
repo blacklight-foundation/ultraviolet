@@ -1,0 +1,245 @@
+//! Generated catalog markers for 14. Abstraction and Polymorphism / 14.10 Foundational Classes and Predicates.
+
+
+public procedure countAbstractionAndPolymorphismFoundationalClassesAndPredicatesObligations() -> usize {
+    return 26usize
+}
+
+public procedure validatedAbstractionAndPolymorphismFoundationalClassesAndPredicatesObligations() -> usize {
+    var count: usize = 0usize
+    if rejectedSourceObligationEntryMatches(
+        "req.14.FoundationalClassesSyntaxAndReservedNames",
+        52491usize,
+        "HelloUltraviolet::Audit::FixtureCatalog::RejectedSource",
+        "validatedPolymorphismRejectedSourceFixtureCount",
+        "Fixtures/RejectedSource/Polymorphism/FoundationalClassNameReserved/Source/Main.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "req.14.FoundationalClassesNoFeatureSpecificParser",
+        52506usize,
+        "HelloUltraviolet::Reference::Polymorphism",
+        "runPolymorphismClassesReference",
+        "Source/Reference/Polymorphism/Classes.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "def.14.FoundationalClassName",
+        52521usize,
+        "HelloUltraviolet::Reference::Polymorphism",
+        "runPolymorphismClassesReference",
+        "Source/Reference/Polymorphism/Classes.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "def.14.FoundationalJudgements",
+        52534usize,
+        "HelloUltraviolet::Reference::Polymorphism",
+        "runPolymorphismClassesReference",
+        "Source/Reference/Polymorphism/Classes.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "def.14.HasCloneDropMethod",
+        52550usize,
+        "HelloUltraviolet::Reference::Polymorphism",
+        "runPolymorphismClassesReference",
+        "Source/Reference/Polymorphism/Classes.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "def.14.CloneDropTypePredicates",
+        52564usize,
+        "HelloUltraviolet::Reference::Polymorphism",
+        "runPolymorphismClassesReference",
+        "Source/Reference/Polymorphism/Classes.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "def.14.FoundationalImplementationPredicates",
+        52578usize,
+        "HelloUltraviolet::Reference::Polymorphism",
+        "runPolymorphismClassesReference",
+        "Source/Reference/Polymorphism/Classes.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "req.14.FoundationalBoundsIntrinsicSatisfaction",
+        52598usize,
+        "HelloUltraviolet::Reference::Polymorphism",
+        "runPolymorphismClassesReference",
+        "Source/Reference/Polymorphism/Classes.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "rule.14.BitcopyDrop-Ok",
+        52611usize,
+        "HelloUltraviolet::Reference::Polymorphism",
+        "runPolymorphismClassesReference",
+        "Source/Reference/Polymorphism/Classes.uv"
+    ) {
+        count = count + 1usize
+    }
+    if rejectedSourceObligationEntryMatches(
+        "rule.14.BitcopyDrop-Conflict",
+        52627usize,
+        "HelloUltraviolet::Audit::FixtureCatalog::RejectedSource",
+        "validatedPolymorphismRejectedSourceFixtureCount",
+        "Fixtures/RejectedSource/Polymorphism/BitcopyDropConflict/Source/Main.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "def.14.BitcopyType",
+        52643usize,
+        "HelloUltraviolet::Reference::Polymorphism",
+        "runPolymorphismClassesReference",
+        "Source/Reference/Polymorphism/Classes.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "def.14.BitcopyTypeCore",
+        52656usize,
+        "HelloUltraviolet::Reference::Polymorphism",
+        "runPolymorphismClassesReference",
+        "Source/Reference/Polymorphism/Classes.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "def.14.BuiltinBitcopyType",
+        52679usize,
+        "HelloUltraviolet::Reference::Polymorphism",
+        "runPolymorphismClassesReference",
+        "Source/Reference/Polymorphism/Classes.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "def.14.BuiltinDropCloneType",
+        52710usize,
+        "HelloUltraviolet::Reference::Polymorphism",
+        "runPolymorphismClassesReference",
+        "Source/Reference/Polymorphism/Classes.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "def.14.BuiltinFoundationalClassSignatures",
+        52724usize,
+        "HelloUltraviolet::Reference::Polymorphism",
+        "runPolymorphismClassesReference",
+        "Source/Reference/Polymorphism/Classes.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "req.14.EqLaws",
+        52743usize,
+        "HelloUltraviolet::Reference::Polymorphism",
+        "runPolymorphismClassesReference",
+        "Source/Reference/Polymorphism/Classes.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "req.14.HashRequiresEqAndEqualValuesHashEqual",
+        52756usize,
+        "HelloUltraviolet::Reference::Polymorphism",
+        "runPolymorphismClassesReference",
+        "Source/Reference/Polymorphism/Classes.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "req.14.IteratorNextContract",
+        52769usize,
+        "HelloUltraviolet::Reference::Polymorphism",
+        "runPolymorphismClassesReference",
+        "Source/Reference/Polymorphism/Classes.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "req.14.StepPartialInverseContract",
+        52782usize,
+        "HelloUltraviolet::Reference::Polymorphism",
+        "runPolymorphismClassesReference",
+        "Source/Reference/Polymorphism/Classes.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "req.14.DropCloneDynamicSemantics",
+        52797usize,
+        "HelloUltraviolet::Reference::Polymorphism",
+        "runPolymorphismClassesReference",
+        "Source/Reference/Polymorphism/Classes.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "req.14.HasherDynamicSemantics",
+        52814usize,
+        "HelloUltraviolet::Reference::Polymorphism",
+        "runPolymorphismClassesReference",
+        "Source/Reference/Polymorphism/Classes.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "req.14.IntegerStepDynamicSemantics",
+        52827usize,
+        "HelloUltraviolet::Reference::Polymorphism",
+        "runPolymorphismClassesReference",
+        "Source/Reference/Polymorphism/Classes.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "req.14.CharStepDynamicSemantics",
+        52840usize,
+        "HelloUltraviolet::Reference::Polymorphism",
+        "runPolymorphismClassesReference",
+        "Source/Reference/Polymorphism/Classes.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "req.14.FoundationalIntrinsicCallLowering",
+        52855usize,
+        "HelloUltraviolet::Reference::Polymorphism",
+        "runPolymorphismClassesReference",
+        "Source/Reference/Polymorphism/Classes.uv"
+    ) {
+        count = count + 1usize
+    }
+    if acceptedObligationEntryMatches(
+        "req.14.FoundationalPredicatesNoSeparateRepresentation",
+        52868usize,
+        "HelloUltraviolet::Reference::Polymorphism",
+        "runPolymorphismClassesReference",
+        "Source/Reference/Polymorphism/Classes.uv"
+    ) {
+        count = count + 1usize
+    }
+    if rejectedSourceObligationEntryMatches(
+        "diag.14.FoundationalClasses",
+        52883usize,
+        "HelloUltraviolet::Audit::FixtureCatalog::RejectedSource",
+        "validatedPolymorphismRejectedSourceFixtureCount",
+        "Fixtures/RejectedSource/Polymorphism/BitcopyFieldNonBitcopy/Source/Main.uv"
+    ) {
+        count = count + 1usize
+    }
+    return count
+}

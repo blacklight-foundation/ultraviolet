@@ -1,0 +1,55 @@
+//! Compiled symbol execution checks for ReferencePolymorphism.
+
+using HelloUltraviolet::Reference::Polymorphism::{ runPolymorphismAssociatedTypesReference }
+using HelloUltraviolet::Reference::Polymorphism::{ runPolymorphismCapabilityClassesReference }
+using HelloUltraviolet::Reference::Polymorphism::{ runPolymorphismClassesReference }
+using HelloUltraviolet::Reference::Polymorphism::{ runPolymorphismDynamicClassObjectsReference }
+using HelloUltraviolet::Reference::Polymorphism::{ runPolymorphismGenericParametersReference }
+using HelloUltraviolet::Reference::Polymorphism::{ runPolymorphismGenericProceduresReference }
+using HelloUltraviolet::Reference::Polymorphism::{ runPolymorphismImplementationsReference }
+using HelloUltraviolet::Reference::Polymorphism::{ runPolymorphismOpaqueTypesReference }
+
+public procedure catalogCompiledSymbolsExecuteReferencePolymorphism(context: Context) -> bool {
+    var passed: bool = true
+    passed = recordCatalogSymbolExecution(
+        context,
+        "runPolymorphismAssociatedTypesReference",
+        runPolymorphismAssociatedTypesReference()
+    ) && passed
+    passed = recordCatalogSymbolExecution(
+        context,
+        "runPolymorphismCapabilityClassesReference",
+        runPolymorphismCapabilityClassesReference(context)
+    ) && passed
+    passed = recordCatalogSymbolExecution(
+        context,
+        "runPolymorphismClassesReference",
+        runPolymorphismClassesReference()
+    ) && passed
+    passed = recordCatalogSymbolExecution(
+        context,
+        "runPolymorphismDynamicClassObjectsReference",
+        runPolymorphismDynamicClassObjectsReference()
+    ) && passed
+    passed = recordCatalogSymbolExecution(
+        context,
+        "runPolymorphismGenericParametersReference",
+        runPolymorphismGenericParametersReference()
+    ) && passed
+    passed = recordCatalogSymbolExecution(
+        context,
+        "runPolymorphismGenericProceduresReference",
+        runPolymorphismGenericProceduresReference()
+    ) && passed
+    passed = recordCatalogSymbolExecution(
+        context,
+        "runPolymorphismImplementationsReference",
+        runPolymorphismImplementationsReference()
+    ) && passed
+    passed = recordCatalogSymbolExecution(
+        context,
+        "runPolymorphismOpaqueTypesReference",
+        runPolymorphismOpaqueTypesReference()
+    ) && passed
+    return passed
+}

@@ -1,0 +1,11 @@
+//! Rejected polymorphism specimen for an unbound associated type member.
+
+internal class DefaultAssociatedTypeClass {
+    internal type Item = i32
+}
+
+internal record UnboundAssociatedTypeMember <: DefaultAssociatedTypeClass {
+    internal type Item
+
+    internal value: i32
+}

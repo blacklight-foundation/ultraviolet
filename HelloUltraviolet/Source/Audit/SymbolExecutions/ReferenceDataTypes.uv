@@ -1,0 +1,61 @@
+//! Compiled symbol execution checks for ReferenceDataTypes.
+
+using HelloUltraviolet::Reference::DataTypes::{ runDataTypesArraysReference }
+using HelloUltraviolet::Reference::DataTypes::{ runDataTypesEnumsReference }
+using HelloUltraviolet::Reference::DataTypes::{ runDataTypesPrimitivesReference }
+using HelloUltraviolet::Reference::DataTypes::{ runDataTypesRangesReference }
+using HelloUltraviolet::Reference::DataTypes::{ runDataTypesRecordsReference }
+using HelloUltraviolet::Reference::DataTypes::{ runDataTypesSlicesReference }
+using HelloUltraviolet::Reference::DataTypes::{ runDataTypesTuplesReference }
+using HelloUltraviolet::Reference::DataTypes::{ runDataTypesTypeAliasesReference }
+using HelloUltraviolet::Reference::DataTypes::{ runDataTypesUnionsReference }
+
+public procedure catalogCompiledSymbolsExecuteReferenceDataTypes(context: Context) -> bool {
+    var passed: bool = true
+    passed = recordCatalogSymbolExecution(
+        context,
+        "runDataTypesArraysReference",
+        runDataTypesArraysReference()
+    ) && passed
+    passed = recordCatalogSymbolExecution(
+        context,
+        "runDataTypesEnumsReference",
+        runDataTypesEnumsReference()
+    ) && passed
+    passed = recordCatalogSymbolExecution(
+        context,
+        "runDataTypesPrimitivesReference",
+        runDataTypesPrimitivesReference()
+    ) && passed
+    passed = recordCatalogSymbolExecution(
+        context,
+        "runDataTypesRangesReference",
+        runDataTypesRangesReference()
+    ) && passed
+    passed = recordCatalogSymbolExecution(
+        context,
+        "runDataTypesRecordsReference",
+        runDataTypesRecordsReference()
+    ) && passed
+    passed = recordCatalogSymbolExecution(
+        context,
+        "runDataTypesSlicesReference",
+        runDataTypesSlicesReference()
+    ) && passed
+    passed = recordCatalogSymbolExecution(
+        context,
+        "runDataTypesTuplesReference",
+        runDataTypesTuplesReference()
+    ) && passed
+    passed = recordCatalogSymbolExecution(
+        context,
+        "runDataTypesTypeAliasesReference",
+        runDataTypesTypeAliasesReference()
+    ) && passed
+    passed = recordCatalogSymbolExecution(
+        context,
+        "runDataTypesUnionsReference",
+        runDataTypesUnionsReference()
+    ) && passed
+    return passed
+}

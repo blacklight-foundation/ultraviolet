@@ -1,0 +1,104 @@
+//! Reference specimens for Attributes / LayoutAttributes.
+
+internal enum LayoutAttributeReferenceKind {
+    C
+    Packed
+    Align
+    IntegerDiscriminant
+}
+
+#layout(C)
+internal record LayoutAttributeCRecord {
+    internal flag: bool
+    internal value: i32
+}
+
+#layout(packed)
+internal record LayoutAttributePackedRecord {
+    internal byte: u8
+    internal value: i32
+}
+
+#layout(C, align(16))
+internal record LayoutAttributeAlignedRecord {
+    internal value: i64
+}
+
+#layout(u8)
+internal enum LayoutAttributeSmallEnum {
+    First
+    Second
+}
+
+internal record LayoutAttributeReference {
+    internal kind: LayoutAttributeReferenceKind
+    internal applies_to_record: bool
+    internal applies_to_enum: bool
+}
+
+internal procedure layoutAttributeReference(
+    kind: LayoutAttributeReferenceKind,
+    applies_to_record: bool,
+    applies_to_enum: bool
+) -> LayoutAttributeReference {
+    return LayoutAttributeReference {
+        kind: kind,
+        applies_to_record: applies_to_record,
+        applies_to_enum: applies_to_enum
+    }
+}
+
+internal procedure layoutAttributeTargetIsValid(
+    reference: LayoutAttributeReference
+) -> bool {
+    return reference.applies_to_record || reference.applies_to_enum
+}
+
+internal procedure layoutAttributeConcreteRecordValue() -> bool {
+    let c_layout: LayoutAttributeCRecord = LayoutAttributeCRecord {
+        flag: true,
+        value: 7
+    }
+    let packed: LayoutAttributePackedRecord = LayoutAttributePackedRecord {
+        byte: 2u8,
+        value: 11
+    }
+    let aligned: LayoutAttributeAlignedRecord = LayoutAttributeAlignedRecord {
+        value: 13i64
+    }
+    return c_layout.flag &&
+        c_layout.value == 7 &&
+        packed.byte == 2u8 &&
+        packed.value == 11 &&
+        aligned.value == 13i64 &&
+        alignof(LayoutAttributePackedRecord) == 1usize &&
+        alignof(LayoutAttributeAlignedRecord) == 16usize
+}
+
+internal procedure layoutAttributeConcreteEnumValue() -> bool {
+    let first: LayoutAttributeSmallEnum = LayoutAttributeSmallEnum::First
+    let second: LayoutAttributeSmallEnum = LayoutAttributeSmallEnum::Second
+    let first_is_first: bool =
+        if first is LayoutAttributeSmallEnum::First { true } else { false }
+    let second_is_second: bool =
+        if second is LayoutAttributeSmallEnum::Second { true } else { false }
+    return sizeof(LayoutAttributeSmallEnum) == 1usize &&
+        alignof(LayoutAttributeSmallEnum) == 1usize &&
+        first_is_first &&
+        second_is_second
+}
+
+/// Exercises the Attributes LayoutAttributes reference surface.
+public procedure runAttributesLayoutAttributesReference() -> bool {
+    let c_layout: LayoutAttributeReference =
+        layoutAttributeReference(LayoutAttributeReferenceKind::C, true, true)
+    let packed: LayoutAttributeReference =
+        layoutAttributeReference(LayoutAttributeReferenceKind::Packed, true, false)
+    let discriminant: LayoutAttributeReference =
+        layoutAttributeReference(LayoutAttributeReferenceKind::IntegerDiscriminant, false, true)
+    return layoutAttributeTargetIsValid(c_layout) &&
+        layoutAttributeTargetIsValid(packed) &&
+        layoutAttributeTargetIsValid(discriminant) &&
+        layoutAttributeConcreteRecordValue() &&
+        layoutAttributeConcreteEnumValue()
+}

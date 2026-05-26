@@ -1,0 +1,11 @@
+//! Rejected structured-parallelism specimen for non-uniform GPU barrier control flow.
+
+public procedure barrierDivergenceReference(context: Context) -> i32 {
+    return parallel context~>gpu() {
+        if true {
+            gpu_barrier()
+        } else {
+        }
+        0
+    }
+}

@@ -1,0 +1,64 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1100" height="420" viewBox="0 0 1100 420" role="img" aria-labelledby="title desc">
+  <title id="title">Figure 3. Type-theoretic repair loop for generated code</title>
+  <desc id="desc">A vector diagram showing generated source passing through parsing, resolution, typechecking, proof obligations, accepted static programs, diagnostics, and repair back to source.</desc>
+  <defs>
+    <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse">
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="#334155"/>
+    </marker>
+    <marker id="arrow-red" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse">
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="#9f1239"/>
+    </marker>
+    <style>
+      .title { font: 700 22px Arial, sans-serif; fill: #111827; }
+      .label { font: 700 15px Arial, sans-serif; fill: #111827; }
+      .small { font: 13px Arial, sans-serif; fill: #334155; }
+      .box { fill: #f8fafc; stroke: #475569; stroke-width: 1.5; rx: 10; }
+      .blue { fill: #e0f2fe; stroke: #0369a1; }
+      .green { fill: #dcfce7; stroke: #15803d; }
+      .red { fill: #ffe4e6; stroke: #be123c; }
+      .arrow { fill: none; stroke: #334155; stroke-width: 2; marker-end: url(#arrow); }
+      .repair { fill: none; stroke: #9f1239; stroke-width: 2; stroke-dasharray: 7 5; marker-end: url(#arrow-red); }
+    </style>
+  </defs>
+  <rect width="1100" height="420" fill="#ffffff"/>
+  <text class="title" x="40" y="38">Typed diagnostics turn rejected generations into repairable obligations</text>
+
+  <rect class="box" x="50" y="110" width="160" height="64"/>
+  <text class="label" x="130" y="136" text-anchor="middle">Generated</text>
+  <text class="small" x="130" y="158" text-anchor="middle">source</text>
+
+  <rect class="box" x="270" y="110" width="140" height="64"/>
+  <text class="label" x="340" y="136" text-anchor="middle">Parser</text>
+  <text class="small" x="340" y="158" text-anchor="middle">syntax</text>
+
+  <rect class="blue" x="470" y="110" width="220" height="64" rx="10"/>
+  <text class="label" x="580" y="136" text-anchor="middle">Resolver/typechecker</text>
+  <text class="small" x="580" y="158" text-anchor="middle">static semantics</text>
+
+  <rect class="blue" x="750" y="110" width="240" height="64" rx="10"/>
+  <text class="label" x="870" y="136" text-anchor="middle">Proof obligations</text>
+  <text class="small" x="870" y="158" text-anchor="middle">facts to discharge</text>
+
+  <rect class="green" x="750" y="250" width="240" height="64" rx="10"/>
+  <text class="label" x="870" y="276" text-anchor="middle">Accepted static program</text>
+  <text class="small" x="870" y="298" text-anchor="middle">checked candidate</text>
+
+  <rect class="red" x="470" y="250" width="220" height="64" rx="10"/>
+  <text class="label" x="580" y="276" text-anchor="middle">Typed diagnostics</text>
+  <text class="small" x="580" y="298" text-anchor="middle">local repair signal</text>
+
+  <rect class="red" x="190" y="250" width="220" height="64" rx="10"/>
+  <text class="label" x="300" y="276" text-anchor="middle">Prompt/tool repair</text>
+  <text class="small" x="300" y="298" text-anchor="middle">next candidate</text>
+
+  <path class="arrow" d="M 210 142 L 270 142"/>
+  <path class="arrow" d="M 410 142 L 470 142"/>
+  <path class="arrow" d="M 690 142 L 750 142"/>
+  <path class="arrow" d="M 870 174 L 870 250"/>
+  <path class="repair" d="M 750 155 C 700 212 660 240 630 250"/>
+  <path class="repair" d="M 470 282 L 410 282"/>
+  <path class="repair" d="M 300 250 C 240 210 160 205 130 174"/>
+
+  <text class="small" x="918" y="214" text-anchor="middle">discharged</text>
+  <text class="small" x="690" y="222" text-anchor="middle" fill="#9f1239">not discharged</text>
+</svg>

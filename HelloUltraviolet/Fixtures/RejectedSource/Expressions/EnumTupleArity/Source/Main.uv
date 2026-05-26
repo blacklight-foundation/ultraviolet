@@ -1,0 +1,9 @@
+//! Rejected enum specimen for tuple variant payload arity mismatch.
+
+public enum TupleArityPayload {
+    Pair(i32, bool)
+}
+
+public procedure enumTupleArityReference() -> TupleArityPayload {
+    return TupleArityPayload::Pair(1)
+}

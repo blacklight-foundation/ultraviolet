@@ -1,0 +1,14 @@
+//! Rejected statement specimen for statement diagnostics supplement coverage.
+
+public record StatementSupplementTarget {
+    public value: i32
+}
+
+public procedure makeStatementSupplementTarget() -> StatementSupplementTarget {
+    return StatementSupplementTarget { value: 1 }
+}
+
+public procedure statementDiagnosticsSupplementReference() -> i32 {
+    makeStatementSupplementTarget().value = 2
+    return 0
+}

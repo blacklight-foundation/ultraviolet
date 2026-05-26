@@ -1,0 +1,46 @@
+//! Artifact fixture for LLVM IR emission.
+
+public record EmitLlSRetPair {
+    public left: string@View
+    public right: string@View
+}
+
+public procedure emitLlLibraryValue() -> i32 {
+    return 11
+}
+
+public procedure emitLlSRetPair(left: string@View, right: string@View) -> EmitLlSRetPair {
+    return EmitLlSRetPair {
+        left: left,
+        right: right
+    }
+}
+
+public procedure emitLlSRetCallSiteProbe() -> usize {
+    let pair: EmitLlSRetPair = emitLlSRetPair(
+        "E-HUV-LLVM-SRET",
+        "regression.24.LLVMCallSRetAttrs"
+    )
+    return string::length(pair.left) + string::length(pair.right)
+}
+
+public record EmitLlLibraryIOContext {
+    public io: $IO
+}
+
+public procedure emitLlRuntimeCreateWriteCarrierProbe(
+    context: EmitLlLibraryIOContext,
+    path: string@View
+) -> bool {
+    let created: Outcome<unique File@Write, IoError> = context.io~>create_write(path)
+    return if move created is {
+        @Value { value } {
+            let closed: File@Closed = value~>close()
+            let _ = closed
+            true
+        }
+        @Error {
+            false
+        }
+    }
+}

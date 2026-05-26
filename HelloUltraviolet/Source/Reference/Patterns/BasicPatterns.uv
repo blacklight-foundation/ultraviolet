@@ -1,0 +1,79 @@
+//! Reference specimens for Patterns / BasicPatterns.
+
+public type BasicPatternUnionReference = i32 | bool
+
+/// Exercises the Patterns BasicPatterns reference surface.
+public procedure runPatternsBasicPatternsReference() -> bool {
+    let literal_hit: bool = if 7 is 7 {
+        true
+    } else {
+        false
+    }
+    let bool_literal_hit: bool = if true is true {
+        true
+    } else {
+        false
+    }
+    let wildcard_hit: bool = if 7 is _ {
+        true
+    } else {
+        false
+    }
+    let identifier_hit: bool = if 7 is bound_value {
+        bound_value == 7
+    } else {
+        false
+    }
+    let typed_discard_hit: bool = if 7 is _: i32 {
+        true
+    } else {
+        false
+    }
+    let typed_identifier_hit: bool = if 7 is typed_value: i32 {
+        typed_value == 7
+    } else {
+        false
+    }
+    let permission_wrapped_value: const i32 = 11
+    let permission_wrapped_hit: bool = if permission_wrapped_value is wrapped_value {
+        wrapped_value == 11
+    } else {
+        false
+    }
+    let union_value: BasicPatternUnionReference = 9
+    let typed_union_hit: bool = if union_value is {
+        value: i32 {
+            value == 9
+        }
+        value: bool {
+            false
+        }
+    }
+    let typed_else_hit: bool = if union_value is {
+        value: bool {
+            false
+        }
+        else {
+            true
+        }
+    }
+    let bool_union_value: BasicPatternUnionReference = true
+    let typed_union_bool_hit: bool = if bool_union_value is {
+        value: i32 {
+            false
+        }
+        value: bool {
+            value
+        }
+    }
+    return literal_hit &&
+        bool_literal_hit &&
+        wildcard_hit &&
+        identifier_hit &&
+        typed_discard_hit &&
+        typed_identifier_hit &&
+        permission_wrapped_hit &&
+        typed_union_hit &&
+        typed_else_hit &&
+        typed_union_bool_hit
+}

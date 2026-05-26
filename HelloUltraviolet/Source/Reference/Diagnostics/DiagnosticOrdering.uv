@@ -1,0 +1,51 @@
+//! Reference specimens for Diagnostics / DiagnosticOrdering.
+
+internal record DiagnosticOrderReference {
+    internal file_order: usize
+    internal start_offset: usize
+    internal emission_order: usize
+}
+
+internal procedure diagnosticOrderReference(
+    file_order: usize,
+    start_offset: usize,
+    emission_order: usize
+) -> DiagnosticOrderReference {
+    return DiagnosticOrderReference {
+        file_order: file_order,
+        start_offset: start_offset,
+        emission_order: emission_order
+    }
+}
+
+internal procedure diagnosticPrecedes(
+    left: DiagnosticOrderReference,
+    right: DiagnosticOrderReference
+) -> bool {
+    if left.file_order < right.file_order {
+        return true
+    }
+    if left.file_order > right.file_order {
+        return false
+    }
+    if left.start_offset < right.start_offset {
+        return true
+    }
+    if left.start_offset > right.start_offset {
+        return false
+    }
+    return left.emission_order < right.emission_order
+}
+
+/// Exercises the Diagnostics DiagnosticOrdering reference surface.
+public procedure runDiagnosticsDiagnosticOrderingReference() -> bool {
+    let first: DiagnosticOrderReference =
+        diagnosticOrderReference(1usize, 8usize, 2usize)
+    let second: DiagnosticOrderReference =
+        diagnosticOrderReference(1usize, 16usize, 1usize)
+    let third: DiagnosticOrderReference =
+        diagnosticOrderReference(2usize, 1usize, 1usize)
+    return diagnosticPrecedes(first, second) &&
+        diagnosticPrecedes(second, third) &&
+        !diagnosticPrecedes(third, first)
+}

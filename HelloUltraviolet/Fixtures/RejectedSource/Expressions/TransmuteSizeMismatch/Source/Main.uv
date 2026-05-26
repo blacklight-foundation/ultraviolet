@@ -1,0 +1,9 @@
+//! Rejected transmute specimen for source and target size mismatch.
+
+public procedure transmuteSizeMismatchReference() -> i64 {
+    var result: i64 = 0
+    unsafe {
+        result = transmute<i32, i64>(1)
+    }
+    return result
+}

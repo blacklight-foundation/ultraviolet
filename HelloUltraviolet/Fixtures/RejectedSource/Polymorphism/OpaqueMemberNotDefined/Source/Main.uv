@@ -1,0 +1,22 @@
+//! Rejected polymorphism specimen for opaque interface exposure.
+
+internal class OpaqueVisibleClass {
+    internal procedure visibleOpaqueValue(~) -> i32
+}
+
+internal record OpaqueVisibleOwner <: OpaqueVisibleClass {
+    internal value: i32
+
+    internal procedure visibleOpaqueValue(~) -> i32 {
+        return self.value
+    }
+}
+
+internal procedure makeVisibleOpaque() -> opaque OpaqueVisibleClass {
+    return OpaqueVisibleOwner { value: 6 }
+}
+
+internal procedure readHiddenOpaqueMember() -> i32 {
+    let value: opaque OpaqueVisibleClass = makeVisibleOpaque()
+    return value~>hiddenOpaqueValue()
+}

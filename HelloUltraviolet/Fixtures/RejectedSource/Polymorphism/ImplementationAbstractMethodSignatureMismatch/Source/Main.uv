@@ -1,0 +1,11 @@
+//! Rejected polymorphism specimen for an abstract class method implementation with mismatched signature.
+
+internal class AbstractSignatureClass {
+    internal procedure value(~) -> i32
+}
+
+internal record AbstractSignatureOwner <: AbstractSignatureClass {
+    internal procedure value(~) -> bool {
+        return true
+    }
+}

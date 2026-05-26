@@ -1,0 +1,365 @@
+//! Rejected structured-parallelism specimens.
+
+internal procedure parallelismSpecimenMatches(
+    name: string@View,
+    fixture_path: string@View,
+    source_path: string@View,
+    expected_path: string@View,
+    code: string@View,
+    obligation_id: string@View
+) -> bool {
+    return rejectedSpecimenMatches(
+        rejectedSpecimen(
+            name,
+            fixture_path,
+            source_path,
+            expected_path,
+            expectedDiagnostic(code, obligation_id)
+        ),
+        name,
+        fixture_path,
+        source_path,
+        expected_path,
+        code,
+        obligation_id
+    )
+}
+
+public procedure parallelismRejectedSourceFixtureCount() -> usize {
+    return 33usize
+}
+
+public procedure validatedParallelismRejectedSourceFixtureCount() -> usize {
+    var count: usize = 0usize
+    if parallelismSpecimenMatches(
+        "SpawnOutsideParallel",
+        "Fixtures/RejectedSource/Parallelism/SpawnOutsideParallel",
+        "Fixtures/RejectedSource/Parallelism/SpawnOutsideParallel/Source/Main.uv",
+        "Fixtures/RejectedSource/Parallelism/SpawnOutsideParallel/Expected.uv",
+        "E-CON-0101",
+        "requirement.20.SpawnRequiresParallelContext"
+    ) {
+        count = count + 1usize
+    }
+    if parallelismSpecimenMatches(
+        "DispatchOutsideParallel",
+        "Fixtures/RejectedSource/Parallelism/DispatchOutsideParallel",
+        "Fixtures/RejectedSource/Parallelism/DispatchOutsideParallel/Source/Main.uv",
+        "Fixtures/RejectedSource/Parallelism/DispatchOutsideParallel/Expected.uv",
+        "E-CON-0140",
+        "rule.20.Dispatch-Outside-Err"
+    ) {
+        count = count + 1usize
+    }
+    if parallelismSpecimenMatches(
+        "ParallelDomainNotExecutionDomain",
+        "Fixtures/RejectedSource/Parallelism/ParallelDomainNotExecutionDomain",
+        "Fixtures/RejectedSource/Parallelism/ParallelDomainNotExecutionDomain/Source/Main.uv",
+        "Fixtures/RejectedSource/Parallelism/ParallelDomainNotExecutionDomain/Expected.uv",
+        "E-CON-0102",
+        "diagnostics.20.ParallelBlocks"
+    ) {
+        count = count + 1usize
+    }
+    if parallelismSpecimenMatches(
+        "ParallelCancelOptionType",
+        "Fixtures/RejectedSource/Parallelism/ParallelCancelOptionType",
+        "Fixtures/RejectedSource/Parallelism/ParallelCancelOptionType/Source/Main.uv",
+        "Fixtures/RejectedSource/Parallelism/ParallelCancelOptionType/Expected.uv",
+        "E-CON-0103",
+        "requirement.20.ParallelCancelOptionType"
+    ) {
+        count = count + 1usize
+    }
+    if parallelismSpecimenMatches(
+        "ParallelDim3Const",
+        "Fixtures/RejectedSource/Parallelism/ParallelDim3Const",
+        "Fixtures/RejectedSource/Parallelism/ParallelDim3Const/Source/Main.uv",
+        "Fixtures/RejectedSource/Parallelism/ParallelDim3Const/Expected.uv",
+        "E-CON-0159",
+        "rule.20.Dim3Const-Err"
+    ) {
+        count = count + 1usize
+    }
+    if parallelismSpecimenMatches(
+        "ParallelWorkgroupSize",
+        "Fixtures/RejectedSource/Parallelism/ParallelWorkgroupSize",
+        "Fixtures/RejectedSource/Parallelism/ParallelWorkgroupSize/Source/Main.uv",
+        "Fixtures/RejectedSource/Parallelism/ParallelWorkgroupSize/Expected.uv",
+        "E-CON-0157",
+        "rule.20.WorkgroupSize-Err"
+    ) {
+        count = count + 1usize
+    }
+    if parallelismSpecimenMatches(
+        "DispatchChunkType",
+        "Fixtures/RejectedSource/Parallelism/DispatchChunkType",
+        "Fixtures/RejectedSource/Parallelism/DispatchChunkType/Source/Main.uv",
+        "Fixtures/RejectedSource/Parallelism/DispatchChunkType/Expected.uv",
+        "E-SEM-3133",
+        "rule.20.Dispatch-Chunk-Type-Err"
+    ) {
+        count = count + 1usize
+    }
+    if parallelismSpecimenMatches(
+        "DispatchNonAssociativeReduce",
+        "Fixtures/RejectedSource/Parallelism/DispatchNonAssociativeReduce",
+        "Fixtures/RejectedSource/Parallelism/DispatchNonAssociativeReduce/Source/Main.uv",
+        "Fixtures/RejectedSource/Parallelism/DispatchNonAssociativeReduce/Expected.uv",
+        "E-CON-0143",
+        "rule.20.Dispatch-Reduce-Assoc-Err"
+    ) {
+        count = count + 1usize
+    }
+    if parallelismSpecimenMatches(
+        "NestedGpuParallel",
+        "Fixtures/RejectedSource/Parallelism/NestedGpuParallel",
+        "Fixtures/RejectedSource/Parallelism/NestedGpuParallel/Source/Main.uv",
+        "Fixtures/RejectedSource/Parallelism/NestedGpuParallel/Expected.uv",
+        "E-CON-0152",
+        "requirement.20.NoNestedGpuParallel"
+    ) {
+        count = count + 1usize
+    }
+    if parallelismSpecimenMatches(
+        "GpuIntrinsicOutside",
+        "Fixtures/RejectedSource/Parallelism/GpuIntrinsicOutside",
+        "Fixtures/RejectedSource/Parallelism/GpuIntrinsicOutside/Source/Main.uv",
+        "Fixtures/RejectedSource/Parallelism/GpuIntrinsicOutside/Expected.uv",
+        "E-CON-0154",
+        "rule.20.GpuIntrinsic-Outside-Err"
+    ) {
+        count = count + 1usize
+    }
+    if parallelismSpecimenMatches(
+        "BarrierOutsideGpuContext",
+        "Fixtures/RejectedSource/Parallelism/BarrierOutsideGpuContext",
+        "Fixtures/RejectedSource/Parallelism/BarrierOutsideGpuContext/Source/Main.uv",
+        "Fixtures/RejectedSource/Parallelism/BarrierOutsideGpuContext/Expected.uv",
+        "E-CON-0156",
+        "rule.20.Barrier-Outside-Err"
+    ) {
+        count = count + 1usize
+    }
+    if parallelismSpecimenMatches(
+        "ParallelDomainParameter",
+        "Fixtures/RejectedSource/Parallelism/ParallelDomainParameter",
+        "Fixtures/RejectedSource/Parallelism/ParallelDomainParameter/Source/Main.uv",
+        "Fixtures/RejectedSource/Parallelism/ParallelDomainParameter/Expected.uv",
+        "E-CON-0103",
+        "rule.20.Parallel-Domain-Param-Err"
+    ) {
+        count = count + 1usize
+    }
+    if parallelismSpecimenMatches(
+        "SpawnInvalidPriorityOption",
+        "Fixtures/RejectedSource/Parallelism/SpawnInvalidPriorityOption",
+        "Fixtures/RejectedSource/Parallelism/SpawnInvalidPriorityOption/Source/Main.uv",
+        "Fixtures/RejectedSource/Parallelism/SpawnInvalidPriorityOption/Expected.uv",
+        "E-CON-0130",
+        "diagnostics.20.Spawn"
+    ) {
+        count = count + 1usize
+    }
+    if parallelismSpecimenMatches(
+        "DispatchRequiresParallelContext",
+        "Fixtures/RejectedSource/Parallelism/DispatchRequiresParallelContext",
+        "Fixtures/RejectedSource/Parallelism/DispatchRequiresParallelContext/Source/Main.uv",
+        "Fixtures/RejectedSource/Parallelism/DispatchRequiresParallelContext/Expected.uv",
+        "E-CON-0140",
+        "requirement.20.DispatchRequiresParallelContext"
+    ) {
+        count = count + 1usize
+    }
+    if parallelismSpecimenMatches(
+        "DispatchDiagnostics",
+        "Fixtures/RejectedSource/Parallelism/DispatchDiagnostics",
+        "Fixtures/RejectedSource/Parallelism/DispatchDiagnostics/Source/Main.uv",
+        "Fixtures/RejectedSource/Parallelism/DispatchDiagnostics/Expected.uv",
+        "E-CON-0140",
+        "diagnostics.20.Dispatch"
+    ) {
+        count = count + 1usize
+    }
+    if parallelismSpecimenMatches(
+        "ExecutionDomainsDiagnostics",
+        "Fixtures/RejectedSource/Parallelism/ExecutionDomainsDiagnostics",
+        "Fixtures/RejectedSource/Parallelism/ExecutionDomainsDiagnostics/Source/Main.uv",
+        "Fixtures/RejectedSource/Parallelism/ExecutionDomainsDiagnostics/Expected.uv",
+        "E-CON-0156",
+        "diagnostics.20.ExecutionDomains"
+    ) {
+        count = count + 1usize
+    }
+    if parallelismSpecimenMatches(
+        "DeterminismAndNestingDiagnostics",
+        "Fixtures/RejectedSource/Parallelism/DeterminismAndNestingDiagnostics",
+        "Fixtures/RejectedSource/Parallelism/DeterminismAndNestingDiagnostics/Source/Main.uv",
+        "Fixtures/RejectedSource/Parallelism/DeterminismAndNestingDiagnostics/Expected.uv",
+        "E-CON-0152",
+        "diagnostics.20.DeterminismAndNesting"
+    ) {
+        count = count + 1usize
+    }
+    if parallelismSpecimenMatches(
+        "KeyBlockGpuContext",
+        "Fixtures/RejectedSource/Parallelism/KeyBlockGpuContext",
+        "Fixtures/RejectedSource/Parallelism/KeyBlockGpuContext/Source/Main.uv",
+        "Fixtures/RejectedSource/Parallelism/KeyBlockGpuContext/Expected.uv",
+        "E-CON-0155",
+        "rule.20.KeyBlock-GPU-Err"
+    ) {
+        count = count + 1usize
+    }
+    if parallelismSpecimenMatches(
+        "BarrierDivergence",
+        "Fixtures/RejectedSource/Parallelism/BarrierDivergence",
+        "Fixtures/RejectedSource/Parallelism/BarrierDivergence/Source/Main.uv",
+        "Fixtures/RejectedSource/Parallelism/BarrierDivergence/Expected.uv",
+        "E-CON-0158",
+        "rule.20.Barrier-Divergence-Err"
+    ) {
+        count = count + 1usize
+    }
+    if parallelismSpecimenMatches(
+        "GpuCaptureShared",
+        "Fixtures/RejectedSource/Parallelism/GpuCaptureShared",
+        "Fixtures/RejectedSource/Parallelism/GpuCaptureShared/Source/Main.uv",
+        "Fixtures/RejectedSource/Parallelism/GpuCaptureShared/Expected.uv",
+        "E-CON-0151",
+        "rule.20.GpuCapture-Shared-Err"
+    ) {
+        count = count + 1usize
+    }
+    if parallelismSpecimenMatches(
+        "GpuCaptureNonGpuSafe",
+        "Fixtures/RejectedSource/Parallelism/GpuCaptureNonGpuSafe",
+        "Fixtures/RejectedSource/Parallelism/GpuCaptureNonGpuSafe/Source/Main.uv",
+        "Fixtures/RejectedSource/Parallelism/GpuCaptureNonGpuSafe/Expected.uv",
+        "E-CON-0153",
+        "rule.20.GpuCapture-NonGpuSafe-Err"
+    ) {
+        count = count + 1usize
+    }
+    if parallelismSpecimenMatches(
+        "CaptureSemanticsDiagnostics",
+        "Fixtures/RejectedSource/Parallelism/CaptureSemanticsDiagnostics",
+        "Fixtures/RejectedSource/Parallelism/CaptureSemanticsDiagnostics/Source/Main.uv",
+        "Fixtures/RejectedSource/Parallelism/CaptureSemanticsDiagnostics/Expected.uv",
+        "E-CON-0151",
+        "diagnostics.20.CaptureSemantics"
+    ) {
+        count = count + 1usize
+    }
+    if parallelismSpecimenMatches(
+        "ParallelClosureCaptureUnique",
+        "Fixtures/RejectedSource/Parallelism/ParallelClosureCaptureUnique",
+        "Fixtures/RejectedSource/Parallelism/ParallelClosureCaptureUnique/Source/Main.uv",
+        "Fixtures/RejectedSource/Parallelism/ParallelClosureCaptureUnique/Expected.uv",
+        "E-CON-0120",
+        "rule.20.Parallel-Closure-Capture-Unique-Err"
+    ) {
+        count = count + 1usize
+    }
+    if parallelismSpecimenMatches(
+        "ParallelClosureCaptureOuterMove",
+        "Fixtures/RejectedSource/Parallelism/ParallelClosureCaptureOuterMove",
+        "Fixtures/RejectedSource/Parallelism/ParallelClosureCaptureOuterMove/Source/Main.uv",
+        "Fixtures/RejectedSource/Parallelism/ParallelClosureCaptureOuterMove/Expected.uv",
+        "E-CON-0122",
+        "rule.20.Parallel-Closure-Capture-OuterMove-Err"
+    ) {
+        count = count + 1usize
+    }
+    if parallelismSpecimenMatches(
+        "ParallelEscapingClosureSpawn",
+        "Fixtures/RejectedSource/Parallelism/ParallelEscapingClosureSpawn",
+        "Fixtures/RejectedSource/Parallelism/ParallelEscapingClosureSpawn/Source/Main.uv",
+        "Fixtures/RejectedSource/Parallelism/ParallelEscapingClosureSpawn/Expected.uv",
+        "E-CON-0131",
+        "rule.20.Parallel-Escaping-Closure-Spawn-Err"
+    ) {
+        count = count + 1usize
+    }
+    if parallelismSpecimenMatches(
+        "DispatchInferFailure",
+        "Fixtures/RejectedSource/Parallelism/DispatchInferFailure",
+        "Fixtures/RejectedSource/Parallelism/DispatchInferFailure/Source/Main.uv",
+        "Fixtures/RejectedSource/Parallelism/DispatchInferFailure/Expected.uv",
+        "E-CON-0141",
+        "rule.20.Dispatch-Infer-Err"
+    ) {
+        count = count + 1usize
+    }
+    if parallelismSpecimenMatches(
+        "DispatchDependencyConflict",
+        "Fixtures/RejectedSource/Parallelism/DispatchDependencyConflict",
+        "Fixtures/RejectedSource/Parallelism/DispatchDependencyConflict/Source/Main.uv",
+        "Fixtures/RejectedSource/Parallelism/DispatchDependencyConflict/Expected.uv",
+        "E-CON-0142",
+        "rule.20.Dispatch-Dependency-Err"
+    ) {
+        count = count + 1usize
+    }
+    if parallelismSpecimenMatches(
+        "GpuCaptureHeapProvenance",
+        "Fixtures/RejectedSource/Parallelism/GpuCaptureHeapProvenance",
+        "Fixtures/RejectedSource/Parallelism/GpuCaptureHeapProvenance/Source/Main.uv",
+        "Fixtures/RejectedSource/Parallelism/GpuCaptureHeapProvenance/Expected.uv",
+        "E-CON-0150",
+        "rule.20.GpuCapture-HeapProv-Err"
+    ) {
+        count = count + 1usize
+    }
+    if parallelismSpecimenMatches(
+        "GpuSafeTypeDiagnostic",
+        "Fixtures/RejectedSource/Parallelism/GpuSafeTypeDiagnostic",
+        "Fixtures/RejectedSource/Parallelism/GpuSafeTypeDiagnostic/Source/Main.uv",
+        "Fixtures/RejectedSource/Parallelism/GpuSafeTypeDiagnostic/Expected.uv",
+        "E-TYP-2640",
+        "rule.20.GpuSafeType-Err"
+    ) {
+        count = count + 1usize
+    }
+    if parallelismSpecimenMatches(
+        "GpuSafeRecordFieldDiagnostic",
+        "Fixtures/RejectedSource/Parallelism/GpuSafeRecordFieldDiagnostic",
+        "Fixtures/RejectedSource/Parallelism/GpuSafeRecordFieldDiagnostic/Source/Main.uv",
+        "Fixtures/RejectedSource/Parallelism/GpuSafeRecordFieldDiagnostic/Expected.uv",
+        "E-TYP-2640",
+        "rule.20.GpuSafe-Record-Field-Err"
+    ) {
+        count = count + 1usize
+    }
+    if parallelismSpecimenMatches(
+        "GpuSafeGenericUnbounded",
+        "Fixtures/RejectedSource/Parallelism/GpuSafeGenericUnbounded",
+        "Fixtures/RejectedSource/Parallelism/GpuSafeGenericUnbounded/Source/Main.uv",
+        "Fixtures/RejectedSource/Parallelism/GpuSafeGenericUnbounded/Expected.uv",
+        "E-TYP-2642",
+        "rule.20.GpuSafe-Generic-Unbounded-Err"
+    ) {
+        count = count + 1usize
+    }
+    if parallelismSpecimenMatches(
+        "GpuPtrAddrSpace",
+        "Fixtures/RejectedSource/Parallelism/GpuPtrAddrSpace",
+        "Fixtures/RejectedSource/Parallelism/GpuPtrAddrSpace/Source/Main.uv",
+        "Fixtures/RejectedSource/Parallelism/GpuPtrAddrSpace/Expected.uv",
+        "E-TYP-2641",
+        "rule.20.GpuPtr-AddrSpace-Err"
+    ) {
+        count = count + 1usize
+    }
+    if parallelismSpecimenMatches(
+        "GpuPtrDerefHostMemory",
+        "Fixtures/RejectedSource/Parallelism/GpuPtrDerefHostMemory",
+        "Fixtures/RejectedSource/Parallelism/GpuPtrDerefHostMemory/Source/Main.uv",
+        "Fixtures/RejectedSource/Parallelism/GpuPtrDerefHostMemory/Expected.uv",
+        "E-CON-0150",
+        "rule.20.GpuPtr-Deref-Err"
+    ) {
+        count = count + 1usize
+    }
+    return count
+}

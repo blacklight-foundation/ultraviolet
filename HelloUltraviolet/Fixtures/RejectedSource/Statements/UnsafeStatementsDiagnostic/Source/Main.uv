@@ -1,0 +1,8 @@
+//! Rejected statement specimen for unsafe statement diagnostic coverage.
+
+public procedure unsafeStatementsDiagnosticReference() -> i32 {
+    unsafe {
+        let value: i32 = true
+    }
+    return 0
+}

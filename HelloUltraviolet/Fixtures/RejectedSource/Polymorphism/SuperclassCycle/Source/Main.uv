@@ -1,0 +1,7 @@
+//! Rejected polymorphism specimen for a cyclic superclass relation.
+
+internal class CycleA <: CycleB {
+}
+
+internal class CycleB <: CycleA {
+}

@@ -1,0 +1,119 @@
+//! Reference specimens for Keys / ConflictDetection.
+
+internal procedure disjointKeyAccessValue() -> i32 {
+    var values: shared [i32; 4] = [1, 2, 3, 4]
+    var observed: i32 = 0
+    %read values[0usize], values[1usize] {
+        observed = values[0usize] + values[1usize]
+    }
+    return observed
+}
+
+internal procedure sameConstIndexEquivalenceValue() -> i32 {
+    var backing: shared [i32; 4] = [1, 2, 3, 4]
+    let values: shared [i32] = backing[..]
+    let index: usize = 2usize
+    var observed: i32 = 0
+    %read values[index], values[index] {
+        observed = values[index] + values[index]
+    }
+    return observed
+}
+
+internal procedure sameVariableIndexEquivalenceValue() -> i32 {
+    var backing: shared [i32; 4] = [1, 2, 3, 4]
+    let values: shared [i32] = backing[..]
+    var index: usize = 3usize
+    var observed: i32 = 0
+    %read values[index], values[index] {
+        observed = values[index] + values[index]
+    }
+    return observed
+}
+
+internal procedure foldedIndexEquivalenceValue() -> i32 {
+    var backing: shared [i32; 4] = [1, 2, 3, 4]
+    let values: shared [i32] = backing[..]
+    var observed: i32 = 0
+    %read values[1usize + 1usize], values[3usize - 1usize] [ordered] {
+        observed = values[2usize] + values[1usize + 1usize]
+    }
+    return observed
+}
+
+internal procedure constantOffsetDisjointIndexValue(index: usize) -> i32 {
+    var backing: shared [i32; 4] = [1, 2, 3, 4]
+    let values: shared [i32] = backing[..]
+    var observed: i32 = 0
+    %read values[index], values[index + 1usize] [ordered] {
+        observed = values[index] + values[index + 1usize]
+    }
+    return observed
+}
+
+#dynamic
+internal procedure dynamicOrderedSameBaseKeyAccessValue(first: usize, second: usize) -> i32 {
+    var values: shared [i32; 4] = [1, 2, 3, 4]
+    var observed: i32 = 0
+    #dynamic
+    %read values[first], values[second] [ordered] {
+        observed = values[first] + values[second]
+    }
+    return observed
+}
+
+internal procedure coveredKeyAccessValue() -> i32 {
+    var container: shared KeyContainer =
+        KeyContainer {
+            leaf: KeyLeaf { value: 8 },
+            values: [1, 2, 3, 4]
+        }
+    var observed: i32 = 0
+    %read container {
+        observed = container.leaf.value + container.values[0usize]
+    }
+    return observed
+}
+
+internal procedure coveringWriteReadThenWriteValue() -> i32 {
+    var shared_value: shared i32 = 5
+    %write shared_value {
+        shared_value = shared_value + 4
+    }
+    return shared_value + 0
+}
+
+internal procedure coveringWriteCompoundRewriteValue() -> i32 {
+    var shared_value: shared i32 = 5
+    %write shared_value {
+        shared_value += 4
+    }
+    return shared_value + 0
+}
+
+internal procedure coveringRootWriteValue() -> i32 {
+    var container: shared KeyContainer =
+        KeyContainer {
+            leaf: KeyLeaf { value: 10 },
+            values: [1, 2, 3, 4]
+        }
+    %write container {
+        container.leaf.value = 21
+        container.values[2usize] = container.leaf.value + 0
+    }
+    return container.leaf.value + container.values[2usize]
+}
+
+/// Exercises the Keys ConflictDetection reference surface.
+public procedure runKeysConflictDetectionReference() -> bool {
+    return disjointKeyAccessValue() == 3 &&
+        sameConstIndexEquivalenceValue() == 6 &&
+        sameVariableIndexEquivalenceValue() == 8 &&
+        foldedIndexEquivalenceValue() == 6 &&
+        constantOffsetDisjointIndexValue(1usize) == 5 &&
+        dynamicOrderedSameBaseKeyAccessValue(0usize, 2usize) == 4 &&
+        coveredKeyAccessValue() == 9 &&
+        coveringWriteReadThenWriteValue() == 9 &&
+        coveringWriteCompoundRewriteValue() == 9 &&
+        coveringRootWriteValue() == 42
+}

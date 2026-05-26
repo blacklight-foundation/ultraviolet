@@ -1,0 +1,81 @@
+title: "[idea]: "
+labels:
+  - idea
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Use this for language ideas, semantic proposals, specification questions, or
+        larger design changes. Compiler behavior changes need current specification
+        support before they become compiler work.
+  - type: textarea
+    id: summary
+    attributes:
+      label: Proposal summary
+      description: Describe the proposed language, specification, compiler, or ecosystem change.
+    validations:
+      required: true
+  - type: textarea
+    id: design-goal
+    attributes:
+      label: Intended Ultraviolet design goal
+      description: Explain which Ultraviolet design goal this better serves.
+    validations:
+      required: true
+  - type: textarea
+    id: ai-benefit
+    attributes:
+      label: AI-written or AI-reviewed code benefit
+      description: >
+        Explain how this materially improves code written, generated, or reviewed by
+        AI systems.
+    validations:
+      required: true
+  - type: textarea
+    id: examples
+    attributes:
+      label: Examples
+      description: Show current behavior and proposed behavior, if applicable.
+      render: ultraviolet
+    validations:
+      required: false
+  - type: textarea
+    id: evidence
+    attributes:
+      label: Supporting evidence
+      description: >
+        Include research, experiments, examples, prototypes, comparative language
+        study, user evidence, or implementation experience.
+    validations:
+      required: false
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: Alternatives considered
+      description: Describe other designs considered and why this proposal is preferable.
+    validations:
+      required: true
+  - type: checkboxes
+    id: affected-areas
+    attributes:
+      label: Areas likely affected
+      options:
+        - label: Specification text
+        - label: Obligation ledger
+        - label: Compiler
+        - label: Runtime / ABI
+        - label: Diagnostics
+        - label: HelloUltraviolet reference coverage
+        - label: HelloUltraviolet fixtures
+        - label: Generated catalog / symbol execution files
+        - label: Documentation / changelog / release notes
+  - type: dropdown
+    id: proposal-stage
+    attributes:
+      label: Proposal stage
+      options:
+        - Exploratory discussion
+        - Intended for implementation after design review
+        - Unsure
+    validations:
+      required: true

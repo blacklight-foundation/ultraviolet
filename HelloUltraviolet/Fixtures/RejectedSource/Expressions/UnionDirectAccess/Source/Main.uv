@@ -1,0 +1,16 @@
+//! Rejected expression specimen for direct field access on a union value.
+
+public record DirectAccessPayload {
+    public value: i32
+}
+
+public type DirectAccessUnion = DirectAccessPayload | i32
+
+public procedure unionDirectAccessValue() -> DirectAccessUnion {
+    return DirectAccessPayload { value: 1 }
+}
+
+public procedure unionDirectAccessReference() -> i32 {
+    let payload: DirectAccessUnion = unionDirectAccessValue()
+    return payload.value
+}

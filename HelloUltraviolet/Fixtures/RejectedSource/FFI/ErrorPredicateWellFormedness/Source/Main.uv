@@ -1,0 +1,6 @@
+//! Rejected FFI specimen for error predicates on void-returning foreign procedures.
+
+extern "C" {
+    public procedure importedErrorVoid() -> ()
+        |: @foreign_ensures(@error: true)
+}

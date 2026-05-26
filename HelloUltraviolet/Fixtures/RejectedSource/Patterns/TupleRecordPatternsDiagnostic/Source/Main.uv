@@ -1,0 +1,13 @@
+//! Rejected pattern specimen for tuple and record pattern diagnostic ownership.
+
+public record TupleRecordPatternPayload {
+    public value: i32
+}
+
+public procedure tupleRecordPatternsDiagnosticReference() -> i32 {
+    let payload: TupleRecordPatternPayload = TupleRecordPatternPayload {
+        value: 1
+    }
+    let TupleRecordPatternPayload { missing } = payload
+    return missing
+}
