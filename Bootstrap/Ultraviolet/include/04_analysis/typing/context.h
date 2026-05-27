@@ -1,6 +1,7 @@
 #pragma once
 
 #include <map>
+#include <memory>
 #include <optional>
 #include <span>
 #include <string>
@@ -18,6 +19,8 @@
 #include "02_source/ast/ast.h"
 
 namespace ultraviolet::analysis {
+
+struct ContractPurityCache;
 
 using IdKey = std::string;
 using PathKey = std::vector<IdKey>;
@@ -95,6 +98,7 @@ struct ScopeContext {
   GenericCallSubstMap* generic_call_substs = nullptr;
   SelectedCallTargetMap* selected_call_targets = nullptr;
   const NameResolutionTables* name_resolution_tables = nullptr;
+  std::shared_ptr<ContractPurityCache> contract_purity_cache = nullptr;
   ast::ModulePath current_module;
   ScopeList scopes;
 };

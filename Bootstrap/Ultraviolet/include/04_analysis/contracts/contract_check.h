@@ -19,6 +19,10 @@ struct ScopeContext;
 
 // UVX Extension: Contract System - Contract Type Checking
 
+struct ContractPurityCache {
+  std::unordered_map<const ast::ProcedureDecl*, bool> procedure_results;
+};
+
 // Contract checking result
 struct ContractCheckResult {
   bool ok = true;

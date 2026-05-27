@@ -70,11 +70,27 @@ enum class TypeBodyPerfPhase : std::size_t {
   BinaryAliasEquiv,
   IfCondition,
   IfProofFacts,
+  IfProofPurity,
+  IfThenEnvRefine,
+  IfElseCondition,
+  IfElseEnvRefine,
+  IfThenProofExtend,
+  IfElseProofExtend,
   IfBranchType,
   IfBranchCheck,
   IfUnifyBranchTypes,
   ReturnCheckExpr,
   ReturnValidation,
+  PurityCheck,
+  PurityBlock,
+  PurityStmt,
+  PurityCallLookup,
+  PurityProcedure,
+  PurityRecordMethod,
+  PurityClassMethod,
+  PurityStateMethod,
+  PurityReceiverType,
+  PurityMethodLookup,
   Count
 };
 
@@ -177,6 +193,18 @@ inline std::string_view TypeBodyPerfPhaseName(TypeBodyPerfPhase phase) {
       return "IfCondition";
     case TypeBodyPerfPhase::IfProofFacts:
       return "IfProofFacts";
+    case TypeBodyPerfPhase::IfProofPurity:
+      return "IfProofPurity";
+    case TypeBodyPerfPhase::IfThenEnvRefine:
+      return "IfThenEnvRefine";
+    case TypeBodyPerfPhase::IfElseCondition:
+      return "IfElseCondition";
+    case TypeBodyPerfPhase::IfElseEnvRefine:
+      return "IfElseEnvRefine";
+    case TypeBodyPerfPhase::IfThenProofExtend:
+      return "IfThenProofExtend";
+    case TypeBodyPerfPhase::IfElseProofExtend:
+      return "IfElseProofExtend";
     case TypeBodyPerfPhase::IfBranchType:
       return "IfBranchType";
     case TypeBodyPerfPhase::IfBranchCheck:
@@ -187,6 +215,26 @@ inline std::string_view TypeBodyPerfPhaseName(TypeBodyPerfPhase phase) {
       return "ReturnCheckExpr";
     case TypeBodyPerfPhase::ReturnValidation:
       return "ReturnValidation";
+    case TypeBodyPerfPhase::PurityCheck:
+      return "PurityCheck";
+    case TypeBodyPerfPhase::PurityBlock:
+      return "PurityBlock";
+    case TypeBodyPerfPhase::PurityStmt:
+      return "PurityStmt";
+    case TypeBodyPerfPhase::PurityCallLookup:
+      return "PurityCallLookup";
+    case TypeBodyPerfPhase::PurityProcedure:
+      return "PurityProcedure";
+    case TypeBodyPerfPhase::PurityRecordMethod:
+      return "PurityRecordMethod";
+    case TypeBodyPerfPhase::PurityClassMethod:
+      return "PurityClassMethod";
+    case TypeBodyPerfPhase::PurityStateMethod:
+      return "PurityStateMethod";
+    case TypeBodyPerfPhase::PurityReceiverType:
+      return "PurityReceiverType";
+    case TypeBodyPerfPhase::PurityMethodLookup:
+      return "PurityMethodLookup";
     case TypeBodyPerfPhase::Count:
       break;
   }

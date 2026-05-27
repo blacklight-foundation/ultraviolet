@@ -611,18 +611,46 @@ ExprTypeResult TypeIfExpr(const ScopeContext& ctx,
   StmtTypeContext else_ctx = type_ctx;
   {
     ScopedTypeBodyPerfPhase proof_perf(TypeBodyPerfPhase::IfProofFacts);
-    condition_has_proof_facts = ConditionCanContributeProofFacts(ctx, expr.cond);
+    condition_has_proof_facts = [&]() {
+      ScopedTypeBodyPerfPhase purity_perf(TypeBodyPerfPhase::IfProofPurity);
+      return ConditionCanContributeProofFacts(ctx, expr.cond);
+    }();
     then_env =
-        condition_has_proof_facts ? RefineEnvFromConditionFacts(env, expr.cond) : env;
+        condition_has_proof_facts
+            ? [&]() {
+                ScopedTypeBodyPerfPhase refine_perf(
+                    TypeBodyPerfPhase::IfThenEnvRefine);
+                return RefineEnvFromConditionFacts(env, expr.cond);
+              }()
+            : env;
     if (condition_has_proof_facts) {
-      if (const auto else_fact_cond = ElseFactCondition(expr.cond)) {
-        else_env = RefineEnvFromConditionFacts(env, else_fact_cond);
+      if (const auto else_fact_cond = [&]() {
+            ScopedTypeBodyPerfPhase else_cond_perf(
+                TypeBodyPerfPhase::IfElseCondition);
+            return ElseFactCondition(expr.cond);
+          }()) {
+        else_env = [&]() {
+          ScopedTypeBodyPerfPhase refine_perf(
+              TypeBodyPerfPhase::IfElseEnvRefine);
+          return RefineEnvFromConditionFacts(env, else_fact_cond);
+        }();
       }
-      then_ctx.proof_ctx =
-          ExtendProofContextWithPredicate(type_ctx.proof_ctx, expr.cond);
-      if (const auto else_fact_cond = ElseFactCondition(expr.cond)) {
-        else_ctx.proof_ctx =
-            ExtendProofContextWithPredicate(type_ctx.proof_ctx, else_fact_cond);
+      then_ctx.proof_ctx = [&]() {
+        ScopedTypeBodyPerfPhase extend_perf(
+            TypeBodyPerfPhase::IfThenProofExtend);
+        return ExtendProofContextWithPredicate(type_ctx.proof_ctx, expr.cond);
+      }();
+      if (const auto else_fact_cond = [&]() {
+            ScopedTypeBodyPerfPhase else_cond_perf(
+                TypeBodyPerfPhase::IfElseCondition);
+            return ElseFactCondition(expr.cond);
+          }()) {
+        else_ctx.proof_ctx = [&]() {
+          ScopedTypeBodyPerfPhase extend_perf(
+              TypeBodyPerfPhase::IfElseProofExtend);
+          return ExtendProofContextWithPredicate(type_ctx.proof_ctx,
+                                                 else_fact_cond);
+        }();
       }
     }
   }
@@ -736,18 +764,46 @@ CheckResult CheckIfExpr(const ScopeContext& ctx,
   StmtTypeContext else_ctx = type_ctx;
   {
     ScopedTypeBodyPerfPhase proof_perf(TypeBodyPerfPhase::IfProofFacts);
-    condition_has_proof_facts = ConditionCanContributeProofFacts(ctx, expr.cond);
+    condition_has_proof_facts = [&]() {
+      ScopedTypeBodyPerfPhase purity_perf(TypeBodyPerfPhase::IfProofPurity);
+      return ConditionCanContributeProofFacts(ctx, expr.cond);
+    }();
     then_env =
-        condition_has_proof_facts ? RefineEnvFromConditionFacts(env, expr.cond) : env;
+        condition_has_proof_facts
+            ? [&]() {
+                ScopedTypeBodyPerfPhase refine_perf(
+                    TypeBodyPerfPhase::IfThenEnvRefine);
+                return RefineEnvFromConditionFacts(env, expr.cond);
+              }()
+            : env;
     if (condition_has_proof_facts) {
-      if (const auto else_fact_cond = ElseFactCondition(expr.cond)) {
-        else_env = RefineEnvFromConditionFacts(env, else_fact_cond);
+      if (const auto else_fact_cond = [&]() {
+            ScopedTypeBodyPerfPhase else_cond_perf(
+                TypeBodyPerfPhase::IfElseCondition);
+            return ElseFactCondition(expr.cond);
+          }()) {
+        else_env = [&]() {
+          ScopedTypeBodyPerfPhase refine_perf(
+              TypeBodyPerfPhase::IfElseEnvRefine);
+          return RefineEnvFromConditionFacts(env, else_fact_cond);
+        }();
       }
-      then_ctx.proof_ctx =
-          ExtendProofContextWithPredicate(type_ctx.proof_ctx, expr.cond);
-      if (const auto else_fact_cond = ElseFactCondition(expr.cond)) {
-        else_ctx.proof_ctx =
-            ExtendProofContextWithPredicate(type_ctx.proof_ctx, else_fact_cond);
+      then_ctx.proof_ctx = [&]() {
+        ScopedTypeBodyPerfPhase extend_perf(
+            TypeBodyPerfPhase::IfThenProofExtend);
+        return ExtendProofContextWithPredicate(type_ctx.proof_ctx, expr.cond);
+      }();
+      if (const auto else_fact_cond = [&]() {
+            ScopedTypeBodyPerfPhase else_cond_perf(
+                TypeBodyPerfPhase::IfElseCondition);
+            return ElseFactCondition(expr.cond);
+          }()) {
+        else_ctx.proof_ctx = [&]() {
+          ScopedTypeBodyPerfPhase extend_perf(
+              TypeBodyPerfPhase::IfElseProofExtend);
+          return ExtendProofContextWithPredicate(type_ctx.proof_ctx,
+                                                 else_fact_cond);
+        }();
       }
     }
   }

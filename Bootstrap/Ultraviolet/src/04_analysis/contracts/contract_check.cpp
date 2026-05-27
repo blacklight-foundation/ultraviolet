@@ -80,6 +80,7 @@
 #include "04_analysis/typing/type_expr.h"
 #include "04_analysis/typing/type_lower.h"
 #include "04_analysis/typing/type_lookup.h"
+#include "04_analysis/typing/type_perf.h"
 
 namespace ultraviolet::analysis
 {
@@ -334,6 +335,7 @@ namespace ultraviolet::analysis
         const ScopeContext &ctx,
         const ast::ExprPtr &callee)
     {
+      ScopedTypeBodyPerfPhase perf(TypeBodyPerfPhase::PurityCallLookup);
       if (!callee)
       {
         return std::nullopt;
@@ -506,6 +508,7 @@ namespace ultraviolet::analysis
       std::unordered_set<const ast::MethodDecl *> record_methods;
       std::unordered_set<const ast::ClassMethodDecl *> class_methods;
       std::unordered_set<const ast::StateMethodDecl *> state_methods;
+      bool encountered_active_procedure_cycle = false;
     };
 
     bool IsImpureExpr(ContractContext *ctx,
@@ -1317,6 +1320,7 @@ namespace ultraviolet::analysis
                       const ast::Stmt &stmt,
                       PurityStack &purity_stack)
     {
+      ScopedTypeBodyPerfPhase perf(TypeBodyPerfPhase::PurityStmt);
       return std::visit(
           [&](const auto &node) -> bool
           {
@@ -1380,6 +1384,7 @@ namespace ultraviolet::analysis
                        const ast::Block &block,
                        PurityStack &purity_stack)
     {
+      ScopedTypeBodyPerfPhase perf(TypeBodyPerfPhase::PurityBlock);
       for (const auto &stmt : block.stmts)
       {
         if (IsImpureStmt(ctx, stmt, purity_stack))
@@ -1395,8 +1400,22 @@ namespace ultraviolet::analysis
                          const ast::ProcedureDecl &proc,
                          PurityStack &purity_stack)
     {
+      ScopedTypeBodyPerfPhase perf(TypeBodyPerfPhase::PurityProcedure);
+      ContractPurityCache *cache = scope_ctx.contract_purity_cache.get();
+      if (cache)
+      {
+        const auto found = cache->procedure_results.find(&proc);
+        if (found != cache->procedure_results.end())
+        {
+          return found->second;
+        }
+      }
       if (HasCapabilityParams(proc) || !proc.body)
       {
+        if (cache)
+        {
+          cache->procedure_results[&proc] = false;
+        }
         return false;
       }
       if (purity_stack.procedures.find(&proc) != purity_stack.procedures.end())
@@ -1404,6 +1423,7 @@ namespace ultraviolet::analysis
         // Recursion is allowed for pure procedures. Treat active-cycle calls as
         // provisionally pure and let the enclosing traversal detect concrete
         // impure constructs in the strongly connected body.
+        purity_stack.encountered_active_procedure_cycle = true;
         return true;
       }
       purity_stack.procedures.insert(&proc);
@@ -1424,8 +1444,19 @@ namespace ultraviolet::analysis
         }
         proc_ctx.params[param.name] = lowered.type;
       }
+      const bool previous_cycle =
+          purity_stack.encountered_active_procedure_cycle;
+      purity_stack.encountered_active_procedure_cycle = false;
       const bool pure = !IsImpureBlock(&proc_ctx, *proc.body, purity_stack);
+      const bool saw_active_cycle =
+          purity_stack.encountered_active_procedure_cycle;
+      purity_stack.encountered_active_procedure_cycle =
+          previous_cycle || saw_active_cycle;
       purity_stack.procedures.erase(&proc);
+      if (cache && (!pure || !saw_active_cycle))
+      {
+        cache->procedure_results[&proc] = pure;
+      }
       return pure;
     }
 
@@ -1435,6 +1466,7 @@ namespace ultraviolet::analysis
                             const ast::ModulePath &owner_module,
                             PurityStack &purity_stack)
     {
+      ScopedTypeBodyPerfPhase perf(TypeBodyPerfPhase::PurityRecordMethod);
       if (!method.body || HasCapabilityParams(method.params) ||
           !ReceiverIsConst(method.receiver, &scope_ctx))
       {
@@ -1475,6 +1507,7 @@ namespace ultraviolet::analysis
                            const ast::ModulePath &owner_module,
                            PurityStack &purity_stack)
     {
+      ScopedTypeBodyPerfPhase perf(TypeBodyPerfPhase::PurityClassMethod);
       if (!method.body_opt || HasCapabilityParams(method.params) ||
           !ReceiverIsConst(method.receiver, &scope_ctx))
       {
@@ -1516,6 +1549,7 @@ namespace ultraviolet::analysis
                            const ast::ModulePath &owner_module,
                            PurityStack &purity_stack)
     {
+      ScopedTypeBodyPerfPhase perf(TypeBodyPerfPhase::PurityStateMethod);
       if (!method.body || HasCapabilityParams(method.params) ||
           !ReceiverIsConst(method.receiver, &scope_ctx))
       {
@@ -1833,7 +1867,11 @@ namespace ultraviolet::analysis
               {
                 return true;
               }
-              TypeRef receiver_type = InferContractExprType(ctx, node.receiver);
+              TypeRef receiver_type = [&]() {
+                ScopedTypeBodyPerfPhase receiver_perf(
+                    TypeBodyPerfPhase::PurityReceiverType);
+                return InferContractExprType(ctx, node.receiver);
+              }();
               receiver_type = StripPermOrSelf(receiver_type);
               if (!receiver_type)
               {
@@ -1863,7 +1901,12 @@ namespace ultraviolet::analysis
                                           purity_stack);
               }
 
-              const auto lookup = LookupMethodStatic(*ctx->scope_ctx, receiver_type, node.name);
+              const auto lookup = [&]() {
+                ScopedTypeBodyPerfPhase lookup_perf(
+                    TypeBodyPerfPhase::PurityMethodLookup);
+                return LookupMethodStatic(*ctx->scope_ctx, receiver_type,
+                                          node.name);
+              }();
               if (!lookup.ok)
               {
                 return true;
@@ -2057,6 +2100,7 @@ namespace ultraviolet::analysis
   {
     SpecDefsContractCheck();
     SPEC_RULE("ContractPure");
+    ScopedTypeBodyPerfPhase perf(TypeBodyPerfPhase::PurityCheck);
 
     ContractCheckResult result;
 

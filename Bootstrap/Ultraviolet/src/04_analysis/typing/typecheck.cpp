@@ -16,6 +16,7 @@
 
 #include <iostream>
 #include <iterator>
+#include <memory>
 #include <optional>
 #include <string>
 #include <string_view>
@@ -34,6 +35,7 @@
 #include "04_analysis/composite/classes.h"
 #include "04_analysis/caps/cap_system.h"
 #include "04_analysis/conformance/conformance.h"
+#include "04_analysis/contracts/contract_check.h"
 #include "04_analysis/generics/generic_params.h"
 #include "04_analysis/generics/monomorphize.h"
 #include "04_analysis/memory/borrow_bind.h"
@@ -1114,11 +1116,15 @@ TypecheckResult TypecheckModules(
   SelectedCallTargetMap* prev_selected_call_targets = ctx.selected_call_targets;
   const NameResolutionTables* prev_name_resolution_tables =
       ctx.name_resolution_tables;
+  std::shared_ptr<ContractPurityCache> prev_contract_purity_cache =
+      ctx.contract_purity_cache;
+  auto contract_purity_cache = std::make_shared<ContractPurityCache>();
   ctx.expr_types = &result.expr_types;
   ctx.dynamic_refine_checks = &result.dynamic_refine_checks;
   ctx.generic_call_substs = &result.generic_call_substs;
   ctx.selected_call_targets = &result.selected_call_targets;
   ctx.name_resolution_tables = &resolution_tables;
+  ctx.contract_purity_cache = contract_purity_cache;
   struct ExprTypesReset {
     ScopeContext& ctx;
     ExprTypeMap* prev;
@@ -1126,19 +1132,22 @@ TypecheckResult TypecheckModules(
     GenericCallSubstMap* prev_generic_call_substs;
     SelectedCallTargetMap* prev_selected_call_targets;
     const NameResolutionTables* prev_name_resolution_tables;
+    std::shared_ptr<ContractPurityCache> prev_contract_purity_cache;
     ~ExprTypesReset() {
       ctx.expr_types = prev;
       ctx.dynamic_refine_checks = prev_dynamic_refine_checks;
       ctx.generic_call_substs = prev_generic_call_substs;
       ctx.selected_call_targets = prev_selected_call_targets;
       ctx.name_resolution_tables = prev_name_resolution_tables;
+      ctx.contract_purity_cache = prev_contract_purity_cache;
     }
   } expr_types_reset{ctx,
                      prev_expr_types,
                      prev_dynamic_refine_checks,
                      prev_generic_call_substs,
                      prev_selected_call_targets,
-                     prev_name_resolution_tables};
+                     prev_name_resolution_tables,
+                     prev_contract_purity_cache};
 
   const auto decls = DeclTypingModules(ctx, modules, *name_maps);
   if (!decls.diags.empty()) {
