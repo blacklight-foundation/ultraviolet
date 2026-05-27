@@ -13,11 +13,11 @@
 
 #include "00_core/assert_spec.h"
 #include "00_core/symbols.h"
-#include "04_analysis/generics/generic_params.h"
 #include "04_analysis/generics/monomorphize.h"
 #include "04_analysis/resolve/scopes.h"
 #include "04_analysis/resolve/scopes_lookup.h"
 #include "04_analysis/typing/type_lower.h"
+#include "04_analysis/typing/type_perf.h"
 
 namespace ultraviolet::analysis {
 
@@ -136,14 +136,6 @@ const ast::FieldDecl* LookupFieldDeclImpl(const ast::RecordDecl& record,
     }
   }
   return nullptr;
-}
-
-ScopeContext BindRecordFieldTypeScope(const ScopeContext& ctx,
-                                      const ast::RecordDecl& record) {
-  ScopeContext field_ctx = ctx;
-  field_ctx.sigma_source = ctx.sigma_source ? ctx.sigma_source : &ctx.sigma;
-  field_ctx.scopes = BindTypeParams(ctx, record.generic_params);
-  return field_ctx;
 }
 
 }  // namespace
@@ -269,27 +261,37 @@ std::optional<TypeRef> FieldType(const ast::RecordDecl& record,
                                  const std::vector<TypeRef>& generic_args) {
   SpecDefsTypeLookup();
   SPEC_RULE("Fields");
-  const auto* field = LookupFieldDecl(record, field_name);
+  const ast::FieldDecl* field = nullptr;
+  {
+    ScopedTypeBodyPerfPhase perf(TypeBodyPerfPhase::FieldTypeLookupField);
+    field = LookupFieldDecl(record, field_name);
+  }
   if (!field) {
     return std::nullopt;
   }
 
-  const auto field_ctx = BindRecordFieldTypeScope(ctx, record);
-  const auto lowered = LowerType(field_ctx, field->type);
+  LowerTypeResult lowered;
+  {
+    ScopedTypeBodyPerfPhase perf(TypeBodyPerfPhase::FieldTypeLower);
+    lowered = LowerType(ctx, field->type);
+  }
   if (!lowered.ok || !lowered.type) {
     return std::nullopt;
   }
 
   TypeRef field_type = lowered.type;
-  if (record.generic_params.has_value()) {
-    const auto& params = record.generic_params->params;
-    if (generic_args.size() > params.size()) {
+  {
+    ScopedTypeBodyPerfPhase perf(TypeBodyPerfPhase::FieldTypeSubstitute);
+    if (record.generic_params.has_value()) {
+      const auto& params = record.generic_params->params;
+      if (generic_args.size() > params.size()) {
+        return std::nullopt;
+      }
+      const auto subst = BuildSubstitution(params, generic_args);
+      field_type = InstantiateType(field_type, subst);
+    } else if (!generic_args.empty()) {
       return std::nullopt;
     }
-    const auto subst = BuildSubstitution(params, generic_args);
-    field_type = InstantiateType(field_type, subst);
-  } else if (!generic_args.empty()) {
-    return std::nullopt;
   }
 
   return field_type;

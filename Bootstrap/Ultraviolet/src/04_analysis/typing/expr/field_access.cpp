@@ -33,6 +33,7 @@
 #include "04_analysis/typing/type_equiv.h"
 #include "04_analysis/typing/type_lower.h"
 #include "04_analysis/typing/type_lookup.h"
+#include "04_analysis/typing/type_perf.h"
 
 namespace ultraviolet::analysis::expr {
 
@@ -338,17 +339,27 @@ ExprTypeResult TypeFieldAccessExprImpl(const ScopeContext& ctx,
   }
 
   // Get base type from environment or by typing the base expression
-  const auto base_type =
-      TypeExpr(ctx, SuppressSharedAccessCheck(type_ctx), expr.base, env);
+  ExprTypeResult base_type;
+  {
+    ScopedTypeBodyPerfPhase perf(TypeBodyPerfPhase::FieldAccessBaseExpr);
+    base_type =
+        TypeExpr(ctx, SuppressSharedAccessCheck(type_ctx), expr.base, env);
+  }
   if (!base_type.ok) {
     result.diag_id = base_type.diag_id;
     return result;
   }
 
   // Extract permission if present
-  const auto perm = ExtractPerm(base_type.type);
-  const auto stripped = StripPermLocal(base_type.type);
-  const auto normalized = NormalizeFieldBaseType(ctx, stripped);
+  std::optional<Permission> perm;
+  TypeRef stripped;
+  AliasExpandResult normalized;
+  {
+    ScopedTypeBodyPerfPhase perf(TypeBodyPerfPhase::FieldAccessNormalizeBase);
+    perm = ExtractPerm(base_type.type);
+    stripped = StripPermLocal(base_type.type);
+    normalized = NormalizeFieldBaseType(ctx, stripped);
+  }
   if (!normalized.ok) {
     result.diag_id = normalized.diag_id;
     return result;
@@ -370,8 +381,13 @@ ExprTypeResult TypeFieldAccessExprImpl(const ScopeContext& ctx,
   // Handle record path and type-application forms.
   if (const auto* path = AppliedTypePath(*stripped_base)) {
       if (IsSelfVarPath(*path) && type_ctx.current_class_path.has_value()) {
-        const auto field_lookup =
-            LookupClassSelfField(ctx, *type_ctx.current_class_path, expr.name);
+        ClassFieldLookupResult field_lookup;
+        {
+          ScopedTypeBodyPerfPhase perf(
+              TypeBodyPerfPhase::FieldAccessClassSelfLookup);
+          field_lookup =
+              LookupClassSelfField(ctx, *type_ctx.current_class_path, expr.name);
+        }
         if (!field_lookup.ok) {
           result.diag_id = field_lookup.diag_id;
           return result;
@@ -393,39 +409,56 @@ ExprTypeResult TypeFieldAccessExprImpl(const ScopeContext& ctx,
       }
 
       const auto* path_args = AppliedTypeArgs(*stripped_base);
-      if (LookupEnumDeclByPath(ctx, *path) != nullptr) {
-        SPEC_RULE("FieldAccess-Enum");
-        result.diag_id = "E-TYP-1904";
-        return result;
+      const ast::RecordDecl* record = nullptr;
+      {
+        ScopedTypeBodyPerfPhase perf(
+            TypeBodyPerfPhase::FieldAccessRecordDeclLookup);
+        if (LookupEnumDeclByPath(ctx, *path) != nullptr) {
+          SPEC_RULE("FieldAccess-Enum");
+          result.diag_id = "E-TYP-1904";
+          return result;
+        }
+        if (LookupModalDeclByPath(ctx, *path) != nullptr) {
+          SPEC_RULE("Modal-Field-General-Err");
+          result.diag_id = "E-TYP-2057";
+          return result;
+        }
+        record = LookupRecordDecl(ctx, *path);
       }
-      if (LookupModalDeclByPath(ctx, *path) != nullptr) {
-        SPEC_RULE("Modal-Field-General-Err");
-        result.diag_id = "E-TYP-2057";
-        return result;
-      }
-
-      const auto* record = LookupRecordDecl(ctx, *path);
       if (!record) {
         SPEC_RULE("FieldAccess-Unknown");
         result.diag_id = "E-TYP-1904";
         return result;
       }
 
-      const auto* field_decl = LookupFieldDecl(*record, expr.name);
+      const ast::FieldDecl* field_decl = nullptr;
+      {
+        ScopedTypeBodyPerfPhase perf(
+            TypeBodyPerfPhase::FieldAccessFieldDeclLookup);
+        field_decl = LookupFieldDecl(*record, expr.name);
+      }
       if (!field_decl) {
         SPEC_RULE("FieldAccess-Unknown");
         result.diag_id = "E-TYP-1904";
         return result;
       }
-      const auto field_type =
-          FieldType(*record, expr.name, ctx, path_args ? *path_args
-                                                       : std::vector<TypeRef>{});
+      std::optional<TypeRef> field_type;
+      {
+        ScopedTypeBodyPerfPhase perf(TypeBodyPerfPhase::FieldAccessFieldType);
+        field_type = FieldType(*record, expr.name, ctx,
+                               path_args ? *path_args : std::vector<TypeRef>{});
+      }
       if (!field_type.has_value()) {
         SPEC_RULE("FieldAccess-Unknown");
         result.diag_id = "E-TYP-1904";
         return result;
       }
-      if (!FieldVisible(ctx, *record, expr.name, *path)) {
+      bool visible = false;
+      {
+        ScopedTypeBodyPerfPhase perf(TypeBodyPerfPhase::FieldAccessVisibility);
+        visible = FieldVisible(ctx, *record, expr.name, *path);
+      }
+      if (!visible) {
         SPEC_RULE("FieldAccess-NotVisible");
         result.diag_id = "FieldAccess-NotVisible";
         return result;
@@ -451,9 +484,12 @@ ExprTypeResult TypeFieldAccessExprImpl(const ScopeContext& ctx,
 
   // Handle modal state types
   if (const auto* modal = std::get_if<TypeModalState>(&stripped_base->node)) {
-    const auto field_lookup = LookupModalField(ctx, modal->path,
-                                               modal->generic_args,
-                                               modal->state, expr.name);
+    std::optional<ModalFieldLookupResult> field_lookup;
+    {
+      ScopedTypeBodyPerfPhase perf(TypeBodyPerfPhase::FieldAccessModalLookup);
+      field_lookup = LookupModalField(ctx, modal->path, modal->generic_args,
+                                      modal->state, expr.name);
+    }
     if (!field_lookup.has_value()) {
       SPEC_RULE("Modal-Field-Missing");
       result.diag_id = "E-TYP-2052";
@@ -504,7 +540,11 @@ PlaceTypeResult TypeFieldAccessPlaceImpl(const ScopeContext& ctx,
   PlaceTypeResult result;
 
   // For place typing, we first type as expression then mark as place
-  const auto expr_result = TypeFieldAccessExprImpl(ctx, type_ctx, expr, env);
+  ExprTypeResult expr_result;
+  {
+    ScopedTypeBodyPerfPhase perf(TypeBodyPerfPhase::FieldAccessPlaceAsExpr);
+    expr_result = TypeFieldAccessExprImpl(ctx, type_ctx, expr, env);
+  }
   if (!expr_result.ok) {
     result.diag_id = expr_result.diag_id;
     return result;

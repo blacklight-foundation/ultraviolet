@@ -91,6 +91,18 @@ enum class TypeBodyPerfPhase : std::size_t {
   PurityStateMethod,
   PurityReceiverType,
   PurityMethodLookup,
+  FieldAccessBaseExpr,
+  FieldAccessNormalizeBase,
+  FieldAccessClassSelfLookup,
+  FieldAccessRecordDeclLookup,
+  FieldAccessFieldDeclLookup,
+  FieldAccessFieldType,
+  FieldAccessVisibility,
+  FieldAccessModalLookup,
+  FieldAccessPlaceAsExpr,
+  FieldTypeLookupField,
+  FieldTypeLower,
+  FieldTypeSubstitute,
   Count
 };
 
@@ -235,6 +247,30 @@ inline std::string_view TypeBodyPerfPhaseName(TypeBodyPerfPhase phase) {
       return "PurityReceiverType";
     case TypeBodyPerfPhase::PurityMethodLookup:
       return "PurityMethodLookup";
+    case TypeBodyPerfPhase::FieldAccessBaseExpr:
+      return "FieldAccessBaseExpr";
+    case TypeBodyPerfPhase::FieldAccessNormalizeBase:
+      return "FieldAccessNormalizeBase";
+    case TypeBodyPerfPhase::FieldAccessClassSelfLookup:
+      return "FieldAccessClassSelfLookup";
+    case TypeBodyPerfPhase::FieldAccessRecordDeclLookup:
+      return "FieldAccessRecordDeclLookup";
+    case TypeBodyPerfPhase::FieldAccessFieldDeclLookup:
+      return "FieldAccessFieldDeclLookup";
+    case TypeBodyPerfPhase::FieldAccessFieldType:
+      return "FieldAccessFieldType";
+    case TypeBodyPerfPhase::FieldAccessVisibility:
+      return "FieldAccessVisibility";
+    case TypeBodyPerfPhase::FieldAccessModalLookup:
+      return "FieldAccessModalLookup";
+    case TypeBodyPerfPhase::FieldAccessPlaceAsExpr:
+      return "FieldAccessPlaceAsExpr";
+    case TypeBodyPerfPhase::FieldTypeLookupField:
+      return "FieldTypeLookupField";
+    case TypeBodyPerfPhase::FieldTypeLower:
+      return "FieldTypeLower";
+    case TypeBodyPerfPhase::FieldTypeSubstitute:
+      return "FieldTypeSubstitute";
     case TypeBodyPerfPhase::Count:
       break;
   }
