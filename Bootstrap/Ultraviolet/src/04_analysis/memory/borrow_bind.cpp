@@ -161,8 +161,11 @@ static bool BorrowPerfActive() {
 
 class ScopedBorrowTimer {
  public:
-  explicit ScopedBorrowTimer(std::uint64_t* slot)
-      : slot_(slot), start_(std::chrono::steady_clock::now()) {}
+  explicit ScopedBorrowTimer(std::uint64_t* slot) : slot_(slot) {
+    if (slot_) {
+      start_ = std::chrono::steady_clock::now();
+    }
+  }
 
   ~ScopedBorrowTimer() {
     if (!slot_) {

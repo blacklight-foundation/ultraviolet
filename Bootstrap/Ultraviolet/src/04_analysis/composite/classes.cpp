@@ -92,8 +92,11 @@ static bool ClassesPerfActive() {
 
 class ScopedClassesTimer {
  public:
-  explicit ScopedClassesTimer(std::uint64_t* slot)
-      : slot_(slot), start_(std::chrono::steady_clock::now()) {}
+  explicit ScopedClassesTimer(std::uint64_t* slot) : slot_(slot) {
+    if (slot_) {
+      start_ = std::chrono::steady_clock::now();
+    }
+  }
 
   ~ScopedClassesTimer() {
     if (!slot_) {

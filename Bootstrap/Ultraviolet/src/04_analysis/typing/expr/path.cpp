@@ -24,6 +24,7 @@
 #include "04_analysis/composite/function_types.h"
 #include "04_analysis/resolve/scopes_lookup.h"
 #include "04_analysis/typing/context.h"
+#include "04_analysis/typing/type_perf.h"
 #include "04_analysis/typing/type_infer.h"
 #include "04_analysis/typing/types.h"
 #include "02_source/ast/ast.h"
@@ -96,6 +97,7 @@ static bool IsComptimeTypingEnv(const TypeEnv& env) {
 
 static const ast::ASTModule* FindModuleByPath(const ScopeContext& ctx,
                                               const ast::ModulePath& path) {
+  ScopedTypeBodyPerfPhase perf(TypeBodyPerfPhase::PathFindModuleByPath);
   for (const auto& mod : ctx.sigma.mods) {
     if (mod.path == path) {
       return &mod;
@@ -106,6 +108,8 @@ static const ast::ASTModule* FindModuleByPath(const ScopeContext& ctx,
 
 static bool ModuleHasComptimeProcedure(const ast::ASTModule& module,
                                        std::string_view name) {
+  ScopedTypeBodyPerfPhase perf(
+      TypeBodyPerfPhase::PathModuleHasComptimeProcedure);
   for (const auto& proc : module.comptime_procedures) {
     if (IdEq(proc.name, name)) {
       return true;
@@ -124,6 +128,7 @@ static bool IsRuntimeComptimeProcedureRef(const ScopeContext& ctx,
                                           const ast::ModulePath& origin,
                                           std::string_view name,
                                           const TypeEnv& env) {
+  ScopedTypeBodyPerfPhase perf(TypeBodyPerfPhase::PathRuntimeComptimeRef);
   if (IsComptimeTypingEnv(env)) {
     return false;
   }
@@ -146,7 +151,10 @@ ExprTypeResult TypePathExprImpl(const ScopeContext& ctx,
     return result;
   }
 
-  const auto value_type = ValuePathType(ctx, expr.path, expr.name);
+  const auto value_type = [&]() {
+    ScopedTypeBodyPerfPhase value_perf(TypeBodyPerfPhase::PathValuePathType);
+    return ValuePathType(ctx, expr.path, expr.name);
+  }();
   if (!value_type.ok) {
     result.diag_id = value_type.diag_id;
     return result;
@@ -178,8 +186,12 @@ ExprTypeResult TypeIdentifierExprImpl(const ScopeContext& ctx,
     return result;
   }
 
-  if (const auto ent = ResolveValueName(ctx, name);
-      ent && ent->origin_opt.has_value()) {
+  const auto ent = [&]() {
+    ScopedTypeBodyPerfPhase resolve_perf(
+        TypeBodyPerfPhase::PathResolveValueName);
+    return ResolveValueName(ctx, name);
+  }();
+  if (ent && ent->origin_opt.has_value()) {
     const std::string resolved_name = ent->target_opt.value_or(std::string(name));
     if (IsRuntimeComptimeProcedureRef(ctx, *ent->origin_opt, resolved_name, env)) {
       result.diag_id = "E-CTE-0034";
@@ -190,7 +202,10 @@ ExprTypeResult TypeIdentifierExprImpl(const ScopeContext& ctx,
     return result;
   }
 
-  const auto value_type = ValuePathType(ctx, ctx.current_module, name);
+  const auto value_type = [&]() {
+    ScopedTypeBodyPerfPhase value_perf(TypeBodyPerfPhase::PathValuePathType);
+    return ValuePathType(ctx, ctx.current_module, name);
+  }();
   if (!value_type.ok) {
     result.diag_id = value_type.diag_id;
     return result;

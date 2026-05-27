@@ -13,8 +13,6 @@
 
 namespace ultraviolet::analysis {
 
-using NameMap = Scope;
-using NameMapTable = std::map<PathKey, NameMap>;
 using AliasMap = std::map<IdKey, ast::ModulePath>;
 
 struct AccessResult {

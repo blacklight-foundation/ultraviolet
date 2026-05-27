@@ -124,8 +124,11 @@ static bool ProcedurePerfActive() {
 
 class ScopedPerfTimer {
  public:
-  explicit ScopedPerfTimer(std::uint64_t* slot)
-      : slot_(slot), start_(std::chrono::steady_clock::now()) {}
+  explicit ScopedPerfTimer(std::uint64_t* slot) : slot_(slot) {
+    if (slot_) {
+      start_ = std::chrono::steady_clock::now();
+    }
+  }
 
   ~ScopedPerfTimer() {
     if (!slot_) {

@@ -31,6 +31,7 @@
 #include "04_analysis/typing/type_expr.h"
 #include "04_analysis/typing/type_infer.h"
 #include "04_analysis/typing/type_pattern.h"
+#include "04_analysis/typing/type_perf.h"
 #include "04_analysis/typing/type_predicates.h"
 
 namespace ultraviolet::analysis {
@@ -1161,8 +1162,11 @@ StmtTypeResult TypeReturnStmt(const ScopeContext& ctx,
   if (async_sig.has_value()) {
     if (node.value_opt) {
       const auto return_expr = return_dest_expr(node.value_opt);
-      const auto check =
-          CheckExprAgainst(ctx, type_ctx, return_expr, async_sig->result, env);
+      const auto check = [&]() {
+        ScopedTypeBodyPerfPhase check_perf(TypeBodyPerfPhase::ReturnCheckExpr);
+        return CheckExprAgainst(ctx, type_ctx, return_expr, async_sig->result,
+                                env);
+      }();
       if (!check.ok) {
         if (!check.diag_id.has_value() || *check.diag_id == "E-SEM-2526") {
           SPEC_RULE("Return-Async-Type-Err");
@@ -1209,7 +1213,10 @@ StmtTypeResult TypeReturnStmt(const ScopeContext& ctx,
     // Handle opaque return types
     if (type_ctx.opaque_return) {
       const auto return_expr = return_dest_expr(node.value_opt);
-      const auto typed = type_expr_current(return_expr);
+      const auto typed = [&]() {
+        ScopedTypeBodyPerfPhase check_perf(TypeBodyPerfPhase::ReturnCheckExpr);
+        return type_expr_current(return_expr);
+      }();
       if (!typed.ok) {
         return {false, typed.diag_id, {}, {}, typed.diag_detail};
       }
@@ -1256,8 +1263,11 @@ StmtTypeResult TypeReturnStmt(const ScopeContext& ctx,
 
     // Normal return with value
     const auto return_expr = return_dest_expr(node.value_opt);
-    const auto check = CheckExprAgainst(ctx, type_ctx, return_expr,
-                                        type_ctx.return_type, env);
+    const auto check = [&]() {
+      ScopedTypeBodyPerfPhase check_perf(TypeBodyPerfPhase::ReturnCheckExpr);
+      return CheckExprAgainst(ctx, type_ctx, return_expr, type_ctx.return_type,
+                              env);
+    }();
     if (!check.ok) {
       if (!check.diag_id.has_value() || *check.diag_id == "E-SEM-2526") {
         SPEC_RULE("Return-Type-Err");

@@ -40,6 +40,7 @@
 #include "04_analysis/typing/type_equiv.h"
 #include "04_analysis/typing/type_expr.h"
 #include "04_analysis/typing/type_lower.h"
+#include "04_analysis/typing/type_perf.h"
 #include "04_analysis/typing/type_predicates.h"
 #include "04_analysis/typing/deprecation_warnings.h"
 #include "04_analysis/typing/typecheck.h"
@@ -90,8 +91,11 @@ static bool CallPerfActive() {
 
 class ScopedCallTimer {
  public:
-  explicit ScopedCallTimer(std::uint64_t* slot)
-      : slot_(slot), start_(std::chrono::steady_clock::now()) {}
+  explicit ScopedCallTimer(std::uint64_t* slot) : slot_(slot) {
+    if (slot_) {
+      start_ = std::chrono::steady_clock::now();
+    }
+  }
 
   ~ScopedCallTimer() {
     if (!slot_) {
@@ -452,6 +456,8 @@ static OverloadCandidateCheck CheckFreeProcedureOverloadCandidate(
     const TypeEnv& env,
     const ExprTypeFn& type_expr,
     const ArgCheckFn& check_expr) {
+  ScopedTypeBodyPerfPhase candidate_perf(
+      TypeBodyPerfPhase::CallOverloadCandidate);
   OverloadCandidateCheck out;
   if (is_comptime_proc && !AllowsComptimeProcedureCall(type_ctx, env)) {
     out.hard_error = true;
@@ -462,7 +468,11 @@ static OverloadCandidateCheck CheckFreeProcedureOverloadCandidate(
     return out;
   }
 
-  const auto proc_type = ProcType(ctx, proc);
+  const auto proc_type = [&]() {
+    ScopedTypeBodyPerfPhase proc_type_perf(
+        TypeBodyPerfPhase::CallOverloadCandidateProcType);
+    return ProcType(ctx, proc);
+  }();
   if (!proc_type.ok) {
     out.hard_error = true;
     out.diag_id = proc_type.diag_id;
@@ -490,7 +500,11 @@ static OverloadCandidateCheck CheckFreeProcedureOverloadCandidate(
 
     const ast::ExprPtr arg_expr =
         (param.mode == ParamMode::Move || ast::IsCopyArg(arg)) ? ArgPassExpr(arg) : arg.value;
-    const auto checked = check_expr(arg_expr, param.type);
+    const auto checked = [&]() {
+      ScopedTypeBodyPerfPhase check_perf(
+          TypeBodyPerfPhase::CallOverloadCandidateCheckExpr);
+      return check_expr(arg_expr, param.type);
+    }();
     if (!checked.ok) {
       if (!checked.diag_id.has_value() || *checked.diag_id == "E-SEM-2526") {
         return out;
@@ -500,13 +514,21 @@ static OverloadCandidateCheck CheckFreeProcedureOverloadCandidate(
       return out;
     }
 
-    const auto typed = type_expr(arg_expr);
+    const auto typed = [&]() {
+      ScopedTypeBodyPerfPhase type_perf(
+          TypeBodyPerfPhase::CallOverloadCandidateTypeExpr);
+      return type_expr(arg_expr);
+    }();
     if (!typed.ok) {
       out.hard_error = true;
       out.diag_id = typed.diag_id;
       return out;
     }
-    const auto exact = TypeEquiv(StripPerm(typed.type), StripPerm(param.type));
+    const auto exact = [&]() {
+      ScopedTypeBodyPerfPhase equiv_perf(
+          TypeBodyPerfPhase::CallOverloadCandidateTypeEquiv);
+      return TypeEquiv(StripPerm(typed.type), StripPerm(param.type));
+    }();
     if (exact.equiv) {
       ++out.exact_matches;
     }
@@ -535,6 +557,7 @@ static FreeProcedureOverloadResolution ResolveFreeProcedureOverload(
     const TypeEnv& env,
     const ExprTypeFn& type_expr,
     const ArgCheckFn& check_expr) {
+  ScopedTypeBodyPerfPhase perf(TypeBodyPerfPhase::CallOverloadResolve);
   FreeProcedureOverloadResolution out;
   const auto overloads = LookupFreeProcedureOverloadSet(ctx, callee);
   if (!overloads.has_value()) {
@@ -3582,9 +3605,11 @@ ExprTypeResult TypeCallExprImpl(const ScopeContext& ctx,
       }
       return r;
     }
-    const auto call = TypeCallWithSubst(ctx, node.callee, node.args,
-                                         subst, type_expr, &type_place,
-                                         &check_expr);
+    const auto call = [&]() {
+      ScopedTypeBodyPerfPhase call_perf(TypeBodyPerfPhase::CallTypeCall);
+      return TypeCallWithSubst(ctx, node.callee, node.args, subst, type_expr,
+                               &type_place, &check_expr);
+    }();
     ExprTypeResult r;
     if (!call.ok) {
       r.diag_id = call.diag_id;
@@ -3644,8 +3669,11 @@ ExprTypeResult TypeCallExprImpl(const ScopeContext& ctx,
       r.diag_span = inferred.diag_span;
       return r;
     }
-    const auto call = TypeCallWithSubst(ctx, node.callee, node.args, inferred.subst,
-                                        type_expr, &type_place, &check_expr);
+    const auto call = [&]() {
+      ScopedTypeBodyPerfPhase call_perf(TypeBodyPerfPhase::CallTypeCall);
+      return TypeCallWithSubst(ctx, node.callee, node.args, inferred.subst,
+                               type_expr, &type_place, &check_expr);
+    }();
     if (!call.ok) {
       r.diag_id = call.diag_id;
       r.diag_detail = call.diag_detail;
@@ -3693,8 +3721,11 @@ ExprTypeResult TypeCallExprImpl(const ScopeContext& ctx,
   }
 
   // Non-generic call path
-  const auto call =
-      TypeCall(ctx, node.callee, node.args, type_expr, &type_place, &check_expr);
+  const auto call = [&]() {
+    ScopedTypeBodyPerfPhase call_perf(TypeBodyPerfPhase::CallTypeCall);
+    return TypeCall(ctx, node.callee, node.args, type_expr, &type_place,
+                    &check_expr);
+  }();
   ExprTypeResult r;
   if (!call.ok) {
     r.diag_id = call.diag_id;

@@ -79,6 +79,7 @@
 #include "04_analysis/resolve/scopes_lookup.h"
 #include "04_analysis/typing/type_lower.h"
 #include "04_analysis/typing/type_equiv.h"
+#include "04_analysis/typing/type_perf.h"
 #include "04_analysis/typing/type_pattern.h"
 #include "04_analysis/memory/string_bytes.h"
 #include "04_analysis/resolve/visibility.h"
@@ -198,6 +199,7 @@ static const ast::ASTModule* FindModule(const ScopeContext& ctx,
 }
 
 static source::ModuleNames ModuleNamesForContext(const ScopeContext& ctx) {
+  ScopedTypeBodyPerfPhase perf(TypeBodyPerfPhase::ValuePathModuleNames);
   if (ctx.project) {
     return ModuleNamesOf(*ctx.project);
   }
@@ -225,6 +227,7 @@ static std::uint64_t MixFingerprint(std::uint64_t h, std::uint64_t v) {
 }
 
 static std::uint64_t SigmaFingerprint(const ScopeContext& ctx) {
+  ScopedTypeBodyPerfPhase perf(TypeBodyPerfPhase::ValuePathSigmaFingerprint);
   std::uint64_t h = 0x84222325cbf29ce4ull;
   h = MixFingerprint(h, static_cast<std::uint64_t>(ctx.sigma.mods.size()));
   h = MixFingerprint(h, static_cast<std::uint64_t>(ctx.sigma.types.size()));
@@ -255,6 +258,7 @@ static bool ValuePathNameMapCacheValid(const ScopeContext& ctx,
 }
 
 static const NameMapTable& CachedNameMapsForValuePath(const ScopeContext& ctx) {
+  ScopedTypeBodyPerfPhase perf(TypeBodyPerfPhase::ValuePathNameMaps);
   static thread_local ValuePathNameMapCache cache;
   if (ValuePathNameMapCacheValid(ctx, cache)) {
     return cache.name_maps;
@@ -279,6 +283,7 @@ static ModuleStaticLookupResult LookupModuleStaticInModule(
     const ScopeContext& ctx,
     const ast::ASTModule& module,
     std::string_view name) {
+  ScopedTypeBodyPerfPhase perf(TypeBodyPerfPhase::ValuePathStaticLookup);
   for (const auto& item : module.items) {
     const auto* decl = std::get_if<ast::StaticDecl>(&item);
     if (!decl || !decl->binding.pat) {
@@ -330,6 +335,7 @@ struct ProcedureLookupResult {
 static ProcedureLookupResult FindProcedure(
     const ast::ASTModule& module,
     std::string_view name) {
+  ScopedTypeBodyPerfPhase perf(TypeBodyPerfPhase::ValuePathFindProcedure);
   for (const auto& decl : module.comptime_procedures) {
     if (IdEq(decl.name, name)) {
       return ProcedureLookupResult{nullptr, &decl, nullptr};
@@ -378,6 +384,7 @@ static bool ModulePathEq(const ast::ModulePath& lhs,
 ValuePathTypeResult ProcType(const ScopeContext& ctx,
                              const ast::ProcedureDecl& decl) {
   SpecDefsFunctionTypes();
+  ScopedTypeBodyPerfPhase perf(TypeBodyPerfPhase::ValuePathProcType);
   std::vector<TypeFuncParam> params;
   params.reserve(decl.params.size());
   for (const auto& param : decl.params) {
@@ -399,6 +406,7 @@ ValuePathTypeResult ProcType(const ScopeContext& ctx,
 ValuePathTypeResult ProcType(const ScopeContext& ctx,
                              const ast::ComptimeProcedureDecl& decl) {
   SpecDefsFunctionTypes();
+  ScopedTypeBodyPerfPhase perf(TypeBodyPerfPhase::ValuePathProcType);
   std::vector<TypeFuncParam> params;
   params.reserve(decl.params.size());
   for (const auto& param : decl.params) {
@@ -420,6 +428,7 @@ ValuePathTypeResult ProcType(const ScopeContext& ctx,
 ValuePathTypeResult ProcType(const ScopeContext& ctx,
                              const ast::ExternProcDecl& decl) {
   SpecDefsFunctionTypes();
+  ScopedTypeBodyPerfPhase perf(TypeBodyPerfPhase::ValuePathProcType);
   std::vector<TypeFuncParam> params;
   params.reserve(decl.params.size());
   for (const auto& param : decl.params) {
@@ -444,6 +453,8 @@ ValuePathTypeResult ValuePathType(const ScopeContext& ctx,
   SpecDefsFunctionTypes();
   auto direct_module_lookup =
       [&]() -> std::optional<ValuePathTypeResult> {
+    ScopedTypeBodyPerfPhase direct_perf(
+        TypeBodyPerfPhase::ValuePathDirectLookup);
     const ast::ModulePath module_path = path.empty() ? ctx.current_module : path;
     const auto* module = FindModule(ctx, module_path);
     if (!module) {
@@ -477,11 +488,24 @@ ValuePathTypeResult ValuePathType(const ScopeContext& ctx,
     return {true, std::nullopt,
             MakeTypeFunc(std::move(params), builtin_sig->ret)};
   }
-  const auto& name_maps = CachedNameMapsForValuePath(ctx);
-  const auto module_names = ModuleNamesForContext(ctx);
-  const auto resolved = ResolveQualified(
-      ctx, name_maps, module_names, path, name, EntityKind::Value,
-      CanAccess);
+  const NameMapTable* name_maps = nullptr;
+  const source::ModuleNames* module_names = nullptr;
+  source::ModuleNames fallback_module_names;
+  if (ctx.name_resolution_tables && ctx.name_resolution_tables->name_maps &&
+      ctx.name_resolution_tables->module_names) {
+    name_maps = ctx.name_resolution_tables->name_maps;
+    module_names = ctx.name_resolution_tables->module_names;
+  } else {
+    name_maps = &CachedNameMapsForValuePath(ctx);
+    fallback_module_names = ModuleNamesForContext(ctx);
+    module_names = &fallback_module_names;
+  }
+  const auto resolved = [&]() {
+    ScopedTypeBodyPerfPhase resolve_perf(
+        TypeBodyPerfPhase::ValuePathResolveQualified);
+    return ResolveQualified(ctx, *name_maps, *module_names, path, name,
+                            EntityKind::Value, CanAccess);
+  }();
   if (!resolved.ok) {
     if (!resolved.diag_id) {
       if (const auto direct = direct_module_lookup()) {

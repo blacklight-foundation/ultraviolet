@@ -48,6 +48,7 @@
 #include "04_analysis/typing/type_equiv.h"
 #include "04_analysis/typing/type_expr.h"
 #include "04_analysis/typing/type_decls.h"
+#include "04_analysis/typing/type_perf.h"
 #include "04_analysis/typing/type_stmt.h"
 
 namespace ultraviolet::analysis {
@@ -1074,6 +1075,7 @@ TypecheckResult TypecheckModules(
   struct PerfSummaryScope {
     ~PerfSummaryScope() {
       LogProcedureTypePerfSummary();
+      LogTypeBodyPerfSummary();
       expr::LogCallLookupPerfSummary();
       LogClassLookupPerfSummary();
       LogBorrowBindPerfSummary();
@@ -1095,31 +1097,48 @@ TypecheckResult TypecheckModules(
     name_maps = &collected_name_maps.name_maps;
   }
 
+  source::ModuleNames module_names;
+  if (ctx.project) {
+    module_names = ModuleNamesOf(*ctx.project);
+  } else {
+    module_names.reserve(modules.size());
+    for (const auto& module : modules) {
+      module_names.insert(core::StringOfPath(module.path));
+    }
+  }
+  NameResolutionTables resolution_tables{name_maps, &module_names};
+
   ExprTypeMap* prev_expr_types = ctx.expr_types;
   DynamicRefineExprMap* prev_dynamic_refine_checks = ctx.dynamic_refine_checks;
   GenericCallSubstMap* prev_generic_call_substs = ctx.generic_call_substs;
   SelectedCallTargetMap* prev_selected_call_targets = ctx.selected_call_targets;
+  const NameResolutionTables* prev_name_resolution_tables =
+      ctx.name_resolution_tables;
   ctx.expr_types = &result.expr_types;
   ctx.dynamic_refine_checks = &result.dynamic_refine_checks;
   ctx.generic_call_substs = &result.generic_call_substs;
   ctx.selected_call_targets = &result.selected_call_targets;
+  ctx.name_resolution_tables = &resolution_tables;
   struct ExprTypesReset {
     ScopeContext& ctx;
     ExprTypeMap* prev;
     DynamicRefineExprMap* prev_dynamic_refine_checks;
     GenericCallSubstMap* prev_generic_call_substs;
     SelectedCallTargetMap* prev_selected_call_targets;
+    const NameResolutionTables* prev_name_resolution_tables;
     ~ExprTypesReset() {
       ctx.expr_types = prev;
       ctx.dynamic_refine_checks = prev_dynamic_refine_checks;
       ctx.generic_call_substs = prev_generic_call_substs;
       ctx.selected_call_targets = prev_selected_call_targets;
+      ctx.name_resolution_tables = prev_name_resolution_tables;
     }
   } expr_types_reset{ctx,
                      prev_expr_types,
                      prev_dynamic_refine_checks,
                      prev_generic_call_substs,
-                     prev_selected_call_targets};
+                     prev_selected_call_targets,
+                     prev_name_resolution_tables};
 
   const auto decls = DeclTypingModules(ctx, modules, *name_maps);
   if (!decls.diags.empty()) {

@@ -174,8 +174,11 @@ static bool RegionsPerfActive() {
 
 class ScopedProvTimer {
  public:
-  explicit ScopedProvTimer(std::uint64_t* slot)
-      : slot_(slot), start_(std::chrono::steady_clock::now()) {}
+  explicit ScopedProvTimer(std::uint64_t* slot) : slot_(slot) {
+    if (slot_) {
+      start_ = std::chrono::steady_clock::now();
+    }
+  }
 
   ~ScopedProvTimer() {
     if (!slot_) {

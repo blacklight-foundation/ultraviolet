@@ -1154,6 +1154,12 @@ llvm::Value* EmitABICall(LLVMEmitter& emitter,
     if (!type) {
       return false;
     }
+    if (std::holds_alternative<analysis::TypeFunc>(type->node)) {
+      return true;
+    }
+    if (!analysis::AppliedTypePath(*type)) {
+      return false;
+    }
     LowerCtx* ctx = emitter.GetCurrentCtx();
     const analysis::ScopeContext scope = BuildScope(ctx);
     if (analysis::TypeRef resolved =

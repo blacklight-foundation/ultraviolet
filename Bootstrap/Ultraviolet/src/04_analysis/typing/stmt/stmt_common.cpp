@@ -23,6 +23,7 @@
 #include <optional>
 #include <string>
 #include <string_view>
+#include <type_traits>
 #include <unordered_map>
 #include <unordered_set>
 #include <utility>
@@ -42,6 +43,7 @@
 #include "04_analysis/typing/type_expr.h"
 #include "04_analysis/typing/type_infer.h"
 #include "04_analysis/typing/if_case_check.h"
+#include "04_analysis/typing/type_perf.h"
 #include "04_analysis/typing/type_predicates.h"
 #include "04_analysis/typing/type_lower.h"
 #include "04_analysis/memory/regions.h"
@@ -109,6 +111,45 @@ static inline void SpecDefsTypeStmt() {
   SPEC_DEF("NumericTypes", "5.2.12");
   SPEC_DEF("Fact-Call-Postcondition", "15.8.4");
   SPEC_DEF("T-CtStmt", "22.1.2");
+}
+
+template <typename T>
+constexpr std::string_view TypeStmtPerfName() {
+  if constexpr (std::is_same_v<T, ast::LetStmt>) {
+    return "LetStmt";
+  } else if constexpr (std::is_same_v<T, ast::VarStmt>) {
+    return "VarStmt";
+  } else if constexpr (std::is_same_v<T, ast::UsingLocalStmt>) {
+    return "UsingLocalStmt";
+  } else if constexpr (std::is_same_v<T, ast::AssignStmt>) {
+    return "AssignStmt";
+  } else if constexpr (std::is_same_v<T, ast::CompoundAssignStmt>) {
+    return "CompoundAssignStmt";
+  } else if constexpr (std::is_same_v<T, ast::ReturnStmt>) {
+    return "ReturnStmt";
+  } else if constexpr (std::is_same_v<T, ast::BreakStmt>) {
+    return "BreakStmt";
+  } else if constexpr (std::is_same_v<T, ast::ContinueStmt>) {
+    return "ContinueStmt";
+  } else if constexpr (std::is_same_v<T, ast::ExprStmt>) {
+    return "ExprStmt";
+  } else if constexpr (std::is_same_v<T, ast::DeferStmt>) {
+    return "DeferStmt";
+  } else if constexpr (std::is_same_v<T, ast::RegionStmt>) {
+    return "RegionStmt";
+  } else if constexpr (std::is_same_v<T, ast::FrameStmt>) {
+    return "FrameStmt";
+  } else if constexpr (std::is_same_v<T, ast::UnsafeBlockStmt>) {
+    return "UnsafeBlockStmt";
+  } else if constexpr (std::is_same_v<T, ast::CtStmt>) {
+    return "CtStmt";
+  } else if constexpr (std::is_same_v<T, ast::KeyBlockStmt>) {
+    return "KeyBlockStmt";
+  } else if constexpr (std::is_same_v<T, ast::ErrorStmt>) {
+    return "ErrorStmt";
+  } else {
+    return "UnknownStmt";
+  }
 }
 
 static TypeRef StripPermOnce(const TypeRef& type) {
@@ -2823,6 +2864,7 @@ bool ExceedsMaxWorkgroupSize(const Dim3ConstValue& dims) {
 
 TypeEnv PushScope(const TypeEnv& env) {
   SpecDefsTypeStmt();
+  ScopedTypeBodyPerfPhase perf(TypeBodyPerfPhase::PushScope);
   TypeEnv out = env;
   out.scopes.emplace_back();
   return out;
@@ -2830,6 +2872,7 @@ TypeEnv PushScope(const TypeEnv& env) {
 
 TypeEnv PopScope(const TypeEnv& env) {
   SpecDefsTypeStmt();
+  ScopedTypeBodyPerfPhase perf(TypeBodyPerfPhase::PopScope);
   if (env.scopes.empty()) {
     return env;
   }
@@ -2840,6 +2883,7 @@ TypeEnv PopScope(const TypeEnv& env) {
 
 TypeEnv ProjectTypeEnvToDepth(const TypeEnv& env, std::size_t depth) {
   SpecDefsTypeStmt();
+  ScopedTypeBodyPerfPhase perf(TypeBodyPerfPhase::ProjectEnv);
   if (env.scopes.size() <= depth) {
     return env;
   }
@@ -2880,6 +2924,7 @@ StmtTypeResult TypeScopedStmtBody(const ScopeContext& ctx,
 
 std::optional<TypeBinding> BindOf(const TypeEnv& env, std::string_view name) {
   SpecDefsTypeStmt();
+  ScopedTypeBodyPerfPhase perf(TypeBodyPerfPhase::BindOf);
   const auto key = IdKeyOf(name);
   for (auto it = env.scopes.rbegin(); it != env.scopes.rend(); ++it) {
     const auto found = it->find(key);
@@ -3138,6 +3183,7 @@ StmtSeqResult TypeStmtSeq(const ScopeContext& ctx,
                           const PlaceTypeFn& type_place,
                           TypeEnv* env_ref) {
   SpecDefsTypeStmt();
+  ScopedTypeBodyPerfPhase perf(TypeBodyPerfPhase::TypeStmtSeq);
   StmtSeqResult result;
   if (stmts.empty()) {
     SPEC_RULE("StmtSeq-Empty");
@@ -3232,6 +3278,7 @@ BlockInfoResult TypeBlockInfo(const ScopeContext& ctx,
                               const PlaceTypeFn& type_place,
                               TypeEnv* env_ref) {
   SpecDefsTypeStmt();
+  ScopedTypeBodyPerfPhase perf(TypeBodyPerfPhase::TypeBlockInfo);
   BlockInfoResult result;
   const TypeEnv pushed = PushScope(env);
   const auto stmts_typed =
@@ -3243,7 +3290,12 @@ BlockInfoResult TypeBlockInfo(const ScopeContext& ctx,
     result.diag_span = stmts_typed.diag_span;
     return result;
   }
-  if (!WarnResultUnreachable(block.stmts, type_ctx)) {
+  const bool reachable_ok = [&]() {
+    ScopedTypeBodyPerfPhase warn_perf(
+        TypeBodyPerfPhase::WarnResultUnreachable);
+    return WarnResultUnreachable(block.stmts, type_ctx);
+  }();
+  if (!reachable_ok) {
     result.diag_id = "BlockInfo-Res-Err";
     return result;
   }
@@ -3251,15 +3303,22 @@ BlockInfoResult TypeBlockInfo(const ScopeContext& ctx,
   FlowInfo block_break_flow;
   block_break_flow.breaks = stmts_typed.flow.breaks;
   block_break_flow.break_void = stmts_typed.flow.break_void;
-  MergeBreakFlow(block_break_flow,
-                 CollectNestedBreakFlowFromBlock(ctx, type_ctx, stmts_typed.env,
-                                                 type_expr, block));
+  {
+    ScopedTypeBodyPerfPhase break_perf(TypeBodyPerfPhase::CollectBreakFlow);
+    MergeBreakFlow(
+        block_break_flow,
+        CollectNestedBreakFlowFromBlock(ctx, type_ctx, stmts_typed.env,
+                                        type_expr, block));
+  }
   auto apply_break_flow = [&]() {
     result.breaks = block_break_flow.breaks;
     result.break_void = block_break_flow.break_void;
   };
 
-  const auto res_type = ResType(ctx, stmts_typed.flow.results);
+  const auto res_type = [&]() {
+    ScopedTypeBodyPerfPhase res_perf(TypeBodyPerfPhase::ResType);
+    return ResType(ctx, stmts_typed.flow.results);
+  }();
   std::optional<ExprTypeResult> tail_type;
   if (block.tail_opt) {
     StmtTypeContext tail_ctx = type_ctx;
@@ -3271,8 +3330,11 @@ BlockInfoResult TypeBlockInfo(const ScopeContext& ctx,
     if (env_ref) {
       *env_ref = stmts_typed.env;
     }
-    const auto typed = TypeExprWithEnv(ctx, tail_ctx, stmts_typed.env,
-                                       tail_fns.type_expr, block.tail_opt);
+    const auto typed = [&]() {
+      ScopedTypeBodyPerfPhase tail_perf(TypeBodyPerfPhase::TailExpr);
+      return TypeExprWithEnv(ctx, tail_ctx, stmts_typed.env,
+                             tail_fns.type_expr, block.tail_opt);
+    }();
     if (!typed.ok) {
       result.diag_id = typed.diag_id;
       result.diag_detail = typed.diag_detail;
@@ -3303,8 +3365,11 @@ BlockInfoResult TypeBlockInfo(const ScopeContext& ctx,
       StmtTypeContext tail_ctx = type_ctx;
       tail_ctx.proof_ctx = stmts_typed.proof_ctx;
       const auto tail_fns = MakeFlowTypingFns(ctx, tail_ctx, stmts_typed.env);
-      const auto typed = TypeExprWithEnv(ctx, tail_ctx, stmts_typed.env,
-                                         tail_fns.type_expr, block.tail_opt);
+      const auto typed = [&]() {
+        ScopedTypeBodyPerfPhase tail_perf(TypeBodyPerfPhase::TailExpr);
+        return TypeExprWithEnv(ctx, tail_ctx, stmts_typed.env,
+                               tail_fns.type_expr, block.tail_opt);
+      }();
       if (!typed.ok) {
         result.diag_id = typed.diag_id;
         result.diag_span =
@@ -3347,6 +3412,7 @@ ExprTypeResult TypeBlock(const ScopeContext& ctx,
                          const PlaceTypeFn& type_place,
                          TypeEnv* env_ref) {
   SpecDefsTypeStmt();
+  ScopedTypeBodyPerfPhase perf(TypeBodyPerfPhase::TypeBlock);
   ExprTypeResult result;
   const auto info = TypeBlockInfo(ctx, type_ctx, block, env, type_expr,
                                   type_ident, type_place, env_ref);
@@ -3713,10 +3779,13 @@ StmtTypeResult TypeStmt(const ScopeContext& ctx,
                         const PlaceTypeFn& type_place,
                         TypeEnv* env_ref) {
   SpecDefsTypeStmt();
+  ScopedTypeBodyPerfPhase perf(TypeBodyPerfPhase::TypeStmt);
 
   return std::visit(
       [&](const auto& node) -> StmtTypeResult {
         using T = std::decay_t<decltype(node)>;
+        ScopedTypeBodyPerfKind kind_perf(TypeBodyPerfKind::Statement,
+                                         TypeStmtPerfName<T>());
 
         if constexpr (std::is_same_v<T, ast::LetStmt>) {
           SPEC_RULE("T-LetStmt");

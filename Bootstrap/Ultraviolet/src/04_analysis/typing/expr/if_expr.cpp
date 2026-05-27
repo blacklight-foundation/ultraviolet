@@ -28,6 +28,7 @@
 #include "04_analysis/typing/subtyping.h"
 #include "04_analysis/typing/type_expr.h"
 #include "04_analysis/typing/type_equiv.h"
+#include "04_analysis/typing/type_perf.h"
 #include "04_analysis/typing/expr/path.h"
 
 namespace ultraviolet::analysis::expr {
@@ -484,6 +485,7 @@ static bool ContainsGpuBarrierCall(const ast::ExprPtr& expr) {
 static TypeRef UnifyBranchTypes(const ScopeContext& ctx,
                                 const TypeRef& then_type,
                                 const TypeRef& else_type) {
+  ScopedTypeBodyPerfPhase perf(TypeBodyPerfPhase::IfUnifyBranchTypes);
   // If one branch is never (!), the result is the other type
   if (IsNeverType(then_type)) {
     return else_type;
@@ -574,8 +576,11 @@ ExprTypeResult TypeIfExpr(const ScopeContext& ctx,
   }
 
   // 1. Type the condition
-  const auto cond_type = TypeExpr(
-      ctx, WithSharedAccessMode(type_ctx, ast::KeyMode::Read), expr.cond, env);
+  const auto cond_type = [&]() {
+    ScopedTypeBodyPerfPhase cond_perf(TypeBodyPerfPhase::IfCondition);
+    return TypeExpr(ctx, WithSharedAccessMode(type_ctx, ast::KeyMode::Read),
+                    expr.cond, env);
+  }();
   if (!cond_type.ok) {
     result.diag_id = cond_type.diag_id;
     result.diag_detail = cond_type.diag_detail;
@@ -599,34 +604,36 @@ ExprTypeResult TypeIfExpr(const ScopeContext& ctx,
     }
   }
 
-  const bool condition_has_proof_facts =
-      ConditionCanContributeProofFacts(ctx, expr.cond);
-  TypeEnv then_env =
-      condition_has_proof_facts ? RefineEnvFromConditionFacts(env, expr.cond) : env;
+  bool condition_has_proof_facts = false;
+  TypeEnv then_env = env;
   TypeEnv else_env = env;
-  if (condition_has_proof_facts) {
-    if (const auto else_fact_cond = ElseFactCondition(expr.cond)) {
-      else_env = RefineEnvFromConditionFacts(env, else_fact_cond);
-    }
-  }
   StmtTypeContext then_ctx = type_ctx;
-  if (condition_has_proof_facts) {
-    then_ctx.proof_ctx =
-        ExtendProofContextWithPredicate(type_ctx.proof_ctx, expr.cond);
-  }
   StmtTypeContext else_ctx = type_ctx;
-  if (condition_has_proof_facts) {
-    if (const auto else_fact_cond = ElseFactCondition(expr.cond)) {
-      else_ctx.proof_ctx =
-          ExtendProofContextWithPredicate(type_ctx.proof_ctx, else_fact_cond);
+  {
+    ScopedTypeBodyPerfPhase proof_perf(TypeBodyPerfPhase::IfProofFacts);
+    condition_has_proof_facts = ConditionCanContributeProofFacts(ctx, expr.cond);
+    then_env =
+        condition_has_proof_facts ? RefineEnvFromConditionFacts(env, expr.cond) : env;
+    if (condition_has_proof_facts) {
+      if (const auto else_fact_cond = ElseFactCondition(expr.cond)) {
+        else_env = RefineEnvFromConditionFacts(env, else_fact_cond);
+      }
+      then_ctx.proof_ctx =
+          ExtendProofContextWithPredicate(type_ctx.proof_ctx, expr.cond);
+      if (const auto else_fact_cond = ElseFactCondition(expr.cond)) {
+        else_ctx.proof_ctx =
+            ExtendProofContextWithPredicate(type_ctx.proof_ctx, else_fact_cond);
+      }
     }
   }
 
   // 3. Handle else branch
   if (!expr.else_expr) {
-    const auto then_check =
-        CheckExprAgainst(ctx, then_ctx, expr.then_expr, MakeTypePrim("()"),
-                         then_env);
+    const auto then_check = [&]() {
+      ScopedTypeBodyPerfPhase branch_perf(TypeBodyPerfPhase::IfBranchCheck);
+      return CheckExprAgainst(ctx, then_ctx, expr.then_expr, MakeTypePrim("()"),
+                              then_env);
+    }();
     if (!then_check.ok) {
       SPEC_RULE("T-If-No-Else");
       result.diag_id = IfNoElseDiagOrFallback(then_check.diag_id);
@@ -643,7 +650,10 @@ ExprTypeResult TypeIfExpr(const ScopeContext& ctx,
   }
 
   // 2. Type the then branch
-  const auto then_type = TypeExpr(ctx, then_ctx, expr.then_expr, then_env);
+  const auto then_type = [&]() {
+    ScopedTypeBodyPerfPhase branch_perf(TypeBodyPerfPhase::IfBranchType);
+    return TypeExpr(ctx, then_ctx, expr.then_expr, then_env);
+  }();
   if (!then_type.ok) {
     result.diag_id = then_type.diag_id;
     result.diag_detail = then_type.diag_detail;
@@ -651,7 +661,10 @@ ExprTypeResult TypeIfExpr(const ScopeContext& ctx,
   }
 
   // 4. Type else branch
-  const auto else_type = TypeExpr(ctx, else_ctx, expr.else_expr, else_env);
+  const auto else_type = [&]() {
+    ScopedTypeBodyPerfPhase branch_perf(TypeBodyPerfPhase::IfBranchType);
+    return TypeExpr(ctx, else_ctx, expr.else_expr, else_env);
+  }();
   if (!else_type.ok) {
     result.diag_id = else_type.diag_id;
     result.diag_detail = else_type.diag_detail;
@@ -688,8 +701,11 @@ CheckResult CheckIfExpr(const ScopeContext& ctx,
   }
 
   // 1. Type the condition
-  const auto cond_type = TypeExpr(
-      ctx, WithSharedAccessMode(type_ctx, ast::KeyMode::Read), expr.cond, env);
+  const auto cond_type = [&]() {
+    ScopedTypeBodyPerfPhase cond_perf(TypeBodyPerfPhase::IfCondition);
+    return TypeExpr(ctx, WithSharedAccessMode(type_ctx, ast::KeyMode::Read),
+                    expr.cond, env);
+  }();
   if (!cond_type.ok) {
     result.diag_id = cond_type.diag_id;
     result.diag_detail = cond_type.diag_detail;
@@ -713,32 +729,34 @@ CheckResult CheckIfExpr(const ScopeContext& ctx,
     }
   }
 
-  const bool condition_has_proof_facts =
-      ConditionCanContributeProofFacts(ctx, expr.cond);
-  TypeEnv then_env =
-      condition_has_proof_facts ? RefineEnvFromConditionFacts(env, expr.cond) : env;
+  bool condition_has_proof_facts = false;
+  TypeEnv then_env = env;
   TypeEnv else_env = env;
-  if (condition_has_proof_facts) {
-    if (const auto else_fact_cond = ElseFactCondition(expr.cond)) {
-      else_env = RefineEnvFromConditionFacts(env, else_fact_cond);
-    }
-  }
   StmtTypeContext then_ctx = type_ctx;
-  if (condition_has_proof_facts) {
-    then_ctx.proof_ctx =
-        ExtendProofContextWithPredicate(type_ctx.proof_ctx, expr.cond);
-  }
   StmtTypeContext else_ctx = type_ctx;
-  if (condition_has_proof_facts) {
-    if (const auto else_fact_cond = ElseFactCondition(expr.cond)) {
-      else_ctx.proof_ctx =
-          ExtendProofContextWithPredicate(type_ctx.proof_ctx, else_fact_cond);
+  {
+    ScopedTypeBodyPerfPhase proof_perf(TypeBodyPerfPhase::IfProofFacts);
+    condition_has_proof_facts = ConditionCanContributeProofFacts(ctx, expr.cond);
+    then_env =
+        condition_has_proof_facts ? RefineEnvFromConditionFacts(env, expr.cond) : env;
+    if (condition_has_proof_facts) {
+      if (const auto else_fact_cond = ElseFactCondition(expr.cond)) {
+        else_env = RefineEnvFromConditionFacts(env, else_fact_cond);
+      }
+      then_ctx.proof_ctx =
+          ExtendProofContextWithPredicate(type_ctx.proof_ctx, expr.cond);
+      if (const auto else_fact_cond = ElseFactCondition(expr.cond)) {
+        else_ctx.proof_ctx =
+            ExtendProofContextWithPredicate(type_ctx.proof_ctx, else_fact_cond);
+      }
     }
   }
 
   // 2. Check then branch
-  const auto then_check =
-      CheckExprAgainst(ctx, then_ctx, expr.then_expr, expected, then_env);
+  const auto then_check = [&]() {
+    ScopedTypeBodyPerfPhase branch_perf(TypeBodyPerfPhase::IfBranchCheck);
+    return CheckExprAgainst(ctx, then_ctx, expr.then_expr, expected, then_env);
+  }();
   if (!then_check.ok) {
     result.diag_id = then_check.diag_id;
     result.diag_detail = then_check.diag_detail;
@@ -748,8 +766,11 @@ CheckResult CheckIfExpr(const ScopeContext& ctx,
   // 3. Handle else branch
   if (!expr.else_expr) {
     const auto unit_type = MakeTypePrim("()");
-    const auto then_check =
-        CheckExprAgainst(ctx, then_ctx, expr.then_expr, unit_type, then_env);
+    const auto then_check = [&]() {
+      ScopedTypeBodyPerfPhase branch_perf(TypeBodyPerfPhase::IfBranchCheck);
+      return CheckExprAgainst(ctx, then_ctx, expr.then_expr, unit_type,
+                              then_env);
+    }();
     if (!then_check.ok) {
       result.diag_id = IfNoElseDiagOrFallback(then_check.diag_id);
       result.diag_detail = then_check.diag_detail;
@@ -775,8 +796,10 @@ CheckResult CheckIfExpr(const ScopeContext& ctx,
   }
 
   // 4. Check else branch
-  const auto else_check =
-      CheckExprAgainst(ctx, else_ctx, expr.else_expr, expected, else_env);
+  const auto else_check = [&]() {
+    ScopedTypeBodyPerfPhase branch_perf(TypeBodyPerfPhase::IfBranchCheck);
+    return CheckExprAgainst(ctx, else_ctx, expr.else_expr, expected, else_env);
+  }();
   if (!else_check.ok) {
     result.diag_id = else_check.diag_id;
     result.diag_detail = else_check.diag_detail;

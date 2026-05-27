@@ -12,6 +12,7 @@
 #include "00_core/assert_spec.h"
 #include "00_core/diagnostics.h"
 #include "01_project/project.h"
+#include "02_source/module_paths.h"
 #include "04_analysis/generics/monomorphize.h"
 #include "04_analysis/typing/types.h"
 #include "02_source/ast/ast.h"
@@ -72,6 +73,13 @@ struct Sigma {
 
 using Scope = std::unordered_map<IdKey, Entity>;
 using ScopeList = std::vector<Scope>;
+using NameMap = Scope;
+using NameMapTable = std::map<PathKey, NameMap>;
+
+struct NameResolutionTables {
+  const NameMapTable* name_maps = nullptr;
+  const source::ModuleNames* module_names = nullptr;
+};
 
 struct ScopeContext {
   const project::Project* project = nullptr;
@@ -86,6 +94,7 @@ struct ScopeContext {
   DynamicRefineExprMap* dynamic_refine_checks = nullptr;
   GenericCallSubstMap* generic_call_substs = nullptr;
   SelectedCallTargetMap* selected_call_targets = nullptr;
+  const NameResolutionTables* name_resolution_tables = nullptr;
   ast::ModulePath current_module;
   ScopeList scopes;
 };

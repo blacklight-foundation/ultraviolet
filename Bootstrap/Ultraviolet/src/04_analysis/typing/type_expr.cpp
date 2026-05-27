@@ -30,6 +30,7 @@
 #include <set>
 #include <string>
 #include <string_view>
+#include <type_traits>
 #include <variant>
 #include <vector>
 
@@ -52,6 +53,7 @@
 #include "04_analysis/typing/type_infer.h"
 #include "04_analysis/typing/type_lower.h"
 #include "04_analysis/typing/type_lookup.h"
+#include "04_analysis/typing/type_perf.h"
 #include "04_analysis/typing/type_predicates.h"
 #include "04_analysis/typing/type_stmt.h"
 #include "04_analysis/typing/types.h"
@@ -169,6 +171,141 @@ static inline void SpecDefsTypeExpr() {
   SPEC_DEF("P-Index", "5.2.12");
   SPEC_DEF("P-Deref", "5.2.12");
   SPEC_DEF("Expr-Unresolved-Err", "5.2.12");
+}
+
+template <typename T>
+constexpr std::string_view TypeExprPerfName() {
+  if constexpr (std::is_same_v<T, ast::ErrorExpr>) {
+    return "ErrorExpr";
+  } else if constexpr (std::is_same_v<T, ast::AttributedExpr>) {
+    return "AttributedExpr";
+  } else if constexpr (std::is_same_v<T, ast::LiteralExpr>) {
+    return "LiteralExpr";
+  } else if constexpr (std::is_same_v<T, ast::PtrNullExpr>) {
+    return "PtrNullExpr";
+  } else if constexpr (std::is_same_v<T, ast::IdentifierExpr>) {
+    return "IdentifierExpr";
+  } else if constexpr (std::is_same_v<T, ast::PathExpr>) {
+    return "PathExpr";
+  } else if constexpr (std::is_same_v<T, ast::FieldAccessExpr>) {
+    return "FieldAccessExpr";
+  } else if constexpr (std::is_same_v<T, ast::TupleAccessExpr>) {
+    return "TupleAccessExpr";
+  } else if constexpr (std::is_same_v<T, ast::IndexAccessExpr>) {
+    return "IndexAccessExpr";
+  } else if constexpr (std::is_same_v<T, ast::BinaryExpr>) {
+    return "BinaryExpr";
+  } else if constexpr (std::is_same_v<T, ast::UnaryExpr>) {
+    return "UnaryExpr";
+  } else if constexpr (std::is_same_v<T, ast::CastExpr>) {
+    return "CastExpr";
+  } else if constexpr (std::is_same_v<T, ast::IfExpr>) {
+    return "IfExpr";
+  } else if constexpr (std::is_same_v<T, ast::IfIsExpr>) {
+    return "IfIsExpr";
+  } else if constexpr (std::is_same_v<T, ast::IfCaseExpr>) {
+    return "IfCaseExpr";
+  } else if constexpr (std::is_same_v<T, ast::RangeExpr>) {
+    return "RangeExpr";
+  } else if constexpr (std::is_same_v<T, ast::AddressOfExpr>) {
+    return "AddressOfExpr";
+  } else if constexpr (std::is_same_v<T, ast::DerefExpr>) {
+    return "DerefExpr";
+  } else if constexpr (std::is_same_v<T, ast::MoveExpr>) {
+    return "MoveExpr";
+  } else if constexpr (std::is_same_v<T, ast::CopyExpr>) {
+    return "CopyExpr";
+  } else if constexpr (std::is_same_v<T, ast::PropagateExpr>) {
+    return "PropagateExpr";
+  } else if constexpr (std::is_same_v<T, ast::ResultExpr>) {
+    return "ResultExpr";
+  } else if constexpr (std::is_same_v<T, ast::EntryExpr>) {
+    return "EntryExpr";
+  } else if constexpr (std::is_same_v<T, ast::RecordExpr>) {
+    return "RecordExpr";
+  } else if constexpr (std::is_same_v<T, ast::EnumLiteralExpr>) {
+    return "EnumLiteralExpr";
+  } else if constexpr (std::is_same_v<T, ast::TupleExpr>) {
+    return "TupleExpr";
+  } else if constexpr (std::is_same_v<T, ast::ArrayExpr>) {
+    return "ArrayExpr";
+  } else if constexpr (std::is_same_v<T, ast::ArrayRepeatExpr>) {
+    return "ArrayRepeatExpr";
+  } else if constexpr (std::is_same_v<T, ast::SizeofExpr>) {
+    return "SizeofExpr";
+  } else if constexpr (std::is_same_v<T, ast::AlignofExpr>) {
+    return "AlignofExpr";
+  } else if constexpr (std::is_same_v<T, ast::CallExpr>) {
+    return "CallExpr";
+  } else if constexpr (std::is_same_v<T, ast::CallTypeArgsExpr>) {
+    return "CallTypeArgsExpr";
+  } else if constexpr (std::is_same_v<T, ast::MethodCallExpr>) {
+    return "MethodCallExpr";
+  } else if constexpr (std::is_same_v<T, ast::ClosureExpr>) {
+    return "ClosureExpr";
+  } else if constexpr (std::is_same_v<T, ast::BlockExpr>) {
+    return "BlockExpr";
+  } else if constexpr (std::is_same_v<T, ast::UnsafeBlockExpr>) {
+    return "UnsafeBlockExpr";
+  } else if constexpr (std::is_same_v<T, ast::TypeLiteralExpr>) {
+    return "TypeLiteralExpr";
+  } else if constexpr (std::is_same_v<T, ast::QuoteExpr>) {
+    return "QuoteExpr";
+  } else if constexpr (std::is_same_v<T, ast::ComptimeExpr>) {
+    return "ComptimeExpr";
+  } else if constexpr (std::is_same_v<T, ast::CtIfExpr>) {
+    return "CtIfExpr";
+  } else if constexpr (std::is_same_v<T, ast::CtLoopIterExpr>) {
+    return "CtLoopIterExpr";
+  } else if constexpr (std::is_same_v<T, ast::LoopInfiniteExpr>) {
+    return "LoopInfiniteExpr";
+  } else if constexpr (std::is_same_v<T, ast::LoopConditionalExpr>) {
+    return "LoopConditionalExpr";
+  } else if constexpr (std::is_same_v<T, ast::LoopIterExpr>) {
+    return "LoopIterExpr";
+  } else if constexpr (std::is_same_v<T, ast::PipelineExpr>) {
+    return "PipelineExpr";
+  } else if constexpr (std::is_same_v<T, ast::AllocExpr>) {
+    return "AllocExpr";
+  } else if constexpr (std::is_same_v<T, ast::TransmuteExpr>) {
+    return "TransmuteExpr";
+  } else if constexpr (std::is_same_v<T, ast::YieldExpr>) {
+    return "YieldExpr";
+  } else if constexpr (std::is_same_v<T, ast::YieldFromExpr>) {
+    return "YieldFromExpr";
+  } else if constexpr (std::is_same_v<T, ast::SyncExpr>) {
+    return "SyncExpr";
+  } else if constexpr (std::is_same_v<T, ast::RaceExpr>) {
+    return "RaceExpr";
+  } else if constexpr (std::is_same_v<T, ast::AllExpr>) {
+    return "AllExpr";
+  } else if constexpr (std::is_same_v<T, ast::QualifiedNameExpr>) {
+    return "QualifiedNameExpr";
+  } else if constexpr (std::is_same_v<T, ast::QualifiedApplyExpr>) {
+    return "QualifiedApplyExpr";
+  } else if constexpr (std::is_same_v<T, ast::ParallelExpr>) {
+    return "ParallelExpr";
+  } else if constexpr (std::is_same_v<T, ast::SpawnExpr>) {
+    return "SpawnExpr";
+  } else if constexpr (std::is_same_v<T, ast::WaitExpr>) {
+    return "WaitExpr";
+  } else if constexpr (std::is_same_v<T, ast::FenceExpr>) {
+    return "FenceExpr";
+  } else if constexpr (std::is_same_v<T, ast::DispatchExpr>) {
+    return "DispatchExpr";
+  } else {
+    return "UnknownExpr";
+  }
+}
+
+void StoreExprTypeWithPerf(const ScopeContext& ctx,
+                           const ast::ExprPtr& expr,
+                           const TypeRef& type,
+                           TypeBodyPerfPhase phase) {
+  if (ctx.expr_types && expr) {
+    ScopedTypeBodyPerfPhase store_perf(phase);
+    (*ctx.expr_types)[expr.get()] = type;
+  }
 }
 
 // Check if an attribute is present in the attribute list
@@ -3225,6 +3362,7 @@ static ExprTypeResult TypeExprImpl(const ScopeContext& ctx,
                                    const ast::ExprPtr& e,
                                    const TypeEnv& env) {
   SpecDefsTypeExpr();
+  ScopedTypeBodyPerfPhase perf(TypeBodyPerfPhase::ExprDispatch);
   ExprTypeResult result;
 
   if (!e) {
@@ -3246,6 +3384,8 @@ static ExprTypeResult TypeExprImpl(const ScopeContext& ctx,
   result = std::visit(
       [&](const auto& node) -> ExprTypeResult {
         using T = std::decay_t<decltype(node)>;
+        ScopedTypeBodyPerfKind kind_perf(TypeBodyPerfKind::Expression,
+                                         TypeExprPerfName<T>());
 
         if constexpr (std::is_same_v<T, ast::ErrorExpr>) {
           return expr::TypeErrorExprImpl(ctx, node);
@@ -3594,6 +3734,7 @@ static PlaceTypeResult TypePlaceImpl(const ScopeContext& ctx,
                                      const ast::ExprPtr& e,
                                      const TypeEnv& env) {
   SpecDefsTypeExpr();
+  ScopedTypeBodyPerfPhase perf(TypeBodyPerfPhase::PlaceDispatch);
   PlaceTypeResult result;
 
   if (!e) {
@@ -3614,6 +3755,8 @@ static PlaceTypeResult TypePlaceImpl(const ScopeContext& ctx,
   result = std::visit(
       [&](const auto& node) -> PlaceTypeResult {
         using T = std::decay_t<decltype(node)>;
+        ScopedTypeBodyPerfKind kind_perf(TypeBodyPerfKind::PlaceExpression,
+                                         TypeExprPerfName<T>());
 
         if constexpr (std::is_same_v<T, ast::IdentifierExpr>) {
           auto r = expr::TypeIdentifierPlaceImpl(ctx, node, env);
@@ -3691,8 +3834,9 @@ static PlaceTypeResult TypePlaceImpl(const ScopeContext& ctx,
     }
   }
 
-  if (result.ok && ctx.expr_types && e) {
-    (*ctx.expr_types)[e.get()] = result.type;
+  if (result.ok) {
+    StoreExprTypeWithPerf(ctx, e, result.type,
+                          TypeBodyPerfPhase::PlaceStoreType);
   }
 
   return result;
@@ -3835,9 +3979,8 @@ ExprTypeResult TypeExpr(const ScopeContext& ctx,
   SpecDefsTypeExpr();
   auto result = TypeExprImpl(ctx, type_ctx, e, env);
   if (result.ok) {
-    if (ctx.expr_types && e) {
-      (*ctx.expr_types)[e.get()] = result.type;
-    }
+    StoreExprTypeWithPerf(ctx, e, result.type,
+                          TypeBodyPerfPhase::ExprStoreType);
     SPEC_RULE("Lift-Expr");
   }
   return result;
@@ -3849,6 +3992,7 @@ CheckResult CheckExprAgainst(const ScopeContext& ctx,
                              const TypeRef& expected,
                              const TypeEnv& env) {
   SpecDefsTypeExpr();
+  ScopedTypeBodyPerfPhase perf(TypeBodyPerfPhase::CheckExprAgainst);
   CheckResult result;
 
   if (!e || !expected) {
@@ -3900,9 +4044,8 @@ CheckResult CheckExprAgainst(const ScopeContext& ctx,
     }
 
     result.ok = true;
-    if (ctx.expr_types && e) {
-      (*ctx.expr_types)[e.get()] = expected;
-    }
+    StoreExprTypeWithPerf(ctx, e, expected,
+                          TypeBodyPerfPhase::ExprStoreType);
     return result;
   }
 
@@ -3916,9 +4059,8 @@ CheckResult CheckExprAgainst(const ScopeContext& ctx,
       }
       result = dynamic_fallback;
     }
-    if (ctx.expr_types && e) {
-      (*ctx.expr_types)[e.get()] = expected;
-    }
+    StoreExprTypeWithPerf(ctx, e, expected,
+                          TypeBodyPerfPhase::ExprStoreType);
     return result;
   }
 
@@ -3932,9 +4074,8 @@ CheckResult CheckExprAgainst(const ScopeContext& ctx,
       }
       result = dynamic_fallback;
     }
-    if (ctx.expr_types && e) {
-      (*ctx.expr_types)[e.get()] = expected;
-    }
+    StoreExprTypeWithPerf(ctx, e, expected,
+                          TypeBodyPerfPhase::ExprStoreType);
     return result;
   }
 
@@ -3949,9 +4090,8 @@ CheckResult CheckExprAgainst(const ScopeContext& ctx,
       }
       if (sub.subtype) {
         result.ok = true;
-        if (ctx.expr_types && e) {
-          (*ctx.expr_types)[e.get()] = expected;
-        }
+        StoreExprTypeWithPerf(ctx, e, expected,
+                              TypeBodyPerfPhase::ExprStoreType);
         return result;
       }
     }
@@ -3990,9 +4130,8 @@ CheckResult CheckExprAgainst(const ScopeContext& ctx,
       if (IsAstMetaType(expected) ||
           (expected_kind.has_value() && *expected_kind == *resolved_kind)) {
         result.ok = true;
-        if (ctx.expr_types && e) {
-          (*ctx.expr_types)[e.get()] = QuoteKindType(*resolved_kind);
-        }
+        StoreExprTypeWithPerf(ctx, e, QuoteKindType(*resolved_kind),
+                              TypeBodyPerfPhase::ExprStoreType);
         return result;
       }
     }
@@ -4003,9 +4142,8 @@ CheckResult CheckExprAgainst(const ScopeContext& ctx,
         ctx, type_ctx, *enum_literal, expected, env);
     if (enum_check.ok) {
       result.ok = true;
-      if (ctx.expr_types && e) {
-        (*ctx.expr_types)[e.get()] = expected;
-      }
+      StoreExprTypeWithPerf(ctx, e, expected,
+                            TypeBodyPerfPhase::ExprStoreType);
       return result;
     }
     if (enum_check.diag_id.has_value()) {
@@ -4046,9 +4184,8 @@ CheckResult CheckExprAgainst(const ScopeContext& ctx,
       }
       if (sub.subtype) {
         result.ok = true;
-        if (ctx.expr_types && e) {
-          (*ctx.expr_types)[e.get()] = expected;
-        }
+        StoreExprTypeWithPerf(ctx, e, expected,
+                              TypeBodyPerfPhase::ExprStoreType);
         return result;
       }
     }
@@ -4076,9 +4213,8 @@ CheckResult CheckExprAgainst(const ScopeContext& ctx,
       return result;
     }
     result.ok = true;
-    if (ctx.expr_types && e) {
-      (*ctx.expr_types)[e.get()] = expected;
-    }
+    StoreExprTypeWithPerf(ctx, e, expected,
+                          TypeBodyPerfPhase::ExprStoreType);
     return result;
   }
 
@@ -4091,9 +4227,7 @@ CheckResult CheckExprAgainst(const ScopeContext& ctx,
   }
 
   result.ok = true;
-  if (ctx.expr_types && e) {
-    (*ctx.expr_types)[e.get()] = expected;
-  }
+  StoreExprTypeWithPerf(ctx, e, expected, TypeBodyPerfPhase::ExprStoreType);
   return result;
 }
 
@@ -4103,6 +4237,7 @@ CheckResult CheckPlaceAgainst(const ScopeContext& ctx,
                               const TypeRef& expected,
                               const TypeEnv& env) {
   SpecDefsTypeExpr();
+  ScopedTypeBodyPerfPhase perf(TypeBodyPerfPhase::CheckPlaceAgainst);
   CheckResult result;
 
   if (!e || !expected) {

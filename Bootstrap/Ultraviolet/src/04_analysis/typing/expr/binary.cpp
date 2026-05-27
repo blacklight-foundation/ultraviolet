@@ -15,6 +15,7 @@
 #include "04_analysis/typing/type_equiv.h"
 #include "04_analysis/typing/type_expr.h"
 #include "04_analysis/typing/type_lower.h"
+#include "04_analysis/typing/type_perf.h"
 #include "04_analysis/typing/type_predicates.h"
 #include "04_analysis/typing/typecheck.h"
 #include "04_analysis/typing/types.h"
@@ -284,6 +285,7 @@ static bool LoadBinaryOperandInfo(const ScopeContext& ctx,
                                   std::optional<std::string_view>& diag_id,
                                   std::string* diag_detail,
                                   std::optional<core::Span>* diag_span) {
+  ScopedTypeBodyPerfPhase perf(TypeBodyPerfPhase::BinaryLoadOperand);
   out.typed =
       TypeExpr(ctx, WithSharedAccessMode(type_ctx, ast::KeyMode::Read), expr,
                env);
@@ -337,6 +339,7 @@ static bool TryCheckOperandAgainst(const ScopeContext& ctx,
                                    const ast::ExprPtr& expr,
                                    const TypeRef& expected,
                                    const TypeEnv& env) {
+  ScopedTypeBodyPerfPhase perf(TypeBodyPerfPhase::BinaryTryCheckOperand);
   if (!expected) {
     return false;
   }
@@ -352,6 +355,7 @@ static bool TryAliasTransparentEquiv(const ScopeContext& ctx,
                                      const TypeRef& rhs,
                                      ExprTypeResult& result,
                                      bool& equiv) {
+  ScopedTypeBodyPerfPhase perf(TypeBodyPerfPhase::BinaryAliasEquiv);
   const auto rel = AliasTransparentEquiv(ctx, lhs, rhs);
   if (!rel.ok) {
     result.diag_id = rel.diag_id;
