@@ -181,27 +181,37 @@ using namespace emit_detail;
 
   void LLVMEmitter::RestoreFlowState(const FlowStateSnapshot &snapshot)
   {
-    const auto persistent_home_storage = local_home_storage_;
-    const auto persistent_local_types = local_types_;
+    std::vector<std::pair<std::string, llvm::Value *>> added_home_storage;
+    for (const auto &[name, storage] : local_home_storage_)
+    {
+      if (storage && !snapshot.local_home_storage.contains(name))
+      {
+        added_home_storage.emplace_back(name, storage);
+      }
+    }
+
+    std::vector<std::pair<std::string, analysis::TypeRef>> added_local_types;
+    for (const auto &[name, type] : local_types_)
+    {
+      if (type && !snapshot.local_types.contains(name))
+      {
+        added_local_types.emplace_back(name, type);
+      }
+    }
+
     locals_ = snapshot.locals;
     local_home_storage_ = snapshot.local_home_storage;
     local_types_ = snapshot.local_types;
     values_ = snapshot.values;
     storage_values_ = snapshot.storage_values;
     preferred_result_storage_ = snapshot.preferred_result_storage;
-    for (const auto &[name, storage] : persistent_home_storage)
+    for (auto &[name, storage] : added_home_storage)
     {
-      if (storage && !local_home_storage_.contains(name))
-      {
-        local_home_storage_[name] = storage;
-      }
+      local_home_storage_.emplace(std::move(name), storage);
     }
-    for (const auto &[name, type] : persistent_local_types)
+    for (auto &[name, type] : added_local_types)
     {
-      if (type && !local_types_.contains(name))
-      {
-        local_types_[name] = type;
-      }
+      local_types_.emplace(std::move(name), type);
     }
   }
 
