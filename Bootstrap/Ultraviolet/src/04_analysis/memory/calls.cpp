@@ -71,6 +71,7 @@
 #include "04_analysis/typing/subtyping.h"
 #include "04_analysis/typing/type_expr.h"
 #include "04_analysis/typing/type_lower.h"
+#include "04_analysis/typing/type_perf.h"
 #include "02_source/lexer/token.h"
 
 namespace ultraviolet::analysis {
@@ -1261,9 +1262,19 @@ CallTypeResult TypeCallWithSubst(const ScopeContext& ctx,
     return result;
   }
 
+  std::vector<TypeFuncParam> subst_params;
+  subst_params.reserve(params.size());
+  {
+    ScopedTypeBodyPerfPhase perf(TypeBodyPerfPhase::CallSubstituteParams);
+    for (const auto& param : params) {
+      subst_params.push_back(
+          TypeFuncParam{param.mode, InstantiateType(param.type, subst)});
+    }
+  }
+
   // Check move annotations
   for (std::size_t i = 0; i < args.size(); ++i) {
-    if (MissingRequiredMoveForConsumingLocal(params[i].mode, args[i])) {
+    if (MissingRequiredMoveForConsumingLocal(subst_params[i].mode, args[i])) {
       SPEC_RULE("Call-Move-Missing");
       result.diag_id = "E-SEM-2534";
       result.diag_span = ArgDiagnosticSpan(args[i]);
@@ -1272,7 +1283,8 @@ CallTypeResult TypeCallWithSubst(const ScopeContext& ctx,
   }
 
   for (std::size_t i = 0; i < args.size(); ++i) {
-    if (!params[i].mode.has_value() && args[i].pass == ast::ArgPassKind::Move) {
+    if (!subst_params[i].mode.has_value() &&
+        args[i].pass == ast::ArgPassKind::Move) {
       SPEC_RULE("Call-Move-Unexpected");
       result.diag_id = "E-SEM-2535";
       result.diag_span = ArgDiagnosticSpan(args[i]);
@@ -1285,8 +1297,9 @@ CallTypeResult TypeCallWithSubst(const ScopeContext& ctx,
   arg_types.reserve(args.size());
   for (std::size_t i = 0; i < args.size(); ++i) {
     const auto& arg = args[i];
-    const TypeRef subst_param_type = InstantiateType(params[i].type, subst);
-    if (!params[i].mode.has_value()) {
+    const auto& param = subst_params[i];
+    const TypeRef& subst_param_type = param.type;
+    if (!param.mode.has_value()) {
       if (ast::IsCopyArg(arg)) {
         const auto copy_type = type_expr(ArgPassExprLocal(arg));
         if (!copy_type.ok) {
@@ -1347,7 +1360,7 @@ CallTypeResult TypeCallWithSubst(const ScopeContext& ctx,
       continue;
     }
     const auto arg_expr = ArgPassExprLocal(arg);
-    if (UsesCallTempForConsumingLocal(params[i].mode, arg) && check_expr) {
+    if (UsesCallTempForConsumingLocal(param.mode, arg) && check_expr) {
       const auto checked = (*check_expr)(arg_expr, subst_param_type);
       if (checked.ok) {
         arg_types.push_back(subst_param_type);
@@ -1376,11 +1389,11 @@ CallTypeResult TypeCallWithSubst(const ScopeContext& ctx,
 
   // Check arg types against substituted parameter types
   for (std::size_t i = 0; i < args.size(); ++i) {
-    // Apply substitution to parameter type (T -> concrete type)
-    const TypeRef subst_param_type = InstantiateType(params[i].type, subst);
+    const auto& param = subst_params[i];
+    const TypeRef& subst_param_type = param.type;
     const auto sub =
         ArgumentTypeCompatible(ctx, arg_types[i], subst_param_type,
-                               params[i].mode);
+                               param.mode);
     if (!sub.ok) {
       result.diag_id = sub.diag_id;
       result.diag_span = ArgDiagnosticSpan(args[i]);
@@ -1397,8 +1410,9 @@ CallTypeResult TypeCallWithSubst(const ScopeContext& ctx,
   }
 
   for (std::size_t i = 0; i < args.size(); ++i) {
-    if (!params[i].mode.has_value() &&
-        !IsFunctionValueType(ctx, InstantiateType(params[i].type, subst)) &&
+    const auto& param = subst_params[i];
+    if (!param.mode.has_value() &&
+        !IsFunctionValueType(ctx, param.type) &&
         HasSourceProvenanceLocal(args[i].value) &&
         !IsPlaceExprForCallLocal(args[i].value)) {
       SPEC_RULE("Call-Arg-NotPlace");
@@ -1411,8 +1425,9 @@ CallTypeResult TypeCallWithSubst(const ScopeContext& ctx,
   if (params.empty()) {
     SPEC_RULE("ArgsT-Empty");
   } else {
-    for (std::size_t i = 0; i < params.size(); ++i) {
-      if (params[i].mode == ParamMode::Move) {
+    for (std::size_t i = 0; i < subst_params.size(); ++i) {
+      const auto& param = subst_params[i];
+      if (param.mode == ParamMode::Move) {
         const auto moved = ArgPassExprLocal(args[i]);
         const auto moved_type = type_expr(moved);
         if (!moved_type.ok) {
@@ -1422,11 +1437,10 @@ CallTypeResult TypeCallWithSubst(const ScopeContext& ctx,
                                  : ArgDiagnosticSpan(args[i]);
           return result;
         }
-        // Apply substitution to parameter type
-        const TypeRef subst_param_type = InstantiateType(params[i].type, subst);
+        const TypeRef& subst_param_type = param.type;
         const auto sub =
             ArgumentTypeCompatible(ctx, moved_type.type, subst_param_type,
-                                   params[i].mode);
+                                   param.mode);
         if (!sub.ok) {
           result.diag_id = sub.diag_id;
           result.diag_span = ArgDiagnosticSpan(args[i]);
@@ -1443,7 +1457,7 @@ CallTypeResult TypeCallWithSubst(const ScopeContext& ctx,
         SPEC_RULE("ArgsT-Cons");
         continue;
       }
-      if (!IsFunctionValueType(ctx, InstantiateType(params[i].type, subst)) &&
+      if (!IsFunctionValueType(ctx, param.type) &&
           HasSourceProvenanceLocal(args[i].value)) {
         const auto addr_ok = AddrOfOk(ctx, args[i].value, type_expr, check_expr);
         if (!addr_ok.ok) {
@@ -1462,7 +1476,10 @@ CallTypeResult TypeCallWithSubst(const ScopeContext& ctx,
 
   // Return substituted return type
   result.ok = true;
-  result.type = InstantiateType(func->ret, subst);
+  {
+    ScopedTypeBodyPerfPhase perf(TypeBodyPerfPhase::CallSubstituteReturn);
+    result.type = InstantiateType(func->ret, subst);
+  }
   return result;
 }
 

@@ -64,6 +64,8 @@ enum class TypeBodyPerfPhase : std::size_t {
   CallOverloadCandidateTypeExpr,
   CallOverloadCandidateTypeEquiv,
   CallTypeCall,
+  CallSubstituteParams,
+  CallSubstituteReturn,
   CallPostChecks,
   BinaryLoadOperand,
   BinaryTryCheckOperand,
@@ -193,6 +195,10 @@ inline std::string_view TypeBodyPerfPhaseName(TypeBodyPerfPhase phase) {
       return "CallOverloadCandidateTypeEquiv";
     case TypeBodyPerfPhase::CallTypeCall:
       return "CallTypeCall";
+    case TypeBodyPerfPhase::CallSubstituteParams:
+      return "CallSubstituteParams";
+    case TypeBodyPerfPhase::CallSubstituteReturn:
+      return "CallSubstituteReturn";
     case TypeBodyPerfPhase::CallPostChecks:
       return "CallPostChecks";
     case TypeBodyPerfPhase::BinaryLoadOperand:

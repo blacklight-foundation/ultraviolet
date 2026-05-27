@@ -118,6 +118,20 @@ static UVTrackedFile* uv_find_tracked_file_locked(uint64_t id) {
   return NULL;
 }
 
+static UVTrackedFile* uv_unlink_tracked_file_locked(uint64_t id) {
+  UVTrackedFile** link = &g_uv_tracked_files;
+  while (*link) {
+    UVTrackedFile* current = *link;
+    if (current->id == id) {
+      *link = current->next;
+      current->next = NULL;
+      return current;
+    }
+    link = &current->next;
+  }
+  return NULL;
+}
+
 static uint64_t uv_track_file_handle(uv_rt_handle_t handle,
                                      UVTrackedFileStateTag state,
                                      uint64_t position,
@@ -213,18 +227,17 @@ static int uv_close_tracked_file_locked(uint64_t id, UVIoError* out_err) {
   if (out_err) {
     *out_err = UV_IO_FAILURE;
   }
-  UVTrackedFile* tracked = uv_find_tracked_file_locked(id);
+  UVTrackedFile* tracked = uv_unlink_tracked_file_locked(id);
   if (!tracked) {
     return 0;
   }
   if (tracked->state == (uint8_t)UV_TRACKED_FILE_CLOSED) {
+    uv_heap_free_raw(tracked);
     return 0;
   }
 
   uv_rt_handle_t handle = tracked->handle;
-  tracked->handle = UV_RT_INVALID_HANDLE;
-  tracked->state = (uint8_t)UV_TRACKED_FILE_CLOSED;
-  tracked->flushed = 0;
+  uv_heap_free_raw(tracked);
   if (!handle || handle == UV_RT_INVALID_HANDLE) {
     return 0;
   }

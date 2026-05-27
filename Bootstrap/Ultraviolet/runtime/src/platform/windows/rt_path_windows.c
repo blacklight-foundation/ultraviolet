@@ -56,6 +56,57 @@ typedef struct uv_rt_path_segment_t {
   uint32_t len;
 } uv_rt_path_segment_t;
 
+static int uv_rt_path_is_simple_canonical_relative(const uint8_t* data,
+                                                   uint64_t len) {
+  uint64_t segment_start = 0u;
+  if (!data && len != 0u) {
+    return 0;
+  }
+  if (uv_rt_path_is_absolute_utf8(data, len)) {
+    return 0;
+  }
+  for (uint64_t index = 0u; index <= len; ++index) {
+    const int at_end = index == len;
+    const int at_separator = !at_end && uv_rt_path_is_separator(data[index]);
+    if (!at_end && data[index] == '\\') {
+      return 0;
+    }
+    if (!at_end && !at_separator) {
+      continue;
+    }
+    if (index == segment_start) {
+      return 0;
+    }
+    const uint64_t segment_len = index - segment_start;
+    if (segment_len == 1u && data[segment_start] == '.') {
+      return 0;
+    }
+    if (segment_len == 2u && data[segment_start] == '.' &&
+        data[segment_start + 1u] == '.') {
+      return 0;
+    }
+    segment_start = index + 1u;
+  }
+  return 1;
+}
+
+static uint8_t* uv_rt_path_copy_canonical_utf8(const uint8_t* data,
+                                               uint64_t len,
+                                               uint32_t* out_len) {
+  uint8_t* out = (uint8_t*)uv_heap_alloc_raw((size_t)len + 1u);
+  if (!out) {
+    return NULL;
+  }
+  if (len > 0u) {
+    uv_memcpy(out, data, (size_t)len);
+  }
+  out[len] = 0;
+  if (out_len) {
+    *out_len = (uint32_t)len;
+  }
+  return out;
+}
+
 uint8_t* uv_rt_path_canonicalize_utf8(const uint8_t* data,
                                            uint64_t len,
                                            uint32_t* out_len) {
@@ -79,6 +130,10 @@ uint8_t* uv_rt_path_canonicalize_utf8(const uint8_t* data,
   }
   if (len > UINT32_MAX) {
     return NULL;
+  }
+
+  if (uv_rt_path_is_simple_canonical_relative(data, len)) {
+    return uv_rt_path_copy_canonical_utf8(data, len, out_len);
   }
 
   if (uv_rt_path_is_drive_rooted(data, len)) {
