@@ -24,12 +24,16 @@
 
 #include <algorithm>
 #include <initializer_list>
+#include <chrono>
+#include <iostream>
 #include <utility>
 #include <unordered_set>
 #include <variant>
 #include <vector>
 
 #include "00_core/assert_spec.h"
+#include "00_core/host/services.h"
+#include "00_core/process_config.h"
 #include "04_analysis/typing/types.h"
 #include "05_codegen/cleanup/cleanup.h"
 #include "05_codegen/cleanup/unwind.h"
@@ -38,6 +42,55 @@
 namespace ultraviolet::codegen {
 
 namespace {
+
+bool LowerIfPerfEnabled() {
+  static const bool enabled = [] {
+    const auto env = core::HostGetEnvUtf8("UV_LOWER_IF_PERF");
+    return env.has_value() && !env->empty() && *env != "0" &&
+           *env != "false" && *env != "FALSE";
+  }();
+  return enabled;
+}
+
+struct LowerIfStageProfiler {
+  using Clock = std::chrono::steady_clock;
+
+  LowerIfStageProfiler(const ast::Expr& expr,
+                       const ast::IfExpr& if_expr,
+                       const LowerCtx& ctx)
+      : enabled(core::IsDebugEnabled("codegen") || LowerIfPerfEnabled()),
+        proc(ctx.current_proc_symbol.value_or("<unknown>")),
+        line(expr.span.start_line),
+        col(expr.span.start_col),
+        has_else(if_expr.else_expr != nullptr),
+        last(Clock::now()) {}
+
+  void mark(std::string_view stage, const LowerCtx& ctx) {
+    if (!enabled) {
+      return;
+    }
+    const auto now = Clock::now();
+    const auto elapsed_us =
+        std::chrono::duration_cast<std::chrono::microseconds>(now - last).count();
+    last = now;
+    std::cerr << "[lower-if-debug] proc=" << proc
+              << " line=" << line
+              << " col=" << col
+              << " has_else=" << (has_else ? "1" : "0")
+              << " stage=" << stage
+              << " elapsed_us=" << elapsed_us
+              << " value_types=" << ctx.values.value_types.size()
+              << " derived_values=" << ctx.values.derived_values.size()
+              << "\n";
+  }
+
+  bool enabled = false;
+  std::string proc;
+  std::uint32_t line = 0;
+  std::uint32_t col = 0;
+  bool has_else = false;
+  Clock::time_point last;
+};
 
 LowerCtx MakeBranchCtx(LowerCtx& base) {
   auto saved_value_types = std::move(base.values.value_types);
@@ -202,6 +255,7 @@ LowerResult LowerIfExpr(const ast::Expr& expr,
                         const ast::IfExpr& if_expr,
                         LowerCtx& ctx) {
   SPEC_RULE("Lower-Expr-If");
+  LowerIfStageProfiler profiler(expr, if_expr, ctx);
 
   // Lower condition
   auto* prev_sink = ctx.temp_sink;
@@ -216,9 +270,11 @@ LowerResult LowerIfExpr(const ast::Expr& expr,
   if (IsNoopIR(cond_cleanup)) {
     cond_cleanup = EmptyIR();
   }
+  profiler.mark("condition", ctx);
 
   // Lower then branch
   LowerCtx then_ctx = MakeBranchCtx(ctx);
+  profiler.mark("then-context", ctx);
   std::vector<TempValue> then_temps;
   then_ctx.temp_sink = &then_temps;
   auto then_prev_suppress = then_ctx.suppress_temp_at_depth;
@@ -229,10 +285,12 @@ LowerResult LowerIfExpr(const ast::Expr& expr,
   if (!IsNoopIR(then_cleanup) && IRFlowMayFallThrough(then_result.ir)) {
     then_result.ir = SeqIR({then_result.ir, then_cleanup});
   }
+  profiler.mark("then-branch", then_ctx);
 
   // Lower else branch (if present)
   LowerCtx else_ctx = MakeBranchCtx(ctx);
   *else_ctx.temp_counter = std::max(*else_ctx.temp_counter, *then_ctx.temp_counter);
+  profiler.mark("else-context", ctx);
   LowerResult else_result;
   if (if_expr.else_expr) {
     std::vector<TempValue> else_temps;
@@ -245,19 +303,23 @@ LowerResult LowerIfExpr(const ast::Expr& expr,
     if (!IsNoopIR(else_cleanup) && IRFlowMayFallThrough(else_result.ir)) {
       else_result.ir = SeqIR({else_result.ir, else_cleanup});
     }
+    profiler.mark("else-branch", else_ctx);
   } else {
     else_result.ir = EmptyIR();
     else_result.value = ctx.FreshTempValue("unit");
     ctx.RegisterValueType(else_result.value, analysis::MakeTypePrim("()"));
+    profiler.mark("else-unit", ctx);
   }
 
   MergeLowerCtxTemps(ctx, then_ctx);
   MergeLowerCtxTemps(ctx, else_ctx);
+  profiler.mark("merge-values", ctx);
   ctx.MergeGeneratedProcsFrom(then_ctx);
   ctx.MergeGeneratedProcsFrom(else_ctx);
   MergeMoveStates(ctx, {&then_ctx, &else_ctx});
   MergeFailures(ctx, then_ctx);
   MergeFailures(ctx, else_ctx);
+  profiler.mark("merge-state", ctx);
 
   // Create if IR
   IRValue result_value = ctx.FreshTempValue("if");
@@ -279,6 +341,7 @@ LowerResult LowerIfExpr(const ast::Expr& expr,
   if_ir.else_ir = else_result.ir;
   if_ir.else_value = else_result.value;
   if_ir.result = result_value;
+  profiler.mark("result", ctx);
 
   return LowerResult{SeqIR({cond_result.ir, cond_cleanup, MakeIR(std::move(if_ir))}),
                      result_value};

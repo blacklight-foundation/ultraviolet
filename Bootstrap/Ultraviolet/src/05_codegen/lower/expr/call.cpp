@@ -1493,165 +1493,175 @@ LowerResult LowerCallExpr(const ast::Expr& expr_wrapper,
               << " generic_args=" << expr.generic_args.size() << "\n";
   };
 
+  auto selected_proc_info = ResolveSelectedProcedureCalleeInfo(expr, ctx);
+  const bool selected_proc_is_generic =
+      selected_proc_info.has_value() &&
+      selected_proc_info->proc &&
+      selected_proc_info->proc->generic_params.has_value() &&
+      !selected_proc_info->proc->generic_params->params.empty();
+
   // Generic procedure call: instantiate a monomorphic procedure for this
   // call-site substitution, then lower as a direct symbol call.
-  log_call_stage("resolve-generic-start");
-  if (auto generic_info = ResolveGenericProcedure(expr, ctx)) {
-    log_call_stage("resolve-generic-found");
-    log_call_stage("lookup-generic-subst-start");
-    if (auto subst = LookupGenericSubstForCall(expr, *generic_info, ctx)) {
-      log_call_stage("lookup-generic-subst-finish");
-      const std::string base_symbol = GenericProcBaseSymbol(*generic_info);
-      const std::vector<analysis::TypeRef> inst_args =
-          GenericInstantiationArgs(*generic_info, *subst);
-      if (GenericInstantiationWouldRecurse(ctx, base_symbol, inst_args)) {
-        EmitGenericInstantiationDiagnostic("E-TYP-2307");
-        ctx.ReportCodegenFailure();
-        return LowerResult{
-            EmptyIR(),
-            ctx.FreshTempValue("generic_monomorphization_recursion_err"),
-        };
-      }
-      if (ctx.generic_instantiation_stack.size() >=
-          analysis::MonomorphizeContext::kMaxDepth) {
-        EmitGenericInstantiationDiagnostic("E-TYP-2308");
-        ctx.ReportCodegenFailure();
-        return LowerResult{
-            EmptyIR(),
-            ctx.FreshTempValue("generic_monomorphization_depth_err"),
-        };
-      }
-      const std::string inst_symbol = MonomorphizedProcSymbol(*generic_info, *subst);
-      auto log_generic = [&](std::string_view stage) {
-        if (!debug_call) {
-          return;
+  if (!selected_proc_info.has_value() || selected_proc_is_generic) {
+    log_call_stage("resolve-generic-start");
+    if (auto generic_info = ResolveGenericProcedure(expr, ctx)) {
+      log_call_stage("resolve-generic-found");
+      log_call_stage("lookup-generic-subst-start");
+      if (auto subst = LookupGenericSubstForCall(expr, *generic_info, ctx)) {
+        log_call_stage("lookup-generic-subst-finish");
+        const std::string base_symbol = GenericProcBaseSymbol(*generic_info);
+        const std::vector<analysis::TypeRef> inst_args =
+            GenericInstantiationArgs(*generic_info, *subst);
+        if (GenericInstantiationWouldRecurse(ctx, base_symbol, inst_args)) {
+          EmitGenericInstantiationDiagnostic("E-TYP-2307");
+          ctx.ReportCodegenFailure();
+          return LowerResult{
+              EmptyIR(),
+              ctx.FreshTempValue("generic_monomorphization_recursion_err"),
+          };
         }
-        std::cerr << "[lower-call-generic-debug] callee=" << inst_symbol
-                  << " stage=" << stage << "\n";
-      };
-      log_generic("start");
+        if (ctx.generic_instantiation_stack.size() >=
+            analysis::MonomorphizeContext::kMaxDepth) {
+          EmitGenericInstantiationDiagnostic("E-TYP-2308");
+          ctx.ReportCodegenFailure();
+          return LowerResult{
+              EmptyIR(),
+              ctx.FreshTempValue("generic_monomorphization_depth_err"),
+          };
+        }
+        const std::string inst_symbol = MonomorphizedProcSymbol(*generic_info, *subst);
+        auto log_generic = [&](std::string_view stage) {
+          if (!debug_call) {
+            return;
+          }
+          std::cerr << "[lower-call-generic-debug] callee=" << inst_symbol
+                    << " stage=" << stage << "\n";
+        };
+        log_generic("start");
 
-      if (!ctx.LookupProcSig(inst_symbol)) {
-        RegisterProvisionalGenericProcSig(*generic_info, *subst, inst_symbol, ctx);
-      }
+        if (!ctx.LookupProcSig(inst_symbol)) {
+          RegisterProvisionalGenericProcSig(*generic_info, *subst, inst_symbol, ctx);
+        }
 
-      if (ctx.generic_instantiation_in_progress.find(inst_symbol) ==
-          ctx.generic_instantiation_in_progress.end()) {
-        if (!ctx.LookupProcModule(inst_symbol)) {
-          log_generic("instantiate-start");
-          ctx.generic_instantiation_in_progress.insert(inst_symbol);
-          ctx.generic_instantiation_stack.push_back(inst_symbol);
-          ctx.generic_instantiation_decl_stack.push_back(
-              GenericInstantiationFrame{base_symbol, inst_args});
-          ProcIR inst_proc = LowerProcInstantiated(
-              *generic_info->decl, generic_info->module_path, inst_symbol, *subst, ctx);
-          ctx.generic_instantiation_decl_stack.pop_back();
-          ctx.generic_instantiation_stack.pop_back();
-          ctx.generic_instantiation_in_progress.erase(inst_symbol);
-          if (generic_info->decl->contract.has_value() &&
-              generic_info->decl->contract->precondition) {
-            LowerCtx::LocalContractInfo local_contract;
-            local_contract.precondition =
-                generic_info->decl->contract->precondition;
-            local_contract.param_names.reserve(generic_info->decl->params.size());
-            for (const auto& param : generic_info->decl->params) {
-              local_contract.param_names.push_back(param.name);
+        if (ctx.generic_instantiation_in_progress.find(inst_symbol) ==
+            ctx.generic_instantiation_in_progress.end()) {
+          if (!ctx.LookupProcModule(inst_symbol)) {
+            log_generic("instantiate-start");
+            ctx.generic_instantiation_in_progress.insert(inst_symbol);
+            ctx.generic_instantiation_stack.push_back(inst_symbol);
+            ctx.generic_instantiation_decl_stack.push_back(
+                GenericInstantiationFrame{base_symbol, inst_args});
+            ProcIR inst_proc = LowerProcInstantiated(
+                *generic_info->decl, generic_info->module_path, inst_symbol, *subst, ctx);
+            ctx.generic_instantiation_decl_stack.pop_back();
+            ctx.generic_instantiation_stack.pop_back();
+            ctx.generic_instantiation_in_progress.erase(inst_symbol);
+            if (generic_info->decl->contract.has_value() &&
+                generic_info->decl->contract->precondition) {
+              LowerCtx::LocalContractInfo local_contract;
+              local_contract.precondition =
+                  generic_info->decl->contract->precondition;
+              local_contract.param_names.reserve(generic_info->decl->params.size());
+              for (const auto& param : generic_info->decl->params) {
+                local_contract.param_names.push_back(param.name);
+              }
+              ctx.RegisterLocalContractInfo(inst_proc.symbol,
+                                            std::move(local_contract));
             }
-            ctx.RegisterLocalContractInfo(inst_proc.symbol,
-                                          std::move(local_contract));
+            ctx.QueueExtraProc(std::move(inst_proc),
+                               LinkageOf(*generic_info->decl),
+                               &generic_info->module_path);
+            log_generic("instantiate-finish");
+          } else {
+            log_generic("instantiate-skip-module-registered");
           }
-          ctx.QueueExtraProc(std::move(inst_proc),
-                             LinkageOf(*generic_info->decl),
-                             &generic_info->module_path);
-          log_generic("instantiate-finish");
         } else {
-          log_generic("instantiate-skip-module-registered");
+          log_generic("instantiate-skip-in-progress");
         }
-      } else {
-        log_generic("instantiate-skip-in-progress");
-      }
 
-      const bool needs_panic_out = ctx.NeedsPanicOutForSymbol(inst_symbol);
+        const bool needs_panic_out = ctx.NeedsPanicOutForSymbol(inst_symbol);
 
-      ParamModeList param_modes;
-      ParamTypeList param_types;
-      analysis::TypeRef result_type;
-      if (const auto* inst_sig = ctx.LookupProcSig(inst_symbol)) {
-        param_modes.reserve(inst_sig->params.size());
-        param_types.reserve(inst_sig->params.size());
-        for (const auto& param : inst_sig->params) {
-          param_modes.push_back(param.mode);
-          param_types.push_back(param.type);
-        }
-        // Proc signatures include hidden panic-out when required. It is not
-        // part of source-level call arguments and is appended separately below.
-        if (!inst_sig->params.empty() &&
-            inst_sig->params.back().name == std::string(kPanicOutName) &&
-            param_modes.size() == expr.args.size() + 1) {
-          param_modes.pop_back();
-          param_types.pop_back();
-        }
-        if (inst_sig->ffi_import || UsesRawExportAbi(ctx, inst_symbol)) {
-          for (auto& mode : param_modes) {
-            mode = analysis::ParamMode::Move;
+        ParamModeList param_modes;
+        ParamTypeList param_types;
+        analysis::TypeRef result_type;
+        if (const auto* inst_sig = ctx.LookupProcSig(inst_symbol)) {
+          param_modes.reserve(inst_sig->params.size());
+          param_types.reserve(inst_sig->params.size());
+          for (const auto& param : inst_sig->params) {
+            param_modes.push_back(param.mode);
+            param_types.push_back(param.type);
           }
+          // Proc signatures include hidden panic-out when required. It is not
+          // part of source-level call arguments and is appended separately below.
+          if (!inst_sig->params.empty() &&
+              inst_sig->params.back().name == std::string(kPanicOutName) &&
+              param_modes.size() == expr.args.size() + 1) {
+            param_modes.pop_back();
+            param_types.pop_back();
+          }
+          if (inst_sig->ffi_import || UsesRawExportAbi(ctx, inst_symbol)) {
+            for (auto& mode : param_modes) {
+              mode = analysis::ParamMode::Move;
+            }
+          }
+          result_type = inst_sig->ret;
+        } else {
+          param_modes = ParamModesFromParams(generic_info->decl->params);
         }
-        result_type = inst_sig->ret;
-      } else {
-        param_modes = ParamModesFromParams(generic_info->decl->params);
-      }
-      auto [args_ir, arg_values] =
-          LowerArgs(param_modes,
-                    expr.args,
-                    ctx,
-                    param_types.empty() ? nullptr : &param_types);
-      log_generic("args-lowered");
+        auto [args_ir, arg_values] =
+            LowerArgs(param_modes,
+                      expr.args,
+                      ctx,
+                      param_types.empty() ? nullptr : &param_types);
+        log_generic("args-lowered");
 
-      IRValue result_value = ctx.FreshTempValue("call");
-      IRCall call;
-      call.callee.kind = IRValue::Kind::Symbol;
-      call.callee.name = inst_symbol;
-      call.args = std::move(arg_values);
-      call.result = result_value;
-      if (result_type) {
-        ctx.RegisterValueType(result_value, result_type);
-      }
-      IRPtr local_pre_ir =
-          EmitLocalPreDynamicChecks(inst_symbol, expr, call.args, ctx);
-      auto is_noop = [](const IRPtr& ir) {
-        return !ir || std::holds_alternative<IROpaque>(ir->node);
-      };
+        IRValue result_value = ctx.FreshTempValue("call");
+        IRCall call;
+        call.callee.kind = IRValue::Kind::Symbol;
+        call.callee.name = inst_symbol;
+        call.args = std::move(arg_values);
+        call.result = result_value;
+        if (result_type) {
+          ctx.RegisterValueType(result_value, result_type);
+        }
+        IRPtr local_pre_ir =
+            EmitLocalPreDynamicChecks(inst_symbol, expr, call.args, ctx);
+        auto is_noop = [](const IRPtr& ir) {
+          return !ir || std::holds_alternative<IROpaque>(ir->node);
+        };
 
-      if (needs_panic_out) {
-        IRValue panic_out;
-        panic_out.kind = IRValue::Kind::Local;
-        panic_out.name = std::string(kPanicOutName);
-        call.args.push_back(panic_out);
+        if (needs_panic_out) {
+          IRValue panic_out;
+          panic_out.kind = IRValue::Kind::Local;
+          panic_out.name = std::string(kPanicOutName);
+          call.args.push_back(panic_out);
+          std::vector<IRPtr> parts;
+          parts.push_back(args_ir);
+          if (!is_noop(local_pre_ir)) {
+            parts.push_back(local_pre_ir);
+          }
+          parts.push_back(MakeIR(std::move(call)));
+          parts.push_back(PanicFollowup(ctx));
+          return LowerResult{SeqIR(std::move(parts)), result_value};
+        }
+
         std::vector<IRPtr> parts;
         parts.push_back(args_ir);
         if (!is_noop(local_pre_ir)) {
           parts.push_back(local_pre_ir);
         }
         parts.push_back(MakeIR(std::move(call)));
-        parts.push_back(PanicFollowup(ctx));
         return LowerResult{SeqIR(std::move(parts)), result_value};
       }
-
-      std::vector<IRPtr> parts;
-      parts.push_back(args_ir);
-      if (!is_noop(local_pre_ir)) {
-        parts.push_back(local_pre_ir);
-      }
-      parts.push_back(MakeIR(std::move(call)));
-      return LowerResult{SeqIR(std::move(parts)), result_value};
+      log_call_stage("lookup-generic-subst-miss");
+      ctx.ReportCodegenFailure();
+      return LowerResult{EmptyIR(), ctx.FreshTempValue("generic_call_subst_err")};
     }
-    log_call_stage("lookup-generic-subst-miss");
-    ctx.ReportCodegenFailure();
-    return LowerResult{EmptyIR(), ctx.FreshTempValue("generic_call_subst_err")};
+    log_call_stage("resolve-generic-miss");
+  } else {
+    log_call_stage("resolve-generic-skip-selected-nongeneric");
   }
-  log_call_stage("resolve-generic-miss");
 
-  auto selected_proc_info = ResolveSelectedProcedureCalleeInfo(expr, ctx);
   LowerResult callee_result;
   if (selected_proc_info.has_value()) {
     callee_result.ir = EmptyIR();
@@ -1939,5 +1949,4 @@ void AnchorCallLoweringRules() {
 }
 
 }  // namespace ultraviolet::codegen
-
 
