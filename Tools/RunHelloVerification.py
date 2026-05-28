@@ -216,6 +216,12 @@ def parse_args() -> argparse.Namespace:
         help="CMake executable to use for configure and package gates",
     )
     parser.add_argument(
+        "--cmake-configure-arg",
+        action="append",
+        default=[],
+        help="extra argument to append to the compiler package CMake configure command",
+    )
+    parser.add_argument(
         "--skip-package",
         action="store_true",
         help="skip CMake package rebuild; not valid for public-alpha release verifications",
@@ -493,7 +499,12 @@ def planned_commands(
                 VerificationGate(
                     "compiler package configure",
                     bootstrap_root,
-                    (args.cmake, "--preset", config.configure_preset),
+                    (
+                        args.cmake,
+                        "--preset",
+                        config.configure_preset,
+                        *args.cmake_configure_arg,
+                    ),
                 ),
                 VerificationGate(
                     "compiler package build",
@@ -1065,6 +1076,9 @@ def write_header(transcript: Transcript, args: argparse.Namespace, config: Targe
     transcript.line(f"Target profile: {config.profile}")
     transcript.line(f"Compiler path: {config.compiler_path}")
     transcript.line(f"HelloUltraviolet executable: {config.executable_path}")
+    if args.cmake_configure_arg:
+        joined_args = " ".join(args.cmake_configure_arg)
+        transcript.line(f"CMake configure args: {joined_args}")
 
     github_run_id = os.environ.get("GITHUB_RUN_ID", "")
     if github_run_id:

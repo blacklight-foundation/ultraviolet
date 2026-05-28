@@ -20,10 +20,15 @@ namespace ultraviolet::driver {
 
 namespace {
 
+#ifndef UV_COMPILER_VERSION_OVERRIDE
+#define UV_COMPILER_VERSION_OVERRIDE ""
+#endif
+
 constexpr int VERSION_MAJOR = 0;
 constexpr int VERSION_MINOR = 1;
 constexpr int VERSION_PATCH = 0;
 constexpr const char* VERSION_PRERELEASE = "alpha";
+constexpr const char* VERSION_OVERRIDE = UV_COMPILER_VERSION_OVERRIDE;
 constexpr const char* COMPILER_NAME = "Ultraviolet";
 
 }  // namespace
@@ -36,6 +41,10 @@ void SpecDefsDriver() {
 std::string GetVersionString() {
   std::string version = COMPILER_NAME;
   version += " ";
+  if (VERSION_OVERRIDE && VERSION_OVERRIDE[0] != '\0') {
+    version += VERSION_OVERRIDE;
+    return version;
+  }
   version += std::to_string(VERSION_MAJOR);
   version += ".";
   version += std::to_string(VERSION_MINOR);

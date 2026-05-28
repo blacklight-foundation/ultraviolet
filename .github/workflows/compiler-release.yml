@@ -1,0 +1,104 @@
+name: Compiler Release
+
+on:
+  workflow_run:
+    workflows:
+      - HelloUltraviolet Linux Verification
+      - HelloUltraviolet macOS Verification
+      - HelloUltraviolet Windows Verification
+    types:
+      - completed
+  workflow_dispatch:
+    inputs:
+      release_kind:
+        description: Release kind to plan for the target SHA.
+        type: choice
+        default: auto
+        options:
+          - auto
+          - none
+          - canary
+          - patch
+          - minor
+          - breaking
+      target_sha:
+        description: Main-branch commit SHA to release. Defaults to the current ref SHA.
+        required: false
+        type: string
+
+permissions:
+  actions: read
+  contents: write
+  pull-requests: read
+
+concurrency:
+  group: compiler-release-${{ github.event.workflow_run.head_sha || github.event.inputs.target_sha || github.sha }}
+  cancel-in-progress: false
+
+jobs:
+  publish:
+    name: Plan and publish compiler release
+    runs-on: ubuntu-24.04
+    if: >-
+      github.event_name == 'workflow_dispatch' ||
+      (
+        github.event.workflow_run.event == 'push' &&
+        github.event.workflow_run.head_branch == 'main' &&
+        github.event.workflow_run.conclusion == 'success'
+      )
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5
+        with:
+          fetch-depth: 0
+          lfs: false
+
+      - name: Plan compiler release
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+          RELEASE_KIND: ${{ github.event.inputs.release_kind || 'auto' }}
+          TARGET_SHA: ${{ github.event.inputs.target_sha || github.event.workflow_run.head_sha || github.sha }}
+        run: |
+          python3 Tools/PlanCompilerRelease.py \
+            --sha "$TARGET_SHA" \
+            --release-kind "$RELEASE_KIND" \
+            --require-validations \
+            --write-env "$GITHUB_ENV" \
+            --summary compiler-release-plan.md
+          cat compiler-release-plan.md >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Download validated release archives
+        if: env.UV_RELEASE_SHOULD_PUBLISH == 'true'
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+        run: |
+          mkdir -p release-assets
+          gh run download "$UV_VALIDATION_LINUX_RUN_ID" \
+            --name ultraviolet-linux-x86_64 \
+            --dir release-assets
+          gh run download "$UV_VALIDATION_MACOS_RUN_ID" \
+            --name ultraviolet-macos-aarch64 \
+            --dir release-assets
+          gh run download "$UV_VALIDATION_WINDOWS_RUN_ID" \
+            --name ultraviolet-windows-x86_64 \
+            --dir release-assets
+          find release-assets -type f | sort
+
+      - name: Publish GitHub release
+        if: env.UV_RELEASE_SHOULD_PUBLISH == 'true'
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+          TARGET_SHA: ${{ github.event.inputs.target_sha || github.event.workflow_run.head_sha || github.sha }}
+        run: |
+          mapfile -t assets < <(find release-assets -type f | sort)
+          release_flags=()
+          if [ "$UV_RELEASE_PRERELEASE" = "true" ]; then
+            release_flags+=(--prerelease)
+          fi
+          gh release create "$UV_RELEASE_TAG" \
+            "${assets[@]}" \
+            --target "$TARGET_SHA" \
+            --title "$UV_RELEASE_TITLE" \
+            --notes-file compiler-release-plan.md \
+            "${release_flags[@]}"

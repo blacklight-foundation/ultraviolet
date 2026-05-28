@@ -44,15 +44,33 @@ jobs:
       - name: Fetch target extern payloads
         run: python3 Tools/FetchTargetExterns.py --target-profile aarch64-darwin
 
+      - name: Plan compiler release version
+        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+        run: |
+          python3 Tools/PlanCompilerRelease.py \
+            --sha "$GITHUB_SHA" \
+            --release-kind auto \
+            --skip-validation \
+            --write-env "$GITHUB_ENV" \
+            --summary compiler-release-plan.md
+          cat compiler-release-plan.md >> "$GITHUB_STEP_SUMMARY"
+
       - name: Run HelloUltraviolet verification
         run: |
           set -o pipefail
           mkdir -p artifacts
+          release_configure_args=()
+          if [ -n "${UV_RELEASE_VERSION:-}" ]; then
+            release_configure_args+=("--cmake-configure-arg=-DUV_COMPILER_VERSION_OVERRIDE:STRING=${UV_RELEASE_VERSION}")
+          fi
           python3 Tools/RunHelloVerification.py \
             --target-profile aarch64-darwin \
             --cmake "$UV_CMAKE_EXE" \
             --pr "${GITHUB_REF_NAME}" \
             --nonce "github-${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}" \
+            "${release_configure_args[@]}" \
             | tee artifacts/hello-verification-macos.txt
 
       - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02

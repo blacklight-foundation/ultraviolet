@@ -13,7 +13,7 @@ jobs:
     timeout-minutes: 120
 
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5
         with:
           fetch-depth: 0
           lfs: false
@@ -91,7 +91,7 @@ jobs:
             -print > artifacts/object-and-ir-files.txt 2>/dev/null || true
           exit 0
 
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         if: always()
         with:
           name: hello-verification-macos-diagnostics

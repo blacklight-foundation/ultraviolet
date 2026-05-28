@@ -47,6 +47,21 @@ jobs:
         shell: pwsh
         run: py -3 Tools\FetchTargetExterns.py --target-profile x86_64-win64
 
+      - name: Plan compiler release version
+        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+        shell: pwsh
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+        run: |
+          py -3 Tools\PlanCompilerRelease.py `
+            --sha "$env:GITHUB_SHA" `
+            --release-kind auto `
+            --skip-validation `
+            --write-env "$env:GITHUB_ENV" `
+            --summary compiler-release-plan.md
+          Get-Content -LiteralPath compiler-release-plan.md |
+            Add-Content -Path $env:GITHUB_STEP_SUMMARY
+
       - name: Run HelloUltraviolet verification
         shell: pwsh
         run: |
@@ -65,11 +80,16 @@ jobs:
 
           & "$env:UV_CMAKE_EXE" --version
           New-Item -ItemType Directory -Force -Path artifacts | Out-Null
+          $releaseConfigureArgs = @()
+          if ($env:UV_RELEASE_VERSION) {
+            $releaseConfigureArgs += "--cmake-configure-arg=-DUV_COMPILER_VERSION_OVERRIDE:STRING=$env:UV_RELEASE_VERSION"
+          }
           py -3 Tools\RunHelloVerification.py `
             --target-profile x86_64-win64 `
             --cmake "$env:UV_CMAKE_EXE" `
             --pr "$env:GITHUB_REF_NAME" `
             --nonce "github-$env:GITHUB_RUN_ID-$env:GITHUB_RUN_ATTEMPT" `
+            @releaseConfigureArgs `
             2>&1 | Tee-Object -FilePath artifacts\hello-verification-windows.txt
           $verificationExitCode = $LASTEXITCODE
           Get-Content -LiteralPath artifacts\hello-verification-windows.txt |
