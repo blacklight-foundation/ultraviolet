@@ -112,6 +112,12 @@ enum class TypeBodyPerfPhase : std::size_t {
   ResolveModulePathCurrentAssembly,
   ResolveQualifiedNameMapLookup,
   ResolveQualifiedAccessCheck,
+  VisibleModuleNamesCurrentAssembly,
+  VisibleModuleNamesFindCurrentModule,
+  VisibleModuleNamesImportScan,
+  VisibleModuleNamesResolveImport,
+  VisibleModuleNamesProjectFilter,
+  VisibleModuleNamesSigmaFilter,
   Count
 };
 
@@ -298,6 +304,18 @@ inline std::string_view TypeBodyPerfPhaseName(TypeBodyPerfPhase phase) {
       return "ResolveQualifiedNameMapLookup";
     case TypeBodyPerfPhase::ResolveQualifiedAccessCheck:
       return "ResolveQualifiedAccessCheck";
+    case TypeBodyPerfPhase::VisibleModuleNamesCurrentAssembly:
+      return "VisibleModuleNamesCurrentAssembly";
+    case TypeBodyPerfPhase::VisibleModuleNamesFindCurrentModule:
+      return "VisibleModuleNamesFindCurrentModule";
+    case TypeBodyPerfPhase::VisibleModuleNamesImportScan:
+      return "VisibleModuleNamesImportScan";
+    case TypeBodyPerfPhase::VisibleModuleNamesResolveImport:
+      return "VisibleModuleNamesResolveImport";
+    case TypeBodyPerfPhase::VisibleModuleNamesProjectFilter:
+      return "VisibleModuleNamesProjectFilter";
+    case TypeBodyPerfPhase::VisibleModuleNamesSigmaFilter:
+      return "VisibleModuleNamesSigmaFilter";
     case TypeBodyPerfPhase::Count:
       break;
   }

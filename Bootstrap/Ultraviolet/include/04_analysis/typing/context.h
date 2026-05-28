@@ -79,10 +79,12 @@ using Scope = std::unordered_map<IdKey, Entity>;
 using ScopeList = std::vector<Scope>;
 using NameMap = Scope;
 using NameMapTable = std::map<PathKey, NameMap>;
+using VisibleModuleNameTable = std::map<PathKey, source::ModuleNames>;
 
 struct NameResolutionTables {
   const NameMapTable* name_maps = nullptr;
   const source::ModuleNames* module_names = nullptr;
+  const VisibleModuleNameTable* visible_module_names = nullptr;
 };
 
 struct ScopeContext {

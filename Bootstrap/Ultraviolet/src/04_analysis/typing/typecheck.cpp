@@ -42,6 +42,7 @@
 #include "04_analysis/resolve/resolve_items.h"
 #include "04_analysis/resolve/scope_overrides.h"
 #include "04_analysis/resolve/scopes.h"
+#include "04_analysis/resolve/scopes_lookup.h"
 #include "04_analysis/memory/init_planner.h"
 #include "04_analysis/memory/regions.h"
 #include "04_analysis/typing/expr/call.h"
@@ -393,6 +394,21 @@ static inline void SpecDefsDeclTyping() {
   SPEC_DEF("MainGeneric", "5.2.14");
   SPEC_DEF("MainSigOk", "5.2.14");
   SPEC_DEF("DuplicateErasedOverloadSignaturesForbidden", "15.3.4");
+}
+
+VisibleModuleNameTable BuildVisibleModuleNameTable(
+    ScopeContext& ctx,
+    const std::vector<ast::ASTModule>& modules,
+    const source::ModuleNames& module_names) {
+  const ast::ModulePath saved_module = ctx.current_module;
+  VisibleModuleNameTable visible_module_names;
+  for (const auto& module : modules) {
+    ctx.current_module = module.path;
+    visible_module_names.emplace(PathKeyOf(module.path),
+                                 VisibleModuleNamesOf(ctx, module_names));
+  }
+  ctx.current_module = saved_module;
+  return visible_module_names;
 }
 
 // =============================================================================
@@ -1108,7 +1124,11 @@ TypecheckResult TypecheckModules(
       module_names.insert(core::StringOfPath(module.path));
     }
   }
-  NameResolutionTables resolution_tables{name_maps, &module_names};
+  VisibleModuleNameTable visible_module_names =
+      BuildVisibleModuleNameTable(ctx, modules, module_names);
+  NameResolutionTables resolution_tables{name_maps,
+                                         &module_names,
+                                         &visible_module_names};
 
   ExprTypeMap* prev_expr_types = ctx.expr_types;
   DynamicRefineExprMap* prev_dynamic_refine_checks = ctx.dynamic_refine_checks;

@@ -123,6 +123,7 @@ std::string_view FirstAssemblyName(std::string_view module_path) {
 source::ModuleNames VisibleModuleNamesFromSigma(
     const ScopeContext& ctx,
     const std::unordered_set<std::string>& visible_assemblies) {
+  ScopedTypeBodyPerfPhase perf(TypeBodyPerfPhase::VisibleModuleNamesSigmaFilter);
   source::ModuleNames visible;
   visible.reserve(ctx.sigma.mods.size());
   for (const auto& mod : ctx.sigma.mods) {
@@ -147,50 +148,86 @@ source::ModuleNames ComputeVisibleModuleNames(
 
   std::unordered_set<std::string> visible_assemblies;
   visible_assemblies.reserve(4);
-  AddVisibleAssemblyName(visible_assemblies, CurrentModule(ctx));
+  {
+    ScopedTypeBodyPerfPhase perf(
+        TypeBodyPerfPhase::VisibleModuleNamesCurrentAssembly);
+    AddVisibleAssemblyName(visible_assemblies, CurrentModule(ctx));
+  }
 
-  const auto* current_module = FindContextModuleByPath(ctx, CurrentModule(ctx));
+  const auto* current_module = [&]() {
+    ScopedTypeBodyPerfPhase perf(
+        TypeBodyPerfPhase::VisibleModuleNamesFindCurrentModule);
+    return FindContextModuleByPath(ctx, CurrentModule(ctx));
+  }();
   if (!current_module) {
     return all_module_names;
   }
 
-  for (const auto& item : current_module->items) {
-    const auto* import_decl = std::get_if<ast::ImportDecl>(&item);
-    if (!import_decl) {
-      continue;
+  {
+    ScopedTypeBodyPerfPhase perf(TypeBodyPerfPhase::VisibleModuleNamesImportScan);
+    for (const auto& item : current_module->items) {
+      const auto* import_decl = std::get_if<ast::ImportDecl>(&item);
+      if (!import_decl) {
+        continue;
+      }
+      const auto resolved_path = [&]() {
+        ScopedTypeBodyPerfPhase resolve_perf(
+            TypeBodyPerfPhase::VisibleModuleNamesResolveImport);
+        return source::ResolveImportModulePath(CurrentModule(ctx),
+                                               all_module_names,
+                                               import_decl->path);
+      }();
+      if (!resolved_path.has_value()) {
+        continue;
+      }
+      AddVisibleAssemblyName(visible_assemblies, *resolved_path);
     }
-    const auto resolved_path =
-        source::ResolveImportModulePath(CurrentModule(ctx),
-                                        all_module_names,
-                                        import_decl->path);
-    if (!resolved_path.has_value()) {
-      continue;
-    }
-    AddVisibleAssemblyName(visible_assemblies, *resolved_path);
   }
 
   if (!ctx.project) {
     return VisibleModuleNamesFromSigma(ctx, visible_assemblies);
   }
 
-  source::ModuleNames visible;
-  visible.reserve(ctx.project->modules.size());
-  for (const auto& module : ctx.project->modules) {
-    const auto assembly_name = FirstAssemblyName(module.path);
-    if (assembly_name.empty()) {
-      continue;
+  source::ModuleNames visible = [&]() {
+    ScopedTypeBodyPerfPhase perf(
+        TypeBodyPerfPhase::VisibleModuleNamesProjectFilter);
+    source::ModuleNames filtered;
+    filtered.reserve(ctx.project->modules.size());
+    for (const auto& module : ctx.project->modules) {
+      const auto assembly_name = FirstAssemblyName(module.path);
+      if (assembly_name.empty()) {
+        continue;
+      }
+      if (visible_assemblies.find(std::string(assembly_name)) ==
+          visible_assemblies.end()) {
+        continue;
+      }
+      filtered.insert(module.path);
     }
-    if (visible_assemblies.find(std::string(assembly_name)) ==
-        visible_assemblies.end()) {
-      continue;
-    }
-    visible.insert(module.path);
-  }
+    return filtered;
+  }();
   if (!visible.empty()) {
     return visible;
   }
 
   return VisibleModuleNamesFromSigma(ctx, visible_assemblies);
+}
+
+const source::ModuleNames* PrecomputedVisibleModuleNames(
+    const ScopeContext& ctx,
+    const source::ModuleNames& module_names) {
+  if (!ctx.name_resolution_tables ||
+      ctx.name_resolution_tables->module_names != &module_names ||
+      !ctx.name_resolution_tables->visible_module_names) {
+    return nullptr;
+  }
+
+  const auto it = ctx.name_resolution_tables->visible_module_names->find(
+      PathKeyOf(CurrentModule(ctx)));
+  if (it == ctx.name_resolution_tables->visible_module_names->end()) {
+    return nullptr;
+  }
+  return &it->second;
 }
 
 }  // namespace
@@ -347,10 +384,17 @@ ResolveModulePathResult ResolveModulePath(const ScopeContext& ctx,
                                           const AliasMap& alias,
                                           const source::ModuleNames& module_names) {
   SpecDefsLookup();
-  const source::ModuleNames visible_module_names = [&]() {
+  source::ModuleNames computed_visible_module_names;
+  const source::ModuleNames* visible_module_names =
+      [&]() -> const source::ModuleNames* {
     ScopedTypeBodyPerfPhase perf(
         TypeBodyPerfPhase::ResolveModulePathVisibleNames);
-    return VisibleModuleNamesOf(ctx, module_names);
+    if (const auto* precomputed =
+            PrecomputedVisibleModuleNames(ctx, module_names)) {
+      return precomputed;
+    }
+    computed_visible_module_names = VisibleModuleNamesOf(ctx, module_names);
+    return &computed_visible_module_names;
   }();
   const auto expanded = [&]() {
     ScopedTypeBodyPerfPhase perf(
@@ -360,7 +404,7 @@ ResolveModulePathResult ResolveModulePath(const ScopeContext& ctx,
   const bool direct_match = [&]() {
     ScopedTypeBodyPerfPhase perf(
         TypeBodyPerfPhase::ResolveModulePathDirectLookup);
-    return ContainsName(visible_module_names, core::StringOfPath(expanded));
+    return ContainsName(*visible_module_names, core::StringOfPath(expanded));
   }();
   if (direct_match) {
     SPEC_RULE("Resolve-ModulePath-Direct");
@@ -369,7 +413,7 @@ ResolveModulePathResult ResolveModulePath(const ScopeContext& ctx,
   const auto local = [&]() {
     ScopedTypeBodyPerfPhase perf(
         TypeBodyPerfPhase::ResolveModulePathCurrentAssembly);
-    return ResolveInCurrentAssembly(ctx, expanded, visible_module_names);
+    return ResolveInCurrentAssembly(ctx, expanded, *visible_module_names);
   }();
   if (local.has_value()) {
     SPEC_RULE("Resolve-ModulePath-Current");
