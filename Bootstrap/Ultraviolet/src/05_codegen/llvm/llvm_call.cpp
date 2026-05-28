@@ -1209,7 +1209,7 @@ llvm::Value* EmitABICall(LLVMEmitter& emitter,
       return false;
     }
     LowerCtx* ctx = emitter.GetCurrentCtx();
-    const analysis::ScopeContext scope = BuildScope(ctx);
+    const analysis::ScopeContext& scope = BuildScope(ctx);
     if (analysis::TypeRef resolved =
             emit_detail::ResolveAliasTypeInScope(scope, type)) {
       type = analysis::StripPerm(resolved);
