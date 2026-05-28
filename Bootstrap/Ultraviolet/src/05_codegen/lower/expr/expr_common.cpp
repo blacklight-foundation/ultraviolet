@@ -479,6 +479,9 @@ bool BindingInitializerHasResponsibility(const ast::ExprPtr& init,
       std::holds_alternative<ast::CopyExpr>(init->node)) {
     return true;
   }
+  if (std::holds_alternative<ast::LiteralExpr>(init->node)) {
+    return false;
+  }
   if (IsPlaceExpr(*init)) {
     return false;
   }
