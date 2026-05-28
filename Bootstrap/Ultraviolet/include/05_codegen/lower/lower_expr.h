@@ -44,6 +44,7 @@ struct CleanupItem {
 
   Kind kind = Kind::DropBinding;
   std::string name;
+  std::uint64_t binding_id = 0;
   IRPtr defer_ir;
   std::uint64_t scope_runtime_id = 0;
 };

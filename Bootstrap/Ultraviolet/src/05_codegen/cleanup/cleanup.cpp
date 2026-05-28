@@ -341,7 +341,10 @@ static void AppendCleanupItemToPlan(const CleanupItem& item,
                                     CleanupPlan& plan) {
   switch (item.kind) {
     case CleanupItem::Kind::DropBinding: {
-      const BindingState* state = ctx.GetBindingState(item.name);
+      const BindingState* state = item.binding_id != 0
+                                      ? ctx.GetBindingStateById(item.name,
+                                                                item.binding_id)
+                                      : ctx.GetBindingState(item.name);
       if (!state) {
         return;
       }
@@ -349,8 +352,9 @@ static void AppendCleanupItemToPlan(const CleanupItem& item,
         return;
       }
 
-      BindValidity validity = GetBindValidity(item.name, ctx);
-      if (validity == BindValidity::Moved) {
+      SPEC_RULE("BindValid");
+      SPEC_RULE("BindValid-Sigma");
+      if (state->is_moved) {
         return;
       }
 
@@ -359,8 +363,8 @@ static void AppendCleanupItemToPlan(const CleanupItem& item,
       action.name = item.name;
       action.type = state->type;
 
-      if (validity == BindValidity::PartiallyMoved) {
-        action.skip_fields = GetMovedFields(item.name, ctx);
+      if (!state->moved_fields.empty()) {
+        action.skip_fields = state->moved_fields;
       }
 
       plan.push_back(std::move(action));
@@ -442,14 +446,10 @@ static void AppendScopeCleanupItems(const std::vector<CleanupItem>& items,
 
 static CleanupPlan ComputeCleanupPlanForScopes(LowerCtx& ctx, bool stop_at_loop) {
   CleanupPlan plan;
-  LowerCtx tmp = ctx;
 
-  while (!tmp.scope_stack.empty()) {
-    const bool is_loop = tmp.scope_stack.back().is_loop;
-    const auto items = tmp.scope_stack.back().cleanup_items;
-    AppendScopeCleanupItems(items, tmp, plan);
-    tmp.PopScope();
-    if (stop_at_loop && is_loop) {
+  for (auto it = ctx.scope_stack.rbegin(); it != ctx.scope_stack.rend(); ++it) {
+    AppendScopeCleanupItems(it->cleanup_items, ctx, plan);
+    if (stop_at_loop && it->is_loop) {
       break;
     }
   }
@@ -1804,5 +1804,4 @@ void AnchorCleanupRules() {
 }
 
 }  // namespace ultraviolet::codegen
-
 

@@ -223,16 +223,6 @@ void LowerCtx::RegisterVar(const std::string& name,
                            std::optional<std::string> prov_region,
                            bool preserve_addr_provenance,
                            std::optional<std::string> prov_region_tag) {
-  if (!scope_stack.empty()) {
-    scope_stack.back().variables.push_back(name);
-    if (has_responsibility) {
-      CleanupItem item;
-      item.kind = CleanupItem::Kind::DropBinding;
-      item.name = name;
-      scope_stack.back().cleanup_items.push_back(std::move(item));
-    }
-  }
-
   BindingState state;
   state.type = type;
   state.storage_type = type;
@@ -248,6 +238,14 @@ void LowerCtx::RegisterVar(const std::string& name,
   state.preserve_addr_provenance = preserve_addr_provenance;
   if (!scope_stack.empty()) {
     state.scope_runtime_id = scope_stack.back().runtime_scope_id;
+    scope_stack.back().variables.push_back(name);
+    if (has_responsibility) {
+      CleanupItem item;
+      item.kind = CleanupItem::Kind::DropBinding;
+      item.name = name;
+      item.binding_id = state.binding_id;
+      scope_stack.back().cleanup_items.push_back(std::move(item));
+    }
   }
 
   binding_states[name].push_back(std::move(state));

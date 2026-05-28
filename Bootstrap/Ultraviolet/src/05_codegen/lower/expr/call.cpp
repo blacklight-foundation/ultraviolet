@@ -22,6 +22,7 @@
 
 #include <algorithm>
 #include <cassert>
+#include <chrono>
 #include <cstdint>
 #include <iostream>
 #include <optional>
@@ -35,6 +36,7 @@
 #include "00_core/assert_spec.h"
 #include "00_core/diagnostic_messages.h"
 #include "00_core/diagnostic_render.h"
+#include "00_core/host/services.h"
 #include "00_core/process_config.h"
 #include "00_core/symbols.h"
 #include "04_analysis/contracts/verification.h"
@@ -71,6 +73,88 @@ namespace {
 // =============================================================================
 // Helper functions for call lowering
 // =============================================================================
+
+bool LowerCallPerfEnabled() {
+  static const bool enabled = [] {
+    const auto env = core::HostGetEnvUtf8("UV_LOWER_CALL_PERF");
+    return env.has_value() && !env->empty() && *env != "0" &&
+           *env != "false" && *env != "FALSE";
+  }();
+  return enabled;
+}
+
+struct LowerCallStageProfiler {
+  using Clock = std::chrono::steady_clock;
+
+  struct Sample {
+    std::string_view stage;
+    long long elapsed_us = 0;
+    std::size_t value_types = 0;
+    std::size_t derived_values = 0;
+    std::size_t binding_states = 0;
+  };
+
+  LowerCallStageProfiler(const ast::Expr& expr,
+                         const ast::CallExpr& call,
+                         const LowerCtx& ctx)
+      : enabled(core::IsDebugEnabled("codegen") || LowerCallPerfEnabled()) {
+    if (!enabled) {
+      return;
+    }
+    proc = ctx.current_proc_symbol.value_or("<unknown>");
+    line = expr.span.start_line;
+    col = expr.span.start_col;
+    arg_count = call.args.size();
+    generic_arg_count = call.generic_args.size();
+    samples.reserve(16);
+    last = Clock::now();
+  }
+
+  ~LowerCallStageProfiler() {
+    if (!enabled) {
+      return;
+    }
+    for (const auto& sample : samples) {
+      std::cerr << "[lower-call-perf] proc=" << proc
+                << " line=" << line
+                << " col=" << col
+                << " args=" << arg_count
+                << " generic_args=" << generic_arg_count
+                << " stage=" << sample.stage
+                << " elapsed_us=" << sample.elapsed_us
+                << " value_types=" << sample.value_types
+                << " derived_values=" << sample.derived_values
+                << " binding_states=" << sample.binding_states
+                << "\n";
+    }
+  }
+
+  void mark(std::string_view stage, const LowerCtx& ctx) {
+    if (!enabled) {
+      return;
+    }
+    const auto now = Clock::now();
+    const auto elapsed_us =
+        std::chrono::duration_cast<std::chrono::microseconds>(now - last).count();
+    last = now;
+    samples.push_back(Sample{
+        stage,
+        elapsed_us,
+        ctx.values.value_types.size(),
+        ctx.values.derived_values.size(),
+        ctx.binding_states.size(),
+    });
+  }
+
+  bool enabled = false;
+  std::string proc;
+  std::uint32_t line = 0;
+  std::uint32_t col = 0;
+  std::size_t arg_count = 0;
+  std::size_t generic_arg_count = 0;
+  Clock::time_point last;
+  std::vector<Sample> samples;
+};
 
 // Extract parameter modes from TypeFunc parameters
 ParamModeList ParamModesFromFuncParams(const std::vector<analysis::TypeFuncParam>& params) {
@@ -1514,9 +1598,12 @@ LowerResult LowerCallExpr(const ast::Expr& expr_wrapper,
                           LowerCtx& ctx) {
   SPEC_RULE("Lower-Expr-Call-PanicOut");
   SPEC_RULE("Lower-Expr-Call-NoPanicOut");
+  LowerCallStageProfiler profiler(expr_wrapper, expr, ctx);
 
   // Check if this is a record constructor call (zero-arg call to record type)
-  if (auto record_info = ResolveRecordCtor(expr.callee, expr.args, ctx)) {
+  auto record_info = ResolveRecordCtor(expr.callee, expr.args, ctx);
+  profiler.mark("record-ctor-check", ctx);
+  if (record_info) {
     SPEC_RULE("Lower-CallIR-RecordCtor");
     if (!record_info->record && !record_info->synth_builtin_record_defaults) {
       ctx.ReportCodegenFailure();
@@ -1576,6 +1663,7 @@ LowerResult LowerCallExpr(const ast::Expr& expr_wrapper,
     }
 
     auto [ir, field_values] = LowerFieldInits(field_inits, ctx, true);
+    profiler.mark("record-ctor-fields", ctx);
 
     ctx.module_path = std::move(saved_module);
 
@@ -1587,6 +1675,7 @@ LowerResult LowerCallExpr(const ast::Expr& expr_wrapper,
                   analysis::MakeTypePath(record_info->path)},
         "record_ctor",
         ctx);
+    profiler.mark("record-ctor-result", ctx);
     return LowerResult{ir, record_value};
   }
 
@@ -1596,9 +1685,11 @@ LowerResult LowerCallExpr(const ast::Expr& expr_wrapper,
     callee_type = analysis::StripPerm(callee_type);
     if (callee_type &&
         std::holds_alternative<analysis::TypeClosure>(callee_type->node)) {
+      profiler.mark("closure-check", ctx);
       return LowerClosureCall(*expr.callee, expr.args, ctx);
     }
   }
+  profiler.mark("closure-check", ctx);
 
   const bool debug_call = core::IsDebugEnabled("codegen");
   auto log_call_stage = [&](std::string_view stage) {
@@ -1611,20 +1702,24 @@ LowerResult LowerCallExpr(const ast::Expr& expr_wrapper,
   };
 
   auto selected_proc_info = ResolveSelectedProcedureCalleeInfo(expr, ctx);
+  profiler.mark("selected-resolve", ctx);
   const bool selected_proc_is_generic =
       selected_proc_info.has_value() &&
       selected_proc_info->proc &&
       selected_proc_info->proc->generic_params.has_value() &&
       !selected_proc_info->proc->generic_params->params.empty();
+  profiler.mark("selected-generic-check", ctx);
 
   // Generic procedure call: instantiate a monomorphic procedure for this
   // call-site substitution, then lower as a direct symbol call.
   if (!selected_proc_info.has_value() || selected_proc_is_generic) {
     log_call_stage("resolve-generic-start");
     if (auto generic_info = ResolveGenericProcedure(expr, ctx)) {
+      profiler.mark("generic-resolve", ctx);
       log_call_stage("resolve-generic-found");
       log_call_stage("lookup-generic-subst-start");
       if (auto subst = LookupGenericSubstForCall(expr, *generic_info, ctx)) {
+        profiler.mark("generic-subst", ctx);
         log_call_stage("lookup-generic-subst-finish");
         const std::string base_symbol = GenericProcBaseSymbol(*generic_info);
         const std::vector<analysis::TypeRef> inst_args =
@@ -1670,6 +1765,7 @@ LowerResult LowerCallExpr(const ast::Expr& expr_wrapper,
                 GenericInstantiationFrame{base_symbol, inst_args});
             ProcIR inst_proc = LowerProcInstantiated(
                 *generic_info->decl, generic_info->module_path, inst_symbol, *subst, ctx);
+            profiler.mark("generic-instantiate", ctx);
             ctx.generic_instantiation_decl_stack.pop_back();
             ctx.generic_instantiation_stack.pop_back();
             ctx.generic_instantiation_in_progress.erase(inst_symbol);
@@ -1730,6 +1826,7 @@ LowerResult LowerCallExpr(const ast::Expr& expr_wrapper,
                       expr.args,
                       ctx,
                       param_types.empty() ? nullptr : &param_types);
+        profiler.mark("generic-args", ctx);
         log_generic("args-lowered");
 
         IRValue result_value = ctx.FreshTempValue("call");
@@ -1743,6 +1840,7 @@ LowerResult LowerCallExpr(const ast::Expr& expr_wrapper,
         }
         IRPtr local_pre_ir =
             EmitLocalPreDynamicChecks(inst_symbol, expr, call.args, ctx);
+        profiler.mark("generic-checks", ctx);
         auto is_noop = [](const IRPtr& ir) {
           return !ir || std::holds_alternative<IROpaque>(ir->node);
         };
@@ -1759,6 +1857,7 @@ LowerResult LowerCallExpr(const ast::Expr& expr_wrapper,
           }
           parts.push_back(MakeIR(std::move(call)));
           parts.push_back(PanicFollowup(ctx));
+          profiler.mark("generic-result", ctx);
           return LowerResult{SeqIR(std::move(parts)), result_value};
         }
 
@@ -1768,6 +1867,7 @@ LowerResult LowerCallExpr(const ast::Expr& expr_wrapper,
           parts.push_back(local_pre_ir);
         }
         parts.push_back(MakeIR(std::move(call)));
+        profiler.mark("generic-result", ctx);
         return LowerResult{SeqIR(std::move(parts)), result_value};
       }
       log_call_stage("lookup-generic-subst-miss");
@@ -1778,6 +1878,7 @@ LowerResult LowerCallExpr(const ast::Expr& expr_wrapper,
   } else {
     log_call_stage("resolve-generic-skip-selected-nongeneric");
   }
+  profiler.mark("generic-path", ctx);
 
   LowerResult callee_result;
   if (selected_proc_info.has_value()) {
@@ -1798,6 +1899,7 @@ LowerResult LowerCallExpr(const ast::Expr& expr_wrapper,
       RegisterResolvedSourceSignatureIfMissing(*resolved_proc_info, ctx);
     }
   }
+  profiler.mark("callee", ctx);
 
   analysis::TypeRef contextual_result_type;
   if (ctx.expr_type) {
@@ -1805,6 +1907,7 @@ LowerResult LowerCallExpr(const ast::Expr& expr_wrapper,
     contextual_result_type =
         InstantiateActiveGenericType(contextual_result_type, ctx);
   }
+  profiler.mark("contextual-result", ctx);
   analysis::TypeRef result_type;
 
   // Extract parameter modes from the callee type if available
@@ -1843,6 +1946,7 @@ LowerResult LowerCallExpr(const ast::Expr& expr_wrapper,
       }
     }
   }
+  profiler.mark("callee-type", ctx);
 
   // Concrete procedure symbols have a canonical registered signature in the
   // lowering context. Use it as the source of truth for parameter and return
@@ -1872,6 +1976,7 @@ LowerResult LowerCallExpr(const ast::Expr& expr_wrapper,
       result_type = sig->ret;
     }
   }
+  profiler.mark("signature", ctx);
 
   if (callee_result.value.kind == IRValue::Kind::Symbol) {
     if (const auto* sig = ctx.LookupProcSig(callee_lookup_symbol);
@@ -1895,6 +2000,7 @@ LowerResult LowerCallExpr(const ast::Expr& expr_wrapper,
       result_type = sig->ret;
     }
   }
+  profiler.mark("raw-abi-signature", ctx);
   if (!result_type) {
     result_type = contextual_result_type;
   }
@@ -1918,12 +2024,14 @@ LowerResult LowerCallExpr(const ast::Expr& expr_wrapper,
                                   result_type);
     }
   }
+  profiler.mark("signature-populate", ctx);
   // Lower arguments
   auto [args_ir, arg_values] =
       LowerArgs(param_modes,
                 expr.args,
                 ctx,
                 param_types.empty() ? nullptr : &param_types);
+  profiler.mark("args", ctx);
 
   IRValue result_value = ctx.FreshTempValue("call");
 
@@ -1938,6 +2046,7 @@ LowerResult LowerCallExpr(const ast::Expr& expr_wrapper,
   if (result_type) {
     ctx.RegisterValueType(result_value, result_type);
   }
+  profiler.mark("construct", ctx);
 
   // Determine if we need to add panic out parameter
   bool needs_panic_out = true;
@@ -1985,6 +2094,7 @@ LowerResult LowerCallExpr(const ast::Expr& expr_wrapper,
       }
     }
   }
+  profiler.mark("panic-out", ctx);
 
   IRPtr local_pre_ir = EmptyIR();
   IRPtr foreign_pre_ir = EmptyIR();
@@ -1997,6 +2107,7 @@ LowerResult LowerCallExpr(const ast::Expr& expr_wrapper,
     foreign_post_ir =
         EmitForeignPostDynamicChecks(callee_lookup_symbol, result_value, ctx);
   }
+  profiler.mark("checks", ctx);
   auto is_noop = [](const IRPtr& ir) {
     return !ir || std::holds_alternative<IROpaque>(ir->node);
   };
@@ -2020,6 +2131,7 @@ LowerResult LowerCallExpr(const ast::Expr& expr_wrapper,
     if (!is_noop(foreign_post_ir)) {
       parts.push_back(foreign_post_ir);
     }
+    profiler.mark("result", ctx);
     return LowerResult{
         SeqIR(std::move(parts)),
         result_value};
@@ -2038,6 +2150,7 @@ LowerResult LowerCallExpr(const ast::Expr& expr_wrapper,
   if (!is_noop(foreign_post_ir)) {
     parts.push_back(foreign_post_ir);
   }
+  profiler.mark("result", ctx);
   return LowerResult{
       SeqIR(std::move(parts)),
       result_value};
