@@ -26,6 +26,7 @@
 #include <initializer_list>
 #include <chrono>
 #include <iostream>
+#include <optional>
 #include <utility>
 #include <unordered_set>
 #include <variant>
@@ -213,6 +214,39 @@ void MergeMoveStates(LowerCtx& base, std::initializer_list<const LowerCtx*> bran
   }
 }
 
+void MergeMoveStatesWithImplicitBaseElse(LowerCtx& base, const LowerCtx& then_ctx) {
+  for (auto& [name, states] : base.binding_states) {
+    if (states.empty()) {
+      continue;
+    }
+    auto& state = states.back();
+    const bool base_moved = state.is_moved;
+    const std::vector<std::string> base_fields = state.moved_fields;
+
+    bool moved_any = base_moved;
+    std::unordered_set<std::string> fields(base_fields.begin(), base_fields.end());
+
+    auto then_it = then_ctx.binding_states.find(name);
+    if (then_it != then_ctx.binding_states.end() && !then_it->second.empty()) {
+      const BindingState& then_state = then_it->second.back();
+      if (then_state.is_moved) {
+        moved_any = true;
+      } else if (!moved_any) {
+        fields.insert(then_state.moved_fields.begin(),
+                      then_state.moved_fields.end());
+      }
+    }
+
+    if (moved_any) {
+      state.is_moved = true;
+      state.moved_fields.clear();
+    } else {
+      state.is_moved = false;
+      state.moved_fields.assign(fields.begin(), fields.end());
+    }
+  }
+}
+
 // ---------------------------------------------------------------------------
 // Helper: MergeFailures
 // ---------------------------------------------------------------------------
@@ -291,23 +325,26 @@ LowerResult LowerIfExpr(const ast::Expr& expr,
   profiler.mark("then-branch", then_ctx);
 
   // Lower else branch (if present)
-  LowerCtx else_ctx = MakeBranchCtx(ctx);
-  *else_ctx.temp_counter = std::max(*else_ctx.temp_counter, *then_ctx.temp_counter);
-  profiler.mark("else-context", ctx);
+  std::optional<LowerCtx> else_ctx;
   LowerResult else_result;
   if (if_expr.else_expr) {
+    else_ctx = MakeBranchCtx(ctx);
+    *else_ctx->temp_counter = std::max(*else_ctx->temp_counter, *then_ctx.temp_counter);
+    profiler.mark("else-context", ctx);
+
     std::vector<TempValue> else_temps;
-    else_ctx.temp_sink = &else_temps;
-    auto else_prev_suppress = else_ctx.suppress_temp_at_depth;
-    else_ctx.suppress_temp_at_depth = else_ctx.temp_depth + 1;
-    else_result = LowerExpr(*if_expr.else_expr, else_ctx);
-    else_ctx.suppress_temp_at_depth = else_prev_suppress;
-    IRPtr else_cleanup = CleanupTemps(else_temps, else_ctx);
+    else_ctx->temp_sink = &else_temps;
+    auto else_prev_suppress = else_ctx->suppress_temp_at_depth;
+    else_ctx->suppress_temp_at_depth = else_ctx->temp_depth + 1;
+    else_result = LowerExpr(*if_expr.else_expr, *else_ctx);
+    else_ctx->suppress_temp_at_depth = else_prev_suppress;
+    IRPtr else_cleanup = CleanupTemps(else_temps, *else_ctx);
     if (!IsNoopIR(else_cleanup) && IRFlowMayFallThrough(else_result.ir)) {
       else_result.ir = SeqIR({else_result.ir, else_cleanup});
     }
-    profiler.mark("else-branch", else_ctx);
+    profiler.mark("else-branch", *else_ctx);
   } else {
+    profiler.mark("else-context", ctx);
     else_result.ir = EmptyIR();
     else_result.value = ctx.FreshTempValue("unit");
     ctx.RegisterValueType(else_result.value, analysis::MakeTypePrim("()"));
@@ -315,13 +352,21 @@ LowerResult LowerIfExpr(const ast::Expr& expr,
   }
 
   MergeLowerCtxTemps(ctx, then_ctx);
-  MergeLowerCtxTemps(ctx, else_ctx);
+  if (else_ctx.has_value()) {
+    MergeLowerCtxTemps(ctx, *else_ctx);
+  }
   profiler.mark("merge-values", ctx);
   ctx.MergeGeneratedProcsFrom(then_ctx);
-  ctx.MergeGeneratedProcsFrom(else_ctx);
-  MergeMoveStates(ctx, {&then_ctx, &else_ctx});
+  if (else_ctx.has_value()) {
+    ctx.MergeGeneratedProcsFrom(*else_ctx);
+    MergeMoveStates(ctx, {&then_ctx, &*else_ctx});
+  } else {
+    MergeMoveStatesWithImplicitBaseElse(ctx, then_ctx);
+  }
   MergeFailures(ctx, then_ctx);
-  MergeFailures(ctx, else_ctx);
+  if (else_ctx.has_value()) {
+    MergeFailures(ctx, *else_ctx);
+  }
   profiler.mark("merge-state", ctx);
 
   // Create if IR
