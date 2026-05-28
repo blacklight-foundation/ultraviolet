@@ -26,6 +26,7 @@
 
 #include "00_core/spec_trace.h"
 #include "04_analysis/layout/layout.h"
+#include "05_codegen/llvm/emit/internal_helpers.h"
 #include "05_codegen/llvm/llvm_emit.h"
 
 #include "llvm/IR/Attributes.h"
@@ -119,10 +120,7 @@ AttrSet ComputePtrAttrs(const analysis::TypeRef& type, const LowerCtx* ctx) {
 
   // Add size and alignment attributes if context available
   if (ctx && ctx->sigma) {
-    analysis::ScopeContext scope;
-    scope.sigma = *ctx->sigma;
-    scope.sigma_source = ctx->sigma;
-    scope.current_module = ctx->module_path;
+    const analysis::ScopeContext& scope = emit_detail::BuildScope(ctx);
 
     const auto layout =
         ::ultraviolet::analysis::layout::LayoutOf(scope, ptr->element);
