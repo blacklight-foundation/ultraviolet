@@ -82,6 +82,9 @@ IRPtr CleanupTemps(const std::vector<TempValue>& temps, LowerCtx& ctx) {
     action.value = it->value;
     plan.push_back(std::move(action));
   }
+  if (plan.empty()) {
+    return EmitCleanupWithRemainder(plan, {}, ctx);
+  }
   CleanupPlan remainder = ComputeCleanupPlanToFunctionRoot(ctx);
   return EmitCleanupWithRemainder(plan, remainder, ctx);
 }
