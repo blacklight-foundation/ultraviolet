@@ -1773,7 +1773,7 @@ void IRInstructionVisitor::operator()(const IRCall &call) const
     }
     if (callee_type)
     {
-      const analysis::ScopeContext scope = BuildScope(ctx);
+      const analysis::ScopeContext& scope = BuildScope(ctx);
       if (analysis::TypeRef resolved =
               ResolveAliasTypeInScope(scope, callee_type))
       {
@@ -2390,7 +2390,7 @@ void IRInstructionVisitor::operator()(const IRCall &call) const
     }
     if (callable_type)
     {
-      const analysis::ScopeContext scope = BuildScope(ctx);
+      const analysis::ScopeContext& scope = BuildScope(ctx);
       if (analysis::TypeRef resolved =
               ResolveAliasTypeInScope(scope, callable_type))
       {
