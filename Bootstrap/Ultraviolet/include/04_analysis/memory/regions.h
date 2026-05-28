@@ -33,9 +33,9 @@ struct ExprProvMapResult {
   bool ok = false;
   std::optional<std::string_view> diag_id;
   std::optional<core::Span> span;
-  std::unordered_map<const ast::Expr*, ProvenanceKind> expr_prov;
-  std::unordered_map<const ast::Expr*, std::string> expr_region_tags;
-  std::unordered_map<const ast::Expr*, std::string> expr_region_targets;
+  ExprProvenanceMap expr_prov;
+  ExprRegionMap expr_region_tags;
+  ExprRegionMap expr_region_targets;
 };
 
 struct ProvExprTrackResult {

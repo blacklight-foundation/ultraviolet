@@ -1351,6 +1351,10 @@ std::shared_ptr<CodegenCache> BuildCodegenCache(
   const auto* dynamic_refine_checks = &typechecked.dynamic_refine_checks;
   const auto* generic_call_substs = &typechecked.generic_call_substs;
   const auto* selected_call_targets = &typechecked.selected_call_targets;
+  const auto* expr_prov_by_body = &typechecked.expr_prov_by_body;
+  const auto* expr_region_targets_by_body =
+      &typechecked.expr_region_targets_by_body;
+  const auto* expr_region_tags_by_body = &typechecked.expr_region_tags_by_body;
   cache->ctx.expr_types =
       const_cast<analysis::ExprTypeMap*>(expr_types);
   cache->ctx.dynamic_refine_checks =
@@ -1359,6 +1363,9 @@ std::shared_ptr<CodegenCache> BuildCodegenCache(
       const_cast<analysis::GenericCallSubstMap*>(generic_call_substs);
   cache->ctx.selected_call_targets =
       const_cast<analysis::SelectedCallTargetMap*>(selected_call_targets);
+  cache->ctx.precomputed_expr_prov_by_body = expr_prov_by_body;
+  cache->ctx.precomputed_expr_region_by_body = expr_region_targets_by_body;
+  cache->ctx.precomputed_expr_region_tags_by_body = expr_region_tags_by_body;
   cache->ctx.expr_type =
       [expr_types](const ast::Expr& expr) -> analysis::TypeRef {
         if (!expr_types) {

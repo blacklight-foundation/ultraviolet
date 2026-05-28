@@ -1134,6 +1134,11 @@ TypecheckResult TypecheckModules(
   DynamicRefineExprMap* prev_dynamic_refine_checks = ctx.dynamic_refine_checks;
   GenericCallSubstMap* prev_generic_call_substs = ctx.generic_call_substs;
   SelectedCallTargetMap* prev_selected_call_targets = ctx.selected_call_targets;
+  ExprProvenanceBodyMap* prev_expr_prov_by_body = ctx.expr_prov_by_body;
+  ExprRegionBodyMap* prev_expr_region_targets_by_body =
+      ctx.expr_region_targets_by_body;
+  ExprRegionBodyMap* prev_expr_region_tags_by_body =
+      ctx.expr_region_tags_by_body;
   const NameResolutionTables* prev_name_resolution_tables =
       ctx.name_resolution_tables;
   std::shared_ptr<ContractPurityCache> prev_contract_purity_cache =
@@ -1143,6 +1148,9 @@ TypecheckResult TypecheckModules(
   ctx.dynamic_refine_checks = &result.dynamic_refine_checks;
   ctx.generic_call_substs = &result.generic_call_substs;
   ctx.selected_call_targets = &result.selected_call_targets;
+  ctx.expr_prov_by_body = &result.expr_prov_by_body;
+  ctx.expr_region_targets_by_body = &result.expr_region_targets_by_body;
+  ctx.expr_region_tags_by_body = &result.expr_region_tags_by_body;
   ctx.name_resolution_tables = &resolution_tables;
   ctx.contract_purity_cache = contract_purity_cache;
   struct ExprTypesReset {
@@ -1151,6 +1159,9 @@ TypecheckResult TypecheckModules(
     DynamicRefineExprMap* prev_dynamic_refine_checks;
     GenericCallSubstMap* prev_generic_call_substs;
     SelectedCallTargetMap* prev_selected_call_targets;
+    ExprProvenanceBodyMap* prev_expr_prov_by_body;
+    ExprRegionBodyMap* prev_expr_region_targets_by_body;
+    ExprRegionBodyMap* prev_expr_region_tags_by_body;
     const NameResolutionTables* prev_name_resolution_tables;
     std::shared_ptr<ContractPurityCache> prev_contract_purity_cache;
     ~ExprTypesReset() {
@@ -1158,6 +1169,9 @@ TypecheckResult TypecheckModules(
       ctx.dynamic_refine_checks = prev_dynamic_refine_checks;
       ctx.generic_call_substs = prev_generic_call_substs;
       ctx.selected_call_targets = prev_selected_call_targets;
+      ctx.expr_prov_by_body = prev_expr_prov_by_body;
+      ctx.expr_region_targets_by_body = prev_expr_region_targets_by_body;
+      ctx.expr_region_tags_by_body = prev_expr_region_tags_by_body;
       ctx.name_resolution_tables = prev_name_resolution_tables;
       ctx.contract_purity_cache = prev_contract_purity_cache;
     }
@@ -1166,6 +1180,9 @@ TypecheckResult TypecheckModules(
                      prev_dynamic_refine_checks,
                      prev_generic_call_substs,
                      prev_selected_call_targets,
+                     prev_expr_prov_by_body,
+                     prev_expr_region_targets_by_body,
+                     prev_expr_region_tags_by_body,
                      prev_name_resolution_tables,
                      prev_contract_purity_cache};
 

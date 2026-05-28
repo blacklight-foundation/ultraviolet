@@ -21,6 +21,7 @@
 namespace ultraviolet::analysis {
 
 struct ContractPurityCache;
+enum class ProvenanceKind;
 
 using IdKey = std::string;
 using PathKey = std::vector<IdKey>;
@@ -35,6 +36,12 @@ struct SelectedCallTarget {
 };
 using SelectedCallTargetMap =
     std::unordered_map<const ast::CallExpr*, SelectedCallTarget>;
+using ExprProvenanceMap =
+    std::unordered_map<const ast::Expr*, ProvenanceKind>;
+using ExprRegionMap = std::unordered_map<const ast::Expr*, std::string>;
+using ExprProvenanceBodyMap =
+    std::unordered_map<const ast::Block*, ExprProvenanceMap>;
+using ExprRegionBodyMap = std::unordered_map<const ast::Block*, ExprRegionMap>;
 
 enum class EntityKind {
   Value,
@@ -100,6 +107,9 @@ struct ScopeContext {
   DynamicRefineExprMap* dynamic_refine_checks = nullptr;
   GenericCallSubstMap* generic_call_substs = nullptr;
   SelectedCallTargetMap* selected_call_targets = nullptr;
+  ExprProvenanceBodyMap* expr_prov_by_body = nullptr;
+  ExprRegionBodyMap* expr_region_targets_by_body = nullptr;
+  ExprRegionBodyMap* expr_region_tags_by_body = nullptr;
   const NameResolutionTables* name_resolution_tables = nullptr;
   std::shared_ptr<ContractPurityCache> contract_purity_cache = nullptr;
   ast::ModulePath current_module;
