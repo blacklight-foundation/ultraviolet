@@ -61,6 +61,27 @@ static inline void SpecDefsPatNames() {
   SPEC_DEF("PatNames", "5.1.5");
 }
 
+Entity MakeEntityWithVisibility(
+    EntityKind kind,
+    std::optional<ast::ModulePath> origin_opt,
+    std::optional<ast::Identifier> target_opt,
+    EntitySource source,
+    std::optional<ast::Visibility> visibility) {
+  Entity entity{kind, origin_opt, target_opt, source};
+  entity.visibility = visibility;
+  return entity;
+}
+
+Entity MakeDeclEntity(EntityKind kind,
+                      const ast::ModulePath& module_path,
+                      ast::Visibility visibility) {
+  return MakeEntityWithVisibility(kind,
+                                  module_path,
+                                  std::nullopt,
+                                  EntitySource::Decl,
+                                  visibility);
+}
+
 std::optional<core::Span> SpanOfItem(const ast::ASTItem& item) {
   return std::visit(
       [](const auto& it) -> std::optional<core::Span> { return it.span; },
@@ -173,8 +194,7 @@ BindingList ComptimeProcedureBindings(const ast::ASTModule& module) {
   for (const auto& proc : module.comptime_procedures) {
     bindings.push_back(BoundName{
         IdKeyOf(proc.name),
-        Entity{EntityKind::Value, module.path, std::nullopt,
-               EntitySource::Decl},
+        MakeDeclEntity(EntityKind::Value, module.path, proc.vis),
         proc.span,
     });
   }
@@ -200,6 +220,9 @@ bool EntityEquals(const Entity& lhs, const Entity& rhs) {
   }
   if (lhs.target_opt.has_value() &&
       !IdEq(*lhs.target_opt, *rhs.target_opt)) {
+    return false;
+  }
+  if (lhs.visibility != rhs.visibility) {
     return false;
   }
   return true;
@@ -290,31 +313,41 @@ NameMap BuildDeclNameMap(const ast::ModulePath& module_path,
         [&](const auto& node) {
           using T = std::decay_t<decltype(node)>;
           if constexpr (std::is_same_v<T, ast::ProcedureDecl> ||
-                               std::is_same_v<T, ast::ComptimeProcedureDecl> ||
-                               std::is_same_v<T, ast::DeriveTargetDecl>) {
+                        std::is_same_v<T, ast::ComptimeProcedureDecl>) {
             names.emplace(IdKeyOf(node.name),
-                          Entity{EntityKind::Value, module_path, std::nullopt,
-                                 EntitySource::Decl});
+                          MakeDeclEntity(EntityKind::Value,
+                                         module_path,
+                                         node.vis));
+          } else if constexpr (std::is_same_v<T, ast::DeriveTargetDecl>) {
+            names.emplace(IdKeyOf(node.name),
+                          MakeDeclEntity(EntityKind::Value,
+                                         module_path,
+                                         ast::Visibility::Internal));
           } else if constexpr (std::is_same_v<T, ast::RecordDecl>) {
             names.emplace(IdKeyOf(node.name),
-                          Entity{EntityKind::Type, module_path, std::nullopt,
-                                 EntitySource::Decl});
+                          MakeDeclEntity(EntityKind::Type,
+                                         module_path,
+                                         node.vis));
           } else if constexpr (std::is_same_v<T, ast::EnumDecl>) {
             names.emplace(IdKeyOf(node.name),
-                          Entity{EntityKind::Type, module_path, std::nullopt,
-                                 EntitySource::Decl});
+                          MakeDeclEntity(EntityKind::Type,
+                                         module_path,
+                                         node.vis));
           } else if constexpr (std::is_same_v<T, ast::ModalDecl>) {
             names.emplace(IdKeyOf(node.name),
-                          Entity{EntityKind::Type, module_path, std::nullopt,
-                                 EntitySource::Decl});
+                          MakeDeclEntity(EntityKind::Type,
+                                         module_path,
+                                         node.vis));
           } else if constexpr (std::is_same_v<T, ast::ClassDecl>) {
             names.emplace(IdKeyOf(node.name),
-                          Entity{EntityKind::Class, module_path, std::nullopt,
-                                 EntitySource::Decl});
+                          MakeDeclEntity(EntityKind::Class,
+                                         module_path,
+                                         node.vis));
           } else if constexpr (std::is_same_v<T, ast::TypeAliasDecl>) {
             names.emplace(IdKeyOf(node.name),
-                          Entity{EntityKind::Type, module_path, std::nullopt,
-                                 EntitySource::Decl});
+                          MakeDeclEntity(EntityKind::Type,
+                                         module_path,
+                                         node.vis));
           } else if constexpr (std::is_same_v<T, ast::ExternBlock>) {
             for (const auto& ext_item : node.items) {
               std::visit(
@@ -322,8 +355,9 @@ NameMap BuildDeclNameMap(const ast::ModulePath& module_path,
                     using ET = std::decay_t<decltype(ext_decl)>;
                     if constexpr (std::is_same_v<ET, ast::ExternProcDecl>) {
                       names.emplace(IdKeyOf(ext_decl.name),
-                                    Entity{EntityKind::Value, module_path,
-                                           std::nullopt, EntitySource::Decl});
+                                    MakeDeclEntity(EntityKind::Value,
+                                                   module_path,
+                                                   ext_decl.vis));
                     }
                   },
                   ext_item);
@@ -332,8 +366,9 @@ NameMap BuildDeclNameMap(const ast::ModulePath& module_path,
             if (node.binding.pat) {
               for (const auto& name : PatNames(*node.binding.pat)) {
                 names.emplace(IdKeyOf(name),
-                              Entity{EntityKind::Value, module_path,
-                                     std::nullopt, EntitySource::Decl});
+                              MakeDeclEntity(EntityKind::Value,
+                                             module_path,
+                                             node.vis));
               }
             }
           }
@@ -654,8 +689,9 @@ BindingsResult ItemBindings(const ScopeContext& ctx,
                   std::nullopt,
                   std::nullopt,
                   {BoundName{IdKeyOf(node.name),
-                             Entity{EntityKind::Value, module_path, std::nullopt,
-                                    EntitySource::Decl},
+                             MakeDeclEntity(EntityKind::Value,
+                                            module_path,
+                                            node.vis),
                              node.span}}};
         } else if constexpr (std::is_same_v<T, ast::DeriveTargetDecl>) {
           SPEC_RULE("Bind-Procedure");
@@ -663,8 +699,9 @@ BindingsResult ItemBindings(const ScopeContext& ctx,
                   std::nullopt,
                   std::nullopt,
                   {BoundName{IdKeyOf(node.name),
-                             Entity{EntityKind::Value, module_path, std::nullopt,
-                                    EntitySource::Decl},
+                             MakeDeclEntity(EntityKind::Value,
+                                            module_path,
+                                            ast::Visibility::Internal),
                              node.span}}};
         } else if constexpr (std::is_same_v<T, ast::ExternBlock>) {
           SPEC_RULE("Bind-Procedure");
@@ -676,8 +713,9 @@ BindingsResult ItemBindings(const ScopeContext& ctx,
                   if constexpr (std::is_same_v<ET, ast::ExternProcDecl>) {
                     bindings.push_back(
                         BoundName{IdKeyOf(ext_decl.name),
-                                  Entity{EntityKind::Value, module_path,
-                                         std::nullopt, EntitySource::Decl},
+                                  MakeDeclEntity(EntityKind::Value,
+                                                 module_path,
+                                                 ext_decl.vis),
                                   ext_decl.span});
                   }
                 },
@@ -690,8 +728,9 @@ BindingsResult ItemBindings(const ScopeContext& ctx,
                   std::nullopt,
                   std::nullopt,
                   {BoundName{IdKeyOf(node.name),
-                             Entity{EntityKind::Type, module_path, std::nullopt,
-                                    EntitySource::Decl},
+                             MakeDeclEntity(EntityKind::Type,
+                                            module_path,
+                                            node.vis),
                              node.span}}};
         } else if constexpr (std::is_same_v<T, ast::EnumDecl>) {
           SPEC_RULE("Bind-Enum");
@@ -699,16 +738,18 @@ BindingsResult ItemBindings(const ScopeContext& ctx,
                   std::nullopt,
                   std::nullopt,
                   {BoundName{IdKeyOf(node.name),
-                             Entity{EntityKind::Type, module_path, std::nullopt,
-                                    EntitySource::Decl},
+                             MakeDeclEntity(EntityKind::Type,
+                                            module_path,
+                                            node.vis),
                              node.span}}};
         } else if constexpr (std::is_same_v<T, ast::ModalDecl>) {
           return {true,
                   std::nullopt,
                   std::nullopt,
                   {BoundName{IdKeyOf(node.name),
-                             Entity{EntityKind::Type, module_path, std::nullopt,
-                                    EntitySource::Decl},
+                             MakeDeclEntity(EntityKind::Type,
+                                            module_path,
+                                            node.vis),
                              node.span}}};
         } else if constexpr (std::is_same_v<T, ast::ClassDecl>) {
           SPEC_RULE("Bind-Class");
@@ -716,8 +757,9 @@ BindingsResult ItemBindings(const ScopeContext& ctx,
                   std::nullopt,
                   std::nullopt,
                   {BoundName{IdKeyOf(node.name),
-                             Entity{EntityKind::Class, module_path, std::nullopt,
-                                    EntitySource::Decl},
+                             MakeDeclEntity(EntityKind::Class,
+                                            module_path,
+                                            node.vis),
                              node.span}}};
         } else if constexpr (std::is_same_v<T, ast::TypeAliasDecl>) {
           SPEC_RULE("Bind-TypeAlias");
@@ -725,8 +767,9 @@ BindingsResult ItemBindings(const ScopeContext& ctx,
                   std::nullopt,
                   std::nullopt,
                   {BoundName{IdKeyOf(node.name),
-                             Entity{EntityKind::Type, module_path, std::nullopt,
-                                    EntitySource::Decl},
+                             MakeDeclEntity(EntityKind::Type,
+                                            module_path,
+                                            node.vis),
                              node.span}}};
         } else if constexpr (std::is_same_v<T, ast::StaticDecl>) {
           SPEC_RULE("Bind-Static");
@@ -735,8 +778,9 @@ BindingsResult ItemBindings(const ScopeContext& ctx,
             for (const auto& name : PatNames(*node.binding.pat)) {
               bindings.push_back(
                   BoundName{IdKeyOf(name),
-                            Entity{EntityKind::Value, module_path, std::nullopt,
-                                   EntitySource::Decl},
+                            MakeDeclEntity(EntityKind::Value,
+                                           module_path,
+                                           node.vis),
                             node.span});
             }
           }

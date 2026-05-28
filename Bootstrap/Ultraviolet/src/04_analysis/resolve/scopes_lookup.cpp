@@ -21,6 +21,7 @@
 #include "04_analysis/caps/cap_concurrency.h"
 #include "04_analysis/modal/builtin_modal_intrinsics.h"
 #include "04_analysis/resolve/resolve_items.h"
+#include "04_analysis/typing/type_perf.h"
 
 namespace ultraviolet::analysis {
 
@@ -94,6 +95,7 @@ ast::ModulePath AliasExpand(const ast::ModulePath& path,
 
 AliasMap AliasMapForCurrentModule(const ScopeContext& ctx,
                                   const NameMapTable& name_maps) {
+  ScopedTypeBodyPerfPhase perf(TypeBodyPerfPhase::ResolveQualifiedAliasMap);
   const auto current_key = PathKeyOf(CurrentModule(ctx));
   const auto it = name_maps.find(current_key);
   if (it == name_maps.end()) {
@@ -345,16 +347,31 @@ ResolveModulePathResult ResolveModulePath(const ScopeContext& ctx,
                                           const AliasMap& alias,
                                           const source::ModuleNames& module_names) {
   SpecDefsLookup();
-  const source::ModuleNames visible_module_names =
-      VisibleModuleNamesOf(ctx, module_names);
-  const auto expanded = AliasExpand(path, alias);
-  if (ContainsName(visible_module_names, core::StringOfPath(expanded))) {
+  const source::ModuleNames visible_module_names = [&]() {
+    ScopedTypeBodyPerfPhase perf(
+        TypeBodyPerfPhase::ResolveModulePathVisibleNames);
+    return VisibleModuleNamesOf(ctx, module_names);
+  }();
+  const auto expanded = [&]() {
+    ScopedTypeBodyPerfPhase perf(
+        TypeBodyPerfPhase::ResolveModulePathAliasExpand);
+    return AliasExpand(path, alias);
+  }();
+  const bool direct_match = [&]() {
+    ScopedTypeBodyPerfPhase perf(
+        TypeBodyPerfPhase::ResolveModulePathDirectLookup);
+    return ContainsName(visible_module_names, core::StringOfPath(expanded));
+  }();
+  if (direct_match) {
     SPEC_RULE("Resolve-ModulePath-Direct");
     return {true, std::nullopt, expanded};
   }
-  if (const auto local =
-          ResolveInCurrentAssembly(ctx, expanded, visible_module_names);
-      local.has_value()) {
+  const auto local = [&]() {
+    ScopedTypeBodyPerfPhase perf(
+        TypeBodyPerfPhase::ResolveModulePathCurrentAssembly);
+    return ResolveInCurrentAssembly(ctx, expanded, visible_module_names);
+  }();
+  if (local.has_value()) {
     SPEC_RULE("Resolve-ModulePath-Current");
     return {true, std::nullopt, *local};
   }
@@ -398,22 +415,31 @@ ResolveQualifiedResult ResolveQualified(const ScopeContext& ctx,
   if (map_it == name_maps.end()) {
     return {false, std::nullopt, std::nullopt};
   }
-  const auto& names = map_it->second;
-  const auto ent_it = names.find(IdKeyOf(name));
-  if (ent_it == names.end()) {
-    return {false, std::nullopt, std::nullopt};
-  }
-  if (ent_it->second.kind != kind) {
+  const Entity* entity = [&]() -> const Entity* {
+    ScopedTypeBodyPerfPhase perf(
+        TypeBodyPerfPhase::ResolveQualifiedNameMapLookup);
+    const auto& names = map_it->second;
+    const auto ent_it = names.find(IdKeyOf(name));
+    if (ent_it == names.end() || ent_it->second.kind != kind) {
+      return nullptr;
+    }
+    return &ent_it->second;
+  }();
+  if (!entity) {
     return {false, std::nullopt, std::nullopt};
   }
   if (can_access) {
-    const auto access = can_access(ctx, module_path, name);
+    const auto access = [&]() {
+      ScopedTypeBodyPerfPhase perf(
+          TypeBodyPerfPhase::ResolveQualifiedAccessCheck);
+      return can_access(ctx, module_path, name);
+    }();
     if (!access.ok) {
       return {false, access.diag_id, std::nullopt};
     }
   }
   SPEC_RULE("Resolve-Qualified");
-  return {true, std::nullopt, ent_it->second};
+  return {true, std::nullopt, *entity};
 }
 
 }  // namespace ultraviolet::analysis

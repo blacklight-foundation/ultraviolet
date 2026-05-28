@@ -105,6 +105,13 @@ enum class TypeBodyPerfPhase : std::size_t {
   FieldTypeLookupField,
   FieldTypeLower,
   FieldTypeSubstitute,
+  ResolveQualifiedAliasMap,
+  ResolveModulePathVisibleNames,
+  ResolveModulePathAliasExpand,
+  ResolveModulePathDirectLookup,
+  ResolveModulePathCurrentAssembly,
+  ResolveQualifiedNameMapLookup,
+  ResolveQualifiedAccessCheck,
   Count
 };
 
@@ -277,6 +284,20 @@ inline std::string_view TypeBodyPerfPhaseName(TypeBodyPerfPhase phase) {
       return "FieldTypeLower";
     case TypeBodyPerfPhase::FieldTypeSubstitute:
       return "FieldTypeSubstitute";
+    case TypeBodyPerfPhase::ResolveQualifiedAliasMap:
+      return "ResolveQualifiedAliasMap";
+    case TypeBodyPerfPhase::ResolveModulePathVisibleNames:
+      return "ResolveModulePathVisibleNames";
+    case TypeBodyPerfPhase::ResolveModulePathAliasExpand:
+      return "ResolveModulePathAliasExpand";
+    case TypeBodyPerfPhase::ResolveModulePathDirectLookup:
+      return "ResolveModulePathDirectLookup";
+    case TypeBodyPerfPhase::ResolveModulePathCurrentAssembly:
+      return "ResolveModulePathCurrentAssembly";
+    case TypeBodyPerfPhase::ResolveQualifiedNameMapLookup:
+      return "ResolveQualifiedNameMapLookup";
+    case TypeBodyPerfPhase::ResolveQualifiedAccessCheck:
+      return "ResolveQualifiedAccessCheck";
     case TypeBodyPerfPhase::Count:
       break;
   }

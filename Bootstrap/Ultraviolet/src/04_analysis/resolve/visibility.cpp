@@ -256,6 +256,32 @@ std::optional<ast::ModulePath> ResolveVisibleModulePath(
   return std::nullopt;
 }
 
+std::optional<AccessResult> CanAccessFromNameMap(
+    const ScopeContext& ctx,
+    const ast::ModulePath& module_path,
+    std::string_view name) {
+  if (!ctx.name_resolution_tables ||
+      !ctx.name_resolution_tables->name_maps) {
+    return std::nullopt;
+  }
+
+  const auto& name_maps = *ctx.name_resolution_tables->name_maps;
+  const auto map_it = name_maps.find(PathKeyOf(module_path));
+  if (map_it == name_maps.end()) {
+    return std::nullopt;
+  }
+
+  const auto ent_it = map_it->second.find(IdKeyOf(name));
+  if (ent_it == map_it->second.end() ||
+      !ent_it->second.visibility.has_value()) {
+    return std::nullopt;
+  }
+
+  return CanAccessVis(CurrentModule(ctx),
+                      module_path,
+                      *ent_it->second.visibility);
+}
+
 const ast::ASTItem* FindDeclByName(const ScopeContext& ctx,
                                    const ast::ModulePath& module_path,
                                    std::string_view name) {
@@ -656,12 +682,25 @@ AccessResult CanAccess(const ScopeContext& ctx,
                        const ast::ModulePath& module_path,
                        std::string_view name) {
   SpecDefsVisibility();
+  if (!module_path.empty()) {
+    if (const auto access = CanAccessFromNameMap(ctx, module_path, name);
+        access.has_value()) {
+      return *access;
+    }
+  }
+
   const auto resolved_module = ResolveVisibleModulePath(ctx, module_path);
   if (!resolved_module.has_value()) {
     // Access checks are only meaningful once the module path is determined.
     // Unresolved paths are handled by qualified-name resolution diagnostics.
     return {true, std::nullopt};
   }
+
+  if (const auto access = CanAccessFromNameMap(ctx, *resolved_module, name);
+      access.has_value()) {
+    return *access;
+  }
+
   const auto vis = FindDeclVisibilityByName(ctx, *resolved_module, name);
   if (!vis) {
     return {true, std::nullopt};

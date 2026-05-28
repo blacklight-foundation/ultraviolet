@@ -59,6 +59,7 @@ struct Entity {
   std::string language_symbol_id;
   std::vector<ast::TypeBound> type_param_class_bounds = {};
   std::vector<std::string> type_param_predicate_bounds = {};
+  std::optional<ast::Visibility> visibility = std::nullopt;
 };
 
 using TypeDecl = std::variant<ast::RecordDecl,

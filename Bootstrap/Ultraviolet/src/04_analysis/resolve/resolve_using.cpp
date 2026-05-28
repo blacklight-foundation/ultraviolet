@@ -38,6 +38,15 @@ static inline void SpecDefsResolveUsing() {
   SPEC_DEF("UsingSpecNames", "5.1.5");
 }
 
+Entity MakeUsingEntity(EntityKind kind,
+                       const ast::ModulePath& module_path,
+                       ast::Identifier target,
+                       ast::Visibility visibility) {
+  Entity entity{kind, module_path, target, EntitySource::Using};
+  entity.visibility = visibility;
+  return entity;
+}
+
 std::optional<ast::ModulePath> ResolveVisibleModulePath(
     const ScopeContext& ctx,
     const source::ModuleNames& module_names,
@@ -450,8 +459,10 @@ UsingNamesResult UsingNames(const ScopeContext& ctx,
           BindingList bindings;
           bindings.push_back(BoundName{
               IdKeyOf(clause.alias_opt.value_or(*resolved.item)),
-              Entity{kind, resolved.module_path, *resolved.item,
-                     EntitySource::Using},
+              MakeUsingEntity(kind,
+                              resolved.module_path,
+                              *resolved.item,
+                              decl.vis),
               decl.span,
           });
           return {true, std::nullopt, std::nullopt, bindings};
@@ -495,7 +506,7 @@ UsingNamesResult UsingNames(const ScopeContext& ctx,
           for (const auto& [name, kind] : items) {
             bindings.push_back(BoundName{
                 IdKeyOf(name),
-                Entity{kind, *module_path, name, EntitySource::Using},
+                MakeUsingEntity(kind, *module_path, name, decl.vis),
                 decl.span,
             });
           }
@@ -545,7 +556,7 @@ UsingNamesResult UsingNames(const ScopeContext& ctx,
             const auto bind_name = spec.alias_opt.value_or(spec.name);
             bindings.push_back(BoundName{
                 IdKeyOf(bind_name),
-                Entity{kind, *module_path, spec.name, EntitySource::Using},
+                MakeUsingEntity(kind, *module_path, spec.name, decl.vis),
                 decl.span,
             });
           }
