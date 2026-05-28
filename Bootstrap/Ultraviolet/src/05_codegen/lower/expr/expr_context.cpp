@@ -450,38 +450,53 @@ std::optional<LocalAddrAlias> LowerCtx::LookupLocalAddrAlias(
 
 std::optional<analysis::ProvenanceKind> LowerCtx::LookupExprProv(
     const ast::Expr& expr) const {
-  if (!expr_prov) {
-    return std::nullopt;
+  if (expr_prov) {
+    const auto it = expr_prov->find(&expr);
+    if (it != expr_prov->end()) {
+      return it->second;
+    }
   }
-  const auto it = expr_prov->find(&expr);
-  if (it == expr_prov->end()) {
-    return std::nullopt;
+  if (precomputed_expr_prov) {
+    const auto it = precomputed_expr_prov->find(&expr);
+    if (it != precomputed_expr_prov->end()) {
+      return it->second;
+    }
   }
-  return it->second;
+  return std::nullopt;
 }
 
 std::optional<std::string> LowerCtx::LookupExprRegion(
     const ast::Expr& expr) const {
-  if (!expr_region) {
-    return std::nullopt;
+  if (expr_region) {
+    const auto it = expr_region->find(&expr);
+    if (it != expr_region->end()) {
+      return it->second;
+    }
   }
-  const auto it = expr_region->find(&expr);
-  if (it == expr_region->end()) {
-    return std::nullopt;
+  if (precomputed_expr_region) {
+    const auto it = precomputed_expr_region->find(&expr);
+    if (it != precomputed_expr_region->end()) {
+      return it->second;
+    }
   }
-  return it->second;
+  return std::nullopt;
 }
 
 std::optional<std::string> LowerCtx::LookupExprRegionTag(
     const ast::Expr& expr) const {
-  if (!expr_region_tags) {
-    return std::nullopt;
+  if (expr_region_tags) {
+    const auto it = expr_region_tags->find(&expr);
+    if (it != expr_region_tags->end()) {
+      return it->second;
+    }
   }
-  const auto it = expr_region_tags->find(&expr);
-  if (it == expr_region_tags->end()) {
-    return std::nullopt;
+  if (precomputed_expr_region_tags) {
+    const auto it = precomputed_expr_region_tags->find(&expr);
+    if (it != precomputed_expr_region_tags->end()) {
+      return it->second;
+    }
   }
-  return it->second;
+  return std::nullopt;
 }
 
 const std::vector<analysis::TypeRef>* LowerCtx::LookupDynamicRefinementTypes(

@@ -307,6 +307,14 @@ struct LowerCtx {
       expr_region;
   std::shared_ptr<const std::unordered_map<const ast::Expr*, std::string>>
       expr_region_tags;
+  const analysis::ExprProvenanceMap* precomputed_expr_prov = nullptr;
+  const analysis::ExprRegionMap* precomputed_expr_region = nullptr;
+  const analysis::ExprRegionMap* precomputed_expr_region_tags = nullptr;
+  const analysis::ExprProvenanceBodyMap* precomputed_expr_prov_by_body =
+      nullptr;
+  const analysis::ExprRegionBodyMap* precomputed_expr_region_by_body = nullptr;
+  const analysis::ExprRegionBodyMap* precomputed_expr_region_tags_by_body =
+      nullptr;
 
   // #dynamic verification scope for runtime checks (arrays, contracts, etc.)
   bool dynamic_checks = false;

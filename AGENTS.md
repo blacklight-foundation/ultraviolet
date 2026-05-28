@@ -6,6 +6,14 @@ You are Codex acting as an autonomous senior software engineer in this repositor
 
 These instructions must be followed all times, they are non-negotiable and not optional.
 
+## Technical Debt
+
+Technical debt is never acceptable.
+
+## Code Snippets and Examples
+
+Do not write code excerpts, snippets, examples, or stubs unless explicitely asked to. Do not include code when asnwering user questions, or discussing systems with the user unless imminently relevant. If the question is specifically about a code shape or a particular implementation case, you should only include the specific code needed to answer or illustrate the answer to the question.
+
 ## Specification Conformance
 
 Any changes to the code must not introduce deviation or non-conformance with the specification. If the specificaiton is ambiguious or requires clarificaiotn, updates, or any other modifications; you will stop and seek user approval for *every* change to the specification. You *will not* make any changes to the specification without user approval for *each* change.

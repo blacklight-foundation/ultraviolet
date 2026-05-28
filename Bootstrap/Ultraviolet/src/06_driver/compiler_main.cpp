@@ -3510,6 +3510,11 @@ int ultraviolet::driver::RunCompiler(int argc, char** argv) {
                 &typechecked.generic_call_substs;
             const auto* selected_call_targets =
                 &typechecked.selected_call_targets;
+            const auto* expr_prov_by_body = &typechecked.expr_prov_by_body;
+            const auto* expr_region_targets_by_body =
+                &typechecked.expr_region_targets_by_body;
+            const auto* expr_region_tags_by_body =
+                &typechecked.expr_region_tags_by_body;
             lower_ctx.expr_types =
                 const_cast<analysis::ExprTypeMap*>(expr_types);
             lower_ctx.dynamic_refine_checks =
@@ -3521,6 +3526,11 @@ int ultraviolet::driver::RunCompiler(int argc, char** argv) {
             lower_ctx.selected_call_targets =
                 const_cast<analysis::SelectedCallTargetMap*>(
                     selected_call_targets);
+            lower_ctx.precomputed_expr_prov_by_body = expr_prov_by_body;
+            lower_ctx.precomputed_expr_region_by_body =
+                expr_region_targets_by_body;
+            lower_ctx.precomputed_expr_region_tags_by_body =
+                expr_region_tags_by_body;
             lower_ctx.expr_type =
                 [expr_types](const ast::Expr& expr) -> analysis::TypeRef {
               if (!expr_types) {

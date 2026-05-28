@@ -3332,6 +3332,12 @@ void LogProvenancePerfSummary() {
   std::fflush(stderr);
 }
 
+static void PopulatePublicExprProvMaps(
+    const ExprProvTagMap& expr_map,
+    ExprProvenanceMap* expr_prov,
+    ExprRegionMap* expr_region_tags,
+    ExprRegionMap* expr_region_targets);
+
 ProvCheckResult ProvBindCheck(const ScopeContext& ctx,
                               const ast::ModulePath& module_path,
                               const std::vector<ast::Param>& params,
@@ -3378,9 +3384,15 @@ ProvCheckResult ProvBindCheck(const ScopeContext& ctx,
   gamma.scopes.emplace_back();
   ParamTypeMap(prov_ctx, params, self_param, gamma);
 
+  ExprProvTagMap expr_map;
+  ExprProvTagMap* expr_map_ptr =
+      (ctx.expr_prov_by_body || ctx.expr_region_tags_by_body ||
+       ctx.expr_region_targets_by_body)
+          ? &expr_map
+          : nullptr;
   const auto block = [&]() {
     ScopedProvTimer timer(perf_on ? &perf.block_prov_us : nullptr);
-    return BlockProv(prov_ctx, *body, prov_env, gamma, nullptr);
+    return BlockProv(prov_ctx, *body, prov_env, gamma, expr_map_ptr);
   }();
   if (!block.ok) {
     result.ok = false;
@@ -3390,6 +3402,31 @@ ProvCheckResult ProvBindCheck(const ScopeContext& ctx,
   }
 
   result.ok = true;
+  if (expr_map_ptr) {
+    ExprProvenanceMap expr_prov;
+    ExprRegionMap expr_region_tags;
+    ExprRegionMap expr_region_targets;
+    PopulatePublicExprProvMaps(expr_map,
+                               ctx.expr_prov_by_body ? &expr_prov : nullptr,
+                               ctx.expr_region_tags_by_body
+                                   ? &expr_region_tags
+                                   : nullptr,
+                               ctx.expr_region_targets_by_body
+                                   ? &expr_region_targets
+                                   : nullptr);
+    const ast::Block* body_ptr = body.get();
+    if (ctx.expr_prov_by_body) {
+      (*ctx.expr_prov_by_body)[body_ptr] = std::move(expr_prov);
+    }
+    if (ctx.expr_region_tags_by_body) {
+      (*ctx.expr_region_tags_by_body)[body_ptr] =
+          std::move(expr_region_tags);
+    }
+    if (ctx.expr_region_targets_by_body) {
+      (*ctx.expr_region_targets_by_body)[body_ptr] =
+          std::move(expr_region_targets);
+    }
+  }
   return result;
 }
 
@@ -3409,6 +3446,35 @@ static ProvenanceKind ToPublicKind(const ProvTag& tag) {
       return ProvenanceKind::Param;
   }
   return ProvenanceKind::Bottom;
+}
+
+static void PopulatePublicExprProvMaps(
+    const ExprProvTagMap& expr_map,
+    ExprProvenanceMap* expr_prov,
+    ExprRegionMap* expr_region_tags,
+    ExprRegionMap* expr_region_targets) {
+  if (expr_prov) {
+    expr_prov->reserve(expr_prov->size() + expr_map.size());
+  }
+  if (expr_region_tags) {
+    expr_region_tags->reserve(expr_region_tags->size() + expr_map.size());
+  }
+  if (expr_region_targets) {
+    expr_region_targets->reserve(expr_region_targets->size() + expr_map.size());
+  }
+
+  for (const auto& [expr_ptr, info] : expr_map) {
+    if (expr_prov) {
+      (*expr_prov)[expr_ptr] = ToPublicKind(info.tag);
+    }
+    if (info.tag.kind == ProvKind::Region && expr_region_tags) {
+      (*expr_region_tags)[expr_ptr] = info.tag.region;
+    }
+    if (info.tag.kind == ProvKind::Region && info.target.has_value() &&
+        expr_region_targets) {
+      (*expr_region_targets)[expr_ptr] = *info.target;
+    }
+  }
 }
 
 ExprProvMapResult ComputeExprProvenanceMap(
@@ -3461,16 +3527,10 @@ ExprProvMapResult ComputeExprProvenanceMap(
   }
 
   result.ok = true;
-  result.expr_prov.reserve(expr_map.size());
-  for (const auto& [expr_ptr, info] : expr_map) {
-    result.expr_prov.emplace(expr_ptr, ToPublicKind(info.tag));
-    if (info.tag.kind == ProvKind::Region) {
-      result.expr_region_tags.emplace(expr_ptr, info.tag.region);
-    }
-    if (info.tag.kind == ProvKind::Region && info.target.has_value()) {
-      result.expr_region_targets.emplace(expr_ptr, *info.target);
-    }
-  }
+  PopulatePublicExprProvMaps(expr_map,
+                             &result.expr_prov,
+                             &result.expr_region_tags,
+                             &result.expr_region_targets);
   return result;
 }
 

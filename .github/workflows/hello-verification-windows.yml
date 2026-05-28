@@ -1,6 +1,12 @@
 name: HelloUltraviolet Windows Verification
 
 on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
   workflow_dispatch:
 
 permissions:
@@ -14,7 +20,7 @@ jobs:
 
     steps:
       - name: Check out repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5
         with:
           fetch-depth: 0
           lfs: false
@@ -75,14 +81,14 @@ jobs:
 
       - name: Upload verification transcript
         if: always()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         with:
           name: hello-verification-windows
           path: artifacts/hello-verification-windows.txt
           if-no-files-found: ignore
 
       - name: Upload Windows release archive
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         with:
           name: ultraviolet-windows-x86_64
           path: |

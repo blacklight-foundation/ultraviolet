@@ -179,6 +179,79 @@ analysis::ScopeContext ScopeForModule(const ModulePath& module_path,
   return scope;
 }
 
+struct PrecomputedExprProvenanceView {
+  const analysis::ExprProvenanceMap* expr_prov = nullptr;
+  const analysis::ExprRegionMap* expr_region = nullptr;
+  const analysis::ExprRegionMap* expr_region_tags = nullptr;
+
+  bool available() const {
+    return expr_prov != nullptr && expr_region != nullptr &&
+           expr_region_tags != nullptr;
+  }
+};
+
+PrecomputedExprProvenanceView PrecomputedExprProvenanceFor(
+    const ProcedureDecl& decl,
+    const LowerCtx& ctx) {
+  if (ctx.active_generic_type_subst.has_value() || !decl.body) {
+    return {};
+  }
+  if (!ctx.precomputed_expr_prov_by_body ||
+      !ctx.precomputed_expr_region_by_body ||
+      !ctx.precomputed_expr_region_tags_by_body) {
+    return {};
+  }
+
+  const ast::Block* body = decl.body.get();
+  const auto prov_it = ctx.precomputed_expr_prov_by_body->find(body);
+  const auto region_it = ctx.precomputed_expr_region_by_body->find(body);
+  const auto region_tags_it =
+      ctx.precomputed_expr_region_tags_by_body->find(body);
+  if (prov_it == ctx.precomputed_expr_prov_by_body->end() ||
+      region_it == ctx.precomputed_expr_region_by_body->end() ||
+      region_tags_it == ctx.precomputed_expr_region_tags_by_body->end()) {
+    return {};
+  }
+
+  return PrecomputedExprProvenanceView{
+      &prov_it->second,
+      &region_it->second,
+      &region_tags_it->second,
+  };
+}
+
+class ActivePrecomputedExprProvenance {
+ public:
+  ActivePrecomputedExprProvenance(
+      LowerCtx& ctx,
+      const PrecomputedExprProvenanceView& view)
+      : ctx_(ctx),
+        prev_expr_prov_(ctx.precomputed_expr_prov),
+        prev_expr_region_(ctx.precomputed_expr_region),
+        prev_expr_region_tags_(ctx.precomputed_expr_region_tags) {
+    ctx_.precomputed_expr_prov = view.expr_prov;
+    ctx_.precomputed_expr_region = view.expr_region;
+    ctx_.precomputed_expr_region_tags = view.expr_region_tags;
+  }
+
+  ActivePrecomputedExprProvenance(const ActivePrecomputedExprProvenance&) =
+      delete;
+  ActivePrecomputedExprProvenance& operator=(
+      const ActivePrecomputedExprProvenance&) = delete;
+
+  ~ActivePrecomputedExprProvenance() {
+    ctx_.precomputed_expr_prov = prev_expr_prov_;
+    ctx_.precomputed_expr_region = prev_expr_region_;
+    ctx_.precomputed_expr_region_tags = prev_expr_region_tags_;
+  }
+
+ private:
+  LowerCtx& ctx_;
+  const analysis::ExprProvenanceMap* prev_expr_prov_ = nullptr;
+  const analysis::ExprRegionMap* prev_expr_region_ = nullptr;
+  const analysis::ExprRegionMap* prev_expr_region_tags_ = nullptr;
+};
+
 bool IsContractParamSnapshotType(const analysis::TypeRef& type) {
   analysis::TypeRef stripped = type;
   while (stripped) {
@@ -1111,7 +1184,11 @@ ProcIR LowerProc(const ProcedureDecl& decl,
   ctx.expr_prov.reset();
   ctx.expr_region.reset();
   ctx.expr_region_tags.reset();
-  if (ctx.sigma && decl.body) {
+  const auto precomputed_expr_prov = PrecomputedExprProvenanceFor(decl, ctx);
+  ActivePrecomputedExprProvenance active_precomputed_expr_prov(
+      ctx,
+      precomputed_expr_prov);
+  if (!precomputed_expr_prov.available() && ctx.sigma && decl.body) {
     auto prov =
         analysis::ComputeExprProvenanceMap(scope, module_path, decl.params,
                                            decl.body, std::nullopt);

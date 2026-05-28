@@ -19,6 +19,9 @@ struct TypecheckResult {
   DynamicRefineExprMap dynamic_refine_checks;
   GenericCallSubstMap generic_call_substs;
   SelectedCallTargetMap selected_call_targets;
+  ExprProvenanceBodyMap expr_prov_by_body;
+  ExprRegionBodyMap expr_region_tags_by_body;
+  ExprRegionBodyMap expr_region_targets_by_body;
   std::optional<InitPlan> init_plan;
 };
 
