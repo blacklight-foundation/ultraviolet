@@ -1911,6 +1911,9 @@ static void RecordExprProv(const ast::ExprPtr& expr,
   if (!res.ok) {
     return;
   }
+  if (res.prov.kind == ProvKind::Bottom) {
+    return;
+  }
   ExprProvInfo info;
   info.tag = res.prov;
   info.target = ResolveRegionTarget(env, res.prov);
