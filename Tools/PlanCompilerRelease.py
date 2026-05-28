@@ -24,7 +24,7 @@ RELEASE_LABELS = {
     "release: canary": "canary",
     "release: patch": "patch",
     "release: minor": "minor",
-    "release: breaking": "minor",
+    "release: breaking": "breaking",
 }
 VALIDATION_WORKFLOWS = {
     "linux": {
@@ -177,7 +177,7 @@ def resolve_intent(
     token: str,
 ) -> tuple[str, str, tuple[str, ...]]:
     if requested_kind != "auto":
-        return ("minor" if requested_kind == "breaking" else requested_kind), "", ()
+        return requested_kind, "", ()
 
     pr_number, labels = associated_pr_labels(repository, sha, token)
     release_labels = [label for label in labels if label.startswith(RELEASE_LABEL_PREFIX)]
@@ -214,9 +214,9 @@ def successful_validation_runs(
 
 
 def tag_exists(repository: str, tag: str, token: str) -> bool:
-    encoded = urllib.parse.quote(f"tags/{tag}", safe="")
+    encoded = urllib.parse.quote(tag, safe="")
     try:
-        github_api(repository, f"/git/ref/{encoded}", token)
+        github_api(repository, f"/git/ref/tags/{encoded}", token)
         return True
     except RuntimeError as exc:
         if " 404 " in str(exc):
@@ -266,7 +266,7 @@ def build_plan(args: argparse.Namespace) -> ReleasePlan:
         return plan
 
     base = latest_compiler_release(args.repository, token, args.latest_release_tag)
-    if intent == "minor":
+    if intent in ("minor", "breaking"):
         next_version = base.bump_minor()
         plan.version = next_version.version
         plan.tag = next_version.tag
@@ -347,6 +347,7 @@ def summary_text(plan: ReleasePlan) -> str:
         f"- Version: `{plan.version or 'none'}`",
         f"- Tag: `{plan.tag or 'none'}`",
         f"- Prerelease: `{str(plan.prerelease).lower()}`",
+        f"- Breaking change: `{str(plan.intent == 'breaking').lower()}`",
         f"- Should publish: `{str(plan.should_publish).lower()}`",
         f"- Reason: {plan.reason}",
         f"- Source PR: `{plan.source_pr or 'none'}`",
