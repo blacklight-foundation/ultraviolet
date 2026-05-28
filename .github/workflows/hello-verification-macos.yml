@@ -19,7 +19,7 @@ jobs:
     timeout-minutes: 120
 
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5
         with:
           fetch-depth: 0
           lfs: false
@@ -55,7 +55,7 @@ jobs:
             --nonce "github-${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}" \
             | tee artifacts/hello-verification-macos.txt
 
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         if: always()
         with:
           name: hello-verification-macos
@@ -63,7 +63,7 @@ jobs:
           if-no-files-found: ignore
 
       - name: Upload macOS release archive
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         with:
           name: ultraviolet-macos-aarch64
           path: |
