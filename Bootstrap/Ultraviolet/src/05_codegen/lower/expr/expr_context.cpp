@@ -545,7 +545,7 @@ void LowerCtx::RegisterParallelJoin(const IRValue& parallel_ctx) {
 void LowerCtx::RegisterTempValue(const IRValue& value,
                                  const analysis::TypeRef& type,
                                  bool has_responsibility) {
-  if (!temp_sink) {
+  if (!temp_sink || !has_responsibility) {
     return;
   }
   TempValue temp;
