@@ -173,8 +173,10 @@ LowerResult LowerBlock(const ast::Block& block, LowerCtx& ctx) {
     }
   }
   CleanupPlan cleanup_plan = ComputeCleanupPlanForCurrentScope(ctx);
-  CleanupPlan remainder =
-      ComputeCleanupPlanRemainder(CleanupTarget::CurrentScope, ctx);
+  CleanupPlan remainder;
+  if (!cleanup_plan.empty()) {
+    remainder = ComputeCleanupPlanRemainder(CleanupTarget::CurrentScope, ctx);
+  }
   IRPtr cleanup_ir = EmitCleanupWithRemainder(cleanup_plan, remainder, ctx);
   ctx.PopScope();
 
