@@ -124,14 +124,25 @@ AttrSet ComputePtrAttrs(const analysis::TypeRef& type, const LowerCtx* ctx) {
     scope.sigma_source = ctx->sigma;
     scope.current_module = ctx->module_path;
 
-    const auto size = ::ultraviolet::analysis::layout::SizeOf(scope, ptr->element);
-    const auto align = ::ultraviolet::analysis::layout::AlignOf(scope, ptr->element);
+    const auto layout =
+        ::ultraviolet::analysis::layout::LayoutOf(scope, ptr->element);
+    if (layout.has_value()) {
+      attrs.push_back({AttrKind::Dereferenceable, layout->size});
+      if (layout->align > 0) {
+        attrs.push_back({AttrKind::Alignment, layout->align});
+      }
+    } else {
+      const auto size =
+          ::ultraviolet::analysis::layout::SizeOf(scope, ptr->element);
+      const auto align =
+          ::ultraviolet::analysis::layout::AlignOf(scope, ptr->element);
 
-    if (size.has_value()) {
-      attrs.push_back({AttrKind::Dereferenceable, *size});
-    }
-    if (align.has_value() && *align > 0) {
-      attrs.push_back({AttrKind::Alignment, *align});
+      if (size.has_value()) {
+        attrs.push_back({AttrKind::Dereferenceable, *size});
+      }
+      if (align.has_value() && *align > 0) {
+        attrs.push_back({AttrKind::Alignment, *align});
+      }
     }
   }
 
@@ -363,4 +374,3 @@ void LLVMEmitter::AddPtrAttributes(llvm::Function *func,
 }
 
 }  // namespace ultraviolet::codegen
-

@@ -177,6 +177,51 @@ CallABICacheKey MakeCallABICacheKey(
   return key;
 }
 
+class IRCallPerfScope {
+ public:
+  using Clock = std::chrono::steady_clock;
+
+  explicit IRCallPerfScope(emit_detail::IRCallPerfKind initial_stage)
+      : enabled_(emit_detail::g_ir_proc_perf_ctx != nullptr),
+        stage_(initial_stage),
+        stage_start_(Clock::now()) {}
+
+  ~IRCallPerfScope() {
+    flush();
+  }
+
+  void switchTo(emit_detail::IRCallPerfKind next_stage) {
+    if (!enabled_) {
+      return;
+    }
+    flush();
+    stage_ = next_stage;
+    stage_start_ = Clock::now();
+  }
+
+  void stop() {
+    flush();
+  }
+
+ private:
+  void flush() {
+    if (!enabled_ || stage_ == emit_detail::IRCallPerfKind::Count) {
+      return;
+    }
+    const auto end = Clock::now();
+    const long long elapsed_us =
+        std::chrono::duration_cast<std::chrono::microseconds>(
+            end - stage_start_)
+            .count();
+    emit_detail::RecordIRCallPerf(stage_, elapsed_us);
+    stage_ = emit_detail::IRCallPerfKind::Count;
+  }
+
+  bool enabled_ = false;
+  emit_detail::IRCallPerfKind stage_ = emit_detail::IRCallPerfKind::Count;
+  Clock::time_point stage_start_;
+};
+
 }  // namespace
 
 void ClearCallABICacheForEmitter(const LLVMEmitter& emitter) {
@@ -806,6 +851,7 @@ llvm::Value* EmitABICall(LLVMEmitter& emitter,
   }
 
   auto* builder = static_cast<llvm::IRBuilder<>*>(builder_base);
+  IRCallPerfScope abi_perf(emit_detail::IRCallPerfKind::ABIExplicitOut);
 
   bool call_force_explicit_out_result = force_explicit_out_result;
   if (!call_force_explicit_out_result) {
@@ -815,6 +861,7 @@ llvm::Value* EmitABICall(LLVMEmitter& emitter,
     }
   }
 
+  abi_perf.switchTo(emit_detail::IRCallPerfKind::ABICompute);
   ABICallResult abi = ComputeCallABI(
       emitter,
       params,
@@ -823,6 +870,7 @@ llvm::Value* EmitABICall(LLVMEmitter& emitter,
       /*foreign_boundary_mode_independent=*/
       (ffi_import_boundary || foreign_boundary_mode_independent),
       call_force_explicit_out_result);
+  abi_perf.switchTo(emit_detail::IRCallPerfKind::ABISetup);
   if (!abi.valid || !abi.func_type) {
     if (LowerCtx* ctx = emitter.GetCurrentCtx()) {
       ctx->ReportCodegenFailure();
@@ -1274,6 +1322,8 @@ llvm::Value* EmitABICall(LLVMEmitter& emitter,
     return false;
   };
 
+  abi_perf.switchTo(emit_detail::IRCallPerfKind::ABIResultStorage);
+
   // Handle sret parameter
   if (abi.has_sret) {
     llvm::Type* ret_ty = emitter.GetLLVMType(ret_type);
@@ -1300,6 +1350,8 @@ llvm::Value* EmitABICall(LLVMEmitter& emitter,
       *result_storage_out = sret_alloca;
     }
   }
+
+  abi_perf.switchTo(emit_detail::IRCallPerfKind::ABIArgMap);
 
   // Map source arguments onto ABI parameters. Hidden panic-out participates in
   // the lowered procedure signature, but it is not a source argument. Keeping a
@@ -1595,6 +1647,8 @@ llvm::Value* EmitABICall(LLVMEmitter& emitter,
     }
   }
 
+  abi_perf.switchTo(emit_detail::IRCallPerfKind::ABICallEmit);
+
   auto release_consumed_move_arg_temps = [&]() -> void {
     if (!source_args) {
       return;
@@ -1735,6 +1789,7 @@ llvm::Value* EmitABICall(LLVMEmitter& emitter,
     }
   }
 
+  abi_perf.switchTo(emit_detail::IRCallPerfKind::ABIReturn);
   release_consumed_move_arg_temps();
 
   // Handle return value
@@ -1815,6 +1870,7 @@ ABICallResult ComputeCallABI(LLVMEmitter& emitter,
 
   ABICallResult result;
   LowerCtx* current_ctx = emitter.GetCurrentCtx();
+  IRCallPerfScope abi_perf(emit_detail::IRCallPerfKind::ABIKeyBuild);
   const bool use_cache = !core::Conformance::Enabled();
   const CallABICacheKey cache_key =
       use_cache
@@ -1825,15 +1881,18 @@ ABICallResult ComputeCallABI(LLVMEmitter& emitter,
                                 foreign_boundary_mode_independent,
                                 force_explicit_out_result)
           : CallABICacheKey{};
+  abi_perf.switchTo(emit_detail::IRCallPerfKind::ABICacheLookup);
   if (use_cache)
   {
     CallABICache& cache = call_abi_caches[&emitter];
     const auto cached = cache.find(cache_key);
     if (cached != cache.end())
     {
+      abi_perf.stop();
       return cached->second;
     }
   }
+  abi_perf.switchTo(emit_detail::IRCallPerfKind::ABIInfo);
   const analysis::ScopeContext& scope = BuildScope(current_ctx);
   auto invalidate = [&]() -> ABICallResult {
     if (current_ctx) {
@@ -1854,6 +1913,7 @@ ABICallResult ComputeCallABI(LLVMEmitter& emitter,
           ? ABIParamPolicy::ForeignBoundary
           : ABIParamPolicy::ModeAware;
   const auto call_info = ABICall(scope, abi_params, ret_type, param_policy);
+  abi_perf.switchTo(emit_detail::IRCallPerfKind::ABIRetLayout);
   if (!call_info.has_value()) {
     SPEC_RULE("LLVMCall-Err");
     llvm::Function* debug_func = nullptr;
@@ -1970,6 +2030,7 @@ ABICallResult ComputeCallABI(LLVMEmitter& emitter,
             : ComputeExplicitOutParamAttrs(ret_type, current_ctx));
   }
 
+  abi_perf.switchTo(emit_detail::IRCallPerfKind::ABIParamLayout);
   unsigned llvm_index = result.has_sret ? 1u : 0u;
   for (std::size_t i = 0; i < params.size(); ++i) {
     if (i >= result.param_kinds.size()) {
@@ -2042,6 +2103,7 @@ ABICallResult ComputeCallABI(LLVMEmitter& emitter,
   if (use_cache) {
     call_abi_caches[&emitter].emplace(cache_key, result);
   }
+  abi_perf.stop();
   return result;
 }
 

@@ -10,12 +10,62 @@ namespace ultraviolet::codegen::emit_detail {
 
 void IRInstructionVisitor::operator()(const IRCall &call) const
 {
+  struct IRCallStageTimer
+  {
+    using Clock = std::chrono::steady_clock;
+
+    explicit IRCallStageTimer(IRCallPerfKind initial_stage)
+        : enabled(g_ir_proc_perf_ctx != nullptr),
+          stage(initial_stage),
+          stage_start(Clock::now())
+    {}
+
+    ~IRCallStageTimer()
+    {
+      flush();
+    }
+
+    void switchTo(IRCallPerfKind next_stage)
+    {
+      if (!enabled)
+      {
+        return;
+      }
+      flush();
+      stage = next_stage;
+      stage_start = Clock::now();
+    }
+
+    void flush()
+    {
+      if (!enabled || stage == IRCallPerfKind::Count)
+      {
+        return;
+      }
+      const auto end = Clock::now();
+      const long long elapsed_us =
+          std::chrono::duration_cast<std::chrono::microseconds>(
+              end - stage_start)
+              .count();
+      RecordIRCallPerf(stage, elapsed_us);
+      stage = IRCallPerfKind::Count;
+    }
+
+    bool enabled = false;
+    IRCallPerfKind stage = IRCallPerfKind::Count;
+    Clock::time_point stage_start;
+  };
+
+  IRCallStageTimer call_perf(IRCallPerfKind::ArgValues);
+
   std::vector<llvm::Value *> args;
   args.reserve(call.args.size());
   for (const auto &arg : call.args)
   {
     args.push_back(EvaluateOrDefault(arg));
   }
+
+  call_perf.switchTo(IRCallPerfKind::PureIntrinsic);
 
   // Pure string/bytes view builtins are specified as pointer/length metadata
   // operations. Lower them directly instead of crossing the runtime ABI.
@@ -273,6 +323,8 @@ void IRInstructionVisitor::operator()(const IRCall &call) const
     return;
   }
 
+  call_perf.switchTo(IRCallPerfKind::DropGlue);
+
   if (call.callee.kind == IRValue::Kind::Symbol &&
       IsDropGlueSymbol(call.callee.name) &&
       !call.args.empty())
@@ -344,6 +396,8 @@ void IRInstructionVisitor::operator()(const IRCall &call) const
     }
   }
 
+  call_perf.switchTo(IRCallPerfKind::AsyncProbe);
+
   if (call.callee.kind == IRValue::Kind::Symbol)
   {
     const LowerCtx *comb_ctx = emitter.GetCurrentCtx();
@@ -364,6 +418,8 @@ void IRInstructionVisitor::operator()(const IRCall &call) const
 
     if (comb_kind.has_value())
     {
+      call_perf.switchTo(IRCallPerfKind::AsyncEmit);
+
       if (args.empty() || call.args.empty())
       {
         emitter.SetTempValue(call.result, DefaultFor(call.result));
@@ -1265,6 +1321,8 @@ void IRInstructionVisitor::operator()(const IRCall &call) const
     }
   }
 
+  call_perf.switchTo(IRCallPerfKind::ResolveSig);
+
   const LowerCtx *ctx = emitter.GetCurrentCtx();
   const LowerCtx::ProcSigInfo *sig = nullptr;
   LowerCtx::ProcSigInfo inferred_sig;
@@ -2008,7 +2066,10 @@ void IRInstructionVisitor::operator()(const IRCall &call) const
     return params;
   };
 
+  call_perf.switchTo(IRCallPerfKind::CalleeEval);
+
   llvm::Value *callee = emitter.EvaluateIRValue(call.callee);
+  call_perf.switchTo(IRCallPerfKind::CalleeDeclare);
   if (!callee && call.callee.kind == IRValue::Kind::Symbol)
   {
     if (llvm::Function *existing = emitter.GetModule().getFunction(callee_symbol))
@@ -2062,6 +2123,8 @@ void IRInstructionVisitor::operator()(const IRCall &call) const
       }
     }
   }
+
+  call_perf.switchTo(IRCallPerfKind::CalleeAnalyze);
 
   auto extract_value_index = [](llvm::Value *value) -> std::optional<unsigned>
   {
@@ -2395,6 +2458,8 @@ void IRInstructionVisitor::operator()(const IRCall &call) const
     args.erase(args.begin());
   }
 
+  call_perf.switchTo(IRCallPerfKind::EmitCallPrep);
+
   llvm::Value *call_result = nullptr;
   llvm::Value *call_result_storage = nullptr;
   if (call.callee.kind == IRValue::Kind::Symbol && ctx)
@@ -2417,6 +2482,7 @@ void IRInstructionVisitor::operator()(const IRCall &call) const
             LowerCtx::FfiImportUnwindMode::Catch;
     const bool foreign_boundary_mode_independent =
         ffi_import_boundary || raw_export_boundary || runtime_foreign_boundary;
+    call_perf.switchTo(IRCallPerfKind::EmitCallABI);
     call_result = EmitABICall(
         emitter,
         &builder,
@@ -2469,6 +2535,8 @@ void IRInstructionVisitor::operator()(const IRCall &call) const
       }
     }
   }
+
+  call_perf.switchTo(IRCallPerfKind::Result);
 
   const LowerCtx *active_ctx = emitter.GetCurrentCtx();
   analysis::TypeRef call_result_type =

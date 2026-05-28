@@ -188,6 +188,42 @@ namespace ultraviolet::codegen::emit_detail {
 
 
 
+    enum class IRCallPerfKind : std::size_t
+    {
+      ArgValues = 0,
+      PureIntrinsic,
+      DropGlue,
+      AsyncProbe,
+      AsyncEmit,
+      ResolveSig,
+      CalleeEval,
+      CalleeDeclare,
+      CalleeAnalyze,
+      EmitCallPrep,
+      EmitCallABI,
+      ABIExplicitOut,
+      ABICompute,
+      ABISetup,
+      ABIResultStorage,
+      ABIArgMap,
+      ABICallEmit,
+      ABIReturn,
+      ABIKeyBuild,
+      ABICacheLookup,
+      ABIInfo,
+      ABIRetLayout,
+      ABIParamLayout,
+      Result,
+      Count,
+    };
+
+    struct IRCallPerfBucket
+    {
+      std::size_t count = 0;
+      long long total_us = 0;
+      long long max_us = 0;
+    };
+
     struct IRNodePerfBucket
     {
       std::size_t count = 0;
@@ -208,10 +244,18 @@ namespace ultraviolet::codegen::emit_detail {
     struct IRProcPerfContext
     {
       std::array<IRNodePerfBucket, kIRNodePerfKindCount> buckets{};
+      std::array<IRCallPerfBucket,
+                 static_cast<std::size_t>(IRCallPerfKind::Count)> call_buckets{};
       std::vector<IRNodePerfFrame> stack;
     };
 
     extern thread_local IRProcPerfContext *g_ir_proc_perf_ctx;
+
+    const char *IRCallPerfKindName(IRCallPerfKind kind)
+    ;
+
+    void RecordIRCallPerf(IRCallPerfKind kind, long long elapsed_us)
+    ;
 
     const char *IRNodePerfKindName(std::size_t index)
     ;
@@ -220,6 +264,9 @@ namespace ultraviolet::codegen::emit_detail {
     ;
 
     void AppendTopIRNodePerf(std::string &line, const IRProcPerfContext &ctx)
+    ;
+
+    void AppendTopIRCallPerf(std::string &line, const IRProcPerfContext &ctx)
     ;
 
 

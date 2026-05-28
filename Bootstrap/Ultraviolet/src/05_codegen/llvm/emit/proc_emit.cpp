@@ -644,6 +644,7 @@ using namespace emit_detail;
         if (perf_enabled)
         {
           AppendTopIRNodePerf(perf_line, ir_proc_perf);
+          AppendTopIRCallPerf(perf_line, ir_proc_perf);
         }
         EmitPerfLogLine(perf_line);
       }

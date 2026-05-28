@@ -365,6 +365,84 @@ namespace ultraviolet::codegen::emit_detail {
 
     thread_local IRProcPerfContext *g_ir_proc_perf_ctx = nullptr;
 
+    const char *IRCallPerfKindName(IRCallPerfKind kind)
+    {
+      switch (kind)
+      {
+        case IRCallPerfKind::ArgValues:
+          return "ArgValues";
+        case IRCallPerfKind::PureIntrinsic:
+          return "PureIntrinsic";
+        case IRCallPerfKind::DropGlue:
+          return "DropGlue";
+        case IRCallPerfKind::AsyncProbe:
+          return "AsyncProbe";
+        case IRCallPerfKind::AsyncEmit:
+          return "AsyncEmit";
+        case IRCallPerfKind::ResolveSig:
+          return "ResolveSig";
+        case IRCallPerfKind::CalleeEval:
+          return "CalleeEval";
+        case IRCallPerfKind::CalleeDeclare:
+          return "CalleeDeclare";
+        case IRCallPerfKind::CalleeAnalyze:
+          return "CalleeAnalyze";
+        case IRCallPerfKind::EmitCallPrep:
+          return "EmitCallPrep";
+        case IRCallPerfKind::EmitCallABI:
+          return "EmitCallABI";
+        case IRCallPerfKind::ABIExplicitOut:
+          return "ABIExplicitOut";
+        case IRCallPerfKind::ABICompute:
+          return "ABICompute";
+        case IRCallPerfKind::ABISetup:
+          return "ABISetup";
+        case IRCallPerfKind::ABIResultStorage:
+          return "ABIResultStorage";
+        case IRCallPerfKind::ABIArgMap:
+          return "ABIArgMap";
+        case IRCallPerfKind::ABICallEmit:
+          return "ABICallEmit";
+        case IRCallPerfKind::ABIReturn:
+          return "ABIReturn";
+        case IRCallPerfKind::ABIKeyBuild:
+          return "ABIKeyBuild";
+        case IRCallPerfKind::ABICacheLookup:
+          return "ABICacheLookup";
+        case IRCallPerfKind::ABIInfo:
+          return "ABIInfo";
+        case IRCallPerfKind::ABIRetLayout:
+          return "ABIRetLayout";
+        case IRCallPerfKind::ABIParamLayout:
+          return "ABIParamLayout";
+        case IRCallPerfKind::Result:
+          return "Result";
+        case IRCallPerfKind::Count:
+          break;
+      }
+      return "Unknown";
+    }
+
+    void RecordIRCallPerf(IRCallPerfKind kind, long long elapsed_us)
+    {
+      if (!g_ir_proc_perf_ctx)
+      {
+        return;
+      }
+      const auto index = static_cast<std::size_t>(kind);
+      if (index >= g_ir_proc_perf_ctx->call_buckets.size())
+      {
+        return;
+      }
+      auto &bucket = g_ir_proc_perf_ctx->call_buckets[index];
+      bucket.count += 1;
+      bucket.total_us += elapsed_us;
+      if (elapsed_us > bucket.max_us)
+      {
+        bucket.max_us = elapsed_us;
+      }
+    }
+
     const char *IRNodePerfKindName(std::size_t index)
     {
       static constexpr const char *names[] = {
@@ -513,6 +591,65 @@ namespace ultraviolet::codegen::emit_detail {
                 std::to_string(top[i].total_self_ms) + "ms/" +
                 std::to_string(top[i].count) + "x(max=" +
                 std::to_string(top[i].max_self_ms) + "ms)";
+      }
+    }
+
+    void AppendTopIRCallPerf(std::string &line, const IRProcPerfContext &ctx)
+    {
+      struct TopEntry
+      {
+        IRCallPerfKind kind = IRCallPerfKind::Count;
+        long long total_us = -1;
+        std::size_t count = 0;
+        long long max_us = 0;
+      };
+
+      std::array<TopEntry, static_cast<std::size_t>(IRCallPerfKind::Count)> top{};
+      for (std::size_t i = 0; i < top.size(); ++i)
+      {
+        top[i].total_us = -1;
+      }
+
+      for (std::size_t i = 0; i < ctx.call_buckets.size(); ++i)
+      {
+        const auto &bucket = ctx.call_buckets[i];
+        if (bucket.count == 0 || bucket.total_us <= 0)
+        {
+          continue;
+        }
+
+        TopEntry candidate;
+        candidate.kind = static_cast<IRCallPerfKind>(i);
+        candidate.total_us = bucket.total_us;
+        candidate.count = bucket.count;
+        candidate.max_us = bucket.max_us;
+
+        for (std::size_t pos = 0; pos < top.size(); ++pos)
+        {
+          if (candidate.total_us <= top[pos].total_us)
+          {
+            continue;
+          }
+          for (std::size_t shift = top.size() - 1; shift > pos; --shift)
+          {
+            top[shift] = top[shift - 1];
+          }
+          top[pos] = candidate;
+          break;
+        }
+      }
+
+      for (std::size_t i = 0; i < top.size(); ++i)
+      {
+        if (top[i].total_us < 0)
+        {
+          continue;
+        }
+        line += " call_top" + std::to_string(i + 1) + "=" +
+                IRCallPerfKindName(top[i].kind) + ":" +
+                std::to_string(top[i].total_us) + "us/" +
+                std::to_string(top[i].count) + "x(max=" +
+                std::to_string(top[i].max_us) + "us)";
       }
     }
 
