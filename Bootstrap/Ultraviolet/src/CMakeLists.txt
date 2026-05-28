@@ -1185,6 +1185,16 @@ if(LLVM_FOUND)
   target_link_libraries(uv_lsp_core PRIVATE ${LLVM_SUPPORT_LIBS})
 endif()
 
+set(UV_COMPILER_VERSION_OVERRIDE "" CACHE STRING "Override the compiler version string for release builds")
+
+function(uv_apply_compiler_version_override target_name)
+  if(NOT "${UV_COMPILER_VERSION_OVERRIDE}" STREQUAL "")
+    target_compile_definitions(${target_name} PRIVATE
+      UV_COMPILER_VERSION_OVERRIDE="${UV_COMPILER_VERSION_OVERRIDE}"
+    )
+  endif()
+endfunction()
+
 add_executable(uvc-debug
   06_driver/debugger_main.cpp
   06_driver/version.cpp
@@ -1199,6 +1209,7 @@ target_include_directories(uvc-debug PRIVATE
 )
 
 target_compile_features(uvc-debug PRIVATE cxx_std_20)
+uv_apply_compiler_version_override(uvc-debug)
 
 add_executable(uvc
   06_driver/cli.cpp
@@ -1224,6 +1235,7 @@ target_include_directories(uvc PRIVATE
 )
 
 target_compile_features(uvc PRIVATE cxx_std_20)
+uv_apply_compiler_version_override(uvc)
 
 if(LLVM_FOUND)
   target_compile_definitions(uvc PRIVATE ${LLVM_DEFINITIONS})
@@ -1244,6 +1256,7 @@ target_include_directories(uv-lsp PRIVATE
 )
 
 target_compile_features(uv-lsp PRIVATE cxx_std_20)
+uv_apply_compiler_version_override(uv-lsp)
 
 if(LLVM_FOUND)
   target_compile_definitions(uv-lsp PRIVATE ${LLVM_DEFINITIONS})
