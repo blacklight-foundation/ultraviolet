@@ -56,6 +56,7 @@
 #include "05_codegen/checks/checks.h"
 #include "05_codegen/checks/panic.h"
 #include "05_codegen/cleanup/cleanup.h"
+#include "05_codegen/cleanup/drop_hooks.h"
 #include "05_codegen/dyn_dispatch/dyn_dispatch.h"
 #include "04_analysis/layout/layout.h"
 #include "05_codegen/lower/expr/closure_expr.h"
@@ -840,6 +841,119 @@ analysis::TypeRef InstantiateActiveGenericType(const analysis::TypeRef& type,
   return analysis::InstantiateType(type, *ctx.active_generic_type_subst);
 }
 
+bool TypeHasInferenceVar(const analysis::TypeRef& type) {
+  if (!type) {
+    return true;
+  }
+
+  return std::visit(
+      [](const auto& node) -> bool {
+        using T = std::decay_t<decltype(node)>;
+
+        if constexpr (std::is_same_v<T, analysis::TypeVar>) {
+          return true;
+        } else if constexpr (std::is_same_v<T, analysis::TypePerm>) {
+          return TypeHasInferenceVar(node.base);
+        } else if constexpr (std::is_same_v<T, analysis::TypeUnion>) {
+          return std::any_of(node.members.begin(),
+                             node.members.end(),
+                             TypeHasInferenceVar);
+        } else if constexpr (std::is_same_v<T, analysis::TypeFunc>) {
+          for (const auto& param : node.params) {
+            if (TypeHasInferenceVar(param.type)) {
+              return true;
+            }
+          }
+          return TypeHasInferenceVar(node.ret);
+        } else if constexpr (std::is_same_v<T, analysis::TypeTuple>) {
+          return std::any_of(node.elements.begin(),
+                             node.elements.end(),
+                             TypeHasInferenceVar);
+        } else if constexpr (std::is_same_v<T, analysis::TypeArray>) {
+          return TypeHasInferenceVar(node.element);
+        } else if constexpr (std::is_same_v<T, analysis::TypeSlice>) {
+          return TypeHasInferenceVar(node.element);
+        } else if constexpr (std::is_same_v<T, analysis::TypePtr>) {
+          return TypeHasInferenceVar(node.element);
+        } else if constexpr (std::is_same_v<T, analysis::TypeRawPtr>) {
+          return TypeHasInferenceVar(node.element);
+        } else if constexpr (std::is_same_v<T, analysis::TypeApply>) {
+          return std::any_of(node.args.begin(),
+                             node.args.end(),
+                             TypeHasInferenceVar);
+        } else if constexpr (std::is_same_v<T, analysis::TypeModalState>) {
+          return std::any_of(node.generic_args.begin(),
+                             node.generic_args.end(),
+                             TypeHasInferenceVar);
+        } else if constexpr (std::is_same_v<T, analysis::TypePathType>) {
+          return std::any_of(node.generic_args.begin(),
+                             node.generic_args.end(),
+                             TypeHasInferenceVar);
+        } else if constexpr (std::is_same_v<T, analysis::TypeOpaque>) {
+          return true;
+        } else if constexpr (std::is_same_v<T, analysis::TypeRefine>) {
+          return TypeHasInferenceVar(node.base);
+        } else if constexpr (std::is_same_v<T, analysis::TypeRange>) {
+          return TypeHasInferenceVar(node.base);
+        } else if constexpr (std::is_same_v<T, analysis::TypeRangeInclusive>) {
+          return TypeHasInferenceVar(node.base);
+        } else if constexpr (std::is_same_v<T, analysis::TypeRangeFrom>) {
+          return TypeHasInferenceVar(node.base);
+        } else if constexpr (std::is_same_v<T, analysis::TypeRangeTo>) {
+          return TypeHasInferenceVar(node.base);
+        } else if constexpr (std::is_same_v<T, analysis::TypeRangeToInclusive>) {
+          return TypeHasInferenceVar(node.base);
+        } else if constexpr (std::is_same_v<T, analysis::TypeClosure>) {
+          for (const auto& param : node.params) {
+            if (TypeHasInferenceVar(param.second)) {
+              return true;
+            }
+          }
+          if (TypeHasInferenceVar(node.ret)) {
+            return true;
+          }
+          if (node.deps_opt.has_value()) {
+            for (const auto& dep : *node.deps_opt) {
+              if (TypeHasInferenceVar(dep.type)) {
+                return true;
+              }
+            }
+          }
+          return false;
+        } else {
+          return false;
+        }
+      },
+      type->node);
+}
+
+const ast::Expr* UnwrapAttributedExpr(const ast::ExprPtr& expr) {
+  const ast::Expr* current = expr.get();
+  while (current) {
+    const auto* attr = std::get_if<ast::AttributedExpr>(&current->node);
+    if (!attr) {
+      return current;
+    }
+    current = attr->expr.get();
+  }
+  return nullptr;
+}
+
+bool IsCallLikeInitializer(const ast::ExprPtr& expr) {
+  const ast::Expr* unwrapped = UnwrapAttributedExpr(expr);
+  return unwrapped &&
+         (std::holds_alternative<ast::CallExpr>(unwrapped->node) ||
+          std::holds_alternative<ast::MethodCallExpr>(unwrapped->node));
+}
+
+bool TempTypeHasNoCleanup(const analysis::TypeRef& type, LowerCtx& ctx) {
+  analysis::TypeRef instantiated = InstantiateActiveGenericType(type, ctx);
+  if (!instantiated || TypeHasInferenceVar(instantiated)) {
+    return false;
+  }
+  return !TypeNeedsDrop(instantiated, ctx);
+}
+
 const ast::TypeAliasDecl* LookupTypeAliasDeclForCallLowering(
     const analysis::TypePath& path,
     const LowerCtx& ctx) {
@@ -1226,9 +1340,12 @@ LowerResult LowerRefArgExprWithTemp(const ast::ExprPtr& expr,
   temp_value.name = temp_name;
   if (temp_type) {
     ctx.RegisterValueType(temp_value, temp_type);
+    const bool temp_has_responsibility =
+        !(IsCallLikeInitializer(expr) && TempTypeHasNoCleanup(temp_type, ctx)) &&
+        BindingInitializerHasResponsibility(expr, ctx);
     ctx.RegisterTempValue(temp_value,
                           temp_type,
-                          BindingInitializerHasResponsibility(expr, ctx));
+                          temp_has_responsibility);
   }
 
   ast::Expr temp_ident;
@@ -1949,4 +2066,3 @@ void AnchorCallLoweringRules() {
 }
 
 }  // namespace ultraviolet::codegen
-
