@@ -597,16 +597,50 @@ static const ast::ASTModule* FindModuleByPath(
   return nullptr;
 }
 
-static std::vector<StaticBindingInfo> StaticBindings(
+static const std::vector<StaticBindingInfo>& StaticBindings(
     const ScopeContext& ctx,
     const ast::ModulePath& module_path) {
+  struct StaticBindingCache {
+    const Sigma* sigma_key = nullptr;
+    const ast::ASTModule* mods_data = nullptr;
+    std::size_t mods_size = 0;
+    const NameResolutionTables* name_resolution_tables = nullptr;
+    PathKey current_module_key;
+    std::map<PathKey, std::vector<StaticBindingInfo>> bindings_by_module;
+  };
+
   auto& perf = RegionsPerfStats();
   const bool perf_on = RegionsPerfActive();
   ScopedProvTimer timer(perf_on ? &perf.static_bindings_us : nullptr);
+
+  static thread_local StaticBindingCache cache;
+  const Sigma* sigma_key = ctx.sigma_source ? ctx.sigma_source : &ctx.sigma;
+  const PathKey current_module_key = PathKeyOf(ctx.current_module);
+  if (cache.sigma_key != sigma_key ||
+      cache.mods_data != sigma_key->mods.data() ||
+      cache.mods_size != sigma_key->mods.size() ||
+      cache.name_resolution_tables != ctx.name_resolution_tables ||
+      cache.current_module_key != current_module_key) {
+    cache.sigma_key = sigma_key;
+    cache.mods_data = sigma_key->mods.data();
+    cache.mods_size = sigma_key->mods.size();
+    cache.name_resolution_tables = ctx.name_resolution_tables;
+    cache.current_module_key = current_module_key;
+    cache.bindings_by_module.clear();
+  }
+
+  const PathKey module_key = PathKeyOf(module_path);
+  const auto cached = cache.bindings_by_module.find(module_key);
+  if (cached != cache.bindings_by_module.end()) {
+    return cached->second;
+  }
+
   std::vector<StaticBindingInfo> bindings;
   const auto* module = FindModuleByPath(ctx, module_path);
   if (!module) {
-    return bindings;
+    const auto inserted =
+        cache.bindings_by_module.emplace(module_key, std::move(bindings));
+    return inserted.first->second;
   }
   for (const auto& item : module->items) {
     if (perf_on) {
@@ -629,7 +663,9 @@ static std::vector<StaticBindingInfo> StaticBindings(
       bindings.push_back(StaticBindingInfo{name, type, decl->mut});
     }
   }
-  return bindings;
+  const auto inserted =
+      cache.bindings_by_module.emplace(module_key, std::move(bindings));
+  return inserted.first->second;
 }
 
 static ProvTag BottomTag() {
@@ -3116,7 +3152,8 @@ static std::optional<ProvExprResult> ResolvedCallReturnProv(
   }
 
   ProvEnv proc_env = InitProvEnv(param_names, param_tags, region_entries);
-  const auto static_bindings = StaticBindings(proc_ctx, selected->second.module_path);
+  const auto& static_bindings =
+      StaticBindings(proc_ctx, selected->second.module_path);
   if (!static_bindings.empty()) {
     ProvScope static_scope;
     static_scope.id = proc_env.next_scope_id++;
@@ -3363,7 +3400,7 @@ ProvCheckResult ProvBindCheck(const ScopeContext& ctx,
   ProvEnv prov_env = InitProvEnv(param_init.names, param_init.tags,
                                  param_init.regions);
 
-  const auto static_bindings = StaticBindings(prov_ctx, module_path);
+  const auto& static_bindings = StaticBindings(prov_ctx, module_path);
   if (!static_bindings.empty()) {
     ProvScope static_scope;
     static_scope.id = prov_env.next_scope_id++;
@@ -3427,6 +3464,50 @@ ProvCheckResult ProvBindCheck(const ScopeContext& ctx,
           std::move(expr_region_targets);
     }
   }
+  return result;
+}
+
+BodyMemoryCheckResult CheckBodyMemory(
+    const ScopeContext& ctx,
+    const ast::ModulePath& module_path,
+    const std::vector<ast::Param>& params,
+    const std::shared_ptr<ast::Block>& body,
+    const std::optional<BindSelfParam>& self_param,
+    core::DiagnosticStream* diags,
+    bool collect_timing) {
+  BodyMemoryCheckResult result;
+  const auto bind_start = std::chrono::steady_clock::now();
+  const auto bind = BindCheckBody(ctx, module_path, params, body, self_param);
+  if (collect_timing) {
+    result.borrow_ms = static_cast<std::uint64_t>(
+        std::chrono::duration_cast<std::chrono::milliseconds>(
+            std::chrono::steady_clock::now() - bind_start)
+            .count());
+  }
+  if (!bind.ok) {
+    result.ok = false;
+    result.diag_id = bind.diag_id;
+    result.span = bind.span;
+    return result;
+  }
+
+  const auto prov_start = std::chrono::steady_clock::now();
+  const auto prov =
+      ProvBindCheck(ctx, module_path, params, body, self_param, diags);
+  if (collect_timing) {
+    result.provenance_ms = static_cast<std::uint64_t>(
+        std::chrono::duration_cast<std::chrono::milliseconds>(
+            std::chrono::steady_clock::now() - prov_start)
+            .count());
+  }
+  if (!prov.ok) {
+    result.ok = false;
+    result.diag_id = prov.diag_id;
+    result.span = prov.span;
+    return result;
+  }
+
+  result.ok = true;
   return result;
 }
 
@@ -3496,7 +3577,7 @@ ExprProvMapResult ComputeExprProvenanceMap(
   ProvEnv prov_env = InitProvEnv(param_init.names, param_init.tags,
                                  param_init.regions);
 
-  const auto static_bindings = StaticBindings(prov_ctx, module_path);
+  const auto& static_bindings = StaticBindings(prov_ctx, module_path);
   if (!static_bindings.empty()) {
     ProvScope static_scope;
     static_scope.id = prov_env.next_scope_id++;

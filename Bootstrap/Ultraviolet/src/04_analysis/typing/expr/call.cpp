@@ -266,6 +266,11 @@ struct CalleeProcedureLookupResult {
   std::string name;
 };
 
+struct CalleeNameResolution {
+  ast::ModulePath origin;
+  std::string name;
+};
+
 static ast::ProcedureDecl AsProcedureDecl(const ast::ComptimeProcedureDecl& decl) {
   ast::ProcedureDecl proc;
   proc.attrs = decl.attrs;
@@ -297,15 +302,9 @@ static bool AllowsComptimeProcedureCall(const StmtTypeContext& type_ctx,
           type_ctx.contract_phase != ContractPhase::None);
 }
 
-static std::optional<CalleeProcedureLookupResult> LookupProcedureForCallee(
+static std::optional<CalleeNameResolution> ResolveCalleeProcedureName(
     const ScopeContext& ctx,
     const ast::ExprPtr& callee) {
-  auto& perf = CallPerfStats();
-  const bool perf_on = CallPerfActive();
-  if (perf_on) {
-    ++perf.lookup_proc_callee_calls;
-  }
-  ScopedCallTimer timer(perf_on ? &perf.lookup_proc_callee_us : nullptr);
   if (!callee) {
     return std::nullopt;
   }
@@ -338,12 +337,18 @@ static std::optional<CalleeProcedureLookupResult> LookupProcedureForCallee(
     return std::nullopt;
   }
 
-  const auto* module = FindModuleByPathForGeneric(ctx, *origin);
+  return CalleeNameResolution{*origin, std::move(name)};
+}
+
+static std::optional<CalleeProcedureLookupResult> LookupProcedureForResolvedCallee(
+    const ScopeContext& ctx,
+    const CalleeNameResolution& callee) {
+  const auto* module = FindModuleByPathForGeneric(ctx, callee.origin);
   if (!module) {
     return std::nullopt;
   }
 
-  const auto proc = FindProcedureInModule(ctx, *module, name);
+  const auto proc = FindProcedureInModule(ctx, *module, callee.name);
   if (!proc.has_value()) {
     return std::nullopt;
   }
@@ -357,9 +362,25 @@ static std::optional<CalleeProcedureLookupResult> LookupProcedureForCallee(
     result.proc = result.proc_view.get();
     result.is_comptime_proc = true;
   }
-  result.origin = *origin;
-  result.name = std::move(name);
+  result.origin = callee.origin;
+  result.name = callee.name;
   return result;
+}
+
+static std::optional<CalleeProcedureLookupResult> LookupProcedureForCallee(
+    const ScopeContext& ctx,
+    const ast::ExprPtr& callee) {
+  auto& perf = CallPerfStats();
+  const bool perf_on = CallPerfActive();
+  if (perf_on) {
+    ++perf.lookup_proc_callee_calls;
+  }
+  ScopedCallTimer timer(perf_on ? &perf.lookup_proc_callee_us : nullptr);
+  const auto resolved = ResolveCalleeProcedureName(ctx, callee);
+  if (!resolved.has_value()) {
+    return std::nullopt;
+  }
+  return LookupProcedureForResolvedCallee(ctx, *resolved);
 }
 
 struct FreeProcedureOverloadSet {
@@ -370,50 +391,29 @@ struct FreeProcedureOverloadSet {
 
 static std::optional<FreeProcedureOverloadSet> LookupFreeProcedureOverloadSet(
     const ScopeContext& ctx,
-    const ast::ExprPtr& callee) {
-  if (!callee) {
-    return std::nullopt;
-  }
-
-  std::string name;
-  std::optional<ast::ModulePath> origin;
-
-  if (const auto* ident = std::get_if<ast::IdentifierExpr>(&callee->node)) {
-    const auto ent = ResolveValueName(ctx, ident->name);
-    if (ent && ent->origin_opt.has_value()) {
-      origin = *ent->origin_opt;
-      name = ent->target_opt.value_or(std::string(ident->name));
-    } else {
-      origin = ctx.current_module;
-      name = ident->name;
-    }
-  } else if (const auto* qualified =
-                 std::get_if<ast::QualifiedNameExpr>(&callee->node)) {
-    origin = qualified->path;
-    name = qualified->name;
-  } else if (const auto* path_expr = std::get_if<ast::PathExpr>(&callee->node)) {
-    origin = path_expr->path.empty() ? ctx.current_module : path_expr->path;
-    name = path_expr->name;
-  } else {
-    return std::nullopt;
-  }
-
-  if (!origin.has_value()) {
-    return std::nullopt;
-  }
-
-  const auto* module = FindModuleByPathForGeneric(ctx, *origin);
+    const CalleeNameResolution& callee) {
+  const auto* module = FindModuleByPathForGeneric(ctx, callee.origin);
   if (!module) {
     return std::nullopt;
   }
 
-  auto candidates = FindProceduresInModule(ctx, *module, name);
+  auto candidates = FindProceduresInModule(ctx, *module, callee.name);
   if (candidates.size() <= 1) {
     return std::nullopt;
   }
 
-  return FreeProcedureOverloadSet{*origin, std::move(name),
+  return FreeProcedureOverloadSet{callee.origin, callee.name,
                                   std::move(candidates)};
+}
+
+static std::optional<FreeProcedureOverloadSet> LookupFreeProcedureOverloadSet(
+    const ScopeContext& ctx,
+    const ast::ExprPtr& callee) {
+  const auto resolved = ResolveCalleeProcedureName(ctx, callee);
+  if (!resolved.has_value()) {
+    return std::nullopt;
+  }
+  return LookupFreeProcedureOverloadSet(ctx, *resolved);
 }
 
 struct OverloadCandidateCheck {
@@ -552,6 +552,7 @@ struct FreeProcedureOverloadResolution {
 static FreeProcedureOverloadResolution ResolveFreeProcedureOverload(
     const ScopeContext& ctx,
     const StmtTypeContext& type_ctx,
+    const std::optional<CalleeNameResolution>& resolved_callee,
     const ast::ExprPtr& callee,
     const std::vector<ast::Arg>& args,
     const TypeEnv& env,
@@ -559,7 +560,9 @@ static FreeProcedureOverloadResolution ResolveFreeProcedureOverload(
     const ArgCheckFn& check_expr) {
   ScopedTypeBodyPerfPhase perf(TypeBodyPerfPhase::CallOverloadResolve);
   FreeProcedureOverloadResolution out;
-  const auto overloads = LookupFreeProcedureOverloadSet(ctx, callee);
+  const auto overloads = resolved_callee.has_value()
+                             ? LookupFreeProcedureOverloadSet(ctx, *resolved_callee)
+                             : LookupFreeProcedureOverloadSet(ctx, callee);
   if (!overloads.has_value()) {
     return out;
   }
@@ -1270,12 +1273,12 @@ static bool SharedArgUnderHeldPrefix(const ast::ExprPtr& arg,
 static void EmitUnknownCalleeAccessWarningIfNeeded(
     const ScopeContext& ctx,
     const StmtTypeContext& type_ctx,
-    const ast::CallExpr& node) {
+    const ast::CallExpr& node,
+    const std::optional<CalleeProcedureLookupResult>& lookup) {
   if (!type_ctx.keys_held || !type_ctx.diags || type_ctx.held_key_paths.empty()) {
     return;
   }
 
-  const auto lookup = LookupProcedureForCallee(ctx, node.callee);
   if (!lookup.has_value() || !lookup->proc || lookup->proc_view) {
     return;
   }
@@ -1304,10 +1307,9 @@ static void EmitUnknownCalleeAccessWarningIfNeeded(
 }
 
 static void EmitDeprecatedReferenceWarning(
-    const ScopeContext& ctx,
     const StmtTypeContext& type_ctx,
-    const ast::ExprPtr& callee) {
-  const auto lookup = LookupProcedureForCallee(ctx, callee);
+    const ast::ExprPtr& callee,
+    const std::optional<CalleeProcedureLookupResult>& lookup) {
   if (!lookup.has_value() || !lookup->proc) {
     return;
   }
@@ -2015,18 +2017,6 @@ static std::optional<ExternProcLookupResult> FindExternProcedureInModule(
   return ExternProcLookupResult{nullptr, ext_it->second.block, ext_it->second.proc};
 }
 
-static bool HasExternProcedureInModule(
-    const ScopeContext& ctx,
-    const ast::ASTModule& module,
-    const std::vector<std::string>& candidate_names) {
-  for (const auto& candidate : candidate_names) {
-    if (FindExternProcedureInModule(ctx, module, candidate).has_value()) {
-      return true;
-    }
-  }
-  return false;
-}
-
 static bool HasProcedureInModule(
     const ScopeContext& ctx,
     const ast::ASTModule& module,
@@ -2039,14 +2029,9 @@ static bool HasProcedureInModule(
   return false;
 }
 
-static bool GenericArgCountMismatch(const ScopeContext& ctx,
-                                     const ast::ExprPtr& callee,
-                                     std::size_t arg_count) {
-  if (!callee) {
-    return false;
-  }
-
-  const auto lookup = LookupProcedureForCallee(ctx, callee);
+static bool GenericArgCountMismatch(
+    const std::optional<CalleeProcedureLookupResult>& lookup,
+    std::size_t arg_count) {
   if (!lookup || !lookup->proc || !lookup->proc->generic_params) {
     return false;
   }
@@ -2090,7 +2075,6 @@ static bool IsGpuDomainType(const TypeRef& type) {
 static std::optional<ExternProcLookupResult> LookupExternProcedureForCallee(
     const ScopeContext& ctx,
     const ast::ExprPtr& callee);
-static bool IsExternCallee(const ScopeContext& ctx, const ast::ExprPtr& callee);
 
 static bool IsRawPointerTypeLocal(const TypeRef& type) {
   const auto stripped = StripPermDeepLocal(type);
@@ -2149,8 +2133,9 @@ static std::optional<std::string_view>
 CheckFfiBoundaryRegionLocalRawPointerArgs(const ScopeContext& ctx,
                                           const StmtTypeContext& type_ctx,
                                           const ast::CallExpr& call,
-                                          const TypeEnv& env) {
-  if (!IsExternCallee(ctx, call.callee)) {
+                                          const TypeEnv& env,
+                                          bool callee_is_extern) {
+  if (!callee_is_extern) {
     return std::nullopt;
   }
 
@@ -2219,108 +2204,6 @@ static std::optional<std::string_view> ExtractDirectCalleeName(
 static bool IsGpuBarrierName(std::string_view name) {
   return name == "gpu_barrier" || name == "gpu_memory_barrier" ||
          name == "gpu_workgroup_barrier";
-}
-
-static bool IsExternCallee(const ScopeContext& ctx, const ast::ExprPtr& callee) {
-  auto& perf = CallPerfStats();
-  const bool perf_on = CallPerfActive();
-  if (perf_on) {
-    ++perf.is_extern_calls;
-  }
-  ScopedCallTimer timer(perf_on ? &perf.is_extern_us : nullptr);
-  if (!callee) {
-    return false;
-  }
-
-  std::optional<ast::ModulePath> module_path;
-  std::vector<std::string> candidate_names;
-
-  if (const auto* ident = std::get_if<ast::IdentifierExpr>(&callee->node)) {
-    candidate_names.push_back(std::string(ident->name));
-    const auto ent = ResolveValueName(ctx, ident->name);
-    if (ent && ent->origin_opt.has_value()) {
-      module_path = *ent->origin_opt;
-      if (ent->target_opt.has_value() &&
-          !IdEq(*ent->target_opt, ident->name)) {
-        candidate_names.push_back(*ent->target_opt);
-      }
-    } else {
-      // Value-path typing can resolve current-module extern declarations even when
-      // resolve-time value lookup omits them; fall back to current module.
-      module_path = ctx.current_module;
-    }
-  } else if (const auto* qualified =
-                 std::get_if<ast::QualifiedNameExpr>(&callee->node)) {
-    module_path = qualified->path;
-    candidate_names.push_back(qualified->name);
-  } else if (const auto* qualified_apply =
-                 std::get_if<ast::QualifiedApplyExpr>(&callee->node)) {
-    module_path = qualified_apply->path;
-    candidate_names.push_back(qualified_apply->name);
-  } else if (const auto* path_expr = std::get_if<ast::PathExpr>(&callee->node)) {
-    module_path = path_expr->path.empty() ? ctx.current_module : path_expr->path;
-    candidate_names.push_back(path_expr->name);
-  } else {
-    return false;
-  }
-
-  if (candidate_names.empty()) {
-    return false;
-  }
-
-  if (!module_path.has_value()) {
-    // Prefer current-module resolution for unqualified calls.
-    const auto* current = FindModuleByPathForGeneric(ctx, ctx.current_module);
-    if (current != nullptr) {
-      if (HasExternProcedureInModule(ctx, *current, candidate_names)) {
-        return true;
-      }
-      if (HasProcedureInModule(ctx, *current, candidate_names)) {
-        return false;
-      }
-    }
-    if (ctx.sigma.mods.size() == 1) {
-      return HasExternProcedureInModule(ctx, ctx.sigma.mods.front(),
-                                        candidate_names);
-    }
-    for (const auto& mod : ctx.sigma.mods) {
-      if (HasExternProcedureInModule(ctx, mod, candidate_names)) {
-        return true;
-      }
-    }
-    return false;
-  }
-
-  const auto* module = FindModuleByPathForGeneric(ctx, *module_path);
-  if (!module) {
-    // Fallback for single-module/unqualified resolution paths where
-    // current-module metadata is not yet canonicalized.
-    for (const auto& mod : ctx.sigma.mods) {
-      if (HasExternProcedureInModule(ctx, mod, candidate_names)) {
-        return true;
-      }
-    }
-    return false;
-  }
-
-  if (HasExternProcedureInModule(ctx, *module, candidate_names)) {
-    return true;
-  }
-  // If the resolved module has a normal procedure for the same symbol,
-  // do not reinterpret it as extern from another module.
-  if (HasProcedureInModule(ctx, *module, candidate_names)) {
-    return false;
-  }
-  if (ctx.sigma.mods.size() == 1) {
-    return HasExternProcedureInModule(ctx, ctx.sigma.mods.front(),
-                                      candidate_names);
-  }
-  for (const auto& mod : ctx.sigma.mods) {
-    if (HasExternProcedureInModule(ctx, mod, candidate_names)) {
-      return true;
-    }
-  }
-  return false;
 }
 
 static ForeignVerificationMode ToForeignVerificationMode(
@@ -3104,8 +2987,8 @@ static std::optional<ExternProcLookupResult> LookupExternProcedureForCallee(
 static std::optional<std::string_view> CheckForeignStaticAssumes(
     const ScopeContext& ctx,
     const StmtTypeContext& type_ctx,
-    const ast::CallExpr& call) {
-  const auto lookup = LookupExternProcedureForCallee(ctx, call.callee);
+    const ast::CallExpr& call,
+    const std::optional<ExternProcLookupResult>& lookup) {
   if (!lookup.has_value() || !lookup->block || !lookup->proc) {
     return std::nullopt;
   }
@@ -3196,8 +3079,8 @@ static std::optional<std::string_view> CheckForeignStaticAssumes(
 static std::optional<std::string_view> CheckCallSitePrecondition(
     const ScopeContext& ctx,
     const StmtTypeContext& type_ctx,
-    const ast::CallExpr& call) {
-  const auto lookup = LookupProcedureForCallee(ctx, call.callee);
+    const ast::CallExpr& call,
+    const std::optional<CalleeProcedureLookupResult>& lookup) {
   if (!lookup.has_value() || !lookup->proc) {
     return std::nullopt;
   }
@@ -3370,10 +3253,9 @@ void RecordGenericCallSubst(const ScopeContext& ctx,
 
 static std::optional<std::string_view> BuildGenericCallSubstChecked(
     const ScopeContext& ctx,
-    const ast::ExprPtr& callee,
+    const std::optional<CalleeProcedureLookupResult>& lookup,
     const std::vector<std::shared_ptr<ast::Type>>& generic_args,
     TypeSubst& out_subst) {
-  const auto lookup = LookupProcedureForCallee(ctx, callee);
   if (!lookup || !lookup->proc || !lookup->proc->generic_params) {
     return std::optional<std::string_view>{"E-SEM-2533"};
   }
@@ -3427,9 +3309,47 @@ ExprTypeResult TypeCallExprImpl(const ScopeContext& ctx,
                                 const TypeEnv& env) {
   SpecDefsCall();
 
+  bool resolved_callee_ready = false;
+  std::optional<CalleeNameResolution> resolved_callee;
+  auto resolved_callee_for_call =
+      [&]() -> const std::optional<CalleeNameResolution>& {
+    if (!resolved_callee_ready) {
+      resolved_callee = ResolveCalleeProcedureName(ctx, node.callee);
+      resolved_callee_ready = true;
+    }
+    return resolved_callee;
+  };
+
+  bool proc_lookup_ready = false;
+  std::optional<CalleeProcedureLookupResult> proc_lookup_cache;
+  auto proc_lookup_for_call =
+      [&]() -> const std::optional<CalleeProcedureLookupResult>& {
+    if (!proc_lookup_ready) {
+      const auto& resolved = resolved_callee_for_call();
+      if (resolved.has_value()) {
+        proc_lookup_cache = LookupProcedureForResolvedCallee(ctx, *resolved);
+      } else {
+        proc_lookup_cache = std::nullopt;
+      }
+      proc_lookup_ready = true;
+    }
+    return proc_lookup_cache;
+  };
+
+  bool extern_lookup_ready = false;
+  std::optional<ExternProcLookupResult> extern_lookup;
+  auto extern_lookup_for_call =
+      [&]() -> const std::optional<ExternProcLookupResult>& {
+    if (!extern_lookup_ready) {
+      extern_lookup = LookupExternProcedureForCallee(ctx, node.callee);
+      extern_lookup_ready = true;
+    }
+    return extern_lookup;
+  };
+
   auto type_expr = [&](const ast::ExprPtr& inner) {
     if (inner == node.callee && AllowsComptimeProcedureCall(type_ctx, env)) {
-      const auto lookup = LookupProcedureForCallee(ctx, inner);
+      const auto& lookup = proc_lookup_for_call();
       if (lookup && lookup->is_comptime_proc && lookup->proc) {
         ExprTypeResult r;
         const auto proc_type = ProcType(ctx, *lookup->proc);
@@ -3485,7 +3405,7 @@ ExprTypeResult TypeCallExprImpl(const ScopeContext& ctx,
     return record;
   }
 
-  if (IsExternCallee(ctx, node.callee) &&
+  if (extern_lookup_for_call().has_value() &&
       !IsInUnsafeSpan(ctx, node.callee ? node.callee->span : core::Span{})) {
     ExprTypeResult r;
     SPEC_RULE("Call-Extern-Unsafe-Err");
@@ -3532,18 +3452,18 @@ ExprTypeResult TypeCallExprImpl(const ScopeContext& ctx,
     return ArgCheckResult{checked.ok, checked.diag_id};
   };
 
-  if (const auto lookup = LookupProcedureForCallee(ctx, node.callee);
-      lookup && lookup->is_comptime_proc &&
+  const auto& callee_proc = proc_lookup_for_call();
+  if (callee_proc && callee_proc->is_comptime_proc &&
       !AllowsComptimeProcedureCall(type_ctx, env)) {
     ExprTypeResult r;
     r.diag_id = "E-CTE-0034";
     return r;
   }
-  const auto proc_lookup = LookupProcedureForCallee(ctx, node.callee);
 
   if (node.generic_args.empty()) {
     const auto overload = ResolveFreeProcedureOverload(
-        ctx, type_ctx, node.callee, node.args, env, type_expr, check_expr);
+        ctx, type_ctx, resolved_callee_for_call(), node.callee, node.args, env,
+        type_expr, check_expr);
     if (overload.applies) {
       ExprTypeResult r;
       if (overload.diag_id.has_value()) {
@@ -3570,12 +3490,15 @@ ExprTypeResult TypeCallExprImpl(const ScopeContext& ctx,
         r.diag_id = *key_diag;
         return r;
       }
-      if (const auto foreign_diag = CheckForeignStaticAssumes(ctx, type_ctx, node)) {
+      if (const auto foreign_diag =
+              CheckForeignStaticAssumes(ctx, type_ctx, node,
+                                        extern_lookup_for_call())) {
         r.diag_id = *foreign_diag;
         return r;
       }
       if (const auto ffi_diag =
-              CheckFfiBoundaryRegionLocalRawPointerArgs(ctx, type_ctx, node, env)) {
+              CheckFfiBoundaryRegionLocalRawPointerArgs(
+                  ctx, type_ctx, node, env, extern_lookup_for_call().has_value())) {
         r.diag_id = *ffi_diag;
         return r;
       }
@@ -3593,11 +3516,11 @@ ExprTypeResult TypeCallExprImpl(const ScopeContext& ctx,
   if (!node.generic_args.empty()) {
     TypeSubst subst;
     const auto subst_diag =
-        BuildGenericCallSubstChecked(ctx, node.callee, node.generic_args, subst);
+        BuildGenericCallSubstChecked(ctx, callee_proc, node.generic_args, subst);
     if (subst_diag.has_value()) {
       ExprTypeResult r;
       if (*subst_diag == "E-TYP-2303" ||
-          GenericArgCountMismatch(ctx, node.callee, node.generic_args.size())) {
+          GenericArgCountMismatch(callee_proc, node.generic_args.size())) {
         SPEC_RULE("Generic-Call-ArgCount-Err");
         r.diag_id = "E-TYP-2303";
       } else {
@@ -3628,28 +3551,32 @@ ExprTypeResult TypeCallExprImpl(const ScopeContext& ctx,
         }
       }
     }
-    if (const auto pre_diag = CheckCallSitePrecondition(ctx, type_ctx, node)) {
+    if (const auto pre_diag =
+            CheckCallSitePrecondition(ctx, type_ctx, node, callee_proc)) {
       r.diag_id = *pre_diag;
       return r;
     }
-    if (proc_lookup && proc_lookup->proc) {
+    if (callee_proc && callee_proc->proc) {
       if (const auto key_diag = CheckSharedArgWriteRequirement(
-              ctx, type_ctx, env, *proc_lookup->proc, node.args, type_expr)) {
+              ctx, type_ctx, env, *callee_proc->proc, node.args, type_expr)) {
         r.diag_id = *key_diag;
         return r;
       }
     }
-    if (const auto foreign_diag = CheckForeignStaticAssumes(ctx, type_ctx, node)) {
+    if (const auto foreign_diag =
+            CheckForeignStaticAssumes(ctx, type_ctx, node,
+                                      extern_lookup_for_call())) {
       r.diag_id = *foreign_diag;
       return r;
     }
     if (const auto ffi_diag =
-            CheckFfiBoundaryRegionLocalRawPointerArgs(ctx, type_ctx, node, env)) {
+            CheckFfiBoundaryRegionLocalRawPointerArgs(
+                ctx, type_ctx, node, env, extern_lookup_for_call().has_value())) {
       r.diag_id = *ffi_diag;
       return r;
     }
-    EmitUnknownCalleeAccessWarningIfNeeded(ctx, type_ctx, node);
-    EmitDeprecatedReferenceWarning(ctx, type_ctx, node.callee);
+    EmitUnknownCalleeAccessWarningIfNeeded(ctx, type_ctx, node, callee_proc);
+    EmitDeprecatedReferenceWarning(type_ctx, node.callee, callee_proc);
     r.ok = true;
     r.type = call.type;
     RecordGenericCallSubst(ctx, node, subst);
@@ -3657,11 +3584,10 @@ ExprTypeResult TypeCallExprImpl(const ScopeContext& ctx,
     return r;
   }
 
-  if (const auto lookup = LookupProcedureForCallee(ctx, node.callee);
-      lookup && lookup->proc && lookup->proc->generic_params &&
-      !lookup->proc->generic_params->params.empty()) {
+  if (callee_proc && callee_proc->proc && callee_proc->proc->generic_params &&
+      !callee_proc->proc->generic_params->params.empty()) {
     const auto inferred =
-        InferGenericCallSubstForProc(ctx, *lookup->proc, node.args,
+        InferGenericCallSubstForProc(ctx, *callee_proc->proc, node.args,
                                      std::nullopt, type_expr, &type_place);
     ExprTypeResult r;
     if (!inferred.ok) {
@@ -3691,28 +3617,32 @@ ExprTypeResult TypeCallExprImpl(const ScopeContext& ctx,
         }
       }
     }
-    if (const auto pre_diag = CheckCallSitePrecondition(ctx, type_ctx, node)) {
+    if (const auto pre_diag =
+            CheckCallSitePrecondition(ctx, type_ctx, node, callee_proc)) {
       r.diag_id = *pre_diag;
       return r;
     }
-    if (lookup && lookup->proc) {
+    if (callee_proc && callee_proc->proc) {
       if (const auto key_diag = CheckSharedArgWriteRequirement(
-              ctx, type_ctx, env, *lookup->proc, node.args, type_expr)) {
+              ctx, type_ctx, env, *callee_proc->proc, node.args, type_expr)) {
         r.diag_id = *key_diag;
         return r;
       }
     }
-    if (const auto foreign_diag = CheckForeignStaticAssumes(ctx, type_ctx, node)) {
+    if (const auto foreign_diag =
+            CheckForeignStaticAssumes(ctx, type_ctx, node,
+                                      extern_lookup_for_call())) {
       r.diag_id = *foreign_diag;
       return r;
     }
     if (const auto ffi_diag =
-            CheckFfiBoundaryRegionLocalRawPointerArgs(ctx, type_ctx, node, env)) {
+            CheckFfiBoundaryRegionLocalRawPointerArgs(
+                ctx, type_ctx, node, env, extern_lookup_for_call().has_value())) {
       r.diag_id = *ffi_diag;
       return r;
     }
-    EmitUnknownCalleeAccessWarningIfNeeded(ctx, type_ctx, node);
-    EmitDeprecatedReferenceWarning(ctx, type_ctx, node.callee);
+    EmitUnknownCalleeAccessWarningIfNeeded(ctx, type_ctx, node, callee_proc);
+    EmitDeprecatedReferenceWarning(type_ctx, node.callee, callee_proc);
     r.ok = true;
     r.type = call.type;
     RecordGenericCallSubst(ctx, node, inferred.subst);
@@ -3744,29 +3674,32 @@ ExprTypeResult TypeCallExprImpl(const ScopeContext& ctx,
       }
     }
   }
-  if (const auto pre_diag = CheckCallSitePrecondition(ctx, type_ctx, node)) {
+  if (const auto pre_diag =
+          CheckCallSitePrecondition(ctx, type_ctx, node, callee_proc)) {
     r.diag_id = *pre_diag;
     return r;
   }
-  if (const auto lookup = LookupProcedureForCallee(ctx, node.callee);
-      lookup && lookup->proc) {
+  if (callee_proc && callee_proc->proc) {
     if (const auto key_diag = CheckSharedArgWriteRequirement(
-            ctx, type_ctx, env, *lookup->proc, node.args, type_expr)) {
+            ctx, type_ctx, env, *callee_proc->proc, node.args, type_expr)) {
       r.diag_id = *key_diag;
       return r;
     }
   }
-  if (const auto foreign_diag = CheckForeignStaticAssumes(ctx, type_ctx, node)) {
+  if (const auto foreign_diag =
+          CheckForeignStaticAssumes(ctx, type_ctx, node,
+                                    extern_lookup_for_call())) {
     r.diag_id = *foreign_diag;
     return r;
   }
   if (const auto ffi_diag =
-          CheckFfiBoundaryRegionLocalRawPointerArgs(ctx, type_ctx, node, env)) {
+          CheckFfiBoundaryRegionLocalRawPointerArgs(
+              ctx, type_ctx, node, env, extern_lookup_for_call().has_value())) {
     r.diag_id = *ffi_diag;
     return r;
   }
-  EmitUnknownCalleeAccessWarningIfNeeded(ctx, type_ctx, node);
-  EmitDeprecatedReferenceWarning(ctx, type_ctx, node.callee);
+  EmitUnknownCalleeAccessWarningIfNeeded(ctx, type_ctx, node, callee_proc);
+  EmitDeprecatedReferenceWarning(type_ctx, node.callee, callee_proc);
   r.ok = true;
   r.type = call.type;
   return r;

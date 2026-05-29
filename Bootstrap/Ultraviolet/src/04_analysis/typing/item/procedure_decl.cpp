@@ -2191,33 +2191,20 @@ ProcedureDeclResult TypeProcedureDecl(
       }
     }
 
-    // Borrow checking
     if (perf_on) {
       ++perf_stats.bind_checks;
-    }
-    const auto bind_result = [&]() {
-      ScopedPerfTimer bind_timer(perf_on ? &perf_stats.bind_ms : nullptr);
-      return BindCheckBody(proc_ctx, module_path, decl.params, decl.body,
-                           std::nullopt);
-    }();
-    if (!bind_result.ok) {
-      result.ok = false;
-      result.diag_id = bind_result.diag_id;
-      return result;
-    }
-
-    // Provenance/region escape checking
-    if (perf_on) {
       ++perf_stats.prov_checks;
     }
-    const auto prov_result = [&]() {
-      ScopedPerfTimer prov_timer(perf_on ? &perf_stats.prov_ms : nullptr);
-      return ProvBindCheck(proc_ctx, module_path, decl.params, decl.body,
-                           std::nullopt, &diags);
-    }();
-    if (!prov_result.ok) {
+    const auto memory_result =
+        CheckBodyMemory(proc_ctx, module_path, decl.params, decl.body,
+                        std::nullopt, &diags, perf_on);
+    if (perf_on) {
+      perf_stats.bind_ms += memory_result.borrow_ms;
+      perf_stats.prov_ms += memory_result.provenance_ms;
+    }
+    if (!memory_result.ok) {
       result.ok = false;
-      result.diag_id = prov_result.diag_id;
+      result.diag_id = memory_result.diag_id;
       return result;
     }
   }
@@ -2473,33 +2460,20 @@ ProcedureDeclResult TypeProcedureDeclBody(
     }
   }
 
-  // Borrow check
   if (perf_on) {
     ++perf_stats.bind_checks;
-  }
-  const auto bind_result = [&]() {
-    ScopedPerfTimer bind_timer(perf_on ? &perf_stats.bind_ms : nullptr);
-    return BindCheckBody(proc_ctx, module_path, decl.params, decl.body,
-                         std::nullopt);
-  }();
-  if (!bind_result.ok) {
-    result.ok = false;
-    result.diag_id = bind_result.diag_id;
-    return result;
-  }
-
-  // Provenance/region escape checking
-  if (perf_on) {
     ++perf_stats.prov_checks;
   }
-  const auto prov_result = [&]() {
-    ScopedPerfTimer prov_timer(perf_on ? &perf_stats.prov_ms : nullptr);
-    return ProvBindCheck(proc_ctx, module_path, decl.params, decl.body,
-                         std::nullopt, &diags);
-  }();
-  if (!prov_result.ok) {
+  const auto memory_result =
+      CheckBodyMemory(proc_ctx, module_path, decl.params, decl.body,
+                      std::nullopt, &diags, perf_on);
+  if (perf_on) {
+    perf_stats.bind_ms += memory_result.borrow_ms;
+    perf_stats.prov_ms += memory_result.provenance_ms;
+  }
+  if (!memory_result.ok) {
     result.ok = false;
-    result.diag_id = prov_result.diag_id;
+    result.diag_id = memory_result.diag_id;
     return result;
   }
 

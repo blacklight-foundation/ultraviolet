@@ -2142,6 +2142,16 @@ static std::vector<ParamInfo> ParamInfosFromFunc(const TypeFunc& func) {
   return params;
 }
 
+static std::vector<ParamInfo> ParamInfosFromProcedureDecl(
+    const ast::ProcedureDecl& proc) {
+  std::vector<ParamInfo> params;
+  params.reserve(proc.params.size());
+  for (const auto& param : proc.params) {
+    params.push_back(ParamInfo{LowerParamMode(param.mode)});
+  }
+  return params;
+}
+
 static const ast::ASTModule* FindModuleByPathForCallParams(
     const ScopeContext& ctx,
     const ast::ModulePath& path) {
@@ -2180,12 +2190,7 @@ static std::optional<std::vector<ParamInfo>> ParamsFromProcedureDecl(
   if (!proc) {
     return std::nullopt;
   }
-  std::vector<ParamInfo> params;
-  params.reserve(proc->params.size());
-  for (const auto& param : proc->params) {
-    params.push_back(ParamInfo{LowerParamMode(param.mode)});
-  }
-  return params;
+  return ParamInfosFromProcedureDecl(*proc);
 }
 
 static std::optional<std::vector<ParamInfo>> ParamsFromUniqueProcedureName(
@@ -2205,18 +2210,21 @@ static std::optional<std::vector<ParamInfo>> ParamsFromUniqueProcedureName(
   if (!matched) {
     return std::nullopt;
   }
-  std::vector<ParamInfo> params;
-  params.reserve(matched->params.size());
-  for (const auto& param : matched->params) {
-    params.push_back(ParamInfo{LowerParamMode(param.mode)});
-  }
-  return params;
+  return ParamInfosFromProcedureDecl(*matched);
 }
 
 static std::optional<std::vector<ParamInfo>> ParamsForCall(
     const ScopeContext& ctx,
     const TypeEnv& env,
-    const ast::ExprPtr& callee) {
+    const ast::CallExpr& call) {
+  if (ctx.selected_call_targets) {
+    const auto selected = ctx.selected_call_targets->find(&call);
+    if (selected != ctx.selected_call_targets->end() && selected->second.proc) {
+      return ParamInfosFromProcedureDecl(*selected->second.proc);
+    }
+  }
+
+  const ast::ExprPtr& callee = call.callee;
   const auto type = ExprTypeOf(ctx, env, callee);
   if (!type.has_value() || !*type) {
     // Fall through to declaration-lookup fallback.
@@ -2497,7 +2505,7 @@ static BindResult BindCallExpr(const ScopeContext& ctx,
     callee_state = std::move(callee_res.state);
   }
 
-  auto params = ParamsForCall(ctx, callee_state.env, call.callee);
+  auto params = ParamsForCall(ctx, callee_state.env, call);
   if (!params.has_value()) {
     BindStateBundle current = callee_state;
     for (const auto& arg : call.args) {
@@ -3565,34 +3573,98 @@ static const ast::ASTModule* FindModuleByPath(
   return nullptr;
 }
 
-static BindScope StaticBindInfo(const ScopeContext& ctx,
-                                const ast::StaticDecl& decl,
-                                TypeEnv& env) {
-  BindScope out;
+struct StaticBindEntry {
+  std::vector<std::pair<IdKey, TypeBinding>> env_bindings;
+  BindScope bind_info;
+};
+
+static std::optional<StaticBindEntry> BuildStaticBindEntry(
+    const ScopeContext& ctx,
+    const ast::StaticDecl& decl) {
   const auto ann_type = ast::BindingAnnotationTypeOpt(decl.binding);
   if (!ann_type) {
-    return out;
+    return std::nullopt;
   }
   const auto ann = LocalLowerType(ctx, ann_type);
   if (!ann.ok) {
-    return out;
+    return std::nullopt;
   }
   const auto pat = TypePatternAgainstType(ctx, decl.binding.pat, ann.type);
   if (!pat.ok) {
-    return out;
+    return std::nullopt;
   }
+
+  StaticBindEntry entry;
+  entry.env_bindings.reserve(pat.bindings.size());
   for (const auto& [name, type] : pat.bindings) {
-    if (env.scopes.empty()) {
-      env.scopes.emplace_back();
-    }
-    env.scopes.front()[IdKeyOf(name)] = TypeBinding{decl.mut, type};
+    entry.env_bindings.emplace_back(IdKeyOf(name),
+                                    TypeBinding{decl.mut, type});
   }
+
   const auto type_map = BindTypeMapFromBindings(pat.bindings);
   const auto resp = RespOfInit(ctx, decl.binding.init);
   const auto mv = MovOf(decl.binding.op);
-  const auto info = BindInfoMap(type_map, resp, mv, decl.mut);
-  out.insert(info.begin(), info.end());
-  return out;
+  entry.bind_info = BindInfoMap(type_map, resp, mv, decl.mut);
+  return entry;
+}
+
+static const std::vector<StaticBindEntry>& StaticBindEntriesForModule(
+    const ScopeContext& ctx,
+    const ast::ModulePath& module_path) {
+  struct StaticBindEntryCache {
+    const Sigma* sigma_key = nullptr;
+    const ast::ASTModule* mods_data = nullptr;
+    std::size_t mods_size = 0;
+    const NameResolutionTables* name_resolution_tables = nullptr;
+    PathKey current_module_key;
+    std::map<PathKey, std::vector<StaticBindEntry>> entries_by_module;
+  };
+
+  static thread_local StaticBindEntryCache cache;
+  const Sigma* sigma_key = ctx.sigma_source ? ctx.sigma_source : &ctx.sigma;
+  const PathKey current_module_key = PathKeyOf(ctx.current_module);
+  if (cache.sigma_key != sigma_key ||
+      cache.mods_data != sigma_key->mods.data() ||
+      cache.mods_size != sigma_key->mods.size() ||
+      cache.name_resolution_tables != ctx.name_resolution_tables ||
+      cache.current_module_key != current_module_key) {
+    cache.sigma_key = sigma_key;
+    cache.mods_data = sigma_key->mods.data();
+    cache.mods_size = sigma_key->mods.size();
+    cache.name_resolution_tables = ctx.name_resolution_tables;
+    cache.current_module_key = current_module_key;
+    cache.entries_by_module.clear();
+  }
+
+  const PathKey module_key = PathKeyOf(module_path);
+  const auto cached = cache.entries_by_module.find(module_key);
+  if (cached != cache.entries_by_module.end()) {
+    return cached->second;
+  }
+
+  std::vector<StaticBindEntry> entries;
+  const auto* module = FindModuleByPath(ctx, module_path);
+  if (module) {
+    auto& perf = BorrowPerfStats();
+    const bool perf_on = BorrowPerfActive();
+    for (const auto& item : module->items) {
+      if (perf_on) {
+        ++perf.static_bind_items_scanned;
+      }
+      const auto* decl = std::get_if<ast::StaticDecl>(&item);
+      if (!decl) {
+        continue;
+      }
+      auto entry = BuildStaticBindEntry(ctx, *decl);
+      if (entry.has_value()) {
+        entries.push_back(std::move(*entry));
+      }
+    }
+  }
+
+  const auto inserted =
+      cache.entries_by_module.emplace(module_key, std::move(entries));
+  return inserted.first->second;
 }
 
 static BindScope StaticBindMap(const ScopeContext& ctx,
@@ -3602,20 +3674,15 @@ static BindScope StaticBindMap(const ScopeContext& ctx,
   const bool perf_on = BorrowPerfActive();
   ScopedBorrowTimer timer(perf_on ? &perf.static_bind_map_us : nullptr);
   BindScope out;
-  const auto* module = FindModuleByPath(ctx, module_path);
-  if (!module) {
-    return out;
-  }
-  for (const auto& item : module->items) {
-    if (perf_on) {
-      ++perf.static_bind_items_scanned;
+  const auto& entries = StaticBindEntriesForModule(ctx, module_path);
+  for (const auto& entry : entries) {
+    if (env.scopes.empty()) {
+      env.scopes.emplace_back();
     }
-    const auto* decl = std::get_if<ast::StaticDecl>(&item);
-    if (!decl) {
-      continue;
+    for (const auto& [name, binding] : entry.env_bindings) {
+      env.scopes.front()[name] = binding;
     }
-    const auto info = StaticBindInfo(ctx, *decl, env);
-    out.insert(info.begin(), info.end());
+    out.insert(entry.bind_info.begin(), entry.bind_info.end());
   }
   return out;
 }
