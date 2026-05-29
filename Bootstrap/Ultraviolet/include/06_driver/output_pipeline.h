@@ -33,6 +33,13 @@ struct OutputPipelineResult {
 struct CodegenObjectAndIR {
   std::string object;
   std::optional<std::string> ir;
+  std::int64_t llvm_emit_ms = 0;
+  std::int64_t ir_render_ms = 0;
+  std::int64_t opt_ms = 0;
+  std::int64_t target_ms = 0;
+  std::int64_t emit_setup_ms = 0;
+  std::int64_t emit_pass_ms = 0;
+  std::int64_t object_copy_ms = 0;
 };
 
 struct SharedLibraryExports {
@@ -103,6 +110,10 @@ struct OutputPipelineDeps {
       incremental_module;
   std::function<std::optional<std::string>(const project::Project& project)>
       incremental_build_key;
+  std::function<void(
+      std::string_view event,
+      const std::vector<std::pair<std::string, std::string>>& fields)>
+      profile_event;
   bool codegen_obj_thread_safe = false;
 };
 

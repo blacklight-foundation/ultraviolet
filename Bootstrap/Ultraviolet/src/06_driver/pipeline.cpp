@@ -12,6 +12,7 @@
 #include "06_driver/pipeline.h"
 
 #include <algorithm>
+#include <atomic>
 #include <chrono>
 #include <cstdlib>
 #include <cstdint>
@@ -23,6 +24,7 @@
 #include <optional>
 #include <string>
 #include <string_view>
+#include <thread>
 #include <unordered_map>
 #include <unordered_set>
 #include <vector>
@@ -183,6 +185,12 @@ namespace {
 
 unsigned long CurrentProcessId() {
   return core::CurrentHostProcessId();
+}
+
+std::int64_t ElapsedMs(std::chrono::steady_clock::time_point start) {
+  return std::chrono::duration_cast<std::chrono::milliseconds>(
+             std::chrono::steady_clock::now() - start)
+      .count();
 }
 
 void LogCodegenProgress(const std::string& message) {
@@ -1167,12 +1175,14 @@ std::optional<CodegenObjectAndIR> EmitObjAndOptionalIRForModule(
       debug_obj || core::IsDebugEnabled("pipeline") ||
       core::IsDebugEnabled("codegen");
   const bool wants_ir_artifact = emit_ir == "ll" || emit_ir == "bc";
+  const auto llvm_emit_start = std::chrono::steady_clock::now();
   auto cached = MaterializeCachedLLVMArtifacts(cache,
                                                module,
                                                project,
                                                target_profile,
                                                true,
                                                false);
+  const std::int64_t llvm_emit_ms = ElapsedMs(llvm_emit_start);
   if (!cached.has_value()) {
     LogCodegenProgress("emit-obj-error module=" + module_name +
                        " stage=lower-ir");
@@ -1184,7 +1194,9 @@ std::optional<CodegenObjectAndIR> EmitObjAndOptionalIRForModule(
   auto& entry = **cached;
   auto& bundle = *entry.bundle;
   std::optional<std::string> ir_bytes;
+  std::int64_t ir_render_ms = 0;
   if (wants_ir_artifact) {
+    const auto ir_render_start = std::chrono::steady_clock::now();
     const auto assembler = project::ResolveTool(project, target_profile, "llvm-as");
     if (assembler.has_value()) {
       auto rendered = RenderLLVMText(*bundle.module, *assembler, module_name);
@@ -1196,11 +1208,15 @@ std::optional<CodegenObjectAndIR> EmitObjAndOptionalIRForModule(
         }
       }
     }
+    ir_render_ms = ElapsedMs(ir_render_start);
   }
+  std::int64_t opt_ms = 0;
   if (opt_level != codegen::OptLevel::O0) {
+    const auto opt_start = std::chrono::steady_clock::now();
     codegen::PassConfig pass_config;
     pass_config.opt_level = opt_level;
     codegen::RunOptimizationPipeline(*bundle.module, pass_config);
+    opt_ms = ElapsedMs(opt_start);
   }
   if (verify_llvm_module) {
     std::string verify_err;
@@ -1218,6 +1234,7 @@ std::optional<CodegenObjectAndIR> EmitObjAndOptionalIRForModule(
       return std::nullopt;
     }
   }
+  const auto target_start = std::chrono::steady_clock::now();
   llvm::Triple triple = bundle.module->getTargetTriple();
   if (triple.getTriple().empty()) {
     triple = llvm::Triple(
@@ -1243,10 +1260,12 @@ std::optional<CodegenObjectAndIR> EmitObjAndOptionalIRForModule(
   if (bundle.module->getDataLayout().isDefault()) {
     bundle.module->setDataLayout(machine->createDataLayout());
   }
+  const std::int64_t target_ms = ElapsedMs(target_start);
 
   llvm::SmallVector<char, 0> buffer;
   llvm::raw_svector_ostream dest(buffer);
   llvm::legacy::PassManager pass;
+  const auto emit_setup_start = std::chrono::steady_clock::now();
   if (machine->addPassesToEmitFile(pass, dest, nullptr,
                                    llvm::CodeGenFileType::ObjectFile)) {
     LogCodegenProgress("emit-obj-error module=" + module_name +
@@ -1255,13 +1274,24 @@ std::optional<CodegenObjectAndIR> EmitObjAndOptionalIRForModule(
     SPEC_RULE("EmitObj-Err");
     return std::nullopt;
   }
+  const std::int64_t emit_setup_ms = ElapsedMs(emit_setup_start);
   LogCodegenProgress("emit-obj-run module=" + module_name +
                      " stage=pass-run");
+  const auto emit_pass_start = std::chrono::steady_clock::now();
   pass.run(*bundle.module);
+  const std::int64_t emit_pass_ms = ElapsedMs(emit_pass_start);
   SPEC_RULE("EmitObj-Ok");
   CodegenObjectAndIR emitted;
+  const auto object_copy_start = std::chrono::steady_clock::now();
   emitted.object.assign(buffer.begin(), buffer.end());
+  emitted.object_copy_ms = ElapsedMs(object_copy_start);
   emitted.ir = std::move(ir_bytes);
+  emitted.llvm_emit_ms = llvm_emit_ms;
+  emitted.ir_render_ms = ir_render_ms;
+  emitted.opt_ms = opt_ms;
+  emitted.target_ms = target_ms;
+  emitted.emit_setup_ms = emit_setup_ms;
+  emitted.emit_pass_ms = emit_pass_ms;
   entry.bundle.reset();
   entry.ir_text.reset();
   entry.bitcode.reset();
@@ -1494,15 +1524,240 @@ std::shared_ptr<CodegenCache> BuildCodegenCache(
   return cache;
 }
 
+static std::size_t PublishLoweredCodegenModuleLocked(
+    CodegenCache& cache,
+    const std::string& module_key,
+    const std::shared_ptr<ModuleCodegen>& module_entry,
+    const std::unordered_map<std::string, std::vector<std::string>>& static_modules) {
+  bool emit_context_changed = false;
+  for (const auto& [symbol, type] : module_entry->values.static_types) {
+    cache.ctx.values.static_types[symbol] = type;
+    emit_context_changed = true;
+  }
+  for (const auto& [symbol, owner_module] : static_modules) {
+    cache.ctx.static_modules[symbol] = owner_module;
+    emit_context_changed = true;
+  }
+  if (emit_context_changed) {
+    cache.emit_context_epoch += 1;
+  }
+
+  DeduplicateProcDecls(module_entry->decls,
+                       module_entry->proc_linkages,
+                       cache.lowered_proc_symbols);
+  if (cache.ctx.hosted_library) {
+    CollectHostedStateTemplates(cache, *module_entry);
+  }
+
+  const std::size_t lowered_index = cache.modules.size();
+  cache.modules.push_back(module_entry);
+  cache.index[module_key] = lowered_index;
+  cache.module_entries[module_key] = module_entry;
+  cache.module_states[module_key] = CodegenCache::ModuleState::Done;
+  return lowered_index;
+}
+
 bool PopulateCodegenModules(CodegenCache& cache, const project::Project& project) {
   if (!cache.ok.load()) {
     return false;
   }
-  for (const auto& module : project.modules) {
-    if (!EnsureCodegenModule(cache, module.path).has_value()) {
-      return false;
+
+  struct ModuleLowerJob {
+    std::size_t project_index = 0;
+    std::size_t module_order = 1;
+    std::string module_key;
+    const ast::ASTModule* module = nullptr;
+  };
+
+  struct ModuleLowerResult {
+    std::optional<ModuleCodegen> lowered;
+    std::unordered_map<std::string, std::vector<std::string>> static_modules;
+    bool ok = false;
+  };
+
+  std::vector<ModuleLowerJob> jobs;
+  jobs.reserve(project.modules.size());
+  std::unordered_set<std::string> scheduled_module_keys;
+  scheduled_module_keys.reserve(project.modules.size());
+
+  for (std::size_t i = 0; i < project.modules.size(); ++i) {
+    const auto& module = project.modules[i];
+    const std::string module_key(module.path);
+    std::unique_lock<std::mutex> lock(cache.module_mu);
+
+    for (;;) {
+      if (!cache.ok.load()) {
+        return false;
+      }
+
+      const auto target_it = cache.ast_modules.find(module_key);
+      if (target_it == cache.ast_modules.end() || target_it->second == nullptr) {
+        LogCodegenProgress("cache-lower-error module=" +
+                           ModuleNameForPath(module.path) +
+                           " stage=module-missing");
+        std::cerr << "[uv] PopulateCodegenModules: module not found for path '"
+                  << module_key << "'\n";
+        cache.ok.store(false);
+        cache.module_states[module_key] = CodegenCache::ModuleState::Failed;
+        lock.unlock();
+        cache.module_cv.notify_all();
+        return false;
+      }
+
+      auto state_it = cache.module_states.find(module_key);
+      if (state_it == cache.module_states.end()) {
+        state_it = cache.module_states
+                       .emplace(module_key, CodegenCache::ModuleState::Pending)
+                       .first;
+      }
+
+      switch (state_it->second) {
+        case CodegenCache::ModuleState::Done: {
+          const auto lowered_it = cache.index.find(module_key);
+          if (lowered_it == cache.index.end()) {
+            LogCodegenProgress("cache-lower-error module=" +
+                               ModuleNameForPath(module.path) +
+                               " stage=inconsistent-index");
+            cache.ok.store(false);
+            state_it->second = CodegenCache::ModuleState::Failed;
+            lock.unlock();
+            cache.module_cv.notify_all();
+            return false;
+          }
+          break;
+        }
+        case CodegenCache::ModuleState::Failed:
+          return false;
+        case CodegenCache::ModuleState::Pending: {
+          state_it->second = CodegenCache::ModuleState::InProgress;
+          std::size_t module_order = 1;
+          if (const auto pos_it = cache.module_order.find(module_key);
+              pos_it != cache.module_order.end()) {
+            module_order = pos_it->second;
+          }
+          if (scheduled_module_keys.insert(module_key).second) {
+            jobs.push_back(ModuleLowerJob{
+                i,
+                module_order,
+                module_key,
+                target_it->second,
+            });
+          }
+          break;
+        }
+        case CodegenCache::ModuleState::InProgress:
+          if (scheduled_module_keys.count(module_key) != 0) {
+            break;
+          }
+          cache.module_cv.wait(lock, [&]() {
+            return !cache.ok.load() ||
+                   cache.module_states[module_key] !=
+                       CodegenCache::ModuleState::InProgress;
+          });
+          continue;
+      }
+      break;
     }
   }
+
+  if (jobs.empty()) {
+    return cache.ok.load();
+  }
+
+  constexpr std::size_t kMaxParallelLowerWorkers = 4;
+  const std::size_t hardware_threads = std::thread::hardware_concurrency();
+  const std::size_t available_workers =
+      hardware_threads == 0
+          ? kMaxParallelLowerWorkers
+          : std::min<std::size_t>(hardware_threads, kMaxParallelLowerWorkers);
+  const std::size_t worker_count =
+      jobs.size() == 1
+          ? 1
+          : std::min<std::size_t>(jobs.size(), available_workers);
+  LogCodegenProgress("cache-populate-start modules=" +
+                     std::to_string(project.modules.size()) +
+                     " pending=" + std::to_string(jobs.size()) +
+                     " workers=" + std::to_string(worker_count));
+
+  std::vector<ModuleLowerResult> results(jobs.size());
+  std::atomic<std::size_t> next_job{0};
+  auto lower_job = [&](std::size_t job_index) {
+    const auto& job = jobs[job_index];
+    auto& result = results[job_index];
+    codegen::LowerCtx& lower_ctx = AcquireThreadLocalLowerCtx(cache);
+    auto lowered = LowerCodegenModule(lower_ctx, *job.module, job.module_order);
+    if (!lowered.has_value()) {
+      result.ok = false;
+      return;
+    }
+    result.static_modules = std::move(lower_ctx.static_modules);
+    result.lowered = std::move(*lowered);
+    result.ok = true;
+  };
+
+  if (worker_count == 1) {
+    for (std::size_t i = 0; i < jobs.size(); ++i) {
+      lower_job(i);
+    }
+  } else {
+    std::vector<std::thread> workers;
+    workers.reserve(worker_count);
+    for (std::size_t worker_index = 0; worker_index < worker_count;
+         ++worker_index) {
+      workers.emplace_back([&]() {
+        for (;;) {
+          const std::size_t job_index = next_job.fetch_add(1);
+          if (job_index >= jobs.size()) {
+            break;
+          }
+          lower_job(job_index);
+        }
+      });
+    }
+    for (auto& worker : workers) {
+      worker.join();
+    }
+  }
+
+  bool all_lowered = true;
+  for (const auto& result : results) {
+    if (!result.ok || !result.lowered.has_value()) {
+      all_lowered = false;
+      break;
+    }
+  }
+  if (!all_lowered) {
+    {
+      std::lock_guard<std::mutex> lock(cache.module_mu);
+      cache.ok.store(false);
+      for (const auto& job : jobs) {
+        cache.module_states[job.module_key] = CodegenCache::ModuleState::Failed;
+      }
+    }
+    cache.module_cv.notify_all();
+    LogCodegenProgress("cache-populate-finish ok=false pending=" +
+                       std::to_string(jobs.size()));
+    return false;
+  }
+
+  {
+    std::lock_guard<std::mutex> lock(cache.module_mu);
+    if (!cache.ok.load()) {
+      return false;
+    }
+    for (std::size_t i = 0; i < jobs.size(); ++i) {
+      auto module_entry =
+          std::make_shared<ModuleCodegen>(std::move(*results[i].lowered));
+      (void)PublishLoweredCodegenModuleLocked(cache,
+                                              jobs[i].module_key,
+                                              module_entry,
+                                              results[i].static_modules);
+    }
+  }
+  cache.module_cv.notify_all();
+  LogCodegenProgress("cache-populate-finish ok=true pending=" +
+                     std::to_string(jobs.size()) +
+                     " lowered=" + std::to_string(cache.modules.size()));
   return cache.ok.load();
 }
 
@@ -1658,31 +1913,10 @@ std::optional<std::size_t> EnsureCodegenModule(CodegenCache& cache,
       return std::nullopt;
     }
 
-    bool emit_context_changed = false;
-    for (const auto& [symbol, type] : module_entry->values.static_types) {
-      cache.ctx.values.static_types[symbol] = type;
-      emit_context_changed = true;
-    }
-    for (const auto& [symbol, owner_module] : lower_ctx.static_modules) {
-      cache.ctx.static_modules[symbol] = owner_module;
-      emit_context_changed = true;
-    }
-    if (emit_context_changed) {
-      cache.emit_context_epoch += 1;
-    }
-
-    DeduplicateProcDecls(module_entry->decls,
-                        module_entry->proc_linkages,
-                        cache.lowered_proc_symbols);
-    if (cache.ctx.hosted_library) {
-      CollectHostedStateTemplates(cache, *module_entry);
-    }
-
-    lowered_index = cache.modules.size();
-    cache.modules.push_back(module_entry);
-    cache.index[module_key] = lowered_index;
-    cache.module_entries[module_key] = module_entry;
-    cache.module_states[module_key] = CodegenCache::ModuleState::Done;
+    lowered_index = PublishLoweredCodegenModuleLocked(cache,
+                                                      module_key,
+                                                      module_entry,
+                                                      lower_ctx.static_modules);
   }
   cache.module_cv.notify_all();
   return lowered_index;

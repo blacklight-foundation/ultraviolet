@@ -281,6 +281,7 @@ static bool LoadBinaryOperandInfo(const ScopeContext& ctx,
                                   const StmtTypeContext& type_ctx,
                                   const ast::ExprPtr& expr,
                                   const TypeEnv& env,
+                                  bool resolve_prim,
                                   BinaryOperandInfo& out,
                                   std::optional<std::string_view>& diag_id,
                                   std::string* diag_detail,
@@ -315,6 +316,9 @@ static bool LoadBinaryOperandInfo(const ScopeContext& ctx,
   }
 
   out.core = core_norm.type;
+  if (!resolve_prim) {
+    return true;
+  }
 
   const auto prim = ResolveAliasTransparentPrim(ctx, out.core);
   if (!prim.ok) {
@@ -334,14 +338,29 @@ static void SetBinaryOperandTypeMismatch(ExprTypeResult& result,
       "' requires operands compatible with the operator's type rules";
 }
 
+static bool TryTypedOperandAgainst(const ScopeContext& ctx,
+                                   const TypeRef& actual,
+                                   const TypeRef& expected) {
+  if (!actual || !expected) {
+    return false;
+  }
+
+  const auto rel = Subtyping(ctx, actual, expected);
+  return rel.ok && rel.subtype;
+}
+
 static bool TryCheckOperandAgainst(const ScopeContext& ctx,
                                    const StmtTypeContext& type_ctx,
                                    const ast::ExprPtr& expr,
+                                   const TypeRef& actual,
                                    const TypeRef& expected,
                                    const TypeEnv& env) {
   ScopedTypeBodyPerfPhase perf(TypeBodyPerfPhase::BinaryTryCheckOperand);
   if (!expected) {
     return false;
+  }
+  if (TryTypedOperandAgainst(ctx, actual, expected)) {
+    return true;
   }
 
   const auto checked = CheckExprAgainst(
@@ -397,7 +416,7 @@ static bool CheckLogicalOperand(const ScopeContext& ctx,
                                 ExprTypeResult& result) {
   BinaryOperandInfo operand;
   std::optional<std::string_view> diag_id;
-  if (!LoadBinaryOperandInfo(ctx, type_ctx, expr, env, operand, diag_id,
+  if (!LoadBinaryOperandInfo(ctx, type_ctx, expr, env, false, operand, diag_id,
                              &result.diag_detail, &result.diag_span)) {
     result.diag_id = diag_id;
     return false;
@@ -410,7 +429,8 @@ static bool CheckLogicalOperand(const ScopeContext& ctx,
   }
 
   if (operand_bool.subtype ||
-      TryCheckOperandAgainst(ctx, type_ctx, expr, MakeTypePrim("bool"), env)) {
+      TryCheckOperandAgainst(ctx, type_ctx, expr, operand.core,
+                             MakeTypePrim("bool"), env)) {
     return true;
   }
 
@@ -494,16 +514,20 @@ ExprTypeResult TypeBinaryExprImpl(const ScopeContext& ctx,
 
   BinaryOperandInfo lhs;
   std::optional<std::string_view> lhs_diag_id;
-  if (!LoadBinaryOperandInfo(ctx, type_ctx, expr.lhs, env, lhs, lhs_diag_id,
-                             nullptr, nullptr)) {
+  const bool resolve_operand_prims =
+      IsArithOp(op) || IsBitOp(op) || IsShiftOp(op) || IsOrdOp(op);
+  if (!LoadBinaryOperandInfo(ctx, type_ctx, expr.lhs, env,
+                             resolve_operand_prims, lhs, lhs_diag_id, nullptr,
+                             nullptr)) {
     result.diag_id = lhs_diag_id;
     return result;
   }
 
   BinaryOperandInfo rhs;
   std::optional<std::string_view> rhs_diag_id;
-  if (!LoadBinaryOperandInfo(ctx, type_ctx, expr.rhs, env, rhs, rhs_diag_id,
-                             nullptr, nullptr)) {
+  if (!LoadBinaryOperandInfo(ctx, type_ctx, expr.rhs, env,
+                             resolve_operand_prims, rhs, rhs_diag_id, nullptr,
+                             nullptr)) {
     result.diag_id = rhs_diag_id;
     return result;
   }
@@ -523,7 +547,8 @@ ExprTypeResult TypeBinaryExprImpl(const ScopeContext& ctx,
     }
 
     if (lhs.prim_name.has_value() && IsNumericType(*lhs.prim_name) &&
-        TryCheckOperandAgainst(ctx, type_ctx, expr.rhs, lhs.core, env)) {
+        TryCheckOperandAgainst(ctx, type_ctx, expr.rhs, rhs.core, lhs.core,
+                               env)) {
       SPEC_RULE("T-Arith");
       result.ok = true;
       result.type = MakeTypePrim(*lhs.prim_name);
@@ -531,7 +556,8 @@ ExprTypeResult TypeBinaryExprImpl(const ScopeContext& ctx,
     }
 
     if (rhs.prim_name.has_value() && IsNumericType(*rhs.prim_name) &&
-        TryCheckOperandAgainst(ctx, type_ctx, expr.lhs, rhs.core, env)) {
+        TryCheckOperandAgainst(ctx, type_ctx, expr.lhs, lhs.core, rhs.core,
+                               env)) {
       SPEC_RULE("T-Arith");
       result.ok = true;
       result.type = MakeTypePrim(*rhs.prim_name);
@@ -558,7 +584,8 @@ ExprTypeResult TypeBinaryExprImpl(const ScopeContext& ctx,
     }
 
     if (lhs.prim_name.has_value() && IsIntType(*lhs.prim_name) &&
-        TryCheckOperandAgainst(ctx, type_ctx, expr.rhs, lhs.core, env)) {
+        TryCheckOperandAgainst(ctx, type_ctx, expr.rhs, rhs.core, lhs.core,
+                               env)) {
       SPEC_RULE("T-Bitwise");
       result.ok = true;
       result.type = MakeTypePrim(*lhs.prim_name);
@@ -566,7 +593,8 @@ ExprTypeResult TypeBinaryExprImpl(const ScopeContext& ctx,
     }
 
     if (rhs.prim_name.has_value() && IsIntType(*rhs.prim_name) &&
-        TryCheckOperandAgainst(ctx, type_ctx, expr.lhs, rhs.core, env)) {
+        TryCheckOperandAgainst(ctx, type_ctx, expr.lhs, lhs.core, rhs.core,
+                               env)) {
       SPEC_RULE("T-Bitwise");
       result.ok = true;
       result.type = MakeTypePrim(*rhs.prim_name);
@@ -593,7 +621,8 @@ ExprTypeResult TypeBinaryExprImpl(const ScopeContext& ctx,
     }
 
     if (rhs_u32.subtype ||
-        TryCheckOperandAgainst(ctx, type_ctx, expr.rhs, MakeTypePrim("u32"), env)) {
+        TryCheckOperandAgainst(ctx, type_ctx, expr.rhs, rhs.core,
+                               MakeTypePrim("u32"), env)) {
       SPEC_RULE("T-Shift");
       result.ok = true;
       result.type = MakeTypePrim(*lhs.prim_name);
@@ -620,7 +649,8 @@ ExprTypeResult TypeBinaryExprImpl(const ScopeContext& ctx,
     }
 
     if (EqType(ctx, lhs.core) &&
-        TryCheckOperandAgainst(ctx, type_ctx, expr.rhs, lhs.core, env)) {
+        TryCheckOperandAgainst(ctx, type_ctx, expr.rhs, rhs.core, lhs.core,
+                               env)) {
       SPEC_RULE("T-Compare-Eq");
       result.ok = true;
       result.type = MakeTypePrim("bool");
@@ -628,7 +658,8 @@ ExprTypeResult TypeBinaryExprImpl(const ScopeContext& ctx,
     }
 
     if (EqType(ctx, rhs.core) &&
-        TryCheckOperandAgainst(ctx, type_ctx, expr.lhs, rhs.core, env)) {
+        TryCheckOperandAgainst(ctx, type_ctx, expr.lhs, lhs.core, rhs.core,
+                               env)) {
       SPEC_RULE("T-Compare-Eq");
       result.ok = true;
       result.type = MakeTypePrim("bool");
@@ -659,14 +690,16 @@ ExprTypeResult TypeBinaryExprImpl(const ScopeContext& ctx,
       return result;
     }
 
-    if (lhs_ord && TryCheckOperandAgainst(ctx, type_ctx, expr.rhs, lhs.core, env)) {
+    if (lhs_ord && TryCheckOperandAgainst(ctx, type_ctx, expr.rhs, rhs.core,
+                                          lhs.core, env)) {
       SPEC_RULE("T-Compare-Ord");
       result.ok = true;
       result.type = MakeTypePrim("bool");
       return result;
     }
 
-    if (rhs_ord && TryCheckOperandAgainst(ctx, type_ctx, expr.lhs, rhs.core, env)) {
+    if (rhs_ord && TryCheckOperandAgainst(ctx, type_ctx, expr.lhs, lhs.core,
+                                          rhs.core, env)) {
       SPEC_RULE("T-Compare-Ord");
       result.ok = true;
       result.type = MakeTypePrim("bool");

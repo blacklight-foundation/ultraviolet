@@ -24,6 +24,7 @@
 #include <iomanip>
 #include <iostream>
 #include <string_view>
+#include <utility>
 
 #include "00_core/assert_spec.h"
 #include "00_core/diagnostic_messages.h"
@@ -80,6 +81,48 @@ std::optional<core::Span> FirstTopLevelErrorItemSpan(
   return std::nullopt;
 }
 
+Parser ParserStateWithoutDiagnostics(const Parser& parser) {
+  Parser out;
+  out.tokens = parser.tokens;
+  out.owned_tokens = parser.owned_tokens;
+  out.split_shift_right_indices = parser.split_shift_right_indices;
+  out.source = parser.source;
+  out.index = parser.index;
+  out.docs = parser.docs;
+  out.doc_index = parser.doc_index;
+  out.depth = parser.depth;
+  out.quote_mode = parser.quote_mode;
+  out.stop_before_parallel_options = parser.stop_before_parallel_options;
+  out.stop_before_contract_post_separator =
+      parser.stop_before_contract_post_separator;
+  return out;
+}
+
+std::size_t ParserVirtualTokenCount(const Parser& parser) {
+  if (!parser.tokens) {
+    return 0;
+  }
+  const std::size_t split_count =
+      parser.split_shift_right_indices
+          ? parser.split_shift_right_indices->size()
+          : 0;
+  return parser.tokens->size() + split_count;
+}
+
+std::size_t EstimateTopLevelItemCapacity(const Parser& parser) {
+  const std::size_t token_count = ParserVirtualTokenCount(parser);
+  if (parser.index >= token_count) {
+    return 0;
+  }
+
+  const std::size_t remaining_tokens = token_count - parser.index;
+  if (remaining_tokens < 64) {
+    return 4;
+  }
+
+  return remaining_tokens / 32;
+}
+
 }  // namespace
 
 // =============================================================================
@@ -106,9 +149,7 @@ Parser AdvanceOrEOF(const Parser& parser) {
 //   Clone(P) = <K, i, D, j, d, []>
 
 Parser Clone(const Parser& parser) {
-  Parser out = parser;
-  out.diags.clear();
-  return out;
+  return ParserStateWithoutDiagnostics(parser);
 }
 
 // =============================================================================
@@ -119,8 +160,9 @@ Parser Clone(const Parser& parser) {
 //   MergeDiag(P_b, P_d, P_s): Merges diagnostics from base and diag into src
 
 Parser MergeDiag(const Parser& base, const Parser& diag, const Parser& src) {
-  Parser out = src;
-  out.diags = base.diags;
+  Parser out = ParserStateWithoutDiagnostics(src);
+  out.diags.reserve(base.diags.size() + diag.diags.size());
+  AppendDiags(out.diags, base.diags);
   AppendDiags(out.diags, diag.diags);
   return out;
 }
@@ -136,7 +178,7 @@ bool PStateOk(const Parser& parser) {
   if (!parser.tokens) {
     return parser.index == 0;
   }
-  return parser.index <= parser.tokens->size();
+  return parser.index <= ParserVirtualTokenCount(parser);
 }
 
 // =============================================================================
@@ -149,11 +191,11 @@ bool PStateOk(const Parser& parser) {
 
 core::Span SpanBetween(const Parser& start, const Parser& end) {
   Token start_tok = *Tok(start);
-  const std::vector<Token>* tokens =
-      end.tokens ? end.tokens : start.tokens;
   Token end_tok = start_tok;
-  if (tokens && end.index > start.index && end.index - 1 < tokens->size()) {
-    end_tok = (*tokens)[end.index - 1];
+  if (end.index > start.index) {
+    Parser last = end;
+    last.index = end.index - 1;
+    end_tok = *Tok(last);
   }
   return SpanFrom(start_tok, end_tok);
 }
@@ -171,6 +213,7 @@ static ParseItemsResult ParseItemsInternal(
     const std::vector<DocComment>& module_docs) {
   ParseItemsResult result;
   result.module_doc = module_docs;
+  result.items.reserve(EstimateTopLevelItemCapacity(parser));
 
   Parser cur = parser;
   for (;;) {
@@ -212,7 +255,7 @@ static ParseItemsResult ParseItemsInternal(
     }
 
     result.items.push_back(std::move(item.item));
-    cur = item.parser;
+    cur = std::move(item.parser);
   }
 }
 

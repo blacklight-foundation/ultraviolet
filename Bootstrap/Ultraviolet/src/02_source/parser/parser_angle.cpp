@@ -16,6 +16,7 @@
 
 #include "02_source/parser/parser.h"
 
+#include <algorithm>
 #include <memory>
 #include <utility>
 #include <vector>
@@ -72,39 +73,37 @@ std::pair<core::Span, core::Span> SplitSpan2(const core::Span& sp) {
 // into two `>` tokens for proper generic argument parsing.
 
 Parser SplitShiftR(const Parser& parser) {
-  if (!parser.tokens || parser.index >= parser.tokens->size()) {
+  const Token* tok = Tok(parser);
+  if (!parser.tokens || !tok || tok->kind != TokenKind::Operator ||
+      tok->lexeme != ">>") {
     return parser;
   }
-  const Token& tok = (*parser.tokens)[parser.index];
-  if (tok.kind != TokenKind::Operator || tok.lexeme != ">>") {
-    return parser;
-  }
 
-  const auto spans = SplitSpan2(tok.span);
-  Token left = tok;
-  left.kind = TokenKind::Operator;
-  left.lexeme = ">";
-  left.span = spans.first;
-
-  Token right = tok;
-  right.kind = TokenKind::Operator;
-  right.lexeme = ">";
-  right.span = spans.second;
-
-  std::vector<Token> updated;
-  updated.reserve(parser.tokens->size() + 1);
-  for (std::size_t i = 0; i < parser.tokens->size(); ++i) {
-    if (i == parser.index) {
-      updated.push_back(left);
-      updated.push_back(right);
-      continue;
+  std::size_t split_count_before = 0;
+  if (parser.split_shift_right_indices) {
+    for (const std::size_t split_index : *parser.split_shift_right_indices) {
+      const std::size_t split_virtual_index =
+          split_index + split_count_before;
+      if (parser.index <= split_virtual_index + 1) {
+        break;
+      }
+      ++split_count_before;
     }
-    updated.push_back((*parser.tokens)[i]);
   }
+  const std::size_t underlying_index = parser.index - split_count_before;
 
   Parser out = parser;
-  out.owned_tokens = std::make_shared<std::vector<Token>>(std::move(updated));
-  out.tokens = out.owned_tokens.get();
+  auto split_indices = std::make_shared<std::vector<std::size_t>>();
+  if (parser.split_shift_right_indices) {
+    *split_indices = *parser.split_shift_right_indices;
+  }
+  const auto insert_at = std::lower_bound(split_indices->begin(),
+                                          split_indices->end(),
+                                          underlying_index);
+  if (insert_at == split_indices->end() || *insert_at != underlying_index) {
+    split_indices->insert(insert_at, underlying_index);
+  }
+  out.split_shift_right_indices = std::move(split_indices);
   return out;
 }
 

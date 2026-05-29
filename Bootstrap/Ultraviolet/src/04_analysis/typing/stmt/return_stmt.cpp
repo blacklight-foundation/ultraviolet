@@ -488,6 +488,58 @@ static bool TypeContainsSafePointer(const TypeRef& type) {
   return false;
 }
 
+static bool TypeMayContainRawPointer(const TypeRef& type) {
+  if (!type) {
+    return true;
+  }
+  const TypeRef stripped = StripPermDeepLocal(type);
+  if (!stripped) {
+    return true;
+  }
+  if (std::holds_alternative<TypeRawPtr>(stripped->node)) {
+    return true;
+  }
+  if (const auto* union_type = std::get_if<TypeUnion>(&stripped->node)) {
+    for (const auto& member : union_type->members) {
+      if (TypeMayContainRawPointer(member)) {
+        return true;
+      }
+    }
+    return false;
+  }
+  return std::holds_alternative<TypeVar>(stripped->node) ||
+         std::holds_alternative<TypeDynamic>(stripped->node) ||
+         std::holds_alternative<TypeApply>(stripped->node) ||
+         std::holds_alternative<TypePathType>(stripped->node) ||
+         std::holds_alternative<TypeOpaque>(stripped->node);
+}
+
+static bool TypeMayBeClosure(const TypeRef& type) {
+  if (!type) {
+    return true;
+  }
+  const TypeRef stripped = StripPermDeepLocal(type);
+  if (!stripped) {
+    return true;
+  }
+  if (std::holds_alternative<TypeClosure>(stripped->node)) {
+    return true;
+  }
+  if (const auto* union_type = std::get_if<TypeUnion>(&stripped->node)) {
+    for (const auto& member : union_type->members) {
+      if (TypeMayBeClosure(member)) {
+        return true;
+      }
+    }
+    return false;
+  }
+  return std::holds_alternative<TypeVar>(stripped->node) ||
+         std::holds_alternative<TypeDynamic>(stripped->node) ||
+         std::holds_alternative<TypeApply>(stripped->node) ||
+         std::holds_alternative<TypePathType>(stripped->node) ||
+         std::holds_alternative<TypeOpaque>(stripped->node);
+}
+
 static std::optional<std::string_view>
 CheckReturnedSafePointerProvenance(const ScopeContext& ctx,
                                    const StmtTypeContext& type_ctx,
@@ -562,8 +614,10 @@ CheckFfiBoundaryRegionLocalRawPointerReturn(const ScopeContext& ctx,
                                             const StmtTypeContext& type_ctx,
                                             const TypeEnv& env,
                                             const ExprTypeFn& type_expr,
-                                            const ast::ExprPtr& ret_expr) {
-  if (!type_ctx.ffi_export_boundary || !ret_expr) {
+                                            const ast::ExprPtr& ret_expr,
+                                            const TypeRef& expected_return_type) {
+  if (!type_ctx.ffi_export_boundary || !ret_expr ||
+      !TypeMayContainRawPointer(expected_return_type)) {
     return std::nullopt;
   }
 
@@ -627,6 +681,9 @@ static std::optional<std::string_view> CheckEscapingClosureReturn(
     const ast::ExprPtr& ret_expr,
     const TypeEnv& env,
     const TypeRef& expected_closure_type) {
+  if (!TypeMayBeClosure(expected_closure_type)) {
+    return std::nullopt;
+  }
   const auto info = ReturnedClosureCaptureInfo(ret_expr, env, expected_closure_type);
   if (!info.has_value() || !info->captures_any) {
     return std::nullopt;
@@ -1181,7 +1238,8 @@ StmtTypeResult TypeReturnStmt(const ScopeContext& ctx,
         return {false, *diag, {}, {}};
       }
       if (const auto diag = CheckFfiBoundaryRegionLocalRawPointerReturn(
-              ctx, type_ctx, env, type_expr_current, node.value_opt);
+              ctx, type_ctx, env, type_expr_current, node.value_opt,
+              async_sig->result);
           diag.has_value()) {
         return {false, *diag, {}, {}};
       }
@@ -1244,7 +1302,8 @@ StmtTypeResult TypeReturnStmt(const ScopeContext& ctx,
         return {false, *diag, {}, {}};
       }
       if (const auto diag = CheckFfiBoundaryRegionLocalRawPointerReturn(
-              ctx, type_ctx, env, type_expr_current, node.value_opt);
+              ctx, type_ctx, env, type_expr_current, node.value_opt,
+              typed.type);
           diag.has_value()) {
         return {false, *diag, {}, {}};
       }
@@ -1282,7 +1341,8 @@ StmtTypeResult TypeReturnStmt(const ScopeContext& ctx,
       return {false, *diag, {}, {}};
     }
     if (const auto diag = CheckFfiBoundaryRegionLocalRawPointerReturn(
-            ctx, type_ctx, env, type_expr_current, node.value_opt);
+            ctx, type_ctx, env, type_expr_current, node.value_opt,
+            type_ctx.return_type);
         diag.has_value()) {
       return {false, *diag, {}, {}};
     }

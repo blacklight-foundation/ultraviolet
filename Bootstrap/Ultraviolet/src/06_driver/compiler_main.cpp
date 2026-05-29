@@ -416,6 +416,84 @@ unsigned long CurrentProcessId() {
   return ultraviolet::core::CurrentHostProcessId();
 }
 
+enum class CompilerProfileValueKind {
+  String,
+  Number,
+  Boolean,
+};
+
+struct CompilerProfileField {
+  std::string name;
+  std::string value;
+  CompilerProfileValueKind kind = CompilerProfileValueKind::String;
+};
+
+CompilerProfileField ProfileString(std::string name, std::string value) {
+  return CompilerProfileField{
+      std::move(name), std::move(value), CompilerProfileValueKind::String};
+}
+
+CompilerProfileField ProfileString(std::string name, std::string_view value) {
+  return ProfileString(std::move(name), std::string(value));
+}
+
+CompilerProfileField ProfileString(std::string name, const char* value) {
+  return ProfileString(std::move(name), std::string(value ? value : ""));
+}
+
+CompilerProfileField ProfileNumber(std::string name, std::string value) {
+  return CompilerProfileField{
+      std::move(name), std::move(value), CompilerProfileValueKind::Number};
+}
+
+CompilerProfileField ProfileNumber(std::string name, std::int64_t value) {
+  return ProfileNumber(std::move(name), std::to_string(value));
+}
+
+CompilerProfileField ProfileNumber(std::string name, std::size_t value) {
+  return ProfileNumber(std::move(name), std::to_string(value));
+}
+
+CompilerProfileField ProfileBoolean(std::string name, bool value) {
+  return CompilerProfileField{std::move(name), value ? "true" : "false",
+                              CompilerProfileValueKind::Boolean};
+}
+
+class CompilerProfileSink {
+ public:
+  explicit CompilerProfileSink(bool enabled) : enabled_(enabled) {}
+
+  void Emit(std::string_view event,
+            const std::vector<CompilerProfileField>& fields) const {
+    if (!enabled_) {
+      return;
+    }
+    std::lock_guard<std::mutex> lock(mutex_);
+    std::cerr << "{\"kind\":\"compiler-profile\",\"event\":\""
+              << ultraviolet::driver::EscapeJson(event) << "\"";
+    for (const auto& field : fields) {
+      std::cerr << ",\"" << ultraviolet::driver::EscapeJson(field.name)
+                << "\":";
+      switch (field.kind) {
+        case CompilerProfileValueKind::String:
+          std::cerr << "\"" << ultraviolet::driver::EscapeJson(field.value)
+                    << "\"";
+          break;
+        case CompilerProfileValueKind::Number:
+        case CompilerProfileValueKind::Boolean:
+          std::cerr << field.value;
+          break;
+      }
+    }
+    std::cerr << "}\n";
+    std::cerr.flush();
+  }
+
+ private:
+  bool enabled_ = false;
+  mutable std::mutex mutex_;
+};
+
 std::filesystem::path g_compiler_executable_path;
 
 std::filesystem::path ResolveCurrentExecutablePath(const char* argv0) {
@@ -2511,6 +2589,7 @@ int ultraviolet::driver::RunCompiler(int argc, char** argv) {
     deps.inspect_source = [](const core::SourceFile& source) {
       return InspectSource(source);
     };
+    deps.parallel_modules = true;
 
     std::vector<SourceNativeTestDescriptor> discovered_tests;
     for (const auto& assembly : project_result.project->assemblies) {
@@ -2748,6 +2827,14 @@ int ultraviolet::driver::RunCompiler(int argc, char** argv) {
       is_verbose ? true : BuildProgressEnabled();
   const bool use_color = core::IsColorEnabledWithOverride(stderr, color_override);
   const auto build_start = std::chrono::steady_clock::now();
+  const CompilerProfileSink compiler_profile(opts->profile_compiler);
+  compiler_profile.Emit(
+      "start",
+      {ProfileString("input", opts->input_path),
+       ProfileString("command", opts->do_test ? "test" : "build"),
+       ProfileBoolean("check_only", opts->check_only),
+       ProfileBoolean("emit_ir", opts->emit_ir),
+       ProfileBoolean("no_output", opts->no_output)});
 
   // Human-friendly progress: right-aligned colored label + detail.
   const auto progress = [&](const char* label, const std::string& detail,
@@ -2818,7 +2905,21 @@ int ultraviolet::driver::RunCompiler(int argc, char** argv) {
     return 1;
   }
   auto project_result =
-      project::LoadProject(project_root, *assembly_target);
+      [&]() {
+        const auto project_load_start = std::chrono::steady_clock::now();
+        auto loaded = project::LoadProject(project_root, *assembly_target);
+        compiler_profile.Emit(
+            "project-load",
+            {ProfileString("project_root", project_root.generic_string()),
+             ProfileBoolean("ok", loaded.project.has_value()),
+             ProfileNumber("diagnostics", loaded.diags.size()),
+             ProfileNumber(
+                 "elapsed_ms",
+                 std::chrono::duration_cast<std::chrono::milliseconds>(
+                     std::chrono::steady_clock::now() - project_load_start)
+                     .count())});
+        return loaded;
+      }();
   if (project_result.project.has_value()) {
     core::UpdateCrashReportRoot(
         core::DefaultCrashReportRoot(project_result.project->outputs.root));
@@ -2850,6 +2951,15 @@ int ultraviolet::driver::RunCompiler(int argc, char** argv) {
   if (!core::HasError(diags) && project_result.project.has_value()) {
     selected_target_profile = ResolveSelectedTargetProfile(
         *opts, *project_result.project, diags);
+    compiler_profile.Emit(
+        "target-select",
+        {ProfileString("assembly", project_result.project->assembly.name),
+         ProfileBoolean("ok", selected_target_profile.has_value()),
+         ProfileString("target_profile",
+                       selected_target_profile.has_value()
+                           ? std::string(project::TargetProfileName(
+                                 *selected_target_profile))
+                           : std::string())});
   }
 
   if (!core::HasError(diags) && project_result.project.has_value() &&
@@ -2866,6 +2976,12 @@ int ultraviolet::driver::RunCompiler(int argc, char** argv) {
                   " reason=" + global_noop.reason +
                   " assemblies=" + std::to_string(global_noop.assemblies) +
                   " modules=" + std::to_string(global_noop.modules));
+      compiler_profile.Emit(
+          "incremental-global",
+          {ProfileBoolean("reusable", global_noop.reusable),
+           ProfileString("reason", global_noop.reason),
+           ProfileNumber("assemblies", global_noop.assemblies),
+           ProfileNumber("modules", global_noop.modules)});
       if (is_verbose) {
         if (global_noop.reusable) {
           std::cerr << "  incremental: full-project cache hit (no changes)\n";
@@ -2906,6 +3022,36 @@ int ultraviolet::driver::RunCompiler(int argc, char** argv) {
     deps.inspect_source = [](const core::SourceFile& source) {
       return InspectSource(source);
     };
+    deps.parallel_modules = true;
+    deps.file_telemetry =
+        [&compiler_profile](const frontend::ParseFileTelemetry& record) {
+          compiler_profile.Emit(
+              "parse-file",
+              {ProfileString("module", record.module_path),
+               ProfileString("file", record.file_path.generic_string()),
+               ProfileBoolean("ok", record.ok),
+               ProfileNumber("bytes", record.byte_count),
+               ProfileNumber("diagnostics", record.diagnostics),
+               ProfileNumber("read_ms", record.read_ms),
+               ProfileNumber("load_ms", record.load_ms),
+               ProfileNumber("inspect_ms", record.inspect_ms),
+               ProfileNumber("parse_ms", record.parse_ms),
+               ProfileNumber("elapsed_ms", record.total_ms)});
+        };
+    deps.module_telemetry =
+        [&compiler_profile](const frontend::ParseModuleTelemetry& record) {
+          compiler_profile.Emit(
+              "parse-module",
+              {ProfileString("module", record.module_path),
+               ProfileString("module_dir", record.module_dir.generic_string()),
+               ProfileBoolean("ok", record.ok),
+               ProfileNumber("files", record.file_count),
+               ProfileNumber("bytes", record.byte_count),
+               ProfileNumber("diagnostics", record.diagnostics),
+               ProfileNumber("compilation_unit_ms",
+                             record.compilation_unit_ms),
+               ProfileNumber("elapsed_ms", record.total_ms)});
+        };
 
     log_machine("phase=parse-modules");
     core::Conformance::SetPhase("parse");
@@ -2943,12 +3089,31 @@ int ultraviolet::driver::RunCompiler(int argc, char** argv) {
                   " modules=" + std::to_string(assembly.modules.size()) +
                   " source_root=" + assembly.source_root.generic_string());
 
+      const auto assembly_parse_start = std::chrono::steady_clock::now();
       auto parsed_chunk = frontend::ParseModulesWithDeps(
           assembly.modules, assembly.source_root, assembly.name, deps);
+      const auto assembly_parse_ms =
+          std::chrono::duration_cast<std::chrono::milliseconds>(
+              std::chrono::steady_clock::now() - assembly_parse_start)
+              .count();
       for (const auto& diag : parsed_chunk.diags) {
         core::Emit(parse_phase_diags, diag);
       }
       const bool parse_chunk_has_errors = core::HasError(parsed_chunk.diags);
+      compiler_profile.Emit(
+          "parse-assembly",
+          {ProfileString("assembly", assembly.name),
+           ProfileBoolean("reachable", true),
+           ProfileBoolean("ok",
+                          parsed_chunk.modules.has_value() &&
+                              !parse_chunk_has_errors),
+           ProfileNumber("modules", assembly.modules.size()),
+           ProfileNumber("parsed_modules",
+                         parsed_chunk.modules.has_value()
+                             ? parsed_chunk.modules->size()
+                             : 0),
+           ProfileNumber("diagnostics", parsed_chunk.diags.size()),
+           ProfileNumber("elapsed_ms", assembly_parse_ms)});
       if (!parsed_chunk.modules.has_value() || parse_chunk_has_errors) {
         log_machine("phase=parse-modules assembly-finish name=" + assembly.name +
                     " ok=false parsed_modules=" +
@@ -3032,12 +3197,31 @@ int ultraviolet::driver::RunCompiler(int argc, char** argv) {
                     " modules=" + std::to_string(assembly.modules.size()) +
                     " source_root=" + assembly.source_root.generic_string());
 
+        const auto assembly_parse_start = std::chrono::steady_clock::now();
         auto parsed_chunk = frontend::ParseModulesWithDeps(
             assembly.modules, assembly.source_root, assembly.name, deps);
+        const auto assembly_parse_ms =
+            std::chrono::duration_cast<std::chrono::milliseconds>(
+                std::chrono::steady_clock::now() - assembly_parse_start)
+                .count();
         for (const auto& diag : parsed_chunk.diags) {
           core::Emit(parse_phase_diags, diag);
         }
         const bool parse_chunk_has_errors = core::HasError(parsed_chunk.diags);
+        compiler_profile.Emit(
+            "parse-assembly",
+            {ProfileString("assembly", assembly.name),
+             ProfileBoolean("reachable", false),
+             ProfileBoolean("ok",
+                            parsed_chunk.modules.has_value() &&
+                                !parse_chunk_has_errors),
+             ProfileNumber("modules", assembly.modules.size()),
+             ProfileNumber("parsed_modules",
+                           parsed_chunk.modules.has_value()
+                               ? parsed_chunk.modules->size()
+                               : 0),
+             ProfileNumber("diagnostics", parsed_chunk.diags.size()),
+             ProfileNumber("elapsed_ms", assembly_parse_ms)});
         if (!parsed_chunk.modules.has_value() || parse_chunk_has_errors) {
           log_machine("phase=parse-modules assembly-finish name=" +
                       assembly.name + " ok=false parsed_modules=" +
@@ -3090,11 +3274,23 @@ int ultraviolet::driver::RunCompiler(int argc, char** argv) {
         comptime_signature_ctx.scopes =
             {analysis::Scope{}, analysis::Scope{}, analysis::Scope{}};
         log_machine("phase=comptime signatures-start");
+        const auto comptime_signature_start =
+            std::chrono::steady_clock::now();
         const auto comptime_signature_diags =
             analysis::ValidateComptimeProcedureSignatures(
                 comptime_signature_ctx, project_modules);
+        const auto comptime_signature_ms =
+            std::chrono::duration_cast<std::chrono::milliseconds>(
+                std::chrono::steady_clock::now() - comptime_signature_start)
+                .count();
         log_machine("phase=comptime signatures-finish emitted_diags=" +
                     std::to_string(comptime_signature_diags.size()));
+        compiler_profile.Emit(
+            "comptime-signatures",
+            {ProfileBoolean("ok", !core::HasError(comptime_signature_diags)),
+             ProfileNumber("modules", project_modules.size()),
+             ProfileNumber("diagnostics", comptime_signature_diags.size()),
+             ProfileNumber("elapsed_ms", comptime_signature_ms)});
         for (const auto& diag : comptime_signature_diags) {
           core::Emit(comptime_phase_diags, diag);
         }
@@ -3103,10 +3299,28 @@ int ultraviolet::driver::RunCompiler(int argc, char** argv) {
         std::optional<frontend::ComptimeResult> expanded_project;
         if (!comptime_signature_has_errors) {
           log_machine("phase=comptime execute-start");
+          const auto comptime_execute_start =
+              std::chrono::steady_clock::now();
           expanded_project = frontend::ExecuteComptime(
               project_modules, BuildComptimeOptions(proj));
+          const auto comptime_execute_ms =
+              std::chrono::duration_cast<std::chrono::milliseconds>(
+                  std::chrono::steady_clock::now() - comptime_execute_start)
+                  .count();
           log_machine("phase=comptime execute-finish emitted_diags=" +
                       std::to_string(expanded_project->diags.size()));
+          compiler_profile.Emit(
+              "comptime-execute",
+              {ProfileBoolean("ok",
+                              expanded_project->modules.has_value() &&
+                                  !core::HasError(expanded_project->diags)),
+               ProfileNumber("input_modules", project_modules.size()),
+               ProfileNumber("output_modules",
+                             expanded_project->modules.has_value()
+                                 ? expanded_project->modules->size()
+                                 : 0),
+               ProfileNumber("diagnostics", expanded_project->diags.size()),
+               ProfileNumber("elapsed_ms", comptime_execute_ms)});
           for (const auto& diag : expanded_project->diags) {
             core::Emit(comptime_phase_diags, diag);
           }
@@ -3136,6 +3350,11 @@ int ultraviolet::driver::RunCompiler(int argc, char** argv) {
         }
         comptime_ms = std::chrono::duration_cast<std::chrono::milliseconds>(
             std::chrono::steady_clock::now() - comptime_start).count();
+        compiler_profile.Emit(
+            "comptime-summary",
+            {ProfileBoolean("ok", comptime_ok),
+             ProfileNumber("diagnostics", comptime_phase_diags.size()),
+             ProfileNumber("elapsed_ms", comptime_ms)});
         core::Conformance::SetPhase("parse");
       }
       if (parse_ok && comptime_ok) {
@@ -3149,6 +3368,14 @@ int ultraviolet::driver::RunCompiler(int argc, char** argv) {
     }
     phase1_ok = parse_ok;
     phase2_ok = parse_ok && comptime_ok;
+    compiler_profile.Emit(
+        "parse-summary",
+        {ProfileBoolean("ok", parse_ok),
+         ProfileNumber("reachable_modules", reachable_modules.size()),
+         ProfileNumber("parsed_modules", parsed_modules.size()),
+         ProfileNumber("reachable_assemblies", seen_assemblies.size()),
+         ProfileNumber("diagnostics", parse_phase_diags.size()),
+         ProfileNumber("elapsed_ms", parse_ms)});
     const std::size_t parse_phase_error_count =
         CountErrorDiagnostics(diags) + CountErrorDiagnostics(parse_phase_diags);
     if (core::AbortOnErrorCount(effective_error_policy,
@@ -3219,6 +3446,11 @@ int ultraviolet::driver::RunCompiler(int argc, char** argv) {
                   std::string(noop_check.reusable ? "true" : "false") +
                   " reason=" + noop_check.reason + " modules=" +
                   std::to_string(noop_check.modules));
+      compiler_profile.Emit(
+          "incremental-fastpath",
+          {ProfileBoolean("reusable", noop_check.reusable),
+           ProfileString("reason", noop_check.reason),
+           ProfileNumber("modules", noop_check.modules)});
       if (is_verbose) {
         if (noop_check.reusable) {
           std::cerr << "  incremental: cache hit (no changes)\n";
@@ -3252,6 +3484,7 @@ int ultraviolet::driver::RunCompiler(int argc, char** argv) {
                   std::to_string(parsed_module_set->size()));
 
       std::size_t visibility_index = 0;
+      const auto visibility_start = std::chrono::steady_clock::now();
       for (const auto& module : *parsed_module_set) {
         ++visibility_index;
         ctx.current_module = module.path;
@@ -3270,21 +3503,48 @@ int ultraviolet::driver::RunCompiler(int argc, char** argv) {
                     module_name + " emitted_diags=" +
                     std::to_string(vis_diags.size()));
       }
+      compiler_profile.Emit(
+          "sema-visibility",
+          {ProfileNumber("modules", parsed_module_set->size()),
+           ProfileNumber("elapsed_ms",
+                         std::chrono::duration_cast<std::chrono::milliseconds>(
+                             std::chrono::steady_clock::now() -
+                             visibility_start)
+                             .count())});
 
       log_machine("phase=sema step=name-map-collect-start modules=" +
                   std::to_string(ctx.sigma.mods.size()));
+      const auto name_map_start = std::chrono::steady_clock::now();
       const auto name_maps = analysis::CollectNameMaps(ctx);
+      const auto name_map_ms =
+          std::chrono::duration_cast<std::chrono::milliseconds>(
+              std::chrono::steady_clock::now() - name_map_start)
+              .count();
       for (const auto& diag : name_maps.diags) {
         core::Emit(diags, diag);
       }
       log_machine("phase=sema step=name-map-collect-finish emitted_diags=" +
                   std::to_string(name_maps.diags.size()));
+      compiler_profile.Emit(
+          "sema-name-map",
+          {ProfileNumber("modules", ctx.sigma.mods.size()),
+           ProfileNumber("diagnostics", name_maps.diags.size()),
+           ProfileNumber("elapsed_ms", name_map_ms)});
 
       if (!HasBlockingErrorsForSema(diags)) {
         log_machine("phase=sema step=populate-sigma-start modules=" +
                     std::to_string(ctx.sigma.mods.size()));
+        const auto populate_start = std::chrono::steady_clock::now();
         analysis::PopulateSigma(ctx);
+        const auto populate_ms =
+            std::chrono::duration_cast<std::chrono::milliseconds>(
+                std::chrono::steady_clock::now() - populate_start)
+                .count();
         log_machine("phase=sema step=populate-sigma-finish");
+        compiler_profile.Emit(
+            "sema-populate-sigma",
+            {ProfileNumber("modules", ctx.sigma.mods.size()),
+             ProfileNumber("elapsed_ms", populate_ms)});
         const auto module_names = analysis::ModuleNamesOf(sema_project);
 
         analysis::ResolveContext res_ctx;
@@ -3297,7 +3557,12 @@ int ultraviolet::driver::RunCompiler(int argc, char** argv) {
 
         log_machine("phase=sema step=resolve-start modules=" +
                     std::to_string(ctx.sigma.mods.size()));
+        const auto resolve_start = std::chrono::steady_clock::now();
         const auto resolved = analysis::ResolveModules(res_ctx);
+        const auto resolve_ms =
+            std::chrono::duration_cast<std::chrono::milliseconds>(
+                std::chrono::steady_clock::now() - resolve_start)
+                .count();
         resolve_ok = resolved.ok;
         for (const auto& diag : resolved.diags) {
           core::Emit(diags, diag);
@@ -3307,13 +3572,29 @@ int ultraviolet::driver::RunCompiler(int argc, char** argv) {
                     " emitted_diags=" + std::to_string(resolved.diags.size()) +
                     " resolved_modules=" +
                     std::to_string(resolved.modules.size()));
+        compiler_profile.Emit(
+            "sema-resolve",
+            {ProfileBoolean("ok", resolved.ok),
+             ProfileNumber("modules", ctx.sigma.mods.size()),
+             ProfileNumber("resolved_modules", resolved.modules.size()),
+             ProfileNumber("diagnostics", resolved.diags.size()),
+             ProfileNumber("elapsed_ms", resolve_ms)});
 
         if (resolved.ok) {
           ctx.sigma.mods = resolved.modules;
           log_machine("phase=sema step=resolve-apply-start modules=" +
                       std::to_string(ctx.sigma.mods.size()));
+          const auto resolve_apply_start = std::chrono::steady_clock::now();
           analysis::PopulateSigma(ctx);
+          const auto resolve_apply_ms =
+              std::chrono::duration_cast<std::chrono::milliseconds>(
+                  std::chrono::steady_clock::now() - resolve_apply_start)
+                  .count();
           log_machine("phase=sema step=resolve-apply-finish");
+          compiler_profile.Emit(
+              "sema-resolve-apply",
+              {ProfileNumber("modules", ctx.sigma.mods.size()),
+               ProfileNumber("elapsed_ms", resolve_apply_ms)});
         }
 
         std::optional<analysis::AssemblyImportGraph> assembly_graph;
@@ -3323,12 +3604,23 @@ int ultraviolet::driver::RunCompiler(int argc, char** argv) {
           const auto& graph_modules = parsed_project_module_set.has_value()
                                           ? *parsed_project_module_set
                                           : ctx.sigma.mods;
+          const auto assembly_graph_start = std::chrono::steady_clock::now();
           assembly_graph =
               analysis::BuildAssemblyImportGraph(sema_project, graph_modules);
           assembly_graph_ok =
               analysis::ValidateAssemblyImportGraphStructure(sema_project,
                                                            *assembly_graph,
                                                            diags);
+          compiler_profile.Emit(
+              "sema-assembly-graph",
+              {ProfileBoolean("ok", assembly_graph_ok),
+               ProfileNumber("modules", graph_modules.size()),
+               ProfileNumber(
+                   "elapsed_ms",
+                   std::chrono::duration_cast<std::chrono::milliseconds>(
+                       std::chrono::steady_clock::now() -
+                       assembly_graph_start)
+                       .count())});
         }
 
         if (!HasBlockingErrorsForSema(diags) && resolve_ok &&
@@ -3336,12 +3628,22 @@ int ultraviolet::driver::RunCompiler(int argc, char** argv) {
           const auto& graph_modules = parsed_project_module_set.has_value()
                                           ? *parsed_project_module_set
                                           : ctx.sigma.mods;
+          const auto hosted_graph_start = std::chrono::steady_clock::now();
           if (!analysis::ValidateHostedLibraryImportGraph(sema_project,
                                                          *assembly_graph,
                                                          graph_modules,
                                                          diags)) {
             typecheck_ok = false;
           }
+          compiler_profile.Emit(
+              "sema-hosted-library-graph",
+              {ProfileBoolean("ok", typecheck_ok),
+               ProfileNumber("modules", graph_modules.size()),
+               ProfileNumber(
+                   "elapsed_ms",
+                   std::chrono::duration_cast<std::chrono::milliseconds>(
+                       std::chrono::steady_clock::now() - hosted_graph_start)
+                       .count())});
         }
 
         if (!HasBlockingErrorsForSema(diags) && resolve_ok &&
@@ -3370,13 +3672,25 @@ int ultraviolet::driver::RunCompiler(int argc, char** argv) {
           const auto typecheck_start = std::chrono::steady_clock::now();
           log_machine("phase=sema step=typecheck-start modules=" +
                       std::to_string(ctx.sigma.mods.size()));
+          const auto typecheck_modules_start =
+              std::chrono::steady_clock::now();
           const auto typechecked =
               analysis::TypecheckModules(ctx, ctx.sigma.mods,
                                          &name_maps.name_maps);
+          const auto typecheck_modules_ms =
+              std::chrono::duration_cast<std::chrono::milliseconds>(
+                  std::chrono::steady_clock::now() - typecheck_modules_start)
+                  .count();
           for (const auto& diag : typechecked.diags) {
             core::Emit(diags, diag);
           }
           typecheck_ok = typechecked.ok;
+          compiler_profile.Emit(
+              "sema-typecheck",
+              {ProfileBoolean("ok", typechecked.ok),
+               ProfileNumber("modules", ctx.sigma.mods.size()),
+               ProfileNumber("diagnostics", typechecked.diags.size()),
+               ProfileNumber("elapsed_ms", typecheck_modules_ms)});
 
           if (typecheck_ok) {
             std::vector<const ast::ASTModule*> cap_modules;
@@ -3388,8 +3702,13 @@ int ultraviolet::driver::RunCompiler(int argc, char** argv) {
             auto call_graph = analysis::BuildCallGraph(ctx, cap_modules);
             analysis::PropagateCapabilityRequirements(call_graph);
             analysis::AnnotateCapabilityFlow(call_graph);
+            const auto cap_chain_start = std::chrono::steady_clock::now();
             const auto cap_chain = analysis::ValidateCapabilityChain(
                 ctx, call_graph, &typechecked.expr_types);
+            const auto cap_chain_ms =
+                std::chrono::duration_cast<std::chrono::milliseconds>(
+                    std::chrono::steady_clock::now() - cap_chain_start)
+                    .count();
             if (!cap_chain.valid) {
               typecheck_ok = false;
               std::size_t emitted_cap_diags = 0;
@@ -3408,11 +3727,22 @@ int ultraviolet::driver::RunCompiler(int argc, char** argv) {
             } else {
               log_machine("phase=sema step=capability-chain-finish ok=true");
             }
+            compiler_profile.Emit(
+                "sema-capability-chain",
+                {ProfileBoolean("ok", cap_chain.valid),
+                 ProfileNumber("errors", cap_chain.errors.size()),
+                 ProfileNumber("leaks", cap_chain.leaks.size()),
+                 ProfileNumber("elapsed_ms", cap_chain_ms)});
 
             log_machine("phase=sema step=authority-model-start modules=" +
                         std::to_string(cap_modules.size()));
+            const auto authority_start = std::chrono::steady_clock::now();
             const auto authority = analysis::ValidateModuleAuthority(
                 ctx, cap_modules, &typechecked.expr_types);
+            const auto authority_ms =
+                std::chrono::duration_cast<std::chrono::milliseconds>(
+                    std::chrono::steady_clock::now() - authority_start)
+                    .count();
             if (!authority.valid) {
               typecheck_ok = false;
               std::size_t emitted_authority_diags = 0;
@@ -3428,6 +3758,12 @@ int ultraviolet::driver::RunCompiler(int argc, char** argv) {
             } else {
               log_machine("phase=sema step=authority-model-finish ok=true");
             }
+            compiler_profile.Emit(
+                "sema-authority",
+                {ProfileBoolean("ok", authority.valid),
+                 ProfileNumber("modules", cap_modules.size()),
+                 ProfileNumber("errors", authority.errors.size()),
+                 ProfileNumber("elapsed_ms", authority_ms)});
           }
 
           const auto typecheck_elapsed =
@@ -3439,6 +3775,12 @@ int ultraviolet::driver::RunCompiler(int argc, char** argv) {
                       " emitted_diags=" +
                       std::to_string(typechecked.diags.size()) +
                       " elapsed_ms=" + std::to_string(typecheck_elapsed));
+          compiler_profile.Emit(
+              "sema-summary",
+              {ProfileBoolean("resolve_ok", resolve_ok),
+               ProfileBoolean("typecheck_ok", typecheck_ok),
+               ProfileNumber("diagnostics", diags.size()),
+               ProfileNumber("elapsed_ms", typecheck_elapsed)});
 
           check_ms = std::chrono::duration_cast<std::chrono::milliseconds>(
               std::chrono::steady_clock::now() - sema_start).count();
@@ -3479,6 +3821,11 @@ int ultraviolet::driver::RunCompiler(int argc, char** argv) {
                         std::string(phase4_ok ? "true" : "false") +
                         " emitted_diags=" + std::to_string(diags.size()) +
                         " elapsed_ms=" + std::to_string(codegen_ms));
+            compiler_profile.Emit(
+                "lowerability-summary",
+                {ProfileBoolean("ok", phase4_ok),
+                 ProfileNumber("diagnostics", diags.size()),
+                 ProfileNumber("elapsed_ms", codegen_ms)});
           } else if (typecheck_ok) {
             const auto codegen_start = std::chrono::steady_clock::now();
             progress("Compiling",
@@ -3690,6 +4037,7 @@ int ultraviolet::driver::RunCompiler(int argc, char** argv) {
                      trace_root,
                      log_file_path,
                      &sema_project,
+                     &compiler_profile,
                      &log_machine](
                         const project::Project& p)
                         -> std::shared_ptr<CodegenCache> {
@@ -3731,6 +4079,14 @@ int ultraviolet::driver::RunCompiler(int argc, char** argv) {
                                   " lowered=" +
                                   std::to_string(lowered_count) +
                                   " elapsed_ms=" + std::to_string(elapsed));
+                      compiler_profile.Emit(
+                          "codegen-cache",
+                          {ProfileString("key", cache_key),
+                           ProfileString("assembly", p.assembly.name),
+                           ProfileBoolean("ok", cache_ok),
+                           ProfileNumber("modules", sema_project.modules.size()),
+                           ProfileNumber("lowered_modules", lowered_count),
+                           ProfileNumber("elapsed_ms", elapsed)});
                     }
                   }
                   return *shared_cache;
@@ -3757,6 +4113,7 @@ int ultraviolet::driver::RunCompiler(int argc, char** argv) {
                       [incremental_cache,
                        incremental_mu,
                        &diags,
+                       &compiler_profile,
                        &log_machine,
                        opts,
                        &ctx,
@@ -3816,6 +4173,15 @@ int ultraviolet::driver::RunCompiler(int argc, char** argv) {
                                            ? incremental.modules.size()
                                            : 0) +
                         " elapsed_ms=" + std::to_string(elapsed));
+                    compiler_profile.Emit(
+                        "codegen-incremental-fingerprint",
+                        {ProfileString("assembly", p.assembly.name),
+                         ProfileBoolean("ok", incremental.ok),
+                         ProfileNumber("modules",
+                                       incremental.ok
+                                           ? incremental.modules.size()
+                                           : 0),
+                         ProfileNumber("elapsed_ms", elapsed)});
                     if (!incremental.ok) {
                       return std::nullopt;
                     }
@@ -3942,6 +4308,20 @@ int ultraviolet::driver::RunCompiler(int argc, char** argv) {
                     }
                     return incremental->build_key;
                   };
+                  out_deps.profile_event =
+                      [&compiler_profile](
+                          std::string_view event,
+                          const std::vector<
+                              std::pair<std::string, std::string>>& fields) {
+                    std::vector<CompilerProfileField> profile_fields;
+                    profile_fields.reserve(fields.size() + 1);
+                    profile_fields.push_back(ProfileString("output_event", event));
+                    for (const auto& field : fields) {
+                      profile_fields.push_back(
+                          ProfileString(field.first, field.second));
+                    }
+                    compiler_profile.Emit("output-pipeline", profile_fields);
+                  };
                   out_deps.codegen_obj_thread_safe = true;
                   const auto codegen_cache = ensure_cache(output_project);
                   if (!codegen_cache || !codegen_cache->ok.load()) {
@@ -3965,6 +4345,12 @@ int ultraviolet::driver::RunCompiler(int argc, char** argv) {
             }
             codegen_ms = std::chrono::duration_cast<std::chrono::milliseconds>(
                 std::chrono::steady_clock::now() - codegen_start).count();
+            compiler_profile.Emit(
+                "codegen-summary",
+                {ProfileBoolean("ok", phase4_ok),
+                 ProfileNumber("modules", ctx.sigma.mods.size()),
+                 ProfileNumber("diagnostics", diags.size()),
+                 ProfileNumber("elapsed_ms", codegen_ms)});
           }
         }
       }
@@ -4097,6 +4483,40 @@ int ultraviolet::driver::RunCompiler(int argc, char** argv) {
     std::cerr << "    codegen: " << codegen_ms << "ms\n";
     std::cerr.flush();
   }
+
+  compiler_profile.Emit(
+      "summary",
+      {ProfileString("schema", "compiler-profile.v1"),
+       ProfileString("input", opts->input_path),
+       ProfileString("assembly",
+                     project_result.project.has_value()
+                         ? project_result.project->assembly.name
+                         : std::string()),
+       ProfileString("target_profile",
+                     selected_target_profile.has_value()
+                         ? std::string(project::TargetProfileName(
+                               *selected_target_profile))
+                         : std::string()),
+       ProfileBoolean("ok", ok),
+       ProfileBoolean("rejected", rejected),
+       ProfileBoolean("incremental_noop_reused", incremental_noop_reused),
+       ProfileBoolean("phase1_ok", phase1_ok),
+       ProfileBoolean("phase2_ok", phase2_ok),
+       ProfileBoolean("resolve_ok", resolve_ok),
+       ProfileBoolean("typecheck_ok", typecheck_ok),
+       ProfileBoolean("phase4_ok", phase4_ok),
+       ProfileNumber("status", static_cast<std::int64_t>(status)),
+       ProfileNumber("diagnostics", diags.size()),
+       ProfileNumber("errors", CountErrorDiagnostics(diags)),
+       ProfileNumber("parse_ms", parse_ms),
+       ProfileNumber("comptime_ms", comptime_ms),
+       ProfileNumber("check_ms", check_ms),
+       ProfileNumber("codegen_ms", codegen_ms),
+       ProfileNumber(
+           "elapsed_ms",
+           std::chrono::duration_cast<std::chrono::milliseconds>(
+               std::chrono::steady_clock::now() - build_start)
+               .count())});
 
   // Human-friendly build result line.
   if (!opts->diag_json && show_build_progress) {

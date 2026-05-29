@@ -271,6 +271,7 @@ std::string SuggestFlag(std::string_view unknown) {
   static const std::string_view known_flags[] = {
       "--help", "-h", "--version", "-V",
       "--color", "--check", "--diag-json", "--dump", "--dump-ast",
+      "--profile-compiler",
       "--assembly", "--out-dir",
       "--target-profile",
       "--opt-level",
@@ -346,6 +347,13 @@ CliParseResult ParseArgs(int argc, char** argv) {
     if (arg == "--diag-json") {
       opts.diag_json = true;
       continue;
+    }
+    if (arg == "--profile-compiler" || arg == "--profile-compiler=json") {
+      opts.profile_compiler = true;
+      continue;
+    }
+    if (StartsWith(arg, "--profile-compiler=")) {
+      return Fail("invalid --profile-compiler value; expected 'json'");
     }
     if (arg == "--target-profile") {
       if (i + 1 >= argc) {
@@ -1107,6 +1115,7 @@ OPTIONS
   --opt-level <level>        Select codegen optimization: O0, O1, O2, O3, Os, Oz
   --out-dir <path>           Override output directory (default: Build/)
   --diag-json                Output diagnostics as JSON
+  --profile-compiler[=json]  Emit compiler timing/profile JSON Lines to stderr
   --dump                     Dump project structure
   --dump-ast                 Dump parsed AST for project modules
   --emit-ir                  Emit textual IR to stdout

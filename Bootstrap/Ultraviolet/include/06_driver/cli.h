@@ -36,6 +36,7 @@ struct CliOptions {
   bool no_output = false;            // --no-output (internal)
   bool dump_project = false;         // --dump
   bool dump_ast = false;             // --dump-ast
+  bool profile_compiler = false;     // --profile-compiler[=json]
   std::optional<std::string> conformance_path;  // --conformance
   std::optional<std::string> assembly_target;   // --assembly
   bool log_enabled = false;                          // --log, --log-file, or --trace

@@ -5,6 +5,7 @@
 #include <algorithm>
 #include <atomic>
 #include <chrono>
+#include <cstdint>
 #include <cstdlib>
 #include <fstream>
 #include <iostream>
@@ -150,10 +151,37 @@ void AppendBuildTelemetry(
   out << '\n';
 }
 
+void RecordOutputTelemetry(
+    const Project& project,
+    const OutputPipelineDeps& deps,
+    std::string_view event,
+    const std::vector<std::pair<std::string, std::string>>& fields) {
+  AppendBuildTelemetry(project, event, fields);
+  if (deps.profile_event) {
+    deps.profile_event(event, fields);
+  }
+}
+
 std::int64_t ElapsedMs(std::chrono::steady_clock::time_point start) {
   return std::chrono::duration_cast<std::chrono::milliseconds>(
              std::chrono::steady_clock::now() - start)
       .count();
+}
+
+std::string_view LinkStatusName(LinkStatus status) {
+  switch (status) {
+    case LinkStatus::Ok:
+      return "ok";
+    case LinkStatus::NotFound:
+      return "tool-not-found";
+    case LinkStatus::RuntimeMissing:
+      return "runtime-missing";
+    case LinkStatus::RuntimeIncompatible:
+      return "runtime-incompatible";
+    case LinkStatus::Fail:
+      return "failed";
+  }
+  return "unknown";
 }
 
 std::filesystem::path TempArtifactPath(const std::filesystem::path& path) {
@@ -291,6 +319,67 @@ std::string RenderList(const std::vector<std::string>& items) {
   oss << JoinList(items, ", ");
   oss << "]";
   return oss.str();
+}
+
+std::uintmax_t ModuleSourceByteEstimate(const ModuleInfo& module) {
+  if (module.dir.empty()) {
+    return 0;
+  }
+
+  std::error_code ec;
+  std::filesystem::directory_iterator it(module.dir, ec);
+  if (ec) {
+    return 0;
+  }
+
+  std::uintmax_t bytes = 0;
+  const std::filesystem::directory_iterator end;
+  const std::string_view source_extension = ActiveLanguageProfile().source_extension;
+  for (; it != end; it.increment(ec)) {
+    if (ec) {
+      return bytes;
+    }
+
+    std::error_code type_ec;
+    if (!it->is_regular_file(type_ec) || type_ec) {
+      continue;
+    }
+
+    const std::string file_path = it->path().generic_string();
+    if (core::FileExt(file_path) != source_extension) {
+      continue;
+    }
+
+    std::error_code size_ec;
+    const std::uintmax_t file_bytes = it->file_size(size_ec);
+    if (!size_ec) {
+      bytes += file_bytes;
+    }
+  }
+
+  return bytes;
+}
+
+void SortObjectCodegenJobsByEstimatedCost(
+    std::vector<std::size_t>& obj_codegen_indices,
+    const std::vector<ModuleInfo>& modules) {
+  if (obj_codegen_indices.size() < 2) {
+    return;
+  }
+
+  std::vector<std::pair<std::size_t, std::uintmax_t>> jobs;
+  jobs.reserve(obj_codegen_indices.size());
+  for (const std::size_t module_idx : obj_codegen_indices) {
+    jobs.push_back({module_idx, ModuleSourceByteEstimate(modules[module_idx])});
+  }
+
+  std::stable_sort(jobs.begin(), jobs.end(), [](const auto& lhs, const auto& rhs) {
+    return lhs.second > rhs.second;
+  });
+
+  for (std::size_t i = 0; i < jobs.size(); ++i) {
+    obj_codegen_indices[i] = jobs[i].first;
+  }
 }
 
 void EmitInternalDiagnostic(core::DiagnosticStream& diags,
@@ -885,6 +974,7 @@ OutputPipelineResult OutputPipelineSingleAssembly(
     const std::vector<std::filesystem::path>& extra_link_inputs,
     const LinkPlan& link_plan) {
   OutputPipelineResult result;
+  const auto pipeline_start = std::chrono::steady_clock::now();
 
   SPEC_RULE("Out-Start");
 
@@ -930,13 +1020,14 @@ OutputPipelineResult OutputPipelineSingleAssembly(
     return result;
   }
   SPEC_RULE("Out-Dirs-Ok");
-  AppendBuildTelemetry(project,
-                       "output-start",
-                       {{"kind", project.assembly.kind},
-                        {"modules", std::to_string(project.modules.size())},
-                        {"emit_ir", std::string(emit_ir)},
-                        {"target",
-                         std::string(TargetProfileName(target_profile))}});
+  RecordOutputTelemetry(project,
+                        deps,
+                        "output-start",
+                        {{"kind", project.assembly.kind},
+                         {"modules", std::to_string(project.modules.size())},
+                         {"emit_ir", std::string(emit_ir)},
+                         {"target",
+                          std::string(TargetProfileName(target_profile))}});
 
   if (show_build_progress) {
     std::ostringstream oss;
@@ -958,6 +1049,7 @@ OutputPipelineResult OutputPipelineSingleAssembly(
   }
 
   if (deps.prepare_codegen_context) {
+    const auto context_start = std::chrono::steady_clock::now();
     SharedLibraryExports exports;
     exports.export_symbols = link_plan.export_symbols;
     exports.data_export_symbols = link_plan.data_export_symbols;
@@ -969,6 +1061,12 @@ OutputPipelineResult OutputPipelineSingleAssembly(
       LogBuildProgress(oss.str());
     }
     if (!deps.prepare_codegen_context(project, exports)) {
+      const auto elapsed = ElapsedMs(context_start);
+      RecordOutputTelemetry(project,
+                            deps,
+                            "codegen-context",
+                            {{"status", "failed"},
+                             {"elapsed_ms", std::to_string(elapsed)}});
       if (show_build_progress) {
         LogBuildProgress("codegen-context-error");
       }
@@ -978,6 +1076,16 @@ OutputPipelineResult OutputPipelineSingleAssembly(
       core::Emit(result.diags, diag);
       return result;
     }
+    const auto elapsed = ElapsedMs(context_start);
+    RecordOutputTelemetry(project,
+                          deps,
+                          "codegen-context",
+                          {{"status", "ok"},
+                           {"export_symbols",
+                            std::to_string(exports.export_symbols.size())},
+                           {"data_export_symbols",
+                            std::to_string(exports.data_export_symbols.size())},
+                           {"elapsed_ms", std::to_string(elapsed)}});
     if (show_build_progress) {
       std::ostringstream oss;
       oss << "codegen-context-finish assembly=" << project.assembly.name;
@@ -1046,9 +1154,19 @@ OutputPipelineResult OutputPipelineSingleAssembly(
     SPEC_RULE("Output-Pipeline-Err");
     return result;
   }
+  RecordOutputTelemetry(
+      project,
+      deps,
+      "output-setup",
+      {{"status", "ok"},
+       {"elapsed_ms", std::to_string(ElapsedMs(pipeline_start))}});
 
   bool any_obj_rebuilt = false;
   bool any_ir_rebuilt = false;
+  std::int64_t obj_phase_ms = 0;
+  std::int64_t ir_phase_ms = 0;
+  std::int64_t finalize_ms = 0;
+  std::int64_t sidecar_ms = 0;
   const bool can_codegen_obj_and_ir =
       (emit_ir == "ll" || emit_ir == "bc") &&
       static_cast<bool>(deps.codegen_obj_and_ir);
@@ -1067,6 +1185,13 @@ OutputPipelineResult OutputPipelineSingleAssembly(
     std::size_t obj_bytes = 0;
     std::size_t ir_bytes = 0;
     std::int64_t codegen_ms = 0;
+    std::int64_t llvm_emit_ms = 0;
+    std::int64_t ir_render_ms = 0;
+    std::int64_t opt_ms = 0;
+    std::int64_t target_ms = 0;
+    std::int64_t emit_setup_ms = 0;
+    std::int64_t emit_pass_ms = 0;
+    std::int64_t object_copy_ms = 0;
     std::int64_t obj_write_ms = 0;
     std::int64_t ir_write_ms = 0;
     bool codegen_failed = false;
@@ -1146,6 +1271,7 @@ OutputPipelineResult OutputPipelineSingleAssembly(
     oss << "obj-phase-start total=" << obj_total;
     LogBuildProgress(oss.str());
   }
+  const auto obj_phase_start = std::chrono::steady_clock::now();
 
   for (std::size_t i = 0; i < project.modules.size(); ++i) {
     const auto& module = project.modules[i];
@@ -1183,6 +1309,7 @@ OutputPipelineResult OutputPipelineSingleAssembly(
       obj_codegen_indices.push_back(i);
     }
   }
+  SortObjectCodegenJobsByEstimatedCost(obj_codegen_indices, project.modules);
 
   auto emit_object_job = [&](std::size_t module_idx) {
     const auto& module = project.modules[module_idx];
@@ -1192,28 +1319,51 @@ OutputPipelineResult OutputPipelineSingleAssembly(
     state.codegen_ms = ElapsedMs(codegen_start);
     if (!emitted.has_value()) {
       state.codegen_failed = true;
-      AppendBuildTelemetry(project,
-                           "obj-module",
-                           {{"module", module.path},
-                            {"status", "codegen-failed"},
-                            {"codegen_ms", std::to_string(state.codegen_ms)}});
+      RecordOutputTelemetry(project,
+                            deps,
+                            "obj-module",
+                            {{"module", module.path},
+                             {"status", "codegen-failed"},
+                             {"codegen_ms", std::to_string(state.codegen_ms)}});
       return;
     }
 
     state.obj_bytes = emitted->object.size();
-    state.obj_hash = HashBytes(emitted->object);
+    state.llvm_emit_ms = emitted->llvm_emit_ms;
+    state.ir_render_ms = emitted->ir_render_ms;
+    state.opt_ms = emitted->opt_ms;
+    state.target_ms = emitted->target_ms;
+    state.emit_setup_ms = emitted->emit_setup_ms;
+    state.emit_pass_ms = emitted->emit_pass_ms;
+    state.object_copy_ms = emitted->object_copy_ms;
+    if (incremental_enabled) {
+      state.obj_hash = HashBytes(emitted->object);
+    }
     const auto obj_write_start = std::chrono::steady_clock::now();
     if (!WriteArtifactFileAtomically(deps, state.obj_path, emitted->object)) {
       state.obj_write_failed = true;
       state.obj_write_ms = ElapsedMs(obj_write_start);
-      AppendBuildTelemetry(project,
-                           "obj-module",
-                           {{"module", module.path},
-                            {"status", "obj-write-failed"},
-                            {"codegen_ms", std::to_string(state.codegen_ms)},
-                            {"obj_write_ms",
-                             std::to_string(state.obj_write_ms)},
-                            {"obj_bytes", std::to_string(state.obj_bytes)}});
+      RecordOutputTelemetry(project,
+                            deps,
+                            "obj-module",
+                            {{"module", module.path},
+                             {"status", "obj-write-failed"},
+                             {"codegen_ms", std::to_string(state.codegen_ms)},
+                             {"obj_write_ms",
+                              std::to_string(state.obj_write_ms)},
+                             {"llvm_emit_ms",
+                              std::to_string(state.llvm_emit_ms)},
+                             {"ir_render_ms",
+                              std::to_string(state.ir_render_ms)},
+                             {"opt_ms", std::to_string(state.opt_ms)},
+                             {"target_ms", std::to_string(state.target_ms)},
+                             {"emit_setup_ms",
+                              std::to_string(state.emit_setup_ms)},
+                             {"emit_pass_ms",
+                              std::to_string(state.emit_pass_ms)},
+                             {"object_copy_ms",
+                              std::to_string(state.object_copy_ms)},
+                             {"obj_bytes", std::to_string(state.obj_bytes)}});
       return;
     }
     state.obj_write_ms = ElapsedMs(obj_write_start);
@@ -1221,22 +1371,37 @@ OutputPipelineResult OutputPipelineSingleAssembly(
 
     if (emitted->ir.has_value()) {
       state.ir_bytes = emitted->ir->size();
-      state.ir_hash = HashBytes(*emitted->ir);
+      if (incremental_enabled) {
+        state.ir_hash = HashBytes(*emitted->ir);
+      }
       const auto ir_write_start = std::chrono::steady_clock::now();
       if (!WriteArtifactFileAtomically(deps, state.ir_path, *emitted->ir)) {
         state.ir_write_failed = true;
         state.ir_write_ms = ElapsedMs(ir_write_start);
-        AppendBuildTelemetry(project,
-                             "obj-module",
-                             {{"module", module.path},
-                              {"status", "ir-write-failed"},
-                              {"codegen_ms", std::to_string(state.codegen_ms)},
-                              {"obj_write_ms",
-                               std::to_string(state.obj_write_ms)},
-                              {"ir_write_ms",
-                               std::to_string(state.ir_write_ms)},
-                              {"obj_bytes", std::to_string(state.obj_bytes)},
-                              {"ir_bytes", std::to_string(state.ir_bytes)}});
+        RecordOutputTelemetry(project,
+                              deps,
+                              "obj-module",
+                              {{"module", module.path},
+                               {"status", "ir-write-failed"},
+                               {"codegen_ms", std::to_string(state.codegen_ms)},
+                               {"obj_write_ms",
+                                std::to_string(state.obj_write_ms)},
+                               {"ir_write_ms",
+                                std::to_string(state.ir_write_ms)},
+                               {"llvm_emit_ms",
+                                std::to_string(state.llvm_emit_ms)},
+                               {"ir_render_ms",
+                                std::to_string(state.ir_render_ms)},
+                               {"opt_ms", std::to_string(state.opt_ms)},
+                               {"target_ms", std::to_string(state.target_ms)},
+                               {"emit_setup_ms",
+                                std::to_string(state.emit_setup_ms)},
+                               {"emit_pass_ms",
+                                std::to_string(state.emit_pass_ms)},
+                               {"object_copy_ms",
+                                std::to_string(state.object_copy_ms)},
+                               {"obj_bytes", std::to_string(state.obj_bytes)},
+                               {"ir_bytes", std::to_string(state.ir_bytes)}});
         update_module_manifest(module, state);
         return;
       }
@@ -1245,15 +1410,25 @@ OutputPipelineResult OutputPipelineSingleAssembly(
     }
 
     update_module_manifest(module, state);
-    AppendBuildTelemetry(project,
-                         "obj-module",
-                         {{"module", module.path},
-                          {"status", "ok"},
-                          {"codegen_ms", std::to_string(state.codegen_ms)},
-                          {"obj_write_ms", std::to_string(state.obj_write_ms)},
-                          {"ir_write_ms", std::to_string(state.ir_write_ms)},
-                          {"obj_bytes", std::to_string(state.obj_bytes)},
-                          {"ir_bytes", std::to_string(state.ir_bytes)}});
+    RecordOutputTelemetry(project,
+                          deps,
+                          "obj-module",
+                          {{"module", module.path},
+                           {"status", "ok"},
+                           {"codegen_ms", std::to_string(state.codegen_ms)},
+                           {"obj_write_ms", std::to_string(state.obj_write_ms)},
+                           {"ir_write_ms", std::to_string(state.ir_write_ms)},
+                           {"llvm_emit_ms", std::to_string(state.llvm_emit_ms)},
+                           {"ir_render_ms", std::to_string(state.ir_render_ms)},
+                           {"opt_ms", std::to_string(state.opt_ms)},
+                           {"target_ms", std::to_string(state.target_ms)},
+                           {"emit_setup_ms",
+                            std::to_string(state.emit_setup_ms)},
+                           {"emit_pass_ms", std::to_string(state.emit_pass_ms)},
+                           {"object_copy_ms",
+                            std::to_string(state.object_copy_ms)},
+                           {"obj_bytes", std::to_string(state.obj_bytes)},
+                           {"ir_bytes", std::to_string(state.ir_bytes)}});
   };
 
   if (deps.codegen_obj_thread_safe && obj_codegen_indices.size() > 1) {
@@ -1440,9 +1615,19 @@ OutputPipelineResult OutputPipelineSingleAssembly(
         << " rebuilt=" << obj_rebuilt;
     LogBuildProgress(oss.str());
   }
+  obj_phase_ms = ElapsedMs(obj_phase_start);
+  RecordOutputTelemetry(project,
+                        deps,
+                        "obj-phase",
+                        {{"status", "ok"},
+                         {"total", std::to_string(obj_total)},
+                         {"reused", std::to_string(obj_reused)},
+                         {"rebuilt", std::to_string(obj_rebuilt)},
+                         {"elapsed_ms", std::to_string(obj_phase_ms)}});
   SPEC_RULE("Out-Obj-Done");
 
   std::vector<std::filesystem::path> irs;
+  const auto ir_phase_start = std::chrono::steady_clock::now();
   if (emit_ir == "none") {
     SPEC_RULE("Emit-IR-None");
     if (show_build_progress) {
@@ -1766,6 +1951,14 @@ OutputPipelineResult OutputPipelineSingleAssembly(
     }
   }
 
+  ir_phase_ms = ElapsedMs(ir_phase_start);
+  RecordOutputTelemetry(project,
+                        deps,
+                        "ir-phase",
+                        {{"status", "ok"},
+                         {"emit_ir", std::string(emit_ir)},
+                         {"elapsed_ms", std::to_string(ir_phase_ms)}});
+
   auto persist_manifest_if_enabled = [&]() {
     if (!incremental_enabled) {
       return;
@@ -1795,12 +1988,17 @@ OutputPipelineResult OutputPipelineSingleAssembly(
           << " irs=" << result.artifacts->irs.size();
       LogBuildProgress(oss.str());
     }
-    AppendBuildTelemetry(project,
-                         "output-finish",
-                         {{"status", "ok"},
-                          {"kind", "dependency"},
-                          {"objs", std::to_string(result.artifacts->objs.size())},
-                          {"irs", std::to_string(result.artifacts->irs.size())}});
+    RecordOutputTelemetry(
+        project,
+        deps,
+        "output-finish",
+        {{"status", "ok"},
+         {"kind", "dependency"},
+         {"objs", std::to_string(result.artifacts->objs.size())},
+         {"irs", std::to_string(result.artifacts->irs.size())},
+         {"obj_phase_ms", std::to_string(obj_phase_ms)},
+         {"ir_phase_ms", std::to_string(ir_phase_ms)},
+         {"elapsed_ms", std::to_string(ElapsedMs(pipeline_start))}});
     return result;
   }
 
@@ -1829,6 +2027,15 @@ OutputPipelineResult OutputPipelineSingleAssembly(
   }
 
   if (!reuse_final) {
+    const std::string finalize_mode = static_library ? "archive" : "link";
+    RecordOutputTelemetry(
+        project,
+        deps,
+        "finalize-start",
+        {{"mode", finalize_mode},
+         {"output", primary_artifact->generic_string()},
+         {"input_count",
+          std::to_string(objs.size() + extra_link_inputs.size() + 1)}});
     if (show_build_progress) {
       std::ostringstream oss;
       oss << "finalize-start output=" << primary_artifact->generic_string()
@@ -1840,12 +2047,23 @@ OutputPipelineResult OutputPipelineSingleAssembly(
       LogBuildProgress(oss.str());
     }
 
+    const auto finalize_start = std::chrono::steady_clock::now();
     const LinkResult link_result =
         FinalizeArtifacts(project, target_profile, objs, extra_link_inputs,
                           link_plan, deps);
+    finalize_ms = ElapsedMs(finalize_start);
     for (const auto& diag : link_result.diags) {
       core::Emit(result.diags, diag);
     }
+    RecordOutputTelemetry(project,
+                          deps,
+                          "finalize-finish",
+                          {{"mode", finalize_mode},
+                           {"status",
+                            std::string(LinkStatusName(link_result.status))},
+                           {"elapsed_ms", std::to_string(finalize_ms)},
+                           {"diagnostics",
+                            std::to_string(link_result.diags.size())}});
 
     if (static_library) {
       switch (link_result.status) {
@@ -1930,27 +2148,68 @@ OutputPipelineResult OutputPipelineSingleAssembly(
     if (show_build_progress) {
       LogBuildProgress("finalize-reuse");
     }
+    RecordOutputTelemetry(project,
+                          deps,
+                          "finalize-finish",
+                          {{"mode", static_library ? "archive" : "link"},
+                           {"status", "reused"},
+                           {"elapsed_ms", "0"},
+                           {"diagnostics", "0"}});
   }
 
   if (IsExecutable(project) || IsSharedLibrary(project)) {
+    const auto runtime_sidecar_start = std::chrono::steady_clock::now();
     if (!CopyBundledRuntimeSidecars(project.outputs.bin_dir, target_profile,
                                     result.diags)) {
+      const auto elapsed = ElapsedMs(runtime_sidecar_start);
+      sidecar_ms += elapsed;
+      RecordOutputTelemetry(project,
+                            deps,
+                            "sidecar-copy",
+                            {{"kind", "runtime"},
+                             {"status", "failed"},
+                             {"elapsed_ms", std::to_string(elapsed)}});
       if (show_build_progress) {
         LogBuildProgress("finalize-error mode=stage-runtime-sidecars");
       }
       SPEC_RULE("Output-Pipeline-Err");
       return result;
     }
+    const auto runtime_sidecar_ms = ElapsedMs(runtime_sidecar_start);
+    sidecar_ms += runtime_sidecar_ms;
+    RecordOutputTelemetry(project,
+                          deps,
+                          "sidecar-copy",
+                          {{"kind", "runtime"},
+                           {"status", "ok"},
+                           {"elapsed_ms", std::to_string(runtime_sidecar_ms)}});
+    const auto shared_sidecar_start = std::chrono::steady_clock::now();
     if (!CopyImportedSharedLibraryArtifacts(project.outputs.bin_dir,
                                            extra_link_inputs,
                                            target_profile,
                                            result.diags)) {
+      const auto elapsed = ElapsedMs(shared_sidecar_start);
+      sidecar_ms += elapsed;
+      RecordOutputTelemetry(project,
+                            deps,
+                            "sidecar-copy",
+                            {{"kind", "shared-library"},
+                             {"status", "failed"},
+                             {"elapsed_ms", std::to_string(elapsed)}});
       if (show_build_progress) {
         LogBuildProgress("finalize-error mode=stage-shared-library-sidecars");
       }
       SPEC_RULE("Output-Pipeline-Err");
       return result;
     }
+    const auto shared_sidecar_ms = ElapsedMs(shared_sidecar_start);
+    sidecar_ms += shared_sidecar_ms;
+    RecordOutputTelemetry(project,
+                          deps,
+                          "sidecar-copy",
+                          {{"kind", "shared-library"},
+                           {"status", "ok"},
+                           {"elapsed_ms", std::to_string(shared_sidecar_ms)}});
   }
 
   OutputArtifacts artifacts;
@@ -1980,13 +2239,20 @@ OutputPipelineResult OutputPipelineSingleAssembly(
     }
     LogBuildProgress(oss.str());
   }
-  AppendBuildTelemetry(
+  RecordOutputTelemetry(
       project,
+      deps,
       "output-finish",
       {{"status", "ok"},
        {"kind", project.assembly.kind},
        {"objs", std::to_string(result.artifacts->objs.size())},
        {"irs", std::to_string(result.artifacts->irs.size())},
+       {"obj_phase_ms", std::to_string(obj_phase_ms)},
+       {"ir_phase_ms", std::to_string(ir_phase_ms)},
+       {"finalize_ms", std::to_string(finalize_ms)},
+       {"sidecar_ms", std::to_string(sidecar_ms)},
+       {"reused_final", reuse_final ? "true" : "false"},
+       {"elapsed_ms", std::to_string(ElapsedMs(pipeline_start))},
        {"artifact",
         result.artifacts->primary_artifact.has_value()
             ? result.artifacts->primary_artifact->generic_string()

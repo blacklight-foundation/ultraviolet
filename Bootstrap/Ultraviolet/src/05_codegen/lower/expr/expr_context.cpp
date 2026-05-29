@@ -52,12 +52,15 @@ const analysis::ScopeContext& ScopeForLowering(const LowerCtx& ctx) {
   }
 
   const bool sigma_changed = cache.sigma != ctx.sigma;
-  if (sigma_changed || cache.expr_types != ctx.expr_types ||
+  const bool analysis_maps_changed =
+      cache.expr_types != ctx.expr_types ||
       cache.dynamic_refine_checks != ctx.dynamic_refine_checks ||
       cache.generic_call_substs != ctx.generic_call_substs ||
-      cache.selected_call_targets != ctx.selected_call_targets ||
-      cache.module_path != ctx.module_path ||
-      cache.target_profile != ctx.target_profile) {
+      cache.selected_call_targets != ctx.selected_call_targets;
+  const bool module_changed = cache.module_path != ctx.module_path;
+  const bool target_profile_changed = cache.target_profile != ctx.target_profile;
+  if (sigma_changed || analysis_maps_changed || module_changed ||
+      target_profile_changed) {
     cache.sigma = ctx.sigma;
     cache.expr_types = ctx.expr_types;
     cache.dynamic_refine_checks = ctx.dynamic_refine_checks;
@@ -65,9 +68,11 @@ const analysis::ScopeContext& ScopeForLowering(const LowerCtx& ctx) {
     cache.selected_call_targets = ctx.selected_call_targets;
     cache.module_path = ctx.module_path;
     cache.target_profile = ctx.target_profile;
-    cache.scope = analysis::ScopeContext{};
-    cache.scope.sigma = *ctx.sigma;
-    cache.scope.sigma_source = ctx.sigma;
+    if (sigma_changed) {
+      cache.scope = analysis::ScopeContext{};
+      cache.scope.sigma = *ctx.sigma;
+      cache.scope.sigma_source = ctx.sigma;
+    }
     cache.scope.current_module = ctx.module_path;
     cache.scope.target_profile = ctx.target_profile;
     cache.scope.expr_types = ctx.expr_types;

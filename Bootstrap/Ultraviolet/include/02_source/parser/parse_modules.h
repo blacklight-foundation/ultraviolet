@@ -2,6 +2,7 @@
 
 #include <cstdint>
 #include <filesystem>
+#include <functional>
 #include <optional>
 #include <string>
 #include <string_view>
@@ -26,6 +27,30 @@ struct InspectResult {
   core::DiagnosticStream diags;
 };
 
+struct ParseFileTelemetry {
+  std::string module_path;
+  std::filesystem::path file_path;
+  std::size_t byte_count = 0;
+  std::int64_t read_ms = 0;
+  std::int64_t load_ms = 0;
+  std::int64_t inspect_ms = 0;
+  std::int64_t parse_ms = 0;
+  std::int64_t total_ms = 0;
+  std::size_t diagnostics = 0;
+  bool ok = false;
+};
+
+struct ParseModuleTelemetry {
+  std::string module_path;
+  std::filesystem::path module_dir;
+  std::size_t file_count = 0;
+  std::size_t byte_count = 0;
+  std::int64_t compilation_unit_ms = 0;
+  std::int64_t total_ms = 0;
+  std::size_t diagnostics = 0;
+  bool ok = false;
+};
+
 struct ParseModuleDeps {
   project::CompilationUnitResult (*compilation_unit)(
       const std::filesystem::path& module_dir);
@@ -36,6 +61,9 @@ struct ParseModuleDeps {
   ast::ParseFileResult (*parse_file)(const core::SourceFile& source);
   core::DiagnosticStream (*inspect_source)(const core::SourceFile& source) =
       nullptr;
+  std::function<void(const ParseFileTelemetry&)> file_telemetry;
+  std::function<void(const ParseModuleTelemetry&)> module_telemetry;
+  bool parallel_modules = false;
 };
 
 struct ParseModuleResult {

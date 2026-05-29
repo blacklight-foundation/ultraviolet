@@ -4,7 +4,6 @@
 
 #include "02_source/parser/parser.h"
 
-#include <algorithm>
 #include <memory>
 #include <optional>
 #include <string_view>
@@ -41,14 +40,15 @@ std::vector<Token> SliceTokensBetween(const Parser& start, const Parser& end) {
   }
 
   const auto [from, to] = TokensBetween(start, end);
-  if (to <= from || from >= start.tokens->size()) {
+  if (to <= from) {
     return out;
   }
 
-  const std::size_t last = std::min(to, start.tokens->size());
-  out.reserve(last - from);
-  for (std::size_t i = from; i < last; ++i) {
-    out.push_back((*start.tokens)[i]);
+  out.reserve(to - from);
+  Parser cur = start;
+  while (cur.index < to && !AtEof(cur)) {
+    out.push_back(*Tok(cur));
+    Advance(cur);
   }
   return out;
 }

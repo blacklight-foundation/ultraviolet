@@ -65,8 +65,10 @@
 
 #include <cstddef>
 #include <cstdint>
+#include <map>
 #include <optional>
 #include <string_view>
+#include <unordered_map>
 #include <utility>
 #include <vector>
 
@@ -188,12 +190,83 @@ static TypeLowerResult ProcReturn(const ScopeContext& ctx,
   return LowerTypeLocal(ctx, ret_opt);
 }
 
+struct ProcedureLookupResult {
+  const ast::ProcedureDecl* proc = nullptr;
+  const ast::ComptimeProcedureDecl* comptime_proc = nullptr;
+  const ast::ExternProcDecl* extern_proc = nullptr;
+};
+
+struct FunctionValueLookupIndex {
+  const void* sigma_key = nullptr;
+  const void* module_storage_key = nullptr;
+  std::size_t module_count = 0;
+  std::map<PathKey, const ast::ASTModule*> modules_by_path;
+  std::unordered_map<const ast::ASTModule*,
+                     std::unordered_map<IdKey, ProcedureLookupResult>>
+      procedures_by_module;
+};
+
+static const FunctionValueLookupIndex& GetFunctionValueLookupIndex(
+    const ScopeContext& ctx) {
+  thread_local FunctionValueLookupIndex index;
+  const Sigma* sigma_ptr = ctx.sigma_source ? ctx.sigma_source : &ctx.sigma;
+  const Sigma& sigma = *sigma_ptr;
+  const void* sigma_key = static_cast<const void*>(sigma_ptr);
+  const void* module_storage_key =
+      sigma.mods.empty() ? nullptr : static_cast<const void*>(sigma.mods.data());
+  if (index.sigma_key == sigma_key &&
+      index.module_storage_key == module_storage_key &&
+      index.module_count == sigma.mods.size()) {
+    return index;
+  }
+
+  index = {};
+  index.sigma_key = sigma_key;
+  index.module_storage_key = module_storage_key;
+  index.module_count = sigma.mods.size();
+  index.procedures_by_module.reserve(sigma.mods.size());
+
+  for (const auto& module : sigma.mods) {
+    const auto* module_ptr = &module;
+    index.modules_by_path.emplace(PathKeyOf(module.path), module_ptr);
+
+    auto& procedures = index.procedures_by_module[module_ptr];
+    for (const auto& decl : module.comptime_procedures) {
+      procedures.emplace(IdKeyOf(decl.name),
+                         ProcedureLookupResult{nullptr, &decl, nullptr});
+    }
+    for (const auto& item : module.items) {
+      if (const auto* decl = std::get_if<ast::ProcedureDecl>(&item)) {
+        procedures.emplace(IdKeyOf(decl->name),
+                           ProcedureLookupResult{decl, nullptr, nullptr});
+        continue;
+      }
+      if (const auto* decl = std::get_if<ast::ComptimeProcedureDecl>(&item)) {
+        procedures.emplace(IdKeyOf(decl->name),
+                           ProcedureLookupResult{nullptr, decl, nullptr});
+        continue;
+      }
+      if (const auto* block = std::get_if<ast::ExternBlock>(&item)) {
+        for (const auto& ext_item : block->items) {
+          if (const auto* decl =
+                  std::get_if<ast::ExternProcDecl>(&ext_item)) {
+            procedures.emplace(IdKeyOf(decl->name),
+                               ProcedureLookupResult{nullptr, nullptr, decl});
+          }
+        }
+      }
+    }
+  }
+
+  return index;
+}
+
 static const ast::ASTModule* FindModule(const ScopeContext& ctx,
                                          const ast::ModulePath& path) {
-  for (const auto& module : ctx.sigma.mods) {
-    if (PathEq(module.path, path)) {
-      return &module;
-    }
+  const auto& index = GetFunctionValueLookupIndex(ctx);
+  const auto it = index.modules_by_path.find(PathKeyOf(path));
+  if (it != index.modules_by_path.end()) {
+    return it->second;
   }
   return nullptr;
 }
@@ -326,44 +399,21 @@ static ModuleStaticLookupResult LookupModuleStaticInModule(
   return {true, std::nullopt, {}, false};
 }
 
-struct ProcedureLookupResult {
-  const ast::ProcedureDecl* proc = nullptr;
-  const ast::ComptimeProcedureDecl* comptime_proc = nullptr;
-  const ast::ExternProcDecl* extern_proc = nullptr;
-};
-
 static ProcedureLookupResult FindProcedure(
+    const ScopeContext& ctx,
     const ast::ASTModule& module,
     std::string_view name) {
   ScopedTypeBodyPerfPhase perf(TypeBodyPerfPhase::ValuePathFindProcedure);
-  for (const auto& decl : module.comptime_procedures) {
-    if (IdEq(decl.name, name)) {
-      return ProcedureLookupResult{nullptr, &decl, nullptr};
-    }
+  const auto& index = GetFunctionValueLookupIndex(ctx);
+  const auto module_it = index.procedures_by_module.find(&module);
+  if (module_it == index.procedures_by_module.end()) {
+    return {};
   }
-  for (const auto& item : module.items) {
-    if (const auto* decl = std::get_if<ast::ProcedureDecl>(&item)) {
-      if (IdEq(decl->name, name)) {
-        return ProcedureLookupResult{decl, nullptr, nullptr};
-      }
-      continue;
-    }
-    if (const auto* decl = std::get_if<ast::ComptimeProcedureDecl>(&item)) {
-      if (IdEq(decl->name, name)) {
-        return ProcedureLookupResult{nullptr, decl, nullptr};
-      }
-      continue;
-    }
-    if (const auto* block = std::get_if<ast::ExternBlock>(&item)) {
-      for (const auto& ext_item : block->items) {
-        if (const auto* ext_decl = std::get_if<ast::ExternProcDecl>(&ext_item);
-            ext_decl && IdEq(ext_decl->name, name)) {
-          return ProcedureLookupResult{nullptr, nullptr, ext_decl};
-        }
-      }
-    }
+  const auto proc_it = module_it->second.find(IdKeyOf(name));
+  if (proc_it == module_it->second.end()) {
+    return {};
   }
-  return {};
+  return proc_it->second;
 }
 
 static bool ModulePathEq(const ast::ModulePath& lhs,
@@ -467,7 +517,7 @@ ValuePathTypeResult ValuePathType(const ScopeContext& ctx,
     if (static_lookup.type) {
       return ValuePathTypeResult{true, std::nullopt, static_lookup.type};
     }
-    const auto proc_lookup = FindProcedure(*module, name);
+    const auto proc_lookup = FindProcedure(ctx, *module, name);
     if (proc_lookup.proc) {
       return ProcType(ctx, *proc_lookup.proc);
     }
@@ -539,7 +589,7 @@ ValuePathTypeResult ValuePathType(const ScopeContext& ctx,
   if (static_lookup.type) {
     return {true, std::nullopt, static_lookup.type};
   }
-  const auto proc_lookup = FindProcedure(*module, resolved_name);
+  const auto proc_lookup = FindProcedure(ctx, *module, resolved_name);
   if (!proc_lookup.proc && !proc_lookup.comptime_proc && !proc_lookup.extern_proc) {
     if (ModulePathEq(path, ctx.current_module)) {
       if (const auto gpu_intrinsic = LookupGpuIntrinsicType(name)) {

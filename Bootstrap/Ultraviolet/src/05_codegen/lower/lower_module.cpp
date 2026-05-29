@@ -133,13 +133,17 @@ const analysis::ScopeContext& BuildScope(const ast::ModulePath& module_path,
     return kEmptyScope;
   }
 
-  if (cache.ctx != &ctx || cache.sigma != ctx.sigma ||
-      cache.module_path != module_path ||
-      cache.target_profile != ctx.target_profile ||
+  const bool context_changed = cache.ctx != &ctx;
+  const bool sigma_changed = cache.sigma != ctx.sigma;
+  const bool module_changed = cache.module_path != module_path;
+  const bool target_profile_changed = cache.target_profile != ctx.target_profile;
+  const bool analysis_maps_changed =
       cache.expr_types != ctx.expr_types ||
       cache.dynamic_refine_checks != ctx.dynamic_refine_checks ||
       cache.generic_call_substs != ctx.generic_call_substs ||
-      cache.selected_call_targets != ctx.selected_call_targets) {
+      cache.selected_call_targets != ctx.selected_call_targets;
+  if (context_changed || sigma_changed || module_changed ||
+      target_profile_changed || analysis_maps_changed) {
     cache.ctx = &ctx;
     cache.sigma = ctx.sigma;
     cache.module_path = module_path;
@@ -148,9 +152,11 @@ const analysis::ScopeContext& BuildScope(const ast::ModulePath& module_path,
     cache.dynamic_refine_checks = ctx.dynamic_refine_checks;
     cache.generic_call_substs = ctx.generic_call_substs;
     cache.selected_call_targets = ctx.selected_call_targets;
-    cache.scope = analysis::ScopeContext{};
-    cache.scope.sigma = *ctx.sigma;
-    cache.scope.sigma_source = ctx.sigma;
+    if (context_changed || sigma_changed) {
+      cache.scope = analysis::ScopeContext{};
+      cache.scope.sigma = *ctx.sigma;
+      cache.scope.sigma_source = ctx.sigma;
+    }
     cache.scope.current_module = module_path;
     cache.scope.target_profile = ctx.target_profile;
     cache.scope.expr_types = ctx.expr_types;

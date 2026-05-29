@@ -35,6 +35,91 @@ core::Span PointSpanAtEnd(const Token& token) {
   return span;
 }
 
+std::size_t VirtualTokenCount(const Parser& parser) {
+  if (!parser.tokens) {
+    return 0;
+  }
+  const std::size_t split_count =
+      parser.split_shift_right_indices
+          ? parser.split_shift_right_indices->size()
+          : 0;
+  return parser.tokens->size() + split_count;
+}
+
+struct TokenLookup {
+  const Token* token = nullptr;
+  std::optional<Token> split_token;
+};
+
+Token SplitShiftRightToken(const Token& original, bool is_right) {
+  Token split = original;
+  split.kind = TokenKind::Operator;
+  split.lexeme = ">";
+  const core::Span span = original.span;
+  split.span.start_offset = span.start_offset + (is_right ? 1 : 0);
+  split.span.end_offset = span.start_offset + (is_right ? 2 : 1);
+  split.span.start_line = span.start_line;
+  split.span.end_line = span.start_line;
+  split.span.start_col = span.start_col + (is_right ? 1 : 0);
+  split.span.end_col = span.start_col + (is_right ? 2 : 1);
+  return split;
+}
+
+TokenLookup TokenAtVirtualIndex(const Parser& parser,
+                                std::size_t virtual_index) {
+  TokenLookup lookup;
+  if (!parser.tokens) {
+    return lookup;
+  }
+
+  std::size_t split_count_before = 0;
+  if (parser.split_shift_right_indices) {
+    const auto& split_indices = *parser.split_shift_right_indices;
+    std::size_t first_covering_or_after = 0;
+    std::size_t last = split_indices.size();
+    while (first_covering_or_after < last) {
+      const std::size_t mid = first_covering_or_after +
+          (last - first_covering_or_after) / 2;
+      const std::size_t split_virtual_end = split_indices[mid] + mid + 1;
+      if (split_virtual_end < virtual_index) {
+        first_covering_or_after = mid + 1;
+      } else {
+        last = mid;
+      }
+    }
+
+    if (first_covering_or_after < split_indices.size()) {
+      const std::size_t split_index =
+          split_indices[first_covering_or_after];
+      const std::size_t split_virtual_index =
+          split_index + first_covering_or_after;
+      if (virtual_index == split_virtual_index ||
+          virtual_index == split_virtual_index + 1) {
+        if (split_index >= parser.tokens->size()) {
+          return lookup;
+        }
+        lookup.split_token = SplitShiftRightToken(
+            (*parser.tokens)[split_index],
+            virtual_index == split_virtual_index + 1);
+        return lookup;
+      }
+      if (virtual_index < split_virtual_index) {
+        split_count_before = first_covering_or_after;
+      } else {
+        split_count_before = first_covering_or_after + 1;
+      }
+    } else {
+      split_count_before = split_indices.size();
+    }
+  }
+
+  const std::size_t underlying_index = virtual_index - split_count_before;
+  if (underlying_index < parser.tokens->size()) {
+    lookup.token = &(*parser.tokens)[underlying_index];
+  }
+  return lookup;
+}
+
 Token MakeParserEofToken(const Parser& parser) {
   Token eof;
   eof.kind = TokenKind::Eof;
@@ -99,10 +184,7 @@ Parser MakeParser(const std::vector<Token>& tokens,
 // Returns true if tokens is null OR index >= tokens->size()
 
 bool AtEof(const Parser& parser) {
-  if (!parser.tokens) {
-    return true;
-  }
-  return parser.index >= parser.tokens->size();
+  return parser.index >= VirtualTokenCount(parser);
 }
 
 // =============================================================================
@@ -114,12 +196,23 @@ bool AtEof(const Parser& parser) {
 // Returns a pointer to K[i], or to the explicit EOF token when i = |K|
 
 const Token* Tok(const Parser& parser) {
-  if (!parser.tokens || parser.index >= parser.tokens->size()) {
+  if (!parser.tokens || AtEof(parser)) {
     Token& eof = ParserEofTokenCache();
     eof = MakeParserEofToken(parser);
     return &eof;
   }
-  return &(*parser.tokens)[parser.index];
+  TokenLookup lookup = TokenAtVirtualIndex(parser, parser.index);
+  if (lookup.split_token.has_value()) {
+    Token& split = ParserEofTokenCache();
+    split = *lookup.split_token;
+    return &split;
+  }
+  if (lookup.token) {
+    return lookup.token;
+  }
+  Token& eof = ParserEofTokenCache();
+  eof = MakeParserEofToken(parser);
+  return &eof;
 }
 
 // =============================================================================
