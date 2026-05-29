@@ -341,11 +341,12 @@ RecvArgOkResult RecvArgOk(const ast::ExprPtr& base,
     return result;
   }
   if (!mode.has_value()) {
-    if (HasSourceProvenance(base) && !IsPlaceExprForCall(base)) {
+    const bool has_source_provenance = HasSourceProvenance(base);
+    if (has_source_provenance && !IsPlaceExprForCall(base)) {
       result.diag_id = "E-TYP-1603";
       return result;
     }
-    if (HasSourceProvenance(base)) {
+    if (has_source_provenance) {
       const auto addr_ok = AddrOfOk(base, type_expr, check_expr);
       if (!addr_ok.ok) {
         result.diag_id = addr_ok.diag_id;
@@ -359,6 +360,188 @@ RecvArgOkResult RecvArgOk(const ast::ExprPtr& base,
     result.ok = true;
     return result;
   }
+  return result;
+}
+
+struct MethodArgFacts {
+  bool has_source_provenance = false;
+  bool source_provenance_ready = false;
+  bool is_place = false;
+  bool is_place_ready = false;
+  ast::ExprPtr pass_expr;
+};
+
+static bool MethodArgHasSourceProvenance(MethodArgFacts& facts,
+                                         const ast::Arg& arg) {
+  if (!facts.source_provenance_ready) {
+    facts.has_source_provenance = HasSourceProvenance(arg.value);
+    facts.source_provenance_ready = true;
+  }
+  return facts.has_source_provenance;
+}
+
+static bool MethodArgIsPlace(MethodArgFacts& facts, const ast::Arg& arg) {
+  if (!facts.is_place_ready) {
+    facts.is_place = IsPlaceExprForCall(arg.value);
+    facts.is_place_ready = true;
+  }
+  return facts.is_place;
+}
+
+static const ast::ExprPtr& MethodArgPassExpr(MethodArgFacts& facts,
+                                             const ast::Arg& arg) {
+  if (!facts.pass_expr) {
+    facts.pass_expr = ArgPassExpr(arg);
+  }
+  return facts.pass_expr;
+}
+
+static bool MethodArgMissingMove(MethodArgFacts& facts,
+                                 const std::optional<ParamMode>& mode,
+                                 const ast::Arg& arg) {
+  return mode == ParamMode::Move && ast::IsRefArg(arg) &&
+         MethodArgHasSourceProvenance(facts, arg);
+}
+
+static ArgsOkResult CheckLoweredArgsOk(
+    const ScopeContext& ctx,
+    const std::vector<TypeFuncParam>& lowered_params,
+    const std::vector<ast::Arg>& args,
+    const ExprTypeFn& type_expr,
+    const PlaceTypeFn* type_place,
+    const ArgCheckFn* check_expr) {
+  ArgsOkResult result;
+
+  if (lowered_params.size() != args.size()) {
+    SPEC_RULE("Call-ArgCount-Err");
+    result.diag_id = "E-SEM-2532";
+    return result;
+  }
+
+  std::vector<MethodArgFacts> facts(args.size());
+  for (std::size_t i = 0; i < args.size(); ++i) {
+    if (MethodArgMissingMove(facts[i], lowered_params[i].mode, args[i])) {
+      SPEC_RULE("Call-Move-Missing");
+      result.diag_id = "E-SEM-2534";
+      return result;
+    }
+  }
+
+  for (std::size_t i = 0; i < args.size(); ++i) {
+    if (!lowered_params[i].mode.has_value() &&
+        args[i].pass == ast::ArgPassKind::Move) {
+      SPEC_RULE("Call-Move-Unexpected");
+      result.diag_id = "E-SEM-2535";
+      return result;
+    }
+  }
+
+  std::vector<TypeRef> arg_types;
+  arg_types.reserve(args.size());
+  for (std::size_t i = 0; i < args.size(); ++i) {
+    const auto& arg = args[i];
+    const auto& param = lowered_params[i];
+    if (!param.mode.has_value()) {
+      if (ast::IsCopyArg(arg)) {
+        const auto copy_type = type_expr(MethodArgPassExpr(facts[i], arg));
+        if (!copy_type.ok) {
+          result.diag_id = copy_type.diag_id;
+          return result;
+        }
+        arg_types.push_back(copy_type.type);
+        continue;
+      }
+
+      const bool has_source_prov = MethodArgHasSourceProvenance(facts[i], arg);
+      if (has_source_prov && !MethodArgIsPlace(facts[i], arg)) {
+        SPEC_RULE("Call-Arg-NotPlace");
+        result.diag_id = "E-TYP-1603";
+        return result;
+      }
+      if (has_source_prov && type_place) {
+        const auto place_type = (*type_place)(arg.value);
+        if (!place_type.ok) {
+          result.diag_id = place_type.diag_id;
+          return result;
+        }
+        arg_types.push_back(place_type.type);
+      } else {
+        if (!has_source_prov && check_expr) {
+          const auto checked = (*check_expr)(arg.value, param.type);
+          if (checked.ok) {
+            arg_types.push_back(param.type);
+            continue;
+          }
+          if (checked.diag_id.has_value()) {
+            result.diag_id = checked.diag_id;
+            return result;
+          }
+        }
+        const auto arg_type = type_expr(arg.value);
+        if (!arg_type.ok) {
+          result.diag_id = arg_type.diag_id;
+          return result;
+        }
+        arg_types.push_back(arg_type.type);
+      }
+      continue;
+    }
+
+    const auto& arg_expr = MethodArgPassExpr(facts[i], arg);
+    if (!MethodArgHasSourceProvenance(facts[i], arg) && check_expr) {
+      const auto checked = (*check_expr)(arg_expr, param.type);
+      if (checked.ok) {
+        arg_types.push_back(param.type);
+        continue;
+      }
+      if (checked.diag_id.has_value()) {
+        result.diag_id = checked.diag_id;
+        return result;
+      }
+    }
+    const auto arg_type = type_expr(arg_expr);
+    if (!arg_type.ok) {
+      result.diag_id = arg_type.diag_id;
+      return result;
+    }
+    arg_types.push_back(arg_type.type);
+  }
+
+  for (std::size_t i = 0; i < args.size(); ++i) {
+    const auto sub =
+        ArgumentTypeCompatible(ctx, arg_types[i], lowered_params[i].type,
+                               lowered_params[i].mode);
+    if (!sub.ok) {
+      result.diag_id = sub.diag_id;
+      return result;
+    }
+    if (!sub.subtype) {
+      SPEC_RULE("Call-ArgType-Err");
+      result.diag_id = "E-SEM-2533";
+      return result;
+    }
+  }
+
+  if (lowered_params.empty()) {
+    SPEC_RULE("Args-Empty");
+  } else {
+    for (std::size_t i = 0; i < lowered_params.size(); ++i) {
+      if (lowered_params[i].mode == ParamMode::Move) {
+        SPEC_RULE("Args-Cons");
+        continue;
+      }
+      if (MethodArgHasSourceProvenance(facts[i], args[i])) {
+        const auto addr_ok = AddrOfOk(args[i].value, type_expr, check_expr);
+        if (!addr_ok.ok) {
+          result.diag_id = addr_ok.diag_id;
+          return result;
+        }
+      }
+      SPEC_RULE("Args-Cons-Ref");
+    }
+  }
+
+  result.ok = true;
   return result;
 }
 
@@ -390,154 +573,8 @@ ArgsOkResult ArgsOk(const ScopeContext& ctx,
         TypeFuncParam{LowerParamMode(param.mode), lowered.type});
   }
 
-  for (std::size_t i = 0; i < args.size(); ++i) {
-    if (MissingRequiredMoveForConsuming(lowered_params[i].mode, args[i])) {
-      SPEC_RULE("Call-Move-Missing");
-      result.diag_id = "E-SEM-2534";
-      return result;
-    }
-  }
-
-  for (std::size_t i = 0; i < args.size(); ++i) {
-    if (!lowered_params[i].mode.has_value() && args[i].pass == ast::ArgPassKind::Move) {
-      SPEC_RULE("Call-Move-Unexpected");
-      result.diag_id = "E-SEM-2535";
-      return result;
-    }
-  }
-
-  std::vector<TypeRef> arg_types;
-  arg_types.reserve(args.size());
-  for (std::size_t i = 0; i < args.size(); ++i) {
-    const auto& arg = args[i];
-    if (!lowered_params[i].mode.has_value()) {
-      if (ast::IsCopyArg(arg)) {
-        const auto copy_type = type_expr(ArgPassExpr(arg));
-        if (!copy_type.ok) {
-          result.diag_id = copy_type.diag_id;
-          return result;
-        }
-        arg_types.push_back(copy_type.type);
-        continue;
-      }
-      const bool has_source_prov = HasSourceProvenance(arg.value);
-      if (has_source_prov && !IsPlaceExprForCall(arg.value)) {
-        SPEC_RULE("Call-Arg-NotPlace");
-        result.diag_id = "E-TYP-1603";
-        return result;
-      }
-      if (has_source_prov && type_place) {
-        const auto place_type = (*type_place)(arg.value);
-        if (!place_type.ok) {
-          result.diag_id = place_type.diag_id;
-          return result;
-        }
-        arg_types.push_back(place_type.type);
-      } else {
-        if (!has_source_prov && check_expr) {
-          const auto checked = (*check_expr)(arg.value, lowered_params[i].type);
-          if (checked.ok) {
-            arg_types.push_back(lowered_params[i].type);
-            continue;
-          }
-          if (checked.diag_id.has_value()) {
-            result.diag_id = checked.diag_id;
-            return result;
-          }
-        }
-        const auto arg_type = type_expr(arg.value);
-        if (!arg_type.ok) {
-          result.diag_id = arg_type.diag_id;
-          return result;
-        }
-        arg_types.push_back(arg_type.type);
-      }
-      continue;
-    }
-    const auto arg_expr = ArgPassExpr(arg);
-    if (!HasSourceProvenance(arg.value) && check_expr) {
-      const auto checked = (*check_expr)(arg_expr, lowered_params[i].type);
-      if (checked.ok) {
-        arg_types.push_back(lowered_params[i].type);
-        continue;
-      }
-      if (checked.diag_id.has_value()) {
-        result.diag_id = checked.diag_id;
-        return result;
-      }
-    }
-    const auto arg_type = type_expr(arg_expr);
-    if (!arg_type.ok) {
-      result.diag_id = arg_type.diag_id;
-      return result;
-    }
-    arg_types.push_back(arg_type.type);
-  }
-
-  for (std::size_t i = 0; i < args.size(); ++i) {
-    const auto sub =
-        ArgumentTypeCompatible(ctx, arg_types[i], lowered_params[i].type,
-                               lowered_params[i].mode);
-    if (!sub.ok) {
-      result.diag_id = sub.diag_id;
-      return result;
-    }
-    if (!sub.subtype) {
-      SPEC_RULE("Call-ArgType-Err");
-      result.diag_id = "E-SEM-2533";
-      return result;
-    }
-  }
-
-  for (std::size_t i = 0; i < args.size(); ++i) {
-    if (!lowered_params[i].mode.has_value() &&
-        HasSourceProvenance(args[i].value) &&
-        !IsPlaceExprForCall(args[i].value)) {
-      SPEC_RULE("Call-Arg-NotPlace");
-      result.diag_id = "E-TYP-1603";
-      return result;
-    }
-  }
-
-  if (lowered_params.empty()) {
-    SPEC_RULE("Args-Empty");
-  } else {
-    for (std::size_t i = 0; i < lowered_params.size(); ++i) {
-      if (lowered_params[i].mode == ParamMode::Move) {
-        const auto moved = ArgPassExpr(args[i]);
-        const auto moved_type = type_expr(moved);
-        if (!moved_type.ok) {
-          result.diag_id = moved_type.diag_id;
-          return result;
-        }
-        const auto sub =
-            ArgumentTypeCompatible(ctx, moved_type.type, lowered_params[i].type,
-                                   lowered_params[i].mode);
-        if (!sub.ok) {
-          result.diag_id = sub.diag_id;
-          return result;
-        }
-        if (!sub.subtype) {
-          SPEC_RULE("Call-ArgType-Err");
-          result.diag_id = "E-SEM-2533";
-          return result;
-        }
-        SPEC_RULE("Args-Cons");
-        continue;
-      }
-      if (HasSourceProvenance(args[i].value)) {
-        const auto addr_ok = AddrOfOk(args[i].value, type_expr, check_expr);
-        if (!addr_ok.ok) {
-          result.diag_id = addr_ok.diag_id;
-          return result;
-        }
-      }
-      SPEC_RULE("Args-Cons-Ref");
-    }
-  }
-
-  result.ok = true;
-  return result;
+  return CheckLoweredArgsOk(ctx, lowered_params, args, type_expr, type_place,
+                            check_expr);
 }
 
 ArgsOkResult ArgsOkWithSubst(const ScopeContext& ctx,
@@ -573,154 +610,8 @@ ArgsOkResult ArgsOkWithSubst(const ScopeContext& ctx,
         TypeFuncParam{LowerParamMode(param.mode), param_type});
   }
 
-  for (std::size_t i = 0; i < args.size(); ++i) {
-    if (MissingRequiredMoveForConsuming(lowered_params[i].mode, args[i])) {
-      SPEC_RULE("Call-Move-Missing");
-      result.diag_id = "E-SEM-2534";
-      return result;
-    }
-  }
-
-  for (std::size_t i = 0; i < args.size(); ++i) {
-    if (!lowered_params[i].mode.has_value() && args[i].pass == ast::ArgPassKind::Move) {
-      SPEC_RULE("Call-Move-Unexpected");
-      result.diag_id = "E-SEM-2535";
-      return result;
-    }
-  }
-
-  std::vector<TypeRef> arg_types;
-  arg_types.reserve(args.size());
-  for (std::size_t i = 0; i < args.size(); ++i) {
-    const auto& arg = args[i];
-    if (!lowered_params[i].mode.has_value()) {
-      if (ast::IsCopyArg(arg)) {
-        const auto copy_type = type_expr(ArgPassExpr(arg));
-        if (!copy_type.ok) {
-          result.diag_id = copy_type.diag_id;
-          return result;
-        }
-        arg_types.push_back(copy_type.type);
-        continue;
-      }
-      const bool has_source_prov = HasSourceProvenance(arg.value);
-      if (has_source_prov && !IsPlaceExprForCall(arg.value)) {
-        SPEC_RULE("Call-Arg-NotPlace");
-        result.diag_id = "E-TYP-1603";
-        return result;
-      }
-      if (has_source_prov && type_place) {
-        const auto place_type = (*type_place)(arg.value);
-        if (!place_type.ok) {
-          result.diag_id = place_type.diag_id;
-          return result;
-        }
-        arg_types.push_back(place_type.type);
-      } else {
-        if (!has_source_prov && check_expr) {
-          const auto checked = (*check_expr)(arg.value, lowered_params[i].type);
-          if (checked.ok) {
-            arg_types.push_back(lowered_params[i].type);
-            continue;
-          }
-          if (checked.diag_id.has_value()) {
-            result.diag_id = checked.diag_id;
-            return result;
-          }
-        }
-        const auto arg_type = type_expr(arg.value);
-        if (!arg_type.ok) {
-          result.diag_id = arg_type.diag_id;
-          return result;
-        }
-        arg_types.push_back(arg_type.type);
-      }
-      continue;
-    }
-    const auto arg_expr = ArgPassExpr(arg);
-    if (!HasSourceProvenance(arg.value) && check_expr) {
-      const auto checked = (*check_expr)(arg_expr, lowered_params[i].type);
-      if (checked.ok) {
-        arg_types.push_back(lowered_params[i].type);
-        continue;
-      }
-      if (checked.diag_id.has_value()) {
-        result.diag_id = checked.diag_id;
-        return result;
-      }
-    }
-    const auto arg_type = type_expr(arg_expr);
-    if (!arg_type.ok) {
-      result.diag_id = arg_type.diag_id;
-      return result;
-    }
-    arg_types.push_back(arg_type.type);
-  }
-
-  for (std::size_t i = 0; i < args.size(); ++i) {
-    const auto sub =
-        ArgumentTypeCompatible(ctx, arg_types[i], lowered_params[i].type,
-                               lowered_params[i].mode);
-    if (!sub.ok) {
-      result.diag_id = sub.diag_id;
-      return result;
-    }
-    if (!sub.subtype) {
-      SPEC_RULE("Call-ArgType-Err");
-      result.diag_id = "E-SEM-2533";
-      return result;
-    }
-  }
-
-  for (std::size_t i = 0; i < args.size(); ++i) {
-    if (!lowered_params[i].mode.has_value() &&
-        HasSourceProvenance(args[i].value) &&
-        !IsPlaceExprForCall(args[i].value)) {
-      SPEC_RULE("Call-Arg-NotPlace");
-      result.diag_id = "E-TYP-1603";
-      return result;
-    }
-  }
-
-  if (lowered_params.empty()) {
-    SPEC_RULE("Args-Empty");
-  } else {
-    for (std::size_t i = 0; i < lowered_params.size(); ++i) {
-      if (lowered_params[i].mode == ParamMode::Move) {
-        const auto moved = ArgPassExpr(args[i]);
-        const auto moved_type = type_expr(moved);
-        if (!moved_type.ok) {
-          result.diag_id = moved_type.diag_id;
-          return result;
-        }
-        const auto sub =
-            ArgumentTypeCompatible(ctx, moved_type.type, lowered_params[i].type,
-                                   lowered_params[i].mode);
-        if (!sub.ok) {
-          result.diag_id = sub.diag_id;
-          return result;
-        }
-        if (!sub.subtype) {
-          SPEC_RULE("Call-ArgType-Err");
-          result.diag_id = "E-SEM-2533";
-          return result;
-        }
-        SPEC_RULE("Args-Cons");
-        continue;
-      }
-      if (HasSourceProvenance(args[i].value)) {
-        const auto addr_ok = AddrOfOk(args[i].value, type_expr, check_expr);
-        if (!addr_ok.ok) {
-          result.diag_id = addr_ok.diag_id;
-          return result;
-        }
-      }
-      SPEC_RULE("Args-Cons-Ref");
-    }
-  }
-
-  result.ok = true;
-  return result;
+  return CheckLoweredArgsOk(ctx, lowered_params, args, type_expr, type_place,
+                            check_expr);
 }
 
 StaticMethodLookup LookupMethodStatic(const ScopeContext& ctx,

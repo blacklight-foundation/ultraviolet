@@ -67,8 +67,10 @@
 #include <cstdint>
 #include <map>
 #include <optional>
+#include <span>
 #include <string_view>
 #include <unordered_map>
+#include <unordered_set>
 #include <utility>
 #include <vector>
 
@@ -200,23 +202,40 @@ struct FunctionValueLookupIndex {
   const void* sigma_key = nullptr;
   const void* module_storage_key = nullptr;
   std::size_t module_count = 0;
+  std::size_t type_count = 0;
+  std::size_t class_count = 0;
   std::map<PathKey, const ast::ASTModule*> modules_by_path;
   std::unordered_map<const ast::ASTModule*,
                      std::unordered_map<IdKey, ProcedureLookupResult>>
       procedures_by_module;
+  std::unordered_set<const void*> stable_proc_type_keys;
 };
+
+static const Sigma& CacheSigma(const ScopeContext& ctx) {
+  return ctx.sigma_source ? *ctx.sigma_source : ctx.sigma;
+}
+
+static const Sigma* CacheSigmaPtr(const ScopeContext& ctx) {
+  return ctx.sigma_source ? ctx.sigma_source : &ctx.sigma;
+}
+
+static const void* ModuleStorageKey(const Sigma& sigma) {
+  return sigma.mods.empty() ? nullptr
+                            : static_cast<const void*>(sigma.mods.data());
+}
 
 static const FunctionValueLookupIndex& GetFunctionValueLookupIndex(
     const ScopeContext& ctx) {
   thread_local FunctionValueLookupIndex index;
-  const Sigma* sigma_ptr = ctx.sigma_source ? ctx.sigma_source : &ctx.sigma;
+  const Sigma* sigma_ptr = CacheSigmaPtr(ctx);
   const Sigma& sigma = *sigma_ptr;
   const void* sigma_key = static_cast<const void*>(sigma_ptr);
-  const void* module_storage_key =
-      sigma.mods.empty() ? nullptr : static_cast<const void*>(sigma.mods.data());
+  const void* module_storage_key = ModuleStorageKey(sigma);
   if (index.sigma_key == sigma_key &&
       index.module_storage_key == module_storage_key &&
-      index.module_count == sigma.mods.size()) {
+      index.module_count == sigma.mods.size() &&
+      index.type_count == sigma.types.size() &&
+      index.class_count == sigma.classes.size()) {
     return index;
   }
 
@@ -224,6 +243,8 @@ static const FunctionValueLookupIndex& GetFunctionValueLookupIndex(
   index.sigma_key = sigma_key;
   index.module_storage_key = module_storage_key;
   index.module_count = sigma.mods.size();
+  index.type_count = sigma.types.size();
+  index.class_count = sigma.classes.size();
   index.procedures_by_module.reserve(sigma.mods.size());
 
   for (const auto& module : sigma.mods) {
@@ -232,16 +253,19 @@ static const FunctionValueLookupIndex& GetFunctionValueLookupIndex(
 
     auto& procedures = index.procedures_by_module[module_ptr];
     for (const auto& decl : module.comptime_procedures) {
+      index.stable_proc_type_keys.emplace(&decl);
       procedures.emplace(IdKeyOf(decl.name),
                          ProcedureLookupResult{nullptr, &decl, nullptr});
     }
     for (const auto& item : module.items) {
       if (const auto* decl = std::get_if<ast::ProcedureDecl>(&item)) {
+        index.stable_proc_type_keys.emplace(decl);
         procedures.emplace(IdKeyOf(decl->name),
                            ProcedureLookupResult{decl, nullptr, nullptr});
         continue;
       }
       if (const auto* decl = std::get_if<ast::ComptimeProcedureDecl>(&item)) {
+        index.stable_proc_type_keys.emplace(decl);
         procedures.emplace(IdKeyOf(decl->name),
                            ProcedureLookupResult{nullptr, decl, nullptr});
         continue;
@@ -250,6 +274,7 @@ static const FunctionValueLookupIndex& GetFunctionValueLookupIndex(
         for (const auto& ext_item : block->items) {
           if (const auto* decl =
                   std::get_if<ast::ExternProcDecl>(&ext_item)) {
+            index.stable_proc_type_keys.emplace(decl);
             procedures.emplace(IdKeyOf(decl->name),
                                ProcedureLookupResult{nullptr, nullptr, decl});
           }
@@ -277,8 +302,9 @@ static source::ModuleNames ModuleNamesForContext(const ScopeContext& ctx) {
     return ModuleNamesOf(*ctx.project);
   }
   source::ModuleNames names;
-  names.reserve(ctx.sigma.mods.size());
-  for (const auto& mod : ctx.sigma.mods) {
+  const Sigma& sigma = CacheSigma(ctx);
+  names.reserve(sigma.mods.size());
+  for (const auto& mod : sigma.mods) {
     names.insert(core::StringOfPath(mod.path));
   }
   return names;
@@ -299,16 +325,16 @@ static std::uint64_t MixFingerprint(std::uint64_t h, std::uint64_t v) {
   return h;
 }
 
-static std::uint64_t SigmaFingerprint(const ScopeContext& ctx) {
+static std::uint64_t SigmaFingerprintOf(const Sigma& sigma) {
   ScopedTypeBodyPerfPhase perf(TypeBodyPerfPhase::ValuePathSigmaFingerprint);
   std::uint64_t h = 0x84222325cbf29ce4ull;
-  h = MixFingerprint(h, static_cast<std::uint64_t>(ctx.sigma.mods.size()));
-  h = MixFingerprint(h, static_cast<std::uint64_t>(ctx.sigma.types.size()));
-  h = MixFingerprint(h, static_cast<std::uint64_t>(ctx.sigma.classes.size()));
+  h = MixFingerprint(h, static_cast<std::uint64_t>(sigma.mods.size()));
+  h = MixFingerprint(h, static_cast<std::uint64_t>(sigma.types.size()));
+  h = MixFingerprint(h, static_cast<std::uint64_t>(sigma.classes.size()));
   h = MixFingerprint(
       h, static_cast<std::uint64_t>(
-             reinterpret_cast<std::uintptr_t>(ctx.sigma.mods.data())));
-  for (const auto& mod : ctx.sigma.mods) {
+             reinterpret_cast<std::uintptr_t>(sigma.mods.data())));
+  for (const auto& mod : sigma.mods) {
     h = MixFingerprint(h, static_cast<std::uint64_t>(mod.path.size()));
     for (const auto& seg : mod.path) {
       h = MixFingerprint(h, static_cast<std::uint64_t>(IdKeyOf(seg).size()));
@@ -321,13 +347,18 @@ static std::uint64_t SigmaFingerprint(const ScopeContext& ctx) {
   return h;
 }
 
+static std::uint64_t SigmaFingerprint(const ScopeContext& ctx) {
+  return SigmaFingerprintOf(CacheSigma(ctx));
+}
+
 static bool ValuePathNameMapCacheValid(const ScopeContext& ctx,
                                        const ValuePathNameMapCache& cache) {
+  const Sigma& sigma = CacheSigma(ctx);
   return cache.ctx == &ctx && cache.project == ctx.project &&
          cache.sigma_fingerprint == SigmaFingerprint(ctx) &&
-         cache.mods_size == ctx.sigma.mods.size() &&
-         cache.types_size == ctx.sigma.types.size() &&
-         cache.classes_size == ctx.sigma.classes.size();
+         cache.mods_size == sigma.mods.size() &&
+         cache.types_size == sigma.types.size() &&
+         cache.classes_size == sigma.classes.size();
 }
 
 static const NameMapTable& CachedNameMapsForValuePath(const ScopeContext& ctx) {
@@ -345,11 +376,102 @@ static const NameMapTable& CachedNameMapsForValuePath(const ScopeContext& ctx) {
   cache.ctx = &ctx;
   cache.project = ctx.project;
   cache.sigma_fingerprint = SigmaFingerprint(ctx);
-  cache.mods_size = ctx.sigma.mods.size();
-  cache.types_size = ctx.sigma.types.size();
-  cache.classes_size = ctx.sigma.classes.size();
+  const Sigma& sigma = CacheSigma(ctx);
+  cache.mods_size = sigma.mods.size();
+  cache.types_size = sigma.types.size();
+  cache.classes_size = sigma.classes.size();
   cache.name_maps = built.name_maps;
   return cache.name_maps;
+}
+
+static std::size_t HashCombine(std::size_t h, std::size_t v) {
+  return h ^ (v + 0x9e3779b97f4a7c15ull + (h << 6) + (h >> 2));
+}
+
+struct ModuleStaticCacheKey {
+  const ast::ASTModule* module = nullptr;
+  IdKey name;
+
+  bool operator==(const ModuleStaticCacheKey& other) const {
+    return module == other.module && name == other.name;
+  }
+};
+
+struct ModuleStaticCacheKeyHash {
+  std::size_t operator()(const ModuleStaticCacheKey& key) const {
+    std::size_t h = std::hash<const void*>{}(key.module);
+    return HashCombine(h, std::hash<IdKey>{}(key.name));
+  }
+};
+
+struct FunctionTypeAnalysisCache {
+  const ScopeContext* ctx = nullptr;
+  const project::Project* project = nullptr;
+  const Sigma* sigma = nullptr;
+  const void* module_storage_key = nullptr;
+  std::size_t module_count = 0;
+  std::size_t type_count = 0;
+  std::size_t class_count = 0;
+  PathKey current_module_key;
+  const NameResolutionTables* name_resolution_tables = nullptr;
+  const NameMapTable* name_maps = nullptr;
+  const source::ModuleNames* module_names = nullptr;
+  std::unordered_map<const void*, ValuePathTypeResult> proc_types;
+  std::unordered_map<ModuleStaticCacheKey,
+                     ModuleStaticLookupResult,
+                     ModuleStaticCacheKeyHash>
+      statics;
+};
+
+static bool FunctionTypeAnalysisCacheValid(
+    const ScopeContext& ctx,
+    const FunctionTypeAnalysisCache& cache) {
+  const Sigma* sigma_ptr = CacheSigmaPtr(ctx);
+  const Sigma& sigma = *sigma_ptr;
+  const NameMapTable* name_maps =
+      ctx.name_resolution_tables ? ctx.name_resolution_tables->name_maps : nullptr;
+  const source::ModuleNames* module_names =
+      ctx.name_resolution_tables ? ctx.name_resolution_tables->module_names : nullptr;
+  const PathKey current_module_key = PathKeyOf(ctx.current_module);
+  return cache.ctx == &ctx &&
+         cache.project == ctx.project &&
+         cache.sigma == sigma_ptr &&
+         cache.module_storage_key == ModuleStorageKey(sigma) &&
+         cache.module_count == sigma.mods.size() &&
+         cache.type_count == sigma.types.size() &&
+         cache.class_count == sigma.classes.size() &&
+         cache.current_module_key == current_module_key &&
+         cache.name_resolution_tables == ctx.name_resolution_tables &&
+         cache.name_maps == name_maps &&
+         cache.module_names == module_names;
+}
+
+static FunctionTypeAnalysisCache& AnalysisCacheFor(const ScopeContext& ctx) {
+  thread_local FunctionTypeAnalysisCache cache;
+  if (FunctionTypeAnalysisCacheValid(ctx, cache)) {
+    return cache;
+  }
+
+  const Sigma* sigma_ptr = CacheSigmaPtr(ctx);
+  const Sigma& sigma = *sigma_ptr;
+  const NameMapTable* name_maps =
+      ctx.name_resolution_tables ? ctx.name_resolution_tables->name_maps : nullptr;
+  const source::ModuleNames* module_names =
+      ctx.name_resolution_tables ? ctx.name_resolution_tables->module_names : nullptr;
+
+  cache = {};
+  cache.ctx = &ctx;
+  cache.project = ctx.project;
+  cache.sigma = sigma_ptr;
+  cache.module_storage_key = ModuleStorageKey(sigma);
+  cache.module_count = sigma.mods.size();
+  cache.type_count = sigma.types.size();
+  cache.class_count = sigma.classes.size();
+  cache.current_module_key = PathKeyOf(ctx.current_module);
+  cache.name_resolution_tables = ctx.name_resolution_tables;
+  cache.name_maps = name_maps;
+  cache.module_names = module_names;
+  return cache;
 }
 
 static ModuleStaticLookupResult LookupModuleStaticInModule(
@@ -357,6 +479,14 @@ static ModuleStaticLookupResult LookupModuleStaticInModule(
     const ast::ASTModule& module,
     std::string_view name) {
   ScopedTypeBodyPerfPhase perf(TypeBodyPerfPhase::ValuePathStaticLookup);
+  auto& cache = AnalysisCacheFor(ctx);
+  ModuleStaticCacheKey cache_key{&module, IdKeyOf(name)};
+  if (const auto cached = cache.statics.find(cache_key);
+      cached != cache.statics.end()) {
+    return cached->second;
+  }
+
+  ModuleStaticLookupResult result{true, std::nullopt, {}, false};
   for (const auto& item : module.items) {
     const auto* decl = std::get_if<ast::StaticDecl>(&item);
     if (!decl || !decl->binding.pat) {
@@ -380,23 +510,30 @@ static ModuleStaticLookupResult LookupModuleStaticInModule(
 
     const auto lowered = LowerTypeLocal(ctx, ann_type);
     if (!lowered.ok) {
-      return {false, lowered.diag_id, {}, false};
+      result = {false, lowered.diag_id, {}, false};
+      cache.statics.emplace(std::move(cache_key), result);
+      return result;
     }
 
     const auto pattern_result =
         TypePatternAgainstType(ctx, decl->binding.pat, lowered.type);
     if (!pattern_result.ok) {
-      return {false, pattern_result.diag_id, {}, false};
+      result = {false, pattern_result.diag_id, {}, false};
+      cache.statics.emplace(std::move(cache_key), result);
+      return result;
     }
 
     for (const auto& binding : pattern_result.bindings) {
       if (IdEq(binding.first, name)) {
-        return {true, std::nullopt, binding.second,
-                decl->mut == ast::Mutability::Var};
+        result = {true, std::nullopt, binding.second,
+                  decl->mut == ast::Mutability::Var};
+        cache.statics.emplace(std::move(cache_key), result);
+        return result;
       }
     }
   }
-  return {true, std::nullopt, {}, false};
+  cache.statics.emplace(std::move(cache_key), result);
+  return result;
 }
 
 static ProcedureLookupResult FindProcedure(
@@ -431,13 +568,14 @@ static bool ModulePathEq(const ast::ModulePath& lhs,
 
 }  // namespace
 
-ValuePathTypeResult ProcType(const ScopeContext& ctx,
-                             const ast::ProcedureDecl& decl) {
+static ValuePathTypeResult BuildProcType(
+    const ScopeContext& ctx,
+    std::span<const ast::Param> params_src,
+    const std::shared_ptr<ast::Type>& return_type_opt) {
   SpecDefsFunctionTypes();
-  ScopedTypeBodyPerfPhase perf(TypeBodyPerfPhase::ValuePathProcType);
   std::vector<TypeFuncParam> params;
-  params.reserve(decl.params.size());
-  for (const auto& param : decl.params) {
+  params.reserve(params_src.size());
+  for (const auto& param : params_src) {
     const auto lowered = LowerTypeLocal(ctx, param.type);
     if (!lowered.ok) {
       return {false, lowered.diag_id, {}};
@@ -445,61 +583,57 @@ ValuePathTypeResult ProcType(const ScopeContext& ctx,
     params.push_back(TypeFuncParam{
         ::ultraviolet::analysis::LowerParamMode(param.mode), lowered.type});
   }
-  const auto ret = ProcReturn(ctx, decl.return_type_opt);
+  const auto ret = ProcReturn(ctx, return_type_opt);
   if (!ret.ok) {
     return {false, ret.diag_id, {}};
   }
   SPEC_RULE("T-Proc-As-Value");
   return {true, std::nullopt, MakeTypeFunc(std::move(params), ret.type)};
+}
+
+static ValuePathTypeResult ProcTypeCached(
+    const ScopeContext& ctx,
+    const void* decl_key,
+    std::span<const ast::Param> params,
+    const std::shared_ptr<ast::Type>& return_type_opt) {
+  ScopedTypeBodyPerfPhase perf(TypeBodyPerfPhase::ValuePathProcType);
+  const auto& index = GetFunctionValueLookupIndex(ctx);
+  if (!index.stable_proc_type_keys.contains(decl_key)) {
+    return BuildProcType(ctx, params, return_type_opt);
+  }
+
+  auto& cache = AnalysisCacheFor(ctx);
+  if (const auto cached = cache.proc_types.find(decl_key);
+      cached != cache.proc_types.end()) {
+    if (cached->second.ok && cached->second.type) {
+      SPEC_RULE("T-Proc-As-Value");
+    }
+    return cached->second;
+  }
+
+  auto result = BuildProcType(ctx, params, return_type_opt);
+  cache.proc_types.emplace(decl_key, result);
+  return result;
+}
+
+ValuePathTypeResult ProcType(const ScopeContext& ctx,
+                             const ast::ProcedureDecl& decl) {
+  return ProcTypeCached(ctx, &decl, decl.params, decl.return_type_opt);
 }
 
 ValuePathTypeResult ProcType(const ScopeContext& ctx,
                              const ast::ComptimeProcedureDecl& decl) {
-  SpecDefsFunctionTypes();
-  ScopedTypeBodyPerfPhase perf(TypeBodyPerfPhase::ValuePathProcType);
-  std::vector<TypeFuncParam> params;
-  params.reserve(decl.params.size());
-  for (const auto& param : decl.params) {
-    const auto lowered = LowerTypeLocal(ctx, param.type);
-    if (!lowered.ok) {
-      return {false, lowered.diag_id, {}};
-    }
-    params.push_back(TypeFuncParam{
-        ::ultraviolet::analysis::LowerParamMode(param.mode), lowered.type});
-  }
-  const auto ret = ProcReturn(ctx, decl.return_type_opt);
-  if (!ret.ok) {
-    return {false, ret.diag_id, {}};
-  }
-  SPEC_RULE("T-Proc-As-Value");
-  return {true, std::nullopt, MakeTypeFunc(std::move(params), ret.type)};
+  return ProcTypeCached(ctx, &decl, decl.params, decl.return_type_opt);
 }
 
 ValuePathTypeResult ProcType(const ScopeContext& ctx,
                              const ast::ExternProcDecl& decl) {
-  SpecDefsFunctionTypes();
-  ScopedTypeBodyPerfPhase perf(TypeBodyPerfPhase::ValuePathProcType);
-  std::vector<TypeFuncParam> params;
-  params.reserve(decl.params.size());
-  for (const auto& param : decl.params) {
-    const auto lowered = LowerTypeLocal(ctx, param.type);
-    if (!lowered.ok) {
-      return {false, lowered.diag_id, {}};
-    }
-    params.push_back(TypeFuncParam{
-        ::ultraviolet::analysis::LowerParamMode(param.mode), lowered.type});
-  }
-  const auto ret = ProcReturn(ctx, decl.return_type_opt);
-  if (!ret.ok) {
-    return {false, ret.diag_id, {}};
-  }
-  SPEC_RULE("T-Proc-As-Value");
-  return {true, std::nullopt, MakeTypeFunc(std::move(params), ret.type)};
+  return ProcTypeCached(ctx, &decl, decl.params, decl.return_type_opt);
 }
 
-ValuePathTypeResult ValuePathType(const ScopeContext& ctx,
-                                  const ast::ModulePath& path,
-                                  std::string_view name) {
+static ValuePathTypeResult ComputeValuePathType(const ScopeContext& ctx,
+                                                const ast::ModulePath& path,
+                                                std::string_view name) {
   SpecDefsFunctionTypes();
   auto direct_module_lookup =
       [&]() -> std::optional<ValuePathTypeResult> {
@@ -605,6 +739,13 @@ ValuePathTypeResult ValuePathType(const ScopeContext& ctx,
     return ProcType(ctx, *proc_lookup.comptime_proc);
   }
   return ProcType(ctx, *proc_lookup.extern_proc);
+}
+
+ValuePathTypeResult ValuePathType(const ScopeContext& ctx,
+                                  const ast::ModulePath& path,
+                                  std::string_view name) {
+  SpecDefsFunctionTypes();
+  return ComputeValuePathType(ctx, path, name);
 }
 
 ModuleStaticLookupResult LookupModuleStatic(const ScopeContext& ctx,

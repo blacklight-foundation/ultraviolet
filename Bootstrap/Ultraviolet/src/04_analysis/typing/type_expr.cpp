@@ -50,6 +50,7 @@
 #include "04_analysis/typing/subtyping.h"
 #include "04_analysis/typing/dynamic_context.h"
 #include "04_analysis/typing/type_decls.h"
+#include "04_analysis/typing/type_equiv.h"
 #include "04_analysis/typing/type_infer.h"
 #include "04_analysis/typing/type_lower.h"
 #include "04_analysis/typing/type_lookup.h"
@@ -298,6 +299,11 @@ constexpr std::string_view TypeExprPerfName() {
   }
 }
 
+void EmitDeprecatedBindingReferenceWarning(
+    const TypeBinding& binding,
+    const StmtTypeContext& type_ctx,
+    const std::optional<core::Span>& span);
+
 void StoreExprTypeWithPerf(const ScopeContext& ctx,
                            const ast::ExprPtr& expr,
                            const TypeRef& type,
@@ -306,6 +312,121 @@ void StoreExprTypeWithPerf(const ScopeContext& ctx,
     ScopedTypeBodyPerfPhase store_perf(phase);
     (*ctx.expr_types)[expr.get()] = type;
   }
+}
+
+std::optional<TypeRef> StoredExprType(const ScopeContext& ctx,
+                                      const ast::ExprPtr& expr) {
+  if (!ctx.expr_types || !expr) {
+    return std::nullopt;
+  }
+  const auto found = ctx.expr_types->find(expr.get());
+  if (found == ctx.expr_types->end() || !found->second) {
+    return std::nullopt;
+  }
+  return found->second;
+}
+
+bool CallCheckNeedsExpectedTraversal(const ScopeContext& ctx,
+                                     const ast::CallExpr& call) {
+  if (!call.generic_args.empty()) {
+    return false;
+  }
+  if (!ctx.selected_call_targets) {
+    return true;
+  }
+  const auto selected = ctx.selected_call_targets->find(&call);
+  if (selected == ctx.selected_call_targets->end() || !selected->second.proc) {
+    return true;
+  }
+  const auto& proc = *selected->second.proc;
+  return proc.generic_params.has_value() && !proc.generic_params->params.empty();
+}
+
+bool CachedCheckNeedsExpectedTraversal(const ScopeContext& ctx,
+                                       const ast::ExprPtr& expr) {
+  if (!expr) {
+    return true;
+  }
+
+  return std::visit(
+      [&](const auto& node) -> bool {
+        using T = std::decay_t<decltype(node)>;
+        if constexpr (std::is_same_v<T, ast::AttributedExpr> ||
+                      std::is_same_v<T, ast::IfExpr> ||
+                      std::is_same_v<T, ast::IfIsExpr> ||
+                      std::is_same_v<T, ast::IfCaseExpr> ||
+                      std::is_same_v<T, ast::RecordExpr> ||
+                      std::is_same_v<T, ast::QuoteExpr> ||
+                      std::is_same_v<T, ast::EnumLiteralExpr> ||
+                      std::is_same_v<T, ast::ClosureExpr> ||
+                      std::is_same_v<T, ast::PtrNullExpr> ||
+                      std::is_same_v<T, ast::LiteralExpr> ||
+                      std::is_same_v<T, ast::TupleExpr> ||
+                      std::is_same_v<T, ast::ArrayExpr> ||
+                      std::is_same_v<T, ast::ArrayRepeatExpr>) {
+          return true;
+        } else if constexpr (std::is_same_v<T, ast::UnaryExpr>) {
+          return IdEq(node.op, "-");
+        } else if constexpr (std::is_same_v<T, ast::CallExpr>) {
+          return CallCheckNeedsExpectedTraversal(ctx, node);
+        } else if constexpr (std::is_same_v<T, ast::MethodCallExpr>) {
+          return IdEq(node.name, "alloc_raw");
+        } else {
+          return false;
+        }
+      },
+      expr->node);
+}
+
+bool CachedCheckMayHitModalNonNiche(const TypeRef& actual) {
+  const auto stripped = StripPerm(actual);
+  return stripped && std::holds_alternative<TypeModalState>(stripped->node);
+}
+
+std::optional<CheckResult> TryCachedExprCheck(
+    const ScopeContext& ctx,
+    const StmtTypeContext& type_ctx,
+    const ast::ExprPtr& expr,
+    const TypeRef& expected,
+    const TypeEnv& env) {
+  if (CachedCheckNeedsExpectedTraversal(ctx, expr)) {
+    return std::nullopt;
+  }
+
+  const auto cached = StoredExprType(ctx, expr);
+  if (!cached.has_value() || CachedCheckMayHitModalNonNiche(*cached)) {
+    return std::nullopt;
+  }
+
+  CheckResult result;
+  const auto equiv = TypeEquiv(*cached, expected);
+  if (!equiv.ok) {
+    result.diag_id = equiv.diag_id;
+    return result;
+  }
+  if (equiv.equiv) {
+    result.ok = true;
+  } else {
+    const auto sub = Subtyping(ctx, *cached, expected);
+    if (!sub.ok) {
+      result.diag_id = sub.diag_id;
+      return result;
+    }
+    if (!sub.subtype) {
+      return std::nullopt;
+    }
+    result.ok = true;
+  }
+
+  if (const auto* ident = std::get_if<ast::IdentifierExpr>(&expr->node)) {
+    const auto binding = BindOf(env, ident->name);
+    if (binding.has_value()) {
+      EmitDeprecatedBindingReferenceWarning(*binding, type_ctx,
+                                            std::optional<core::Span>(expr->span));
+    }
+  }
+  StoreExprTypeWithPerf(ctx, expr, expected, TypeBodyPerfPhase::ExprStoreType);
+  return result;
 }
 
 // Check if an attribute is present in the attribute list
@@ -4004,6 +4125,10 @@ CheckResult CheckExprAgainst(const ScopeContext& ctx,
     result.diag_id = *diag;
     result.diag_span = e ? std::optional<core::Span>(e->span) : std::nullopt;
     return result;
+  }
+
+  if (auto cached_check = TryCachedExprCheck(ctx, type_ctx, e, expected, env)) {
+    return *cached_check;
   }
 
   if (const auto* attributed = std::get_if<ast::AttributedExpr>(&e->node)) {

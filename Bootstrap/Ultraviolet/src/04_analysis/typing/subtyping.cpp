@@ -360,6 +360,13 @@ struct SubtypingMemoKeyHash {
 
 struct SubtypingMemoState {
   int depth = 0;
+  const Sigma* sigma_key = nullptr;
+  const ast::ASTModule* mods_data = nullptr;
+  std::size_t mods_size = 0;
+  const NameResolutionTables* name_resolution_tables = nullptr;
+  PathKey current_module_key;
+  const Scope* scopes_data = nullptr;
+  std::size_t scopes_size = 0;
   std::unordered_map<AliasNormalizeMemoKey,
                      AliasExpandResult,
                      AliasNormalizeMemoKeyHash>
@@ -373,12 +380,44 @@ SubtypingMemoState& CurrentSubtypingMemo() {
   return state;
 }
 
+void ResetSubtypingMemo(SubtypingMemoState& state) {
+  state.alias_normalize.clear();
+  state.subtype.clear();
+}
+
+void RefreshSubtypingMemoForContext(SubtypingMemoState& state,
+                                    const ScopeContext& ctx) {
+  const Sigma* sigma_key = ctx.sigma_source ? ctx.sigma_source : &ctx.sigma;
+  const ast::ASTModule* mods_data = sigma_key->mods.data();
+  const std::size_t mods_size = sigma_key->mods.size();
+  const PathKey current_module_key = PathKeyOf(ctx.current_module);
+  const Scope* scopes_data = ctx.scopes.data();
+  const std::size_t scopes_size = ctx.scopes.size();
+  if (state.sigma_key == sigma_key &&
+      state.mods_data == mods_data &&
+      state.mods_size == mods_size &&
+      state.name_resolution_tables == ctx.name_resolution_tables &&
+      state.current_module_key == current_module_key &&
+      state.scopes_data == scopes_data &&
+      state.scopes_size == scopes_size) {
+    return;
+  }
+
+  state.sigma_key = sigma_key;
+  state.mods_data = mods_data;
+  state.mods_size = mods_size;
+  state.name_resolution_tables = ctx.name_resolution_tables;
+  state.current_module_key = current_module_key;
+  state.scopes_data = scopes_data;
+  state.scopes_size = scopes_size;
+  ResetSubtypingMemo(state);
+}
+
 struct SubtypingMemoScope {
-  SubtypingMemoScope() {
+  explicit SubtypingMemoScope(const ScopeContext& ctx) {
     auto& state = CurrentSubtypingMemo();
     if (state.depth == 0) {
-      state.alias_normalize.clear();
-      state.subtype.clear();
+      RefreshSubtypingMemoForContext(state, ctx);
     }
     state.depth += 1;
   }
@@ -386,10 +425,6 @@ struct SubtypingMemoScope {
   ~SubtypingMemoScope() {
     auto& state = CurrentSubtypingMemo();
     state.depth -= 1;
-    if (state.depth == 0) {
-      state.alias_normalize.clear();
-      state.subtype.clear();
-    }
   }
 };
 
@@ -1306,7 +1341,7 @@ static SubtypingResult SubtypingUncached(const ScopeContext& ctx,
 SubtypingResult Subtyping(const ScopeContext& ctx,
                           const TypeRef& lhs_in,
                           const TypeRef& rhs_in) {
-  SubtypingMemoScope memo_scope;
+  SubtypingMemoScope memo_scope(ctx);
   if (!lhs_in || !rhs_in) {
     return SubtypingUncached(ctx, lhs_in, rhs_in);
   }

@@ -41,6 +41,13 @@ struct CallTypeResult {
   std::optional<core::Span> diag_span;
 };
 
+struct CallCalleeFacts {
+  bool extern_callee = false;
+  bool extern_callee_known = false;
+  ExprTypeResult callee_type;
+  bool callee_type_known = false;
+};
+
 // Call-argument helpers shared across typing/borrow/lowering.
 bool IsPlaceExprForCall(const ast::ExprPtr& expr);
 bool HasSourceProvenance(const ast::ExprPtr& expr);
@@ -55,7 +62,8 @@ CallTypeResult TypeCall(const ScopeContext& ctx,
                         const std::vector<ast::Arg>& args,
                         const ExprTypeFn& type_expr,
                         const PlaceTypeFn* type_place = nullptr,
-                        const ArgCheckFn* check_expr = nullptr);
+                        const ArgCheckFn* check_expr = nullptr,
+                        const CallCalleeFacts* callee_facts = nullptr);
 
 // Type check a generic procedure call with type substitution (§13.1.2 T-Generic-Call)
 CallTypeResult TypeCallWithSubst(const ScopeContext& ctx,
@@ -64,7 +72,8 @@ CallTypeResult TypeCallWithSubst(const ScopeContext& ctx,
                                  const TypeSubst& subst,
                                  const ExprTypeFn& type_expr,
                                  const PlaceTypeFn* type_place = nullptr,
-                                 const ArgCheckFn* check_expr = nullptr);
+                                 const ArgCheckFn* check_expr = nullptr,
+                                 const CallCalleeFacts* callee_facts = nullptr);
 
 bool IsRecordCallee(const ScopeContext& ctx,
                     const ast::ExprPtr& callee,

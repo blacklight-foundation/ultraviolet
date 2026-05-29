@@ -1986,8 +1986,15 @@ static ArgPassResult ArgPass(const ScopeContext& ctx,
 
   const auto& param = params[idx];
   const auto& arg = args[idx];
+  std::optional<bool> has_source_provenance;
+  auto arg_has_source_provenance = [&]() {
+    if (!has_source_provenance.has_value()) {
+      has_source_provenance = HasSourceProvenance(arg.value);
+    }
+    return *has_source_provenance;
+  };
   if (param.mode.has_value() && ast::IsRefArg(arg) && IsMoveMissing(arg.value) &&
-      HasSourceProvenance(arg.value)) {
+      arg_has_source_provenance()) {
     SPEC_RULE("B-ArgPass-Move-Missing");
     return ArgError("E-MOD-2411", arg.span);
   }
@@ -2006,11 +2013,11 @@ static ArgPassResult ArgPass(const ScopeContext& ctx,
   }
 
   if (!param.mode.has_value()) {
-    if (HasSourceProvenance(arg.value) && !IsPlaceExprForCall(arg.value)) {
+    if (arg_has_source_provenance() && !IsPlaceExprForCall(arg.value)) {
       SPEC_RULE("Call-Arg-NotPlace");
       return ArgError("E-TYP-1603", arg.span);
     }
-    if (!HasSourceProvenance(arg.value)) {
+    if (!arg_has_source_provenance()) {
       return ArgPass(ctx, params, args, eval.state, idx + 1);
     }
   }
@@ -2576,13 +2583,21 @@ static BindResult BindMethodCallExpr(const ScopeContext& ctx,
     return OkResult(current);
   }
 
+  std::optional<bool> receiver_has_source_provenance;
+  auto receiver_has_source = [&]() {
+    if (!receiver_has_source_provenance.has_value()) {
+      receiver_has_source_provenance = HasSourceProvenance(call.receiver);
+    }
+    return *receiver_has_source_provenance;
+  };
+
   if (recv_mode.has_value() && !is_transition && IsMoveMissing(call.receiver) &&
-      HasSourceProvenance(call.receiver)) {
+      receiver_has_source()) {
     SPEC_RULE("B-ArgPass-Move-Missing");
     return ErrorResult(std::string_view("E-MOD-2411"), std::optional<core::Span>(call.receiver->span));
   }
 
-  if (!recv_mode.has_value() && HasSourceProvenance(call.receiver) &&
+  if (!recv_mode.has_value() && receiver_has_source() &&
       !IsPlaceExprForCall(call.receiver)) {
     SPEC_RULE("Call-Arg-NotPlace");
     return ErrorResult(std::string_view("E-TYP-1603"), std::optional<core::Span>(call.receiver->span));

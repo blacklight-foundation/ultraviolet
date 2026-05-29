@@ -944,24 +944,289 @@ bool IsRecordCallee(const ScopeContext& ctx,
   return RecordCalleeDecl(ctx, callee, args) != nullptr;
 }
 
+struct CallArgFacts {
+  bool has_source_provenance = false;
+  bool source_provenance_ready = false;
+  bool is_place = false;
+  bool is_place_ready = false;
+  bool expected_function_value = false;
+  bool expected_function_value_ready = false;
+  ast::ExprPtr pass_expr;
+};
+
+static bool HasSourceProvenanceForArg(CallArgFacts& facts,
+                                      const ast::Arg& arg) {
+  if (!facts.source_provenance_ready) {
+    facts.has_source_provenance = HasSourceProvenanceLocal(arg.value);
+    facts.source_provenance_ready = true;
+  }
+  return facts.has_source_provenance;
+}
+
+static bool IsPlaceForArg(CallArgFacts& facts, const ast::Arg& arg) {
+  if (!facts.is_place_ready) {
+    facts.is_place = IsPlaceExprForCallLocal(arg.value);
+    facts.is_place_ready = true;
+  }
+  return facts.is_place;
+}
+
+static bool ExpectsFunctionValueForArg(const ScopeContext& ctx,
+                                       CallArgFacts& facts,
+                                       const TypeRef& param_type) {
+  if (!facts.expected_function_value_ready) {
+    facts.expected_function_value = IsFunctionValueType(ctx, param_type);
+    facts.expected_function_value_ready = true;
+  }
+  return facts.expected_function_value;
+}
+
+static const ast::ExprPtr& PassExprForArg(CallArgFacts& facts,
+                                          const ast::Arg& arg) {
+  if (!facts.pass_expr) {
+    facts.pass_expr = ArgPassExprLocal(arg);
+  }
+  return facts.pass_expr;
+}
+
+static bool MissingRequiredMoveForConsumingArg(
+    CallArgFacts& facts,
+    const std::optional<ParamMode>& mode,
+    const ast::Arg& arg) {
+  return mode == ParamMode::Move && ast::IsRefArg(arg) &&
+         HasSourceProvenanceForArg(facts, arg);
+}
+
+static bool UsesCallTempForConsumingArg(
+    CallArgFacts& facts,
+    const std::optional<ParamMode>& mode,
+    const ast::Arg& arg) {
+  return mode == ParamMode::Move && ast::IsRefArg(arg) &&
+         !HasSourceProvenanceForArg(facts, arg);
+}
+
+static CallTypeResult CheckCallArguments(
+    const ScopeContext& ctx,
+    const std::vector<TypeFuncParam>& params,
+    const std::vector<ast::Arg>& args,
+    const ExprTypeFn& type_expr,
+    const PlaceTypeFn* type_place,
+    const ArgCheckFn* check_expr) {
+  CallTypeResult result;
+  if (params.size() != args.size()) {
+    SPEC_RULE("Call-ArgCount-Err");
+    result.diag_id = "E-SEM-2532";
+    result.diag_detail = "expected " + std::to_string(params.size()) +
+                         " args, found " + std::to_string(args.size());
+    return result;
+  }
+
+  std::vector<CallArgFacts> facts(args.size());
+  for (std::size_t i = 0; i < args.size(); ++i) {
+    if (MissingRequiredMoveForConsumingArg(facts[i], params[i].mode,
+                                           args[i])) {
+      SPEC_RULE("Call-Move-Missing");
+      result.diag_id = "E-SEM-2534";
+      result.diag_span = ArgDiagnosticSpan(args[i]);
+      return result;
+    }
+  }
+
+  for (std::size_t i = 0; i < args.size(); ++i) {
+    if (!params[i].mode.has_value() &&
+        args[i].pass == ast::ArgPassKind::Move) {
+      SPEC_RULE("Call-Move-Unexpected");
+      result.diag_id = "E-SEM-2535";
+      result.diag_span = ArgDiagnosticSpan(args[i]);
+      return result;
+    }
+  }
+
+  std::vector<TypeRef> arg_types;
+  arg_types.reserve(args.size());
+  for (std::size_t i = 0; i < args.size(); ++i) {
+    const auto& arg = args[i];
+    const auto& param = params[i];
+    if (!param.mode.has_value()) {
+      if (ast::IsCopyArg(arg)) {
+        const auto copy_type = type_expr(PassExprForArg(facts[i], arg));
+        if (!copy_type.ok) {
+          result.diag_id = copy_type.diag_id;
+          result.diag_span = copy_type.diag_span.has_value()
+                                 ? copy_type.diag_span
+                                 : ArgDiagnosticSpan(arg);
+          return result;
+        }
+        arg_types.push_back(copy_type.type);
+        continue;
+      }
+
+      const bool has_source_prov =
+          HasSourceProvenanceForArg(facts[i], arg);
+      const bool expected_function_value =
+          ExpectsFunctionValueForArg(ctx, facts[i], param.type);
+      if (has_source_prov && !expected_function_value &&
+          !IsPlaceForArg(facts[i], arg)) {
+        SPEC_RULE("Call-Arg-NotPlace");
+        result.diag_id = "E-TYP-1603";
+        result.diag_span = ArgDiagnosticSpan(arg);
+        return result;
+      }
+      if (has_source_prov && !expected_function_value && type_place) {
+        const auto place_type = (*type_place)(arg.value);
+        if (!place_type.ok) {
+          result.diag_id = place_type.diag_id;
+          result.diag_span = ArgDiagnosticSpan(arg);
+          return result;
+        }
+        arg_types.push_back(place_type.type);
+      } else {
+        if ((!has_source_prov || expected_function_value) && check_expr) {
+          const auto checked = (*check_expr)(arg.value, param.type);
+          if (checked.ok) {
+            arg_types.push_back(param.type);
+            continue;
+          }
+          if (IsExpectedTypeMismatch(checked)) {
+            SPEC_RULE("Call-ArgType-Err");
+            result.diag_id = "E-SEM-2533";
+            result.diag_span = ArgDiagnosticSpan(arg);
+            return result;
+          }
+          result.diag_id = checked.diag_id;
+          result.diag_span = ArgDiagnosticSpan(arg);
+          return result;
+        }
+        const auto arg_type = type_expr(arg.value);
+        if (!arg_type.ok) {
+          result.diag_id = arg_type.diag_id;
+          result.diag_span = arg_type.diag_span.has_value()
+                                 ? arg_type.diag_span
+                                 : ArgDiagnosticSpan(arg);
+          return result;
+        }
+        arg_types.push_back(arg_type.type);
+      }
+      continue;
+    }
+
+    const auto& arg_expr = PassExprForArg(facts[i], arg);
+    if (UsesCallTempForConsumingArg(facts[i], param.mode, arg) &&
+        check_expr) {
+      const auto checked = (*check_expr)(arg_expr, param.type);
+      if (checked.ok) {
+        arg_types.push_back(param.type);
+        continue;
+      }
+      if (IsExpectedTypeMismatch(checked)) {
+        SPEC_RULE("Call-ArgType-Err");
+        result.diag_id = "E-SEM-2533";
+        result.diag_span = ArgDiagnosticSpan(arg);
+        return result;
+      }
+      result.diag_id = checked.diag_id;
+      result.diag_span = ArgDiagnosticSpan(arg);
+      return result;
+    }
+    const auto arg_type = type_expr(arg_expr);
+    if (!arg_type.ok) {
+      result.diag_id = arg_type.diag_id;
+      result.diag_span = arg_type.diag_span.has_value()
+                             ? arg_type.diag_span
+                             : ArgDiagnosticSpan(arg);
+      return result;
+    }
+    arg_types.push_back(arg_type.type);
+  }
+
+  for (std::size_t i = 0; i < args.size(); ++i) {
+    const auto sub =
+        ArgumentTypeCompatible(ctx, arg_types[i], params[i].type,
+                               params[i].mode);
+    if (!sub.ok) {
+      result.diag_id = sub.diag_id;
+      result.diag_span = ArgDiagnosticSpan(args[i]);
+      return result;
+    }
+    if (!sub.subtype) {
+      SPEC_RULE("Call-ArgType-Err");
+      result.diag_id = "E-SEM-2533";
+      result.diag_detail = "expected type " + TypeToString(params[i].type) +
+                           ", found " + TypeToString(arg_types[i]);
+      result.diag_span = ArgDiagnosticSpan(args[i]);
+      return result;
+    }
+  }
+
+  if (params.empty()) {
+    SPEC_RULE("ArgsT-Empty");
+  } else {
+    for (std::size_t i = 0; i < params.size(); ++i) {
+      if (params[i].mode == ParamMode::Move) {
+        SPEC_RULE("ArgsT-Cons");
+        continue;
+      }
+      const bool expected_function_value =
+          ExpectsFunctionValueForArg(ctx, facts[i], params[i].type);
+      if (!expected_function_value &&
+          HasSourceProvenanceForArg(facts[i], args[i])) {
+        const auto addr_ok =
+            AddrOfOk(ctx, args[i].value, type_expr, check_expr);
+        if (!addr_ok.ok) {
+          if (addr_ok.diag_id ==
+              std::optional<std::string_view>("E-TYP-2105")) {
+            SPEC_RULE("Call-Arg-Packed-Unsafe-Err");
+          }
+          result.diag_id = addr_ok.diag_id;
+          result.diag_span = ArgDiagnosticSpan(args[i]);
+          return result;
+        }
+      }
+      SPEC_RULE("ArgsT-Cons-Ref");
+    }
+  }
+
+  result.ok = true;
+  return result;
+}
+
+static bool CalleeIsExtern(const ScopeContext& ctx,
+                           const ast::ExprPtr& callee,
+                           const CallCalleeFacts* callee_facts) {
+  if (callee_facts && callee_facts->extern_callee_known) {
+    return callee_facts->extern_callee;
+  }
+  return IsExternCallee(ctx, callee);
+}
+
+static ExprTypeResult TypeCalleeForCall(const ast::ExprPtr& callee,
+                                        const ExprTypeFn& type_expr,
+                                        const CallCalleeFacts* callee_facts) {
+  if (callee_facts && callee_facts->callee_type_known) {
+    return callee_facts->callee_type;
+  }
+  return type_expr(callee);
+}
+
 CallTypeResult TypeCall(const ScopeContext& ctx,
                         const ast::ExprPtr& callee,
                         const std::vector<ast::Arg>& args,
                         const ExprTypeFn& type_expr,
                         const PlaceTypeFn* type_place,
-                        const ArgCheckFn* check_expr) {
+                        const ArgCheckFn* check_expr,
+                        const CallCalleeFacts* callee_facts) {
   SpecDefsCalls();
   CallTypeResult result;
   if (!callee) {
     return result;
   }
-  if (IsExternCallee(ctx, callee) &&
+  if (CalleeIsExtern(ctx, callee, callee_facts) &&
       !IsInUnsafeSpan(ctx, callee ? callee->span : core::Span{})) {
     SPEC_RULE("Call-Extern-Unsafe-Err");
     result.diag_id = "Call-Extern-Unsafe-Err";
     return result;
   }
-  const auto callee_type = type_expr(callee);
+  const auto callee_type = TypeCalleeForCall(callee, type_expr, callee_facts);
   if (!callee_type.ok) {
     result.diag_id = callee_type.diag_id;
     result.diag_span = callee_type.diag_span;
@@ -1006,204 +1271,11 @@ CallTypeResult TypeCall(const ScopeContext& ctx,
     ret_type = closure->ret;
   }
 
-  const auto& params = *params_ptr;
-  if (params.size() != args.size()) {
-    SPEC_RULE("Call-ArgCount-Err");
-    result.diag_id = "E-SEM-2532";
-    result.diag_detail = "expected " + std::to_string(params.size()) +
-                         " args, found " + std::to_string(args.size());
-    return result;
-  }
-
-  for (std::size_t i = 0; i < args.size(); ++i) {
-    if (MissingRequiredMoveForConsumingLocal(params[i].mode, args[i])) {
-      SPEC_RULE("Call-Move-Missing");
-      result.diag_id = "E-SEM-2534";
-      result.diag_span = ArgDiagnosticSpan(args[i]);
-      return result;
-    }
-  }
-
-  for (std::size_t i = 0; i < args.size(); ++i) {
-    if (!params[i].mode.has_value() && args[i].pass == ast::ArgPassKind::Move) {
-      SPEC_RULE("Call-Move-Unexpected");
-      result.diag_id = "E-SEM-2535";
-      result.diag_span = ArgDiagnosticSpan(args[i]);
-      return result;
-    }
-  }
-
-  std::vector<TypeRef> arg_types;
-  arg_types.reserve(args.size());
-  for (std::size_t i = 0; i < args.size(); ++i) {
-    const auto& arg = args[i];
-    if (!params[i].mode.has_value()) {
-      if (ast::IsCopyArg(arg)) {
-        const auto copy_type = type_expr(ArgPassExprLocal(arg));
-        if (!copy_type.ok) {
-          result.diag_id = copy_type.diag_id;
-          result.diag_span = copy_type.diag_span.has_value()
-                                 ? copy_type.diag_span
-                                 : ArgDiagnosticSpan(arg);
-          return result;
-        }
-        arg_types.push_back(copy_type.type);
-        continue;
-      }
-      const bool has_source_prov = HasSourceProvenanceLocal(arg.value);
-      const bool expected_function_value =
-          IsFunctionValueType(ctx, params[i].type);
-      if (has_source_prov && !expected_function_value &&
-          !IsPlaceExprForCallLocal(arg.value)) {
-        SPEC_RULE("Call-Arg-NotPlace");
-        result.diag_id = "E-TYP-1603";
-        result.diag_span = ArgDiagnosticSpan(arg);
-        return result;
-      }
-      if (has_source_prov && !expected_function_value && type_place) {
-        const auto place_type = (*type_place)(arg.value);
-        if (!place_type.ok) {
-          result.diag_id = place_type.diag_id;
-          result.diag_span = ArgDiagnosticSpan(arg);
-          return result;
-        }
-        arg_types.push_back(place_type.type);
-      } else {
-        if ((!has_source_prov || expected_function_value) && check_expr) {
-          const auto checked = (*check_expr)(arg.value, params[i].type);
-          if (checked.ok) {
-            arg_types.push_back(params[i].type);
-            continue;
-          }
-          if (IsExpectedTypeMismatch(checked)) {
-            SPEC_RULE("Call-ArgType-Err");
-            result.diag_id = "E-SEM-2533";
-            result.diag_span = ArgDiagnosticSpan(arg);
-            return result;
-          }
-          result.diag_id = checked.diag_id;
-          result.diag_span = ArgDiagnosticSpan(arg);
-          return result;
-        }
-        const auto arg_type = type_expr(arg.value);
-        if (!arg_type.ok) {
-          result.diag_id = arg_type.diag_id;
-          result.diag_span = arg_type.diag_span.has_value()
-                                 ? arg_type.diag_span
-                                 : ArgDiagnosticSpan(arg);
-          return result;
-        }
-        arg_types.push_back(arg_type.type);
-      }
-      continue;
-    }
-    const auto arg_expr = ArgPassExprLocal(arg);
-    if (UsesCallTempForConsumingLocal(params[i].mode, arg) && check_expr) {
-      const auto checked = (*check_expr)(arg_expr, params[i].type);
-      if (checked.ok) {
-        arg_types.push_back(params[i].type);
-        continue;
-      }
-      if (IsExpectedTypeMismatch(checked)) {
-        SPEC_RULE("Call-ArgType-Err");
-        result.diag_id = "E-SEM-2533";
-        result.diag_span = ArgDiagnosticSpan(arg);
-        return result;
-      }
-      result.diag_id = checked.diag_id;
-      result.diag_span = ArgDiagnosticSpan(arg);
-      return result;
-    }
-    const auto arg_type = type_expr(arg_expr);
-    if (!arg_type.ok) {
-      result.diag_id = arg_type.diag_id;
-      result.diag_span = arg_type.diag_span.has_value()
-                             ? arg_type.diag_span
-                             : ArgDiagnosticSpan(arg);
-      return result;
-    }
-    arg_types.push_back(arg_type.type);
-  }
-
-  for (std::size_t i = 0; i < args.size(); ++i) {
-    const auto sub =
-        ArgumentTypeCompatible(ctx, arg_types[i], params[i].type,
-                               params[i].mode);
-    if (!sub.ok) {
-      result.diag_id = sub.diag_id;
-      result.diag_span = ArgDiagnosticSpan(args[i]);
-      return result;
-    }
-    if (!sub.subtype) {
-      SPEC_RULE("Call-ArgType-Err");
-      result.diag_id = "E-SEM-2533";
-      result.diag_detail = "expected type " + TypeToString(params[i].type) +
-                           ", found " + TypeToString(arg_types[i]);
-      result.diag_span = ArgDiagnosticSpan(args[i]);
-      return result;
-    }
-  }
-
-  for (std::size_t i = 0; i < args.size(); ++i) {
-    if (!params[i].mode.has_value() &&
-        !IsFunctionValueType(ctx, params[i].type) &&
-        HasSourceProvenanceLocal(args[i].value) &&
-        !IsPlaceExprForCallLocal(args[i].value)) {
-      SPEC_RULE("Call-Arg-NotPlace");
-      result.diag_id = "E-TYP-1603";
-      result.diag_span = ArgDiagnosticSpan(args[i]);
-      return result;
-    }
-  }
-
-  if (params.empty()) {
-    SPEC_RULE("ArgsT-Empty");
-  } else {
-    for (std::size_t i = 0; i < params.size(); ++i) {
-      if (params[i].mode == ParamMode::Move) {
-        const auto moved = ArgPassExprLocal(args[i]);
-        const auto moved_type = type_expr(moved);
-        if (!moved_type.ok) {
-          result.diag_id = moved_type.diag_id;
-          result.diag_span = moved_type.diag_span.has_value()
-                                 ? moved_type.diag_span
-                                 : ArgDiagnosticSpan(args[i]);
-          return result;
-        }
-        const auto sub =
-            ArgumentTypeCompatible(ctx, moved_type.type, params[i].type,
-                                   params[i].mode);
-        if (!sub.ok) {
-          result.diag_id = sub.diag_id;
-          result.diag_span = ArgDiagnosticSpan(args[i]);
-          return result;
-        }
-        if (!sub.subtype) {
-          SPEC_RULE("Call-ArgType-Err");
-          result.diag_id = "E-SEM-2533";
-          result.diag_detail = "expected type " + TypeToString(params[i].type) +
-                               ", found " + TypeToString(moved_type.type);
-          result.diag_span = ArgDiagnosticSpan(args[i]);
-          return result;
-        }
-        SPEC_RULE("ArgsT-Cons");
-        continue;
-      }
-      if (!IsFunctionValueType(ctx, params[i].type) &&
-          HasSourceProvenanceLocal(args[i].value)) {
-        const auto addr_ok = AddrOfOk(ctx, args[i].value, type_expr, check_expr);
-        if (!addr_ok.ok) {
-          if (addr_ok.diag_id ==
-              std::optional<std::string_view>("E-TYP-2105")) {
-            SPEC_RULE("Call-Arg-Packed-Unsafe-Err");
-          }
-          result.diag_id = addr_ok.diag_id;
-          result.diag_span = ArgDiagnosticSpan(args[i]);
-          return result;
-        }
-      }
-      SPEC_RULE("ArgsT-Cons-Ref");
-    }
+  const auto checked =
+      CheckCallArguments(ctx, *params_ptr, args, type_expr, type_place,
+                         check_expr);
+  if (!checked.ok) {
+    return checked;
   }
 
   SPEC_RULE("T-Call");
@@ -1219,20 +1291,21 @@ CallTypeResult TypeCallWithSubst(const ScopeContext& ctx,
                                  const TypeSubst& subst,
                                  const ExprTypeFn& type_expr,
                                  const PlaceTypeFn* type_place,
-                                 const ArgCheckFn* check_expr) {
+                                 const ArgCheckFn* check_expr,
+                                 const CallCalleeFacts* callee_facts) {
   SpecDefsCalls();
   SPEC_RULE("T-Generic-Call");
   CallTypeResult result;
   if (!callee) {
     return result;
   }
-  if (IsExternCallee(ctx, callee) &&
+  if (CalleeIsExtern(ctx, callee, callee_facts) &&
       !IsInUnsafeSpan(ctx, callee ? callee->span : core::Span{})) {
     SPEC_RULE("Call-Extern-Unsafe-Err");
     result.diag_id = "Call-Extern-Unsafe-Err";
     return result;
   }
-  const auto callee_type = type_expr(callee);
+  const auto callee_type = TypeCalleeForCall(callee, type_expr, callee_facts);
   if (!callee_type.ok) {
     result.diag_id = callee_type.diag_id;
     result.diag_span = callee_type.diag_span;
@@ -1272,206 +1345,11 @@ CallTypeResult TypeCallWithSubst(const ScopeContext& ctx,
     }
   }
 
-  // Check move annotations
-  for (std::size_t i = 0; i < args.size(); ++i) {
-    if (MissingRequiredMoveForConsumingLocal(subst_params[i].mode, args[i])) {
-      SPEC_RULE("Call-Move-Missing");
-      result.diag_id = "E-SEM-2534";
-      result.diag_span = ArgDiagnosticSpan(args[i]);
-      return result;
-    }
-  }
-
-  for (std::size_t i = 0; i < args.size(); ++i) {
-    if (!subst_params[i].mode.has_value() &&
-        args[i].pass == ast::ArgPassKind::Move) {
-      SPEC_RULE("Call-Move-Unexpected");
-      result.diag_id = "E-SEM-2535";
-      result.diag_span = ArgDiagnosticSpan(args[i]);
-      return result;
-    }
-  }
-
-  // Type arguments with substitution applied to parameter types
-  std::vector<TypeRef> arg_types;
-  arg_types.reserve(args.size());
-  for (std::size_t i = 0; i < args.size(); ++i) {
-    const auto& arg = args[i];
-    const auto& param = subst_params[i];
-    const TypeRef& subst_param_type = param.type;
-    if (!param.mode.has_value()) {
-      if (ast::IsCopyArg(arg)) {
-        const auto copy_type = type_expr(ArgPassExprLocal(arg));
-        if (!copy_type.ok) {
-          result.diag_id = copy_type.diag_id;
-          result.diag_span = copy_type.diag_span.has_value()
-                                 ? copy_type.diag_span
-                                 : ArgDiagnosticSpan(arg);
-          return result;
-        }
-        arg_types.push_back(copy_type.type);
-        continue;
-      }
-      const bool has_source_prov = HasSourceProvenanceLocal(arg.value);
-      const bool expected_function_value =
-          IsFunctionValueType(ctx, subst_param_type);
-      if (has_source_prov && !expected_function_value &&
-          !IsPlaceExprForCallLocal(arg.value)) {
-        SPEC_RULE("Call-Arg-NotPlace");
-        result.diag_id = "E-TYP-1603";
-        result.diag_span = ArgDiagnosticSpan(arg);
-        return result;
-      }
-      if (has_source_prov && !expected_function_value && type_place) {
-        const auto place_type = (*type_place)(arg.value);
-        if (!place_type.ok) {
-          result.diag_id = place_type.diag_id;
-          result.diag_span = ArgDiagnosticSpan(arg);
-          return result;
-        }
-        arg_types.push_back(place_type.type);
-      } else {
-        if ((!has_source_prov || expected_function_value) && check_expr) {
-          const auto checked = (*check_expr)(arg.value, subst_param_type);
-          if (checked.ok) {
-            arg_types.push_back(subst_param_type);
-            continue;
-          }
-          if (IsExpectedTypeMismatch(checked)) {
-            SPEC_RULE("Call-ArgType-Err");
-            result.diag_id = "E-SEM-2533";
-            result.diag_span = ArgDiagnosticSpan(arg);
-            return result;
-          }
-          result.diag_id = checked.diag_id;
-          result.diag_span = ArgDiagnosticSpan(arg);
-          return result;
-        }
-        const auto arg_type = type_expr(arg.value);
-        if (!arg_type.ok) {
-          result.diag_id = arg_type.diag_id;
-          result.diag_span = arg_type.diag_span.has_value()
-                                 ? arg_type.diag_span
-                                 : ArgDiagnosticSpan(arg);
-          return result;
-        }
-        arg_types.push_back(arg_type.type);
-      }
-      continue;
-    }
-    const auto arg_expr = ArgPassExprLocal(arg);
-    if (UsesCallTempForConsumingLocal(param.mode, arg) && check_expr) {
-      const auto checked = (*check_expr)(arg_expr, subst_param_type);
-      if (checked.ok) {
-        arg_types.push_back(subst_param_type);
-        continue;
-      }
-      if (IsExpectedTypeMismatch(checked)) {
-        SPEC_RULE("Call-ArgType-Err");
-        result.diag_id = "E-SEM-2533";
-        result.diag_span = ArgDiagnosticSpan(arg);
-        return result;
-      }
-      result.diag_id = checked.diag_id;
-      result.diag_span = ArgDiagnosticSpan(arg);
-      return result;
-    }
-    const auto arg_type = type_expr(arg_expr);
-    if (!arg_type.ok) {
-      result.diag_id = arg_type.diag_id;
-      result.diag_span = arg_type.diag_span.has_value()
-                             ? arg_type.diag_span
-                             : ArgDiagnosticSpan(arg);
-      return result;
-    }
-    arg_types.push_back(arg_type.type);
-  }
-
-  // Check arg types against substituted parameter types
-  for (std::size_t i = 0; i < args.size(); ++i) {
-    const auto& param = subst_params[i];
-    const TypeRef& subst_param_type = param.type;
-    const auto sub =
-        ArgumentTypeCompatible(ctx, arg_types[i], subst_param_type,
-                               param.mode);
-    if (!sub.ok) {
-      result.diag_id = sub.diag_id;
-      result.diag_span = ArgDiagnosticSpan(args[i]);
-      return result;
-    }
-    if (!sub.subtype) {
-      SPEC_RULE("Call-ArgType-Err");
-      result.diag_id = "E-SEM-2533";
-      result.diag_detail = "expected type " + TypeToString(subst_param_type) +
-                           ", found " + TypeToString(arg_types[i]);
-      result.diag_span = ArgDiagnosticSpan(args[i]);
-      return result;
-    }
-  }
-
-  for (std::size_t i = 0; i < args.size(); ++i) {
-    const auto& param = subst_params[i];
-    if (!param.mode.has_value() &&
-        !IsFunctionValueType(ctx, param.type) &&
-        HasSourceProvenanceLocal(args[i].value) &&
-        !IsPlaceExprForCallLocal(args[i].value)) {
-      SPEC_RULE("Call-Arg-NotPlace");
-      result.diag_id = "E-TYP-1603";
-      result.diag_span = ArgDiagnosticSpan(args[i]);
-      return result;
-    }
-  }
-
-  if (params.empty()) {
-    SPEC_RULE("ArgsT-Empty");
-  } else {
-    for (std::size_t i = 0; i < subst_params.size(); ++i) {
-      const auto& param = subst_params[i];
-      if (param.mode == ParamMode::Move) {
-        const auto moved = ArgPassExprLocal(args[i]);
-        const auto moved_type = type_expr(moved);
-        if (!moved_type.ok) {
-          result.diag_id = moved_type.diag_id;
-          result.diag_span = moved_type.diag_span.has_value()
-                                 ? moved_type.diag_span
-                                 : ArgDiagnosticSpan(args[i]);
-          return result;
-        }
-        const TypeRef& subst_param_type = param.type;
-        const auto sub =
-            ArgumentTypeCompatible(ctx, moved_type.type, subst_param_type,
-                                   param.mode);
-        if (!sub.ok) {
-          result.diag_id = sub.diag_id;
-          result.diag_span = ArgDiagnosticSpan(args[i]);
-          return result;
-        }
-        if (!sub.subtype) {
-          SPEC_RULE("Call-ArgType-Err");
-          result.diag_id = "E-SEM-2533";
-          result.diag_detail = "expected type " + TypeToString(subst_param_type) +
-                               ", found " + TypeToString(moved_type.type);
-          result.diag_span = ArgDiagnosticSpan(args[i]);
-          return result;
-        }
-        SPEC_RULE("ArgsT-Cons");
-        continue;
-      }
-      if (!IsFunctionValueType(ctx, param.type) &&
-          HasSourceProvenanceLocal(args[i].value)) {
-        const auto addr_ok = AddrOfOk(ctx, args[i].value, type_expr, check_expr);
-        if (!addr_ok.ok) {
-          if (addr_ok.diag_id ==
-              std::optional<std::string_view>("E-TYP-2105")) {
-            SPEC_RULE("Call-Arg-Packed-Unsafe-Err");
-          }
-          result.diag_id = addr_ok.diag_id;
-          result.diag_span = ArgDiagnosticSpan(args[i]);
-          return result;
-        }
-      }
-      SPEC_RULE("ArgsT-Cons-Ref");
-    }
+  const auto checked =
+      CheckCallArguments(ctx, subst_params, args, type_expr, type_place,
+                         check_expr);
+  if (!checked.ok) {
+    return checked;
   }
 
   // Return substituted return type
