@@ -1,0 +1,11 @@
+//! Artifact fixture for System.exit abort behavior.
+
+/// Minimal context carrying only the System capability needed by the fixture.
+public record SystemExitContext {
+    public sys: System
+}
+
+/// Exits through the System primitive so the parent audit can observe the process code.
+public procedure main(context: SystemExitContext) -> i32 {
+    return context.sys~>exit(23)
+}

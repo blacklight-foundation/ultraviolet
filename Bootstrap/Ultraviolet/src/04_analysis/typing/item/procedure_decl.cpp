@@ -1651,6 +1651,12 @@ static void EmitProcedureFfiWarnings(const ast::ProcedureDecl& decl,
   }
 }
 
+static void RecordProcedureConformance(std::string_view rule_id) {
+  if (core::Conformance::Enabled()) {
+    core::Conformance::Record(rule_id);
+  }
+}
+
 static std::optional<std::string_view> ValidateProcedureFfiAttributes(
     const ScopeContext& ctx,
     const ast::ProcedureDecl& decl) {
@@ -1717,27 +1723,36 @@ static std::optional<std::string_view> ValidateProcedureFfiAttributes(
   }
 
   if (has_foreign_export && AssemblyHasMixedForeignExportModes(ctx)) {
+    if (has_host_export) {
+      RecordProcedureConformance("rule.23.HostExport-MixedMode-Err");
+    }
     return "E-SYS-3358";
   }
 
   if (has_host_export) {
     const auto* assembly = CurrentAssembly(ctx);
     if (!assembly || assembly->kind != "library") {
+      RecordProcedureConformance("rule.23.HostExport-Library-Err");
       return "E-SYS-3357";
     }
     if (!ast::TypeParamsOpt(decl.generic_params).empty()) {
+      RecordProcedureConformance("rule.23.HostExport-Generic-Err");
       return "E-TYP-2634";
     }
     if (decl.params.empty() || !decl.params.front().type ||
         !IsContextBundleType(ctx, *decl.params.front().type)) {
+      RecordProcedureConformance("rule.23.HostExport-Context-Err");
       return "E-TYP-2632";
     }
     if (!IsHostedContextBundleType(ctx, *decl.params.front().type)) {
+      RecordProcedureConformance("rule.23.HostExport-Context-Raw-Err");
       return "E-TYP-2636";
     }
     if (decl.params.front().mode.has_value()) {
+      RecordProcedureConformance("rule.23.HostExport-Context-Move-Err");
       return "E-TYP-2633";
     }
+    RecordProcedureConformance("rule.23.HostExportSig-Ok");
   }
 
   return std::nullopt;

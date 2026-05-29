@@ -30,6 +30,26 @@ internal procedure systemExecutablePathIsAvailable(sys: System) -> bool {
     return string::length(executable_path) > 0usize
 }
 
+internal procedure systemMissingEnvironmentIsEmpty(sys: System) -> bool {
+    let missing_value: string@View =
+        sys~>get_env("HUV_REFERENCE_ENVIRONMENT_KEY_SHOULD_NOT_EXIST")
+    return auditTextEquals(missing_value, "")
+}
+
+internal procedure systemCurrentDirectoryIsAvailable(sys: System) -> bool {
+    let current_directory: string@View = sys~>current_directory()
+    return string::length(current_directory) > 0usize
+}
+
+internal procedure systemArgumentSurfaceIsAvailable(sys: System) -> bool {
+    let count: usize = sys~>argument_count()
+    if count == 0usize {
+        return true
+    }
+    let first_argument: string@View = sys~>argument(0usize)
+    return string::length(first_argument) > 0usize
+}
+
 /// Exercises the Authority System reference surface.
 public procedure runAuthoritySystemReference(context: Context) -> bool {
     let environment: SystemAuthorityReference =
@@ -38,5 +58,8 @@ public procedure runAuthoritySystemReference(context: Context) -> bool {
         systemAuthorityReference(false, true, true)
     return systemAuthorityCanObserveHost(environment) &&
         systemAuthorityCanObserveHost(process) &&
-        systemExecutablePathIsAvailable(context.sys)
+        systemExecutablePathIsAvailable(context.sys) &&
+        systemMissingEnvironmentIsEmpty(context.sys) &&
+        systemCurrentDirectoryIsAvailable(context.sys) &&
+        systemArgumentSurfaceIsAvailable(context.sys)
 }

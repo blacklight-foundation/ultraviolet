@@ -1,0 +1,721 @@
+//! Source-native compiler execution checks for output-diagnostic fixtures.
+
+using HelloUltraviolet::Audit::FixtureCatalog::OutputDiagnostics::{
+    expectedOutputDiagnosticFixtureCount
+}
+
+internal procedure outputDiagnosticExpectedDirectiveCount(expected_text: string@View) -> usize {
+    let text_length: usize = string::length(expected_text)
+    let name_length: usize = string::length(EXPECTED_DIAGNOSTIC_NAME)
+    var position: usize = 0usize
+    var directive_count: usize = 0usize
+    loop position < text_length {
+        let name_start: usize =
+            diagnosticFindFrom(expected_text, EXPECTED_DIAGNOSTIC_NAME, position)
+        if name_start == text_length {
+            return directive_count
+        }
+
+        let name_end: usize = name_start + name_length
+        let quote_start: usize = diagnosticFindByteFrom(expected_text, 34u8, name_end)
+        if quote_start == text_length {
+            return 0usize
+        }
+        let code_start: usize = quote_start + 1usize
+        let code_end: usize = diagnosticFindByteFrom(expected_text, 34u8, code_start)
+        if code_end == text_length {
+            return 0usize
+        }
+
+        directive_count = directive_count + 1usize
+        position = code_end + 1usize
+    }
+    return directive_count
+}
+
+internal procedure outputDiagnosticExpectedDirectiveCountFromFile(
+    authority: TestAuthority,
+    expected_path: string@View
+) -> usize {
+    let read_result: Outcome<unique string@Managed, IoError> =
+        authority.io~>read_file(expected_path)
+    return if move read_result is {
+        @Value { value } {
+            let expected_text: string@View = string::as_view(value)
+            outputDiagnosticExpectedDirectiveCount(expected_text)
+        }
+        @Error {
+            0usize
+        }
+    }
+}
+
+internal procedure outputDiagnosticActualMatchesExpected(
+    authority: TestAuthority,
+    expected_path: string@View,
+    actual_path: string@View
+) -> usize {
+    let expected_count: usize =
+        outputDiagnosticExpectedDirectiveCountFromFile(authority, expected_path)
+    if expected_count == 0usize {
+        return 0usize
+    }
+
+    let expected_result: Outcome<unique string@Managed, IoError> =
+        authority.io~>read_file(expected_path)
+    let actual_result: Outcome<unique string@Managed, IoError> =
+        authority.io~>read_file(actual_path)
+    if diagnosticReadTextContainsExpected(move expected_result, move actual_result) {
+        return expected_count
+    }
+    return 0usize
+}
+
+internal procedure outputDiagnosticActualTextEquals(
+    expected_text: string@View,
+    move actual_result: Outcome<unique string@Managed, IoError>
+) -> bool {
+    return if move actual_result is {
+        @Value { value } {
+            let actual_text: string@View = string::as_view(value)
+            auditTextEquals(expected_text, actual_text)
+        }
+        @Error {
+            false
+        }
+    }
+}
+
+internal procedure outputDiagnosticTextFilesEqual(
+    move expected_result: Outcome<unique string@Managed, IoError>,
+    move actual_result: Outcome<unique string@Managed, IoError>
+) -> bool {
+    return if move expected_result is {
+        @Value { value } {
+            let expected_text: string@View = string::as_view(value)
+            outputDiagnosticActualTextEquals(expected_text, move actual_result)
+        }
+        @Error {
+            false
+        }
+    }
+}
+
+internal procedure outputDiagnosticFileContains(
+    authority: TestAuthority,
+    path: string@View,
+    required_text: string@View
+) -> bool {
+    let read_result: Outcome<unique string@Managed, IoError> =
+        authority.io~>read_file(path)
+    return if move read_result is {
+        @Value { value } {
+            let text: string@View = string::as_view(value)
+            auditTextContains(text, required_text)
+        }
+        @Error {
+            false
+        }
+    }
+}
+
+internal procedure outputDiagnosticFileExcludes(
+    authority: TestAuthority,
+    path: string@View,
+    forbidden_text: string@View
+) -> bool {
+    let read_result: Outcome<unique string@Managed, IoError> =
+        authority.io~>read_file(path)
+    return if move read_result is {
+        @Value { value } {
+            let text: string@View = string::as_view(value)
+            !auditTextContains(text, forbidden_text)
+        }
+        @Error {
+            false
+        }
+    }
+}
+
+internal procedure outputDiagnosticAppendCommandStart(
+    text: unique string@Managed,
+    authority: TestAuthority
+) -> bool {
+    var command_ready: bool = true
+    if auditTextEquals(authority.target_profile, "x86_64-win64") {
+        command_ready =
+            diagnosticAppendText(text, "cmd.exe /C \"", authority.heap) &&
+            command_ready
+    }
+    command_ready = diagnosticAppendQuoted(
+        text,
+        authority.compiler_executable_path,
+        authority.heap
+    ) && command_ready
+    return command_ready
+}
+
+internal procedure outputDiagnosticAppendCommandFinish(
+    text: unique string@Managed,
+    authority: TestAuthority,
+    output_path: string@View,
+    error_path: string@View
+) -> bool {
+    var command_ready: bool =
+        diagnosticAppendText(text, " > ", authority.heap)
+    command_ready =
+        diagnosticAppendQuoted(text, output_path, authority.heap) &&
+        command_ready
+    command_ready =
+        diagnosticAppendText(text, " 2> ", authority.heap) &&
+        command_ready
+    command_ready =
+        diagnosticAppendQuoted(text, error_path, authority.heap) &&
+        command_ready
+    if auditTextEquals(authority.target_profile, "x86_64-win64") {
+        command_ready =
+            diagnosticAppendText(text, "\"", authority.heap) &&
+            command_ready
+    }
+    return command_ready
+}
+
+internal procedure outputDiagnosticRunCommand(
+    authority: TestAuthority,
+    command: unique string@Managed,
+    output_path: string@View,
+    error_path: string@View
+) -> i32 {
+    if !outputDiagnosticAppendCommandFinish(
+        command,
+        authority,
+        output_path,
+        error_path
+    ) {
+        return -1
+    }
+    let command_text: string@View = string::as_view(command)
+    return authority.sys~>run(command_text)
+}
+
+internal procedure outputDiagnosticRunBuildCommand(
+    authority: TestAuthority,
+    fixture_path: string@View,
+    output_path: string@View,
+    error_path: string@View,
+    out_dir_path: string@View,
+    conformance_log_name: string@View
+) -> i32 {
+    let created: Outcome<unique string@Managed, AllocationError> =
+        string::from("", authority.heap)
+    return if move created is {
+        @Value { value } {
+            var command_ready: bool =
+                outputDiagnosticAppendCommandStart(value, authority)
+            command_ready =
+                diagnosticAppendText(value, " build ", authority.heap) &&
+                command_ready
+            command_ready =
+                diagnosticAppendQuoted(value, fixture_path, authority.heap) &&
+                command_ready
+            command_ready =
+                diagnosticAppendText(value, " --target-profile ", authority.heap) &&
+                command_ready
+            command_ready =
+                diagnosticAppendText(value, authority.target_profile, authority.heap) &&
+                command_ready
+            command_ready =
+                diagnosticAppendText(
+                    value,
+                    " --diag-json --build-progress off --out-dir ",
+                    authority.heap
+                ) && command_ready
+            command_ready =
+                diagnosticAppendQuoted(value, out_dir_path, authority.heap) &&
+                command_ready
+            if !string::is_empty(conformance_log_name) {
+                command_ready =
+                    diagnosticAppendText(value, " --conformance ", authority.heap) &&
+                    command_ready
+                command_ready =
+                    diagnosticAppendText(value, conformance_log_name, authority.heap) &&
+                    command_ready
+            }
+            if command_ready {
+                outputDiagnosticRunCommand(
+                    authority,
+                    value,
+                    output_path,
+                    error_path
+                )
+            } else {
+                -1
+            }
+        }
+        @Error {
+            -1
+        }
+    }
+}
+
+internal procedure outputDiagnosticRunUnknownCommand(
+    authority: TestAuthority,
+    output_path: string@View,
+    error_path: string@View
+) -> i32 {
+    let created: Outcome<unique string@Managed, AllocationError> =
+        string::from("", authority.heap)
+    return if move created is {
+        @Value { value } {
+            let command_ready: bool =
+                outputDiagnosticAppendCommandStart(value, authority) &&
+                diagnosticAppendText(
+                    value,
+                    " definitely_unknown_command",
+                    authority.heap
+                )
+            if command_ready {
+                outputDiagnosticRunCommand(
+                    authority,
+                    value,
+                    output_path,
+                    error_path
+                )
+            } else {
+                -1
+            }
+        }
+        @Error {
+            -1
+        }
+    }
+}
+
+internal procedure outputDiagnosticLlvmToolConformanceMatchesAtPath(
+    authority: TestAuthority,
+    log_path: string@View
+) -> bool {
+    return outputDiagnosticFileContains(authority, log_path, "\tResolveTool-Err-IR\t") &&
+        outputDiagnosticFileContains(authority, log_path, "\tOut-IR-Err\t") &&
+        outputDiagnosticFileContains(authority, log_path, "\tOutput-Pipeline-Err\t") &&
+        outputDiagnosticFileExcludes(authority, log_path, "\tEmitObj-Err\t") &&
+        outputDiagnosticFileExcludes(authority, log_path, "\tEmitLLVM-Err\t")
+}
+
+internal procedure outputDiagnosticEmitLLVMConformanceMatchesAtPath(
+    authority: TestAuthority,
+    log_path: string@View
+) -> bool {
+    return outputDiagnosticFileContains(authority, log_path, "\tResolveTool-Ok\t") &&
+        outputDiagnosticFileContains(authority, log_path, "\tAssembleIR-Err\t") &&
+        outputDiagnosticFileContains(authority, log_path, "\tEmitLLVM-Err\t") &&
+        outputDiagnosticFileContains(authority, log_path, "\tOut-IR-Err\t") &&
+        outputDiagnosticFileContains(authority, log_path, "\tOutput-Pipeline-Err\t") &&
+        outputDiagnosticFileExcludes(authority, log_path, "\tEmitObj-Err\t") &&
+        outputDiagnosticFileExcludes(authority, log_path, "\tResolveTool-Err-IR\t")
+}
+
+internal procedure outputDiagnosticLlvmToolConformanceMatches(
+    authority: TestAuthority,
+    out_dir_path: string@View
+) -> bool {
+    let path_result: Outcome<unique string@Managed, AllocationError> =
+        string::from(out_dir_path, authority.heap)
+    return if move path_result is {
+        @Value { value } {
+            if diagnosticBuildPath(value, "Logs", authority.heap) &&
+                diagnosticBuildPath(value, "Conformance", authority.heap) &&
+                diagnosticBuildPath(
+                    value,
+                    "LlvmToolResolveOwnership.conformance.log",
+                    authority.heap
+                ) {
+                let log_path: string@View = string::as_view(value)
+                outputDiagnosticLlvmToolConformanceMatchesAtPath(authority, log_path)
+            } else {
+                false
+            }
+        }
+        @Error {
+            false
+        }
+    }
+}
+
+internal procedure outputDiagnosticEmitLLVMConformanceMatches(
+    authority: TestAuthority,
+    out_dir_path: string@View
+) -> bool {
+    let path_result: Outcome<unique string@Managed, AllocationError> =
+        string::from(out_dir_path, authority.heap)
+    return if move path_result is {
+        @Value { value } {
+            if diagnosticBuildPath(value, "Logs", authority.heap) &&
+                diagnosticBuildPath(value, "Conformance", authority.heap) &&
+                diagnosticBuildPath(
+                    value,
+                    "EmitLLVMRenderFailure.conformance.log",
+                    authority.heap
+                ) {
+                let log_path: string@View = string::as_view(value)
+                outputDiagnosticEmitLLVMConformanceMatchesAtPath(authority, log_path)
+            } else {
+                false
+            }
+        }
+        @Error {
+            false
+        }
+    }
+}
+
+internal procedure outputDiagnosticConformanceMatches(
+    authority: TestAuthority,
+    out_dir_path: string@View,
+    check_llvm_tool: bool,
+    check_emit_llvm: bool
+) -> bool {
+    if check_llvm_tool {
+        return outputDiagnosticLlvmToolConformanceMatches(authority, out_dir_path)
+    }
+    if check_emit_llvm {
+        return outputDiagnosticEmitLLVMConformanceMatches(authority, out_dir_path)
+    }
+    return true
+}
+
+internal procedure outputDiagnosticBuildCaseWithPaths(
+    authority: TestAuthority,
+    fixture_path: string@View,
+    expected_path: string@View,
+    output_path: string@View,
+    error_path: string@View,
+    out_dir_path: string@View,
+    conformance_log_name: string@View,
+    check_llvm_tool: bool,
+    check_emit_llvm: bool
+) -> DiagnosticFixtureExecutionResult {
+    let _ = authority.io~>remove(output_path)
+    let _ = authority.io~>remove(error_path)
+    let _ = authority.io~>ensure_dir(out_dir_path)
+    let status: i32 = outputDiagnosticRunBuildCommand(
+        authority,
+        fixture_path,
+        output_path,
+        error_path,
+        out_dir_path,
+        conformance_log_name
+    )
+    if status == 0 {
+        return diagnosticFixtureExecutionResult(false, 0usize)
+    }
+
+    let matched_count: usize =
+        outputDiagnosticActualMatchesExpected(authority, expected_path, output_path)
+    if matched_count == 0usize {
+        return diagnosticFixtureExecutionResult(false, 0usize)
+    }
+    if !outputDiagnosticConformanceMatches(
+        authority,
+        out_dir_path,
+        check_llvm_tool,
+        check_emit_llvm
+    ) {
+        return diagnosticFixtureExecutionResult(false, 0usize)
+    }
+    return diagnosticFixtureExecutionResult(true, matched_count)
+}
+
+internal procedure outputDiagnosticBuildCaseWithOutDirPath(
+    authority: TestAuthority,
+    fixture_path: string@View,
+    expected_path: string@View,
+    output_path: unique string@Managed,
+    error_path: unique string@Managed,
+    out_dir_path: unique string@Managed,
+    conformance_log_name: string@View,
+    check_llvm_tool: bool,
+    check_emit_llvm: bool
+) -> DiagnosticFixtureExecutionResult {
+    let output_text_path: string@View = string::as_view(output_path)
+    let error_text_path: string@View = string::as_view(error_path)
+    let out_dir_text_path: string@View = string::as_view(out_dir_path)
+    return outputDiagnosticBuildCaseWithPaths(
+        authority,
+        fixture_path,
+        expected_path,
+        output_text_path,
+        error_text_path,
+        out_dir_text_path,
+        conformance_log_name,
+        check_llvm_tool,
+        check_emit_llvm
+    )
+}
+
+internal procedure outputDiagnosticBuildCaseWithErrorPath(
+    authority: TestAuthority,
+    fixture_path: string@View,
+    expected_path: string@View,
+    output_path: unique string@Managed,
+    error_path: unique string@Managed,
+    out_dir_suffix: string@View,
+    conformance_log_name: string@View,
+    check_llvm_tool: bool,
+    check_emit_llvm: bool
+) -> DiagnosticFixtureExecutionResult {
+    let out_dir_created: Outcome<unique string@Managed, AllocationError> =
+        string::from(authority.temporary_directory, authority.heap)
+    return if move out_dir_created is {
+        @Value { value } {
+            if !diagnosticBuildPath(value, out_dir_suffix, authority.heap) {
+                diagnosticFixtureExecutionResult(false, 0usize)
+            } else {
+                outputDiagnosticBuildCaseWithOutDirPath(
+                    authority,
+                    fixture_path,
+                    expected_path,
+                    output_path,
+                    error_path,
+                    value,
+                    conformance_log_name,
+                    check_llvm_tool,
+                    check_emit_llvm
+                )
+            }
+        }
+        @Error {
+            diagnosticFixtureExecutionResult(false, 0usize)
+        }
+    }
+}
+
+internal procedure outputDiagnosticBuildCaseWithOutputPath(
+    authority: TestAuthority,
+    fixture_path: string@View,
+    expected_path: string@View,
+    output_path: unique string@Managed,
+    error_suffix: string@View,
+    out_dir_suffix: string@View,
+    conformance_log_name: string@View,
+    check_llvm_tool: bool,
+    check_emit_llvm: bool
+) -> DiagnosticFixtureExecutionResult {
+    let error_created: Outcome<unique string@Managed, AllocationError> =
+        string::from(authority.temporary_directory, authority.heap)
+    return if move error_created is {
+        @Value { value } {
+            if !diagnosticBuildPath(value, error_suffix, authority.heap) {
+                diagnosticFixtureExecutionResult(false, 0usize)
+            } else {
+                outputDiagnosticBuildCaseWithErrorPath(
+                    authority,
+                    fixture_path,
+                    expected_path,
+                    output_path,
+                    value,
+                    out_dir_suffix,
+                    conformance_log_name,
+                    check_llvm_tool,
+                    check_emit_llvm
+                )
+            }
+        }
+        @Error {
+            diagnosticFixtureExecutionResult(false, 0usize)
+        }
+    }
+}
+
+internal procedure outputDiagnosticBuildCase(
+    authority: TestAuthority,
+    fixture_path: string@View,
+    expected_path: string@View,
+    output_suffix: string@View,
+    error_suffix: string@View,
+    out_dir_suffix: string@View,
+    conformance_log_name: string@View,
+    check_llvm_tool: bool,
+    check_emit_llvm: bool
+) -> DiagnosticFixtureExecutionResult {
+    let output_created: Outcome<unique string@Managed, AllocationError> =
+        string::from(authority.temporary_directory, authority.heap)
+    return if move output_created is {
+        @Value { value } {
+            if !diagnosticBuildPath(value, output_suffix, authority.heap) {
+                diagnosticFixtureExecutionResult(false, 0usize)
+            } else {
+                outputDiagnosticBuildCaseWithOutputPath(
+                    authority,
+                    fixture_path,
+                    expected_path,
+                    value,
+                    error_suffix,
+                    out_dir_suffix,
+                    conformance_log_name,
+                    check_llvm_tool,
+                    check_emit_llvm
+                )
+            }
+        }
+        @Error {
+            diagnosticFixtureExecutionResult(false, 0usize)
+        }
+    }
+}
+
+internal procedure outputDiagnosticUnknownCommandWithPaths(
+    authority: TestAuthority,
+    output_path: string@View,
+    error_path: string@View
+) -> DiagnosticFixtureExecutionResult {
+    let _ = authority.io~>remove(output_path)
+    let _ = authority.io~>remove(error_path)
+    let status: i32 =
+        outputDiagnosticRunUnknownCommand(authority, output_path, error_path)
+    if status == 0 {
+        return diagnosticFixtureExecutionResult(false, 0usize)
+    }
+
+    let expected_result: Outcome<unique string@Managed, IoError> =
+        authority.io~>read_file(
+            "Fixtures/OutputDiagnostics/CommandLine/UnknownCommand/Output.txt"
+        )
+    let actual_result: Outcome<unique string@Managed, IoError> =
+        authority.io~>read_file(error_path)
+    if !outputDiagnosticTextFilesEqual(move expected_result, move actual_result) {
+        return diagnosticFixtureExecutionResult(false, 0usize)
+    }
+
+    let expected_count: usize = outputDiagnosticExpectedDirectiveCountFromFile(
+        authority,
+        "Fixtures/OutputDiagnostics/CommandLine/UnknownCommand/Expected.uv"
+    )
+    return diagnosticFixtureExecutionResult(
+        expected_count > 0usize,
+        expected_count
+    )
+}
+
+internal procedure outputDiagnosticUnknownCommandWithOutputPath(
+    authority: TestAuthority,
+    output_path: unique string@Managed
+) -> DiagnosticFixtureExecutionResult {
+    let error_created: Outcome<unique string@Managed, AllocationError> =
+        string::from(authority.temporary_directory, authority.heap)
+    return if move error_created is {
+        @Value { value } {
+            if !diagnosticBuildPath(
+                value,
+                "OutputDiagnosticUnknownCommand.err",
+                authority.heap
+            ) {
+                diagnosticFixtureExecutionResult(false, 0usize)
+            } else {
+                let output_text_path: string@View = string::as_view(output_path)
+                let error_text_path: string@View = string::as_view(value)
+                outputDiagnosticUnknownCommandWithPaths(
+                    authority,
+                    output_text_path,
+                    error_text_path
+                )
+            }
+        }
+        @Error {
+            diagnosticFixtureExecutionResult(false, 0usize)
+        }
+    }
+}
+
+internal procedure outputDiagnosticUnknownCommand(
+    authority: TestAuthority
+) -> DiagnosticFixtureExecutionResult {
+    let output_created: Outcome<unique string@Managed, AllocationError> =
+        string::from(authority.temporary_directory, authority.heap)
+    return if move output_created is {
+        @Value { value } {
+            if !diagnosticBuildPath(
+                value,
+                "OutputDiagnosticUnknownCommand.out",
+                authority.heap
+            ) {
+                diagnosticFixtureExecutionResult(false, 0usize)
+            } else {
+                outputDiagnosticUnknownCommandWithOutputPath(authority, value)
+            }
+        }
+        @Error {
+            diagnosticFixtureExecutionResult(false, 0usize)
+        }
+    }
+}
+
+internal procedure outputDiagnosticMergeResult(
+    first: DiagnosticFixtureExecutionResult,
+    second: DiagnosticFixtureExecutionResult
+) -> DiagnosticFixtureExecutionResult {
+    return diagnosticFixtureExecutionResult(
+        first.passed && second.passed,
+        first.count + second.count
+    )
+}
+
+#test(name: "output diagnostic fixtures execute and emit expected diagnostics")
+internal procedure outputDiagnosticFixturesExecuteAndEmitExpectedDiagnostics(
+    authority: TestAuthority
+) -> bool
+|: |= @result
+{
+    let temp_ready: Outcome<(), IoError> =
+        authority.io~>ensure_dir(authority.temporary_directory)
+    if !diagnosticIoSucceeded(temp_ready) {
+        return false
+    }
+
+    var result: DiagnosticFixtureExecutionResult =
+        outputDiagnosticUnknownCommand(authority)
+    result = outputDiagnosticMergeResult(
+        result,
+        outputDiagnosticBuildCase(
+            authority,
+            "Fixtures/OutputDiagnostics/Projects/ManifestParseError",
+            "Fixtures/OutputDiagnostics/Projects/ManifestParseError/Expected.uv",
+            "OutputDiagnosticManifestParse.out",
+            "OutputDiagnosticManifestParse.err",
+            "OutputDiagnosticManifestParseBuild",
+            "",
+            false,
+            false
+        )
+    )
+    result = outputDiagnosticMergeResult(
+        result,
+        outputDiagnosticBuildCase(
+            authority,
+            "Fixtures/OutputDiagnostics/Lowering/LlvmToolResolveOwnership",
+            "Fixtures/OutputDiagnostics/Lowering/LlvmToolResolveOwnership/Expected.uv",
+            "OutputDiagnosticLlvmTool.out",
+            "OutputDiagnosticLlvmTool.err",
+            "OutputDiagnosticLlvmToolBuild",
+            "LlvmToolResolveOwnership.conformance.log",
+            true,
+            false
+        )
+    )
+    result = outputDiagnosticMergeResult(
+        result,
+        outputDiagnosticBuildCase(
+            authority,
+            "Fixtures/OutputDiagnostics/Lowering/EmitLLVMRenderFailure",
+            "Fixtures/OutputDiagnostics/Lowering/EmitLLVMRenderFailure/Expected.uv",
+            "OutputDiagnosticEmitLLVM.out",
+            "OutputDiagnosticEmitLLVM.err",
+            "OutputDiagnosticEmitLLVMBuild",
+            "EmitLLVMRenderFailure.conformance.log",
+            false,
+            true
+        )
+    )
+    return result.passed &&
+        result.count == expectedOutputDiagnosticFixtureCount()
+}

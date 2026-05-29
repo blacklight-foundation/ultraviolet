@@ -1,0 +1,628 @@
+//! Source-native compiler execution checks for diagnostic fixtures.
+
+using HelloUltraviolet::Audit::FixtureCatalog::DiagnosticSource::{
+    expectedDiagnosticSourceFixtureCount
+}
+using HelloUltraviolet::Audit::FixtureCatalog::RejectedSource::{
+    expectedRejectedSourceFixtureCount
+}
+
+internal let EXPECTED_DIAGNOSTIC_NAME: string@View = "expectedDiagnostic"
+internal let EXPECTED_DIAGNOSTIC_ABSENT_SUFFIX: string@View = "Absent"
+internal let DIAGNOSTIC_CODE_FIELD: string@View = "\"code\":\""
+internal let DIAGNOSTIC_NULL_CODE_FIELD: string@View = "\"code\":null"
+
+internal record DiagnosticFixtureExecutionResult {
+    internal passed: bool
+    internal count: usize
+}
+
+internal record DiagnosticFixtureDirectoryStepResult {
+    internal passed: bool
+    internal count: usize
+    internal is_done: bool
+}
+
+internal procedure diagnosticFixtureExecutionResult(
+    passed: bool,
+    count: usize
+) -> DiagnosticFixtureExecutionResult {
+    return DiagnosticFixtureExecutionResult {
+        passed: passed,
+        count: count
+    }
+}
+
+internal procedure diagnosticFixtureDirectoryStepResult(
+    passed: bool,
+    count: usize,
+    is_done: bool
+) -> DiagnosticFixtureDirectoryStepResult {
+    return DiagnosticFixtureDirectoryStepResult {
+        passed: passed,
+        count: count,
+        is_done: is_done
+    }
+}
+
+internal procedure diagnosticAllocationSucceeded(
+    result: Outcome<(), AllocationError>
+) -> bool {
+    return if result is {
+        @Value {
+            true
+        }
+        @Error {
+            false
+        }
+    }
+}
+
+internal procedure diagnosticIoSucceeded(result: Outcome<(), IoError>) -> bool {
+    return if result is {
+        @Value {
+            true
+        }
+        @Error {
+            false
+        }
+    }
+}
+
+internal procedure diagnosticAppendText(
+    text: unique string@Managed,
+    suffix: string@View,
+    heap: $HeapAllocator
+) -> bool {
+    let appended: Outcome<(), AllocationError> = string::append(text, suffix, heap)
+    return diagnosticAllocationSucceeded(appended)
+}
+
+internal procedure diagnosticAppendQuoted(
+    text: unique string@Managed,
+    value: string@View,
+    heap: $HeapAllocator
+) -> bool {
+    return diagnosticAppendText(text, "\"", heap) &&
+        diagnosticAppendText(text, value, heap) &&
+        diagnosticAppendText(text, "\"", heap)
+}
+
+internal procedure diagnosticBuildPath(
+    text: unique string@Managed,
+    suffix: string@View,
+    heap: $HeapAllocator
+) -> bool {
+    return diagnosticAppendText(text, "/", heap) &&
+        diagnosticAppendText(text, suffix, heap)
+}
+
+internal procedure diagnosticFindFrom(
+    text: string@View,
+    needle: string@View,
+    start: usize
+) -> usize {
+    let text_length: usize = string::length(text)
+    let needle_length: usize = string::length(needle)
+    if needle_length == 0usize {
+        return start
+    }
+    if start >= text_length || needle_length > text_length {
+        return text_length
+    }
+
+    let last_start: usize = text_length - needle_length
+    var index: usize = start
+    loop index <= last_start {
+        if auditTextStartsAt(text, needle, index) {
+            return index
+        }
+        index = index + 1usize
+    }
+    return text_length
+}
+
+internal procedure diagnosticFindByteFrom(
+    text: string@View,
+    byte: u8,
+    start: usize
+) -> usize {
+    let text_length: usize = string::length(text)
+    var index: usize = start
+    loop index < text_length {
+        if auditTextByte(text, index) == byte {
+            return index
+        }
+        index = index + 1usize
+    }
+    return text_length
+}
+
+internal procedure diagnosticExpectedDirectiveIsAbsent(
+    expected_text: string@View,
+    name_end: usize
+) -> bool {
+    return auditTextStartsAt(
+        expected_text,
+        EXPECTED_DIAGNOSTIC_ABSENT_SUFFIX,
+        name_end
+    )
+}
+
+internal procedure diagnosticOutputContainsExpectedCode(
+    output_text: string@View,
+    expected_code: string@View
+) -> bool {
+    if string::is_empty(expected_code) {
+        return auditTextContains(output_text, DIAGNOSTIC_NULL_CODE_FIELD)
+    }
+
+    let output_length: usize = string::length(output_text)
+    let field_length: usize = string::length(DIAGNOSTIC_CODE_FIELD)
+    let expected_length: usize = string::length(expected_code)
+    var position: usize = 0usize
+    loop position < output_length {
+        let field_start: usize =
+            diagnosticFindFrom(output_text, DIAGNOSTIC_CODE_FIELD, position)
+        if field_start == output_length {
+            return false
+        }
+        let code_start: usize = field_start + field_length
+        let code_end: usize = diagnosticFindByteFrom(output_text, 34u8, code_start)
+        if code_end == code_start + expected_length &&
+            auditTextStartsAt(output_text, expected_code, code_start) {
+            return true
+        }
+        if code_end == output_length {
+            return false
+        }
+        position = code_end + 1usize
+    }
+    return false
+}
+
+internal procedure diagnosticExpectedDirectivesMatch(
+    expected_text: string@View,
+    output_text: string@View
+) -> bool {
+    let text_length: usize = string::length(expected_text)
+    let name_length: usize = string::length(EXPECTED_DIAGNOSTIC_NAME)
+    var position: usize = 0usize
+    var directive_count: usize = 0usize
+    loop position < text_length {
+        let name_start: usize =
+            diagnosticFindFrom(expected_text, EXPECTED_DIAGNOSTIC_NAME, position)
+        if name_start == text_length {
+            return directive_count > 0usize
+        }
+
+        let name_end: usize = name_start + name_length
+        let is_absent: bool =
+            diagnosticExpectedDirectiveIsAbsent(expected_text, name_end)
+        let quote_start: usize = diagnosticFindByteFrom(expected_text, 34u8, name_end)
+        if quote_start == text_length {
+            return false
+        }
+        let code_start: usize = quote_start + 1usize
+        let code_end: usize = diagnosticFindByteFrom(expected_text, 34u8, code_start)
+        if code_end == text_length {
+            return false
+        }
+
+        let expected_code: string@View =
+            string::slice(expected_text, code_start, code_end)
+        let contains_code: bool =
+            diagnosticOutputContainsExpectedCode(output_text, expected_code)
+        if is_absent && contains_code {
+            return false
+        }
+        if !is_absent && !contains_code {
+            return false
+        }
+
+        directive_count = directive_count + 1usize
+        position = code_end + 1usize
+    }
+    return directive_count > 0usize
+}
+
+internal procedure diagnosticReportFixtureFailure(
+    authority: TestAuthority,
+    message: string@View,
+    fixture_path: string@View
+) -> bool {
+    let _ = authority.io~>write_stderr(message)
+    let _ = authority.io~>write_stderr(fixture_path)
+    let _ = authority.io~>write_stderr("\n")
+    return false
+}
+
+internal procedure diagnosticRunCompiler(
+    authority: TestAuthority,
+    fixture_path: string@View,
+    output_path: string@View,
+    error_path: string@View
+) -> i32 {
+    let created: Outcome<unique string@Managed, AllocationError> =
+        string::from("", authority.heap)
+    return if move created is {
+        @Value { value } {
+            var command_ready: bool = true
+            if auditTextEquals(authority.target_profile, "x86_64-win64") {
+                command_ready =
+                    diagnosticAppendText(value, "cmd.exe /C \"", authority.heap) &&
+                    command_ready
+            }
+            command_ready = diagnosticAppendQuoted(
+                value,
+                authority.compiler_executable_path,
+                authority.heap
+            ) && command_ready
+            command_ready =
+                diagnosticAppendText(value, " build ", authority.heap) &&
+                command_ready
+            command_ready =
+                diagnosticAppendQuoted(value, fixture_path, authority.heap) &&
+                command_ready
+            command_ready =
+                diagnosticAppendText(value, " --target-profile ", authority.heap) &&
+                command_ready
+            command_ready =
+                diagnosticAppendText(value, authority.target_profile, authority.heap) &&
+                command_ready
+            command_ready =
+                diagnosticAppendText(
+                    value,
+                    " --check --diag-json --build-progress off > ",
+                    authority.heap
+                ) && command_ready
+            command_ready =
+                diagnosticAppendQuoted(value, output_path, authority.heap) &&
+                command_ready
+            command_ready =
+                diagnosticAppendText(value, " 2> ", authority.heap) &&
+                command_ready
+            command_ready =
+                diagnosticAppendQuoted(value, error_path, authority.heap) &&
+                command_ready
+            if auditTextEquals(authority.target_profile, "x86_64-win64") {
+                command_ready =
+                    diagnosticAppendText(value, "\"", authority.heap) &&
+                    command_ready
+            }
+
+            if command_ready {
+                let command_text: string@View = string::as_view(value)
+                authority.sys~>run(command_text)
+            } else {
+                -1
+            }
+        }
+        @Error {
+            -1
+        }
+    }
+}
+
+internal procedure diagnosticOutputMatchesExpectedText(
+    expected_text: string@View,
+    move output_result: Outcome<unique string@Managed, IoError>
+) -> bool {
+    return if move output_result is {
+        @Value { value } {
+            let output_text: string@View = string::as_view(value)
+            diagnosticExpectedDirectivesMatch(expected_text, output_text)
+        }
+        @Error {
+            false
+        }
+    }
+}
+
+internal procedure diagnosticReadTextContainsExpected(
+    move expected_result: Outcome<unique string@Managed, IoError>,
+    move output_result: Outcome<unique string@Managed, IoError>
+) -> bool {
+    return if move expected_result is {
+        @Value { value } {
+            let expected_text: string@View = string::as_view(value)
+            diagnosticOutputMatchesExpectedText(expected_text, move output_result)
+        }
+        @Error {
+            false
+        }
+    }
+}
+
+internal procedure diagnosticExerciseFixtureWithPaths(
+    authority: TestAuthority,
+    fixture_path: string@View,
+    expected_path: string@View,
+    should_reject: bool,
+    output_path: string@View,
+    error_path: string@View
+) -> bool {
+    let _ = authority.io~>remove(output_path)
+    let _ = authority.io~>remove(error_path)
+
+    let status: i32 = diagnosticRunCompiler(
+        authority,
+        fixture_path,
+        output_path,
+        error_path
+    )
+    if should_reject && status == 0 {
+        return diagnosticReportFixtureFailure(
+            authority,
+            "expected rejection but compiler accepted: ",
+            fixture_path
+        )
+    }
+    if !should_reject && status != 0 {
+        return diagnosticReportFixtureFailure(
+            authority,
+            "expected diagnostic fixture to compile: ",
+            fixture_path
+        )
+    }
+
+    let expected_result: Outcome<unique string@Managed, IoError> =
+        authority.io~>read_file(expected_path)
+    let output_result: Outcome<unique string@Managed, IoError> =
+        authority.io~>read_file(output_path)
+    if !diagnosticReadTextContainsExpected(move expected_result, move output_result) {
+        return diagnosticReportFixtureFailure(
+            authority,
+            "expected diagnostic code mismatch: ",
+            fixture_path
+        )
+    }
+    return true
+}
+
+internal procedure diagnosticExerciseFixtureWithOutputPath(
+    authority: TestAuthority,
+    fixture_path: string@View,
+    expected_path: string@View,
+    should_reject: bool,
+    output_path: unique string@Managed
+) -> bool {
+    if !diagnosticBuildPath(
+        output_path,
+        "DiagnosticFixtureOutput.json",
+        authority.heap
+    ) {
+        return false
+    }
+
+    let error_created: Outcome<unique string@Managed, AllocationError> =
+        string::from(authority.temporary_directory, authority.heap)
+    return if move error_created is {
+        @Value { value } {
+            if !diagnosticBuildPath(
+                value,
+                "DiagnosticFixtureError.txt",
+                authority.heap
+            ) {
+                false
+            } else {
+                let output_text_path: string@View = string::as_view(output_path)
+                let error_text_path: string@View = string::as_view(value)
+                diagnosticExerciseFixtureWithPaths(
+                    authority,
+                    fixture_path,
+                    expected_path,
+                    should_reject,
+                    output_text_path,
+                    error_text_path
+                )
+            }
+        }
+        @Error {
+            false
+        }
+    }
+}
+
+internal procedure diagnosticExerciseFixture(
+    authority: TestAuthority,
+    fixture_path: string@View,
+    expected_path: string@View,
+    should_reject: bool
+) -> bool {
+    let output_created: Outcome<unique string@Managed, AllocationError> =
+        string::from(authority.temporary_directory, authority.heap)
+    return if move output_created is {
+        @Value { value } {
+            diagnosticExerciseFixtureWithOutputPath(
+                authority,
+                fixture_path,
+                expected_path,
+                should_reject,
+                value
+            )
+        }
+        @Error {
+            false
+        }
+    }
+}
+
+internal procedure diagnosticEntryIsDirectory(entry: DirEntry) -> bool {
+    return if entry.kind is {
+        FileKind::File {
+            false
+        }
+        FileKind::Dir {
+            true
+        }
+        FileKind::Other {
+            false
+        }
+    }
+}
+
+internal procedure diagnosticExerciseDirectoryEntry(
+    authority: TestAuthority,
+    entry: DirEntry,
+    should_reject: bool
+) -> DiagnosticFixtureDirectoryStepResult {
+    if diagnosticEntryIsDirectory(entry) {
+        let child_path: string@View = string::as_view(entry.path)
+        let result: DiagnosticFixtureExecutionResult =
+            diagnosticExerciseFixtureDirectory(
+                authority,
+                child_path,
+                should_reject
+            )
+        return diagnosticFixtureDirectoryStepResult(
+            result.passed,
+            result.count,
+            false
+        )
+    }
+    return diagnosticFixtureDirectoryStepResult(true, 0usize, false)
+}
+
+internal procedure diagnosticExerciseDirectoryStep(
+    authority: TestAuthority,
+    result: Outcome<DirEntry | (), IoError>,
+    should_reject: bool
+) -> DiagnosticFixtureDirectoryStepResult {
+    return if result is {
+        @Value { value } {
+            return if value is {
+                entry: DirEntry {
+                    diagnosticExerciseDirectoryEntry(
+                        authority,
+                        entry,
+                        should_reject
+                    )
+                }
+                empty_value: () {
+                    diagnosticFixtureDirectoryStepResult(true, 0usize, true)
+                }
+            }
+        }
+        @Error {
+            diagnosticFixtureDirectoryStepResult(false, 0usize, false)
+        }
+    }
+}
+
+internal procedure diagnosticExerciseOpenFixtureDirectory(
+    authority: TestAuthority,
+    move result: Outcome<unique DirIter@Open, IoError>,
+    should_reject: bool
+) -> DiagnosticFixtureExecutionResult {
+    return if move result is {
+        @Value { value } {
+            var fixture_count: usize = 0usize
+            let directory_passed: bool = loop {
+                let next_result: Outcome<DirEntry | (), IoError> = value~>next()
+                let step_result: DiagnosticFixtureDirectoryStepResult =
+                    diagnosticExerciseDirectoryStep(
+                        authority,
+                        next_result,
+                        should_reject
+                    )
+                if step_result.is_done {
+                    break true
+                }
+                if !step_result.passed {
+                    break false
+                }
+                fixture_count = fixture_count + step_result.count
+            }
+            let closed: DirIter@Closed = value~>close()
+            let _ = closed
+            diagnosticFixtureExecutionResult(
+                directory_passed,
+                fixture_count
+            )
+        }
+        @Error {
+            diagnosticFixtureExecutionResult(false, 0usize)
+        }
+    }
+}
+
+internal procedure diagnosticExerciseFixtureDirectory(
+    authority: TestAuthority,
+    directory_path: string@View,
+    should_reject: bool
+) -> DiagnosticFixtureExecutionResult {
+    let expected_path_result: Outcome<unique string@Managed, AllocationError> =
+        string::from(directory_path, authority.heap)
+    return if move expected_path_result is {
+        @Value { value } {
+            if !diagnosticBuildPath(value, "Expected.uv", authority.heap) {
+                diagnosticFixtureExecutionResult(false, 0usize)
+            } else {
+                let expected_text_path: string@View = string::as_view(value)
+                if authority.io~>exists(expected_text_path) {
+                    let passed: bool = diagnosticExerciseFixture(
+                        authority,
+                        directory_path,
+                        expected_text_path,
+                        should_reject
+                    )
+                    diagnosticFixtureExecutionResult(passed, 1usize)
+                } else {
+                    let opened: Outcome<unique DirIter@Open, IoError> =
+                        authority.io~>open_dir(directory_path)
+                    diagnosticExerciseOpenFixtureDirectory(
+                        authority,
+                        move opened,
+                        should_reject
+                    )
+                }
+            }
+        }
+        @Error {
+            diagnosticFixtureExecutionResult(false, 0usize)
+        }
+    }
+}
+
+#test(name: "rejected source fixtures compile and emit expected diagnostics")
+internal procedure rejectedSourceFixturesCompileAndEmitExpectedDiagnostics(
+    authority: TestAuthority
+) -> bool
+|: |= @result
+{
+    let temp_ready: Outcome<(), IoError> =
+        authority.io~>ensure_dir(authority.temporary_directory)
+    if !diagnosticIoSucceeded(temp_ready) {
+        return false
+    }
+    let result: DiagnosticFixtureExecutionResult =
+        diagnosticExerciseFixtureDirectory(
+            authority,
+            "Fixtures/RejectedSource",
+            true
+        )
+    return result.passed &&
+        result.count == expectedRejectedSourceFixtureCount()
+}
+
+#test(name: "diagnostic source fixtures emit expected diagnostics")
+internal procedure diagnosticSourceFixturesEmitExpectedDiagnostics(
+    authority: TestAuthority
+) -> bool
+|: |= @result
+{
+    let temp_ready: Outcome<(), IoError> =
+        authority.io~>ensure_dir(authority.temporary_directory)
+    if !diagnosticIoSucceeded(temp_ready) {
+        return false
+    }
+    let result: DiagnosticFixtureExecutionResult =
+        diagnosticExerciseFixtureDirectory(
+            authority,
+            "Fixtures/DiagnosticSource",
+            false
+        )
+    return result.passed &&
+        result.count == expectedDiagnosticSourceFixtureCount()
+}

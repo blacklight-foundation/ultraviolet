@@ -245,7 +245,11 @@ std::optional<core::ErrorRecoveryPolicy> ParseMaxErrorsPolicy(
 }
 
 CliParseResult Fail(std::string message) {
-  return CliParseResult{{}, std::move(message)};
+  return CliParseResult{{}, std::move(message), std::nullopt};
+}
+
+CliParseResult FailDiagnostic(std::string code, std::string message) {
+  return CliParseResult{{}, std::move(message), std::move(code)};
 }
 
 std::size_t LevenshteinDistance(std::string_view a, std::string_view b) {
@@ -308,6 +312,7 @@ std::string SuggestFlag(std::string_view unknown) {
 
 CliParseResult ParseArgs(int argc, char** argv) {
   CliOptions opts;
+  bool command_selected = false;
 
   // First pass: parse --debug early so InternalFlagsEnabled() works for
   // subsequent flags. We scan ahead without consuming to find --debug.
@@ -338,11 +343,11 @@ CliParseResult ParseArgs(int argc, char** argv) {
     std::string_view arg = argv[i];
     if (arg == "--help" || arg == "-h") {
       opts.show_help = true;
-      return CliParseResult{opts, {}};
+      return CliParseResult{opts, {}, std::nullopt};
     }
     if (arg == "--version" || arg == "-V") {
       opts.show_version = true;
-      return CliParseResult{opts, {}};
+      return CliParseResult{opts, {}, std::nullopt};
     }
     if (arg == "--diag-json") {
       opts.diag_json = true;
@@ -676,10 +681,10 @@ CliParseResult ParseArgs(int argc, char** argv) {
         return Fail("--debug requires a comma-separated list of subsystems or 'help'");
       }
       const auto parsed = ParseDebugSubsystems(argv[++i]);
-      if (parsed.size() == 1 && parsed.front() == "help") {
-        opts.show_debug_help = true;
-        return CliParseResult{opts, {}};
-      }
+        if (parsed.size() == 1 && parsed.front() == "help") {
+          opts.show_debug_help = true;
+          return CliParseResult{opts, {}, std::nullopt};
+        }
       if (const auto error = ValidateDebugSubsystems(parsed); error.has_value()) {
         return Fail(*error);
       }
@@ -690,10 +695,10 @@ CliParseResult ParseArgs(int argc, char** argv) {
     if (StartsWith(arg, "--debug=")) {
       const auto parsed = ParseDebugSubsystems(
           arg.substr(std::string_view("--debug=").size()));
-      if (parsed.size() == 1 && parsed.front() == "help") {
-        opts.show_debug_help = true;
-        return CliParseResult{opts, {}};
-      }
+        if (parsed.size() == 1 && parsed.front() == "help") {
+          opts.show_debug_help = true;
+          return CliParseResult{opts, {}, std::nullopt};
+        }
       if (const auto error = ValidateDebugSubsystems(parsed); error.has_value()) {
         return Fail(*error);
       }
@@ -793,18 +798,21 @@ CliParseResult ParseArgs(int argc, char** argv) {
       continue;
     }
     if (arg == "build") {
-      // Subcommand - currently ignored
+      command_selected = true;
       continue;
     }
     if (arg == "test") {
+      command_selected = true;
       opts.do_test = true;
       continue;
     }
     if (arg == "init") {
+      command_selected = true;
       opts.do_init = true;
       continue;
     }
     if (arg == "clean") {
+      command_selected = true;
       opts.do_clean = true;
       continue;
     }
@@ -817,6 +825,9 @@ CliParseResult ParseArgs(int argc, char** argv) {
         msg += "'?";
       }
       return Fail(std::move(msg));
+    }
+    if (!command_selected) {
+      return FailDiagnostic("E-CLI-0001", "unknown command");
     }
     if (opts.do_test) {
       if (opts.test_target.has_value()) {
@@ -833,30 +844,30 @@ CliParseResult ParseArgs(int argc, char** argv) {
     opts.input_path = std::string(arg);
   }
   if (opts.show_help || opts.show_version) {
-    return CliParseResult{opts, {}};
+    return CliParseResult{opts, {}, std::nullopt};
   }
   if (opts.do_init) {
     // init subcommand: input_path is optional (defaults to ".")
     if (opts.input_path.empty()) {
       opts.input_path = ".";
     }
-    return CliParseResult{opts, {}};
+    return CliParseResult{opts, {}, std::nullopt};
   }
   if (opts.do_clean) {
     // clean subcommand: still needs input path to find project root
     if (opts.input_path.empty()) {
       opts.input_path = ".";
     }
-    return CliParseResult{opts, {}};
+    return CliParseResult{opts, {}, std::nullopt};
   }
   if (opts.do_test) {
     opts.input_path = ".";
-    return CliParseResult{opts, {}};
+    return CliParseResult{opts, {}, std::nullopt};
   }
   if (opts.input_path.empty()) {
     return Fail("no input file specified");
   }
-  return CliParseResult{opts, {}};
+  return CliParseResult{opts, {}, std::nullopt};
 }
 
 // ============================================================================

@@ -39,6 +39,99 @@ llvm::Value *MaterializeHostedRuntimeValueRef(llvm::IRBuilder<> &builder,
   return slot;
 }
 
+void AppendTraceField(std::string &payload,
+                      std::string_view key,
+                      std::string_view value)
+{
+  if (!payload.empty())
+  {
+    payload += ';';
+  }
+  payload += key;
+  payload += '=';
+  payload += value;
+}
+
+void AppendTraceField(std::string &payload,
+                      std::string_view key,
+                      const char *value)
+{
+  AppendTraceField(payload, key, std::string_view(value ? value : "-"));
+}
+
+void AppendTraceField(std::string &payload,
+                      std::string_view key,
+                      std::uint64_t value)
+{
+  const std::string text = std::to_string(value);
+  AppendTraceField(payload, key, std::string_view(text));
+}
+
+void AppendTraceField(std::string &payload,
+                      std::string_view key,
+                      bool value)
+{
+  AppendTraceField(payload, key, std::string_view(value ? "true" : "false"));
+}
+
+std::string LLVMTypeTraceName(llvm::Type *type)
+{
+  if (!type)
+  {
+    return "-";
+  }
+  std::string text;
+  llvm::raw_string_ostream os(text);
+  type->print(os);
+  os.flush();
+  return text;
+}
+
+std::string PassKindTraceName(PassKind kind)
+{
+  switch (kind)
+  {
+    case PassKind::ByValue:
+      return "ByValue";
+    case PassKind::ByRef:
+      return "ByRef";
+    case PassKind::SRet:
+      return "SRet";
+  }
+  return "Unknown";
+}
+
+std::string CarrierTraceName(ABIArgCarrierKind carrier)
+{
+  switch (carrier)
+  {
+    case ABIArgCarrierKind::Direct:
+      return "Direct";
+    case ABIArgCarrierKind::Indirect:
+      return "Indirect";
+  }
+  return "Unknown";
+}
+
+bool IsAggregateLLVMType(llvm::Type *type)
+{
+  return type && (type->isStructTy() || type->isArrayTy());
+}
+
+bool IsWin64DirectAggregateSize(std::uint64_t size)
+{
+  return size == 1u || size == 2u || size == 4u || size == 8u;
+}
+
+void RecordHostedConformance(std::string_view rule_id, std::string payload)
+{
+  if (!core::Conformance::Enabled())
+  {
+    return;
+  }
+  core::Conformance::Record(rule_id, std::nullopt, payload);
+}
+
 }  // namespace
 
   bool LLVMEmitter::IsHostedLibraryBuild() const
@@ -149,6 +242,15 @@ llvm::Value *MaterializeHostedRuntimeValueRef(llvm::IRBuilder<> &builder,
     {
       return fallback_ptr;
     }
+
+    std::string payload;
+    AppendTraceField(payload, "symbol", std::string_view(symbol));
+    AppendTraceField(payload, "slot_offset", it->second.offset);
+    AppendTraceField(payload, "slot_size", it->second.size);
+    AppendTraceField(payload, "has_fallback", fallback_ptr != nullptr);
+    AppendTraceField(payload, "session_context_owned", true);
+    RecordHostedConformance(
+        "requirement.23.HostedStateSymbolResolution", std::move(payload));
 
     llvm::Type *ptr_ty = llvm::PointerType::get(value_ty, 0);
     auto coerce_fallback = [&]() -> llvm::Value * {
@@ -349,6 +451,34 @@ llvm::Value *MaterializeHostedRuntimeValueRef(llvm::IRBuilder<> &builder,
     }
     llvm::Value *owner_token =
         llvm::ConstantExpr::getBitCast(owner_token_gv, opaque_ptr_ty);
+
+    std::string lifecycle_payload;
+    AppendTraceField(lifecycle_payload,
+                     "abi_symbol",
+                     std::string_view(HostAbiVersionSym()));
+    AppendTraceField(lifecycle_payload,
+                     "create_symbol",
+                     std::string_view(HostSessionCreateSym()));
+    AppendTraceField(lifecycle_payload,
+                     "destroy_symbol",
+                     std::string_view(HostSessionDestroySym()));
+    AppendTraceField(lifecycle_payload,
+                     "hosted_export_count",
+                     static_cast<std::uint64_t>(
+                         current_ctx_->hosted_exports.size()));
+    AppendTraceField(lifecycle_payload, "backend_generated", true);
+    AppendTraceField(lifecycle_payload, "destroy_failure_returns_zero", true);
+    AppendTraceField(lifecycle_payload, "uses_runtime_handle_registry", true);
+    RecordHostedConformance(
+        "requirement.23.HostedLibraryLifecycleExports", lifecycle_payload);
+    RecordHostedConformance(
+        "requirement.23.HostedLifecycleExportsBackendGenerated",
+        lifecycle_payload);
+    RecordHostedConformance(
+        "requirement.23.HostedLifecycleExportsPanicAndDestroyFailure",
+        lifecycle_payload);
+    RecordHostedConformance(
+        "requirement.23.HostedSessionHandleNoReissue", lifecycle_payload);
 
     auto ensure_runtime_fn = [&](const char *name,
                                  llvm::Type *ret_ty,
@@ -1650,6 +1780,193 @@ llvm::Value *MaterializeHostedRuntimeValueRef(llvm::IRBuilder<> &builder,
         return alloca_builder.CreateAlloca(alloc_ty, nullptr, name);
       };
       llvm::Type *ret_ll = GetLLVMType(info.ret);
+
+      std::string thunk_payload;
+      AppendTraceField(
+          thunk_payload, "thunk_symbol", std::string_view(info.thunk_symbol));
+      AppendTraceField(
+          thunk_payload, "internal_symbol", std::string_view(info.internal_symbol));
+      AppendTraceField(
+          thunk_payload,
+          "target_profile",
+          project::TargetProfileName(GetTargetProfile()));
+      AppendTraceField(
+          thunk_payload,
+          "source_visible_param_count",
+          static_cast<std::uint64_t>(info.visible_params.size()));
+      AppendTraceField(
+          thunk_payload,
+          "foreign_param_count",
+          static_cast<std::uint64_t>(thunk_params.size()));
+      AppendTraceField(
+          thunk_payload,
+          "llvm_param_count",
+          static_cast<std::uint64_t>(thunk_abi.func_type->getNumParams()));
+      AppendTraceField(thunk_payload, "prepends_session_handle", true);
+      AppendTraceField(thunk_payload, "omits_first_source_param", true);
+      AppendTraceField(thunk_payload, "has_sret", thunk_abi.has_sret);
+      AppendTraceField(thunk_payload,
+                       "use_c_abi_aggregate_sret",
+                       hosted_win64_aggregate_carrier);
+      AppendTraceField(thunk_payload,
+                       "foreign_boundary_mode_independent",
+                       true);
+      const std::string ret_type_name = LLVMTypeTraceName(thunk->getReturnType());
+      AppendTraceField(
+          thunk_payload, "llvm_return_type", std::string_view(ret_type_name));
+
+      std::string param_kinds_text;
+      std::string param_carriers_text;
+      std::string param_types_text;
+      const llvm::DataLayout &trace_dl = module_->getDataLayout();
+      for (std::size_t i = 0; i < thunk_params.size(); ++i)
+      {
+        if (i != 0u)
+        {
+          param_kinds_text += ',';
+          param_carriers_text += ',';
+          param_types_text += ',';
+        }
+        const PassKind kind =
+            i < thunk_abi.param_kinds.size() ? thunk_abi.param_kinds[i]
+                                             : PassKind::ByValue;
+        const ABIArgCarrierKind carrier =
+            i < thunk_abi.param_carriers.size()
+                ? thunk_abi.param_carriers[i]
+                : ABIArgCarrierKind::Direct;
+        param_kinds_text += PassKindTraceName(kind);
+        param_carriers_text += CarrierTraceName(carrier);
+        llvm::Type *param_ll = GetLLVMType(thunk_params[i].type);
+        const std::string param_type_name = LLVMTypeTraceName(param_ll);
+        param_types_text += param_type_name;
+
+        std::string carrier_payload = thunk_payload;
+        AppendTraceField(carrier_payload,
+                         "param_index",
+                         static_cast<std::uint64_t>(i));
+        AppendTraceField(
+            carrier_payload, "param_type", std::string_view(param_type_name));
+        const std::string pass_kind_name = PassKindTraceName(kind);
+        AppendTraceField(
+            carrier_payload, "pass_kind", std::string_view(pass_kind_name));
+        AppendTraceField(carrier_payload, "is_session_param", i == 0u);
+        AppendTraceField(carrier_payload, "is_visible_source_param", i != 0u);
+
+        if (kind == PassKind::ByRef)
+        {
+          AppendTraceField(
+              carrier_payload, "carrier", std::string_view("Direct"));
+          AppendTraceField(
+              carrier_payload, "llvm_param_is_pointer", true);
+          RecordHostedConformance(
+              "rule.23.HostThunkParamCarrier-ByRef", carrier_payload);
+        }
+        else if (kind == PassKind::ByValue)
+        {
+          if (i != 0u && hosted_win64_aggregate_carrier &&
+              IsAggregateLLVMType(param_ll))
+          {
+            const std::uint64_t param_size = trace_dl.getTypeStoreSize(param_ll);
+            AppendTraceField(carrier_payload, "param_size", param_size);
+            if (carrier == ABIArgCarrierKind::Direct &&
+                IsWin64DirectAggregateSize(param_size))
+            {
+              AppendTraceField(
+                  carrier_payload, "carrier", std::string_view("Direct"));
+              RecordHostedConformance(
+                  "rule.23.HostThunkParamCarrier-Win64-DirectAgg",
+                  carrier_payload);
+            }
+            if (carrier == ABIArgCarrierKind::Indirect &&
+                !IsWin64DirectAggregateSize(param_size))
+            {
+              AppendTraceField(
+                  carrier_payload, "carrier", std::string_view("Indirect"));
+              RecordHostedConformance(
+                  "rule.23.HostThunkParamCarrier-Win64-IndirectAgg",
+                  carrier_payload);
+            }
+          }
+          else
+          {
+            AppendTraceField(
+                carrier_payload, "carrier", std::string_view("Direct"));
+            RecordHostedConformance(
+                "rule.23.HostThunkParamCarrier-ByValue-Default",
+                carrier_payload);
+          }
+        }
+      }
+      AppendTraceField(
+          thunk_payload, "param_kinds", std::string_view(param_kinds_text));
+      AppendTraceField(
+          thunk_payload, "param_carriers", std::string_view(param_carriers_text));
+      AppendTraceField(
+          thunk_payload, "source_param_types", std::string_view(param_types_text));
+
+      const std::string ret_kind_name = PassKindTraceName(thunk_abi.ret_kind);
+      if (hosted_win64_aggregate_carrier &&
+          thunk_abi.ret_kind == PassKind::ByValue && IsAggregateLLVMType(ret_ll))
+      {
+        const std::uint64_t ret_size = trace_dl.getTypeStoreSize(ret_ll);
+        std::string ret_payload = thunk_payload;
+        AppendTraceField(
+            ret_payload, "ret_kind", std::string_view(ret_kind_name));
+        AppendTraceField(ret_payload, "ret_size", ret_size);
+        const std::string source_ret_type = LLVMTypeTraceName(ret_ll);
+        AppendTraceField(
+            ret_payload, "source_ret_type", std::string_view(source_ret_type));
+        if (!thunk_abi.has_sret && IsWin64DirectAggregateSize(ret_size))
+        {
+          AppendTraceField(ret_payload, "carrier", "Direct");
+          RecordHostedConformance(
+              "rule.23.HostThunkRetCarrier-Win64-DirectAgg",
+              ret_payload);
+        }
+        if (thunk_abi.has_sret && !IsWin64DirectAggregateSize(ret_size))
+        {
+          AppendTraceField(ret_payload, "carrier", "Indirect");
+          RecordHostedConformance(
+              "rule.23.HostThunkRetCarrier-Win64-SRetAgg",
+              ret_payload);
+        }
+      }
+      else
+      {
+        std::string ret_payload = thunk_payload;
+        AppendTraceField(
+            ret_payload, "ret_kind", std::string_view(ret_kind_name));
+        const std::string source_ret_type = LLVMTypeTraceName(ret_ll);
+        AppendTraceField(
+            ret_payload, "source_ret_type", std::string_view(source_ret_type));
+        AppendTraceField(ret_payload, "carrier", "Direct");
+        AppendTraceField(ret_payload, "sret_sigma_base", thunk_abi.has_sret);
+        RecordHostedConformance(
+            "rule.23.HostThunkRetCarrier-Default", ret_payload);
+      }
+
+      RecordHostedConformance("def.23.HostThunkCarrierHelpers", thunk_payload);
+      RecordHostedConformance(
+          "requirement.23.HostedExportLoweringPreservesRawFfiRules",
+          thunk_payload);
+      RecordHostedConformance(
+          "requirement.23.HostedExportThunkAbiDetermination", thunk_payload);
+      RecordHostedConformance(
+          "requirement.23.HostedExportThunkShapeUse", thunk_payload);
+      RecordHostedConformance(
+          "requirement.23.HostedExportNoWin64AggregateSplitting",
+          thunk_payload);
+      RecordHostedConformance(
+          "requirement.23.HostedExportNoExtraAbiRewriting", thunk_payload);
+      RecordHostedConformance(
+          "requirement.23.HostedThunkModeIndependentForeignClassification",
+          thunk_payload);
+      RecordHostedConformance(
+          "requirement.23.HostedExportThunkForeignVisibleAbi", thunk_payload);
+      RecordHostedConformance(
+          "requirement.23.HostedExportThunkEmissionAndEntrypoint",
+          thunk_payload);
+
       llvm::Value *thunk_sret_storage = nullptr;
       if (thunk_abi.has_sret && ret_ll && !ret_ll->isVoidTy() &&
           thunk->arg_size() > 0u)
@@ -1879,6 +2196,27 @@ llvm::Value *MaterializeHostedRuntimeValueRef(llvm::IRBuilder<> &builder,
       emit_hosted_boundary_failure(
           *builder,
           llvm::ConstantInt::get(i32_ty, PanicCode(PanicReason::ForeignPre)));
+      std::string boundary_payload = thunk_payload;
+      AppendTraceField(boundary_payload, "validates_session_handle", true);
+      AppendTraceField(boundary_payload, "rejects_zero_invalid_busy", true);
+      AppendTraceField(boundary_payload, "checks_before_user_code", true);
+      RecordHostedConformance(
+          "requirement.23.HostedExportSessionHandleValidity",
+          boundary_payload);
+      RecordHostedConformance(
+          "requirement.23.HostedExportBoundaryEntrySequence",
+          boundary_payload);
+      RecordHostedConformance(
+          "requirement.23.HostedExportInvalidHandleBehavior",
+          boundary_payload);
+      if (info.unwind_mode == LowerCtx::ExportUnwindMode::Catch)
+      {
+        std::string catch_payload = boundary_payload;
+        AppendTraceField(catch_payload, "catch_boundary_returns_zero", true);
+        RecordHostedConformance(
+            "requirement.23.HostedExportCatchFailureReturn",
+            catch_payload);
+      }
 
       builder->SetInsertPoint(entered_bb);
       llvm::Value *env_ptr = builder->CreateLoad(opaque_ptr_ty, entered_env);
@@ -1954,6 +2292,16 @@ llvm::Value *MaterializeHostedRuntimeValueRef(llvm::IRBuilder<> &builder,
         ctx_arg.storage = slot;
       }
       source_args.push_back(ctx_arg);
+      std::string context_payload = thunk_payload;
+      AppendTraceField(context_payload, "reconstructs_first_source_arg", true);
+      AppendTraceField(context_payload, "raw_context_exposed", false);
+      AppendTraceField(context_payload, "session_root_caps_granted", true);
+      RecordHostedConformance(
+          "requirement.23.HostedRootCapsMeaning", context_payload);
+      RecordHostedConformance(
+          "requirement.23.HostedExportCapabilityIsolation", context_payload);
+      RecordHostedConformance(
+          "requirement.23.HostedSessionRootCapsGrant", context_payload);
       for (std::size_t i = 1; i < prepared.size(); ++i)
       {
         source_args.push_back(prepared[i]);
@@ -1963,6 +2311,16 @@ llvm::Value *MaterializeHostedRuntimeValueRef(llvm::IRBuilder<> &builder,
       panic_arg.value = panic_ptr;
       panic_arg.storage = nullptr;
       source_args.push_back(panic_arg);
+      std::string reconstruction_payload = thunk_payload;
+      AppendTraceField(
+          reconstruction_payload,
+          "source_arg_count",
+          static_cast<std::uint64_t>(source_args.size()));
+      AppendTraceField(reconstruction_payload, "temporary_storage_materialized", true);
+      AppendTraceField(reconstruction_payload, "ordinary_source_call_abi", true);
+      RecordHostedConformance(
+          "requirement.23.HostedThunkToSourceCallReconstruction",
+          reconstruction_payload);
 
       ABICallResult internal_abi =
           ComputeCallABI(*this, internal_params, internal_sig->ret);

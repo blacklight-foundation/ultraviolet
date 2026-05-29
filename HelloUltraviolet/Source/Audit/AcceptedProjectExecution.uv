@@ -1,0 +1,878 @@
+//! Source-native compiler execution checks for accepted project fixtures.
+
+internal let ACCEPTED_PROJECT_EXECUTED_OBLIGATION_COUNT: usize = 44usize
+
+internal procedure acceptedProjectTempFileExists(
+    authority: TestAuthority,
+    out_dir_suffix: string@View,
+    file_suffix: string@View
+) -> bool {
+    let path_result: Outcome<unique string@Managed, AllocationError> =
+        string::from(authority.temporary_directory, authority.heap)
+    return if move path_result is {
+        @Value { value } {
+            if diagnosticBuildPath(value, out_dir_suffix, authority.heap) &&
+                diagnosticBuildPath(value, file_suffix, authority.heap) {
+                let path: string@View = string::as_view(value)
+                authority.io~>exists(path)
+            } else {
+                false
+            }
+        }
+        @Error {
+            false
+        }
+    }
+}
+
+internal procedure acceptedProjectTempFileContains(
+    authority: TestAuthority,
+    out_dir_suffix: string@View,
+    file_suffix: string@View,
+    required_text: string@View
+) -> bool {
+    let path_result: Outcome<unique string@Managed, AllocationError> =
+        string::from(authority.temporary_directory, authority.heap)
+    return if move path_result is {
+        @Value { value } {
+            if diagnosticBuildPath(value, out_dir_suffix, authority.heap) &&
+                diagnosticBuildPath(value, file_suffix, authority.heap) {
+                let path: string@View = string::as_view(value)
+                outputDiagnosticFileContains(authority, path, required_text)
+            } else {
+                false
+            }
+        }
+        @Error {
+            false
+        }
+    }
+}
+
+internal procedure acceptedProjectConformanceContains(
+    authority: TestAuthority,
+    out_dir_suffix: string@View,
+    log_name: string@View,
+    required_text: string@View
+) -> bool {
+    let path_result: Outcome<unique string@Managed, AllocationError> =
+        string::from(authority.temporary_directory, authority.heap)
+    return if move path_result is {
+        @Value { value } {
+            if !diagnosticBuildPath(value, out_dir_suffix, authority.heap) ||
+                !diagnosticBuildPath(value, "Logs", authority.heap) ||
+                !diagnosticBuildPath(value, "Conformance", authority.heap) ||
+                !diagnosticBuildPath(value, log_name, authority.heap) {
+                false
+            } else {
+                let path: string@View = string::as_view(value)
+                outputDiagnosticFileContains(authority, path, required_text)
+            }
+        }
+        @Error {
+            false
+        }
+    }
+}
+
+internal procedure acceptedProjectRunBuildCommand(
+    authority: TestAuthority,
+    fixture_path: string@View,
+    assembly_name: string@View,
+    output_path: string@View,
+    error_path: string@View,
+    out_dir_path: string@View,
+    conformance_log_name: string@View
+) -> i32 {
+    let created: Outcome<unique string@Managed, AllocationError> =
+        string::from("", authority.heap)
+    return if move created is {
+        @Value { value } {
+            var command_ready: bool =
+                outputDiagnosticAppendCommandStart(value, authority)
+            command_ready =
+                diagnosticAppendText(value, " build ", authority.heap) &&
+                command_ready
+            command_ready =
+                diagnosticAppendQuoted(value, fixture_path, authority.heap) &&
+                command_ready
+            if !string::is_empty(assembly_name) {
+                command_ready =
+                    diagnosticAppendText(value, " --assembly ", authority.heap) &&
+                    command_ready
+                command_ready =
+                    diagnosticAppendText(value, assembly_name, authority.heap) &&
+                    command_ready
+            }
+            command_ready =
+                diagnosticAppendText(value, " --target-profile ", authority.heap) &&
+                command_ready
+            command_ready =
+                diagnosticAppendText(value, authority.target_profile, authority.heap) &&
+                command_ready
+            command_ready =
+                diagnosticAppendText(
+                    value,
+                    " --diag-json --build-progress off --incremental off --out-dir ",
+                    authority.heap
+                ) && command_ready
+            command_ready =
+                diagnosticAppendQuoted(value, out_dir_path, authority.heap) &&
+                command_ready
+            command_ready =
+                diagnosticAppendText(value, " --conformance ", authority.heap) &&
+                command_ready
+            command_ready =
+                diagnosticAppendText(value, conformance_log_name, authority.heap) &&
+                command_ready
+            if command_ready {
+                outputDiagnosticRunCommand(
+                    authority,
+                    value,
+                    output_path,
+                    error_path
+                )
+            } else {
+                -1
+            }
+        }
+        @Error {
+            -1
+        }
+    }
+}
+
+internal procedure acceptedProjectRunCaseWithPaths(
+    authority: TestAuthority,
+    fixture_path: string@View,
+    assembly_name: string@View,
+    output_path: string@View,
+    error_path: string@View,
+    out_dir_path: string@View,
+    conformance_log_name: string@View
+) -> bool {
+    let _ = authority.io~>remove(output_path)
+    let _ = authority.io~>remove(error_path)
+    let _ = authority.io~>ensure_dir(out_dir_path)
+    let status: i32 = acceptedProjectRunBuildCommand(
+        authority,
+        fixture_path,
+        assembly_name,
+        output_path,
+        error_path,
+        out_dir_path,
+        conformance_log_name
+    )
+    if status != 0 {
+        return diagnosticReportFixtureFailure(
+            authority,
+            "accepted project build failed: ",
+            fixture_path
+        )
+    }
+    return true
+}
+
+internal procedure acceptedProjectRunCaseWithOutDir(
+    authority: TestAuthority,
+    fixture_path: string@View,
+    assembly_name: string@View,
+    output_path: unique string@Managed,
+    error_path: unique string@Managed,
+    out_dir_path: unique string@Managed,
+    conformance_log_name: string@View
+) -> bool {
+    let output_text_path: string@View = string::as_view(output_path)
+    let error_text_path: string@View = string::as_view(error_path)
+    let out_dir_text_path: string@View = string::as_view(out_dir_path)
+    return acceptedProjectRunCaseWithPaths(
+        authority,
+        fixture_path,
+        assembly_name,
+        output_text_path,
+        error_text_path,
+        out_dir_text_path,
+        conformance_log_name
+    )
+}
+
+internal procedure acceptedProjectRunCaseWithError(
+    authority: TestAuthority,
+    fixture_path: string@View,
+    assembly_name: string@View,
+    output_path: unique string@Managed,
+    error_path: unique string@Managed,
+    out_dir_suffix: string@View,
+    conformance_log_name: string@View
+) -> bool {
+    let out_dir_created: Outcome<unique string@Managed, AllocationError> =
+        string::from(authority.temporary_directory, authority.heap)
+    return if move out_dir_created is {
+        @Value { value } {
+            if !diagnosticBuildPath(value, out_dir_suffix, authority.heap) {
+                false
+            } else {
+                acceptedProjectRunCaseWithOutDir(
+                    authority,
+                    fixture_path,
+                    assembly_name,
+                    output_path,
+                    error_path,
+                    value,
+                    conformance_log_name
+                )
+            }
+        }
+        @Error {
+            false
+        }
+    }
+}
+
+internal procedure acceptedProjectRunCaseWithOutput(
+    authority: TestAuthority,
+    fixture_path: string@View,
+    assembly_name: string@View,
+    output_path: unique string@Managed,
+    error_suffix: string@View,
+    out_dir_suffix: string@View,
+    conformance_log_name: string@View
+) -> bool {
+    let error_created: Outcome<unique string@Managed, AllocationError> =
+        string::from(authority.temporary_directory, authority.heap)
+    return if move error_created is {
+        @Value { value } {
+            if !diagnosticBuildPath(value, error_suffix, authority.heap) {
+                false
+            } else {
+                acceptedProjectRunCaseWithError(
+                    authority,
+                    fixture_path,
+                    assembly_name,
+                    output_path,
+                    value,
+                    out_dir_suffix,
+                    conformance_log_name
+                )
+            }
+        }
+        @Error {
+            false
+        }
+    }
+}
+
+internal procedure acceptedProjectRunCase(
+    authority: TestAuthority,
+    fixture_path: string@View,
+    assembly_name: string@View,
+    output_suffix: string@View,
+    error_suffix: string@View,
+    out_dir_suffix: string@View,
+    conformance_log_name: string@View
+) -> bool {
+    let output_created: Outcome<unique string@Managed, AllocationError> =
+        string::from(authority.temporary_directory, authority.heap)
+    return if move output_created is {
+        @Value { value } {
+            if !diagnosticBuildPath(value, output_suffix, authority.heap) {
+                false
+            } else {
+                acceptedProjectRunCaseWithOutput(
+                    authority,
+                    fixture_path,
+                    assembly_name,
+                    value,
+                    error_suffix,
+                    out_dir_suffix,
+                    conformance_log_name
+                )
+            }
+        }
+        @Error {
+            false
+        }
+    }
+}
+
+internal procedure acceptedProjectStaticLibraryExercise(
+    authority: TestAuthority
+) -> DiagnosticFixtureExecutionResult {
+    if !acceptedProjectRunCase(
+        authority,
+        "Fixtures/AcceptedProjects/StaticLibrary",
+        "",
+        "AcceptedProjectStatic.out",
+        "AcceptedProjectStatic.err",
+        "AcceptedProjectStaticBuild",
+        "static.conformance.log"
+    ) {
+        return diagnosticFixtureExecutionResult(false, 0usize)
+    }
+
+    let passed: bool =
+        acceptedProjectTempFileExists(
+            authority,
+            "AcceptedProjectStaticBuild",
+            "Library/StaticLibrary.lib"
+        ) &&
+        acceptedProjectConformanceContains(
+            authority,
+            "AcceptedProjectStaticBuild",
+            "static.conformance.log",
+            "\tArchive-Ok\t"
+        ) &&
+        acceptedProjectConformanceContains(
+            authority,
+            "AcceptedProjectStaticBuild",
+            "static.conformance.log",
+            "\tOut-Final-Archive-Ok\t"
+        ) &&
+        acceptedProjectTempFileContains(
+            authority,
+            "AcceptedProjectStaticBuild",
+            "Logs/BuildTelemetry.tsv",
+            "finalize-finish\tStaticLibrary\tmode=archive;status=ok"
+        )
+    if !passed {
+        return diagnosticFixtureExecutionResult(false, 0usize)
+    }
+    return diagnosticFixtureExecutionResult(true, 2usize)
+}
+
+internal procedure acceptedProjectExecutableExercise(
+    authority: TestAuthority
+) -> DiagnosticFixtureExecutionResult {
+    if !acceptedProjectRunCase(
+        authority,
+        "Fixtures/AcceptedProjects/ExecutableMain",
+        "",
+        "AcceptedProjectExecutable.out",
+        "AcceptedProjectExecutable.err",
+        "AcceptedProjectExecutableBuild",
+        "executable.conformance.log"
+    ) {
+        return diagnosticFixtureExecutionResult(false, 0usize)
+    }
+
+    let passed: bool =
+        acceptedProjectTempFileExists(
+            authority,
+            "AcceptedProjectExecutableBuild",
+            "Binary/ExecutableMain.exe"
+        ) &&
+        acceptedProjectConformanceContains(
+            authority,
+            "AcceptedProjectExecutableBuild",
+            "executable.conformance.log",
+            "\tLink-Ok\t"
+        ) &&
+        acceptedProjectConformanceContains(
+            authority,
+            "AcceptedProjectExecutableBuild",
+            "executable.conformance.log",
+            "\tOut-Final-Link-Ok\t"
+        ) &&
+        acceptedProjectTempFileContains(
+            authority,
+            "AcceptedProjectExecutableBuild",
+            "Logs/BuildTelemetry.tsv",
+            "finalize-finish\tExecutableMain\tmode=link;status=ok"
+        )
+    if !passed {
+        return diagnosticFixtureExecutionResult(false, 0usize)
+    }
+    return diagnosticFixtureExecutionResult(true, 2usize)
+}
+
+internal procedure acceptedProjectCrossAssemblyExercise(
+    authority: TestAuthority
+) -> DiagnosticFixtureExecutionResult {
+    if !acceptedProjectRunCase(
+        authority,
+        "Fixtures/AcceptedProjects/CrossAssemblyImplementation",
+        "CrossAssemblyImplementation",
+        "AcceptedProjectCross.out",
+        "AcceptedProjectCross.err",
+        "AcceptedProjectCrossBuild",
+        "cross.conformance.log"
+    ) {
+        return diagnosticFixtureExecutionResult(false, 0usize)
+    }
+
+    let passed: bool =
+        acceptedProjectTempFileExists(
+            authority,
+            "AcceptedProjectCrossBuild",
+            "Binary/CrossAssemblyImplementation.dll"
+        ) &&
+        acceptedProjectTempFileExists(
+            authority,
+            "AcceptedProjectCrossBuild",
+            "Intermediate/Obj/Source/ExternalContracts/ExternalContracts.obj"
+        ) &&
+        acceptedProjectTempFileExists(
+            authority,
+            "AcceptedProjectCrossBuild",
+            "Intermediate/Obj/Source/CrossAssemblyImplementation/CrossAssemblyImplementation.obj"
+        ) &&
+        acceptedProjectConformanceContains(
+            authority,
+            "AcceptedProjectCrossBuild",
+            "cross.conformance.log",
+            "\tT-Orphan-Rule\t"
+        ) &&
+        acceptedProjectTempFileContains(
+            authority,
+            "AcceptedProjectCrossBuild",
+            "Logs/BuildTelemetry.tsv",
+            "obj-module\tCrossAssemblyImplementation\tmodule=ExternalContracts;status=ok"
+        ) &&
+        acceptedProjectTempFileContains(
+            authority,
+            "AcceptedProjectCrossBuild",
+            "Logs/BuildTelemetry.tsv",
+            "obj-module\tCrossAssemblyImplementation\tmodule=CrossAssemblyImplementation;status=ok"
+        )
+    if !passed {
+        return diagnosticFixtureExecutionResult(false, 0usize)
+    }
+    return diagnosticFixtureExecutionResult(true, 1usize)
+}
+
+internal procedure acceptedProjectHostedConformanceMatches(
+    authority: TestAuthority
+) -> bool {
+    return acceptedProjectConformanceContains(
+            authority,
+            "AcceptedProjectHostedBuild",
+            "hosted.conformance.log",
+            "\trequirement.23.HostedExportClassification\t"
+        ) &&
+        acceptedProjectConformanceContains(
+            authority,
+            "AcceptedProjectHostedBuild",
+            "hosted.conformance.log",
+            "\trequirement.23.HostedExportParsingUsesOrdinaryProcedureParser\t"
+        ) &&
+        acceptedProjectConformanceContains(
+            authority,
+            "AcceptedProjectHostedBuild",
+            "hosted.conformance.log",
+            "\trequirement.23.HostedExportParsingClassification\t"
+        ) &&
+        acceptedProjectConformanceContains(
+            authority,
+            "AcceptedProjectHostedBuild",
+            "hosted.conformance.log",
+            "\tast.23.HostedExportProcedureForm\t"
+        ) &&
+        acceptedProjectConformanceContains(
+            authority,
+            "AcceptedProjectHostedBuild",
+            "hosted.conformance.log",
+            "\tdef.23.HostedExportProcedureHelpers\t"
+        ) &&
+        acceptedProjectConformanceContains(
+            authority,
+            "AcceptedProjectHostedBuild",
+            "hosted.conformance.log",
+            "\trequirement.23.HostedRootCapsMeaning\t"
+        ) &&
+        acceptedProjectConformanceContains(
+            authority,
+            "AcceptedProjectHostedBuild",
+            "hosted.conformance.log",
+            "\tdef.23.HostedExportMeaning\t"
+        ) &&
+        acceptedProjectConformanceContains(
+            authority,
+            "AcceptedProjectHostedBuild",
+            "hosted.conformance.log",
+            "\trequirement.23.HostedExportForeignVisibleSignature\t"
+        ) &&
+        acceptedProjectConformanceContains(
+            authority,
+            "AcceptedProjectHostedBuild",
+            "hosted.conformance.log",
+            "\trequirement.23.HostedExportForeignVisiblePassKind\t"
+        ) &&
+        acceptedProjectConformanceContains(
+            authority,
+            "AcceptedProjectHostedBuild",
+            "hosted.conformance.log",
+            "\tdef.23.HostExportSignatureJudgements\t"
+        ) &&
+        acceptedProjectConformanceContains(
+            authority,
+            "AcceptedProjectHostedBuild",
+            "hosted.conformance.log",
+            "\trule.23.HostExportSig-Ok\t"
+        ) &&
+        acceptedProjectConformanceContains(
+            authority,
+            "AcceptedProjectHostedBuild",
+            "hosted.conformance.log",
+            "\trequirement.23.HostedExportSessionHandleValidity\t"
+        ) &&
+        acceptedProjectConformanceContains(
+            authority,
+            "AcceptedProjectHostedBuild",
+            "hosted.conformance.log",
+            "\trequirement.23.HostedExportCapabilityIsolation\t"
+        ) &&
+        acceptedProjectConformanceContains(
+            authority,
+            "AcceptedProjectHostedBuild",
+            "hosted.conformance.log",
+            "\trequirement.23.HostedSessionRootCapsGrant\t"
+        ) &&
+        acceptedProjectConformanceContains(
+            authority,
+            "AcceptedProjectHostedBuild",
+            "hosted.conformance.log",
+            "\trequirement.23.HostedExportBoundaryEntrySequence\t"
+        ) &&
+        acceptedProjectConformanceContains(
+            authority,
+            "AcceptedProjectHostedBuild",
+            "hosted.conformance.log",
+            "\trequirement.23.HostedExportInvalidHandleBehavior\t"
+        ) &&
+        acceptedProjectConformanceContains(
+            authority,
+            "AcceptedProjectHostedBuild",
+            "hosted.conformance.log",
+            "\trequirement.23.HostedExportCatchFailureReturn\t"
+        ) &&
+        acceptedProjectConformanceContains(
+            authority,
+            "AcceptedProjectHostedBuild",
+            "hosted.conformance.log",
+            "\trequirement.23.HostedExportLoweringPreservesRawFfiRules\t"
+        ) &&
+        acceptedProjectConformanceContains(
+            authority,
+            "AcceptedProjectHostedBuild",
+            "hosted.conformance.log",
+            "\trequirement.23.HostedExportThunkAbiDetermination\t"
+        ) &&
+        acceptedProjectConformanceContains(
+            authority,
+            "AcceptedProjectHostedBuild",
+            "hosted.conformance.log",
+            "\tdef.23.HostThunkCarrierHelpers\t"
+        ) &&
+        acceptedProjectConformanceContains(
+            authority,
+            "AcceptedProjectHostedBuild",
+            "hosted.conformance.log",
+            "\trule.23.HostThunkParamCarrier-ByRef\t"
+        ) &&
+        acceptedProjectConformanceContains(
+            authority,
+            "AcceptedProjectHostedBuild",
+            "hosted.conformance.log",
+            "\trule.23.HostThunkParamCarrier-ByValue-Default\t"
+        ) &&
+        acceptedProjectConformanceContains(
+            authority,
+            "AcceptedProjectHostedBuild",
+            "hosted.conformance.log",
+            "\trule.23.HostThunkParamCarrier-Win64-DirectAgg\t"
+        ) &&
+        acceptedProjectConformanceContains(
+            authority,
+            "AcceptedProjectHostedBuild",
+            "hosted.conformance.log",
+            "\trule.23.HostThunkParamCarrier-Win64-IndirectAgg\t"
+        ) &&
+        acceptedProjectConformanceContains(
+            authority,
+            "AcceptedProjectHostedBuild",
+            "hosted.conformance.log",
+            "\trule.23.HostThunkRetCarrier-Default\t"
+        ) &&
+        acceptedProjectConformanceContains(
+            authority,
+            "AcceptedProjectHostedBuild",
+            "hosted.conformance.log",
+            "\trule.23.HostThunkRetCarrier-Win64-DirectAgg\t"
+        ) &&
+        acceptedProjectConformanceContains(
+            authority,
+            "AcceptedProjectHostedBuild",
+            "hosted.conformance.log",
+            "\trule.23.HostThunkRetCarrier-Win64-SRetAgg\t"
+        ) &&
+        acceptedProjectConformanceContains(
+            authority,
+            "AcceptedProjectHostedBuild",
+            "hosted.conformance.log",
+            "\trequirement.23.HostedExportThunkShapeUse\t"
+        ) &&
+        acceptedProjectConformanceContains(
+            authority,
+            "AcceptedProjectHostedBuild",
+            "hosted.conformance.log",
+            "\trequirement.23.HostedExportNoWin64AggregateSplitting\t"
+        ) &&
+        acceptedProjectConformanceContains(
+            authority,
+            "AcceptedProjectHostedBuild",
+            "hosted.conformance.log",
+            "\trequirement.23.HostedExportNoExtraAbiRewriting\t"
+        ) &&
+        acceptedProjectConformanceContains(
+            authority,
+            "AcceptedProjectHostedBuild",
+            "hosted.conformance.log",
+            "\trequirement.23.HostedThunkModeIndependentForeignClassification\t"
+        ) &&
+        acceptedProjectConformanceContains(
+            authority,
+            "AcceptedProjectHostedBuild",
+            "hosted.conformance.log",
+            "\trequirement.23.HostedThunkToSourceCallReconstruction\t"
+        ) &&
+        acceptedProjectConformanceContains(
+            authority,
+            "AcceptedProjectHostedBuild",
+            "hosted.conformance.log",
+            "\trequirement.23.HostedStateSymbolResolution\t"
+        ) &&
+        acceptedProjectConformanceContains(
+            authority,
+            "AcceptedProjectHostedBuild",
+            "hosted.conformance.log",
+            "\trequirement.23.HostedLibraryLifecycleExports\t"
+        ) &&
+        acceptedProjectConformanceContains(
+            authority,
+            "AcceptedProjectHostedBuild",
+            "hosted.conformance.log",
+            "\trequirement.23.HostedLifecycleExportsBackendGenerated\t"
+        ) &&
+        acceptedProjectConformanceContains(
+            authority,
+            "AcceptedProjectHostedBuild",
+            "hosted.conformance.log",
+            "\trequirement.23.HostedLifecycleExportsPanicAndDestroyFailure\t"
+        ) &&
+        acceptedProjectConformanceContains(
+            authority,
+            "AcceptedProjectHostedBuild",
+            "hosted.conformance.log",
+            "\trequirement.23.HostedSessionHandleNoReissue\t"
+        ) &&
+        acceptedProjectConformanceContains(
+            authority,
+            "AcceptedProjectHostedBuild",
+            "hosted.conformance.log",
+            "\trequirement.23.HostedExportThunkForeignVisibleAbi\t"
+        ) &&
+        acceptedProjectConformanceContains(
+            authority,
+            "AcceptedProjectHostedBuild",
+            "hosted.conformance.log",
+            "\trequirement.23.HostedExportThunkEmissionAndEntrypoint\t"
+        )
+}
+
+internal procedure acceptedProjectHostedMapMatches(authority: TestAuthority) -> bool {
+    return acceptedProjectTempFileContains(
+            authority,
+            "AcceptedProjectHostedBuild",
+            "Binary/HostedExportLibrary.map",
+            "__ultraviolet_host_abi_version"
+        ) &&
+        acceptedProjectTempFileContains(
+            authority,
+            "AcceptedProjectHostedBuild",
+            "Binary/HostedExportLibrary.map",
+            "__ultraviolet_host_session_create"
+        ) &&
+        acceptedProjectTempFileContains(
+            authority,
+            "AcceptedProjectHostedBuild",
+            "Binary/HostedExportLibrary.map",
+            "__ultraviolet_host_session_destroy"
+        ) &&
+        acceptedProjectTempFileContains(
+            authority,
+            "AcceptedProjectHostedBuild",
+            "Binary/HostedExportLibrary.map",
+            "uv_hosted_reference_increment"
+        ) &&
+        acceptedProjectTempFileContains(
+            authority,
+            "AcceptedProjectHostedBuild",
+            "Binary/HostedExportLibrary.map",
+            "uv_hosted_reference_pair_sum"
+        ) &&
+        acceptedProjectTempFileContains(
+            authority,
+            "AcceptedProjectHostedBuild",
+            "Binary/HostedExportLibrary.map",
+            "uv_hosted_reference_pair_echo"
+        ) &&
+        acceptedProjectTempFileContains(
+            authority,
+            "AcceptedProjectHostedBuild",
+            "Binary/HostedExportLibrary.map",
+            "uv_hosted_reference_triple_sum"
+        ) &&
+        acceptedProjectTempFileContains(
+            authority,
+            "AcceptedProjectHostedBuild",
+            "Binary/HostedExportLibrary.map",
+            "uv_hosted_reference_triple_echo"
+        ) &&
+        acceptedProjectTempFileContains(
+            authority,
+            "AcceptedProjectHostedBuild",
+            "Binary/HostedExportLibrary.map",
+            "uv_hosted_reference_large_echo"
+        ) &&
+        acceptedProjectTempFileContains(
+            authority,
+            "AcceptedProjectHostedBuild",
+            "Binary/HostedExportLibrary.map",
+            "uv_hosted_reference_io_probe"
+        ) &&
+        acceptedProjectTempFileContains(
+            authority,
+            "AcceptedProjectHostedBuild",
+            "Binary/HostedExportLibrary.map",
+            "uv_hosted_reference_state_increment"
+        ) &&
+        acceptedProjectTempFileContains(
+            authority,
+            "AcceptedProjectHostedBuild",
+            "Binary/HostedExportLibrary.map",
+            "uv_hosted_reference_catch_value"
+        ) &&
+        acceptedProjectTempFileContains(
+            authority,
+            "AcceptedProjectHostedBuild",
+            "Binary/HostedExportLibrary.map",
+            "hostedReferenceTripleEcho_x3a_x3a_x5f_x5fhost_x5fbody"
+        ) &&
+        acceptedProjectTempFileContains(
+            authority,
+            "AcceptedProjectHostedBuild",
+            "Binary/HostedExportLibrary.map",
+            "uv_host_session_try_enter"
+        ) &&
+        acceptedProjectTempFileContains(
+            authority,
+            "AcceptedProjectHostedBuild",
+            "Binary/HostedExportLibrary.map",
+            "uv_host_session_leave"
+        ) &&
+        acceptedProjectTempFileContains(
+            authority,
+            "AcceptedProjectHostedBuild",
+            "Binary/HostedExportLibrary.map",
+            "uv_host_session_register"
+        ) &&
+        acceptedProjectTempFileContains(
+            authority,
+            "AcceptedProjectHostedBuild",
+            "Binary/HostedExportLibrary.map",
+            "uv_host_session_try_retire"
+        )
+}
+
+internal procedure acceptedProjectHostedExercise(
+    authority: TestAuthority
+) -> DiagnosticFixtureExecutionResult {
+    if !acceptedProjectRunCase(
+        authority,
+        "Fixtures/AcceptedProjects/HostedExportLibrary",
+        "",
+        "AcceptedProjectHosted.out",
+        "AcceptedProjectHosted.err",
+        "AcceptedProjectHostedBuild",
+        "hosted.conformance.log"
+    ) {
+        return diagnosticFixtureExecutionResult(false, 0usize)
+    }
+
+    let passed: bool =
+        acceptedProjectTempFileExists(
+            authority,
+            "AcceptedProjectHostedBuild",
+            "Binary/HostedExportLibrary.dll"
+        ) &&
+        acceptedProjectTempFileExists(
+            authority,
+            "AcceptedProjectHostedBuild",
+            "Library/HostedExportLibrary.lib"
+        ) &&
+        acceptedProjectTempFileExists(
+            authority,
+            "AcceptedProjectHostedBuild",
+            "Binary/HostedExportLibrary.map"
+        ) &&
+        acceptedProjectTempFileContains(
+            authority,
+            "AcceptedProjectHostedBuild",
+            "Logs/BuildTelemetry.tsv",
+            "export_symbols=12;data_export_symbols=1"
+        ) &&
+        acceptedProjectTempFileContains(
+            authority,
+            "AcceptedProjectHostedBuild",
+            "Logs/BuildTelemetry.tsv",
+            "finalize-finish\tHostedExportLibrary\tmode=link;status=ok"
+        ) &&
+        acceptedProjectConformanceContains(
+            authority,
+            "AcceptedProjectHostedBuild",
+            "hosted.conformance.log",
+            "\tLink-Ok\t"
+        ) &&
+        acceptedProjectConformanceContains(
+            authority,
+            "AcceptedProjectHostedBuild",
+            "hosted.conformance.log",
+            "\tOut-Final-Link-Ok\t"
+        ) &&
+        acceptedProjectHostedConformanceMatches(authority) &&
+        acceptedProjectHostedMapMatches(authority)
+    if !passed {
+        return diagnosticFixtureExecutionResult(false, 0usize)
+    }
+    return diagnosticFixtureExecutionResult(true, 39usize)
+}
+
+#test(name: "accepted project fixtures build and exercise artifact obligations")
+internal procedure acceptedProjectFixturesBuildAndExerciseArtifactObligations(
+    authority: TestAuthority
+) -> bool
+|: |= @result
+{
+    let temp_ready: Outcome<(), IoError> =
+        authority.io~>ensure_dir(authority.temporary_directory)
+    if !diagnosticIoSucceeded(temp_ready) {
+        return false
+    }
+
+    var result: DiagnosticFixtureExecutionResult =
+        acceptedProjectStaticLibraryExercise(authority)
+    result = outputDiagnosticMergeResult(
+        result,
+        acceptedProjectExecutableExercise(authority)
+    )
+    result = outputDiagnosticMergeResult(
+        result,
+        acceptedProjectCrossAssemblyExercise(authority)
+    )
+    result = outputDiagnosticMergeResult(
+        result,
+        acceptedProjectHostedExercise(authority)
+    )
+    return result.passed &&
+        result.count == ACCEPTED_PROJECT_EXECUTED_OBLIGATION_COUNT
+}

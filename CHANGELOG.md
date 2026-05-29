@@ -2,7 +2,13 @@
 
 ## Unreleased
 
-- No unreleased changes.
+- Added source-native diagnostic fixture execution checks so rejected-source and
+  diagnostic-source coverage verifies real compiler results, not only fixture
+  metadata.
+- Added source-native output-diagnostic fixture execution checks for command-line,
+  project-manifest, and LLVM output failure diagnostics.
+- Fixed unknown `uv` command handling so command-line parsing emits `E-CLI-0001`
+  instead of treating the unknown command as a build input path.
 
 ## 0.1.0-alpha - 2026-05-27
 

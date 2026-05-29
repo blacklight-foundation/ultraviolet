@@ -89,6 +89,58 @@ internal procedure ioErrorIsNotFound(error: IoError) -> bool {
     }
 }
 
+internal procedure ioErrorIsPermissionDenied(error: IoError) -> bool {
+    return if error is {
+        IoError::NotFound {
+            false
+        }
+        IoError::PermissionDenied {
+            true
+        }
+        IoError::AlreadyExists {
+            false
+        }
+        IoError::InvalidPath {
+            false
+        }
+        IoError::Busy {
+            false
+        }
+        IoError::IoFailure {
+            false
+        }
+        IoError::DirectoryNotEmpty {
+            false
+        }
+    }
+}
+
+internal procedure ioErrorIsAlreadyExists(error: IoError) -> bool {
+    return if error is {
+        IoError::NotFound {
+            false
+        }
+        IoError::PermissionDenied {
+            false
+        }
+        IoError::AlreadyExists {
+            true
+        }
+        IoError::InvalidPath {
+            false
+        }
+        IoError::Busy {
+            false
+        }
+        IoError::IoFailure {
+            false
+        }
+        IoError::DirectoryNotEmpty {
+            false
+        }
+    }
+}
+
 internal procedure ioErrorIsDirectoryNotEmpty(error: IoError) -> bool {
     return if error is {
         IoError::NotFound {
@@ -111,6 +163,58 @@ internal procedure ioErrorIsDirectoryNotEmpty(error: IoError) -> bool {
         }
         IoError::DirectoryNotEmpty {
             true
+        }
+    }
+}
+
+internal procedure ioErrorIsBusy(error: IoError) -> bool {
+    return if error is {
+        IoError::NotFound {
+            false
+        }
+        IoError::PermissionDenied {
+            false
+        }
+        IoError::AlreadyExists {
+            false
+        }
+        IoError::InvalidPath {
+            false
+        }
+        IoError::Busy {
+            true
+        }
+        IoError::IoFailure {
+            false
+        }
+        IoError::DirectoryNotEmpty {
+            false
+        }
+    }
+}
+
+internal procedure ioErrorIsIoFailure(error: IoError) -> bool {
+    return if error is {
+        IoError::NotFound {
+            false
+        }
+        IoError::PermissionDenied {
+            false
+        }
+        IoError::AlreadyExists {
+            false
+        }
+        IoError::InvalidPath {
+            false
+        }
+        IoError::Busy {
+            false
+        }
+        IoError::IoFailure {
+            true
+        }
+        IoError::DirectoryNotEmpty {
+            false
         }
     }
 }
@@ -141,6 +245,45 @@ internal procedure ioOutcomeErrorIsNotFound<TValue>(
     }
 }
 
+internal procedure ioOutcomeErrorIsPermissionDenied<TValue>(
+    move outcome: Outcome<TValue, IoError>
+) -> bool {
+    return if move outcome is {
+        @Value {
+            false
+        }
+        @Error { error } {
+            ioErrorIsPermissionDenied(error)
+        }
+    }
+}
+
+internal procedure ioOutcomeErrorIsAlreadyExists<TValue>(
+    move outcome: Outcome<TValue, IoError>
+) -> bool {
+    return if move outcome is {
+        @Value {
+            false
+        }
+        @Error { error } {
+            ioErrorIsAlreadyExists(error)
+        }
+    }
+}
+
+internal procedure ioOutcomeErrorIsBusy<TValue>(
+    move outcome: Outcome<TValue, IoError>
+) -> bool {
+    return if move outcome is {
+        @Value {
+            false
+        }
+        @Error { error } {
+            ioErrorIsBusy(error)
+        }
+    }
+}
+
 internal procedure ioOutcomeErrorIsDirectoryNotEmpty<TValue>(
     move outcome: Outcome<TValue, IoError>
 ) -> bool {
@@ -150,6 +293,19 @@ internal procedure ioOutcomeErrorIsDirectoryNotEmpty<TValue>(
         }
         @Error { error } {
             ioErrorIsDirectoryNotEmpty(error)
+        }
+    }
+}
+
+internal procedure ioOutcomeErrorIsIoFailure<TValue>(
+    move outcome: Outcome<TValue, IoError>
+) -> bool {
+    return if move outcome is {
+        @Value {
+            false
+        }
+        @Error { error } {
+            ioErrorIsIoFailure(error)
         }
     }
 }
@@ -226,6 +382,27 @@ internal procedure ioFileKindIsDir(result: Outcome<FileKind, IoError>) -> bool {
     }
 }
 
+internal procedure ioFileKindIsOther(result: Outcome<FileKind, IoError>) -> bool {
+    return if result is {
+        @Value { value } {
+            return if value is {
+                FileKind::File {
+                    false
+                }
+                FileKind::Dir {
+                    false
+                }
+                FileKind::Other {
+                    true
+                }
+            }
+        }
+        @Error {
+            false
+        }
+    }
+}
+
 internal procedure ioReadHandleTextEquals(
     move result: Outcome<unique File@Read, IoError>,
     expected: string@View
@@ -236,6 +413,134 @@ internal procedure ioReadHandleTextEquals(
             let closed: File@Closed = value~>close()
             let _ = closed
             ioTextEquals(move read_result, expected)
+        }
+        @Error {
+            false
+        }
+    }
+}
+
+internal procedure ioReadHandleTextFailsWithIoFailure(
+    move result: Outcome<unique File@Read, IoError>
+) -> bool {
+    return if move result is {
+        @Value { value } {
+            let read_result: Outcome<unique string@Managed, IoError> = value~>read_all()
+            let closed: File@Closed = value~>close()
+            let _ = closed
+            ioOutcomeErrorIsIoFailure(move read_result)
+        }
+        @Error {
+            false
+        }
+    }
+}
+
+internal procedure ioReadHandleClosedTextFailsWithIoFailure(
+    move result: Outcome<unique File@Read, IoError>
+) -> bool {
+    return if move result is {
+        @Value { value } {
+            let handle: usize =
+                unsafe { transmute<unique File@Read, usize>(move value) }
+            // Unsafe harness only: the handle came from this file value, is closed
+            // through the real transition, and is reused only on this thread to
+            // verify the runtime closed-handle error path.
+            let close_target: unique File@Read =
+                unsafe { transmute<usize, unique File@Read>(handle) }
+            let closed: File@Closed = close_target~>close()
+            let _ = closed
+            let stale: unique File@Read =
+                unsafe { transmute<usize, unique File@Read>(handle) }
+            let read_result: Outcome<unique string@Managed, IoError> =
+                stale~>read_all()
+            ioOutcomeErrorIsIoFailure(move read_result)
+        }
+        @Error {
+            false
+        }
+    }
+}
+
+internal procedure ioReadHandleBytesLengthEquals(
+    move result: Outcome<unique File@Read, IoError>,
+    expected: usize
+) -> bool {
+    return if move result is {
+        @Value { value } {
+            let read_result: Outcome<unique bytes@Managed, IoError> =
+                value~>read_all_bytes()
+            let closed: File@Closed = value~>close()
+            let _ = closed
+            ioBytesLengthEquals(move read_result, expected)
+        }
+        @Error {
+            false
+        }
+    }
+}
+
+internal procedure ioReadHandleTextAdvancesToEnd(
+    move result: Outcome<unique File@Read, IoError>,
+    expected: string@View
+) -> bool {
+    return if move result is {
+        @Value { value } {
+            let first_result: Outcome<unique string@Managed, IoError> =
+                value~>read_all()
+            let second_result: Outcome<unique string@Managed, IoError> =
+                value~>read_all()
+            let closed: File@Closed = value~>close()
+            let _ = closed
+            ioTextEquals(move first_result, expected) &&
+                ioTextEquals(move second_result, "")
+        }
+        @Error {
+            false
+        }
+    }
+}
+
+internal procedure ioReadHandleBytesAdvancesToEnd(
+    move result: Outcome<unique File@Read, IoError>,
+    expected: usize
+) -> bool {
+    return if move result is {
+        @Value { value } {
+            let first_result: Outcome<unique bytes@Managed, IoError> =
+                value~>read_all_bytes()
+            let second_result: Outcome<unique bytes@Managed, IoError> =
+                value~>read_all_bytes()
+            let closed: File@Closed = value~>close()
+            let _ = closed
+            ioBytesLengthEquals(move first_result, expected) &&
+                ioBytesLengthEquals(move second_result, 0usize)
+        }
+        @Error {
+            false
+        }
+    }
+}
+
+internal procedure ioReadHandleClosedBytesFailsWithIoFailure(
+    move result: Outcome<unique File@Read, IoError>
+) -> bool {
+    return if move result is {
+        @Value { value } {
+            let handle: usize =
+                unsafe { transmute<unique File@Read, usize>(move value) }
+            // Unsafe harness only: the handle came from this file value, is closed
+            // through the real transition, and is reused only on this thread to
+            // verify the runtime closed-handle error path.
+            let close_target: unique File@Read =
+                unsafe { transmute<usize, unique File@Read>(handle) }
+            let closed: File@Closed = close_target~>close()
+            let _ = closed
+            let stale: unique File@Read =
+                unsafe { transmute<usize, unique File@Read>(handle) }
+            let read_result: Outcome<unique bytes@Managed, IoError> =
+                stale~>read_all_bytes()
+            ioOutcomeErrorIsIoFailure(move read_result)
         }
         @Error {
             false
@@ -260,6 +565,113 @@ internal procedure ioWriteHandleAcceptsPayload(
             false
         }
     }
+}
+
+internal procedure ioWriteHandleClosedOperationsFailWithIoFailure(
+    move result: Outcome<unique File@Write, IoError>
+) -> bool {
+    return if move result is {
+        @Value { value } {
+            let handle: usize =
+                unsafe { transmute<unique File@Write, usize>(move value) }
+            // Unsafe harness only: the handle came from this file value, is closed
+            // through the real transition, and is reused only on this thread to
+            // verify the runtime closed-handle error path.
+            let close_target: unique File@Write =
+                unsafe { transmute<usize, unique File@Write>(handle) }
+            let closed: File@Closed = close_target~>close()
+            let _ = closed
+            let stale: unique File@Write =
+                unsafe { transmute<usize, unique File@Write>(handle) }
+            let payload: bytes@View = bytes::view_string("closed")
+            let write_result: Outcome<(), IoError> = stale~>write(payload)
+            let flush_result: Outcome<(), IoError> = stale~>flush()
+            ioOutcomeErrorIsIoFailure(move write_result) &&
+                ioOutcomeErrorIsIoFailure(move flush_result)
+        }
+        @Error {
+            false
+        }
+    }
+}
+
+internal procedure ioWriteHandleBusyWhileOpen(
+    io: $IO,
+    path: string@View
+) -> bool {
+    let created: Outcome<unique File@Write, IoError> = io~>create_write(path)
+    return if move created is {
+        @Value { value } {
+            let blocked: Outcome<unique File@Write, IoError> = io~>open_write(path)
+            let closed: File@Closed = value~>close()
+            let _ = closed
+            ioOutcomeErrorIsBusy(move blocked)
+        }
+        @Error {
+            false
+        }
+    }
+}
+
+internal procedure ioWriteHandlePositionAndLengthReference(
+    io: $IO,
+    path: string@View
+) -> bool {
+    let created: Outcome<unique File@Write, IoError> = io~>create_write(path)
+    return if move created is {
+        @Value { value } {
+            let first_payload: bytes@View = bytes::view_string("abc")
+            let second_payload: bytes@View = bytes::view_string("def")
+            let first_write: Outcome<(), IoError> = value~>write(first_payload)
+            let second_write: Outcome<(), IoError> = value~>write(second_payload)
+            let flush_result: Outcome<(), IoError> = value~>flush()
+            let closed: File@Closed = value~>close()
+            let _ = closed
+            ioUnitSucceeded(first_write) &&
+                ioUnitSucceeded(second_write) &&
+                ioUnitSucceeded(flush_result) &&
+                ioTextEquals(io~>read_file(path), "abcdef") &&
+                ioBytesLengthEquals(io~>read_bytes(path), 6usize)
+        }
+        @Error {
+            false
+        }
+    }
+}
+
+internal procedure ioOtherEntryRemoveReference(
+    sys: System,
+    io: $IO,
+    target_root: string@View,
+    target_child_path: string@View,
+    link_path: string@View
+) -> bool {
+    let _ = io~>remove(link_path)
+    let _ = io~>remove(target_child_path)
+    let _ = io~>remove(target_root)
+
+    let target_ready: Outcome<(), IoError> = io~>ensure_dir(target_root)
+    let target_child_ready: Outcome<(), IoError> =
+        io~>write_file(target_child_path, bytes::view_string("junction-target"))
+    let command_status: i32 = sys~>run(
+        "cmd /C mklink /J HelloUltraviolet\\Build\\IOOtherLink HelloUltraviolet\\Build\\IOOtherTarget >NUL"
+    )
+    let kind_other: bool = ioFileKindIsOther(io~>kind(link_path))
+    let remove_link: Outcome<(), IoError> = io~>remove(link_path)
+    let link_removed: bool = !io~>exists(link_path)
+    let target_survived: bool = io~>exists(target_child_path)
+    let remove_target_child: Outcome<(), IoError> = io~>remove(target_child_path)
+    let remove_target_root: Outcome<(), IoError> = io~>remove(target_root)
+
+    return ioUnitSucceeded(target_ready) &&
+        ioUnitSucceeded(target_child_ready) &&
+        command_status == 0 &&
+        kind_other &&
+        ioUnitSucceeded(remove_link) &&
+        link_removed &&
+        target_survived &&
+        ioUnitSucceeded(remove_target_child) &&
+        ioUnitSucceeded(remove_target_root)
 }
 
 internal procedure ioAppendHandleAcceptsPayload(
@@ -321,6 +733,31 @@ internal procedure ioDirEntryIsEnd(result: Outcome<DirEntry | (), IoError>) -> b
     }
 }
 
+internal procedure ioDirIterClosedNextFailsWithIoFailure(
+    move result: Outcome<unique DirIter@Open, IoError>
+) -> bool {
+    return if move result is {
+        @Value { value } {
+            let handle: usize =
+                unsafe { transmute<unique DirIter@Open, usize>(move value) }
+            // Unsafe harness only: the handle came from this iterator value, is
+            // closed through the real transition, and is reused only on this
+            // thread to verify the runtime closed-iterator error path.
+            let close_target: unique DirIter@Open =
+                unsafe { transmute<usize, unique DirIter@Open>(handle) }
+            let closed: DirIter@Closed = close_target~>close()
+            let _ = closed
+            let stale: unique DirIter@Open =
+                unsafe { transmute<usize, unique DirIter@Open>(handle) }
+            let next_result: Outcome<DirEntry | (), IoError> = stale~>next()
+            ioOutcomeErrorIsIoFailure(move next_result)
+        }
+        @Error {
+            false
+        }
+    }
+}
+
 internal procedure ioDirectoryIterationReference(
     move result: Outcome<unique DirIter@Open, IoError>
 ) -> bool {
@@ -335,6 +772,28 @@ internal procedure ioDirectoryIterationReference(
             ioDirEntryNameEquals(first, "IOA.txt") &&
                 ioDirEntryNameEquals(second, "IOB.txt") &&
                 ioDirEntryNameEquals(third, "IOC.txt") &&
+                ioDirEntryIsEnd(end)
+        }
+        @Error {
+            false
+        }
+    }
+}
+
+internal procedure ioDirectoryOrderingReference(
+    move result: Outcome<unique DirIter@Open, IoError>
+) -> bool {
+    return if move result is {
+        @Value { value } {
+            let first: Outcome<DirEntry | (), IoError> = value~>next()
+            let second: Outcome<DirEntry | (), IoError> = value~>next()
+            let third: Outcome<DirEntry | (), IoError> = value~>next()
+            let end: Outcome<DirEntry | (), IoError> = value~>next()
+            let closed: DirIter@Closed = value~>close()
+            let _ = closed
+            ioDirEntryNameEquals(first, "OrderA.txt") &&
+                ioDirEntryNameEquals(second, "OrderB.txt") &&
+                ioDirEntryNameEquals(third, "OrderC.txt") &&
                 ioDirEntryIsEnd(end)
         }
         @Error {
@@ -380,6 +839,12 @@ public procedure runAuthorityIOReference(context: Context) -> bool {
         "HelloUltraviolet/Build/IOAuthorityReference/IOFile.txt"
     let handle_path: string@View =
         "HelloUltraviolet/Build/IOAuthorityReference/IOHandle.txt"
+    let busy_path: string@View =
+        "HelloUltraviolet/Build/IOAuthorityReference/IOBusy.txt"
+    let position_path: string@View =
+        "HelloUltraviolet/Build/IOAuthorityReference/IOPosition.txt"
+    let invalid_utf8_path: string@View =
+        "HelloUltraviolet/Build/IOAuthorityReference/InvalidUtf8.bin"
     let dir_root: string@View = "HelloUltraviolet/Build/IOAuthorityReferenceDir"
     let first_path: string@View =
         "HelloUltraviolet/Build/IOAuthorityReferenceDir/IOA.txt"
@@ -395,29 +860,73 @@ public procedure runAuthorityIOReference(context: Context) -> bool {
         "HelloUltraviolet/Build/IOAuthorityReferenceNonEmpty"
     let nonempty_child_path: string@View =
         "HelloUltraviolet/Build/IOAuthorityReferenceNonEmpty/Child.txt"
+    let ordering_root: string@View =
+        "HelloUltraviolet/Build/IOAuthorityReferenceOrdering"
+    let ordering_a_path: string@View =
+        "HelloUltraviolet/Build/IOAuthorityReferenceOrdering/OrderA.txt"
+    let ordering_b_path: string@View =
+        "HelloUltraviolet/Build/IOAuthorityReferenceOrdering/OrderB.txt"
+    let ordering_c_path: string@View =
+        "HelloUltraviolet/Build/IOAuthorityReferenceOrdering/OrderC.txt"
+    let empty_remove_root: string@View =
+        "HelloUltraviolet/Build/IOAuthorityReferenceEmptyRemove"
+    let other_target_root: string@View = "HelloUltraviolet/Build/IOOtherTarget"
+    let other_target_child_path: string@View =
+        "HelloUltraviolet/Build/IOOtherTarget/Child.txt"
+    let other_link_path: string@View = "HelloUltraviolet/Build/IOOtherLink"
 
     let _ = io~>remove(file_path)
     let _ = io~>remove(handle_path)
+    let _ = io~>remove(busy_path)
+    let _ = io~>remove(position_path)
+    let _ = io~>remove(invalid_utf8_path)
     let _ = io~>remove(first_path)
     let _ = io~>remove(second_path)
     let _ = io~>remove(third_path)
     let _ = io~>remove(snapshot_path)
     let _ = io~>remove(nonempty_child_path)
+    let _ = io~>remove(ordering_a_path)
+    let _ = io~>remove(ordering_b_path)
+    let _ = io~>remove(ordering_c_path)
     let _ = io~>remove(root)
     let _ = io~>remove(dir_root)
     let _ = io~>remove(snapshot_root)
     let _ = io~>remove(nonempty_root)
+    let _ = io~>remove(ordering_root)
+    let _ = io~>remove(empty_remove_root)
+    let _ = io~>remove(other_link_path)
+    let _ = io~>remove(other_target_child_path)
+    let _ = io~>remove(other_target_root)
 
     let create_root: Outcome<(), IoError> = io~>ensure_dir(root)
     let create_dir_root: Outcome<(), IoError> = io~>ensure_dir(dir_root)
     let create_snapshot_root: Outcome<(), IoError> = io~>ensure_dir(snapshot_root)
     let create_nonempty_root: Outcome<(), IoError> = io~>ensure_dir(nonempty_root)
+    let create_ordering_root: Outcome<(), IoError> = io~>ensure_dir(ordering_root)
+    let create_empty_remove_root: Outcome<(), IoError> = io~>ensure_dir(empty_remove_root)
     let write_payload: bytes@View = bytes::view_string("hello-io")
+    let invalid_utf8_bytes: [u8; 1] = [255u8]
+    let invalid_utf8_slice: const [u8] = invalid_utf8_bytes[0usize..1usize]
+    let invalid_utf8_view: bytes@View = bytes::view(invalid_utf8_slice)
     let create_file: Outcome<(), IoError> = io~>write_file(file_path, write_payload)
+    let create_invalid_utf8: Outcome<(), IoError> =
+        io~>write_file(invalid_utf8_path, invalid_utf8_view)
     let read_file: Outcome<unique string@Managed, IoError> = io~>read_file(file_path)
     let read_bytes: Outcome<unique bytes@Managed, IoError> = io~>read_bytes(file_path)
+    let read_invalid_utf8: Outcome<unique string@Managed, IoError> =
+        io~>read_file(invalid_utf8_path)
+    let read_text_advances: bool =
+        ioReadHandleTextAdvancesToEnd(io~>open_read(file_path), "hello-io")
+    let read_bytes_advances: bool =
+        ioReadHandleBytesAdvancesToEnd(io~>open_read(file_path), 8usize)
     let kind_file: Outcome<FileKind, IoError> = io~>kind(file_path)
     let kind_dir: Outcome<FileKind, IoError> = io~>kind(root)
+    let open_read_directory: Outcome<unique File@Read, IoError> =
+        io~>open_read(root)
+    let create_dir_on_file: Outcome<(), IoError> = io~>create_dir(file_path)
+    let ensure_dir_on_file: Outcome<(), IoError> = io~>ensure_dir(file_path)
+    let open_dir_on_file: Outcome<unique DirIter@Open, IoError> =
+        io~>open_dir(file_path)
 
     let write_handle: bool = ioWriteHandleAcceptsPayload(
         io~>create_write(handle_path),
@@ -435,17 +944,55 @@ public procedure runAuthorityIOReference(context: Context) -> bool {
         io~>open_write(handle_path),
         "open-write"
     )
+    let read_bytes_handle: bool = ioReadHandleBytesLengthEquals(
+        io~>open_read(handle_path),
+        string::length("handle-write-append")
+    )
+    let invalid_utf8_handle_read: bool =
+        ioReadHandleTextFailsWithIoFailure(io~>open_read(invalid_utf8_path))
+    let closed_read_text: bool =
+        ioReadHandleClosedTextFailsWithIoFailure(io~>open_read(handle_path))
+    let closed_read_bytes: bool =
+        ioReadHandleClosedBytesFailsWithIoFailure(io~>open_read(handle_path))
+    let closed_write: bool =
+        ioWriteHandleClosedOperationsFailWithIoFailure(io~>open_write(handle_path))
+    let busy_write: bool = ioWriteHandleBusyWhileOpen(io, busy_path)
+    let write_position_and_length: bool =
+        ioWriteHandlePositionAndLengthReference(io, position_path)
+    let write_stdout_empty: Outcome<(), IoError> =
+        io~>write_stdout("")
+    let write_stderr_empty: Outcome<(), IoError> =
+        io~>write_stderr("")
 
     let _ = io~>write_file(first_path, bytes::view_string("1"))
     let _ = io~>write_file(second_path, bytes::view_string("2"))
     let _ = io~>write_file(third_path, bytes::view_string("3"))
     let dir_entries: bool = ioDirectoryIterationReference(io~>open_dir(dir_root))
+    let closed_dir_next: bool =
+        ioDirIterClosedNextFailsWithIoFailure(io~>open_dir(dir_root))
+    let write_ordering_c: Outcome<(), IoError> =
+        io~>write_file(ordering_c_path, bytes::view_string("c"))
+    let write_ordering_a: Outcome<(), IoError> =
+        io~>write_file(ordering_a_path, bytes::view_string("a"))
+    let write_ordering_b: Outcome<(), IoError> =
+        io~>write_file(ordering_b_path, bytes::view_string("b"))
+    let ordering_entries: bool =
+        ioDirectoryOrderingReference(io~>open_dir(ordering_root))
     let _ = io~>write_file(snapshot_path, bytes::view_string("snapshot"))
     let snapshot_entries: bool =
         ioDirectorySnapshotAfterRemovalReference(io, snapshot_root, snapshot_path)
     let write_nonempty_child: Outcome<(), IoError> =
         io~>write_file(nonempty_child_path, bytes::view_string("child"))
     let remove_nonempty_root: Outcome<(), IoError> = io~>remove(nonempty_root)
+    let remove_empty_root: Outcome<(), IoError> = io~>remove(empty_remove_root)
+    let empty_root_removed: bool = !io~>exists(empty_remove_root)
+    let other_entry_remove: bool = ioOtherEntryRemoveReference(
+        context.sys,
+        io,
+        other_target_root,
+        other_target_child_path,
+        other_link_path
+    )
 
     let restricted: $IO = io~>restrict(root)
     let restricted_exists: bool = restricted~>exists("IOFile.txt") &&
@@ -459,14 +1006,21 @@ public procedure runAuthorityIOReference(context: Context) -> bool {
 
     let remove_file: Outcome<(), IoError> = io~>remove(file_path)
     let remove_handle: Outcome<(), IoError> = io~>remove(handle_path)
+    let remove_busy: Outcome<(), IoError> = io~>remove(busy_path)
+    let remove_position: Outcome<(), IoError> = io~>remove(position_path)
+    let remove_invalid_utf8: Outcome<(), IoError> = io~>remove(invalid_utf8_path)
     let remove_first: Outcome<(), IoError> = io~>remove(first_path)
     let remove_second: Outcome<(), IoError> = io~>remove(second_path)
     let remove_third: Outcome<(), IoError> = io~>remove(third_path)
     let remove_nonempty_child: Outcome<(), IoError> = io~>remove(nonempty_child_path)
     let remove_empty_nonempty_root: Outcome<(), IoError> = io~>remove(nonempty_root)
+    let remove_ordering_a: Outcome<(), IoError> = io~>remove(ordering_a_path)
+    let remove_ordering_b: Outcome<(), IoError> = io~>remove(ordering_b_path)
+    let remove_ordering_c: Outcome<(), IoError> = io~>remove(ordering_c_path)
     let remove_root: Outcome<(), IoError> = io~>remove(root)
     let remove_dir_root: Outcome<(), IoError> = io~>remove(dir_root)
     let remove_snapshot_root: Outcome<(), IoError> = io~>remove(snapshot_root)
+    let remove_ordering_root: Outcome<(), IoError> = io~>remove(ordering_root)
 
     return ioAuthorityCanObserveHost(read_only) &&
         ioAuthorityCanObserveHost(write_only) &&
@@ -474,30 +1028,64 @@ public procedure runAuthorityIOReference(context: Context) -> bool {
         ioUnitSucceeded(create_dir_root) &&
         ioUnitSucceeded(create_snapshot_root) &&
         ioUnitSucceeded(create_nonempty_root) &&
+        ioUnitSucceeded(create_ordering_root) &&
+        ioUnitSucceeded(create_empty_remove_root) &&
         ioUnitSucceeded(create_file) &&
+        ioUnitSucceeded(create_invalid_utf8) &&
         ioTextEquals(move read_file, "hello-io") &&
         ioBytesLengthEquals(move read_bytes, 8usize) &&
+        ioOutcomeErrorIsIoFailure(move read_invalid_utf8) &&
+        read_text_advances &&
+        read_bytes_advances &&
         ioFileKindIsFile(kind_file) &&
         ioFileKindIsDir(kind_dir) &&
+        ioOutcomeErrorIsPermissionDenied(move open_read_directory) &&
+        ioOutcomeErrorIsAlreadyExists(move create_dir_on_file) &&
+        ioOutcomeErrorIsAlreadyExists(move ensure_dir_on_file) &&
+        ioOutcomeErrorIsInvalidPath(move open_dir_on_file) &&
         write_handle &&
         append_handle &&
         read_handle &&
         open_write_handle &&
+        read_bytes_handle &&
+        invalid_utf8_handle_read &&
+        closed_read_text &&
+        closed_read_bytes &&
+        closed_write &&
+        busy_write &&
+        write_position_and_length &&
+        ioUnitSucceeded(write_stdout_empty) &&
+        ioUnitSucceeded(write_stderr_empty) &&
         dir_entries &&
+        closed_dir_next &&
+        ioUnitSucceeded(write_ordering_c) &&
+        ioUnitSucceeded(write_ordering_a) &&
+        ioUnitSucceeded(write_ordering_b) &&
+        ordering_entries &&
         snapshot_entries &&
         ioUnitSucceeded(write_nonempty_child) &&
         ioOutcomeErrorIsDirectoryNotEmpty(move remove_nonempty_root) &&
+        ioUnitSucceeded(remove_empty_root) &&
+        empty_root_removed &&
+        other_entry_remove &&
         restricted_exists &&
         restricted_invalid &&
         restricted_missing &&
         ioUnitSucceeded(remove_file) &&
         ioUnitSucceeded(remove_handle) &&
+        ioUnitSucceeded(remove_busy) &&
+        ioUnitSucceeded(remove_position) &&
+        ioUnitSucceeded(remove_invalid_utf8) &&
         ioUnitSucceeded(remove_first) &&
         ioUnitSucceeded(remove_second) &&
         ioUnitSucceeded(remove_third) &&
         ioUnitSucceeded(remove_nonempty_child) &&
         ioUnitSucceeded(remove_empty_nonempty_root) &&
+        ioUnitSucceeded(remove_ordering_a) &&
+        ioUnitSucceeded(remove_ordering_b) &&
+        ioUnitSucceeded(remove_ordering_c) &&
         ioUnitSucceeded(remove_root) &&
         ioUnitSucceeded(remove_dir_root) &&
-        ioUnitSucceeded(remove_snapshot_root)
+        ioUnitSucceeded(remove_snapshot_root) &&
+        ioUnitSucceeded(remove_ordering_root)
 }

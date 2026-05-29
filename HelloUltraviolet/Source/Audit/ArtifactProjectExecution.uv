@@ -1,0 +1,920 @@
+//! Source-native compiler execution checks for artifact project fixtures.
+
+internal let ARTIFACT_PROJECT_EXECUTED_OBLIGATION_COUNT: usize = 12usize
+
+internal procedure artifactProjectTempFileExcludes(
+    authority: TestAuthority,
+    out_dir_suffix: string@View,
+    file_suffix: string@View,
+    forbidden_text: string@View
+) -> bool {
+    let path_result: Outcome<unique string@Managed, AllocationError> =
+        string::from(authority.temporary_directory, authority.heap)
+    return if move path_result is {
+        @Value { value } {
+            if diagnosticBuildPath(value, out_dir_suffix, authority.heap) &&
+                diagnosticBuildPath(value, file_suffix, authority.heap) {
+                let path: string@View = string::as_view(value)
+                outputDiagnosticFileExcludes(authority, path, forbidden_text)
+            } else {
+                false
+            }
+        }
+        @Error {
+            false
+        }
+    }
+}
+
+internal procedure artifactProjectAppendShellStart(
+    text: unique string@Managed,
+    authority: TestAuthority
+) -> bool {
+    if auditTextEquals(authority.target_profile, "x86_64-win64") {
+        return diagnosticAppendText(text, "cmd.exe /C \"", authority.heap)
+    }
+    return true
+}
+
+internal procedure artifactProjectRunBuildCommand(
+    authority: TestAuthority,
+    fixture_path: string@View,
+    target_profile: string@View,
+    incremental_mode: string@View,
+    output_path: string@View,
+    error_path: string@View,
+    out_dir_path: string@View,
+    conformance_log_name: string@View
+) -> i32 {
+    let created: Outcome<unique string@Managed, AllocationError> =
+        string::from("", authority.heap)
+    return if move created is {
+        @Value { value } {
+            var command_ready: bool =
+                outputDiagnosticAppendCommandStart(value, authority)
+            command_ready =
+                diagnosticAppendText(value, " build ", authority.heap) &&
+                command_ready
+            command_ready =
+                diagnosticAppendQuoted(value, fixture_path, authority.heap) &&
+                command_ready
+            if !string::is_empty(target_profile) {
+                command_ready =
+                    diagnosticAppendText(value, " --target-profile ", authority.heap) &&
+                    command_ready
+                command_ready =
+                    diagnosticAppendText(value, target_profile, authority.heap) &&
+                    command_ready
+            }
+            command_ready =
+                diagnosticAppendText(
+                    value,
+                    " --diag-json --build-progress off --incremental ",
+                    authority.heap
+                ) && command_ready
+            command_ready =
+                diagnosticAppendText(value, incremental_mode, authority.heap) &&
+                command_ready
+            command_ready =
+                diagnosticAppendText(value, " --out-dir ", authority.heap) &&
+                command_ready
+            command_ready =
+                diagnosticAppendQuoted(value, out_dir_path, authority.heap) &&
+                command_ready
+            command_ready =
+                diagnosticAppendText(value, " --conformance ", authority.heap) &&
+                command_ready
+            command_ready =
+                diagnosticAppendText(value, conformance_log_name, authority.heap) &&
+                command_ready
+            if command_ready {
+                outputDiagnosticRunCommand(
+                    authority,
+                    value,
+                    output_path,
+                    error_path
+                )
+            } else {
+                -1
+            }
+        }
+        @Error {
+            -1
+        }
+    }
+}
+
+internal procedure artifactProjectRunCaseWithPaths(
+    authority: TestAuthority,
+    fixture_path: string@View,
+    target_profile: string@View,
+    incremental_mode: string@View,
+    output_path: string@View,
+    error_path: string@View,
+    out_dir_path: string@View,
+    conformance_log_name: string@View
+) -> bool {
+    let _ = authority.io~>remove(output_path)
+    let _ = authority.io~>remove(error_path)
+    let _ = authority.io~>ensure_dir(out_dir_path)
+    let status: i32 = artifactProjectRunBuildCommand(
+        authority,
+        fixture_path,
+        target_profile,
+        incremental_mode,
+        output_path,
+        error_path,
+        out_dir_path,
+        conformance_log_name
+    )
+    if status != 0 {
+        return diagnosticReportFixtureFailure(
+            authority,
+            "artifact project build failed: ",
+            fixture_path
+        )
+    }
+    return true
+}
+
+internal procedure artifactProjectRunCaseWithOutDir(
+    authority: TestAuthority,
+    fixture_path: string@View,
+    target_profile: string@View,
+    incremental_mode: string@View,
+    output_path: unique string@Managed,
+    error_path: unique string@Managed,
+    out_dir_path: unique string@Managed,
+    conformance_log_name: string@View
+) -> bool {
+    let output_text_path: string@View = string::as_view(output_path)
+    let error_text_path: string@View = string::as_view(error_path)
+    let out_dir_text_path: string@View = string::as_view(out_dir_path)
+    return artifactProjectRunCaseWithPaths(
+        authority,
+        fixture_path,
+        target_profile,
+        incremental_mode,
+        output_text_path,
+        error_text_path,
+        out_dir_text_path,
+        conformance_log_name
+    )
+}
+
+internal procedure artifactProjectRunCaseWithError(
+    authority: TestAuthority,
+    fixture_path: string@View,
+    target_profile: string@View,
+    incremental_mode: string@View,
+    output_path: unique string@Managed,
+    error_path: unique string@Managed,
+    out_dir_suffix: string@View,
+    conformance_log_name: string@View
+) -> bool {
+    let out_dir_created: Outcome<unique string@Managed, AllocationError> =
+        string::from(authority.temporary_directory, authority.heap)
+    return if move out_dir_created is {
+        @Value { value } {
+            if !diagnosticBuildPath(value, out_dir_suffix, authority.heap) {
+                false
+            } else {
+                artifactProjectRunCaseWithOutDir(
+                    authority,
+                    fixture_path,
+                    target_profile,
+                    incremental_mode,
+                    output_path,
+                    error_path,
+                    value,
+                    conformance_log_name
+                )
+            }
+        }
+        @Error {
+            false
+        }
+    }
+}
+
+internal procedure artifactProjectRunCaseWithOutput(
+    authority: TestAuthority,
+    fixture_path: string@View,
+    target_profile: string@View,
+    incremental_mode: string@View,
+    output_path: unique string@Managed,
+    error_suffix: string@View,
+    out_dir_suffix: string@View,
+    conformance_log_name: string@View
+) -> bool {
+    let error_created: Outcome<unique string@Managed, AllocationError> =
+        string::from(authority.temporary_directory, authority.heap)
+    return if move error_created is {
+        @Value { value } {
+            if !diagnosticBuildPath(value, error_suffix, authority.heap) {
+                false
+            } else {
+                artifactProjectRunCaseWithError(
+                    authority,
+                    fixture_path,
+                    target_profile,
+                    incremental_mode,
+                    output_path,
+                    value,
+                    out_dir_suffix,
+                    conformance_log_name
+                )
+            }
+        }
+        @Error {
+            false
+        }
+    }
+}
+
+internal procedure artifactProjectRunCase(
+    authority: TestAuthority,
+    fixture_path: string@View,
+    target_profile: string@View,
+    incremental_mode: string@View,
+    output_suffix: string@View,
+    error_suffix: string@View,
+    out_dir_suffix: string@View,
+    conformance_log_name: string@View
+) -> bool {
+    let output_created: Outcome<unique string@Managed, AllocationError> =
+        string::from(authority.temporary_directory, authority.heap)
+    return if move output_created is {
+        @Value { value } {
+            if !diagnosticBuildPath(value, output_suffix, authority.heap) {
+                false
+            } else {
+                artifactProjectRunCaseWithOutput(
+                    authority,
+                    fixture_path,
+                    target_profile,
+                    incremental_mode,
+                    value,
+                    error_suffix,
+                    out_dir_suffix,
+                    conformance_log_name
+                )
+            }
+        }
+        @Error {
+            false
+        }
+    }
+}
+
+internal procedure artifactProjectRunExecutablePath(
+    authority: TestAuthority,
+    executable_path: string@View
+) -> i32 {
+    let created: Outcome<unique string@Managed, AllocationError> =
+        string::from("", authority.heap)
+    return if move created is {
+        @Value { value } {
+            var command_ready: bool =
+                artifactProjectAppendShellStart(value, authority)
+            command_ready =
+                diagnosticAppendQuoted(value, executable_path, authority.heap) &&
+                command_ready
+            if auditTextEquals(authority.target_profile, "x86_64-win64") {
+                command_ready =
+                    diagnosticAppendText(value, "\"", authority.heap) &&
+                    command_ready
+            }
+            if command_ready {
+                let command_text: string@View = string::as_view(value)
+                authority.sys~>run(command_text)
+            } else {
+                -1
+            }
+        }
+        @Error {
+            -1
+        }
+    }
+}
+
+internal procedure artifactProjectRunExecutable(
+    authority: TestAuthority,
+    out_dir_suffix: string@View,
+    executable_suffix: string@View,
+    expected_status: i32
+) -> bool {
+    let executable_created: Outcome<unique string@Managed, AllocationError> =
+        string::from(authority.temporary_directory, authority.heap)
+    return if move executable_created is {
+        @Value { value } {
+            if !diagnosticBuildPath(value, out_dir_suffix, authority.heap) ||
+                !diagnosticBuildPath(value, executable_suffix, authority.heap) {
+                false
+            } else {
+                let executable_text_path: string@View = string::as_view(value)
+                artifactProjectRunExecutablePath(
+                    authority,
+                    executable_text_path
+                ) == expected_status
+            }
+        }
+        @Error {
+            false
+        }
+    }
+}
+
+internal procedure artifactProjectArchiveConformanceMatches(
+    authority: TestAuthority,
+    out_dir_suffix: string@View,
+    log_name: string@View
+) -> bool {
+    return acceptedProjectConformanceContains(
+        authority,
+        out_dir_suffix,
+        log_name,
+        "\tArchive-Ok\t"
+    ) &&
+        acceptedProjectConformanceContains(
+            authority,
+            out_dir_suffix,
+            log_name,
+            "\tOut-Final-Archive-Ok\t"
+        )
+}
+
+internal procedure artifactProjectLinkConformanceMatches(
+    authority: TestAuthority,
+    out_dir_suffix: string@View,
+    log_name: string@View
+) -> bool {
+    return acceptedProjectConformanceContains(
+        authority,
+        out_dir_suffix,
+        log_name,
+        "\tLink-Ok\t"
+    ) &&
+        acceptedProjectConformanceContains(
+            authority,
+            out_dir_suffix,
+            log_name,
+            "\tOut-Final-Link-Ok\t"
+        )
+}
+
+internal procedure artifactProjectRawDylibExercise(
+    authority: TestAuthority
+) -> DiagnosticFixtureExecutionResult {
+    if !artifactProjectRunCase(
+        authority,
+        "Fixtures/ArtifactProjects/RawDylibLibrary",
+        "",
+        "off",
+        "ArtifactProjectRawDylib.out",
+        "ArtifactProjectRawDylib.err",
+        "ArtifactProjectRawDylibBuild",
+        "rawdylib.conformance.log"
+    ) {
+        return diagnosticFixtureExecutionResult(false, 0usize)
+    }
+
+    let passed: bool =
+        acceptedProjectTempFileExists(
+            authority,
+            "ArtifactProjectRawDylibBuild",
+            "Binary/RawDylibLibrary.exe"
+        ) &&
+        acceptedProjectTempFileExists(
+            authority,
+            "ArtifactProjectRawDylibBuild",
+            "Binary/RawDylibLibrary.map"
+        ) &&
+        artifactProjectLinkConformanceMatches(
+            authority,
+            "ArtifactProjectRawDylibBuild",
+            "rawdylib.conformance.log"
+        ) &&
+        acceptedProjectTempFileContains(
+            authority,
+            "ArtifactProjectRawDylibBuild",
+            "Binary/RawDylibLibrary.map",
+            "RawDylibLibrary_x3a_x3arawDylibGetLastErrorReference"
+        ) &&
+        acceptedProjectTempFileContains(
+            authority,
+            "ArtifactProjectRawDylibBuild",
+            "Binary/RawDylibLibrary.map",
+            "RawDylibLibrary_x3a_x3arawDylibGetLastErrorReference__raw_dylib_cache"
+        ) &&
+        acceptedProjectTempFileContains(
+            authority,
+            "ArtifactProjectRawDylibBuild",
+            "Binary/RawDylibLibrary.map",
+            "GetLastError"
+        ) &&
+        acceptedProjectTempFileContains(
+            authority,
+            "ArtifactProjectRawDylibBuild",
+            "Logs/BuildTelemetry.tsv",
+            "output-start\tRawDylibLibrary\tkind=executable;modules=1;emit_ir=none;target=x86_64-win64"
+        ) &&
+        artifactProjectRunExecutable(
+            authority,
+            "ArtifactProjectRawDylibBuild",
+            "Binary/RawDylibLibrary.exe",
+            0
+        )
+    if !passed {
+        return diagnosticFixtureExecutionResult(false, 0usize)
+    }
+    return diagnosticFixtureExecutionResult(true, 2usize)
+}
+
+internal procedure artifactProjectStaticLibraryExercise(
+    authority: TestAuthority
+) -> DiagnosticFixtureExecutionResult {
+    if !artifactProjectRunCase(
+        authority,
+        "Fixtures/ArtifactProjects/StaticLibraryArchive",
+        authority.target_profile,
+        "off",
+        "ArtifactProjectStatic.out",
+        "ArtifactProjectStatic.err",
+        "ArtifactProjectStaticBuild",
+        "staticartifact.conformance.log"
+    ) {
+        return diagnosticFixtureExecutionResult(false, 0usize)
+    }
+
+    let passed: bool =
+        acceptedProjectTempFileExists(
+            authority,
+            "ArtifactProjectStaticBuild",
+            "Library/StaticLibraryArchive.lib"
+        ) &&
+        acceptedProjectTempFileExists(
+            authority,
+            "ArtifactProjectStaticBuild",
+            "Intermediate/Obj/Source/StaticLibraryArchive.obj"
+        ) &&
+        artifactProjectArchiveConformanceMatches(
+            authority,
+            "ArtifactProjectStaticBuild",
+            "staticartifact.conformance.log"
+        ) &&
+        acceptedProjectTempFileContains(
+            authority,
+            "ArtifactProjectStaticBuild",
+            "Logs/BuildTelemetry.tsv",
+            "finalize-finish\tStaticLibraryArchive\tmode=archive;status=ok"
+        )
+    if !passed {
+        return diagnosticFixtureExecutionResult(false, 0usize)
+    }
+    return diagnosticFixtureExecutionResult(true, 1usize)
+}
+
+internal procedure artifactProjectEmitLlExercise(
+    authority: TestAuthority
+) -> DiagnosticFixtureExecutionResult {
+    if !artifactProjectRunCase(
+        authority,
+        "Fixtures/ArtifactProjects/EmitLlLibrary",
+        authority.target_profile,
+        "off",
+        "ArtifactProjectEmitLl.out",
+        "ArtifactProjectEmitLl.err",
+        "ArtifactProjectEmitLlBuild",
+        "emitll.conformance.log"
+    ) {
+        return diagnosticFixtureExecutionResult(false, 0usize)
+    }
+
+    let passed: bool =
+        acceptedProjectTempFileExists(
+            authority,
+            "ArtifactProjectEmitLlBuild",
+            "Intermediate/IR/Source/EmitLlLibrary.ll"
+        ) &&
+        acceptedProjectTempFileExists(
+            authority,
+            "ArtifactProjectEmitLlBuild",
+            "Intermediate/Obj/Source/EmitLlLibrary.obj"
+        ) &&
+        acceptedProjectTempFileExists(
+            authority,
+            "ArtifactProjectEmitLlBuild",
+            "Library/EmitLlLibrary.lib"
+        ) &&
+        artifactProjectArchiveConformanceMatches(
+            authority,
+            "ArtifactProjectEmitLlBuild",
+            "emitll.conformance.log"
+        ) &&
+        acceptedProjectTempFileContains(
+            authority,
+            "ArtifactProjectEmitLlBuild",
+            "Logs/BuildTelemetry.tsv",
+            "output-start\tEmitLlLibrary\tkind=library;modules=1;emit_ir=ll;target=x86_64-win64"
+        ) &&
+        acceptedProjectTempFileContains(
+            authority,
+            "ArtifactProjectEmitLlBuild",
+            "Intermediate/IR/Source/EmitLlLibrary.ll",
+            "call void @EmitLlLibrary_x3a_x3aemitLlSRetPair(ptr noalias noundef nonnull sret("
+        ) &&
+        acceptedProjectTempFileContains(
+            authority,
+            "ArtifactProjectEmitLlBuild",
+            "Intermediate/IR/Source/EmitLlLibrary.ll",
+            "call void @ultraviolet_x3a_x3aruntime_x3a_x3aio_x3a_x3acreate_x5fwrite(ptr noalias noundef nonnull sret("
+        ) &&
+        artifactProjectTempFileExcludes(
+            authority,
+            "ArtifactProjectEmitLlBuild",
+            "Intermediate/IR/Source/EmitLlLibrary.ll",
+            "ptr noundef nonnull align 16 dereferenceable(16)"
+        )
+    if !passed {
+        return diagnosticFixtureExecutionResult(false, 0usize)
+    }
+    return diagnosticFixtureExecutionResult(true, 1usize)
+}
+
+internal procedure artifactProjectEmitBcExercise(
+    authority: TestAuthority
+) -> DiagnosticFixtureExecutionResult {
+    if !artifactProjectRunCase(
+        authority,
+        "Fixtures/ArtifactProjects/EmitBcLibrary",
+        "",
+        "off",
+        "ArtifactProjectEmitBc.out",
+        "ArtifactProjectEmitBc.err",
+        "ArtifactProjectEmitBcBuild",
+        "emitbc.conformance.log"
+    ) {
+        return diagnosticFixtureExecutionResult(false, 0usize)
+    }
+
+    let passed: bool =
+        acceptedProjectTempFileExists(
+            authority,
+            "ArtifactProjectEmitBcBuild",
+            "Intermediate/IR/Source/EmitBcLibrary.bc"
+        ) &&
+        acceptedProjectTempFileExists(
+            authority,
+            "ArtifactProjectEmitBcBuild",
+            "Intermediate/Obj/Source/EmitBcLibrary.obj"
+        ) &&
+        acceptedProjectTempFileExists(
+            authority,
+            "ArtifactProjectEmitBcBuild",
+            "Library/EmitBcLibrary.lib"
+        ) &&
+        artifactProjectArchiveConformanceMatches(
+            authority,
+            "ArtifactProjectEmitBcBuild",
+            "emitbc.conformance.log"
+        ) &&
+        acceptedProjectTempFileContains(
+            authority,
+            "ArtifactProjectEmitBcBuild",
+            "Logs/BuildTelemetry.tsv",
+            "output-start\tEmitBcLibrary\tkind=library;modules=1;emit_ir=bc;target=x86_64-win64"
+        )
+    if !passed {
+        return diagnosticFixtureExecutionResult(false, 0usize)
+    }
+    return diagnosticFixtureExecutionResult(true, 1usize)
+}
+
+internal procedure artifactProjectFlowProofRuntimeErasureExercise(
+    authority: TestAuthority
+) -> DiagnosticFixtureExecutionResult {
+    if !artifactProjectRunCase(
+        authority,
+        "Fixtures/ArtifactProjects/FlowProofRuntimeErasure",
+        authority.target_profile,
+        "off",
+        "ArtifactProjectFlowErasure.out",
+        "ArtifactProjectFlowErasure.err",
+        "ArtifactProjectFlowErasureBuild",
+        "flow.conformance.log"
+    ) {
+        return diagnosticFixtureExecutionResult(false, 0usize)
+    }
+
+    let passed: bool =
+        acceptedProjectTempFileExists(
+            authority,
+            "ArtifactProjectFlowErasureBuild",
+            "Intermediate/IR/Source/FlowProofRuntimeErasure.ll"
+        ) &&
+        acceptedProjectTempFileExists(
+            authority,
+            "ArtifactProjectFlowErasureBuild",
+            "Intermediate/Obj/Source/FlowProofRuntimeErasure.obj"
+        ) &&
+        acceptedProjectTempFileExists(
+            authority,
+            "ArtifactProjectFlowErasureBuild",
+            "Library/FlowProofRuntimeErasure.lib"
+        ) &&
+        artifactProjectArchiveConformanceMatches(
+            authority,
+            "ArtifactProjectFlowErasureBuild",
+            "flow.conformance.log"
+        ) &&
+        artifactProjectTempFileExcludes(
+            authority,
+            "ArtifactProjectFlowErasureBuild",
+            "Intermediate/IR/Source/FlowProofRuntimeErasure.ll",
+            "VerificationFact"
+        ) &&
+        artifactProjectTempFileExcludes(
+            authority,
+            "ArtifactProjectFlowErasureBuild",
+            "Intermediate/IR/Source/FlowProofRuntimeErasure.ll",
+            "ContractViolation"
+        ) &&
+        artifactProjectTempFileExcludes(
+            authority,
+            "ArtifactProjectFlowErasureBuild",
+            "Intermediate/IR/Source/FlowProofRuntimeErasure.ll",
+            "Precondition"
+        )
+    if !passed {
+        return diagnosticFixtureExecutionResult(false, 0usize)
+    }
+    return diagnosticFixtureExecutionResult(true, 1usize)
+}
+
+internal procedure artifactProjectExecutableExercise(
+    authority: TestAuthority
+) -> DiagnosticFixtureExecutionResult {
+    if !artifactProjectRunCase(
+        authority,
+        "Fixtures/ArtifactProjects/ExecutableOutput",
+        authority.target_profile,
+        "off",
+        "ArtifactProjectExecutable.out",
+        "ArtifactProjectExecutable.err",
+        "ArtifactProjectExecutableBuild",
+        "exeartifact.conformance.log"
+    ) {
+        return diagnosticFixtureExecutionResult(false, 0usize)
+    }
+
+    let passed: bool =
+        acceptedProjectTempFileExists(
+            authority,
+            "ArtifactProjectExecutableBuild",
+            "Binary/ExecutableOutput.exe"
+        ) &&
+        acceptedProjectTempFileExists(
+            authority,
+            "ArtifactProjectExecutableBuild",
+            "Binary/ExecutableOutput.map"
+        ) &&
+        acceptedProjectTempFileExists(
+            authority,
+            "ArtifactProjectExecutableBuild",
+            "Intermediate/Obj/Source/ExecutableOutput.obj"
+        ) &&
+        artifactProjectLinkConformanceMatches(
+            authority,
+            "ArtifactProjectExecutableBuild",
+            "exeartifact.conformance.log"
+        ) &&
+        acceptedProjectTempFileContains(
+            authority,
+            "ArtifactProjectExecutableBuild",
+            "Logs/BuildTelemetry.tsv",
+            "finalize-finish\tExecutableOutput\tmode=link;status=ok"
+        ) &&
+        artifactProjectRunExecutable(
+            authority,
+            "ArtifactProjectExecutableBuild",
+            "Binary/ExecutableOutput.exe",
+            0
+        )
+    if !passed {
+        return diagnosticFixtureExecutionResult(false, 0usize)
+    }
+    return diagnosticFixtureExecutionResult(true, 1usize)
+}
+
+internal procedure artifactProjectReducedEmptyDispatchPanicExercise(
+    authority: TestAuthority
+) -> DiagnosticFixtureExecutionResult {
+    if !artifactProjectRunCase(
+        authority,
+        "Fixtures/ArtifactProjects/ReducedEmptyDispatchPanic",
+        authority.target_profile,
+        "off",
+        "ArtifactProjectPanic.out",
+        "ArtifactProjectPanic.err",
+        "ArtifactProjectPanicBuild",
+        "panic.conformance.log"
+    ) {
+        return diagnosticFixtureExecutionResult(false, 0usize)
+    }
+
+    let passed: bool =
+        acceptedProjectTempFileExists(
+            authority,
+            "ArtifactProjectPanicBuild",
+            "Binary/ReducedEmptyDispatchPanic.exe"
+        ) &&
+        acceptedProjectTempFileExists(
+            authority,
+            "ArtifactProjectPanicBuild",
+            "Binary/ReducedEmptyDispatchPanic.map"
+        ) &&
+        artifactProjectLinkConformanceMatches(
+            authority,
+            "ArtifactProjectPanicBuild",
+            "panic.conformance.log"
+        ) &&
+        acceptedProjectTempFileContains(
+            authority,
+            "ArtifactProjectPanicBuild",
+            "Binary/ReducedEmptyDispatchPanic.map",
+            "uv_parallel_raise_panic"
+        ) &&
+        acceptedProjectTempFileContains(
+            authority,
+            "ArtifactProjectPanicBuild",
+            "Binary/ReducedEmptyDispatchPanic.map",
+            "uv_parallel_work_panic"
+        ) &&
+        acceptedProjectTempFileContains(
+            authority,
+            "ArtifactProjectPanicBuild",
+            "Binary/ReducedEmptyDispatchPanic.map",
+            "uv_panic"
+        ) &&
+        artifactProjectRunExecutable(
+            authority,
+            "ArtifactProjectPanicBuild",
+            "Binary/ReducedEmptyDispatchPanic.exe",
+            1
+        )
+    if !passed {
+        return diagnosticFixtureExecutionResult(false, 0usize)
+    }
+    return diagnosticFixtureExecutionResult(true, 2usize)
+}
+
+internal procedure artifactProjectSystemExitExecutableExercise(
+    authority: TestAuthority
+) -> DiagnosticFixtureExecutionResult {
+    if !artifactProjectRunCase(
+        authority,
+        "Fixtures/ArtifactProjects/SystemExitExecutable",
+        authority.target_profile,
+        "off",
+        "ArtifactProjectSystemExit.out",
+        "ArtifactProjectSystemExit.err",
+        "ArtifactProjectSystemExitBuild",
+        "systemexit.conformance.log"
+    ) {
+        return diagnosticFixtureExecutionResult(false, 0usize)
+    }
+
+    let passed: bool =
+        acceptedProjectTempFileExists(
+            authority,
+            "ArtifactProjectSystemExitBuild",
+            "Binary/SystemExitExecutable.exe"
+        ) &&
+        acceptedProjectTempFileExists(
+            authority,
+            "ArtifactProjectSystemExitBuild",
+            "Binary/SystemExitExecutable.map"
+        ) &&
+        acceptedProjectTempFileExists(
+            authority,
+            "ArtifactProjectSystemExitBuild",
+            "Intermediate/Obj/Source/SystemExitExecutable.obj"
+        ) &&
+        artifactProjectLinkConformanceMatches(
+            authority,
+            "ArtifactProjectSystemExitBuild",
+            "systemexit.conformance.log"
+        ) &&
+        acceptedProjectTempFileContains(
+            authority,
+            "ArtifactProjectSystemExitBuild",
+            "Binary/SystemExitExecutable.map",
+            "ultraviolet_x3a_x3aruntime_x3a_x3asystem_x3a_x3aexit"
+        ) &&
+        artifactProjectRunExecutable(
+            authority,
+            "ArtifactProjectSystemExitBuild",
+            "Binary/SystemExitExecutable.exe",
+            23
+        )
+    if !passed {
+        return diagnosticFixtureExecutionResult(false, 0usize)
+    }
+    return diagnosticFixtureExecutionResult(true, 3usize)
+}
+
+internal procedure artifactProjectAArch64DependencyExercise(
+    authority: TestAuthority
+) -> DiagnosticFixtureExecutionResult {
+    if !artifactProjectRunCase(
+        authority,
+        "Fixtures/ArtifactProjects/AArch64DependencyObject",
+        "",
+        "on",
+        "ArtifactProjectAArch64.out",
+        "ArtifactProjectAArch64.err",
+        "ArtifactProjectAArch64Build",
+        "aarch64.conformance.log"
+    ) {
+        return diagnosticFixtureExecutionResult(false, 0usize)
+    }
+
+    let passed: bool =
+        acceptedProjectTempFileExists(
+            authority,
+            "ArtifactProjectAArch64Build",
+            "Intermediate/Obj/Source/AArch64DependencyObject.o"
+        ) &&
+        acceptedProjectTempFileExists(
+            authority,
+            "ArtifactProjectAArch64Build",
+            "Intermediate/Incremental/AArch64DependencyObject.manifest"
+        ) &&
+        acceptedProjectConformanceContains(
+            authority,
+            "ArtifactProjectAArch64Build",
+            "aarch64.conformance.log",
+            "\tOutput-Pipeline-Dependency\t"
+        ) &&
+        acceptedProjectTempFileContains(
+            authority,
+            "ArtifactProjectAArch64Build",
+            "Logs/BuildTelemetry.tsv",
+            "output-start\tAArch64DependencyObject\tkind=dependency;modules=1;emit_ir=none;target=aarch64-aapcs64"
+        )
+    if !passed {
+        return diagnosticFixtureExecutionResult(false, 0usize)
+    }
+    return diagnosticFixtureExecutionResult(true, 1usize)
+}
+
+#test(name: "artifact project fixtures build and exercise output obligations")
+internal procedure artifactProjectFixturesBuildAndExerciseOutputObligations(
+    authority: TestAuthority
+) -> bool
+|: |= @result
+{
+    let temp_ready: Outcome<(), IoError> =
+        authority.io~>ensure_dir(authority.temporary_directory)
+    if !diagnosticIoSucceeded(temp_ready) {
+        return false
+    }
+
+    var result: DiagnosticFixtureExecutionResult =
+        artifactProjectRawDylibExercise(authority)
+    result = outputDiagnosticMergeResult(
+        result,
+        artifactProjectStaticLibraryExercise(authority)
+    )
+    result = outputDiagnosticMergeResult(
+        result,
+        artifactProjectEmitLlExercise(authority)
+    )
+    result = outputDiagnosticMergeResult(
+        result,
+        artifactProjectEmitBcExercise(authority)
+    )
+    result = outputDiagnosticMergeResult(
+        result,
+        artifactProjectFlowProofRuntimeErasureExercise(authority)
+    )
+    result = outputDiagnosticMergeResult(
+        result,
+        artifactProjectExecutableExercise(authority)
+    )
+    result = outputDiagnosticMergeResult(
+        result,
+        artifactProjectReducedEmptyDispatchPanicExercise(authority)
+    )
+    result = outputDiagnosticMergeResult(
+        result,
+        artifactProjectSystemExitExecutableExercise(authority)
+    )
+    result = outputDiagnosticMergeResult(
+        result,
+        artifactProjectAArch64DependencyExercise(authority)
+    )
+    return result.passed &&
+        result.count == ARTIFACT_PROJECT_EXECUTED_OBLIGATION_COUNT
+}

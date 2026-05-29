@@ -69,6 +69,11 @@ public procedure artifactProjectFixtureSourceArtifactsExist(context: Context) ->
         ) &&
         artifactProjectSourceArtifactsExist(
             context,
+            "HelloUltraviolet/Fixtures/ArtifactProjects/SystemExitExecutable/Ultraviolet.toml",
+            "HelloUltraviolet/Fixtures/ArtifactProjects/SystemExitExecutable/Source/Main.uv"
+        ) &&
+        artifactProjectSourceArtifactsExist(
+            context,
             "HelloUltraviolet/Fixtures/ArtifactProjects/AArch64DependencyObject/Ultraviolet.toml",
             "HelloUltraviolet/Fixtures/ArtifactProjects/AArch64DependencyObject/Source/Library.uv"
         )

@@ -1948,6 +1948,7 @@ ABICallResult ComputeCallABI(LLVMEmitter& emitter,
   }
 
   result.param_kinds = call_info->param_kinds;
+  result.ret_kind = call_info->ret_kind;
   result.param_carriers.assign(params.size(), ABIArgCarrierKind::Direct);
 
   const bool c_abi_return_boundary = use_c_abi_aggregate_sret;

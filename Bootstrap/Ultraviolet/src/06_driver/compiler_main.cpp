@@ -357,6 +357,38 @@ void RenderDriverDiagnostics(
   }
 }
 
+bool ArgsRequestDiagJson(int argc, char** argv) {
+  for (int i = 1; i < argc; ++i) {
+    if (std::string_view(argv[i]) == "--diag-json") {
+      return true;
+    }
+  }
+  return false;
+}
+
+void RenderCliParseDiagnostic(
+    const ultraviolet::driver::CliParseResult& parse_result,
+    bool diag_json) {
+  ultraviolet::core::DiagnosticStream diags;
+  if (auto diag = ultraviolet::core::MakeDiagnosticById(
+          parse_result.error_code.value())) {
+    if (!parse_result.error_message.empty()) {
+      diag->message = parse_result.error_message;
+    }
+    diags.push_back(*diag);
+  }
+  if (diag_json) {
+    std::cout << ultraviolet::driver::DiagnosticStreamToJson(
+        ultraviolet::core::Order(diags)) << "\n";
+    return;
+  }
+  for (const auto& diag : ultraviolet::core::Order(diags)) {
+    std::cerr << diag.code << " ("
+              << ultraviolet::driver::SeverityString(diag.severity)
+              << "): " << diag.message << "\n";
+  }
+}
+
 bool ValidateParsedTypeAttributeLists(
     const std::vector<ultraviolet::ast::ASTModule>& modules,
     ultraviolet::core::DiagnosticStream& diags) {
@@ -2453,6 +2485,10 @@ int ultraviolet::driver::RunCompiler(int argc, char** argv) {
   const auto parse_result = ParseArgs(argc, argv);
   const auto command_name = ResolveCommandName((argc > 0) ? argv[0] : nullptr);
   if (!parse_result.options.has_value()) {
+    if (parse_result.error_code.has_value()) {
+      RenderCliParseDiagnostic(parse_result, ArgsRequestDiagJson(argc, argv));
+      return 2;
+    }
     if (!parse_result.error_message.empty()) {
       std::cerr << "error: " << parse_result.error_message << "\n";
     }

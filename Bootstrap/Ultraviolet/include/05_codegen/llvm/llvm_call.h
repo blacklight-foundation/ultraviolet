@@ -53,6 +53,7 @@ struct ABICallResult {
     bool out_param_uses_sret_attr = false;
     bool valid = false;
     std::vector<PassKind> param_kinds;
+    PassKind ret_kind = PassKind::ByValue;
     std::vector<std::optional<unsigned>> param_indices;
     std::vector<ABIArgCarrierKind> param_carriers;
 };

@@ -75,6 +75,7 @@ struct CliOptions {
 struct CliParseResult {
   std::optional<CliOptions> options;
   std::string error_message;
+  std::optional<std::string> error_code;
 };
 
 // Parse command-line arguments

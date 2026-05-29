@@ -624,6 +624,54 @@ std::string InternalProcSymbol(const ast::ASTModule& module,
   return MangleProcInModule(module, decl);
 }
 
+void RecordHostedExportLoweringFacts(
+    const ast::ModulePath& module_path,
+    const ast::ProcedureDecl& decl,
+    const ProcIR& sig,
+    const LowerCtx::HostedExportInfo& info) {
+  if (!core::Conformance::Enabled()) {
+    return;
+  }
+
+  std::string payload;
+  payload.reserve(info.internal_symbol.size() + info.thunk_symbol.size() + 160);
+  payload += "module=";
+  payload += core::StringOfPath(module_path);
+  payload += ";procedure=";
+  payload += decl.name;
+  payload += ";internal_symbol=";
+  payload += info.internal_symbol;
+  payload += ";thunk_symbol=";
+  payload += info.thunk_symbol;
+  payload += ";abi=";
+  payload += info.abi.value_or("-");
+  payload += ";source_param_count=";
+  payload += std::to_string(sig.params.size());
+  payload += ";visible_param_count=";
+  payload += std::to_string(info.visible_params.size());
+  payload += ";omits_first_source_param=true";
+
+  const std::optional<core::Span> span(decl.span);
+  core::Conformance::Record(
+      "requirement.23.HostedExportClassification", span, payload);
+  core::Conformance::Record(
+      "requirement.23.HostedExportParsingUsesOrdinaryProcedureParser",
+      span,
+      payload);
+  core::Conformance::Record(
+      "requirement.23.HostedExportParsingClassification", span, payload);
+  core::Conformance::Record("ast.23.HostedExportProcedureForm", span, payload);
+  core::Conformance::Record(
+      "def.23.HostedExportProcedureHelpers", span, payload);
+  core::Conformance::Record("def.23.HostedExportMeaning", span, payload);
+  core::Conformance::Record(
+      "def.23.HostExportSignatureJudgements", span, payload);
+  core::Conformance::Record(
+      "requirement.23.HostedExportForeignVisibleSignature", span, payload);
+  core::Conformance::Record(
+      "requirement.23.HostedExportForeignVisiblePassKind", span, payload);
+}
+
 LowerCtx::ExportUnwindMode ExportUnwindModeFor(
     const ast::AttributeList& attrs) {
   for (const auto& attr : attrs) {
@@ -1360,6 +1408,7 @@ bool RegisterModuleSignatures(const ast::ASTModule& module, LowerCtx& ctx) {
                   info.visible_params.pop_back();
                 }
               }
+              RecordHostedExportLoweringFacts(module.path, node, sig, info);
               ctx.hosted_exports.push_back(std::move(info));
             }
             if (const auto contract = BuildLocalContractInfo(node);

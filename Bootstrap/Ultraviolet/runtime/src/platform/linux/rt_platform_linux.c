@@ -2541,7 +2541,11 @@ static DWORD uv_rt_linux_attributes_from_stat(const struct stat *st)
   {
     return FILE_ATTRIBUTE_DIRECTORY;
   }
-  return FILE_ATTRIBUTE_NORMAL;
+  if (S_ISREG(st->st_mode))
+  {
+    return FILE_ATTRIBUTE_NORMAL;
+  }
+  return FILE_ATTRIBUTE_REPARSE_POINT;
 }
 
 DWORD GetFileAttributesW(LPCWSTR path)
@@ -2552,7 +2556,7 @@ DWORD GetFileAttributesW(LPCWSTR path)
   {
     return INVALID_FILE_ATTRIBUTES;
   }
-  if (stat(utf8_path, &st) != 0)
+  if (lstat(utf8_path, &st) != 0)
   {
     uv_rt_linux_set_errno_error(errno);
     free(utf8_path);
@@ -2633,7 +2637,7 @@ static int uv_rt_linux_fill_find_data(const char *dir_path,
     SetLastError(ERROR_NOT_ENOUGH_MEMORY);
     return 0;
   }
-  if (stat(full_path, &st) != 0)
+  if (lstat(full_path, &st) != 0)
   {
     free(full_path);
     uv_rt_linux_set_errno_error(errno);
