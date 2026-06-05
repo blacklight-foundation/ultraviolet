@@ -116,6 +116,33 @@ EXECUTABLE_AUDIT_ARTIFACT_PROJECTS = (
 RUNNABLE_EXECUTABLE_AUDIT_ARTIFACT_PROJECTS = frozenset({
     "ExecutableOutput",
 })
+EXECUTABLE_OUTPUT_FAILURE_DIAGNOSTICS = {
+    11: "primary IO exists check returned false",
+    12: "secondary IO exists check returned false",
+    13: "combined IO predicate returned false after both individual IO checks passed",
+    21: "current directory was empty",
+    22: "secondary System argument_count predicate returned false",
+    23: "combined System predicate returned false after individual checks passed",
+    31: "Reactor::run future value did not match expected i32 payload",
+    32: "MonotonicTime::resolution returned zero nanoseconds",
+    33: "primary cpu execution domain was not observed",
+    34: "primary gpu execution domain was not observed",
+    35: "primary inline execution domain was not observed",
+    36: "secondary cpu execution domain was not observed",
+    39: "combined domain predicate returned false after individual domains passed",
+    41: "non-capturing closure call returned the wrong value",
+    42: "capturing or move-capturing closure call returned the wrong value",
+    43: "direct closure call returned the wrong value",
+    44: "closure helper call returned the wrong value",
+    45: "closure callee control-flow value was not preserved",
+    46: "closure argument control-flow value was not preserved",
+    47: "resolved internal-form closure call returned the wrong value",
+    48: "function pipeline call returned the wrong value",
+    49: "closure pipeline call returned the wrong value",
+    50: "pipeline left operand control-flow value was not preserved",
+    51: "pipeline right operand control-flow value was not preserved",
+    99: "original aggregate executable predicate failed after individual probes passed",
+}
 CURRENT_TARGET_EXECUTABLE_AUDIT_ARTIFACT_PROJECTS = frozenset({
     "ExecutableOutput",
     "EmitBcLibrary",
@@ -1114,6 +1141,13 @@ def run_verification_gate(
         if gate.allowed_exit_codes != (0,):
             transcript.line(f"## Accepted exit code: {exit_code}")
         return 0
+
+    if gate.label == (
+        "HelloUltraviolet executable audit artifact fixture run: ExecutableOutput"
+    ):
+        diagnostic = EXECUTABLE_OUTPUT_FAILURE_DIAGNOSTICS.get(exit_code)
+        if diagnostic is not None:
+            transcript.line(f"## ExecutableOutput diagnostic: {diagnostic}")
 
     transcript.line(
         "## Expected exit code(s): "

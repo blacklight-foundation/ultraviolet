@@ -142,6 +142,110 @@ internal procedure executableClosureAndPipelineRuntimeOk() -> bool {
         executableEvalSigmaPipelineCtrlRightValue() == 29
 }
 
+internal procedure executableClosureAndPipelineRuntimeFailureCode() -> i32 {
+    if !executableEvalSigmaClosureNonCapturing() {
+        return 41
+    }
+    if !executableEvalSigmaClosureCapturing() {
+        return 42
+    }
+    if !executableEvalSigmaClosureCall() {
+        return 43
+    }
+    if !executableEvalSigmaClosureRuntimeHelpers() {
+        return 44
+    }
+    if executableEvalSigmaClosureCallCalleeControlValue() != 17 {
+        return 45
+    }
+    if executableEvalSigmaClosureCallArgsControlValue() != 19 {
+        return 46
+    }
+    if !executableEvalSigmaClosureCallResolvedInternalFormRuntime() {
+        return 47
+    }
+    if !executableEvalSigmaPipelineFunc() {
+        return 48
+    }
+    if !executableEvalSigmaPipelineClosure() {
+        return 49
+    }
+    if executableEvalSigmaPipelineCtrlLeftValue() != 23 {
+        return 50
+    }
+    if executableEvalSigmaPipelineCtrlRightValue() != 29 {
+        return 51
+    }
+    return 0
+}
+
+internal procedure executableOutputDomainRuntimeFailureCode(
+    context: ExecutableOutputContext
+) -> i32 {
+    if !executableOutputDomainObserved(context.primary.domains.cpu) {
+        return 33
+    }
+    if !executableOutputDomainObserved(context.primary.domains.gpu) {
+        return 34
+    }
+    if !executableOutputDomainObserved(context.primary.domains.inline) {
+        return 35
+    }
+    if !executableOutputDomainObserved(context.secondary.domains.cpu) {
+        return 36
+    }
+    return 0
+}
+
+internal procedure executableOutputRuntimeFailureCode(
+    context: ExecutableOutputContext,
+    current_directory: string@View,
+    reactor_value: i32 | bool,
+    resolution: Duration,
+    io_ok: bool,
+    system_ok: bool,
+    domains_ok: bool
+) -> i32 {
+    if !io_ok {
+        if !context.primary.io~>exists(current_directory) {
+            return 11
+        }
+        if !context.secondary.io~>exists(current_directory) {
+            return 12
+        }
+        return 13
+    }
+    if !system_ok {
+        if string::length(current_directory) == 0usize {
+            return 21
+        }
+        if !(context.secondary.sys~>argument_count() >= 0usize) {
+            return 22
+        }
+        return 23
+    }
+    if !executableOutputFutureValue(reactor_value, 7) {
+        return 31
+    }
+    if !(resolution.nanoseconds > 0u128) {
+        return 32
+    }
+    if !domains_ok {
+        let domain_failure_code: i32 =
+            executableOutputDomainRuntimeFailureCode(context)
+        if domain_failure_code != 0 {
+            return domain_failure_code
+        }
+        return 39
+    }
+    let closure_failure_code: i32 =
+        executableClosureAndPipelineRuntimeFailureCode()
+    if closure_failure_code != 0 {
+        return closure_failure_code
+    }
+    return 99
+}
+
 public procedure main(context: ExecutableOutputContext) -> i32 {
     let net: $Network = context.primary.net~>restrict_to_host("localhost")
     let heap: $HeapAllocator = context.primary.heap~>with_quota(64usize)
@@ -169,5 +273,13 @@ public procedure main(context: ExecutableOutputContext) -> i32 {
         executableClosureAndPipelineRuntimeOk() {
         return 0
     }
-    return 1
+    return executableOutputRuntimeFailureCode(
+        context,
+        current_directory,
+        reactor_value,
+        resolution,
+        io_ok,
+        system_ok,
+        domains_ok
+    )
 }
