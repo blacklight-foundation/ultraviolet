@@ -206,9 +206,18 @@ internal procedure executableOutputRuntimeFailureCode(
     system_ok: bool,
     domains_ok: bool
 ) -> i32 {
+    if string::length(current_directory) == 0usize {
+        return 10
+    }
     if !io_ok {
+        if !context.primary.io~>exists("/") {
+            return 14
+        }
         if !context.primary.io~>exists(current_directory) {
             return 11
+        }
+        if !context.secondary.io~>exists("/") {
+            return 15
         }
         if !context.secondary.io~>exists(current_directory) {
             return 12
@@ -216,9 +225,6 @@ internal procedure executableOutputRuntimeFailureCode(
         return 13
     }
     if !system_ok {
-        if string::length(current_directory) == 0usize {
-            return 21
-        }
         if !(context.secondary.sys~>argument_count() >= 0usize) {
             return 22
         }

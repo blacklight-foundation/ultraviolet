@@ -117,9 +117,12 @@ RUNNABLE_EXECUTABLE_AUDIT_ARTIFACT_PROJECTS = frozenset({
     "ExecutableOutput",
 })
 EXECUTABLE_OUTPUT_FAILURE_DIAGNOSTICS = {
-    11: "primary IO exists check returned false",
-    12: "secondary IO exists check returned false",
+    10: "System::current_directory returned an empty string",
+    11: "primary IO exists check returned false for System::current_directory",
+    12: "secondary IO exists check returned false for System::current_directory",
     13: "combined IO predicate returned false after both individual IO checks passed",
+    14: "primary IO exists check returned false for the root path literal",
+    15: "secondary IO exists check returned false for the root path literal",
     21: "current directory was empty",
     22: "secondary System argument_count predicate returned false",
     23: "combined System predicate returned false after individual checks passed",
